@@ -52,6 +52,7 @@ char history_rcsid[] =
 #include "string-fun.h"
 #include "verify.h"
 #include "wm.h"
+#include "misc.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -314,6 +315,8 @@ void SelectHistoryCB(Widget, XtPointer, XtPointer call_data)
 {
     XmListCallbackStruct *cbs = (XmListCallbackStruct *)call_data;
     gdb_current_history = cbs->item_position - 1;
+
+    clear_isearch();
     set_line_from_history();
 }
 
@@ -419,6 +422,8 @@ void prev_historyAct(Widget, XEvent*, String*, Cardinal*)
     while (gdb_current_history >= gdb_history.size())
 	gdb_current_history--;
     gdb_current_history--;
+
+    clear_isearch();
     set_line_from_history();
 }
 
@@ -428,5 +433,38 @@ void next_historyAct(Widget, XEvent*, String*, Cardinal*)
 	return;
 
     gdb_current_history++;
+
+    clear_isearch();
+    set_line_from_history();
+}
+
+// Search TEXT in history; return POS iff found, -1 if none
+// DIRECTION = -1 means search backward, DIRECTION = +1 means search forward
+// RESEARCH = true means skip current position
+int search_history(const string& text, int direction, bool research)
+{
+    int i = min(gdb_current_history, gdb_history.size() - 1);
+    if (research)
+	i += direction;
+
+    while (i < gdb_history.size() && i >= 0)
+    {
+	if (gdb_history[i].contains(text))
+	    return i;
+
+	i += direction;
+    }
+
+    return -1;			// Not found
+}
+
+// Set history position to POS; -1 means last position.
+void goto_history(int pos)
+{
+    if (pos == -1)
+	pos = gdb_history.size() - 1;
+
+    assert (pos >= 0 && pos < gdb_history.size());
+    gdb_current_history = pos;
     set_line_from_history();
 }

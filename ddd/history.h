@@ -61,6 +61,15 @@ extern string current_line();
 extern void prev_historyAct      (Widget, XEvent*, String*, Cardinal*);
 extern void next_historyAct      (Widget, XEvent*, String*, Cardinal*);
 
+// Search TEXT in history; return POS iff found, -1 if none
+// DIRECTION = -1 means search backward, DIRECTION = +1 means search forward
+// RESEARCH = true means skip current position
+extern int search_history(const string& text, int direction,
+			  bool research = false);
+
+// Set history position to POS; -1 means last position.
+extern void goto_history(int pos = -1);
+
 // Invoke history dialog
 extern void gdbHistoryCB(Widget, XtPointer, XtPointer);
 

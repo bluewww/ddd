@@ -49,6 +49,9 @@ extern void insert_graph_argAct  (Widget, XEvent*, String*, Cardinal*);
 extern void next_tab_groupAct    (Widget, XEvent*, String*, Cardinal*);
 extern void prev_tab_groupAct    (Widget, XEvent*, String*, Cardinal*);
 extern void get_focusAct         (Widget, XEvent*, String*, Cardinal*);
+extern void isearch_nextAct      (Widget, XEvent*, String*, Cardinal*);
+extern void isearch_prevAct      (Widget, XEvent*, String*, Cardinal*);
+extern void isearch_exitAct      (Widget, XEvent*, String*, Cardinal*);
 
 // Callbacks
 extern void gdbModifyCB          (Widget, XtPointer, XtPointer);
@@ -57,6 +60,8 @@ extern void gdbChangeCB          (Widget, XtPointer, XtPointer);
 
 extern void gdbNextCB            (Widget, XtPointer, XtPointer);
 extern void gdbPrevCB            (Widget, XtPointer, XtPointer);
+extern void gdbISearchNextCB     (Widget, XtPointer, XtPointer);
+extern void gdbISearchPrevCB     (Widget, XtPointer, XtPointer);
 extern void gdbClearCB           (Widget, XtPointer, XtPointer);
 extern void gdbCompleteCB        (Widget, XtPointer, XtPointer);
 extern void gdbApplyCB           (Widget, XtPointer, XtPointer);
@@ -64,6 +69,9 @@ extern void gdbClearWindowCB     (Widget, XtPointer, XtPointer);
 
 // True if last input was at gdb prompt
 extern bool gdb_input_at_prompt;
+
+// Clear isearch mode
+extern void clear_isearch();
 
 #endif // _DDD_editing_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

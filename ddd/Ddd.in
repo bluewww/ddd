@@ -695,8 +695,8 @@ Ctrl<Key>C:		gdb-control(^C)		    \n\
 Ctrl<Key>D:		gdb-delete-or-control(^D)   \n\
 Ctrl ~Shift<Key>E:	gdb-end-of-line()	    \n\
 Ctrl<Key>F:		gdb-forward-character()	    \n\
+Ctrl<Key>G:		gdb-control(^C)		    \n\
 Ctrl<Key>H:		delete-previous-character() \n\
-Ctrl<Key>I:		gdb-complete-command()	    \n\
 Ctrl<Key>K:		delete-to-end-of-line()	    \n\
 Ctrl<Key>N:		gdb-next-history()	    \n\
 Ctrl<Key>P:		gdb-previous-history()	    \n\
@@ -707,6 +707,11 @@ Ctrl<Key>W:		delete-previous-word()	    \n\
 Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
 Ctrl<Key>Y:		unkill()		    \n\
 Ctrl<Key>backslash:	gdb-control(^\\)	    \n\
+Ctrl<Key>R:		gdb-isearch-prev()          \n\
+Ctrl<Key>S:		gdb-isearch-next()          \n\
+Ctrl<Key>T:		gdb-complete-command()	    \n\
+None<Key>Escape:	process-cancel() gdb-isearch-exit() \n\
+None<Key>osfCancel:	process-cancel() gdb-isearch-exit() \n\
 None<Key>osfUp:		gdb-previous-history()	    \n\
 None<Key>osfDown:	gdb-next-history()	    \n\
 None<Key>osfLeft:	gdb-backward-character()    \n\
@@ -719,8 +724,7 @@ None<Key>Home:		gdb-beginning-of-line()	    \n\
 None<Key>End:		gdb-end-of-line()	    \n\
 None<Key>R7:		gdb-beginning-of-line()	    \n\
 None<Key>R13:		gdb-end-of-line()	    \n\
-None<Key>Tab:		gdb-complete-command()	    \n\
-None<Key>Escape:	gdb-complete-command()	    \n
+None<Key>Tab:		gdb-complete-command()	    \n
 
 ! Have some of these in argument fields as well
 Ddd*XmTextField*translations: #override \
@@ -730,8 +734,8 @@ Ctrl<Key>D:		delete-next-character()	    \n\
 Ctrl ~Shift<Key>E:	end-of-line()		    \n\
 Ctrl<Key>F:		forward-character()	    \n\
 Ctrl<Key>H:		delete-previous-character() \n\
-Ctrl<Key>I:		gdb-complete-arg(print)	    \n\
 Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>T:		gdb-complete-arg(print)	    \n\
 Ctrl<Key>U:		beginning-of-line()	    \
 			delete-to-end-of-line()	    \n\
 Ctrl<Key>W:		delete-previous-word()	    \n\
@@ -739,7 +743,6 @@ Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
 None<Key>R7:		beginning-of-line()	    \n\
 None<Key>R13:		end-of-line()		    \n\
 None<Key>Tab:		gdb-complete-tab(print)	    \n\
-None<Key>Escape:	gdb-complete-arg(print)	    \n\
 None<Key>Home:		beginning-of-line()	    \n\
 None<Key>End:		end-of-line()		    \n
 
@@ -753,8 +756,8 @@ Ctrl<Key>D:		delete-next-character()	    \n\
 Ctrl ~Shift<Key>E:	end-of-line()		    \n\
 Ctrl<Key>F:		forward-character()	    \n\
 Ctrl<Key>H:		delete-previous-character() \n\
-Ctrl<Key>I:		gdb-complete-arg(break)	    \n\
 Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>T:		gdb-complete-arg(break)	    \n\
 Ctrl<Key>U:		beginning-of-line()	    \
 			delete-to-end-of-line()	    \n\
 Ctrl<Key>W:		delete-previous-word()	    \n\
@@ -763,7 +766,6 @@ Ctrl<Key>Y:		unkill()		    \n\
 None<Key>R7:		beginning-of-line()	    \n\
 None<Key>R13:		end-of-line()		    \n\
 None<Key>Tab:		gdb-complete-tab(break)	    \n\
-None<Key>Escape:	gdb-complete-arg(break)	    \n\
 None<Key>Home:		beginning-of-line()	    \n\
 None<Key>End:		end-of-line()		    \n
 
@@ -774,8 +776,8 @@ Ctrl<Key>D:		delete-next-character()	    \n\
 Ctrl ~Shift<Key>E:	end-of-line()		    \n\
 Ctrl<Key>F:		forward-character()	    \n\
 Ctrl<Key>H:		delete-previous-character() \n\
-Ctrl<Key>I:		gdb-complete-arg(break)	    \n\
 Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>T:		gdb-complete-arg(break)	    \n\
 Ctrl<Key>U:		beginning-of-line()	    \
 			delete-to-end-of-line()	    \n\
 Ctrl<Key>W:		delete-previous-word()	    \n\
@@ -783,7 +785,6 @@ Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
 None<Key>R7:		beginning-of-line()	    \n\
 None<Key>R13:		end-of-line()		    \n\
 None<Key>Tab:		gdb-complete-tab(break)	    \n\
-None<Key>Escape:	gdb-complete-arg(break)	    \n\
 None<Key>Home:		beginning-of-line()	    \n\
 None<Key>End:		end-of-line()		    \n
 
@@ -794,8 +795,8 @@ Ctrl<Key>D:		delete-next-character()	    \n\
 Ctrl ~Shift<Key>E:	end-of-line()		    \n\
 Ctrl<Key>F:		forward-character()	    \n\
 Ctrl<Key>H:		delete-previous-character() \n\
-Ctrl<Key>I:		gdb-complete-arg(print)	    \n\
 Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>T:		gdb-complete-arg(print)	    \n\
 Ctrl<Key>U:		beginning-of-line()	    \
 			delete-to-end-of-line()	    \n\
 Ctrl<Key>W:		delete-previous-word()	    \n\
@@ -804,7 +805,6 @@ Ctrl<Key>Y:		unkill()		    \n\
 None<Key>R7:		beginning-of-line()	    \n\
 None<Key>R13:		end-of-line()		    \n\
 None<Key>Tab:		gdb-complete-tab(print)	    \n\
-None<Key>Escape:	gdb-complete-arg(print)	    \n\
 None<Key>Home:		beginning-of-line()	    \n\
 None<Key>End:		end-of-line()		    \n
 
@@ -815,8 +815,8 @@ Ctrl<Key>D:		delete-next-character()	    \n\
 Ctrl ~Shift<Key>E:	end-of-line()		    \n\
 Ctrl<Key>F:		forward-character()	    \n\
 Ctrl<Key>H:		delete-previous-character() \n\
-Ctrl<Key>I:		gdb-complete-arg(print)	    \n\
 Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>T:		gdb-complete-arg(print)	    \n\
 Ctrl<Key>U:		beginning-of-line()	    \
 			delete-to-end-of-line()	    \n\
 Ctrl<Key>W:		delete-previous-word()	    \n\
@@ -824,7 +824,6 @@ Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
 None<Key>R7:		beginning-of-line()	    \n\
 None<Key>R13:		end-of-line()		    \n\
 None<Key>Tab:		gdb-complete-tab(print)	    \n\
-None<Key>Escape:	gdb-complete-arg(print)	    \n\
 None<Key>Home:		beginning-of-line()	    \n\
 None<Key>End:		end-of-line()		    \n
 
@@ -835,7 +834,6 @@ Ctrl<Key>D:		delete-next-character()	    \n\
 Ctrl ~Shift<Key>E:	end-of-line()		    \n\
 Ctrl<Key>F:		forward-character()	    \n\
 Ctrl<Key>H:		delete-previous-character() \n\
-Ctrl<Key>I:		beep()			    \n\
 Ctrl<Key>K:		delete-to-end-of-line()	    \n\
 Ctrl<Key>U:		beginning-of-line()	    \
 			delete-to-end-of-line()	    \n\
@@ -854,7 +852,6 @@ Ctrl<Key>D:		delete-next-character()	    \n\
 Ctrl ~Shift<Key>E:	end-of-line()		    \n\
 Ctrl<Key>F:		forward-character()	    \n\
 Ctrl<Key>H:		delete-previous-character() \n\
-Ctrl<Key>I:		beep()			    \n\
 Ctrl<Key>K:		delete-to-end-of-line()	    \n\
 Ctrl<Key>U:		beginning-of-line()	    \
 			delete-to-end-of-line()	    \n\
@@ -872,8 +869,8 @@ Ctrl<Key>D:		delete-next-character()	    \n\
 Ctrl ~Shift<Key>E:	end-of-line()		    \n\
 Ctrl<Key>F:		forward-character()	    \n\
 Ctrl<Key>H:		delete-previous-character() \n\
-Ctrl<Key>I:		gdb-complete-arg(print)	    \n\
 Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>T:		gdb-complete-arg(print)	    \n\
 Ctrl<Key>U:		beginning-of-line()	    \
 			delete-to-end-of-line()	    \n\
 Ctrl<Key>W:		delete-previous-word()	    \n\
@@ -882,7 +879,6 @@ Ctrl<Key>Y:		unkill()		    \n\
 None<Key>R7:		beginning-of-line()	    \n\
 None<Key>R13:		end-of-line()		    \n\
 None<Key>Tab:		gdb-complete-tab(print)	    \n\
-None<Key>Escape:	gdb-complete-arg(print)	    \n\
 None<Key>Home:		beginning-of-line()	    \n\
 None<Key>End:		end-of-line()		    \n
 
@@ -893,8 +889,8 @@ Ctrl<Key>D:		delete-next-character()	    \n\
 Ctrl ~Shift<Key>E:	end-of-line()		    \n\
 Ctrl<Key>F:		forward-character()	    \n\
 Ctrl<Key>H:		delete-previous-character() \n\
-Ctrl<Key>I:		gdb-complete-arg(print)	    \n\
 Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>T:		gdb-complete-arg(print)	    \n\
 Ctrl<Key>U:		beginning-of-line()	    \
 			delete-to-end-of-line()	    \n\
 Ctrl<Key>W:		delete-previous-word()	    \n\
@@ -902,7 +898,6 @@ Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
 None<Key>R7:		beginning-of-line()	    \n\
 None<Key>R13:		end-of-line()		    \n\
 None<Key>Tab:		gdb-complete-tab(print)	    \n\
-None<Key>Escape:	gdb-complete-arg(print)	    \n\
 None<Key>Home:		beginning-of-line()	    \n\
 None<Key>End:		end-of-line()		    \n
 
@@ -913,8 +908,8 @@ Ctrl<Key>D:		delete-next-character()	    \n\
 Ctrl ~Shift<Key>E:	end-of-line()		    \n\
 Ctrl<Key>F:		forward-character()	    \n\
 Ctrl<Key>H:		delete-previous-character() \n\
-Ctrl<Key>I:		gdb-complete-arg(print)	    \n\
 Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>T:		gdb-complete-arg(print)	    \n\
 Ctrl<Key>U:		beginning-of-line()	    \
 			delete-to-end-of-line()	    \n\
 Ctrl<Key>W:		delete-previous-word()	    \n\
@@ -923,7 +918,6 @@ Ctrl<Key>Y:		unkill()		    \n\
 None<Key>R7:		beginning-of-line()	    \n\
 None<Key>R13:		end-of-line()		    \n\
 None<Key>Tab:		gdb-complete-tab(print)	    \n\
-None<Key>Escape:	gdb-complete-arg(print)	    \n\
 None<Key>Home:		beginning-of-line()	    \n\
 None<Key>End:		end-of-line()		    \n
 
@@ -934,8 +928,8 @@ Ctrl<Key>D:		delete-next-character()	    \n\
 Ctrl ~Shift<Key>E:	end-of-line()		    \n\
 Ctrl<Key>F:		forward-character()	    \n\
 Ctrl<Key>H:		delete-previous-character() \n\
-Ctrl<Key>I:		gdb-complete-arg(print)	    \n\
 Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>T:		gdb-complete-arg(print)	    \n\
 Ctrl<Key>U:		beginning-of-line()	    \
 			delete-to-end-of-line()	    \n\
 Ctrl<Key>W:		delete-previous-word()	    \n\
@@ -943,7 +937,6 @@ Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
 None<Key>R7:		beginning-of-line()	    \n\
 None<Key>R13:		end-of-line()		    \n\
 None<Key>Tab:		gdb-complete-tab(print)	    \n\
-None<Key>Escape:	gdb-complete-arg(print)	    \n\
 None<Key>Home:		beginning-of-line()	    \n\
 None<Key>End:		end-of-line()		    \n
 
@@ -956,8 +949,8 @@ Ctrl<Key>D:		delete-next-character()	    \n\
 Ctrl ~Shift<Key>E:	end-of-line()		    \n\
 Ctrl<Key>F:		forward-character()	    \n\
 Ctrl<Key>H:		delete-previous-character() \n\
-Ctrl<Key>I:		gdb-complete-arg(file)	    \n\
 Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>T:		gdb-complete-arg(file)	    \n\
 Ctrl<Key>U:		beginning-of-line()	    \
 			delete-to-end-of-line()	    \n\
 Ctrl<Key>W:		delete-previous-word()	    \n\
@@ -966,7 +959,6 @@ Ctrl<Key>Y:		unkill()		    \n\
 None<Key>R7:		beginning-of-line()	    \n\
 None<Key>R13:		end-of-line()		    \n\
 None<Key>Tab:		gdb-complete-tab(file)	    \n\
-None<Key>Escape:	gdb-complete-arg(file)	    \n\
 None<Key>Home:		beginning-of-line()	    \n\
 None<Key>End:		end-of-line()		    \n
 
@@ -977,8 +969,8 @@ Ctrl<Key>D:		delete-next-character()	    \n\
 Ctrl ~Shift<Key>E:	end-of-line()		    \n\
 Ctrl<Key>F:		forward-character()	    \n\
 Ctrl<Key>H:		delete-previous-character() \n\
-Ctrl<Key>I:		gdb-complete-arg(file)	    \n\
 Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>T:		gdb-complete-arg(file)	    \n\
 Ctrl<Key>U:		beginning-of-line()	    \
 			delete-to-end-of-line()	    \n\
 Ctrl<Key>W:		delete-previous-word()	    \n\
@@ -986,7 +978,6 @@ Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
 None<Key>R7:		beginning-of-line()	    \n\
 None<Key>R13:		end-of-line()		    \n\
 None<Key>Tab:		gdb-complete-tab(file)	    \n\
-None<Key>Escape:	gdb-complete-arg(file)	    \n\
 None<Key>Home:		beginning-of-line()	    \n\
 None<Key>End:		end-of-line()		    \n
 
@@ -997,8 +988,8 @@ Ctrl<Key>D:		delete-next-character()	    \n\
 Ctrl ~Shift<Key>E:	end-of-line()		    \n\
 Ctrl<Key>F:		forward-character()	    \n\
 Ctrl<Key>H:		delete-previous-character() \n\
-Ctrl<Key>I:		gdb-complete-arg(core-file) \n\
 Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>T:		gdb-complete-arg(core-file) \n\
 Ctrl<Key>U:		beginning-of-line()	    \
 			delete-to-end-of-line()	    \n\
 Ctrl<Key>W:		delete-previous-word()	    \n\
@@ -1007,7 +998,6 @@ Ctrl<Key>Y:		unkill()		    \n\
 None<Key>R7:		beginning-of-line()	    \n\
 None<Key>R13:		end-of-line()		    \n\
 None<Key>Tab:		gdb-complete-tab(core-file) \n\
-None<Key>Escape:	gdb-complete-arg(core-file) \n\
 None<Key>Home:		beginning-of-line()	    \n\
 None<Key>End:		end-of-line()		    \n
 
@@ -1018,8 +1008,8 @@ Ctrl<Key>D:		delete-next-character()	    \n\
 Ctrl ~Shift<Key>E:	end-of-line()		    \n\
 Ctrl<Key>F:		forward-character()	    \n\
 Ctrl<Key>H:		delete-previous-character() \n\
-Ctrl<Key>I:		gdb-complete-arg(core-file) \n\
 Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>T:		gdb-complete-arg(core-file) \n\
 Ctrl<Key>U:		beginning-of-line()	    \
 			delete-to-end-of-line()	    \n\
 Ctrl<Key>W:		delete-previous-word()	    \n\
@@ -1027,7 +1017,6 @@ Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
 None<Key>R7:		beginning-of-line()	    \n\
 None<Key>R13:		end-of-line()		    \n\
 None<Key>Tab:		gdb-complete-tab(core-file) \n\
-None<Key>Escape:	gdb-complete-arg(core-file) \n\
 None<Key>Home:		beginning-of-line()	    \n\
 None<Key>End:		end-of-line()		    \n
 
@@ -1038,8 +1027,8 @@ Ctrl<Key>D:		delete-next-character()	    \n\
 Ctrl ~Shift<Key>E:	end-of-line()		    \n\
 Ctrl<Key>F:		forward-character()	    \n\
 Ctrl<Key>H:		delete-previous-character() \n\
-Ctrl<Key>I:		gdb-complete-arg(file)	    \n\
 Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>T:		gdb-complete-arg(file)      \n\
 Ctrl<Key>U:		beginning-of-line()	    \
 			delete-to-end-of-line()	    \n\
 Ctrl<Key>W:		delete-previous-word()	    \n\
@@ -1048,7 +1037,6 @@ Ctrl<Key>Y:		unkill()		    \n\
 None<Key>R7:		beginning-of-line()	    \n\
 None<Key>R13:		end-of-line()		    \n\
 None<Key>Tab:		gdb-complete-tab(file)	    \n\
-None<Key>Escape:	gdb-complete-arg(file)	    \n\
 None<Key>Home:		beginning-of-line()	    \n\
 None<Key>End:		end-of-line()		    \n
 
@@ -1059,8 +1047,8 @@ Ctrl<Key>D:		delete-next-character()	    \n\
 Ctrl ~Shift<Key>E:	end-of-line()		    \n\
 Ctrl<Key>F:		forward-character()	    \n\
 Ctrl<Key>H:		delete-previous-character() \n\
-Ctrl<Key>I:		gdb-complete-arg(file)	    \n\
 Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>T:		gdb-complete-arg(file)      \n\
 Ctrl<Key>U:		beginning-of-line()	    \
 			delete-to-end-of-line()	    \n\
 Ctrl<Key>W:		delete-previous-word()	    \n\
@@ -1068,7 +1056,6 @@ Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
 None<Key>R7:		beginning-of-line()	    \n\
 None<Key>R13:		end-of-line()		    \n\
 None<Key>Tab:		gdb-complete-tab(file)	    \n\
-None<Key>Escape:	gdb-complete-arg(file)	    \n\
 None<Key>Home:		beginning-of-line()	    \n\
 None<Key>End:		end-of-line()		    \n
 
@@ -1079,8 +1066,8 @@ Ctrl<Key>D:		delete-next-character()	    \n\
 Ctrl ~Shift<Key>E:	end-of-line()		    \n\
 Ctrl<Key>F:		forward-character()	    \n\
 Ctrl<Key>H:		delete-previous-character() \n\
-Ctrl<Key>I:		gdb-complete-arg(file)	    \n\
 Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>T:		gdb-complete-arg(file)      \n\
 Ctrl<Key>U:		beginning-of-line()	    \
 			delete-to-end-of-line()	    \n\
 Ctrl<Key>W:		delete-previous-word()	    \n\
@@ -1088,7 +1075,6 @@ Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
 None<Key>R7:		beginning-of-line()	    \n\
 None<Key>R13:		end-of-line()		    \n\
 None<Key>Tab:		gdb-complete-tab(file)	    \n\
-None<Key>Escape:	gdb-complete-arg(file)	    \n\
 None<Key>Home:		beginning-of-line()	    \n\
 None<Key>End:		end-of-line()		    \n
 
@@ -1099,8 +1085,8 @@ Ctrl<Key>D:		delete-next-character()	    \n\
 Ctrl ~Shift<Key>E:	end-of-line()		    \n\
 Ctrl<Key>F:		forward-character()	    \n\
 Ctrl<Key>H:		delete-previous-character() \n\
-Ctrl<Key>I:		gdb-complete-arg(file)	    \n\
 Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>T:		gdb-complete-arg(file)      \n\
 Ctrl<Key>U:		beginning-of-line()	    \
 			delete-to-end-of-line()	    \n\
 Ctrl<Key>W:		delete-previous-word()	    \n\
@@ -1108,7 +1094,6 @@ Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
 None<Key>R7:		beginning-of-line()	    \n\
 None<Key>R13:		end-of-line()		    \n\
 None<Key>Tab:		gdb-complete-tab(file)	    \n\
-None<Key>Escape:	gdb-complete-arg(file)	    \n\
 None<Key>Home:		beginning-of-line()	    \n\
 None<Key>End:		end-of-line()		    \n
 
@@ -1119,8 +1104,8 @@ Ctrl<Key>D:		delete-next-character()	    \n\
 Ctrl ~Shift<Key>E:	end-of-line()		    \n\
 Ctrl<Key>F:		forward-character()	    \n\
 Ctrl<Key>H:		delete-previous-character() \n\
-Ctrl<Key>I:		gdb-complete-arg(print)	    \n\
 Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>T:		gdb-complete-arg(shell)     \n\
 Ctrl<Key>U:		beginning-of-line()	    \
 			delete-to-end-of-line()	    \n\
 Ctrl<Key>W:		delete-previous-word()	    \n\
@@ -1129,7 +1114,6 @@ Ctrl<Key>Y:		unkill()		    \n\
 None<Key>R7:		beginning-of-line()	    \n\
 None<Key>R13:		end-of-line()		    \n\
 None<Key>Tab:		gdb-complete-tab(shell)	    \n\
-None<Key>Escape:	gdb-complete-arg(shell)	    \n\
 None<Key>Home:		beginning-of-line()	    \n\
 None<Key>End:		end-of-line()		    \n
 
@@ -1140,8 +1124,8 @@ Ctrl<Key>D:		delete-next-character()	    \n\
 Ctrl ~Shift<Key>E:	end-of-line()		    \n\
 Ctrl<Key>F:		forward-character()	    \n\
 Ctrl<Key>H:		delete-previous-character() \n\
-Ctrl<Key>I:		gdb-complete-arg(print)	    \n\
 Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>T:		gdb-complete-arg(shell)     \n\
 Ctrl<Key>U:		beginning-of-line()	    \
 			delete-to-end-of-line()	    \n\
 Ctrl<Key>W:		delete-previous-word()	    \n\
@@ -1149,7 +1133,6 @@ Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
 None<Key>R7:		beginning-of-line()	    \n\
 None<Key>R13:		end-of-line()		    \n\
 None<Key>Tab:		gdb-complete-tab(shell)	    \n\
-None<Key>Escape:	gdb-complete-arg(shell)	    \n\
 None<Key>Home:		beginning-of-line()	    \n\
 None<Key>End:		end-of-line()		    \n
 
@@ -1160,8 +1143,8 @@ Ctrl<Key>D:		delete-next-character()	    \n\
 Ctrl ~Shift<Key>E:	end-of-line()		    \n\
 Ctrl<Key>F:		forward-character()	    \n\
 Ctrl<Key>H:		delete-previous-character() \n\
-Ctrl<Key>I:		gdb-complete-arg(print)	    \n\
 Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>T:		gdb-complete-arg(print)     \n\
 Ctrl<Key>U:		beginning-of-line()	    \
 			delete-to-end-of-line()	    \n\
 Ctrl<Key>W:		delete-previous-word()	    \n\
@@ -1170,7 +1153,6 @@ Ctrl<Key>Y:		unkill()		    \n\
 None<Key>R7:		beginning-of-line()	    \n\
 None<Key>R13:		end-of-line()		    \n\
 None<Key>Tab:		gdb-complete-tab(print)	    \n\
-None<Key>Escape:	gdb-complete-arg(print)	    \n\
 None<Key>Home:		beginning-of-line()	    \n\
 None<Key>End:		end-of-line()		    \n
 
@@ -1181,8 +1163,8 @@ Ctrl<Key>D:		delete-next-character()	    \n\
 Ctrl ~Shift<Key>E:	end-of-line()		    \n\
 Ctrl<Key>F:		forward-character()	    \n\
 Ctrl<Key>H:		delete-previous-character() \n\
-Ctrl<Key>I:		gdb-complete-arg(print)	    \n\
 Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>T:		gdb-complete-arg(print)     \n\
 Ctrl<Key>U:		beginning-of-line()	    \
 			delete-to-end-of-line()	    \n\
 Ctrl<Key>W:		delete-previous-word()	    \n\
@@ -1190,7 +1172,6 @@ Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
 None<Key>R7:		beginning-of-line()	    \n\
 None<Key>R13:		end-of-line()		    \n\
 None<Key>Tab:		gdb-complete-tab(print)	    \n\
-None<Key>Escape:	gdb-complete-arg(print)	    \n\
 None<Key>Home:		beginning-of-line()	    \n\
 None<Key>End:		end-of-line()		    \n
 
@@ -1489,7 +1470,7 @@ Ddd*editMenu.paste.acceleratorText:	Shift+Ins
 
 Ddd*editMenu.clear.labelString:		Clear
 Ddd*editMenu.clear.mnemonic:		e
-Ddd*editMenu.clear.accelerator:		~Shift Ctrl<Key>U
+! Ddd*editMenu.clear.accelerator:	~Shift Ctrl<Key>U
 Ddd*editMenu.clear.acceleratorText:	Ctrl+U
 
 Ddd*editMenu.delete.labelString:	Delete
@@ -1520,8 +1501,8 @@ for the next @DDD@ invocation.
 
 Ddd*optionsMenu.separateExecWindow.labelString:		Run in Execution Window
 Ddd*optionsMenu.separateExecWindow.mnemonic:		E
-Ddd*optionsMenu*separateExecWindow.accelerator:		Ctrl<Key>Z
-Ddd*optionsMenu*separateExecWindow.acceleratorText:	Ctrl+Z
+Ddd*optionsMenu*separateExecWindow.accelerator:		Ctrl<Key>X
+Ddd*optionsMenu*separateExecWindow.acceleratorText:	Ctrl+X
 
 Ddd*optionsMenu.findWordsOnly.labelString:		Find Words Only
 Ddd*optionsMenu.findWordsOnly.mnemonic:			W
@@ -1592,33 +1573,33 @@ but proceed through subroutine calls.\n\
 
 Ddd*menubar*programMenu.run.labelString:	   Run...
 Ddd*menubar*programMenu.run.mnemonic:		   R
-Ddd*menubar*programMenu.run.accelerator:	   Ctrl ~Shift<Key>R
-Ddd*menubar*programMenu.run.acceleratorText:	   Ctrl+R
+Ddd*menubar*programMenu.run.accelerator:	   Ctrl ~Shift<Key>Z
+Ddd*menubar*programMenu.run.acceleratorText:	   Ctrl+Z
 
 Ddd*menubar*programMenu.run_again.labelString:	   Run Again
 Ddd*menubar*programMenu.run_again.mnemonic:	   A
-Ddd*menubar*programMenu.run_again.accelerator:	   Ctrl Shift<Key>R
-Ddd*menubar*programMenu.run_again.acceleratorText: Ctrl+Shift+R
+Ddd*menubar*programMenu.run_again.accelerator:	   Ctrl Shift<Key>Z
+Ddd*menubar*programMenu.run_again.acceleratorText: Ctrl+Shift+Z
 
 Ddd*menubar*programMenu.step.labelString:	   Step
 Ddd*menubar*programMenu.step.mnemonic:		   S
-Ddd*menubar*programMenu.step.accelerator:	   Ctrl ~Shift<Key>S
-Ddd*menubar*programMenu.step.acceleratorText:	   Ctrl+S
+Ddd*menubar*programMenu.step.accelerator:	   Ctrl ~Shift<Key>I
+Ddd*menubar*programMenu.step.acceleratorText:	   Ctrl+I
 
 Ddd*menubar*programMenu.stepi.labelString:	   Step Instruction
 Ddd*menubar*programMenu.stepi.mnemonic:		   I
-Ddd*menubar*programMenu.stepi.accelerator:	   Ctrl Shift<Key>S
-Ddd*menubar*programMenu.stepi.acceleratorText:	   Ctrl+Shift+S
+Ddd*menubar*programMenu.stepi.accelerator:	   Ctrl Shift<Key>I
+Ddd*menubar*programMenu.stepi.acceleratorText:	   Ctrl+Shift+I
 
 Ddd*menubar*programMenu.next.labelString:	   Next
 Ddd*menubar*programMenu.next.mnemonic:		   N
-Ddd*menubar*programMenu.next.accelerator:	   Ctrl ~Shift<Key>X
-Ddd*menubar*programMenu.next.acceleratorText:	   Ctrl+X
+Ddd*menubar*programMenu.next.accelerator:	   Ctrl ~Shift<Key>J
+Ddd*menubar*programMenu.next.acceleratorText:	   Ctrl+J
 
 Ddd*menubar*programMenu.nexti.labelString:	   Next Instruction
 Ddd*menubar*programMenu.nexti.mnemonic:		   e
-Ddd*menubar*programMenu.nexti.accelerator:	   Ctrl Shift<Key>X
-Ddd*menubar*programMenu.nexti.acceleratorText:	   Ctrl+Shift+X
+Ddd*menubar*programMenu.nexti.accelerator:	   Ctrl Shift<Key>J
+Ddd*menubar*programMenu.nexti.acceleratorText:	   Ctrl+Shift+J
 
 Ddd*menubar*programMenu.cont.labelString:	   Continue
 Ddd*menubar*programMenu.cont.mnemonic:		   C
@@ -1660,42 +1641,55 @@ Ddd*menubar.commands*contextHelpString:	\
 @tt \267 @bf Complete @rm - complete the current command.\n\
 @tt \267 @bf Apply @rm - execute the current command.
 \n\
+@tt \267 @bf Search Previous @rm - incrementally search previous command.\n\
+@tt \267 @bf Search Next @rm - incrementally search next command.\n\
+\n\
 @tt \267 @bf Clear Line @rm - clear current command line.
 @tt \267 @bf Clear Window @rm - clear all before last debugger prompt.
 
-Ddd*commandsMenu.history.labelString:	Command History...
-Ddd*commandsMenu.history.mnemonic:	H
+Ddd*commandsMenu.history.labelString:	        Command History...
+Ddd*commandsMenu.history.mnemonic:	        H
 
-Ddd*commandsMenu.prev.labelString:	Previous
-Ddd*commandsMenu.prev.mnemonic:		P
-! *commandsMenu.prev.accelerator:	Ctrl<Key>P
-Ddd*commandsMenu.prev.acceleratorText:	Ctrl+P
+Ddd*commandsMenu.prev.labelString:	        Previous
+Ddd*commandsMenu.prev.mnemonic:		        P
+! *commandsMenu.prev.accelerator:	        Ctrl<Key>P
+Ddd*commandsMenu.prev.acceleratorText:	        Ctrl+P
 
-Ddd*commandsMenu.next.labelString:	Next
-Ddd*commandsMenu.next.mnemonic:		N
-! *commandsMenu.next.accelerator:	Ctrl<Key>N
-Ddd*commandsMenu.next.acceleratorText:	Ctrl+N
+Ddd*commandsMenu.next.labelString:	        Next
+Ddd*commandsMenu.next.mnemonic:		        N
+! *commandsMenu.next.accelerator:	        Ctrl<Key>N
+Ddd*commandsMenu.next.acceleratorText:	        Ctrl+N
 
-Ddd*commandsMenu.complete.labelString:	Complete
-Ddd*commandsMenu.complete.mnemonic:	C
-! *commandsMenu.complete.accelerator:	None<Key>Tab
-! *commandsMenu.complete.accelerator:	Ctrl<Key>I
+Ddd*commandsMenu.complete.labelString:	        Complete
+Ddd*commandsMenu.complete.mnemonic:	        C
+! *commandsMenu.complete.accelerator:	        None<Key>Tab
+! *commandsMenu.complete.accelerator:	        Ctrl<Key>I
 Ddd*commandsMenu.complete.acceleratorText:	Tab
 
-Ddd*commandsMenu.apply.labelString:	Apply
-Ddd*commandsMenu.apply.mnemonic:	A
-! *commandsMenu.apply.accelerator:	None<Key>Return
-Ddd*commandsMenu.apply.acceleratorText: Return
+Ddd*commandsMenu.apply.labelString:	        Apply
+Ddd*commandsMenu.apply.mnemonic:	        A
+! *commandsMenu.apply.accelerator:	        None<Key>Return
+Ddd*commandsMenu.apply.acceleratorText:         Return
 
-Ddd*commandsMenu.clear_line.labelString: Clear Line
-Ddd*commandsMenu.clear_line.mnemonic:	L
-! *commandsMenu.clear_line.accelerator:	 Ctrl<Key>U
-Ddd*commandsMenu.clear_line.acceleratorText: Ctrl+U
+Ddd*commandsMenu.isearch_prev.labelString:	Search Previous
+Ddd*commandsMenu.isearch_prev.mnemonic:	        r
+Ddd*commandsMenu.isearch_prev.accelerator:	Ctrl<Key>R
+Ddd*commandsMenu.isearch_prev.acceleratorText:  Ctrl+R
 
-Ddd*commandsMenu.clear_window.labelString: Clear Window
-Ddd*commandsMenu.clear_window.mnemonic:	W
-Ddd*commandsMenu.clear_window.accelerator:	Shift Ctrl<Key>U
-Ddd*commandsMenu.clear_window.acceleratorText: Ctrl+Shift+U
+Ddd*commandsMenu.isearch_next.labelString:	Search Next
+Ddd*commandsMenu.isearch_next.mnemonic:	        S
+Ddd*commandsMenu.isearch_next.accelerator:	Ctrl<Key>S
+Ddd*commandsMenu.isearch_next.acceleratorText:  Ctrl+S
+
+Ddd*commandsMenu.clear_line.labelString:        Clear Line
+Ddd*commandsMenu.clear_line.mnemonic:	        L
+! *commandsMenu.clear_line.accelerator:	        Ctrl<Key>U
+Ddd*commandsMenu.clear_line.acceleratorText:    Ctrl+U
+
+Ddd*commandsMenu.clear_window.labelString:      Clear Window
+Ddd*commandsMenu.clear_window.mnemonic:	        W
+Ddd*commandsMenu.clear_window.accelerator:      Shift Ctrl<Key>U
+Ddd*commandsMenu.clear_window.acceleratorText:  Ctrl+Shift+U
 
 Ddd*menubar.stack.labelString:		Stack
 Ddd*menubar.stack.mnemonic:		t

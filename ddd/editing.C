@@ -46,18 +46,260 @@ char editing_rcsid[] =
 #include "post.h"
 #include "history.h"
 #include "string-fun.h"
+#include "cook.h"
+#include "misc.h"
 
 #include <iostream.h>
 #include <Xm/Xm.h>
 #include <Xm/Text.h>
 #include <Xm/TextF.h>
 
-
 // True if last input was at gdb prompt
 bool gdb_input_at_prompt = true;
 
+
+//-----------------------------------------------------------------------------
+// Helpers
+//-----------------------------------------------------------------------------
+
+static void move_to_pos(XtPointer client_data, XtIntervalId *)
+{
+    XmTextPosition pos = XmTextPosition(client_data);
+
+    XmTextSetInsertionPosition(gdb_w, pos);
+    XmTextShowPosition(gdb_w, pos);
+}
+
+static void move_to_end_of_line(XtPointer, XtIntervalId *id)
+{
+    move_to_pos(XtPointer(XmTextGetLastPosition(gdb_w)), id);
+}
+
+static XmTextPosition start_of_line()
+{
+    String str = XmTextGetString(gdb_w);
+    string s = str;
+    XtFree(str);
+
+    int start = s.index("\n(", -1);
+    if (start < 0)
+	start = s.index("\n>", -1);
+    if (start < 0 && !s.contains('(', 0) && !s.contains('>', 0))
+	return XmTextPosition(-1);
+
+    return start + 1;
+}
+
+
+//-----------------------------------------------------------------------------
+// Incremental search
+//-----------------------------------------------------------------------------
+
+enum ISearchState { ISEARCH_NONE = 0, ISEARCH_NEXT = 1, ISEARCH_PREV = -1 };
+static ISearchState isearch_state = ISEARCH_NONE;
+static string isearch_string = "";
+
+// Show prompt according to current mode
+static void show_isearch()
+{
+    XmTextPosition start = start_of_line();
+    if (start == XmTextPosition(-1))
+	return;
+
+    string prompt;
+    switch (isearch_state)
+    {
+    case ISEARCH_NONE:
+	prompt = gdb->default_prompt();
+	break;
+
+    case ISEARCH_NEXT:
+	prompt = "(i-search)";
+	break;
+
+    case ISEARCH_PREV:
+	prompt = "(reverse-i-search)";
+	break;
+    }
+
+    if (isearch_state != ISEARCH_NONE)
+	prompt += "`" + cook(isearch_string) + "': ";
+    string input = current_line();
+    string line  = prompt + input;
+
+    bool old_private_gdb_output = private_gdb_output;
+    private_gdb_output = true;
+    XmTextReplace(gdb_w, start, XmTextGetLastPosition(gdb_w), (String)line);
+    private_gdb_output = old_private_gdb_output;
+    promptPosition = start + prompt.length();
+
+    XmTextPosition pos = promptPosition;
+    int index = input.index(isearch_string);
+    if (isearch_state == ISEARCH_NONE || index < 0)
+    {
+	XmTextSetHighlight(gdb_w, 0, XmTextGetLastPosition(gdb_w),
+			   XmHIGHLIGHT_NORMAL);
+    }
+    else
+    {
+	XmTextSetHighlight(gdb_w,
+			   0,
+			   pos + index,
+			   XmHIGHLIGHT_NORMAL);
+	XmTextSetHighlight(gdb_w,
+			   pos + index, 
+			   pos + index + isearch_string.length(),
+			   XmHIGHLIGHT_SECONDARY_SELECTED);
+	XmTextSetHighlight(gdb_w, 
+			   pos + index + isearch_string.length(),
+			   XmTextGetLastPosition(gdb_w),
+			   XmHIGHLIGHT_NORMAL);
+    }
+
+    if (index >= 0)
+	pos += index;
+
+    XmTextSetInsertionPosition(gdb_w, pos);
+    XmTextShowPosition(gdb_w, pos);
+}
+
+// When i-search is done, show history position given in client_data
+static void isearch_done(XtPointer client_data, XtIntervalId *)
+{
+    int history = int(client_data);
+
+    if (history >= 0)
+    {
+	bool old_private_gdb_output = private_gdb_output;
+	private_gdb_output = true;
+	goto_history(history);
+	private_gdb_output = old_private_gdb_output;
+    }
+
+    show_isearch();
+}
+
+void isearch_again(ISearchState new_isearch_state, XEvent *event)
+{
+    if (isearch_state == ISEARCH_NONE)
+    	isearch_string = "";
+
+    if (isearch_state == new_isearch_state)
+    {
+	// Same state - search again
+	int history = search_history(isearch_string, int(isearch_state), true);
+	if (history < 0)
+	    XtCallActionProc(gdb_w, "beep", event, 0, 0);
+	else
+	    isearch_done(XtPointer(history), 0);
+    }
+    else
+    {
+	isearch_state = new_isearch_state;
+	show_isearch();
+    }
+}
+
+// Action: enter reverse i-search
+void isearch_prevAct(Widget, XEvent *event, String *, Cardinal *)
+{
+    isearch_again(ISEARCH_PREV, event);
+}
+
+// Action: enter forward i-search
+void isearch_nextAct(Widget, XEvent *event, String *, Cardinal *)
+{
+    isearch_again(ISEARCH_NEXT, event);
+}
+
+// Action: exit i-search
+void isearch_exitAct(Widget, XEvent *, String *, Cardinal *)
+{
+    clear_isearch();
+}
+
+// Exit i-search mode and return to normal mode
+void clear_isearch()
+{
+    if (isearch_state != ISEARCH_NONE)
+    {
+	isearch_state = ISEARCH_NONE;
+	show_isearch();
+    }
+}
+
+// Handle incremental searches; return TRUE if processed
+static bool do_isearch(Widget, XmTextVerifyCallbackStruct *change)
+{
+    if (isearch_state == ISEARCH_NONE)
+	return false;
+
+    bool processed = false;
+    string saved_isearch_string = isearch_string;
+
+    if (change->startPos == change->endPos)
+    {
+	// Character insertion
+	string input = string(change->text->ptr, change->text->length);
+	if (!input.contains('\n', -1))
+	{
+	    // Add to current search string
+	    isearch_string += input;
+	    processed = true;
+	}
+    }
+    else if (change->endPos - change->startPos == 1)
+    {
+	// Backspace - remove last character from search string
+	if (isearch_string != "")
+	    isearch_string.after(int(isearch_string.length()) - 2) = "";
+	else
+	    clear_isearch();
+
+	processed = true;
+    }
+
+    if (processed)
+    {
+	// Make this a no-op
+	change->startPos = change->endPos = change->newInsert
+	    = change->currInsert = promptPosition;
+	change->text->length = 0;
+
+	string line = current_line();
+	if (isearch_string == "" || line.contains(isearch_string))
+	{
+	    // Search string found in current line
+	    XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0, 
+			    isearch_done, XtPointer(-1));
+	}
+	else
+	{
+	    int history = search_history(isearch_string, int(isearch_state));
+	    if (history < 0)
+	    {
+		// Search string not found in history
+		XtCallActionProc(gdb_w, "beep", change->event, 0, 0);
+		isearch_string = saved_isearch_string;
+	    }
+
+	    XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0, 
+			    isearch_done, XtPointer(history));
+	}
+    }
+
+    return processed;
+}
+
+
+//-----------------------------------------------------------------------------
+// Misc actions
+//-----------------------------------------------------------------------------
+
 void controlAct(Widget w, XEvent*, String *params, Cardinal *num_params)
 {
+    clear_isearch();
+
     if (*num_params != 1)
     {
 	cerr << "gdb-control: usage: gdb-control(CONTROL-CHARACTER)\n";
@@ -70,6 +312,8 @@ void controlAct(Widget w, XEvent*, String *params, Cardinal *num_params)
 
 void insert_source_argAct   (Widget w, XEvent*, String*, Cardinal*)
 {
+    clear_isearch();
+
     string arg = source_arg->get_string();
     if (XmIsText(w)) {
 	if (XmTextGetEditable(w)) {
@@ -87,6 +331,8 @@ void insert_source_argAct   (Widget w, XEvent*, String*, Cardinal*)
 
 void insert_graph_argAct (Widget w, XEvent*, String*, Cardinal*)
 {
+    clear_isearch();
+
     string arg = DataDisp::graph_arg->get_string();
     if (XmIsText(w)) {
 	if (XmTextGetEditable(w)) {
@@ -124,22 +370,30 @@ void get_focusAct (Widget w, XEvent*, String*, Cardinal*)
 
 void beginning_of_lineAct(Widget, XEvent*, String*, Cardinal*)
 {
+    clear_isearch();
+
     XmTextSetInsertionPosition(gdb_w, promptPosition);
 }
 
 void end_of_lineAct(Widget, XEvent*, String*, Cardinal*)
 {
+    clear_isearch();
+
     XmTextSetInsertionPosition(gdb_w, XmTextGetLastPosition(gdb_w));
 }
 
 void forward_characterAct(Widget w, XEvent *e, 
 			  String *args, Cardinal *num_args)
 {
+    clear_isearch();
+
     XtCallActionProc(w, "forward-character", e, args, *num_args);
 }
 
 void backward_characterAct(Widget, XEvent*, String*, Cardinal*)
 {
+    clear_isearch();
+
     XmTextPosition pos = XmTextGetInsertionPosition(gdb_w);
     if (pos > promptPosition)
 	XmTextSetInsertionPosition(gdb_w, pos - 1);
@@ -147,6 +401,8 @@ void backward_characterAct(Widget, XEvent*, String*, Cardinal*)
 
 void set_lineAct(Widget, XEvent*, String* params, Cardinal* num_params)
 {
+    clear_isearch();
+
     string input = "";
     if (num_params && *num_params > 0)
 	input = params[0];
@@ -157,6 +413,8 @@ void set_lineAct(Widget, XEvent*, String* params, Cardinal* num_params)
 void delete_or_controlAct(Widget w, XEvent *e, 
 			  String *args, Cardinal *num_args)
 {
+    clear_isearch();
+
     string input = current_line();
     strip_final_newlines(input);
     if (input == "")
@@ -171,13 +429,6 @@ void delete_or_controlAct(Widget w, XEvent *e,
 // Callbacks
 //-----------------------------------------------------------------------------
 
-static void move_to_end_of_line(XtPointer, XtIntervalId *)
-{
-    XmTextPosition lastPos = XmTextGetLastPosition(gdb_w);
-    XmTextSetInsertionPosition(gdb_w, lastPos);
-    XmTextShowPosition(gdb_w, lastPos);
-}
-
 // Veto changes before the current input line
 void gdbModifyCB(Widget gdb_w, XtPointer, XtPointer call_data)
 {
@@ -187,16 +438,24 @@ void gdbModifyCB(Widget gdb_w, XtPointer, XtPointer call_data)
     XmTextVerifyCallbackStruct *change = 
 	(XmTextVerifyCallbackStruct *)call_data;
 
+    if (do_isearch(gdb_w, change))
+	return;
+
+    clear_isearch();
+
     if (change->startPos < promptPosition && change->text->length == 0)
     {
-	// Attempt to delete text before prompt
+	// Attempt to change text before prompt
 #if 0
 	// With Motif, this causes a core dump on Solaris.  - AZ
 	change->doit = false;
 #else
 	// Make it a no-op
-	change->startPos = change->endPos = change->newInsert = 
-	    change->currInsert;
+	change->startPos = change->endPos = change->newInsert
+	    = change->currInsert = promptPosition;
+	XtCallActionProc(gdb_w, "beep", change->event, 0, 0);
+	XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0, 
+			move_to_pos, XtPointer(promptPosition));
 #endif
 	return;
     }
@@ -224,20 +483,21 @@ void gdbMotionCB(Widget, XtPointer, XtPointer call_data)
     XmTextVerifyCallbackStruct *change = 
 	(XmTextVerifyCallbackStruct *)call_data;
 
-    if (change->newInsert >= promptPosition)
-	return;
-
     // We are before the current prompt: don't change the cursor
     // position if a key was pressed.
-    if (change->event != NULL && 
-	(change->event->type == KeyPress || change->event->type == KeyRelease))
+    if (change->newInsert < promptPosition
+	&& change->event != NULL
+	&& (change->event->type == KeyPress 
+	    || change->event->type == KeyRelease))
     {
 #if 0
 	// With Motif, this causes a core dump on Solaris.  - AZ
 	change->doit = false;
 #else
 	// Make it a no-op.
-	change->newInsert = change->currInsert;
+	XtCallActionProc(gdb_w, "beep", change->event, 0, 0);
+	XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0, 
+			move_to_pos, XtPointer(promptPosition));
 #endif
     }
 }
@@ -261,11 +521,13 @@ void gdbChangeCB(Widget w, XtPointer, XtPointer)
 
     if (newlines == 0)
     {
+	// Non newline found - line is still incomplete
 	set_history_from_line(input, true);
     }
     else
     {
 	// Process entered lines
+	clear_isearch();
 	promptPosition = XmTextGetLastPosition(w);
 	for (int i = 0; i < newlines; i++)
 	{
@@ -318,6 +580,7 @@ void gdbChangeCB(Widget w, XtPointer, XtPointer)
 
 void gdbCommandCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
+    clear_isearch();
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
 
     string command = (String)client_data;
@@ -350,8 +613,23 @@ void gdbNextCB  (Widget w, XtPointer, XtPointer call_data)
     next_historyAct(w, cbs->event, 0, &zero);
 }
 
+void gdbISearchPrevCB  (Widget w, XtPointer, XtPointer call_data)
+{
+    XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
+    Cardinal zero = 0;
+    isearch_prevAct(w, cbs->event, 0, &zero);
+}
+
+void gdbISearchNextCB  (Widget w, XtPointer, XtPointer call_data)
+{
+    XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
+    Cardinal zero = 0;
+    isearch_nextAct(w, cbs->event, 0, &zero);
+}
+
 void gdbClearCB  (Widget w, XtPointer, XtPointer call_data)
 {
+    clear_isearch();
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
 
     String args[1] = {""};
@@ -362,21 +640,16 @@ void gdbClearCB  (Widget w, XtPointer, XtPointer call_data)
 // Remove any text up to the last GDB prompt
 void gdbClearWindowCB(Widget, XtPointer, XtPointer)
 {
-    String str = XmTextGetString(gdb_w);
-    string s = str;
-    XtFree(str);
-
-    int index = s.index("\n(", -1);
-    if (index < 0)
+    XmTextPosition start = start_of_line();
+    if (start == XmTextPosition(-1))
 	return;
-    index++;
 
     private_gdb_output = true;
 
-    XmTextReplace(gdb_w, 0, index, "");
+    XmTextReplace(gdb_w, 0, start, "");
 
-    promptPosition  -= index;
-    messagePosition -= index;
+    promptPosition  -= start;
+    messagePosition -= start;
     XmTextSetInsertionPosition(gdb_w, XmTextGetLastPosition(gdb_w));
 
     private_gdb_output = false;
@@ -390,6 +663,7 @@ void gdbCompleteCB  (Widget w, XtPointer, XtPointer call_data)
 	return;
     }
 
+    clear_isearch();
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
 
     Cardinal zero = 0;
@@ -405,6 +679,7 @@ void gdbApplyCB(Widget w, XtPointer, XtPointer call_data)
 	return;
     }
 
+    clear_isearch();
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
 
     Cardinal zero = 0;

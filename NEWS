@@ -1,11 +1,11 @@
 Changes in DDD						-*- text -*-
 **************
 
-DDD 2.0 (in beta test)
-----------------------
+DDD 2.0
+-------
 
     DDD 2.0 brings XDB support, extended DBX support, an improved user
-    interface and many bug fixes.
+    interface as well as several new features and bug fixes.
 
     User-visible changes to DDD 1.4:
     - Colored displays.  You can specify individual colors for
@@ -36,18 +36,21 @@ DDD 2.0 (in beta test)
       * The `Break ()' and `Clear ()' buttons are now named `Break at ()'
         and `Clear at ()', respectively.
       * The `Dereference' button is now named `Display *'.
+    - You can now incrementally search through the command history
+      using Ctrl+R and Ctrl+S in the debugger console.
+    - Incremental search required some changes in keyboard shortcuts.
+      `Run' is now Ctrl+Z, `Step' is Ctrl+I, and `Next' is Ctrl+J.
     - The `Save Options on Exit' function has been removed, as it
       also saved options given upon DDD invocation like `--dbx' or
       `--exec-window'.  Options must now always be saved explicitly.
-    - Ypu can press Ctrl+\ to interrupt programs using a QUIT signal.
+    - You can press Ctrl+\ to interrupt programs using a QUIT signal.
     - Ctrl+C and Ctrl+\ now have the highest priority of all events.
     - Improved remote debugging.  In contrast to `--host', the new
       `--rhost' option uses `rsh' without arguments (aka `rlogin') 
       to access the remote debugger.  DEC and SGI DBX require this.
     - The DDD License can now be viewed from within DDD.
-    - The DDD resources are now fully documented; the DDD manual
-      contains several customization examples (fonts, colors,
-      buttons).
+    - DDD resources and actions are now fully documented; the DDD manual
+      contains several customization examples (fonts, colors, buttons).
 
     Supported debuggers and languages:
     - XDB support.  On popular request, DDD now also supports HP's XDB as
