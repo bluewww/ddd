@@ -813,7 +813,7 @@ AC_CHECK_HEADERS(string.h strings.h stropts.h termio.h termios.h unistd.h)
 AC_CHECK_HEADERS(sys/ioctl.h sys/int_types.h sys/param.h sys/resource.h)
 AC_CHECK_HEADERS(sys/stat.h sys/stropts.h sys/vty.h sys/sysmacros.h sys/core.h)
 AC_CHECK_HEADERS(sys/socket.h sys/termios.h sys/time.h sys/timeb.h sys/types.h)
-AC_CHECK_HEADERS(sys/utsname.h sys/user.h sys/ptrace.h)
+AC_CHECK_HEADERS(sys/utsname.h sys/ptrace.h)
 AC_CHECK_HEADERS(exception stdexcept)
 AC_HEADER_TIME
 AC_HEADER_SYS_WAIT
