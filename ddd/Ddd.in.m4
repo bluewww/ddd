@@ -4730,22 +4730,98 @@ Ddd*edit_breakpoints_dialog*buttons.marginWidth:   0
 Ddd*edit_breakpoints_dialog*buttons.marginHeight:  0
 Ddd*edit_breakpoints_dialog.okLabelString:	 Close
 
+Ddd*edit_breakpoints_dialog*buttons*labelType:  XmPIXMAP
+
 Ddd*edit_breakpoints_dialog*helpString:	     \
 WIDGET(Breakpoint and Watchpoint Editor)\n\
 \n\
 Select breakpoints and watchpoints on the left; operations on the right.\n\
 \n\
-DESC(New Breakpoint..., [create a new breakpoint])\n\
-DESC(New Watchpoint..., [create a new watchpoint])\n\
+DESC(Break..., [create a new breakpoint])\n\
+DESC(Watch..., [create a new watchpoint])\n\
 DESC(Lookup, [lookup selected item])\n\
-DESC(Print, [print selected item])\n\
 DESC(Enable, [enable all selected items])\n\
 DESC(Disable, [disable all selected items])\n\
-DESC(Condition..., [set or modify an item's condition])\n\
-DESC(Properties..., [set or modify an item's properties])\n\
-DESC(Delete, [delete all selected items])
+DESC(Props..., [set or modify an item's properties])\n\
+DESC(Clear, [delete all selected items])
 
 Ddd*edit_breakpoints_dialog*list.selectionPolicy: XmEXTENDED_SELECT
+
+Ddd*edit_breakpoints_dialog*new_bp.labelString:	           New Breakpoint...
+Ddd*edit_breakpoints_dialog*new_bp.labelPixmap:	           new_break
+Ddd*edit_breakpoints_dialog*new_bp.labelInsensitivePixmap: new_break-xx
+Ddd*edit_breakpoints_dialog*new_bp.armPixmap:              new_break-arm
+
+Ddd*edit_breakpoints_dialog*new_bp.tipString:     \
+@rm Set new breakpoint
+Ddd*edit_breakpoints_dialog*new_bp.documentationString: \
+@rm Set breakpoint at specified line or function
+
+Ddd*edit_breakpoints_dialog*new_wp.labelString:	      New Watchpoint...
+Ddd*edit_breakpoints_dialog*new_wp.labelPixmap:	           new_watch
+Ddd*edit_breakpoints_dialog*new_wp.labelInsensitivePixmap: new_watch-xx
+Ddd*edit_breakpoints_dialog*new_wp.armPixmap:              new_watch-arm
+
+Ddd*edit_breakpoints_dialog*new_wp.tipString:     \
+@rm Set new watchpoint
+Ddd*edit_breakpoints_dialog*new_wp.documentationString: \
+@rm Set watchpoint on specified variable
+
+Ddd*edit_breakpoints_dialog*lookup.labelString:	       Lookup
+Ddd*edit_breakpoints_dialog*lookup.labelPixmap:	           lookup
+Ddd*edit_breakpoints_dialog*lookup.labelInsensitivePixmap: lookup-xx
+Ddd*edit_breakpoints_dialog*lookup.armPixmap:              lookup-arm
+
+Ddd*edit_breakpoints_dialog*lookup.tipString:     \
+@rm Lookup or print selected item
+Ddd*edit_breakpoints_dialog*lookup.documentationString: \
+@rm Lookup selected item in the source (breakpoint) or print value (watchpoint)
+
+Ddd*edit_breakpoints_dialog*enable.labelString:	       Enable
+Ddd*edit_breakpoints_dialog*enable.labelPixmap:	           enable
+Ddd*edit_breakpoints_dialog*enable.labelInsensitivePixmap: enable-xx
+Ddd*edit_breakpoints_dialog*enable.armPixmap:              enable-arm
+
+Ddd*edit_breakpoints_dialog*enable.tipString:     \
+@rm Enable selected items
+Ddd*edit_breakpoints_dialog*enable.documentationString: \
+@rm Enable the selected items
+
+Ddd*edit_breakpoints_dialog*disable.labelString:       Disable
+Ddd*edit_breakpoints_dialog*disable.labelPixmap:	    disable
+Ddd*edit_breakpoints_dialog*disable.labelInsensitivePixmap: disable-xx
+Ddd*edit_breakpoints_dialog*disable.armPixmap:              disable-arm
+
+Ddd*edit_breakpoints_dialog*disable.tipString:     \
+@rm Disable selected items
+Ddd*edit_breakpoints_dialog*disable.documentationString: \
+@rm Disable the selected items
+
+Ddd*edit_breakpoints_dialog*properties.labelString:     Properties...
+Ddd*edit_breakpoints_dialog*properties.labelPixmap:	       properties
+Ddd*edit_breakpoints_dialog*properties.labelInsensitivePixmap: properties-xx
+Ddd*edit_breakpoints_dialog*properties.armPixmap:              properties-arm
+
+Ddd*edit_breakpoints_dialog*properties.tipString:     \
+@rm Edit properties
+Ddd*edit_breakpoints_dialog*properties.documentationString:     \
+@rm Specify the properties of the selected items
+
+Ddd*edit_breakpoints_dialog*delete.labelString:	       Delete
+Ddd*edit_breakpoints_dialog*delete.labelPixmap:	           delete
+Ddd*edit_breakpoints_dialog*delete.labelInsensitivePixmap: delete-xx
+Ddd*edit_breakpoints_dialog*delete.armPixmap:              delete-arm
+
+Ddd*edit_breakpoints_dialog*delete.tipString:     \
+@rm Delete selected items
+Ddd*edit_breakpoints_dialog*delete.documentationString:     \
+@rm Delete the selected items
+
+
+
+!-----------------------------------------------------------------------------
+! New Breakpoint, New Watchpoint dialogs
+!-----------------------------------------------------------------------------
 
 Ddd*new_breakpoint_dialog_popup.title: DDD: New Breakpoint
 Ddd*new_breakpoint_dialog.selectionLabelString:	New Breakpoint
@@ -4782,48 +4858,6 @@ DESC(Set Watchpoint, [stop whenever the variable value changes])\n\
 DESC(Set Read Watchpoint, [stop whenever the variable is read])\n\
 DESC(Set Access Watchpoint, \
 [stop whenever the variable is either read or written])
-
-Ddd*edit_breakpoints_dialog*buttons*new_bp.labelString:	      New Breakpoint...
-Ddd*edit_breakpoints_dialog*buttons*new_bp.tipString:     \
-@rm Set new breakpoint
-Ddd*edit_breakpoints_dialog*buttons*new_bp.documentationString: \
-@rm Set breakpoint at specified line or function
-
-Ddd*edit_breakpoints_dialog*buttons*new_wp.labelString:	      New Watchpoint...
-Ddd*edit_breakpoints_dialog*buttons*new_wp.tipString:     \
-@rm Set new watchpoint
-Ddd*edit_breakpoints_dialog*buttons*new_wp.documentationString: \
-@rm Set watchpoint on specified variable
-
-Ddd*edit_breakpoints_dialog*buttons*lookup.labelString:	       Lookup
-Ddd*edit_breakpoints_dialog*buttons*lookup.tipString:     \
-@rm Lookup or print selected item
-Ddd*edit_breakpoints_dialog*buttons*lookup.documentationString: \
-@rm Lookup selected item in the source (breakpoint) or print value (watchpoint)
-
-Ddd*edit_breakpoints_dialog*buttons*enable.labelString:	       Enable
-Ddd*edit_breakpoints_dialog*buttons*enable.tipString:     \
-@rm Enable selected items
-Ddd*edit_breakpoints_dialog*buttons*enable.documentationString: \
-@rm Enable the selected items
-
-Ddd*edit_breakpoints_dialog*buttons*disable.labelString:       Disable
-Ddd*edit_breakpoints_dialog*buttons*disable.tipString:     \
-@rm Disable selected items
-Ddd*edit_breakpoints_dialog*buttons*disable.documentationString: \
-@rm Disable the selected items
-
-Ddd*edit_breakpoints_dialog*buttons*properties.labelString:     Properties...
-Ddd*edit_breakpoints_dialog*buttons*properties.tipString:     \
-@rm Edit properties
-Ddd*edit_breakpoints_dialog*buttons*properties.documentationString:     \
-@rm Specify the properties of the selected items
-
-Ddd*edit_breakpoints_dialog*buttons*delete.labelString:	       Delete
-Ddd*edit_breakpoints_dialog*buttons*delete.tipString:     \
-@rm Delete selected items
-Ddd*edit_breakpoints_dialog*buttons*delete.documentationString:     \
-@rm Delete the selected items
 
 
 
@@ -5008,6 +5042,8 @@ Ddd*edit_displays_dialog*buttons.marginWidth:	0
 Ddd*edit_displays_dialog*buttons.marginHeight:	0
 Ddd*edit_displays_dialog.okLabelString:	      Close
 
+Ddd*edit_displays_dialog*buttons*labelType:  XmPIXMAP
+
 Ddd*edit_displays_dialog*helpString:	  \
 WIDGET(Display Editor)\n\
 \n\
@@ -5020,12 +5056,12 @@ DESC(State, [the display state (enabled, disabled, or alias)])\n\
 DESC(Address, [the location of the display expression in memory])\n\
 \n\
 Buttons:\n\
-DESC(New Display, [create a new display])\n\
-DESC(Display *, [dereference the selected display])\n\
-DESC(Show Detail, [show the details of all selected displays])\n\
-DESC(Hide Detail, [hide the details of all selected displays])\n\
-DESC(Set Value, [change a value in the selected display])\n\
-DESC(Delete, [delete all selected displays])
+DESC(Display..., [create a new display])\n\
+DESC(Disp *, [dereference the selected display])\n\
+DESC(Show, [show the details of all selected displays])\n\
+DESC(Hide, [hide the details of all selected displays])\n\
+DESC(Set, [change a value in the selected display])\n\
+DESC(Undisplay, [delete all selected displays])
 
 define(NEW_DISPLAY_HELP,
 [@rm Please enter an expression in the argument field.\n\
@@ -5056,40 +5092,64 @@ Ddd*dependent_display_dialog*helpString: 	   NEW_DISPLAY_HELP\n\
 \n\
 The new display will be made dependent on the currently selected display.
 
-Ddd*edit_displays_dialog*buttons*new.labelString:	    New...
-Ddd*edit_displays_dialog*buttons*new.tipString:  \
+Ddd*edit_displays_dialog*new.labelString:	    New...
+Ddd*edit_displays_dialog*new.labelPixmap:		new_display
+Ddd*edit_displays_dialog*new.labelInsensitivePixmap:	new_display-xx
+Ddd*edit_displays_dialog*new.armPixmap:			new_display-arm
+
+Ddd*edit_displays_dialog*new.tipString:  \
 @rm Create new display
-Ddd*edit_displays_dialog*buttons*new.documentationString:  \
+Ddd*edit_displays_dialog*new.documentationString:  \
 @rm Create new data display (possibly depending on the selected data display)
 
-Ddd*edit_displays_dialog*buttons*dereference.labelString:   Display *
-Ddd*edit_displays_dialog*buttons*dereference.tipString:  \
+Ddd*edit_displays_dialog*dereference.labelString:   Display *
+Ddd*edit_displays_dialog*dereference.labelPixmap:		dispref
+Ddd*edit_displays_dialog*dereference.labelInsensitivePixmap:	dispref-xx
+Ddd*edit_displays_dialog*dereference.armPixmap:			dispref-arm
+
+Ddd*edit_displays_dialog*dereference.tipString:  \
 @rm Dereference selected display
-Ddd*edit_displays_dialog*buttons*dereference.documentationString: \
+Ddd*edit_displays_dialog*dereference.documentationString: \
 @rm Dereference the selected data display
 
-Ddd*edit_displays_dialog*buttons*show_detail.labelString:   Show Detail
-Ddd*edit_displays_dialog*buttons*show_detail.tipString:  \
+Ddd*edit_displays_dialog*show_detail.labelString:   Show Detail
+Ddd*edit_displays_dialog*show_detail.labelPixmap:		show
+Ddd*edit_displays_dialog*show_detail.labelInsensitivePixmap:	show-xx
+Ddd*edit_displays_dialog*show_detail.armPixmap:			show-arm
+
+Ddd*edit_displays_dialog*show_detail.tipString:  \
 @rm Show selected details
-Ddd*edit_displays_dialog*buttons*show_detail.documentationString: \
+Ddd*edit_displays_dialog*show_detail.documentationString: \
 @rm Show detail on the selected data displays
 
-Ddd*edit_displays_dialog*buttons*hide_detail.labelString:   Hide Detail
-Ddd*edit_displays_dialog*buttons*hide_detail.tipString:  \
+Ddd*edit_displays_dialog*hide_detail.labelString:   Hide Detail
+Ddd*edit_displays_dialog*hide_detail.labelPixmap:		hide
+Ddd*edit_displays_dialog*hide_detail.labelInsensitivePixmap:	hide-xx
+Ddd*edit_displays_dialog*hide_detail.armPixmap:			hide-arm
+
+Ddd*edit_displays_dialog*hide_detail.tipString:  \
 @rm Hide selected details
-Ddd*edit_displays_dialog*buttons*hide_detail.documentationString: \
+Ddd*edit_displays_dialog*hide_detail.documentationString: \
 @rm Hide detail on the selected data displays
 
-Ddd*edit_displays_dialog*buttons*set.labelString:	    Set Value
-Ddd*edit_displays_dialog*buttons*set.tipString:  \
+Ddd*edit_displays_dialog*set.labelString:	    Set Value
+Ddd*edit_displays_dialog*set.labelPixmap:		set
+Ddd*edit_displays_dialog*set.labelInsensitivePixmap:	set-xx
+Ddd*edit_displays_dialog*set.armPixmap:			set-arm
+
+Ddd*edit_displays_dialog*set.tipString:  \
 @rm Set display value
-Ddd*edit_displays_dialog*buttons*set.documentationString: \
+Ddd*edit_displays_dialog*set.documentationString: \
 @rm Change a value in the selected data display
 
-Ddd*edit_displays_dialog*buttons*delete.labelString:	    Undisplay
-Ddd*edit_displays_dialog*buttons*delete.tipString:  \
+Ddd*edit_displays_dialog*delete.labelString:	    Undisplay
+Ddd*edit_displays_dialog*delete.labelPixmap:		undisplay
+Ddd*edit_displays_dialog*delete.labelInsensitivePixmap:	undisplay-xx
+Ddd*edit_displays_dialog*delete.armPixmap:		undisplay-arm
+
+Ddd*edit_displays_dialog*delete.tipString:  \
 @rm Delete selected displays
-Ddd*edit_displays_dialog*buttons*delete.documentationString:  \
+Ddd*edit_displays_dialog*delete.documentationString:  \
 @rm Delete the selected data displays
 
 
