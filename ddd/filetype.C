@@ -272,7 +272,7 @@ bool is_directory(const string& file_name)
 string cmd_file(const string& command)
 {
     const char *path_s = getenv("PATH");
-    if (path_s == 0 || command.contains('/') != 0)
+    if (path_s == 0 || command.contains('/', 0))
 	return command;
 
     // Check if COMMAND occurs in any of the components of PATH
