@@ -38,7 +38,7 @@
 
 class ThemedVSLLib: public VSLLib {
 private:
-    const VSLLib *_original_lib;
+    VSLLib *_original_lib;
     unsigned _optimizeMode;
     StringArray _theme_list;
 
