@@ -1734,8 +1734,8 @@ int main(int argc, char *argv[])
 	+ rm(" and you are welcome to distribute copies of it") + cr()
 	+ rm("under certain conditions; select `" DDD_NAME 
 	     " License' in the `Help' menu") + cr()
-	+ rm("to see the conditions.  There is ") + sl("absolutely no warranty")
-	+ rm(" for " DDD_NAME ";") + cr()
+	+ rm("to see the conditions.  There is ") 
+	+ sl("absolutely no warranty") + rm(" for " DDD_NAME ";") + cr()
 	+ rm("see the " DDD_NAME " License for details.") + cr()
 	+ cr()
 	+ rm("If you appreciate this software, "
@@ -1747,11 +1747,14 @@ int main(int argc, char *argv[])
 	+ rm("    D-38092 Braunschweig") + cr()
 	+ rm("    GERMANY") + cr()
 	+ cr()
-	+ rm("Send bug reports to <" ddd_NAME "-bugs@ips.cs.tu-bs.de>;") + cr()
-	+ rm("see the " DDD_NAME " manual for details on reporting bugs.") + cr()
-	+ rm("Send comments and suggestions to <" ddd_NAME "@ips.cs.tu-bs.de>.");
+	+ rm("Send bug reports "
+	     "to <" ddd_NAME "-bugs@ips.cs.tu-bs.de>;") + cr()
+	+ rm("see the " DDD_NAME " manual "
+	     "for details on reporting bugs.") + cr()
+	+ rm("Send comments and suggestions "
+	     "to <" ddd_NAME "@ips.cs.tu-bs.de>.");
 
-    // Customize `settings' and `status displays' titles.
+    // Customize `settings' title.
     MString settings_title(gdb->title() + " Settings...");
     XtVaSetValues(settings_w, XmNlabelString, settings_title.xmstring(), NULL);
 
