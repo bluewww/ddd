@@ -1,6 +1,16 @@
 DDD News						-*- text -*-
 ********
 
+DDD 3.2.1
+=========
+
+DDD 3.2.1 fixes a couple of minor bugs.
+
+- DDD PostScript documentation can now be printed using multiple pages per sheet
+- Using LessTif, the `Print' dialog is now operational (esp. printing to file)
+
+
+
 DDD 3.2
 =======
 

@@ -2,6 +2,7 @@
 // Printing dialog
 
 // Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2000 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -419,9 +420,12 @@ static void UnsetSensitiveCB(Widget w, XtPointer client_data, XtPointer)
 	set_sensitive(Widget(client_data), False);
 }
 
-static void SetPrintDisplaysCB(Widget w, XtPointer, XtPointer)
+static void SetPrintDisplaysCB(Widget w, XtPointer client_data, XtPointer)
 {
-    print_displays = XmToggleButtonGetState(w);
+    if (!XmToggleButtonGetState(w))
+	return;
+
+    print_displays = bool((int)(long)client_data);
 }
 
 static void SetPrintSelectedNodesCB(Widget w, XtPointer, XtPointer)
@@ -429,9 +433,12 @@ static void SetPrintSelectedNodesCB(Widget w, XtPointer, XtPointer)
     print_selected_only = XmToggleButtonGetState(w);
 }
 
-static void SetPrintTargetCB(Widget w, XtPointer, XtPointer)
+static void SetPrintTargetCB(Widget w, XtPointer client_data, XtPointer)
 {
-    print_target = XmToggleButtonGetState(w) ? TARGET_PRINTER : TARGET_FILE;
+    if (!XmToggleButtonGetState(w))
+	return;
+
+    print_target = PrintTarget((int)(long)client_data);
 }
 
 static void set_paper_size_string(string s)
@@ -711,16 +718,14 @@ static void SetGCCustom(Widget w, XtPointer, XtPointer)
     manage_and_raise(paper_size_dialog);
 }
 
-static void SetGCOrientation(Widget w, XtPointer, XtPointer)
+static void SetGCOrientation(Widget w, XtPointer client_data, XtPointer)
 {
-    if (XmToggleButtonGetState(w))
-	print_postscript_gc.orientation = PostScriptPrintGC::PORTRAIT;
-    else
-	print_postscript_gc.orientation = PostScriptPrintGC::LANDSCAPE;
-}
+    if (!XmToggleButtonGetState(w))
+	return;
 
-static void NopCB(Widget, XtPointer, XtPointer)
-{}
+    print_postscript_gc.orientation = 
+	PostScriptPrintGC::Orientation((int)(long)client_data);
+}
 
 static void SetPrintFileNameCB(Widget w,
 			       XtPointer client_data, 
@@ -837,8 +842,11 @@ static void PrintCB(Widget parent, bool displays)
     static MMDesc print_to_menu[] = 
     {
 	{"printer", MMToggle, 
-	 { SetPrintTargetCB, 0 }, NULL, &print_to_printer_w, 0, 0},
-	{"file",    MMToggle, { NopCB, 0 }, NULL, &print_to_file_w, 0, 0 },
+	    { SetPrintTargetCB, XtPointer(TARGET_PRINTER) }, 
+	     NULL, &print_to_printer_w, 0, 0},
+	{"file",    MMToggle, 
+	    { SetPrintTargetCB, XtPointer(TARGET_FILE) }, 
+	     NULL, &print_to_file_w, 0, 0 },
 	MMEnd
     };
 
@@ -866,9 +874,10 @@ static void PrintCB(Widget parent, bool displays)
 
     static MMDesc what2_menu[] = 
     {
-	{"displays", MMToggle, { SetPrintDisplaysCB, 0 }, NULL, 
+	{"displays", MMToggle, { SetPrintDisplaysCB, XtPointer(true) }, NULL, 
 	 &print_displays_w, 0, 0 },
-	{"plots",    MMToggle, { NopCB, 0 }, NULL, &print_plots_w, 0, 0 },
+	{"plots",    MMToggle, { SetPrintDisplaysCB, XtPointer(false) }, NULL, 
+	 &print_plots_w, 0, 0 },
 	MMEnd
     };
 
@@ -882,11 +891,15 @@ static void PrintCB(Widget parent, bool displays)
     };
 
     static Widget print_portrait_w;
+    static Widget print_landscape_w;
     static MMDesc orientation_menu[] = 
     {
 	{"portrait",  MMToggle, 
-	 { SetGCOrientation, 0 }, NULL, &print_portrait_w, 0, 0},
-	{"landscape", MMToggle, { NopCB, 0 }, 0, 0, 0, 0},
+	 { SetGCOrientation, XtPointer(PostScriptPrintGC::PORTRAIT) }, 
+	     NULL, &print_portrait_w, 0, 0},
+	{"landscape", MMToggle,
+	 { SetGCOrientation, XtPointer(PostScriptPrintGC::LANDSCAPE) },
+	     NULL, &print_landscape_w, 0, 0},
 	MMEnd
     };
 
@@ -1003,6 +1016,7 @@ static void PrintCB(Widget parent, bool displays)
     XmToggleButtonSetState(print_color_w, False, True);
     XmToggleButtonSetState(print_selected_w, False, True);
     XmToggleButtonSetState(print_portrait_w, True, True);
+    XmToggleButtonSetState(print_landscape_w, False, True);
     XmToggleButtonSetState(print_plots_w, !displays, True);
     XmToggleButtonSetState(print_displays_w, displays, True);
     XmToggleButtonSetState(print_selected_w, 
