@@ -1868,19 +1868,19 @@ DispNode *DataDisp::new_data_node(const string& given_name, string& answer)
 
     DispNode* dn = 0;
 
-#if 1
     // Naming a data display after the GDB display name cause trouble
     // when displaying functions: `display tree_test' creates a
     // display named `tree_test(void)', and while `print tree_test'
     // works fine, `print tree_test(void)' fails.  We may use quotes,
     // as in `print 'tree_test(void)'', but it is too hard to
     // determine where quotes are needed, and where not - just
-    // consider `print tree_test(42)'.  Hence, we use the name
-    // specified by the user, not the name supplied by GDB.
-    string title = given_name;
-#else
+    // consider `print tree_test(42)'.  Hence, if a function call
+    // occurs in an expression, we use the name specified by the user,
+    // not the name supplied by GDB.
+    static regex rxfunction_call("[a-zA-Z0-9_$][(]");
     string title = display_name;
-#endif
+    if (title.contains(rxfunction_call))
+	title = given_name;
 
     if (is_disabling(answer, gdb))
     {
