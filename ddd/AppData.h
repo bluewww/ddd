@@ -178,6 +178,8 @@
 #define XtNttyMode               "ttyMode"
 #define XtNfullNameMode          "fullNameMode"
 #define XtCTTYMode               "TTYMode"
+#define XtNblockTTYInput         "blockTTYInput"
+#define XtCBlockTTYInput         "BlockTTYInput"
 #define XtNdisplayGlyphs         "displayGlyphs"
 #define XtCDisplayGlyphs         "DisplayGlyphs"
 #define XtNdisplayLineNumbers    "displayLineNumbers"
@@ -319,6 +321,7 @@ struct AppData {
     Boolean cache_machine_code;
     Boolean suppress_warnings;
     Boolean tty_mode;
+    OnOff   block_tty_input;
     Boolean full_name_mode;
     Boolean display_glyphs;
     Boolean display_line_numbers;

@@ -154,6 +154,15 @@ Ddd*termType: xterm
 Ddd*useTTYCommand: false
 
 
+! The `blockTTYInput' resource sets whether DDD should block when
+! reading from a terminal.  Some systems require this, such as Linux
+! with GNU libc 5.4.33 and earlier; set it to `true'.  Some other
+! systems prohibit this, such as Linux with GNU libc 6 and later; set it
+! to `false'.  The value `auto' will select the `best' choice (that is,
+! the best choice known to the DDD developers).
+Ddd*blockTTYInput: auto
+
+
 ! The `rsh' command to invoke tty-based commands on other hosts.
 ! On some systems, this is called `remsh'; on others, `on'.
 ! You may want to consult your system documentation for details.
@@ -4161,6 +4170,8 @@ ITEM If you started DDD without arguments, re-invoke DDD,\n\
 ITEM DDD passes all unknown options to @GDB@.  If @GDB@ choked on\n\
     some options intended for DDD, use the DDD SAMP(--help) option to\n\
     get a list of valid DDD options.\n\
+ITEM If @GDB@ could not be invoked due to some communication failure,\n\
+    try changing the SAMP(.blockTTYInput) resource.\n\
 \n\
 Click on LBL(Exit) to exit DDD.
 

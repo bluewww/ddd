@@ -1,7 +1,7 @@
 // $Id$
 // Agent interface on a callback basis
 
-// Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1995-1997 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of the DDD Library.
@@ -24,7 +24,7 @@
 // DDD is the data display debugger.
 // For details, see the DDD World-Wide-Web page, 
 // `http://www.cs.tu-bs.de/softech/ddd/',
-// or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
+// or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
 #ifndef _DDD_LiterateAgent_h
 #define _DDD_LiterateAgent_h
@@ -32,7 +32,6 @@
 #ifdef __GNUG__
 #pragma interface
 #endif
-
 
 /*
     LiterateAgent(app_context, p) opens an asynchronous three-way communication
@@ -146,6 +145,9 @@ public:
 	AsyncAgent(app_context, dummy, nTypes), activeIO(false)
     {}
 
+    // Flag: do we want TTYs to be read in blocking mode?
+    static bool block_tty_input;
+
     // Duplicator
     LiterateAgent(const LiterateAgent& lit)
 	: AsyncAgent(lit), activeIO(lit.activeIO)
@@ -165,4 +167,5 @@ public:
     virtual void abort();
 };
 
-#endif
+#endif // _DDD_LiterateAgent_h
+// DON'T ADD ANYTHING BEHIND THIS #endif

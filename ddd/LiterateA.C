@@ -1,7 +1,7 @@
 // $Id$
 // Agent interface on a callback basis
 
-// Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1995-1997 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of the DDD Library.
@@ -39,6 +39,7 @@ char LiterateAgent_rcsid[] =
 #include <unistd.h>
 #include <errno.h>
 #include <stdio.h>		// On Linux, includes _G_config.h
+#include <ctype.h>
 
 #ifdef HAVE_FCNTL_H
 #include <fcntl.h>
@@ -53,6 +54,13 @@ extern "C" int fcntl(int fd, int command, ...);
 #include "SignalB.h"
 #include "ChunkQueue.h"
 
+
+DEFINE_TYPE_INFO_1(LiterateAgent, AsyncAgent)
+
+// ---------------------------------------------------------------------------
+// TTY blocking
+// ---------------------------------------------------------------------------
+
 // This package reads data in non-blocking mode, reading only data
 // that is currently present.  Unfortunately, this is not a good idea
 // for ttys, since if the process is run in the background, it will
@@ -60,57 +68,90 @@ extern "C" int fcntl(int fd, int command, ...);
 // change affects all processes reading from this tty, they will
 // detect an EOF on input and (most likely) exit.
 
-// Consequently, we provide a special flag, called BLOCK_TTY_INPUT.
-// If BLOCK_TTY_INPUT is set (non-zero), we use blocking mode for TTYs
-// and read only one line at a time.  This works fine unless the
-// process runs in raw or cbreak mode.  If BLOCK_TTY_INPUT is not set,
-// we have no special treatment for TTYs.
+// Consequently, we provide a special flag, BLOCK_TTY_INPUT.  If
+// BLOCK_TTY_INPUT is TRUE, we use blocking mode for TTYs and read
+// only one line at a time.  This works fine unless the process
+// runs in raw or cbreak mode.  If BLOCK_TTY_INPUT is FALSE, we
+// have no special treatment for TTYs.
 
-// According to Ray Dassen <jdassen@wi.LeidenUniv.nl>, Linux with GNU
-// libc 6 wants BLOCK_TTY_INPUT to be unset.
-#if !defined(BLOCK_TTY_INPUT) \
-    && _LINUX_C_LIB_VERSION_MAJOR > 5
-#define BLOCK_TTY_INPUT 0	// libc 6 and later
-#endif
+// Determine an appropriate default setting
+static bool _block_tty_input()
+{
+#if defined(BLOCK_TTY_INPUT)
+    return BLOCK_TTY_INPUT;
 
-// According to Terence Spielman <terence@globeset.com>, this is also
-// true for Linux with GNU libc 5.4.35.  Anders Wegge Jakobsen
-// <wegge@wegge.dk> reports the same for GNU libc 5.4.38.  On the
-// other hand, Linux with GNU libc 5.4.33 and earlier, however, needs
-// BLOCK_TTY_INPUT being set.  Hence, we set BLOCK_TTY_INPUT only for
-// GNU libc 5.4.33 and earlier.
-#if !defined(BLOCK_TTY_INPUT) \
-    && _LINUX_C_LIB_VERSION_MAJOR == 5 \
-    && _LINUX_C_LIB_VERSION_MINOR > 4
-#define BLOCK_TTY_INPUT 0	// libc 5.5 and later
-#endif
-#if !defined(BLOCK_TTY_INPUT) \
-    && _LINUX_C_LIB_VERSION_MAJOR == 5 \
-    && _LINUX_C_LIB_VERSION_MINOR == 4 \
-    && _LINUX_C_LIB_VERSION_SUBMINOR > 33
-#define BLOCK_TTY_INPUT 0	// libc 5.4.34 and later
-#endif
-#if !defined(BLOCK_TTY_INPUT) \
-    && _LINUX_C_LIB_VERSION_MAJOR <= 5
-#define BLOCK_TTY_INPUT 1	// libc 5.4.33 and earlier
-#endif
+#elif defined(_LINUX_C_LIB_VERSION_MAJOR)
+    // On Linux, the correct setting depends on the C library version.
 
-// For all other systems, the default is BLOCK_TTY_INPUT set.  (I
-// don't know whether this is the `best' setting, but I have no reason
-// to change a default that has been around successfully for so long...)
-#if !defined(BLOCK_TTY_INPUT)
-#define BLOCK_TTY_INPUT 1
-#endif
+    // We get the version number from the library, rather than from
+    // the include file, since the (dynamic) library may have changed
+    // since compilation.
+    extern char *__linux_C_lib_version;
 
-DEFINE_TYPE_INFO_1(LiterateAgent, AsyncAgent)
+    // If this doesn't link or compile, replace __linux_C_lib_version by "".
+    char *s = __linux_C_lib_version;
+
+    // Find start of version number
+    while (*s && !isdigit(*s))
+	s++;
+    if (atoi(s) == 0)
+    {
+	// No library version - try the included one
+	s = _LINUX_C_LIB_VERSION;
+    }
+
+    int version_major = atoi(s);
+    while (*s && *s != '.')
+	s++;
+    if (*s == '.')
+	s++;
+    int version_minor = atoi(s);
+    while (*s && *s != '.')
+	s++;
+    if (*s == '.')
+	s++;
+    int version_subminor = atoi(s);
+
+    // According to Ray Dassen <jdassen@wi.LeidenUniv.nl>, Linux with GNU
+    // libc 6 wants BLOCK_TTY_INPUT to be unset.
+    if (version_major > 5)
+	return false;
+
+    // According to Terence Spielman <terence@globeset.com>, this is also
+    // true for Linux with GNU libc 5.4.35.  Anders Wegge Jakobsen
+    // <wegge@wegge.dk> reports the same for GNU libc 5.4.38.
+    if (version_major == 5 && version_minor > 4)
+	return false;
+    if (version_major == 5 && version_minor == 4 && version_subminor > 33)
+	return false;
+
+    // On the other hand, Linux with GNU libc 5.4.33 and earlier,
+    // needs BLOCK_TTY_INPUT being set.  Hence, we set BLOCK_TTY_INPUT
+    // only for GNU libc 5.4.33 and earlier.
+    return true;
+
+#else  // !LINUX && !BLOCK_TTY_INPUT
+    // For all other systems, the default is BLOCK_TTY_INPUT set.  (I
+    // don't know whether this is the `best' setting, but I have no
+    // reason to change a default that has been around successfully
+    // for so long...)
+
+    return true;
+#endif // !LINUX && !BLOCK_TTY_INPUT
+}
+
+bool LiterateAgent::block_tty_input = _block_tty_input();
 
 // Check if fp is a tty and wants blocking input
 inline bool blocking_tty(FILE *fp)
 {
-    return BLOCK_TTY_INPUT && isatty(fileno(fp));
+    return LiterateAgent::block_tty_input && isatty(fileno(fp));
 }
 
+
+// ---------------------------------------------------------------------------
 // I/O functions
+// ---------------------------------------------------------------------------
 
 // Input data handling
 int LiterateAgent::readInput(char*& data)
@@ -132,7 +173,7 @@ int LiterateAgent::readError(char*& data)
     return _readError(data);
 }
 
-// write a whole string
+// Write a whole string
 int LiterateAgent::write(const char *data, int length)
 {
     if (outputfp() == 0 || !activeIO)
@@ -179,7 +220,7 @@ int LiterateAgent::write(const char *data, int length)
     return 0;
 }
 
-// flush output buffers
+// Flush output buffers
 int LiterateAgent::flush()
 {
     // Not needed, since we use immediate write()
@@ -187,7 +228,7 @@ int LiterateAgent::flush()
 }
 
 
-// read from fp without delay
+// Read from fp without delay
 int LiterateAgent::_readNonBlocking(char *buffer, int nelems, FILE *fp)
 {
     // Avoid being stopped when file is non-blocking
@@ -211,7 +252,7 @@ int LiterateAgent::_readNonBlocking(char *buffer, int nelems, FILE *fp)
 }
 
 
-// read from fp
+// Read from fp
 int LiterateAgent::_read(char*& data, FILE *fp)
 {
     static ChunkQueue queue;
@@ -257,7 +298,9 @@ int LiterateAgent::_readError(char*& data)
 
 
 
+// ---------------------------------------------------------------------------
 // Dispatchers
+// ---------------------------------------------------------------------------
 
 // dispatch data to <type> handler 
 void LiterateAgent::dispatch(int type, char *data, int length)
@@ -276,7 +319,9 @@ void LiterateAgent::dispatch(int type, char *data, int length)
 }
     
 
+// ---------------------------------------------------------------------------
 // Handlers
+// ---------------------------------------------------------------------------
 
 // Data handlers
 

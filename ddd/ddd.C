@@ -1560,6 +1560,20 @@ int main(int argc, char *argv[])
 	return EXIT_FAILURE;
     }
 
+    // Set up Agent resources
+    switch (app_data.block_tty_input)
+    {
+    case On:
+	LiterateAgent::block_tty_input = true;
+	break;
+    case Off:
+	LiterateAgent::block_tty_input = false;
+	break;
+    case Auto:
+	// Leave default setting unchanged
+	break;
+    }
+
     // Check the X configuration
     if (app_data.check_configuration)
     {

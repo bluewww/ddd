@@ -747,6 +747,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNblockTTYInput,
+	XtCBlockTTYInput,
+	XtROnOff,
+	sizeof(OnOff),
+	XtOffsetOf(AppData, block_tty_input),
+	XmRImmediate,
+	XtPointer(Auto)
+    },
+
+    {
 	XtNfullNameMode,
 	XtCTTYMode,
 	XtRBoolean,
