@@ -41,6 +41,10 @@ char filetype_rcsid[] =
 
 #include <fcntl.h>
 
+#ifdef HAVE_SYS_PARAM_H
+#include <sys/param.h>
+#endif
+
 // AIX and DEC alpha OSF/1 v3.0 require <sys/user.h> being included
 // before <sys/core.h>.  Reported by bas@phys.uva.nl (Bas V. de
 // Bakker) and dmitzel@everest.hitc.com.

@@ -84,6 +84,11 @@ DEFINE_TYPE_INFO_1(TTYAgent, LiterateAgent)
 #include <fcntl.h>
 #endif
 
+#if defined(HAVE_SYS_IOCTL_H) && defined(__FreeBSD__)
+#include <sys/ioctl.h>
+#define HAVE_IOCTL_DECL
+#endif
+
 #ifdef HAVE_SYS_VTY_H
 #include <sys/vty.h>
 
@@ -405,6 +410,14 @@ void TTYAgent::open_slave()
 	_raiseIOMsg("cannot open " + slave_tty());
 	return;
     }
+
+#if defined(__FreeBSD__) && defined(TIOCSCTTY)
+    if (!push)
+    {
+	if (ioctl(slave, TIOCSCTTY) < 0)
+	    _raiseIOMsg("cannot allocate controlling terminal");
+    }
+#endif
 
 #ifdef I_PUSH
     if (push)

@@ -24,6 +24,7 @@
 // C++ comments indicate changes to Stallman's original C code.
 
 #include "config.h"
+#include <sys/types.h>
 
 char glob_rcsid[] = 
     "$Id$";

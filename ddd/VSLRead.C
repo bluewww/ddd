@@ -83,6 +83,11 @@ static string yyfilename = "standard input";   // Aktueller Dateiname
 
 #define yyparse VSLLib::parse
 
+// Patch by smcarey@mailbox.syr.edu (Shawn M. Carey)
+#ifdef __FreeBSD__
+#define YY_SKIP_YYWRAP
+#endif
+
 #include "vsl-lex.C"
 #include "vsl-gramma.C"
 

@@ -35,6 +35,7 @@ char hostname_rcsid[] =
 #include <string.h>
 #include <unistd.h>
 
+extern "C" {
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
@@ -51,7 +52,6 @@ char hostname_rcsid[] =
 #include <netdb.h>
 #endif
 
-extern "C" {
 #if defined(HAVE_GETHOSTNAME) && !defined(HAVE_GETHOSTNAME_DECL)
     int gethostname(char *name, int namelen);
 #endif
