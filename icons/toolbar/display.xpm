@@ -2,8 +2,8 @@
 static char * display_xpm[] = {
 "29 25 9 1",
 " 	c none   g none   m none  s Background",
-"_	c grey95 g grey95 m white",
-"-	c white  g white  m white",
+"_	c white  g white  m white",
+"-	c yellow g white  m white",
 ".      c white  g white  m white",
 ":	c grey75 g grey75 m white",
 "o	c grey50 g grey50 m black",

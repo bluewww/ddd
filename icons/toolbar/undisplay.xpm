@@ -16,7 +16,7 @@ static char * undisplay_xpm[] = {
 "          XXX...XXX          ",
 "         X.:::::::.X         ",
 "         X:oXo:oXo:X         ",
-"         X:###:###:X         ",
+"         X:XXX:XXX:X         ",
 "         Xo..:X:..oX         ",
 "          Xo::.::oX          ",
 "           X:::::X           ",

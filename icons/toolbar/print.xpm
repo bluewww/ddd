@@ -5,7 +5,7 @@ static char * print_xpm[] = {
 "_ 	c white  g white  m white",
 "X	c black  g black  m black",
 "o	c grey50 g grey50 m white",
-".	c blue4  g grey25 m black",
+".	c blue   g grey25 m black",
 "                             ",
 "              ...            ",
 "            ......           ",
