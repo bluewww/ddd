@@ -7080,8 +7080,7 @@ static void setup_options()
     set_sensitive(source_file_menu[FileItems::CD].widget,             have_cd);
     set_sensitive(data_file_menu[FileItems::CD].widget,               have_cd);
 
-    bool have_settings = 
-	(gdb->type() != XDB && gdb->type() != PYDB && gdb->type() != PERL);
+    bool have_settings = (gdb->type() != XDB && gdb->type() != PYDB);
     set_sensitive(command_edit_menu[EditItems::Settings].widget,have_settings);
     set_sensitive(source_edit_menu[EditItems::Settings].widget, have_settings);
     set_sensitive(data_edit_menu[EditItems::Settings].widget,   have_settings);

@@ -304,7 +304,7 @@ J	[A-Za-z_$][A-Za-z0-9_$.]*
 81{C}[(]END[)].*			RETURN(&rxq);
 82@{_}{x}{_}:{C} 			RETURN(&rxreference);
 83{_}refresh({W}{C})?			RETURN(&rxrefresh_cmd);
-84{C}([(]press{W}RETURN[)]|Hit{W}RETURN{W}to{W}continue|Type{W}<return>{W}to{W}continue|More{W}[(]n{W}if{W}no[)][?]).* RETURN(&rxreturn);
+84{C}([(]press{W}RETURN[)]|Hit{W}RETURN{W}to{W}continue|Type{W}<return>{W}to{W}continue|More{W}[(]n{W}if{W}no[)][?]|{W}cont:{W}).* RETURN(&rxreturn);
 85{_}(r|rer|rerun|ru|run|R)({W}{C})? RETURN(&rxrun_cmd);
 86{_}(r|ru|run|rer|rerun|c|cont|contin|continu|continue|sig|sign|signa|signal|u|unt|unti|until|s|si|step|stepi|n|ni|next|nexti|j|ju|jump|k|ki|kill|fin|fini|finis|finish|R|S)({W}{C})?	RETURN(&rxrunning_cmd);
 87Select{w}one{w}of{w}\[{D}{w}-{w}{D}\]:{w}	RETURN(&rxselect);
@@ -313,7 +313,7 @@ J	[A-Za-z_$][A-Za-z0-9_$.]*
 90{_}(set{W}var[a-z]*|assign|pq)({W}{C})?	RETURN(&rxset1_cmd);
 91{_}(set|p|print|output){W}[^=]+=[^=]{C}	RETURN(&rxset2_cmd);
 92{_}set{W}args({W}{C})?		RETURN(&rxset_args_cmd);
-93{_}(set|dbxenv){W}{C}			RETURN(&rxsetting_cmd);
+93{_}(set|dbxenv|O){W}{C} 		RETURN(&rxsetting_cmd);
 94([][a-zA-Z0-9_$@%().]|->)*		RETURN(&rxsimple);
 95{_}disp(lay){W}[^ ]+			RETURN(&rxsingle_display_cmd);
 96{C}(--More--|line{w}{d}).* 		RETURN(&rxspace);

@@ -300,6 +300,9 @@ bool is_assign_cmd(const string& cmd, GDBAgent *gdb)
 
     DebuggerType type = gdb->type();
 
+    if (type == PERL && cmd.contains("O ", 0))
+	return false;		// Setting command
+
     return cmd.matches(rxset1_cmd) || 
 	(type == GDB && cmd.matches(rxset2_cmd)) ||
 	((type == PYDB || type == PERL) && cmd.matches(rxset3_cmd));
@@ -330,7 +333,7 @@ string get_assign_variable(const string& _cmd)
 bool is_setting_cmd (const string& cmd)
 {
 #if RUNTIME_REGEX
-    static regex rxsetting_cmd("[ \t]*(set|dbxenv)[ \t]+.*");
+    static regex rxsetting_cmd("[ \t]*(set|dbxenv|O)[ \t]+.*");
     static regex rxpath_cmd("[ \t]*(dir|directory|path)([ \t]+.*)?");
 #endif
 

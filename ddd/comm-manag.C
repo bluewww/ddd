@@ -1599,6 +1599,8 @@ void send_gdb_command(string cmd, Widget origin,
 	if (extra_data->refresh_user)
 	    extra_data->n_refresh_user = 
 		data_disp->add_refresh_user_commands(cmds);
+	if (extra_data->refresh_setting)
+	    cmds += show_command(cmd, gdb->type());
 	break;
     }
 

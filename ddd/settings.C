@@ -171,10 +171,13 @@ static void gdb_set_command(string set_command, string value)
 
     if (value != "")
     {
-	if (set_command.contains("set $", 0) && !set_command.contains(" = "))
-	    gdb_command(set_command + " = " + value);
+	if (set_command.contains("O ", 0))
+	    gdb_command(set_command + "=" + value); // Perl
+	else if (set_command.contains("set $", 0) && 
+		 !set_command.contains(" = "))
+	    gdb_command(set_command + " = " + value); // DBX
 	else
-	    gdb_command(set_command + " " + value);
+	    gdb_command(set_command + " " + value); // GDB
     }
     else
 	gdb_command(set_command);
@@ -532,12 +535,32 @@ void process_show(string command, string value, bool init)
 	    value = value.after(": ");
     }
 
+    if (gdb->type() == PERL)
+    {
+	if (value.contains('\''))
+	{
+	    value = value.after('\'');
+	    value = value.before('\'');
+	}
+    }
+
     static string empty;
     value.gsub(gdb_out_ignore, empty);
 
     string set_command = command;
-    if (!set_command.contains("set ", 0))
+    if (set_command.contains("O ", 0))
+    {
+	// Perl
+	if (set_command.contains('?'))
+	    set_command = set_command.before('?');
+	else if (set_command.contains('='))
+	    set_command = set_command.before('=');
+    }
+    else if (!set_command.contains("set ", 0))
+    {
+	// GDB
 	set_command = "set " + set_command.after(rxwhite);
+    }
 
     Widget button = command_to_widget(settings_form, set_command);
     if (button == 0)
@@ -1210,9 +1233,15 @@ string show_command(const string& cmd, DebuggerType type)
 	show = cmd.before(rxwhite);
 	break;
 
+    case PERL:
+	if (cmd.contains('='))
+	    show = cmd.before('=') + "?";
+	else
+	    show = cmd + "?";
+	break;
+
     case JDB:
     case XDB:
-    case PERL:
 	break;
     }
 
@@ -1406,7 +1435,16 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	return;			// FIXME
 
     case PERL:
-	return;			// FIXME
+    {
+	e_type = TextFieldEntry;
+	base  = line.before(" = ");
+	strip_space(base);
+	value = unquote(line.after(" = "));
+	set_command  = "O " + base;
+	show_command = "O " + base + "?";
+	doc = base;
+	break;
+    }
     }
 
     if (e_type != entry_filter)
@@ -1868,10 +1906,8 @@ static void add_settings(Widget form, int& row, Dimension& max_width,
     }
 
     case PERL:
-    {
 	commands = cached_gdb_question("O");
 	break;
-    }
     }
 
     if (type == GDB && entry_filter == SignalEntry)
@@ -2423,10 +2459,14 @@ static void get_setting(ostream& os, DebuggerType type,
 	}
 	break;
 
+    case PERL:
+	// Add setting
+	os << base << '=' << value << '\n';
+	break;
+
     case XDB:
     case JDB:
     case PYDB:
-    case PERL:
 	// Add setting
 	os << base << ' ' << value << '\n';
 	break;

@@ -238,6 +238,13 @@ static string gdbHelp(string command)
 	command = "step";
     }
 
+    if (gdb->type() == PERL)
+    {
+	// Perl help has only one argument
+	if (command.contains(rxwhite))
+	    command = command.before(rxwhite);
+    }
+
     string help = NO_GDB_ANSWER;
 
     if (is_graph_cmd(command))
