@@ -233,6 +233,7 @@ void type_test ()
 void in_out_test ()
 {
     char name[80];
+    fprintf(stderr, "This is stderr speaking\n");
     printf("What's your name? ");
     gets(name);
     printf("Hello, %s!\n", name);
