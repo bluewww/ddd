@@ -466,7 +466,7 @@ void user_cmdSUC (string cmd, Widget origin)
 	if (plus_cmd_data->refresh_register)
 	    cmds[qu_count++] = "info registers";
 	if (plus_cmd_data->refresh_disp)
-	    cmds[qu_count++] = "display";
+	    cmds[qu_count++] = gdb->display_command();
 	if (plus_cmd_data->refresh_disp_info)
 	    cmds[qu_count++] = "info display";
 	if (plus_cmd_data->refresh_history_filename)
@@ -503,7 +503,7 @@ void user_cmdSUC (string cmd, Widget origin)
 	if (plus_cmd_data->refresh_disp)
 	    assert(0);
 	if (plus_cmd_data->refresh_disp_info)
-	    cmds[qu_count++] = "display";
+	    cmds[qu_count++] = gdb->display_command();
 	if (plus_cmd_data->refresh_history_filename)
 	    assert(0);
 	if (plus_cmd_data->refresh_history_size)
@@ -669,7 +669,7 @@ void user_cmdOAC (void* data)
  	    if (disabling_occurred)
 	    {
 		cmd_data->filter_disp = Filter;
-		gdb->send_user_cmd("display");
+		gdb->send_user_cmd(gdb->display_command());
  		return;
  	    }
 	}
@@ -758,43 +758,32 @@ void plusOQAC (string answers[],
 	assert (gdb->type() == DBX);
 	assert (qu_count < count);
 
-	if (gdb->version() == DBX1)
+	string listing = answers[qu_count++];
+
+	string message = "";
+	while (listing != "" && atoi(listing) == 0)
 	{
-	    string listing = answers[qu_count++];
-
-	    string message = "";
-	    while (listing != "" && atoi(listing) == 0)
-	    {
-		message += listing.through('\n');
-		listing = listing.after('\n');
-	    }
-
-	    if (message != "")
-		post_gdb_message(message);
-
-	    int line = atoi(listing);
-	    if (line == 0)
-	    {
-		// Weird.  No source?
-		line = 1;
-	    }
-	    else if (!plus_cmd_data->refresh_main)
-	    {
-		// DBX lists 10 lines; the current line is the 5th one.
-		line += 5;
-	    }
-
-	    string pos;
-	    if (file != "")
-		source_view->lookup(file + ":" + itostring(line));
+	    message += listing.through('\n');
+	    listing = listing.after('\n');
 	}
-	else
+
+	if (message != "")
+	    post_gdb_message(message);
+
+	int line = atoi(listing);
+	if (line == 0)
 	{
-	    // source_view->lookup(file + ":" + answers[qu_count]);
-	    source_view->show_execution_position(file + ":" 
-						 + answers[qu_count]);
-	    qu_count++;
+	    // Weird.  No source?
+	    line = 1;
 	}
+	else if (!plus_cmd_data->refresh_main)
+	{
+	    // DBX lists 10 lines; the current line is the 5th one.
+	    line += 5;
+	}
+
+	if (file != "")
+	    source_view->lookup(file + ":" + itostring(line));
     }
 
     if (plus_cmd_data->refresh_bpoints) {
