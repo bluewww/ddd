@@ -90,9 +90,12 @@ protected:
     }
 
     // Copy
-    ListBox(const ListBox& box):
-	CompositeBox(box), _last(0)
-    {}
+    ListBox(const ListBox& box)
+	: CompositeBox(box), 
+	  _last(0)
+    {
+	relast();
+    }
 
     virtual void _draw(Widget, 
 		       const BoxRegion&, 
