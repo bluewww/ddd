@@ -1228,8 +1228,11 @@ Ddd*text_help_popup*okLabelString: Close
 Ddd*manual_help_popup*okLabelString: Close
 
 ! Titles
-Ddd*help_popup.title: @DDD@: Help
-Ddd*manual_help_popup.title: @DDD@: Manual
+Ddd*help_popup.title:           @DDD@ Help
+Ddd*manual_help_popup.title:    @DDD@ Manual
+Ddd*manual_help_popup.iconName: @DDD@ Manual
+Ddd*text_help_popup.title:      @DDD@ License
+Ddd*text_help_popup.iconName:   @DDD@ License
 
 ! Help on help.
 Ddd*help_popup.help*helpString: \
@@ -3660,7 +3663,6 @@ in this window.  You can also move around by pressing \
 Ddd*register_dialog_popup.title:	     @DDD@: Registers
 Ddd*register_dialog.listLabelString:	     Registers
 Ddd*register_dialog.okLabelString:	     Close
-
 Ddd*register_dialog.listVisibleItemCount:    12
 
 Ddd*register_dialog*box.orientation: XmHORIZONTAL
@@ -3685,7 +3687,6 @@ If @bf All registers @rm is set, all registers are shown.
 Ddd*thread_dialog_popup.title:	     	     @DDD@: Threads
 Ddd*thread_dialog.listLabelString:	     Threads
 Ddd*thread_dialog.okLabelString:	     Close
-
 Ddd*thread_dialog.listVisibleItemCount:      10
 
 Ddd*thread_dialog*box.orientation:  XmHORIZONTAL

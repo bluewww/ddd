@@ -60,6 +60,7 @@ char HelpCB_rcsid[] =
 #include <X11/cursorfont.h>
 #include <X11/StringDefs.h>
 #include <X11/IntrinsicP.h>	// LessTif hacks
+#include <X11/Shell.h>
 
 #include "LessTifH.h"
 
@@ -74,6 +75,8 @@ char HelpCB_rcsid[] =
 #include "post.h"
 #include "mydialogs.h"
 #include "ArgField.h"
+
+extern void process_pending_events();
 
 // The help system supports five resources:
 // helpString          - displayed in context-sensitive help.
@@ -628,18 +631,47 @@ void ManualStringHelpCB(Widget widget, XtPointer client_data,
     ManualStringHelpCB(widget, null, text);
 }
 
+// Create an empty dialog within a top-level-shell
+static Widget create_text_dialog(Widget parent, String name, 
+				 Arg *args, int arg)
+{
+    string shell_name = string(name) + "_popup";
+    Widget shell = verify(XtCreateWidget(shell_name.chars(), 
+					 topLevelShellWidgetClass,
+					 parent, args, arg));
+
+    XtSetArg(args[arg], XmNdialogType, XmDIALOG_PROMPT); arg++;
+    Widget w = XmCreateSelectionBox(shell, name, args, arg);
+    XtManageChild(w);
+
+    XtUnmanageChild(XmSelectionBoxGetChild(w, XmDIALOG_CANCEL_BUTTON));
+    XtUnmanageChild(XmSelectionBoxGetChild(w, XmDIALOG_TEXT));
+    XtUnmanageChild(XmSelectionBoxGetChild(w, XmDIALOG_SELECTION_LABEL));
+
+    XtAddCallback(w, XmNokCallback, DestroyThisCB, shell);
+
+    return w;
+}
+
+static void DeleteFindInfoCB(Widget, XtPointer client_data, XtPointer)
+{
+    FindInfo *fi = (FindInfo *)client_data;
+    delete fi;
+}
+
+// Return manual
 void ManualStringHelpCB(Widget widget, const MString& title,
 			const string& unformatted_text)
 {
-    Delay delay;
+    // Delay delay;
 
     Arg args[10];
     Cardinal arg = 0;
 
-    static Widget help_man     = 0;
-    static Widget help_index   = 0;
-    static Widget text_dialog  = 0;
-    static Widget dialog_title = 0;
+    Widget help_man     = 0;
+    Widget help_index   = 0;
+    Widget text_dialog  = 0;
+    Widget dialog_title = 0;
 
     if (help_man == 0)
     {
@@ -649,9 +681,8 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 	    return;
 
 	arg = 0;
-	XtSetArg(args[arg], XmNdeleteResponse, XmUNMAP); arg++;
-	text_dialog = 
-	    verify(XmCreatePromptDialog(toplevel, "manual_help", args, arg));
+	XtSetArg(args[arg], XmNdeleteResponse, XmDESTROY); arg++;
+	text_dialog = create_text_dialog(toplevel, "manual_help", args, arg);
 	Delay::register_shell(text_dialog);
 
 	if (lesstif_hacks_enabled)
@@ -740,21 +771,15 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 	XtAddCallback(key, XmNactivateCallback, ActivateCB, 
 		      XtPointer(findForward));
 
-	static FindInfo fi;
-	fi.key  = key;
-	fi.text = help_man;
-
+	FindInfo *fi = new FindInfo;
+	fi->key  = key;
+	fi->text = help_man;
+	XtAddCallback(text_dialog, XmNdestroyCallback,
+		      DeleteFindInfoCB, XtPointer(fi));
 	XtAddCallback(findForward, XmNactivateCallback, 
-		      FindForwardCB, XtPointer(&fi));
+		      FindForwardCB, XtPointer(fi));
 	XtAddCallback(findBackward, XmNactivateCallback, 
-		      FindBackwardCB, XtPointer(&fi));
-
-	XtUnmanageChild(XmSelectionBoxGetChild(text_dialog, 
-					       XmDIALOG_CANCEL_BUTTON));
-	XtUnmanageChild(XmSelectionBoxGetChild(text_dialog, 
-					       XmDIALOG_TEXT));
-	XtUnmanageChild(XmSelectionBoxGetChild(text_dialog,
-					       XmDIALOG_SELECTION_LABEL));
+		      FindBackwardCB, XtPointer(fi));
 
 	XtVaSetValues(text_dialog, XmNdefaultButton, Widget(0), NULL);
 
@@ -764,7 +789,10 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 
     // Set title
     if (!title.isNull())
+    {
 	XtVaSetValues(dialog_title, XmNlabelString, title.xmstring(), NULL);
+	wm_set_name(XtParent(text_dialog), title.str(), title.str());
+    }
 
     string text(unformatted_text);
     bool manual = !text.contains("File:", 0) && text.freq('\n') > 1;
@@ -779,6 +807,9 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 
 	for (;;)
 	{
+	    if (target % 100 == 0)
+		process_pending_events();
+
 	    while (has_header(text, source))
 	    {
 		// Header line: strip line and surrounding blanks
@@ -793,12 +824,14 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 		source = text.index('\n', source);
 		while (source < text.length() && text[source] == '\n')
 		    source++;
-	    }
 
+		process_pending_events();
+	    }
 	    if (source >= text.length())
 		break;
 
 	    text[target++] = text[source++];
+
 	}
 	text.from(target) = "";
     }
@@ -807,6 +840,9 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 	// Info file: strip menus
 	unsigned source = 0;
 	int target = 0;
+
+	if (target % 100 == 0)
+	    process_pending_events();
 
 	while (source < text.length())
 	{
@@ -835,6 +871,8 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 		       && text[source + 1] == '\n'
 		       && text[source + 2] == '\n')
 		    source++;
+
+		process_pending_events();
 	    }
 	    text[target++] = text[source++];
 	}
@@ -860,6 +898,8 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 
 	    if (c == '\b' && target >= 2)
 	    {
+		process_pending_events();
+
 		target -= 2;
 		if (text[target] == '_')
 		    underlined[target] = true;
@@ -880,6 +920,9 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 	XmTextPosition doublestriking = 0;
 	for (i = 0; i < int(text.length()); i++)
 	{
+	    if (i % 100 == 0)
+		process_pending_events();
+
 	    if (doublestriked[i] && !doublestriking)
 	    {
 		doublestriking = i;
@@ -892,6 +935,7 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 #if 0
 		XmTextSetHighlight(help_man, doublestriking, i, 
 				   XmHIGHLIGHT_SELECTED);
+		process_pending_events();
 #endif
 		doublestriking = 0;
 	    }
@@ -904,6 +948,7 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 	    {
 		XmTextSetHighlight(help_man, underlining, i, 
 				   XmHIGHLIGHT_SECONDARY_SELECTED);
+		process_pending_events();
 		underlining = 0;
 	    }
 	}
@@ -925,6 +970,8 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 	{
 	    if (text[source] == '\n')
 	    {
+		process_pending_events();
+
 		if (source - start_of_line > 3)
 		{
 		    // Check manual title
@@ -955,6 +1002,8 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 	int source = 0;
 	while (source >= 0)
 	{
+	    process_pending_events();
+
 	    assert(text.contains("File: ", source));
 
 	    // Fetch title below `File: ' line
@@ -998,6 +1047,8 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 			   XmHIGHLIGHT_NORMAL);
     }
 
+    process_pending_events();
+
     // Set titles in selection list
     XmTextPosition *xmpositions = new XmTextPosition[titles.size() + 1];
     for (i = 0; i < titles.size(); i++)
@@ -1026,22 +1077,26 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 	XmStringFree(xmtitles[i]);
     delete[] xmtitles;
 
+    process_pending_events();
+
     // Enable Text Window
+    XtRealizeWidget(XtParent(text_dialog));
+    XtPopup(XtParent(text_dialog), XtGrabNone);
     manage_and_raise(text_dialog);
 }
 
 
 void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
 {
-    Delay delay;
+    // Delay delay;
 
     String text = (String)client_data;
 
     Arg args[10];
     Cardinal arg = 0;
 
-    static Widget help_text   = 0;
-    static Widget text_dialog = 0;
+    Widget help_text   = 0;
+    Widget text_dialog = 0;
 
     if (help_text == 0)
     {
@@ -1051,9 +1106,8 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
 	    return;
 
 	arg = 0;
-	XtSetArg(args[arg], XmNdeleteResponse, XmUNMAP); arg++;
-	text_dialog = 
-	    verify(XmCreatePromptDialog(toplevel, "text_help", args, arg));
+	XtSetArg(args[arg], XmNdeleteResponse, XmDESTROY); arg++;
+	text_dialog = create_text_dialog(toplevel, "text_help", args, arg);
 	Delay::register_shell(text_dialog);
 
 	if (lesstif_hacks_enabled)
@@ -1087,13 +1141,6 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
 	XtAddCallback(text_dialog, XmNhelpCallback,
 		      ImmediateHelpCB, XtPointer(0));
 
-	XtUnmanageChild(XmSelectionBoxGetChild(text_dialog, 
-					       XmDIALOG_CANCEL_BUTTON));
-	XtUnmanageChild(XmSelectionBoxGetChild(text_dialog, 
-					       XmDIALOG_TEXT));
-	XtUnmanageChild(XmSelectionBoxGetChild(text_dialog,
-					       XmDIALOG_SELECTION_LABEL));
-
 	XtManageChild(form);
 	InstallButtonTips(text_dialog);
     }
@@ -1104,6 +1151,8 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
     XtSetValues(help_text, args, arg);
 
     // Enable Text Window
+    XtRealizeWidget(XtParent(text_dialog));
+    XtPopup(XtParent(text_dialog), XtGrabNone);
     manage_and_raise(text_dialog);
 }
 

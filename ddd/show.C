@@ -53,6 +53,8 @@ char show_rcsid[] =
 
 #include "HelpCB.h"
 
+extern void process_pending_events();
+
 //-----------------------------------------------------------------------------
 // Show version
 //-----------------------------------------------------------------------------
@@ -296,8 +298,13 @@ static int uncompress(ostream& os, const char *text, int size)
 	return -1;
     }
 
-    for (int i = 0; i < size; i++)
+    int i;
+    for (i = 0; i < size; i++)
+    {
+	if (i % 100 == 0)
+	    process_pending_events();
 	putc(text[i], fp);
+    }
     fclose(fp);
 
     string cmd = string(app_data.uncompress_command) + " < " + tempfile;
@@ -310,8 +317,14 @@ static int uncompress(ostream& os, const char *text, int size)
     }
 
     int c;
+    i = 0;
     while ((c = getc(fp)) != EOF)
+    {
+	if (i % 100 == 0)
+	    process_pending_events();
 	os << (char)c;
+	i++;
+    }
     pclose(fp);
 
     unlink(tempfile);
@@ -373,7 +386,6 @@ void DDDWWWPageCB(Widget, XtPointer, XtPointer)
 
 
 
-
 //-----------------------------------------------------------------------------
 // License
 //-----------------------------------------------------------------------------
@@ -399,10 +411,12 @@ void show_license()
 
 void DDDLicenseCB(Widget w, XtPointer, XtPointer call_data)
 {
-    StatusDelay delay("Formatting license");
-
     ostrstream license;
-    int ret = ddd_license(license);
+    int ret;
+    {
+	StatusDelay delay("Invoking " DDD_NAME " license browser");
+	ret = ddd_license(license);
+    }
     string s(license);
     TextHelpCB(w, XtPointer((char *)s), call_data);
 
@@ -437,10 +451,12 @@ void show_manual()
 
 void DDDManualCB(Widget w, XtPointer, XtPointer)
 {
-    StatusDelay delay("Formatting " DDD_NAME " manual");
-
     ostrstream man;
-    int ret = ddd_man(man);
+    int ret;
+    {
+	StatusDelay delay("Invoking " DDD_NAME " manual browser");
+	ret = ddd_man(man);
+    }
     string s(man);
 
     MString title(DDD_NAME " Manual");
@@ -453,7 +469,6 @@ void DDDManualCB(Widget w, XtPointer, XtPointer)
 
 void GDBManualCB(Widget w, XtPointer, XtPointer)
 {
-    StatusDelay delay("Formatting " + gdb->title() + " manual");
 
     string cmd = "man " + downcase(gdb->title());
 
@@ -469,9 +484,18 @@ void GDBManualCB(Widget w, XtPointer, XtPointer)
     {
 	ostrstream man;
 
-	int c;
-	while ((c = getc(fp)) != EOF)
-	    man << char(c);
+	{
+	    StatusDelay delay("Invoking " + gdb->title() + " manual browser");
+	    int c;
+	    int i = 0;
+	    while ((c = getc(fp)) != EOF)
+	    {
+		if (i % 100 == 0)
+		    process_pending_events();
+		man << char(c);
+		i++;
+	    }
+	}
 	
 	string s(man);
 	bool info = s.contains("File: ", 0);
