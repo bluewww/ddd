@@ -59,16 +59,17 @@ static int preferred_height(Widget w)
     return XmConvertUnits(w, XmVERTICAL, XmPIXELS, size.height, unit_type);
 }
 
-// Create a toolbar as child of parent, named `NAME_toolbar', having
+// Create a toolbar as child of parent, named `NAME', having
 // the buttons ITEMS.  Return LABEL and ARGFIELD.
-Widget create_toolbar(Widget parent, string name, MMDesc items[],
+Widget create_toolbar(Widget parent, string name, 
+		      MMDesc *items1, MMDesc *items2,
 		      Widget& label, ArgField*& argfield)
 {
     Arg args[10];
     Cardinal arg = 0;
 
     // Create toolbar
-    string toolbar_name = name + "_toolbar";
+    string toolbar_name = name;
 
     arg = 0;
     XtSetArg(args[arg], XmNmarginWidth, 0);  arg++;
@@ -80,20 +81,27 @@ Widget create_toolbar(Widget parent, string name, MMDesc items[],
     label = create_arg_label(toolbar);
 
     // Create argument field
-    string argfield_name = name + "_arg";
+    string argfield_name = "arg";
     argfield = new ArgField (toolbar, argfield_name);
 
     registerOwnConverters();
 
     // Create buttons
-    string buttons_name = name + "_buttons";
-    Widget buttons = MMcreateWorkArea(toolbar, buttons_name, items);
-    MMaddCallbacks(items);
-    MMaddHelpCallback(items, ImmediateHelpCB);
+    string buttons_name = "toolbar";
+    Widget buttons = MMcreateWorkArea(toolbar, buttons_name, items1);
+    MMaddCallbacks(items1);
+    MMaddHelpCallback(items1, ImmediateHelpCB);
+
+    if (items2 != 0)
+    {
+	MMaddItems(buttons, items2);
+	MMaddCallbacks(items2);
+	MMaddHelpCallback(items2, ImmediateHelpCB);
+    }
 
     unsigned char label_type = XmSTRING;
-    if (items[0].widget != 0)
-	XtVaGetValues(items[0].widget, XmNlabelType, &label_type, NULL);
+    if (items1[0].widget != 0)
+	XtVaGetValues(items1[0].widget, XmNlabelType, &label_type, NULL);
 
     XtVaSetValues(buttons,
 		  XmNmarginWidth,    0,
@@ -125,10 +133,13 @@ Widget create_toolbar(Widget parent, string name, MMDesc items[],
 		  NULL);
 
     XtManageChild(toolbar);
-    register_menu_shell(items);
+    register_menu_shell(items1);
+
+    if (items2 != 0)
+	register_menu_shell(items2);
 
     // Check geometry
-    int button_height = preferred_height(items[0].widget);
+    int button_height = preferred_height(items1[0].widget);
     int arg_height    = preferred_height(argfield->widget());
 
     if (XmIsPanedWindow(parent))
