@@ -521,6 +521,8 @@ static XrmOptionDescRec options[] = {
 // Actions
 static XtActionsRec actions [] = {
     {"gdb-control",            controlAct},
+    {"gdb-command",            commandAct},
+    {"gdb-process",            processAct},
     {"gdb-delete-or-control",  delete_or_controlAct},
     {"gdb-prev-history",       prev_historyAct},
     {"gdb-previous-history",   prev_historyAct},
@@ -2306,12 +2308,21 @@ int main(int argc, char *argv[])
 	// TTY mode: no need for a debugger console
 	gdbCloseCommandWindowCB(gdb_w, 0, 0);
     }
+    if (app_data.full_name_mode)
+    {
+	// Full name mode: no need for source window
+	gdbCloseSourceWindowCB(gdb_w, 0, 0);
+	gdbCloseToolWindowCB(gdb_w, 0, 0);
+    }
 
     // Close windows explicitly requested
     if (!app_data.data_window)
 	gdbCloseDataWindowCB(gdb_w, 0, 0);
     if (!app_data.source_window)
+    {
 	gdbCloseSourceWindowCB(gdb_w, 0, 0);
+	gdbCloseToolWindowCB(gdb_w, 0, 0);
+    }
     if (!app_data.debugger_console)
 	gdbCloseCommandWindowCB(gdb_w, 0, 0);
 
