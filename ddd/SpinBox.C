@@ -1,5 +1,5 @@
 // $Id$ -*- C++ -*-
-//
+// Create a spin box
 
 // Copyright (C) 1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -33,7 +33,7 @@ char SpinBox_rcsid[] =
 #pragma implementation
 #endif
 
-// Comment out to rely on our replacement routines
+// #define as 0 to rely exclusively on our replacement routines
 // #define USE_XM_SPINBOX 0
 
 #include "SpinBox.h"
@@ -67,6 +67,7 @@ char SpinBox_rcsid[] =
 // SpinBox helpers
 //-----------------------------------------------------------------------
 
+#if !USE_XM_SPINBOX
 static void add_to_value(Widget text, int offset)
 {
     String value = XmTextFieldGetString(text);
@@ -159,6 +160,7 @@ static Widget create_spin_arrow(Widget parent, unsigned char direction,
 
     return arrow;
 }
+#endif // !USE_XM_SPINBOX
 
 
 //-----------------------------------------------------------------------
@@ -185,11 +187,10 @@ Widget CreateSpinBox(Widget parent, String name, ArgList _args, Cardinal _arg)
     Widget text = verify(XmCreateTextField(spin, name, args, arg));
     XtManageChild(text);
     
-    if (spin == parent)
-    {
-	create_spin_arrow(parent, XmARROW_LEFT,  text);
-	create_spin_arrow(parent, XmARROW_RIGHT, text);
-    }
+#if !USE_XM_SPINBOX
+    create_spin_arrow(parent, XmARROW_LEFT,  text);
+    create_spin_arrow(parent, XmARROW_RIGHT, text);
+#endif
 
     delete[] args;
     return text;
