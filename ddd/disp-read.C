@@ -2,7 +2,9 @@
 // Helper functions to process GDB display output
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
-// Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>.
+// Copyright (C) 2000 Universitaet Passau, Germany.
+// Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
+// and Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
 // 
@@ -980,6 +982,7 @@ bool is_valid(const string& value, GDBAgent *gdb)
     return !value.contains("Unknown name") 
 	&& !value.contains("not active")
 	&& !value.contains("not defined")
+	&& !value.contains("not valid")
 	&& !value.matches(rxinvalid_value);
 }
 
