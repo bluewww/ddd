@@ -2,7 +2,7 @@
 .\" DDD manual page
 .\" @configure_input@
 .\"
-.\" Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+.\" Copyright (C) 1995, 1996 Technische Universitaet Braunschweig, Germany.
 .\" Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
 .\" 
 .\" This file is part of DDD.
@@ -26,7 +26,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 .\"
-.TH @ddd@ 1 "12 January 1996" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "2 April 1996" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger (v@VERSION@)
 .SH SYNOPSIS
@@ -1347,6 +1347,7 @@ offers to extend \s-2@DDD@\s+2.  For a list of people offering
 .\" ---------------
 If you appreciate this software, or have any suggestions, 
 please send us a picture postcard.  Our address is:
+.PP
 .DS
 Technische Universitaet Braunschweig 
 .br
@@ -1354,13 +1355,14 @@ Institut fuer Programmiersprachen und Informationssysteme
 .br
 Abteilung Softwaretechnologie 
 .br
-Gaussstrasse 17 
+Bueltenweg 88
 .br
 D-38092 Braunschweig 
 .br
 \s-2GERMANY\s+2 
 .br
 .DE
+.PP
 You may also leave a message in the DDD guestbook (accessible via the
 \s-2@DDD@\s+2 \s-2WWW\s+2 page, 
 `\fBhttp://www.cs.tu-bs.de/softech/ddd/\fR')
@@ -1663,19 +1665,19 @@ As a last resort, send bug reports on paper to:
 .sp
 .br
 .DS
-  Technische Universitaet Braunschweig 
+Technische Universitaet Braunschweig 
 .br
-  Institut fuer Programmiersprachen und Informationssysteme 
+Institut fuer Programmiersprachen und Informationssysteme 
 .br
-  Abteilung Softwaretechnologie 
+Abteilung Softwaretechnologie 
 .br
-  \s-2DDD\s+2-Bugs 
+\s-2DDD\s+2-Bugs 
 .br
-  Gaussstrasse 17 
+Bueltenweg 88
 .br
-  D-38092 Braunschweig 
+D-38092 Braunschweig 
 .br
-  \s-2GERMANY\s+2 
+\s-2GERMANY\s+2 
 .br
 .DE
 .\"
