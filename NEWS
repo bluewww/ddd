@@ -100,10 +100,10 @@ DDD 2.2 [in beta test]
       time, rather than generating them at run time.
 
     Supported platforms and configurations:
-    - DDD now runs on Linux with GNU libc 5.4.38 and later.
-    - DDD now runs with XDB on HP-UX 10.x.  Thanks to Robert Wiegand
-      <wiegand@kong.gsfc.nasa.gov>.
-    - DDD now runs with SUN DBX 3.2.
+    - Support for Linux with GNU libc 5.4.38 and later included.
+    - Support for XDB on HP-UX 10.x included.  Thanks to Robert
+      Wiegand <wiegand@kong.gsfc.nasa.gov>.
+    - Support for SUN DBX 3.2 included.
 
     Bug fixes:
     - DDD no longer hangs while receiving large chunks of data.
