@@ -56,3 +56,4 @@ Shift<Key>F:	show-edges(from)   \n\
 *graphEdit_panner.background: grey
 *graphEdit_panner.foreground: light grey
 *graphEdit.background: light grey
+*graphEdit.foreground: black
