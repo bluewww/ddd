@@ -1,7 +1,7 @@
 // $Id$
-// create custom Motif Menus
+// Create custom Motif Menus
 
-// Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1995-1997 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of the DDD Library.
@@ -46,6 +46,7 @@ char MakeMenu_rcsid[] =
 #include <Xm/Scale.h>
 #include <Xm/Label.h>
 #include <Xm/MenuShell.h>
+#include <X11/Xutil.h>
 
 #include "LessTifH.h"
 #include "bool.h"
@@ -63,6 +64,32 @@ static XtActionsRec actions [] = {
 static char extraTranslations[] = 
     "None<Btn3Down>:	popup-push-menu()\n"
 ;
+
+
+// Make sure menu stays on top.  This prevents conflicts with
+// auto-raise windows which would otherwise hide menu panels.
+static void StayOnTopEH(Widget w, XtPointer, XEvent *event, Boolean *)
+{
+
+    if (event->type != VisibilityNotify)
+	return;
+
+    switch (event->xvisibility.state)
+    {
+    case VisibilityFullyObscured:
+    case VisibilityPartiallyObscured:
+	XRaiseWindow(XtDisplay(w), XtWindow(w));
+	break;
+    }
+}
+
+static void stay_on_top(Widget shell)
+{
+    assert(XmIsMenuShell(shell));
+
+    XtAddEventHandler(shell, VisibilityChangeMask, False,
+		      StayOnTopEH, XtPointer(0));
+}
 
 // Add items to shell
 static void addItems(Widget /* parent */, Widget shell, MMDesc items[], 
@@ -293,6 +320,7 @@ Widget MMcreatePulldownMenu(Widget parent, String name, MMDesc items[])
     arg = 0;
     Widget menu = verify(XmCreatePulldownMenu(parent, name, args, arg));
     addItems(parent, menu, items);
+    stay_on_top(XtParent(menu));
 
     return menu;
 }
@@ -310,6 +338,7 @@ Widget MMcreateRadioPulldownMenu(Widget parent, String name, MMDesc items[])
 
     Widget menu = verify(XmCreatePulldownMenu(parent, name, args, arg));
     addItems(parent, menu, items);
+    stay_on_top(XtParent(menu));
 
     return menu;
 }
@@ -323,6 +352,7 @@ Widget MMcreatePopupMenu(Widget parent, String name, MMDesc items[])
     arg = 0;
     Widget menu = verify(XmCreatePopupMenu(parent, name, args, arg));
     addItems(parent, menu, items);
+    stay_on_top(XtParent(menu));
 
     return menu;
 }
