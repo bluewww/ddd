@@ -45,12 +45,22 @@ char show_rcsid[] =
 #include "status.h"
 #include "version.h"
 #include "filetype.h"
+#include "findParent.h"
 
 #include <iostream.h>
 #include <iomanip.h>
 #include <fstream.h>
 
+#include <Xm/Xm.h>
+#include <Xm/SelectioB.h>
+#include <Xm/Form.h>
+#include <Xm/Label.h>
+
 #include "HelpCB.h"
+#include "exit.h"
+#include "options.h"
+#include "verify.h"
+#include "wm.h"
 
 //-----------------------------------------------------------------------------
 // Show version
@@ -348,15 +358,92 @@ void show_license()
 
 
 //-----------------------------------------------------------------------------
-// Show License
+// License Dialog
 //-----------------------------------------------------------------------------
-
-void DDDLicenseCB(Widget w, XtPointer, XtPointer call_data)
+static void DDDSaveInitialOptionsCB(Widget w, XtPointer client_data, 
+				    XtPointer call_data)
 {
-    StatusDelay delay("Formatting license");
+    if (app_data.dddinit_version == 0)
+    {
+	// We don't have a ~/.dddinit file yet.  Create it such that
+	// we don't get the DDD license again.
+	DDDSaveOptionsCB(w, client_data, call_data);
+    }
+}
 
-    ostrstream license;
-    ddd_license(license);
-    string s(license);
-    TextHelpCB(w, XtPointer((char *)s), call_data);
+void DDDLicenseCB(Widget widget, XtPointer, XtPointer)
+{
+    static Widget license_text   = 0;
+    static Widget license_dialog = 0;
+
+    Arg args[10];
+    Cardinal arg;
+
+    if (license_text == 0)
+    {
+	// Build license_text
+	StatusDelay delay("Formatting " DDD_NAME " license");
+
+	ostrstream license;
+	ddd_license(license);
+	string s(license);
+
+	Widget toplevel = findTheTopLevelShell(widget);
+	if (toplevel == 0)
+	    return;
+
+	arg = 0;
+	XtSetArg(args[arg], XmNdeleteResponse, XmUNMAP); arg++;
+	license_dialog = 
+	    verify(XmCreatePromptDialog(toplevel, "license", args, arg));
+	Delay::register_shell(license_dialog);
+
+	arg = 0;
+	Widget form =
+	    verify(XmCreateForm(license_dialog, "form", args, arg));
+
+	arg = 0;
+	XtSetArg(args[arg], XmNtopAttachment,    XmATTACH_FORM);     arg++;
+	XtSetArg(args[arg], XmNleftAttachment,   XmATTACH_FORM);     arg++;
+	XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_FORM);     arg++;
+	Widget title = verify(XmCreateLabel(form, "title", args, arg));
+	XtManageChild(title);
+
+	arg = 0;
+ 	XtSetArg(args[arg], XmNtopAttachment,    XmATTACH_WIDGET);   arg++;
+ 	XtSetArg(args[arg], XmNtopWidget,        title);             arg++;
+	XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_FORM);     arg++;
+	XtSetArg(args[arg], XmNleftAttachment,   XmATTACH_FORM);     arg++;
+	XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_FORM);     arg++;
+	XtSetArg(args[arg], XmNeditable,         False);             arg++;
+	XtSetArg(args[arg], XmNeditMode,         XmMULTI_LINE_EDIT); arg++;
+	XtSetArg(args[arg], XmNvalue,            s.chars());         arg++;
+	license_text = 
+	    verify(XmCreateScrolledText(form, "text", args, arg));
+	XtManageChild(license_text);
+
+	XtAddCallback(license_dialog, XmNhelpCallback,
+		      ImmediateHelpCB, XtPointer(0));
+	XtAddCallback(license_dialog, XmNcancelCallback,
+		      DDDExitCB, XtPointer(EXIT_SUCCESS));
+	XtAddCallback(license_dialog, XmNokCallback,
+		      DDDSaveInitialOptionsCB, XtPointer(0));
+
+	XtUnmanageChild(XmSelectionBoxGetChild(license_dialog, 
+					       XmDIALOG_TEXT));
+	XtUnmanageChild(XmSelectionBoxGetChild(license_dialog,
+					       XmDIALOG_SELECTION_LABEL));
+
+	XtManageChild(form);
+	InstallButtonTips(license_dialog);
+
+	// Find `NO WARRANTY' text
+	int i = s.index("NO WARRANTY");
+	if (i >= 0)
+	    XmTextSetTopCharacter(license_text, i);
+    }
+
+    // Enable Text Window
+    XtManageChild(license_dialog);
+    raise_shell(license_dialog);
 }

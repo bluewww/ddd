@@ -2062,6 +2062,13 @@ static void process_pending_events()
 
 static void ddd_check_version()
 {
+    if (app_data.dddinit_version == 0 ||
+	string(app_data.dddinit_version) != DDD_VERSION)
+    {
+	// We have no ~/.dddinit file or an old one: show license
+	DDDLicenseCB(gdb_w, 0, 0);
+    }
+
     if (ddd_expired())
     {
 	ostrstream msg;

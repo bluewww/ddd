@@ -468,10 +468,10 @@ Ddd*graph_edit.opaqueMove:	false
 Ddd*graph_edit.showGrid:	true
 
 ! Do we wish to snap the position to the grid?
-Ddd*graph_edit.snapToGrid:	false
+Ddd*graph_edit.snapToGrid:	true
 
 ! Do we wish to show edge hints?
-Ddd*graph_edit.showEdgeHints:	true
+Ddd*graph_edit.showHints:	true
 
 ! What kind of layout do we wish? (regular, compact)
 Ddd*graph_edit.layoutMode:	regular
@@ -1175,19 +1175,21 @@ Ddd*XmDialogShell.mwmDecorations: 26
 
 ! Exception: the manual page and license page.
 Ddd*manual_help_popup.mwmDecorations: 1
-Ddd*text_help_popup.mwmDecorations:   1
+Ddd*license_popup.mwmDecorations:   1
 
 
 !-----------------------------------------------------------------------------
 ! Help
 !-----------------------------------------------------------------------------
 
+! Make help button a little wider
+Ddd*helpLabelString: \ \ \ Help\ \ \ 
+
 ! Set this to `true' to view widget names in help texts.
 Ddd*helpShowTitle: false
 
 ! Help is never acknowledged, always closed.
 Ddd*help_popup*okLabelString: Close
-Ddd*text_help_popup*okLabelString: Close
 Ddd*manual_help_popup*okLabelString: Close
 
 ! Titles
@@ -1325,25 +1327,35 @@ Click on @bf Find@small<< @bf() @rm to search the previous occurrence of \
 ! DDD license
 !-----------------------------------------------------------------------------
 
-Ddd*text_help*form.borderWidth:	0
+Ddd*license_popup*okLabelString:        OK
+Ddd*license_popup*cancelLabelString:    Exit
 
-Ddd*text_help*title.labelString:      @DDD@ License
-Ddd*text_help*title.alignment:	      XmALIGNMENT_BEGINNING
+Ddd*license*form.borderWidth:		0
 
-Ddd*text_help*text.columns:	      80
-Ddd*text_help*text.rows:	      25
-Ddd*text_help*text.wordWrap:	      true
-Ddd*text_help*text.scrollHorizontal:  false
-Ddd*text_help*scrollBarDisplayPolicy: XmAS_NEEDED
+Ddd*license*title.labelString:      	@DDD@ License
+Ddd*license*title.alignment:	        XmALIGNMENT_BEGINNING
 
-Ddd*text_help*textSW.width:		600
-Ddd*text_help*textSW.height:		320
+Ddd*license*text.columns:	        80
+Ddd*license*text.rows:	      		25
+Ddd*license*text.wordWrap:	        true
+Ddd*license*text.scrollHorizontal:      false
+Ddd*license*scrollBarDisplayPolicy:     XmAS_NEEDED
 
-Ddd*text_help*helpString: \
-@rm This is the @sl @DDD@ License.@rm\n\
+Ddd*license*textSW.width:		600
+Ddd*license*textSW.height:		320
+
+Ddd*license*helpString: \
+@rm This is the @sl @DDD@ License,@rm\n\
+a GNU General Public License.\n\
 \n\
 It describes the terms and conditions\n\
-for copying, distributing and modifying @DDD@.
+for copying, distributing and modifying @DDD@.\n\
+\n\
+Please see section 11, @tt NO WARRANTY@rm, \n\
+for the various kind of warranty you do not have.\n\
+\n\
+Click on @bf OK @rm to close the license.\n\
+Click on @bf Exit @rm to exit @DDD@.
 
 
 !-----------------------------------------------------------------------------

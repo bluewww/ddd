@@ -953,6 +953,8 @@ void save_options(Widget origin)
 
     save_option_state();
     save_settings_state();
+
+    app_data.dddinit_version = DDD_VERSION;
 }
 
 void DDDSaveOptionsCB (Widget w, XtPointer, XtPointer)
