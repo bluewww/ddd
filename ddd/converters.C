@@ -630,7 +630,7 @@ void registerOwnConverters()
 
     // string -> xmstring
     XtSetTypeConverter(XmRString, XmRXmString, CvtStringToXmString,
-		       NULL, 0, XtCacheAll, 
+		       NULL, 0, XtCacheNone,
 		       XtDestructor(NULL));
 
     // string -> unitType
