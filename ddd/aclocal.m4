@@ -43,7 +43,7 @@ AC_DEFUN(ICE_PROG_CC,
 [
 AC_REQUIRE([AC_ISC_POSIX])
 AC_REQUIRE([AC_PROG_CC])
-AC_MSG_CHECKING(whether ${CC} compiles and links a simple C program)
+AC_MSG_CHECKING(whether the C compiler (${CC}) compiles and links a simple C program)
 AC_CACHE_VAL(ice_cv_prog_cc,
 [
 AC_LANG_SAVE
@@ -86,7 +86,7 @@ esac
 AC_LANG_RESTORE
 fi
 dnl
-AC_MSG_CHECKING(whether ${CXX} compiles and links a simple C++ program)
+AC_MSG_CHECKING(whether the C++ compiler (${CXX}) compiles a simple program)
 AC_CACHE_VAL(ice_cv_prog_cxx,
 [
 AC_LANG_SAVE
@@ -143,7 +143,7 @@ dnl
 AC_DEFUN(ICE_EXTERNAL_TEMPLATES,
 [
 AC_REQUIRE([AC_PROG_CXX])
-AC_MSG_CHECKING(whether ${CXX} accepts the -fexternal-templates flag)
+AC_MSG_CHECKING(whether the C++ compiler (${CXX}) accepts -fexternal-templates)
 AC_CACHE_VAL(ice_cv_external_templates,
 [
 AC_LANG_SAVE
@@ -174,7 +174,7 @@ dnl
 AC_DEFUN(ICE_NO_IMPLICIT_TEMPLATES,
 [
 AC_REQUIRE([AC_PROG_CXX])
-AC_MSG_CHECKING(whether ${CXX} accepts the -fno-implicit-templates flag)
+AC_MSG_CHECKING(whether the C++ compiler (${CXX}) accepts -fno-implicit-templates)
 AC_CACHE_VAL(ice_cv_no_implicit_templates,
 [
 AC_LANG_SAVE
@@ -204,7 +204,7 @@ dnl
 AC_DEFUN(ICE_ELIDE_CONSTRUCTORS,
 [
 AC_REQUIRE([AC_PROG_CXX])
-AC_MSG_CHECKING(whether ${CXX} accepts the -felide-constructors flag)
+AC_MSG_CHECKING(whether the C++ compiler (${CXX}) accepts -felide-constructors)
 AC_CACHE_VAL(ice_cv_elide_constructors,
 [
 AC_LANG_SAVE
@@ -233,7 +233,7 @@ dnl
 AC_DEFUN(ICE_CONSERVE_SPACE,
 [
 AC_REQUIRE([AC_PROG_CXX])
-AC_MSG_CHECKING(whether ${CXX} accepts the -fconserve-space flag)
+AC_MSG_CHECKING(whether the C++ compiler (${CXX}) accepts -fconserve-space)
 AC_CACHE_VAL(ice_cv_conserve_space,
 [
 AC_LANG_SAVE
@@ -298,7 +298,7 @@ dnl
 AC_DEFUN(ICE_CXX_BOOL,
 [
 AC_REQUIRE([AC_PROG_CXX])
-AC_MSG_CHECKING(whether ${CXX} supports bool types)
+AC_MSG_CHECKING(whether the C++ compiler (${CXX}) supports bool types)
 AC_CACHE_VAL(ice_cv_have_bool,
 [
 AC_LANG_SAVE
@@ -325,7 +325,7 @@ dnl
 AC_DEFUN(ICE_CXX_NAMED_RETURN_VALUES,
 [
 AC_REQUIRE([AC_PROG_CXX])
-AC_MSG_CHECKING(whether ${CXX} supports named return values)
+AC_MSG_CHECKING(whether the C++ compiler (${CXX}) supports named return values)
 AC_CACHE_VAL(ice_cv_have_named_return_values,
 [
 AC_LANG_SAVE
@@ -360,7 +360,7 @@ dnl
 AC_DEFUN(ICE_CXX_EXPLICIT_TEMPLATE_INSTANTIATION,
 [
 AC_REQUIRE([AC_PROG_CXX])
-AC_MSG_CHECKING(whether ${CXX} supports explicit template instantiation)
+AC_MSG_CHECKING(whether the C++ compiler (${CXX}) supports explicit template instantiation)
 AC_CACHE_VAL(ice_cv_have_explicit_template_instantiation,
 [
 AC_LANG_SAVE
@@ -389,7 +389,7 @@ dnl
 AC_DEFUN(ICE_CXX_PRETTY_FUNCTION,
 [
 AC_REQUIRE([AC_PROG_CXX])
-AC_MSG_CHECKING(whether ${CXX} supports the __PRETTY_FUNCTION__ macro)
+AC_MSG_CHECKING(whether the C++ compiler (${CXX}) supports __PRETTY_FUNCTION__)
 AC_CACHE_VAL(ice_cv_have_pretty_function,
 [
 AC_LANG_SAVE
@@ -419,7 +419,7 @@ AC_DEFUN(ICE_CXX_ARRAY_OPERATOR_NEW,
 [
 AC_REQUIRE([AC_PROG_CXX])
 changequote(,)dnl
-AC_MSG_CHECKING(whether ${CXX} supports overloaded operator new[])
+AC_MSG_CHECKING(whether the C++ compiler (${CXX}) supports overloaded new[])
 changequote([,])dnl
 AC_CACHE_VAL(ice_cv_have_array_operator_new,
 [
@@ -450,7 +450,7 @@ AC_DEFUN(ICE_CXX_PLACEMENT_NEW,
 [
 AC_REQUIRE([AC_PROG_CXX])
 changequote(,)dnl
-AC_MSG_CHECKING(whether ${CXX} supports placement new)
+AC_MSG_CHECKING(whether the C++ compiler (${CXX}) supports placement new)
 changequote([,])dnl
 AC_CACHE_VAL(ice_cv_have_placement_new,
 [
@@ -478,7 +478,7 @@ dnl
 AC_DEFUN(ICE_CXX_LIFETIME_OF_TEMPORARIES,
 [
 AC_REQUIRE([AC_PROG_CXX])
-AC_MSG_CHECKING(whether ${CXX} supports ANSI C++ lifetime of temporaries)
+AC_MSG_CHECKING(whether the C++ compiler (${CXX}) supports ANSI lifetime of temporaries)
 AC_CACHE_VAL(ice_cv_have_ansi_lifetime_of_temporaries,
 [
 AC_LANG_SAVE
@@ -542,7 +542,7 @@ dnl
 AC_DEFUN(ICE_CXX_LONG_LONG,
 [
 AC_REQUIRE([AC_PROG_CXX])
-AC_MSG_CHECKING(whether ${CXX} supports long long types)
+AC_MSG_CHECKING(whether the C++ compiler (${CXX}) supports long long types)
 AC_CACHE_VAL(ice_cv_have_long_long,
 [
 AC_LANG_SAVE
@@ -874,15 +874,15 @@ else
     esac
   done
 fi
-AC_MSG_CHECKING(for ${CXX} warning options for C++)
+AC_MSG_CHECKING(for C++ compiler (${CXX}) warning options)
 AC_MSG_RESULT(${CXXWARNINGS})
-AC_MSG_CHECKING(for ${CXX} optimizing options for C++)
+AC_MSG_CHECKING(for C++ compiler (${CXX}) optimizing options)
 AC_MSG_RESULT(${CXXOPT})
-AC_MSG_CHECKING(for ${CXX} extra libraries for C++)
+AC_MSG_CHECKING(for C++ compiler (${CXX}) extra libraries)
 AC_MSG_RESULT(${CXXLIBS})
-AC_MSG_CHECKING(for ${CXX} static binding options for C++)
+AC_MSG_CHECKING(for C++ compiler (${CXX}) static binding options)
 AC_MSG_RESULT(${CXXSTATIC_BINDING})
-AC_MSG_CHECKING(for ${CXX} dynamic binding options for C++)
+AC_MSG_CHECKING(for C++ compiler (${CXX}) dynamic binding options)
 AC_MSG_RESULT(${CXXDYNAMIC_BINDING})
 AC_SUBST(CXXWARNINGS)dnl
 AC_SUBST(CXXDEBUG)dnl
@@ -1375,7 +1375,10 @@ LDFLAGS="$X_LIBS $LDFLAGS"
 #
 # We use XtToolkitInitialize() here since it takes no arguments
 # and thus also works with a C++ compiler.
-AC_TRY_LINK([#include <Xm/Xm.h>],[XtToolkitInitialize();],
+AC_TRY_LINK([
+#include <X11/Intrinsic.h>
+#include <Xm/Xm.h>
+],[XtToolkitInitialize();],
 [
 # libXm.a is in the standard search path.
 ice_cv_motif_libraries=
@@ -1724,13 +1727,16 @@ LDFLAGS="$X_LIBS $LDFLAGS"
 #
 # We use XtToolkitInitialize() here since it takes no arguments
 # and thus also works with a C++ compiler.
-AC_TRY_LINK([#include <X11/xpm.h>],[XtToolkitInitialize();],
+AC_TRY_LINK([
+#include <X11/Intrinsic.h>
+#include <X11/xpm.h>
+],[XtToolkitInitialize();],
 [
 # libxpm.a is in the standard search path.
 ice_cv_xpm_libraries=
 ],
 [
-# libXaw.a is not in the standard search path.
+# libXpm.a is not in the standard search path.
 # Locate it and put its directory in `xpm_libraries'
 #
 #
