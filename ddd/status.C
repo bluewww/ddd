@@ -175,8 +175,9 @@ static Widget create_status_history(Widget parent)
 
     arg = 0;
     XtSetArg(args[arg], XmNallowShellResize, True); arg++;
-    history_shell = verify(XmCreateMenuShell(parent,
-					     "status_history_shell",
+    XtSetArg(args[arg], XmNwidth,            10);   arg++;
+    XtSetArg(args[arg], XmNheight,           10);   arg++;
+    history_shell = verify(XmCreateMenuShell(parent, "status_history", 
 					     args, arg));
 
     arg = 0;

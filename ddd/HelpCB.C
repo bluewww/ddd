@@ -1211,6 +1211,8 @@ static void PopupTip(XtPointer client_data, XtIntervalId *timer)
 	XtSetArg(args[arg], XmNallowShellResize, true);             arg++;
 	XtSetArg(args[arg], XmNx, WidthOfScreen(XtScreen(w)) + 1);  arg++;
 	XtSetArg(args[arg], XmNy, HeightOfScreen(XtScreen(w)) + 1); arg++;
+	XtSetArg(args[arg], XmNwidth,            10);               arg++;
+	XtSetArg(args[arg], XmNheight,           10);               arg++;
 	tip_shell = verify(XmCreateMenuShell(findTheTopLevelShell(w),
 					     "tipShell", args, arg));
 

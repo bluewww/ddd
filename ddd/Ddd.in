@@ -1377,6 +1377,7 @@ for the various kind of warranty you do not have.
 
 Ddd*tipLabel.background:  #FFFFCC
 Ddd*tipLabel.foreground:  Black
+Ddd*tipRow.background:    Black
 Ddd*tipShell.borderColor: Black
 Ddd*tipShell.borderWidth: 1
 
@@ -2774,6 +2775,7 @@ Ddd*status_lines.marginHeight:		0
 Ddd*status_lines.borderWidth:		0
 Ddd*status_lines.spacing:		0
 
+Ddd*status_history.row.background:	Black
 
 !-----------------------------------------------------------------------------
 ! Source view
