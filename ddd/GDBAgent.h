@@ -128,9 +128,11 @@ private:
     bool _has_print_r_command;
     bool _has_where_h_command;
     bool _has_display_command;
+    bool _has_clear_command;
     bool _has_pwd_command;
     bool _has_named_values;
     bool _has_func_pos;
+    bool _has_when_semicolon;
 
 protected:
     // Copy constructor - too complicated yet
@@ -245,6 +247,10 @@ public:
     bool has_display_command() const   { return _has_display_command; }
     bool has_display_command(bool val) { return _has_display_command = val; }
 
+    // True if debugger has `clear' command
+    bool has_clear_command() const     { return _has_clear_command; }
+    bool has_clear_command(bool val)   { return _has_clear_command = val; }
+
     // True if debugger has `pwd' command
     bool has_pwd_command() const       { return _has_pwd_command; }
     bool has_pwd_command(bool val)     { return _has_pwd_command = val; }
@@ -256,6 +262,10 @@ public:
     // True if debugger issues position upon `func' command
     bool has_func_pos() const          { return _has_func_pos; }
     bool has_func_pos(bool val)        { return _has_func_pos = val; }
+
+    // True if debugger wants `;' at the end of `when' command specs
+    bool has_when_semicolon() const    { return _has_when_semicolon; }
+    bool has_when_semicolon(bool val)  { return _has_when_semicolon = val; }
 
     // True if debugger has stderr redirection
     bool has_err_redirection() const   { return has_print_r_command(); }
