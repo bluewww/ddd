@@ -195,16 +195,22 @@ int DataDisp::next_display_number = 1;
 void DataDisp::ClearOriginCB(Widget w, XtPointer, XtPointer)
 {
     if (last_origin == w)
+    {
 	last_origin = 0;
+    }
 }
 
 void DataDisp::set_last_origin(Widget w)
 {
-    last_origin = w;
-
     if (last_origin != 0)
     {
 	XtRemoveCallback(last_origin, XtNdestroyCallback, ClearOriginCB, 0);
+    }
+
+    last_origin = find_shell(w);
+
+    if (last_origin != 0)
+    {
 	XtAddCallback(last_origin, XtNdestroyCallback, ClearOriginCB, 0);
     }
 }

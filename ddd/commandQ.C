@@ -84,12 +84,17 @@ void _gdb_command(string command, Widget origin)
     }
 
     gdb_keyboard_command = private_gdb_input;
-    gdb_last_origin = (gdb_keyboard_command ? gdb_w : origin);
 
     if (gdb_last_origin != 0)
     {
 	XtRemoveCallback(gdb_last_origin, XtNdestroyCallback, 
 			 ClearOriginCB, 0);
+    }
+
+    gdb_last_origin = find_shell(gdb_keyboard_command ? gdb_w : origin);
+
+    if (gdb_last_origin != 0)
+    {
 	XtAddCallback(gdb_last_origin, XtNdestroyCallback, 
 		      ClearOriginCB, 0);
     }
@@ -109,18 +114,49 @@ struct Command
     string command;		// Command text
     Widget origin;		// Origin
 
+private:
+    static void clear_origin(Widget w, XtPointer client_data, 
+			     XtPointer call_data);
+
+    void add_destroy_callback()
+    {
+	if (origin != 0)
+	    XtAddCallback(origin, XtNdestroyCallback, clear_origin, 
+			  (XtPointer)this);
+    }
+
+    void remove_destroy_callback()
+    {
+	if (origin != 0)
+	    XtRemoveCallback(origin, XtNdestroyCallback, clear_origin,
+			     (XtPointer)this);
+    }
+
+public:
     Command(const string& cmd, Widget w = 0)
 	: command(cmd), origin(w)
-    {}
+    {
+	add_destroy_callback();
+    }
     Command(const Command& c)
 	: command(c.command), origin(c.origin)
-    {}
+    {
+	add_destroy_callback();
+    }
+    ~Command()
+    {
+	remove_destroy_callback();
+    }
     Command& operator = (const Command& c)
     {
 	if (this != &c)
 	{
+	    remove_destroy_callback();
+
 	    command = c.command;
 	    origin = c.origin;
+
+	    add_destroy_callback();
 	}
 	return *this;
     }
@@ -129,6 +165,14 @@ struct Command
 	return this == &c || command == c.command && origin == c.origin;
     }
 };
+
+void Command::clear_origin(Widget w, XtPointer client_data, XtPointer)
+{
+    // The widget is being destroyed.  Remove all references.
+    Command *command = (Command *)client_data;
+    assert(w == command->origin);
+    command->origin = 0;
+}
 
 static Queue<Command> commandQueue;
 
