@@ -40,19 +40,23 @@
 class UndoBufferEntry: public StringStringAssoc {
 public:
     bool exec_pos;		// True if execution position
+    bool command;		// True if command
 
     UndoBufferEntry()
-	: StringStringAssoc(), exec_pos(false)
+	: StringStringAssoc(), exec_pos(false), command(false)
     {}
 
     UndoBufferEntry(const UndoBufferEntry& entry)
-	: StringStringAssoc(entry), exec_pos(entry.exec_pos)
+	: StringStringAssoc(entry), 
+	  exec_pos(entry.exec_pos),
+	  command(entry.command)
     {}
 
     UndoBufferEntry& operator = (const UndoBufferEntry& entry)
     {
 	StringStringAssoc::operator = (entry);
 	exec_pos = entry.exec_pos;
+	command  = entry.command;
 
 	return *this;
     }

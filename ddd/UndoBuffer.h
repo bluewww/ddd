@@ -43,6 +43,7 @@
 #define UB_WHERE     "where"     // Current backtrace
 #define UB_REGISTERS "registers" // Current register values
 #define UB_THREADS   "threads"   // Current threads
+#define UB_COMMAND   "command"   // Command for undoing
 
 // Prefix for current displays; followed by display name
 #define UB_DISPLAY_PREFIX         "display "  // Display value
@@ -59,21 +60,34 @@ private:
     // True if position history is to stay unchanged
     static bool locked;
 
+    // Helpers
+    static void process_command(const UndoBufferEntry& entry, int direction);
+    static void process_status(const UndoBufferEntry& entry, int direction);
+
+    // Count undoing commands
+    static int own_commands;
+    static int own_direction;
+    static void CommandDone(const string &, void *);
+    static void ExtraDone(void *);
+
 protected:
     // Add new entry
     static void add(const UndoBufferEntry& entry);
 
     // Process entry
-    static void process(const UndoBufferEntry& entry);
+    static void process(const UndoBufferEntry& entry, int direction);
 
     // Log current position
     static void log();
 
 public:
-    // Add NAME/VALUE to history.  If EXEC_POS is set, mark this as
-    // new execution position.
+    // Add status NAME/VALUE to history.  If EXEC_POS is set, mark
+    // this as new execution position.
     static void add(const string& name, const string& value,
 		    bool exec_pos = false);
+
+    // Add command COMMAND to history.
+    static void add_command(const string &command);
 
     // Custom calls
     static void add_position(const string& file_name, int line, bool exec_pos)
@@ -115,11 +129,17 @@ public:
     static bool undo();
     static bool redo();
 
-    // True iff we're at the last known execution position
-    static bool at_last_exec_pos();
+    // True iff we're at some past execution position
+    static bool at_past_exec_pos();
+
+    // Go to the last known (`true') execution position
+    static void goto_current_exec_pos();
 
     // Clear history
     static void clear();
+
+    // Clear all execution positions
+    static void clear_exec_pos();
 };
 
 extern UndoBuffer undo_buffer;

@@ -45,6 +45,9 @@ bool UndoBufferEntry::operator == (const UndoBufferEntry& entry) const
     if (exec_pos != entry.exec_pos)
 	return false;		// Differing EXEC_POS values
 
+    if (command != entry.command)
+	return false;		// Differing COMMAND values
+
     StringStringAssocIter iter1(*this);
     StringStringAssocIter iter2(entry);
 
