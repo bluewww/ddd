@@ -4,29 +4,39 @@ DDD News						-*- text -*-
 DDD 2.2.1
 ---------
 
-    DDD 2.2.1 fixes some minor bugs introduced in DDD 2.2.
+    DDD 2.2.1 fixes some minor bugs introduced in DDD 2.2:
 
     User-visible changes to DDD 2.2:
-    - Auto-raised menus have been disabled by default; use
-      `Ddd*autoRaiseMenu: true' in `~/.ddd/init' to re-enable them.
+    - You can now select the method for getting core files.
+
+    Bug fixes:
+    - Auto-raised menus have caused problems on some architectures and
+      are thus disabled by default; use `Ddd*autoRaiseMenu: true' in
+      `~/.ddd/init' to re-enable them.
     - By default, DDD stops disassembling after 1024 bytes.  This is
       useful when working with the machine code of huge functions.
       See the `maxDisassemble' resource for more info.
-    - Status messages show the outcome of a command.
-
-    Bug fixes:
-    - DDD works with Linux libc 5.4.38 and later.
-    - The `gcore' method for getting core files works.
-    - Interacting with the debuggee (or interrupting it) properly
-      discards pending debugger commands.
+    - Several status messages have been reworked; they now show the
+      outcome of a command.
+    - DDD now works around a bug present in Linux libc 5.4.38 to
+      5.4.40 that prevented DDD <-> GDB communication.
+    - The `gcore' method for getting core files is now fully supported.
+    - Various glitches in command queue management have been fixed:
+      * Interacting with the debuggee (or interrupting it) now
+        properly discards pending debugger commands.
+      * In `--tty' mode, DDD can now properly handle long command
+        sequences.  This is useful when running DDD from Emacs.
+      * In `--tty' mode, you can now send EOF (^D) characters to the
+        debugged program without having DDD terminate GDB.
     - Trying to open non-existent source files no longer confuses GDB.
     - When running in the background, DDD is no longer interrupted by
       `tty output' signals upon initializing the execution window.
     - PushButton menus work with LessTif >= 0.82 and with OSF/Motif 1.1.
-    - The command tool is decorated under all circumstances.
+    - Command tool decoration has been improved and should now work
+      with all X window managers.
 
-    And again, a couple of minor improvements and bug fixes.  See the
-    ChangeLog for details.
+    There are also some more minor improvements and bug fixes.  See
+    the ChangeLog for details.
 
 
 
