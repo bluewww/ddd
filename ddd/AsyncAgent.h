@@ -98,9 +98,9 @@ const unsigned AsyncAgent_NTypes = Agent_NTypes;
 const unsigned OutputReady     = 0;	// agent is ready for data
 const unsigned InputReady      = 1;	// data from agent's stdout is ready
 const unsigned ErrorReady      = 2;	// data from agent's stdin is ready
-const unsigned OutputException = 3;	// I/O error on output
-const unsigned InputException  = 4;	// I/O error on input
-const unsigned ErrorException  = 5;	// I/O error on error
+const unsigned OutputException = 3;	// I/O exception (urgent msg) on output
+const unsigned InputException  = 4;	// I/O exception (urgent msg) on input
+const unsigned ErrorException  = 5;	// I/O exception (urgent msg) on error
 
 const unsigned AsyncAgent_NHandlers = 6; // number of handler types
 

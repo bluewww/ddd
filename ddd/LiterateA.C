@@ -293,38 +293,6 @@ void LiterateAgent::readAndDispatchError(bool expectEOF)
 }
 
 
-// Exception handlers
-
-void LiterateAgent::outputException(AsyncAgent *c)
-{
-    ptr_cast(LiterateAgent, c)->_outputException();
-}
-
-void LiterateAgent::inputException(AsyncAgent *c)
-{
-    ptr_cast(LiterateAgent, c)->_inputException();
-}
-
-void LiterateAgent::errorException(AsyncAgent *c)
-{
-    ptr_cast(LiterateAgent, c)->_errorException();
-}
-
-void LiterateAgent::_outputException()
-{
-    raiseWarning("I/O exception when writing to agent");
-}
-
-void LiterateAgent::_inputException()
-{
-    raiseWarning("I/O exception when reading from agent's stdin");
-}
-
-void LiterateAgent::_errorException()
-{
-    raiseWarning("I/O exception when reading from agent's stderr");
-}
-
 // (Re)set I/O handlers
 void LiterateAgent::handlerChange()
 {
@@ -338,25 +306,16 @@ void LiterateAgent::_activateIO()
     // We do select this event only if a handler is present
     // Otherwise, outputReady() may be called all the time
     setHandler(OutputReady, hasHandler(Ready) ? outputReady : 0);
-    
-    setHandler(InputReady,      inputReady);
-    setHandler(ErrorReady,      errorReady);
-    
-    setHandler(OutputException, outputException);
-    setHandler(InputException,  inputException);
-    setHandler(ErrorException,  errorException);
+    setHandler(InputReady,  inputReady);
+    setHandler(ErrorReady,  errorReady);
 }
 
 // Deactivate Handlers
 void LiterateAgent::_deactivateIO()
 {
-    setHandler(OutputReady,     0);
-    setHandler(InputReady,      0);
-    setHandler(ErrorReady,      0);
-
-    setHandler(OutputException, 0);
-    setHandler(InputException,  0);
-    setHandler(ErrorException,  0);
+    setHandler(OutputReady, 0);
+    setHandler(InputReady,  0);
+    setHandler(ErrorReady,  0);
 }
 
 

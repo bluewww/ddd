@@ -81,10 +81,6 @@ public:
     DECLARE_TYPE_INFO
 
 private:
-    void _outputException();	// exception on output channel
-    void _inputException();	// exception on input channel
-    void _errorException();	// exception on error channel
-
     bool activeIO;           // Flag: I/O handlers active?
     void _activateIO();         // activate I/O handlers
     void _deactivateIO();       // deactivate I/O handlers
@@ -113,9 +109,6 @@ private:
     static void outputReady(AsyncAgent *c);
     static void inputReady(AsyncAgent *c);
     static void errorReady(AsyncAgent *c);
-    static void outputException(AsyncAgent *c);
-    static void inputException(AsyncAgent *c);
-    static void errorException(AsyncAgent *c);
 
 protected:
 
