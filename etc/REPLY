@@ -11,9 +11,9 @@ documentation for details on reporting bugs and getting assistance.
 If you are using GDB, try the GDB documentation at
 `http://www.cs.tu-bs.de/softech/info/gdb_19.html'.
 
-This will be in DDD 2.2.  In fact, it already has been implemented.
-If you really need this feature, you can try out tomorrow's DDD
-snapshot from one of these sites:
+This will be in the next DDD release.  In fact, it already has been
+implemented.  If you really need this feature, you can try out the
+current DDD snapshot from one of these sites:
 
 I have made some changes in DDD that should fix your problem.
 Unfortunately, I cannot test them as I don't have an appropriate
@@ -39,8 +39,7 @@ main FTP server and its mirrors at:
     ftp://uiarchive.cso.uiuc.edu/pub/packages/ddd/
     ftp://richb-pc.acc.qc.edu/pub/ddd/
 
-There is a patch called `unresolved-inheritance' which might fix this
-problem.  Get a copy at:
+There is a patch which might fix this problem.  See the list at:
 
     ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/patches/
     ftp://ftp.th-darmstadt.de/pub/programming/tools/ddd/patches/

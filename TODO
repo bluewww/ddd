@@ -374,4 +374,14 @@ Volunteers for these and other projects are welcome!
      view the content of an array graphically.  Useful when you know
      what kind of array you are expecting (symmetric, diagonal ...)
 
-217. (Insert your project idea here)
+217. Winson Quock <quock@pepper.com> (see the quote in ddd/exit.C) says:
+     * I fix a problem related to redirect I/O to external window.
+       DBX is buggy in handling I/O redirection, according to Sun's
+       support guy. "2> <tty>" will not be parsed correctly, but ">
+       <tty>" will handle stderr as well. The fix is in `exectty.C'.
+     * Another comment, while the data display graph is nice
+       sometimes. Very often, I found myself spending quite a lot of
+       time arranging each "display box". It will cool if we can also
+       have a normal text list display for variable values.
+
+218. (Insert your project idea here)
