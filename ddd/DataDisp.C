@@ -82,6 +82,7 @@ char DataDisp_rcsid[] =
 #include "Map.h"
 #include "PannedGE.h"
 #include "PosBuffer.h"
+#include "PositionH.h"
 #include "ScrolledGE.h"
 #include "SmartC.h"
 #include "StringBox.h"		// StringBox::fontTable
@@ -3175,6 +3176,8 @@ DispNode *DataDisp::new_data_node(const string& given_name,
 				  const string& scope,
 				  const string& answer)
 {
+    position_history.add_display(answer);
+
     string value = answer;
     string nr_s;
     string display_name;
@@ -4435,6 +4438,8 @@ void DataDisp::process_info_display(string& info_display_answer,
 string DataDisp::process_displays(string& displays,
 				  bool& disabling_occurred)
 {
+    position_history.add_displays(displays);
+
     string not_my_displays;
     disabling_occurred = false;
 

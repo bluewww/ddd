@@ -38,6 +38,7 @@
 
 class PositionHistory {
 
+private:
     static PositionHistoryArray history;
 
     // Last position in history + 1
@@ -45,6 +46,10 @@ class PositionHistory {
 
     // True if position history is to stay unchanged
     static bool locked;
+
+protected:
+    // Add new entry
+    void add(const PositionHistoryEntry& entry);
 
     // Lookup entry in source
     static void goto_entry(const PositionHistoryEntry& entry);
@@ -56,6 +61,8 @@ public:
     // Add position to history
     void add_position(const string& file_name, int line);
     void add_address(const string& address);
+    void add_displays(const string& displays);
+    void add_display(const string& display);
 
     // Lookup previous/next position; return true iff successful
     static bool go_back();

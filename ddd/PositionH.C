@@ -36,6 +36,8 @@ char PositionHistory_rcsid[] =
 #include "PositionH.h"
 
 #include "SourceView.h"
+#include "DataDisp.h"
+#include "cook.h"
 #include "ddd.h"
 #include "string-fun.h"
 
@@ -58,7 +60,23 @@ bool PositionHistory::locked = false;
 // Position history
 //-----------------------------------------------------------------------
 
-// All entries in the history have the format `FILE:LINE[:ADDRESS]'.
+void PositionHistory::add(const PositionHistoryEntry& entry)
+{
+    if (history_position < history.size())
+    {
+	history[history_position++] = entry;
+    }
+    else
+    {
+	history += entry;
+	history_position = history.size();
+    }
+
+    PositionHistoryArray new_history;
+    for (int i = 0; i < history_position; i++)
+	new_history += history[i];
+    history = new_history;
+}
 
 // Add position to history
 void PositionHistory::add_position(const string& source_name, int line)
@@ -78,22 +96,7 @@ void PositionHistory::add_position(const string& source_name, int line)
     }
 
     if (entry != current_entry)
-    {
-	if (history_position < history.size())
-	{
-	    history[history_position++] = entry;
-	}
-	else
-	{
-	    history += entry;
-	    history_position = history.size();
-	}
-
-	PositionHistoryArray new_history;
-	for (int i = 0; i < history_position; i++)
-	    new_history += history[i];
-	history = new_history;
-    }
+	add(entry);
 
     log();
 }
@@ -116,6 +119,7 @@ void PositionHistory::add_address(const string& address)
 	}
 	else if (current_entry.address != address)
 	{
+	    // Create new entry
 	    new_entry = current_entry;
 	    new_entry.address = address;
 	}
@@ -127,22 +131,79 @@ void PositionHistory::add_address(const string& address)
     }
 
     if (new_entry.address != "")
-    {
-	if (history_position < history.size())
-	{
-	    history[history_position++] = new_entry;
-	}
-	else
-	{
-	    history += new_entry;
-	    history_position = history.size();
-	}
+	add(new_entry);
 
-	PositionHistoryArray new_history;
-	for (int i = 0; i < history_position; i++)
-	    new_history += history[i];
-	history = new_history;
+    log();
+}
+
+
+// Add displays to history
+void PositionHistory::add_displays(const string& displays)
+{
+    if (locked)
+	return;
+
+    PositionHistoryEntry new_entry;
+
+    if (history.size() > 0)
+    {
+	PositionHistoryEntry& current_entry = history[history_position - 1];
+	if (current_entry.displays == NO_GDB_ANSWER)
+	{
+	    // Append displays to current position
+	    current_entry.displays = displays;
+	}
+	else if (current_entry.displays != displays)
+	{
+	    // Create new entry
+	    new_entry = current_entry;
+	    new_entry.displays = displays;
+	}
     }
+    else
+    {
+	// No position yet: add displays
+	new_entry.displays = displays;
+    }
+
+    if (new_entry.displays != NO_GDB_ANSWER)
+	add(new_entry);
+
+    log();
+}
+
+
+// Add single display to history
+void PositionHistory::add_display(const string& display)
+{
+    if (locked)
+	return;
+
+    PositionHistoryEntry new_entry;
+
+    if (history.size() > 0)
+    {
+	PositionHistoryEntry& current_entry = history[history_position - 1];
+	if (current_entry.displays == NO_GDB_ANSWER)
+	{
+	    // Append display to current position
+	    current_entry.displays = display;
+	}
+	else if (!current_entry.displays.contains(display))
+	{
+	    // Create new entry, adding the new display
+	    new_entry = current_entry;
+	    new_entry.displays += display;
+	}
+    }
+    else
+    {
+	// No position yet: add displays
+	new_entry.displays = display;
+    }
+
+    if (new_entry.displays != NO_GDB_ANSWER)
+	add(new_entry);
 
     log();
 }
@@ -161,8 +222,12 @@ void PositionHistory::log()
 	    clog << entry.file << ":" << entry.line;
 	else
 	    clog << ":";
-	if (entry.address != "")
-	    clog << ":" << entry.address;
+
+       	clog << ":" << entry.address;
+
+ 	if (entry.displays != NO_GDB_ANSWER)
+	    clog << ":" << quote(entry.displays);
+
 	clog << "\n";
     }
     clog << "\n";
@@ -172,7 +237,18 @@ void PositionHistory::log()
 void PositionHistory::goto_entry(const PositionHistoryEntry& entry)
 {
     locked = true;
+
+    // Lookup position in source
     source_view->goto_entry(entry.file, entry.line, entry.address);
+
+    // Re-process displays
+    if (entry.displays != NO_GDB_ANSWER)
+    {
+	string displays = entry.displays;
+	bool disabling_occurred = false;
+	data_disp->process_displays(displays, disabling_occurred);
+    }
+
     locked = false;
 
     log();

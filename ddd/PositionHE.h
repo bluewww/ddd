@@ -36,25 +36,30 @@
 #include "strclass.h"
 #include "VarArray.h"
 #include "bool.h"
+#include "question.h"
 
 struct PositionHistoryEntry {
-    string file;
+    string file;		// Source position
     int line;
-    string address;
+    string address;		// Machine code position
+    string displays;		// Displayed values
 
     PositionHistoryEntry()
-	: file(""), line(0), address("")
+	: file(""), line(0), address(""), displays(NO_GDB_ANSWER)
     {}
 
     PositionHistoryEntry(const PositionHistoryEntry& entry)
-	: file(entry.file), line(entry.line), address(entry.address)
+	: file(entry.file), line(entry.line), address(entry.address),
+	  displays(entry.displays)
     {}
 
     PositionHistoryEntry& operator = (const PositionHistoryEntry& entry)
     {
-	file    = entry.file;
-	line    = entry.line;
-	address = entry.address;
+	file     = entry.file;
+	line     = entry.line;
+	address  = entry.address;
+	displays = entry.displays;
+
 	return *this;
     }
 
@@ -62,8 +67,10 @@ struct PositionHistoryEntry {
     {
 	return (file == entry.file && 
 		line == entry.line &&
-		address == entry.address);
+		address == entry.address &&
+		displays == entry.displays);
     }
+
     bool operator != (const PositionHistoryEntry& entry) const
     {
 	return !operator == (entry);

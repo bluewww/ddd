@@ -54,6 +54,10 @@ Data exploration
   * Value changes in status displays are flagged more precisely.
   * Creating and updating data displays uses a common code base.
 
+- When going back to previous execution positions, using `Back' and
+  `Forward', display values are restored, too.  This way, you can
+  easily view previous values and compare them with the current ones.
+
 - `Set ()' dialog improvements:
   * You can now set structs as a whole.
   * A drop down selection of previously set values is available.
