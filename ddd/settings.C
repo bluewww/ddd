@@ -2447,7 +2447,7 @@ static void get_themes(StringArray& themes)
 
     for (int i = 0; i < n; i++)
     {
-	string mask = dirs[i] + "/*";
+	string mask = dirs[i] + "/*.[vV][sS][lL]";
 	char **files = glob_filename(mask);
 	if (files == (char **)0)
 	{
