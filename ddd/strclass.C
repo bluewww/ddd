@@ -159,13 +159,9 @@ inline static strRep* string_Snew(int newsiz)
 	abort();
     }
 
-#if 0
-    // This change was introduced in libg++ 2.7.1.  I don't know which
-    // C++ compilers already support this `placement new' syntax, so I
-    // leave it out for the moment.  - AZ
+#ifdef HAVE_PLACEMENT_NEW
     strRep* rep = new (operator new (allocsiz)) strRep;
 #else
-    // Uglier, but more portable.
     strRep* rep = (strRep *) new char[allocsiz];
 #endif
     rep->sz = allocsiz - sizeof(strRep);

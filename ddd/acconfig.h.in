@@ -65,6 +65,9 @@
 /* Define if PATH_MAX is defined or declared in <limits.h>. */
 #undef HAVE_PATH_MAX
 
+/* Define if your C++ compiler supports placement new. */
+#undef HAVE_PLACEMENT_NEW
+
 /* Define if _POSIX_PATH_MAX is defined or declared in <limits.h>. */
 #undef HAVE_POSIX_PATH_MAX
 
