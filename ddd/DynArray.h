@@ -136,8 +136,8 @@ public:
 
 	    _allocated_size = m.size();
 	    _values = new T [_allocated_size];
-	    
-	    for (int i = 0; i < m.size(); i++)
+
+	    for (int i = 0; i < _allocated_size; i++)
 		_values[i] = m._values[i];
 
 	    delete[] old_values;
