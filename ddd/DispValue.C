@@ -718,22 +718,24 @@ void DispValue::update (string& value,
     case StructOrClass:
     case BaseClass:
 	{
-	    bool have_text = false;
-	    int count = v.str_or_cl->member_count;
-	    if (mytype == List
-		&& count > 0
-		&& v.str_or_cl->members[count - 1]->type() == Text)
+	    if (mytype == List 
+		&& v.str_or_cl->member_count == 1
+		&& v.str_or_cl->members[0]->type() == Text
+		&& v.str_or_cl->members[0]->value() != value)
 	    {
-		have_text = true;
-		count--;
+		// Re-initialize single text.
+		init(value);
+		was_initialized = was_changed = true;
+		return;
 	    }
 
 	    read_str_or_cl_begin (value);
-	    for (i = 0; more_values && i < count; i++)
+	    for (i = 0; more_values && i < v.str_or_cl->member_count; i++)
 	    {
 		member_name = read_member_name (value);
 		
-		if (is_BaseClass_name (member_name)) {
+		if (is_BaseClass_name (member_name))
+		{
 		    if (v.str_or_cl->members[i]->
 			new_BaseClass_name(member_name))
 			was_changed = true;
@@ -758,14 +760,9 @@ void DispValue::update (string& value,
 		}
 	    }
 
-	    if (have_text)
-	    {
-		// Update text remainder
-		v.str_or_cl->members[i++]->update(value, was_changed,
-						  was_initialized);
-	    }
-
-	    if (was_initialized || i != v.str_or_cl->member_count)
+	    if (was_initialized 
+		|| i != v.str_or_cl->member_count 
+		|| more_values)
 	    {
 #if LOG_UPDATE_VALUES
 		clog << "Struct/Class changed\n";
