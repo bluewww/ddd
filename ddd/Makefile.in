@@ -443,6 +443,11 @@ COMPILE_AND_LINK.m2 = $(M2C) $(M2FLAGS)
 COMPILE.m2 = $(COMPILE_AND_LINK.m2) -c
 LINK.m2 = $(M2C)
 
+## FORTRAN compile commands.
+COMPILE_AND_LINK.f = $(FC) $(FFLAGS)
+COMPILE.f = $(COMPILE_AND_LINK.f) -c
+LINK.f = $(FC)
+
 ## YACC commands.
 YY = yy
 YACCTOCPLUS = $(SHELL) $(srcdir)/yacctoC -prefix $(YY) \
@@ -1201,7 +1206,7 @@ ctest.o: $(srcdir)/ctest.c
 	$(CC) -g -c -o $@ $(srcdir)/ctest.c
 
 ftest.o: $(srcdir)/ftest.f
-	$(FC) -g -c -o $@ $(srcdir)/ftest.f
+	$(COMPILE.f) -g -c -o $@ $(srcdir)/ftest.f
 
 huffdecode.o: $(srcdir)/huffdecode.C ddd.man.huff.C
 	$(COMPILE.cc) -DMAIN -DHUFFTEXT='"$(srcdir)/ddd.man.huff.C"' \
