@@ -1,5 +1,5 @@
 // $Id$ -*- C++ -*-
-// AliasGraphEdge class: temporary LineGraphEdge from or to alias node
+// AliasGraphEdge class: temporary edge from or to alias node
 
 // Copyright (C) 1997 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
@@ -33,9 +33,9 @@
 #pragma interface
 #endif
 
-#include "LineGraphE.h"
+#include "ArcGraphE.h"
 
-class AliasGraphEdge: public LineGraphEdge {
+class AliasGraphEdge: public ArcGraphEdge {
 public:
     DECLARE_TYPE_INFO;
 
@@ -45,14 +45,14 @@ private:
 protected:
     // Copy Constructor
     AliasGraphEdge(const AliasGraphEdge& edge)
-	: LineGraphEdge(edge),
+	: ArcGraphEdge(edge),
 	  _disp_nr(edge._disp_nr)
     {}
 
 public:
     // Constructor
     AliasGraphEdge(int disp_nr, GraphNode *from, GraphNode *to)
-	: LineGraphEdge(from, to),
+	: ArcGraphEdge(from, to),
 	  _disp_nr(disp_nr)
     {}
 

@@ -1,5 +1,5 @@
 // $Id$ -*- C++ -*-
-// AliasGraphEdge class: temporary LineGraphEdge from or to alias node
+// AliasGraphEdge class: temporary edge from or to alias node
 
 // Copyright (C) 1997 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
@@ -35,4 +35,4 @@ const char AliasGraphEdge_rcsid[] =
 
 #include "AliasGE.h"
 
-DEFINE_TYPE_INFO_1(AliasGraphEdge, LineGraphEdge);
+DEFINE_TYPE_INFO_1(AliasGraphEdge, ArcGraphEdge);
