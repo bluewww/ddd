@@ -109,7 +109,7 @@ end
 
 # Facility for printing DDD string types
 define string
-    p *((char *)$->rep->s)@($->rep->len + 1)
+    p $.rep->s[0]@$.rep->len
 end
 document string
     Print value of last viewed DDD string
