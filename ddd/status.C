@@ -72,9 +72,6 @@ bool show_next_line_in_status = false;
 
 void set_buttons_from_gdb(Widget buttons, string& text)
 {
-    if (buttons == 0)
-	return;
-
     bool yn = text.contains("(y or n) ", -1) 
 	|| text.contains("(yes or no) ", -1);
 
@@ -97,6 +94,9 @@ void set_buttons_from_gdb(Widget buttons, string& text)
 	text = "";
 	return;
     }
+
+    if (buttons == 0)
+	return;
 
     static bool last_yn = false;
     if (yn == last_yn)
