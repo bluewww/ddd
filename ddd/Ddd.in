@@ -4524,6 +4524,16 @@ Ddd*display_selected.helpString: \
 @tt \267 @rm To delete the selected displays, use @bf Delete ()@rm.\n\
 @tt \267 @rm Use @bf Data @rm| @bf Edit Displays @rm for further editing.
 
+Ddd*command_entered.helpString: \
+@rm You have entered some command at the @GDB@ prompt.\n\
+\n\
+@tt \267 @rm To execute the current command, press @key RETURN @rm.\n\
+@tt \267 @rm To complete the current word, use @key TAB @rm.\n\
+@tt \267 @rm To move through the command history, \
+use @key Up @rm and @key Down@rm.\n\
+@tt \267 @rm To clear the current line, use @key Ctrl+U@rm.\n\
+@tt \267 @rm For further options, see the @bf Commands @rm menu.
+
 Ddd*program_stopped.helpString: \
 @rm Your program @PROGRAM_STATE@.\n\
 \n\

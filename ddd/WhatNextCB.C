@@ -38,6 +38,7 @@ char WhatNextCB_rcsid[] =
 #include "commandQ.h"
 #include "converters.h"
 #include "ddd.h"
+#include "editing.h"
 #include "exit.h"
 #include "file.h"
 #include "question.h"
@@ -184,6 +185,12 @@ void WhatNextCB(Widget, XtPointer, XtPointer)
     if (data_disp->have_selection())
     {
 	hint_on("display_selected");
+	return;
+    }
+
+    if (current_line() != "")
+    {
+	hint_on("command_entered");
 	return;
     }
 
