@@ -2088,10 +2088,15 @@ int main(int argc, char *argv[])
 
     // Create initial delay
     if (app_data.session == DEFAULT_SESSION)
+    {
 	init_delay = new StatusMsg("Initializing " + gdb->title());
+	unlock_status();	// We still want to see the messages
+    }
     else
+    {
 	init_delay = new StatusDelay("Opening session " 
 				     + quote(app_data.session));
+    }
 
     if (app_data.decorate_tool == Auto)
     {
