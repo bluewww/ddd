@@ -372,10 +372,7 @@ Volunteers for fixing these and other bugs are welcome!
 
      <- "\r\e[K\e[7mStandard input: END\e[m"
 
-197* The most recent release of the GNU C library does not work with
-     DDD: the GDB prompt does not appear.  (In fact, DDD cannot
-     process GDB output without terminating newline). This might be a
-     bug in the GNU C library; please let us know about any
-     work-arounds.
+198. In `--tty' mode, EOF terminates DDD, even if only a subprogram
+     (e.g. a shell) is running.
 
-198. (Insert your bug here)
+199. (Insert your bug here)
