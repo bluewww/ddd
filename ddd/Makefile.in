@@ -990,7 +990,7 @@ huffdecode.o: $(srcdir)/huffdecode.C ddd.man.huff.C
 
 ## For demonstration and debugging purposes
 check:	Ddd ddd cxxtest
-	XAPPLRESDIR=. ./ddd cxxtest
+	XUSERFILESEARCHPATH=. XAPPLRESDIR=. ./ddd cxxtest
 
 
 ## Lex and Yacc stuff.
