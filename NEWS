@@ -1,8 +1,8 @@
 Changes in DDD						-*- text -*-
 **************
 
-DDD 1.4 (WORK IN PROGRESS - NOT YET RELEASED)
----------------------------------------------
+DDD 1.4
+-------
 
     This release realizes the top ten suggestions of DDD users.  It
     brings the long awaited machine code support, new breakpoint and
