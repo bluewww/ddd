@@ -572,27 +572,6 @@ None<Key>R13:		end-of-line()               \n\
 None<Key>Home:		beginning-of-line()         \n\
 None<Key>End:		end-of-line()               \n
 
-Ddd*new_breakpoint_dialog*XmText.translations: #override \
-Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
-Ctrl<Key>B:     	backward-character()        \n\
-Ctrl<Key>D:     	delete-next-character()     \n\
-Ctrl ~Shift<Key>E:    	end-of-line()               \n\
-Ctrl<Key>F:     	forward-character()         \n\
-Ctrl<Key>H:     	delete-previous-character() \n\
-Ctrl<Key>I:     	gdb-complete-arg(break)     \n\
-Ctrl<Key>K:     	delete-to-end-of-line()     \n\
-Ctrl<Key>U:     	beginning-of-line() 	    \
-			delete-to-end-of-line()     \n\
-Ctrl<Key>W:     	delete-previous-word()      \n\
-Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
-Ctrl<Key>Y:     	unkill()                    \n\
-None<Key>R7:		beginning-of-line()         \n\
-None<Key>R13:		end-of-line()               \n\
-None<Key>Tab:		gdb-complete-tab(break)     \n\
-None<Key>Escape:	gdb-complete-arg(break)     \n\
-None<Key>Home:		beginning-of-line()         \n\
-None<Key>End:		end-of-line()               \n
-
 Ddd*new_display_dialog*XmText.translations: #override \
 Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
 Ctrl<Key>B:     	backward-character()        \n\
@@ -760,7 +739,7 @@ None<Key>Tab:		PrimitiveNextTabGroup()     \n\
 None<Key>osfPageUp:     previous-page()             \
 			source-update-glyphs()      \n\
 None<Key>osfPageDown:   next-page()     	    \
-			source-update-glyphs()      \n
+			source-update-glyphs()      \n\
 Shift<Key>osfPageUp:    previous-page(extend)       \
 			source-update-glyphs()      \n\
 Shift<Key>osfPageDown:  next-page(extend)     	    \
@@ -787,7 +766,7 @@ None<Key>Tab:		PrimitiveNextTabGroup()     \n\
 None<Key>osfPageUp:     previous-page()             \
 			source-update-glyphs()      \n\
 None<Key>osfPageDown:   next-page()     	    \
-			source-update-glyphs()      \n
+			source-update-glyphs()      \n\
 Shift<Key>osfPageUp:    previous-page(extend)       \
 			source-update-glyphs()      \n\
 Shift<Key>osfPageDown:  next-page(extend)     	    \
@@ -1321,7 +1300,7 @@ Ddd*commandsMenu.clear_line.acceleratorText: Ctrl+U
 
 Ddd*commandsMenu.clear_window.labelString: Clear Window
 Ddd*commandsMenu.clear_window.mnemonic:	W
-*commandsMenu.clear_window.accelerator:	Shift Ctrl<Key>U
+Ddd*commandsMenu.clear_window.accelerator:	Shift Ctrl<Key>U
 Ddd*commandsMenu.clear_window.acceleratorText: Ctrl+Shift+U
 
 Ddd*menubar.stack.labelString:		Stack
@@ -2388,7 +2367,7 @@ Ddd*edit_displays_dialog*buttons*new.contextHelpString:     \
 @rm Create a new data display.
 
 Ddd*edit_displays_dialog*buttons*dependent.labelString:     Dependent...
-Ddd*edit_displays_dialog*buttons*dereference.contextHelpString:  \
+Ddd*edit_displays_dialog*buttons*dependent.contextHelpString:  \
 @rm Create a data display dependent on the selected data display.
 
 Ddd*edit_displays_dialog*buttons*dereference.labelString:   Dereference
@@ -2410,10 +2389,6 @@ Ddd*edit_displays_dialog*buttons*disable.contextHelpString:  \
 Ddd*edit_displays_dialog*buttons*enable.labelString:        Enable
 Ddd*edit_displays_dialog*buttons*enable.contextHelpString:  \
 @rm Enable the selected data display(s).
-
-Ddd*edit_displays_dialog*buttons*disable.labelString:       Disable
-Ddd*edit_displays_dialog*buttons*disable.contextHelpString:  \
-@rm Disable the selected data display(s).
 
 Ddd*edit_displays_dialog*buttons*delete.labelString:        Delete
 Ddd*edit_displays_dialog*buttons*delete.contextHelpString:  \
