@@ -134,9 +134,8 @@ void getDisplayNumbers(Widget selectionList, IntArray& disp_nrs)
 	string item(_item);
 	XtFree(_item);
 
-	int nr = get_nr(item);
-	if (nr != 0)
-	    disp_nrs += nr;
+	if (has_nr(item))
+	    disp_nrs += get_nr(item);
     }
 }
 

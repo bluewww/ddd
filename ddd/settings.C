@@ -461,7 +461,7 @@ static EntryType entry_type(DebuggerType type,
 	else if (value.contains("sensitive", 0) 
 		 || value.contains("insensitive", 0))
 	    return SensitiveToggleButtonEntry;
-	else if (value.contains(rxint, 0))
+	else if (has_nr(value))
 	    return TextFieldEntry;
 	else if (base.contains("version")
 	    || base.contains("run_io")

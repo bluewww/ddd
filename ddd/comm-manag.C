@@ -1170,7 +1170,7 @@ void plusOQAC (string answers[],
 		string list = answers[qu_count++];
 
 		// Skip initial message lines like `Reading symbols...'
-		while (list != "" && !list.contains(rxint, 0))
+		while (list != "" && !has_nr(list))
 		    list = list.after('\n');
 
 		if (atoi(list) == 0)

@@ -78,7 +78,7 @@ BreakPoint::BreakPoint (string& info_output)
     {
     case GDB:
 	{
-	    // "Type" lesen
+	    // Read "Type" 
 	    read_leading_blanks (info_output);
 	    if (info_output.contains ("watchpoint", 0))
 		mytype = WATCHPOINT;
@@ -87,7 +87,7 @@ BreakPoint::BreakPoint (string& info_output)
 
 	    info_output = info_output.after(RXblanks_or_tabs);
 
-	    // "Disp" lesen
+	    // Read "Disp" 
 	    if (info_output.contains("dis", 0))
 		mydispo = BPDIS;
 	    else if (info_output.contains("del", 0))
@@ -96,7 +96,7 @@ BreakPoint::BreakPoint (string& info_output)
 		mydispo = BPKEEP;
 	    info_output = info_output.after(RXblanks_or_tabs);
 
-	    // "Enb" lesen
+	    // Read "Enb" 
 	    if (info_output.contains("n", 0))
 		myenabled = false;
 	    else {
@@ -106,6 +106,7 @@ BreakPoint::BreakPoint (string& info_output)
 
 	    if (mytype == BREAKPOINT)
 	    {
+		// Read "Address"
 		myaddress   = info_output.through(rxalphanum);
 
 		info_output = info_output.from (RXname_colon_int_nl);
@@ -114,20 +115,21 @@ BreakPoint::BreakPoint (string& info_output)
 		if (info_output != "" && isdigit(info_output[0]))
 		    myline_nr = read_positive_nr (info_output);
 	    }
-	    else if (mytype == WATCHPOINT) {
-		// "Address" ueberlesen
+	    else if (mytype == WATCHPOINT)
+	    {
+		// Read "Address" 
 		info_output = info_output.after(RXblanks_or_tabs);
 
 		myinfos += info_output.through ("\n");
 	    }
-	    info_output = info_output.after ("\n");
 
 	    if (info_output != "" && isdigit(info_output[0]))
 	    {
-		// Extra info is following
+		// Extra info may follow
 		int next_index = info_output.index(RXnl_int);
-		if (next_index == -1) {
-		    // Dies war die letzte Breakpoint-Ausgabe
+		if (next_index == -1)
+		{
+		    // That's all, folks!
 		    myinfos += info_output;
 		    info_output = "";
 		}
@@ -243,7 +245,7 @@ bool BreakPoint::update (string& info_output)
     {
     case GDB:
 	{
-	    // "Type" pruefen (kann sich nicht aendern)
+	    // Read "Type" (cannot change)
 	    read_leading_blanks (info_output);
 
 	    if (!info_output.contains("breakpoint", 0) &&
@@ -251,7 +253,7 @@ bool BreakPoint::update (string& info_output)
 		return false;
 	    info_output = info_output.after(RXblanks_or_tabs);
 
-	    // "Disp" lesen
+	    // Read "Disp"
 	    if (info_output.contains("dis", 0))
 	    {
 		changed = (mydispo != BPDIS);
@@ -269,7 +271,7 @@ bool BreakPoint::update (string& info_output)
 	    }
 	    info_output = info_output.after(RXblanks_or_tabs);
 
-	    // "Enb" lesen
+	    // Read "Enb"
 	    if (info_output.index ("y") == 0) {
 		if (myenabled != true) {
 		    changed = myenabled_changed = true;
@@ -313,20 +315,21 @@ bool BreakPoint::update (string& info_output)
 		    }
 		}
 	    }
-	    else if (mytype == WATCHPOINT) {
-
-		// "Adress" ueberlesen
+	    else if (mytype == WATCHPOINT)
+	    {
+		// Read "Address" 
 		info_output = info_output.after(RXblanks_or_tabs);
 
 		new_info = info_output.through ("\n");
 	    }
 
-	    if (info_output.length() > 0 && !isdigit(info_output[0]))
+	    if (info_output != "" && !isdigit(info_output[0]))
 	    {
-		// es folgen noch Informationen
+		// Extra info may follow
 		int next_nl = info_output.index(RXnl_int);
-		if (next_nl == -1) {
-		    // dies war die letzte Breakpoint-Ausgabe
+		if (next_nl == -1)
+		{
+		    // That's all, folks!
 		    new_info += info_output;
 		    info_output = "";
 		}
