@@ -186,7 +186,7 @@ Volunteers for fixing these and other bugs are welcome!
 
 047. [fixed]
 
-048. Check if options still work with DDD 1.3.
+048. [fixed]
 
 049. The bounding box is computed for all boxes, even if only selected
      boxes are to be printed.
@@ -209,8 +209,8 @@ Volunteers for fixing these and other bugs are welcome!
      > ddd --dbx program process-id 
      ddd seemed to start up fine, but after loading it core-dumped. 
 
-054. tbe@glenlivet.fokus.gmd.de (Thomas Berndes) says that DDD crashes
-     after failing to allocate the `grey' colormap.
+054. tbe@glenlivet.fokus.gmd.de (Thomas Berndes) says that his DDD
+     crashed after failing to allocate the `grey' colormap.
 
 055. [fixed]
 
