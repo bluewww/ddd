@@ -425,10 +425,14 @@ static void PostHelpOnItem(Widget item);
 static void check_log(const string& logname, DebuggerType& type);
 
 // Add current selection as argument
-static void add_arg_from_selection(Widget toplevel, int& argc, const char **&argv);
+static void add_arg_from_selection(Widget toplevel, 
+				   int& argc, const char **&argv);
 
-#if XmVersion < 2000
-static void toggleOverstrikeAct (Widget, XEvent*, String*, Cardinal*) {}
+#if XmVersion < 2000 || defined(LESSTIF_VERSION)
+static void toggleOverstrikeAct (Widget, XEvent*, String*, Cardinal*)
+{
+    // Do nothing.  (Just a dummy.)
+}
 #endif
 
 static void vsl_echo(const string& msg);
@@ -707,7 +711,7 @@ static XtActionsRec actions [] = {
     {(char *)"ddd-previous-tab-group", prev_tab_groupAct},
     {(char *)"ddd-get-focus",          get_focusAct},
     {(char *)"ddd-select-all",         select_allAct},
-#if XmVersion < 2000
+#if XmVersion < 2000 || defined(LESSTIF_VERSION)
     {(char *)"toggle-overstrike",      toggleOverstrikeAct},
 #endif
 };
