@@ -155,4 +155,17 @@ detail.
     parameters when running in the execution window.  See the test
     `dbx-rerun-tty' for details.
 
-736 (Insert new bugs here)
+736 Matthew Majka <mmajka@cs5.dasd.honeywell.com> reports that all
+    strings in DDD miss the last character:
+
+      Warning: Cannot convert string "o" to type Boolean
+      Warning: Cannot convert string "of" to type Boolean
+      Warning: Cannot convert string "regula" to type LayoutMode
+      Warning: Cannot convert string "POINTE" to type KeyboardFocusPolicy
+
+    [Can this be caused by OSTRSTREAM_PCOUNT_BROKEN being #defined?  -AZ]
+
+737 Joonas Lehtinen <phoenix@jole.fi> reports that DDD 3.1 coredumps
+    after a few replots.
+
+738 (Insert new bugs here)
