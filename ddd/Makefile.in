@@ -1387,8 +1387,18 @@ $(srcdir)/Ddd.in: $(srcdir)/Ddd.in.m4 $(srcdir)/tips.m4 \
 
 ## The VSL header files.
 
-VSL_CPP = $(CPP) -I$(srcdir)/../vsllib -I$(prefix)/lib/vsl-include
-$(srcdir)/ddd.vsl.h: ddd.vsl $(srcdir)/vsl2c.sed
+VSLDIR  = $(srcdir)/../vsllib
+
+VSL_CPP = $(CPP) -I$(VSLDIR) -I$(prefix)/lib/vsl-include
+
+VSLSOURCES = \
+	$(VSLDIR)/std.vsl \
+	$(VSLDIR)/builtin.vsl \
+	$(VSLDIR)/tab.vsl \
+	$(VSLDIR)/fonts.vsl \
+	$(VSLDIR)/colors.vsl
+
+$(srcdir)/ddd.vsl.h: $(srcdir)/ddd.vsl $(srcdir)/vsl2c.sed $(VSLSOURCES)
 	$(CAT) $(srcdir)/ddd.vsl > tmp.c
 	$(VSL_CPP) tmp.c | $(VSL2C) > $@
 	$(RM) tmp.c
