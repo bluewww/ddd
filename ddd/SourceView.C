@@ -2855,7 +2855,7 @@ bool SourceView::get_line_of_pos (Widget   w,
 			assert (bp);
 
 			bp_disp_pos += 2; // respect '#' and '_';
-			bp_disp_pos += bp->number_str().length();
+			bp_disp_pos += itostring(bp->number()).length();
 			if (pos < bp_disp_pos)
 			{
 			    bp_nr = bps[i];
@@ -2923,7 +2923,7 @@ bool SourceView::get_line_of_pos (Widget   w,
 			BreakPoint* bp = bp_map.get(bps[i]);
 			assert (bp);
 			bp_disp_pos += 2; // respect '#' and '_';
-			bp_disp_pos += bp->number_str().length();
+			bp_disp_pos += itostring(bp->number()).length();
 			if (pos < bp_disp_pos)
 			{
 			    bp_nr = bps[i];
@@ -8224,7 +8224,7 @@ MString SourceView::help_on_bp(int bp_nr, bool detailed)
 	info = rm("Watchpoint ");
 	break;
     }
-    info += tt(bp->number_str());
+    info += tt(itostring(bp->number()));
 
     if (detailed)
     {
