@@ -95,6 +95,7 @@ char SourceView_rcsid[] =
 #include "assert.h"
 #include "basename.h"
 #include "buttons.h"
+#include "casts.h"
 #include "charsets.h"
 #include "cmdtty.h"
 #include "cook.h"
@@ -169,10 +170,6 @@ extern "C" {
 #include <time.h>
 #include <errno.h>
 #include <limits.h>
-
-#ifndef ULONG_MAX
-#define	ULONG_MAX	((unsigned long)(~0L))		/* 0xFFFFFFFF */
-#endif
 
 // Test for regular file - see stat(3)
 #ifndef S_ISREG
@@ -365,7 +362,7 @@ int  SourceView::source_indent_amount = 4;
 int  SourceView::script_indent_amount = 4;
 int  SourceView::code_indent_amount   = 4;
 int  SourceView::line_indent_amount   = 4;
-int  SourceView::tab_width            = 8;
+int  SourceView::tab_width            = DEFAULT_TAB_WIDTH;
 
 int  SourceView::lines_above_cursor   = 2;
 int  SourceView::lines_below_cursor   = 3;
@@ -2494,8 +2491,7 @@ int SourceView::read_current(string& file_name, bool force_reload, bool silent)
     }
 
     // Untabify current source, using the current tab width
-    untabify_if_needed(current_source, tab_width, 
-		       indent_amount(source_text_w));
+    untabify(current_source, tab_width, indent_amount(source_text_w));
 
     // Setup global parameters
 
@@ -7310,7 +7306,7 @@ void SourceView::process_registers(string& register_output)
     for (int i = 0; i < count; i++)
     {
 	tabto(register_list[i], 26);
-	untabify_if_needed(register_list[i]);
+	untabify(register_list[i]);
 	selected[i] = false;
     }
 
@@ -9343,7 +9339,7 @@ void SourceView::process_disassemble(const string& disassemble_output)
     for (int i = 0; i < count; i++)
     {
 	string& line = code_list[i];
-	untabify_if_needed(line);
+	untabify(line);
 	if (line.length() > 0 && line[0] == '0')
 	    line = replicate(string(' '), indent_amount(code_text_w)) + line;
 	indented_code += line + '\n';
@@ -9500,7 +9496,7 @@ bool SourceView::function_is_larger_than(string pc, int max_size)
     if (next_l < pc_l)
     {
 	// Overflow
-	next_l = ULONG_MAX;
+	next_l = STATIC_CAST(unsigned long, -1);
     }
     string next = make_address(next_l);
 
@@ -9580,7 +9576,7 @@ void SourceView::show_pc(const string& pc, XmHighlightMode mode,
 	    if (next_l < pc_l)
 	    {
 		// Overflow
-		next_l = ULONG_MAX;
+		next_l = STATIC_CAST(unsigned long, -1);
 	    }
 	    end = make_address(next_l);
 	}

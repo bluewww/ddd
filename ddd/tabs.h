@@ -2,6 +2,7 @@
 // Tabulator functions
 
 // Copyright (C) 1997 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2001 Universitaet des Saarlandes, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -35,19 +36,15 @@
 
 #include "strclass.h"
 
+// Standard tab width
+const int DEFAULT_TAB_WIDTH = 8; // Eight characters
+
 // Replace first '\t' by filling up spaces until POS is reached
 void tabto(string& s, int pos);
 
 // Replace all '\t' by filling up spaces until multiple of TAB_WIDTH
 // is reached; ignore first INDENT characters.
-void untabify(string& str, int tab_width = 8, int indent = 0);
-
-// Same, but untabify only for non-standard settings
-inline void untabify_if_needed(string& str, int tab_width = 8, int indent = 0)
-{
-    if (tab_width != 8 || indent % tab_width != 0)
-	untabify(str, tab_width, indent);
-}
+void untabify(string& str, int tab_width = DEFAULT_TAB_WIDTH, int indent = 0);
 
 #endif // _DDD_tabs_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

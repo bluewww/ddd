@@ -261,6 +261,7 @@ char ddd_rcsid[] =
 #include "status.h"
 #include "strclass.h"
 #include "string-fun.h"
+#include "tabs.h"
 #include "tempfile.h"
 #include "tictactoe.h"
 #include "tips.h"
@@ -5924,7 +5925,7 @@ static void gdb_ctrl(char ctrl)
 	case '\t':
 	{
 	    // Go to next tab position
-	    const int TAB_WIDTH = 8;
+	    const int TAB_WIDTH = DEFAULT_TAB_WIDTH;
 	    int column = promptPosition - startOfLine;
 	    int spaces = TAB_WIDTH - column % TAB_WIDTH;
 	    string spacing = replicate(string(' '), spaces);
