@@ -39,9 +39,13 @@ char findWindow_rcsid[] =
 #include "bool.h"
 #include <iostream.h>
 
+#ifndef LOG_FIND_WINDOWS
+#define LOG_FIND_WINDOWS 0
+#endif
+
 inline bool eq(String s1, String s2)
 {
-#if 0
+#if LOG_FIND_WINDOWS
     if (s1 != 0)
 	cout << "Found " << s1 << "\n";
 #endif
