@@ -1112,8 +1112,8 @@ struct DataDispCount {
     int selected;		// # of selected displays
     int selected_expanded;	// # of selected and expanded displays
     int selected_collapsed;	// # of selected and collapsed displays
+    int selected_clustered;     // # of selected clustered data displays
     int selected_unclustered;   // # of selected unclustered data displays
-    int selected_clusters;	// # of selected clusters
     int selected_titles;	// # of selected titles (no display parts)
 
     DataDispCount(DispGraph *disp_graph);
@@ -1123,8 +1123,8 @@ DataDispCount::DataDispCount(DispGraph *disp_graph)
     : all(0), visible(0), selected(0),
       selected_expanded(0),
       selected_collapsed(0),
+      selected_clustered(0),
       selected_unclustered(0),
-      selected_clusters(0),
       selected_titles(0)
 {
 
@@ -1152,11 +1152,10 @@ DataDispCount::DataDispCount(DispGraph *disp_graph)
 		if (dv == 0 || dv == dn->value())
 		    selected_titles++;
 
-		if (is_cluster(dn))
-		    selected_clusters++;
-
 		if (!dn->is_user_command() && !dn->clustered())
 		    selected_unclustered++;
+		if (!dn->is_user_command() && dn->clustered())
+		    selected_clustered++;
 
 		if (dn->disabled())
 		{
@@ -2194,10 +2193,10 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 		  gdb->has_assign_command() && !undoing);
 
     // Cluster
-    if (count.selected_unclustered > 0 || count.selected_clusters == 0)
+    if (count.selected_unclustered > 0 || count.selected_clustered == 0)
     {
 	set_label(delete_menu[DeleteItms::Cluster].widget, "Cluster ()");
-	set_sensitive(delete_menu[DeleteItms::Cluster].widget,
+	set_sensitive(delete_menu[DeleteItms::Cluster].widget, 
 		      count.selected_unclustered > 0);
     }
     else
@@ -5549,20 +5548,38 @@ void DataDisp::toggleClusterSelectedCB(Widget w, XtPointer client_data,
     {
 	clusterSelectedCB(w, client_data, call_data);
     }
-    else if (count.selected_clusters > 0)
+    else
     {
 	unclusterSelectedCB(w, client_data, call_data);
     }
 }
 
-// Uncluster selected clusters
+// Uncluster selected nodes (and clusters)
 void DataDisp::unclusterSelectedCB(Widget, XtPointer, XtPointer)
 {
+    // Uncluster selected nodes
+    MapRef ref;
+    for (DispNode* dn = disp_graph->first(ref); 
+	 dn != 0;
+	 dn = disp_graph->next(ref))
+    {
+	if (selected(dn) && dn->clustered())
+	{
+	    // Force cluster to be redisplayed
+	    DispNode *cluster = disp_graph->get(dn->clustered());
+	    if (cluster != 0)
+		cluster->set_last_refresh();
+
+	    // Uncluster display
+	    dn->cluster();
+	}
+    }
+
+    // Delete selected clusters
     IntArray all_clusters;
     get_all_clusters(all_clusters);
 
     IntArray killme;
-
     for (int i = 0; i < all_clusters.size(); i++)
     {
 	DispNode *cluster = disp_graph->get(all_clusters[i]);
@@ -5574,6 +5591,7 @@ void DataDisp::unclusterSelectedCB(Widget, XtPointer, XtPointer)
     }
 
     delete_display(killme);
+    refresh_args();
     refresh_graph_edit();
 }
 
