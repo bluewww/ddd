@@ -31,7 +31,7 @@
 
 #include "config.h"
 
-#ifndef HAVE_BOOL
+#if !HAVE_BOOL
 
 // Simple replacement for ANSI C++ `bool' type
 typedef int bool;

@@ -100,7 +100,7 @@
 #include <errno.h>
 #include <string.h>
 
-#ifndef HAVE_STRERROR_DECL
+#if !HAVE_STRERROR_DECL
 extern "C" char *sterror(int errno);
 #endif
 

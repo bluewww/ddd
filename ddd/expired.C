@@ -38,7 +38,7 @@ char expired_rcsid[] =
 #include "version.h"
 #include <stdio.h>
 #include <time.h>
-#ifndef HAVE_DIFFTIME
+#if !HAVE_DIFFTIME
 inline double difftime(time_t time1, time_t time0) { return time1 - time0; }
 #endif
 
