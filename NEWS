@@ -48,9 +48,10 @@ DDD 3.0 [in beta test]
       See the `maxGlyphs' resource for details.
     - DDD no longer indents the source code, leaving more horizontal
       space.  See `Edit | Preferences | Source | Source indentation'.
-    - Save Options improvements.  DDD saves whether a window is open
-      or closed and restores this setting upon start-up.  Saving
-      options is also much, much faster.
+    - Save Options improvements.
+      * DDD saves whether a window is open or closed.
+      * DDD only saves resources that differ from the default setting.
+      * Saving options is also much, much faster.
     - DBX settings also work with SGI DBX.
 
     Bug fixes:
