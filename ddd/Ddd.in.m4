@@ -124,9 +124,8 @@ Ddd*saveOptionsOnExit: off
 ! The command to invoke the execution window for showing I/O of the debugged
 ! program.  To this string, DDD appends bourne shell commands which must be
 ! run in the execution window.
-Ddd*termCommand: xterm \
--bg 'grey90' -fg 'black' -cr 'DarkGreen' \
--fn '-*-lucidatypewriter-medium-r-*-*-FONT_NORMAL-*-*-*-*-iso8859-*' \
+! The string `@FONT@' is replaced by the current DDD text font.
+Ddd*termCommand: xterm -bg 'grey90' -fg 'black' -cr 'DarkGreen' -fn '@FONT@' \
 -title 'DDD: Execution Window' -e /bin/sh -c
 
 
@@ -863,13 +862,13 @@ Ddd*maxDisplayNumber:    99
 ! Fonts
 
 ! The default font to use for labels, etc.
-Ddd*defaultFont:       helvetica-bold-r
+Ddd*defaultFont:       helvetica-bold
 
 ! The font to use for help texts.
-Ddd*variableWidthFont: helvetica-medium-r
+Ddd*variableWidthFont: helvetica-medium
 
 ! The font to use for fixed-width fields, such as the source code.
-Ddd*fixedWidthFont:    lucidatypewriter-medium-r
+Ddd*fixedWidthFont:    lucidatypewriter-medium
 
 ! The base font size; overrides the point settings as set above.
 Ddd*FontSize:          90

@@ -40,6 +40,7 @@ char exectty_rcsid[] =
 #include "LiterateA.h"
 #include "ddd.h"
 #include "disp-read.h"
+#include "fonts.h"
 #include "logo.h"
 #include "post.h"
 #include "question.h"
@@ -120,6 +121,9 @@ static void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
 
     string old_ttyname = ttyname;
 
+    string term_command = app_data.term_command;
+    term_command.gsub("@FONT@", make_font(FixedWidthDDDFont));
+
     string command = 
 	
 	// Set up a temporary file in TMP.
@@ -132,7 +136,7 @@ static void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
 	"trap 'exit 1' 1 2 15; "
 
 	// Now execute the xterm command
-	+ string(app_data.term_command) +
+	+ term_command +
 
 	// which saves TTY, PID, TERM, and WINDOWID in TMP and goes to
 	// sleep forever.  Signal 2 (SIGINT) is blocked for two
