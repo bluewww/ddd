@@ -210,6 +210,11 @@ static void RefreshComboTextCB(Widget w, XtPointer client_data,
     XmTextFieldSetString(info->text, item_s);
     XtFree(item_s);
 
+    XmTextPosition last_pos = XmTextFieldGetLastPosition(info->text);
+    XmTextFieldSetInsertionPosition(info->text, last_pos);
+    XmTextFieldShowPosition(info->text, 0);
+    XmTextFieldShowPosition(info->text, last_pos);
+
 #if !USE_XM_COMBOBOX
     PopdownComboListCB(w, client_data, call_data);
 #endif
