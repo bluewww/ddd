@@ -410,7 +410,7 @@ XPMTOPPM   = xpmtoppm
 CONVERT    = convert
 
 # The image extension (.gif or .jpg)
-IMGEXT     = .jpg
+IMGEXT     = .gif
 
 # GIF <=> PPM conversion
 GIFTOPPM   = giftoppm
@@ -1333,7 +1333,7 @@ uninstall-man:
 
 .PHONY: picsclean
 picsclean:
-	$(RM) $(PICS) $(IMAGES) ./#*#
+	$(RM) $(picdir)/*.eps $(picdir)/*.gif $(picdir)/*.jpg ./#*#
 	-cd $(picdir) && $(RM) $(CLEAN_STUFF) ./#*#
 
 .PHONY: iconclean
@@ -1946,19 +1946,31 @@ $(picdir)/ddd-toolbars$(IMGEXT):         $(picdir)/ddd-toolbars.eps
 $(picdir)/dddsplash.eps: $(icondir)/dddsplash.xpm
 	$(CONVERT) $(icondir)/dddsplash.xpm $@
 
-$(picdir)/dddsplash$(IMGEXT): $(icondir)/dddsplash.xpm
+$(picdir)/dddsplash.gif: $(icondir)/dddsplash.xpm
+	$(CONVERT) $(icondir)/dddsplash.xpm $@
+	$(GIFTOPPM) $@ | $(PPMTOGIF) > $@~ && $(MV) $@~ $@
+
+$(picdir)/dddsplash.jpg: $(icondir)/dddsplash.xpm
 	$(CONVERT) $(icondir)/dddsplash.xpm $@
 
 $(picdir)/dddlogo.eps: $(icondir)/dddlogo.xpm
 	$(CONVERT) $(icondir)/dddlogo.xpm $@
 
-$(picdir)/dddlogo$(IMGEXT): $(icondir)/dddlogo.xpm
+$(picdir)/dddlogo.gif: $(icondir)/dddlogo.xpm
+	$(CONVERT) $(icondir)/dddlogo.xpm $@
+	$(GIFTOPPM) $@ | $(PPMTOGIF) > $@~ && $(MV) $@~ $@
+
+$(picdir)/dddlogo.jpg: $(icondir)/dddlogo.xpm
 	$(CONVERT) $(icondir)/dddlogo.xpm $@
 
 $(picdir)/dddback.eps: $(icondir)/dddback.xpm
 	$(CONVERT) $(icondir)/dddback.xpm $@
 
-$(picdir)/dddback$(IMGEXT): $(icondir)/dddback.xpm
+$(picdir)/dddback.gif: $(icondir)/dddback.xpm
+	$(CONVERT) $(icondir)/dddback.xpm $@
+	$(GIFTOPPM) $@ | $(PPMTOGIF) > $@~ && $(MV) $@~ $@
+
+$(picdir)/dddback.jpg: $(icondir)/dddback.xpm
 	$(CONVERT) $(icondir)/dddback.xpm $@
 
 
