@@ -1031,9 +1031,7 @@ void send_gdb_command(string cmd, Widget origin,
     {
 	// File may change: display main() function and update displays
 	if (cmd != "# reset")
-	{
 	    extra_data->refresh_initial_line = true;
-	}
 
 	extra_data->refresh_data = true;
 	extra_data->refresh_recent_files = true;
@@ -1048,11 +1046,15 @@ void send_gdb_command(string cmd, Widget origin,
 	    extra_data->refresh_line = true;
 	    break;
 
+	case PERL:
+	    cmd_data->new_exec_pos = true;
+	    extra_data->refresh_initial_line = false;
+	    break;
+
 	case GDB:
 	case XDB:
 	case JDB:
 	case PYDB:
-	case PERL:
 	    break;		// FIXME
 	}
     }

@@ -2137,7 +2137,7 @@ string GDBAgent::debug_command(string program) const
 	return "load " + program;
 
     case PERL:
-	return "";		// Not available (yet)
+	return "exec " + quote("perl -d " + program);
     }
     return "";			// Never reached
 }

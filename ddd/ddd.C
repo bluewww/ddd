@@ -7042,7 +7042,7 @@ static void setup_options()
     set_sensitive(source_file_menu[FileItems::OpenCore].widget,     have_core);
     set_sensitive(data_file_menu[FileItems::OpenCore].widget,       have_core);
 
-    bool have_exec = gdb->has_exec_files();
+    bool have_exec = gdb->has_exec_files() || gdb->type() == PERL;
     manage_child(command_file_menu[FileItems::OpenFile].widget,     have_exec);
     manage_child(source_file_menu[FileItems::OpenFile].widget,      have_exec);
     manage_child(data_file_menu[FileItems::OpenFile].widget,        have_exec);
