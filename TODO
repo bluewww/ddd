@@ -199,9 +199,6 @@ Volunteers for these and other projects are welcome!
      it would be nice to have a menu to say: display hex data for 255
      bytes.
 
-118. In the source view and the data display, forward all keyboard
-     events except position changes to the debugger console.
-
 119. Try whether the `-fno-implement-inlines' option in DDD reduces
      executable size.
 
@@ -366,11 +363,9 @@ Volunteers for these and other projects are welcome!
        have a normal text list display for variable values.
 
 218. Roy Dragseth <royd@math.uit.no> reports on DDD 2.1.90:
-     1. The source window still pops up when I run ddd from emacs. I want
-        to view the source in emacs. (Can be worked around by fvwm.)
-
-     2. The command buttons come up off screen under fvwm (haven't
-        checked other WM's).
+     The command buttons come up off screen under fvwm 
+     (haven't checked other WM's).
+     [Should be fixed in DDD 2.2  -AZ]
 
 219. Annotated arrows. Christoph Koegl <koegl@informatik.uni-kl.de>
      suggests that the data display window should be able to annotate

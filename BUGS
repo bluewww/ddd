@@ -104,11 +104,6 @@ Volunteers for fixing these and other bugs are welcome!
      type.
      [I could not reproduce this bug.  Can anyone clarify this?  -AZ]
 
-077. oyvind@stavanger.Geco-Prakla.slb.com (Oyvind Yrke) says that DDD 2.0
-     crashes after receiving too much data from GDB (e.g. `info
-     functions').
-     [Does this still happen in DDD 2.1?  -AZ]
-
 079. Window resize problems.  louie@dbmx.com (Lewis Alderton) says: I
      am running using FVWM (virtual window manager) and when the
      breakpoints and stack-frame windows pop up, they appear as the
@@ -309,6 +304,7 @@ Volunteers for fixing these and other bugs are welcome!
      - AZ]
 
 152. Curved edges cannot (yet) be printed.
+     [Any PostScript and FIG gurus out there?  -AZ]
 
 153. Jonathan Edwards <edwards@intranet.com> says that in AIX DBX,
      the local variable display does not display function arguments.
@@ -346,7 +342,7 @@ Volunteers for fixing these and other bugs are welcome!
      screen, the command pad always appears in the bottom left screen
      (in the top right corner). DDD 2.0 doesn't give this behaviour:
      the command pad pops up in the screen on which I start it.
-     [I could not reproduce this. -AZ]
+     [Should be fixed in DDD 2.2  -AZ]
 
 175. Harry Mangalam <mangalam@uci.edu> reports: As soon as I click on
      a variable to try to highlight a structure name, DDD 2.1 goes
@@ -368,7 +364,7 @@ Volunteers for fixing these and other bugs are welcome!
 
      <- "\r\e[K\e[7mStandard input: END\e[m"
 
-     [Is this still true for DDD 2.2?  -AZ]
+     [Should be fixed in DDD 2.2  -AZ]
 
 198. In `--tty' mode, EOF terminates DDD, even if only a subprogram
      (e.g. a shell) is running.

@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "26 Oct 1997" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "28 Oct 1997" "@DDD@ @VERSION@"
 .\" ---------------
 .SH "NAME"
 .\" ---------------
@@ -629,7 +629,7 @@ prompt) for details.  The \s-2XDB\s+2 `\fBb\fR' command works as well.
 .\"
 .SS "Disabling Breakpoints"
 .\"
-Note: \s-2DBX\s+2 does not support breakpoint disabling.
+Note: Some \s-2DBX\s+2 variants do not support breakpoint disabling.
 .PP
 To temporarily disable a breakpoint, press the \fIright mouse
 button\fR on the breakpoint name and select the `\fBDisable
@@ -770,10 +770,33 @@ Enter `\fBhelp breakpoints\fR' at the `\fB(gdb)\fR' prompt.
 .SH "RUNNING THE PROGRAM"
 .\" ---------------
 .\"
+.SS "Using the Command Tool"
+.\"
+All functionality you need for running and stopping the debugged
+program can be found on the command tool.
+.PP
+The command tool is a small window containing the most frequently used
+commands.  It can be moved around on top of the \s-2@DDD@\s+2 windows,
+but it can also be placed besides them.  Whenever you save
+\s-2@DDD@\s+2 state, \s-2@DDD@\s+2 also saves the distance between
+command tool and source window, such that you can select your own
+individual command tool placement.  In case you want to move the
+command tool to its saved position, use `\fBView | Command Tool\fR'.
+.PP
+By default, the command tool \fIsticks\fR to the \s-2@DDD@\s+2 source
+window: Whenever you move the \s-2@DDD@\s+2 source window, the command
+tool follows such that the distance between source window and command
+tool remains the same.  By default, the command tool also is
+\fIauto-raised\fR, such that it stays on top of other \s-2@DDD@\s+2
+windows.
+.PP
+.PSPIC @srcdir@/PICS/ddd-tool.ps 15.3cm
+.\"
+.\"
 .SS "Starting Program Execution"
 .\"
-Select `\fBProgram | Run\fR' to start execution of the debugged
-program.  You will then be prompted for the arguments to give to your
+To start execution of the debugged program, select `\fBProgram |
+Run\fR'.  You will then be prompted for the arguments to give to your
 program.  You can either select from a list of previously used
 arguments or enter own arguments in the text field.  Afterwards, press
 the `\fBOK\fR' button to start execution with the selected arguments.
@@ -850,8 +873,6 @@ stopping.
 .PP
 To continue running until the current function returns, use the
 `\fBFinish\fR' button.  The returned value (if any) is printed.
-.PP
-.PSPIC @srcdir@/PICS/ddd-tool.ps 15.3cm
 .PP
 To continue running until a line after the current source line is
 reached, use the `\fBContinue Until Here\fR' facility from the line
@@ -1545,9 +1566,9 @@ realizes an alternate layout algorithm, where successors are placed
 next to their parents.  This algorithm is suitable for homogeneous
 data structures only.
 .PP
-You can enforce layout by setting `\fBEdit | Preferences | Data
- | Re-layout graph automatically\fR'.  If automatic layout
-is enabled, the graph is layouted after each change.
+You can enforce layout by setting `\fBEdit | Preferences | Data | 
+Re-layout graph automatically\fR'.  If automatic layout is enabled,
+the graph is layouted after each change.
 .PP
 .PSPIC @srcdir@/PICS/ddd-layout.ps 15.3cm
 .\"
@@ -1996,17 +2017,24 @@ You may also invoke `\fB@ddd@ \-\-tty\fR' directly, entering
 \s-2@DDD@\s+2 commands from your \s-2TTY\s+2, or use \s-2@DDD@\s+2 as
 the end of a pipe, controlled by a remote program.  Be aware, however,
 that the \s-2TTY\s+2 interface does not support line editing and
-command completion and that \s-2@DDD@\s+2 exits as soon as it receives
-a \s-2EOF\s+2 on its standard input.  Also, do not try to run
-\s-2@DDD@\s+2 with \s-2@DDD@\s+2 as inferior debugger.
+command completion and that \s-2@DDD@\s+2 exits as soon as it detects
+an \s-2EOF\s+2 condition on its standard input.  Also, do not try to
+run \s-2@DDD@\s+2 with \s-2@DDD@\s+2 as inferior debugger.
 .PP
-The `\fB\-\-tty\fR' option automatically disables the debugger
-console, as its facilities are supposed to be provided by the
-integrating front-end.  If the front-end also provides source and/or
-data facilities, you may be interested in disabling the \s-2@DDD@\s+2
-source window or the \s-2@DDD@\s+2 data window, too.  Use the
-`\fB\-\-no-source-window\fR' and `\fB\-\-no-data-window\fR'
-options for this purpose.
+Using \s-2@DDD@\s+2 in \s-2TTY\s+2 mode automatically disables some
+\s-2@DDD@\s+2 windows, because it is assumed that their facilities are 
+provided by the remote program:
+.IP \(bu 2 
+If \s-2@DDD@\s+2 is invoked with the `\fB\-\-tty\fR' option, the
+debugger console is initially disabled, as its facilities are supposed
+to be provided by the integrating front-end.
+.IP \(bu 2
+If \s-2@DDD@\s+2 is invoked with the `\fB\-fullname\fR' option, the
+debugger console and the source window are initially disabled, as their
+facilities are supposed to be provided by the integrating front-end.
+.PP
+In case of need, you can use the `\fBView\fR' menu to re-enable these
+windows.
 .\"
 .\"
 .SS "Using @DDD@ with GNU Emacs"
@@ -2945,8 +2973,9 @@ inferior debugger from the remote shell.  See also the
 .TP
 .B "fullNameMode (\fPclass\fB TTYMode)"
 If this is `\fBtrue\fR', \s-2@DDD@\s+2 reports the current source
-position on standard output in \s-2GDB\s+2 `\fB\-\-fullname\fR'
-format.  See also the `\fB\-\-fullname\fR' option, below.
+position on standard output in \s-2GDB\s+2 `\fB\-fullname\fR'
+format.  As a side effect, the source window is disabled by default.
+See also the `\fB\-\-fullname\fR' option, below.
 .TP
 .B "gdbInitCommands (\fPclass\fB InitCommands)"
 This string contains a list of newline-separated commands that are
@@ -3010,7 +3039,8 @@ option, below.
 .B "ttyMode (\fPclass\fB TTYMode)"
 If `\fBtrue\fR', enable \s-2TTY\s+2 interface, taking additional
 debugger commands from standard input and forwarding debugger output
-on standard output.  See also the `\fB\-\-tty\fR' and
+on standard output.  As a side effect, the debugger console is
+disabled by default.  See also the `\fB\-\-tty\fR' and
 `\fB\-\-fullname\fR' options, below.
 .TP
 .B "useTTYCommand (\fPclass\fB UseTTYCommand)"
@@ -3846,6 +3876,9 @@ The \fIcontrol-character\fR must be specified in the form `\fB^\fIX\fR',
 where \fIX\fR is an upper-case letter or `\fB?\fR'.
 Bound to \fBCtrl+C\fR and \fBCtrl+\\\fR.
 .TP
+.B gdb-command (\fIcommand\fB)
+Execute \fIcommand\fR in the debugger console.
+.TP
 .B gdb-complete-arg (\fIcommand\fB)
 Complete current argument as if \fIcommand\fR was prepended.
 Bound to \fBCtrl+T\fR.
@@ -3876,6 +3909,10 @@ Recall previous command from history.  Bound to \fBCtrl+P\fR and \fBUp\fR.
 .TP
 .B gdb-previous-history ()
 Recall previous command from history.  Bound to \fBCtrl+P\fR and \fBUp\fR.
+.TP
+.B gdb-process ()
+Process the given event in the debugger console.  Bound to key events
+in the source and data window.
 .TP
 .B gdb-forward-character ()
 Move one character to the right.  Bound to \fBCtrl+F\fR and \fBRight\fR.
@@ -3996,7 +4033,8 @@ terminal control sequences.
 Enable \s-2TTY\s+2 interface, taking additional debugger commands
 from standard input and forwarding debugger output on standard output.
 Current positions are issued in \s-2GDB\s+2 `\fB\-fullname\fR' format
-suitable for debugger front-ends.
+suitable for debugger front-ends.  By default, both the debugger
+console and source window are disabled.
 .TP
 .B \-\-gdb
 Run the \s-2GDB\s+2 debugger as inferior debugger.
@@ -4116,9 +4154,10 @@ is useful for debugging \s-2@DDD@\s+2.
 Show both interaction and shell commands.
 .TP
 .B \-\-tty
-Enable \s-2TTY\s+2 interface, taking additional debugger commands
-from standard input and forwarding debugger output on standard output.
-Current positions are issued in a format readable for humans.
+Enable \s-2TTY\s+2 interface, taking additional debugger commands from
+standard input and forwarding debugger output on standard output.
+Current positions are issued in a format readable for humans.  By
+default, the debugger console is disabled.
 .TP
 .B \-\-value-tips
 Enable value tips.
