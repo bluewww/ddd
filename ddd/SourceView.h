@@ -247,6 +247,7 @@ class SourceView {
     static void dropGlyphAct      (Widget, XEvent*, String*, Cardinal*);
     static void deleteGlyphAct    (Widget, XEvent*, String*, Cardinal*);
     static void doubleClickAct    (Widget, XEvent*, String*, Cardinal*);
+    static void setArgAct         (Widget, XEvent*, String*, Cardinal*);
 
     //-----------------------------------------------------------------------
     // Timer procedures

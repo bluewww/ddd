@@ -193,6 +193,7 @@ XtActionsRec SourceView::actions [] = {
     {"source-drop-glyph",        SourceView::dropGlyphAct       },
     {"source-delete-glyph",      SourceView::deleteGlyphAct     },
     {"source-double-click",      SourceView::doubleClickAct     },
+    {"source-set-arg",           SourceView::setArgAct          },
 };
 
 //-----------------------------------------------------------------------
@@ -5050,6 +5051,23 @@ void SourceView::doubleClickAct(Widget w, XEvent *e, String *params,
 	    else
 		create_bp(source_arg->get_string(), w);
 	}
+    }
+}
+
+void SourceView::setArgAct(Widget w, XEvent *, String *, Cardinal *)
+{
+    String s = 0;
+    if (XmIsText(w))
+	s = XmTextGetSelection(w);
+    else if (XmIsTextField(w))
+	s = XmTextFieldGetSelection(w);
+
+    if (s != 0)
+    {
+	string arg = s;
+	arg.gsub('\n', ' ');
+	source_arg->set_string(s);
+	XtFree(s);
     }
 }
 

@@ -5069,6 +5069,10 @@ some motion event.
 .B source-popup-menu ()
 Pop up a menu, depending on the location.
 .TP
+.B source-set-arg ()
+Set the argument field to the current selection.  Typically bound to
+some selection operation.
+.TP
 .B source-start-select-word ()
 Start selecting a word.
 .TP
