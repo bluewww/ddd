@@ -768,7 +768,8 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 	XtVaSetValues(dialog_title, XmNlabelString, title.xmstring(), NULL);
 
     string text(unformatted_text);
-    bool manual = !text.contains("File:", 0);
+    bool manual = !text.contains("File:", 0) && text.freq('\n') > 1;
+    bool info   =  text.contains("File:", 0) && text.freq('\n') > 1;
     int i;
 
     if (manual)
@@ -802,7 +803,7 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 	}
 	text.from(target) = "";
     }
-    else
+    else if (info)
     {
 	// Info file: strip menus
 	unsigned source = 0;
@@ -822,6 +823,7 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 	text.from(target) = "";
     }
 
+    if (info || manual)
     {
 	// Info and manual: kill multiple empty lines
 	unsigned source = 0;
@@ -948,7 +950,7 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 	    }
 	}
     }
-    else
+    else if (info)
     {
 	// Info file
 	int source = 0;
@@ -985,6 +987,14 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 	XtVaSetValues(help_man, XmNvalue, text.chars(), NULL);
 
 	// Info: no highlighting
+	XmTextSetHighlight(help_man, 0, XmTextGetLastPosition(help_man), 
+			   XmHIGHLIGHT_NORMAL);
+    }
+    else
+    {
+	// Something else
+	XtVaSetValues(help_man, XmNvalue, text.chars(), NULL);
+
 	XmTextSetHighlight(help_man, 0, XmTextGetLastPosition(help_man), 
 			   XmHIGHLIGHT_NORMAL);
     }

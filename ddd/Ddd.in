@@ -4131,6 +4131,22 @@ Ddd*options_save_error_popup.title: @DDD@: Save Options Failed
 Ddd*options_save_error*helpString:	\
 @rm The @DDD@ options could not be saved.
 
+Ddd*no_license_error_popup.title: @DDD@: No License
+Ddd*no_license_error*helpString:	\
+@rm The @DDD@ license could not be uncompressed.\n\
+\n\
+Please verify the contents of the @bf .uncompressCommand @rm resource\n\
+in the @DDD@ application defaults file and make sure that the given\n\
+uncompressing program is within your executable path.
+
+Ddd*no_ddd_manual_error_popup.title: @DDD@: No Manual
+Ddd*no_ddd_manual_error*helpString:	\
+@rm The @DDD@ manual could not be uncompressed.\n\
+\n\
+Please verify the contents of the @bf .uncompressCommand @rm resource\n\
+in the @DDD@ application defaults file and make sure that the given\n\
+uncompressing program is within your executable path.
+
 Ddd*startup_warning.title: @DDD@: New Startup Required
 Ddd*startup_warning*helpString: \
 @rm This setting cannot be changed while @DDD@ is running.\n\

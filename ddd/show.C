@@ -41,6 +41,7 @@ char show_rcsid[] =
 #include "cook.h"
 #include "ddd.h"
 #include "host.h"
+#include "post.h"
 #include "shell.h"
 #include "status.h"
 #include "version.h"
@@ -282,6 +283,78 @@ void show_configuration()
 
 
 //-----------------------------------------------------------------------------
+// Helpers
+//-----------------------------------------------------------------------------
+
+static int uncompress(ostream& os, const char *text, int size)
+{
+    string tempfile = tmpnam(0);
+    FILE *fp = fopen(tempfile, "w");
+    if (fp == 0)
+    {
+	os << tempfile << ": " << strerror(errno);
+	return -1;
+    }
+
+    for (int i = 0; i < size; i++)
+	putc(text[i], fp);
+    fclose(fp);
+
+    string cmd = string(app_data.uncompress_command) + " < " + tempfile;
+
+    FILE *uncompress = popen(sh_command(cmd, true) + " 2>&1", "r");
+    if (uncompress == 0)
+    {
+	os << app_data.uncompress_command << ": " << strerror(errno);
+	return -1;
+    }
+
+    int c;
+    while ((c = getc(fp)) != EOF)
+	os << (char)c;
+    pclose(fp);
+
+    unlink(tempfile);
+    return 0;
+}
+
+static void show(int (*formatter)(ostream& os))
+{
+    FILE *pager = 0;
+    if (isatty(fileno(stdout)))
+    {
+	// Try, in that order:
+	// 1. The pager specified in the $PAGER environment variable
+	// 2. less
+	// 3. more
+	// 4. cat  (I wonder if this can ever happen)
+	string cmd = "less || more || cat";
+
+	char *env_pager = getenv("PAGER");
+	if (env_pager != 0)
+	    cmd = string(env_pager) + " || " + cmd;
+	cmd = "( " + cmd + " )";
+	pager = popen(sh_command(cmd), "w");
+    }
+
+    if (pager == 0)
+    {
+	formatter(cout);
+	cout << flush;
+    }
+    else
+    {
+	ostrstream text;
+	formatter(text);
+	string s(text);
+
+	fputs(s.chars(), pager);
+	pclose(pager);
+    }
+}
+
+
+//-----------------------------------------------------------------------------
 // WWW Page
 //-----------------------------------------------------------------------------
 
@@ -299,71 +372,24 @@ void DDDWWWPageCB(Widget, XtPointer, XtPointer)
 }
 
 
+
+
 //-----------------------------------------------------------------------------
 // License
 //-----------------------------------------------------------------------------
 
-void ddd_license(ostream& os)
+int ddd_license(ostream& os)
 {
     static const char COPYING[] =
 #include "COPYING.gz.C"
 	;
 
-    string tempfile = tmpnam(0);
-    FILE *fp = fopen(tempfile, "w");
-    for (int i = 0; i < int(sizeof(COPYING)) - 1; i++)
-	putc(COPYING[i], fp);
-    fclose(fp);
-
-    FILE *uncompress = 
-	popen(string(app_data.uncompress_command) + " < " + tempfile, "r");
-    if (uncompress == 0)
-    {
-	perror(app_data.uncompress_command);
-	return;
-    }
-
-    int c;
-    while ((c = getc(fp)) != EOF)
-	os << (char)c;
-    pclose(fp);
-
-    unlink(tempfile);
+    return uncompress(os, COPYING, sizeof(COPYING) - 1);
 }
 
 void show_license()
 {
-    FILE *pager = 0;
-    if (isatty(fileno(stdout)))
-    {
-	// Try, in that order:
-	// 1. The pager specified in the $PAGER environment variable
-	// 2. less
-	// 3. more
-	// 4. cat  (I wonder if this can ever happen)
-	string cmd = "less || more || cat";
-
-	char *env_pager = getenv("PAGER");
-	if (env_pager != 0)
-	    cmd = string(env_pager) + " || " + cmd;
-	cmd = "( " + cmd + " )";
-	pager = popen(cmd, "w");
-    }
-
-    if (pager == 0)
-    {
-	ddd_license(cout);
-	cout << flush;
-    }
-    else
-    {
-	ostrstream license;
-	ddd_license(license);
-	string s(license);
-
-	fputs(s.chars(), pager);
-	pclose(pager);
-    }
+    show(ddd_license);
 }
 
 
@@ -376,7 +402,83 @@ void DDDLicenseCB(Widget w, XtPointer, XtPointer call_data)
     StatusDelay delay("Formatting license");
 
     ostrstream license;
-    ddd_license(license);
+    int ret = ddd_license(license);
     string s(license);
     TextHelpCB(w, XtPointer((char *)s), call_data);
+
+    if (ret != 0 || !s.contains("GNU"))
+	post_error("The license could not be uncompressed.", 
+		   "no_license_error", w);
+}
+
+
+//-----------------------------------------------------------------------------
+// Manual
+//-----------------------------------------------------------------------------
+
+int ddd_man(ostream& os)
+{
+    static const char MANUAL[] =
+#include "ddd.man.txt.gz.C"
+	;
+
+    return uncompress(os, MANUAL, sizeof(MANUAL) - 1);
+}
+
+void show_manual()
+{
+    show(ddd_man);
+}
+
+
+//-----------------------------------------------------------------------------
+// Show Manual Page
+//-----------------------------------------------------------------------------
+
+void DDDManualCB(Widget w, XtPointer, XtPointer)
+{
+    StatusDelay delay("Formatting " DDD_NAME " manual");
+
+    ostrstream man;
+    int ret = ddd_man(man);
+    string s(man);
+
+    MString title(DDD_NAME " Manual");
+    ManualStringHelpCB(w, title, s);
+
+    if (ret != 0 || !s.contains(DDD_NAME))
+	post_error("The manual could not be uncompressed.", 
+		   "no_ddd_manual_error", w);
+}
+
+void GDBManualCB(Widget w, XtPointer, XtPointer)
+{
+    StatusDelay delay("Formatting " + gdb->title() + " manual");
+
+    string cmd = "man " + downcase(gdb->title());
+
+    if (gdb->type() == GDB)
+    {
+	// Try `info' first
+	cmd.prepend("info --subnodes -o - -f " 
+		    + downcase(gdb->title()) + " 2> /dev/null || ");
+    }
+
+    FILE *fp = popen(sh_command(cmd), "r");
+    if (fp != 0)
+    {
+	ostrstream man;
+
+	int c;
+	while ((c = getc(fp)) != EOF)
+	    man << char(c);
+	
+	string s(man);
+	bool info = s.contains("File: ", 0);
+
+	MString title(gdb->title() + (info ? " Info" : " Manual"));
+	ManualStringHelpCB(w, title, s);
+
+	pclose(fp);
+    }
 }

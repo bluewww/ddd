@@ -667,7 +667,6 @@ DDD_OBJECTS = \
 	history.o    \
 	hostname.o   \
 	logo.o       \
-	manual.o     \
 	mydialogs.o  \
 	options.o    \
 	post.o       \
@@ -1325,8 +1324,7 @@ COPYING.gz.C: COPYING.gz
 	-./stringify < COPYING.gz > $@ || $(RM) $@
 
 # `make depend' fails to find this dependency :-(
-manual.o: ddd.man.huff.C huffdecode.C
-show.o: COPYING.huff.C huffdecode.C
+show.o: COPYING.gz.C ddd.man.txt.gz.C
 
 
 ## The xlibdir script
