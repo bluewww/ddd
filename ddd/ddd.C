@@ -4146,13 +4146,12 @@ void update_arg_buttons()
 {
     string arg = source_arg->get_string();
 
-    bool can_find = (arg != "");
+    bool can_find = (arg != "") && source_view->have_source();
 
     set_sensitive(arg_cmd_area[ArgItems::FindBackward].widget, can_find);
     set_sensitive(arg_cmd_area[ArgItems::FindForward].widget,  can_find);
 
-    bool can_print = 
-	can_find && (arg.contains("::") || !arg.contains(":"));
+    bool can_print = (arg != "") && (arg.contains("::") || !arg.contains(":"));
 
     set_sensitive(arg_cmd_area[ArgItems::Print].widget, can_print);
     set_sensitive(arg_cmd_area[ArgItems::Display].widget, can_print);
