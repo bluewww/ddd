@@ -71,8 +71,9 @@ Widget create_toolbar(Widget parent, string name, MMDesc items[],
     string toolbar_name = name + "_toolbar";
 
     arg = 0;
-    XtSetArg(args[arg], XmNmarginWidth, 0); arg++;
+    XtSetArg(args[arg], XmNmarginWidth, 0);  arg++;
     XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
+    XtSetArg(args[arg], XmNborderWidth, 0);  arg++;
     Widget toolbar = verify(XmCreateForm(parent, toolbar_name, args, arg));
 
     // Create `():'
@@ -111,10 +112,10 @@ Widget create_toolbar(Widget parent, string name, MMDesc items[],
 		  XmNbottomAttachment, XmATTACH_FORM,
 		  NULL);
     XtVaSetValues(argfield->widget(),
-		  XmNleftAttachment, XmATTACH_WIDGET,
-		  XmNleftWidget, label,
-		  XmNrightAttachment, XmATTACH_WIDGET,
-		  XmNrightWidget, buttons,
+		  XmNleftAttachment,   XmATTACH_WIDGET,
+		  XmNleftWidget,       label,
+		  XmNrightAttachment,  XmATTACH_WIDGET,
+		  XmNrightWidget,      buttons,
 		  XmNtopAttachment,    XmATTACH_FORM,
 		  NULL);
     XtVaSetValues(buttons,
