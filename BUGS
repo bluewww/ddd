@@ -101,6 +101,16 @@ Volunteers for fixing these and other bugs are welcome!
 
 025. DBX on mips-dec-ultrix4 is only partially supported since it has
      an entirely different output format than Sun's DBX.  [If someone
-     convinces me that he requires ULTRIX DBX support, I'll do it.]
+     convinces us that s/he requires ULTRIX DBX support, we'll do it.]
 
-026. (Insert your bug here)
+026. Using DBX with PASCAL or Modula-2, selected array elements are
+     always counted from zero, instead of the starting index of the array.
+
+027. When displaying virtual function tables with GDB, vtbl entries
+     are off by one (due to the GDB feature of telling the number of
+     vtbl entries).
+
+028. (Insert your bug here)
+
+
+
