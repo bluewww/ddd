@@ -193,10 +193,17 @@ To debug a child process, put a call to SAMP(sleep) in the child right
 after the SAMP(fork) call.  Run the program and attach to the child process
 using LBL(File, Attach to Process).
 
+If your program prints a lot of text on standard error, try
+redirecting standard error to a file (via SAMP(2> VAR(FILE))), or add
+to FILE(~/.[ddd]/init): CODE([Ddd]*lineBufferedConsole: off).
+
+If the inferior debugger does not support stderr redirection, try
+invoking DDD using KBD(--debugger 'VAR(NAME) 2> VAR(FILE)').
+
 Using GDB, you can define your own canned sequences of commands.
 Try LBL(Commands, Define Command).
 
-To use GDB with Sun CC, compile with SAMP(-xs).
+To use GDB with Solaris CC, compile with SAMP(-xs).
 GDB wants debugging info in the executable.
 
 Double-clicking on a function call will lead you to the definition of

@@ -5857,7 +5857,7 @@ Ddd*stack_dialog.cancelLabelString:	  Close
 Ddd*stack_dialog*visibleItemCount:	  10
 
 Ddd*stack_dialog*helpString:	  \
-@rm This window shows the current EMPH(Backtrace).\n\
+WIDGET(Backtrace)\n\
 \n\
 The backtrace is a summary of how your program got where it is.\n\
 It shows one line per stack frame, for many frames, starting with\n\
@@ -5887,7 +5887,8 @@ Ddd*register_dialog*all_registers.labelString: All registers
 Ddd*register_dialog*int_registers.labelString: Integer registers
 
 Ddd*register_dialog*helpString:	     \
-@rm This window shows the EMPH(Machine Registers).\n\
+WIDGET(Machine Registers)\n\
+\n\
 Select any register to have its name copied to the argument LBL(()).\n\
 \n\
 If LBL(Integer registers) is set, integer registers are shown.\n\
@@ -5910,7 +5911,7 @@ Ddd*thread_dialog*box.marginHeight: 0
 Ddd*thread_dialog*box.marginWidth:  0
 
 Ddd*thread_dialog*helpString:	     \
-@rm This window shows the current EMPH(Execution Threads).\n\
+WIDGET(Execution Threads)\n\
 \n\
 The current thread is highlighted.\n\
 All debugging commands show information from the perspective\n\
@@ -5934,7 +5935,7 @@ Ddd*history_dialog.listLabelString:	    Command History
 Ddd*history_dialog*visibleItemCount:	    10
 
 Ddd*history_dialog*helpString:	    \
-@rm This window shows the EMPH(Command History).\n\
+WIDGET(Command History)\n\
 \n\
 DDD keeps track of the commands you type during your debugging\n\
 sessions, so that you can be certain of precisely what happened.\n\

@@ -45,7 +45,7 @@ Debuggers, Languages, and Platforms
 
 - EGCS 1.1 is supported.
 
-- Cygwin32 is supported.
+- Cygwin is supported.
 
 
 Plotting
@@ -163,6 +163,9 @@ User Interface
 
   The bindings from DDD 3.0 and earlier (Ctrl+E for Run, Ctrl+I for
   Step, etc.) are still available.
+
+- You can configure the Ctrl+C (Interrupt vs. Copy) and Ctrl+A (Select
+  All vs. Beginning of Line) keys at run-time.
 
 - You can configure the tool bar to appear at the bottom of the
   window, as in DDD 2.x and earlier.
