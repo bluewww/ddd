@@ -71,6 +71,7 @@ char settings_rcsid[] =
 #include "ThemeP.h"
 #include "VarArray.h"
 #include "WidgetSA.h"
+#include "basename.h"
 #include "buttons.h"
 #include "cook.h"
 #include "comm-manag.h"
@@ -1476,7 +1477,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	e_type = entry_filter;
 	doc = vsldoc(line);
 	if (doc == "")
-	    doc = line;		// Use file name instead
+	    doc = basename(line);  // Use file base name instead
 	else if (doc.contains("."))
 	    doc = doc.before("."); // Use first sentence only
     }
@@ -2390,36 +2391,43 @@ static void fix_clip_window_translations(Widget scroll)
 // Themes
 static void get_themes(StringArray& arr)
 {
-    // FIXME: Fetch themes from entire path
+    string path = DispBox::vsllib_path;
+    int n = path.freq(':');
+    string *dirs = new string[n + 1];
+    split(path, dirs, n + 1, ':');
 
-    string mask = session_themes_dir() + "/*";
-    char **files = glob_filename(mask);
-    if (files == (char **)0)
+    for (int i = 0; i < n; i++)
     {
-	cerr << mask << ": glob failed\n";
-    }
-    else if (files == (char **)-1)
-    {
-	if (errno != 0)
-	    post_warning(string(mask) + ": " + strerror(errno), 
-			 "no_themes_warning");
-    }
-    else
-    {
-	int count;
-	for (count = 0; files[count] != 0; count++)
-	    ;
-	smart_sort(files, count);
-
-	for (int i = 0; i < count; i++)
+	string mask = dirs[i] + "/*";
+	char **files = glob_filename(mask);
+	if (files == (char **)0)
 	{
-	    string file = files[i];
-	    free(files[i]);
-	    file = file.after('/', -1);
-	    arr += file;
+	    cerr << mask << ": glob failed\n";
 	}
-	free((char *)files);
+	else if (files == (char **)-1)
+	{
+	    if (errno != 0)
+		post_warning(string(mask) + ": " + strerror(errno), 
+			     "no_themes_warning");
+	}
+	else
+	{
+	    int count;
+	    for (count = 0; files[count] != 0; count++)
+		;
+	    smart_sort(files, count);
+
+	    for (int i = 0; i < count; i++)
+	    {
+		string file = files[i];
+		free(files[i]);
+		arr += file;
+	    }
+	    free((char *)files);
+	}
     }
+
+    delete[] dirs;
 }
 
 static void add_themes(Widget form, int& row, Dimension& max_width)
