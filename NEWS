@@ -5,6 +5,11 @@ DDD 1.5 (in development)
 ------------------------
 
     User-visible changes:
+    - DDD now supports HP XDB and DEC DBX debuggers.
+    - Improved general DBX support.  DDD determines DBX features dynamically
+      at run-time and adapts to a wide range of DBX variants.
+    - Improved directory support.  Sources and executables can reside
+      in several different directories; the `cd' command works as well.
     - New command tool.  All command buttons that do not take
       arguments are now located in the command tool, a small separate
       window.  The command tool can be moved wherever appropriate,
@@ -16,13 +21,6 @@ DDD 1.5 (in development)
       selected, the new display is made dependent on it.
     - Variable values can now be changed interactively using the
       `Set ()' button.
-    - Improved DBX support.  DDD determines DBX features dynamically
-      at run-time and can adapt to a wide range of DBX variants.  For
-      instance, DDD now properly works with DEC DBX.
-    - Improved directory support.  Sources and executables can reside
-      in several different directories; the `cd' command works as well.
-    - Bits and pieces of XDB support for HP-UX users.  Not fully 
-      functional yet.
 
     Changes in configuration and building:
     - Regular expressions now use the POSIX.2 standard regcomp/regexec

@@ -26,7 +26,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 .\"
-.TH @ddd@ 1 "2 April 1996" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "15 August 1996" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger (v@VERSION@)
 .SH SYNOPSIS
@@ -37,6 +37,7 @@
 .RB "[\|" \-\-nw "\|]"
 .RB "[\|" \-\-gdb "\|]"
 .RB "[\|" \-\-dbx "\|]"
+.RB "[\|" \-\-xdb "\|]"
 .RB "[\|" \-\-debugger
 .I gdb-name\c
 \&\|]
@@ -115,9 +116,10 @@ effects of one bug and go on to learn about another.
 \*(lqClassical\*(rq \s-2UNIX\s+2 debuggers such as the \s-2GNU\s+2
 debugger (\s-2GDB\s+2) provide a command-line interface and a
 multitude of commands for these and other debugging purposes.
-\s-2@DDD@\s+2 is a \fIwrapper\fR around an inferior \s-2GDB\s+2 or
-\s-2DBX\s+2 debugger.  In addition to the \s-2GDB\s+2 or \s-2DBX\s+2
-command-line interface, \s-2@DDD@\s+2 provides a \fIgraphical user
+\s-2@DDD@\s+2 is a \fIwrapper\fR around an inferior \s-2GDB\s+2,
+\s-2DBX\s+2, or \s-2XDB\s+2 debugger.  
+In addition to the command-line interface of the inferior debugger,
+\s-2@DDD@\s+2 provides a \fIgraphical user
 interface\fR to support common debugging tasks.  The \s-2@DDD@\s+2
 \fIgraphical data display\fR allows for interactive exploration of
 data structures.
@@ -165,8 +167,14 @@ By default, \s-2@DDD@\s+2 uses \s-2GDB\s+2 as inferior debugger.  Use
   \fB@ddd@\ \-\-dbx program\fR
 .br
 .sp
+or
+.sp
+.br
+  \fB@ddd@\ \-\-xdb program\fR
+.br
+.sp
 .\"
-to run \s-2DBX\s+2 as inferior debugger for the program.
+to run \s-2DBX\s+2 or \s-2XDB\s+2 as inferior debugger.
 .PP
 To learn more about \s-2@DDD@\s+2 options, run
 .sp
@@ -187,22 +195,25 @@ You can get help on any visible \s-2@DDD@\s+2 item by pressing the
 want help for.  Clicking on the item pops up a help text.
 .PP
 You can get help on \s-2GDB\s+2 and \s-2DBX\s+2 commands by entering
-the `\fBhelp\fR' command at the `\fB(gdb)\fR' or `\fB(dbx)\fR' prompt
-(see next section).
+`\fBhelp\fR' at the `\fB(gdb)\fR' or `\fB(dbx)\fR' prompt.  You can
+get help on \s-2XDB\s+2 commands by entering `\fBhelp\fR' at the
+`\fB>\fR' prompt.  See the following section for details on entering
+commands.
 .PP
 .\"
 .\" ---------------
 .SH "ENTERING COMMANDS"
 .\" ---------------
 .\"
-In the \fIcommand window\fR, you can interact with the \s-2GDB\s+2 or
-\s-2DBX\s+2 command interface.  Enter \s-2GDB\s+2 commands at the
-`\fB(gdb)\fR' prompt, and \s-2DBX\s+2 commands at the `\fB(dbx)\fR'
-prompt.  Arbitrary \s-2GDB\s+2 and \s-2DBX\s+2 commands can be used.
+In the \fIcommand window\fR, you can interact with the command
+interface of the inferior debugger.  Enter commands at the \fIdebugger
+prompt\fR\(em\&that is, `\fB(gdb)\fR' for \s-2GDB\s+2, `\fB(dbx)\fR'
+for \s-2DBX\s+2, and `\fB>\fR' for \s-2XDB\s+2.  You can use arbitrary
+debugger commands; use the \s-2\fBRETURN\fR\s+2 key to enter them.
 .PP
 You can \fIrepeat\fR previous and next commands by pressing the
-`\fBUp\fR' and `\fBDown\fR' keys, respectively.  If you enter an empty
-line, the last command is repeated as well.  The `\fBCommand
+`\fBUp\fR' and `\fBDown\fR' cursor keys, respectively.  If you enter
+an empty line, the last command is repeated as well.  The `\fBCommand
 History...\fR' item in the `\fBCommands...\fR' menu shows the command
 history.
 .PP
@@ -210,20 +221,17 @@ Using \s-2GDB\s+2, you can \fIcomplete\fR commands and arguments by
 pressing the \s-2\fBTAB\fR\s+2 key; pressing the \s-2\fBTAB\fR\s+2 key
 multiple times shows one possible expansion after the other.
 .PP
-Here are some of the most frequently needed debugger commands:
+Here are some of the most frequently needed debugger commands.
+.\"
+.SS "GDB commands"
 .TP
 .B break \fR[\|\fIfile\fB:\fR\|]\fIfunction
 \&
-(\s-2GDB\s+2 only) Set a breakpoint at \c
+Set a breakpoint at \c
 .I function\c
 \& (in \c
 .I file\c
 \&).
-.TP
-.B stop in \fIfunction
-\&
-(\s-2DBX\s+2 only) Set a breakpoint at \c
-.I function.
 .TP
 .B run \fR[\|\fIarglist\fR\|]
 Start your program (with \c
@@ -270,7 +278,111 @@ The same text is available online as the \c
 .B info\c
 \& program.
 .PP
+.\"
+.SS "DBX commands"
+.B stop in \fIfunction
+\&
+Set a breakpoint at \c
+.I function.
+.TP
+.TP
+.B break \fR[\|\fIfile\fB:\fR\|]\fIfunction
+\&
+Set a breakpoint at \c
+.I function\c
+\& (in \c
+.I file\c
+\&).
+.TP
+.B run \fR[\|\fIarglist\fR\|]
+Start your program (with \c
+.I arglist\c
+\&, if specified).
+.TP
+.B where
+Display the program stack.
+.TP
+.BI print " expr"\c
+\&
+Display the value of an expression.
+.TP
+.B cont
+Continue running your program (after stopping, e.g. at a breakpoint).
+.TP
+.B next
+Execute next program line (after stopping); step \c
+.I over\c
+\& any
+function calls in the line.
+.TP
+.B step
+Execute next program line (after stopping); step \c
+.I into\c
+\& any
+function calls in the line.
+.TP
+.B help \fR[\|\fIname\fR\|]
+Show information about the command \c
+.I name\c
+\&, or general usage information.
+.TP
+.B quit
+Exit \s-2@DDD@\s+2.
+.PP
 For full details on \s-2DBX\s+2 commands, see the \s-2DBX\s+2
+documentation.
+.\"
+.SS "XDB commands"
+.TP
+.B b \fR[\|\fIfile\fB:\fR\|]\fIline
+\&
+Set a breakpoint at line \c
+.I line\c
+\& (in \c
+.I file\c
+\&).
+.TP
+.B b \fIfunction
+\&
+Set a breakpoint at \c
+.I function.
+.TP
+.B r \fR[\|\fIarglist\fR\|]
+Start your program (with \c
+.I arglist\c
+\&, if specified).
+.TP
+.B t
+Display the program stack.
+.TP
+.BI p " expr"\c
+\&
+Display the value of an expression.
+.TP
+.B c
+Continue running your program (after stopping, e.g. at a breakpoint).
+.TP
+.B S
+Execute next program line (after stopping); step \c
+.I over\c
+\& any
+function calls in the line.
+.TP
+.B s
+Execute next program line (after stopping); step \c
+.I into\c
+\& any
+function calls in the line.
+.TP
+.B h \fR[\|\fIname\fR\|]
+Show information about the command \c
+.I name\c
+\&, or general usage information.
+.TP
+.B q
+Exit \s-2@DDD@\s+2.
+.PP
+For full details on \s-2XDB\s+2 commands, see the \s-2XDB\s+2
 documentation.
 .PP
 .\"
@@ -291,6 +403,9 @@ To open a core dump for the program, select `\fBOpen Core\fR' from the
 To open an arbitrary source file, select `\fBOpen Source\fR' from the
 `\fBFile\fR' menu.
 .PP
+Note: With \s-2XDB\s+2 and some \s-2DBX\s+2 versions, the debugged
+program must be specified upon invocation and cannot be changed at run
+time.
 .\"
 .\" ---------------
 .SH "BREAKPOINTS"
@@ -307,14 +422,14 @@ Using the source window, you can make the program stop at certain
 .SS "Setting Breakpoints by Location"
 .\"
 If the source line is visible, click with the \fIleft mouse button\fR
-on the source line number and then on the `\fBBreak()\fR' button.
+on the source line number and then on the `\fBBreak at ()\fR' button.
 .PP
 As an alternative, you can simply press the \fIright mouse button\fR
 on the source line number and select the `\fBSet Breakpoint\fR' item
 from the popup menu.
 .PP
 As another alternative, you can enter the line number in the argument
-field (indicated by `\fB():\fR') and click on the `\fBBreak()\fR'
+field (indicated by `\fB():\fR') and click on the `\fBBreak at ()\fR'
 button.
 .PP
 As yet another alternative, you can select `\fBEdit Breakpoints...\fR'
@@ -324,14 +439,15 @@ the line number.
 And finally, you can also use the \s-2GDB\s+2 `\fBbreak\fR' command or
 the \s-2DBX\s+2 `\fBstop\fR' command.  Type `\fBhelp break\fR' at the
 `\fB(gdb)\fR' prompt (or `\fBhelp stop\fR' at the `\fB(dbx)\fR'
-prompt) for details.
+prompt) for details.  The \s-2XDB\s+2 `\fBb\fR' command works as well.
 .PP
 (If you find this number of alternatives confusing, be aware that
 \s-2@DDD@\s+2 users fall into three categories, which must all be
 supported.  \fINovice users\fR explore \s-2@DDD@\s+2 and may prefer to
 use one single mouse button.  \fIAdvanced users\fR know how to use
-shortcuts and prefer popup menus.  \fIExperienced \s-2GDB\s+2 and
-\s-2DBX\s+2 users\fR prefer the command line interface.)
+shortcuts and prefer popup menus.  \fIExperienced \s-2GDB\s+2,
+\s-2DBX\s+2, and \s-2XDB\s+2 users\fR prefer the command line
+interface.)
 .PP
 Breakpoints are indicated by a plain stop sign, 
 or as `\fB#\fIn\fB#\fR', where \fIn\fR is the breakpoint number.
@@ -341,7 +457,7 @@ or as `\fB#\fIn\fB#\fR', where \fIn\fR is the breakpoint number.
 .\"
 If the function name is visible, click with the \fIleft
 mouse button\fR' on the function name.  The function name is copied to
-the argument field.  Click on the `\fBBreak()\fR' button to set a
+the argument field.  Click on the `\fBBreak at ()\fR' button to set a
 breakpoint there.
 .PP
 As a shorter alternative, you can simply press the \fIright
@@ -350,7 +466,7 @@ from the popup menu.
 .PP
 As another alternative, you can enter the function name in the
 argument field (possibly using name completion by pressing the
-`\fBTab\fR' key) and click on the `\fBBreak()\fR' button.
+`\fBTab\fR' key) and click on the `\fBBreak at ()\fR' button.
 .PP
 As yet another alternative, you can click on `\fBNew\fR' from the
 Breakpoint editor (invoked through `\fBEdit Breakpoints...\fR'
@@ -359,7 +475,7 @@ in the `\fBSource\fR' menu) and enter the function name.
 Finally, you can use the \s-2GDB\s+2 `\fBbreak\fR' command or the
 \s-2DBX\s+2 `\fBstop\fR' command.  Type `\fBhelp break\fR' at the
 `\fB(gdb)\fR' prompt (or `\fBhelp stop\fR' at the `\fB(dbx)\fR'
-prompt) for details.
+prompt) for details.  The \s-2XDB\s+2 `\fBb\fR' command works as well.
 .\"
 .\"
 .SS "Disabling and Enabling Breakpoints"
@@ -392,24 +508,24 @@ Temporary breakpoints are convenient to make the program continue up
 to a specific location: just set the temporary breakpoint at this
 location and continue execution.
 .PP
-The `\fBContinue Until Here\fR' item from the popup menu sets
-a temporary breakpoint on the source line number and immediately
+The `\fBContinue Until Here\fR' item from the popup menu sets a
+temporary breakpoint on the source line number and immediately
 continues execution.  In \s-2GDB\s+2, execution stops when a source
 line greater than the source line is reached, or when the current
-stack frame is exited.  In \s-2DBX\s+2, execution stops when the
-temporary breakpoint is reached.
+stack frame is exited.  In \s-2DBX\s+2 and \s-2XDB\s+2, execution
+stops when the temporary breakpoint is reached.
 .\"
 .\"
 .SS "Deleting Breakpoints"
 If the breakpoint is visible, click with the \fIleft mouse button\fR
 on the breakpoint.  The breakpoint location is copied to the argument
-field.  Click on the `\fBClear()\fR' button to delete all breakpoints
-there.
+field.  Click on the `\fBClear at ()\fR' button to delete all
+breakpoints there.
 .PP
 If the function name is visible, click with the \fIleft mouse
 button\fR on the function name.  The function name is copied to the
-argument field.  Click on the `\fBClear()\fR' button to set a breakpoint
-there.
+argument field.  Click on the `\fBClear at ()\fR' button to set a
+breakpoint there.
 .PP
 As a shorter alternative, you can simply press the \fIright mouse
 button\fR on the function name and select the `\fBclear\fR' item from
@@ -510,7 +626,7 @@ arguments.
 To run your program again, with the same arguments, select `\fBRun
 Again\fR' from the `\fBProgram\fR' menu or press the `\fBRun\fR'
 button below.  You may also enter `\fBrun\fR', followed by arguments
-at the `\fB(gdb)\fR' or `\fB(dbx)\fR' prompt instead.
+at the debugger prompt instead.
 .PP
 When the program is first started, \s-2@DDD@\s+2 invokes an \fIexecution
 window\fR, where the program terminal input and output is shown.  (You
@@ -524,7 +640,7 @@ The program stops as soon as a breakpoint is reached.  The current
 execution position is highlighted by an arrow.
 .PP
 You can interrupt a running program any time by clicking the
-`\fBInterrupt\fR' button or typing \fBCtrl+C\fR in a \s-2@DDD@\s+2 window.
+`\fBBreak\fR' button or typing \fBCtrl+C\fR in a \s-2@DDD@\s+2 window.
 .\"
 .\"
 .SS "Resuming Execution"
@@ -562,8 +678,8 @@ one.
 The `\fBDown\fR' button selects the function that was called by
 the current one.
 .PP
-You can also type the \s-2GDB\s+2 and \s-2DBX\s+2 `\fBup\fR' and
-`\fBdown\fR' commands at the `\fB(gdb)\fR' or `\fB(dbx)\fR' prompt.
+You can also directly type the `\fBup\fR' and `\fBdown\fR' commands at
+the debugger prompt.
 .PP
 .\"
 .\" ---------------
@@ -599,7 +715,7 @@ Finally, you may enter
   \fBgraph display \fI expr\fR
 .sp
 .br
-\&at the `\fB(gdb)\fR' or `\fB(dbx)\fR' prompt.
+\&at the debugger prompt.
 .\"
 .\"
 .SS "Selecting Displays"
@@ -673,18 +789,18 @@ dependency is indicated by arrows leading from the originating display
 to the dependent display.
 .PP
 To create a dependent display, select the originating display or
-display part and click on the `\fBDependent()\fR' button.  A
-prompt dialog appears where you can enter a new expression \fIEXPR\fR
-in the argument field.  By clicking on `\fBOK\fR', the new display
-showing \fIEXPR\fR is created.
+display part and click on the `\fBNew Display\fR' button.  A prompt
+dialog appears where you can enter a new expression \fIEXPR\fR in the
+argument field.  By clicking on `\fBOK\fR', the new display showing
+\fIEXPR\fR is created.
 .PP
 As a faster alternative, you can also press the \fIright mouse
-button\fR on the originating display part and select the `\fBDependent
+button\fR on the originating display part and select the `\fBNew
 Display...\fR' menu item.
 .PP
 Using dependent displays, you can investigate the data structure of a
-\*(lqtree\*(rq for example and lay it out according to your intuitive image
-of the \*(lqtree\*(rq data structure.
+\*(lqtree\*(rq for example and lay it out according to your intuitive
+image of the \*(lqtree\*(rq data structure.
 .\"
 .\"
 .SS "Dereferencing Pointers"
@@ -694,12 +810,12 @@ there is a shortcut for creating dependent displays showing the value
 of a dereferenced pointer.
 .PP
 To dereference a pointer, select the originating pointer value or name
-and click on the `\fBDereference()\fR' button.  A new display showing
+and click on the `\fBDisplay * ()\fR' button.  A new display showing
 the dereferenced pointer value is created.
 .PP
 As a faster alternative, you can also press the \fIright mouse
 button\fR on the originating pointer value or name and select the
-`\fBDereference\fR' menu item.
+`\fBDisplay *\fR' menu item.
 .\"
 .\"
 .SS "Displaying Multiple Array Items"
@@ -721,7 +837,7 @@ display.  Thus,
 creates ten new display nodes for `\fBargv[0]\fR',
 `\fBargv[1]\fR', ..., `\fBargv[9]\fR'.
 .PP
-As an alternative, you can use \s-2GDB\s+2 \fIartificial arrays\fR.
+Using \s-2GDB\s+2 as inferior debugger, you can use \fIartificial arrays\fR.
 Typing
 .sp
 .br
@@ -733,6 +849,19 @@ creates a single array display node containing `\fBargv[0]\fR' up to
 can specify the number of array elements to be displayed.
 .PP
 For more details on artificial arrays, see the \s-2GDB\s+2 documentation.
+.\"
+.\"
+.SS "Altering Variable Values"
+.\"
+Using the `\fBSet ()\fR' button or the `\fBSet Value\fR' menu item in
+the data popup menu, you can alter the value of the selected variable,
+to resume execution with the changed value.  In a dialog, you can
+modify the variable value at will; clicking the `\fBOK\fR' or
+`\fBApply\fR' button commits your change.
+.PP
+Note that most inferior debuggers have no support for changing entire
+structures; you must change each primitive structure member
+separately.
 .\"
 .\"
 .SS "Deleting Displays"
@@ -755,9 +884,9 @@ As an alternative, you can also type
   \fBundisplay \fINUM...\fR
 .sp
 .br
-at the `\fB(gdb)\fR' or `\fB(dbx)\fR' prompt, where \fINUM...\fR is a
-space-separated list of the displays to delete.  You may need to
-refresh the data window afterwards (see below).
+at the debugger prompt, where \fINUM...\fR is a space-separated list
+of the displays to delete.  You may need to refresh the data window
+afterwards (see below).
 .\"
 .\"
 .SS "Disabling or Enabling Displays"
@@ -798,8 +927,8 @@ explicitly.
 The data window should be refreshed whenever:
 .br
 .IP \(bu 2
-you disabled, enabled or deleted displays items at the
-`\fB(gdb)\fR' or `\fB(dbx)\fR' prompt,
+you disabled, enabled or deleted displays items at the debugger
+prompt,
 .br
 .IP \(bu 2
 the display stays unchanged although all items should be deleted
@@ -821,7 +950,7 @@ Typing
   \fBgraph refresh\fR
 .sp
 .br
-at the `\fB(gdb)\fR' or `\fB(dbx)\fR' prompt has the same effect.
+at the debugger prompt has the same effect.
 .PP
 .\"
 .\" ---------------
@@ -928,7 +1057,7 @@ editor, or for conversion into other formats using the
 .SH "MACHINE-LEVEL DEBUGGING"
 .\" ---------------
 .\"
-Note: Machine-level support is not available with \s-2DBX\s+2.
+Note: Machine-level support is available with \s-2GDB\s+2 only.
 .PP
 Sometimes, it is desirable to examine a program not only at the
 source level, but also at the machine level.  \s-2@DDD@\s+2 provides
@@ -945,8 +1074,8 @@ code, you can resize the source and machine code windows.
 .PP
 The machine code window works very much like the source window.  You
 can set, clear, and change breakpoints by selecting the address and
-pressing a `\fBBreak()\fR' or `\fBClear()\fR' button; the usual
-popup menus are also available.  Breakpoints and the current
+pressing a `\fBBreak at ()\fR' or `\fBClear at ()\fR' button; the
+usual popup menus are also available.  Breakpoints and the current
 execution position are displayed simultaneously in both source and
 machine code.
 .PP
@@ -1031,23 +1160,24 @@ recompiled, this should seldom be necessary.
 .\" ---------------
 .\"
 To exit \s-2@DDD@\s+2, select `\fBExit\fR' from the `\fBFile\fR' menu.
-You may also type the `\fBquit\fR' command at the `\fB(gdb)\fR' or
-`\fB(dbx)\fR' prompt.  \s-2GDB\s+2 also accepts the `\fBq\fR' command
-or an end-of-file character (usually \fBCtrl+D\fR).
+You may also type the `\fBquit\fR' command at the debugger prompt.
+\s-2GDB\s+2 and \s-2XDB\s+2 also accept the `\fBq\fR' command or an
+end-of-file character (usually \fBCtrl+D\fR).
 .PP
-An interrupt (\fBCtrl+C\fR) does not exit from \s-2@DDD@\s+2, but rather
-terminates the action of any \s-2GDB\s+2 or \s-2DBX\s+2 command that
-is in progress and returns to the debugger command level.  It is safe
-to type the interrupt character at any time because the debugger does
-not allow it to take effect until a time when it is safe.
+An interrupt (\fBCtrl+C\fR or \fBBreak\fR) does not exit from
+\s-2@DDD@\s+2, but rather terminates the action of any debugger
+command that is in progress and returns to the debugger command level.
+It is safe to type the interrupt character at any time because the
+debugger does not allow it to take effect until a time when it is
+safe.
 .PP
 You may also interrupt \s-2@DDD@\s+2 using an interrupt signal
-(\s-2SIGINT\s+2)\(em\&for instance by pressing \fBCtrl+C\fR in the shell
-\s-2@DDD@\s+2 was started from, or by using the \s-2UNIX\s+2
+(\s-2SIGINT\s+2)\(em\&for instance by pressing \fBCtrl+C\fR in the
+shell \s-2@DDD@\s+2 was started from, or by using the \s-2UNIX\s+2
 `\fBkill\fR' command.  This interrupts any \s-2@DDD@\s+2 action; the
-inferior \s-2GDB\s+2 or \s-2DBX\s+2 debugger is interrupted as well.
-Use this as a last resort in emergencies only\(em\&if \s-2@DDD@\s+2
-hangs, for example.
+inferior debugger is interrupted as well.  Since this interrupt signal
+can result in internal inconsistencies, use this as a last resort in
+emergencies only\(em\&if \s-2@DDD@\s+2 hangs, for example.
 .PP
 .\"
 .\"
@@ -1055,10 +1185,10 @@ hangs, for example.
 .SH "REMOTE DEBUGGING"
 .\" ---------------
 .\"
-It is possible to have \s-2GDB\s+2 or \s-2DBX\s+2 run on a remote
+It is possible to have the inferior debugger run on a remote
 \s-2UNIX\s+2 host.  This is useful when the remote host has a slow
-network connection or when \s-2@DDD@\s+2 is available on the local host
-only.
+network connection or when \s-2@DDD@\s+2 is available on the local
+host only.
 .PP
 In order to run the inferior debugger on a remote host, you need
 `\fBremsh\fR' (called `\fBrsh\fR' on \s-2BSD\s+2 systems) access on
@@ -1143,13 +1273,13 @@ front-ends, combining their special abilities with those of
 .PP
 .SS "General Information"
 To have \s-2@DDD@\s+2 run as an inferior debugger in other front-ends,
-set up your debugger front-end such that `\fB@ddd@ \-\-tty\fR'
-is invoked instead of \s-2GDB\s+2 resp. \s-2DBX\s+2.  When
-\s-2@DDD@\s+2 is invoked using the `\fB\-\-tty\fR' option, it enables
-its \fI\s-2TTY\s+2 interface\fR, taking additional debugger commands from
+set up your debugger front-end such that `\fB@ddd@ \-\-tty\fR' is
+invoked instead of the inferior debugger.  When \s-2@DDD@\s+2 is
+invoked using the `\fB\-\-tty\fR' option, it enables its
+\fI\s-2TTY\s+2 interface\fR, taking additional debugger commands from
 standard input and forwarding debugger output to standard output, just
-as if the inferior debugger had been invoked directly.  All
-remaining \s-2@DDD@\s+2 functionality stays unchanged.
+as if the inferior debugger had been invoked directly.  All remaining
+\s-2@DDD@\s+2 functionality stays unchanged.
 .PP
 In case your debugger front-end uses the \s-2GDB\s+2
 `\fB\-fullname\fR' option to have \s-2GDB\s+2 report source code
@@ -1302,11 +1432,11 @@ This change takes only effect after you have saved options and
 restarted \s-2@DDD@\s+2.  See also the `\fB\-\-panned\-graph\fR' and
 `\fB\-\-scrolled\-graph\fR' options, below.
 .PP
-By default, \s-2@DDD@\s+2 runs with \s-2GDB\s+2 as inferior
-debugger.  To change this default, set the `\fBDebugger Type\fR'
-option to another debugger.  This change takes only effect after you
-have saved options and restarted \s-2@DDD@\s+2.  See also the
-`\fB\-\-gdb\fR' and `\fB\-\-dbx\fR' options, below.
+By default, \s-2@DDD@\s+2 runs with \s-2GDB\s+2 as inferior debugger.
+To change this default, set the `\fBDebugger Type\fR' option to
+another debugger.  This change takes only effect after you have saved
+options and restarted \s-2@DDD@\s+2.  See also the `\fB\-\-gdb\fR',
+`\fB\-\-dbx\fR', and `\fB\-\-xdb\fR' options, below.
 .\"
 .SS "Saving Options"
 You can save the current option settings by selecting `\fBSave
@@ -1401,8 +1531,8 @@ Run the \s-2DBX\s+2 debugger as inferior debugger.
 .TP
 .B \-\-debugger \fIname\fR
 Invoke the inferior debugger \fIname\fR.  This is useful if you have
-several debugger versions around, or if \s-2GDB\s+2 and \s-2DBX\s+2
-cannot be invoked as `\fBgdb\fR' or `\fBdbx\fR', respectively.
+several debugger versions around, or if the inferior debugger cannot
+be invoked as `\fBgdb\fR', `\fBdbx\fR', or `\fBxdb\fR', respectively.
 .TP
 .B \-\-exec\-window
 Run the debugged program in a specially created execution window.
@@ -1494,6 +1624,9 @@ directory list).
 Show a list of further options controlling the \s-2VSL\s+2
 interpreter.  These options are intended for debugging purposes and
 are subject to change without further notice.
+.TP
+.B \-\-xdb
+Run the \s-2XDB\s+2 debugger as inferior debugger.
 .PP
 .\" ---------------
 .SH "RESOURCES"
@@ -1518,6 +1651,9 @@ Individual \s-2DDD\s+2 resource file.  \s-2DDD\s+2 options are saved here.
 .TP
 .B $HOME/.dbxinit
 \s-2DBX\s+2 initialization file.
+.TP
+.B $HOME/.xdbrc
+\s-2XDB\s+2 initialization file.
 .PD
 .PP
 .\"
@@ -1527,6 +1663,7 @@ Individual \s-2DDD\s+2 resource file.  \s-2DDD\s+2 options are saved here.
 .BR X (1),
 .BR gdb (1),
 .BR dbx (1),
+.BR xdb (1),
 .BR remsh (1),
 .BR rsh (1)
 .PP
@@ -1629,14 +1766,26 @@ order to operate properly.  This also affects the output of the
 debugged program when sent to the command window.  Using the separate
 execution window avoids these problems.
 .PP
+Some \s-2DBX\s+2 versions (notably \s-2DEC\s+2 \s-2DBX\s+2) do not
+support the `\fBdisplay\fR' command.  As a workaround, \s-2@DDD@\s+2
+uses the `\fBprint\fR' command to access data values.  Consequently,
+data outside the current frame cannot be displayed; under certain
+circumstances, local displays may also be affected.
+.\"
+.SS "Limitations using XDB"
+\s-2XDB\s+2 does not support the `\fBdisplay\fR' command.  As a
+workaround, \s-2@DDD@\s+2 uses the `\fBp\fR' command to access data
+values.  Consequently, data outside the current frame
+cannot be displayed; under certain circumstances, local displays may
+also be affected.
 .\"
 .SS "General Limitations"
 If command output is sent to the command window, it is impossible for
 \s-2@DDD@\s+2 to distinguish between the output of the debugged
 program and the output of the inferior debugger.  For instance, if
-your program output includes debugger prompts, \s-2@DDD@\s+2 will
-become confused.  Using the separate execution window avoids these
-problems.
+your program output includes debugger prompts or debugger-like output,
+\s-2@DDD@\s+2 will become confused.  Use the separate execution window
+to avoid such problems.
 .PP
 Paper sizes larger than 2,147,483,648pt (757km, 470 miles) can not be
 handled.
@@ -1755,12 +1904,12 @@ include at least the \s-2@DDD@\s+2 version, the type of machine you
 are using, and its operating system name and version number.
 .br
 .IP \(bu 2
-The debugger you are using and its version (e.g., `\fBgdb-4.14\fR' or
-`\fBdbx as shipped with Solaris 2.4\fR').
+The debugger you are using and its version (e.g., `\fBgdb-4.16\fR' or
+`\fBdbx as shipped with Solaris 2.5\fR').
 .br
 .IP \(bu 2
 The compiler you used to compile \s-2@DDD@\s+2 and its version (e.g.,
-`\fBgcc-2.6.3\fR').
+`\fBgcc-2.8.0\fR').
 .br
 .IP \(bu 2
 A description of what behavior you observe that you believe is
@@ -1787,7 +1936,6 @@ Be sure to include this information in \fIevery\fR single bug report.
 .\" ---------------
 .SH HISTORY
 .\" ---------------
-.\"
 The history of \s-2@DDD@\s+2 is a story of code recycling.  The oldest
 parts of \s-2@DDD@\s+2 were written in 1990, when \fIAndreas Zeller\fR
 designed \s-2VSL\s+2, a box-based visual structure language for
@@ -1823,10 +1971,14 @@ May, 1995
 First public \s-2@DDD@\s+2 release (\s-2@DDD@\s+2 1.0)
 .TP
 August, 1995
-Code adapted to ANSI/ISO C++ standard (\s-2@DDD@\s+2 1.3)
+Code adapted to \s-2ANSI/ISO\s+2 C++ standard (\s-2@DDD@\s+2 1.3)
 .TP
 December, 1995
-Machine-level debugging, glyphs, \s-2EMACS\s+2 integration (\s-2@DDD@\s+2 1.4)
+Machine-level debugging, glyphs, \s-2EMACS\s+2 integration
+(\s-2@DDD@\s+2 1.4)
+.TP
+September, 1996
+\s-2XDB\s+2 support, command tool (\s-2@DDD@\s+2 1.5)
 .PD
 .PP
 .\"
