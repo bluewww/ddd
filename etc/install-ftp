@@ -159,7 +159,7 @@ fi
 
 if $doc; then
   (
-  cd ddd
+  cd sun/ddd
   if [ ! -f Makefile ]; then
     echo configuring ddd...
     ./configure -v
@@ -175,7 +175,7 @@ if $doc; then
 
   echo installing $DOC...
   $rsh "cd $dir/doc; /bin/rm -f $DOC"
-  (cd ../doc; $rcp -p $DOC $ftpdir/doc)
+  (cd ../../doc; $rcp -p $DOC $ftpdir/doc)
   $rsh "cd $dir/doc; gzip -f -v -9 $DOC"
 
   echo installing $SAMPLES...
