@@ -1,11 +1,16 @@
 Changes in DDD						-*- text -*-
 **************
 
-DDD 0.9.8
+DDD 0.9.9
 ---------
 
-Hopefully the last beta release before DDD 1.0.  This release should
-configure, compile and run on the following systems:
+Definitively the last beta release before DDD 1.0, which is scheduled
+for May 7th, 1995.  This release fixes sime minor bugs introduced by
+porting DDD on other machines (the AIX patches made DDD not run on
+HP-UX; the HP-UX patches made DDD not run on ULTRIX, and so on...).
+
+DDD should configure, compile and run out-of-the-box on the following
+systems:
 
     hppa1.1-hp-hpux9.05 
     linux-i386-unknown
@@ -17,9 +22,13 @@ configure, compile and run on the following systems:
     sparc-sun-solaris2
 
 If your system is in the list above, please let us know if you
-encountered any problems (unless they are known problems listed in the
-`BUGS' and `PROBLEMS' files).  If your system is not in the list
+encountered any problems (unless these are known problems listed in
+the `BUGS' and `PROBLEMS' files).  If your system is not in the list
 above, please let us share your experiences.
+
+
+DDD 0.9.8
+---------
 
 General Features:
 - Improved auto-configuration for HP-UX and Solaris.
