@@ -1070,6 +1070,9 @@ void RestartDebuggerCB(Widget, XtPointer, XtPointer)
     source_view->reset();
     data_disp->reset();
 
+    // Abort old GDB (if still running)
+    gdb->abort();
+
     // Start GDB again
     start_gdb(false);
 }
