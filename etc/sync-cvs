@@ -1,0 +1,19 @@
+#!/bin/sh
+# Sync CVS branch with main tree
+# Usage: sync [TAG]
+
+# The base name
+base=${1-DDD_3_1}
+
+# The name of the branch to sync from
+fixes=${base}_fixes
+
+# The tag to get 
+sync=${base}_sync
+
+# 1. Merge all changes since last sync into this trunk.
+set -x
+cvs update -j $sync -j $fixes .
+
+# 2. Set new sync tag on branch.  Note that this moves the tag.
+cvs rtag -F -r DDD_3_1_fixes $sync ddd
