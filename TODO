@@ -360,4 +360,9 @@ Volunteers for these and other projects are welcome!
      "preferences" facility: this would be an obvious place to add
      this capability.
 
-240 (Insert your project idea here)
+240 If a new display A' is created from some display A, copy the
+    selection state in A to A'.  This way, you can easily dereference
+    a series of `next' pointers just by pressing `Display *' again and 
+    again.
+
+241 (Insert your project idea here)
