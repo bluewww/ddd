@@ -2599,17 +2599,14 @@ Ddd*preferences*docs.labelString: in the status line
 Ddd*preferences*tabCompletion.labelString: \
 TAB key completes
 Ddd*preferences*inAllWindows.labelString: in all windows
-Ddd*preferences*inConsole.labelString: in console only
+Ddd*preferences*inConsole.labelString:    in console only
 
-Ddd*preferences*buttonHints.alignment:		XmALIGNMENT_END
 Ddd*preferences*buttonHints.width:      	240
 Ddd*preferences*buttonHints.recomputeSize:	false
 
-Ddd*preferences*valueHints.alignment:		XmALIGNMENT_END
 Ddd*preferences*valueHints.width:      		240
 Ddd*preferences*valueHints.recomputeSize:	false
 
-Ddd*preferences*tabCompletion.alignment:	XmALIGNMENT_END
 Ddd*preferences*tabCompletion.width:      	240
 Ddd*preferences*tabCompletion.recomputeSize:	false
 
@@ -2656,7 +2653,6 @@ Ddd*preferences*showExecPos.labelString:	Show position and breakpoints
 Ddd*preferences*asGlyphs.labelString:		as glyphs
 Ddd*preferences*asText.labelString:		as text characters
 
-Ddd*preferences*showExecPos.alignment:		XmALIGNMENT_END
 Ddd*preferences*showExecPos.width:		200
 Ddd*preferences*showExecPos.recomputeSize:	false
 
@@ -2664,7 +2660,6 @@ Ddd*preferences*referSources.labelString:	Refer to program sources
 Ddd*preferences*byPath.labelString:		by full path name
 Ddd*preferences*byBase.labelString:		by base name only
 
-Ddd*preferences*referSources.alignment:		XmALIGNMENT_END
 Ddd*preferences*referSources.width:		200
 Ddd*preferences*referSources.recomputeSize:	false
 
@@ -2672,7 +2667,6 @@ Ddd*preferences*cache.labelString:	        Cache
 Ddd*preferences*cacheSource.labelString:	source files
 Ddd*preferences*cacheCode.labelString:		machine code
 
-Ddd*preferences*cache.alignment:		XmALIGNMENT_END
 Ddd*preferences*cache.width:		        200
 Ddd*preferences*cache.recomputeSize:	        false
 
@@ -2680,7 +2674,6 @@ Ddd*preferences*find.labelString:	        Find
 Ddd*preferences*wordsOnly.labelString:		words only
 Ddd*preferences*caseSensitive.labelString:	case sensitive
 
-Ddd*preferences*find.alignment:		        XmALIGNMENT_END
 Ddd*preferences*find.width:		        200
 Ddd*preferences*find.recomputeSize:	        false
 
@@ -2783,42 +2776,36 @@ Click on LBL(Reset) to restore the saved preferences.
 Ddd*preferences*startup*adjustMargin:		false
 
 Ddd*preferences*windows.labelString:		DDD comes in
-Ddd*preferences*windows.alignment:		XmALIGNMENT_END
 Ddd*preferences*windows.width:			200
 Ddd*preferences*windows.recomputeSize:		false
 Ddd*windowsMenu*separate.labelString:		separate windows
 Ddd*windowsMenu*attached.labelString:		one single window
 
 Ddd*preferences*statusPosition.labelString:	Status line is located
-Ddd*preferences*statusPosition.alignment:	XmALIGNMENT_END
 Ddd*preferences*statusPosition.width:		200
 Ddd*preferences*statusPosition.recomputeSize:	false
 Ddd*statusPositionMenu*bottom.labelString:	at bottom of source
 Ddd*statusPositionMenu*top.labelString:		at top of source
 
 Ddd*preferences*toolButtons.labelString:	Tool buttons are located
-Ddd*preferences*toolButtons.alignment:		XmALIGNMENT_END
 Ddd*preferences*toolButtons.width:		200
 Ddd*preferences*toolButtons.recomputeSize:	false
 Ddd*toolButtonsMenu*commandTool.labelString:	in command tool
 Ddd*toolButtonsMenu*sourceWindow.labelString:   in source window
 
 Ddd*preferences*keyboardFocus.labelString:	Keyboard focus is
-Ddd*preferences*keyboardFocus.alignment:	XmALIGNMENT_END
 Ddd*preferences*keyboardFocus.width:		200
 Ddd*preferences*keyboardFocus.recomputeSize:	false
 Ddd*keyboardFocusMenu*explicit.labelString:	click-to-type
 Ddd*keyboardFocusMenu*pointer.labelString:	point-to-type
 
 Ddd*preferences*dataScrolling.labelString:	Data is scrolled using
-Ddd*preferences*dataScrolling.alignment:	XmALIGNMENT_END
 Ddd*preferences*dataScrolling.width:		200
 Ddd*preferences*dataScrolling.recomputeSize:	false
 Ddd*dataScrollingMenu*panner.labelString:	a panner
 Ddd*dataScrollingMenu*scrollbars.labelString:	two scrollbars
 
 Ddd*preferences*debugger.labelString:		Debugger type is
-Ddd*preferences*debugger.alignment:		XmALIGNMENT_END
 Ddd*preferences*debugger.width:			200
 Ddd*preferences*debugger.recomputeSize:		false
 Ddd*debuggerMenu*gdb.labelString:		GDB
@@ -2827,7 +2814,6 @@ Ddd*debuggerMenu*xdb.labelString:		XDB
 Ddd*debuggerMenu*jdb.labelString:		JDB
 
 Ddd*preferences*showStartupLogo.labelString:	Show DDD splash screen
-Ddd*preferences*showStartupLogo.alignment:	XmALIGNMENT_END
 Ddd*preferences*showStartupLogo.width:		200
 Ddd*preferences*showStartupLogo.recomputeSize:	false
 
@@ -4119,20 +4105,17 @@ Ddd*print*options*isAligned:		      false
 Ddd*print*options*alignment:		      XmALIGNMENT_BEGINNING
 
 Ddd*print*print_to.labelString:		      Print To:
-Ddd*print*print_to.alignment:		      XmALIGNMENT_END
 Ddd*print*print_to.width:		      120
 Ddd*print*print_to.recomputeSize:	      false
 Ddd*print*print_to_field*printer.labelString: Printer
 Ddd*print*print_to_field*file.labelString:    File
 
 Ddd*print*print_command.labelString:	      Print Command:
-Ddd*print*print_command.alignment:	      XmALIGNMENT_END
 Ddd*print*print_command.width:		      120
 Ddd*print*print_command.recomputeSize:	      false
 Ddd*print*print_command_field.columns:	      48
 
 Ddd*print*file_name.labelString:	      File Name:
-Ddd*print*file_name.alignment:		      XmALIGNMENT_END
 Ddd*print*file_name.width:		      120
 Ddd*print*file_name.recomputeSize:	      false
 Ddd*print*file_name_field.columns:	      32
@@ -4141,21 +4124,18 @@ Ddd*print*postscript.labelString:	      PostScript
 Ddd*print*xfig.labelString:		      FIG
 
 Ddd*print*print_what.labelString:	      Print:
-Ddd*print*print_what.alignment:		      XmALIGNMENT_END
 Ddd*print*print_what.width:		      120
 Ddd*print*print_what.recomputeSize:	      false
 Ddd*print*all.labelString:		      All Displays
 Ddd*print*selected.labelString:		      Selected Displays
 
 Ddd*print*print_orientation.labelString:      Orientation:
-Ddd*print*print_orientation.alignment:	      XmALIGNMENT_END
 Ddd*print*print_orientation.width:	      120
 Ddd*print*print_orientation.recomputeSize:    false
 Ddd*print*portrait.labelString:		      Portrait
 Ddd*print*landscape.labelString:	      Landscape
 
 Ddd*print*paper_size.labelString:	      Paper Size:
-Ddd*print*paper_size.alignment:		      XmALIGNMENT_END
 Ddd*print*paper_size.width:		      120
 Ddd*print*paper_size.recomputeSize:	      false
 Ddd*print*paper_size_field.orientation:	      XmVERTICAL
