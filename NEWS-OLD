@@ -1,5 +1,240 @@
-Old DDD News (up to 2.1.1)					-*- text -*-
+Old DDD News (up to 2.2.3)					-*- text -*-
 **************************
+
+DDD 2.2.3
+=========
+
+    DDD 2.2.3 fixes some problems reported for DDD 2.2.2:
+    - `struct' recognition with DBX now works again.  (This one was serious.)
+    - `configure' now checks for correct ISO C++ <stdexcept>.
+    - DDD now runs under the `tvtwm' virtual desktop.
+    - DBX Settings now work with Solaris DBX.
+
+
+DDD 2.2.2
+=========
+
+    DDD 2.2.2 brings improved FORTRAN support, improvements in the
+    data display and fixes some minor bugs introduced in DDD 2.2.
+
+    User-visible changes to DDD 2.2.1:
+    - Improved FORTRAN support.  When debugging FORTRAN programs with
+      GDB, DDD now supports FORTRAN array indexing syntax, FORTRAN
+      pointer recognition, and lookup of FORTRAN functions with
+      trailing underscore `_'.
+    - The data display is now scope-sensitive: displays are
+      automatically hidden as they become inactive (out of scope) and
+      redisplayed as they become active again.  This is handy when
+      maintaining a multitude of displays in different scopes.  For
+      details, see the `hideInactiveDisplays' resource.
+    - Faster data exploration.  Double-clicking...
+      * ...on a pointer value: dereferences it.
+      * ...on a partially hidden value: shows more detail.
+      * ...on a fully shown value: hides it again.
+    - A display resize (due to value changes) now automatically
+      `bumps' adjacent displays such that they are not obscured;
+      see the `bumpDisplays' resource for details.
+    - Case-insensitive search in the source text is now supported;
+      see the `findCaseSensitive' resource for details.
+
+    Bug fixes:
+    - Getting and identifying core dumps now works on Solaris, AIX and
+      other architectures.
+    - `Edit' no longer causes DDD to crash.
+    - The separate execution TTY now works with Sun DBX 4.0.
+    - Improved XDB support.  XDB output no longer causes DDD to hang.
+    - Improved SGI DBX support.  File positions are now recognized;
+      DBX Settings work, too.
+    - Various quirks and memory leaks in the interaction between DDD
+      and the inferior debugger have been fixed.
+
+    Changes in debugging DDD:
+    - The interaction between DDD and the inferior debugger is now
+      logged in `~/.ddd/log'.  This is useful for bug reports.
+    - DDD dumps core upon fatal errors (but resumes execution).
+      This is useful for bug reports.
+
+    Changes in configuration and building:
+    - GCC 2.8.0 is supported.
+
+    There are also some more minor improvements and bug fixes; see the
+    `ChangeLog' file for details.
+
+
+
+DDD 2.2.1
+=========
+
+    DDD 2.2.1 fixes some minor bugs introduced in DDD 2.2.
+
+    User-visible changes to DDD 2.2:
+    - When saving a session, you can now select the method for getting
+      core files.  This is useful on Solaris and SunOS systems.
+
+    Bug fixes:
+    - Auto-raised menus have caused problems on some architectures:
+      they are now disabled by default.  Use `Ddd*autoRaiseMenu: true'
+      in `~/.ddd/init' to re-enable them.
+    - By default, DDD stops disassembling after 1024 bytes.  This is
+      useful when working with the machine code of huge functions.
+      See the `maxDisassemble' resource for more info.
+    - Several status and diagnostic messages have been reworked; they
+      now show the outcome of a command.
+    - DDD now works around a bug present in Linux libc 5.4.38 to
+      5.4.40 that prevented DDD <-> GDB communication.
+    - The `gcore' method for getting core files is now fully supported.
+    - Various glitches in command queue management have been fixed:
+      * Interacting with the debuggee (or interrupting it) now
+        properly discards pending debugger commands.
+      * In `--tty' mode, DDD can now handle long command sequences.
+        This is useful when running DDD from Emacs.
+      * In `--tty' mode, you can now send EOF (^D) characters to the
+        debugged program without having DDD terminate GDB.
+    - Trying to open non-existent source files no longer confuses GDB.
+    - When running in the background, DDD is no longer interrupted by
+      `tty output' signals upon initializing the execution window.
+    - PushButton menus work with LessTif >= 0.82 and with OSF/Motif 1.1.
+    - Command tool decoration has been improved and should now work
+      with all X window managers.
+
+    Changes in configuration and building:
+    - GNU libiberty and the GNU configure scripts are now up-to-date.
+    - The EGCS C++ compiler is supported (see `http://www.cygnus.com/egcs/').
+
+    There are also some more minor improvements and bug fixes.  See
+    the `ChangeLog' file for details.
+
+
+
+DDD 2.2
+=======
+
+    DDD 2.2 brings persistent sessions, an improved user interface,
+    attaching to running processes, display shortcuts, and more.
+
+    User-visible changes to DDD 2.1:
+    - Persistent sessions.
+      * You can now save the entire debugger and process state and
+        resume the session later.
+      * Saved state includes process memory and state, inferior
+        debugger settings, breakpoints, and data displays.
+      * X11R6 sessions are supported, too.  When used with a
+        session manager, DDD saves and restores its entire state.
+      * Persistent sessions work best with GDB; DBX and XDB are
+        partially supported, too.
+    - Improved user interface.
+      * DDD now requires less width and height.
+      * Source line numbers have been turned off (can be restored);
+        the breakpoint area extends to the first non-blank character.
+      * The `Disable ()' button for disabling displays has gone;
+        displays are now enabled or disabled via `Show ()/Hide ()'.
+      * The `Break at ()' and `Clear at ()' buttons have been merged
+        into one single dynamic button.
+      * The `Windows' menu is now called `View', complying with the
+        Motif style guide.
+      * Options are now grouped according to their functionality.  The
+        `Options' menu has gone.  Use `Edit' instead.
+      * The `Edit' menu has been completely rewritten, allowing for
+        better clipboard operations.  For instance, you can now copy
+        selected displays to the clipboard and paste them later.
+      * Several buttons provide new pulldown menus with useful functions.
+    - Improved command tool.
+      * The command tool is always auto-raised, i.e. placed on top of
+        the DDD windows.
+      * The command tool always comes with window manager decorations, 
+        such that you can easily move it around.
+      * The command tool sticks to the DDD source window: if you move
+        the DDD source window around, the command tool follows.
+    - Display shortcuts.  Once you have changed `p' to `(char *) p'
+      manually, DDD provides a menu shortcut for converting arbitrary
+      values to `(char *)'.
+    - Button editor.  User-defined buttons can now be defined,
+      changed, and deleted at run-time.
+    - Support for debugging processes running outside of DDD.  You can
+      attach to a running process, examine it, and resume execution.
+    - Helper customization.  You can now interactively select and
+      customize the applications to be used for the execution window,
+      for editing source code, for browsing the DDD WWW page, etc.
+    - Improved online manuals.
+      * Multiple manual browsers are supported.
+      * Manual browsers are realized as top-level windows.
+      * DDD no longer blocks while the manual is uncompressed and formatted.
+      * DDD stores manuals in `gzip' format, saving space in executables.
+    - New `What Now?' help.  Gives a hint on what you can do next,
+      depending on the current DDD state.  Useful for beginners.
+    - Improved data display.
+      * Displayed data is highlighted whenever it changes.
+      * Two-dimensional arrays are now laid out as tables.
+      * Numerical values are now aligned to the right.
+      * You can now incrementally `Show More' details of an object,
+        instead of showing all details at once.
+      * Processing displays can be interrupted by typing Ctrl+C.
+    - Drag and drop support.
+      * You can now alter the current execution position interactively
+        by dragging and dropping the execution arrow.  This allows you
+        to back up - perhaps with more breakpoints set-over a portion
+        of a program that has already executed, in order to examine
+        its execution in more detail.
+      * Breakpoints can be dragged and dropped, too.  This allows you
+        to move breakpoints to alternate positions, without changing
+        their properties.
+    - Improved display of breakpoints and execution positions.
+      * The current execution position is now properly cleared if
+        undetermined (no source, program terminated, etc.)
+      * If the program stopped due to a signal, this is indicated
+        by a lightning symbol within the current execution glyph.
+      * Faster scrolling.  While scrolling source or machine code at
+        high speed, glyphs are now unmapped.  Slow scrolling still
+        shows glyphs.
+    - Improved DBX and XDB support.
+      * DDD supports DBX and XDB breakpoint conditions.
+      * With SUN DBX 3.x, DDD also supports disabled breakpoints 
+        and ignore counts.
+    - User-defined DDD commands.  DDD now provides a simple facility
+      that allows the inferior debugger to execute DDD commands.  For
+      details, see `User-Defined Commands' in the DDD manual.
+    - For `Continue Until Here', DDD now sets a temporary breakpoint
+      and continues (instead of using the GDB `until' command).  If
+      the temporary breakpoint is not reached, it is deleted.
+    - When restarting DDD, all settings (data displays, execution
+      position, etc.) are preserved.
+    - When DDD becomes ready after a user command, it automatically
+      uniconifies itself.  Hence, you can iconify DDD while it runs a
+      program; DDD pops up again as soon as a breakpoint is hit.
+    - Characters typed into the data and source windows are now
+      forwarded to the debugger console.
+    - Resource files have been renamed.  All files are now located
+      under `~/.ddd/'.  The file `~/.dddinit' has been replaced by
+      `~/.ddd/init'; `~/.ddd_history' is now `~/.ddd/history'.  The
+      new directory `~/.ddd/sessions/' contains saved DDD sessions.
+    - Your window manager should now show multi-color DDD icons.
+      (requires XPM; can be disabled)
+    - During start-up, DDD shows a multi-color logo in a transient
+      window. (requires XPM; can be disabled)
+    - DDD now typically requires 35% less memory.  This was achieved
+      by compiling and optimizing DDD regular expressions at compile
+      time, rather than generating them at run time.
+
+    Supported platforms and configurations:
+    - Support for Linux with GNU libc 5.4.38 and later included.
+    - Support for XDB on HP-UX 10.x included.  Thanks to Robert
+      Wiegand <wiegand@kong.gsfc.nasa.gov>.
+    - Support for SUN DBX 3.2 included.
+
+    Bug fixes:
+    - DDD no longer hangs while receiving large chunks of data.
+    - DDD now also works with echoing TTY connections.
+    - Significant speed-ups in processing debugger and program output.
+    - Several memory leaks and X resource leaks have been tightened.
+    - DDD no longer requires the librx library.  Consequently, librx
+      errors can no more cause DDD to crash.
+    - A serious bug that caused timers to be inadvertently removed has
+      been fixed.  Bug effects included loss of console cursor, loss
+      of data display contents, and loss of scrolling capabilities.
+    - DDD now handles GDB `<repeats N times>' output correctly.
+    - And again, hundreds of minor improvements and bug fixes.  See
+      the ChangeLog for details.
+
 
 DDD 2.1.1
 ---------
