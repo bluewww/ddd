@@ -20,6 +20,7 @@ This is the third beta release of DDD 3.1, fixing some minor bugs:
 - The `configure' option `--without-xpm' had no effect.
 - If running DDD on a remote machine, and the remote shell sets
   DISPLAY (such as `ssh'), don't override the DISPLAY value.
+- Several warnings for SGI CC and DEC CXX fixed.
 
 
 There are also some minor new features:
