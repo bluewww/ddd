@@ -135,6 +135,7 @@ typedef struct PlusCmdData {
     bool     config_pwd;	       // try 'pwd'
     bool     config_named_values;      // try 'print "ddd"'
     bool     config_when_semicolon;    // try 'help when'
+    bool     config_delete_comma;      // try 'delete 4711 4712'
     bool     config_err_redirection;   // try 'help run'
     bool     config_xdb;	       // try XDB settings
     bool     config_output;            // try 'output'
@@ -169,6 +170,7 @@ typedef struct PlusCmdData {
 	config_pwd(false),
 	config_named_values(false),
 	config_when_semicolon(false),
+	config_delete_comma(false),
 	config_err_redirection(false),
 	config_xdb(false),
 	config_output(false),
@@ -268,6 +270,8 @@ void start_gdb()
 	plus_cmd_data->config_named_values = true;
 	cmds += "help when";
 	plus_cmd_data->config_when_semicolon = true;
+	cmds += "delete " + print_cookie + " " + print_cookie;
+	plus_cmd_data->config_delete_comma = true;
 	cmds += "help run";
 	plus_cmd_data->config_err_redirection = true;
 
@@ -601,6 +605,7 @@ void user_cmdSUC (string cmd, Widget origin)
     assert(!plus_cmd_data->config_pwd);
     assert(!plus_cmd_data->config_named_values);
     assert(!plus_cmd_data->config_when_semicolon);
+    assert(!plus_cmd_data->config_delete_comma);
     assert(!plus_cmd_data->config_err_redirection);
     assert(!plus_cmd_data->config_xdb);
     assert(!plus_cmd_data->config_output);
@@ -987,6 +992,11 @@ static void process_config_when_semicolon(string& answer)
     gdb->has_when_semicolon(answer.contains(rxsemicolon_and_brace));
 }
 
+static void process_config_delete_comma(string& answer)
+{
+    gdb->has_delete_comma(!is_known_command(answer));
+}
+
 static void process_config_err_redirection(string& answer)
 {
     gdb->has_err_redirection(answer.contains(">&"));
@@ -1114,6 +1124,11 @@ void plusOQAC (string answers[],
     if (plus_cmd_data->config_when_semicolon) {
 	assert (qu_count < count);
 	process_config_when_semicolon(answers[qu_count++]);
+    }
+
+    if (plus_cmd_data->config_delete_comma) {
+	assert (qu_count < count);
+	process_config_delete_comma(answers[qu_count++]);
     }
 
     if (plus_cmd_data->config_err_redirection) {
