@@ -3,6 +3,7 @@
 # Create DDD release-of-the-day.  
 
 # Copyright (C) 1997-1999 Technische Universitaet Braunschweig, Germany.
+# Copyright (C) 2000 Universitaet Passau, Germany.
 # Written by Andreas Zeller <zeller@gnu.org>.
 # 
 # This file is part of DDD.
@@ -155,6 +156,7 @@ fi
 
 # Configure the package.
 ln -s $CVSROOT/CVSROOT/ddd-log ChangeLog
+ln -s $CVSROOT/CVSROOT/ddd-log-99 ChangeLog-99
 ln -s $CVSROOT/CVSROOT/ddd-log-98 ChangeLog-98
 ln -s $CVSROOT/CVSROOT/ddd-log-97 ChangeLog-97
 ln -s $CVSROOT/CVSROOT/ddd-log-96 ChangeLog-96
