@@ -317,13 +317,12 @@ void PosBuffer::filter (string& answer)
 		    answer = answer.after("\n");
 		}
 
-		static regex RXdbxfunc2("[a-zA-Z_][^(]*([^)]*),  *"
-					"line  *[1-9][0-9]*  *"
-					"in  *\"[^\"]\".*");
+		static regex RXdbxfunc2(".*line  *[1-9][0-9]*  *"
+					"in  *\"[^\"]*\"\n.*");
 		if (answer.matches(RXdbxfunc2))
 		{
 		    // AIX DBX issues `up', `down' and `func' output
-		    // in the format `FUNCTION(), line LINE in "FILE"'
+		    // in the format `FUNCTION(ARGS), line LINE in "FILE"'
 
 		    line = answer.after("line");
 		    line = line.through(rxint);
@@ -334,7 +333,7 @@ void PosBuffer::filter (string& answer)
 
 		    already_read = PosComplete;
 
-		    answer = answer.after("\n");
+		    // answer = answer.after("\n");
 		}
 
 		static regex RXdbxpos("[[][^]]*:[1-9][0-9]*[^]]*].*");
