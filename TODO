@@ -362,11 +362,6 @@ Volunteers for these and other projects are welcome!
     that `Displays' clusters should have two or more columns in order
     to fit the visible part of the display.
 
-352 The special debugger type `auto' should invoke a debugger
-    dependent on the particular file type.
-
-353 If no arg is given, attempt to open the primary selection.  See also 352.
-
 354 In Windows, compare file names regardless of case.
 
 355 (Insert new project ideas here)
