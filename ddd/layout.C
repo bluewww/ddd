@@ -1526,7 +1526,7 @@ void Layout::graphInvertEdge (NODE *source, NODE *target)
 
 int Layout::graphNewNodeID()
 {
-    int counter = 1000 ;
+    static int counter = 1000 ;
 
     return counter++ ;
 }
