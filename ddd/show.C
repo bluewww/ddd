@@ -314,9 +314,11 @@ static void show_configuration(ostream& os, bool version_only)
     string s;
 
     // Version info
-    s = string("@(#)" DDD_NAME " " DDD_VERSION " (" DDD_HOST ")\n") +
-	"@(#)Copyright (C) 1995-1999 Technische Universitaet Braunschweig\n" +
-        "@(#)Copyright (C) 1999 Universitaet Passau\n";
+    s = string("@(#)GNU " DDD_NAME " " DDD_VERSION " (" DDD_HOST ")\n") +
+	"@(#)Copyright (C) 1999 " 
+	"Technische Universitaet Braunschweig, Germany.\n" +
+        "@(#)Copyright (C) 1999 "
+	"Universitaet Passau, Germany.\n";
     s.gsub(sccs, string(""));
     os << s;
 

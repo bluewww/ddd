@@ -4768,8 +4768,8 @@ Ddd.main_window.helpString: MAIN_WINDOW_HELP
 !-----------------------------------------------------------------------------
 
 Ddd*gdb_w.value: \
-DDD @VERSION@ (@host@), by Dorothea L\374tkehaus and Andreas Zeller.\n\
-Copyright \251 1995-1999 Technische Universit\344t Braunschweig, Germany.\n\
+GNU DDD @VERSION@ (@host@), by Dorothea L\374tkehaus and Andreas Zeller.\n\
+Copyright \251 1999 Technische Universit\344t Braunschweig, Germany.\n\
 Copyright \251 1999 Universit\344t Passau, Germany.\n
 
 Ddd*gdb_w.editable:			on

@@ -1164,8 +1164,8 @@ information as well as a @GDB{} prompt.@footnote{Re-invoke @DDD{} with
 (@pxref{Choosing an Inferior Debugger})}
 
 @example
-@value{DDD} Version @value{VERSION}, by Dorothea Lütkehaus and Andreas Zeller.
-Copyright @copyright{} 1995-1999 Technische Universität Braunschweig, Germany.
+GNU @value{DDD} Version @value{VERSION}, by Dorothea Lütkehaus and Andreas Zeller.
+Copyright @copyright{} 1999 Technische Universität Braunschweig, Germany.
 Copyright @copyright{} 1999 Universität Passau, Germany.
 Reading symbols from sample@dots{}done.
 (gdb) 
