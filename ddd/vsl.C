@@ -39,6 +39,22 @@ char vsl_rcsid[] =
 #include <sys/types.h>
 #include <time.h>
 
+#ifndef EXIT_SUCCESS
+#define EXIT_SUCCESS 0
+#endif
+
+#ifndef EXIT_FAILURE
+#define EXIT_FAILURE 1
+#endif
+
+#if !HAVE_ATHENA
+int main(int argc, char *argv[]) 
+{
+    cerr "This program requires the Athena widget library.\n";
+    return EXIT_FAILURE;
+}
+#else
+
 #include <X11/Intrinsic.h>      // X Toolkit
 #include <X11/Xlib.h>           // X Library
 #include <X11/Xaw/Viewport.h>   // Viewport Widget
@@ -54,14 +70,6 @@ char vsl_rcsid[] =
 #include "Box.h"
 #include "StringBox.h"
 #include "ListBox.h"
-
-#ifndef EXIT_SUCCESS
-#define EXIT_SUCCESS 0
-#endif
-
-#ifndef EXIT_FAILURE
-#define EXIT_FAILURE 1
-#endif
 
 
 
@@ -312,3 +320,5 @@ int main(int argc, char *argv[])
     // Never reached...
     return EXIT_SUCCESS;
 }
+
+#endif // HAVE_ATHENA
