@@ -149,8 +149,13 @@ void translate_command(string& command)
 	    command = "step up";
 	break;
 
-    case GDB:
     case PYDB:
+	// PYDB uses `return' instead of `finish'.
+	if (command == "finish")
+	    command = "return";
+	break;
+
+    case GDB:
 	break;
     }
 
