@@ -35,6 +35,9 @@
 // True if FILE_NAME is a regular file
 bool is_regular_file(const string& file_name);
 
+// True if FILE_NAME contains non-TEXT characters
+bool is_binary_file(const string& file_name);
+
 // True if FILE_NAME is an executable binary file
 bool is_exec_file(const string& file_name);
 
