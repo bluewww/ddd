@@ -36,7 +36,7 @@ extern char **dupargv PARAMS ((char **));
    across different systems, sometimes as "char *" and sometimes as
    "const char *" */
 
-#if defined(__GNU_LIBRARY__ ) || defined (__linux__)
+#if defined (__GNU_LIBRARY__ ) || defined (__linux__) || defined (__FreeBSD__)
 extern char *basename PARAMS ((const char *));
 #else
 extern char *basename ();
@@ -111,8 +111,7 @@ extern int xatexit PARAMS ((void (*fn) (void)));
 #ifndef __GNUC__
 extern void xexit PARAMS ((int status));
 #else
-typedef void libiberty_voidfn PARAMS ((int status));
-__volatile__ libiberty_voidfn xexit;
+void xexit PARAMS ((int status)) __attribute__ ((noreturn));
 #endif
 
 /* Set the program name used by xmalloc.  */
@@ -135,6 +134,11 @@ extern PTR xmalloc PARAMS ((size_t));
    xmalloc.  */
 
 extern PTR xrealloc PARAMS ((PTR, size_t));
+
+/* Allocate memory without fail and set it to zero.  This works like
+   xmalloc.  */
+
+extern PTR xcalloc PARAMS ((size_t, size_t));
 
 /* Copy a string into a memory buffer without fail.  */
 

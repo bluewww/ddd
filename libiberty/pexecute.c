@@ -1,6 +1,6 @@
 /* Utilities to execute a program in a subprocess (possibly linked by pipes
    with other subprocesses), and wait for it.
-   Copyright (C) 1996, 1997 Free Software Foundation, Inc.
+   Copyright (C) 1996, 1997, 1998 Free Software Foundation, Inc.
 
 This file is part of the libiberty library.
 Libiberty is free software; you can redistribute it and/or
@@ -23,24 +23,34 @@ Boston, MA 02111-1307, USA.  */
 /* This file lives in at least two places: libiberty and gcc.
    Don't change one without the other.  */
 
-#ifdef IN_GCC
+#ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
 #include <stdio.h>
 #include <errno.h>
-
-#ifdef IN_GCC
-#include "gansidecl.h"
-/* ??? Need to find a suitable header file.  */
-#define PEXECUTE_FIRST   1
-#define PEXECUTE_LAST    2
-#define PEXECUTE_ONE     (PEXECUTE_FIRST + PEXECUTE_LAST)
-#define PEXECUTE_SEARCH  4
-#define PEXECUTE_VERBOSE 8
-#else
-#include "libiberty.h"
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
 #endif
+#define ISSPACE (x) isspace(x)
+#ifdef HAVE_SYS_WAIT_H
+#include <sys/wait.h>
+#endif
+
+#ifdef vfork /* Autoconf may define this to fork for us. */
+# define VFORK_STRING "fork"
+#else
+# define VFORK_STRING "vfork"
+#endif
+#ifdef HAVE_VFORK_H
+#include <vfork.h>
+#endif
+#ifdef VMS
+#define vfork() (decc$$alloc_vfork_blocks() >= 0 ? \
+               lib$get_current_invo_context(decc$$get_vfork_jmpbuf()) : -1)
+#endif /* VMS */
+
+#include "libiberty.h"
 
 /* stdin file number.  */
 #define STDIN_FILE_NO 0
@@ -166,7 +176,7 @@ pexecute (program, argv, this_pname, temp_base, errmsg_fmt, errmsg_arg, flags)
       char *cp;
       for (cp = argv[i]; *cp; cp++)
 	{
-	  if (*cp == '"' || *cp == '\'' || *cp == '\\' || isspace (*cp))
+	  if (*cp == '"' || *cp == '\'' || *cp == '\\' || ISSPACE (*cp))
 	    fputc ('\\', argfile);
 	  fputc (*cp, argfile);
 	}
@@ -231,41 +241,6 @@ pwait (pid, status, flags)
 extern int _spawnv ();
 extern int _spawnvp ();
 
-int
-pexecute (program, argv, this_pname, temp_base, errmsg_fmt, errmsg_arg, flags)
-     const char *program;
-     char * const *argv;
-     const char *this_pname;
-     const char *temp_base;
-     char **errmsg_fmt, **errmsg_arg;
-     int flags;
-{
-  int pid;
-
-  if ((flags & PEXECUTE_ONE) != PEXECUTE_ONE)
-    abort ();
-  pid = (flags & PEXECUTE_SEARCH ? _spawnvp : _spawnv)
-    (_P_NOWAIT, program, fix_argv(argv));
-  if (pid == -1)
-    {
-      *errmsg_fmt = install_error_msg;
-      *errmsg_arg = program;
-      return -1;
-    }
-  return pid;
-}
-
-int
-pwait (pid, status, flags)
-     int pid;
-     int *status;
-     int flags;
-{
-  /* ??? Here's an opportunity to canonicalize the values in STATUS.
-     Needed?  */
-  return cwait (status, pid, WAIT_CHILD);
-}
-
 #else /* ! __CYGWIN32__ */
 
 /* This is a kludge to get around the Microsoft C spawn functions' propensity
@@ -304,6 +279,7 @@ fix_argv (argvec)
 
   return (const char * const *) argvec;
 }
+#endif /* __CYGWIN32__ */
 
 #include <io.h>
 #include <fcntl.h>
@@ -420,6 +396,9 @@ pwait (pid, status, flags)
      int *status;
      int flags;
 {
+#ifdef __CYGWIN32__
+  return wait (status);
+#else
   int termstat;
 
   pid = _cwait (&termstat, pid, WAIT_CHILD);
@@ -437,9 +416,8 @@ pwait (pid, status, flags)
     *status = (((termstat) & 0xff) << 8);
 
   return pid;
+#endif /* __CYGWIN32__ */
 }
-
-#endif /* ! defined (__CYGWIN32__) */
 
 #endif /* _WIN32 */
 
@@ -509,7 +487,7 @@ static int first_time = 1;
 int
 pexecute (program, argv, this_pname, temp_base, errmsg_fmt, errmsg_arg, flags)
      const char *program;
-     char **argv;
+     char * const *argv;
      const char *this_pname;
      const char *temp_base;
      char **errmsg_fmt, **errmsg_arg;
@@ -538,14 +516,18 @@ pexecute (program, argv, this_pname, temp_base, errmsg_fmt, errmsg_arg, flags)
       fputc (' ', stdout);
       for (i=1; argv[i]; i++)
 	{
-	  /* We have to quote every arg, so that when the echo is
-	     executed, the quotes are stripped and the original arg
-	     is left. */
 	  fputc ('\'', stdout);
+	  /* See if we have an argument that needs fixing.  */
+	  if (strchr(argv[i], '/'))
+	    {
+	      tmpname = (char *) xmalloc (256);
+	      mpwify_filename (argv[i], tmpname);
+	      argv[i] = tmpname;
+	    }
 	  for (cp = argv[i]; *cp; cp++)
 	    {
-	      /* Write an Option-d esc char in front of special chars.  */
-	      if (strchr ("\"'+", *cp))
+	      /* Write an Option-d escape char in front of special chars.  */
+	      if (strchr("'+", *cp))
 		fputc ('\266', stdout);
 	      fputc (*cp, stdout);
 	    }
@@ -560,15 +542,20 @@ pexecute (program, argv, this_pname, temp_base, errmsg_fmt, errmsg_arg, flags)
 
   for (i=1; argv[i]; i++)
     {
+      /* See if we have an argument that needs fixing.  */
+      if (strchr(argv[i], '/'))
+	{
+	  tmpname = (char *) xmalloc (256);
+	  mpwify_filename (argv[i], tmpname);
+	  argv[i] = tmpname;
+	}
       if (strchr (argv[i], ' '))
 	fputc ('\'', stdout);
       for (cp = argv[i]; *cp; cp++)
 	{
-	  /* Write an Option-d esc char in front of special chars.  */
-	  if (strchr ("\"'+", *cp))
-	    {
-	      fputc ('\266', stdout);
-	    }
+	  /* Write an Option-d escape char in front of special chars.  */
+	  if (strchr("'+", *cp))
+	    fputc ('\266', stdout);
 	  fputc (*cp, stdout);
 	}
       if (strchr (argv[i], ' '))
@@ -616,15 +603,6 @@ pfinish ()
 /* include for Unix-like environments but not for Dos-like environments */
 #if ! defined (__MSDOS__) && ! defined (OS2) && ! defined (MPW) \
     && ! defined (_WIN32)
-
-#ifdef VMS
-#define vfork() (decc$$alloc_vfork_blocks() >= 0 ? \
-               lib$get_current_invo_context(decc$$get_vfork_jmpbuf()) : -1)
-#else
-#ifdef USG
-#define vfork fork
-#endif
-#endif
 
 extern int execv ();
 extern int execvp ();
@@ -689,11 +667,7 @@ pexecute (program, argv, this_pname, temp_base, errmsg_fmt, errmsg_arg, flags)
     {
     case -1:
       {
-#ifdef vfork
-	*errmsg_fmt = "fork";
-#else
-	*errmsg_fmt = "vfork";
-#endif
+	*errmsg_fmt = VFORK_STRING;
 	*errmsg_arg = NULL;
 	return -1;
       }
@@ -723,11 +697,7 @@ pexecute (program, argv, this_pname, temp_base, errmsg_fmt, errmsg_arg, flags)
       /* Note: Calling fprintf and exit here doesn't seem right for vfork.  */
       fprintf (stderr, "%s: ", this_pname);
       fprintf (stderr, install_error_msg, program);
-#ifdef IN_GCC
-      fprintf (stderr, ": %s\n", my_strerror (errno));
-#else
       fprintf (stderr, ": %s\n", xstrerror (errno));
-#endif
       exit (-1);
       /* NOTREACHED */
       return 0;

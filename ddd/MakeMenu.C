@@ -63,6 +63,7 @@ char MakeMenu_rcsid[] =
 #include "frame.h"
 #include "ComboBox.h"
 #include "SpinBox.h"
+#include "AutoRaise.h"
 
 #ifndef LOG_FLATTENING
 #define LOG_FLATTENING 0
@@ -102,66 +103,6 @@ struct PushMenuInfo {
 	: widget(w), subMenu(s), flat(f), timer(0)
     {}
 };
-
-//-----------------------------------------------------------------------
-// Auto-raise stuff
-//-----------------------------------------------------------------------
-
-// Whether menus should be auto-raised
-#define XtNautoRaiseMenu  "autoRaiseMenu"
-#define XtCAutoRaiseMenu  "AutoRaiseMenu"
-
-struct MMresource_values {
-    Boolean auto_raise_menu;
-};
-
-static XtResource MMsubresources[] = {
-    {
-	XtNautoRaiseMenu,
-	XtCAutoRaiseMenu,
-	XmRBoolean,
-	sizeof(Boolean),
-	XtOffsetOf(MMresource_values, auto_raise_menu),
-	XmRImmediate,
-	XtPointer(False)
-    }
-};
-
-
-// Make sure menu stays on top.  This prevents conflicts with
-// auto-raise windows which would otherwise hide menu panels.
-static void AutoRaiseEH(Widget w, XtPointer, XEvent *event, Boolean *)
-{
-
-    if (event->type != VisibilityNotify)
-	return;
-
-    switch (event->xvisibility.state)
-    {
-    case VisibilityFullyObscured:
-    case VisibilityPartiallyObscured:
-	XRaiseWindow(XtDisplay(w), frame(w));
-	break;
-    }
-}
-
-static void auto_raise(Widget shell)
-{
-    assert(XmIsMenuShell(shell));
-
-    // Get text
-    MMresource_values values;
-    XtGetApplicationResources(shell, &values, 
-			      MMsubresources, XtNumber(MMsubresources), 
-			      NULL, 0);
-
-    if (values.auto_raise_menu)
-    {
-	XtAddEventHandler(shell, VisibilityChangeMask, False,
-			  AutoRaiseEH, XtPointer(0));
-    }
-}
-
 
 //-----------------------------------------------------------------------
 // Flat buttons
@@ -727,12 +668,7 @@ Widget MMcreatePopupMenu(Widget parent, String name, MMDesc items[],
 {
     Widget menu = verify(XmCreatePopupMenu(parent, name, args, arg));
     MMaddItems(menu, items);
-
-    // Don't auto-raise popup menus.
-    // 1. There are conflicts with nested popups.
-    // 2. During a popup, the pointer is grabbed such that we won't
-    //    have an auto-raised window anyway.
-    // auto_raise(XtParent(menu));
+    auto_raise(XtParent(menu));
 
     return menu;
 }
@@ -1086,12 +1022,7 @@ Widget MMcreatePushMenu(Widget parent, String name, MMDesc items[],
     
     Widget menu = verify(XmCreatePopupMenu(parent, name, args, arg));
     MMaddItems(menu, items);
-
-    // Don't auto-raise popup menus.
-    // 1. There are conflicts with nested popups.
-    // 2. During a popup, the pointer is grabbed such that we won't
-    //    have an auto-raised window anyway.
-    // auto_raise(XtParent(menu));
+    auto_raise(XtParent(menu));
 
     // LessTif places a passive grab on the parent, such that the
     // pointer is grabbed as soon as the menuPost event occurs.  This

@@ -429,6 +429,8 @@ static void read_token(const char *value, int& pos)
 		string name(value + start, pos - start);
 		if (name == "record")
 		    read_up_to(value, pos, "end");
+		else if (name == "object")
+		    read_up_to(value, pos, "end");
 		else if (name == "RECORD")
 		    read_up_to(value, pos, "END");
 		else if (name == "OBJECT")
@@ -472,7 +474,23 @@ string read_token(string& value)
     return token;
 }
 
-bool is_ending(const string& value)
+static bool is_ending_with_end(const string& value)
+{
+    int i = 0;
+    while (i < int(value.length()) && isspace(value[i]))
+	i++;
+    if (i >= int(value.length()))
+	return false;		// At end of value
+
+    return value.contains("end\n", i)
+	|| value.contains("END\n", i)
+	|| value.contains("end;", i)
+	|| value.contains("END;", i)
+	|| value.from(i) == "end"
+	|| value.from(i) == "END";
+}
+
+static bool is_ending_with_paren(const string& value)
 {
     int i = 0;
     while (i < int(value.length()) && isspace(value[i]))
@@ -482,11 +500,12 @@ bool is_ending(const string& value)
 
     return value.contains('}', i)
 	|| value.contains(')', i)
-	|| value.contains(']', i)
-	|| value.contains("end\n", i)
-	|| value.contains("END\n", i)
-	|| value.from(i) == "end"
-	|| value.from(i) == "END";
+	|| value.contains(']', i);
+}
+
+bool is_ending(const string& value)
+{
+    return is_ending_with_end(value) || is_ending_with_paren(value);
 }
 
 bool is_delimited(const string& value)
@@ -510,7 +529,7 @@ string read_simple_value(string& value, int depth, bool ignore_repeats)
 
     string ret = "";
     while (value != "" && value[0] != '\n' && 
-	   (depth == 0 || (!is_delimited(value))))
+	   (depth == 0 || !is_delimited(value)))
     {
 	ret += read_token(value);
 
@@ -618,11 +637,7 @@ bool read_array_next(string& value)
     {
 	value = value.after(0);
 	read_leading_junk (value);
-	return value != "" 
-	    && !value.contains("END", 0)
-	    && !value.contains('}', 0)
-	    && !value.contains(')', 0)
-	    && !value.contains(']', 0); // More stuff follows
+	return value != "" && !is_ending(value); // More stuff follows
     }
 
     if (value.contains('{', 0)
@@ -644,27 +659,13 @@ void read_array_end(string& value)
 {
     read_leading_junk(value);
 
-    if (value.contains("end\n", 0))
+    if (is_ending_with_end(value))
     {
-	value = value.after("end");
+	value = value.from(int(strlen("end")));
 	return;
     }
 
-    if (value.contains("END\n", 0))
-    {
-	value = value.after("END");
-	return;
-    }
-
-    if (value.contains("END;", 0))
-    {
-	value = value.after("END");
-	return;
-    }
-
-    if (value.contains('}', 0)
-	|| value.contains(')', 0)
-	|| value.contains(']', 0))
+    if (is_ending_with_paren(value))
     {
 	value = value.after(0);
 
@@ -757,6 +758,25 @@ bool read_members_prefix (string& value)
     return false;
 }
 
+// Read member name from VALUE up to SEP
+static string get_member_name(string& value, const string& sep)
+{
+    string prefix = value.before(sep);
+
+    string member_name = "";
+    while (prefix != "" && prefix[0] != '\n' && !is_ending(prefix))
+	member_name += read_token(prefix);
+
+    if (is_ending(prefix))
+    {
+	// Found an ending in member name.  This is no member.
+	return "";
+    }
+
+    value = value.after(sep);
+    return member_name;
+}
+
 
 // Read member name; return "" upon error
 string read_member_name (string& value)
@@ -810,7 +830,7 @@ string read_member_name (string& value)
     // GDB using the Java language uses `: ' instead.
     // JDB printing classes uses `:\n' for the interface list.
     // GDB with GNAT support and Perl use `=> '.
-    string member_name;
+    string member_name = "";
     string sep = gdb->member_separator();
     string sepnl = sep;
     strip_trailing_space(sepnl);
@@ -819,31 +839,29 @@ string read_member_name (string& value)
     if (v.contains("Virtual table at ", 0))
     {
 	// `Virtual table at 0x1234' or likewise.  WDB gives us such things.
-	member_name = v.before(" at ");
-	value = value.after(" at ");
+	member_name = get_member_name(value, " at ");
 	strip_qualifiers = false;
     }
     else if (v.contains(" = "))
     {
-	member_name = v.before(" = ");
-	value = value.after(" = ");
+	member_name = get_member_name(value, " = ");
     }
     else if (v.contains(sep))
     {
-	member_name = v.before(sep);
-	value = value.after(sep);
+	member_name = get_member_name(value, sep);
     }
     else if (v.contains(sepnl))
     {
-	member_name = v.before(sepnl);
-	value = value.after(sepnl);
+	member_name = get_member_name(value, sepnl);
     }
     else
     {
 	// Member value in unknown format
 	// Should we treat this as anonymous union?  (FIXME)
-	return "";
     }
+
+    if (member_name == "")
+	return "";
 
     if (!is_BaseClass_name(member_name))
     {
@@ -856,6 +874,13 @@ string read_member_name (string& value)
 	    m = m.before("(");
 	if (m != "")
 	    member_name = m;
+    }
+
+    if (gdb->type() == PERL && 
+	member_name.contains('\'', 0) && member_name.contains('\'', -1))
+    {
+	// Some Perl debugger flavours quote the member name.
+	member_name = unquote(member_name);
     }
 
     read_leading_junk (member_name);

@@ -61,7 +61,13 @@ string deref(const string& expr, const string& sym)
     if (ref == NO_GDB_ANSWER)
     {
 	// Try value directly.  Must have the form `REF(ADDRESS)'.
-	string val = gdbValue(expr);
+
+	// To get the type, we use the `p' command; the default `x'
+	// command prints the entire value recursively, which takes
+	// too long for recursive structures.
+	string print_command = "p " + expr;
+
+	string val = gdbValue(expr, print_command);
 	if (val.matches(rxperlref))
 	    ref = val.through(rxidentifier);
     }

@@ -157,7 +157,6 @@ char ddd_rcsid[] =
 #include <Xm/ToggleB.h>
 #include <Xm/PushB.h>
 #include <Xm/ArrowB.h>
-#include <Xm/MwmUtil.h>
 #include <X11/Shell.h>
 
 #if XmVersion >= 1002
@@ -345,6 +344,7 @@ static void ReportDeathHP(Agent *, void *, void *);
 // Status history
 static void PopupStatusHistoryCB(Widget, XtPointer, XtPointer);
 static void PopdownStatusHistoryCB(Widget, XtPointer, XtPointer);
+static void PopdownStatusHistoryEH(Widget, XtPointer, XEvent *, Boolean *);
 
 // Argument callback
 static void ActivateCB(Widget, XtPointer client_data, XtPointer call_data);
@@ -364,10 +364,6 @@ static void fix_status_size();
 
 // Setup new shell
 static void setup_new_shell(Widget w);
-
-// Check if window manager decorates transients
-static void start_have_decorated_transients(Widget parent);
-static bool have_decorated_transients();
 
 // Set `Settings' title
 static void set_settings_title(Widget w);
@@ -393,7 +389,6 @@ static bool lock_ddd(Widget parent, LockInfo& info);
 // Various setups
 static void setup_version_info();
 static void setup_environment();
-static void setup_command_tool();
 static void setup_options(int& argc, char *argv[],
 			  StringArray& saved_options, string& gdb_name,
 			  bool& no_windows);
@@ -585,9 +580,21 @@ static XrmOptionDescRec options[] = {
 { "-tty",                   XtNttyMode,              XrmoptionNoArg, ON },
 { "-t",                     XtNttyMode,              XrmoptionNoArg, ON },
 
-{ "--fullname",             XtCTTYMode,              XrmoptionNoArg, ON },
-{ "-fullname",              XtCTTYMode,              XrmoptionNoArg, ON },
-{ "-f",                     XtCTTYMode,              XrmoptionNoArg, ON },
+{ "--fullname",             XtNannotate,             XrmoptionNoArg, "1" },
+{ "-fullname",              XtNannotate,             XrmoptionNoArg, "1" },
+{ "-f",                     XtNannotate,             XrmoptionNoArg, "1" },
+
+{ "--annotate",             XtNannotate,             XrmoptionSepArg, NULL },
+{ "-annotate",              XtNannotate,             XrmoptionSepArg, NULL },
+
+{ "--annotate=0",           XtNannotate,             XrmoptionNoArg, "0" },
+{ "-annotate=0",            XtNannotate,             XrmoptionNoArg, "0" },
+
+{ "--annotate=1",           XtNannotate,             XrmoptionNoArg, "1" },
+{ "-annotate=1",            XtNannotate,             XrmoptionNoArg, "1" },
+
+{ "--annotate=2",           XtNannotate,             XrmoptionNoArg, "2" },
+{ "-annotate=2",            XtNannotate,             XrmoptionNoArg, "2" },
 
 { "--version",              XtNshowVersion,          XrmoptionNoArg, ON },
 { "-version",               XtNshowVersion,          XrmoptionNoArg, ON },
@@ -725,7 +732,7 @@ struct FileItems {
     { "attach",        MMPush, \
         { WhenReady, XtPointer(gdbOpenProcessCB) }, 0, 0, 0, 0 }, \
     { "detach",        MMPush, \
-        { gdbCommandCB, "detach" }, 0, 0, 0, 0 }, \
+        { gdbCommandCB, XtPointer("detach") }, 0, 0, 0, 0 }, \
     MMSep, \
     { "print",         MMPush, { PrintGraphCB, XtPointer(0) }, 0, 0, 0, 0 }, \
     { "printAgain",    MMPush | MMUnmanaged, \
@@ -762,25 +769,26 @@ struct ProgramItems {
 
 #define PROGRAM_MENU(w) \
 { \
-    { "run",         MMPush, { gdbRunCB, 0 }, 0, 0, 0, 0 }, \
-    { "run_again",   MMPush, { gdbCommandCB, "run" }, 0, 0, 0, 0 }, \
+    { "run",       MMPush, { gdbRunCB, 0 }, 0, 0, 0, 0 }, \
+    { "run_again", MMPush, { gdbCommandCB, XtPointer("run") }, 0, 0, 0, 0 }, \
     MMSep, \
     { "separateExecWindow",  MMToggle, \
 	{ dddToggleSeparateExecWindowCB, 0 }, 0, &(w), 0, 0 }, \
     MMSep, \
-    { "step",        MMPush, { gdbCommandCB, "step" }, 0, 0, 0, 0 }, \
-    { "stepi",       MMPush, { gdbCommandCB, "stepi" }, 0, 0, 0, 0 }, \
-    { "next",        MMPush, { gdbCommandCB, "next" }, 0, 0, 0, 0 }, \
-    { "nexti",       MMPush, { gdbCommandCB, "nexti" }, 0, 0, 0, 0}, \
-    { "until",       MMPush, { gdbCommandCB, "until" }, 0, 0, 0, 0}, \
-    { "finish",      MMPush, { gdbCommandCB, "finish" }, 0, 0, 0, 0}, \
+    { "step",     MMPush, { gdbCommandCB, XtPointer("step") }, 0, 0, 0, 0 }, \
+    { "stepi",    MMPush, { gdbCommandCB, XtPointer("stepi") }, 0, 0, 0, 0 }, \
+    { "next",     MMPush, { gdbCommandCB, XtPointer("next") }, 0, 0, 0, 0 }, \
+    { "nexti",    MMPush, { gdbCommandCB, XtPointer("nexti") }, 0, 0, 0, 0}, \
+    { "until",    MMPush, { gdbCommandCB, XtPointer("until") }, 0, 0, 0, 0}, \
+    { "finish",   MMPush, { gdbCommandCB, XtPointer("finish") }, 0, 0, 0, 0}, \
     MMSep, \
-    { "cont",        MMPush, { gdbCommandCB, "cont" }, 0, 0, 0, 0}, \
-    { "signal0",     MMPush, { gdbCommandCB, "signal 0" }, 0, 0, 0, 0}, \
+    { "cont",     MMPush, { gdbCommandCB, XtPointer("cont") }, 0, 0, 0, 0}, \
+    { "signal0",  MMPush, \
+                      { gdbCommandCB, XtPointer("signal 0") }, 0, 0, 0, 0}, \
     MMSep, \
-    { "kill",        MMPush, { gdbCommandCB, "kill" }, 0, 0, 0, 0}, \
-    { "break",       MMPush, { gdbCommandCB, "\003" }, 0, 0, 0, 0}, \
-    { "quit",        MMPush, { gdbCommandCB, "\034" }, 0, 0, 0, 0}, \
+    { "kill",     MMPush, { gdbCommandCB, XtPointer("kill") }, 0, 0, 0, 0}, \
+    { "break",    MMPush, { gdbCommandCB, XtPointer("\003") }, 0, 0, 0, 0}, \
+    { "quit",     MMPush, { gdbCommandCB, XtPointer("\034") }, 0, 0, 0, 0}, \
     MMEnd \
 }
 
@@ -923,8 +931,8 @@ static MMDesc stack_menu[] =
 			       XtPointer(dddPopupSignalsCB) },
       NULL, &signals_w, 0, 0 },
     MMSep,
-    { "up",         MMPush,  { gdbCommandCB, "up" }, 0, 0, 0, 0},
-    { "down",       MMPush,  { gdbCommandCB, "down" }, 0, 0, 0, 0},
+    { "up",         MMPush,  { gdbCommandCB, XtPointer("up") }, 0, 0, 0, 0},
+    { "down",       MMPush,  { gdbCommandCB, XtPointer("down") }, 0, 0, 0, 0},
     MMEnd
 };
 
@@ -1881,7 +1889,7 @@ int main(int argc, char *argv[])
     XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
 
 #if XtSpecificationRelease >= 6
-    if (session_id)
+    if (session_id != 0)
     {
 	XtSetArg(args[arg], XtNsessionID, session_id); arg++;
     }
@@ -1929,8 +1937,8 @@ int main(int argc, char *argv[])
 
 #if XtSpecificationRelease >= 6
     // Synchronize SESSION_ID and APP_DATA.session
-    session_id = 0;
-    XtVaGetValues(toplevel, XtNsessionID, &session_id, NULL);
+    if (session_id == 0)
+	XtVaGetValues(toplevel, XtNsessionID, &session_id, NULL);
     if (session_id != 0)
 	app_data.session = session_id;
 #endif
@@ -1975,9 +1983,6 @@ int main(int argc, char *argv[])
     setup_fonts(app_data, XtDatabase(XtDisplay(toplevel)));
     if (app_data.show_fonts)
 	return EXIT_SUCCESS;
-
-    // Create new session dir if needed
-    create_session_dir(app_data.session, messages);
 
     // Create a new auto_command_prefix if needed
     setup_auto_command_prefix();
@@ -2591,9 +2596,13 @@ int main(int argc, char *argv[])
     set_settings_title(source_edit_menu[EditItems::Settings].widget);
     set_settings_title(data_edit_menu[EditItems::Settings].widget);
 
+    // If we use annotations, we also want tty mode.
+    if (app_data.annotate)
+	app_data.tty_mode = True;
+
     // Close windows explicitly requested
     if (!app_data.data_window && 
-	(!app_data.full_name_mode || !app_data.tty_mode))
+	(!app_data.annotate || !app_data.tty_mode))
     {
 	// We don't want the data window (unless in full name mode,
 	// where we always open a data window - because otherwise, no
@@ -2601,7 +2610,7 @@ int main(int argc, char *argv[])
 	gdbCloseDataWindowCB(gdb_w, 0, 0);
     }
 
-    if (!app_data.source_window || app_data.full_name_mode)
+    if (!app_data.source_window || app_data.annotate)
     {
 	// We don't need the source window, since we're invoked by Emacs.
 	gdbCloseSourceWindowCB(gdb_w, 0, 0);
@@ -2663,14 +2672,6 @@ int main(int argc, char *argv[])
     {
 	init_delay = new StatusDelay("Opening session " 
 				     + quote(app_data.session));
-    }
-
-    if (app_data.decorate_tool == Auto)
-    {
-	// Check for decorated transient windows.  We can do this only
-	// after the command shell has been realized, because
-	// otherwise the init shell might always be decorated.
-	start_have_decorated_transients(command_shell);
     }
 
     // Remove unnecessary sashes
@@ -2767,10 +2768,6 @@ int main(int argc, char *argv[])
     // starts.
     wait_until_mapped(command_shell);
 #endif
-
-    // Create command tool
-    if (app_data.tool_buttons && strlen(app_data.tool_buttons) > 0)
-	setup_command_tool();
 
     // Setup TTY interface
     setup_tty();
@@ -2883,7 +2880,7 @@ void process_next_event()
     }
 #if HAVE_EXCEPTION && HAVE_STD_EXCEPTIONS && HAVE_TYPEINFO
     // Standard library exception: get its type and diagnostics.
-    catch (const exception& err)
+    catch (const std::exception& err)
     {
 	ddd_show_exception(typeid(err).name(), err.what());
     }
@@ -4897,7 +4894,7 @@ static void create_status(Widget parent)
     XtSetArg(args[arg], XmNset,                True); arg++;
 
     MString spaces("   ");
-    if (lesstif_version < 1000)
+    if (lesstif_version <= 87)
     {
 	XtSetArg(args[arg], XmNlabelString, spaces.xmstring()); arg++;
     }
@@ -4952,19 +4949,30 @@ static void create_status(Widget parent)
 
     XtAddCallback(status_w, XmNarmCallback, 
 		  PopupStatusHistoryCB, XtPointer(0));
+    XtAddCallback(status_w, XmNactivateCallback, 
+		  PopdownStatusHistoryCB, XtPointer(0));
     XtAddCallback(status_w, XmNdisarmCallback, 
 		  PopdownStatusHistoryCB, XtPointer(0));
 
     XtAddCallback(arrow_w, XmNarmCallback, 
 		  PopupStatusHistoryCB, XtPointer(0));
+    XtAddCallback(arrow_w, XmNactivateCallback, 
+		  PopdownStatusHistoryCB, XtPointer(0));
     XtAddCallback(arrow_w, XmNdisarmCallback, 
 		  PopdownStatusHistoryCB, XtPointer(0));
+
+    // Using LessTif 0.88, you can release button 1 while outside the
+    // status bar; no disarm callback is invoked.  Prevent against this.
+    XtAddEventHandler(status_w, ButtonReleaseMask, False,
+		      PopdownStatusHistoryEH, XtPointer(0));
+    XtAddEventHandler(arrow_w, ButtonReleaseMask, False, 
+		      PopdownStatusHistoryEH, XtPointer(0));
 
     XtWidgetGeometry size;
     size.request_mode = CWHeight;
     XtQueryGeometry(status_w, NULL, &size);
 
-    if (lesstif_version < 1000)
+    if (lesstif_version <= 87)
 	XtVaSetValues(led_w, XmNindicatorSize, size.height - 4, NULL);
     else
 	XtVaSetValues(led_w, XmNindicatorSize, size.height - 1, NULL);
@@ -5115,6 +5123,12 @@ static void PopdownStatusHistoryCB(Widget, XtPointer, XtPointer)
 {
     if (history_shell != 0)
 	XtPopdown(history_shell);
+}
+
+static void PopdownStatusHistoryEH(Widget w, XtPointer client_data, 
+				   XEvent *event, Boolean *)
+{
+    PopdownStatusHistoryCB(w, client_data, (XtPointer)event);
 }
 
 
@@ -5636,6 +5650,10 @@ void _gdb_out(const string& txt)
 	return;
 
     string text(txt);
+    string buffered = buffered_gdb_output();
+    if (buffered != "")
+	text.prepend(buffered);
+
     gdb_input_at_prompt = gdb->ends_with_prompt(text);
     if (gdb_input_at_prompt)
 	debuggee_running = false;
@@ -6172,10 +6190,11 @@ static int _mapped_menus = 0;
 
 static int mapped_menus()
 {
-    if (lesstif_version < 1000)
+    if (lesstif_version <= 87)
     {
-	// LessTif does not issue a XmCR_MAP callback when mapping
-	// RowColumn menus.  Hence, assume we have a mapped menu.
+	// LessTif 0.87 and earlier does not issue a XmCR_MAP callback
+	// when mapping RowColumn menus.  Hence, we always assume we
+	// have some mapped menu.
 	return 1;
     }
 
@@ -6470,106 +6489,6 @@ static void ddd_xt_warning(String message)
 }
 
 
-
-
-//-----------------------------------------------------------------------------
-// Decoration
-//-----------------------------------------------------------------------------
-
-static Widget init_label, init_shell;
-
-// Return a transient position on SCREEN (for command tool etc.) in POS_X/POS_Y
-static void get_transient_pos(Screen *screen, Position& pos_x, Position& pos_y)
-{
-    (void) screen;		// Use it
-#if 0
-    // Use lower right corner.
-    pos_x = WidthOfScreen(screen) - 1;
-    pos_y = HeightOfScreen(screen) - 1;
-#else
-    // This loses on some window managers; upper left corner is safer.
-    pos_x = 0;
-    pos_y = 0;
-#endif
-}
-
-// Check if window manager decorates transients
-static void start_have_decorated_transients(Widget parent)
-{
-    Position pos_x, pos_y;
-    get_transient_pos(XtScreen(parent), pos_x, pos_y);
-
-    ostrstream os;
-    os << "+" << pos_x << "+" << pos_y;
-    string geometry(os);
-
-    Arg args[10];
-    int arg = 0;
-    XtSetArg(args[arg], XmNgeometry, geometry.chars()); arg++;
-    XtSetArg(args[arg], XmNx, pos_x);                   arg++;
-    XtSetArg(args[arg], XmNy, pos_y);                   arg++;
-    init_shell = verify(XmCreateDialogShell(parent, "init_shell", args, arg));
-
-    arg = 0;
-    MString label(DDD_NAME " " DDD_VERSION);
-    XtSetArg(args[arg], XmNlabelString, label.xmstring()); arg++;
-    init_label = verify(XmCreateLabel(init_shell, ddd_NAME, args, arg));
-    XtManageChild(init_label);
-
-    wait_until_mapped(init_label, init_shell);
-    XmUpdateDisplay(init_label);
-}
-
-static bool have_decorated_transients()
-{
-    if (init_label == 0 || init_shell == 0)
-	start_have_decorated_transients(command_shell);
-
-    XWindowAttributes shell_attributes;
-    XGetWindowAttributes(XtDisplay(init_shell), XtWindow(init_shell), 
-			 &shell_attributes);
-
-#if 0
-    clog << "shell window: " << XtWindow(init_shell)
-	 << ", size: " << BoxPoint(shell_attributes.width, 
-				       shell_attributes.height) << "\n";
-#endif
-
-    // Wait up to 5 seconds until WM has decorated the init shell.
-    // Problem: If we have no WM or a non-decorating WM, this delays
-    // DDD for 5 seconds; this can be avoided by using an explicit
-    // `decorateTool' resource value.
-    Window frame_window = 0;
-    for (int trial = 1; trial < 5; trial++)
-    {
-	frame_window = frame(XtDisplay(init_shell), XtWindow(init_shell));
-	if (frame_window != XtWindow(init_shell))
-	    break;
-	XSync(XtDisplay(init_label), False);
-	sleep(1);
-    }
-
-    XWindowAttributes frame_attributes;
-    XGetWindowAttributes(XtDisplay(init_shell), frame_window,
-			 &frame_attributes);
-
-#if 0
-    clog << "frame window: " << frame_window 
-	 << ", size: " << BoxPoint(frame_attributes.width, 
-				       frame_attributes.height) << "\n";
-#endif
-
-    XtUnmapWidget(init_shell);
-    DestroyWhenIdle(init_shell);
-
-    // If the border supplied by the window manager border is more
-    // than 5 pixels higher than wider, assume we have some kind of
-    // title bar - the shell is decorated.
-    int border_height = frame_attributes.height - shell_attributes.height;
-    int border_width  = frame_attributes.width  - shell_attributes.width;
-
-    return border_height - border_width > 5;
-}
 
 
 //-----------------------------------------------------------------------------
@@ -7070,107 +6989,6 @@ static void setup_environment()
     put_environment(DDD_NAME, ddd_NAME "-" DDD_VERSION "-" DDD_HOST);
 }
 
-static void setup_command_tool()
-{
-    // It is preferable to realize the command tool as a DialogShell,
-    // since this will cause it to stay on top of other DDD windows.
-    // Unfortunately, some window managers do not decorate transient
-    // windows such as DialogShells.  In this case, use a TopLevel
-    // shell instead and rely on the DDD auto-raise mechanisms defined
-    // in `windows.C'.
-    //
-    // Nobody ever honors all this work.  -AZ
-
-    bool use_transient_tool_shell = true;
-    switch (app_data.decorate_tool)
-    {
-    case On:
-	use_transient_tool_shell = false;
-	break;
-    case Off:
-	use_transient_tool_shell = true;
-	break;
-    case Auto:
-	use_transient_tool_shell = have_decorated_transients();
-	break;
-    }
-
-    Widget tool_shell_parent = 
-	source_view_shell ? source_view_shell : command_shell;
-
-    Arg args[10];
-    int arg = 0;
-
-    XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
-    XtSetArg(args[arg], XmNallowShellResize, False);      arg++;
-    XtSetArg(args[arg], XmNmwmDecorations,
-	     MWM_DECOR_BORDER | MWM_DECOR_TITLE | MWM_DECOR_MENU); arg++;
-    XtSetArg(args[arg], XmNmwmFunctions, 
-	     MWM_FUNC_MOVE | MWM_FUNC_CLOSE); arg++;
-
-    if (use_transient_tool_shell)
-    {
-	tool_shell = 
-	    verify(XmCreateDialogShell(tool_shell_parent, 
-				       "tool_shell", args, arg));
-    }
-    else
-    {
-	tool_shell = 
-	    verify(XtCreateWidget("tool_shell", vendorShellWidgetClass,
-				  tool_shell_parent, args, arg));
-    }
-
-    XmAddWMProtocolCallback(tool_shell, WM_DELETE_WINDOW, 
-			    gdbCloseToolWindowCB, 0);
-
-    arg = 0;
-    tool_buttons_w = 
-	verify(XmCreateForm(tool_shell, "tool_buttons", args, arg));
-    set_buttons(tool_buttons_w, app_data.tool_buttons, false);
-
-    Delay::register_shell(tool_shell);
-    XtAddEventHandler(tool_shell, STRUCTURE_MASK, False,
-		      StructureNotifyEH, XtPointer(0));
-
-#if XmVersion >= 1002
-#define FIXED_COMMAND_TOOL 1
-#endif
-
-#if FIXED_COMMAND_TOOL
-    // Some FVWM flavors have trouble in finding the `best' window size.
-    // Determine `best' size for tool shell.
-    XtWidgetGeometry size;
-    size.request_mode = CWHeight | CWWidth;
-    XtQueryGeometry(tool_buttons_w, NULL, &size);
-#endif
-
-    // Set shell geometry
-    Position pos_x, pos_y;
-    get_transient_pos(XtScreen(tool_shell_parent), pos_x, pos_y);
-
-    ostrstream os;
-#if FIXED_COMMAND_TOOL
-    os << size.width << "x" << size.height;
-#endif
-    os << "+" << pos_x << "+" << pos_y;
-    string geometry(os);
-
-    XtSetArg(args[arg], XmNgeometry, geometry.chars()); arg++;
-    XtSetArg(args[arg], XmNx, pos_x);                   arg++;
-    XtSetArg(args[arg], XmNy, pos_y);                   arg++;
-
-#if FIXED_COMMAND_TOOL
-    // Some FVWM flavors have trouble in finding the `best' window size.
-    XtSetArg(args[arg], XmNmaxWidth,  size.width);      arg++;
-    XtSetArg(args[arg], XmNmaxHeight, size.height);     arg++;
-    XtSetArg(args[arg], XmNminWidth,  size.width);      arg++;
-    XtSetArg(args[arg], XmNminHeight, size.height);     arg++;
-#endif
-
-    XtSetValues(tool_shell, args, arg);
-}
-
 static void setup_options(int& argc, char *argv[],
 			  StringArray& saved_options, string& gdb_name,
 			  bool& no_windows)
@@ -7178,13 +6996,39 @@ static void setup_options(int& argc, char *argv[],
     int gdb_option_pos = -1;
     int gdb_option_offset = 2;
     int i;
+    bool save = false;
+
     for (i = 1; i < argc; i++)
     {
 	string arg = string(argv[i]);
 
 	if (arg == "--")
-	    break;		// End of options
+	{
+	    // Anything after `--' is a debugger option.  Skip `--'
+	    // and store all remaining options in SAVED_OPTIONS.
+	    for (int j = i; j <= argc - 1; j++)
+		argv[j] = argv[j + 1];
+	    argc--;
+	    i--;
 
+	    save = true;
+	    continue;
+	}
+
+	if (save)
+	{
+	    // Found `--' - save all remaining options
+	    saved_options += arg;
+
+	    for (int j = i; j <= argc - 1; j++)
+		argv[j] = argv[j + 1];
+	    argc--;
+	    i--;
+
+	    continue;
+	}
+
+	// Ordinary DDD options
 	if ((arg == "--debugger" || arg == "-debugger") && i < argc - 1)
 	{
 	    gdb_name = argv[i + 1];

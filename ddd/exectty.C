@@ -135,7 +135,7 @@ static void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
 				Window& windowid, Widget origin)
 {
     // If we're already running, all is done.
-    if (pid > 0 && !remote_gdb() && kill(pid, 0) == 0)
+    if (pid > 0 && (remote_gdb() || kill(pid, 0) == 0))
 	return;
 
     string term_command = app_data.term_command;
@@ -274,7 +274,7 @@ static void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
     }
 }
 
-static void get_args(string command, string& base, string& args)
+static void get_args(const string& command, string& base, string& args)
 {
     // Find (last) arguments to `run' command
     base = command;
@@ -290,7 +290,7 @@ static void get_args(string command, string& base, string& args)
     {
 	args = gdb_question("show args");
 
-	// GDB 4.16 issues `Arguments list', GDB 4,17 `Argument list'.  Shhh.
+	// GDB 4.16 issues `Arguments list', GDB 4.17 `Argument list'.  Shhh.
 	if (!args.contains("Argument", 0))
 	{
 	    args = "";
@@ -334,6 +334,11 @@ static int set_term_env(const string& cmd, const string& term_type,
     return 0;
 }
 
+
+static bool has_redirection(const string& args, const string& redirection)
+{
+    return args.contains(redirection, 0) || args.contains(" " + redirection);
+}
 
 // Set debugger TTY to TTY_NAME and terminal type to TERM_TYPE.
 // Use without arguments to silently restore original TTY.
@@ -446,10 +451,30 @@ static int gdb_set_tty(string tty_name = "",
 
     case PERL:
     {
+	// Set remote terminal type
 	string cmd = "$ENV{'TERM'} = " + quote(term_type, '\'');
 	int ok = set_term_env(cmd, term_type, origin, silent);
 	if (!ok)
 	    return ok;
+
+#if 0
+	// Benoit Rochefort <benoitr@adopt.qc.ca> reports that
+	// Perl-5.005_02 on HP-UX exits after executing 
+	// open(STDIN, "</dev/tty").  
+	// So, redirect to the original TTY name instead.
+	if (tty_name == gdb->slave_tty())
+	    tty_name = "/dev/tty";
+#endif
+
+	cmd = "";
+	if (!has_redirection(gdb->path(), "<"))
+	    cmd += "open(STDIN, \"<" + tty_name + "\"); ";
+	if (!has_redirection(gdb->path(), ">"))
+	    cmd += "open(STDOUT, \">" + tty_name + "\"); ";
+	if (!has_redirection(gdb->path(), "2>"))
+	    cmd += "open(STDERR, \">" + tty_name + "\"); ";
+
+	gdb_question(cmd);
     }
     break;
 
@@ -461,11 +486,6 @@ static int gdb_set_tty(string tty_name = "",
     }
 
     return 0;
-}
-
-static bool has_redirection(const string& args, const string& redirection)
-{
-    return args.contains(redirection, 0) || args.contains(" " + redirection);
 }
 
 // Add redirection commands for SH-like shell
@@ -524,7 +544,7 @@ static void redirect_process(string& command,
 {
     // Try `tty' command to perform redirection
     int ret = gdb_set_tty(tty_name, app_data.term_type, origin);
-    if (app_data.use_tty_command && ret == 0)
+    if ((gdb->type() == PERL || app_data.use_tty_command) && ret == 0)
 	return;
 
     // Use redirection directives
@@ -594,17 +614,22 @@ static void redirect_process(string& command,
 	break;
     }
 
+    case PERL:
+    {
+	// In Perl, COMMAND is always interpreted by /bin/sh.
+	add_sh_redirection(gdb_redirection, tty_name, args);
+	break;
+    }
+
     case DBX:
 	// DBX has its own parsing, in several variants.
-	if (gdb->has_regs_command())
-	{
-	    // SUN DBX 4.0 has true ksh-style redirection.
-	    add_sh_redirection(gdb_redirection, tty_name, args);
-	}
-	else if (gdb->has_print_r_option())
+	if (gdb->has_print_r_option())
 	{
 	    // SUN DBX 3.x interprets `COMMAND 2>&1' such that COMMAND
 	    // runs in the background.  Use this kludge instead.
+	    // Tuomo Takkula <tuomo@cs.chalmers.se> reports this also
+	    // happens for SUN DBX 4.0.
+
 	    if (!has_redirection(args, "2>"))
 		gdb_redirection += " 2> " + tty_name;
 	    if (!has_redirection(args, ">"))
@@ -634,9 +659,6 @@ static void redirect_process(string& command,
 
     case PYDB:
 	break;			// No redirection in PYDB (for now)
-
-    case PERL:
-	break;			// No redirection in Perl (for now)
     }
 
     string new_args;
@@ -651,7 +673,14 @@ static void redirect_process(string& command,
     if (gdb_redirection != "")
 	gdb_out_ignore = " " + gdb_redirection;
 
-    command = base + " " + new_args;
+    if (gdb->type() == PERL)
+    {
+	command = gdb->run_command(new_args);
+    }
+    else
+    {
+	command = base + " " + new_args;
+    }
 }
 
 static void unredirect_reply(const string& answer, void *)
@@ -669,12 +698,26 @@ static void unredirect_process(string& command,
 	string base;
 	string args;
 	get_args(command, base, args);
-	if (has_redirection(args, gdb_redirection) && gdb->type() == GDB)
+	if (has_redirection(args, gdb_redirection))
 	{
-	    static string empty;
-	    args.gsub(gdb_redirection, empty);
-	    strip_space(args);
-	    gdb_command("set args " + args, origin, unredirect_reply);
+	    if (gdb->type() == GDB)
+	    {
+		static string empty;
+		args.gsub(gdb_redirection, empty);
+		strip_space(args);
+		gdb_command("set args " + args, origin, unredirect_reply);
+	    }
+	    else if (gdb->type() == PERL)
+	    {
+		// If we start Perl with I/O redirection, redirection
+		// after exec remains active until explicitly
+		// redirected to /dev/tty.
+		string new_args;
+		add_sh_redirection(new_args, "/dev/tty", args);
+		if (args != "")
+		    new_args = new_args + " " + args;
+		command = gdb->run_command(new_args);
+	    }
 	}
     }
 
@@ -775,6 +818,38 @@ static void set_tty_title(string message, Window tty_window)
 		    title, icon);
 }
 
+// Handle rerun
+static void handle_rerun(string& command)
+{
+    if (!gdb->has_rerun_command())
+	return;
+    if (!is_running_cmd(command, gdb))
+	return;
+
+    static string last_args = "";
+
+    string base;
+    string args;
+    get_args(command, base, args);
+    bool rerun = base.contains("re", 0);
+
+    if (rerun && !gdb->rerun_clears_args() && args == "")
+    {
+	// `rerun' without args - Use last arguments
+	command = base + " " + last_args;
+    }
+    else if (!rerun && gdb->rerun_clears_args() && args == "")
+    {
+	// `run' without args - Use last arguments
+	command = base + " " + last_args;
+    }
+    else
+    {
+	// Set last arguments
+	last_args = args;
+    }
+}
+
 // Create TTY if required
 void handle_running_commands(string& command, Widget origin)
 {
@@ -793,9 +868,25 @@ void startup_exec_tty()
     startup_exec_tty(dummy);
 }
 
+// Reset TTY settings after a restart
+void reset_exec_tty()
+{
+    if (separate_tty_pid > 0)
+    {
+	initialize_tty(separate_tty_name, separate_tty_term);
+	gdb_set_tty(separate_tty_name, app_data.term_type);
+    }
+    else
+    {
+	gdb_set_tty();
+    }
+}
+
 // Raise execution TTY with command COMMAND.
 void startup_exec_tty(string& command, Widget origin)
 {
+    handle_rerun(command);
+
     bool started = false;
 
     if (app_data.separate_exec_window 
@@ -882,6 +973,9 @@ void kill_exec_tty(bool killed)
 	{
 	    kill(separate_tty_pid, SIGHUP);
 	}
+
+	// Tell GDB not to redirect its process I/O
+	gdb_set_tty();
     }
 
     separate_tty_pid    = 0;

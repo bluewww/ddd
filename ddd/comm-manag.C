@@ -53,6 +53,7 @@ char comm_manager_rcsid[] =
 #include "PosBuffer.h"
 #include "UndoBuffer.h"
 #include "SourceView.h"
+#include "TimeOut.h"
 #include "VoidArray.h"
 #include "bool.h"
 #include "buttons.h"
@@ -63,11 +64,13 @@ char comm_manager_rcsid[] =
 #include "ddd.h"
 #include "disp-read.h"
 #include "editing.h"
+#include "exectty.h"
 #include "exit.h"
 #include "file.h"
 #include "history.h"
 #include "home.h"
 #include "index.h"
+#include "options.h"
 #include "post.h"
 #include "question.h"
 #include "regexps.h"
@@ -126,6 +129,11 @@ public:
 
     bool        disabling_occurred; // Flag: GDB disabled displays
 
+    string      init_perl;	  // Perl restart commands
+
+    XtIntervalId position_timer;  // Still waiting for partial position
+    XtIntervalId display_timer;   // Still waiting for partial display
+
 private:
     static void clear_origin(Widget w, XtPointer client_data, 
 			     XtPointer call_data);
@@ -170,7 +178,12 @@ public:
 	  user_check(true),
 	  recorded(false),
 
-	  disabling_occurred(false)
+	  disabling_occurred(false),
+
+	  init_perl(""),
+
+	  position_timer(0),
+	  display_timer(0)
     {
 	add_destroy_callback();
     }
@@ -181,6 +194,11 @@ public:
 	remove_destroy_callback();
 	delete disp_buffer;
 	delete pos_buffer;
+
+	if (position_timer != 0)
+	    XtRemoveTimeOut(position_timer);
+	if (display_timer != 0)
+	    XtRemoveTimeOut(display_timer);
     }
 
 private:
@@ -206,7 +224,14 @@ private:
 	  user_verbose(true),
 	  user_prompt(true),
 	  user_check(true),
-	  recorded(false)
+	  recorded(false),
+
+	  disabling_occurred(false),
+
+	  init_perl(""),
+
+	  position_timer(0),
+	  display_timer(0)
     {
 	assert(0);
     }
@@ -398,7 +423,27 @@ static void fix_symbols(string& cmd)
 
 inline String str(String s)
 {
-    return s != 0 ? s : "";
+    return s != 0 ? s : (String)"";
+}
+
+static void StartDoneCB(const string& /* answer */, void * /* qu_data */)
+{
+    // If we have an execution tty, use it.
+    reset_exec_tty();
+}
+
+static void start_done()
+{
+    // One last command to clear the delay, set up breakpoints and
+    // issue prompt
+    Command c("# reset");
+    c.priority = COMMAND_PRIORITY_INIT;
+    c.echo     = false;
+    c.verbose  = false;
+    c.prompt   = false;
+    c.check    = true;
+    c.callback = StartDoneCB;
+    gdb_command(c);
 }
 
 void start_gdb(bool config)
@@ -577,9 +622,6 @@ void start_gdb(bool config)
 
     case JDB:
 	extra_data->refresh_initial_line = true;
-
-	cmds += "use";
-	extra_data->refresh_class_path = true;
 	break;
 
     case PYDB:
@@ -618,16 +660,7 @@ void start_gdb(bool config)
     // and don't care for detailed diagnostics, we allow the GDB
     // `source' command.
     init_session(restart, settings, app_data.source_init_commands);
-
-    // One last command to clear the delay, set up breakpoints and
-    // issue prompt
-    Command c("# reset");
-    c.priority = COMMAND_PRIORITY_INIT;
-    c.echo     = false;
-    c.verbose  = false;
-    c.prompt   = false;
-    c.check    = true;
-    gdb_command(c);
+    start_done();
 }
 
 struct InitSessionInfo {
@@ -670,6 +703,7 @@ void init_session(const string& restart, const string& settings,
 	info->tempfile = tmpnam(0);
 
 	string file_commands = "";
+	bool recording_defines = false;
 
 	{
 	    ofstream os(info->tempfile);
@@ -678,14 +712,21 @@ void init_session(const string& restart, const string& settings,
 		string cmd = init_commands.before('\n');
 		init_commands = init_commands.after('\n');
 
-		if (is_file_cmd(cmd, gdb) || is_core_cmd(cmd) || 
-		    cmd.contains("set confirm", 0))
+		if (!recording_defines && 
+		    (is_file_cmd(cmd, gdb) || is_core_cmd(cmd) || 
+		     cmd.contains("set confirm", 0)))
 		{
-		    // Use this command the ordinary way
+		    // This is a `file' command that is not part of
+		    // a definition: execute this command the ordinary way
 		    file_commands += cmd + "\n";
 		}
 		else
 		{
+		    if (is_define_cmd(cmd))
+			recording_defines = true;
+		    else if (is_end_cmd(cmd))
+			recording_defines = false;
+
 		    // Source this command
 		    fix_symbols(cmd);
 		    if (is_graph_cmd(cmd))
@@ -875,6 +916,7 @@ void send_gdb_command(string cmd, Widget origin,
     }
 
     command_was_cancelled = false;
+    bool next_input_goes_to_debuggee = false;
 
     // Setup extra command information
     CmdData* cmd_data       = new CmdData(origin);
@@ -1043,7 +1085,15 @@ void send_gdb_command(string cmd, Widget origin,
 
 	case PERL:
 	    if (!is_reset_cmd)
+	    {
+		// We're restarting Perl.  Make sure the state is preserved.
+		unsigned long flags = DONT_RELOAD_FILE;
+		get_restart_commands(cmd_data->init_perl, flags);
+		cmd_data->init_perl += get_settings(gdb->type());
+		cmd_data->init_perl.prepend(app_data.perl_init_commands);
+
 		cmd_data->new_exec_pos = true;
+	    }
 	    extra_data->refresh_initial_line = false;
 	    break;
 
@@ -1110,7 +1160,7 @@ void send_gdb_command(string cmd, Widget origin,
 #endif
 
 	// Any later input is user interaction.
-	gdb_input_at_prompt = false;
+	next_input_goes_to_debuggee = true;
 
 	// Debuggee should now be running
 	debuggee_running = true;
@@ -1137,7 +1187,6 @@ void send_gdb_command(string cmd, Widget origin,
 	extra_data->refresh_breakpoints = false;
 	extra_data->refresh_where       = false;
 	extra_data->refresh_frame       = true;
-	extra_data->refresh_registers   = false;
 	extra_data->refresh_threads     = false;
 	extra_data->refresh_data        = true;
 
@@ -1223,7 +1272,7 @@ void send_gdb_command(string cmd, Widget origin,
 	get_settings(gdb->type());
 	extra_data->refresh_setting     = true;
 	extra_data->set_command         = cmd;
-	extra_data->refresh_data        = false;
+	extra_data->refresh_data        = true;
 	extra_data->refresh_addr        = false;
 	extra_data->refresh_breakpoints = false;
 
@@ -1286,7 +1335,14 @@ void send_gdb_command(string cmd, Widget origin,
 	extra_data->refresh_threads     = true;
 
 	// Any later input is user interaction.
-	gdb_input_at_prompt = false;
+	next_input_goes_to_debuggee = true;
+    }
+
+    if (calls_function(cmd))
+    {
+	// Function call - later input may be user interaction
+	next_input_goes_to_debuggee  = true;
+	debuggee_running = true;
     }
 
     if (undo_buffer.showing_earlier_state() && !cmd_data->new_exec_pos)
@@ -1393,6 +1449,9 @@ void send_gdb_command(string cmd, Widget origin,
     {
 	strip_auto_command_prefix(echoed_cmd);
 	gdb_out(echoed_cmd + "\n");
+
+	if (next_input_goes_to_debuggee)
+	    gdb_input_at_prompt = false;
     }
 
     if (abort_undo)
@@ -1426,7 +1485,13 @@ void send_gdb_command(string cmd, Widget origin,
     assert(!extra_data->config_xdb);
     assert(!extra_data->config_output);
     assert(!extra_data->config_program_language);
-    
+
+    // Annotate state
+    if (extra_data->refresh_breakpoints)
+	annotate("breakpoints-invalid");
+    if (extra_data->refresh_frame)
+	annotate("frames-invalid");
+
     // Setup additional trailing commands
     switch (gdb->type())
     {
@@ -1438,14 +1503,14 @@ void send_gdb_command(string cmd, Widget origin,
 	    cmds += "info line";
 	}
 	if (extra_data->refresh_pwd)
-	    cmds += "pwd";
+	    cmds += gdb->pwd_command();
 	assert(!extra_data->refresh_class_path);
 	assert(!extra_data->refresh_file);
 	assert(!extra_data->refresh_line);
 	if (extra_data->refresh_breakpoints)
 	    cmds += "info breakpoints";
 	if (extra_data->refresh_where)
-	    cmds += "where";
+	    cmds += gdb->where_command();
 	if (extra_data->refresh_frame)
 	    cmds += gdb->frame_command();
 	if (extra_data->refresh_registers)
@@ -1478,7 +1543,7 @@ void send_gdb_command(string cmd, Widget origin,
 
     case DBX:
 	if (extra_data->refresh_pwd)
-	    cmds += "pwd";
+	    cmds += gdb->pwd_command();
 	assert(!extra_data->refresh_class_path);
 	if (extra_data->refresh_file)
 	    cmds += "file";
@@ -1487,10 +1552,11 @@ void send_gdb_command(string cmd, Widget origin,
 	if (extra_data->refresh_breakpoints)
 	    cmds += "status";
 	if (extra_data->refresh_where)
-	    cmds += "where";
+	    cmds += gdb->where_command();
 	if (extra_data->refresh_frame)
 	    cmds += gdb->frame_command();
-	assert (!extra_data->refresh_registers);
+	if (extra_data->refresh_registers)
+	    cmds += source_view->refresh_registers_command();
 	assert (!extra_data->refresh_threads);
 	if (extra_data->refresh_data)
 	    extra_data->n_refresh_data = 
@@ -1518,7 +1584,7 @@ void send_gdb_command(string cmd, Widget origin,
 	if (extra_data->refresh_breakpoints)
 	    cmds += "lb";
 	if (extra_data->refresh_where)
-	    cmds += "t";
+	    cmds += gdb->where_command();
 	if (extra_data->refresh_frame)
 	    cmds += gdb->frame_command();
 	assert (!extra_data->refresh_registers);
@@ -1546,7 +1612,7 @@ void send_gdb_command(string cmd, Widget origin,
 	if (extra_data->refresh_breakpoints)
 	    cmds += "clear";
 	if (extra_data->refresh_where)
-	    cmds += "where";
+	    cmds += gdb->where_command();
 	assert (!extra_data->refresh_registers);
 	if (extra_data->refresh_threads)
 	    cmds += "threads";
@@ -1564,11 +1630,11 @@ void send_gdb_command(string cmd, Widget origin,
 
     case PYDB:
 	if (extra_data->refresh_pwd)
-	    cmds += "pwd";
+	    cmds += gdb->pwd_command();
 	if (extra_data->refresh_breakpoints)
 	    cmds += "info breakpoints";
 	if (extra_data->refresh_where)
-	    cmds += "where";
+	    cmds += gdb->where_command();
 	if (extra_data->refresh_data)
 	    extra_data->n_refresh_data = 
 		data_disp->add_refresh_data_commands(cmds);
@@ -1584,6 +1650,8 @@ void send_gdb_command(string cmd, Widget origin,
 	    cmds += gdb->pwd_command();
 	if (extra_data->refresh_breakpoints)
 	    cmds += "L";
+	if (extra_data->refresh_where)
+	    cmds += gdb->where_command();
 	if (extra_data->refresh_data)
 	    extra_data->n_refresh_data = 
 		data_disp->add_refresh_data_commands(cmds);
@@ -1631,32 +1699,129 @@ void send_gdb_command(string cmd, Widget origin,
 // Part of the answer has been received
 //-----------------------------------------------------------------------------
 
-static void partial_answer_received(const string& answer, void* data) 
+static void print_partial_answer(const string& answer, CmdData *cmd_data)
 {
-    string ans = answer;
-    CmdData *cmd_data = (CmdData *) data;
-
-    bool verbose = cmd_data->user_verbose;
-
-    // Filter displays and position
-    if (cmd_data->pos_buffer)
-	cmd_data->pos_buffer->filter(ans);
-
-    if (cmd_data->filter_disp != NoFilter)
-	cmd_data->disp_buffer->filter(ans);
-    
-    cmd_data->user_answer += ans;
+    cmd_data->user_answer += answer;
 
     // Output remaining answer
-    if (verbose && cmd_data->graph_cmd == "")
+    if (cmd_data->user_verbose && cmd_data->graph_cmd == "")
     {
-	gdb_out(ans);
+	gdb_out(answer);
     }
     else if (cmd_data->user_answer.contains("(y or n) ", -1))
     {
 	// GDB wants confirmation for a batch command
 	gdb->send_user_ctrl_cmd("y\n");
     }
+}
+
+static void CancelPartialPositionCB(XtPointer client_data, XtIntervalId *id)
+{
+    (void) id;			// Use it
+
+    CmdData *cmd_data = (CmdData *)client_data;
+    assert(cmd_data->position_timer == *id);
+    cmd_data->position_timer = 0;
+
+    string ans = cmd_data->pos_buffer->answer_ended();
+    print_partial_answer(ans, cmd_data);
+}
+
+static void CancelPartialDisplayCB(XtPointer client_data, XtIntervalId *id)
+{
+    (void) id;			// Use it
+
+    CmdData *cmd_data = (CmdData *)client_data;
+    assert(cmd_data->display_timer == *id);
+    cmd_data->display_timer = 0;
+
+    string ans = cmd_data->disp_buffer->answer_ended();
+    print_partial_answer(ans, cmd_data);
+}
+
+
+static CmdData *current_cmd_data = 0;
+
+// Return GDB output that has not been echoed yet
+string buffered_gdb_output()
+{
+    string output = "";
+    if (current_cmd_data != 0)
+    {
+	if (current_cmd_data->pos_buffer != 0)
+	    output += current_cmd_data->pos_buffer->answer_ended();
+	if (current_cmd_data->disp_buffer != 0)
+	    output += current_cmd_data->disp_buffer->answer_ended();
+    }
+
+    return output;
+}
+
+static void partial_answer_received(const string& answer, void *data)
+{
+    string ans = answer;
+    CmdData *cmd_data = (CmdData *) data;
+    current_cmd_data = cmd_data;
+
+    XtAppContext app_con = XtWidgetToApplicationContext(gdb_w);
+
+    if (cmd_data->pos_buffer)
+    {
+	// Filter position
+	cmd_data->pos_buffer->filter(ans);
+
+	if (cmd_data->pos_buffer->pos_found() || 
+	    cmd_data->pos_buffer->partial_pos_found())
+	{
+	    if (cmd_data->position_timer != 0)
+		XtRemoveTimeOut(cmd_data->position_timer);
+	    cmd_data->position_timer = 0;
+	}
+
+	if (cmd_data->pos_buffer->partial_pos_found())
+	{
+	    // Get the remaining position within posTimeOut ms.
+	    if (app_data.position_timeout >= 0)
+	    {
+		assert(cmd_data->position_timer == 0);
+
+		cmd_data->position_timer = 
+		    XtAppAddTimeOut(app_con, app_data.position_timeout,
+				    CancelPartialPositionCB, 
+				    XtPointer(cmd_data));
+	    }
+	}
+    }
+
+    if (cmd_data->filter_disp != NoFilter)
+    {
+	// Filter displays
+	cmd_data->disp_buffer->filter(ans);
+
+	if (cmd_data->disp_buffer->displays_found() || 
+	    cmd_data->disp_buffer->partial_displays_found())
+	{
+	    if (cmd_data->display_timer != 0)
+		XtRemoveTimeOut(cmd_data->display_timer);
+	    cmd_data->display_timer = 0;
+	}
+
+	if (cmd_data->disp_buffer->partial_displays_found())
+	{
+	    // Get the remaining displays within displayTimeOut ms.
+	    if (app_data.display_timeout >= 0)
+	    {
+		assert(cmd_data->display_timer == 0);
+
+		cmd_data->display_timer = 
+		    XtAppAddTimeOut(app_con, app_data.display_timeout,
+				    CancelPartialDisplayCB,
+				    XtPointer(cmd_data));
+	    }
+	}
+    }
+
+    print_partial_answer(ans, cmd_data);
 }
 
 
@@ -1686,6 +1851,14 @@ static void command_completed(void *data)
     bool check     = cmd_data->user_check;
     bool verbose   = cmd_data->user_verbose;
     bool do_prompt = cmd_data->user_prompt;
+
+    if (cmd_data->position_timer != 0)
+	XtRemoveTimeOut(cmd_data->position_timer);
+    cmd_data->position_timer = 0;
+
+    if (cmd_data->display_timer != 0)
+	XtRemoveTimeOut(cmd_data->display_timer);
+    cmd_data->display_timer = 0;
 
     if (verbose && !cmd_data->recorded)
     {
@@ -1721,6 +1894,13 @@ static void command_completed(void *data)
     {
 	undo_buffer.add_command(cmd_data->undo_command, 
 				cmd_data->undo_is_exec);
+    }
+
+    if (cmd_data->init_perl != "")
+    {
+	init_session(cmd_data->init_perl, app_data.perl_settings, 
+		     app_data.source_init_commands);
+	start_done();
     }
 
     if (pos_buffer && pos_buffer->started_found())
@@ -1954,6 +2134,7 @@ static void command_completed(void *data)
     }
 
     delete cmd_data;
+    current_cmd_data = 0;
 
     if (do_prompt)
 	prompt();
@@ -1967,8 +2148,38 @@ static void command_completed(void *data)
 // Fetch display numbers from ARG into NUMBERS
 static bool read_displays(string arg, IntArray& numbers, bool verbose)
 {
+    IntArray displays;
+    data_disp->get_all_display_numbers(displays);
+
     while (has_nr(arg))
-	numbers += atoi(read_nr_str(arg));
+    {
+	string number = read_nr_str(arg);
+	int nr = atoi(number);
+	bool found = false;
+	for (int i = 0; !found && i < displays.size(); i++)
+	{
+	    if (displays[i] == nr)
+	    {
+		// Found a display with this number
+		numbers += nr;
+		found = true;
+	    }
+	}
+
+	if (!found)
+	{
+	    int disp_nr = data_disp->display_number(number, false);
+	    if (disp_nr != 0)
+	    {
+		// Found a display with this name
+		numbers += disp_nr;
+		found = true;
+	    }
+	}
+
+	if (!found)
+	    numbers += nr;	// Use given (probably invalid) display number
+    }
 
     strip_space(arg);
     if (arg != "")

@@ -34,11 +34,20 @@
 #endif
 
 #include <X11/Xlib.h>
+#include <X11/Intrinsic.h>
 
+// Initialize IMAGE
 extern void InitImage(XImage *image);
 
+// Create IMAGE from bitmap source
 extern XImage *CreateImageFromBitmapData(unsigned char *bits,
 					 int width, int height);
+
+// Install IMAGE in Motif cache
+Boolean InstallImage(XImage *image, char *name);
+
+// Install bitmap in Motif cache
+Boolean InstallBitmap(unsigned char *bits, int width, int height, char *name);
 
 #endif // _DDD_InitImage_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

@@ -1,0 +1,1771 @@
+.\" $Header$
+.TH xdb 1
+.ds )H Hewlett-Packard Company
+.ds ]W HP-UX Release 9.0: August 1992
+.SH NAME
+xdb \- C, FORTRAN, Pascal, and C++ Symbolic Debugger
+.SH SYNOPSIS
+.C xdb
+.RC [ -d
+.IR dir\| ]
+.RC [ -r
+.IR file\| ]
+.RC [ -R
+.IR file\| ]
+.RC [ -p
+.IR file\| ]
+.RC [ -P
+.IR process_\s-1ID\s0\| ]
+.RC [ -L ]
+.RC [ -l
+.IR library\| ]
+.br
+.ti +4n
+.RC [ -i
+.IR file\| ]
+.RC [ -o
+.IR file\| ]
+.RC [ -e
+.IR file\| ]
+.RC [ -S
+.IR num\| ]
+.RC [ -s ]
+.RI [ \|objectfile
+.RI [ \|corefile\| ]\|]
+.SH DESCRIPTION
+.C xdb
+is a source level debugger for C,
+.SM HP FORTRAN,
+.SM HP
+Pascal, and C++ programs.
+It provides a controlled environment for their execution.
+See the
+.IR "HP-UX Symbolic Debugger User's Guide"
+for a comprehensive description of
+.I xdb .
+.PP
+.I objectfile
+is an executable program file
+having zero or more of its component modules compiled
+with the debug option turned on (enabled by the
+.C -g
+option of the
+.CR cc ,
+.CR f77 ,
+.CR pc ,
+and
+.C CC
+compilers).
+The support module
+.C /usr/lib/end.o
+must be included as the last object file linked,
+except for libraries included with the
+.C -l
+option to
+.C ld
+(see
+.IR ld (1)).
+The support module is included automatically when
+.C ld
+is invoked as part of a compile command that uses the
+.C -g
+option.
+The default for
+.I objectfile
+is
+.CR a.out .
+Note that by default
+.C ld
+links in shared libraries instead of archive libraries.
+.PP
+.I corefile
+is a core image from a failed execution of
+.IR objectfile .
+The default for
+.I corefile
+is
+.CR core .
+.SS Options
+.C xdb
+recognizes the following options:
+.RS
+.TP 15
+.CI -d \0dir
+Specify
+.I dir
+as an alternate directory where source files are located.
+.TP
+.CI -r \0file
+Specify a record
+.IR file ,
+which is invoked immediately (for overwrite, not for append).
+.TP
+.CI -R \0file
+Specify a restore state
+.IR file ,
+which is processed before the
+.C -p
+option (if any) and after the
+.C -r
+option (if any).
+.TP
+.CI -p \0file
+Specify a playback
+.I file
+which is invoked immediately.
+.TP
+.CI -P \0process_\s-1ID\s0
+Specify the process
+.SM ID
+of an existing process the user wants to debug.
+.TP
+.C -L
+Use the line-oriented interface.
+.TP
+.CI -l \0library
+Pre-load information about this shared
+.I library,
+.C -l ALL
+means always pre-load shared library information.
+.TP
+.CI -i \0file
+Redirect standard input to the child process
+from the designated file or character device.
+.TP
+.CI -o \0file
+Redirect standard output from the child process
+to the designated file or character device.
+.TP
+.CI -e \0file
+Redirect standard error from the child process
+to the designated file or character device.
+.TP
+.CI -S \0num
+Set the size of the string cache to
+.I num
+bytes (default is 1024, which is also the minimum).
+.TP
+.C -s
+Enable debugging of shared-libraries.
+.RE
+.PP
+At start-up, the debugger executes commands from the file
+.CR $HOME/.xdbrc ,
+if it exists.
+.SH ENVIRONMENT VARIABLES
+.SS Display
+.TP 15
+.C TERM
+This variable specifies the terminal type.
+There is no default for the terminal type.
+.TP
+.C LINES
+This variable specifies the window height in lines of text.
+The default for this variable is 24 if not otherwise determinable.
+.TP
+.C COLUMNS
+This variable specifies the window width in text columns.
+The default for this variable is 80 if not otherwise determinable.
+.SS Command Line Editing
+.TP 15
+.C XDBHIST
+This variable specifies the history file.
+The default for this variable is
+.CR $HOME/.xdbhist .
+.TP
+.C HISTSIZE
+This variable specifies the actual number of commands
+allowed in the history file.
+The default for this variable is
+.CR 128 .
+.TP
+.C XDBEDIT
+This variable specifies the editing mode (
+.C vi,
+.C emacs,
+or
+.CR gmacs).
+The default for this variable is to match the environment variable
+.C VISUAL
+or
+.C EDITOR;
+otherwise, there is no default.
+.SS Native Language Support
+.TP 15
+.C LANG
+This variable determines the local language equivalent of
+.C y
+(for yes/no queries).
+.C LANG
+also determines the locale in which messages are displayed.
+The default value for this variable is
+.CR C .
+.TP
+.C LC_CTYPE
+This variable determines the interpretation of text as single-
+and/or multi-byte characters and their printability when reading or
+writing character and string data.
+If
+.C LC_CTYPE
+is not specified in the environment
+or is set to the empty string, the value of
+.C LANG
+is used as the default.
+.SS International Code Set Support
+Single- and multi-byte character code sets are supported.
+.SH LOCATION SYNTAX
+.TP 15
+.I line
+A
+.I number
+that refers to a particular line in a file.
+.TP
+.I location
+A particular
+.I line
+in a file and its corresponding address in the user's program.
+.I location
+has the following general forms:
+.RS
+.IP
+.I line
+.br
+.CI #label
+.br
+.I file\c
+.RC [ \|:\c
+.IR line \|]
+.br
+.RI [ \|file\c
+.CR : \|]\c
+.I proc\c
+.RC [ \|:\c
+.I proc\c
+.RC \|[\|...\|]\|]\|[ :\c
+.IC line "| #"\c
+.IR label \|]
+.br
+.RI [\| class \|]\c
+.CI :: proc\c
+.RC \|[\| :\c
+.IC line "| #"
+.IR label \|]
+.RE
+.IP
+To reference code addresses symbolically, use:
+.RS
+.IP
+.IC proc # line
+.br
+.RI [\|[\| class \|]\c
+.CR :: \|]\|\c
+.IC proc # line
+.PP
+.RE
+.SH Variable Identifiers
+Variables are referenced exactly as they are named
+in the source file or files.
+Uppercase/lowercase sensitivity is controlled by the
+.C tc
+command.
+.PP
+Several methods can be used to obtain the value of some variable
+.IR var ,
+depending on where and what it is:
+.TP 18
+.I var
+Search for
+.I var
+first as a local in the current procedure
+(or the most recent instance of the current procedure),
+next as a member of that procedure's class, or finally as a global.
+.TP
+.IC class :: var
+Search
+.I class
+for variable.
+.TP
+.IC proc : var
+.PD 0
+.TP
+.ifn [[\f2class\f1]\f3::\f1]\f2proc\f3:\f1[\f2class\f3::\f1]\f2var\f1
+.ift [[\f2class\f1]\f4\s+1::\s0\f1]\f2proc\f4\s+1:\s0\f1[\f2class\f4\s+1::\s0\f1]\f2var\f1
+.PD
+Search for
+.I var
+in the current or most recent instance of
+.IR proc .
+A leading \f3::\f1 indicates a global.
+.TP
+.IC proc : depth : var
+.PD 0
+.TP
+.ift [[\f2class\f1]\f4\s+1::\s0\f1]\f2proc\f4\s+1:\s0\f2depth\f4\s+1:\s0\f1[\f2class\f4\s+1::\s0\f1]\f2var\f1
+.ifn [[\f2class\f1]\f3::\f1]\f2proc\f3:\f2depth\f3:\f1[\f2class\f3::\f1]\f2var\f1
+.PD
+Use the instance of
+.I proc
+that is at depth
+.I depth
+(exactly), instead of the current or most recent instance.
+.TP
+.CI : var
+.PD 0
+.TP
+.CI :: var
+.PD
+Search for a global (not local) variable named
+.IR var .
+.TP
+.C .
+.I dot
+is shorthand for the last thing viewed.
+.SH Special Variables
+Special variables are names for things
+that are not normally directly accessible.
+Special variables include:
+.TP 18
+.CI $ var
+The debugger has room in its own address space for several
+user-created special variables of type
+.C long .
+.TP
+.CR $pc , \0$sp , \0$r7 ,\0etc.
+These are the names of the program counter, the stack pointer, the
+.SM CPU
+general registers, etc.
+.TP
+.C $result
+This is used to reference the return value
+from the last command-line procedure call.
+It can also be referenced as
+.C $short
+and
+.CR $long .
+.TP
+.C $signal
+This lets you see and modify the current child process signal number.
+.TP
+.C $lang
+This lets you see and modify the current language.
+Possible values are:
+.CR C ,
+.CR C++ ,
+.CR FORTRAN ,
+.CR Pascal ,
+.CR default .
+.TP
+.C $depth
+This is the default stack level for viewing local variables.
+.TP
+.C $print
+Alters the behavior of the ``print'' command
+when printing character data.
+Values that can be assigned are
+.CR ascii ,
+.CR native ,
+and
+.CR raw .
+.TP
+.C $line
+This lets you see and modify the current source line number.
+.TP
+.C $malloc
+This lets you see the current amount of memory (bytes)
+allocated at run-time for use by the debugger itself.
+.TP
+.C $step
+This lets you see and modify the number of machine instructions
+the debugger steps while in a non-debuggable procedure
+before setting an up-level breakpoint and free-running to it.
+.TP
+.C $cplusplus
+This is interpreted as a set of flags to control behavior of certain
+C++ capabilities.
+.RS
+.RS
+.TP 10
+.C bit 0
+Set means print full base class information at each occurrence.
+.TP
+.C bit 1
+Set means
+.C bpc
+sets breakpoints on member functions of base classes, also.
+.TP
+.C bit 2
+Set means
+.C bi
+sets breakpoints on member functions of base classes, also.
+.RE
+.RE
+.IP
+The default for all bits is clear.
+Some commands take a
+.C -c
+or
+.C -C
+argument which causes the action to be as if the appropriate bit of
+.C $cplusplus
+was clear
+.RC ( -c )
+or set
+.RC ( -C ).
+.RE
+.SH COMMANDS
+The debugger has a large number of commands
+for viewing and manipulating the program being debugged.
+They are explained below
+and are grouped according to functional similarity.
+.SS Window Mode Commands
+These commands control what is displayed in the source window.
+The source window by default comes up in source mode
+for viewing source code.
+If assembly language instructions are needed,
+the disassembly mode can be selected.
+Registers are also shown in this mode.
+If both assembly instructions and source code are needed,
+the split-screen mode can be selected.
+Commands are as follows:
+.RS
+.TP 12
+.C td
+Toggle disassembly mode.
+.TP
+.C ts
+.PD
+Toggle split-screen mode.
+.TP
+.C gr
+Display the general registers when the debugger
+is in disassembly (non-split-screen) mode.
+.TP
+.C fr
+Display the floating-point registers
+when the debugger is in disassembly (non-split-screen) mode.
+.TP
+.C +r
+Scroll the floating-point register display forward four lines.
+.TP
+.C -r
+Scroll the floating-point register display back four lines.
+.TP
+.CR w \0[\f2size\fP]
+Set the size of the source viewing window.
+.TP
+.C u
+Update the screen to reflect the current location.
+.TP
+.C U
+Clear and redraw the screen.
+.RE
+.SS Path Map Commands
+Path maps can be used
+to redirect portions of a source tree to different directories.
+Commands are as follows:
+.TP 22
+.CR apm \0\f2old_path\fP\0[\f2new_path\fP]
+Add a path map to the list of path maps.
+.TP
+.C lpm
+List path maps.
+The list is numbered for use with the
+.C dpm
+command.
+.TP
+.CR dpm \0[\f2number\fP " | *" ]
+Delete path map.
+Default
+.I number
+is 1 (most recent path map).
+A
+.C *
+deletes all path maps.
+.TP
+.CI D \0directory
+Adds
+.I directory
+to the list of alternate directory search paths for source files.
+.SS File Viewing Commands
+These commands may change the current viewing position,
+but they do not affect the next statement
+to be executed in the child process, if any.
+Commands are as follows:
+.TP 18
+.C v
+View the source one window forward from the
+.I current
+source window.
+.TP
+.CI v \0location
+View the source at the specified
+.IR location ,
+placing it in the center of the window.
+.TP
+.CR V \0[\f2depth\fP]
+View the source at the current procedure at
+.I depth
+on the stack.
+.TP
+.CR va \0[\f2address\fP]
+View the assembly code at
+.I address
+in the source window (see the
+.CR td
+command).
+.TP
+.C L
+Display the file name, procedure name, line number,
+and the current source statement
+corresponding to the object code being executed or examined.
+.TP
+.CR + \0[\f2lines\fP]
+Move to
+.I lines
+(default one) lines after the current line.
+.TP
+.CR - \0[\f2lines\fP]
+Move to
+.I lines
+(default one) lines before the current line.
+.TP
+.CR / \0[\f2string\fP]
+Search forward through the current file for
+.IR string ,
+starting at the line after the current line.
+.TP
+.CR ? \0[\f2string\fP]
+Search backward for
+.IR string ,
+starting with the line before the current line.
+.TP
+.C n
+Repeat the previous
+.C /
+or
+.C ?
+command using the same
+.I string
+as the last search, starting at the current location being viewed.
+.TP
+.C N
+The same as
+.CR n ,
+but the search goes in the opposite direction
+from that specified by the previous
+.C /
+or
+.C ?
+command.
+.SS Display Formats
+The display formats tell the debugger's data viewing commands
+how output should be formatted.
+A
+.I format
+is of the form
+.RI [\| count \|]\| formchar\|\c
+.RI [\| size \|].
+For example,
+.C "p abc\e4x2"
+prints, starting at the location of
+.CR "abc" ,
+four two-byte numbers in hexadecimal.
+.PP
+Formats that print numbers use lowercase characters to represent
+.C integer
+data types and uppercase to represent
+.C long
+data types.
+For example,
+.C O
+prints in
+.C long
+octal.
+.PP
+The following formats are available:
+.RS
+.TP 10
+.C n
+Print in the ``normal'' format, based on the type.
+Arrays of
+.C char
+and pointers to
+.C char
+are interpreted as strings, and structures are fully dumped.
+.TP
+.RC ( d \(or D )
+Print in decimal (as
+.C integer
+or
+.CR long ).
+.TP
+.RC ( u \(or U )
+Print in unsigned decimal (as
+.C integer
+or
+.CR long ).
+.TP
+.RC ( o \(or O )
+Print in octal (as
+.C integer
+or
+.CR long ).
+.TP
+.RC ( x \(or X )
+Print in hexadecimal (as
+.C integer
+or
+.CR long ).
+.TP
+.RC ( z \(or Z )
+Print in binary (as
+.C integer
+or
+.CR long ).
+.TP
+.RC ( b \(or B )
+Print a byte in decimal (either way).
+.TP
+.C c
+Print a character.
+.TP
+.C C
+Print a wide-character.
+.TP
+.RC ( e \(or E )
+Print in ``e'' floating-point notation (as
+.CR float ,
+.CR double ,
+or
+.CR long ).
+.TP
+.RC ( f \(or F )
+Print in ``f'' floating-point notation (as
+.CR float ,
+.CR double ,
+or
+.CR "long double" ).
+.TP
+.RC ( g \(or G )
+Print in ``g'' floating-point notation (as
+.CR float ,
+.CR double ,
+or
+.CR "long double" ).
+.TP
+.C i
+Print a disassembled machine instruction.
+.TP
+.C a
+Print a string using
+.I expr
+as the address of the first byte.
+.TP
+.C w
+Print a wide-character string using
+.I expr
+as the address of the first element.
+.TP
+.C W
+Print a wide-character string using
+.I expr
+as the address of a pointer to the first element.
+.TP
+.C r
+Print the template of an object (C++).
+.TP
+.C R
+Print the template of an object with base classes displayed (C++).
+.TP
+.C s
+Print a string using
+.I expr
+as the address of a pointer to the first byte.
+.TP
+.C t
+Show the type of
+.I expr
+(usually a variable or procedure name).
+.TP
+.C T
+This is identical to the
+.C t
+format except for C++ classes and struct objects
+where base class and struct type information are also displayed.
+.TP
+.C p
+Print the name of the procedure containing address
+.IR expr .
+.TP
+.C S
+Do a formatted dump of a structure.
+.TP
+.C k
+Identical to the
+.C S
+format.
+.TP
+.C K
+Same as the
+.C S
+format, except that for C++ class and struct objects
+the base class and struct data are also displayed.
+.RE
+.PP
+There are some short hand notations for
+.IR size :
+.RS
+.TP 10
+.C b
+1 byte
+.RC ( char ).
+.TP
+.C s
+2 bytes
+.RC ( short ).
+.TP
+.C l
+4 bytes
+.RC ( long ).
+.TP
+.C D
+8 bytes
+.RC ( double ).
+Can only be used with floating-point formats.
+.TP
+.C L
+16 bytes
+.RC( "long double" ).
+Can only be used with floating-point formats.
+.RE
+.SS Data Viewing and Modification Commands
+.TP 18
+.CI p \0expr
+If
+.I expr
+does not resemble anything else (such as a command),
+it is handled as if you had typed
+.CI p \0expr \en
+(print expression in normal format).
+.TP
+.CI p \0expr \e format
+Print the contents (value) of
+.I expr
+using
+.IR format .
+.TP
+.CI p \0expr ? format
+Print the address of
+.I expr
+using
+.IR format .
+.TP
+.CR "p -" [\|[ \e "] \f2format\fP]"
+Back up to the preceding memory location
+(based on the size of the last thing displayed) and use
+.I format
+if supplied, or the previous
+.I format
+if not.
+.TP
+.CR "p + " [\|[ \e "] \f2format\fP]"
+Go forward to the following memory location
+(based on the size of the last thing displayed) and use
+.I format
+if supplied, or the previous
+.I format
+if not.
+.TP
+.CI p \0class ::
+Print the values of all static data members of
+.IR class .
+.TP
+.CI pq \0argument
+Print quietly (evaluate but do not print).
+.I argument
+can be anything allowed after
+.CR p .
+.TP
+.CR l \0[\f2proc\fP[ : \f2depth\fP]\|]
+.PD 0
+.TP
+.CR l \0[\|[\|[\f2class\fP] :: ]\|[\f2proc\f1[ : \f2depth\f1]\|]\|]
+.PD
+List all parameters and local variables of the current procedure (or of
+.IR proc ,
+if given, at the specified
+.IR depth ,
+if any).
+.TP
+.C la
+List all
+.CR a ssertions.
+.PD 0
+.TP
+.C lb
+List all
+.CR b reakpoints.
+.TP
+.C ld
+List all
+.CR d irectories
+(where to search for files).
+.TP
+.C lsl
+List all shared libraries known to the debugger.
+.TP
+.C lz
+List all
+.CR z ignals
+(signal actions).
+.PD
+.TP
+.CR lc \0[\f2string\fP]
+List all (or matching)
+.CR c ommon
+blocks in the current procedure
+.SM (F\s-2ORTRAN\s0).
+.PD 0
+.TP
+.CR lf \0[\f2string\fP]
+List all (or matching)
+.CR f iles
+(source files used to build
+.IR objectfile ).
+.TP
+.CR lg \0[\f2string\fP]
+List all (or matching)
+.CR g lobal
+variables.
+.TP
+.ift \f4\s+1ll\fP\s0 [\f2string\fP]\|[ \f4@\fP\f2library\fP]
+.ifn \f3ll\fP [\f2string\fP]\|[ \f3@\fP\f2library\fP]
+List all (or matching)
+.CR l abels.
+.TP
+.CR lm \0[\f2string\fP]
+List all (or matching)
+.CR m acros.
+.TP
+.CR lp \0[\|[\f2class\fP] :: ]\|[\f2string\fP]
+List all (or matching)
+.CR p rocedure
+names.
+.TP
+.CR lr \0[\f2string\fP]
+List all (or matching)
+.CR r egisters.
+.TP
+.CR ls \0[\f2string\fP]
+List all (or matching)
+.CR s pecial
+variables (except registers).
+.TP
+.CR lx
+List exception stop-on-throw and -catch state (C++).
+.TP
+.CR lcl \0[\f2string\fP]
+List all (or matching) classes (C++).
+.TP
+.CR lct \0[\f2string\fP]
+List all (or matching) class templates (C++).
+.TP
+.CR ltf \0[\f2string\fP]
+List all (or matching) template functions (C++).
+.TP
+.CR lft \0[\f2string\fP]
+List all (or matching) function templates (C++).
+.TP
+.CR lo \0[\|[\f2class\fP\|] :: ]\|[\|\f2string\f1\|]
+List all (or matching) overloaded functions (C++).
+.TP
+.CR mm \0[\f2string\fP]
+Show a memory-map of all currently loaded shared-libraries
+and the main program, or of the one specified.
+.SS Stack Viewing Commands
+.TP 18
+.CR t \0[\f2depth\fP]
+Trace the stack for the first
+.I depth
+(default 20) levels.
+.TP
+.CR T \0[\f2depth\fP]
+Same as
+.CR t ,
+but local variables are also displayed, using
+.C \en
+format (except that all arrays and pointers
+are shown simply as addresses, and structures as first word only).
+.TP 18
+.CR up \0[\f2offset\fP]
+Move up (decreasing depth)
+.I offset
+levels in the stack.
+The default value of
+.I offset
+is 1.
+.TP
+.CR down \0[\f2offset\fP]
+Move down (increasing depth)
+.I offset
+levels in the stack.
+The default value of
+.I offset
+is 1.
+.TP
+.C top
+Move to the top of the stack (this is the same as
+.CR "V 0" ).
+.TP
+.C tst
+Toggle the visibility of inter-procedural stubs in stack traces (\c
+.SM PA-RISC
+only).
+.SS Job Control Commands
+These commands let you control execution of the program.
+The parent (\c
+.SM HP
+Symbolic Debugger) and child
+.RI ( objectfile )
+processes take turns running.
+The debugger is only active and able to execute commands
+while the child process is stopped due to a signal or a breakpoint,
+or by terminating.
+.TP 18
+.CR r \0[\f2arguments\fP]
+Run a new child process with the given or previous argument list,
+if any.
+.TP
+.C R
+Run a new child process with no argument list.
+.TP
+.C k
+Terminate (kill) the current child process, if any.
+.TP
+.CR c \0[\f2location\fP]
+Continue after a breakpoint or a signal, ignoring the signal, if
+any.
+If a
+.IR location
+is specified, a tempory breakpoint is set at that
+.IR location .
+.TP
+.CR C \0[\f2location\fP]
+Continue just like
+.CR c ,
+but allow the signal (if any) to be received.
+If a
+.IR location
+is specified, a tempory breakpoint is set at that
+.IR location .
+.TP
+.CR s \0[\f2count\fP]
+Single step 1 (or
+.IR count )
+statements (or instructions in disassembly mode).
+.TP
+.CR S \0[\f2count\fP]
+Similar to
+.CR s ,
+but treat procedure calls as single statements
+(do not step ``into'' them).
+The
+.CR s
+and
+.CR S
+commands pass the current signal (like
+.CR C ).
+Set
+.C $signal = 0
+if necessary, to prevent this.
+.SS Breakpoint Commands
+The debugger provides a number of commands
+for setting and deleting breakpoints.
+Associated with any breakpoint are three attributes:
+.TP 18
+.I location
+A particular
+.I line
+in a file and its corresponding address in the user's program,
+if executable code exists for that line.
+.TP
+.I count
+The number of times the breakpoint is encountered
+prior to recognition.
+This can be suffixed with
+.CR p
+(permanent, which is the default) or
+.CR t
+(temporary).
+.TP
+.I commands
+Actions to be taken upon recognition of a breakpoint
+before waiting for command input.
+This is a list of debugger commands separated by
+.C ;
+and enclosed by
+.CR {\|} .
+.PP
+Each breakpoint can be individually activated or suspended,
+and there is an overall breakpoint mode which can be toggled.
+If any breakpoint is added or activated,
+or if all breakpoints are suspended,
+the global mode is toggled automatically.
+.PP
+Here are the breakpoint commands:
+.TP 18
+.C lb
+List all breakpoints.
+.TP
+.CR b " [\f2location\fP] [\e\f2count\fP] [\f2commands\fP]"
+Set a permanent breakpoint at the current location (or at
+.IR location ).
+.TP
+.CR db \0[\f2number\fP]
+.PD
+Delete breakpoint number
+.IR number ,
+or at the current
+.IR location .
+.TP
+.C db *
+.PD
+Delete all breakpoints (including ``procedure'' breakpoints).
+.TP
+.CR bi " \f2expr.proc\fP [\e\f2count\fP] [\f2commands\fP]"
+.PD
+After evaluating
+.I expr
+to what must be a class instance,
+set an ``instance'' breakpoint at the first executable line of
+.I proc
+for the instance's class.
+.TP
+.CR bi " [" -c\(or-C "] \f2expr\fP [\f2commands\fP]"
+.PD
+After evaluating
+.I expr
+to what must be a class instance, set ``instance'' breakpoints
+at the first executable line of all member functions
+of the instance's class.
+The
+.C -c
+option indicates only members of the designated class.
+The
+.C -C
+option indicates members of base classes
+as well as members of the designated class.
+.TP
+.CR bpc \0[ -c | -C "] \f2class\fP [\f2commands\fP]
+Set ``class'' breakpoints at the first executable line
+of all member functions of
+.IR class .
+See the previous command for information on
+.CR -c
+and
+.CR -C .
+.TP
+.CR bpo \0[\|[\|\f2class\fP\|] :: "]\f2proc\fP [\f2commands\fP]
+Set ``overload'' breakpoints at the first executable line
+of all overloaded functions with name
+.I proc
+(which can be qualified by a
+.IR class ).
+.TP
+.CR bp \0[\f2commands\fP]
+.PD
+Set permanent breakpoints at the beginning
+(first executable line) of every debuggable procedure.
+.TP
+.CR bpx \0[\f2commands\fP]
+Set permanent breakpoints at the exit (final executable statement)
+of every debuggable procedure.
+.TP
+.CR bpt \0[\f2commands\fP]
+Set permanent breakpoints at the entry and exit (first and final
+executable statement) of every debuggable procedure.
+The given
+.IR commands
+are associated with the entry breakpoint and default to
+.C "Q;t 2;c"
+.TP
+.C dp
+Delete all procedure breakpoints.
+.TP
+.C Dpx
+Delete all ``procedure exit'' breakpoints.
+.TP
+.C Dpt
+Delete all ``procedure trace'' breakpoints.
+.TP
+.CI abc \0commands
+Define a global breakpoint command list to be executed
+whenever any breakpoint is hit (normal, instance, class,
+overload, procedure, procedure exit, or procedure trace).
+.TP
+.C dbc
+Delete the global breakpoint command.
+.TP
+.CR bb " [\f2depth\fP] [\f2\ecount\fP] [\f2commands\fP]"
+.PD
+Set a breakpoint at the beginning (first executable line)
+of the procedure at the given stack
+.IR depth
+(if
+.IR depth
+is not given use the current procedure).
+.TP
+.CR bx " [\f2depth\fP] [\f2\ecount\fP] [\f2commands\fP]"
+.PD
+Set a breakpoint at the exit (last executable line)
+of the procedure at the given stack
+.IR depth
+(if
+.IR depth
+is not given use the current procedure).
+.TP
+.CR bu " [\f2depth\fP] [\f2\ecount\fP] [\f2commands\fP]"
+.PD
+Set an up-level breakpoint.
+.TP
+.CR bt " [\f2depth\fP \(or \f2proc\fP] [\f2\ecount\fP] [\f2commands\fP]"
+.PD
+Trace the current procedure (or procedure at
+.IR depth ,
+or
+.IR proc ).
+By default, the entry breakpoint
+.IR commands
+are
+.C "Q;t 2;c",
+which shows the top two procedures on the stack and continues.
+.TP
+.CR ba " \f2address\fP [\f2\ecount\fP] [\f2commands\fP]"
+Set a breakpoint at the given code address.
+.TP
+.C txc
+Toggle the exception stop-on-catch state.
+.TP
+.C txt
+Toggle the exception stop-on-throw state.
+.TP
+.CR xcc " [\f2commands\fP]"
+Define the stop-on-catch command-list.
+.TP
+.CR xtc " [\f2commands\fP]"
+Define the stop-on-throw command-list.
+.TP
+.CI bc " number count"
+.PD
+Set the count of breakpoint
+.I number
+to
+.IR count .
+.TP
+.CR sb " [\f2num\fP]"
+Suspend the breakpoint having the
+.IR num
+specified, or if a
+.IR num
+is not entered, the breakpoint at the current line
+is suspended if one exists.
+.TP
+.C sb *
+Suspend all breakpoints.
+.TP
+.CR ab " [\f2num\fP]"
+Activate breakpoint number
+.IR num
+or if a
+.IR num
+is not entered, the breakpoint at the current line is activated
+if one exists.
+.TP
+.C ab *
+Activate all breakpoints.
+.TP
+.C tb
+Toggle the overall breakpoint mode between
+.I active
+and
+.IR suspended .
+.SS Auxiliary Breakpoint Commands
+.TP 18
+.ifn \f3if\fP \f2expr\fP \f3{\fP\f2commands\fP\f3}\fP [\f3{\fP\f2commands\fP\f3}\fP]
+.ift \f4\s+1if\s0\fP \f2expr\fP \f4\s+1{\s0\fP\f2commands\fP\f4\s+1}\s0\fP [\f4\s+1{\s0\fP\f2commands\fP\f4\s+1}\s0\fP]
+If
+.I expr
+evaluates to a non-zero value, the first group of commands (the first
+.C {}
+block) is executed; otherwise it (and the following
+.CR { ,
+if any) is skipped.
+.TP
+.C Q
+If the
+.CR Q uiet
+command appears as the first command in a breakpoint command list,
+the normal announcement of
+.C breakpoint at
+.I address
+is not made.
+.TP
+.ift \f4"\f2any string you like\fP"\f1
+.ifn \f3"\f2any string you like\fP"\f1
+Print the given string.
+.SS Assertion Control Commands
+Assertions are command lists that are executed before every instruction.
+If there is an active assertion,
+the program is single-stepped at the machine-instruction level
+and runs very slowly.
+.PP
+Each assertion can be individually activated or suspended,
+and there is an overall assertions mode which can be toggled.
+If any assertion is added or activated
+or if all assertions become suspended,
+the global mode is toggled automatically.
+.PP
+Here are the assertion commands:
+.TP 18
+.CI a \0commands
+Create a new assertion with the given command list
+which is not parsed until it is executed.
+.TP
+.CI aa \0number
+Activate assertion
+.IR number .
+.TP
+.C aa *
+Activate all assertions.
+.TP
+.CI da \0number
+Delete assertion
+.IR number .
+.TP
+.C da *
+Delete all assertions.
+.TP
+.CI sa \0number
+Suspend assertion
+.IR number .
+.TP
+.C sa *
+Suspend all assertions.
+.TP
+.C ta
+Toggle the overall assertions mode between
+.I active
+and
+.IR suspended .
+.TP
+.CR x \0[\f2mode\fP]
+Force an exit from assertions
+.IR mode
+immediately (default or
+.IR mode
+is non-zero) or at the end of the command list (
+.IR mode
+non-zero).
+.SS Signal Control Commands
+These commands are used to modify and list the contents of the
+``zignal'' (signal) handling table.
+Here are the signal control commands:
+.TP 25
+.C " z [\f2signal\fP]\|[ i ]\|[ r ]\|[ s ]\|[ Q ]"
+Toggles flags (
+.CR i gnore,
+.CR r eport,
+or
+.CR s top)
+for signals (
+.CR Q uietly).
+.TP
+.C lz
+Lists the current handling of all signals.
+.SS Record and Playback Commands
+These commands allow the recording of debugger sessions
+in a recordfile and the playing back of those sessions.
+Here are the record and playback commands:
+.TP 18
+.CI > file
+Set or change the recordfile to
+.I file
+and turn recording on.
+.TP
+.CI >> file
+Same as
+.CI > file\f1,
+but appends to
+.I file
+instead of overwriting.
+.TP
+.ifn \f3>@\f2file\f1
+.ift \f4\s+1>@\s0\f2file\f1
+.PD 0
+.TP
+.ifn \f3>>@\f2file\f1
+.ift \f4\s+1>>@\s0\f2file\f1
+.PD
+Set or change the record-all file to
+.IR file ,
+for overwriting or appending.
+.TP
+.C >t
+Turn recording on.
+.PD 0
+.TP
+.C >f
+Turn recording off.
+.TP
+.C >c
+Close the recording file
+.IP
+When recording is resumed, new commands are appended to the file.
+In this context,
+.C >>
+is equivalent to
+.CR > .
+.PD
+.TP
+.ift \f4\s+1>@t\fP\s0
+.ifn \f3>@t\fP
+Turn record-all on
+.PD 0
+.TP
+.ift \f4\s+1>@f\fP\s0
+.ifn \f3>@f\fP
+Turn record-all off
+.TP
+.ift \f4\s+1>@c\fP\s0
+.ifn \f3>@c\fP
+Close the record-all file
+.PD
+.IP
+In this context,
+.ifn \f3>>@\fP
+.ift \f4\s+1>>@\s0\fP
+is equivalent to
+.ifn \f3>@\f1.
+.ift \f4\s+1>@\s0\f1.
+.TP
+.ifn \f3tr\f1 [\f2@\f1]
+.ift \f4\s-1tr\s0\f1 [\f2@\f1]
+Toggle recording [record-all]; if on, turn it off; if off, turn it on.
+.TP
+.C >
+Tell the current recording status (same as
+.CR >> ).
+.TP
+.ifn \f3>@\f1
+.ift \f4\s+1>@\s0\f1
+Tell the current record-all status (same as
+.C >>\c
+.ifn \f3@\fP\c
+.ift \f4\s+1@\s0\fP\c
+).
+.TP
+.CI < file
+Start playback from
+.IR file .
+.TP
+.CI << file
+Start playback from
+.IR file ,
+using the single-step feature of playback.
+.SS Save State Command
+.TP 18
+.CI ss \0file
+Save the current set of breakpoints, macros and assertions in
+.IR file
+for later use with the
+.C -R
+command-line option.
+.SS Macro Definition Commands
+.TP 18
+.CR def " \f2name\fP [\f2replacement-text\fP]"
+.PD
+Define
+.I name
+as a macro whose value is
+.IR replacement-text .
+.TP
+.CI undef \0name
+.PD
+Remove the macro definition from
+.I name
+so that
+.I name
+no longer exists as a replacement string macro.
+.TP
+.C tm
+.PD
+Toggle the state of the macro substitution mechanism between active and
+suspended.
+.SS Miscellaneous Commands
+.TP 18
+.C sm
+Suspend the built-in
+.I more
+pagination facility of the debugger output.
+.TP
+.C am
+Activate the built-in
+.I more
+pagination facility to paginate the debugger output.
+.TP
+<carriage-return>
+.PD 0
+.TP
+.C ~
+.PD
+Repeat the last command, if possible,
+with an appropriate increment, if any.
+.TP
+.CR ! \0[\f2command-line\fP]
+Invoke a shell program.
+.TP
+.CR # \0[\f2text\fP]
+Flag
+.I text
+as a comment to be echoed to the command window.
+.TP
+.CR f [\f3"\f2printf-style-format\f3"\f1]
+Set the address printing format using
+.IR printf (3S)
+format specifications
+.RI ( not
+debugger format styles).
+If no argument is provided, the format is set to the default,
+.C "%10.8lx" .
+.TP
+.CR g " (\f2line\fP\(or\f3#\fP\f2label\fP\(or" + [\f2lines\fP]\(or - [\f2lines\fP])
+Go to an address in the procedure on the stack at
+.I depth
+zero (not necessarily the current procedure).
+.TP
+.CR h \0[\f2topic\fP]
+.PD 0
+.TP
+.CR help \0[\f2topic\fP]
+.PD
+Print commands/syntaxes related to this
+.I topic
+using
+.IR more (1).
+Use
+.C h help
+for a list of topics.
+.TP
+.C I
+Print information (inquire) about the state of the debugger
+and various toggles.
+.TP
+.C M
+Print the current text
+.RI ( objectfile )
+and core
+.RI ( corefile )
+address maps.
+.TP
+.C tM
+Toggle the address mapping of
+.I corefile
+between the initial map and the modifiable mapping pair
+which the user can set with the
+.C Mc
+command.
+.TP
+.ift \f4\s+1M\fP\s0(\f4\s+1t\fP\s0 | \f4\s+1c\fP\s0) [\f2expr\f1 [\f4\s+1;\fP\s0 \f2expr\f1 [ ... ]]]
+.ifn \f3M\f1(\f3t\f1 | \f3c\f1) [\f2expr\f1 [\f3;\f1 \f2expr\f1 [ ... ]]]
+Set the
+.CR t ext
+.RI ( objectfile )
+or the modifiable
+.CR c ore
+.RI ( corefile )
+address map.
+.TP
+.C q
+Quit the debugger.
+.TP
+.C tc
+Toggle case sensitivity in searches.
+.SH ADOPTING AN EXISTING PROCESS
+The symbolic debugger
+.RC ( xdb )
+command line option
+.C -P
+.I process_\s-1ID\s0
+allows for the debugging of a free-running process.
+To adopt a process, the effective user
+.SM ID\s0s
+of the debugger and the process to be adopted must match,
+or the effective user
+.SM ID
+of the debugger must be
+.IR root .
+When a process is adopted, it halts, and the debugger displays where
+the program is halted, at which point the program can be debugged.
+If the user quits the debugger without killing the process, the
+debugger removes all breakpoints from the process and allows it to
+continue running.
+If a program is designed to be adopted by the
+debugger when in a certain state (such as an error condition), it is
+important that the program do something such as enter an infinite
+loop, rather than calling the system routine
+.C sleep()
+(see
+.IR sleep (3C)).
+A sleeping program cannot be adopted correctly by the debugger,
+although a suspended process (i.e., blocked on a read) can be.
+.PP
+When using the
+.CR -s
+command-line option with
+.CR xdb
+to debug shared libraries in an adopted process,
+prepare the
+.I executable_file
+by executing:
+.IP
+.C "pxdb -s on " executable_file
+.PP
+Once the file is prepared for debugging, run
+.I executable_file
+in the background and adopt it using:
+.IP
+.C "xdb -s -P " "process_\s-1ID\s0 executable_file"
+.RE
+.PP
+The syntax for this use of the
+.C pxdb
+command is:
+.RS
+.TP 15
+.C "pxdb -s " [ on \(or enable ]\0\f2file\fP
+Enables shared library debugging of the adopted process
+by setting private data switches within the
+.IR file .
+.TP
+.C "pxdb -s " [ off \(or disable ]\0\f2file\fP
+Disables shared library debugging of the adopted process
+by clearing private data switches within the
+.IR file .
+.TP
+.C "pxdb -s " [ status ]\0\f2file\fP
+This command reports whether:
+shared-library debugging is enabled or disabled,
+symbolic-debugging information is present,
+or symbolic-debug information has already been preprocessed.
+.I file
+is not changed when the
+.C status
+option is given.
+If all three conditions are true,
+an exit value of 0 is returned; otherwise 1.
+.RE
+.PP
+Note that for the
+.C on
+or
+.C off
+options,
+.I file
+must be writable by the user.
+.SH WARNINGS
+The debugger does not terminate on an interrupt
+.RC ( SIGINT );
+but jumps instead to its main loop and awaits another command.
+However, this does not imply that sending the debugger
+an interrupt is harmless.
+It can result in internal tables being left in
+an inconsistent state that could produce incorrect behavior.
+.PP
+Code that is not compiled debuggable
+or does not have a corresponding source file
+is dealt with in a half-hearted manner.
+The debugger shows
+.C unknown
+for unknown file and procedure names, cannot show code locations
+or interpret parameter lists, etc.
+However, the linker symbol table provides procedure names
+for most procedures, even if they are not debuggable.
+.PP
+On some systems, if the debugger is run on a shared
+.I objectfile
+you cannot set breakpoints.
+(This may only apply if someone else is also executing the program.)
+This may be indicated by the error "Bad access"
+when you attempt to start a child process.
+If another person starts running
+.I objectfile
+while you are debugging,
+they and you may have some interesting interactions.
+.PP
+The debugger will probably be unusable on systems
+that have been booted from something other than
+.C /hp-ux
+(such as if
+.C SYSBCKUP
+was booted instead on a Series 300/400 system).
+.PP
+The debugger has no knowledge about or control over
+child processes forked in turn by the process being debugged.
+Programs being debugged should not execute a different program via
+.C exec()
+without a
+.C fork()
+(see
+.IR exec (2)
+and
+.IR fork (2)).
+.PP
+Child process output may be (and usually is) buffered.
+Hence it may not appear immediately
+after you step through an output statement such as
+.C printf()
+(see
+.IR printf (3S)).
+It may not appear at all if you kill the process.
+.PP
+If the
+.I address
+given to a
+.C ba
+command is not a code address in the child process,
+meaningless results or errors may ensue.
+.PP
+Single stepping floating-point instructions may show delayed results
+for operations that are actually emulated via exception traps (e.g.
+.C fsin
+on the Series 300/400 MC68040 processor).
+Actual results will not be apparent
+until the next floating-point operation is performed.
+.PP
+Debugging dynamically loaded code is inherently difficult,
+since no symbols within it are known to the debugger.
+.PP
+If you set the address printing format to something
+.IR printf (3S)
+does not like, you may get an error (usually memory fault)
+each time you try to print an address,
+until you fix the format with another
+.C f
+command.
+.PP
+Do not use the
+.C z
+command to manipulate the
+.C SIGTRAP
+signal.
+This signal is used by the debugger
+to synchronize with and control the traced process,
+and unpredictable results may occur if it is otherwise manipulated.
+A corrolary to this is that applications that make use of the
+.C SIGTRAP
+signal are at best difficult to debug.
+.PP
+If you single step or run with assertions through a call to
+.C longjmp()
+(see
+.IR setjmp (3C)),
+the child process will probably take off free-running
+because the debugger sets, but never hits, an up-level breakpoint.
+.PP
+Do not modify any file while the debugger has it open.
+If you do, the debugger gets confused and may display garbage.
+.PP
+Although the debugger tries to do things reasonably,
+it is possible to confuse the recording mechanism.
+Be careful about trying to play back
+from a file currently open for recording,
+or vice versa; strange things can happen.
+.PP
+The output of some program generators such as
+.C yacc
+have compiler-line-number directives in them
+that can confuse the debugger (see
+.IR yacc (1)).
+It expects source line entries in the symbol table
+to appear in sorted order.
+.SH DEPENDENCIES
+.SS Series 300/400
+The
+.C lc
+command is not supported on the Series 300 or 400.
+.SS Series 700/800 \s-1(PA-RISC)\s0
+All programs are shared executables.
+This implies three limitations.
+You cannot set breakpoints or single step a program
+if another process is running it; the error message
+.C "Bad access to child process"
+results.
+If debugging a program, and another process
+starts to run the same program, either through your process executing a
+.CR fork() ,
+or another process, such as a shell, executing an
+.CR exec() ,
+this second process can hit one of your breakpoints and generate a
+.SM SIGTRAP.
+You cannot single step through a call to
+.CR fork() .
+.SH AUTHOR
+.C xdb
+was developed by HP and Third Eye Software.
+.SH FILES
+.PD 0
+.TP 28
+.C a.out
+Default
+.I objectfile
+to debug.
+.TP
+.C core
+Default
+.I corefile
+to debug.
+.TP
+.C /usr/lib/xdb.help
+Text file listed by the
+.C help
+command.
+.TP
+.C /usr/lib/xdb.help.nro
+Unformatted text file used to generate xdb.help.
+.TP
+.C /usr/lib/end.o
+Auxiliary object file (support module) to link with all debuggable programs.
+.TP
+.C /usr/lib/nls/$LANG/xdb.cat
+The xdb message catalog.
+.TP
+.C /usr/lib/nls/$LANG/pxdb.cat
+The pxdb message catalog.
+.TP
+.C /usr/lib/xdb_demos/*
+Demo files.
+.TP
+.C $HOME/.xdbrc
+The xdb startup command file.
+.PD
+.SH SEE ALSO
+adb(1), cc(1), echo(1), fc(1), ksh(1), ld(1), more(1), pc(1),
+creat(2), exec(2), fork(2), open(2), ptrace(2),
+ecvt(3C), multibyte(3C), printf(3S), setjmp(3C), shl_load(3X), system(3S),
+a.out(4), core(4), user(4), lang(5), signal(5).
+.PP
+.I "HP-UX Symbolic Debugger User's Guide"
+.br
+.IR "HP-UX Symbolic Debugger Quick Reference" .
+.\"
+.\" index	\f4xdb\f1 \- C, C++, F\s-2ORTRAN\s+2, and Pascal Symbolic Debugger 	 \f3xdb(1)\f1
+.\" index	symbolic debugger for C, C++, F\s-2ORTRAN\s+2, and Pascal 	 \f3xdb(1)\f1
+.\" index	debugger: symbolic, for C, C++, F\s-2ORTRAN\s+2, and Pascal 	 \f3xdb(1)\f1
+.\" index	C, C++, F\s-2ORTRAN\s+2, and Pascal symbolic debugger 	 \f3xdb(1)\f1
+.\" index	C++, C, F\s-2ORTRAN\s+2, and Pascal symbolic debugger 	 \f3xdb(1)\f1
+.\" index	F\s-2ORTRAN\s+2, C, C++, and Pascal symbolic debugger 	 \f3xdb(1)\f1
+.\" index	Pascal, F\s-2ORTRAN\s+2, C, and C++ symbolic debugger 	 \f3xdb(1)\f1
+.\"
+.\" toc	\f3xdb(1)\f1:\0\0\f4xdb\f1 	 C, C++, F\s-2ORTRAN\s+2, and Pascal Symbolic Debugger
+.\"
+.\" fileset_database	xdb.1 DEBUGGERS-MAN

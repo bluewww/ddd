@@ -5,7 +5,7 @@ DDD_APP_WARNING
 ! @configure_input@
 Ddd*appDefaultsVersion: @VERSION@
 
-! Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
+! Copyright (C) 1995-1999 Technische Universitaet Braunschweig, Germany.
 ! Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 ! 
 ! This file is part of DDD.
@@ -219,6 +219,12 @@ Ddd*blockTTYInput: auto
 
 ! The time (in seconds) to wait for synchronous GDB questions to complete
 Ddd*questionTimeout: 10
+
+! The time (in ms) to wait for GDB to finish a partial position information
+Ddd*positionTimeout: 500
+
+! The time (in ms) to wait for GDB to finish a partial display information
+Ddd*displayTimeout: 2000
 
 
 ! The `rsh' command to invoke tty-based commands on other hosts.
@@ -461,7 +467,7 @@ Ddd*stickyTool: on
 ! * If `auto', DDD checks the window manager.  If it decorates
 !   transients, the command tool is realized as a transient, and as
 !   a top-level-window. otherwise.
-Ddd*decoratedTool: auto
+Ddd*decorateTool: auto
 
 ! Do we want an auto-raised command tool?  If on, DDD will always 
 ! keep the command tool on top of other DDD windows.  If this setting
@@ -477,9 +483,14 @@ Ddd*toolRightOffset: 8
 Ddd*toolTopOffset:   8
 
 ! Do we want auto-raised menus?  This is handy with certain window managers:
-! An auto-raised DDD might obscure popped up pulldown menus.  However, there's
-! a risk that this might interfere with Motif, which is why this is off.
-Ddd*autoRaiseMenu: off
+! An auto-raised DDD might obscure popped up pulldown menus.  There is
+! a risk that this might interfere with Motif, but we have not received
+! any bug reports so far.
+Ddd*autoRaiseMenu: on
+
+! The delay during which an initial auto-raise blocks further auto-raises 
+! (in ms).  This prevents `auto-raise loops'.
+Ddd*autoRaiseMenuDelay: 100
 
 
 ! Shortcuts
@@ -504,8 +515,8 @@ Ddd*pydbDisplayShortcuts:  \
 /o ()	// Convert to Oct
 
 Ddd*perlDisplayShortcuts:  \
-hex(())	// Convert to Hex\n\
-oct(())	// Convert to Oct
+sprintf("%#x", ())	// Convert to Hex\n\
+sprintf("%#o", ())	// Convert to Oct
 
 
 ! Tab width in source texts
@@ -598,7 +609,9 @@ Ddd*pydbSettings:
 
 ! The Perl Debugger initialization commands.  Enable emacs mode.
 Ddd*perlInitCommands: \
-$DB::emacs = 1\n
+$DB::emacs = 1\n\
+O compactDump=\n\
+O veryCompact=\n
 
 ! The Perl Debugger settings.  Usually overridden in `~/.ddd/init'.
 Ddd*perlSettings:
@@ -976,6 +989,12 @@ Ddd*startupTips: on
 
 ! Which tip to start with.  This is usually overridden by `~/.ddd/tips'.
 Ddd*startupTipCount: 1
+
+
+! Window Manager Stuff
+
+! Enable DDD selections in the CDE window manager.
+Ddd*enableBtn1Transfer: False
 
 
 !-----------------------------------------------------------------------------
@@ -2074,9 +2093,6 @@ Ddd*menubar*recentMenu.r9.mnemonic: 9
 
 ! Get the file names dynamically
 Ddd*menubar*recentMenu*documentationString: 
-
-! Don't auto-raise this one
-Ddd*menubar*popup_recentMenu*autoRaiseMenu: off
 
 
 ! Edit menu
@@ -4757,7 +4773,7 @@ Ddd.main_window.helpString: MAIN_WINDOW_HELP
 
 Ddd*gdb_w.value: \
 DDD @VERSION@ (@host@), by Dorothea L\374tkehaus and Andreas Zeller.\n\
-Copyright \251 1998 Technische Universit\344t Braunschweig, Germany.\n
+Copyright \251 1999 Technische Universit\344t Braunschweig, Germany.\n
 
 Ddd*gdb_w.editable:			on
 Ddd*gdb_w.allowResize:			on
@@ -5569,7 +5585,7 @@ Click on LBL(Filter) to apply the given filter.
 ! Breakpoint Editor
 !-----------------------------------------------------------------------------
 
-Ddd*edit_breakpoins_dialog_popup.title: DDD: Breakpoint and Watchpoint Editor
+Ddd*edit_breakpoints_dialog_popup.title: DDD: Breakpoint and Watchpoint Editor
 Ddd*edit_breakpoints_dialog.listLabelString: Breakpoints and Watchpoints
 Ddd*edit_breakpoints_dialog*buttons.orientation: XmHORIZONTAL
 Ddd*edit_breakpoints_dialog.okLabelString:	 Close

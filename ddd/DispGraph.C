@@ -548,14 +548,27 @@ int DispGraph::get_nr(BoxGraphNode *node) const
 // Get number of node NAME
 int DispGraph::get_by_name(const string& name) const
 {
-    if (name.matches(rxint))
-	return atoi(name);
-
     MapRef ref;
-    for (int k = idMap.first_key(ref); k != 0; k = idMap.next_key(ref))
+    int k;
+    int nr = 0;
+
+    if (name.matches(rxint))
+	nr = atoi(name);
+
+    if (nr != 0)
+    {
+	// Check for a display with this number
+	for (k = idMap.first_key(ref); k != 0; k = idMap.next_key(ref))
+	    if (idMap.get(k)->disp_nr() == nr)
+		return k;
+    }
+
+    // Check for a display with this name
+    for (k = idMap.first_key(ref); k != 0; k = idMap.next_key(ref))
 	if (idMap.get(k)->name() == name)
 	    return k;
-    return 0;
+
+    return nr;
 }
 
 

@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
 // An agent interface using ptys (pseudo ttys)
 
-// Copyright (C) 1998 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1999 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of DDD.
@@ -243,8 +243,14 @@ extern "C" {
     int tcsetpgrp(int fd, pid_t pgid);
 #endif
 #if HAVE_IOCTL && !HAVE_IOCTL_DECL && !defined(ioctl)
+#if defined(__GLIBC__) && \
+    (__GLIBC__ >= 3 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 1))
+    // Christian Meder <meder@isr.uni-stuttgart.de> says there is an
+    // ioctl() decl in glibc 2.1 and later.
+#else
     int ioctl(int fd, int request, ...);
-#endif
+#endif // __GLIBC__
+#endif // HAVE_IOCTL
 #if HAVE_FCNTL && !HAVE_FCNTL_DECL && !defined(fcntl)
     int fcntl(int fd, int command, ...);
 #endif
@@ -263,28 +269,29 @@ extern "C" {
 #endif
 }
 
+// getpt() should be defined in <stdlib.h> if we define _GNU_SOURCE
+#if HAVE_GETPT && !HAVE_GETPT_DECL && !defined(getpt)
+extern "C" int getpt();
+#endif
+
 // Streams won't work on DEC OSF because there isn't any "ttcompat"
 // module and I don't know enough about any of this stuff to try to
 // figure it out now.  -- phil_brooks@MENTORG.COM (Phil Brooks)
-#if !defined(__osf__) && HAVE_PTSNAME && HAVE_GRANTPT \
-    && HAVE_UNLOCKPT && HAVE_IOCTL
-
+#if !defined(__osf__) && \
+    HAVE_PTSNAME && HAVE_GRANTPT && HAVE_UNLOCKPT && HAVE_IOCTL
 #define HAVE_STREAMS 1
+#endif // !defined(__osf__) && HAVE_PTSNAME && ...
 
 // Provide C++ declarations
-extern "C" {
-#if !HAVE_PTSNAME_DECL && !defined(ptsname)
-    char *ptsname(int master);
+#if HAVE_PTSNAME && !HAVE_PTSNAME_DECL && !defined(ptsname)
+extern "C" char *ptsname(int master);
 #endif
-#if !HAVE_UNLOCKPT_DECL && !defined(unlockpt)
-    int unlockpt(int fd);
+#if HAVE_GRANTPT && !HAVE_GRANTPT_DECL && !defined(grantpt)
+extern "C" int grantpt(int fd);
 #endif
-#if !HAVE_GRANTPT_DECL && !defined(grantpt)
-    int grantpt(int fd);
+#if HAVE_UNLOCKPT && !HAVE_UNLOCKPT_DECL && !defined(unlockpt)
+extern "C" int unlockpt(int fd);
 #endif
-}
-
-#endif // !defined(__osf__) && HAVE_PTSNAME && ...
 
 #ifndef STDIN_FILENO
 #define STDIN_FILENO 0
@@ -458,40 +465,55 @@ void TTYAgent::open_master()
 	}
     }
 
-#if HAVE_STREAMS
-    if (stat("/dev/ptmx", &sb) == 0)
-    {
-	// Try STREAMS - a SVR4 feature
-	master = open_tty("/dev/ptmx");
-	if (master >= 0)
-	{
-	    line = ptsname(master);
-	    if (line == NULL)
-		_raiseIOMsg("ptsname");
-	    else if (grantpt(master))
-		_raiseIOMsg("grantpt " + string(line));
-	    else if (unlockpt(master))
-		_raiseIOMsg("unlockpt " + string(line));
-	    else if (!tty_ok(line))
-		_raiseIOMsg("access " + string(line));
-	    else
-	    {
-		// Everything ok - proceed
-		_master_tty = ttyname(master);
-		_slave_tty  = line;
-#ifdef TIOCFLUSH
-		ioctl(master, TIOCFLUSH, (char *)0);
-#endif
-		push = true;
-		return;
-	    }
 
-	    close(master);
-	}
-	else
+#if HAVE_STREAMS
+    // Try STREAMS - a SVR4 feature
+    master = -1;
+
+#if HAVE_GETPT
+    // On systems with GNU libc 2.1, getpt() returns a new file
+    // descriptor for the next available master pseudo-terminal.  This
+    // function is a GNU extension.
+    master = getpt();
+    if (master < 0)
+	_raiseIOMsg("getpt");
+#endif
+
+    if (master < 0 && stat("/dev/ptmx", &sb) == 0)
+    {
+	// On other systems, we try /dev/ptmx - a SVR4 feature
+	master = open_tty("/dev/ptmx");
+	if (master < 0)
 	    _raiseIOMsg("cannot open /dev/ptmx");
     }
+
+    if (master >= 0)
+    {
+	// Finish setup
+	line = ptsname(master);
+	if (line == NULL)
+	    _raiseIOMsg("ptsname");
+	else if (grantpt(master) < 0)
+	    _raiseIOMsg("grantpt " + string(line));
+	else if (unlockpt(master) < 0)
+	    _raiseIOMsg("unlockpt " + string(line));
+	else if (!tty_ok(line))
+	    _raiseIOMsg("access " + string(line));
+	else
+	{
+	    // Everything ok - proceed
+	    _master_tty = ttyname(master);
+	    _slave_tty  = line;
+#ifdef TIOCFLUSH
+	    ioctl(master, TIOCFLUSH, (char *)0);
 #endif
+	    push = true;
+	    return;
+	}
+
+	close(master);
+    }
+#endif // HAVE_STREAMS
 
     // Try PTY's
     if (stat("/dev/pty/000", &sb) == 0)
@@ -556,8 +578,8 @@ void TTYAgent::open_master()
 	    }
     }
 
-    // Try PTY's in /dev/pty?? -- a BSD and USG feature
-    // Slackware 3.0 wants [/zip]/dev/pty??, as
+    // Try PTY's in /dev/ptyXX -- a BSD and USG feature
+    // Slackware 3.0 wants [/zip]/dev/ptyXX, as
     // Jim Van Zandt <jrv@vanzandt.mv.com> suggests.
     for (int k = 0; k < 2; k++)
     {
@@ -620,20 +642,20 @@ void TTYAgent::open_slave()
 #if HAVE_STREAMS && defined(I_PUSH)
     if (push)
     {
-	// Finish STREAMS setup.
-	if (ioctl(slave, I_PUSH, "ptem"))
+	// Finish STREAMS setup by pushing TTY compatibility modules.
+	// These calls fail may fail if the modules do not exist.  For
+	// instance, HP-UX has no `ttcompat' module; Linux has no
+	// modules at all.  To avoid confusion, we do not give a
+	// warning if these calls fail due to invalid module names.
+
+	if (ioctl(slave, I_PUSH, "ptem") < 0 && errno != EINVAL)
 	    _raiseIOWarning("ioctl ptem " + slave_tty());
-	if (ioctl(slave, I_PUSH, "ldterm"))
+	    
+	if (ioctl(slave, I_PUSH, "ldterm") < 0 && errno != EINVAL)
 	    _raiseIOWarning("ioctl ldterm " + slave_tty());
-	if (ioctl(slave, I_PUSH, "ttcompat"))
-	{
-	    // On HP-UX and other systems, this call always fails.
-	    // Fortunately, it seems we can live without as well.  Hence,
-	    // we suppress the warning message to avoid confusion.
-#if 0
+
+	if (ioctl(slave, I_PUSH, "ttcompat") < 0 && errno != EINVAL)
 	    _raiseIOWarning("ioctl ttcompat " + slave_tty());
-#endif
-	}
     }
 #endif // I_PUSH
 

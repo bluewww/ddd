@@ -52,7 +52,7 @@ struct LineGraphEdgeSelfInfo {
     BoxPoint fig_pos[3];	// FIG coordinates of arc
 
     // Constructor
-    explicit LineGraphEdgeSelfInfo(const BoxRegion& region, const GraphGC& gc);
+    LineGraphEdgeSelfInfo(const BoxRegion& region, const GraphGC& gc);
 };
 
 #endif // _DDD_LineGraphEdgeSelfInfo_h

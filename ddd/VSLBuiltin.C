@@ -655,7 +655,7 @@ static Box *diag(ListBox *)
 // Place holder for an undefined box
 static Box *undef(ListBox *)
 {
-    return new StringBox("???");
+    return new StringBox("?" "?" "?");
 }
 
 

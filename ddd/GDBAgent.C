@@ -1435,6 +1435,26 @@ void GDBAgent::handle_input(string& answer)
     }
 }
 
+// Write
+int GDBAgent::write(const char *data, int length)
+{
+    last_written = string(data, length);
+
+    if (gdb->type() == PERL && last_written.contains("exec ", 0))
+    {
+	// Rename debugger
+	string p = last_written.before('\n');
+	p = p.after("exec ");
+	if (p.contains('\'', 0) || p.contains('\"', 0))
+	    p = unquote(p);
+	if (p != "")
+	    _path = p;
+    }
+
+    echoed_characters = 0;
+    return TTYAgent::write(data, length);
+}
+
 // GDB died
 void GDBAgent::DiedHP(Agent *agent, void *, void *)
 {
@@ -1911,9 +1931,9 @@ string GDBAgent::echo_command(string text) const
 	return quote(text);
 
     case PERL:
-	if (text.contains('\n', -1))
-	    text = text.before(-1);
-	return "p " + quote(text, '\'');
+	// We use `print DB::OUT' instead of `p' since this also works
+	// in actions.
+	return "print DB::OUT " + quote(text, '\"');
 
     case JDB:
     case PYDB:
@@ -2102,6 +2122,87 @@ string GDBAgent::shell_command(string cmd) const
     return "";			// Never reached
 }
 
+// Return actual debugger command, with args
+string GDBAgent::cmd() const
+{
+    string cmd = path();
+
+    for (;;)
+    {
+	// We might get called as `/bin/sh -c 'exec CMD ARGS''.  Handle this.
+	strip_leading_space(cmd);
+	if (cmd.contains("/bin/sh -c ", 0))
+	{
+	    cmd = cmd.after("-c ");
+	    strip_leading_space(cmd);
+	    if (cmd.contains('\'', 0) || cmd.contains('\"', 0))
+	    {
+		cmd.gsub("\'\\\'\'", '\'');
+		cmd = unquote(cmd);
+	    }
+	}
+	else if (cmd.contains("exec ", 0))
+	{
+	    cmd = cmd.after("exec ");
+	}
+	else
+	{
+	    break;
+	}
+    }
+
+    strip_space(cmd);
+    return cmd;
+}
+
+// Return name of debugger
+string GDBAgent::debugger() const
+{
+    string debugger = cmd();
+    if (debugger.contains(' '))
+	debugger = debugger.before(' ');
+
+    if (debugger.contains('\'', 0) || debugger.contains('\"', 0))
+	debugger = unquote(debugger);
+
+    strip_space(debugger);
+    return debugger;
+}
+
+// Return debugger arguments (including program name)
+string GDBAgent::args() const
+{
+    string args = cmd();
+
+    args = args.after(' ');
+    strip_leading_space(args);
+
+    if (args.contains('\'', 0) || args.contains('\"', 0))
+	args = unquote(args);
+
+    strip_space(args);
+    return args;
+}
+
+// Return debugged program
+string GDBAgent::program() const
+{
+    string program = args();
+    while (program.contains("-", 0))
+    {
+	// Skip options
+	program = program.after(' ');
+	strip_leading_space(program);
+    }
+
+    if (program.contains(' '))
+	program = program.before(' ');
+    if (program.contains('\'', 0) || program.contains('\"', 0))
+	program = unquote(program);
+
+    return program;
+}
+
 // Return command to debug PROGRAM
 string GDBAgent::debug_command(string program, string args) const
 {
@@ -2127,8 +2228,9 @@ string GDBAgent::debug_command(string program, string args) const
 	return "load " + program;
 
     case PERL:
-	return "exec " + quote("perl -d " + program + args);
+	return "exec " + quote(debugger() + " -d " + program + args);
     }
+
     return "";			// Never reached
 }
 
@@ -2200,17 +2302,7 @@ string GDBAgent::run_command(string args) const
 	    return "r" + args;
 
     case PERL:
-    {
-	string c = "R\n@ARGV = (";
-	while (args != "")
-	{
-	    strip_leading_space(args);
-	    string arg = read_token(args);
-	    c += quote(arg, '\'') + ", ";
-	}
-	c += ")";
-	return c;
-    }
+	return "exec " + quote(debugger() + " -d " + program() + args);
     }
 
     return "";			// Never reached

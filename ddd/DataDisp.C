@@ -1,7 +1,7 @@
 // $Id$
 // Data Display
 
-// Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1995-1999 Technische Universitaet Braunschweig, Germany.
 // Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
 // and Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
@@ -626,11 +626,14 @@ void DataDisp::toggleDetailCB(Widget dialog,
 	    if (dv == 0)
 		dv = dn->value();
 
-	    if (dn->disabled() || dv->collapsedAll() > 0)
+	    if (dv == 0 || dn->disabled() || dv->collapsedAll() > 0)
 	    {
-		// Expand this value
-		dv->collapseAll();
-		dv->expandAll(depth);
+		if (dv != 0)
+		{
+		    // Expand this value
+		    dv->collapseAll();
+		    dv->expandAll(depth);
+		}
 
 		if (dn->disabled())
 		{
@@ -821,10 +824,10 @@ void DataDisp::rotateCB(Widget w, XtPointer client_data, XtPointer)
 	if (disp_node_arg->clustered())
 	{
 	    DispNode *cluster = disp_graph->get(disp_node_arg->clustered());
-	    if (cluster != 0)
+	    if (cluster != 0 && cluster->value() != 0)
 		cluster->value()->replot();
 	}
-	else
+	else if (disp_node_arg->value() != 0)
 	{
 	    disp_node_arg->value()->replot();
 	}
@@ -1987,6 +1990,10 @@ DispNode *DataDisp::selected_node()
 
 	    // Cluster remains selected
 	}
+	else if (dn->clustered() == selection->clustered())
+	{
+	    // Differing nodes in same cluster
+	}
 	else
 	{
 	    return 0;		// Differing nodes
@@ -2159,7 +2166,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     bool rotate_ok      = false;
     bool rotate_plot_ok = false;
 
-    if (disp_value_arg != 0)
+    if (disp_node_arg != 0 && disp_value_arg != 0)
     {
 	// We have selected a single node
 	switch (disp_value_arg->type())
@@ -2198,14 +2205,18 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     bool arg_ok  = false;
     bool plot_ok = false;
     string arg;
-    if (disp_value_arg != 0)
+    if (disp_node_arg != 0)
     {
-	arg = disp_value_arg->full_name();
-	arg_ok = true;
-	plot_ok = disp_value_arg->can_plot();
+	if (disp_value_arg != 0)
+	{
+	    arg = disp_value_arg->full_name();
+	    arg_ok = true;
+	    plot_ok = disp_value_arg->can_plot();
+	}
     }
     else
     {
+	// No node selected
 	arg = source_arg->get_string();
 	arg_ok = (arg != "") && !is_file_pos(arg);
 	plot_ok = arg_ok && !undoing;
@@ -2321,11 +2332,19 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 		  count.selected > 0);
 
     // Set
-    bool can_set = gdb->has_assign_command() && arg_ok && !undoing;
-    set_sensitive(graph_cmd_area[CmdItms::Set].widget,   can_set);
-    set_sensitive(display_area[DisplayItms::Set].widget, can_set);
+    bool can_set = gdb->has_assign_command() && !undoing;
+    bool set_node_ok = 
+	disp_node_arg != 0 && 
+	(!disp_node_arg->is_user_command() || 
+	 disp_value_arg != 0 && disp_value_arg != disp_node_arg->value());
+    bool set_arg_ok = (disp_node_arg == 0 && arg_ok && !is_user_command(arg));
+
+    set_sensitive(graph_cmd_area[CmdItms::Set].widget,
+		  can_set && (set_arg_ok || set_node_ok));
+    set_sensitive(display_area[DisplayItms::Set].widget,
+		  can_set && (set_arg_ok || set_node_ok));
     set_sensitive(node_popup[NodeItms::Set].widget, 
-		  gdb->has_assign_command() && !undoing);
+		  can_set && set_node_ok);
 
     // Cluster
     if (count.selected_unclustered > 0 || count.selected_clustered == 0)
@@ -3249,7 +3268,7 @@ DispValue *DataDisp::update_hook(string& value)
     value = value.after(HOOK_POSTFIX);
 
     DispNode *dn = disp_graph->get(nr);
-    if (dn == 0)
+    if (dn == 0 || dn->value() == 0)
 	return 0;		// Ignore
 
     // Share the clustered DispValue with the original display
@@ -3391,7 +3410,7 @@ DispNode *DataDisp::new_data_node(const string& given_name,
     {
 	string error_msg = get_disp_value_str(value, gdb);
 	post_gdb_message(error_msg, true, last_origin);
-	value = "";
+	value = " ";
 	disabling_occurred = true;
     }
 
@@ -3401,7 +3420,7 @@ DispNode *DataDisp::new_data_node(const string& given_name,
 
     DispNode *dn = new DispNode(nr, title, scope, value, plotted);
 
-    if (plotted && dn->value()->can_plot() == 0)
+    if (plotted && (dn->value() == 0 || dn->value()->can_plot() == 0))
     {
 	post_gdb_message("Nothing to plot.", true, last_origin);
 
@@ -3451,7 +3470,7 @@ DispNode *DataDisp::new_user_node(const string& name,
     DispNode *dn = new DispNode(nr, name, scope, answer, plotted);
     DispValue::value_hook = 0;
 
-    if (plotted && dn->value()->can_plot() == 0)
+    if (plotted && (dn->value() == 0 || dn->value()->can_plot() == 0))
     {
 	post_gdb_message("Nothing to plot.", true, last_origin);
 	delete dn;
@@ -3527,33 +3546,8 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
 	return;
     }
 
-    if (!contains_display(answer, gdb) || !is_valid(answer, gdb))
-    {
-	if (info->deferred == DeferIfNeeded)
-	{
-	    // Create deferred display now
-	    DispNode *dn = new_deferred_node(info->display_expression,
-					     info->scope,
-					     info->point, info->depends_on,
-					     info->clustered, info->plotted);
-	    
-	    // Insert deferred node into graph
-	    disp_graph->insert(dn->disp_nr(), dn);
-	    
-	    if (info->prompt)
-		prompt();
-
-	    refresh_display_list();
-	}
-	else
-	{
-	    if (info->verbose)
-		post_gdb_message(answer, info->prompt, last_origin);
-	}
-
-	delete info;
-	return;
-    }
+    bool have_display_answer = contains_display(answer, gdb);
+    bool have_valid_answer   = is_valid(answer, gdb);
 
     // Unselect all nodes
     for (GraphNode *gn = disp_graph->firstNode();
@@ -3564,8 +3558,14 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
 
     // Create new DispNode
     string ans = answer;
-    DispNode *dn = new_data_node(info->display_expression,
-				 info->scope, ans, info->plotted);
+    DispNode *dn = 0;
+
+    if (have_display_answer)
+    {
+	dn = new_data_node(info->display_expression, 
+			   info->scope, ans, info->plotted);
+    }
+
     if (dn == 0)
     {
 	// Display could not be created
@@ -3575,14 +3575,19 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
 	    dn = new_deferred_node(info->display_expression, info->scope,
 				   info->point, info->depends_on,
 				   info->clustered, info->plotted);
-	    
+
 	    // Insert deferred node into graph
 	    disp_graph->insert(dn->disp_nr(), dn);
-	    
+
 	    if (info->prompt)
 		prompt();
 
 	    refresh_display_list();
+	}
+	else if (!have_valid_answer)
+	{
+	    if (info->verbose)
+		post_gdb_message(answer, info->prompt, last_origin);
 	}
 
 	delete info;
@@ -3640,7 +3645,7 @@ void DataDisp::new_user_displayOQC (const string& answer, void* data)
 	disp_graph->insert(dn->disp_nr(), dn, depend_nr);
 
 	// Plot new node
-	if (dn->plotted())
+	if (dn->plotted() && dn->value() != 0)
 	    dn->value()->plot();
 
 	// Determine new position
@@ -3763,6 +3768,14 @@ void DataDisp::new_data_displaysOQAC (const StringArray& answers,
     for (int i = 0; i < count; i++)
     {
 	string answer = answers[i];
+	string var = info->display_expressions[i];
+
+	if (!gdb->has_named_values())
+	{
+	    // The debugger `print NAME' does not prepend 'NAME = ' before
+	    // the value.  Fix this.
+	    answer.prepend(var + " = ");
+	}
 
 	if (!contains_display(answer, gdb))
 	{
@@ -3773,8 +3786,6 @@ void DataDisp::new_data_displaysOQAC (const StringArray& answers,
 	else
 	{
 	    // Create new display and remember disabling message
-	    string var = info->display_expressions[i];
-	    gdb->munch_value(answer, var);
 	    DispNode *dn = 
 		new_data_node(var, info->scope, answer, info->plotted);
 	    if (dn == 0)
@@ -3811,7 +3822,8 @@ void DataDisp::insert_data_node(DispNode *dn, int depend_nr,
     if (plotted)
     {
 	dn->plotted() = true;
-	dn->value()->plot();
+	if (dn->value() != 0)
+	    dn->value()->plot();
     }
 
     // Check for clusters
@@ -3857,9 +3869,10 @@ public:
     bool verbose;
     bool prompt;
     IntArray display_nrs;
+    StringArray cmds;
 
     RefreshInfo()
-	: verbose(false), prompt(false), display_nrs()
+	: verbose(false), prompt(false), display_nrs(), cmds()
     {}
 
     ~RefreshInfo()
@@ -3867,7 +3880,7 @@ public:
 
 private:
     RefreshInfo(const RefreshInfo&)
-	: verbose(false), prompt(false), display_nrs()
+	: verbose(false), prompt(false), display_nrs(), cmds()
     {
 	assert(0);
     }
@@ -3971,6 +3984,7 @@ void DataDisp::refresh_displaySQ(Widget origin, bool verbose, bool do_prompt)
     static RefreshInfo info;
     info.verbose = verbose;
     info.prompt  = do_prompt;
+    info.cmds    = cmds;
 
     bool ok = gdb->send_qu_array(cmds, dummy, cmds.size(), 
 				 refresh_displayOQAC, (void *)&info);
@@ -4007,9 +4021,20 @@ void DataDisp::refresh_displayOQAC (const StringArray& answers,
 	    break;
 
 	case PROCESS_DATA:
-	    data_answers += answers[i];
+	{
+	    const string& cmd = info->cmds[i];
+	    string var = cmd.after(rxwhite);
+
+	    if (!gdb->has_named_values())
+		data_answers += var + " = ";
+
+	    string value = answers[i];
+	    gdb->munch_value(value, var);
+	    data_answers += value + "\n";
+
 	    data_answers_seen++;
 	    break;
+	}
 
 	case PROCESS_USER:
 	    user_answers += answers[i];
@@ -4249,7 +4274,8 @@ void DataDisp::enable_displaySQ(IntArray& display_nrs, bool verbose,
 	    dn->disabled() && !dn->deferred())
 	{
 	    dn->enable();
-	    dn->value()->expandAll();
+	    if (dn->value() != 0)
+		dn->value()->expandAll();
 	    enabled_user_displays++;
 	}
     }
@@ -4779,6 +4805,7 @@ string DataDisp::process_displays(string& displays,
 		post_gdb_message(error_msg);
 		dn->make_active();
 		dn->disable();
+		refresh_graph_edit();
 	    }
 	    else
 	    {
@@ -5520,7 +5547,7 @@ void DataDisp::setCB(Widget w, XtPointer, XtPointer)
     XtManageChild(box);
 
     arg = 0;
-    MString prompt = bf("Set value of ") + tt(name);
+    MString prompt = MString("Set value of ") + tt(name);
     XtSetArg(args[arg], XmNalignment, XmALIGNMENT_BEGINNING); arg++;
     XtSetArg(args[arg], XmNlabelString, prompt.xmstring());   arg++;
     Widget label = verify(XmCreateLabel(box, "label", args, arg));
@@ -5946,6 +5973,7 @@ void DataDisp::RefreshAddrCB(XtPointer client_data, XtIntervalId *id)
 	    static RefreshInfo info;
 	    info.verbose = false;
 	    info.prompt  = false;
+	    info.cmds    = cmds;
 	    ok = gdb->send_qu_array(cmds, dummy, cmds.size(), 
 				    refresh_displayOQAC, (void *)&info);
 

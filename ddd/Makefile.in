@@ -129,7 +129,7 @@ CXXWARNINGS = @CXXWARNINGS@
 CXXFLAGS = $(CXXOPT) $(CXXDEBUG) $(CXXWARNINGS)
 
 # Extra C++-specific flags.  (-fexternal-templates -felide-constructors)
-CXXSTUFF = @CXXSTUFF@
+CXXSTUFF = @CXXSTUFF@ @X_PERMISSIVE@
 
 # Possible extra libraries required for all C++ programs.  ()
 CXXLIBS = @CXXLIBS@
@@ -382,6 +382,7 @@ SLEEP = sleep
 
 # The fig2dev command.  (fig2dev)
 FIG2DEV = fig2dev
+# FIG2DEV = /public/source/graphic2/transfig.3.2.1/fig2dev/fig2dev
 FIG2PS = $(FIG2DEV) -L ps
 
 # Some XPM/PPM/PostScript converters, from the netpbm and pbmplus packages.
@@ -654,6 +655,7 @@ BASE_OBJECTS = \
 # Instantiated templates
 TEMPLATE_OBJECTS = \
 	IntIntAA.o   \
+	StatArray.o  \
 	StringA.o    \
 	StringMap.o  \
 	StringSA.o   \
@@ -678,6 +680,7 @@ AGENT_OBJECTS = \
 XSTUFF_OBJECTS = \
 	charsets.o   \
 	converters.o \
+	decoration.o \
 	events.o     \
 	findParent.o \
 	findWindow.o \
@@ -687,6 +690,7 @@ XSTUFF_OBJECTS = \
 	selection.o  \
 	simpleMenu.o \
 	verify.o     \
+	AutoRaise.o  \
 	ComboBox.o   \
 	Delay.o      \
 	DestroyCB.o  \
@@ -800,7 +804,6 @@ DDD_OBJECTS = \
 	cmdtty.o     \
 	comm-manag.o \
 	complete.o   \
-	configinfo.o \
 	ctrl.o       \
 	data.o       \
 	dbx-lookup.o \
@@ -840,6 +843,7 @@ DDD_OBJECTS = \
 	shell.o      \
 	shorten.o    \
 	show.o       \
+	configinfo.o \
 	source.o     \
 	status.o     \
 	string-fun.o \
@@ -879,6 +883,7 @@ DDD_OBJECTS = \
 	RefreshDI.o  \
 	SmartC.o     \
 	SourceView.o \
+	Tool.o       \
 	UndoBuffer.o \
 	UndoBE.o     \
 	WhatNextCB.o
@@ -1104,7 +1109,7 @@ PROG_STUFF       = vsl-lex.C vsl-gramma.h vsl-gramma.C rxscan.C \
 		   $(srcdir)/tips.m4 $(srcdir)/tips.html \
 		   $(srcdir)/Ddd.in Ddd.ad.h host.h \
 		   $(srcdir)/ddd.vsl $(srcdir)/ddd.vsl.h \
-		   vr.h version.h configinfo.C \
+		   vr.h version.h bld.h build.h configinfo.C \
 		   ddd.1 ddd.man.txt ddd.man.txt.gz ddd.man.txt.gz.C \
                    COPYING.gz.C NEWS.gz.C xlibdir.C eps-code.h .gdbinit
 
@@ -1131,7 +1136,7 @@ DISTCLEAN_STUFF	 = $(CLEAN_STUFF) \
 
 # Any files that can be reconstructed, except configure script
 REALCLEAN_STUFF	 = $(DISTCLEAN_STUFF) $(DIST_STUFF) \
-		   header.str trailer.str eps-code.h vr.h $(MANS)
+		   header.str trailer.str eps-code.h vr.h bld.h $(MANS)
 
 # All files that can be reconstructed (but may require special programs)
 ULTRACLEAN_STUFF = $(REALCLEAN_STUFF) \
@@ -1486,8 +1491,10 @@ test-graph$(EXEEXT): test-graph.o $(LIB_OBJECTS)
 vsl$(EXEEXT):	vsl.o DocSpace.o $(LIB_OBJECTS)
 	$(LINK.cc) -o $@ vsl.o DocSpace.o $(LIB_OBJECTS) $(ALL_X_LIBS) $(LIBS)
 
-ttytest$(EXEEXT): ttytest.o $(BASE_OBJECTS) $(AGENT_OBJECTS)
-	$(LINK.cc) -o $@ ttytest.o $(BASE_OBJECTS) $(AGENT_OBJECTS) \
+ttytest$(EXEEXT): ttytest.o \
+	$(BASE_OBJECTS) $(AGENT_OBJECTS) $(TEMPLATE_OBJECTS)
+	$(LINK.cc) -o $@ ttytest.o \
+	$(BASE_OBJECTS) $(AGENT_OBJECTS) $(TEMPLATE_OBJECTS) \
 	$(ALL_X_LIBS) $(LIBS)
 
 bug$(EXEEXT):	bug.o
@@ -1547,7 +1554,7 @@ ftest.o: $(srcdir)/ftest.f
 ## For demonstration and debugging purposes
 .PHONY: check
 check: Ddd $(ddd)$(EXEEXT) cxxtest$(EXEEXT)
-	XUSERFILESEARCHPATH=. XAPPLRESDIR=. ./ddd $(DDD_OPTIONS) cxxtest$(EXEEXT)
+	XUSERFILESEARCHPATH=%N XAPPLRESDIR=. ./ddd $(DDD_OPTIONS) cxxtest$(EXEEXT)
 
 .PHONY: debug
 debug: Ddd $(ddd)$(EXEEXT) cxxtest$(EXEEXT) .gdbinit $(ddd).syms
@@ -1587,7 +1594,8 @@ vsl-lex.C: $(srcdir)/vsl-lex.L
 	$(MV) $(LEX_OUTPUT_ROOT).C $@
 	$(RM) $(LEX_OUTPUT_ROOT).c
 
-vsl-gramma.h vsl-gramma.C: $(srcdir)/vsl-gramma.Y
+vsl-gramma.h vsl-gramma.C: $(srcdir)/vsl-gramma.Y \
+	$(YACCTOCXX) $(YACCTOCXX).bison $(YACCTOCXX).h $(YACCTOCXX).sun
 	$(YACC.Y) -d $(srcdir)/vsl-gramma.Y
 	$(YACCTOCXX) -prefix vsl
 	$(MV) y.tab.H vsl-gramma.h
@@ -1861,6 +1869,7 @@ $(icondir)/dddmask.xbm: $(icondir)/dddmask.xpm
 
 # Original filter for dddsplash to extract g4 info
 # $(SED) 's/[	 ][cmg][ 	][#a-zA-Z0-9][#a-zA-Z0-9]*//g' | \
+#
 
 $(icondir)/dddsplash.xbm: $(icondir)/dddsplash.xpm
 	@$(ECHO) "Creating $@"
@@ -1927,6 +1936,15 @@ stamp-h: config.h.in config.status
 version.h: vr.h
 	@$(CMP) vr.h $@ 2> /dev/null || ( $(CAT) vr.h > $@~ && $(MV) $@~ $@ )
 vr.h: vr.h.in config.status
+	CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
+
+# We use configure to create `build.h'.
+# To make sure these are not touched upon every invocation,
+# we create temporary bld.* files instead and touch the build.* files
+# only if the bld.* files changed.
+build.h: bld.h
+	@$(CMP) bld.h $@ 2> /dev/null || ( $(CAT) bld.h > $@~ && $(MV) $@~ $@ )
+bld.h: bld.h.in config.status
 	CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
 ## The manual page

@@ -39,6 +39,18 @@ Reported by: Rick Flower <Rick.Flower@trw.com>
 AIX
 ===
 
+Reported by: Andreas Zeller <ddd@ips.cs.tu-bs.de>
+
+    Some EGCS versions on AIX have trouble compiling DDD.  If you get
+    internal compiler errors, try compiling the affected modules
+    without optimization.  Here are the commands:
+
+	$ cd TOPLEVEL        # Top of DDD distribution
+	$ make -k            # Build all with optimization
+	$ cd ddd
+	$ make -k CXXOPT=    # Build remainder of DDD without optimization
+
+
 Reported by: Brian Cameron <bcameron@tuc.com>
 
     When compiling DDD using EGCS, you may get a conflict between
@@ -56,9 +68,9 @@ Reported by: Andreas Zeller <ddd@ips.cs.tu-bs.de>
     with the message "TOC overflow".  The AIX Table of Contents (TOC)
     by default has only 16,384 entries; DDD has far more symbols.
 
-    If you use GCC 2.8.0 or later, `configure' should already have
-    fixed this for you.  In other configurations, there are three ways
-    to fix this problem:
+    If you use EGCS 1.1 or GCC 2.8.0 or later, `configure' should
+    already have fixed this for you.  In other configurations, there
+    are three ways to fix this problem:
 
     1. Add the flag `-Wl,-bbigtoc' to the `LDFLAGS' definition in
        `ddd/Makefile' and retype `make'.  This makes the AIX linker
@@ -226,6 +238,11 @@ HP-UX
 
 Reported by:  (various)
 
+    Joseph H. Buehler <jhpb@sarto.gaithersburg.md.us> reports that gcc
+    2.95 on HP-UX 11.00 crashes with an internal error, turning off
+    -O2 eliminates the problem.  However, even when gcc 2.95 builds
+    DDD, it core dumps immediately at start.
+
     On HP-UX 10.01, if you cannot link DDD or get an illegal
     instruction at start-up, this is due to some bugs in the X11 and
     Motif libraries as shipped by HP.  Mark Harig <markh@landmark.com>
@@ -286,17 +303,13 @@ LessTif
 =======
     
     To use DDD with LessTif, get a recent LessTif release from
-    `http://www.lesstif.org'.
+    `http://www.lesstif.org'.  Be sure to apply the patches found in
+    the `patches/' subdirectory.
 
-    With LessTif 0.87, the following problems are currently known:
-
-    * The `Preferences' dialog may need manual resize.
-
-    * Option menus in `GDB Settings' are only displayed partially.
+    With DDD 3.1.6 and LessTif 0.88.9, the following problems are
+    currently known:
 
     * Resizing the plot window does not work properly.
-
-    * Accelerators like Ctrl+L do not work in the plot window.
 
     See the DDD WWW page for further issues and patches.
 
@@ -310,9 +323,9 @@ EGCS
 
 	warning: ANSI C++ forbids declaration `__in' with no type
 
-    This is an EGCS bug, which has been fixed for the upcoming
-    egcs-1.1.1 release.  As a workaround, create a file `sys/wait.h'
-    in the DDD source directory that contains the following lines:
+    This is an EGCS bug, which has been fixed in the egcs-1.1.1
+    release.  As a workaround, create a file `sys/wait.h' in the DDD
+    source directory that contains the following lines:
 
 	#include_next <sys/wait.h>
 

@@ -79,6 +79,11 @@ inline string session_tips_file()
     return session_file(DEFAULT_SESSION, "tips");
 }
 
+inline string session_tmp_flag(const string& session)
+{
+    return session_file(session, "tmp");
+}
+
 // Create session directory for SESSION; leave messages in MSG
 void create_session_dir(const string& session, ostream& msg);
 
@@ -116,6 +121,15 @@ void set_session(const string& session);
 
 // Name of session to be restarted with
 string restart_session();
+
+// True if SESSION is a saved session
+bool is_saved_session(const string& session);
+
+// True if SESSION is temporary
+bool is_temporary_session(const string& session);
+
+// Set temporary flag of SESSION
+void set_tmeporary_session(const string& session, bool temporary);
 
 // Set name of session to be restarted with
 void set_restart_session(const string& session = "");

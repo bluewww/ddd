@@ -12,7 +12,10 @@ configure
 i586-pc-linux-gnu
 lesstif
 linux
+linux-lesstif
+linux-motif
 sparc-sun-sunos4.1.4
 sun
 sun-lesstif
+sun-lesstif-3.1
 sun-motif
