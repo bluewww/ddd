@@ -4,8 +4,8 @@ DDD News						-*- text -*-
 DDD 2.2.2
 ---------
 
-    DDD 2.2.2 brings an improved data display and fixes some minor
-    bugs introduced in DDD 2.2.
+    DDD 2.2.2 brings substantial improvements in the data display and
+    fixes some minor bugs introduced in DDD 2.2.
 
     User-visible changes to DDD 2.2.1:
     - Faster data exploration with double-clicking...
@@ -13,10 +13,12 @@ DDD 2.2.2
       * ...on a partially hidden value: show more detail.
       * ...on a fully shown value: hide it again.
     - A display resize (due to value changes) automatically `bumps'
-      adjacent displays such that they are not obscured.  See the
-      `bumpDisplays' resource for documentation.
-    - A display that gets out of scope is automatically hidden.  See
-      the `hideDisplays' resource for documentation.
+      adjacent displays such that they are not obscured.  (Can be
+      disabled; see the `bumpDisplays' resource.)
+    - The data display is now scope-sensitive: displays are
+      automatically shown as soon as their scope is entered and hidden
+      as soon as their scope is left.  (Can be disabled; see the
+      `hideDisplays' resource.)
     - DDD supports case-insensitive search in the source text.
 
     Bug fixes:
