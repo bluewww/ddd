@@ -305,4 +305,7 @@ Volunteers for fixing these and other bugs are welcome!
      do) to get rid of it, that makes ddd exit in a very abrupt
      manner. (This happens on HP-UX 10.20.)
 
-226. (Insert your bug here)
+226. Run cxxtest.  While it runs, enable machine code.  Interrupt.
+     Watch DDD die.
+
+227. (Insert your bug here)
