@@ -68,7 +68,7 @@ char editing_rcsid[] =
 #endif
 
 // True if last input was at gdb prompt
-bool gdb_input_at_prompt = true;
+bool gdb_input_at_prompt = false;
 
 
 //-----------------------------------------------------------------------------
