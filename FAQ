@@ -4,9 +4,9 @@ DDD Frequently Asked Questions                                  -*- text -*-
 1.  How can I speed up DDD?
 
     The fastest DDD configuration is obtained as follows.  Enable
-    source code and machine code caching.  Disable glyphs, machine
-    code display, execution window.  Do not use remote debugging.
-    Use DDD 1.4b or later, compiled with the `-O2' option.
+    source code and machine code caching.  Disable glyphs and machine
+    code.  Do not use remote debugging.  Use DDD 1.4b or later,
+    compiled with the `-O2' option.
 
 
 2.  How can I display a multi-length array?
@@ -55,17 +55,24 @@ DDD Frequently Asked Questions                                  -*- text -*-
     changes - in which case you'll have to wait until we patch DDD.
 
 
-6.  Does DDD work with DBX on other systems than Sun?
+6.  Which other debuggers are supported by DDD?
 
-    DDD has been reported to run with Sun DBX as shipped with SunOS
-    4.x (aka Solaris 1.x) and SunOS 5.x (aka Solaris 2.x).  It only
-    works partially with DEC DBX (no breakpoints, no data display).
-    Unfortunately, DBX is quite different across machines since every
-    vendor icorporated his own extensions.  As long as some basics
-    stay the same, DDD may work more or less with other DBX versions
-    as well.  If not, extending the DDD code to support other DBX
-    versions should not be too difficult.  Use `ddd --trace' to see
-    the interaction.
+    DDD 1.5 has been tested with the following debuggers:
+
+    * GDB from the Free Software Foundation
+    * DBX as found on SunOS 4.x (aka Solaris 1.x)
+    * DBX as found on SunOS 5.x (aka Solaris 2.x)
+    * DBX as found on DEC systems.
+    * DBX as found on AIX systems.
+    * XDB as found on HP-UX systems.
+
+    DDD functionality largely depends on the capabilities of the
+    underlying debugger; best results are obtained with GDB.
+
+    To cope with the large variety of DBX flavours, DDD determines the
+    DBX capabilities dynamically at run-rime; DDD should thus adapt
+    automatically to other DBX variants.  Please let us know your
+    experiences; use `ddd --trace' to see the DDD/DBX interaction.
 
 
 7.  I don't like the 'break point' symbol.  Can I change it?
@@ -104,9 +111,9 @@ DDD Frequently Asked Questions                                  -*- text -*-
 10. Is there an Athena Widgets port of DDD?
 
     No.  If you want DDD running with a free widget set, you should
-    support the LessTif team, who are developing a free
-    Motif-compliant widget set.  Check out their WWW page at
-    
+    support the Hungry Programmer's Team - they develop LessTif, a
+    free Motif-compliant widget set.  Check out their WWW page at
+
         http://www.hungry.com/products/lesstif/
 
     [Note: We HAVE considered to build DDD on a free widget set.  But
@@ -116,12 +123,13 @@ DDD Frequently Asked Questions                                  -*- text -*-
     efficient interface.  So go and support the LessTif team instead.]
 
 
-11. Will DDD compile and run under LessTif?
+11. Will DDD work with LessTif?
 
-    DDD compiles with LessTif 0.33 and later; no special fixes are
-    required.  The resulting DDD executable is far from being usable,
-    though, due to lacking LessTif features.  This will probably get
-    much better while LessTif evolves; see question #10, above.
+    Right now, DDD *compiles* with LessTif 0.33 and later; no special
+    fixes are required.  As of LessTif 0.50, DDD also *runs* somewhat.
+    However, the resulting DDD executable is far from being usable,
+    due to lacking LessTif features.  This will probably get much
+    better while LessTif evolves; see question #10, above.
 
 
 12. DDD reports `imake' and/or `xmkmf' problems when being started.
@@ -131,12 +139,14 @@ DDD Frequently Asked Questions                                  -*- text -*-
     the X project root.  Since we distribute DDD binaries, the X
     project root compiled into the X libraries (and thus hard-coded in
     the DDD binary) may not be valid on the actual machine.  DDD tries
-    to repair this situation by calling `xmkmf' and thus determining
-    the X project root.  Usually, this is not required if DDD runs on
-    the machine it was compiled on.  You may run `ddd
+    to repair this situation by calling `xmkmf' to determine the X
+    project root.  Usually, this is not required if DDD runs on the
+    machine it was compiled on.  You may run `ddd
     --check-configuration' to find out why DDD finds it necessary to
     determine the X project root.  The code for this hack can be found
     in `xconfig.C'.
+
+    As of DDD 1.5, `xmkmf' is called only if it resides in your path.
 
 
 13. How can I change DDD resources (especially colors)?
@@ -277,8 +287,8 @@ DDD Frequently Asked Questions                                  -*- text -*-
            (sh)  $ VSL_INCLUDE=/home/tom/lib/vsl; export VSL_INCLUDE
            (csh) % setenv VSL_INCLUDE /home/tom/lib/vsl
 
-       (In releases later than DDD 1.4d, the `vslPath' resource
-        overrides the VSL_INCLUDE environment variable).
+       (In DDD 1.5 and later, the `vslPath' resource overrides the
+        VSL_INCLUDE environment variable).
 
     5. In DDD 1.4d and later, you can use the `--vsl-verbose' option
        to see which files are actually accessed:
@@ -339,10 +349,10 @@ DDD Frequently Asked Questions                                  -*- text -*-
     You may wish to replace some of these buttons by buttons of your
     own.  The `Ddd' app-defaults file contains some examples.
 
-    In DDD 1.5, you can also customize the command tool buttons.  This
-    is somewhat trickier, since you have to specify button locations
-    as well.  The following section in the `Ddd' app-defaults file
-    gives some hints.
+    In DDD 1.5 and later, you can also customize the command tool
+    buttons.  This is somewhat trickier, since you have to specify
+    button locations as well.  The following section in the `Ddd'
+    app-defaults file gives some hints.
 
     ---- cut here ----
     ! The command tool buttons, as of DDD 1.5 and later.

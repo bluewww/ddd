@@ -311,12 +311,6 @@ Volunteers for fixing these and other bugs are welcome!
          the default in the display graph?  If I "set output-radix 16" 
          in the gdb window ddd seems to lock up very often.
 
-090* When running `one single window' in TTY mode, the window does not
-     appear.
-
-091* The command tool should appear with the source window, placed in
-     the upper right corner.
-
 092* Entering ^D in TTY mode causes an abort (due to TTYAgent::dup())
 
 093* `Up' and `Down' in XDB mode won't work.
