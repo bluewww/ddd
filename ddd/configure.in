@@ -303,28 +303,6 @@ if test "$GXX" != yes; then
 AC_CHECK_LIB(cxxinst, main, CXXLIBS="-lcxxinst $CXXLIBS")
 fi
 dnl
-dnl check for ncurses
-AC_ARG_WITH(ncurses,
-[  --with-ncurses[=DIR]             use ncurses library in DIR],[
-  case "$with_ncurses" in
-  no) ;;
-  yes)
-    AC_CHECK_HEADER(ncurses.h,
-      AC_CHECK_LIB(ncurses, tgetent, [LIBTERMCAP="-lncurses"]))
-    ;;
-  *)
-    _ldflags="${LDFLAGS}"
-    _cppflags="${CPPFLAGS}"
-    CPPFLAGS="${CPPFLAGS} -I$with_ncurses/include -I$with_ncurses/include/ncurses"
-    LDFLAGS="${LDFLAGS} -L$with_ncurses/lib"
-    AC_CHECK_HEADER(ncurses.h,
-      AC_CHECK_LIB(ncurses, tgetent, [LIBTERMCAP="-L$with_ncurses/lib -lncurses"],
-        CPPFLAGS="${_cppflags}"), CPPFLAGS="${_cppflags}")
-    LDFLAGS="${_ldflags}"
-    ;;
-  esac
-])
-dnl
 dnl
 dnl Look for the tgetent() function - either in libtermcap, libcurses,
 dnl or use the GNU termcap library as shipped with DDD.
@@ -335,17 +313,10 @@ dnl
 dnl On Linux ELF systems, `-lncurses' is preferred to `-ltermcap'.
 dnl Reported by jdassen@wi.leidenuniv.nl (J.H.M. Dassen)
 dnl
-if test "x$LIBTERMCAP" = "x"; then
-  LIBTERMCAP="../termcap/libtermcap.a"
-  if test "x$with_ncurses" = "xno"; then
-    _termlib="mytinfo curses termcap terminfo termlib"
-  else
-    _termlib="mytinfo ncurses curses termcap terminfo termlib"
-  fi
-  for termlib in ${_termlib}; do
-     AC_CHECK_LIB(${termlib}, tgetent, [LIBTERMCAP="-l${termlib}"; break])
-  done
-fi
+LIBTERMCAP="../termcap/libtermcap.a"
+for termlib in mytinfo ncurses curses termcap terminfo termlib; do
+   AC_CHECK_LIB(${termlib}, tgetent, [LIBTERMCAP="-l${termlib}"; break])
+done
 AC_SUBST(LIBTERMCAP)
 dnl
 dnl
@@ -364,27 +335,18 @@ dnl
 LIBREADLINE=""
 readline=yes
 AC_ARG_WITH(readline,
-[  --with-readline[=DIR]            use readline library in DIR
-  --without-readline               do not support tty command line editing],[
-  case "$with_readline" in
-  no) ;;
-  yes)
-    AC_CHECK_LIB(readline, readline, [LIBREADLINE="-lreadline"], ,
-    $LIBTERMCAP)
-    ;;
-  *)
-    _ldflags="${LDFLAGS}"
-    LDFLAGS="-L$with_readline/lib $LDFLAGS"
-    AC_CHECK_LIB(readline, readline,
-      LIBREADLINE="-L$with_readline/lib -lreadline", , $LIBTERMCAP)
-    LDFLAGS="${_ldflags}"
- 
-    _cppflags="${CPPFLAGS}"
-    CPPFLAGS="-I$with_readline/include $CPPFLAGS"
-    AC_CHECK_HEADER(readline/readline.h, AC_DEFINE(WITH_READLINE),
-      CPPFLAGS="${_cppflags}")
-    ;;
-  esac])
+[  --without-readline               do not support tty command line editing],
+	readline="$withval")
+if test "$readline" != no; then
+dnl
+dnl Find a readline library
+LIBREADLINE="../readline/libreadline.a"
+dnl
+dnl If we have an installed library, prefer it over the one shipped with DDD.
+AC_CHECK_LIB(readline, rl_callback_read_char, LIBREADLINE="-lreadline")
+dnl
+AC_DEFINE(WITH_READLINE)
+fi
 AC_SUBST(LIBREADLINE)
 dnl
 dnl
