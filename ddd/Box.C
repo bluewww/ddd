@@ -130,7 +130,7 @@ Box *Box::tag(Data *dta, DataLink *dl)
 }
 
 // Region of the TagBox at P; if P is not given, use top-most tag
-BoxRegion Box::region(BoxPoint p) const
+BoxRegion Box::region(const BoxPoint& p) const
 {
     const TagBox *t = findTag(p);
     return (t) ?
@@ -139,7 +139,7 @@ BoxRegion Box::region(BoxPoint p) const
 }
 
 // Data of the TagBox at P
-Data *Box::data(BoxPoint p) const
+Data *Box::data(const BoxPoint& p) const
 {
     const TagBox *t = findTag(p);
     if (t == 0)
@@ -148,7 +148,7 @@ Data *Box::data(BoxPoint p) const
 }
 
 // Name of the TagBox at P
-string Box::name(BoxPoint p) const
+string Box::name(const BoxPoint& p) const
 {
     const TagBox *t = findTag(p);
     return (t) ?
@@ -157,7 +157,7 @@ string Box::name(BoxPoint p) const
 }
 
 // Information of the TagBox at P
-string Box::info(BoxPoint p) const
+string Box::info(const BoxPoint &p) const
 {
     const TagBox *t = findTag(p);
     return (t) ?
@@ -166,7 +166,7 @@ string Box::info(BoxPoint p) const
 }
 
 // `Selected' property of TagBox at P
-bool Box::selected(BoxPoint p) const
+bool Box::selected(const BoxPoint& p) const
 {
     const TagBox *t = findTag(p);
     if (t == 0)

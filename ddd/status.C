@@ -517,11 +517,12 @@ void set_status_from_gdb(const string& text)
 
 // Show MESSAGE in status window.
 // If TEMPORARY is set, override locks and do not add to status history.
-void set_status(string message, bool temporary)
+void set_status(const string& message_, bool temporary)
 {
     if (status_w == 0)
 	return;
 
+    string message(message_);
     if (message.length() > 0
 	&& !message.contains("=") 
 	&& isascii(message[0])
@@ -532,7 +533,7 @@ void set_status(string message, bool temporary)
 }
 
 // Same, but use an MString.
-void set_status_mstring(MString message, bool temporary)
+void set_status_mstring(const MString& message, bool temporary)
 {
     if (status_w == 0)
 	return;

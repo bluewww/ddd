@@ -223,7 +223,7 @@ static XtIntervalId move_tool_shell_timer = 0;
 static BoxPoint last_tool_shell_position;
 static BoxPoint tool_shell_move_offset(0, 0);
 
-static void move_tool_shell(BoxPoint pos, bool verify = true);
+static void move_tool_shell(const BoxPoint& pos, bool verify = true);
 
 // Verify shell position after movement
 static void VerifyToolShellPositionCB(XtPointer = 0, XtIntervalId *id = 0)
@@ -247,7 +247,7 @@ static void VerifyToolShellPositionCB(XtPointer = 0, XtIntervalId *id = 0)
 
 // Move tool shell to POS.  If VERIFY is set, verify and correct 
 // any displacement induced by the window manager.
-static void move_tool_shell(BoxPoint pos, bool verify)
+static void move_tool_shell(const BoxPoint& pos, bool verify)
 {
 #if 0
     // Make sure we don't move the tool shell off the screen

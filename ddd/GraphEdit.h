@@ -290,7 +290,7 @@ extern const GraphGC& graphEditGetGraphGC(Widget w);
 extern Graph *graphEditGetGraph(Widget w);
 
 // Get node at point
-extern GraphNode *graphEditGetNodeAtPoint(Widget w, BoxPoint p);
+extern GraphNode *graphEditGetNodeAtPoint(Widget w, const BoxPoint& p);
 
 // Get node at event
 extern GraphNode *graphEditGetNodeAtEvent(Widget w, XEvent *e);

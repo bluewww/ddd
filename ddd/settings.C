@@ -1411,10 +1411,10 @@ static Dimension preferred_height(Widget w)
 
 static void add_settings(Widget form, int& row, Dimension& max_width,
 			 DebuggerType type, EntryType entry_filter, 
-			 string gdb_class = "set");
+			 const string& gdb_class = "set");
 
 static Widget create_signal_button(Widget label,
-				   string name,
+				   const string& name,
 				   int row,
 				   Widget rightmost = 0)
 {
@@ -2241,7 +2241,7 @@ static void add_separator(Widget form, int& row)
 // Add buttons
 static void add_settings(Widget form, int& row, Dimension& max_width,
 			 DebuggerType type, EntryType entry_filter,
-			 string gdb_class)
+			 const string& gdb_class)
 {
     string commands;
 

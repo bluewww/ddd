@@ -131,7 +131,7 @@ public:
     }
 
     // Add after A
-    void enqueue_after(const E& e, QueueIter<E> a)
+    void enqueue_after(const E& e, const QueueIter<E>& a)
     {
 	QueueRec<E> *rec = new QueueRec<E>(e);
 	QueueRec<E> *after = a.theRec();

@@ -41,10 +41,10 @@
 
 // Show MESSAGE in status window.
 // If TEMPORARY is set, override locks and do not add to status history.
-void set_status(string message, bool temporary = false);
+void set_status(const string& message, bool temporary = false);
 
 // Same, but use an MString.
-void set_status_mstring(MString text, bool temporary = false);
+void set_status_mstring(const MString& text, bool temporary = false);
 
 // Return current contents of status line
 extern const MString& current_status(void);

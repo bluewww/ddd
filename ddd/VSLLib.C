@@ -247,16 +247,16 @@ const Box *VSLLib::eval(const string& func_name, VSLArg args[]) const
 }
 
 const Box *VSLLib::eval(const string& func_name,
-			VSLArg arg0,
-			VSLArg arg1,
-			VSLArg arg2,
-			VSLArg arg3,
-			VSLArg arg4,
-			VSLArg arg5,
-			VSLArg arg6,
-			VSLArg arg7,
-			VSLArg arg8,
-			VSLArg arg9) const
+			const VSLArg& arg0,
+			const VSLArg& arg1,
+			const VSLArg& arg2,
+			const VSLArg& arg3,
+			const VSLArg& arg4,
+			const VSLArg& arg5,
+			const VSLArg& arg6,
+			const VSLArg& arg7,
+			const VSLArg& arg8,
+			const VSLArg& arg9) const
 {
     VSLArg args[11];
 

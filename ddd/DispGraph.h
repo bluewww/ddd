@@ -164,7 +164,7 @@ protected:
     BoxPoint adjust_position (DispNode *new_node,
 			      Widget w,
 			      BoxPoint pos,
-			      BoxPoint offset,
+			      const BoxPoint& offset,
 			      BoxPoint grid) const;
 
     // Add a new alias edge

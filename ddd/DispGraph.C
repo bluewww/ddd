@@ -227,7 +227,7 @@ int DispGraph::insert(int new_disp_nr, DispNode *new_dn, int depends_on)
 BoxPoint DispGraph::adjust_position (DispNode *new_node,
 				     Widget w,
 				     BoxPoint pos,
-				     BoxPoint offset,
+				     const BoxPoint& offset,
 				     BoxPoint grid) const
 {
     const GraphGC& graphGC = graphEditGetGraphGC(w);

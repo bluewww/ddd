@@ -1873,7 +1873,7 @@ Widget DataDisp::create_display_dialog(Widget parent, const _XtString name,
 }
 
 // Enter a new Display at BOX_POINT
-void DataDisp::new_displayCD (Widget w, BoxPoint box_point)
+void DataDisp::new_displayCD (Widget w, const BoxPoint &box_point)
 {
     static NewDisplayInfo info;
     if (info.point_ptr == 0)
@@ -2080,7 +2080,7 @@ void DataDisp::RefreshGraphEditCB(XtPointer client_data, XtIntervalId *id)
 
 // ***************************************************************************
 //
-inline int DataDisp::getDispNrAtPoint (BoxPoint point)
+inline int DataDisp::getDispNrAtPoint (const BoxPoint& point)
 {
     GraphNode* gn = graphEditGetNodeAtPoint (graph_edit, point);
     if (gn == 0)
@@ -2271,7 +2271,7 @@ void DataDisp::graph_popupAct (Widget, XEvent* event, String *args,
     }
 }
 
-void DataDisp::set_args(BoxPoint p, SelectionMode mode)
+void DataDisp::set_args(const BoxPoint& p, SelectionMode mode)
 {
     DispNode*  disp_node   = 0;
     DispValue* disp_value  = 0;

@@ -1536,7 +1536,7 @@ static void Destroy(Widget)
 // Helping stuff
 
 // Find node at point
-GraphNode *graphEditGetNodeAtPoint(Widget w, BoxPoint p)
+GraphNode *graphEditGetNodeAtPoint(Widget w, const BoxPoint& p)
 {
     XtCheckSubclass(w, GraphEditWidgetClass, "Bad widget class");
 

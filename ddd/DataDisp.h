@@ -167,7 +167,7 @@ class DataDisp {
     //-----------------------------------------------------------------------
     // Create dialogs
     //-----------------------------------------------------------------------
-    static void new_displayCD (Widget w, BoxPoint box_point = BoxPoint());
+    static void new_displayCD (Widget w, const BoxPoint& box_point = BoxPoint());
 
     //-----------------------------------------------------------------------
     // Set sensitivity
@@ -180,7 +180,7 @@ class DataDisp {
 
     static bool lose_selection;
 
-    static void set_args(BoxPoint p = BoxPoint(),
+    static void set_args(const BoxPoint& p = BoxPoint(),
 			 SelectionMode mode = SetSelection);
 
     static void refresh_display_list(bool silent = false);
@@ -203,7 +203,7 @@ class DataDisp {
 				       const string& depends_on,
 				       bool clustered, bool plotted);
 
-    static int getDispNrAtPoint(BoxPoint point);
+    static int getDispNrAtPoint(const BoxPoint& point);
 
     static string numbers(IntArray& a);
     static bool all_data_displays(IntArray& numbers);

@@ -220,11 +220,11 @@ public:
     virtual Box *tag(Data *data, DataLink *dl = 0);
 
     // Return tag attributes for a point (No point: outermost)
-    BoxRegion region(BoxPoint p = BoxPoint(-1,-1)) const;   // current region
-    Data *data(BoxPoint p = BoxPoint(-1,-1)) const;         // current data
-    string name(BoxPoint p = BoxPoint(-1,-1)) const;        // current name
-    bool selected(BoxPoint p = BoxPoint(-1,-1)) const;      // Flag: selected?
-    string info(BoxPoint p = BoxPoint(-1,-1)) const;        // Debugging info
+    BoxRegion region(const BoxPoint& p = BoxPoint(-1,-1)) const;   // current region
+    Data *data(const BoxPoint& p = BoxPoint(-1,-1)) const;         // current data
+    string name(const BoxPoint& p = BoxPoint(-1,-1)) const;        // current name
+    bool selected(const BoxPoint& p = BoxPoint(-1,-1)) const;      // Flag: selected?
+    string info(const BoxPoint& p = BoxPoint(-1,-1)) const;        // Debugging info
 
     // Return the box that is to be matched
     virtual const Box& matchMe() const { return *this; }

@@ -293,16 +293,16 @@ public:
     // Custom functions
     const Box *eval(const string& func_name, VSLArg args[]) const;
     const Box *eval(const string& func_name, 
-		    VSLArg arg0 = (Box *)0,
-		    VSLArg arg1 = (Box *)0,
-		    VSLArg arg2 = (Box *)0,
-		    VSLArg arg3 = (Box *)0,
-		    VSLArg arg4 = (Box *)0,
-		    VSLArg arg5 = (Box *)0,
-		    VSLArg arg6 = (Box *)0,
-		    VSLArg arg7 = (Box *)0,
-		    VSLArg arg8 = (Box *)0,
-		    VSLArg arg9 = (Box *)0) const;
+		    const VSLArg& arg0 = (Box *)0,
+		    const VSLArg& arg1 = (Box *)0,
+		    const VSLArg& arg2 = (Box *)0,
+		    const VSLArg& arg3 = (Box *)0,
+		    const VSLArg& arg4 = (Box *)0,
+		    const VSLArg& arg5 = (Box *)0,
+		    const VSLArg& arg6 = (Box *)0,
+		    const VSLArg& arg7 = (Box *)0,
+		    const VSLArg& arg8 = (Box *)0,
+		    const VSLArg& arg9 = (Box *)0) const;
 
     // Perform __output() function on arg if present
     void output(Box *&arg);
