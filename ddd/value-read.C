@@ -798,6 +798,11 @@ string read_member_name (string& value)
     // JDB printing classes uses `:\n' for the interface list.
     // GDB with GNAT support and Perl use `=> '.
     string member_name;
+    string sep = gdb->member_separator();
+    string sepnl = sep;
+    strip_trailing_space(sepnl);
+    sepnl += '\n';
+
     if (v.contains("Virtual table at ", 0))
     {
 	// `Virtual table at 0x1234' or likewise.  WDB gives us such things.
@@ -810,22 +815,15 @@ string read_member_name (string& value)
 	member_name = v.before(" = ");
 	value = value.after(" = ");
     }
-    else if (gdb->program_language() == LANGUAGE_JAVA && v.contains(": "))
+    else if (v.contains(sep))
     {
-	member_name = v.before(": ");
-	value = value.after(": ");
+	member_name = v.before(sep);
+	value = value.after(sep);
     }
-    else if (gdb->program_language() == LANGUAGE_JAVA && v.contains(":\n"))
+    else if (v.contains(sepnl))
     {
-	member_name = v.before(":\n");
-	value = value.after(":\n");
-    }
-    else if ((gdb->program_language() == LANGUAGE_ADA ||
-	      gdb->program_language() == LANGUAGE_PERL)
-	     && v.contains("=> "))
-    {
-	member_name = v.before("=> ");
-	value = value.after("=> ");
+	member_name = v.before(sepnl);
+	value = value.after(sepnl);
     }
     else
     {
