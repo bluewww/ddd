@@ -139,13 +139,7 @@ void array_test ()
 	reference_test(dates[i], date_ptrs[i]);
 }
 //--------------------------------------------------------------------------
-struct Guni {
-    int ii;
-    union {
-	int j;
-	char c;
-    };
-};
+
 void type_test ()
 {
     Holiday new_years_eve (Sat, 31, 12, 1994, 
@@ -156,15 +150,40 @@ void type_test ()
 
     struct Uni {
 	int ii;
+	unsigned bit1:1;
+	unsigned bit2:2;
 	union {
 	    int j;
 	    char c;
 	}u;
     } uni;
+
+    struct Guni {
+	int ii;
+	union {
+	    unsigned bit1:1;
+	    int j;
+	    char c;
+	};
+	union {
+	    unsigned bit2:1;
+	    unsigned bit3:1;
+	};
+    };
+
+    uni.ii   = 7;
+    uni.bit1 = 1;
+    uni.bit2 = 3;
+    uni.u.j  = 9;
+    uni.u.c  = 'a';
+
     Guni guni; 
-    uni.ii  = 7;
-    uni.u.j = 9;
-    guni.j  = 8;
+    guni.ii   = 1;
+    guni.j    = 2;
+    guni.c    = 'a';
+    guni.bit1 = 1;
+    guni.bit2 = 1;
+    guni.bit3 = 0;
 
     float f        = 0.0;
     double d       = 0.0;
