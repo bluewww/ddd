@@ -357,4 +357,6 @@ Volunteers for fixing these and other bugs are welcome!
      [I could not reproduce this.  Jonathan's DDD is compiled with AIX
      xlC.  Is this the reason?  -AZ]
 
-163. (Insert your bug here)
+163. The `-iconic' option is not recognized for the new DDD main window.
+
+164. (Insert your bug here)
