@@ -332,12 +332,6 @@ Volunteers for fixing these and other bugs are welcome!
 153. Jonathan Edwards <edwards@intranet.com> says that in AIX DBX,
      the local variable display does not display function arguments.
 
-154. Jonathan Edwards <edwards@intranet.com> says: The backtrace
-     window, in trying to eliminate the argument information, doesn't
-     seem to understand nested parentheses. So ent_open(control =
-     (nil), proc_name = (nil)), line 164 in "proc.c" is displayed as
-     ent_open(, proc_name = ()), line 164 in "proc.c"
-
 155. DBX `dump` output is not understood if local arrays are shown.
      (DBX prints these as `ARRAY')
 
@@ -349,7 +343,8 @@ Volunteers for fixing these and other bugs are welcome!
      there a way to not have it tell me that?  I consider this a bug
      in that normally the debugger comes back to me in less time than
      it takes the dialog to pop up ;-).
-     [Compiled with g++ 2.6.3.  Is this the reason?  -AZ]
+     [I could not reproduce this.  Ira's DDD is compiled with g++ 2.6.3.
+     Is this the reason?  -AZ]
 
 158. ilcooper@tasc.com (Ira Cooper) says:
      When deleting a display in the graph display with SunPRO dbx, it
@@ -359,28 +354,7 @@ Volunteers for fixing these and other bugs are welcome!
      A status display only shows once. After stepping the program it
      collapses into just the title.  Doing a refresh command restores
      the display.
-     [Compiled with AIX xlC.  Is this the reason?  -AZ]
-
-160. Jonathan Edwards <edwards@intranet.com> says:
-     On AIX 4.2.0, DDD isssues `where -h' instead of `where'.
-
-161. Jonathan Edwards <edwards@intranet.com> says:
-     Doing a "display local variables" at the same point as above, produces
-     the dialog:
-
-     -> "dump\n"
-     <- "main(___1 = 1, ___2 = 0x2ff22368), line 247 in \"cxxtest.C\"\n"
-     <- "i = -559038737\n"
-     <- "(dbx) "
-
-     The `, line' part is not ignored.
-
-162. Jonathan Edwards <edwards@intranet.com> says:
-     On AIX 4.2.0, DDD hangs in the dialog
-
-     -> "print \"getpid =\", getpid\n"
-     <- "1. glink.getpid [/home/edwards/nex/lib/libentia.a]\n"
-     <- "2. glink.getpid [/usr/lib/libc.a]\n"
-     <- "Select one of [1 - 2]: "
+     [I could not reproduce this.  Jonathan's DDD is compiled with AIX
+     xlC.  Is this the reason?  -AZ]
 
 163. (Insert your bug here)

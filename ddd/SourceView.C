@@ -4151,17 +4151,25 @@ void SourceView::ViewStackFramesCB(Widget, XtPointer, XtPointer)
     stack_dialog_popped_up = true;
 }
 
+// Remove file paths and argument lists from `where' output
 void SourceView::setup_where_line(string& line)
 {
     const int min_width = 40;
 
-    // Remove argument list and file paths
-    // (otherwise line can be too long for dbx)
+    // Remove file paths (otherwise line can be too long for dbx)
     //   ... n.b. with templates, line can still be rather long
-    static regex arglist("[(][^0-9][^)]*[)]");
     static regex filepath("/[^ ]*/");
-    line.gsub(arglist, "()");
     line.gsub(filepath, "");
+
+    // Shorten argument lists `(a = 1, b = 2, ...)' to `()'
+    static regex arglist("[(][^0-9][^)]*[)]");
+    int start = line.index(arglist);
+    if (start > 0)
+    {
+	int end = line.index(')', -1);
+	if (end > start)
+	line = line.through(start) + line.from(end);
+    }
 
     if (int(line.length()) < min_width)
 	line += replicate(' ', min_width - line.length());

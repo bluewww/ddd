@@ -486,19 +486,36 @@ bool GDBAgent::ends_with_prompt (const string& answer)
 }
 
 // ***************************************************************************
+
+static bool ends_in(const string& answer, const string& prompt)
+{
+    return answer.contains(prompt, answer.length() - prompt.length());
+}
+
 // Return true iff ANSWER ends with secondary prompt.
 bool GDBAgent::ends_with_secondary_prompt (const string& answer)
 {
     switch (type())
     {
-    case GDB:
     case DBX:
-	return (answer.length() > 3
-	    && answer[answer.length() - 3] == '\n'
-	    && answer[answer.length() - 2] == '>'
-	    && answer[answer.length() - 1] == ' ');
+	if (ends_in(answer, "]: "))
+	{
+	    // AIX DBX knows `Select one of [FROM - TO]: '
+	    // Reported by Jonathan Edwards <edwards@intranet.com>
+	    static regex rxselect("\nSelect one of \\[[0-9]+ - [0-9]+\\]: ");
+	    int index = answer.index(rxselect, -1);
+	    if (index > 0 && !answer.contains('\n', index))
+		return true;
+	}
+	// Prompt is `> ' at beginning of line
+	return ends_in(answer, "\n> ");
 
+    case GDB:
+	// Prompt is `> ' at beginning of line
+	return ends_in(answer, "\n> ");
+	
     case XDB:
+	// Is there any secondary prompt in XDB? (FIXME)
 	return false;
     }
 

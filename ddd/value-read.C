@@ -497,24 +497,29 @@ bool read_str_or_cl_end (string& value)
 
 // Some DBXes issue the local variables via a frame line, just like
 // `set_date(d = 0x10003060, day_of_week = Sat, day = 24, month = 12,
-// year = 1994) [location]'.  Make this more readable.
+// year = 1994) LOCATION', where LOCATION is either `[FRAME]' (DEC
+// DBX) or `, line N in FILE' (AIX DBX).  Make this more readable.
 void munch_dump_line (string& value)
 {
-    string initial_line = value.before('\n');
-    strip_final_blanks(initial_line);
-
-    static regex rxframe("[a-zA-Z_$][a-zA-Z_$0-9]*[(].*[)].*[[].*[]]");
-    if (initial_line.matches(rxframe))
+    if (gdb->type() == DBX)
     {
-	// Strip enclosing parentheses
-	initial_line = initial_line.after('(');
-	int index = initial_line.index(')', -1);
-	initial_line = initial_line.before(index);
+	string initial_line = value.before('\n');
+	strip_final_blanks(initial_line);
 
-	// Place one arg per line
-	initial_line.gsub(", ", "\n");
+	static regex rxframe("[a-zA-Z_$][a-zA-Z_$0-9]*[(].*[)].*"
+			     "([[].*[]]|, line .*)");
+	if (initial_line.matches(rxframe))
+	{
+	    // Strip enclosing parentheses
+	    initial_line = initial_line.after('(');
+	    int index = initial_line.index(')', -1);
+	    initial_line = initial_line.before(index);
 
-	value = initial_line + value.from('\n');
+	    // Place one arg per line
+	    initial_line.gsub(", ", "\n");
+
+	    value = initial_line + value.from('\n');
+	}
     }
 }
 

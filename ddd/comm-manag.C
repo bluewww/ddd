@@ -1020,9 +1020,13 @@ static bool is_known_command(const string& answer)
     read_leading_blanks(ans);
     strip_final_blanks(ans);
 
-    // In longer messages (help texts), care for first line only
+    // In longer messages (help texts and such), only check the first
+    // and last line.
     if (ans.freq('\n') > 1)
-	ans = ans.before('\n');
+    {
+	int last_nl = ans.index('\n', -1);
+	ans = ans.before('\n') + ans.from(last_nl + 1);
+    }
 
     return ans.contains("program is not active") // DBX
 	|| (!ans.contains("syntax")              // DEC DBX
