@@ -402,7 +402,7 @@ bool is_make_cmd (const string& cmd)
 // True if CMD quits GDB
 bool is_quit_cmd (const string& cmd)
 {
-    return cmd == "quit" || cmd == "q";
+    return cmd.contains('q', 0); // `quit', `q', or whatever
 }
 
 // Fetch display expression from DISPLAY_CMD
