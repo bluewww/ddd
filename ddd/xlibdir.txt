@@ -1,4 +1,4 @@
-cd ${TMPDIR-/tmp}
+cd ${TMPDIR=/tmp}
 mkdir xc$$
 cd xc$$
 cat <<EOF > Imakefile

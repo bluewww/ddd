@@ -111,7 +111,7 @@ void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
     string command = 
 	
 	// Set up a temporary file in TMP.
-	"tmp=${TMPDIR-/tmp}/ddd$$; export tmp; "
+	"tmp=${TMPDIR=/tmp}/ddd$$; export tmp; "
 
 	// Be sure to remove it when exiting...
 	"trap \"rm -f $tmp\" 0; "
@@ -384,6 +384,9 @@ void redirect_process(string& command,
 		gdb_redirection += " 2>&1";
 	    }
 	    break;
+
+	case XDB:
+	    break;		// FIXME
 	}
     }
 
