@@ -884,7 +884,7 @@ uninstall-man:
 .PHONY: clean
 clean:
 	$(RM) $(CLEAN_STUFF) ./#*#
-	test -d PICS && cd PICS && $(RM) $(CLEAN_STUFF) ./#*#
+	-test -d PICS && cd PICS && $(RM) $(CLEAN_STUFF) ./#*#
 
 .PHONY: distclean
 distclean:
