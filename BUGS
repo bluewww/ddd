@@ -237,4 +237,12 @@ Volunteers for fixing these and other bugs are welcome!
      remains empty and the 'edit displays' dialog says 'no displays'.
      I don't have this problem with beta2.
 
-112. (Insert your bug here)
+112. toader ovidiu nicolae <ovi@phys.ksu.edu> says:
+     ddd-2.0 has a square but on the bottom edge of the assembler window
+     and I could resize the assembler window in a strange way but only for 
+     increasing it.
+
+113. Matthias Kurz <mk@baerlap.north.de> states:
+     If I resize the data display the background doesn't get refreshed.
+
+114. (Insert your bug here)
