@@ -45,8 +45,9 @@ char disp_read_rcsid[] =
 #include "string-fun.h"
 #include "cook.h"
 
-#include <stdlib.h> // atoi()
-#include <stdio.h>  // sprintf()
+#include <stdlib.h>		// atoi()
+#include <stdio.h>		// sprintf()
+#include <ctype.h>		// isspace()
 
 
 //----------------------------------------------------------------------------
@@ -696,4 +697,33 @@ bool is_invalid(const string& value)
 				 ")\n?");
 
     return value.matches(RXinvalid_value);
+}
+
+
+//-----------------------------------------------------------------------------
+// Handle `where' output
+//-----------------------------------------------------------------------------
+
+// Fetch current scope from GDB `where' output (a function name)
+string get_scope(const string& where_output)
+{
+    // The word before the first parenthesis is the current function.
+    int index = where_output.index('(');
+    if (index < 0)
+	return "";		// no current scope
+
+    do {
+	index--;
+    } while (index >= 0 && isspace(where_output[index]));
+
+    int end_of_name = index + 1;
+
+    do {
+	index--;
+    } while (index >= 0 && !isspace(where_output[index]));
+
+    int start_of_name = index + 1;
+
+    return ((string &)where_output).at(start_of_name, 
+				       end_of_name - start_of_name);
 }

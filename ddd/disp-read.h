@@ -175,5 +175,13 @@ bool is_disabling (const string& value, GDBAgent *gdb);
 bool is_invalid(const string& value);
 
 
+
+//-----------------------------------------------------------------------------
+// Handle `where' output
+//-----------------------------------------------------------------------------
+
+// Fetch current scope from GDB `where' output (a function name)
+string get_scope(const string& where_output);
+
 #endif // _DDD_disp_read_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
