@@ -974,43 +974,43 @@ debug-now:
 	$(DEBUGGER) ./$(ddd)$(EXEEXT)
 
 # We don't want no optimizing, but debugging info in our test files
-MAKE_DEBUG = \
-$(MAKE) CXXFLAGS="`$(ECHO) '$(CXXFLAGS)' | \
+MAKE_DEBUG_FLAGS = \
+	CXXFLAGS="`$(ECHO) '$(CXXFLAGS)' | \
 	$(SED) 's/-O[^ ]*//' | $(SED) 's/-DNDEBUG//'`" \
 	CFLAGS="`$(ECHO) '$(CFLAGS)' | \
 	$(SED) 's/-O[^ ]*//' | $(SED) 's/-DNDEBUG//'`"
 
 cxxtest.$(OBJEXT): $(srcdir)/cxxtest.C
 	@case '$(CXXFLAGS)' in \
-	*-O*) $(MAKE_DEBUG) $@;; \
+	*-O*) $(MAKE) $(MAKE_DEBUG_FLAGS) $@;; \
 	*) set -x; \
 	   $(CXXCOMPILE) -c @CXXDEBUG@ $(srcdir)/cxxtest.C -o $@;; \
 	esac
 
 ctest.$(OBJEXT): $(srcdir)/ctest.c
 	@case '$(CFLAGS)' in \
-	*-O*) $(MAKE_DEBUG) $@;; \
+	*-O*) $(MAKE) $(MAKE_DEBUG_FLAGS) $@;; \
 	*) set -x; \
 	   $(COMPILE) -c -g $(srcdir)/ctest.c -o $@;; \
 	esac
 
 sample.$(OBJEXT): $(srcdir)/sample.c
 	@case '$(CFLAGS)' in \
-	*-O*) $(MAKE_DEBUG) $@;; \
+	*-O*) $(MAKE) $(MAKE_DEBUG_FLAGS) $@;; \
 	*) set -x; \
 	   $(COMPILE) -c -g $(srcdir)/sample.c -o $@;; \
 	esac
 
 grabtest.$(OBJEXT): $(srcdir)/grabtest.C
 	@case '$(CXXFLAGS)' in \
-	*-O*) $(MAKE_DEBUG) $@;; \
+	*-O*) $(MAKE) $(MAKE_DEBUG_FLAGS) $@;; \
 	*) set -x; \
 	   $(CXXCOMPILE) -c @CXXDEBUG@ $(srcdir)/grabtest.C -o $@;; \
 	esac
 
 bug.$(OBJEXT):	$(srcdir)/bug.C
 	@case '$(CXXFLAGS)' in \
-	*-O*) $(MAKE_DEBUG) $@;; \
+	*-O*) $(MAKE) $(MAKE_DEBUG_FLAGS) $@;; \
 	*) set -x; \
 	   $(CXXCOMPILE) -c @CXXDEBUG@ $(srcdir)/bug.C -o $@;; \
 	esac
