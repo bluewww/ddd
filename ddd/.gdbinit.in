@@ -78,7 +78,7 @@ set history size 1000
 directory @srcdir@
 
 # Default arguments
-set args --trace cxxtest
+set args --gdb --trace cxxtest
 
 # Environment
 set environment XUSERFILESEARCHPATH .
@@ -97,6 +97,15 @@ end
 document ddd
     Setup environment for debugging DDD
 end
+
+define perl
+    ddd
+    set args --perl --trace xbm2xface.pl
+end
+document perl
+    Setup environment for debugging DDD with Perl
+end
+
 
 # Facility for printing DDD string types
 define string
