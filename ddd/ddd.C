@@ -1293,11 +1293,14 @@ static MMDesc display_menu[] =
 };
 
 struct WatchItems {
-    enum ArgCmd { CWatch, RWatch, AWatch };
+    enum ArgCmd { Properties, Enable, Sep, CWatch, RWatch, AWatch };
 };
 
 static MMDesc watch_menu[] =
 {
+    { "watchProperties",  MMPush, { gdbEditWatchpointPropertiesCB }},
+    { "enableWatch",      MMPush, { gdbToggleEnableWatchpointCB }},
+    MMSep,
     { "cwatch",       MMPush, { gdbWatchCB, XtPointer(WATCH_CHANGE) } },
     { "rwatch",       MMPush, { gdbWatchCB, XtPointer(WATCH_READ)   } },
     { "awatch",       MMPush, { gdbWatchCB, XtPointer(WATCH_ACCESS) } },
@@ -1319,14 +1322,14 @@ struct BreakItems {
 
 static MMDesc break_menu[] = 
 {
-    { "tempBreakAt",  MMPush, { gdbTempBreakAtCB }},
-    { "properties",   MMPush, { gdbEditBreakpointPropertiesCB }},
-    { "enable",       MMPush, { gdbToggleEnableCB }},
+    { "tempBreakAt",     MMPush, { gdbTempBreakAtCB }},
+    { "breakProperties", MMPush, { gdbEditBreakpointPropertiesCB }},
+    { "enableBreak",     MMPush, { gdbToggleEnableBreakpointCB }},
     MMSep,
-    { "contUntil",    MMPush, { gdbContUntilCB }},
-    { "setPC",        MMPush, { gdbSetPCCB }},
+    { "contUntil",       MMPush, { gdbContUntilCB }},
+    { "setPC",           MMPush, { gdbSetPCCB }},
     MMSep,
-    { "clearAt2",     MMPush, { gdbClearAtCB }},
+    { "clearAt2",        MMPush, { gdbClearAtCB }},
     MMEnd
 };
 
@@ -4413,6 +4416,12 @@ void update_arg_buttons()
     bool can_watch = can_print && gdb->has_watch_command();
     set_sensitive(arg_cmd_area[ArgItems::Watch].widget, can_watch);
 
+    bool have_watch = have_watchpoint_at_arg();
+
+    manage_child(watch_menu[WatchItems::Properties].widget, have_watch);
+    manage_child(watch_menu[WatchItems::Enable].widget,     have_watch);
+    manage_child(watch_menu[WatchItems::Sep].widget,        have_watch);
+
     set_sensitive(watch_menu[WatchItems::CWatch].widget, 
 		  can_watch && 
 		  (gdb->has_watch_command() & WATCH_CHANGE) == WATCH_CHANGE);
@@ -4422,8 +4431,36 @@ void update_arg_buttons()
     set_sensitive(watch_menu[WatchItems::AWatch].widget,
 		  can_watch &&
 		  (gdb->has_watch_command() & WATCH_ACCESS) == WATCH_ACCESS);
+    if (have_watch)
+    {
+	set_label(arg_cmd_area[ArgItems::Watch].widget, 
+		  "Unwatch ()", UNWATCH_ICON);
+    }
+    else
+    {
+	set_label(arg_cmd_area[ArgItems::Watch].widget, 
+		  "Watch ()", WATCH_ICON);
+    }
+
+    bool watch_enabled = have_enabled_watchpoint_at_arg();
+    if (watch_enabled)
+	set_label(watch_menu[WatchItems::Enable].widget, 
+		  "Disable Watchpoint on ()");
+    else
+	set_label(watch_menu[WatchItems::Enable].widget, 
+		  "Enable Watchpoint at ()");
+
 
     bool have_break = have_breakpoint_at_arg();
+
+    manage_child(break_menu[BreakItems::TempBreak].widget,   !have_break);
+    manage_child(break_menu[BreakItems::ContUntil].widget,   !have_break);
+    manage_child(break_menu[BreakItems::Sep2].widget,        !have_break);
+    manage_child(break_menu[BreakItems::ClearAt2].widget,    !have_break);
+
+    manage_child(break_menu[BreakItems::Properties].widget,  have_break);
+    manage_child(break_menu[BreakItems::Enable].widget,      have_break);
+
     if (have_break)
     {
 	set_label(arg_cmd_area[ArgItems::Break].widget, 
@@ -4434,14 +4471,6 @@ void update_arg_buttons()
 	set_label(arg_cmd_area[ArgItems::Break].widget, 
 		  "Break at ()", BREAK_AT_ICON);
     }
-
-    manage_child(break_menu[BreakItems::TempBreak].widget,   !have_break);
-    manage_child(break_menu[BreakItems::ContUntil].widget,   !have_break);
-    manage_child(break_menu[BreakItems::Sep2].widget,        !have_break);
-    manage_child(break_menu[BreakItems::ClearAt2].widget,    !have_break);
-
-    manage_child(break_menu[BreakItems::Properties].widget,  have_break);
-    manage_child(break_menu[BreakItems::Enable].widget,      have_break);
 
     bool break_enabled = have_enabled_breakpoint_at_arg();
     if (break_enabled)
@@ -4457,18 +4486,6 @@ void update_arg_buttons()
 		  gdb->has_disable_command());
     set_sensitive(break_menu[BreakItems::SetPC].widget,
 		  gdb->has_jump_command() || gdb->has_assign_command());
-
-    bool have_watch = have_watchpoint_at_arg();
-    if (have_watch)
-    {
-	set_label(arg_cmd_area[ArgItems::Watch].widget, 
-		  "Unwatch ()", UNWATCH_ICON);
-    }
-    else
-    {
-	set_label(arg_cmd_area[ArgItems::Watch].widget, 
-		  "Watch ()", WATCH_ICON);
-    }
 
     MString print_ref_label("Print " + gdb->dereferenced_expr("()"));
     XtVaSetValues(print_menu[PrintItems::PrintRef].widget,

@@ -179,9 +179,21 @@ void gdbSetPCCB(Widget w, XtPointer, XtPointer)
     source_view->move_pc(current_arg(true), w);
 }
 
-void gdbToggleEnableCB(Widget w, XtPointer, XtPointer)
+void gdbToggleEnableBreakpointCB(Widget w, XtPointer, XtPointer)
 {
     BreakPoint *bp = source_view->breakpoint_at(current_arg(true));
+    if (bp != 0)
+    {
+	if (bp->enabled())
+	    source_view->disable_bp(bp->number(), w);
+	else
+	    source_view->enable_bp(bp->number(), w);
+    }
+}
+
+void gdbToggleEnableWatchpointCB(Widget w, XtPointer, XtPointer)
+{
+    BreakPoint *bp = source_view->watchpoint_at(current_arg(true));
     if (bp != 0)
     {
 	if (bp->enabled())
@@ -194,6 +206,13 @@ void gdbToggleEnableCB(Widget w, XtPointer, XtPointer)
 void gdbEditBreakpointPropertiesCB(Widget, XtPointer, XtPointer)
 {
     BreakPoint *bp = source_view->breakpoint_at(current_arg(true));
+    if (bp != 0)
+	source_view->edit_breakpoint_properties(bp->number());
+}
+
+void gdbEditWatchpointPropertiesCB(Widget, XtPointer, XtPointer)
+{
+    BreakPoint *bp = source_view->watchpoint_at(current_arg(true));
     if (bp != 0)
 	source_view->edit_breakpoint_properties(bp->number());
 }
@@ -227,7 +246,7 @@ void gdbWatchCB(Widget w, XtPointer client_data, XtPointer call_data)
     (void) call_data;		// Use it
     string arg = current_arg();
 
-#if 0
+#if 0 // We may have different kinds of watchpoints!
     if (have_watchpoint_at_arg())
     {
 	// Don't place multiple watchpoints on one expression
@@ -252,7 +271,7 @@ void gdbUnwatchCB(Widget, XtPointer, XtPointer)
     BreakPoint *wp = source_view->watchpoint_at(current_arg());
     if (wp == 0)
 	return;
-    gdb_command(gdb->delete_command(wp->number_str()));
+    source_view->delete_bp(wp->number());
 }
 
 void gdbToggleWatchCB(Widget w, XtPointer client_data, XtPointer call_data)

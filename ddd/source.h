@@ -44,8 +44,6 @@ extern void gdbLookupCB       (Widget, XtPointer, XtPointer);
 
 extern void gdbTempBreakAtCB  (Widget, XtPointer, XtPointer);
 extern void gdbContUntilCB    (Widget, XtPointer, XtPointer);
-extern void gdbToggleEnableCB (Widget, XtPointer, XtPointer);
-extern void gdbEditBreakpointPropertiesCB (Widget, XtPointer, XtPointer);
 extern void gdbSetPCCB        (Widget, XtPointer, XtPointer);
 
 extern void gdbPrintCB        (Widget, XtPointer, XtPointer);
@@ -72,6 +70,12 @@ extern bool have_enabled_breakpoint_at_arg();
 extern bool have_watchpoint_at_arg();
 extern bool have_watchpoint_at_ref_arg();
 extern bool have_enabled_watchpoint_at_arg();
+
+extern void gdbEditBreakpointPropertiesCB (Widget, XtPointer, XtPointer);
+extern void gdbEditWatchpointPropertiesCB (Widget, XtPointer, XtPointer);
+
+extern void gdbToggleEnableBreakpointCB (Widget, XtPointer, XtPointer);
+extern void gdbToggleEnableWatchpointCB (Widget, XtPointer, XtPointer);
 
 extern void gdbFindCB         (Widget, XtPointer, XtPointer);
 extern void gdbFindAgainCB    (Widget, XtPointer, XtPointer);

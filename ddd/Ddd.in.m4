@@ -3668,8 +3668,10 @@ Ddd*toolbar*breakAt2.labelString:	Set Breakpoint at ()
 Ddd*toolbar*clearAt2.labelString:	Clear Breakpoint at ()
 Ddd*toolbar*tempBreakAt.labelString:	Set Temporary Breakpoint at ()
 Ddd*toolbar*contUntil.labelString:	Continue Until ()
-Ddd*toolbar*enable.labelString:		Enable Breakpoint at ()
-Ddd*toolbar*properties.labelString:	Set Properties at ()...
+Ddd*toolbar*enableBreak.labelString:	Enable Breakpoint at ()
+Ddd*toolbar*enableWatch.labelString:	Enable Watchpoint at ()
+Ddd*toolbar*breakProperties.labelString: Breakpoint Properties...
+Ddd*toolbar*watchProperties.labelString: Watchpoint Properties...
 Ddd*toolbar*setPC.labelString:		Set Execution Position to ()
 Ddd*toolbar*watch.labelString:		Unwatch ()
 Ddd*toolbar*cwatch.labelString:		Set watchpoint on ()
@@ -3741,7 +3743,7 @@ define(BREAK_HELP, [\
 DESC(Set Temporary Breakpoint at (), [set temporary breakpoint])\n\
 DESC(Continue Until (), [set temporary breakpoint and resume execution])\n\
 DESC(Enable / Disable Breakpoint at (), [enable or disable breakpoint])\n\
-DESC(Set Properties at ()..., [set breakpoint properties])\n\
+DESC(Breakpoint Properties..., [set properties of breakpoint at ()])\n\
 DESC(Set Execution Position to (), [move execution position])
 ])dnl
 
@@ -3764,10 +3766,14 @@ Ddd*toolbar*tempBreakAt.documentationString: \
 @rm Set a temporary breakpoint at the argument LBL(())
 Ddd*toolbar*contUntil.documentationString: \
 @rm Set a temporary breakpoint at LBL(()) and resume execution
-Ddd*toolbar*enable.documentationString: \
+Ddd*toolbar*enableBreak.documentationString: \
 @rm Enable or disable the breakpoint at the argument LBL(())
-Ddd*toolbar*properties.documentationString: \
-@rm Edit the properties of the breakpoint at LBL(())
+Ddd*toolbar*enableWatch.documentationString: \
+@rm Enable or disable the watchpoint on the argument LBL(())
+Ddd*toolbar*breakProperties.documentationString: \
+@rm Edit the properties of the breakpoint at the argument LBL(())
+Ddd*toolbar*watchProperties.documentationString: \
+@rm Edit the properties of the watchpoint on the argument LBL(())
 Ddd*toolbar*setPC.documentationString: \
 @rm Set the current execution position to LBL(())
 
@@ -3816,6 +3822,8 @@ Ddd*toolbar*dispRef.documentationString:	\
 @rm Display the dereferenced argument LBL(()) in the data window
 
 define(WATCH_HELP, [\
+DESC(Watchpoint Properties..., [set properties of watchpoint on LBL(())])\n\
+\n\
 DESC(Set watchpoint on (), [stop whenever LBL(()) changes; same as LBL(Watch())])\n\
 DESC(Set read watchpoint on (), [stop whenever LBL(()) is read])\n\
 DESC(Set access watchpoint on (), [stop whenever LBL(()) is either read or written])\n\
