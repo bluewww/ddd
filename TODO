@@ -265,8 +265,6 @@ Volunteers for these and other projects are welcome!
 122. Have a window that shows DDD/GDB communication, with the ability
      to modify commands before they are processed.
 
-124* Include more pictures in the PostScript copy of the DDD manual.
-
 126. `shorten' may need some improvements (count `(' and `)'
      occurrences, etc.)
 
