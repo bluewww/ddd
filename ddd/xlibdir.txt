@@ -1,0 +1,13 @@
+cd ${TMPDIR-/tmp}
+mkdir xc$$
+cd xc$$
+cat <<EOF > Imakefile
+findx:
+	@echo \${LIBDIR}
+EOF
+xmkmf > /dev/null
+make
+cd ..
+rm -f xc$$/*
+rmdir xc$$
+exit 0
