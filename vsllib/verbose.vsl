@@ -26,8 +26,8 @@
 // `http://www.gnu.org/software/ddd/',
 // or send a mail to the DDD developers <ddd@gnu.org>.
 
-#include <builtin.vsl>
-#include <linebreak.vsl>
+#include "builtin.vsl"
+#include "linebreak.vsl"
 
 _verbose_list(sep) = 0;
 _verbose_list(sep, head) = head;

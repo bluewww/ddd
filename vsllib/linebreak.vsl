@@ -26,7 +26,7 @@
 // `http://www.gnu.org/software/ddd/',
 // or send a mail to the DDD developers <ddd@gnu.org>.
 
-#include <builtin.vsl>
+#include "builtin.vsl"
 
 linebreak_space = hspace(" " * 72);
 

@@ -36,8 +36,8 @@
 // Version
 flowplus_version() = "$Revision$";
 
-#include <flow.vsl>
-#include <list.vsl>
+#include "flow.vsl"
+#include "list.vsl"
 
 
 // Data structures

@@ -26,9 +26,9 @@
 // `http://www.gnu.org/software/ddd/',
 // or send a mail to the DDD developers <ddd@gnu.org>.
 
-#include <std.vsl>
-#include <fonts.vsl>
-#include <tree.vsl>
+#include "std.vsl"
+#include "fonts.vsl"
+#include "tree.vsl"
 
 f(text) = fix(frame(text));
 

@@ -28,10 +28,10 @@ include(ifdef(`srcdir',srcdir()/colors.m4,colors.m4))changequote(,)DDD_VSL_WARNI
 // or send a mail to the DDD developers <ddd@gnu.org>.
 
 // Includes
-#include <std.vsl>
-#include <tab.vsl>
-#include <fonts.vsl>
-#include <colors.vsl>
+#include "std.vsl"
+#include "tab.vsl"
+#include "fonts.vsl"
+#include "colors.vsl"
 
 // Font settings
 #pragma replace stdfontfamily
