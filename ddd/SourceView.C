@@ -7538,6 +7538,15 @@ void SourceView::process_threads(string& threads_output)
     case BASH:
     case DBG:
     case DBX:
+#ifdef HAVE_SUNDBX
+    {
+	for (int i = 0; i < count; i++)
+	{
+	    selected[i] = thread_list[i].contains('>', 1);
+	}
+	break;
+    }
+#endif
     case XDB:
     case PERL:
     case PYDB:
@@ -7583,6 +7592,13 @@ void SourceView::refresh_threads(bool all_threadgroups)
     case BASH:
     case DBG:
     case DBX:
+#ifdef HAVE_SUNDBX
+    {
+	string threads = gdb_question("threads");
+	process_threads(threads);
+	break;
+    }
+#endif
     case XDB:
     case PERL:
     case PYDB:
@@ -7660,6 +7676,28 @@ void SourceView::SelectThreadCB(Widget w, XtPointer, XtPointer)
 	    }
 	}
     }
+#ifdef HAVE_SUNDBX
+    if (threads.size() == 0 && gdb->type() == DBX) { 
+	XmStringTable selected_items;
+	int selected_items_count = 0;
+
+	XtVaGetValues(thread_list_w,
+		XmNselectedItemCount, &selected_items_count,
+		XmNselectedItems, &selected_items,
+		XtPointer(0));
+
+	if (selected_items_count == 1) {
+		String _item;
+		XmStringGetLtoR(selected_items[0], LIST_CHARSET, &_item);
+		string item(_item);
+		XtFree(_item);
+
+		string thread = item.after("t@");
+		thread = thread.before(" ");
+		gdb_command("thread t@" + thread, w);	
+	}
+    }
+#endif
 }
 
 //-----------------------------------------------------------------------------

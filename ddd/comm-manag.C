@@ -548,6 +548,8 @@ void start_gdb(bool config)
 
     case DBX:
 	extra_data->refresh_initial_line = true;
+	cmds += "file";
+	cmds += "line";
 
 	if (config)
 	{
@@ -605,10 +607,12 @@ void start_gdb(bool config)
 
 	cmds += "sh pwd";
 	extra_data->refresh_pwd = true;
+#ifndef HAVE_SUNDBX
 	cmds += "file";
 	extra_data->refresh_file = true;
 	cmds += "list";
 	extra_data->refresh_line = true;
+#endif
 	cmds += "status";
 	extra_data->refresh_breakpoints = true;
 	break;
@@ -1121,8 +1125,10 @@ void send_gdb_command(string cmd, Widget origin,
 	switch (gdb->type())
 	{
 	case DBX:
+#ifndef HAVE_SUNDBX
 	    extra_data->refresh_file = true;
 	    extra_data->refresh_line = true;
+#endif
 	    break;
 
 	case PERL:
@@ -1219,8 +1225,10 @@ void send_gdb_command(string cmd, Widget origin,
 
 	if (gdb->type() == DBX)
 	{
+#ifndef HAVE_SUNDBX
 	    extra_data->refresh_file  = true;
 	    // extra_data->refresh_line  = true;
+#endif
 	    if (gdb->has_frame_command())
 		extra_data->refresh_frame = true;
 	}
@@ -1274,11 +1282,13 @@ void send_gdb_command(string cmd, Widget origin,
 	extra_data->refresh_threads     = false;
 	extra_data->refresh_data        = true;
 
+#ifndef HAVE_SUNDBX
 	if (gdb->type() == DBX)
 	{
 	    // We need to get the current file as well...
 	    extra_data->refresh_file  = true;
 	}
+#endif
 	if (gdb->type() == JDB)
 	{
 	    // Get the current frame via `where'
@@ -1314,8 +1324,10 @@ void send_gdb_command(string cmd, Widget origin,
 	    // In DBX, `func' changes the stack frame
 	    cmd_data->new_frame_pos   = true;
 	    extra_data->refresh_frame = true;
+#ifndef HAVE_SUNDBX
 	    extra_data->refresh_file  = true;
 	    extra_data->refresh_line  = true;
+#endif
 	}
 	extra_data->refresh_breakpoints = false;
 	extra_data->refresh_where       = false;
@@ -1515,7 +1527,11 @@ void send_gdb_command(string cmd, Widget origin,
 	extra_data->refresh_registers = false;
     }
 
+#ifdef HAVE_SUNDBX
+    if (gdb->type() != GDB && gdb->type() != JDB && gdb->type() != DBX)
+#else
     if (gdb->type() != GDB && gdb->type() != JDB)
+#endif
     {
 	// No threads
 	extra_data->refresh_threads = false;
@@ -1638,6 +1654,10 @@ void send_gdb_command(string cmd, Widget origin,
 	break;
 
     case DBX:
+	if (extra_data->refresh_initial_line) {
+	    cmds += "file";
+	    cmds += "line";
+	}
 	if (extra_data->refresh_pwd)
 	    cmds += gdb->pwd_command();
 	assert(!extra_data->refresh_class_path);
@@ -1653,7 +1673,12 @@ void send_gdb_command(string cmd, Widget origin,
 	    cmds += gdb->frame_command();
 	if (extra_data->refresh_registers)
 	    cmds += source_view->refresh_registers_command();
+#ifdef HAVE_SUNDBX
+	if (extra_data->refresh_threads)
+	    cmds += "threads";
+#else
 	assert (!extra_data->refresh_threads);
+#endif
 	if (extra_data->refresh_data)
 	    extra_data->n_refresh_data = 
 		data_disp->add_refresh_data_commands(cmds);
@@ -2918,6 +2943,22 @@ static void extra_completed (StringArray& answers,
 	case BASH:
 	case DBG:
 	case DBX:
+#ifdef HAVE_SUNDBX
+	{ 
+		string list = (qu_count<count)?(answers[qu_count++]):("");
+		string line = (qu_count<count)?(answers[qu_count++]):("");
+		string pos;
+
+		list = list.before('\n');
+		line = line.before('\n');
+
+		pos = list + ":" + line;
+
+		source_view->process_info_line_main(pos);
+	        find_some_source();
+		source_view->lookup(pos, true);
+	}
+#endif
 	case JDB:
 	case PERL:
 	case PYDB:
