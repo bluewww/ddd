@@ -3864,6 +3864,7 @@ void SourceView::process_info_bp (string& info_output,
     bool changed = false;
     bool added   = false;
     ostrstream undo_commands;
+    string file = current_file_name;
 
     while (info_output != "")
     {
@@ -3978,8 +3979,8 @@ void SourceView::process_info_bp (string& info_output,
 	{
 	    // New breakpoint
 	    changed = true;
-	    BreakPoint *new_bp = new BreakPoint(info_output, break_arg, 
-						bp_nr, current_file_name);
+	    BreakPoint *new_bp = 
+		new BreakPoint(info_output, break_arg, bp_nr, file);
 	    bp_map.insert(bp_nr, new_bp);
 
 	    if (gdb->has_delete_command())

@@ -1111,18 +1111,34 @@ void PosBuffer::filter_perl(string& answer)
 
 string PosBuffer::answer_ended ()
 {
-    switch (already_read) {
+    switch (already_read) 
+    {
     case PosPart:
+    {
 	assert (pos_buffer == "");
-	return answer_buffer;
+	string ans = answer_buffer;
+	answer_buffer = "";
+	return ans;
+    }
 
     case Null:
+    {
 	assert (pos_buffer == "");
 	return "";
+    }
 
     case PosComplete:
+    {
 	assert (pos_buffer != "");
 	return "";
     }
+
+    default:
+    {
+	assert(0);		// This can't happen
+	break;
+    }
+    }
+
     return "";
 }

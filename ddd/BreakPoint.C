@@ -62,7 +62,8 @@ static regex rxname_colon_int_nl ("[^ ]+:[0-9]+\n");
 #endif
 
 // Create new breakpoint from INFO_OUTPUT
-BreakPoint::BreakPoint(string& info_output, char *arg, int number, char *file)
+BreakPoint::BreakPoint(string& info_output, const string& arg, 
+		       int number, string& file)
     : mynumber(number),
       mytype(BREAKPOINT),
       mydispo(BPKEEP),
@@ -98,7 +99,8 @@ BreakPoint::BreakPoint(string& info_output, char *arg, int number, char *file)
 	mynumber = number;
     }
 
-    strip_leading_space(info_output);
+    if (gdb->type() != PERL)
+	strip_leading_space(info_output);
 
     switch(gdb->type())
     {
@@ -126,6 +128,9 @@ BreakPoint::BreakPoint(string& info_output, char *arg, int number, char *file)
 	process_perl(info_output);
 	break;
     }
+
+    // If we found a file name, propagate it to next breakpoint
+    file = file_name();
 }
 
 void BreakPoint::process_gdb(string& info_output)
@@ -523,12 +528,25 @@ void BreakPoint::process_jdb(string& info_output)
 
 void BreakPoint::process_perl(string& info_output)
 {
-    // Format: LINE_NO: LINE
+    // Format: [FILE:]
+    //          LINE_NO: LINE
     //           INFO 1
     //           INFO 2 ...
+
+    if (!info_output.contains(' ', 0))
+    {
+	string first_line = info_output.before('\n');
+	if (first_line.contains(':', -1))
+	{
+	    // Get leading file name
+	    myfile_name = first_line.before(':');
+	    info_output = info_output.after('\n');
+	}
+    }
+
     myline_nr = atoi(info_output);
     info_output = info_output.after('\n');
-    while (info_output.contains(' ', 0))
+    while (info_output.contains("  ", 0))
     {
 	string info = info_output.before('\n');
 	info_output = info_output.after('\n');
@@ -572,7 +590,8 @@ bool BreakPoint::update(string& info_output,
 			ostream& undo_commands,
 			bool& need_total_undo)
 {
-    BreakPoint new_bp(info_output, arg(), number(), file_name());
+    string file = file_name();
+    BreakPoint new_bp(info_output, arg(), number(), file);
 
     bool changed       = false;
     myenabled_changed  = false;

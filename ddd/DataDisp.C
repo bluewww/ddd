@@ -626,11 +626,14 @@ void DataDisp::toggleDetailCB(Widget dialog,
 	    if (dv == 0)
 		dv = dn->value();
 
-	    if (dn->disabled() || dv->collapsedAll() > 0)
+	    if (dv == 0 || dn->disabled() || dv->collapsedAll() > 0)
 	    {
-		// Expand this value
-		dv->collapseAll();
-		dv->expandAll(depth);
+		if (dv != 0)
+		{
+		    // Expand this value
+		    dv->collapseAll();
+		    dv->expandAll(depth);
+		}
 
 		if (dn->disabled())
 		{
@@ -821,10 +824,10 @@ void DataDisp::rotateCB(Widget w, XtPointer client_data, XtPointer)
 	if (disp_node_arg->clustered())
 	{
 	    DispNode *cluster = disp_graph->get(disp_node_arg->clustered());
-	    if (cluster != 0)
+	    if (cluster != 0 && cluster->value() != 0)
 		cluster->value()->replot();
 	}
-	else
+	else if (disp_node_arg->value() != 0)
 	{
 	    disp_node_arg->value()->replot();
 	}
@@ -2159,7 +2162,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     bool rotate_ok      = false;
     bool rotate_plot_ok = false;
 
-    if (disp_value_arg != 0)
+    if (disp_node_arg != 0 && disp_value_arg != 0)
     {
 	// We have selected a single node
 	switch (disp_value_arg->type())
@@ -2198,14 +2201,18 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     bool arg_ok  = false;
     bool plot_ok = false;
     string arg;
-    if (disp_value_arg != 0)
+    if (disp_node_arg != 0)
     {
-	arg = disp_value_arg->full_name();
-	arg_ok = true;
-	plot_ok = disp_value_arg->can_plot();
+	if (disp_value_arg != 0)
+	{
+	    arg = disp_value_arg->full_name();
+	    arg_ok = true;
+	    plot_ok = disp_value_arg->can_plot();
+	}
     }
     else
     {
+	// No node selected
 	arg = source_arg->get_string();
 	arg_ok = (arg != "") && !is_file_pos(arg);
 	plot_ok = arg_ok && !undoing;
@@ -2321,11 +2328,19 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 		  count.selected > 0);
 
     // Set
-    bool can_set = gdb->has_assign_command() && arg_ok && !undoing;
-    set_sensitive(graph_cmd_area[CmdItms::Set].widget,   can_set);
-    set_sensitive(display_area[DisplayItms::Set].widget, can_set);
+    bool can_set = gdb->has_assign_command() && !undoing;
+    bool set_node_ok = 
+	disp_node_arg != 0 && 
+	(!disp_node_arg->is_user_command() || 
+	 disp_value_arg != 0 && disp_value_arg != disp_node_arg->value());
+    bool set_arg_ok = (disp_node_arg == 0 && arg_ok && !is_user_command(arg));
+
+    set_sensitive(graph_cmd_area[CmdItms::Set].widget,
+		  can_set && (set_arg_ok || set_node_ok));
+    set_sensitive(display_area[DisplayItms::Set].widget,
+		  can_set && (set_arg_ok || set_node_ok));
     set_sensitive(node_popup[NodeItms::Set].widget, 
-		  gdb->has_assign_command() && !undoing);
+		  can_set && set_node_ok);
 
     // Cluster
     if (count.selected_unclustered > 0 || count.selected_clustered == 0)
@@ -3249,7 +3264,7 @@ DispValue *DataDisp::update_hook(string& value)
     value = value.after(HOOK_POSTFIX);
 
     DispNode *dn = disp_graph->get(nr);
-    if (dn == 0)
+    if (dn == 0 || dn->value() == 0)
 	return 0;		// Ignore
 
     // Share the clustered DispValue with the original display
@@ -3401,7 +3416,7 @@ DispNode *DataDisp::new_data_node(const string& given_name,
 
     DispNode *dn = new DispNode(nr, title, scope, value, plotted);
 
-    if (plotted && dn->value()->can_plot() == 0)
+    if (plotted && (dn->value() == 0 || dn->value()->can_plot() == 0))
     {
 	post_gdb_message("Nothing to plot.", true, last_origin);
 
@@ -3451,7 +3466,7 @@ DispNode *DataDisp::new_user_node(const string& name,
     DispNode *dn = new DispNode(nr, name, scope, answer, plotted);
     DispValue::value_hook = 0;
 
-    if (plotted && dn->value()->can_plot() == 0)
+    if (plotted && (dn->value() == 0 || dn->value()->can_plot() == 0))
     {
 	post_gdb_message("Nothing to plot.", true, last_origin);
 	delete dn;
@@ -3640,7 +3655,7 @@ void DataDisp::new_user_displayOQC (const string& answer, void* data)
 	disp_graph->insert(dn->disp_nr(), dn, depend_nr);
 
 	// Plot new node
-	if (dn->plotted())
+	if (dn->plotted() && dn->value() != 0)
 	    dn->value()->plot();
 
 	// Determine new position
@@ -3811,7 +3826,8 @@ void DataDisp::insert_data_node(DispNode *dn, int depend_nr,
     if (plotted)
     {
 	dn->plotted() = true;
-	dn->value()->plot();
+	if (dn->value() != 0)
+	    dn->value()->plot();
     }
 
     // Check for clusters
@@ -4249,7 +4265,8 @@ void DataDisp::enable_displaySQ(IntArray& display_nrs, bool verbose,
 	    dn->disabled() && !dn->deferred())
 	{
 	    dn->enable();
-	    dn->value()->expandAll();
+	    if (dn->value() != 0)
+		dn->value()->expandAll();
 	    enabled_user_displays++;
 	}
     }

@@ -785,6 +785,26 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNpositionTimeout,
+	XtCPositionTimeout,
+	XmRInt,
+	sizeof(int),
+	XtOffsetOf(AppData, position_timeout),
+	XtRImmediate,
+	XtPointer(500)
+    },
+
+    {
+	XtNdisplayTimeout,
+	XtCDisplayTimeout,
+	XmRInt,
+	sizeof(int),
+	XtOffsetOf(AppData, display_timeout),
+	XtRImmediate,
+	XtPointer(2000)
+    },
+
+    {
 	XtNsynchronousDebugger,
 	XtCSynchronousDebugger,
 	XtRBoolean,

@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998\-12\-01" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998\-12\-06" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -4153,6 +4153,10 @@ contrast to `\fBdebuggerHost\fR', using this resource causes
 inferior debugger from the remote shell.  See also the
 `\fB\-\-rhost\fR' option, below, and `\fBREMOTE DEBUGGING\fR', above.
 .TP
+.B "displayTimeout (\fPclass\fB DisplayTimeout)"
+The time (in ms) to wait for the inferior debugger to finish a partial
+display information.  Default is \fB2000\fR.
+.TP
 .B "fullNameMode (\fPclass\fB TTYMode)"
 If this is `\fBon\fR', \s-1@DDD@\s+1 reports the current source
 position on standard output in \s-1GDB\s+1 `\fB\-fullname\fR'
@@ -4240,6 +4244,10 @@ also initially sent to \s-1PYDB\s+1.  By default, it is empty.
 .sp
 This resource is used by \s-1@DDD@\s+1 to save and restore \s-1PYDB\s+1
 settings.
+.TP
+.B "positionTimeout (\fPclass\fB PositionTimeout)"
+The time (in ms) to wait for the inferior debugger to finish a partial
+position information.  Default is \fB500\fR.
 .TP
 .B "questionTimeout (\fPclass\fB QuestionTimeout)"
 The time (in seconds) to wait for the inferior debugger to reply.

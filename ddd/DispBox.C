@@ -165,7 +165,8 @@ void DispBox::set_value(const DispValue* dv, const DispValue *parent)
     if (title_box != 0)
 	args += title_box->link();
 
-    ((DispValue *)dv)->validate_box_cache();
+    if (dv != 0)
+	((DispValue *)dv)->validate_box_cache();
 
     args += create_value_box(dv, parent);
     mybox = eval("display_box", args);
@@ -250,6 +251,8 @@ bool DispBox::is_numeric(const DispValue *dv, const DispValue *parent)
 // Create a Box for the value DV
 Box *DispBox::_create_value_box(const DispValue *dv, const DispValue *parent)
 {
+    assert(dv != 0);
+
     Box *vbox = 0;
 
 #if CACHE_BOXES
@@ -560,7 +563,11 @@ Box *DispBox::create_value_box (const DispValue *dv,
 				int member_name_width)
 {
     Box *vbox = 0;
-    if (dv == 0 || !dv->enabled())
+    if (dv == 0)
+    {
+	vbox = eval("none");
+    }
+    else if (!dv->enabled())
     {
 	vbox = eval("disabled");
     }
