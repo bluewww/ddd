@@ -2,7 +2,7 @@
 // DDD interface to GDB commands
 
 // Copyright (C) 1996-1997 Technische Universitaet Braunschweig, Germany.
-// Copyright (C) 2000 Universitaet Passau, Germany.
+// Copyright (C) 2000-2001 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -716,6 +716,18 @@ void processCommandQueue(XtPointer, XtIntervalId *id)
 // Wait for command queue to drain
 void syncCommandQueue()
 {
+    // Interrupt current command.
+    // Note: there will be no automatic `continue' afterwards (FIXME).
+    if (app_data.stop_and_continue && 
+	!gdb->isReadyWithPrompt() && 
+	is_cont_cmd(current_gdb_command()))
+    {
+	gdb_command('\003');
+    }
+
+    bool saved_stop_and_continue = app_data.stop_and_continue;
+    app_data.stop_and_continue = false;
+
     while (!(emptyCommandQueue() && can_do_gdb_command()))
     {
 	// Process next command from queue
@@ -729,6 +741,8 @@ void syncCommandQueue()
 	XtAppProcessEvent(XtWidgetToApplicationContext(command_shell),
 			  XtIMTimer | XtIMAlternateInput);
     }
+
+    app_data.stop_and_continue = saved_stop_and_continue;
 }
 
 // Shell finder
