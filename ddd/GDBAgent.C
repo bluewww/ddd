@@ -667,7 +667,7 @@ bool GDBAgent::ends_with_prompt (const string& ans)
 	if (i < 1 || answer[i] != ' ' || answer[i - 1] != '>')
 	    return false;
 
-	while (i > 0 && answer[i - 1] != '\n')
+	while (i > 0 && answer[i - 1] != '\n' && !answer.contains("DB", i))
 	    i--;
 
 	string possible_prompt = answer.from(i);
@@ -816,6 +816,7 @@ string GDBAgent::requires_reply (const string& answer)
     if (last_line.contains("end") 
 	|| last_line.contains("line")
 	|| last_line.contains("more")
+	|| last_line.contains("cont:")
 	|| last_line.contains("return"))
     {
 #if RUNTIME_REGEX
@@ -834,6 +835,7 @@ string GDBAgent::requires_reply (const string& answer)
 	static regex rxreturn(".*([(]press RETURN[)]"
 			      "|Hit RETURN to continue"
 			      "|Type <return> to continue"
+			      "|  cont: "
 			      "|More [(]n if no[)][?])[^\n]*");
 #endif
 	if (answer.matches(rxreturn, last_line_index))
@@ -2706,7 +2708,7 @@ void GDBAgent::munch_perl_array(string& value, bool hash)
 		// In compact representation, Perl omits individual
 		// indexes, and puts a START..END index instead.
 		compact = true;
-		line = lines[i].after(rxint);
+		line = line.after(rxint);
 	    }
 	    strip_space(line);
 	}
