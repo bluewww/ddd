@@ -105,7 +105,7 @@ Ddd*saveOptionsOnExit: false
 ! program.  Bourne shell commands to run in the separate tty are appended
 ! to this string.
 Ddd*termCommand: xterm \
--bg 'grey90' \
+-bg 'grey90' -fg 'black' \
 -fn '-*-lucidatypewriter-medium-r-*-*-12-*' \
 -title '@DDD@: Execution Window' -e /bin/sh -c
 
