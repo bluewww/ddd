@@ -117,7 +117,7 @@ dnl
 AC_CHECK_PROGS(COMPFACE, compface)
 if test "$COMPFACE" = "compface"; then
   AC_CACHE_CHECK([whether compface can input xbm files], ddd_cv_compface_xbm,
-	[if $COMPFACE ${srcdir}/icons/ddd.xbm >&/dev/null; then
+	[if $COMPFACE ${srcdir}/icons/ddd.xbm > /dev/null 2>&1; then
 	 ddd_cv_compface_xbm=yes; else ddd_cv_compface_xbm=no; fi])
   if test "$ddd_cv_compface_xbm" = "yes"; then
     XBM2XFACE="$COMPFACE"
