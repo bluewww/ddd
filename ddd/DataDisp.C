@@ -420,6 +420,7 @@ void DataDisp::showDetailCB (Widget dialog, XtPointer, XtPointer)
 	{
 	    if (dn->disabled())
 	    {
+		// Enable display
 		string nr = dn->disp_nr();
 		disp_nrs += get_nr(nr);
 	    }
@@ -461,16 +462,15 @@ void DataDisp::hideDetailCB (Widget dialog, XtPointer, XtPointer)
 	    DispValue *dv = dn->selected_value();
 	    if (dv == 0)
 		dv = dn->value();
-	    if (dv == 0)
-		continue;
 
-	    if (dv == dn->value() && dn->enabled())
+	    if ((dv == 0 || dv == dn->value()) && dn->enabled())
 	    {
+		// Disable display
 		string nr = dn->disp_nr();
 		disp_nrs += get_nr(nr);
 	    }
 
-	    if (dv->expanded())
+	    if (dv != 0 && dv->expanded())
 	    {
 		dv->collapse();
 		dn->refresh();
