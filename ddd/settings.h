@@ -34,9 +34,13 @@
 #endif
 
 #include <X11/Intrinsic.h>
+#include "strclass.h"
 
 // Popup editor for debugger settings
 void dddPopupSettingsCB (Widget, XtPointer, XtPointer);
+
+// Process `show' output
+void process_show(string command, string value);
 
 #endif // _DDD_settings_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

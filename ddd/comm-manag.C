@@ -61,6 +61,7 @@ char comm_manager_rcsid[] =
 #include "version.h"
 #include "VoidArray.h"
 #include "question.h"
+#include "settings.h"
 
 #include <ctype.h>
 
@@ -114,6 +115,8 @@ typedef struct PlusCmdData {
     bool     refresh_history_filename; // send 'show history filename'
     bool     refresh_history_size;     // send 'show history size'
     bool     refresh_history_save;     // send 'show history save'
+    bool     refresh_setting;	       // send 'show SETTING'
+    string   set_command;	       // setting to update
 
     bool     config_frame;	       // try 'frame'
     bool     config_run_io;	       // try 'dbxenv run_io'
@@ -143,6 +146,8 @@ typedef struct PlusCmdData {
 	refresh_history_filename(false),
 	refresh_history_size(false),
 	refresh_history_save(false),
+	refresh_setting(false),
+	set_command(""),
 
 	config_frame(false),
 	config_run_io(false),
@@ -490,6 +495,12 @@ void user_cmdSUC (string cmd, Widget origin)
 	plus_cmd_data->refresh_frame    = false;
 	plus_cmd_data->refresh_register = false;
     }
+
+    if (is_setting_cmd(cmd) && gdb->type() == GDB)
+    {
+	plus_cmd_data->refresh_setting = true;
+	plus_cmd_data->set_command     = cmd;
+    }
 	
     if (plus_cmd_data->refresh_frame && !gdb->has_frame_command())
     {
@@ -585,6 +596,17 @@ void user_cmdSUC (string cmd, Widget origin)
 	    cmds += "show history size";
 	if (plus_cmd_data->refresh_history_save)
 	    cmds += "show history save";
+	if (plus_cmd_data->refresh_setting)
+	{
+	    string show_command = "show " + cmd.after("set ");
+	    if (show_command.freq(' ') >= 2)
+	    {
+		// Strip last argument from `show' command
+		int index = show_command.index(' ', -1);
+		show_command = show_command.before(index);
+	    }
+	    cmds += show_command;
+	}
 	break;
 
     case DBX:
@@ -611,6 +633,7 @@ void user_cmdSUC (string cmd, Widget origin)
 	assert (!plus_cmd_data->refresh_history_filename);
 	assert (!plus_cmd_data->refresh_history_size);
 	assert (!plus_cmd_data->refresh_history_save);
+	assert (!plus_cmd_data->refresh_setting);
 	break;
 
     case XDB:
@@ -634,6 +657,7 @@ void user_cmdSUC (string cmd, Widget origin)
 	assert (!plus_cmd_data->refresh_history_filename);
 	assert (!plus_cmd_data->refresh_history_size);
 	assert (!plus_cmd_data->refresh_history_save);
+	assert (!plus_cmd_data->refresh_setting);
 	break;
     }
 
@@ -1112,6 +1136,14 @@ void plusOQAC (string answers[],
 	assert (qu_count < count);
 	if (!disabling_occurred)
 	    process_history_save(answers[qu_count++]);
+	else
+	    qu_count++;
+    }
+
+    if (plus_cmd_data->refresh_setting) {
+	assert (qu_count < count);
+	if (!disabling_occurred)
+	    process_show(plus_cmd_data->set_command, answers[qu_count++]);
 	else
 	    qu_count++;
     }

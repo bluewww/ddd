@@ -58,18 +58,9 @@ const char settings_rcsid[] =
 #include "verify.h"
 #include "wm.h"
 
-static void add_settings(Widget form, int& row, string command = "set");
+static Widget settings_form   = 0;
 
-// ToggleButton reply
-static void SetBoolCB(Widget, XtPointer client_data, XtPointer call_data)
-{
-    String set_command = (String)client_data;
-    XmToggleButtonCallbackStruct *cbs = 
-	(XmToggleButtonCallbackStruct *)call_data;
-
-    String value = cbs->set ? "on" : "off";
-    gdb_command(string(set_command) + " " + value);
-}
+static void add_settings(int& row, string command = "set");
 
 // TextField reply
 static void SetTextCB(Widget w, XtPointer client_data, XtPointer)
@@ -92,9 +83,103 @@ static void SetOptionCB(Widget w, XtPointer client_data, XtPointer)
     gdb_command(string(set_command) + " " + XtName(w));
 }
 
+// ToggleButton reply
+static void SetBoolCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *cbs = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    if (cbs->set)
+	SetOptionCB(w, client_data, call_data);
+}
+
+// Find widget for command COMMAND
+static Widget command_to_widget(Widget ref, string command)
+{
+    Widget found = 0;
+    while (command != "" && (found = XtNameToWidget(ref, command)) == 0)
+    {
+	// Strip last word (command argument)
+	int index = command.index(rxwhite, -1);
+	command   = command.before(index);
+    }
+
+    return found;
+}
+	
+
+// Process output of `show' command
+void process_show(string command, string value)
+{
+    if (settings_form == 0)
+	return;
+
+    if (value.contains(".\n", -1))
+    {
+	value = value.after(" is ", -1);
+	value = value.before(".\n");
+    }
+    if (value.contains("\"auto;", 0))
+	value = "auto";
+    if (value.contains('"', 0))
+	value = unquote(value);
+
+    string set_command = command;
+    if (!set_command.contains("set ", 0))
+	set_command = string("set ") + set_command.after(rxwhite);
+
+    Widget button = command_to_widget(settings_form, set_command);
+
+    if (button != 0 && XtIsSubclass(button, xmRowColumnWidgetClass))
+    {
+	Widget menu = 0;
+	XtVaGetValues(button, XmNsubMenuId, &menu, NULL);
+	if (menu != 0)
+	{
+	    // Option menu
+	    Widget active = XtNameToWidget(menu, value);
+	    if (active != 0)
+	    {
+		XtVaSetValues(button, XmNmenuHistory, active, NULL);
+		return;
+	    }
+	}
+
+	Widget on  = XtNameToWidget(button, "on");
+	Widget off = XtNameToWidget(button, "off");
+	if (on != 0 && off != 0)
+	{
+	    if (value == "on")
+	    {
+		XmToggleButtonSetState(on,  True,  False);
+		XmToggleButtonSetState(off, False, False);
+		return;
+	    }
+	    else if (value == "off")
+	    {
+		XmToggleButtonSetState(on,  False, False);
+		XmToggleButtonSetState(off, True,  False);
+		return;
+	    }
+	}
+    }
+    else if (button != 0 && XtIsSubclass(button, xmTextFieldWidgetClass))
+    {
+	XtVaSetValues(button, 
+		      XmNvalue,                 value.chars(),
+		      XmNcursorPosition,        0,
+		      XmNcursorPositionVisible, True,
+		      NULL);
+	return;
+    }
+
+    cerr << "Warning: cannot " << set_command 
+	 << " to " << quote(value) << "\n";
+}
+
 
 // Add single button
-static void add_button(Widget form, string line, int& row)
+static void add_button(string line, int& row)
 {
     if (!line.contains("set ", 0))
 	return;			// No `set' command
@@ -107,7 +192,7 @@ static void add_button(Widget form, string line, int& row)
     if (!doc.contains("Set ", 0))
     {
 	// Generic command or `set variable' - list `set' subcommands
-	add_settings(form, row, set_command);
+	add_settings(row, set_command);
 	return;
     }
 
@@ -115,12 +200,12 @@ static void add_button(Widget form, string line, int& row)
     if (value.freq('\n') > 1)
     {
 	// Generic command - list `set' subcommands
-	add_settings(form, row, set_command);
+	add_settings(row, set_command);
 	return;
     }
 
-    value = value.after(" is ", -1);
-    value = value.before(".\n");
+    if (!value.contains(".\n", -1))
+	return;
 
     doc = doc.after("Set ");
     if (doc.contains("whether to ", 0))
@@ -128,12 +213,6 @@ static void add_button(Widget form, string line, int& row)
     if (doc.contains("the ", 0))
 	doc = doc.after("the ");
     doc[0] = toupper(doc[0]);
-
-    if (value.contains("\"auto;", 0))
-	value = "\"auto\"";
-
-    if (value == "")
-	return;
 
     Arg args[10];
     int arg;
@@ -146,7 +225,7 @@ static void add_button(Widget form, string line, int& row)
     XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_POSITION);      arg++;
     XtSetArg(args[arg], XmNbottomPosition,   row + 1);                arg++;
     XtSetArg(args[arg], XmNalignment,        XmALIGNMENT_BEGINNING);  arg++;
-    Widget label = verify(XmCreateLabel(form, base, args, arg));
+    Widget label = verify(XmCreateLabel(settings_form, base, args, arg));
     XtManageChild(label);
 
     // Add help button
@@ -157,7 +236,7 @@ static void add_button(Widget form, string line, int& row)
     XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_POSITION);  arg++;
     XtSetArg(args[arg], XmNbottomPosition,   row + 1);            arg++;
     XtSetArg(args[arg], XmNalignment,        XmALIGNMENT_CENTER); arg++;
-    Widget help = verify(XmCreatePushButton(form, "help", args, arg));
+    Widget help = verify(XmCreatePushButton(settings_form, "help", args, arg));
     XtManageChild(help);
 
     // Add entry
@@ -168,19 +247,15 @@ static void add_button(Widget form, string line, int& row)
     if (base.contains("check", 0))
     {
 	// `set check'
-	if (value.contains('"', 0))
-	    value = unquote(value);
-
 	arg = 0;
 	Widget menu = 
-	    verify(XmCreatePulldownMenu(form, set_command, args, arg));
+	    verify(XmCreatePulldownMenu(settings_form, "menu", args, arg));
 
 	// Possible options are contained in the help string
 	string options = gdb_question("help " + set_command);
 	options = options.from('(');
 	options = options.before(')');
 
-	Widget active = 0;
 	while (options != "")
 	{
 	    string option = options.after(0);
@@ -193,9 +268,6 @@ static void add_button(Widget form, string line, int& row)
 	    XtManageChild(button);
 	    XtAddCallback(button, XmNactivateCallback, SetOptionCB, 
 			  set_command_s);
-
-	    if (active == 0 || option == value)
-		active = button;
 	}
 
 	arg = 0;
@@ -204,24 +276,20 @@ static void add_button(Widget form, string line, int& row)
 	XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_POSITION); arg++;
 	XtSetArg(args[arg], XmNbottomPosition,   row + 1);           arg++;
 	XtSetArg(args[arg], XmNsubMenuId,        menu);              arg++;
-	XtSetArg(args[arg], XmNmenuHistory,      active);            arg++;
-	entry = verify(XmCreateOptionMenu(form, set_command, args, arg));
+	entry = 
+	    verify(XmCreateOptionMenu(settings_form, set_command, args, arg));
 	XtManageChild(entry);
     }
     else if (base.contains("language", 0) || base.contains("demangle", 0))
     {
 	// `set language / set demangle'
-	if (value.contains('"', 0))
-	    value = unquote(value);
-
 	arg = 0;
 	Widget menu = 
-	    verify(XmCreatePulldownMenu(form, set_command, args, arg));
+	    verify(XmCreatePulldownMenu(settings_form, "menu", args, arg));
 
 	// Possible options are listed upon `set language' without value
 	string options = gdb_question("set " + base);
 
-	Widget active = 0;
 	while (options != "")
 	{
 	    string option = options.before('\n');
@@ -253,9 +321,6 @@ static void add_button(Widget form, string line, int& row)
 		XtManageChild(button);
 		XtAddCallback(button, XmNactivateCallback, SetOptionCB, 
 			      set_command_s);
-
-		if (active == 0 || option == value)
-		    active = button;
 	    }
 	}
 
@@ -265,54 +330,53 @@ static void add_button(Widget form, string line, int& row)
 	XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_POSITION); arg++;
 	XtSetArg(args[arg], XmNbottomPosition,   row + 1);           arg++;
 	XtSetArg(args[arg], XmNsubMenuId,        menu);              arg++;
-	XtSetArg(args[arg], XmNmenuHistory,      active);            arg++;
-	entry = verify(XmCreateOptionMenu(form, set_command, args, arg));
+	entry = 
+	    verify(XmCreateOptionMenu(settings_form, set_command, args, arg));
 	XtManageChild(entry);
     }
-    else if (value == "on" || value == "off")
+    else if (value.contains("on.\n", -1) || value.contains("off.\n", -1))
     {
 	// Boolean value
-	bool set = (value == "on");
-
 	arg = 0;
 	XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_WIDGET);   arg++;
 	XtSetArg(args[arg], XmNrightWidget,      help);              arg++;
 	XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_POSITION); arg++;
 	XtSetArg(args[arg], XmNbottomPosition,   row + 1);           arg++;
 	XtSetArg(args[arg], XmNorientation,      XmHORIZONTAL);      arg++;
-	entry = verify(XmCreateRadioBox(form, set_command, args, arg));
+	entry = 
+	    verify(XmCreateRadioBox(settings_form, set_command, args, arg));
 	XtManageChild(entry);
 
 	arg = 0;
-	XtSetArg(args[arg], XmNset, set); arg++;
 	Widget on = verify(XmCreateToggleButton(entry, "on", args, arg));
 	XtManageChild(on);
 
 	arg = 0;
-	XtSetArg(args[arg], XmNset, !set); arg++;
 	Widget off = verify(XmCreateToggleButton(entry, "off", args, arg));
 	XtManageChild(off);
 
 	XtAddCallback(on, XmNvalueChangedCallback,
 		      SetBoolCB, XtPointer(set_command_s));
+	XtAddCallback(off, XmNvalueChangedCallback,
+		      SetBoolCB, XtPointer(set_command_s));
     }
     else
     {
 	// Some other value
-	if (value.contains('"', 0))
-	    value = unquote(value);
-
 	arg = 0;
 	XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_WIDGET);   arg++;
 	XtSetArg(args[arg], XmNrightWidget,      help);              arg++;
 	XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_POSITION); arg++;
 	XtSetArg(args[arg], XmNbottomPosition,   row + 1);           arg++;
-	XtSetArg(args[arg], XmNvalue,            value.chars());     arg++;
-	entry = verify(XmCreateTextField(form, set_command, args, arg));
+	entry = 
+	    verify(XmCreateTextField(settings_form, set_command, args, arg));
 	XtManageChild(entry);
 	XtAddCallback(entry, XmNactivateCallback, 
 		      SetTextCB, XtPointer(set_command_s));
     }
+
+    // Initialize button
+    process_show(show_command, value);
 
     XtAddCallback(help, XmNactivateCallback, 
 		  HelpOnThisCB, XtPointer(entry));
@@ -321,7 +385,7 @@ static void add_button(Widget form, string line, int& row)
 }
 
 // Add buttons
-static void add_settings(Widget form, int& row, string command = "set")
+static void add_settings(int& row, string command = "set")
 {
     string commands = gdb_question("help " + command);
 
@@ -329,7 +393,7 @@ static void add_settings(Widget form, int& row, string command = "set")
     {
 	string line = commands.before('\n');
 	commands = commands.after('\n');
-	add_button(form, line, row);
+	add_button(line, row);
     }
 }
 
@@ -373,13 +437,13 @@ void dddPopupSettingsCB (Widget, XtPointer, XtPointer)
 
 	// ...and a form.
 	arg = 0;
-	Widget form = verify(XmCreateForm(scroll, "form", args, arg));
+	settings_form = verify(XmCreateForm(scroll, "form", args, arg));
 
 	// Add setting buttons to the button box.
 	int row = 0;
-	add_settings(form, row);
-	XtVaSetValues(form, XmNfractionBase, row, NULL);
-	XtManageChild(form);
+	add_settings(row);
+	XtVaSetValues(settings_form, XmNfractionBase, row, NULL);
+	XtManageChild(settings_form);
 	XtManageChild(scroll);
     }
 

@@ -93,6 +93,11 @@ bool is_down_cmd(const string& cmd);
 bool is_set_cmd(const string& cmd);
 
 // ***************************************************************************
+// true, wenn cmd Einstellungs-Wechsel zur Folge hat.
+// 
+bool is_setting_cmd(const string& cmd);
+
+// ***************************************************************************
 // true, wenn cmd File-Wechsel zur Folge hat.
 // 
 bool is_file_cmd(const string& cmd, GDBAgent *gdb);

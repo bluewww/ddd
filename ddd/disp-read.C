@@ -187,6 +187,15 @@ bool is_set_cmd (const string& cmd)
 
 // ***************************************************************************
 // 
+bool is_setting_cmd (const string& cmd)
+{
+    static regex RXsetting_cmd("[ \t]*(set|dbxenv)[ \t]+.*");
+
+    return !cmd.contains('=') && cmd.matches (RXsetting_cmd);
+}
+
+// ***************************************************************************
+// 
 bool is_file_cmd (const string& cmd, GDBAgent *gdb)
 {
     static regex RXfile_cmd("[ \t]*file([ \t]+.*)?");
