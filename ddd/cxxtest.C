@@ -230,7 +230,7 @@ void type_test()
     guni.ii   = 1;
     guni.j    = 2;
     guni.c    = 'a';
-    guni.bit1 = 1;
+    guni.bit1 = 0;
     guni.bit2 = 1;
     guni.bit3 = 0;
 
