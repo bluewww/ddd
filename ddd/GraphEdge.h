@@ -101,6 +101,9 @@ public:
         next(0), prev(0)
     {}
 
+    // Destructor
+    virtual ~GraphEdge() {}
+
     // Duplication
     virtual GraphEdge *dup() const = 0;
 

@@ -70,12 +70,16 @@ public:
 	center();
     }
 
+    // Destructor
+    virtual ~RegionGraphNode() {}
+
     // Move
     virtual void moveTo(const BoxPoint& newPos)
     {
 	PosGraphNode::moveTo(newPos);
 	center();
     }
+
     // Assign new size
     virtual void resize(const BoxSize& newSize)
     {

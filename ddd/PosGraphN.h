@@ -57,6 +57,9 @@ public:
 	_pos(initialPos)
     {}
 
+    // Destructor
+    virtual ~PosGraphNode() {}
+
     // Move
     virtual void moveTo(const BoxPoint& newPos)
     {

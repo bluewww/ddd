@@ -80,6 +80,9 @@ public:
 	_firstFrom(0), _firstTo(0), next(0), prev(0), count(0)
     {}
 
+    // Destructor
+    virtual ~GraphNode() {}
+
     // Duplication
     virtual GraphNode *dup() const = 0;
 

@@ -97,12 +97,12 @@ protected:
 public:
     // LetNode erzeugen
     LetNode(VSLNode *p, VSLNode *a, VSLNode *b, char *type = "LetNode"):
+	CallNode(new FixListNode(a, b), type),
 	_node_pattern(p),
 	_box_pattern(0),
 	_nargs(p->nargs()),
 	_straight(p->isStraight()),
-	being_compiled(false),
-	CallNode(new FixListNode(a, b), type)
+	being_compiled(false)
     {}
 
     // LetNode zerstoeren

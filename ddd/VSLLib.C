@@ -68,7 +68,7 @@ void (*VSLLib::background)() = 0;   // Hintergrund-Prozedur
 // Hashtabelle initialisieren
 void VSLLib::initHash()
 {
-    for (unsigned i = 0; i < hashSize; i++)
+    for (int i = 0; i < hashSize; i++)
 	defs[i] = 0;
     _first = 0;
     _last  = 0;
@@ -273,7 +273,7 @@ void VSLLib::output(Box *&a)
 // VSLLib zerstoeren
 VSLLib::~VSLLib()
 {
-    for (unsigned i = 0; i < hashSize; i++)
+    for (int i = 0; i < hashSize; i++)
 	if (defs[i]) delete defs[i];
 }
 
@@ -789,7 +789,7 @@ void VSLLib::dumpTree(ostream& s) const
 bool VSLLib::OK() const
 {
     // 1. Schleife: ueber Hash-Tabelle
-    for (unsigned i = 0; i < hashSize; i++)
+    for (int i = 0; i < hashSize; i++)
 	if (defs[i] != 0)
 	{
 	    // Pruefen, ob Zeiger auf Lib ok

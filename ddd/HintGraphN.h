@@ -50,9 +50,13 @@ protected:
     {}
 
 public:
+    // Constructor
     HintGraphNode(const BoxPoint& initialPos = BoxPoint()):
        RegionGraphNode(initialPos, BoxSize(0,0))
     {}
+
+    // Destructor
+    virtual ~HintGraphNode() {}
 
     GraphNode *dup() const
     {

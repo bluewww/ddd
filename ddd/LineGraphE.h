@@ -64,6 +64,9 @@ public:
 	GraphEdge(f, t)
     {}
 
+    // Destructor
+    virtual ~LineGraphEdge() {}
+
     GraphEdge *dup() const
     {
 	return new LineGraphEdge(*this);

@@ -136,7 +136,7 @@ void *MemCheck::alloc(unsigned nbytes)
 // Return more core memory -- using malloc()
 MemCheckHeader *MemCheck::morecore(unsigned nunits)
 {
-    const int NALLOC = 1024;
+    const unsigned NALLOC = 1024;
     
     if (nunits < NALLOC)
 	nunits = NALLOC;

@@ -72,13 +72,13 @@ void insert_source_argAct   (Widget w, XEvent*, String*, Cardinal*)
 {
     string arg = source_arg->get_string();
     if (XmIsText(w)) {
-	if (XmTextGetEditable) {
+	if (XmTextGetEditable(w)) {
 	    XmTextPosition pos = XmTextGetInsertionPosition(w);
 	    XmTextReplace(w, pos, pos, (String)arg);
 	}
     }
     else if (XmIsTextField(w)) {
-	if (XmTextFieldGetEditable) {
+	if (XmTextFieldGetEditable(w)) {
 	    XmTextPosition pos = XmTextFieldGetInsertionPosition(w);
 	    XmTextFieldReplace(w, pos, pos, (String)arg);
 	}
@@ -89,13 +89,13 @@ void insert_graph_argAct (Widget w, XEvent*, String*, Cardinal*)
 {
     string arg = DataDisp::graph_arg->get_string();
     if (XmIsText(w)) {
-	if (XmTextGetEditable) {
+	if (XmTextGetEditable(w)) {
 	    XmTextPosition pos = XmTextGetInsertionPosition(w);
 	    XmTextReplace(w, pos, pos, (String)arg);
 	}
     }
     else if (XmIsTextField(w)) {
-	if (XmTextFieldGetEditable) {
+	if (XmTextFieldGetEditable(w)) {
 	    XmTextPosition pos = XmTextFieldGetInsertionPosition(w);
 	    XmTextFieldReplace(w, pos, pos, (String)arg);
 	}

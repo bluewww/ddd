@@ -80,16 +80,16 @@ protected:
 public:
     // Constructors
     VarArray(int initial_size = 0):
-        _size(0), DynArray<T>(initial_size)
+        DynArray<T>(initial_size), _size(0)
     {}
 
     VarArray(T *v, int n):
-        _size(n), DynArray<T>(v, n)
+        DynArray<T>(v, n), _size(n)
     {}  
 
     // Copy constructor
     VarArray(const VarArray<T>& m):
-        _size(m.size()), DynArray<T>(m)
+        DynArray<T>(m), _size(m.size())
     {}
 
     // Assignment
