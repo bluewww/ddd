@@ -59,7 +59,7 @@ char show_rcsid[] =
 void show_version()
 {
     cout << DDD_NAME " " DDD_VERSION " (" DDD_HOST "), "
-	"Copyright (C) 1995, 1996 TU Braunschweig.\n";
+	"Copyright (C) 1997 TU Braunschweig.\n";
 }
 
 //-----------------------------------------------------------------------------
