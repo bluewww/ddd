@@ -821,8 +821,7 @@ SYMS = $(ddd).syms $(ddd_canonical).syms
 PROG_STUFF       = config.h vsl-lex.C vsl-gramma.h vsl-gramma.C rxscan.C \
 	 	   acconfig.h acspecial.h stamp-h.in $(srcdir)/Ddd.in \
 		   ddd.vsl.h vr.h version.h configinfo.C \
-		   ddd.man ddd.man.txt ddd.man.txt.gz ddd.man.txt.gz.C \
-		   COPYING.gz COPYING.gz.C xlibdir.C eps-code.h
+		   ddd.man ddd.man.txt xlibdir.C eps-code.h
 
 # Extra files to be built for the distribution
 # In a distribution, these should be already built.
@@ -986,6 +985,7 @@ readme:	$(README_FILES)
 .PHONY: diststuff
 diststuff: $(DIST_STUFF)
 	-for file in $(DIST_STUFF); do test -f $$file && $(TOUCH) $$file; done
+	$(MAKE) depend
 
 .PHONY: dist
 dist:	
@@ -1564,8 +1564,9 @@ $(srcdir)/Makedeps depend:
 	@( $(ECHO) \#' DO NOT EDIT -- generated automagically by make depend';\
 	$(ECHO) \#' Source: $$Id$$'; \
 	$(ECHO) ; \
+	srcdir=`echo $(srcdir) | $(SED) 's%\.%\\\\.%g'`; \
 	$(CXX) -M $(CPPFLAGS) $(DEFS) $(INCLUDE) $(srcdir)/*.C \
-	| $(SED) 's%$(srcdir)/%%g' \
+	| $(SED) "s%$$srcdir/%%g" \
 	| $(SED) 's% /[^ ]*%%g' \
 	| $(SED) 's% \./% %g' \
 	| $(GREP) -v '^ *\\$$' \
