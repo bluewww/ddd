@@ -899,7 +899,6 @@ void set_buttons(Widget buttons, String _button_list, bool manage)
 	XtSetArg(args[arg], XmNhighlightThickness, 1); arg++;
 	Widget button = verify(XmCreatePushButton(buttons, name, args, arg));
 #endif
-	XtVaSetValues(button, XmNmultiClick, XmMULTICLICK_DISCARD, NULL);
 	XtManageChild(button);
 	number_of_buttons++;
 

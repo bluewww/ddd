@@ -75,16 +75,6 @@ static void set_label_type(MMDesc items[], unsigned char label_type)
     }
 }
 
-static void disable_multi_click(MMDesc items[])
-{
-    for (MMDesc *item = items; item != 0 && item->name != 0; item++)
-    {
-	Widget w = item->widget;
-	if (w != 0 && XmIsPushButton(w))
-	    XtVaSetValues(w, XmNmultiClick, XmMULTICLICK_DISCARD, NULL);
-    }
-}
-
 static void flatten_buttons(MMDesc items[])
 {
     // Replace all `MMPush' by `MMFlatPush'
@@ -143,7 +133,6 @@ Widget create_toolbar(Widget parent, string name,
 
     if (label_type != (unsigned char)-1)
 	set_label_type(items1, label_type);
-    disable_multi_click(items1);
 
     if (items2 != 0)
     {
@@ -152,7 +141,6 @@ Widget create_toolbar(Widget parent, string name,
 	MMaddHelpCallback(items2, ImmediateHelpCB);
 	if (label_type != (unsigned char)-1)
 	    set_label_type(items2, label_type);
-	disable_multi_click(items2);
     }
 
     XtVaSetValues(buttons,
