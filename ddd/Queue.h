@@ -53,6 +53,11 @@ private:
     QueueRec<E> *_first;
     QueueRec<E> *_last;
 
+    // For QueueIter only
+    QueueRec<E> *firstRec() const { return _first; }
+
+    friend class QueueIter<E>;
+
 public:
     // Constructor
     Queue(): 
@@ -86,8 +91,8 @@ public:
 	    operator += (i());
     }
 
-    // Adding
-    void operator += (const E& e)
+    // Add at end
+    void enqueue_at_end(const E& e)
     {
 	QueueRec<E> *rec = new QueueRec<E>(e);
 	if (_last == 0)
@@ -97,10 +102,31 @@ public:
 	_last = rec;
     }
 
-    // Removing
-    void operator -= (const E& e)
+    // Add after A
+    void enqueue_after(const E& e, QueueIter<E> a)
     {
-	QueueRec<E> *prev = 0;      // kill predecessor
+	QueueRec<E> *rec = new QueueRec<E>(e);
+	QueueRec<E> *after = a.theRec();
+	rec->next = after->next;
+	after->next = rec;
+	if (after == _last)
+	    _last = rec;
+    }
+
+    // Add at start
+    void enqueue_at_start(const E& e)
+    {
+	QueueRec<E> *rec = new QueueRec<E>(e);
+	rec->next = _first;
+	if (_first == _last)
+	    _last = rec;
+	_first = rec;
+    }
+
+    // Remove
+    void dequeue(const E& e)
+    {
+	QueueRec<E> *prev = 0;       // kill predecessor
         QueueRec<E> *rec = _first;   // loop var
 
 	while (rec != 0)
@@ -131,14 +157,15 @@ public:
 	}
     }
 
+    // Operator versions
+    void operator += (const E& e) { enqueue_at_end(e); }
+    void operator -= (const E& e) { dequeue(e); }
+
     // Access
     const E& first() const { return _first->elem; }
     const E& last()  const { return _last->elem; }
-    E& first() { return _first->elem; }
-    E& last()  { return _last->elem; }
-
-    // For QueueIter only
-    QueueRec<E> *firstRec() const { return _first; }
+    E& first()             { return _first->elem; }
+    E& last()              { return _last->elem; }
 
     // Testing
     bool isEmpty() const { return _first == 0; }
@@ -151,6 +178,11 @@ private:
     QueueIter(QueueRec<E> *ptr):
         rec(ptr)
     {}
+
+    // For Queue only
+    QueueRec<E> *theRec() const { return rec; }
+
+    friend class Queue<E>;
 
 public:
     QueueIter(const Queue<E>& queue):
