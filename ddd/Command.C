@@ -205,7 +205,7 @@ void _gdb_command(const Command& c)
     }
 
     translate_command(cmd);
-    send_gdb_command(cmd, c.origin, c.callback, c.data, 
+    send_gdb_command(cmd, c.origin, c.callback, c.extra_callback, c.data, 
 		     c.echo, c.verbose, c.prompt, c.check);
     messagePosition = XmTextGetLastPosition(gdb_w);
 }

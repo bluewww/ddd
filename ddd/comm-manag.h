@@ -49,12 +49,13 @@
 void start_gdb ();
 
 // Send user command CMD to GDB.  Invoke CALLBACK with DATA upon
-// completion.  If ECHO and VERBOSE are set, issue command in GDB
-// console.  If VERBOSE is set, issue answer in GDB console.  If
-// PROMPT is set, issue prompt.  If CHECK is set, add appropriate GDB
-// commands to get GDB state.
+// completion of CMD; invoke EXTRA_CALLBACK with DATA when all extra
+// commands (see CHECK) are done.  If ECHO and VERBOSE are set, issue
+// command in GDB console.  If VERBOSE is set, issue answer in GDB
+// console.  If PROMPT is set, issue prompt.  If CHECK is set, add
+// extra GDB commands to get GDB state.
 void send_gdb_command(string cmd, Widget origin,
-		      OQCProc callback, void *data,
+		      OQCProc callback, OACProc extra_callback, void *data,
 		      bool echo, bool verbose, bool prompt, bool check);
 
 // Send user input CMD to GDB (unchanged).
@@ -67,6 +68,10 @@ bool is_known_command(const string& answer);
 // the GDB `source' command.
 void init_session(const string& restart, const string& settings,
 		  bool try_source = false);
+
+// Replace all occurrences of `@N@' by N + the current breakpoint base;
+// Replace all occurrences of `@AUTO@' by the current command prefix.
+void fix_symbols(string& cmd);
 
 #endif // _DDD_comm_manag_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

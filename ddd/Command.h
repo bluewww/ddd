@@ -48,13 +48,13 @@ struct Command
 {
     string command;		// Command text
     Widget origin;		// Origin
-    OQCProc callback;		// Associated callback; will be called after
-				// completion
-    void *data;			// Data for callback
+    OQCProc callback;		// Completion of COMMAND
+    OACProc extra_callback;	// Completion of extra commands
+    void *data;			// Data for callbacks
     bool echo;			// Flag: issue command in GDB console?
     bool verbose;		// Flag: issue answer in GDB console?
     bool prompt;		// Flag: issue prompt in GDB console?
-    bool check;			// Flag: add commands to get GDB state?
+    bool check;			// Flag: add extra commands to get GDB state?
     int priority;		// Priority (highest get executed first)
 
 private:
@@ -66,21 +66,22 @@ private:
 public:
     Command(const string& cmd, Widget w, OQCProc cb, void *d = 0, 
 	    bool v = false, bool c = false, int p = COMMAND_PRIORITY_SYSTEM)
-	: command(cmd), origin(w), callback(cb), data(d), 
+	: command(cmd), origin(w), callback(cb), extra_callback(0), data(d), 
 	  echo(v), verbose(v), prompt(v), check(c), priority(p)
     {
 	add_destroy_callback();
     }
     Command(const string& cmd, Widget w = 0)
-	: command(cmd), origin(w), callback(0), data(0), 
+	: command(cmd), origin(w), callback(0), extra_callback(0), data(0), 
 	  echo(true), verbose(true), prompt(true), check(true), 
 	  priority(COMMAND_PRIORITY_USER)
     {
 	add_destroy_callback();
     }
     Command(const Command& c)
-	: command(c.command), origin(c.origin), callback(c.callback), 
-	  data(c.data), echo(c.echo), verbose(c.verbose), prompt(c.prompt),
+	: command(c.command), origin(c.origin), callback(c.callback),
+	  extra_callback(c.extra_callback), data(c.data), 
+	  echo(c.echo), verbose(c.verbose), prompt(c.prompt),
 	  check(c.check), priority(c.priority)
     {
 	add_destroy_callback();
@@ -95,15 +96,16 @@ public:
 	{
 	    remove_destroy_callback();
 
-	    command  = c.command;
-	    origin   = c.origin;
-	    callback = c.callback;
-	    data     = c.data;
-	    echo     = c.echo;
-	    verbose  = c.verbose;
-	    prompt   = c.prompt;
-	    check    = c.check;
-	    priority = c.priority;
+	    command        = c.command;
+	    origin         = c.origin;
+	    callback       = c.callback;
+	    extra_callback = c.extra_callback;
+	    data           = c.data;
+	    echo           = c.echo;
+	    verbose        = c.verbose;
+	    prompt         = c.prompt;
+	    check          = c.check;
+	    priority       = c.priority;
 
 	    add_destroy_callback();
 	}
@@ -115,6 +117,7 @@ public:
 	    command == c.command 
 	    && origin == c.origin 
 	    && callback == c.callback 
+	    && extra_callback == c.extra_callback 
 	    && data == c.data
 	    && echo == c.echo
 	    && verbose == c.verbose
