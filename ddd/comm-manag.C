@@ -697,7 +697,7 @@ static void SourceDoneCB(const string& answer, void *qu_data)
     unlink(info->tempfile);
 
     string a = downcase(answer);
-    if (a.contains(info->tempfile) && a.contains("error"))
+    if (a.contains(downcase(info->tempfile)) && a.contains("error"))
     {
 	// We've had an error while sourcing the file.  This keeps GDB
 	// from reading the entire file, so we issue commands the
