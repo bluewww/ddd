@@ -34,7 +34,7 @@ char SpinBox_rcsid[] =
 #endif
 
 // #define as 0 to rely exclusively on our replacement routines
-// #define USE_XM_SPINBOX 0
+#define USE_XM_SPINBOX 0
 
 #include "SpinBox.h"
 
@@ -49,6 +49,7 @@ char SpinBox_rcsid[] =
 #include <Xm/Xm.h>
 #include <Xm/ArrowB.h>
 #include <Xm/TextF.h>
+#include <Xm/RowColumn.h>
 
 // Whether to use XmSpinBox
 #ifndef USE_XM_SPINBOX
@@ -95,7 +96,7 @@ static void RepeatSpinCB(XtPointer, XtIntervalId *id)
     add_to_value(spin_text, spin_offset);
 
     spin_timer = XtAppAddTimeOut(XtWidgetToApplicationContext(spin_text),
-				 200, RepeatSpinCB, 0);
+				 150, RepeatSpinCB, 0);
 }
 
 static void StartSpinCB(Widget w, XtPointer client_data, XtPointer)
@@ -108,12 +109,12 @@ static void StartSpinCB(Widget w, XtPointer client_data, XtPointer)
     switch (direction)
     {
     case XmARROW_LEFT:
-    case XmARROW_UP:
+    case XmARROW_DOWN:
 	spin_offset = -1;
 	break;
 
     case XmARROW_RIGHT:
-    case XmARROW_DOWN:
+    case XmARROW_UP:
 	spin_offset = +1;
 	break;
 
@@ -154,7 +155,8 @@ static Widget create_spin_arrow(Widget parent, unsigned char direction,
     XtSetArg(args[arg], XmNarrowDirection,  direction);  arg++;
     XtSetArg(args[arg], XmNshadowThickness, 0);          arg++;
     XtSetArg(args[arg], XmNforeground,      foreground); arg++;
-    Widget arrow = XmCreateArrowButton(parent, (char *)"arrow", args, arg);
+    Widget arrow = XmCreateArrowButton(parent, 
+				       (char *)"spinBoxArrow", args, arg);
     XtManageChild(arrow);
 
     XtAddCallback(arrow, XmNarmCallback, StartSpinCB, XtPointer(text));
@@ -182,7 +184,7 @@ Widget CreateSpinBox(Widget parent, String name, ArgList _args, Cardinal _arg)
 
 #if USE_XM_SPINBOX
     XtSetArg(args[arg], XmNhighlightThickness, 0); arg++;
-    spin = XmCreateSpinBox(parent, "spin", args, arg);
+    spin = XmCreateSpinBox(parent, (char *)"spin", args, arg);
     XtManageChild(spin);
 #endif
 
@@ -190,8 +192,17 @@ Widget CreateSpinBox(Widget parent, String name, ArgList _args, Cardinal _arg)
     XtManageChild(text);
     
 #if !USE_XM_SPINBOX
-    create_spin_arrow(parent, XmARROW_LEFT,  text);
-    create_spin_arrow(parent, XmARROW_RIGHT, text);
+    XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
+    XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
+    XtSetArg(args[arg], XmNborderWidth,  0); arg++;
+    XtSetArg(args[arg], XmNspacing,      0); arg++;
+    XtSetArg(args[arg], XmNadjustMargin, False); arg++;
+    XtSetArg(args[arg], XmNorientation, XmVERTICAL); arg++;
+    spin = XmCreateRowColumn(parent, (char *)"spin", args, arg);
+    XtManageChild(spin);
+
+    create_spin_arrow(spin, XmARROW_UP,  text);
+    create_spin_arrow(spin, XmARROW_DOWN, text);
 #endif
 
     delete[] args;
