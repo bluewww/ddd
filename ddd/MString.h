@@ -102,7 +102,7 @@ public:
     MString& prepend(const MString& m)
     {
 	XmString old = _mstring;
-	_mstring = XmStringConcat(_mstring, m._mstring);
+	_mstring = XmStringConcat(m._mstring, _mstring);
 	XmStringFree(old);
 
 	return *this;
