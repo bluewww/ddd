@@ -192,4 +192,10 @@ Volunteers for fixing these and other bugs are welcome!
      hannu@roope.cctap.carel.fi (Hannu Mallat) states that DDD usually
      kept crashing right in the start or a bit later.
 
-045. (Insert your bug here)
+045. The distributed DDD binary for Linux crashes on some machines as
+     soon as `Open Source' is selected.  As a simple workaround, use
+     the GDB `file' and `core' commands.  As the Linux binary runs
+     perfectly well on the machine it was generated, we suspect the bug
+     is due to a shared library mismatch.
+
+046. (Insert your bug here)
