@@ -291,3 +291,6 @@ Delay::~Delay()
 	}
     }
 }
+
+
+// bullmann@fzi.de (Joerg Bullmann) says a dummy comment is required here...
