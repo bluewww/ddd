@@ -85,6 +85,9 @@ string gdb_question(const string& command, int timeout, bool verbatim)
     if (gdb_question_running)
 	return NO_GDB_ANSWER;
 
+    if (gdb->recording())
+	return NO_GDB_ANSWER;
+
     // Block against reentrant calls
     gdb_question_running = true;
 
