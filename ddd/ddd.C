@@ -2084,18 +2084,14 @@ int main(int argc, char *argv[])
     bool lock_ok = lock_ddd(toplevel, lock_info);
     if (!lock_ok)
     {
-	ostrstream os;
-	os << "Warning: another " DDD_NAME " is running (pid "
-	   << lock_info.pid;
+	// A minimal warning.
+	messages << "Another " DDD_NAME " is running (pid "
+		 << lock_info.pid;
 	if (lock_info.hostname != fullhostname())
-	    os << ", host " << cook(lock_info.hostname);
+	    messages << ", host " << cook(lock_info.hostname);
 	if (lock_info.display != XDisplayString(XtDisplay(toplevel)))
-	    os << ", display " << cook(lock_info.display);
-	os << ")\n";
-
-	string msg(os);
-	messages << msg;
-	cerr << msg;
+	    messages << ", display " << cook(lock_info.display);
+	messages << ")\n";
     }
 
     // Put saved options back again
