@@ -222,6 +222,7 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
     switch (dv->type())
     {
     case Simple:
+    {
 	if (dv->collapsed())
 	    vbox = eval("collapsed_simple_value");
 	else
@@ -231,10 +232,12 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
 		vbox = eval("numeric_value", dv->value());
 	    else
 		vbox = eval("simple_value", dv->value());
-	    break;
 	}
+	break;
+    }
 
     case Text:
+    {
 	if (dv->collapsed())
 	    vbox = eval("collapsed_text_value");
 	else
@@ -260,8 +263,10 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
 	    delete[] lines;
 	}
 	break;
+    }
 
     case Pointer:
+    {
 	if (dv->collapsed())
 	    vbox = eval("collapsed_pointer_value");
 	else if (dv->dereferenced())
@@ -269,8 +274,10 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
 	else
 	    vbox = eval("pointer_value", dv->value());
 	break;
+    }
 
     case Array:
+    {
 	if (dv->collapsed())
 	    vbox = eval("collapsed_array");
 	else
@@ -407,60 +414,79 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
 	    }
 	}
 	break;
+    }
+
+    case Sequence:
+    {
+	if (dv->collapsed())
+	    vbox = eval("collapsed_sequence_value");
+	else
+	{
+	    // Create children
+	    ListBox* args = new ListBox;
+	    int count = dv->nchildren();
+	    for (int i = 0; i < count; i++)
+		*args += create_value_box(dv->get_child(i));
+
+	    vbox = eval("sequence_value", args);
+	    args->unlink();
+	}
+	break;
+    }
 
     case List:
-    case Sequence:
     case StructOrClass:
     case BaseClass:
-	{
-	    String collapsed_value = (dv->type() == List ? 
-				      "collapsed_list_value" :
-				      "collapsed_struct_value");
-	    String empty_value     = (dv->type() == List ? 
-				      "empty_list_value" :
-				      "empty_struct_value");
-	    String member_name     = (dv->type() == List ? 
-				      "list_member_name" :
-				      "struct_member_name");
-	    String value           = (dv->type() == List ? 
-				      "list_value" :
-				      "struct_value");
+    {
+	String collapsed_value = (dv->type() == List ? 
+				  "collapsed_list_value" :
+				  "collapsed_struct_value");
+	String empty_value     = (dv->type() == List ? 
+				  "empty_list_value" :
+				  "empty_struct_value");
+	String member_name     = (dv->type() == List ? 
+				  "list_member_name" :
+				  "struct_member_name");
+	String value           = (dv->type() == List ? 
+				  "list_value" :
+				  "struct_value");
 
-	    if (dv->collapsed())
-		vbox = eval(collapsed_value);
+	if (dv->collapsed())
+	    vbox = eval(collapsed_value);
+	else
+	{
+	    int count = dv->nchildren();
+	    if (count == 0)
+		vbox = eval(empty_value);
 	    else
 	    {
-		int count = dv->nchildren();
-		if (count == 0)
-		    vbox = eval(empty_value);
-		else
+		// Determine maximum member name width
+		int max_member_name_width = 0;
+		int i;
+		for (i = 0; i < count; i++)
 		{
-		    // Determine maximum member name width
-		    int max_member_name_width = 0;
-		    int i;
-		    for (i = 0; i < count; i++)
-		    {
-			string child_member_name = dv->get_child(i)->name();
-			Box *box = eval(member_name, child_member_name);
-			max_member_name_width = 
-			    max(max_member_name_width, box->size(X));
-			box->unlink();
-		    }
-
-		    // Create children
-		    ListBox* args = new ListBox;
-		    for (i = 0; i < count; i++)
-			*args += create_value_box(dv->get_child(i), 
-						  max_member_name_width);
-
-		    vbox = eval(value, args);
-		    args->unlink();
+		    string child_member_name = dv->get_child(i)->name();
+		    Box *box = eval(member_name, child_member_name);
+		    max_member_name_width = 
+			max(max_member_name_width, box->size(X));
+		    box->unlink();
 		}
+
+		// Create children
+		ListBox* args = new ListBox;
+		for (i = 0; i < count; i++)
+		    *args += create_value_box(dv->get_child(i), 
+					      max_member_name_width);
+
+		vbox = eval(value, args);
+		args->unlink();
 	    }
 	}
 	break;
+    }
 
     case Reference:
+    {
 	if (dv->collapsed())
 	    vbox = eval("collapsed_reference_value");
 	else
@@ -473,6 +499,7 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
 	    args->unlink();
 	}
 	break;
+    }
 
     case UnknownType:
 	assert(0);

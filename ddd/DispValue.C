@@ -253,6 +253,36 @@ DispValue::DispValue (const DispValue& dv)
 
 DispValue *DispValue::dup() { return new DispValue(*this); }
 
+// True if more sequence members are coming
+bool DispValue::sequence_pending(const string& value) const
+{
+    string v = value;
+    strip_leading_space(v);
+
+    if (v != "" && depth() == 0)
+	return true;		// Still more to read
+
+    if (!is_delimited(value))
+	return true;		// Not at delimiter - more stuff follows
+
+    if (parent() != 0 && parent()->type() == StructOrClass)
+    {
+	// Check for invalid member name.  If we're not at a delimiter,
+	// but cannot read the next member name, return true.
+	if (is_ending(v) || v.contains(',', 0) || v.contains(';', 0))
+	    return false;
+
+	if (!read_str_or_cl_next(v))
+	    return false;
+
+	if (read_member_name(v) == "")
+	    return true;
+    }
+
+    // Sequence is done
+    return false;
+}
+
 
 // Initialization
 void DispValue::init(string& value, DispValueType given_type)
@@ -260,6 +290,8 @@ void DispValue::init(string& value, DispValueType given_type)
 #if LOG_CREATE_VALUES
     clog << "Building value from " << quote(value) << "\n";
 #endif
+
+    string initial_value = value;
 
     if (background(value.length()))
     {
@@ -287,92 +319,12 @@ void DispValue::init(string& value, DispValueType given_type)
     {
 
     case Simple:
-    case Sequence:
     {
-	if (myparent == 0 || myparent->type() != Sequence)
-	{
-	    // Attempt to build a sequence from consecutive values
-	    string initial_value = value;
-
-	    mytype = Sequence;
-
-	    v.str_or_cl = new StructOrClassDispValue;
-	    v.str_or_cl->member_count = 0;
-
-	    // Consume entire value
-	    bool consume = true;
-	    while (consume)
-	    {
-		strip_leading_space(value);
-		string old_value = value;
-		DispValue *dv = new DispValue(this, depth() + 1, value, 
-					      myfull_name, myfull_name);
-
-		if (value == old_value)
-		{
-		    // Nothing consumed - stop here
-		    consume = false;
-		}
-		else if (dv->type() == Simple && dv->value() == "")
-		{
-		    // Empty value - stop here
-		    consume = false;
-		}
-
-		if (!consume)
-		{
-		    // Discard the value just read
-		    delete dv;
-		}
-		else
-		{
-		    v.str_or_cl->members[v.str_or_cl->member_count++] = dv;
-		}
-	    }
-
-	    if (v.str_or_cl->member_count == 1)
-	    {
-		// We only found one value.  Change type to Simple.
-		for (int i = 0; i < v.str_or_cl->member_count; i++)
-		    delete v.str_or_cl->members[i];
-
-		mytype = Simple;
-		value = initial_value;
-	    }
-	}
-	else
-	{
-	    // Our parent is a Sequence.  If we keep on reading
-	    // Sequences, we'll end in an endless recursion.  Make
-	    // this a Simple.
-	    mytype = Simple;
-	}
-
-	if (mytype == Simple)
-	{
-	    v.simple = new SimpleDispValue;
-	    v.simple->value = 
-		read_simple_value(value, depth(), ignore_repeats);
-	}
-
+	v.simple = new SimpleDispValue;
+	v.simple->value = read_simple_value(value, depth(), ignore_repeats);
 #if LOG_CREATE_VALUES
-	if (mytype == Simple)
-	{
-	    clog << mytype << ": " << quote(v.simple->value) << "\n";
-	}
-	else if (mytype == Sequence)
-	{
-	    clog << mytype << " "
-		 << quote(myfull_name)
-		 << " has " << v.str_or_cl->member_count << " members\n";
-	}
-	else
-	{
-	    assert(0);
-	    abort();
-	}
+	clog << mytype << ": " << quote(v.simple->value) << "\n";
 #endif
-
 	break;
     }
 
@@ -571,14 +523,44 @@ void DispValue::init(string& value, DispValueType given_type)
 
 	bool more_values = true;
 	string member_name = read_member_name (value);
-	int i = 0;
-	while (more_values && member_name != "")
+	while (more_values)
 	{
-	    v.str_or_cl->member_count++;
-	    if (is_BaseClass_name (member_name) || member_name == " ")
+	    if (member_name == "")
+	    {
+		// Some struct stuff that is not a member
+		string old_value = value;
+
+		DispValue *dv = 
+		    new DispValue(this, depth() + 1, value, myfull_name, "");
+
+		bool consume = true;
+		if (value == old_value)
+		{
+		    // Nothing consumed - stop here
+		    consume = false;
+		}
+		else if (dv->type() == Simple && dv->value() == "")
+		{
+		    // Empty value - stop here
+		    consume = false;
+		}
+
+		if (!consume)
+		{
+		    // Discard the value just read
+		    delete dv;
+		}
+		else
+		{
+		    v.str_or_cl->members[v.str_or_cl->member_count++] = dv;
+		}
+
+		more_values = read_str_or_cl_next (value);
+	    }
+	    else if (is_BaseClass_name (member_name) || member_name == " ")
 	    {
 		// Anonymous union
-		v.str_or_cl->members[i] = 
+		v.str_or_cl->members[v.str_or_cl->member_count++] = 
 		    new DispValue (this, depth() + 1, value, myfull_name,
 				   member_name);
 		more_values = read_str_or_cl_next (value);
@@ -595,12 +577,11 @@ void DispValue::init(string& value, DispValueType given_type)
 		else
 		    full_name = member_prefix + member_name;
 
-		v.str_or_cl->members[i] = 
+		v.str_or_cl->members[v.str_or_cl->member_count++] = 
 		    new DispValue (this, depth() + 1, value, 
 				   full_name, member_name);
 		more_values = read_str_or_cl_next (value);
 	    }
-	    i++;
 	    if (more_values)
 		member_name = read_member_name (value);
 
@@ -664,9 +645,67 @@ void DispValue::init(string& value, DispValueType given_type)
 	break;
     }
 
+    case Sequence:
     case UnknownType:
 	assert(0);
 	abort();
+    }
+
+    if (parent() == 0 || parent()->type() != Sequence)
+    {
+	bool need_clear = true;
+	while (sequence_pending(value))
+	{
+	    if (need_clear)
+	    {
+#if LOG_CREATE_VALUES
+		clog << "Sequence detected at " << quote(value) << "\n";
+#endif
+
+		clear();
+		value = initial_value;
+
+		mytype = Sequence;
+
+#if LOG_CREATE_VALUES
+		clog << mytype << " " << quote(myfull_name) << "\n";
+#endif
+
+		v.str_or_cl = new StructOrClassDispValue;
+		v.str_or_cl->member_count = 0;
+		need_clear = false;
+	    }
+	    
+	    string old_value = value;
+
+	    DispValue *dv = new DispValue(this, depth() + 1, value, 
+					  myfull_name, myfull_name);
+
+	    if (value == old_value)
+	    {
+		// Nothing consumed - stop here
+		delete dv;
+		break;
+	    }
+	    else if (dv->type() == Simple && dv->value() == "")
+	    {
+		// Empty value - ignore
+		delete dv;
+	    }
+	    else
+	    {
+		v.str_or_cl->members[v.str_or_cl->member_count++] = dv;
+	    }
+	}
+
+#if LOG_CREATE_VALUES
+	if (!need_clear)
+	{
+	    clog << mytype << " "
+		 << quote(myfull_name)
+		 << " has " << v.str_or_cl->member_count << " members\n";
+	}
+#endif
     }
 
     background(value.length());
@@ -1075,6 +1114,8 @@ void DispValue::update(string& value, bool& was_changed, bool& was_initialized,
 #endif
 
     DispValueType new_type = given_type;
+    if (mytype == Sequence)
+	new_type = Sequence;
     if (new_type == UnknownType && print_name == "")
 	new_type = Text;
     if (new_type == UnknownType && is_user_command (print_name))
@@ -1232,6 +1273,21 @@ void DispValue::update(string& value, bool& was_changed, bool& was_initialized,
     }
 
     case Sequence:
+    {
+	int i;
+	for (i = 0; i < v.str_or_cl->member_count; i++)
+	{
+	    v.str_or_cl->members[i]->update(value, was_changed, 
+					    was_initialized);
+	    if (was_initialized)
+		break;
+	    if (background(value.length()))
+		break;
+	}
+
+	break;
+    }
+
     case List:
     case StructOrClass:
     case BaseClass:
@@ -1256,8 +1312,25 @@ void DispValue::update(string& value, bool& was_changed, bool& was_initialized,
 	for (i = 0; more_values && i < v.str_or_cl->member_count; i++)
 	{
 	    string member_name = read_member_name (value);
-		
-	    if (is_BaseClass_name (member_name))
+
+	    if (member_name == "")
+	    {
+		if (v.str_or_cl->members[i]->full_name() == myfull_name)
+		{
+		    v.str_or_cl->members[i]->update(value, was_changed,
+						    was_initialized);
+		    if (was_initialized)
+			break;
+		    if (background(value.length()))
+			break;
+		    more_values = read_str_or_cl_next (value);
+		}
+		else
+		{
+		    // Ignore previously empty value
+		}
+	    }
+	    else if (is_BaseClass_name (member_name))
 	    {
 		if (v.str_or_cl->members[i]->
 		    new_BaseClass_name(member_name))

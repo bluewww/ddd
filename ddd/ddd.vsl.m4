@@ -1,4 +1,4 @@
-// $Id$
+// $Id$ -*- c++ -*-
 // VSL functions for DDD graph display
 // Generated automatically from ddd.vsl.m4 and colors.m4 by M4.
 include(ifdef(`srcdir',srcdir()/colors.m4,colors.m4))dnl
@@ -57,6 +57,16 @@ array_color(box)     = color(box, "DATA_COLOR");
 reference_color(box) = color(box, "DATA_COLOR");
 changed_color(box)   = color(box, "FOREGROUND_COLOR", "CHANGED_COLOR");
 
+// Non-expanding alignments
+fixed_hlist(_) = hnull();
+fixed_hlist(_, head) = hfix(head);
+fixed_hlist(sep, head, ...) = hfix(head) & sep & fixed_hlist(sep, ...);
+
+fixed_vlist(_) = vnull();
+fixed_vlist(_, head) = vfix(head);
+fixed_vlist(sep, head, ...) = vfix(head) | sep | fixed_vlist(sep, ...);
+
+
 // The title
 title (disp_nr, name) -> 
   title_color(rm(disp_nr & ": ") & bf(name) & hfill());
@@ -114,7 +124,8 @@ vertical_array (...) ->
 
 // Horizontal array
 horizontal_array (...) -> 
-  array_color(frame(indent(hlist((vwhite(3) & vrule() & vwhite(3)), ...))));
+  array_color(frame(indent(fixed_hlist(vwhite() & vrule() & vwhite(), ...))) 
+	      & hfill());
 
 // Two-dimensional arrays
 twodim_array (...) -> 
@@ -124,7 +135,7 @@ twodim_array_elem (...) ->
 
 // Struct value
 struct_value (...) -> 
-  struct_color(frame(indent(valign(...)) & hfill()));
+  struct_color(frame(indent(valign(...))));
 
 // Collapsed struct
 collapsed_struct_value () -> 
@@ -145,7 +156,7 @@ struct_member (name, value, name_width) ->
 
 // List value
 list_value (...) -> 
-  list_color(valign(...) & hfill());
+  list_color(valign(...));
 
 // Collapsed list
 collapsed_list_value () -> 
@@ -163,6 +174,14 @@ list_member_name (name) ->
 list_member (name, value, name_width) -> 
   vcenter(rm(name) | hspace(name_width)) 
   & vcenter(rm(" = ")) & rm(value) & hfill();
+
+// Sequence
+sequence_value (...) -> 
+  simple_color(fixed_hlist(vwhite(), ...) & hfill());
+
+// Collapsed sequence
+collapsed_sequence_value () -> 
+  collapsed_simple_value();
 
 // Reference
 reference_value (ref, value) -> 

@@ -632,9 +632,24 @@ string read_next_display (string& displays, GDBAgent *gdb)
     }
     else
     {
-	do {
+	for (;;)
+	{
 	    next_display += read_token(displays);
-	} while (displays != "" && !next_is_nl(displays));
+
+	    if (displays == "")
+		break;		// All done
+
+	    if (next_display.contains(":()", -1))
+	    {
+		// AIX DBX gives weird `members' like
+		// "pcg =     OM_PCGDownCasters:()\n(_root = 0x2004c248 ..."
+		// Be sure to continue such displays.
+		continue;
+	    }
+
+	    if (next_is_nl(displays))
+		break;		// At end of display
+	}
     }
     displays = displays.after('\n');
 

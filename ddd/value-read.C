@@ -417,15 +417,30 @@ string read_token(string& value)
     return token;
 }
 
-static bool is_ending(const string& value)
+bool is_ending(const string& value)
 {
-    return value.contains('}', 0)
-	|| value.contains(')', 0)
-	|| value.contains(']', 0)
-	|| value.contains("end\n", 0)
-	|| value.contains("END\n", 0)
-	|| value == "end"
-	|| value == "END";
+    string v = value;
+    strip_leading_space(v);
+
+    return v.contains('}', 0)
+	|| v.contains(')', 0)
+	|| v.contains(']', 0)
+	|| v.contains("end\n", 0)
+	|| v.contains("END\n", 0)
+	|| v == "end"
+	|| v == "END";
+}
+
+bool is_delimited(const string& value)
+{
+    if (value.contains('\n', 0)
+	|| value.contains(',', 0)
+	|| value.contains(';', 0)
+	|| value == ""
+	|| value.matches(rxwhite))
+	return true;
+
+    return is_ending(value);
 }
 
 // Read a simple value from VALUE.
@@ -437,8 +452,7 @@ string read_simple_value(string& value, int depth, bool ignore_repeats)
 
     string ret = "";
     while (value != "" && value[0] != '\n' && 
-	   (depth == 0 || 
-	    (!is_ending(value) && value[0] != ',' && value[0] != ';')))
+	   (depth == 0 || (!is_delimited(value))))
     {
 	ret += read_token(value);
 

@@ -98,5 +98,11 @@ bool is_BaseClass_name (const string& name);
 // Cut off basename part (e.g. "foo.<Base>" becomes "foo")
 void cut_BaseClass_name (string& full_name);
 
+// True if VALUE starts with `END', `}', or likewise
+bool is_ending(const string& value);
+
+// True if VALUE is ending or starts with `,', `;', or likewise
+bool is_delimited(const string& value);
+
 #endif // _DDD_value_read_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

@@ -90,6 +90,9 @@ protected:
     void _expand()    { myexpanded = true;  }
     void _collapse()  { myexpanded = false; }
 
+    // True if more sequence members are coming
+    bool sequence_pending(const string& value) const;
+
 public:
     // Global settings
     static bool expand_repeated_values;
