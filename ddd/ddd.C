@@ -4677,7 +4677,8 @@ static bool have_decorated_transients()
 // Startup Logo
 //-----------------------------------------------------------------------------
 
-static Widget logo_shell = 0;
+static Widget logo_shell  = 0;
+static _Delay *logo_delay = 0;
 
 static void popdown_startup_logo(XtPointer, XtIntervalId *)
 {
@@ -4686,6 +4687,9 @@ static void popdown_startup_logo(XtPointer, XtIntervalId *)
 	popdown_shell(logo_shell);
 	DestroyWhenIdle(logo_shell);
 	logo_shell = 0;
+
+	delete logo_delay;
+	logo_delay = 0;
     }
 }
 
@@ -4711,6 +4715,8 @@ static void popup_startup_logo(Widget parent, string color_key)
     Widget logo = XmCreateLabel(logo_shell, "logo", args, arg);
     XtManageChild(logo);
     XtRealizeWidget(logo_shell);
+
+    logo_delay = new _Delay(logo_shell);
 
     Pixmap pixmap = dddlogo(logo, color_key);
     XtVaSetValues(logo, XmNlabelPixmap, pixmap, NULL);
