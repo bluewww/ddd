@@ -741,6 +741,7 @@ void SaveSessionAsCB(Widget w, XtPointer, XtPointer)
 
     if (dump_core_w == 0)
     {
+	// Create panel
 	Widget panel = MMcreateButtonPanel(dialog, "panel", gcore_items);
 	XtVaSetValues(panel, 
 		      XmNorientation, XmHORIZONTAL,
@@ -751,6 +752,10 @@ void SaveSessionAsCB(Widget w, XtPointer, XtPointer)
 		      XmNmarginHeight, 0,
 		      NULL);
 	MMaddCallbacks(gcore_items);
+
+	// Initialize: use `kill debuggee' as default item
+	XtCallActionProc(may_kill_w, "ArmAndActivate", 
+			 (XEvent *)0, (String *)0, 0);
     }
 
     ProgramInfo info;
