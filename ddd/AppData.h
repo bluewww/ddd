@@ -321,6 +321,10 @@
 #define XtCDeleteAliasDisplays   "DeleteAliasDisplays"
 #define XtNalign2dArrays         "align2dArrays"
 #define XtCAlign2dArrays         "Align2dArrays"
+#define XtNarrayOrientation      "arrayOrientation"
+#define XtNstructOrientation     "structOrientation"
+#define XtNshowMemberNames       "showMemberNames"
+#define XtCShowMemberNames       "ShowMemberNames"
 #define XtNexpandRepeatedValues  "expandRepeatedValues"
 #define XtCExpandRepeatedValues  "ExpandRepeatedValues"
 #define XtNbumpDisplays          "bumpDisplays"
@@ -551,6 +555,9 @@ struct AppData {
     Boolean   typed_aliases;
     Boolean   delete_alias_displays;
     Boolean   align_2d_arrays;
+    unsigned char array_orientation;
+    unsigned char struct_orientation;
+    Boolean   show_member_names;
     Boolean   expand_repeated_values;
     Boolean   bump_displays;
     Boolean   hide_inactive_displays;

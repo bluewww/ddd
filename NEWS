@@ -54,13 +54,14 @@ Source Navigation
   There is an additional button that loads libraries.
 
 
-
 Data exploration
 ----------------
 
-- Structs can now be rotated.  A horizontally displayed struct
-  saves space by omitting the member names; this very much looks like
-  a horizontal array.
+- You can rotate structs, saving space by omitting the member names.
+  A rotated struct looks very much like a horizontal array.
+
+- The last rotation setting is used for new displays and is saved
+  together with other DDD options.
 
 - Array slices `ARRAY[FROM..TO]' are much better supported:
   * By default, the displayed values are clustered and displayed like an 

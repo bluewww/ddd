@@ -43,11 +43,14 @@
 #include "DispValueT.h"
 #include "StringSA.h"
 #include "Box.h"
+#include <Xm/Xm.h>
 
 class Agent;
 class PlotAgent;
 
-enum DispValueAlignment {Vertical, Horizontal};
+typedef unsigned char DispValueOrientation;
+const unsigned char Vertical   = XmVERTICAL;
+const unsigned char Horizontal = XmHORIZONTAL;
 
 class DispValue {
     // General members
@@ -67,8 +70,8 @@ class DispValue {
     DispValueArray _children;	// Array or Struct members 
     int _index_base;		// First index
     bool _have_index_base;	// True if INDEX_BASE is valid
-    DispValueAlignment _alignment; // Array alignment
-    bool _has_plot_alignment;   // True if plotter set the alignment
+    DispValueOrientation _orientation; // Array orientation
+    bool _has_plot_orientation;   // True if plotter set the orientation
 
     // Plotting stuff
     PlotAgent *_plotter;	// Plotting agent
@@ -250,13 +253,13 @@ public:
     const string& name()       const { return print_name; }
     const string& addr()       const { return myaddr; }
     int repeats()              const { return myrepeats; }
-    bool has_plot_alignment()  const { return _has_plot_alignment; }
+    bool has_plot_orientation()  const { return _has_plot_orientation; }
 
     int& repeats()       { clear_cached_box(); return myrepeats; }
     string& full_name()  { clear_cached_box(); return myfull_name; }
     string& name()       { clear_cached_box(); return print_name; }
     bool& enabled()      { clear_cached_box(); return myenabled; }
-    bool& has_plot_alignment() { return _has_plot_alignment; }
+    bool& has_plot_orientation() { return _has_plot_orientation; }
 
     bool is_changed() const { return changed; }
     bool descendant_changed() const;
@@ -306,12 +309,8 @@ public:
     // Type-specific modifiers
 
     // Array
-    void set_alignment(DispValueAlignment alignment);
-
-    bool vertical_aligned()   const { return _alignment == Vertical; }
-    bool horizontal_aligned() const { return _alignment == Horizontal; }
-    void align_vertical()     { set_alignment(Vertical); }
-    void align_horizontal()   { set_alignment(Horizontal); }
+    void set_orientation(DispValueOrientation orientation);
+    DispValueOrientation orientation() const { return _orientation; }
 
     // Pointer
     void dereference(bool set = true)

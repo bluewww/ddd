@@ -792,15 +792,17 @@ void DataDisp::toggle_rotate(DispValue *dv, bool all)
     if (dv == 0)
 	return;
 
-    if (dv->horizontal_aligned())
+    switch (dv->orientation())
     {
-	dv->align_vertical();
+    case Horizontal:
+	dv->set_orientation(Vertical);
 	dv->set_member_names(true);
-    }
-    else
-    {
-	dv->align_horizontal();
+	break;
+    
+    case Vertical:
+	dv->set_orientation(Horizontal);
 	dv->set_member_names(false);
+	break;
     }
 
     if (all)
@@ -2183,7 +2185,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 	switch (disp_value_arg->type())
 	{
 	case Simple:
-	    rotate_plot_ok = disp_value_arg->has_plot_alignment();
+	    rotate_plot_ok = disp_value_arg->has_plot_orientation();
 	    break;
 
 	case Text:
@@ -3566,7 +3568,7 @@ DispNode *DataDisp::new_user_node(const string& name,
 	{
 	    // Align array slices horizontally
 	    DispValue *dv = dn->value();
-	    dv->align_horizontal();
+	    dv->set_orientation(Horizontal);
 	    dv->set_member_names(false);
 	    dn->refresh();
 	}

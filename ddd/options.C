@@ -2008,6 +2008,29 @@ static string widget_value(Widget w, String name, bool check_default = false)
 			    check_default);
 }
 
+static string orientation_app_value(const string& name, unsigned char v,
+				    bool check_default = false)
+{
+    string value = "XmBAD_ORIENTATION";
+
+    switch (v)
+    {
+    case XmVERTICAL:
+	value = "XmVERTICAL";
+	break;
+
+    case XmHORIZONTAL:
+	value = "XmHORIZONTAL";
+	break;
+
+    case XmNO_ORIENTATION:
+	value = "XmNO_ORIENTATION";
+	break;
+    }
+
+    return app_value(name, value, check_default);
+}
+
 static string paned_widget_size(Widget w, bool height_only = false)
 {
     string s;
@@ -2507,6 +2530,13 @@ bool save_options(unsigned long flags)
     os << bool_app_value(XtNdetectAliases,  app_data.detect_aliases)   << '\n';
     os << bool_app_value(XtNclusterDisplays,app_data.cluster_displays) << '\n';
     os << bool_app_value(XtNalign2dArrays,  app_data.align_2d_arrays)  << '\n';
+
+    os << orientation_app_value(XtNarrayOrientation, 
+				app_data.array_orientation) << '\n';
+    os << orientation_app_value(XtNstructOrientation, 
+				app_data.struct_orientation) << '\n';
+    os << bool_app_value(XtNshowMemberNames,
+			 app_data.show_member_names) << '\n';
 
     // Tips
     os << "\n! Tips.\n";

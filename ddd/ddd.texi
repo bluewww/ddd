@@ -655,7 +655,7 @@ Rather than using @samp{Print} at each stop to see the current value of
 automatically displayed.  With @samp{a[0]@@(argc - 1)} still being shown
 in the argument field, click on @samp{Display}.  The contents of
 @samp{a} are now shown in a new window, the @dfn{Data Window}.  Click on
-@samp{Rotate} to align the array horizontally.
+@samp{Rotate} to rotate the array horizontally.
 
 @ifnotinfo
 @sp 1
@@ -5622,8 +5622,8 @@ Use @samp{Edit @result{} Undo} to undo disabling or enabling displays.
 @subsubsection Rotating Displays
 @cindex Display, rotating
 
-Arrays, structures and lists can be aligned horizontally or vertically.
-To change the alignment of a display, select it and then click on the
+Arrays, structures and lists can be oriented horizontally or vertically.
+To change the orientation of a display, select it and then click on the
 @samp{Rotate} button.
 
 As a faster alternative, you can also press @emph{mouse button 3} on the
@@ -5635,7 +5635,7 @@ array and select @samp{Rotate} from the popup menu.
 @sp 1
 @end ifnotinfo
 
-If a structure or list is aligned horizontally, @value{DDD} suppresses
+If a structure or list is oriented horizontally, @value{DDD} suppresses
 the member names.  This can be handy for saving space.
 
 
@@ -6667,7 +6667,7 @@ Scalars that are displayed together with arrays can be displayed either
 as vertical lines or horizontal lines.  By default, scalars are plotted
 as horizontal lines.  However, if a scalar is a valid index for an array
 that was previously plotted, it is shown as a vertical line.  You can
-change this initial alignment by selecting the scalar display, followed
+change this initial orientation by selecting the scalar display, followed
 by @samp{Rotate}.
 
 
@@ -9598,6 +9598,11 @@ If @samp{off}, @value{DDD} treats a two-dimensional array as an
 array of one-dimensional arrays, each aligned on its own.
 @end defvr
 
+@defvr Resource arrayOrientation (class Orientation)
+How arrays are to be oriented.  Possible values are @samp{XmVERTICAL}
+(default) and @samp{XmHORIZONTAL}.
+@end defvr
+
 @defvr Resource autoCloseDataWindow (class AutoClose)
 If this is @samp{on} (default) and @value{DDD} is in stacked window
 mode, deleting the last display automatically closes the data window.
@@ -9655,6 +9660,16 @@ Default is @samp{on}.
 @defvr Resource showDependentDisplayTitles (class ShowDisplayTitles)
 Whether to assign titles to dependent displays or not.  Default is
 @samp{off}.
+@end defvr
+
+@defvr Resource showMemberNames (class ShowMemberNames)
+Whether to show struct member names or not.
+Default is @samp{on}.
+@end defvr
+
+@defvr Resource structOrientation (class Orientation)
+How structs are to be oriented.  Possible values are @samp{XmVERTICAL}
+(default) and @samp{XmHORIZONTAL}.
 @end defvr
 
 @defvr Resource typedAliases (class TypedAliases)

@@ -389,7 +389,7 @@ Box *DispBox::_create_value_box(const DispValue *dv, const DispValue *parent)
 		    // Two-dimensional array
 		    ListBox *table = new ListBox;
 
-		    if (dv->vertical_aligned())
+		    if (dv->orientation() == Vertical)
 		    {
 			// Sub-arrays are aligned vertically;
 			// each sub-array is laid out horizontally
@@ -453,7 +453,7 @@ Box *DispBox::_create_value_box(const DispValue *dv, const DispValue *parent)
 		    for (int i = 0; i < count; i++)
 			args += create_value_box(dv->child(i), dv);
 
-		    if (dv->vertical_aligned())
+		    if (dv->orientation() == Vertical)
 			vbox = eval("vertical_array", args);
 		    else
 			vbox = eval("horizontal_array", args);
@@ -515,7 +515,7 @@ Box *DispBox::_create_value_box(const DispValue *dv, const DispValue *parent)
 	    for (int i = 0; i < count; i++)
 		args += create_value_box(dv->child(i), dv);
 
-	    if (dv->vertical_aligned())
+	    if (dv->orientation() == Vertical)
 		vbox = eval(vertical, args);
 	    else
 		vbox = eval(horizontal, args);

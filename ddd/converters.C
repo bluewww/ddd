@@ -758,6 +758,8 @@ static Boolean CvtStringToOrientation(Display*         display,
 	done(unsigned char, XmVERTICAL);
     else if (theOrientation == "horizontal")
 	done(unsigned char, XmHORIZONTAL);
+    else if (theOrientation == "no_orientation")
+	done(unsigned char, XmNO_ORIENTATION);
     else
     {
 	XtDisplayStringConversionWarning(display, fromVal->addr, 

@@ -148,8 +148,8 @@ DispValue::DispValue (DispValue* parent,
     : mytype(UnknownType), myexpanded(true), myenabled(true),
       myfull_name(f_n), print_name(p_n), changed(false), myrepeats(1),
       _value(""), _dereferenced(false), _member_names(true), _children(0),
-      _index_base(0), _have_index_base(false), _alignment(Horizontal),
-      _has_plot_alignment(false), _plotter(0), 
+      _index_base(0), _have_index_base(false), _orientation(Horizontal),
+      _has_plot_orientation(false), _plotter(0), 
       _cached_box(0), _cached_box_change(0),
       _links(1)
 {
@@ -168,8 +168,8 @@ DispValue::DispValue (const DispValue& dv)
       _value(dv.value()), _dereferenced(false), 
       _member_names(dv.member_names()), _children(dv.nchildren()), 
        _index_base(dv._index_base), 
-      _have_index_base(dv._have_index_base), _alignment(dv._alignment),
-      _has_plot_alignment(false), _plotter(0),
+      _have_index_base(dv._have_index_base), _orientation(dv._orientation),
+      _has_plot_orientation(false), _plotter(0),
       _cached_box(0), _cached_box_change(0),
       _links(1)
 {
@@ -383,7 +383,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
     {
 	string base = normalize_base(myfull_name);
 
-	_alignment = Vertical;
+	_orientation = app_data.array_orientation;
 
 #if LOG_CREATE_VALUES
 	clog << mytype << ": " << "\n";
@@ -485,8 +485,8 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 	// FALL THROUGH
     case Struct:
     {
-	_alignment = Vertical;
-	_member_names = true;
+	_orientation  = app_data.struct_orientation;
+	_member_names = app_data.show_member_names;
 
 	bool found_struct_begin   = false;
 	bool read_multiple_values = false;
@@ -938,16 +938,32 @@ int DispValue::heightExpanded() const
     return d + 1;
 }
 
-void DispValue::set_alignment(DispValueAlignment alignment)
+void DispValue::set_orientation(DispValueOrientation orientation)
 {
-    if (_alignment == alignment)
+    if (_orientation == orientation)
 	return;
 
-    _alignment = alignment;
+    _orientation = orientation;
     clear_cached_box();
 
     if (type() == Simple && plotter() != 0)
 	plot();
+
+    // Save orientation for next time
+    switch (type())
+    {
+    case Array:
+	app_data.array_orientation = orientation;
+	break;
+
+    case List:
+    case Struct:
+	app_data.struct_orientation = orientation;
+	break;
+
+    default:
+	break;
+    }
 }
 
 void DispValue::set_member_names(bool value)
@@ -957,6 +973,9 @@ void DispValue::set_member_names(bool value)
 
     _member_names = value;
     clear_cached_box();
+
+    // Save setting for next time
+    app_data.show_member_names = value;
 }
 
 
@@ -1160,10 +1179,7 @@ DispValue *DispValue::_update(DispValue *source,
     // Copy the basic settings
     ret->myexpanded = expanded();
     ret->dereference(dereferenced());
-    if (vertical_aligned())
-	ret->align_vertical();
-    if (horizontal_aligned())
-	ret->align_horizontal();
+    ret->set_orientation(orientation());
     ret->set_member_names(member_names());
 
     unlink();
@@ -1498,11 +1514,11 @@ void DispValue::plot1d(PlotAgent *plotter, int ndim) const
 
     string val = num_value();
 
-    if (!has_plot_alignment())
+    if (!has_plot_orientation())
     {
-	// Determine initial alignment.
+	// Determine initial orientation.
 	// By default, this is plotted horizontally.
-	DispValueAlignment alignment = Horizontal;
+	DispValueOrientation orientation = Horizontal;
 
 	// But if this is an integral value that lies within the index
 	// limits of a previously plotted array, plot it vertically.
@@ -1512,15 +1528,15 @@ void DispValue::plot1d(PlotAgent *plotter, int ndim) const
 	    if (plotter->min_x() < plotter->max_x() &&
 		v >= plotter->min_x() && v <= plotter->max_x())
 	    {
-		alignment = Vertical;
+		orientation = Vertical;
 	    }
 	}
 	
-	((DispValue *)this)->_alignment = alignment;
-	((DispValue *)this)->_has_plot_alignment = true;
+	((DispValue *)this)->_orientation = orientation;
+	((DispValue *)this)->_has_plot_orientation = true;
     }
 
-    plotter->add_point(val, horizontal_aligned() ? 0 : 1);
+    plotter->add_point(val, orientation() == Horizontal ? 0 : 1);
     plotter->end_plot();
 }
 
