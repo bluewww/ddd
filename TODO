@@ -197,8 +197,9 @@ Volunteers for these and other projects are welcome!
 
 083. Include graphplace (or other graph layout) support.
 
-084. Support DBXes that don't know the `display' command, such as
-     IBM and DEC dbx.  Use `print' instead whenever the prompt comes.
+084* Support DBXes that don't know the `display' command, such as
+     IBM and DEC dbx.  Use `print' instead whenever the prompt comes;
+     see `DataDisp::refresh_display_command' for details.
 
 085. Include xDuel support.  See `http://www.math.tau.ac.il/~frangy/'
      for details.
@@ -206,12 +207,7 @@ Volunteers for these and other projects are welcome!
 086. Move the status line to the bottom and give one-liner
      explanations about items pointed at.
 
-087. Have configurable buttons that take their arguments from the
-     mouse buffer.
-
 088. Some suggestions by Oyvind Yrke <oyvind@stavanger.geoquest.slb.com>:
-
-     o Buttons for print* and display*, or better - programmable buttons
 
      o When setting a breakpoint, it should be possible to select from
        a list matching a regexp.  This feature would be particularly
@@ -222,10 +218,6 @@ Volunteers for these and other projects are welcome!
        fields of a (big) struct should be displayed.  In the current
        version, you have to display the whole struct, or display
        individual elements in separate boxes which wastes space.
-
-     o Change a variable by selecting it in the Data window.  A new
-       command along the lines of Derefence(), Hide() ... would be
-       Change value() that pops up a new dialog.
 
      o Ability to group variables as selections that can be
        enabled/disabled separately.  For big applications, the data
@@ -259,6 +251,4 @@ Volunteers for these and other projects are welcome!
 089. Have an `info source' popup menu that pops up when pointing at
      blank space.  (Info/Reload/Edit)
 
-090. Have an `Edit ()' button that allows users to modify data values.
-
-090. (Insert your project idea here)
+091. (Insert your project idea here)

@@ -5,19 +5,17 @@ DDD 1.5 (in development)
 ------------------------
 
     User-visible changes:
-    - Improved user interface.  The buttons on the bottom of the
-      command window and the source window are now located in a small
-      separate `command tool' window.  This command tool can be moved
-      wherever appropriate, leaving more space for window contents.
-      The old buttons can still be activated through resource
-      settings.
-    - Some buttons have been renamed for clarity: `Break' and `Clear' 
-      are now named `Break at' and `Clear at'; the `Interrupt' button
-      is now named `Break'.  Likewise, `Dereference' became `Display *'.
-    - The functionality of `Dependent display' and `New display' has
-      been merged into `New Display'.  If one display part is
-      selected, the new display is made dependent on the selected
-      display; otherwise, it is created as single new display.
+    - New command tool.  All command buttons that do not take
+      arguments are now located in the command tool, a small separate
+      window.  The command tool can be moved wherever appropriate,
+      leaving more space for window contents.
+    - User-defined buttons are now available.  They can also
+      be used to re-install the DDD 1.4 command buttons.
+    - A couple of buttons have been renamed for further clarity.
+    - `New display' subsumes `Dependent display': if a display is
+      selected, the new display is made dependent on it.
+    - Variable values can now be changed interactively through a
+      `Set ()' button.
 
     Changes in configuration and building:
     - Regular expressions now use the POSIX.2 standard regcomp/regexec
@@ -30,11 +28,15 @@ DDD 1.5 (in development)
       Thanks to Jacek Holeczek <holeczek@clri6f.gsi.de>.
 
     Several bug fixes, including:
-    - Improved directory support.  Sources and executables can reside 
+    - Improved directory support.  Sources and executables can reside
       in several different directories; the `cd' command works as well.
     - The execution window can be opened, closed and re-opened
       without DDD crashing or hanging.
+    - In DBX, the display is refreshed much more frequently, reflecting
+      current variable values.
     - On HP-UX, the `@' character is no more discarded from GDB input.
+    - On Solaris 2.x, annoying DBX warnings like `-r option only
+      recognized for C++' are now silently ignored.
     - The `vslPath' resource is no more ignored.
 
 
