@@ -1,5 +1,5 @@
 // $Id$
-// Deklaration builtin()
+// Predefined VSL functions
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -35,7 +35,6 @@
 
 
 #include "strclass.h"
-#include "Range.h"
 #include "bool.h"
 #include "ListBox.h"
 

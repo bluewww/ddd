@@ -1,5 +1,5 @@
 // $Id$
-// Vordefinierte VSL-Funktionen
+// Predefined VSL functions
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -40,7 +40,6 @@ char VSLBuiltin_rcsid[] =
 #include <iostream.h>
 
 #include "bool.h"
-#include "Range.h"
 #include "VSLBuiltin.h"
 #include "VSLLib.h"
 
