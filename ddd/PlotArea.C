@@ -89,38 +89,38 @@ static XtResource plot_subresources[] = {
 
 
 #if 0
-static const char *color_keys[Ncolors] =   { 
+static const char * const color_keys[Ncolors] =   { 
    "background", "bordercolor", "text", "border", "axis", 
    "line1", "line2", "line3",  "line4", 
    "line5", "line6", "line7",  "line8" 
    };
 #endif
 
-static const char *color_values[Ncolors] = { 
+static const char * const color_values[Ncolors] = { 
     "white", "black",  "black",  "black",  "black", 
     "red",   "green",  "blue",   "magenta", 
     "cyan",  "sienna", "orange", "coral" 
 };
 
-static const char *gray_values[Ncolors] = { 
+static const char * const gray_values[Ncolors] = { 
     "black",   "white",  "white",  "gray50", "gray50",
     "gray100", "gray60", "gray80", "gray40", 
     "gray90",  "gray50", "gray70", "gray30" 
 };
 
 #if 0
-static const char *dash_keys[Ndashes] =   { 
+static const char * const dash_keys[Ndashes] =   { 
    "border", "axis",
    "line1", "line2", "line3",  "line4", "line5", "line6", "line7",  "line8" 
 };
 #endif
 
-static const char *dash_mono[Ndashes] =   { 
+static const char * const dash_mono[Ndashes] =   { 
    "0", "16",
    "0", "42", "13",  "44", "15", "4441", "42",  "13" 
 };
 
-static const char *dash_color[Ndashes] =   { 
+static const char * const dash_color[Ndashes] =   { 
    "0", "16",
    "0", "0", "0", "0", "0", "0", "0", "0" 
 };
