@@ -35,9 +35,13 @@
 
 #include <X11/Intrinsic.h>
 #include "strclass.h"
+#include "version.h"
 
 // Name of default session
 const string DEFAULT_SESSION = "";
+
+// Name of restart session
+const string RESTART_SESSION = DDD_NAME;
 
 // Return session directories
 
@@ -65,6 +69,18 @@ void create_session_dir(const string& session, ostream& msg);
 
 // Same, but leave messages in status line
 void create_session_dir(const string& session);
+
+// Delete session SESSION
+void delete_session(const string& session, bool silent = false);
+
+// Set session name
+void set_session(const string& session);
+
+// Name of session to be restarted with
+string restart_session();
+
+// Set name of session to be restarted with
+void set_restart_session(const string& session = "");
 
 // Callbacks for X11R6 session management
 extern void SaveSmSessionCB(Widget, XtPointer, XtPointer);

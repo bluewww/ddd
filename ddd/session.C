@@ -41,7 +41,7 @@ char session_rcsid[] =
 #include <X11/SM/SM.h>
 #endif
 
-#include <stdlib.h>
+#include <stdlib.h>		// putenv(), getenv()
 #include <stdio.h>
 #include <string.h>		// strerror()
 #include <errno.h>
@@ -472,8 +472,8 @@ static Widget create_session_panel(Widget parent, String name,
 // Session deletion
 // ---------------------------------------------------------------------------
 
-// Delete given session
-static void delete_session(const string& session)
+// Delete session SESSION
+void delete_session(const string& session, bool silent)
 {
     if (session == DEFAULT_SESSION || session == NO_SESSION)
 	return;
@@ -483,7 +483,7 @@ static void delete_session(const string& session)
     unlink(session_core_file(session));
     unlink(session_history_file(session));
 
-    if (rmdir(session_dir(session)))
+    if (rmdir(session_dir(session)) && !silent)
     {
 	post_error("Could not delete " + quote(session_dir(session)) + ": " 
 		   + strerror(errno), "delete_session_error");
@@ -539,11 +539,11 @@ static string get_chosen_session(XtPointer call_data)
     return value;
 }
 
-// Set the current session
-static void SetSessionCB(Widget dialog, XtPointer, XtPointer call_data)
+// Set session to V
+void set_session(const string& v)
 {
     static string value;
-    value = get_chosen_session(call_data);
+    value = v;
 
     app_data.session = value;
 
@@ -557,7 +557,12 @@ static void SetSessionCB(Widget dialog, XtPointer, XtPointer call_data)
 			  + quote(app_data.session));
 	create_session_dir(app_data.session);
     }
+}
 
+// Set the current session
+static void SetSessionCB(Widget dialog, XtPointer, XtPointer call_data)
+{
+    set_session(get_chosen_session(call_data));
     update_sessions(dialog);
 
     if (app_data.session == DEFAULT_SESSION)
@@ -788,6 +793,21 @@ void OpenSessionCB(Widget w, XtPointer, XtPointer)
 
     update_sessions(dialog);
     manage_and_raise(dialog);
+}
+
+// Name of restart session
+string restart_session()
+{
+    if (getenv("DDD_SESSION") != 0)
+	return getenv("DDD_SESSION");
+    return "";
+}
+
+void set_restart_session(const string& session)
+{
+    static string env;
+    env = "DDD_SESSION=" + session;
+    putenv(env);
 }
 
 
