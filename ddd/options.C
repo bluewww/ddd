@@ -70,6 +70,7 @@ char options_rcsid[] =
 #include <Xm/DialogS.h>
 #include <Xm/BulletinB.h>
 #include <Xm/MessageB.h>
+#include <Xm/PanedW.h>
 
 #include <stdio.h>
 #include <fstream.h>
@@ -1507,7 +1508,7 @@ static string widget_value(Widget w, String name, bool ignore_default = false)
 			    ignore_default);
 }
 
-static string widget_size(Widget w, bool height_only = false)
+static string paned_widget_size(Widget w, bool height_only = false)
 {
     string s;
     const bool ignore_default = true;
@@ -1540,10 +1541,18 @@ static string widget_size(Widget w, bool height_only = false)
     }
     else
     {
+	// We store the size of the paned child, in order to account
+	// for scrolled windows etc.
+	Widget ref = w;
+	while (XtParent(ref) != 0 && !XmIsPanedWindow(XtParent(ref)))
+	    ref = XtParent(ref);
+	if (XtParent(ref) == 0)
+	    ref = w;
+
 	// Store absolute sizes
 	Dimension width  = 0;
 	Dimension height = 0;
-	XtVaGetValues(w, XmNwidth, &width, XmNheight, &height, NULL);
+	XtVaGetValues(ref, XmNwidth, &width, XmNheight, &height, NULL);
 
 	if (!height_only)
 	    s += int_app_value(string(XtName(w)) + "." + XmNwidth, width,
@@ -1558,9 +1567,9 @@ static string widget_size(Widget w, bool height_only = false)
     return s;
 }
 
-inline string widget_height(Widget w)
+inline string paned_widget_height(Widget w)
 {
-    return widget_size(w, true);
+    return paned_widget_size(w, true);
 }
 
 static string widget_geometry(Widget w, bool include_size = false)
@@ -1983,10 +1992,10 @@ bool save_options(unsigned long flags)
     // Window sizes.
     os << "\n! Window sizes.\n";
 
-    os << widget_height(data_disp->graph_edit) << "\n";
-    os << widget_size(source_view->source())   << "\n";
-    os << widget_size(source_view->code())     << "\n";
-    os << widget_size(gdb_w)                   << "\n";
+    os << paned_widget_height(data_disp->graph_edit) << "\n";
+    os << paned_widget_size(source_view->source())   << "\n";
+    os << paned_widget_size(source_view->code())     << "\n";
+    os << paned_widget_size(gdb_w)                   << "\n";
 
     if (save_geometry)
     {
