@@ -74,10 +74,15 @@ protected:
 	    grow(i + 1);
 	return _values[i];
     }
-    T& _value(int i) const  
-    { 
+    const T& _value(int i) const
+    {
 	assert(i >= 0 && i < size());
-	return _values[i]; 
+	return _values[i];
+    }
+    T& _value(int i)
+    {
+	assert(i >= 0 && i < size());
+	return _values[i];
     }
 
 public:
@@ -85,7 +90,8 @@ public:
     virtual int size() const   { return _allocated_size; }
     const T& operator[](int i) const { return _value(i); }
     T& operator[](int i)       { return value(i); }
-    T* values() const          { return _values; }
+    const T* values() const    { return _values; }
+    T* values()                { return _values; }
 #if 0
     operator const T*() const  { return values(); }
     operator       T*() const  { return values(); }
