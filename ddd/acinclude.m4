@@ -651,7 +651,7 @@ AC_CACHE_VAL(ice_cv_have_new_casts,
 [
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
-AC_TRY_COMPILE(,[void f() { double *x = 0; char *s = reinterpret_cast<char*>(x); }],
+AC_TRY_COMPILE(,[double *x = 0; char *s = reinterpret_cast<char*>(x);],
 ice_cv_have_new_casts=yes,
 ice_cv_have_new_casts=no)
 AC_LANG_RESTORE
