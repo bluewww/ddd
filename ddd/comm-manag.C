@@ -37,7 +37,6 @@ char comm_manager_rcsid[] =
 //-----------------------------------------------------------------------------
 // GDB communication manager
 // Name conventions:
-// ...SUC : calls send_user_cmd() of GDBAgent *gdb.
 // ...OA  : an OAProc used in GDBAgent::on_answer
 // ...OAC : an OACProc used in GDBAgent::on_answer_completion()
 // ...HP  : A handler procedure; see HandlerL.h
@@ -95,8 +94,8 @@ typedef struct CmdData {
     string      user_answer;	  // Buffer for the complete answer
     OQCProc     user_callback;	  // User callback
     void *      user_data;	  // User data
-    bool        user_verbose;	  // Flag as given to user_cmdSUC()
-    bool        user_check;	  // Flag as given to user_cmdSUC()
+    bool        user_verbose;	  // Flag as given to send_gdb_command()
+    bool        user_check;	  // Flag as given to send_gdb_command()
 
 private:
     static void clear_origin(Widget w, XtPointer client_data, 
@@ -476,7 +475,7 @@ void init_session(const string& restart, const string& settings)
 // No special processing whatsoever.
 //-----------------------------------------------------------------------------
 
-void user_rawSUC (string cmd, Widget origin)
+void send_gdb_ctrl(string cmd, Widget origin)
 {
     CmdData* cmd_data      = new CmdData(origin, NoFilter);
     cmd_data->disp_buffer  = new DispBuffer;
@@ -500,9 +499,9 @@ void user_rawSUC (string cmd, Widget origin)
 // True iff last command was cancelled
 static bool command_was_cancelled = false;
 
-void user_cmdSUC (string cmd, Widget origin,
-		  OQCProc callback, void *data,
-		  bool verbose, bool check)
+void send_gdb_command(string cmd, Widget origin,
+		      OQCProc callback, void *data,
+		      bool verbose, bool check)
 {
     // Pass control commands unprocessed to GDB.
     if (cmd.length() == 1 && iscntrl(cmd[0]))
@@ -521,7 +520,7 @@ void user_cmdSUC (string cmd, Widget origin,
 	if (cmd == "\004")
 	    command_was_cancelled = true;
 
-	user_rawSUC(cmd, origin);
+	send_gdb_ctrl(cmd, origin);
 	return;
     }
 

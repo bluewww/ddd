@@ -112,7 +112,7 @@ void _gdb_command(const Command& c)
 		      ClearOriginCB, 0);
     }
 
-    user_cmdSUC(cmd, c.origin, c.callback, c.data, c.verbose, c.check);
+    send_gdb_command(cmd, c.origin, c.callback, c.data, c.verbose, c.check);
     messagePosition = XmTextGetLastPosition(gdb_w);
 }
 

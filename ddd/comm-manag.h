@@ -30,7 +30,6 @@
 //-----------------------------------------------------------------------------
 // GDB communication manager
 // Name conventions:
-// ...SUC : calls send_user_cmd() of GDBAgent *gdb.
 // ...OA  : an OAProc used in GDBAgent::on_answer
 // ...OAC : an OACProc used in GDBAgent::on_answer_completion()
 //-----------------------------------------------------------------------------
@@ -52,12 +51,12 @@ void start_gdb ();
 // Send user command CMD to GDB.  Invoke CALLBACK with DATA upon
 // completion.  If VERBOSE is set, issue command in GDB console.
 // If CHECK is set, add appropriate GDB commands to get GDB state.
-void user_cmdSUC (string cmd, Widget origin,
-		  OQCProc callback, void *data,
-		  bool verbose, bool check);
+void send_gdb_command(string cmd, Widget origin,
+		      OQCProc callback, void *data,
+		      bool verbose, bool check);
 
 // Send user input CMD to GDB (unchanged).
-void user_rawSUC (string cmd, Widget origin = 0);
+void send_gdb_ctrl(string cmd, Widget origin = 0);
 
 // Return FALSE if ANSWER is an error message indicating an unknown command
 bool is_known_command(const string& answer);
