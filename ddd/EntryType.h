@@ -47,7 +47,10 @@ enum EntryType
     CheckOptionMenuEntry,       // Create `check' option menu
     OtherOptionMenuEntry,       // Create other option menu
     TextFieldEntry,		// Create text field
-    SignalEntry		        // Create signal handler
+    SignalEntry,		// Create signal handler
+    ForkOptionMenuEntry,	// Create `follow-fork-mode' option menu
+    DisassemblyOptionMenuEntry,	// Create `disassembly-flavor' option menu
+    SchedulerOptionMenuEntry	// Create `scheduler-locking' option menu
 };
 
 typedef VarArray<EntryType> EntryTypeArray;

@@ -774,9 +774,12 @@ static bool is_verb(const string& doc)
     int ing = doc.index("ing");
     if (ing < 0)
 	return false;
+
     int first_space  = doc.index(' ');
     int second_space = doc.index(' ', first_space + 1);
-    if (ing < first_space || ing < second_space || second_space < 0)
+    int third_space  = doc.index(' ', second_space + 1);
+
+    if (ing < third_space || third_space < 0)
 	return true;
 
     return false;
@@ -798,16 +801,22 @@ static EntryType entry_type(DebuggerType type,
     case GDB:
 	if (base.contains("check", 0))
 	    return CheckOptionMenuEntry;
+	if (base.contains("follow-fork-mode", 0))
+	    return ForkOptionMenuEntry;
 	if (base.contains("endian", 0) ||
 	    base.contains("architecture", 0))
 	    return TargetOptionMenuEntry;
+	if (base.contains("disassembly-flavor", 0))
+	    return DisassemblyOptionMenuEntry;
+	if (base.contains("scheduler-locking", 0))
+	    return SchedulerOptionMenuEntry;
 	if (base.contains("language", 0) || 
 	    base.contains("demangle", 0))
 	    return OtherOptionMenuEntry;
 	if (value.contains("on.\n", -1) || value.contains("off.\n", -1))
 	    return OnOffToggleButtonEntry;
 	if ((value.contains("0.\n", -1) || value.contains("1.\n", -1))
-	    && (is_verb(doc)))
+	    && is_verb(doc))
 	    return NumToggleButtonEntry;
 	break;
 
@@ -1376,6 +1385,11 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	    if (base == "radix")
 		return; // Already handled in input- and output-radix
 
+	    // GDB 4.18 provides `set extension-language', but not the
+	    // equivalent `show extension-language'.
+	    if (base == "extension-language")
+		return;
+
 	    is_set = doc.contains("Set ", 0);
 	    is_add = doc.contains("Add ", 0);
 
@@ -1688,8 +1702,13 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 
     case OtherOptionMenuEntry:
     case TargetOptionMenuEntry:
+    case ForkOptionMenuEntry:
+    case DisassemblyOptionMenuEntry:
+    case SchedulerOptionMenuEntry:
     {
-	// set language / set demangle / set architecture / set endian
+	// set language / set demangle / set architecture / set endian /
+	// set follow-fork-mode / set disassembly-flavor / 
+	// set scheduler-locking
 	arg = 0;
 	Widget menu = verify(XmCreatePulldownMenu(form, "menu", args, arg));
 
@@ -1711,6 +1730,21 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	    {
 		// Hardwired options
 		options = "auto\nbig endian\nlittle endian\n";
+	    }
+	    else if (base == "follow-fork-mode")
+	    {
+		// Hardwired options
+		options = "parent\nchild\nask\n";
+	    }
+	    else if (base == "disassembly-flavor")
+	    {
+		// Hardwired options
+		options = "intel\natt\n";
+	    }
+	    else if (base == "scheduler-locking")
+	    {
+		// Hardwired options
+		options = "off\non\nstep\n";
 	    }
 	    else
 	    {
@@ -2295,6 +2329,13 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
 
 	last_row = row;
 	add_settings(form, row, max_width, type, OtherOptionMenuEntry);
+	add_settings(form, row, max_width, type, DisassemblyOptionMenuEntry);
+	if (row != last_row)
+	    add_separator(form, row);
+
+	last_row = row;
+	add_settings(form, row, max_width, type, ForkOptionMenuEntry);
+	add_settings(form, row, max_width, type, SchedulerOptionMenuEntry);
 	if (row != last_row)
 	    add_separator(form, row);
 
