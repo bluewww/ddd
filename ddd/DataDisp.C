@@ -1365,6 +1365,8 @@ void DataDisp::RefreshGraphEditCB(XtPointer client_data, XtIntervalId *id)
 	    initial_popup_shell(data_disp_shell);
 	    popped_up = true;
 	}
+
+	gdbOpenDataWindowCB(graph_edit, 0, 0);
     }
 }
 

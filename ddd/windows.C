@@ -456,6 +456,7 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 	else
 	    return;
 
+#if 0
 	if (!synthetic
 	    && (w == source_view_shell
 		|| (source_view_shell == 0 && w == command_shell))
@@ -465,6 +466,7 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 	    popup_shell(tool_shell);
 	    tool_shell_state = Transient;
 	}
+#endif
 
 	if (tool_shell != 0)
 	{

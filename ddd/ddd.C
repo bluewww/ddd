@@ -2175,6 +2175,11 @@ int main(int argc, char *argv[])
     // Create preference panels
     make_preferences(paned_work_w);
 
+    // Close SourceView and DataDisp until we have data available
+    XtUnmanageChild(source_view->source_form());
+    XtUnmanageChild(source_view->code_form());
+    XtUnmanageChild(data_disp->graph_form());
+
     // Save option states
     save_option_state();
 
@@ -5288,6 +5293,9 @@ static void SyncArgHP(void *src, void *client_data, void *)
 
 static void sync_args(ArgField *source, ArgField *target)
 {
+    if (source == 0 || target == 0)
+	return;
+
     target->set_string(source->get_string());
 
     source->addHandler(Changed, SyncArgHP, (void *)target);
@@ -5478,6 +5486,7 @@ static void setup_command_tool(bool iconic)
     XtAddEventHandler(tool_shell, STRUCTURE_MASK, False,
 		      StructureNotifyEH, XtPointer(0));
 
+#if 0
     if (app_data.command_toolbar)
     {
 	// The command tool is not needed, as we have a command tool bar.
@@ -5496,6 +5505,7 @@ static void setup_command_tool(bool iconic)
 	// OK, raise the command tool
 	initial_popup_shell(tool_shell);
     }
+#endif
 }
 
 static void setup_options(int argc, char *argv[],

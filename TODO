@@ -384,7 +384,7 @@ Volunteers for these and other projects are welcome!
 254 If an XEmacs is running, use its frame for displaying the text.
 
 256*Add a `hint of the day' that might be shown at start-up.  Ask on
-    DDD announce for possible hints.
+    ddd-announce for possible hints.
 
 257 Show whether a conditional jump (breakpoint?) will be taken or
     not.
@@ -394,8 +394,6 @@ Volunteers for these and other projects are welcome!
     `display FOOBAR now or when in FUNCTION'.
 
 259*Finish common toolbar:
-    - In one-window mode, the data window should not be shown until
-      data is actually displayed.
     - Have a resource for toolbar placement: above or below window.
       As an alternative, use XmNpositionIndex instead (changeable at
       run-time?).

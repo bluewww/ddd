@@ -2368,16 +2368,27 @@ void SourceView::read_file (string file_name,
     last_start_secondary_highlight = last_end_secondary_highlight = 0;
     update_glyphs(source_text_w);
 
-    if ((source_view_shell != 0 || app_data.tty_mode)
-	&& app_data.source_window)
+    if (app_data.source_window)
     {
-	// Make sure source is visible
-	Widget shell = (source_view_shell != 0) ? 
-	    source_view_shell : command_shell;
-	initial_popup_shell(shell);
+	static bool popped_up = false;
 
-	if (!app_data.command_toolbar)
-	    initial_popup_shell(tool_shell);
+	if (!popped_up)
+	{
+	    // Make sure source is visible
+	    if (source_view_shell != 0 || app_data.tty_mode)
+	    {
+		Widget shell = (source_view_shell != 0) ? 
+		    source_view_shell : command_shell;
+		initial_popup_shell(shell);
+	    }
+
+	    if (!app_data.command_toolbar)
+		initial_popup_shell(tool_shell);
+
+	    gdbOpenSourceWindowCB(source_text_w, 0, 0);
+
+	    popped_up = true;
+	}
     }
 }
 
