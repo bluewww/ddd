@@ -121,7 +121,14 @@ Basic Installation
          definitions, and `config.status' (all the files that `configure'
          created), type `make distclean'.
 
-     12. You can remove DDD from your system by typing `make uninstall'.
+     12. Please consider sharing your DDD binary with other people
+         lacking Motif or a C++ compiler.  As the DDD maintainers have
+         access to a limited number of systems only, they cannot
+         produce binaries for every single configuration.  Your
+         support is thus very appreciated.  For details, see
+         `ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/bin/'
+
+     13. You can remove DDD from your system by typing `make uninstall'.
 
 
 Documentation

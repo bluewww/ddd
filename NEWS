@@ -14,6 +14,8 @@ DDD 1.4b
    - Much faster start-up, due to delayed parsing of the VSL library.
    - Manual update of data display (`graph refresh') improved.
    - `set' and `assign' commands automatically update the data display.
+   - Printing graphs can now be done with custom paper sizes.
+   - Paper size and printing command is saved with options.
    - Building DDD creates executable with canonical name.
 
 
