@@ -36,7 +36,7 @@
 #ifndef _DDD_Map_h
 #define _DDD_Map_h
 
-#if defined(__GNUC_MINOR__) && (__GNUC_MINOR__ >= 5)
+#ifdef __GNUG__
 #pragma interface
 #endif
 

@@ -29,7 +29,7 @@
 #ifndef _DDD_VarArray_h
 #define _DDD_VarArray_h
 
-#if defined(__GNUC_MINOR__) && (__GNUC_MINOR__ >= 5)
+#ifdef __GNUG__
 #pragma interface
 #endif
 
