@@ -678,6 +678,7 @@ AGENT_OBJECTS = \
 XSTUFF_OBJECTS = \
 	charsets.o   \
 	converters.o \
+	decoration.o \
 	events.o     \
 	findParent.o \
 	findWindow.o \
@@ -879,6 +880,7 @@ DDD_OBJECTS = \
 	RefreshDI.o  \
 	SmartC.o     \
 	SourceView.o \
+	Tool.o       \
 	UndoBuffer.o \
 	UndoBE.o     \
 	WhatNextCB.o
