@@ -100,7 +100,10 @@ DispNode::DispNode (int disp_nr,
 DispNode::~DispNode()
 {
     if (disp_value != 0)
+    {
 	disp_value->unlink();
+	disp_value = 0;
+    }
 
     delete disp_box;
 }
