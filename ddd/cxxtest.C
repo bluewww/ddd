@@ -100,8 +100,19 @@ public:
     }
 };
 //--------------------------------------------------------------------------
+class List {
+    int value;
+public:
+    List *next;
+
+    List (int v):
+	value(v), next(0)
+    {}
+};
+//--------------------------------------------------------------------------
 void tree_test ()
 {
+    // Simple binary tree
     Tree *tree = 0;
     tree =              new Tree (7, "Ada");      // Byron Lovelace
     tree->left =        new Tree (1, "Grace");    // Murray Hopper
@@ -113,7 +124,24 @@ void tree_test ()
     tree->date.set(Wed, 30, 11, 1994);
 
     delete tree;
-}    
+}
+//--------------------------------------------------------------------------
+void list_test (int start)
+{
+    // Simple circular list.  Examine `list' with alias detection enabled.
+    List *list = 0;
+
+    list                         = new List(start++);
+    list->next                   = new List(start++);
+    list->next->next             = new List(start++);
+    list->next->next->next       = new List(start++);
+    list->next->next->next->next = list;
+
+    delete list->next->next->next;
+    delete list->next->next;
+    delete list->next;
+    delete list;
+}
 //--------------------------------------------------------------------------
 void reference_test (Date& date, Date*& date_ptr)
 {
@@ -218,6 +246,8 @@ int main (int /* argc */, char ** /* argv */)
 {
     int i = 42;
     tree_test();
+    i++;
+    list_test(i);
     i++;
     array_test();
     i++;
