@@ -393,7 +393,8 @@ static void setup_options(int& argc, char *argv[],
 			  StringArray& saved_options, string& gdb_name,
 			  bool& no_windows);
 static void setup_tty();
-static void setup_version_warnings();
+static void setup_ddd_version_warnings();
+static void setup_motif_version_warnings();
 static void setup_auto_command_prefix();
 static void setup_core_limit();
 static void setup_options();
@@ -1831,6 +1832,10 @@ int main(int argc, char *argv[])
 #endif
     ddd_install_xt_error(app_context);
 
+    // Check Motif version.  We can do this only now after the first
+    // Motif widget has been created.
+    setup_motif_version_warnings();
+
     // Merge ~/.ddd/init resources into application shell
     XrmDatabase target = XtDatabase(XtDisplay(toplevel));
     XrmMergeDatabases(dddinit, &target);
@@ -2036,7 +2041,7 @@ int main(int argc, char *argv[])
     dddlog.flush();
 
     // Warn for incompatible `Ddd' and `~/.ddd/init' files
-    setup_version_warnings();
+    setup_ddd_version_warnings();
 
     // Global variables: Set LessTif version
     lesstif_version = app_data.lesstif_version;
@@ -7066,7 +7071,7 @@ static void setup_tty()
     }
 }
 
-static void setup_version_warnings()
+static void setup_ddd_version_warnings()
 {
     // Check for app-defaults
     if (app_data.app_defaults_version == 0)
@@ -7117,6 +7122,28 @@ static void setup_version_warnings()
 	    + rm("(this is " DDD_NAME " " DDD_VERSION ").  "
 		 "Please save options.");
     }
+}
+
+static void setup_motif_version_warnings()
+{
+    // Version warnings
+    bool risky = false;
+
+#if HAVE_XMUSEVERSION
+    if (xmUseVersion != XmVersion)
+    {
+	cerr << "Warning: This " DDD_NAME " requires a Motif "
+	     << XmVersion / 1000 << "." << XmVersion % 1000 
+	     << " library (using Motif "
+	     << xmUseVersion / 1000 << "." << xmUseVersion % 1000 
+	     << ")\n";
+
+	risky = true;
+    }
+#endif
+
+    if (risky)
+	cerr << "Continue at own risk.\n";
 }
 
 static void setup_auto_command_prefix()

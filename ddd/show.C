@@ -364,19 +364,6 @@ static void show_configuration(ostream& os, bool version_only)
     s.gsub(" )", ")");
     os << s;
 
-#if HAVE_XMUSEVERSION
-    // xmUseVersion may be uninitialized (zero) if no Motif widget has
-    // yet been created.
-    if (xmUseVersion != 0 && xmUseVersion != XmVersion)
-    {
-	os << "(Note: Compiled using Motif " 
-	   << XmVersion / 1000 << "." << XmVersion % 1000 
-	   << ", but linked against Motif " 
-	   << xmUseVersion / 1000 << "." << xmUseVersion % 1000 
-	   << ")\n";
-    }
-#endif
-
     // Optional stuff
     s = "@(#)Includes " DDD_NAME " core"
 #if WITH_BUILTIN_MANUAL
