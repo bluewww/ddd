@@ -237,3 +237,18 @@ dist-hook:
 	rm -rf `find $(distdir)/include -name CVS -o -name .cvsignore`
 	rm -rf `find $(distdir)/readline -name CVS -o -name .cvsignore`
 	rm -rf `find $(distdir)/libiberty -name CVS -o -name .cvsignore`
+
+# -----------------------------------------------------------------------------
+# Documentation targets
+# -----------------------------------------------------------------------------
+.PHONY: html pdf ps
+html:
+	cd ddd && $(MAKE) html
+
+pdf:
+	cd ddd && $(MAKE) pdf
+
+ps:
+	cd ddd && $(MAKE) ps
+
+

@@ -1320,12 +1320,14 @@ docdir = $(srcdir)/../doc
 builddocdir = $(top_builddir)/doc
 
 .PHONY: ps
-ps: $(docdir)/ddd.ps $(docdir)/ddd-themes.ps
+ps: $(builddocdir)/ddd.ps $(builddocdir)/ddd-themes.ps
 
 $(builddocdir)/ddd.ps: ddd.dvi
+	@-test -d $(builddocdir) || mkdir $(builddocdir)
 	$(DVIPS) ddd.dvi -o $@
 
 $(builddocdir)/ddd-themes.ps: ddd-themes.dvi
+	@-test -d $(builddocdir) || mkdir $(builddocdir)
 	$(DVIPS) ddd-themes.dvi -o $@
 
 # The DDD manual in PDF format, including all pictures.
@@ -1334,9 +1336,11 @@ $(builddocdir)/ddd-themes.ps: ddd-themes.dvi
 pdf: $(builddocdir)/ddd.pdf $(builddocdir)/ddd-themes.pdf
 
 $(builddocdir)/ddd.pdf: ddd.pdf
+	@-test -d $(builddocdir) || mkdir $(builddocdir)
 	$(INSTALL_DATA) ddd.pdf $@
 
 $(builddocdir)/ddd-themes.pdf: ddd-themes.pdf
+	@-test -d $(builddocdir) || mkdir $(builddocdir)
 	$(INSTALL_DATA) ddd-themes.pdf $@
 
 ddd.pdf: $(PDF_IMAGES) $(ddd_TEXINFOS)
@@ -1430,32 +1434,37 @@ FIG2PDF = $(FIG2DEV) -L pdf
 
 # We use giftoppm/ppmtogif to get optimal GIF compression.
 .eps.gif:
+	@-test -d $(buildpicdir) || mkdir $(buildpicdir)
 	$(CONVERT) -geometry $(IMAGE_WIDTH) $< $@
 
 .eps.jpg:
+	@-test -d $(buildpicdir) || mkdir $(buildpicdir)
 	$(CONVERT) -geometry $(IMAGE_WIDTH) -quality 100 $< $@
 
 ##.eps.png:
 ##	$(CONVERT) -geometry $(IMAGE_WIDTH) -quality 100 $< $@
 
 .eps.pdf:
+	@-test -d $(buildpicdir) || mkdir $(buildpicdir)
 	$(EPSTOPDF) $< --outfile=$@
 
 .fig.eps:
+	@-test -d $(buildpicdir) || mkdir $(buildpicdir)
 	(cd `dirname $<` && $(FIG2PS) `basename $<` ) > $@
 
 .fig.pdf:
+	@-test -d $(buildpicdir) || mkdir $(buildpicdir)
 	(cd `dirname $<` && $(FIG2PDF) `basename $<` ) > $@
 
 # Our `texinfo.tex' must reside in the current directory, otherwise
 # texi2dvi will use the default.
 .texi.pdf:
-	@-test -d PICS || mkdir PICS
+	@-test -d $(buildpicdir) || mkdir $(buildpicdir)
 	@-test -f texinfo.tex || $(LN_S) $(texidir)/texinfo.tex .
 	$(TEXI2PDF) --pdf -I $(srcdir) -I $(texidir) $<
 
 .texi.dvi:
-	@-test -d PICS || mkdir PICS
+	@-test -d $(buildpicdir) || mkdir $(buildpicdir)
 	@-test -f texinfo.tex || $(LN_S) $(texidir)/texinfo.tex .
 	$(TEXI2DVI) -I $(srcdir) -I $(texidir) $<
 
