@@ -167,8 +167,8 @@ ln -s $CVSROOT/CVSROOT/ddd-log-95 ChangeLog-1995
 # dependencies are generated in `.deps/' subdir.
 (cd ddd && aclocal)
 autoconf -l ddd
-automake --gnu --add-missing --verbose
-(cd ddd && autoconf && automake --foreign --add-missing --verbose)
+automake --gnu --add-missing --copy --verbose
+(cd ddd && autoconf && automake --foreign --add-missing --copy --verbose)
 (cd vsllib && autoconf -l ../ddd && automake --foreign --verbose)
 (cd themes && autoconf -l ../ddd && automake --foreign --verbose)
 (cd readline && autoconf)
