@@ -1328,6 +1328,10 @@ void GDBAgent::handle_input(string& answer)
     bool had_a_prompt;
     int old_complete_answer_length = complete_answer.length();
 
+    OAProc  on_answer = _on_answer;
+    OACProc on_answer_completion = _on_answer_completion;
+    void *user_data = _user_data;
+
     handle_echo(answer);
     handle_more(answer);
     handle_reply(answer);
@@ -1363,41 +1367,51 @@ void GDBAgent::handle_input(string& answer)
 
 	had_a_prompt = ends_with_prompt(complete_answer);
 
+	if (had_a_prompt)
+	    set_exception_state(false);
+
 	if (_on_answer != 0)
 	{
-	    bool ready_to_process = 
-		!buffer_gdb_output() || 
-		had_a_prompt ||
-		answer.contains("(y or n)");
-
-	    if (ready_to_process && buffer_gdb_output())
-		answer = complete_answer;
-
-	    if (had_a_prompt)
+	    // Received partial answer
+	    if (buffer_gdb_output())
 	    {
-		set_exception_state(false);
-		normalize_answer(answer);
-	    }
-
-	    if (ready_to_process || flush_next_output())
-	    {
-		strip_control(answer);
-		strip_dbx_comments(answer);
-		_on_answer(answer, _user_data);
-
-	        if (flush_next_output())
+		// Buffer answer
+		if (flush_next_output() && !had_a_prompt)
 		{
 		    flush_next_output(false);
+		    on_answer(answer, user_data);
+
 		    complete_answer = 
 			complete_answer.before(old_complete_answer_length);
 		}
+
+		if (had_a_prompt)
+		{
+		    normalize_answer(complete_answer);
+		    on_answer(complete_answer, user_data);
+		}
+	    }
+	    else
+	    {
+		// Handle immediately
+		if (had_a_prompt)
+		{
+		    normalize_answer(answer);
+		}
+		else
+		{
+		    strip_control(answer);
+		    strip_dbx_comments(answer);
+		}
+
+		_on_answer(answer, _user_data);
 	    }
 	}
 
+	
+
 	if (had_a_prompt)
 	{
-	    exception_state = false;
-
             // Received complete answer (GDB issued prompt)
 
             // Set new state and call answer procedure
@@ -1409,8 +1423,8 @@ void GDBAgent::handle_input(string& answer)
 		    callHandlers(ReadyForCmd, (void *)true);
 		    callHandlers(ReadyForQuestion, (void *)true);
 
-		    if (_on_answer_completion != 0)
-			_on_answer_completion (_user_data);
+		    if (on_answer_completion != 0)
+			on_answer_completion(user_data);
 		}
 		else
 		{
@@ -1426,8 +1440,8 @@ void GDBAgent::handle_input(string& answer)
 		state = ReadyWithPrompt;
 		callHandlers(ReadyForQuestion, (void *)true);
 
-		if (_on_answer_completion != 0)
-		    _on_answer_completion (_user_data);
+		if (on_answer_completion != 0)
+		    on_answer_completion(user_data);
 	    }
 	    else
 	    {
