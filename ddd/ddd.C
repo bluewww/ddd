@@ -182,6 +182,7 @@ extern "C" {
 #include "AppData.h"
 #include "ArgField.h"
 #include "DataDisp.h"
+#include "DestroyCB.h"
 #include "ExitCB.h"
 #include "GraphEdit.h"
 #include "GDBAgent.h"
@@ -315,7 +316,8 @@ static void fix_status_size();
 static void decorate_new_shell(Widget w);
 
 // Check if window manager decorates transients
-static bool have_decorated_transients(Widget shell);
+static void start_have_decorated_transients(Widget parent);
+static bool have_decorated_transients();
 
 //-----------------------------------------------------------------------------
 // Xt Stuff
@@ -1892,6 +1894,9 @@ int main(int argc, char *argv[])
 	Delay::register_shell(source_view_shell);
     }
 
+    // Check for decorated transient windows
+    start_have_decorated_transients(command_shell);
+
     // Remove unnecessary sashes
     untraverse_sashes(source_view_parent);
 
@@ -1948,6 +1953,7 @@ int main(int argc, char *argv[])
     }
     update_infos();
 
+    // Startup shells
     Boolean iconic;
     XtVaGetValues(toplevel, XmNiconic, &iconic, NULL);
     if (iconic)
@@ -2005,8 +2011,8 @@ int main(int argc, char *argv[])
 	Widget tool_shell_parent = 
 	    source_view_shell ? source_view_shell : command_shell;
 
-	Position pos_x = WidthOfScreen(XtScreen(tool_shell_parent)) + 1;
-	Position pos_y = HeightOfScreen(XtScreen(tool_shell_parent)) + 1;
+	Position pos_x = WidthOfScreen(XtScreen(tool_shell_parent)) - 1;
+	Position pos_y = HeightOfScreen(XtScreen(tool_shell_parent)) - 1;
 
 	ostrstream os;
 	os << "+" << pos_x << "+" << pos_y;
@@ -2027,7 +2033,7 @@ int main(int argc, char *argv[])
 	// not decorate transient windows such as DialogShells.
 	// In this case, use a TopLevel shell instead and rely
 	// on the DDD auto-raise mechanisms defined in `windows.C'.
-	if (have_decorated_transients(tool_shell_parent))
+	if (have_decorated_transients())
 	{
 	    tool_shell = 
 		verify(XmCreateDialogShell(tool_shell_parent, 
@@ -2388,6 +2394,7 @@ static Boolean ddd_setup_done(XtPointer)
     ddd_check_version();
     install_button_tips();
     fix_status_size();
+
     main_loop_entered = true;
 
     DispBox::init_vsllib(process_pending_events);
@@ -4034,33 +4041,46 @@ static void ddd_xt_warning(String message)
 }
 
 
+
+
+//-----------------------------------------------------------------------------
+// Decoration
+//-----------------------------------------------------------------------------
+
+static Widget init_label, init_shell;
+
 // Check if window manager decorates transients
-static bool have_decorated_transients(Widget parent)
+static void start_have_decorated_transients(Widget parent)
 {
-    Position pos_x = 0;
-    Position pos_y = 0;
+    Position pos_x = WidthOfScreen(XtScreen(parent)) - 1;
+    Position pos_y = HeightOfScreen(XtScreen(parent)) - 1;
 
     ostrstream os;
     os << "+" << pos_x << "+" << pos_y;
     string geometry(os);
-
-    Pixmap pixmap = versionlogo(parent);
 
     Arg args[10];
     int arg = 0;
     XtSetArg(args[arg], XmNgeometry, geometry.chars()); arg++;
     XtSetArg(args[arg], XmNx, pos_x);                   arg++;
     XtSetArg(args[arg], XmNy, pos_y);                   arg++;
-    XtSetArg(args[arg], XmNsymbolPixmap, pixmap);       arg++;
-    Widget init_shell = 
-	verify(XtCreateWidget("init", transientShellWidgetClass,
-			      parent, args, arg));
-    Widget init_label = verify(XmCreateLabel(init_shell, ddd_NAME, args, arg));
-    XtManageChild(init_label);
-    XtRealizeWidget(init_shell);
-    XtPopup(init_shell, XtGrabNone);
+    init_shell = verify(XmCreateDialogShell(parent, "init_shell", args, arg));
 
-    wait_until_mapped(init_shell);
+    arg = 0;
+    init_label = verify(XmCreateLabel(init_shell, ddd_NAME, args, arg));
+    XtManageChild(init_label);
+
+    XtRealizeWidget(init_shell);
+    popup_shell(init_shell);
+    XFlush(XtDisplay(init_shell));
+}
+
+static bool have_decorated_transients()
+{
+    if (init_label == 0 || init_shell == 0)
+	start_have_decorated_transients(command_shell);
+
+    wait_until_mapped(init_label, init_shell);
 
     XWindowAttributes shell_attributes;
     XGetWindowAttributes(XtDisplay(init_shell), XtWindow(init_shell), 
@@ -4071,13 +4091,13 @@ static bool have_decorated_transients(Widget parent)
 			 frame(XtDisplay(init_shell), XtWindow(init_shell)), 
 			 &frame_attributes);
 
-    XtDestroyWidget(init_shell);
-    XFreePixmap(XtDisplay(parent), pixmap);
+    DestroyWhenIdle(init_shell);
 
     // If the window manager frame is larger than the shell window,
     // assume the shell is decorated.
     return frame_attributes.height - shell_attributes.height > 5;
 }
+
 
 //-----------------------------------------------------------------------------
 // Emergency
