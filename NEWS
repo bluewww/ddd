@@ -4,34 +4,34 @@ Changes in DDD						-*- text -*-
 DDD 1.4b
 --------
 
-   Bug fix release.
+    Bug fix release.
 
-   Changes to DDD 1.4a:
-   - Much faster start-up, due to delayed parsing of the VSL library.
-   - Custom paper size support for printing graphs.
-   - Paper size and printing command is saved with options.
-   - On some X11 configurations, DDD was caught in a busy loop upon
-     invocation.  Now fixed.
-   - On some Linux configurations, DDD crashed immediately upon
-     invocation.  Now fixed.
-   - Manual update of data display (`graph refresh') improved.
-   - `set' and `assign' commands automatically update the data
-     display.
-   - New releases of top-level `configure' and `libiberty' included.
-   - Building DDD creates executable with canonical name.
+    Changes to DDD 1.4a:
+    - Much faster start-up, due to delayed parsing of the VSL library.
+    - Custom paper size support for printing graphs.
+    - Paper size and printing command is saved with options.
+    - On some X11 configurations, DDD was caught in a busy loop upon
+      invocation.  Now fixed.
+    - On some Linux configurations, DDD crashed immediately upon
+      invocation.  Now fixed.
+    - Manual update of data display (`graph refresh') improved.
+    - `set' and `assign' commands automatically update the data
+      display.
+    - New releases of top-level `configure' and `libiberty' included.
+    - Building DDD creates executable with canonical name.
 
 
 DDD 1.4a
 --------
 
-   Bug fix release.  No user-visible changes.
-
-   - Compilation trouble with older GCC versions as well as 
-     older C++ compilers fixed.
-   - Compilation in separate directory fixed.
-   - For older GDB versions, one may use `display /x $pc' and `print
-     /x $pc' to get the current PC value.
-   - Minor bugs in construction and installation fixed.
+    Bug fix release.  No user-visible changes.
+ 
+    - Compilation trouble with older GCC versions as well as 
+      older C++ compilers fixed.
+    - Compilation in separate directory fixed.
+    - For older GDB versions, one may use `display /x $pc' and `print
+      /x $pc' to get the current PC value.
+    - Minor bugs in construction and installation fixed.
 
 
 DDD 1.4

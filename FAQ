@@ -9,7 +9,7 @@ DDD Frequently Asked Questions                                  -*- text -*-
     Use DDD 1.4b or later, compiled with the `-O2' option.
 
 
-2.  Can I dereference a multi-length array graphically via the mouse?
+2.  How can I display a multi-length array?
 
     The problem is that GDB does not know the actual length of the
     array; you have to supply it by hand (i.e. using the keyboard).
@@ -35,20 +35,27 @@ DDD Frequently Asked Questions                                  -*- text -*-
     elements.
 
 
-3.  Does DDD sit on top of GDB, or is it integrated with gdb source?
+3.  In C++, how do I see the *actual* type (derived) type of the
+    object rather than the *declared* type?
+
+    Enter `set print object on' at the `(gdb)' prompt, or enter
+    `set print object on' in your `~/.gdbinit' file.
+
+
+4.  Does DDD sit on top of GDB, or is it integrated with gdb source?
 
     DDD sits on top of a separate GDB process.  Use `ddd --trace' to
     see the interaction.
 
 
-4.  If it sits on top, how can GDB upgrades be incorporated?
+5.  If it sits on top, how can GDB upgrades be incorporated?
 
     By getting and installing the new GDB.  No changes to DDD are
     necessary, unless the GDB developers introduce incompatible
     changes - in which case you'll have to wait until we patch DDD.
 
 
-5.  Does DDD work with DBX on other systems than Sun?
+6.  Does DDD work with DBX on other systems than Sun?
 
     DDD has been reported to run with Sun DBX as shipped with SunOS
     4.x (aka Solaris 1.x) and SunOS 5.x (aka Solaris 2.x).
@@ -60,12 +67,12 @@ DDD Frequently Asked Questions                                  -*- text -*-
     the interaction.
 
 
-6.  I don't like the 'break point' symbol.  Can I change it?
+7.  I don't like the 'break point' symbol.  Can I change it?
 
     Yes.  See the various `*.xbm' files in the DDD source code.
 
 
-7.  I compiled DDD on my machine and it fails.  I got the executable
+8.  I compiled DDD on my machine and it fails.  I got the executable
     from an FTP site and it runs.  What is the difference? Is there
     some compilation setup I need to do, or is the executable patched?
 
@@ -87,13 +94,13 @@ DDD Frequently Asked Questions                                  -*- text -*-
     lot.
 
 
-8.  I have heard that there is a magic command built into DDD.
+9.  I have heard that there is a magic command built into DDD.
     Is this true, and what is this magic command for?
 
     It's an adventurer's secret.  Use the source, Luke.
 
 
-9.  Is there an Athena Widgets port of DDD?
+10. Is there an Athena Widgets port of DDD?
 
     No.  If you want DDD running with a free widget set, you should
     support the LessTif team, who are developing a free
@@ -108,7 +115,13 @@ DDD Frequently Asked Questions                                  -*- text -*-
     efficient interface.  So go and support the LessTif team instead.]
 
 
-10. DDD reports `imake' and/or `xmkmf' problems when being started.
+11. Will DDD compile under LessTif?
+
+    As of LessTif 0.33, it will.  But it will not run, due to lacking
+    LessTif features.  See also question 9, above.
+
+
+12. DDD reports `imake' and/or `xmkmf' problems when being started.
     How come?
 
     To run properly, OSF/Motif requires a file called `XKeysymDB' in
@@ -123,7 +136,7 @@ DDD Frequently Asked Questions                                  -*- text -*-
     in `xconfig.C'.
 
 
-11. How can I change DDD resources (especially colors)?
+13. How can I change DDD resources (especially colors)?
 
     Copy the appropriate resource lines from the `Ddd' file contained
     in the DDD distribution (type `./configure -v; cd ddd; make Ddd'
@@ -146,7 +159,7 @@ DDD Frequently Asked Questions                                  -*- text -*-
      geometry specifications)
 
 
-12. I want to use DDD interprocess communication in my own
+14. I want to use DDD interprocess communication in my own
     application.  How do I proceed?
 
     There is a demonstration program named `ttytest' in the DDD
@@ -164,7 +177,7 @@ DDD Frequently Asked Questions                                  -*- text -*-
     widgets, or another Xt-based toolkit.
 
 
-13. I want to use the DDD graph editor in my own application.
+15. I want to use the DDD graph editor in my own application.
     How do I proceed?
 
     There is a demonstration program named `test-graph' in the DDD

@@ -132,4 +132,7 @@ Volunteers for fixing these and other bugs are welcome!
      ddd --dbx $PAR_HOME/bin/tesla-wish 20919
      Reported by Joe Hildebrand <hildjj@fuentez.com>
 
-068. (Insert your bug here)
+068. On HPUX 9.05 ddd does not pass any characters to the left of the "@"
+     symbol typed into the command line.
+
+069. (Insert your bug here)

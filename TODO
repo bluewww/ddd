@@ -86,5 +86,23 @@ Volunteers for these and other projects are welcome!
 060. When using a dynamic version of libstdc++, configure fails
      to add its location to the -R flag.
 
-061. (Insert your project idea here)
+061. Have the on-line manual in compressed form.  May be done using zlib.
+     zlib is a complete (re)-implementation of the guts of gzip as a
+     part of the PNG (portable network graphics) specification. done
+     by jean-loup gailly and mark adler. sources for zlib is available
+     from the home directory of PNG as
+     ftp://swrinde.nde.swri.edu:/pub/png. also see
+     http://quest.jpl.nasa.gov/PNG.
+
+063. Have a (generic) panel for GDB options.  Inquire setting and
+     documentation strings via `show'.
+
+064. Have scrolling parameters user-configurable.
+
+065. Show an hourglass cursor while waiting for assembly.  More
+     general, show an hourglass cursor while a question is pending.
+
+066. Upgrade rx library to rx-1.0.  Should be less buggy.
+
+067. (Insert your project idea here)
 

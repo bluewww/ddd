@@ -53,7 +53,24 @@ DDD News
       Grant McDorman <grant@isgtec.com>.
     - DDD incorporates the name of its builder in `Help/Show Version'.
     - No more `Help on Debugging' item.  Sigh.
-
+    - Compilation trouble with older GCC versions as well as 
+      older C++ compilers fixed.
+    - Compilation in separate directory fixed.
+    - For older GDB versions, one may use `display /x $pc' and `print
+      /x $pc' to get the current PC value.
+    - Minor bugs in construction and installation fixed.
+    - Much faster start-up, due to delayed parsing of the VSL library.
+    - Custom paper size support for printing graphs.
+    - Paper size and printing command is saved with options.
+    - On some X11 configurations, DDD was caught in a busy loop upon
+      invocation.  Now fixed.
+    - On some Linux configurations, DDD crashed immediately upon
+      invocation.  Now fixed.
+    - Manual update of data display (`graph refresh') improved.
+    - `set' and `assign' commands automatically update the data
+      display.
+    - New releases of top-level `configure' and `libiberty' included.
+    - Building DDD creates executable with canonical name.
 
 
 Summary of DDD
@@ -72,23 +89,23 @@ Summary of DDD
     code.
 
     Other DDD features include: debugging of programs written in C,
-    C++, Ada, Fortran, Pascal, or Modula-2; hypertext source
-    navigation and lookup; GDB/DBX command-line interface with full
-    editing, history, and completion capabilities; breakpoint,
-    backtrace, and history editors; optional program execution in
-    terminal emulator window; debugging on remote host; on-line
-    manual; interactive help on the OSF/Motif user interface.  DDD has
-    been designed to compete with well-known commercial debuggers.
+    C++, ADA, Fortran, Pascal, or Modula-2; machine-level debugging;
+    hypertext source navigation and lookup; GDB/DBX command-line
+    interface with full editing, history, and completion capabilities;
+    breakpoint, backtrace, and history editors; optional program
+    execution in terminal emulator window; debugging on remote host;
+    on-line manual; interactive help on the OSF/Motif user interface.
+    DDD has been designed to compete with well-known commercial
+    debuggers.
 
     DDD has been extensively beta-tested (especially by debugging
     itself) and configures, compiles and runs out-of-the-box on every
     major UNIX brand, including AIX (powerpc-ibm-aix3,
     rs6000-ibm-aix3), FreeBSD (i386-intel-freebsd1), HP-UX
     (hppa1.1-hp-hpux9, m68k-hp-hpux9), IRIX (mips-sgi-irix5), Linux
-    (i386-unknown-linux, i486-unknown-linux; a.out and ELF support),
-    Alpha OSF (alpha-osf3), Solaris (i386-sun-solaris2,
-    sparc-sun-solaris2), SunOS (sparc-sun-sunos4), and ULTRIX
-    (mips-dec-ultrix4).
+    (i[345]86-unknown-linux, i[345]86-unknown-linuxaout), Alpha OSF
+    (alpha-osf3), Solaris (i386-sun-solaris2, sparc-sun-solaris2),
+    SunOS (sparc-sun-sunos4), and ULTRIX (mips-dec-ultrix4).
 
     DDD is free software, protected by the GNU general public license.
     It is actively maintained by its authors, Dorothea Luetkehaus and
@@ -121,9 +138,11 @@ Requirements
       Widget library is convenient for supporting two-dimensional
       scrollbars and the `editres' protocol.
 
+    * Lots of virtual memory.
+
     To run DDD, you need a GDB debugger (version 4 is required; best
     results are achieved with 4.13 or later).  Using GDB, you can
-    debug programs written in C and C++; GNU Ada (`gnats'), GNU
+    debug programs written in C and C++; GNU ADA (`gnats'), GNU
     Fortran (`g77') and GNU Modula-2 have been reported to work as
     well.
 
