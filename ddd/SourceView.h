@@ -646,6 +646,8 @@ public:
     // Consider only breakpoints whose number is >= FIRST_BP.
     static string clear_command(string arg, bool clear_next = false,
 				int first_bp = 0);
+    // Return `delete N' command.
+    static string delete_command(int bp_nr);
 
     // Return `{ COMMAND; }'
     static string command_list(string cmd);

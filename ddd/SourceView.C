@@ -1,7 +1,7 @@
 // $Id$
 // Use the Source, Luke.
 
-// Copyright (C) 1995-1997 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
 // Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de> 
 // and Andreas Zeller <zeller@ips.cs.tu-bs.de>
 // 
@@ -758,7 +758,7 @@ void SourceView::clearBP(XtPointer client_data, XtIntervalId *)
     int bp_nr = int(client_data);
     BreakPoint *bp = bp_map.get(bp_nr);
     if (bp != 0)
-	bp_popup_deleteCB(source_text_w, XtPointer(&bp_nr), 0);
+	gdb_command(delete_command(bp_nr));
 }
 
 // Save last `jump' target for XDB
@@ -964,7 +964,7 @@ void SourceView::move_bp(int bp_nr, const string& a, Widget w)
     }
 
     // Delete old breakpoint
-    bp_popup_deleteCB(w, XtPointer(&bp_nr), XtPointer(0));
+    gdb_command(delete_command(bp_nr));
 }
 
 void SourceView::set_bp_cond(int bp_nr, const string& cond, Widget w)
@@ -997,7 +997,7 @@ void SourceView::set_bp_cond(int bp_nr, const string& cond, Widget w)
     }
 
     // Delete old breakpoint
-    bp_popup_deleteCB(w, XtPointer(&bp_nr), XtPointer(0));
+    gdb_command(delete_command(bp_nr));
 }
 
 
@@ -1008,10 +1008,14 @@ void SourceView::bp_popup_deleteCB (Widget w,
 				    XtPointer)
 {
     int bp_nr = *((int *)client_data);
-    string cmd = gdb->delete_command(itostring(bp_nr));
-    if (cmd != "")
+    gdb_command(delete_command(bp_nr), w);
+}
+
+string SourceView::delete_command(int bp_nr)
+{
+    if (gdb->has_delete_command())
     {
-	gdb_command(cmd, w);
+	return gdb->delete_command(itostring(bp_nr));
     }
     else if (gdb->has_clear_command())
     {
@@ -1019,9 +1023,11 @@ void SourceView::bp_popup_deleteCB (Widget w,
 	if (bp != 0)
 	{
 	    string pos = bp->file_name() + ":" + itostring(bp->line_nr());
-	    gdb_command(clear_command(pos));
+	    return clear_command(pos);
 	}
     }
+
+    return "";			// No way to delete a breakpoint (*sigh*)
 }
 
 
@@ -3641,6 +3647,7 @@ void SourceView::process_pwd(string& pwd_output)
 
 	case XDB:
 	case DBX:		// 'PATH'
+	case JDB:
 	    if (pwd.contains('/', 0) && !pwd.contains(" "))
 	    {
 		current_pwd = pwd;
@@ -3648,9 +3655,6 @@ void SourceView::process_pwd(string& pwd_output)
 		return;
 	    }
 	    break;
-
-	case JDB:
-	    break;		// FIXME
 	}
     }
 }
@@ -4727,10 +4731,10 @@ void SourceView::BreakpointCmdCB(Widget,
 
     string cmd = (String)client_data;
 
-    if (cmd == "delete" && gdb->delete_command() == "")
+    if (cmd == "delete" && !gdb->has_delete_command())
     {
         for (int i = 0; i < breakpoint_nrs.size(); i++)
-	    bp_popup_deleteCB(source_text_w, XtPointer(&breakpoint_nrs[i]), 0);
+	    gdb_command(delete_command(breakpoint_nrs[i]));
         return;
     }
 
@@ -7139,24 +7143,43 @@ void SourceView::reset_done(const string& answer, void *)
 
 void SourceView::reset()
 {
-    string del = gdb->delete_command();
-
     // Delete all breakpoints
-    MapRef ref;
-    int n = 0;
-    for (BreakPoint *bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
+    if (gdb->has_delete_command())
     {
-	n++;
-	del += " " + itostring(bp->number());
-    }
+	string del = gdb->delete_command();
 
-    if (n > 0)
+	MapRef ref;
+	int n = 0;
+	for (BreakPoint *bp = bp_map.first(ref); bp != 0; 
+	     bp = bp_map.next(ref))
+	{
+	    n++;
+	    del += " " + itostring(bp->number());
+	}
+
+	if (n > 0)
+	{
+	    Command c(del);
+	    c.verbose  = false;
+	    c.check    = true;
+	    c.priority = COMMAND_PRIORITY_INIT;
+	    c.callback = reset_done;
+	    gdb_command(c);
+	}
+    }
+    else if (gdb->has_clear_command())
     {
-	Command c(del);
-	c.verbose  = false;
-	c.check    = true;
-	c.priority = COMMAND_PRIORITY_INIT;
-	c.callback = reset_done;
-	gdb_command(c);
+	MapRef ref;
+	for (BreakPoint *bp = bp_map.first(ref); bp != 0; 
+	     bp = bp_map.next(ref))
+	{
+	    string pos = bp->file_name() + ":" + itostring(bp->line_nr());
+	    Command c(clear_command(pos));
+	    c.verbose  = false;
+	    c.check    = true;
+	    c.priority = COMMAND_PRIORITY_INIT;
+	    c.callback = reset_done;
+	    gdb_command(c);
+	}
     }
 }

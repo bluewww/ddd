@@ -395,6 +395,19 @@ public:
 	return type() == GDB;
     }
 
+    // True if debugger can delete breakpoints by number
+    bool has_delete_command() const
+    {
+	return type() == GDB || type() == XDB || type() == DBX;
+    }
+
+    // True if debugger has volatile breakpoints (i.e. breakpoints may
+    // change at any time)
+    bool has_volatile_breakpoints() const
+    {
+	return type() == GDB || type() == XDB || type() == DBX;
+    }
+
     // True if debugger dialog is traced on clog
     bool trace_dialog() const    { return _trace_dialog; }
     bool trace_dialog(bool val);

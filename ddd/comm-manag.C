@@ -194,7 +194,7 @@ typedef struct PlusCmdData {
     bool     refresh_file;             // send 'file'
     bool     refresh_line;             // send 'list'
     bool     refresh_pwd;	       // send 'pwd'
-    bool     refresh_bpoints;          // send 'info b'
+    bool     refresh_breakpoints;      // send 'info b'
     bool     refresh_where;            // send 'where'
     bool     refresh_frame;            // send 'frame'
     bool     refresh_pc;               // refresh pc
@@ -242,7 +242,7 @@ typedef struct PlusCmdData {
 	refresh_file(false),
 	refresh_line(false),
 	refresh_pwd(false),
-	refresh_bpoints(false),
+	refresh_breakpoints(false),
 	refresh_where(false),
 	refresh_frame(false),
 	refresh_pc(false),
@@ -396,7 +396,7 @@ void start_gdb()
 	cmds += "pwd";
 	plus_cmd_data->refresh_pwd = true;
 	cmds += "info breakpoints";
-	plus_cmd_data->refresh_bpoints = true;
+	plus_cmd_data->refresh_breakpoints = true;
 	cmds += "show history filename";
 	plus_cmd_data->refresh_history_filename = true;
 	cmds += "show history size";
@@ -452,7 +452,7 @@ void start_gdb()
 	cmds += "list";
 	plus_cmd_data->refresh_line = true;
 	cmds += "status";
-	plus_cmd_data->refresh_bpoints = true;
+	plus_cmd_data->refresh_breakpoints = true;
 	break;
 
     case XDB:
@@ -463,7 +463,7 @@ void start_gdb()
 	cmds += "!pwd";
 	plus_cmd_data->refresh_pwd = true;
 	cmds += "lb";
-	plus_cmd_data->refresh_bpoints = true;
+	plus_cmd_data->refresh_breakpoints = true;
 	break;
 
     case JDB:
@@ -616,7 +616,8 @@ void send_gdb_command(string cmd, Widget origin,
     PlusCmdData* plus_cmd_data = new PlusCmdData;
 
     // Breakpoints may change any time
-    plus_cmd_data->refresh_bpoints = true;
+    if (gdb->has_volatile_breakpoints())
+	plus_cmd_data->refresh_breakpoints = true;
 
     // User command output may change any time
     plus_cmd_data->refresh_user    = true;
@@ -656,13 +657,13 @@ void send_gdb_command(string cmd, Widget origin,
 	    cmd_data->pos_buffer = 0;
 	}
 
-	plus_cmd_data->refresh_bpoints   = false;
-	plus_cmd_data->refresh_addr      = false;
-	plus_cmd_data->refresh_user      = false;
-	plus_cmd_data->refresh_where     = false;
-	plus_cmd_data->refresh_frame     = false;
-	plus_cmd_data->refresh_registers = false;
-	plus_cmd_data->refresh_threads   = false;
+	plus_cmd_data->refresh_breakpoints = false;
+	plus_cmd_data->refresh_addr        = false;
+	plus_cmd_data->refresh_user        = false;
+	plus_cmd_data->refresh_where       = false;
+	plus_cmd_data->refresh_frame       = false;
+	plus_cmd_data->refresh_registers   = false;
+	plus_cmd_data->refresh_threads     = false;
 
 	if (is_graph_cmd(cmd))
 	{
@@ -701,24 +702,24 @@ void send_gdb_command(string cmd, Widget origin,
 	cmd_data->filter_disp = NoFilter;
 
 	// Breakpoints, Frames, Code and Registers won't change
-	plus_cmd_data->refresh_bpoints   = false;
-	plus_cmd_data->refresh_where     = false;
-	plus_cmd_data->refresh_frame     = false;
-	plus_cmd_data->refresh_registers = false;
-	plus_cmd_data->refresh_threads   = false;
-	plus_cmd_data->refresh_addr      = false;
+	plus_cmd_data->refresh_breakpoints = false;
+	plus_cmd_data->refresh_where       = false;
+	plus_cmd_data->refresh_frame       = false;
+	plus_cmd_data->refresh_registers   = false;
+	plus_cmd_data->refresh_threads     = false;
+	plus_cmd_data->refresh_addr        = false;
     }
     else if (is_data_cmd(cmd))
     {
 	plus_cmd_data->refresh_data      = true;
 
 	// Breakpoints, Frames, Code and Registers won't change
-	plus_cmd_data->refresh_bpoints   = false;
-	plus_cmd_data->refresh_where     = false;
-	plus_cmd_data->refresh_frame     = false;
-	plus_cmd_data->refresh_registers = false;
-	plus_cmd_data->refresh_threads   = false;
-	plus_cmd_data->refresh_addr      = false;
+	plus_cmd_data->refresh_breakpoints = false;
+	plus_cmd_data->refresh_where       = false;
+	plus_cmd_data->refresh_frame       = false;
+	plus_cmd_data->refresh_registers   = false;
+	plus_cmd_data->refresh_threads     = false;
+	plus_cmd_data->refresh_addr        = false;
     }
     else if (is_running_cmd(cmd, gdb) || is_pc_cmd(cmd))
     {
@@ -746,12 +747,12 @@ void send_gdb_command(string cmd, Widget origin,
 	cmd_data->filter_disp            = NoFilter;
 	cmd_data->new_frame_pos          = true;
 
-	plus_cmd_data->refresh_bpoints   = false;
-	plus_cmd_data->refresh_where     = false;
-	plus_cmd_data->refresh_frame     = true;
-	plus_cmd_data->refresh_registers = false;
-	plus_cmd_data->refresh_threads   = false;
-	plus_cmd_data->refresh_data      = true;
+	plus_cmd_data->refresh_breakpoints = false;
+	plus_cmd_data->refresh_where       = false;
+	plus_cmd_data->refresh_frame       = true;
+	plus_cmd_data->refresh_registers   = false;
+	plus_cmd_data->refresh_threads     = false;
+	plus_cmd_data->refresh_data        = true;
 
 	if (gdb->type() == DBX)
 	{
@@ -766,11 +767,11 @@ void send_gdb_command(string cmd, Widget origin,
 	cmd_data->new_frame_pos          = true;
 	cmd_data->new_exec_pos           = true;
 
-	plus_cmd_data->refresh_bpoints   = is_thread_cmd(cmd);
-	plus_cmd_data->refresh_where     = true;
-	plus_cmd_data->refresh_frame     = true;
-	plus_cmd_data->refresh_data      = true;
-	plus_cmd_data->refresh_threads   = true;
+	plus_cmd_data->refresh_breakpoints = is_thread_cmd(cmd);
+	plus_cmd_data->refresh_where       = true;
+	plus_cmd_data->refresh_frame       = true;
+	plus_cmd_data->refresh_data        = true;
+	plus_cmd_data->refresh_threads     = true;
     }
     else if (is_set_cmd(cmd, gdb))
     {
@@ -790,24 +791,24 @@ void send_gdb_command(string cmd, Widget origin,
 	    plus_cmd_data->refresh_file  = true;
 	    plus_cmd_data->refresh_line  = true;
 	}
-	plus_cmd_data->refresh_bpoints   = false;
-	plus_cmd_data->refresh_where     = false;
-	plus_cmd_data->refresh_registers = false;
-	plus_cmd_data->refresh_threads   = false;
-	plus_cmd_data->refresh_addr      = false;
+	plus_cmd_data->refresh_breakpoints = false;
+	plus_cmd_data->refresh_where       = false;
+	plus_cmd_data->refresh_registers   = false;
+	plus_cmd_data->refresh_threads     = false;
+	plus_cmd_data->refresh_addr        = false;
 
 	if (!gdb->has_display_command())
 	    plus_cmd_data->refresh_data = true;
     }
     else if (is_cd_cmd(cmd))
     {
-	plus_cmd_data->refresh_pwd       = true;
-	plus_cmd_data->refresh_bpoints   = false;
-	plus_cmd_data->refresh_where     = false;
-	plus_cmd_data->refresh_frame     = false;
-	plus_cmd_data->refresh_registers = false;
-	plus_cmd_data->refresh_threads   = false;
-	plus_cmd_data->refresh_addr      = false;
+	plus_cmd_data->refresh_pwd         = true;
+	plus_cmd_data->refresh_breakpoints = false;
+	plus_cmd_data->refresh_where       = false;
+	plus_cmd_data->refresh_frame       = false;
+	plus_cmd_data->refresh_registers   = false;
+	plus_cmd_data->refresh_threads     = false;
+	plus_cmd_data->refresh_addr        = false;
     }
     else if (is_setting_cmd(cmd))
     {
@@ -826,7 +827,10 @@ void send_gdb_command(string cmd, Widget origin,
     }
 
     if (is_break_cmd(cmd))
+    {
 	plus_cmd_data->break_arg = get_break_expression(cmd);
+	plus_cmd_data->refresh_breakpoints = true;
+    }
 
     if (cmd_data->new_exec_pos
 	|| plus_cmd_data->refresh_frame 
@@ -938,7 +942,7 @@ void send_gdb_command(string cmd, Widget origin,
 	    cmds += "pwd";
 	assert(!plus_cmd_data->refresh_file);
 	assert(!plus_cmd_data->refresh_line);
-	if (plus_cmd_data->refresh_bpoints)
+	if (plus_cmd_data->refresh_breakpoints)
 	    cmds += "info breakpoints";
 	if (plus_cmd_data->refresh_where)
 	    cmds += "where";
@@ -989,7 +993,7 @@ void send_gdb_command(string cmd, Widget origin,
 	    cmds += "file";
 	if (plus_cmd_data->refresh_line)
 	    cmds += "list";
-	if (plus_cmd_data->refresh_bpoints)
+	if (plus_cmd_data->refresh_breakpoints)
 	    cmds += "status";
 	if (plus_cmd_data->refresh_where)
 	    cmds += "where";
@@ -1018,7 +1022,7 @@ void send_gdb_command(string cmd, Widget origin,
 	    cmds += "!pwd";
 	assert(!plus_cmd_data->refresh_file);
 	assert(!plus_cmd_data->refresh_line);
-	if (plus_cmd_data->refresh_bpoints)
+	if (plus_cmd_data->refresh_breakpoints)
 	    cmds += "lb";
 	if (plus_cmd_data->refresh_where)
 	    cmds += "t";
@@ -1040,7 +1044,7 @@ void send_gdb_command(string cmd, Widget origin,
 	break;
 
     case JDB:
-	if (plus_cmd_data->refresh_bpoints)
+	if (plus_cmd_data->refresh_breakpoints)
 	    cmds += "clear";
 	if (plus_cmd_data->refresh_where)
 	    cmds += "where";
@@ -1792,7 +1796,7 @@ void plusOQAC (const StringArray& answers,
 	}
     }
 
-    if (plus_cmd_data->refresh_bpoints)
+    if (plus_cmd_data->refresh_breakpoints)
     {
 	source_view->process_info_bp(answers[qu_count++], 
 				     plus_cmd_data->break_arg);
