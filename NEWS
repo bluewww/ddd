@@ -55,6 +55,7 @@ DDD 2.1 (in development)
       under certain circumstances.  Fixed.
     - `Help on Version' no longer includes the entire DDD configuration.
     - Buttons ending in `...' insert their name, followed by a space.
+    - Line continuations (i.e. lines ending in `\') are properly handled.
     - The `vsl' and `test-graph' programs can again be built.
 
 
