@@ -46,5 +46,8 @@ void add_buttons(Widget buttons, const string& list);
 extern int max_value_tip_length;
 extern int max_value_doc_length;
 
+// Clear value cache after some change in the program state
+extern void clear_value_cache();
+
 #endif // _DDD_buttons_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

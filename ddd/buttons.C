@@ -205,9 +205,35 @@ static MString gdbDefaultHelpText(Widget widget)
     return MString(name + "\n", "bf") +	MString(help, "rm");
 }
 
+
+static StringStringAssoc value_cache;
+
+void clear_value_cache()
+{
+    static StringStringAssoc empty;
+    value_cache = empty;
+}
+
 static string gdbValue(const string& expr)
 {
-    return gdb_question(gdb->print_command(expr));
+    string value = NO_GDB_ANSWER;
+    if (value == NO_GDB_ANSWER)
+    {
+	// Lookup cache
+	if (value_cache.has(expr))
+	    value = value_cache[expr];
+    }
+
+    if (value == NO_GDB_ANSWER)
+    {
+	// Ask debugger for value
+	value = gdb_question(gdb->print_command(expr));
+    }
+
+    if (value != NO_GDB_ANSWER)
+	value_cache[expr] = value;
+
+    return value;
 }
 
 static XmTextPosition textPosOfEvent(Widget widget, XEvent *event)
@@ -241,7 +267,12 @@ static MString gdbDefaultText(Widget widget, XEvent *event,
 	// Otherwise, we might point at `i++' or `f()' and have weird
 	// side effects.
 	if (!expr.matches(rxidentifier))
-	    return empty;
+	{
+	    if (for_documentation)
+		return empty;
+	    else
+		return MString(0, true);
+	}
 
 	Position x, y;
 	if (XmTextPosToXY(widget, endpos, &x, &y))

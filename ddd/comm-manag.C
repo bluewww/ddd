@@ -61,6 +61,7 @@ char comm_manager_rcsid[] =
 #include "DataDisp.h"
 #include "version.h"
 #include "VoidArray.h"
+#include "buttons.h"
 #include "question.h"
 #include "settings.h"
 #include "stty.h"
@@ -517,7 +518,15 @@ void user_cmdSUC (string cmd, Widget origin)
 	    break;
 	}
     }
-	
+
+    if (cmd_data->new_exec_pos
+	|| plus_cmd_data->refresh_frame 
+	|| plus_cmd_data->refresh_disp)
+    {
+	// New program state: clear value cache
+	clear_value_cache();
+    }
+
     if (plus_cmd_data->refresh_frame && !gdb->has_frame_command())
     {
 	// We have a backtrace window open, but DBX has no ``frame''
