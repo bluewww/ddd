@@ -733,8 +733,8 @@ Ddd*highlightThickness: 1
 
 
 ! Menus
-! Enable tear-off menus
-Ddd*tearOffModel: XmTEAR_OFF_ENABLED
+! Enable tear-off pulldown menus
+Ddd*menubar*tearOffModel: XmTEAR_OFF_ENABLED
 
 
 ! Logos and icons

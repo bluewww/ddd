@@ -455,6 +455,13 @@ static Widget MMcreatePushMenu(Widget parent, String name, MMDesc items[])
 	XtSetArg(args[arg], XmNmenuPost, "<Btn1Down>"); arg++;
     }
 
+#if XmVersion >= 1002
+    // Tear-off push menus don't work well - in LessTif, they cause
+    // frequent X errors, and in Motif, they disable the old menus
+    // once torn off.  So, we explicitly disable them.
+    XtSetArg(args[arg], XmNtearOffModel, XmTEAR_OFF_DISABLED); arg++;
+#endif
+    
     Widget menu = verify(XmCreatePopupMenu(parent, name, args, arg));
     addItems(parent, menu, items);
 
@@ -654,22 +661,6 @@ static void addCallback(MMDesc *item, XtPointer default_closure)
 			  XmNmapCallback,
 			  callback.callback, 
 			  callback.closure);
-
-#if 0
-	    // If we use LessTif, the mapCallback is not called; but
-	    // anyway, if we have tear-off menus, a `mapCallback'
-	    // makes no sense.  So we call the mapCallback whenever
-	    // the window is mapped and whenever we enter it.
-
-	    // (This handler is not copied to tear-off menus - just
-	    // forget about it...)
-	    XtAddEventHandler(subMenu,
-			      EnterWindowMask | FocusChangeMask | 
-			      StructureNotifyMask
-			      True,
-			      (XtEventHandler)callback.callback,
-			      callback.closure);
-#endif
 	}
 	break;
 
