@@ -2843,6 +2843,27 @@ static void sort(string labels[], bool selected[], int size)
     } while (h != 1);
 }
 
+static string fmt(string s, unsigned size)
+{
+    if (s.length() > size)
+	s = s.before(int(size));
+    else if (s.length() < size)
+	s += replicate(' ', size - s.length());
+
+    assert(s.length() == size);
+    return s;
+}
+
+static int max_width(const StringArray& s)
+{
+    int w = 0;
+
+    for (int i = 0; i < s.size(); i++)
+	w = max(w, s[i].length());
+
+    return w;
+}
+
 // Create labels for the list
 void DataDisp::refresh_display_list()
 {
@@ -2850,33 +2871,76 @@ void DataDisp::refresh_display_list()
 	return;
 
     int max_count      = disp_graph->count_all();
+
+    StringArray nums;
+    StringArray states;
+    StringArray exprs;
+    StringArray addrs;
+
+    if (max_count > 0)
+    {
+	// Add titles
+	nums   += "Num";
+	states += "State";
+	exprs  += "Expression";
+	addrs  += "Address";
+    }
+    else
+    {
+	nums   += "No displays.";
+	states += "";
+	exprs  += "";
+	addrs  += "";
+    }
+
+    MapRef ref;
+    int k;
+    for (k = disp_graph->first_nr(ref); k != 0; k = disp_graph->next_nr(ref))
+    {
+	DispNode* dn = disp_graph->get(k);
+
+	nums += itostring(k) + ":";
+
+	if (dn->nodeptr()->hidden())
+	    states += "-> " + itostring(dn->alias_of);
+	else if (dn->enabled())
+	    states += "enabled";
+	else
+	    states += "disabled";
+	
+	exprs += dn->name();
+	addrs += dn->addr();
+    }
+
+    int nums_width   = max_width(nums);
+    int states_width = max_width(states);
+    int exprs_width  = max_width(exprs);
+    int addrs_width  = max_width(addrs);
+
     string *label_list = new string[max_count + 1];
     bool *selected     = new bool[max_count + 1];
 
+    // Set titles
     int count = 0;
-    label_list[count] = 
-	(max_count > 0) ? "Num Enb Expression" : "No displays.";
-    selected[count]   = false;
+    string line = fmt(nums[count], nums_width) 
+	+ " " + fmt(states[count], states_width)
+	+ " " + fmt(exprs[count], exprs_width);
+    if (detect_aliases)
+	line += " " + fmt(addrs[count], addrs_width);
+    label_list[count] = line;
+    selected[count] = false;
     count++;
 
-    MapRef ref;
-    for (int k = disp_graph->first_nr(ref); 
-	 k != 0 ; 
-	 k = disp_graph->next_nr(ref))
+    // Set contents
+    for (k = disp_graph->first_nr(ref); k != 0; k = disp_graph->next_nr(ref))
     {
-	ostrstream os;
-
-	string num = itostring(k) + ":     ";
-	os << num.through(3);
-
 	DispNode* dn = disp_graph->get(k);
-	if (dn->enabled())
-	    os << "y";
-	else
-	    os << "n";
-	os << "   " << dn->name();
-
-	label_list[count] = os;
+	string line = fmt(nums[count], nums_width) 
+	    + " " + fmt(states[count], states_width)
+	    + " " + fmt(exprs[count], exprs_width);
+	if (detect_aliases)
+	    line += " " + fmt(addrs[count], addrs_width);
+	label_list[count] = line;
 	selected[count]   = dn->selected();
 	count++;
     }
@@ -3250,7 +3314,7 @@ string DataDisp::pretty(int disp_nr)
 	return "";
 
     string title = node->name();
-    shorten(title, DispBox::max_display_title_length);
+    // shorten(title, DispBox::max_display_title_length);
 
     return node->disp_nr() + ": " + title;
 }
