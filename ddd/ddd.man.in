@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "06 Jan 1998" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998-01-06" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -547,13 +547,13 @@ click on one of the `\fBFind\fR' buttons.
 By default, \s-2@DDD@\s+2 finds only complete words.  To search for
 arbitrary substrings, change the value of the `\fBSource | Find Words
 Only\fR' option.
-.PP
-.PSPIC @srcdir@/PICS/ddd-source.ps 15.3cm
 .\"
 .SS "Looking up Previous Locations"
 .\"
 Use the `\fBBack\fR' and `\fBForward\fR' buttons to lookup previous or
 next locations.  The location found is underlined.
+.PP
+.PSPIC @srcdir@/PICS/ddd-source.ps 15.3cm
 .\"
 .\"
 .\"
@@ -2195,6 +2195,8 @@ users may find these \fIbutton tips\fR disturbing; this is why you
 can disable them by unsetting the `\fBAutomatic display of button
 hints as popup tips\fR' option.
 .PP
+.PSPIC @srcdir@/PICS/ddd-general-prefs.ps 15.3cm
+.PP
 The button hints are also displayed in the status line.  Disabling
 hints in status line (by unsetting the `\fBAutomatic display of button
 hints in the status line\fR' option) and disabling button tips as well
@@ -2216,8 +2218,6 @@ windows, set the `\s-2\fBTAB\fR\s+2 \fBkey completes in all windows\fR'
 option.  This is useful if you have pointer-driven keyboard focus (see
 below) and no special usage for the \s-2\fBTAB\fR\s+2 key.  Otherwise,
 the \s-2\fBTAB\fR\s+2 key completes in the debugger console only.
-.PP
-.PSPIC @srcdir@/PICS/ddd-general-prefs.ps 15.3cm
 .PP
 If you frequently switch between \s-2@DDD@\s+2 and other multi-window
 applications, you may like to set the `\fBIconify all windows at
@@ -2378,8 +2378,6 @@ The `\fBReset\fR' button restores the most recently saved preferences.
 \fIhelpers\fR) for specific tasks.  Through the `\fBHelpers\fR' panel,
 you can choose and customize these applications.
 .PP
-.PSPIC @srcdir@/PICS/ddd-helpers.ps 15.3cm
-.PP
 In `\fBEdit Sources\fR', you can select an X editor to be invoked via
 the \s-2@DDD@\s+2 `\fBEdit\fR' button.  `\fB@FILE@\fR' is replaced by
 the current file name; `\fB@LINE@\fR' is replaced by the current line.
@@ -2404,6 +2402,8 @@ terminal emulator.  To this command, \s-2@DDD@\s+2 appends bourne
 shell commands to be executed within the execution window.  A simple
 value is `\fBxterm -e /bin/sh -c\fR'.  See also the `\fBtermCommand\fR'
 resource, below.
+.PP
+.PSPIC @srcdir@/PICS/ddd-helpers.ps 15.3cm
 .PP
 `\fBUncompress\fR' is the uncompression command used by \s-2@DDD@\s+2
 to uncompress the \s-2@DDD@\s+2 license and manual pages.  The
@@ -2431,8 +2431,6 @@ where each line contains the command for exactly one button.  Clicking
 on `\fBApply\fR' creates the appropriate buttons from the text.  If
 the text is empty (the default), no button is created.
 .PP
-.PSPIC @srcdir@/PICS/ddd-button-editor.ps 15.3cm
-.PP
 As a simple example, assume you want to create a `\fBprint i\fR'
 button.  Invoke `\fBCommands | Edit Buttons\fR' and enter a line
 saying `\fBprint i\fR' in the button editor.  Then click on
@@ -2447,6 +2445,8 @@ supported by the inferior debugger.  To enable such buttons, unset the
 \s-2@DDD@\s+2 also allows you to specify control sequences and special
 labels for user-defined buttons.  See the examples in `\fBUser-defined
 Buttons\fR' in the `\fBRESOURCES\fR' section, below.
+.PP
+.PSPIC @srcdir@/PICS/ddd-button-editor.ps 15.3cm
 .\"
 .\"
 .SS "Saving Options"
@@ -2473,8 +2473,6 @@ debugger, you can change its settings using `\fBEdit | Settings\fR'.
 Using the settings editor, you can determine whether C++ names are to
 be demangled, how many array elements are to print, and so on.
 .PP
-.PSPIC @srcdir@/PICS/ddd-settings.ps 15.3cm
-.PP
 The capabilities of the settings editor depend on the capabilities of
 your inferior debugger\(em\&that is, your \s-2GDB\s+2 or \s-2DBX\s+2
 version.  Clicking on `\fB?\fR' gives an an explanation on the
@@ -2489,6 +2487,8 @@ details.
 .PP
 All debugger settings (except source and object paths) 
 are saved with \s-2@DDD@\s+2 options.
+.PP
+.PSPIC @srcdir@/PICS/ddd-settings.ps 15.3cm
 .\"
 .\"
 .\"
@@ -4281,7 +4281,7 @@ Default \s-2@DDD@\s+2 command history file.
 .B $HOME/.ddd/sessions/
 \s-2@DDD@\s+2 session directory.  One subdirectory per session.
 .TP
-.B $HOME/.ddd/sessions/\fIsession\fB/dddcore
+.B $HOME/.ddd/sessions/\fIsession\fB/@ddd@core
 \s-2@DDD@\s+2 core file for \fIsession\fR.
 .TP
 .B $HOME/.ddd/sessions/\fIsession\fB/init
@@ -4682,7 +4682,7 @@ As a last resort, send bug reports on paper to:
 .br
   Bültenweg 88
 .br
-  D-38092 Braunschweig 
+  D-38092 Braunschweig
 .br
   \s-2GERMANY\s+2 
 .br
@@ -4883,7 +4883,6 @@ is accessible via our \s-2@DDD@\s+2 \s-2WWW\s+2 page,
 .br
   \fBhttp://www.cs.tu-bs.de/softech/ddd/\fR .
 .br
-.sp
 .\"
 .\"
 .\" --------------------
@@ -4909,7 +4908,6 @@ A \s-2ROFF\s+2 copy of this manual page, suitable for installation as
 manual page on \s-2UNIX\s+2 systems (as
 `\fB/usr/local/man/man1/ddd.1\fR' or similar), is included in the
 \s-2@DDD@\s+2 source distribution.
-.sp
 .PP
 .\"
 .\"
@@ -4917,7 +4915,7 @@ manual page on \s-2UNIX\s+2 systems (as
 .SH "COPYRIGHT"
 .\" ---------------
 .\"
-\s-2@DDD@\s+2 is Copyright \(co 1995, 1996, 1997
+\s-2@DDD@\s+2 is Copyright \(co 1995, 1996, 1997, 1998
 Technische Universität Braunschweig, Germany.
 .PP
 \s-2@DDD@\s+2 is free software; you can redistribute it and/or modify
@@ -4936,7 +4934,7 @@ You should have received a copy of the License along with
 To read the License from within \s-2@DDD@\s+2, use `\fBHelp | @DDD@
 License\fR'.
 .PP
-This \s-2@DDD@\s+2 manual page is Copyright \(co 1995, 1996, 1997
+This \s-2@DDD@\s+2 manual page is Copyright \(co 1995, 1996, 1997, 1998
 Technische Universität Braunschweig, Germany.
 .PP
 Permission is granted to make and distribute verbatim copies of this
