@@ -892,6 +892,54 @@ void gdb_eofHP(Agent *agent, void *, void *)
 }
 
 
+static XtIntervalId post_exception_timer = 0;
+static void PostExceptionCB(XtPointer, XtIntervalId *id)
+{
+    assert (*id == post_exception_timer);
+    (void) id;			// Use it
+    post_exception_timer = 0;
+
+    post_gdb_died(gdb->title() + ": internal exception", -1);
+}
+
+// Internal exception (JDB)
+void gdb_exceptionHP(Agent *agent, void *, void *call_data)
+{
+    GDBAgent *gdb = ptr_cast(GDBAgent, agent);
+    if (gdb == 0)
+	return;
+
+    bool exception_state = (int)(long)call_data;
+    
+    if (exception_state)
+    {
+	// Entered exception state
+
+	if (gdb->isBusyOnQuestion())
+	{
+	    // We only care for exceptions that get raised while a DDD
+	    // question is running.  (Exceptions during program
+	    // execution may also be raised by the program.)
+
+	    assert (post_exception_timer == 0);
+
+	    // Wait 5 seconds before offering a restart
+	    post_exception_timer = 
+		XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 5000,
+				PostExceptionCB, 0);
+	}
+    }
+    else
+    {
+	// Left exception state (i.e. prompt appeared)
+
+	if (post_exception_timer)
+	    XtRemoveTimeOut(post_exception_timer);
+	post_exception_timer = 0;
+    }
+}
+
+
 // GDB died
 void gdb_diedHP(Agent *gdb, void *, void *call_data)
 {
@@ -916,53 +964,11 @@ void gdb_diedHP(Agent *gdb, void *, void *call_data)
 
 	_DDDExitCB(gdb_w, XtPointer(EXIT_FAILURE), XtPointer(0));
     }
-}
 
-static XtIntervalId post_exception_timer = 0;
-static void PostExceptionCB(XtPointer, XtIntervalId *id)
-{
-    assert (*id == post_exception_timer);
-    (void) id;			// Use it
+    // Don't care about any exceptions seen before the exit
+    if (post_exception_timer)
+	XtRemoveTimeOut(post_exception_timer);
     post_exception_timer = 0;
-
-    post_gdb_died(gdb->title() + ": internal exception", -1);
-}
-
-// Fatal error message
-void gdb_exceptionHP(Agent *agent, void *, void *call_data)
-{
-    GDBAgent *gdb = ptr_cast(GDBAgent, agent);
-    if (gdb == 0)
-	return;
-
-    bool exception_state = (int)(long)call_data;
-    
-    if (exception_state)
-    {
-	// Entered exception state
-
-	if (gdb->isBusyOnQuestion())
-	{
-	    // We only care for exceptions that get raised while a DDD
-	    // question is running.  (Exceptions during program
-	    // execution may also be raised by the program.)
-
-	    assert (post_exception_timer == 0);
-
-	    // Wait 10 seconds before offering a restart
-	    post_exception_timer = 
-		XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 10000,
-				PostExceptionCB, 0);
-	}
-    }
-    else
-    {
-	// Left exception state (i.e. prompt appeared)
-
-	if (post_exception_timer)
-	    XtRemoveTimeOut(post_exception_timer);
-	post_exception_timer = 0;
-    }
 }
 
 
