@@ -3273,7 +3273,10 @@ bool StatusShower::process(int remaining_length)
     // Interrupt if emergency
     if (!aborted && process_emergencies())
 	aborted = true;
-    if (!aborted)
+
+    // If we have a dialog, process its events
+    // (The dialog is modal, such that we cannot be called recursively)
+    if (!aborted && XtIsManaged(dialog))
 	process_pending_events();
 
     return aborted;
