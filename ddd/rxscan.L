@@ -218,6 +218,7 @@ V	v(irtual{W})?t(a)?bl(e)?
 %s S110
 %s S111
 %s S112
+%s S113
 
 %%
 <S001>address{W}{A}			return &rxaddr;
@@ -332,5 +333,6 @@ V	v(irtual{W})?t(a)?bl(e)?
 <S110>{C}Standard{W}input:{W}END{C} 	return &rxxdb;
 <S111>[^ \t]*:.*:{w}{P}[: ]{C} 	        return &rxxdbpos;
 <S112>[<]repeats{W}{P}{W}times[>]       return &rxrepeats;
+<S113>[-a-zA-Z0-9_>.]+                  return &rxchain;
 <*>.|\n				        return 0;  // Anything else
 %%

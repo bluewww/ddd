@@ -221,3 +221,4 @@ const regex rxxdb			(rx_matcher, (void *)S110);
 const regex rxxdbpos			(rx_matcher, (void *)S111);
 
 const regex rxrepeats                   (rx_matcher, (void *)S112);
+const regex rxchain                     (rx_matcher, (void *)S113);

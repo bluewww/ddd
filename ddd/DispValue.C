@@ -427,8 +427,19 @@ void DispValue::init(string& value, DispValueType given_type)
 		    {
 			// Use the C `->' operator instead
 			member_prefix.del("*");
-			member_prefix.prepend("(");
-			member_prefix += ")->";
+#if RUNTIME_REGEX
+			static regex rxchain("[-a-zA-Z0-9_>.]+");
+#endif
+			if (member_prefix.matches(rxchain))
+			{
+			    // Simple chain of identifiers - prepend `->'
+			    member_prefix += "->";
+			}
+			else
+			{
+			    member_prefix.prepend("(");
+			    member_prefix += ")->";
+			}
 		    }
 		    else
 		    {

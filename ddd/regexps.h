@@ -51,6 +51,7 @@ extern const regex rxblanks;
 extern const regex rxblanks_or_tabs;
 extern const regex rxbreak_cmd;
 extern const regex rxcd_cmd;
+extern const regex rxchain;
 extern const regex rxcolons;
 extern const regex rxcore;
 extern const regex rxcore_cmd;
