@@ -1262,7 +1262,7 @@ string SourceView::clear_command(string pos, bool clear_next, int first_bp)
 	    if (line_no > 0 && file_matches(file, current_file_name))
 	    {
 		// Clear the breakpoint
-		string command = "d " + line;
+		string command = "B " + line;
 
 		// Check whether there are any other breakpoints with actions
 		bool have_other_actions = false;
