@@ -192,7 +192,7 @@ static Pixmap _iconlogo(Widget w)
 #endif // defined(XpmVersion)
 
     // Try bitmap instead
-    GC gc = DefaultGC(XtDisplay(w), XScreenNumberOfScreen(XtScreen(w)));
+    GC gc = DefaultGCOfScreen(XtScreen(w));
     XGCValues gcv;
     XGetGCValues(XtDisplay(w), gc, GCForeground | GCBackground, &gcv);
 		      
