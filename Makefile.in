@@ -172,6 +172,7 @@ snapshot:
 	    ln -s .. proto-toplev/$$ddd-$$VER; \
 	    find . -name RCS -prune -o -name CVS -prune -o -name PICS -prune \
 		-o -name proto-toplev -prune \
+		-o -name '.gdbinit.in' -print \
 		-o -name '.[a-zA-Z0-9]*' -prune \
 		-o -name '*.o' -prune \
 		-o -name '*.a' -prune \
