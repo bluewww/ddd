@@ -38,7 +38,28 @@ Reported by: Rick Flower <Rick.Flower@trw.com>
 AIX
 ===
 
-Reported by: Andreas Zeller <ddd@gnu.org>
+Reported by: jensen@Adobe.COM (Freddy Jensen)
+
+To compile DDD 3.3 for AIX 4.3.3:
+
+     I had to set these two flags before running configure:
+
+     setenv CPPFLAGS "-I/usr/shared/gcc_2.95/aix_4.3/lib/gcc-lib/rs6000-ibm-aix4.3.2.0/2.95.2/include"
+     setenv LDFLAGS  "-Wl,-bbigtoc"
+
+     After running configure I had to edit ddd/config.h and 
+     change this:
+
+     From: #define HAVE_TCDRAIN 1
+     To:   #define HAVE_TCDRAIN 0
+
+     Otherwise I would get tcdrain() undefined. I tried to link
+     in libcurses.a explicitly, but that did not work. I am not
+     sure exactly what the effect of not having tcdrain() is,
+     although ddd seems to run just fine without it.
+
+
+Reported by: Andreas Zeller <zeller@gnu.org>
 
     Some EGCS versions on AIX have trouble compiling DDD.  If you get
     internal compiler errors, try compiling the affected modules
@@ -61,7 +82,7 @@ Reported by: Brian Cameron <bcameron@tuc.com>
 	#undef math_exception
 
 
-Reported by: Andreas Zeller <ddd@gnu.org>
+Reported by: Andreas Zeller <zeller@gnu.org>
 
     Because of a limitation in the AIX linker, linking of DDD may stop
     with the message "TOC overflow".  The AIX Table of Contents (TOC)
@@ -240,6 +261,23 @@ GCC and LIBG++
 
 HP-UX
 =====
+
+Reported by: jensen@Adobe.COM (Freddy Jensen)
+
+     To compile DDD 3.3 for HP-UX 10.20:
+
+     After running configure I had to edit ddd/Makefile and do this:
+
+     1. Change LIBTERMCAP
+
+        From: LIBTERMCAP = -lcurses
+        To:   LIBTERMCAP = /usr/lib/libHcurses.a
+
+     2. Change LIBXM
+
+        From: LIBXM = -lXm
+        To:   LIBXM = /usr/lib/Motif1.2_R6/libXm.a
+    
 
 Reported by:  (various)
 
