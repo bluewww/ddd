@@ -51,9 +51,14 @@ private:
 
 public:
     // Constructors
-    MString(String text = "", 
+    MString(char *text = "", 
 	    XmStringCharSet charset = MSTRING_DEFAULT_CHARSET):
 	_mstring(XmStringCreateLtoR(text, charset))
+    {}
+
+    MString(const char *text = "", 
+	    XmStringCharSet charset = MSTRING_DEFAULT_CHARSET):
+	_mstring(XmStringCreateLtoR((char *)text, charset))
     {}
 
     MString(const string& text, 
@@ -180,12 +185,22 @@ inline MString operator + (const MString& m1, const MString& m2)
     return MString(XmStringConcat(m1.xmstring(), m2.xmstring()), true);
 }
 
-inline MString operator + (const MString& m, String s)
+inline MString operator + (const MString& m, const char *s)
 {
     return operator + (m, MString(s));
 }
 
-inline MString operator + (String s, const MString& m)
+inline MString operator + (const MString& m, char *s)
+{
+    return operator + (m, MString(s));
+}
+
+inline MString operator + (const char *s, const MString& m)
+{
+    return operator + (MString(s), m);
+}
+
+inline MString operator + (char *s, const MString& m)
 {
     return operator + (MString(s), m);
 }
@@ -200,4 +215,5 @@ inline MString operator + (const string& s, const MString& m)
     return operator + (MString(s), m);
 }
 
-#endif
+#endif // _DDD_MString_h
+// DON'T ADD ANYTHING BEHIND THIS #endif

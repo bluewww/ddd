@@ -25,6 +25,8 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 // - extra constructor string::string(ostrstream&)
 // - extra assignment string::operator=(ostrstream&)
 // - output to stream issues *all* characters, including '\0'
+// - extra functions for `char *' provided (besides `const char *')
+// - `cat' with 4 arguments is not supported
 
 
 #ifndef _ICE_strclass_h
@@ -85,10 +87,11 @@ public:
     subString(const subString& x);
     ~subString();
 
-    void operator =  (const string&     y);
-    void operator =  (const subString&  y);
+    void operator =  (const string& y);
+    void operator =  (const subString& y);
     void operator =  (const char* t);
-    void operator =  (char        c);
+    void operator =  (char* t);
+    void operator =  (char c);
 
 // return 1 if target appears anywhere in subString; else 0
 
@@ -96,6 +99,7 @@ public:
     int contains(const string& y) const;
     int contains(const subString& y) const;
     int contains(const char* t) const;
+    int contains(char* t) const;
     int contains(const regex& r) const;
 
 // return 1 if target matches entire subString
@@ -146,22 +150,25 @@ public:
 
     ~string();
 
-    void operator =  (const string&     y);
+    void operator =  (const string& y);
     void operator =  (const char* y);
-    void operator =  (char        c);
-    void operator =  (const subString&  y);
+    void operator =  (char* y);
+    void operator =  (char c);
+    void operator =  (const subString& y);
     void operator =  (ostrstream& os);
 
 // concatenation
 
-    void operator += (const string&     y); 
-    void operator += (const subString&  y);
+    void operator += (const string& y); 
+    void operator += (const subString& y);
     void operator += (const char* t);
+    void operator += (char* t);
     void operator += (char c);
 
-    void prepend(const string&     y); 
-    void prepend(const subString&  y);
+    void prepend(const string& y); 
+    void prepend(const subString& y);
     void prepend(const char* t);
+    void prepend(char* t);
     void prepend(char c);
 
 
@@ -171,73 +178,26 @@ public:
     friend inline void cat(const string&, const string&, string&);
     friend inline void cat(const string&, const subString&, string&);
     friend inline void cat(const string&, const char*, string&);
+    friend inline void cat(const string&, char*, string&);
     friend inline void cat(const string&, char, string&);
 
     friend inline void cat(const subString&, const string&, string&);
     friend inline void cat(const subString&, const subString&, string&);
     friend inline void cat(const subString&, const char*, string&);
+    friend inline void cat(const subString&, char*, string&);
     friend inline void cat(const subString&, char, string&);
 
     friend inline void cat(const char*, const string&, string&);
     friend inline void cat(const char*, const subString&, string&);
     friend inline void cat(const char*, const char*, string&);
+    friend inline void cat(const char*, char*, string&);
     friend inline void cat(const char*, char, string&);
 
-// double concatenation, by request. (yes, there are too many versions, 
-// but if one is supported, then the others should be too...)
-// Concatenate first 3 args, store in last arg
-
-    friend inline void cat(const string&, const string&, 
-			   const string&, string&);
-    friend inline void cat(const string&, const string&,
-			   const subString&, string&);
-    friend inline void cat(const string&, const string&, 
-			   const char*, string&);
-    friend inline void cat(const string&, const string&, 
-			   char, string&);
-    friend inline void cat(const string&, const subString&,
-			   const string&,string&);
-    friend inline void cat(const string&, const subString&,
-			   const subString&,string&);
-
-    friend inline void cat(const string&, const subString&, 
-			   const char*, string&);
-    friend inline void cat(const string&, const subString&, 
-			   char, string&);
-    friend inline void cat(const string&, const char*, 
-			   const string&, string&);
-    friend inline void cat(const string&, const char*, 
-			   const subString&, string&);
-    friend inline void cat(const string&, const char*, 
-			   const char*, string&);
-    friend inline void cat(const string&, const char*,
-			   char, string&);
-
-    friend inline void cat(const char*, const string&,
-			   const string&,string&);
-    friend inline void cat(const char*, const string&,
-			   const subString&,string&);
-    friend inline void cat(const char*, const string&,
-			   const char*, string&);
-    friend inline void cat(const char*, const string&,
-			   char, string&);
-    friend inline void cat(const char*, const subString&,
-			   const string&,string&);
-    friend inline void cat(const char*, const subString&,
-			   const subString&, string&);
-
-    friend inline void cat(const char*, const subString&,
-			   const char*, string&);
-    friend inline void cat(const char*, const subString&,
-			   char, string&);
-    friend inline void cat(const char*, const char*,
-			   const string&,    string&);
-    friend inline void cat(const char*, const char*,
-			   const subString&, string&);
-    friend inline void cat(const char*, const char*,
-			   const char*, string&);
-    friend inline void cat(const char*, const char*,
-			   char, string&);
+    friend inline void cat(char*, const string&, string&);
+    friend inline void cat(char*, const subString&, string&);
+    friend inline void cat(char*, const char*, string&);
+    friend inline void cat(char*, char*, string&);
+    friend inline void cat(char*, char, string&);
 
 
 // searching & matching
@@ -248,6 +208,7 @@ public:
     int index(const string& y, int startpos = 0) const;      
     int index(const subString&  y, int startpos = 0) const;      
     int index(const char* t, int startpos = 0) const;  
+    int index(char* t, int startpos = 0) const;  
     int index(const regex& r, int startpos = 0) const;       
 
 // return 1 if target appears anyhere in string; else 0
@@ -256,6 +217,7 @@ public:
     int contains(const string& y) const;
     int contains(const subString& y) const;
     int contains(const char* t) const;
+    int contains(char* t) const;
     int contains(const regex& r) const;
 
 // return 1 if target appears anywhere after position pos 
@@ -265,6 +227,7 @@ public:
     int contains(const string& y, int pos) const;
     int contains(const subString& y, int pos) const;
     int contains(const char* t, int pos) const;
+    int contains(char* t, int pos) const;
     int contains(const regex& r, int pos) const;
 
 // return 1 if target appears at position pos in string; else 0
@@ -273,6 +236,7 @@ public:
     int matches(const string& y, int pos = 0) const;
     int matches(const subString& y, int pos = 0) const;
     int matches(const char* t, int pos = 0) const;
+    int matches(char* t, int pos = 0) const;
     int matches(const regex& r, int pos = 0) const;
 
 //  return number of occurences of target in string
@@ -281,6 +245,7 @@ public:
     int freq(const string& y) const;
     int freq(const subString& y) const;
     int freq(const char* t) const;
+    int freq(char* t) const;
 
 // subString extraction
 
@@ -294,6 +259,7 @@ public:
     subString at(const string& x, int startpos = 0); 
     subString at(const subString&  x, int startpos = 0); 
     subString at(const char* t, int startpos = 0);
+    subString at(char* t, int startpos = 0);
     subString at(char c, int startpos = 0);
     subString at(const regex& r, int startpos = 0); 
 
@@ -301,6 +267,7 @@ public:
     subString before(const string& x, int startpos = 0);
     subString before(const subString&   x, int startpos = 0);
     subString before(const char* t, int startpos = 0);
+    subString before(char* t, int startpos = 0);
     subString before(char c, int startpos = 0);
     subString before(const regex& r, int startpos = 0);
 
@@ -308,6 +275,7 @@ public:
     subString through(const string& x, int startpos = 0);
     subString through(const subString& x, int startpos = 0);
     subString through(const char* t, int startpos = 0);
+    subString through(char* t, int startpos = 0);
     subString through(char c, int startpos = 0);
     subString through(const regex& r, int startpos = 0);
 
@@ -315,6 +283,7 @@ public:
     subString from(const string& x, int startpos = 0);
     subString from(const subString& x, int startpos = 0);
     subString from(const char* t, int startpos = 0);
+    subString from(char* t, int startpos = 0);
     subString from(char c, int startpos = 0);
     subString from(const regex& r, int startpos = 0);
 
@@ -322,6 +291,7 @@ public:
     subString after(const string& x, int startpos = 0);
     subString after(const subString& x, int startpos = 0);
     subString after(const char* t, int startpos = 0);
+    subString after(char* t, int startpos = 0);
     subString after(char c, int startpos = 0);
     subString after(const regex& r, int startpos = 0);
 
@@ -336,6 +306,7 @@ public:
     void del(const string& y, int startpos = 0);
     void del(const subString& y, int startpos = 0);
     void del(const char* t, int startpos = 0);
+    void del(char* t, int startpos = 0);
     void del(char c, int startpos = 0);
     void del(const regex& r, int startpos = 0);
 
@@ -345,6 +316,10 @@ public:
     int gsub(const subString& pat, const string& repl);
     int gsub(const char* pat, const string& repl);
     int gsub(const char* pat, const char* repl);
+    int gsub(const char* pat, char* repl);
+    int gsub(char* pat, const string& repl);
+    int gsub(char* pat, const char* repl);
+    int gsub(char* pat, char* repl);
     int gsub(const regex& pat, const string& repl);
 
 // friends & utilities
@@ -444,9 +419,11 @@ typedef string strTmp; // for backward compatibility
 int compare(const string& x, const string& y);
 int compare(const string& x, const subString& y);
 int compare(const string& x, const char* y);
+int compare(const string& x, char* y);
 int compare(const subString& x, const string& y);
 int compare(const subString& x, const subString& y);
 int compare(const subString& x, const char* y);
+int compare(const subString& x, char* y);
 int fcompare(const string& x, const string& y); // ignore case
 
 extern strRep  _nilstrRep;
@@ -499,6 +476,11 @@ inline void string::operator=(const char* t)
     rep = string_Salloc(rep, t, -1, -1); 
 }
 
+inline void string::operator=(char* t)
+{
+    rep = string_Salloc(rep, t, -1, -1); 
+}
+
 inline void string::operator=(const subString&  y)
 {
     rep = string_Salloc(rep, y.chars(), y.length(), y.length());
@@ -535,6 +517,11 @@ inline void subString::operator = (const char* ys)
     assign(0, ys);
 }
 
+inline void subString::operator = (char* ys)
+{
+    assign(0, ys);
+}
+
 inline void subString::operator = (char ch)
 {
     assign(0, &ch, 1);
@@ -567,6 +554,11 @@ inline void cat(const string& x, const char* y, string& r)
     r.rep = string_Scat(r.rep, x.chars(), x.length(), y, -1);
 }
 
+inline void cat(const string& x, char* y, string& r)
+{
+    r.rep = string_Scat(r.rep, x.chars(), x.length(), y, -1);
+}
+
 inline void cat(const string& x, char y, string& r)
 {
     r.rep = string_Scat(r.rep, x.chars(), x.length(), &y, 1);
@@ -583,6 +575,11 @@ inline void cat(const subString& x, const subString& y, string& r)
 }
 
 inline void cat(const subString& x, const char* y, string& r)
+{
+    r.rep = string_Scat(r.rep, x.chars(), x.length(), y, -1);
+}
+
+inline void cat(const subString& x, char* y, string& r)
 {
     r.rep = string_Scat(r.rep, x.chars(), x.length(), y, -1);
 }
@@ -607,145 +604,39 @@ inline void cat(const char* x, const char* y, string& r)
     r.rep = string_Scat(r.rep, x, -1, y, -1);
 }
 
+inline void cat(const char* x, char* y, string& r)
+{
+    r.rep = string_Scat(r.rep, x, -1, y, -1);
+}
+
 inline void cat(const char* x, char y, string& r)
 {
     r.rep = string_Scat(r.rep, x, -1, &y, 1);
 }
 
-inline void cat(const string& a, const string& x, const string& y, string& r)
+inline void cat(char* x, const string& y, string& r)
 {
-    r.rep = string_Scat(r.rep, a.chars(), a.length(), x.chars(), 
-			x.length(), y.chars(), y.length());
+    r.rep = string_Scat(r.rep, x, -1, y.chars(), y.length());
 }
 
-inline void cat(const string& a, const string& x, const subString& y, string& r)
+inline void cat(char* x, const subString& y, string& r)
 {
-    r.rep = string_Scat(r.rep, a.chars(), a.length(), x.chars(), 
-			x.length(), y.chars(), y.length());
+    r.rep = string_Scat(r.rep, x, -1, y.chars(), y.length());
 }
 
-inline void cat(const string& a, const string& x, const char* y, string& r)
+inline void cat(char* x, const char* y, string& r)
 {
-    r.rep = string_Scat(r.rep, a.chars(), a.length(), x.chars(), 
-			x.length(), y, -1);
+    r.rep = string_Scat(r.rep, x, -1, y, -1);
 }
 
-inline void cat(const string& a, const string& x, char y, string& r)
+inline void cat(char* x, char* y, string& r)
 {
-    r.rep = string_Scat(r.rep, a.chars(), a.length(), x.chars(), 
-			x.length(), &y, 1);
+    r.rep = string_Scat(r.rep, x, -1, y, -1);
 }
 
-inline void cat(const string& a, const subString& x, const string& y, string& r)
+inline void cat(char* x, char y, string& r)
 {
-    r.rep = string_Scat(r.rep, a.chars(), a.length(), x.chars(), 
-			x.length(), y.chars(), y.length());
-}
-
-inline void cat(const string& a, const subString& x, const subString& y, string& r)
-{
-    r.rep = string_Scat(r.rep, a.chars(), a.length(), x.chars(), 
-			x.length(), y.chars(), y.length());
-}
-
-inline void cat(const string& a, const subString& x, const char* y, string& r)
-{
-    r.rep = string_Scat(r.rep, a.chars(), a.length(), x.chars(), 
-			x.length(), y, -1);
-}
-
-inline void cat(const string& a, const subString& x, char y, string& r)
-{
-    r.rep = string_Scat(r.rep, a.chars(), a.length(), x.chars(), 
-			x.length(), &y, 1);
-}
-
-inline void cat(const string& a, const char* x, const string& y, string& r)
-{
-    r.rep = string_Scat(r.rep, a.chars(), a.length(), x, 
-			-1, y.chars(), y.length());
-}
-
-inline void cat(const string& a, const char* x, const subString& y, string& r)
-{
-    r.rep = string_Scat(r.rep, a.chars(), a.length(), x, 
-			-1, y.chars(), y.length());
-}
-
-inline void cat(const string& a, const char* x, const char* y, string& r)
-{
-    r.rep = string_Scat(r.rep, a.chars(), a.length(), x, -1, y, -1);
-}
-
-inline void cat(const string& a, const char* x, char y, string& r)
-{
-    r.rep = string_Scat(r.rep, a.chars(), a.length(), x, -1, &y, 1);
-}
-
-
-inline void cat(const char* a, const string& x, const string& y, string& r)
-{
-    r.rep = string_Scat(r.rep, a, -1, x.chars(), x.length(), 
-			y.chars(), y.length());
-}
-
-inline void cat(const char* a, const string& x, const subString& y, string& r)
-{
-    r.rep = string_Scat(r.rep, a, -1, x.chars(), x.length(), 
-			y.chars(), y.length());
-}
-
-inline void cat(const char* a, const string& x, const char* y, string& r)
-{
-    r.rep = string_Scat(r.rep, a, -1, x.chars(), x.length(), y, -1);
-}
-
-inline void cat(const char* a, const string& x, char y, string& r)
-{
-    r.rep = string_Scat(r.rep, a, -1, x.chars(), x.length(), &y, 1);
-}
-
-inline void cat(const char* a, const subString& x, const string& y, string& r)
-{
-    r.rep = string_Scat(r.rep, a, -1, x.chars(), x.length(), 
-			y.chars(), y.length());
-}
-
-inline void cat(const char* a, const subString& x, 
-		const subString& y, string& r)
-{
-    r.rep = string_Scat(r.rep, a, -1, x.chars(), x.length(), 
-			y.chars(), y.length());
-}
-
-inline void cat(const char* a, const subString& x, const char* y, string& r)
-{
-    r.rep = string_Scat(r.rep, a, -1, x.chars(), x.length(), y, -1);
-}
-
-inline void cat(const char* a, const subString& x, char y, string& r)
-{
-    r.rep = string_Scat(r.rep, a, -1, x.chars(), x.length(), &y, 1);
-}
-
-inline void cat(const char* a, const char* x, const string& y, string& r)
-{
-    r.rep = string_Scat(r.rep, a, -1, x, -1, y.chars(), y.length());
-}
-
-inline void cat(const char* a, const char* x, const subString& y, string& r)
-{
-    r.rep = string_Scat(r.rep, a, -1, x, -1, y.chars(), y.length());
-}
-
-inline void cat(const char* a, const char* x, const char* y, string& r)
-{
-    r.rep = string_Scat(r.rep, a, -1, x, -1, y, -1);
-}
-
-inline void cat(const char* a, const char* x, char y, string& r)
-{
-    r.rep = string_Scat(r.rep, a, -1, x, -1, &y, 1);
+    r.rep = string_Scat(r.rep, x, -1, &y, 1);
 }
 
 
@@ -762,6 +653,11 @@ inline void string::operator +=(const subString& y)
 }
 
 inline void string::operator += (const char* y)
+{
+    cat(*this, y, *this);
+}
+
+inline void string::operator += (char* y)
 {
     cat(*this, y, *this);
 }
@@ -790,6 +686,11 @@ inline string operator + (const string& x, const char* y) return r;
     cat(x, y, r);
 }
 
+inline string operator + (const string& x, char* y) return r;
+{
+    cat(x, y, r);
+}
+
 inline string operator + (const string& x, char y) return r;
 {
     cat(x, y, r);
@@ -806,6 +707,11 @@ inline string operator + (const subString& x, const subString& y) return r;
 }
 
 inline string operator + (const subString& x, const char* y) return r;
+{
+    cat(x, y, r);
+}
+
+inline string operator + (const subString& x, char* y) return r;
 {
     cat(x, y, r);
 }
@@ -862,6 +768,11 @@ inline string operator + (const string& x, const char* y)
     string r; cat(x, y, r); return r;
 }
 
+inline string operator + (const string& x, char* y) 
+{
+    string r; cat(x, y, r); return r;
+}
+
 inline string operator + (const string& x, char y) 
 {
     string r; cat(x, y, r); return r;
@@ -878,6 +789,11 @@ inline string operator + (const subString& x, const subString& y)
 }
 
 inline string operator + (const subString& x, const char* y) 
+{
+    string r; cat(x, y, r); return r;
+}
+
+inline string operator + (const subString& x, char* y) 
 {
     string r; cat(x, y, r); return r;
 }
@@ -927,6 +843,11 @@ inline void string::prepend(const string& y)
 }
 
 inline void string::prepend(const char* y)
+{
+    rep = string_Sprepend(rep, y, -1); 
+}
+
+inline void string::prepend(char* y)
 {
     rep = string_Sprepend(rep, y, -1); 
 }
@@ -1069,6 +990,11 @@ inline int string::index(const char* t, int startpos) const
     return search(startpos, length(), t);
 }
 
+inline int string::index(char* t, int startpos) const
+{   
+    return search(startpos, length(), t);
+}
+
 inline int string::index(const string& y, int startpos) const
 {   
     return search(startpos, length(), y.chars(), y.length());
@@ -1094,6 +1020,11 @@ inline int string::contains(const char* t) const
     return search(0, length(), t) >= 0;
 }
 
+inline int string::contains(char* t) const
+{   
+    return search(0, length(), t) >= 0;
+}
+
 inline int string::contains(const string& y) const
 {   
     return search(0, length(), y.chars(), y.length()) >= 0;
@@ -1110,6 +1041,11 @@ inline int string::contains(char c, int p) const
 }
 
 inline int string::contains(const char* t, int p) const
+{
+    return match(p, length(), 0, t) >= 0;
+}
+
+inline int string::contains(char* t, int p) const
 {
     return match(p, length(), 0, t) >= 0;
 }
@@ -1150,6 +1086,11 @@ inline int string::matches(const char* t, int p) const
     return match(p, length(), 1, t) >= 0;
 }
 
+inline int string::matches(char* t, int p) const
+{
+    return match(p, length(), 1, t) >= 0;
+}
+
 inline int string::matches(char c, int p) const
 {
     return match(p, length(), 1, &c, 1) >= 0;
@@ -1163,6 +1104,11 @@ inline int string::matches(const regex& r, int p) const
 
 
 inline int subString::contains(const char* t) const
+{   
+    return S.search(pos, pos+len, t) >= 0;
+}
+
+inline int subString::contains(char* t) const
 {   
     return S.search(pos, pos+len, t) >= 0;
 }
@@ -1213,10 +1159,69 @@ inline int string::gsub(const char* pat, const string& r)
     return _gsub(pat, -1, r.chars(), r.length());
 }
 
+inline int string::gsub(char* pat, const string& r)
+{
+    return _gsub(pat, -1, r.chars(), r.length());
+}
+
 inline int string::gsub(const char* pat, const char* r)
 {
     return _gsub(pat, -1, r, -1);
 }
+
+inline int string::gsub(const char* pat, char* r)
+{
+    return _gsub(pat, -1, r, -1);
+}
+
+inline int string::gsub(char* pat, const char* r)
+{
+    return _gsub(pat, -1, r, -1);
+}
+
+inline int string::gsub(char* pat, char* r)
+{
+    return _gsub(pat, -1, r, -1);
+}
+
+
+// `char *' => `const char *' wrappers
+
+inline subString string::after(char* t, int startpos = 0)
+{
+    return after((const char *)t, startpos);
+}
+
+inline subString string::before(char* t, int startpos = 0)
+{
+    return before((const char *)t, startpos);
+}
+
+inline subString string::through(char* t, int startpos = 0)
+{
+    return through((const char *)t, startpos);
+}
+
+inline subString string::at(char* t, int startpos = 0)
+{
+    return at((const char *)t, startpos);
+}
+
+inline void string::del(char* t, int startpos = 0)
+{
+    del((const char *)t, startpos);
+}
+
+inline int compare(const subString& x, char* b)
+{
+    return compare(x, (const char*)b);
+}
+
+inline int compare(const string& x, char* b)
+{
+    return compare(x, (const char*)b);
+}
+
 
 // I/O
 
@@ -1322,6 +1327,36 @@ inline int operator<=(const string& x, const char* t)
     return compare(x, t) <= 0; 
 }
 
+inline int operator==(const string& x, char* t) 
+{
+    return compare(x, t) == 0; 
+}
+
+inline int operator!=(const string& x, char* t) 
+{
+    return compare(x, t) != 0; 
+}
+
+inline int operator>(const string& x, char* t)  
+{
+    return compare(x, t) > 0; 
+}
+
+inline int operator>=(const string& x, char* t) 
+{
+    return compare(x, t) >= 0; 
+}
+
+inline int operator<(const string& x, char* t)  
+{
+    return compare(x, t) < 0; 
+}
+
+inline int operator<=(const string& x, char* t) 
+{
+    return compare(x, t) <= 0; 
+}
+
 inline int operator==(const subString& x, const string& y) 
 {
     return compare(y, x) == 0; 
@@ -1408,6 +1443,36 @@ inline int operator<(const subString& x, const char* t)
 }
 
 inline int operator<=(const subString& x, const char* t) 
+{
+    return compare(x, t) <= 0; 
+}
+
+inline int operator==(const subString& x, char* t) 
+{
+    return compare(x, t) == 0; 
+}
+
+inline int operator!=(const subString& x, char* t) 
+{
+    return compare(x, t) != 0;
+}
+
+inline int operator>(const subString& x, char* t)  
+{
+    return compare(x, t) > 0; 
+}
+
+inline int operator>=(const subString& x, char* t) 
+{
+    return compare(x, t) >= 0; 
+}
+
+inline int operator<(const subString& x, char* t)  
+{
+    return compare(x, t) < 0; 
+}
+
+inline int operator<=(const subString& x, char* t) 
 {
     return compare(x, t) <= 0; 
 }

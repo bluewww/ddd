@@ -153,7 +153,7 @@ inline static strRep* string_Snew(int newsiz)
     unsigned int allocsiz = MINstrRep_SIZE;
     while (allocsiz < siz) allocsiz <<= 1;
     allocsiz -= MALLOC_MIN_OVERHEAD;
-    if (allocsiz >= MAXstrRep_SIZE)
+    if (allocsiz > MAXstrRep_SIZE - 1)
     {
 	cerr << "string: requested length out of range\n";
 	abort();
