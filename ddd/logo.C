@@ -38,6 +38,9 @@ char logo_rcsid[] =
 #include "Xpm.h"
 #include "assert.h"
 #include "string-fun.h"
+#include "AppData.h"
+#include "cook.h"
+#include "LessTifH.h"
 
 // X bitmaps
 #include "icons/ddd.xbm"
@@ -61,9 +64,6 @@ char logo_rcsid[] =
 #ifdef XtIsRealized
 #undef XtIsRealized
 #endif
-
-#include "AppData.h"
-#include "cook.h"
 
 
 //-----------------------------------------------------------------------------
@@ -567,7 +567,11 @@ void install_icons(Widget shell, const string& color_key)
     Pixel foreground, top_shadow, bottom_shadow, select;
     XmGetColors(XtScreen(shell), root_attr.colormap, background,
 		&foreground, &top_shadow, &bottom_shadow, &select);
-    Pixel arm_background = select;
+    Pixel arm_background;
+    if (lesstif_version < 1000)
+	arm_background = background;
+    else
+	arm_background = select;
 
     // DDD icon
     install_icon(shell, DDD_ICON, 
