@@ -68,9 +68,10 @@ class BreakPoint {
     string  myaddress;
     string  myexpr;
     string  myinfos;
-    string  myignore_count;
+    int     myignore_count;
     string  mycondition;
     string  myarg;
+    WatchMode mywatch_mode;
     bool    myenabled_changed;
     bool    myfile_changed;
     bool    myposition_changed;
@@ -89,10 +90,12 @@ private:
 	  myfile_name(b.myfile_name),
 	  myline_nr(b.myline_nr),
 	  myaddress(b.myaddress),
+	  myexpr(b.myexpr),
 	  myinfos(b.myinfos),
 	  myignore_count(b.myignore_count),
 	  mycondition(b.mycondition),
 	  myarg(b.myarg),
+	  mywatch_mode(b.mywatch_mode),
 	  myenabled_changed(b.myenabled_changed),
 	  myfile_changed(b.myfile_changed),
 	  myposition_changed(b.myposition_changed),
@@ -131,12 +134,15 @@ public:
     const string& file_name()    const { return myfile_name; }
     int           line_nr()      const { return myline_nr; }
     const string& address()      const { return myaddress; }
+
+    // Watchpoint info
     const string& expr()         const { return myexpr; }
+    WatchMode watch_mode()       const { return mywatch_mode; }
 
     // Additional infos
     const string& infos()        const { return myinfos; }
-    string ignore_count() const;
-    string condition() const;
+    int ignore_count()           const { return myignore_count; }
+    const string& condition()    const { return mycondition; }
 
     // Argument of breakpoint-setting command, as passed to constructor
     const string& arg()          const { return myarg; }

@@ -1,8 +1,9 @@
 // $Id$
 // Breakpoint management
 
-// Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
-// Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>.
+// Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
+// Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
+// and Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of the DDD Library.
 // 
@@ -70,10 +71,12 @@ BreakPoint::BreakPoint (string& info_output, string arg, int number)
       myfile_name(""),
       myline_nr(0),
       myaddress(""),
+      myexpr(""),
       myinfos(""),
-      myignore_count(""),
+      myignore_count(0),
       mycondition(""),
       myarg(arg),
+      mywatch_mode(WATCH_CHANGE),
       myenabled_changed(true),
       myfile_changed(true),
       myposition_changed(true),
@@ -130,6 +133,13 @@ bool BreakPoint::update (string& info_output)
 	    {
 		changed |= (mytype != WATCHPOINT);
 		mytype = WATCHPOINT;
+
+		if (word1.contains("acc ", 0))
+		    mywatch_mode = WATCH_ACCESS;
+		else if (word1.contains("read ", 0))
+		    mywatch_mode = WATCH_READ;
+		else
+		    mywatch_mode = WATCH_CHANGE;
 	    }
 	    else if (word1.contains("breakpoint", 0) || 
 		     word2.contains("breakpoint", 0))
@@ -217,19 +227,37 @@ bool BreakPoint::update (string& info_output)
 		info_output = info_output.after('\n');
 	    }
 
+	    int ignore_count = 0;
+	    string cond      = "";
+
 	    if (info_output != "" && !isdigit(info_output[0]))
 	    {
-		// Extra info may follow
+		// Extra info follows
 		int next_nl = index(info_output, rxnl_int, "\n");
 		if (next_nl == -1)
 		{
-		    // That's all, folks!
 		    new_info += info_output;
 		    info_output = "";
 		}
-		else {
+		else
+		{
 		    new_info += info_output.through(next_nl);
 		    info_output = info_output.after(next_nl);
+		}
+
+		// Check for ignore count and breakpoint condition
+		if (new_info.contains("ignore next "))
+		{
+		    string count = new_info.after("ignore next ");
+		    count = count.before(" hits");
+		    ignore_count = atoi(count);
+		}
+
+		if (new_info.contains("stop only if "))
+		{
+		    cond = new_info.after("stop only if ");
+		    if (cond.contains('\n'))
+			cond = cond.before("\n");
 		}
 	    }
 
@@ -237,6 +265,18 @@ bool BreakPoint::update (string& info_output)
 	    {
 		changed = true;
 		myinfos = new_info;
+	    }
+
+	    if (ignore_count != myignore_count)
+	    {
+		changed = myenabled_changed = true;
+		myignore_count = ignore_count;
+	    }
+
+	    if (cond != mycondition)
+	    {
+		changed = myenabled_changed = true;
+		mycondition = cond;
 	    }
 	}
 	break;
@@ -315,6 +355,20 @@ bool BreakPoint::update (string& info_output)
 			}
 		    }
 		}
+		else
+		{
+		    // ``stop VAR''
+		    mytype       = WATCHPOINT;
+		    mywatch_mode = WATCH_CHANGE;
+
+		    string expr = info_output;
+		    if (expr.contains('\n'))
+			expr = expr.before('\n');
+		    if (expr.contains(rxblanks_or_tabs))
+			expr = expr.before(rxblanks_or_tabs);
+
+		    myexpr = expr;
+		}
 
 		// Sun DBX 3.0 issues extra characters like 
 		// (2) stop in main -count 0/10
@@ -342,11 +396,11 @@ bool BreakPoint::update (string& info_output)
 		    myinfos = "count " + count;
 		    if (count.contains('/'))
 			count = count.after('/');
-		    count = read_nr_str(count);
+		    int ignore_count = atoi(count);
 
-		    if (count != myignore_count)
+		    if (ignore_count != myignore_count)
 		    {
-			myignore_count = count;
+			myignore_count = ignore_count;
 			changed = true;
 		    }
 		}
@@ -382,8 +436,10 @@ bool BreakPoint::update (string& info_output)
 	    {
 		info_output = info_output.after("count:");
 		read_leading_blanks(info_output);
-		string ignore_count = info_output.before(rxblanks_or_tabs);
+		string count = info_output.before(rxblanks_or_tabs);
 		info_output = info_output.after(rxblanks_or_tabs);
+
+		int ignore_count = atoi(count);
 		if (myignore_count != ignore_count)
 		{
 		    changed = true;
@@ -499,57 +555,6 @@ bool BreakPoint::update (string& info_output)
 // Session stuff
 //-----------------------------------------------------------------------------
 
-// Return ignore count ("" if none)
-string BreakPoint::ignore_count() const
-{
-    switch (gdb->type())
-    {
-    case GDB:
-    {
-	string info = gdb_question("info breakpoint " + number_str());
-	if (info == NO_GDB_ANSWER)
-	    return "";
-
-	string ignore = info.after("ignore next ");
-	return ignore.before(" hits");
-    }
-    break;
-
-    case DBX:
-    case XDB:
-    case JDB:
-	return myignore_count;
-    }
-
-    return "";			// Never reached
-}
-
-// Return condition ("" if none)
-string BreakPoint::condition() const
-{
-    switch (gdb->type())
-    {
-    case GDB:
-    {
-	string info = gdb_question("info breakpoint " + number_str());
-	if (info == NO_GDB_ANSWER)
-	    return "";
-
-	string cond = info.after("stop only if ");
-	if (cond.contains('\n'))
-	    cond = cond.before("\n");
-
-	return cond;
-    }
-    case DBX:
-    case XDB:
-    case JDB:
-	return mycondition;
-    }
-
-    return "";			// Never reached
-}
-
 // Return commands to restore this breakpoint.  If AS_DUMMY is set,
 // delete the breakpoint immediately in order to increase the
 // breakpoint number.  If ADDR is set, use ADDR as (fake) address.  If
@@ -574,7 +579,7 @@ bool BreakPoint::get_state(ostream& os, int nr, bool as_dummy,
     {
     case GDB:
     {
-	switch (BPType())
+	switch (type())
 	{
 	case BREAKPOINT:
 	{
@@ -594,7 +599,7 @@ bool BreakPoint::get_state(ostream& os, int nr, bool as_dummy,
 
 	case WATCHPOINT:
 	{
-	    os << "watch " << infos() << "\n";
+	    os << gdb->watch_command(expr(), watch_mode()) << "\n";
 	    break;
 	}
 	}
@@ -604,9 +609,9 @@ bool BreakPoint::get_state(ostream& os, int nr, bool as_dummy,
 	    // Extra infos
 	    if (!enabled() && gdb->has_disable_command())
 		os << gdb->disable_command(num) << "\n";
-	    string ignore = ignore_count();
-	    if (ignore != "" && gdb->has_ignore_command())
-		os << gdb->ignore_command(num, atoi(ignore)) << "\n";
+	    int ignore = ignore_count();
+	    if (ignore >= 0 && gdb->has_ignore_command())
+		os << gdb->ignore_command(num, ignore) << "\n";
 	    if (cond != "" && gdb->has_condition_command())
 		os << gdb->condition_command(num, cond) << "\n";
 	}
@@ -624,14 +629,23 @@ bool BreakPoint::get_state(ostream& os, int nr, bool as_dummy,
 		cond_suffix = " if " + cond;
 	}
 
-	if (pos.contains('*', 0))
+	switch (type())
 	{
-	    os << "stop at " << pos.after('*') << cond_suffix << '\n';
-	}
-	else
-	{
-	    os << "file "    << pos.before(':') << "\n";
-	    os << "stop at " << pos.after(':')  << cond_suffix << "\n";
+	case BREAKPOINT:
+	    if (pos.contains('*', 0))
+	    {
+		os << "stop at " << pos.after('*') << cond_suffix << '\n';
+	    }
+	    else
+	    {
+		os << "file "    << pos.before(':') << "\n";
+		os << "stop at " << pos.after(':')  << cond_suffix << "\n";
+	    }
+	    break;
+
+	case WATCHPOINT:
+	    os << "stop " << expr() << cond_suffix << '\n';
+	    break;
 	}
 
 	if (!as_dummy)
@@ -639,9 +653,9 @@ bool BreakPoint::get_state(ostream& os, int nr, bool as_dummy,
 	    // Extra infos
 	    if (!enabled() && gdb->has_disable_command())
 		os << gdb->disable_command(num) << "\n";
-	    string ignore = ignore_count();
-	    if (ignore != "" && gdb->has_ignore_command())
-		os << gdb->ignore_command(num, atoi(ignore)) << "\n";
+	    int ignore = ignore_count();
+	    if (ignore >= 0 && gdb->has_ignore_command())
+		os << gdb->ignore_command(num, ignore) << "\n";
 	}
 	break;
     }
@@ -668,9 +682,9 @@ bool BreakPoint::get_state(ostream& os, int nr, bool as_dummy,
 	    // Extra infos
 	    if (!enabled() && gdb->has_disable_command())
 		os << gdb->disable_command(num) << "\n";
-	    string ignore = ignore_count();
-	    if (ignore != "" && gdb->has_ignore_command())
-		os << gdb->ignore_command(num, atoi(ignore)) << "\n";
+	    int ignore = ignore_count();
+	    if (ignore >= 0 && gdb->has_ignore_command())
+		os << gdb->ignore_command(num, ignore) << "\n";
 	}
 	break;
     }
