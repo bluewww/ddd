@@ -103,6 +103,7 @@ bool is_running_cmd (const string& cmd, GDBAgent *gdb)
 	"|s|si|step|stepi"
 	"|n|ni|next|nexti"
 	"|j|ju|jump"
+	"|k|ki|kill"
 	"|fin|fini|finis|finish"
         "|R|S"
 	")([ \t]+.*)?");
