@@ -2,7 +2,7 @@ Installing DDD					-*- text -*-
 **************
 
 PLEASE NOTE: The installation process has changed in this release.  Be
-sure to read this file.
+sure to read the instructions below carefully.
 
 For compiling and installing DDD on a system, please follow these
 instructions.
@@ -83,6 +83,8 @@ To run DDD, you need:
        C++, GNU Java (`guavac'), GNU Ada (`gnat'), GNU Fortran (`g77'),
        GNU Chill and GNU Modula-2.
 
+       GDB also supports WDB, a GDB variant found on HP-UX systems.
+
      - As an alternative to GDB, DDD also supports the DBX debugger as
        found on SUN, Compaq, DEC, AIX, and IRIX systems.  DDD adapts
        automatically to a wide range of DBX variants.
@@ -102,8 +104,8 @@ To run DDD, you need:
        only, but may work for other languages as well.
 
        Note: In DDD, GDB support is much better than XDB support; in
-       fact, XDB support is no longer maintained.  Try GDB 4.18 or
-       later; these support HP-UX compilers.
+       fact, XDB support is no longer maintained.  Try WDB or GDB 4.18
+       or later; these support HP-UX compilers.
 
      - To debug Java bytecode programs, DDD supports JDB, the Java
        Debugger, as of JDK 1.1 and later.
@@ -485,11 +487,13 @@ optional DDD features.  There are five optional features.
   To enable the builtin application defaults file, use the `configure'
   option `--enable-builtin-app-defaults'.
 
+
 * You can configure DDD such that the DDD manual will be compiled into
   the DDD executable.
 
   To enable the builtin DDD manual, use the `configure' option
   `--enable-builtin-manual'.
+
 
 * You can configure DDD such that the DDD News will be compiled into
   the DDD executable.
@@ -497,17 +501,20 @@ optional DDD features.  There are five optional features.
   To enable the builtin DDD news, use the `configure' option
   `--enable-builtin-news'.
 
+
 * You can configure DDD such that the DDD License will be compiled into
   the DDD executable.
 
   To enable the builtin DDD news, use the `configure' option
   `--enable-builtin-license'.
 
+
 * You can configure DDD such that the DDD VSL library `ddd.vsl' will
   be compiled into the DDD executable.
 
   To enable the builtin VSL library, use the `configure' option
   `--enable-builtin-vsllib'.
+
 
 See also `External Packages', above, to disable external packages such
 as the Readline library used for command-line editing on standard input.
@@ -613,7 +620,7 @@ listed there, please ask a local expert for help.
 If you find the error can be avoided by changing some DDD code or by
 changing the DDD build process, please send a bug report to the DDD
 maintainers <bug-ddd@gnu.org>.  Be sure to include a context
-diff (`diff -c5') between the original and the changed file(s).
+diff (`diff -c2') between the original and the changed file(s).
 
 
 Documentation
