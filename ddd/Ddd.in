@@ -404,7 +404,7 @@ set print repeats 0\n
 ! or `~/.dbxrc' file to customize DBX.
 Ddd*dbxInitCommands: \
 sh stty -echo -onlcr\n\
-set $page = 0\n
+set $page = 1\n
 
 ! The DBX settings.  Usually overridden in `~/.dddinit'.
 Ddd*dbxSettings:
