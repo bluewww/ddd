@@ -96,7 +96,8 @@ DDD Frequently Asked Questions					-*- text -*-
     http://www.cs.uidaho.edu:8000/hungry/microshaft/lesstif.html
 
 
-9.  Why does my DDD call `xmkmf' when being started?
+9.  DDD reports `imake' and/or `xmkmf' problems when being started.
+    How come?
 
     To run properly, OSF/Motif requires a file called `XKeysymDB' in
     the X project root.  Since we distribute DDD binaries, the X

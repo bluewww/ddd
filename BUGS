@@ -209,8 +209,7 @@ Volunteers for fixing these and other bugs are welcome!
      > ddd --dbx program process-id 
      ddd seemed to start up fine, but after loading it core-dumped. 
 
-054. tbe@glenlivet.fokus.gmd.de (Thomas Berndes) says that his DDD
-     crashed after failing to allocate the `grey' colormap.
+054. [fixed]
 
 055. [fixed]
 
