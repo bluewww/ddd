@@ -30,10 +30,6 @@ Volunteers for these and other projects are welcome!
 037 Group dereference.  If multiple pointers are selected,
     dereference them all.
 
-050 Include algorithm animation; for instance, in a way similar to
-    LENS (see ftp.cc.gatech.edu:pub/people/stasko).  Suggested by
-    bruce@liverpool.ac.uk (Bruce Stephens).
-
 070 Matthias Kurz <mk@baerlap.north.de> suggests an option to set
     debuggee arguments when invoking DDD.  A simple way of
     implementing that would be: if more than one argument is given,
@@ -172,11 +168,6 @@ Volunteers for these and other projects are welcome!
 289 Enable drop actions.  Dropping an action on the text causes the
     action to perform on the object (or vice versa?)
 
-291 Rich Homolka <rich@stg.com> suggests: When displaying a class
-    variable, to be able to toggle between showing only member var's
-    defined in that class, or all member variables, including those
-    inherited from superclasses.
-
 294 Have a way to expand `VALUE <Nx>' manually.
 
 304 If the source window size has changed (via panes?), recenter the
@@ -246,18 +237,10 @@ Volunteers for these and other projects are welcome!
 346 If a new display obscures an existing display, use spring-embedded
     layout to resolve conflicts.
 
-348 Allow debugger interaction while the program is running.  Simply
-    interrupt the debuggee, do debugger action, and resume execution.
-    (This will only work after a `run' or `cont'.)
-
 349 Access Java `.jar' class archives.
 
 350 Harri Pasanen <harri@trema.com> suggests incremental search for
     the source window.  (Could this be bound to Ctrl+B/Ctrl+F?)
-
-351 Oliver Eichler <oliver.eichler@regensburg.netsurf.de> suggests
-    that `Displays' clusters should have two or more columns in order
-    to fit the visible part of the display.
 
 354 In Windows, compare file names regardless of case.
 
@@ -313,7 +296,5 @@ Volunteers for these and other projects are welcome!
 384 Finish themes support:
     * Allow for interaction between VSL and DDD.
     * Document it all.
-
-386 Move DDD to SourceForge.
 
 387 (Insert new project ideas here)
