@@ -2752,8 +2752,25 @@ static void BlinkCB(XtPointer client_data, XtIntervalId *id)
     assert(*id == blink_timer);
     blink_timer = 0;
 
+    static bool have_led_colors = false;
+    static Pixel led_select_color;
+    static Pixel led_background_color;
+
+    if (!have_led_colors)
+    {
+	XtVaGetValues(led_w,
+		      XmNbackground, &led_background_color,
+		      XmNselectColor, &led_select_color,
+		      NULL);
+	have_led_colors = true;
+    }
+
     bool set = int(client_data);
-    XtVaSetValues(led_w, XmNfillOnSelect, set, NULL);
+    if (set)
+	XtVaSetValues(led_w, XmNselectColor, led_select_color, NULL);
+    else
+	XtVaSetValues(led_w, XmNselectColor, led_background_color, NULL);
+
     XFlush(XtDisplay(led_w));
     XmUpdateDisplay(led_w);
 
