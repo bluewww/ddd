@@ -327,10 +327,12 @@ Volunteers for these and other projects are welcome!
     create individual icons), such that the icon creation time is
     minimized.
 
-306 Andreas Heilwagen <hostmaster@netguru.org> suggests a way to have
-    multiple DDDs run, each saving its state in
-    `~/.ddd/<pid>/<status>'.  This is useful for client-server
-    debugging.
-    [Can't we just use GDB to switch between processes?  -AZ]
+307 Lassi A. Tuura <lat@iki.fi> states: For cxxtest, if I take the
+    list_test, show the entire list (and display all `self' and `next'
+    links), and then start disabling nodes, they keep coming back,
+    apparently because either the self or next alias link brings it
+    back alive.  I would probably expect (at least in this scenario)
+    that if I remove a display, all aliases to it are deleted as well
+    so that the display really goes away.
 
-307 (Insert new project ideas here)
+308 (Insert new project ideas here)

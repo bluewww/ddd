@@ -161,15 +161,4 @@ detail.
       10.20.  On my Windows NT 4.0 running Exceed on 24-bit screen
       everything shows fine.
 
-    - For cxxtest, if I take the list_test, show the entire list (and
-      display all `self' and `next' links), and then start disabling
-      nodes, they keep coming back, apparently because either the self
-      or next alias link brings it back alive.  I would probably
-      expect (at least in this scenario) that if I remove a display,
-      all aliases to it are deleted as well so that the display really
-      goes away.
-
-719 Make sure that if ~/.ddd/init has a bad version number, the
-    diagnostics are correct.
-
 720 (Insert new bugs here)
