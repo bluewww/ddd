@@ -1347,13 +1347,10 @@ bool GDBAgent::recording(bool val)
 
 void GDBAgent::handle_input(string& answer)
 {
-    bool ready_to_process;
-    bool had_a_prompt;
-
     handle_echo(answer);
     handle_more(answer);
     handle_reply(answer);
-    
+
     if (exception_state && state != ReadyWithPrompt)
     {
 	// Be sure to report the exception like an unexpected output
@@ -1381,12 +1378,6 @@ void GDBAgent::handle_input(string& answer)
 
     case BusyOnInitialCmds:
     case BusyOnCmd:
-    
-    	// Collect all answers first before handling them because sometimes
-    	// the reply is much too fragmented to extract necessary infomation
-	// from a single answer.
-        had_a_prompt     = ends_with_prompt(answer);
-    	ready_to_process = answer.contains("(y or n)") || had_a_prompt;
 	complete_answer += answer;
 
 	if (_on_answer != 0)
@@ -1394,16 +1385,17 @@ void GDBAgent::handle_input(string& answer)
 	    if (ends_with_prompt(complete_answer))
 	    {
 		set_exception_state(false);
-	        normalize_answer(complete_answer);
+		normalize_answer(answer);
 	    }
-
-	    if (ready_to_process )
+	    else
 	    {
-	    	_on_answer(complete_answer, _user_data);
+		strip_control(answer);
+		strip_dbx_comments(answer);
 	    }
+	    _on_answer(answer, _user_data);
 	}
 
-	if (had_a_prompt)
+	if (ends_with_prompt(complete_answer))
 	{
 	    exception_state = false;
 
