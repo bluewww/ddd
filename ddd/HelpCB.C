@@ -931,6 +931,7 @@ static void PopupTip(XtPointer client_data, XtIntervalId *timer)
 	XGetWindowAttributes(XtDisplay(w), XtWindow(w), &w_attributes);
 
 	XtWidgetGeometry tip_geometry;
+	tip_geometry.request_mode = CWHeight | CWWidth;
 	XtQueryGeometry(tip_shell, NULL, &tip_geometry);
 
 	const int offset = 5;	// Distance between W and tip (in pixels)
