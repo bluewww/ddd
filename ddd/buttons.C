@@ -276,11 +276,13 @@ static void strip_through(string& s, string key)
 static XmTextPosition textPosOfEvent(Widget widget, XEvent *event)
 {
     XmTextPosition startpos, endpos;
-
     string expr = 
 	source_view->get_word_at_event(widget, event, startpos, endpos);
+
+#if 0				// We might point at a text breakpoint
     if (expr == "")
 	return XmTextPosition(-1);
+#endif
 
     return startpos;
 }
@@ -294,6 +296,13 @@ static MString gdbDefaultValueText(Widget widget, XEvent *event,
     XmTextPosition startpos, endpos;
     string expr = 
 	source_view->get_word_at_event(widget, event, startpos, endpos);
+
+    // If we're at a breakpoint, return appropriate help
+    MString bp_help = 
+	source_view->help_on_pos(widget, startpos, for_documentation);
+    if (bp_help.xmstring() != 0)
+	return bp_help;
+
     if (expr == "")
 	return MString(0, true); // Nothing pointed at
 
