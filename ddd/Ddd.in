@@ -105,7 +105,7 @@ Ddd*saveOptionsOnExit: false
 ! program.  Bourne shell commands to run in the separate tty are appended
 ! to this string.
 Ddd*termCommand: xterm \
--bg 'light gray' \
+-bg 'grey90' \
 -fn '-*-lucidatypewriter-medium-r-*-*-12-*' \
 -title '@DDD@: Execution Window' -e /bin/sh -c
 
@@ -355,25 +355,29 @@ Ddd*XmText.FontList:      -*-lucidatypewriter-medium-r-*-*-12-*
 
 Ddd*foreground:                    black
 Ddd*background:                    grey
-Ddd*XmText.background:             light grey
-Ddd*XmTextField.background:        light grey
-Ddd*GraphEdit.background:          light grey
-Ddd*XmList.background:             light grey
+Ddd*XmText.background:             grey90
+Ddd*XmTextField.background:        grey90
+Ddd*GraphEdit.background:          grey90
+Ddd*XmList.background:             grey90
 Ddd*graph_edit_panner.background:  grey
 Ddd*graph_edit_panner.foreground:  grey
 Ddd*graph_edit_panner.shadowColor: black
 
 ! The famous red and green buttons.
-Ddd*interrupt.foreground:          maroon
+Ddd*interrupt.foreground:          red4
 Ddd*run.foreground:                dark green
 
+! Highlight special dialogs
+Ddd*internal_error*foreground: 	   red4
+Ddd*terminated_dialog*foreground:  red4
+Ddd*debugging_poem*foreground: 	   dark green
 
 ! Here are the resources to set data display colors.
 Ddd*graph_edit.nodeColor:          black
-Ddd*graph_edit.edgeColor:          black
+Ddd*graph_edit.edgeColor:          grey50
 Ddd*graph_edit.selectColor:        black
 Ddd*graph_edit.gridColor:          black
-Ddd*graph_edit.frameColor:         black
+Ddd*graph_edit.frameColor:         grey50
 
 
 
@@ -1674,7 +1678,6 @@ Reload the source from file.
 !-----------------------------------------------------------------------------
 
 Ddd*print*options.orientation:                XmVERTICAL
-Ddd*print*options.orientation:                XmVERTICAL
 Ddd*print*options.marginWidth:                0
 Ddd*print*options.marginHeight:               0
 Ddd*print*options.spacing:                    0
@@ -1682,19 +1685,24 @@ Ddd*print*options.?.orientation:              XmHORIZONTAL
 Ddd*print*options.?.marginWidth:              0
 Ddd*print*options.?.marginHeight:             0
 Ddd*print*options.?.?.orientation:            XmHORIZONTAL
+Ddd*print*options*isAligned:		      false
+Ddd*print*options*alignment:		      XmALIGNMENT_BEGINNING
 
 Ddd*print*print_to.labelString:               Print To:
+Ddd*print*print_to.alignment:                 XmALIGNMENT_END
 Ddd*print*print_to.width:                     100
 Ddd*print*print_to.recomputeSize:             false
 Ddd*print*print_to_field*printer.labelString: Printer
 Ddd*print*print_to_field*file.labelString:    File
 
 Ddd*print*print_command.labelString:          Print Command:
+Ddd*print*print_command.alignment:            XmALIGNMENT_END
 Ddd*print*print_command.width:                100
 Ddd*print*print_command.recomputeSize:        false
 Ddd*print*print_command_field.columns:        48
 
 Ddd*print*file_name.labelString:              File Name:
+Ddd*print*file_name.alignment:                XmALIGNMENT_END
 Ddd*print*file_name.width:                    100
 Ddd*print*file_name.recomputeSize:            false
 Ddd*print*file_name_field.columns:            32
@@ -1702,18 +1710,21 @@ Ddd*print*postscript.labelString:             PostScript
 Ddd*print*xfig.labelString:	   	      XFIG
 
 Ddd*print*print_what.labelString:             Print:
+Ddd*print*print_what.alignment:               XmALIGNMENT_END
 Ddd*print*print_what.width:                   100
 Ddd*print*print_what.recomputeSize:           false
 Ddd*print*all.labelString:	              All Displays
 Ddd*print*selected.labelString:	              Selected Displays
 
 Ddd*print*print_orientation.labelString:      Orientation:
+Ddd*print*print_orientation.alignment:        XmALIGNMENT_END
 Ddd*print*print_orientation.width:            100
 Ddd*print*print_orientation.recomputeSize:    false
 Ddd*print*portrait.labelString:               Portrait
 Ddd*print*landscape.labelString:              Landscape
 
 Ddd*print*paper_size.labelString:             Paper Size:
+Ddd*print*paper_size.alignment:               XmALIGNMENT_END
 Ddd*print*paper_size.width:                   100
 Ddd*print*paper_size.recomputeSize:           false
 Ddd*print*paper_size_field.orientation:       XmVERTICAL
@@ -2245,8 +2256,8 @@ giving a subject like\n\
 \n\
 To enable us to fix the bug, you should include the following information:\n\
 @tt \267 @rm What you were doing to get this message.  Report all the facts.\n\
-@tt \267 @rm The @DDD@ configuration.  \n\
-Run `@tt ddd --configuration @rm' to get it.\n\
+@tt \267 @rm The @DDD@ configuration.  \
+Run `@tt ddd --configuration@rm' to get it.\n\
 See also the section ``Reporting Bugs'' in the @DDD@ manual.\n\
 \n\
 We thank you for your support.
