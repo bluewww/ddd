@@ -2584,13 +2584,15 @@ int main(int argc, char *argv[])
     set_settings_title(data_edit_menu[EditItems::Settings].widget);
 
     // Close windows explicitly requested
-    if (!app_data.data_window && !app_data.full_name_mode)
+    if (!app_data.separate_data_window && 
+	!app_data.data_window && !app_data.full_name_mode)
     {
 	// We don't want the data window.
 	gdbCloseDataWindowCB(gdb_w, 0, 0);
     }
 
-    if (!app_data.source_window || app_data.full_name_mode)
+    if (!app_data.separate_source_window && 
+	(!app_data.source_window || app_data.full_name_mode))
     {
 	// We don't need the source window, since we're invoked by Emacs.
 	gdbCloseSourceWindowCB(gdb_w, 0, 0);
@@ -2605,7 +2607,9 @@ int main(int argc, char *argv[])
 	gdbCloseCodeWindowCB(gdb_w, 0, 0);
     }
 
-    if (!app_data.debugger_console || app_data.tty_mode)
+    if ((!app_data.separate_source_window && have_source_window() || 
+	 !app_data.separate_data_window && have_data_window()) &&
+	(!app_data.debugger_console || app_data.tty_mode))
     {
 	// We don't need the debugger console, since we have a TTY.
 	gdbCloseCommandWindowCB(gdb_w, 0, 0);
@@ -3559,10 +3563,13 @@ Boolean ddd_setup_done(XtPointer)
 	install_button_tips();
 	fix_status_size();
 
-	if (running_shells() == 0)
+	if (running_shells() == 0 ||
+	    app_data.full_name_mode && running_shells() == 1)
 	{
 	    // We have no shell (yet).  Be sure to popup at least one shell.
-	    if (app_data.source_window)
+	    if (app_data.full_name_mode)
+		gdbOpenDataWindowCB(gdb_w, 0, 0);
+	    else if (app_data.source_window)
 		gdbOpenSourceWindowCB(gdb_w, 0, 0);
 	    else if (app_data.data_window)
 		gdbOpenDataWindowCB(gdb_w, 0, 0);
