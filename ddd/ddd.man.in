@@ -1,0 +1,1571 @@
+.\" $Id$ -*-nroff-*-
+.\" DDD manual page
+.\" @configure_input@
+.\"
+.\" Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+.\" Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
+.\" 
+.\" This file is part of DDD.
+.\" 
+.\" DDD is free software; you can redistribute it and/or modify it under
+.\" the terms of the GNU General Public License as published by the Free
+.\" Software Foundation; either version 2 of the License, or (at your
+.\" option) any later version.
+.\" 
+.\" DDD is distributed in the hope that it will be useful, but WITHOUT ANY
+.\" WARRANTY; without even the implied warranty of MERCHANTABILITY or
+.\" FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+.\" for more details.
+.\" 
+.\" You should have received a copy of the GNU General Public License
+.\" along with DDD -- see the file COPYING.  If not, write to the Free
+.\" Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\" 
+.\" DDD is the GDB-based Data Display Debugger.
+.\" Contact ddd@ips.cs.tu-bs.de for details.
+.\"
+.\"
+.TH @ddd@ 1 "1 May 1995" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
+.SH NAME
+@ddd@, x@ddd@ - the data display debugger (v@VERSION@)
+.SH SYNOPSIS
+.na
+.TP
+.B @ddd@
+.RB "[\|" \-\-help "\|]"
+.RB "[\|" \-\-nw "\|]"
+.RB "[\|" \-\-gdb "\|]"
+.RB "[\|" \-\-dbx "\|]"
+.RB "[\|" \-\-debugger
+.I gdb-name\c
+\&\|]
+.RB "[\|" \-\-host
+.I hostname
+.RB "[\|" \-\-login
+.I username\c
+\&\|]\|]
+.RB "[\|" \-\-vsl\-library
+.I library\c
+\&\|]
+.RB "[\|" \-\-vsl\-path
+.I path\c
+\&\|]
+.RB "[\|" \-\-trace\-dialog "\|]"
+.RB "[\|" \-\-trace\-shell "\|]"
+.RB "[\|" \-\-exec\-window "\|]"
+.RB "[\|" \-\-no\-exec\-window "\|]"
+.RB "[\|" \-\-attach\-windows "\|]"
+.RB "[\|" \-\-separate\-windows "\|]"
+.RB "[\|" \-\-scrolled\-graph "\|]"
+.RB "[\|" \-\-panned\-graph "\|]"
+.RB "[\|" \-\-version "\|]"
+.RB "[\|" \-\-configuration "\|]"
+.RB "[\|" \-\-manual "\|]"
+.RB "[\|"\c
+.I gdb-options\c
+\&\|]
+.RB "[\|"\c
+.I x-options\c
+\&\|]
+.RB "[\|" \c
+.I program
+.RB "[\|" \c
+.IR core \||\|
+.IR process-id "\|]\|]"
+.ad b
+.TP
+but usually just
+.TP
+.B @ddd@
+.I program
+.ad b
+
+.TP
+Note: In some sites, \s-2@DDD@\s+2 is installed as `\fBx@ddd@\fR'.
+
+.\" ---------------
+.SH DESCRIPTION
+.\" ---------------
+The purpose of a debugger such as \s-2@DDD@\s+2 is to allow you to see
+what is going on \*(lqinside\*(rq another program while it
+executes\(em\&or what another program was doing at the moment it
+crashed.
+
+\s-2@DDD@\s+2 can do four main kinds of things (plus other things in support of
+these) to help you catch bugs in the act:
+.IP \(bu 2
+Start your program, specifying anything that might affect its
+behavior.
+.br
+.IP \(bu 2
+Make your program stop on specified conditions.
+.br
+.IP \(bu 2
+Examine what has happened, when your program has stopped.
+.br
+.IP \(bu 2
+Change things in your program, so you can experiment with correcting the
+effects of one bug and go on to learn about another.
+.PP
+.\"
+\*(lqClassical\*(rq \s-2UNIX\s+2 debuggers such as the \s-2GNU\s+2 debugger
+(\s-2GDB\s+2) provide a command-line interface and a multitude of
+commands for these and other debugging purposes.  \s-2@DDD@\s+2 is a
+\fIwrapper\fR around an underlying \s-2GDB\s+2 or \s-2DBX\s+2
+debugger.  In addition to the \s-2GDB\s+2 or \s-2DBX\s+2 command-line
+interface, \s-2@DDD@\s+2 provides a \fIgraphical user interface\fR to
+support common debugging tasks.  As a special feature, \s-2@DDD@\s+2
+provides a \fIgraphical data display\fR for interactive exploration of
+data structures.
+.PP
+
+.\" ---------------
+.SH "INVOKING @DDD@"
+.\" ---------------
+.\"
+You can run \s-2@DDD@\s+2 with no arguments or options.  However, the
+most usual way to start \s-2@DDD@\s+2 is with one argument or two,
+specifying an executable program as the argument:
+.sp
+.br
+  \fB@ddd@\ program\fR
+.br
+.sp
+.\"
+You can also start with both an executable program and a core file specified:
+.sp
+.br
+  \fB@ddd@\ program\ core\fR
+.br
+.sp
+.\"
+You can, instead, specify a process ID as a second argument, if you want
+to debug a running process:
+.sp
+.br
+  \fB@ddd@\ program\ 1234\fR
+.br
+.sp
+.\"
+would attach \s-2@DDD@\s+2 to process \c
+.B 1234\c
+\& (unless you also have a file
+named `\|\c
+.B 1234\c
+\&\|'; \s-2@DDD@\s+2 does check for a core file first).
+.\"
+.PP
+By default, \s-2@DDD@\s+2 uses \s-2GDB\s+2 as underlying debugger.  Use
+.sp
+.br
+  \fB@ddd@\ \-\-dbx program\fR
+.br
+.sp
+.\"
+to run \s-2DBX\s+2 as underlying debugger for the program.
+.PP
+To learn more about \s-2@DDD@\s+2 options, run
+.sp
+.br
+  \fB@ddd@\ \-\-help\fR
+.br
+.sp
+to get a list of frequently used options, or see the `\fBOPTIONS\fR'
+section, below.
+
+.\" ---------------
+.SH "GETTING HELP"
+.\" ---------------
+.\"
+You can get help on any visible \s-2@DDD@\s+2 item by pressing the
+`\fBF1\fR' key and moving the question mark arrow on the item you
+want help for.  Clicking on the item pops up a help text.
+.PP
+You can get help on \s-2GDB\s+2 and \s-2DBX\s+2 commands by entering
+the `\fBhelp\fR' command at the `\fB(gdb)\fR' or `\fB(dbx)\fR' prompt
+(see next section).
+
+.\" ---------------
+.SH "ENTERING COMMANDS"
+.\" ---------------
+.\"
+In the \fIcommand window\fR, you can interact with the \s-2GDB\s+2 or
+\s-2DBX\s+2 command interface.  Enter \s-2GDB\s+2 commands at the
+`\fB(gdb)\fR' prompt, and \s-2DBX\s+2 commands at the `\fB(dbx)\fR'
+prompt.  Arbitrary \s-2GDB\s+2 and \s-2DBX\s+2 commands can be used.
+.PP
+You can \fIrepeat\fR previous and next commands by pressing the
+`\fBUp\fR' and `\fBDown\fR' keys, respectively.  If you enter an empty
+line, the last command is repeated as well.  The `\fBCommand
+History...\fR' item in the `\fBCommands...\fR' menu shows the command
+history.
+.PP
+Using \s-2GDB\s+2, you can \fIcompleted\fR commands and arguments by
+pressing the \s-2\fBTAB\fR\s+2 key; pressing the \s-2\fBTAB\fR\s+2 key
+multiple times shows one possible expansion after the other.
+.PP
+Here are some of the most frequently needed debugger commands:
+.TP
+.B break \fR[\|\fIfile\fB:\fR\|]\fIfunction
+\&
+(\s-2GDB\s+2 only) Set a breakpoint at \c
+.I function\c
+\& (in \c
+.I file\c
+\&).
+.TP
+.B stop in \fIfunction
+\&
+(\s-2DBX\s+2 only) Set a breakpoint at \c
+.I function.
+.TP
+.B run \fR[\|\fIarglist\fR\|]
+Start your program (with \c
+.I arglist\c
+\&, if specified).
+.TP
+.B where
+Display the program stack.
+.TP
+.BI print " expr"\c
+\&
+Display the value of an expression.
+.TP
+.B cont
+Continue running your program (after stopping, e.g. at a breakpoint).
+.TP
+.B next
+Execute next program line (after stopping); step \c
+.I over\c
+\& any
+function calls in the line.
+.TP
+.B step
+Execute next program line (after stopping); step \c
+.I into\c
+\& any
+function calls in the line.
+.TP
+.B help \fR[\|\fIname\fR\|]
+Show information about the command \c
+.I name\c
+\&, or general usage information.
+.TP
+.B quit
+Exit \s-2@DDD@\s+2.
+.PP
+For full details on \s-2GDB\s+2 commands, see \c
+.I 
+Using \s-2GDB\s+2: A Guide to the \s-2GNU\s+2 Source-Level Debugger\c
+\&, by Richard M. Stallman and Roland H. Pesch.  
+The same text is available online as the \c
+.B gdb\c
+\& entry in the \c
+.B info\c
+\& program.
+.PP
+For full details on \s-2DBX\s+2 commands, see the \s-2DBX\s+2 documentation.
+
+.\" ---------------
+.SH "OPENING FILES"
+.\" ---------------
+.\"
+If you did not invoke \s-2@DDD@\s+2 specifying a program to be debugged,
+you can use the `\fBFile\fR' menu to open programs, core dumps and
+sources.
+.PP
+To open a program to be debugged, select `\fBOpen File\fR' from the
+`\fBFile\fR' menu.
+.PP
+To open a core dump for the program, select `\fBOpen Core\fR' from the
+`\fBFile\fR' menu.
+.PP
+To open an arbitrary source file, select `\fBOpen Source\fR' from the
+`\fBFile\fR' menu.
+
+.\" ---------------
+.SH "BREAKPOINTS"
+.\" ---------------
+.\"
+If the source of the debugged program is available, the \fIsource
+window\fR displays its current source text.  (If a source text cannot
+be found, use the \s-2GDB\s+2 `\fBdirectory\fR' command to specify
+source text directories).
+.PP
+Using the source window, you can make the program stop at certain
+\fIbreakpoints\fR and trace its execution.
+.\"
+.SS "Setting Breakpoints by Location"
+.\"
+If the source line is visible, click with the \fIleft mouse button\fR
+on the source line number and then on the `\fBBreak()\fR' button.
+.PP
+As an alternative, you can simply press the \fIright mouse button\fR
+on the source line number and select the `\fBSet Breakpoint\fR' item
+from the popup menu.
+.PP
+As another alternative, you can enter the line number in the argument
+field (indicated by `\fB():\fR') and click on the `\fBBreak()\fR'
+button.
+.PP
+As yet another alternative, you can select `\fBEdit Breakpoints...\fR'
+in the `\fBSource\fR' menu, click on the `\fBNew\fR' button and enter
+the line number.
+.PP
+And finally, you can also use the \s-2GDB\s+2 `\fBbreak\fR' command or
+the \s-2DBX\s+2 `\fBstop\fR' command.  Type `\fBhelp break\fR' at the
+`\fB(gdb)\fR' prompt (or `\fBhelp stop\fR' at the `\fB(dbx)\fR'
+prompt) for details.
+.PP
+(If you find this number of alternatives confusing, be aware that
+\s-2@DDD@\s+2 users fall into three categories, which must all be
+supported.  \fINovice users\fR explore \s-2@DDD@\s+2 and may prefer to
+use one single mouse button.  \fIAdvanced users\fR know how to use
+shortcuts and prefer popup menus.  \fIExperienced \s-2GDB\s+2 and
+\s-2DBX\s+2 users\fR prefer the command line interface.)
+.PP
+Breakpoints are indicated by `\fB#\fIn\fB#\fR', where \fIn\fR is the
+breakpoint number.
+.\"
+.\"
+.SS "Setting Breakpoints by Name"
+.\"
+If the function name is visible, click with the \fIleft
+mouse button\fR' on the function name.  The function name is copied to
+the argument field.  Click on the `\fBBreak()\fR' button to set a
+breakpoint there.
+.PP
+As a shorter alternative, you can simply press the \fIright
+mouse button\fR on the function name and select the `\fBbreak\fR' item
+from the popup menu.
+.PP
+As another alternative, you can enter the function name in the
+argument field (possibly using name completion by pressing the
+`\fBTab\fR' key) and click on the `\fBBreak()\fR' button.
+.PP
+As yet another alternative, you can click on `\fBNew\fR' from the
+Breakpoint editor (invoked through `\fBEdit Breakpoints...\fR'
+in the `\fBSource\fR' menu) and enter the function name.
+.PP
+Finally, you can use the \s-2GDB\s+2 `\fBbreak\fR' command or the
+\s-2DBX\s+2 `\fBstop\fR' command.  Type `\fBhelp break\fR' at the
+`\fB(gdb)\fR' prompt (or `\fBhelp stop\fR' at the `\fB(dbx)\fR'
+prompt) for details.
+.\"
+.\"
+.SS "Disabling and Enabling Breakpoints"
+.\"
+Note: \s-2DBX\s+2 does not support breakpoint disabling.
+.PP
+Press the \fIright mouse button\fR on the breakpoint name and select
+the `\fBDisable Breakpoint\fR' item (or the `\fBEnable Breakpoint\fR'
+item, respectively) from the popup menu.
+.PP
+As an alternative, you can select the breakpoint and click on
+`\fBDisable\fR' or `\fBEnable\fR' in the Breakpoint editor (invoked
+through `\fBEdit Breakpoints...\fR' in the `\fBSource\fR' menu).
+.PP
+Disabled breakpoints are indicated by `\fB_\fIn\fB_\fR', where \fIn\fR
+is the breakpoint number.
+.PP
+Finally, you can use the \s-2GDB\s+2 `\fBdisable\fR' command.  Type
+`\fBhelp disable\fR' at the `\fB(gdb)\fR' prompt for details.
+.\"
+.\"
+.SS "Deleting Breakpoints"
+If the breakpoint is visible, click with the \fIleft mouse button\fR
+on the breakpoint.  The breakpoint location is copied to the argument
+field.  Click on the `\fBClear()\fR' button to delete all breakpoints
+there.
+.PP
+If the function name is visible, click with the \fIleft mouse
+button\fR on the function name.  The function name is copied to the
+argument field.  Click on the `\fBClear()\fR' button to set a breakpoint
+there.
+.PP
+As a shorter alternative, you can simply press the \fIright mouse
+button\fR on the function name and select the `\fBclear\fR' item from
+the popup menu.
+.PP
+As yet another alternative, you can select the breakpoint and click on
+`\fBDelete\fR' from the Breakpoint editor (invoked through `\fBEdit
+Breakpoints...\fR' in the `\fBSource\fR' menu).
+.PP
+Finally, you can use the \s-2GDB\s+2 `\fBclear\fR' and `\fBdelete\fR'
+commands.  Type `\fBhelp clear\fR' or `\fBhelp delete\fR' at
+the `\fB(gdb)\fR' prompt for details.
+.\"
+.\"
+.SS "More Breakpoint Features"
+Using the Breakpoint editor (invoked through `\fBEdit
+Breakpoints...\fR' in the `\fBSource\fR' menu), you can specify
+breakpoint conditions and ignore counts.  Click on the
+`\fBCondition...\fR' and `\fBIgnore Count...\fR' buttons and click on
+the `\fBHelp\fR' button.
+.PP
+More breakpoint features can be invoked through the command window.
+Enter `\fBhelp breakpoints\fR' at the `\fB(gdb)\fR' prompt.
+
+.\" ---------------
+.SH "LOOKING UP ITEMS"
+.\" ---------------
+.\"
+.SS "Searching Definitions"
+.\"
+If you wish to lookup a specific function or variable definition whose
+name is visible in the source text, click with the \fIleft mouse
+button\fR on the function or variable name.  The name is copied to the
+argument field.  Click on the `\fBLookup()\fR' button to find its
+definition.
+.PP
+As a shorter alternative, you can simply press the \fIright mouse
+button\fR on the function name and select the `\fBlookup\fR' item from
+the popup menu.
+.PP
+As another alternative, you can enter the function name in the
+argument field and click on the `\fBLookup()\fR' button to find its
+definition.
+.PP
+Finally, you can use the \s-2GDB\s+2 `\fBinfo line\fR' command.
+Type `\fBhelp info line\fR' at the `\fB(gdb)\fR' prompt for
+details.
+.\"
+.\"
+.SS "Searching Items in the Source Text"
+.\"
+If the item you wish to search is visible in the source text, click
+with the \fIleft mouse button\fR on it.  The identifier is copied to
+the argument field.  Click on the `\fBSearch>> ()\fR' button to find
+following occurrences and on the  `\fBSearch<< ()\fR' button to find
+previous occurrences.
+.PP
+As an alternative, you can enter the item in the argument field and
+click on one of the `\fBSearch ()\fR' buttons.
+.PP
+By default, \s-2@DDD@\s+2 finds only complete words.  To search for
+arbitrary substrings, change the value of the `\fBFind Words Only\fR'
+option in the `\fBSource Options\fR' menu.
+.\"
+.\"
+.SS "Finding Breakpoints"
+.\"
+If you wish to lookup a specific breakpoint, select the
+`\fBLookup\fR' item from the `\fBBreakpoints\fR' menu.  After
+selecting a breakpoint from the list and clicking the
+`\fBLookup\fR' button, the breakpoint location is displayed.
+.PP
+As an alternative, you can enter `\fB#\fIn\fR' in the argument field,
+where \fIn\fR is the breakpoint number and click on the `\fBLookup()\fR'
+button to find its definition.
+.\"
+.\"
+.SS "Looking up Previous Locations"
+.\"
+Use the `\fBBack\fR' and `\fBForward\fR' buttons to lookup previous or
+next looked-up locations.  The location found is underlined.
+
+.\" ---------------
+.SH "RUNNING THE PROGRAM"
+.\" ---------------
+.\"
+.SS "Starting Program Execution"
+.\"
+Click on the `\fBrun\fR' button or select `\fBRun\fR' from the
+`\fBFile\fR' menu to start execution of the debugged program.  If
+you wish to specify program arguments, enter `\fBrun\fR' followed
+by arguments at the `\fB(gdb)\fR' or `\fB(dbx)\fR' prompt instead.
+.PP
+When the program is first started, \s-2@DDD@\s+2 invokes an \fIexecution
+window\fR, where the program terminal input and output is shown.  (You
+can disable this feature by starting \s-2@DDD@\s+2 with the
+`\fB\-\-no\-exec\-window\fR' option.)
+.\"
+.\"
+.SS "Stopping the Program"
+.\"
+The program stops as soon as a breakpoint is reached.  The source text
+highlights the current execution position.
+.PP
+You can interrupt a running program any time by clicking the
+`\fBInterrupt\fR' button or typing \fBCtrl+C\fR in a \s-2@DDD@\s+2 window.
+.\"
+.\"
+.SS "Resuming Execution"
+.\"
+To resume execution, at the address where your program last stopped,
+click on the `\fBContinue\|\fR` button.  Any breakpoints set at that
+address are bypassed.
+.PP
+To execute just one source line, click on the `\fBStep\fR' button.
+The program is executed until control reaches a different source line,
+which may be in a different function.
+.PP
+To continue to the next line in the current function, click on the
+`\fBNext\fR' button.  This is similar to `\fBStep\fR', but any
+function calls appearing within the line of code are executed without
+stopping.
+.PP
+To continue running until the current function returns, use the
+`\fBContinue\fR' button.  The returned value (if any) is printed.
+.PP
+To continue running until a line after the current source line is
+reached, use the `\fBUntil\fR' button.  `\fBUntil\fR' is used to avoid
+single stepping through a loop more than once.  It is like the
+`\fBNext\fR' button, except that when `\fBUntil\fR' encounters a jump,
+it automatically continues execution until the program counter is
+greater than the address of the jump. This means that when you reach
+the end of a loop after single stepping though it, `\fBUntil\fR' makes
+your program continue execution until it exits the loop.
+.\"
+.\"
+.SS "Examining the Stack"
+.\"
+When your program has stopped, the first thing you need to know is
+where it stopped and how it got there.
+.PP
+The `\fBUp\fR' button selects the function that called the current
+one.
+.PP
+The `\fBDown\fR' button selects the function that was called by
+the current one.
+.PP
+You can also type the \s-2GDB\s+2 and \s-2DBX\s+2 `\fBup\fR' and
+`\fBdown\fR' commands at the `\fB(gdb)\fR' or `\fB(dbx)\fR' prompt.
+
+.\" ---------------
+.SH "EXAMINING DATA"
+.\" ---------------
+.\"
+In \s-2@DDD@\s+2, the usual way to examine data is using the \fIgraphical data
+display\fR in the \fIdata window\fR.  The data window holds
+\fIdisplays\fR showing names and the values of variables.  The display
+is updated each time the program stops.
+.\"
+.SS "Displaying Variable Values"
+To create a new display, select the variable by clicking the \fIleft mouse
+button\fR on its name.  The variable name is copied to the argument
+field.  By clicking the `\fBDisplay()\fR' button, a new display is
+created in the data window.
+.PP
+As a shorter alternative, you can simply press the \fIright mouse
+button\fR on the variable name and select the `\fBdisplay\fR' item from
+the popup menu.
+.PP
+As another alternative, you may also enter the variable name in the
+argument field and press the `\fBDisplay()\fR' button.
+.PP
+If the data window is visible, you may invoke the `\fBEdit
+Displays...\fR' item from the `\fBData\fR' menu and click on the
+`\fBNew...\fR' button.  Enter the variable name in the resulting
+prompt dialog.
+.PP
+Finally, you may enter
+.sp
+.br
+  \fBgraph display \fI expr\fR
+.sp
+.br
+\&at the `\fB(gdb)\fR' or `\fB(dbx)\fR' prompt.
+.\"
+.\"
+.SS "Selecting Displays"
+.\"
+Each display in the data window has a \fItitle bar\fR containing the
+\fIdisplay number\fR and the displayed expression (the \fIdisplay
+name\fR).  Below the title, the \fIdisplay value\fR is shown.
+.PP
+You can select individual displays by clicking on them with the
+\fIleft mouse button\fR.  The resulting expression is shown in the
+\fIargument field\fR, below.
+.PP
+You can \fIextend\fR an existing selection by pressing the \fBShift\fI
+Key while selecting.
+.PP
+Single displays may also be selected by using the arrow keys.
+.\"
+.\"
+.SS "Selecting Multiple Displays"
+.\"
+Multiple displays are selected by pressing and holding the \fIleft
+mouse button\fR somewhere on the window background.  By moving the
+pointer while holding the button, a selection rectangle is shown; all
+displays fitting in the rectangle are selected when the mouse button
+is released.
+.PP
+By double-clicking on a display, the display itself and all connected
+displays are automatically selected.
+.\"
+.\"
+.SS "Selecting Display Parts"
+.\"
+If a display is composed from several values (that is, a C/C++
+\fIclass\fR, \fIstruct\fR, \fIunion\fR, or \fIarray\fR; or a
+\s-2PASCAL\s+2/\s-2MODULA-2\s+2 \fIRECORD\fR or \fIARRAY\fR), you can
+select individual parts by clicking on their names or values.  The
+resulting expression is shown in the \fIargument field\fR, below.
+.PP
+Selection of multiple display parts is not supported.
+.\"
+.\"
+.SS "Manipulating Aggregate Values"
+.\"
+\fIAggregate Values\fR can be shown \fIexpanded\fR, that is,
+displaying all details, or \fIhidden\fR, that is, displayed as
+`\fB{...}\fR'.
+.PP
+To show details about an aggregate, select the aggregate by clicking
+the \fIleft mouse button\fR on its name or value and click on the
+`\fBShow()\fR' button.
+.PP
+To hide details about an aggregate, select the aggregate by clicking
+the \fIleft mouse button\fR on its name or value and click on the
+`\fBHide()\fR' button.
+.PP
+As a faster alternative, you can also press the \fIright mouse
+button\fR on the aggregate and select the appropriate menu item.
+.PP
+Arrays can be aligned horizontally or vertically.  To change the
+alignment of an array, select it and then click on the `\fBRotate()\fR'
+button.
+.PP
+As a faster alternative, you can also press the \fIright mouse
+button\fR on the array and select the `\fBRotate\fR' menu item.
+.\"
+.\"
+.SS "Displaying Dependent Values"
+.\"
+Dependent displays are created from an existing display.  The
+dependency is indicated by arrows leading from the originating display
+to the dependent display.
+.PP
+To create a dependent display, select the originating display or
+display part and click on the `\fBDependent()\fR' button.  A
+prompt dialog appears where you can enter a new expression \fIEXPR\fR
+in the argument field.  By clicking on `\fBOK\fR', the new display
+showing \fIEXPR\fR is created.
+.PP
+As a faster alternative, you can also press the \fIright mouse
+button\fR on the originating display part and select the `\fBDependent
+Display...\fR' menu item.
+.PP
+Using dependent displays, you can investigate the data structure of a
+\*(lqtree\*(rq for example and lay it out according to your intuitive image
+of the \*(lqtree\*(rq data structure.
+.\"
+.\"
+.SS "Dereferencing Pointers"
+.\"
+Since so many data structures are realized using pointers,
+there is a shortcut for creating dependent displays showing the value
+of a dereferenced pointer.
+.PP
+To dereference a pointer, select the originating pointer value or name
+and click on the `\fBDereference()\fR' button.  A new display showing
+the dereferenced pointer value is created.
+.PP
+As a faster alternative, you can also press the \fIright mouse
+button\fR on the originating pointer value or name and select the
+`\fBDereference\fR' menu item.
+.\"
+.\"
+.SS "Displaying Successive Array Elements"
+.\"
+To display several successive objects of the same type (a section of
+an array, or an array of dynamically determined size), use the
+notation [\fIFROM\fR..\fITO\fR] in display expressions.  \fIFROM\fR
+and \fITO\fR denote the first and last array position to display.
+Thus,
+.sp
+.br
+  \fBgraph display argv[0..9]\fR
+.sp
+.br
+creates ten new display nodes for `\fBargv[0]\fR',
+`\fBargv[1]\fR', ..., `\fBargv[9]\fR'.
+.\"
+.\"
+.SS "Deleting Displays"
+.\"
+To delete a single display, select it and click on the `\fBDelete()\fR'
+button.  As an alternative, you can also press the \fIright mouse
+button\fR on the display and select the `\fBDelete Display\fR' item.
+.PP
+When a display is deleted, its immediate ancestors and descendants are
+automatically selected, so that you can easily delete entire graphs.
+.PP
+To delete several displays at once, select the `\fBDelete...\fR' item
+in the Display Editor (invoked through the `\fBEdit Displays...\fR'
+item in the `\fBData\fR' menu).  Select any number of display items in
+the usual way and delete them by pressing `\fBDelete\fR'.
+.PP
+As an alternative, you can also type
+.sp
+.br
+  \fBundisplay \fINUM...\fR
+.sp
+.br
+at the `\fB(gdb)\fR' or `\fB(dbx)\fR' prompt, where \fINUM...\fR is a
+space-separated list of the displays to delete.  You may need to
+refresh the data window afterwards (see below).
+.\"
+.\"
+.SS "Disabling or Enabling Displays"
+.\"
+Note: \s-2DBX\s+2 does not support display disabling.
+.PP
+Unlike a \fIdeleted\fR display item, a \fIdisabled\fR display item
+remains in the display, but its value is not shown until it is enabled
+again.
+.PP
+Displays are enabled and disabled the same way they are deleted, using
+the `\fBDisable()\fR'/`\fBEnable()\fR' button, the
+`\fBDisable\fR'/`\fBEnable Display\fR' popup menu item, or the
+`\fBDisable\fR'/`\fBEnable\fR' buttons in the Display Editor.
+.PP
+The corresponding \s-2GDB\s+2 commands are
+.sp
+.br
+  \fBdisable display \fINUM...\fR
+.sp
+.br
+and
+.sp
+.br
+  \fBenable display \fINUM...\fR
+.sp
+.br
+respectively.
+.\"
+.\"
+.\"
+.SS "Refreshing the Data Window"
+.\"
+Although the data window refreshes itself automatically each time the
+program stops, there are some situations where you should refresh it
+explicitly.
+.PP
+The data window should be refreshed whenever:
+.br
+.IP \(bu 2
+you disabled, enabled or deleted displays items at the
+`\fB(gdb)\fR' or `\fB(dbx)\fR' prompt,
+.br
+.IP \(bu 2
+the display stays unchanged although all items should be deleted
+(e.g. because you chose another file to debug),
+.br
+.IP \(bu 2
+you think it could be useful.
+.PP
+You can refresh the data window by selecting the `\fBRefresh
+Displays\fR' item in the `\fBData\fR' menu.
+.PP
+As an alternative, you can press the \fIright mouse button\fR
+on the background of the data window and select the `\fBRefresh
+Display\fR' item.
+.PP
+Typing
+.sp
+.br
+  \fBgraph refresh\fR
+.sp
+.br
+at the `\fB(gdb)\fR' or `\fB(dbx)\fR' prompt has the same effect.
+
+.\" ---------------
+.SH "GRAPH EDITING"
+.\" ---------------
+.\"
+The \s-2@DDD@\s+2 data window offers some basic functionality to
+manipulate the display graph.
+.\"
+.\"
+.SS "Moving Displays Around"
+.\"
+From time to time, you may wish to move displays at another place in
+the data window.  You can move a single display by pressing and
+holding the \fIleft mouse button\fR on a display.  Moving the pointer
+while holding the button causes all selected displays to move along
+with the pointer.
+.PP
+If the data window becomes too small to hold all displays, scroll bars
+are created.  If your \s-2@DDD@\s+2 is set up to use \fIpanners\fR
+instead, a panner is created in the lower right edge.  When the panner
+is moved around, the window view follows the position of the panner.
+See `\fBCUSTOMIZING @DDD@\fR', below, for details on how to set up
+scroll bars or panners.
+.PP
+For fine-grain movements, selected displays may also be moved using
+the arrow keys.  Pressing \fBShift\fR and an arrow key moves displays
+by single pixels.  Pressing \fRCtrl\fB and arrow keys moves displays
+by grid positions.
+.\"
+.\"
+.SS "Aligning Displays"
+.\"
+You can align all displays on the nearest grid position by selecting
+`\fBAlign\fR' from the `\fBGraph\fR' menu.  This is useful for
+getting strictly horizontal or vertical edges.
+.PP
+You can enforce alignment by selecting `\fBSnap to Grid\fR' in the
+`\fBData Options\fR' menu.  If `\fBSnap to Grid\fR' is
+enabled, displays can be moved on grid positions only.
+.\"
+.\"
+.SS "Layouting the Display Graph"
+.\"
+You can layout the entire graph as a tree by selecting `\fBLayout\fR'
+from the `\fBGraph\fR' menu.
+.PP
+Layouting the graph may introduce \fIedge hints\fR; that is, edges are
+no more straight lines, but lead to an edge hint and from there to
+their destination.  You can make edge hints visible by selecting
+`\fBShow Edge Hints\fR' in the `\fBData Options\fR' menu.
+Edge hints can be moved around like arbitrary displays.
+.PP
+To enable a more compact layout, you can set the `\fBCompact
+Layout\fR' option in the `\fBData Options\fR' menu.  This realizes an
+alternate layout algorithm, where successors are placed next to their
+parents.  This algorithm is suitable for homogeneous data structures
+only.
+.PP
+You can enforce layout by setting the `\fBAutomatic Layout\fR' option
+in the `\fBData Options\fR' menu.  If `\fBAutomatic Layout\fR' is
+enabled, the graph is layouted after each change.
+.\"
+.\"
+.SS "Rotating the Display Graph"
+.\"
+You can rotate the entire graph clockwise by 90 degrees by selecting
+`\fBRotate\fR' from the `\fBGraph\fR' menu.
+.PP
+If the graph was previously layouted, you may need to layout it again.
+Subsequent layouts will respect the direction of the last rotation.
+.\"
+.\"
+.SS "Printing the Display Graph"
+.\"
+\s-2@DDD@\s+2 allows for printing the graph picture on a printer, which is
+useful for documenting program states.
+.PP
+To print the display graph on a printer, select the `\fBPrint...\fR'
+item from the `\fBGraph\fR' menu.  Enter the printer name in the
+`\fBPrinter\fR' field, the number of copies, the printer type.  Click on
+the `\fBPrint\fR' button to start printing.
+.PP
+To re-print the display graph using the previous settings, select the
+`\fBQuick Print\fR' item from the `\fBGraph\fR' menu.
+.\"
+.\"
+.\"
+.SS "Saving the Display Graph in a File"
+.\"
+\s-2@DDD@\s+2 allows for storing the graph picture in a file, which makes it
+possible to process graph pictures in other documents.
+.PP
+To save the graph picture in a file, select the `\fBExport...\fR' item
+from the `\fBGraph\fR' menu.  Select a file name and file type; click
+on the `\fBExport\fR' button to save the graph picture.
+
+.\" ---------------
+.SH QUITTING @DDD@
+.\" ---------------
+.\"
+To exit \s-2@DDD@\s+2, select `\fBExit\fR' from the `\fBFile\fR' menu.
+You may also type the `\fBquit\fR' command at the `\fB(gdb)\fR' or
+`\fB(dbx)\fR' prompt.  \s-2GDB\s+2 also accepts the `\fBq\fR' command
+or an end-of-file character (usually \fBCtrl+D\fR).
+.PP
+An interrupt (\fBCtrl+C\fR) does not exit from \s-2@DDD@\s+2, but rather
+terminates the action of any \s-2GDB\s+2 or \s-2DBX\s+2 command that
+is in progress and returns to the debugger command level.  It is safe
+to type the interrupt character at any time because the debugger does
+not allow it to take effect until a time when it is safe.
+
+.\" ---------------
+.SH "REMOTE DEBUGGING"
+.\" ---------------
+.\"
+It is possible to have \s-2GDB\s+2 or \s-2DBX\s+2 run on a remote
+\s-2UNIX\s+2 host.  This is useful when the remote host has a slow
+network connection or when \s-2@DDD@\s+2 is available on the local host
+only.
+.PP
+In order to run the underlying debugger on a remote host, you need
+`\fBremsh\fR' (called `\fBrsh\fR' on \s-2BSD\s+2 systems) access on
+the remote host.
+.PP
+To run the debugger on a remote host \fIhostname\fR, invoke \s-2@DDD@\s+2 as
+.sp
+.br
+  \fB@ddd@\ \-\-host \fIhostname\fB \fIremote-program\fR
+.br
+.sp
+If your remote  \fIusername\fR differs from the local username, use
+.sp
+.br
+  \fB@ddd@\ \-\-host \fIhostname\fB\ \-\-login \fIusername\fB\c
+ \fIremote-program\fR
+.br
+.sp
+instead.
+.PP
+There are a few \fIcaveats\fR in remote mode:
+.IP \(bu 2
+The remote debugger is started in your remote home directory.  Hence,
+you must specify an absolute path name for \fIremote-program\fR (or a
+path name relative to your remote home directory).  Same applies to
+remote core files.  Also, be sure to specify a remote process id when
+debugging a running program.
+.br
+.IP \(bu 2
+To run the remote program, \s-2@DDD@\s+2 invokes an `\fBxterm\fR' terminal
+emulator on the remote host, giving your current `\fBDISPLAY\fR'
+environment variable as address.  If the remote host cannot invoke
+`\fBxterm\fR', or does not have access to your X display, start
+\s-2@DDD@\s+2 with the `\fB\-\-no\-exec\-window\fR' option.  The program
+input/output will then go through the \s-2@DDD@\s+2 command window.
+.br
+.IP \(bu 2
+In remote mode, all sources are loaded from the remote host; file
+dialogs scan remote directories.  This may result in somewhat slower
+operation than normal.
+.br
+.IP \(bu 2
+To help you find problems due to remote execution, run \s-2@DDD@\s+2 with the
+`\fB\-\-trace\-shell\-commands\fR' option.  This prints the shell
+commands issued by \s-2@DDD@\s+2 on standard error.
+
+
+.\" ---------------
+.SH "CUSTOMIZING @DDD@"
+.\" ---------------
+.\"
+You can set up your personal \s-2@DDD@\s+2 preferences by using the
+`\fBOptions\fR' menu from the menu bar.  These options affect your
+running \s-2@DDD@\s+2 process only, unless you save these options for
+a later \s-2@DDD@\s+2 invocation.
+
+.SS "General Options"
+These items are found in the `\fBOptions\fR' menu:
+.PP
+If you frequently switch between \s-2@DDD@\s+2 and other multi-window
+applications, you may like to set the `\fBGroup Iconify\fR' option.
+This way, all \s-2@DDD@\s+2 windows are iconified and deiconified as a
+group.
+.PP
+If you want to use \s-2\fBTAB\fR\s+2 key completion in all text windows, set
+the `\fBGlobal Tab Completion\fR' option.  This is useful if you have
+pointer-driven keyboard focus (see below) and no special usage for the
+\s-2\fBTAB\fR\s+2 key.
+.PP
+If you want to run your debugged process in a separate terminal
+emulator window, set the `\fBRun in Execution Window\fR' option.  This
+is useful for programs that have special terminal requirements not
+provided by the debugger window, as raw keyboard processing or
+terminal control sequences.
+.PP
+If you want to save changed options automatically for the next
+\s-2@DDD@\s+2 invocation, set the `\fBSave Options on Exit\fR' option.
+.PP
+If you want to save the command history for the next \s-2@DDD@\s+2
+invocation, set the `\fBSave Options on Exit\fR' option.  Note: This
+option is always set if your \s-2GDB\s+2 is set up to save its command
+history.
+
+.SS "Source Options"
+By default, \s-2@DDD@\s+2 finds only complete words.  This is
+convenient for clicking on an identifier in the source text and search
+for exactly this identifier.  If you want to find all occurrences,
+including word parts, unset the `\fBFind Words Only\fR' option.
+
+.SS "Data Options"
+By default, \s-2@DDD@\s+2 displays a grid in the data window to
+facilitate display alignment.  If you prefer not to have a grid, unset
+the `\fBShow Grid\fR' option.
+.PP
+Layouting the display graph may introduce \fIedge hints\fR; that is,
+edges are no more straight lines, but lead to an edge hint and from
+there to their destination.  These edge hints can be selected and
+moved around like displays.  You can make edge hints visible by
+setting the `\fBShow Edge Hints\fR' option.
+.PP
+To enforce alignment, you can set the `\fBSnap to Grid\fR' option.
+If `\fBSnap to Grid\fR' is enabled, displays can be moved on grid
+positions only.
+.PP
+To enable a more compact layout, you can set the `\fBCompact
+Layout\fR' option.  This realizes an alternate layout algorithm, where
+successors are placed next to their parents.  This algorithm is
+suitable for homogeneous data structures only.
+.PP
+To enforce layout, you can set the `\fBAutomatic Layout\fR' option.
+If `\fBAutomatic Layout\fR' is enabled, the graph is layouted after
+each change.
+
+.SS "Startup Options"
+By default, \s-2@DDD@\s+2 uses three separate windows for commands,
+source, and data.  To attach the source and data windows to the
+command window, creating one single big \s-2@DDD@\s+2 window, set the
+`\fBWindows\fR' option to `\fBOne Single Window\fR'.  This change
+takes only effect after you have saved options and restarted
+\s-2@DDD@\s+2.  See also the `\fB\-\-attach\-windows\fR' 
+and `\fB\-\-separate\-windows\fR' options, below.
+.PP
+By default, \s-2@DDD@\s+2 directs keyboard input to the item your
+mouse pointer points at.  If you prefer a click-to-type keyboard focus
+(that is, click on an item to make it accept keyboard input), set the
+`\fBKeyboard Focus\fR' option on `\fBClick to type\fR'.
+.PP
+By default, \s-2@DDD@\s+2 uses Motif scroll bars to scroll the data
+window.  Many people find this inconvenient, since you can scroll in
+the horizontal or vertical direction only.  As an alternative,
+\s-2@DDD@\s+2 provides a panner (a kind of two-dimensional scroll bar).
+This is much more comfortable, but may be incompatible with your Motif
+toolkit.  To set up \s-2@DDD@\s+2 such that it uses panners by
+default, set the `\fBData Scrolling\fR' option to `\fBPanner\fR'.
+This change takes only effect after you have saved options and
+restarted \s-2@DDD@\s+2.  See also the `\fB\-\-panned\-graph\fR' and
+`\fB\-\-scrolled\-graph\fR' options, below.
+.PP
+By default, \s-2@DDD@\s+2 runs with \s-2GDB\s+2 as underlying
+debugger.  To change this default, set the `\fBDebugger Type\fR'
+option to another debugger.  This change takes only effect after you
+have saved options and restarted \s-2@DDD@\s+2.  See also the
+`\fB\-\-gdb\fR' and `\fB\-\-dbx\fR' options, below.
+
+.SS "Saving Options"
+You can save the current option settings by selecting `\fBSave
+Options\fR' in the `\fBOptions\fR' menu.  Options are saved in a file
+named `\fB.dddinit\fR' in your home directory.  You can also add other
+personal \s-2@DDD@\s+2 resources in this file.
+.PP
+
+.\" ---------------
+.SH "EXTENDING @DDD@"
+.\" ---------------
+.\"
+If you have any contributions to be incorporated into \s-2@DDD@\s+2,
+please send them to `\fBddd@ips.cs.tu-bs.de\fR'.  For suggestions on
+what might be done, see the file `\fBPROJECTS\fR' in the \s-2@DDD@\s+2
+distribution.
+.PP
+If you wish something done in \s-2@DDD@\s+2, but cannot do it
+yourself, you can finance specific \s-2@DDD@\s+2 extensions.  For
+details, contact `\fBddd@ips.cs.tu-bs.de\fR'; direct mail is also
+welcome.
+
+
+.\" ---------------
+.SH "A NOTE FROM THE @DDD@ DEVELOPERS"
+.\" ---------------
+
+If you appreciate this software, please send a picture postcard to:
+
+.DS
+Technische Universitaet Braunschweig 
+.br
+Institut fuer Programmiersprachen und Informationssysteme 
+.br
+Abteilung Softwaretechnologie 
+.br
+Gaussstrasse 17 
+.br
+D-38092 Braunschweig 
+.br
+\s-2GERMANY\s+2 
+.br
+.DE
+
+
+.\" ---------------
+.SH "OPTIONS"
+.\" ---------------
+.\"
+You can use the following options when starting \s-2@DDD@\s+2.  All
+options may be abbreviated, as long as they are unambiguous.  Options
+not listed here are passed to the underlying debugger.
+.TP
+.B \-\-attach\-windows
+Attach the source and data windows to the command window, creating one
+single big \s-2@DDD@\s+2 window.  This gives the good ole
+`\fBxxgdb\fR' or `\fBxdbx\fR' feeling.
+.TP
+.B \-\-attach\-source\-window
+Attaches only the source window to the command window.
+.TP
+.B \-\-attach\-data\-window
+Attaches only the source window to the command window.
+.TP
+.B \-\-configuration
+Show the \s-2@DDD@\s+2 configuration settings and exit.
+.TP
+.B \-\-check-configuration
+Check the \s-2@DDD@\s+2 environment (in particular, the X configuration),
+report any possible problem causes and exit.
+.TP
+.B \-\-dbx
+Run the \s-2DBX\s+2 debugger as underlying debugger.
+.TP
+.B \-\-debugger \fIname\fR
+Invoke the underlying debugger \fIname\fR.  This is useful if you have
+several debugger versions around, or if \s-2GDB\s+2 and \s-2DBX\s+2
+cannot be invoked as `\fBgdb\fR' or `\fBdbx\fR', respectively.
+.TP
+.B \-\-exec\-window
+Run the debugged program in a specially created execution window.
+This is useful for programs that have special terminal requirements
+not provided by the debugger window, as raw keyboard processing or
+terminal control sequences.
+.TP
+.B \-\-gdb
+Run the \s-2GDB\s+2 debugger as underlying debugger.
+.TP
+.B \-\-help
+Give a list of frequently used options.  Show options of the
+underlying debugger as well.
+.TP
+.B \-\-host \fIhostname\fR
+Run the underlying debugger on the remote host \fIhostname\fR.  See
+\fBREMOTE MODE\fR, above.
+.TP
+.B \-\-login \fIusername\fR
+Use \fIusername\fR as remote user name.  See \fBREMOTE MODE\fR, above.
+.TP
+.B \-\-manual
+Show this manual page and exit.
+.TP
+.B \-\-no\-exec\-window
+Do not run the debugged program in a specially created execution
+window; use the command window instead.  Useful for programs that have
+little terminal input/output, or for remote debugging.
+.TP
+.B \-\-nw
+Do not use the X window interface.  Start the underlying debugger on
+the local host.
+.TP
+.B \-\-panned\-graph
+Use an Athena panner to scroll the data window.  Most people prefer
+panners on scroll bars, since panners allow two-dimensional scrolling.
+However, the panner is off by default, since some Motif
+implementations do not work well with Athena widgets.  See also
+\fB\-\-scrolled\-graph\fR, below.
+.TP
+.B \-\-separate\-windows
+Separate the command, source and data windows.  This is the default.
+See also the `\fB\-\-attach\fR' options, above.
+.TP
+.B \-\-scrolled\-graph
+Use Motif scroll bars to scroll the data window.  This is the default
+in most \s-2@DDD@\s+2 configurations.  See also
+\fB\-\-panned\-graph\fR, above.
+.TP
+.B \-\-synchronous\-debugger
+Do not process X events while the debugger is busy.  This may result
+in slightly better performance on single-processor systems.
+.TP
+.B \-\-trace\-dialog
+Show the interaction between \s-2@DDD@\s+2 and the underlying debugger
+on standard error.  This is useful for debugging \s-2@DDD@\s+2.
+.TP
+.B \-\-trace\-shell
+Show the shell commands issued by \s-2@DDD@\s+2 on standard error.  This
+is useful for debugging \s-2@DDD@\s+2.
+.TP
+.B \-\-trace
+Show both interaction and shell commands.
+.TP
+.B \-\-version
+Show the \s-2@DDD@\s+2 version and exit.
+.TP
+.B \-\-vsl\-library \fIlibrary\fR
+Load the \s-2VSL\s+2 library \fIlibrary\fR instead of using the
+\s-2@DDD@\s+2 built-in library.  This is useful for customizing
+display shapes and fonts.
+.TP
+.B \-\-vsl\-path \fIpath\fR
+Search \s-2VSL\s+2 libraries in \fIpath\fR (a colon-separated
+directory list).
+.PP
+.\" ---------------
+.SH "RESOURCES"
+.\" ---------------
+.\"
+See the `\fBDdd\fR' application defaults file for full information
+about customizing \s-2@DDD@\s+2.  The `\fBDdd\fR' file comes with
+the \s-2@DDD@\s+2 distribution.
+
+.\" ---------------
+.SH "FILES"
+.\" ---------------
+.\"
+.PD 0
+.TP 20
+.B $HOME/.dddinit
+Individual \s-2DDD\s+2 resource file.  \s-2DDD\s+2 options are saved here.
+.TP
+.B $HOME/.gdbinit
+\s-2GDB\s+2 initialization file.
+.TP
+.B $HOME/.dbxinit
+\s-2DBX\s+2 initialization file.
+.PP
+
+.\" ---------------
+.SH "SEE ALSO"
+.\" ---------------
+.BR X (1),
+.BR gdb (1),
+.BR dbx (1),
+.BR remsh (1),
+.BR rsh (1)
+
+.PP
+.RB "`\|" gdb "\|'"
+entry in
+.B info.
+
+.PP
+.I 
+Using \s-2GDB\s+2: A Guide to the \s-2GNU\s+2 Source-Level Debugger\c
+\&, by Richard M. Stallman and Roland H. Pesch.
+
+.PP
+.I 
+\s-2DDD\s+2 \(em ein Debugger mit graphischer Datendarstellung\c
+\&, by Dorothea Luetkehaus, Diploma Thesis, Technische
+Universitaet Braunschweig, 1994.
+
+.PP
+The \s-2@DDD@\s+2 
+.IR "\s-2FTP\s+2 site" ,
+.sp
+.br
+  \fBftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/\fR
+.br
+.sp
+
+.PP
+The \s-2@DDD@\s+2
+.IR "World-Wide-Web page" ,
+.sp
+.br
+  \fBhttp://www.cs.tu-bs.de/softech/software/ddd_e.html\fR
+.br
+.sp
+
+.PP
+The \s-2@DDD@\s+2
+.IR "Mailing List" ,
+.sp
+.br
+   \fBddd-users@ips.cs.tu-bs.de\fR
+.br
+.sp
+For more information on this list, send a mail to
+.sp
+.br
+   \fBddd-users-request@ips.cs.tu-bs.de\fR
+.br
+.sp
+
+.\" ---------------
+.SH LIMITATIONS
+.\" ---------------
+
+.SS "Limitations using GDB"
+Some \s-2GDB\s+2 settings are essential for \s-2@DDD@\s+2 to work correctly.
+These settings with their correct values are:
+.sp
+.br
+  \fBset height 0\fR
+.br
+  \fBset width 0\fR
+.br
+  \fBset print pretty\fR
+.br
+  \fBset print array\fR
+.br
+  \fBset print repeats 0\fR
+.br
+  \fBset verbose off\fR
+.br
+  \fBset prompt (gdb) \fR
+.br
+.sp
+\s-2@DDD@\s+2 sets these values automatically when invoking \s-2GDB\s+2.
+.PP
+If these values are changed, there may be some malfunctions,
+especially in the data display.  If you want to display C strings
+(i.e., `\fBchar *\fR'-fields), it might be useful to change the
+settings of `\fBprint repeats\fR' and `\fBprint array\fR'.  But to
+recognize array structures correctly, you should have `\fBprint
+repeats\fR' set to 0.  Also, do not change the setting of `\fBprint
+array\fR' while there are array structures in the data display.
+
+.SS "Limitations using DBX"
+When used for debugging \s-2MODULA-2\s+2 or \s-2PASCAL\s+2 programs,
+\s-2DDD\s+2 always numerates array elements starting with zero,
+instead of using correct array subscripts.  This shall be fixed in a
+future release.
+
+.\" ---------------
+.SH "REPORTING BUGS"
+.\" ---------------
+.\"
+If you find a bug in \s-2@DDD@\s+2, please send us a bug report.  We
+will either attempt to fix the bug\(em\&or include the bug description
+in the \s-2@DDD@\s+2 `\fBBUGS\fR' file, such that others can attempt
+to fix it.  (Instead of sending bug reports, you may also send
+\fIfixes\fR; \s-2@DDD@\s+2 is an excellent tool for debugging itself
+:-)
+
+.SS "Where to Send Bug Reports"
+We recommend that you send bug reports for \s-2@DDD@\s+2 via electronic
+mail to
+.sp
+.br
+  \fBddd-bugs@ips.cs.tu-bs.de\fR
+.br
+.sp
+As a last resort, send bug reports on paper to:
+
+.DS
+Technische Universitaet Braunschweig 
+.br
+Institut fuer Programmiersprachen und Informationssysteme 
+.br
+Abteilung Softwaretechnologie 
+.br
+\s-2DDD\s+2-Bugs 
+.br
+Gaussstrasse 17 
+.br
+D-38092 Braunschweig 
+.br
+\s-2GERMANY\s+2 
+.br
+Fax: +49 531 391-8111 
+.br
+.DE
+
+.SS "Is it a \s-2@DDD@\s+2 Bug?"
+Before sending in a bug report, try to find out whether the problem
+cause really lies within \s-2@DDD@\s+2.  A common cause of problems
+are incomplete or missing X or Motif installations, for instance, or
+bugs in the X server or Motif itself.  Running \s-2@DDD@\s+2 as
+.br
+.sp
+  \fB@ddd@ \-\-check\-configuration\fR
+.sp
+.br
+checks for common problems and gives hints on how to repair them.
+.PP
+Another potential cause of problems is the underlying \s-2GDB\s+2 or
+\s-2DBX\s+2 debugger; although unlikely, they may have bugs.  To find
+out whether a bug was caused by \s-2GDB\s+2 or \s-2DBX\s+2, run
+\s-2@DDD@\s+2 as
+.br
+.sp
+  \fB@ddd@ \-\-trace\-dialog\fR
+.sp
+.br
+This shows the dialog between \s-2@DDD@\s+2 and the underlying
+debugger on standard error while \s-2@DDD@\s+2 is running.  Compare
+the debugger output to the \s-2@DDD@\s+2 output and determine which
+one is wrong.
+
+.SS "How to Report Bugs"
+Here are some guidelines for bug reports:
+.br
+.IP \(bu 2
+The fundamental principle of reporting bugs usefully is this:
+\fIreport all the facts\fR.  If you are not sure whether to state a fact or
+leave it out, state it!
+.br
+.IP \(bu 2
+Keep in mind that the purpose of a bug report is to enable someone to
+fix the bug if it is not known.  It is not very important what happens
+if the bug is already known.  Therefore, always write your bug reports
+on the assumption that the bug is not known.
+.br
+.IP \(bu 2
+Your bug report should be self-contained.  Do not refer to information
+sent in previous mails; your previous mail may have been forwarded to
+somebody else.
+.br
+.IP \(bu 2
+Please report each bug in a separate message.  This makes it easier
+for us to track which bugs have been fixed and to forward your bugs
+reports to the appropriate maintainer.
+.IP \(bu 2
+Please report bugs in English; this increases the chances of finding
+someone who can fix the bug.  Do not assume one particular person will
+receive your bug report.
+.br
+.PP
+
+.SS "What to Include in a Bug Report"
+To enable us to fix a \s-2@DDD@\s+2 bug, you \fImust\fR include the
+following information:
+.br
+.IP \(bu 2
+Your \s-2@DDD@\s+2 configuration.  Invoke \s-2@DDD@\s+2 as
+.br
+.sp
+  \fB@ddd@ --configuration\fR
+.sp
+.br
+to get the configuration information.  If this does npt work, please
+include at least the \s-2@DDD@\s+2 version, the type of machine you
+are using, and its operating system name and version number.
+.br
+.IP \(bu 2
+The debugger you are using (e.g., \s-2GDB\s+2 or \s-2DBX\s+2) and its
+version.
+.br
+.IP \(bu 2
+A description of what behavior you observe that you believe is
+incorrect.  For example, \*(lq\s-2DDD\s+2 gets a fatal signal\*(rq or
+\*(lq\s-2DDD\s+2 exits immediately after attempting to create the data
+window\*(lq.
+.br
+.IP \(bu 2
+If you wish to suggest changes to the \s-2@DDD@\s+2 source, send us context
+diffs.  If you even discuss something in the \s-2@DDD@\s+2 source, refer to
+it by context, not by line number.
+
+.PP
+Be sure to include this information in \fIevery\fR single bug report.
+
+
+.\" ---------------
+.SH HISTORY
+.\" ---------------
+.\"
+The history of \s-2@DDD@\s+2 is a story of code recycling.  The oldest
+parts of \s-2@DDD@\s+2 were written in 1990, when \fIAndreas Zeller\fR
+designed \s-2VSL\s+2, a box-based visual structure language for
+visualizing data and program structures.  The \s-2VSL\s+2 interpreter
+and the \s-2BOX\s+2 library became part of Andreas' Diploma Thesis, a
+graphical syntax editor based on the Programming System Generator
+\s-2PSG\s+2.
+
+.PP
+In 1992, the \s-2VSL\s+2 and Box libraries were recycled for the
+\s-2NORA\s+2 project.  For \s-2NORA\s+2, an experimental
+inference-based software development tool set, Andreas wrote a graph
+editor (based on \s-2VSL\s+2 and the \s-2BOX\s+2 libraries) and
+facilities for inter-process knowledge exchange.  Based on these
+tools, \fIDorothea Luetkehaus\fR realized \s-2@DDD@\s+2 as her Diploma
+Thesis, 1994.
+
+.PP
+The original \s-2@DDD@\s+2 had no source window; this was added by
+Dorothea during the winter of 1994/1995.  In the first quarter of
+1995, finally, Andreas completed \s-2@DDD@\s+2 by adding command and
+execution windows, extensions for \s-2DBX\s+2 and remote debugging as
+well as configuration support for several architectures.  Since then,
+many people have contributed to the success of \s-2@DDD@\s+2; see the
+file `\fBCONTRIBUTORS\fR' in the \s-2@DDD@\s+2 release for details.
+
+.PP
+\s-2@DDD@\s+2 1.0 was released in May, 1995.
+
+
+.\" ---------------
+.SH COPYING
+.\" ---------------
+\s-2@DDD@\s+2 is Copyright \(co 1995 Technische Universitaet Braunschweig,
+Germany.
+
+.PP
+Permission is granted to make and distribute verbatim copies of this
+manual page provided the copyright notice and this permission notice
+are preserved on all copies.
+
+.PP
+Permission is granted to copy and distribute modified versions of this
+manual page under the conditions for verbatim copying, provided that
+the entire resulting derived work is distributed under the terms of a
+permission notice identical to this one.
+
+.PP
+Permission is granted to copy and distribute translations of this
+manual page into another language, under the above conditions for
+modified versions, except that this permission notice may be included
+in translations approved by the Free Software Foundation instead of in
+the original English.
+.\"
+.\"
+.\"
+.\"
+.\" History
+.\" =======
+.\"
+.\" $Log$
+.\" Revision 1.1  1995/05/01 15:48:06  zeller
+.\" Initial revision
+.\"
+.\" Revision 1.21  1995/04/29  16:00:13  zeller
+.\" New: Customizing DDD
+.\"
+.\" Revision 1.20  1995/04/29  13:39:15  zeller
+.\" New: --check-configuration
+.\"
+.\" Revision 1.19  1995/04/28  12:51:55  zeller
+.\" *** empty log message ***
+.\"
+.\" Revision 1.18  1995/04/28  12:14:38  zeller
+.\" *** empty log message ***
+.\"
+.\" Revision 1.17  1995/04/18  20:08:52  zeller
+.\" New: alternate name: xddd
+.\"
+.\" Revision 1.16  1995/04/18  20:04:49  zeller
+.\" Header fixed for man -k
+.\" --manual option documented
+.\"
+.\" Revision 1.15  1995/04/13  18:46:15  zeller
+.\" *** empty log message ***
+.\"
+.\" Revision 1.14  1995/04/13  18:27:27  zeller
+.\" More typos fixed, formatting improved
+.\"
+.\" Revision 1.13  1995/04/12  02:10:53  zeller
+.\" Fix: missing break
+.\"
+.\" Revision 1.12  1995/04/12  00:26:58  zeller
+.\" Several minor changes and fixes
+.\"
+.\" Revision 1.11  1995/04/11  11:35:20  zeller
+.\" New: locate majordomo server in ibr
+.\"
+.\" Revision 1.10  1995/04/10  15:57:48  zeller
+.\" ``Reporting bugs'' simplified
+.\"
+.\" Revision 1.9  1995/04/08  16:44:33  zeller
+.\" New: have single ``Search'' button instead of Find<< and Find>>
+.\"
+.\" Revision 1.8  1995/04/06  15:34:30  zeller
+.\" ispell'ed
+.\"
+.\" Revision 1.7  1995/04/06  15:32:03  zeller
+.\" New: getting DDD
+.\"
+.\" Revision 1.6  1995/04/05  17:52:59  zeller
+.\" elaborated on ``underyling''
+.\"
+.\" Revision 1.5  1995/04/05  17:50:36  zeller
+.\" New: dbx support
+.\" New: new options
+.\"
+.\" Revision 1.4  1995/04/04  16:47:26  zeller
+.\" New: describe breakpoint and display editor
+.\"
+.\" Revision 1.3  1995/03/31  19:19:32  zeller
+.\" New: inserted quotes around verbatim text
+.\"
+.\" Revision 1.2  1995/03/31  18:43:06  zeller
+.\" Completely rewritten by AZ
+.\"
