@@ -22,15 +22,22 @@ DDD News
     point and thus throw a time bomb into DDD, making DDD fail at
     unpredictable (and unrepeatable) places.  This bug has been fixed;
     some other minor bugs were fixed, too.  See the `ChangeLog' file
-    for details.
+    for details.  Some bugs still remain; especially, DDD still won't
+    run on SGI machines.
 
     Our sincere apologies to all who got and tried to compile and run
     a defective DDD.  Thanks to all who sent in bug reports and helped
     us track this bug down.
 
-    Changes to DDD 1.0:
+    User visible changes to DDD 1.0:
     - C++ References and VTables are fully supported.
     - The source popup menu no longer changes the source selection.
+
+    NOTE: As we receive lots of request for DDD binaries from people
+    who lack the requirements for building DDD, we encourage everyone
+    to share her or his DDD executable with others.  See below for
+    details.
+
 
 
 Summary of DDD
@@ -80,8 +87,9 @@ Requirements
 
 	 GCC version 2.6.0, 2.6.1, and 2.6.2 have been reported to
 	 compile DDD, but the resulting executable may fail due to
-	 bugs in these GCC versions.  GCC 2.5.8 may work.  No one has
-	 tried yet to compile DDD using a C++ compiler other than GCC.
+	 bugs in these GCC versions.  Earlier GCC versions have been
+         reported to fail.  No one has tried yet to compile DDD
+         using a C++ compiler other than GCC.
 
        * The X window library (Xlib) and X toolkit library (Xt),
          X11R4 or later.
@@ -148,6 +156,7 @@ Europe
     ftp.ibp.fr[132.227.60.2]:/pub/X11/contrib/utilities/
     ftp.germany.eu.net[192.76.144.75]:/pub/X11/XConsortium/contrib/utilities/
     ftp.uni-paderborn.de[131.234.2.32]:/pub/X11/contrib/utilities/
+    ftp.th-darmstadt.de[130.83.47.112]:/pub/X11/contrib/utilities/
     ftp.luth.se[130.240.18.2]:/pub/X11/contrib/utilities/
     ftp.sunet.se[130.238.127.3]:/pub/X11/contrib/utilities/
     ftp.eunet.ch[146.228.10.16]:/archive/software/X/utilities/
@@ -170,8 +179,8 @@ Australia
 
 
 
-DDD Binary FTP sites
-====================
+DDD binary sites
+================
 
     DDD pre-compiled binaries are available for a variety of
     architectures.  This may be useful for people who lack GCC or
@@ -179,12 +188,13 @@ DDD Binary FTP sites
     preferred.  Use binaries as a last resort only.
 
     The `README' file contains a list of available binaries.
-    Additional contributions are welcome.
+    Additional contributions are very welcome.
 
 Europe
 ------
 
     ftp.ips.cs.tu-bs.de[134.169.32.1]:/pub/local/softech/ddd/bin/
+    ftp.th-darmstadt.de[130.83.47.112]:/pub/programming/tools/ddd/bin/
 
 
 

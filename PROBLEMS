@@ -28,4 +28,35 @@ Reported by:  bas@phys.uva.nl (Bas V. de Bakker),
     a quite different program.
 
 
+FreeBSD
+=======
+
+Reported by:  taob@gate.sinica.edu.tw (Brian Tao)
+
+    Use `gmake' (GNU make) instead of `make' for building DDD.
+
+
+HP-UX
+=====
+
+    Various linking problems have been reported.  This is probably due
+    to an error in the HP-UX linker.
+
+
+SunOS 4.1 and X11R6
+===================
+
+Reported by:  dmitzel@everest.hitc.com (Danny J. Mitzel) and
+    doko@cs.tu-berlin.de (Matthias Klose)
+
+    Using certain Motif and Athena libraries may cause
+    `_vendorShellWidgetClass' to be defined twice.  A possible
+    workaround is to configure DDD to run without Athena widgets
+    (i.e. in `config.h', undefine `HAVE_ATHENA_WIDGETS' and remove the
+    -lXaw flag from the `Makefile' linking command).
+ 
+    
+    
+  
+
 $Id$

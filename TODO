@@ -97,7 +97,7 @@ Volunteers for these and other projects are welcome!
 
 030. [done]
 
-031. Have a three-dimensional data display (using red/green glasses).
+031. Have a three-dimensional data display (using red/green glasses) :-)
 
 032. [done]
 
@@ -112,9 +112,12 @@ Volunteers for these and other projects are welcome!
 037. Group dereference.  If multiple pointers are selected,
      dereference them all.
 
-038. Create a special `Extra' type holding reference and vtable info
-     (that is, anything before a colon).
+038. [done]
 
-039. Make sure the name popup menu is properly resized.
+039. [done]
 
-040. (Insert your project idea here)
+040. Suppress X warnings by default.
+
+041. If `gcc' is chosen as C++ compiler, add -lg++ to the library list.
+
+042. (Insert your project idea here)

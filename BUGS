@@ -126,4 +126,59 @@ Volunteers for fixing these and other bugs are welcome!
 
 032. [fixed]
 
-033. (Insert your bug here)
+033. Tab characters are not supported in argument field.  Go and
+     convert'em; just like '\n's.
+
+034. '\r' output is not supported in command window.
+
+035. On LINUX, ddd fails when opening a file selection box.  Reported
+     by mende@ips.cs.tu-bs.de (Andreas Mende).  [Be sure not to use
+     librx/librx.a when it is already part of the OS standard library,
+     as on LINUX].
+
+036. Indexes in artificial arrays are not properly generated.
+     Also, artificial arrays should be mentioned in the man page.
+
+037. Paul Eggert (eggert@twinsun.com) states:
+
+     The first time I ran ddd, my X server dumped core!  Ack!
+
+     Here are the details.  I was running on `shade', a SunOS 4.1.4
+     sparc, using the old X News server.  ddd was running on a Solaris
+     2.4 host, with the DISPLAY='shade:0'.
+
+     I managed to narrow it down to the following.  Use the .Xdefaults
+     at the end of this message.  This should be the only file in your
+     home directory.  Log in to a SunOS 4.1.x (x = 3 or 4) host ONE.
+     Type `/usr/openwin/bin/openwin' to start up Open Windows.  Click
+     in the command tool, and type `rlogin TWO' where TWO is a Solaris
+     2.4 host.  Then type `setenv DISPLAY ONE:0' (where ONE is the
+     SunOS 4.1.x host).  Then run `ddd'.  This will make the SunOS
+     4.1.x X server dump core.
+
+038. Doing `Open Source' and typing in the name of an
+     executable causes DDD to abort with 
+
+     SourceView.C: In function `static char *
+     SourceView::read_indented(class string &)':
+
+     SourceView.C:728: assertion `pos_ptr - indented_text ==
+     indented_text_length' failed
+
+     Reported by neal@ctd.comsat.com (Neal Becker).
+
+039. [done]
+
+040. dmitzel@everest.hitc.com (Danny J. Mitzel) states:
+
+     I'm running the DDD 1.1 sparc-sun-sunos4.1.1 prebuilt binary on a
+     Sun4/300 SunOS4.1.3_U1.  I notice that once I have typed any
+     commands in the 'DDD Command Window' and then bring up the
+     'Command History' list that there is always an extra entry at the
+     bottom of the list, usually it's blank sometimes there's garbage.
+     anyways, selecting that entry leads to 'Internal error
+     (Segmentation fault).'  no core dump.  I've attached the
+     '--configuration' and '--check-configuration' report.  let me
+     know if you need any other info.
+
+041. (Insert your bug here)
