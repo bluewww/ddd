@@ -755,13 +755,13 @@ void gdbCloseCommandWindowCB(Widget w, XtPointer, XtPointer)
 	return;
     }
 
-    unmanage_paned_child(XtParent(gdb_w));
-
     if ((app_data.separate_source_window || !have_source_window())
 	&& (app_data.separate_data_window || !have_data_window()))
     {
 	popdown_shell(command_shell);
     }
+
+    unmanage_paned_child(XtParent(gdb_w));
 
     app_data.debugger_console = false;
 
@@ -805,6 +805,9 @@ void gdbCloseSourceWindowCB(Widget w, XtPointer client_data,
 	return;
     }
 
+    // Popdown shell
+    popdown_shell(source_view_shell);
+
     // Unmanage source
     unmanage_paned_child(source_view->source_form());
 
@@ -816,7 +819,6 @@ void gdbCloseSourceWindowCB(Widget w, XtPointer client_data,
 
     app_data.source_window = false;
 
-    popdown_shell(source_view_shell);
     update_options();
 }
 
@@ -900,6 +902,8 @@ void gdbCloseDataWindowCB(Widget w, XtPointer, XtPointer)
 	return;
     }
 
+    popdown_shell(data_disp_shell);
+
     Widget arg_cmd_w = XtParent(source_arg->widget());
     if (data_disp->graph_cmd_w == arg_cmd_w)
     {
@@ -911,7 +915,6 @@ void gdbCloseDataWindowCB(Widget w, XtPointer, XtPointer)
     }
 
     unmanage_paned_child(data_disp->graph_form());
-    popdown_shell(data_disp_shell);
 
     app_data.data_window = false;
 
@@ -1099,8 +1102,8 @@ void gdbToggleToolWindowCB(Widget w, XtPointer client_data,
 // Place command tool in upper right edge of REF
 static void recenter_tool_shell(Widget ref)
 {
-    recenter_tool_shell(ref, app_data.tool_top_offset,
-			app_data.tool_right_offset);
+    recenter_tool_shell(ref, 
+			app_data.tool_top_offset, app_data.tool_right_offset);
 }
 
 // Place command tool in upper right edge of REF, with a distance of
@@ -1113,7 +1116,8 @@ static void recenter_tool_shell(Widget ref, int top_offset, int right_offset)
 	ref = source_view->code();
 
     if (ref == 0 || tool_shell == 0 || 
-	!XtIsRealized(ref) || !XtIsRealized(tool_shell))
+	!XtIsRealized(ref) || !XtIsRealized(tool_shell) ||
+	tool_shell_state != PoppedUp)
 	return;
 
     Window ref_window  = XtWindow(ref);
