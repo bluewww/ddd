@@ -110,7 +110,7 @@ detail.
     HP-UX box, the tooltips are not complete: "Set/Delete Breakpo???",
     "Display/Undisplay???", etc.
 
-713*Michael Marxmeier <mike@msede.com> writes: When configuring a
+713 Michael Marxmeier <mike@msede.com> writes: When configuring a
     separate Command Tool (with separate windows), its location
     relative to the source window changes.
 
@@ -138,8 +138,7 @@ detail.
     3) If a program is NOT running, yet I view the execution window
        (Alt+9) and then kill the window, ddd seg faults.
 
-716 Michael Marxmeier <mike@msede.com> reports:
-    * 4 digit line numbers are truncated. Only last three digits
-      are visible.
+716 Michael Marxmeier <mike@msede.com> reports that 4 digit line
+    numbers are truncated. Only the last three digits are visible.
 
 717 (Insert new bugs here)
