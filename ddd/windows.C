@@ -447,6 +447,7 @@ void gdbOpenExecWindowCB(Widget, XtPointer, XtPointer)
 void gdbOpenToolWindowCB(Widget, XtPointer, XtPointer)
 {
     popup_shell(tool_shell);
+    recenter_tool_shell(source_view->source());
 }
 
 
