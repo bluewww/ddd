@@ -46,7 +46,8 @@ AC_LANG_RESTORE
 AC_MSG_RESULT($ice_cv_prog_cc)
 if test "$ice_cv_prog_cc" = no; then
 AC_MSG_ERROR(You must set the environment variable CC to a working
-                  C compiler.  Also check the CFLAGS settings.)
+                  C compiler.  Also check the CFLAGS settings.
+                  See the file 'config.log' for further diagnostics.)
 fi
 ])dnl
 dnl
@@ -88,7 +89,8 @@ AC_LANG_RESTORE
 AC_MSG_RESULT($ice_cv_prog_cxx)
 if test "$ice_cv_prog_cxx" = no; then
 AC_MSG_ERROR(You must set the environment variable CXX to a working 
-                  C++ compiler.  Also check the CXXFLAGS settings.)
+                  C++ compiler.  Also check the CXXFLAGS settings.
+                  See the file 'config.log' for further diagnostics.)
 fi
 ice_need_cxxlibs=no
 case "$LIBS" in
