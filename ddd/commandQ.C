@@ -81,9 +81,8 @@ void _gdb_command(const Command& c)
 	{
 	    promptPosition = messagePosition = XmTextGetLastPosition(gdb_w);
 	}
-	else if (c.command.length() > 0 
-		 && c.verbose 
-		 && c.priority == COMMAND_PRIORITY_USER)
+	else if (c.command.length() > 0 && c.verbose 
+		 /* && c.priority == COMMAND_PRIORITY_USER */)
 	{
 	    add_to_history(cmd);
 	}
@@ -257,6 +256,9 @@ void gdb_command(const Command& c)
 
 void processCommandQueue(XtPointer, XtIntervalId *)
 {
+    if (emptyCommandQueue())
+	return;
+
     if (!gdb->isReadyWithPrompt())
     {
 	// Try again later...
@@ -265,56 +267,26 @@ void processCommandQueue(XtPointer, XtIntervalId *)
 	return;
     }
 
-    if (!emptyCommandQueue())
-    {
-	const Command& c = commandQueue.first();
-	Command cmd(c);
-	commandQueue.dequeue(c);
+    const Command& c = commandQueue.first();
+    Command cmd(c);
+    commandQueue.dequeue(c);
 
-	_gdb_command(cmd);
+    _gdb_command(cmd);
 
-	gdb_keyboard_command = false;
+    gdb_keyboard_command = false;
 
 #if LOG_QUEUE
-	clog << "Command queue: " << commandQueue << "\n";
+    clog << "Command queue: " << commandQueue << "\n";
 #endif
-    }
-}
-
-static bool ddd_is_idle = false;
-
-static void LeaveLoop(XtPointer, XtIntervalId *) {}
-
-static Boolean ddd_idle(XtPointer)
-{
-    ddd_is_idle = emptyCommandQueue() && gdb->isReadyWithPrompt();
-
-    if (ddd_is_idle)
-    {
-	// Be sure that XtAppProcessEvent exits once more
-	XtAppAddTimeOut(XtWidgetToApplicationContext(command_shell),
-			0, LeaveLoop, 0);
-	return True;		// Remove from the list of work procs
-    }
-    
-    return False;		// Try again later
 }
 
 // Wait for command queue to drain
 void syncCommandQueue()
 {
-    ddd_is_idle = false;
-    XtAppAddWorkProc(XtWidgetToApplicationContext(command_shell),
-		     ddd_idle, 0);
-
-    for (;;)
+    while (!(emptyCommandQueue() && gdb->isReadyWithPrompt()))
     {
-	if (ddd_is_idle)
-	    break;
-
-	processCommandQueue();
-	if (ddd_is_idle)
-	    break;
+	if (gdb->isReadyWithPrompt())
+	    processCommandQueue();
 
 	XtAppProcessEvent(XtWidgetToApplicationContext(command_shell),
 			  XtIMTimer | XtIMAlternateInput);
