@@ -50,6 +50,9 @@
 /* Define if <sys/core.h> defines CORE_MAGIC to identify core files. */
 #undef HAVE_CORE_MAGIC
 
+/* Define if ptrace() supports a PTRACE_DUMPCORE request to dump core files. */
+#undef HAVE_PTRACE_DUMPCORE
+
 /* Define if your C++ library has an ostrstream::frozen() function. */
 #undef HAVE_FROZEN_OSTRSTREAM
 

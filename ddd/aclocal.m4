@@ -737,6 +737,29 @@ fi
 ])dnl
 dnl
 dnl
+dnl
+dnl ICE_CHECK_PTRACE_DUMPCORE
+dnl -------------------------
+dnl
+dnl Set `HAVE_PTRACE_DUMPCORE' if PTRACE_DUMPCORE is defined in <sys/ptrace.h>.
+dnl
+AC_DEFUN(ICE_CHECK_PTRACE_DUMPCORE,
+[
+AC_MSG_CHECKING(for PTRACE_DUMPCORE definition in <sys/ptrace.h>)
+AC_CACHE_VAL(ice_cv_have_ptrace_dumpcore,
+[
+AC_TRY_COMPILE([#include <sys/ptrace.h>], [int request = PTRACE_DUMPCORE;],
+ice_cv_have_ptrace_dumpcore=yes,
+ice_cv_have_ptrace_dumpcore=no)
+])
+AC_MSG_RESULT($ice_cv_have_ptrace_dumpcore)
+if test "$ice_cv_have_ptrace_dumpcore" = yes; then
+AC_DEFINE(HAVE_PTRACE_DUMPCORE)
+fi
+])dnl
+dnl
+dnl
+dnl
 dnl ICE_CHECK_CORE_MAGIC
 dnl --------------------
 dnl

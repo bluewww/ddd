@@ -61,7 +61,7 @@ dnl
 dnl The product version, in the form `MAJOR-NUMBER.MINOR-NUMBER[.PATCHLEVEL]'
 dnl A version in the form `YYYY-MM-DD' is a release-of-the-day, i.e. a
 dnl snapshot of the current development tree.
-VERSION=2.2
+VERSION=2.2.1
 dnl
 dnl The product expiration date, in ISO 8601 YYYY-MM-DD format.
 dnl After this date, users are requested to update the product.
@@ -448,13 +448,14 @@ AC_CHECK_HEADERS(unistd.h limits.h malloc.h pwd.h stdlib.h termio.h termios.h)
 AC_CHECK_HEADERS(sys/ioctl.h sys/param.h sys/time.h sys/resource.h sys/timeb.h)
 AC_CHECK_HEADERS(sys/stat.h sys/stropts.h sys/vty.h sys/sysmacros.h sys/core.h)
 AC_CHECK_HEADERS(sys/socket.h sys/termios.h sys/utsname.h sys/user.h)
-AC_CHECK_HEADERS(fcntl.h string.h strings.h netdb.h regex.h rx.h)
+AC_CHECK_HEADERS(sys/ptrace.h fcntl.h string.h strings.h netdb.h regex.h rx.h)
 AC_HEADER_TIME
 AC_HEADER_SYS_WAIT
 AC_HEADER_DIRENT
 AC_STAT_MACROS_BROKEN
 dnl
 ICE_CHECK_CORE_MAGIC
+ICE_CHECK_PTRACE_DUMPCORE
 ICE_CHECK_FROZEN_OSTRSTREAM
 ICE_TYPE_REGEX_T
 ICE_REGCOMP_BROKEN
@@ -482,6 +483,7 @@ ICE_CHECK_DECL(memcpy, string.h)
 ICE_CHECK_DECL(memset, string.h)
 ICE_CHECK_DECL(popen, stdio.h)
 ICE_CHECK_DECL(pclose, stdio.h)
+ICE_CHECK_DECL(ptrace, sys/ptrace.h)
 ICE_CHECK_DECL(ptsname, stdlib.h)
 ICE_CHECK_DECL(raise, signal.h)
 ICE_CHECK_DECL(rand, stdlib.h)
