@@ -2304,7 +2304,8 @@ AppDataInitializer::AppDataInitializer()
 }
 
 // Fallback resources
-String ddd_fallback_resources[] = {
+// The resources should be loaded in read-only memory thanks to "const"
+const _XtString const ddd_fallback_resources[] = {
 #if WITH_BUILTIN_APP_DEFAULTS
 #include "Ddd.ad.h"
 #endif

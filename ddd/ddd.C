@@ -2171,16 +2171,18 @@ int main(int argc, char *argv[])
 	XtSetArg(args[arg], XtNsessionID, session_id); arg++;
     }
 
+    // Note: the cast on ddd_fallback_resources is safe.
     Widget toplevel =
 	XtOpenApplication(&app_context, DDD_CLASS_NAME,
 			  XrmOptionDescList(0), 0,
-			  &argc, argv, ddd_fallback_resources,
+			  &argc, argv, (String *)ddd_fallback_resources,
 			  sessionShellWidgetClass,
 			  args, arg);
 
     XtAddCallback(toplevel, XtNsaveCallback, SaveSmSessionCB, XtPointer(0));
     XtAddCallback(toplevel, XtNdieCallback, ShutdownSmSessionCB, XtPointer(0));
 #else
+    // Note: the cast on ddd_fallback_resources is safe.
     Widget toplevel = 
 	XtAppInitialize(&app_context, DDD_CLASS_NAME,
 			XrmOptionDescList(0), 0, 

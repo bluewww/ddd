@@ -40,7 +40,7 @@ extern XtResource ddd_resources[];
 extern const int ddd_resources_size;
 
 // Resources to use if `Ddd' app-defaults are not found
-extern String ddd_fallback_resources[];
+extern const _XtString const ddd_fallback_resources[];
 
 // Default resources
 extern XrmDatabase app_defaults(Display *display);
