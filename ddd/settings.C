@@ -2878,7 +2878,7 @@ void UpdateDefinePanelCB(Widget w, XtPointer, XtPointer)
     string name = current_name();
 
     set_sensitive(record_w, !gdb->recording() && name != "");
-    set_sensitive(apply_w,  !gdb->recording() && name != "");
+    set_sensitive(apply_w,  !gdb->recording() && defs.has(name));
     set_sensitive(end_w,    gdb->recording());
     set_sensitive(edit_w,   !gdb->recording() && name != "");
 
@@ -2936,19 +2936,10 @@ static void RecordCommandDefinitionCB(Widget w, XtPointer, XtPointer)
     gdb_command("define " + name, w);
 }
 
-// Activate the button given in CLIENT_DATA
-static void ActivateCB(Widget, XtPointer client_data, 
-		       XtPointer call_data)
-{
-    XmAnyCallbackStruct *cbs = (XmAnyCallbackStruct *)call_data;
-    
-    Widget button = Widget(client_data);
-    XtCallActionProc(button, "ArmAndActivate", cbs->event, (String *)0, 0);
-}
-
 static void EndCommandDefinitionCB(Widget w, XtPointer, XtPointer)
 {
-    gdb_command("end", w);
+    if (gdb->recording())
+	gdb_command("end", w);
 }
 
 static void DoneEditCommandDefinitionCB(Widget w, XtPointer, XtPointer)
@@ -3029,16 +3020,21 @@ static void ToggleEditCommandDefinitionCB(Widget w, XtPointer client_data,
 }
 
 // Apply the given command
-static void ApplyCB(Widget, XtPointer, XtPointer)
+static void ApplyCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
+    if (gdb->recording())
+	EndCommandDefinitionCB(w, client_data, call_data);
+
+    DoneEditCommandDefinitionCB(w, client_data, call_data);
+
     string cmd = current_name();
-    if (cmd == "")
-	return;
+    if (cmd != "")
+    {
+	if (XmToggleButtonGetState(arg_w))
+	    cmd += " " + source_arg->get_string();
 
-    if (XmToggleButtonGetState(arg_w))
-	cmd += " " + source_arg->get_string();
-
-    gdb_command(cmd);
+	gdb_command(cmd, w);
+    }
 }
 
 // Force argument to `()'
@@ -3140,7 +3136,6 @@ void dddDefineCommandCB(Widget w, XtPointer, XtPointer)
 	dialog = verify(XmCreatePromptDialog(find_shell(w),
 					     "define_command",
 					     args, arg));
-	XtVaSetValues(dialog, XmNdefaultButton, Widget(0), NULL);
 
 	// Remove old prompt
 	Widget text = XmSelectionBoxGetChild(dialog, XmDIALOG_TEXT);
@@ -3149,12 +3144,13 @@ void dddDefineCommandCB(Widget w, XtPointer, XtPointer)
 	    XmSelectionBoxGetChild(dialog, XmDIALOG_SELECTION_LABEL);
 	XtUnmanageChild(old_label);
 
-	Delay::register_shell(dialog);
-
-	XtUnmanageChild(XmSelectionBoxGetChild(dialog, 
-					       XmDIALOG_CANCEL_BUTTON));
 	apply_w = XmSelectionBoxGetChild(dialog, XmDIALOG_APPLY_BUTTON);
+	XtVaSetValues(dialog, XmNdefaultButton, apply_w, NULL);
 	XtManageChild(apply_w);
+
+	XtUnmanageChild(XmSelectionBoxGetChild(dialog, XmDIALOG_OK_BUTTON));
+
+	Delay::register_shell(dialog);
 
 	arg = 0;
 	XtSetArg(args[arg], XmNorientation, XmHORIZONTAL); arg++;
@@ -3183,10 +3179,14 @@ void dddDefineCommandCB(Widget w, XtPointer, XtPointer)
 		      XtPointer(dialog));
 	XtAddCallback(dialog, XmNokCallback, DoneEditCommandDefinitionCB, 
 		      XtPointer(0));
+
 	XtAddCallback(dialog, XmNapplyCallback, ApplyCB, NULL);
+
+	XtAddCallback(dialog, XmNcancelCallback, EndCommandDefinitionCB, NULL);
+	XtAddCallback(dialog, XmNcancelCallback, UnmanageThisCB, 
+		      XtPointer(dialog));
+
 	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, NULL);
-	XtAddCallback(name_w, XmNactivateCallback, ActivateCB, 
-		      XtPointer(record_w));
 
 	set_need_load_defines(true);
 	update_defines();

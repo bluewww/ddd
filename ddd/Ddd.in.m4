@@ -5875,7 +5875,7 @@ Click on LBL(Close) to close this window.
 
 Ddd*define_command_popup.title:    		DDD: Define Command
 
-! Ddd*define_command.okLabelString:    		Close
+Ddd*define_command.cancelLabelString:    	Close
 
 Ddd*define_command*name.labelString:		Command
 Ddd*define_command*name*text*columns:       	25
@@ -5938,7 +5938,7 @@ To define a command with argument, enable the LBL(()) toggle.\n\
 This will make the command use LBL(()) as symbolic argument.\n\
 \n\
 Click on LBL(Apply) to apply the new command.\n\
-Click on LBL(OK) to close this window.
+Click on LBL(Close) to close this window.
 
 
 !-----------------------------------------------------------------------------
