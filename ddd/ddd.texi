@@ -27,8 +27,8 @@
 @c `http://www.gnu.org/software/ddd/',
 @c or send a mail to the DDD developers <ddd@gnu.org>.
 
-@c Note: This file contains 8-bit characters (Latin1 encoding)
-@c Note: This file requires Texinfo 4.0 or later
+@c Note: This file contains 8-bit characters (ISO-8859-1 encoding).
+@c Note: This file requires Texinfo 4.0 or later.
 
 @c %**start of header
 
@@ -143,7 +143,7 @@
 
 
 @ifinfo
-@c This section is prepended before every info file.
+@c This section is prepended to every info file.
 
 @noindent
 
@@ -240,7 +240,7 @@ D-94032 Passau @*
 
 Distributed by @*
 Free Software Foundation, Inc. @*
-59 Temple Place - Suite 330 @*
+59 Temple Place -- Suite 330 @*
 Boston, MA 02111-1307 @*
 @acronym{USA}
 @sp 1
@@ -467,6 +467,7 @@ Customizing the @value{DDD} Windows
 * Text Fields::                 Popdown histories.
 * Icons::                       Iconifying @DDD{} windows.
 * Adding Buttons::              Create your own button set.
+* More Customizations::         
 
 Navigating through the Code
 
@@ -723,17 +724,6 @@ Configuration Notes
 * JDB::                         Using @DDD{} with @JDB{}
 * Perl::                        Using @DDD{} with Perl
 * LessTif::                     Using @DDD{} with LessTif
-
-Frequently Answered Questions
-
-* How do I make @DDD{} find the sources of my program?::  
-* How do I redirect I/O in Perl?::  
-* I cannot access any common FORTRAN variables from @DDD{}!::  
-* The @DDD{} fonts are too small!::  
-* How do I save the window size?::  
-* How do I change the key bindings?::  
-* How do I change the @DDD{} colors? ::  
-* How do I recenter the command tool?::  
 
 @end detailmenu
 @end menu
@@ -3359,12 +3349,14 @@ no special action.
 @end defvr
 
 @defvr Resource useTTYCommand (class UseTTYCommand)
-If @samp{on}, use the @GDB{} @samp{tty} command for
-redirecting input/output to the separate execution window.  If
-@samp{off}, use explicit redirection through shell redirection
-operators @samp{<} and @samp{>}.  The default is @samp{off}
-(explicit redirection), since on some systems, the @samp{tty} command
-does not work properly on some @GDB{} versions.
+@cindex Redirection, to execution window
+@cmindex tty
+If @samp{on}, use the @GDB{} @command{tty} command for redirecting
+input/output to the separate execution window.  If @samp{off}, use
+explicit redirection through shell redirection operators @samp{<} and
+@samp{>}.  The default is @samp{off} (explicit redirection), since on
+some systems, the @command{tty} command does not work properly on some
+@GDB{} versions.
 @end defvr
 
 
@@ -5217,6 +5209,7 @@ You can customize the @DDD{} Windows in various ways.
 * Text Fields::                 Popdown histories.
 * Icons::                       Iconifying @DDD{} windows.
 * Adding Buttons::              Create your own button set.
+* More Customizations::         
 @end menu
 
 @node Splash Screen
@@ -5614,14 +5607,35 @@ You can extend @DDD{} with new buttons.  @xref{Defining Buttons},
 for details.
 
 
+@node More Customizations
+@subsubsection More Customizations
+
+@flindex Ddd
+You can change just about any label, color, keyboard mapping, etc.  by
+changing resources from the @file{Ddd} application defaults file which
+comes with the @DDD{} source distribution.  Here's how it works:
+
+@itemize @bullet
+@item
+Identify the appropriate resource in the @file{Ddd} file.
+
+@item
+Copy the resource line to your @file{~/.@value{ddd}/init} file
+and change it at will.
+@end itemize
+
+@xref{Application Defaults}, for details on the application-defaults
+file.
+
+
 
 @node Debugger Settings
 @subsection Debugger Settings
 
-For most inferior debuggers, you can change its settings using
-@samp{Edit @result{} Settings}.  Using the settings editor, you can
-determine whether C++ names are to be demangled, how many array elements
-are to print, and so on.
+For most inferior debuggers, you can change their internal settings
+using @samp{Edit @result{} Settings}.  Using the settings editor, you
+can determine whether C++ names are to be demangled, how many array
+elements are to print, and so on.
 
 @ifnotinfo
 @sp 1
@@ -5642,6 +5656,9 @@ doing so would endanger @DDD{} operation.  See the
 
 All debugger settings (except source and object paths) are saved with
 @DDD{} options.
+
+
+
 
 
 @node Navigating
@@ -5870,6 +5887,8 @@ location you looked for.
 
 @node Source Path
 @subsection Specifying Source Directories
+@cindex Source, accessing
+@cindex Source directory
 
 Executable programs sometimes do not record the directories of the
 source files from which they were compiled, just the names.  Even when
@@ -5907,6 +5926,28 @@ a source path for the inferior debugger when invoking @DDD{}.
 When using @JDB{}, you can set the @env{CLASSPATH} environment variable to
 specify directories where @JDB{} (and @DDD{}) should search for
 classes.
+
+If @value{DDD} does not find a source file for any reason, check the
+following issues:
+
+@itemize @bullet
+@item 
+In order to debug a program effectively, you need to generate debugging
+information when you compile it.  Without debugging information, the
+inferior debugger will be unable to locate the source code. To request
+debugging information, specify the @option{-g} option when you run the
+compiler.  @xref{Compiling for Debugging}, for details.
+
+@item
+You may need to tell your inferior debugger where the source code files
+are.  @xref{Source Path}, for details.
+
+@cmindex directory
+Using @GDB{}, you can also create a local @file{.gdbinit} file that
+contains a line @command{directory @var{path}}.  Here, @var{path} is a
+colon-separated list of source paths.
+@end itemize
+
 
 
 
@@ -6922,24 +6963,20 @@ the inferior debugger.
 @cindex Input of the debugged program
 @cindex Output of the debugged program
 @cindex Redirecting I/O of the debugged program
+@cindex Redirection
 
-By default, the program you run under @DDD{} does input and output
-to the debugger console.  Normally, you can redirect your program's
-input and/or output using shell redirection with the arguments.  For
-example,
-
-@example
-run > @var{outfile}
-@end example
-
-@noindent
-starts your program, diverting its output to the file @var{outfile}.
+By default, the program you run under @DDD{} does input and output to
+the debugger console.  Normally, you can redirect your program's input
+and/or output using @dfn{shell redirections} with the arguments---that
+is, additional arguments like @samp{< @var{input}} or @samp{>
+@var{output}}.  You can enter these shell redirections just like other
+arguments (@pxref{Arguments}).
 
 @cindex Pipe
 @emph{Warning:} While input and output redirection work, you cannot use
 pipes to pass the output of the program you are debugging to another
-program; if you attempt this, @DDD{} is likely to wind up debugging
-the wrong program.  @xref{Attaching to a Process}, for an alternative.
+program; if you attempt this, @DDD{} may wind up debugging the wrong
+program.  @xref{Attaching to a Process}, for an alternative.
 
 If command output is sent to the debugger console, it is impossible for
 @DDD{} to distinguish between the output of the debugged program
@@ -7011,6 +7048,7 @@ redirects the standard input, output, and error streams of your program
 to the execution window.  Note that the device @samp{/dev/tty} still
 refers to the debugger console, @emph{not} the execution window.
 
+@cindex Redirection, to execution window
 You can override the @DDD{} stream redirection by giving alternate
 redirection operations as arguments.  For instance, to have your program
 read from @var{file}, but to write to the execution window, invoke your
@@ -12249,183 +12287,13 @@ please send them to @email{ddd@@gnu.org}.  For suggestions on what might
 be done, see the file @samp{TODO} in the @DDD{} distribution.
 
 
+
 @node FAQ
 @appendix Frequently Answered Questions
 
-@menu
-* How do I make @DDD{} find the sources of my program?::  
-* How do I redirect I/O in Perl?::  
-* I cannot access any common FORTRAN variables from @DDD{}!::  
-* The @DDD{} fonts are too small!::  
-* How do I save the window size?::  
-* How do I change the key bindings?::  
-* How do I change the @DDD{} colors? ::  
-* How do I recenter the command tool?::  
-@end menu
+See @uref{http://www.gnu.org/software/ddd/, the @DDD{} @WWW{} page} for
+frequently answered questions not covered in this manual.
 
-@node How do I make @DDD{} find the sources of my program?
-@section How do I make @value{DDD} find the sources of my program?
-
-@itemize @bullet
-@item 
-In order to debug a program effectively, you need to generate debugging
-information when you compile it.  Without debugging information, the
-inferior debugger will be unable to locate the source code. To request
-debugging information, specify the @option{-g} option when you run the
-compiler.  @xref{Compiling for Debugging}, for details.
-
-@item
-You may need to tell your inferior debugger where the source code files
-are.  Invoke @samp{Edit @result{} Debugger Settings} and look for
-appropriate entries; also consult the documentation of the inferior
-debugger.
-
-@cmindex directory
-Using @GDB{}, you can also create a local @file{.gdbinit} file that
-contains a line @command{directory @var{path}}.  Here, @var{path} is a
-colon-separated list of source paths.
-@end itemize
-
-@node How do I redirect I/O in Perl?
-@section How do I redirect I/O in Perl?
-
-Restart the Perl debugger using 
-
-@example
-DB<> exec "perl -d @var{script} < @var{input} > @var{output}"
-@end example
-
-
-@node I cannot access any common FORTRAN variables from @DDD{}!
-@section I cannot access any common FORTRAN variables from @value{DDD}!
-
-Jochen Schütze <jos@@gbf.de> says:
-
-@GDB{} simply doesn't know enough about common blocks, which in turn partly
-is due to the fact that g77 doesn't include enough debug information
-about these. So I can think of two ways (apart from assigning all
-interesting values to local variables...):
-
-@itemize @bullet
-@item
-Try the (more or less undocumented) compiler option
-@option{-fdebug-kludge} (hope I remember it correctly) to g77. Maybe then
-g77 includes enough information for @GDB{} to find your variables.
-
-@item
-My personal way of solving this: use @DBX{} as inferior debugger. But this
-might not be possible on Linux...
-@end itemize
-
-@node The @DDD{} fonts are too small!
-@section The @value{DDD} fonts are too small (too huge, too ugly, ...)
-
-As of @DDD{} 3.0, the default fonts are specified in a
-resolution-independent manner. Normally, @DDD{} should look very much like
-shown in the screenshots; but on some configurations, the
-resolution-independent specification results in bad fonts being
-chosen. Use @samp{Edit @result{} Preferences @result{} Fonts} to
-customize @DDD{} fonts; @xref{Customizing Fonts}, for details.
-
-
-@node How do I save the window size?
-@section How do I save the window size?
-
-Use @samp{Edit @result{} Save Options} to save the current window size.
-@xref{Saving Options}, for details.
-
-
-@node How do I change the key bindings?
-@section How do I change the @value{DDD} key bindings?
-
-As of @DDD{} 3.0, you can override the default translations using the
-@samp{translations} resource.
-
-As an example, let us change @key{Ctrl+A} to jump to the beginning of a
-line. In @file{~/.ddd/init}, insert
-
-@example
-Ddd*XmText.translations: \
-#override\n\
-Ctrl<Key>A: beginning-of-line()
- 
-Ddd*XmTextField.translations: \
-#override\n\
-Ctrl<Key>A: beginning-of-line()
-@end example
-
-The debugger console uses the @samp{gdb-beginning-of-line} action
-instead of @samp{beginning-of-line}, since the @GDB{} prompt must be
-accounted for:
-
-@example
-Ddd*gdb_w.translations: \
-#override\n\
-Ctrl<Key>A: gdb-beginning-of-line()
-@end example
-
-This scheme can easily be extended to other key bindings. The only
-problem is that the key may already be used by some menu accelerator, in
-wich case you'll have to change or disable the appropriate
-@samp{accelerator} resource.  For instance, @key{Ctrl+E} is taken by the
-@samp{Run} menu item. In @file{Ddd}, we find:
-
-@example
-Ddd*menubar*programMenu.run.accelerator:      ~Shift Ctrl<Key>E
-Ddd*menubar*programMenu.run.acceleratorText:  Ctrl+E
-@end example
-
-Before assigning a new binding to @key{Ctrl+E}, you must first assign a
-new key---for instance, by writing into @file{~/.ddd/init}:
-
-@example
-Ddd*menubar*programMenu.run.accelerator:      ~Shift Ctrl<Key>X
-Ddd*menubar*programMenu.run.acceleratorText:  Ctrl+X
-@end example
-
-This makes @key{Ctrl+E} available for assigning new actions. (In fact,
-the default action is to jump at the end of the line - unless overridden
-by the @samp{Run} item, as shown above.)
-
-Look for the @file{Ddd} file as in the @DDD{} source distribution to
-determine widget names.
-
-All this only works in @DDD{} 3.0 on X11R5 and later. In previous
-@DDD{} and X11 releases, you have to copy and edit the translation
-resource value from @file{Ddd}---or edit the @file{Ddd.in.m4} source and
-rebuild @DDD{}.
-
-@node How do I change the @DDD{} colors? 
-@section How do I change the @value{DDD} colors? 
-
-The general way is to copy the appropriate resources from the @file{Ddd}
-resource file to @file{~/.ddd/init} and editing them. For instance, to
-set the text background color to white, use
-
-@example
-Ddd*XmText.background:      white
-Ddd*XmTextField.background: white
-Ddd*GraphEdit.background:   white
-Ddd*XmList.background:      white
-@end example
-
-@noindent
-in your @file{~/.ddd/init} file. 
-
-The @DDD{} manual also contains a list of resources to change. Future @DDD{}
-releases may include a color editor, such that you can set up colors
-interactively.
-
-A simple way to set up colors when building @DDD{} is to change the file
-@file{colors.m4} in the @DDD{} source distribution and generate a new
-@file{Ddd} file.
-
-
-@node How do I recenter the command tool?
-@section How do I recenter the command tool?
-
-@samp{View @result{} Command Tool} brings the command tool back to its
-most recently saved position.
 
 
 @node License
