@@ -69,19 +69,24 @@ struct BoxFigGC: public BoxPrintGC {
 };
 
 struct BoxPostScriptGC: public BoxPrintGC {
-    DECLARE_TYPE_INFO
+    DECLARE_TYPE_INFO;
+    enum Orientation { PORTRAIT, LANDSCAPE };
 
     virtual bool isPostScript() const { return true; }
 
-    int hsize;   // Maximum size of graph in 1/72"
+    int hsize;   // Maximum size of graph in 1/72" (Portrait)
     int vsize;
 
-    int hoffset; // lower left corner of graph on page in 1/72"
+    int hoffset; // Lower left corner of graph on page in 1/72" (Portrait)
     int voffset;
+
+    Orientation orientation;	// Whether graph should be rotated
 
     // Default: let params fit to an A4-sized page
     BoxPostScriptGC():
-        hsize(510), vsize(794), hoffset(42), voffset(35) 
+        hsize(510), vsize(794), 
+	hoffset(42), voffset(35), 
+	orientation(PORTRAIT)
     {}
 };
 
