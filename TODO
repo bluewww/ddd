@@ -82,15 +82,6 @@ Volunteers for these and other projects are welcome!
     (i.e. comments and graphics that are associated with certain
     variable/function names in the code).
 
-075 Andre Cormeau <ac@enci.ucalgary.ca> says:
-
-    Apparently ddd does not fully support fortran. A problem is in
-    variable names, with capital letters and underscores (not strict
-    f77).  I need to change the variable names to small caps and add
-    underscores to the end of the names, which is a bit annoying after
-    a while.  Is there a filter to do this out there?  [This is a
-    problem in the underlying debugger.  -AZ]
-
 076 Henrik Seidel <henrik@satchmo.physik.tu-berlin.de> says:
 
     I am missing a feature which would be very useful (but, maybe,

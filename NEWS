@@ -8,20 +8,21 @@ DDD 2.2.2
     data display and fixes some minor bugs introduced in DDD 2.2.
 
     User-visible changes to DDD 2.2.1:
-    - Improved FORTRAN support.  Array indexing and pointer
-      recognition now work with FORTRAN.  [function_ recognition is
-      yet to do.]
-    - Faster data exploration with double-clicking...
-      * ...on a pointer value: dereference it.
-      * ...on a partially hidden value: show more detail.
-      * ...on a fully shown value: hide it again.
-    - A display resize (due to value changes) now automatically
-      `bumps' adjacent displays such that they are not obscured.
+    - Improved FORTRAN support.  When debugging FORTRAN programs with
+      GDB, DDD now supports FORTRAN array indexing syntax, FORTRAN
+      pointer recognition, and lookup of FORTRAN functions with
+      trailing underscore `_'.
     - The data display is now scope-sensitive: displays are
       automatically hidden as they become inactive (out of scope) and
       redisplayed as they become active again.  This is handy when
       maintaining a multitude of displays in different scopes.
-    - DDD supports case-insensitive search in the source text.
+    - Faster data exploration.  Double-clicking...
+      * ...on a pointer value: dereferences it.
+      * ...on a partially hidden value: shows more detail.
+      * ...on a fully shown value: hides it again.
+    - A display resize (due to value changes) now automatically
+      `bumps' adjacent displays such that they are not obscured.
+    - Case-insensitive search in the source text is now supported.
 
     Bug fixes:
     - Getting and identifying core dumps now works on Solaris, AIX and
