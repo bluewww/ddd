@@ -338,4 +338,7 @@ Volunteers for fixing these and other bugs are welcome!
      (nil), proc_name = (nil)), line 164 in "proc.c" is displayed as
      ent_open(, proc_name = ()), line 164 in "proc.c"
 
-155. (Insert your bug here)
+155. DBX `dump` output is not understood if local arrays are shown.
+     (DBX prints these as `ARRAY')
+
+156. (Insert your bug here)
