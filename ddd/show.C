@@ -220,59 +220,23 @@ void show_resources(XrmDatabase db)
 // Show Manual Page
 //-----------------------------------------------------------------------------
 
-// Return true if we have an executable named NAME in PATH
-static bool have_program(const string& name)
-{
-    if (name.contains('/'))
-	return is_cmd_file(name);
-
-    char *_path = getenv("PATH");
-    if (_path == 0)
-	return false;		// No path -- weird
-    string path = _path;
-
-    int colons = path.freq(':') + 1;
-    string *dirs = new string[colons];
-    split(path, dirs, colons, ':');
-
-    for (int i = 0; i < colons; i++)
-    {
-	string dir = dirs[i];
-	if (dir == "")
-	    dir = ".";
-	string file = dir + "/" + name;
-
-	if (is_cmd_file(file))
-	{
-	    delete[] dirs;
-	    return true;
-	}
-    }
-
-    delete[] dirs;
-    return false;
-}
-
-static FILE *popen_if_exists(char *name, char *mode)
-{
-    if (have_program(name))
-	return popen(name, mode);
-    else
-	return 0;
-}
-
 void show_manual()
 {
     FILE *fp = 0;
     if (isatty(fileno(stdout)))
     {
+	// Try, in that order:
+	// 1. The pager specified in the $PAGER environment variable
+	// 2. less
+	// 3. more
+	// 4. cat  (I wonder if this can ever happen)
+	string cmd = "less || more || cat";
+
 	char *pager = getenv("PAGER");
-	if (fp == 0 && pager != 0)
-	    fp = popen_if_exists(pager, "w");
-	if (fp == 0)
-	    fp = popen_if_exists("less", "w");
-	if (fp == 0)
-	    fp = popen_if_exists("more", "w");
+	if (pager != 0)
+	    cmd = string(pager) + " || " + cmd;
+	cmd = "( " + cmd + " )";
+	fp = popen(cmd, "w");
     }
     if (fp == 0)
     {
