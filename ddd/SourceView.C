@@ -4485,10 +4485,22 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
     if (pos_found && bp_nr != 0)
     {
 	// Clicked on breakpoint: create breakpoint menu
-	static Widget bp_popup_w = 0;
+	static Widget bp_popup_w      = 0;
+	static Widget bp_popup_parent = 0;
 
-	if (bp_popup_w == 0) {
-	    bp_popup_w = MMcreatePopupMenu (text_w, "bp_popup", bp_popup);
+	if (lesstif_version < 1000 && w != bp_popup_parent)
+	{
+	    // LessTif wants this menu re-created every time the
+	    // parent has changed.  Otherwise, it gets insensitive.
+	    if (bp_popup_w != 0)
+		XtDestroyWidget(bp_popup_w);
+	    bp_popup_w = 0;
+	}
+
+	if (bp_popup_w == 0)
+	{
+	    bp_popup_parent = w;
+	    bp_popup_w = MMcreatePopupMenu(w, "bp_popup", bp_popup);
 	    MMaddCallbacks (bp_popup, XtPointer(&bp_nr));
 	    InstallButtonTips(bp_popup_w);
 	}
@@ -4509,8 +4521,8 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 		      XmNlabelString, label.xmstring(),
 		      NULL);
 
-	XmMenuPosition (bp_popup_w, event);
-	XtManageChild (bp_popup_w);
+	XmMenuPosition(bp_popup_w, event);
+	XtManageChild(bp_popup_w);
     }
     else if (pos_found 
 	     && (line_nr > 0 || address != "") 
