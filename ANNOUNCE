@@ -1,7 +1,7 @@
 DDD 2.0 is available
 ====================
 
-    Release 2.0 of the Data Display Debugger (DDD), a graphical
+    Release 2.0 of the Data Display Debugger (DDD), a common graphical
     front-end for GDB, DBX, and XDB debuggers, is now available at
 
         ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/ddd-2.0.tar.gz
@@ -13,6 +13,10 @@ DDD 2.0 is available
     Contributed DDD binaries for various architectures are in
 
         ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/bin/
+
+    The DDD WWW page is at
+
+        http://www.cs.tu-bs.de/softech/ddd/
 
     Please try a closer FTP site first; see below for a list.
 
@@ -138,27 +142,25 @@ DDD News
 Summary of DDD
 ==============
 
-    The Data Display Debugger (DDD) is a comfortable graphical user
+    The Data Display Debugger (DDD) is a common graphical user
     interface to GDB, DBX, and XDB, the popular UNIX debuggers.
     Besides ``usual'' features such as viewing source texts and
     breakpoints, DDD provides a graphical data display, where data
     structures are displayed as graphs.  A simple mouse click
-    dereferences pointers or reveals structure contents.  Complex data
-    structures can be explored incrementally and interactively, using
-    automatic layout if preferred.  Each time the program stops, the
-    data display reflects the current variable values.  Using DDD, you
-    can reason about your application by viewing its data, not just by
-    viewing it execute lines of source code.
+    dereferences pointers or reveals structure contents, updated each
+    time the program stops.  Using DDD, you can reason about your
+    application by viewing its data, not just by viewing it execute
+    lines of source code.
 
     Other DDD features include: debugging of programs written in C,
     C++, Ada, Fortran, Pascal, Modula-2, or Modula-3; machine-level
-    debugging; hypertext source navigation and lookup; GDB/DBX/XDB
-    command-line interface with full editing, history, and completion
-    capabilities; breakpoint, backtrace, and history editors;
-    preferences and settings editors; optional program execution in
-    terminal emulator window; debugging on remote host; on-line
-    manual; interactive help on the OSF/Motif user interface.  DDD has
-    been designed to compete with well-known commercial debuggers.
+    debugging; hypertext source navigation and lookup; breakpoint,
+    backtrace, and history editors; preferences and settings editors;
+    program execution in terminal emulator window; debugging on remote
+    host; on-line manual; interactive help on the OSF/Motif user
+    interface; GDB/DBX/XDB command-line interface with full editing,
+    history, and completion capabilities.  DDD has been designed to
+    compete with well-known commercial debuggers.
 
     DDD has been extensively beta-tested (especially by debugging
     itself) and configures, compiles and runs out-of-the-box on every
@@ -185,8 +187,8 @@ Requirements
 	 later, and a matching C++ I/O library (libstdc++ or libg++).
 
          Some other C++ compilers have been reported to compile DDD as
-         well, such as Sun CC 4.0 and AIX xlC.  Cfront 3.0 does not
-         compile DDD.
+         well, such as Sun CC 4.0, AIX xlC and SGI CC.  Cfront 3.0
+         does not compile DDD.
 
        * The X window library (Xlib) and X toolkit library (Xt),
          X11R4 or later.
@@ -213,10 +215,10 @@ Requirements
     (`gnat'), GNU Fortran (`g77') and GNU Modula-2 have been reported
     to work as well.
 
-    As an alternative, DDD also supports the DBX debugger as found on
-    SUN, DEC, AIX, and IRIX systems.  Using DBX, you can debug
-    programs written in C, C++, Pascal, Fortran, and Modula-2.  As of
-    DDD 2.0, DDD adapts itself to a wide range of other DBX variants.
+    As an alternative to GDB, DDD also supports the DBX debugger as
+    found on SUN, DEC, AIX, and IRIX systems.  Using DBX, you can
+    debug programs written in C, C++, Pascal, Fortran, and Modula-2.
+    DDD adapts itself to a wide range of other DBX variants.
 
     As another alternative, DDD also supports the XDB debugger as
     found on HP-UX systems.  XDB usage has been tested for C programs
@@ -227,8 +229,7 @@ Requirements
 More Information
 ================
 
-    A World-Wide-Web page (including screen shots) devoted to DDD is
-    installed at
+    The DDD World-Wide-Web page (including screen shots) is installed at
 
         http://www.cs.tu-bs.de/softech/ddd/
 
@@ -239,14 +240,23 @@ More Information
     The six-page paper gives a short introduction to the look-and-feel
     of DDD and highlights some internal aspects.
 
-    The DDD users mailing list, `ddd-users@ips.cs.tu-bs.de', is the
-    right place to contact other DDD users for assistance and hints.
-    New DDD releases and bug fixes are also announced here.  Send a
-    mail to `ddd-users-request@ips.cs.tu-bs.de' for more information
-    on this list and how to subscribe.
+    The DDD users mailing list, 
 
-    Send suggestions and bug reports for DDD to `ddd-bugs@ips.cs.tu-bs.de'.
+        ddd-users@ips.cs.tu-bs.de
 
+    is the right place to contact other DDD users for assistance and
+    hints.  New DDD releases are also announced here.  For more
+    information on this list, and for subscription, send a mail to
+
+        ddd-users-request@ips.cs.tu-bs.de
+
+    Please send suggestions and bug reports for DDD to
+
+        ddd-bugs@ips.cs.tu-bs.de
+
+    As the DDD developers are often busy with other projects, don't
+    expect an immediate personal answer.  We try to resolve and fix
+    all reported bugs as soon as possible.
 
 
 DDD source FTP sites
@@ -325,7 +335,7 @@ Europe
     ftp://ftp.gre.ac.uk/pub/tools/debuggers/ddd/
 
 
-Have fun!
+Enjoy your day!
 --
 Andreas Zeller (ddd@ips.cs.tu-bs.de)
 Technische Universitaet Braunschweig, Germany

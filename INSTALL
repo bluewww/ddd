@@ -13,8 +13,8 @@ Requirements
 	 later, and a matching C++ I/O library (libstdc++ or libg++).
 
          Some other C++ compilers have been reported to compile DDD as
-         well, such as Sun CC 4.0 and AIX xlC.  Cfront 3.0 does not
-         compile DDD.
+         well, such as Sun CC 4.0, AIX xlC and SGI CC.  Cfront 3.0
+         does not compile DDD.
 
        * The X window library (Xlib) and X toolkit library (Xt),
          X11R4 or later.
@@ -41,10 +41,10 @@ Requirements
     (`gnat'), GNU Fortran (`g77') and GNU Modula-2 have been reported
     to work as well.
 
-    As an alternative, DDD also supports the DBX debugger as found on
-    SUN, DEC, AIX, and IRIX systems.  Using DBX, you can debug
-    programs written in C, C++, Pascal, Fortran, and Modula-2.  As of
-    DDD 2.0, DDD adapts itself to a wide range of other DBX variants.
+    As an alternative to GDB, DDD also supports the DBX debugger as
+    found on SUN, DEC, AIX, and IRIX systems.  Using DBX, you can
+    debug programs written in C, C++, Pascal, Fortran, and Modula-2.
+    DDD adapts itself to a wide range of other DBX variants.
 
     As another alternative, DDD also supports the XDB debugger as
     found on HP-UX systems.  XDB usage has been tested for C programs
