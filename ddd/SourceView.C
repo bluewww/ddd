@@ -4014,6 +4014,10 @@ void SourceView::process_info_line_main(string& info_output)
     clear_file_cache();
     clear_code_cache();
     clear_dbx_lookup_cache();
+
+    if (info_output == "")
+	return;
+
     current_file_name = "";
 
     switch (gdb->type())
