@@ -1362,8 +1362,8 @@ syms:   $(ddd).syms
 
 # Create useful stuff in background
 .PHONY: stuff
-stuff:  $(ddd_canonical)
-	$(MAKE) $(ddd_canonical).syms > make.log 2>&1 &
+stuff:  $(ddd)
+	$(MAKE) $(ddd).syms > make.log 2>&1 &
 	@:
 
 # A convient target for setting up a debugging environment.
