@@ -2146,7 +2146,11 @@ bool save_options(unsigned long flags)
 	bool have_data = 
 	    info.running || (info.core != "" && info.core != NO_GDB_ANSWER);
 
-	bool have_displays = (data_disp->count_data_displays() > 0);
+	bool have_data_displays = (data_disp->count_data_displays() > 0);
+
+	IntArray display_numbers;
+	data_disp->get_all_display_numbers(display_numbers);
+	bool have_displays = display_numbers.size() > 0;
 
 	if (have_data || have_displays)
 	{
@@ -2154,7 +2158,7 @@ bool save_options(unsigned long flags)
 	    StringArray scopes;
 	    bool displays_ok = true;
 
-	    if (have_data && displays_ok)
+	    if (have_data && have_data_displays && displays_ok)
 		displays_ok = data_disp->get_scopes(scopes);
 
 	    if (have_data && save_core)
