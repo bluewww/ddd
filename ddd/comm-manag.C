@@ -69,11 +69,13 @@ char comm_manager_rcsid[] =
 #include "question.h"
 #include "regexps.h"
 #include "settings.h"
+#include "shell.h"
 #include "string-fun.h"
 #include "version.h"
 #include "windows.h"
 
 #include <ctype.h>
+#include <fstream.h>
 
 //-----------------------------------------------------------------------------
 // Types
@@ -535,34 +537,86 @@ void start_gdb()
     gdb_command(c);
 }
 
+struct InitSessionInfo {
+    string restart;
+    string settings;
+    string tempfile;
+};
+
+static void SourceDoneCB(const string& answer, void *qu_data)
+{
+    InitSessionInfo *info = (InitSessionInfo *)qu_data;
+    unlink(info->tempfile);
+
+    string a = downcase(answer);
+    if (a.contains(info->tempfile) && a.contains("error"))
+    {
+	// We've had an error while sourcing the file.  This keeps GDB
+	// from reading the entire file, so we try the commands the
+	// ordinary way.
+	init_session(info->restart, info->settings, false);
+    }
+
+    delete info;
+}
+
 // Enqueue init commands
-void init_session(const string& restart, const string& settings)
+void init_session(const string& restart, const string& settings, 
+		  bool try_source)
 {
     string init_commands = restart + settings;
 
-    // Process all start-up commands.  These should load the file, etc.
-    while (init_commands != "")
+    if (try_source && !remote_gdb() && gdb->type() == GDB)
     {
-	Command c(init_commands.before('\n'), Widget(0), OQCProc(0));
+	// In GDB, source start-up commands from temp file
+	InitSessionInfo *info = new InitSessionInfo;
+	info->restart  = restart;
+	info->settings = settings;
+	info->tempfile = tmpnam(0);
+
+	ofstream os(info->tempfile);
+	while (init_commands != "")
+	{
+	    string cmd = init_commands.before('\n');
+	    fix_symbols(cmd);
+	    if (is_graph_cmd(cmd))
+		add_auto_command_prefix(cmd);
+	    os << cmd << "\n";
+	    init_commands = init_commands.after('\n');
+	}
+	os.close();
+
+	Command c("source " + info->tempfile, Widget(0), 
+		  SourceDoneCB, (void *)info);
 	c.priority = COMMAND_PRIORITY_INIT;
-	if (is_file_cmd(c.command, gdb) || is_core_cmd(c.command))
-	{
-	    // Give feedback on the files used and their state
-	    c.verbose = true;
-	    c.echo    = true;
-	    c.prompt  = true;
-	    c.check   = true;
-	}
-	else if (gdb->type() == JDB && is_use_cmd(c.command))
-	{
-	    c.check = true;
-	}
-
-	// Translate breakpoint numbers to the current base.
-	fix_symbols(c.command);
 	gdb_command(c);
+    }
+    else
+    {
+	// Process all start-up commands.  These should load the file, etc.
+	while (init_commands != "")
+	{
+	    Command c(init_commands.before('\n'), Widget(0), OQCProc(0));
+	    c.priority = COMMAND_PRIORITY_INIT;
+	    if (is_file_cmd(c.command, gdb) || is_core_cmd(c.command))
+	    {
+		// Give feedback on the files used and their state
+		c.verbose = true;
+		c.echo    = true;
+		c.prompt  = true;
+		c.check   = true;
+	    }
+	    else if (gdb->type() == JDB && is_use_cmd(c.command))
+	    {
+		c.check = true;
+	    }
 
-	init_commands = init_commands.after('\n');
+	    // Translate breakpoint numbers to the current base.
+	    fix_symbols(c.command);
+	    gdb_command(c);
+
+	    init_commands = init_commands.after('\n');
+	}
     }
 }
 

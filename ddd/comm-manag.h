@@ -63,8 +63,10 @@ void send_gdb_ctrl(string cmd, Widget origin = 0);
 // Return FALSE if ANSWER is an error message indicating an unknown command
 bool is_known_command(const string& answer);
 
-// Send commands to initialize a session
-void init_session(const string& restart, const string& settings);
+// Send commands to initialize a session.  If TRY_SOURCE is set, try
+// the GDB `source' command.
+void init_session(const string& restart, const string& settings,
+		  bool try_source = true);
 
 #endif // _DDD_comm_manag_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
