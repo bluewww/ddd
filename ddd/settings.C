@@ -109,10 +109,18 @@ static Widget command_to_widget(Widget ref, string command)
 	
 
 // Process output of `show' command
-void process_show(string command, string value)
+void process_show(string command, string value, bool show_status)
 {
     if (settings_form == 0)
 	return;
+
+    if (show_status)
+    {
+	string msg = value;
+	if (msg.contains('\n', -1))
+	    msg = msg.before('\n');
+	set_status(msg);
+    }
 
     if (value.contains(".\n", -1))
     {
@@ -123,6 +131,9 @@ void process_show(string command, string value)
 	value = "auto";
     if (value.contains('"', 0))
 	value = unquote(value);
+
+    static string empty;
+    value.gsub(gdb_out_ignore, empty);
 
     string set_command = command;
     if (!set_command.contains("set ", 0))
@@ -376,7 +387,7 @@ static void add_button(string line, int& row)
     }
 
     // Initialize button
-    process_show(show_command, value);
+    process_show(show_command, value, false);
 
     XtAddCallback(help, XmNactivateCallback, 
 		  HelpOnThisCB, XtPointer(entry));
