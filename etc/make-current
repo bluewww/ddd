@@ -36,6 +36,9 @@
 # CVS options: given to CVS checkout (for checking out older versions).
 # To make a `fix' release, use `make-current -final -r DDD_X_Y_fixes'.
 
+# Some Bash versions issue the name of the directory they're changing into :-(
+unset CDPATH
+
 # Check args
 final=false;
 case "$0" in
