@@ -38,7 +38,13 @@ case "$0" in
   *final*) final=true;;
 esac
 if [ "$1" = "-final" ]; then
-  final=true;
+  final=true
+  shift
+fi
+local=$final
+if [ "$1" = "-local" ]; then
+  local=true
+  shift
 fi
 
 # Setup environment
@@ -46,14 +52,14 @@ tmpdir=$HOME/tmp/ddd$$
 CVSROOT=/usr/local/share/CVS; export CVSROOT
 PATH=/usr/local/bin:/usr/local/gnubin:$PATH; export PATH
 
-if $final; then
+if $local; then
   target=`pwd`
 else
   target=/ftp/pub/local/softech/ddd/current
 fi
 
 # Check whether the ChangeLog file has changed (i.e. we need a new ROTD)
-install=$final
+install=$local
 /usr/local/gnubin/test $CVSROOT/CVSROOT/ddd-log -nt $target/ChangeLog.tail \
     && install=true
 /usr/local/gnubin/test ! -f $target/ChangeLog.tail \
@@ -61,7 +67,7 @@ install=$final
 
 $install || exit 0; # No installation required
 
-if $final; then
+if $local; then
   :
 else
   exec > $target/.current.log 2>&1 < /dev/null
@@ -182,7 +188,7 @@ if [ -f ddd-$date.tar.gz ]; then
   rm -f $target/ddd-*.tar.gz
   mv ddd-$date.tar.gz ddd-$date-pics.tar.gz $target
 
-  if $final; then
+  if $local; then
     :
   else
     # Copy the ChangeLog and NEWS/BUGS/TODO files
@@ -197,7 +203,7 @@ if [ -f ddd-$date.tar.gz ]; then
 else
   echo "make-current[$$]: failed at `date`"
   Mail -s "make-current failed at `date`" ddd@ips.cs.tu-bs.de \
-   < $target/.current.log
+    < $target/.current.log
 fi
 
 # That's all, folks!
