@@ -39,7 +39,6 @@
 
 #include "strclass.h"
 #include "bool.h"
-#include "Box.h"
 #include "DispValueT.h"
 #include "StringSA.h"
 
