@@ -37,11 +37,13 @@
 #include "bool.h"
 #include "ExitCB.h"
 
-// Cleanup
+// Cleanup and signal handling
 extern void ddd_cleanup();
 extern void ddd_show_signal(int sig);
 extern void ddd_install_fatal(char *program_name = 0);
 extern void ddd_install_signal();
+extern void ddd_install_x_fatal();
+extern void ddd_install_x_error();
 
 // Callbacks
 void _DDDExitCB   (Widget, XtPointer, XtPointer); // GDB exited normally

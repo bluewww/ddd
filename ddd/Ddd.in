@@ -26,7 +26,7 @@ Ddd*appDefaultsVersion: @VERSION@
 ! DDD is the data display debugger.
 ! For details, see the DDD World-Wide-Web page, 
 ! `http://www.cs.tu-bs.de/softech/ddd/',
-! or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
+! or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
 ! =================================================================
 ! NOTE: If you're looking here for things to customize, look
@@ -4199,7 +4199,7 @@ specify\n\
     some options intended for @DDD@, use the @DDD@ @tt --help @rm option to\n\
     get a list of valid @DDD@ options.
 
-Ddd*fatal_dialog.title: @DDD@: @SIGNAL@
+Ddd*fatal_dialog.title: @DDD@: @TITLE@
 Ddd*fatal_dialog.messageString:	  \
 @rm Internal error
 Ddd*fatal_dialog*okLabelString:	      Restart
@@ -4209,9 +4209,9 @@ Ddd*fatal_dialog*helpString: \
 You should better save your work immediately; @DDD@ may fail again soon.\n\
 \n\
 If you can reproduce this bug, please send a bug report\n\
-to `@tt ddd-bugs@ ips.cs.tu-bs.de@rm', giving a subject like\n\
+to @tt<ddd-bugs@ ips.cs.tu-bs.de>@rm, giving a subject like\n\
 \n\
-    @DDD@ @VERSION@ (@host@) gets `@SIGNAL@' signal\n\
+    @DDD@ @VERSION@ (@host@) gets @CAUSE@\n\
 \n\
 To enable us to fix the bug, you should include the following information:\n\
 @tt \267 @rm What you were doing to get this message.  Report all the facts.\n\

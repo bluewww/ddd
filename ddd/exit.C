@@ -85,6 +85,30 @@ bool ddd_is_restarting = false;
 // True if DDD has crashed and needs restarting
 bool ddd_has_crashed = false;
 
+
+//-----------------------------------------------------------------------------
+// General clean-up actions before exiting DDD
+//-----------------------------------------------------------------------------
+
+// Some clean-up actions before exiting
+void ddd_cleanup()
+{
+    if (ddd_is_exiting)
+	return;
+
+    ddd_is_exiting = true;
+
+    kill_exec_tty();
+    if (gdb)
+    {
+	gdb->shutdown();
+	gdb->terminate(true);
+    }
+    if (app_data.save_history_on_exit)
+	save_history(command_shell);
+}
+
+
 //-----------------------------------------------------------------------------
 // Signal handling
 //-----------------------------------------------------------------------------
@@ -151,6 +175,40 @@ void ddd_install_fatal(char *program_name)
 #endif
 }
 
+// Post a dialog containing TITLE and CAUSE
+static void post_fatal(string title, string cause)
+{
+    static Widget fatal_dialog = 0;
+    if (fatal_dialog)
+	DestroyWhenIdle(fatal_dialog);
+
+    defineConversionMacro("TITLE", title);
+    defineConversionMacro("CAUSE", cause);
+
+    fatal_dialog = 
+	verify(XmCreateErrorDialog (find_shell(),
+				    "fatal_dialog", 0, 0));
+    Delay::register_shell(fatal_dialog);
+
+    XtAddCallback(fatal_dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
+    XtAddCallback(fatal_dialog, XmNokCallback,     DDDRestartCB,    0);
+    XtAddCallback(fatal_dialog, XmNcancelCallback,
+		  DDDExitCB, XtPointer(EXIT_FAILURE));
+
+    string msg = string("Internal error (") + title + ")";
+    MString mtext = rm(msg);
+    XtVaSetValues (fatal_dialog,
+		   XmNmessageString, mtext.xmstring(),
+		   0);
+
+    manage_and_raise(fatal_dialog);
+
+    // Wait until dialog is mapped and synchronize, such that DDD will
+    // exit if we get another signal or X error during that time.
+    wait_until_mapped(fatal_dialog);
+    XSync(XtDisplay(fatal_dialog), False);
+}
+
 // Show the user that a signal has been raised
 void ddd_show_signal(int sig)
 {
@@ -166,53 +224,10 @@ void ddd_show_signal(int sig)
     // allowing the user to clean up manually.
     if (sig != SIGINT)
     {
-	static Widget fatal_dialog = 0;
-	if (fatal_dialog)
-	    DestroyWhenIdle(fatal_dialog);
-
-	defineConversionMacro("SIGNAL", sigName(sig));
-
-	fatal_dialog = 
-	    verify(XmCreateErrorDialog (find_shell(),
-					"fatal_dialog", 0, 0));
-	Delay::register_shell(fatal_dialog);
-
-	XtAddCallback(fatal_dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
-	XtAddCallback(fatal_dialog, XmNokCallback,     DDDRestartCB,    0);
-	XtAddCallback(fatal_dialog, XmNcancelCallback,
-		      DDDExitCB, XtPointer(EXIT_FAILURE));
-
-	string msg = string("Internal error (") + sigName(sig) + ")";
-	MString mtext = rm(msg);
-	XtVaSetValues (fatal_dialog,
-		       XmNmessageString, mtext.xmstring(),
-		       0);
-
-	manage_and_raise(fatal_dialog);
-
-	// Wait until dialog is mapped, such that DDD will exit
-	// if we get another signal during that time.
-	wait_until_mapped(fatal_dialog);
+	string title = sigName(sig);
+	string cause = "`" + title + "' signal";
+	post_fatal(title, cause);
     }
-}
-
-
-//-----------------------------------------------------------------------------
-// Exiting
-//-----------------------------------------------------------------------------
-
-void ddd_cleanup()
-{
-    if (ddd_is_exiting)
-	return;
-
-    ddd_is_exiting = true;
-
-    kill_exec_tty();
-    if (command_shell && app_data.save_history_on_exit)
-	save_history(command_shell);
-    if (gdb)
-	gdb->shutdown();
 }
 
 // Signal handler: clean up and re-raise signal
@@ -221,6 +236,42 @@ static void ddd_signal(int sig...)
     ddd_cleanup();
     signal(sig, SignalProc(SIG_DFL));
     raise(sig);
+}
+
+// Issue fatal message on stderr
+static void print_fatal_msg(char *title, char *cause)
+{
+    static const char *msg =
+	"\nInternal error (%s).\n"
+	"\n"
+	"Oops!  You have found a bug in " DDD_NAME ".\n"
+	"\n"
+	"If you can reproduce this bug, please send a bug report\n"
+	"to <ddd-bugs@ips.cs.tu-bs.de>, giving a subject like\n"
+	"\n"
+	"    " DDD_NAME " " DDD_VERSION 
+	" (" DDD_HOST ") gets %s\n"
+	"\n"
+	"To enable us to fix the bug, you should include "
+	"the following information:\n"
+	"  * What you were doing to get this message.  "
+	"Report all the facts.\n"
+	"  * Your " DDD_NAME " configuration.  "
+	"Run `" ddd_NAME " --configuration' to get it.\n"
+	"  * If a core file was generated in your directory, please run\n"
+	"    `gdb " ddd_NAME " core', "
+	"and type `where' at the `(gdb)' prompt.\n"
+	"    (Include this output only.  Do not include "
+	"the core file itself.)\n"
+	"  * Invoke " DDD_NAME " with the `--trace' option, "
+	"and if you can reproduce the bug,\n"
+	"    include the trace output in your bug report.\n"
+	"Please read also the section \"Reporting Bugs\" "
+	"in the " DDD_NAME " manual.\n"
+	"\n"
+	"We thank you for your support.\n\n";
+
+    fprintf(stderr, msg, title, cause);
 }
 
 // Fatal signal handler: issue error message and re-raise signal
@@ -245,38 +296,13 @@ static void ddd_fatal(int sig...)
 
     if (fatal_entered++ || !main_loop_entered || ddd_is_exiting)
     {
-	static const char *msg =
-	    "\nInternal error (%s).\n"
-	    "\n"
-	    "Oops!  You have found a bug in " DDD_NAME ".\n"
-	    "\n"
-	    "If you can reproduce this bug, please send a bug report\n"
-	    "to `ddd-bugs@ips.cs.tu-bs.de', giving a subject like\n"
-	    "\n"
-	    "    " DDD_NAME " " DDD_VERSION 
-	    " (" DDD_HOST ") gets `%s' signal\n"
-	    "\n"
-	    "To enable us to fix the bug, you should include "
-	    "the following information:\n"
-	    "  * What you were doing to get this message.  "
-	    "Report all the facts.\n"
-	    "  * Your " DDD_NAME " configuration.  "
-	    "Run `" ddd_NAME " --configuration' to get it.\n"
-	    "  * If a core file was generated in your directory, please run\n"
-	    "    `gdb " ddd_NAME " core', "
-	    "and type `where' at the `(gdb)' prompt.\n"
-	    "    (Include this output only.  Do not include "
-	    "the core file itself.)\n"
-	    "  * Invoke " DDD_NAME " with the `--trace' option, "
-	    "and if you can reproduce the bug,\n"
-	    "    include the trace output in your bug report.\n"
-	    "Please read also the section \"Reporting Bugs\" "
-	    "in the " DDD_NAME " manual.\n"
-	    "\n"
-	    "We thank you for your support.\n\n";
-
 	if (sig != SIGINT)
-	    fprintf(stderr, msg, sigName(sig), sigName(sig));
+	{
+	    char *title = sigName(sig);
+	    char cause[BUFSIZ];
+	    sprintf(cause, "`%s' signal", title);
+	    print_fatal_msg(title, cause);
+	}
 
 	// Re-raise signal.  This should kill us as we return.
 	ddd_signal(sig);
@@ -290,6 +316,209 @@ static void ddd_fatal(int sig...)
     fatal_entered--;
     longjmp(main_loop_env, sig);
 }
+
+
+//-----------------------------------------------------------------------------
+// X I/O error
+//-----------------------------------------------------------------------------
+
+static int (*old_x_fatal_handler)(Display *display) = 0;
+
+// Fatal X I/O error handler: cleanup and issue error message
+static int ddd_x_fatal(Display *display)
+{
+    ddd_cleanup();
+    return old_x_fatal_handler(display);
+}
+
+// Cleanup on fatal X I/O errors
+void ddd_install_x_fatal()
+{
+    old_x_fatal_handler = XSetIOErrorHandler(ddd_x_fatal);
+}
+
+
+//-----------------------------------------------------------------------------
+// Other X errors
+//-----------------------------------------------------------------------------
+
+static string xtext(Display *display, char *code, char *def, int arg = 0)
+{
+    char *mtype = "XlibMessage";
+    char format[BUFSIZ];
+    char message[BUFSIZ];
+    XGetErrorDatabaseText(display, mtype, code, def, format, sizeof format);
+    sprintf(message, format, arg);
+    return message;
+}
+
+// Give a diagnostic on EVENT on OS.  Patterned after
+// _XPrintDefaultError(dpy, event, fp) in X11R6.3.
+static void print_x_error(Display *display, XErrorEvent *event, ostream& os)
+{
+    char buffer[BUFSIZ];
+    XGetErrorText(display, event->error_code, buffer, sizeof buffer);
+
+    os << xtext(display, "XError", "X Error")
+       << ":  " << buffer << "\n  "
+       << xtext(display, "MajorCode", "Request Major code %d", 
+		event->request_code);
+    
+    char number[32];
+    sprintf(number, "%d", event->request_code);
+    XGetErrorDatabaseText(display, "XRequest", 
+			  number, "", buffer, sizeof buffer);
+    os << " (" << buffer << ")\n";
+
+    if (event->request_code >= 128)
+	os << xtext(display, "MinorCode", "Request Minor code %d\n",
+		    event->minor_code);
+
+    switch (event->error_code)
+    {
+    case BadWindow:
+    case BadPixmap:
+    case BadCursor:
+    case BadFont:
+    case BadDrawable:
+    case BadColor:
+    case BadGC:
+    case BadIDChoice:
+	os << "  "
+	   << xtext(display, "ResourceID", "ResourceID 0x%x", 
+		    event->resourceid)
+	   << "\n";
+	break;
+
+    case BadValue:
+	os << "  "
+	   << xtext(display, "Value", "Value 0x%x", event->resourceid)
+	   << "\n";
+	break;
+
+    case BadAtom:
+	os << "  "
+	   << xtext(display, "AtomID", "AtomID 0x%x", event->resourceid)
+	   << "\n";
+	break;
+    }
+
+    os << "  " 
+       << xtext(display, "ErrorSerial", "Error Serial #%d", event->serial)
+       << "\n"
+       << "  "
+       << xtext(display, "CurrentSerial", "Current Serial #%d", 
+		NextRequest(display) - 1) 
+       << "\n";
+}
+
+static int (*old_x_error_handler)(Display *, XErrorEvent *) = 0;
+
+static void PostXErrorCB(XtPointer client_data, XtIntervalId *)
+{
+    string *msg_ptr = (string *)client_data;
+    string msg = *msg_ptr;
+    delete msg_ptr;
+
+    string title = msg.before('\n');
+    string cause = msg.after('\n');
+    post_fatal(title, cause);
+}
+
+static bool recovered_from_x_error = true;
+
+static Boolean recovery_done(XtPointer)
+{
+    recovered_from_x_error = true;
+    return True;		// Remove from the list of work procs
+}
+
+// X error handler: cleanup and issue error message
+static int ddd_x_error(Display *display, XErrorEvent *event)
+{
+    if (event->error_code == BadImplementation)
+    {
+	// Taken care of by the standard X handler - just proceed
+	return old_x_error_handler(display, event);
+    }
+
+    // Fetch precise diagnostics
+    char buffer[BUFSIZ];
+    XGetErrorText(display, event->error_code, buffer, sizeof buffer);
+    string cause = buffer;
+    if (cause.contains(" ("))
+	cause = cause.before(" (");
+    cause = "`" + cause + "' error";
+
+    string title = buffer;
+    if (title.contains('('))
+	title = title.after('(');
+    if (title.contains(')'))
+	title = title.before(')');
+
+    if (!recovered_from_x_error)
+    {
+	// Not recovered from last X error
+
+	// Ignore being called while cleaning up
+	static bool entered = false;
+	if (entered)
+	    return 0;
+	entered = true;
+
+	// Exit after diagnostics
+	ddd_cleanup();
+	print_x_error(display, event, cerr);
+	print_fatal_msg(title, cause);
+	exit(EXIT_FAILURE);
+    }
+
+    // Issue error on stderr
+    print_x_error(display, event, cerr);
+
+    // Prepare for issuing error in dialog
+    string *msg_ptr = new string(title + '\n' + cause);
+    XtAppContext app_context = XtWidgetToApplicationContext(command_shell);
+    XtAppAddTimeOut(app_context, 0, PostXErrorCB, XtPointer(msg_ptr));
+
+    // Set RECOVERED_FROM_X_ERROR to FALSE until DDD is idle again
+    recovered_from_x_error = false;
+    XtAppAddWorkProc(app_context, recovery_done, XtPointer(0));
+
+    return 0;			// Keep on acting
+}
+
+// Cleanup on fatal X I/O errors
+void ddd_install_x_error()
+{
+    old_x_error_handler = XSetErrorHandler(ddd_x_error);
+}
+
+
+
+//-----------------------------------------------------------------------------
+// GDB I/O error
+//-----------------------------------------------------------------------------
+
+// EOF on input/output detected
+void gdb_eofHP(Agent *, void *, void *)
+{
+    // Kill and exit
+    gdb->terminate();
+}
+
+
+// GDB died
+void gdb_diedHP(Agent *gdb, void *, void *call_data)
+{
+    char *reason = (char *)call_data;
+    post_gdb_died(reason, gdb->lastStatus());
+}
+
+
+//-----------------------------------------------------------------------------
+// Controlled exiting
+//-----------------------------------------------------------------------------
 
 static void SaveOptionsAndExitCB(Widget w, XtPointer client_data,
 				 XtPointer call_data)
@@ -386,20 +615,4 @@ void DDDRestartCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     ddd_is_restarting = true;
     DDDDoneCB(w, client_data, call_data);
-}
-
-
-// EOF on input/output detected
-void gdb_eofHP(Agent *, void *, void *)
-{
-    // Kill and exit
-    gdb->terminate();
-}
-
-
-// GDB died
-void gdb_diedHP(Agent *gdb, void *, void *call_data)
-{
-    char *reason = (char *)call_data;
-    post_gdb_died(reason, gdb->lastStatus());
 }

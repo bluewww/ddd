@@ -1319,6 +1319,10 @@ int main(int argc, char *argv[])
     Arg args[10];
     int arg = 0;
 
+    // Install X error handlers
+    ddd_install_x_fatal();
+    ddd_install_x_error();
+
     // Read ~/.dddinit resources
     XrmDatabase dddinit = XrmGetFileDatabase(options_file());
     if (dddinit == 0)
@@ -1328,7 +1332,7 @@ int main(int argc, char *argv[])
     XrmParseCommand(&dddinit, options, XtNumber(options), 
 		    DDD_CLASS_NAME, &argc, argv);
 
-    // Create application shell
+    // Open X connection and create application shell
     XtAppContext app_context;
     arg = 0;
     XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
