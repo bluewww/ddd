@@ -413,7 +413,7 @@ bool GDBAgent::ends_with_prompt (const string& answer)
 	    && answer[beginning_of_line] == '(' 
 	    && answer[answer.length() - 2] == ')'
 	    && answer[answer.length() - 1] == ' '
-	    && (answer.contains("gdb") || answer.contains("dbx"));
+	    && answer.index("db", beginning_of_line) >= 0;
 
     case XDB:
 	return beginning_of_line < answer.length()
