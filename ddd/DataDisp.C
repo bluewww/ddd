@@ -539,11 +539,11 @@ void DataDisp::get_all_clusters(IntArray& numbers)
 
 
 //-----------------------------------------------------------------------------
-// Suppress expressions
+// Apply themes to expressions
 //-----------------------------------------------------------------------------
 
-// Suppress the selected item - now and forever
-void DataDisp::suppressCB (Widget dialog, XtPointer, XtPointer)
+// Apply the theme in CLIENT_DATA to the selected item.
+void DataDisp::applyCB (Widget dialog, XtPointer client_data, XtPointer)
 {
     set_last_origin(dialog);
 
@@ -562,30 +562,31 @@ void DataDisp::suppressCB (Widget dialog, XtPointer, XtPointer)
     if (pattern.contains("."))
 	pattern = "*" + pattern.from(".", -1);
 
-    suppress_pattern(pattern);
+    apply_theme(String(client_data), pattern);
 }
 
-string DataDisp::suppress_pattern_cmd(const string& expr)
+string DataDisp::apply_theme_cmd(const string& theme, const string& pattern)
 {
-    return "graph suppress " + expr;
+    return "graph apply " + theme + " " + pattern;
 }
 
-string DataDisp::unsuppress_pattern_cmd(const string& expr)
+string DataDisp::unapply_theme_cmd(const string& theme, const string& pattern)
 {
-    return "graph unsuppress " + expr;
+    return "graph unapply " + theme + " " + pattern;
 }
 
-static string suppress_vsl = "suppress.vsl";
-
-void DataDisp::suppress_patternSQ(const string& expr, bool /* verbose */, 
-				  bool do_prompt)
+void DataDisp::apply_themeSQ(const string& theme, const string& pattern,
+			     bool /* verbose */, bool do_prompt)
 {
-    string e = expr;
-    strip_space(e);
+    string t = theme;
+    strip_space(t);
 
-    ThemePattern& p = DispBox::theme_manager.pattern(suppress_vsl);
-    p.add(e);
-    p.active() = true;
+    string p = pattern;
+    strip_space(p);
+
+    ThemePattern& tp = DispBox::theme_manager.pattern(t);
+    tp.add(p);
+    tp.active() = true;
 
     update_themes();
     set_theme_manager(DispBox::theme_manager);
@@ -594,15 +595,17 @@ void DataDisp::suppress_patternSQ(const string& expr, bool /* verbose */,
 	prompt();
 }
 
-void DataDisp::unsuppress_patternSQ(const string& expr, bool /* verbose */, 
-				    bool do_prompt)
+void DataDisp::unapply_themeSQ(const string& theme, const string& pattern,
+			       bool /* verbose */, bool do_prompt)
 {
-    string e = expr;
-    strip_space(e);
+    string t = theme;
+    strip_space(t);
 
-    ThemePattern& p = DispBox::theme_manager.pattern(suppress_vsl);
-    p.remove(expr);
-    p.active() = true;
+    string p = pattern;
+    strip_space(p);
+
+    ThemePattern& tp = DispBox::theme_manager.pattern(t);
+    tp.remove(p);
 
     update_themes();
     set_theme_manager(DispBox::theme_manager);
@@ -1725,7 +1728,7 @@ void DataDisp::deleteArgCB(Widget dialog, XtPointer client_data,
     else if (count.selected > 0)
     {
 	// Suppress selected display
-	suppressCB(dialog, client_data, call_data);
+	applyCB(dialog, XtPointer("suppress.vsl"), call_data);
     }
     else
     {

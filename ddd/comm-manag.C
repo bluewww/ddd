@@ -1077,18 +1077,21 @@ void send_gdb_command(string cmd, Widget origin,
 	    cmd_data->graph_cmd = cmd;
 
 	    string base = cmd.after("graph ");
-	    if (is_suppress_cmd(base))
+	    if (is_apply_cmd(base) || is_unapply_cmd(base))
 	    {
-		string expr = base.after(" ");
-		cmd_data->undo_command = 
-		    data_disp->unsuppress_pattern_cmd(expr);
-		cmd_data->undo_is_exec = false;
-	    }
-	    else if (is_unsuppress_cmd(base))
-	    {
-		string expr = base.after(" ");
-		cmd_data->undo_command = 
-		    data_disp->suppress_pattern_cmd(expr);
+		string theme = base.after(" ");
+		strip_space(theme);
+		string pattern = theme.after(" ");
+		strip_space(pattern);
+		theme = theme.before(" ");
+		
+		if (is_apply_cmd(base))
+		    cmd_data->undo_command = 
+			data_disp->unapply_theme_cmd(theme, pattern);
+		else
+		    cmd_data->undo_command = 
+			data_disp->apply_theme_cmd(theme, pattern);
+
 		cmd_data->undo_is_exec = false;
 	    }
 	}
@@ -2406,15 +2409,27 @@ static bool handle_graph_cmd(string& cmd, const string& where_answer,
 	    }
 	}
     }
-    else if (is_suppress_cmd(cmd))
+    else if (is_apply_cmd(cmd))
     {
-	data_disp->suppress_patternSQ(cmd.after("suppress "), 
-				      verbose, do_prompt);
+	string theme = cmd.after("apply");
+	strip_space(theme);
+	string pattern = theme.after(" ");
+	strip_space(pattern);
+	theme = theme.before(" ");
+
+	data_disp->apply_themeSQ(theme, pattern,
+				 verbose, do_prompt);
     }
-    else if (is_unsuppress_cmd(cmd))
+    else if (is_unapply_cmd(cmd))
     {
-	data_disp->unsuppress_patternSQ(cmd.after("unsuppress "), 
-					verbose, do_prompt);
+	string theme = cmd.after("apply");
+	strip_space(theme);
+	string pattern = theme.after(" ");
+	strip_space(pattern);
+	theme = theme.before(" ");
+
+	data_disp->unapply_themeSQ(theme, pattern,
+				   verbose, do_prompt);
     }
     else
     {

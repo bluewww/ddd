@@ -321,15 +321,17 @@ public:
 				 bool verbose = true,
 				 bool prompt = true);
 
-    // Suppress expression EXPR.
-    static void suppress_patternSQ(const string& expr,
-				   bool verbose = true,
-				   bool prompt = true);
+    // Apply THEME on PATTERN.
+    static void apply_themeSQ(const string& theme,
+			      const string& pattern,
+			      bool verbose = true,
+			      bool prompt = true);
 
-    // Unsuppress expression EXPR.
-    static void unsuppress_patternSQ(const string& expr,
-				     bool verbose = true,
-				     bool prompt = true);
+    // Unapply THEME on PATTERN.
+    static void unapply_themeSQ(const string& theme,
+				const string& pattern,
+				bool verbose = true,
+				bool prompt = true);
 
     // Same, but return the appropriate command
     static string new_display_cmd(const string& display_expression,
@@ -343,8 +345,10 @@ public:
     static string enable_display_cmd(IntArray& display_nrs);
     static string delete_display_cmd(IntArray& display_nrs);
     static string delete_display_cmd(const string& name);
-    static string suppress_pattern_cmd(const string& expr);
-    static string unsuppress_pattern_cmd(const string& expr);
+    static string apply_theme_cmd(const string& theme, 
+				  const string& pattern);
+    static string unapply_theme_cmd(const string& theme, 
+				    const string& pattern);
 
     // Same, but use the GDB_COMMAND interface for enqueing commands
     static void new_display(string display_expression,
@@ -387,9 +391,16 @@ public:
 	gdb_command(delete_display_cmd(name), origin);
     }
 
-    static void suppress_pattern(const string& expr, Widget origin = 0)
+    static void apply_theme(const string& theme, const string& pattern, 
+			    Widget origin = 0)
     {
-	gdb_command(suppress_pattern_cmd(expr), origin);
+	gdb_command(apply_theme_cmd(theme, pattern), origin);
+    }
+
+    static void unapply_theme(const string& theme, const string& pattern, 
+			      Widget origin = 0)
+    {
+	gdb_command(unapply_theme_cmd(theme, pattern), origin);
     }
 
     // Process 'info display' output in INFO_DISPLAY_ANSWER.  If
@@ -566,7 +577,7 @@ public:
     static void selectAllCB(Widget, XtPointer, XtPointer);
     static void unselectAllCB(Widget, XtPointer, XtPointer);
     static void deleteCB(Widget, XtPointer, XtPointer);
-    static void suppressCB(Widget, XtPointer, XtPointer);
+    static void applyCB(Widget, XtPointer, XtPointer);
 
     // Helpers for user displays
     static bool have_user_display(const string& name);

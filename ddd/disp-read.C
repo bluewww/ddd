@@ -229,16 +229,16 @@ bool is_disable_display_cmd (const string& cmd)
     return cmd.matches(rxdisable);
 }
 
-// True if CMD suppresses values
-bool is_suppress_cmd (const string& cmd)
+// True if CMD applies a theme
+bool is_apply_cmd (const string& cmd)
 {
-    return cmd.contains("suppress ", 0);
+    return cmd.contains("apply ", 0);
 }
 
-// True if CMD unsuppresses values
-bool is_unsuppress_cmd (const string& cmd)
+// True if CMD unapplies a theme
+bool is_unapply_cmd (const string& cmd)
 {
-    return cmd.contains("unsuppress ", 0);
+    return cmd.contains("unapply ", 0);
 }
 
 // True if CMD changes current frame
