@@ -422,7 +422,11 @@ MacOS X
 
     Build may fail on case sensitive file systems as ddd and Ddd conflict.
     See http://mail.gnu.org/archive/html/ddd/2002-09/msg00024.html.
-    Patches are welcome.
+    Another workaround is to build ddd using "make EXEEXT=.exe".
+    After installation ("make install EXEEXT=.exe"), ddd.exe needs
+    to be renamed as 'ddd'. The resource file Ddd may need to be installed
+    within $XAPPLRESDIR.
+    ddd for MacOS X is available at http://darwinports.opendarwin.org/.
 
 
 OSF/1
