@@ -2750,16 +2750,20 @@ Set LBL(()) by selecting data displays.\n\
 Clear LBL(()) by clicking on the prompt LBL(():).
 
 Ddd*graph_cmd_w.orientation:			XmHORIZONTAL
-Ddd*graph_cmd_w.graph_cmd_area*orientation:	XmHORIZONTAL
-Ddd*graph_cmd_w.graph_cmd_area*spacing:		0
-Ddd*graph_cmd_w*spacing:			0
-Ddd*graph_cmd_w.graph_cmd_area*packing:	  	XmPACK_TIGHT
-Ddd*graph_cmd_w.graph_cmd_area*entryAlignment:	XmALIGNMENT_CENTER
-Ddd*graph_cmd_w.graph_cmd_area*alignment:	XmALIGNMENT_CENTER
+Ddd*graph_cmd_w.graph_cmd_area.orientation:	XmHORIZONTAL
+Ddd*graph_cmd_w.graph_cmd_area.spacing:		0
+Ddd*graph_cmd_w.spacing:			0
+Ddd*graph_cmd_w.graph_cmd_area.packing:	  	XmPACK_TIGHT
+Ddd*graph_cmd_w.graph_cmd_area.entryAlignment:	XmALIGNMENT_CENTER
+Ddd*graph_cmd_w.graph_cmd_area.alignment:	XmALIGNMENT_CENTER
 
 Ddd*graph_cmd_w.graph_cmd_area*dependent.labelString:	New Display
 Ddd*graph_cmd_w.graph_cmd_area*dereference.labelString: Display *()
 Ddd*graph_cmd_w.graph_cmd_area*detail.labelString:	Show ()
+Ddd*graph_cmd_w.graph_cmd_area*show_more.labelString:   Show More ()
+Ddd*graph_cmd_w.graph_cmd_area*show_just.labelString:   Show Just ()
+Ddd*graph_cmd_w.graph_cmd_area*show_detail.labelString: Show All ()
+Ddd*graph_cmd_w.graph_cmd_area*hide_detail.labelString: Hide ()
 Ddd*graph_cmd_w.graph_cmd_area*rotate.labelString:	Rotate ()
 Ddd*graph_cmd_w.graph_cmd_area*set.labelString:		Set ()
 Ddd*graph_cmd_w.graph_cmd_area*delete.labelString:	Delete ()
@@ -2789,6 +2793,15 @@ Ddd*graph_cmd_w.graph_cmd_area*detail.tipString:	\
 @rm Show/Hide selected details
 Ddd*graph_cmd_w.graph_cmd_area*detail.documentationString: \
 @rm Show/Hide details of the selected displays
+
+Ddd*graph_cmd_w.graph_cmd_area*show_more.documentationString: \
+@rm Show more details of the selected displays
+Ddd*graph_cmd_w.graph_cmd_area*show_just.documentationString: \
+@rm Show details of the selected displays, hiding substructures
+Ddd*graph_cmd_w.graph_cmd_area*show_detail.documentationString: \
+@rm Show all details of the selected displays, including substructures
+Ddd*graph_cmd_w.graph_cmd_area*hide_detail.documentationString: \
+@rm Hide details of the selected displays
 
 Ddd*graph_cmd_w.graph_cmd_area*rotate.helpString:	\
 LBL(Rotate ())\n\
@@ -3055,8 +3068,13 @@ Ddd*arg_cmd_w.arg_cmd_area.entryAlignment:		XmALIGNMENT_CENTER
 Ddd*arg_cmd_w.arg_cmd_area*alignment:			XmALIGNMENT_CENTER
 
 Ddd*arg_cmd_w.arg_cmd_area*lookup.labelString:		Lookup ()
-Ddd*arg_cmd_w.arg_cmd_area*lookupType.labelString:	Lookup type ()
 Ddd*arg_cmd_w.arg_cmd_area*breakAt.labelString:		Break at ()
+Ddd*arg_cmd_w.arg_cmd_area*tempBreakAt.labelString:	\
+Set Temporary Breakpoint at ()
+Ddd*arg_cmd_w.arg_cmd_area*contUntil.labelString:	Continue Until ()
+Ddd*arg_cmd_w.arg_cmd_area*enable.labelString:		Enable Breakpoint at ()
+Ddd*arg_cmd_w.arg_cmd_area*setPC.labelString:		\
+Set Execution Position to ()
 Ddd*arg_cmd_w.arg_cmd_area*print.labelString:		Print ()
 Ddd*arg_cmd_w.arg_cmd_area*printRef.labelString:	Print *()
 Ddd*arg_cmd_w.arg_cmd_area*whatis.labelString:		Whatis ()
@@ -3087,8 +3105,6 @@ Ddd*arg_cmd_w.arg_cmd_area*lookup.tipString:	\
 @rm Lookup LBL(()) in the source
 Ddd*arg_cmd_w.arg_cmd_area*lookup.documentationString:	\
 @rm Lookup a line, file, function, variable or breakpoint in the source
-Ddd*arg_cmd_w.arg_cmd_area*lookupType.documentationString:	\
-@rm Lookup the type of a function or variable in the source
 
 Ddd*arg_cmd_w.arg_cmd_area*breakAt.helpString:	\
 LBL(Break at ()) / LBL(Clear at ())\n\
@@ -3097,6 +3113,15 @@ Ddd*arg_cmd_w.arg_cmd_area*breakAt.tipString:	\
 @rm Set/Delete breakpoint at LBL(())
 Ddd*arg_cmd_w.arg_cmd_area*breakAt.documentationString:	\
 @rm Set or delete a breakpoint at the argument LBL(())
+
+Ddd*arg_cmd_w.arg_cmd_area*tempBreakAt.documentationString: \
+@rm Set a temporary breakpoint at the argument LBL(())
+Ddd*arg_cmd_w.arg_cmd_area*contUntil.documentationString: \
+@rm Set a temporary breakpoint at LBL(()) and resume execution
+Ddd*arg_cmd_w.arg_cmd_area*enable.documentationString: \
+@rm Enable or disable the breakpoint at the argument LBL(())
+Ddd*arg_cmd_w.arg_cmd_area*setPC.documentationString: \
+@rm Set the current execution position to LBL(())
 
 Ddd*arg_cmd_w.arg_cmd_area*print.helpString:	\
 LBL(Print ())\n\

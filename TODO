@@ -316,11 +316,6 @@ Volunteers for these and other projects are welcome!
 
 171. Use double-buffering to display the graph.  Even less flickering.
 
-174* Realize `()' buttons as cascade buttons, showing a pulldown menu
-     with additional functions, like in Netscape 4.0 - i.e. base
-     conversions under `New Display', `Show 1' under `Show', `Lookup
-     type` under `Lookup` etc.
-
 175. Theodore Papadopoulo <papadop@sophia.inria.fr> suggests a smaller 
      font for large matrices.
 
@@ -341,7 +336,7 @@ Volunteers for these and other projects are welcome!
 178* Offer more dereferencing options, which may be user-customizable.
      Instead of just providing `Display *()', offer also `Display /o
      ()', etc.  These conversions may also be obtained from creating
-     dependent displays.
+     dependent displays and should be placed under `New Display'.
 
 179. Add `libgdb' as an alternate communication method.
 
@@ -352,7 +347,7 @@ Volunteers for these and other projects are welcome!
 187. Have a `commands' menu listing up all debugger commands.  Should
      be organized according to `help' classes.
 
-193* Have a way to unfold trees and graphs.  For instance, `Display
+193. Have a way to unfold trees and graphs.  For instance, `Display
      *()' applied to a struct could dereference all contained pointers
      (unless already dereferenced).
 
