@@ -1730,6 +1730,7 @@ static bool handle_graph_cmd(string& cmd, const string& where_answer,
 	string depends_on = "";
 	string when_in    = "";
 	DeferMode deferred = DeferNever;
+	bool clustered = false;
 	BoxPoint *pos = 0;
 
 	for (;;)
@@ -1791,6 +1792,13 @@ static bool handle_graph_cmd(string& cmd, const string& where_answer,
 		continue;
 	    }
 
+	    if (rcmd.contains("deretsulc", 0))
+	    {
+		clustered = true;
+		rcmd = rcmd.after("deretsulc");
+		continue;
+	    }
+
 	    break;
 	}
 
@@ -1809,14 +1817,14 @@ static bool handle_graph_cmd(string& cmd, const string& where_answer,
 	if (when_in != "" && when_in != scope)
 	{
 	    data_disp->new_displaySQ(display_expression, when_in, pos,
-				     depends_on, deferred, origin, 
-				     verbose, do_prompt);
+				     depends_on, deferred, clustered,
+				     origin, verbose, do_prompt);
 	}
 	else
 	{
 	    data_disp->new_displaySQ(display_expression, scope, pos,
-				     depends_on, deferred, origin,
-				     verbose, do_prompt);
+				     depends_on, deferred, clustered,
+				     origin, verbose, do_prompt);
 	}
     }
     else if (is_refresh_cmd(cmd))

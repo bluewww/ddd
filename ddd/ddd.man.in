@@ -1177,11 +1177,17 @@ button.
 Finally, you may also enter
 .sp
 .br
-  \fBgraph display \fIexpr\fR [\|\fBat (\fIx, y\fB)\fR\|] [\|\fBdependent
-on \fIdisplay\fR\|] [\|[\|\fBnow or\fR\|]\|\fBwhen in \fIscope\fR\|]
+  \fBgraph display \fIexpr\fR [\|\fBclustered\fR\|] 
+[\|\fBat (\fIx, y\fB)\fR\|] [\|\fBdependent on \fIdisplay\fR\|] 
+[\|[\|\fBnow or\fR\|]\|\fBwhen in \fIscope\fR\|]
 .sp
 .br
 \&at the debugger prompt.  The options have the following meaning:
+.br
+.IP \(bu 2
+If the suffix `\fBclustered\fR' is specified, the new data display is
+created in a cluster.  See `\fBClustering Displays\fR', below, for a
+discussion.
 .br
 .IP \(bu 2
 If the suffix `\fBat \fB(\fIx, y\fB)\fR' is specified, the new data

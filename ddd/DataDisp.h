@@ -192,7 +192,8 @@ class DataDisp {
 				   const string& answer);
     static DispNode *new_deferred_node(const string& expr, const string& scope,
 				       const BoxPoint& pos,
-				       const string& depends_on);
+				       const string& depends_on,
+				       bool clustered);
 
     static int getDispNrAtPoint(BoxPoint point);
 
@@ -274,12 +275,14 @@ public:
     // If DEPENDS_ON is set, the new display is made dependent on
     // DEPENDS_ON (a display number or name).
     // If DEFERRED is set, defer creation until SCOPE is reached.
+    // If CLUSTERED is set, cluster display.
     // If ORIGIN is set, the last origin is set to ORIGIN.
     static void new_displaySQ(string display_expression,
 			      string scope,
 			      BoxPoint *pos = 0,
 			      string depends_on = "",
 			      DeferMode deferred = DeferAlways,
+			      bool clustered = false,
 			      Widget origin = 0,
 			      bool verbose = true,
 			      bool prompt = true);
@@ -307,7 +310,8 @@ public:
     // Same, but return the appropriate command
     static string new_display_cmd(string display_expression,
 				  BoxPoint *pos = 0,
-				  string depends_on = "");
+				  string depends_on = "",
+				  bool clustered = false);
 
     static string refresh_display_cmd();
     static string disable_display_cmd(IntArray& display_nrs);
@@ -319,10 +323,11 @@ public:
     static void new_display(string display_expression,
 			    BoxPoint *pos = 0,
 			    string depends_on = "",
+			    bool clustered = false,
 			    Widget origin = 0)
     {
-	gdb_command(new_display_cmd(display_expression, pos, depends_on), 
-		    origin);
+	gdb_command(new_display_cmd(display_expression, pos, 
+				    depends_on, clustered), origin);
     }
 
     static void refresh_display(Widget origin = 0)
@@ -430,7 +435,6 @@ private:
     static Time last_select_time;
     static int next_ddd_display_number;
     static int next_gdb_display_number;
-    static int current_cluster;
     static bool detect_aliases;
     static bool cluster_displays;
     static bool arg_needs_update;
@@ -485,8 +489,9 @@ private:
     static void reset_done(const string& answer, void *data);
 
     // Clustering stuff
-    static void insert_data_node(DispNode *dn, int depend_nr);
+    static void insert_data_node(DispNode *dn, int depend_nr, bool clustered);
     static int new_cluster();
+    static int current_cluster();
 
     static DispValue *update_hook(string& value);
 

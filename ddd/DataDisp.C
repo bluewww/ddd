@@ -315,8 +315,6 @@ bool DataDisp::arg_needs_update = false;
 int DataDisp::next_ddd_display_number = 1;
 int DataDisp::next_gdb_display_number = 1;
 
-int DataDisp::current_cluster = 0;
-
 XtIntervalId DataDisp::refresh_args_timer       = 0;
 XtIntervalId DataDisp::refresh_addr_timer       = 0;
 XtIntervalId DataDisp::refresh_graph_edit_timer = 0;
@@ -481,7 +479,7 @@ void DataDisp::dereferenceCB(Widget w, XtPointer client_data,
     else
 	depends_on = itostring(disp_node_arg->disp_nr());
 
-    new_display(display_expression, 0, depends_on, w);
+    new_display(display_expression, 0, depends_on, false, w);
 }
 
 void DataDisp::dereferenceArgCB(Widget w, XtPointer client_data, 
@@ -493,7 +491,8 @@ void DataDisp::dereferenceArgCB(Widget w, XtPointer client_data,
 	return;
     }
 
-    new_display(gdb->dereferenced_expr(source_arg->get_string()), 0, "", w);
+    new_display(gdb->dereferenced_expr(source_arg->get_string()), 
+		0, "", false, w);
 }
 
 void DataDisp::toggleDetailCB(Widget dialog,
@@ -991,7 +990,7 @@ void DataDisp::shortcutCB(Widget w, XtPointer client_data, XtPointer)
 
     expr.gsub("()", arg);
 
-    new_display(expr, 0, depends_on, w);
+    new_display(expr, 0, depends_on, false, w);
 }
 
 // Set shortcut menu to expressions EXPRS
@@ -1228,7 +1227,7 @@ void DataDisp::popup_new_argCB (Widget    display_dialog,
     set_last_origin(display_dialog);
 
     BoxPoint *p = (BoxPoint *) client_data;
-    new_display(source_arg->get_string(), p, "", display_dialog);
+    new_display(source_arg->get_string(), p, "", false, display_dialog);
 }
 
 
@@ -1264,6 +1263,7 @@ public:
     bool prompt;
     bool constant;
     DeferMode deferred;
+    bool clustered;
 
     NewDisplayInfo()
 	: display_expression(),
@@ -1278,7 +1278,8 @@ public:
 	  verbose(false),
 	  prompt(false),
 	  constant(false),
-	  deferred(DeferNever)
+	  deferred(DeferNever),
+	  clustered(false)
     {}
 
     ~NewDisplayInfo()
@@ -1298,7 +1299,8 @@ private:
 	  verbose(false),
 	  prompt(false),
 	  constant(false),
-	  deferred(DeferNever)
+	  deferred(DeferNever),
+	  clustered(false)
     {
 	assert(0);
     }
@@ -1323,7 +1325,8 @@ void DataDisp::new_displayDCB (Widget dialog, XtPointer client_data, XtPointer)
 
     if (expr != "")
     {
-	new_display(expr, info->point_ptr, info->depends_on, info->origin);
+	new_display(expr, info->point_ptr, info->depends_on, info->clustered,
+		    info->origin);
 
 	if (info->shortcut != 0 && XmToggleButtonGetState(info->shortcut))
 	{
@@ -1486,7 +1489,7 @@ void DataDisp::displayArgCB(Widget w, XtPointer client_data,
 	    depends_on = itostring(disp_node_arg->disp_nr());
     }
 
-    new_display(arg, 0, depends_on, w);
+    new_display(arg, 0, depends_on, false, w);
 }
 
 
@@ -2358,6 +2361,10 @@ bool DataDisp::get_state(ostream& os,
 
 	os << "graph display " << dn->name();
 
+	// Write cluster
+	if (dn->clustered())
+	    os << " clustered";
+
 	// Write position
 	if (include_position)
 	{
@@ -2691,8 +2698,8 @@ void DataDisp::again_new_displaySQ (XtPointer client_data, XtIntervalId *)
 {
     NewDisplayInfo *info = (NewDisplayInfo *)client_data;
     new_displaySQ(info->display_expression, info->scope, info->point_ptr, 
-		  info->depends_on, info->deferred, info->origin, 
-		  info->verbose, info->prompt);
+		  info->depends_on, info->deferred, info->clustered,
+		  info->origin, info->verbose, info->prompt);
     delete info;
 }
 
@@ -2720,7 +2727,8 @@ int DataDisp::display_number(const string& name, bool verbose)
 
 void DataDisp::new_displaySQ (string display_expression,
 			      string scope, BoxPoint *p,
-			      string depends_on, DeferMode deferred,
+			      string depends_on,
+			      DeferMode deferred, bool clustered,
 			      Widget origin, bool verbose, bool do_prompt)
 {
     // Check arguments
@@ -2737,6 +2745,8 @@ void DataDisp::new_displaySQ (string display_expression,
     info->verbose            = verbose;
     info->prompt             = do_prompt;
     info->deferred           = deferred;
+    info->clustered          = clustered;
+
     if (p != 0)
     {
 	info->point = *p;
@@ -2781,7 +2791,8 @@ void DataDisp::new_displaySQ (string display_expression,
     {
 	// Create deferred display now
 	DispNode *dn = new_deferred_node(display_expression, scope, 
-					 info->point, depends_on);
+					 info->point, depends_on, 
+					 info->clustered);
 
 	// Insert deferred node into graph
 	disp_graph->insert(dn->disp_nr(), dn);
@@ -2879,9 +2890,11 @@ void DataDisp::read_number_and_name(string& answer, string& nr, string& name)
 }
 
 string DataDisp::new_display_cmd(string display_expression, BoxPoint *p,
-				 string depends_on)
+				 string depends_on, bool clustered)
 {
     string cmd = "graph display " + display_expression;
+    if (clustered)
+	cmd += " clustered ";
     if (p != 0 && *p != BoxPoint())
 	cmd += " at (" + itostring((*p)[X]) + ", " + itostring((*p)[Y]) + ")";
     if (depends_on != "")
@@ -3217,7 +3230,8 @@ DispNode *DataDisp::new_user_node(const string& name,
 
 DispNode *DataDisp::new_deferred_node(const string& expr, const string& scope,
 				      const BoxPoint& pos,
-				      const string& depends_on)
+				      const string& depends_on,
+				      bool clustered)
 {
     // Assign a default number
     int nr = -(next_ddd_display_number++);
@@ -3231,6 +3245,8 @@ DispNode *DataDisp::new_deferred_node(const string& expr, const string& scope,
 
     DispNode *dn = new DispNode(nr, expr, scope, answer);
     dn->deferred() = true;
+    if (clustered)
+	dn->cluster(-1);
     dn->make_inactive();
     dn->depends_on() = depends_on;
     dn->moveTo(pos);
@@ -3273,7 +3289,8 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
 	    // Create deferred display now
 	    DispNode *dn = new_deferred_node(info->display_expression,
 					     info->scope,
-					     info->point, info->depends_on);
+					     info->point, info->depends_on,
+					     info->clustered);
 	    
 	    // Insert deferred node into graph
 	    disp_graph->insert(dn->disp_nr(), dn);
@@ -3310,7 +3327,8 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
 	{
 	    // Create deferred display now
 	    dn = new_deferred_node(info->display_expression, info->scope,
-				   info->point, info->depends_on);
+				   info->point, info->depends_on,
+				   info->clustered);
 	    
 	    // Insert deferred node into graph
 	    disp_graph->insert(dn->disp_nr(), dn);
@@ -3327,7 +3345,7 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
 
     // Insert node into graph
     int depend_nr = disp_graph->get_by_name(info->depends_on);
-    insert_data_node(dn, depend_nr);
+    insert_data_node(dn, depend_nr, info->clustered);
 
     // Determine position
     BoxPoint box_point = info->point;
@@ -3509,7 +3527,7 @@ void DataDisp::new_data_displaysOQAC (const StringArray& answers,
 		continue;
 
 	    // Insert into graph
-	    insert_data_node(dn, depend_nr);
+	    insert_data_node(dn, depend_nr, info->clustered);
 
 	    // Set position
 	    BoxPoint box_point = info->point;
@@ -3531,33 +3549,43 @@ void DataDisp::new_data_displaysOQAC (const StringArray& answers,
     delete info;
 }
 
-void DataDisp::insert_data_node(DispNode *dn, int depend_nr)
+// Insert DN into graph, possibly clustering it
+void DataDisp::insert_data_node(DispNode *dn, int depend_nr, bool clustered)
 {
     // Insert into graph
     disp_graph->insert(dn->disp_nr(), dn, depend_nr);
 
     // Check for clusters
-    if (!cluster_displays)
+    if (!clustered && !cluster_displays)
 	return;
     if (dn->is_user_command())
 	return;
     if (depend_nr != 0)
 	return;
 
-    if (current_cluster == 0 || disp_graph->get(current_cluster) == 0)
-    {
-	// No cluster -- create a new one
-	current_cluster = new_cluster();
-    }
-
     // Insert into current cluster
-    dn->cluster(current_cluster);
+    dn->cluster(current_cluster());
 }
 
+// Create a new cluster and return its number
 int DataDisp::new_cluster()
 {
     gdb_command("graph display `" CLUSTER_COMMAND "`", last_origin, 0);
     return -next_ddd_display_number;
+}
+
+// Return a cluster number; create a new cluster if necessary
+int DataDisp::current_cluster()
+{
+    // Use last cluster or create a new one
+    IntArray all_clusters;
+    get_all_clusters(all_clusters);
+    sort(all_clusters);
+
+    if (all_clusters.size() > 0)
+	return all_clusters[0];
+    else
+	return new_cluster();
 }
 
 
@@ -4338,7 +4366,7 @@ void DataDisp::process_info_display(string& info_display_answer,
 
 	    // Create new deferred node
 	    new_displaySQ(dn->name(), dn->scope(), &pos,
-			  depends_on, DeferIfNeeded, 0, false, false);
+			  depends_on, DeferIfNeeded, false, 0, false, false);
 	}
     }
 
@@ -4691,7 +4719,8 @@ void DataDisp::process_scope(const string& scope)
 	    assert(dn != 0 && dn->deferred());
 
 	    BoxPoint pos = dn->pos();
-	    Command c(new_display_cmd(dn->name(), &pos, dn->depends_on()));
+	    Command c(new_display_cmd(dn->name(), &pos, dn->depends_on(),
+				      dn->clustered()));
 	    c.verbose = false;
 	    c.prompt  = false;
 	    gdb_command(c);
@@ -5291,13 +5320,9 @@ void DataDisp::set_cluster_displays(bool value)
 
     if (cluster_displays)
     {
-	if (current_cluster == 0 || disp_graph->get(current_cluster) == 0)
-	{
-	    // No cluster -- create a new one
-	    current_cluster = new_cluster();
-	}
-
 	// Cluster all independent data displays
+	int target_cluster = current_cluster();
+
 	MapRef ref;
 	for (DispNode *dn = disp_graph->first(ref); 
 	     dn != 0; dn = disp_graph->next(ref))
@@ -5311,7 +5336,7 @@ void DataDisp::set_cluster_displays(bool value)
 	    if (dn->clustered())
 		continue;	// already clustered
 
-	    dn->cluster(current_cluster);
+	    dn->cluster(target_cluster);
 	}
 
 	refresh_builtin_user_displays();
@@ -5397,8 +5422,8 @@ void DataDisp::clusterSelectedCB(Widget, XtPointer, XtPointer)
 
     if (target_cluster == 0)
     {
-	// No target cluster selected - make a new current one
-	target_cluster = current_cluster = new_cluster();
+	// No target cluster selected - make a new one
+	target_cluster = new_cluster();
     }
 
     // Cluster all selected displays into the current one
