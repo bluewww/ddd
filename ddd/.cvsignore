@@ -21,6 +21,7 @@ ddd-2.1beta3-sparc-sun-sunos4.1.4
 ddd.man
 ddd.man.huff.C
 ddd.man.txt
+ddd.syms
 ddd.vsl.h
 eps-code.h
 header.str

@@ -832,7 +832,7 @@ ddd-message:
 .PHONY: ddd-done
 ddd-done: $(ddd)
 	@$(ECHO) "Building $(ddd_canonical)... done."
-	@$(ECHO) "You may now type \`make check' for a test."
+	@$(ECHO) "You may now type \`make check' for a test or \`make debug' for debugging DDD."
 
 .PHONY: install
 install: install-prog install-man
@@ -1073,8 +1073,15 @@ huffdecode.o: $(srcdir)/huffdecode.C ddd.man.huff.C
 
 
 ## For demonstration and debugging purposes
-check:	Ddd ddd cxxtest
+check: Ddd ddd cxxtest
 	XUSERFILESEARCHPATH=. XAPPLRESDIR=. ./ddd cxxtest
+
+debug: Ddd ddd cxxtest ddd.gdb ddd.syms
+	gdb -x $(srcdir)/ddd.gdb ./ddd
+
+ddd.syms: ddd
+	gdb -batch -nx -mapped -readnow ddd || touch ddd.syms
+
 
 
 ## Lex and Yacc stuff.
@@ -1334,9 +1341,11 @@ eps-code.h:     header.str trailer.str eps-code.x
 
 
 ## Configuration info stuff
-configinfo.C:   USERINFO Makefile config.h $(srcdir)/config-info
+configinfo.C:   USERINFO $(srcdir)/config-info
 		$(SHELL) $(srcdir)/config-info $(srcdir)/USERINFO USERINFO > $@
 		-$(CAT) $(srcdir)/USERINFO || $(CAT) USERINFO
+
+# configinfo.C:	Makefile config.h
 
 configinfo.o:	configinfo.C configinfo.h
 
