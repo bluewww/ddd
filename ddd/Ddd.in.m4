@@ -5939,8 +5939,8 @@ The printing has been cancelled.
 Ddd*tty_exec_error_popup.title: DDD: No Execution Window
 Ddd*tty_exec_error*helpString:	\
 @rm The terminal emulator for the execution window\n\
-could not be invoked.  The debugged process will execute in the\n\
-@GDB@ console instead.\n\
+could not be invoked.  The debugged process will\n\
+execute in the @GDB@ console instead.\n\
 \n\
 Please verify the contents of the\n\
 LBL(Edit, Preferences, Helpers, Execution Window)\n\
