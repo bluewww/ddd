@@ -652,6 +652,9 @@ LIBXM = @XM_LIBS@
 # Libtool has a bug and moves -Wl,xxx before any other link flags.
 # The following workaround should work:
 # LIBXM = -Wl,$(X_LDFLAGS) -Wl,-Bstatic -Wl,@XM_LIBS@ -Wl,-Bdynamic
+# Alternatively, just define (with the proper path)
+# LIBXM = /path/to/libXm.a
+# This can be done interactively: "make LIBXM=/path/to/libXm.a"
 
 # Athena libraries.  (-lXaw -lXmu)
 LIBXAW = @XAW_LIBS@
