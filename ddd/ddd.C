@@ -855,6 +855,7 @@ static MMDesc options_menu [] =
 static MMDesc data_menu[] = 
 {
     { "displays",   MMPush,    { DataDisp::EditDisplaysCB }},
+    { "infos",      MMPush,    { dddPopupInfosCB }},
     MMSep,
     { "align",      MMPush,    { graphAlignCB  }},
     { "rotate",     MMPush,    { graphRotateCB }},

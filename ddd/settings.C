@@ -200,7 +200,16 @@ static void SetNoNumCB(Widget, XtPointer client_data, XtPointer call_data)
     else
 	gdb_set_command((String)client_data, "1");
 }
-	
+
+// ToggleButton reply
+static void SetDisplayCB(Widget, XtPointer client_data, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *cbs = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    // FIXME...
+}
+
 // Update state of `reset' button
 static void update_reset_settings()
 {
@@ -719,12 +728,12 @@ static string get_dbx_doc(string dbxenv, string base)
     return dbx_doc;
 }
 
-static void add_settings(int& row, DebuggerType type, EntryType entry_filter,
-			 string gdb_class = "set");
+static void add_settings(Widget form, int& row, DebuggerType type, 
+			 EntryType entry_filter, string gdb_class = "set");
 
 // Add single button
-static void add_button(int& row, DebuggerType type, EntryType entry_filter,
-		       string line)
+static void add_button(Widget form, int& row, DebuggerType type,
+		       EntryType entry_filter, string line)
 {
     if (line == "")
 	return;
@@ -748,7 +757,7 @@ static void add_button(int& row, DebuggerType type, EntryType entry_filter,
 
 	    set_command  = line.before(" -- ");
 	    doc          = line.after(" -- ");
-	    base         = set_command.after("set ");
+	    base         = set_command.after(' ');
 	    if (base == "")
 		base = set_command;
 	    show_command = "show " + base;
@@ -759,36 +768,48 @@ static void add_button(int& row, DebuggerType type, EntryType entry_filter,
 	    if (base == "radix")
 		return; // Already handled in input- and output-radix
 
-	    is_set = doc.contains("Set ", 0);
-	    is_add = doc.contains("Add ", 0);
-
-	    if (!is_set && !is_add)
+	    if (entry_filter != DisplayToggleButtonEntry)
 	    {
-		// Generic command or `set variable' - list `set' subcommands
-		add_settings(row, type, entry_filter, set_command);
-		return;
-	    }
+		is_set = doc.contains("Set ", 0);
+		is_add = doc.contains("Add ", 0);
 
-	    value = cached_gdb_question(show_command);
-	    if (is_set && value.freq('\n') > 1)
+		if (!is_set && !is_add)
+		{
+		    // Generic command or `set variable' - list `set'
+		    // subcommands
+		    add_settings(form, row, type, entry_filter, set_command);
+		    return;
+		}
+
+		value = cached_gdb_question(show_command);
+		if (is_set && value.freq('\n') > 1)
+		{
+		    // Generic command - list `set' subcommands
+		    add_settings(form, row, type, entry_filter, set_command);
+		    return;
+		}
+
+		if (is_set && !value.contains(".\n", -1))
+		    return;
+
+		e_type = entry_type(type, base, doc, value);
+
+		if (is_set)
+		    doc = doc.after("Set ");
+		else if (is_add)
+		    doc = doc.after("Add ");
+
+		if (is_add && doc.contains("of "))
+		    doc = doc.after("of ");
+	    }
+	    else
 	    {
-		// Generic command - list `set' subcommands
-		add_settings(row, type, entry_filter, set_command);
-		return;
+		e_type = DisplayToggleButtonEntry;
+		strip_leading(doc, "Show ");
+		strip_leading(doc, "Print ");
+		strip_leading(doc, "out ");
+		strip_leading(doc, "the ");
 	    }
-
-	    if (is_set && !value.contains(".\n", -1))
-		return;
-
-	    e_type = entry_type(type, base, doc, value);
-
-	    if (is_set)
-		doc = doc.after("Set ");
-	    else if (is_add)
-		doc = doc.after("Add ");
-
-	    if (is_add && doc.contains("of "))
-		doc = doc.after("of ");
 	    munch_doc(doc);
 	}
         break;
@@ -878,6 +899,10 @@ static void add_button(int& row, DebuggerType type, EntryType entry_filter,
 	callback = SetNoNumCB;
 	break;
 
+    case DisplayToggleButtonEntry:
+	callback = SetDisplayCB;
+	break;
+
     default:
 	callback = 0;
 	break;
@@ -886,18 +911,16 @@ static void add_button(int& row, DebuggerType type, EntryType entry_filter,
     if (callback == 0)
     {
 	if (is_set)
-	    label = verify(XmCreateLabel(settings_form, base, args, arg));
+	    label = verify(XmCreateLabel(form, base, args, arg));
 	else
-	    label = verify(XmCreateLabel(settings_form, "the" + base, 
-					 args, arg));
+	    label = verify(XmCreateLabel(form, "the" + base, args, arg));
 
 	XtManageChild(label);
     }
     else
     {
 	entry = label = 
-	    verify(XmCreateToggleButton(settings_form, set_command, 
-					args, arg));
+	    verify(XmCreateToggleButton(form, set_command, args, arg));
 	XtManageChild(label);
 
 	XtAddCallback(entry, XmNvalueChangedCallback,
@@ -912,7 +935,7 @@ static void add_button(int& row, DebuggerType type, EntryType entry_filter,
     XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_POSITION);  arg++;
     XtSetArg(args[arg], XmNbottomPosition,   row + 1);            arg++;
     XtSetArg(args[arg], XmNalignment,        XmALIGNMENT_CENTER); arg++;
-    Widget help = verify(XmCreatePushButton(settings_form, "help", args, arg));
+    Widget help = verify(XmCreatePushButton(form, "help", args, arg));
     XtManageChild(help);
 
     // Add entry
@@ -923,6 +946,7 @@ static void add_button(int& row, DebuggerType type, EntryType entry_filter,
     case SensitiveToggleButtonEntry:
     case NumToggleButtonEntry:
     case NoNumToggleButtonEntry:
+    case DisplayToggleButtonEntry:
 	// All is done
 	break;
 
@@ -931,7 +955,7 @@ static void add_button(int& row, DebuggerType type, EntryType entry_filter,
 	    // `set check'
 	    arg = 0;
 	    Widget menu = 
-		verify(XmCreatePulldownMenu(settings_form, "menu", args, arg));
+		verify(XmCreatePulldownMenu(form, "menu", args, arg));
 
 	    // Possible options are contained in the help string
 	    string options = cached_gdb_question("help " + set_command);
@@ -963,8 +987,7 @@ static void add_button(int& row, DebuggerType type, EntryType entry_filter,
 	    XtSetArg(args[arg], XmNmarginHeight,     0);                 arg++;
 	    XtSetArg(args[arg], XmNspacing,          0);                 arg++;
 	    XtSetArg(args[arg], XmNsubMenuId,        menu);              arg++;
-	    entry = verify(XmCreateOptionMenu(settings_form, 
-					      set_command, args, arg));
+	    entry = verify(XmCreateOptionMenu(form, set_command, args, arg));
 	    XtManageChild(entry);
 	}
 	break;
@@ -974,7 +997,7 @@ static void add_button(int& row, DebuggerType type, EntryType entry_filter,
 	    // `set language / set demangle'
 	    arg = 0;
 	    Widget menu = 
-		verify(XmCreatePulldownMenu(settings_form, "menu", args, arg));
+		verify(XmCreatePulldownMenu(form, "menu", args, arg));
 
 	    // Possible options are listed upon `set language'
 	    // without value
@@ -1014,6 +1037,9 @@ static void add_button(int& row, DebuggerType type, EntryType entry_filter,
 		read_leading_blanks(options);
 		strip_final_blanks(options);
 
+		if (options == "" || options.contains(':', -1))
+		    continue;
+
 		string label = option;
 		if (gdb->type() == GDB && option.contains("  "))
 		{
@@ -1052,7 +1078,7 @@ static void add_button(int& row, DebuggerType type, EntryType entry_filter,
 	    XtSetArg(args[arg], XmNspacing,          0);                 arg++;
 	    XtSetArg(args[arg], XmNsubMenuId,        menu);              arg++;
 	    entry = 
-		verify(XmCreateOptionMenu(settings_form, 
+		verify(XmCreateOptionMenu(form, 
 					  set_command, args, arg));
 	    XtManageChild(entry);
 	}
@@ -1065,8 +1091,7 @@ static void add_button(int& row, DebuggerType type, EntryType entry_filter,
 	XtSetArg(args[arg], XmNrightWidget,      help);              arg++;
 	XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_POSITION); arg++;
 	XtSetArg(args[arg], XmNbottomPosition,   row + 1);           arg++;
-	entry = 
-	    verify(XmCreateTextField(settings_form, set_command, args, arg));
+	entry = verify(XmCreateTextField(form, set_command, args, arg));
 	XtManageChild(entry);
 	XtAddCallback(entry, XmNactivateCallback, 
 		      SetTextCB, XtPointer(set_command_s));
@@ -1085,33 +1110,39 @@ static void add_button(int& row, DebuggerType type, EntryType entry_filter,
     XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_POSITION); arg++;
     XtSetArg(args[arg], XmNbottomPosition,   row + 1);           arg++;
     Widget leader = 
-	verify(XmCreateSeparator(settings_form, "leader", args, arg));
+	verify(XmCreateSeparator(form, "leader", args, arg));
     XtManageChild(leader);
 
-    // Make entry insensitive if part of initialization commands.
-    string init = app_data.gdb_initial_cmds;
-    int idx = init.index(set_command);
-    if (idx == 0 || idx > 0 && init[idx - 1] == '\n')
-    {
-	XtSetSensitive(entry,  False);
-	XtSetSensitive(label,  False);
-	XtSetSensitive(leader, False);
-    }
-
-    // Initialize button
-    process_show(show_command, value, true);
-
+    // Add help callback
     XtAddCallback(help, XmNactivateCallback, 
 		  HelpOnThisCB, XtPointer(entry));
-    entries     += entry;
-    entry_types += e_type;
+
+    if (e_type != DisplayToggleButtonEntry)
+    {
+	// Make entry insensitive if part of initialization commands.
+	string init = app_data.gdb_initial_cmds;
+	int idx = init.index(set_command);
+	if (idx == 0 || idx > 0 && init[idx - 1] == '\n')
+	{
+	    XtSetSensitive(entry,  False);
+	    XtSetSensitive(label,  False);
+	    XtSetSensitive(leader, False);
+	}
+
+	// Initialize button
+	process_show(show_command, value, true);
+
+	// Register entry
+	entries     += entry;
+	entry_types += e_type;
+    }
 
     row++;
 }
 
 
 // Add buttons
-static void add_settings(int& row, DebuggerType type,
+static void add_settings(Widget form, int& row, DebuggerType type,
 			 EntryType entry_filter, string gdb_class)
 {
     string commands;
@@ -1136,13 +1167,13 @@ static void add_settings(int& row, DebuggerType type,
     while (commands != "")
     {
 	string line = commands.before('\n');
-	commands = commands.after('\n');
-	add_button(row, type, entry_filter, line);
+	commands    = commands.after('\n');
+	add_button(form, row, type, entry_filter, line);
     }
 }
 
 // Add separator
-static void add_separator(int& row)
+static void add_separator(Widget form, int& row)
 {
     Arg args[10];
     int arg = 0;
@@ -1150,7 +1181,7 @@ static void add_separator(int& row)
     XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_FORM);     arg++;
     XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_POSITION); arg++;
     XtSetArg(args[arg], XmNbottomPosition,   row + 1);           arg++;
-    Widget sep = verify(XmCreateSeparator(settings_form, "sep", args, arg));
+    Widget sep = verify(XmCreateSeparator(form, "sep", args, arg));
     XtManageChild(sep);
     row++;
 }
@@ -1179,36 +1210,40 @@ static string get_help_line(string command, DebuggerType type)
     return reply;
 }
 
-// Create settings editor
-static Widget create_settings(DebuggerType type)
+// Create settings or infos editor
+static Widget create_panel(DebuggerType type, bool create_settings)
 {
-    static Widget settings = 0;
-    if (settings != 0 || !gdb->isReadyWithPrompt() || gdb->type() != type)
-	return settings;
-
-    StatusDelay delay("Retrieving debugger settings");
+    StatusDelay delay(create_settings ? "Retrieving debugger settings" 
+		      : "Retrieving info commands");
 
     Arg args[10];
     int arg;
 
     arg = 0;
-    settings = verify(XmCreatePromptDialog(find_shell(), "settings", 
-					   args, arg));
-    Delay::register_shell(settings);
+    Widget panel = verify(XmCreatePromptDialog(find_shell(), 
+					       create_settings ? 
+					       "settings" : "infos", 
+					       args, arg));
+    Delay::register_shell(panel);
 
-    // Remove old prompt and cancel button
-    XtUnmanageChild(XmSelectionBoxGetChild(settings, XmDIALOG_TEXT));
-    XtUnmanageChild(XmSelectionBoxGetChild(settings, 
-    				       XmDIALOG_SELECTION_LABEL));
-    XtAddCallback(settings, XmNhelpCallback, ImmediateHelpCB, 0);
-    XtAddCallback(settings, XmNokCallback, UnmanageThisCB, 
-    	      XtPointer(settings));
+    // Remove old prompt
+    XtUnmanageChild(XmSelectionBoxGetChild(panel, XmDIALOG_TEXT));
+    XtUnmanageChild(XmSelectionBoxGetChild(panel, XmDIALOG_SELECTION_LABEL));
+    XtAddCallback(panel, XmNhelpCallback, ImmediateHelpCB, 0);
+    XtAddCallback(panel, XmNokCallback, UnmanageThisCB, 
+    	      XtPointer(panel));
 
-    reset_settings = 
-        XmSelectionBoxGetChild(settings, XmDIALOG_CANCEL_BUTTON);
-    XtRemoveAllCallbacks(reset_settings, XmNactivateCallback);
-    XtAddCallback(reset_settings, XmNactivateCallback, ResetSettingsCB, 0);
-    XtVaSetValues(settings, XmNdefaultButton, Widget(0), NULL);
+    Widget cancel = XmSelectionBoxGetChild(panel, XmDIALOG_CANCEL_BUTTON);
+    if (create_settings)
+    {
+	XtRemoveAllCallbacks(cancel, XmNactivateCallback);
+	XtAddCallback(cancel, XmNactivateCallback, ResetSettingsCB, 0);
+	XtVaSetValues(panel, XmNdefaultButton, Widget(0), NULL);
+    }
+    else
+    {
+	XtUnmanageChild(cancel);
+    }
 
     // Add a rowcolumn widget
     arg = 0;
@@ -1217,7 +1252,7 @@ static Widget create_settings(DebuggerType type)
     XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
     XtSetArg(args[arg], XmNspacing,      0); arg++;
     Widget column =
-        verify(XmCreateRowColumn(settings, "column", args, arg));
+        verify(XmCreateRowColumn(panel, "column", args, arg));
     XtManageChild(column);
 
     // Add a label
@@ -1233,56 +1268,95 @@ static Widget create_settings(DebuggerType type)
 
     // ...and a form.
     arg = 0;
-    settings_form = verify(XmCreateForm(scroll, "form", args, arg));
+    Widget form = verify(XmCreateForm(scroll, "form", args, arg));
+
+    if (create_settings)
+    {
+	settings_form  = form;
+    }
 
     // Add setting buttons to the button box.
     int row = 0;
     int last_row = row;
-    add_settings(row, type, OnOffToggleButtonEntry);
-    add_settings(row, type, TrueFalseToggleButtonEntry);
-    add_settings(row, type, SensitiveToggleButtonEntry);
-    add_settings(row, type, NumToggleButtonEntry);
-    add_settings(row, type, NoNumToggleButtonEntry);
 
-    if (row != last_row)
-	add_separator(row);
-
-    last_row = row;
-    add_settings(row, type, OtherOptionMenuEntry);
-
-    if (row != last_row)
-	add_separator(row);
-
-    last_row = row;
-    add_settings(row, type, CheckOptionMenuEntry);
-
-    if (row != last_row)
-	add_separator(row);
-
-    if (type == GDB)
+    if (create_settings)
     {
-	last_row = row;
-	add_button(row, type, TextFieldEntry, get_help_line("dir", type));
-	add_button(row, type, TextFieldEntry, get_help_line("path", type));
-	if (row != last_row)
-	    add_separator(row);
-    }
+	add_settings(form, row, type, OnOffToggleButtonEntry);
+	add_settings(form, row, type, TrueFalseToggleButtonEntry);
+	add_settings(form, row, type, SensitiveToggleButtonEntry);
+	add_settings(form, row, type, NumToggleButtonEntry);
+	add_settings(form, row, type, NoNumToggleButtonEntry);
 
-    add_settings(row, type, TextFieldEntry);
+	if (row != last_row)
+	    add_separator(form, row);
+
+	last_row = row;
+	add_settings(form, row, type, OtherOptionMenuEntry);
+
+	if (row != last_row)
+	    add_separator(form, row);
+
+	last_row = row;
+	add_settings(form, row, type, CheckOptionMenuEntry);
+
+	if (row != last_row)
+	    add_separator(form, row);
+
+	if (type == GDB)
+	{
+	    last_row = row;
+	    add_button(form, row, type, TextFieldEntry, 
+		       get_help_line("dir", type));
+	    add_button(form, row, type, TextFieldEntry, 
+		       get_help_line("path", type));
+	    if (row != last_row)
+		add_separator(form, row);
+	}
+
+	add_settings(form, row, type, TextFieldEntry);
+    }
+    else
+    {
+	add_settings(form, row, type, DisplayToggleButtonEntry, "info");
+    }
 
     // Clean up cached documentation stuff
     clear_gdb_question_cache();
 
     // Setup values
-    update_reset_settings();
+    if (create_settings)
+    {
+	reset_settings = cancel;
+	update_reset_settings();
+    }
 
     if (row > 0)
-	XtVaSetValues(settings_form, XmNfractionBase, row, NULL);
-    XtManageChild(settings_form);
+	XtVaSetValues(form, XmNfractionBase, row, NULL);
+    XtManageChild(form);
     XtManageChild(scroll);
 
+    return panel;
+}
+
+
+// Create settings editor
+static Widget create_settings(DebuggerType type)
+{
+    static Widget settings = 0;
+    if (settings == 0 && gdb->isReadyWithPrompt() && gdb->type() == type)
+	settings = create_panel(type, true);
     return settings;
 }
+
+// Create infos editor
+static Widget create_infos(DebuggerType type)
+{
+    static Widget infos = 0;
+    if (infos == 0 && gdb->isReadyWithPrompt() && gdb->type() == type)
+	infos = create_panel(type, false);
+    return infos;
+}
+
 
 // Popup editor for debugger settings
 void dddPopupSettingsCB (Widget, XtPointer, XtPointer)
@@ -1294,6 +1368,18 @@ void dddPopupSettingsCB (Widget, XtPointer, XtPointer)
     XtManageChild(settings);
     raise_shell(settings);
 }
+
+// Popup editor for debugger infos
+void dddPopupInfosCB (Widget, XtPointer, XtPointer)
+{
+    Widget infos = create_infos(gdb->type());
+    if (infos == 0)
+	return;
+
+    XtManageChild(infos);
+    raise_shell(infos);
+}
+
 
 // Fetch GDB settings string
 string get_settings(DebuggerType type)

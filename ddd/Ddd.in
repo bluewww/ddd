@@ -2031,6 +2031,8 @@ Ddd*menubar.data*helpString:	\
 @rm This is the @sl Data menu@rm.\n\
 \n\
 @tt \267 @bf Edit Displays... @rm - select, enable and delete displays.\n\
+@tt \267 @bf Info Displays... @rm - create displays that show things about \
+the program being debugged.\n\
 \n\
 @tt \267 @bf Align Displays @rm - align all displays on the next grid point.\n\
 @tt \267 @bf Rotate Graph @rm - rotate the graph clockwise by 90 degrees.\n\
@@ -2043,6 +2045,11 @@ Ddd*dataMenu.displays.labelString:	Edit Displays...
 Ddd*dataMenu.displays.mnemonic:		E
 Ddd*dataMenu.displays.documentationString: \
 @rm Select, enable and delete displays
+
+Ddd*dataMenu.infos.labelString:		Info Displays...
+Ddd*dataMenu.infos.mnemonic:		I
+Ddd*dataMenu.infos.documentationString: \
+@rm Create displays that show things about the program being debugged
 
 Ddd*dataMenu.align.labelString:		Align Displays
 Ddd*dataMenu.align.mnemonic:		A
@@ -2456,6 +2463,43 @@ Click on @bf ? @rm near an item to get further information.\n\
 In a text field, press the @key RETURN @rm key to commit the changes.\n\
 \n\
 Click on @bf Reset @rm to restore the saved settings.\n\
+Click on @bf Close @rm to close this window.
+
+
+!-----------------------------------------------------------------------------
+! Info displays
+!-----------------------------------------------------------------------------
+
+Ddd*infos_popup*okLabelString: Close
+Ddd*infos_popup*cancelLabelString: Reset
+Ddd*infos_popup.title: @DDD@: Info Displays
+Ddd*infos_popup.autoUnmanage: false
+
+Ddd*infos*title.labelString:			Info Displays
+Ddd*infos*scroll.scrollingPolicy:		XmAUTOMATIC
+Ddd*infos*scroll.height:			293
+Ddd*infos*scroll.width:				528
+Ddd*infos*form.width:				500
+Ddd*infos*help.labelString:			?
+Ddd*infos*sep.bottomOffset:			10
+Ddd*infos*leader.bottomOffset:			4
+Ddd*infos*leader.separatorType:			XmSINGLE_DASHED_LINE
+
+Ddd*infos*help.tipString:\
+@rm Get help on this info display
+
+! An empty help string means that the help text for this command
+! is to be requested from GDB (via the GDB `help' command).
+Ddd*infos*scroll*helpString:
+
+! The panel itself has a help button, too.
+Ddd*infos*helpString: \
+@rm This is the list of @sl info displays@rm.\n\
+\n\
+An @sl info display @rm shows things about the program being debugged\n\
+in the data window.  Please pick your choice from the list.\n\
+\n\
+Click on @bf ? @rm near an item to get further information.\n\
 Click on @bf Close @rm to close this window.
 
 

@@ -40,6 +40,9 @@
 // Popup editor for debugger settings
 void dddPopupSettingsCB (Widget, XtPointer, XtPointer);
 
+// Popup editor for debugger infos
+void dddPopupInfosCB (Widget, XtPointer, XtPointer);
+
 // Process `show' output
 void process_show(string command, string value, bool init = false);
 

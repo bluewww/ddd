@@ -219,7 +219,7 @@ static MString gdbDefaultHelpText(Widget widget)
 	    "Please try again when the debugger is ready.";
     }
 
-    return MString(name + "\n", "bf") +	MString(help, "rm");
+    return MString(name, "bf") + MString("\n" + help, "rm");
 }
 
 
