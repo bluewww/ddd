@@ -41,8 +41,6 @@ Volunteers for these and other projects are welcome!
     [1] Of course, as long as DDD produces only one executable, you could
     ddd/ddd instead.
 
-034 Call for bug report if a fatal X error occurs.
-
 037 Group dereference.  If multiple pointers are selected,
      dereference them all.
 
@@ -273,8 +271,6 @@ Volunteers for these and other projects are welcome!
 
 179 Add `libgdb' as an alternate communication method.
 
-181 If the DDD WWW page server is down, try a mirror site.
-
 183 Have a way to re-dereference until no more changes occur.
 
 187 Have a `commands' menu listing up all debugger commands.  Could
@@ -322,11 +318,6 @@ Volunteers for these and other projects are welcome!
     instead of a mailing list.  [This should be done when there are
     more than 1000 subscribers, or when the number of messages/day is
     greater than 50.]
-
-229 Is it not possible to prevent ddd to put up ANY windows until you
-    say you want one. ddd insists on putting up a source window even
-    if I run it from within xemacs, I've manually hided it with the
-    window manager, but still...  [Try `-iconic'  -AZ]
 
 232 Have an `infinite' assembler window that extends in both
     directions as needed.
