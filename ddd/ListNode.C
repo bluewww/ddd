@@ -357,21 +357,6 @@ string ListNode::firstName() const
     return s != "" ? s : tail()->firstName();
 }
 
-// Quantoren
-bool ListNode::exists(VSLNodeFunc func)
-{
-    return VSLNode::exists(func) ||
-	head()->exists(func) ||
-	tail()->exists(func);
-}
-
-bool ListNode::forAll(VSLNodeFunc func)
-{
-    return VSLNode::forAll(func) &&
-	head()->forAll(func) &&
-	tail()->forAll(func);
-}
-
 
 // foldConsts: Funktionen mit konstanten Argumenten sofort auswerten
 // Etwa: f(2 + 2) durch f(4) ersetzen.

@@ -160,17 +160,6 @@ string CallNode::firstName() const
 }
 
 
-// Quantoren
-bool CallNode::exists(VSLNodeFunc func)
-{
-    return VSLNode::exists(func) || arg()->exists(func);
-}
-
-bool CallNode::forAll(VSLNodeFunc func)
-{
-    return VSLNode::forAll(func) && arg()->forAll(func);
-}
-
 
 // Konstanten zusammenziehen
 int CallNode::foldConsts(VSLDef *cdef, VSLNode **node)

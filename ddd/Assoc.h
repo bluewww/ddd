@@ -56,12 +56,6 @@ public:
     AssocRec(const K& k):
 	next(0), key(k)
     {}
-
-    ~AssocRec()
-    {
-	if (next)
-	    delete next;
-    }
 };
 
 template<class K, class V>
@@ -96,8 +90,12 @@ public:
     // Destructor
     virtual ~_Assoc()
     {
-        if (entries)
-	    delete entries;
+	AssocRec<K,V> *next;
+	for (AssocRec<K,V> *e = entries; e != 0; e = next)
+	{
+	    next = e->next;
+	    delete e;
+	}
     }
 
     // Resources
@@ -236,6 +234,14 @@ public:
 
     bool ok() { return rec != 0; }
     AssocIter next() { return AssocIter(rec->next); }
+    void operator ++ ()
+    {
+	rec = rec->next;
+    }
+    void operator ++ (int dummy)
+    {
+	rec = rec->next;
+    }
 };
 
 

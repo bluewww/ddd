@@ -75,8 +75,6 @@ extern "C" {
 extern GDBAgent* gdb;
 extern ArgField* source_arg;
 
-template class Map<int, string>;
-
 //-----------------------------------------------------------------------------
 class DataDisp {
 

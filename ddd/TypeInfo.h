@@ -41,11 +41,19 @@
     static BaseList _type_info_all_bases; \
     static const TypeInfo *_type_info_direct_bases[];
 
+#ifdef __GNUG__
 #define _DEFINE_TYPE_INFO(T) \
     TypeInfo T::type_info = \
         { #T, T::_type_info_direct_bases, &T::_type_info_all_bases }; \
     BaseList T::_type_info_all_bases = 0; \
     const TypeInfo *T::_type_info_direct_bases[] = 
+#else
+#define _DEFINE_TYPE_INFO(T) \
+    TypeInfo T::type_info(#T, T::_type_info_direct_bases, \
+                          &T::_type_info_all_bases); \
+    BaseList T::_type_info_all_bases = 0; \
+    const TypeInfo *T::_type_info_direct_bases[] = 
+#endif
 
 #define DEFINE_TYPE_INFO_0(T) \
     _DEFINE_TYPE_INFO(T) { 0 };
@@ -148,6 +156,12 @@ protected:
     void makehash();
 
 public:
+    // Construction
+    TypeInfo(char *name, BaseList direct_bases, BaseList *all_bases):
+	_name(name), _direct_bases(direct_bases), _all_bases(all_bases),
+	_hash(0)
+    {}
+     
     // Debugging
     // We cannot use a bool here, since it may be initialized to late
     static int debug;

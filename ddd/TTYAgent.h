@@ -34,6 +34,8 @@
 #include "LiterateA.h"
 #include <unistd.h>
 
+const unsigned TTYAgent_NTypes = LiterateAgent_NTypes;
+
 class TTYAgent: public LiterateAgent {
 public:
     DECLARE_TYPE_INFO
@@ -51,28 +53,27 @@ protected:
     // hooks for alternative communication schemes
     virtual int setupCommunication();
     virtual int setupChildCommunication();
-    virtual int setupParentCommunication(FILE *& _inputfp,
-					 FILE *& _outputfp,
-					 FILE *& _errorfp);
+    virtual int setupParentCommunication();
 
 public:
     // Constructors
     TTYAgent(XtAppContext app_context, char *pth,
-         unsigned nTypes = NTypes):
+	     unsigned nTypes = TTYAgent_NTypes):
         LiterateAgent(app_context, pth, nTypes),
 	master(-1),
 	push(false)
     {}
 
     TTYAgent(XtAppContext app_context, FILE *in = stdin,
-        FILE *out = stdout, FILE *err = 0, unsigned nTypes = NTypes):
+	     FILE *out = stdout, FILE *err = 0, 
+	     unsigned nTypes = TTYAgent_NTypes):
         LiterateAgent(app_context, in, out, err, nTypes),
 	master(-1),
 	push(false)
     {}
 
     TTYAgent(XtAppContext app_context, bool dummy,
-        unsigned nTypes = NTypes):
+	     unsigned nTypes = TTYAgent_NTypes):
         LiterateAgent(app_context, dummy, nTypes),
 	master(-1),
 	push(false)

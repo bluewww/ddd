@@ -165,7 +165,7 @@ void Agent::startChildProcess()
 	return;
     }
 
-    if (setupParentCommunication(_inputfp, _outputfp, _errorfp))
+    if (setupParentCommunication())
     {
 	raiseMsg("parent communication setup failed");
 	return;
@@ -225,9 +225,7 @@ int Agent::setupChildCommunication()
 }
 
 // Setup parent communication
-int Agent::setupParentCommunication(FILE *& _inputfp,
-				    FILE *& _outputfp,
-				    FILE *& _errorfp)
+int Agent::setupParentCommunication()
 {
     // I am the parent: close unused pipe ends
     close(to_child[READ]);
@@ -235,7 +233,7 @@ int Agent::setupParentCommunication(FILE *& _inputfp,
     close(to_parent_error[WRITE]);
 
     // access remaining pipe ends via stream I/O
-    // using _errorfp, _inputfp and _outputfp...
+    // using error, in and out...
     _errorfp = fdopen(to_parent_error[READ], "r");
     if (errorfp() == NULL)
     {

@@ -109,10 +109,6 @@ public:
     int _resolveNames(VSLDef *cdef, unsigned base);
     string firstName() const;
 
-    // Quantoren
-    bool exists(VSLNodeFunc func);
-    bool forAll(VSLNodeFunc func);
-
     // Liste anhaengen
     int append(VSLNode *node);
 

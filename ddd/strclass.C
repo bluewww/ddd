@@ -44,6 +44,7 @@ extern "C" int malloc_verify();
 #include <ctype.h>
 #include <limits.h>
 #include <new.h>
+#include <stdlib.h>
 
 #ifdef HAVE_LIMITS_H
 #include <limits.h>
@@ -58,6 +59,11 @@ void string::error(const char* msg) const
 string::operator const char*() const
 { 
     return (const char *)chars();
+}
+
+string::operator char*() const
+{ 
+    return (char *)chars();
 }
 
 //  globals
@@ -1205,7 +1211,7 @@ string common_prefix(const string& x, const string& y, int startpos)
     const char* ys = &(ychars[startpos]);
     const char* topy = &(ychars[y.length()]);
     for (int l = 0; xs < topx && ys < topy && *xs++ == *ys++; ++l);
-    r.rep = Salloc(r.rep, ss, l, l);
+    r.rep = string_Salloc(r.rep, ss, l, l);
     return r;
 }
 
@@ -1219,7 +1225,7 @@ string common_suffix(const string& x, const string& y, int startpos)
     const char* ys = &(ychars[y.length() + startpos]);
     const char* boty = ychars;
     for (int l = 0; xs >= botx && ys >= boty && *xs == *ys ; --xs, --ys, ++l);
-    r.rep = Salloc(r.rep, ++xs, l, l);
+    r.rep = string_Salloc(r.rep, ++xs, l, l);
     return r;
 }
 
@@ -1294,7 +1300,7 @@ int readline(istream& s, string& x, char terminator, int discard)
     }
     x.rep->s[i] = 0;
     x.rep->len = i;
-    if (ch == EOF) s.set(ios::eofbit);
+    if (ch == EOF) s.clear(s.rdstate() | ios::eofbit);
     return i;
 }
 

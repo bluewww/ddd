@@ -154,9 +154,9 @@ string GDBAgent::default_prompt() const
     
 
 // ***************************************************************************
-void GDBAgent::start (OAProc  on_answer,
-		      OACProc on_answer_completion,
-		      void*   user_data)
+void GDBAgent::do_start (OAProc  on_answer,
+			 OACProc on_answer_completion,
+			 void*   user_data)
 {
     assert (state == BusyOnInitialCmds);
 
@@ -184,7 +184,7 @@ void GDBAgent::start_plus (OAProc   on_answer,
 	    (cmds, qu_datas, qu_count, on_qu_array_completion, qa_data);
     }
 
-    start(on_answer, on_answer_completion, user_data);
+    do_start(on_answer, on_answer_completion, user_data);
 }
 
 

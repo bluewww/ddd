@@ -89,28 +89,29 @@ struct AsyncAgentWorkProc {
     {}
 };
 
+// Events
+const unsigned AsyncAgent_NTypes = Agent_NTypes;
+
+// Handlers
+const unsigned OutputReady     = 0;	// agent is ready for data
+const unsigned InputReady      = 1;	// data from agent's stdout is ready
+const unsigned ErrorReady      = 2;	// data from agent's stdin is ready
+const unsigned OutputException = 3;	// I/O error on output
+const unsigned InputException  = 4;	// I/O error on input
+const unsigned ErrorException  = 5;	// I/O error on error
+
+const unsigned AsyncAgent_NHandlers = 6; // number of handler types
+
 class AsyncAgent: public Agent {
 public:
     DECLARE_TYPE_INFO
 
-    const unsigned NTypes = Agent::NTypes; // number of events
-
-protected:
-    // Handlers
-    const unsigned OutputReady     = 0;	// agent is ready for data
-    const unsigned InputReady      = 1;	// data from agent's stdout is ready
-    const unsigned ErrorReady      = 2;	// data from agent's stdin is ready
-    const unsigned OutputException = 3;	// I/O error on output
-    const unsigned InputException  = 4;	// I/O error on input
-    const unsigned ErrorException  = 5;	// I/O error on error
-
 private:
-    const unsigned NHandlers   = 6;     // number of handler types
 
     XtAppContext _appContext;		// the application context
 
-    AsyncAgentHandler _handlers[NHandlers]; // handlers
-    XtInputId _ids[NHandlers];		// their ids
+    AsyncAgentHandler _handlers[AsyncAgent_NHandlers]; // handlers
+    XtInputId _ids[AsyncAgent_NHandlers];	       // their ids
 
     AsyncAgentWorkProc *workProcs;	// working procedures
 
@@ -144,13 +145,13 @@ protected:
     // resources
     XtInputId id(unsigned type)
     {
-	assert(type < NHandlers);
+	assert(type < AsyncAgent_NHandlers);
 	return _ids[type]; 
     }
 
     AsyncAgentHandler handler(unsigned type)
     {
-	assert(type < NHandlers);
+	assert(type < AsyncAgent_NHandlers);
 	return _handlers[type];
     }
 
@@ -176,7 +177,8 @@ private:
 
 public:
     // Constructors
-    AsyncAgent(XtAppContext app_context, char *pth, unsigned nTypes = NTypes):
+    AsyncAgent(XtAppContext app_context, char *pth, 
+	       unsigned nTypes = AsyncAgent_NTypes):
 	Agent(pth, nTypes), _appContext(app_context), workProcs(0)
     {
 	initHandlers();
@@ -184,14 +186,14 @@ public:
     }
 
     AsyncAgent(XtAppContext app_context, FILE *in = stdin, FILE *out = stdout,
-	FILE *err = 0, unsigned nTypes = NTypes):
+	FILE *err = 0, unsigned nTypes = AsyncAgent_NTypes):
 	Agent(in, out, err, nTypes), _appContext(app_context), workProcs(0)
     {
 	initHandlers();
     }
 
     AsyncAgent(XtAppContext app_context, bool dummy,
-	unsigned nTypes = NTypes):
+	unsigned nTypes = AsyncAgent_NTypes):
 	Agent(dummy, nTypes), _appContext(app_context), workProcs(0)
     {
 	initHandlers();

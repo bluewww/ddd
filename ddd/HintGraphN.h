@@ -62,7 +62,8 @@ public:
 	static BoxRegion r;
 
 	// return a size-pixel area around the current position
-	return r = BoxRegion(pos() - gc.hintSize / 2, gc.hintSize);
+	r = BoxRegion(pos() - gc.hintSize / 2, gc.hintSize);
+	return r;
     }
 };
 

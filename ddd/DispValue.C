@@ -453,7 +453,8 @@ bool DispValue::new_BaseClass_name (string name)
 
 
 // ***************************************************************************
-void DispValue::update (string& value, bool& changed, bool& inited)
+void DispValue::update (string& value, 
+			bool& was_changed, bool& was_initialized)
 {
     string init_value = value;
 
@@ -478,7 +479,7 @@ void DispValue::update (string& value, bool& changed, bool& inited)
 	value = init_value;
 	clear();
 	init(value);
-	inited = changed = true;
+	was_initialized = was_changed = true;
 	return;
     }
 
@@ -487,7 +488,7 @@ void DispValue::update (string& value, bool& changed, bool& inited)
 	new_value = read_simple_value (value);
 	if (v.simple->value != new_value) {
 	    v.simple->value = new_value;
-	    changed = true;
+	    was_changed = true;
 	}
 	break;
 
@@ -495,7 +496,7 @@ void DispValue::update (string& value, bool& changed, bool& inited)
 	new_value = read_pointer_value (value);
 	if (v.pointer->value != new_value) {
 	    v.pointer->value = new_value;
-	    changed = true;
+	    was_changed = true;
 	}
 	break;
 
@@ -507,22 +508,24 @@ void DispValue::update (string& value, bool& changed, bool& inited)
 	string vtable_entries = read_vtable_entries(value);
 	if (vtable_entries != "")
 	{
-	    v.array->members[i++]->update(vtable_entries, changed, inited);
-	    if (inited)
+	    v.array->members[i++]->update(vtable_entries, 
+					  was_changed, was_initialized);
+	    if (was_initialized)
 		break;
 	}
 
-	if (!inited)
+	if (!was_initialized)
 	{
 	    for (; more_values && i < v.array->member_count; i++) {
-		v.array->members[i]->update(value, changed, inited);
-		if (inited)
+		v.array->members[i]->update(value, 
+					    was_changed, was_initialized);
+		if (was_initialized)
 		    break;
 		more_values = read_array_next (value);
 	    }
 	}
 
-	if (inited || i != v.array->member_count)
+	if (was_initialized || i != v.array->member_count)
 	{
 #if LOG_UPDATE_VALUES
 	    clog << "Array changed\n";
@@ -533,7 +536,7 @@ void DispValue::update (string& value, bool& changed, bool& inited)
 	    value = init_value;
 	    clear();
 	    init(value);
-	    inited = changed = true;
+	    was_initialized = was_changed = true;
 	    return;
 	}
 	read_array_end (value);
@@ -548,9 +551,10 @@ void DispValue::update (string& value, bool& changed, bool& inited)
 	    
 	    if (is_BaseClass_name (member_name)) {
 		if ( v.str_or_cl->members[i]->new_BaseClass_name (member_name))
-		    changed = true;
-		v.str_or_cl->members[i]->update(value, changed, inited);
-		if (inited)
+		    was_changed = true;
+		v.str_or_cl->members[i]->update(value, 
+						was_changed, was_initialized);
+		if (was_initialized)
 		    break;
 		if (!read_str_or_cl_next (value))
 		    break;
@@ -560,13 +564,14 @@ void DispValue::update (string& value, bool& changed, bool& inited)
 		if (member_name != v.str_or_cl->members[i]->name())
 		    break;
 
-		v.str_or_cl->members[i]->update(value, changed, inited);
-		if (inited)
+		v.str_or_cl->members[i]->update(value, 
+						was_changed, was_initialized);
+		if (was_initialized)
 		    break;
 		more_values = read_str_or_cl_next (value);
 	    }
 	}
-	if (inited || i != v.str_or_cl->member_count)
+	if (was_initialized || i != v.str_or_cl->member_count)
 	{
 #if LOG_UPDATE_VALUES
 	    clog << "Struct/Class changed\n";
@@ -576,7 +581,7 @@ void DispValue::update (string& value, bool& changed, bool& inited)
 	    value = init_value;
 	    clear();
 	    init(value);
-	    inited = changed = true;
+	    was_initialized = was_changed = true;
 	    return;
 	}
 	read_str_or_cl_end (value);
@@ -586,15 +591,16 @@ void DispValue::update (string& value, bool& changed, bool& inited)
 	string ref = value.before(':');
 	value = value.after(':');
 
-	v.str_or_cl->members[0]->update(ref, changed, inited);
-	if (!inited)
-	    v.str_or_cl->members[1]->update(value, changed, inited);
-	if (inited)
+	v.str_or_cl->members[0]->update(ref, was_changed, was_initialized);
+	if (!was_initialized)
+	    v.str_or_cl->members[1]->update(value, 
+					    was_changed, was_initialized);
+	if (was_initialized)
 	{
 	    value = init_value;
 	    clear();
 	    init(value);
-	    inited = changed = true;
+	    was_initialized = was_changed = true;
 	    return;
 	}
 	break;

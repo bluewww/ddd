@@ -32,3 +32,7 @@
 # Make YYSTYPE a struct such that we can store class objects
 # (use anonymous unions to save space!)
 s!^typedef union\(.*\)$!typedef struct _YYSTYPE \1!
+
+# Avoid conflicting re-definitions
+s!YYSTYPE!IGNORED_&!
+s!yylval!IGNORED_&!

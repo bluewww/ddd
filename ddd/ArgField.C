@@ -37,7 +37,7 @@ char ArgField_rcsid[] =
 
 // Constructor
 ArgField::ArgField (Widget parent, const char* name)
-    : arg_text_field(0), handlers(NTypes), is_empty(true)
+    : arg_text_field(0), handlers(ArgField_NTypes), is_empty(true)
 {
     arg_text_field = XtVaCreateManagedWidget (name,
 					      xmTextFieldWidgetClass,

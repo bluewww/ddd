@@ -40,7 +40,7 @@
 enum EdgeAttachMode {
     Straight,	// attach edge on nearest edge point
     Circle,     // ...but assume nodes to be displayed as circles
-    Centered,   // attach edge on center of node edge
+    Centered    // attach edge on center of node edge
 };
 
 struct GraphGC {

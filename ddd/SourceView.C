@@ -679,7 +679,7 @@ String SourceView::read_indented(string& file_name)
 
     String indented_text = XtMalloc(indented_text_length + 1);
 
-    char line_no_s[bp_indent_amount];
+    char *line_no_s = new char[bp_indent_amount];
     for (int i = 0; i < bp_indent_amount; i++)
 	line_no_s[i] = ' ';
 
@@ -724,6 +724,8 @@ String SourceView::read_indented(string& file_name)
 	    *pos_ptr++ = *text_ptr++;
 	}
     }
+
+    delete[] line_no_s;
 
     assert (pos_ptr - indented_text == indented_text_length);
     *pos_ptr = '\0';
@@ -904,8 +906,8 @@ void SourceView::refresh_bp_disp ()
     if (bps_in_line != 0)
     {
 	for (AssocIter<int, VarArray<int> > b_i_l_iter = *(bps_in_line);
-	     b_i_l_iter.ok();
-	     b_i_l_iter = b_i_l_iter.next())
+	     b_i_l_iter.ok(); 
+	     b_i_l_iter++)
 	{
 	    int line_nr = b_i_l_iter.key();
 	    if (line_nr < 0 || line_nr > line_count)
@@ -943,7 +945,7 @@ void SourceView::refresh_bp_disp ()
     // fuer alle Zeilen mit Breakpoints ...
     for (AssocIter<int, VarArray<int> > b_i_l_iter = *(bps_in_line);
 	 b_i_l_iter.ok();
-	 b_i_l_iter = b_i_l_iter.next())
+	 b_i_l_iter++)
     {
 	int line_nr = b_i_l_iter.key();
 	if (line_nr < 0 || line_nr > line_count)
@@ -1634,7 +1636,7 @@ void SourceView::lookup(string s)
 	{
 	case GDB:
 	    if (s.length() > 0 && s[0] != '\'')
-		s = '\'' + s + '\'';
+		s = string('\'') + s + '\'';
 	    gdb_command("info line " + s);
 	    break;
 	case DBX:
@@ -1992,7 +1994,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String* str, Cardinal* c)
 	    MString label(bp_map.get(bp_nr)->enabled() ? 
 			  "Disable Breakpoint" : "Enable Breakpoint");
 	    XtVaSetValues(bp_popup_gdb[BPItms::Disable].widget,
-			  XmNlabelString, XmString(label),
+			  XmNlabelString, label.xmstring(),
 			  NULL);
 	}
 	break;
@@ -2041,27 +2043,27 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String* str, Cardinal* c)
 	Arg args[5];
 	int arg = 0;
 	MString label = text_cmd_labels[TextItms::Break] + current_arg;
-	XtSetArg (args[arg], XmNlabelString, XmString(label));arg++;
+	XtSetArg (args[arg], XmNlabelString, label.xmstring());arg++;
 	XtSetValues(text_popup[TextItms::Break].widget, args, arg);
 
 	arg = 0;
 	label = text_cmd_labels[TextItms::Clear] + current_arg;
-	XtSetArg (args[arg], XmNlabelString, XmString(label));arg++;
+	XtSetArg (args[arg], XmNlabelString, label.xmstring());arg++;
 	XtSetValues(text_popup[TextItms::Clear].widget, args, arg);
 
 	arg = 0;
 	label = text_cmd_labels[TextItms::Print] + current_arg;
-	XtSetArg (args[arg], XmNlabelString, XmString(label));arg++;
+	XtSetArg (args[arg], XmNlabelString, label.xmstring());arg++;
 	XtSetValues(text_popup[TextItms::Print].widget, args, arg);
 
 	arg = 0;
 	label = text_cmd_labels[TextItms::Disp] + current_arg;
-	XtSetArg (args[arg], XmNlabelString, XmString(label));arg++;
+	XtSetArg (args[arg], XmNlabelString, label.xmstring());arg++;
 	XtSetValues(text_popup[TextItms::Disp].widget, args, arg);
 
 	arg = 0;
 	label = text_cmd_labels[TextItms::Lookup] + current_arg;
-	XtSetArg (args[arg], XmNlabelString, XmString(label));arg++;
+	XtSetArg (args[arg], XmNlabelString, label.xmstring());arg++;
 	XtSetValues(text_popup[TextItms::Lookup].widget, args, arg);
 
 	bool sens = (word.length() > 0);
@@ -2240,7 +2242,7 @@ void SourceView::EditBreakpointConditionCB(Widget w,
 
 	MString xmcond(cond);
 	XtVaSetValues(edit_breakpoint_condition_dialog,
-		      XmNtextString, XmString(xmcond),
+		      XmNtextString, xmcond.xmstring(),
 		      NULL);
     }
 
@@ -2332,7 +2334,7 @@ void SourceView::EditBreakpointIgnoreCountCB(Widget w,
 
 	MString xmignore(ignore);
 	XtVaSetValues(edit_breakpoint_ignore_count_dialog,
-		      XmNtextString, XmString(xmignore),
+		      XmNtextString, xmignore.xmstring(),
 		      NULL);
     }
 

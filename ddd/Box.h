@@ -69,7 +69,7 @@ struct BoxFigGC: public BoxPrintGC {
 };
 
 struct BoxPostScriptGC: public BoxPrintGC {
-    DECLARE_TYPE_INFO;
+    DECLARE_TYPE_INFO
     enum Orientation { PORTRAIT, LANDSCAPE };
 
     virtual bool isPostScript() const { return true; }

@@ -46,6 +46,10 @@
 #include "DispValue.h"
 #include "DispBox.h"
 
+// Event-Typen
+const unsigned DispNode_Disabled   = 0;
+
+const unsigned DispNode_NTypes  = DispNode_Disabled + 1;
 
 //-----------------------------------------------------------------------------
 // Die Klasse DispNode
@@ -81,10 +85,6 @@ public:
     bool& selected()                    { return mynodeptr->selected(); }
     void moveTo(const BoxPoint& newPos) { mynodeptr->moveTo(newPos); }
 
-    // Event-Typen
-    static const unsigned Disabled   = 0;
-
-    static const unsigned NTypes  = Disabled + 1;
     static void addHandler (unsigned    type,
 			    HandlerProc proc,
 			    void*       client_data = 0);

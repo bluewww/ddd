@@ -332,13 +332,16 @@ bool VSEFlags::_parse(int& argc, char**& argv)
 			break;
 
 		    case BOOLEAN:
+		    {
 			bool *boolptr = (bool *)entry.flag;
 			if (boolptr)
 			    *boolptr = !no;
 			skip = 1;
 			break;
+		    }
 
 		    case INT:
+		    {
 			if (arg + 1 < argc)
 			{
 			    int *intptr = (int *)entry.flag;
@@ -347,8 +350,10 @@ bool VSEFlags::_parse(int& argc, char**& argv)
 			    skip = 2;
 			}
 			break;
+		    }
 
 		    case STRING:
+		    {
 			if (arg + 1 < argc)
 			{
 			    char **stringptr = (char **)entry.flag;
@@ -357,6 +362,7 @@ bool VSEFlags::_parse(int& argc, char**& argv)
 			    skip = 2;
 			}
 			break;
+		    }
 
 		    default:
 			// darf nicht auftreten
@@ -507,6 +513,7 @@ string VSEFlags::explain()
 
 	switch (entry.type) {
 	    case BOOLEAN:
+	    {
 		bool *boolptr = (bool *)entry.flag;
 		if (boolptr)
 		{
@@ -518,8 +525,10 @@ string VSEFlags::explain()
 		    }
 		}
 		break;
+	    }
 
 	    case INT:
+	    {
 		int *intptr = (int *)entry.flag;
 
 		optArg = " [num]";
@@ -532,8 +541,10 @@ string VSEFlags::explain()
 		    deflt = string(os);
 		}
 		break;
+	    }
 
 	    case STRING:
+	    {
 		char **stringptr = (char **)entry.flag;
 
 		optArg = " [name]";
@@ -542,6 +553,7 @@ string VSEFlags::explain()
 		if (stringptr)
 		    deflt = string(" (default: '") + *stringptr + "')";
 		break;
+	    }
 	
 	    default:
 		// darf nicht auftreten
@@ -571,17 +583,17 @@ unsigned VSEFlags::optimize_mode()
     unsigned mode = 0;
     
     if (optimize_resolveDefs)
-	mode |= VSLLib::ResolveDefs;
+	mode |= ResolveDefs;
     if (optimize_resolveSynonyms)
-	mode |= VSLLib::ResolveSynonyms;
+	mode |= ResolveSynonyms;
     if (optimize_foldOps)
-	mode |= VSLLib::FoldOps;
+	mode |= FoldOps;
     if (optimize_foldConsts)
-	mode |= VSLLib::FoldConsts;
+	mode |= FoldConsts;
     if (optimize_inlineFuncs)
-	mode |= VSLLib::InlineFuncs;
+	mode |= InlineFuncs;
     if (optimize_cleanup)
-	mode |= VSLLib::Cleanup;
+	mode |= Cleanup;
 
     mode |= max_optimize_loops;
 

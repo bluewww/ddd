@@ -638,6 +638,28 @@ AC_MSG_RESULT($ice_cv_type_signal)
 AC_DEFINE_UNQUOTED(RETSIGTYPE, $ice_cv_type_signal)
 ])dnl
 dnl
+dnl If the C++ library has a ostrstream::frozen() function,
+dnl define HAVE_FROZEN_OSTRSTREAM.
+dnl
+AC_DEFUN(ICE_CHECK_FROZEN_OSTRSTREAM,
+[
+AC_REQUIRE([AC_PROG_CXX])
+AC_MSG_CHECKING([for ostrstream::frozen()])
+AC_CACHE_VAL(ice_cv_frozen_ostrstream,
+[
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_COMPILE([#include <strstream.h>],
+[ostrstream os; int frozen = os.frozen();],
+ice_cv_frozen_ostrstream=yes, ice_cv_frozen_ostrstream=no)
+AC_LANG_RESTORE
+])
+AC_MSG_RESULT($ice_cv_frozen_ostrstream)
+if test "$ice_cv_frozen_ostrstream" = yes; then
+AC_DEFINE(HAVE_FROZEN_OSTRSTREAM)
+fi
+])dnl
+dnl
 dnl
 dnl ICE_FIND_MOTIF: find OSF/Motif libraries and headers
 dnl put Motif include directory in motif_includes

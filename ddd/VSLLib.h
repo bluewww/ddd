@@ -48,7 +48,6 @@ class VSLDefList;
 class VSLNode;
 
 class VSLLib;
-typedef int (VSLLib::*VSLLibAction)();
 
 // Custom eval() arguments
 // This is just a wrapper around a Box pointer with a few fancy conversions.
@@ -131,40 +130,40 @@ inline VSLArg tag(const VSLArg& arg, Data *data = 0, DataLink *link = 0)
 }
 
 
+
+// Size of hash table (should be prime)
+const int hashSize = 4001;
+
+// Flags for optimizing (used internally)
+const unsigned _ResolveDefs             = (1 << 4);
+const unsigned _ResolveSynonyms         = (1 << 5);
+const unsigned _FoldOps                 = (1 << 6);
+const unsigned _FoldConsts              = (1 << 7);
+const unsigned _InlineFuncs             = (1 << 8);
+const unsigned _CountSelfReferences     = (1 << 9);
+const unsigned _Cleanup                 = (1 << 10);
+
+// Public flags for optimizing
+const unsigned ResolveDefs          = _ResolveDefs;
+const unsigned ResolveSynonyms      = _ResolveDefs | _ResolveSynonyms;
+const unsigned FoldOps              = _ResolveSynonyms | _FoldOps;
+const unsigned FoldConsts           = _FoldConsts;
+const unsigned InlineFuncs          = _ResolveDefs | _InlineFuncs;
+const unsigned CountSelfReferences  = _CountSelfReferences;
+const unsigned Cleanup              = _CountSelfReferences | _Cleanup;
+
+// Mask for building #iterations
+const unsigned loopMask         = (1 << 0 | 1 << 1 | 1 << 2 | 1 << 3);
+const unsigned allOpts          = ((unsigned)-1) & ~loopMask;
+const unsigned stdOpt           = allOpts | 2;
+
+
 // The VSL library
 class VSLLib {
     friend class VSLDefList;  // for VSLDefList::replace()
 
 public:
     DECLARE_TYPE_INFO
-
-private:
-    // Size of hash table (should be prime)
-    const int hashSize = 4001;
-
-    // Flags for optimizing (used internally)
-    const unsigned _ResolveDefs             = (1 << 4);
-    const unsigned _ResolveSynonyms         = (1 << 5);
-    const unsigned _FoldOps                 = (1 << 6);
-    const unsigned _FoldConsts              = (1 << 7);
-    const unsigned _InlineFuncs             = (1 << 8);
-    const unsigned _CountSelfReferences     = (1 << 9);
-    const unsigned _Cleanup                 = (1 << 10);
-
-public:
-    // Public flags for optimizing
-    const unsigned ResolveDefs          = _ResolveDefs;
-    const unsigned ResolveSynonyms      = _ResolveDefs | _ResolveSynonyms;
-    const unsigned FoldOps              = _ResolveSynonyms | _FoldOps;
-    const unsigned FoldConsts           = _FoldConsts;
-    const unsigned InlineFuncs          = _ResolveDefs | _InlineFuncs;
-    const unsigned CountSelfReferences  = _CountSelfReferences;
-    const unsigned Cleanup              = _CountSelfReferences | _Cleanup;
-
-    // Mask for building #iterations
-    const unsigned loopMask         = (1 << 0 | 1 << 1 | 1 << 2 | 1 << 3);
-    const unsigned allOpts          = ((unsigned)-1) & ~loopMask;
-    const unsigned stdOpt           = allOpts | 2;
 
 private:
     string _lib_name;               // library name
@@ -187,7 +186,6 @@ private:
     int cleanup();                  // remove unreferenced functions
 
     // Front-end for optimizing functions
-    int perform(VSLLibAction action, char *actionName);
     void process(unsigned mode = stdOpt);
 
     // Build function call with arglist as argument

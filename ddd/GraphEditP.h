@@ -66,7 +66,7 @@ enum GraphEditState {
     SelectState,	// draw select frame
     DeltaState,		// wait for movement
     MoveState,		// draw move frames
-    NopState,		// something completely different
+    NopState		// something completely different
 };
 
 // The GraphEdit instance record

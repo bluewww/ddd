@@ -44,6 +44,9 @@
 /* Define if your C++ compiler supports `bool' types. */
 #undef HAVE_BOOL
 
+/* Define if your C++ library has an ostrstream::frozen() function. */
+#undef HAVE_FROZEN_OSTRSTREAM
+
 /* Define if MAXPATHLEN is defined or declared in <sys/param.h>. */
 #undef HAVE_MAXPATHLEN
 

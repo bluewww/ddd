@@ -71,9 +71,6 @@ public:
     bool operator != (const BoxRegion& r) const
     { return origin() != r.origin() || space() != r.space(); }
 
-    // Pruefen, ob Punkt p in r enthalten ist
-    friend static bool operator <= (const BoxPoint& p, const BoxRegion& r);
-
     // Pruefen, ob BoxRegion (teilweise oder ganz) in r enthalten ist
     bool operator <= (const BoxRegion& r) const
     {

@@ -114,31 +114,37 @@ extern "C" char *sterror(int errno);
 typedef void (*AgentHandlerProc)(class Agent *source, void *client_data,
     void *call_data);
 
+
+// Event types
+const unsigned Panic    = 0;	        // I/O error occurred
+const unsigned Strange  = Panic + 1;    // Strange I/O condition occurred
+const unsigned Started  = Strange + 1;  // Process started
+const unsigned Stopped  = Started + 1;  // Process stopped
+const unsigned InputEOF = Stopped + 1;  // EOF on input detected
+const unsigned ErrorEOF = InputEOF + 1; // EOF on error detected
+const unsigned Died     = ErrorEOF + 1; // Process died
+const unsigned _Died    = Died + 1;     // New Status (async call)
+
+const unsigned Agent_NTypes = _Died + 1;    // number of events
+
+const int READ = 0;		// constants for pipe indexing
+const int WRITE = 1;
+
 class Agent {
     friend class AgentManager;
 
 public:
     DECLARE_TYPE_INFO
 
-    // Event types
-    const unsigned Panic    = 0;	    // I/O error occured
-    const unsigned Strange  = Panic + 1;    // Strange I/O condition occured
-    const unsigned Started  = Strange + 1;  // Process started
-    const unsigned Stopped  = Started + 1;  // Process stopped
-    const unsigned InputEOF = Stopped + 1;  // EOF on input detected
-    const unsigned ErrorEOF = InputEOF + 1; // EOF on error detected
-    const unsigned Died     = ErrorEOF + 1; // Process died
-    const unsigned _Died    = Died + 1;     // New Status (async call)
-
-    const unsigned NTypes   = _Died + 1;    // number of events
-
 private:
     int _pid;		    	// process id (0: not running, <0: no process)
 
+protected:
     FILE *_inputfp;	    	// read from child
     FILE *_outputfp;	    	// write to child
     FILE *_errorfp;	    	// read errors from child
 
+private:
     bool _running;	      	// flag: is child still running?
     bool _beingTerminated;   // flag: is child just being terminated?
 
@@ -153,9 +159,6 @@ private:
     int to_child[2];		// pipes
     int to_parent[2];
     int to_parent_error[2];
-
-    const int READ = 0;		// constants for pipe indexing
-    const int WRITE = 1;
 
     Agent *next;	    	// used in agent manager
 
@@ -242,9 +245,7 @@ protected:
     // hooks for alternative communication schemes
     virtual int setupCommunication();
     virtual int setupChildCommunication();
-    virtual int setupParentCommunication(FILE *& _inputfp,
-					 FILE *& _outputfp,
-					 FILE *& _errorfp);
+    virtual int setupParentCommunication();
 
     // hook for alternative child execution (never return)
     virtual void executeChild();
@@ -275,7 +276,7 @@ public:
     static AgentManager runningAgents;
 
     // Constructor for Agent users
-    Agent(string pth, unsigned nTypes = NTypes):
+    Agent(string pth, unsigned nTypes = Agent_NTypes):
 	_pid(0), _inputfp(0), _outputfp(0), _errorfp(0),
 	_running(false), _beingTerminated(false), _lastStatus(-1),
 	_terminateTimeOut(10), _hangupTimeOut(5), _killTimeOut(15),
@@ -288,8 +289,8 @@ public:
 
     // Constructor for Agent writers
     Agent(FILE *in = stdin, FILE *out = stdout, FILE *err = 0,
-	unsigned nTypes = NTypes):
-	_pid(-int(UniqueId())), _inputfp(in), _outputfp(out),
+	unsigned nTypes = Agent_NTypes):
+	_pid(-(unsigned long)UniqueId()), _inputfp(in), _outputfp(out),
 	_errorfp(err), _running(false), _beingTerminated(false),
 	_lastStatus(-1), _terminateTimeOut(-1), _hangupTimeOut(-1), 
 	_killTimeOut(-1), handlers(nTypes), next(0), _path("this")
@@ -298,8 +299,8 @@ public:
     }
 
     // "Dummy" Constructor without any communication
-    Agent(bool dummy, unsigned nTypes = NTypes):
-	_pid(-int(UniqueId())), _inputfp(0), _outputfp(0),
+    Agent(bool dummy, unsigned nTypes = Agent_NTypes):
+	_pid(-(unsigned long)UniqueId()), _inputfp(0), _outputfp(0),
 	_errorfp(0), _running(false), _beingTerminated(false),
 	_lastStatus(-1), _terminateTimeOut(-1), _hangupTimeOut(-1),
 	_killTimeOut(-1), handlers(nTypes), next(0), _path("this")

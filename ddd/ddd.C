@@ -1490,7 +1490,7 @@ int main(int argc, char *argv[])
     // Setup toplevel window
 #if defined(HAVE_X11_XMU_EDITRES_H)
     XtAddEventHandler(toplevel, EventMask(0), true,
-		      _XEditResCheckMessages, NULL);
+		      XtEventHandler(_XEditResCheckMessages), NULL);
 #endif
 
     XtAppAddActions(app_context, actions, XtNumber(actions));
@@ -1581,7 +1581,7 @@ int main(int argc, char *argv[])
 			    WM_DELETE_WINDOW, gdbCloseCommandWindowCB, 0);
 #if defined(HAVE_X11_XMU_EDITRES_H)
     XtAddEventHandler(command_shell, EventMask(0), true,
-		      _XEditResCheckMessages, NULL);
+		      XtEventHandler(_XEditResCheckMessages), NULL);
 #endif
     Delay::register_shell(command_shell);
 
@@ -1658,7 +1658,7 @@ int main(int argc, char *argv[])
 				WM_DELETE_WINDOW, gdbCloseDataWindowCB, 0);
 #if defined(HAVE_X11_XMU_EDITRES_H)
 	XtAddEventHandler(data_disp_shell, EventMask(0), true,
-			  _XEditResCheckMessages, NULL);
+			  XtEventHandler(_XEditResCheckMessages), NULL);
 #endif
 	Delay::register_shell(data_disp_shell);
 
@@ -1734,7 +1734,7 @@ int main(int argc, char *argv[])
 				WM_DELETE_WINDOW, gdbCloseSourceWindowCB, 0);
 #if defined(HAVE_X11_XMU_EDITRES_H)
 	XtAddEventHandler(source_view_shell, EventMask(0), true,
-			  _XEditResCheckMessages, NULL);
+			  XtEventHandler(_XEditResCheckMessages), NULL);
 #endif
 	Delay::register_shell(source_view_shell);
 
@@ -1922,13 +1922,13 @@ int main(int argc, char *argv[])
     gdb->set_trace_dialog(app_data.trace_dialog);
 
     // Setup handlers
-    gdb->addBusyHandler(GDBAgent::ReadyForQuestion, gdb_ready_for_questionHP);
-    gdb->addBusyHandler(GDBAgent::ReadyForCmd,      gdb_ready_for_cmdHP);
-    gdb->addHandler    (GDBAgent::InputEOF,         gdb_eofHP);
-    gdb->addHandler    (GDBAgent::ErrorEOF,         gdb_eofHP);
+    gdb->addBusyHandler(ReadyForQuestion, gdb_ready_for_questionHP);
+    gdb->addBusyHandler(ReadyForCmd,      gdb_ready_for_cmdHP);
+    gdb->addHandler    (InputEOF,         gdb_eofHP);
+    gdb->addHandler    (ErrorEOF,         gdb_eofHP);
     DataDisp::set_handlers();
 
-    source_arg->addHandler (ArgField::Changed, source_argHP);
+    source_arg->addHandler (Changed, source_argHP);
     source_arg->callHandlers();
 
     // Set the terminal type
@@ -2592,7 +2592,7 @@ Widget file_dialog(Widget w, const string& name,
 	{
 	    static MString xmpwd;
 	    xmpwd = pwd;
-	    XtSetArg(args[arg], XmNdirectory, XmString(xmpwd)); arg++;
+	    XtSetArg(args[arg], XmNdirectory, xmpwd.xmstring()); arg++;
 	}
     }
 
@@ -3939,7 +3939,7 @@ void set_history_from_line(const string& line)
 	    selected = 0;
 
 	MString xm_line(line, LIST_CHARSET);
-	XmString xms = XmString(xm_line);
+	XmString xms = xm_line.xmstring();
 	XmListReplaceItemsPos(gdb_commands_w, &xms, 1, pos);
 
 	if (selected)
@@ -4152,7 +4152,8 @@ void gdbHistoryCB(Widget w, XtPointer client_data, XtPointer call_data)
 	selected[i] = false;
     selected[gdb_current_history] = true;
 
-    setLabelList(gdb_commands_w, gdb_history, selected, gdb_history.size());
+    setLabelList(gdb_commands_w, gdb_history.values(), 
+		 selected, gdb_history.size());
 
     set_history_from_line(current_line());
     XmListSelectPos(gdb_commands_w, 0, False);
@@ -4185,6 +4186,7 @@ struct Command
 	    command = c.command;
 	    origin = c.origin;
 	}
+	return *this;
     }
     bool operator == (const Command& c)
     {
@@ -5583,7 +5585,7 @@ void set_status(const string& message)
 
     MString msg(m, "rm");
     XtVaSetValues(status_w,
-		  XmNlabelString, XmString(msg),
+		  XmNlabelString, msg.xmstring(),
 		  NULL);
 }
 
@@ -6548,7 +6550,7 @@ static void post_startup_warning(Widget w)
 
 void dddSetSeparateWindowsCB (Widget w, XtPointer client_data, XtPointer)
 {
-    Boolean state = Boolean(client_data);
+    Boolean state = Boolean(client_data != 0);
 
     app_data.separate_data_window   = state;
     app_data.separate_source_window = state;
@@ -6567,7 +6569,7 @@ void dddSetSeparateWindowsCB (Widget w, XtPointer client_data, XtPointer)
 
 void dddSetKeyboardFocusPolicyCB (Widget w, XtPointer client_data, XtPointer)
 {
-    unsigned char policy = (unsigned char)client_data;
+    unsigned char policy = (unsigned char)int(client_data);
 
     const WidgetArray& shells = Delay::shells();
     for (int i = 0; i < shells.size(); i++)
@@ -6604,7 +6606,7 @@ void dddSetKeyboardFocusPolicyCB (Widget w, XtPointer client_data, XtPointer)
 
 void dddSetPannerCB (Widget w, XtPointer client_data, XtPointer)
 {
-    Boolean state = Boolean(client_data);
+    Boolean state = Boolean(client_data != 0);
     app_data.panned_graph_editor = state;
 
     if (state)
@@ -6844,7 +6846,7 @@ static void DungeonCollapseCB(XtPointer client_data, XtIntervalId *id)
 
     MString mtext("Suddenly, the dungeon collapses.", "rm");
     XtVaSetValues (dungeon_error,
-		   XmNmessageString, XmString(mtext),
+		   XmNmessageString, mtext.xmstring(),
 		   NULL);
 
     XtManageChild(dungeon_error);
@@ -7013,7 +7015,7 @@ void post_gdb_message(string text, Widget w)
 
     MString mtext(text, "rm");
     XtVaSetValues (gdb_message_dialog,
-		   XmNmessageString, XmString(mtext),
+		   XmNmessageString, mtext.xmstring(),
 		   NULL);
 
     XtManageChild (gdb_message_dialog);
@@ -7051,7 +7053,7 @@ void post_error (string text, String name, Widget w)
 
     MString mtext(text, "rm");
     XtVaSetValues (ddd_error,
-		   XmNmessageString, XmString(mtext),
+		   XmNmessageString, mtext.xmstring(),
 		   NULL);
 
     XtManageChild (ddd_error);
@@ -7089,7 +7091,7 @@ void post_warning (string text, String name, Widget w)
 
     MString mtext(text, "rm");
     XtVaSetValues (ddd_warning,
-		   XmNmessageString, XmString(mtext),
+		   XmNmessageString, mtext.xmstring(),
 		   NULL);
 
     XtManageChild (ddd_warning);

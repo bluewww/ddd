@@ -65,9 +65,9 @@ const int max_instances = 256;
 
 static VSLNode *node_instances[max_instances];
 
-static void node_matches(int data, VSLNode *node)
+static void node_matches(int data, const VSLNode *node)
 {
-    node_instances[data] = node;
+    node_instances[data] = (VSLNode *)node;
 }
 
 // Pruefen, ob Definition mit Aufruf 'arg' uebereinstimmt;
@@ -124,9 +124,9 @@ VSLNode **VSLDef::nodelist(const VSLNode *arg) const
 
 static Box *box_instances[max_instances];
 
-static void box_matches(int data, Box *box)
+static void box_matches(int data, const Box *box)
 {
-    box_instances[data] = box;
+    box_instances[data] = (Box *)box;
 }
 
 // Pruefen, ob Definition mit Parameter 'arg' uebereinstimmt;

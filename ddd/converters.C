@@ -37,6 +37,7 @@ char converters_rcsid[] =
 
 #include <X11/CoreP.h>
 
+#include "bool.h"
 #include "strclass.h"
 #include "MString.h"
 
@@ -395,7 +396,7 @@ Boolean CvtStringToXmString(Display *display,
     split(source, segments, n_segments, font_esc);
 
     MString buf(segments[0], charset);
-    for (int i = 1; i < n_segments && XmString(buf) != 0; i++)
+    for (int i = 1; i < n_segments && buf.xmstring() != 0; i++)
     {
 	string segment;
 	if (segments[i].index(font_id) == 0)

@@ -77,14 +77,15 @@ protected:
 	assert(i >= 0 && i < size());
 	return _values[i]; 
     }
-    const T* values() const { return _values; }
 
 public:
     // Resources
     virtual int size() const   { return _allocated_size; }
     T& operator[](int i) const { return _value(i); }
     T& operator[](int i)       { return value(i); }
+    T* values() const          { return _values; }
     operator const T*() const  { return values(); }
+    operator       T*() const  { return values(); }
 
     // Constructors
     DynArray(int initial_size = 0):

@@ -46,12 +46,12 @@ char DispGraph_rcsid[] =
 //
 DispGraph::DispGraph() :
     idMap(),
-    handlers(NTypes),
+    handlers(DispGraph_NTypes),
     no_enabled(true),
     no_disabled(true),
     Graph()
 {
-    DispNode::addHandler(DispNode::Disabled,
+    DispNode::addHandler(DispNode_Disabled,
 			 disp_node_disabledHP,
 			 (void*)this);
 }
@@ -134,7 +134,7 @@ void DispGraph::removeHandler (unsigned    type,
 // ***************************************************************************
 void DispGraph::callHandlers ()
 {
-    handlers.call(Empty,
+    handlers.call(DispGraph_Empty,
 		  this,
 		  (void*)(count_all() == 0));
     handlers.call(NoEnabled,
@@ -155,7 +155,7 @@ int DispGraph::insert_new (int disp_nr, DispNode* dn)
     if (idMap.contains(disp_nr))
 	return 0;
     if (idMap.length() == 0)
-	handlers.call(Empty, this, (void*)false);
+	handlers.call(DispGraph_Empty, this, (void*)false);
 
     Graph* tmp = (Graph *) this;
     *tmp += dn->nodeptr();
@@ -480,7 +480,7 @@ bool DispGraph::del (int disp_nr)
 	idMap.del (disp_nr);
 
 	if (idMap.length() == 0)
-	    handlers.call(Empty, this, (void*)true);
+	    handlers.call(DispGraph_Empty, this, (void*)true);
 	if (!no_enabled)
 	    if ((no_enabled = (count_all(Enabled) == 0)))
 		handlers.call(NoEnabled, this, (void*)true);

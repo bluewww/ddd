@@ -140,7 +140,7 @@ extern "C" {
     int getpty(char *line, char *sline, int mode);
 #endif
 #if defined(HAVE__GETPTY) && !defined(HAVE__GETPTY_DECL) && !defined(_getpty)
-    char *_getpty(int *fd, int mode, int prot, int something);
+    char *_getpty(int *fd, int mode, int prot, int nofork);
 #endif
 #if defined(HAVE_SETSID) && !defined(HAVE_SETSID_DECL) && !defined(setsid)
     pid_t setsid(void);
@@ -206,7 +206,6 @@ extern "C" {
 // Depending on the host features, we try a large variety of possibilities.
 int TTYAgent::open_master()
 {
-    int master;
     char *line;
     struct stat sb;
 
@@ -436,9 +435,7 @@ int TTYAgent::setupCommunication()
 }
 
 
-int TTYAgent::setupParentCommunication(FILE *& _inputfp,
-				       FILE *& _outputfp,
-				       FILE *& _errorfp)
+int TTYAgent::setupParentCommunication()
 {
 #if defined(HAVE_FCNTL) && defined(O_NONBLOCK)
     // Set the child file descriptor to nonblocking mode

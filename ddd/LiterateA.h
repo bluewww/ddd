@@ -64,17 +64,19 @@
 #include "AsyncAgent.h"
 #include "DataLength.h"
 
+
+// Event types
+const unsigned Ready  = AsyncAgent_NTypes; // Ready for output
+const unsigned Output = Ready + 1;         // Output written
+const unsigned Input  = Output + 1;        // Input read
+const unsigned Error  = Input + 1;	   // Error read
+
+const unsigned LiterateAgent_NTypes = Error + 1; // number of events
+
+
 class LiterateAgent: public AsyncAgent {
 public:
     DECLARE_TYPE_INFO
-
-    // Event types
-    const unsigned Ready  = AsyncAgent::NTypes;	// Ready for output
-    const unsigned Output = Ready + 1;          // Output written
-    const unsigned Input  = Output + 1;         // Input read
-    const unsigned Error  = Input + 1;	        // Error read
-
-    const unsigned NTypes = Error + 1;	        // number of events
 
 private:
     void _outputException();	// exception on output channel
@@ -148,17 +150,18 @@ protected:
 public:
     // Constructors
     LiterateAgent(XtAppContext app_context, char *pth,
-	 unsigned nTypes = NTypes):
+		  unsigned nTypes = LiterateAgent_NTypes):
 	AsyncAgent(app_context, pth, nTypes), activeIO(false)
     {}
 
     LiterateAgent(XtAppContext app_context, FILE *in = stdin,
-	FILE *out = stdout, FILE *err = 0, unsigned nTypes = NTypes):
+		  FILE *out = stdout, FILE *err = 0, 
+		  unsigned nTypes = LiterateAgent_NTypes):
 	AsyncAgent(app_context, in, out, err, nTypes), activeIO(false)
     {}
 
     LiterateAgent(XtAppContext app_context, bool dummy,
-	unsigned nTypes = NTypes):
+		  unsigned nTypes = LiterateAgent_NTypes):
 	AsyncAgent(app_context, dummy, nTypes), activeIO(false)
     {}
 

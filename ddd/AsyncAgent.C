@@ -88,7 +88,7 @@ void AsyncAgent::somethingHappened(XtPointer client_data, int *fid,
 // Initialize handlers
 void AsyncAgent::initHandlers()
 {
-    for (unsigned type = 0; type < NHandlers; type++)
+    for (unsigned type = 0; type < AsyncAgent_NHandlers; type++)
     {
 	_handlers[type] = 0;
 	_ids[type] = 0;
@@ -168,11 +168,12 @@ AsyncAgentHandler AsyncAgent::setHandler(unsigned type, AsyncAgentHandler h)
 void AsyncAgent::dispatch(int *fid, XtInputId *inputId)
 {
     // search handler
-    for (unsigned type = 0; type < NHandlers && id(type) != *inputId; type++)
+    for (unsigned type = 0; 
+	 type < AsyncAgent_NHandlers && id(type) != *inputId; type++)
 	;
     
     // call it
-    if (type < NHandlers)
+    if (type < AsyncAgent_NHandlers)
     {
 	(*(handler(type)))(this);
     }
@@ -189,7 +190,7 @@ void AsyncAgent::dispatch(int *fid, XtInputId *inputId)
 void AsyncAgent::abort()
 {
     // remove previously installed handlers
-    for (unsigned type = 0; type < NHandlers; type++)
+    for (unsigned type = 0; type < AsyncAgent_NHandlers; type++)
 	removeInput(type);
 
     // inhibit further communication

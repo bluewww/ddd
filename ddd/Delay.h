@@ -41,7 +41,7 @@
 // _Delay defines a delay for a specific widget only
 class _Delay {
 public:
-    DECLARE_TYPE_INFO;
+    DECLARE_TYPE_INFO
 
 private:
     Widget widget;
@@ -65,7 +65,7 @@ typedef VarArray<_Delay *> DelayArray;
 // Delay also defines delays for all registered shells
 class Delay: public _Delay {
 public:
-    DECLARE_TYPE_INFO;
+    DECLARE_TYPE_INFO
 
 private:
     static int delay_count;

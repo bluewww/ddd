@@ -143,7 +143,6 @@ public:
     string(const char* t, int len);
     string(char c);
     string(ostrstream& os); // should be const
-    string(strstream& os); // should be const
 
     ~string();
 
@@ -152,7 +151,6 @@ public:
     void operator =  (char        c);
     void operator =  (const subString&  y);
     void operator =  (ostrstream& os);
-    void operator =  (strstream& os);
 
 // concatenation
 
@@ -391,6 +389,7 @@ public:
 // conversion
 
     operator const char*() const;
+    operator char*() const;
     const char* chars() const;
 
 
@@ -496,30 +495,21 @@ inline void string::operator=(char c)
 
 inline void string::operator=(ostrstream& os)
 {
+#ifdef HAVE_FROZEN_OSTRSTREAM
     // No need to freeze the stream, since the string is copied right away
     int frozen = os.frozen();
-    const char *str = os.str();
-    rep = string_Salloc(rep, str, os.pcount(), os.pcount());
-    os.freeze(frozen);
-}
+#endif
 
-inline void string::operator=(strstream& os)
-{
-    // No need to freeze the stream, since the string is copied right away
-    int frozen = os.frozen();
     const char *str = os.str();
     rep = string_Salloc(rep, str, os.pcount(), os.pcount());
+
+#ifdef HAVE_FROZEN_OSTRSTREAM
     os.freeze(frozen);
+#endif
 }
 
 inline string::string(ostrstream& os)
     : rep(&_nilstrRep) 
-{
-    operator=(os);
-}
-
-inline string::string(strstream& os)
-  : rep(&_nilstrRep)
 {
     operator=(os);
 }

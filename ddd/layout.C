@@ -36,6 +36,7 @@ char layout_rcsid[] =
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <X11/StringDefs.h>
 
 
@@ -54,6 +55,63 @@ char layout_rcsid[] =
 //   month =        "July/August",
 // }
 
+
+
+const int MINXDIST    = 20;
+const int MINYDIST    = 20;
+const int XITERATIONS = 6;
+const int REVERSE     = FALSE;
+
+/*
+ * PULLUP
+ * if TRUE each node will be placed on the highest level possible. 
+ * Otherwise each node will be placed on the level determined 
+ * by a topological sort.
+ */
+const int PULLUP     = FALSE;
+const int NOPULLUP   = FALSE;
+
+const int HINTPRIO   = 100;
+
+const int NOLEVEL    = -1;
+const int NOPOSITION = -1;
+
+/*
+ * defaults for handling of strings: each node can carry an assosiated
+ * string
+ */
+
+const int STR_STORE = 10 * 1024;   /* 10k - hope this is enough */
+
+
+/*
+ * definitions for return values
+ */
+
+const int NO_ERROR      = 0;
+const int MEMORY_ERROR  = 1;
+
+const int EMPTY_LIST    = 2;
+const int NOT_MEMBER    = 3;
+
+const int NO_PREV_LEVEL = 4;
+const int NO_NEXT_LEVEL = 5;
+const int LOOPS         = 6;
+
+const int CMD_LINE      = 7;
+
+const int NODE_TYPE     = 8;
+const int LEVEL_ERROR   = 9;
+const int NO_EDGE       = 10;
+const int INTERNAL      = 11;
+const int NOT_REGULAR   = 12;
+
+/*
+ * definitions for state of Edge (NORMAL,REVERSE)
+ */
+
+const int NORMAL_EDGE = 0;
+const int REVERSE_EDGE = 1;
 
 
 /*****************************************************************************

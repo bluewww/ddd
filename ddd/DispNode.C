@@ -42,7 +42,7 @@ char DispNode_rcsid[] =
 
 //-----------------------------------------------------------------------------
 
-HandlerList DispNode::handlers(NTypes);
+HandlerList DispNode::handlers(DispNode_NTypes);
 
 // ***************************************************************************
 // Constructor
@@ -123,7 +123,7 @@ bool DispNode::update(string& value)
 
     if (!myenabled) { //Display wurde (automatisch) eingeschaltet
 	myenabled = true;
-	handlers.call(Disabled, this, (void*)false);
+	handlers.call(DispNode_Disabled, this, (void*)false);
 	changed = true;
     }
 
@@ -210,7 +210,7 @@ void DispNode::disable()
 {
     if (myenabled) {
 	myenabled = false;
-	handlers.call(Disabled, this, (void*)true);
+	handlers.call(DispNode_Disabled, this, (void*)true);
 	disp_box->set_value();
 	mynodeptr->setBox (disp_box->box());
     }

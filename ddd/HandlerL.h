@@ -33,7 +33,7 @@
 
 #include "compare.h"
 
-typedef void (*HandlerProc)(void *const source,	// handler source
+typedef void (*HandlerProc)(void *source,	// handler source
 			    void *client_data,  // data supplied by client
 			    void *call_data);   // data supplied by caller
 

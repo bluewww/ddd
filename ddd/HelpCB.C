@@ -89,9 +89,9 @@ static MString get_help_string(Widget widget)
 			      NULL, 0);
 
     MString text = values.helpString;
-    if ((XmString(text) == 0 || text.isEmpty()) && DefaultHelpText != 0)
+    if ((text.xmstring() == 0 || text.isEmpty()) && DefaultHelpText != 0)
 	text = DefaultHelpText(widget);
-    if (XmString(text) == 0 || text.isEmpty())
+    if (text.xmstring() == 0 || text.isEmpty())
 	text = _DefaultHelpText(widget);
 
     if (values.showTitle)
@@ -111,7 +111,7 @@ void HelpOnHelpCB(Widget widget, XtPointer client_data, XtPointer call_data)
 
     // Get help on the help dialog
     MString text = get_help_string(help_dialog);
-    _MStringHelpCB(widget, XtPointer(XmString(text)), call_data, true);
+    _MStringHelpCB(widget, XtPointer(text.xmstring()), call_data, true);
 }
 
 void ImmediateHelpCB(Widget widget, XtPointer client_data, XtPointer call_data)
@@ -121,7 +121,7 @@ void ImmediateHelpCB(Widget widget, XtPointer client_data, XtPointer call_data)
 
     // Get help on this widget
     MString text = get_help_string(widget);
-    MStringHelpCB(widget, XtPointer(XmString(text)), call_data);
+    MStringHelpCB(widget, XtPointer(text.xmstring()), call_data);
 }
 
 void HelpOnWindowCB(Widget widget, XtPointer client_data, XtPointer call_data)
@@ -130,7 +130,7 @@ void HelpOnWindowCB(Widget widget, XtPointer client_data, XtPointer call_data)
     Widget shell = findTopLevelShellParent(widget);
 
     MString text = get_help_string(shell);
-    MStringHelpCB(widget, XtPointer(XmString(text)), call_data);
+    MStringHelpCB(widget, XtPointer(text.xmstring()), call_data);
 }
 
 void HelpOnVersionCB(Widget widget, XtPointer client_data, XtPointer call_data)
@@ -147,7 +147,7 @@ void HelpOnVersionCB(Widget widget, XtPointer client_data, XtPointer call_data)
     if (helpOnVersionPixmapProc)
 	pixmap = helpOnVersionPixmapProc(widget);
 
-    _MStringHelpCB(widget, XtPointer(XmString(text)), call_data, 
+    _MStringHelpCB(widget, XtPointer(text.xmstring()), call_data, 
 		   false, pixmap);
 }
 
@@ -180,7 +180,7 @@ void StringHelpCB(Widget widget, XtPointer client_data, XtPointer call_data)
 {
     MString text = String(client_data);
 
-    MStringHelpCB(widget, XmString(text), call_data);
+    MStringHelpCB(widget, text.xmstring(), call_data);
 }
 
 void MStringHelpCB(Widget widget, XtPointer client_data, XtPointer call_data)

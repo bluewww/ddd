@@ -1599,6 +1599,7 @@ static void Follow(Widget w, XEvent *event, String *params,
 	    break;
 
 	case MoveState:
+	{
 	    // Draw new move frames
 	    endAction = p;
 	    BoxPoint newOffset = actionOffset(w);
@@ -1608,6 +1609,7 @@ static void Follow(Widget w, XEvent *event, String *params,
 		drawMoveFrames(w, lastOffset = newOffset);
 	    }
 	    break;
+	}
 
 	case DeltaState:
 	    // Wait for movement
@@ -1681,6 +1683,7 @@ static void End(Widget w, XEvent *event, String *params,
     switch(state)
     {
 	case SelectState:
+	{
 	    drawSelectFrame(w);
 	    endAction = point(event);
 
@@ -1707,8 +1710,10 @@ static void End(Widget w, XEvent *event, String *params,
 
 	    state = NopState;
 	    break;
+	}
 
         case MoveState:
+	{
 	    // Move all selected nodes to new positions
 		   
 	    // clear graph area
@@ -1721,6 +1726,7 @@ static void End(Widget w, XEvent *event, String *params,
 
 	    state = NopState;
 	    break;
+	}
 
 	default:
 	    // Do nothing

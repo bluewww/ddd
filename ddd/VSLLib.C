@@ -541,31 +541,6 @@ int VSLLib::cleanup()
 }
 
 
-// Aktion auf Bibliothek ausfuehren
-int VSLLib::perform(VSLLibAction action, char *name)
-{
-    if (VSEFlags::verbose)
-    {
-	cout << ", " << name;
-	cout.flush();
-    }
-    int changes = action();
-
-    if (VSEFlags::verbose)
-    {
-	cout << "(" << changes << ")";
-	cout.flush();
-    }
-
-    if (VSEFlags::show_optimize && VSEFlags::dump_library)
-	cout << "\n\nAfter " << name << ":\n\n" << *this << "\n\n";
-
-    return changes;
-}
-
-#define PERFORM(x) perform(x, #x)
-
-
 // Steuerprogramm
 void VSLLib::process(unsigned mode)
 {
@@ -617,22 +592,22 @@ void VSLLib::process(unsigned mode)
 	wird ein wenig beschleunigt.
     */
 
-    PERFORM(bind);
-    PERFORM(resolveNames);
-    PERFORM(compilePatterns);
+    bind();
+    resolveNames();
+    compilePatterns();
 
     if (mode & _Cleanup)
-	PERFORM(cleanup);
+	cleanup();
 
     if (mode & _ResolveDefs)
-	if (PERFORM(resolveDefs) > 0)
+	if (resolveDefs() > 0)
 	    if (mode & _Cleanup)
-		PERFORM(cleanup);
+		cleanup();
 
     if (mode & _ResolveSynonyms)
-	if (PERFORM(resolveSynonyms) > 0)
+	if (resolveSynonyms() > 0)
 	    if (mode & _Cleanup)
-		PERFORM(cleanup);
+		cleanup();
 	
     for (unsigned loop = 0; loop < (mode & loopMask); loop++)
     {
@@ -640,26 +615,26 @@ void VSLLib::process(unsigned mode)
 	int changes;
 
 	if (mode & _FoldOps)
-	    if ((changes = PERFORM(foldOps)) > 0)
+	    if ((changes = foldOps()) > 0)
 	    {
 		sum += changes;
-		PERFORM(compilePatterns);
+		compilePatterns();
 	    }
 
 	if (mode & _FoldConsts)
-	    if ((changes = PERFORM(foldConsts)) > 0)
+	    if ((changes = foldConsts()) > 0)
 	    {
 		sum += changes;
 		if (mode & _Cleanup)
-		    PERFORM(cleanup);
+		    cleanup();
 	    }
 
 	if (mode & _InlineFuncs)
-	    if ((changes = PERFORM(inlineFuncs)) > 0)
+	    if ((changes = inlineFuncs()) > 0)
 	    {
 		sum += changes;
 		if (mode & _Cleanup)
-		    PERFORM(cleanup);
+		    cleanup();
 	    }
 
 	if (sum == 0)
@@ -667,9 +642,9 @@ void VSLLib::process(unsigned mode)
     }
 
     if (mode & _CountSelfReferences)
-	if (PERFORM(countSelfReferences) > 0)
+	if (countSelfReferences() > 0)
 	    if (mode & _Cleanup)
-		PERFORM(cleanup);
+		cleanup();
 }
 
 

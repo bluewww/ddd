@@ -39,15 +39,14 @@
 
 // MemCheckHeader -- for internal use only
 
+const unsigned MAGIC = 3917580; // Marks start of block
+const char WIPEOUT   = '@';	// Filled in free()'d blocks
+typedef double Align;
+    
 class MemCheckHeader {
     friend class MemCheck;
 
-    const unsigned MAGIC = 3917580; // Marks start of block
-    const char WIPEOUT   = '@';	    // Filled in free()'d blocks
-    
 private:
-    typedef double Align;
-
     union {
 	struct Block {
 	    MemCheckHeader *ptr;    // Next block
@@ -153,7 +152,7 @@ public:
 // Setup if required
 inline void MemCheck::init()
 {
-    if (freebase.s.magic != MemCheckHeader::MAGIC)
+    if (freebase.s.magic != MAGIC)
     {
 	freebase.init();
 	allocbase.init();

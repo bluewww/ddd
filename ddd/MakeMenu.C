@@ -41,6 +41,7 @@ char MakeMenu_rcsid[] =
 #include <Xm/Label.h>
 
 #include "MakeMenu.h"
+#include "bool.h"
 
 // Add items to shell
 static void addItems(Widget parent, Widget shell, MMDesc items[], 

@@ -59,6 +59,7 @@ inline int do_unput(char c)
         pushback = c;
         has_pushback = 1;
     }
+    return c;
 }
 
 static int do_input() 
@@ -102,7 +103,7 @@ static int do_input()
 #endif
 
 #undef yywrap
-inline int yywrap() 
+int yywrap() 
 { 
     if (switchdown())
 	return 1;

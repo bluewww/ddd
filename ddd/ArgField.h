@@ -49,6 +49,13 @@ extern "C" {
 
 
 //-----------------------------------------------------------------------------
+// Event types
+const unsigned Empty       = 0;
+const unsigned Changed     = Empty + 1;
+const unsigned LosePrimary = Changed + 1;
+
+const unsigned ArgField_NTypes = LosePrimary + 1;
+
 class ArgField {
     Widget      arg_text_field;
     HandlerList handlers;
@@ -62,13 +69,6 @@ class ArgField {
 			      XtPointer call_data);
 
 public:
-    // Event types
-    static const unsigned Empty       = 0;
-    static const unsigned Changed     = Empty + 1;
-    static const unsigned LosePrimary = Changed + 1;
-
-    static const unsigned NTypes  = LosePrimary + 1;
-
     // Constructor
     ArgField (Widget parent, const char* name);
 

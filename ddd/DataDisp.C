@@ -181,10 +181,10 @@ static void set_label(Widget w, string label)
     MString new_label(label);
     XmString old_label;
     XtVaGetValues(w, XmNlabelString, &old_label, NULL);
-    if (!XmStringCompare(XmString(new_label), old_label))
+    if (!XmStringCompare(new_label.xmstring(), old_label))
     {
 	XtVaSetValues(w,
-		      XmNlabelString, XmString(new_label),
+		      XmNlabelString, new_label.xmstring(),
 		      NULL);
     }
     XmStringFree(old_label);
@@ -495,7 +495,7 @@ void DataDisp::dependentCB(Widget w,
     MString label(disp_value_arg->full_name());
 
     XtVaSetValues (dependent_display_dialog,
-		   XmNtextString, XmString(label),
+		   XmNtextString, label.xmstring(),
 		   NULL);
     XtManageChild (dependent_display_dialog);
 }
@@ -713,10 +713,10 @@ void DataDisp::unset_delay ()
 
 void DataDisp::set_handlers()
 {
-    source_arg->addHandler(ArgField::Empty, source_argHP);
-    graph_arg->addHandler(ArgField::Empty, graph_argHP);
-    graph_arg->addHandler(ArgField::LosePrimary, graph_unselectHP);
-    gdb->addBusyHandler(GDBAgent::ReadyForQuestion, gdb_ready_for_questionHP);
+    source_arg->addHandler(Empty, source_argHP);
+    graph_arg->addHandler(Empty, graph_argHP);
+    graph_arg->addHandler(LosePrimary, graph_unselectHP);
+    gdb->addBusyHandler(ReadyForQuestion, gdb_ready_for_questionHP);
 }
 
 
@@ -1540,8 +1540,8 @@ void DataDisp::new_displaysSQA (string display_expression, BoxPoint* p)
     assert (stop >= start);
     int count = stop + 1 - start;
 
-    string display_cmds[count];
-    string print_cmds[count];
+    string *display_cmds = new string[count];
+    string *print_cmds   = new string[count];
 
     int j = 0;
     for (int i = start; i < stop + 1; i++) {
@@ -1556,7 +1556,7 @@ void DataDisp::new_displaysSQA (string display_expression, BoxPoint* p)
     {
     case GDB:
     {
-	void* dummy[count];
+	void** dummy = new void *[count];
 	int k = gdb->send_qu_array (display_cmds,
 				    dummy,
 				    count,
@@ -1565,6 +1565,7 @@ void DataDisp::new_displaysSQA (string display_expression, BoxPoint* p)
 	if (k == 0) {
 	    post_gdb_busy(last_origin);
 	}
+	delete[] dummy;
     }
     break;
 
@@ -1573,7 +1574,7 @@ void DataDisp::new_displaysSQA (string display_expression, BoxPoint* p)
 	for (int i = 0; i < count; i++)
 	    gdb_question(display_cmds[i]);
 
-	void* dummy[count];
+	void** dummy = new void *[count];
 	int k = gdb->send_qu_array (print_cmds,
 				    dummy,
 				    count,
@@ -1582,9 +1583,13 @@ void DataDisp::new_displaysSQA (string display_expression, BoxPoint* p)
 	if (k == 0) {
 	    post_gdb_busy(last_origin);
 	}
+	delete[] dummy;
     }
     break;
     }
+
+    delete[] display_cmds;
+    delete[] print_cmds;
 }
 
 // ***************************************************************************
@@ -2007,8 +2012,8 @@ void DataDisp::dependent_displaysSQA (string display_expression,
     assert (stop >= start);
     int count = stop + 1 - start;
 
-    string display_cmds[count];
-    string print_cmds[count];
+    string *display_cmds = new string[count];
+    string *print_cmds   = new string[count];
 
     int j = 0;
     for (int i = start; i < stop + 1; i++) {
@@ -2023,7 +2028,7 @@ void DataDisp::dependent_displaysSQA (string display_expression,
     {
     case GDB:
     {
-	void* dummy[count];
+	void** dummy = new void *[count];
 	int k = gdb->send_qu_array (display_cmds,
 				    dummy,
 				    count,
@@ -2032,6 +2037,7 @@ void DataDisp::dependent_displaysSQA (string display_expression,
 	if (k == 0) {
 	    post_gdb_busy(last_origin);
 	}
+	delete[] dummy;
     }
     break;
 
@@ -2039,7 +2045,7 @@ void DataDisp::dependent_displaysSQA (string display_expression,
     {
 	for (int i = 0; i < count; i++)
 	    gdb_question(display_cmds[i]);
-	void* dummy[count];
+	void** dummy = new void *[count];
 	int k = gdb->send_qu_array (print_cmds,
 				    dummy,
 				    count,
@@ -2048,9 +2054,13 @@ void DataDisp::dependent_displaysSQA (string display_expression,
 	if (k == 0) {
 	    post_gdb_busy(last_origin);
 	}
+	delete[] dummy;
     }
     break;
     }
+
+    delete[] display_cmds;
+    delete[] print_cmds;
 }
 
 // ***************************************************************************
@@ -2219,7 +2229,7 @@ void DataDisp::process_info_display (string& info_display_answer)
 string DataDisp::process_displays (string& displays,
 				   bool& disabling_occurred)
 {
-    Delay delay;
+    Delay d;
 
     string not_my_displays;
     static string disabling_error_msgs;
@@ -2469,7 +2479,7 @@ DataDisp::DataDisp (XtAppContext app_context,
 
     disp_graph = new DispGraph();
 
-    disp_graph->addHandler(DispGraph::Empty, no_displaysHP);
+    disp_graph->addHandler(DispGraph_Empty, no_displaysHP);
 
     Arg args[10];
     int arg = 0;

@@ -50,6 +50,12 @@
 
 enum Displaying {Both, Enabled, Disabled};
 
+// Event-Typen
+const unsigned DispGraph_Empty = 0;          // DispGraph ist leer
+const unsigned NoEnabled  = DispGraph_Empty + 1;
+const unsigned NoDisabled = NoEnabled + 1;
+
+const unsigned DispGraph_NTypes = NoDisabled + 1;
 
 //-----------------------------------------------------------------------------
 // Die Klasse DispGraph
@@ -75,12 +81,6 @@ public:
     bool has_enabled() const { return !no_enabled; }
     bool has_disabled() const { return !no_disabled; }
 
-    // Event-Typen
-    static const unsigned Empty      = 0;          // DispGraph ist leer
-    static const unsigned NoEnabled  = Empty + 1;
-    static const unsigned NoDisabled = NoEnabled + 1;
-
-    static const unsigned NTypes  = NoDisabled + 1;
 
     void addHandler (unsigned    type,
 		     HandlerProc proc,

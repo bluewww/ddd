@@ -49,8 +49,6 @@ class VSLDefList;
 class VSLDef;
 class VSLNode;
 
-typedef bool (VSLNode::*VSLNodeFunc)();
-
 // VSLNode
 
 class VSLNode {
@@ -154,10 +152,6 @@ public:
     virtual bool isTestNode() const        { return false; }
 
     virtual bool isStraight() const        { return false; }
-
-    // Quantoren ueber Praedikate
-    virtual bool exists(VSLNodeFunc func)    { return func(); }
-    virtual bool forAll(VSLNodeFunc func)    { return func(); }
 
     // #NameNode's zurueckgeben
     virtual unsigned nargs() const            { return 0; }

@@ -47,9 +47,9 @@
 */
 
 // The header.
-const char FIGHEAD[]    = "#FIG 2.1\n"
-                          "80 2\n"
-                          "#Creator: Box::print() by Christian Lindig\n";
+#define FIGHEAD "#FIG 2.1\n" \
+                "80 2\n"     \
+                "#Creator: Box::print() by Christian Lindig\n"
 
 
 /*
@@ -170,22 +170,22 @@ const char FIGHEAD[]    = "#FIG 2.1\n"
 */ 
 
 // A black line (for edges, depth = 0)
-const char EDGEHEAD1[]  = "2 1 0 "; // +thickness
-const char EDGEHEAD2[]  = " -1 2 0 0 0.000 0 0 0\n\t";
+#define EDGEHEAD1 "2 1 0 " // +thickness
+#define EDGEHEAD2 " -1 2 0 0 0.000 0 0 0\n\t"
 
 // Same, but with arrows (for edges, depth = 2)
-const char ARROWHEAD1[] = "2 1 0 "; // +thickness
-const char ARROWHEAD2[] = " -1 2 0 0 0.000 0 1 0\n\t -1 -1 1 4 10\n\t";
+#define ARROWHEAD1 "2 1 0 " // +thickness
+#define ARROWHEAD2 " -1 2 0 0 0.000 0 1 0\n\t -1 -1 1 4 10\n\t"
 
 // A black line (for boxes, depth = 0)
-const char LINEHEAD1[]  = "2 1 0 "; // +thickness
-const char LINEHEAD2[]  = " -1 0 0 0 0.000 0 0 0\n\t";
+#define LINEHEAD1 "2 1 0 " // +thickness
+#define LINEHEAD2 " -1 0 0 0 0.000 0 0 0\n\t"
 
 // A black rule (for boxes, depth = 0)
-const char RULEHEAD[]   = "2 2 0 1 -1 0 0 21 0.000 0 0 0\n\t";
+#define RULEHEAD "2 2 0 1 -1 0 0 21 0.000 0 0 0\n\t"
 
 // A white rectangle in the background (behind boxes, depth = 1)
-const char CLEANHEAD[]  = "2 2 0 0 7 1 0 21 0.000 0 0 0\n\t";
+#define CLEANHEAD "2 2 0 0 7 1 0 21 0.000 0 0 0\n\t"
 
 
 /*
@@ -215,8 +215,8 @@ const char CLEANHEAD[]  = "2 2 0 0 7 1 0 21 0.000 0 0 0\n\t";
 	-6
 */
 
-const char CMPHEAD[]    = "6 "; // +corners
-const char CMPTAIL[]    = "-6\n";
+#define CMPHEAD "6 " // +corners
+#define CMPTAIL "-6\n"
 
 
 /*
@@ -250,8 +250,8 @@ const char CMPTAIL[]    = "-6\n";
 */
 
 // Texts (depth = 0)
-const char TEXTHEAD1[]  = "4 0 "; // +font +font_size
-const char TEXTHEAD2[]  = " 0 -1 0 0.000 4 ";
+#define TEXTHEAD1 "4 0 " // +font +font_size
+#define TEXTHEAD2 " 0 -1 0 0.000 4 "
 
 #endif // _Nora_printBox_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

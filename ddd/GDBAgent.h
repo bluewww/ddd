@@ -97,12 +97,18 @@ string build_gdb_call(DebuggerType debugger_type,
 		      int argc, char *argv[],
 		      string myArguments = "");
 
+// Handler zum Anzeigen einer Zustandsaenderung
+static const unsigned ReadyForQuestion = 0;
+static const unsigned ReadyForCmd      = ReadyForQuestion + 1;
+
+static const unsigned BusyNTypes       = ReadyForCmd + 1;
+
 //-----------------------------------------------------------------------------
 // Die Klasse GDBAgent
 //-----------------------------------------------------------------------------
 class GDBAgent: public TTYAgent {
 public:
-    DECLARE_TYPE_INFO;
+    DECLARE_TYPE_INFO
 
 protected:
     enum State {ReadyWithPrompt, BusyOnCmd, BusyOnQuestion, BusyOnQuArray,
@@ -122,9 +128,9 @@ public:
 
     ~GDBAgent ();
 
-    void start (OAProc  on_answer,
-		OACProc on_answer_completion,
-		void*   user_data);
+    void do_start (OAProc  on_answer,
+		   OACProc on_answer_completion,
+		   void*   user_data);
 
     // Nach Empfang des ersten gdb-Prompts werden cmds abgeschickt.
     // Bearbeitung aehnlich send_user_cmd_plus.
@@ -177,12 +183,6 @@ public:
 					   || (state == BusyOnInitialCmds);}
     bool isBusyOnQuestion()  const {return (state == BusyOnQuestion)
 					   || (state == BusyOnQuArray);}
-
-    // Handler zum Anzeigen einer Zustandsaenderung
-    static const unsigned ReadyForQuestion = 0;
-    static const unsigned ReadyForCmd      = ReadyForQuestion + 1;
-
-    static const unsigned BusyNTypes       = ReadyForCmd + 1;
 
     void addBusyHandler (unsigned    type,
 			 HandlerProc proc,

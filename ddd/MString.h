@@ -112,10 +112,9 @@ public:
     }
 
     // Conversions
-    operator const XmString() const
-    {
-	return _mstring;
-    }
+    operator const XmString() const { return _mstring; }
+    operator       XmString() const { return _mstring; }
+    XmString xmstring()       const { return _mstring; }
 
     // Attributes
     Dimension baseline(XmFontList fontlist) const
@@ -176,7 +175,7 @@ public:
 // Addition
 inline MString operator + (const MString& m1, const MString& m2)
 {
-    return MString(XmStringConcat(XmString(m1), XmString(m2)));
+    return MString(XmStringConcat(m1.xmstring(), m2.xmstring()));
 }
 
 inline MString operator + (const MString& m, String s)

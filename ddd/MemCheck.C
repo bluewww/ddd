@@ -59,7 +59,7 @@ unsigned MemCheck::allocBytes;	// Bytes in alloc list
 // Validate a header pointer
 inline void MemCheck::validate(MemCheckHeader *p, char *src)
 {
-    if (p->s.magic != MemCheckHeader::MAGIC)
+    if (p->s.magic != MAGIC)
     {
 	cerr << src << ": memory corrupted at " << (void *)p << "\n";
 	abort();
@@ -98,7 +98,7 @@ void *MemCheck::alloc(unsigned nbytes)
 	    }
 
 	    // Insert debugging info
-	    p->s.magic     = MemCheckHeader::MAGIC;
+	    p->s.magic     = MAGIC;
 	    p->s.requested = nbytes;
 	    p->s.tic       = tics++;
 	    
@@ -154,7 +154,7 @@ MemCheckHeader *MemCheck::morecore(unsigned nunits)
 
     // make a single block and "free" it
     up->s.size  = nunits;
-    up->s.magic = MemCheckHeader::MAGIC;
+    up->s.magic = MAGIC;
     _free(up);
     
     return freep;
@@ -176,7 +176,7 @@ void MemCheck::free(void *ap)
     // wipe out memory
     char *wipeout = (char *)ap;
     for (unsigned i = 0; i < bp->s.requested; i++)
-	*wipeout++ = MemCheckHeader::WIPEOUT;
+	*wipeout++ = WIPEOUT;
     
     // delete from alloc list
     MemCheckHeader *prevp = allocp;

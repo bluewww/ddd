@@ -18,7 +18,7 @@
 #ifndef _TERMCAP_H
 #define _TERMCAP_H 1
 
-#if __STDC__
+#if __STDC__ || defined(__cplusplus)
 
 extern int tgetent (char *buffer, const char *termtype);
 
