@@ -617,9 +617,6 @@ void DataDisp::toggleDetailCB(Widget dialog,
 	 dn != 0;
 	 dn = disp_graph->next(ref))
     {
-	if (is_cluster(dn))
-	    continue;
-
 	if (selected(dn))
 	{
 	    DispValue *dv = dn->selected_value();
@@ -3314,6 +3311,22 @@ void DataDisp::refresh_builtin_user_displays()
 		s = new ProgressMeter("Updating clusters");
 
 	    answer = builtin_user_command(cmd, dn);
+
+	    DispValue *dv = dn->value();
+	    
+	    // If any child is enabled, enable cluster as well.
+	    bool enable = false;
+	    for (int i = 0; dv != 0 && i < dv->nchildren(); i++)
+		if (dv->child(i)->enabled())
+		{
+		    enable = true;
+		    break;
+		}
+
+	    if (enable)
+		dn->enable();
+	    else
+		dn->disable();
 	}
 	else
 	{
@@ -3807,15 +3820,15 @@ void DataDisp::new_data_displaysOQAC (const StringArray& answers,
 
 	// Create new display and remember disabling message
 	DispNode *dn = 
-	    new_data_node(var, info->scope, answer, info->plotted);
+	    new_data_node(var, info->scope, answer, false);
 	if (dn == 0)
 	    continue;
 
 	if (cluster_nr == 0)
-	    cluster_nr = new_cluster(info->display_expression);
+	    cluster_nr = new_cluster(info->display_expression, info->plotted);
 
 	// Insert into graph
-	insert_data_node(dn, depend_nr, false, info->plotted);
+	insert_data_node(dn, depend_nr, false, false);
 
 	// Set position
 	BoxPoint box_point = info->point;
@@ -3863,13 +3876,15 @@ void DataDisp::insert_data_node(DispNode *dn, int depend_nr,
 }
 
 // Create a new cluster named NAME and return its number
-int DataDisp::new_cluster(const string& name)
+int DataDisp::new_cluster(const string& name, bool plotted)
 {
-    string cmd = CLUSTER_COMMAND;
-    if (name != "")
-	cmd = cmd + " " + name;
+    string cmd = plotted ? "plot" : "display";
 
-    gdb_command("graph display `"  + cmd + "`", last_origin, 0);
+    string base = CLUSTER_COMMAND;
+    if (name != "")
+	base = base + " " + name;
+
+    gdb_command("graph " + cmd + " `"  + base + "`", last_origin, 0);
     return -next_ddd_display_number;
 }
 
@@ -4220,6 +4235,7 @@ void DataDisp::disable_displaySQ(IntArray& display_nrs, bool verbose,
 	if (dn != 0 && dn->enabled())
 	{
 	    dn->disable();
+	    dn->refresh();
 	    disabled_user_displays++;
 	}
     }
@@ -4304,6 +4320,7 @@ void DataDisp::enable_displaySQ(IntArray& display_nrs, bool verbose,
 	    dn->enable();
 	    if (dn->value() != 0)
 		dn->value()->expandAll();
+	    dn->refresh();
 	    enabled_user_displays++;
 	}
     }

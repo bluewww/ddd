@@ -1304,18 +1304,70 @@ bool DispValue::can_plot1d() const
     return true;
 }
 
+// If the names of all children have the form (PREFIX)(INDEX)(SUFFIX),
+// return the common PREFIX and SUFFIX.
+void DispValue::get_index_surroundings(string& prefix, string& suffix) const
+{
+    assert (nchildren() > 0);
+
+    prefix = child(0)->full_name();
+    suffix = child(0)->full_name();
+
+    for (int i = 1; i < nchildren(); i++)
+    {
+	prefix = common_prefix(prefix, child(i)->full_name());
+	suffix = common_suffix(suffix, child(i)->full_name());
+    }
+}
+
+// If the name has the form (PREFIX)(INDEX)(SUFFIX), return INDEX
+string DispValue::index(const string& prefix, const string& suffix) const
+{
+    string idx = full_name();
+    idx = idx.from(int(prefix.length()));
+    idx = idx.before(int(idx.length() - suffix.length()));
+    strip_space(idx);
+
+    return idx;
+}
+
 bool DispValue::can_plot2d() const
 {
-    if (type() != Array)
-	return false;
-
-    for (int i = 0; i < nchildren(); i++)
+    if (type() == Array)
     {
-	if (!child(i)->can_plot1d())
-	    return false;
+	for (int i = 0; i < nchildren(); i++)
+	{
+	    if (!child(i)->can_plot1d())
+		return false;
+	}
+
+	return true;
     }
 
-    return true;
+    if (nchildren() > 0)
+    {
+	// If we have a list of indexed names, then we can plot in 2d.
+
+	string prefix, suffix;
+	get_index_surroundings(prefix, suffix);
+	
+	for (int i = 0; i < nchildren(); i++)
+	{
+	    string idx = child(i)->index(prefix, suffix);
+	    if (!idx.matches(rxdouble) && !idx.matches(rxint))
+		return false;
+	}
+
+	for (int i = 0; i < nchildren(); i++)
+	{
+	    if (!child(i)->can_plot1d())
+		return false;
+	}
+
+	return true;
+    }
+
+    return false;
 }
 
 bool DispValue::can_plot3d() const
@@ -1442,7 +1494,7 @@ string DispValue::num_value() const
 
 void DispValue::plot1d(PlotAgent *plotter, int ndim) const
 {
-    plotter->start_plot(full_name(), ndim);
+    plotter->start_plot(make_title(full_name()), ndim);
 
     string val = num_value();
 
@@ -1474,20 +1526,37 @@ void DispValue::plot1d(PlotAgent *plotter, int ndim) const
 
 void DispValue::plot2d(PlotAgent *plotter, int ndim) const
 {
-    plotter->start_plot(full_name(), ndim);
-
-    int index;
-    if (_have_index_base)
-	index = _index_base;
-    else
-	index = gdb->default_index_base();
-
-    for (int i = 0; i < nchildren(); i++)
+    if (type() == Array)
     {
-	DispValue *c = child(i);
-	for (int ii = 0; ii < c->repeats(); ii++)
+	plotter->start_plot(make_title(full_name()), ndim);
+
+	int index;
+	if (_have_index_base)
+	    index = _index_base;
+	else
+	    index = gdb->default_index_base();
+
+	for (int i = 0; i < nchildren(); i++)
 	{
-	    plotter->add_point(index++, c->num_value());
+	    DispValue *c = child(i);
+	    for (int ii = 0; ii < c->repeats(); ii++)
+	    {
+		plotter->add_point(index++, c->num_value());
+	    }
+	}
+    }
+    else
+    {
+	string prefix, suffix;
+	get_index_surroundings(prefix, suffix);
+
+	plotter->start_plot(prefix + "x" + suffix, ndim);
+
+	for (int i = 0; i < nchildren(); i++)
+	{
+	    DispValue *c = child(i);
+	    string idx = c->index(prefix, suffix);
+	    plotter->add_point(atof(idx), c->num_value());
 	}
     }
 
@@ -1496,7 +1565,7 @@ void DispValue::plot2d(PlotAgent *plotter, int ndim) const
 
 void DispValue::plot3d(PlotAgent *plotter, int ndim) const
 {
-    plotter->start_plot(full_name(), ndim);
+    plotter->start_plot(make_title(full_name()), ndim);
 
     int index;
     if (_have_index_base)

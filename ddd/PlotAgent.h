@@ -113,7 +113,9 @@ public:
     // Add plot point
     void add_point(const string& v, int dim);
     void add_point(int x, const string& v);
+    void add_point(double x, const string& v);
     void add_point(int x, int y, const string& v);
+    void add_point(double x, double y, const string& v);
 
     // Add a break
     void add_break();

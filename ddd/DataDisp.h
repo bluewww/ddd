@@ -508,7 +508,7 @@ private:
     // Clustering stuff
     static void insert_data_node(DispNode *dn, int depend_nr,
 				 bool clustered, bool plotted);
-    static int new_cluster(const string& name = "");
+    static int new_cluster(const string& name = "", bool plotted = false);
     static int current_cluster();
 
     static DispValue *update_hook(string& value);

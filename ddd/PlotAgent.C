@@ -304,7 +304,29 @@ void PlotAgent::add_point(int x, const string& v)
     }
 }
 
+void PlotAgent::add_point(double x, const string& v)
+{
+    if (ndim > 2)
+	add_point(x, 0.0, v);
+    else
+    {
+	plot_os << x << '\t' << v << '\n';
+	add_x(x);
+	add_v(atof(v));
+    }
+}
+
 void PlotAgent::add_point(int x, int y, const string& v)
+{
+    assert(ndim == 3);
+
+    plot_os << x << '\t' << y << '\t' << v << '\n';
+    add_x(x);
+    add_y(y);
+    add_v(atof(v));
+}
+
+void PlotAgent::add_point(double x, double y, const string& v)
 {
     assert(ndim == 3);
 

@@ -4,27 +4,78 @@ DDD News						-*- text -*-
 DDD 3.2 [in development]
 ========================
 
-DDD 3.2 brings not much yet.
+DDD 3.2 brings a new documentation and several minor improvements.
 
-- Breakpoint commands are also supported for DBX, Perl, and XDB.
+
+Documentation
+-------------
+
+- There is a new DDD manual, generated from Texinfo source, and coming
+  in HTML, PDF, PostScript, Info, as well as plain text format.
+
+
+Debuggers and Languages
+-----------------------
+
+- The DEC `ladebug' debugger is supported.
+
+
+User Interface
+--------------
+
 - `Breakpoint Properties', `Define Command', and `Debugger Settings'
   have an `Apply' button that applies changes to text fields.
-- Structs can now be rotated, showing their values like a horizontal array.
-- Display `ARRAY[FROM..TO]' of array slices creates a cluster.
+
 - In TTY mode, you can edit and complete the command line as in GDB.
   (Uses GNU readline library.)
+
+- Ctrl+E moves the cursor to the end of the line.  For a `Run'
+  shortcut, use F2/F3 or Shift+Ctrl+E.
+
 - DDD uses the locale as specified by the environment (such as $LANG).
   This allows input of locale characters in DDD dialogs; error
   messages may also come up in your locale.  If you experience any
   problems, set LANG=C when invoking DDD.
-- Ctrl+E moves the cursor to the end of the line.  For a `Run'
-  shortcut, use F2/F3 or Shift+Ctrl+E.
-- [Perl] DDD supports temporary breakpoints in Perl.
-- [GDB] DDD saves the GDB source directory path with the current session.
-- [JDB] DDD saves the JDB class path only with the current session.
-- [DBX] DEC `ladebug' is supported.
 
-DDD 3.2 also incorporates all changes listed below.
+
+Plotting
+--------
+
+- If you have several indexed variables in a cluster (such as X[1],
+  X[3], and X[5]), DDD plots the cluster as 2-D plot, where the X-axis
+  shows the index, and the Y-axis shows the values.
+
+
+Data exploration
+----------------
+
+- Structs can now be rotated.  A horizontally displayed struct
+  saves space by omitting the member names; this very much looks like
+  a horizontal array.
+
+- Array slices `ARRAY[FROM..TO]' are much better supported:
+  * By default, the displayed values are clustered and displayed like an 
+    ordinary array.
+  * Array slices can be plotted, too.
+
+
+Running the Program
+-------------------
+
+- Breakpoint commands are also supported for DBX, Perl, and XDB.
+
+- In Perl, DDD supports temporary breakpoints.
+
+
+Settings
+--------
+
+- DDD saves the GDB source directory path with the current session.
+
+- DDD saves the JDB class path only with the current session.
+
+DDD 3.2 also incorporates all changes and bug fixes listed below.
+
 
 DDD 3.1.7
 =========
@@ -34,7 +85,7 @@ DDD 3.1.7 fixes a number of minor bugs.
 - Auto-raise of menus works much better (and is enabled by default).
 - Value tips of strings containing ` = ' are displayed correctly.
 - In file names, `//' is no longer normalized to `/'.
-- The array syntax `graph display [A..B]' now works for DBX.
+- The array slice syntax `graph display [A..B]' now works for DBX.
 - Using the execution window with Sun DBX 4.0 now should work.
 - [JDB] Thread names with dashes are handled correctly.
 - [HP-UX] Renaming the `~/.ddd/init' file during saving options works.
@@ -42,6 +93,7 @@ DDD 3.1.7 fixes a number of minor bugs.
 
 There are no new features in DDD 3.1.7.  You don't need to upgrade
 unless you suffer from one of these problems.
+
 
 DDD 3.1.6
 =========

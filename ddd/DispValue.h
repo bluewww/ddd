@@ -127,6 +127,14 @@ class DispValue {
 	_cached_box_change = 0;
     }
 
+private:
+    // If the names of all children have the form (PREFIX)(INDEX)(SUFFIX),
+    // return the common PREFIX and SUFFIX.
+    void get_index_surroundings(string& prefix, string& suffix) const;
+
+    // If the name has the form (PREFIX)(INDEX)(SUFFIX), return INDEX
+    string index(const string& prefix, const string& suffix) const;
+
 protected:
     int _links;			// #references (>= 1)
 
