@@ -130,7 +130,7 @@ static string home_dir()
 
 string session_state_dir()
 {
-    char *ddd_state = getenv("DDDSTATE");
+    char *ddd_state = getenv("DDD_STATE");
     if (ddd_state != 0)
 	return ddd_state;
     else
@@ -139,7 +139,7 @@ string session_state_dir()
 
 static string session_base_dir()
 {
-    char *ddd_sessions = getenv("DDDSESSIONS");
+    char *ddd_sessions = getenv("DDD_SESSIONS");
     if (ddd_sessions != 0)
 	return ddd_sessions;
     else
@@ -636,7 +636,7 @@ void set_session(const string& v)
     else
 	session_name = quote(app_data.session);
 
-    StatusDelay delay("Setting current session to " + session_name);
+    set_status("Current session is " + session_name);
     create_session_dir(app_data.session);
 }
 
