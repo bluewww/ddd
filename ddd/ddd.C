@@ -189,6 +189,7 @@ extern "C" {
 #include "ArgField.h"
 #include "DataDisp.h"
 #include "DestroyCB.h"
+#include "DispGraph.h"
 #include "ExitCB.h"
 #include "GraphEdit.h"
 #include "GDBAgent.h"
@@ -1682,8 +1683,8 @@ int main(int argc, char *argv[])
     SourceView::max_popup_expr_length = app_data.max_popup_expr_length;
 
     // Global variables: Setup data display
-    DataDisp::bump_displays          = app_data.bump_displays;
-    DataDisp::hide_inactive_displays = app_data.hide_inactive_displays;
+    DataDisp::bump_displays           = app_data.bump_displays;
+    DispGraph::hide_inactive_displays = app_data.hide_inactive_displays;
 
     // Global variables: Set delays for button and value tips
     help_button_tip_delay = app_data.button_tip_delay;

@@ -288,9 +288,6 @@ XtIntervalId DataDisp::refresh_graph_edit_timer = 0;
 StringArray DataDisp::shortcut_exprs;
 StringArray DataDisp::shortcut_labels;
 
-// Whether to hide disabled displays
-bool DataDisp::hide_inactive_displays = true;
-
 
 //----------------------------------------------------------------------------
 // Helpers
@@ -956,6 +953,7 @@ MString DataDisp::shortcut_help(Widget w)
 // Counter
 struct DataDispCount {
     int all;			// Total # of displays
+    int visible;		// # of non-hidden displays
     int selected;		// # of selected displays
     int selected_expanded;	// # of selected and expanded displays
     int selected_collapsed;	// # of selected and collapsed displays
@@ -965,7 +963,7 @@ struct DataDispCount {
 };
 
 DataDispCount::DataDispCount(DispGraph *disp_graph)
-    : all(0), selected(0),
+    : all(0), visible(0), selected(0),
       selected_expanded(0),
       selected_collapsed(0),
       selected_data(0)
@@ -977,6 +975,9 @@ DataDispCount::DataDispCount(DispGraph *disp_graph)
 	 dn = disp_graph->next(ref))
     {
 	all++;
+
+	if (!dn->nodeptr()->hidden())
+	    visible++;
 
 	if (dn->selected())
 	{
@@ -1673,7 +1674,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 
     // Refresh (), Select All ()
     set_sensitive(graph_popup[GraphItms::Refresh].widget,   count.all > 0);
-    set_sensitive(graph_popup[GraphItms::SelectAll].widget, count.all > 0);
+    set_sensitive(graph_popup[GraphItms::SelectAll].widget, count.visible > 0);
 
     Boolean dereference_ok  = False;
     Boolean rotate_ok       = False;
@@ -1826,7 +1827,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 
     // Set selection.
     // If the entire graph is selected, include position info, too.
-    bool include_position = (count.selected == count.all);
+    bool include_position = (count.selected >= count.visible);
     ostrstream os;
     get_selection(os, include_position);
     string cmd(os);
@@ -2603,7 +2604,7 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
 	return;
     }
 
-    if (gdb->type() == GDB && answer == "")
+    if (answer == "")
     {
 	// No display output (GDB bug).  Get it via `print'
 	gdb_command(gdb->print_command(info->display_expression), 
@@ -3494,15 +3495,10 @@ string DataDisp::process_displays(string& displays,
 	{
 	    if (!disp_string_map.contains(k))
 	    {
-		// Node is inactive (out of scope) or disabled
-		if (hide_inactive_displays && dn->active() && dn->enabled())
+		// Node is no more part of `display' output
+		if (disp_graph->make_inactive(k))
 		{
-		    dn->make_inactive();
-		    changed = true;
-		}
-		if (dn->active() && dn->enabled())
-		{
-		    dn->disable();
+		    // Now inactive
 		    changed = true;
 		}
 	    }
@@ -3517,10 +3513,9 @@ string DataDisp::process_displays(string& displays,
 		    // New value
 		    changed = true;
 		}
-		if (!dn->active())
+		if (disp_graph->make_active(k))
 		{
 		    // Now active
-		    dn->make_active();
 		    changed = true;
 		}
 		if (*strptr != "" && !(strptr->matches(rxwhite)))

@@ -1038,3 +1038,48 @@ void DispGraph::add_routed_alias_edge(Widget w, int alias_disp_nr,
 	*this += new AliasGraphEdge(alias_disp_nr, hint, to);
     }
 }
+
+
+
+//-----------------------------------------------------------------------------
+// Display activation
+//-----------------------------------------------------------------------------
+
+bool DispGraph::hide_inactive_displays = true;
+
+bool DispGraph::make_inactive(int disp_nr)
+{
+    DispNode *dn = get(disp_nr);
+    if (dn == 0)
+	return false;
+
+    if (dn->active() && dn->enabled())
+    {
+	if (!hide_inactive_displays)
+	{
+	    dn->disable();
+	}
+	else
+	{
+	    dn->make_inactive();
+	}
+	return true;
+    }
+
+    return false;
+}
+
+bool DispGraph::make_active(int disp_nr)
+{
+    DispNode *dn = get(disp_nr);
+    if (dn == 0)
+	return false;
+
+    if (!dn->active())
+    {
+	dn->make_active();
+	return true;
+    }
+
+    return false;
+}

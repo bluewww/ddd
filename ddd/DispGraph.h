@@ -65,6 +65,8 @@ class DispGraph: public Graph {
     bool         no_disabled;
 
 public:
+    static bool hide_inactive_displays;
+
     // Constructor
     DispGraph();
 
@@ -101,6 +103,10 @@ public:
     // Un-alias ALIAS_DISP_NR.  Unsuppress ALIAS_DISP_NR.  Return true
     // iff changed.
     bool unalias (int alias_disp_nr);
+
+    // (In)activate display DISP_NR.  Return true iff changed.
+    bool make_active (int disp_nr);
+    bool make_inactive (int disp_nr);
 
     // Determine default positions for NEW_NODE
     BoxPoint default_pos(DispNode *new_node, Widget w, 
