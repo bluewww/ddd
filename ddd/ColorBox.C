@@ -56,7 +56,7 @@ void ColorBox::convert_color(Widget w) const
 
     XColor exact_def;
     Status ok = 
-	XParseColor(XtDisplay(w), colormap, CONST_CAST(char*,color_name().chars()), &exact_def);
+	XParseColor(XtDisplay(w), colormap, color_name().chars(), &exact_def);
 
     if (ok)
     {
