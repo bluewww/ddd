@@ -482,10 +482,7 @@ static void popup_plot_shell(PlotWindowInfo *plot)
 
 	// Pop down working dialog
 	if (plot->working_dialog != 0)
-	{
 	    XtUnmanageChild(plot->working_dialog);
-	    XtPopdown(XtParent(plot->working_dialog));
-	}
 
 	// Pop up shell
 	XtPopup(plot->shell, XtGrabNone);
@@ -608,11 +605,7 @@ static void popdown_plot_shell(PlotWindowInfo *plot)
 
     // Manage dialogs
     if (plot->working_dialog != 0)
-    {
 	XtUnmanageChild(plot->working_dialog);
-	XtPopdown(XtParent(plot->working_dialog));
-    }
-
     if (plot->command_dialog != 0)
 	XtUnmanageChild(plot->command_dialog);
     if (plot->export_dialog != 0)
