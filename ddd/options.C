@@ -51,6 +51,7 @@ char options_rcsid[] =
 #include "file.h"
 #include "filetype.h"
 #include "frame.h"
+#include "gdbinit.h"
 #include "post.h"
 #include "resources.h"
 #include "session.h"
@@ -850,40 +851,26 @@ void dddSetDebuggerCB (Widget w, XtPointer client_data, XtPointer call_data)
     if (!info->set)
 	return;
 
-    DebuggerType type = DebuggerType((int)(long)client_data);
-    string title;
+    int t = (int)(long)client_data;
 
-    switch (type)
+    if (t >= 0)
     {
-    case DBX:
-	app_data.debugger = "dbx";
-	break;
+	DebuggerType type = DebuggerType(t);
+	app_data.debugger = default_debugger(type);
 
-    case GDB:
-	app_data.debugger = "gdb";
-	break;
-
-    case XDB:
-	app_data.debugger = "xdb";
-	break;
-
-    case JDB:
-	app_data.debugger = "jdb";
-	break;
-
-    case PYDB:
-	app_data.debugger = "pydb";
-	break;
-
-    case PERL:
-	app_data.debugger = "perl";
-	title = "Perl";
-	break;
+	string title;
+	if (type == PERL)
+	    title = "Perl";
+	else
+	    title = upcase(app_data.debugger);
+	set_status(next_ddd_will_start_with + "a " + title + " debugger.");
     }
-
-    if (title == "")
-	title = upcase(app_data.debugger);
-    set_status(next_ddd_will_start_with + "a " + title + " debugger.");
+    else
+    {
+	app_data.debugger = "auto";
+	set_status("Next " DDD_NAME 
+		   " invocation will determine the debugger automatically.");
+    }
 
     update_options();
     post_startup_warning(w);

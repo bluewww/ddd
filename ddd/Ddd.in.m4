@@ -78,9 +78,8 @@ Ddd*appDefaultsVersion: @VERSION@
 ! User-settable resources
 !-----------------------------------------------------------------------------
 
-! The inferior debugger type. One of: dbx, gdb, xdb, jdb, pydb, perl.
-! Default: gdb.
-Ddd*debugger:
+! The inferior debugger type. One of: gdb, dbx, xdb, jdb, pydb, perl, or auto.
+Ddd*debugger: auto
 
 
 ! The name under which the inferior debugger is to be invoked
@@ -3319,12 +3318,15 @@ Ddd*dataScrollingMenu*panner.labelString:	Panner
 Ddd*dataScrollingMenu*scrollbars.labelString:	Scrollbars
 
 Ddd*preferences*debugger.labelString:		Debugger Type
+Ddd*preferences*debuggerMenu*auto.labelString:	Automatic
 Ddd*debuggerMenu*gdb.labelString:		GDB
 Ddd*debuggerMenu*dbx.labelString:		DBX
 Ddd*debuggerMenu*xdb.labelString:		XDB
 Ddd*debuggerMenu*jdb.labelString:		JDB
 Ddd*debuggerMenu*pydb.labelString:		PYDB
 Ddd*debuggerMenu*perl.labelString:		Perl
+Ddd*debuggerMenu.orientation:	      	        XmVERTICAL
+Ddd*debuggerMenu.numColumns:	      	        3
 
 Ddd*preferences*show.labelString:	        Startup Windows
 Ddd*preferences*splashScreen.labelString:	DDD Splash Screen

@@ -173,33 +173,6 @@ DEFINE_TYPE_INFO_1(GDBAgent, TTYAgent);
 
 
 //-----------------------------------------------------------------------------
-// Determine debugger type from TYPE
-//-----------------------------------------------------------------------------
-
-DebuggerType debugger_type(const string& type)
-{
-    if (type.contains("gdb"))
-	return GDB;
-    if (type.contains("dbx"))
-	return DBX;
-    if (type.contains("xdb"))
-	return XDB;
-    if (type.contains("jdb"))
-	return JDB;
-    if (type.contains("pydb"))
-	return PYDB;
-    if (type.contains("perl"))
-	return PERL;
-
-    cerr << "Unknown debugger type " << quote(type) << "\n";
-    exit(EXIT_FAILURE);
-
-    // Never reached
-    return GDB;
-}
-
-
-//-----------------------------------------------------------------------------
 // Construction and setup
 //-----------------------------------------------------------------------------
 

@@ -41,6 +41,7 @@ char show_rcsid[] =
 #include "configinfo.h"
 #include "cook.h"
 #include "ddd.h"
+#include "gdbinit.h"
 #include "host.h"
 #include "post.h"
 #include "regexps.h"
@@ -79,7 +80,11 @@ void show_invocation(const string& gdb_command, ostream& os)
 
     string gdb_get_help    = sh_command(gdb_command + " -h");
     string gdb_get_version = sh_command(gdb_command + " -v");
-    DebuggerType type = debugger_type(gdb_command);
+
+    DebuggerType type;
+    bool type_ok = get_debugger_type(gdb_command, type);
+    if (!type_ok)
+	type = GDB;
 
     switch (type)
     {

@@ -427,6 +427,9 @@ static XrmOptionDescRec options[] = {
 { "--debugger",             XtNdebuggerCommand,      XrmoptionSepArg, NULL },
 { "-debugger",              XtNdebuggerCommand,      XrmoptionSepArg, NULL },
 
+{ "--automatic-debugger",   XtNdebugger,             XrmoptionNoArg,  "auto" },
+{ "-automatic-debugger",    XtNdebugger,             XrmoptionNoArg,  "auto" },
+
 { "--gdb",                  XtNdebugger,             XrmoptionNoArg,  "gdb" },
 { "-gdb",                   XtNdebugger,             XrmoptionNoArg,  "gdb" },
 
@@ -1184,6 +1187,7 @@ static MMDesc data_scrolling_menu [] =
     MMEnd
 };
 
+static Widget set_debugger_auto_w;
 static Widget set_debugger_gdb_w;
 static Widget set_debugger_dbx_w;
 static Widget set_debugger_xdb_w;
@@ -1204,6 +1208,8 @@ static MMDesc debugger_menu [] =
       NULL, &set_debugger_pydb_w, 0, 0 },
     { "perl", MMToggle, { dddSetDebuggerCB, XtPointer(PERL) },
       NULL, &set_debugger_perl_w, 0, 0 },
+    { "auto", MMToggle, { dddSetDebuggerCB, XtPointer(-1) },
+      NULL, &set_debugger_auto_w, 0, 0 },
     MMEnd
 };
 
@@ -1881,13 +1887,28 @@ int main(int argc, char *argv[])
     // Set up debugger defaults
     if (app_data.debugger[0] == '\0')
     {
+	// No debugger given - use debugger command instead
 	if (app_data.debugger_command[0] == '\0')
 	    app_data.debugger_command = gdb_name;
 	app_data.debugger = app_data.debugger_command;
     }
-    DebuggerType type = debugger_type(app_data.debugger);
+
+    // Determine debugger type
+    DebuggerType debugger_type;
+    bool type_ok = get_debugger_type(app_data.debugger, debugger_type);
+    if (!type_ok)
+    {
+	if (string(app_data.debugger) != "auto")
+	{
+	    cerr << argv[0] << ": unknown debugger type " 
+		 << quote(app_data.debugger) << ", assuming \"auto\"\n";
+	}
+
+	// Invalid debugger type - guess from args
+	debugger_type = guess_debugger_type(argc, argv);
+    }
     if (app_data.debugger_command[0] == '\0')
-	app_data.debugger_command = app_data.debugger;
+	app_data.debugger_command = default_debugger(debugger_type);
 
     // Set host specification
     if (app_data.debugger_rhost && app_data.debugger_rhost[0] != '\0')
@@ -1919,7 +1940,7 @@ int main(int argc, char *argv[])
 	if (!remote_gdb())
 	{
 	    // Override debugger type from log
-	    check_log(app_data.play_log, type);
+	    check_log(app_data.play_log, debugger_type);
 	}
 
 	// Don't overwrite existing log files
@@ -2020,7 +2041,7 @@ int main(int argc, char *argv[])
     argv[argc] = 0;
 
     // Create GDB interface
-    gdb = new_gdb(type, app_data, app_context, argc, argv);
+    gdb = new_gdb(debugger_type, app_data, app_context, argc, argv);
     defineConversionMacro("GDB", gdb->title());
 
     // Set up GDB handlers
@@ -3634,13 +3655,15 @@ void update_options()
     set_toggle(set_separate_windows_w, separate);
     set_toggle(set_attached_windows_w, !separate);
 
-    DebuggerType type = debugger_type(app_data.debugger);
-    set_toggle(set_debugger_gdb_w,  type == GDB);
-    set_toggle(set_debugger_dbx_w,  type == DBX);
-    set_toggle(set_debugger_xdb_w,  type == XDB);
-    set_toggle(set_debugger_jdb_w,  type == JDB);
-    set_toggle(set_debugger_pydb_w, type == PYDB);
-    set_toggle(set_debugger_perl_w, type == PERL);
+    DebuggerType debugger_type;
+    bool type_ok = get_debugger_type(app_data.debugger, debugger_type);
+    set_toggle(set_debugger_gdb_w,  type_ok && debugger_type == GDB);
+    set_toggle(set_debugger_dbx_w,  type_ok && debugger_type == DBX);
+    set_toggle(set_debugger_xdb_w,  type_ok && debugger_type == XDB);
+    set_toggle(set_debugger_jdb_w,  type_ok && debugger_type == JDB);
+    set_toggle(set_debugger_pydb_w, type_ok && debugger_type == PYDB);
+    set_toggle(set_debugger_perl_w, type_ok && debugger_type == PERL);
+    set_toggle(set_debugger_auto_w, !type_ok);
 
     set_sensitive(set_debugger_gdb_w,  have_cmd("gdb"));
     set_sensitive(set_debugger_dbx_w,  have_cmd("dbx"));
@@ -3648,6 +3671,7 @@ void update_options()
     set_sensitive(set_debugger_jdb_w,  have_cmd("jdb"));
     set_sensitive(set_debugger_pydb_w, have_cmd("pydb"));
     set_sensitive(set_debugger_perl_w, have_cmd("perl"));
+    set_sensitive(set_debugger_auto_w, true);
 
     set_toggle(splash_screen_w, app_data.splash_screen);
     set_toggle(startup_tips_w,  app_data.startup_tips);
@@ -4162,13 +4186,15 @@ static void ResetStartupPreferencesCB(Widget, XtPointer, XtPointer)
     notify_set_toggle(set_scrolling_scrollbars_w, 
 	       !initial_app_data.panned_graph_editor);
 
-    DebuggerType type = debugger_type(initial_app_data.debugger);
-    notify_set_toggle(set_debugger_gdb_w,  type == GDB);
-    notify_set_toggle(set_debugger_dbx_w,  type == DBX);
-    notify_set_toggle(set_debugger_xdb_w,  type == XDB);
-    notify_set_toggle(set_debugger_jdb_w,  type == JDB);
-    notify_set_toggle(set_debugger_pydb_w, type == PYDB);
-    notify_set_toggle(set_debugger_perl_w, type == PERL);
+    DebuggerType debugger_type;
+    bool type_ok = get_debugger_type(initial_app_data.debugger, debugger_type);
+    notify_set_toggle(set_debugger_gdb_w,  type_ok && debugger_type == GDB);
+    notify_set_toggle(set_debugger_dbx_w,  type_ok && debugger_type == DBX);
+    notify_set_toggle(set_debugger_xdb_w,  type_ok && debugger_type == XDB);
+    notify_set_toggle(set_debugger_jdb_w,  type_ok && debugger_type == JDB);
+    notify_set_toggle(set_debugger_pydb_w, type_ok && debugger_type == PYDB);
+    notify_set_toggle(set_debugger_perl_w, type_ok && debugger_type == PERL);
+    notify_set_toggle(set_debugger_auto_w, !type_ok);
 
     BindingStyle style = initial_app_data.cut_copy_paste_bindings;
     notify_set_toggle(kde_binding_w, style == KDEBindings);
@@ -4229,8 +4255,7 @@ static bool startup_preferences_changed()
     if (app_data.panned_graph_editor != initial_app_data.panned_graph_editor)
 	return true;
 
-    if (debugger_type(app_data.debugger) !=
-	debugger_type(initial_app_data.debugger))
+    if (string(app_data.debugger) != string(initial_app_data.debugger))
 	return true;
 
     return false;
@@ -6407,7 +6432,7 @@ static void check_log(const string& logname, DebuggerType& type)
 
 	if (log_line.contains("+  ", 0))
 	{
-	    type = debugger_type(log_line);
+	    get_debugger_type(log_line, type);
 	    return;
 	}
     }

@@ -115,8 +115,6 @@ typedef void (* OQACProc) (const StringArray& complete_answers,
 			   void *user_data);
 
 //-----------------------------------------------------------------------------
-// Determine debugger type
-DebuggerType debugger_type(const string& type);
 
 // Create appropriate call for the given debugger
 string build_gdb_call(DebuggerType debugger_type,
@@ -469,7 +467,8 @@ public:
     // True if debugger supports calling system functions
     bool has_system_calls() const
     {
-	return type() == GDB || type() == XDB || type() == DBX || type() == PERL;
+	return type() == GDB || type() == XDB || type() == DBX || 
+	    type() == PERL;
     }
 
     // True if debugger supports loading and examining executables
@@ -506,13 +505,15 @@ public:
     // True if debugger supports `shell'
     bool has_shell_command() const
     {
-	return type() == GDB || type() == XDB || type() == DBX || type() == PERL;
+	return type() == GDB || type() == XDB || type() == DBX || 
+	    type() == PERL;
     }
 
     // True if debugger has numbered breakpoints
     bool has_numbered_breakpoints()
     {
-	return type() == GDB || type() == DBX || type() == XDB || type() == PYDB;
+	return type() == GDB || type() == DBX || type() == XDB || 
+	    type() == PYDB;
     }
 
     // True if debugger supports temporary breakpoints

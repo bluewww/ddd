@@ -33,12 +33,15 @@ char gdbinit_rcsid[] =
 #pragma implementation
 #endif
 
+#include "gdbinit.h"
+
 #include <X11/Intrinsic.h>
 #include <iostream.h>
 #include <fstream.h>
 #include <ctype.h>
 
-#include "gdbinit.h"
+#include "assert.h"
+#include "filetype.h"
 #include "shell.h"
 #include "string-fun.h"
 #include "ddd.h"
@@ -207,4 +210,133 @@ static void InvokeGDBFromShellHP(Agent *source, void *client_data,
 	    gdb->removeHandler(Input, InvokeGDBFromShellHP, client_data);
 	}
     }
+}
+
+
+
+//-----------------------------------------------------------------------------
+// Guess inferior debugger type
+//-----------------------------------------------------------------------------
+
+static string first_line(const string& file)
+{
+    ifstream is(file);
+    if (is.bad())
+	return "";
+
+    char line[BUFSIZ];
+    line[0] = '\0';
+
+    is.getline(line, sizeof(line));
+
+    return line;
+}
+
+static bool have_cmd(const string& cmd)
+{
+    return cmd_file(cmd).contains('/', 0);
+}
+
+// Return an appropriate debugger type from ARGC/ARGV
+DebuggerType guess_debugger_type(int argc, char *argv[])
+{
+    bool have_perl   = have_cmd("perl");
+    bool have_python = have_cmd("python");
+
+    // Check for Perl and Python scripts
+    for (int i = 1; i < argc; i++)
+    {
+	string arg = argv[i];
+
+	if (arg.contains('-', 0))
+	    continue;		// Option
+
+	if (!is_regular_file(arg) || is_binary_file(arg))
+	    continue;		// Not a file or binary file
+
+	string header = first_line(arg);
+
+	if (have_perl && (arg.contains(".pl", -1) || 
+			  header.contains("perl")))
+	{
+	    return PERL;
+	}
+
+	if (have_python && (arg.contains(".py", -1) || 
+			    header.contains("python")))
+	{
+	    return PYDB;
+	}
+    }
+
+    // Check for Java classes
+    if (have_cmd("jdb"))
+    {
+	for (int i = 1; i < argc; i++)
+	{
+	    string arg = argv[i];
+
+	    if (arg.contains('-', 0))
+		continue;		// Option
+
+	    if (is_regular_file(arg + ".java"))
+		return JDB;
+
+	    if (is_regular_file(arg + ".class"))
+		return JDB;
+	}
+    }
+
+    // Return an appropriate inferior debugger
+    if (have_cmd("gdb"))
+	return GDB;
+
+    if (have_cmd("dbx"))
+	return DBX;
+
+    if (have_cmd("xdb"))
+	return XDB;
+
+    // Nothing found -- try GDB.
+    return GDB;
+}
+
+static struct table {
+    DebuggerType type;
+    char *cmd;
+} debuggers[] =
+{
+    { GDB,  "gdb"  },
+    { DBX,  "dbx"  },
+    { XDB,  "xdb"  },
+    { JDB,  "jdb"  },
+    { PYDB, "pydb" },
+    { PERL, "perl" }
+};
+
+// Determine debugger type from DEBUGGER_NAME
+bool get_debugger_type(const string& debugger_name, DebuggerType& type)
+{
+    for (int i = 0; i < int(XtNumber(debuggers)); i++)
+	if (debugger_name.contains(debuggers[i].cmd))
+	{
+	    // Found
+	    type = debuggers[i].type;
+	    return true;
+	}
+	    
+
+    // Failed
+    return false;
+}
+
+char *default_debugger(DebuggerType type)
+{
+    for (int i = 0; i < int(XtNumber(debuggers)); i++)
+	if (type == debuggers[i].type)
+	    return debuggers[i].cmd;
+
+    // This can't happen.
+    assert(0);
+    return "false";
 }
