@@ -309,8 +309,7 @@ void gdbHistoryCB(Widget w, XtPointer, XtPointer)
 {
     if (gdb_history_w)
     {
-	XtManageChild(gdb_history_w);
-	raise_shell(gdb_history_w);
+	manage_and_raise(gdb_history_w);
 	return;
     }
 
@@ -371,7 +370,7 @@ void gdbHistoryCB(Widget w, XtPointer, XtPointer)
     XmListSelectPos(gdb_commands_w, 0, False);
     XmListSetBottomPos(gdb_commands_w, 0);
 
-    XtManageChild(gdb_history_w);
+    manage_and_raise(gdb_history_w);
 }
 
 

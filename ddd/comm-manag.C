@@ -3,7 +3,7 @@
 
 // Copyright (C) 1995-1997 Technische Universitaet Braunschweig, Germany.
 // Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
-// and Andreas Zeller (zeller@ips.cs.tu-bs.de).
+// and Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of the DDD Library.
 // 
@@ -623,6 +623,14 @@ void user_cmdSUC (string cmd, Widget origin,
 	plus_cmd_data->set_command     = cmd;
 	plus_cmd_data->refresh_data    = false;
 	plus_cmd_data->refresh_addr    = false;
+
+	if (gdb->type() == GDB && cmd.contains("history"))
+	{
+	    // Refresh history settings, too
+	    plus_cmd_data->refresh_history_filename = true;
+	    plus_cmd_data->refresh_history_save     = true;
+	    plus_cmd_data->refresh_history_size     = true;
+	}
     }
 
     if (is_break_cmd(cmd))
