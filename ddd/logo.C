@@ -37,7 +37,7 @@ char logo_rcsid[] =
 
 #include "config.h"
 
-#if defined(HAVE_XPM) && defined(HAVE_X11_XPM_H)
+#if HAVE_XPM
 #include <X11/xpm.h>
 #endif
 
