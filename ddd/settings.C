@@ -104,10 +104,10 @@ static void gdb_set_command(string set_command, string value)
 	    confirm_value = values[confirm_w];
 
 	if (confirm_value == "on")
-	    gdb_question("set confirm off");
-	gdb_question(set_command);
+	    gdb_command("set confirm off");
+	gdb_command(set_command);
 	if (confirm_value == "on")
-	    gdb_question("set confirm on");
+	    gdb_command("set confirm on");
     }
 
     if (value != "")
