@@ -6705,6 +6705,8 @@ void SourceView::process_where(string& where_output)
     for (i = 0; i < count; i++)
     {
 	const string& frame = frame_list[i];
+	if (frame == "")
+	    continue;		// Skip empty lines
 	if (frame.contains("Reading ", 0))
 	    continue;		// Skip GDB `Reading in symbols' messages
 
