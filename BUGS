@@ -146,6 +146,6 @@ Volunteers for fixing these and other bugs are welcome!
 
 316 Alias hints of clustered displays remain in place.
 
-317 When restarting DDD, the `file' command requires confirmation.
+319 Clustering an item multiple times causes havoc.
 
-318 (Insert new bugs here)
+320 (Insert new bugs here)
