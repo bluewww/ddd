@@ -325,11 +325,6 @@ static void ReportDeathHP(Agent *, void *, void *);
 static void PopupStatusHistoryCB(Widget, XtPointer, XtPointer);
 static void PopdownStatusHistoryCB(Widget, XtPointer, XtPointer);
 
-#if SHOW_GDB_STATUS
-// GDB status
-static void ShowGDBStatusCB(Widget w, XtPointer, XtPointer);
-#endif
-
 // Argument callback
 static void ActivateCB(Widget, XtPointer client_data, XtPointer call_data);
 
@@ -4023,16 +4018,6 @@ static void PopupStatusHistoryCB(Widget w, XtPointer client_data,
     (void) call_data;		// Use it
     (void) client_data;		// Use it
 
-#if SHOW_GDB_STATUS
-    XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
-
-    if (cbs->event->xbutton.state & ShiftMask)
-    {
-	ShowGDBStatusCB(w, client_data, call_data);
-	return;
-    }
-#endif
-
     history_shell = status_history(w);
 
     Position shell_x, shell_y;
@@ -4078,135 +4063,6 @@ static void PopdownStatusHistoryCB(Widget, XtPointer, XtPointer)
 	XtPopdown(history_shell);
 }
 
-
-#if SHOW_GDB_STATUS
-//-----------------------------------------------------------------------------
-// Show status of inferior debugger
-//-----------------------------------------------------------------------------
-
-static MString yn(bool b)
-{
-    return (b ? rm("yes") : rm("no")) + cr();
-}
-
-static MString cap(const MString& title, bool b)
-{
-    return title + bf(": ") + yn(b);
-}
-
-static MString has(const string& command, bool b)
-{
-    return cap(tb(quote(command)) + bf(" command"), b);
-}
-
-static MString cmd(const string& title, const string& cmd)
-{
-    MString s = bf(title + " command: ");
-    if (cmd == "")
-	return s + rm("-/-") + cr();
-    else
-	return s + tt(cmd) + cr();
-}
-
-static MString expr(const string& title, const string& expr)
-{
-    return bf(title + " expression: ") + tt(expr) + cr();
-}
-
-static MString option(const string& command, const string& opt, bool b)
-{
-    return cap(tb(quote(command)) + bf(" wants ") + tb(quote(opt)), b);
-}
-
-static void ShowGDBStatusCB(Widget w, XtPointer client_data, XtPointer)
-{
-    static Widget info = 0;
-    if (info == 0)
-    {
-	info = verify(XmCreateInformationDialog(find_shell(w), 
-						"gdb_status_dialog",
-						NULL, 0));
-	Delay::register_shell(info);
-	XtAddCallback(info, XmNhelpCallback,   ImmediateHelpCB, NULL);
-
-	Widget cancel = XmMessageBoxGetChild(info, XmDIALOG_CANCEL_BUTTON);
-	XtRemoveAllCallbacks(cancel, XmNactivateCallback);
-	XtAddCallback(cancel, XmNactivateCallback, ShowGDBStatusCB, 
-		      client_data);
-    }
-
-    MString status;
-
-    status += cr() + sl("GENERAL DEBUGGER INFORMATION") + cr();
-    status += bf("Debugger: ") + tt(gdb->path()) + cr();
-    status += bf("Process ID: ") + tt(itostring(gdb->pid())) + cr();
-    status += bf("Master TTY: ") + tt(gdb->master_tty()) + cr();
-    status += bf("Slave TTY: ") + tt(gdb->slave_tty()) + cr();
-    status += bf("Current state: ");
-    if (gdb->isReadyWithPrompt())
-	status += rm("ready") + cr();
-    else
-	status += rm("busy") + cr();
-
-    status += cr() + sl("DEBUGGER CAPABILITIES") + cr();
-    status += bf("Debugger type: ") + rm(gdb->title()) + cr();
-    status += has("clear",   gdb->has_clear_command());
-    status += has("display", gdb->has_display_command());
-    status += has("edit",    gdb->has_setenv_command());
-    status += has("frame",   gdb->has_frame_command());
-    status += has("output",  gdb->has_output_command());
-    status += has("pwd",     gdb->has_pwd_command());
-    status += has("run_io",  gdb->has_run_io_command());
-    status += has("setenv",  gdb->has_setenv_command());
-    status += has("when",    gdb->has_when_command());
-
-    status += cr() + sl("DEBUGGER COMMANDS") + cr();
-    status += cmd("Args",        gdb->info_args_command());
-    status += cmd("Assign",      gdb->assign_command("VAR", "EXPR"));
-    status += cmd("Disassemble", gdb->disassemble_command("deadbeef"));
-    status += cmd("Display",     gdb->display_command());
-    status += cmd("Echo",        gdb->echo_command("TEXT"));
-    status += cmd("Frame",       gdb->frame_command());
-    status += cmd("Locals",      gdb->info_locals_command());
-    status += cmd("Pwd",         gdb->pwd_command());
-    status += cmd("Whatis",      gdb->whatis_command("EXPR"));
-    status += cmd("Where",       gdb->where_command());
-
-    status += cr() + sl("EXPRESSIONS") + cr();
-    status += bf("Current language class: ");
-    switch (gdb->program_language())
-    {
-    case LANGUAGE_C:       status += rm("C"); break;
-    case LANGUAGE_JAVA:    status += rm("Java"); break;
-    case LANGUAGE_PASCAL:  status += rm("Pascal"); break;
-    case LANGUAGE_CHILL:   status += rm("Chill"); break;
-    case LANGUAGE_FORTRAN: status += rm("FORTRAN"); break;
-    case LANGUAGE_OTHER:   status += rm("-/-"); break;
-    }
-    status += cr();
-    status += expr("Address",     gdb->address_expr("EXPR"));
-    status += expr("Dereference", gdb->dereferenced_expr("EXPR"));
-
-    status += cr() + sl("OPTIONS") + cr();
-    status += option("print", "-r", gdb->has_print_r_option());
-    status += option("where", "-h", gdb->has_where_h_option());
-
-    status += cr() + sl("SYNTAX") + cr();
-    status += cap(bf("Named values"), gdb->has_named_values());
-    status += cap(bf("Semicolon after ") + tb(quote("when")),
-		  gdb->has_when_semicolon());
-    status += cap(bf("Stderr redirection via ") + tb(quote(">&")),
-		  gdb->has_err_redirection());
-    status += cap(tb(quote("delete")) + bf(" wants comma-separated args"), 
-		  gdb->has_delete_comma());
-
-    XtVaSetValues(info,
-		  XmNmessageString, status.xmstring(),
-		  NULL);
-
-    XtManageChild(info);
-}
-#endif // SHOW_GDB_STATUS
 
 //-----------------------------------------------------------------------------
 // Helpers
