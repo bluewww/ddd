@@ -849,7 +849,7 @@ inline string::string(char c)
 // was flagging this and it does result in undefined behavior.
 inline void string_DeleteRep(strRep *rep)
 {
-#ifdef HAVE_PLACEMENT_NEW
+#if HAVE_PLACEMENT_NEW
     operator delete(rep);
 #else
     delete[] (char *) rep;
@@ -898,7 +898,7 @@ inline string& string::operator = (char c)
 
 inline string& string::operator = (ostrstream& os)
 {
-#ifdef HAVE_FROZEN_OSTRSTREAM
+#if HAVE_FROZEN_OSTRSTREAM
     // No need to freeze the stream, since the string is copied right away
     int frozen = os.frozen();
 #endif
@@ -906,7 +906,7 @@ inline string& string::operator = (ostrstream& os)
     const char *str = os.str();
     rep = string_Salloc(rep, str, os.pcount(), os.pcount());
 
-#ifdef HAVE_FROZEN_OSTRSTREAM
+#if HAVE_FROZEN_OSTRSTREAM
     os.freeze(frozen);
 #endif
     return *this;
@@ -1098,7 +1098,7 @@ inline string& string:: operator +=(char y)
 }
 
 // Constructive concatenation
-#ifdef HAVE_NAMED_RETURN_VALUES
+#if HAVE_NAMED_RETURN_VALUES
 
 inline string operator + (const string& x, const string& y) return r;
 {

@@ -92,7 +92,7 @@ string ddd_expiration_date()
 
     string pretty_expiration_date;
 
-#ifdef HAVE_STRFTIME
+#if HAVE_STRFTIME
     char buffer[1024];
     strftime(buffer, sizeof buffer, "%x", localtime(&expiration_time));
     pretty_expiration_date = buffer;

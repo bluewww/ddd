@@ -46,7 +46,7 @@ extern "C" int malloc_verify();
 #include <new.h>
 #include <stdlib.h>
 
-#ifdef HAVE_LIMITS_H
+#if HAVE_LIMITS_H
 #include <limits.h>
 #endif
 
@@ -165,7 +165,7 @@ inline static strRep* string_Snew(int newsiz)
     }
 #endif
 
-#ifdef HAVE_PLACEMENT_NEW
+#if HAVE_PLACEMENT_NEW
     strRep* rep = new (operator new (allocsiz)) strRep;
 #else
     strRep* rep = (strRep *) new char[allocsiz];

@@ -948,13 +948,13 @@ static bool _get_core(const string& session, unsigned long flags,
 	    // Remove old target, if any
 	    unlink(target);
 
-#ifdef HAVE_LINK
+#if HAVE_LINK
 	    // Try a hard link from current core file to target
 	    if (link(info.core, target) == 0)
 		return true;
 #endif
 
-#ifdef HAVE_SYMLINK
+#if HAVE_SYMLINK
 	    // Try a symlink link from target to current core file
 	    if (symlink(info.core, target) == 0)
 		return true;

@@ -164,7 +164,7 @@ char ddd_rcsid[] =
 #include <Xm/DragDrop.h>
 #endif
 
-#ifdef HAVE_X11_XMU_EDITRES_H
+#if HAVE_X11_XMU_EDITRES_H
 #include <X11/Xmu/Editres.h>
 #endif
 
@@ -1789,7 +1789,7 @@ int main(int argc, char *argv[])
 	XmInternAtom(XtDisplay(toplevel), "WM_DELETE_WINDOW", False);
     XmAddWMProtocolCallback(command_shell, WM_DELETE_WINDOW, DDDCloseCB, 0);
 
-#ifdef HAVE_X11_XMU_EDITRES_H
+#if HAVE_X11_XMU_EDITRES_H
     XtAddEventHandler(command_shell, EventMask(0), true,
 		      XtEventHandler(_XEditResCheckMessages), NULL);
 #endif
@@ -1841,7 +1841,7 @@ int main(int argc, char *argv[])
 				      toplevel, args, arg));
 	XmAddWMProtocolCallback(data_disp_shell, WM_DELETE_WINDOW, 
 				DDDCloseCB, 0);
-#ifdef HAVE_X11_XMU_EDITRES_H
+#if HAVE_X11_XMU_EDITRES_H
 	XtAddEventHandler(data_disp_shell, EventMask(0), true,
 			  XtEventHandler(_XEditResCheckMessages), NULL);
 #endif
@@ -1902,7 +1902,7 @@ int main(int argc, char *argv[])
 				      toplevel, args, arg));
 	XmAddWMProtocolCallback(source_view_shell, WM_DELETE_WINDOW, 
 				DDDCloseCB, 0);
-#ifdef HAVE_X11_XMU_EDITRES_H
+#if HAVE_X11_XMU_EDITRES_H
 	XtAddEventHandler(source_view_shell, EventMask(0), true,
 			  XtEventHandler(_XEditResCheckMessages), NULL);
 #endif

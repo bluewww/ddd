@@ -41,7 +41,7 @@ char LiterateAgent_rcsid[] =
 #include <stdio.h>		// On Linux, includes _G_config.h
 #include <ctype.h>
 
-#ifdef HAVE_FCNTL_H
+#if HAVE_FCNTL_H
 #include <fcntl.h>
 #endif
 

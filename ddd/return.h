@@ -40,7 +40,7 @@
 //     RETURN(x);
 // }
 
-#ifdef HAVE_NAMED_RETURN_VALUES
+#if HAVE_NAMED_RETURN_VALUES
 
 #define RETURN(r) return
 #define RETURNS(r) return r;
