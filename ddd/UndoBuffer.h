@@ -130,8 +130,9 @@ public:
     static void add(const string& name, const string& value,
 		    bool exec_pos = false);
 
-    // Add command COMMAND to history.
-    static void add_command(const string &command);
+    // Add command COMMAND to history.  If CURRENT_ONLY is set,
+    // re-issue this command only if we're in the current program state.
+    static void add_command(const string &command, bool current_only = false);
 
     // Custom calls
     static void add_position(const string& file_name, int line, bool exec_pos)

@@ -39,24 +39,28 @@
 
 class UndoBufferEntry: public StringStringAssoc {
 public:
-    bool exec_pos;		// True if execution position
-    bool command;		// True if command
+    bool exec_pos;      // True if execution position
+    bool command;       // True if command
+    bool current_only;  // True if command is valid in current state only
 
     UndoBufferEntry()
-	: StringStringAssoc(), exec_pos(false), command(false)
+	: StringStringAssoc(), 
+	  exec_pos(false), command(false), current_only(false)
     {}
 
     UndoBufferEntry(const UndoBufferEntry& entry)
 	: StringStringAssoc(entry), 
 	  exec_pos(entry.exec_pos),
-	  command(entry.command)
+	  command(entry.command),
+	  current_only(entry.current_only)
     {}
 
     UndoBufferEntry& operator = (const UndoBufferEntry& entry)
     {
 	StringStringAssoc::operator = (entry);
-	exec_pos = entry.exec_pos;
-	command  = entry.command;
+	exec_pos     = entry.exec_pos;
+	command      = entry.command;
+	current_only = entry.current_only;
 
 	return *this;
     }

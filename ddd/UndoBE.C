@@ -48,6 +48,9 @@ bool UndoBufferEntry::operator == (const UndoBufferEntry& entry) const
     if (command != entry.command)
 	return false;		// Differing COMMAND values
 
+    if (current_only != entry.current_only)
+	return false;		// Differing CURRENT_ONLY values
+
     StringStringAssocIter iter1(*this);
     StringStringAssocIter iter2(entry);
 

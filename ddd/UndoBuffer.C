@@ -50,7 +50,7 @@ char UndoBuffer_rcsid[] =
 #include "string-fun.h"
 
 #ifndef LOG_UNDO_BUFFER
-#define LOG_UNDO_BUFFER 0
+#define LOG_UNDO_BUFFER 1
 #endif
 
 #define REMAP_COMMAND "@remap "
@@ -87,11 +87,12 @@ void UndoBuffer::add(const UndoBufferEntry& entry)
     if (entry.exec_pos)
     {
 	// Adding a new execution position - remove all non-exec
-	// positions from history, except for commands
+	// positions from history, except for non-current commands
 	UndoBufferArray new_history;
 	for (int i = 0; i < history.size(); i++)
 	{
-	    if (history[i].exec_pos || history[i].command)
+	    if (history[i].exec_pos || 
+		(history[i].command && !history[i].current_only))
 		new_history += history[i];
 	}
 	history = new_history;
@@ -141,7 +142,7 @@ void UndoBuffer::add(const UndoBufferEntry& entry)
 }
 
 // Add command COMMAND to history.
-void UndoBuffer::add_command(const string& command)
+void UndoBuffer::add_command(const string& command, bool current_only)
 {
     string c = command;
     strip_space(c);
@@ -168,6 +169,7 @@ void UndoBuffer::add_command(const string& command)
 	new_entry[UB_COMMAND] = c;
 	new_entry[UB_SOURCE] = current_source;
 	new_entry.command = true;
+	new_entry.current_only = current_only;
 	new_history += new_entry;
 
 	// Add current
@@ -208,6 +210,7 @@ void UndoBuffer::add_command(const string& command)
 	new_entry[UB_COMMAND] = c;
 	new_entry[UB_SOURCE] = current_source;
 	new_entry.command = true;
+	new_entry.current_only = current_only;
 	new_history += new_entry;
 
 	// Add remaining entries
@@ -232,6 +235,8 @@ void UndoBuffer::add_command(const string& command)
 
 	UndoBufferEntry& next_entry = history[history_position];
 	next_entry[UB_COMMAND].prepend(c + '\n');
+	if (current_only)
+	    next_entry.current_only = true;
 	own_processed++;
     }
     else if (own_direction > 0 && own_processed == 0)
@@ -255,6 +260,7 @@ void UndoBuffer::add_command(const string& command)
 	new_entry[UB_COMMAND] = c;
 	new_entry[UB_SOURCE] = current_source;
 	new_entry.command = true;
+	new_entry.current_only = current_only;
 	new_history += new_entry;
 
 	// Add current
@@ -282,6 +288,8 @@ void UndoBuffer::add_command(const string& command)
 
 	UndoBufferEntry& last_entry = history[history_position - 2];
 	last_entry[UB_COMMAND].prepend(c + '\n');
+	if (current_only)
+	    last_entry.current_only = true;
 	own_processed++;
     }
     else
@@ -357,6 +365,8 @@ void UndoBuffer::log()
 	clog << i;
 	if (entry.exec_pos)
 	    clog << "*";
+	if (entry.current_only)
+	    clog << "+";
 	clog << '\t';
 
 	bool first_line = true;
