@@ -3839,7 +3839,7 @@ void SourceView::MoveCursorToGlyphPosCB(Widget w,
     String *params = { 0 };
     XtCallActionProc(text_w, "source-start-select-word", e, params, 0);
 }
-    
+
 
 // Return pixmaps suitable for the widget W
 static Pixmap pixmap(Widget w, char *bits, int width, int height)
@@ -3858,16 +3858,32 @@ static Pixmap pixmap(Widget w, char *bits, int width, int height)
     return pix;
 }
 
+#if XmVERSION >= 2
+const int motif_offset = 1;  // Motif 2.0 adds a 1 pixel border around glyphs
+#else
+const int motif_offset = 0;  // Motif 1.x does not
+#endif
+
 // Create glyph for text
 Widget SourceView::create_glyph(Widget form_w,
 				String name,
 				char *bits, int width, int height)
 {
-    Arg args[10];
+    Arg args[20];
     Cardinal arg = 0;
-    XtSetArg(args[arg], XmNmappedWhenManaged, False);         arg++;
-    XtSetArg(args[arg], XmNtopAttachment,     XmATTACH_FORM); arg++;
-    XtSetArg(args[arg], XmNleftAttachment,    XmATTACH_FORM); arg++;
+    XtSetArg(args[arg], XmNmappedWhenManaged,  False);         arg++;
+    XtSetArg(args[arg], XmNtopAttachment,      XmATTACH_FORM); arg++;
+    XtSetArg(args[arg], XmNleftAttachment,     XmATTACH_FORM); arg++;
+    XtSetArg(args[arg], XmNrecomputeSize,      False);         arg++;
+    XtSetArg(args[arg], XmNmarginBottom,       0);             arg++;
+    XtSetArg(args[arg], XmNmarginTop,          0);             arg++;
+    XtSetArg(args[arg], XmNmarginLeft,         0);             arg++;
+    XtSetArg(args[arg], XmNmarginRight,        0);             arg++;
+    XtSetArg(args[arg], XmNmarginWidth,        0);             arg++;
+    XtSetArg(args[arg], XmNmarginHeight,       0);             arg++;
+    XtSetArg(args[arg], XmNshadowThickness,    0);             arg++;
+    XtSetArg(args[arg], XmNhighlightThickness, 0);             arg++;
+    XtSetArg(args[arg], XmNborderWidth,        0);             arg++;
     Widget w = verify(XmCreatePushButton(form_w, name, args, arg));
     XtRealizeWidget(w);
     XtManageChild(w);
@@ -3876,6 +3892,8 @@ Widget SourceView::create_glyph(Widget form_w,
     arg = 0;
     XtSetArg(args[arg], XmNlabelType, XmPIXMAP); arg++;
     XtSetArg(args[arg], XmNlabelPixmap, pix);    arg++;
+    XtSetArg(args[arg], XmNwidth,  width + 1 + motif_offset);   arg++;
+    XtSetArg(args[arg], XmNheight, height + 1 + motif_offset);  arg++;
     XtSetValues(w, args, arg);
     
     XtAddCallback(w, XmNactivateCallback, MoveCursorToGlyphPosCB, 0);
@@ -4000,7 +4018,7 @@ const int arrow_x_offset = -5;
 const int stop_x_offset = +6;
 
 // Additional offset for multiple breakpoints (pixels)
-const int multiple_stop_x_offset = stop_width - 2;
+const int multiple_stop_x_offset = stop_width + (2 * motif_offset - 2);
 
 
 // Glyph locations
