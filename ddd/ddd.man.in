@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998\-11\-10" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998\-11\-11" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -474,7 +474,7 @@ from the line popup menu.
 .PP
 .PSPIC @srcdir@/PICS/ddd-line-popup.ps 15.3cm
 .PP
-As an even faster alternative, you can sinply double-click on the left
+As an even faster alternative, you can simply double-click on the left
 of the source line to set a breakpoint.
 .PP
 As yet another alternative, you can select `\fBSource\(->Edit
@@ -622,7 +622,7 @@ button 3\fR on the breakpoint symbol and select `\fBProperties\fR'
 from the breakpoint popup menu.  This will pop up a dialog showing the 
 current properties of the selected breakpoint.
 .PP
-As an even faster alternative, you can sinply double-click on the
+As an even faster alternative, you can simply double-click on the
 breakpoint.
 .PP
 .PSPIC @srcdir@/PICS/ddd-bp-properties.ps 15.3cm
@@ -859,7 +859,7 @@ execution window.
 .PP
 You can override the \s-1@DDD@\s+1 stream redirection by giving
 alternate redirection operations as arguments.  For instance, to have
-your program read from a file, but to write ro the execution window,
+your program read from a file, but to write to the execution window,
 invoke your program with `\fB< \fIfile\fR' as argument.  Likewise, to
 redirect the standard error output to the debugger console, use `\fB2>
 /dev/tty\fR' (assuming the inferior debugger and/or your \s-1UNIX\s+1
@@ -1095,8 +1095,8 @@ any thread to make it the current thread.
 .PP
 Using \s-1JDB\s+1, additional functionality is available:
 .IP \(bu 2
-Select a \fIthreadgroup\fR to switch between viewing all threads and
-the threads of the selected threadgroup;
+Select a \fIthread group\fR to switch between viewing all threads and
+the threads of the selected thread group;
 .IP \(bu 2
 Click on `\fBSuspend\fR' to suspend execution of the selected threads;
 .IP \(bu 2
@@ -1946,7 +1946,7 @@ When the graph is printed in a file, two formats are available:
 \fBPostScript\fR\(em\&suitable for enclosing the graph in another document;
 .br
 .IP \(bu 2
-\fB\s-1FIG\s+1\fR\(em\&suitable for postprocessing, using the
+\fB\s-1FIG\s+1\fR\(em\&suitable for post-processing, using the
 \s-1XFIG\s+1 graphic editor, or for conversion into other formats
 (among others \s-1IBMGL\s+1, \s-1L\s-1A\s+1T\dE\uX\s+1, \s-1PIC\s+1),
 using the \s-1TRANSFIG\s+1 or \s-1FIG2DEV\s+1 package.
@@ -2010,7 +2010,7 @@ border lines or a background grid.
 .br
 .IP \(bu 2
 The `\fBPlot\fR' menu changes the plotting style.  The `\fB3-D
-Lines\fR' option uis useful for plotting two-dimensional arrays.
+Lines\fR' option is useful for plotting two-dimensional arrays.
 .br
 .IP \(bu 2
 The `\fBScale\fR' menu allows you to enable logarithmic scaling and to 
@@ -2039,7 +2039,7 @@ scalar's value as a \fIY\fR constant\(em\&that is, a horizontal line.
 So why care about scalars at all?  \s-1@DDD@\s+1 allows you to combine
 multiple values into one plot.  The basic idea is: if you want to plot
 something that is neither an array nor a scalar, \s-1@DDD@\s+1 takes
-all numerical subvalues it can find and plots them all together in one
+all numerical sub-values it can find and plots them all together in one
 window.  For instance, you can plot all local variables by selecting
 `\fBData\(->Display Local Variables\fR', followed by `\fBPlot\fR'.
 This will create a plot containing all numerical values as found in
@@ -2653,7 +2653,7 @@ the Motif style guide.
 The \s-1@DDD@\s+1 tool bar buttons can appear in a variety of styles:
 .TP
 .B "Images"
-This lets each toolbar button show an image illustrating the action.
+This lets each tool bar button show an image illustrating the action.
 .TP
 .B "Captions"
 This shows the action name below the image.
@@ -2663,17 +2663,17 @@ to have only images (saving space) or only captions.
 .PP
 If you choose to have neither images nor captions, tool bar buttons
 are labeled like other buttons, as in \s-1@DDD@\s+1 2.x.  Note that
-this implies that in the stacked window configuration, the common
-toolbar cannot be displayed; it is replaced by two separate toolbars,
-as in \s-1@DDD@\s+1 2.x.
+this implies that in the stacked window configuration, the common tool
+bar cannot be displayed; it is replaced by two separate tool bars, as
+in \s-1@DDD@\s+1 2.x.
 .PP
-If you enable `\fBFlat\fR' buttons (default), the border of toolbar
+If you enable `\fBFlat\fR' buttons (default), the border of tool bar
 buttons will appear only if the mouse pointer is over them.  This
 latest-and-greatest \s-1GUI\s+1 invention can be disabled, such that
 the button border is always shown.
 .PP
-If you enable `\fBColor\fR' buttons, toolbar images will be colored.
-Don't expect too much\(em\&even color toolbar images have a large
+If you enable `\fBColor\fR' buttons, tool bar images will be colored.
+Don't expect too much\(em\&even color tool bar images have a large
 amount of grey.  If \s-1@DDD@\s+1 was built using Motif 2.0 and later,
 you can also choose an `indeterminate' setting, causing the buttons to
 appear in grey by default and in color when entered.
@@ -3015,7 +3015,7 @@ use the command frequently, you may wish to define a `\fBcu\fR'
 command, which again calls `\fBcontuntil\fR' with its argument.  This
 is a nice exercise.)
 .PP
-There is a little drawback with parametrized commands: a user-defined
+There is a little drawback with argument commands: a user-defined
 command in \s-1GDB\s+1 has no means to access the argument list as a
 whole; only the first argument (up to whitespace) is processed.  This
 may change in future \s-1GDB\s+1 releases.
@@ -4889,7 +4889,7 @@ the value of the `\fBLessTifVersion\fR' macro in \fB<Xm/Xm.h>\fR.  If
 \fB1000\fR, disabling all LessTif-specific hacks.
 .TP
 .B "listCoreCommand (\fPclass\fB listCoreCommand)"
-The commmand to list all core files on the remote host.  The string
+The command to list all core files on the remote host.  The string
 `\fB@MASK@\fR' is replaced by a file filter.  The default setting is:
 .sp
 .br
@@ -4900,7 +4900,7 @@ The commmand to list all core files on the remote host.  The string
 .sp
 .TP
 .B "listDirCommand (\fPclass\fB listDirCommand)"
-The commmand to list all directories on the remote host.  The string
+The command to list all directories on the remote host.  The string
 `\fB@MASK@\fR' is replaced by a file filter.  The default setting is:
 .sp
 .br
@@ -4911,7 +4911,7 @@ The commmand to list all directories on the remote host.  The string
 .sp
 .TP
 .B "listExecCommand (\fPclass\fB listExecCommand)"
-The commmand to list all executable files on the remote host.  The string
+The command to list all executable files on the remote host.  The string
 `\fB@MASK@\fR' is replaced by a file filter.  The default setting is:
 .sp
 .br
@@ -4923,7 +4923,7 @@ The commmand to list all executable files on the remote host.  The string
 .sp
 .TP
 .B "listSourceCommand (\fPclass\fB listSourceCommand)"
-The commmand to list all source files on the remote host.  The string
+The command to list all source files on the remote host.  The string
 `\fB@MASK@\fR' is replaced by a file filter.  The default setting is:
 .sp
 .br
@@ -4950,15 +4950,15 @@ process itself as well as the process of the inferior debugger are
 suppressed, too.
 .TP
 .B "rshCommand (\fPclass\fB RshCommand)"
-The remote shell command to invoke tty-based commands on remote
-hosts.  Usually, `\fBremsh\fR', `\fBrsh\fR', or `\fBon\fR'.
+The remote shell command to invoke \s-1TTY\s+1-based commands on
+remote hosts.  Usually, `\fBremsh\fR', `\fBrsh\fR', or `\fBon\fR'.
 .TP
 .B "termCommand (\fPclass\fB TermCommand)"
-The command to invoke a separate tty for showing the input/output of
-the debugged program.  A Bourne shell command to run in the separate
-tty is appended to this string.  The string `\fB@FONT@\fR' is replaced
-by the name of the fixed width font used by \s-1@DDD@\s+1.  A simple
-value is
+The command to invoke a separate \s-1TTY\s+1 for showing the
+input/output of the debugged program.  A Bourne shell command to run
+in the separate \s-1TTY\s+1 is appended to this string.  The string
+`\fB@FONT@\fR' is replaced by the name of the fixed width font used by
+\s-1@DDD@\s+1.  A simple value is
 .sp
 .br
   \fB@Ddd@*termCommand: xterm \-fn @FONT@ \-e /bin/sh \-c\fR
