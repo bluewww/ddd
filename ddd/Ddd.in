@@ -4079,12 +4079,12 @@ Ddd*run_dialog.selectionLabelString:	Run with Arguments
 Ddd*run_dialog*selectionPolicy:		XmSINGLE_SELECT
 
 Ddd*run_dialog*helpString:	\
-@rm This window shows the @sl Argument History.@rm\n\
+@rm You can enter program arguments now.\n\
 \n\
 @DDD@ keeps track of the arguments you gave to the debugged program,\n\
 such that you can re-use them at a later time.\n\
-\n\
 Select specific arguments to have them copied to the argument prompt.\n\
+\n\
 Click on @bf OK @rm or @bf Apply @rm to start the debugged program \
 with the selected arguments.
 
@@ -4096,12 +4096,12 @@ Ddd*make_dialog.selectionLabelString:	Make Target
 Ddd*make_dialog*selectionPolicy:	XmSINGLE_SELECT
 
 Ddd*make_dialog*helpString:	\
-@rm This window shows the @sl Make History.@rm\n\
+@rm You can enter make arguments now.\n\
 \n\
 @DDD@ keeps track of the arguments you gave to the make program,\n\
 such that you can re-use them at a later time.\n\
-\n\
 Select specific arguments to have them copied to the argument prompt.\n\
+\n\
 Click on @bf OK @rm or @bf Apply @rm to start the make program \
 with the selected arguments.
 
