@@ -240,8 +240,6 @@ Volunteers for fixing these and other bugs are welcome!
      explicitly re-disassemble (with caching disabled).  
      [Does somebody care for that?  -AZ]
 
-101* `graph display int' results in an empty box.  No warning.
-
 105* DBX on AIX 3.x does not understand source file names containing `/'.
 
 106. (Insert your bug here)

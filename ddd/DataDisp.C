@@ -1468,7 +1468,10 @@ DispNode *DataDisp::new_node (string& answer)
     case GDB:
 	disp_nr_str = read_disp_nr_str (answer, gdb);
 	if (disp_nr_str == "")
+	{
+	    post_gdb_message(answer, last_origin);
 	    return 0;
+	}
 	break;
 
     case DBX:
@@ -1479,6 +1482,12 @@ DispNode *DataDisp::new_node (string& answer)
     }
 
     string name = read_disp_name (answer, gdb);
+    if (name == "")
+    {
+	post_gdb_message (answer, last_origin);
+	return 0;
+    }
+
     DispNode* dn = 0;
 
     if (is_disabling (answer, gdb))
@@ -2185,8 +2194,11 @@ void DataDisp::dependent_displaysOQAC (string answers[],
 
     for (int i = 0; i < count; i++) {
 	if (!contains_display (answers[i], gdb))
-	    post_gdb_message (answers[i], last_origin);
-	else {
+	{
+	    disabling_error_msgs += answers[i] + '\n';
+	}
+	else 
+	{
 	    // DispNode erzeugen und ggf. disabling-Meldung ausgeben
 	    string disp_nr_str;
 
@@ -2206,34 +2218,42 @@ void DataDisp::dependent_displaysOQAC (string answers[],
 	    }
 
 	    name = read_disp_name (answers[i], gdb);
-	    if (is_disabling (answers[i], gdb))
+	    if (name == "")
 	    {
-		disabling_error_msgs += answers[i];
-		dn = new DispNode(disp_nr_str, name);
+		disabling_error_msgs += answers[i] + '\n';
 	    }
 	    else
 	    {
-		dn = new DispNode(disp_nr_str, name, answers[i]);
+		if (is_disabling (answers[i], gdb))
+		{
+		    disabling_error_msgs += answers[i] + '\n';
+		    dn = new DispNode(disp_nr_str, name);
+		}
+		else
+		{
+		    dn = new DispNode(disp_nr_str, name, answers[i]);
+		}
+
+		BoxPoint box_point =
+		    disp_graph->default_dependent_box_point(dn, 
+							    graph_edit, 
+							    old_disp_nr);
+		
+		dn->moveTo(box_point);
+		dn->selected() = true;
+
+		// in den Graphen einfuegen
+		string nr = dn->disp_nr();
+		disp_graph->insert_dependent(get_positive_nr(nr), 
+					     dn, old_disp_nr);
 	    }
-
-	    BoxPoint box_point =
-		disp_graph->default_dependent_box_point(dn, 
-							graph_edit, 
-							old_disp_nr);
-
-	    dn->moveTo(box_point);
-	    dn->selected() = true;
-
-	    // in den Graphen einfuegen
-	    string nr = dn->disp_nr();
-	    disp_graph->insert_dependent(get_positive_nr(nr), dn, old_disp_nr);
 	}
     }
 
     delete[] answers;
     delete[] qu_datas;
 
-    if ( disabling_error_msgs != "")
+    if (disabling_error_msgs != "")
 	post_gdb_message (disabling_error_msgs, last_origin);
 
     refresh_graph_edit();
@@ -2362,16 +2382,19 @@ string DataDisp::process_displays (string& displays,
 		disp_nr = 0;
 		string disp_name = next_display;
 		disp_name = read_disp_name(disp_name, gdb);
-		MapRef ref;
-		for (DispNode* dn = disp_graph->first(ref); 
-		     dn != 0;
-		     dn = disp_graph->next(ref))
+		if (disp_name != "")
 		{
-		    if (dn->name() == disp_name)
+		    MapRef ref;
+		    for (DispNode* dn = disp_graph->first(ref); 
+			 dn != 0;
+			 dn = disp_graph->next(ref))
 		    {
-			string nr = dn->disp_nr();
-			disp_nr = get_positive_nr(nr);
-			break;
+			if (dn->name() == disp_name)
+			{
+			    string nr = dn->disp_nr();
+			    disp_nr = get_positive_nr(nr);
+			    break;
+			}
 		    }
 		}
 	    }
