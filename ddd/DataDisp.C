@@ -4338,7 +4338,7 @@ void DataDisp::process_info_display(string& info_display_answer,
 
 	    // Create new deferred node
 	    new_displaySQ(dn->name(), dn->scope(), &pos,
-			  depends_on, DeferIfNeeded, 0, false);
+			  depends_on, DeferIfNeeded, 0, false, false);
 	}
     }
 
