@@ -40,6 +40,9 @@ extern Widget command_shell;
 extern Widget data_disp_shell;
 extern Widget source_view_shell;
 
+// Command tool
+extern Widget tool_shell;
+
 // Shell management
 extern void initial_popup_shell(Widget w);
 extern void popdown_shell(Widget w);
@@ -49,11 +52,13 @@ extern void gdbOpenCommandWindowCB  (Widget, XtPointer, XtPointer);
 extern void gdbOpenSourceWindowCB   (Widget, XtPointer, XtPointer);
 extern void gdbOpenDataWindowCB     (Widget, XtPointer, XtPointer);
 extern void gdbOpenExecWindowCB     (Widget, XtPointer, XtPointer);
+extern void gdbOpenToolWindowCB     (Widget, XtPointer, XtPointer);
 
 extern void gdbCloseCommandWindowCB (Widget, XtPointer, XtPointer);
 extern void gdbCloseSourceWindowCB  (Widget, XtPointer, XtPointer);
 extern void gdbCloseDataWindowCB    (Widget, XtPointer, XtPointer);
 extern void gdbCloseExecWindowCB    (Widget, XtPointer, XtPointer);
+extern void gdbCloseToolWindowCB    (Widget, XtPointer, XtPointer);
 
 // Register this event handler with all shells
 extern void StructureNotifyEH(Widget, XtPointer, XEvent *, Boolean *);

@@ -145,11 +145,11 @@ XtResource ddd_resources[] = {
 	XtPointer(8)
     },
     {
-	XtNcommandButtons,
-	XtCCommandButtons,
+	XtNconsoleButtons,
+	XtCConsoleButtons,
 	XtRString,
 	sizeof(String),
-	XtOffsetOf(AppData, command_buttons),
+	XtOffsetOf(AppData, console_buttons),
 	XtRString,
 	XtPointer("")
     },
@@ -313,7 +313,7 @@ XtResource ddd_resources[] = {
 	sizeof(String),
 	XtOffsetOf(AppData, www_page),
 	XtRString,
-	XtPointer("http://www.cs.tu-bs.de/softech/")
+	XtPointer("http://www.cs.tu-bs.de/softech/ddd/")
     },
     {
         XtNwwwCommand,

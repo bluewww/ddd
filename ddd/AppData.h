@@ -60,8 +60,8 @@
 #define XtCMaxNameLength         "MaxNameLength"
 #define XtNindentAmount          "indentAmount"
 #define XtCIndentAmount          "IndentAmount"
-#define XtNcommandButtons        "commandButtons"
-#define XtCCommandButtons        "CommandButtons"
+#define XtNconsoleButtons        "consoleButtons"
+#define XtCConsoleButtons        "ConsoleButtons"
 #define XtNsourceButtons         "sourceButtons"
 #define XtCSourceButtons         "sourceButtons"
 #define XtNtoolButtons           "toolButtons"
@@ -161,7 +161,7 @@ struct AppData {
     String  vslLibrary;
     int     max_name_length;
     int     indent_amount;
-    String  command_buttons;
+    String  console_buttons;
     String  source_buttons;
     String  tool_buttons;
     Boolean separate_data_window;

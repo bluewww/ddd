@@ -51,11 +51,15 @@ Widget command_shell;
 Widget data_disp_shell;
 Widget source_view_shell;
 
+// Command tool
+Widget tool_shell;
+
 // Flags: shell state
 enum WindowState { PoppedUp, PoppedDown, Iconic, Transient };
 static WindowState command_shell_state     = PoppedDown;
 static WindowState data_disp_shell_state   = PoppedDown;
 static WindowState source_view_shell_state = PoppedDown;
+static WindowState tool_shell_state        = PoppedDown;
 
 void initial_popup_shell(Widget w)
 {
@@ -81,6 +85,8 @@ void initial_popup_shell(Widget w)
 	data_disp_shell_state      = state;
     else if (w == source_view_shell)
 	source_view_shell_state    = state;
+    else if (w == tool_shell)
+	tool_shell_state    = state;
 
     XtPopup(w, XtGrabNone);
 }
@@ -98,6 +104,8 @@ void popup_shell(Widget w)
 	data_disp_shell_state      = PoppedUp;
     else if (w == source_view_shell)
 	source_view_shell_state    = PoppedUp;
+    else if (w == tool_shell)
+	tool_shell_state           = PoppedUp;
 
     // Deiconify window
     XMapWindow(XtDisplay(w), XtWindow(w));
@@ -132,6 +140,8 @@ void popdown_shell(Widget w)
 	data_disp_shell_state   = PoppedDown;
     else if (w == source_view_shell)
 	source_view_shell_state = PoppedDown;
+    else if (w == tool_shell)
+	tool_shell_state        = PoppedDown;
 
     XtPopdown(w);
 }
@@ -147,6 +157,8 @@ void iconify_shell(Widget w)
 	data_disp_shell_state   = Iconic;
     else if (w == source_view_shell)
 	source_view_shell_state = Iconic;
+    else if (w == tool_shell)
+	tool_shell_state        = Iconic;
 
     XIconifyWindow(XtDisplay(w), XtWindow(w),
 		   XScreenNumberOfScreen(XtScreen(w)));
@@ -188,6 +200,8 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 	synthetic = (data_disp_shell_state == Transient);
     else if (w == source_view_shell)
 	synthetic = (source_view_shell_state == Transient);
+    else if (w == tool_shell)
+	synthetic = (tool_shell_state == Transient);
 
     // if (synthetic)
     //    clog << "synthetic event: ";
@@ -204,6 +218,8 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 	    data_disp_shell_state = PoppedUp;
 	else if (w == source_view_shell && source_view_shell_state != PoppedUp)
 	    source_view_shell_state = PoppedUp;
+	else if (w == tool_shell && source_view_shell_state != PoppedUp)
+	    tool_shell_state = PoppedUp;
 	else
 	    return;
 
@@ -225,6 +241,11 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 		popup_shell(source_view_shell);
 		source_view_shell_state = Transient;
 	    }
+	    if (tool_shell_state == Iconic)
+	    {
+		popup_shell(tool_shell);
+		tool_shell_state = Transient;
+	    }
 	    popup_tty(command_shell);
 	}
 	break;
@@ -245,6 +266,10 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 		 && source_view_shell_state != Iconic
 		 && source_view_shell_state != PoppedDown)
 	    source_view_shell_state = Iconic;
+	else if (w == tool_shell
+		 && tool_shell_state != Iconic
+		 && tool_shell_state != PoppedDown)
+	    tool_shell_state = Iconic;
 	else
 	    return;
 
@@ -265,6 +290,11 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 	    {
 		iconify_shell(source_view_shell);
 		source_view_shell_state = Transient;
+	    }
+	    if (tool_shell_state == PoppedUp)
+	    {
+		iconify_shell(tool_shell);
+		tool_shell_state = Transient;
 	    }
 	    iconify_tty(command_shell);
 	}
@@ -321,6 +351,11 @@ void gdbCloseExecWindowCB(Widget w,
     kill_exec_tty();
 }
 
+void gdbCloseToolWindowCB(Widget, XtPointer, XtPointer)
+{
+    popdown_shell(tool_shell);
+}
+
 
 void gdbOpenCommandWindowCB(Widget, XtPointer, XtPointer)
 {
@@ -342,6 +377,11 @@ void gdbOpenExecWindowCB(Widget, XtPointer, XtPointer)
     if (exec_tty_pid() == 0)
 	startup_exec_tty();
     popup_tty(command_shell);
+}
+
+void gdbOpenToolWindowCB(Widget, XtPointer, XtPointer)
+{
+    popup_shell(tool_shell);
 }
 
 

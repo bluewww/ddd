@@ -76,17 +76,17 @@ Ddd*debuggerCommand:
 
 
 ! True if data is to be displayed in a separate top-level window.
-! If this is false, the window is attached to the DDD command window.
+! If this is false, the window is attached to the DDD console window.
 Ddd*separateDataWindow: true
 
 
 ! True if source is to be displayed in a separate top-level window.
-! If this is false, the window is attached to the DDD command window.
+! If this is false, the window is attached to the DDD console window.
 Ddd*separateSourceWindow: true
 
 
 ! True if programs are to be run in a separate top-level window.
-! If this is false, input/output is sent to the DDD command window.
+! If this is false, input/output is sent to the DDD console window.
 Ddd*separateExecWindow: false
 
 
@@ -96,7 +96,7 @@ Ddd*groupIconify: false
 
 
 ! True if the TAB key is to complete text in all DDD windows.
-! If this is false, the TAB key completes in the DDD command window only.
+! If this is false, the TAB key completes in the DDD console window only.
 Ddd*globalTabCompletion: true
 
 
@@ -218,13 +218,13 @@ Ddd*questionTimeout: 10
 ! - `Yes'      : Answer current GDB prompt
 ! - `No'       : Answer current GDB prompt
 
-! The command window buttons (none: no buttons)
-Ddd*commandButtons:
+! The console window buttons (none: no buttons)
+Ddd*consoleButtons:
 ! The following setting was effective in DDD 1.4d and earlier:
-! Ddd*commandButtons: \
+! Ddd*consoleButtons: \
 ! 	Yes:No:interrupt^C
 ! Here is a very extensive setting:
-! Ddd*commandButtons: \
+! Ddd*consoleButtons: \
 ! 	Yes:No:run:Clear:Prev:Next:Apply:interrupt^C
 
 ! The source window buttons (none: no buttons)
@@ -955,14 +955,14 @@ None<Btn3Down>:		graph-select() graph-popup-menu()\n
 
 Ddd*title: @DDD@ Window
 
-Ddd*command_shell.title: 		@DDD@: Command Window
-Ddd*command_shell.iconName: 		@DDD@: Command Window
+Ddd*console_shell.title: 		@DDD@: Debugger Console
+Ddd*console_shell.iconName: 		@DDD@: Debugger Console
 
-Ddd*source_view_shell.title: 		@DDD@: Source Window
-Ddd*source_view_shell.iconName: 	@DDD@: Source Window
+Ddd*source_view_shell.title: 		@DDD@: Program Source
+Ddd*source_view_shell.iconName: 	@DDD@: Program Source
 
-Ddd*data_disp_shell.title: 		@DDD@: Data Window
-Ddd*data_disp_shell.iconName: 		@DDD@: Data Window
+Ddd*data_disp_shell.title: 		@DDD@: Program Data
+Ddd*data_disp_shell.iconName: 		@DDD@: Program Data
 
 
 
@@ -1157,11 +1157,11 @@ Ddd*menubar.options*contextHelpString:	\
 @tt \267 @rm If @bf Global Tab Completion @rm is set, \
 the @key TAB @rm key completes\n\
     arguments in all @DDD@ windows.  Otherwise, the  @key TAB @rm completes\n\
-    in the @DDD@ command window only.\n\
+    in the @DDD@ console window only.\n\
 @tt \267 @rm If @bf Execution Window @rm is set, \
 the program is run in a separate\n\
     terminal window; useful for programs using terminal I/O.  Otherwise,\n\
-    the program is run in the @DDD@ command window.\n\
+    the program is run in the @DDD@ console window.\n\
     This change takes effect the next time the program is run.\n\
 @tt \267 @rm If @bf Suppress X Warnings @rm is set, \
 X warnings are silently ignored.\n\
@@ -1325,18 +1325,21 @@ Ddd*menubar.view.contextHelpString:	\
 \
 @rm This is the @sl Windows menu@rm.\n\
 \n\
-@tt \267 @bf Command... @rm - show the debugger command window.\n\
-@tt \267 @bf Source... @rm - show the source window.\n\
-@tt \267 @bf Data... @rm - show the data window.\n\
-@tt \267 @bf Execution... @rm - show the execution window.
+@tt \267 @bf Command Tool... @rm - show the debugger command tool.\n\
+@tt \267 @bf Debugger Console... @rm - show the debugger console.\n\
+@tt \267 @bf Program Source... @rm - show the program source.\n\
+@tt \267 @bf Program Data... @rm - show the program data.\n\
+@tt \267 @bf Program Execution... @rm - show input/output of the program.
 
-Ddd*viewMenu.command.labelString:		Command...
-Ddd*viewMenu.command.mnemonic:			C
-Ddd*viewMenu.source.labelString:		Source...
+Ddd*viewMenu.tool.labelString:			Command Tool...
+Ddd*viewMenu.tool.mnemonic:			C
+Ddd*viewMenu.console.labelString:		Debugger Console...
+Ddd*viewMenu.console.mnemonic:			D
+Ddd*viewMenu.source.labelString:		Program Source...
 Ddd*viewMenu.source.mnemonic:			S
-Ddd*viewMenu.data.labelString:			Data...
+Ddd*viewMenu.data.labelString:			Program Data...
 Ddd*viewMenu.data.mnemonic:			D
-Ddd*viewMenu.exec.labelString:			Execution...
+Ddd*viewMenu.exec.labelString:			Program Execution...
 Ddd*viewMenu.exec.mnemonic:			E
 
 
@@ -1957,7 +1960,7 @@ Clear the breakpoint at the argument @bf ()@rm.
 
 Ddd*arg_cmd_w.arg_cmd_area*print.contextHelpString:	\
 @bf Print ()@rm\n\
-Print the argument @bf () @rm in the command window.
+Print the argument @bf () @rm in the debugger console.
 
 Ddd*arg_cmd_w.arg_cmd_area*display.contextHelpString:	\
 @bf Display ()@rm\n\
@@ -2030,7 +2033,7 @@ Press the @bf right mouse button @rm to change its properties.
 
 
 !-----------------------------------------------------------------------------
-! Command Window
+! Debugger Console
 !-----------------------------------------------------------------------------
 
 Ddd*gdb_w.value: \
@@ -2053,20 +2056,18 @@ Ddd*gdb_w.cursorPositionVisible:	true
 
 Ddd*gdb_w.contextHelpString:		\
 \
-@rm This is the @sl Command window.@rm\n\
+@rm This is the @sl debugger console window.@rm\n\
 \n\
 You can enter debugging commands here.\n\
-Enter ``@tt help@rm'' at the `@tt (gdb)@rm' or \
-`@tt (dbx)@rm' or `@tt >@rm' prompt\n\
+Enter ``@tt help@rm'' at the debugger prompt\n\
 to get help on debugging commands.
 
 Ddd*command_shell.contextHelpString:		\
 \
-@rm This is the @sl Command window.@rm\n\
+@rm This is the @sl debugger console window.@rm\n\
 \n\
 You can enter debugging commands here.\n\
-Enter ``@tt help@rm'' at the `@tt (gdb)@rm' or \
-`@tt (dbx)@rm' or `@tt >@rm' prompt\n\
+Enter ``@tt help@rm'' at the debugger prompt\n\
 to get help on debugging commands.
 
 
@@ -2104,22 +2105,22 @@ gives a short command description.\n
 ! An empty help string means that the help text for this button
 ! is to be requested from GDB (via the GDB `help' command).
 Ddd*source_buttons*contextHelpString:
-Ddd*command_buttons*contextHelpString:
+Ddd*console_buttons*contextHelpString:
 Ddd*tool_buttons*contextHelpString:
 
 ! Special spacing
 Ddd*source_buttons.spacing:         0
-Ddd*command_buttons.spacing:        0
+Ddd*console_buttons.spacing:        0
 Ddd*source_buttons.packing:         XmPACK_COLUMN
-Ddd*command_buttons.packing:        XmPACK_COLUMN
+Ddd*console_buttons.packing:        XmPACK_COLUMN
 Ddd*source_buttons.entryAlignment:  XmALIGNMENT_CENTER
-Ddd*command_buttons.entryAlignment: XmALIGNMENT_CENTER
+Ddd*console_buttons.entryAlignment: XmALIGNMENT_CENTER
 Ddd*source_buttons*alignment:  	    XmALIGNMENT_CENTER
-Ddd*command_buttons*alignment:      XmALIGNMENT_CENTER
+Ddd*console_buttons*alignment:      XmALIGNMENT_CENTER
 ! Ddd*source_buttons*marginTop:       1
 ! Ddd*source_buttons*marginBottom:    1
-! Ddd*command_buttons*marginTop:      1
-! Ddd*command_buttons*marginBottom:   1
+! Ddd*console_buttons*marginTop:      1
+! Ddd*console_buttons*marginBottom:   1
 
 ! Some buttons have a special meaning; 
 ! so we must provide help on ourselves.
@@ -2661,12 +2662,12 @@ Ddd*terminated_dialog*contextHelpString:	\
 @rm The inferior debugger terminated abnormally.\n\
 You may wish to examine its final output before exiting @DDD@.
 
-Ddd*fatal_dialog.title: @DDD@: Internal Error
+Ddd*fatal_dialog.title: @DDD@: Oops!
 Ddd*fatal_dialog.messageString:   \
 @rm Internal error
 Ddd*fatal_dialog*okLabelString:   Exit
 Ddd*fatal_dialog*contextHelpString: \
-@rm Congratulations!  You have found a bug in @DDD@.\n\
+@rm Oops!  You have found a bug in @DDD@.\n\
 You should better save your work immediately; @DDD@ may fail again soon.\n\
 \n\
 If you can reproduce this bug, please send a bug report\n\
@@ -2813,7 +2814,7 @@ Ddd*tty_exec_error_popup.title: @DDD@: No Execution TTY
 Ddd*tty_exec_error*contextHelpString:	\
 @rm The terminal emulator for the execution window\n\
 could not be invoked.  The debugged process will execute in the\n\
-Command Window instead.\n\
+debugger console instead.\n\
 \n\
 Please verify the contents of the @bf .termCommand @rm resource\n\
 in the @DDD@ application defaults file.

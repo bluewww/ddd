@@ -439,11 +439,12 @@ static MMDesc program_menu[] =
     MMEnd
 };
 
-enum DDDWindow { GDBWindow, SourceWindow, DataWindow, ExecWindow };
+enum DDDWindow { ToolWindow, GDBWindow, SourceWindow, DataWindow, ExecWindow };
 
 static MMDesc command_view_menu[] =
 {
-    { "command",    MMPush, { gdbOpenCommandWindowCB }},
+    { "tool",       MMPush, { gdbOpenToolWindowCB }},
+    { "console",    MMPush, { gdbOpenCommandWindowCB }},
     { "source",     MMPush, { gdbOpenSourceWindowCB }},
     { "data",       MMPush, { gdbOpenDataWindowCB }},
     { "exec",       MMPush, { gdbOpenExecWindowCB }},
@@ -452,7 +453,8 @@ static MMDesc command_view_menu[] =
 
 static MMDesc source_view_menu[] =
 {
-    { "command",    MMPush, { gdbOpenCommandWindowCB }},
+    { "tool",       MMPush, { gdbOpenToolWindowCB }},
+    { "console",    MMPush, { gdbOpenCommandWindowCB }},
     { "source",     MMPush, { gdbOpenSourceWindowCB }},
     { "data",       MMPush, { gdbOpenDataWindowCB }},
     { "exec",       MMPush, { gdbOpenExecWindowCB }},
@@ -461,7 +463,8 @@ static MMDesc source_view_menu[] =
 
 static MMDesc data_view_menu[] =
 {
-    { "command",    MMPush, { gdbOpenCommandWindowCB }},
+    { "tool",       MMPush, { gdbOpenToolWindowCB }},
+    { "console",    MMPush, { gdbOpenCommandWindowCB }},
     { "source",     MMPush, { gdbOpenSourceWindowCB }},
     { "data",       MMPush, { gdbOpenDataWindowCB }},
     { "exec",       MMPush, { gdbOpenExecWindowCB }},
@@ -836,7 +839,7 @@ XmTextPosition promptPosition;
 XmTextPosition messagePosition;
 
 // Buttons
-static Widget command_buttons_w;
+static Widget console_buttons_w;
 static Widget source_buttons_w;
 
 // Strings to be ignored in GDB output
@@ -1287,8 +1290,8 @@ int main(int argc, char *argv[])
     XmTextSetEditable(gdb_w, false);
 
     // source_area (Befehle mit PushButton an gdb) ----------------------------
-    command_buttons_w = make_buttons(paned_work_w, "command_buttons", 
-				     app_data.command_buttons);
+    console_buttons_w = make_buttons(paned_work_w, "console_buttons", 
+				     app_data.console_buttons);
 
     // Paned Window is done
     XtManageChild (paned_work_w);
@@ -1370,7 +1373,7 @@ DDD_NAME " is free software and you are welcome to distribute copies of it\n"
 "    GERMANY\n"
 "\n"
 "Send bug reports to <" ddd_NAME "-bugs@ips.cs.tu-bs.de>\n"
-"Send comments and suggestions to <" ddd_NAME "@ips.cs.tu-bs.de>", "rm");
+"Send comments and suggestions to <" ddd_NAME "@ips.cs.tu-bs.de>\n", "rm");
 
     // Realize all top-level widgets
     XtRealizeWidget(command_shell);
@@ -1450,20 +1453,26 @@ DDD_NAME " is free software and you are welcome to distribute copies of it\n"
     // starts.
     wait_until_mapped(command_shell);
 
-    // Create command tool
-    Widget tool_shell_parent = 
-	source_view_shell ? source_view_shell : command_shell;
-    arg = 0;
-    Widget tool_shell = 
-	verify(XmCreateDialogShell(tool_shell_parent, 
-				   "tool_shell", args, arg));
-    Delay::register_shell(tool_shell);
-    arg = 0;
-    Widget tool_buttons = 
-	verify(XmCreateForm(tool_shell, "tool_buttons", args, arg));
-    add_buttons(tool_buttons, app_data.tool_buttons);
-    XtManageChild(tool_buttons);
-    XtManageChild(tool_shell);
+    if (string(app_data.tool_buttons) != "")
+    {
+	// Create command tool
+	Widget tool_shell_parent = 
+	    source_view_shell ? source_view_shell : command_shell;
+	arg = 0;
+	tool_shell = 
+	    verify(XmCreateDialogShell(tool_shell_parent, 
+				       "tool_shell", args, arg));
+	Delay::register_shell(tool_shell);
+	arg = 0;
+	Widget tool_buttons = 
+	    verify(XmCreateForm(tool_shell, "tool_buttons", args, arg));
+	add_buttons(tool_buttons, app_data.tool_buttons);
+	XtManageChild(tool_buttons);
+	XtManageChild(tool_shell);
+    }
+    if (tool_shell)
+	XtAddEventHandler(tool_shell, StructureNotifyMask, False,
+			  StructureNotifyEH, XtPointer(0));
 
     // Setup TTY interface
     if (app_data.tty_mode)
@@ -1913,7 +1922,7 @@ void _gdb_out(string text)
 	text.gsub(gdb_out_ignore, empty);
 
     set_selection_from_gdb(text);
-    set_buttons_from_gdb(command_buttons_w, text);
+    set_buttons_from_gdb(console_buttons_w, text);
     set_buttons_from_gdb(source_buttons_w, text);
     set_status_from_gdb(text);
     set_tty_from_gdb(text);
@@ -1975,6 +1984,10 @@ void gdbCutSelectionCB(Widget, XtPointer client_data, XtPointer call_data)
     DDDWindow win = DDDWindow(client_data);
     switch (win)
     {
+    case ToolWindow:
+	// Cannot cut from command tool
+	break;
+
     case GDBWindow:
 	XmTextCut(gdb_w, tm);
 	break;
@@ -2001,6 +2014,10 @@ void gdbCopySelectionCB(Widget, XtPointer client_data, XtPointer call_data)
     DDDWindow win = DDDWindow(client_data);
     switch (win)
     {
+    case ToolWindow:
+	// Cannot copy from command tool
+	break;
+
     case GDBWindow:
 	XmTextCopy(gdb_w, tm);
 	break;
@@ -2024,6 +2041,10 @@ void gdbPasteClipboardCB(Widget, XtPointer client_data, XtPointer)
     DDDWindow win = DDDWindow(client_data);
     switch (win)
     {
+    case ToolWindow:
+	// Cannot paste into command tool
+	break;
+
     case GDBWindow:
 	XmTextPaste(gdb_w);
 	break;
@@ -2047,6 +2068,10 @@ void gdbClearSelectionCB(Widget, XtPointer client_data, XtPointer)
     DDDWindow win = DDDWindow(client_data);
     switch (win)
     {
+    case ToolWindow:
+	// Cannot clear command tool
+	break;
+
     case GDBWindow:
 	XmTextReplace(gdb_w, promptPosition, 
 		      XmTextGetLastPosition(gdb_w), "");
@@ -2071,6 +2096,10 @@ void gdbDeleteSelectionCB(Widget w, XtPointer client_data, XtPointer call_data)
     DDDWindow win = DDDWindow(client_data);
     switch (win)
     {
+    case ToolWindow:
+	// Cannot delete from command tool
+	break;
+
     case GDBWindow:
 	XmTextRemove(gdb_w);
 	break;
@@ -2136,11 +2165,16 @@ void gdbUpdateEditCB(Widget, XtPointer, XtPointer)
 void gdbUpdateViewCB(Widget, XtPointer, XtPointer)
 {
     // Check whether the execution tty is running
-
     Boolean b = (exec_tty_pid() > 0);
     set_sensitive(command_view_menu[ExecWindow].widget, b);
     set_sensitive(source_view_menu[ExecWindow].widget,  b);
     set_sensitive(data_view_menu[ExecWindow].widget,    b);
+
+    // Check whether we have a command tool
+    b = (tool_shell != 0);
+    set_sensitive(command_view_menu[ToolWindow].widget, b);
+    set_sensitive(source_view_menu[ToolWindow].widget,  b);
+    set_sensitive(data_view_menu[ToolWindow].widget,    b);
 }
 
 

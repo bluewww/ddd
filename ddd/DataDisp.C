@@ -1700,6 +1700,9 @@ string DataDisp::refresh_display_command()
 	break;
     }
 
+    if (command == "")
+	command = gdb->print_command("42");
+
     return command;
 }
 
@@ -1726,16 +1729,17 @@ void DataDisp::refresh_displayOQC (const string& answer, void *)
 {
     bool disabling_occurred;
 
-    string ans = answer;
-
-    // Antwort auf 'display' auswerten
+    // Process 'display' output - this may disable some displays
+    string ans(answer);
     string not_my_displays = process_displays (ans, disabling_occurred);
 
-    // Bei Fehlermeldung (Disabling...) nochmal refresh.
-    if (disabling_occurred) {
+    // If we had a `disabling' message, refresh again
+    if (disabling_occurred)
+    {
 	refresh_displaySQ();
     }
-    else {
+    else
+    {
 	refresh_graph_edit();
     }
 }
@@ -1957,8 +1961,7 @@ void DataDisp::delete_displayOQC (const string& answer, void *)
 
     case DBX:
     case XDB:
-	// Upon `undisplay', DBX redisplays remaining displays with
-	// values
+	// Upon `undisplay', DBX redisplays remaining displays with values
 	if (answer != "")
 	{
 	    bool disabling_occurred;

@@ -205,14 +205,14 @@ commands.
 .SH "ENTERING COMMANDS"
 .\" ---------------
 .\"
-In the \fIcommand window\fR, you can interact with the command
+In the \fIdebugger console\fR, you can interact with the command
 interface of the inferior debugger.  Enter commands at the \fIdebugger
 prompt\fR\(em\&that is, `\fB(gdb)\fR' for \s-2GDB\s+2, `\fB(dbx)\fR'
 for \s-2DBX\s+2, and `\fB>\fR' for \s-2XDB\s+2.  You can use arbitrary
 debugger commands; use the \s-2\fBRETURN\fR\s+2 key to enter them.
 .PP
 You can \fIrepeat\fR previous and next commands by pressing the
-`\fBUp\fR' and `\fBDown\fR' cursor keys, respectively.  If you enter
+`\fBUp\fR' and `\fBDown\fR' arrow keys, respectively.  If you enter
 an empty line, the last command is repeated as well.  The `\fBCommand
 History...\fR' item in the `\fBCommands...\fR' menu shows the command
 history.
@@ -547,7 +547,7 @@ breakpoint conditions and ignore counts.  Click on the
 `\fBCondition...\fR' and `\fBIgnore Count...\fR' buttons and click on
 the `\fBHelp\fR' button.
 .PP
-More breakpoint features can be invoked through the command window.
+More breakpoint features can be invoked through the debugger console.
 Enter `\fBhelp breakpoints\fR' at the `\fB(gdb)\fR' prompt.
 .PP
 .\"
@@ -1223,7 +1223,7 @@ emulator on the remote host, giving your current `\fBDISPLAY\fR'
 environment variable as address.  If the remote host cannot invoke
 `\fBxterm\fR', or does not have access to your X display, start
 \s-2@DDD@\s+2 with the `\fB\-\-no\-exec\-window\fR' option.  The program
-input/output will then go through the \s-2@DDD@\s+2 command window.
+input/output will then go through the \s-2@DDD@\s+2 debugger console.
 .br
 .IP \(bu 2
 In remote mode, all sources are loaded from the remote host; file
@@ -1410,7 +1410,7 @@ each change.
 .SS "Startup Options"
 By default, \s-2@DDD@\s+2 uses three separate windows for commands,
 source, and data.  To attach the source and data windows to the
-command window, creating one single big \s-2@DDD@\s+2 window, set the
+debugger console, creating one single big \s-2@DDD@\s+2 window, set the
 `\fBWindows\fR' option to `\fBOne Single Window\fR'.  This change
 takes only effect after you have saved options and restarted
 \s-2@DDD@\s+2.  See also the `\fB\-\-attach\-windows\fR' 
@@ -1509,15 +1509,15 @@ inferior debugger.
 .\"
 .TP
 .B \-\-attach\-windows
-Attach the source and data windows to the command window, creating one
+Attach the source and data windows to the debugger console, creating one
 single big \s-2@DDD@\s+2 window.  This gives the good ole
 `\fBxxgdb\fR' or `\fBxdbx\fR' feeling.
 .TP
 .B \-\-attach\-source\-window
-Attaches only the source window to the command window.
+Attaches only the source window to the debugger console.
 .TP
 .B \-\-attach\-data\-window
-Attaches only the source window to the command window.
+Attaches only the source window to the debugger console.
 .TP
 .B \-\-configuration
 Show the \s-2@DDD@\s+2 configuration settings and exit.
@@ -1565,7 +1565,7 @@ Show this manual page and exit.
 .TP
 .B \-\-no\-exec\-window
 Do not run the debugged program in a specially created execution
-window; use the command window instead.  Useful for programs that have
+window; use the debugger console instead.  Useful for programs that have
 little terminal input/output, or for remote debugging.
 .TP
 .B \-\-nw
@@ -1580,7 +1580,7 @@ implementations do not work well with Athena widgets.  See also
 \fB\-\-scrolled\-graph\fR, below.
 .TP
 .B \-\-separate\-windows
-Separate the command, source and data windows.  This is the default.
+Separate the console, source and data windows.  This is the default.
 See also the `\fB\-\-attach\fR' options, above.
 .TP
 .B \-\-scrolled\-graph
@@ -1763,7 +1763,7 @@ future \s-2@DDD@\s+2 release.
 Using \s-2DBX\s+2 3.x or later as inferior debugger, \s-2@DDD@\s+2
 strips C-style and C++-style comments from the \s-2DBX\s+2 output in
 order to operate properly.  This also affects the output of the
-debugged program when sent to the command window.  Using the separate
+debugged program when sent to the debugger console.  Using the separate
 execution window avoids these problems.
 .PP
 Some \s-2DBX\s+2 versions (notably \s-2DEC\s+2 \s-2DBX\s+2) do not
@@ -1780,7 +1780,7 @@ cannot be displayed; under certain circumstances, local displays may
 also be affected.
 .\"
 .SS "General Limitations"
-If command output is sent to the command window, it is impossible for
+If command output is sent to the debugger console, it is impossible for
 \s-2@DDD@\s+2 to distinguish between the output of the debugged
 program and the output of the inferior debugger.  For instance, if
 your program output includes debugger prompts or debugger-like output,
