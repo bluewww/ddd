@@ -71,6 +71,8 @@ static void gdb_reply_timeout(XtPointer client_data, XtIntervalId *)
     assert(gdb_question_running);
 
     GDBReply *reply = (GDBReply *)client_data;
+    assert(!reply->received);
+
     reply->answer   = NO_GDB_ANSWER;
     reply->received = true;
     reply->answered = false;
@@ -79,9 +81,9 @@ static void gdb_reply_timeout(XtPointer client_data, XtIntervalId *)
 // GDB sent a reply - Called from GDBAgent::send_question()
 static void gdb_reply(const string& complete_answer, void *qu_data)
 {
-    assert(gdb_question_running);
-
     GDBReply *reply = (GDBReply *)qu_data;
+    assert(!reply->received);
+
     reply->answer   = complete_answer;
     reply->received = true;
     reply->answered = true;
@@ -138,7 +140,7 @@ static void wait_for_gdb_reply(GDBReply *reply, int timeout)
     {
 	// Reply has been answered or will not be answered any more:
 	// Remove timeout
-	if (timer && timeout > 0)
+	if (timeout > 0)
 	    XtRemoveTimeOut(timer);
     }
 }
