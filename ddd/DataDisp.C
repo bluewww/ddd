@@ -2583,7 +2583,10 @@ DispNode *DataDisp::new_data_node(const string& given_name,
 
     DispNode *dn = new DispNode(nr, title, scope, value);
     if (disabling_occurred)
+    {
 	dn->disable();
+	dn->make_active();
+    }
     return dn;
 }
 
@@ -3537,6 +3540,7 @@ string DataDisp::process_displays(string& displays,
 	    {
 		string error_msg = get_disp_value_str(next_display, gdb);
 		post_gdb_message(error_msg);
+		dn->make_active();
 		dn->disable();
 	    }
 	    else
