@@ -357,6 +357,8 @@ private:
 			 const string& start,
 			 const string& end);
 
+    static MString help_on_bp(int bp, bool detailed);
+
 public:
     // Constructor
     SourceView (XtAppContext app_context,
@@ -506,6 +508,7 @@ public:
 
     // Get a help string for GLYPH; return 0 if none
     static MString help_on_glyph(Widget glyph, bool detailed);
+    static MString help_on_pos(Widget w, XmTextPosition pos, bool detailed);
 
     // Get the position of breakpoint NUM
     static string bp_pos(int num);

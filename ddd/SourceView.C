@@ -4005,8 +4005,11 @@ void SourceView::process_breakpoints(string& info_breakpoints_output)
     delete[] selected;
 }
 
-void SourceView::UpdateBreakpointButtonsCB(Widget, XtPointer, XtPointer)
+void SourceView::UpdateBreakpointButtonsCB(Widget, XtPointer, 
+					   XtPointer call_data)
 {
+    (void) call_data;		// Use it
+
     if (edit_breakpoints_dialog_w == 0)
 	return;
 
@@ -4035,6 +4038,17 @@ void SourceView::UpdateBreakpointButtonsCB(Widget, XtPointer, XtPointer)
 	    }
 	}
     }
+
+#if 0
+    if (call_data != 0)
+    {
+	// Update status line
+	if (breakpoint_nrs.size() == 1)
+	    set_status_mstring(help_on_bp(breakpoint_nrs[0], true));
+	else
+	    set_status("");
+    }
+#endif
 
     // Update buttons
     XtSetSensitive(bp_area[BPButtons::Lookup].widget,
@@ -5139,6 +5153,12 @@ void SourceView::set_display_glyphs(bool set)
 // Return help on a glyph
 MString SourceView::help_on_glyph(Widget w, bool detailed)
 {
+    return help_on_pos(w, 0, detailed);
+}
+
+// Return help on a breakpoint position
+MString SourceView::help_on_pos(Widget w, XmTextPosition pos, bool detailed)
+{
     if (w == 0)
 	return MString(0, true);
 
@@ -5146,11 +5166,17 @@ MString SourceView::help_on_glyph(Widget w, bool detailed)
     bool in_text;
     static int bp_nr;
     static string address;
-    bool pos_found = get_line_of_pos(w, 0, line_nr, address, in_text, bp_nr);
+    bool pos_found = get_line_of_pos(w, pos, line_nr, address, in_text, bp_nr);
 
     if (!pos_found || bp_nr == 0)
 	return MString(0, true);
 
+    return help_on_bp(bp_nr, detailed);
+}
+
+// Return help on a glyph
+MString SourceView::help_on_bp(int bp_nr, bool detailed)
+{
     BreakPoint *bp = bp_map.get(bp_nr);
     if (bp == 0)
 	return MString(0, true);
