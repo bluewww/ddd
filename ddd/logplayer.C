@@ -46,11 +46,22 @@ char logplayer_rcsid[] =
 #include <iomanip.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <unistd.h>		// sleep()
+#include <unistd.h>
+#include <ctype.h>
 
 #include <setjmp.h>
 #include <signal.h>
 #include <string.h>		// strerror()
+
+#if HAVE_TERMIOS_H
+#include <termios.h>
+#endif
+
+extern "C" {
+#if HAVE_TCDRAIN && !HAVE_TCDRAIN_DECL && !defined(tcdrain)
+    int tcdrain(int filedes);
+#endif
+}
 
 #ifndef EXIT_SUCCESS
 #define EXIT_SUCCESS 0
@@ -58,6 +69,10 @@ char logplayer_rcsid[] =
 
 #ifndef EXIT_FAILURE
 #define EXIT_FAILURE 1
+#endif
+
+#ifndef STDOUT_FILENO
+#define STDOUT_FAILNO 1
 #endif
 
 typedef void (*SignalProc)(SIGHANDLERARGS);
@@ -77,6 +92,18 @@ static const char *usage =
 "`/'  search again          `:'  list all commands  `!' issue expected command"
 "\n";
 
+static void put(const string& s)
+{
+    write(STDOUT_FILENO, s.chars(), s.length());
+
+#if HAVE_TCDRAIN || defined(tcdrain)
+    if (isatty(STDOUT_FILENO))
+    {
+	tcdrain(STDOUT_FILENO);
+    }
+#endif
+}
+
 // Simulate a debugger via the DDD log LOGNAME.  If a command matches
 // a DDD command in LOGNAME, issue the appropriate answer.
 void logplayer(const string& logname)
@@ -92,7 +119,7 @@ void logplayer(const string& logname)
 	exit(EXIT_FAILURE);
     }
 
-    cout << "[Playing " + quote(logname) + ".  Use `?' for help]\n";
+    put("[Playing " + quote(logname) + ".  Use `?' for help]\n");
 
     static string out;
     static string last_out;
@@ -102,6 +129,7 @@ void logplayer(const string& logname)
     static bool scanning = false;
     static bool out_seen = false;
     static bool wrapped = false;
+    static bool echoing = false;
     static streampos scan_start, last_input;
     static string expecting;
     static int command_no = 0;
@@ -112,8 +140,7 @@ void logplayer(const string& logname)
     static int sig = 0;
     if ((sig = setjmp(main_loop_env)) != 0)
     {
-	cout << "Quit\n";
-	cout.flush();
+	put("Quit\n");
 
 	scanning = false;
 	wrapped  = false;
@@ -149,10 +176,11 @@ void logplayer(const string& logname)
 	    // Send out accumulated output
 	    if (!scanning)
 	    {
-		cout << out;
-		cout.flush();
-		// sleep(1);
+		if (out.contains(ddd_line, 0))
+		    echoing = true;
+		put(out);
 	    }
+
 	    last_out += out;
 	    out = "";
 	}
@@ -186,7 +214,9 @@ void logplayer(const string& logname)
 		    (c == '/' && (pattern == "" || in.contains(pattern))))
 		{
 		    // Report line
-		    cout << setw(4) << command_no << " " << in << "\n";
+		    ostrstream os;
+		    os << setw(4) << command_no << " " << in << "\n";
+		    put(os);
 
 		    if (c == '/' || pattern != "")
 		    {
@@ -211,11 +241,10 @@ void logplayer(const string& logname)
 		    if (prompt != "")
 			last_prompt = prompt;
 		}
+
 		if (!last_out.contains(last_prompt, -1))
-		{
-		    cout << last_prompt;
-		    cout.flush();
-		}
+		    put(last_prompt);
+
 		last_out = "";
 
 		char *s = fgets(buffer, sizeof buffer, stdin);
@@ -231,6 +260,9 @@ void logplayer(const string& logname)
 		if (ddd_line.contains('\n', -1))
 		    ddd_line = ddd_line.before('\n', -1);
 
+		if (echoing && ddd_line != "" && !isalpha(ddd_line[0]))
+		    put(ddd_line + "\r\n");
+
 		if (ddd_line.contains('q', 0))
 		    exit(EXIT_SUCCESS);
 
@@ -241,6 +273,7 @@ void logplayer(const string& logname)
 		    int line = 1;
 		    bool at_start_of_line = true;
 
+		    ostrstream os;
 		    for (;;)
 		    {
 			char c;
@@ -250,11 +283,11 @@ void logplayer(const string& logname)
 
 			if (at_start_of_line)
 			{
-			    cout << line << '\t';
+			    os << line << '\t';
 			    at_start_of_line = false;
 			}
 
-			cout << c;
+			os << c;
 
 			if (c == '\n')
 			{
@@ -262,19 +295,23 @@ void logplayer(const string& logname)
 			    at_start_of_line = true;
 			}
 		    }
+
+		    put(string(os));
 		}
 	    }
 
 	    if (!scanning && ddd_line == ".")
 	    {
-		cout << "Expecting " 
-		     << command_no << " " << quote(in) << "\n";
+		ostrstream os;
+		os << "Expecting " 
+		   << command_no << " " << quote(in) << "\n";
+		put(os);
 		log.seekg(scan_start);
 		command_no = command_no_start;
 	    }
 	    else if (!scanning && ddd_line == "?")
 	    {
-		cout << usage;
+		put(usage);
 		log.seekg(scan_start);
 		command_no = command_no_start;
 	    }
@@ -297,6 +334,9 @@ void logplayer(const string& logname)
 	    if (scanning && wrapped)
 	    {
 		// Nothing found.  Don't reply.
+		if (echoing && (ddd_line == "" || isalpha(ddd_line[0])))
+		    put(ddd_line + "\r\n");
+
 		scanning = false;
 		log.clear();
 		log.seekg(scan_start);
