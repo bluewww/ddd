@@ -66,11 +66,12 @@ Ddd*appDefaultsVersion:  @VERSION@
 ! User-settable resources
 !-----------------------------------------------------------------------------
 
-! The debugger type (dbx or gdb, defaults to gdb)
+! The inferior debugger type (dbx or gdb, defaults to gdb)
 Ddd*debugger:
 
 
-! The name under which gdb is to be invoked (default: debugger type)
+! The name under which the inferior debugger is to be invoked
+! (default: debugger type)
 Ddd*debuggerCommand:
 
 
@@ -1044,7 +1045,7 @@ and restarting @DDD@)\n\
 @tt \267 @bf Windows @rm sets the window layout.\n\
 @tt \267 @bf Keyboard focus @rm sets the keyboard focus policy.\n\
 @tt \267 @bf Data Scrolling @rm sets the data window scrolling mode.\n\
-@tt \267 @bf Debugger Type @rm sets the default debugger to use.\n\
+@tt \267 @bf Debugger Type @rm sets the type of inferior debugger to use.\n\
 \n\
 @bf Save Options @rm saves the options for the next use of @DDD@.
 
@@ -1603,7 +1604,7 @@ Delete the selected displays.
 Ddd*status_w.alignment:			XmALIGNMENT_BEGINNING
 Ddd*status_w.labelString:		Ready.
 Ddd*status_w.contextHelpString:		\
-@rm This @sl status line @rm shows the last debugger message.
+@rm This @sl status line @rm shows the last message of the inferior debugger.
 
 Ddd*source_text_w.columns:		88
 Ddd*source_text_w.rows:			12
@@ -1877,7 +1878,7 @@ Ddd*source_buttons.contextHelpString:\
 @rm This is a @sl command area @rm.\n\
 \n\
 By clicking on one of the buttons,\n\
-the corresponding command is sent to the debugger.\n\
+the corresponding command is sent to the inferior debugger.\n\
 The context sensitive help for the buttons\n\
 gives a short command description.\n
 
@@ -1886,7 +1887,7 @@ Ddd*command_buttons.contextHelpString:\
 @rm This is a @sl command area @rm.\n\
 \n\
 By clicking on one of the buttons,\n\
-the corresponding command is sent to the debugger.\n\
+the corresponding command is sent to the inferior debugger.\n\
 The context sensitive help for the buttons\n\
 gives a short command description.\n
 
@@ -1904,11 +1905,11 @@ Ddd*?*interrupt.contextHelpString: \
 
 Ddd*?*Yes.contextHelpString:    \
 @bf Yes\n\
-@rm Confirm the debugger question.
+@rm Confirm the question of the inferior debugger.
 
 Ddd*?*No.contextHelpString:     \
 @bf No\n\
-@rm Do @sl not @rm confirm the debugger question.
+@rm Do @sl not @rm confirm the question of the inferior debugger.
 
 Ddd*?*Complete.contextHelpString:	\
 @bf Complete@rm\n\
@@ -2234,7 +2235,7 @@ Ddd*history_dialog*contextHelpString:       \
 sessions, so that you can be certain of precisely what happened.  Use\n\
 this window to manage the @DDD@ command history facility.\n\
 \n\
-Select a specific command to have it copied at the debugger prompt.\n\
+Select a specific command to have it copied at the command prompt.\n\
 Click on @bf Apply @rm to execute the current command.
 
 
@@ -2359,18 +2360,21 @@ Ddd*edit_displays_dialog*buttons*delete.contextHelpString:  \
 @rm Delete the selected data display(s).
 
 
-Ddd*run_dialog.title: @DDD@: Arguments
-Ddd*run_dialog.okLabelString:	 Run
-Ddd*run_command.promptString:	 Arguments
-Ddd*run_command.marginWidth:	 0
-Ddd*run_command.marginHeight:	 10
-Ddd*run_dialog*XmList.fontList: \
--*-lucidatypewriter-medium-r-*-*-12-*=charset
+Ddd*run_dialog.title: @DDD@: Run Program
+Ddd*run_dialog.listLabelString:	 	Arguments
+Ddd*run_dialog.selectionLabelString:	Run with Arguments
+
+Ddd*run_dialog*selectionPolicy:         XmSINGLE_SELECT
 
 Ddd*run_dialog*contextHelpString:	\
-@rm Please select the arguments for the debugged program.\n\
-Press @bf Run @rm to run the program with the selected arguments.\n\
-Press @bf Cancel @rm if you do not want to run the program now.
+@rm This window shows the @sl argument history@rm.\n\
+\n\
+@DDD@ keeps track of the arguments you gave to the debugged program,\n\
+such that you can re-use them at a later time.\n\
+\n\
+Select specific arguments to have them copied to the argument prompt.\n\
+Click on @bf OK @rm or @bf Apply @rm to start the debugged program\n\
+with the current arguments.
 
 
 
@@ -2382,7 +2386,7 @@ Ddd*busy_display_dialog_popup.title: @DDD@: Debugger Busy
 Ddd*busy_dialog.messageString:		\
 @rm The debugger is busy!
 Ddd*busy_dialog*contextHelpString:	\
-@rm The debugger is busy on some commands.\n\
+@rm The inferior debugger is busy on some commands.\n\
 Please try again when the `@tt (gdb)@rm' or `@tt (dbx)@rm' \
 prompt appears.\n\
 You may also interrupt the current debugging command by selecting\n\
@@ -2395,8 +2399,9 @@ Ddd*quit_dialog*okLabelString:       Yes
 Ddd*quit_dialog*cancelLabelString:   No
 Ddd*quit_dialog*defaultButtonType:   XmDIALOG_OK_BUTTON
 Ddd*quit_dialog*contextHelpString:	\
-@rm The debugger is busy and does not react to the ``quit'' command.\n\
-Maybe the debugged process is still running.\n\
+@rm The inferior debugger is busy and does not react\n\
+to the ``quit'' command.\n\
+The debugged process is probably still running.\n\
 \n\
 Before killing a running debugger, you should try to interrupt it\n\
 (by selecting @bf Interrupt @rm from the @bf Program @rm menu).
@@ -2406,7 +2411,7 @@ Ddd*exited_dialog.messageString:   \
 @rm The debugger exited normally.
 Ddd*exited_dialog*okLabelString:   Exit
 Ddd*exited_dialog*contextHelpString:	\
-@rm The debugger exited normally.\n\
+@rm The inferior debugger exited normally.\n\
 You may wish to examine its final output before exiting @DDD@.
 
 Ddd*terminated_dialog_popup.title: @DDD@: Hasta la Vista
@@ -2414,7 +2419,7 @@ Ddd*terminated_dialog.messageString:   \
 @rm The debugger terminated abnormally.
 Ddd*terminated_dialog*okLabelString:   Exit
 Ddd*terminated_dialog*contextHelpString:	\
-@rm The debugger terminated abnormally.\n\
+@rm The inferior debugger terminated abnormally.\n\
 You may wish to examine its final output before exiting @DDD@.
 
 Ddd*fatal_dialog.title: @DDD@: Internal Error
@@ -2443,13 +2448,13 @@ Ddd*yn_dialog*okLabelString:       Yes
 Ddd*yn_dialog*cancelLabelString:   No
 Ddd*yn_dialog*defaultButtonType:   XmDIALOG_OK_BUTTON
 Ddd*yn_dialog*contextHelpString:	\
-@rm This is a debugger question.\n\
-For more details, consult the debugger documentation.
+@rm This is a question of the inferior debugger.\n\
+For more details, consult the GDB or DBX documentation.
 
 Ddd*gdb_message_dialog_popup.title: @DDD@: Debugger Message
 Ddd*gdb_message_dialog*contextHelpString:	\
-@rm This is a debugger message.\n\
-For more details, consult the debugger documentation.
+@rm This is a message of the inferior debugger.\n\
+For more details, consult the GDB or DBX documentation.
 
 Ddd*confirm_overwrite_dialog_popup.title: @DDD@: File Exists
 Ddd*confirm_overwrite_dialog*messageString:       \
@@ -2491,7 +2496,8 @@ This message is also caused by attempting to load an empty source file.
 Ddd*source_file_from_gdb_warning_popup.title: @DDD@: Source From Debugger
 Ddd*source_file_from_gdb_warning*contextHelpString:	\
 @rm The given source file could not be loaded directly.\n\
-Instead, the source was obtained from the debugger, via the ``list'' command.
+Instead, the source was obtained from the inferior debugger,\n\
+via the ``list'' command.
 
 Ddd*source_trunc_error_popup.title: @DDD@: Source Truncated
 Ddd*source_trunc_error*contextHelpString:	\
@@ -2537,7 +2543,7 @@ Ddd*no_such_breakpoint_error*contextHelpString:	\
 
 Ddd*no_completion_error_popup.title: @DDD@: No Completion
 Ddd*no_completion_error*contextHelpString:	\
-@rm Command and argument completion is not supported by your debugger.\n\
+@rm The inferior debugger does not support command and argument completion.\n\
 \n\
 Command completion relies on the GDB `@tt complete@rm' command,\n\
 which is present in GDB 4.13 and later.
@@ -2563,8 +2569,9 @@ in the @DDD@ application defaults file.
 
 Ddd*tty_command_error_popup.title: @DDD@: TTY Failed
 Ddd*tty_command_error*contextHelpString:	\
-@rm @DDD@ sent a `tty' command to the debugger in order to redirect the I/O\n\
-of the debugged process to the execution window.  This command failed.\n\
+@rm @DDD@ sent a `tty' command to the inferior GDB in order to redirect\n\
+input/output of the debugged process to the execution window.\n\
+This command failed.\n\
 \n\
 @DDD@ will now redirect the process I/O explicitly.  This means that\n\
 the command window remains the controlling terminal.

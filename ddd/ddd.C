@@ -149,7 +149,6 @@ char ddd_rcsid[] =
 #include <Xm/AtomMgr.h>
 #include <Xm/MainW.h>
 #include <Xm/PanedW.h>
-#include <Xm/Command.h>
 #include <Xm/Label.h>
 #include <Xm/List.h>      // XmListSelectPos()
 #include <Xm/Text.h>
@@ -298,7 +297,7 @@ void gdbCloseSourceWindowCB  (Widget, XtPointer, XtPointer);
 void gdbCloseDataWindowCB    (Widget, XtPointer, XtPointer);
 void gdbCloseExecWindowCB    (Widget, XtPointer, XtPointer);
 
-void gdbRunWithArgsCB        (Widget, XtPointer, XtPointer);
+void gdbRunCB                (Widget, XtPointer, XtPointer);
 
 void DDDExitCB               (Widget, XtPointer, XtPointer);
 void DDDCloseCB              (Widget, XtPointer, XtPointer);
@@ -408,6 +407,13 @@ void remove_init_file();
 // Controlling TTY
 void tty_command(Agent *source, void *client_data, void *call_data);
 void tty_eof(Agent *source, void *client_data, void *call_data);
+
+// History
+void add_to_history(const string& line);
+
+// Arguments
+void add_to_arguments(string line);
+void update_arguments();
 
 // Help texts
 void show_invocation(DebuggerType type);
@@ -1089,7 +1095,7 @@ static MMDesc file_menu[] =
 
 static MMDesc program_menu[] =
 {
-    { "run",         MMPush, { gdbRunWithArgsCB }},
+    { "run",         MMPush, { gdbRunCB }},
     { "run_again",   MMPush, { gdbCommandCB, "run" }},
     MMSep,
     { "step",        MMPush, { gdbCommandCB, "step" }},
@@ -1492,6 +1498,9 @@ Widget status_w;
 // GDB yes/no widget
 static Widget yn_dialog;
 
+// GDB run dialog
+static Widget run_dialog;
+
 // Last output position
 XmTextPosition promptPosition;
 
@@ -1595,6 +1604,10 @@ static int    gdb_history_size = 100;
 
 // True if the history was just loaded
 static bool   gdb_new_history = true;
+
+// Argument storage
+static StringArray gdb_arguments;
+static Widget gdb_arguments_w;
 
 // True if DDD is about to exit
 static bool ddd_is_exiting = false;
@@ -4457,6 +4470,7 @@ void get_focusAct (Widget w, XEvent*, String*, Cardinal*)
     XmProcessTraversal(w, XmTRAVERSE_CURRENT);
 }
 
+
 //-----------------------------------------------------------------------------
 // Command history
 //-----------------------------------------------------------------------------
@@ -4565,6 +4579,9 @@ void add_to_history(const string& line)
     }
 
     gdb_new_history = false;
+
+    add_to_arguments(line);
+    update_arguments();
 }
 
 // Load history from history file
@@ -4585,17 +4602,22 @@ static void load_history()
 
 	while (is)
 	{
-	    char buffer[BUFSIZ];
-	    buffer[0] = '\0';
+	    char line[BUFSIZ];
+	    line[0] = '\0';
 
-	    is.getline(buffer, sizeof(buffer));
-	    if (buffer[0] != '\0')
-		gdb_history += buffer;
+	    is.getline(line, sizeof(line));
+	    if (line[0] != '\0')
+	    {
+		gdb_history += line;
+		add_to_arguments(line);
+	    }
 	}
 
 	gdb_history += "";
 	gdb_current_history = gdb_history.size() - 1;
 	gdb_new_history = true;
+
+	update_arguments();
     }
 }
 
@@ -4735,6 +4757,8 @@ void gdbHistoryCB(Widget w, XtPointer, XtPointer)
 
     setLabelList(gdb_commands_w, gdb_history.values(), 
 		 selected, gdb_history.size());
+
+    delete[] selected;
 
     set_history_from_line(current_line());
     XmListSelectPos(gdb_commands_w, 0, False);
@@ -5265,77 +5289,143 @@ void gdbUpdateViewCB(Widget, XtPointer, XtPointer)
     set_sensitive(data_view_menu[ExecWindow].widget,    b);
 }
 
-void gdbRunWithArgsDCB(Widget w, XtPointer client_data, XtPointer call_data)
+
+
+
+//-----------------------------------------------------------------------------
+// Run and Argument Dialog
+//-----------------------------------------------------------------------------
+
+static bool arguments_updated = false;
+
+// Update list of arguments
+void update_arguments()
 {
-    string args = "";
+    if (arguments_updated || run_dialog == 0)
+	return;
 
-    Widget command_w = Widget(client_data);
-    if (command_w == 0)
+    bool *selected = new bool[gdb_arguments.size() + 1];
+    for (int i = 0; i < gdb_arguments.size() + 1; i++)
+	selected[i] = false;
+
+    setLabelList(gdb_arguments_w, gdb_arguments.values(),
+		 selected, gdb_arguments.size());
+
+    delete[] selected;
+
+    arguments_updated = true;
+}
+
+// Add ARG to the list of arguments
+static void add_argument(string arg)
+{
+    strip_final_blanks(arg);
+    while (arg.length() > 0 && isspace(arg[0]))
+	arg = arg.after(0);
+
+    // Insertion sort
+    int i;
+    for (i = 0; i < gdb_arguments.size(); i++)
     {
-	// Entered via command widget
-	XmCommandCallbackStruct *cbs = (XmCommandCallbackStruct *)call_data;
-
-	char *_args = 0;
-
-	if (XmStringGetLtoR(cbs->value, MSTRING_DEFAULT_CHARSET,
-			    &_args) && _args != 0)
-	{
-	    args = _args;
-	    XtFree(_args);
-	}
+	int cmp = compare(gdb_arguments[i], arg);
+	if (cmp == 0)
+	    return;		// Already present
+	if (cmp > 0)
+	    break;
     }
-    else
+
+    gdb_arguments += "<dummy>";
+
+    for (int j = gdb_arguments.size() - 1; j > i; j--)
+	gdb_arguments[j] = gdb_arguments[j - 1];
+    gdb_arguments[i] = arg;
+
+    arguments_updated = false;
+}
+
+// If LINE is an argument-setting command, add it to the list of arguments
+void add_to_arguments(string line)
+{
+    if (is_set_args_cmd(line))
     {
-	// Entered via OK/Run button
-	Widget text = XmCommandGetChild(command_w, XmDIALOG_COMMAND_TEXT);
-	String _args = XmTextGetString(text);
-	args = _args;
-	XtFree(_args);
+	string args = line.after("args");
+	args = args.after(rxwhite);
+	add_argument(args);
     }
+    else if (is_run_cmd(line))
+    {
+	string args = line.after(rxwhite);
+	add_argument(args);
+    }
+}
+
+// Run program with given arguments
+void gdbRunDCB(Widget, XtPointer, XtPointer)
+{
+    Widget text = XmSelectionBoxGetChild(run_dialog, XmDIALOG_TEXT);
+    String _args = XmTextGetString(text);
+    string args(_args);
+    XtFree(_args);
 
     if (args != "")
 	args = " " + args;
 
     if (gdb->type() == GDB)
     {
-	gdb_command("set args" + args, w);
-	gdb_command("run");
+	if (args == "")
+	    gdb_command("set args", run_dialog);
+	gdb_command("run" + args, run_dialog);
     }
     else if (gdb->type() == DBX)
     {
-	gdb_command("rerun" + args);
+	gdb_command("rerun" + args, run_dialog);
     }
 }
 
-void gdbRunWithArgsCB(Widget w, XtPointer, XtPointer)
+// Set program arguments from list
+void SelectArgsCB(Widget, XtPointer, XtPointer call_data)
 {
-    static Widget run_dialog  = 0;
-    static Widget run_command = 0;
+    XmListCallbackStruct *cbs = (XmListCallbackStruct *)call_data;
+    int pos = cbs->item_position - 1;
+    const string& args = gdb_arguments[pos];
+    
+    Widget text_w = XmSelectionBoxGetChild(run_dialog, XmDIALOG_TEXT);
+    XmTextSetString(text_w, args);
+}
 
+// Create `Run' dialog
+void gdbRunCB(Widget w, XtPointer, XtPointer)
+{
     if (run_dialog == 0)
     {
 	Arg args[10];
 	int arg = 0;
 
 	run_dialog = 
-	    verify(XmCreatePromptDialog(w, "run_dialog", args, arg));
-
-	run_command =
-	    verify(XmCreateCommand(run_dialog, "run_command", NULL, 0));
-	XtManageChild(run_command);
+	    verify(XmCreateSelectionDialog(w, "run_dialog", args, arg));
 
 	Delay::register_shell(run_dialog);
-	XtAddCallback(run_dialog, XmNokCallback, 
-		      gdbRunWithArgsDCB, XtPointer(run_command));
-	XtAddCallback(run_dialog, XmNhelpCallback, 
-		      ImmediateHelpCB, 0);
-	XtAddCallback(run_command, XmNcommandEnteredCallback,
-		      gdbRunWithArgsDCB, XtPointer(0));
+	XtAddCallback(run_dialog, XmNokCallback, gdbRunDCB, 0);
+	XtAddCallback(run_dialog, XmNapplyCallback, gdbRunDCB, 0);
+	XtAddCallback(run_dialog, XmNhelpCallback,  ImmediateHelpCB, 0);
 
-	XtUnmanageChild(XmSelectionBoxGetChild(run_dialog,
-					       XmDIALOG_TEXT));
-	XtUnmanageChild(XmSelectionBoxGetChild(run_dialog,
-					       XmDIALOG_SELECTION_LABEL));
+#if 0
+	Widget apply_w = XmSelectionBoxGetChild(run_dialog, 
+						XmDIALOG_APPLY_BUTTON);
+	XtVaSetValues(run_dialog,
+		      XmNdefaultButton, apply_w,
+		      NULL);
+#endif
+
+	gdb_arguments_w = XmSelectionBoxGetChild(run_dialog, XmDIALOG_LIST);
+	XtAddCallback(gdb_arguments_w, XmNsingleSelectionCallback,
+		      SelectArgsCB, 0);
+	XtAddCallback(gdb_arguments_w, XmNmultipleSelectionCallback,
+		      SelectArgsCB, 0);
+	XtAddCallback(gdb_arguments_w, XmNextendedSelectionCallback,
+		      SelectArgsCB, 0);
+	XtAddCallback(gdb_arguments_w, XmNbrowseSelectionCallback,
+		      SelectArgsCB, 0);
     }
 
     string base;
@@ -5344,10 +5434,11 @@ void gdbRunWithArgsCB(Widget w, XtPointer, XtPointer)
 
     if (args != "")
     {
-	MString margs(args);
-	XmCommandSetValue(run_command, margs.xmstring());
+	Widget text_w = XmSelectionBoxGetChild(run_dialog, XmDIALOG_TEXT);
+	XmTextSetString(text_w, args);
     }
 
+    update_arguments();
     XtManageChild(run_dialog);
 }
 
@@ -7763,14 +7854,14 @@ static void save_options(Widget origin)
     }
     else
     {
-	char buffer[BUFSIZ];
+	char line[BUFSIZ];
 	while (is)
 	{
-	    buffer[0] = '\0';
-	    is.getline(buffer, sizeof(buffer));
-	    if (string(buffer).contains(delimiter, 0))
+	    line[0] = '\0';
+	    is.getline(line, sizeof(line));
+	    if (string(line).contains(delimiter, 0))
 		break;
-	    dddinit += buffer;
+	    dddinit += line;
 	    dddinit += '\n';
 	}
     }
