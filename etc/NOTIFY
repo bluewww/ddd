@@ -2,8 +2,8 @@ Memo: Whom to notify about new DDD releases
 ===========================================
 
 Text is found in `ANNOUNCE'.
-Title: `The Data Display Debugger (DDD) 2.1 is available' or
-       `DDD 2.1 is available'.
+Title: `The Data Display Debugger (DDD) 2.2 is available' or
+       `DDD 2.2 is available'.
 
 E-Mail
 ------
@@ -43,5 +43,5 @@ Where to install
 ----------------
 
 * Local FTP site                        [source + binaries]
-* ftp://ftp.x.org/contrib/utilities/    [source]
-* ftp://sunsite.unc.edu/incoming/Linux/ [source + LSM entry; see HOW.TO.SUBMIT]
+* ftp://ftp.x.org/contrib/INCOMING/     [source + ANNOUNCE as ddd-xxx.README]
+* ftp://sunsite.unc.edu/incoming/Linux/ [source + binaries + LSM entry]
