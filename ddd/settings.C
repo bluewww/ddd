@@ -1042,14 +1042,14 @@ static void clear_gdb_question_cache()
     gdb_question_cache = empty;
 }
 
-static void strip_leading(string& doc, const string& key)
+static void strip_leading(string& doc, const char *key)
 {
     if (doc.contains(key, 0))
 	doc = doc.after(key);
     strip_leading_space(doc);
 }
 
-static void strip_from(string& doc, const string& key)
+static void strip_from(string& doc, const char *key)
 {
     if (doc.contains(key))
 	doc = doc.before(key);

@@ -36,7 +36,10 @@
 #include "strclass.h"
 
 // Put NAME=VALUE into the environment
-extern void put_environment(const string& name, const string& value);
+extern void put_environment(const char *name, const char *value);
+inline void put_environment(const string& name, const string& value){
+  put_environment(name.chars(), value.chars());
+}
 
 // Return NAME1=VALUE1 NAME2=VALUE2 for each name defined by PUT_ENVIRONMENT
 extern string set_environment_command();
