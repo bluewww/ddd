@@ -731,7 +731,7 @@ struct FileItems {
     { "attach",        MMPush, \
         { WhenReady, XtPointer(gdbOpenProcessCB) }, 0, 0, 0, 0 }, \
     { "detach",        MMPush, \
-        { gdbCommandCB, "detach" }, 0, 0, 0, 0 }, \
+        { gdbCommandCB, XtPointer("detach") }, 0, 0, 0, 0 }, \
     MMSep, \
     { "print",         MMPush, { PrintGraphCB, XtPointer(0) }, 0, 0, 0, 0 }, \
     { "printAgain",    MMPush | MMUnmanaged, \
@@ -768,25 +768,26 @@ struct ProgramItems {
 
 #define PROGRAM_MENU(w) \
 { \
-    { "run",         MMPush, { gdbRunCB, 0 }, 0, 0, 0, 0 }, \
-    { "run_again",   MMPush, { gdbCommandCB, "run" }, 0, 0, 0, 0 }, \
+    { "run",       MMPush, { gdbRunCB, 0 }, 0, 0, 0, 0 }, \
+    { "run_again", MMPush, { gdbCommandCB, XtPointer("run") }, 0, 0, 0, 0 }, \
     MMSep, \
     { "separateExecWindow",  MMToggle, \
 	{ dddToggleSeparateExecWindowCB, 0 }, 0, &(w), 0, 0 }, \
     MMSep, \
-    { "step",        MMPush, { gdbCommandCB, "step" }, 0, 0, 0, 0 }, \
-    { "stepi",       MMPush, { gdbCommandCB, "stepi" }, 0, 0, 0, 0 }, \
-    { "next",        MMPush, { gdbCommandCB, "next" }, 0, 0, 0, 0 }, \
-    { "nexti",       MMPush, { gdbCommandCB, "nexti" }, 0, 0, 0, 0}, \
-    { "until",       MMPush, { gdbCommandCB, "until" }, 0, 0, 0, 0}, \
-    { "finish",      MMPush, { gdbCommandCB, "finish" }, 0, 0, 0, 0}, \
+    { "step",     MMPush, { gdbCommandCB, XtPointer("step") }, 0, 0, 0, 0 }, \
+    { "stepi",    MMPush, { gdbCommandCB, XtPointer("stepi") }, 0, 0, 0, 0 }, \
+    { "next",     MMPush, { gdbCommandCB, XtPointer("next") }, 0, 0, 0, 0 }, \
+    { "nexti",    MMPush, { gdbCommandCB, XtPointer("nexti") }, 0, 0, 0, 0}, \
+    { "until",    MMPush, { gdbCommandCB, XtPointer("until") }, 0, 0, 0, 0}, \
+    { "finish",   MMPush, { gdbCommandCB, XtPointer("finish") }, 0, 0, 0, 0}, \
     MMSep, \
-    { "cont",        MMPush, { gdbCommandCB, "cont" }, 0, 0, 0, 0}, \
-    { "signal0",     MMPush, { gdbCommandCB, "signal 0" }, 0, 0, 0, 0}, \
+    { "cont",     MMPush, { gdbCommandCB, XtPointer("cont") }, 0, 0, 0, 0}, \
+    { "signal0",  MMPush, \
+                      { gdbCommandCB, XtPointer("signal 0") }, 0, 0, 0, 0}, \
     MMSep, \
-    { "kill",        MMPush, { gdbCommandCB, "kill" }, 0, 0, 0, 0}, \
-    { "break",       MMPush, { gdbCommandCB, "\003" }, 0, 0, 0, 0}, \
-    { "quit",        MMPush, { gdbCommandCB, "\034" }, 0, 0, 0, 0}, \
+    { "kill",     MMPush, { gdbCommandCB, XtPointer("kill") }, 0, 0, 0, 0}, \
+    { "break",    MMPush, { gdbCommandCB, XtPointer("\003") }, 0, 0, 0, 0}, \
+    { "quit",     MMPush, { gdbCommandCB, XtPointer("\034") }, 0, 0, 0, 0}, \
     MMEnd \
 }
 
@@ -929,8 +930,8 @@ static MMDesc stack_menu[] =
 			       XtPointer(dddPopupSignalsCB) },
       NULL, &signals_w, 0, 0 },
     MMSep,
-    { "up",         MMPush,  { gdbCommandCB, "up" }, 0, 0, 0, 0},
-    { "down",       MMPush,  { gdbCommandCB, "down" }, 0, 0, 0, 0},
+    { "up",         MMPush,  { gdbCommandCB, XtPointer("up") }, 0, 0, 0, 0},
+    { "down",       MMPush,  { gdbCommandCB, XtPointer("down") }, 0, 0, 0, 0},
     MMEnd
 };
 
