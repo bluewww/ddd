@@ -8,6 +8,6 @@ EOF
 xmkmf > /dev/null
 make
 cd ..
-rm -f xc$$/*
+rm -f xc$$/* xc$$/.??*
 rmdir xc$$
 exit 0
