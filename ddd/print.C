@@ -213,7 +213,7 @@ static void printOutputHP(Agent *, void *, void *call_data)
 static int print_to_printer(string command, PrintGC& gc, 
 			    bool selectedOnly, bool displays)
 {
-    string tmpfile = tempfile();
+    const string tmpfile = tempfile();
     int ret = print_to_file(tmpfile, gc, selectedOnly, displays);
     if (ret)
 	return ret;

@@ -113,7 +113,7 @@ void tty_full_name(const string& pos)
     }
     else
     {
-	string line = source_view->get_line(pos);
+	const string line = source_view->get_line(pos);
 	if (line != "")
 	    _tty_out(line + "\n");
     }

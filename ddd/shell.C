@@ -105,7 +105,7 @@ string _sh_command(string command, bool force_local,
     }
 
     string rsh = app_data.rsh_command;
-    string login = app_data.debugger_host_login;
+    const string login = app_data.debugger_host_login;
     if (login != "")
 	rsh += " -l " + login;
 

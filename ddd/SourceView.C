@@ -7688,7 +7688,7 @@ string SourceView::get_line(string position)
     if (end < 0)
 	end = current_source.length();
 
-    string text = current_source.at(int(start), end - start);
+    const string text = current_source.at(int(start), end - start);
     return itostring(line) + "\t" + text;
 }
 
