@@ -1,6 +1,26 @@
 DDD News						-*- text -*-
 ********
 
+DDD 3.1.1 [not yet released]
+============================
+
+DDD 3.1.1 fixes a number of minor bugs in DDD 3.1:
+
+- Work around EGCS 1.1 bug on Linux
+- Make sure ostrstream::pcount() is not considered broken when
+  using `gcc' (instead of `c++' or `g++') as C++ compiler
+- Handle empty status displays properly
+- Recognize multiple breakpoints as reported by the Perl debugger 
+  as of Perl 5.005 and later
+- Handle incomplete DBX output correctly, such as prompts of the
+  debugged program.  For details, see the new `positionTimeout' and
+  `displayTimeout' resources.
+- Under certain circumstances, DDD could hang searching for a Java
+  class.
+
+There are no new features in DDD 3.1.1.
+
+
 DDD 3.1
 =======
 

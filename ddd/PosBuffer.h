@@ -117,9 +117,10 @@ public:
     string answer_ended();
 
     // Did we find a position in the last output?
-    bool pos_found() const      { return already_read == PosComplete; }
-    bool pc_found()  const      { return pc_buffer != ""; }
-    bool auto_cmd_found() const { return auto_cmd_buffer != ""; }
+    bool pos_found() const         { return already_read == PosComplete; }
+    bool partial_pos_found() const { return already_read == PosPart; }
+    bool pc_found()  const         { return pc_buffer != ""; }
+    bool auto_cmd_found() const    { return auto_cmd_buffer != ""; }
 
     // Return the position found.
     const string& get_position() const { return pos_buffer; }

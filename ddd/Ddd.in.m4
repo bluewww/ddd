@@ -220,6 +220,12 @@ Ddd*blockTTYInput: auto
 ! The time (in seconds) to wait for synchronous GDB questions to complete
 Ddd*questionTimeout: 10
 
+! The time (in ms) to wait for GDB to finish a partial position information
+Ddd*positionTimeout: 500
+
+! The time (in ms) to wait for GDB to finish a partial display information
+Ddd*displayTimeout: 2000
+
 
 ! The `rsh' command to invoke tty-based commands on other hosts.
 ! On some systems, this is called `remsh'; on others, `on'.

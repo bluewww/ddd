@@ -111,20 +111,31 @@ string DispBuffer::answer_ended ()
 {
     switch (already_read) {
     case DisplayPart:
+    {
 	assert (display_buffer == "");
-	return answer_buffer;
+	string ans = answer_buffer;
+	answer_buffer = "";
+	return ans;
+    }
 
     case Null:
+    {
 	assert (display_buffer == "");
 	return "";
+    }
 
     case DisplayFound:
+    {
 	return "";
+    }
 
     default:
+    {
 	assert(0);		// This can't happen
 	break;
     }
+    }
+
     return "";
 }
 
