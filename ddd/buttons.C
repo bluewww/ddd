@@ -652,7 +652,6 @@ static MString gdbDefaultValueText(Widget widget, XEvent *event,
     if (!is_valid(tip, gdb))
 	return clear;
 
-    tip = get_disp_value_str(tip, gdb);
     if (tip == "void")
 	return clear;		// Empty variable
 
