@@ -257,7 +257,8 @@ void gdbChangeCB       (Widget, XtPointer, XtPointer);
 void gdbBreakArgCmdCB  (Widget, XtPointer, XtPointer);
 void gdbClearArgCmdCB  (Widget, XtPointer, XtPointer);
 void gdbLineArgCmdCB   (Widget, XtPointer, XtPointer);
-void gdbItemArgCmdCB   (Widget, XtPointer, XtPointer);
+void gdbPrintArgCmdCB  (Widget, XtPointer, XtPointer);
+void gdbDisplayArgCmdCB(Widget, XtPointer, XtPointer);
 void gdbLookupCB       (Widget, XtPointer, XtPointer);
 void gdbFindForwardCB  (Widget, XtPointer, XtPointer);
 void gdbFindBackwardCB (Widget, XtPointer, XtPointer);
@@ -346,6 +347,7 @@ MString gdbDefaultHelp(Widget widget);
 void set_buttons_from_gdb(string& text);
 void set_buttons_from_gdb(Widget w, string& text);
 void set_status_from_gdb(const string& text);
+void set_selection_from_gdb(string& text);
 void set_status(const string& text);
 void update_options();
 
@@ -1452,13 +1454,13 @@ struct ArgItems {
 
 static MMDesc arg_cmd_area[] = 
 {
-    {"lookup",        MMPush,  { gdbLookupCB,       0}},
-    {"break",         MMPush,  { gdbBreakArgCmdCB,  0}},
-    {"clear",         MMPush,  { gdbClearArgCmdCB,  0}},
-    {"print",         MMPush,  { gdbItemArgCmdCB,   "print "         }},
-    {"display",       MMPush,  { gdbItemArgCmdCB,   "graph display " }},
-    {"find_backward", MMPush,  { gdbFindBackwardCB, 0}},
-    {"find_forward",  MMPush,  { gdbFindForwardCB,  0}},
+    {"lookup",        MMPush,  { gdbLookupCB        }},
+    {"break",         MMPush,  { gdbBreakArgCmdCB   }},
+    {"clear",         MMPush,  { gdbClearArgCmdCB   }},
+    {"print",         MMPush,  { gdbPrintArgCmdCB   }},
+    {"display",       MMPush,  { gdbDisplayArgCmdCB }},
+    {"find_backward", MMPush,  { gdbFindBackwardCB  }},
+    {"find_forward",  MMPush,  { gdbFindForwardCB   }},
     MMEnd
 };
 
@@ -1500,6 +1502,10 @@ static Widget yn_dialog;
 
 // GDB run dialog
 static Widget run_dialog;
+
+// GDB selection dialog
+Widget gdb_selection_dialog;
+Widget gdb_selection_list_w;
 
 // Last output position
 XmTextPosition promptPosition;
@@ -1566,6 +1572,7 @@ static bool tty_gdb_input;        // true if input comes from command tty
 static bool private_gdb_history;  // true if history command was issued
 static bool gdb_keyboard_command; // true if last cmd came from GDB window
 static Widget gdb_last_origin;    // origin of last command
+static bool gdb_question_running; // Is gdb_question running?
 
 // History viewer
 static Widget gdb_history_w  = 0;
@@ -2391,6 +2398,7 @@ DDD_NAME " is free software and you are welcome to distribute copies of it\n"
 	    // Show diagnostic
 	    cerr << sigName(sig) << "\n";
 	}
+	gdb_question_running = false;
     }
 
     for (;;)
@@ -5017,13 +5025,22 @@ void gdbLineArgCmdCB(Widget w, XtPointer client_data, XtPointer)
     gdb_command(cmd + arg, w);
 }
 
-void gdbItemArgCmdCB(Widget w, XtPointer client_data, XtPointer)
+void gdbPrintArgCmdCB(Widget w, XtPointer, XtPointer)
 {
-    string cmd = (String)client_data;
+    string cmd = gdb->print_command();
     string arg = source_arg->get_string();
 
     if (arg != "" && !arg.matches(rxwhite))
-	gdb_command(cmd + arg, w);
+	gdb_command(cmd + " " + arg, w);
+}
+
+void gdbDisplayArgCmdCB(Widget w, XtPointer, XtPointer)
+{
+    string cmd = "graph display";
+    string arg = source_arg->get_string();
+
+    if (arg != "" && !arg.matches(rxwhite))
+	gdb_command(cmd + " " + arg, w);
 }
 
 void gdbLookupCB(Widget, XtPointer, XtPointer)
@@ -5577,11 +5594,9 @@ static void gdb_reply(const string& complete_answer, void *qu_data)
 
 string gdb_question(const string& command, int timeout)
 {
-    static bool running = false;
-
-    if (running)
+    if (gdb_question_running)
 	return string(-1);
-    running = true;
+    gdb_question_running = true;
 
     static GDBReply reply;
     reply.received = false;
@@ -5609,7 +5624,7 @@ string gdb_question(const string& command, int timeout)
 	    XtRemoveTimeOut(timer);
     }
 
-    running = false;
+    gdb_question_running = false;
 
     return reply.answer;
 }
@@ -6308,7 +6323,7 @@ void set_buttons_from_gdb(Widget buttons, string& text)
     if (buttons == 0)
 	return;
 
-    static regex rxyn("(y[es]* or n[o]*) *$");
+    static regex rxyn("(y[es]* or n[o]*) *$", true);
 
     int yn_index = text.index(rxyn);
     bool yn = (yn_index >= 0);
@@ -6365,6 +6380,80 @@ void set_buttons_from_gdb(Widget buttons, string& text)
     }
 
     XtSetSensitive(buttons, true);
+}
+
+void SelectCB(Widget dialog, XtPointer, XtPointer)
+{
+    int *numbers = getDisplayNumbers(gdb_selection_list_w);
+    string choice = itostring(numbers[0]);
+    delete[] numbers;
+
+    clog << quote(choice) << "\n";
+
+    _gdb_command(choice, dialog);
+}
+
+void set_selection_from_gdb(string& text)
+{
+    static regex rxselect("\\(\n\\|.\\)*\n> ", true);
+
+    if (gdb_keyboard_command || !text.matches(rxselect))
+	return;
+
+    // Fetch previous output lines, in case this is a multi-line message.
+    String s = XmTextGetString(gdb_w);
+    string prompt(s);
+    XtFree(s);
+
+    int last_gt = text.index("\n>", -1);
+    prompt = prompt.from(int(messagePosition)) + text.before(last_gt);
+
+    XmTextReplace(gdb_w, messagePosition, 
+		  XmTextGetLastPosition(gdb_w), "");
+    text = "";
+
+    if (gdb_selection_dialog == 0)
+    {
+	gdb_selection_dialog = 
+	    verify(XmCreateSelectionDialog(find_shell(gdb_w),
+					   "gdb_selection_dialog", NULL, 0));
+	Delay::register_shell(gdb_selection_dialog);
+
+	XtUnmanageChild(XmSelectionBoxGetChild(gdb_selection_dialog, 
+					       XmDIALOG_TEXT));
+	XtUnmanageChild(XmSelectionBoxGetChild(gdb_selection_dialog, 
+					       XmDIALOG_SELECTION_LABEL));
+	XtUnmanageChild(XmSelectionBoxGetChild(gdb_selection_dialog, 
+					       XmDIALOG_APPLY_BUTTON));
+
+	gdb_selection_list_w = XmSelectionBoxGetChild(gdb_selection_dialog, 
+						      XmDIALOG_LIST);
+	XtVaSetValues(gdb_selection_list_w,
+		      XmNselectionPolicy, XmSINGLE_SELECT,
+		      NULL);
+	XtAddCallback(gdb_selection_dialog,
+		      XmNokCallback, SelectCB, 0);
+	XtAddCallback(gdb_selection_dialog,
+		      XmNcancelCallback, gdbCommandCB, XtPointer("\003"));
+	XtAddCallback(gdb_selection_dialog,
+		      XmNhelpCallback, ImmediateHelpCB, 0);
+    }
+
+    int count       = prompt.freq('\n') + 1;
+    string *choices = new string[count];
+    bool *selected  = new bool[count];
+
+    split(prompt, choices, count, '\n');
+
+    for (int i = 0; i < count; i++)
+	selected[i] = (get_positive_nr(choices[i]) == 1);
+
+    setLabelList(gdb_selection_list_w, choices, selected, count);
+
+    delete[] choices;
+    delete[] selected;
+
+    XtManageChild(gdb_selection_dialog);
 }
 
 void YnCB(Widget dialog, 
@@ -6565,6 +6654,7 @@ void _gdb_out(string text)
     if (gdb_out_ignore != "")
 	text.gsub(gdb_out_ignore, empty);
 
+    set_selection_from_gdb(text);
     set_buttons_from_gdb(text);
     set_status_from_gdb(text);
     set_tty_from_gdb(text);
