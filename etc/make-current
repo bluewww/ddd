@@ -26,20 +26,20 @@
 # Contact ddd@ips.cs.tu-bs.de for details.
 
 # This script checks out the current DDD development tree, as
-# stored in CVS, and creates a DDD release-of-the-day.
+# stored in CVS, and creates a DDD release-of-the-day (`ROTD').
 
 # Setup environment
 tmpdir=${TMPDIR-/tmp}
 CVSROOT=/usr/local/share/CVS; export CVSROOT
 PATH=/usr/local/bin:/usr/local/gnubin:$PATH; export PATH
-rotd=/ftp/pub/local/softech/ddd/rotd
+target=/ftp/pub/local/softech/ddd/current
 
-exec > $rotd/.rotd.log 2>&1 < /dev/null
+exec > $target/.current.log 2>&1 < /dev/null
 
-# Check whether the ChangeLog file has changed (i.e. we need a new rotd)
+# Check whether the ChangeLog file has changed (i.e. we need a new ROTD)
 install=false
-/usr/local/gnubin/test $CVSROOT/ddd-log -nt $rotd/ChangeLog && install=true
-/usr/local/gnubin/test ! -f $rotd/ChangeLog && install=true
+/usr/local/gnubin/test $CVSROOT/ddd-log -nt $target/ChangeLog && install=true
+/usr/local/gnubin/test ! -f $target/ChangeLog && install=true
 
 if [ $install = false ]; then
     exit 0;			# No installation required
@@ -113,9 +113,9 @@ make dist
 
 if [ -f ddd-$date.tar.gz ]; then
     # Move dist file into FTP area
-    rm -f $rotd/ddd-*.tar.gz
-    mv ddd-$date.tar.gz $rotd
-    cp -p NEWS $CVSROOT/ddd-log $rotd
+    rm -f $target/ddd-*.tar.gz
+    mv ddd-$date.tar.gz $target
+    cp -p NEWS $CVSROOT/ddd-log $target
     echo "Creating ddd-$date.tar.gz (expires $expires)...done."
 fi
 
