@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 .\"
-.TH @ddd@ 1 "1 September 1996" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "5 September 1996" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger (v@VERSION@)
 .SH SYNOPSIS
@@ -1292,8 +1292,9 @@ program to be debugged.  Proceed as usual.
 .PP
 .SS "Using @DDD@ with XEmacs"
 Set the variable \fBgdb-command-name\fR to \fB"ddd"\fR, by inserting
-the following line in your \fB$HOME/.emacs\fR file or evaluating it
-via \fBESC ESC ESC\fR:
+the following line in your \fB$HOME/.emacs\fR file or evaluating it by
+pressing \s-2\fBESC\fR\s+2 \s-2\fBESC\fR\s+2 \s-2\fB:\fR\s+2\fR
+(\s-2\fBESC\fR\s+2 \s-2\fBESC\fR\s+2 for XEmacs 19.13 and earlier):
 .br
 .sp
   \fB(setq gdb-command-name "@ddd@")\fR
