@@ -42,7 +42,7 @@
 #undef HAVE_ARRAY_OPERATOR_NEW
 
 /* Define if you have the X Athena widgets. */
-#undef HAVE_ATHENA_WIDGETS
+#undef HAVE_ATHENA
 
 /* Define if your C++ compiler supports `bool' types. */
 #undef HAVE_BOOL
@@ -59,11 +59,11 @@
 /* Define if MAXPATHLEN is defined or declared in <sys/param.h>. */
 #undef HAVE_MAXPATHLEN
 
-/* Define if you have the XPM library. */
+/* Define if you have the XPM library and the <X11/xpm.h> header file. */
 #undef HAVE_XPM
 
 /* Define if you have Motif widgets. */
-#undef HAVE_MOTIF_WIDGETS
+#undef HAVE_MOTIF
 
 /* Define if your Motif widgets are actually LessTif widgets. */
 #undef HAVE_LESSTIF
@@ -88,10 +88,6 @@
 
 /* Define if the `regex_t' type has a `re_nsub' member, according to POSIX.2 */
 #undef HAVE_REGEX_T_RE_NSUB
-
-/* Define to enable some LessTif bug workarounds.  Required for
-   LessTif 0.79, for instance.  Don't use these with Motif. */
-#undef LESSTIF_HACKS
 
 /* Define to the signal handler type accepted by signal(). 
    See the `signal' man page and the decl in <signal.h> for the exact type.

@@ -338,7 +338,7 @@ AC_CHECK_LIB(Xmu, XmuCvtStringToOrientation,
 	${X_PRE_LIBS} ${XAW_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X11_LIBS})
 AC_CHECK_LIB(Xaw, XawTextSetInsertionPoint, 
 	XAW_LIBS="-lXaw ${XAW_LIBS}"
-	AC_DEFINE(HAVE_ATHENA_WIDGETS),,
+	AC_DEFINE(HAVE_ATHENA),,
 	${X_PRE_LIBS} ${XAW_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X11_LIBS})
 if test "$XAW_LIBS" = ""; then
 dnl A warning suffices here -- DDD also works without Athena.
@@ -375,7 +375,7 @@ if test "$motif_includes" != "no" && test "$motif_libraries" != "no"
 then
 AC_CHECK_LIB(Xm, XmCreateOptionMenu, 
 	XM_LIBS="-lXm"
-	AC_DEFINE(HAVE_MOTIF_WIDGETS),,
+	AC_DEFINE(HAVE_MOTIF),,
 	${X_PRE_LIBS} ${XPM_LIBS} ${XEXT_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X11_LIBS} ${LIBGEN})
 fi
 if test "$XM_LIBS" = ""; then
@@ -432,7 +432,6 @@ AC_CHECK_HEADERS(sys/ioctl.h sys/param.h sys/time.h sys/resource.h sys/timeb.h)
 AC_CHECK_HEADERS(sys/stat.h sys/stropts.h sys/vty.h sys/sysmacros.h sys/core.h)
 AC_CHECK_HEADERS(sys/socket.h sys/termios.h sys/utsname.h sys/user.h)
 AC_CHECK_HEADERS(fcntl.h string.h strings.h netdb.h regex.h rx.h)
-AC_CHECK_HEADERS(X11/xpm.h)
 AC_HEADER_TIME
 AC_HEADER_SYS_WAIT
 AC_HEADER_DIRENT
