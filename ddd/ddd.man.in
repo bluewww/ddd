@@ -2,7 +2,7 @@
 .\" DDD manual page
 .\" @configure_input@
 .\"
-.\" Copyright (C) 1995-1997 Technische Universitaet Braunschweig, Germany.
+.\" Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
 .\" Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 .\" 
 .\" This file is part of DDD.
@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "02 Jan 1998" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "06 Jan 1998" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -4281,14 +4281,14 @@ Default \s-2@DDD@\s+2 command history file.
 .B $HOME/.ddd/sessions/
 \s-2@DDD@\s+2 session directory.  One subdirectory per session.
 .TP
+.B $HOME/.ddd/sessions/\fIsession\fB/dddcore
+\s-2@DDD@\s+2 core file for \fIsession\fR.
+.TP
 .B $HOME/.ddd/sessions/\fIsession\fB/init
 \s-2@DDD@\s+2 resource file for \fIsession\fR.
 .TP
 .B $HOME/.ddd/sessions/\fIsession\fB/history
 \s-2@DDD@\s+2 command history for \fIsession\fR.
-.TP
-.B $HOME/.ddd/sessions/\fIsession\fB/core
-\s-2@DDD@\s+2 core file for \fIsession\fR.
 .TP
 .B $HOME/.gdbinit
 \s-2GDB\s+2 initialization file.
