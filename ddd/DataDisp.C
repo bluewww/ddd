@@ -706,16 +706,10 @@ void DataDisp::show(Widget dialog, int depth, int more)
 		dv->expandAll(depth);
 		dn->refresh();
 
-		if (dn->enabled())
-		{
-		    changed = true;
-		}
-		else
-		{
-		    // Mark as enabled right now; this way, the
-		    // `enable display' command won't re-expand it.
-		    dn->enable();
-		}
+		// Mark as enabled right now; this way, the
+		// `enable display' command won't re-expand it.
+		dn->enable();
+		changed = true;
 	    }
 	}
     }
