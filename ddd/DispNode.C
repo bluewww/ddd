@@ -55,7 +55,7 @@ DispNode::DispNode (int disp_nr,
       myname(name),
       myaddr(""),
       myscope(scope),
-      myenabled(false),
+      myenabled(true),
       mynodeptr(0),
       disp_value(0),
       myselected_value(0),
@@ -65,7 +65,10 @@ DispNode::DispNode (int disp_nr,
     mylast_change = ++change_tics;
 
     if (value != "")
-	disp_value = new DispValue (0, 0, value, myname, myname);
+    {
+	string v = value;
+	disp_value = new DispValue(0, 0, v, myname, myname);
+    }
 
     // Create new box from DISP_VALUE
     disp_box = new DispBox (mydisp_nr, myname, disp_value);
