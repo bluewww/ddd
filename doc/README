@@ -8,8 +8,8 @@ PostScript format.
 ddd-paper.ps -- ``DDD---A Free Graphical Front-End for UNIX Debuggers''
 
     A six-page DDD survey including lots of screen shots.  The paper
-    also highlights some internal aspects of DDD.  To appear in ACM
-    SIGPLAN Notices 30(12), December 1995.
+    also highlights some internal aspects of DDD.  Appeared in ACM
+    SIGPLAN Notices 31(1), pp. 22--27, January 1996.
 
     Included in the DDD distribution.
 
