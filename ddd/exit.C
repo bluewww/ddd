@@ -914,20 +914,12 @@ void gdb_exceptionHP(Agent *agent, void *, void *call_data)
     if (exception_state)
     {
 	// Entered exception state
+	assert (post_exception_timer == 0);
 
-	if (gdb->isBusyOnQuestion())
-	{
-	    // We only care for exceptions that get raised while a DDD
-	    // question is running.  (Exceptions during program
-	    // execution may also be raised by the program.)
-
-	    assert (post_exception_timer == 0);
-
-	    // Wait 5 seconds before offering a restart
-	    post_exception_timer = 
-		XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 5000,
-				PostExceptionCB, 0);
-	}
+	// Wait 5 seconds before offering a restart
+	post_exception_timer = 
+	    XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 5000,
+			    PostExceptionCB, 0);
     }
     else
     {
