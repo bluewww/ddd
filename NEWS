@@ -14,12 +14,11 @@ DDD 3.2 brings not much yet.
 - [GDB] DDD saves the GDB source directory path with the current session.
 - [JDB] DDD saves the JDB class path only with the current session.
 
-DDD 3.2 also incorporates all changes from earlier DDD releases; see
-below for details.
+DDD 3.2 also incorporates all changes listed below.
 
 
-DDD 3.1.4
-=========
+DDD 3.1.4 [in development]
+==========================
 
 DDD 3.1.4 fixes more minor bugs in DDD 3.1.
 
