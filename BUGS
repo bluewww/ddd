@@ -299,4 +299,10 @@ Volunteers for fixing these and other bugs are welcome!
      I´m not sure, if the new behaviour of libc can be considered as
      bug or if ddd should be adapted to support that.
 
-220. (Insert your bug here)
+     [Should be fixed in DDD 2.2  -AZ]
+
+220* Status Displays are always marked as `changed'.
+
+221* Recognize `<repeated N times>' in arrays.
+
+222. (Insert your bug here)
