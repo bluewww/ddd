@@ -123,6 +123,28 @@ static string format(const string& format, const string& size)
 	return format + size;
 
     case DBX:
+	// Translate GDB spec to DBX spec.
+	//
+	// Legal values for FORMAT are:
+	//
+	// i     instruction (disassembly)
+	// d,D   decimal (2 or 4 bytes)
+	// o,O   octal (2 or 4 bytes)
+	// x,X   hexadecimal (2 or 4 bytes)
+	// b     octal (1 byte)
+	// c     character
+	// w     wide character
+	// s     string
+	// W     wide character string
+	// f     hex and float (4 bytes, 6 digit prec.)
+	// F     hex and float (8 bytes, 14 digit prec.)
+	// g     same as `F'
+	// E     hex and float (16 bytes, 14 digit prec.)
+	// ld,lD decimal (4 bytes, same as D)
+	// lo,lO octal (4 bytes, same as O)
+	// lx,LX hexadecimal (4 bytes, same as X)
+	// Ld,LD decimal (8 bytes)
+
 	// Handle bytes
 	if (format == 'o' && size == 'b')
 	    return "b";
@@ -174,8 +196,24 @@ static string examine_command()
     strip_space(repeat);
     strip_space(address);
 
-    return string("x /") + repeat + 
-	format(the_format, the_size) + " " + address;
+    string fmt = "/" + repeat + format(the_format, the_size);
+    switch (gdb->type())
+    {
+    case DBX:
+	// x ADDRESS /FMT
+	return "x" + address + " " + fmt;
+
+    case GDB:
+	// x /FMT ADDRESS
+	return "x " + fmt + " " + address;
+
+    case XDB:
+    case JDB:
+    case PYDB:
+	break;			// No way
+    }
+
+    return "";
 }
 
 static void DisplayExaminedCB(Widget w, XtPointer, XtPointer)
