@@ -2223,9 +2223,7 @@ String ddd_fallback_resources[] = {
 // Return a database of default settings
 XrmDatabase app_defaults(Display *display)
 {
-    static XrmDatabase db = NULL;
-    if (db != NULL)
-	return db;
+    XrmDatabase db = 0;
 
     // Add builtin fallback defaults.
     int i = 0;
