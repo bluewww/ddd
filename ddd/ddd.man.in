@@ -5806,6 +5806,7 @@ Old-style \s-1@DDD@\s+1 initialization file; used only if
 .BR gdb (1),
 .BR dbx (1),
 .BR xdb (1),
+.BR perldebug (1),
 .BR remsh (1),
 .BR rsh (1),
 .BR gnuplot (1),
@@ -5819,18 +5820,18 @@ Using \s-1GDB\s+1: A Guide to the \s-1GNU\s+1 Source-Level Debugger\c
 .PP
 .I
 jdb\(em\&The Java Debugger\c
-\&, at \fBhttp://java.sun.com/\fR and its mirrors in
-\fBproducts/jdk/1.1/docs/tooldocs/solaris/jdb.html\fR
+\&, at \fBhttp://java.sun.com/\fR (and its mirrors) in
+\fB/products/jdk/1.1/docs/tooldocs/solaris/jdb.html\fR
 .PP
 .I
 Java Language Debugging\c
-\&, at \fBhttp://java.sun.com/\fR and its mirrors in 
-\fBproducts/jdk/1.1/debugging/\fR
-.PP
+\&, at \fBhttp://java.sun.com/\fR (and its mirrors) in 
+\fB/products/jdk/1.1/debugging/\fR
 .PP
 .I
 The Python Language\c
 \&, at \fBhttp://www.python.org/\fR and its mirrors.
+.PP
 .I
 \s-1DDD\s+1\(em\&A Free Graphical Front-End for \s-1UNIX\s+1 Debuggers\c
 \&, by Andreas Zeller and Dorothea Lütkehaus, Computer Science Report
@@ -6170,8 +6171,7 @@ June, 1998
 \s-1@DDD@\s+1 3.0: Icon tool bar, Java support, \s-1JDB\s+1 support.
 .TP
 December, 1998
-\s-1@DDD@\s+1 3.1: Data plotting, Perl support, Python support, 
-Undo/Redo, new data display engine.
+\s-1@DDD@\s+1 3.1: Data plotting, Perl support, Python support, Undo/Redo.
 .PD
 .\"
 .\"
@@ -6241,9 +6241,13 @@ manual page on \s-1UNIX\s+1 systems (as
 .PP
 .\"
 .\"
+.\"
 .\" ---------------
 .SH "COPYRIGHT"
 .\" ---------------
+.\"
+.\"
+.SS "\s-1@DDD@\s+1"
 .\"
 \s-1@DDD@\s+1 is Copyright \(co 1995, 1996, 1997, 1998
 Technische Universität Braunschweig, Germany.
@@ -6264,20 +6268,24 @@ You should have received a copy of the License along with
 To read the License from within \s-1@DDD@\s+1, use `\fBHelp\(->@DDD@
 License\fR'.
 .PP
-This \s-1@DDD@\s+1 manual page is Copyright \(co 1995, 1996, 1997, 1998
+.\"
+.\"
+.SS "\s-1@DDD@\s+1 Manual"
+.\"
+This \s-1@DDD@\s+1 manual is Copyright \(co 1995, 1996, 1997, 1998
 Technische Universität Braunschweig, Germany.
 .PP
 Permission is granted to make and distribute verbatim copies of this
-manual page provided the copyright notice and this permission notice
-are preserved on all copies.
+manual provided the copyright notice and this permission notice are
+preserved on all copies.
 .PP
 Permission is granted to copy and distribute modified versions of this
-manual page under the conditions for verbatim copying, provided that
-the entire resulting derived work is distributed under the terms of a
+manual under the conditions for verbatim copying, provided that the
+entire resulting derived work is distributed under the terms of a
 permission notice identical to this one.
 .PP
 Permission is granted to copy and distribute translations of this
-manual page into another language, under the above conditions for
-modified versions, except that this permission notice may be included
-in translations approved by the Free Software Foundation instead of in
+manual into another language, under the above conditions for modified
+versions, except that this permission notice may be included in
+translations approved by the Free Software Foundation instead of in
 the original English.
