@@ -1236,6 +1236,8 @@ int main(int argc, char *argv[])
 		    DDD_CLASS_NAME, &argc, argv);
 
     XtAppContext app_context;
+    arg = 0;
+    XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
     Widget toplevel = XtAppInitialize(&app_context,
 				      DDD_CLASS_NAME,
 				      0, 0,
@@ -1375,14 +1377,21 @@ int main(int argc, char *argv[])
     help_clear_doc_delay  = app_data.clear_doc_delay;
     help_clear_tip_delay  = app_data.clear_tip_delay;
 
-
     // Create command shell
-    arg = 0;
-    XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
-    command_shell =
-	verify(XtCreatePopupShell("command_shell",
-				  topLevelShellWidgetClass,
-				  toplevel, args, arg));
+    if (!app_data.separate_source_window && !app_data.separate_data_window)
+    {
+	// Whole DDD in one window - use toplevel shell
+	command_shell = toplevel;
+    }
+    else
+    {
+	arg = 0;
+	XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
+	command_shell =
+	    verify(XtCreatePopupShell("command_shell",
+				      topLevelShellWidgetClass,
+				      toplevel, args, arg));
+    }
     XmAddWMProtocolCallback(command_shell,
 			    WM_DELETE_WINDOW, gdbCloseCommandWindowCB, 0);
 #ifdef HAVE_X11_XMU_EDITRES_H
@@ -1615,13 +1624,6 @@ int main(int argc, char *argv[])
     // Status line
     if (app_data.status_at_bottom && !app_data.separate_source_window)
 	create_status(source_view_parent);
-
-    // Set up `Help on Window' item
-    if (!app_data.separate_source_window && !app_data.separate_data_window)
-    {
-	// Whole DDD in one window - `Help on Window' makes no sense
-	XtUnmanageChild(help_on_window_w);
-    }
 
     // Set up `Windows' menus
     if (!app_data.separate_source_window)
@@ -3279,7 +3281,6 @@ void _gdb_out(string text)
 	text.gsub(gdb_out_ignore, empty);
 
     // Pass TEXT to various functions
-    set_selection_from_gdb(text);
     set_buttons_from_gdb(console_buttons_w, text);
     set_buttons_from_gdb(source_buttons_w, text);
     set_buttons_from_gdb(data_buttons_w, text);
