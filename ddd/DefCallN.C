@@ -397,7 +397,7 @@ void DefCallNode::rebind(const class VSLLib *lib)
 	_def = 0;
 
 	// Reference deflist in new library
-	string func_name = _deflist->func_name();
+	const string& func_name = _deflist->func_name();
 	_deflist = lib->deflist(func_name);
 	assert(_deflist != 0);
 	_deflist->inc();
