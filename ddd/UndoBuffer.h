@@ -52,6 +52,9 @@ private:
     // Currently processed entry
     static int current_entry;
 
+    // If true, next `add' creates new entry
+    static bool force_new_entry;
+
     // General scheme:
     //
     // History
@@ -60,20 +63,38 @@ private:
     // `history' contains:
     //
     // 0                       \ 
-    // 1 ...                    > entries (state or commands) to be undone
+    // 1 ...                    > entries (positions or commands) to be undone
     // (history_position - 1)  /
     // (history_position)      \ 
-    // ...                      > entries (state or commands) to be redone
+    // ...                      > entries (positions or commands) to be redone
     // (history.size() - 1)    /
     //
     //
     // Entries
     // -------
     //
-    // An entry is either a STATE (command == false) or a COMMAND
-    // (otherwise).  A command is to be executed when reached; a state
-    // is to be restored when reached.  STATES are distinguished in
-    // execution states and non-execution states (lookups).
+    // Each entry is a list of key/value pairs.
+    //
+    // Basically, there are four kinds of entries:
+    // * COMMANDS with the command name in the COMMAND key.
+    //   The command is to be executed when reached.
+    // * EXEC COMMANDS with the command name in the EXEC_COMMAND key.
+    //   Like commands, but are dependent on the program state and
+    //   thus get deleted when changing the program state.
+    // * EXEC POSITIONS with the position in the EXEC_POS key.
+    //   Other fields contain the current state, such as display values.
+    // * POSITIONS with the position in the POS key.  Used in lookups.
+    //
+    // Upon undo, DDD re-executes the command at HISTORY_POSITION - 1
+    // and attempts to re-create the state at HISTORY_POSITION - 2.
+    // Redo works the other way around.
+    //
+    //
+    // Sources
+    // -------
+    //
+    // DDD starts a new entry each time the command source is set via
+    // SET_SOURCE.
 
     // True if we have undone some exec position
     static bool _showing_earlier_state;
@@ -85,8 +106,10 @@ private:
     static bool locked;
 
     // Helpers
-    static void process_command(const UndoBufferEntry& entry, int direction);
-    static void process_status(const UndoBufferEntry& entry, int direction);
+    static void process_command(const UndoBufferEntry& entry,
+				int direction);
+    static void process_state(const UndoBufferEntry& entry, 
+			      bool restore_state);
 
     // Count undoing commands
     static int own_processed;
@@ -105,7 +128,7 @@ protected:
 
     // Process entry
     static void process_command(int entry, int direction);
-    static void process_status(int entry, int direction);
+    static void process_state(int entry, bool restore_state);
 
     // Log current position
     static void log();
@@ -120,51 +143,64 @@ protected:
     static bool has_effect(const UndoBufferEntry& entry);
 
 public:
-    // Add status NAME/VALUE to history.
-    static void add(const string& name, const string& value);
+    // Set source command.
+    static void set_source(const string& command);
 
-    // Add command COMMAND to history.
+    // Adding entries
+
+    // If SET_SOURCE was called before any of these add_SOMETHING
+    // calls, the call creates a new entry in the history.  Otherwise,
+    // the values are added to the last entry, possibly overriding
+    // existing values.
+
+    // Add command COMMAND to history.  If EXEC is set, COMMAND is
+    // treated as execution command, i.e. dependent on the current
+    // program state.
     static void add_command(const string &command, bool exec = false);
+
+    // Add status NAME/VALUE to history.
+    static void add_status(const string& name, const string& value);
 
     // Custom calls
     static void add_position(const string& file_name, int line, bool exec)
     {
-	add(exec ? UB_EXEC_POS : UB_POS, file_name + ":" + itostring(line));
+	add_status(exec ? UB_EXEC_POS : UB_POS,
+		   file_name + ":" + itostring(line));
     }
 
     static void add_address(const string& address, bool exec)
     {
-	add(exec ? UB_EXEC_ADDRESS : UB_ADDRESS, address);
+	add_status(exec ? UB_EXEC_ADDRESS : UB_ADDRESS, address);
     }
 
     static void add_where(const string& where)
     {
-	add(UB_WHERE, where);
+	add_status(UB_WHERE, where);
     }
 
     static void add_frame(const string& frame)
     {
-	add(UB_FRAME, frame);
+	add_status(UB_FRAME, frame);
     }
 
     static void add_registers(const string& registers)
     {
-	add(UB_REGISTERS, registers);
+	add_status(UB_REGISTERS, registers);
     }
 
     static void add_threads(const string& threads)
     {
-	add(UB_THREADS, threads);
+	add_status(UB_THREADS, threads);
     }
 
     static void add_display(const string& name, const string& value)
     {
-	add(UB_DISPLAY_PREFIX + name, value);
+	add_status(UB_DISPLAY_PREFIX + name, value);
     }
 
     static void add_display_address(const string& name, const string& addr)
     {
-	add(UB_DISPLAY_ADDRESS_PREFIX + name, addr);
+	add_status(UB_DISPLAY_ADDRESS_PREFIX + name, addr);
     }
 
     // Undo/Redo action
@@ -187,14 +223,11 @@ public:
     // Clear all execution positions
     static void clear_exec_pos();
 
-    // Invariant
-    static bool OK();
-
     // Add breakpoint state to OS
     static void add_breakpoint_state(ostream& os, BreakPoint *bp);
 
-    // Set source command
-    static void set_source(const string& command) { current_source = command; }
+    // Invariant
+    static bool OK();
 };
 
 extern UndoBuffer undo_buffer;
