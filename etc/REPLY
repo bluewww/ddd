@@ -5,9 +5,11 @@ To solve this problem, I need to see the interaction between DDD and
 the inferior debugger.  Please run DDD with the `--trace' option and
 let me know what happens.
 
-This is a problem of the inferior debugger (i.e. GDB).  Remember that
-DDD is only a front-end.  See your debugger documentation for details
-on reporting bugs and getting assistance.
+This looks like a problem of the inferior debugger (i.e. GDB).
+Remember that DDD is only a front-end.  See your debugger
+documentation for details on reporting bugs and getting assistance.
+If you are using GDB, try the GDB documentation at
+`http://www.cs.tu-bs.de/softech/info/gdb_19.html'.
 
 This will be in DDD 2.2.  In fact, it already has been implemented.
 If you really need this feature, you can try out tomorrow's DDD
