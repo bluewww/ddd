@@ -277,4 +277,6 @@ Volunteers for fixing these and other bugs are welcome!
 264 (LessTif bug): In a DialogShell, setting the defaultButton to 0
     won't work.
 
-271 (Insert new bugs here)
+271 Source text and machine code are no drop targets.
+
+272 (Insert new bugs here)

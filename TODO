@@ -402,4 +402,8 @@ Volunteers for these and other projects are welcome!
     the `Preferences' panel, calling `xfontsel' for each resource.
     Any component not equal to `*' can be taken.
 
-285 (Insert new project ideas here)
+285*Redesign Breakpoint and Watchpoint editors, using icons.
+    Thus, they can be realized as SelectionDialogs, solving all resize 
+    problems.
+
+286 (Insert new project ideas here)
