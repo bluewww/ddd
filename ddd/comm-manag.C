@@ -71,6 +71,7 @@ char comm_manager_rcsid[] =
 #include "history.h"
 #include "home.h"
 #include "index.h"
+#include "java.h"
 #include "options.h"
 #include "post.h"
 #include "question.h"
@@ -1111,9 +1112,24 @@ void send_gdb_command(string cmd, Widget origin,
 	    extra_data->refresh_initial_line = false;
 	    break;
 
+	case JDB:
+	    if (!gdb->has_debug_command())
+	    {
+		// JDB 1.2 cannot load classes.  Lookup source instead.
+		string cls = cmd.after(" ");
+		strip_space(cls);
+		if (cls != "")
+		{
+		    source_view->read_file(cls);
+
+		    // Don't show JDB's error message
+		    verbose = false;
+		}
+	    }
+	    break;
+
 	case GDB:
 	case XDB:
-	case JDB:
 	case PYDB:
 	    break;		// FIXME
 	}

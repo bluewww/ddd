@@ -230,8 +230,8 @@ static string gdbHelp(string original_command)
     translate_command(original_command);
 
     string command = original_command;
-    if (gdb->type() == JDB && original_command == "next" && 
-	!gdb->has_load_command())
+    if (gdb->type() == JDB && gdb->has_debug_command() &&
+	original_command == "next")
     {
 	// JDB 1.1 has an undocumented `next' command.  Treat it like `step'.
 	command = "step";
@@ -286,7 +286,7 @@ static string gdbHelp(string original_command)
 		return NO_GDB_ANSWER; // try again later
 
 	    // Configure debugger
-	    gdb->has_load_command(all_help.contains("load "));
+	    gdb->has_debug_command(all_help.contains("load "));
 	    gdb->has_watch_command(
 		all_help.contains("watch ") ? WATCH_ACCESS | WATCH_CHANGE : 0);
 	    update_arg_buttons();
