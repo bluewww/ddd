@@ -105,6 +105,8 @@ Key bindings
   The bindings from DDD 3.0 and earlier (Ctrl+E for Run, Ctrl+I for
   Step, etc.) are still available.
 
+- The `Home' and `End' keys work in all text fields.
+
 
 Bug fixes
 ---------

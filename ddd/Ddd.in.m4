@@ -3295,6 +3295,7 @@ Ddd*preferences*text.columns:			50
 Ddd*settings_popup.title: DDD: Debugger Settings
 ! Ddd*settings.okLabelString: Close
 Ddd*settings.cancelLabelString: Reset
+Ddd*settings.textAccelerators:
 
 Ddd*settings*help.labelString:		?
 Ddd*settings*XmTextField.columns:	10

@@ -1879,6 +1879,50 @@ static string get_help_line(string command, DebuggerType type)
     return reply;
 }
 
+// ClipWindow translation stuff
+static void ClipDo(Widget w, XEvent *event, 
+		   String *params, Cardinal *num_params)
+{
+    Widget scroll = XtParent(w);
+    Widget scrollbar = 0;
+    XtVaGetValues(scroll, XmNverticalScrollBar, &scrollbar, NULL);
+    XtCallActionProc(scrollbar, params[0], event, params + 1, *num_params - 1);
+}
+
+static void fix_clip_window_translations(Widget scroll)
+{
+    // The scrolled clip window grabs translations for osfBeginLine
+    // and osfEndLine, which we need in our text fields.  Since we
+    // cannot selectively disable these translations, we disable all
+    // translations ...
+
+    Widget clip = 0;
+    XtVaGetValues(scroll, XmNclipWindow, &clip, NULL);
+    XtUninstallTranslations(clip);
+
+    // ... and provide a minimal set instead.
+    static bool have_clip_actions = false;
+    if (!have_clip_actions)
+    {
+	static XtActionsRec clip_actions[] = {
+	    {"clip-do", ClipDo}
+	};
+
+	XtAppAddActions(XtWidgetToApplicationContext(scroll), 
+			clip_actions, XtNumber(clip_actions));
+	have_clip_actions = true;
+    }
+
+    static char clip_translations[] = 
+	"<Key>osfPageUp:         clip-do(PageUpOrLeft, 0)\n"
+	"<Key>osfPageDown:       clip-do(PageDownOrRight, 0)\n"
+	"Ctrl <Key>osfBeginLine: clip-do(TopOrBottom)\n"
+	"Ctrl <Key>osfEndLine:   clip-do(TopOrBottom)\n";
+
+    XtTranslations tr = XtParseTranslationTable(clip_translations);
+    XtVaSetValues(clip, XmNtranslations, tr, NULL);
+}
+
 // Create settings or infos editor
 static Widget create_panel(DebuggerType type, SettingsType stype)
 {
@@ -1963,13 +2007,14 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
     Widget title = verify(XmCreateLabel(column, "title", args, arg));
     XtManageChild(title);
 
-    // Add a scrolled window...
+    // Add a scrolled window.
     arg = 0;
     XtSetArg(args[arg], XmNscrollingPolicy, XmAUTOMATIC); arg++;
     Widget scroll = 
 	verify(XmCreateScrolledWindow(column, "scroll", args, arg));
+    fix_clip_window_translations(scroll);
 
-    // ...and a form.
+    // Add a form.
     arg = 0;
     Widget form = verify(XmCreateForm(scroll, "form", args, arg));
 
