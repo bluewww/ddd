@@ -1,7 +1,7 @@
 // $Id$
 // Destroy Callbacks
 
-// Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of DDD.
@@ -33,18 +33,32 @@ char DestroyCB_rcsid[] =
 #include "TimeOut.h"
 #include <Xm/DialogS.h>
 
-static void DestroyCB(XtPointer client_data, XtIntervalId *)
+static void CancelTimer(Widget w, XtPointer client_data, XtPointer)
+{
+    XtIntervalId id = XtIntervalId(client_data);
+    XtRemoveTimeOut(id);
+}
+
+static void DestroyCB(XtPointer client_data, XtIntervalId *id)
 {
     Widget w = Widget(client_data);
+
     if (w != 0)
+    {
+	XtRemoveCallback(w, XtNdestroyCallback, CancelTimer, XtPointer(*id));
 	XtDestroyWidget(w);
+    }
 }
 
 // Destroy WIDGET as soon as we are idle
 void DestroyWhenIdle(Widget widget)
 {
-    XtAppAddTimeOut(XtWidgetToApplicationContext(widget), 0, DestroyCB, 
-		    XtPointer(widget));
+    XtIntervalId id = 
+	XtAppAddTimeOut(XtWidgetToApplicationContext(widget), 0, DestroyCB, 
+			XtPointer(widget));
+
+    // Should WIDGET be destroyed beforehand, cancel the timer
+    XtAddCallback(widget, XtNdestroyCallback, CancelTimer, XtPointer(id));
 }
 
 
