@@ -619,6 +619,8 @@ void process_handle(string output, bool init)
     if (signals_form == 0)
 	return;
 
+    string undo_command = "";
+
     while (output != "")
     {
 	string line = output;
@@ -645,9 +647,19 @@ void process_handle(string output, bool init)
 
 	    if (w == 0)
 	    {
+#if 0
 		cerr << "Warning: cannot set " << base << " " << titles[word]
 		     << " to " << quote(value) << "\n";
+#endif
 		continue;
+	    }
+
+	    if (!init && signals_values[w] != value)
+	    {
+		// Save undoing command
+		if (undo_command != "")
+		    undo_command += '\n';
+		undo_command += handle_command(w, !set);
 	    }
 
 	    XtVaSetValues(w, XmNset, set, NULL);
@@ -657,6 +669,9 @@ void process_handle(string output, bool init)
 		signals_initial_values[w] = value;
 	}
     }
+
+    if (undo_command != "")
+	undo_buffer.add_command(undo_command);
 
     update_reset_signals_button();
 }

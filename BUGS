@@ -148,7 +148,6 @@ Volunteers for fixing these and other bugs are welcome!
     - graph undisplay `NAME` should delete *all* displays named NAME
     - undo/redo may make clusters (or user displays?) inactive - they
       should all be restored at the end
-    - Undo signals
     - Document it all
 
 322*Finish Plots:
