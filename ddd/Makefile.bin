@@ -13,6 +13,10 @@ MAKE_IT = \
 	test -f Makefile || ( cd ..; ../configure ); \
 	$(MAKE) $@
 
+# Default target
+all:	FORCE
+	$(MAKE_IT)
+
 # Override implicit rules
 %.o: %.C
 	$(MAKE_IT)
