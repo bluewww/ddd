@@ -271,6 +271,13 @@ LessTif
       mouse instead.
 
     * Tearing off menus may result in X errors.
+
+    * In dialogs involving multiple buttons, the `OK' button still
+      remains the default button, causing the dialog to pop down as
+      soon as `Return' is hit.
+
+    * In `GDB settings', the option menus are not shown.
+
  
 
 Linux
