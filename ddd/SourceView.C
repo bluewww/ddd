@@ -239,7 +239,7 @@ void SourceView::other_fileCB (Widget w,
 
 // ***************************************************************************
 //
-void SourceView::line_popup_setCB (Widget w,
+void SourceView::line_popup_setCB (Widget,
 				   XtPointer client_data,
 				   XtPointer)
 {
@@ -248,12 +248,12 @@ void SourceView::line_popup_setCB (Widget w,
     {
     case GDB:
 	gdb_command("break " + basename(current_file_name) + ":" + 
-		    itostring(line_nr), w);
+		    itostring(line_nr), source_view_w);
 	break;
 	
     case DBX:
-	gdb_command("file " + current_file_name, w);
-	gdb_command("stop at " + itostring(line_nr), w);
+	gdb_command("file " + current_file_name, source_view_w);
+	gdb_command("stop at " + itostring(line_nr), source_view_w);
 	break;
     }
 }
@@ -261,7 +261,7 @@ void SourceView::line_popup_setCB (Widget w,
 
 // ***************************************************************************
 //
-void SourceView::line_popup_set_tempCB (Widget w,
+void SourceView::line_popup_set_tempCB (Widget,
 					XtPointer client_data,
 					XtPointer)
 {
@@ -270,14 +270,14 @@ void SourceView::line_popup_set_tempCB (Widget w,
     {
     case GDB:
 	gdb_command("tbreak " + basename(current_file_name) + ":" + 
-		    itostring(line_nr), w);
+		    itostring(line_nr), source_view_w);
 	break;
 
     case DBX:
-	gdb_command("file " + current_file_name, w);
-	gdb_command("stop at " + itostring(line_nr), w);
+	gdb_command("file " + current_file_name, source_view_w);
+	gdb_command("stop at " + itostring(line_nr), source_view_w);
 	gdb_command("when at " + itostring(line_nr) 
-		    + " { clear " + itostring(line_nr) + "; }", w);
+		    + " { clear " + itostring(line_nr) + "; }", source_view_w);
 	break;
     }
 }
@@ -286,18 +286,18 @@ void SourceView::line_popup_set_tempCB (Widget w,
 
 // ***************************************************************************
 //
-void SourceView::bp_popup_deleteCB (Widget w,
+void SourceView::bp_popup_deleteCB (Widget,
 				    XtPointer client_data,
 				    XtPointer)
 {
     int bp_nr = *((int *)client_data);
-    gdb_command("delete " + itostring(bp_nr), w);
+    gdb_command("delete " + itostring(bp_nr), source_view_w);
 }
 
 
 // ***************************************************************************
 //
-void SourceView::bp_popup_disableCB (Widget w,
+void SourceView::bp_popup_disableCB (Widget,
 				     XtPointer client_data,
 				     XtPointer call_data)
 {
@@ -310,12 +310,12 @@ void SourceView::bp_popup_disableCB (Widget w,
 	cmd = "enable ";
 
     cmd += itostring(bp_nr);
-    gdb_command(cmd, w);
+    gdb_command(cmd, source_view_w);
 }
 
 // ***************************************************************************
 //
-void SourceView::text_popup_breakCB (Widget w,
+void SourceView::text_popup_breakCB (Widget,
 				     XtPointer client_data,
 				     XtPointer call_data)
 {
@@ -326,21 +326,21 @@ void SourceView::text_popup_breakCB (Widget w,
     switch (gdb->type())
     {
     case GDB:
-	gdb_command("break " + *word_ptr, w);
+	gdb_command("break " + *word_ptr, source_view_w);
 	break;
 
     case DBX:
 	pos = dbx_lookup(*word_ptr);
 	if (pos != "")
 	{
-	    gdb_command("file " + pos.before(':'), w);
-	    gdb_command("stop at " + pos.after(':'), w);
+	    gdb_command("file " + pos.before(':'), source_view_w);
+	    gdb_command("stop at " + pos.after(':'), source_view_w);
 	}
 	break;
     }
 }
 
-void SourceView::text_popup_clearCB (Widget w,
+void SourceView::text_popup_clearCB (Widget,
 				     XtPointer client_data,
 				     XtPointer call_data)
 {
@@ -351,15 +351,15 @@ void SourceView::text_popup_clearCB (Widget w,
     switch (gdb->type())
     {
     case GDB:
-	gdb_command("clear " + *word_ptr, w);
+	gdb_command("clear " + *word_ptr, source_view_w);
 	break;
 
     case DBX:
 	pos = dbx_lookup(*word_ptr);
 	if (pos != "")
 	{
-	    gdb_command("file " + pos.before(':'), w);
-	    gdb_command("clear " + pos.after(':'), w);
+	    gdb_command("file " + pos.before(':'), source_view_w);
+	    gdb_command("clear " + pos.after(':'), source_view_w);
 	}
 	break;
     }
@@ -369,34 +369,34 @@ void SourceView::text_popup_clearCB (Widget w,
 
 // ***************************************************************************
 //
-void SourceView::text_popup_printCB (Widget w,
+void SourceView::text_popup_printCB (Widget,
 				     XtPointer client_data,
 				     XtPointer call_data)
 {
     string* word_ptr = (string*)client_data;
     assert(word_ptr->length() > 0);
 
-    gdb_command("print " + *word_ptr, w);
+    gdb_command("print " + *word_ptr, source_view_w);
 }
 
 
 
 // ***************************************************************************
 //
-void SourceView::text_popup_dispCB (Widget w,
+void SourceView::text_popup_dispCB (Widget,
 				    XtPointer client_data,
 				    XtPointer call_data)
 {
     string* word_ptr = (string*)client_data;
     assert(word_ptr->length() > 0);
 
-    gdb_command("graph display " + *word_ptr, w);
+    gdb_command("graph display " + *word_ptr, source_view_w);
 }
 
 
 // ***************************************************************************
 //
-void SourceView::text_popup_lookupCB (Widget w,
+void SourceView::text_popup_lookupCB (Widget,
 				      XtPointer client_data,
 				      XtPointer call_data)
 {
@@ -414,7 +414,7 @@ static bool selection_click = false;
 
 static string last_info_output = "";
 
-void SourceView::set_source_argCB (Widget w, 
+void SourceView::set_source_argCB (Widget, 
 				   XtPointer client_data, 
 				   XtPointer call_data)
 {
