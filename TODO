@@ -331,7 +331,7 @@ Volunteers for these and other projects are welcome!
 
 321 Allow `()' expansion in auto-commands.
 
-322 Add support for the Perl debugger.
+322 Add support for the Perl debugger.  Any volunteers?
 
 325 Allow `snapshots' of the currently displayed data.  Just create
     `frozen' copies of displays that simply display the original data
@@ -347,14 +347,14 @@ Volunteers for these and other projects are welcome!
 334 When looking at a C++ identifier X, try `this->X' if `X' is not
     found.  Better yet, try `CLASS::X' if we're in a CLASS member.
 
-339 Have a `Plot History' option, plotting the value history of a
+339*Have a `Plot History' option, plotting the value history of a
     variable.
 
 340 Have `Display Array Slice', a friendly interface to the `@' operator.
 
-342 Add a menu bar for the execution window, using swallowing.
+342 Add a menu bar for the execution window (via swallowing)
 
-343 Add a progress meter (including `Cancel' button) for long display
+343*Add a progress meter (including `Cancel' button) for long display
     updates.
 
 345 (Insert new project ideas here)

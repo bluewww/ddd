@@ -20,11 +20,12 @@ To build a complete DDD from sources, you need:
      In doubt, GCC is preferred.
 
    * A Motif Widget library, either LessTif (0.83 or later) or
-     OSF/Motif (1.1 or later).  See the DDD WWW site and the
+     OSF/Motif (1.2 or later).  See the DDD WWW site and the
      `patches/' directory for useful LessTif patches.  The most recent
      LessTif release is available via `http://www.lesstif.org/'.
 
-   * The X window library (Xlib) and X toolkit library (Xt), X11R4 or later.
+   * The X window library (Xlib) and X toolkit library (Xt), X11R4 or
+     later.  Best results are obtained with X11R6.3.
 
    * A `make' program.  GNU make is recommended.
 
@@ -46,6 +47,8 @@ Execution Requirements
 
 To run DDD, you need:
 
+   * An X server.  Without X, DDD does not run.
+
    * An inferior command-line debugger.  Best results are achieved
      with GDB, the GNU debugger.  (GDB 4.x is required; best results
      are achieved with GDB 4.13 or later.)  Using GDB, you can debug
@@ -61,17 +64,16 @@ To run DDD, you need:
      found on HP-UX systems.  XDB usage has been tested for C programs
      only, but may work for other languages as well. (*)
 
-     Finally, DDD also supports JDB, the Java Debugger, as of JDK 1.1
-     and later.  Using JDB, you can find and fix bugs in Java
-     programs.
+     To debug Java programs, DDD supports JDB, the Java Debugger, as
+     of JDK 1.1 and later.
 
+     To debug Python scripts, DDD supports PYDB, a PDB extension.
+     PYDB is included in the DDD distribution.
 
      (*) XDB will no longer be supported in future DDD releases.
          You can use HP's Wildebeest (WDB) instead, a free GDB port to
          HP-UX (`http://www.hp.com/lang/tools/Debuggers/WDB/').
          Please let us know your experiences with DDD and WDB.
-
-   * An X server.  Without X, DDD does not run.
 
 
 The following recommended helper applications should be in the user path:
@@ -89,6 +91,9 @@ The following recommended helper applications should be in the user path:
 
    * The `xfontsel' font selection program.  With `xfontsel', you can
      select fonts interactively.
+
+   * The `gnuplot' program, version 3.5 or later.  DDD uses `gnuplot'
+     to plot array and history data.
 
 
 Basic Installation
@@ -128,8 +133,8 @@ The simplest way to compile DDD is:
      possible system-specific installation procedures.
 
   3. If you want to use DDD with LessTif, get a recent LessTif release
-     from `http://www.lesstif.org' and see the `patches/' subdirectory
-     for patches to be applied.
+     from `http://www.lesstif.org' and see the local `patches/'
+     subdirectory for patches to be applied.
 
   4. `cd' to the directory containing the DDD package source code
      (that is, the directory named `ddd-<release>', *not* `ddd') and
@@ -140,12 +145,12 @@ The simplest way to compile DDD is:
      to configure DDD for your system.  If you're using `csh' on an
      old version of System V, you might need to type
 
-	% sh ./configure -v
+	% sh ./configure
 	
      instead to prevent `csh' from trying to execute `configure' itself.
      If you're building DDD on Windows using Cygwin32, type
      
-	$ bash ./configure -v
+	$ bash ./configure
 
      instead.
 
@@ -203,7 +208,9 @@ The simplest way to compile DDD is:
      Abort compilation and fix the problem.
 
      If you find a warning can be avoided by changing DDD code, send a
-     bug report to the DDD maintainers <ddd-bugs@ips.cs.tu-bs.de>.
+     bug report to the DDD maintainers <ddd-bugs@ips.cs.tu-bs.de>,
+     including a context diff (`diff -c5') between the original and
+     the changed file.
 
   8. For a simple check, type
   
@@ -214,7 +221,8 @@ The simplest way to compile DDD is:
 
   9. If DDD crashes immediately after startup or after a few
      interactions, first check your configuration (the output of
-     `./ddd --configuration') for version mismatches.
+     `./ddd --configuration') for version mismatches.  Also check
+     whether libraries and include files have matching versions.
 
      Then, see the `PROBLEMS' and `BUGS' files for known problems.  If
      the problem is not listed, report it to the DDD maintainers
@@ -471,12 +479,12 @@ operates.
 Documentation
 =============
 
-The DDD Manual Page, contained in the file `ddd/ddd.man', is the
-official DDD reference.  Note that DDD provides various on-line help
-mechanisms.
+The DDD Manual, contained in the file `ddd/ddd.man', is the official
+DDD reference.  Note that DDD also has various on-line facilities.
 
-Various formatted documents related to DDD are contained in the
-`./doc' directory.  See the `./doc/README' file for details.
+A DDD manual in PostScript format, as well as other documents related
+to DDD are contained in the `./doc' directory.  See the `./doc/README'
+file for details.
 
 
 $Id$

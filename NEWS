@@ -1,4 +1,3 @@
-
 DDD News						-*- text -*-
 ********
 
@@ -33,6 +32,19 @@ Undoing commands
 - `Undo' and `Redo' supersedes the old `Back' and `Forward' functions.
 
 
+Plotting
+--------
+
+- Array plots.  You can plot one- and two-dimensional numeric arrays
+  via the `Plot' button.  This gives a totally new meaning to `data
+  display debugger'.  Requires Gnuplot.
+
+- History plots.  You can plot the history of a numerical variable,
+  i.e. the sequence of previous values.  [Not operational yet]
+
+- Plots can be animated, visualizing algorithm effects.
+
+
 Data exploration
 ----------------
 
@@ -41,9 +53,6 @@ Data exploration
 
 - Titles on dependent displays are now disabled by default, as they
   can be inferred from edge annotations.  Saves screen space.
-
-- Data plotting.  The `Plot' button lets you plot one- and
-  two-dimensional numeric arrays.  Requires Gnuplot.
 
 - Clusters.  You can join several data displays into a cluster display,
   showing data like local variables.  Saves screen space.
@@ -155,7 +164,10 @@ Bug fixes
 ---------
 
 - This release brings major performance improvements, especially when
-  processing large chunks of data.
+  processing large chunks of data.  In fact, the time complexity of
+  data processing algorithms has been improved from O(n^2) to O(n).
+
+- Value tips for large arrays no longer cause significant delays.
 
 - Improved redirection handling.  You can redirect stderr away from
   the execution window, using `run 2> FILE'.  The debugger command

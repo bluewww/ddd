@@ -149,6 +149,7 @@ Volunteers for fixing these and other bugs are welcome!
       as the _current_ values (and not the recorded ones).
     - Up/Down does not change program state, hence undoing `up N'
       should result in `down N'
+    - Document it all
 
 322*Finish Plots:
     - Plot clusters
@@ -160,6 +161,7 @@ Volunteers for fixing these and other bugs are welcome!
     - Add Gnuplot console
     - Make swallowing (decorating) optional
     - Destroying plotter decorations is risky; better re-use them
+    - Document it all
 
 329*Something is wrong with selecting clusters as a whole: the title
     is not copied to `()'.
