@@ -122,6 +122,11 @@ void add_to_arguments(string line)
     else if (is_run_cmd(line))
     {
 	string args = line.after(rxwhite);
+	if (gdb->type() == JDB)
+	{
+	    // Skip class name
+	    args = args.after(rxwhite);
+	}
 	add_argument(args, run_arguments, last_run_argument, 
 		     run_arguments_updated);
     }
