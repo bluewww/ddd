@@ -28,11 +28,11 @@
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
 .TH @ddd@ 1 "15 Nov 1997" "@DDD@ @VERSION@"
-.\" ---------------
 .SH "NAME"
-.\" ---------------
 @ddd@, x@ddd@ - the data display debugger
+.SH ""
 .PSPIC @srcdir@/PICS/dddlogo.ps 10cm
+.\"
 .\" ---------------
 .SH "SYNOPSIS"
 .\" ---------------
