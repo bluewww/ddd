@@ -84,7 +84,9 @@ void translate_command(string& command)
     switch(gdb->type())
     {
     case XDB:
-	// XDB is too dumb to find out aliases
+	// Although we have defined these as aliases, we translate
+	// them anyway.  This way, DDD can find the documentation
+	// (which won't work for aliases).
 	if (command == "run")
 	    command = "r";
 	else if (command == "cont")
@@ -98,9 +100,19 @@ void translate_command(string& command)
 	break;
 
     case JDB:
-	// JDB uses `step up' instead of `finish'
+	// JDB uses `step up' instead of `finish'.
 	if (command == "finish")
 	    command = "step up";
+
+	// Typing ^C at JDB kills it, which is not what the user
+	// expects.  Simply suspend all threads instead.
+	if (command == '\003')
+	    command = "suspend";
+
+	break;
+
+    case GDB:
+    case DBX:
 	break;
     }
 }
@@ -246,16 +258,6 @@ bool emptyCommandQueue()
 
 void gdb_command(const Command& c)
 {
-    if (c.command == '\003' && gdb->type() == JDB)
-    {
-	// Typing ^C at JDB kills it, which is not what the user
-	// expects.  Simply suspend all threads instead.
-	Command c2(c);
-	c2.command = "suspend";
-	gdb_command(c2);
-	return;
-    }
-
     if (c.command.length() == 1 && iscntrl(c.command[0]) 
 	|| c.command == "no" || c.command == "yes")
     {
