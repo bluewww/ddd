@@ -327,6 +327,8 @@ static int (*old_x_fatal_handler)(Display *display) = 0;
 // Fatal X I/O error handler: cleanup and issue error message
 static int ddd_x_fatal(Display *display)
 {
+    ddd_has_crashed = true;
+
     ddd_cleanup();
     return old_x_fatal_handler(display);
 }
@@ -442,6 +444,8 @@ static int ddd_x_error(Display *display, XErrorEvent *event)
 	return old_x_error_handler(display, event);
     }
 
+    ddd_has_crashed = true;
+
     // Fetch precise diagnostics
     char buffer[BUFSIZ];
     XGetErrorText(display, event->error_code, buffer, sizeof buffer);
@@ -503,6 +507,8 @@ static XtErrorHandler old_xt_error_handler;
 
 static void ddd_xt_error(String message = 0)
 {
+    ddd_has_crashed = true;
+
     if (message == 0 || message[0] == '\0')
     {
 	ddd_cleanup();
