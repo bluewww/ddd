@@ -34,7 +34,7 @@
 #endif
 
 //-----------------------------------------------------------------------------
-// Diese Klasse speichert Informationen zu Breakpoints des gdb.
+// A `BreakPoint' stores information about an existing debugger breakpoint.
 //-----------------------------------------------------------------------------
 
 #include <X11/Intrinsic.h>
@@ -43,8 +43,18 @@
 #include "strclass.h"
 #include "bool.h"
 
-enum BPType {BREAKPOINT, WATCHPOINT};
-enum BPDispo {BPKEEP, BPDEL, BPDIS};
+// Breakpoint type
+enum BPType {
+    BREAKPOINT,			// Breakpoint
+    WATCHPOINT			// Watchpoint
+};
+
+// What to do when breakpoint is reached
+enum BPDispo {
+    BPKEEP,			// Keep (default)
+    BPDEL,			// Delete (temporary breakpoint)
+    BPDIS			// Disable (???)
+};
 
 class BreakPoint {
     string  mynumber_str;
@@ -57,6 +67,7 @@ class BreakPoint {
     string  myaddress;
     string  myinfos;
     string  myignore_count;
+    string  myarg;
     bool    myenabled_changed;
     bool    myfile_changed;
     bool    myposition_changed;
@@ -66,44 +77,57 @@ class BreakPoint {
     Widget  mycode_glyph;
 
 public:
-    // Entfernt eigene info aus info_output.
-    //
-    BreakPoint (string& info_output);
+    // Create new breakpoint from INFO_OUTPUT.  ARG denotes the
+    // argument of a breakpoint setting command.  Delete own info from
+    // INFO_OUTPUT.
+    BreakPoint (string& info_output, string arg = "");
 
+    // Breakpoint number.
     const string& number_str()   const { return mynumber_str; }
     int           number()       const { return mynumber; }
+
+    // Breakpoint type.
     BPType        type()         const { return mytype; }
+
+    // What to do when breakpoint is reached.
     BPDispo       dispo()        const { return mydispo; }
+
+    // Whether breakpoint is enabled
     bool          enabled()      const { return myenabled; }
+
+    // Breakpoint position
     const string& file_name()    const { return myfile_name; }
     int           line_nr()      const { return myline_nr; }
     const string& address()      const { return myaddress; }
-    const string& infos()        const { return myinfos; }
-    string        ignore_count() const { return myignore_count; }
 
+    // Additional infos
+    const string& infos()        const { return myinfos; }
+    const string& ignore_count() const { return myignore_count; }
+
+    // Argument of breakpoint-setting command, as passed to constructor
+    const string& arg()          const { return myarg; }
+
+    // Selection state
     bool&         selected()        { return myselected; }
+
+    // Associated glyphs in source and machine code
     Widget&       source_glyph()    { return mysource_glyph; }
     Widget&       code_glyph()      { return mycode_glyph; }
 
-    // true wenn sich beim letzten update enabled geaendert hat.
-    //
+    // True iff `enabled' status changed
     bool enabled_changed () const { return myenabled_changed; }
 
-    // true wenn sich beim letzten update der file_name geaendert hat.
-    //
+    // True iff file name changed
     bool file_changed () const { return myfile_changed; }
 
-    // true wenn sich beim letzten update line_nr oder file_name geaendert hat.
-    //
+    // True iff position changed
     bool position_changed () const { return myposition_changed; }
 
-    // true wenn sich beim letzten update address geaendert hat.
-    //
+    // True iff address changed
     bool address_changed () const { return myaddress_changed; }
 
-    // liefert true, wenn sich irgendetwas geandert hat.
-    // entfernt eigene info aus info_output.
-    //
+    // Update breakpoint from breakpoint info INFO_OUTPUT.  Return
+    // true iff changes occurred.  Delete own info from INFO_OUTPUT.
     bool update (string& info_output);
 };
 

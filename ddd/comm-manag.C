@@ -68,7 +68,6 @@ char comm_manager_rcsid[] =
 
 #include <ctype.h>
 
-
 static void handle_graph_cmd (string cmd, Widget origin);
 
 //-----------------------------------------------------------------------------
@@ -97,17 +96,17 @@ typedef struct CmdData {
 	     PosBuffer*  pb = 0,
 	     bool     nep= false,
 	     bool     /* nfp */ = false) :
-	filter_disp (fd),
-	disp_buffer (db),
-	pos_buffer (pb),
-	new_exec_pos (nep),
-	new_frame_pos (nep),
-	set_frame_pos (false),
-	set_frame_arg (0),
-	set_frame_func (""),
+	filter_disp(fd),
+	disp_buffer(db),
+	pos_buffer(pb),
+	new_exec_pos(nep),
+	new_frame_pos(nep),
+	set_frame_pos(false),
+	set_frame_arg(0),
+	set_frame_func(""),
 	user_answer(""),
-	user_callback (0),
-	user_data (0)
+	user_callback(0),
+	user_data(0)
     {}
 };
 
@@ -133,6 +132,7 @@ typedef struct PlusCmdData {
     bool     refresh_history_save;     // send 'show history save'
     bool     refresh_setting;	       // send 'show SETTING'
     string   set_command;	       // setting to update
+    string   break_arg;		       // argument when setting breakpoint
     int      n_refresh_data;	       // # of data displays to refresh
     int      n_refresh_user;	       // # of user displays to refresh
     int      n_refresh_addr;	       // # of addresses to refresh
@@ -176,6 +176,7 @@ typedef struct PlusCmdData {
 	refresh_history_save(false),
 	refresh_setting(false),
 	set_command(""),
+	break_arg(""),
 	n_refresh_data(0),
 	n_refresh_user(0),
 	n_refresh_addr(0),
@@ -613,6 +614,11 @@ void user_cmdSUC (string cmd, Widget origin, OQCProc callback, void *data)
 	plus_cmd_data->set_command     = cmd;
 	plus_cmd_data->refresh_data    = false;
 	plus_cmd_data->refresh_addr    = false;
+    }
+
+    if (is_break_cmd(cmd))
+    {
+	plus_cmd_data->break_arg = get_break_expression(cmd);
     }
 
     if (cmd_data->new_exec_pos
@@ -1479,7 +1485,9 @@ void plusOQAC (string answers[],
 
     if (plus_cmd_data->refresh_bpoints) {
 	assert (qu_count < count);
-	source_view->process_info_bp(answers[qu_count++]);
+	source_view->process_info_bp(answers[qu_count++], 
+				     plus_cmd_data->break_arg);
+	update_arg_buttons();
     }
 
     if (plus_cmd_data->refresh_where) {

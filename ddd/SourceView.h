@@ -377,7 +377,8 @@ public:
 			 XmHighlightMode mode = XmHIGHLIGHT_NORMAL);
 
     // Handle breakpoint information
-    static void process_info_bp         (string& info_output);
+    static void process_info_bp         (string& info_output,
+					 const string& break_arg = "");
 
     // Handle 'info line' information
     static void process_info_line_main  (string& info_output);
@@ -523,6 +524,9 @@ public:
 
     // Get the position of breakpoint NUM
     static string bp_pos(int num);
+
+    // Return the number of the breakpoint at POS (0 if none)
+    static int bp_at(string pos);
 
     // Get the word at position of EVENT
     static string get_word_at_event(Widget w,

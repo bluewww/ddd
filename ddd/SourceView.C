@@ -983,6 +983,49 @@ void SourceView::set_source_argCB(Widget text_w,
     }
 }
 
+int SourceView::bp_at(string arg)
+{
+    MapRef ref;
+    for (BreakPoint* bp = bp_map.first(ref);
+	 bp != 0;
+	 bp = bp_map.next(ref))
+    {
+	if (arg.matches(rxint))
+	{
+	    // Line number for current source given
+	    if (bp_matches(bp) && bp->line_nr() == atoi(arg))
+		return bp->number();
+	}
+	else
+	{
+	    string pos = arg;
+
+	    if (!pos.contains(":") || pos.contains("::"))
+	    {
+		// Function given
+		if (bp->arg() == pos)
+		    return bp->number();
+
+		if (gdb->type() == DBX)
+		    pos = dbx_lookup(arg);
+	    }
+	    
+	    if (pos.contains(":") && !pos.contains("::"))
+	    {
+		// File:line given
+		string file = pos.before(':');
+		string line = pos.after(':');
+
+		if (file_matches(bp->file_name(), file) 
+		    && bp->line_nr() == atoi(line))
+		    return bp->number();
+	    }
+	}
+    }
+
+    return 0;
+}
+
 
 // ***************************************************************************
 
@@ -2565,7 +2608,8 @@ void SourceView::show_position (string position, bool silent)
 // Update breakpoints in BP_BAP, adding new ones or deleting existing ones.
 // Update breakpoint display by calling REFRESH_BP_DISP.
 //
-void SourceView::process_info_bp (string& info_output)
+void SourceView::process_info_bp (string& info_output,
+				  const string& break_arg)
 {
     // DEC dbx issues empty lines, which causes trouble
     info_output.gsub("\n\n", "\n");
@@ -2659,7 +2703,7 @@ void SourceView::process_info_bp (string& info_output)
 	{
 	    // New breakpoint
 	    changed = true;
-	    BreakPoint* new_bp = new BreakPoint (info_output);
+	    BreakPoint* new_bp = new BreakPoint(info_output, break_arg);
 	    bp_map.insert (bp_nr, new_bp);
 
 	    if (!added)

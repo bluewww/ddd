@@ -54,7 +54,7 @@ char BreakPoint_rcsid[] =
 regex RXnl_int ("\n[1-9]");
 regex RXname_colon_int_nl ("[^ ]+:[0-9]+\n");
 
-BreakPoint::BreakPoint (string& info_output)
+BreakPoint::BreakPoint (string& info_output, string arg)
     : mytype(BREAKPOINT),
       mydispo(BPKEEP),
       myenabled(true),
@@ -63,6 +63,7 @@ BreakPoint::BreakPoint (string& info_output)
       myaddress(""),
       myinfos(""),
       myignore_count(""),
+      myarg(arg),
       myfile_changed(true),
       myposition_changed(true),
       myaddress_changed(true),
