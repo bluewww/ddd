@@ -2270,7 +2270,7 @@ static void fix_status_size()
     XtDispatchEvent(&event);
 
     // ... move down ...
-    for (Dimension y = 0; y < movement; y++)
+    for (Dimension y = 0; y < movement; y += 5)
     {
 	event.type                = MotionNotify;
 	event.xmotion.serial      = 0;
@@ -2289,7 +2289,24 @@ static void fix_status_size()
 	XtDispatchEvent(&event);
     }
 
-    // ... and release it again.
+    // ... until target position is reached ...
+    event.type                = MotionNotify;
+    event.xmotion.serial      = 0;
+    event.xmotion.display     = XtDisplay(sash);
+    event.xmotion.window      = XtWindow(sash);
+    event.xmotion.root        = RootWindowOfScreen(XtScreen(sash));
+    event.xmotion.subwindow   = None;
+    event.xmotion.time        = XtLastTimestampProcessed(XtDisplay(sash));
+    event.xmotion.x           = 0;
+    event.xmotion.y           = movement;
+    event.xmotion.x_root      = 0;
+    event.xmotion.y_root      = movement;
+    event.xmotion.state       = Button1Mask;
+    event.xmotion.is_hint     = NotifyNormal;
+    event.xmotion.same_screen = True;
+    XtDispatchEvent(&event);
+
+    // ... and release button1 again.
     event.type                = ButtonRelease;
     event.xbutton.serial      = 0;
     event.xbutton.display     = XtDisplay(sash);

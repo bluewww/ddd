@@ -427,6 +427,8 @@ void gdbCloseCommandWindowCB(Widget w, XtPointer, XtPointer)
     {
 	popdown_shell(command_shell);
     }
+
+    update_options();
 }
 
 void gdbOpenCommandWindowCB(Widget, XtPointer, XtPointer)
@@ -435,6 +437,8 @@ void gdbOpenCommandWindowCB(Widget, XtPointer, XtPointer)
 
     if (app_data.separate_source_window)
 	popup_shell(command_shell);
+
+    update_options();
 }
 
 bool have_command_window()
@@ -467,6 +471,7 @@ void gdbCloseSourceWindowCB(Widget w, XtPointer, XtPointer)
     XtUnmanageChild(XtParent(source_arg->widget()));
 
     popdown_shell(source_view_shell);
+    update_options();
 }
 
 void gdbOpenSourceWindowCB(Widget, XtPointer, XtPointer)
@@ -477,6 +482,7 @@ void gdbOpenSourceWindowCB(Widget, XtPointer, XtPointer)
     XtManageChild(XtParent(source_arg->widget()));
 
     popup_shell(source_view_shell);
+    update_options();
 }
 
 bool have_source_window()
@@ -506,6 +512,7 @@ void gdbCloseDataWindowCB(Widget w, XtPointer, XtPointer)
     XtUnmanageChild(data_disp->graph_form());
 
     popdown_shell(data_disp_shell);
+    update_options();
 }
 
 void gdbOpenDataWindowCB(Widget, XtPointer, XtPointer)
@@ -514,6 +521,7 @@ void gdbOpenDataWindowCB(Widget, XtPointer, XtPointer)
     XtManageChild(data_disp->graph_form());
 
     popup_shell(data_disp_shell);
+    update_options();
 }
 
 bool have_data_window()
@@ -534,6 +542,7 @@ bool have_visible_data_window()
 void gdbCloseExecWindowCB(Widget, XtPointer, XtPointer)
 {
     kill_exec_tty();
+    update_options();
 }
 
 void gdbOpenExecWindowCB(Widget, XtPointer, XtPointer)
@@ -541,6 +550,7 @@ void gdbOpenExecWindowCB(Widget, XtPointer, XtPointer)
     if (exec_tty_pid() == 0)
 	startup_exec_tty();
     popup_tty(command_shell);
+    update_options();
 }
 
 bool have_exec_window()
@@ -560,6 +570,7 @@ bool have_visible_exec_window()
 void gdbCloseToolWindowCB(Widget, XtPointer, XtPointer)
 {
     popdown_shell(tool_shell);
+    update_options();
 }
 
 void gdbOpenToolWindowCB(Widget, XtPointer, XtPointer)
@@ -567,6 +578,7 @@ void gdbOpenToolWindowCB(Widget, XtPointer, XtPointer)
     popup_shell(tool_shell);
     wait_until_mapped(tool_shell);
     recenter_tool_shell(source_view->source());
+    update_options();
 }
 
 bool have_tool_window()
