@@ -69,6 +69,7 @@ extern bool startup_preferences_changed();
 
 // Lots and lots of callbacks
 extern void sourceToggleFindWordsOnlyCB     (Widget, XtPointer, XtPointer);
+extern void sourceToggleFindCaseSensitiveCB (Widget, XtPointer, XtPointer);
 extern void sourceToggleCacheSourceFilesCB  (Widget, XtPointer, XtPointer);
 extern void sourceToggleCacheMachineCodeCB  (Widget, XtPointer, XtPointer);
 extern void sourceToggleDisassembleCB       (Widget, XtPointer, XtPointer);

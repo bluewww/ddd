@@ -118,6 +118,21 @@ void sourceToggleFindWordsOnlyCB (Widget, XtPointer, XtPointer call_data)
     update_options();
 }
 
+void sourceToggleFindCaseSensitiveCB (Widget, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    app_data.find_case_sensitive = info->set;
+
+    if (info->set)
+	set_status("Case-sensitive search enabled.");
+    else
+	set_status("Case-sensitive search disabled.");
+
+    update_options();
+}
+
 void sourceToggleCacheSourceFilesCB (Widget, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
@@ -1459,6 +1474,8 @@ bool save_options(unsigned long flags)
     os << "\n! Preferences\n";
     os << bool_app_value(XtNfindWordsOnly,
 			 app_data.find_words_only) << "\n";
+    os << bool_app_value(XtNfindCaseSensitive,
+			 app_data.find_case_sensitive) << "\n";
     os << int_app_value(XtNtabWidth,
 			 app_data.tab_width) << "\n";
     os << bool_app_value(XtNcacheSourceFiles,

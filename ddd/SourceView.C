@@ -3708,6 +3708,7 @@ void SourceView::clear_history()
 void SourceView::find(const string& s, 
 		      SourceView::SearchDirection direction,
 		      bool words_only,
+		      bool case_sensitive,
 		      Time time)
 {
     int matchlen = s.length();
@@ -3722,6 +3723,15 @@ void SourceView::find(const string& s,
 	return;
     }
 
+    string key  = s;
+    string text = current_source;
+    if (!case_sensitive)
+    {
+	// FIXME: This should be done according to the current locale
+	key.downcase();
+	text.downcase();
+    }
+
     // Make sure we don't re-find the currently found word
     XmTextPosition startpos;
     XmTextPosition endpos;
@@ -3732,7 +3742,7 @@ void SourceView::find(const string& s,
 	{
 	case forward:
 	    if (cursor == startpos
-		&& cursor < XmTextPosition(current_source.length()))
+		&& cursor < XmTextPosition(text.length()))
 		cursor++;
 	    break;
 	case backward:
@@ -3747,22 +3757,21 @@ void SourceView::find(const string& s,
 	switch (direction)
 	{
 	case forward:
-	    pos = current_source.index(s, cursor);
+	    pos = text.index(key, cursor);
 	    if (pos < 0)
 	    {
 		if (wraps++)
 		    break;
-		pos = current_source.index(s, 0);
+		pos = text.index(key, 0);
 	    }
 	    break;
 	case backward:
-	    pos = current_source.index(s, 
-				       cursor - current_source.length() - 1);
+	    pos = text.index(key, cursor - text.length() - 1);
 	    if (pos < 0)
 	    {
 		if (wraps++)
 		    break;
-		pos = current_source.index(s, -1);
+		pos = text.index(key, -1);
 	    }
 	    break;
 	}
@@ -3783,17 +3792,17 @@ void SourceView::find(const string& s,
 
 	if (words_only)
 	{
-	    // Make sure the found string is not part of a larger word
-	    if (pos > 0 && pos < int(current_source.length()))
+	    // Make sure the occurrence is not part of a larger word
+	    if (pos > 0 && pos < int(text.length()))
 	    {
-		if (isid(current_source[pos]) && isid(current_source[pos - 1]))
+		if (isid(text[pos]) && isid(text[pos - 1]))
 		    continue;
 	    }
 
-	    if (pos + matchlen < int(current_source.length()))
+	    if (pos + matchlen < int(text.length()))
 	    {
-		if (isid(current_source[pos + matchlen - 1]) && 
-		    isid(current_source[pos + matchlen]))
+		if (isid(text[pos + matchlen - 1]) && 
+		    isid(text[pos + matchlen]))
 		    continue;
 	    }
 	}
@@ -3828,7 +3837,8 @@ void SourceView::find(const string& s,
 				 address, in_text, bp_nr))
 		line_nr = line_count;
 
-	    msg = "Found " + quote(s) + " in " + line_of_cursor();
+	    string occurrence = current_source(pos, matchlen);
+	    msg = "Found " + quote(occurrence) + " in " + line_of_cursor();
 	    if (wraps)
 		msg += " (wrapped)";
 	}

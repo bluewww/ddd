@@ -6,7 +6,8 @@ DDD 2.2.2
 
     DDD 2.2.2 fixes some more minor bugs introduced in DDD 2.2.
 
-    There are no user-visible changes to DDD 2.2.1.
+    User-visible changes to DDD 2.2.1:
+    - DDD supports case-insensitive search in the source text.
 
     Bug fixes:
     - Getting and identifying core dumps now works on Solaris, AIX and

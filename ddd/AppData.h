@@ -167,6 +167,8 @@
 #define XtCPannedGraphEditor     "PannedGraphEditor"
 #define XtNfindWordsOnly         "findWordsOnly"
 #define XtCFindWordsOnly         "FindWordsOnly"
+#define XtNfindCaseSensitive     "findCaseSensitive"
+#define XtCFindCaseSensitive     "FindCaseSensitive"
 #define XtNgroupIconify          "groupIconify"
 #define XtCGroupIconify          "GroupIconify"
 #define XtNuniconifyWhenReady    "uniconifyWhenReady"
@@ -328,6 +330,7 @@ struct AppData {
     String  get_core_command;
     Boolean panned_graph_editor;
     Boolean find_words_only;
+    Boolean find_case_sensitive;
     Boolean group_iconify;
     Boolean uniconify_when_ready;
     Boolean global_tab_completion;

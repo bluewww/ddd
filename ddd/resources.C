@@ -724,6 +724,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+        XtNfindCaseSensitive,
+	XtCFindCaseSensitive,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, find_case_sensitive),
+	XtRImmediate,
+	XtPointer(True)
+    },
+
+    {
 	XtNgroupIconify,
 	XtCGroupIconify,
 	XtRBoolean,

@@ -531,6 +531,7 @@ public:
     static void find(const string& s,
 		     SearchDirection direction = forward,
 		     bool words_only = false,
+		     bool case_sensitive = false,
 		     Time time = CurrentTime);
 
     // Locate function S; if S is omitted, locate last execution position.

@@ -1489,7 +1489,7 @@ stamp-h: config.h.in config.status
 # we create temporary vr.* files instead and touch the version.* files
 # only if the vr.* files changed.
 version.h: vr.h
-	@$(CMP) vr.h $@ || $(CAT) vr.h > $@~ && $(MV) $@~ $@
+	@$(CMP) vr.h $@ || ( $(CAT) vr.h > $@~ && $(MV) $@~ $@ )
 vr.h: vr.h.in config.status
 	CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
 

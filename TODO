@@ -299,7 +299,7 @@ Volunteers for these and other projects are welcome!
 
 181. If the DDD WWW page server is down, try a mirror site.
 
-183. Have a way to re-dereference until a NULL pointer is encountered.
+183. Have a way to re-dereference until no more changes occur.
 
 187. Have a `commands' menu listing up all debugger commands.  Could
      be organized according to `help' classes.
@@ -387,7 +387,5 @@ Volunteers for these and other projects are welcome!
       this capability.
 
 236. Support getting core dumps via the /proc file system.
-
-237. `Find' should do case-insensitive search.
 
 238. (Insert your project idea here)

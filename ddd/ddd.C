@@ -768,6 +768,7 @@ static MMDesc stack_menu[] =
 };
 
 static Widget find_words_only_w;
+static Widget find_case_sensitive_w;
 static Widget disassemble_w;
 
 static MMDesc source_menu[] =
@@ -776,6 +777,8 @@ static MMDesc source_menu[] =
     MMSep,
     { "findWordsOnly",       MMToggle, { sourceToggleFindWordsOnlyCB }, 
       NULL, &find_words_only_w },
+    { "findCaseSensitive",   MMToggle, { sourceToggleFindCaseSensitiveCB }, 
+      NULL, &find_case_sensitive_w },
     { "disassemble",         MMToggle,  { sourceToggleDisassembleCB },
       NULL, &disassemble_w },
     MMSep,
@@ -846,8 +849,6 @@ static MMDesc general_preferences_menu[] =
 
 // Source preferences
 static Widget display_line_numbers_w;
-static Widget cache_source_files_w;
-static Widget cache_machine_code_w;
 static Widget tab_width_w;
 
 static Widget set_display_glyphs_w;
@@ -872,20 +873,38 @@ static MMDesc refer_menu[] =
     MMEnd
 };
 
+static Widget words_only_w;
+static Widget case_sensitive_w;
+static MMDesc find_menu[] =
+{
+    { "wordsOnly", MMToggle, { sourceToggleFindWordsOnlyCB }, 
+      NULL, &words_only_w },
+    { "caseSensitive", MMToggle, { sourceToggleFindCaseSensitiveCB }, 
+      NULL, &case_sensitive_w },
+    MMEnd
+};
+
+static Widget cache_source_files_w;
+static Widget cache_machine_code_w;
+static MMDesc cache_menu[] =
+{
+    { "cacheSource", MMToggle, { sourceToggleCacheSourceFilesCB }, 
+      NULL, &cache_source_files_w },
+    { "cacheCode", MMToggle, { sourceToggleCacheMachineCodeCB }, 
+      NULL, &cache_machine_code_w },
+    MMEnd
+};
 
 static Widget refer_sources_w;
 static MMDesc source_preferences_menu[] = 
 {
     { "showExecPos",      MMRadioPanel, MMNoCB, glyph_menu },
     { "referSources",     MMRadioPanel, MMNoCB, refer_menu, &refer_sources_w },
+    { "find",             MMButtonPanel, MMNoCB, find_menu },
+    { "cache",            MMButtonPanel, MMNoCB, cache_menu },
     { "displayLineNumbers", MMToggle, { sourceToggleDisplayLineNumbersCB },
       NULL, &display_line_numbers_w },
-    { "cacheSourceFiles", MMToggle, { sourceToggleCacheSourceFilesCB }, 
-      NULL, &cache_source_files_w },
-    { "cacheMachineCode", MMToggle, { sourceToggleCacheMachineCodeCB }, 
-      NULL, &cache_machine_code_w },
-    { "tabWidth", MMScale, { sourceSetTabWidthCB },
-      NULL, &tab_width_w },
+    { "tabWidth", MMScale, { sourceSetTabWidthCB }, NULL, &tab_width_w },
     MMEnd
 };
 
@@ -2944,6 +2963,11 @@ inline void set_string(Widget w, String value)
 void update_options()
 {
     set_toggle(find_words_only_w, app_data.find_words_only);
+    set_toggle(words_only_w, app_data.find_words_only);
+
+    set_toggle(find_case_sensitive_w, app_data.find_case_sensitive);
+    set_toggle(case_sensitive_w, app_data.find_case_sensitive);
+
     set_sensitive(disassemble_w, gdb->type() == GDB);
     set_toggle(disassemble_w, app_data.disassemble);
 
@@ -3256,12 +3280,14 @@ static void ResetSourcePreferencesCB(Widget, XtPointer, XtPointer)
     notify_set_toggle(set_display_glyphs_w, !initial_app_data.display_glyphs);
     notify_set_toggle(set_refer_path_w, initial_app_data.use_source_path);
     notify_set_toggle(set_refer_base_w, !initial_app_data.use_source_path);
-    notify_set_toggle(display_line_numbers_w, 
-		      initial_app_data.display_line_numbers);
+    notify_set_toggle(words_only_w, initial_app_data.find_words_only);
+    notify_set_toggle(case_sensitive_w, initial_app_data.find_case_sensitive);
     notify_set_toggle(cache_source_files_w, 
 		      initial_app_data.cache_source_files);
     notify_set_toggle(cache_machine_code_w, 
 		      initial_app_data.cache_machine_code);
+    notify_set_toggle(display_line_numbers_w, 
+		      initial_app_data.display_line_numbers);
 
     if (app_data.tab_width != initial_app_data.tab_width)
     {
@@ -3276,6 +3302,8 @@ static bool source_preferences_changed()
 	|| app_data.display_line_numbers 
 	   != initial_app_data.display_line_numbers
 	|| app_data.use_source_path != initial_app_data.use_source_path
+	|| app_data.find_words_only != initial_app_data.find_words_only
+	|| app_data.find_case_sensitive != initial_app_data.find_case_sensitive
 	|| app_data.cache_source_files != initial_app_data.cache_source_files
 	|| app_data.cache_machine_code != initial_app_data.cache_machine_code
 	|| app_data.tab_width != initial_app_data.tab_width;

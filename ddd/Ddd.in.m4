@@ -605,6 +605,9 @@ Ddd*graph_edit.GridSize:	16
 ! Do we wish to find complete words only?
 Ddd*findWordsOnly:		true
 
+! Do we wish case-sensitive search?
+Ddd*findCaseSensitive:		true
+
 ! Do we wish to show machine code? (Makes DDD run somewhat slower)
 Ddd*disassemble: false
 
@@ -2229,6 +2232,9 @@ DESC(Edit Breakpoints..., [set, view, and edit breakpoints])\n\
 ITEM If LBL(Find Words Only) is set, \
 only complete words are found.\n\
     Otherwise, arbitrary occurrences are found.\n\
+ITEM If LBL(Find Case Sensitive) is set, \
+search is case-sensitive.\n\
+    Otherwise, occurrences are found regardless of case.\n\
 ITEM If LBL(Display Machine Code) is set, \
 the current function is automatically disassembled.\n\
 \n\
@@ -2249,6 +2255,13 @@ Ddd*sourceMenu*findWordsOnly.accelerator:	Meta<Key>W
 Ddd*sourceMenu*findWordsOnly.acceleratorText:	Alt+W
 Ddd*sourceMenu.findWordsOnly.documentationString:\
 @rm Switch between finding complete words and finding arbitrary occurrences
+
+Ddd*sourceMenu.findCaseSensitive.labelString:	Find Case Sensitive
+Ddd*sourceMenu.findCaseSensitive.mnemonic:	i
+Ddd*sourceMenu*findCaseSensitive.accelerator:	Meta<Key>I
+Ddd*sourceMenu*findCaseSensitive.acceleratorText: Alt+I
+Ddd*sourceMenu.findCaseSensitive.documentationString:\
+@rm Toggle case-sensitive search
 
 Ddd*sourceMenu.disassemble.labelString:		Display Machine Code
 Ddd*sourceMenu.disassemble.mnemonic:		M
@@ -2583,42 +2596,60 @@ ITEM If LBL(Show position and breakpoints as glyphs) is set,\n\
 ITEM If LBL(Refer to program sources by full path name) is set, \n\
     source code locations are referred by full source file paths.\n\
     Otherwise, only the base name is used.\n\
-ITEM If LBL(Display source line numbers) is set, \n\
-    each source line is prefixed by its number.\n\
-ITEM If LBL(Cache source files in memory) is set, \
+ITEM If LBL(Find words only) is set, \
+only complete words are found.\n\
+    Otherwise, arbitrary occurrences are found.\n\
+ITEM If LBL(Find case sensitive) is set, \
+search is case-sensitive.\n\
+    Otherwise, occurrences are found regardless of case.\n\
+ITEM If LBL(Cache source files) is set, \
 source texts are cached in memory.\n\
     Otherwise, sources are read from disk upon each source change.\n\
-ITEM If LBL(Cache machine code in memory) is set, \
+ITEM If LBL(Cache machine code) is set, \
 disassembled code is cached in memory.\n\
     Otherwise, code is re-disassembled upon each function change.\n\
+ITEM If LBL(Display source line numbers) is set, \n\
+    each source line is prefixed by its number.\n\
 ITEM In LBL(Tab width), you can set the spacing of tab stops.\n\
     Setting the tab width to 8 sets a tab stop every 8 characters.\n\
 \n\
 Use the buttons above to view and change other preferences.\n\
 Click on LBL(Reset) to restore the saved preferences.
 
-Ddd*preferences*showExecPos.labelString:	 \
-Show position and breakpoints
-Ddd*preferences*showExecPos.alignment:		XmALIGNMENT_END
-Ddd*preferences*showExecPos.width:		200
-Ddd*preferences*showExecPos.recomputeSize:	false
+Ddd*preferences*showExecPos.labelString:	Show position and breakpoints
 Ddd*preferences*asGlyphs.labelString:		as glyphs
 Ddd*preferences*asText.labelString:		as text characters
 
-Ddd*preferences*referSources.labelString:	 \
-Refer to program sources
-Ddd*preferences*referSources.alignment:		XmALIGNMENT_END
-Ddd*preferences*referSources.width:		200
-Ddd*preferences*referSources.recomputeSize:	false
+Ddd*preferences*showExecPos.alignment:		XmALIGNMENT_END
+Ddd*preferences*showExecPos.width:		200
+Ddd*preferences*showExecPos.recomputeSize:	false
+
+Ddd*preferences*referSources.labelString:	Refer to program sources
 Ddd*preferences*byPath.labelString:		by full path name
 Ddd*preferences*byBase.labelString:		by base name only
 
+Ddd*preferences*referSources.alignment:		XmALIGNMENT_END
+Ddd*preferences*referSources.width:		200
+Ddd*preferences*referSources.recomputeSize:	false
+
+Ddd*preferences*cache.labelString:	        Cache
+Ddd*preferences*cacheSource.labelString:	source files
+Ddd*preferences*cacheCode.labelString:		machine code
+
+Ddd*preferences*cache.alignment:		XmALIGNMENT_END
+Ddd*preferences*cache.width:		        200
+Ddd*preferences*cache.recomputeSize:	        false
+
+Ddd*preferences*find.labelString:	        Find
+Ddd*preferences*wordsOnly.labelString:		words only
+Ddd*preferences*caseSensitive.labelString:	case sensitive
+
+Ddd*preferences*find.alignment:		        XmALIGNMENT_END
+Ddd*preferences*find.width:		        200
+Ddd*preferences*find.recomputeSize:	        false
+
 Ddd*preferences*displayLineNumbers.labelString:	 \
 Display source line numbers
-Ddd*preferences*cacheSourceFiles.labelString:	 \
-Cache source files in memory
-Ddd*preferences*cacheMachineCode.labelString:	 \
-Cache machine code in memory
 
 Ddd*preferences*tabWidth.orientation:		XmHORIZONTAL
 Ddd*preferences*tabWidth.minimum:		1
@@ -3621,7 +3652,7 @@ Ddd*arg_cmd_w.arg_cmd_area*dispRef.documentationString:	\
 Ddd*arg_cmd_w.arg_cmd_area*findBackward.helpString:	\
 LBL_FIND_PREV\n\
 Search the previous occurrence of LBL(()) in the current source text.\n\
-If LBL(Source) | LBL(Find Words Only) is set, only complete words are found.
+See LBL(Edit) | LBL(Preferences) | LBL(Source) for search settings.
 Ddd*arg_cmd_w.arg_cmd_area*findBackward.tipString:	\
 @rm Find previous LBL(()) in source
 Ddd*arg_cmd_w.arg_cmd_area*findBackward.documentationString:	\
@@ -3630,7 +3661,7 @@ Ddd*arg_cmd_w.arg_cmd_area*findBackward.documentationString:	\
 Ddd*arg_cmd_w.arg_cmd_area*findForward.helpString:	\
 LBL_FIND_NEXT\n\
 Search the next occurrence of LBL(()) in the current source text.\n\
-If LBL(Source) | LBL(Find Words Only) is set, only complete words are found.
+See LBL(Edit) | LBL(Preferences) | LBL(Source) for search settings.
 Ddd*arg_cmd_w.arg_cmd_area*findForward.tipString:	\
 @rm Find next LBL(()) in source
 Ddd*arg_cmd_w.arg_cmd_area*findForward.documentationString:	\
@@ -4858,8 +4889,7 @@ Ddd*source_find_error_popup.title: DDD: Not Found
 Ddd*source_find_error*helpString:	\
 @rm The given argument LBL(()) can not be found in the source text.\n\
 \n\
-If you wish to search for LBL(()) even within words,\n\
-consider disabling LBL(Source) | LBL(Find Words Only).
+See LBL(Edit) | LBL(Preferences) | LBL(Source) for search settings.
 
 Ddd*manual_find_error_popup.title: DDD: Not Found
 Ddd*manual_find_error*helpString:	\

@@ -203,8 +203,12 @@ static void gdbFindCB(Widget w,
     else
 	tm = XtLastTimestampProcessed(XtDisplay(w));
 
-    string s = source_arg->get_string();
-    source_view->find(s, direction, app_data.find_words_only, tm);
+    string key = source_arg->get_string();
+    source_view->find(key, direction, 
+		      app_data.find_words_only,
+		      app_data.find_case_sensitive,
+		      tm);
+    source_arg->set_string(key);
 }
 
 void gdbFindForwardCB(Widget w, XtPointer, XtPointer call_data)

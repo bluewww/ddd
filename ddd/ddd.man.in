@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "21 Dec 1997" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "02 Jan 1998" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -2166,6 +2166,11 @@ convenient for clicking on an identifier in the source text and search
 for exactly this identifier.  If you want to find all occurrences,
 including word parts, unset `\fBSource | Find Words Only\fR'.
 .PP
+By default, \s-2@DDD@\s+2 find is case-sensitive.  This is convenient
+for case-sensitive programming languages.  If you want to find all
+occurrences, regardless of case, unset `\fBSource | Find Case
+Sensitive\fR'.
+.PP
 If you wish to display machine code of selected funtions, set
 `\fBSource | Display Machine Code\fR'.  This makes \s-2@DDD@\s+2 run
 a little slower, so it is disabled by default.
@@ -2238,17 +2243,26 @@ can also indicate these positions using text characters.  If you wish
 to disable glyphs, unset the `\fBUse Glyphs\fR' option.  This also
 makes \s-2@DDD@\s+2 run slightly faster, especially when scrolling.
 .PP
+.PSPIC @srcdir@/PICS/ddd-source-prefs.ps 15.3cm
+.PP
 In contrast to previous releases, \s-2@DDD@\s+2 2.2 and later do not
 display line numbers in the source code.  If you want to see each
 source line prefixed with its respective number, set the `\fBDisplay
 source line numbers\fR' option.
 .PP
+By default, \s-2@DDD@\s+2 finds only complete words.  This is
+convenient for clicking on an identifier in the source text and search
+for exactly this identifier.  If you want to find all occurrences,
+including word parts, unset `\fBFind words only\fR'.
+.PP
+By default, \s-2@DDD@\s+2 find is case-sensitive.  This is convenient
+for case-sensitive programming languages.  If you want to find all
+occurrences, regardless of case, unset `\fBFind case sensitive\fR'.
+.PP
 By default, \s-2@DDD@\s+2 caches source files in memory.  This is
 convenient for remote debugging, since remote file access may be slow.
 If you want to reduce memory usage, unset the `\fBCache source
 files\fR' option.
-.PP
-.PSPIC @srcdir@/PICS/ddd-source-prefs.ps 15.3cm
 .PP
 By default, \s-2@DDD@\s+2 caches machine code in memory.  This is bad
 for memory usage, but convenient for speed, since disassembling a
@@ -2794,6 +2808,10 @@ in the text.  The default is `\fBtrue\fR'.  See also the
 .B "displayLineNumbers (\fPclass\fB DisplayLineNumbers)"
 If this is `\fBtrue\fR', lines in the source text are prefixed with
 their respective line number.  The default is `\fBfalse\fR'.
+.TP
+.B "findCaseSensitive (\fPclass\fB FindCaseSensitive)"
+If this is `\fBtrue\fR' (default), the `\fBFind\fR' commands are
+case-sensitive.  Otherwise, occurrences are found regardless of case.
 .TP
 .B "findWordsOnly (\fPclass\fB FindWordsOnly)"
 If this is `\fBtrue\fR' (default), the `\fBFind\fR' commands find
