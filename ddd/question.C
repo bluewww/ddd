@@ -37,6 +37,7 @@ char question_rcsid[] =
 
 #include "ddd.h"
 #include "AppData.h"
+#include "Command.h"
 #include "GDBAgent.h"
 #include "Delay.h"
 #include "TimeOut.h"
@@ -94,6 +95,36 @@ void filter_junk(string& answer)
     }
 }
 
+// Wait for GDB reply
+static void wait_for_gdb_reply(GDBReply& reply, int timeout)
+{
+    reply.received = false;
+    reply.answer   = NO_GDB_ANSWER;
+
+    if (timeout == 0)
+	timeout = app_data.question_timeout;
+
+    XtIntervalId timer = 0;
+    if (timeout > 0)
+    {
+	timer = XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 
+				timeout * 1000,
+				gdb_reply_timeout, (void *)&reply);
+    }
+
+    // Process all GDB input and timer events
+    while (!reply.received && gdb->running())
+	XtAppProcessEvent(XtWidgetToApplicationContext(gdb_w), 
+			  XtIMTimer | XtIMAlternateInput);
+
+    // Remove timeout in case it's still running
+    if (reply.answer != NO_GDB_ANSWER)
+    {
+	if (timer && timeout > 0)
+	    XtRemoveTimeOut(timer);
+    }
+}
+
 // Send COMMAND to GDB; return answer (NO_GDB_ANSWER if none)
 // TIMEOUT is either 0 (= use default timeout), -1 (= no timeout)
 // or maximal time in seconds
@@ -112,49 +143,45 @@ string gdb_question(const string& command, int timeout, bool verbatim)
     gdb_question_running = true;
 
     static GDBReply reply;
-    reply.received = false;
-    reply.answer   = NO_GDB_ANSWER;
 
     // Set verbatim mode if needed
     bool old_verbatim = gdb->verbatim();
     gdb->verbatim(verbatim);
+
+    bool interrupted = false;
+
+    // Interrupt GDB if needed
+    if (app_data.stop_and_continue && 
+	!gdb->isReadyWithPrompt() &&
+	is_cont_cmd(current_gdb_command()))
+    {
+	gdb_command('\003', Widget(0), gdb_reply, (void *)&reply);
+
+	wait_for_gdb_reply(reply, timeout);
+	interrupted = true;
+    }
 
     // Send question to GDB
     bool ok = gdb->send_question(command, gdb_reply, (void *)&reply);
 
     if (ok)
     {
-	// GDB received question - set timeout
-	if (timeout == 0)
-	    timeout = app_data.question_timeout;
-
-	XtIntervalId timer = 0;
-	if (timeout > 0)
-	{
-	    timer = XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 
-				    timeout * 1000,
-				    gdb_reply_timeout, (void *)&reply);
-	}
-
 	// Set delay (unless this is a trivial question)
 	Delay *delay = 0;
 	if (!command.contains("help", 0) && !is_print_cmd(command, gdb))
 	    delay = new Delay;
 
-	// Process all GDB input and timer events
-	while (!reply.received && gdb->running())
-	    XtAppProcessEvent(XtWidgetToApplicationContext(gdb_w), 
-			      XtIMTimer | XtIMAlternateInput);
-
-	// Remove timeout in case it's still running
-	if (reply.answer != NO_GDB_ANSWER)
-	{
-	    if (timer && timeout > 0)
-		XtRemoveTimeOut(timer);
-	}
+	// GDB received question - set timeout
+	wait_for_gdb_reply(reply, timeout);
 
 	// Clear delay again
 	delete delay;
+    }
+
+    if (interrupted)
+    {
+	// Silently resume execution
+	gdb_command("cont", Widget(0), OQCProc(0));
     }
 
     // Restore old verbatim mode

@@ -36,12 +36,15 @@
 #include "GDBAgent.h"
 #include "question.h"		// NO_GDB_ANSWER
 
-#define COMMAND_PRIORITY_WORK  -1 // work procedures
-#define COMMAND_PRIORITY_USER   0 // user-initiated commands
-#define COMMAND_PRIORITY_BATCH  1 // batch jobs (auto commands)
-#define COMMAND_PRIORITY_INIT   2 // init commands
-#define COMMAND_PRIORITY_SYSTEM 3 // system-initiated commands
-#define COMMAND_PRIORITY_AGAIN 99 // try again
+// Priorities.  The higher the priority, the earlier the command
+// will be executed.
+#define COMMAND_PRIORITY_WORK  -20 // Work procedures
+#define COMMAND_PRIORITY_CONT  -10 // Continue after interrupt
+#define COMMAND_PRIORITY_USER   0  // User-initiated commands
+#define COMMAND_PRIORITY_BATCH  10 // Batch jobs (auto commands)
+#define COMMAND_PRIORITY_INIT   20 // Init commands
+#define COMMAND_PRIORITY_SYSTEM 30 // System-initiated commands
+#define COMMAND_PRIORITY_AGAIN  90 // Try again
 
 // Commands
 struct Command
@@ -191,6 +194,9 @@ extern void translate_command(string& command);
 // Add and strip auto_command prefix
 extern void add_auto_command_prefix(string& command);
 extern void strip_auto_command_prefix(string& command);
+
+// Currently executed command
+extern const string& current_gdb_command();
 
 #endif // _DDD_Command_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

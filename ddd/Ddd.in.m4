@@ -223,6 +223,8 @@ Ddd*useTTYCommand: off
 ! `best' choice (that is, the best choice known to the DDD developers).
 Ddd*blockTTYInput: auto
 
+! Whether to interrupt running programs for debugger commands.
+Ddd*stopAndContinue: on
 
 ! The time (in seconds) to wait for synchronous GDB questions to complete
 Ddd*questionTimeout: 10

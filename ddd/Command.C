@@ -2,6 +2,7 @@
 // DDD interface to GDB commands
 
 // Copyright (C) 1996-1997 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2000 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -197,7 +198,7 @@ void translate_command(string& command)
 	    // Graph commands are handled by DDD.
 	    add_auto_command_prefix(command);
 	}
-	else if (is_running_cmd(command, gdb))
+	else if (is_running_cmd(command))
 	{
 	    // Running commands (typically, `continue') may issue
 	    // display output or positions that must be interpreted by DDD.
@@ -206,8 +207,15 @@ void translate_command(string& command)
     }
 }
 
+static string _current_gdb_command;
+
+const string& current_gdb_command()
+{
+    return _current_gdb_command;
+}
+
 // Process command C; do it right now.
-static void do_gdb_command(Command& c)
+static void do_gdb_command(Command& c, bool is_command = true)
 {
     string cmd = c.command;
     OQCProc callback       = c.callback;
@@ -219,6 +227,9 @@ static void do_gdb_command(Command& c)
 	extra_callback = 0;
     }
     c.command = c.command.after('\n');
+
+    if (is_command)
+	_current_gdb_command = cmd;
 
 #if LOG_QUEUE
     clog << "Command " << quote(cmd) << "\n";
@@ -385,7 +396,7 @@ void gdb_command(const Command& c0)
     {
  	// User interaction -- execute immediately
 	last_user_reply = c.command;
-	do_gdb_command(c);
+	do_gdb_command(c, false);
 
 	if (last_user_reply != "yes")
 	{
@@ -398,45 +409,76 @@ void gdb_command(const Command& c0)
 	do_gdb_command(c);
     }
 
-    if (c.command != "")
+    if (c.command == "")
+	return;
+
+    bool interrupted = false;
+
+    if (app_data.stop_and_continue && !gdb->recording() && 
+	is_cont_cmd(current_gdb_command()))
     {
-	// Enqueue before first command with lower priority.  This
-	// ensures that user commands are placed at the end.
-	CommandQueueIter i(commandQueue);
-	CommandQueueIter pos(commandQueue);
+	// Interrupt GDB
+	Command interrupt('\003');
+	interrupt.verbose = c.verbose;
+	interrupt.echo    = c.echo;
+	interrupt.prompt  = c.prompt;
+	interrupt.check   = c.check;
+	do_gdb_command(interrupt, false);
 
-	while (i.ok() && c.priority <= i().priority)
-	{
-	    pos = i; i = i.next();
-	}
+	interrupted = true;
+    }
 
-	if (!i.ok())
-	{
-	    assert(!pos.ok() || pos().priority >= c.priority);
+    // Enqueue before first command with lower priority.  This
+    // ensures that user commands are placed at the end.
+    CommandQueueIter i(commandQueue);
+    CommandQueueIter pos(commandQueue);
 
-	    // End of queue reached
-	    commandQueue.enqueue_at_end(c);
-	}
-	else if (pos().priority >= c.priority)
-	{
-	    assert(pos().priority >= c.priority && c.priority > i().priority);
+    while (i.ok() && c.priority <= i().priority)
+    {
+	pos = i; i = i.next();
+    }
 
-	    // Enqueue after POS
-	    commandQueue.enqueue_after(c, pos);
-	}
-	else
-	{
-	    CommandQueueIter start(commandQueue);
-	    (void) start;	// Use it
-	    assert(!start.ok() || start().priority < c.priority);
+    if (!i.ok())
+    {
+	assert(!pos.ok() || pos().priority >= c.priority);
 
-	    // Higher priority than first element
-	    commandQueue.enqueue_at_start(c);
-	}
+	// End of queue reached
+	commandQueue.enqueue_at_end(c);
+    }
+    else if (pos().priority >= c.priority)
+    {
+	assert(pos().priority >= c.priority && c.priority > i().priority);
+
+	// Enqueue after POS
+	commandQueue.enqueue_after(c, pos);
+    }
+    else
+    {
+	CommandQueueIter start(commandQueue);
+	(void) start;	// Use it
+	assert(!start.ok() || start().priority < c.priority);
+
+	// Higher priority than first element
+	commandQueue.enqueue_at_start(c);
+    }
 
 #if LOG_QUEUE
-	clog << "Command queue: " << commandQueue << "\n";
+    clog << "Command queue: " << commandQueue << "\n";
 #endif
+
+    if (interrupted && !is_running_cmd(c.command))
+    {
+	// Continue later
+	Command cont("cont");
+	cont.verbose  = c.verbose;
+	cont.echo     = c.echo;
+	cont.prompt   = c.prompt;
+	cont.check    = c.check;
+	cont.priority = COMMAND_PRIORITY_CONT;
+
+	app_data.stop_and_continue = False;
+	gdb_command(cont);
+	app_data.stop_and_continue = True;
     }
 }
 

@@ -358,5 +358,6 @@ C4[^(]*::[^(]*[(][^:]*:{P}[)]:.*	RETURN(&rxperlpos);
 C5(({I}::)*{I}=)?{I}[(]{A}[)]		RETURN(&rxperlref);
 C6enter{W}.*file{W}name                 RETURN(&rxenter_file_name);
 C7[[]-?{D}]{W}*={W}[[]-?{D}]{C}         RETURN(&rxdoubleindex);
+C8{_}(r|ru|run|rer|rerun|c|cont|contin|continu|continue|R|exec)({W}{C})? RETURN(&rxcont_cmd);
 (.|\n)				        RETURN(0);  // Anything else
 %%

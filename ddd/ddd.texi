@@ -52,7 +52,7 @@
 @set EDITION First
 
 @c !!set DDD manual's revision date
-@set DATE 2000-12-18
+@set DATE 2000-12-19
 
 @c Index stuff
 @c Labels
@@ -3357,6 +3357,15 @@ position information.  Default is @code{500}.
 @defvr Resource questionTimeout (class QuestionTimeout)
 The time (in seconds) to wait for the inferior debugger to reply.
 Default is @code{10}.
+@end defvr
+
+@defvr Resource stopAndContinue (class StopAndContinue)
+@cindex Interrupting execution, automatically
+@cindex Execution, interrupting automatically
+If @samp{on} (default), debugger commands interrupt program execution,
+resuming execution after the command has completed.  This only happens
+if the last debugger command was either a `run' or a `continue' command.
+If @samp{off}, debugger commands do not interrupt program execution.
 @end defvr
 
 @defvr Resource synchronousDebugger (class SynchronousDebugger)

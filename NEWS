@@ -11,7 +11,7 @@ Data Themes
 -----------
 
 - DDD supports _data themes_ - modifiers that change the appearance of 
-  program data.
+  program data.  Try `Data->Themes'.
 
 - Data themes included with this release are:
   * Show specific expressions in a smaller font (useful for arrays).
@@ -67,6 +67,10 @@ Examining Data
 
 User Interface
 --------------
+
+- You can interact with the debugger while the program is running;
+  DDD automatically interrupts and resumes debuggee execution.  See the
+  `stopAndContinue' resource.
 
 - Interrupts (Ctrl+C) from the controlling TTY can be issued multiple times.
 

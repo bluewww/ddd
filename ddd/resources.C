@@ -867,6 +867,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+	(char *)XtNstopAndContinue,
+	(char *)XtCStopAndContinue,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, stop_and_continue),
+	XtRImmediate,
+	XtPointer(True)
+    },
+
+    {
 	(char *)XtNpollChildStatus,
 	(char *)XtCPollChildStatus,
 	XtRBoolean,
