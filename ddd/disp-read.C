@@ -70,6 +70,9 @@ bool is_single_display_cmd (const string& cmd, GDBAgent *gdb)
     case DBX:
 	// DBX has no `display' equivalent
 	return false;
+
+    case XDB:
+	return false;		// FIXME
     }
 
     return false;
@@ -95,6 +98,7 @@ bool is_running_cmd (const string& cmd, GDBAgent *gdb)
 	"|s|si|step|stepi"
 	"|n|ni|next|nexti"
 	"|fin|fini|finis|finish"
+        "|R|S"
 	")([ \t]+.*)?");
 
     static regex RXdisplay(
@@ -108,6 +112,7 @@ bool is_running_cmd (const string& cmd, GDBAgent *gdb)
 	    || is_display_cmd(cmd);
 
     case DBX:
+    case XDB:
 	return cmd.matches (RXrunning_cmd)
 	    || is_display_cmd(cmd);
     }
@@ -118,7 +123,7 @@ bool is_running_cmd (const string& cmd, GDBAgent *gdb)
 bool is_run_cmd (const string& cmd)
 {
     static regex RXrun_cmd(
-	"[ \t]*(r|rer|rerun|ru|run)([ \t]+.*)?");
+	"[ \t]*(r|rer|rerun|ru|run|R)([ \t]+.*)?");
 
     return cmd.matches (RXrun_cmd);
 }
@@ -151,6 +156,7 @@ bool is_frame_cmd (const string& cmd)
 	"(up"
 	"|do|down|"
 	"|f|fra|fram|frame"
+	"|top"
 	")([ \t]+.*)?");
 
     return cmd.matches (RXframe_cmd);
@@ -193,6 +199,8 @@ bool is_file_cmd (const string& cmd, GDBAgent *gdb)
 	return cmd.matches (RXfile_cmd);
     case DBX:
 	return cmd.matches (RXdebug_cmd);
+    case XDB:
+	return false;		// FIXME
     }
 
     assert(0);
@@ -224,8 +232,8 @@ bool is_break_cmd (const string& cmd)
     static regex RXbreak_cmd(
 	"[ \t]*"
 	"("
-	"[th]*(b|br|bre|brea|break)"
-	"|cl|cle|clea|clear"
+	"[th]*(b|br|bre|brea|break|b[a-z])"
+	"|cl|cle|clea|clear|d[a-z]"
 	"|info[ \t]+(li|lin|line)"
 	"|stop"
 	")([ \t]+.*)?");
@@ -237,7 +245,7 @@ bool is_break_cmd (const string& cmd)
 // 
 bool is_lookup_cmd (const string& cmd)
 {
-    static regex RXlookup_cmd("[ \t]*func[ \t]+.*");
+    static regex RXlookup_cmd("[ \t]*(func|v)[ \t]+.*");
 
     return cmd.matches(RXlookup_cmd);
 }
@@ -283,6 +291,9 @@ int display_index (const string& gdb_answer, GDBAgent *gdb)
 	prx = &RXgdb_begin_of_display;
 	break;
     case DBX:
+	prx = &RXdbx_begin_of_display;
+	break;
+    case XDB:
 	prx = &RXdbx_begin_of_display;
 	break;
 
@@ -480,6 +491,9 @@ string read_next_disp_info (string& gdb_answer, GDBAgent *gdb)
 	return next_disp_info;
     }
     break;
+
+    case XDB:
+	break;			// FIXME
     }
 
     return "";
@@ -497,6 +511,9 @@ string get_info_disp_str (string& display_info, GDBAgent *gdb)
 
     case DBX:
 	return display_info.after (") ");
+
+    case XDB:
+	return "";		// FIXME
     }
 
     return "";
@@ -513,6 +530,9 @@ bool disp_is_disabled (const string& info_disp_str, GDBAgent *gdb)
 
     case DBX:
 	return false;		// no display disabling in dbx
+
+    case XDB:
+	return false;		// FIXME
     }
 
     return false;
@@ -540,6 +560,9 @@ string  read_disp_nr_str (string& display, GDBAgent *gdb)
     }
     case DBX:
 	return read_disp_name(display, gdb);
+
+    case XDB:
+	return "";		// FIXME
     }
 
     return "";

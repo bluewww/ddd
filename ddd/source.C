@@ -89,6 +89,9 @@ void gdbBreakArgCmdCB(Widget w, XtPointer, XtPointer)
 	    gdb_command("stop at " + pos.after(":"), w);
 	}
 	break;
+
+    case XDB:
+	break;			// FIXME
     }
 }
 
@@ -127,6 +130,9 @@ void gdbClearArgCmdCB(Widget w, XtPointer, XtPointer)
 	    gdb_command(SourceView::clear_command(pos.after(":")), w);
 	}
 	break;
+
+    case XDB:
+	break;			// FIXME
     }
 }
 

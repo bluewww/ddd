@@ -100,6 +100,15 @@ XtResource ddd_resources[] = {
 	XtPointer("")
     },
     { 
+	XtNxdbInitCommands, 
+	XtCXDBInitCommands, 
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, xdb_initial_cmds), 
+	XtRString,
+	XtPointer("")
+    },
+    { 
 	XtNvslPath, 
 	XtCVSLPath, 
 	XtRString, 

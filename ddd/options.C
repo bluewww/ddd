@@ -448,16 +448,19 @@ void dddSetDebuggerCB (Widget w, XtPointer client_data, XtPointer)
     {
     case DBX:
 	app_data.debugger = "dbx";
-	set_status("Next " DDD_NAME
-		   " invocation will start-up with a DBX debugger.");
 	break;
 
     case GDB:
 	app_data.debugger = "gdb";
-	set_status("Next " DDD_NAME
-		   " invocation will start-up with a GDB debugger.");
+	break;
+
+    case XDB:
+	app_data.debugger = "xdb";
 	break;
     }
+
+    set_status("Next " DDD_NAME " invocation will start-up with a " +
+	       upcase(app_data.debugger) + " debugger.");
 
     update_options();
     post_startup_warning(w);

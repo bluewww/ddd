@@ -162,7 +162,7 @@ static Widget file_dialog(Widget w, const string& name,
 
     if (remote_gdb())
     {
-	pwd = gdb_question("pwd");
+	pwd = gdb_question(gdb->pwd_command());
 	if (pwd == NO_GDB_ANSWER)
 	{
 	    post_error("Cannot get current remote directory", "pwd_error", w);
@@ -178,7 +178,10 @@ static Widget file_dialog(Widget w, const string& name,
 		break;
 
 	    case DBX:
-		pwd = pwd.before('\n');
+	    case XDB:
+		// Use last line only
+		if (pwd.contains('\n'))
+		    pwd = pwd.after('\n', -1);
 		break;
 	    }
 	}
@@ -485,6 +488,9 @@ static void openFileDone(Widget w, XtPointer client_data, XtPointer call_data)
 	case DBX:
 	    gdb_command("debug " + filename);
 	    break;
+
+	case XDB:
+	    break;		// FIXME
 	}
     }
 }
@@ -507,17 +513,22 @@ static void openCoreDone(Widget w, XtPointer client_data, XtPointer call_data)
 	    break;
 
 	case DBX:
-	    string file = gdb_question("debug");
-	    if (file == NO_GDB_ANSWER)
-		post_gdb_busy();
-	    else if (file.contains("Debugging: ", 0))
 	    {
-		file = file.after(": ");
-		strip_final_blanks(file);
-		gdb_command("debug " + file + " " + corefile);
+		string file = gdb_question("debug");
+		if (file == NO_GDB_ANSWER)
+		    post_gdb_busy();
+		else if (file.contains("Debugging: ", 0))
+		{
+		    file = file.after(": ");
+		    strip_final_blanks(file);
+		    gdb_command("debug " + file + " " + corefile);
+		}
+		else
+		    post_gdb_message(file);
 	    }
-	    else
-		post_gdb_message(file);
+
+	case XDB:
+	    break;		// FIXME
 	}
     }
 }

@@ -66,7 +66,7 @@ Ddd*appDefaultsVersion:  @VERSION@
 ! User-settable resources
 !-----------------------------------------------------------------------------
 
-! The inferior debugger type (dbx or gdb, defaults to gdb)
+! The inferior debugger type (dbx, gdb, or xdb; defaults to gdb)
 Ddd*debugger:
 
 
@@ -404,6 +404,11 @@ set prompt (gdb) \n
 ! The DBX initialization commands.  Nothing special yet.
 ! Use a personal `~/.dbxinit' file instead to customize DBX.
 Ddd*dbxInitCommands:
+
+
+! The XDB initialization commands.  Nothing special yet.
+! Use a personal `~/.xdbrc' file instead to customize XDB.
+Ddd*xdbInitCommands:
 
 
 ! The VSL library for displaying graph nodes.  `builtin' means the VSL
@@ -1301,6 +1306,9 @@ Ddd*debuggerMenu*gdb.mnemonic:			       G
 Ddd*debuggerMenu*dbx.labelString:       	       DBX
 Ddd*debuggerMenu*dbx.mnemonic:			       D
 
+Ddd*debuggerMenu*xdb.labelString:       	       XDB
+Ddd*debuggerMenu*xdb.mnemonic:			       X
+
 
 Ddd*menubar.view.labelString:		Windows
 Ddd*menubar.view.mnemonic:		W
@@ -2039,7 +2047,8 @@ Ddd*gdb_w.contextHelpString:		\
 @rm This is the @sl Command window.@rm\n\
 \n\
 You can enter debugging commands here.\n\
-Enter ``@tt help@rm'' at the `@tt (gdb)@rm' or `@tt (dbx)@rm' prompt\n\
+Enter ``@tt help@rm'' at the `@tt (gdb)@rm' or \
+`@tt (dbx)@rm' or `@tt >@rm' prompt\n\
 to get help on debugging commands.
 
 Ddd*command_shell.contextHelpString:		\
@@ -2047,7 +2056,8 @@ Ddd*command_shell.contextHelpString:		\
 @rm This is the @sl Command window.@rm\n\
 \n\
 You can enter debugging commands here.\n\
-Enter ``@tt help@rm'' at the `@tt (gdb)@rm' or `@tt (dbx)@rm' prompt\n\
+Enter ``@tt help@rm'' at the `@tt (gdb)@rm' or \
+`@tt (dbx)@rm' or `@tt >@rm' prompt\n\
 to get help on debugging commands.
 
 
@@ -2608,7 +2618,7 @@ Ddd*busy_dialog.messageString:		\
 Ddd*busy_dialog*contextHelpString:	\
 @rm The inferior debugger is busy on some commands.\n\
 Please try again when the `@tt (gdb)@rm' or `@tt (dbx)@rm' \
-prompt appears.\n\
+or `@tt >@rm' prompt appears.\n\
 You may also interrupt the current debugging command by selecting\n\
 @bf Break @rm from the @bf Program @rm menu.
 
@@ -2669,19 +2679,19 @@ Ddd*yn_dialog*cancelLabelString:   No
 Ddd*yn_dialog*defaultButtonType:   XmDIALOG_OK_BUTTON
 Ddd*yn_dialog*contextHelpString:	\
 @rm This is a question of the inferior debugger.\n\
-For more details, consult the GDB or DBX documentation.
+For more details, consult the debugger documentation.
 
 Ddd*gdb_message_dialog_popup.title: @DDD@: Debugger Message
 Ddd*gdb_message_dialog*contextHelpString:	\
 @rm This is a message of the inferior debugger.\n\
-For more details, consult the GDB or DBX documentation.
+For more details, consult the debugger documentation.
 
 Ddd*gdb_selection_dialog_popup.title: @DDD@: Selection
 Ddd*gdb_selection_dialog*okLabelString:    Select
 Ddd*gdb_selection_dialog*listLabelString:  Choices
 Ddd*gdb_selection_dialog*contextHelpString:	\
 @rm This is a selection menu of the inferior debugger.\n\
-For more details, consult the GDB or DBX documentation.
+For more details, consult the debugger documentation.
 
 Ddd*confirm_overwrite_dialog_popup.title: @DDD@: File Exists
 Ddd*confirm_overwrite_dialog*messageString:       \

@@ -127,6 +127,11 @@ void show_invocation(DebuggerType type)
 	base = "DBX, the UNIX debugger.";
 	options = "  [DBX options]      Pass option to DBX.\n";
 	break;
+
+    case XDB:
+	base = "XDB, the HP-UX debugger.";
+	options = "  [XDB options]      Pass option to XDB.\n";
+	break;
     }
 
     show_version();
@@ -140,6 +145,7 @@ void show_invocation(DebuggerType type)
 	<< options <<
 	"  --dbx              Invoke DBX as inferior debugger.\n"
 	"  --gdb              Invoke GDB as inferior debugger.\n"
+	"  --xdb              Invoke XDB as inferior debugger.\n"
 	"  --debugger NAME    Invoke inferior debugger as NAME.\n"
 	"  --host HOST        Run inferior debugger on HOST.\n"
 	"  --login LOGIN      Use LOGIN for connecting to host.\n"

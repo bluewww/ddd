@@ -399,6 +399,10 @@ void SourceView::line_popup_setCB (Widget w,
 	gdb_command("file " + full_path(current_file_name), w);
 	gdb_command("stop at " + itostring(line_nr), w);
 	break;
+
+    case XDB:
+	gdb_command("b " + current_source_name() + ":" + 
+		    itostring(line_nr), w);
     }
 }
 
@@ -415,6 +419,10 @@ void SourceView::address_popup_setCB (Widget w,
 	
     case DBX:
 	gdb_command("stopi at " + address, w);
+	break;
+
+    case XDB:
+	gdb_command("b " + address, w);
 	break;
     }
 }
@@ -439,10 +447,15 @@ void SourceView::line_popup_set_tempCB (Widget w,
 
 	// Make sure we get the number of the temporary breakpoint
 	syncCommandQueue();
-	string line = itostring(line_nr);
-	gdb_command("when at " + line + " " 
-		    + command_list(clear_command(line)), w);
+	{
+	    string line = itostring(line_nr);
+	    gdb_command("when at " + line + " " 
+			+ command_list(clear_command(line)), w);
+	}
 	break;
+
+    case XDB:
+	break;			// FIXME
     }
 }
 
@@ -465,6 +478,9 @@ void SourceView::address_popup_set_tempCB (Widget w,
 	gdb_command("when $pc == " + address + " "
 		    + command_list(clear_command(address)), w);
 	break;
+
+    case XDB:
+	break;			// FIXME
     }
 }
 
@@ -486,6 +502,11 @@ void SourceView::line_popup_temp_n_contCB (Widget w,
 	line_popup_set_tempCB(w, client_data, call_data);
 	gdb_command("cont", w);
 	break;
+
+    case XDB:
+	gdb_command("c " + current_source_name() + ":" + 
+		    itostring(line_nr), w);
+	break;
     }
 }
 
@@ -504,6 +525,10 @@ void SourceView::address_popup_temp_n_contCB (Widget w,
 	line_popup_set_tempCB(w, client_data, call_data);
 	gdb_command("cont", w);
 	break;
+
+    case XDB:
+	gdb_command("c " + address, w);
+	break;
     }
 }
 
@@ -514,7 +539,21 @@ void SourceView::bp_popup_deleteCB (Widget w,
 				    XtPointer)
 {
     int bp_nr = *((int *)client_data);
-    gdb_command("delete " + itostring(bp_nr), w);
+
+    string cmd;
+    switch (gdb->type())
+    {
+    case GDB:
+    case DBX:
+	cmd = "delete ";
+	break;
+
+    case XDB:
+	cmd = "db ";
+	break;
+    }
+
+    gdb_command(cmd + itostring(bp_nr), w);
 }
 
 
@@ -560,6 +599,10 @@ void SourceView::text_popup_breakCB (Widget w,
 	    gdb_command("stop at " + pos.after(':'), w);
 	}
 	break;
+
+    case XDB:
+	gdb_command("b " + *word_ptr, w);
+	break;
     }
 }
 
@@ -574,6 +617,7 @@ void SourceView::text_popup_clearCB (Widget w,
     switch (gdb->type())
     {
     case GDB:
+    case XDB:
 	gdb_command(clear_command(*word_ptr), w);
 	break;
 
@@ -943,6 +987,9 @@ String SourceView::read_from_gdb(const string& file_name, long& length)
     case DBX:
 	command = "list 1,1000000";
 	break;
+
+    case XDB:
+	break;			// FIXME
     }
     string listing = gdb_question(command, -1);
 
@@ -2186,6 +2233,9 @@ void SourceView::process_info_bp (string& info_output)
 	    bp_nr_s = info_output.after(0);
 	    bp_nr = get_positive_nr (bp_nr_s);
 	    break;
+
+	case XDB:
+	    break;			// FIXME
 	}
 
 	if (bp_nr < 0)
@@ -2250,22 +2300,25 @@ void SourceView::process_info_line_main(string& info_output)
     switch (gdb->type())
     {
     case GDB:
-    {
-	PosBuffer pos_buffer;
-	pos_buffer.filter(info_output);
-	pos_buffer.answer_ended();
-	if (pos_buffer.pos_found())
-	    show_position(pos_buffer.get_position());
-	if (pos_buffer.pc_found())
-	    show_pc(pos_buffer.get_pc());
-    }
-    break;
+	{
+	    PosBuffer pos_buffer;
+	    pos_buffer.filter(info_output);
+	    pos_buffer.answer_ended();
+	    if (pos_buffer.pos_found())
+		show_position(pos_buffer.get_position());
+	    if (pos_buffer.pc_found())
+		show_pc(pos_buffer.get_pc());
+	}
+	break;
     case DBX:
-    {
-	show_position(info_output);
-	info_output = "";
-    }
-    break;
+	{
+	    show_position(info_output);
+	    info_output = "";
+	}
+	break;
+
+    case XDB:
+	break;			// FIXME
     }
 
     // Strip 'Line <n> of <file> starts at <address>...' info
@@ -2398,8 +2451,13 @@ void SourceView::lookup(string s)
 		s = string('\'') + s + '\'';
 	    gdb_command("info line " + s);
 	    break;
+
 	case DBX:
 	    gdb_command("func " + s);
+	    break;
+
+	case XDB:
+	    gdb_command("v " + s);
 	    break;
 	}
     }
@@ -2426,6 +2484,8 @@ void SourceView::process_pwd(string& pwd_output)
 	pwd = pwd.before('.', -1);
 	pwd = pwd.after(' ', -1);
 	break;
+
+    case XDB:
     case DBX:			// 'PATH'
 	if (pwd.contains(" "))
 	    return;		// This is an error message, not a path
@@ -2771,6 +2831,9 @@ string SourceView::current_source_name()
 	// DBX uses full file names.
 	source = full_path(current_file_name);
 	break;
+
+    case XDB:
+	break;			// FIXME
     }
     
     // In case this does not work, use the current base name.
@@ -2936,8 +2999,13 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	    case GDB:
 		bp_popup = bp_popup_gdb;
 		break;
+
 	    case DBX:
 		bp_popup = bp_popup_dbx;
+		break;
+
+	    case XDB:
+		bp_popup = bp_popup_dbx; // FIXME
 		break;
 	    }
 
@@ -2959,6 +3027,9 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 
 	case DBX:
 	    break;
+
+	case XDB:
+	    break;			// FIXME
 	}
 
 	XmMenuPosition (bp_popup_w, event);
@@ -3129,6 +3200,9 @@ void SourceView::NewBreakpointDCB(Widget w, XtPointer, XtPointer call_data)
 		gdb_command("stop at " + pos.after(':'), w);
 	    }
 	}
+
+    case XDB:
+	break;			// FIXME
     }
 }
 
@@ -3528,78 +3602,86 @@ void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
 	break;
     
     case DBX:
-	string pos;
-	if (!gdb->has_frame_command())
 	{
-	    // Some DBXes lack a `frame' command.  Use this kludge instead.
+	    string pos;
+	    if (!gdb->has_frame_command())
+	    {
+		// Some DBXes lack a `frame' command.  Use this kludge instead.
 
-	    string reply = gdb_question("func main");
-	    if (reply == NO_GDB_ANSWER)
-	    {
-		post_gdb_busy(w);
-		return;
-	    }
-	    if (cbs->item_position == 1)
-	    {
-		set_status("Current function is main");
-	    }
-	    else
-	    {
-		reply = 
-		    gdb_question("down " + itostring(cbs->item_position - 1));
+		string reply = gdb_question("func main");
 		if (reply == NO_GDB_ANSWER)
 		{
 		    post_gdb_busy(w);
 		    return;
 		}
-
-		if (reply.contains("Current", 0))
+		if (cbs->item_position == 1)
 		{
-		    if (reply.contains('\n'))
-			reply = reply.before('\n');
-		    set_status(reply);
+		    set_status("Current function is main");
 		}
 		else
-		    post_gdb_message(reply, w);
+		{
+		    reply = 
+			gdb_question("down " 
+				     + itostring(cbs->item_position - 1));
+		    if (reply == NO_GDB_ANSWER)
+		    {
+			post_gdb_busy(w);
+			return;
+		    }
+
+		    if (reply.contains("Current", 0))
+		    {
+			if (reply.contains('\n'))
+			    reply = reply.before('\n');
+			set_status(reply);
+		    }
+		    else
+			post_gdb_message(reply, w);
+		}
+
+		// Get the selected line
+		String _item;
+		XmStringGetLtoR(cbs->item, LIST_CHARSET, &_item);
+		string item(_item);
+		XtFree(_item);
+
+		if (item.contains(" in "))
+		{
+		    string file = item.after(" in ");
+		    file = file.after('\"');
+		    file = file.before('\"');
+		    pos = file + ":";
+		}
+
+		if (item.contains("line "))
+		{
+		    string line_s = item.after("line ");
+		    pos += itostring(get_positive_nr(line_s));
+		}
+	    }
+	    else
+	    {
+		// DBX 3.x works better
+		string reply = 
+		    gdb_question("frame " + 
+				 itostring(count - cbs->item_position + 1));
+		if (reply == NO_GDB_ANSWER)
+		{
+		    post_gdb_busy(w);
+		    return;
+		}
+		pos = gdb_question("file");
+		strip_final_blanks(pos);	// remove trailing newline
+		pos = pos + ":" + gdb_question("line");
 	    }
 
-	    // Get the selected line
-	    String _item;
-	    XmStringGetLtoR(cbs->item, LIST_CHARSET, &_item);
-	    string item(_item);
-	    XtFree(_item);
-
-	    if (item.contains(" in "))
-	    {
-		string file = item.after(" in ");
-		file = file.after('\"');
-		file = file.before('\"');
-		pos = file + ":";
-	    }
-	    if (item.contains("line "))
-	    {
-		string line_s = item.after("line ");
-		pos += itostring(get_positive_nr(line_s));
-	    }
+	    if (pos != "")
+		show_execution_position(pos);
 	}
-	else
-	{
-	    // DBX 3.x works better
-	    string reply = 
-		gdb_question("frame " + 
-			     itostring(count - cbs->item_position + 1));
-	    if (reply == NO_GDB_ANSWER)
-	    {
-		post_gdb_busy(w);
-		return;
-	    }
-	    pos = gdb_question("file");
-	    strip_final_blanks(pos);		// remove trailing newline
-	    pos = pos + ":" + gdb_question("line");
-	}
+	break;
 
-	if (pos != "")
-	    show_execution_position(pos);
+    case XDB:
+	break;			// FIXME
     }
 }
 
@@ -4847,10 +4929,23 @@ string SourceView::clear_command(string pos)
 	    }
     }
 
-    if (bps != "")
-	return string("delete ") + bps;
-    else
+    if (bps == "")
 	return "";
+
+    string cmd;
+    switch (gdb->type())
+    {
+    case GDB:
+    case DBX:
+	cmd = "delete ";
+	break;
+
+    case XDB:
+	cmd = "db ";
+	break;
+    }
+
+    return cmd + bps;
 }
 
 // Some DBXes require `{ COMMAND; }', others `{ COMMAND }'.

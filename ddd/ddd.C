@@ -265,6 +265,9 @@ static XrmOptionDescRec options[] = {
 { "--dbx",                  XtNdebugger,             XrmoptionNoArg,  "dbx" },
 { "-dbx",                   XtNdebugger,             XrmoptionNoArg,  "dbx" },
 
+{ "--xdb",                  XtNdebugger,             XrmoptionNoArg,  "xdb" },
+{ "-xdb",                   XtNdebugger,             XrmoptionNoArg,  "xdb" },
+
 { "--trace",                XtCTrace,                XrmoptionNoArg,  S_true },
 { "-trace",                 XtCTrace,                XrmoptionNoArg,  S_true },
 
@@ -584,6 +587,7 @@ static Widget set_scrolling_panner_w[4];
 static Widget set_scrolling_scrollbars_w[4];
 static Widget set_debugger_gdb_w[4];
 static Widget set_debugger_dbx_w[4];
+static Widget set_debugger_xdb_w[4];
 static Widget set_separate_windows_w[4];
 static Widget set_attached_windows_w[4];
 static void set_option_widgets(DDDOption opt);
@@ -670,6 +674,8 @@ static MMDesc debugger_menu [] =
       NULL, set_debugger_gdb_w },
     { "dbx", MMToggle, { dddSetDebuggerCB, XtPointer(DBX) },
       NULL, set_debugger_dbx_w },
+    { "xdb", MMToggle | MMInsensitive, { dddSetDebuggerCB, XtPointer(XDB) },
+      NULL, set_debugger_xdb_w },
     MMEnd
 };
 
@@ -1560,6 +1566,7 @@ static void set_option_widgets(DDDOption opt)
     set_scrolling_scrollbars_w[opt] = set_scrolling_scrollbars_w[0];
     set_debugger_gdb_w[opt]         = set_debugger_gdb_w[0];
     set_debugger_dbx_w[opt]         = set_debugger_dbx_w[0];
+    set_debugger_xdb_w[opt]         = set_debugger_xdb_w[0];
     set_separate_windows_w[opt]     = set_separate_windows_w[0];
     set_attached_windows_w[opt]     = set_attached_windows_w[0];
 }
@@ -1666,6 +1673,8 @@ void update_options()
 		      XmNset, type == GDB, NULL);
 	XtVaSetValues(set_debugger_dbx_w[i],
 		      XmNset, type == DBX, NULL);
+	XtVaSetValues(set_debugger_xdb_w[i],
+		      XmNset, type == XDB, NULL);
     }
 
     if (app_data.cache_source_files != source_view->cache_source_files)

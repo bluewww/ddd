@@ -227,6 +227,13 @@ void start_gdb()
 	cmds[qu_count++] = "status";
 	plus_cmd_data->refresh_bpoints = true;
 	break;
+
+    case XDB:
+	cmds[qu_count++] = "!pwd";
+	plus_cmd_data->refresh_pwd = true;
+	cmds[qu_count++] = "lb";
+	plus_cmd_data->refresh_bpoints = true;
+	break;			// FIXME
     }
 
     gdb->start_plus (user_cmdOA,
@@ -357,6 +364,8 @@ void user_cmdSUC (string cmd, Widget origin)
 	    break;
 	case GDB:
 	    break;
+	case XDB:
+	    break;		// FIXME
 	}
     }
     else if (is_single_display_cmd(cmd, gdb))
@@ -408,6 +417,9 @@ void user_cmdSUC (string cmd, Widget origin)
 	    if (gdb->has_line_command())
 		plus_cmd_data->refresh_line  = true;
 	    break;
+
+	case XDB:
+	    break;		// FIXME
 	}
 	if (!gdb->has_display_command())
 	    plus_cmd_data->refresh_disp = true;
@@ -587,6 +599,26 @@ void user_cmdSUC (string cmd, Widget origin)
 	assert (!plus_cmd_data->refresh_history_size);
 	assert (!plus_cmd_data->refresh_history_save);
 	break;
+
+    case XDB:
+	if (plus_cmd_data->refresh_pwd)
+	    cmds[qu_count++] = "!pwd";
+	assert(!plus_cmd_data->refresh_file);
+	assert(!plus_cmd_data->refresh_line);
+	if (plus_cmd_data->refresh_bpoints)
+	    cmds[qu_count++] = "lb";
+	if (plus_cmd_data->refresh_where)
+	    cmds[qu_count++] = "t";
+	assert (!plus_cmd_data->refresh_frame);
+	assert (!plus_cmd_data->refresh_register);
+	if (plus_cmd_data->refresh_disp)
+	    cmds[qu_count++] = data_disp->refresh_display_command();
+	if (plus_cmd_data->refresh_disp_info)
+	    cmds[qu_count++] = gdb->display_command();
+	assert (!plus_cmd_data->refresh_history_filename);
+	assert (!plus_cmd_data->refresh_history_size);
+	assert (!plus_cmd_data->refresh_history_save);
+	break;
     }
 
     // Send commands
@@ -682,6 +714,9 @@ void user_cmdOAC (void* data)
 	    case GDB:
 		// GDB always issues file names on positions...
 		break;
+
+	    case XDB:
+		break;		// FIXME
 	    }
 
 	    if (file != "")
@@ -879,6 +914,9 @@ void plusOQAC (string answers[],
 
 	case DBX:
 	    break;
+
+	case XDB:
+	    break;		// FIXME
 	}
     }
 

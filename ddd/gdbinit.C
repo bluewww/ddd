@@ -62,6 +62,9 @@ GDBAgent *new_gdb(DebuggerType type,
     case DBX:
 	initial_cmds = app_data.dbx_initial_cmds;
 	break;
+    case XDB:
+	initial_cmds = app_data.xdb_initial_cmds;
+	break;
     }
 
     if (initial_cmds == "")
@@ -71,7 +74,7 @@ GDBAgent *new_gdb(DebuggerType type,
 	// Set initial commands
 	if (remote_gdb())
 	{
-	    gdb_init_file = "${TMPDIR-/tmp}/ddd" + itostring(getpid());
+	    gdb_init_file = "${TMPDIR=/tmp}/ddd" + itostring(getpid());
 	    Agent cat(sh_command("cat > " + gdb_init_file));
 	    cat.start();
 
@@ -107,6 +110,13 @@ GDBAgent *new_gdb(DebuggerType type,
 	    gdb_call += " -s " + gdb_init_file;
 	}
 	break;
+
+    case XDB:
+	gdb_call += " -L ";
+	if (gdb_init_file != "")
+	{
+	    // No way to do that in XDB.  FIXME.
+	}	
     }
 
     for (int i = 1; i < argc; i++) {

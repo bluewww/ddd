@@ -66,6 +66,8 @@ DebuggerType debugger_type(const string& type)
 	return GDB;
     if (type.contains("dbx"))
 	return DBX;
+    if (type.contains("xdb"))
+	return XDB;
 
     cerr << "Unknown debugger type " << quote(type) << "\n";
     exit(EXIT_FAILURE);
@@ -88,9 +90,9 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _has_run_io_command(false),
       _has_print_r_command(false),
       _has_where_h_command(false),
-      _has_display_command(tp == GDB),
-      _has_clear_command(true),
-      _has_pwd_command(true),
+      _has_display_command(tp == GDB || tp == DBX),
+      _has_clear_command(tp == GDB || tp == DBX),
+      _has_pwd_command(tp == GDB || tp == DBX),
       _has_named_values(true),
       _has_func_pos(false),
       _has_when_semicolon(tp == DBX),
@@ -129,6 +131,8 @@ string GDBAgent::default_prompt() const
 	return "(gdb) ";
     case DBX:
 	return "(dbx) ";
+    case XDB:
+	return ">";
     }
 
     return "(???) ";
@@ -365,26 +369,59 @@ bool GDBAgent::ends_with_prompt (const string& answer)
 {
     unsigned beginning_of_line = answer.index('\n', -1) + 1;
 
-    return beginning_of_line < answer.length()
-	&& answer.length() > 3
-        && answer[beginning_of_line] == '(' 
-	&& answer[answer.length() - 2] == ')'
-	&& answer[answer.length() - 1] == ' ';
+    switch (type())
+    {
+    case GDB:
+    case DBX:
+	return beginning_of_line < answer.length()
+	    && answer.length() > 3
+	    && answer[beginning_of_line] == '(' 
+	    && answer[answer.length() - 2] == ')'
+	    && answer[answer.length() - 1] == ' ';
+
+    case XDB:
+	return beginning_of_line < answer.length()
+	    && answer.length() > 0
+	    && answer[beginning_of_line] == '>';
+    }
+
+    return false;		// Never reached
 }
 
 // ***************************************************************************
 bool GDBAgent::ends_with_secondary_prompt (const string& answer)
 {
-    return answer.length() > 3
-	&& answer[answer.length() - 3] == '\n'
-	&& answer[answer.length() - 2] == '>'
-	&& answer[answer.length() - 1] == ' ';
+    switch (type())
+    {
+    case GDB:
+    case DBX:
+	return answer.length() > 3
+	    && answer[answer.length() - 3] == '\n'
+	    && answer[answer.length() - 2] == '>'
+	    && answer[answer.length() - 1] == ' ';
+
+    case XDB:
+	return answer.matches("[Hit RETURN to continue]", -1) 
+		|| answer.matches("--More--", -1);
+    }
+
+    return false;		// Never reached
 }
 
 // ***************************************************************************
 void GDBAgent::cut_off_prompt (string& answer)
 {
-    answer = answer.before('(', -1);
+    switch (type())
+    {
+    case GDB:
+    case DBX:
+	answer = answer.before('(', -1);
+	break;
+
+    case XDB:
+	answer = answer.before('>', -1);
+	break;
+    }
 }
 
 
@@ -492,6 +529,19 @@ void GDBAgent::InputHP(Agent *, void* client_data, void* call_data)
 
     case BusyOnInitialCmds:
     case BusyOnCmd:
+	if (gdb->ends_with_secondary_prompt(answer))
+	{
+	    // GDB requires more information here: probably the
+	    // selection of an ambiguous C++ name.
+	    // We simply try the first alternative here:
+	    // - in GDB, this means `all';
+	    // - in DBX and XDB, this is a non-deterministic selection,
+
+	    string answer = "1\n";
+	    gdb->write(answer, answer.length());
+	    gdb->flush();
+	}
+
 	if (!gdb->ends_with_prompt(answer))
 	{
             // Received only part of the answer
@@ -558,8 +608,8 @@ void GDBAgent::InputHP(Agent *, void* client_data, void* call_data)
 	    // GDB requires more information here: probably the
 	    // selection of an ambiguous C++ name.
 	    // We simply try the first alternative here:
-	    // - in GDB, this means `all'
-	    // - in DBX, this is a non-deterministic selection.
+	    // - in GDB, this means `all';
+	    // - in DBX and XDB, this is a non-deterministic selection,
 
 	    string answer = "1\n";
 	    gdb->write(answer, answer.length());
@@ -593,12 +643,25 @@ void GDBAgent::InputHP(Agent *, void* client_data, void* call_data)
 	break;
 
     case BusyOnQuArray:
+	if (gdb->ends_with_secondary_prompt(answer))
+	{
+	    // GDB requires more information here: probably the
+	    // selection of an ambiguous C++ name.
+	    // We simply try the first alternative here:
+	    // - in GDB, this means `all';
+	    // - in DBX and XDB, this is a non-deterministic selection,
+
+	    string answer = "1\n";
+	    gdb->write(answer, answer.length());
+	    gdb->flush();
+	}
 	if (!gdb->ends_with_prompt(answer))
 	{
             // Received only part of the answer
 	    gdb->complete_answers[gdb->qu_index] += answer;
 	}
-	else {
+	else
+	{
             // Received complete answer (GDB issued prompt)
 	    gdb->cut_off_prompt (answer);
 	    gdb->strip_comments (answer);
@@ -658,10 +721,20 @@ void GDBAgent::InputHP(Agent *, void* client_data, void* call_data)
 string GDBAgent::print_command(string expr) const
 {
     string cmd;
-    if (has_print_r_command())
-	cmd = "print -r";
-    else
-	cmd = "print";
+
+    switch (type())
+    {
+    case GDB:
+    case DBX:
+	if (has_print_r_command())
+	    cmd = "print -r";
+	else
+	    cmd = "print";
+	break;
+
+    case XDB:
+	cmd = "p";
+    }
 
     if (expr != "")
     {
@@ -695,19 +768,39 @@ string GDBAgent::display_command(string expr) const
 // DBX 3.0 wants `where -h' instead of `where'
 string GDBAgent::where_command() const
 {
+    switch (type())
+    {
+    case GDB:
+    case DBX:
     if (has_where_h_command())
 	return "where -h";
     else
 	return "where";
+
+    case XDB:
+	return "t";
+    }
+
+    return "";			// Never reached
 }
 
 // Some DBXes want `sh pwd' instead of `pwd'
 string GDBAgent::pwd_command() const
 {
+    switch (type())
+    {
+    case GDB:
+    case DBX:
     if (has_pwd_command())
 	return "pwd";
     else
 	return "sh pwd";
+
+    case XDB:
+	return "!pwd";
+    }
+
+    return "";			// Never reached
 }
 
 // ***************************************************************************

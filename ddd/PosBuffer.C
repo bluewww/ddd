@@ -111,18 +111,25 @@ void PosBuffer::filter (string& answer)
 	    break;
 
 	case DBX:
-	    string line_s = pos_buffer;
-	    if (line_s.contains(':'))
-		line_s = line_s.after(':');
-	    int line = atoi(line_s);
-	    filter_line(answer, line);
+	    {
+		string line_s = pos_buffer;
+		if (line_s.contains(':'))
+		    line_s = line_s.after(':');
+		int line = atoi(line_s);
+		filter_line(answer, line);
+	    }
+
+	case XDB:
+	    break;		// FIXME
 	}
 	break;
+
     case PosPart:
 	answer.prepend (answer_buffer);
 	answer_buffer = "";
 	already_read = Null;
-	// weiter wie bei Null
+	// FALL THROUGH
+
     case Null:
 	{
 	    switch (gdb->type())
@@ -361,6 +368,34 @@ void PosBuffer::filter (string& answer)
 		}
 	    }
 	    break;
+
+	    case XDB:
+		{
+		    static regex RXxdbpos("[^: \t]*:[^:]*: [1-9][0-9]*: .*\n");
+		    if (answer.matches(RXxdbpos))
+		    {
+			string file = answer.before(':');
+			answer = answer.after(':');
+			string func = answer.before(':');
+			answer = answer.after(':');
+			string line = answer.before(':');
+			answer = answer.after('\n');
+			
+			read_leading_blanks(func);
+			read_leading_blanks(line);
+
+			pos_buffer   = file + ":" + line;
+			func_buffer  = func;
+			already_read = PosComplete;
+		    }
+		    else if (answer.contains(':'))
+		    {
+			answer_buffer = answer;
+			answer = "";
+			already_read = PosPart;
+		    }
+		}
+		break;
 	    }
 	}
 	break;

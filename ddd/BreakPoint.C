@@ -186,6 +186,9 @@ BreakPoint::BreakPoint (string& info_output)
 	}
 	info_output = info_output.after('\n');
     }
+
+    case XDB:
+	break;			// FIXME
     }
 }
 
@@ -385,6 +388,9 @@ bool BreakPoint::update (string& info_output)
 	}
 	info_output = info_output.after('\n');
     }
+
+    case XDB:
+	break;			// FIXME
     }
 
     return changed;

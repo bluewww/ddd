@@ -73,7 +73,8 @@ bool show_next_line_in_status = false;
 void set_buttons_from_gdb(Widget buttons, string& text)
 {
     bool yn = text.contains("(y or n) ", -1) 
-	|| text.contains("(yes or no) ", -1);
+	|| text.contains("(yes or no) ", -1)
+	|| (gdb->type() == XDB && text.contains("? ", -1));
 
     if (yn && !gdb_keyboard_command)
     {
@@ -81,7 +82,10 @@ void set_buttons_from_gdb(Widget buttons, string& text)
 	String s = XmTextGetString(gdb_w);
 	string prompt(s);
 	XtFree(s);
-	int pos = prompt.index('(', -1);
+
+	char prompt_start = (gdb->type() == XDB ? '>' : '(');
+
+	int pos = prompt.index(prompt_start, -1);
 	if (pos >= 0)
 	    pos = prompt.index('\n', pos) + 1;
 	if (pos == 0)
@@ -89,7 +93,12 @@ void set_buttons_from_gdb(Widget buttons, string& text)
 
 	XmTextReplace(gdb_w, pos, XmTextGetLastPosition(gdb_w), "");
 
-	prompt = prompt.from(pos) + text.before('(', -1);
+	prompt = prompt.from(pos);
+	if (text.contains('('))
+	    prompt += text.before('(', -1); // Don't repeat `(y or n)'
+	else
+	    prompt += text;
+
 	post_gdb_yn(prompt);
 	text = "";
 	return;

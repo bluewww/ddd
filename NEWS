@@ -21,6 +21,8 @@ DDD 1.5 (in development)
       instance, DDD now properly works with DEC DBX.
     - Improved directory support.  Sources and executables can reside
       in several different directories; the `cd' command works as well.
+    - Bits and pieces of XDB support for HP-UX users.  Not fully 
+      functional yet.
 
     Changes in configuration and building:
     - Regular expressions now use the POSIX.2 standard regcomp/regexec

@@ -50,6 +50,8 @@
 #define XtCGDBInitCommands       "GDBInitCommands"
 #define XtNdbxInitCommands       "dbxInitCommands"
 #define XtCDBXInitCommands       "DBXInitCommands"
+#define XtNxdbInitCommands       "xdbInitCommands"
+#define XtCXDBInitCommands       "XDBInitCommands"
 #define XtNvslPath               "vslPath"
 #define XtCVSLPath               "VSLPath"
 #define XtNvslLibrary            "vslLibrary"
@@ -154,6 +156,7 @@ struct AppData {
     Boolean trace_shell_commands;
     String  gdb_initial_cmds;
     String  dbx_initial_cmds;
+    String  xdb_initial_cmds;
     String  vslPath;
     String  vslLibrary;
     int     max_name_length;

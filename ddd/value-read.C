@@ -67,14 +67,13 @@ DispValueType determine_type (string value)
 
     switch(gdb->type())
     {
-    case GDB:
-	break;
-
     case DBX:
 	// DBX uses this representation for out-of-range Pascal/Modula-2
 	// enumerations.
 	if (value.matches("(scalar = ", 0))
 	    return Simple;
+    default:
+	break;
     }
 
     static regex 
@@ -114,6 +113,9 @@ DispValueType determine_type (string value)
 	if (value.contains('{', 0) || value.contains('(', 0))
 	    return Array;
 	break;
+
+    case XDB:
+	break;			// FIXME
     }
 
     return Simple;
@@ -292,7 +294,8 @@ string read_simple_value(string& value)
 	   && value[0] != ')'
 	   && value[0] != ']'
 	   && value[0] != '}'
-	   && value[0] != ',')
+	   && value[0] != ','
+	   && value[0] != ';')
     {
 	ret += read_token(value);
     }
@@ -355,7 +358,7 @@ bool read_array_next (string& value)
     if (value.matches(RXindex))
 	value = value.after(']');
 
-    if (value.contains(',', 0))
+    if (value.contains(',', 0) || value.contains(';', 0))
     {
 	value = value.after(0);
 	return value != "";	// More stuff follows

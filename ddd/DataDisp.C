@@ -1059,6 +1059,9 @@ void DataDisp::refresh_args()
 
 	case GDB:
 	    break;
+
+	case XDB:
+	    break;		// FIXME
 	}
     }
 
@@ -1447,6 +1450,9 @@ void DataDisp::new_displaySQ (string display_expression, BoxPoint* p,
 	}
     }
     break;
+
+    case XDB:
+	break;			// FIXME
     }
 }
 
@@ -1466,6 +1472,9 @@ DispNode *DataDisp::new_node (string& answer)
 	// Assign a default number
 	disp_nr_str = itostring(disp_graph->count_all() + 1);
 	break;
+
+    case XDB:
+	break;			// FIXME
     }
 
     string name = read_disp_name (answer, gdb);
@@ -1613,6 +1622,9 @@ void DataDisp::new_displaysSQA (string display_expression, BoxPoint* p)
 	delete[] dummy;
     }
     break;
+
+    case XDB:
+	break;			// FIXME
     }
 
     delete[] display_cmds;
@@ -1709,6 +1721,9 @@ string DataDisp::refresh_display_command()
     case GDB:
 	command = gdb->display_command();
 	break;
+
+    case XDB:
+	break;			// FIXME
     }
 
     return command;
@@ -1776,6 +1791,9 @@ void DataDisp::refresh_displaySQA (Widget origin)
 	cmds[0] = refresh_display_command();
 	ok = gdb->send_qu_array(cmds, dummy, 1, refresh_displayOQAC, 0);
 	break;
+
+    case XDB:
+	break;			// FIXME
     }
 
     if (!ok)
@@ -1921,18 +1939,23 @@ void DataDisp::delete_displaySQ (int display_nrs[], int count)
 	break;
 
     case DBX:
-	int c = 0;
-	for (j = 0; j < count; j++)
 	{
-	    DispNode *dn = disp_graph->get(display_nrs[j]);
-	    if (dn)
+	    int c = 0;
+	    for (j = 0; j < count; j++)
 	    {
-		if (c++)
-		    cmd += ", ";
-		cmd += " " + dn->name();
+		DispNode *dn = disp_graph->get(display_nrs[j]);
+		if (dn)
+		{
+		    if (c++)
+			cmd += ", ";
+		    cmd += " " + dn->name();
+		}
 	    }
 	}
 	break;
+
+    case XDB:
+	break;			// FIXME
     }
 	
     bool ok = 
@@ -1971,6 +1994,9 @@ void DataDisp::delete_displayOQC (const string& answer, void *)
 	    process_displays(ans, disabling_occurred);
 	}
 	break;
+
+    case XDB:
+	break;			// FIXME
     }
 
     // Anything remaining is an error message
@@ -2020,6 +2046,9 @@ void DataDisp::dependent_displaySQ (string display_expression, int disp_nr)
 	}
     }
     break;
+
+    case XDB:
+	break;			// FIXME
     }
 }
 
@@ -2147,6 +2176,9 @@ void DataDisp::dependent_displaysSQA (string display_expression,
 	delete[] dummy;
     }
     break;
+
+    case XDB:
+	break;			// FIXME
     }
 
     delete[] display_cmds;
@@ -2193,6 +2225,9 @@ void DataDisp::dependent_displaysOQAC (string answers[],
 		// Assign a default number
 		disp_nr_str = itostring(disp_graph->count_all() + 1);
 		break;
+
+	    case XDB:
+		break;		// FIXME
 	    }
 
 	    name = read_disp_name (answers[i], gdb);
@@ -2364,6 +2399,9 @@ string DataDisp::process_displays (string& displays,
 		}
 	    }
 	}
+
+	case XDB:
+	    break;		// FIXME
 	}
 
 #if LOG_DISPLAYS
@@ -2612,7 +2650,11 @@ void DataDisp::setDCB(Widget set_dialog, XtPointer client_data, XtPointer)
     case DBX:
 	cmd = "assign " + disp_value->full_name() + " = " + value;
 	break;
+
+    case XDB:
+	break;			// FIXME
     }
+
 
     gdb_command(cmd);
 }
