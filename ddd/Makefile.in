@@ -134,6 +134,9 @@ CXXSTUFF = @CXXSTUFF@
 # Possible extra libraries required for all C++ programs.  ()
 CXXLIBS = @CXXLIBS@
 
+# The `.exe' extension on Windows (Cygwin32)
+EXEEXT = @EXEEXT@
+
 
 ## The C compiler; for demos only
 
@@ -869,16 +872,18 @@ HUFFMAN_OBJECTS = strclass.o cook.o rxclass.o
 OBJECTS = $(LIB_OBJECTS) $(DDD_OBJECTS)
 
 ## The program files.
-PROGS = $(ddd_canonical) $(ddd)
+PROGS = $(ddd_canonical)$(EXEEXT) $(ddd)$(EXEEXT)
 
 ## The program files to be installed.
-INSTALL_PROGS = $(ddd)
+INSTALL_PROGS = $(ddd)$(EXEEXT)
 
 ## Extra demonstration files.
-DEMOS = userinfo stringify huffencode huffdecode \
-	cxxtest ctest grabtest ftest ptest m2test \
-	test-file test-graph vsl ttytest bug tString \
-	mmtest gcore logplayer
+DEMOS = userinfo$(EXEEXT) stringify$(EXEEXT) huffencode$(EXEEXT) \
+	huffdecode$(EXEEXT) cxxtest$(EXEEXT) ctest$(EXEEXT) grabtest$(EXEEXT) \
+	ftest$(EXEEXT) ptest$(EXEEXT) m2test$(EXEEXT) \
+	test-file$(EXEEXT) test-graph$(EXEEXT) vsl$(EXEEXT) ttytest$(EXEEXT) \
+	bug$(EXEEXT) tString$(EXEEXT) mmtest$(EXEEXT) gcore$(EXEEXT) \
+	logplayer$(EXEEXT)
 
 ## Where to find texinfo files and so
 MAKEINFO_FLAGS = \
@@ -1116,7 +1121,7 @@ ddd-message:
 	@$(ECHO) "Building $(ddd_canonical)..."
 
 .PHONY: ddd-done
-ddd-done: $(ddd)
+ddd-done: $(ddd)$(EXEEXT)
 	@$(ECHO) "Building $(ddd_canonical)... done."
 	@$(ECHO) "You may now type \`$(MAKE) check' for a test."
 
@@ -1400,76 +1405,76 @@ ddd.vsl.h: $(srcdir)/../vsllib/tab.vsl
 
 ## The programs.
 
-$(ddd):	$(ddd_canonical)
-	$(RM) $@ $(SYMS); $(LN_S) $(ddd_canonical) $@
+$(ddd)$(EXEEXT): $(ddd_canonical)$(EXEEXT)
+	$(RM) $@ $(SYMS); $(LN_S) $(ddd_canonical)$(EXEEXT) $@
 
-$(ddd_canonical): ddd.o $(OBJECTS)
+$(ddd_canonical)$(EXEEXT): ddd.o $(OBJECTS)
 	$(LINK.cc) -o $@ ddd.o $(OBJECTS) $(ALL_X_LIBS) $(LIBS)
 
 
 ## The demonstration programs.
 
-userinfo: userinfo.o $(USERINFO_OBJECTS)
+userinfo$(EXEEXT): userinfo.o $(USERINFO_OBJECTS)
 	-$(LINK.cc) -o $@ userinfo.o $(USERINFO_OBJECTS) $(NON_X_LIBS) $(LIBS)
 
-rxtest: rxtest.o $(HUFFMAN_OBJECTS)
+rxtest$(EXEEXT): rxtest.o $(HUFFMAN_OBJECTS)
 	-$(LINK.cc) -o $@ rxtest.o $(HUFFMAN_OBJECTS) $(NON_X_LIBS) $(LIBS)
 
-huffencode: huffencode.o $(HUFFMAN_OBJECTS)
+huffencode$(EXEEXT): huffencode.o $(HUFFMAN_OBJECTS)
 	$(LINK.cc) -o $@ huffencode.o $(HUFFMAN_OBJECTS) $(NON_X_LIBS) $(LIBS)
 
-huffdecode: huffdecode.o $(HUFFMAN_OBJECTS)
+huffdecode$(EXEEXT): huffdecode.o $(HUFFMAN_OBJECTS)
 	$(LINK.cc) -o $@ huffdecode.o $(HUFFMAN_OBJECTS) $(NON_X_LIBS) $(LIBS)
 
-stringify: stringify.o
+stringify$(EXEEXT): stringify.o
 	$(LINK.cc) -o $@ stringify.o $(LIBS)
 
-mmtest: mmtest.o $(LIB_OBJECTS) 
+mmtest$(EXEEXT): mmtest.o $(LIB_OBJECTS) 
 	$(LINK.cc) -o $@ mmtest.o $(LIB_OBJECTS) $(ALL_X_LIBS) $(LIBS)
 
-gcore: gcore.o $(HUFFMAN_OBJECTS)
+gcore$(EXEEXT): gcore.o $(HUFFMAN_OBJECTS)
 	$(LINK.cc) -o $@ gcore.o $(HUFFMAN_OBJECTS) $(NON_X_LIBS) $(LIBS)
 
-logplayer: $(srcdir)/logplayer.C $(HUFFMAN_OBJECTS)
+logplayer$(EXEEXT): $(srcdir)/logplayer.C $(HUFFMAN_OBJECTS)
 	$(COMPILE_AND_LINK.cc) -DMAIN $(INCLUDE) -o $@ \
 	$(srcdir)/logplayer.C $(HUFFMAN_OBJECTS) $(NON_X_LIBS) $(LIBS)
 
-test-file: test-file.o
+test-file$(EXEEXT): test-file.o
 	$(LINK.cc) -o $@ test-file.o $(ALL_X_LIBS)
 
-test-graph: test-graph.o $(LIB_OBJECTS) 
+test-graph$(EXEEXT): test-graph.o $(LIB_OBJECTS) 
 	$(LINK.cc) -o $@ test-graph.o $(LIB_OBJECTS) $(ALL_X_LIBS) $(LIBS)
 
-vsl:	vsl.o DocSpace.o $(LIB_OBJECTS)
+vsl$(EXEEXT):	vsl.o DocSpace.o $(LIB_OBJECTS)
 	$(LINK.cc) -o $@ vsl.o DocSpace.o $(LIB_OBJECTS) $(ALL_X_LIBS) $(LIBS)
 
-ttytest: ttytest.o $(BASE_OBJECTS) $(AGENT_OBJECTS)
+ttytest$(EXEEXT): ttytest.o $(BASE_OBJECTS) $(AGENT_OBJECTS)
 	$(LINK.cc) -o $@ ttytest.o $(BASE_OBJECTS) $(AGENT_OBJECTS) \
 	$(ALL_X_LIBS) $(LIBS)
 
-bug:	bug.o
+bug$(EXEEXT):	bug.o
 	$(LINK.cc) -o $@ bug.o $(LIBS)
 
-tString: tString.o  $(HUFFMAN_OBJECTS)
+tString$(EXEEXT): tString.o  $(HUFFMAN_OBJECTS)
 	$(LINK.cc) -o $@ tString.o $(HUFFMAN_OBJECTS) $(NON_X_LIBS) $(LIBS)
 
-cxxtest: cxxtest.o
+cxxtest$(EXEEXT): cxxtest.o
 	$(LINK.cc) -o $@ cxxtest.o $(LIBS)
 
-grabtest: grabtest.o
+grabtest$(EXEEXT): grabtest.o
 	$(LINK.cc) -o $@ grabtest.o $(ALL_X_LIBS) $(LIBS)
 
-ctest:  ctest.o
+ctest$(EXEEXT):  ctest.o
 	$(LINK.c) -o $@ ctest.o
 
-ptest:  ptest.o
+ptest$(EXEEXT):  ptest.o
 	$(LINK.p) -o $@ ptest.o
 
-m2test: $(srcdir)/m2test.mod
+m2test$(EXEEXT): $(srcdir)/m2test.mod
 	$(COMPILE_AND_LINK.m2) -o $@ -e $@ $(srcdir)/m2test.mod \
 	-lmodula2 -ltermcap
 
-ftest:	ftest.o
+ftest$(EXEEXT):	ftest.o
 	$(LINK.f) -o $@ ftest.o
 
 .PHONY: jtest
@@ -1499,18 +1504,18 @@ ftest.o: $(srcdir)/ftest.f
 
 ## For demonstration and debugging purposes
 .PHONY: check
-check: Ddd ddd cxxtest
-	XUSERFILESEARCHPATH=. XAPPLRESDIR=. ./ddd $(DDD_OPTIONS) cxxtest
+check: Ddd $(ddd)$(EXEEXT) cxxtest$(EXEEXT)
+	XUSERFILESEARCHPATH=. XAPPLRESDIR=. ./ddd $(DDD_OPTIONS) cxxtest$(EXEEXT)
 
 .PHONY: debug
-debug: Ddd $(ddd) cxxtest .gdbinit $(ddd).syms
+debug: Ddd $(ddd)$(EXEEXT) cxxtest$(EXEEXT) .gdbinit $(ddd).syms
 	$(DEBUGGER) ./$(ddd)
 
 $(ddd).syms: $(ddd_canonical).syms
 	$(RM) $@; $(LN_S) $(ddd_canonical).syms $@
 
-$(ddd_canonical).syms: $(ddd_canonical)
-	nice $(DEBUGGER) -batch -nx -mapped -readnow $(ddd_canonical)
+$(ddd_canonical).syms: $(ddd_canonical)$(EXEEXT)
+	nice $(DEBUGGER) -batch -nx -mapped -readnow $(ddd_canonical)$(EXEEXT)
 
 .PHONY: syms
 syms:   $(ddd).syms
@@ -1520,13 +1525,13 @@ syms:   $(ddd).syms
 
 # Create useful stuff in background
 .PHONY: stuff
-stuff:  $(ddd)
+stuff:  $(ddd)$(EXEEXT)
 	$(MAKE) $(ddd).syms > make.log 2>&1 &
 	@:
 
 # A convient target for setting up a debugging environment.
 .PHONY: it
-it:	all cxxtest ctest stuff
+it:	all cxxtest$(EXEEXT) ctest$(EXEEXT) stuff
 	@:
 
 
@@ -1882,14 +1887,14 @@ ddd.man.txt.gz: ddd.man.txt
 	$(COMPRESS) $? > $@~ && $(MV) $@~ $@
 
 ddd.man.txt.gz.C: ddd.man.txt.gz
-	$(MAKE) stringify
+	$(MAKE) stringify$(EXEEXT)
 	-./stringify < $? > $@~ && $(MV) $@~ $@
 
 
 # ddd.man.huff.C does NOT depend on huffencode since we don't want it
 # to get re-created after each configuration.
 ddd.man.huff.C: ddd.man.txt
-	$(MAKE) huffencode
+	$(MAKE) huffencode$(EXEEXT)
 	-./huffencode < ddd.man.txt > $@~ && $(MV) $@~ $@
 
 # The `no pictures' variant of ddd.man.
@@ -1899,7 +1904,7 @@ ddd.man-nopics: ddd.man
 # COPYING.huff.C does NOT depend on huffencode since we don't want it
 # to get re-created after each configuration.
 COPYING.huff.C: $(srcdir)/../COPYING
-	$(MAKE) huffencode
+	$(MAKE) huffencode$(EXEEXT)
 	-$(SED) 's///' < $(srcdir)/../COPYING | ./huffencode > $@~ && \
 	$(MV) $@~ $@
 
@@ -1907,13 +1912,13 @@ COPYING.gz: $(srcdir)/../COPYING
 	$(COMPRESS) $(srcdir)/../COPYING > $@
 
 COPYING.gz.C: COPYING.gz
-	$(MAKE) stringify
+	$(MAKE) stringify$(EXEEXT)
 	-./stringify < COPYING.gz > $@~ && $(MV) $@~ $@
 
 # NEWS.huff.C does NOT depend on huffencode since we don't want it
 # to get re-created after each configuration.
 NEWS.huff.C: $(srcdir)/../NEWS
-	$(MAKE) huffencode
+	$(MAKE) huffencode$(EXEEXT)
 	-$(SED) 's///' < $(srcdir)/../NEWS | ./huffencode > $@~ && \
 	$(MV) $@~ $@
 
@@ -1921,7 +1926,7 @@ NEWS.gz: $(srcdir)/../NEWS
 	$(COMPRESS) $(srcdir)/../NEWS > $@~ && $(MV) $@~ $@
 
 NEWS.gz.C: NEWS.gz
-	$(MAKE) stringify
+	$(MAKE) stringify$(EXEEXT)
 	-./stringify < NEWS.gz > $@~ && $(MV) $@~ $@
 
 # `make depend' fails to find this dependency :-(
@@ -1998,7 +2003,7 @@ configinfo.C: USERINFO $(srcdir)/config-info
 configinfo.o:	configinfo.C configinfo.h
 
 # If `~/.ddd_userinfo' exists, use this file as personal identification.
-USERINFO: userinfo
+USERINFO: userinfo$(EXEEXT)
 	-(cat $$HOME/.ddd_userinfo 2> /dev/null || \
 	./userinfo || echo '(unknown)') > $@~ && $(MV) $@~ $@
 	@$(ECHO) ""

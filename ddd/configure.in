@@ -107,6 +107,8 @@ dnl
 AC_ISC_POSIX
 dnl
 dnl
+dnl
+dnl
 dnl Locate programs
 dnl
 AC_PROG_LN_S
@@ -211,9 +213,17 @@ ICE_CXX_LIFETIME_OF_TEMPORARIES
 ICE_PROG_CPP_TRADITIONAL
 dnl
 dnl
+dnl Check for .exe extension (used in the Windows/Cygwin32 environment)
+dnl
+AM_EXEEXT
+dnl
+dnl
 dnl The C++ compiler is set up.  Use it for further checks.
 dnl 
 AC_LANG_CPLUSPLUS
+dnl
+dnl
+dnl
 dnl
 dnl Locate Libraries
 dnl
