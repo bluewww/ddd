@@ -288,4 +288,12 @@ Volunteers for these and other projects are welcome!
 
 148* Include a sample `.dddinit' file.
 
-151. (Insert your project idea here)
+151. When `Disable/Enable' is applied to a display part, make it act like
+     `Show/Hide'; `Show/Hide' would no more be required.  Likewise,
+     apply `Delete' to display parts only.  See also 143, 128, and
+     088.
+
+152. When dereferencing, make new displays inherit the `Show/Hide'
+     settings of their ancestors.
+
+153. (Insert your project idea here)
