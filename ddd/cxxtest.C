@@ -2,7 +2,9 @@
 // Test program
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
-// Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>.
+// Copyright (C) 2001 Universitaet Passau, Germany.
+// Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
+// and Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
 // 
@@ -93,6 +95,8 @@ static int rnd(int x)
 enum DayOfWeek {Sun, Mon, Tue, Wed, Thu, Fri, Sat};
 
 static int a_global = 42;	// Place watchpoints on this one
+
+static void *address = 0;	// Some generic pointer
 
 //--------------------------------------------------------------------------
 class Date {
@@ -430,6 +434,7 @@ static void string_test()
 {
     char data[]="one plus two = three";	// Display this
     (void) data;		// Use it
+    address = (void *)&data;
 }
 
 //--------------------------------------------------------------------------
@@ -476,6 +481,11 @@ static void array_test()
     ar[50] = &ir[50];	ir[50] = 50;
     ar[51] = &ir[51];	ir[51] = 51;
     ar[99] = &ir[99];	ir[99] = 99;
+
+    address = (void *)&days_of_week;
+    address = (void *)&twodim;
+    address = (void *)&ar;
+    address = (void *)&ir;
 }
 
 //--------------------------------------------------------------------------
@@ -709,6 +719,12 @@ static void type_test()
     ts.ot = interface;		// (**) BREAK here: oops
 
     (void) ts;			// Display this
+
+    address = (void *)&voidptr;
+    address = (void *)&uni;
+    address = (void *)&guni;
+    address = (void *)&MAX;
+    address = (void *)&ts;
 }
 
 //--------------------------------------------------------------------------
@@ -725,22 +741,32 @@ static void cin_cout_test()
 int main(int /* argc */, char ** /* argv */)
 {
     int i = 42;
+
     tree_test();
     i++;
+
     list_test(i);
     i++;
+
     array_test();
     i++;
+
     string_test();
     i++;
+
     plot_test();
     i++;
+
     type_test();
     i++;
+
     namespace_test();
     i++;
+
     multiple_inheritance_test();
     --i;
+
     cin_cout_test();
+
     return 0;
 }

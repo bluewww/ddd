@@ -3,7 +3,7 @@
 
 /*
  * Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
- * Copyright (C) 2000 Universitaet Passau, Germany.
+ * Copyright (C) 2000-2001 Universitaet Passau, Germany.
  * Written by Andreas Zeller <zeller@gnu.org>.
  * 
  * This file is part of DDD.
@@ -225,6 +225,8 @@ void type_test ()
 	    char c;
 	} u;
     } uni;
+
+    uni.ii = 42;
 
     float f  = 0.0;
     double d = 0.0;
