@@ -320,7 +320,12 @@ bool DispValue::dereferenced() const
 string DispValue::dereferenced_name() const
 {
     if (mytype == Pointer)
-	return "*(" + full_name() + ")";
+    {
+	string f = full_name();
+	if (f.length() > 2 && f[0] == '/')
+	    f = f.from(2);
+	return "*(" + f + ")";
+    }
     else
 	return "";
 }
