@@ -776,11 +776,11 @@ None<Key>End:		end-of-line()               \n
 
 ! Make sure glyphs popup as well
 Ddd*source_form_w.XmPushButton.translations: #override \
-None<Btn1Down>:	Activate() \n\
+None<Btn1Down>:	ArmAndActivate() \n\
 None<Btn3Down>:	source-popup-menu()
 
 Ddd*code_form_w.XmPushButton.translations: #override \
-None<Btn1Down>:	Activate() \n\
+None<Btn1Down>:	ArmAndActivate() \n\
 None<Btn3Down>:	source-popup-menu()
 
 
