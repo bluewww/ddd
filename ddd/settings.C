@@ -505,13 +505,11 @@ static void update_themes_buttons()
 	XtFree(value_s);
 
 	string old_value;
-	bool old_set = false;
 
 	bool have_pattern = old_tm.has_pattern(theme);
 	if (have_pattern)
 	{
 	    ThemePattern p = old_tm.pattern(theme);
-	    old_set = p.active();
 	    ostrstream os;
 	    os << p;
 	    old_value = string(os);

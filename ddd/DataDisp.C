@@ -6072,10 +6072,6 @@ void DataDisp::delete_user_display(const string& name)
 
 void DataDisp::language_changedHP(Agent *source, void *, void *)
 {
-    GDBAgent *gdb = ptr_cast(GDBAgent, source);
-    (void) gdb;			// Use it
-    assert(gdb != 0);
-
     string arg = source_arg->get_string();
     if (selected_value() != 0)
 	arg = selected_value()->full_name();
