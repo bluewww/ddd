@@ -101,8 +101,15 @@ Volunteers for these and other projects are welcome!
 
 032. [done]
 
-033. Call for bug report if `make' fails.
+033. Call for bug report if `make' fails.  But how?
 
 034. Call for bug report if a fatal X error occurs.
 
-035. (Insert your project idea here)
+035. [done]
+
+036. [done]
+
+037. Group dereference.  If multiple pointers are selected,
+     dereference them all.
+
+038. (Insert your project idea here)
