@@ -117,14 +117,16 @@ typedef struct PlusCmdData {
     bool     refresh_where;            // send 'where'
     bool     refresh_frame;            // send 'frame'
     bool     refresh_register;         // send 'info registers'
-    bool     refresh_disp;             // send 'display'
+    bool     refresh_data;             // send 'display'
+    bool     refresh_user;             // send user-defined commands
     bool     refresh_disp_info;        // send 'info display'
     bool     refresh_history_filename; // send 'show history filename'
     bool     refresh_history_size;     // send 'show history size'
     bool     refresh_history_save;     // send 'show history save'
     bool     refresh_setting;	       // send 'show SETTING'
     string   set_command;	       // setting to update
-    int      n_refresh_disp;	       // # of displays to refresh
+    int      n_refresh_data;	       // # of data displays to refresh
+    int      n_refresh_user;	       // # of user displays to refresh
 
     bool     config_frame;	       // try 'frame'
     bool     config_run_io;	       // try 'dbxenv run_io'
@@ -152,14 +154,16 @@ typedef struct PlusCmdData {
 	refresh_where(false),
 	refresh_frame(false),
 	refresh_register(false),
-	refresh_disp(false),
+	refresh_data(false),
+	refresh_user(false),
 	refresh_disp_info(false),
 	refresh_history_filename(false),
 	refresh_history_size(false),
 	refresh_history_save(false),
 	refresh_setting(false),
 	set_command(""),
-	n_refresh_disp(0),
+	n_refresh_data(0),
+	n_refresh_user(0),
 
 	config_frame(false),
 	config_run_io(false),
@@ -396,7 +400,12 @@ void user_cmdSUC (string cmd, Widget origin)
     PlusCmdData* plus_cmd_data     = new PlusCmdData;
     cmd_data->disp_buffer          = new DispBuffer;
     cmd_data->pos_buffer           = new PosBuffer;
+
+    // Breakpoints may change any time
     plus_cmd_data->refresh_bpoints = true;
+
+    // User command output may change any time
+    plus_cmd_data->refresh_user    = true;
 
     if (source_view->where_required())
     {
@@ -420,7 +429,7 @@ void user_cmdSUC (string cmd, Widget origin)
 	// File may change: display main() function and update displays
 	plus_cmd_data->refresh_disp_info    = true;
 	plus_cmd_data->refresh_initial_line = true;
-	plus_cmd_data->refresh_disp         = true;
+	plus_cmd_data->refresh_data         = true;
 	
 	switch (gdb->type())
 	{
@@ -458,7 +467,7 @@ void user_cmdSUC (string cmd, Widget origin)
 		plus_cmd_data->refresh_frame = true;
 	}
 	if (!gdb->has_display_command())
-	    plus_cmd_data->refresh_disp = true;
+	    plus_cmd_data->refresh_data = true;
     }
     else if (is_frame_cmd(cmd))
     {
@@ -470,7 +479,7 @@ void user_cmdSUC (string cmd, Widget origin)
 	plus_cmd_data->refresh_where    = false;
 	plus_cmd_data->refresh_frame    = true;
 	plus_cmd_data->refresh_register = false;
-	plus_cmd_data->refresh_disp     = true;
+	plus_cmd_data->refresh_data     = true;
 
 	switch (gdb->type())
 	{
@@ -484,12 +493,12 @@ void user_cmdSUC (string cmd, Widget origin)
 	    break;
 	}
 	if (!gdb->has_display_command())
-	    plus_cmd_data->refresh_disp = true;
+	    plus_cmd_data->refresh_data = true;
     }
     else if (is_set_cmd(cmd))
     {
 	// Update displays
-	plus_cmd_data->refresh_disp = true;
+	plus_cmd_data->refresh_data = true;
     }
     else if (is_lookup_cmd(cmd))
     {
@@ -506,7 +515,7 @@ void user_cmdSUC (string cmd, Widget origin)
 	plus_cmd_data->refresh_register = false;
 
 	if (!gdb->has_display_command())
-	    plus_cmd_data->refresh_disp = true;
+	    plus_cmd_data->refresh_data = true;
     }
     else if (is_cd_cmd(cmd))
     {
@@ -530,7 +539,7 @@ void user_cmdSUC (string cmd, Widget origin)
 
     if (cmd_data->new_exec_pos
 	|| plus_cmd_data->refresh_frame 
-	|| plus_cmd_data->refresh_disp)
+	|| plus_cmd_data->refresh_data)
     {
 	// New program state: clear value cache
 	clear_value_cache();
@@ -581,7 +590,7 @@ void user_cmdSUC (string cmd, Widget origin)
 	plus_cmd_data->refresh_frame = false;
 
 	if (!gdb->has_display_command())
-	    plus_cmd_data->refresh_disp = true;
+	    plus_cmd_data->refresh_data = true;
     }
 
     if (gdb->type() == DBX)
@@ -632,9 +641,12 @@ void user_cmdSUC (string cmd, Widget origin)
 	    cmds += gdb->frame_command();
 	if (plus_cmd_data->refresh_register)
 	    cmds += "info registers";
-	if (plus_cmd_data->refresh_disp)
-	    plus_cmd_data->n_refresh_disp = 
-		data_disp->add_refresh_display_commands(cmds);
+	if (plus_cmd_data->refresh_data)
+	    plus_cmd_data->n_refresh_data = 
+		data_disp->add_refresh_data_commands(cmds);
+	if (plus_cmd_data->refresh_user)
+	    plus_cmd_data->n_refresh_user = 
+		data_disp->add_refresh_user_commands(cmds);
 	if (plus_cmd_data->refresh_disp_info)
 	    cmds += "info display";
 	if (plus_cmd_data->refresh_history_filename)
@@ -678,9 +690,12 @@ void user_cmdSUC (string cmd, Widget origin)
 	    cmds += gdb->frame_command();
 	}
 	assert (!plus_cmd_data->refresh_register);
-	if (plus_cmd_data->refresh_disp)
-	    plus_cmd_data->n_refresh_disp = 
-		data_disp->add_refresh_display_commands(cmds);
+	if (plus_cmd_data->refresh_data)
+	    plus_cmd_data->n_refresh_data = 
+		data_disp->add_refresh_data_commands(cmds);
+	if (plus_cmd_data->refresh_user)
+	    plus_cmd_data->n_refresh_user = 
+		data_disp->add_refresh_user_commands(cmds);
 	if (plus_cmd_data->refresh_disp_info)
 	    cmds += gdb->display_command();
 	assert (!plus_cmd_data->refresh_history_filename);
@@ -704,9 +719,12 @@ void user_cmdSUC (string cmd, Widget origin)
 	if (plus_cmd_data->refresh_frame)
 	    cmds += gdb->frame_command();
 	assert (!plus_cmd_data->refresh_register);
-	if (plus_cmd_data->refresh_disp)
-	    plus_cmd_data->n_refresh_disp = 
-		data_disp->add_refresh_display_commands(cmds);
+	if (plus_cmd_data->refresh_data)
+	    plus_cmd_data->n_refresh_data = 
+		data_disp->add_refresh_data_commands(cmds);
+	if (plus_cmd_data->refresh_user)
+	    plus_cmd_data->n_refresh_user = 
+		data_disp->add_refresh_user_commands(cmds);
 	if (plus_cmd_data->refresh_disp_info)
 	    cmds += gdb->display_command();
 	assert (!plus_cmd_data->refresh_history_filename);
@@ -905,14 +923,17 @@ void user_cmdOAC (void* data)
 void handle_graph_cmd (string cmd, Widget origin)
 {
     cmd = cmd.after ("graph ");
-    if (is_display_cmd (cmd)) {
+    if (is_display_cmd (cmd))
+    {
 	string display_expression = get_display_expression (cmd);
 	data_disp->new_displaySQ(display_expression, 0, origin);
     }
-    else if (is_refresh_cmd (cmd)) {
+    else if (is_refresh_cmd (cmd))
+    {
 	data_disp->refresh_displaySQ(origin);
     }
-    else {
+    else
+    {
 	user_cmdSUC(cmd, origin);
     }
 }
@@ -1242,20 +1263,28 @@ void plusOQAC (string answers[],
 	source_view->process_register(answers[qu_count++]);
     }
 
-    if (plus_cmd_data->refresh_disp) {
+    if (plus_cmd_data->refresh_data) {
 	string ans = "";
-	for (int i = 0; i < plus_cmd_data->n_refresh_disp; i++)
+	for (int i = 0; i < plus_cmd_data->n_refresh_data; i++)
 	{
 	    assert (qu_count < count);
 	    ans += answers[qu_count++];
 	}
-	if (plus_cmd_data->n_refresh_disp > 0)
+	if (plus_cmd_data->n_refresh_data > 0)
 	{
 	    bool disabling_occurred = false;
 	    data_disp->process_displays(ans, disabling_occurred);
 	    if (disabling_occurred)
 		data_disp->refresh_displaySQ();
 	}
+    }
+
+    if (plus_cmd_data->refresh_user)
+    {
+	StringArray answers(((string *)answers) + qu_count,
+			    plus_cmd_data->n_refresh_user);
+	data_disp->process_user(answers);
+	qu_count += plus_cmd_data->n_refresh_user;
     }
 
     if (plus_cmd_data->refresh_disp_info) {

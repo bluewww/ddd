@@ -261,7 +261,7 @@ void DataDisp::dereferenceCB(Widget w, XtPointer client_data,
     disp_node_arg->refresh();
 
     string nr = disp_node_arg->disp_nr();
-    dependent_displaySQ (display_expression, get_positive_nr(nr));
+    dependent_displaySQ (display_expression, get_nr(nr));
 }
 
 void DataDisp::toggleDetailCB(Widget dialog, XtPointer, XtPointer)
@@ -379,13 +379,11 @@ void DataDisp::toggleRotateCB(Widget w, XtPointer, XtPointer)
 void DataDisp::toggleDisableCB (Widget dialog, XtPointer, XtPointer)
 {
     set_last_origin(dialog);
-
-    int *disp_nrs = new int[disp_graph->count_all()];
+    IntArray disp_nrs;
 
     bool do_enable  = true;
     bool do_disable = true;
 
-    int i = 0;
     MapRef ref;
     for (DispNode* dn = disp_graph->first(ref); 
 	 dn != 0;
@@ -394,7 +392,7 @@ void DataDisp::toggleDisableCB (Widget dialog, XtPointer, XtPointer)
 	if (dn->selected())
 	{
 	    string nr = dn->disp_nr();
-	    disp_nrs[i++] = get_positive_nr(nr);
+	    disp_nrs += get_nr(nr);
 	    if (dn->enabled())
 		do_enable = false;
 	    if (dn->disabled())
@@ -402,15 +400,10 @@ void DataDisp::toggleDisableCB (Widget dialog, XtPointer, XtPointer)
 	}
     }
 
-    if (i > 0)
-    {
-	if (do_enable)
-	    enable_displaySQ (disp_nrs, i);
-	else if (do_disable)
-	    disable_displaySQ (disp_nrs, i);
-    }
-
-    delete[] disp_nrs;
+    if (do_enable)
+	enable_displaySQ(disp_nrs);
+    else if (do_disable)
+	disable_displaySQ(disp_nrs);
 }
 
 static void select_with_all_descendants(GraphNode *node)
@@ -443,11 +436,10 @@ void DataDisp::deleteCB (Widget dialog, XtPointer, XtPointer)
     set_last_origin(dialog);
 
     int count = disp_graph->count_all();
-    int *disp_nrs = new int[count];
+    IntArray disp_nrs(count);
     GraphNode **ancestors   = new GraphNode *[count];
     GraphNode **descendants = new GraphNode *[count];
 
-    int i = 0;
     int a = 0;
     int d = 0;
 
@@ -459,7 +451,7 @@ void DataDisp::deleteCB (Widget dialog, XtPointer, XtPointer)
 	if (dn->selected())
 	{
 	    string nr = dn->disp_nr();
-	    disp_nrs[i++] = get_positive_nr(nr);
+	    disp_nrs += get_positive_nr(nr);
 
 	    // Select all ancestors
 	    GraphEdge *edge;
@@ -486,8 +478,7 @@ void DataDisp::deleteCB (Widget dialog, XtPointer, XtPointer)
 	}
     }
 
-    if (i > 0)
-	delete_displaySQ (disp_nrs, i);
+    delete_displaySQ(disp_nrs);
 
     while (a > 0)
 	select_with_all_descendants(ancestors[--a]);
@@ -496,7 +487,6 @@ void DataDisp::deleteCB (Widget dialog, XtPointer, XtPointer)
 
     refresh_graph_edit();
 
-    delete[] disp_nrs;
     delete[] descendants;
     delete[] ancestors;
 }
@@ -517,7 +507,7 @@ void DataDisp::dependentCB(Widget w, XtPointer client_data,
 
     string nr = disp_node_arg->disp_nr();
     static int* disp_nr_ptr = new int;
-    *disp_nr_ptr = get_positive_nr(nr);
+    *disp_nr_ptr = get_nr(nr);
 
     static Widget dependent_display_dialog = 0;
     if (!dependent_display_dialog) {
@@ -571,9 +561,8 @@ void DataDisp::enableCB(Widget w, XtPointer, XtPointer)
 {
     set_last_origin(w);
 
-    int *disp_nrs = new int[disp_graph->count_all()];
+    IntArray disp_nrs;
 
-    int i = 0;
     MapRef ref;
     for (DispNode* dn = disp_graph->first(ref); 
 	 dn != 0;
@@ -582,23 +571,19 @@ void DataDisp::enableCB(Widget w, XtPointer, XtPointer)
 	if (dn->selected() && dn->disabled())
 	{
 	    string nr = dn->disp_nr();
-	    disp_nrs[i++] = get_positive_nr(nr);
+	    disp_nrs += get_nr(nr);
 	}
     }
 
-    if (i > 0)
-	enable_displaySQ (disp_nrs, i);
-
-    delete[] disp_nrs;
+    enable_displaySQ (disp_nrs);
 }
 
 void DataDisp::disableCB(Widget w, XtPointer, XtPointer)
 {
     set_last_origin(w);
 
-    int *disp_nrs = new int[disp_graph->count_all()];
+    IntArray disp_nrs;
 
-    int i = 0;
     MapRef ref;
     for (DispNode* dn = disp_graph->first(ref); 
 	 dn != 0;
@@ -607,14 +592,11 @@ void DataDisp::disableCB(Widget w, XtPointer, XtPointer)
 	if (dn->selected() && dn->enabled())
 	{
 	    string nr = dn->disp_nr();
-	    disp_nrs[i++] = get_positive_nr(nr);
+	    disp_nrs += get_nr(nr);
 	}
     }
 
-    if (i > 0)
-	disable_displaySQ (disp_nrs, i);
-
-    delete[] disp_nrs;
+    disable_displaySQ (disp_nrs);
 }
 
 //-----------------------------------------------------------------------------
@@ -1171,6 +1153,7 @@ void DataDisp::refresh_args()
 	switch (disp_value_arg->type())
 	{
 	case Simple:
+	case Text:
 	case Reference:
 	    break;
 
@@ -1183,13 +1166,9 @@ void DataDisp::refresh_args()
 	    rotate_state  = disp_value_arg->vertical_aligned();
 	    break;
 
+	case List:
 	case StructOrClass:
 	case BaseClass:
-	    break;
-
-	default:
-	    // Falscher Fehler
-	    assert (0);
 	    break;
 	}
     }
@@ -1340,7 +1319,8 @@ void DataDisp::UpdateGraphEditorSelectionCB(Widget, XtPointer, XtPointer)
     ignore_update_graph_editor_selection   = true;
     ignore_update_display_editor_selection = true;
 
-    int *display_nrs = getDisplayNumbers(display_list_w);
+    IntArray display_nrs;
+    getDisplayNumbers(display_list_w, display_nrs);
 
     // Update graph editor selection
     MapRef ref;
@@ -1349,10 +1329,10 @@ void DataDisp::UpdateGraphEditorSelectionCB(Widget, XtPointer, XtPointer)
 	 dn = disp_graph->next(ref))
     {
 	string nr = dn->disp_nr();
-	int display_nr = get_positive_nr(nr);
+	int display_nr = get_nr(nr);
 
 	bool select = false;
-	for (int i = 0; display_nrs[i] > 0; i++)
+	for (int i = 0; i < display_nrs.size(); i++)
 	{
 	    if (display_nr == display_nrs[i])
 	    {
@@ -1367,8 +1347,6 @@ void DataDisp::UpdateGraphEditorSelectionCB(Widget, XtPointer, XtPointer)
 	    graphEditRedrawNode(graph_edit, dn->nodeptr());
 	}
     }
-
-    delete[] display_nrs;
 
     refresh_args();
 
@@ -1542,37 +1520,64 @@ void DataDisp::new_displaySQ (string display_expression, BoxPoint *p,
 
     if (display_expression == "")
 	return;
-    if (display_expression.contains (RXmore_than_one)) {
-	new_displaysSQA (display_expression, p);
-	return;
-    }
 
-    switch (gdb->type())
+    if (is_user_command(display_expression))
     {
-    case GDB:
+	CallAgainInfo *info = new CallAgainInfo;
+	if (p != 0)
 	{
-	    string cmd = gdb->display_command(display_expression);
-	    bool ok = gdb->send_question (cmd, new_displayOQC, p);
-	    if (!ok)
-		post_gdb_busy(last_origin);
+	    info->point = *p;
+	    info->point_ptr = &info->point;
 	}
-	break;
+	else
+	{
+	    info->point = BoxPoint(-1, -1);
+	    info->point_ptr = 0;
+	}
+	info->display_expression = display_expression;
 
-    case DBX:
-    case XDB:
-	{
-	    gdb_question(gdb->display_command(display_expression));
-	    string cmd = gdb->print_command(display_expression);
-	    bool ok = gdb->send_question (cmd, new_displayOQC, p);
-	    if (!ok)
-		post_gdb_busy(last_origin);
+	// User-defined display
+	string cmd = user_command(display_expression);
+	bool ok = gdb->send_question(cmd, new_userOQC, info);
+	if (!ok)
+	    post_gdb_busy(origin);
+    }
+    else
+    {
+	// Data display
+	if (display_expression.contains (RXmore_than_one)) {
+	    new_displaysSQA (display_expression, p);
+	    return;
 	}
-	break;
+
+	switch (gdb->type())
+	{
+	case GDB:
+	    {
+		string cmd = gdb->display_command(display_expression);
+		bool ok = gdb->send_question (cmd, new_displayOQC, p);
+		if (!ok)
+		    post_gdb_busy(last_origin);
+	    }
+	    break;
+
+	case DBX:
+	case XDB:
+	    {
+		gdb_question(gdb->display_command(display_expression));
+		string cmd;
+		cmd = gdb->print_command(display_expression);
+		bool ok = gdb->send_question (cmd, new_displayOQC, p);
+		if (!ok)
+		    post_gdb_busy(last_origin);
+	    }
+	    break;
+	}
     }
 }
 
 
-DispNode *DataDisp::new_node (string& answer)
+DispNode *DataDisp::new_data_node(string& answer)
 {
     string disp_nr_str;
     switch(gdb->type())
@@ -1615,6 +1620,14 @@ DispNode *DataDisp::new_node (string& answer)
     return dn;
 }
 
+DispNode *DataDisp::new_user_node(const string& name, string& answer)
+{
+    // Assign a default number
+    string disp_nr_str = itostring(-(next_display_number++));
+    string title = name;
+    return new DispNode(disp_nr_str, title, answer);
+}
+
 
 // ***************************************************************************
 // erzeugt neuen Display-Knoten und setzt ihn an den im data-Argument
@@ -1651,7 +1664,7 @@ void DataDisp::new_displayOQC (const string& answer, void* data)
 
     // DispNode erzeugen und ggf. disabling-Meldung ausgeben
     string ans = answer;
-    DispNode *dn = new_node(ans);
+    DispNode *dn = new_data_node(ans);
     if (dn == 0)
 	return;
 
@@ -1666,8 +1679,47 @@ void DataDisp::new_displayOQC (const string& answer, void* data)
 
     // in den Graphen einfuegen
     string nr = dn->disp_nr();
-    disp_graph->insert_new (get_positive_nr(nr), dn);
+    disp_graph->insert_new (get_nr(nr), dn);
     refresh_graph_edit();
+}
+
+void DataDisp::new_userOQC (const string& answer, void* data)
+{
+    CallAgainInfo *info = (CallAgainInfo *)data;
+
+    // Unselect all nodes
+    for (GraphNode *gn = disp_graph->firstNode();
+	 gn != 0; gn = disp_graph->nextNode(gn))
+    {
+	BoxGraphNode *bgn = ptr_cast(BoxGraphNode, gn);
+	if (bgn)
+	    bgn->selected() = false;
+    }
+
+    // DispNode erzeugen und ggf. disabling-Meldung ausgeben
+    string ans = answer;
+    DispNode *dn = new_user_node(info->display_expression, ans);
+    if (dn == 0)
+    {
+	delete info;
+	return;
+    }
+
+    // BoxPoint berechnen
+    BoxPoint* p         = info->point_ptr;
+    BoxPoint  box_point =
+	(p == 0 || *p == BoxPoint(-1,-1)) ?
+	disp_graph->default_new_box_point(dn, graph_edit) :
+	(*p);
+    dn->moveTo(box_point);
+    dn->selected() = true;
+
+    // in den Graphen einfuegen
+    string nr = dn->disp_nr();
+    disp_graph->insert_new (get_nr(nr), dn);
+    refresh_graph_edit();
+
+    delete info;
 }
 
 // ***************************************************************************
@@ -1784,7 +1836,7 @@ void DataDisp::new_displaysOQAC (string answers[],
 	else {
 
 	    // DispNode erzeugen und ggf. disabling-Meldung merken
-	    DispNode *dn = new_node(answers[i]);
+	    DispNode *dn = new_data_node(answers[i]);
 	    if (dn == 0)
 		return;
 
@@ -1799,7 +1851,7 @@ void DataDisp::new_displaysOQAC (string answers[],
 
 	    // Insert into graph
 	    string nr = dn->disp_nr();
-	    disp_graph->insert_new (get_positive_nr(nr), dn);
+	    disp_graph->insert_new (get_nr(nr), dn);
 	}
     }
     delete[] answers;
@@ -1813,7 +1865,7 @@ void DataDisp::new_displaysOQAC (string answers[],
 // Den disp-graph auf aktuellen Stand bringen.
 //-----------------------------------------------------------------------------
 
-int DataDisp::add_refresh_display_commands(StringArray& cmds)
+int DataDisp::add_refresh_data_commands(StringArray& cmds)
 {
     string command;
     int initial_size = cmds.size();
@@ -1829,7 +1881,8 @@ int DataDisp::add_refresh_display_commands(StringArray& cmds)
 		 dn != 0;
 		 dn = disp_graph->next(ref))
 	    {
-		cmds += gdb->print_command(dn->name());
+		if (!dn->is_user_command())
+		    cmds += gdb->print_command(dn->name());
 	    }
 	}
 	break;
@@ -1837,6 +1890,24 @@ int DataDisp::add_refresh_display_commands(StringArray& cmds)
     case GDB:
 	cmds += gdb->display_command();
 	break;
+    }
+
+    return cmds.size() - initial_size;
+}
+
+int DataDisp::add_refresh_user_commands(StringArray& cmds)
+{
+    string command;
+    int initial_size = cmds.size();
+
+    command = "";
+    MapRef ref;
+    for (DispNode* dn = disp_graph->first(ref); 
+	 dn != 0;
+	 dn = disp_graph->next(ref))
+    {
+	if (dn->is_user_command())
+	    cmds += dn->user_command();
     }
 
     return cmds.size() - initial_size;
@@ -1861,12 +1932,12 @@ void DataDisp::refresh_displaySQ (Widget origin)
     {
     case GDB:
 	cmds += "info display";
-	add_refresh_display_commands(cmds);
+	add_refresh_data_commands(cmds);
 	break;
 
     case DBX:
     case XDB:
-	add_refresh_display_commands(cmds);
+	add_refresh_data_commands(cmds);
 	break;
     }
 
@@ -1924,25 +1995,41 @@ void DataDisp::refresh_displayOQAC (string answers[],
 // sendet den 'disable display'-Befehl mit den Nummern an den gdb
 // und aktualisiert den disp_graph.
 //
-void DataDisp::disable_displaySQ (int display_nrs[], int count)
+void DataDisp::disable_displaySQ (const IntArray& display_nrs)
 {
-    if (count == 0)
-	return;
-
-    int j;
-    string cmd = "disable display ";
-    for (j = 0; j < count; j++) {
-	cmd += " " + itostring(display_nrs[j]);
-    }
-    bool ok = gdb->send_question (cmd, disable_displayOQC, 0);
-    if (!ok)
-	post_gdb_busy(last_origin);
-    else {
-	for (j = 0; j < count; j++) {
-	    disp_graph->get(display_nrs[j])->disable();
+    int k = 0;
+    string cmd = "disable display";
+    for (int i = 0; i < display_nrs.size(); i++)
+    {
+	if (display_nrs[i] > 0)
+	{
+	    cmd += " " + itostring(display_nrs[i]);
+	    k++;
 	}
-	refresh_graph_edit();
     }
+
+    bool ok = true;
+
+    if (k > 0)
+    {
+	ok = gdb->send_question (cmd, disable_displayOQC, 0);
+	if (!ok)
+	    post_gdb_busy(last_origin);
+    }
+
+    k = 0;
+    for (int i = 0; i < display_nrs.size(); i++)
+    {
+	DispNode *dn = disp_graph->get(display_nrs[i]);
+	if ((ok || dn->is_user_command()) && dn->enabled())
+	{
+	    dn->disable();
+	    k++;
+	}
+    }
+
+    if (k > 0)
+	refresh_graph_edit();
 }
 
 
@@ -1964,19 +2051,40 @@ void DataDisp::disable_displayOQC (const string& answer, void *)
 // sendet den 'enable display'-Befehl mit den Nummern an den gdb
 // und aktualisiert den disp_graph.
 //
-void DataDisp::enable_displaySQ (int display_nrs[], int count)
+void DataDisp::enable_displaySQ (const IntArray& display_nrs)
 {
-    if (count == 0)
-	return;
-
-    int j;
+    int k = 0;
     string cmd = "enable display";
-    for (j = 0; j < count; j++) {
-	cmd += " " + itostring(display_nrs[j]);
+    for (int i = 0; i < display_nrs.size(); i++)
+    {
+	if (display_nrs[i] > 0)
+	{
+	    cmd += " " + itostring(display_nrs[i]);
+	    k++;
+	}
     }
-    bool ok = gdb->send_question (cmd, enable_displayOQC, 0);
-    if (!ok)
-       post_gdb_busy(last_origin);
+
+    bool ok = true;
+
+    if (k > 0)
+    {
+	ok = gdb->send_question (cmd, disable_displayOQC, 0);
+	if (!ok)
+	    post_gdb_busy(last_origin);
+    }
+
+    for (int i = 0; i < display_nrs.size(); i++)
+    {
+	DispNode *dn = disp_graph->get(display_nrs[i]);
+	if (dn->is_user_command() && dn->disabled())
+	{
+	    disp_graph->get(display_nrs[i])->refresh();
+	    k++;
+	}
+    }
+
+    if (k > 0)
+	refresh_graph_edit();
 }
 
 
@@ -2000,32 +2108,35 @@ void DataDisp::enable_displayOQC (const string& answer, void *)
 // sendet den 'delete display'-Befehl mit den Nummern an den gdb
 // und aktualisiert den disp_graph.
 //
-void DataDisp::delete_displaySQ (int display_nrs[], int count)
+void DataDisp::delete_displaySQ (const IntArray& display_nrs)
 {
-    if (count == 0)
-	return;
+    string cmd = "undisplay";
 
-    int j;
-    string cmd = "undisplay ";
-
+    int k = 0;
     switch (gdb->type())
     {
     case GDB:
-	for (j = 0; j < count; j++)
-	    cmd += " " + itostring(display_nrs[j]);
-
+	{
+	    for (int i = 0; i < display_nrs.size(); i++)
+	    {
+		if (display_nrs[i] > 0)
+		{
+		    cmd += " " + itostring(display_nrs[i]);
+		    k++;
+		}
+	    }
+	}
 	break;
 
     case DBX:
     case XDB:
 	{
-	    int c = 0;
-	    for (j = 0; j < count; j++)
+	    for (int i = 0; i < display_nrs.size(); i++)
 	    {
-		DispNode *dn = disp_graph->get(display_nrs[j]);
-		if (dn)
+		DispNode *dn = disp_graph->get(display_nrs[i]);
+		if (dn && !dn->is_user_command())
 		{
-		    if (c++)
+		    if (k++)
 			cmd += ", ";
 		    cmd += " " + dn->name();
 		}
@@ -2034,17 +2145,22 @@ void DataDisp::delete_displaySQ (int display_nrs[], int count)
 	break;
     }
 	
-    bool ok = 
-	!gdb->has_display_command() 
-	|| gdb->send_question (cmd, delete_displayOQC, 0);
+    bool ok = true;
+
+    if (k > 0)
+    {
+	if (gdb->has_display_command())
+	    ok = gdb->send_question (cmd, delete_displayOQC, 0);
+    }
+
     if (!ok)
 	post_gdb_busy(last_origin);
-    else
+
+    for (int i = 0; i < display_nrs.size(); i++)
     {
-	for (j = 0; j < count; j++) {
-	    disp_graph->del (display_nrs[j]);
-	}
-	// refresh_graph_edit();
+	DispNode *dn = disp_graph->get(display_nrs[i]);
+	if (dn != 0 && (ok || dn->is_user_command()))
+	    disp_graph->del(display_nrs[i]);
     }
 }
 
@@ -2157,7 +2273,7 @@ void DataDisp::dependent_displayOQC (const string& answer, void* data)
     }
 
     // DispNode erzeugen und ggf. disabling-Meldung merken
-    DispNode *dn = new_node(ans);
+    DispNode *dn = new_data_node(ans);
     if (dn == 0)
 	return;
 
@@ -2169,7 +2285,7 @@ void DataDisp::dependent_displayOQC (const string& answer, void* data)
 
     // in den Graphen einfuegen
     string nr = dn->disp_nr();
-    disp_graph->insert_dependent (get_positive_nr(nr), dn, old_disp_nr);
+    disp_graph->insert_dependent (get_nr(nr), dn, old_disp_nr);
     refresh_graph_edit();
 }
 
@@ -2339,7 +2455,7 @@ void DataDisp::dependent_displaysOQAC (string answers[],
 
 		// in den Graphen einfuegen
 		string nr = dn->disp_nr();
-		disp_graph->insert_dependent(get_positive_nr(nr), 
+		disp_graph->insert_dependent(get_nr(nr), 
 					     dn, old_disp_nr);
 	    }
 	}
@@ -2396,34 +2512,38 @@ void DataDisp::process_info_display (string& info_display_answer)
 	     k != 0 ; 
 	     k = disp_graph->next_nr(ref))
     {
-	if (!info_disp_string_map.contains (k))
+	DispNode *dn = disp_graph->get(k);
+	if (!dn->is_user_command())
 	{
-	    // Knoten loeschen
-	    disp_graph->del (k);
-	    changed = true;
-	}
-	else
-	{
-	    // Knoten aktualisieren
-	    DispNode* dn = disp_graph->get (k);
-	    if (disp_is_disabled(*(info_disp_string_map.get (k)), gdb))
+	    if (!info_disp_string_map.contains (k))
 	    {
-		if (dn->enabled())
-		{
-		    dn->disable();
-		    changed = true;
-		}
+		// Display is not contained in `display' output
+		disp_graph->del (k);
+		changed = true;
 	    }
 	    else
 	    {
-		if (dn->disabled())
+		// Update values
+		DispNode* dn = disp_graph->get (k);
+		if (disp_is_disabled(*(info_disp_string_map.get (k)), gdb))
 		{
-		    changed = true;
+		    if (dn->enabled())
+		    {
+			dn->disable();
+			changed = true;
+		    }
 		}
-	    }
+		else
+		{
+		    if (dn->disabled())
+		    {
+			changed = true;
+		    }
+		}
 
-	    delete info_disp_string_map.get (k);
-	    info_disp_string_map.del (k);
+		delete info_disp_string_map.get (k);
+		info_disp_string_map.del (k);
+	    }
 	}
     }
 
@@ -2549,28 +2669,35 @@ string DataDisp::process_displays (string& displays,
     MapRef ref;
     for (int k = disp_graph->first_nr(ref); 
 	     k != 0 ; 
-	     k = disp_graph->next_nr(ref)) {
+	     k = disp_graph->next_nr(ref))
+    {
 	DispNode* dn = disp_graph->get(k);
-
-	if (!disp_string_map.contains (k)) {
-	    // Knoten auf disabled setzen, falls nicht schon geschehen
-	    if (dn->enabled()) {
-		dn->disable();
-		changed = true;
+	if (!dn->is_user_command())
+	{
+	    if (!disp_string_map.contains (k))
+	    {
+		// Knoten auf disabled setzen, falls nicht schon geschehen
+		if (dn->enabled())
+		{
+		    dn->disable();
+		    changed = true;
+		}
 	    }
-	}
-	else {
-	    // Knoten aktualisieren
-	    strptr = disp_string_map.get(k);
-	    if ( dn->update (*strptr ))
-		changed = true;
-	    if ( (*strptr != "") && !(strptr->matches (rxwhite)) ) {
-		// hinter dem Display stand noch etwas, was nicht dazu gehoert
-		// z.B. der return Wert bei finish
-		not_my_displays += strptr->after (rxwhite);
+	    else
+	    {
+		// Knoten aktualisieren
+		strptr = disp_string_map.get(k);
+		if ( dn->update (*strptr ))
+		    changed = true;
+		if ((*strptr != "") && !(strptr->matches (rxwhite)))
+		{
+		    // hinter dem Display stand noch etwas, was nicht
+		    // dazu gehoert z.B. der return Wert bei finish
+		    not_my_displays += strptr->after (rxwhite);
+		}
+		delete disp_string_map.get(k);
+		disp_string_map.del (k);
 	    }
-	    delete disp_string_map.get(k);
-	    disp_string_map.del (k);
 	}
     }
 
@@ -2579,6 +2706,31 @@ string DataDisp::process_displays (string& displays,
 	refresh_graph_edit();
 
     return not_my_displays;
+}
+
+
+void DataDisp::process_user (StringArray& answers)
+{
+    int i = 0;
+
+    bool changed = false;
+    MapRef ref;
+    for (int k = disp_graph->first_nr(ref); 
+	     k != 0 ; 
+	     k = disp_graph->next_nr(ref))
+    {
+	DispNode* dn = disp_graph->get(k);
+
+	if (dn->is_user_command())
+	{
+	    string answer = answers[i++];
+	    if (dn->update(answer))
+		changed = true;
+	}
+    }
+
+    if (changed) 
+	refresh_graph_edit();
 }
 
 

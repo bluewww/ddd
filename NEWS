@@ -1,50 +1,58 @@
 Changes in DDD						-*- text -*-
 **************
 
-DDD 2.1 (in development)
-------------------------
+DDD 2.1 [in development; scheduled for April, 1997]
+---------------------------------------------------
 
-    DDD 2.1 brings a further improved user interface and several bug
-    fixes.
+    DDD 2.1 brings a further improved user interface, some new
+    features, and several bug fixes.
 
     User-visible changes to DDD 2.0:
+    - Command displays.  You can now view the output of a debugger
+      command in the data window, using "graph display `COMMAND`".
+      For instance, "graph display `info locals`" creates a display
+      showing the local variables.  [work in progress]
     - Button tips.  Moving the mouse pointer over a button causes a
       small hint window to raise.  This feature is also known as
       `toolbar tips' or `button help'.  (optional)
     - Value tips.  Moving the mouse pointer over a variable causes a
-      small window to raise showing the current variable value.
-      (optional)
-    - The same information shown in the tips is also displayed in the
-      status line.
+      small window to raise showing the current variable value.  (optional)
+    - The info shown in the tips is also displayed in the status line.
     - The status line has moved to the bottom.  (can be restored)
-    - Floating-point registers can be displayed.
+    - The register window can display floating-point registers.
     - The `Preferences' panel has been extended and reworked:
       + Button tips and Value tips can be enabled and disabled.
-      + The tab width can now be changed at run time.
+      + Tab width and grid size can now be changed at run time.
       + You can choose at run time whether command buttons should 
         be placed in the command tool (as in DDD 2.0) or in the 
         source window (as in DDD 1.x).
-      + You can reset the DDD preferences to the previously saved settings.
+      + You can reset the DDD preferences to the least recently saved
+	settings.
     - The `Break' button is now named `Interrupt' (as in DDD 1.x), to
       avoid confusion with the `Break At' button.  The `Quit' menu
       item is now named `Abort', to avoid confusion with the `Exit'
       menu item (which issues a `quit' command).
-    - DBX settings can now be viewed and changed at run time.
+    - DBX settings can now be viewed and changed at run time, using
+      the `Settings' panel.
     - Reading the VSL library is now realized as a background job.
+      Much faster startup time.
     - In the data window, the middle mouse button now toggles 
       the display selection instead of simply extending it.
-    - If the debugged program is interrupted while grabbing the
-      pointer (while being in a popup menu or in a modal dialog, for
-      instance), DDD will automatically make the program ungrab it.
-    - Several single-letter options like `-d DIR' are now passed down to the
-      inferior debugger.
+    - No more display freezes.  If the debugged program is interrupted
+      while grabbing the pointer (while being in a popup menu or in a
+      modal dialog, for instance), DDD will automatically make the
+      program ungrab it.
+
+    Documentation:
+    - The PostScript copy of the manual has been enriched with several
+      color pictures showing DDD usage.  [work in progress]
 
     Changes in configuration and building:
     - DDD 2.1 uses improved configuration checks from Autoconf 2.11.
     - DDD no longer installs in the `gcc' location by default, but in
       an existing DDD location; otherwise, in `/usr/local/bin'.
     - Improved means of determining builder's e-mail address.
-    - Beta releases expire after a few months.
+    - Beta releases and DDD snapshots expire after a few months.
 
     Bug fixes:
     - Using DBX, comments were stripped from source code under certain
@@ -54,9 +62,20 @@ DDD 2.1 (in development)
     - With DBX, the current source line was omitted from the listing
       under certain circumstances.  Fixed.
     - `Help on Version' no longer includes the entire DDD configuration.
+    - Several single-letter options like `-d DIR' are now passed down to the
+      inferior debugger.
     - Buttons ending in `...' insert their name, followed by a space.
     - Line continuations (i.e. lines ending in `\') are properly handled.
     - The `vsl' and `test-graph' programs can again be built.
+    - And, again, dozens of minor bug fixes and improvements.
+
+    Release policy:
+    - Due to the large amount of work, we make new DDD releases only every
+      six months or so.  If you found a bug and fixed it for us or
+      just reported it to us so we could fix it, then this release
+      scheme may not be good enough for you.  Therefore, we now also
+      have a daily snapshot of our CVS repository.  See the DDD WWW
+      page at `http://www.cs.tu-bs.de/softech/ddd/' for details.
 
 
 DDD 2.0
@@ -180,6 +199,14 @@ DDD 2.0
       are properly handled.  (When seeing `--More--', DDD hits the
       space key.)
     - And, of course, hundreds of minor bug fixes and improvements.
+
+    Release policy:
+    - Before every new feature release (like this one), we shall make
+      beta releases publicly available.  They are named like the major
+      release, but have `beta' and a number appended.  For instance,
+      this release was preceded by `ddd-2.0beta1', `ddd-2.0beta2', and
+      so on.  Beta releases will be announced in DDD mailing lists
+      only.
 
 
 DDD 1.4d

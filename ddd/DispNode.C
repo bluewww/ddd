@@ -39,6 +39,7 @@ char DispNode_rcsid[] =
 
 //-----------------------------------------------------------------------------
 
+#include "cook.h"
 #include "DispNode.h"
 #include "CompositeB.h"
 
@@ -96,6 +97,20 @@ DispNode::~DispNode()
 	delete disp_box;
 }
 
+// ***************************************************************************
+// User-defined commands
+bool is_user_command(const string& s)
+{
+    return s.length() > 0 && s[0] == '`' && s[s.length() - 1] == '`';
+}
+
+string user_command(const string& s)
+{
+    if (is_user_command(s))
+	return _unquote(s);
+    else
+	return "";
+}
 
 // ***************************************************************************
 void DispNode::addHandler (unsigned    type,
@@ -123,7 +138,7 @@ bool DispNode::update(string& value)
     bool changed = false;
     bool inited  = false;
 
-    if (!myenabled) { //Display wurde (automatisch) eingeschaltet
+    if (!myenabled) { // Display wurde (automatisch) eingeschaltet
 	myenabled = true;
 	handlers.call(DispNode_Disabled, this, (void*)false);
 	changed = true;

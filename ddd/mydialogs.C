@@ -120,9 +120,12 @@ void setLabelList (Widget  selectionList,
 }
 
 // ***************************************************************************
-// Get the display numbers in a NULL-terminated list
-int *getDisplayNumbers(Widget selectionList)
+// Fill the display numbers in DISP_NRS
+void getDisplayNumbers(Widget selectionList, IntArray& disp_nrs)
 {
+    static IntArray empty;
+    disp_nrs = empty;
+
     XmStringTable selected_items;
     int selected_items_count;
 
@@ -131,9 +134,6 @@ int *getDisplayNumbers(Widget selectionList)
 		  XmNselectedItems, &selected_items,
 		  NULL);
 
-    int *disp_nrs = new int[selected_items_count + 1];
-
-    int j = 0;
     for (int i = 0; i < selected_items_count; i++)
     {
 	String _item;
@@ -141,13 +141,9 @@ int *getDisplayNumbers(Widget selectionList)
 	string item(_item);
 	XtFree(_item);
 
-	int disp_nr = get_positive_nr(item);
-	if (disp_nr > 0)
-	    disp_nrs[j++] = disp_nr;
+	if (item.contains(rxint, 0))
+	    disp_nrs += get_nr(item);
     }
-
-    disp_nrs[j] = 0;
-    return disp_nrs;
 }
 
 // ***************************************************************************

@@ -62,6 +62,7 @@
 #include "VSEFlags.h"
 #include "VSLLib.h"
 #include "Delay.h"
+#include "IntArray.h"
 
 // DDD includes
 #include "ArgField.h"
@@ -150,7 +151,8 @@ class DataDisp {
     static DispValue *selected_value();
     static DispNode  *selected_node();
 
-    static DispNode  *new_node(string& answer);
+    static DispNode  *new_data_node(string& answer);
+    static DispNode  *new_user_node(const string& name, string& answer);
 
 public:
     static void set_delay ();
@@ -204,17 +206,14 @@ public:
     // Refresh displays.  Sends `info display' and `display' to GDB.
     static void refresh_displaySQ   (Widget origin = 0);
 
-    // Disable displays given in DISPLAY_NRS; COUNT is number of
-    // elements in DISPLAY_NRS.  Sends `disable display' to GDB.
-    static void disable_displaySQ   (int display_nrs[], int count);
+    // Disable displays given in DISPLAY_NRS.  Sends `disable display' to GDB.
+    static void disable_displaySQ   (const IntArray& display_nrs);
 
-    // Enable displays given in DISPLAY_NRS; COUNT is number of
-    // elements in DISPLAY_NRS.  Sends `enable display' to GDB.
-    static void enable_displaySQ    (int display_nrs[], int count);
+    // Enable displays given in DISPLAY_NRS.  Sends `enable display' to GDB.
+    static void enable_displaySQ    (const IntArray& display_nrs);
 
-    // Delete displays given in DISPLAY_NRS; COUNT is number of
-    // elements in DISPLAY_NRS.  Sends `delete display' to GDB.
-    static void delete_displaySQ    (int display_nrs[], int count);
+    // Delete displays given in DISPLAY_NRS.  Sends `delete display' to GDB.
+    static void delete_displaySQ    (const IntArray& display_nrs);
 
     // Create a new display for DISPLAY_EXPRESSION dependent on
     // DISP_NR.  Sends a `display' command to GDB.
@@ -228,8 +227,11 @@ public:
     // (non-display) output is returned.  If DISABLING_OCCURRED is set
     // after the call, some displays have been disabled and a
     // `display' command must be re-sent to GDB.
-    static string process_displays  (string& display_answer,
-				     bool& disabling_occurred);
+    static string process_displays(string& display_answer,
+				   bool& disabling_occurred);
+
+    // Process user-defined command output in DISPLAY_ANSWER.
+    static void process_user(StringArray& answers);
 
 private:
     // Call me back again
@@ -243,6 +245,8 @@ private:
 				      void*  qu_datas[],
 				      int    count, 
 				      void*  data);
+
+    static void new_userOQC          (const string& answer, void* data);
 
     static void dependent_displayOQC       (const string& answer, void* data);
     static void dependent_display_extraOQC (const string& answer, void* data);
@@ -298,7 +302,8 @@ public:
     static void refresh_graph_edit ();
 
     // Command(s) to re-print all displays; return # of commands
-    static int add_refresh_display_commands(StringArray& cmds);
+    static int add_refresh_data_commands(StringArray& cmds);
+    static int add_refresh_user_commands(StringArray& cmds);
 
     // Callbacks for menu bar
     static void EditDisplaysCB(Widget, XtPointer, XtPointer);

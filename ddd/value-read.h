@@ -45,9 +45,11 @@ enum DispValueType {
     Simple,			// Ordinary or other value
     Pointer,			// Pointer value
     Array,			// Array
-    StructOrClass,		// `struct' or `class'
-    BaseClass,			// C++ Base class member
-    Reference			// C++ Reference
+    StructOrClass,		// Struct, Class, Record, Object
+    BaseClass,			// C++ base class member
+    Reference,			// C++ Reference.  2 children.
+    List,			// List of values.  Last member may be text,
+    Text			// Multi-line text.  Last member of a list.
 };
 
 DispValueType determine_type (string value);

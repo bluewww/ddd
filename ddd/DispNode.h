@@ -53,6 +53,9 @@ const unsigned DispNode_Disabled   = 0;
 
 const unsigned DispNode_NTypes  = DispNode_Disabled + 1;
 
+bool is_user_command(const string& s);
+string user_command(const string& s);
+
 //-----------------------------------------------------------------------------
 // Die Klasse DispNode
 //-----------------------------------------------------------------------------
@@ -74,10 +77,13 @@ public:
     // Destructor
     ~DispNode();
 
-    string  disp_nr()  const { return mydisp_nr; }
-    string  name()     const { return myname; }
+    const string& disp_nr()  const { return mydisp_nr; }
+    const string& name()     const { return myname; }
     bool enabled()  const { return myenabled; }
     bool disabled() const { return !myenabled; }
+
+    bool is_user_command() const { return ::is_user_command(name()); }
+    string user_command() const  { return ::user_command(name()); }
 
     BoxGraphNode* nodeptr() const { return mynodeptr; }
     const Box*    box()     const { return mynodeptr->box(); }

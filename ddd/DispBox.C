@@ -39,13 +39,18 @@ char DispBox_rcsid[] =
 
 #include "assert.h"
 #include "DispBox.h"
+#include "DispNode.h"
 #include "strclass.h"
 #include "bool.h"
 #include "cook.h"
 #include "ddd.h"
 #include "status.h"
 #include "shorten.h"
+#include "string-fun.h"
+#include "tabs.h"
 #include "version.h"
+
+#include <ctype.h>
 
 
 
@@ -81,8 +86,23 @@ DispBox::DispBox (string disp_nr,
 
     // Create display
     VSLArg args[3];
-    args[0] = disp_nr;
-    args[1] = tag (title);
+    if (is_user_command(title))
+    {
+	// User command: use EXPR
+	title = user_command(title);
+	if (title.contains("info ", 0))
+	    title = title.after("info ");
+	if (title.length() > 0)
+	    title = toupper(title[0]) + title.after(0);
+
+	args[0] = tag(title);
+    }
+    else
+    {
+	// Normal title: use NUMBER: EXPR
+	args[0] = disp_nr;
+	args[1] = tag(title);
+    }
 
     title_box = eval("title", args);
     
@@ -181,6 +201,34 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
 	    vbox = eval("simple_value", dv->value());
 	break;
 
+    case Text:
+	if (dv->collapsed())
+	    vbox = eval("collapsed_text_value");
+	else
+	{
+	    string v = dv->value();
+	    read_leading_blanks(v);
+	    strip_final_blanks(v);
+	    untabify(v);
+
+	    int n = v.freq('\n');
+	    string *lines = new string[n + 1];
+	    split(v, lines, n + 1, '\n');
+
+	    ListBox *args = new ListBox;
+	    for (int i = 0; i < n + 1; i++)
+	    {
+		if (lines[i] == "")
+		    lines[i] = " ";
+		*args += eval("text_line", lines[i]);
+	    }
+	    vbox = eval("text_value", args);
+
+	    args->unlink();
+	    delete[] lines;
+	}
+	break;
+
     case Pointer:
 	if (dv->collapsed())
 	    vbox = eval("collapsed_pointer_value");
@@ -209,34 +257,47 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
 	}
 	break;
 
+    case List:
     case StructOrClass:
     case BaseClass:
-	if (dv->collapsed())
-	    vbox = eval("collapsed_struct_value");
-	else
 	{
-	    int count = dv->number_of_childs();
+	    String collapsed_value = (dv->type() == List ? 
+				      "collapsed_list_value" :
+				      "collapsed_struct_value");
+	    String member_name     = (dv->type() == List ? 
+				      "list_member_name" :
+				      "struct_member_name");
+	    String value           = (dv->type() == List ? 
+				      "list_value" :
+				      "struct_value");
 
-	    // Determine maximum member name width
-	    int max_member_name_width = 0;
-	    int i;
-	    for (i = 0; i < count; i++)
+	    if (dv->collapsed())
+		vbox = eval(collapsed_value);
+	    else
 	    {
-		string child_member_name = dv->get_child(i)->name();
-		Box *box = eval("struct_member_name", child_member_name);
-		max_member_name_width = 
-		    max(max_member_name_width, box->size(X));
-	        box->unlink();
+		int count = dv->number_of_childs();
+
+		// Determine maximum member name width
+		int max_member_name_width = 0;
+		int i;
+		for (i = 0; i < count; i++)
+		{
+		    string child_member_name = dv->get_child(i)->name();
+		    Box *box = eval(member_name, child_member_name);
+		    max_member_name_width = 
+			max(max_member_name_width, box->size(X));
+		    box->unlink();
+		}
+
+		// Create children
+		ListBox* args = new ListBox;
+		for (i = 0; i < count; i++)
+		    *args += create_value_box(dv->get_child(i), 
+					      max_member_name_width);
+
+		vbox = eval(value, args);
+		args->unlink();
 	    }
-
-	    // Create children
-	    ListBox* args = new ListBox;
-	    for (i = 0; i < count; i++)
-		*args += create_value_box(dv->get_child(i), 
-					  max_member_name_width);
-
-	    vbox = eval("struct_value", args);
-	    args->unlink();
 	}
 	break;
 
@@ -253,20 +314,32 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
 	    args->unlink();
 	}
 	break;
-
-    default:
-	// Illegal type
-	assert (0);
-	break;
     }
 
     // Add member name
-    if (dv->depth() > 0 && 
-	(dv->parent()->type() == StructOrClass || 
-	 dv->parent()->type() == BaseClass))
+    if (dv->depth() > 0)
     {
-	vbox = eval("struct_member", dv->name(), vbox->link(), 
-		    member_name_width);
+	switch (dv->parent()->type())
+	{
+	case List:
+	    if (dv->type() != Text)
+		vbox = eval("list_member", dv->name(), vbox->link(), 
+			    member_name_width);
+	    break;
+
+	case StructOrClass:
+	case BaseClass:
+	    vbox = eval("struct_member", dv->name(), vbox->link(), 
+			member_name_width);
+	    break;
+
+	case Array:
+	case Reference:
+	case Simple:
+	case Text:
+	case Pointer:
+	    break;
+	}
     }
 
     Data* data = (Data *)dv;

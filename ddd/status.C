@@ -149,9 +149,13 @@ void set_buttons_from_gdb(Widget buttons, string& text)
 
 void SelectCB(Widget dialog, XtPointer, XtPointer)
 {
-    int *numbers = getDisplayNumbers(gdb_selection_list_w);
-    string choice = itostring(numbers[0]);
-    delete[] numbers;
+    IntArray numbers;
+    getDisplayNumbers(gdb_selection_list_w, numbers);
+    string choice;
+    if (numbers.size() > 0)
+	choice = itostring(numbers[0]);
+    else
+	choice = "0";
 
     // clog << quote(choice) << "\n";
 

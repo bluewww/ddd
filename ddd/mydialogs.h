@@ -43,13 +43,14 @@
 // DDD includes
 #include "strclass.h"
 #include "bool.h"
+#include "IntArray.h"
 
 // Create a display selection list
 Widget createDisplaySelectionList (Widget parent, String name,
 				   ArgList args, Cardinal num_args);
 
 // Get the display numbers
-int *getDisplayNumbers(Widget selectionList);
+void getDisplayNumbers(Widget selectionList, IntArray& arr);
 
 
 // Set the elements of the display selection list
