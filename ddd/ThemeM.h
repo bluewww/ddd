@@ -67,7 +67,8 @@ public:
     // Assignment
     ThemeManager& operator = (const ThemeManager& t)
     {
-	map = t.map;
+        if (this != &t)
+	  map = t.map;
 	return *this;
     }
 

@@ -179,11 +179,13 @@ struct GraphEditPositionChangedInfo {
     GraphEditPositionChangedInfo& 
         operator = (const GraphEditPositionChangedInfo& info)
     {
-	graph        = info.graph;
-	node         = info.node;
-	old_position = info.old_position;
-	new_position = info.new_position;
-	is_last      = info.is_last;
+        if (this != &info) {
+	  graph        = info.graph;
+	  node         = info.node;
+	  old_position = info.old_position;
+	  new_position = info.new_position;
+	  is_last      = info.is_last;
+	}
 	return *this;
     }
 };
@@ -205,11 +207,13 @@ struct GraphEditPreSelectionInfo {
     GraphEditPreSelectionInfo& 
         operator = (const GraphEditPreSelectionInfo& info)
     {
-	graph        = info.graph;
-	node         = info.node;
-	event        = info.event;
-	double_click = info.double_click;
-	doit         = info.doit;
+        if (this != &info) {
+	  graph        = info.graph;
+	  node         = info.node;
+	  event        = info.event;
+	  double_click = info.double_click;
+	  doit         = info.doit;
+	}
 	return *this;
     }
 };
@@ -230,9 +234,11 @@ struct GraphEditLayoutInfo {
     GraphEditLayoutInfo& 
         operator = (const GraphEditLayoutInfo& info)
     {
-	graph    = info.graph;
-	mode     = info.mode;
-	rotation = info.rotation;
+        if (this != &info) {
+	  graph    = info.graph;
+	  mode     = info.mode;
+	  rotation = info.rotation;
+	}
 	return *this;
     }
 };
@@ -258,10 +264,12 @@ struct GraphEditCompareNodesInfo {
     GraphEditCompareNodesInfo& 
         operator = (const GraphEditCompareNodesInfo& info)
     {
-        graph  = info.graph;
-	node1  = info.node1;
-	node2  = info.node2;
-	result = info.result;
+        if (this != &info) {
+	  graph  = info.graph;
+	  node1  = info.node1;
+	  node2  = info.node2;
+	  result = info.result;
+	}
 	return *this;
     }
 };

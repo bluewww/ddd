@@ -67,7 +67,9 @@ public:
 
     UndoBufferEntry& operator = (const UndoBufferEntry& entry)
     {
-	StringStringAssoc::operator = (entry);
+        if ( &entry != this ) {
+	  StringStringAssoc::operator = (entry);
+	}
 	return *this;
     }
 

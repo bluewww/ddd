@@ -78,8 +78,10 @@ public:
     // Assignment
     ThemePattern& operator = (const ThemePattern& t)
     {
-	_patterns = t.patterns();
-	_active   = t.active();
+        if (this != &t) {
+	  _patterns = t.patterns();
+	  _active   = t.active();
+	}
 	return *this;
     }
 

@@ -70,6 +70,7 @@ public:
 
     BoxEdgeAnnotation& operator=(const BoxEdgeAnnotation& src)
     {
+      if (this != &src) {
 	Box *new_box = 0;
 	if (src._box != 0)
 	    new_box = src._box->dup();
@@ -78,7 +79,8 @@ public:
 	    _box->unlink();
 	_box = new_box;
 
-	return *this;
+      }
+      return *this;
     }
 
     // Duplication

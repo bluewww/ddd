@@ -109,8 +109,10 @@ public:
     // Assignment
     VarArray<T>& operator = (const VarArray<T>& m)
     { 
-	DynArray<T>::operator = (m);
-	_size = m.size();
+        if (this != &m) {
+	  DynArray<T>::operator = (m);
+	  _size = m.size();
+	}
 	return *this;
     }
 

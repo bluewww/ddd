@@ -147,10 +147,12 @@ public:
 	assert(OK());
 	assert(m.OK());
 
-	// Make sure a = a works
-	XmString tmp = XmStringCopy(m._mstring);
-	XmStringFree(_mstring);
-	_mstring = tmp;
+	if ( this != &m ) { 
+	  // Make sure a = a works
+	  XmString tmp = XmStringCopy(m._mstring);
+	  XmStringFree(_mstring);
+	  _mstring = tmp;
+	}
 
 	return *this;
     }

@@ -55,9 +55,11 @@ struct CodeCacheEntry {
     {}
     CodeCacheEntry& operator = (const CodeCacheEntry& cce)
     {
-	start = cce.start;
-	end   = cce.end;
-	code  = cce.code;
+        if (this != &cce){
+	  start = cce.start;
+	  end   = cce.end;
+	  code  = cce.code;
+	}
 	return *this;
     }
     bool operator == (const CodeCacheEntry& cce)

@@ -232,7 +232,8 @@ public:
     }
     AssocMark<K,V>& operator = (const AssocMark<K,V>& mark)
     {
-	rec = mark.rec;
+        if (this != &mark)
+	  rec = mark.rec;
 	return *this;
     }
 };
@@ -259,7 +260,8 @@ public:
     }
     AssocIter<K,V>& operator = (const AssocIter<K,V>& iter)
     {
-	AssocMark<K,V>::operator = (iter);
+        if (this != &iter)
+	  AssocMark<K,V>::operator = (iter);
 	return *this;
     }
 
@@ -329,7 +331,9 @@ public:
     // Assignment
     Assoc<K, V>& operator = (const Assoc<K, V>& m)
     {
-	_Assoc<K, V>::operator =(m);
+        if (this != &m) {
+	  _Assoc<K, V>::operator =(m);
+	}
 	return *this;
     }
 };

@@ -112,6 +112,7 @@ public:
 
     VSLArg& operator = (const VSLArg& arg)
     {
+      if (this != &arg){
 	if (arg.box() != _box)
 	{
 	    if (_box)
@@ -119,7 +120,8 @@ public:
 
 	    _box = arg.box() ? arg.box()->link() : 0;
 	}
-	return *this;
+      }
+      return *this;
     }
 };
 
