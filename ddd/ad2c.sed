@@ -33,9 +33,8 @@ n
 # just like "read" only does not add leading quote
 /^!/d
 /^$/d
-# s/\\\\/\\/g
-s/\\n/\\\\n/g
-s/\\t/\\\\t/g
-s/\\f/\\\\f/g
-s/\\b/\\\\b/g
+s/\\/\\\\/g
+s/\\$//g
+s/"/\\"/g
+s/'/\\'/g
 b test
