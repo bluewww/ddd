@@ -7996,16 +7996,42 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
     return True;		// all done
 }
 
+// Return position POS of glyph GLYPH in X/Y.  Return true iff displayed.
+bool SourceView::glyph_pos_to_xy(Widget glyph, XmTextPosition pos,
+				 Position& x, Position& y)
+{
+    assert (is_source_widget(glyph) || is_code_widget(glyph));
+
+    if (pos == XmTextPosition(-1))
+	return false;		// Not displayed
+
+    Widget text_w;
+    if (is_source_widget(glyph))
+	text_w = source_text_w;
+    else
+	text_w = code_text_w;
+
+    Boolean pos_displayed = XmTextPosToXY(text_w, pos, &x, &y);
+
+    if (pos_displayed && y > 1000)
+    {
+	// Weird stuff.  LessTif bug?
+	(void) XmTextPosToXY(text_w, pos, &x, &y);
+    }
+
+    return pos_displayed;
+}
+
+
 // Map stop sign GLYPH at position POS.  Get widget from STOPS[COUNT];
 // store location in POSITIONS.  Return mapped widget (0 if none)
 Widget SourceView::map_stop_at(Widget glyph, XmTextPosition pos,
 			       WidgetArray& stops, int& count,
 			       TextPositionArray& positions)
 {
-    assert (is_source_widget(glyph) || is_code_widget(glyph));
-
     Position x, y;
-    Boolean pos_displayed = XmTextPosToXY(glyph, pos, &x, &y);
+    bool pos_displayed = glyph_pos_to_xy(glyph, pos, x, y);
+
     if (pos_displayed)
     {
 	while (stops[count] == 0)
@@ -8054,8 +8080,7 @@ Widget SourceView::map_arrow_at(Widget glyph, XmTextPosition pos)
     assert (is_source_widget(glyph) || is_code_widget(glyph));
 
     Position x, y;
-    Boolean pos_displayed = (pos != XmTextPosition(-1) 
-			     && XmTextPosToXY(glyph, pos, &x, &y));
+    bool pos_displayed = glyph_pos_to_xy(glyph, pos, x, y);
 
     int k = int(is_code_widget(glyph));
 
@@ -8148,8 +8173,7 @@ Widget SourceView::map_drag_stop_at(Widget glyph, XmTextPosition pos,
     assert (is_source_widget(glyph) || is_code_widget(glyph));
 
     Position x, y;
-    Boolean pos_displayed = 
-	(pos != XmTextPosition(-1) && XmTextPosToXY(glyph, pos, &x, &y));
+    bool pos_displayed = glyph_pos_to_xy(glyph, pos, x, y);
 
     int k = int(is_code_widget(glyph));
 
@@ -8231,9 +8255,9 @@ Widget SourceView::map_drag_arrow_at(Widget glyph, XmTextPosition pos,
 				     Widget origin)
 {
     assert (is_source_widget(glyph) || is_code_widget(glyph));
+
     Position x, y;
-    Boolean pos_displayed = (pos != XmTextPosition(-1) 
-			     && XmTextPosToXY(glyph, pos, &x, &y));
+    bool pos_displayed = glyph_pos_to_xy(glyph, pos, x, y);
 
     int k = int(is_code_widget(glyph));
 
