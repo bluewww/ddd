@@ -301,6 +301,7 @@ MMDesc SourceView::text_popup[] =
 
 #include "icons/glyphs/arrow.xbm"
 #include "icons/glyphs/greyarrow.xbm"
+#include "icons/glyphs/pastarrow.xbm"
 #include "icons/glyphs/signalarrow.xbm"
 #include "icons/glyphs/dragarrow.xbm"
 #include "icons/glyphs/stop.xbm"
@@ -3074,6 +3075,8 @@ SourceView::SourceView(Widget parent)
 		 "plain_arrow");
     InstallImage(grey_arrow_bits, grey_arrow_width, grey_arrow_height, 
 		 "grey_arrow");
+    InstallImage(past_arrow_bits, past_arrow_width, past_arrow_height, 
+		 "past_arrow");
     InstallImage(signal_arrow_bits, signal_arrow_width, signal_arrow_height, 
 		 "signal_arrow");
     InstallImage(drag_arrow_bits, drag_arrow_width, drag_arrow_height, 
@@ -4135,7 +4138,7 @@ void SourceView::add_position_to_history(const string& file_name, int line,
 
 // Lookup entry from position history
 void SourceView::goto_entry(const string& file_name, int line, 
-			    const string& address)
+			    const string& address, bool exec_pos)
 {
     // Show position in status line
     string msg = "";
@@ -4169,9 +4172,16 @@ void SourceView::goto_entry(const string& file_name, int line,
 
 	if (is_current_file(file_name) && line > 0 && line <= line_count)
 	{
-	    XmTextPosition pos = pos_of_line(line);
-	    int indent = indent_amount(source_text_w, pos);
-	    SetInsertionPosition(source_text_w, pos + indent, true);
+	    if (exec_pos)
+	    {
+		_show_execution_position(file_name, line, true, true);
+	    }
+	    else
+	    {
+		XmTextPosition pos = pos_of_line(line);
+		int indent = indent_amount(source_text_w, pos);
+		SetInsertionPosition(source_text_w, pos + indent, true);
+	    }
 	}
     }
 
@@ -4179,7 +4189,7 @@ void SourceView::goto_entry(const string& file_name, int line,
     {
 	// Lookup address
 	show_pc(address, 
-		address == last_execution_pc ? 
+		(exec_pos || address == last_execution_pc) ? 
 		XmHIGHLIGHT_SELECTED : XmHIGHLIGHT_NORMAL);
     }
 }
@@ -7317,6 +7327,7 @@ int SourceView::multiple_stop_x_offset = stop_width;
 // Glyph locations: x[0] is source, x[1] is code
 Widget SourceView::plain_arrows[2]  = {0, 0};
 Widget SourceView::grey_arrows[2]   = {0, 0};
+Widget SourceView::past_arrows[2]   = {0, 0};
 Widget SourceView::signal_arrows[2] = {0, 0};
 Widget SourceView::drag_arrows[2]   = {0, 0};
 
@@ -7349,6 +7360,16 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 
 	if (form_w == 0)
 	    continue;
+
+	if (past_arrows[k] == 0)
+	{
+	    past_arrows[k] = 
+		create_glyph(form_w, "past_arrow",
+			     past_arrow_bits, 
+			     past_arrow_width, 
+			     past_arrow_height);
+	    return False;
+	}
 
 	if (plain_arrows[k] == 0)
 	{
@@ -7577,8 +7598,10 @@ Widget SourceView::map_arrow_at(Widget glyph, XmTextPosition pos)
     Widget& signal_arrow = signal_arrows[k];
     Widget& plain_arrow  = plain_arrows[k];
     Widget& grey_arrow   = grey_arrows[k];
+    Widget& past_arrow   = past_arrows[k];
 
-    while (signal_arrow == 0 || plain_arrow == 0 || grey_arrow == 0)
+    while (signal_arrow == 0 || plain_arrow == 0 || 
+	   grey_arrow == 0 || past_arrow == 0)
     {
 	if (CreateGlyphsWorkProc(0))
 	    break;
@@ -7586,11 +7609,20 @@ Widget SourceView::map_arrow_at(Widget glyph, XmTextPosition pos)
 
     if (pos_displayed)
     {
-	if (at_lowest_frame && signal_received)
+	if (!position_history.at_last_exec_pos())
+	{
+	    map_glyph(past_arrow, x + arrow_x_offset, y);
+	    unmap_glyph(grey_arrow);
+	    unmap_glyph(signal_arrow);
+	    unmap_glyph(plain_arrow);
+	    return past_arrow;
+	}
+	else if (at_lowest_frame && signal_received)
 	{
 	    map_glyph(signal_arrow, x + arrow_x_offset, y);
 	    unmap_glyph(plain_arrow);
 	    unmap_glyph(grey_arrow);
+	    unmap_glyph(past_arrow);
 	    return signal_arrow;
 	}
 	else if (at_lowest_frame)
@@ -7598,6 +7630,7 @@ Widget SourceView::map_arrow_at(Widget glyph, XmTextPosition pos)
 	    map_glyph(plain_arrow, x + arrow_x_offset, y);
 	    unmap_glyph(signal_arrow);
 	    unmap_glyph(grey_arrow);
+	    unmap_glyph(past_arrow);
 	    return plain_arrow;
 	}
 	else
@@ -7605,6 +7638,7 @@ Widget SourceView::map_arrow_at(Widget glyph, XmTextPosition pos)
 	    map_glyph(grey_arrow, x + arrow_x_offset, y);
 	    unmap_glyph(signal_arrow);
 	    unmap_glyph(plain_arrow);
+	    unmap_glyph(past_arrow);
 	    return grey_arrow;
 	}
     }
@@ -7613,6 +7647,7 @@ Widget SourceView::map_arrow_at(Widget glyph, XmTextPosition pos)
 	unmap_glyph(signal_arrow);
 	unmap_glyph(plain_arrow);
 	unmap_glyph(grey_arrow);
+	unmap_glyph(past_arrow);
     }
     return 0;
 }
@@ -8185,7 +8220,7 @@ void SourceView::dragGlyphAct(Widget glyph, XEvent *e, String *params,
     int k;
     for (k = 0; k < 2; k++)
     {
-	if (glyph == grey_arrows[k])
+	if (glyph == grey_arrows[k] || glyph == past_arrows[k])
 	{
 	    // Cannot drag last execution position
 	    return;
@@ -8297,6 +8332,7 @@ void SourceView::dropGlyphAct (Widget glyph, XEvent *e,
     int k;
     for (k = 0; k < 2; k++)
 	if (glyph == grey_arrows[k] || 
+	    glyph == past_arrows[k] ||
 	    glyph == drag_stops[k] || 
 	    glyph == drag_conds[k] || 
 	    glyph == drag_temps[k] || 
@@ -8445,6 +8481,7 @@ void SourceView::log_glyphs()
 
 	log_glyph(plain_arrows[k]);
 	log_glyph(grey_arrows[k]);
+	log_glyph(past_arrows[k]);
 	log_glyph(signal_arrows[k]);
 	log_glyph(drag_arrows[k]);
 

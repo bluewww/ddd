@@ -916,6 +916,7 @@ Ddd*no_debugger_dialog*foreground: STOP_COLOR
 ! Glyph colors
 Ddd*plain_arrow.foreground:  RUN_COLOR
 Ddd*grey_arrow.foreground:   RUN_COLOR
+Ddd*past_arrow.foreground:   RUN_COLOR
 Ddd*signal_arrow.foreground: STOP_COLOR
 
 Ddd*plain_stop.foreground:   STOP_COLOR
@@ -953,6 +954,7 @@ Ddd*graph_edit.outlineColor:	DISABLED_COLOR
 
 Ddd*plain_arrow.labelPixmap:	plain_arrow
 Ddd*grey_arrow.labelPixmap:	grey_arrow
+Ddd*past_arrow.labelPixmap:	past_arrow
 Ddd*temp_arrow.labelPixmap:	temp_arrow
 Ddd*signal_arrow.labelPixmap:	signal_arrow
 
@@ -4322,6 +4324,7 @@ Ddd*code_form_w.XmPushButton.marginHeight:	   0
 Ddd*code_form_w.XmPushButton.marginWidth:	   0
 Ddd*code_form_w.XmPushButton.borderWidth:	   0
 
+! Plain arrows
 Ddd*source_form_w.plain_arrow*helpString: \
 STRONG(Current Execution Position)\n\
 The plain arrow shows the current execution position in the lowest frame.\n\
@@ -4342,6 +4345,7 @@ Ddd*code_form_w.plain_arrow*tipString: \
 Ddd*code_form_w.plain_arrow*documentationString: \
 @rm Current program counter (drag to change)
 
+! Grey arrows
 Ddd*source_form_w.grey_arrow*helpString: \
 STRONG(Last Execution Position)\n\
 The grey arrow shows the last execution position in the current frame.
@@ -4354,6 +4358,20 @@ The grey arrow shows the last program counter in the current frame.
 Ddd*code_form_w.grey_arrow*tipString: \
 @rm Last program counter in current frame
 
+! Dashed arrows
+Ddd*source_form_w.past_arrow*helpString: \
+STRONG(Earlier Execution Position)\n\
+The dashed arrow shows an earlier execution position.
+Ddd*source_form_w.past_arrow*tipString: \
+@rm Earlier execution position
+
+Ddd*code_form_w.past_arrow*helpString: \
+STRONG(Earlier Program Counter)\n\
+The dashed arrow shows an earlier program counter.
+Ddd*code_form_w.past_arrow*tipString: \
+@rm Earlier program counter
+
+! Signal arrows
 Ddd*source_form_w.signal_arrow*helpString: \
 STRONG(Current Execution Position (signaled))\n\
 The lightning arrow shows the current execution position after being\n\
@@ -4372,6 +4390,7 @@ To change the program counter, drag it with BUTTON(1).
 Ddd*code_form_w.signal_arrow*tipString: \
 @rm Current program counter (stopped by signal)
 
+! Breakpoints
 define(BREAKPOINT_HELP, [\n\
 To change the breakpoint properties, press BUTTON(3).\n\
 To move it to another location, drag it using BUTTON(1).\n\

@@ -246,11 +246,13 @@ void PositionHistory::log()
     {
 	const PositionHistoryEntry& entry = history[i];
 
-	clog << i;
 	if (i == history_position - 1)
-	    clog << "*";
-	if (entry.exec_pos)
 	    clog << ">";
+	else
+	    clog << " ";
+	clog << i;
+	if (entry.exec_pos)
+	    clog << "*";
 	clog << '\t';
 
 	if (entry.file != "")
@@ -274,7 +276,8 @@ void PositionHistory::goto_entry(const PositionHistoryEntry& entry)
     locked = true;
 
     // Lookup position in source
-    source_view->goto_entry(entry.file, entry.line, entry.address);
+    source_view->goto_entry(entry.file, entry.line, entry.address, 
+			    entry.exec_pos);
 
     // Re-process displays
     if (entry.displays != NO_GDB_ANSWER)
@@ -288,6 +291,18 @@ void PositionHistory::goto_entry(const PositionHistoryEntry& entry)
 
     log();
 }
+
+
+// True iff we're at the last known execution position
+bool PositionHistory::at_last_exec_pos()
+{
+    for (int i = history_position; i < history.size(); i++)
+	if (history[i].exec_pos)
+	    return false;	// later exec pos
+
+    return true;
+}
+
 
 bool PositionHistory::go_back()
 {

@@ -521,6 +521,7 @@ private:
     // Glyph locations: X[0] is source, X[1] is code
     static Widget plain_arrows[2];
     static Widget grey_arrows[2];
+    static Widget past_arrows[2];
     static Widget signal_arrows[2];
     static Widget drag_arrows[2];
     static WidgetArray plain_stops[2];
@@ -908,7 +909,7 @@ public:
 
     // Goto history entry
     static void goto_entry(const string& file, int line,
-			   const string& address);
+			   const string& address, bool exec_pos);
 };
 
 inline void SourceView::create_bp(const string& a, Widget w)

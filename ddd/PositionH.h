@@ -49,7 +49,7 @@ private:
 
 protected:
     // Add new entry
-    void add(const PositionHistoryEntry& entry);
+    static void add(const PositionHistoryEntry& entry);
 
     // Lookup entry in source
     static void goto_entry(const PositionHistoryEntry& entry);
@@ -60,18 +60,21 @@ protected:
 public:
     // Add position to history.  If EXEC_POS is set, this is a new
     // execution position.
-    void add_position(const string& file_name, int line, bool exec_pos);
-    void add_address(const string& address, bool exec_pos);
+    static void add_position(const string& file_name, int line, bool exec_pos);
+    static void add_address(const string& address, bool exec_pos);
 
     // Add list of displays to history
-    void add_displays(const string& displays);
+    static void add_displays(const string& displays);
 
     // Add single new display to history
-    void add_display(const string& display);
+    static void add_display(const string& display);
 
     // Lookup previous/next position; return true iff successful
     static bool go_back();
     static bool go_forward();
+
+    // True iff we're at the last known execution position
+    static bool at_last_exec_pos();
 
     // Clear history
     static void clear();
