@@ -66,7 +66,7 @@ dnl
 dnl The product expiration date, in ISO 8601 YYYY-MM-DD format.
 dnl After this date, users are requested to update the product.
 dnl An empty expiration date means no expiration.
-EXPIRES=
+EXPIRES=1998-01-01
 dnl
 dnl
 AC_SUBST(ddd)dnl
@@ -382,12 +382,12 @@ XM_LIBS=""
 XP_LIBS=""
 if test "$motif_includes" != "no" && test "$motif_libraries" != "no"
 then
-# Rudolf Leitgeb <leitgeb@leland.Stanford.EDU> says that 
-# Motif 2.1 (linux 2.0.29) wants `-lXp' after `-lXm'.
+dnl Motif 2.1 wants `-lXp' (X11R6.3 print server)
 AC_CHECK_LIB(Xp, XpSelectInput,
 	XP_LIBS="-lXp"
 	AC_DEFINE(HAVE_XP),,
 	${X_PRE_LIBS} ${XPM_LIBS} ${XEXT_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X11_LIBS} ${LIBGEN})
+dnl
 AC_CHECK_LIB(Xm, XmCreateOptionMenu, 
 	XM_LIBS="-lXm"
 	AC_DEFINE(HAVE_MOTIF),,
