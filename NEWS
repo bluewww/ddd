@@ -7,10 +7,12 @@ DDD 3.0 [in development]
     DDD 3.0 brings a new window layout, Java support, and JDB support.
 
     User-visible changes to DDD 2.2.3:
-    - New window layout.  The DDD 2.x button rows are replaced by a
+    - New look.  The DDD 2.x button rows are replaced by an icon
       toolbar at the top, saving vertical and horizontal space.
-    - Resolution-independent fonts.  DDD font sizes now by default are
-      specified by points, not by pixels.
+    - Configurable fonts.  You can easily customize font families and
+      font sizes using just a few resources;, `ddd --fontsize 120'
+      starts DDD with 12-point fonts.  See `Setting DDD fonts' in the
+      DDD manual for details.
     - JDB support.  DDD now also supports JDB as inferior debugger.
       All important JDB features are available via the GUI.
     - Java support.  Requires GDB 4.17 or later (or JDB, of course).

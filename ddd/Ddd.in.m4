@@ -1013,6 +1013,7 @@ Ddd*graph_edit.outlineColor:	   grey50
 
 ! These bitmap names are predefined by DDD.  Feel free to use others.
 ! Note: if `cacheGlyphImages' is set, these bitmap names are ignored.
+
 Ddd*plain_arrow.labelPixmap:	plain_arrow
 Ddd*grey_arrow.labelPixmap:	grey_arrow
 Ddd*temp_arrow.labelPixmap:	temp_arrow
@@ -1032,7 +1033,7 @@ Ddd*grey_cond.labelPixmap:	grey_cond
 ! The general pattern to replace a function definition FUNCTION with a new
 ! definition NEW_DEF is:
 !
-! #replace FUNCTION
+! #pragma replace FUNCTION
 ! FUNCTION(ARGS...) = NEW_DEF;
 !
 ! The following settings may be useful:
@@ -1052,14 +1053,14 @@ Ddd*grey_cond.labelPixmap:	grey_cond
 ! Here is an example which you can copy to `~/.ddd/init' and customize:
 !
 ! Ddd*vslDefs: \
-! #replace display_color   \n\
-! #replace title_color	   \n\
-! #replace disabled_color  \n\
-! #replace simple_color	   \n\
-! #replace pointer_color   \n\
-! #replace struct_color	   \n\
-! #replace array_color	   \n\
-! #replace reference_color \n\
+! #pragma replace display_color   \n\
+! #pragma replace title_color	   \n\
+! #pragma replace disabled_color  \n\
+! #pragma replace simple_color	   \n\
+! #pragma replace pointer_color   \n\
+! #pragma replace struct_color	   \n\
+! #pragma replace array_color	   \n\
+! #pragma replace reference_color \n\
 ! \n\
 ! display_color(box)   = color(box, "black", "white");	\n\
 ! title_color(box)     = color(box, "black");		\n\
@@ -1070,10 +1071,10 @@ Ddd*grey_cond.labelPixmap:	grey_cond
 ! array_color(box)     = color(box, "blue4");		\n\
 ! reference_color(box) = color(box, "blue4");		\n\
 ! \n\
-! #replace stdfontfamily\n\
-! #replace stdfontsize	\n\
-! #replace stdfontpoints\n\
-! #replace stdfontweight\n\
+! #pragma replace stdfontfamily\n\
+! #pragma replace stdfontsize	\n\
+! #pragma replace stdfontpoints\n\
+! #pragma replace stdfontweight\n\
 ! stdfontfamily() = family_typewriter();\n\
 ! stdfontsize()   = 0;	\n\
 ! stdfontpoints() = 90;	\n\
