@@ -1511,7 +1511,7 @@ dnl Use this instead:
 Ddd*source_form_w.XmPushButton.@TRANSLATIONS@: #override\n GLYPH_TRANSLATIONS
 Ddd*code_form_w.XmPushButton.@TRANSLATIONS@:   #override\n GLYPH_TRANSLATIONS
 
-! This defines the popup menus in the graph window.
+! This defines the popup menus in the data window.
 define(GRAPH_TRANSLATIONS,[\
 ~Shift<Btn1Down>: graph-select-or-move()\n\
 Shift<Btn1Down>:  graph-toggle-or-move()\n\
@@ -3782,6 +3782,7 @@ The item's functionality will be explained here.
 
 Ddd*toolbar*dereference.labelString: 	Display *()
 Ddd*toolbar*plot.labelString: 	        Plot ()
+Ddd*toolbar*history.labelString:	Plot history of ()
 Ddd*toolbar*detail.labelString:		Show ()
 Ddd*toolbar*show_more.labelString:   	Show More ()
 Ddd*toolbar*show_just.labelString:   	Show Just ()
@@ -3884,6 +3885,8 @@ Ddd*toolbar*plot.tipString:\
 @rm Plot LBL(())
 Ddd*toolbar*plot.documentationString:\
 @rm Plot the argument LBL(())
+Ddd*toolbar*history.documentationString:\
+@rm Plot the value history of LBL(()), as recorded at previous stops
 
 
 define(DETAIL_HELP, [\
@@ -3984,7 +3987,6 @@ Ddd*toolbar*whatis.labelString:		Whatis ()
 Ddd*toolbar*examine.labelString:	Examine ()...
 Ddd*toolbar*display.labelString:	Display ()
 Ddd*toolbar*dispRef.labelString:	Display *()
-Ddd*toolbar*history.labelString:	Plot history of ()
 Ddd*toolbar*find.labelString:		LBL_FIND_FORWARD
 Ddd*toolbar*findBackward.labelString:	LBL_FIND_BACKWARD
 Ddd*toolbar*findForward.labelString:	LBL_FIND_FORWARD
@@ -4626,6 +4628,16 @@ Press KEY_HELP on a button to get a short command description.
 
 define(PLOT_WINDOW_HELP, [\
 WIDGET(Plot Window)\n\
+\n\
+This window shows a plot of numerical arrays and/or scalars\n\
+of the debugged program.\n\
+\n\
+In a 2-D plot, a point at X/Y shows the value Y at the array index X.\n\
+In a 3-D plot, a point at X/Y/Z shows the value Z at the array index X/Y.\n\
+Scalars are shown as lines and can be rotated using the LBL(Rotate ()) button.\n\
+\n\
+You can modify the plot appearance via the options in the menu bar.\n\
+LBL(File, Plot Command) gives you direct access to the Gnuplot program.\n\
 \n\
 Use LBL(File, Close) to close this window.
 ])dnl
