@@ -4268,6 +4268,11 @@ Ddd*expired_warning*helpString: \
 DDD @VERSION@ should no longer be used.\n\
 To get the most recent DDD version, see the LBL(Help) | LBL([DDD] WWW Page).
 
+Ddd*incomplete_save_warning.title: DDD: Incomplete Save
+Ddd*incomplete_save_warning*helpString: \
+@rm Some displays could not be saved because their scope is not active.\n\
+See the status line for details.
+
 
 !-----------------------------------------------------------------------------
 ! Hints on specific DDD states (`What next')
