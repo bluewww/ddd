@@ -2102,9 +2102,8 @@ $(icondir)/dddsplash.xbm: $(icondir)/dddsplash.xpm
 	@test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; test -s $@)
 
 $(icondir)/dddlogo.xpm: $(icondir)/dddsplash.xpm
-	$(RM) $@
-	cd $(icondir); $(LN_S) dddsplash.xpm dddlogo.xpm
-
+	$(CONVERT) -pen white \
+	-draw 'rectangle 0,0 409,139' -draw 'rectangle 1,1 408,138' $< $@
 
 ## Configuration stuff.
 
