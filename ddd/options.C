@@ -493,19 +493,17 @@ void dddToggleSeparateExecWindowCB (Widget, XtPointer, XtPointer call_data)
     update_options();
 }
 
-void dddToggleUngrabMousePointerCB (Widget, XtPointer, XtPointer call_data)
+void dddToggleCheckGrabsCB (Widget, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
-    app_data.ungrab_mouse_pointer = info->set;
-    string automatic_ungrabbing_of_mouse_pointer =
-	"Automatic ungrabbing of mouse pointer ";
+    app_data.check_grabs = info->set;
 
     if (info->set)
-	set_status(automatic_ungrabbing_of_mouse_pointer + "enabled.");
+	set_status("Checking for grabs.");
     else
-	set_status(automatic_ungrabbing_of_mouse_pointer + "disabled.");
+	set_status("Not checking for grabs.");
 
     update_options();
 }
@@ -1614,8 +1612,8 @@ bool save_options(unsigned long flags)
 			 app_data.suppress_warnings) << "\n";
     os << string_app_value(XtNshowStartupLogo,
 			   app_data.show_startup_logo) << "\n";
-    os << bool_app_value(XtNungrabMousePointer,
-			 app_data.ungrab_mouse_pointer) << "\n";
+    os << bool_app_value(XtNcheckGrabs,
+			 app_data.check_grabs) << "\n";
     os << bool_app_value(XtNsaveHistoryOnExit,
 			 app_data.save_history_on_exit) << "\n";
     os << string_app_value(XtNpaperSize,

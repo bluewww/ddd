@@ -1169,13 +1169,43 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNungrabMousePointer,
-	XtCUngrabMousePointer,
+	XtNcheckGrabs,
+	XtCCheckGrabs,
 	XmRBoolean,
 	sizeof(Boolean),
-	XtOffsetOf(AppData, ungrab_mouse_pointer),
+	XtOffsetOf(AppData, check_grabs),
 	XmRImmediate,
 	XtPointer(True)
+    },
+
+    {
+	XtNcheckGrabDelay,
+	XtCCheckGrabDelay,
+	XtRCardinal,
+	sizeof(Cardinal),
+	XtOffsetOf(AppData, check_grab_delay),
+	XmRImmediate,
+	XtPointer(5000)
+    },
+
+    {
+	XtNgrabActionDelay,
+	XtCGrabActionDelay,
+	XtRCardinal,
+	sizeof(Cardinal),
+	XtOffsetOf(AppData, grab_action_delay),
+	XmRImmediate,
+	XtPointer(10000)
+    },
+
+    {
+	XtNgrabAction,
+	XtCGrabAction,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, grab_action),
+	XmRImmediate,
+	XtPointer("cont")
     },
 
     {

@@ -243,8 +243,14 @@
 #define XtNblinkWhileBusy        "blinkWhileBusy"
 #define XtCBlinkWhileBusy        "BlinkWhileBusy"
 #define XtNbusyBlinkRate         "busyBlinkRate"
-#define XtNungrabMousePointer    "ungrabMousePointer"
-#define XtCUngrabMousePointer    "UngrabMousePointer"
+#define XtNcheckGrabs            "checkGrabs"
+#define XtCCheckGrabs            "CheckGrabs"
+#define XtNcheckGrabDelay        "checkGrabDelay"
+#define XtCCheckGrabDelay        "CheckGrabDelay"
+#define XtNgrabActionDelay       "grabActionDelay"
+#define XtCGrabActionDelay       "GrabActionDelay"
+#define XtNgrabAction            "grabAction"
+#define XtCGrabAction            "GrabAction"
 #define XtNdetectAliases         "detectAliases"
 #define XtCDetectAliases         "DetectAliases"
 #define XtNalign2dArrays         "align2dArrays"
@@ -406,7 +412,10 @@ struct AppData {
     Cardinal  clear_tip_delay;
     Boolean   blink_while_busy;
     Cardinal  busy_blink_rate;
-    Boolean   ungrab_mouse_pointer;
+    Boolean   check_grabs;
+    Cardinal  check_grab_delay;
+    Cardinal  grab_action_delay;
+    String    grab_action;
     Boolean   detect_aliases;
     Boolean   align_2d_arrays;
     Boolean   bump_displays;

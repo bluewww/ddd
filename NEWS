@@ -29,6 +29,9 @@ DDD 3.0 [in development]
     - On popular demand, the command tool now has `until' and `make' buttons.
     - Conditional breakpoints and breakpoints with ignore counts are now
       indicated by special breakpoint symbols.
+    - When detecting a grabbed (frozen) mouse pointer after reaching a
+      breakpoint, DDD now automatically continues execution, rather
+      than attempting to ungrab the pointer.
     - Improved help system: In accordance with the Motif style guide,
       F1 invokes help on the item pointed at, while Shift+F1 lets you
       choose an item.
@@ -51,6 +54,8 @@ DDD 3.0 [in development]
       glyph updates.  See the `glyphUpdateDelay' resource for details.
     - DDD no longer terminates the inferior debugger when receiving an 
       EOF on input.   See the `terminateOnEOF' resource for details.
+    - The new grab detection mechanism no longer interferes with grabs
+      on Motif popup and pulldown menus.
     - One-letter options like `-b BPS' or `-x FILE' work again.
 
     Changes in configuration and building:
@@ -67,8 +72,8 @@ DDD 3.0 [in development]
 	Ddd*commonToolBar:    off
 	Ddd*toolbarsAtBottom: on
 
-      in your `~/.ddd/init' file; disable images and captions via
-      `Edit | Preferences | Startup | Toolbar appareance' if desired.
+      in your `~/.ddd/init' file.  For a full DDD 2.x look, disable images
+      and captions via `Edit | Preferences | Startup | Toolbar Appareance'.
 
     And once more, several more minor improvements and bug fixes; see
     the `ChangeLog' file for details.

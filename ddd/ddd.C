@@ -849,7 +849,7 @@ static MMDesc completion_menu [] =
 static Widget group_iconify_w;
 static Widget uniconify_when_ready_w;
 static Widget suppress_warnings_w;
-static Widget ungrab_mouse_pointer_w;
+static Widget check_grabs_w;
 
 static MMDesc general_preferences_menu[] = 
 {
@@ -862,8 +862,8 @@ static MMDesc general_preferences_menu[] =
       NULL, &uniconify_when_ready_w },
     { "suppressWarnings",    MMToggle, { dddToggleSuppressWarningsCB },
       NULL, &suppress_warnings_w },
-    { "ungrabMousePointer",  MMToggle, { dddToggleUngrabMousePointerCB },
-      NULL, &ungrab_mouse_pointer_w },
+    { "checkGrabs",          MMToggle, { dddToggleCheckGrabsCB },
+      NULL, &check_grabs_w },
     MMEnd
 };
 
@@ -2442,6 +2442,7 @@ int main(int argc, char *argv[])
 }
 
 
+
 //-----------------------------------------------------------------------------
 // Process next X Event
 //-----------------------------------------------------------------------------
@@ -2471,12 +2472,40 @@ void process_next_event()
 
     XtAppContext app_context = XtWidgetToApplicationContext(command_shell);
 
+    if ((XtAppPending(app_context) & XtIMXEvent) != 0)
+    {
+	XEvent event;
+
+	if (XtAppPeekEvent(app_context, &event))
+	{
+	    // We have an X event pending.  Check it.
+	    switch (event.type)
+	    {
+	    case MotionNotify:
+	    case ButtonPress:
+	    case ButtonRelease:
+	    case EnterNotify:
+	    case LeaveNotify:
+	    case KeyPress:
+	    case KeyRelease:
+
+		// The pointer cannot be grabbed, since we receive
+		// input events.
+		check_grabs(false);
+		break;
+
+	    default:
+		break;
+	    }
+	}
+    }
+
     if (app_data.synchronous_gdb && gdb->isBusyOnQuestion())
     {
 	// Synchronous mode: wait for GDB to answer question
 	XtAppProcessEvent(app_context, XtIMAlternateInput);
     }
-    else if (XtAppPending(app_context) & (XtIMXEvent | XtIMTimer))
+    else if ((XtAppPending(app_context) & (XtIMXEvent | XtIMTimer)) != 0)
     {
 	// Process next X event
 	XtAppProcessEvent(app_context, XtIMXEvent | XtIMTimer);
@@ -2631,7 +2660,6 @@ XrmDatabase GetFileDatabase(char *filename)
 	XtNtoolRightOffset, XtNtoolTopOffset, // Command tool offset
 	XtNshowStartupLogo,	              // Splash screen
 	XtNshowHints,		              // Show edge hints
-	XtNungrabMousePointer,	              // Ungrab pointer settings
     };
 
     bool version_mismatch = false;
@@ -3230,7 +3258,7 @@ void update_options()
     set_toggle(set_console_completion_w, !app_data.global_tab_completion);
     set_toggle(group_iconify_w,          app_data.group_iconify);
     set_toggle(uniconify_when_ready_w,   app_data.uniconify_when_ready);
-    set_toggle(ungrab_mouse_pointer_w,   app_data.ungrab_mouse_pointer);
+    set_toggle(check_grabs_w,   	 app_data.check_grabs);
     set_toggle(suppress_warnings_w,      app_data.suppress_warnings);
 
     set_toggle(cache_source_files_w,     app_data.cache_source_files);
@@ -3555,8 +3583,8 @@ static void ResetGeneralPreferencesCB(Widget, XtPointer, XtPointer)
     notify_set_toggle(uniconify_when_ready_w, 
 		      initial_app_data.uniconify_when_ready);
     notify_set_toggle(suppress_warnings_w, initial_app_data.suppress_warnings);
-    notify_set_toggle(ungrab_mouse_pointer_w, 
-		      initial_app_data.ungrab_mouse_pointer);
+    notify_set_toggle(check_grabs_w, 
+		      initial_app_data.check_grabs);
 }
 
 static bool general_preferences_changed()
@@ -3571,8 +3599,7 @@ static bool general_preferences_changed()
 	|| app_data.uniconify_when_ready != 
 	    initial_app_data.uniconify_when_ready
 	|| app_data.suppress_warnings != initial_app_data.suppress_warnings
-	|| app_data.ungrab_mouse_pointer != 
-	    initial_app_data.ungrab_mouse_pointer;
+	|| app_data.check_grabs != initial_app_data.check_grabs;
 }
 
 static void ResetSourcePreferencesCB(Widget, XtPointer, XtPointer)
@@ -4281,6 +4308,7 @@ static void PopdownStatusHistoryCB(Widget, XtPointer, XtPointer)
 }
 
 
+
 //-----------------------------------------------------------------------------
 // Helpers
 //-----------------------------------------------------------------------------
@@ -4543,8 +4571,8 @@ static void gdb_readyHP(Agent *, void *, void *call_data)
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0, 
 			    processCommandQueue, XtPointer(0));
 
-	// If the debugged program has grabbed the pointer, ungrab it
-	ungrab_mouse_pointer();
+	// Check for mouse pointer grabs
+	check_grabs(true);
 
 	// Completion is done
 	clear_completion_delay();

@@ -89,7 +89,7 @@ extern void graphSetGridSizeCB              (Widget, XtPointer, XtPointer);
 extern void dddToggleGroupIconifyCB         (Widget, XtPointer, XtPointer);
 extern void dddToggleUniconifyWhenReadyCB   (Widget, XtPointer, XtPointer);
 extern void dddToggleSeparateExecWindowCB   (Widget, XtPointer, XtPointer);
-extern void dddToggleUngrabMousePointerCB   (Widget, XtPointer, XtPointer);
+extern void dddToggleCheckGrabsCB           (Widget, XtPointer, XtPointer);
 extern void dddToggleSaveHistoryOnExitCB    (Widget, XtPointer, XtPointer);
 extern void dddToggleSuppressWarningsCB     (Widget, XtPointer, XtPointer);
 

@@ -33,7 +33,8 @@
 #pragma interface
 #endif
 
-extern void ungrab_mouse_pointer();
+// If START is true, initiate grab check.  If START is false, stop it.
+void check_grabs(bool start);
 
 #endif // _DDD_ungrab_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
