@@ -1438,6 +1438,12 @@ Click the @bf right mouse button @rm to get a popup menu:\n\
 *bp_popup.ignore_count.labelString:	Set Ignore Count
 *bp_popup.delete.labelString:		Delete Breakpoint
 
+*text_popup.print.labelString:		Print
+*text_popup.disp.labelString:		Display
+*text_popup.lookup.labelString:		Lookup
+*text_popup.break.labelString:		Break
+*text_popup.clear.labelString:		Clear
+
 
 !-----------------------------------------------------------------------------
 ! Source Text Commands

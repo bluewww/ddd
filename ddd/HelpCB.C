@@ -53,6 +53,7 @@ char HelpCB_rcsid[] =
 #include "Delay.h"
 #include "StringA.h"
 #include "IntArray.h"
+#include "Delay.h"
 
 struct resource_values {
     XmString helpString;
@@ -69,16 +70,13 @@ static XtResource subresources[] = {
 };
 
 static Widget help_dialog = 0;
-static Widget help_shell  = 0;
 static Widget text_dialog = 0;
-static Pixmap help_pixmap = 0;
 
 static MString _DefaultHelpText(Widget widget);
 static void _MStringHelpCB(Widget widget, 
 			   XtPointer client_data, 
 			   XtPointer call_data,
-			   bool help_on_help = false,
-			   Pixmap pixmap = 0);
+			   bool help_on_help = false);
 
 static MString get_help_string(Widget widget)
 {
@@ -147,15 +145,34 @@ void HelpOnVersionCB(Widget widget, XtPointer client_data, XtPointer call_data)
     if (helpOnVersionPixmapProc)
 	pixmap = helpOnVersionPixmapProc(widget);
 
-    _MStringHelpCB(widget, XtPointer(XmString(text)), call_data, 
-		   false, pixmap);
-}
+    Arg args[10];
+    Cardinal arg = 0;
+    XtSetArg(args[arg], XmNmessageString, XmString(text)); arg++;
+    if (pixmap)
+    {
+	XtSetArg(args[arg], XmNsymbolPixmap, pixmap); arg++;
+    }
 
-static void HelpDestroyCB(Widget widget, XtPointer client_data, 
-			  XtPointer call_data)
-{
-    help_dialog = 0;
-    help_shell  = 0;
+    static Widget help_on_version = 0;
+    if (help_on_version == 0)
+    {
+	// Build info dialog
+	XtSetArg(args[arg], XmNdeleteResponse, XmUNMAP); arg++;
+
+	help_on_version = XmCreateInformationDialog(widget, "help", args, arg);
+	Delay::register_shell(help_on_version);
+	XtAddCallback(help_on_version, XmNhelpCallback, HelpOnHelpCB, 0);
+
+	XtUnmanageChild(XmMessageBoxGetChild(help_on_version, 
+					     XmDIALOG_CANCEL_BUTTON));
+    }
+    else
+    {
+	// Setup values in existing dialog
+	XtSetValues(help_on_version, args, arg);
+    }
+
+    XtManageChild(help_on_version);
 }
 
 
@@ -187,8 +204,7 @@ void MStringHelpCB(Widget widget, XtPointer client_data, XtPointer call_data)
 static void _MStringHelpCB(Widget widget, 
 			   XtPointer client_data, 
 			   XtPointer call_data,
-			   bool help_on_help,
-			   Pixmap pixmap)
+			   bool help_on_help)
 {
     XmString text = XmString(client_data);
 
@@ -200,28 +216,14 @@ static void _MStringHelpCB(Widget widget,
     if (shell == 0)
 	shell = widget;
 
-    if (help_dialog && (shell != help_shell || pixmap != help_pixmap))
-    {
-	XtDestroyWidget(help_dialog);
-	help_dialog = 0;
-    }
-
-    help_shell  = shell;
-    help_pixmap = pixmap;
-
     if (help_dialog == 0)
     {
 	// Build help_dialog
 	XtSetArg(args[arg], XmNdeleteResponse, XmUNMAP); arg++;
 
-	if (pixmap)
-	{
-	    XtSetArg(args[arg], XmNsymbolPixmap, pixmap); arg++;
-	}
-
 	help_dialog = XmCreateInformationDialog(shell, "help", args, arg);
+	Delay::register_shell(help_dialog);
 	XtAddCallback(help_dialog, XmNhelpCallback, HelpOnHelpCB, 0);
-	XtAddCallback(help_dialog, XmNdestroyCallback, HelpDestroyCB, 0);
 
 	XtUnmanageChild(XmMessageBoxGetChild(help_dialog, 
 					     XmDIALOG_CANCEL_BUTTON));
@@ -285,6 +287,7 @@ void ManualStringHelpCB(Widget widget, XtPointer client_data,
 	arg = 0;
 	XtSetArg(args[arg], XmNdeleteResponse, XmUNMAP); arg++;
 	text_dialog = XmCreatePromptDialog(toplevel, "manual_help", args, arg);
+	Delay::register_shell(text_dialog);
 
 	arg = 0;
 	Widget form = XmCreateWorkArea(text_dialog, "area", args, arg);
@@ -519,6 +522,7 @@ void FileHelpCB(Widget widget, XtPointer client_data, XtPointer call_data)
 	arg = 0;
 	XtSetArg(args[arg], XmNdeleteResponse, XmUNMAP); arg++;
 	text_dialog = XmCreatePromptDialog(toplevel, "text_help", args, arg);
+	Delay::register_shell(text_dialog);
 
 	arg = 0;
 	XtSetArg(args[arg], XmNeditable, False); arg++;

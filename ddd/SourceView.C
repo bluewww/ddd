@@ -497,12 +497,18 @@ String SourceView::read_local(const string& file_name)
 		    "source_file_error", source_view_w);
 	return 0;
     }
+
+#if 0 
+    // According to bussieck@moa.math.nat.tu-bs.de (Michael Bussieck),
+    // this causes trouble on hppa1.1-hp-hpux9.01.
     if ((statb.st_mode & S_IFMT) != S_IFREG)
     {
 	post_error (file_name + ": not a regular file", 
 		    "source_file_error", source_view_w);
 	return 0;
     }
+#endif
+
     if ((fd = open(file_name, O_RDONLY)) < 0)
     {
 	post_error (file_name + ": " + strerror(errno), 
@@ -2026,67 +2032,29 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String* str, Cardinal* c)
     }
     else {
 	// 'Umgebenden' C-String ermitteln, und Popup dafuer oeffnen
-	static string* word_ptr = new string();
+	static string word;
 
 	XmTextPosition startpos;
 	XmTextPosition endpos;
 
 	find_word_bounds(pos, startpos, endpos);
+	word = "";
 	if (startpos < current_text.length() && startpos < endpos)
-	{
-	    *word_ptr = current_text(int(startpos), int(endpos - startpos));
-	}
-	else
-	{
-	    *word_ptr = "";
-	}
+	    word = current_text(int(startpos), int(endpos - startpos));
 	
 	static Widget text_popup_w = 0;
-	if (text_popup_w)
-	    XtDestroyWidget(text_popup_w);
+	if (text_popup_w == 0)
+	{
+	    text_popup_w = MMcreatePopupMenu(w, "text_popup", text_popup);
+	    MMaddCallbacks (text_popup, XtPointer(&word));
+	}
 
-	text_popup_w = MMcreatePopupMenu(w, "text_popup", text_popup);
-	MMaddCallbacks (text_popup, XtPointer(word_ptr));
-
-	MString current_arg(*word_ptr, "tt");
-
-	Arg args[5];
-	int arg = 0;
-	MString label = text_cmd_labels[TextItms::Break] + current_arg;
-	XtSetArg (args[arg], XmNlabelString, XmString(label));arg++;
-	XtSetValues(text_popup[TextItms::Break].widget, args, arg);
-
-	arg = 0;
-	label = text_cmd_labels[TextItms::Clear] + current_arg;
-	XtSetArg (args[arg], XmNlabelString, XmString(label));arg++;
-	XtSetValues(text_popup[TextItms::Clear].widget, args, arg);
-
-	arg = 0;
-	label = text_cmd_labels[TextItms::Print] + current_arg;
-	XtSetArg (args[arg], XmNlabelString, XmString(label));arg++;
-	XtSetValues(text_popup[TextItms::Print].widget, args, arg);
-
-	arg = 0;
-	label = text_cmd_labels[TextItms::Disp] + current_arg;
-	XtSetArg (args[arg], XmNlabelString, XmString(label));arg++;
-	XtSetValues(text_popup[TextItms::Disp].widget, args, arg);
-
-	arg = 0;
-	label = text_cmd_labels[TextItms::Lookup] + current_arg;
-	XtSetArg (args[arg], XmNlabelString, XmString(label));arg++;
-	XtSetValues(text_popup[TextItms::Lookup].widget, args, arg);
-
-	bool sens = (word_ptr->length() > 0);
-	XtSetSensitive (text_popup[TextItms::Break].widget,
-			sens);
-	XtSetSensitive (text_popup[TextItms::Clear].widget,
-			sens);
-	XtSetSensitive (text_popup[TextItms::Print].widget,
-			sens);
-	XtSetSensitive (text_popup[TextItms::Disp].widget,
-			sens);
-	XtSetSensitive (text_popup[TextItms::Lookup].widget,
-			sens);
+	bool sens = word.length() > 0;
+	XtSetSensitive (text_popup[TextItms::Break].widget,  sens);
+	XtSetSensitive (text_popup[TextItms::Clear].widget,  sens);
+	XtSetSensitive (text_popup[TextItms::Print].widget,  sens);
+	XtSetSensitive (text_popup[TextItms::Disp].widget,   sens);
+	XtSetSensitive (text_popup[TextItms::Lookup].widget, sens);
 
 	XmMenuPosition (text_popup_w, event);
 	XtManageChild (text_popup_w);
