@@ -164,4 +164,8 @@ detail.
     his DEC Alpha system using fvwm.  The problem happens with fvwm
     and tvwm, but not with fvwm95, mwm or olwm.  [WM bug?]
 
-725 (Insert new bugs here)
+725 Pierre Pomes <ppomes@it.inov.imt-mrs.fr> reports that
+    DDD-1998-07-09 causes a segmentation fault, recursing endlessly in
+    Agent::childStatusChange() routines.
+
+726 (Insert new bugs here)
