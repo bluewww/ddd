@@ -11,6 +11,7 @@ DDD-3.3.9
   and the Athena libraries are now found by default.
 - Builds without Motif/Lesstif available abort with an adequate message.
 - Builds with readline support now work.
+- Builds without -DNDEBUG (i.e. with "assert" enabled) now work.
 - Several missing files in the distribution are now included.
 - The libiberty distributed with ddd has been upgraded to the one released
   with gcc-3.3.2.
