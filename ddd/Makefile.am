@@ -1314,6 +1314,11 @@ FIG2PS = $(FIG2DEV) -L ps
 	TEXINPUTS=$(top_srcdir)/../texinfo:$$TEXINPUTS \
 	  MAKEINFO='$(MAKEINFO) -I $(srcdir)' $(TEXI2PDF) $<
 
+.texi.dvi:
+	@-test -d PICS || $(LN_S) $(picdir) .
+	TEXINPUTS=$(top_srcdir)/../texinfo:$$TEXINPUTS \
+	  MAKEINFO='$(MAKEINFO) -I $(srcdir)' $(TEXI2DVI) $<
+
 # PostScript pictures in the DDD manual.
 # All of these are generated from FIG and XPM files.
 picdir = $(srcdir)/PICS
