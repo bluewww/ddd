@@ -367,10 +367,7 @@ Volunteers for fixing these and other bugs are welcome!
      data window causes all other windows to (de-)iconify, *except*
      the command tool.
 
-190. After reading a core file in GDB, the execution pointer is not
-     set.
+193. `close' does not work on the main window when separate windows
+     are used.
 
-191. Hitting `up'/`down' in `list_test' causes DDD to lose the list
-     structure.
-
-192. (Insert your bug here)
+194. (Insert your bug here)

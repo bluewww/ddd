@@ -368,9 +368,6 @@ Volunteers for these and other projects are welcome!
      `http://www.igpm.rwth-aachen.de/~albrecht/mnem.html')
 
 202* More session stuff:
-     - Have an `Open session...' and a `Save Session As...' item.
-       
-     - Restoring a session should also restore the executable and
-       core settings (i.e. the debugger command).
+     History is not yet saved per-session.
 
-203. (Insert your project idea here)
+205. (Insert your project idea here)

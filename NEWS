@@ -4,10 +4,16 @@ Changes in DDD						-*- text -*-
 DDD 2.2 [in development]
 ------------------------
 
-    DDD 2.2 brings an improved user interface, support for debugging
-    running processes, user-defined commands, and more.
+    DDD 2.2 brings persistent sessions, an improved user interface,
+    attaching to running processes, user-defined commands, and more.
 
     User-visible changes to DDD 2.1:
+    - Persistent sessions.  You can now save the entire debugger and
+      process state and resume the session later.  Saved state
+      includes process memory and state, inferior debugger settings,
+      breakpoints, and data displays.
+    - DDD now implements X11R6 session support.  When used with a
+      session manager, DDD saves and restores its entire state.
     - Improved user interface:
       + Source line numbers have been turned off (can be restored);
         the breakpoint area extends to the first non-blank character.
@@ -49,9 +55,11 @@ DDD 2.2 [in development]
       + Faster scrolling.  While scrolling source or machine code at
         high speed, glyphs are now unmapped.  Slow scrolling still
         shows glyphs.
+    - Resource files have been renamed.  All files are now located
+      under `~/.ddd'.  The file `~/.dddinit' has been replaced by
+      `~/.ddd/init'; `~/.ddd_history' is now `~/.ddd/history'.  The
+       directory `~/.ddd/sessions/' contains saved DDD sessions.
     - Multi-color icons.  (requires XPM)
-    - Rudimentary session management support.  Checkpoint saves
-      options; Shutdown asks for confirmation.  (requires X11R6)
 
     Bug fixes:
     - Various fixes for XDB on HP-UX 10.x included.  Thanks to Robert
