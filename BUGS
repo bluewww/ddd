@@ -242,10 +242,6 @@ Volunteers for fixing these and other bugs are welcome!
     options. At that point DDD dies and the options file is not
     updated.
 
-238 Neil Soiffer <soiffer@wri.com> reports a `BadMatch' X error for the
-    command tool when used under tvtwm.
-    [I could not reproduce this. -AZ]
-
 239 Paul Sydney <sydney@ulua.mhpcc.af.mil> states that in the DBX
     preferences under IRIX 6.3, the text for each item is sometimes
     too long for the dialog and important information about an item is
