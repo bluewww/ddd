@@ -1262,7 +1262,7 @@ Click on LBL(Close) to close the help window.
 Ddd*helpOnVersionString:	\
 @Logo DDD@logo: \
 The @Logo D@logo ata @Logo D@logo isplay @Logo D@logo ebugger\n\
-@rm by Dorothea Krabiell, n\351e L\374tkehaus, and Andreas Zeller.\n\
+@rm by Dorothea L\374tkehaus and Andreas Zeller.\n\
 \n\
 DDD @VERSION@ (@host@),\n\
 Copyright \251 1997 Technische Universit\344t Braunschweig, Germany.\n
@@ -3412,7 +3412,7 @@ help on any of these areas.
 !-----------------------------------------------------------------------------
 
 Ddd*gdb_w.value: \
-DDD @VERSION@ (@host@), by Dorothea Krabiell and Andreas Zeller.\n\
+DDD @VERSION@ (@host@), by Dorothea L\374tkehaus and Andreas Zeller.\n\
 Copyright \251 1997 Technische Universit\344t Braunschweig, Germany.\n
 
 Ddd*gdb_w.rows:			10
