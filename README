@@ -17,11 +17,6 @@ For further information, consult the following files:
     TIPS         DDD hints (`tip of the day')
     TODO         Possible future DDD features.
 
-Recent versions of these files reflecting the current development
-state are stored in
-
-    `ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/current/'.
-
 -- 
 Andreas Zeller       Technische Universitaet Braunschweig, Germany
                      ddd@gnu.org  http://www.gnu.org/software/ddd/
