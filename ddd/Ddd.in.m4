@@ -4654,17 +4654,6 @@ Ddd*plot*print.mnemonic:        P
 Ddd*plot*print.documentationString:   \
 @rm Print the current plot
 
-Ddd*plot*area.width:        640
-Ddd*plot*area.height:       450
-Ddd*plot*area.background:   TEXT_BACKGROUND_COLOR
-
-! Ideally, these values would come from the swallowed window.
-! Unfortunately, LessTif has problems with these, so we specify them.
-Ddd*plot*swallower.width:        640
-Ddd*plot*swallower.height:       450
-Ddd*plot*swallower.background:   TEXT_BACKGROUND_COLOR
-
-
 Ddd*plot*menubar.helpString:		\
 WIDGET(Menu Bar)\n\
 \n\
@@ -4871,7 +4860,19 @@ The plot will automatically be refreshed after execution.\n\
 See the Gnuplot documentation for useful commands.
 
 
+! The default Gnuplot window is 640x540 pixels wide.
+Ddd*plot*area.width:        640
+Ddd*plot*area.height:       450
+Ddd*plot*area.background:   TEXT_BACKGROUND_COLOR
 
+! Ideally, these values would come from the swallowed window.
+! Unfortunately, LessTif has problems with these, so we set them explicitly.
+Ddd*plot*swallower.width:        640
+Ddd*plot*swallower.height:       450
+Ddd*plot*swallower.background:   TEXT_BACKGROUND_COLOR
+
+Ddd*plot*XmScrollBar.borderWidth:		0
+Ddd*plot*XmScrollBar.highlightThickness:        0
 
 
 !-----------------------------------------------------------------------------
