@@ -2945,7 +2945,7 @@ Ddd*status_form*highlightThickness: 	0
 
 Ddd*status_form.arrow.tipString: \
 @rm Show recent messages
-Ddd*status_form.arrow.documentationString: \n
+Ddd*status_form.arrow.documentationString: \n\n
 
 Ddd*status_form.status.alignment:	XmALIGNMENT_BEGINNING
 Ddd*status_form.status.leftOffset:	5
