@@ -121,20 +121,26 @@ bool BreakPoint::update (string& info_output)
     {
     case GDB:
 	{
-	    // Read "Type" 
-	    if (info_output.contains ("watchpoint", 0))
+	    // Read "Type" (breakpoint or watchpoint)
+	    string word1 = info_output.before('\n');
+	    string word2 = word1.after(rxblanks_or_tabs);
+
+	    if (word1.contains("watchpoint", 0) || 
+		word2.contains("watchpoint", 0))
 	    {
 		changed |= (mytype != WATCHPOINT);
 		mytype = WATCHPOINT;
 	    }
-	    else if (info_output.contains ("breakpoint", 0))
+	    else if (word1.contains("breakpoint", 0) || 
+		     word2.contains("breakpoint", 0))
 	    {
 		changed |= (mytype != BREAKPOINT);
 		mytype = BREAKPOINT;
 	    }
+	    info_output = info_output.after("point");
 	    info_output = info_output.after(rxblanks_or_tabs);
 
-	    // Read "Disp"
+	    // Read "Disp" (disposition)
 	    if (info_output.contains("dis", 0))
 	    {
 		changed |= (mydispo != BPDIS);
@@ -152,7 +158,7 @@ bool BreakPoint::update (string& info_output)
 	    }
 	    info_output = info_output.after(rxblanks_or_tabs);
 
-	    // Read "Enb"
+	    // Read "Enb" (enabled or disabled)
 	    if (info_output.index ("y") == 0) {
 		if (myenabled != true) {
 		    changed = myenabled_changed = true;
@@ -201,7 +207,7 @@ bool BreakPoint::update (string& info_output)
 	    }
 	    else if (mytype == WATCHPOINT)
 	    {
-		// Read watch expr
+		// Read watched expression
 	        string new_expr = info_output.before('\n');
 		if (myexpr != new_expr)
 		{
