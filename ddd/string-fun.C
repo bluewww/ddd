@@ -62,6 +62,14 @@ static void read_leading_parentheses(string& s)
     
 
 // ***************************************************************************
+bool has_nr (const string& s)
+{
+    string int_string(s);
+    read_leading_parentheses(int_string);
+    return int_string.contains(rxint, 0);
+}
+
+// ***************************************************************************
 // gibt den Integer zurueck, der am Anfang des String steht
 // 
 int get_nr (/*const*/ string& s)
@@ -112,7 +120,7 @@ string read_nr_str (string& s)
 	return "";
 
     string int_string = s.through(rxint);
-    s = s.after(int(int_string.length()));
+    s = s.from(int(int_string.length()));
     return int_string;
 }
 
@@ -124,7 +132,7 @@ int read_positive_nr (string& s)
 	return -1;
 
     string int_string = s.through(rxint);
-    s = s.after(int(int_string.length()));
+    s = s.from(int(int_string.length()));
     return atoi(int_string);
 }
 

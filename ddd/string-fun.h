@@ -50,6 +50,9 @@ extern regex RXblanks_or_tabs;
 string itostring (int nr);
 
 // ***************************************************************************
+bool has_nr (const string& s);
+
+// ***************************************************************************
 // gibt den Integer zurueck, der am Anfang des String steht
 // 
 int get_nr (/*const*/ string& s);
