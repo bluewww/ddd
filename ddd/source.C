@@ -157,7 +157,7 @@ void gdbClearAtCB(Widget w, XtPointer, XtPointer)
 void gdbToggleBreakCB(Widget w, XtPointer, XtPointer)
 {
     SourceView::set_bp(source_arg->get_string(), !have_break_at_arg(), 
-		       false, w);
+		       false, "", w);
 }
 
 void gdbContUntilCB(Widget w, XtPointer, XtPointer)
