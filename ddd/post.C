@@ -146,11 +146,12 @@ Widget post_gdb_busy(Widget w)
 	busy_dialog = 
 	    verify(XmCreateWorkingDialog(find_shell(w), 
 					 (char *)"busy_dialog", 
-					 NULL, 0));
+					 ArgList(0), 0));
 	Delay::register_shell(busy_dialog);
 	XtUnmanageChild(XmMessageBoxGetChild(busy_dialog, 
 					     XmDIALOG_CANCEL_BUTTON));
-	XtAddCallback(busy_dialog, XmNhelpCallback, ImmediateHelpCB, NULL);
+	XtAddCallback(busy_dialog, XmNhelpCallback, 
+		      ImmediateHelpCB, XtPointer(0));
     }
 
     manage_and_raise(busy_dialog);
@@ -240,8 +241,10 @@ Widget post_gdb_died(string reason, int state, Widget w)
 	else
 	    dialog = verify(XmCreateErrorDialog(shell, (char *)name, args, arg));
 
-	XtAddCallback(dialog, XmNhelpCallback,   ImmediateHelpCB, NULL);
-	XtAddCallback(dialog, XmNokCallback,     RestartDebuggerCB, NULL);
+	XtAddCallback(dialog, XmNhelpCallback,
+		      ImmediateHelpCB, XtPointer(0));
+	XtAddCallback(dialog, XmNokCallback,     
+		      RestartDebuggerCB, XtPointer(0));
 	XtAddCallback(dialog, XmNcancelCallback, 
 		      DDDExitCB, XtPointer(exit_state));
     }
@@ -254,7 +257,7 @@ Widget post_gdb_died(string reason, int state, Widget w)
 					    (char *)"no_debugger_dialog", 
 					    args, arg));
 	XtUnmanageChild(XmMessageBoxGetChild(dialog, XmDIALOG_CANCEL_BUTTON));
-	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, NULL);
+	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, XtPointer(0));
 	XtAddCallback(dialog, XmNokCallback, DDDExitCB, XtPointer(exit_state));
     }
 
@@ -334,7 +337,7 @@ Widget post_gdb_message(string text, bool prompt, Widget w)
 	XtUnmanageChild(XmMessageBoxGetChild(gdb_message_dialog, 
 					     XmDIALOG_CANCEL_BUTTON));
 	XtAddCallback(gdb_message_dialog, XmNhelpCallback, 
-		      ImmediateHelpCB, NULL);
+		      ImmediateHelpCB, XtPointer(0));
     }
     else
     {
@@ -384,7 +387,7 @@ Widget post_error(string text, const _XtString name, Widget w)
 	verify(XmCreateErrorDialog(find_shell(w), (char *)name, args, arg));
     Delay::register_shell(ddd_error);
     XtUnmanageChild(XmMessageBoxGetChild(ddd_error, XmDIALOG_CANCEL_BUTTON));
-    XtAddCallback(ddd_error, XmNhelpCallback, ImmediateHelpCB, NULL);
+    XtAddCallback(ddd_error, XmNhelpCallback, ImmediateHelpCB, XtPointer(0));
 
     manage_and_raise(ddd_error);
     return ddd_error;
@@ -429,7 +432,7 @@ Widget post_warning(string text, const _XtString name, Widget w)
 	verify(XmCreateWarningDialog(find_shell(w), (char *)name, args, arg));
     Delay::register_shell(ddd_warning);
     XtUnmanageChild(XmMessageBoxGetChild(ddd_warning, XmDIALOG_CANCEL_BUTTON));
-    XtAddCallback(ddd_warning, XmNhelpCallback, ImmediateHelpCB, NULL);
+    XtAddCallback(ddd_warning, XmNhelpCallback, ImmediateHelpCB, XtPointer(0));
 
     manage_and_raise(ddd_warning);
     return ddd_warning;

@@ -548,8 +548,8 @@ void TicTacToeCB(Widget, XtPointer, XtPointer)
 	XtUnmanageChild(XmSelectionBoxGetChild(dialog, 
 					       XmDIALOG_SELECTION_LABEL));
 
-	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, NULL);
-	XtAddCallback(dialog, XmNokCallback, ResetTicTacToeCB, NULL);
+	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, XtPointer(0));
+	XtAddCallback(dialog, XmNokCallback, ResetTicTacToeCB, XtPointer(0));
 	XtAddCallback(dialog, XmNcancelCallback, UnmanageThisCB, 
 		      XtPointer(dialog));
 

@@ -163,7 +163,7 @@ static Boolean CvtStringToPacking(Display *display,
 // Return a value of given type
 #define done(type, value) \
     do {                                                \
-        if (toVal->addr != NULL) {                      \
+        if (toVal->addr != 0) {                         \
             if (toVal->size < sizeof(type)) {           \
                 toVal->size = sizeof(type);             \
                 return False;                           \
@@ -173,7 +173,7 @@ static Boolean CvtStringToPacking(Display *display,
         else {                                          \
             static type static_val;                     \
             static_val = (value);                       \
-            toVal->addr = (caddr_t)&static_val;         \
+            toVal->addr = (XPointer)&static_val;        \
         }                                               \
                                                         \
         toVal->size = sizeof(type);                     \
@@ -223,14 +223,14 @@ Boolean CvtStringToWidget(Display *display,
 	    "wrongParameters", "CvtStringToWidget",
 	    "XtToolkitError",
 	    "String to Widget conversion needs parent arg",
-	    (String *)NULL, (Cardinal *)NULL);
+	    (String *)0, (Cardinal *)0);
     }
     Widget parent = *(Widget *) args[0].addr;
 
     // Get widget
     string value = str(fromVal, false);
     Widget w = XtNameToWidget(parent, value);
-    if (w == NULL)
+    if (w == 0)
     {
 	XtDisplayStringConversionWarning(display, fromVal->addr, XtRWidget);
 	return False;
@@ -333,7 +333,7 @@ static Boolean CvtStringToBitmap(Display *display,
     // Locate file
     string basename = str(fromVal, false);
     String filename = locateBitmap(display, basename);
-    if (filename == NULL)
+    if (filename == 0)
     {
 	// Cannot find file -- check for predefined motif bitmaps
 	for (Cardinal i = 0; i < XtNumber(bitmap_name_set); i++)
@@ -398,12 +398,12 @@ static string bitmapPath()
 
     path = BASENAME;
     char *xbmlangpath = getenv("XBMLANGPATH");
-    if (xbmlangpath == NULL)
+    if (xbmlangpath == 0)
     {
 	char *xapplresdir = getenv("XAPPLRESDIR");
 	string home = gethome();
 
-	if (xapplresdir != NULL)
+	if (xapplresdir != 0)
 	    addDefaultPaths(path, xapplresdir);
 	else
 	    addDefaultPaths(path, home);
@@ -428,13 +428,14 @@ static String locateBitmap(Display *display, String basename)
     subst.match        = 'B';
     subst.substitution = basename;
 
-    return XtResolvePathname(display,      // the display we use
-			     "bitmaps",    // %T = bitmaps
-			     NULL,         // %N = application class name
-			     "",           // %S = "" (suffix)
-			     (String)PATH, // path to use
-			     &subst, 1,    // %B = basename
-			     NULL);        // no checking for valid bitmap
+    return XtResolvePathname(
+	display,      // the display we use
+	"bitmaps",    // %T = bitmaps
+	String(0),    // %N = application class name
+	"",           // %S = "" (suffix)
+	String(PATH), // path to use
+	&subst, 1,    // %B = basename
+	XtFilePredicate(0)); // no checking for valid bitmap
 }
 
 // Macro tables
@@ -927,118 +928,118 @@ void registerOwnConverters()
     // String -> Widget
     XtSetTypeConverter(XtRString, XtRWidget, CvtStringToWidget,
 		       parentCvtArgs, XtNumber(parentCvtArgs), XtCacheNone,
-		       XtDestructor(NULL));
+		       XtDestructor(0));
 
     // String -> Window
     // We use CvtStringToWidget for conversions to "Window" as well,
     // since Motif widgets want a widget id in their "Window" fields.
     XtSetTypeConverter(XtRString, XtRWindow, CvtStringToWidget,
 		       parentCvtArgs, XtNumber(parentCvtArgs), XtCacheNone,
-		       XtDestructor(NULL));
+		       XtDestructor(0));
 
     // String -> Pixmap
     XtSetTypeConverter(XtRString, XmRPixmap, CvtStringToPixmap,
 		       thisCvtArgs, XtNumber(thisCvtArgs), XtCacheNone,
-		       XtDestructor(NULL));
+		       XtDestructor(0));
 
     // String -> GadgetPixmap
     XtSetTypeConverter(XtRString, XmRGadgetPixmap, CvtStringToPixmap,
 		       thisCvtArgs, XtNumber(thisCvtArgs), XtCacheNone,
-		       XtDestructor(NULL));
+		       XtDestructor(0));
 
     // String -> PrimForegroundPixmap
     XtSetTypeConverter(XtRString, XmRPrimForegroundPixmap, CvtStringToPixmap,
 		       thisCvtArgs, XtNumber(thisCvtArgs), XtCacheNone,
-		       XtDestructor(NULL));
+		       XtDestructor(0));
 
     // String -> ManForegroundPixmap
     XtSetTypeConverter(XtRString, XmRManForegroundPixmap, CvtStringToPixmap,
 		       thisCvtArgs, XtNumber(thisCvtArgs), XtCacheNone,
-		       XtDestructor(NULL));
+		       XtDestructor(0));
 
     // String -> BackgroundPixmap
     XtSetTypeConverter(XtRString, XmRBackgroundPixmap, CvtStringToPixmap,
 		       thisCvtArgs, XtNumber(thisCvtArgs), XtCacheNone,
-		       XtDestructor(NULL));
+		       XtDestructor(0));
 
     // String -> PrimHighlightPixmap
     XtSetTypeConverter(XtRString, XmRPrimHighlightPixmap, CvtStringToPixmap,
 		       thisCvtArgs, XtNumber(thisCvtArgs), XtCacheNone,
-		       XtDestructor(NULL));
+		       XtDestructor(0));
 
     // String -> PrimTopShadowPixmap
     XtSetTypeConverter(XtRString, XmRPrimTopShadowPixmap, CvtStringToPixmap,
 		       thisCvtArgs, XtNumber(thisCvtArgs), XtCacheNone,
-		       XtDestructor(NULL));
+		       XtDestructor(0));
 
     // String -> PrimBottomShadowPixmap
     XtSetTypeConverter(XtRString, XmRPrimBottomShadowPixmap, CvtStringToPixmap,
 		       thisCvtArgs, XtNumber(thisCvtArgs), XtCacheNone,
-		       XtDestructor(NULL));
+		       XtDestructor(0));
 
     // String -> ManTopShadowPixmap
     XtSetTypeConverter(XtRString, XmRManTopShadowPixmap, CvtStringToPixmap,
 		       thisCvtArgs, XtNumber(thisCvtArgs), XtCacheNone,
-		       XtDestructor(NULL));
+		       XtDestructor(0));
 
     // String -> ManBottomShadowPixmap
     XtSetTypeConverter(XtRString, XmRManBottomShadowPixmap, CvtStringToPixmap,
 		       thisCvtArgs, XtNumber(thisCvtArgs), XtCacheNone,
-		       XtDestructor(NULL));
+		       XtDestructor(0));
 
     // String -> ManHighlightPixmap
     XtSetTypeConverter(XtRString, XmRManHighlightPixmap, CvtStringToPixmap,
 		       thisCvtArgs, XtNumber(thisCvtArgs), XtCacheNone,
-		       XtDestructor(NULL));
+		       XtDestructor(0));
 
 #if XmVersion >= 1002
     // String -> AnimationPixmap
     XtSetTypeConverter(XtRString, XmRAnimationPixmap, CvtStringToPixmap,
 		       thisCvtArgs, XtNumber(thisCvtArgs), XtCacheNone,
-		       XtDestructor(NULL));
+		       XtDestructor(0));
 #endif
 
     // String -> Bitmap
     XtSetTypeConverter(XtRString, XtRBitmap, CvtStringToBitmap,
 		       thisCvtArgs, XtNumber(thisCvtArgs), XtCacheByDisplay,
-		       XtDestructor(NULL));
+		       XtDestructor(0));
 
     // String -> XmString
     XtSetTypeConverter(XmRString, XmRXmString, CvtStringToXmString,
-		       NULL, 0, XtCacheNone,
-		       XtDestructor(NULL));
+		       XtConvertArgList(0), 0, XtCacheNone,
+		       XtDestructor(0));
 
 #if OWN_FONT_CONVERTERS
     // String -> FontList
     XtSetTypeConverter(XmRString, XmRFontList, CvtStringToXmFontList,
-		       NULL, 0, XtCacheAll,
-		       XtDestructor(NULL));
+		       XtConvertArgList(0), 0, XtCacheAll,
+		       XtDestructor(0));
 
     // String -> FontStruct
     XtSetTypeConverter(XmRString, XtRFontStruct, CvtStringToFontStruct,
-		       NULL, 0, XtCacheAll,
-		       XtDestructor(NULL));
+		       XtConvertArgList(0), 0, XtCacheAll,
+		       XtDestructor(0));
 #endif
 
     // String -> UnitType
     XtSetTypeConverter(XmRString, XmRUnitType, CvtStringToUnitType,
-		       NULL, 0, XtCacheAll, 
-		       XtDestructor(NULL));
+		       XtConvertArgList(0), 0, XtCacheAll, 
+		       XtDestructor(0));
 
     // String -> OnOff
     XtSetTypeConverter(XmRString, XtROnOff, CvtStringToOnOff,
-		       NULL, 0, XtCacheAll, 
-		       XtDestructor(NULL));
+		       XtConvertArgList(0), 0, XtCacheAll, 
+		       XtDestructor(0));
 
     // String -> BindingStyle
     XtSetTypeConverter(XmRString, XtRBindingStyle, CvtStringToBindingStyle,
-		       NULL, 0, XtCacheAll, 
-		       XtDestructor(NULL));
+		       XtConvertArgList(0), 0, XtCacheAll, 
+		       XtDestructor(0));
 
     // String -> Cardinal
     XtSetTypeConverter(XmRString, XtRCardinal, CvtStringToCardinal,
-		       NULL, 0, XtCacheAll,
-		       XtDestructor(NULL));
+		       XtConvertArgList(0), 0, XtCacheAll,
+		       XtDestructor(0));
 
     // The following three were contributed by Thorsten Sommer
     // <sommer@ips.cs.tu-bs.de>
@@ -1046,17 +1047,17 @@ void registerOwnConverters()
     // String -> Alignment
     XtSetTypeConverter(XtRString, XmNentryAlignment, CvtStringToAlignment,
 		       parentCvtArgs, XtNumber(parentCvtArgs), XtCacheNone,
-		       XtDestructor(NULL));
+		       XtDestructor(0));
 
     // String -> Orientation
     XtSetTypeConverter(XtRString, XmNorientation, CvtStringToOrientation,
 		       parentCvtArgs, XtNumber(parentCvtArgs), XtCacheNone,
-		       XtDestructor(NULL));
+		       XtDestructor(0));
 
     // String -> Packing
     XtSetTypeConverter(XtRString, XmNpacking, CvtStringToPacking,
 		       parentCvtArgs, XtNumber(parentCvtArgs), XtCacheNone,
-		       XtDestructor(NULL));
+		       XtDestructor(0));
 }
 
 // Define a macro: @NAME@ will be replaced by VALUE in CvtStringToXmString

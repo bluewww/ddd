@@ -5433,7 +5433,8 @@ void SourceView::NewBreakpointCB(Widget w, XtPointer, XtPointer)
 	Widget text = CreateComboBox(box, "text", args, arg);
 	tie_combo_box_to_history(text, break_history_filter);
 
-	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, NULL);
+	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, 
+		      XtPointer(0));
 	XtAddCallback(dialog, XmNokCallback, NewBreakpointDCB, 
 		      XtPointer(text));
     }
@@ -5477,11 +5478,11 @@ void SourceView::NewWatchpointCB(Widget w, XtPointer, XtPointer)
 	static MMDesc wp_modes[] =
 	{
 	    { "cwatch",  MMPush, { SetWatchModeCB, XtPointer(WATCH_CHANGE) }, 
-	      NULL, &cwatch_w, 0, 0 },
+	      0, &cwatch_w, 0, 0 },
 	    { "rwatch",  MMPush, { SetWatchModeCB, XtPointer(WATCH_READ) }, 
-	      NULL, &rwatch_w, 0, 0 },
+	      0, &rwatch_w, 0, 0 },
 	    { "awatch", MMPush, { SetWatchModeCB, XtPointer(WATCH_ACCESS)},
-	      NULL, &awatch_w, 0, 0 },
+	      0, &awatch_w, 0, 0 },
 	    MMEnd
 	};
 
@@ -5541,7 +5542,8 @@ void SourceView::NewWatchpointCB(Widget w, XtPointer, XtPointer)
 	Widget text = CreateComboBox(box, "text", args, arg);
 	tie_combo_box_to_history(text, watch_history_filter);
 
-	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, NULL);
+	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, 
+		      XtPointer(0));
 	XtAddCallback(dialog, XmNokCallback, NewWatchpointDCB, 
 		      XtPointer(text));
 
@@ -6122,7 +6124,7 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, Widget /* origin */)
 		  UnmanageThisCB, XtPointer(info->dialog));
 
     XtAddCallback(info->dialog, XmNhelpCallback,    
-		  ImmediateHelpCB, NULL);
+		  ImmediateHelpCB, XtPointer(0));
 
     XtAddCallback(info->dialog, XmNunmapCallback,
 		  DestroyThisCB, XtParent(info->dialog));
@@ -9493,7 +9495,7 @@ bool SourceView::function_is_larger_than(string pc, int max_size)
 
     // Get the function name at function start + MAX_SIZE.  If this is
     // the same name as the name at start, the function is too large.
-    unsigned long pc_l = strtoul(pc.chars(), NULL, 0);
+    unsigned long pc_l = strtoul(pc.chars(), (char **)0, 0);
     unsigned long next_l = pc_l - pc_offset + max_size;
     if (next_l < pc_l)
     {
@@ -9573,7 +9575,7 @@ void SourceView::show_pc(const string& pc, XmHighlightMode mode,
 	    function_is_larger_than(pc, app_data.max_disassemble))
 	{
 	    // Disassemble only MAX_DISASSEMBLE bytes after PC
-	    unsigned long pc_l = strtoul(pc.chars(), NULL, 0);
+	    unsigned long pc_l = strtoul(pc.chars(), (char **)0, 0);
 	    unsigned long next_l = pc_l + app_data.max_disassemble;
 	    if (next_l < pc_l)
 	    {

@@ -739,7 +739,7 @@ void MMadjustPanel(MMDesc items[], Dimension space)
 
 	XtWidgetGeometry size;
 	size.request_mode = CWWidth;
-	XtQueryGeometry(item->label, NULL, &size);
+	XtQueryGeometry(item->label, (XtWidgetGeometry *)0, &size);
 	max_label_width = max(max_label_width, size.width);
     }
 
@@ -1263,7 +1263,7 @@ static void ArmPushMenuCB(Widget w, XtPointer client_data, XtPointer call_data)
     subresource_values values;
     XtGetApplicationResources(w, &values, 
 			      subresources, XtNumber(subresources), 
-			      NULL, 0);
+			      ArgList(0), 0);
 
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
     if (cbs && cbs->event)

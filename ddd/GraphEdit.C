@@ -86,7 +86,7 @@ static BoxRegion EVERYWHERE(BoxPoint(0,0), BoxSize(INT_MAX, INT_MAX));
 static void defaultForeground(Widget w, int, XrmValue *value)
 {
     const GraphEditWidget _w = GraphEditWidget(w);
-    value->addr = caddr_t(&_w->primitive.foreground);
+    value->addr = XPointer(&_w->primitive.foreground);
 }
 
 
@@ -96,7 +96,7 @@ static XtResource resources[] = {
 #define offset(field) XtOffsetOf(GraphEditRec, graphEdit.field)
     // {name, class, type, size, offset, default_type, default_addr}
     { (char *)XtNgraph, (char *)XtCGraph, XtRPointer, sizeof(Graph *),
-        offset(graph), XtRImmediate, XtPointer(NULL) },
+        offset(graph), XtRImmediate, XtPointer(0) },
     { (char *)XtNmoveDelta, (char *)XtCMoveDelta, XtRDimension, sizeof(Dimension),
 	offset(moveDelta), XtRImmediate, XtPointer(4) },
     { (char *)XtNrubberEdges, (char *)XtCRubberEdges, XtRBoolean, sizeof(Boolean),
@@ -393,10 +393,10 @@ GraphEditClassRec graphEditClassRec = {
     /* class_name               */  (char *)"GraphEdit",
     /* widget_size              */  sizeof(GraphEditRec),
     /* class_initialize         */  ClassInitialize,
-    /* class_part_initialize    */  NULL,
+    /* class_part_initialize    */  XtWidgetClassProc(0),
     /* class_inited             */  False,
     /* initialize               */  Initialize,
-    /* initialize_hook          */  NULL,
+    /* initialize_hook          */  XtArgsProc(0),
     /* realize                  */  Realize,
     /* actions                  */  actions,
     /* num_actions              */  XtNumber(actions),
@@ -411,25 +411,25 @@ GraphEditClassRec graphEditClassRec = {
     /* resize                   */  XtInheritResize,
     /* expose                   */  Redisplay,
     /* set_values               */  SetValues,
-    /* set_values_hook          */  NULL,
+    /* set_values_hook          */  XtArgsFunc(0),
     /* set_values_almost        */  XtInheritSetValuesAlmost,
-    /* get_values_hook          */  NULL,
-    /* accept_focus             */  NULL,
+    /* get_values_hook          */  XtArgsProc(0),
+    /* accept_focus             */  XtAcceptFocusProc(0),
     /* version                  */  XtVersion,
-    /* callback_private         */  NULL,
+    /* callback_private         */  XtPointer(0),
     /* tm_table                 */  defaultTranslations,
     /* query_geometry           */  XtInheritQueryGeometry,
     /* display_accelerator      */  XtInheritDisplayAccelerator,
-    /* extension                */  NULL,
+    /* extension                */  XtPointer(0)
   },
   {	 /* Primitive fields */
     /* border_highlight         */ XmInheritBorderHighlight,
     /* border_unhighlight       */ XmInheritBorderUnhighlight,
     /* translations             */ XtInheritTranslations,
-    /* arm_and_activate         */ NULL,   // XmInheritArmAndActivate?
-    /* syn_resources            */ NULL,
+    /* arm_and_activate         */ XtActionProc(0), // XmInheritArmAndActivate?
+    /* syn_resources            */ (XmSyntheticResource *)0,
     /* num_syn_resources        */ 0,
-    /* extension                */ NULL
+    /* extension                */ XtPointer(0)
 #if defined(__sgi) && !defined(LesstifVersion)
 	// Paul Sydney <sydney@ulua.mhpcc.af.mil> reports that OSF/Motif
 	// on an SGI Indy running IRIX 6.5 has an extra
@@ -439,7 +439,7 @@ GraphEditClassRec graphEditClassRec = {
 #endif
   },
   {	/* GraphEdit fields */
-    /* extension                */ NULL
+    /* extension                */ XtPointer(0)
   },
 };
 
@@ -737,7 +737,7 @@ Boolean graphEditEnableRedisplay(Widget w, Boolean state)
 
 #define done(type, value) \
     {							\
-	if (toVal->addr != NULL) {			\
+	if (toVal->addr != 0) {			\
 	    if (toVal->size < sizeof(type)) {		\
 		toVal->size = sizeof(type);		\
 		return False;				\
@@ -747,7 +747,7 @@ Boolean graphEditEnableRedisplay(Widget w, Boolean state)
 	else {						\
 	    static type static_val;			\
 	    static_val = (value);			\
-	    toVal->addr = (caddr_t)&static_val;	        \
+	    toVal->addr = (XPointer)&static_val;	\
 	}						\
 							\
 	toVal->size = sizeof(type);			\
@@ -769,7 +769,7 @@ static Boolean CvtStringToEdgeAttachMode (Display *display, XrmValue *,
 	    "CvtStringToEdgeAttachMode", "wrongParameters",
 	    "XtToolkitError",
 	    "String to EdgeAttachMode conversion needs no extra arguments",
-	    (String *)NULL, (Cardinal *)NULL);
+	    (String *)0, (Cardinal *)0);
     
     string s = downcase((char *)fromVal->addr);
 
@@ -795,7 +795,7 @@ static Boolean CvtEdgeAttachModeToString (Display *display, XrmValue *,
 	    "CvtEdgeAttachModeToString", "wrongParameters",
 	    "XtToolkitError",
 	    "EdgeAttachMode to String conversion needs no extra arguments",
-	    (String *)NULL, (Cardinal *)NULL);
+	    (String *)0, (Cardinal *)0);
 
     EdgeAttachMode mode = *((EdgeAttachMode *)fromVal->addr);
 
@@ -833,7 +833,7 @@ static Boolean CvtStringToLayoutMode (Display *display, XrmValue *,
 	    "CvtStringToLayoutMode", "wrongParameters",
 	    "XtToolkitError",
 	    "String to LayoutMode conversion needs no extra arguments",
-	    (String *)NULL, (Cardinal *)NULL);
+	    (String *)0, (Cardinal *)0);
     
     string s = downcase((char *)fromVal->addr);
 
@@ -858,7 +858,7 @@ static Boolean CvtLayoutModeToString (Display *display, XrmValue *,
 	    "CvtLayoutModeToString", "wrongParameters",
 	    "XtToolkitError",
 	    "LayoutMode to String conversion needs no extra arguments",
-	    (String *)NULL, (Cardinal *)NULL);
+	    (String *)0, (Cardinal *)0);
 
     LayoutMode mode = *((LayoutMode *)fromVal->addr);
 
@@ -891,7 +891,7 @@ static Boolean CvtStringToSelfEdgePosition (Display *display, XrmValue *,
 	    "CvtStringToSelfEdgePosition", "wrongParameters",
 	    "XtToolkitError",
 	    "String to SelfEdgePosition conversion needs no extra arguments",
-	    (String *)NULL, (Cardinal *)NULL);
+	    (String *)0, (Cardinal *)0);
     
     string s = downcase((char *)fromVal->addr);
 
@@ -920,7 +920,7 @@ static Boolean CvtSelfEdgePositionToString (Display *display, XrmValue *,
 	    "CvtSelfEdgePositionToString", "wrongParameters",
 	    "XtToolkitError",
 	    "SelfEdgePosition to String conversion needs no extra arguments",
-	    (String *)NULL, (Cardinal *)NULL);
+	    (String *)0, (Cardinal *)0);
 
     SelfEdgePosition pos = *((SelfEdgePosition *)fromVal->addr);
 
@@ -959,7 +959,7 @@ static Boolean CvtStringToSelfEdgeDirection (Display *display, XrmValue *,
 	    "CvtStringToSelfEdgeDirection", "wrongParameters",
 	    "XtToolkitError",
 	    "String to SelfEdgeDirection conversion needs no extra arguments",
-	    (String *)NULL, (Cardinal *)NULL);
+	    (String *)0, (Cardinal *)0);
     
     string s = downcase((char *)fromVal->addr);
 
@@ -984,7 +984,7 @@ static Boolean CvtSelfEdgeDirectionToString (Display *display, XrmValue *,
 	    "CvtSelfEdgeDirectionToString", "wrongParameters",
 	    "XtToolkitError",
 	    "SelfEdgeDirection to String conversion needs no extra arguments",
-	    (String *)NULL, (Cardinal *)NULL);
+	    (String *)0, (Cardinal *)0);
 
     SelfEdgeDirection pos = *((SelfEdgeDirection *)fromVal->addr);
 
@@ -1019,7 +1019,7 @@ static Boolean CvtBooleanToString (Display *display, XrmValue *,
 	    "CvtBooleanToString", "wrongParameters",
 	    "XtToolkitError",
 	    "Boolean to String conversion needs no extra arguments",
-	    (String *)NULL, (Cardinal *)NULL);
+	    (String *)0, (Cardinal *)0);
 
     Boolean mode = *((Boolean *)fromVal->addr);
 
@@ -1049,7 +1049,7 @@ static Boolean CvtDimensionToString (Display *display, XrmValue *,
 	    "CvtDimensionToString", "wrongParameters",
 	    "XtToolkitError",
 	    "Dimension to String conversion needs no extra arguments",
-	    (String *)NULL, (Cardinal *)NULL);
+	    (String *)0, (Cardinal *)0);
 
     Dimension d = *((Dimension *)fromVal->addr);
 
@@ -1070,7 +1070,7 @@ static Boolean CvtCardinalToString (Display *display, XrmValue *,
 	    "CvtCardinalToString", "wrongParameters",
 	    "XtToolkitError",
 	    "Cardinal to String conversion needs no extra arguments",
-	    (String *)NULL, (Cardinal *)NULL);
+	    (String *)0, (Cardinal *)0);
 
     Cardinal d = *((Cardinal *)fromVal->addr);
 
@@ -1819,7 +1819,7 @@ static void moveTo(Widget w,
 	info.new_position = newPos;
 	info.is_last      = isLast;
 
-	XtCallCallbacks(w, XtNpositionChangedCallback, caddr_t(&info));
+	XtCallCallbacks(w, XtNpositionChangedCallback, XtPointer(&info));
 
 	node->moveTo(newPos);
     }
@@ -1836,7 +1836,7 @@ static void selectionChanged(Widget w, XEvent *event, Boolean double_click)
     info.event        = event;
     info.double_click = double_click;
 
-    XtCallCallbacks(w, XtNselectionChangedCallback, caddr_t(&info));
+    XtCallCallbacks(w, XtNselectionChangedCallback, XtPointer(&info));
 }
 
 
@@ -2004,7 +2004,7 @@ static void _SelectOrMove(Widget w, XEvent *event, String *params,
 	info.doit         = True;
 	info.double_click = double_click;
 
-	XtCallCallbacks(w, XtNpreSelectionCallback, caddr_t(&info));
+	XtCallCallbacks(w, XtNpreSelectionCallback, XtPointer(&info));
 
 	if (!info.doit)
 	    return;
@@ -2709,7 +2709,7 @@ static int LayoutCompareCB(char *name1, char *name2)
     info.node1 = node1;
     info.node2 = node2;
 
-    XtCallCallbacks(layout_widget, XtNcompareNodesCallback, caddr_t(&info));
+    XtCallCallbacks(layout_widget, XtNcompareNodesCallback, XtPointer(&info));
 
     return info.result;
 }
@@ -2802,9 +2802,9 @@ static void _Layout(Widget w, XEvent *event, String *params,
     {
 	LayoutMode mode_param;
 	XrmValue v1, v2;
-	v1.addr = caddr_t(params[0]);
+	v1.addr = XPointer(params[0]);
 	v1.size = sizeof(String);
-	v2.addr = caddr_t(&mode_param);
+	v2.addr = XPointer(&mode_param);
 	v2.size = sizeof(LayoutMode);
 
 	Boolean ok = 
@@ -2830,7 +2830,7 @@ static void _Layout(Widget w, XEvent *event, String *params,
     info.graph    = graph;
     info.mode     = mode;
     info.rotation = new_rotation;
-    XtCallCallbacks(w, XtNpreLayoutCallback, caddr_t(&info));
+    XtCallCallbacks(w, XtNpreLayoutCallback, XtPointer(&info));
 
     // Remove all hint nodes
     remove_all_hints(graph);
@@ -2896,7 +2896,7 @@ static void _Layout(Widget w, XEvent *event, String *params,
     _Rotate(w, event, rotate_params, &rotate_num_params);
 
     // Layout is done
-    XtCallCallbacks(w, XtNpostLayoutCallback, caddr_t(&info));
+    XtCallCallbacks(w, XtNpostLayoutCallback, XtPointer(&info));
 
     autoLayout = old_autoLayout;
 }

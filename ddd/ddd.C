@@ -463,13 +463,13 @@ static char OFF[] = "off";
 // Options
 // Note: we support both the GDB '--OPTION' and the X '-OPTION' convention.
 static XrmOptionDescRec options[] = {
-{ (char *)"--session",              (char *)XtNsession,              XrmoptionSepArg, NULL },
-{ (char *)"-session",               (char *)XtNsession,              XrmoptionSepArg, NULL },
+{ (char *)"--session",              (char *)XtNsession,              XrmoptionSepArg, XPointer(0) },
+{ (char *)"-session",               (char *)XtNsession,              XrmoptionSepArg, XPointer(0) },
 
-{ (char *)"-xtsessionID",           (char *)XtNsession,              XrmoptionSepArg, NULL },
+{ (char *)"-xtsessionID",           (char *)XtNsession,              XrmoptionSepArg, XPointer(0) },
 
-{ (char *)"--debugger",             (char *)XtNdebuggerCommand,      XrmoptionSepArg, NULL },
-{ (char *)"-debugger",              (char *)XtNdebuggerCommand,      XrmoptionSepArg, NULL },
+{ (char *)"--debugger",             (char *)XtNdebuggerCommand,      XrmoptionSepArg, XPointer(0) },
+{ (char *)"-debugger",              (char *)XtNdebuggerCommand,      XrmoptionSepArg, XPointer(0) },
 
 { (char *)"--automatic-debugger",   (char *)XtNautoDebugger,         XrmoptionNoArg,  ON },
 { (char *)"-automatic-debugger",    (char *)XtNautoDebugger,         XrmoptionNoArg,  ON },
@@ -501,21 +501,21 @@ static XrmOptionDescRec options[] = {
 { (char *)"--trace",                (char *)XtNtrace,                XrmoptionNoArg,  ON },
 { (char *)"-trace",                 (char *)XtNtrace,                XrmoptionNoArg,  ON },
 
-{ (char *)"--play-log",		   (char *)XtNplayLog,              XrmoptionSepArg, NULL },
-{ (char *)"-play-log",		   (char *)XtNplayLog,              XrmoptionSepArg, NULL },
+{ (char *)"--play-log",		   (char *)XtNplayLog,              XrmoptionSepArg, XPointer(0) },
+{ (char *)"-play-log",		   (char *)XtNplayLog,              XrmoptionSepArg, XPointer(0) },
 
-{ (char *)"--font",                 (char *)XtNdefaultFont,          XrmoptionSepArg, NULL },
-{ (char *)"-font",                  (char *)XtNdefaultFont,          XrmoptionSepArg, NULL },
-{ (char *)"-fn",                    (char *)XtNdefaultFont,          XrmoptionSepArg, NULL },
+{ (char *)"--font",                 (char *)XtNdefaultFont,          XrmoptionSepArg, XPointer(0) },
+{ (char *)"-font",                  (char *)XtNdefaultFont,          XrmoptionSepArg, XPointer(0) },
+{ (char *)"-fn",                    (char *)XtNdefaultFont,          XrmoptionSepArg, XPointer(0) },
 
-{ (char *)"--fontsize",             (char *)XtCFontSize,             XrmoptionSepArg, NULL },
-{ (char *)"-fontsize",              (char *)XtCFontSize,             XrmoptionSepArg, NULL },
+{ (char *)"--fontsize",             (char *)XtCFontSize,             XrmoptionSepArg, XPointer(0) },
+{ (char *)"-fontsize",              (char *)XtCFontSize,             XrmoptionSepArg, XPointer(0) },
 
-{ (char *)"--vsl-library",          (char *)XtNvslLibrary,           XrmoptionSepArg, NULL },
-{ (char *)"-vsl-library",           (char *)XtNvslLibrary,           XrmoptionSepArg, NULL },
+{ (char *)"--vsl-library",          (char *)XtNvslLibrary,           XrmoptionSepArg, XPointer(0) },
+{ (char *)"-vsl-library",           (char *)XtNvslLibrary,           XrmoptionSepArg, XPointer(0) },
 
-{ (char *)"--vsl-path",             (char *)XtNvslPath,              XrmoptionSepArg, NULL },
-{ (char *)"-vsl-path",              (char *)XtNvslPath,              XrmoptionSepArg, NULL },
+{ (char *)"--vsl-path",             (char *)XtNvslPath,              XrmoptionSepArg, XPointer(0) },
+{ (char *)"-vsl-path",              (char *)XtNvslPath,              XrmoptionSepArg, XPointer(0) },
 
 { (char *)"--separate",             (char *)XtCSeparate,             XrmoptionNoArg, ON },
 { (char *)"-separate",              (char *)XtCSeparate,             XrmoptionNoArg, ON },
@@ -608,15 +608,15 @@ static XrmOptionDescRec options[] = {
 { (char *)"--no-glyphs",            (char *)XtNdisplayGlyphs,        XrmoptionNoArg, OFF },
 { (char *)"-no-glyphs",             (char *)XtNdisplayGlyphs,        XrmoptionNoArg, OFF },
 
-{ (char *)"--host",                 (char *)XtNdebuggerHost,         XrmoptionSepArg, NULL },
-{ (char *)"-host",                  (char *)XtNdebuggerHost,         XrmoptionSepArg, NULL },
+{ (char *)"--host",                 (char *)XtNdebuggerHost,         XrmoptionSepArg, XPointer(0) },
+{ (char *)"-host",                  (char *)XtNdebuggerHost,         XrmoptionSepArg, XPointer(0) },
 
-{ (char *)"--rhost",                (char *)XtNdebuggerRHost,        XrmoptionSepArg, NULL },
-{ (char *)"-rhost",                 (char *)XtNdebuggerRHost,        XrmoptionSepArg, NULL },
+{ (char *)"--rhost",                (char *)XtNdebuggerRHost,        XrmoptionSepArg, XPointer(0) },
+{ (char *)"-rhost",                 (char *)XtNdebuggerRHost,        XrmoptionSepArg, XPointer(0) },
 
-{ (char *)"--login",                (char *)XtNdebuggerHostLogin,    XrmoptionSepArg, NULL },
-{ (char *)"-login",                 (char *)XtNdebuggerHostLogin,    XrmoptionSepArg, NULL },
-{ (char *)"-l",                     (char *)XtNdebuggerHostLogin,    XrmoptionSepArg, NULL },
+{ (char *)"--login",                (char *)XtNdebuggerHostLogin,    XrmoptionSepArg, XPointer(0) },
+{ (char *)"-login",                 (char *)XtNdebuggerHostLogin,    XrmoptionSepArg, XPointer(0) },
+{ (char *)"-l",                     (char *)XtNdebuggerHostLogin,    XrmoptionSepArg, XPointer(0) },
 
 { (char *)"--tty",                  (char *)XtNttyMode,              XrmoptionNoArg, ON },
 { (char *)"-tty",                   (char *)XtNttyMode,              XrmoptionNoArg, ON },
@@ -626,8 +626,8 @@ static XrmOptionDescRec options[] = {
 { (char *)"-fullname",              (char *)XtNannotate,             XrmoptionNoArg, (char *)"1" },
 { (char *)"-f",                     (char *)XtNannotate,             XrmoptionNoArg, (char *)"1" },
 
-{ (char *)"--annotate",             (char *)XtNannotate,             XrmoptionSepArg, NULL },
-{ (char *)"-annotate",              (char *)XtNannotate,             XrmoptionSepArg, NULL },
+{ (char *)"--annotate",             (char *)XtNannotate,             XrmoptionSepArg, XPointer(0) },
+{ (char *)"-annotate",              (char *)XtNannotate,             XrmoptionSepArg, XPointer(0) },
 
 { (char *)"--annotate=0",           (char *)XtNannotate,             XrmoptionNoArg, (char *)"0" },
 { (char *)"-annotate=0",            (char *)XtNannotate,             XrmoptionNoArg, (char *)"0" },
@@ -672,8 +672,8 @@ static XrmOptionDescRec options[] = {
 { (char *)"--no-lesstif-hacks",     (char *)XtNlessTifVersion,       XrmoptionNoArg, (char *)"1000" },
 { (char *)"-no-lesstif-hacks",      (char *)XtNlessTifVersion,       XrmoptionNoArg, (char *)"1000" },
 
-{ (char *)"--lesstif-version",      (char *)XtNlessTifVersion,       XrmoptionSepArg, NULL },
-{ (char *)"-lesstif-version",       (char *)XtNlessTifVersion,       XrmoptionSepArg, NULL },
+{ (char *)"--lesstif-version",      (char *)XtNlessTifVersion,       XrmoptionSepArg, XPointer(0) },
+{ (char *)"-lesstif-version",       (char *)XtNlessTifVersion,       XrmoptionSepArg, XPointer(0) },
 
 { (char *)"--help",                 (char *)XtNshowInvocation,       XrmoptionNoArg, ON },
 { (char *)"-help",                  (char *)XtNshowInvocation,       XrmoptionNoArg, ON },
@@ -942,13 +942,13 @@ static MMDesc command_menu[] =
     { "isearch_exit", MMPush, { gdbISearchExitCB, 0 }, 0, 0, 0, 0},
     MMSep,
     { "complete", MMPush, { WhenReady, XtPointer(gdbCompleteCB) }, 
-      NULL, &complete_w, 0, 0 },
+      0, &complete_w, 0, 0 },
     { "apply",    MMPush, { WhenReady, XtPointer(gdbApplyCB) }, 0, 0, 0, 0},
     MMSep,
     { "clear_line",   MMPush, { gdbClearCB, 0 }, 0, 0, 0, 0},
     { "clear_window", MMPush, { gdbClearWindowCB, 0 }, 0, 0, 0, 0},
     MMSep,
-    { "define",   MMPush, { dddDefineCommandCB, 0 }, NULL, &define_w, 0, 0 },
+    { "define",   MMPush, { dddDefineCommandCB, 0 }, 0, &define_w, 0, 0 },
     { "buttons",  MMPush, { dddEditButtonsCB, 0 }, 0, 0, 0, 0},
     MMEnd
 };
@@ -962,16 +962,16 @@ static MMDesc stack_menu[] =
 {
     { "stack",      MMPush,  { WhenReady, 
 			       XtPointer(SourceView::ViewStackFramesCB) },
-      NULL, &stack_w, 0, 0 },
+      0, &stack_w, 0, 0 },
     { "registers",  MMPush,  { WhenReady, 
 			       XtPointer(SourceView::ViewRegistersCB) },
-      NULL, &registers_w, 0, 0 },
+      0, &registers_w, 0, 0 },
     { "threads",    MMPush,  { WhenReady,
 			       XtPointer(SourceView::ViewThreadsCB) },
-      NULL, &threads_w, 0, 0 },
+      0, &threads_w, 0, 0 },
     { "signals",    MMPush,  { WhenReady,
 			       XtPointer(dddPopupSignalsCB) },
-      NULL, &signals_w, 0, 0 },
+      0, &signals_w, 0, 0 },
     MMSep,
     { "up",         MMPush,  { gdbCommandCB, XtPointer("up") }, 0, 0, 0, 0},
     { "down",       MMPush,  { gdbCommandCB, XtPointer("down") }, 0, 0, 0, 0},
@@ -993,21 +993,21 @@ static MMDesc source_menu[] =
     { "breakpoints", MMPush, { SourceView::EditBreakpointsCB, 0 }, 0, 0, 0, 0},
     MMSep,
     {"lookup",        MMPush, { gdbLookupCB, 0 },
-      NULL, &lookup_w, 0, 0 },
+      0, &lookup_w, 0, 0 },
     { "findForward",  MMPush, { gdbFindCB, XtPointer(SourceView::forward) },
-      NULL, &find_forward_w, 0, 0 },
+      0, &find_forward_w, 0, 0 },
     { "findBackward", MMPush, { gdbFindCB, XtPointer(SourceView::backward) },
-      NULL, &find_backward_w, 0, 0 },
+      0, &find_backward_w, 0, 0 },
     MMSep,
     { "findWordsOnly",       MMToggle, { sourceToggleFindWordsOnlyCB, 0 }, 
-      NULL, &find_words_only_w, 0, 0 },
+      0, &find_words_only_w, 0, 0 },
     { "findCaseSensitive",   MMToggle, { sourceToggleFindCaseSensitiveCB, 0 }, 
-      NULL, &find_case_sensitive_w, 0, 0 },
+      0, &find_case_sensitive_w, 0, 0 },
     MMSep,
     { "lineNumbers",         MMToggle, { sourceToggleDisplayLineNumbersCB, 0 },
-      NULL, &line_numbers1_w, 0, 0 },
+      0, &line_numbers1_w, 0, 0 },
     { "disassemble",         MMToggle,  { gdbToggleCodeWindowCB, 0 },
-      NULL, &disassemble_w, 0, 0 },
+      0, &disassemble_w, 0, 0 },
     MMSep,
     { "edit",       MMPush,  
       { gdbEditSourceCB, 0 }, 0, &edit_source_w, 0, 0 },
@@ -1045,9 +1045,9 @@ static MMDesc completion_menu [] =
 {
     { "inAllWindows", MMToggle, 
       { dddSetGlobalTabCompletionCB, XtPointer(True) }, 
-      NULL, &set_global_completion_w, 0, 0 },
+      0, &set_global_completion_w, 0, 0 },
     { "inConsole", MMToggle, { dddSetGlobalTabCompletionCB, XtPointer(False) },
-      NULL, &set_console_completion_w, 0, 0 },
+      0, &set_console_completion_w, 0, 0 },
     MMEnd
 };
 
@@ -1055,9 +1055,9 @@ static Widget max_undo_size_w;
 static MMDesc undo_menu [] =
 {
     { "size", MMTextField | MMUnmanagedLabel, { dddSetUndoBufferSizeCB, 0 }, 
-      NULL, &max_undo_size_w, 0, 0 },
-    { "kbytes", MMLabel, MMNoCB, NULL, 0, 0, 0 },
-    { "clear", MMPush, { dddClearUndoBufferCB, 0 }, NULL, 0, 0, 0 },
+      0, &max_undo_size_w, 0, 0 },
+    { "kbytes", MMLabel, MMNoCB, 0, 0, 0, 0 },
+    { "clear", MMPush, { dddClearUndoBufferCB, 0 }, 0, 0, 0, 0 },
     MMEnd
 };
 
@@ -1073,15 +1073,15 @@ static MMDesc general_preferences_menu[] =
     { "valueHints",          MMButtonPanel, MMNoCB, value_menu, 0, 0, 0 },
     { "tabCompletion",       MMRadioPanel,  MMNoCB, completion_menu, 0, 0, 0 },
     { "groupIconify",        MMToggle, { dddToggleGroupIconifyCB, 0 },
-      NULL, &group_iconify_w, 0, 0 },
+      0, &group_iconify_w, 0, 0 },
     { "uniconifyWhenReady",  MMToggle, { dddToggleUniconifyWhenReadyCB, 0 },
-      NULL, &uniconify_when_ready_w, 0, 0 },
+      0, &uniconify_when_ready_w, 0, 0 },
     { "suppressWarnings",    MMToggle, { dddToggleSuppressWarningsCB, 0 },
-      NULL, &suppress_warnings_w, 0, 0 },
+      0, &suppress_warnings_w, 0, 0 },
     { "warnIfLocked",        MMToggle, { dddToggleWarnIfLockedCB, 0 }, 
-      NULL, &warn_if_locked_w, 0, 0 },
+      0, &warn_if_locked_w, 0, 0 },
     { "checkGrabs",          MMToggle, { dddToggleCheckGrabsCB, 0 },
-      NULL, &check_grabs_w, 0, 0 },
+      0, &check_grabs_w, 0, 0 },
     { "undoSize",            MMPanel,  MMNoCB, undo_menu, 0, 0, 0 },
     MMEnd
 };
@@ -1093,9 +1093,9 @@ static Widget set_display_text_w;
 static MMDesc glyph_menu[] =
 {
     { "asGlyphs", MMToggle, { sourceSetDisplayGlyphsCB, XtPointer(True) },
-      NULL, &set_display_glyphs_w, 0, 0 },
+      0, &set_display_glyphs_w, 0, 0 },
     { "asText", MMToggle, { sourceSetDisplayGlyphsCB, XtPointer(False) },
-      NULL, &set_display_text_w, 0, 0 },
+      0, &set_display_text_w, 0, 0 },
     MMEnd
 };
 
@@ -1104,9 +1104,9 @@ static Widget set_tool_buttons_in_command_tool_w;
 static MMDesc tool_buttons_menu [] = 
 {
     { "commandTool",  MMToggle, { dddSetToolBarCB, XtPointer(False) },
-      NULL, &set_tool_buttons_in_command_tool_w, 0, 0 },
+      0, &set_tool_buttons_in_command_tool_w, 0, 0 },
     { "sourceWindow", MMToggle, { dddSetToolBarCB, XtPointer(True) },
-      NULL, &set_tool_buttons_in_toolbar_w, 0, 0 },
+      0, &set_tool_buttons_in_toolbar_w, 0, 0 },
     MMEnd
 };
 
@@ -1115,9 +1115,9 @@ static Widget set_refer_base_w;
 static MMDesc refer_menu[] =
 {
     { "byPath", MMToggle, { sourceSetUseSourcePathCB, XtPointer(True) },
-      NULL, &set_refer_path_w, 0, 0 },
+      0, &set_refer_path_w, 0, 0 },
     { "byBase", MMToggle, { sourceSetUseSourcePathCB, XtPointer(False) },
-      NULL, &set_refer_base_w, 0, 0 },
+      0, &set_refer_base_w, 0, 0 },
     MMEnd
 };
 
@@ -1126,9 +1126,9 @@ static Widget case_sensitive_w;
 static MMDesc find_preferences_menu[] =
 {
     { "wordsOnly", MMToggle, { sourceToggleFindWordsOnlyCB, 0 }, 
-      NULL, &words_only_w, 0, 0 },
+      0, &words_only_w, 0, 0 },
     { "caseSensitive", MMToggle, { sourceToggleFindCaseSensitiveCB, 0 }, 
-      NULL, &case_sensitive_w, 0, 0 },
+      0, &case_sensitive_w, 0, 0 },
     MMEnd
 };
 
@@ -1137,9 +1137,9 @@ static Widget cache_machine_code_w;
 static MMDesc cache_menu[] =
 {
     { "cacheSource", MMToggle, { sourceToggleCacheSourceFilesCB, 0 }, 
-      NULL, &cache_source_files_w, 0, 0 },
+      0, &cache_source_files_w, 0, 0 },
     { "cacheCode", MMToggle, { sourceToggleCacheMachineCodeCB, 0 }, 
-      NULL, &cache_machine_code_w, 0, 0 },
+      0, &cache_machine_code_w, 0, 0 },
     MMEnd
 };
 
@@ -1149,11 +1149,11 @@ static Widget code_indent_w;
 static MMDesc scales_menu[] = 
 {
     { "tabWidth", MMScale, 
-      { sourceSetTabWidthCB, 0 }, NULL, &tab_width_w, 0, 0 },
+      { sourceSetTabWidthCB, 0 }, 0, &tab_width_w, 0, 0 },
     { "sourceIndent", MMScale, 
-      { sourceSetSourceIndentCB, 0 }, NULL, &source_indent_w, 0, 0 },
+      { sourceSetSourceIndentCB, 0 }, 0, &source_indent_w, 0, 0 },
     { "codeIndent", MMScale, 
-      { sourceSetCodeIndentCB, 0 }, NULL, &code_indent_w, 0, 0 },
+      { sourceSetCodeIndentCB, 0 }, 0, &code_indent_w, 0, 0 },
     MMEnd
 };
 
@@ -1185,11 +1185,11 @@ static Widget graph_show_dependent_titles_w;
 static MMDesc show_menu[] = 
 {
     { "hints", MMToggle, { graphToggleShowHintsCB, 0 },
-      NULL, &graph_show_hints_w, 0, 0 },
+      0, &graph_show_hints_w, 0, 0 },
     { "annotations", MMToggle, { graphToggleShowAnnotationsCB, 0 },
-      NULL, &graph_show_annotations_w, 0, 0 },
+      0, &graph_show_annotations_w, 0, 0 },
     { "dependentTitles", MMToggle, { graphToggleShowDependentTitlesCB, 0 },
-      NULL, &graph_show_dependent_titles_w, 0, 0 },
+      0, &graph_show_dependent_titles_w, 0, 0 },
     MMEnd
 };
 
@@ -1199,9 +1199,9 @@ static Widget graph_auto_layout_w;
 static MMDesc layout_menu[] =
 {
     { "compact", MMToggle,  { graphToggleCompactLayoutCB, 0 },
-      NULL, &graph_compact_layout_w, 0, 0 },
+      0, &graph_compact_layout_w, 0, 0 },
     { "auto",    MMToggle,  { graphToggleAutoLayoutCB, 0 },
-      NULL, &graph_auto_layout_w, 0, 0 },
+      0, &graph_auto_layout_w, 0, 0 },
     MMEnd
 };
 
@@ -1212,10 +1212,10 @@ static MMDesc direction_menu[] =
 {
     { "topToBottom",    MMToggle,  { graphSetDisplayPlacementCB, 
 					 XtPointer(XmVERTICAL) },
-      NULL, &graph_top_to_bottom_w, 0, 0 },
+      0, &graph_top_to_bottom_w, 0, 0 },
     { "leftToRight",    MMToggle,  { graphSetDisplayPlacementCB, 
 					 XtPointer(XmHORIZONTAL) },
-      NULL, &graph_left_to_right_w, 0, 0 },
+      0, &graph_left_to_right_w, 0, 0 },
     MMEnd
 };
 
@@ -1226,7 +1226,7 @@ static MMDesc placement_menu[] =
     { "direction", MMRadioPanel | MMUnmanagedLabel,
 	  MMNoCB, direction_menu, 0, 0, 0 },
     { "clusterDisplays", MMToggle, { graphToggleClusterDisplaysCB, 0 },
-      NULL, &graph_cluster_displays_w, 0, 0 },
+      0, &graph_cluster_displays_w, 0, 0 },
     MMEnd
 };
 
@@ -1235,7 +1235,7 @@ static Widget graph_snap_to_grid_w;
 static MMDesc themes_menu[] = 
 {
     { "snapToGrid",    MMToggle,  { graphToggleSnapToGridCB, 0 },
-      NULL, &graph_snap_to_grid_w, 0, 0 },
+      0, &graph_snap_to_grid_w, 0, 0 },
     { "themes", MMPush, { dddPopupThemesCB, 0 }, 0, 0, 0, 0 },
     MMEnd
 };
@@ -1245,7 +1245,7 @@ static Widget graph_grid_size_w;
 static MMDesc grid_menu[] =
 {
     { "gridSize",      MMScale,   { graphSetGridSizeCB, 0 },
-      NULL, &graph_grid_size_w, 0, 0 },
+      0, &graph_grid_size_w, 0, 0 },
     MMEnd
 };
 
@@ -1259,11 +1259,11 @@ static MMDesc data_preferences_menu[] =
     { "placement",     MMPanel, MMNoCB, placement_menu, 0, 0, 0 },
     { "layout",        MMPanel, MMNoCB, layout_menu, 0, 0, 0 },
     { "detectAliases", MMToggle, { graphToggleDetectAliasesCB, 0 },
-      NULL, &graph_detect_aliases_w, 0, 0 },
+      0, &graph_detect_aliases_w, 0, 0 },
     { "align2dArrays", MMToggle,  { graphToggleAlign2dArraysCB, 0 },
-      NULL, &graph_align_2d_arrays_w, 0, 0 },
+      0, &graph_align_2d_arrays_w, 0, 0 },
     { "autoClose",     MMToggle,  { graphToggleAutoCloseCB, 0 },
-      NULL, &graph_auto_close_w, 0, 0 },
+      0, &graph_auto_close_w, 0, 0 },
     { "themes",    MMPanel | MMUnmanagedLabel, 
 	  MMNoCB, themes_menu, 0, 0, 0 },
     { "grid",    MMPanel | MMUnmanagedLabel, MMNoCB, grid_menu, 0, 0, 0 },
@@ -1277,9 +1277,9 @@ static Widget set_attached_windows_w;
 static MMDesc window_mode_menu [] = 
 {
     { "attached",  MMToggle, { dddSetSeparateWindowsCB, XtPointer(1) },
-      NULL, &set_attached_windows_w, 0, 0 },
+      0, &set_attached_windows_w, 0, 0 },
     { "separate",  MMToggle, { dddSetSeparateWindowsCB, XtPointer(0) },
-      NULL, &set_separate_windows_w, 0, 0 },
+      0, &set_separate_windows_w, 0, 0 },
     MMEnd
 };
 
@@ -1291,15 +1291,15 @@ static Widget set_toolbars_at_bottom_w;
 static MMDesc button_appearance_menu [] = 
 {
     { "images",   MMToggle, { dddToggleButtonImagesCB, 0 },
-      NULL, &set_button_images_w, 0, 0 },
+      0, &set_button_images_w, 0, 0 },
     { "captions", MMToggle, { dddToggleButtonCaptionsCB, 0 },
-      NULL, &set_button_captions_w, 0, 0 },
+      0, &set_button_captions_w, 0, 0 },
     { "flat", MMToggle, { dddToggleFlatButtonsCB, 0 },
-      NULL, &set_flat_buttons_w, 0, 0 },
+      0, &set_flat_buttons_w, 0, 0 },
     { "color", MMToggle, { dddToggleColorButtonsCB, 0 },
-      NULL, &set_color_buttons_w, 0, 0 },
+      0, &set_color_buttons_w, 0, 0 },
     { "bottom", MMToggle, { dddToggleToolbarsAtBottomCB, 0 },
-      NULL, &set_toolbars_at_bottom_w, 0, 0 },
+      0, &set_toolbars_at_bottom_w, 0, 0 },
     MMEnd
 };
 
@@ -1309,10 +1309,10 @@ static MMDesc keyboard_focus_menu [] =
 {
     { "pointer",  MMToggle, { dddSetKeyboardFocusPolicyCB, 
 			    XtPointer(XmPOINTER) },
-      NULL, &set_focus_pointer_w, 0, 0 },
+      0, &set_focus_pointer_w, 0, 0 },
     { "explicit", MMToggle, { dddSetKeyboardFocusPolicyCB, 
 			    XtPointer(XmEXPLICIT) },
-      NULL, &set_focus_explicit_w, 0, 0 },
+      0, &set_focus_explicit_w, 0, 0 },
     MMEnd
 };
 
@@ -1321,9 +1321,9 @@ static Widget set_scrolling_scrollbars_w;
 static MMDesc data_scrolling_menu [] = 
 {
     { "panner", MMToggle,     { dddSetPannerCB, XtPointer(True) },
-      NULL, &set_scrolling_panner_w, 0, 0 },
+      0, &set_scrolling_panner_w, 0, 0 },
     { "scrollbars", MMToggle, { dddSetPannerCB, XtPointer(False) },
-      NULL, &set_scrolling_scrollbars_w, 0, 0 },
+      0, &set_scrolling_scrollbars_w, 0, 0 },
     MMEnd
 };
 
@@ -1336,17 +1336,17 @@ static Widget set_debugger_perl_w;
 static MMDesc debugger_menu [] = 
 {
     { "gdb", MMToggle, { dddSetDebuggerCB, XtPointer(GDB) },
-      NULL, &set_debugger_gdb_w, 0, 0 },
+      0, &set_debugger_gdb_w, 0, 0 },
     { "dbx", MMToggle, { dddSetDebuggerCB, XtPointer(DBX) },
-      NULL, &set_debugger_dbx_w, 0, 0 },
+      0, &set_debugger_dbx_w, 0, 0 },
     { "xdb", MMToggle, { dddSetDebuggerCB, XtPointer(XDB) },
-      NULL, &set_debugger_xdb_w, 0, 0 },
+      0, &set_debugger_xdb_w, 0, 0 },
     { "jdb", MMToggle, { dddSetDebuggerCB, XtPointer(JDB) },
-      NULL, &set_debugger_jdb_w, 0, 0 },
+      0, &set_debugger_jdb_w, 0, 0 },
     { "pydb", MMToggle, { dddSetDebuggerCB, XtPointer(PYDB) },
-      NULL, &set_debugger_pydb_w, 0, 0 },
+      0, &set_debugger_pydb_w, 0, 0 },
     { "perl", MMToggle, { dddSetDebuggerCB, XtPointer(PERL) },
-      NULL, &set_debugger_perl_w, 0, 0 },
+      0, &set_debugger_perl_w, 0, 0 },
     MMEnd
 };
 
@@ -1354,7 +1354,7 @@ static Widget auto_debugger_w;
 static MMDesc auto_debugger_menu [] =
 {
     { "automatic", MMToggle, { dddToggleAutoDebuggerCB, 0 },
-      NULL, &auto_debugger_w, 0, 0 },
+      0, &auto_debugger_w, 0, 0 },
     MMEnd
 };
 
@@ -1364,9 +1364,9 @@ static Widget splash_screen_w;
 static MMDesc startup_menu [] =
 {
     { "splashScreen", MMToggle, { SetSplashScreenCB, 0 }, 
-      NULL, &splash_screen_w, 0, 0 },
+      0, &splash_screen_w, 0, 0 },
     { "startupTips",  MMToggle, { SetStartupTipsCB, 0 },  
-      NULL, &startup_tips_w, 0, 0 },
+      0, &startup_tips_w, 0, 0 },
     MMEnd
 };
 
@@ -1377,10 +1377,10 @@ static MMDesc cut_copy_paste_menu [] =
 {
     { "kde",    MMToggle, { dddSetCutCopyPasteBindingsCB, 
 			    XtPointer(KDEBindings) }, 
-      NULL, &cut_copy_paste_kde_w, 0, 0 },
+      0, &cut_copy_paste_kde_w, 0, 0 },
     { "motif",  MMToggle, { dddSetCutCopyPasteBindingsCB, 
 			    XtPointer(MotifBindings) },
-      NULL, &cut_copy_paste_motif_w, 0, 0 },
+      0, &cut_copy_paste_motif_w, 0, 0 },
     MMEnd
 };
 
@@ -1391,10 +1391,10 @@ static MMDesc select_all_menu [] =
 {
     { "kde",    MMToggle, { dddSetSelectAllBindingsCB, 
 			    XtPointer(KDEBindings) }, 
-      NULL, &select_all_kde_w, 0, 0 },
+      0, &select_all_kde_w, 0, 0 },
     { "motif",  MMToggle, { dddSetSelectAllBindingsCB, 
 			    XtPointer(MotifBindings) },
-      NULL, &select_all_motif_w, 0, 0 },
+      0, &select_all_motif_w, 0, 0 },
     MMEnd
 };
 
@@ -1422,10 +1422,10 @@ static Widget font_sizes[5];
 #define FONT_MENU(font) \
 { \
     { "name",   MMTextField | MMUnmanagedLabel, \
-    { SetFontNameCB, XtPointer(font) }, NULL, \
+    { SetFontNameCB, XtPointer(font) }, 0, \
     &font_names[int(font)], 0, 0 }, \
     { "size",   MMTextField, \
-    { SetFontSizeCB, XtPointer(font) }, NULL, \
+    { SetFontSizeCB, XtPointer(font) }, 0, \
     &font_sizes[int(font)], 0, 0 }, \
     { "browse", MMPush, { BrowseFontCB, XtPointer(font) }, 0, 0, 0, 0 }, \
     MMEnd \
@@ -1452,9 +1452,9 @@ static Widget builtin_plot_window_w;
 static MMDesc plot_window_menu [] =
 {
     { "extern", MMToggle, { dddSetBuiltinPlotWindowCB, XtPointer(false) },
-      NULL, &extern_plot_window_w, 0, 0},
+      0, &extern_plot_window_w, 0, 0},
     { "builtin", MMToggle, { dddSetBuiltinPlotWindowCB, XtPointer(true) },
-      NULL, &builtin_plot_window_w, 0, 0},
+      0, &builtin_plot_window_w, 0, 0},
     MMEnd
 };
 
@@ -1469,19 +1469,19 @@ static Widget plot_command_w;
 static MMDesc helpers_preferences_menu [] =
 {
     { "edit",       MMTextField, { dddSetEditCommandCB, 0 }, 
-      NULL, &edit_command_w, 0, 0},
+      0, &edit_command_w, 0, 0},
     { "get_core",   MMTextField, { dddSetGetCoreCommandCB, 0 }, 
-      NULL, &get_core_command_w, 0, 0},
+      0, &get_core_command_w, 0, 0},
     { "ps",         MMTextField, { dddSetPSCommandCB, 0 },
-      NULL, &ps_command_w, 0, 0},
+      0, &ps_command_w, 0, 0},
     { "term",       MMTextField, { dddSetTermCommandCB, 0 },
-      NULL, &term_command_w, 0, 0},
+      0, &term_command_w, 0, 0},
     { "uncompress", MMTextField, { dddSetUncompressCommandCB, 0 },
-      NULL, &uncompress_command_w, 0, 0},
+      0, &uncompress_command_w, 0, 0},
     { "www",        MMTextField, { dddSetWWWCommandCB, 0 },
-      NULL, &www_command_w, 0, 0},
+      0, &www_command_w, 0, 0},
     { "plot",       MMTextField, { dddSetPlotCommandCB, 0 }, 
-      NULL, &plot_command_w, 0, 0},
+      0, &plot_command_w, 0, 0},
     { "plot_window", MMRadioPanel, MMNoCB, plot_window_menu, 0, 0, 0 },
     MMEnd
 };
@@ -1503,7 +1503,7 @@ static MMDesc data_menu[] =
     { "displays",    MMPush,    { DataDisp::EditDisplaysCB, 0 }, 0, 0, 0, 0},
     { "themes",      MMPush,    { dddPopupThemesCB, 0 }, 0, 0, 0, 0},
     { "watchpoints", MMPush,   { SourceView::EditBreakpointsCB, 0 }, 
-                                 NULL, &edit_watchpoints_w, 0, 0 },
+                                 0, &edit_watchpoints_w, 0, 0 },
     { "examine",     MMPush,  { gdbExamineCB, 0 }, 0, &examine_w, 0, 0},
     MMSep,
     { "print",       MMPush,  
@@ -1511,16 +1511,16 @@ static MMDesc data_menu[] =
     { "display",     MMPush,  { gdbDisplayCB, 0 }, 0, &display_w, 0, 0 },
     MMSep,
     { "detectAliases", MMToggle, { graphToggleDetectAliasesCB, 0 },
-      NULL, &detect_aliases_w, 0, 0 },
+      0, &detect_aliases_w, 0, 0 },
     MMSep,
     { "info locals", MMToggle,  { graphToggleLocalsCB, 0 }, 
-      NULL, &locals_w, 0, 0 },
+      0, &locals_w, 0, 0 },
     { "info args",   MMToggle,  { graphToggleArgsCB, 0 }, 
-      NULL, &args_w, 0, 0 },
+      0, &args_w, 0, 0 },
     { "infos",       MMPush,    { WhenReady, XtPointer(dddPopupInfosCB) }, 
-      NULL, &infos_w, 0, 0 },
+      0, &infos_w, 0, 0 },
     MMSep,
-    { "align",      MMPush,    { graphAlignCB, 0  }, NULL, &align_w, 0, 0 },
+    { "align",      MMPush,    { graphAlignCB, 0  }, 0, &align_w, 0, 0 },
     { "rotate",     MMPush,    { graphRotateCB, 0 }, 0, 0, 0, 0},
     { "layout",     MMPush,    { graphLayoutCB, 0 }, 0, 0, 0, 0},
     MMSep,
@@ -2022,8 +2022,8 @@ int main(int argc, char *argv[])
     // Register string -> OnOff converter; this must be done before
     // reading application defaults.
     XtSetTypeConverter(XmRString, XtROnOff, CvtStringToOnOff,
-		       NULL, 0, XtCacheAll, 
-		       XtDestructor(NULL));
+		       XtConvertArgList(0), 0, XtCacheAll, 
+		       XtDestructor(0));
 
     // Get application resources into APP_DATA
     XtVaGetApplicationResources(toplevel, (XtPointer)&app_data,
@@ -2216,7 +2216,7 @@ int main(int argc, char *argv[])
     }
 
     // Check for `--play-log'
-    if (app_data.play_log != NULL)
+    if (app_data.play_log != 0)
     {
 	// Invoke self with `--PLAY LOGFILE' as inferior
 	app_data.debugger_command = argv[0];
@@ -2626,15 +2626,15 @@ int main(int argc, char *argv[])
     XtAddCallback (gdb_w,
 		   XmNmodifyVerifyCallback,
 		   gdbModifyCB,
-		   NULL);
+		   XtPointer(0));
     XtAddCallback (gdb_w,
 		   XmNmotionVerifyCallback,
 		   gdbMotionCB,
-		   NULL);
+		   XtPointer(0));
     XtAddCallback (gdb_w,
 		   XmNvalueChangedCallback,
 		   gdbChangeCB,
-		   NULL);
+		   XtPointer(0));
     XtManageChild (gdb_w);
 
     if (!app_data.separate_source_window || !app_data.separate_data_window)
@@ -3063,7 +3063,7 @@ static void ddd_check_version()
 					 args, arg));
 	Delay::register_shell(warning);
 	XtUnmanageChild(XmMessageBoxGetChild(warning, XmDIALOG_CANCEL_BUTTON));
-	XtAddCallback(warning, XmNhelpCallback, ImmediateHelpCB, NULL);
+	XtAddCallback(warning, XmNhelpCallback, ImmediateHelpCB, XtPointer(0));
 
 	manage_and_raise(warning);
     }
@@ -3614,9 +3614,9 @@ static bool lock_ddd(Widget parent, LockInfo& info)
 #endif
 
     XtAddCallback(lock_dialog, XmNhelpCallback,
-		  ImmediateHelpCB, NULL);
+		  ImmediateHelpCB, XtPointer(0));
     XtAddCallback(lock_dialog, XmNokCallback,
-		  ContinueDespiteLockCB, NULL);
+		  ContinueDespiteLockCB, XtPointer(0));
     XtAddCallback(lock_dialog, XmNcancelCallback, ExitCB, 
 		  XtPointer(EXIT_FAILURE));
 
@@ -4885,7 +4885,7 @@ static Widget add_panel(Widget parent, Widget buttons,
     // Fetch panel geometry
     XtWidgetGeometry size;
     size.request_mode = CWHeight | CWWidth;
-    XtQueryGeometry(form, NULL, &size);
+    XtQueryGeometry(form, (XtWidgetGeometry *)0, &size);
 
     size.width  += 10;		// Compensate for small rounding errors
     size.height += 10;
@@ -4947,7 +4947,8 @@ static void make_preferences(Widget parent)
     Delay::register_shell(preferences_dialog);
     XtVaSetValues(preferences_dialog, XmNdefaultButton, Widget(0), 
 		  XtPointer(0));
-    XtAddCallback(preferences_dialog, XmNunmapCallback, OfferRestartCB, NULL);
+    XtAddCallback(preferences_dialog, XmNunmapCallback, OfferRestartCB,
+		  XtPointer(0));
 
     if (lesstif_version <= 79)
 	XtUnmanageChild(XmSelectionBoxGetChild(preferences_dialog,
@@ -5127,7 +5128,7 @@ static void create_status(Widget parent)
 
     XtWidgetGeometry size;
     size.request_mode = CWHeight;
-    XtQueryGeometry(status_w, NULL, &size);
+    XtQueryGeometry(status_w, (XtWidgetGeometry *)0, &size);
 
     if (lesstif_version <= 87)
 	XtVaSetValues(led_w, XmNindicatorSize, size.height - 4, XtPointer(0));
@@ -5261,14 +5262,14 @@ static void PopupStatusHistoryCB(Widget w, XtPointer client_data,
     Position x, y;
     if (app_data.status_at_bottom)
     {
-	XtQueryGeometry(history_shell, NULL, &size);
+	XtQueryGeometry(history_shell, (XtWidgetGeometry *)0, &size);
 
 	x = shell_x;
 	y = status_y - size.height - y_popup_offset;
     }
     else
     {
-	XtQueryGeometry(status_w, NULL, &size);
+	XtQueryGeometry(status_w, (XtWidgetGeometry *)0, &size);
 
 	x = shell_x;
 	y = status_y + size.height + y_popup_offset;
@@ -5588,7 +5589,7 @@ static void WhenReady(Widget w, XtPointer client_data, XtPointer call_data)
 
     // Execute command as soon as GDB gets ready
     XmString label = 0;
-    XtVaGetValues(w, XmNlabelString, &label, NULL);
+    XtVaGetValues(w, XmNlabelString, &label, XtPointer(0));
     MString _action(label, true);
     XmStringFree(label);
     string action = _action.str();
@@ -6629,9 +6630,11 @@ static void setup_new_shell(Widget w)
 #if HAVE_X11_XMU_EDITRES_H
     // Make the shell handle EditRes messages
     XtRemoveEventHandler(shell, EventMask(0), true,
-			 XtEventHandler(_XEditResCheckMessages), NULL);
+			 XtEventHandler(_XEditResCheckMessages), 
+			 XtPointer(0));
     XtAddEventHandler(shell, EventMask(0), true,
-		      XtEventHandler(_XEditResCheckMessages), NULL);
+		      XtEventHandler(_XEditResCheckMessages),
+		      XtPointer(0));
 #endif
 
     // Use DDD logo as icon of the new shell
@@ -6865,7 +6868,7 @@ extern "C" {
 	    KeySym keysym;
 
 	    int len = XLookupString(&event->xkey, buffer, sizeof buffer, 
-				    &keysym, NULL);
+				    &keysym, (XComposeStatus *)0);
 	    if (len == 1)
 	    {
 		char c = buffer[0];

@@ -98,7 +98,7 @@ static void cleanupOnSignal(int sig)
 SignalCleanup::SignalCleanup()
 {
     // if $NO_SIGNAL_CLEANUP is set, don't do anything
-    if (getenv("NO_SIGNAL_CLEANUP") != NULL)
+    if (getenv("NO_SIGNAL_CLEANUP") != 0)
 	return;
 
     // catch "typical" interrupt signals

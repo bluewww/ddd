@@ -83,35 +83,35 @@ static Widget wide_char_w;
 static Widget wide_string_w;
 
 static MMDesc format_menu[] = { 
-    { "o", MMPush, { SetFormatCB, 0 }, NULL, &octal_w, 0, 0 },
+    { "o", MMPush, { SetFormatCB, 0 }, 0, &octal_w, 0, 0 },
     { "x", MMPush, { SetFormatCB, 0 }, 0, 0, 0, 0},
     { "d", MMPush, { SetFormatCB, 0 }, 0, 0, 0, 0},
-    { "u", MMPush, { SetFormatCB, 0 }, NULL, &unsigned_char_w, 0, 0 },
-    { "t", MMPush, { SetFormatCB, 0 }, NULL, &binary_w, 0, 0 },
+    { "u", MMPush, { SetFormatCB, 0 }, 0, &unsigned_char_w, 0, 0 },
+    { "t", MMPush, { SetFormatCB, 0 }, 0, &binary_w, 0, 0 },
     { "f", MMPush, { SetFormatCB, 0 }, 0, 0, 0, 0},
-    { "a", MMPush, { SetFormatCB, 0 }, NULL, &address_format_w, 0, 0 },
+    { "a", MMPush, { SetFormatCB, 0 }, 0, &address_format_w, 0, 0 },
     { "i", MMPush, { SetFormatCB, 0 }, 0, 0, 0, 0},
     { "c", MMPush, { SetFormatCB, 0 }, 0, 0, 0, 0},
-    { "C", MMPush, { SetFormatCB, 0 }, NULL, &wide_char_w, 0, 0 },
+    { "C", MMPush, { SetFormatCB, 0 }, 0, &wide_char_w, 0, 0 },
     { "s", MMPush, { SetFormatCB, 0 }, 0, 0, 0, 0},
-    { "W", MMPush, { SetFormatCB, 0 }, NULL, &wide_string_w, 0, 0 },
+    { "W", MMPush, { SetFormatCB, 0 }, 0, &wide_string_w, 0, 0 },
     MMEnd
 };
 
 static MMDesc size_menu[] = { 
-    { "b", MMPush, { SetSizeCB, 0 }, NULL, &byte_w, 0, 0 },
+    { "b", MMPush, { SetSizeCB, 0 }, 0, &byte_w, 0, 0 },
     { "h", MMPush, { SetSizeCB, 0 }, 0, 0, 0, 0},
     { "w", MMPush, { SetSizeCB, 0 }, 0, 0, 0, 0},
     { "g", MMPush, { SetSizeCB, 0 }, 0, 0, 0, 0},
-    { "G", MMPush, { SetSizeCB, 0 }, NULL, &long_w, 0, 0 },
+    { "G", MMPush, { SetSizeCB, 0 }, 0, &long_w, 0, 0 },
     MMEnd
 };
 
 static MMDesc examine_menu[] = { 
-    { "examine", MMSpinBox,    MMNoCB, NULL, &repeat_w, 0, 0 },
+    { "examine", MMSpinBox,    MMNoCB, 0, &repeat_w, 0, 0 },
     { "format",  MMOptionMenu, MMNoCB, format_menu, 0, 0, 0 },
     { "size",    MMOptionMenu, MMNoCB, size_menu, 0, 0, 0 },
-    { "address", MMComboBox,   MMNoCB, NULL, &address_w, 0, 0 },
+    { "address", MMComboBox,   MMNoCB, 0, &address_w, 0, 0 },
     MMEnd
 };
 

@@ -163,10 +163,10 @@ static void CheckUngrabCB(XtPointer client_data, XtIntervalId *)
 	dialog = 
 	    verify(XmCreateWorkingDialog(find_shell(gdb_w), 
 					 (char *)"grab_warning",
-					 NULL, 0));
+					 ArgList(0), 0));
 	Delay::register_shell(dialog);
 	XtUnmanageChild(XmMessageBoxGetChild(dialog, XmDIALOG_OK_BUTTON));
-	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, NULL);
+	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, XtPointer(0));
     }
 
     if (!mouse_pointer_grabbed() && count > 0)

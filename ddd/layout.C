@@ -944,8 +944,8 @@ void Layout::debugGraphXFig (GRAPH *graph)
 
 void Layout::listInit (EDGELIST *list)
 {
-    list->head = (EDGE*) NULL;
-    list->tail = (EDGE*) NULL;
+    list->head = (EDGE*) 0;
+    list->tail = (EDGE*) 0;
     list->length = 0;
 }
 
@@ -970,8 +970,8 @@ EDGE *Layout::listInsertEdge (EDGELIST *list, NODE *node)
     /*
      * link the edge to the list
      */
-    edge->next = (EDGE*) NULL;
-    edge->prev = (EDGE*) NULL;
+    edge->next = (EDGE*) 0;
+    edge->prev = (EDGE*) 0;
 
     tail = list->head;
     list->head = edge;
@@ -1008,14 +1008,14 @@ void Layout::listRemoveEdge (EDGELIST *list, EDGE *edge)
 	    /* last entry of list */
 	    list->tail = edge->prev;
 	    if (edge->prev) {
-		edge->prev->next = (EDGE*) NULL;
+		edge->prev->next = (EDGE*) 0;
 	    }
 	}
 	if (!edge->prev) {
 	    /* first entry of list */
 	    list->head = edge->next ;
 	    if (edge->next) {
-		edge->next->prev = (EDGE*) NULL;
+		edge->next->prev = (EDGE*) 0;
 	    }
 	}
     }
@@ -1063,7 +1063,7 @@ EDGE *Layout::listFindTarget (EDGELIST *list, NODE *target)
     }
     if (!edge) {
 	fprintf (stderr,"listFindEntry: can't find entry\n");
-	edge = (EDGE*) NULL;
+	edge = (EDGE*) 0;
     }
 	
     return edge;
@@ -1086,8 +1086,8 @@ void Layout::listRemove (EDGELIST *list)
 	free ((char *) edge);
 	edge = tmp;
     }
-    list->head = (EDGE*) NULL;
-    list->tail = (EDGE*) NULL;
+    list->head = (EDGE*) 0;
+    list->tail = (EDGE*) 0;
 }
 
 
@@ -1111,13 +1111,13 @@ void Layout::nodeInit (NODE* node, ID *id , NODETYPE type)
     node->center = 0;
     node->index = 0 ;
     node->loop = 0;
-    node->mark = (NODE*) NULL;
+    node->mark = (NODE*) 0;
 	
-    node->left = (NODE*) NULL;
-    node->right = (NODE*) NULL;
+    node->left = (NODE*) 0;
+    node->right = (NODE*) 0;
 
-    node->hashnext = (NODE*) NULL;
-    node->hashprev = (NODE*) NULL;
+    node->hashnext = (NODE*) 0;
+    node->hashprev = (NODE*) 0;
 	
     node->type = type;
 
@@ -1135,10 +1135,10 @@ void Layout::nodeInit (NODE* node, ID *id , NODETYPE type)
 	listInit (&node->attr.node.down);
     } else {
 	node->attr.hint.id = id->id ;
-	node->attr.hint.up = (NODE*) NULL;
-	node->attr.hint.down = (NODE*) NULL;
-	node->attr.hint.source = (NODE*) NULL;
-	node->attr.hint.target = (NODE*) NULL;
+	node->attr.hint.up = (NODE*) 0;
+	node->attr.hint.down = (NODE*) 0;
+	node->attr.hint.source = (NODE*) 0;
+	node->attr.hint.target = (NODE*) 0;
     }
 		
 }		
@@ -1178,8 +1178,8 @@ void Layout::graphInit (GRAPH *graph, char *label)
 	fprintf (stderr,"graphInit: out of memory!\n");
     }
     strcpy (graph->label, label);
-    graph->hashnext = (GRAPH*) NULL;
-    graph->hashprev = (GRAPH*) NULL;
+    graph->hashnext = (GRAPH*) 0;
+    graph->hashprev = (GRAPH*) 0;
 
     graph->minxdist    = MINXDIST ;
     graph->minydist    = MINYDIST;
@@ -1188,12 +1188,12 @@ void Layout::graphInit (GRAPH *graph, char *label)
     graph->pullup      = PULLUP;
 
     graph->levels = 0;
-    graph->level = (NODE**) NULL;
+    graph->level = (NODE**) 0;
 
     graph->layouted = FALSE ; 	/* the graph was never layouted */
 
     for ( i = 0; i < PRIME; i++) {
-	graph->hashtab[i] = (NODE*) NULL;
+	graph->hashtab[i] = (NODE*) 0;
     }
 }
 
@@ -1229,7 +1229,7 @@ NODE *Layout::graphEnterNode (GRAPH *graph, ID *id, NODETYPE type)
     tail = graph->hashtab[pos] ;
     graph->hashtab[pos] = node;
     node->hashnext = tail ;
-    node->hashprev = (NODE*) NULL;
+    node->hashprev = (NODE*) 0;
     if (node->hashnext) {
 	node->hashnext->hashprev = node;
     }
@@ -1286,7 +1286,7 @@ NODE *Layout::graphGetNode (GRAPH *graph, ID *id, NODETYPE type)
     }
 
     /*
-     * node == NULL if not found
+     * node == 0 if not found
      */
     return node;
 }
@@ -1330,7 +1330,7 @@ void Layout::graphRemoveNode (GRAPH *graph, ID *id, NODETYPE type)
     }
 
     /*
-     * node == NULL if not found
+     * node == 0 if not found
      */
 
     if (!node) {
@@ -1349,11 +1349,11 @@ void Layout::graphRemoveNode (GRAPH *graph, ID *id, NODETYPE type)
 	if (!node->hashprev) {
 	    graph->hashtab[pos] = node->hashnext;
 	    if (node->hashnext) {
-		node->hashnext->hashprev = (NODE*) NULL;
+		node->hashnext->hashprev = (NODE*) 0;
 	    }
 	}
 	if (!node->hashnext && node->hashprev) {
-	    node->hashprev->hashnext = (NODE*) NULL;
+	    node->hashprev->hashnext = (NODE*) 0;
 	}
     }
     nodeRemove (node);
@@ -1382,7 +1382,7 @@ void Layout::graphCreateLevels (GRAPH *graph, int n)
 
     nodeptr = graph->level ;
     for ( i = 0 ; i < n ; i++ ) {
-	*(nodeptr++) = (NODE*) NULL;
+	*(nodeptr++) = (NODE*) 0;
     }
 }
 
@@ -1396,7 +1396,7 @@ void Layout::graphCreateLevels (GRAPH *graph, int n)
 void Layout::graphRemoveLevels (GRAPH *graph)
 {
     free ( (char *) graph->level);
-    graph->level = (NODE**) NULL;
+    graph->level = (NODE**) 0;
     graph->levels = 0;
 }
 
@@ -1430,7 +1430,7 @@ void Layout::graphAddLevels (GRAPH *graph, int n)
      * clear the new levels
      */
     for (i=graph->levels; i < graph->levels+n; i++) {
-	*(newtab+i) = (NODE*) NULL;
+	*(newtab+i) = (NODE*) 0;
     }
     /*
      * make the new table to the actual table
@@ -1647,7 +1647,7 @@ EDGE *Layout::graphFindEdgeAtTarget (NODE *source, NODE *target)
 /*
  * graphResetLevels
  * set the level of all nodes to NOLEVEL. The entries of 'left' and 'right'
- * will be set to NULL.
+ * will be set to 0.
  * ATTENTION: You first have to clear the Levels by calling
  * 'graphRemoveLevels' before you call this function!
  */
@@ -1661,8 +1661,8 @@ void Layout::graphResetLevels (GRAPH *graph)
 	node = graph->hashtab[i];
 	while (node) {
 	    node->level = NOLEVEL;
-	    node->left = (NODE*) NULL;
-	    node->right = (NODE*) NULL;
+	    node->left = (NODE*) 0;
+	    node->right = (NODE*) 0;
 
 	    node = node->hashnext;
 	}
@@ -1698,7 +1698,7 @@ int Layout::graphHashStr (char *str, int prime)
 
 /*
  * graphGet
- * return a pointer to a specified graph. Return NULL, if no such
+ * return a pointer to a specified graph. Return 0, if no such
  * graph exists.
  * 'hashtab' contains SMALLPRIME pointers to GRAPHs.
  */
@@ -1724,7 +1724,7 @@ GRAPH *Layout::graphGet (GRAPHTAB *tab, char *label)
  * graphNew
  * create a new graph, initialize it and return a pointer to it
  * if a graph with the specified label allready exists a warning
- * is printed and no new graph is created (NULL returned).
+ * is printed and no new graph is created (0 returned).
  */
 
 GRAPH *Layout::graphNew (GRAPHTAB *tab,char *label)
@@ -1739,7 +1739,7 @@ GRAPH *Layout::graphNew (GRAPHTAB *tab,char *label)
     graph = graphGet (tab, label);
     if (graph) {
 	fprintf (stderr,"graphNew: %s already there!\n",label);
-	return (GRAPH*) NULL;
+	return (GRAPH*) 0;
     }
 		
     graph = (GRAPH*) malloc (sizeof(GRAPH));
@@ -1757,11 +1757,11 @@ GRAPH *Layout::graphNew (GRAPHTAB *tab,char *label)
     if ((*tab)[pos]) {
 	tail = ((*tab)[pos])->hashnext;
     } else {
-	tail = (GRAPH*) NULL;
+	tail = (GRAPH*) 0;
     }
     (*tab)[pos] = graph;
     graph->hashnext = tail;
-    graph->hashprev = (GRAPH*) NULL;
+    graph->hashprev = (GRAPH*) 0;
     if (graph->hashnext) {
 	graph->hashnext->hashprev = graph;
     }
@@ -1807,11 +1807,11 @@ void Layout::graphRemove (GRAPHTAB *tab, char *label)
 	if (!graph->hashprev) {
 	    (*tab)[pos] = graph->hashnext;
 	    if (graph->hashnext) {
-		graph->hashnext->hashprev = (GRAPH*) NULL;
+		graph->hashnext->hashprev = (GRAPH*) 0;
 	    }
 	}
 	if (!graph->hashnext && graph->hashprev) {
-	    graph->hashprev->hashnext = (GRAPH*) NULL;
+	    graph->hashprev->hashnext = (GRAPH*) 0;
 	}
     }
 
@@ -1838,7 +1838,7 @@ void Layout::graphTabInit (GRAPHTAB *tab)
     int i;
 	
     for (i=0 ; i < SMALLPRIME; i++) {
-	(*tab)[i] = (GRAPH*) NULL;
+	(*tab)[i] = (GRAPH*) 0;
     }
 }
 
@@ -1850,7 +1850,7 @@ void Layout::graphTabInit (GRAPHTAB *tab)
 /*
  * levelsInsertNode
  * insert a node to a specified level. The node wil only be
- * inserted if its components 'left' and 'right' are NULL. Otherwise
+ * inserted if its components 'left' and 'right' are 0. Otherwise
  * the function assumes, that the node is allready member of
  * a level. These differences are made to allow incremental
  * layout of the graph.
@@ -1873,7 +1873,7 @@ void Layout::levelsInsertNode (GRAPH *graph, NODE *node, int n)
 	
 	level = graph->level+n ;
 	node->right = *level;
-	node->left = (NODE*) NULL;
+	node->left = (NODE*) 0;
 	if (*level) {
 	    (*level)->left = node;
 	}
@@ -2096,8 +2096,8 @@ void Layout::sortPullupNodes (GRAPH *graph)
 		 * pull it up
 		 */
 		levelsRemoveNode (graph, node, node->level);
-		node->left = (NODE*) NULL;
-		node->right = (NODE*) NULL;
+		node->left = (NODE*) 0;
+		node->right = (NODE*) 0;
 		levelsInsertNode (graph, node, newlevel);
 	    }
 	    node = rightnode;
@@ -2448,14 +2448,14 @@ void Layout::sortByCenter (NODE **level)
 
     tmp = index;
     *level = *tmp;
-    (*level)->left = (NODE*) NULL;
+    (*level)->left = (NODE*) 0;
 
     for (i=1 ; i < len ; i++) {
 	(*tmp)->right = *(tmp+1);
 	(*(tmp+1))->left = *tmp;
 	tmp++;
     }
-    (*tmp)->right = (NODE*) NULL;
+    (*tmp)->right = (NODE*) 0;
 
     free ( (char *) index);
 }
@@ -2640,7 +2640,7 @@ void Layout::sortLevelUpX (NODE **level, int dist)
 	*(tmp++) = node;
 	node = node->right;
     }
-    *tmp = (NODE*) NULL;
+    *tmp = (NODE*) 0;
 
     /* 
      * sort the index by node priority (from low to high)
@@ -2690,7 +2690,7 @@ void Layout::sortLevelDownX (NODE **level, int dist)
 	*(tmp++) = node;
 	node = node->right;
     }
-    *tmp = (NODE*) NULL;
+    *tmp = (NODE*) 0;
 
     /* 
      * sort the index by node priority (from low to high)

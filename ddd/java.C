@@ -256,7 +256,7 @@ static void slurp_file(const string& file, string& s)
     s = "";
 
     FILE *fp = fopen(file, "r");
-    if (fp == NULL)
+    if (fp == 0)
 	return;
 
     while (!feof(fp))

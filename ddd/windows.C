@@ -1436,7 +1436,7 @@ void save_preferred_paned_sizes(Widget paned)
 	{
 	    XtWidgetGeometry size;
 	    size.request_mode = CWHeight;
-	    XtQueryGeometry(child, NULL, &size);
+	    XtQueryGeometry(child, (XtWidgetGeometry *)0, &size);
 	    height = max(height, size.height);
 	}
 
@@ -1704,7 +1704,7 @@ void get_paned_window_width(Widget paned, Dimension& max_width)
 	// Fetch preferred width
 	XtWidgetGeometry size;
 	size.request_mode = CWWidth;
-	XtQueryGeometry(child, NULL, &size);
+	XtQueryGeometry(child, (XtWidgetGeometry *)0, &size);
 
 #if LOG_GEOMETRY
 	clog << XtName(paned) << ": child " << XtName(child)
@@ -1756,7 +1756,7 @@ void set_paned_window_size(Widget paned, Dimension max_width)
 	{
 	    XtWidgetGeometry size;
 	    size.request_mode = CWWidth | CWHeight;
-	    XtQueryGeometry(child, NULL, &size);
+	    XtQueryGeometry(child, (XtWidgetGeometry *)0, &size);
 
 	    width  = max(width, size.width);
 	    height = max(height, size.height);
@@ -1821,7 +1821,7 @@ void set_main_window_size(Widget main)
 	{
 	    XtWidgetGeometry size;
 	    size.request_mode = CWWidth | CWHeight;
-	    XtQueryGeometry(child, NULL, &size);
+	    XtQueryGeometry(child, (XtWidgetGeometry *)0, &size);
 
 	    width  = max(width, size.width);
 	    height = max(height, size.height);
@@ -1871,14 +1871,14 @@ void set_scrolled_window_size(Widget child, Widget target)
     {
 	XtWidgetGeometry size;
 	size.request_mode = CWWidth;
-	XtQueryGeometry(vertical_scroll_bar, NULL, &size);
+	XtQueryGeometry(vertical_scroll_bar, (XtWidgetGeometry *)0, &size);
 	scrollbar_width = size.width;
     }
 
     // Give the ScrolledWindow the size specified for its child
     XtWidgetGeometry size;
     size.request_mode = CWWidth | CWHeight;
-    XtQueryGeometry(child, NULL, &size);
+    XtQueryGeometry(child, (XtWidgetGeometry *)0, &size);
 
     if (target == 0)
 	target = scroll;

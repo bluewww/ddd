@@ -49,7 +49,7 @@ char *gethome()
     if (home == "")
     {
 	char *h = getenv("HOME");
-	if (h != NULL)
+	if (h != 0)
 	    home = h;
     }
 

@@ -74,13 +74,13 @@ const MMAttr MMAttrMask       = ~MMTypeMask;
 // Description data structure
 
 struct MMDesc {
-    const char *name;		 // Widget name
-    MMType type;		 // Widget type
-    XtCallbackRec callback;	 // Associated callback
-    MMDesc *items;		 // Submenus (NULL if none)
-    Widget *widgetptr;           // Where to store the resulting widget
-    Widget widget;		 // The resulting widget
-    Widget label;		 // The resulting label
+    const char *name;	     // Widget name
+    MMType type;	     // Widget type
+    XtCallbackRec callback;  // Associated callback
+    MMDesc *items;	     // Submenus (0 if none)
+    Widget *widgetptr;       // Where to store the resulting widget (0 if not)
+    Widget widget;	     // The resulting widget
+    Widget label;	     // The resulting label
 };
 
 

@@ -275,7 +275,7 @@ void logplayer(const string& logname)
 			s = fgets(buffer, sizeof buffer, stdin);
 			ignore_next_input = false;
 		    }
-		    if (s == NULL)
+		    if (s == 0)
 			exit(EXIT_SUCCESS);
 
 		    ddd_line = buffer;

@@ -168,7 +168,7 @@ static void FilterAllCB(Widget dialog, XtPointer client_data,
 	if (file_dialogs[i] != dialog)
 	{
 	    // clog << "other dialog = " << longName(file_dialogs[i]) << "\n";
-	    XmFileSelectionDoSearch(file_dialogs[i], NULL);
+	    XmFileSelectionDoSearch(file_dialogs[i], 0);
 	}
     }
 }
@@ -1118,13 +1118,14 @@ static void update_processes(Widget processes, bool keep_selection)
       ostrstream os;
       kill += " 2>&1";
       FILE *fp = popen(kill.chars(), "r");
-      if (fp != NULL){
-	int c;
-	while ((c = getc(fp)) != EOF)
+      if (fp != 0)
+      {
+	  int c;
+	  while ((c = getc(fp)) != EOF)
 	  {
-	    os << (char)c;
+	      os << (char)c;
 	  }
-	pclose(fp);
+	  pclose(fp);
       }
       kill_result = os; 
       os.rdbuf()->freeze(0);

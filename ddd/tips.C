@@ -74,7 +74,7 @@ static MString get_tip_of_the_day(Widget w, int n)
     r.default_addr    = XtPointer(0);
 
     tip_of_the_day_resource_values values;
-    XtGetApplicationResources(w, &values, &r, 1, NULL, 0);
+    XtGetApplicationResources(w, &values, &r, 1, ArgList(0), 0);
 
     return MString(values.tip, true);
 }

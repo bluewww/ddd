@@ -50,7 +50,7 @@ extern "C" {
 // The GraphEdit class record
 
 typedef struct {
-    caddr_t extension;
+    XtPointer extension;
 } GraphEditClassPart;
 
 typedef struct _GraphEditClassRec {

@@ -105,7 +105,7 @@ struct _PannedGraphEditClassRec pannedGraphEditClassRec = {
     /* initialize               */  XtInitProc(0),
     /* initialize_hook          */  XtArgsProc(0),
     /* realize                  */  XtInheritRealize,
-    /* actions                  */  NULL,
+    /* actions                  */  XtActionList(0),
     /* num_actions              */  0,
     /* resources                */  resources,
     /* num_resources            */  XtNumber(resources),
@@ -123,24 +123,24 @@ struct _PannedGraphEditClassRec pannedGraphEditClassRec = {
     /* get_values_hook          */  XtArgsProc(0),
     /* accept_focus             */  XtAcceptFocusProc(0),
     /* version                  */  XtVersion,
-    /* callback_private         */  NULL,
-    /* tm_table                 */  NULL,
+    /* callback_private         */  XtPointer(0),
+    /* tm_table                 */  String(0),
     /* query_geometry           */  XtInheritQueryGeometry,
     /* display_accelerator      */  XtInheritDisplayAccelerator,
-    /* extension                */  NULL,
+    /* extension                */  XtPointer(0)
   },
   {     /* Composite fields */
     /* geometry_manager         */  XtInheritGeometryManager,
     /* change_managed           */  XtInheritChangeManaged,
     /* insert_child             */  XtInheritInsertChild,
     /* delete_child             */  XtInheritDeleteChild,
-    /* extension                */  NULL,
+    /* extension                */  XtPointer(0)
   },
   {     /* Porthole fields */
-    /* dummy                    */  0,
+    /* dummy                    */  0
   },
   {	/* PannedGraphEdit fields */
-    /* extension                */  0,
+    /* extension                */  XtPointer(0)
   },
 };
 

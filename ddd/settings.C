@@ -1372,7 +1372,7 @@ static Dimension preferred_width(Widget w)
 
     XtWidgetGeometry size;
     size.request_mode = CWWidth;
-    XtQueryGeometry(w, NULL, &size);
+    XtQueryGeometry(w, (XtWidgetGeometry *)0, &size);
 
     int left_offset  = 0;
     int right_offset = 0;
@@ -1389,7 +1389,7 @@ static Dimension preferred_height(Widget w)
 
     XtWidgetGeometry size;
     size.request_mode = CWHeight;
-    XtQueryGeometry(w, NULL, &size);
+    XtQueryGeometry(w, (XtWidgetGeometry *)0, &size);
     return size.height;
 }
 
@@ -2043,10 +2043,10 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 
 	if (e_type == TextFieldEntry)
 	    XtAddCallback(entry, XmNvalueChangedCallback, 
-			  UpdateSettingsButtonsCB, NULL);
+			  UpdateSettingsButtonsCB, XtPointer(0));
 	else // ThemeEntry
 	    XtAddCallback(entry, XmNvalueChangedCallback, 
-			  UpdateThemesButtonsCB, NULL);
+			  UpdateThemesButtonsCB, XtPointer(0));
     }
     }
 
@@ -2765,7 +2765,7 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
 	{
 	    XtWidgetGeometry size;
 	    size.request_mode = CWWidth;
-	    XtQueryGeometry(vertical_scroll_bar, NULL, &size);
+	    XtQueryGeometry(vertical_scroll_bar, (XtWidgetGeometry *)0, &size);
 	    scrollbar_width = size.width;
 	}
 	
@@ -3825,13 +3825,15 @@ void dddDefineCommandCB(Widget w, XtPointer, XtPointer)
 	XtAddCallback(dialog, XmNokCallback, DoneEditCommandDefinitionCB, 
 		      XtPointer(0));
 
-	XtAddCallback(dialog, XmNapplyCallback, ApplyCB, NULL);
-
-	XtAddCallback(dialog, XmNcancelCallback, EndCommandDefinitionCB, NULL);
+	XtAddCallback(dialog, XmNapplyCallback,
+		      ApplyCB, XtPointer(0));
+	XtAddCallback(dialog, XmNcancelCallback, 
+		      EndCommandDefinitionCB, XtPointer(0));
 	XtAddCallback(dialog, XmNcancelCallback, UnmanageThisCB, 
 		      XtPointer(dialog));
 
-	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, NULL);
+	XtAddCallback(dialog, XmNhelpCallback,
+		      ImmediateHelpCB, XtPointer(0));
 
 	set_need_load_defines(true);
 	update_defines();

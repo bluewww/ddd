@@ -281,7 +281,7 @@ glob_vector (char *pat, char *dir)
   register char *nextname;
   unsigned int count;
   int lose;
-  register char **name_vector = NULL;
+  register char **name_vector = 0;
   register unsigned int i;
 #if defined (OPENDIR_NOT_ROBUST)
   struct stat finfo;
@@ -294,7 +294,7 @@ glob_vector (char *pat, char *dir)
 #endif /* OPENDIR_NOT_ROBUST */
 
   d = opendir (dir);
-  if (d == NULL)
+  if (d == 0)
     return (char **) -1;
 
   lastlink = 0;
@@ -308,7 +308,7 @@ glob_vector (char *pat, char *dir)
   while (1)
     {
       dp = readdir (d);
-      if (dp == NULL)
+      if (dp == 0)
 	break;
 
       /* If this directory entry is not to be used, try again. */
@@ -325,7 +325,7 @@ glob_vector (char *pat, char *dir)
 	  nextlink = (struct globval *) alloca (sizeof (struct globval));
 	  nextlink->next = lastlink;
 	  nextname = (char *) malloc (len + 1);
-	  if (nextname == NULL)
+	  if (nextname == 0)
 	    {
 	      lose = 1;
 	      break;
@@ -342,7 +342,7 @@ glob_vector (char *pat, char *dir)
   if (!lose)
     {
       name_vector = (char **) malloc ((count + 1) * sizeof (char *));
-      lose |= name_vector == NULL;
+      lose |= name_vector == 0;
     }
 
   /* Have we run out of memory?	 */
@@ -354,7 +354,7 @@ glob_vector (char *pat, char *dir)
 	  free (lastlink->name);
 	  lastlink = lastlink->next;
 	}
-      return NULL;
+      return 0;
     }
 
   /* Copy the name pointers from the linked list into the vector.  */
@@ -364,7 +364,7 @@ glob_vector (char *pat, char *dir)
       lastlink = lastlink->next;
     }
 
-  name_vector[count] = NULL;
+  name_vector[count] = 0;
   return name_vector;
 }
 
@@ -385,25 +385,25 @@ glob_dir_to_array (char *dir, char **array)
   add_slash = dir[l - 1] != '/';
 
   i = 0;
-  while (array[i] != NULL)
+  while (array[i] != 0)
     ++i;
 
   result = (char **) malloc ((i + 1) * sizeof (char *));
-  if (result == NULL)
-    return NULL;
+  if (result == 0)
+    return 0;
 
-  for (i = 0; array[i] != NULL; i++)
+  for (i = 0; array[i] != 0; i++)
     {
       result[i] = (char *) malloc (l + (add_slash ? 1 : 0)
 				   + strlen (array[i]) + 1);
-      if (result[i] == NULL)
-	return NULL;
+      if (result[i] == 0)
+	return 0;
       sprintf (result[i], "%s%s%s", dir, add_slash ? "/" : "", array[i]);
     }
-  result[i] = NULL;
+  result[i] = 0;
 
   /* Free the input array.  */
-  for (i = 0; array[i] != NULL; i++)
+  for (i = 0; array[i] != 0; i++)
     free (array[i]);
   free ((char *) array);
 
@@ -413,7 +413,7 @@ glob_dir_to_array (char *dir, char **array)
 /* Do globbing on PATHNAME.  Return an array of pathnames that match,
    marking the end of the array with a null-pointer as an element.
    If no pathnames match, then the array is empty (first element is null).
-   If there isn't enough memory, then return NULL.
+   If there isn't enough memory, then return 0.
    If a file system error occurs, return -1; `errno' has the error code.  */
 char **
 glob_filename (char *pathname)
@@ -425,14 +425,14 @@ glob_filename (char *pathname)
 
   result = (char **) malloc (sizeof (char *));
   result_size = 1;
-  if (result == NULL)
-    return NULL;
+  if (result == 0)
+    return 0;
 
-  result[0] = NULL;
+  result[0] = 0;
 
   /* Find the filename.  */
   filename = strrchr (pathname, '/');
-  if (filename == NULL)
+  if (filename == 0)
     {
       filename = pathname;
       directory_name = (char *)"";
@@ -460,11 +460,11 @@ glob_filename (char *pathname)
 
       directories = glob_filename (directory_name);
 
-      if (directories == NULL)
+      if (directories == 0)
 	goto memory_error;
       else if (directories == (char **)-1)
 	return (char **) -1;
-      else if (*directories == NULL)
+      else if (*directories == 0)
 	{
 	  free ((char *) directories);
 	  return (char **) -1;
@@ -473,12 +473,12 @@ glob_filename (char *pathname)
       /* We have successfully globbed the preceding directory name.
 	 For each name in DIRECTORIES, call glob_vector on it and
 	 FILENAME.  Concatenate the results together.  */
-      for (i = 0; directories[i] != NULL; ++i)
+      for (i = 0; directories[i] != 0; ++i)
 	{
 	  char **temp_results = glob_vector (filename, directories[i]);
 
 	  /* Handle error cases. */
-	  if (temp_results == NULL)
+	  if (temp_results == 0)
 	    goto memory_error;
 	  else if (temp_results == (char **)-1)
 	    /* This filename is probably not a directory.  Ignore it.  */
@@ -489,20 +489,20 @@ glob_filename (char *pathname)
 	      register unsigned int l;
 
 	      l = 0;
-	      while (array[l] != NULL)
+	      while (array[l] != 0)
 		++l;
 
 	      result =
 		(char **)realloc ((char *)result, 
 				  (result_size + l) * sizeof (char *));
 
-	      if (result == NULL)
+	      if (result == 0)
 		goto memory_error;
 
-	      for (l = 0; array[l] != NULL; ++l)
+	      for (l = 0; array[l] != 0; ++l)
 		result[result_size++ - 1] = array[l];
 
-	      result[result_size - 1] = NULL;
+	      result[result_size - 1] = 0;
 
 	      /* Note that the elements of ARRAY are not freed.  */
 	      free ((char *) array);
@@ -521,13 +521,13 @@ glob_filename (char *pathname)
   if (*filename == '\0')
     {
       result = (char **) realloc ((char *) result, 2 * sizeof (char *));
-      if (result == NULL)
-	return NULL;
+      if (result == 0)
+	return 0;
       result[0] = (char *) malloc (directory_len + 1);
-      if (result[0] == NULL)
+      if (result[0] == 0)
 	goto memory_error;
       memcpy (result[0], directory_name, directory_len + 1);
-      result[1] = NULL;
+      result[1] = 0;
       return result;
     }
   else
@@ -538,7 +538,7 @@ glob_filename (char *pathname)
 					 (char *)(directory_len == 0
 					  ? (char *)"." : directory_name));
 
-      if (temp_results == NULL || temp_results == (char **)-1)
+      if (temp_results == 0 || temp_results == (char **)-1)
 	return temp_results;
 
       return (glob_dir_to_array (directory_name, temp_results));
@@ -547,14 +547,14 @@ glob_filename (char *pathname)
   /* We get to memory error if the program has run out of memory, or
      if this is the shell, and we have been interrupted. */
  memory_error:
-  if (result != NULL)
+  if (result != 0)
     {
       register unsigned int i;
-      for (i = 0; result[i] != NULL; ++i)
+      for (i = 0; result[i] != 0; ++i)
 	free (result[i]);
       free ((char *) result);
     }
-  return NULL;
+  return 0;
 }
 
 #ifdef TEST
@@ -566,12 +566,12 @@ main (int argc, char *argv[])
   for (i = 1; i < argc; ++i)
     {
       char **value = glob_filename (argv[i]);
-      if (value == NULL)
+      if (value == 0)
 	puts ("Out of memory.");
       else if ((int) value == -1)
 	perror (argv[i]);
       else
-	for (i = 0; value[i] != NULL; i++)
+	for (i = 0; value[i] != 0; i++)
 	  puts (value[i]);
     }
 

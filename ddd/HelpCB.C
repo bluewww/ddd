@@ -226,7 +226,7 @@ static MString get_help_string(Widget widget)
     help_resource_values values;
     XtGetApplicationResources(widget, &values, 
 			      help_subresources, XtNumber(help_subresources), 
-			      NULL, 0);
+			      ArgList(0), 0);
 
     MString text(values.helpString, true);
     if ((text.isNull() || text.isEmpty()) && DefaultHelpText != 0)
@@ -248,7 +248,7 @@ static MString get_help_on_version_string(Widget widget)
     XtGetApplicationResources(widget, &values, 
 			      help_on_version_subresources, 
 			      XtNumber(help_subresources), 
-			      NULL, 0);
+			      ArgList(0), 0);
 
     MString text(values.helpOnVersionString, true);
     if (text.isNull() || text.isEmpty())
@@ -274,7 +274,7 @@ static MString _get_tip_string(Widget widget, XEvent *event)
     tip_resource_values values;
     XtGetApplicationResources(widget, &values, 
 			      tip_subresources, XtNumber(tip_subresources), 
-			      NULL, 0);
+			      ArgList(0), 0);
 
     MString text(values.tipString, true);
     if (text.isNull() || isNone(text))
@@ -335,7 +335,7 @@ static MString _get_documentation_string(Widget widget, XEvent *event)
     doc_resource_values values;
     XtGetApplicationResources(widget, &values, 
 			      doc_subresources, XtNumber(doc_subresources), 
-			      NULL, 0);
+			      ArgList(0), 0);
 
     MString text(values.documentationString, true);
     if (text.isNull())
@@ -688,7 +688,7 @@ static void FindCB(Widget w, XtPointer client_data, XtPointer call_data,
     }
     else
     {
-	// LessTif 0.79 sometimes returns NULL in cbs->event.  Handle this.
+	// LessTif 0.79 sometimes returns 0 in cbs->event.  Handle this.
 	Time tm;
 	if (cbs->event != 0)
 	    tm = time(cbs->event);
@@ -1158,7 +1158,7 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 	MMSep,
 	{ "viewIndex",    MMToggle, { ToggleIndexCB, 
 				      XtPointer(XtParent(help_index)) }, 
-	  NULL, &view_index, 0, 0 },
+	  0, &view_index, 0, 0 },
 	MMEnd
     };
 
@@ -1191,7 +1191,7 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 
     XtWidgetGeometry size;
     size.request_mode = CWHeight;
-    XtQueryGeometry(toolbar, NULL, &size);
+    XtQueryGeometry(toolbar, (XtWidgetGeometry *)0, &size);
     XtVaSetValues(toolbar,
 		  XmNpaneMaximum, size.height,
 		  XmNpaneMinimum, size.height,
@@ -1496,7 +1496,7 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
 
     XtWidgetGeometry size;
     size.request_mode = CWHeight;
-    XtQueryGeometry(toolbar, NULL, &size);
+    XtQueryGeometry(toolbar, (XtWidgetGeometry *)0, &size);
     XtVaSetValues(toolbar,
 		  XmNpaneMaximum, size.height,
 		  XmNpaneMinimum, size.height,
@@ -2083,7 +2083,7 @@ static void PopupTip(XtPointer client_data, XtIntervalId *timer)
 
 	XtWidgetGeometry tip_geometry;
 	tip_geometry.request_mode = CWHeight | CWWidth;
-	XtQueryGeometry(tip_shell, NULL, &tip_geometry);
+	XtQueryGeometry(tip_shell, (XtWidgetGeometry *)0, &tip_geometry);
 
 	int x_offset = 5;
 	int y_offset = 5;
@@ -2426,11 +2426,13 @@ static void InstallButtonTipEvents(Widget w, bool install)
     tip_resource_values tip_values;
     XtGetApplicationResources(w, &tip_values, 
 			      tip_subresources, XtNumber(tip_subresources), 
-			      NULL, 0);
+			      ArgList(0), 0);
+
     doc_resource_values doc_values;
     XtGetApplicationResources(w, &doc_values, 
 			      doc_subresources, XtNumber(doc_subresources), 
-			      NULL, 0);
+			      ArgList(0), 0);
+
     if (tip_values.tipString != 0 || doc_values.documentationString != 0)
     {
 	EventMask event_mask = 

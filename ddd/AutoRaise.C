@@ -114,7 +114,7 @@ static void AutoRaiseEH(Widget shell, XtPointer, XEvent *event, Boolean *)
 	MMresource_values values;
 	XtGetApplicationResources(shell, &values, 
 				  MMsubresources, XtNumber(MMsubresources), 
-				  NULL, 0);
+				  ArgList(0), 0);
 
 	if (values.auto_raise_menu_delay > 0)
 	{
@@ -160,7 +160,7 @@ void auto_raise(Widget shell)
     MMresource_values values;
     XtGetApplicationResources(shell, &values, 
 			      MMsubresources, XtNumber(MMsubresources), 
-			      NULL, 0);
+			      ArgList(0), 0);
 
     if (values.auto_raise_menu)
 	_auto_raise(shell);

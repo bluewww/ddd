@@ -169,7 +169,8 @@ static int check_xkeysymdb(Display *display, bool verbose)
     if (xkeysymdb == "")
     {
 	String s = XtResolvePathname(display, "", "XKeysymDB", "",
-				     NULL, NULL, 0, NULL);
+				     (String)0, Substitution(0), 0, 
+				     XtFilePredicate(0));
 	if (s != 0)
 	    xkeysymdb = s;
 	XtFree(s);
@@ -262,7 +263,8 @@ static string dirname(const string& file)
 static String resolve_dirname(Display *display, String type, String name)
 {
     String ret = XtResolvePathname(display, type, name, "", 
-				   NULL, NULL, 0, NULL);
+				   (String)0, Substitution(0), 0, 
+				   XtFilePredicate(0));
 
     if (ret != 0)
     {
@@ -304,7 +306,8 @@ static int check_xnlspath(Display *display, bool verbose)
     // Tobias Mangold <mangold@hft.e-technik.tu-muenchen.de>.
     if (xnlspath == 0)
 	xnlspath = XtResolvePathname(display, "nls", "", "", 
-				     NULL, NULL, 0, NULL);
+				     (String)0, Substitution(0), 0, 
+				     XtFilePredicate(0));
 #else
     // Check for `nls/C' or `nls/nls.dir'
     if (xnlspath == 0)

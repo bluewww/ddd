@@ -2740,10 +2740,10 @@ int main(int argc, char *argv[])
     Widget toplevel = 
 	XtAppInitialize(&app_context, "Config",
 			XrmOptionDescList(0), 0, 
-			&argc, argv, NULL, NULL, 0);
+			&argc, argv, (String *)0, ArgList(0), 0);
 
     Widget dialog = 
-	XmCreateSelectionDialog(toplevel, "dialog", NULL, 0);
+	XmCreateSelectionDialog(toplevel, "dialog", ArgList(0), 0);
 
     int length = 10;
 

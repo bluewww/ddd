@@ -102,13 +102,13 @@ XmLabelHackClassRec xmLabelHackClassRec =
 	(WidgetClass)&xmLabelClassRec,		/* superclass */
 	(char *)"XmLabelHack",				/* class_name */
 	(Cardinal)sizeof(XmLabelHackRec),	/* widget size */
-	(XtProc)NULL,				/* class_init */
-	(XtWidgetClassProc)NULL,		/* class_part_init */
+	XtProc(0),				/* class_init */
+	XtWidgetClassProc(0),		        /* class_part_init */
 	(XtEnum)FALSE,				/* class_inited */
 	(XtInitProc)initialize,			/* initialize */
-	(XtArgsProc)NULL,			/* init_hook */
+	XtArgsProc(0),			        /* init_hook */
 	XtInheritRealize,			/* realize */
-	(XtActionList)NULL,			/* actions */
+	XtActionList(0),			/* actions */
 	(Cardinal)0,				/* num_actions */
 	(XtResourceList)resources,		/* resources */
 	(Cardinal)XtNumber(resources),		/* num_resources */
@@ -117,20 +117,20 @@ XmLabelHackClassRec xmLabelHackClassRec =
 	(XtEnum)TRUE,				/* compress_exposur */
 	TRUE,					/* compress enterleave */
 	FALSE,					/* visibility_interest */
-	(XtWidgetProc)NULL,			/* destroy */
+	XtWidgetProc(0),			/* destroy */
 	(XtWidgetProc)XtInheritResize,
-	(XtExposeProc)NULL,
+	XtExposeProc(0),
 	(XtSetValuesFunc)set_values,            /* set_values */
-	(XtArgsFunc)NULL,			/* set_values_hook */
+	XtArgsFunc(0),		                /* set_values_hook */
 	XtInheritSetValuesAlmost,		/* set_values_almost */
-	(XtArgsProc)NULL,			/* get_values_hook */
-	NULL,					/* accept_focus */
+	XtArgsProc(0),			        /* get_values_hook */
+	XtAcceptFocusProc(0),		        /* accept_focus */
 	XtVersion,				/* version */
-	(XtPointer)NULL,			/* callback_private */
+	XtPointer(0),			        /* callback_private */
 	XtInheritTranslations,			/* tm_table */
-	(XtGeometryHandler)NULL, 	        /* query_geometry */
-	NULL, 					/* display_accelerator */
-	(XtPointer)NULL,			/* extension */
+	XtGeometryHandler(0), 	                /* query_geometry */
+	XtStringProc(0), 			/* display_accelerator */
+	XtPointer(0)			        /* extension */
     },
     { 	/* xmPrimitiveClass */
 	XmInheritBorderHighlight,     // border_highlight
@@ -253,7 +253,7 @@ static GC _topShadowGC(XmLabelWidget _label)
     }
 
     _XmFontListGetDefaultFont(LABEL(_label).font, &fs);
-    if (fs != NULL)
+    if (fs != 0)
     {
 	mask |= GCFont;
 	gcValues.font = fs->fid;
@@ -281,7 +281,7 @@ static GC _bottomShadowGC(XmLabelWidget _label)
     }
 
     _XmFontListGetDefaultFont(LABEL(_label).font, &fs);
-    if (fs != NULL)
+    if (fs != 0)
     {
 	mask |= GCFont;
 	gcValues.font = fs->fid;
@@ -320,7 +320,7 @@ extern "C" {
 
 	    LABEL(label).TextRect.x += 1;
 	    LABEL(label).TextRect.y += 1;
-	    if (LABEL(label)._acc_text != NULL)
+	    if (LABEL(label)._acc_text != 0)
 	    {
 		LABEL(label).acc_TextRect.x += 1;
 		LABEL(label).acc_TextRect.y += 1;
@@ -331,7 +331,7 @@ extern "C" {
 
 	    LABEL(label).TextRect.x -= 1;
 	    LABEL(label).TextRect.y -= 1;
-	    if (LABEL(label)._acc_text != NULL)
+	    if (LABEL(label)._acc_text != 0)
 	    {
 		LABEL(label).acc_TextRect.x -= 1;
 		LABEL(label).acc_TextRect.y -= 1;
@@ -375,7 +375,7 @@ static GC _gadgetParentTopShadowGC(XmLabelGadget _label)
     }
 
     _XmFontListGetDefaultFont(LABEL(_label).font, &fs);
-    if (fs != NULL)
+    if (fs != 0)
     {
 	mask |= GCFont;
 	gcValues.font = fs->fid;
@@ -404,7 +404,7 @@ static GC _gadgetParentBottomShadowGC(XmLabelGadget _label)
     }
 
     _XmFontListGetDefaultFont(LABEL(_label).font, &fs);
-    if (fs != NULL)
+    if (fs != 0)
     {
 	mask |= GCFont;
 	gcValues.font = fs->fid;
@@ -440,7 +440,7 @@ extern "C" {
 
 	    LABEL(label).TextRect.x += 1;
 	    LABEL(label).TextRect.y += 1;
-	    if (LABEL(label)._acc_text != NULL)
+	    if (LABEL(label)._acc_text != 0)
 	    {
 		LABEL(label).acc_TextRect.x += 1;
 		LABEL(label).acc_TextRect.y += 1;
@@ -451,7 +451,7 @@ extern "C" {
 
 	    LABEL(label).TextRect.x -= 1;
 	    LABEL(label).TextRect.y -= 1;
-	    if (LABEL(label)._acc_text != NULL)
+	    if (LABEL(label)._acc_text != 0)
 	    {
 		LABEL(label).acc_TextRect.x -= 1;
 		LABEL(label).acc_TextRect.y -= 1;

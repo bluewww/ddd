@@ -337,7 +337,7 @@ void PrintAgainCB(Widget w, XtPointer client_data, XtPointer)
 		verify(
 		    XmCreateQuestionDialog(find_shell(w),
 					   (char *)"confirm_overwrite_dialog", 
-					   NULL, 0));
+					   ArgList(0), 0));
 	    Delay::register_shell(confirm_overwrite_dialog);
 	    XtAddCallback(confirm_overwrite_dialog, 
 			  XmNokCallback, PrintAgainCB, 
@@ -847,10 +847,10 @@ static void PrintCB(Widget parent, bool displays)
     {
 	{"printer", MMToggle, 
 	    { SetPrintTargetCB, XtPointer(TARGET_PRINTER) }, 
-	     NULL, &print_to_printer_w, 0, 0},
+	     0, &print_to_printer_w, 0, 0},
 	{"file",    MMToggle, 
 	    { SetPrintTargetCB, XtPointer(TARGET_FILE) }, 
-	     NULL, &print_to_file_w, 0, 0 },
+	     0, &print_to_file_w, 0, 0 },
 	MMEnd
     };
 
@@ -872,16 +872,16 @@ static void PrintCB(Widget parent, bool displays)
 	{"type2",    MMRadioPanel | MMUnmanagedLabel, 
 	 MMNoCB, type2_menu, 0, 0, 0 },
 	{"color",    MMToggle, { SetGCColorCB, 0 }, 
-	             NULL, &print_color_w, 0, 0 },
+	             0, &print_color_w, 0, 0 },
 	MMEnd
     };
 
     static MMDesc what2_menu[] = 
     {
-	{"displays", MMToggle, { SetPrintDisplaysCB, XtPointer(true) }, NULL, 
-	 &print_displays_w, 0, 0 },
-	{"plots",    MMToggle, { SetPrintDisplaysCB, XtPointer(false) }, NULL, 
-	 &print_plots_w, 0, 0 },
+	{"displays", MMToggle, { SetPrintDisplaysCB, XtPointer(true) }, 
+	 0, &print_displays_w, 0, 0 },
+	{"plots",    MMToggle, { SetPrintDisplaysCB, XtPointer(false) }, 
+	 0, &print_plots_w, 0, 0 },
 	MMEnd
     };
 
@@ -890,7 +890,7 @@ static void PrintCB(Widget parent, bool displays)
 	{"what2",    MMRadioPanel | MMUnmanagedLabel, 
 	 MMNoCB, what2_menu, 0, 0, 0 },
 	{"selected", MMToggle, { SetPrintSelectedNodesCB, 0 }, 
-	             NULL, &print_selected_w, 0, 0 },
+	             0, &print_selected_w, 0, 0 },
 	MMEnd
     };
 
@@ -900,27 +900,27 @@ static void PrintCB(Widget parent, bool displays)
     {
 	{"portrait",  MMToggle, 
 	 { SetGCOrientation, XtPointer(PostScriptPrintGC::PORTRAIT) }, 
-	     NULL, &print_portrait_w, 0, 0},
+	     0, &print_portrait_w, 0, 0},
 	{"landscape", MMToggle,
 	 { SetGCOrientation, XtPointer(PostScriptPrintGC::LANDSCAPE) },
-	     NULL, &print_landscape_w, 0, 0},
+	     0, &print_landscape_w, 0, 0},
 	MMEnd
     };
 
     static MMDesc paper_menu[] = 
     {
 	{"a4",        MMToggle, 
-	 {SetGCA4, 0},        NULL, &a4_paper_size, 0, 0},
+	 {SetGCA4, 0},        0, &a4_paper_size, 0, 0},
 	{"a3",        MMToggle, 
-	 {SetGCA3, 0},        NULL, &a3_paper_size, 0, 0},
+	 {SetGCA3, 0},        0, &a3_paper_size, 0, 0},
 	{"letter",    MMToggle, 
-	 {SetGCLetter, 0},    NULL, &letter_paper_size, 0, 0},
+	 {SetGCLetter, 0},    0, &letter_paper_size, 0, 0},
 	{"legal",     MMToggle, 
-	 {SetGCLegal, 0},     NULL, &legal_paper_size, 0, 0},
+	 {SetGCLegal, 0},     0, &legal_paper_size, 0, 0},
 	{"executive", MMToggle, 
-	 {SetGCExecutive, 0}, NULL, &executive_paper_size, 0, 0},
+	 {SetGCExecutive, 0}, 0, &executive_paper_size, 0, 0},
 	{"custom",    MMToggle, 
-	 {SetGCCustom, 0},    NULL, &custom_paper_size, 0, 0},
+	 {SetGCCustom, 0},    0, &custom_paper_size, 0, 0},
 	MMEnd
     };
 

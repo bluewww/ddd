@@ -253,7 +253,7 @@ int Agent::setupParentCommunication()
     // access remaining pipe ends via stream I/O
     // using error, in and out...
     _errorfp = fdopen(to_parent_error[READ], "r");
-    if (errorfp() == NULL)
+    if (errorfp() == 0)
     {
 	raiseIOMsg("cannot fdopen child's stdin pipe");
 	terminate();
@@ -261,7 +261,7 @@ int Agent::setupParentCommunication()
     }
 
     _inputfp = fdopen(to_parent[READ], "r");
-    if (inputfp() == NULL)
+    if (inputfp() == 0)
     {
 	raiseIOMsg("cannot fdopen child's stdout pipe");
 	terminate();
@@ -269,7 +269,7 @@ int Agent::setupParentCommunication()
     }
 
     _outputfp = fdopen(to_child[WRITE], "w");
-    if (outputfp() == NULL)
+    if (outputfp() == 0)
     {
 	raiseIOMsg("cannot fdopen child's stderr pipe");
 	terminate();

@@ -43,10 +43,10 @@ string fileSelectionBoxFilename(XtPointer call_data)
     XmFileSelectionBoxCallbackStruct *info =
 	(XmFileSelectionBoxCallbackStruct *)call_data;
 
-    char *filename = NULL;
+    char *filename = 0;
 
     if (XmStringGetLtoR(info->value, MSTRING_DEFAULT_CHARSET, &filename)
-	&& filename != NULL)
+	&& filename != 0)
     {
 	string s = filename;
 	XtFree(filename);

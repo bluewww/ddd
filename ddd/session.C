@@ -212,14 +212,14 @@ static int makedir(string name, ostream& msg, bool user_only = false)
 static void copy(const string& from_name, const string& to_name, ostream& msg)
 {
     FILE *from = fopen(from_name, "r");
-    if (from == NULL)
+    if (from == 0)
 	return;			// Don't care
 
     StreamAction action(msg, "Copying " + quote(from_name) 
 			+ " to " + quote(to_name));
 
     FILE *to = fopen(to_name, "w");
-    if (to == NULL)
+    if (to == 0)
     {
 	action.failed(strerror(errno));
 	return;
@@ -746,18 +746,18 @@ static void SetGCoreMethodCB(Widget, XtPointer client_data, XtPointer)
 static MMDesc gcore_methods[] =
 {
     { "kill",   MMPush, 
-      { SetGCoreMethodCB, XtPointer(0) }, NULL, &may_kill_w, 0, 0 },
+      { SetGCoreMethodCB, XtPointer(0) }, 0, &may_kill_w, 0, 0 },
     { "gcore",  MMPush, 
-      { SetGCoreMethodCB, XtPointer(MAY_GCORE) }, NULL, &may_gcore_w, 0, 0 },
+      { SetGCoreMethodCB, XtPointer(MAY_GCORE) }, 0, &may_gcore_w, 0, 0 },
     { "ptrace", MMPush, 
-      { SetGCoreMethodCB, XtPointer(MAY_PTRACE) }, NULL, &may_ptrace_w, 0, 0 },
+      { SetGCoreMethodCB, XtPointer(MAY_PTRACE) }, 0, &may_ptrace_w, 0, 0 },
     MMEnd
 };
 
 static MMDesc gcore_items[] =
 {
     { "dump",     MMToggle, 
-      { SetGCoreSensitivityCB, 0 }, NULL, &dump_core_w, 0, 0 },
+      { SetGCoreSensitivityCB, 0 }, 0, &dump_core_w, 0, 0 },
     { "method",   MMOptionMenu, 
       { SetGCoreSensitivityCB, 0 }, gcore_methods, &gcore_methods_w, 0, 0 },
     MMEnd

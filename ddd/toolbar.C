@@ -60,7 +60,7 @@ static Dimension preferred_height(Widget w)
 {
     XtWidgetGeometry size;
     size.request_mode = CWHeight;
-    XtQueryGeometry(w, NULL, &size);
+    XtQueryGeometry(w, (XtWidgetGeometry *)0, &size);
     Dimension real_height;
     XtVaGetValues(w, XmNheight, &real_height, XtPointer(0));
     return max(size.height, real_height);

@@ -141,7 +141,7 @@ void setLabelList (Widget  selectionList,
     XtVaSetValues (selectionList,
 		   XmNitems,     xmlabel_list,
 		   XmNitemCount, list_length,
-		   NULL);
+		   XtPointer(0));
 
     XmListDeselectAllItems (selectionList);
     XtVaSetValues (selectionList,

@@ -524,10 +524,10 @@ bool add_running_arguments(string& cmd, Widget origin)
 	    restart_jdb = 
 		verify(XmCreateQuestionDialog(find_shell(origin),
 				 (char *)"confirm_restart_gdb_dialog", 
-				 NULL, 0));
+				 ArgList(0), 0));
 	    Delay::register_shell(restart_jdb);
 	    XtAddCallback(restart_jdb, XmNhelpCallback,   
-			  ImmediateHelpCB, NULL);
+			  ImmediateHelpCB, XtPointer(0));
 	    XtAddCallback(restart_jdb, XmNokCallback,     
 			  RestartAndRunCB, (XtPointer)&saved_run_command);
 	}

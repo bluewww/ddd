@@ -39,29 +39,29 @@ static XtResource resources[] = {
 #define offset(field) XtOffset(DocSpaceWidget, docSpace.field)
     /* {name, class, type, size, offset, default_type, default_addr}, */
     { XtNexposeCallback, XtCCallback, XtRCallback, sizeof(XtCallbackList),
-    offset(expose_callback), XtRCallback, NULL },
+    offset(expose_callback), XtRCallback, (XtPointer)NULL },
     { XtNcallback, XtCCallback, XtRCallback, sizeof(XtCallbackList),
-    offset(input_callback), XtRCallback, NULL },
+    offset(input_callback), XtRCallback, (XtPointer)NULL },
     { XtNquitCallback, XtCCallback, XtRCallback, sizeof(XtCallbackList),
-    offset(quit_callback), XtRCallback, NULL }
+    offset(quit_callback), XtRCallback, (XtPointer)NULL }
 #undef offset
 };
 
 static void InputAction(Widget w, XEvent *event, 
 			String params[], Cardinal *num_params)
 {
-    XtCallCallbacks(w, XtNcallback, (caddr_t) event);
+    XtCallCallbacks(w, XtNcallback, (XtPointer)event);
 }
 
 static void Redisplay(Widget w, XEvent *event, Region region)
 {
-    XtCallCallbacks(w, XtNexposeCallback, (caddr_t) event);
+    XtCallCallbacks(w, XtNexposeCallback, (XtPointer)event);
 }
 
 static void QuitAction(Widget w, XEvent *event, 
 		       String params[], Cardinal *num_params)
 {
-    XtCallCallbacks(w, XtNquitCallback, (caddr_t) event);
+    XtCallCallbacks(w, XtNquitCallback, (XtPointer)event);
 }
 
 static XtActionsRec actions[] =
@@ -82,11 +82,11 @@ DocSpaceClassRec docSpaceClassRec = {
     /* superclass           */  (WidgetClass) &widgetClassRec,
     /* class_name           */  "DocSpace",
     /* widget_size          */  sizeof(DocSpaceRec),
-    /* class_initialize     */  NULL,
-    /* class_part_initialize*/  NULL,
+    /* class_initialize     */  (XtProc)NULL,
+    /* class_part_initialize*/  (XtWidgetClassProc)NULL,
     /* class_inited         */  FALSE,
-    /* initialize           */  NULL,
-    /* initialize_hook      */  NULL,
+    /* initialize           */  (XtInitProc)NULL,
+    /* initialize_hook      */  (XtArgsProc)NULL,
     /* realize              */  XtInheritRealize,
     /* actions              */  actions,
     /* num_actions          */  XtNumber(actions),
@@ -97,20 +97,20 @@ DocSpaceClassRec docSpaceClassRec = {
     /* compress_exposure    */  TRUE,
     /* compress_enterleave  */  TRUE,
     /* visible_interest     */  FALSE,
-    /* destroy              */  NULL,
-    /* resize               */  NULL,
+    /* destroy              */  (XtWidgetProc)NULL,
+    /* resize               */  (XtWidgetProc)NULL,
     /* expose               */  Redisplay,
-    /* set_values           */  NULL,
-    /* set_values_hook      */  NULL,
+    /* set_values           */  (XtSetValuesFunc)NULL,
+    /* set_values_hook      */  (XtArgsFunc)NULL,
     /* set_values_almost    */  XtInheritSetValuesAlmost,
-    /* get_values_hook      */  NULL,
-    /* accept_focus         */  NULL,
+    /* get_values_hook      */  (XtArgsProc)NULL,
+    /* accept_focus         */  (XtAcceptFocusProc)NULL,
     /* version              */  XtVersion,
-    /* callback_private     */  NULL,
+    /* callback_private     */  (XtPointer)NULL,
     /* tm_table             */  translations,
     /* query_geometry       */  XtInheritQueryGeometry,
     /* display_accelerator  */  XtInheritDisplayAccelerator,
-    /* extension            */  NULL
+    /* extension            */  (XtPointer)NULL
   },
   { /* docSpace fields */
     /* empty                */  0

@@ -41,7 +41,7 @@ BoxPoint point(XEvent *ev)
 {
     if (ev == 0)
     {
-	// LessTif 0.79 and Motif 1.1 sometimes pass NULL as event;
+	// LessTif 0.79 and Motif 1.1 sometimes pass 0 as event;
 	// provide some reasonable default
 	invalid_event("point");
 	return BoxPoint();
@@ -108,7 +108,7 @@ Time time(XEvent *ev)
 {
     if (ev == 0)
     {
-	// LessTif 0.79 and Motif 1.1 sometimes pass NULL as event;
+	// LessTif 0.79 and Motif 1.1 sometimes pass 0 as event;
 	// provide some reasonable default
 	invalid_event("time");
 	return CurrentTime;
@@ -155,7 +155,7 @@ BoxSize size(XEvent *ev)
 {
     if (ev == 0)
     {
-	// LessTif 0.79 and Motif 1.1 sometimes pass NULL as event;
+	// LessTif 0.79 and Motif 1.1 sometimes pass 0 as event;
 	// provide some reasonable default
 	invalid_event("size");
 	return BoxSize(0, 0);

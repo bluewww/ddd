@@ -764,7 +764,7 @@ static void PlotterNotFoundHP(Agent *plotter, void *client_data, void *)
 				   (char *)"no_plotter_dialog", args, arg));
     XtUnmanageChild(XmMessageBoxGetChild
 		    (dialog, XmDIALOG_CANCEL_BUTTON));
-    XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, NULL);
+    XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, XtPointer(0));
 
     Delay::register_shell(dialog);
     manage_and_raise(dialog);

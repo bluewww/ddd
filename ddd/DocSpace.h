@@ -44,15 +44,15 @@
  background          Background         Pixel           XtDefaultBackground
  border              BorderColor        Pixel           XtDefaultForeground
  borderWidth         BorderWidth        BoxDimension    1
- destroyCallback     Callback           Pointer         NULL
+ destroyCallback     Callback           Pointer         XtCallbackProc(0)
  height              Height             BoxDimension    0
  mappedWhenManaged   MappedWhenManaged  boolean         True
  sensitive           Sensitive          boolean         True
  width               Width              BoxDimension    0
  x                   Position           Position        0
  y                   Position           Position        0
- callback            Callback           Callback        NULL
- exposeCallback      Callback           Callback        NULL
+ callback            Callback           Callback        XtCallbackProc(0)
+ exposeCallback      Callback           Callback        XtCallbackProc(0)
 
 */
 

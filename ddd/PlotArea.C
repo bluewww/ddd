@@ -135,7 +135,7 @@ PlotArea::PlotArea(Widget w, const string& fontname)
     plot_resource_values values;
     XtGetApplicationResources(area, &values,
 			      plot_subresources, XtNumber(plot_subresources),
-			      NULL, 0);
+			      ArgList(0), 0);
 
     // Init font
     font = XLoadQueryFont(dpy, fontname);

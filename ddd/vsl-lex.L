@@ -359,11 +359,11 @@ static char *searchpath(char *filename, bool thisDir)
 
     // If "-I" is given, use this path
     const char *s = VSEFlags::include_search_path;
-    if (s == NULL || s[0] == '\0')
+    if (s == 0 || s[0] == '\0')
     {
 	// Otherwise: Use environment or default path
 	s = getenv("VSL_INCLUDE");
-	if (s == NULL)
+	if (s == 0)
 	{
 	    static string path = 
 		string(VSL_INCLUDE_PATH) +
@@ -391,7 +391,9 @@ static char *searchpath(char *filename, bool thisDir)
     strncat(includeList, s, BUFSIZ - 2);
 
     // Check dirs; if file can be opened, return full path
-    for (char *p = strtok(includeList, ":"); p != NULL; p = strtok(NULL, ":"))
+    for (char *p = strtok(includeList, ":"); 
+	 p != 0; 
+	 p = strtok((char *)0, ":"))
     {
 	static char path[BUFSIZ];
 	strcpy(path, p);
@@ -399,7 +401,7 @@ static char *searchpath(char *filename, bool thisDir)
 	strcat(path, filename);
 
 	FILE *fp = fopen(path, "r");
-	if (fp != NULL && fclose(fp) != EOF)
+	if (fp != 0 && fclose(fp) != EOF)
 	{
 	    // Remove "./" prefix
 	    if (path[0] == '.' && path[1] == '/')
@@ -463,7 +465,7 @@ static int switchup(char *filename, bool thisdir)
 #if BAD_ISTREAM
     yystream = 0;
     FILE *fp = fopen(filename, "r");
-    if (fp == NULL || fclose(fp) == EOF) 
+    if (fp == 0 || fclose(fp) == EOF) 
     {
 #else
     yystream = new ifstream(filename, ios::in);

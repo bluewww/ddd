@@ -456,13 +456,13 @@ void VSEFlags::getDefaults(bool warn)
 
     string filename = ".vserc";
     FILE *fp = fopen(filename, "r");
-    if (fp == NULL)
+    if (fp == 0)
     {
 	string home = gethome();
 	filename.prepend(home + "/");
 	fp = fopen(filename, "r");
 
-	if (fp == NULL)
+	if (fp == 0)
 	{
 	    static string path = 
 		string(VSL_INCLUDE_PATH) +
@@ -477,13 +477,13 @@ void VSEFlags::getDefaults(bool warn)
 	    strcpy(buffer, path);
 
 	    for (char *p = strtok(buffer, ":"); 
-		 p != NULL; 
-		 p = strtok(NULL, ":"))
+		 p != 0; 
+		 p = strtok(0, ":"))
 	    {
 		filename = string(p) + "/vserc";
 
 		fp = fopen(filename, "r");
-		if (fp != NULL)
+		if (fp != 0)
 		    break;
 	    }
 

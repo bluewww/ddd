@@ -37,9 +37,9 @@
 #include "bool.h"
 
 // Return true if one of the following is true:
-// - TITLE is non-NULL and WINDOW has the title TITLE
-// - APP_NAME is non-NULL and WINDOW has the application name APP_NAME
-// - APP_CLASS is non-NULL and WINDOW has an application class APP_CLASS.
+// - TITLE is non-null and WINDOW has the title TITLE
+// - APP_NAME is non-null and WINDOW has the application name APP_NAME
+// - APP_CLASS is non-null and WINDOW has an application class APP_CLASS.
 bool windowMatches(Display *display, Window window,
 		   String title, String app_name, String app_class);
 

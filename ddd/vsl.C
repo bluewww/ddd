@@ -84,7 +84,7 @@ void Flush(Widget w)
 
 // Standard resources
 const _XtString fallback_resources[] = 
-    { "*Viewport.width:    400", "*Viewport.height: 400", NULL };
+    { "*Viewport.width:    400", "*Viewport.height: 400", 0 };
 
 // These should be part of ExposeCB...
 static Box *thebox = 0;
@@ -197,9 +197,10 @@ int main(int argc, char *argv[])
     }
 
     // Init toolkit
-    Widget toplevel = XtAppInitialize(&app_con, "Vsl", NULL, ZERO, 
+    Widget toplevel = XtAppInitialize(&app_con, "Vsl", 
+				      (XrmOptionDescRec *)0, ZERO, 
 				      &argc, argv, (char**)fallback_resources, 
-				      NULL, ZERO);
+				      ArgList(0), ZERO);
 
     // Create Viewport
     Arg arglist[10];        // Arguments

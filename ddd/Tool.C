@@ -136,7 +136,7 @@ void create_command_tool()
     // Determine `best' size for tool shell.
     XtWidgetGeometry size;
     size.request_mode = CWHeight | CWWidth;
-    XtQueryGeometry(tool_buttons_w, NULL, &size);
+    XtQueryGeometry(tool_buttons_w, (XtWidgetGeometry *)0, &size);
 #endif
 
     // Set shell geometry

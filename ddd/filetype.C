@@ -156,11 +156,11 @@ static bool is_ppc_file(const string& file_name)
 
     // Obtain the ELF descriptor
     (void) elf_version(EV_CURRENT);
-    if ((elf = elf_begin(fd, ELF_C_READ, NULL)) == NULL)
+    if ((elf = elf_begin(fd, ELF_C_READ, 0)) == 0)
 	ret_code = false;		// cannot get descriptor
 
     // Obtain ELF header
-    else if ((ehdr = elf32_getehdr(elf)) == NULL)
+    else if ((ehdr = elf32_getehdr(elf)) == 0)
 	ret_code = false;		// cannot get header
 
     else if (ehdr->e_type != ET_REL)
@@ -220,7 +220,7 @@ bool is_core_file(const string& file_name)
     // FILE_NAME is a core file iff `file FILE_NAME' issues `core'.
     string cmd = "file " + file_name;
     FILE *fp = popen(cmd.chars(), "r");
-    if (fp != NULL)
+    if (fp != 0)
     {
 	char line[PATH_MAX];
 	fgets(line, sizeof(line), fp);

@@ -334,7 +334,7 @@ void gdbFindCB(Widget w,
     XmPushButtonCallbackStruct *cbs = 
 	(XmPushButtonCallbackStruct *)call_data;
 
-    // LessTif 0.79 sometimes returns NULL in cbs->event.  Handle this.
+    // LessTif 0.79 sometimes returns 0 in cbs->event.  Handle this.
     Time tm;
     if (cbs->event != 0)
 	tm = time(cbs->event);

@@ -1322,11 +1322,11 @@ void dddSetWWWCommandCB(Widget w, XtPointer, XtPointer)
 static bool copy(const string& src, const string& dest)
 {
     FILE *from = fopen(src, "r");
-    if (from == NULL)
+    if (from == 0)
 	return false;
 
     FILE *to = fopen(dest, "w");
-    if (to == NULL)
+    if (to == 0)
 	return false;
 
     int c;

@@ -52,7 +52,7 @@ XtResource ddd_resources[] = {
 	sizeof(String),
 	XtOffsetOf(AppData, session),
 	XtRString, 
-	XtPointer(NULL)
+	XtPointer(0)
     },
 
     {
@@ -62,7 +62,7 @@ XtResource ddd_resources[] = {
 	sizeof(String),
 	XtOffsetOf(AppData, initial_session),
 	XtRString, 
-	XtPointer(NULL)
+	XtPointer(0)
     },
 
     { 
@@ -122,7 +122,7 @@ XtResource ddd_resources[] = {
 	sizeof(String),
 	XtOffsetOf(AppData, play_log), 
 	XtRString, 
-	XtPointer(NULL)
+	XtPointer(0)
     },
 
     { 
@@ -2267,8 +2267,12 @@ String ddd_fallback_resources[] = {
 #if WITH_BUILTIN_APP_DEFAULTS
 #include "Ddd.ad.h"
 #endif
-0				// Terminating NULL
+
+// Terminating null pointer
+0
+
 };
+
 
 // Return a database of default settings
 XrmDatabase app_defaults(Display *display)
@@ -2302,9 +2306,15 @@ XrmDatabase app_defaults(Display *display)
 	// No application defaults file in the standard place.
 	// Search along the usual path.
 	String official_app_defaults_file = 
-	    XtResolvePathname(display, NULL, app_class, 
-			      NULL, NULL, NULL, 0, NULL);
-	if (official_app_defaults_file != NULL)
+	    XtResolvePathname(display, 
+			      (String)0, // type
+			      app_class, // filename
+			      (String)0, // suffix
+			      (String)0, // path
+			      Substitution(0), 0, 
+			      XtFilePredicate(0));
+
+	if (official_app_defaults_file != 0)
 	{
 	    XrmDatabase db2 = XrmGetFileDatabase(official_app_defaults_file);
 	    if (db2 != 0)

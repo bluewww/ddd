@@ -491,7 +491,7 @@ void TTYAgent::open_master()
     {
 	// Finish setup
 	line = ptsname(master);
-	if (line == NULL)
+	if (line == 0)
 	    _raiseIOMsg("ptsname");
 	else if (grantpt(master) < 0)
 	    _raiseIOMsg("grantpt " + string(line));
@@ -706,7 +706,7 @@ int TTYAgent::setupParentCommunication()
 	
     // Open file pointer with read/write access to child process
     _inputfp = fdopen(master, "r+");
-    if (inputfp() == NULL)
+    if (inputfp() == 0)
     {
 	raiseIOMsg("cannot associate input stream with pty master");
 	terminate();
@@ -714,15 +714,15 @@ int TTYAgent::setupParentCommunication()
     }
 
     _outputfp = _inputfp;
-    _errorfp  = NULL;
+    _errorfp  = 0;
 
 #if HAVE_SETBUF
     // Set unbuffered mode
-    setbuf(_outputfp, NULL);
+    setbuf(_outputfp, (char *)0);
 #elif HAVE_SETVBUF && defined(_IONBF)
     // According to lee@champion.tcs.co.jp (Lee Hounshell), this
     // won't work on Linux ELF systems:
-    setvbuf(_outputfp, NULL, _IONBF, BUFSIZ);
+    setvbuf(_outputfp, (char *)0, _IONBF, BUFSIZ);
 #endif
 
 #if SYNCHRONIZE_PARENT_AND_CHILD
@@ -959,7 +959,7 @@ int TTYAgent::setupChildCommunication()
 
     // Unbuffer output data from child
     fcntl(STDOUT_FILENO, F_SETFL, O_APPEND);
-    setbuf(stdout, NULL);
+    setbuf(stdout, (char *)0);
 
 #if SYNCHRONIZE_PARENT_AND_CHILD
     // Send an initialization sequence ...

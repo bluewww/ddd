@@ -768,7 +768,7 @@ static void initialize_tty(const string& tty_name, const string& tty_term)
     {
 	string command = sh_command("cat > " + tty_name);
 	FILE *fp = popen(command, "w");
-	if (fp != NULL)
+	if (fp != 0)
 	{
 	    fwrite((char *)init, init.length(), sizeof(char), fp);
 	    pclose(fp);

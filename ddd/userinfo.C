@@ -78,10 +78,10 @@ static char *email_from_preferences(const char *home, const char *dotrc, const c
     strcat(preferences, dotrc);
 
     FILE *fp = fopen(preferences, "r");
-    if (fp != NULL)
+    if (fp != 0)
     {
 	char line[BUFSIZ];
-	while (fgets(line, sizeof(line), fp) != NULL)
+	while (fgets(line, sizeof(line), fp) != 0)
 	{
 	    if (strncmp(line, tag, strlen(tag)) == 0)
 	    {
@@ -116,10 +116,10 @@ static char *email_from_signature(const char *home, const char *dotrc)
     strcat(signature, dotrc);
 
     FILE *fp = fopen(signature, "r");
-    if (fp != NULL)
+    if (fp != 0)
     {
 	char line[BUFSIZ];
-	while (fgets(line, sizeof(line), fp) != NULL)
+	while (fgets(line, sizeof(line), fp) != 0)
 	{
 	    const char *s = strchr(line, '@');
 	    if (s != 0)

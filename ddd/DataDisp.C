@@ -1829,7 +1829,7 @@ Widget DataDisp::create_display_dialog(Widget parent, const _XtString name,
     XtUnmanageChild(XmSelectionBoxGetChild(dialog, XmDIALOG_TEXT));
     XtUnmanageChild(XmSelectionBoxGetChild(dialog, XmDIALOG_SELECTION_LABEL));
 
-    XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, NULL);
+    XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, 0);
     XtAddCallback(dialog, XmNokCallback, new_displayDCB, XtPointer(&info));
 
     arg = 0;
@@ -7005,7 +7005,8 @@ DataDisp::DataDisp(Widget parent, Widget& data_buttons_w)
 
     // Create (unmanaged) selection widget
     graph_selection_w =
-	verify(XmCreateText(graph_cmd_w, (char *)"graph_selection", NULL, 0));
+	verify(XmCreateText(graph_cmd_w, (char *)"graph_selection", 
+			    ArgList(0), 0));
     XtAddCallback(graph_selection_w, XmNlosePrimaryCallback, 
 		  SelectionLostCB, XtPointer(0));
 }

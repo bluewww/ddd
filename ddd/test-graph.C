@@ -180,7 +180,7 @@ Graph *myGraph()
 
 static String fallback_resources[] = {
     "*allowShellResize: True",
-    NULL
+    0
 };
 
 void PositionChanged(Widget, XtPointer, XtPointer call_data)

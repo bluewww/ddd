@@ -91,12 +91,12 @@ SwallowerClassRec swallowerClassRec = {
     /* class_name               */  (char *)"Swallower",
     /* widget_size              */  sizeof(SwallowerRec),
     /* class_initialize         */  ClassInitialize,
-    /* class_part_initialize    */  NULL,
+    /* class_part_initialize    */  XtWidgetClassProc(0),
     /* class_inited             */  False,
     /* initialize               */  Initialize,
-    /* initialize_hook          */  NULL,
+    /* initialize_hook          */  XtArgsProc(0),
     /* realize                  */  Realize,
-    /* actions                  */  NULL,
+    /* actions                  */  XtActionList(0),
     /* num_actions              */  0,
     /* resources                */  resources,
     /* num_resources            */  XtNumber(resources),
@@ -107,21 +107,21 @@ SwallowerClassRec swallowerClassRec = {
     /* visible_interest         */  False,
     /* destroy                  */  Destroy,
     /* resize                   */  Resize,
-    /* expose                   */  NULL,
+    /* expose                   */  XtExposeProc(0),
     /* set_values               */  SetValues,
-    /* set_values_hook          */  NULL,
+    /* set_values_hook          */  XtArgsFunc(0),
     /* set_values_almost        */  XtInheritSetValuesAlmost,
-    /* get_values_hook          */  NULL,
-    /* accept_focus             */  NULL,
+    /* get_values_hook          */  XtArgsProc(0),
+    /* accept_focus             */  XtAcceptFocusProc(0),
     /* version                  */  XtVersion,
-    /* callback_private         */  NULL,
-    /* tm_table                 */  NULL,
+    /* callback_private         */  XtPointer(0),
+    /* tm_table                 */  String(0),
     /* query_geometry           */  XtInheritQueryGeometry,
     /* display_accelerator      */  XtInheritDisplayAccelerator,
-    /* extension                */  NULL,
+    /* extension                */  XtPointer(0)
   },
   {	/* Swallower fields */
-    /* extension                */ NULL,
+    /* extension                */  XtPointer(0)
   },
 };
 
@@ -159,10 +159,9 @@ void SwallowerCheckEvents()
 		loop = loop->swallower.next;
 	    }
 
-	    // We don't dispatch this event, since root has no
-	    // associated widget.  Hence, XtWindowToWidget may return
-	    // NULL, which some toolkits (especially LessTif) don't
-	    // check for.
+	    // We don't dispatch this event - root has no associated
+	    // widget.  Hence, XtWindowToWidget may return 0, which
+	    // some toolkits (especially LessTif) don't check for.
 	}
     }
 }

@@ -452,7 +452,7 @@ specific @VSL{} definitions.
 * Display Title Color::         A simple theme example.
 * General Scheme::              How to write themes in general.
 * Overriding vs. Replacing::    Referring to existing definitions.
-* A Complex Example::           Displaying NULL values in red.
+* A Complex Example::           Displaying null values in red.
 * Future Work::                 The road goes on...
 @end menu
 

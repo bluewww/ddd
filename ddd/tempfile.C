@@ -57,7 +57,7 @@ string tempfile()
 #if HAVE_MKSTEMP
     // Find a directory
     char *tmpdir = getenv("TMPDIR");
-    if (tmpdir == NULL)
+    if (tmpdir == 0)
     {
 #ifdef P_tmpdir
 	tmpdir = P_tmpdir;

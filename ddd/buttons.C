@@ -1066,7 +1066,7 @@ Widget make_buttons(Widget parent, const string& name,
     {
 	XtWidgetGeometry size;
 	size.request_mode = CWHeight;
-	XtQueryGeometry(buttons, NULL, &size);
+	XtQueryGeometry(buttons, (XtWidgetGeometry *)0, &size);
 	XtVaSetValues(buttons,
 		      XmNpaneMaximum, size.height,
 		      XmNpaneMinimum, size.height,
@@ -1274,7 +1274,7 @@ void set_buttons(Widget buttons, String _button_list, bool manage)
 	    // Manage buttons, giving them their preferred height
 	    XtWidgetGeometry size;
 	    size.request_mode = CWHeight;
-	    XtQueryGeometry(buttons, NULL, &size);
+	    XtQueryGeometry(buttons, (XtWidgetGeometry *)0, &size);
 
 	    XtVaSetValues(buttons,
 			  XmNpaneMinimum, size.height, 

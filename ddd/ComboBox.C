@@ -150,7 +150,7 @@ static void PopupComboListCB(Widget w, XtPointer client_data,
     // Query preferred height of scroll window
     XtWidgetGeometry size;
     size.request_mode = CWHeight;
-    XtQueryGeometry(XtParent(info->list), NULL, &size);
+    XtQueryGeometry(XtParent(info->list), (XtWidgetGeometry *)0, &size);
 
     Dimension current_height;
     XtVaGetValues(info->shell, XmNheight, &current_height, XtPointer(0));
@@ -387,7 +387,7 @@ Widget CreateComboBox(Widget parent, const _XtString name, ArgList _args, Cardin
     // Set form size explicitly.
     XtWidgetGeometry size;
     size.request_mode = CWHeight | CWWidth;
-    XtQueryGeometry(combo, NULL, &size);
+    XtQueryGeometry(combo, XtWidgetGeometry(0), &size);
     XtVaSetValues(form, 
 		  XmNheight, size.height, 
 		  XmNwidth, size.width,
@@ -474,7 +474,7 @@ Widget CreateComboBox(Widget parent, const _XtString name, ArgList _args, Cardin
     // Set form size explicitly.
     XtWidgetGeometry size;
     size.request_mode = CWHeight | CWWidth;
-    XtQueryGeometry(info->text, NULL, &size);
+    XtQueryGeometry(info->text, (XtWidgetGeometry *)0, &size);
     XtVaSetValues(form,
 		  XmNheight, size.height,
 		  XmNwidth, size.width,

@@ -50,7 +50,7 @@ extern "C" {
 // The Swallower class record
 
 typedef struct _SwallowerClassPart {
-    caddr_t extension;
+    XtPointer extension;
 } SwallowerClassPart;
 
 typedef struct _SwallowerClassRec {
