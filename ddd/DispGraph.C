@@ -284,7 +284,7 @@ BoxPoint DispGraph::default_pos(DispNode *new_node,
 		  NULL);
 
     BoxPoint grid(max(grid_height, 1), max(grid_width, 1));
-    BoxPoint delta = grid * 2;
+    BoxPoint delta(grid[X] * 3, grid[Y] * 2);
 
     bool horizontal = rotation % 90;
 
