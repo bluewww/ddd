@@ -71,6 +71,9 @@ README="ANNOUNCE    \
 # Documentation files
 DOC="ddd.man.ps ddd.man-nopics.ps"
 
+# Icons
+ICONS="ddd.xbm ddd.xpm mini-ddd.xpm README"
+
 # Sample files
 SAMPLES="ddd.man ddd.man.txt sample.dddinit Ddd"
 
@@ -84,6 +87,7 @@ ddd/*.man
 ddd/*.man.txt
 ddd/*.huff.C
 ddd/xlibdir.C
+ddd/Ddd.in
 "
 
 readme=false
@@ -98,6 +102,7 @@ if [ $# = 0 ]; then
   readme=true
   dist=true
   doc=true
+  icons=true
   diff=true
   link=true
 else
@@ -106,6 +111,7 @@ else
     -readme) readme=true; shift;;
     -dist)   dist=true;   shift;;
     -doc)    doc=true;    shift;;
+    -icons)  icons=true;  shift;;
     -diff)   diff=true;   shift;;
     -link)   link=true;   shift;;
     *) echo "unknown option $1" >&2; errors=true; shift;;
@@ -169,6 +175,15 @@ if $doc; then
   $rcp -p $SAMPLES $ftpdir/doc
 
   (cd ../doc; rm -f $DOC)
+  )
+fi
+
+if $icons; then
+  (
+  cd ddd
+  echo installing $ICONS...
+  $rsh "cd $dir/icons; /bin/rm -f $ICONS"
+  (cd ../icons; $rcp -p $ICONS $ftpdir/icons)
   )
 fi
 
