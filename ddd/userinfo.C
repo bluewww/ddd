@@ -47,6 +47,7 @@ extern "C" {
 #include <unistd.h>
 #endif
 
+#include <stdlib.h>
 #include <ctype.h>
 #include <pwd.h>
 
@@ -59,18 +60,52 @@ inline bool is_letter(char c)
     return isalpha(c) || isspace(c) || c == '.' || c == '-';
 }
 
-// Issue the name of the building user, in the format
-// ``REALNAME <USERNAME@HOSTNAME>''
-int main()
+int userinfo(char *arg = 0)
 {
-    // Fetch user
-    uid_t uid = getuid();
-    struct passwd *pwd = getpwuid(uid);
+    struct passwd *pwd = 0;
+
+    if (arg == 0)
+    {
+	// Get info for current user
+	pwd = getpwuid(getuid());
+    }
+    else if (isdigit(arg[0]))
+    {
+	// Get info for numerical id
+	pwd = getpwuid(atoi(arg));
+    }
+    else
+    {
+	// Get info for user name
+	pwd = getpwnam(arg);
+    }
+
+    if (pwd == 0)
+    {
+	fputs(arg, stderr);
+	fputs(": no such passwd entry\n", stderr);
+	return 1;
+    }
 
     // Issue real name
-    char *s = pwd->pw_gecos; 
+    char *s = pwd->pw_gecos;
     while (is_letter(*s))
 	putchar(*s++);
+
+    if (s == pwd->pw_gecos)
+    {
+	// No real name given; try capitalized user id
+	if (pwd->pw_name[0])
+	{
+	    fputc(toupper(pwd->pw_name[0]), stdout);
+	    fputs(pwd->pw_name + 1, stdout);
+	}
+	else
+	{
+	    // No user id.  This is weird.
+	    fputs("Unknown ", stdout);
+	}
+    }
 
     // Issue user and host (probable mail address)
     fputs(" <", stdout);
@@ -80,4 +115,18 @@ int main()
     fputs(">\n", stdout);
 
     return 0;
+}
+
+// Issue the name of the building user, in the format
+// ``REALNAME <USERNAME@HOSTNAME>''
+int main(int argc, char *argv[])
+{
+    if (argc == 1)
+	return userinfo();
+
+    int ret = 0;
+    for (int i = 1; i < argc; i++)
+	ret |= userinfo(argv[i]);
+
+    return ret;
 }
