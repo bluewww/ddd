@@ -37,7 +37,7 @@ AC_REVISION([$Id$])
 dnl
 dnl Zdenek Sekera <zs@cray.com> says that if CDPATH is set, it may break
 dnl this script.
-CDPATH=
+unset CDPATH
 dnl
 dnl
 dnl Initialization.
