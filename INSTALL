@@ -10,8 +10,7 @@ Requirements
     To build a complete DDD from sources, you need:
 
        * The GNU C++ compiler (GCC/G++), preferably version 2.6.3 or
-	 later, and a matching C++ I/O library (libg++, libstdc++, or
-	 libiostream).
+	 later, and a matching C++ I/O library (libstdc++ or libg++).
 
          Some other C++ compilers have been reported to compile DDD as
          well, such as Sun CC 4.0 and AIX xlC.  Cfront 3.0 does not
@@ -24,21 +23,32 @@ Requirements
          results are achieved using Motif 2.0 in conjunction with the
          Athena Widget library.
 
+	 DDD also compiles with LessTif, a free Motif clone.  But as
+	 of LessTif 0.50, the resulting DDD executable is far from
+	 being usable.  This will change as LessTif evolves.
+
        * Optionally, in addition to the OSF/Motif widget library, the
          Athena Widget library (release 5 or later).  Having the
          Athena Widget library is convenient for supporting
          two-dimensional scrollbars and the `editres' protocol.
 
-    To run DDD, you need a GDB debugger (version 4 is required; best
-    results are achieved with 4.13 or later).  Using GDB, you can
-    debug programs written in C and C++.  Other languages have been
-    reported to work as well.  Best results are achieved with GDB.
+       * Lots of virtual memory.
+
+    To run DDD, you need an inferior command-line debugger.  Best
+    results are achieved with GDB, the GNU debugger.  (GDB 4.x is
+    required; best results are achieved with GDB 4.13 or later.)
+    Using GDB, you can debug programs written in C and C++; GNU Ada
+    (`gnat'), GNU Fortran (`g77') and GNU Modula-2 have been reported
+    to work as well.
 
     As an alternative, DDD also supports the DBX debugger as found on
-    Sun, DEC, and AIX systems.  Using DBX, you can also debug programs
-    written in Pascal and Modula-2.  DBX debuggers on other systems
-    will probably work, too.  Finally, DDD also supports the XDB
-    debugger as found on HP-UX.
+    SUN, DEC, AIX, and IRIX systems.  Using DBX, you can debug
+    programs written in C, C++, Pascal, Fortran, and Modula-2.  As of
+    DDD 2.0, DDD adapts itself to a wide range of other DBX variants.
+
+    As another alternative, DDD also supports the XDB debugger as
+    found on HP-UX systems.  XDB usage has been tested for C programs
+    only, but may work for other languages as well.
 
 
 Basic Installation

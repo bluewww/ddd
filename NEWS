@@ -22,14 +22,14 @@ DDD 2.0 (in beta test)
       through the source popup menu.
     - `New display' subsumes `Dependent display': if a display is
       selected, the new display is made dependent on it.
-    - Option editors.  New editors for DDD preferences and GDB settings.
+    - Option editors.  New panels for DDD preferences and GDB settings.
     - Some items have been renamed for further clarity:
       * The `command window' is now named `debugger console', to avoid
         confusion with the command tool.
       * The `Interrupt' button is now named `Break', to associate the
 	concept with `Breakpoints'.
-      * The `Break ()' and `Clear ()' buttons are now named `Break at
-	()' and `Clear at ()', respectively.
+      * The `Break ()' and `Clear ()' buttons are now named `Break at ()'
+        and `Clear at ()', respectively.
       * The `Dereference' button is now named `Display *'.
     - The `Save Options on Exit' function has been removed, as it
       also saved options given upon DDD invocation like `--dbx' or
@@ -59,9 +59,10 @@ DDD 2.0 (in beta test)
       Thanks to Peter Klein <pk@i3.informatik.rwth-aachen.de>.
 
     Changes in configuration and building:
-    - DDD now uses an `autoconf' top-level `configure' script instead
-      of the Cygnus one.  Advantages: `configure' options are properly
-      passed down to sub-`configures'; configuration caches are shared.
+    - New top-level `configure' script.  DDD now uses an `autoconf'-
+      generated top-level `configure' script instead of Cygnus
+      `configure'.  Among other advantages, configuration options are
+      now properly passed down to subdirectory configuration.
     - Regular expressions now use the POSIX.2 standard regcomp/regexec
       interface.  The slower interface is compensated by smarter calls.
     - DDD configuration now generally attempts to link with native system
@@ -93,7 +94,7 @@ DDD 2.0 (in beta test)
     - Editor problems fixed.  Invoking a source editor via `Edit'
       should work fine now.
     - The rubber band outline no more clutters the data display.
-      (This was a gcc optimization bug.)
+      (This was a GCC optimization bug.)
     - No more endless scrolling when glyphs are enabled.  Scrolling is
       slightly faster, too.
     - On HP-UX, the `@' character is no more discarded from GDB input.

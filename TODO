@@ -258,7 +258,4 @@ Volunteers for these and other projects are welcome!
 100. Settings: make all settings insensitive that appear in
      `gdbInitCommands', except when preceded by white space.
 
-101. For the top-level `configure', use an `autoconf' configure script
-     instead of Cygnus `configure'.
-
 102. (Insert your project idea here)
