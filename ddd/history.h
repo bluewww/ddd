@@ -36,6 +36,7 @@
 #include "strclass.h"
 #include "bool.h"
 #include "StringA.h"
+#include "HistoryF.h"
 
 #include <X11/Intrinsic.h>
 
@@ -76,8 +77,8 @@ extern void goto_history(int pos = -1);
 // Invoke history dialog
 extern void gdbHistoryCB(Widget, XtPointer, XtPointer);
 
-// Return the arguments of all history entries matching PREFIX into ARR
-extern void get_history(const string& prefix, StringArray& arr);
+// Tie a ComboBox to global history
+extern void tie_combo_box_to_history(Widget text, HistoryFilter filter);
 
 #endif // _DDD_history_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

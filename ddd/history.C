@@ -35,10 +35,12 @@ char history_rcsid[] =
 
 #include "history.h"
 
+#include "Assoc.h"
 #include "Delay.h"
 #include "DestroyCB.h"
 #include "GDBAgent.h"
 #include "HelpCB.h"
+#include "MakeMenu.h"
 #include "MString.h"
 #include "StringA.h"
 #include "args.h"
@@ -62,6 +64,9 @@ char history_rcsid[] =
 #include <Xm/Text.h>
 #include <Xm/List.h>
 #include <Xm/SelectioB.h>
+
+
+static void update_combo_boxes(const string& new_entry);
 
 
 //-----------------------------------------------------------------------------
@@ -185,6 +190,7 @@ void add_to_history(const string& line)
 
     add_to_arguments(line);
     update_arguments();
+    update_combo_boxes(line);
 }
 
 // Load history from history file
@@ -420,13 +426,90 @@ void goto_history(int pos)
     set_line_from_history();
 }
 
-// Return the arguments of all history entries matching PREFIX into ARR
-void get_history(const string& prefix, StringArray& arr)
+
+//-----------------------------------------------------------------------------
+// Combo Box Histories
+//-----------------------------------------------------------------------------
+
+static void sort(StringArray& a)
 {
-    for (int i = 0; i < gdb_history.size(); i++)
+    // Shell sort -- simple and fast
+    int h = 1;
+    do {
+	h = h * 3 + 1;
+    } while (h <= a.size());
+    do {
+	h /= 3;
+	for (int i = h; i < a.size(); i++)
+	{
+	    string v = a[i];
+	    int j;
+	    for (j = i; j >= h && a[j - h] > v; j -= h)
+		a[j] = a[j - h];
+	    if (i != j)
+		a[j] = v;
+	}
+    } while (h != 1);
+}
+
+// Remove adjacent duplicates in A
+static void uniq(StringArray& a)
+{
+    StringArray b;
+
+    for (int i = 0; i < a.size(); i++)
+    {
+	if (i == 0 || a[i - 1] != a[i])
+	    b += a[i];
+    }
+    
+    a = b;
+}
+
+
+static void update_combo_box(Widget text, HistoryFilter filter)
+{
+    StringArray entries;
+
+    for (int i = gdb_history.size() - 1; i >= 0; i--)
     {
 	const string& entry = gdb_history[i];
-	if (prefix == "" || entry.contains(prefix, 0))
-	    arr += entry.after(prefix);
+	string arg = filter(entry);
+	if (arg != "")
+	{
+	    if (entries.size() == 0 || entries[entries.size() - 1] != arg)
+		entries += arg;
+	}
     }
+
+    sort(entries);
+    uniq(entries);
+    MMsetComboBoxList(text, entries);
+}
+
+static WidgetHistoryFilterAssoc combo_boxes;
+
+static void update_combo_boxes(const string& new_entry)
+{
+    for (WidgetHistoryFilterAssocIter iter(combo_boxes);
+	 iter.ok(); iter++)
+    {
+	HistoryFilter filter = iter.value();
+	string arg = filter(new_entry);
+	if (arg != "")
+	    update_combo_box(iter.key(), iter.value());
+    }
+}
+
+static void RemoveComboBoxCB(Widget text, XtPointer, XtPointer)
+{
+    combo_boxes.remove(text);
+}
+
+// Tie a ComboBox to global history
+void tie_combo_box_to_history(Widget text, HistoryFilter filter)
+{
+    combo_boxes[text] = filter;
+    update_combo_box(text, filter);
+    XtAddCallback(text, XmNdestroyCallback, RemoveComboBoxCB, XtPointer(0));
 }
