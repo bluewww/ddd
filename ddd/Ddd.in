@@ -1,0 +1,2154 @@
+! $Id$
+! DDD Resource File
+! @configure_input@
+*appDefaultsVersion:  @VERSION@
+
+! WARNING: This file contains 8-bit characters.  Be careful when editing.
+! Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+! Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
+! 
+! This file is part of DDD.
+! 
+! DDD is free software; you can redistribute it and/or
+! modify it under the terms of the GNU General Public
+! License as published by the Free Software Foundation; either
+! version 2 of the License, or (at your option) any later version.
+! 
+! DDD is distributed in the hope that it will be useful,
+! but WITHOUT ANY WARRANTY; without even the implied warranty of
+! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+! See the GNU General Public License for more details.
+! 
+! You should have received a copy of the GNU General Public
+! License along with DDD -- see the file COPYING.
+! If not, write to the Free Software Foundation, Inc.,
+! 675 Mass Ave, Cambridge, MA 02139, USA.
+! 
+! DDD is the GDB-based data display debugger.
+! Contact ddd@ips.cs.tu-bs.de for details.
+
+
+!=============================================================================
+! Warning
+!=============================================================================
+
+! This file lists the default resources built into DDD.  You can use the
+! stuff in this file for examples of how to customize DDD for your
+! environment; normally you will do this by copying the few lines you
+! want to alter to your private resource database, which usually lives
+! in a file called `.Xdefaults' in your home directory.  You may also 
+! place such lines in the DDD-specific `.dddinit' file in your home
+! directory.
+! 
+! Site administrators **may** want to make changes here and install this
+! file as the global app-defaults file for the site.  To do this, one
+! would copy this file to `/usr/lib/X11/app-defaults/Ddd', or on SunOS,
+! `/usr/openwin/lib/app-defaults/Ddd'.  (Actually this directory could
+! be anywhere; only the person who installed X knows for sure.)
+! 
+! It is **STRONGLY RECOMMENDED** that you not install this file in the
+! `app-defaults' directory unless you are really sure you know what you
+! are doing.  There are a whole slew of version-skew problems associated
+! with app-defaults files, which are best avoided by simply not using
+! them.  In particular, if the app-defaults file for a program is
+! installed, and you get a new version of that program, you can't
+! properly test out the new version without actually installing it,
+! since it will pick up the resources for the previous version, and will
+! quite likely malfunction.
+! 
+! In short, app-defaults files are bad.  Don't use them.  Use this file
+! for informational purposes as suggested above.
+
+!-----------------------------------------------------------------------------
+! User-settable resources
+!-----------------------------------------------------------------------------
+
+! The debugger type (dbx or gdb, defaults to gdb)
+*debugger:
+
+
+! The name under which gdb is to be invoked (default: debugger type)
+*debuggerCommand:
+
+
+! True if data is to be displayed in a separate top-level window.
+! If this is false, the window is attached to the DDD command window.
+*separateDataWindow: true
+
+
+! True if source is to be displayed in a separate top-level window.
+! If this is false, the window is attached to the DDD command window.
+*separateSourceWindow: true
+
+
+! True if programs are to be run in a separate top-level window.
+! If this is false, input/output is sent to the DDD command window.
+*separateExecWindow: false
+
+
+! True if DDD windows are to be iconified/deiconified as a whole.
+! If this is false, every DDD window can be iconified on its own.
+*groupIconify: false
+
+
+! True if the TAB key is to complete text in all DDD windows.
+! If this is false, the TAB key completes in the DDD command window only.
+*globalTabCompletion: true
+
+
+! True if options are to be saved in ~/.dddinit across DDD invocations.
+*saveOptionsOnExit: false
+
+
+! The command to invoke a separate tty for showing I/O of the debugged
+! program.  Bourne shell commands to run in the separate tty are appended
+! to this string.
+*termCommand: xterm \
+-bg 'light gray' \
+-fn '-*-lucidatypewriter-medium-r-*-*-12-*' \
+-title '@DDD@: Execution Window' -e /bin/sh -c
+
+
+! The terminal type provided by `termCommand' (that is, the value of
+! the TERM environment variable to be passed to the debugged program)
+*termType: xterm
+
+
+! The `useTTYCommand' resource sets the redirection mode for separate TTYs.
+! Basically, there are two ways to redirect process I/O.  Both have
+! advantages and disadvantages.
+!
+! * GDB provides a `tty' command to redirect I/O to a separate tty TTY.
+!   This is portable, but on some systems, there is the nasty side-effect
+!   that redirection can not be undone.
+!   Set `useTTYCommand' to `true' to enable this behaviour.
+! 
+! * As an alternative, DDD can redirect the process I/O explicitly,
+!   without using the `tty' command.  This may fail if you use a
+!   non-standard shell.
+!   Set `useTTYCommand' to `false' to enable this behaviour.
+!   
+! The default setting is `true', since tampering around with user commands
+! is too risky.  Maybe one day GDB will provide a way to undo redirection.
+*useTTYCommand: true
+
+
+! The `rsh' command to invoke tty-based commands on other hosts.
+! On some systems, this is called `remsh'; on others, `on'.
+! You may want to consult your system documentation for details.
+
+*rshCommand: @RSH@
+
+
+! The print command to print a postscript file @FILE@
+! on a printer @PRINTER@ in @COPIES@ copies.
+! On some systems, this is called `lp'; on others, `lpr'.
+! You may want to consult your system documentation for details.
+
+! *printCommand: lpr -P@PRINTER@ -#@COPIES@ @FILE@
+! *printCommand: lp -c -d@PRINTER@ -n@COPIES@ @FILE@
+*printCommand: @PRINT_COMMAND@
+
+
+! The default printer name.  This is overridden by the values
+! of the PRINTER and LPDEST environment variables.
+*printer: lp
+
+
+! Commands to list all executable/source/core/directory
+! files matching @MASK@.
+! These commands are executed on remote hosts only.
+*listExecCommand:   \
+	file @MASK@ | grep '.*:.*exec.*' | grep -v  '.*:.*script.*' \
+	| cut -d: -f1 | grep -v '.*\\.o$'
+*listSourceCommand: \
+	file @MASK@ | grep '.*:.*text.*' | cut -d: -f1
+*listCoreCommand:   \
+	file @MASK@ | grep '.*:.*core.*' | cut -d: -f1
+*listDirCommand:   \
+	file @MASK@ | grep '.*:.*directory.*' | cut -d: -f1
+
+
+! The time (in seconds) to wait for synchonous GDB questions to complete
+*questionTimeout: 5
+
+
+! Colon-separated lists of GDB commands for which buttons are to be created.
+!
+! All buttons send the named command to GDB.
+! Commands ending with '...' insert their name, followed by a space.
+! Commands ending with a control character insert the given
+! control character.
+!
+! The following button names have special meanings:
+! - `Clear'    : Clear current command
+! - `Prev'     : Show previous command
+! - `Next'     : Show next command
+! - `Apply'    : Send the given command to GDB
+! - `Back'     : Lookup previously selected source position
+! - `Forward'  : Lookup next selected source position
+! - `Complete' : Complete current command
+! - `Yes'      : Answer current GDB prompt
+! - `No'       : Answer current GDB prompt
+
+! The buttons under the GDB command window.
+! *commandButtons: \
+! 	Yes:No:run:Clear:Prev:Next:Apply:interrupt^C
+*commandButtons: \
+	Yes:No:interrupt^C
+
+! The buttons under the source window.
+*sourceButtons:   	    \
+	run:next:step:cont:until:finish:up:down:Back:Forward:kill:interrupt^C
+
+! Some special labels
+*run.labelString:       Run
+*next.labelString:      Next
+*step.labelString:      Step
+*cont.labelString:      Continue
+*interrupt.labelString: Interrupt
+*kill.labelString:      Kill
+*until.labelString:    	Until
+*finish.labelString:    Finish
+*up.labelString:        Up
+*down.labelString:      Down
+
+! The maximum number of characters allowed in a data display.
+! Components of longer names are replaced by `..', for instance
+! `foo->bar->blue' becomes `foo->..->blue'
+*maxNameLength: 	20
+
+
+! Number of colons used for the code line number display.
+! Should be a multiple of 8, to avoid confusion with TAB characters.
+*indentAmount: 	8
+
+
+! The GDB initialization commands.  DDD depends on these settings,
+! so don't change them unless required by your GDB version.
+! Use a personal `~/.gdbinit' file instead to customize GDB.
+*gdbInitCommands:	\
+set height 0\n\
+set width 0\n\
+set print pretty\n\
+set print array\n\
+set print repeats 0\n\
+set verbose off\n\
+set prompt (gdb) \n
+
+
+! The DBX initialization commands.  Nothing special yet.
+! Use a personal `~/.dbxinit' file instead to customize DBX.
+*dbxInitCommands:
+
+
+! The VSL library for displaying graph nodes.  `builtin' means the VSL
+! library compiled into DDD, named `ddd.vsl'.  If you wish to use
+! another VSL library, put its name here and set `vslPath' to a
+! colon-separated list of directories where the VSL file and its
+! includes can be found.
+*vslLibrary: 		builtin
+*vslPath:	 	.
+
+
+! Graph Editor Defaults
+! What shall we use if the graph gets too large to be displayed?
+! If true, an Athena panner is used (a kind of two-directional scrollbar).
+! If false, two Motif scrollbars are used.
+!
+! Although a panned graph editor is much more comfortable, we set-up Motif
+! scrollbars as a default: Many OSF/Motif installations choke
+! on intermixed Motif/Athena applications and we don't want to get bug
+! reports that should be directed to OSF.
+*pannedGraphEditor: 	false
+
+! Nodes are moved when dragged more than 4 pixels.
+*graph_edit.moveDelta:	4
+
+! The selection tile pixmap.  Usual choices are Motif built-in pixmaps.
+! If this resource is left unspecified, nodes are simply inverted.
+! *graph_edit.selectTile: 	25_foreground
+
+! Do we wish opaque movement? (doesn't work yet)
+*graph_edit.opaqueMove: 	false
+
+! Do we wish a grid?
+*graph_edit.showGrid: 		true
+
+! Do we wish to snap the position to the grid?
+*graph_edit.snapToGrid: 	false
+
+! Do we wish to show edge hints?
+*graph_edit.showEdgeHints: 	true
+
+! What kind of layout do we wish? (regular, compact)
+*graph_edit.layoutMode: 	regular
+
+! Do we wish to re-layout the graph after each change?
+*graph_edit.autoLayout: 	false
+
+! Width and height of the grid
+*graph_edit.gridWidth: 		16
+*graph_edit.gridHeight: 	16
+
+
+! Source defaults
+! Do we wish to find complete words only?
+*findWordsOnly: 	true
+
+! Focus policy: POINTER means point-and-type, EXPLICIT means click-and-type.
+! Rather than accepting the user's default, we use POINTER here because:
+! 1. Using EXPLICIT focus policy works bad with a panned graph editor,
+!    since Motif has trouble with assigning focus to Athena Widgets.
+! 2. Several users use DDD in a non-Motif environment, where the click-to-type
+!    methaphor is inappropriate.
+! 3. DDD users usually are wither novices or experienced programmers,
+!    who are often confused and/or embarrassed by explicit focus.
+! Users unsatisfied with this setting can change it at run-time.
+*keyboardFocusPolicy: POINTER
+
+
+!-----------------------------------------------------------------------------
+! Fonts
+!-----------------------------------------------------------------------------
+
+! Font definitions.  @<font> is used to switch between fonts.
+! @charset is the default font.
+! @tt is the fixed-width font used in texts
+! @key is the font used for keys
+! @rm, @sl, @bf, @bs are some fonts for usual highlighting.
+! @Logo and @logo are used in the DDD logo.
+*fontList: \
+-*-helvetica-bold-r-*-*-12-*=charset,\
+-*-lucidatypewriter-medium-r-*-*-12-*=tt,\
+-*-helvetica-bold-r-*-*-12-*=key,\
+-*-helvetica-medium-r-*-*-12-*=rm,\
+-*-helvetica-medium-o-*-*-12-*=sl,\
+-*-helvetica-bold-r-*-*-12-*=bf,\
+-*-helvetica-bold-o-*-*-12-*=bs,\
+-*-helvetica-bold-r-*-*-18-*=Logo,\
+-*-helvetica-bold-r-*-*-12-*=logo,\
+-*-symbol-*-*-*-12-*=symbol
+
+! Fixed-width fonts.  `lucidatypewriter' is the font the DDD developers
+! prefer; another popular choice is `courier'.  Note that the fonts used in
+! displays are specified in the VSL file.
+*XmTextField.FontList: -*-lucidatypewriter-medium-r-*-*-12-*
+*XmText.FontList:      -*-lucidatypewriter-medium-r-*-*-12-*
+
+
+!-----------------------------------------------------------------------------
+! Colors
+!-----------------------------------------------------------------------------
+
+*background:                    grey
+*XmText.background:             light grey
+*XmTextField.background:        light grey
+*GraphEdit.background:          light grey
+*XmList.background:             light grey
+*graph_edit_panner.background:  grey
+*graph_edit_panner.foreground:  grey
+*graph_edit_panner.shadowColor: black
+
+! The famous red and green buttons.
+*interrupt.foreground:          maroon
+*run.foreground:                dark green
+
+
+! Here are the resources to set data display colors.
+*graph_edit.nodeColor:          black
+*graph_edit.edgeColor:          black
+*graph_edit.selectColor:        black
+*graph_edit.gridColor:          black
+*graph_edit.frameColor:         black
+
+
+
+!-----------------------------------------------------------------------------
+! Translations
+!-----------------------------------------------------------------------------
+
+
+! The GDB window uses an EMACS-like editing style.
+! `R7' and `R13' are generated by the developer's SUNs for `Home' and `End'
+*gdb_w*translations: #override \
+Ctrl<Key>A:		gdb-beginning-of-line()     \n\
+Ctrl<Key>B:     	gdb-backward-character()    \n\
+Ctrl<Key>C:		gdb-control(^C)             \n\
+Ctrl<Key>D:		gdb-delete-or-control(^D)   \n\
+Ctrl<Key>E:		gdb-end-of-line()           \n\
+Ctrl<Key>F:     	gdb-forward-character()     \n\
+Ctrl<Key>H:     	delete-previous-character() \n\
+Ctrl<Key>I:     	gdb-complete-command()      \n\
+Ctrl<Key>K:     	delete-to-end-of-line()     \n\
+Ctrl<Key>N:		gdb-next-history()          \n\
+Ctrl<Key>P:		gdb-previous-history()      \n\
+Ctrl<Key>U:     	gdb-set-line("")            \n\
+Ctrl<Key>V:     	next-page()                 \n\
+Meta<Key>V:     	previous-page()             \n\
+Ctrl<Key>W:     	delete-previous-word()      \n\
+Ctrl<Key>Y:     	unkill()                    \n\
+None<Key>osfUp:		gdb-previous-history()      \n\
+None<Key>osfDown:	gdb-next-history()          \n\
+None<Key>osfLeft:	gdb-backward-character()    \n\
+None<Key>osfRight:	gdb-forward-character()     \n\
+None<Key>osfBeginLine:	gdb-beginning-of-line()     \n\
+None<Key>osfEndLine:	gdb-end-of-line()           \n\
+None<Key>osfBeginData:	gdb-beginning-of-line()     \n\
+None<Key>osfEndData:	gdb-end-of-line()           \n\
+None<Key>Home:		gdb-beginning-of-line()     \n\
+None<Key>End:		gdb-end-of-line()           \n\
+None<Key>R7:		gdb-beginning-of-line()     \n\
+None<Key>R13:		gdb-end-of-line()           \n\
+None<Key>Tab:		gdb-complete-command()      \n\
+None<Key>Escape:	gdb-complete-command()      \n
+
+
+! Have some of these in argument fields as well
+*XmTextField*translations: #override \
+Ctrl<Key>A:		beginning-of-line()         \n\
+Ctrl<Key>B:     	backward-character()        \n\
+Ctrl<Key>D:     	delete-next-character()     \n\
+Ctrl<Key>E:     	end-of-line()               \n\
+Ctrl<Key>F:     	forward-character()         \n\
+Ctrl<Key>H:     	delete-previous-character() \n\
+Ctrl<Key>I:     	gdb-complete-arg(print)     \n\
+Ctrl<Key>K:     	delete-to-end-of-line()     \n\
+Ctrl<Key>U:     	beginning-of-line() 	    \
+			delete-to-end-of-line()     \n\
+Ctrl<Key>W:     	delete-previous-word()      \n\
+None<Key>R7:		beginning-of-line()         \n\
+None<Key>R13:		end-of-line()               \n\
+None<Key>Tab:		gdb-complete-tab(print)     \n\
+None<Key>Escape:	gdb-complete-arg(print)     \n
+
+
+! Have some of these in breakpoint and display dialogs
+! (with different completion)
+*new_breakpoint_dialog*XmText.translations: #override \
+Ctrl<Key>A:		beginning-of-line()         \n\
+Ctrl<Key>B:     	backward-character()        \n\
+Ctrl<Key>D:     	delete-next-character()     \n\
+Ctrl<Key>E:     	end-of-line()               \n\
+Ctrl<Key>F:     	forward-character()         \n\
+Ctrl<Key>H:     	delete-previous-character() \n\
+Ctrl<Key>I:     	gdb-complete-arg(break)     \n\
+Ctrl<Key>K:     	delete-to-end-of-line()     \n\
+Ctrl<Key>U:     	beginning-of-line() 	    \
+			delete-to-end-of-line()     \n\
+Ctrl<Key>W:     	delete-previous-word()      \n\
+Ctrl<Key>Y:     	unkill()                    \n\
+None<Key>R7:		beginning-of-line()         \n\
+None<Key>R13:		end-of-line()               \n\
+None<Key>Tab:		gdb-complete-tab(break)     \n\
+None<Key>Escape:	gdb-complete-arg(break)     \n
+
+*edit_breakpoint_condition_dialog*XmText.translations: #override \
+Ctrl<Key>A:		beginning-of-line()         \n\
+Ctrl<Key>B:     	backward-character()        \n\
+Ctrl<Key>D:     	delete-next-character()     \n\
+Ctrl<Key>E:     	end-of-line()               \n\
+Ctrl<Key>F:     	forward-character()         \n\
+Ctrl<Key>H:     	delete-previous-character() \n\
+Ctrl<Key>I:     	gdb-complete-arg(print)     \n\
+Ctrl<Key>K:     	delete-to-end-of-line()     \n\
+Ctrl<Key>U:     	beginning-of-line() 	    \
+			delete-to-end-of-line()     \n\
+Ctrl<Key>W:     	delete-previous-word()      \n\
+Ctrl<Key>Y:     	unkill()                    \n\
+None<Key>R7:		beginning-of-line()         \n\
+None<Key>R13:		end-of-line()               \n\
+None<Key>Tab:		gdb-complete-tab(print)     \n\
+None<Key>Escape:	gdb-complete-arg(print)     \n
+
+*edit_breakpoint_ignore_count_dialog*XmText.translations: #override \
+Ctrl<Key>A:		beginning-of-line()         \n\
+Ctrl<Key>B:     	backward-character()        \n\
+Ctrl<Key>D:     	delete-next-character()     \n\
+Ctrl<Key>E:     	end-of-line()               \n\
+Ctrl<Key>F:     	forward-character()         \n\
+Ctrl<Key>H:     	delete-previous-character() \n\
+Ctrl<Key>I:     	beep()                      \n\
+Ctrl<Key>K:     	delete-to-end-of-line()     \n\
+Ctrl<Key>U:     	beginning-of-line() 	    \
+			delete-to-end-of-line()     \n\
+Ctrl<Key>W:     	delete-previous-word()      \n\
+Ctrl<Key>Y:     	unkill()                    \n\
+None<Key>R7:		beginning-of-line()         \n\
+None<Key>R13:		end-of-line()               \n
+
+*new_breakpoint_dialog*XmText.translations: #override \
+Ctrl<Key>A:		beginning-of-line()         \n\
+Ctrl<Key>B:     	backward-character()        \n\
+Ctrl<Key>D:     	delete-next-character()     \n\
+Ctrl<Key>E:     	end-of-line()               \n\
+Ctrl<Key>F:     	forward-character()         \n\
+Ctrl<Key>H:     	delete-previous-character() \n\
+Ctrl<Key>I:     	gdb-complete-arg(break)     \n\
+Ctrl<Key>K:     	delete-to-end-of-line()     \n\
+Ctrl<Key>U:     	beginning-of-line() 	    \
+			delete-to-end-of-line()     \n\
+Ctrl<Key>W:     	delete-previous-word()      \n\
+Ctrl<Key>Y:     	unkill()                    \n\
+None<Key>R7:		beginning-of-line()         \n\
+None<Key>R13:		end-of-line()               \n\
+None<Key>Tab:		gdb-complete-tab(break)     \n\
+None<Key>Escape:	gdb-complete-arg(break)     \n
+
+*new_display_dialog*XmText.translations: #override \
+Ctrl<Key>A:		beginning-of-line()         \n\
+Ctrl<Key>B:     	backward-character()        \n\
+Ctrl<Key>D:     	delete-next-character()     \n\
+Ctrl<Key>E:     	end-of-line()               \n\
+Ctrl<Key>F:     	forward-character()         \n\
+Ctrl<Key>H:     	delete-previous-character() \n\
+Ctrl<Key>I:     	gdb-complete-arg(print)     \n\
+Ctrl<Key>K:     	delete-to-end-of-line()     \n\
+Ctrl<Key>U:     	beginning-of-line() 	    \
+			delete-to-end-of-line()     \n\
+Ctrl<Key>W:     	delete-previous-word()      \n\
+Ctrl<Key>Y:     	unkill()                    \n\
+None<Key>R7:		beginning-of-line()         \n\
+None<Key>R13:		end-of-line()               \n\
+None<Key>Tab:		gdb-complete-tab(print)     \n\
+None<Key>Escape:	gdb-complete-arg(print)     \n
+
+*dependent_display_dialog*XmText.translations: #override \
+Ctrl<Key>A:		beginning-of-line()         \n\
+Ctrl<Key>B:     	backward-character()        \n\
+Ctrl<Key>D:     	delete-next-character()     \n\
+Ctrl<Key>E:     	end-of-line()               \n\
+Ctrl<Key>F:     	forward-character()         \n\
+Ctrl<Key>H:     	delete-previous-character() \n\
+Ctrl<Key>I:     	gdb-complete-arg(print)     \n\
+Ctrl<Key>K:     	delete-to-end-of-line()     \n\
+Ctrl<Key>U:     	beginning-of-line() 	    \
+			delete-to-end-of-line()     \n\
+Ctrl<Key>W:     	delete-previous-word()      \n\
+Ctrl<Key>Y:     	unkill()                    \n\
+None<Key>R7:		beginning-of-line()         \n\
+None<Key>R13:		end-of-line()               \n\
+None<Key>Tab:		gdb-complete-tab(print)     \n\
+None<Key>Escape:	gdb-complete-arg(print)     \n
+
+
+! Have some of these in file dialogs (with different completion)
+*exec_files_popup*XmText.translations: #override \
+Ctrl<Key>A:		beginning-of-line()         \n\
+Ctrl<Key>B:     	backward-character()        \n\
+Ctrl<Key>D:     	delete-next-character()     \n\
+Ctrl<Key>E:     	end-of-line()               \n\
+Ctrl<Key>F:     	forward-character()         \n\
+Ctrl<Key>H:     	delete-previous-character() \n\
+Ctrl<Key>I:     	gdb-complete-arg(file)      \n\
+Ctrl<Key>K:     	delete-to-end-of-line()     \n\
+Ctrl<Key>U:     	beginning-of-line() 	    \
+			delete-to-end-of-line()     \n\
+Ctrl<Key>W:     	delete-previous-word()      \n\
+Ctrl<Key>Y:     	unkill()                    \n\
+None<Key>R7:		beginning-of-line()         \n\
+None<Key>R13:		end-of-line()               \n\
+None<Key>Tab:		gdb-complete-tab(file)      \n\
+None<Key>Escape:	gdb-complete-arg(file)      \n
+
+*core_files_popup*XmText.translations: #override \
+Ctrl<Key>A:		beginning-of-line()         \n\
+Ctrl<Key>B:     	backward-character()        \n\
+Ctrl<Key>D:     	delete-next-character()     \n\
+Ctrl<Key>E:     	end-of-line()               \n\
+Ctrl<Key>F:     	forward-character()         \n\
+Ctrl<Key>H:     	delete-previous-character() \n\
+Ctrl<Key>I:     	gdb-complete-arg(core-file) \n\
+Ctrl<Key>K:     	delete-to-end-of-line()     \n\
+Ctrl<Key>U:     	beginning-of-line() 	    \
+			delete-to-end-of-line()     \n\
+Ctrl<Key>W:     	delete-previous-word()      \n\
+Ctrl<Key>Y:     	unkill()                    \n\
+None<Key>R7:		beginning-of-line()         \n\
+None<Key>R13:		end-of-line()               \n\
+None<Key>Tab:		gdb-complete-tab(core-file) \n\
+None<Key>Escape:	gdb-complete-arg(core-file) \n
+
+*source_files_popup*XmText.translations: #override \
+Ctrl<Key>A:		beginning-of-line()         \n\
+Ctrl<Key>B:     	backward-character()        \n\
+Ctrl<Key>D:     	delete-next-character()     \n\
+Ctrl<Key>E:     	end-of-line()               \n\
+Ctrl<Key>F:     	forward-character()         \n\
+Ctrl<Key>H:     	delete-previous-character() \n\
+Ctrl<Key>I:     	gdb-complete-arg(file)      \n\
+Ctrl<Key>K:     	delete-to-end-of-line()     \n\
+Ctrl<Key>U:     	beginning-of-line() 	    \
+			delete-to-end-of-line()     \n\
+Ctrl<Key>W:     	delete-previous-word()      \n\
+Ctrl<Key>Y:     	unkill()                    \n\
+None<Key>R7:		beginning-of-line()         \n\
+None<Key>R13:		end-of-line()               \n\
+None<Key>Tab:		gdb-complete-tab(file)      \n\
+None<Key>Escape:	gdb-complete-arg(file)      \n
+
+*convert_popup*XmText.translations: #override \
+Ctrl<Key>A:		beginning-of-line()         \n\
+Ctrl<Key>B:     	backward-character()        \n\
+Ctrl<Key>D:     	delete-next-character()     \n\
+Ctrl<Key>E:     	end-of-line()               \n\
+Ctrl<Key>F:     	forward-character()         \n\
+Ctrl<Key>H:     	delete-previous-character() \n\
+Ctrl<Key>I:     	gdb-complete-arg(file)      \n\
+Ctrl<Key>K:     	delete-to-end-of-line()     \n\
+Ctrl<Key>U:     	beginning-of-line() 	    \
+			delete-to-end-of-line()     \n\
+Ctrl<Key>W:     	delete-previous-word()      \n\
+Ctrl<Key>Y:     	unkill()                    \n\
+None<Key>R7:		beginning-of-line()         \n\
+None<Key>R13:		end-of-line()               \n\
+None<Key>Tab:		gdb-complete-tab(file)      \n\
+None<Key>Escape:	gdb-complete-arg(file)      \n
+
+! The source window is especially tuned for word selection.
+*source_text_w.translations: #override \
+None<Btn3Down>:		source-start-select-word() source-popup-menu()\n\
+None<Btn3Up>:		source-end-select-word()    \n\
+None<Btn1Down>:		source-start-select-word()  \n\
+None<Btn1Up>:		source-end-select-word()    \n\
+Ctrl<Key>A:		beginning-of-line()         \n\
+Ctrl<Key>B:     	backward-character()        \n\
+Ctrl<Key>E:     	end-of-line()               \n\
+Ctrl<Key>F:     	forward-character()         \n\
+Ctrl<Key>V:     	next-page()                 \n\
+Meta<Key>V:     	previous-page()             \n\
+None<Key>R7:		beginning-of-line()         \n\
+None<Key>R13:		end-of-line()               \n\
+None<Key>Tab:		PrimitiveNextTabGroup()     \n
+
+
+! This defines the popup menus in the graph window.
+*graph_edit.translations: #override \
+None<Btn1Down>:		graph-select-or-move()\n\
+None<Btn3Down>:		graph-select() graph-popup-menu()\n
+
+
+!-----------------------------------------------------------------------------
+! Titles
+!-----------------------------------------------------------------------------
+
+*title: @DDD@ Window
+
+*command_shell.title: 			@DDD@: Command Window
+*command_shell.iconName: 		@DDD@: Command Window
+
+*source_view_shell.title: 		@DDD@: Source Window
+*source_view_shell.iconName: 		@DDD@: Source Window
+
+*data_disp_shell.title: 		@DDD@: Data Window
+*data_disp_shell.iconName: 		@DDD@: Data Window
+
+
+
+!-----------------------------------------------------------------------------
+! MWM Decorations
+!-----------------------------------------------------------------------------
+
+! Don't place resize handles on dialogs
+*XmDialogShell.mwmDecorations: 26
+
+! Exception: the help index.
+*manual_help_popup.mwmDecorations: 1
+
+
+!-----------------------------------------------------------------------------
+! Help
+!-----------------------------------------------------------------------------
+
+! Set this to true to view widget names in help texts.
+*contextHelpShowTitle: false
+
+! Help is never acknowledged, always closed.
+*help_popup*okLabelString: Close
+*text_help_popup*okLabelString: Close
+*manual_help_popup*okLabelString: Close
+
+! Titles
+*help_popup.title: @DDD@: Help
+*manual_help_popup.title: @DDD@: Help Index
+
+! Help on help.
+*help_popup.help*contextHelpString: \
+@rm This is the @sl Help @rm window.\n\
+\n\
+By pressing @key F1 @rm and clicking on an item,\n\
+the item's functions are explained here.\n\
+\n\
+Click on @bf Close @rm to close the help window.
+
+! DDD manual.
+*manual_help.area.orientation:                 HORIZONTAL
+*manual_help*index.selectionPolicy:            SINGLE_SELECT
+
+*manual_help*text.columns:           72
+*manual_help*text.rows:              25
+*manual_help*scrollBarDisplayPolicy: AS_NEEDED
+
+*manual_help*contextHelpString: \
+@rm This is the @sl @DDD@ Manual@rm.\n\
+\n\
+Select titles from the index on the left to get help on a specific item.
+
+! The official announcement.
+?.contextHelpString:	\
+@Logo @DDD@@logo, \
+the @Logo D@logo ata @Logo D@logo isplay @Logo D@logo ebugger\n\
+@rm by Dorothea Lütkehaus and Andreas Zeller.\n\
+\n\
+@DDD@ @VERSION@ (@host@),\n\
+Copyright © 1995 Technische Universität Braunschweig, Germany.\n\
+@DDD@ is free software and you are welcome to distribute copies of it\n\
+under certain conditions; type `show copying' to see the conditions.\n\
+There is absolutely no warranty for @DDD@; type `show warranty' for details.\n\
+\n\
+If you appreciate this software, please send a picture postcard to:\n\
+\n\
+    Technische Universität Braunschweig\n\
+    Abteilung Softwaretechnologie\n\
+    Gaußstraße 17\n\
+    D-38092 Braunschweig\n\
+    @sl GERMANY @rm
+
+
+! The default Help Text.
+*contextHelpString:	\
+@rm This item has no function.
+
+! Some trival help
+*XmScrollBar.contextHelpString: \
+@rm This is a @sl Scroll Bar @rm.\n\
+\n\
+Click or hold the @bf left mouse button @rm on an arrow button\n\
+to scroll the window in the arrow direction.\n\
+\n\
+Drag the slider with the @bf left mouse button @rm to select the\n\
+visible part of the window.
+
+*XmSash.contextHelpString: \
+@rm This is a @sl Paned Window Sash @rm.\n\
+\n\
+Drag the sash with the @bf left mouse button @rm to resize window parts.
+
+
+
+!-----------------------------------------------------------------------------
+! Menu Bar
+!-----------------------------------------------------------------------------
+
+*menubar.contextHelpString:		\
+@rm This is the @sl Menu bar@rm.\n\
+\n\
+* @bf File @rm - select files and exit @DDD@.\n\
+* @bf Edit @rm - cut, copy, and paste text.\n\
+* @bf Options @rm - change @DDD@ settings.\n\
+* @bf Windows @rm - raise @DDD@ windows.\n\
+* @bf Commands @rm - view command history.\n\
+* @bf Stack @rm - view backtrace and select the current stack frame.\n\
+* @bf Source @rm - edit breakpoints and go to previous positions.\n\
+* @bf Data @rm - edit displays.\n\
+* @bf Graph @rm - graph operations.\n\
+* @bf Help @rm - on-line help and version information.
+
+
+*menubar.file.labelString:		File
+*menubar.file.mnemonic:			F
+*menubar.file*contextHelpString:	\
+\
+@rm This is the @sl File menu@rm.\n\
+\n\
+* @bf Open File... @rm - open the program to be debugged.\n\
+* @bf Open Core... @rm - open a core dump.\n\
+* @bf Open Source... @rm - open a source file.\n\
+\n\
+* @bf Run @rm - start the execution of the debugged process.\n\
+* @bf Interrupt @rm - interrupt the debugged process.\n\
+* @bf Continue @rm - resume execution of the debugged process.\n\
+\n\
+* @bf Close @rm - close this window.\n\
+* @bf Exit @rm - exit DDD.
+
+*menubar*fileMenu.open_file.labelString: Open File...
+*menubar*fileMenu.open_file.mnemonic:	 O
+
+*menubar*fileMenu.open_core.labelString: Open Core...
+*menubar*fileMenu.open_core.mnemonic:	 o
+
+*menubar*fileMenu.open_source.labelString: Open Source...
+*menubar*fileMenu.open_source.mnemonic:	 S
+
+*menubar*fileMenu.run.labelString: 	 Run
+*menubar*fileMenu.run.mnemonic:	 	 R
+
+*menubar*fileMenu.interrupt.labelString: Interrupt
+*menubar*fileMenu.interrupt.mnemonic:	 I
+*menubar*fileMenu.interrupt.accelerator: Ctrl<Key>C	 I
+*menubar*fileMenu.interrupt.acceleratorText: Ctrl+C
+
+*menubar*fileMenu.continue.labelString:	 Continue
+*menubar*fileMenu.continue.mnemonic:	 n
+
+*menubar*fileMenu.close.labelString:	 Close
+*menubar*fileMenu.close.mnemonic:	 C
+
+*menubar*fileMenu.quit.labelString:	 Exit
+*menubar*fileMenu.quit.mnemonic:	 E
+
+
+*menubar.edit.labelString:		Edit
+*menubar.edit.mnemonic:			E
+*menubar.edit*contextHelpString:	\
+\
+@rm This is the @sl Edit menu@rm.\n\
+\n\
+* @bf Cut @rm - remove the selected text to the clipboard.\n\
+* @bf Copy @rm - copy the selected text to the clipboard\n\
+   without removing the original.\n\
+* @bf Paste @rm - paste the clipboard contents into the text.\n\
+\n\
+* @bf Clear @rm - delete the current input.\n\
+* @bf Delete @rm - delete the selected text.
+
+*editMenu.cut.labelString:		Cut
+*editMenu.cut.mnemonic:			t
+*editMenu.cut.accelerator:		Shift<Key>osfDelete
+! *editMenu.cut.accelerator:		<Key>osfCut
+*editMenu.cut.acceleratorText:		Shift+Del
+
+*editMenu.copy.labelString:		Copy
+*editMenu.copy.mnemonic:		C
+*editMenu.copy.accelerator:		Ctrl<Key>osfInsert
+! *editMenu.copy.accelerator:		<Key>osfPrimaryCopy
+*editMenu.copy.acceleratorText:		Ctrl+Ins
+
+*editMenu.paste.labelString:		Paste
+*editMenu.paste.mnemonic:		P
+*editMenu.paste.accelerator:		Shift<Key>osfInsert
+! *editMenu.paste.accelerator:		<Key>osfPaste
+*editMenu.paste.acceleratorText: 	Shift+Ins
+
+*editMenu.clear.labelString:		Clear
+*editMenu.clear.mnemonic:		e
+*editMenu.clear.accelerator:		Ctrl<Key>U
+*editMenu.clear.acceleratorText:	Ctrl+U
+
+*editMenu.delete.labelString:		Delete
+*editMenu.delete.mnemonic:		D
+
+
+*menubar.commands.labelString:		Commands
+*menubar.commands.mnemonic:		C
+*menubar.commands*contextHelpString:	\
+\
+@rm This is the @sl Commands menu@rm.\n\
+\n\
+* @bf Command History... @rm shows the previous commands.\n\
+\n\
+* @bf Previous @rm - show the previous command.\n\
+* @bf Next @rm - show the next command.\n\
+* @bf Complete @rm - complete the current command.
+
+*commandsMenu.history.labelString:	Command History...
+*commandsMenu.prev.mnemonic:		H
+
+*commandsMenu.prev.labelString:		Previous
+*commandsMenu.prev.mnemonic:		P
+! *commandsMenu.prev.accelerator:	Ctrl<Key>P
+*commandsMenu.prev.acceleratorText:	Ctrl+P
+
+*commandsMenu.next.labelString:		Next
+*commandsMenu.next.mnemonic:		N
+! *commandsMenu.next.accelerator:	Ctrl<Key>N
+*commandsMenu.next.acceleratorText:	Ctrl+N
+
+*commandsMenu.complete.labelString:	Complete
+*commandsMenu.complete.mnemonic:	C
+! *commandsMenu.complete.accelerator:	None<Key>Tab
+! *commandsMenu.complete.accelerator:	Ctrl<Key>I
+*commandsMenu.complete.acceleratorText:	Tab
+
+
+*menubar.stack.labelString:		Stack
+*menubar.stack.mnemonic:		t
+*menubar.stack.contextHelpString:	\
+\
+@rm This is the @sl Stack menu@rm.\n\
+\n\
+* @bf Show Backtrace... @rm - give a summary of how your program got \
+where it is.\n\
+\n\
+* @bf Up @rm - show the function that called the current one.\n\
+* @bf Down @rm - show the function that was called by the current one.
+
+*stackMenu.stack.labelString:		Show Backtrace...
+*stackMenu.stack.mnemonic:		S
+
+*stackMenu.up.labelString:		Up
+*stackMenu.up.mnemonic:			U
+*stackMenu.up.accelerator:		Ctrl<Key>Up
+*stackMenu.up.acceleratorText:		Ctrl+Up
+
+*stackMenu.down.labelString:		Down
+*stackMenu.down.mnemonic:		D
+*stackMenu.down.accelerator:		Ctrl<Key>Down
+*stackMenu.down.acceleratorText:	Ctrl+Down
+
+*menubar.source.labelString:		Source
+*menubar.source.mnemonic:		S
+*menubar.source.contextHelpString:	\
+\
+@rm This is the @sl Source menu@rm.\n\
+\n\
+* @bf Edit Breakpoints... @rm - set, view, and edit breakpoints.\n\
+\n\
+* @bf Back @rm - show the previous source position.\n\
+* @bf Forward @rm - show the next source position.
+
+*sourceMenu.breakpoints.labelString:	Edit Breakpoints...
+*sourceMenu.breakpoints.mnemonic:	E
+
+*sourceMenu.back.labelString:		Back
+*sourceMenu.back.mnemonic:		B
+*sourceMenu.back.accelerator:		Ctrl<Key>Left
+*sourceMenu.back.acceleratorText:	Ctrl+Left
+
+*sourceMenu.forward.labelString:	Forward
+*sourceMenu.forward.mnemonic:		F
+*sourceMenu.forward.accelerator:	Ctrl<Key>Right
+*sourceMenu.forward.acceleratorText:	Ctrl+Right
+
+
+*menubar.data.labelString:		Data
+*menubar.data.mnemonic:			D
+*menubar.data*contextHelpString:	\
+\
+@rm This is the @sl Data menu@rm.\n\
+\n\
+* @bf Edit Displays... @rm - select, enable and delete displays.\n\
+\n\
+* @bf Select All @rm - select all displays.\n\
+* @bf Refresh @rm - update all displays.
+
+*dataMenu.displays.labelString:		Edit Displays...
+*dataMenu.displays.mnemonic:		E
+
+*dataMenu.selectAll.labelString:	Select All
+*dataMenu.selectAll.mnemonic:		S
+*dataMenu.selectAll.accelerator:	Ctrl<Key>A
+*dataMenu.selectAll.acceleratorText:	Ctrl+A
+
+*dataMenu.refresh.labelString:		Refresh
+*dataMenu.refresh.mnemonic:		R
+*dataMenu.refresh.accelerator:		Ctrl<Key>L
+*dataMenu.refresh.acceleratorText:	Ctrl+L
+
+
+*menubar.graph.labelString:		Graph
+*menubar.graph.mnemonic:		G
+*menubar.graph*contextHelpString:	\
+\
+@rm This is the @sl Graph menu@rm.\n\
+\n\
+* @bf Align @rm - align all displays on the next grid point.\n\
+* @bf Rotate @rm - rotate the graph clockwise by 90 degrees.\n\
+* @bf Layout @rm - layout the graph.\n\
+\n\
+* @bf Print... @rm - print the graph.\n\
+* @bf Quick Print @rm - print the graph using the current settings.\n\
+* @bf Export... @rm - save the graph in a file suitable for other programs.
+
+*graphMenu.align.labelString:		Align
+*graphMenu.align.mnemonic:		A
+*graphMenu.align.accelerator:		Meta<Key>A
+*graphMenu.align.acceleratorText:	Alt+A
+
+*graphMenu.rotate.labelString:		Rotate
+*graphMenu.rotate.mnemonic:		R
+*graphMenu.rotate.accelerator:		Meta<Key>R
+*graphMenu.rotate.acceleratorText:	Alt+R
+
+*graphMenu.layout.labelString:		Layout
+*graphMenu.layout.mnemonic:		L
+*graphMenu.layout.accelerator:		Meta<Key>L
+*graphMenu.layout.acceleratorText:	Alt+L
+
+*graphMenu.print.labelString:		Print...
+*graphMenu.print.mnemonic:		P
+
+*graphMenu.quickPrint.labelString:	Quick Print
+*graphMenu.quickPrint.mnemonic:		Q
+
+*graphMenu.convert.labelString:		Export...
+*graphMenu.convert.mnemonic:		E
+
+
+*menubar.options.labelString:		Options
+*menubar.options.mnemonic:		O
+
+*menubar.options*contextHelpString:	\
+@rm This is the @sl Options @rm menu.\n\
+\n\
+@sl General Options:@rm\n\
+* If @bf Group Iconify @rm is set, all @DDD@ windows\n\
+  are iconified as a group.  Otherwise, windows are iconified separately.\n\
+* If @bf Global Tab Completion @rm is set, the @key TAB @rm key completes\n\
+  arguments in all @DDD@ windows.  Otherwise, the  @key TAB @rm completes\n\
+  in the @DDD@ command window only.\n\
+* If @bf Execution Window @rm is set, the program is run in a separate\n\
+  terminal window; useful for programs using terminal I/O.  Otherwise,\n\
+  the program is run in the @DDD@ command window.\n\
+  This change takes effect the next time the program is run.\n\
+* If @bf Save Options on Exit @rm is set, the options are\n\
+  automatically saved when @DDD@ exits.  Otherwise, options are discarded.\n\
+* If @bf Save History on Exit @rm is set, the command history is\n\
+  automatically saved when @DDD@ exits.  Otherwise, history is discarded.\n\
+\n\
+@sl Source Options:@rm\n\
+* If @bf Find Words Only @rm is set, only complete words are found.\n\
+  Otherwise, arbitrary occurrences are found.\n\
+\n\
+@sl Data Options:@rm\n\
+* If @bf Show Grid @rm is set, the grid is displayed.\n\
+* If @bf Show Edge Hints @rm is set, edge hints are displayed.\n\
+* If @bf Snap to Grid @rm is set, display alignment is enforced.\n\
+* If @bf Compact Layout @rm is set, the graph is layouted\n\
+  in a more compact fashion; suitable for homogenous structures only.\n\
+  Otherwise, the standard layout algorithm is used.\n\
+* If @bf Automatic Layout @rm is set, the graph is layouted\n\
+  after each change.  Otherwise, layout can be invoked manually.\n\
+\n\
+@sl Startup Options:@rm\n\
+(Note: these options take effect only after saving options\n\
+and restarting @DDD@)\n\
+* @bf Windows @rm sets the window layout.\n\
+* @bf Keyboard focus @rm sets the keyboard focus policy.\n\
+* @bf Data Scrolling @rm sets the data window scrolling mode.\n\
+* @bf Debugger Type @rm sets the default debugger to use.\n\
+\n\
+@bf Save Options @rm saves the options for the next use of @DDD@.
+
+*optionsMenu.generalOptions.labelString:  General Options
+*optionsMenu.generalOptions.mnemonic:     G
+
+*optionsMenu.sourceOptions.labelString:   Source Options
+*optionsMenu.sourceOptions.mnemonic:      S
+
+*optionsMenu.dataOptions.labelString:     Data Options
+*optionsMenu.dataOptions.mnemonic:        D
+
+*optionsMenu.startupOptions.labelString:  Startup Options
+*optionsMenu.startupOptions.mnemonic:     u
+
+*optionsMenu.saveOptions.labelString:     Save Options
+*optionsMenu.saveOptions.mnemonic:        O
+
+*generalOptionsMenu.groupIconify.labelString:	    Group Iconify
+*generalOptionsMenu.groupIconify.mnemonic:	    G
+
+*generalOptionsMenu.globalTabCompletion.labelString: Global Tab Completion
+*generalOptionsMenu.globalTabCompletion.mnemonic:    T
+
+*generalOptionsMenu.separateExecWindow.labelString: Run in Execution Window
+*generalOptionsMenu.separateExecWindow.mnemonic:    E
+
+*generalOptionsMenu.saveOptionsOnExit.labelString:  Save Options on Exit
+*generalOptionsMenu.saveOptionsOnExit.mnemonic:     O
+
+*generalOptionsMenu.saveHistoryOnExit.labelString:  Save History on Exit
+*generalOptionsMenu.saveHistoryOnExit.mnemonic:     H
+
+*sourceOptionsMenu.findWordsOnly.labelString:	Find Words Only
+*sourceOptionsMenu.findWordsOnly.mnemonic:	W
+
+*dataOptionsMenu*showGrid.labelString:		Show Grid
+*dataOptionsMenu*showGrid.mnemonic:		G
+
+*dataOptionsMenu*showHints.labelString:		Show Edge Hints
+*dataOptionsMenu*showHints.mnemonic:		E
+
+*dataOptionsMenu*snapToGrid.labelString:	Snap to Grid
+*dataOptionsMenu*snapToGrid.mnemonic:		S
+*dataOptionsMenu*snapToGrid.accelerator:	Meta<Key>S
+*dataOptionsMenu*snapToGrid.acceleratorText:    Alt+S
+
+*dataOptionsMenu*compactLayout.labelString:	Compact Layout
+*dataOptionsMenu*compactLayout.mnemonic:	C
+
+*dataOptionsMenu*autoLayout.labelString:	 Automatic Layout
+*dataOptionsMenu*autoLayout.mnemonic:		 A
+
+*startupOptionsMenu*windows.labelString:         Windows
+*startupOptionsMenu*windows.mnemonic:            W
+
+*startupOptionsMenu*keyboardFocus.labelString:   Keyboard Focus
+*startupOptionsMenu*keyboardFocus.mnemonic:      K
+
+*startupOptionsMenu*dataScrolling.labelString:   Data Scrolling
+*startupOptionsMenu*dataScrolling.mnemonic:      S
+
+*startupOptionsMenu*debugger.labelString:        Debugger Type
+*startupOptionsMenu*debugger.mnemonic:           D
+
+*windowsMenu*separate.labelString:          	 Separate Windows
+*windowsMenu*separate.mnemonic:                  S
+
+*windowsMenu*attached.labelString:          	 One Single Window
+*windowsMenu*attached.mnemonic:                  O
+
+*keyboardFocusMenu*explicit.labelString:         Click To Type
+*keyboardFocusMenu*explicit.mnemonic:            C
+
+*keyboardFocusMenu*pointer.labelString:          Pointer Driven
+*keyboardFocusMenu*pointer.mnemonic:             P
+
+*keyboardFocusMenu*explicit.labelString:         Click To Type
+*keyboardFocusMenu*explicit.mnemonic:            C
+
+*dataScrollingMenu*panner.labelString:           Panner
+*dataScrollingMenu*panner.mnemonic:              P
+
+*dataScrollingMenu*scrollbars.labelString:       Scrollbars
+*dataScrollingMenu*scrollbars.mnemonic:          S
+
+*debuggerMenu*gdb.labelString:       		 GDB
+*debuggerMenu*gdb.mnemonic:			 G
+
+*debuggerMenu*dbx.labelString:       		 DBX
+*debuggerMenu*dbx.mnemonic:			 D
+
+
+
+*menubar.view.labelString:		Windows
+*menubar.view.mnemonic:			W
+*menubar.view.contextHelpString:	\
+\
+@rm This is the @sl Windows menu@rm.\n\
+\n\
+* @bf Command... @rm - show the debugger command window.\n\
+* @bf Source... @rm - show the source window.\n\
+* @bf Data... @rm - show the data window.\n\
+* @bf Execution... @rm - show the execution window.
+
+*viewMenu.command.labelString:		Command...
+*viewMenu.command.mnemonic:		C
+*viewMenu.source.labelString:		Source...
+*viewMenu.source.mnemonic:		S
+*viewMenu.data.labelString:		Data...
+*viewMenu.data.mnemonic:		D
+*viewMenu.exec.labelString:		Execution...
+*viewMenu.exec.mnemonic:		E
+
+*menubar.help.labelString:		Help
+*menubar.help.mnemonic:			H
+*menubar.help*contextHelpString: \
+\
+@rm This is the @sl Help menu@rm.\n\
+\n\
+* @bf On Context... @rm - click on an item and get help on it.\n\
+* @bf On Window... @rm - help on the application itself.\n\
+* @bf On Help... @rm - help on how to use the help facility.\n
+* @bf On Version... @rm - some general information about @DDD@.\n\
+\n\
+* @bf Index... @rm - the @DDD@ on-line manual.\n\
+\n\
+* @bf More Help... @rm - pointers to further @DDD@ support.
+
+*helpMenu.onContext.labelString:	On Context...
+*helpMenu.onContext.mnemonic:		C
+*helpMenu.onContext.accelerator:	None<Key>F1
+! *helpMenu.onContext.accelerator:	<Key>osfHelp
+*helpMenu.onContext.acceleratorText:	F1
+
+*helpMenu.onWindow.labelString:		On Window...
+*helpMenu.onWindow.mnemonic:		W
+
+*helpMenu.onHelp.labelString:		On Help...
+*helpMenu.onHelp.mnemonic:		H
+
+*helpMenu.onVersion.labelString:	On Version...
+*helpMenu.onVersion.mnemonic:		V
+
+*helpMenu.index.labelString:		Index...
+*helpMenu.index.mnemonic:		I
+
+
+!-----------------------------------------------------------------------------
+! Graph Editor
+!-----------------------------------------------------------------------------
+
+! Width and height for several Motif & Athena variants
+
+! Motif 1.x, using ScrolledWindow
+*graph_edit_swindow.width:			620
+*graph_edit_swindow.height:			200
+
+! Motif 2.0, using ScrolledWindow
+*graph_editSW.width:				620
+*graph_editSW.height:				200
+
+! Motif 1.x, using Porthole
+*graph_edit_porthole.width:                     620
+*graph_edit_porthole.height:                    200
+
+! Motif 2.0, using Porthole
+*graph_edit_form.width:                         620
+*graph_edit_form.height:                        200
+
+*graph_edit_panner.backgroundPixmap:		25_foreground
+*graph_edit_panner.defaultScale:		10
+*graph_edit_panner.translations: \
+#override \
+<Btn1Down>:        ddd-get-focus() start()\n\
+<Btn2Down>:        ddd-get-focus() abort()\n\
+<Key>osfLeft:      page(-.5p, +0)\n\
+<Key>osfRight:     page(+.5p, +0)\n\
+<Key>osfUp:        page(+0, -.5p)\n\
+<Key>osfDown:      page(+0, +.5p)\n\
+<Key>osfBeginLine: page(0,0)\n\
+<Key>osfBackSpace: page(-1p, -1p)\n\
+<Key>osfDelete:    page(-1p, -1p)\n\
+Shift<Key>Tab:     ddd-prev-tab-group()\n\
+<Key>Tab:     	   ddd-next-tab-group()\n
+
+*graph_edit.highlightOnEnter:			True
+*graph_edit.navigationType:			TAB_GROUP
+
+*graph_edit.contextHelpString:	\
+@rm This is the @sl Data Window @rm \n\
+showing the data displays of the debugged program.\n\
+\n\
+@bf Left mouse button:@rm\n\
+* @sl Click @rm on a display @sl DISPLAY  @rm to select @sl DISPLAY @rm.\n\
+* @sl Double-click @rm on a display to select all connected displays.\n\
+* @sl Double-click @rm on the background to select all displays.\n\
+* @sl Drag @rm on a display to move selected displays.\n\
+* @sl Drag @rm on the background to select framed displays.\n\
+\n\
+@bf Shift + Left mouse button:@rm\n\
+* @sl Click @rm on a display @sl DISPLAY  @rm to add @sl DISPLAY  @rm \
+to the selection.\n\
+* @sl Drag @rm on a display to move selected displays.\n\
+* @sl Drag @rm on the background to add framed displays\n\
+  to the selection.\n\
+\n\
+@bf Right mouse button:@rm\n\
+* @sl Click @rm on some display @sl DISPLAY  @rm to modify @sl DISPLAY  @rm \
+via a menu.\n\
+* @sl Click @rm on the background to create new displays via a menu.
+
+*data_disp_shell.contextHelpString:	\
+@rm This is the @sl Data Display @rm \n\
+showing the data displays of the debugged program.\n\
+\n\
+@bf Left mouse button:@rm\n\
+* @sl Click @rm on a display @sl DISPLAY  @rm to select @sl DISPLAY  @rm.\n\
+* @sl Double-click @rm on a display to select all connected displays.\n\
+* @sl Double-click @rm on the background to select all displays.\n\
+* @sl Drag @rm on a display to move selected displays.\n\
+* @sl Drag @rm on the background to select framed displays.\n\
+\n\
+@bf Middle mouse button:@rm\n\
+* @sl Click @rm on a display @sl DISPLAY  @rm to add @sl DISPLAY  @rm \
+to the selection.\n\
+* @sl Drag @rm on a display to move selected displays.\n\
+* @sl Drag @rm on the background to add framed displays\n\
+  to the selection.\n\
+\n\
+@bf Right mouse button:@rm\n\
+* @sl Click @rm on some display @sl DISPLAY  @rm to modify @sl DISPLAY  @rm \
+via a menu.\n\
+* @sl Click @rm on the background to create new displays via a menu.
+
+*graph_edit_panner.contextHelpString:	\
+@rm The data window is too small to hold all displays.\n\
+Drag the slider with the @bf left mouse button @rm to select\n\
+the visible part of the data window.
+
+
+!-----------------------------------------------------------------------------
+! Graph Popup Menus
+!-----------------------------------------------------------------------------
+
+*graph_popup.selectAll.labelString:	Select All
+*graph_popup.refresh.labelString:	Refresh
+*graph_popup.new_arg.labelString:	New ()
+*graph_popup.new.labelString:		New Display...
+
+*node_popup.dereference.labelString:	Dereference
+*node_popup.dependent.labelString:	Dependent Display...
+*node_popup.detail.labelString:		Show Detail
+*node_popup.rotate.labelString: 	Rotate
+*node_popup.delete.labelString:		Delete Display
+*node_popup.disable.labelString:	Disable Display
+
+
+!-----------------------------------------------------------------------------
+! Graph Buttons
+!-----------------------------------------------------------------------------
+
+*graph_cmd_w*contextHelpString: \
+@rm Commands related to the data window.
+
+
+*graph_cmd_w.graph_arg_label.labelString:		():
+*graph_cmd_w.graph_arg.columns:                         20
+*graph_cmd_w*graph_arg.editable:			false
+*graph_cmd_w*graph_arg.contextHelpString:		\
+@rm This is the argument @bf () @rm for the command buttons on the right.\n\
+This is an output-only window which displays the selection\n\
+in the data window above.
+
+
+
+*graph_cmd_w.orientation:				HORIZONTAL
+*graph_cmd_w.graph_cmd_area*orientation:		HORIZONTAL
+
+*graph_cmd_w.graph_cmd_area*dependent.labelString:	Dependent ()
+*graph_cmd_w.graph_cmd_area*dereference.labelString: 	Dereference ()
+*graph_cmd_w.graph_cmd_area*detail.labelString:		Show ()
+*graph_cmd_w.graph_cmd_area*rotate.labelString:		Rotate ()
+*graph_cmd_w.graph_cmd_area*delete.labelString:		Delete ()
+*graph_cmd_w.graph_cmd_area*disable.labelString:	Disable ()
+
+*graph_cmd_w.graph_cmd_area*dependent.contextHelpString:\
+@bf Dependent ()@rm\n\
+Create a new display dependent on the selected display part.
+
+*graph_cmd_w.graph_cmd_area*dereference.contextHelpString:\
+@bf Dereference ()@rm\n\
+Dereference the selected display.
+
+*graph_cmd_w.graph_cmd_area*detail.contextHelpString:	\
+@bf Show () @rm / @bf Hide () @rm\n\
+Show/Hide details of the selected displays.
+
+*graph_cmd_w.graph_cmd_area*rotate.contextHelpString:	\
+@bf Rotate ()@rm\n\
+Rotate the selected displays.
+
+*graph_cmd_w.graph_cmd_area*disable.contextHelpString:	\
+@bf Disable () @rm / @bf Enable () @rm\n\
+Disable/Enable the selected displays.
+
+*graph_cmd_w.graph_cmd_area*delete.contextHelpString:	\
+@bf Delete ()@rm\n\
+Delete the selected displays.
+
+
+!-----------------------------------------------------------------------------
+! Source text
+!-----------------------------------------------------------------------------
+*status_w.alignment:			ALIGNMENT_BEGINNING
+*status_w.labelString:			Ready.
+*status_w.contextHelpString:		\
+@rm This @sl status line @rm shows the last debugger message.
+
+*source_text_w.columns:			88
+*source_text_w.rows:			12
+*source_view_shell*source_text_w.rows:	20
+
+*source_text_wSW.width:			660
+*source_text_wSW.height:		140
+*source_view_shell*source_text_wSW.height: 280
+
+*source_text_w.editable:		false
+*source_text_w.allowResize:		true
+*source_text_w.editMode:		XmMULTI_LINE_EDIT
+*source_text_w.autoShowCursorPosition:	true
+*source_text_w.cursorPositionVisible:	true
+*source_text_w.scrollHorizontal:	false
+*source_text_w.wordWrap:		true
+
+*source_text_w.contextHelpString:	\
+\
+@rm This is the @sl source text window @rm in which the source code\n\
+of the debugged program is displayed.\n\
+\n\
+On the @sl left side@rm, line numbers and breakpoints are shown:\n\
+`@tt #@sl n@tt #@rm' is an enabled breakpoint (with number @sl n@rm);\n\
+`@tt _@sl n@tt _@rm' is a disabled breakpoint (with number @sl n@rm).\n\
+The currently executed line is indicated by `@tt>@rm'.\n\
+The @sl right side @rm contains the source code.\n\
+\n\
+Click the @bf left mouse button @rm to select words.\n\
+Drag with the @bf left mouse button @rm to modify your selection.\n\
+\n\
+Click the @bf right mouse button @rm to get a popup menu:\n\
+* On the left side: set and modify breakpoints;\n\
+* On the right side: show values and lookup functions.
+
+
+*source_view_shell.contextHelpString:	\
+\
+@rm This is the @sl source text window @rm in which the source code\n\
+of the debugged program is displayed.\n\
+\n\
+On the @sl left side@rm, line numbers and breakpoints are shown:\n\
+`@tt #@sl n@tt #@rm' is an enabled breakpoint (with number @sl n@rm);\n\
+`@tt _@sl n@tt _@rm' is a disabled breakpoint (with number @sl n@rm).\n\
+The currently executed line is indicated by `@tt>@rm'.\n\
+The @sl right side @rm contains the source code.\n\
+\n\
+Click the @bf left mouse button @rm to select words.\n\
+Drag with the @bf left mouse button @rm to modify your selection.\n\
+\n\
+Click the @bf right mouse button @rm to get a popup menu:\n\
+* On the left side: set and modify breakpoints;\n\
+* On the right side: show values and lookup functions.
+
+
+!-----------------------------------------------------------------------------
+! Source Text Popup-Menus
+!-----------------------------------------------------------------------------
+
+*line_popup.set.labelString:		Set Breakpoint
+*line_popup.set_temp.labelString:	Set temporary Breakpoint
+
+*bp_popup.disable.labelString:		Disable Breakpoint
+*bp_popup.condition.labelString:	Set Condition
+*bp_popup.ignore_count.labelString:	Set Ignore Count
+*bp_popup.delete.labelString:		Delete Breakpoint
+
+
+!-----------------------------------------------------------------------------
+! Source Text Commands
+!-----------------------------------------------------------------------------
+
+*arg_cmd_w*contextHelpString: \
+@rm Commands related to the source text.\n\
+Enter arguments for @sl name @rm() commands\n\
+in the @bf() @rm field.
+
+*arg_cmd_w.arg_label.labelString:			():
+*arg_cmd_w.source_arg.contextHelpString:	\
+@rm This is the argument @bf () @rm for the command buttons on the right.\n\
+You can edit this field, or easily change its value\n\
+by selecting something in the source text above.
+*arg_cmd_w.source_arg.value:                            main
+*arg_cmd_w.source_arg.columns:                          20
+
+*arg_cmd_w.orientation:					HORIZONTAL
+*arg_cmd_w.arg_cmd_area*orientation:			HORIZONTAL
+
+*arg_cmd_w.arg_cmd_area*lookup.labelString:		Lookup ()
+*arg_cmd_w.arg_cmd_area*break.labelString:		Break ()
+*arg_cmd_w.arg_cmd_area*clear.labelString:		Clear ()
+*arg_cmd_w.arg_cmd_area*print.labelString:		Print ()
+*arg_cmd_w.arg_cmd_area*display.labelString:		Display ()
+*arg_cmd_w.arg_cmd_area*find_backward.labelString:	Search<< ()
+*arg_cmd_w.arg_cmd_area*find_forward.labelString:	Search>> ()
+
+*arg_cmd_w.arg_cmd_area*lookup.contextHelpString:	\
+@bf Lookup ()@rm\n\
+Lookup a line, file, function, variable, or breakpoint.\n\
+* If the argument @bf () @rm is empty, show the current execution position.\n\
+* If @bf () @rm contains a number, lookup that line in the current source.\n\
+* If @bf () @rm contains @sl FILENAME@tt:@sl LINE@rm, lookup\n\
+  line number @sl LINE@rm in the source file @sl FILENAME@rm.\n\
+* If @bf () @rm contains @tt #@sl NUMBER@rm, lookup\n\
+  breakpoint number @sl NUMBER@rm.\n\
+* If @bf () @rm contains a function or variable name, lookup\n\
+  the definition of that function or variable.
+
+*arg_cmd_w.arg_cmd_area*break.contextHelpString:	\
+@bf Break ()@rm\n\
+Set a breakpoint at the argument @bf ()@rm.
+
+*arg_cmd_w.arg_cmd_area*clear.contextHelpString:	\
+@bf Clear ()@rm\n\
+Clear the breakpoint at the argument @bf ()@rm.
+
+*arg_cmd_w.arg_cmd_area*print.contextHelpString:	\
+@bf Print ()@rm\n\
+Print the argument @bf () @rm in the command window.
+
+*arg_cmd_w.arg_cmd_area*display.contextHelpString:	\
+@bf Display ()@rm\n\
+Display the argument @bf () @rm in the data display window.
+
+*arg_cmd_w.arg_cmd_area*find_backward.contextHelpString:	\
+@bf Search<< () @rm\n\
+Search the previous occurrence of @bf () @rm in the current source text.\n\
+If the option @bf Find Words Only @rm is set, only complete words are found.
+
+*arg_cmd_w.arg_cmd_area*find_forward.contextHelpString:	\
+@bf Search>> () @rm\n\
+Search the next occurrence of @bf () @rm in the current source text.\n\
+If the option @bf Find Words Only @rm is set, only complete words are found.
+
+
+!-----------------------------------------------------------------------------
+! Command Window
+!-----------------------------------------------------------------------------
+
+*gdb_w.value: \
+@DDD@ @VERSION@ (@host@), Copyright © 1995 TU Braunschweig, Germany.\n
+
+*gdb_w.rows:			10
+*gdb_w.columns:			88
+
+*gdb_wSW.width:			660
+*gdb_wSW.height:		120
+
+*gdb_w.editable:		true
+*gdb_w.allowResize:		true
+*gdb_w.editMode:		XmMULTI_LINE_EDIT
+*gdb_w.scrollHorizontal:	false
+*gdb_w.wordWrap:		true
+*gdb_w.autoShowCursorPosition:	true
+*gdb_w.cursorPositionVisible:	true
+
+*gdb_w.contextHelpString:		\
+\
+@rm This is the @sl Command window.@rm\n\
+\n\
+You can enter debugging commands here.\n\
+Enter ``@tt help@rm'' at the `@tt (gdb)@rm' or `@tt (dbx)@rm' prompt\n\
+to get help on debugging commands.
+
+*command_shell.contextHelpString:		\
+\
+@rm This is the @sl Command window.@rm\n\
+\n\
+You can enter debugging commands here.\n\
+Enter ``@tt help@rm'' at the `@tt (gdb)@rm' or `@tt (dbx)@rm' prompt\n\
+to get help on debugging commands.
+
+
+
+!-----------------------------------------------------------------------------
+! Debugger Buttons
+!-----------------------------------------------------------------------------
+
+*source_buttons.orientation:	HORIZONTAL
+*source_buttons.contextHelpString:\
+@rm This is a @sl command area @rm.\n\
+\n\
+By clicking on one of the buttons,\n\
+the corresponding command is sent to the debugger.\n\
+The context sensitive help for the buttons\n\
+gives a short command description.\n
+
+*command_buttons.orientation:	HORIZONTAL
+*command_buttons.contextHelpString:\
+@rm This is a @sl command area @rm.\n\
+\n\
+By clicking on one of the buttons,\n\
+the corresponding command is sent to the debugger.\n\
+The context sensitive help for the buttons\n\
+gives a short command description.\n
+
+! An empty help string means that the help text for this button
+! is to be requested from GDB (via the GDB `help' command).
+*source_buttons*contextHelpString:
+*command_buttons*contextHelpString:
+
+! Some buttons have a special meaning; 
+! so we must provide help on ourselves.
+*?*interrupt.contextHelpString: \
+@bf Interrupt\n\
+@rm Interrupt the debugged process.  (Equivalent to @key Ctrl+C@rm).
+
+*?*Yes.contextHelpString:    \
+@bf Yes\n\
+@rm Confirm the debugger question.
+
+*?*No.contextHelpString:     \
+@bf No\n\
+@rm Do @sl not @rm confirm the debugger question.
+
+*?*Complete.contextHelpString:	\
+@bf Complete@rm\n\
+Complete the current debugging command.  (Equivalent to @key Tab@rm).
+
+*?*Clear.contextHelpString:	\
+@bf Clear@rm\n\
+Clear the current debugging command.  (Equivalent to @key Ctrl+U@rm).
+
+*?*Prev.contextHelpString:	\
+@bf Prev@rm\n\
+Show the previous debugging command \
+(Equivalent to @key Ctrl+P @rm or @key Up@rm).
+
+*?*Next.contextHelpString:	\
+@bf Prev@rm\n\
+Show the next debugging command \
+(Equivalent to @key Ctrl+N @rm or @key Down@rm).
+
+*?*Apply.contextHelpString:	\
+@bf Apply@rm\n\
+Execute the current debugging command.  (Equivalent to @symbol ¿@rm).
+
+*?*Back.contextHelpString:	\
+@bf Back@rm\n\
+Go to the previous source position.
+
+*?*Forward.contextHelpString:	\
+@bf Forward@rm\n\
+Go to the next source position.
+
+
+
+!-----------------------------------------------------------------------------
+! Export Dialog
+!-----------------------------------------------------------------------------
+
+*convert_popup*what.orientation:          HORIZONTAL
+*convert_popup*what*all.labelString:      All Displays
+*convert_popup*what*selected.labelString: Selected Displays
+
+*convert_popup*type*labelString:          Export as
+*convert_popup*postscript.labelString:    PostScript
+*convert_popup*fig.labelString:           FIG
+*convert_popup*dump.labelString:          X Window Dump
+
+*convert_popup*selectionLabelString:      Graph file
+*convert_popup*okLabelString:             Export
+
+*convert_popup*contextHelpString: \
+@rm Please select a file where you want to save the display graph.\n\
+Enter the file name in the @bf Graph file @rm field.\n\
+\n\
+If you wish to export all displays, select @bf All Displays@rm.\n\
+If you wish to export selected displays only, select\
+ @bf Selected Displays@rm.\n\
+\n\
+You may select the file type to be created using the menu below.\n\
+The following file types are supported:\n\
+* @bf PostScript @rm - Encapsulated PostScript@symbol ä @rm - \
+suitable for printing\n\
+  or inclusion in documents.\n\
+* @bf FIG @rm - FIG format - \
+suitable for postprocessing with @tt xfig(1)@rm.\n\
+* @bf X Window Dump @rm - XWD format - \
+suitable for producing screen snapshots.\n\
+  X Window Dumps can be processed with @tt xpr(1)@rm.\n\
+  Using XWD format, only the visible part of the data window is saved.\n\
+\n\
+To export, click on @bf Export@rm.
+
+
+!-----------------------------------------------------------------------------
+! Print Dialog
+!-----------------------------------------------------------------------------
+
+*print*printer_line.orientation:   HORIZONTAL
+*print*printer.orientation:        HORIZONTAL
+*print*printer.prompt.labelString: Printer
+*print*printer.entry.value:        lp
+*print*printer.entry.columns:      12
+
+*print*copies.orientation:        HORIZONTAL
+*print*copies.prompt.labelString: Copies
+*print*copies.entry.value:        1
+*print*copies.entry.columns:      2
+
+*print*what.orientation: 	  HORIZONTAL
+*print*what*all.labelString:      All Displays
+*print*what*selected.labelString: Selected Displays
+
+*print*type*labelString:         Printer Type
+*print*postscript.labelString:   PostScript
+*print*laserjet.labelString:     LaserJet
+*print*line_printer.labelString: Line Printer
+
+*print*okLabelString: Print
+
+*print*contextHelpString: \
+@rm Please enter the printer name and the number of copies \n\
+in the appropriate fields.\n\
+\n\
+If you wish to print all displays, select @bf All Displays@rm.\n\
+If you wish to print selected displays only, select\
+ @bf Selected Displays@rm.\n\
+\n\
+You may select your printer type using the menu below.\n\
+The following printer types are supported:\n\
+* @bf PostScript @rm - PostScript@symbol ä @rm printers.\n\
+\n\
+To print, click on @bf Print@rm.
+
+
+
+!-----------------------------------------------------------------------------
+! File Selection Dialog
+!-----------------------------------------------------------------------------
+
+*exec_files_popup*okLabelString:        Open
+*exec_files_popup*selectionLabelString: Executable file
+*exec_files_popup*contextHelpString:    \
+@rm Enter the name of the program to be debugged in the argument field.\n\
+The program is read for its symbols, for getting the contents\
+ of pure memory,\n\
+and it is the program executed when you use the ``@tt run@rm'' command.\n\
+If the program file cannot be found as specified,\
+ your execution directory path\n\
+(@tt $PATH@rm) is searched for a command of that name.\n\
+No argument means to have no executable file and no symbols.\n\
+\n\
+Click on @bf Open @rm to open the selected file.
+
+
+*core_files_popup*okLabelString:        Open
+*core_files_popup*selectionLabelString: Core dump
+*core_files_popup*contextHelpString:    \
+@rm  Enter the name of a core dump in the argument field.\n\
+The core dump is used for examining memory and registers.\n\
+No argument means to have no core file.\n\
+\n\
+Click on @bf Open @rm to open the selected core dump.
+
+
+*source_files_popup*okLabelString:      Open
+*source_files_popup*selectionLabelString: Source file
+*source_files_popup*contextHelpString:    \
+@rm  Enter the name of a source file in the argument field.\n\
+The source file is shown in the source window and may be used\n\
+for setting or clearing breakpoints.\n\
+\n\
+Click on @bf Open @rm to open the selected source file.
+
+
+
+!-----------------------------------------------------------------------------
+! Breakpoint Editor
+!-----------------------------------------------------------------------------
+
+*edit_breakpoints_dialog_popup.title: @DDD@: Breakpoint Editor
+*edit_breakpoints_dialog*breakpoints.labelString: Breakpoints
+*edit_breakpoints_dialog*form1.orientation:   VERTICAL
+*edit_breakpoints_dialog*form1.marginWidth:   0
+*edit_breakpoints_dialog*form1.marginHeight:  0
+*edit_breakpoints_dialog*form2.orientation:   HORIZONTAL
+*edit_breakpoints_dialog*form2.marginWidth:   0
+*edit_breakpoints_dialog*form2.marginHeight:  0
+*edit_breakpoints_dialog*buttons.orientation: VERTICAL
+*edit_breakpoints_dialog*buttons.marginWidth:   0
+*edit_breakpoints_dialog*buttons.marginHeight:  0
+*edit_breakpoints_dialog.okLabelString:       Close
+
+*edit_breakpoints_dialog*contextHelpString:       \
+@rm This is the @sl Breakpoint editor@rm.\n\
+\n\
+Select breakpoints on the left; operations on the right.\n\
+\n\
+* @bf New... @rm - create a new breakpoint.\n\
+* @bf Lookup @rm - look up the selected breakpoint.\n\
+* @bf Enable @rm - enable all selected breakpoints.\n\
+* @bf Disable @rm - disable all selected breakpoints.\n\
+* @bf Condition... @rm - set or modify a breakpoint condition.\n\
+* @bf Ignore Count... @rm - set or modify a breakpoint ignore count.\n\
+* @bf Delete @rm - delete all selected breakpoints.
+
+*new_breakpoint_dialog_popup.title: @DDD@: New Breakpoint
+*new_breakpoint_dialog.selectionLabelString:	\
+@rm Enter new breakpoint:
+
+*new_breakpoint_dialog*contextHelpString:	\
+\
+@rm Please enter a breakpoint you want to set.\n\
+Enter its name in the argument field.\n\
+\n\
+The argument may be a @sl line number@rm, a @sl function name@rm,\
+ or `@tt*@rm' and an address.\n\
+If a @sl line number @rm is specified, break at start of code for that line.\n\
+If a @sl function name @rm is specified, break at start of code\
+ for that function.\n\
+If an @sl address @rm is specified, break at that exact address.\n\
+Without argument, use current execution address of selected stack frame.\n\
+This is useful for breaking on return to a stack frame.\n\
+\n\
+Multiple breakpoints at one place are permitted, and useful if conditional.
+
+
+*edit_breakpoint_condition_dialog_popup.title: @DDD@: Breakpoint Condition
+*edit_breakpoint_condition_dialog.selectionLabelString:        \
+@rm Enter breakpoint condition:
+
+*edit_breakpoint_condition_dialog*contextHelpString:        \
+@rm Specify a condition @sl COND @rm for the selected breakpoint(s).\n\
+The selected breakpoint(s) break only if @sl COND @rm\n\
+evaluates to a non-zero value.
+
+
+*edit_breakpoint_ignore_count_dialog_popup.title: @DDD@: Ignore Count
+*edit_breakpoint_ignore_count_dialog.selectionLabelString:        \
+@rm Enter breakpoint ignore count:
+
+*edit_breakpoint_ignore_count_dialog*contextHelpString:        \
+@rm Set the ignore count @sl COUNT @rm for the selected breakpoint(s).\n\
+Next @sl COUNT @rm hits of the selected breakpoint(s) will be ignored.
+
+
+*edit_breakpoints_dialog*buttons*new.labelString:           New...
+*edit_breakpoints_dialog*buttons*new.contextHelpString:     \
+@rm Set breakpoint at specified line or function.
+
+*edit_breakpoints_dialog*buttons*lookup.labelString:        Lookup
+*edit_breakpoints_dialog*buttons*lookup.contextHelpString:  \
+@rm Lookup the selected breakpoint.
+
+*edit_breakpoints_dialog*buttons*enable.labelString:        Enable
+*edit_breakpoints_dialog*buttons*enable.contextHelpString:  \
+@rm Enable the selected breakpoint(s).
+
+*edit_breakpoints_dialog*buttons*disable.labelString:       Disable
+*edit_breakpoints_dialog*buttons*disable.contextHelpString:  \
+@rm Disable the selected breakpoint(s).
+
+*edit_breakpoints_dialog*buttons*condition.labelString:     Condition...
+*edit_breakpoints_dialog*buttons*condition*contextHelpString:  \
+@rm Specify a condition @sl COND @rm for the selected breakpoint(s).\n\
+Breakpoints break only if @sl COND @rm evaluates to a non-zero value.
+
+*edit_breakpoints_dialog*buttons*ignore_count.labelString:  Ignore Count...
+*edit_breakpoints_dialog*buttons*ignore_count*contextHelpString:  \
+@rm Set the ignore count @sl COUNT @rm for the selected breakpoint(s).\n\
+Next @sl COUNT @rm hits of the selected breakpoints will be ignored.
+
+*edit_breakpoints_dialog*buttons*delete.labelString:        Delete
+*edit_breakpoints_dialog*buttons*delete.contextHelpString:  \
+@rm Delete the selected breakpoint(s).
+
+
+!-----------------------------------------------------------------------------
+! Show Backtrace
+!-----------------------------------------------------------------------------
+
+*stack_dialog_popup.title:                   @DDD@: Backtrace
+*stack_dialog.okLabelString:           Close
+*stack_dialog.applyLabelString:        Up
+*stack_dialog.cancelLabelString:       Down
+*stack_dialog.listLabelString:         Backtrace
+*stack_dialog*visibleItemCount:        10
+
+*stack_dialog*contextHelpString:       \
+@rm This window shows the current @sl backtrace@rm.\n\
+\n\
+The backtrace is a summary of how your program got where it is.\n\
+It shows one line per stack frame, for many frames, starting with\n\
+the initial calling function (usually @tt main()@rm), the function\n\
+called by @tt main()@rm, the function called by this function and\n\
+so on down the stack, down to the currently executing frame.\n\
+\n\
+You can make a specific frame the current one by selecting it\n\
+in this window.  You can also move around by pressing \
+@bf Up @rm or @bf Down @rm.
+
+
+!-----------------------------------------------------------------------------
+! Command History
+!-----------------------------------------------------------------------------
+
+*history_dialog_popup.title:             @DDD@: Command History
+*history_dialog.okLabelString:           Close
+*history_dialog.applyLabelString:        Apply
+*history_dialog.listLabelString:         Command History
+*history_dialog*visibleItemCount:        10
+
+*history_dialog*contextHelpString:       \
+@rm This window shows the @sl command history@rm.\n\
+\n\
+@DDD@ keeps track of the commands you type during your debugging\n\
+sessions, so that you can be certain of precisely what happened.  Use\n\
+this window to manage the @DDD@ command history facility.\n\
+\n\
+Select a specific command to have it copied at the debugger prompt.\n\
+Click on @bf Apply @rm to execute the current command.
+
+
+!-----------------------------------------------------------------------------
+! Display Editor
+!-----------------------------------------------------------------------------
+
+*edit_displays_dialog_popup.title: @DDD@: Display Editor
+*edit_displays_dialog*displays.labelString: Displays
+*edit_displays_dialog*form1.orientation:   VERTICAL
+*edit_displays_dialog*form1.marginWidth:   0
+*edit_displays_dialog*form1.marginHeight:  0
+*edit_displays_dialog*form2.orientation:   HORIZONTAL
+*edit_displays_dialog*form2.marginWidth:   0
+*edit_displays_dialog*form2.marginHeight:  0
+*edit_displays_dialog*buttons.orientation: VERTICAL
+*edit_displays_dialog*buttons.marginWidth:   0
+*edit_displays_dialog*buttons.marginHeight:  0
+*edit_displays_dialog.okLabelString:       Close
+
+*edit_displays_dialog*contextHelpString:       \
+@rm This is the @sl Display editor@rm.\n\
+\n\
+Select displays on the left; operations on the right.\n\
+\n\
+* @bf New... @rm - create a new display.\n\
+* @bf Dependent... @rm - create a display dependent on the selected display.\n\
+* @bf Dereference @rm - dereference the selected display.\n\
+* @bf Show Detail @rm - show the details of all selected displays.\n\
+* @bf Hide Detail @rm - hide the details of all selected displays.\n\
+* @bf Enable @rm - enable all selected displays.\n\
+* @bf Disable @rm - disable all selected displays.\n\
+* @bf Delete @rm - delete all selected displays.
+
+
+*new_display_dialog_popup.title: @DDD@: New Display
+*new_display_dialog.selectionLabelString:	\
+@rm Enter new display expression:
+
+*new_display_dialog*contextHelpString:	\
+\
+@rm Please enter a display expression in the argument field.\n\
+The current value of the expression is shown each time the program stops.\n\
+\n\
+Variables accessible are those of the lexical environment of the selected\n\
+stack frame, plus all those whose scope is global or an entire file.\n\
+\n\
+@tt $@sl NUM @rm gets previous value number @sl NUM@rm.\
+  @tt $ @rm and @tt$$ @rm are the last two values.\n\
+@tt $$@sl NUM @rm refers to @sl NUM@rm'th value back from the last one.\n\
+Names starting with @tt$ @rm refer to registers\
+ (with the values they would have\n\
+if the program were to return to the stack frame now selected, restoring\n\
+all registers saved by frames farther in) or else to debugger\n\
+``convenience'' variables (any such name not a known register).\n\
+Use assignment expressions to give values to convenience variables.\n\
+\n\
+@tt{@sl TYPE@tt}@sl ADREXP @rm refers to a datum of data type\
+ @sl TYPE@rm, located at address @sl ADREXP@rm.\n\
+\n\
+@tt @ @rm is a binary operator for treating consecutive data objects\n\
+anywhere in memory as an array. @sl FOO@tt@ @sl NUM @rm\
+ gives an array whose first\n\
+element is @sl FOO@rm, whose second element is stored in the space following\n\
+where @sl FOO @rm is stored, etc. @sl FOO @rm must be an expression \
+whose value\n\
+resides in memory.\n\
+\n\
+As a special extension, you can display ranges of array elements\n\
+by using the notation @tt[@sl FROM@tt ..@sl TO@tt]@rm,\n\
+where @sl FROM @rm and @sl TO @rm are the positions of the first\n\
+and last array element to display.\n\
+Thus, @tt argv[0..9] @rm will create 10 new displays\
+  @tt argv[0]@rm, @tt argv[1]@rm ... @tt argv[9]@rm.
+
+
+*dependent_display_dialog_popup.title: @DDD@: Dependent Display
+*dependent_display_dialog.selectionLabelString:	\
+@rm Modify dependent display expression:
+
+*dependent_display_dialog*contextHelpString:	\
+\
+@rm Please modify the display expression displayed in the argument field.\n\
+The current value of the expression is shown each time the program stops.
+
+*edit_displays_dialog*buttons*new.labelString:           New...
+*edit_displays_dialog*buttons*new.contextHelpString:     \
+@rm Create a new data display.
+
+*edit_displays_dialog*buttons*dependent.labelString:   	 Dependent...
+*edit_displays_dialog*buttons*dereference.contextHelpString:  \
+@rm Create a data display dependent on the selected data display.
+
+*edit_displays_dialog*buttons*dereference.labelString:   Dereference
+*edit_displays_dialog*buttons*dereference.contextHelpString:  \
+@rm Dereference the selected data display.
+
+*edit_displays_dialog*buttons*show_detail.labelString:   Show Detail
+*edit_displays_dialog*buttons*show_detail.contextHelpString:  \
+@rm Show detail on the selected data display(s).
+
+*edit_displays_dialog*buttons*hide_detail.labelString:   Hide Detail
+*edit_displays_dialog*buttons*hide_detail.contextHelpString:  \
+@rm Hide detail on the selected data display(s).
+
+*edit_displays_dialog*buttons*disable.labelString:       Disable
+*edit_displays_dialog*buttons*disable.contextHelpString:  \
+@rm Disable the selected data display(s).
+
+*edit_displays_dialog*buttons*enable.labelString:        Enable
+*edit_displays_dialog*buttons*enable.contextHelpString:  \
+@rm Enable the selected data display(s).
+
+*edit_displays_dialog*buttons*disable.labelString:       Disable
+*edit_displays_dialog*buttons*disable.contextHelpString:  \
+@rm Disable the selected data display(s).
+
+*edit_displays_dialog*buttons*delete.labelString:        Delete
+*edit_displays_dialog*buttons*delete.contextHelpString:  \
+@rm Delete the selected data display(s).
+
+
+
+!-----------------------------------------------------------------------------
+! Other Dialogs
+!-----------------------------------------------------------------------------
+
+*busy_display_dialog_popup.title: @DDD@: Debugger Busy
+*busy_dialog.messageString:		\
+@rm The debugger is busy!
+*busy_dialog*contextHelpString:	\
+@rm The debugger is busy on some commands.\n\
+Please try again when the `@tt (gdb)@rm' or `@tt (dbx)@rm' \
+prompt appears.\n\
+You may also interrupt the current debugging command by selecting\n\
+@bf Interrupt @rm from the @bf File @rm menu.
+
+*quit_dialog_popup.title: @DDD@: Debugger Still Busy
+*quit_dialog.messageString:   \
+@rm The debugger is still busy.  Exit anyway (and kill it)?
+*quit_dialog*okLabelString:       Yes
+*quit_dialog*cancelLabelString:   No
+*quit_dialog*defaultButtonType:   XmDIALOG_OK_BUTTON
+*quit_dialog*contextHelpString:	\
+@rm The debugger is busy and does not react to the ``quit'' command.\n\
+Maybe the debugged process is still running.\n\
+\n\
+Before killing a running debugger, you should try to interrupt it\n\
+(by selecting @bf Interrupt @rm from the @bf File @rm menu).
+
+*exited_dialog_popup.title: @DDD@: Debugger Exited
+*exited_dialog.messageString:   \
+@rm The debugger exited normally.
+*exited_dialog*okLabelString:   Exit
+*exited_dialog*contextHelpString:	\
+@rm The debugger exited normally.\n\
+You may wish to examine its final output before exiting @DDD@.
+
+*terminated_dialog_popup.title: @DDD@: Hasta la Vista
+*terminated_dialog.messageString:   \
+@rm The debugger terminated abnormally.
+*terminated_dialog*okLabelString:   Exit
+*terminated_dialog*contextHelpString:	\
+@rm The debugger terminated abnormally.\n\
+You may wish to examine its final output before exiting @DDD@.
+
+*yn_dialog_popup.title: @DDD@: Debugger Question
+*yn_dialog*okLabelString:       Yes
+*yn_dialog*cancelLabelString:   No
+*yn_dialog*defaultButtonType:   XmDIALOG_OK_BUTTON
+*yn_dialog*contextHelpString:	\
+@rm This is a debugger question.\n\
+For more details, consult the debugger documentation.
+
+*gdb_message_dialog_popup.title: @DDD@: Debugger Message
+*gdb_message_dialog*contextHelpString:	\
+@rm This is a debugger message.\n\
+For more details, consult the debugger documentation.
+
+*confirm_overwrite_dialog_popup.title: @DDD@: File Exists
+*confirm_overwrite_dialog*messageString:       \
+@rm Overwrite existing file?
+*confirm_overwrite_dialog*okLabelString:       Yes
+*confirm_overwrite_dialog*cancelLabelString:   No
+*confirm_overwrite_dialog*defaultButtonType:   XmDIALOG_CANCEL_BUTTON
+*confirm_overwrite_dialog*contextHelpString:	\
+@rm The file already exists.\n\
+Click on @bf Yes @rm to overwrite the existing file.
+
+*save_options_dialog_popup.title: @DDD@: Save Options
+*save_options_dialog.messageString:   \
+@rm Startup @DDD@ options were modified.\n\
+Save them for the next @DDD@ invocation?
+*save_options_dialog*okLabelString:       Yes
+*save_options_dialog*cancelLabelString:   No
+*save_options_dialog*defaultButtonType:   XmDIALOG_OK_BUTTON
+*save_options_dialog*contextHelpString:	\
+@rm You have changed some @DDD@ startup options\n\
+ (using the @bf Options@rm menu).\n\
+To save them for the next @DDD@ invocation, click on @bf Yes@rm.\n\
+To discard the changes, click on @bf No@rm.
+
+
+!-----------------------------------------------------------------------------
+! Messages
+!-----------------------------------------------------------------------------
+
+*source_file_error_popup.title: @DDD@: No Source
+*source_file_error*contextHelpString:	\
+@rm The given source file could not be loaded.
+
+*remote_file_error_popup.title: @DDD@: No Remote Source
+*remote_file_error*contextHelpString:	\
+@rm The given source file could not be loaded from the remote host.\n\
+This message is also caused by attempting to load an empty source file.
+
+*source_file_from_gdb_warning_popup.title: @DDD@: Source From Debugger
+*source_file_from_gdb_warning*contextHelpString:	\
+@rm The given source file could not be loaded directly.\n\
+Instead, the source was obtained from the debugger, via the ``list'' command.
+
+*source_trunc_error_popup.title: @DDD@: Source Truncated
+*source_trunc_error*contextHelpString:	\
+@rm The current source file was not be loaded entirely.
+
+*source_position_error_popup.title: @DDD@: No Current Position
+*source_position_error*contextHelpString:	\
+@rm The current execution position is not in the displayed source file.\n\
+This may be true for two reasons:\n\
+- The debugged process is not running, or\n\
+- The debugged process has stopped in a location without source file.\n\
+In the latter case, try the `directory' command to specify\n\
+a directory where source files can be found.
+
+*source_find_error_popup.title: @DDD@: Not Found
+*source_find_error*contextHelpString:	\
+@rm The given argument @bf () @rm can not be found in the source text.
+
+*no_source_error_popup.title: @DDD@: No Source
+*no_source_error*contextHelpString:	\
+@rm There is no current source text in which to search.
+
+*no_such_line_error_popup.title: @DDD@: No Such Line
+*no_such_line_error*contextHelpString:	\
+@rm There is no such line in the current source text.
+
+*no_such_breakpoint_error_popup.title: @DDD@: No Such Breakpoint
+*no_such_breakpoint_error*contextHelpString:	\
+@rm There is no such breakpoint in the current program.
+
+*no_completion_error_popup.title: @DDD@: No Completion
+*no_completion_error*contextHelpString:	\
+@rm Command and argument completion is not supported by your\n\
+debugger version.\n\
+\n\
+Command completion relies on the GDB `@tt complete@rm' command,\
+ which is present\n\
+in GDB 4.13 and later.
+
+*tty_exec_error_popup.title: @DDD@: No Exec TTY
+*tty_exec_error*contextHelpString:	\
+@rm The terminal emulator for the execution window\n\
+could not be invoked.  The debugged process will execute in the\n\
+Command Window instead.\n\
+\n\
+Please verify the contents of the @bf .termCommand @rm resource\n\
+in the @DDD@ application defaults file.
+
+*tty_command_error_popup.title: @DDD@: TTY Failed
+*tty_command_error*contextHelpString:	\
+@rm @DDD@ sent a `tty' command to the debugger in order to redirect the I/O\n\
+of the debugged process to the execution window.  This command failed.\n\
+\n\
+@DDD@ will now redirect the process I/O explicitly.  This means that\n\
+the command window remains the controlling terminal.
+
+*history_save_error_popup.title: @DDD@: Save History Failed
+*history_save_error*contextHelpString:	\
+@rm The command history could not be saved.
+
+*options_save_error_popup.title: @DDD@: Save Options Failed
+*options_save_error*contextHelpString:	\
+@rm The @DDD@ options could not be saved.
+
+*startup_warning.title: @DDD@: New Startup Required
+*startup_warning_title*contextHelpString:	\
+@rm This setting cannot be changed while @DDD@ is running.\n\
+Please save options and restart @DDD@ to see the effects.
+
+*dungeon_collapse_error_popup.title: @DDD@: Dungeon Kaputt
+*dungeon_collapse_error*contextHelpString:	\
+@rm The DDD display dungeon has collapsed.\n\
+Please verify your display dungeon database installation.\n\
+See the DDD dungeon documentation for details.
