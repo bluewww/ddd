@@ -7815,7 +7815,7 @@ string SourceView::clear_command(string pos, bool clear_next, int first_bp)
 	    && bp_matches(bp, file, line_no))
 	    {
 		if (bps != "")
-		    bps += gdb->has_delete_comma() ? ", " : " ";
+		    bps += gdb->wants_delete_comma() ? ", " : " ";
 		bps += itostring(bp->number());
 		max_bp_nr = max(max_bp_nr, bp->number());
 	    }
@@ -7826,7 +7826,7 @@ string SourceView::clear_command(string pos, bool clear_next, int first_bp)
 
     if (clear_next && max_bp_nr >= 0)
     {
-	bps += (gdb->has_delete_comma() ? ", " : " ");
+	bps += (gdb->wants_delete_comma() ? ", " : " ");
 	bps += itostring(max_bp_nr + 1);
     }
 

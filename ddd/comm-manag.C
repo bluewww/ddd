@@ -1006,7 +1006,7 @@ void send_gdb_command(string cmd, Widget origin,
 	    plus_cmd_data->n_refresh_user = 
 		data_disp->add_refresh_user_commands(cmds);
 	if (plus_cmd_data->refresh_disp_info)
-	    cmds += "info display";
+	    cmds += gdb->info_display_command();
 	if (plus_cmd_data->refresh_history_filename)
 	    cmds += "show history filename";
 	if (plus_cmd_data->refresh_history_size)
@@ -1056,7 +1056,7 @@ void send_gdb_command(string cmd, Widget origin,
 	    plus_cmd_data->n_refresh_user = 
 		data_disp->add_refresh_user_commands(cmds);
 	if (plus_cmd_data->refresh_disp_info)
-	    cmds += gdb->display_command();
+	    cmds += gdb->info_display_command();
 	assert (!plus_cmd_data->refresh_history_filename);
 	assert (!plus_cmd_data->refresh_history_size);
 	if (plus_cmd_data->refresh_setting)
@@ -1644,7 +1644,7 @@ static void process_config_when_semicolon(string& answer)
 
 static void process_config_delete_comma(string& answer)
 {
-    gdb->has_delete_comma(!is_known_command(answer));
+    gdb->wants_delete_comma(!is_known_command(answer));
 }
 
 static void process_config_err_redirection(string& answer)

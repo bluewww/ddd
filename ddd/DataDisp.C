@@ -2373,25 +2373,17 @@ void DataDisp::new_displaySQ (string display_expression,
 	    return;
 	}
 
-	switch (gdb->type())
+	if (gdb->display_prints_values())
 	{
-	case GDB:
-	    {
-		gdb_command(gdb->display_command(display_expression),
-			    last_origin, new_data_displayOQC, info);
-	    }
-	    break;
-
-	case DBX:
-	case XDB:
-	case JDB:
-	    {
-		gdb_command(gdb->display_command(display_expression),
-			    last_origin, OQCProc(0), (void *)0);
-		gdb_command(gdb->print_command(display_expression),
-			    last_origin, new_data_displayOQC, info);
-	    }
-	    break;
+	    gdb_command(gdb->display_command(display_expression),
+			last_origin, new_data_displayOQC, info);
+	}
+	else
+	{
+	    gdb_command(gdb->display_command(display_expression),
+			last_origin, OQCProc(0), (void *)0);
+	    gdb_command(gdb->print_command(display_expression),
+			last_origin, new_data_displayOQC, info);
 	}
     }
 }
@@ -2402,17 +2394,14 @@ void DataDisp::read_number_and_name(string& answer, string& nr, string& name)
     nr   = "";
     name = "";
 
-    switch(gdb->type())
+    if (gdb->has_numbered_displays())
     {
-    case GDB:
 	nr = read_disp_nr_str(answer, gdb);
 	if (nr != "")
 	    name = read_disp_name(answer, gdb);
-	break;
-
-    case DBX:
-    case XDB:
-    case JDB:
+    }
+    else
+    {
 	name = read_disp_name(answer, gdb);
 	if (gdb->has_display_command())
 	{
@@ -2442,7 +2431,6 @@ void DataDisp::read_number_and_name(string& answer, string& nr, string& name)
 	    // Assign a default number
 	    nr = itostring(next_ddd_display_number++);
 	}
-	break;
     }
 }
 
@@ -2810,35 +2798,22 @@ void DataDisp::new_data_displaysSQA (string display_expression,
     while (dummy.size() < display_cmds.size())
 	dummy += (void *)0;
 
-    switch (gdb->type())
+    bool ok = true;
+    if (gdb->display_prints_values())
     {
-    case GDB:
-	{
-	    bool ok = 
-		gdb->send_qu_array (display_cmds, dummy, display_cmds.size(),
-				    new_data_displaysOQAC, info);
-	    if (!ok)
-		post_gdb_busy(last_origin);
-	}
-	break;
-
-    case DBX:
-    case XDB:
-    case JDB:
-	{
-	    for (int i = 0; i < display_cmds.size(); i++)
-		gdb_question(display_cmds[i]);
-
-	    bool ok = gdb->send_qu_array (print_cmds,
-					  dummy,
-					  print_cmds.size(),
-					  new_data_displaysOQAC,
-					  info);
-	    if (!ok)
-		post_gdb_busy(last_origin);
-	}
-	break;
+	ok = gdb->send_qu_array (display_cmds, dummy, display_cmds.size(),
+				 new_data_displaysOQAC, info);
     }
+    else
+    {
+	for (int i = 0; i < display_cmds.size(); i++)
+	    gdb_question(display_cmds[i]);
+
+	ok = gdb->send_qu_array (print_cmds, dummy, print_cmds.size(),
+				 new_data_displaysOQAC, info);
+    }
+    if (!ok)
+	post_gdb_busy(last_origin);
 }
 
 void DataDisp::new_data_displaysOQAC (const StringArray& answers,
@@ -2927,26 +2902,18 @@ int DataDisp::add_refresh_data_commands(StringArray& cmds)
 {
     int initial_size = cmds.size();
 
-    switch (gdb->type())
-    {
-    case DBX:
-    case XDB:
-    case JDB:
-	{
-	    MapRef ref;
-	    for (DispNode* dn = disp_graph->first(ref); 
-		 dn != 0;
-		 dn = disp_graph->next(ref))
-	    {
-		if (!dn->is_user_command())
-		    cmds += gdb->print_command(dn->name());
-	    }
-	}
-	break;
-
-    case GDB:
+    if (gdb->display_prints_values())
 	cmds += gdb->display_command();
-	break;
+    else
+    {
+	MapRef ref;
+	for (DispNode* dn = disp_graph->first(ref); 
+	     dn != 0;
+	     dn = disp_graph->next(ref))
+	{
+	    if (!dn->is_user_command())
+		cmds += gdb->print_command(dn->name());
+	}
     }
 
     return cmds.size() - initial_size;
@@ -2987,8 +2954,8 @@ void DataDisp::refresh_displaySQ(Widget origin, bool verbose)
     StringArray cmds;
     VoidArray dummy;
 
-    if (gdb->type() == GDB)
-	cmds += "info display";
+    if (gdb->has_info_display_command())
+	cmds += gdb->info_display_command();
     while (dummy.size() < cmds.size())
 	dummy += (void *)PROCESS_INFO_DISPLAY;
 
@@ -3170,7 +3137,7 @@ void DataDisp::disable_displaySQ(IntArray& display_nrs, bool verbose)
     string cmd = "disable display";
     for (i = 0; i < display_nrs.size(); i++)
     {
-	if (gdb->type() == GDB && display_nrs[i] > 0)
+	if (gdb->has_disable_display_command() && display_nrs[i] > 0)
 	{
 	    cmd += " " + itostring(display_nrs[i]);
 	    disabled_data_displays++;
@@ -3235,7 +3202,7 @@ void DataDisp::enable_displaySQ(IntArray& display_nrs, bool verbose)
     string cmd = "enable display";
     for (i = 0; i < display_nrs.size(); i++)
     {
-	if (gdb->type() == GDB && display_nrs[i] > 0)
+	if (gdb->has_enable_display_command() && display_nrs[i] > 0)
 	{
 	    cmd += " " + itostring(display_nrs[i]);
 	    enabled_data_displays++;
@@ -3302,7 +3269,7 @@ void DataDisp::delete_displaySQ(IntArray& display_nrs, bool verbose)
     {
 	if (display_nrs[i] > 0)
 	{
-	    if (deleted_data_displays++ > 0 && gdb->type() == DBX)
+	    if (deleted_data_displays++ > 0 && gdb->wants_display_comma())
 		cmd += ",";
 	    cmd += " " + itostring(display_nrs[i]);
 	}
@@ -3342,21 +3309,14 @@ void DataDisp::delete_displayOQC (const string& answer, void *data)
 
     string ans = answer;
 
-    switch (gdb->type())
+    if (gdb->has_redisplaying_undisplay())
     {
-    case GDB:
-    case XDB:
-    case JDB:
-	break;
-
-    case DBX:
 	// Upon `undisplay', DBX redisplays remaining displays with values
 	if (answer != "" && !answer.contains("no such expression"))
 	{
 	    bool disabling_occurred;
 	    process_displays(ans, disabling_occurred);
 	}
-	break;
     }
 
     // Anything remaining is an error message
@@ -3511,35 +3471,29 @@ string DataDisp::process_displays(string& displays,
 #if LOG_DISPLAYS
         clog << "Updating display " << quote(next_display);
 #endif
-	switch (gdb->type())
+	if (gdb->has_numbered_displays())
 	{
-	case GDB:
 	    disp_nr = get_positive_nr (next_display);
-	    break;
-
-	case DBX:
-	case XDB:
-	case JDB:
+	}
+	else
+	{
+	    disp_nr = 0;
+	    string disp_name = next_display;
+	    disp_name = read_disp_name(disp_name, gdb);
+	    if (disp_name != "")
 	    {
-		disp_nr = 0;
-		string disp_name = next_display;
-		disp_name = read_disp_name(disp_name, gdb);
-		if (disp_name != "")
+		MapRef ref;
+		for (DispNode* dn = disp_graph->first(ref); 
+		     dn != 0;
+		     dn = disp_graph->next(ref))
 		{
-		    MapRef ref;
-		    for (DispNode* dn = disp_graph->first(ref); 
-			 dn != 0;
-			 dn = disp_graph->next(ref))
+		    if (dn->name() == disp_name)
 		    {
-			if (dn->name() == disp_name)
-			{
-			    disp_nr = dn->disp_nr();
-			    break;
-			}
+			disp_nr = dn->disp_nr();
+			break;
 		    }
 		}
 	    }
-	    break;		// FIXME
 	}
 
 #if LOG_DISPLAYS

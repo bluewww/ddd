@@ -182,7 +182,7 @@ private:
     bool _has_named_values;
     bool _has_when_command;
     bool _has_when_semicolon;
-    bool _has_delete_comma;
+    bool _wants_delete_comma;
     bool _has_err_redirection;
     bool _has_givenfile_command;
     bool _has_cont_sig_command;
@@ -364,8 +364,8 @@ public:
     bool has_when_semicolon(bool val)  { return _has_when_semicolon = val; }
 
     // True if debugger wants events separated by `,'
-    bool has_delete_comma() const      { return _has_delete_comma; }
-    bool has_delete_comma(bool val)    { return _has_delete_comma = val; }
+    bool wants_delete_comma() const      { return _wants_delete_comma; }
+    bool wants_delete_comma(bool val)    { return _wants_delete_comma = val; }
 
     // True if debugger has stderr redirection using `>&'
     bool has_err_redirection() const   { return _has_err_redirection; }
@@ -496,6 +496,70 @@ public:
 	return type() == GDB || type() == XDB || type() == DBX;
     }
 
+    // True if debugger has typed pointers, as in `(TYPE)0x0'
+    bool has_typed_pointers() const
+    {
+	return type() == GDB || type() == JDB;
+    }
+
+    // True if debugger has typed structs, as in `(TYPE)0x1234 { ... }'
+    bool has_typed_structs() const
+    {
+	return type() == JDB;
+    }
+
+    // True if debugger uses `(scalar = ...)' for out-of-range enumerations
+    bool has_scalars() const
+    {
+	return type() == DBX;
+    }
+
+    // True if debugger can use quotes for complex expressions
+    bool has_quotes() const
+    {
+	return type() == GDB;
+    }
+
+    // True if `display X' automatically prints X
+    bool display_prints_values() const
+    {
+	return type() == GDB;
+    }
+
+    // True if debugger can enable displays
+    bool has_enable_display_command() const
+    {
+	return type() == GDB;
+    }
+    bool has_disable_display_command() const
+    {
+	return has_enable_display_command();
+    }
+
+    // True if debugger has numbered displays
+    bool has_numbered_displays()
+    {
+	return type() == GDB;
+    }
+
+    // True if debugger wants displays separated by `,'
+    bool wants_display_comma() const
+    {
+	return type() == DBX;
+    }
+
+    // True if debugger has `info displays' command
+    bool has_info_display_command() const
+    {
+	return display_command() != "";
+    }
+
+    // True if `undisplay' redisplays remaining values
+    bool has_redisplaying_undisplay() const
+    {
+	return type() == DBX;
+    }
+
     // True if debugger dialog is traced on clog
     bool trace_dialog() const    { return _trace_dialog; }
     bool trace_dialog(bool val);
@@ -528,6 +592,7 @@ public:
     int default_index_base() const;                 // GDB: 0 in C, else 1
     string info_locals_command() const;	            // GDB: "info locals"
     string info_args_command() const;	            // GDB: "info args"
+    string info_display_command() const;	    // GDB: "info display"
     string disassemble_command(string start, string end = "") const;
                                                 // GDB: "disassemble START END"
     string make_command(string target) const;       // GDB: "make TARGET"

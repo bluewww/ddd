@@ -476,7 +476,7 @@ void DispValue::init(string& value, DispValueType given_type)
 
 		    // If a member name contains `.', quote it.  This
 		    // happens with vtable pointers on Linux (`_vptr.').
-		    if (member_name.contains('.') && gdb->type() == GDB)
+		    if (member_name.contains('.') && gdb->has_quotes())
 			full_name = member_prefix + quote(member_name, '\'');
 		    else
 			full_name = member_prefix + member_name;
@@ -1063,7 +1063,13 @@ void DispValue::update(string& value, bool& was_changed, bool& was_initialized,
 	if (was_initialized || array_index != v.array->member_count)
 	{
 #if LOG_UPDATE_VALUES
-	    clog << mytype << " changed\n";
+	    clog << mytype << " changed";
+	    if (array_index != v.array->member_count)
+	    {
+		clog << " (old size " << v.array->member_count 
+		     << "!= new size " << array_index << ")";
+	    }
+	    clog << "\n";
 #endif
 	    // Array size changed -- re-initialize.  This may happen
 	    // if the user sets a length on the number of array
@@ -1138,7 +1144,17 @@ void DispValue::update(string& value, bool& was_changed, bool& was_initialized,
 	    || more_values)
 	{
 #if LOG_UPDATE_VALUES
-	    clog << mytype << " changed\n";
+	    clog << mytype << " changed";
+	    if (i != v.str_or_cl->member_count)
+	    {
+		clog << " (old size " << v.str_or_cl->member_count
+		     << "!= new size " << i << ")";
+	    }
+	    if (more_values)
+	    {
+		clog << " (more values)";
+	    }
+	    clog << "\n";
 #endif
 	    // Member count or member name changed -- re-initialize.
 	    // Really weird stuff.  Can this ever happen?

@@ -226,7 +226,7 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _has_named_values(tp == GDB || tp == DBX || tp == JDB),
       _has_when_command(tp == DBX),
       _has_when_semicolon(tp == DBX),
-      _has_delete_comma(false),
+      _wants_delete_comma(false),
       _has_err_redirection(tp == GDB || tp == DBX || tp == XDB),
       _has_givenfile_command(false),
       _has_cont_sig_command(false),
@@ -302,7 +302,7 @@ GDBAgent::GDBAgent(const GDBAgent& gdb)
       _has_named_values(gdb.has_named_values()),
       _has_when_command(gdb.has_when_command()),
       _has_when_semicolon(gdb.has_when_semicolon()),
-      _has_delete_comma(gdb.has_delete_comma()),
+      _wants_delete_comma(gdb.wants_delete_comma()),
       _has_err_redirection(gdb.has_err_redirection()),
       _has_givenfile_command(gdb.has_givenfile_command()),
       _has_cont_sig_command(gdb.has_cont_sig_command()),
@@ -1475,6 +1475,13 @@ string GDBAgent::info_args_command() const
     return "";			// Never reached
 }
 
+string GDBAgent::info_display_command() const
+{
+    if (type() == GDB)
+	return "info display";
+    else
+	return display_command();
+}
 
 
 // Some DBXes want `sh pwd' instead of `pwd'
