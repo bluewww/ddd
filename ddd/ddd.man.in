@@ -2,7 +2,7 @@
 .\" DDD manual page
 .\" @configure_input@
 .\"
-.\" Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
+.\" Copyright (C) 1995-1999 Technische Universitaet Braunschweig, Germany.
 .\" Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 .\" 
 .\" This file is part of DDD.
@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998\-12\-29" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1999\-01\-01" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -6515,7 +6515,7 @@ manual page on \s-1UNIX\s+1 systems (as
 .\"
 .SS "\s-1@DDD@\s+1"
 .\"
-\s-1@DDD@\s+1 is Copyright \(co 1995, 1996, 1997, 1998
+\s-1@DDD@\s+1 is Copyright \(co 1995, 1996, 1997, 1998, 1999
 Technische Universität Braunschweig, Germany.
 .PP
 \s-1@DDD@\s+1 is free software; you can redistribute it and/or modify
@@ -6538,7 +6538,7 @@ License\fR'.
 .\"
 .SS "\s-1@DDD@\s+1 Manual"
 .\"
-This \s-1@DDD@\s+1 manual is Copyright \(co 1995, 1996, 1997, 1998
+This \s-1@DDD@\s+1 manual is Copyright \(co 1995, 1996, 1997, 1998, 1999
 Technische Universität Braunschweig, Germany.
 .PP
 Permission is granted to make and distribute verbatim copies of this

@@ -5,7 +5,7 @@ DDD_APP_WARNING
 ! @configure_input@
 Ddd*appDefaultsVersion: @VERSION@
 
-! Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
+! Copyright (C) 1995-1999 Technische Universitaet Braunschweig, Germany.
 ! Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 ! 
 ! This file is part of DDD.
@@ -4771,7 +4771,7 @@ Ddd.main_window.helpString: MAIN_WINDOW_HELP
 
 Ddd*gdb_w.value: \
 DDD @VERSION@ (@host@), by Dorothea L\374tkehaus and Andreas Zeller.\n\
-Copyright \251 1998 Technische Universit\344t Braunschweig, Germany.\n
+Copyright \251 1999 Technische Universit\344t Braunschweig, Germany.\n
 
 Ddd*gdb_w.editable:			on
 Ddd*gdb_w.allowResize:			on

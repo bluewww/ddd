@@ -315,7 +315,7 @@ static void show_configuration(ostream& os, bool version_only)
 
     // Version info
     s = "@(#)" DDD_NAME " " DDD_VERSION " (" DDD_HOST "), "
-	"Copyright (C) 1998 TU Braunschweig.\n";
+	"Copyright (C) 1999 TU Braunschweig.\n";
     s.gsub(sccs, string(""));
     os << s;
 
