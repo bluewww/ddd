@@ -24,9 +24,10 @@ DDD 2.2.3 is available					-*- text -*-
 What's new in DDD?
 ==================
 
-    DDD 2.2.3 fixes two problems in DDD 2.2.2.
+    DDD 2.2.3 fixes three problems reported for DDD 2.2.2.
     - `struct' recognition with DBX now works again.  (This one was serious.)
-    - `configure' now checks for the presence of ISO C++ <stdexcept>.
+    - `configure' now checks for correct ISO C++ <stdexcept>.
+    - DDD now runs under the `tvtwm' virtual desktop.
 
 
 What is DDD, anyway?

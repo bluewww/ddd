@@ -4,7 +4,7 @@ DDD News						-*- text -*-
 DDD 2.2.3
 ---------
 
-    DDD 2.2.3 fixes three problems with DDD 2.2.2.
+    DDD 2.2.3 fixes three problems reported for DDD 2.2.2.
     - `struct' recognition with DBX now works again.  (This one was serious.)
     - `configure' now checks for correct ISO C++ <stdexcept>.
     - DDD now runs under the `tvtwm' virtual desktop.
