@@ -1341,7 +1341,7 @@ cxxtest.o: $(srcdir)/cxxtest.C
 	$(CXX) -g -c -o $@ $(srcdir)/cxxtest.C
 
 grabtest.o: $(srcdir)/grabtest.C
-	$(CXX) -g -c -o $@ $(srcdir)/grabtest.C
+	$(CXX) $(X_INCLUDE) -g -c -o $@ $(srcdir)/grabtest.C
 
 ctest.o: $(srcdir)/ctest.c
 	$(CC) -g -c -o $@ $(srcdir)/ctest.c
