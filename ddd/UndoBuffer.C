@@ -667,7 +667,7 @@ void UndoBuffer::showing_earlier_state(bool set, StatusMsg *msg)
     if (_showing_earlier_state == set)
     {
 	if (set && msg != 0)
-	    msg->outcome += "  (Still showing earlier program state)";
+	    msg->outcome += ".  Still showing earlier program state";
 	return;
     }
 
@@ -676,9 +676,9 @@ void UndoBuffer::showing_earlier_state(bool set, StatusMsg *msg)
     if (msg != 0)
     {
 	if (set)
-	    msg->outcome = "failed  (Showing earlier program state instead)";
+	    msg->outcome = "failed.  Showing earlier program state instead";
 	else
-	    msg->outcome += "  (Back in current program state)";
+	    msg->outcome += ".  Back in current program state";
     }
 
     XtVaSetValues(data_disp->graph_edit, XtNdashedLines, set, NULL);
@@ -700,20 +700,42 @@ void UndoBuffer::done(StatusMsg *msg)
     assert(OK());
 
     // Check whether we're showing an earlier state
-    bool earlier_state = false;
-    for (int i = history_position; i < history.size(); i++)
-    {
-	const UndoBufferEntry& entry = history[i];
+    bool earlier = false;
 
-	if (entry.has_exec_pos() && !entry.has_command())
-	{
-	    earlier_state = true;
-	    break;
-	}
+    if (history.size() > 0)
+    {
+	const UndoBufferEntry& current = history[history.size() - 1];
+
+	for (int i = history_position - 1; 
+	     !earlier && i < history.size() - 1; i++)
+	    if (in_earlier_state(history[i], current))
+		earlier = true;
     }
 
-    showing_earlier_state(earlier_state, msg);
+    showing_earlier_state(earlier, msg);
     refresh_buttons();
+}
+
+// Return true if ENTRY is in an earlier state than CURRENT 
+bool UndoBuffer::in_earlier_state(const UndoBufferEntry& entry,
+				  const UndoBufferEntry& current)
+{
+    if (!entry.has_exec_pos())
+	return false;
+
+    for (StringStringAssocIter iter(entry); iter.ok(); iter++)
+    {
+	const string& key   = iter.key();
+	const string& value = iter.value();
+
+	if (key == UB_COMMAND || key == UB_EXEC_COMMAND || key == UB_SOURCE)
+	    continue;
+
+	if (current.has(key) && current[key] != value)
+	    return true;
+    }
+
+    return false;
 }
 
 // Clear history

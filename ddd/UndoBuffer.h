@@ -134,6 +134,10 @@ protected:
     // Call when all is done.  If MSG is set, leave the outcome there.
     static void done(StatusMsg *msg = 0);
 
+    // Return true if ENTRY is in an earlier state than CURRENT 
+    static bool in_earlier_state(const UndoBufferEntry& entry,
+				 const UndoBufferEntry& current);
+
     // Get a short action description from COMMAND
     static string action(const string& command);
 
