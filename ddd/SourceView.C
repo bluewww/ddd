@@ -8107,13 +8107,13 @@ void SourceView::CheckScrollWorkProc(XtPointer client_data, XtIntervalId *id)
 // Pixel offsets
 
 // Horizontal arrow offset (pixels)
-int SourceView::arrow_x_offset = -5;
+Position SourceView::arrow_x_offset = -5;
 
 // Horizontal breakpoint symbol offset (pixels)
-int SourceView::stop_x_offset = +6;
+Position SourceView::stop_x_offset = +6;
 
 // Additional offset for multiple breakpoints (pixels)
-int SourceView::multiple_stop_x_offset = stop_width;
+Position SourceView::multiple_stop_x_offset = stop_width;
 
 
 // Glyph locations: x[0] is source, x[1] is code

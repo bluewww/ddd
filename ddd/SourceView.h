@@ -511,13 +511,13 @@ class SourceView {
 
 public:
     // Horizontal arrow offset (pixels)
-    static int arrow_x_offset;
+    static Position arrow_x_offset;
 
     // Horizontal breakpoint symbol offset (pixels)
-    static int stop_x_offset;
+    static Position stop_x_offset;
 
     // Additional offset for multiple breakpoints (pixels)
-    static int multiple_stop_x_offset;
+    static Position multiple_stop_x_offset;
 
 private:
     // Glyph locations: X[0] is source, X[1] is code
