@@ -42,6 +42,7 @@ char buttons_rcsid[] =
 #include "ddd.h"
 #include "editing.h"
 #include "question.h"
+#include "settings.h"
 #include "shorten.h"
 #include "source.h"
 #include "status.h"
@@ -179,6 +180,20 @@ static string gdbHelp(string command)
 	// Lookup cache
 	if (help_texts.has(command))
 	    help = help_texts[command];
+    }
+
+    if (help == NO_GDB_ANSWER && gdb->type() == DBX)
+    {
+	string cmd  = command.before(rxwhite);
+	string base = command.after(rxwhite);
+	base.gsub(' ', '_');
+
+	if (cmd == "set" || cmd == "dbxenv")
+	{
+	    // Ask DBX for help on DBXENV command
+	    help = get_dbx_help(cmd, base);
+	    strip_final_blanks(help);
+	}
     }
 
     if (help == NO_GDB_ANSWER)

@@ -495,7 +495,7 @@ static void munch_doc(string& doc)
 
 
 // Get DBX documentation
-static string get_dbx_help(string dbxenv, string base)
+static string _get_dbx_help(string dbxenv, string base)
 {
     string dbx_help = cached_gdb_question("help " + dbxenv);
 
@@ -549,6 +549,76 @@ static string get_dbx_help(string dbxenv, string base)
     return dbx_help;
 }
 
+static void compress_spaces(string& s, int width)
+{
+    char *buffer = new char[s.length() + 1];
+    char *t = buffer;
+
+    int column = 0;
+    for (int i = 0; i < int(s.length()); i++)
+    {
+	if (isspace(s[i]))
+	{
+	    while (i < int(s.length()) && isspace(s[i]))
+		i++;
+
+	    if (width > 0 && column >= width)
+	    {
+		*t++ = '\n';
+		column = 0;
+	    }
+	    else
+	    {
+		*t++ = ' ';
+		column++;
+	    }
+	}
+
+	if (i < int(s.length()))
+	{
+	    *t++ = s[i];
+	    column++;
+	}
+    }
+    *t++ = '\0';
+
+    s = buffer;
+    delete[] buffer;
+}
+
+// Same, but for usage in help messages
+static string get_dbx_help(string dbxenv, string base, int width)
+{
+    string dbx_help = _get_dbx_help(dbxenv, base);
+    dbx_help = dbx_help.after(base);
+    read_leading_blanks(dbx_help);
+
+    if (dbx_help.contains("  - "))
+    {
+	dbx_help = dbx_help.after("  - ");
+	read_leading_blanks(dbx_help);
+    }
+    else if (dbx_help.contains(" # "))
+    {
+	dbx_help = dbx_help.after(" # ");
+	read_leading_blanks(dbx_help);
+    }
+
+    // Remove remaining `# ' prefixes (Solaris DBX)
+    dbx_help.gsub("  # ", "");
+    dbx_help.gsub(" # ", " number ");
+
+    // Reduce spaces (Solaris DBX & DEC DBX)
+    compress_spaces(dbx_help, width);
+
+    return dbx_help;
+}
+
+string get_dbx_help(string dbxenv, string base)
+{
+    return get_dbx_help(dbxenv, base, 60);
+}
+
 static string get_dbx_doc(string dbxenv, string base)
 {
     // Some specials
@@ -569,30 +639,11 @@ static string get_dbx_doc(string dbxenv, string base)
     if (base == "disassembler_version")
 	return "Disassembler version";
     
-    // Generic
-    string dbx_doc = get_dbx_help(dbxenv, base);
-    dbx_doc = dbx_doc.after(base);
+    // Generic help
+    string dbx_doc = get_dbx_help(dbxenv, base, -1);
     read_leading_blanks(dbx_doc);
 
-    if (dbx_doc.contains("  - "))
-    {
-	dbx_doc = dbx_doc.after("  - ");
-	read_leading_blanks(dbx_doc);
-    }
-    else if (dbx_doc.contains(" # "))
-    {
-	dbx_doc = dbx_doc.after(" # ");
-	read_leading_blanks(dbx_doc);
-    }
-
-    // Remove remaining `# ' prefixes (Solaris DBX)
-    dbx_doc.gsub("  # ", "");
-    dbx_doc.gsub(" # ", " number ");
     dbx_doc.gsub("etc. ", "etc ");
-
-    // Reduce spaces (Solaris DBX & DEC DBX)
-    dbx_doc.gsub(rxwhite, " ");
-
     if (dbx_doc.contains(". "))
 	dbx_doc = dbx_doc.before(". ");
     if (dbx_doc.contains("; "))
@@ -864,7 +915,7 @@ static void add_button(int& row, DebuggerType type, EntryType entry_filter,
 		break;
 
 	    case DBX:
-		options = get_dbx_help("dbxenv", base);
+		options = _get_dbx_help("dbxenv", base);
 		options = options.after('<');
 		options = options.before('>');
 
@@ -875,6 +926,9 @@ static void add_button(int& row, DebuggerType type, EntryType entry_filter,
 		}
 		separator = '|';
 		break;
+
+	    case XDB:
+		return;		// FIXME
 	    }
 
 	    while (options != "")

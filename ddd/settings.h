@@ -46,6 +46,9 @@ void process_show(string command, string value, bool init = false);
 // Get settings string
 string get_settings(DebuggerType type);
 
+// Get help on `DBXENV BASE'
+string get_dbx_help(string dbxenv, string base);
+		    
 // Mark settings as `saved'
 void save_settings_state();
 
