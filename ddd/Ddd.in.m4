@@ -121,7 +121,7 @@ Ddd*saveOptionsOnExit: false
 ! program.  To this string, DDD appends bourne shell commands which must be
 ! run in the execution window.
 Ddd*termCommand: xterm \
--bg 'grey90' -fg 'black' -cr 'dark green' \
+-bg 'grey90' -fg 'black' -cr 'DarkGreen' \
 -fn '-*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*' \
 -title 'DDD: Execution Window' -e /bin/sh -c
 
@@ -819,7 +819,7 @@ Ddd*tool_buttons*fontList:  \
 !   to breakpoints (when activated) as well as everything associated
 !   with signal handling (interrupt button, signal arrow).
 !
-! * GREEN (actually, dark green) is used for all objects associated
+! * GREEN (actually, DarkGreen) is used for all objects associated
 !   with running the debugged program (green traffic light).  This applies
 !   to the current execution position as well as to the run button, but
 !   also to the `GDB busy' indicator (meaning that the program is running.)
@@ -841,8 +841,8 @@ Ddd*graph_edit_panner.shadowColor: black
 ! Red, green and blue buttons.
 Ddd*break.foreground:		   red4
 Ddd*quit.foreground:		   red4
-Ddd*run.foreground:		   dark green
-Ddd*run_again.foreground:	   dark green
+Ddd*run.foreground:		   DarkGreen
+Ddd*run_again.foreground:	   DarkGreen
 ! Ddd*dereference.foreground:	   blue4
 
 ! Highlight special dialogs
@@ -852,17 +852,21 @@ Ddd*no_debugger_dialog*foreground: red4
 
 ! Glyph colors
 Ddd*source_form_w.XmPushButton.background: grey90
-Ddd*source_form_w.plain_arrow.foreground:  dark green
-Ddd*source_form_w.grey_arrow.foreground:   dark green
+Ddd*source_form_w.plain_arrow.foreground:  DarkGreen
+Ddd*source_form_w.grey_arrow.foreground:   DarkGreen
+Ddd*source_form_w.temp_arrow.foreground:   DarkGreen
 Ddd*source_form_w.signal_arrow.foreground: red4
 Ddd*source_form_w.plain_stop.foreground:   red4
+Ddd*source_form_w.temp_stop.foreground:    red4
 Ddd*source_form_w.grey_stop.foreground:	   grey50
 
 Ddd*code_form_w.XmPushButton.background:   grey90
-Ddd*code_form_w.plain_arrow.foreground:	   dark green
-Ddd*code_form_w.grey_arrow.foreground:	   dark green
+Ddd*code_form_w.plain_arrow.foreground:	   DarkGreen
+Ddd*code_form_w.grey_arrow.foreground:	   DarkGreen
+Ddd*code_form_w.temp_arrow.foreground:     DarkGreen
 Ddd*code_form_w.signal_arrow.foreground:   red4
 Ddd*code_form_w.plain_stop.foreground:	   red4
+Ddd*code_form_w.temp_stop.foreground:      red4
 Ddd*code_form_w.grey_stop.foreground:	   grey50
 
 ! Graph colors
@@ -1112,17 +1116,18 @@ Ddd*source_text_w.translations: SOURCE_TRANSLATIONS
 
 Ddd*code_text_w.translations:   SOURCE_TRANSLATIONS
 
+! Realize glyph drag and drop as well as glyph menu popups
+define(GLYPH_TRANSLATIONS,[#override \
+None<Btn1Down>:	  ArmAndActivate() source-drag-glyph()	\n\
+None<Btn1Motion>: source-follow-glyph()                 \n\
+None<Btn1Up>:	  source-drop-glyph()                   \n\
+None<Btn2Down>:	  ArmAndActivate() source-drag-glyph()	\n\
+None<Btn2Motion>: source-follow-glyph()			\n\
+None<Btn2Up>:	  source-drop-glyph()			\n\
+None<Btn3Down>:	  source-popup-menu()			\n])dnl
 
-! Make sure glyphs popup as well
-Ddd*source_form_w.XmPushButton.translations: #override \
-None<Btn1Down>:	ArmAndActivate() source-drag-glyph() \n\
-None<Btn1Up>:	source-drop-glyph() \n\
-None<Btn3Down>:	source-popup-menu()
-
-Ddd*code_form_w.XmPushButton.translations: #override \
-None<Btn1Down>:	ArmAndActivate() source-drag-glyph() \n\
-None<Btn1Up>:	source-drop-glyph() \n\
-None<Btn3Down>:	source-popup-menu()
+Ddd*source_form_w.XmPushButton.translations: GLYPH_TRANSLATIONS
+Ddd*code_form_w.XmPushButton.translations:   GLYPH_TRANSLATIONS
 
 
 ! This defines the popup menus in the graph window.
@@ -2829,7 +2834,7 @@ Ddd*status_form.status.fillOnArm:	false
 Ddd*status_form.led.highlightThickness: 0
 Ddd*status_form.led.labelString:
 Ddd*status_form.led.visibleWhenOff:	false
-Ddd*status_form.led.selectColor:	dark green
+Ddd*status_form.led.selectColor:	DarkGreen
 Ddd*status_form.led.tipString:	\
 @rm @GDB@ status
 Ddd*status_form.led.documentationString: \
