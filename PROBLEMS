@@ -152,7 +152,7 @@ Reported by:  (various)
     smaller than when you add -l:libdld.sl to the link step.
 
     Lassi A. Tuura <Lassi.Tuura@cern.ch> suggests to use the option
-    `-fmillicode-long-calls' when compiling.  It should permit fixes
+    `-mmillicode-long-calls' when compiling.  It should permit fixes
     into shared library calls (these errors only occur with shared
     libraries).
 
@@ -166,7 +166,7 @@ LESSTIF
     bugs refer to DDD 2.0 compiled against LessTif 0.75a.
 
     DDD is available via `http://www.cs.tu-bs.de/softech/ddd/'.
-    LessTif is available via `http://www.hungry.com/products/'.
+    LessTif is available via `http://www.lesstif.org/'.
 
     001. The debugger console  (the place where you can enter GDB
          commands) displays only one line.  [behavioral]
