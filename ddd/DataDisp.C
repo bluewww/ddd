@@ -3292,7 +3292,7 @@ DispNode *DataDisp::new_data_node(const string& given_name,
     open_data_window();
 
     undo_buffer.add_display(title, value);
-    undo_buffer.add_command(delete_display_cmd(title));
+    undo_buffer.add_command(delete_display_cmd(title), true);
 
     return dn;
 }
@@ -3322,7 +3322,7 @@ DispNode *DataDisp::new_user_node(const string& name,
     open_data_window();
 
     undo_buffer.add_display(name, answer);
-    undo_buffer.add_command(delete_display_cmd(name));
+    undo_buffer.add_command(delete_display_cmd(name), true);
 
     return dn;
 }
@@ -3352,7 +3352,7 @@ DispNode *DataDisp::new_deferred_node(const string& expr, const string& scope,
     dn->moveTo(pos);
 
     undo_buffer.add_display(expr, answer);
-    undo_buffer.add_command(delete_display_cmd(expr));
+    undo_buffer.add_command(delete_display_cmd(expr), true);
 
     return dn;
 }
@@ -4285,7 +4285,7 @@ void DataDisp::deletion_done (IntArray& display_nrs, bool do_prompt)
 	// Save current state
 	get_node_state(undo_commands, node, true);
     }
-    undo_buffer.add_command(string(undo_commands));
+    undo_buffer.add_command(string(undo_commands), true);
 
     // Delete nodes
     for (i = 0; i < display_nrs.size(); i++)
