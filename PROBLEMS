@@ -85,6 +85,16 @@ Reported by:  Bernie Borenstein <c372321@hc1056.mdc.com>
      source file.
 
 
+Solaris 2.x
+===========
+
+Reported by:  Blair Zajac <blair@olympia.gps.caltech.edu>
+
+    When using Sun cc to compile `libiberty' as shipped with DDD, change
+    `extern char *__builtin_alloca();' to `extern void
+    *__builtin_alloca();' in `alloca-norm.h' to get the code to compile.
+    This does not happen with GCC.
+
 
 SunOS 4.1 and X11R6
 ===================
