@@ -41,6 +41,11 @@ char Delay_rcsid[] =
 #include <X11/cursorfont.h>
 #include <X11/StringDefs.h>
 
+// ANSI C++ doesn't like the XtIsRealized() macro
+#ifdef XtIsRealized
+#undef XtIsRealized
+#endif
+
 DEFINE_TYPE_INFO_0(_Delay);
 DEFINE_TYPE_INFO_0(Delay);
 

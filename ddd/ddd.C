@@ -153,6 +153,11 @@ extern "C" {
 #include "dddlogo.xbm"
 #include "dddmask.xbm"
 
+// ANSI C++ doesn't like the XtIsRealized() macro
+#ifdef XtIsRealized
+#undef XtIsRealized
+#endif
+
 //-----------------------------------------------------------------------------
 // Forward function decls
 //-----------------------------------------------------------------------------
@@ -5734,7 +5739,7 @@ static void ddd_fatal(int sig)
 	"  * The debugger you were using (e.g. `gdb' or `dbx'), "
 	"and its version.\n"
 	"  * If a core file was generated in your directory, please run\n"
-	"    `%s --gdb %s core', and type `where' at the `(gdb)' prompt.\n"
+	"    `gdb %s core', and type `where' at the `(gdb)' prompt.\n"
 	"See also the section \"Reporting Bugs\" "
 	"in the " DDD_NAME " manual page.\n"
 	"\n"
@@ -5742,7 +5747,7 @@ static void ddd_fatal(int sig)
 
     fprintf(stderr, msg, sigName(sig), sigName(sig),
 	    ddd_invoke_name, ddd_invoke_name, 
-	    ddd_invoke_name, ddd_invoke_name);
+	    ddd_invoke_name);
 
     // Re-raise signal.  This should kill us as we return.
     signal(sig, (void (*)(int))SIG_DFL);
