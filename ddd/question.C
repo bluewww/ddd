@@ -2,6 +2,7 @@
 // Synchronous GDB questions
 
 // Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2000 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -144,7 +145,7 @@ string gdb_question(const string& command, int timeout, bool verbatim)
     if (command == "")
 	return "";
 
-    if (gdb_question_running || !can_do_gdb_command())
+    if (gdb_question_running || !can_do_gdb_command() || gdb->recording())
 	return NO_GDB_ANSWER;
 
     // Block against reentrant calls
