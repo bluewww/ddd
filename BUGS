@@ -126,15 +126,4 @@ Volunteers for fixing these and other bugs are welcome!
 
 286 (Motif) Changing Cut/Copy/Paste accelerators at runtime does not work.
 
-287 (GDB) `enable delete' as issued by the `Temp' button does not work
-    without args.
-
-288 Breakpoint command definition trouble:
-    * When defining a breakpoint command for the second time, the
-      `Edit>>' button does not reflect the new definition.  Neither
-      does the Breakpoint editor.
-    * Defining a command for two breakpoints at once does not work correctly.
-
-289 When processing the `ignore' command, the spin box should not be updated.
-
 290 (Insert new bugs here)
