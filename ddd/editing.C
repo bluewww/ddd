@@ -760,6 +760,8 @@ void gdbCommandCB(Widget w, XtPointer client_data, XtPointer call_data)
 	return;
 
     gdb_button_command((String)client_data, w);
+
+    gdb_keyboard_command = from_keyboard(cbs->event);
 }
 
 void gdb_button_command(const string& command, Widget origin)
