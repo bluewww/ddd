@@ -51,6 +51,7 @@ private:
     static Cursor hourglass_cache;
 
 protected:
+    static void DestroyCB(Widget, XtPointer, XtPointer);
     virtual Cursor hourglass_cursor();
 
 public:

@@ -33,8 +33,11 @@ char Delay_rcsid[] =
 #pragma implementation "VarArray.h"
 #endif
 
+#define LOG_DELAY 0
+
 #include "Delay.h"
 #include "assert.h"
+#include "longName.h"
 #include <X11/cursorfont.h>
 #include <X11/StringDefs.h>
 
@@ -128,6 +131,10 @@ _Delay::_Delay(Widget w):
     if (widget == 0)
 	return;
 
+#if LOG_DELAY
+    clog << "Creating delay for " << XtName(widget) << "\n";
+#endif
+
     Display *display = XtDisplay(widget);
 
     if (current_cursor == 0)
@@ -140,12 +147,18 @@ _Delay::_Delay(Widget w):
 	XDefineCursor(display, XtWindow(widget), hourglass_cursor());
 	XFlush(display);
     }
+
+    XtAddCallback(w, XtNdestroyCallback, DestroyCB, this);
 }
 
 _Delay::~_Delay()
 {
     if (widget == 0)
 	return;
+
+#if LOG_DELAY
+    clog << "Removing delay for " << XtName(widget) << "\n";
+#endif
 
     if (XtIsRealized(widget))
     {
@@ -154,6 +167,13 @@ _Delay::~_Delay()
     }
 
     current_cursor = old_cursor;
+}
+
+// Make sure we do not attempt to delete a delay on a destroyed widget
+void _Delay::DestroyCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    _Delay *delay = (_Delay *)client_data;
+    delay->widget = 0;
 }
 
 
@@ -175,6 +195,7 @@ Delay::Delay(Widget w):
     }
 }
 
+// Make sure the shell is unregistered when destroyed
 void Delay::DestroyCB(Widget w, XtPointer, XtPointer)
 {
     // Unregister shell
