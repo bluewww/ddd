@@ -8,9 +8,10 @@ Just a couple of minor bug fixes:
 
 * The option to create new displays `left-to-right' is restored upon startup.
 * Fortran struct members are accessed as `A%B' instead of `A.B'.
-* DDD honors the TMPDIR environment variable for creating temporary files.
+* Structural display changes no longer cause plots to crash.
 * You can specify the top-level geometry via `-geometry'.
 * The `pydb' debugger has been fixed to work with recent Python releases.
+* DDD honors the TMPDIR environment variable for creating temporary files.
 * `config.guess' and `config.sub' scripts have been updated.
 * Minor compilation problems with GCC 2.7.2 have been fixed.
 * Minor compilation problems with GCC 3.0 (prerelease) have been fixed.

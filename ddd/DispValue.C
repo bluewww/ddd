@@ -2,7 +2,7 @@
 // Read and store type and value of a displayed expression
 
 // Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
-// Copyright (C) 2000 Universitaet Passau, Germany.
+// Copyright (C) 2000-2001 Universitaet Passau, Germany.
 // Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
 // and Andreas Zeller <zeller@gnu.org>.
 // 
@@ -1079,6 +1079,14 @@ DispValue *DispValue::update(string& value,
 	// Aborted while parsing - use SOURCE instead of original
 	DispValue *ret = source->link();
 	ret->changed = was_changed = was_initialized = true;
+
+	// Have the new DispValue take over the plotter
+	if (ret->plotter() == 0)
+	{
+	    ret->_plotter = plotter();
+	    _plotter = 0;
+	}
+
 	unlink();
 	return ret;
     }
@@ -1235,7 +1243,7 @@ DispValue *DispValue::_update(DispValue *source,
 
 		if (c == 0)
 		{
-		    // Child not found -- use source child
+		    // Child not found -- use source child instead
 		    c = source->child(j)->link();
 		}
 
@@ -1261,6 +1269,13 @@ DispValue *DispValue::_update(DispValue *source,
     ret->dereference(dereferenced());
     ret->set_orientation(orientation());
     ret->set_member_names(member_names());
+
+    // Have new DispValue take over the plotter
+    if (ret->plotter() == 0)
+    {
+	ret->_plotter = plotter();
+	_plotter = 0;
+    }
 
     unlink();
     return ret;
