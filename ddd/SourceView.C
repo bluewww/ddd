@@ -5353,22 +5353,21 @@ struct BreakpointPropertiesInfo {
 
 BreakpointPropertiesInfo *BreakpointPropertiesInfo::all = 0;
 
-void SourceView::DeleteInfoCB(Widget w, XtPointer client_data, 
+void SourceView::DeleteInfoCB(Widget, XtPointer client_data, 
 			      XtPointer call_data)
 {
     BreakpointPropertiesInfo *info = 
 	(BreakpointPropertiesInfo *)client_data;
 
+    gdb->removeHandler(Recording, RecordingHP, XtPointer(info));
     if (gdb->recording())
-    {
-	gdb->removeHandler(Recording, RecordingHP, XtPointer(info));
 	gdb_command("\003");	// Abort recording
-    }
 
     if (XtIsManaged(XtParent(info->editor)))
     {
-	// Finish entering commands
-	EditBreakpointCommandsCB(w, client_data, call_data);
+	// Finish entering commands.  Since W is being destroyed, pass
+	// SOURCE_TEXT_W as reference.
+	EditBreakpointCommandsCB(source_text_w, client_data, call_data);
     }
 
     delete info;
