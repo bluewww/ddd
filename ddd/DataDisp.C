@@ -5249,6 +5249,18 @@ void DataDisp::refresh_display_list(bool silent)
     if (display_list_w == 0)
 	return;
 
+    // We refresh the list as soon as we return from the callback
+    // (LessTif is sensitive about this)
+    XtAppAddTimeOut(XtWidgetToApplicationContext(display_list_w),
+		    0, RefreshDisplayListCB, XtPointer(silent));
+}
+
+
+void DataDisp::RefreshDisplayListCB(XtPointer client_data, XtIntervalId *id)
+{
+    (void) id;			// Use it
+
+    bool silent = int(client_data);
     int number_of_displays = disp_graph->count_all();
 
     StringArray nums;

@@ -183,6 +183,7 @@ class DataDisp {
 			 SelectionMode mode = SetSelection);
 
     static void refresh_display_list(bool silent = false);
+    static void RefreshDisplayListCB(XtPointer, XtIntervalId *id);
 
     static DispValue *selected_value();
     static DispNode  *selected_node();
