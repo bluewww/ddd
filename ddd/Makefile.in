@@ -767,7 +767,7 @@ PROGS = $(ddd)
 
 ## Extra demonstration files.
 DEMOS = userinfo stringify huffencode huffdecode \
-	cxxtest ctest ftest jtest ptest m2test \
+	cxxtest ctest ftest ptest m2test \
 	test-file test-graph vsl ttytest bug tString mmtest gcore
 
 ## Where to find texinfo files and so
