@@ -197,6 +197,7 @@ void initial_popup_shell(Widget w)
 
     if (w == tool_shell)
     {
+	XtManageChild(tool_buttons_w);
 	if (!iconic)
 	    RecenterToolShellCB();
     }
@@ -211,6 +212,9 @@ void popup_shell(Widget w)
 {
     if (w == 0 || popups_disabled)
 	return;
+
+    if (w == tool_shell)
+	XtManageChild(tool_buttons_w);
 
     XtPopup(w, XtGrabNone);
 
@@ -241,6 +245,9 @@ void popdown_shell(Widget w)
 	source_view_shell_state = PoppedDown;
     else if (w == tool_shell)
 	tool_shell_state        = PoppedDown;
+
+    if (w == tool_shell)
+	XtUnmanageChild(tool_buttons_w);
 
     if (w != command_shell)
 	XtPopdown(w);
