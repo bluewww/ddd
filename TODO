@@ -340,4 +340,6 @@ Volunteers for these and other projects are welcome!
 
 358 Delay `plot' commands until Gnuplot is done sending plot data.
 
-359 (Insert new project ideas here)
+359 Check the GNU `screen' package for more PTY handling options.
+
+360 (Insert new project ideas here)
