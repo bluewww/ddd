@@ -361,6 +361,7 @@ Volunteers for these and other projects are welcome!
 
 348 Allow debugger interaction while the program is running.  Simply
     interrupt the debuggee, do debugger action, and resume execution.
+    (This will only work after a `run' or `cont'.)
 
 349 Access Java `.jar' class archives.
 

@@ -145,9 +145,8 @@ Volunteers for fixing these and other bugs are welcome!
     (Create a DispGraph::cluster() routine, like DispGraph::make_active()).
 
 322*Finish Plots:
-    - Show diagnostic if plot was not possible 
-      (`graph plot' command, but no numeric data)
-    - Show diagnostic if Gnuplot failed
+    - Show diagnostic if plot failed (`graph plot' command w/o numeric data)
+    - Show diagnostic if Gnuplot as a whole failed
     - Add menu for printing
     - Add menu for line styles
     - Add Gnuplot console
@@ -168,9 +167,6 @@ Volunteers for fixing these and other bugs are welcome!
 338 Occasionally, Undo displays bogus `Showing earlier state'
     messages.
 
-339 Adding a display to a cluster does not work.
-
-340 With auto-clustering enabled: select a variable, plot it, plot
-    again.  You get two plot windows.
+340 Plotted clusters are not updated.
 
 341 (Insert new bugs here)
