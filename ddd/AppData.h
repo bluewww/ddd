@@ -393,6 +393,8 @@
 #define XtCMaxUndoSize           "MaxUndoSize"
 #define XtNthemes                "themes"
 #define XtCThemes                "Themes"
+#define XtNsuppressTheme         "suppressTheme"
+#define XtCTheme                 "Theme"
 #define XtNdumpCore              "dumpCore"
 #define XtCDumpCore              "DumpCore"
 #define XtNdebugCoreDumps        "debugCoreDumps"
@@ -605,6 +607,7 @@ struct AppData {
     int       max_undo_depth;
     int       max_undo_size;
     String    themes;
+    String    suppress_theme;
     Boolean   maintenance;
     Boolean   dump_core;
     Boolean   debug_core_dumps;

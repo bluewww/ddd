@@ -2051,6 +2051,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNsuppressTheme,
+	XtCTheme,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, suppress_theme),
+	XtRString,
+	XtPointer("suppress.vsl")
+    },
+
+    {
 	XtNmaintenance,
 	XtCMaintenance,
 	XmRBoolean,

@@ -1003,6 +1003,12 @@ Ddd*maxBreakpointNumber: 99
 Ddd*maxDisplayNumber:    99
 
 
+! Themes
+
+! The theme to apply to delete a value from a display
+Ddd*suppressTheme: suppress.vsl
+
+
 ! Tips of the day
 
 ! Whether to show a tip of the day upon startup
@@ -3795,7 +3801,6 @@ Click on LBL(?) to get further information on the specific theme.\n\
 Click on LBL(Apply) to apply changed text settings.\n\
 Click on LBL(Reset) to restore the original settings.\n\
 Click on LBL(Close) to close this window.
-
 
 !-----------------------------------------------------------------------------
 ! Button Editor and Shortcut Editor

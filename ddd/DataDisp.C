@@ -600,7 +600,11 @@ string DataDisp::selected_pattern()
 {
     DispValue *dv = selected_value();
     if (dv == 0)
-	return "";
+	return "";		// Nothing selected
+
+    DispNode *dn = selected_node();
+    if (dv == dn->value())
+	return "";		// Top-level selection
 
     string pattern = dv->full_name();
     pattern.gsub("\\", "\\\\");
@@ -624,6 +628,7 @@ void DataDisp::applyThemeCB (Widget w, XtPointer client_data, XtPointer)
     string pattern = selected_pattern();
     if (pattern == "")
 	return;
+
     DispValue *dv = selected_value();
     if (dv == 0)
 	return;
@@ -1134,14 +1139,15 @@ void DataDisp::deleteCB (Widget dialog, XtPointer /* client_data */,
 {
     set_last_origin(dialog);
 
-    DispValue *dv = selected_value();
-    DispNode  *dn = selected_node();
-    if (dv != 0 && dv != dn->value())
+    if (selected_pattern() != "")
     {
 	// Display part to be undisplayed
-	applyThemeCB(dialog, XtPointer("suppress.vsl"), call_data);
+	applyThemeCB(dialog, XtPointer(app_data.suppress_theme), call_data);
 	return;
     }
+
+    DispValue *dv = selected_value();
+    DispNode  *dn = selected_node();
 
     IntArray disp_nrs;
     VarArray<GraphNode *> ancestors;
@@ -1153,7 +1159,7 @@ void DataDisp::deleteCB (Widget dialog, XtPointer /* client_data */,
 	 dn = disp_graph->next(ref))
     {
 	dv = dn->selected_value();
-	if (selected(dn) && dv == 0)
+	if (selected(dn) && (dv == 0 || dv == dn->value()))
 	{
 	    disp_nrs += dn->disp_nr();
 
@@ -1858,10 +1864,10 @@ void DataDisp::deleteArgCB(Widget dialog, XtPointer client_data,
 	// Delete selected displays
 	deleteCB(dialog, client_data, call_data);
     }
-    else if (count.selected > 0)
+    else if (selected_pattern() != "")
     {
-	// Suppress selected display
-	applyThemeCB(dialog, XtPointer("suppress.vsl"), call_data);
+	// Suppress selected value
+	applyThemeCB(dialog, XtPointer(app_data.suppress_theme), call_data);
     }
     else
     {
