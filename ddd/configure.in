@@ -243,7 +243,9 @@ AC_FUNC_ALLOCA
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
 dnl
-dnl AC_CHECK_LIB(g++, main, LIBS="$LIBS -lg++")
+if test "$CXX" = gcc; then
+LIBS="$LIBS -lg++"
+fi
 AC_HEADER_STDC
 AC_CHECK_HEADERS(unistd.h limits.h malloc.h pwd.h stdlib.h termio.h termios.h)
 AC_CHECK_HEADERS(sys/ioctl.h sys/param.h sys/time.h sys/resource.h sys/timeb.h)
