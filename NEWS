@@ -66,6 +66,7 @@ DDD 1.5 (in development)
     - Editor problems fixed.  Invoking a source editor via `Edit'
       should work fine now.
     - The rubber band outline no more clutters the data display.
+      (This was a gcc optimization bug.)
     - No more endless scrolling when glyphs are enabled.  Scrolling is
       slightly faster, too.
     - On HP-UX, the `@' character is no more discarded from GDB input.
