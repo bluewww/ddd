@@ -199,6 +199,7 @@ private:
     static MMDesc bp_popup_gdb[];
     static MMDesc bp_popup_dbx[];
     static MMDesc text_popup[];
+    static MMDesc source_popup[];
     static MMDesc bp_area[];
 
     //-----------------------------------------------------------------------

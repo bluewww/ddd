@@ -2312,9 +2312,14 @@ Ddd*address_popup.set_temp.labelString:		Set Temporary Breakpoint
 Ddd*address_popup.temp_n_cont.labelString:	Continue Until Here
 
 Ddd*bp_popup.disable.labelString:		Disable Breakpoint
-Ddd*bp_popup.condition.labelString:		Set Condition
-Ddd*bp_popup.ignore_count.labelString:		Set Ignore Count
+Ddd*bp_popup.condition.labelString:		Set Condition...
+Ddd*bp_popup.ignore_count.labelString:		Set Ignore Count...
 Ddd*bp_popup.delete.labelString:		Delete Breakpoint
+
+Ddd*source_popup.back.labelString:		Back
+Ddd*source_popup.forward.labelString:		Forward
+Ddd*source_popup.edit.labelString:		Edit Source...
+Ddd*source_popup.reload.labelString:		Reload Source
 
 
 !-----------------------------------------------------------------------------
