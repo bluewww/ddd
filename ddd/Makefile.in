@@ -1165,7 +1165,7 @@ love:
 # browse the RHF pages and archives on the web.
 
 .PHONY: joke fun
-joke fun:
+joke fun money fast:
 	@$(ECHO)
 	@$(ECHO)
 	@$(ECHO)
