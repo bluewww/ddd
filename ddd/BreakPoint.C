@@ -654,15 +654,10 @@ string BreakPoint::symbol() const
     return c + number_str() + c;
 }
 
-static bool is_false(const string& cond)
-{
-    return cond == "0" || cond.contains("0 && ", 0);
-}
-
 string BreakPoint::condition() const
 {
     if (is_false(real_condition()))
-	return real_condition().after(" && ");
+	return real_condition().after(and_op());
     else
 	return real_condition();
 }
@@ -675,6 +670,75 @@ bool BreakPoint::enabled() const
 	return myenabled;
 }
 
+
+
+//-----------------------------------------------------------------------------
+// Condition stuff
+//-----------------------------------------------------------------------------
+
+// Return "0" (or appropriate)
+string BreakPoint::false_value()
+{
+    switch (gdb->program_language())
+    {
+    case LANGUAGE_C:
+    case LANGUAGE_OTHER:
+	return "0";
+
+    case LANGUAGE_FORTRAN:
+	return ".FALSE.";
+
+    case LANGUAGE_JAVA:
+	return "false";
+
+    case LANGUAGE_CHILL:	// ??
+    case LANGUAGE_PASCAL:
+    case LANGUAGE_ADA:
+	return "FALSE";
+    }
+
+    return "0";
+}
+
+// Return " && " (or appropriate)
+string BreakPoint::and_op()
+{
+    switch (gdb->program_language())
+    {
+    case LANGUAGE_C:
+    case LANGUAGE_JAVA:
+    case LANGUAGE_OTHER:
+	return " && ";
+
+    case LANGUAGE_FORTRAN:
+	return " .AND. ";
+
+    case LANGUAGE_CHILL:	// ??
+    case LANGUAGE_PASCAL:
+    case LANGUAGE_ADA:
+	return " AND ";
+    }
+
+    return " && ";
+}
+
+// True if COND is `false' or starts with `false and'
+bool BreakPoint::is_false(const string& cond)
+{
+    return cond == false_value() || 
+	downcase(cond).contains(downcase(false_value() + and_op()), 0);
+}
+
+// Make COND `false' or `false and COND'
+string BreakPoint::make_false(const string& cond)
+{
+    if (is_false(cond))
+	return cond;
+    else if (cond == "")
+	return false_value();
+    else
+	return false_value() + and_op() + cond;
+}
 
 //-----------------------------------------------------------------------------
 // Session stuff

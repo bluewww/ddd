@@ -114,6 +114,12 @@ private:
 	assert(0); return *this;
     }
 
+protected:
+    // Helpers
+    static string false_value();
+    static string and_op();
+    static bool is_false(const string& cond);
+
 public:
     // Create new breakpoint from INFO_OUTPUT.  ARG denotes the
     // argument of a breakpoint setting command.  If NUMBER is given,
@@ -185,6 +191,9 @@ public:
     // If COND is set, use COND as (fake) condition.
     bool get_state(ostream& os, int num, bool as_dummy = false, 
 		   string addr = "", string cond = char(-1));
+
+    // Stuff for constructing `false' breakpoint conditions
+    static string make_false(const string& cond);
 };
 
 #endif // _DDD_BreakPoint_h

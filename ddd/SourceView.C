@@ -929,12 +929,7 @@ void SourceView::set_bp_cond(int bp_nr, string cond,
 			     bool make_false, Widget w)
 {
     if (make_false)
-    {
-	if (cond == "")
-	    cond = "0";
-	else
-	    cond = "0 && " + cond;
-    }
+	cond = BreakPoint::make_false(cond);
 
     if (gdb->has_condition_command())
     {
