@@ -4678,6 +4678,9 @@ void DataDisp::setCB(Widget w, XtPointer, XtPointer)
 
     strip_space(value);
 
+    // Make sure the old value is saved in the history
+    add_to_history(gdb->assign_command(name, value));
+
     SetInfo *info = new SetInfo;
     info->name = name;
     info->running = false;
