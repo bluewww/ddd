@@ -107,6 +107,10 @@ extern "C" {
 #undef XtIsRealized
 #endif
 
+
+// Do we want to define our own @STRING@ to font converters?
+#define OWN_FONT_CONVERTERS 1
+
 // Declarations
 
 // Convert String to Widget
@@ -575,6 +579,8 @@ static Boolean CvtStringToXmString(Display *display,
 }
 
 
+#if OWN_FONT_CONVERTERS
+
 static bool convert_fontspec(Display *display,
 			     string& fontspec, const string& name)
 {
@@ -603,6 +609,7 @@ static bool convert_fontspec(Display *display,
 
     return true;
 }
+
 
 // Convert String to FontStruct, relacing `@NAME@' by symbolic font specs.
 static Boolean CvtStringToFontStruct(Display *display, 
@@ -715,6 +722,8 @@ static Boolean CvtStringToXmFontList(Display *display,
     
     done(XmFontList, target);
 }
+
+#endif
 
 
 // Convert the strings 'beginning', 'center' and 'end' in any case to a value
@@ -924,6 +933,7 @@ void registerOwnConverters()
 		       NULL, 0, XtCacheNone,
 		       XtDestructor(NULL));
 
+#if OWN_FONT_CONVERTERS
     // string -> fontlist
     XtSetTypeConverter(XmRString, XmRFontList, CvtStringToXmFontList,
 		       NULL, 0, XtCacheAll,
@@ -933,6 +943,7 @@ void registerOwnConverters()
     XtSetTypeConverter(XmRString, XtRFontStruct, CvtStringToFontStruct,
 		       NULL, 0, XtCacheAll,
 		       XtDestructor(NULL));
+#endif
 
     // string -> unitType
     XtSetTypeConverter(XmRString, XmRUnitType, CvtStringToUnitType,
