@@ -424,6 +424,9 @@ class SourceView {
     static XmTextPosition glyph_position(Widget w, XEvent *e, 
 					 bool normalize = true);
 
+    // Get relative coordinates of GLYPH in TEXT
+    static void translate_glyph_pos(Widget glyph, Widget text, int& x, int& y);
+
     // Data associated with current drag operation
     // The Glyph being dragged
     static Widget current_drag_origin;

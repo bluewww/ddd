@@ -3105,17 +3105,6 @@ void SourceView::create_text(Widget parent,
     string form_name = base + "_form_w";
     form = verify(XmCreateForm(parent, form_name, args, arg));
 
-#if XmVersion >= 2001
-    // Antonello Biancalana <promind@tecnonet.it> says that Motif 2.1
-    // does not display glyphs.  So we try an alternative: create them
-    // all as children of FORM before adding the text child.
-    for (;;)
-    {
-	if (CreateGlyphsWorkProc(0))
-	    break;
-    }
-#endif
-
     arg = 0;
     XtSetArg(args[arg], XmNselectionArrayCount, 1);               arg++;
     XtSetArg(args[arg], XmNtopAttachment,     XmATTACH_FORM);     arg++;
@@ -4427,34 +4416,24 @@ void SourceView::set_text_popup_resource(int item, const string& arg)
     }
 }
 
+// Get relative coordinates of GLYPH in TEXT
+void SourceView::translate_glyph_pos(Widget glyph, Widget text, int& x, int& y)
+{
+    int dest_x, dest_y;
+    Window child;
+    XTranslateCoordinates(XtDisplay(glyph), 
+			  XtWindow(glyph), XtWindow(text), 
+			  x, y, &dest_x, &dest_y, &child);
+
+    x = dest_x;
+    y = dest_y;
+}
 
 void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 {
     if (e->type != ButtonPress && e->type != ButtonRelease)
 	return;
 
-    if (!is_source_widget(w) && !is_code_widget(w))
-	return;
-
-    XButtonEvent* event = (XButtonEvent *) e;
-
-    Position x = event->x;
-    Position y = event->y;
-
-    if (w != source_text_w && w != code_text_w)
-    {
-	// Called from a glyph: add glyph position to event position
-	Position xw, yw;
-	XtVaGetValues(w, 
-		      XmNx, &xw,
-		      XmNy, &yw,
-		      NULL);
-	x += xw;
-	y += yw;
-    }
-
-
-    // Get the position
     Widget text_w;
     if (is_source_widget(w))
 	text_w = source_text_w;
@@ -4463,7 +4442,19 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
     else
 	return;
 
-    XmTextPosition pos = XmTextXYToPos (text_w, x, y);
+    XButtonEvent* event = (XButtonEvent *) e;
+
+    int x = event->x;
+    int y = event->y;
+
+    if (w != source_text_w && w != code_text_w)
+    {
+	// Called from a glyph: translate glyph position to text position
+	translate_glyph_pos(w, text_w, x, y);
+    }
+
+    // Get the position
+    XmTextPosition pos = XmTextXYToPos(text_w, x, y);
 
     // Move the insertion cursor to this position, but don't disturb the
     // selection
@@ -5799,13 +5790,7 @@ void SourceView::MoveCursorToGlyphPosCB(Widget w,
     // Set up event such that it applies to the source window
     XButtonEvent *event = (XButtonEvent *) e;
 
-    Position x, y;
-    XtVaGetValues(w, 
-		  XmNx, &x,
-		  XmNy, &y,
-		  NULL);
-    event->x += x;
-    event->y += y;
+    translate_glyph_pos(w, text_w, event->x, event->y);
     event->window = XtWindow(text_w);
 
     // Invoke action for source window
@@ -5995,6 +5980,16 @@ void SourceView::map_glyph(Widget& w, Position x, Position y)
     if (change_glyphs)
     {
 	XtMapWidget(w);
+
+#if XmVersion >= 2001
+	// Place the glyph above the text.  Dirty hack for Motif 2.1.
+	XWindowChanges xwc;
+	xwc.sibling = XtWindow(XtParent(text_w));
+	xwc.stack_mode = Above;
+	XConfigureWindow(XtDisplay(w), XtWindow(w), 
+			 CWSibling | CWStackMode, &xwc);
+#endif
+
 	XtVaSetValues(w, XmNuserData, XtPointer(1), NULL);
 	changed_glyphs += w;
     }
@@ -6357,7 +6352,7 @@ Widget SourceView::map_temp_stop_at(Widget w, XmTextPosition pos,
     if (pos_displayed)
     {
 	if (origin)
-	    XtVaGetValues(origin, XmNx, &x, NULL);
+ 	    XtVaGetValues(origin, XmNx, &x, NULL);
 	else
 	    x += stop_x_offset;
 
@@ -6681,20 +6676,6 @@ MString SourceView::help_on_bp(int bp_nr, bool detailed)
 
 XmTextPosition SourceView::glyph_position(Widget w, XEvent *e, bool normalize)
 {
-    BoxPoint p = point(e);
-    if (w != source_text_w && w != code_text_w)
-    {
-	// Called from a glyph: add glyph position to event position
-	Position xw, yw;
-	XtVaGetValues(w, 
-		      XmNx, &xw,
-		      XmNy, &yw,
-		      NULL);
-	p[X] += xw;
-	p[Y] += yw;
-    }
-
-    // Get the position
     Widget text_w;
     if (is_source_widget(w))
 	text_w = source_text_w;
@@ -6703,6 +6684,14 @@ XmTextPosition SourceView::glyph_position(Widget w, XEvent *e, bool normalize)
     else
 	return XmTextPosition(-1);
 
+    BoxPoint p = point(e);
+    if (w != source_text_w && w != code_text_w)
+    {
+	// Called from a glyph: add glyph position to event position
+	translate_glyph_pos(w, text_w, p[X], p[Y]);
+    }
+
+    // Get the position
     XmTextPosition pos = XmTextXYToPos(text_w, p[X], p[Y]);
 
     // Stay within viewable text +/-1 row, such that we don't scroll too fast
