@@ -56,7 +56,7 @@ const char file_rcsid[] =
 #include "status.h"
 #include "string-fun.h"
 #include "verify.h"
-#include "windows.h"
+#include "wm.h"
 
 #include <Xm/Xm.h>
 #include <Xm/FileSB.h>

@@ -57,7 +57,7 @@ char HelpCB_rcsid[] =
 #include "Delay.h"
 #include "StringA.h"
 #include "IntArray.h"
-#include "windows.h"
+#include "wm.h"
 
 struct resource_values {
     XmString helpString;

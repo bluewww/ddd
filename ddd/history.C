@@ -51,7 +51,7 @@ const char history_rcsid[] =
 #include "status.h"
 #include "string-fun.h"
 #include "verify.h"
-#include "windows.h"
+#include "wm.h"
 
 #include <stdio.h>
 #include <stdlib.h>
