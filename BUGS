@@ -70,8 +70,8 @@ Volunteers for fixing these and other bugs are welcome!
 155 (DBX) `dump` output is not understood if local arrays are shown.
     (DBX prints these as `ARRAY')
 
-169 The Manual Browser does not recognize manual (sub-)titles for
-    ULTRIX and HP-UX `man' formats (probably problems with others, too)
+169 The Manual Browser only recognizes manual (sub-)titles for
+    BSD-like formats, as in Linux, SunOS, and Solaris.
 
 249 Zdenek Sekera <zs@cray.com> reports:
  
