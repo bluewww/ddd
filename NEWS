@@ -25,6 +25,8 @@ Specific flags for other compilers are documented in PROBLEMS.
   done.
 - A bug affecting platforms where the size of function pointers is 16 has
   been fixed.
+- The settings window now starts at a larger, more reasonable size, and
+  allows the user to resize it.
 
 * Build fixes
 - The configure machinery has been updated to conform more closely to the
