@@ -281,15 +281,12 @@ Volunteers for fixing these and other bugs are welcome!
 
 272 The `select' font selection method does not work with LessTif.
 
-273 Mike Bond <mike.bond@template.com> says:
+273*Mike Bond <mike.bond@template.com> says:
     The sub-window sizes (Console and Source Window) aren't getting
     saved and worse, the sub-windows are being resized to some
     internal default when 'Save Options' returns. 
 
-275 (LessTif only) In the GDB settings, the option menus are not
+275*(LessTif only) In the GDB settings, the option menus are not
     shown.
-
-276 In GDB settings help, `help Set print' commands are issued.
-    Also, help does not show the current item value.
 
 277 (Insert new bugs here)

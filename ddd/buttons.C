@@ -375,11 +375,15 @@ static string gdbSettingsValue(string command)
 
 static MString gdbDefaultHelpText(Widget widget)
 {
-    string name = gdbHelpName(widget);
-    if (name != "" && islower(name[0]))
-	name[0] = toupper(name[0]);
+    const string name = gdbHelpName(widget);
 
-    MString msg = bf(name) + cr() + cr();
+    MString msg;
+    if (name != "" && islower(name[0]))
+	msg = bf(toupper(name[0]) + name.after(0));
+    else
+	msg = bf(name);
+    msg += cr();
+    msg += cr();
 
     string help = gdbHelp(name);
     if (help == NO_GDB_ANSWER)
