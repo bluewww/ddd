@@ -1661,17 +1661,23 @@ $(srcdir)/eps-code.h: \
 configinfo.C: USERINFO $(srcdir)/config-info
 	$(SHELL) $(srcdir)/config-info $(srcdir)/USERINFO USERINFO > $@~ && \
 	$(MV) $@~ $@
-	-$(CAT) $(srcdir)/USERINFO 2> /dev/null || $(CAT) USERINFO
 
 # configinfo.C:	Makefile config.h
 
 configinfo.o:	configinfo.C configinfo.h
 
-# If `~/.ddd_userinfo' exists, use this file as personal identification
-
+# If `~/.ddd_userinfo' exists, use this file as personal identification.
 USERINFO: userinfo
-	-(cat $$HOME/.ddd_userinfo || ./userinfo || echo '(unknown)') \
-	> $@~ && $(MV) $@~ $@
+	-(cat $$HOME/.ddd_userinfo 2> /dev/null || \
+	./userinfo || echo '(unknown)') > $@~ && $(MV) $@~ $@
+	@$(ECHO) ""
+	@$(ECHO) "Please check your name and e-mail address:"
+	@$(ECHO) ""
+	@$(CAT) $@
+	@$(ECHO) ""
+	@$(ECHO) "This information will be compiled into $(DDD)."
+	@$(ECHO) "If it is not correct, please edit $@ and re-compile."
+	@$(ECHO) ""
 
 
 ## Update the shared source tree.  For development only.
