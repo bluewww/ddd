@@ -2551,6 +2551,7 @@ WIDGET(Data Menu)\n\
 \n\
 DESC(Edit Displays..., [select, enable and delete displays])\n\
 DESC(Edit Watchpoints..., [set, view, and edit watchpoints])\n\
+DESC(Examine Memory..., [examine memory in any of several formats])\n\
 \n\
 DESC(Print (),   [print LBL(()) in @GDB@ console])\n\
 DESC(Display (), [display LBL(()) in data window])\n\
@@ -3884,6 +3885,7 @@ Ddd*toolbar*lookup.documentationString:	\
 
 define(BREAK_HELP, [\
 DESC(Set Temporary Breakpoint at (), [set temporary breakpoint])\n\
+DESC(Set Breakpoints at Regexp (), [break at all functions matching ()])\n\
 DESC(Continue Until (), [set temporary breakpoint and resume execution])\n\
 DESC(Enable / Disable Breakpoint at (), [enable or disable breakpoint])\n\
 DESC(Breakpoint Properties..., [set properties of breakpoint at ()])\n\
