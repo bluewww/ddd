@@ -556,11 +556,14 @@ void start_gdb()
 
     case JDB:
 	extra_data->refresh_initial_line = true;
+
 	cmds += "use";
 	extra_data->refresh_class_path = true;
 	break;
 
     case PYDB:
+	extra_data->refresh_initial_line = true;
+
 	cmds += "pwd";
 	extra_data->refresh_pwd = true;
 	cmds += "info breakpoints";
@@ -2193,6 +2196,13 @@ static void extra_completed (const StringArray& answers,
 	extra_data->n_init--;
     }
 
+    if (extra_data->refresh_recent_files)
+    {
+	// Clear undo buffer.  Do this before setting the initial line,
+	// such that it becomes part of the history.
+	undo_buffer.clear();
+    }
+
     if (extra_data->refresh_initial_line)
     {
 	switch (gdb->type())
@@ -2231,7 +2241,11 @@ static void extra_completed (const StringArray& answers,
 	case DBX:
 	case JDB:
 	case PYDB:
+	{
+	    string dummy;
+	    source_view->process_info_line_main(dummy);
 	    break;
+	}
 	}
     }
 
