@@ -209,7 +209,7 @@ Widget SourceView::down_w                    = 0;
 Widget SourceView::code_dialog_w             = 0;
 Widget SourceView::code_text_w               = 0;
 Widget SourceView::register_dialog_w         = 0;
-Widget SourceView::register_text_w           = 0;
+Widget SourceView::register_list_w           = 0;
 
 bool SourceView::stack_dialog_popped_up    = false;
 bool SourceView::code_dialog_popped_up     = false;
@@ -1483,46 +1483,34 @@ SourceView::SourceView (XtAppContext app_context,
     // Create register view
     arg = 0;
     XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
-    register_dialog_w =
-	verify(XmCreatePromptDialog(source_text_w, 
-				    "register_dialog", args, arg));
+    register_dialog_w = 
+	verify(XmCreateSelectionDialog(source_text_w, 
+				       "register_dialog", args, arg));
     Delay::register_shell(register_dialog_w);
 
-    arg = 0;
-    XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
-    XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
-    Widget register_form_w = 
-	verify(XmCreateForm(register_dialog_w, "form", args, arg));
-    XtManageChild(register_form_w);
-
-    arg = 0;
-    XtSetArg(args[arg], XmNtopAttachment,   XmATTACH_FORM);         arg++;
-    XtSetArg(args[arg], XmNleftAttachment,  XmATTACH_FORM);         arg++;
-    XtSetArg(args[arg], XmNrightAttachment, XmATTACH_FORM);         arg++;
-    XtSetArg(args[arg], XmNalignment,       XmALIGNMENT_BEGINNING); arg++;
-    Widget register_label_w = 
-	verify(XmCreateLabel(register_form_w, "label", args, arg));
-    XtManageChild(register_label_w);
-
-    arg = 0;
-    XtSetArg(args[arg], XmNtopAttachment,    XmATTACH_WIDGET);   arg++;
-    XtSetArg(args[arg], XmNtopWidget,        register_label_w);  arg++;
-    XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_FORM);     arg++;
-    XtSetArg(args[arg], XmNleftAttachment,   XmATTACH_FORM);     arg++;
-    XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_FORM);     arg++;
-    XtSetArg(args[arg], XmNeditable,         False);             arg++;
-    XtSetArg(args[arg], XmNeditMode,         XmMULTI_LINE_EDIT); arg++;
-    register_text_w = verify(XmCreateScrolledText(register_form_w, 
-					      "text", args, arg));
+    XtUnmanageChild(XmSelectionBoxGetChild(register_dialog_w, 
+					   XmDIALOG_TEXT));
     XtUnmanageChild(XmSelectionBoxGetChild(register_dialog_w, 
 					   XmDIALOG_SELECTION_LABEL));
-    XtUnmanageChild(XmSelectionBoxGetChild(register_dialog_w,
-					   XmDIALOG_TEXT));
-    XtUnmanageChild(XmSelectionBoxGetChild(register_dialog_w,
-					   XmDIALOG_CANCEL_BUTTON));
-    XtUnmanageChild(XmSelectionBoxGetChild(register_dialog_w,
+    XtUnmanageChild(XmSelectionBoxGetChild(register_dialog_w, 
 					   XmDIALOG_APPLY_BUTTON));
-    XtManageChild(register_text_w);
+    XtUnmanageChild(XmSelectionBoxGetChild(register_dialog_w, 
+					   XmDIALOG_CANCEL_BUTTON));
+
+    arg = 0;
+    register_list_w = XmSelectionBoxGetChild(register_dialog_w, XmDIALOG_LIST);
+    XtVaSetValues(register_list_w,
+		  XmNselectionPolicy, XmSINGLE_SELECT,
+		  NULL);
+
+    XtAddCallback(register_list_w,
+		  XmNsingleSelectionCallback, SelectRegisterCB, 0);
+    XtAddCallback(register_list_w,
+		  XmNmultipleSelectionCallback, SelectRegisterCB, 0);
+    XtAddCallback(register_list_w,
+		  XmNextendedSelectionCallback, SelectRegisterCB, 0);
+    XtAddCallback(register_list_w,
+		  XmNbrowseSelectionCallback, SelectRegisterCB, 0);
 
     XtAddCallback(register_dialog_w,
 		  XmNokCallback, UnmanageThisCB, register_dialog_w);
@@ -2341,7 +2329,12 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	if (startpos < XmTextPosition(current_text.length())
 	    && startpos < endpos)
 	    word = current_text(int(startpos), int(endpos - startpos));
-	ref_word = "*" + word;
+
+	ref_word = "";
+	if (word.length() > 2 && word[0] == '/')
+	    ref_word = "*(" + word.from(2) + ")";
+	else if (word != "")
+	    ref_word = "*(" + word + ")";
 	
 	Widget text_popup_w = MMcreatePopupMenu(w, "text_popup", text_popup);
 	MMaddCallbacks (text_popup, XtPointer(&word));
@@ -3113,11 +3106,55 @@ bool SourceView::register_required() { return register_dialog_popped_up; }
 // Machine stuff
 //----------------------------------------------------------------------------
 
+// Replace first '\t' by filling up spaces until POS is reached
+static void tabto(string& s, int pos)
+{
+    for (int i = 0; unsigned(i) < s.length() && i < pos; i++)
+    {
+	if (s[i] == '\t')
+	{
+	    int offset = pos - i;
+	    s(i, 1) = replicate(' ', offset);
+	    return;
+	}
+    }
+}
+    
+// Replace all '\t' by filling up spaces until multiple of OFFSET is reached
+static void untabify(string& s, int offset = 8)
+{
+    for (int i = 0; unsigned(i) < s.length(); i++)
+    {
+	if (s[i] == '\t')
+	{
+	    int spaces = offset - i % offset;
+	    s(i, 1) = replicate(' ', spaces);
+	    i += spaces - 1;
+	}
+    }
+}
+
 void SourceView::process_register(string& register_output)
 {
-    XmTextPosition top = XmTextGetTopCharacter(register_text_w);
-    XmTextSetString(register_text_w, String(register_output));
-    XmTextSetTopCharacter(register_text_w, top);
+    int count             = register_output.freq('\n') + 1;
+    string *register_list = new string[count];
+    bool *selected        = new bool[count];
+
+    split(register_output, register_list, count, '\n');
+
+    while (count > 0 && register_list[count - 1] == "")
+	count--;
+
+    for (int i = 0; i < count; i++)
+    {
+	tabto(register_list[i], 26);
+	untabify(register_list[i]);
+    }
+
+    setLabelList(register_list_w, register_list, selected, count);
+
+    delete[] register_list;
+    delete[] selected;
 }
 
 void SourceView::process_code(string& code_output)
@@ -3165,6 +3202,25 @@ void SourceView::CodeDialogPoppedDownCB (Widget, XtPointer, XtPointer)
 void SourceView::RegisterDialogPoppedDownCB (Widget, XtPointer, XtPointer)
 {
     register_dialog_popped_up = false;
+}
+
+void SourceView::SelectRegisterCB (Widget, XtPointer, XtPointer call_data)
+{
+    XmListCallbackStruct *cbs = (XmListCallbackStruct *)call_data;
+
+    // Get the selected line
+    String _item;
+    XmStringGetLtoR(cbs->item, LIST_CHARSET, &_item);
+    string item(_item);
+    XtFree(_item);
+
+    if (item != "" && item[item.length() - 1] != '.')
+    {
+	if (item.contains(' '))
+	    item = "/x $" + item.before(' ');
+
+	source_arg->set_string(item);
+    }
 }
 
 //-----------------------------------------------------------------------------

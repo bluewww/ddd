@@ -112,6 +112,7 @@ class SourceView {
     static void CodeDialogPoppedDownCB (Widget, XtPointer, XtPointer);
     static void RegisterDialogPoppedDownCB (Widget, XtPointer, XtPointer);
     static void SelectFrameCB (Widget, XtPointer, XtPointer);
+    static void SelectRegisterCB (Widget, XtPointer, XtPointer);
 
     static void fill_labels(const string& info_output);
 
@@ -210,7 +211,7 @@ private:
     static bool code_dialog_popped_up;	      // True if code is visible
 
     static Widget register_dialog_w;          // Dialog for registers
-    static Widget register_text_w;            // Text inside
+    static Widget register_list_w;            // Register list inside
     static bool register_dialog_popped_up;    // True if registers are visible
 
     static bool display_glyphs;	// True if glyphs are to be displayed
