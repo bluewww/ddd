@@ -860,7 +860,7 @@ XtResource ddd_resources[] = {
 	sizeof(int),
 	XtOffsetOf(AppData, max_disassemble),
 	XmRImmediate,
-	XtPointer(256)
+	XtPointer(1024)
     },
 
     {

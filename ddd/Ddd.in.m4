@@ -604,91 +604,91 @@ Ddd*disassemble: false
 
 ! How many bytes of the current function should we disassemble? (0
 ! means disassemble entire function; default in DDD 2.2 and earlier)
-Ddd*maxDisassemble: 256
+Ddd*maxDisassemble: 1024
 
 ! Do we wish to display glyphs? (Makes DDD run somewhat slower)
 Ddd*displayGlyphs: true
 
 ! Do we wish to display line numbers? (Default in DDD 2.1.1 and earlier)
-Ddd*displayLineNumbers: 	false
+Ddd*displayLineNumbers: false
 
 ! Do we wish to cache source files in memory?
-Ddd*cacheSourceFiles:		true
+Ddd*cacheSourceFiles: true
 
 ! Do we wish to cache machine code in memory?
-Ddd*cacheMachineCode:		true
+Ddd*cacheMachineCode: true
 
 ! Do we wish to refer to sources using the full path name?
-Ddd*useSourcePaths:		false
+Ddd*useSourcePaths: false
 
 ! Do we wish to show all registers, instead of only integer registers?
-Ddd*allRegisters:		false
+Ddd*allRegisters: false
 
 ! Tips (aka ballon help or bubble help) are small windows that pop up
 ! when moving the pointer over some item.  Instructive for DDD
 ! novices, but maybe annoying for DDD experts.
 
 ! Do we want tips on buttons, telling us their meaning?
-Ddd*buttonTips:			true
+Ddd*buttonTips: true
 
 ! Do we want tips on variables in the source code, telling us their value?
-Ddd*valueTips:			true
+Ddd*valueTips: true
 
 
 ! The same info as in tips may also be shown in the status line (`docs').
 ! This is less annoying, but may slow down DDD a bit.
 ! Do we want docs on buttons, telling us their meaning?
-Ddd*buttonDocs:			true
+Ddd*buttonDocs: true
 
 ! Do we want docs on variables in the source code, telling us their value?
-Ddd*valueDocs:			true
+Ddd*valueDocs: true
 
 
 ! Delays for showing tips and docs
 ! Time (in ms) to spend before raising a button or value tip.
-Ddd*buttonTipDelay:		750
-Ddd*valueTipDelay:		750
+Ddd*buttonTipDelay: 750
+Ddd*valueTipDelay:  750
 
 ! Time (in ms) to spend before showing a button or value doc.
-Ddd*buttonDocDelay:		100
-Ddd*valueDocDelay:		100
+Ddd*buttonDocDelay: 100
+Ddd*valueDocDelay:  100
 
 ! Time (in ms) to spend before clearing the value doc.
-Ddd*clearDocDelay:		1000
+Ddd*clearDocDelay: 1000
 
 ! Time (in ms) to spend before clearing a button or value tip.
-Ddd*clearTipDelay:		50
+Ddd*clearTipDelay:   50
 
 ! Time (in ms) to spend before a push button menu pops up
-Ddd*pushMenuPopupTime:		400
+Ddd*pushMenuPopupTime: 400
 
 
 ! Should the status line be placed at the bottom?
-Ddd*statusAtBottom:		true
+Ddd*statusAtBottom: true
 
 ! Number of status messages to be kept in status history
-Ddd*statusHistorySize:		20
+Ddd*statusHistorySize: 20
 
 ! Do we want to see the debugger status (blinking while busy)?
-Ddd*blinkWhileBusy:		true
+Ddd*blinkWhileBusy: true
 
 ! Blink rate (in ms) of the busy LED - the LED showing that the inferior
 ! debugger is busy.  A value of 0 prevents the busy LED from blinking.
-Ddd*busyBlinkRate:		500
+Ddd*busyBlinkRate: 500
 
 
 ! The maximum length of a data display title (in characters)
 ! Longer names are replaced by `..'; `foo->bar->blue' becomes `foo->..->blue'.
-Ddd*maxDisplayTitleLength:	20
+Ddd*maxDisplayTitleLength: 20
 
 ! The maximum length of an expression in the source popup.
-Ddd*maxPopupExprLength:		20
+Ddd*maxPopupExprLength: 20
 
 ! The maximum length of a value tip.
-Ddd*maxValueTipLength:		60
+Ddd*maxValueTipLength: 60
 
 ! The maximum length of a value doc.
-Ddd*maxValueDocLength:		80
+Ddd*maxValueDocLength: 80
 
 
 
@@ -699,13 +699,13 @@ Ddd*maxValueDocLength:		80
 
 ! X Warnings
 ! Do we wish to suppress X warnings?
-Ddd*suppressWarnings:		false
+Ddd*suppressWarnings: false
 
 ! Shall DDD ungrab the mouse pointer when interrupting a modal X application?
-Ddd*ungrabMousePointer:		true
+Ddd*ungrabMousePointer: true
 
 ! A little less highlighting
-Ddd*highlightThickness:		1
+Ddd*highlightThickness: 1
 
 
 
@@ -5143,7 +5143,10 @@ STOPPED_HELP\n\
 ITEM Use the functions of the LBL(Program) menu to resume execution\n\
     and step through your program.
 
-! Local Variables:
-! font-lock-keywords: (t ("\\(\\bdnl.*\\|\\!.*\\)" (1 font-lock-comment-face t)) ("@[a-zA-Z0-9_@]*" (0 font-lock-variable-name-face)) ("\\([A-Z]+\\)(" (1 font-lock-keyword-face)) ("\\b\\(define\\|include\\|ifdef\\)\\b" (0 font-lock-preprocessor-face)))
-! comment-start: "! "
-! End:
+dnl
+dnl For XEmacs use only.
+dnl
+dnl Local Variables:
+dnl font-lock-keywords: (t ("\\(dnl.*\\|^\\!.*\\)" (0 font-lock-comment-face t)) ("@[a-zA-Z0-9_@]*" (0 font-lock-variable-name-face)) ("\\([A-Z]+\\)(" (1 font-lock-keyword-face)) ("\\(define\\|include\\|ifdef\\)" (0 font-lock-preprocessor-face)))
+dnl comment-start: "! "
+dnl End:
