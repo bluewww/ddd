@@ -943,15 +943,15 @@ static void PopupPushMenuAct(Widget w, XEvent *event, String *, Cardinal *)
 	XtRemoveCallback(w, XmNarmCallback,    FlattenCB, XtPointer(False));
 	XtRemoveCallback(w, XmNdisarmCallback, FlattenCB, XtPointer(True));
 
+#if 0
 	XtAddCallback(shell, XtNpopdownCallback, ReflattenButtonCB, 
 		      XtPointer(w));
-
-	if (lesstif_version < 1000)
-	{
-	    // The popDownCallback isn't called by LessTif.  *Sigh*.
-	    XtAddEventHandler(shell, StructureNotifyMask, False, 
-			      ReflattenButtonEH, XtPointer(w));
-	}
+#else
+	// XtNpopDownCallback isn't called by LessTif and unknown in
+	// Motif 1.1.  *Sigh*.
+	XtAddEventHandler(shell, StructureNotifyMask, False, 
+			  ReflattenButtonEH, XtPointer(w));
+#endif
     }
 
     XtManageChild(info->subMenu);
