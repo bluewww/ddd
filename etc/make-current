@@ -31,9 +31,8 @@
 # This script checks out the current DDD development tree, as
 # stored in CVS, and creates a DDD release-of-the-day (`ROTD').
 
-# Usage: `make-current [-final] [-local] [CVS options]'
+# Usage: `make-current [-final] [CVS options]'
 # -final: make an official release (else: release-of-the-day).
-# -local: install in local dir (else: on FTP server if not final)
 # CVS options: given to CVS checkout (for checking out older versions).
 # To make a `fix' release, use `make-current -final -r DDD_X_Y_fixes'.
 
@@ -46,36 +45,13 @@ if [ "$1" = "-final" ]; then
   final=true
   shift
 fi
-local=$final
-if [ "$1" = "-local" ]; then
-  local=true
-  shift
-fi
 
 # Setup environment
 tmpdir=$HOME/tmp/ddd$$
 # CVSROOT=/usr/local/share/CVS; export CVSROOT
 # PATH=/usr/local/bin:/usr/local/gnubin:$PATH; export PATH
 
-if $local; then
-  target=`pwd`
-else
-  target=/ftp/pub/local/softech/ddd/current
-fi
-
-# Check whether the ChangeLog file has changed (i.e. we need a new ROTD)
-install=$local
-test $CVSROOT/CVSROOT/ddd-log -nt $target/ChangeLog.tail && install=true
-test ! -f $target/ChangeLog.tail && install=true
-
-$install || exit 0; # No installation required
-
-if $local; then
-  :
-else
-  exec > $target/.current.log 2>&1 < /dev/null
-fi
-
+target=`pwd`
 echo make-current[$$]: start at `date`
 
 # Fetch the date in ISO 8601 YYYY-MM-DD format.
@@ -219,26 +195,10 @@ if [ -f ddd-$date.tar.gz ]; then
   rm -f $target/ddd-*.tar.gz
   mv ddd-*.tar.gz $target
 
-  if $local; then
-    :
-  else
-    # Copy the ChangeLog and NEWS/BUGS/TODO files
-    commits=200
-    log=$CVSROOT/CVSROOT/ddd-log
-    line=`grep -n '^\*\*\*' $log | tail -$commits | head -1 | cut -d: -f1`
-    tail +$line $log > $target/ChangeLog.tail
-    cp -p NEWS BUGS TODO $target
-  fi
   echo "Creating ddd-$date.tar.gz$expires_msg...done."
   echo "make-current[$$]: done at `date`"
 else
   echo "make-current[$$]: failed at `date`"
-  if $local; then
-    :
-  else
-    Mail -s "make-current failed at `date`" ddd@gnu.org \
-     < $target/.current.log
-  fi
 fi
 
 # That's all, folks!
