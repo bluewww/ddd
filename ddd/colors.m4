@@ -60,7 +60,7 @@ dnl BACKGROUND_COLOR is the default background color.
 define([BACKGROUND_COLOR], [grey])dnl
 dnl
 dnl TEXT_BACKGROUND_COLOR is the background color for text.
-define([TEXT_BACKGROUND_COLOR], [grey90])dnl
+define([TEXT_BACKGROUND_COLOR], [grey92])dnl
 dnl
 dnl RUN_COLOR is the default color for `running' actions.
 define([RUN_COLOR], [DarkGreen])dnl
