@@ -5898,7 +5898,7 @@ Ddd*confirm_overwrite_dialog*messageString:	  \
 @rm Overwrite existing file?
 Ddd*confirm_overwrite_dialog*okLabelString:	  Yes
 Ddd*confirm_overwrite_dialog*cancelLabelString:	  No
-Ddd*confirm_overwrite_dialog*defaultButtonType:	  XmDIALOG_CANCEL_BUTTON
+Ddd*confirm_overwrite_dialog*defaultButtonType: XmDIALOG_OK_BUTTON
 Ddd*confirm_overwrite_dialog*helpString:	\
 @rm The file already exists.\n\
 Click on LBL(Yes) to overwrite the existing file.
