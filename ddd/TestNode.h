@@ -62,6 +62,9 @@ private:
     ListNode *_true() const  { return (ListNode *)(_test()->tail()); }
     ListNode *_false() const { return (ListNode *)(_true()->tail()); }
 
+private:
+    TestNode& operator = (const TestNode&);
+
 protected:
     void dump(std::ostream& s) const;
     void _dumpTree(std::ostream& s) const;

@@ -49,6 +49,9 @@ public:
     TrueNode()
 	: ConstNode(new TrueBox)
     {}
+private:
+    TrueNode(const TrueNode&);
+    TrueNode& operator = (const TrueNode&);
 };
 
 class FalseNode: public ConstNode {
@@ -58,6 +61,9 @@ public:
     FalseNode()
 	: ConstNode(new FalseBox)
     {}
+private:
+    FalseNode(const FalseNode&);
+    FalseNode& operator = (const FalseNode&);
 };
 
 class NullNode: public ConstNode {
@@ -67,6 +73,9 @@ public:
     NullNode()
 	: ConstNode(new NullBox)
     {}
+private:
+    NullNode(const NullNode&);
+    NullNode& operator = (const NullNode&);
 };
 
 class StringNode: public ConstNode {
@@ -76,6 +85,9 @@ public:
     StringNode(const string &str)
 	: ConstNode(new StringBox(str))
     {}
+private:
+    StringNode(const StringNode&);
+    StringNode& operator = (const StringNode&);
 };
 
 class NumNode: public ConstNode {
@@ -85,6 +97,9 @@ public:
     NumNode(int num)
 	: ConstNode(new SquareBox(num))
     {}
+private:
+    NumNode(const NumNode&);
+    NumNode& operator = (const NumNode&);
 };
 
 class EmptyListNode: public ConstNode {
@@ -94,6 +109,9 @@ public:
     EmptyListNode()
 	: ConstNode(new ListBox)
     {}
+private:
+    EmptyListNode(const EmptyListNode&);
+    EmptyListNode& operator = (const EmptyListNode&);
 };
 
 class FixListNode: public ListNode {
