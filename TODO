@@ -332,4 +332,9 @@ Volunteers for these and other projects are welcome!
 382 Support GDB/MI - a machine oriented interface to GDB.  See
     `http://sourceware.cygnus.com/gdb/onlinedocs/gdbmi_toc.html'.
 
-383 (Insert new project ideas here)
+383 Support JDB 1.2:
+  * Handle value pop-ups and displays
+  * Handle restart (and `load recent')
+  * Handle initialization (`ddd jtest' should load src)
+
+384 (Insert new project ideas here)
