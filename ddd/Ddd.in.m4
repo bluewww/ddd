@@ -147,18 +147,18 @@ Ddd*saveOptionsOnExit: off
 ! program.  To this string, DDD appends bourne shell commands which must be
 ! run in the execution window.
 ! The string `@FONT@' is replaced by the current DDD text font.
-Ddd*termCommand: xterm -bg 'grey90' -fg 'black' -cr 'DarkGreen' -fn '@FONT@' \
--title 'DDD: Execution Window' -e /bin/sh -c
+Ddd*termCommand: @XTERM@ -bg 'grey90' -fg 'black' -cr 'DarkGreen' \
+-fn '@FONT@' -title 'DDD: Execution Window' -e /bin/sh -c
 
 ! The command to invoke to select fonts.
 ! The string `@FONT@' is replaced by the current DDD default font.
-Ddd*fontSelectCommand: xfontsel -bg 'grey' -fg 'black' -fn '@FONT@' \
+Ddd*fontSelectCommand: @XFONTSEL@ -bg 'grey' -fg 'black' -fn '@FONT@' \
 -title 'DDD: @TYPE@ selector' -print
 
 
 ! The terminal type provided by `termCommand' (that is, the value of
 ! the TERM environment variable to be passed to the debugged program)
-Ddd*termType: xterm
+Ddd*termType: @XTERM@
 
 
 ! The `useTTYCommand' resource sets the redirection mode for the execution

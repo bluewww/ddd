@@ -157,6 +157,8 @@ jdb) ;;
 *)   DEBUGGER_OPTION="$DEBUGGER_OPTION --debugger $DEBUGGER";
 esac
 AC_SUBST(DEBUGGER_OPTION)dnl
+AC_CHECK_PROGS(XTERM, xterm dtterm hpterm, xterm)dnl
+AC_CHECK_PROGS(XFONTSEL, xfontsel, xfontsel)dnl
 AC_PROG_INSTALL
 AC_PROG_RANLIB
 AC_PROG_YACC
