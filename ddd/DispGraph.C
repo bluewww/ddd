@@ -705,11 +705,16 @@ bool DispGraph::alias(Widget w, int disp_nr, int alias_disp_nr)
 	add_alias_edge(w, alias_disp_nr, edge->from(), d0->nodeptr());
     }
 
-    // Propagate `selected' state
-    if (dn->selected() && !d0->selected())
+    // Propagate `selected' state to hints
+    for (node = firstNode(); node != 0; node = nextNode(node))
     {
-	d0->select();
-	d0->nodeptr()->selected() = true;
+	if (!node->isHint())
+	    continue;
+	AliasGraphEdge *edge = ptr_cast(AliasGraphEdge, node->firstTo());
+	if (edge == 0)
+	    continue;
+	if (edge->disp_nr() == alias_disp_nr)
+	    node->selected() = dn->selected();
     }
 
     return true;
