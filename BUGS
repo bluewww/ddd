@@ -108,9 +108,6 @@ Volunteers for fixing these and other bugs are welcome!
      Xxgdb, mxgdb and xde all display the full 64 bits of this data
      type.
 
-064* After changing the source code, the current execution glyph is
-     not cleared.
-
 067. On Solaris 2.x, when attaching with DBX to a running process, 
      ddd gets a seg fault.  The command line is, for example:
      ddd --dbx $PAR_HOME/bin/tesla-wish 20919
@@ -246,10 +243,10 @@ Volunteers for fixing these and other bugs are welcome!
          the default in the display graph?  If I "set output-radix 16" 
          in the gdb window ddd seems to lock up very often.
 
-095* DDD 2.0 with AIX DBX and `ctest':
+095. DDD 2.0 with AIX DBX and `ctest':
      - displaying `dates' causes a seg fault.
 
-099* With DEC DBX, a display once disabled is never enabled again.
+099. With DEC DBX, a display once disabled is never enabled again.
 
 100. Self-modifying code is not detected automatically; users must
      explicitly re-disassemble (with caching disabled).
