@@ -37,24 +37,25 @@ char buttons_rcsid[] =
 
 #include "AppData.h"
 #include "Delay.h"
+#include "GDBAgent.h"
 #include "HelpCB.h"
+#include "SourceView.h"
+#include "StringSA.h"
 #include "bool.h"
 #include "charsets.h"
 #include "comm-manag.h"
 #include "ctrl.h"
 #include "ddd.h"
+#include "disp-read.h"
 #include "editing.h"
 #include "question.h"
+#include "select.h"
 #include "settings.h"
 #include "shorten.h"
 #include "source.h"
 #include "status.h"
 #include "string-fun.h"
-#include "disp-read.h"
 #include "verify.h"
-#include "GDBAgent.h"
-#include "StringSA.h"
-#include "SourceView.h"
 
 #include <Xm/Xm.h>
 #include <Xm/RowColumn.h>
@@ -257,8 +258,12 @@ static string gdbValue(const string& expr)
 
     if (value == NO_GDB_ANSWER)
     {
-	// Ask debugger for value
+	// Ask debugger for value.  In case of secondary prompts, use
+	// the default choice.
+	gdb->removeHandler(ReplyRequired, gdb_selectHP);
 	value = gdb_question(gdb->print_command(expr), help_timeout);
+	gdb->addHandler(ReplyRequired, gdb_selectHP);
+
 	read_leading_blanks(value);
 	strip_final_blanks(value);
     }
