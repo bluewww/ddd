@@ -1691,9 +1691,10 @@ suppressed.
 .SH "WATCHPOINTS"
 .\" ---------------
 .\"
-Note: \s-2JDB\s+2, \s-2XDB\s+2, and some \s-2DBX\s+2 variants do not
-support watchpoints.  (In \s-2XDB\s+2, a similar feature is available
-via the \s-2XDB\s+2 \fBassert\fR command.)
+Note: Watchpoints are available in \s-2GDB\s+2 and some \s-2DBX\s+2
+variants only.  In \s-2XDB\s+2, a similar feature is available via
+\s-2XDB\s+2 \fIassertions\fR; see the \s-2XDB\s+2 documentation for
+details.
 .PP
 Using \fIwatchpoints\fR, you can make your program stop whenever the
 value of an expression changes, without having to predict a particular
@@ -1706,13 +1707,13 @@ button, \s-2@DDD@\s+2 places a watchpoint on that variable.  From now
 on, \s-2@DDD@\s+2 will interrupt the debugged program whenever the
 variable value changes.
 .PP
-On architectures without special watchpoint support, watchpoints
-currently make the program execute two orders of magnitude more
-slowly.  This is so because the inferior debugger must interrupt the
-program after each machine instruction in order to examine whether the
-watched value has changed.  However, this delay can be well worth it
-to catch errors when you have no clue what part of your program is the
-culprit.
+Please note: on architectures without special watchpoint support,
+watchpoints currently make the program execute two orders of magnitude
+more slowly.  This is so because the inferior debugger must interrupt
+the program after each machine instruction in order to examine whether
+the watched value has changed.  However, this delay can be well worth
+it to catch errors when you have no clue what part of your program is
+the culprit.
 .PP
 If supported by your architecture, \s-2@DDD@\s+2 also allows you to
 set \fIread watchpoints\fR, interrupting your program whenever a
