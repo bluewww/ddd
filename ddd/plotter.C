@@ -491,6 +491,7 @@ static void popup_plot_shell(PlotWindowInfo *plot)
 	    XtUnmanageChild(plot->working_dialog);
 
 	// Pop up shell
+	XtSetSensitive(plot->shell, True);
 	XtPopup(plot->shell, XtGrabNone);
 	wait_until_mapped(plot->shell);
 
@@ -619,13 +620,12 @@ static void popdown_plot_shell(PlotWindowInfo *plot)
 
     if (plot->shell != 0)
     {
-	// Popup shell to uniconify it.  This must be done because
-	// otherwise, the shell may remain iconified (with invalid
-	// contents)
-	XtPopup(plot->shell, XtGrabNone);
-
-	// ...and pop it down again.
+	XWithdrawWindow(XtDisplay(plot->shell), XtWindow(plot->shell),
+			XScreenNumberOfScreen(XtScreen(plot->shell)));
 	XtPopdown(plot->shell);
+
+	// Make sure that any tear-off menus become inactive
+	XtSetSensitive(plot->shell, False);
     }
 
     // Manage settings
