@@ -54,7 +54,10 @@ target_canonical = @target@
 @SET_MAKE@
 
 # The autoconf program.  (autoconf)
-AUTOCONF = autoconf
+AUTOCONF = @AUTOCONF@
+
+# The aclocal program.  (aclocal)
+ACLOCAL = @ACLOCAL@
 
 
 ## Default target: build all
@@ -228,6 +231,9 @@ Makefile: Makefile.in config.status
 
 $(srcdir)/configure: $(srcdir)/ddd/aclocal.m4 $(srcdir)/configure.in
 	-cd $(srcdir) && $(AUTOCONF) -l $(srcdir)/ddd
+
+$(srcdir)/ddd/aclocal.m4: $(srcdir)/ddd/acinclude.m4 $(srcdir)/configure.in
+	-cd $(srcdir) && $(ACLOCAL)
 
 config.status: $(srcdir)/configure
 	-$(SHELL) ./config.status --recheck || $(SHELL) $(srcdir)/configure -v

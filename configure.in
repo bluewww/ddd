@@ -1,7 +1,7 @@
 dnl $Id$
 dnl Process this file with autoconf to produce a configure script.
 dnl
-dnl Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
+dnl Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
 dnl Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 dnl 
 dnl This file is part of DDD.
@@ -44,6 +44,7 @@ dnl
 dnl Some simple checks.
 dnl 
 AC_CANONICAL_SYSTEM
+AM_INIT_AUTOMAKE(package, version, do-not-define)
 AC_PROG_MAKE_SET
 dnl
 dnl
