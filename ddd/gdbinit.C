@@ -97,6 +97,22 @@ GDBAgent *new_gdb(DebuggerType type,
 	gdb->addHandler(Input, InvokeGDBFromShellHP, (void *)&gdb_call);
     }
 
+    // Set up Agent resources
+    switch (app_data.block_tty_input)
+    {
+    case On:
+	gdb->block_tty_input(true);
+	break;
+
+    case Off:
+	gdb->block_tty_input(false);
+	break;
+
+    case Auto:
+	// Leave default setting unchanged
+	break;
+    }
+
     return gdb;
 }
 
