@@ -73,7 +73,7 @@ protected:
     bool matches (const Box &b, const Box * = 0) const
     {
 	return PrimitiveBox::matches(b) &&
-	    _string == ((StringBox *)&b)->_string;  // dirty trick
+	    _string == ((const StringBox *)&b)->_string;  // dirty trick
     }
 
 public:

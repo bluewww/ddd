@@ -53,7 +53,7 @@ protected:
     bool matches (const Box &b, const Box * = 0) const
     {
 	return PrimitiveBox::matches(b) &&
-	    _linethickness == ((LineBox *)&b)->_linethickness;  // dirty trick
+	    _linethickness == ((const LineBox *)&b)->_linethickness;  // dirty trick
     }
 
     // Draw this box

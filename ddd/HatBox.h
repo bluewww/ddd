@@ -61,7 +61,7 @@ protected:
 
     bool matches (const Box &b, const Box * = 0) const
     {
-	return Box::matches(b) && *_box == *(((HatBox *)&b)->_box);
+	return Box::matches(b) && *_box == *(((const HatBox *)&b)->_box);
     }
 
     const TagBox *findTag(const BoxPoint& p) const

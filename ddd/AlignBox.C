@@ -67,7 +67,7 @@ void AlignBox::drawAlign(Widget w,
 
     for (int i = 0; i < nchildren(); i++)
     {
-	Box *child = (Box *)(*this)[i];
+	const Box *child = (const Box *)(*this)[i];
 
 	// If child is extensible, add remaining space per child
 	child_space[dimen] = child->size(dimen) + 
@@ -142,7 +142,7 @@ void HAlignBox::_print(std::ostream& os,
     BoxSize  child_space;
 
     for (i = 0; i < nchildren(); i++ ) {
-	Box *child = (Box *)(*this)[i];
+	const Box *child = (const Box *)(*this)[i];
 
 	child_space[Y] = space[Y];
 	child_space[X] = child->size(X) + perextend * child->extend(X);
@@ -206,7 +206,7 @@ void VAlignBox::_print(std::ostream& os,
     BoxSize  child_space;
 
     for (i = 0; i < nchildren(); i++ ) {
-	Box *child = (Box *)(*this)[i];
+	const Box *child = (const Box *)(*this)[i];
 
 	child_space[X] = space[X];
 	child_space[Y] = child->size(Y) + perextend * child->extend(Y);
@@ -254,7 +254,7 @@ void UAlignBox::_draw(Widget w,
     // Draw all children at the same place
     for (int i = 0; i < nchildren(); i++)
     {
-	Box *child = (Box *)(*this)[i];
+	const Box *child = (const Box *)(*this)[i];
 	child->draw(w, r, exposed, gc, context_selected);
     }
 }
@@ -324,7 +324,7 @@ void TAlignBox::_draw(Widget w,
 
     for (int i = 0; i < nchildren(); i++)
     {
-	Box *child = (Box *)(*this)[i];
+	const Box *child = (const Box *)(*this)[i];
 
 	// If child is extensible, add remaining space per child
 	child_space[X] = child->size(X) + 
@@ -376,7 +376,7 @@ void TAlignBox::_print(std::ostream& os,
     BoxSize  child_space  = space;
 
     for (int i = 0; i < nchildren(); i++) 	{
-        Box *child = (Box *)(*this)[i];
+        const Box *child = (const Box *)(*this)[i];
 
 	// if child extendible, add space per child
 

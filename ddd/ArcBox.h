@@ -75,8 +75,8 @@ protected:
     bool matches (const Box &b, const Box * = 0) const
     {
 	return LineBox::matches(b) &&
-	    _start == ((ArcBox *)&b)->_start &&
-	    _length == ((ArcBox *)&b)->_length; // dirty trick
+	    _start == ((const ArcBox *)&b)->_start &&
+	    _length == ((const ArcBox *)&b)->_length; // dirty trick
     }
 
 public:

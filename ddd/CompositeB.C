@@ -120,7 +120,7 @@ bool CompositeBox::matches (const Box &b, const Box *) const
     if (strcmp(type(), b.type()))
 	return false;
 
-    CompositeBox *c = (CompositeBox *)&b;   // dirty trick
+    const CompositeBox *c = (const CompositeBox *)&b;   // dirty trick
     if (nchildren() != c->nchildren())
 	return false;
 
