@@ -177,6 +177,9 @@ class DataDisp {
     static DispValue *selected_value();
     static DispNode  *selected_node();
 
+    static void open_data_window();
+    static void close_data_window();
+
     static DispNode *new_data_node(const string& name, const string& scope,
 				   const string& answer);
     static DispNode *new_user_node(const string& name, const string& scope,
@@ -301,17 +304,20 @@ public:
 
     static void disable_display(IntArray& display_nrs, Widget origin = 0)
     {
-	gdb_command(disable_display_cmd(display_nrs), origin);
+	if (display_nrs.size() > 0)
+	    gdb_command(disable_display_cmd(display_nrs), origin);
     }
 
     static void enable_display(IntArray& display_nrs, Widget origin = 0)
     {
-	gdb_command(enable_display_cmd(display_nrs), origin);
+	if (display_nrs.size() > 0)
+	    gdb_command(enable_display_cmd(display_nrs), origin);
     }
 
     static void delete_display(IntArray& display_nrs, Widget origin = 0)
     {
-	gdb_command(delete_display_cmd(display_nrs), origin);
+	if (display_nrs.size() > 0)
+	    gdb_command(delete_display_cmd(display_nrs), origin);
     }
 
     static void delete_display(const string& name, Widget origin = 0)

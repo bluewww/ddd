@@ -1378,9 +1378,7 @@ void DataDisp::displayArgCB(Widget w, XtPointer client_data,
     }
     else 
 #endif
-    if (disp_value_arg != 0 && 
-	disp_value_arg->type() == Pointer && 
-	disp_value_arg->repeats() == 1)
+    if (disp_value_arg != 0 && disp_value_arg->type() == Pointer)
     {
 	// Dereference selected pointer
 	dereferenceCB(w, client_data, call_data);
@@ -1485,22 +1483,6 @@ void DataDisp::RefreshGraphEditCB(XtPointer client_data, XtIntervalId *id)
 		  XtNautoLayout, state.autoLayout,
 		  XtNsnapToGrid, state.snapToGrid,
 		  NULL);
-
-    if (disp_graph->firstVisibleNode() != 0)
-    {
-	static bool popped_up = false;
-
-	if (!popped_up)
-	{
-	    // Graph is non-empty: make sure its shell is visible
-	    XtManageChild(graph_edit);
-	    initial_popup_shell(data_disp_shell);
-
-	    gdbOpenDataWindowCB(graph_edit, 0, 0);
-
-	    popped_up = true;
-	}
-    }
 }
 
 // ***************************************************************************
@@ -1871,8 +1853,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 	    break;
 
 	case Pointer:
-	    if (disp_value_arg->repeats() == 1)
-		dereference_ok = true;
+	    dereference_ok = true;
 	    break;
 
 	case Array:
@@ -2782,6 +2763,28 @@ bool StatusShower::process(int remaining_length)
 
 
 //-----------------------------------------------------------------------------
+// Open and close data window
+//-----------------------------------------------------------------------------
+
+void DataDisp::open_data_window()
+{
+    // Make sure graph is visible
+    gdbOpenDataWindowCB(graph_edit, 0, 0);
+}
+
+void DataDisp::close_data_window()
+{
+    if (app_data.separate_data_window)
+    {
+	// Don't close a separate data window.
+    }
+    else
+    {
+	gdbCloseDataWindowCB(graph_edit, 0, 0);
+    }
+}
+
+//-----------------------------------------------------------------------------
 // Create new data and user nodes
 //-----------------------------------------------------------------------------
 
@@ -2847,6 +2850,9 @@ DispNode *DataDisp::new_data_node(const string& given_name,
 	dn->disable();
 	dn->make_active();
     }
+
+    open_data_window();
+
     return dn;
 }
 
@@ -2862,7 +2868,11 @@ DispNode *DataDisp::new_user_node(const string& name,
     s.current = answer.length();
 
     // User displays work regardless of scope
-    return new DispNode(nr, name, "", answer);
+    DispNode *dn = new DispNode(nr, name, "", answer);
+
+    open_data_window();
+
+    return dn;
 }
 
 DispNode *DataDisp::new_deferred_node(const string& expr, const string& scope,
@@ -3601,6 +3611,12 @@ void DataDisp::delete_displaySQ(IntArray& display_nrs, bool verbose)
 	DispNode *dn = disp_graph->get(display_nrs[i]);
 	if (dn != 0)
 	    disp_graph->del(display_nrs[i]);
+    }
+
+    if (disp_graph->firstVisibleNode() == 0)
+    {
+	// Deleted last display
+	close_data_window();
     }
 
     if (deleted_data_displays == 0 || !gdb->has_display_command())
