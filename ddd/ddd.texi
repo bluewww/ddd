@@ -2,7 +2,6 @@
 @c $Id$
 @c DDD Manual
 
-@c Copyright (C) 1999 Technische Universitaet Braunschweig, Germany.
 @c Copyright (C) 1999 Universitaet Passau, Germany.
 @c Written by Andreas Zeller <zeller@gnu.org>.
 @c 
@@ -190,8 +189,16 @@ Lehrstuhl f@"ur Software-Systeme @*
 Innstrasse 33 @*
 D-94032 Passau @*
 GERMANY
+@sp 1
 
-E-mail: @email{@value{ddd}@@gnu.org} @*
+Distributed by @*
+Free Software Foundation, Inc. @*
+59 Temple Place - Suite 330 @*
+Boston, MA 02111-1307 @*
+USA
+@sp 1
+
+@value{DDD} e-mail: @email{@value{ddd}@@gnu.org} @*
 
 @value{DDD} and this manual are available via @*
 @uref{http://www.gnu.org/software/ddd/, the @value{DDD} WWW page}.
@@ -249,12 +256,7 @@ This is the @value{EDITION} Edition of @cite{Debugging with
 * License::                     The @value{DDD} license.
 * Help and Assistance::         Mailing Lists and other resources.
 
-* Label Index::                 All labels.
-* Key Index::                   Important keys.
-* Command Index::               Important commands.
-* Resource Index::              All resources.
-* File Index::                  All files.
-* Concept Index::               Main index.
+* Index::                       
 
 @detailmenu --- The Detailed Node Listing ---
 
@@ -262,8 +264,9 @@ Summary of @value{DDD}
 
 * About this Manual::           Getting copies in various formats.
 * Free Software::               How to copy and redistribute @value{DDD}.
+* Getting DDD::                 How to obtain @value{DDD}.
 * Contributors::                Who has done all this?
-* History::                     Old @value{DDD} versions
+* History::                     Old @value{DDD} versions.
 
 A Sample @value{DDD} Session
 
@@ -664,12 +667,21 @@ Frequently Answered Questions
 * Why does my DDD crash so frequently?::  
 * How do I make DDD find the sources of my program?::  
 * How do I redirect I/O in Perl?::  
-* I cannot access any "common" FORTRAN variables from DDD!::  
+* I cannot access any common FORTRAN variables from DDD!::  
 * The fonts are too small!::    
 * How do I save the window size?::  
 * How do I change the key bindings?::  
 * How do I change the colors? ::  
 * How do I recenter the command tool?::  
+
+Index
+
+* Labels::                      All labels as they occur in the @value{DDD} GUI
+* Keys::                        Keys used to control @value{DDD}.
+* Commands::                    Commands that can be typed within @value{DDD}.
+* Resources::                   All resources and environment variables.
+* Files::                       All programs and files referenced by @value{DDD}.
+* Concepts::                    Concept index.
 
 @end detailmenu
 @end menu
@@ -780,43 +792,74 @@ impression of @value{DDD}.
 @menu
 * About this Manual::           Getting copies in various formats.
 * Free Software::               How to copy and redistribute @value{DDD}.
+* Getting DDD::                 How to obtain @value{DDD}.
 * Contributors::                Who has done all this?
-* History::                     Old @value{DDD} versions
+* History::                     Old @value{DDD} versions.
 @end menu
 
 
 @node About this Manual
 @unnumberedsec About this Manual
 
-This manual comes in three formats:
+This manual comes in several formats:
 
 @itemize @bullet
 @item
+@cindex Info manual
 The @emph{Info} format is used for browsing on character devices; it
 comes without pictures.  You should have a local copy installed, which
 you can browse via Emacs, the standalone @code{info} program, or from
 DDD via @samp{Help @result{} @value{DDD} Manual}.
 
-The @uref{http://www.gnu.org/software/ddd/, @value{DDD} WWW page}
-holds DDD info files for downloading.
+@flindex ddd-@value{VERSION}.tar.gz
+The @value{DDD} source distribution
+@file{@value{ddd}-@value{VERSION}.tar.gz} contains this manual as
+pre-formatted info files; you can also download them from @*
+@uref{http://www.gnu.org/software/ddd/, the @value{DDD} WWW page}.
 
 @item
+@cindex PostScript manual
+The @emph{PostScript} format is used for printing on paper; it comes
+with pictures as well.  
+
+The @value{DDD} source distribution
+@file{@value{ddd}-@value{VERSION}.tar.gz} contains this manual as
+pre-formatted PostScript file; you can also download it from @*
+@uref{http://www.gnu.org/software/ddd/, the @value{DDD} WWW page}.
+
+@item
+@cindex PDF manual
+The @emph{PDF} format is used for printing on paper as well as for
+online browsing; it comes with pictures as well.
+
+The @value{DDD} source distribution
+@file{@value{ddd}-@value{VERSION}.tar.gz} contains this manual as
+pre-formatted PDF file; you can also download it from @*
+@uref{http://www.gnu.org/software/ddd/, the @value{DDD} WWW page}.
+
+@item
+@cindex HTML manual
 The @emph{HTML} format is used for browsing on bitmap devices; it
 includes several pictures.  You can view it using a HTML browser,
 typically from a local copy.  
 
-The @uref{http://www.gnu.org/software/ddd/, @value{DDD} WWW page}
-holds online copies of the most recent @value{DDD} manual.
-You can also download HTML files there to install them locally
-(recommended).
-
-@item
-The @emph{PostScript} format is used for printing on paper; it comes
-with pictures as well.  
-
-The @uref{http://www.gnu.org/software/ddd/, @value{DDD} WWW page}
-holds this manual in PostScript format.
+@flindex ddd-@value{VERSION}-html-manual.tar.gz
+A pre-formatted HTML version of this manual comes
+in a separate @value{DDD} package @*
+@file{@value{ddd}-@value{VERSION}-html-manual.tar.gz}; you can browse
+and download it via @*
+the @uref{http://www.gnu.org/software/ddd/, @value{DDD} WWW page}.
 @end itemize
+
+@cindex @TeX{}info manual
+The manual itself is written in @TeX{}info format; its source code 
+@file{ddd.texi} is contained in the @value{DDD} source distribution
+@file{@value{ddd}-@value{VERSION}.tar.gz}.
+
+@flindex ddd-@value{VERSION}-pics.tar.gz
+The picture sources come in a separate package
+@file{@value{ddd}-@value{VERSION}-pics.tar.gz}; you need this package
+only if you want to re-create the PostScript, HTML, or PDF versions.
 
 
 @node Free Software
@@ -824,17 +867,47 @@ holds this manual in PostScript format.
 
 @cindex License
 @cindex GPL
-@value{DDD} is @dfn{free software}, protected by the GNU General Public
-License (GPL).  The GPL gives you the freedom to copy or adapt a
-licensed program---but every person getting a copy also gets with it the
-freedom to modify that copy (which means that they must get access to
-the source code), and the freedom to distribute further copies.  Typical
-software companies use copyrights to limit your freedoms; the Free
-Software Foundation uses the GPL to preserve these freedoms.
+@value{DDD} is @dfn{free}; this means that everyone is free to use it
+and free to redistribute it on a free basis.  @value{DDD} is not in the
+public domain; it is copyrighted and there are restrictions on its
+distribution, but these restrictions are designed to permit everything
+that a good cooperating citizen would want to do.  What is not allowed
+is to try to prevent others from further sharing any version of
+@value{DDD} that they might get from you.  The precise conditions are
+found in the GNU General Public License that comes with @value{DDD};
+@xref{License}, for details.
 
-Fundamentally, the General Public License is a license which says that
-you have these freedoms and that you cannot take these freedoms away
-from anyone else.  @xref{License}, for details.
+The easiest way to get a copy of @value{DDD} is from someone else who
+has it.  You need not ask for permission to do so, or tell any one else;
+just copy it.
+
+
+@node Getting DDD
+@unnumberedsec Getting @value{DDD}
+
+If you have access to the Internet, you can get the latest version of
+@value{DDD} from the anonymous FTP server @samp{ftp.gnu.org} in the
+directory @file{/gnu/ddd}.  This should contain the following files:
+
+@table @file
+@item @file{@value{ddd}-@var{version}.tar.gz}
+@flindex ddd-@var{version}.tar.gz
+The @value{DDD} source distribution.  This should be all you need.
+
+@item @file{@value{ddd}-@var{version}-html-manual.tar.gz}
+@flindex ddd-@var{version}-html-manual.tar.gz
+The @value{DDD} manual in HTML format.  You need this only if you want to 
+install a local copy of the @value{DDD} manual in HTML format.
+
+@item @file{@value{ddd}-@var{version}-pics.tar.gz}
+@flindex ddd-@var{version}-pics.tar.gz
+Sources of images included in the @value{DDD} manual.  You need this
+only if you want to recreate the @value{DDD} manual.
+@end table
+
+@value{DDD} can also be found at numerous other archive sites around the
+world; check the file @file{ANNOUNCE} in a @value{DDD} distribution for
+the latest known list.
 
 
 @node Contributors
@@ -913,7 +986,7 @@ command tool.
 @item December, 1998
 @value{DDD} 3.1: Data plotting, Perl support, Python support, Undo/Redo.
 
-@item Summer 1999
+@item October, 1999
 @value{DDD} 3.2: New manual, Readline support, Ladebug support.
 @end table
 
@@ -1411,7 +1484,7 @@ All arguments and options that are not understood by @value{DDD} are
 passed to the inferior debugger; @xref{Inferior Debugger Options}, for a
 survey.  To pass an option to the inferior debugger that conflicts with
 an X option, or with a @value{DDD} option listed here, use the
-@samp{--debugger} option, below.
+@samp{--debugger} option (@pxref{DDD Options}).
 
 @menu
 * Choosing an Inferior Debugger::  Which debugger to use?
@@ -2367,7 +2440,8 @@ If you have multiple @value{DDD} instances running, they share common
 preferences and history files.  This means that changes applied to one
 instance may get lost when being overwritten by the other instance.
 @value{DDD} has two means to protect you against unwanted losses.  The
-first means is an automatic reloading of changed options:
+first means is an automatic reloading of changed options, controlled by
+the following resource (@pxref{Customizing}):
 
 @defvr Resource checkOptions (class CheckOptions)
 Every @var{n} seconds, where @var{n} is the value of this resource,
@@ -2386,7 +2460,7 @@ be warned about multiple @value{DDD} invocations sharing the same
 preferences and history files, enable @samp{Edit @result{} Preferences
 @result{} Warn if Multiple @value{DDD} Instances are Running}.
 
-This setting is tied to the following resource:
+This setting is tied to the following resource (@pxref{Customizing}):
 
 @defvr Resource warnIfLocked (class WarnIfLocked)
 Whether to warn if multiple @value{DDD} instances are running
@@ -2404,7 +2478,7 @@ If you are bothered by X warnings, you can suppress them by setting
 @samp{Edit @result{} Preferences @result{} General @result{} Suppress X
 warnings}.
 
-This setting is tied to the following resource:
+This setting is tied to the following resource (@pxref{Customizing}):
 
 @defvr Resource suppressWarnings (class SuppressWarnings)
 If @samp{on}, X warnings are suppressed.  This is
@@ -4524,10 +4598,9 @@ beneath the tool bar.  To disable the command tool, set @samp{Edit
 Here's the related resource:
 
 @defvr Resource commandToolBar (class ToolBar)
-Whether the tool buttons (see the @samp{toolButtons} resource, below)
-should be shown in a tool bar above the source window (@samp{on}) or
-within the command tool (@samp{off}, default).  Enabling the command
-tool bar disables the command tool and vice versa.
+Whether the tool buttons should be shown in a tool bar above the source
+window (@samp{on}) or within the command tool (@samp{off}, default).
+Enabling the command tool bar disables the command tool and vice versa.
 @end defvr
 
 
@@ -4876,7 +4949,7 @@ You can also turn off the hint that is displayed in the status line.
 Just toggle @samp{Edit @result{} Preferences @result{} General @result{}
 Automatic Display of Button Hints @result{} in the Status Line}.
 
-Here are related @value{DDD} resources:
+Here are related @value{DDD} resources (@pxref{Customizing}):
 
 @defvr Resource buttonTips (class Tips)
 If @samp{on} (default), enable button tips.
@@ -4895,7 +4968,7 @@ You can turn off the tip of the day by toggling @samp{Edit @result{}
 Preferences @result{} Startup @result{} Startup Windows @result{} Tip of
 the Day}.
 
-Here is the related @value{DDD} resource:
+Here is the related @value{DDD} resource (@pxref{Customizing}):
 
 @defvr Resource startupTips (class StartupTips)
 If @samp{on} (default), show a tip of the day upon @value{DDD} startup.
@@ -4904,7 +4977,7 @@ If @samp{on} (default), show a tip of the day upon @value{DDD} startup.
 @xref{DDD Options}, for options to set this resource upon @value{DDD}
 invocation.
 
-The actual tips are controlled by these resources:
+The actual tips are controlled by these resources (@pxref{Customizing}):
 
 @defvr Resource startupTipCount (class StartupTipCount)
 The number @var{n} of the tip of the day to be shown at startup.  See
@@ -4996,7 +5069,7 @@ limit.  Default is @code{2000000}, or 2000 kBytes.
 @end defvr
 
 You can also limit the number of entries in the undo buffer, regardless
-of size:
+of size (@pxref{Customizing}):
 
 @defvr Resource maxUndoDepth (class MaxUndoDepth)
 The maximum number of entries in the undo buffer.  This limits the
@@ -5049,7 +5122,8 @@ If @samp{on} (default), show a @value{DDD} splash screen upon
 start-up.
 @end defvr
 
-You can also customize the appearance of the splash screen:
+You can also customize the appearance of the splash screen
+(@pxref{Customizing}):
 
 @defvr Resource splashScreenColorKey (class ColorKey)
 The color key to use for the @value{DDD} splash screen.  Possible
@@ -5135,7 +5209,8 @@ and one for source operations, as in @value{DDD} 2.x (@samp{off}).
 @end defvr
 
 @cindex Status line, location
-You can also change the location of the @emph{status line}:
+You can also change the location of the @emph{status line}
+(@pxref{Customizing}):
 
 @defvr Resource statusAtBottom (class StatusAtBottom)
 If @samp{on} (default), the status line is placed at the bottom of the
@@ -5221,7 +5296,9 @@ Here are the resources related to font specifications:
 The default @value{DDD} font to use for labels, menus, buttons, etc.
 The font is specified as an X font spec, where the initial @var{Foundry}
 specification may be omitted, as well as any specification after
-@var{Family}.  Default value is @samp{helvetica-bold}.
+@var{Family}.  
+
+Default value is @samp{helvetica-bold}.
 
 To set the default @value{DDD} font to, say, @samp{helvetica medium},
 insert a line
@@ -5244,7 +5321,9 @@ overrides any font size specification in the @samp{defaultFont} resource
 The variable width @value{DDD} font to use for help texts and messages.
 The font is specified as an X font spec, where the initial @var{Foundry}
 specification may be omitted, as well as any specification after
-@var{Family}.  Default value is @samp{helvetica-medium-r}.
+@var{Family}.
+
+Default value is @samp{helvetica-medium-r}.
 
 To set the variable width @value{DDD} font family to, say,
 @samp{times}, insert a line
@@ -5269,7 +5348,9 @@ The fixed width @value{DDD} font to use for source code, the debugger
 console, text fields, data displays, and the execution window.  The font
 is specified as an X font spec, where the initial @var{Foundry}
 specification may be omitted, as well as any specification after
-@var{Family}.  Defaults to @samp{lucidatypewriter-medium}.
+@var{Family}.
+
+Default value is to @samp{lucidatypewriter-medium}.
 
 To set the fixed width @value{DDD} font family to, say, @samp{courier},
 insert a line
@@ -8517,8 +8598,7 @@ tree data structure.
 
 By default, @value{DDD} does not recognize shared data structures
 (i.e. a data object referenced by multiple other data objects).
-@xref{Shared Structures}, below, for details on how to examine such
-structures.
+@xref{Shared Structures}, for details on how to examine such structures.
 
 
 @node Dereferencing Pointers
@@ -9244,7 +9324,7 @@ The font size used (in 1/10 points).  @code{0} means to use
 @samp{stdfontsize()} instead.  Default value: @code{90}.
 
 @item stdfontweight()
-The font weight used.  Either @samp{weight_medium()} (default) or
+The font weight used.  This is either @samp{weight_medium()} (default) or
 @samp{weight_bold()}.
 @end table
 
@@ -11911,7 +11991,7 @@ the current frame cannot be displayed.
 @node Ladebug
 @section Using @value{DDD} with Ladebug
 
-@xref{DBX}, above, for the DBX limitations that apply to Ladebug, too.
+All DBX limitations (@pxref{DBX}) apply to Ladebug as well.
 
 
 @node XDB
@@ -12041,7 +12121,7 @@ be done, see the file @samp{TODO} in the @value{DDD} distribution.
 * Why does my DDD crash so frequently?::  
 * How do I make DDD find the sources of my program?::  
 * How do I redirect I/O in Perl?::  
-* I cannot access any "common" FORTRAN variables from DDD!::  
+* I cannot access any common FORTRAN variables from DDD!::  
 * The fonts are too small!::    
 * How do I save the window size?::  
 * How do I change the key bindings?::  
@@ -12110,8 +12190,8 @@ DB<> exec "perl -d @var{script} < @var{input} > @var{output}"
 @end example
 
 
-@node I cannot access any "common" FORTRAN variables from DDD!
-@section I cannot access any "common" FORTRAN variables from DDD!
+@node I cannot access any common FORTRAN variables from DDD!
+@section I cannot access any common FORTRAN variables from DDD!
 
 Jochen Sch@"utze <jos@@gbf.de> says:
 
@@ -12275,44 +12355,55 @@ page} for recent announcements and other news related to @value{DDD}.
 
 
 
-@node Label Index
-@unnumbered Label Index
+@node Index
+@unnumbered Index
 
-@noindent
-This index lists labels as they occur on the @value{DDD} user interface.
+@menu
+* Labels::                      All labels as they occur in the @value{DDD} GUI
+* Keys::                        Keys used to control @value{DDD}.
+* Commands::                    Commands that can be typed within @value{DDD}.
+* Resources::                   All resources and environment variables.
+* Files::                       All programs and files referenced by @value{DDD}.
+* Concepts::                    Concept index.
+@end menu
+
+@node Labels
+@unnumberedsec Labels
+
 @printindex lb
 
-@node Key Index
-@unnumbered Key Index
+@page
 
-@noindent
-This index lists keys used to control @value{DDD}.
+@node Keys
+@unnumberedsec Keys
+
 @printindex ky
 
-@node Command Index
-@unnumbered Command Index
 
-@noindent
-This index lists commands that can be typed within @value{DDD}.
+@node Commands
+@unnumberedsec Commands
+
 @printindex cm
 
-@node Resource Index
-@unnumbered Resource Index
+@page
 
-@noindent
-This index lists all resources and environment variables
-used to customize @value{DDD}.
+@node Resources
+@unnumberedsec Resources
+
 @printindex vr
 
-@node File Index
-@unnumbered File Index
 
-@noindent
-This index lists all programs and files referenced by @value{DDD}.
+@page
+
+@node Files
+@unnumberedsec Files
+
 @printindex fl
 
-@node Concept Index
-@unnumbered Concept Index
+@page
+
+@node Concepts
+@unnumberedsec Concepts
 @printindex cp
 
 @shortcontents
