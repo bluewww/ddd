@@ -473,6 +473,7 @@ void dddToggleValueDocsCB (Widget, XtPointer, XtPointer call_data)
 //-----------------------------------------------------------------------------
 // Startup Options
 //-----------------------------------------------------------------------------
+
 static void post_startup_warning(Widget w)
 {
     (void) w;
@@ -880,6 +881,13 @@ void save_options(Widget origin)
 
     os << bool_app_value(XtNdetectAliases, app_data.detect_aliases) << "\n";
     os << bool_app_value(XtNblinkWhileBusy, app_data.blink_while_busy) << "\n";
+
+    get_tool_offset();
+
+    os << int_app_value(XtNtoolRightOffset,
+			app_data.tool_right_offset) << "\n";
+    os << int_app_value(XtNtoolTopOffset,
+			app_data.tool_top_offset) << "\n";
 
     // Some settable graph editor defaults
     os << widget_value(data_disp->graph_edit, XtNshowGrid)   << "\n";

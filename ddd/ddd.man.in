@@ -2626,6 +2626,14 @@ If the `\fBtoolButtons\fR' resource value is empty, the command tool is
 not created.
 .RE
 .TP
+.B "toolRightOffset (\fPclass\fB Offset)"
+The distance between the right border of the command tool and the
+right border of the source text (in pixels).  Default is 8 pixels.
+.TP
+.B "toolTopOffset (\fPclass\fB Offset)"
+The distance between the upper border of the command tool and the
+upper border of the source text (in pixels).  Default is 8 pixels.
+.TP
 .B "verifyButtons (\fPclass\fB VerifyButtons)"
 If true (default), verify for each button whether its command is
 actually supported by the inferior debugger.  If the command is

@@ -196,6 +196,11 @@
 #define XtCStatusHistorySize     "StatusHistorySize"
 #define XtNverifyButtons         "verifyButtons"
 #define XtCVerifyButtons         "VerifyButtons"
+#define XtNstickyTool            "stickyTool"
+#define XtCStickyTool            "StickyTool"
+#define XtNtoolRightOffset       "toolRightOffset"
+#define XtNtoolTopOffset         "toolTopOffset"
+#define XtCOffset                "Offset"
 #define XtNdddinitVersion        "dddinitVersion"
 #define XtNappDefaultsVersion    "appDefaultsVersion"
 #define XtCVersion               "Version"
@@ -285,6 +290,9 @@ struct AppData {
     Boolean detect_aliases;
     int     status_history_size;
     Boolean verify_buttons;
+    Boolean sticky_tool;
+    int     tool_right_offset;
+    int     tool_top_offset;
     String  dddinit_version;
     String  app_defaults_version;
 };

@@ -45,6 +45,7 @@ char windows_rcsid[] =
 #include "DataDisp.h"
 #include "SourceView.h"
 #include "findParent.h"
+#include "Delay.h"
 
 #include <Xm/Xm.h>
 #include <X11/Xutil.h>
@@ -649,10 +650,10 @@ static Window frame_window(Window window)
 // Place command tool in upper right edge of REF
 static void recenter_tool_shell(Widget ref)
 {
-    const int offset = 8;	// Distance from REF edge
-
     if (ref == 0 || tool_shell == 0)
 	return;
+
+    Delay d;
 
     Window ref_window  = XtWindow(ref);
     Window tool_window = XtWindow(tool_shell);
@@ -672,8 +673,9 @@ static void recenter_tool_shell(Widget ref)
 			 &frame_attributes);
 
     // Determine new position relative to REF
-    int x = ref_attributes.width - tool_attributes.width - offset;
-    int y = offset;
+    int x = ref_attributes.width - tool_attributes.width 
+	- app_data.tool_right_offset;
+    int y = app_data.tool_top_offset;
 
     // Correct them relative to frame thickness
     int frame_x, frame_y;
@@ -699,4 +701,66 @@ static void recenter_tool_shell(Widget ref)
 		  XmNx, root_x,
 		  XmNy, root_y,
 		  NULL);
+}
+
+// Store current offset of command tool in APP_DATA
+void get_tool_offset()
+{
+    Widget ref = source_view->source();
+
+    if (ref == 0 || tool_shell == 0)
+	return;
+
+    Delay d;
+
+    Window ref_window  = XtWindow(ref);
+    Window tool_window = XtWindow(tool_shell);
+    Window tool_frame  = frame_window(tool_window);
+
+    // Get location of upper right edge of REF
+    XWindowAttributes ref_attributes;
+    XGetWindowAttributes(XtDisplay(ref), ref_window, &ref_attributes);
+
+    // Get tool shell attributes
+    XWindowAttributes tool_attributes;
+    XGetWindowAttributes(XtDisplay(tool_shell), tool_window, &tool_attributes);
+
+    // Get tool frame attributes
+    XWindowAttributes frame_attributes;
+    XGetWindowAttributes(XtDisplay(tool_shell), tool_frame, 
+			 &frame_attributes);
+
+    // Fetch root coordinates of upper right edge of command tool
+    int tool_x, tool_y;
+    Window tool_child;
+    XTranslateCoordinates(XtDisplay(tool_shell), tool_window,
+			  tool_attributes.root,
+			  tool_attributes.width, 0,
+			  &tool_x, &tool_y, &tool_child);
+
+    // Fetch root coordinates of upper right edge of ref
+    int ref_x, ref_y;
+    Window ref_child;
+    XTranslateCoordinates(XtDisplay(ref), ref_window,
+			  ref_attributes.root,
+			  ref_attributes.width, 0,
+			  &ref_x, &ref_y, &ref_child);
+
+    // Determine offsets
+    int x = ref_x - tool_x;
+    int y = tool_y - ref_y;
+
+    // Correct them relative to frame thickness
+    int frame_x, frame_y;
+    Window frame_child;
+    XTranslateCoordinates(XtDisplay(ref), tool_window,
+			  tool_frame,
+			  tool_attributes.width, 0, &frame_x, &frame_y,
+			  &frame_child);
+
+    x -= frame_attributes.width - frame_x + frame_attributes.border_width;
+    y -= frame_y + frame_attributes.border_width;
+
+    app_data.tool_top_offset   = y;
+    app_data.tool_right_offset = x;
 }

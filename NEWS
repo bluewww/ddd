@@ -79,7 +79,8 @@ DDD 2.1 [in beta test; scheduled for May, 1997]
       prompt `():'.
     - In the source argument field `()', pressing RETURN activates
       the `Lookup ()' button.
-    - `Save Options' saves window sizes for later DDD settings.
+    - `Save Options' saves window sizes for later DDD sessions, as
+      well as the relative position of the command tool.
     - Unnecessary redisplays have been significantly reduced, causing
       much less flickering.
     - If you specify some overloaded or ambiguous identifier, DDD now

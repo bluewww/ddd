@@ -88,5 +88,8 @@ extern void DDDCloseCB              (Widget, XtPointer, XtPointer);
 // Register this event handler with all shells
 extern void StructureNotifyEH(Widget, XtPointer, XEvent *, Boolean *);
 
+// Save current tool shell offset in APP_DATA.
+extern void get_tool_offset();
+
 #endif // _DDD_windows_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

@@ -874,6 +874,36 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNstickyTool,
+	XtCStickyTool,
+	XmRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, sticky_tool),
+	XmRImmediate,
+	XtPointer(True)
+    },
+
+    {
+	XtNtoolRightOffset,
+	XtCOffset,
+	XmRInt,
+	sizeof(int),
+	XtOffsetOf(AppData, tool_right_offset),
+	XmRImmediate,
+	XtPointer(8)
+    },
+
+    {
+	XtNtoolTopOffset,
+	XtCOffset,
+	XmRInt,
+	sizeof(int),
+	XtOffsetOf(AppData, tool_top_offset),
+	XmRImmediate,
+	XtPointer(8)
+    },
+
+    {
 	XtNdddinitVersion,
 	XtCVersion,
 	XtRString,
