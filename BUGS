@@ -212,11 +212,6 @@ Volunteers for fixing these and other bugs are welcome!
      drag-hilite the name, ddd goes berserk with the cpu.
      [I could not reproduce this. -AZ]
 
-177. Michael Taeschner <Michael.Taeschner@dlr.de> reports that using
-     SGI dbx, setting of temporary breakpoints regularly fails because
-     dbx cannot handle `when at { }' without a command inside the
-     parentheses (this should be `{ delete xx,yy }' anyway).
-
 200. With DBX on SunOS 4.1.4, sessions do not work (cannot save core
      file).
 
