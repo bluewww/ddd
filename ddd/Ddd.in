@@ -1422,8 +1422,14 @@ None<Btn3Down>:		graph-select() graph-popup-menu()\n
 ! Titles
 !-----------------------------------------------------------------------------
 
-Ddd*title: @DDD@ Window
+! Generic title
+Ddd*title:				@DDD@ Window
 
+! Main Window
+Ddd.title:				@DDD@: The Data Display Debugger
+Ddd.iconName:				@DDD@
+
+! Separate windows
 Ddd*command_shell.title:		@DDD@: Debugger Console
 Ddd*command_shell.iconName:		@DDD@: Debugger Console
 
@@ -1433,7 +1439,7 @@ Ddd*source_view_shell.iconName:		@DDD@: Program Source
 Ddd*data_disp_shell.title:		@DDD@: Program Data
 Ddd*data_disp_shell.iconName:		@DDD@: Program Data
 
-! Ddd*tool_shell.title:			@DDD@: Command Tool
+! Command tool
 Ddd*tool_shell.title:			@DDD@
 Ddd*tool_shell.iconName:		@DDD@: Command Tool
 
@@ -1469,7 +1475,7 @@ Ddd*manual_help_popup.title: @DDD@: Manual
 
 ! Help on help.
 Ddd*help_popup.help*helpString: \
-@rm This is the @sl Help window.@rm\n\
+@rm This is the @sl Help Window.@rm\n\
 \n\
 By pressing @key F1 @rm and clicking on an item,\n\
 the item's functions are explained here.\n\
@@ -1479,8 +1485,8 @@ Click on @bf Close @rm to close the help window.
 
 ! The official announcement.
 ! Build information (from `USERINFO') is appended to this text.
-Ddd.helpString:	\
-@Logo @DDD@@logo, \
+Ddd*helpOnVersionString:	\
+@Logo @DDD@@logo: \
 the @Logo D@logo ata @Logo D@logo isplay @Logo D@logo ebugger\n\
 @rm by Dorothea L\374tkehaus and Andreas Zeller.\n\
 \n\
@@ -1511,11 +1517,14 @@ Ddd*XmSash.tipString: \
 @rm Resize window
 
 Ddd*arg_label.helpString: \
-@rm This is a @sl Text Prompt.@rm\n\
+@rm This is an @sl Argument Prompt.@rm\n\
 \n\
-Enter the text on the right.  Click on @bf (): @rm to clear the text field.
+Enter the argument @bf () @rm on the right.\n\
+Click on @bf (): @rm to clear the argument @bf()@rm.
+
 Ddd*arg_label.tipString: \
 @rm Clear argument @bf()
+
 Ddd*arg_label.documentationString: \
 @rm Click to clear the argument @bf()@rm.
 
@@ -1625,7 +1634,7 @@ Ddd*tipShell.borderWidth: 1
 !-----------------------------------------------------------------------------
 
 Ddd*menubar.helpString:		\
-@rm This is the @sl Menu bar.@rm\n\
+@rm This is the @sl Menu Bar.@rm\n\
 \n\
 @tt \267 @bf File @rm - select files and exit @DDD@.\n\
 @tt \267 @bf Edit @rm - cut, copy, and paste text.\n\
@@ -1644,7 +1653,7 @@ Ddd*menubar.file*documentationString:	@rm Open program and source files
 Ddd*menubar.file.mnemonic:		F
 Ddd*menubar.file*helpString:	\
 \
-@rm This is the @sl File menu.@rm\n\
+@rm This is the @sl File Menu.@rm\n\
 \n\
 @tt \267 @bf Open Program... @rm - open the program to be debugged.\n\
 @tt \267 @bf Open Core Dump... @rm - open a core dump.\n\
@@ -1717,7 +1726,7 @@ Ddd*menubar.edit*documentationString:	\
 @rm Cut, copy, paste from and to the clipboard
 Ddd*menubar.edit*helpString:	\
 \
-@rm This is the @sl Edit menu.@rm\n\
+@rm This is the @sl Edit Menu.@rm\n\
 \n\
 @tt \267 @bf Cut @rm - remove the selected text to the clipboard.\n\
 @tt \267 @bf Copy @rm - copy the selected text to the clipboard\n\
@@ -1771,7 +1780,7 @@ Ddd*menubar.options*documentationString: \
 @rm Modify the debugger configuration
 
 Ddd*menubar.options*helpString:	\
-@rm This is the @sl Options menu.@rm\n\
+@rm This is the @sl Options Menu.@rm\n\
 \n\
 @tt \267 @bf Preferences... @rm invokes a panel for \
 setting @DDD@ options.\n\
@@ -1837,7 +1846,7 @@ Ddd*menubar.view*documentationString:	\
 @rm Open @DDD@ windows
 Ddd*menubar.view.helpString:	\
 \
-@rm This is the @sl Windows menu.@rm\n\
+@rm This is the @sl Windows Menu.@rm\n\
 \n\
 @tt \267 @bf Command Tool... @rm - show the debugger command tool.\n\
 @tt \267 @bf Debugger Console... @rm - show the debugger console.\n\
@@ -1878,7 +1887,7 @@ Ddd*menubar.program*documentationString:	\
 @rm Control the execution of the debugged program
 Ddd*menubar.program*helpString:	\
 \
-@rm This is the @sl Program menu.@rm\n\
+@rm This is the @sl Program Menu.@rm\n\
 \n\
 @tt \267 @bf Run... @rm - start the debugged program.\n\
 @tt \267 @bf Run Again @rm - run with current arguments.\n\
@@ -1976,7 +1985,7 @@ Ddd*menubar.commands*documentationString: \
 @rm Enter and modify debugger commands
 Ddd*menubar.commands*helpString:	\
 \
-@rm This is the @sl Commands menu.@rm\n\
+@rm This is the @sl Commands Menu.@rm\n\
 \n\
 @tt \267 @bf Command History... @rm - show all previous commands.\n\
 \n\
@@ -2068,7 +2077,7 @@ Ddd*menubar.stack*documentationString:  \
 @rm Show the current program state
 Ddd*menubar.stack.helpString:	\
 \
-@rm This is the @sl Status menu.@rm\n\
+@rm This is the @sl Status Menu.@rm\n\
 \n\
 @tt \267 @bf Backtrace... @rm - give a summary of how your program got \
 where it is.\n\
@@ -2116,7 +2125,7 @@ Ddd*menubar.source*documentationString: \
 @rm Set and edit breakpoints in source files
 Ddd*menubar.source.helpString:	\
 \
-@rm This is the @sl Source menu.@rm\n\
+@rm This is the @sl Source Menu.@rm\n\
 \n\
 @tt \267 @bf Edit Breakpoints... @rm - set, view, and edit breakpoints.\n\
 \n\
@@ -2167,7 +2176,7 @@ Ddd*menubar.data*documentationString:   \
 @rm Create and modify data displays
 Ddd*menubar.data*helpString:	\
 \
-@rm This is the @sl Data menu.@rm\n\
+@rm This is the @sl Data Menu.@rm\n\
 \n\
 @tt \267 @bf Edit Displays... @rm - select, enable and delete displays.\n\
 \n\
@@ -2277,7 +2286,7 @@ Ddd*menubar.help*documentationString:   \
 @rm Get more information
 Ddd*menubar.help*helpString: \
 \
-@rm This is the @sl Help menu.@rm\n\
+@rm This is the @sl Help Menu.@rm\n\
 \n\
 @tt \267 @bf About @DDD@... @rm - some general information about @DDD@.\n\
 \n\
@@ -2353,7 +2362,7 @@ Ddd*preferences*buttons*data.labelString:	Data Preferences
 Ddd*preferences*buttons*startup.labelString:	Startup Preferences
 
 Ddd*preferences*general*helpString:	\
-@rm These are the @sl General Preferences@rm.\n\
+@rm These are the @sl General Preferences.@rm\n\
 \n\
 @tt \267 @rm When you move the mouse pointer over a button, @DDD@ can \
 automatically\n\
@@ -2429,7 +2438,7 @@ Save command history on exit
 
 
 Ddd*preferences*source*helpString:	\
-@rm These are the @sl Source Preferences@rm.\n\
+@rm These are the @sl Source Preferences.@rm\n\
 \n\
 @tt \267 @rm If @bf Refer to program sources by full path name @rm is set, \n\
     source code locations are referred by full source file paths.\n\
@@ -2480,7 +2489,7 @@ Ddd*preferences*tabWidth.titleString:		Tab width
 
 
 Ddd*preferences*data*helpString:	\
-@rm These are the @sl Data Preferences@rm.\n\
+@rm These are the @sl Data Preferences.@rm\n\
 \n\
 @tt \267 @rm If @bf Detect aliases @rm is set, @DDD@ detects displays\
  with the same\n\
@@ -2521,7 +2530,7 @@ Ddd*preferences*gridSize.showValue:		true
 Ddd*preferences*gridSize.titleString:		Grid size
 
 Ddd*preferences*startup*helpString:   \
-@rm These are the @sl Startup Preferences@rm.\n\
+@rm These are the @sl Startup Preferences.@rm\n\
 \n\
 @tt \267 @bf Windows @rm sets the window layout.\n\
     @bf separate windows @rm means to use one source window,\n\
@@ -2645,7 +2654,7 @@ Ddd*settings*scroll*helpString:
 
 ! The panel itself has a help button, too.
 Ddd*settings*helpString: \
-@rm These are the @sl Debugger Settings@rm.\n\
+@rm These are the @sl Debugger Settings.@rm\n\
 \n\
 These settings affect the inferior debugger only.\n\
 All settings (except source and object paths) can be saved\n\
@@ -2685,7 +2694,7 @@ Ddd*infos*scroll*helpString:
 
 ! The panel itself has a help button, too.
 Ddd*infos*helpString: \
-@rm This is the list of @sl status displays.@rm\n\
+@rm This is the list of @sl Status Displays.@rm\n\
 \n\
 A @sl status display @rm shows things about the program being debugged\n\
 in the data window.  Please pick your choice from the list.\n\
@@ -2738,8 +2747,8 @@ Ddd*graph_edit.highlightOnEnter:	True
 Ddd*graph_edit.navigationType:		TAB_GROUP
 
 Ddd*graph_edit.helpString:	\
-@rm This is the @sl Data Window @rm \n\
-showing the data displays of the debugged program.\n\
+@rm This is the @sl Data Window.@rm\n\
+The data window shows the data displays of the debugged program.\n\
 \n\
 @bf Left mouse button:@rm\n\
 @tt \267 @sl Click @rm on a display to select it.\n\
@@ -2759,8 +2768,8 @@ showing the data displays of the debugged program.\n\
 @tt \267 @sl Click @rm on the background to create new displays via a menu.
 
 Ddd*data_disp_shell.helpString:	\
-@rm This is the @sl Data Window @rm \n\
-showing the data displays of the debugged program.\n\
+@rm This is the @sl Data Window.@rm\n\
+The data window shows the data displays of the debugged program.\n\
 \n\
 @bf Left mouse button:@rm\n\
 @tt \267 @sl Click @rm on a display to select it.\n\
@@ -2836,8 +2845,8 @@ Ddd*node_popup.disable.documentationString: \
 ! Graph Buttons
 !-----------------------------------------------------------------------------
 
-Ddd*graph_cmd_w*helpString: \
-@rm Commands related to the data window.
+! Ddd*graph_cmd_w*helpString: \
+! @rm Commands related to the data window.
 
 Ddd*graph_cmd_w.marginWidth:	 0
 Ddd*graph_cmd_w.marginHeight:	 0
@@ -2848,11 +2857,10 @@ Ddd*graph_cmd_w.arg_label.labelString:	():
 Ddd*graph_cmd_w.graph_arg.columns:		20
 Ddd*graph_cmd_w*graph_arg.editable:		false
 Ddd*graph_cmd_w*graph_arg.helpString:	\
-@rm This is the argument @bf() @rm for the command buttons on the right.\n\
-This is an output-only window which displays the selection\n\
-in the data window above.
-
-
+@rm This is the argument @bf () @rm for the command buttons on the right.\n\
+\n\
+Set @bf () @rm by selecting data displays.\n\
+Clear @bf () @rm by clicking on the prompt @bf (): @rm.
 
 Ddd*graph_cmd_w.orientation:			XmHORIZONTAL
 Ddd*graph_cmd_w.graph_cmd_area*orientation:	XmHORIZONTAL
@@ -2934,11 +2942,11 @@ Ddd*graph_cmd_w.graph_cmd_area*delete.documentationString:	\
 !-----------------------------------------------------------------------------
 
 Ddd*status_form*helpString: \
-@rm This is the @sl Status line.@rm\n\
+@rm This is the @sl Status Line.@rm\n\
 \n\
 It shows the last message of the inferior debugger\n\
 as well as short @DDD@ messages.\n\
-To view previous messages, just click on the status line.\n\
+To view tthe most recent messages, just click on the status line.\n\
 \n\
 The debugger status indicator on the right side\n\
 blinks while the inferior debugger is busy.\n\
@@ -2970,7 +2978,7 @@ Ddd*status_form.led.selectColor:	dark green
 Ddd*status_form.led.tipString:	\
 @rm Debugger status
 Ddd*status_form.led.documentationString: \
-@rm Debugger status: blinks while inferior debugger is busy \
+@rm Debugger status indicator: blinks while inferior debugger is busy \
 (click to disable or enable)
 
 Ddd*status_form.arrow.shadowThickness:  0
@@ -3020,8 +3028,8 @@ Ddd*code_text_w.scrollHorizontal:	false
 Ddd*code_text_w.wordWrap:		true
 
 Ddd*source_text_w.helpString:	\
-@rm This is the @sl source text window @rm showing the source code\n\
-of the debugged program.\n\
+@rm This is the @sl Source Text Window.@rm\n\
+It shows the source text of the debugged program.\n\
 \n\
 On the @sl left side@rm, line numbers and breakpoints are shown:\n\
 A stop sign or `@tt #@sl n@tt #@rm' indicates an enabled breakpoint;\n\
@@ -3039,8 +3047,8 @@ Click the @bf right mouse button @rm to get a popup menu:\n\
 Use the @bf Lookup () @rm button below to view specific functions.
 
 Ddd*code_text_w.helpString:	\
-@rm This is the @sl machine code window @rm showing the machine code\n\
-of the debugged program.\n\
+@rm This is the @sl Machine Code Window.@rm\n\
+It shows the machine code of the debugged program.\n\
 \n\
 On the @sl left side@rm, code addresses and breakpoints are shown:\n\
 A stop sign or `@tt #@sl n@tt #@rm' indicates an enabled breakpoint;\n\
@@ -3058,11 +3066,15 @@ Click the @bf right mouse button @rm to get a popup menu:\n\
 Use the @bf Lookup () @rm button below to disassemble specific functions.
 
 Ddd*source_view_shell.helpString:	\
-@rm This is the @sl source text window @rm in which the source\n\
-and machine code of the debugged program are displayed.\n\
+@rm This is the @sl Source Window.@rm\n\
+The source window displays the source and machine code of the \
+debugged program.\n\
 \n\
 The upper area shows the source code.\n\
-The lower area shows the machine code.
+The lower area shows the machine code.\n\
+\n\
+Use @bf Help On Context @rm in the @bf Help @rm menu to get\n\
+detailed help on any of these areas.
 
 
 !-----------------------------------------------------------------------------
@@ -3138,21 +3150,24 @@ Ddd*text_popup.clearAt.documentationString: \
 ! Source Text Commands
 !-----------------------------------------------------------------------------
 
-Ddd*arg_cmd_w*helpString: \
-@rm Commands related to the source text.\n\
-Enter arguments for @sl name @rm() commands\n\
-in the @bf() @rm field.
+! Ddd*arg_cmd_w*helpString: \
+! @rm Commands related to the source text.\n\
+! Enter arguments for @sl name @rm() commands\n\
+! in the @bf() @rm field.
 
-Ddd*arg_cmd_w.marginWidth:  0
-Ddd*arg_cmd_w.marginHeight: 0
+Ddd*arg_cmd_w.marginWidth:     0
+Ddd*arg_cmd_w.marginHeight:    0
 Ddd*arg_cmd_area.marginWidth:  0
 
 Ddd*arg_cmd_w.arg_label.labelString:		():
 
 Ddd*arg_cmd_w.source_arg.helpString:	\
 @rm This is the argument @bf () @rm for the command buttons on the right.\n\
-You can edit this field, or easily change its value\n\
-by selecting something in the source text above.
+\n\
+Edit @bf () @rm using the usual editing functions.\n\
+Set @bf () @rm by selecting items from the source window or the data window.\n\
+Clear @bf () @rm by clicking on the prompt @bf (): @rm.
+
 Ddd*arg_cmd_w.source_arg.value:			 main
 Ddd*arg_cmd_w.source_arg.columns:		 20
 
@@ -3315,6 +3330,31 @@ Ddd*code_form_w.grey_stop*tipString: \
 
 
 !-----------------------------------------------------------------------------
+! Main Window
+!-----------------------------------------------------------------------------
+
+Ddd.helpString:				\
+@rm This is the @sl @DDD@ Main Window.@rm\n\
+\n\
+From top to bottom, it shows the following areas:\n\
+\n\
+@tt \267 @rm At the top, the @sl Data Window @rm shows the data displays\n\
+    of the debugged program.\n\
+@tt \267 @rm In the center, the @sl Source Text Window @rm shows the \
+currently\n\
+    executed source code.\n\
+@tt \267 @rm Optionally, there may be a @sl Machine Code Window @rm below\n\
+    which shows the current machine code.\n\
+@tt \267 @rm At the bottom, the @sl Debugger Console @rm allows for \
+interaction\n\
+    with the inferior debugger and the debugged program.\n\
+\n\
+Use @bf Help On Context @rm in the @bf Help @rm menu to get\n\
+detailed help on any of these areas.
+
+
+
+!-----------------------------------------------------------------------------
 ! Debugger Console
 !-----------------------------------------------------------------------------
 
@@ -3337,19 +3377,26 @@ Ddd*gdb_w.autoShowCursorPosition:	true
 Ddd*gdb_w.cursorPositionVisible:	true
 
 Ddd*gdb_w.helpString:		\
-@rm This is the @sl debugger console window.@rm\n\
+@rm This is the @sl Debugger Console.@rm\n\
 \n\
-You can enter debugging commands here.\n\
-Enter `@tt help@rm' at the debugger prompt\n\
-to get help on debugging commands.
+The debugger console shows the input and output of the inferior debugger\n\
+as well as the input and output of the debugged program.\n\
+\n\
+You can enter debugging commands here.  To get a list of debugger commands,\n\
+enter `@tt help@rm' at the debugger prompt.\n\
+\n\
+To see the most important editing commands, see the @bf Commands @rm menu.
 
 Ddd*command_shell.helpString:		\
-@rm This is the @sl debugger console window.@rm\n\
+@rm This is the @sl Debugger Console.@rm\n\
 \n\
-You can enter debugging commands here.\n\
-Enter `@tt help@rm' at the debugger prompt\n\
-to get help on debugging commands.
-
+The debugger console shows the input and output of the inferior debugger\n\
+as well as the input and output of the debugged program.\n\
+\n\
+You can enter debugging commands here.  To get a list of debugger commands,\n\
+enter `@tt help@rm' at the debugger prompt.\n\
+\n\
+To see the most important editing commands, see the @bf Commands @rm menu.
 
 
 !-----------------------------------------------------------------------------
@@ -3374,20 +3421,20 @@ Ddd*gdb_popup.clear_window.documentationString:	\
 Ddd*tool_shell*saveUnder: true
 
 Ddd*tool_shell.helpString:		\
-@rm This is the @sl command tool.@rm\n\
+@rm This is the @sl Command Tool.@rm\n\
 \n\
 By clicking on one of the buttons,\n\
 the corresponding command is sent to the inferior debugger.\n\
 The context sensitive help for the buttons\n\
-gives a short command description.\n
+gives a short command description.
 
 Ddd*tool_buttons.helpString:\
-@rm This is the @sl command tool @rm.\n\
+@rm This is the @sl Command Tool.@rm\n\
 \n\
 By clicking on one of the buttons,\n\
 the corresponding command is sent to the inferior debugger.\n\
 The context sensitive help for the buttons\n\
-gives a short command description.\n
+gives a short command description.
 
 !-----------------------------------------------------------------------------
 ! Debugger Buttons
@@ -3711,7 +3758,7 @@ Ddd*edit_breakpoints_dialog*buttons.marginHeight:  0
 Ddd*edit_breakpoints_dialog.okLabelString:	 Close
 
 Ddd*edit_breakpoints_dialog*helpString:	     \
-@rm This is the @sl Breakpoint editor@rm.\n\
+@rm This is the @sl Breakpoint Editor.@rm\n\
 \n\
 Select breakpoints on the left; operations on the right.\n\
 \n\
@@ -3818,7 +3865,7 @@ Ddd*stack_dialog.cancelLabelString:	  Down
 Ddd*stack_dialog*visibleItemCount:	  10
 
 Ddd*stack_dialog*helpString:	  \
-@rm This window shows the current @sl backtrace@rm.\n\
+@rm This window shows the current @sl Backtrace.@rm\n\
 \n\
 The backtrace is a summary of how your program got where it is.\n\
 It shows one line per stack frame, for many frames, starting with\n\
@@ -3849,7 +3896,7 @@ Ddd*register_dialog*all_registers.labelString: All registers
 Ddd*register_dialog*int_registers.labelString: Integer registers
 
 Ddd*register_dialog*helpString:	     \
-@rm This window shows the @sl machine registers@rm.\n\
+@rm This window shows the @sl Machine Registers.@rm\n\
 Select any register to have its name copied to the argument @bf()@rm.\n\
 \n\
 If @bf Integer registers @rm is set, integer registers are shown.\n\
@@ -3871,7 +3918,7 @@ Ddd*thread_dialog*box.marginHeight: 0
 Ddd*thread_dialog*box.marginWidth:  0
 
 Ddd*thread_dialog*helpString:	     \
-@rm This window shows the current @sl execution threads@rm.\n\
+@rm This window shows the current @sl Execution Threads.@rm\n\
 \n\
 The current thread is highlighted.\n\
 All debugging commands show information from the perspective\n\
@@ -3891,7 +3938,7 @@ Ddd*history_dialog.applyLabelString:	    Apply
 Ddd*history_dialog*visibleItemCount:	    10
 
 Ddd*history_dialog*helpString:	    \
-@rm This window shows the @sl command history@rm.\n\
+@rm This window shows the @sl Command History.@rm\n\
 \n\
 @DDD@ keeps track of the commands you type during your debugging\n\
 sessions, so that you can be certain of precisely what happened.\n\
@@ -3919,7 +3966,7 @@ Ddd*edit_displays_dialog*buttons.marginHeight:	0
 Ddd*edit_displays_dialog.okLabelString:	      Close
 
 Ddd*edit_displays_dialog*helpString:	  \
-@rm This is the @sl Display editor@rm.\n\
+@rm This is the @sl Display Editor.@rm\n\
 \n\
 Select displays on the left, operations on the right.\n\
 \n\
@@ -3952,7 +3999,7 @@ The current value of the expression is shown each time the program stops.\n\
 Variables accessible are those of the lexical environment of the selected\n\
 stack frame, plus all those whose scope is global or an entire file.\n\
 \n\
-@tt $@sl NUM @rm gets previous value number @sl NUM@rm.\
+@tt $@sl NUM @rm gets previous value number @sl NUM.@rm\
   @tt $ @rm and @tt$$ @rm are the last two values.\n\
 @tt $$@sl NUM @rm refers to @sl NUM@rm'th value back from the last one.\n\
 Names starting with @tt$ @rm refer to registers\
@@ -3963,7 +4010,7 @@ all registers saved by frames farther in) or else to debugger\n\
 Use assignment expressions to give values to convenience variables.\n\
 \n\
 @tt{@sl TYPE@tt}@sl ADREXP @rm refers to a datum of data type\
- @sl TYPE@rm, located at address @sl ADREXP@rm.\n\
+ @sl TYPE@rm, located at address @sl ADREXP.@rm\n\
 \n\
 @tt @ \
  @rm is a binary operator for treating consecutive data objects\n\
@@ -4046,7 +4093,7 @@ Ddd*run_dialog.selectionLabelString:	Run with Arguments
 Ddd*run_dialog*selectionPolicy:		XmSINGLE_SELECT
 
 Ddd*run_dialog*helpString:	\
-@rm This window shows the @sl argument history@rm.\n\
+@rm This window shows the @sl Argument History.@rm\n\
 \n\
 @DDD@ keeps track of the arguments you gave to the debugged program,\n\
 such that you can re-use them at a later time.\n\
