@@ -32,6 +32,7 @@ include(ifdef(`srcdir',srcdir()/colors.m4,colors.m4))changequote(,)DDD_VSL_WARNI
 #include "tab.vsl"
 #include "fonts.vsl"
 #include "colors.vsl"
+#include "list.vsl"
 
 // Font settings
 #pragma replace stdfontfamily
