@@ -468,9 +468,9 @@ AGENT_OBJECTS = \
 	ChunkQueue.o \
 	DataLength.o \
 	HandlerL.o \
-	TTYAgent.o \
 	LiterateA.o \
 	SignalB.o \
+	TTYAgent.o \
 	TypeInfo.o \
 	UniqueId.o
 
