@@ -636,10 +636,10 @@ static string get_help_line(string command)
 }
 
 // Create settings editor
-static Widget create_settings()
+static Widget create_gdb_settings()
 {
     static Widget settings = 0;
-    if (settings != 0 || !gdb->isReadyWithPrompt())
+    if (settings != 0 || !gdb->isReadyWithPrompt() || gdb->type() != GDB)
 	return settings;
 
     StatusDelay delay("Retrieving debugger settings");
@@ -718,7 +718,10 @@ static Widget create_settings()
 // Popup editor for debugger settings
 void dddPopupSettingsCB (Widget, XtPointer, XtPointer)
 {
-    Widget settings = create_settings();
+    Widget settings = create_gdb_settings();
+    if (settings == 0)
+	return;
+
     XtManageChild(settings);
     raise_shell(settings);
 }
@@ -726,7 +729,9 @@ void dddPopupSettingsCB (Widget, XtPointer, XtPointer)
 // Fetch GDB settings string
 string get_gdb_settings()
 {
-    create_settings();
+    Widget settings = create_gdb_settings();
+    if (settings == 0)
+	return "";
 
     string command = "";
     for (int i = 0; i < entries.size(); i++)
