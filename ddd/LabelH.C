@@ -151,7 +151,9 @@ static void initialize(XmLabelHackWidget, XmLabelHackWidget _new,
     }
 }
 
+#if defined(LesstifVersion)
 static void noResize(Widget) {}
+#endif
 
 static XtExposeProc oldLabelExposeProc;
 
@@ -217,7 +219,10 @@ static void _grabbedLabelExpose(Widget _w, XEvent *_event, Region _region)
 
     XmLabelWidget label = (XmLabelWidget)_w;
 
-    if (XtIsSensitive(_w))
+    unsigned char label_type = XmSTRING;
+    XtVaGetValues(_w, XmNlabelType, &label_type, NULL);
+
+    if (XtIsSensitive(_w) || label_type != XmSTRING)
 	(*oldLabelExposeProc)(_w, _event, _region);
     else
     {
@@ -335,7 +340,10 @@ static void _grabbedLabelGadgetExpose(Widget _w, XEvent *_event,
 
     XmLabelGadget label = (XmLabelGadget)_w;
 
-    if (XtIsSensitive(_w))
+    unsigned char label_type = XmSTRING;
+    XtVaGetValues(_w, XmNlabelType, &label_type, NULL);
+
+    if (XtIsSensitive(_w) || label_type != XmSTRING)
 	(*oldLabelGadgetExposeProc)(_w, _event, _region);
     else
     {
