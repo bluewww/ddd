@@ -1076,9 +1076,14 @@ DataDispCount::DataDispCount(DispGraph *disp_graph)
 		    selected_data++;
 
 		if (dn->disabled())
+		{
 		    selected_collapsed++;
+		}
 		else
 		{
+		    if (dv == 0)
+			dv = dn->value();
+
 		    if (dv != 0)
 		    {
 			selected_expanded  += int(dv->expanded());
