@@ -300,11 +300,12 @@ LessTif
     To use DDD with LessTif, get a recent LessTif release from
     `http://www.lesstif.org'.
 
-    With LessTif 0.87, the following problems are currently known:
+    With LessTif 0.88, the following problems are currently known:
 
     * The `Preferences' dialog may need manual resize.
 
-    * Option menus in `GDB Settings' are only displayed partially.
+    * Dialogs may enter an endless resize loop.  (Sending a SIGINT
+      signal to DDD will make DDD resume.)
 
     * Resizing the plot window does not work properly.
 
