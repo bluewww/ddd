@@ -84,7 +84,7 @@ void update_arguments()
 	selected[pos] = true;
 
     setLabelList(gdb_arguments_w, gdb_arguments.values(),
-		 selected, gdb_arguments.size());
+		 selected, gdb_arguments.size(), false, false);
 
     if (pos >= 0)
 	XmListSelectPos(gdb_arguments_w, pos + 1, False);

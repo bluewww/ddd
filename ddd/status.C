@@ -218,7 +218,7 @@ void set_selection_from_gdb(string& text)
     for (int i = 0; i < count; i++)
 	selected[i] = (get_positive_nr(choices[i]) == 1);
 
-    setLabelList(gdb_selection_list_w, choices, selected, count);
+    setLabelList(gdb_selection_list_w, choices, selected, count, false, false);
 
     delete[] choices;
     delete[] selected;

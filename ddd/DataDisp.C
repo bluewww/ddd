@@ -2870,14 +2870,14 @@ void DataDisp::refresh_display_list()
     if (display_list_w == 0)
 	return;
 
-    int max_count      = disp_graph->count_all();
+    int number_of_displays = disp_graph->count_all();
 
     StringArray nums;
     StringArray states;
     StringArray exprs;
     StringArray addrs;
 
-    if (max_count > 0)
+    if (number_of_displays > 0)
     {
 	// Add titles
 	nums   += "Num";
@@ -2887,7 +2887,7 @@ void DataDisp::refresh_display_list()
     }
     else
     {
-	nums   += "No displays.";
+	nums   += "";
 	states += "";
 	exprs  += "";
 	addrs  += "";
@@ -2917,16 +2917,24 @@ void DataDisp::refresh_display_list()
     int exprs_width  = max_width(exprs);
     int addrs_width  = max_width(addrs);
 
-    string *label_list = new string[max_count + 1];
-    bool *selected     = new bool[max_count + 1];
+    string *label_list = new string[number_of_displays + 1];
+    bool *selected     = new bool[number_of_displays + 1];
 
     // Set titles
     int count = 0;
-    string line = fmt(nums[count], nums_width) 
-	+ " " + fmt(states[count], states_width)
-	+ " " + fmt(exprs[count], exprs_width);
-    if (detect_aliases)
-	line += " " + fmt(addrs[count], addrs_width);
+    string line;
+    if (number_of_displays > 0)
+    {
+	line = fmt(nums[count], nums_width) 
+	    + " " + fmt(states[count], states_width)
+	    + " " + fmt(exprs[count], exprs_width);
+	if (detect_aliases)
+	    line += " " + fmt(addrs[count], addrs_width);
+    }
+    else
+    {
+	line = "No displays.";
+    }
     label_list[count] = line;
     selected[count] = false;
     count++;
@@ -2935,7 +2943,7 @@ void DataDisp::refresh_display_list()
     for (k = disp_graph->first_nr(ref); k != 0; k = disp_graph->next_nr(ref))
     {
 	DispNode* dn = disp_graph->get(k);
-	string line = fmt(nums[count], nums_width) 
+	line = fmt(nums[count], nums_width) 
 	    + " " + fmt(states[count], states_width)
 	    + " " + fmt(exprs[count], exprs_width);
 	if (detect_aliases)
@@ -2948,7 +2956,8 @@ void DataDisp::refresh_display_list()
     sort(label_list + 1, selected + 1, count - 1);
 
     ignore_update_graph_editor_selection = true;
-    setLabelList(display_list_w, label_list, selected, count);
+    setLabelList(display_list_w, label_list, selected, count, 
+		 number_of_displays > 0, false);
     ignore_update_graph_editor_selection = false;
 	
     delete[] label_list;

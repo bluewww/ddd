@@ -597,6 +597,7 @@ Ddd*highlightThickness:		1
 ! Font definitions.  @<font> is used to switch between fonts.
 ! @charset is the default font.
 ! @tt (teletype) is the fixed-width font used in texts.
+! @tb (teletype bold) is the bold variant of @tt.
 ! @key is the font used for keys.
 ! @rm (roman), @sl (slanted), @bf (bold face), @bs (bold slanted)
 ! are some fonts for usual highlighting.
@@ -606,6 +607,7 @@ Ddd*fontList: \
 -*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=charset,\
 -*-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*=small,\
 -*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=tt,\
+-*-lucidatypewriter-bold-r-*-*-12-*-*-*-*-*-*-*=tb,\
 -*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=key,\
 -*-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*=rm,\
 -*-helvetica-medium-o-*-*-12-*-*-*-*-*-*-*=sl,\
@@ -620,6 +622,7 @@ Ddd*fontList: \
 ! -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=charset,\
 ! -*-helvetica-bold-r-*-*-*-80-*-*-*-*-*-*=small,\
 ! -*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=tt,\
+! -*-lucidatypewriter-bold-r-*-*-*-90-*-*-*-*-*-*=tb,\
 ! -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=key,\
 ! -*-helvetica-medium-r-*-*-*-90-*-*-*-*-*-*=rm,\
 ! -*-helvetica-medium-o-*-*-*-90-*-*-*-*-*-*=sl,\

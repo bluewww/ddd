@@ -34,12 +34,12 @@ char mydialogs_rcsid[] =
 #endif
 
 //-----------------------------------------------------------------------------
-// Erzeugung von Motif-Dialogen zur Auswahl von Display-Ausdruecken
+// Create dialogs to select display expressions
 //-----------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
 #include "mydialogs.h"
 
+// System includes
 #include <stdlib.h>
 
 // Motif includes
@@ -57,23 +57,13 @@ char mydialogs_rcsid[] =
 #include "string-fun.h"
 
 
-//-----------------------------------------------------------------------------
-// Vorwaerts-Deklarationen
-//-----------------------------------------------------------------------------
-
-static XmStringTable makeXmStringTable (string label_list[], int list_length);
+// Local functions
+static XmStringTable makeXmStringTable (string label_list[], int list_length,
+					bool highlight_title);
 static void freeXmStringTable (XmStringTable xmlabel_list, int list_length);
 
-//-----------------------------------------------------------------------------
 
-
-// ***************************************************************************
-// Erzeugt Dialog zur (beliebigen) Auswahl aus einer Liste von Display-Labels.
-// Die Callbacks werden so verwaltet, dass dispSQ mit den ausgewaehlten
-// Display-Nummern (und deren Anzahl) aufgerufen wird.
-// Rueckgabewert ist das List-Widget, dessen Initialisierung mit setLabelList
-// erfolgt.
-//
+// Create a display selection list
 Widget createDisplaySelectionList(Widget parent, String name,
 				  ArgList args, Cardinal num_args)
 {
@@ -84,20 +74,22 @@ Widget createDisplaySelectionList(Widget parent, String name,
 
 
 
-// ***************************************************************************
-// Setzen der Listenelemente.
-// label_list : Array der Label in der Form: disp_nr": "disp_name.
-// selected   : Array mit Wert true an den Positionen der Label, die schon
-//              ausgewaehlt sein sollen.
-// list_length: Laenge der gesamten Liste.
+// Set the elements of the display selection list
+// LABEL_LIST:      Labels, using the format disp_nr ": " disp_name.
+// SELECTED:        Whether labels are to be selected
+// LIST_LENGTH:     Length of label_list[] and selected[]
+// HIGHLIGHT_TITLE: Whether the first line should be highlighted
+// NOTIFY:          Whether callbacks should be invoked
 //
 void setLabelList (Widget  selectionList,
 		   string  label_list[],
 		   bool    selected[],
 		   int     list_length,
+		   bool    highlight_title,
 		   bool    notify)
 {
-    XmStringTable xmlabel_list = makeXmStringTable(label_list, list_length);
+    XmStringTable xmlabel_list = 
+	makeXmStringTable(label_list, list_length, highlight_title);
 
     XtVaSetValues (selectionList,
 		   XmNitems,     xmlabel_list,
@@ -120,7 +112,7 @@ void setLabelList (Widget  selectionList,
     freeXmStringTable(xmlabel_list, list_length);
 }
 
-// ***************************************************************************
+
 // Fill the display numbers in DISP_NRS
 void getDisplayNumbers(Widget selectionList, IntArray& disp_nrs)
 {
@@ -147,36 +139,42 @@ void getDisplayNumbers(Widget selectionList, IntArray& disp_nrs)
     }
 }
 
-// ***************************************************************************
-// Erzeugt aus Array von string ein Array von XmString
-//
-static XmStringTable makeXmStringTable (string label_list[], int list_length)
+// Create an array of XmStrings from the list LABEL_LIST of length
+// LIST_LENGTH.  If HIGHLIGHT_TITLE is set, let the first line be bold.
+static XmStringTable makeXmStringTable (string label_list[],
+					int list_length, bool highlight_title)
 {
     XmStringTable xmlist = 
 	XmStringTable(XtMalloc(list_length * sizeof(XmString)));
 
-    for (int i = 0; i < list_length; i++)
+    int i = 0;
+    if (highlight_title && i < list_length)
+    {
+	xmlist[i] = XmStringCreateLtoR(label_list[i], LIST_TITLE_CHARSET);
+	i++;
+    }
+	
+    while (i < list_length)
+    {
 	xmlist[i] = XmStringCreateLtoR(label_list[i], LIST_CHARSET);
+	i++;
+    }
 
     return xmlist;
 }
 
-// ***************************************************************************
-// Gibt Array-Elemente vom Typ XmString frei .
-//
+// Free the XmString table XMLIST of length LIST_LENGTH
 static void freeXmStringTable (XmStringTable xmlist, int list_length)
 {
-    for (int i = 0; i < list_length; i++) {
+    for (int i = 0; i < list_length; i++)
+    {
 	XmStringFree (*xmlist);
 	xmlist++;
     }
 }
 
 
-// ***************************************************************************
 // Select POS in LIST and make it visible
-// ***************************************************************************
-
 void ListSetAndSelectPos(Widget list, int pos)
 {
     int top_item      = 0;

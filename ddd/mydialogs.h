@@ -54,20 +54,24 @@ void getDisplayNumbers(Widget selectionList, IntArray& arr);
 
 
 // Set the elements of the display selection list
-// label_list : Labels, using the format disp_nr ": " disp_name.
-// selected   : Decides whether labels are to be selected
-// list_length: Length of label_list[] and selected[]
-// notify     : Whether callbacks should be invoked
+// LABEL_LIST:      Labels, using the format disp_nr ": " disp_name.
+// SELECTED:        Whether labels are to be selected
+// LIST_LENGTH:     Length of label_list[] and selected[]
+// HIGHLIGHT_TITLE: Whether the first line should be highlighted
+// NOTIFY:          Whether callbacks should be invoked
 //
 void setLabelList (Widget  selectionList,
 		   string  label_list[],
 		   bool    selected[],
 		   int     list_length,
-		   bool    notify = true);
+		   bool    highlight_title,
+		   bool    notify);
 
 // The default list charset
 #define LIST_CHARSET "tt"
 
+// The default list title charset
+#define LIST_TITLE_CHARSET "tb"
 
 // Select POS in LIST and make it visible
 void ListSetAndSelectPos(Widget list, int pos);

@@ -3996,7 +3996,8 @@ void SourceView::process_breakpoints(string& info_breakpoints_output)
 	setup_where_line(breakpoint_list[i]);
     }
 
-    setLabelList(breakpoint_list_w, breakpoint_list, selected, count);
+    setLabelList(breakpoint_list_w, breakpoint_list, selected, count,
+		 true, false);
     UpdateBreakpointButtonsCB(breakpoint_list_w, XtPointer(0), XtPointer(0));
 
     delete[] breakpoint_list;
@@ -4194,7 +4195,7 @@ void SourceView::process_where (string& where_output)
 	setup_where_line(frame_list[i]);
     }
 
-    setLabelList(frame_list_w, frame_list, selected, count);
+    setLabelList(frame_list_w, frame_list, selected, count, false, false);
     set_frame_pos(0, 0);
 
     delete[] frame_list;
@@ -4370,7 +4371,8 @@ void SourceView::process_registers(string& register_output)
 	selected[i] = false;
     }
 
-    setLabelList(register_list_w, register_list, selected, count);
+    setLabelList(register_list_w, register_list, selected, count,
+		 false, false);
 
     delete[] register_list;
     delete[] selected;
@@ -4449,7 +4451,7 @@ void SourceView::process_threads(string& threads_output)
 	setup_where_line(thread_list[i]);
     }
 
-    setLabelList(thread_list_w, thread_list, selected, count, false);
+    setLabelList(thread_list_w, thread_list, selected, count, false, false);
 
     delete[] thread_list;
     delete[] selected;
