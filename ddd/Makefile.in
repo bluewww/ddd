@@ -1134,8 +1134,7 @@ check: Ddd ddd cxxtest
 debug: Ddd $(ddd) cxxtest ddd.gdb syms
 	$(GDB) -x $(srcdir)/ddd.gdb ./$(ddd)
 
-# ddd.syms does not explicitly depend on DDD since we don't want to rebuild it
-$(ddd).syms: FORCE
+$(ddd).syms: $(ddd)
 	@echo 'Creating $@...'
 	@test "`ls -t $(ddd_canonical) $@ 2> /dev/null | head -1`" \
 	= $(ddd_canonical) && (set -x; \
@@ -1543,9 +1542,10 @@ $(PUB_DEST)/USERINFO:
 .PHONY: depend
 depend: FORCE
 
-.PRECIOUS: Makedeps
-Makedeps depend:
-	( $(ECHO) \#' DO NOT EDIT -- generated automagically by make depend'; \
+.PRECIOUS: $(srcdir)/Makedeps
+$(srcdir)/Makedeps depend:
+	@$(ECHO) "Creating $(srcdir)/Makedeps..."
+	@( $(ECHO) \#' DO NOT EDIT -- generated automagically by make depend';\
 	$(ECHO) \#' Source: $$Id$$'; \
 	$(ECHO) ; \
 	$(CXX) -M $(CPPFLAGS) $(DEFS) $(INCLUDE) $(srcdir)/*.C \
@@ -1556,6 +1556,7 @@ Makedeps depend:
 	| $(SED) 's% \.\./% \$$(srcdir)/\.\./%g' \
 	| $(SED) 's%^ *$$%& config.h%g' ) > Makedeps~
 	$(MV) Makedeps~ $(srcdir)/Makedeps
+	@$(ECHO) "Creating $(srcdir)/Makedeps...done."
 
 ## If your `make' cannot handle the following line,
 ## just replace it by the contents of `@srcdir@/Makedeps'.
