@@ -6991,7 +6991,7 @@ void SourceView::set_max_glyphs (int nmax)
 }
 
 
-// Glyph has been activated - catch the double click in LessTif.
+// Glyph has been activated - catch the double click in Motif 1.x
 void SourceView::ActivateGlyphCB(Widget glyph, XtPointer, XtPointer call_data)
 {
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
@@ -7072,8 +7072,7 @@ Widget SourceView::create_glyph(Widget form_w,
     XtSetArg(args[arg], XmNarmColor,  background); arg++;
     XtSetValues(w, args, arg);
 
-    if (lesstif_version < 1000)
-	XtAddCallback(w, XmNactivateCallback, ActivateGlyphCB, 0);
+    XtAddCallback(w, XmNactivateCallback, ActivateGlyphCB, 0);
 
     InstallButtonTips(w);
     return w;
