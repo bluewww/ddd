@@ -1,9 +1,10 @@
 # $Id$ -*- Text -*-
 
-This directory contains the pictures contained in the PostScript copy
-of the DDD manual.  These pictures are needed only if you want to
-re-create the PostScript DDD manual, so they are not part of the
-standard DDD source distribution.
+This directory contains the pictures contained in the DDD manual.  A
+formatted copy of the DDD manual is already part of the DDD source
+distribution.  Hence, this directory is needed only if you want to
+create a local copy of the DDD manual after some change; it is
+contained in a separate distribution.
 
 To re-create the DDD Manual, enter the `ddd' directory (one level
 above the `PICS' directory) and enter `make postscript'.
