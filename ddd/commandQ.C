@@ -161,6 +161,10 @@ void processCommandQueue(XtPointer, XtIntervalId *)
 // Shell finder
 Widget find_shell(Widget w)
 {
+    // Make sure W is a real widget...
+    while (w != 0 && XtIsObject(w))
+	w = XtParent(w);
+
     if (w == 0)
 	w = gdb_last_origin;
     if (w == 0)
@@ -170,7 +174,12 @@ Widget find_shell(Widget w)
     if (parent == 0)
 	return command_shell;
 
-    if (!XtIsRealized(parent))
+    // Gerco Ballintijn <ballinti@afal01.cern.ch> says that the screen
+    // of PARENT may be null...
+    if (!XtIsRealized(parent)
+	|| XtDisplay(parent) == 0
+	|| XtScreen(parent) == 0
+	|| XtWindow(parent) == 0)
 	return command_shell;
 
     XWindowAttributes xwa;
