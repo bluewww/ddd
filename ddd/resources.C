@@ -2223,7 +2223,7 @@ const int ddd_resources_size = XtNumber(ddd_resources);
 AppData app_data;
 
 // Make sure APP_DATA is initialized with above default values
-struct AppDataInitializer {
+static struct AppDataInitializer {
     AppDataInitializer();
 } app_data_initializer;
 

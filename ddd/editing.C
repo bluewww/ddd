@@ -219,7 +219,7 @@ static void isearch_done(XtPointer client_data, XtIntervalId *)
     show_isearch();
 }
 
-void isearch_again(ISearchState new_isearch_state, XEvent *event)
+static void isearch_again(ISearchState new_isearch_state, XEvent *event)
 {
     if (!gdb->isReadyWithPrompt())
 	return;

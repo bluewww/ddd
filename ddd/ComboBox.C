@@ -253,10 +253,13 @@ Widget ComboBoxButton(Widget text)
     return info->button;
 }
 
+#if 0
+// unused
 Boolean ComboBoxIsSimple(Widget text)
 {
     return ComboBoxButton(text) != 0;
 }
+#endif
 
 Widget ComboBoxTop(Widget text)
 {

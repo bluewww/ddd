@@ -240,19 +240,19 @@ static void update_arguments(Widget dialog, Widget arguments_w,
     updated = true;
 }
 
-void update_run_arguments()
+static void update_run_arguments()
 {
     update_arguments(run_dialog, run_arguments_w, run_arguments,
 		     last_run_argument, run_arguments_updated);
 }
 
-void update_make_arguments()
+static void update_make_arguments()
 {
     update_arguments(make_dialog, make_arguments_w, make_arguments,
 		     last_make_argument, make_arguments_updated);
 }
 
-void update_cd_arguments()
+static void update_cd_arguments()
 {
     update_arguments(cd_dialog, cd_arguments_w, cd_arguments,
 		     last_cd_argument, cd_arguments_updated);

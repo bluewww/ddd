@@ -790,7 +790,7 @@ static regex rxdbx_begin_of_display_info("[(][1-9][0-9]*[)] ");
 #endif
 
 // Return index of first display in GDB_ANSWER; -1 if none
-int display_info_index (const string& gdb_answer, GDBAgent *gdb)
+static int display_info_index (const string& gdb_answer, GDBAgent *gdb)
 {
     const regex *prx = 0;
 

@@ -173,7 +173,7 @@ string gdb_history_file()
     return _gdb_history_file;
 }
 
-void set_line_from_history()
+static void set_line_from_history()
 {
     private_gdb_history = true;
 
@@ -404,7 +404,7 @@ void process_history_size(string answer)
 }
 
 // History viewer
-void SelectHistoryCB(Widget, XtPointer, XtPointer call_data)
+static void SelectHistoryCB(Widget, XtPointer, XtPointer call_data)
 {
     XmListCallbackStruct *cbs = (XmListCallbackStruct *)call_data;
     gdb_current_history = cbs->item_position - 1;
@@ -413,7 +413,7 @@ void SelectHistoryCB(Widget, XtPointer, XtPointer call_data)
     set_line_from_history();
 }
 
-void HistoryDestroyedCB(Widget, XtPointer client_data, XtPointer)
+static void HistoryDestroyedCB(Widget, XtPointer client_data, XtPointer)
 {
     Widget old_gdb_history_w = Widget(client_data);
     if (gdb_history_w == old_gdb_history_w)

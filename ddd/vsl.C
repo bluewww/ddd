@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
 
 
 // Graphics functions
-void Flush(Widget w)
+static void Flush(Widget w)
 {
     Display *display = XtDisplay(w);
     
@@ -83,7 +83,7 @@ void Flush(Widget w)
 }
 
 // Standard resources
-const _XtString fallback_resources[] = 
+static const _XtString fallback_resources[] = 
     { "*Viewport.width:    400", "*Viewport.height: 400", 0 };
 
 // These should be part of ExposeCB...
@@ -99,7 +99,7 @@ extern "C" clock_t clock();
 #endif
 
 // Redraw
-void redraw(Widget w, BoxRegion r, BoxRegion exposed)
+static void redraw(Widget w, BoxRegion r, BoxRegion exposed)
 {
     if (VSEFlags::verbose)
     {
@@ -119,7 +119,7 @@ void redraw(Widget w, BoxRegion r, BoxRegion exposed)
 }
 
 // Expose Callback
-void ExposeCB(Widget w, XtPointer, XtPointer call_data)
+static void ExposeCB(Widget w, XtPointer, XtPointer call_data)
 {
     // Set size
     Arg arglist[10];
@@ -138,7 +138,7 @@ void ExposeCB(Widget w, XtPointer, XtPointer call_data)
 }
 
 // When selecting: redraw all (for statistics)
-void SelectCB(Widget w, XtPointer, XtPointer)
+static void SelectCB(Widget w, XtPointer, XtPointer)
 {
     XClearArea(XtDisplay(w), XtWindow(w), 0, 0, 0, 0, false);
 
@@ -148,10 +148,10 @@ void SelectCB(Widget w, XtPointer, XtPointer)
 }
 
 
-XtAppContext app_con;
+static XtAppContext app_con;
 
 // Callback when done
-void QuitCB(Widget, XtPointer, XtPointer)
+static void QuitCB(Widget, XtPointer, XtPointer)
 {
     if (VSEFlags::verbose)
     {
@@ -172,7 +172,7 @@ void QuitCB(Widget, XtPointer, XtPointer)
 }
 
 // Create argument list
-ListBox *vsl_args(int argc, char *argv[])
+static ListBox *vsl_args(int argc, char *argv[])
 {
     ListBox *args = new ListBox;
     for (int i = 0; i < argc; i++)

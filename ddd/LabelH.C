@@ -97,7 +97,7 @@ static XtResource resources[] =
 #endif // XmVersion < 1002
 
 
-XmLabelHackClassRec xmLabelHackClassRec =
+static XmLabelHackClassRec xmLabelHackClassRec =
 {
     {
 	(WidgetClass)&xmLabelClassRec,		/* superclass */

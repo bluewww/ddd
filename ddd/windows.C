@@ -498,7 +498,7 @@ void uniconify_shell(Widget w)
     }
 }
 
-void popup_tty(Widget shell)
+static void popup_tty(Widget shell)
 {
     if (exec_tty_window())
     {
@@ -512,7 +512,7 @@ void popup_tty(Widget shell)
     }
 }
 
-void iconify_tty(Widget shell)
+static void iconify_tty(Widget shell)
 {
     if (exec_tty_window())
     {

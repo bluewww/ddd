@@ -917,12 +917,12 @@ Boolean CvtStringToOnOff(Display*     display,
 }
 
 // Convert the strings 'motif', `kde' to BindingStyle values
-Boolean CvtStringToBindingStyle(Display*     display, 
-				XrmValue*    ,
-				Cardinal*    , 
-				XrmValue*    fromVal,
-				XrmValue*    toVal,
-				XtPointer*   )
+static Boolean CvtStringToBindingStyle(Display*     display, 
+				       XrmValue*    ,
+				       Cardinal*    , 
+				       XrmValue*    fromVal,
+				       XrmValue*    toVal,
+				       XtPointer*   )
 {
     string value = str(fromVal, true);
     value.downcase();

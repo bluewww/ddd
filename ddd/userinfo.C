@@ -223,7 +223,7 @@ static const char *email(struct passwd *pwd)
 }
 
 // Write user information for given ARG
-int userinfo(char *arg = 0)
+static int userinfo(char *arg = 0)
 {
     struct passwd *pwd = 0;
 

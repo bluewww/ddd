@@ -626,7 +626,7 @@ void set_font(DDDFont font, const string& name)
 }
 
 // Set a new font resource
-void set_font_size(DDDFont font, int size)
+static void set_font_size(DDDFont font, int size)
 {
     switch (font)
     {

@@ -3473,7 +3473,7 @@ static void ToggleButtonCB(Widget, XtPointer client_data, XtPointer call_data)
     update_user_buttons();
 }
 
-MMDesc button_menu[] =
+static MMDesc button_menu[] =
 {
     { "console", MMToggle, 
       { ToggleButtonCB, XtPointer(ConsoleTarget) }, 0, 0, 0, 0},

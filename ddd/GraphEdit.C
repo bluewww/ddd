@@ -2714,7 +2714,7 @@ static int LayoutCompareCB(const char *name1, const char *name2)
     return info.result;
 }
 
-string node_name(GraphNode *node)
+static string node_name(GraphNode *node)
 {
     char buffer[BUFSIZ];
     sprintf(buffer, "0x%lx", (unsigned long) node);
