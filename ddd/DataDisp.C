@@ -496,7 +496,7 @@ void DataDisp::dependentCB(Widget w, XtPointer, XtPointer)
 void DataDisp::refreshCB(Widget w, XtPointer, XtPointer)
 {
     last_origin = w;
-    refresh_graph_edit();
+    refresh_displaySQ();
 }
 
 void DataDisp::selectAllCB(Widget w, XtPointer, XtPointer)
@@ -1389,8 +1389,8 @@ void DataDisp::new_displaySQ (string display_expression, BoxPoint* p,
     case GDB:
     {
 	string cmd = gdb->display_command() + " " + display_expression;
-	int i = gdb->send_question (cmd, new_displayOQC, p);
-	if (i == 0) {
+	bool ok = gdb->send_question (cmd, new_displayOQC, p);
+	if (!ok) {
 	    post_gdb_busy(last_origin);
 	}
     }
@@ -1400,8 +1400,8 @@ void DataDisp::new_displaySQ (string display_expression, BoxPoint* p,
     {
 	gdb_question(gdb->display_command() + " " + display_expression);
 	string cmd = gdb->print_command() + " " + display_expression;
-	int i = gdb->send_question (cmd, new_displayOQC, p);
-	if (i == 0) {
+	bool ok = gdb->send_question (cmd, new_displayOQC, p);
+	if (!ok) {
 	    post_gdb_busy(last_origin);
 	}
     }
@@ -1635,9 +1635,26 @@ void DataDisp::new_displaysOQAC (string answers[],
 //
 void DataDisp::refresh_displaySQ () 
 {
-    int i = gdb->send_question(gdb->display_command(), refresh_displayOQC, 0);
-    if (i == 0)
-	post_gdb_busy(last_origin);
+    bool ok;
+
+    switch (gdb->type())
+    {
+    case GDB:
+	ok = gdb->send_question(gdb->display_command(), refresh_displayOQC, 0);
+	break;
+
+    case DBX:
+	// No way to do this in DBX.
+	// (We may issue a `print' command for every display shown.  FIXME)
+	ok = false;
+	break;
+    }
+
+    if (!ok)
+    {
+	// Don't complain; simply redraw display.
+	refresh_graph_edit();
+    }
 }
 
 // ***************************************************************************
@@ -1672,22 +1689,28 @@ void DataDisp::refresh_displaySQA (Widget origin)
 
     string cmds[2];
     void*  dummy[2];
+    bool ok;
 
-    int n = 0;
     switch (gdb->type())
     {
     case GDB:
-	cmds[n++] = "info display";
-	cmds[n++] = gdb->display_command();
+	cmds[0] = "info display";
+	cmds[1] = gdb->display_command();
+	ok = gdb->send_qu_array(cmds, dummy, 2, refresh_displayOQAC, 0);
 	break;
 
     case DBX:
-	cmds[n++] = gdb->display_command();
-    };
+	// No way to do this in DBX.
+	// (We may issue a `print' command for every display shown.  FIXME)
+	ok = false;
+	break;
+    }
 
-    int i = gdb->send_qu_array(cmds, dummy, n, refresh_displayOQAC, 0);
-    if (i == 0)
-	post_gdb_busy(last_origin);
+    if (!ok)
+    {
+	// Don't complain; simply redraw display.
+	refresh_graph_edit();
+    }
 }
 
 // ***************************************************************************
@@ -1742,8 +1765,8 @@ void DataDisp::disable_displaySQ (int display_nrs[], int count)
     for (j = 0; j < count; j++) {
 	cmd += " " + itostring(display_nrs[j]);
     }
-    int i = gdb->send_question (cmd, disable_displayOQC, 0);
-    if (i == 0)
+    bool ok = gdb->send_question (cmd, disable_displayOQC, 0);
+    if (!ok)
 	post_gdb_busy(last_origin);
     else {
 	for (j = 0; j < count; j++) {
@@ -1782,8 +1805,8 @@ void DataDisp::enable_displaySQ (int display_nrs[], int count)
     for (j = 0; j < count; j++) {
 	cmd += " " + itostring(display_nrs[j]);
     }
-    int i = gdb->send_question (cmd, enable_displayOQC, 0);
-    if (i == 0)
+    bool ok = gdb->send_question (cmd, enable_displayOQC, 0);
+    if (!ok)
        post_gdb_busy(last_origin);
 }
 
@@ -1840,8 +1863,8 @@ void DataDisp::delete_displaySQ (int display_nrs[], int count)
 	break;
     }
 	
-    int i = gdb->send_question (cmd, delete_displayOQC, 0);
-    if (i == 0)
+    bool ok = gdb->send_question (cmd, delete_displayOQC, 0);
+    if (!ok)
 	post_gdb_busy(last_origin);
     else {
 	for (j = 0; j < count; j++) {
@@ -1902,9 +1925,9 @@ void DataDisp::dependent_displaySQ (string display_expression, int disp_nr)
     case GDB:
     {
 	string cmd = gdb->display_command() + " " + display_expression;
-	int i = gdb->send_question(cmd, dependent_displayOQC, 
-				   (void *) disp_nr);
-	if (i == 0) {
+	bool ok = gdb->send_question(cmd, dependent_displayOQC, 
+				     (void *) disp_nr);
+	if (!ok) {
 	    post_gdb_busy(last_origin);
 	}
     }
@@ -1914,9 +1937,9 @@ void DataDisp::dependent_displaySQ (string display_expression, int disp_nr)
     {
 	gdb_question(gdb->display_command() + " " + display_expression);
 	string cmd = gdb->print_command() + " " + display_expression;
-	int i = gdb->send_question(cmd, dependent_displayOQC, 
+	bool ok = gdb->send_question(cmd, dependent_displayOQC, 
 				   (void *) disp_nr);
-	if (i == 0) {
+	if (!ok) {
 	    post_gdb_busy(last_origin);
 	}
     }
