@@ -343,6 +343,9 @@ DDD = @DDD@
 # The version number.
 VERSION = @VERSION@
 
+# Canonical program and distribution base name.
+ddd_canonical = $(ddd)-$(VERSION)-$(target_canonical)
+
 # Index file fix
 FIX_INDEX = $(SED) -f $(srcdir)/fixindex.sed
 
@@ -395,7 +398,7 @@ X_INCLUDE = @X_CFLAGS@
 INCLUDE = -I. -I$(srcdir) -I$(srcdir)/.. -I$(srcdir)/../include $(X_INCLUDE)
 
 ## Implicit rules.
-.SUFFIXES: .C .cc .c .mod .p .Y .YY .L .ddd .txt
+.SUFFIXES: .C .cc .c .mod .p .Y .YY .L .txt
 .C.o:
 	$(COMPILE.cc) $(INCLUDE) -o $@ $<
 .cc.o:
@@ -627,7 +630,7 @@ USERINFO_OBJECTS =
 OBJECTS = $(NORA_OBJECTS) $(DDD_OBJECTS)
 
 ## The program files.
-PROGS = ddd
+PROGS = $(ddd)
 
 ## Extra demonstration files.
 DEMOS = userinfo cxxtest ctest test-graph ttytest bug ptest m2test
@@ -640,18 +643,16 @@ MAKEINFO_FLAGS = \
 IDXS = *.cp *.fn *.ky *.pg *.tp *.vr
 
 ## The dvi files.
-# DVIS = $(srcdir)/ddd.dvi $(srcdir)/dddint.dvi
 DVIS =
 
 ## The postscript files.
-# PSS = $(srcdir)/ddd.ps $(srcdir)/dddint.ps
 PSS =
 
 ## The HTML files.
 # HTML_BASES = ddd_toc.html dddint_toc.html
 # HTML_PATTERNS = $(srcdir)/ddd_*.html $(srcdir)/dddint_*.html
 # HTMLS = $(HTML_BASES) $(HTML_PATTERNS)
-HRTMLS = 
+HTMLS = 
 
 ## The manual page.
 MANS = $(srcdir)/ddd.man
@@ -673,7 +674,7 @@ DIST_STUFF	 = $(PROG_STUFF) $(MANS) depend TAGS \
 		   $(srcdir)/../doc/ddd.man.ps
 
 # Temporary Files to be cleaned, keeping configuration intact
-CLEAN_STUFF	 = $(PROGS) $(DEMOS) core *.o *.a *.s *.i \
+CLEAN_STUFF	 = ddd-$(VERSION)-* $(PROGS) $(DEMOS) core *.o *.a *.s *.i \
 		   tmp* *.tmp .*hist* *.syms \
 		   *.aux *.cp *.cps *.fn *.fns *.flc \
 		   *.ky *.kys *.log *.pg *.pgs *.toc *.tp *.tps *.vr *.vrs \
@@ -838,7 +839,10 @@ DataDisp.o: ddd.vsl.h
 
 ## The programs.
 
-ddd:	ddd.o $(OBJECTS)
+$(ddd):	$(ddd_canonical)
+	$(RM) $@; $(LN_S) $(ddd_canonical) $@
+
+$(ddd_canonical): ddd.o $(OBJECTS)
 	$(LINK.cc) -o $@ ddd.o $(OBJECTS) $(ALL_X_LIBS) $(LIBS)
 
 
