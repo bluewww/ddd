@@ -1062,6 +1062,20 @@ bool DispGraph::make_inactive(int disp_nr)
 	else
 	{
 	    dn->make_inactive();
+
+	    // Hide all alias edges associated with this node
+	    VoidArray hide_edges;
+	    GraphEdge *edge;
+	    for (edge = firstEdge(); edge != 0; edge = nextEdge(edge))
+	    {
+		AliasGraphEdge *e = ptr_cast(AliasGraphEdge, edge);
+		if (e != 0 && e->disp_nr() == disp_nr)
+		{
+		    if (e->to()->isHint())
+			e->to()->hidden() = true;
+		    e->hidden() = true;
+		}
+	    }
 	}
 	return true;
     }
@@ -1078,6 +1092,24 @@ bool DispGraph::make_active(int disp_nr)
     if (!dn->active())
     {
 	dn->make_active();
+
+	if (dn->nodeptr()->hidden())
+	{
+	    // Redisplay all alias edges associated with this node
+	    VoidArray hide_edges;
+	    GraphEdge *edge;
+	    for (edge = firstEdge(); edge != 0; edge = nextEdge(edge))
+	    {
+		AliasGraphEdge *e = ptr_cast(AliasGraphEdge, edge);
+		if (e != 0 && e->disp_nr() == disp_nr)
+		{
+		    if (e->to()->isHint())
+			e->to()->hidden() = false;
+		    e->hidden() = false;
+		}
+	    }
+	}
+
 	return true;
     }
 
