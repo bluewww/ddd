@@ -2,7 +2,7 @@
 // General configuration file.
 
 // Copyright (C) 1995-1999 Technische Universitaet Braunschweig, Germany.
-// Copyright (C) 2000 Universitaet Passau, Germany.
+// Copyright (C) 2000-2001 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -58,6 +58,9 @@
 
 /* Define if your C++ compiler supports the `explicit' keyword. */
 #undef HAVE_EXPLICIT
+
+/* Define if your C++ compiler supports new C++ casts, such as `const_cast' */
+#undef HAVE_NEW_CASTS
 
 /* Define if your C++ compiler supports exception handling. */
 #undef HAVE_EXCEPTIONS

@@ -638,6 +638,32 @@ AC_SUBST(ISYSTEM)
 ])dnl
 dnl
 dnl
+dnl ICE_CXX_NEW_CASTS
+dnl ----------------
+dnl
+dnl If the C++ compiler accepts the c++ style casts, define `HAVE_NEW_CASTS'.
+dnl
+AC_DEFUN(ICE_CXX_NEW_CASTS,
+[
+AC_REQUIRE([AC_PROG_CXX])
+AC_MSG_CHECKING(whether the C++ compiler (${CXX}) supports new style casts)
+AC_CACHE_VAL(ice_cv_have_new_casts,
+[
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_COMPILE(,[void f() { double *x = 0; char *s = reinterpret_cast<char*>(x); }],
+ice_cv_have_new_casts=yes,
+ice_cv_have_new_casts=no)
+AC_LANG_RESTORE
+])
+AC_MSG_RESULT($ice_cv_have_new_casts)
+if test "$ice_cv_have_new_casts" = yes; then
+AC_DEFINE(HAVE_NEW_CASTS)
+fi
+])dnl
+dnl
+dnl
+dnl
 dnl
 dnl
 dnl ICE_CXX_PROBLEMATIC_VERSION
