@@ -29,7 +29,7 @@ dnl
 dnl DDD is the data display debugger.
 dnl For details, see the DDD World-Wide-Web page, 
 dnl `http://www.cs.tu-bs.de/softech/ddd/',
-dnl or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
+dnl or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 dnl
 dnl
 dnl ICE_PROG_CC and ICE_PROG_CXX

@@ -25,7 +25,7 @@
 # DDD is the data display debugger.
 # For details, see the DDD World-Wide-Web page, 
 # `http://www.cs.tu-bs.de/softech/ddd/',
-# or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
+# or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
 # This script checks out the current DDD development tree, as
 # stored in CVS, and creates a DDD release-of-the-day (`ROTD').
