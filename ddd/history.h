@@ -40,16 +40,21 @@
 
 
 // History management
-extern void init_history_file(const string& file);
 extern void process_history_filename(string answer);
 extern void process_history_size(string answer);
-extern void process_history_save(string answer);
 extern void add_to_history(const string& line);
 extern void set_history_from_line(const string& line, 
 				  bool ignore_history_commands = false);
-extern void load_history();
-extern void save_history(Widget origin = 0);
 
+// Set and get GDB history file
+extern void set_gdb_history_file(const string& file);
+extern string gdb_history_file();
+
+// Load history from FILE
+extern void load_history(const string& file);
+
+// Save history into FILE
+extern void save_history(const string& file, Widget origin = 0);
 
 // Last command from history
 extern string last_command_from_history();

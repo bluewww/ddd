@@ -1471,6 +1471,43 @@ string GDBAgent::disassemble_command(string pc) const
 }
 
 
+string GDBAgent::history_file() const
+{
+    char *_home = getenv("HOME");
+    if (_home == 0)
+	_home = ".";
+    string home(_home);
+
+    switch (gdb->type())
+    {
+    case GDB:
+    {
+	char *g = getenv("GDBHISTFILE");
+	if (g != 0)
+	    return g;
+	else
+	    return "./.gdb_history";
+    }
+
+    case DBX:
+    {
+	return "";		// Unknown
+    }
+
+    case XDB:
+    {
+	char *g = getenv("XDBHIST");
+	if (g != 0)
+	    return g;
+	else
+	    return home + "/.xdbhist";
+    }
+    }
+
+    return "";			// Unknown
+}
+
+
 // ***************************************************************************
 ProgramLanguage GDBAgent::program_language(string text)
 {

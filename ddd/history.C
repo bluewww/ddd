@@ -35,7 +35,6 @@ char history_rcsid[] =
 
 #include "history.h"
 
-#include "AppData.h"
 #include "Delay.h"
 #include "DestroyCB.h"
 #include "GDBAgent.h"
@@ -79,7 +78,7 @@ static StringArray gdb_history;
 static int gdb_current_history;
 
 // File name to save the history
-static string gdb_history_file;
+static string _gdb_history_file;
 
 // Size of saved history
 static int gdb_history_size = 100;
@@ -90,9 +89,14 @@ static bool gdb_new_history = true;
 // True if history command was issued
 static bool private_gdb_history = false;
 
-void init_history_file(const string& file)
+void set_gdb_history_file(const string& file)
 {
-    gdb_history_file = file;
+    _gdb_history_file = file;
+}
+
+string gdb_history_file()
+{
+    return _gdb_history_file;
 }
 
 void set_line_from_history()
@@ -183,13 +187,13 @@ void add_to_history(const string& line)
 }
 
 // Load history from history file
-void load_history()
+void load_history(const string& file)
 {
-    if (gdb_history_file != "")
+    if (file != "")
     {
 	// Delay d;
 
-	ifstream is(gdb_history_file);
+	ifstream is(file);
 	if (is.bad())
 	    return;
 
@@ -220,15 +224,15 @@ void load_history()
 }
 
 // Save history into history file
-void save_history(Widget origin)
+void save_history(const string& file, Widget origin)
 {
-    if (gdb_history_file != "")
+    if (file != "")
     {
-	StatusDelay delay("Saving history in " + quote(gdb_history_file));
-	ofstream os(gdb_history_file);
+	StatusDelay delay("Saving history in " + quote(file));
+	ofstream os(file);
 	if (os.bad())
 	{
-	    post_error("Cannot save history in " + quote(gdb_history_file),
+	    post_error("Cannot save history in " + quote(file),
 		       "history_save_error", origin);
 	    return;
 	}
@@ -247,14 +251,7 @@ void process_history_filename(string answer)
 {
     answer = answer.after('"');
     answer = answer.before('"');
-    gdb_history_file = answer;
-
-    static bool history_initialized = false;
-    if (!history_initialized)
-    {
-	history_initialized = true;
-	load_history();
-    }
+    set_gdb_history_file(answer);
 }
 
 // Set history size
@@ -264,20 +261,6 @@ void process_history_size(string answer)
     int ret = get_positive_nr(answer);
     if (ret >= 0)
 	gdb_history_size = ret;
-}
-
-// Set history save
-void process_history_save(string answer)
-{
-    // A `set save history on' in ~/.gdbinit causes the DDD history to
-    // be saved (since otherwise, it would be overwritten by the GDB
-    // history, which is cluttered with internal DDD commands).
-
-    if (answer.contains("is on"))
-    {
-	app_data.save_history_on_exit = true;
-	update_options();
-    }
 }
 
 // History viewer
@@ -348,7 +331,7 @@ void gdbHistoryCB(Widget w, XtPointer, XtPointer)
     XtAddCallback(gdb_history_w, XmNokCallback, DestroyThisCB, gdb_history_w);
     XtAddCallback(gdb_history_w, XmNapplyCallback, gdbApplySelectionCB, 0);
     XtAddCallback(gdb_history_w, XmNhelpCallback,  ImmediateHelpCB, 0);
-    XtAddCallback(gdb_history_w, XtNdestroyCallback, 
+    XtAddCallback(gdb_history_w, XmNdestroyCallback, 
 		  HistoryDestroyedCB, XtPointer(gdb_history_w));
 
     bool *selected = new bool[gdb_history.size() + 1];

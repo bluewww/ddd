@@ -43,8 +43,8 @@ char exit_rcsid[] =
 // with the help of advanced tools.
 // However, all I'm looking for today
 // is a well-debugged debugger.
-// I have been working
-// with C/C++ debuggers from several Unix vendors
+// I have been working with C/C++ debuggers
+// from several Unix vendors
 // as well as a Microsoft Windows-based debugger.
 // All of them more than occasionally fail
 // to perform some very basic function,
@@ -82,12 +82,14 @@ char exit_rcsid[] =
 #include "ddd.h"
 #include "exectty.h"
 #include "findParent.h"
+#include "filetype.h"
 #include "history.h"
 #include "host.h"
 #include "longName.h"
 #include "options.h"
 #include "post.h"
 #include "question.h"
+#include "session.h"
 #include "sigName.h"
 #include "status.h"
 #include "verify.h"
@@ -144,8 +146,15 @@ void ddd_cleanup()
 	gdb->shutdown();
 	gdb->terminate(true);
     }
+
+    // If GDB created a history file, overwrite it such that it is not
+    // cluttered with internal DDD commands.
+    if (is_regular_file(gdb_history_file()))
+	save_history(gdb_history_file(), command_shell);
+
+    // Now write the session-specific DDD history file.
     if (app_data.save_history_on_exit)
-	save_history(command_shell);
+	save_history(session_history_file(app_data.session));
 }
 
 

@@ -367,15 +367,6 @@ Volunteers for these and other projects are welcome!
      hotkey package (in
      `http://www.igpm.rwth-aachen.de/~albrecht/mnem.html')
 
-202* More session stuff:
-     * History is not yet saved per-session.  DDD should overwrite the
-       pre-session own history file *as well as* the GDB history file,
-       but load from its per-session history file only.
-     * Exiting a session with changes should require confirmation.
-     * Don't show status messages while restoring a session.  A `lock
-       status line' flag in StatusDelays may be helpful (i.e. add to
-       history, but don't show).
-
 206* `manage_and_raise' should deiconify dialogs.
 
 208* Use a single LEX source for all 150 DDD regexps, instead of

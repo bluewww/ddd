@@ -177,7 +177,6 @@ typedef struct PlusCmdData {
     bool     refresh_disp_info;        // send 'info display'
     bool     refresh_history_filename; // send 'show history filename'
     bool     refresh_history_size;     // send 'show history size'
-    bool     refresh_history_save;     // send 'show history save'
     bool     refresh_setting;	       // send 'show SETTING'
     string   set_command;	       // setting to update
     string   break_arg;		       // argument when setting breakpoint
@@ -224,7 +223,6 @@ typedef struct PlusCmdData {
 	refresh_disp_info(false),
 	refresh_history_filename(false),
 	refresh_history_size(false),
-	refresh_history_save(false),
 	refresh_setting(false),
 	set_command(""),
 	break_arg(""),
@@ -365,8 +363,6 @@ void start_gdb()
 	plus_cmd_data->refresh_history_filename = true;
 	cmds += "show history size";
 	plus_cmd_data->refresh_history_size = true;
-	cmds += "show history save";
-	plus_cmd_data->refresh_history_save = true;
 	break;
 
     case DBX:
@@ -763,7 +759,6 @@ void user_cmdSUC (string cmd, Widget origin,
 	{
 	    // Refresh history settings, too
 	    plus_cmd_data->refresh_history_filename = true;
-	    plus_cmd_data->refresh_history_save     = true;
 	    plus_cmd_data->refresh_history_size     = true;
 	}
     }
@@ -899,8 +894,6 @@ void user_cmdSUC (string cmd, Widget origin,
 	    cmds += "show history filename";
 	if (plus_cmd_data->refresh_history_size)
 	    cmds += "show history size";
-	if (plus_cmd_data->refresh_history_save)
-	    cmds += "show history save";
 	if (plus_cmd_data->refresh_setting)
 	{
 	    string show_command = "show ";
@@ -947,7 +940,6 @@ void user_cmdSUC (string cmd, Widget origin,
 	    cmds += gdb->display_command();
 	assert (!plus_cmd_data->refresh_history_filename);
 	assert (!plus_cmd_data->refresh_history_size);
-	assert (!plus_cmd_data->refresh_history_save);
 	if (plus_cmd_data->refresh_setting)
 	    cmds += cmd.before(rxwhite);
 	break;
@@ -980,7 +972,6 @@ void user_cmdSUC (string cmd, Widget origin,
 	    cmds += gdb->display_command();
 	assert (!plus_cmd_data->refresh_history_filename);
 	assert (!plus_cmd_data->refresh_history_size);
-	assert (!plus_cmd_data->refresh_history_save);
 	assert (!plus_cmd_data->refresh_setting);
 	break;
     }
@@ -1815,11 +1806,6 @@ void plusOQAC (string answers[],
     if (plus_cmd_data->refresh_history_size) {
 	assert (qu_count < count);
 	process_history_size(answers[qu_count++]);
-    }
-
-    if (plus_cmd_data->refresh_history_save) {
-	assert (qu_count < count);
-	process_history_save(answers[qu_count++]);
     }
 
     if (plus_cmd_data->refresh_setting) {

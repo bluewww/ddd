@@ -1697,6 +1697,9 @@ int main(int argc, char *argv[])
     gdb->addHandler(LanguageChanged,  language_changedHP);
     gdb->addHandler(ReplyRequired,    gdb_selectHP);
 
+    // Set default history file (never read, only overwritten)
+    set_gdb_history_file(gdb->history_file());
+
     // Setup shell creation
     Delay::shell_registered = decorate_new_shell;
 
@@ -1975,8 +1978,8 @@ int main(int argc, char *argv[])
 
     // All widgets are created at this point.
     
-    // Setup history
-    init_history_file(session_history_file(app_data.session));
+    // Load history for current session
+    load_history(session_history_file(app_data.session));
 
     // Put saved options back again
     for (i = argc + saved_options.size() - 1; i > saved_options.size(); i--)
@@ -3989,11 +3992,6 @@ static void gdb_readyHP(Agent *, void *, void *call_data)
 	{
 	    gdb_initialized = true;
 	    XmTextSetEditable(gdb_w, true);
-
-	    // Load the default history (for debuggers that don't
-	    // provide history); the ``real'' history is read as reply
-	    // to the ``show history filename'' command.
-	    load_history();
 	}
 
 	// Process next pending command as soon as we return

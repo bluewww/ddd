@@ -363,6 +363,7 @@ public:
     string make_command(string target) const;       // GDB: "make TARGET"
     string jump_command(string pc) const;           // GDB: "jump PC"
     string kill_command() const;                    // GDB: "kill"
+    string history_file() const;                    // GDB: "~/.gdb_history"
 
 private:
     bool questions_waiting;
