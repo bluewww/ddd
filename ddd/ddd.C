@@ -1458,8 +1458,8 @@ int main(int argc, char *argv[])
 
     // Setup extra version info
     helpOnVersionExtraText = 
-	MString(string(config_info).before("\n\n"), "rm") +
-	MString("\n\n" DDD_NAME " is ", "rm") + 
+	MString(string(config_info).through(".\n"), "rm") +
+	MString("\n" DDD_NAME " is ", "rm") + 
 	MString("free software", "sl") +
 	MString(" and you are welcome to distribute copies of it\n"
 "under certain conditions; select `" DDD_NAME " License' in the `Help' menu\n"
