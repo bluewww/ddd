@@ -389,8 +389,9 @@ void PosBuffer::filter (string& answer)
 		    int index = 0;
 		    while (index >= 0 && answer != "")
 		    {
-			string line = answer.before('\n', index);
-
+			string line = answer.from(index);
+			if (line.contains('\n'))
+			    line = line.before('\n');
 			strip_final_blanks(line);
 
 			static regex 
