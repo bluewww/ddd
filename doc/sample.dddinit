@@ -264,14 +264,27 @@
 ! FONTS
 ! ----------------------------------------------------------------------------
 
-
-! Here are some nice alternatives.  Try these.
+! Here are some nice alternatives to the predefined DDD fonts.  Try these.
 
 ! Ddd*defaultFont:       helvetica-medium
 ! Ddd*fixedWidthFont:    courier
 ! Ddd*variableWidthFont: times
 
 
-! Local Variables:
-! font-lock-keywords: (t ("\\(^\\!.*\\|dnl.*\\)" (0 font-lock-comment-face t)) ("@[0-9a-zA-Z@]+" (0 font-lock-variable-name-face)) ("\\(define\\|include\\|ifdef\\)\\b" (0 font-lock-keyword-face)))
-! End:
+
+! ----------------------------------------------------------------------------
+! OBSCURE AND DANGEROUS STUFF
+! ----------------------------------------------------------------------------
+
+! When DDD interrupts a program while it has grabbed the pointer,
+! DDD 3.0 by default continues it.  Earlier DDD releases attempted
+! to make the debuggee ungrab its pointer instead.  This setting
+! will emulate the DDD 2.x behavior.  Use at your own risk!
+
+! Note: This assumes the global variable _XHeadOfDisplayList contains
+! the most recently opened display; as in X11 with MOTIF_BC enabled.
+! Originally suggested by Vadim Rogozin  <dima@mercury.co.il>
+
+! Ddd*grabAction: \
+! print XUngrabPointer(_XHeadOfDisplayList, 0L)\n
+! print XFlush(_XHeadOfDisplayList)
