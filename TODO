@@ -312,8 +312,8 @@ Volunteers for these and other projects are welcome!
 
 370 Make sure the argument window does not grow too wide.
 
-371 Finish temporary breakpoints for Perl.  In particular, handle
-    Action points as 3rd category besides Watch points and Break
-    points.
+371 Add command recording for debuggers other than GDB.
 
-372 (Insert new project ideas here)
+372 Add user-defined commands for debuggers other than GDB.
+
+373 (Insert new project ideas here)

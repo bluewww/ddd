@@ -168,3 +168,7 @@ detail.
 
 738 Joonas Lehtinen <phoenix@jole.fi> reports that DDD 3.1 coredumps
     after a few replots.
+
+739 Matthew Leditschke <mleditsc@arc.corp.mot.com> reports that
+    clicking button 1 on a variable does not copy it to the ():
+    argument field.
