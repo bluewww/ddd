@@ -4001,7 +4001,7 @@ static Widget add_panel(Widget parent, Widget buttons,
 
 static void OfferRestartCB(Widget dialog, XtPointer, XtPointer)
 {
-    if (startup_preferences_changed())
+    if (startup_preferences_changed() || font_preferences_changed())
     {
 	static Widget restart_dialog = 0;
 	if (restart_dialog == 0)
