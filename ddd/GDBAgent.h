@@ -123,7 +123,6 @@ private:
     HandlerList     busy_handlers;
 
     bool _has_frame_command;	
-    bool _has_line_command;
     bool _has_run_io_command;
     bool _has_print_r_command;
     bool _has_where_h_command;
@@ -131,7 +130,6 @@ private:
     bool _has_clear_command;
     bool _has_pwd_command;
     bool _has_named_values;
-    bool _has_func_pos;
     bool _has_when_semicolon;
     bool _has_err_redirection;
 
@@ -223,10 +221,6 @@ public:
     bool has_frame_command() const    { return _has_frame_command; }	
     bool has_frame_command(bool val)  { return _has_frame_command = val; }
 
-    // True if debugger has `line' command
-    bool has_line_command() const      { return _has_line_command; }  
-    bool has_line_command(bool val)    { return _has_line_command = val; }
-
     // True if debugger has `run_io' command
     bool has_run_io_command() const    { return _has_run_io_command; }
     bool has_run_io_command(bool val)  { return _has_run_io_command = val; }
@@ -254,10 +248,6 @@ public:
     // True if debugger issues `NAME = VALUE' upon `print' commands
     bool has_named_values() const      { return _has_named_values; }
     bool has_named_values(bool val)    { return _has_named_values = val; }
-
-    // True if debugger issues position upon `func' command
-    bool has_func_pos() const          { return _has_func_pos; }
-    bool has_func_pos(bool val)        { return _has_func_pos = val; }
 
     // True if debugger wants `;' at the end of `when' command specs
     bool has_when_semicolon() const    { return _has_when_semicolon; }
@@ -299,6 +289,7 @@ private:
 			   void*    qa_data);
     bool ends_with_prompt (const string& answer);
     bool ends_with_secondary_prompt (const string& answer);
+    string requires_reply (const string& answer);
     void cut_off_prompt (string& answer);
     void strip_comments (string& answer);
 
@@ -315,6 +306,6 @@ protected:
 
     virtual int setupChildCommunication();
 };
-#endif
-
+#endif // _DDD_GDBAgent_h
+// DON'T ADD ANYTHING BEHIND THIS #endif
 

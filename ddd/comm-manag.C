@@ -102,7 +102,7 @@ typedef struct CmdData {
 typedef struct PlusCmdData {
     bool     refresh_main;             // send 'info line main' / `func main'
     bool     refresh_file;             // send 'file'
-    bool     refresh_line;             // send 'list' (DBX 1.x) or 'line'
+    bool     refresh_line;             // send 'list'
     bool     refresh_pwd;	       // send 'pwd'
     bool     refresh_bpoints;          // send 'info b'
     bool     refresh_where;            // send 'where'
@@ -115,7 +115,6 @@ typedef struct PlusCmdData {
     bool     refresh_history_save;     // send 'show history save'
 
     bool     config_frame;	       // try 'frame'
-    bool     config_line;	       // try 'line'
     bool     config_run_io;	       // try 'dbxenv run_io'
     bool     config_print_r;	       // try 'print -r'
     bool     config_where_h;	       // try 'where -h'
@@ -123,7 +122,6 @@ typedef struct PlusCmdData {
     bool     config_clear;	       // try 'clear'
     bool     config_pwd;	       // try 'pwd'
     bool     config_named_values;      // try 'print "ddd"'
-    bool     config_func_pos;          // try 'func main'
     bool     config_when_semicolon;    // try 'help when'
     bool     config_err_redirection;   // try 'help run'
     bool     config_page;	       // try 'set $page = 0'
@@ -144,7 +142,6 @@ typedef struct PlusCmdData {
 	refresh_history_save(false),
 
 	config_frame(false),
-	config_line(false),
 	config_run_io(false),
 	config_print_r(false),
 	config_where_h(false),
@@ -152,7 +149,6 @@ typedef struct PlusCmdData {
 	config_clear(false),
 	config_pwd(false),
 	config_named_values(false),
-	config_func_pos(false),
 	config_when_semicolon(false),
 	config_err_redirection(false),
 	config_page(false)
@@ -198,8 +194,6 @@ void start_gdb()
 	plus_cmd_data->refresh_main = true;
 	cmds += "frame";
 	plus_cmd_data->config_frame = true;
-	cmds += "line";
-	plus_cmd_data->config_line = true;
 	cmds += "dbxenv run_io";
 	plus_cmd_data->config_run_io = true;
 	cmds += "print -r " + print_r_cookie;
@@ -214,8 +208,6 @@ void start_gdb()
 	plus_cmd_data->config_pwd = true;
 	cmds += "print \"" DDD_NAME "\"";
 	plus_cmd_data->config_named_values = true;
-	cmds += "func main";
-	plus_cmd_data->config_func_pos = true;
 	cmds += "help when";
 	plus_cmd_data->config_when_semicolon = true;
 	cmds += "help run";
@@ -393,10 +385,10 @@ void user_cmdSUC (string cmd, Widget origin)
 	// New displays and new exec position
 	cmd_data->filter_disp = Filter;
 	cmd_data->new_exec_pos = true;
-	if (gdb->type() == DBX) {
+	if (gdb->type() == DBX)
+	{
 	    plus_cmd_data->refresh_file  = true;
-	    if (gdb->has_line_command())
-		plus_cmd_data->refresh_line  = true;
+	    // plus_cmd_data->refresh_line  = true;
 	    if (gdb->has_frame_command())
 		plus_cmd_data->refresh_frame = true;
 	}
@@ -423,8 +415,8 @@ void user_cmdSUC (string cmd, Widget origin)
 	case DBX:
 	    // We need to get the current file as well...
 	    plus_cmd_data->refresh_file  = true;
-	    if (gdb->has_line_command())
-		plus_cmd_data->refresh_line  = true;
+	    // if (gdb->has_line_command())
+	    // plus_cmd_data->refresh_line  = true;
 	    break;
 
 	case XDB:
@@ -454,9 +446,7 @@ void user_cmdSUC (string cmd, Widget origin)
 		{
 		    // Update position
 		    plus_cmd_data->refresh_file = true;
-
-		    if (!gdb->has_func_pos())
-			plus_cmd_data->refresh_line = true;
+		    plus_cmd_data->refresh_line = true;
 		}
 	    }
 	    else
@@ -539,7 +529,6 @@ void user_cmdSUC (string cmd, Widget origin)
     VoidArray dummy;
 
     assert(!plus_cmd_data->config_frame);
-    assert(!plus_cmd_data->config_line);
     assert(!plus_cmd_data->config_run_io);
     assert(!plus_cmd_data->config_print_r);
     assert(!plus_cmd_data->config_where_h);
@@ -547,7 +536,6 @@ void user_cmdSUC (string cmd, Widget origin)
     assert(!plus_cmd_data->config_clear);
     assert(!plus_cmd_data->config_pwd);
     assert(!plus_cmd_data->config_named_values);
-    assert(!plus_cmd_data->config_func_pos);
     assert(!plus_cmd_data->config_when_semicolon);
     assert(!plus_cmd_data->config_err_redirection);
     assert(!plus_cmd_data->config_page);
@@ -588,12 +576,7 @@ void user_cmdSUC (string cmd, Widget origin)
 	if (plus_cmd_data->refresh_file)
 	    cmds += "file";
 	if (plus_cmd_data->refresh_line)
-	{
-	    if (gdb->has_line_command())
-		cmds += "line";
-	    else
-		cmds += "list";
-	}
+	    cmds += "list";
 	if (plus_cmd_data->refresh_bpoints)
 	    cmds += "status";
 	if (plus_cmd_data->refresh_where)
@@ -844,11 +827,6 @@ static void process_config_frame(string& answer)
     gdb->has_frame_command(is_known_command(answer));
 }
 
-static void process_config_line(string& answer)
-{
-    gdb->has_line_command(is_known_command(answer));
-}
-
 static void process_config_run_io(string& answer)
 {
     gdb->has_run_io_command(is_known_command(answer));
@@ -883,13 +861,6 @@ static void process_config_pwd(string& answer)
 static void process_config_named_values(string& answer)
 {
     gdb->has_named_values(answer.contains(" = "));
-}
-
-static void process_config_func_pos(string& answer)
-{
-    static regex RXcolon_and_line_number(": *[0-9][0-9]*");
-    if (answer.contains(RXcolon_and_line_number))
-	gdb->has_func_pos(true);
 }
 
 static void process_config_when_semicolon(string& answer)
@@ -939,11 +910,6 @@ void plusOQAC (string answers[],
 	process_config_frame(answers[qu_count++]);
     }
 
-    if (plus_cmd_data->config_line) {
-	assert (qu_count < count);
-	process_config_line(answers[qu_count++]);
-    }
-
     if (plus_cmd_data->config_run_io) {
 	assert (qu_count < count);
 	process_config_run_io(answers[qu_count++]);
@@ -979,11 +945,6 @@ void plusOQAC (string answers[],
 	process_config_named_values(answers[qu_count++]);
     }
 
-    if (plus_cmd_data->config_func_pos) {
-	assert (qu_count < count);
-	process_config_func_pos(answers[qu_count++]);
-    }
-
     if (plus_cmd_data->config_when_semicolon) {
 	assert (qu_count < count);
 	process_config_when_semicolon(answers[qu_count++]);
@@ -1011,6 +972,7 @@ void plusOQAC (string answers[],
 	file = answers[qu_count++];
 
 	// Simple sanity check
+	strip_final_blanks(file);
 	if (file.contains('\n'))
 	    file = file.before('\n');
 	if (file.contains(' '))
@@ -1019,42 +981,19 @@ void plusOQAC (string answers[],
 
     if (plus_cmd_data->refresh_line)
     {
-	assert (gdb->type() == DBX);
 	assert (qu_count < count);
 
 	string listing = answers[qu_count++];
 
 	if (file != "")
 	{
-	    string message;
-	    while (listing != "" && atoi(listing) == 0)
-	    {
-		message += listing.through('\n');
-		listing = listing.after('\n');
-	    }
-
-	    if (message != "")
-		post_gdb_message(message);
-
-	    int line = atoi(listing);
-	    if (line == 0)
-	    {
-		// Weird.  No source?
-		line = 1;
-	    }
-	    else if (!plus_cmd_data->refresh_main)
-	    {
-		// Sun DBX 1.0 lists 10 lines; the current line is the
-		// 5th one.  With Sun DBX 3.0, we use the "line"
-		// command; and even if "list" was used (as on
-		// startup) we don't add 5.
-		if (!gdb->has_line_command())
-		{
-		    line += 5;
-		}
-	    }
-	    
-	    source_view->lookup(file + ":" + itostring(line));
+	    int line;
+	    if (plus_cmd_data->refresh_main)
+		line = atoi(listing);
+	    else
+		line = line_of_listing(listing);
+	    string pos = file + ":" + itostring(line);
+	    source_view->lookup(pos);
 	}
     }
 
