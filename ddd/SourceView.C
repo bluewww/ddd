@@ -1983,9 +1983,10 @@ bool SourceView::get_line_of_pos (Widget   w,
 	    {
 		// Check if we're left of first non-blank source character
 		int first_nonblank = line_pos + indent_amount(text_w);
+		const string& text = current_text(text_w);
 		while (first_nonblank < next_line_pos
-		       && first_nonblank < current_text(text_w).length()
-		       && isspace(current_text(text_w)[first_nonblank]))
+		       && first_nonblank < int(text.length())
+		       && isspace(text[first_nonblank]))
 		    first_nonblank++;
 		left_of_first_nonblank = (pos < first_nonblank);
 	    }
@@ -2533,6 +2534,9 @@ void SourceView::show_execution_position (string position, bool stopped,
 
 	}
 	last_pos = last_start_highlight = last_end_highlight = 0;
+	last_execution_file = "";
+	last_execution_line = 0;
+	update_glyphs();
 	return;
     }
 
@@ -2572,8 +2576,6 @@ void SourceView::clear_execution_position()
 {
     show_execution_position();
 
-    last_execution_file = "";
-    last_execution_line = 0;
     last_execution_pc   = "";
 
     update_glyphs();

@@ -984,7 +984,7 @@ void user_cmdOAC (void* data)
     else
     {
 	// Delete old position
-	if (cmd_data->new_exec_pos)
+	if (cmd_data->new_exec_pos || cmd_data->pos_buffer->pc_found())
 	    source_view->show_execution_position("", true);
     }
 

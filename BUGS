@@ -385,7 +385,4 @@ Volunteers for fixing these and other bugs are welcome!
 183* Hitting `stepi' too fast causes a delay cursor to appear that
      won't go.
 
-184* When the PC changes, but no line number is received, the
-     execution arrow should be cleared.
-
 186. (Insert your bug here)
