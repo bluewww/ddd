@@ -426,6 +426,7 @@ Ddd*tool_buttons*rightAttachment:		XmATTACH_POSITION
 
 ! Some special labels
 Ddd*tool_buttons*Forward.labelString:   Fwd
+Ddd*tool_buttons*return.labelString:    Ret
 Ddd*command_toolbar*Cont.labelString:   Continue
 
 
@@ -2125,6 +2126,7 @@ but proceed through subroutine calls])\n\
 DESC(Continue, [continue program after signal or breakpoint])\n\
 DESC(Finish, [execute until function returns])\n\
 DESC(Until, [execute until program reaches a line after the current])\n\
+DESC(Return, [make current function return to its caller])\n\
 \n\
 DESC(Kill, [kill execution of program being debugged])\n\
 DESC(Interrupt, [interrupt program (or current @GDB@ command)])\n\
@@ -2188,15 +2190,21 @@ Ddd*menubar*programMenu.cont.documentationString:
 
 Ddd*menubar*programMenu.finish.labelString:	   Finish
 Ddd*menubar*programMenu.finish.mnemonic:	   F
-Ddd*menubar*programMenu.finish.accelerator:	   Ctrl<Key>Return
-Ddd*menubar*programMenu.finish.acceleratorText:	   Ctrl+Return
+Ddd*menubar*programMenu.finish.accelerator:	   Ctrl<Key>bracketright
+Ddd*menubar*programMenu.finish.acceleratorText:	   Ctrl+\135
 Ddd*menubar*programMenu.finish.documentationString:
 
 Ddd*menubar*programMenu.until.labelString:	   Until
 Ddd*menubar*programMenu.until.mnemonic:	   	   U
-Ddd*menubar*programMenu.until.accelerator:	   Ctrl<Key>equal
-Ddd*menubar*programMenu.until.acceleratorText:	   Ctrl+=
+Ddd*menubar*programMenu.until.accelerator:	   Ctrl<Key>bracketleft
+Ddd*menubar*programMenu.until.acceleratorText:	   Ctrl+\133
 Ddd*menubar*programMenu.until.documentationString:
+
+Ddd*menubar*programMenu.return.labelString:	   Return
+Ddd*menubar*programMenu.return.mnemonic:	   U
+Ddd*menubar*programMenu.return.accelerator:	   Ctrl<Key>Return
+Ddd*menubar*programMenu.return.acceleratorText:	   Ctrl+Return
+Ddd*menubar*programMenu.return.documentationString:
 
 Ddd*menubar*programMenu.kill.labelString:	   Kill
 Ddd*menubar*programMenu.kill.mnemonic:		   K

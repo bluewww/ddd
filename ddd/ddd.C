@@ -621,7 +621,7 @@ struct ProgramItems {
     enum ProgramItem { Run, RunAgain, Sep1,
 		       SeparateExecWindow, Sep2,
 		       Step, Stepi, Next, Nexti, Sep3,
-		       Cont, Finish, Until, Sep4,
+		       Cont, Finish, Until, Return, Sep4,
 		       Kill, Break, Quit
     };
 };
@@ -642,6 +642,7 @@ struct ProgramItems {
     { "cont",        MMPush, { gdbCommandCB, "cont" }}, \
     { "finish",      MMPush, { gdbCommandCB, "finish" }}, \
     { "until",       MMPush, { gdbCommandCB, "until" }}, \
+    { "return",      MMPush, { gdbCommandCB, "return" }}, \
     MMSep, \
     { "kill",        MMPush, { gdbCommandCB, "kill" }}, \
     { "break",       MMPush, { gdbCommandCB, "\003" }}, \
