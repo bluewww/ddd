@@ -224,6 +224,7 @@ char ddd_rcsid[] =
 #include "history.h"
 #include "home.h"
 #include "host.h"
+#include "hostname.h"
 #include "logo.h"
 #include "longName.h"
 #include "mainloop.h"
@@ -258,6 +259,7 @@ char ddd_rcsid[] =
 #include <iostream.h>
 #include <fstream.h>
 #include <time.h>
+#include <signal.h>
 
 #if HAVE_STD_EXCEPTIONS
 #define string stdstring	  // Avoid `string' name clash
@@ -3075,13 +3077,46 @@ static void ContinueDespiteLockCB(Widget, XtPointer, XtPointer)
     continue_despite_lock = true;
 }
 
+static void TryLock(XtPointer client_data, XtIntervalId *)
+{
+    Widget w = (Widget)client_data;
+
+    LockInfo info;
+    bool lock_ok = lock_session_dir(XtDisplay(w), DEFAULT_SESSION, info);
+
+    if (lock_ok)
+    {
+	continue_despite_lock = true;
+	return;
+    }
+
+    XtAppAddTimeOut(XtWidgetToApplicationContext(w), 500, 
+		    TryLock, client_data);
+}
+
+static void KillLockerCB(Widget w, XtPointer client_data, XtPointer)
+{
+    static int attempts_to_kill = 0;
+
+    LockInfo *info = (LockInfo *)client_data;
+
+    kill(info->pid, SIGHUP);
+
+    if (attempts_to_kill++ == 0)
+    {
+	// Try locking again until successful
+	TryLock(XtPointer(w), 0);
+    }
+}
+
 static void lock_ddd(Widget parent)
 {
     LockInfo info;
-    bool lock_ok = 
-	lock_session_dir(XtDisplay(parent), DEFAULT_SESSION, info);
+    bool lock_ok = lock_session_dir(XtDisplay(parent), DEFAULT_SESSION, info);
     if (lock_ok)
 	return;
+
+    bool on_local_host = (info.hostname == fullhostname());
 
     string lock_file = session_lock_file(DEFAULT_SESSION);
     
@@ -3092,22 +3127,43 @@ static void lock_ddd(Widget parent)
 	     DDD_NAME) + cr()
 	+ rm("using your ")
 	+ tt(session_state_dir() + "/") + rm(" files.") + cr()
-	+ rm(DDD_NAME " appears to be running on host ")
-	+ tt(info.hostname) + cr()
-	+ rm("under process ID ") + tt(itostring(info.pid)) + cr()
+	+ rm(DDD_NAME " appears to be running under process ID ") 
+	+ tt(itostring(info.pid));
+
+    if (!on_local_host)
+	msg += cr() + rm("on host ") + tt(info.hostname);
+
+    msg += rm(".") 
 	+ cr()
 	+ rm("You may continue to use " DDD_NAME ", but your "
 	     "saved " DDD_NAME " state may be") + cr()
 	+ rm("overwritten by the other " DDD_NAME " instance.") + cr()
+	+ cr();
+
+#if XmVersion >= 1002
+    if (on_local_host)
+	msg += rm("You can kill the other " DDD_NAME " instance now.") + cr();
+#endif
+
+    msg += rm("Otherwise, make sure that you are not running "
+	      "another " DDD_NAME " and ") + cr()
+	+ rm("delete the ") + tt(lock_file) + rm(" file.") + cr()
 	+ cr()
-	+ rm("Otherwise, make sure that you are not running "
-	     "another " DDD_NAME ",") + cr()
-	+ rm("delete the ") + tt(lock_file) + rm(" file,") + cr()
-	+ rm("and restart " DDD_NAME ".");
+	+ rm("To continue despite the other " DDD_NAME " instance, ")
+	+ rm("click on ") + bf("Continue") + rm(".") + cr();
+#if XmVersion >= 1002
+    if (on_local_host)
+	msg += rm("To kill the other " DDD_NAME " instance and continue, ")
+	    + rm("click on ") + bf("Kill") + rm(".") + cr();
+#endif
+
+    msg += rm("To exit this " DDD_NAME " instance, click on ") 
+	+ bf("Exit") + rm(".");
 	
     Arg args[10];
     int arg = 0;
 	
+    XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
     XtSetArg(args[arg], XmNmessageString, msg.xmstring()); arg++;
     XtSetArg(args[arg], XmNdialogStyle, 
 	     XmDIALOG_FULL_APPLICATION_MODAL); arg++;
@@ -3126,6 +3182,15 @@ static void lock_ddd(Widget parent)
     Widget lock_dialog =
 	verify(XmCreateQuestionDialog(parent, "lock_dialog", args, arg));
     Delay::register_shell(lock_dialog);
+
+#if XmVersion >= 1002
+    Widget kill = verify(XmCreatePushButton(lock_dialog, "kill", 0, 0));
+    XtManageChild(kill);
+    XtAddCallback(kill, XmNactivateCallback,
+		  KillLockerCB, XtPointer(&info));
+    XtSetSensitive(kill, on_local_host);
+#endif
+
     XtAddCallback(lock_dialog, XmNhelpCallback,
 		  ImmediateHelpCB, NULL);
     XtAddCallback(lock_dialog, XmNokCallback,
@@ -3153,6 +3218,9 @@ static void lock_ddd(Widget parent)
 	XtAppProcessEvent(XtWidgetToApplicationContext(lock_dialog), XtIMAll);
 
     XtDestroyWidget(lock_dialog);
+
+    // Try locking once more
+    lock_ok = lock_session_dir(XtDisplay(parent), DEFAULT_SESSION, info);
 }
 
 

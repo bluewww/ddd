@@ -5724,8 +5724,10 @@ Ddd*lock_dialog*helpString:	\
 @rm Another DDD is running, sharing state with this DDD instance.\n\
 \n\
 To resume execution of this DDD, click on LBL(Continue).\n\
+To kill the other DDD instance, click on LBL(Kill).\n\
 Otherwise, click on LBL(Exit).
 Ddd*lock_dialog.okLabelString:		Continue
+Ddd*lock_dialog*kill.labelString:	Kill
 Ddd*lock_dialog.cancelLabelString: 	Exit
 
 
