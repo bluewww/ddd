@@ -61,7 +61,7 @@ DEFS = @DEFS@
 LOCAL_DEFS = @LOCAL_DEFS@
 
 # For libraries which include headers from other libraries.
-INCLUDES = -I. -I$(srcdir) -I$(includedir)
+INCLUDES = -I. -I$(srcdir)
 
 CCFLAGS = $(DEFS) $(LOCAL_DEFS) $(CPPFLAGS) $(INCLUDES) $(LOCAL_CFLAGS) $(CFLAGS)
 
