@@ -4,7 +4,12 @@ DDD News						-*- text -*-
 DDD-3.3.10
 ==========
 
-* ...
+* New features and minor improvements
+- ...
+
+* Build fixes
+- automake 1.8 is now the minimum requirement. This affects only builds
+  from CVS repository.
 
 DDD-3.3.9
 =========
@@ -32,6 +37,7 @@ DDD-3.3.9
 * Build fixes
 - The configure machinery has been updated to conform more closely to the
   autoconf 2.5x requirements. Several bugs have been fixed.
+  Minimum requirements: autoconf 2.59, automake 1.7.9, libtool 1.5.
 - libiberty (which provides missing standard functions) is not linked by
   default anymore. configure has a new option '--with-libiberty' that
   enables the libiberty support if required.
