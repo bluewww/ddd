@@ -323,6 +323,8 @@ int VSLLib::resolveNames()
     int changes = 0;
     for (VSLDef *cdef = _first; cdef != 0; cdef = cdef->libnext())
     {
+	BACKGROUND();
+
 	changes += cdef->resolveNames();
 	if (VSEFlags::assert_library_ok)
 	    assert(OK());
