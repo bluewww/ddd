@@ -54,7 +54,7 @@ mpwify_filename(char *unixname, char *macname)
     }
   j = 0;
   /* If you're going to end up with one or more colons in the middle of a
-     a path after an all-Unix relative path is translated, you must add a
+     path after an all-Unix relative path is translated, you must add a
      colon on the front, so that the first component is not thought to be
      a disk name.  */
   if (unixname[0] != '/' && ! strchr (unixname, ':') && strchr (unixname, '/'))
@@ -705,9 +705,9 @@ mpw_access (char *filename, unsigned int cmd)
       errnum = errno;
       if (rslt >= 0)
 	{
-	  if (((st.st_mode & 004 == 0) && (cmd & R_OK))
-	      || ((st.st_mode & 002 == 0) && (cmd & W_OK))
-	      || ((st.st_mode & 001 == 0) && (cmd & X_OK)))
+	  if ((((st.st_mode & 004) == 0) && (cmd & R_OK))
+	      || (((st.st_mode & 002) == 0) && (cmd & W_OK))
+	      || (((st.st_mode & 001) == 0) && (cmd & X_OK)))
 	    {
 	      rslt = -1;
 	      errnum = EACCES;

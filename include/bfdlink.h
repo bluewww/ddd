@@ -193,6 +193,9 @@ struct bfd_link_info
      on the output file, but may be checked when reading the input
      files.  */
   boolean traditional_format;
+  /* true if we want to produced optimized output files.  This might
+     need much more time and therefore must be explicitly selected.  */
+  boolean optimize;
   /* Which symbols to strip.  */
   enum bfd_link_strip strip;
   /* Which local symbols to discard.  */
