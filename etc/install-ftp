@@ -62,7 +62,6 @@ README="ANNOUNCE    \
 	NEWS        \
 	PROBLEMS    \
 	README      \
-	SERVICE     \
 	TODO        \
 "
 
@@ -77,8 +76,7 @@ ddd/vsl-gramma.C
 ddd/vsl-gramma.h
 ddd/ddd.man.txt
 ddd/ddd.man.huff.C
-ddd/Ddd
-ddd/Ddd.ad.h
+ddd/COPYING.huff.C
 ddd/xlibdir.C
 "
 
