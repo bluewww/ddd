@@ -943,8 +943,10 @@ debug: Ddd ./$(ddd)$(EXEEXT) cxxtest$(EXEEXT) .gdbinit debug-now
 
 .PHONY: debug-now
 debug-now:
-	DDD_HOME=$(srcdir)/.. XUSERFILESEARCHPATH=%N XAPPLRESDIR=. \
-$(DEBUGGER) ./$(ddd)$(EXEEXT)
+	MALLOC_CHECK_=2 \
+	DDD_HOME=$(srcdir)/.. \
+	XUSERFILESEARCHPATH=%N XAPPLRESDIR=. \
+	$(DEBUGGER) ./$(ddd)$(EXEEXT)
 
 # We don't want no optimizing, but debugging info in our test files
 MAKE_DEBUG = \
