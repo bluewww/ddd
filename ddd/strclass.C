@@ -1304,23 +1304,22 @@ string common_suffix(const string& x, const string& y, int startpos)
 
 istream& operator>>(istream& s, string& x)
 {
-#ifdef _OLD_STREAMS
-    if (!s.good())
+    // Read whitespace
+    if (!s.good()) 
     {
+	s.clear(ios::failbit|s.rdstate());
 	return s;
     }
-    s >> ws;
-    if (!s.good())
+
+    if (s.flags() & ios::skipws)
+	ws(s);
+
+    if (!s.good()) 
     {
+	s.clear(ios::failbit|s.rdstate());
 	return s;
     }
-#else
-    if (!s.ipfx(0) || (!(s.flags() & ios::skipws) && !ws(s)))
-    {
-	s.clear(ios::failbit|s.rdstate()); // Redundant if using GNU iostreams.
-	return s;
-    }
-#endif
+
     int ch;
     unsigned i = 0;
     x.rep = string_Sresize(x.rep, 20);
@@ -1346,14 +1345,22 @@ int readline(istream& s, string& x, char terminator, int discard)
 {
     assert(!x.consuming());
 
-#ifdef _OLD_STREAMS
-    if (!s.good())
-#else
-	if (!s.ipfx(0))
-#endif
-	{
-	    return 0;
-	}
+    // Read whitespace
+    if (!s.good()) 
+    {
+	s.clear(ios::failbit|s.rdstate());
+	return 0;
+    }
+
+    if (s.flags() & ios::skipws)
+	ws(s);
+
+    if (!s.good()) 
+    {
+	s.clear(ios::failbit|s.rdstate());
+	return 0;
+    }
+
     int ch;
     unsigned i = 0;
     x.rep = string_Sresize(x.rep, 80);
