@@ -1,6 +1,17 @@
 Changes in DDD						-*- text -*-
 **************
 
+DDD 1.0a
+--------
+
+Bug fix release.
+
+For unknown reasons, on some architectures, DDD choked soon after
+destroying some of its widgets.  This bug, and other minor bugs, have
+been fixed.
+
+
+
 DDD 1.0
 -------
 

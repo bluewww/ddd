@@ -110,7 +110,20 @@ Volunteers for fixing these and other bugs are welcome!
      are off by one (due to the GDB feature of telling the number of
      vtbl entries).
 
-028. (Insert your bug here)
+028. The `-iconic' option does not work.
 
+029. Displays created by `graph display "abc"' are not parsed
+     correctly.
 
+030. [fixed]
 
+031. On Solaris 2.3, DDD dumps core when dereferencing `date_ptrs' in
+     the `cxxtest' program.  Reported by
+     Herve.Poirier@grenoble.rxrc.xerox.com (Herve Poirier) and
+     dana@bellcore.com (Dana A Chee).  [Compiler bug?  Herve's
+     backtrace shows strange `r' value for AlignBox::drawAlign()]
+
+032. References are not processed correctly.  Be sure to display the
+     part after `:` only.
+
+033. (Insert your bug here)

@@ -112,4 +112,9 @@ Volunteers for these and other projects are welcome!
 037. Group dereference.  If multiple pointers are selected,
      dereference them all.
 
-038. (Insert your project idea here)
+038. Create a special `Extra' type holding reference and vtable info
+     (that is, anything before a colon).
+
+039. Make sure the name popup menu is properly resized.
+
+040. (Insert your project idea here)
