@@ -156,11 +156,11 @@ fi
 
 # Configure the package.
 ln -s $CVSROOT/CVSROOT/ddd-log ChangeLog
-ln -s $CVSROOT/CVSROOT/ddd-log-99 ChangeLog-99
-ln -s $CVSROOT/CVSROOT/ddd-log-98 ChangeLog-98
-ln -s $CVSROOT/CVSROOT/ddd-log-97 ChangeLog-97
-ln -s $CVSROOT/CVSROOT/ddd-log-96 ChangeLog-96
-ln -s $CVSROOT/CVSROOT/ddd-log-95 ChangeLog-95
+ln -s $CVSROOT/CVSROOT/ddd-log-99 ChangeLog-1999
+ln -s $CVSROOT/CVSROOT/ddd-log-98 ChangeLog-1998
+ln -s $CVSROOT/CVSROOT/ddd-log-97 ChangeLog-1997
+ln -s $CVSROOT/CVSROOT/ddd-log-96 ChangeLog-1996
+ln -s $CVSROOT/CVSROOT/ddd-log-95 ChangeLog-1995
 (cd ddd && aclocal)
 autoconf -l ddd
 (cd ddd && autoconf)
