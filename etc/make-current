@@ -38,8 +38,10 @@ exec > $target/.current.log 2>&1 < /dev/null
 
 # Check whether the ChangeLog file has changed (i.e. we need a new ROTD)
 install=false
-/usr/local/gnubin/test $CVSROOT/ddd-log -nt $target/ChangeLog && install=true
-/usr/local/gnubin/test ! -f $target/ChangeLog && install=true
+/usr/local/gnubin/test $CVSROOT/CVSROOT/ddd-log -nt $target/ChangeLog \
+    && install=true
+/usr/local/gnubin/test ! -f $target/ChangeLog \
+    && install=true
 
 if [ $install = false ]; then
     exit 0;			# No installation required
@@ -94,7 +96,7 @@ EXPIRES='$expires'
 mv ddd/configure.in~ ddd/configure.in
 
 # Configure the package.
-ln -s $CVSROOT/ddd-log ChangeLog
+ln -s $CVSROOT/CVSROOT/ddd-log ChangeLog
 autoconf
 (cd ddd && autoconf)
 (cd librx && autoconf)
@@ -115,7 +117,7 @@ if [ -f ddd-$date.tar.gz ]; then
     # Move dist file into FTP area
     rm -f $target/ddd-*.tar.gz
     mv ddd-$date.tar.gz $target
-    cp -p NEWS $CVSROOT/ddd-log $target
+    cp -p NEWS $CVSROOT/CVSROOT/ddd-log $target
     echo "Creating ddd-$date.tar.gz (expires $expires)...done."
 fi
 
