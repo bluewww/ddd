@@ -1173,7 +1173,7 @@ The current execution line is indicated by a green arrow.
 You can now examine the variable values.  To examine a simple variable,
 you can simply move the mouse pointer on its name and leave it there.
 After a second, a small window with the variable value pops up
-(@pxref{Value Tips}).  Try this with @samp{argv} to see its value
+(@pxref{Value Tips}).  Try this with @samp{argc} to see its value
 (@code{6}).  The local variable @samp{a} is not yet initialized; you'll
 probably see @code{0x0} or some other invalid pointer value.
 
