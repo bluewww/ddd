@@ -59,47 +59,6 @@ private:
     // A collector for state values
     static UndoBufferEntry collector;
 
-    // General scheme:
-    //
-    // History
-    // -------
-    //
-    // `history' contains:
-    //
-    // 0                       \ 
-    // 1 ...                    > entries (positions or commands) to be undone
-    // (history_position - 1)  /
-    // (history_position)      \ 
-    // ...                      > entries (positions or commands) to be redone
-    // (history.size() - 1)    /
-    //
-    //
-    // Entries
-    // -------
-    //
-    // Each entry is a list of key/value pairs.
-    //
-    // Basically, there are three kinds of entries:
-    // * COMMANDS with the command name in the COMMAND key.
-    //   The command is to be executed when reached.
-    // * POSITIONS with the position in the POS key.  Used in lookups.
-    // * STATES with the an empty STATE key.  The current state is contained 
-    //   in the remaining keys.
-    //
-    // Upon Undo, DDD re-executes the last command at HISTORY_POSITION
-    // - 1; if there is no such command, it attempts to re-create the
-    // earlier state at HISTORY_POSITION - 2.
-    //
-    // Upon Redo, DDD re-executes the next command at
-    // HISTORY_POSITION.  If there is no such command, it attempts to
-    // re-create the next state at HISTORY_POSITION.
-    //
-    // Sources
-    // -------
-    //
-    // DDD starts a new entry each time the command source is set via
-    // SET_SOURCE.
-
     // True if we have undone some exec position
     static bool _showing_earlier_state;
 

@@ -49,8 +49,69 @@ char UndoBuffer_rcsid[] =
 #include "status.h"
 #include "string-fun.h"
 
+// This is the DDD Undo Buffer, a nasty and obfusticating piece of
+// DDD.  Basically, it attempts to combine the two concepts of a
+// command-based undo buffer (for undoing commands) and a state-based
+// undo buffer (for showing earlier program states) into one concept.
+// Problems occur at the intertwining of these concepts - i.e. mixing
+// commands and state.
+//
+// Don't touch it unless you have good reason to do so.
+//
+// Here are a few tests to keep you in a good mood:
+//
+// Break      Break       Break
+// Run        Run         Run
+// Display    Tbreak      Next
+// Set        Cont        Display
+// Next                   Down
+//                        Up
+//                        Next
+// 
+// Each command must be undoable.
+// 
+// Here's the general organization scheme:
+//
+// History
+// -------
+//
+// `history' contains:
+//
+// 0                       \ 
+// 1 ...                    > entries (states or commands) to be undone
+// (history_position - 1)  /
+// (history_position)      \ 
+// ...                      > entries (states or commands) to be redone
+// (history.size() - 1)    /
+//
+//
+// Entries
+// -------
+//
+// Each entry is a list of key/value pairs.
+//
+// Basically, there are three kinds of entries:
+// * COMMANDS with the command name in the COMMAND key.
+//   The command is to be executed when reached.
+// * POSITIONS with the position in the POS key.  Used in lookups.
+// * STATES with the an empty STATE key.  The current state is contained 
+//   in the remaining keys.
+//
+//
+// DDD starts a new entry each time the command source is set via
+// SET_SOURCE - the flag FORCE_NEW_ENTRY is set - *and* the new entry
+// contains either a command, a position, or a state key.  Up to then,
+// the current state is collected in the COLLECTOR variable.
+// 
+// Upon Undo, DDD executes the command at HISTORY_POSITION - 1 and
+// re-creates the earlier state at HISTORY_POSITION - 2.
+//
+// Upon Redo, DDD executes the command and recreates the state at
+// HISTORY_POSITION.
+
+
 #ifndef LOG_UNDO_BUFFER
-#define LOG_UNDO_BUFFER 0
+#define LOG_UNDO_BUFFER 1
 #endif
 
 #define REMAP_COMMAND "@remap "
