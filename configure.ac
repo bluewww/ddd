@@ -145,6 +145,12 @@ jdb) ;;
 esac
 AC_SUBST(DEBUGGER_OPTION)dnl
 dnl
+dnl Check perl version
+dnl
+AC_PROG_PERL_VERSION(5.8.0, [], [AC_MSG_WARN(
+Perl versions before 5.8.0 require a newer perl5db.pl!
+)])
+dnl
 dnl Various helpers.
 dnl
 AC_CHECK_PROGS(XTERM, xterm kterm dtterm hpterm, xterm)dnl
@@ -709,13 +715,13 @@ AC_MSG_ERROR([The Motif library '-lXm' could not be found.
                   See the files 'config.log' and 'ddd/config.log'
                   for further diagnostics.])
 fi
-dnl Tweak: HPUX-10.20 requires that Motif be statically linked.
+dnl Tweak: HPUX-10.20, 11.00, and 11.11 require that Motif be statically linked.
 dnl Linking dynamically will appear to succeed, but DDD will core on startup.
 dnl (I haven't tried other HPUX versions, so I'd be glad for any feedback.)
 case "$host_os" in
-hpux10.20|hpux11.00)
-   AC_MSG_WARN([Force static link of Motif as HP-UX linker bug workaround.])
-   XM_LIBS="/usr/lib/Motif1.2_R6/libXm.a"
+hpux10.20|hpux11.00|hpux11.11)
+   AC_MSG_WARN([Forcing static link of Motif as HP-UX linker bug workaround.])
+   XM_LIBS="/usr/lib/libXm.a"
    ;;
 esac
 AC_SUBST(XP_LIBS)
