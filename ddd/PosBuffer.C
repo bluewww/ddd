@@ -242,9 +242,9 @@ void PosBuffer::filter (string& answer)
 	    }
 	}
 
-	while (answer.contains(pfx, 0))
+	int index;
+	while ((index = answer.index(pfx)) >= 0)
 	{
-	    int index = answer.index(pfx);
 	    string cmd = answer.from(index);
 	    if (cmd.contains('\n'))
 		cmd = cmd.through('\n');
