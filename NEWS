@@ -1,8 +1,8 @@
 Changes in DDD						-*- text -*-
 **************
 
-DDD 2.1 [in beta test; scheduled for May, 1997]
------------------------------------------------
+DDD 2.1
+-------
 
     DDD 2.1 brings alias detection, local variable displays, button
     and value tips as well as several new features and bug fixes.

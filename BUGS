@@ -168,7 +168,8 @@ Volunteers for fixing these and other bugs are welcome!
      the arrow showed up.  Minor cosmetic bug.
 
 113. Matthias Kurz <mk@baerlap.north.de> states:
-     If I resize the data display the background doesn't get refreshed.
+     If I resize the data display the background doesn't get
+     refreshed.  [Use an Athena Panner instead of Motif scrollbars  -AZ]
 
 114. Avi Cohen Stuart <avi@baan.nl> noticed that "a lot of texts on
      several windows are redisplayed more that two times, for example
