@@ -347,9 +347,7 @@ static XrmOptionDescRec options[] = {
 { "--session",              XtNsession,              XrmoptionSepArg, NULL },
 { "-session",               XtNsession,              XrmoptionSepArg, NULL },
 
-#if XtSpecificationRelease < 6
 { "-xtsessionID",           XtNsession,              XrmoptionSepArg, NULL },
-#endif
 
 { "--debugger",             XtNdebuggerCommand,      XrmoptionSepArg, NULL },
 { "-debugger",              XtNdebuggerCommand,      XrmoptionSepArg, NULL },
@@ -1230,7 +1228,11 @@ public:
     void flush()
     {
 	if (flushed++ == 0)
-	    tied_to << str();
+	{
+	    char *s = str();
+	    if (s)
+		tied_to << s;
+	}
     }
     ~MessageSaver()
     {
@@ -1478,6 +1480,11 @@ int main(int argc, char *argv[])
     XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
 
 #if XtSpecificationRelease >= 6
+    if (session_id)
+    {
+	XtSetArg(args[arg], XtNsessionID, session_id); arg++;
+    }
+
     Widget toplevel =
 	XtOpenApplication(&app_context, DDD_CLASS_NAME,
 			  XrmOptionDescList(0), 0,
