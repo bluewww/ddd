@@ -792,7 +792,7 @@ void internal_command(const string& command, OQCProc callback, void *data,
     if (echo && verbose)
     {
 	gdb_out(command + "\n");
-	gdb_input_at_prompt = true;
+	gdb_input_at_prompt = false;
     }
 
     string answer = internal_command(command);
@@ -1378,7 +1378,7 @@ void send_gdb_command(string cmd, Widget origin,
     {
 	strip_auto_command_prefix(echoed_cmd);
 	gdb_out(echoed_cmd + "\n");
-	gdb_input_at_prompt = true;
+	gdb_input_at_prompt = false;
     }
 
     if (abort_undo)
