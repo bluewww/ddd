@@ -41,7 +41,7 @@ shadow(box, thickness) =
 shadow(box) = shadow(box, 1);
 
 // The title
-title (disp_nr, name) -> rm(disp_nr & ": ") & bf(name);
+title (disp_nr, name) -> color(rm(disp_nr & ": ") & bf(name), "red4");
 
 // The "disabled" string
 disabled () -> vcenter(it("(Disabled)") & hfill());

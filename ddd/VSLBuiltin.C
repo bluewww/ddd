@@ -48,6 +48,7 @@ char VSLBuiltin_rcsid[] =
 #include "AlignBox.h"
 #include "ArcBox.h"
 #include "BinBox.h"
+#include "ColorBox.h"
 #include "DiagBox.h"
 #include "FixBox.h"
 #include "FontFixBox.h"
@@ -577,6 +578,11 @@ static Box *fontfix(ListBox *args)
     return new FontFixBox((Box *)(*args)[0]);
 }
 
+static Box *color(ListBox *args)
+// color(box, font)
+{
+    return new ColorBox((Box *)(*args)[0], (*args)[1]->str());
+}
 
 // Standard-Boxen
 
@@ -715,6 +721,7 @@ static BuiltinRec builtins[] = {
 { 0,    "__string",     false,  false,  false,  str },
 { 0,    "__font",       false,  false,  false,  font },
 { 0,    "__fontfix",    false,  false,  false,  fontfix },
+{ 0,    "__color",      false,  false,  false,  color },
 
 // Funktionen mit Seiteneffekten
 { 0,    "__fail",       false,  true,   false,  fail },

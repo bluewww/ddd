@@ -547,6 +547,7 @@ BOX_OBJECTS = \
 	BoxPoint.o   \
 	BoxRegion.o  \
 	BoxSize.o    \
+	ColorBox.o   \
 	CompositeB.o \
 	DiagBox.o    \
 	DummyBox.o   \
@@ -715,13 +716,15 @@ README_FILES =
 
 ## Intermediate files
 
-# Files required for building DDD
+# Files required for building DDD.
+# In a distribution, these should be already built.
 PROG_STUFF       = config.h vsl-lex.C vsl-gramma.h vsl-gramma.C \
 	 	   config.h.in acconfig.h acspecial.h stamp-h.in \
 		   ddd.vsl.h version.h host.h configinfo.C \
 		   Ddd.ad.h ddd.man.huff.C COPYING.huff.C xlibdir.C eps-code.h
 
 # Extra files to be built for the distribution
+# In a distribution, these should be already built.
 DIST_STUFF	 = $(PROG_STUFF) $(MANS) depend TAGS \
 		   $(srcdir)/../doc/ddd.man.ps
 
@@ -891,7 +894,7 @@ ddd.vsl.h: ddd.vsl
 	$(RM) tmp.c
 
 # `make depend' fails to find this dependency :-(
-DataDisp.o: ddd.vsl.h
+DispBox.o: ddd.vsl.h
 
 # And these are never computed:
 ddd.vsl: \
@@ -905,8 +908,12 @@ ddd.vsl: \
 $(ddd):	$(ddd_canonical)
 	$(RM) $@; $(LN_S) $(ddd_canonical) $@
 
-$(ddd_canonical): ddd.o $(OBJECTS)
+$(ddd_canonical): ddd-message ddd.o $(OBJECTS)
 	$(LINK.cc) -o $@ ddd.o $(OBJECTS) $(ALL_X_LIBS) $(LIBS)
+
+.PHONY: ddd-message
+ddd-message:
+	@$(ECHO) "Building $(ddd_canonical)."
 
 
 ## The demonstration programs.
