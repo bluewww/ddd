@@ -263,6 +263,7 @@ public:
     string pwd_command() const;	                    // Usually "pwd "
     string frame_command(string depth = "") const;  // Usually "frame EXPR"
     string echo_command(string text) const;         // Usually "echo TEXT"
+    string whatis_command(string text) const;       // Usually "whatis TEXT"
 
 private:
     bool trace_dialog;

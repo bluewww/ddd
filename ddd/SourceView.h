@@ -97,6 +97,7 @@ class SourceView {
     static void text_popup_dispCB        (Widget, XtPointer, XtPointer);
     static void text_popup_print_refCB   (Widget, XtPointer, XtPointer);
     static void text_popup_disp_refCB    (Widget, XtPointer, XtPointer);
+    static void text_popup_whatisCB      (Widget, XtPointer, XtPointer);
     static void text_popup_lookupCB      (Widget, XtPointer, XtPointer);
     static void text_popup_breakCB       (Widget, XtPointer, XtPointer);
     static void text_popup_clearCB       (Widget, XtPointer, XtPointer);

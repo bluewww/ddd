@@ -223,6 +223,8 @@ struct TextItms {
 	PrintRef, 
 	DispRef,
 	Dummy2,
+	Whatis,
+	Dummy3,
 	Lookup, 
 	Break,
 	Clear
@@ -236,7 +238,9 @@ static String text_cmd_labels[] =
     "", 
     "Print ", 
     "Display ", 
-    "", 
+    "",
+    "What is ",
+    "",
     "Lookup " , 
     "Break at ", 
     "Clear at "
@@ -249,6 +253,8 @@ MMDesc SourceView::text_popup[] =
     MMSep,
     {"print_ref",  MMPush, {SourceView::text_popup_print_refCB}},
     {"disp_ref",   MMPush, {SourceView::text_popup_disp_refCB}},
+    MMSep,
+    {"whatis",     MMPush, {SourceView::text_popup_whatisCB}},
     MMSep,
     {"lookup",     MMPush, {SourceView::text_popup_lookupCB}},
     {"break",      MMPush, {SourceView::text_popup_breakCB}},
@@ -694,6 +700,17 @@ void SourceView::text_popup_disp_refCB (Widget w,
     assert(word_ptr->length() > 0);
 
     gdb_command("graph display *(" + *word_ptr + ")", w);
+}
+
+// ***************************************************************************
+//
+void SourceView::text_popup_whatisCB (Widget w, XtPointer client_data, 
+				      XtPointer)
+{
+    string* word_ptr = (string*)client_data;
+    assert(word_ptr->length() > 0);
+
+    gdb_command(gdb->whatis_command(*word_ptr), w);
 }
 
 // ***************************************************************************
@@ -3185,6 +3202,11 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	XtSetValues(text_popup[TextItms::DispRef].widget, args, arg);
 
 	arg = 0;
+	label = MString(text_cmd_labels[TextItms::Whatis]) + current_arg;
+	XtSetArg (args[arg], XmNlabelString, label.xmstring());arg++;
+	XtSetValues(text_popup[TextItms::Whatis].widget, args, arg);
+
+	arg = 0;
 	label = MString(text_cmd_labels[TextItms::Lookup]) + current_arg;
 	XtSetArg (args[arg], XmNlabelString, label.xmstring());arg++;
 	XtSetValues(text_popup[TextItms::Lookup].widget, args, arg);
@@ -3196,6 +3218,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	XtSetSensitive (text_popup[TextItms::Disp].widget,     sens);
 	XtSetSensitive (text_popup[TextItms::PrintRef].widget, sens);
 	XtSetSensitive (text_popup[TextItms::DispRef].widget,  sens);
+	XtSetSensitive (text_popup[TextItms::Whatis].widget,   sens);
 	XtSetSensitive (text_popup[TextItms::Lookup].widget,   sens);
 
 	XmMenuPosition (text_popup_w, event);

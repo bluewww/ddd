@@ -893,6 +893,26 @@ string GDBAgent::echo_command(string text) const
     return "";			// Never reached
 }
 
+// Prefer `ptype' on `whatis' in GDB
+string GDBAgent::whatis_command(string text) const
+{
+    switch (type())
+    {
+    case GDB:
+	return "ptype " + text;
+
+    case DBX:
+	if (has_print_r_command())
+	    return "whatis -r " + text;
+	else
+	    return "whatis " + text;
+
+    case XDB:
+	return "p " + text + "\\T";
+    }
+
+    return "";			// Never reached
+}
 
 
 

@@ -97,10 +97,6 @@ Volunteers for these and other projects are welcome!
      that let you dump such scripts automatically generated from the
      current layout on the canvas.''  See also 076.
 
-068. Matthias Kurz <mk@baerlap.north.de>: Have `ptype' (in DBX:
-     `whatis') inserted into the source popup menu, such that users
-     can inquire variable types.
-
 069. Yves Arrouye <Yves.Arrouye@marin.fdn.fr> states:
 
      3. Add a way to cast a display. What I mean is that when I debug some
