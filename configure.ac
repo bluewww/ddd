@@ -446,7 +446,7 @@ dnl readline has not been found, test if readline is available on the system
                 $LIBTERMCAP)
   fi
   if test "${ddd_have_readline}" != true; then
-    LIBREADLINE="../readline/readline.a"
+    LIBREADLINE="../readline/libreadline.a"
   fi
   AC_DEFINE([WITH_READLINE],1,[Define if you want readline support in DDD.])
 else
@@ -469,8 +469,8 @@ AS_HELP_STRING([--with-libiberty],
   fi
 ])
 dnl
-LIBIBERTY="../libiberty/libiberty.a"
 if test "${libiberty_support}" = "yes"; then
+  LIBIBERTY="../libiberty/libiberty.a"
 dnl If we have an installed library, prefer it over the one shipped with DDD.
   AC_CHECK_LIB(iberty, xstrerror,
 	       [LIBIBERTY="-liberty"
