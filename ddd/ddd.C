@@ -2034,6 +2034,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 #ifdef LC_ALL
     // Let DDD locales be controlled by the locale-specific
     // environment variables -- especially $LANG.
+    XtSetLanguageProc(NULL, NULL, NULL);
     setlocale(LC_ALL, "");
 #endif
 

@@ -6,6 +6,8 @@ DDD-3.3.11
 
 * New features and minor improvements
 - A bug in DBX mode introduced in release 3.3.10 has been fixed.
+- Thanks to Ted Creedon, XtSetLanguageProc() is now called properly
+  and should help when using I18N encodings.
 
 DDD-3.3.10
 ==========
