@@ -36,6 +36,7 @@ char deref_rcsid[] =
 #include "deref.h"
 
 #include "GDBAgent.h"
+#include "assert.h"
 #include "ddd.h"
 #include "buttons.h"
 #include "disp-read.h"
@@ -48,8 +49,12 @@ string deref(const string& expr, const string& sym)
 {
     const string& symbol = (sym == "" ? expr : sym);
 
-    if (gdb->program_language() != LANGUAGE_PERL || !expr.contains('$', 0))
+    if (gdb->program_language() != LANGUAGE_PERL)
 	return gdb->dereferenced_expr(symbol);
+
+    assert(gdb->program_language() == LANGUAGE_PERL);
+    if (!expr.contains('$', 0))
+	return symbol;		// Only scalars can be dereferenced
 
     string ref = NO_GDB_ANSWER;
 
