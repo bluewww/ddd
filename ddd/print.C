@@ -367,12 +367,13 @@ static int points(string s)
 	char *start = s;
 	char *tailptr;
 	double value = strtod(start, &tailptr);
-	if (start == tailptr)
+	int value_len = (int)(tailptr - start);
+	if (value_len == 0)
 	{
 	    post_error("Unrecognized size.", "paper_size_value_error");
 	    return -1;
 	}
-	s = s.from(int(tailptr - start));
+	s = s.from(value_len);
 
 	// Read unit
 	string unit = s;
