@@ -63,8 +63,8 @@ void dddEditShortcutsCB(Widget, XtPointer, XtPointer);
 // Refresh button editor after external change
 void refresh_button_editor();
 
-// Get a value from GDB
-string gdbValue(const string& expr);
+// Get a value from GDB, using PRINT_COMMAND (default if none)
+string gdbValue(const string& expr, string print_command = "");
 
 // Return changed EXPR that can be used as assignment value
 string assignment_value(const string& expr);
