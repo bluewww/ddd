@@ -60,6 +60,7 @@ dnl Using gcc as C++ compiler requires linkage with -lstdc++ or -lg++
 dnl
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
+ice_save_LIBS="$LIBS"
 AC_CHECK_LIB(m, sin)
 AC_CHECK_LIB(stdc++, cout)
 case "$LIBS" in
@@ -89,6 +90,34 @@ if test "$ice_cv_prog_cxx" = no; then
 AC_MSG_ERROR(You must set the environment variable CXX to a working 
                   C++ compiler.  Also check the CXXFLAGS settings.)
 fi
+ice_need_cxxlibs=no
+case "$LIBS" in
+  *-lstdc++*)
+	      case "$CXXLIBS" in
+		*-lstdc++*)
+			    ;;
+		*)
+		   ice_need_cxxlibs=yes
+		   ;;
+	      esac
+	      ;;
+  *-lg++*)
+	   case "$CXXLIBS" in
+	     *-lg++*)
+		      ;;
+	     *)
+		ice_need_cxxlibs=yes
+		;;
+	     esac
+	     ;;
+esac
+if test "$ice_need_cxxlibs" = yes
+then
+dnl These libraries are required for all C++ programs.
+    CXXLIBS="$CXXLIBS $LIBS"
+fi
+AC_SUBST(CXXLIBS)dnl
+LIBS="$ice_save_LIBS"
 ])dnl
 dnl
 dnl If the C++ compiler accepts the `-fexternal-templates' flag,
@@ -199,7 +228,7 @@ AC_LANG_RESTORE
 ])
 AC_MSG_RESULT($ice_cv_cxx_problematic_version)
 if test "$ice_cv_cxx_problematic_version" = yes; then
-AC_MSG_WARN(*** ${ICE} works best with ${CXX} version 2.5 or higher ***)
+AC_MSG_WARN(*** This package works best with ${CXX} version 2.5 or higher ***)
 fi
 ])dnl
 dnl
@@ -368,6 +397,7 @@ dnl lifetime of temporaries, define `HAVE_ANSI_LIFETIME_OF_TEMPORARIES'.
 dnl
 AC_DEFUN(ICE_CXX_LIFETIME_OF_TEMPORARIES,
 [
+AC_REQUIRE([AC_C_CROSS])
 AC_REQUIRE([AC_PROG_CXX])
 AC_MSG_CHECKING(whether ${CXX} supports ANSI C++ lifetime of temporaries)
 AC_CACHE_VAL(ice_cv_have_ansi_lifetime_of_temporaries,
@@ -662,11 +692,10 @@ AC_SUBST(CXX_LIB_DIR)
 ])dnl
 dnl
 dnl
-dnl Setup C++ compile options.  Specific to ICE.
+dnl Setup C++ compile options.  Specific to this package.
 dnl
 AC_DEFUN(ICE_CXX_OPTIONS,
 [
-CXXLIBS=
 if test "$GXX" = yes; then
   CXXOPT="-DNDEBUG"
   CXXDEBUG=
@@ -699,15 +728,15 @@ else
     esac
   done
 fi
-AC_MSG_CHECKING(for ${CXX} compiler warning options)
+AC_MSG_CHECKING(for ${CXX} warning options for C++)
 AC_MSG_RESULT(${CXXWARNINGS})
-AC_MSG_CHECKING(for ${CXX} compiler optimizing options)
+AC_MSG_CHECKING(for ${CXX} optimizing options for C++)
 AC_MSG_RESULT(${CXXOPT})
-AC_MSG_CHECKING(for ${CXX} compiler extra libraries)
+AC_MSG_CHECKING(for ${CXX} extra libraries for C++)
 AC_MSG_RESULT(${CXXLIBS})
-AC_MSG_CHECKING(for ${CXX} compiler static binding options)
+AC_MSG_CHECKING(for ${CXX} static binding options for C++)
 AC_MSG_RESULT(${CXXSTATIC_BINDING})
-AC_MSG_CHECKING(for ${CXX} compiler dynamic binding options)
+AC_MSG_CHECKING(for ${CXX} dynamic binding options for C++)
 AC_MSG_RESULT(${CXXDYNAMIC_BINDING})
 AC_SUBST(CXXWARNINGS)dnl
 AC_SUBST(CXXDEBUG)dnl
@@ -985,16 +1014,23 @@ dnl
 AC_DEFUN(ICE_FIND_MOTIF,
 [
 AC_REQUIRE([AC_PATH_XTRA])
+motif_includes=
+motif_libraries=
 AC_ARG_WITH(motif,
-[  --without-motif              Don't use Motif widgets],
-motif_includes="$withval"
-motif_libraries="$withval")
+[  --without-motif         do not use Motif widgets])
+dnl Treat --without-motif like
+dnl --without-motif-includes --without-motif-libraries.
+if test "$with_motif" = "no"
+then
+motif_includes=no
+motif_libraries=no
+fi
 AC_ARG_WITH(motif-includes,
 [  --with-motif-includes=DIR    Motif include files are in DIR],
-motif_includes="$withval", motif_includes=)
+motif_includes="$withval")
 AC_ARG_WITH(motif-libraries,
 [  --with-motif-libraries=DIR   Motif libraries are in DIR],
-motif_libraries="$withval", motif_libraries=)
+motif_libraries="$withval")
 AC_MSG_CHECKING(for OSF/Motif)
 #
 #
@@ -1107,7 +1143,7 @@ if test "$motif_includes" != "" && test "$motif_includes" != "$x_includes" && te
 then
 X_CFLAGS="-I$motif_includes $X_CFLAGS"
 fi
-if test "$motif_libraries" != "" && test "$motif_libraries" != "$x_libraries" && text "$motif_libraries" != "no"
+if test "$motif_libraries" != "" && test "$motif_libraries" != "$x_libraries" && test "$motif_libraries" != "no"
 then
 case "$X_LIBS" in
   *-R\ *) X_LIBS="-L$motif_libraries -R $motif_libraries $X_LIBS";;
@@ -1124,11 +1160,11 @@ test "$motif_libraries_result" = "" &&
 test "$motif_includes_result" = "" && 
   motif_includes_result="in default path"
 test "$motif_libraries_result" = "no" && 
-  motif_libraries_result="none"
+  motif_libraries_result="(none)"
 test "$motif_includes_result" = "no" && 
-  motif_includes_result="none"
+  motif_includes_result="(none)"
 AC_MSG_RESULT(
-  [libraries $motif_libraries_result, headers $motif_includes_result])
+  [libraries "$motif_libraries_result", headers "$motif_includes_result"])
 ])dnl
 dnl
 dnl
@@ -1141,16 +1177,23 @@ dnl
 AC_DEFUN(ICE_FIND_ATHENA,
 [
 AC_REQUIRE([AC_PATH_XTRA])
-AC_ARG_WITH(motif,
-[  --without-athena             Don't use Athena widgets],
-athena_includes="$withval"
-athena_libraries="$withval")
+athena_includes=
+athena_libraries=
+AC_ARG_WITH(athena,
+[  --without-athena        do not use Athena widgets])
+dnl Treat --without-athena like
+dnl --without-athena-includes --without-athena-libraries.
+if test "$with_athena" = "no"
+then
+athena_includes=no
+athena_libraries=no
+fi
 AC_ARG_WITH(athena-includes,
 [  --with-athena-includes=DIR   Athena include files are in DIR],
-athena_includes="$withval", athena_includes=)
+athena_includes="$withval")
 AC_ARG_WITH(athena-libraries,
 [  --with-athena-libraries=DIR  Athena libraries are in DIR],
-athena_libraries="$withval", athena_libraries=)
+athena_libraries="$withval")
 AC_MSG_CHECKING(for Athena)
 #
 #
@@ -1287,9 +1330,9 @@ test "$athena_libraries_result" = "" &&
 test "$athena_includes_result" = "" && 
   athena_includes_result="in default path"
 test "$athena_libraries_result" = "no" && 
-  athena_libraries_result="none"
+  athena_libraries_result="(none)"
 test "$athena_includes_result" = "no" && 
-  athena_includes_result="none"
+  athena_includes_result="(none)"
 AC_MSG_RESULT(
-  [libraries $athena_libraries_result, headers $athena_includes_result])
+  [libraries "$athena_libraries_result", headers "$athena_includes_result"])
 ])dnl
