@@ -3578,18 +3578,17 @@ An attached process is stopped by @DDD@. You can examine and modify an\n\
 attached process with all the @DDD@ commands that are ordinarily available\n\
 when you start processes with @bf Run@rm. You can insert breakpoints; you \n\
 can step and continue; you can modify storage.  If you would rather the\n\
-process continue running, you may use the @bf Continue @rm command after \
-attaching \n\
-@DDD@ to the process.\n\
+process continue running, you may use the @bf Continue @rm command after\n\
+attaching @DDD@ to the process.\n\
 \n\
 When you have finished debugging the attached process, you can use\n\
 @bf Detach Process @rm to release it from @DDD@ control.  Detaching \
 the process\n\
 continues its execution.\n\
 \n\
-Before using @bf Attach@rm, you should use the @bf Open Program... @rm \
-command\n\
-to specify the program running in the process, and to load its symbol table.\n\
+Before using @bf Attach@rm, you should use @bf Open Program @rm\n\
+to specify the program running in the process, and to load\n\
+its symbol table.\n\
 \n\
 Click on @bf Attach @rm to attach to the selected process.\n\
 Click on @bf Update @rm to update the list of processes.
@@ -3604,9 +3603,9 @@ Ddd*core_files_popup*helpString:	   \
 The core dump is used for examining memory and registers.\n\
 No argument means to have no core file.\n\
 \n\
-When using @bf Open Core... @rm, you should use the \
-@bf Open Program... @rm command to specify\n\
-the program causing the core dump, and to load its symbol table.\n\
+When using @bf Open Core@rm, you should use @bf Open Program @rm\n\
+to specify the program causing the core dump, and to load\n\
+its symbol table.\n\
 \n\
 Click on @bf Open @rm to open the selected core dump.\n\
 Click on @bf Filter @rm to apply the given filter.
@@ -3620,9 +3619,8 @@ Ddd*source_files_popup*helpString:    \
 The source file is shown in the source window and may be used\n\
 for setting or clearing breakpoints.\n\
 \n\
-When using @bf Open Source... @rm, you should use the \
-@bf Open Program... @rm command to specify\n\
-the executable program, and to load its symbol table.\n\
+When using @bf Open Source@rm, you should use @bf Open Program @rm\n\
+to specify the executable program, and to load its symbol table.\n\
 \n\
 Click on @bf Open @rm to open the selected source file.\n\
 Click on @bf Filter @rm to apply the given filter.
