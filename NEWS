@@ -9,8 +9,8 @@ DDD 3.0 [in beta test]
     User-visible changes to DDD 2.2.3:
     - New, `clean' look.  The DDD 2.x button rows are replaced by an
       icon toolbar at the top, saving vertical and horizontal space.
-    - Configurable fonts.  You can now easily customize DDD font
-      families and font sizes. Try `Edit | Preferences | Fonts'.
+    - Configurable fonts.  You can easily customize DDD font settings
+      via `Edit | Preferences | Fonts'.
     - JDB support.  DDD now also supports JDB as inferior debugger.
       All important JDB features are available via the GUI.
     - Java support.  Requires GDB 4.17 or later (or JDB, of course).
@@ -23,52 +23,52 @@ DDD 3.0 [in beta test]
       * In sessions, displays can also be restored without core dump.
     - Tear-off menus are supported (and enabled by default).
     - Breakpoint properties.  There is an editor panel to set and
-      change all properties for a breakpoint at once.
+      change all properties for a breakpoint at once.  Such panels can
+      also be created for multiple breakpoints.
     - Breakpoint commands.  You can record and edit commands to be
       executed when a breakpoint is reached.
-    - On popular demand, the command tool now has `until' and `make'
-      buttons.
     - Conditional breakpoints, temporary breakpoints, and breakpoints
       with ignore counts now have their special symbols on their own.
-    - All selection dialogs, including the breakpoint and display
-      editors, now can be resized.
+    - On popular demand, the command tool has `until' and `make' buttons.
     - When detecting a grabbed (frozen) mouse pointer after reaching a
       breakpoint, DDD now automatically continues execution, rather
       than attempting to ungrab the pointer.
     - Improved help system: In accordance with the Motif style guide,
-      F1 invokes help on the item pointed at, while Shift+F1 lets you
-      choose an item.
+      the F1 key invokes help on the item pointed at; Shift+F1 lets
+      you choose an item.
     - Tips of the day.  Upon startup, DDD shows a useful hint for DDD usage.
     - Value tips and selections now work for struct members, too: you
       can point at `A.B' or `A->B' and get the current value.
+    - All selection dialogs, including the breakpoint and display
+      editors, can be resized.
     - You can have the most important dialogs be realized as
       non-transient windows, allowing the DDD main window ro obscure
       them.  See the `transientDialogs' resource for details.
     - The maximum number of glyphs is now configurable at startup time.
       See the `maxGlyphs' resource for details.
     - DDD no longer indents the source code, leaving more horizontal
-      space.  To change this, see `Edit | Preferences | Source |
-      Source indentation'.
-    - Save Options improvements.  DDD now saves whether a window is
-      open or closed and restores this setting upon start-up.  Saving
+      space.  See `Edit | Preferences | Source | Source indentation'.
+    - Save Options improvements.  DDD saves whether a window is open
+      or closed and restores this setting upon start-up.  Saving
       options is also much, much faster.
-    - DBX settings now also work with SGI DBX.
+    - DBX settings also work with SGI DBX.
 
     Bug fixes:
     - Data displays are no longer cluttered by Sun DBX 3.0 warnings.
     - Paned window management has been improved a lot.
-    - DDD now works around a Motif 2.1/XFree86 bug that caused glyphs
+    - DDD works around a Motif 2.1/XFree86 bug that caused glyphs
       to disappear.  See the `cacheGlyphImages' resource for details.
       (This bug could be fixed thanks to Trond Eivind Glomsrød
       <teg@pvv.ntnu.no> who donated a copy of Motif 2.1 for Linux)
-    - The `endless scrolling' problem may now be prevented by delaying
+    - The `endless scrolling' problem may be prevented by delaying
       glyph updates.  See the `glyphUpdateDelay' resource for details.
     - DDD no longer terminates the inferior debugger when receiving an 
       EOF on input.   See the `terminateOnEOF' resource for details.
     - The new grab detection mechanism no longer interferes with grabs
       on Motif popup and pulldown menus.
     - One-letter options like `-b BPS' or `-x FILE' work again.
-    - Trailing CRs in debuggee output are now properly handled.
+    - Trailing CRs in debuggee output are properly handled.
+    - The data window with Motif scrollbars no longer ignores resizes.
 
     Changes in configuration and building:
     - LessTif 0.83 is supported (and a standard test environment of
@@ -76,10 +76,20 @@ DDD 3.0 [in beta test]
     - GDB 4.17 is supported.
 
     Compatibility notes:
-    - Some resources were renamed for clarity:
-      The `toolBar' resource is now named `commandToolBar'.
-      The `colorIcons' resource is now named `colorWMIcons'.
-      Please rename all references to these DDD resources.
+    - Some resources had to be renamed for clarity and/or Motif conflicts:
+ 
+        Old resource name   New resource name
+        ------------------  --------------------
+        toolBar             commandToolBar
+        colorIcons          colorWMIcons
+	dataWindow          openDataWindow
+        sourceWindow        openSourceWindow
+        debuggerConsole     openDebuggerConsole
+        traceDialog         trace
+        traceShellCommands  trace
+        ungrabMousePointer  checkGrabs
+
+      Please rename all references to the old DDD resources.
     - To enable a DDD 2.x style window layout, use
 
 	Ddd*commonToolBar:    off
@@ -87,9 +97,13 @@ DDD 3.0 [in beta test]
 
       in your `~/.ddd/init' file.  For a full DDD 2.x look, disable images
       and captions via `Edit | Preferences | Startup | Toolbar Appareance'.
+    - Be sure not to leave `Ddd' app-defaults files from previous
+      versions behind.  DDD does not require app-defaults files; in
+      fact, we recommend strongly *NOT* to use or install them.
 
     And once more, several more minor improvements and bug fixes; see
     the `ChangeLog' file for details.
+
 
 
 DDD 2.2.3
