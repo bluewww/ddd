@@ -208,8 +208,6 @@ Volunteers for these and other projects are welcome!
 
 129. Detect self-modifying code.
 
-130. Have a `bookmarks' menu like the `Highlight' menu in tkman.
-
 131. Include the Athena Panner widget in the DDD distribution, such
      that Athena/Motif conflicts are removed.
 
@@ -357,4 +355,9 @@ Volunteers for these and other projects are welcome!
 232. Have an `infinite' assembler window that extends in both
      directions as needed.
 
-233. (Insert your project idea here)
+233* Have a `bookmarks' menu like the `Highlight' menu in tkman.
+
+234* Have multiple display sets in the data display (via
+     cut/copy/paste; accessible via Alt+0 .. Alt+9)
+
+235. (Insert your project idea here)
