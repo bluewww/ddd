@@ -71,38 +71,16 @@ private:
 public:
     VSLDefList *deflist;        // Vater
 
-    // Erzeugen
+    // Constructor
     VSLDef(VSLDefList* l, VSLNode *pattern, VSLNode *e = 0,
-	string filename = "builtin", int lineno = 0)
-	: _expr(e),
-	_node_pattern(pattern),
-	_box_pattern(0),
-	_nargs(pattern->nargs()),
-	_straight(pattern->isStraight()),
-	_filename(filename),
-	_lineno(lineno),
-	_listnext(0), _libnext(0), _libprev(0),
-	being_compiled(false),
-	deflist(l)
-    {}
+	string filename = "builtin", int lineno = 0);
 
 private:
-    VSLDef(const VSLDef&)
-	:_expr(0),
-	_node_pattern(0),
-	_box_pattern(0),
-	_nargs(0),
-	_straight(0),
-	_filename(),
-	_lineno(0),
-	_listnext(0), _libnext(0), _libprev(0),
-	being_compiled(false),
-	deflist(0)
-    {
-	assert(0);
-    }
+    // `Dummy' copy constructor
+    VSLDef(const VSLDef&);
 
-    VSLDef& operator = (const VSLDef&) { assert(0); return *this; }
+    // `Dummy' assignment
+    VSLDef& operator = (const VSLDef&);
 
 public:
     // Ressourcen
@@ -110,7 +88,7 @@ public:
     VSLNode*& node_pattern()    { return _node_pattern; }
     Box*& box_pattern()         { return _box_pattern; }
     unsigned nargs() const      { return _nargs; }
-    bool straight() const    { return _straight; }
+    bool straight() const       { return _straight; }
 
     VSLDef*& listnext()         { return _listnext; }
     VSLDef*& libnext()          { return _libnext; }

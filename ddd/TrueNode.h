@@ -1,5 +1,5 @@
 // $Id$
-// Praktische Abkuerzungen
+// Abbreviations for frequently used VSL nodes
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -45,48 +45,64 @@
 class TrueNode: public ConstNode {
 public:
     DECLARE_TYPE_INFO
-    TrueNode(): ConstNode(new TrueBox) {}
+
+    TrueNode()
+	: ConstNode(new TrueBox)
+    {}
 };
 
 class FalseNode: public ConstNode {
 public:
     DECLARE_TYPE_INFO
-    FalseNode(): ConstNode(new FalseBox) {}
+
+    FalseNode()
+	: ConstNode(new FalseBox)
+    {}
 };
 
 class NullNode: public ConstNode {
 public:
     DECLARE_TYPE_INFO
-    NullNode(): ConstNode(new NullBox) {}
+
+    NullNode()
+	: ConstNode(new NullBox)
+    {}
 };
 
 class StringNode: public ConstNode {
 public:
     DECLARE_TYPE_INFO
-    StringNode(string &str): ConstNode(new StringBox(str)) {}
+
+    StringNode(const string &str)
+	: ConstNode(new StringBox(str))
+    {}
 };
 
 class NumNode: public ConstNode {
 public:
     DECLARE_TYPE_INFO
-    NumNode(int num): ConstNode(new SquareBox(num)) {}
+
+    NumNode(int num)
+	: ConstNode(new SquareBox(num))
+    {}
 };
 
 class EmptyListNode: public ConstNode {
 public:
     DECLARE_TYPE_INFO
-    EmptyListNode(): ConstNode(new ListBox) {}
+
+    EmptyListNode()
+	: ConstNode(new ListBox)
+    {}
 };
 
 class FixListNode: public ListNode {
 public:
     DECLARE_TYPE_INFO
-    FixListNode(VSLNode *arg): 
-	ListNode(arg, new EmptyListNode) 
-    {}
-    FixListNode(VSLNode *arg1, VSLNode *arg2): 
-	ListNode(arg1, new FixListNode(arg2)) 
-    {}
+
+    // GCC 2.8.1 doesn't like these inlined, so we place them in the .C file
+    FixListNode(VSLNode *arg);
+    FixListNode(VSLNode *arg1, VSLNode *arg2);
     FixListNode(VSLNode *arg1, VSLNode *arg2, VSLNode *arg3);
     FixListNode(VSLNode *arg1, VSLNode *arg2, VSLNode *arg3, VSLNode *arg4);
 };

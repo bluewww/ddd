@@ -36,6 +36,7 @@ char VSLDef_rcsid[] =
 
 #include <iostream.h>
 #include <strstream.h>
+#include <stdlib.h>
 
 #include "assert.h"
 #include "hash.h"
@@ -58,10 +59,49 @@ DEFINE_TYPE_INFO_0(VSLDef)
 
 // VSLDef
 
+// Constructor
+VSLDef::VSLDef(VSLDefList* l, VSLNode *pattern, VSLNode *e, 
+	       string filename, int lineno)
+    : _expr(e),
+      _node_pattern(pattern),
+      _box_pattern(0),
+      _nargs(pattern->nargs()),
+      _straight(pattern->isStraight()),
+      _filename(filename),
+      _lineno(lineno),
+	_listnext(0), _libnext(0), _libprev(0),
+      being_compiled(false),
+      deflist(l)
+{}
+
+// `Dummy' copy constructor
+VSLDef::VSLDef(const VSLDef&)
+    : _expr(0),
+      _node_pattern(0),
+      _box_pattern(0),
+      _nargs(0),
+      _straight(0),
+      _filename(),
+      _lineno(0),
+      _listnext(0), _libnext(0), _libprev(0),
+      being_compiled(false),
+      deflist(0)
+{
+    assert(0);
+    abort();
+}
+
+// `Dummy' assignment
+VSLDef& VSLDef::operator = (const VSLDef&)
+{
+    assert(0);
+    return *this;
+}
+
+
 // Pattern-Matching
 
 const int max_instances = 256;
-
 
 // Pattern-Matching mit Knoten
 

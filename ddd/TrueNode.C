@@ -1,5 +1,5 @@
 // $Id$
-// Implementation Klasse TrueNode
+// Abbreviations for frequently used VSL nodes
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -46,11 +46,20 @@ DEFINE_TYPE_INFO_1(FixListNode,   ListNode)
 
 // FixListNode
 
-FixListNode::FixListNode(VSLNode *arg1, VSLNode *arg2, VSLNode *arg3):
-    ListNode(arg1, new FixListNode(arg2, arg3))
+// GCC 2.8.1 doesn't like these inlined, so we place them in the .C file
+FixListNode::FixListNode(VSLNode *arg)
+    : ListNode(arg, new EmptyListNode)
 {}
 
-FixListNode::FixListNode(VSLNode *arg1, VSLNode *arg2, VSLNode *arg3, 
-    VSLNode *arg4):
-    ListNode(arg1, new FixListNode(arg2, arg3, arg4))
+FixListNode::FixListNode(VSLNode *arg1, VSLNode *arg2)
+    : ListNode(arg1, new FixListNode(arg2))
+{}
+
+FixListNode::FixListNode(VSLNode *arg1, VSLNode *arg2, VSLNode *arg3)
+    : ListNode(arg1, new FixListNode(arg2, arg3))
+{}
+
+FixListNode::FixListNode(VSLNode *arg1, VSLNode *arg2,
+			 VSLNode *arg3, VSLNode *arg4)
+    : ListNode(arg1, new FixListNode(arg2, arg3, arg4))
 {}

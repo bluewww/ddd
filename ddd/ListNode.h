@@ -56,11 +56,7 @@ private:
     VSLNode *_tail;
 
 protected:
-    ListNode(const ListNode& node):
-	VSLNode(node),
-	_head(node._head->dup()),
-	_tail(node._tail->dup())
-    {}
+    ListNode(const ListNode& node);
 
     bool matches(const VSLNode& node) const
     {
@@ -73,10 +69,7 @@ private:
     ListNode& operator = (const ListNode&) { assert(0); return *this; }
 
 public:
-    ListNode(VSLNode *hd, VSLNode *tl, char *type = "ListNode"):
-	VSLNode(type), _head(hd), _tail(tl)
-    {}
-
+    ListNode(VSLNode *hd, VSLNode *tl, char *type = "ListNode");
     VSLNode *dup() const { return new ListNode(*this); }
 
     // ListNode zerstoeren: inklusive Argumenten!

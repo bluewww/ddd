@@ -54,6 +54,21 @@ DEFINE_TYPE_INFO_1(ListNode, VSLNode)
 
 // ListNode
 
+// Constructors
+ListNode::ListNode(VSLNode *hd, VSLNode *tl, char *type)
+    : VSLNode(type), _head(hd), _tail(tl)
+{
+    assert(hd != 0);
+    assert(tl != 0);
+}
+
+ListNode::ListNode(const ListNode& node)
+    : VSLNode(node), 
+      _head(node._head->dup()), 
+      _tail(node._tail->dup())
+{}
+
+
 // Liste auswerten
 const Box *ListNode::_eval(ListBox *arglist) const
 {
