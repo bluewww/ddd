@@ -902,7 +902,7 @@ void SourceView::move_pc(const string& a, Widget w)
 	c.data     = XtPointer(old_max_breakpoint_number_seen);
 	gdb_command(c);
     }
-    else
+    else if (gdb->has_assign_command())
     {
 	// Use the `set $pc = ADDR' alternative.
 	if (address.contains('*', 0))
@@ -1051,12 +1051,14 @@ void SourceView::bp_popup_disableCB (Widget w,
 
 void SourceView::enable_bp(int nr, Widget w)
 {
-    gdb_command(gdb->enable_command(itostring(nr)), w);
+    if (gdb->has_enable_command())
+	gdb_command(gdb->enable_command(itostring(nr)), w);
 }
 
 void SourceView::disable_bp(int nr, Widget w)
 {
-    gdb_command(gdb->disable_command(itostring(nr)), w);
+    if (gdb->has_disable_command())
+	gdb_command(gdb->disable_command(itostring(nr)), w);
 }
 
 
@@ -1764,6 +1766,8 @@ String SourceView::read_from_gdb(const string& file_name, long& length,
     length = 0;
     if (!gdb->isReadyWithPrompt())
 	return 0;
+    if (gdb->type() == JDB)
+	return 0;		// Won't work with JDB
 
     StatusDelay delay("Reading file " + quote(file_name) + 
 		      " from " + gdb->title());
@@ -4431,8 +4435,13 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	// Grey out unsupported functions
 	XtSetSensitive(bp_popup[BPItms::Disable].widget, 
 		       gdb->has_disable_command());
+	XtSetSensitive(bp_popup[BPItms::Condition].widget, 
+		       gdb->has_breakpoint_conditions());
 	XtSetSensitive(bp_popup[BPItms::IgnoreCount].widget,
 		       gdb->has_ignore_command());
+	XtSetSensitive(bp_popup[BPItms::SetPC].widget,
+		       gdb->has_jump_command() || gdb->has_assign_command());
+
 	MString label(bp_map.get(bp_nr)->enabled() ? 
 		      "Disable Breakpoint" : "Enable Breakpoint");
 	XtVaSetValues(bp_popup[BPItms::Disable].widget,
@@ -4454,12 +4463,11 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	    MMaddCallbacks (line_popup, XtPointer(&address));
 	    InstallButtonTips(line_popup_w);
 
-	    bool temp = gdb->type() == GDB 
-		|| gdb->type() == XDB 
-		|| gdb->has_when_command();
-
-	    XtSetSensitive(line_popup[LineItms::SetTempBP].widget, temp);
-	    XtSetSensitive(line_popup[LineItms::TempNContBP].widget, temp);
+	    XtSetSensitive(line_popup[LineItms::SetTempBP].widget, 
+			   gdb->has_temporary_breakpoints());
+	    XtSetSensitive(line_popup[LineItms::SetPC].widget,
+			   gdb->has_jump_command() || 
+			   gdb->has_assign_command());
 	}
 
 	if (is_source_widget(w))
@@ -4610,6 +4618,8 @@ void SourceView::EditBreakpointConditionCB(Widget,
 {
     if (breakpoint_list_w == 0)
 	return;
+    if (!gdb->has_breakpoint_conditions())
+	return;
 
     static Widget edit_breakpoint_condition_dialog = 0;
     if (edit_breakpoint_condition_dialog == 0)
@@ -4688,6 +4698,8 @@ void SourceView::EditBreakpointIgnoreCountDCB(Widget,
 					      XtPointer call_data)
 {
     if (breakpoint_list_w == 0)
+	return;
+    if (!gdb->has_ignore_command())
 	return;
 
     XmSelectionBoxCallbackStruct *cbs = 
@@ -4964,18 +4976,17 @@ void SourceView::UpdateBreakpointButtonsCB(Widget, XtPointer,
 #endif
 
     // Update buttons
-    XtSetSensitive(bp_area[BPButtons::Lookup].widget,
-		   breakpoint_nrs.size() == 1);
+    int selected = breakpoint_nrs.size();
+    XtSetSensitive(bp_area[BPButtons::Lookup].widget, selected == 1);
     XtSetSensitive(bp_area[BPButtons::Enable].widget,      
-		   gdb->has_enable_command() && breakpoint_nrs.size() > 0);
+		   gdb->has_enable_command() && selected > 0);
     XtSetSensitive(bp_area[BPButtons::Disable].widget,     
-		   gdb->has_disable_command() && breakpoint_nrs.size() > 0);
+		   gdb->has_disable_command() && selected > 0);
     XtSetSensitive(bp_area[BPButtons::Condition].widget,   
-		   breakpoint_nrs.size() > 0);
+		   gdb->has_breakpoint_conditions() && selected > 0);
     XtSetSensitive(bp_area[BPButtons::IgnoreCount].widget, 
-		   gdb->has_ignore_command() && breakpoint_nrs.size() > 0);
-    XtSetSensitive(bp_area[BPButtons::Delete].widget,
-		   breakpoint_nrs.size() > 0);
+		   gdb->has_ignore_command() && selected > 0);
+    XtSetSensitive(bp_area[BPButtons::Delete].widget, selected > 0);
 }
 
 void SourceView::EditBreakpointsCB(Widget, XtPointer, XtPointer)
@@ -5106,7 +5117,7 @@ void SourceView::setup_where_line(string& line)
 	line += replicate(' ', min_width - line.length());
 }
 
-void SourceView::process_where (string& where_output)
+void SourceView::process_where(string& where_output)
 {
     int count          = where_output.freq('\n') + 1;
     string *frame_list = new string[count];
@@ -5116,6 +5127,19 @@ void SourceView::process_where (string& where_output)
 
     while (count > 0 && frame_list[count - 1] == "")
 	count--;
+
+    if (gdb->type() == JDB)
+    {
+        // In JDB, the first line issued by `where' is also
+        // the current line executed
+        PosBuffer pb;
+	string w(where_output);
+        pb.filter(w);
+        pb.answer_ended();
+
+	if (pb.pos_found())
+	    show_execution_position(pb.get_position());
+    }
 
     if (gdb->type() != XDB)
     {
