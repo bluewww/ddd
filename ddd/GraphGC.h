@@ -37,6 +37,7 @@
 #include "BoxPoint.h"
 #include "Box.h"
 #include "TypeInfo.h"
+#include "explicit.h"
 
 // Where to attach edges
 enum EdgeAttachMode {
@@ -88,7 +89,7 @@ struct GraphGC {
     static BoxPostScriptGC defaultPrintGC;
 
     // Default Constructor
-    GraphGC(GC n = 0, GC e = 0, GC i = 0, GC c = 0):
+    explicit GraphGC(GC n = 0, GC e = 0, GC i = 0, GC c = 0):
 	redraw(false),
         nodeGC(n),
         hintGC(n),
