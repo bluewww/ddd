@@ -25,12 +25,13 @@ DDD 3.0 [in beta test]
       * In sessions, displays can also be restored without core dump.
     - Tear-off menus are supported (and enabled by default).
     - Breakpoint properties.  There is an editor panel to set and
-      change all properties for a breakpoint at once.  Such panels can
-      also be created for multiple breakpoints.
+      change all properties for a breakpoint at once.  See `Source |
+      Edit Breakpoints | Properties' for details.
     - Breakpoint commands.  Using GDB, you can record and edit
       commands to be executed when a breakpoint is reached.
-    - User-defined commands.  Using GDB, DDD now saves and restores
-      all user commands defined during a DDD session.
+    - User-defined commands.  Using GDB, you can record and edit new
+      commands and assign them to buttons; see `Commands | Define
+      Command'.  All commands are saved across DDD sessions.
     - Conditional breakpoints, temporary breakpoints, and breakpoints
       with ignore counts now have their special symbols on their own.
     - On popular demand, the command tool has `until' and `make' buttons.
