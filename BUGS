@@ -128,6 +128,10 @@ Volunteers for fixing these and other bugs are welcome!
 062. Seth J. Bradley <sbradley@scic.intel.com> says that DDD only
      displays the upper 32 bits of "unsigned long long" data.
      Xxgdb, mxgdb and xde all display the full 64 bits of this data
-     type. 
+     type.
 
-063. (Insert your bug here)
+063. GDB versions earlier than GDB 4.13 do not always issue the
+     current PC after stopping.  Upgrade to a more recent GDB or enter
+     the line `display /x $pc' in `~/.gdbinit'.
+
+064. (Insert your bug here)

@@ -216,7 +216,7 @@ Ddd*questionTimeout: 10
 ! - `No'       : Answer current GDB prompt
 
 ! The buttons under the GDB command window.
-! *commandButtons: \
+! Ddd*commandButtons: \
 ! 	Yes:No:run:Clear:Prev:Next:Apply:interrupt^C
 Ddd*commandButtons: \
 	Yes:No:interrupt^C
@@ -259,6 +259,10 @@ Ddd*indentAmount: 	8
 ! The GDB initialization commands.  DDD depends on these settings,
 ! so don't change them unless required by your GDB version.
 ! Use a personal `~/.gdbinit' file instead to customize GDB.
+!
+! Users of GDB 4.12 and earlier may wish to add a line `display /x $pc',
+! as these GDB versions do not issue the current PC location when source
+! code is not available.
 Ddd*gdbInitCommands:	\
 set height 0\n\
 set width 0\n\
