@@ -5613,10 +5613,10 @@ static void gdbUpdateViewsCB(Widget, XtPointer client_data, XtPointer)
 
     set_sensitive(view_menu[CodeWindow].widget, gdb->type() == GDB);
 
-    set_toggle(view_menu[DataWindow].widget,   have_visible_data_window());
-    set_toggle(view_menu[SourceWindow].widget, have_visible_source_window());
+    set_toggle(view_menu[DataWindow].widget,   have_data_window());
+    set_toggle(view_menu[SourceWindow].widget, have_source_window());
     set_toggle(view_menu[CodeWindow].widget,   app_data.disassemble);
-    set_toggle(view_menu[GDBWindow].widget,    have_visible_command_window());
+    set_toggle(view_menu[GDBWindow].widget,    have_command_window());
 }
 
 // In case we have tear-off menus, all these menus must be updated at

@@ -81,12 +81,6 @@ extern bool have_data_window();
 extern bool have_exec_window();
 extern bool have_tool_window();
 
-extern bool have_visible_command_window();
-extern bool have_visible_source_window();
-extern bool have_visible_data_window();
-extern bool have_visible_exec_window();
-extern bool have_visible_tool_window();
-
 
 // Close current window
 extern void DDDCloseCB              (Widget, XtPointer, XtPointer);

@@ -813,15 +813,6 @@ bool have_command_window()
     return XtIsManaged(XtParent(gdb_w));
 }
 
-bool have_visible_command_window()
-{
-    return have_command_window() 
-	&& state(command_shell) == PoppedUp
-	&& (!app_data.separate_data_window
-	    || !app_data.separate_source_window
-	    || visibility(command_shell) == VisibilityUnobscured);
-}
-
 
 // Source window
 void gdbCloseSourceWindowCB(Widget w, XtPointer client_data, 
@@ -916,14 +907,6 @@ bool have_code_window()
     return XtIsManaged(source_view->code_form());
 }
 
-bool have_visible_source_window()
-{
-    return have_source_window()
-	&& (source_view_shell == 0 
-	    || (state(source_view_shell) == PoppedUp
-		&& visibility(source_view_shell) == VisibilityUnobscured));
-}
-
 
 // Data window
 void gdbCloseDataWindowCB(Widget w, XtPointer, XtPointer)
@@ -970,14 +953,6 @@ bool have_data_window()
     return XtIsManaged(data_disp->graph_form());
 }
 
-bool have_visible_data_window()
-{
-    return have_data_window()
-	&& (data_disp_shell == 0 
-	    || (state(data_disp_shell) == PoppedUp
-		&& visibility(data_disp_shell) == VisibilityUnobscured));
-}
-
 
 // Execution window
 void gdbCloseExecWindowCB(Widget, XtPointer, XtPointer)
@@ -1002,12 +977,6 @@ bool have_exec_window()
 {
     exec_tty_running();
     return exec_tty_pid() > 0;
-}
-
-bool have_visible_exec_window()
-{
-    // We cannot determine easily whether the exec window is visible
-    return have_exec_window();
 }
 
 
@@ -1038,13 +1007,6 @@ void gdbOpenToolWindowCB(Widget, XtPointer, XtPointer)
 bool have_tool_window()
 {
     return tool_shell != 0;
-}
-
-bool have_visible_tool_window()
-{
-    return have_tool_window() 
-	&& state(tool_shell) == PoppedUp 
-	&& visibility(tool_shell) == VisibilityUnobscured;
 }
 
 

@@ -1887,8 +1887,7 @@ bool save_options(unsigned long flags)
 
     // Command tool
     os << "\n! Command Tool.\n";
-    if (have_visible_tool_window())
-	get_tool_offset();
+    get_tool_offset();
     os << bool_app_value(XtNcommandToolBar,
 			 app_data.command_toolbar) << "\n";
     os << int_app_value(XtNtoolRightOffset,
