@@ -1589,8 +1589,11 @@ int main(int argc, char *argv[])
 
     // Remove unnecessary sashes
     untraverse_sashes(source_view_parent);
-    if (source_view_shell)
-	unmanage_sashes(source_view_parent, 2);
+
+    // The sash in the source view is kept, as it separates source and
+    // assembler code windows.
+    // if (source_view_shell)
+    //	   unmanage_sashes(source_view_parent);
 
     untraverse_sashes(data_disp_parent);
     if (data_disp_shell)

@@ -51,27 +51,30 @@ extern "C" {
 // Sashes
 //-----------------------------------------------------------------------------
 
-// Destroy all sashes of PANED, except the one numbered IGNORE
-void unmanage_sashes(Widget paned, int ignore)
+// Unmanage all sashes of PANED
+void unmanage_sashes(Widget paned)
 {
-    if (!XmIsPanedWindow(paned))
+    if (paned == 0 || !XmIsPanedWindow(paned))
 	return;
 
-    WidgetList children;
-    int num_children;
+    if (XtIsComposite(paned))
+    {
+	WidgetList children   = 0;
+	Cardinal num_children = 0;
 
-    XtVaGetValues(paned,
-		  XtNchildren, &children,
-		  XtNnumChildren, &num_children,
-		  NULL);
+	XtVaGetValues(paned,
+		      XtNchildren, &children,
+		      XtNnumChildren, &num_children,
+		      NULL);
 
-    int n = 0;
-    for (int i = 0; i < num_children; i++)
-	if (XmIsSash(children[i]) && n++ != ignore)
-	{
-	    XtUnmanageChild(children[i]);
-	    XtUnmapWidget(children[i]);
-	}
+	if (children)
+	    for (int i = 0; i < int(num_children); i++)
+		if (XmIsSash(children[i]))
+		{
+		    XtUnmanageChild(children[i]);
+		    XtUnmapWidget(children[i]);
+		}
+    }
 }
 
 // Disable traversal for all sashes of PANED

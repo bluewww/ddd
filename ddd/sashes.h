@@ -37,7 +37,7 @@
 
 // Sash killer
 extern void untraverse_sashes(Widget paned);
-extern void unmanage_sashes(Widget paned, int ignore = -1);
+extern void unmanage_sashes(Widget paned);
 
 #endif // _DDD_sashes_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
