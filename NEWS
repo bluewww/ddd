@@ -59,7 +59,8 @@ DDD 2.2 [in development]
       under `~/.ddd'.  The file `~/.dddinit' has been replaced by
       `~/.ddd/init'; `~/.ddd_history' is now `~/.ddd/history'.  The
        directory `~/.ddd/sessions/' contains saved DDD sessions.
-    - Multi-color icons.  (requires XPM)
+    - Your window manager running DDD should now show multi-color
+      DDD icons.  (requires XPM)
     - During start-up, DDD shows its logo in a transient window
       (can be disabled).
 

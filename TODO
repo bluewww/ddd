@@ -299,7 +299,7 @@ Volunteers for these and other projects are welcome!
      - recognize URLs in source window; follow on click (call external
        browser)
 
-164. It would be very nice if the data displayed in the Display window was
+164* It would be very nice if the data displayed in the Display window was
      color highlighted whenever it changes.
 
 166. When the inferior debugger crashes, offer to restart it.  This
@@ -312,7 +312,7 @@ Volunteers for these and other projects are welcome!
      also #108.
 
 170. In the `File' menu, keep a history of most recently opened files
-     (executables? sources?)
+     (executables? sources? sessions?)
 
 171. Use double-buffering to display the graph.  Even less flickering.
 
@@ -377,6 +377,16 @@ Volunteers for these and other projects are welcome!
        history, but don't show).
      * Verify how X11R6 Session Manager stuff works.
 
-205* Show the DDD logo upon start-up, as in acroread.
+206* `manage_and_raise' should deiconify dialogs.
 
-206. (Insert your project idea here)
+207* Multi-color icons should be optional.
+
+208* Use a single LEX source for all 150 DDD regexps, instead of
+     compiling them at runtime.  A LEX-generated scanner matches up to 
+     *10 times* faster than compiled regexps.
+
+210* Use a separate display connection for the DDD start-up logo, such 
+     that the start-up colors will not remain allocated during the DDD 
+     session.
+
+211. (Insert your project idea here)
