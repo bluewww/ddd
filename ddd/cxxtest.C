@@ -130,6 +130,9 @@ void array_test ()
     char* twodim [2][3] = {{ "Pioneering", "women", "in"},
 			   { "computer", "science", "!"}};
 
+    (void) twodim;		// Use it
+    (void) days_of_week;	// Use it
+
     Date* date_ptrs[4];
     date_ptrs[0] = new Date (Thu, 1, 9, 1994);
     date_ptrs[1] = new Date (Tue, 10, 5, 1994);
@@ -149,6 +152,8 @@ void type_test ()
 
     Date* date = new Date(Sat, 24, 12, 1994);
     void* voidptr = date;
+
+    (void) voidptr;		// Use it
 
     struct Uni {
 	int ii;
@@ -190,6 +195,10 @@ void type_test ()
     float f        = 0.0;
     double d       = 0.0;
     signed char sc = 'a';
+
+    (void) f;			// Use it
+    (void) d;			// Use it
+    (void) sc;			// Use it
 }
 //--------------------------------------------------------------------------
 void cin_cout_test ()
