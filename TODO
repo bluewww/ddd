@@ -181,9 +181,6 @@ Volunteers for these and other projects are welcome!
      top-level documentation in the DDD manual (including news,
      problems, etc.) and generate it from this single source.
 
-082. For remote debugging, use an on-line `rlogin' connection,
-     invoking the inferior debugger from the remote shell.
-
 083. Include graphplace (or other graph layout) support.
 
 085. Include xDuel support.  See `http://www.math.tau.ac.il/~frangy/'
