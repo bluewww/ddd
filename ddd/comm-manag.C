@@ -703,7 +703,51 @@ void send_gdb_command(string cmd, Widget origin,
 	// No displays
 	cmd_data->filter_disp = NoFilter;
     }
-    
+
+    if (is_list_cmd(cmd))
+    {
+	string arg = cmd.after(rxwhite);
+	strip_space(arg);
+	if (arg == "" || 
+	    arg.contains('-', 0) || 
+	    arg.contains('+', 0) || 
+	    arg.matches(rxlist_range))
+	{
+	    // Ordinary `list', `list +', `list -', or `list N, M'.
+	    // Nothing special.
+	}
+	else
+	{
+	    // `list ARG'
+	    if (have_source_window())
+	    {
+		// Lookup ARG in source window, too
+		switch (gdb->type())
+		{
+		case GDB:
+		    // No need to list lines in the debugger console;
+		    // translate `list' to `info line'.
+		    cmd = "info line " + arg;
+		    break;
+
+		case DBX:
+		case XDB:
+		case JDB:
+		    // Use `list ARG' as directed, but as a side effect,
+		    // lookup ARG in source window, too.
+		    cmd_data->lookup_arg = arg;
+		    break;
+		}
+	    }
+	}
+
+	plus_cmd_data->refresh_breakpoints = false;
+	plus_cmd_data->refresh_where       = false;
+	plus_cmd_data->refresh_registers   = false;
+	plus_cmd_data->refresh_threads     = false;
+	plus_cmd_data->refresh_addr        = false;
+    }
+
     if (!check || 
 	gdb->recording() ||
 	is_nop_cmd(cmd) || 
@@ -737,6 +781,9 @@ void send_gdb_command(string cmd, Widget origin,
 	{
 	    gdb->recording(true);
 	}
+
+	if (gdb->recording())
+	    echoed_cmd = cmd;
     }
     else if (is_file_cmd(cmd, gdb))
     {
@@ -874,49 +921,6 @@ void send_gdb_command(string cmd, Widget origin,
 
 	if (!gdb->has_display_command())
 	    plus_cmd_data->refresh_data = true;
-    }
-    else if (is_list_cmd(cmd))
-    {
-	string arg = cmd.after(rxwhite);
-	strip_space(arg);
-	if (arg == "" || 
-	    arg.contains('-', 0) || 
-	    arg.contains('+', 0) || 
-	    arg.matches(rxlist_range))
-	{
-	    // Ordinary `list', `list +', `list -', or `list N, M'.
-	    // Nothing special.
-	}
-	else
-	{
-	    // `list ARG'
-	    if (have_source_window())
-	    {
-		// Lookup ARG in source window, too
-		switch (gdb->type())
-		{
-		case GDB:
-		    // No need to list lines in the debugger console;
-		    // translate `list' to `info line'.
-		    cmd = "info line " + arg;
-		    break;
-
-		case DBX:
-		case XDB:
-		case JDB:
-		    // Use `list ARG' as directed, but as a side effect,
-		    // lookup ARG in source window, too.
-		    cmd_data->lookup_arg = arg;
-		    break;
-		}
-	    }
-	}
-
-	plus_cmd_data->refresh_breakpoints = false;
-	plus_cmd_data->refresh_where       = false;
-	plus_cmd_data->refresh_registers   = false;
-	plus_cmd_data->refresh_threads     = false;
-	plus_cmd_data->refresh_addr        = false;
     }
     else if (is_cd_cmd(cmd))
     {
