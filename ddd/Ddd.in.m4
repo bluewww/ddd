@@ -7300,3 +7300,7 @@ Ddd*tip_dialog.helpLabelString:		Next Tip
 Ddd*tip_dialog.symbolPixmap: 		ddd
 
 dnl Tips will be appended here.
+! Avoid automatic merging of these resources.
+! Local Variables:
+! xrdb-master-file: "~/.Xdefaults"
+! End:
