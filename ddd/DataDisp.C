@@ -69,6 +69,7 @@ char DataDisp_rcsid[] =
 #include "PannedGE.h"
 #include "PosBuffer.h"
 #include "ScrolledGE.h"
+#include "SmartC.h"
 #include "StringBox.h"		// StringBox::fontTable
 #include "StringMap.h"
 #include "TagBox.h"
@@ -2438,7 +2439,7 @@ void DataDisp::CompareNodesCB(Widget, XtPointer, XtPointer call_data)
     DispNode *disp1 = 0;
     DispNode *disp2 = 0;
 
-    if (node1 && node2)
+    if (node1 != 0 && node2 != 0)
     {
 	int nr1 = disp_graph->get_nr(node1);
 	int nr2 = disp_graph->get_nr(node2);
@@ -2447,39 +2448,18 @@ void DataDisp::CompareNodesCB(Widget, XtPointer, XtPointer call_data)
 	disp2 = disp_graph->get(nr2);
     }
 
-    if (disp1 && disp2)
+    if (disp1 != 0 && disp2 != 0)
     {
-	string name1 = disp1->name();
-	string name2 = disp2->name();
-
-	char *p1 = (char *)name1;
-	char *p2 = (char *)name2;
-
-	while (*p1 && *p2 && *p1 == *p2)
-	    p1++, p2++;
-
-	if (isdigit(*p1) && isdigit(*p2))
-	{
-	    // Compare numerals numerically
-	    long i1 = strtol(p1, NULL, 0);
-	    long i2 = strtol(p2, NULL, 0);
-
-	    info->result = i1 - i2;
-	}
-	else
-	{
-	    // Simple string comparison
-	    info->result = *p1 - *p2;
-	}
+	info->result = smart_compare(disp1->name(), disp2->name());
     }
     else
     {
-	if (disp1)
+	if (disp1 != 0)
 	{
 	    // Known nodes are ``larger'' than unknown nodes
 	    info->result = 1;
 	}
-	else if (disp2) 
+	else if (disp2 != 0)
 	{
 	    // Known nodes are ``larger'' than unknown nodes
 	    info->result = -1;
@@ -2838,8 +2818,7 @@ DispNode *DataDisp::new_data_node(const string& given_name,
     int nr = get_nr(nr_s);
     if (nr == 0 || display_name == "")
     {
-	if (answer != "")
-	    post_gdb_message(answer, last_origin);
+	post_gdb_message(answer, true, last_origin);
 	return 0;
     }
 
@@ -2874,8 +2853,7 @@ DispNode *DataDisp::new_data_node(const string& given_name,
     if (is_disabling(value, gdb))
     {
 	string error_msg = get_disp_value_str(value, gdb);
-	if (error_msg != "")
-	    post_gdb_message(error_msg, last_origin);
+	post_gdb_message(error_msg, true, last_origin);
 	value = "";
 	disabling_occurred = true;
     }
@@ -2986,7 +2964,7 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
 	else
 	{
 	    if (info->verbose)
-		post_gdb_message(answer, last_origin);
+		post_gdb_message(answer, info->prompt, last_origin);
 	}
 
 	delete info;
@@ -3196,8 +3174,8 @@ void DataDisp::new_data_displaysOQAC (const StringArray& answers,
 	if (!contains_display(answer, gdb))
 	{
 	    // Looks like an error message
-	    if (answer != "")
-		post_gdb_message(answer, last_origin);
+	    if (info->verbose)
+		post_gdb_message(answer, info->prompt, last_origin);
 	}
 	else
 	{
@@ -3544,8 +3522,8 @@ void DataDisp::disable_displayOQC (const string& answer, void *data)
 
     RefreshInfo *info = (RefreshInfo *)data;
 
-    if (info->verbose && answer != "")
-	post_gdb_message(answer);
+    if (info->verbose)
+	post_gdb_message(answer, info->prompt);
     if (info->prompt)
 	prompt();
 
@@ -3622,8 +3600,8 @@ void DataDisp::enable_displayOQC (const string& answer, void *data)
 
     RefreshInfo *info = (RefreshInfo *)data;
 
-    if (info->verbose && answer != "")
-	post_gdb_message(answer);
+    if (info->verbose)
+	post_gdb_message(answer, false);
 
     refresh_displaySQ(0, info->verbose, info->prompt);
 }
@@ -3722,8 +3700,8 @@ void DataDisp::delete_displayOQC (const string& answer, void *data)
     }
 
     // Anything remaining is an error message
-    if (info->verbose && ans != "")
-	post_gdb_message(ans);
+    if (info->verbose)
+	post_gdb_message(ans, false);
     if (info->prompt)
 	prompt();
 
@@ -3991,8 +3969,7 @@ string DataDisp::process_displays(string& displays,
 	    if (disp_nr >= 0 && dn != 0)
 	    {
 		string error_msg = get_disp_value_str(next_display, gdb);
-		if (error_msg != "")
-		    post_gdb_message(error_msg);
+		post_gdb_message(error_msg);
 		dn->make_active();
 		dn->disable();
 	    }
