@@ -1,6 +1,6 @@
 #! /bin/sh
 # $Id$
-# Get Configuration Info from `Makefile' and `config.h'
+# Get configuration info from `Makefile' and `config.h'
 
 # Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 # Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
@@ -27,11 +27,24 @@
 # `http://www.cs.tu-bs.de/softech/ddd/',
 # or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
+# Feature info is seldom useful, so leave it out by default
+features=false
+
 test "$#" = 0 && set USERINFO
-for file in "$@"; do 
-  test -f $file && break
+
+for file in "$@"; do
+  if [ $file = '-f' -o $file = '--full' ]; then
+    features=true
+  else
+    test -f $file && break
+  fi
 done
 userinfo=`cat $file || echo "DDD development team <ddd@ips.cs.tu-bs.de>"`
+userinfo=`echo "$userinfo." | 
+sed ':a
+\/............................................................/q
+s/.*/& /
+b a'`
 echo "// Generated automatically by \`config-info' from \`Makefile' and \`config.h'."
 echo "// Do not edit."
 echo
@@ -40,21 +53,23 @@ echo
 echo "const char *config_info = "
 (
     echo "Built `date '+%x' 2> /dev/null || date '+%D' 2> /dev/null || date` \
-by $userinfo."
-    echo "                                        "
-    echo Features:
-    (
-    grep '#define' config.h
-    grep '#undef' config.h
-    ) | sed 's,/\* *\(.*\) *\*/,\1,g' |
-    sed 's, *$,,' | sort +1 | sed 's,#undef ,#undef  ,'
+by $userinfo"
+    if $features; then
+      echo "          "
+      echo Features:
+      (
+      grep '#define' config.h
+      grep '#undef' config.h
+      ) |
+      sed 's,/\* *\(.*\) *\*/,\1,g' |
+      sed 's, *$,,' | sort +1 | sed 's,#undef ,#undef  ,'
 
-    echo
-    echo Tools and Flags:
-    grep '^[_a-zA-Z]* *=' Makefile | grep -v '\\$' |
-	sed 's/\([_a-zA-Z]*\) *= *\(.*\)/\1=\2/' | sort -f
-
-)  | sed '
+      echo
+      echo Tools and Flags:
+      grep '^[_a-zA-Z]* *=' Makefile | grep -v '\\$' |
+      sed 's/\([_a-zA-Z]*\) *= *\(.*\)/\1=\2/' | sort -f
+    fi
+) | sed '
 s/[\"]/\\&/g
 s/.*/"&\\n"/'
 echo ";"

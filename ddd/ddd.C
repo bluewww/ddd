@@ -1744,7 +1744,7 @@ int main(int argc, char *argv[])
     helpOnVersionPixmapProc = versionlogo;
 
     // Setup version info
-    helpOnVersionExtraText = rm(string(config_info).through(".\n"));
+    helpOnVersionExtraText = rm(string(config_info).through("\n"));
 
     string expires = ddd_expiration_date();
     if (expires != "")

@@ -257,6 +257,19 @@ void show_configuration()
 {    
     show_version();
     cout << 
+	"Compiled with "
+#ifdef __GNUC__
+	"GCC " stringize(__GNUC__)
+#ifdef __GNUC_MINOR__
+        "." stringize(__GNUC_MINOR__)
+#endif
+#else
+	"CC"
+#endif
+#ifdef _G_LIB_VERSION
+	" using libg++ " _G_LIB_VERSION
+#endif
+	"\n"
 	"Using X" stringize(X_PROTOCOL) "R" stringize(XlibSpecificationRelease)
 	 ", Xt" stringize(X_PROTOCOL) "R" stringize(XtSpecificationRelease)
 	 ", Motif " stringize(XmVERSION) "." stringize(XmREVISION)
