@@ -380,7 +380,7 @@ XtResource ddd_resources[] = {
 	sizeof(Boolean),
 	XtOffsetOf(AppData, common_toolbar),
 	XtRImmediate,
-	XtPointer(False)
+	XtPointer(True)
     },
 
     {
