@@ -13,7 +13,6 @@ Table of Contents
     * FreeBSD
     * GCC
       + GCC optimization errors
-      + Early GCC versions
       + GCC and libg++
     * HP-UX
     * LessTif
@@ -179,13 +178,6 @@ GCC Optimization Errors
     If DDD crashes after a few interactions, try building DDD without
     optimization. Just type `cd ddd; rm *.o; make CXXOPT=-DNDEBUG ddd'
     to re-build DDD.
-
-
-Early GCC versions
-------------------
-
-    GCC 2.5 and earlier produce lots and lots of warnings; all of them
-    are insignificant.
 
 
 GCC and LIBG++
