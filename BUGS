@@ -160,4 +160,11 @@ Volunteers for fixing these and other bugs are welcome!
     coupled with the way you are doing shadowing now, that's just when
     it popped up.
 
-322 (Insert new bugs here)
+322*Finish Plots:
+    - Temp files are kept around
+    - After the plot window is killed, we do not get a new one
+    - Give a diagnostic when trying to plot non-array data
+
+323*Updating displays still is O(n^2).
+
+324 (Insert new bugs here)
