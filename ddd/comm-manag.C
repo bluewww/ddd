@@ -725,6 +725,9 @@ void plusOQAC (string answers[],
     }
 
     assert (qu_count == count);
+    if (qu_count != count)
+	abort();
+
     delete plus_cmd_data;
     delete[] answers;
     delete[] qu_datas;

@@ -229,11 +229,11 @@ int ListNode::resolveDefs(VSLDef *cdef, bool complain_recursive)
     return changes;
 }
 
-int ListNode::resolveSynonyms(VSLDef *cdef, VSLNode **node)
+int ListNode::resolveSynonyms(VSLDef *cdef, VSLNode ** /* node */)
 {
     int changes = 0;
 
-    assert (this == *node);
+    // assert (this == *node);
 
     // Auf gesamter Liste ausfuehren
     changes += head()->resolveSynonyms(cdef, &head());
@@ -242,11 +242,11 @@ int ListNode::resolveSynonyms(VSLDef *cdef, VSLNode **node)
     return changes;
 }
 
-int ListNode::foldOps(VSLDef *cdef, VSLNode **node)
+int ListNode::foldOps(VSLDef *cdef, VSLNode ** /* node */)
 {
     int changes = 0;
 
-    assert (this == *node);
+    // assert (this == *node);
 
     // Auf gesamter Liste ausfuehren
     changes += head()->foldOps(cdef, &head());
@@ -255,11 +255,11 @@ int ListNode::foldOps(VSLDef *cdef, VSLNode **node)
     return changes;
 }
 
-int ListNode::inlineFuncs(VSLDef *cdef, VSLNode **node)
+int ListNode::inlineFuncs(VSLDef *cdef, VSLNode ** /* node */)
 {
     int changes = 0;
 
-    assert (this == *node);
+    // assert (this == *node);
 
     // Auf gesamter Liste ausfuehren
     changes += head()->inlineFuncs(cdef, &head());
@@ -268,12 +268,12 @@ int ListNode::inlineFuncs(VSLDef *cdef, VSLNode **node)
     return changes;
 }
 
-int ListNode::instantiateArgs(VSLDef *cdef, VSLNode **node, VSLNode *values[],
-    unsigned base, unsigned n)
+int ListNode::instantiateArgs(VSLDef *cdef, VSLNode ** /* node */,
+			      VSLNode *values[], unsigned base, unsigned n)
 {
     int changes = 0;
 
-    assert (this == *node);
+    // assert (this == *node);
 
     // Auf gesamter Liste ausfuehren
     changes += head()->instantiateArgs(cdef, &head(), values, base, n);
@@ -315,12 +315,12 @@ int ListNode::countSelfReferences(VSLDef *cdef, VSLDefList *deflist)
     return changes;
 }
 
-int ListNode::resolveName(VSLDef *cdef, VSLNode **node, string& name,
+int ListNode::resolveName(VSLDef *cdef, VSLNode **/* node */, string& name,
     unsigned id)
 {
     int changes = 0;
 
-    assert (this == *node);
+    // assert (this == *node);
 
     // Auf gesamter Liste ausfuehren
     changes += head()->resolveName(cdef, &head(), name, id);

@@ -95,25 +95,28 @@ int CallNode::resolveDefs(VSLDef *cdef, bool complain_recursive)
     return arg()->resolveDefs(cdef, complain_recursive);
 }
 
-int CallNode::resolveSynonyms(VSLDef *cdef, VSLNode **node)
+int CallNode::resolveSynonyms(VSLDef *cdef, VSLNode ** /* node */)
 {
-    assert (this == *node); return arg()->resolveSynonyms(cdef, &arg());
+    // assert (this == *node);
+    return arg()->resolveSynonyms(cdef, &arg());
 }
 
-int CallNode::foldOps(VSLDef *cdef, VSLNode **node)
+int CallNode::foldOps(VSLDef *cdef, VSLNode ** /* node */)
 {
-    assert (this == *node); return arg()->foldOps(cdef, &arg());
+    // assert (this == *node);
+    return arg()->foldOps(cdef, &arg());
 }
 
-int CallNode::inlineFuncs(VSLDef *cdef, VSLNode **node)
+int CallNode::inlineFuncs(VSLDef *cdef, VSLNode ** /* node */)
 {
-    assert (this == *node); return arg()->inlineFuncs(cdef, &arg());
+    // assert (this == *node);
+    return arg()->inlineFuncs(cdef, &arg());
 }
 
-int CallNode::instantiateArgs(VSLDef *cdef, VSLNode **node, VSLNode *values[],
-    unsigned base, unsigned n)
+int CallNode::instantiateArgs(VSLDef *cdef, VSLNode ** /* node */,
+			      VSLNode *values[], unsigned base, unsigned n)
 {
-    assert(this == *node); 
+    // assert(this == *node); 
     return arg()->instantiateArgs(cdef, &arg(), values, base, n);
 }
 
@@ -138,10 +141,11 @@ int CallNode::countSelfReferences(VSLDef *cdef, VSLDefList *deflist)
     return arg()->countSelfReferences(cdef, deflist);
 }
 
-int CallNode::resolveName(VSLDef *cdef, VSLNode **node, string& name,
+int CallNode::resolveName(VSLDef *cdef, VSLNode ** /* node */, string& name,
     unsigned id)
 {
-    assert(this == *node); return arg()->resolveName(cdef, &arg(), name, id);
+    // assert(this == *node); 
+    return arg()->resolveName(cdef, &arg(), name, id);
 }
 
 int CallNode::_resolveNames(VSLDef *cdef, unsigned base)

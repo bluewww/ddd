@@ -103,9 +103,10 @@ static void clipToSide(BoxRegion& b, int side, BoxPoint& p, BoxPoint& c)
 
 // Clip point <p> to side <side> of region <b> centered around <c>
 // Assume that b contains a circle
-static void clipToCircle(BoxRegion& b, int side, BoxPoint& p, BoxPoint& c)
+static void clipToCircle(BoxRegion& b, int /* side */, 
+			 BoxPoint& p, BoxPoint& c)
 {
-    assert(side == North || side == South || side == East || side == West);
+    // assert(side == North || side == South || side == East || side == West);
 
     double radius = max(b.space(X), b.space(Y)) / 2;
     if (radius > 0.0)
