@@ -170,6 +170,10 @@ char ddd_rcsid[] =
 #include <X11/Xmu/Editres.h>
 #endif
 
+#if HAVE_ATHENA
+#include <X11/Xaw/XawInit.h>
+#endif
+
 #include <X11/IntrinsicP.h>	// LessTif hacks
 #include "Sash.h"
 #include "LessTifH.h"
@@ -2131,6 +2135,12 @@ int main(int argc, char *argv[])
 	if (session_db != 0)
 	    XrmMergeDatabases(session_db, &dddinit);
     }
+
+#if HAVE_ATHENA
+    // Register Xaw Converters.  This is done before installing our
+    // own converters.
+    XawInitializeDefaultConverters();
+#endif
 
     // Register own converters.  This must be done here to install the
     // String -> Cardinal converter.
