@@ -1219,7 +1219,7 @@ static bool must_kill_to_get_core()
 
 inline String bool_value(bool value)
 {
-    return value ? "true" : "false";
+    return value ? "on" : "off";
 }
 
 string app_value(string resource, const string& value)
@@ -1278,14 +1278,16 @@ static string widget_value(Widget w, String name)
 
 static string widget_size(Widget w)
 {
-    Dimension width, height;
-    XtVaGetValues(w, XmNwidth, &width, XmNheight, &height, NULL);
+    XtWidgetGeometry size;
+    size.request_mode = CWHeight | CWWidth;
+    XtQueryGeometry(w, NULL, &size);
 
     string s;
-    s += int_app_value(string(XtName(w)) + "." + XmNwidth, width);
+    s += int_app_value(string(XtName(w)) + "." + XmNwidth, size.width);
     s += '\n';
-    s += int_app_value(string(XtName(w)) + "." + XmNheight, height);
+    s += int_app_value(string(XtName(w)) + "." + XmNheight, size.height);
 
+#if 0
     if (XmIsText(w) || XmIsTextField(w))
     {
 	short columns;
@@ -1306,6 +1308,7 @@ static string widget_size(Widget w)
 	    s += int_app_value(string(XtName(w)) + "." + XmNrows, rows);
 	}
     }
+#endif
 
     return s;
 }
@@ -1435,6 +1438,9 @@ bool save_options(unsigned long flags)
     }
 
     os << "\n! Debugger settings\n";
+    os << string_app_value(XtNdebugger, app_data.debugger) << "\n";
+    os << bool_app_value(XtNuseSourcePath, app_data.use_source_path) << "\n";
+
     string gdb_settings = app_data.gdb_settings;
     string dbx_settings = app_data.dbx_settings;
     string xdb_settings = app_data.xdb_settings;
@@ -1464,7 +1470,7 @@ bool save_options(unsigned long flags)
     os << string_app_value(XtNxdbSettings, xdb_settings) << "\n";
     os << string_app_value(XtNjdbSettings, jdb_settings) << "\n";
 
-    os << "\n! Preferences\n";
+    os << "\n! Source\n";
     os << bool_app_value(XtNfindWordsOnly,
 			 app_data.find_words_only) << "\n";
     os << bool_app_value(XtNfindCaseSensitive,
@@ -1475,8 +1481,6 @@ bool save_options(unsigned long flags)
 			 app_data.cache_source_files) << "\n";
     os << bool_app_value(XtNcacheMachineCode,
 			 app_data.cache_machine_code) << "\n";
-    os << bool_app_value(XtNuseSourcePath,
-			 app_data.use_source_path) << "\n";
     os << bool_app_value(XtNdisplayGlyphs,
 			 app_data.display_glyphs) << "\n";
     os << bool_app_value(XtNdisplayLineNumbers,
@@ -1485,54 +1489,8 @@ bool save_options(unsigned long flags)
 			 app_data.disassemble) << "\n";
     os << bool_app_value(XtNallRegisters,
 			 app_data.all_registers) << "\n";
-    os << bool_app_value(XtNgroupIconify,
-			 app_data.group_iconify) << "\n";
-    os << bool_app_value(XtNuniconifyWhenReady,
-			 app_data.uniconify_when_ready) << "\n";
-    os << bool_app_value(XtNbuttonTips,
-			 app_data.button_tips) << "\n";
-    os << bool_app_value(XtNvalueTips,
-			 app_data.value_tips) << "\n";
-    os << bool_app_value(XtNbuttonDocs,
-			 app_data.button_docs) << "\n";
-    os << bool_app_value(XtNvalueDocs,
-			 app_data.value_docs) << "\n";
-    os << bool_app_value(XtNstatusAtBottom,
-			 app_data.status_at_bottom) << "\n";
-    os << bool_app_value(XtNcommandToolBar,
-			 app_data.command_toolbar) << "\n";
-    os << bool_app_value(XtNseparateExecWindow,
-			 app_data.separate_exec_window) << "\n";
-    if (!app_data.separate_source_window && !app_data.separate_data_window)
-    {
-	os << bool_app_value(XtCSeparate, false) << "\n";
-    }
-    else if (app_data.separate_source_window && app_data.separate_data_window)
-    {
-	os << bool_app_value(XtCSeparate, true) << "\n";
-    }
-    else
-    {
-	os << bool_app_value(XtNseparateSourceWindow, 
-			     app_data.separate_source_window) << "\n";
-	os << bool_app_value(XtNseparateDataWindow, 
-			     app_data.separate_data_window) << "\n";
-    }
-    os << bool_app_value(XtNpannedGraphEditor,
-			 app_data.panned_graph_editor) << "\n";
-    os << bool_app_value(XtNsuppressWarnings,
-			 app_data.suppress_warnings) << "\n";
-    os << string_app_value(XtNshowStartupLogo,
-			   app_data.show_startup_logo) << "\n";
-    os << bool_app_value(XtNungrabMousePointer,
-			 app_data.ungrab_mouse_pointer) << "\n";
-    os << bool_app_value(XtNsaveHistoryOnExit,
-			 app_data.save_history_on_exit) << "\n";
-    os << string_app_value(XtNdebugger,
-			   app_data.debugger) << "\n";
-    os << string_app_value(XtNpaperSize,
-			   app_data.paper_size) << "\n";
 
+    os << "\n! Misc Preferences\n";
     unsigned char policy = '\0';
     XtVaGetValues(command_shell, XmNkeyboardFocusPolicy, &policy, NULL);
     switch (policy)
@@ -1546,19 +1504,26 @@ bool save_options(unsigned long flags)
 	   << "\n";
 	break;
     }
+    os << bool_app_value(XtNstatusAtBottom,
+			 app_data.status_at_bottom) << "\n";
+    os << bool_app_value(XtNsuppressWarnings,
+			 app_data.suppress_warnings) << "\n";
+    os << string_app_value(XtNshowStartupLogo,
+			   app_data.show_startup_logo) << "\n";
+    os << bool_app_value(XtNungrabMousePointer,
+			 app_data.ungrab_mouse_pointer) << "\n";
+    os << bool_app_value(XtNsaveHistoryOnExit,
+			 app_data.save_history_on_exit) << "\n";
+    os << string_app_value(XtNpaperSize,
+			   app_data.paper_size) << "\n";
+    os << bool_app_value(XtNblinkWhileBusy,
+			 app_data.blink_while_busy) << "\n";
 
-    os << bool_app_value(XtNdetectAliases,  app_data.detect_aliases)   << "\n";
-    os << bool_app_value(XtNalign2dArrays,  app_data.align_2d_arrays)  << "\n";
-    os << bool_app_value(XtNblinkWhileBusy, app_data.blink_while_busy) << "\n";
 
-    get_tool_offset();
-
-    os << int_app_value(XtNtoolRightOffset,
-			app_data.tool_right_offset) << "\n";
-    os << int_app_value(XtNtoolTopOffset,
-			app_data.tool_top_offset) << "\n";
-
-    // Some settable graph editor defaults
+    // Graph editor
+    os << "\n! Data\n";
+    os << bool_app_value(XtNpannedGraphEditor, 
+			 app_data.panned_graph_editor) << "\n";
     os << widget_value(data_disp->graph_edit, XtNshowGrid)   << "\n";
     os << widget_value(data_disp->graph_edit, XtNsnapToGrid) << "\n";
     os << widget_value(data_disp->graph_edit, XtNshowHints)  << "\n";
@@ -1582,6 +1547,43 @@ bool save_options(unsigned long flags)
 	os << int_app_value(string(XtName(data_disp->graph_edit)) + "." 
 			    + XtNgridHeight, grid_height) << "\n";
     }
+    os << bool_app_value(XtNdetectAliases,  app_data.detect_aliases)   << "\n";
+    os << bool_app_value(XtNalign2dArrays,  app_data.align_2d_arrays)  << "\n";
+
+    // Tips
+    os << "\n! Tips\n";
+    os << bool_app_value(XtNbuttonTips,
+			 app_data.button_tips) << "\n";
+    os << bool_app_value(XtNvalueTips,
+			 app_data.value_tips) << "\n";
+    os << bool_app_value(XtNbuttonDocs,
+			 app_data.button_docs) << "\n";
+    os << bool_app_value(XtNvalueDocs,
+			 app_data.value_docs) << "\n";
+
+    // Windows
+    os << "\n! Windows\n";
+    os << bool_app_value(XtNseparateExecWindow,
+			 app_data.separate_exec_window) << "\n";
+    if (!app_data.separate_source_window && !app_data.separate_data_window)
+    {
+	os << bool_app_value(XtCSeparate, false) << "\n";
+    }
+    else if (app_data.separate_source_window && app_data.separate_data_window)
+    {
+	os << bool_app_value(XtCSeparate, true) << "\n";
+    }
+    else
+    {
+	os << bool_app_value(XtNseparateSourceWindow, 
+			     app_data.separate_source_window) << "\n";
+	os << bool_app_value(XtNseparateDataWindow, 
+			     app_data.separate_data_window) << "\n";
+    }
+    os << bool_app_value(XtNgroupIconify,
+			 app_data.group_iconify) << "\n";
+    os << bool_app_value(XtNuniconifyWhenReady,
+			 app_data.uniconify_when_ready) << "\n";
 
     // Helpers
     os << "\n! Helpers\n";
@@ -1599,6 +1601,27 @@ bool save_options(unsigned long flags)
        << '\n';
     os << string_app_value(XtNprintCommand,      app_data.print_command) 
        << "\n";
+
+    // Toolbar
+    os << "\n! Toolbars\n";
+    os << bool_app_value(XtNcommonToolBar,
+			 app_data.common_toolbar)  << "\n";
+    os << bool_app_value(XtNbuttonImages,
+			 app_data.button_images)   << "\n";
+    os << bool_app_value(XtNbuttonCaptions,
+			 app_data.button_captions) << "\n";
+    os << bool_app_value(XtNtoolbarsAtBottom, 
+			 app_data.toolbars_at_bottom) << "\n";
+
+    // Command tool
+    os << "\n! Command tool\n";
+    get_tool_offset();
+    os << bool_app_value(XtNcommandToolBar,
+			 app_data.command_toolbar) << "\n";
+    os << int_app_value(XtNtoolRightOffset,
+			app_data.tool_right_offset) << "\n";
+    os << int_app_value(XtNtoolTopOffset,
+			app_data.tool_top_offset) << "\n";
 
     // Buttons
     os << "\n! Buttons\n";
@@ -1633,6 +1656,7 @@ bool save_options(unsigned long flags)
     // Widget sizes.
     os << "\n! Window sizes\n";
 
+#if 0
     // We must enable all PanedWindow children in order to get the
     // correct sizes.  Ugly hack.
     popups_disabled  = true;
@@ -1643,8 +1667,9 @@ bool save_options(unsigned long flags)
 
     gdbOpenDataWindowCB(gdb_w, 0, 0);
     gdbOpenSourceWindowCB(gdb_w, 0, 0);
-    XtManageChild(source_view->code_form());
+    manage_paned_child(source_view->code_form());
     gdbOpenCommandWindowCB(gdb_w, 0, 0);
+#endif
 
     os << widget_size(data_disp->graph_edit)           << "\n";
     Widget porthole_w = XtParent(data_disp->graph_edit);
@@ -1658,15 +1683,17 @@ bool save_options(unsigned long flags)
     os << widget_size(gdb_w)                           << "\n";
     os << widget_size(XtParent(gdb_w))                 << "\n";
 
+#if 0
     if (!had_data)
 	gdbCloseDataWindowCB(gdb_w, 0, 0);
     if (!had_source)
 	gdbCloseSourceWindowCB(gdb_w, 0, 0);
     if (!had_code)
-	XtUnmanageChild(source_view->code_form());
+	unmanage_paned_child(source_view->code_form());
     if (!had_command)
 	gdbCloseCommandWindowCB(gdb_w, 0, 0);
     popups_disabled = false;
+#endif
 
     if (save_geometry)
     {
