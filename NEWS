@@ -5,7 +5,8 @@ DDD-3.3.10
 ==========
 
 * New features and minor improvements
-- ...
+- More fixes for perl 5.8.x -- it's now a lot more usable.
+- Fixes for Sun's SunONE Studio dbx (1).
 
 * Build fixes
 - automake 1.8 is now the minimum requirement. This affects only builds
@@ -16,6 +17,7 @@ DDD-3.3.10
   ncurses) is now required to build ddd.
   configure has '--with-termlib=LIB' and '--with-termlib-libraries=DIR'
   to offer a finer control on the choice of library.
+(1) Thanks for Ingo Dahm for this patch.
 
 DDD-3.3.9
 =========
