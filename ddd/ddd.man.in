@@ -2,7 +2,7 @@
 .\" DDD manual page
 .\" @configure_input@
 .\"
-.\" Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
+.\" Copyright (C) 1995-1999 Technische Universitaet Braunschweig, Germany.
 .\" Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 .\" 
 .\" This file is part of DDD.
@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998\-12\-01" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1999\-05\-15" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -695,7 +695,17 @@ the \s-1GDB\s+1 prompt.  To \fIcancel\fR the recording, click on
 Click on `\fBEdit \s-2>>\s+2\fR' to edit the recorded commands.
 When done with editing, click on `\fBEdit \s-2<<\s+2\fR' to close the
 commands editor.
-.PP
+.\" .PP
+.\" Technical note: If you use \s-1@DDD@\s+1 commands within breakpoint
+.\" command definitions, or if you include debugger commands that resume
+.\" execution, these commands will be realized transparently as
+.\" \fIauto-commands\fR\(em\&that is, they won't be executed directly by
+.\" the inferior debugger, but result in a command string being sent to
+.\" \s-1@DDD@\s+1.  This command string is then interpreted by
+.\" \s-1@DDD@\s+1 and sent back to the inferior debugger, possibly
+.\" prefixed by some other commands such that \s-1@DDD@\s+1 can update its
+.\" state.  See \fBDefining Commands using Other Debuggers\fR, below, for
+.\" a discussion.
 .\"
 .\"
 .SS "Moving and Copying Breakpoints"
@@ -857,9 +867,10 @@ console.  As an alternative, \s-1@DDD@\s+1 can also invoke an
 shown.  To activate the execution window, select `\fBProgram\(->Run in
 Execution Window\fR'.
 .PP
-While the execution window is active, \s-1@DDD@\s+1 invokes your
-program such that its standard input, output, and error streams are
-redirected to the execution window.  Note that the device
+The execution window is opened automatically as soon as you start the
+debugged program.  While the execution window is active, \s-1@DDD@\s+1
+redirects the standard input, output, and error streams of your
+program to the execution window.  Note that the device
 `\fB/dev/tty\fR' still refers to the debugger console, \fInot\fR the
 execution window.
 .PP
@@ -871,7 +882,7 @@ redirect the standard error output to the debugger console, use `\fB2>
 /dev/tty\fR' (assuming the inferior debugger and/or your \s-1UNIX\s+1
 shell support standard error redirection).
 .PP
-The execution window is not available in \s-1JDB\s+1 and \s-1Perl\s+1.
+The execution window is not available in \s-1JDB\s+1.
 .\"
 .\"
 .SS "Attaching to a Running Process"
@@ -2194,7 +2205,7 @@ resuming execution.
 .PP
 This way, you can set a \(lqcontinue\(rq breakpoint at some decisive
 point within an array-processing algorithm and have \s-1@DDD@\s+1
-display the progress graphically.  When your program has topped for
+display the progress graphically.  When your program has stopped for
 good, you can use `\fBUndo\fR' and `\fRRedo\fR' to redisplay and
 examine previous program states.
 .\"
@@ -2987,9 +2998,16 @@ doing omit the messages when used in a user-defined command.
 .PP
 To save all command definitions, use `\fBEdit\(->Save Options\fR'.
 .\" .PP
-.\" \s-1@DDD@\s+1 commands that are part of \s-1GDB\s+1 command
-.\" definitions are realized transparently as \fIauto-commands\fR; see 
-.\" \fBDefining Commands using Other Debuggers\fR, below, for a discussion.
+.\" Technical note: If you use \s-1@DDD@\s+1 commands within command
+.\" definitions, or if you include debugger commands that resume
+.\" execution, these commands will be realized transparently as
+.\" \fIauto-commands\fR\(em\&that is, they won't be executed directly by
+.\" the inferior debugger, but result in a command string being sent to
+.\" \s-1@DDD@\s+1.  This command string is then interpreted by
+.\" \s-1@DDD@\s+1 and sent back to the inferior debugger, possibly
+.\" prefixed by some other commands such that \s-1@DDD@\s+1 can update its
+.\" state.  See \fBDefining Commands using Other Debuggers\fR, below, for
+.\" a discussion.
 .\"
 .\"
 .SS "Defining Argument Commands using GDB"
@@ -3289,8 +3307,10 @@ In case your debugger front-end uses the \s-1GDB\s+1
 `\fB\-fullname\fR' option to have \s-1GDB\s+1 report source code
 positions, the `\fB\-\-tty\fR' option is not required.  \s-1@DDD@\s+1
 recognizes the `\fB\-fullname\fR' option, finds that it has been
-invoked from a debugger front-end and automatically enables
-the \s-1TTY\s+1 interface.
+invoked from a debugger front-end and automatically enables the
+\s-1TTY\s+1 interface.  Likewise, \s-1@DDD@\s+1 supports the
+\s-1GDB\s+1 `\fB\-annotate\fR' option for even more detailed
+interaction.
 .PP
 You may also invoke `\fB@ddd@ \-\-tty\fR' directly, entering
 \s-1@DDD@\s+1 commands from your \s-1TTY\s+1, or use \s-1@DDD@\s+1 as
@@ -3308,9 +3328,10 @@ If \s-1@DDD@\s+1 is invoked with the `\fB\-\-tty\fR' option, the
 debugger console is initially disabled, as its facilities are supposed
 to be provided by the integrating front-end.
 .IP \(bu 2
-If \s-1@DDD@\s+1 is invoked with the `\fB\-fullname\fR' option, the
-debugger console and the source window are initially disabled, as their
-facilities are supposed to be provided by the integrating front-end.
+If \s-1@DDD@\s+1 is invoked with the `\fB\-fullname\fR' or with the
+`\fB\-annotate\fR' option, the debugger console and the source window
+are initially disabled, as their facilities are supposed to be
+provided by the integrating front-end.
 .PP
 In case of need, you can use the `\fBView\fR' menu to re-enable these
 windows.
@@ -3326,17 +3347,27 @@ program to be debugged.  Proceed as usual.
 .\"
 .SS "Using @DDD@ with XEmacs"
 .\"
-Set the variable \fBgdb-command-name\fR to \fB"ddd"\fR, by inserting
-the following line in your \fB$HOME/.emacs\fR file or evaluating it by
-pressing \s-1\fBESC\fR\s+1 \s-1\fB:\fR\s+1\fR (\s-1\fBESC\fR\s+1
-\s-1\fBESC\fR\s+1 for XEmacs 19.13 and earlier):
+In XEmacs 21 and later, select `\fBTools\(->Debug (GDB)\fR'.  At the
+prompt, enter `\fB@ddd@\fR' and the name of the program to be
+debugged.  Proceed as usual.
+.PP
+To debug with \s-1DBX\s+1 in XEmacs 21 and later, select
+`\fBTools\(->Debug (DBX)\fR'.  At the prompt, enter `\fB@ddd@ \-\-dbx
+\-\-tty\fR' and the name of the program to be debugged.  Proceed as
+usual.
+.PP
+In XEmacs 20 and earlier, set the variable \fBgdb-command-name\fR to
+\fB"ddd"\fR, by inserting the following line in your
+\fB$HOME/.emacs\fR file or evaluating it by pressing \s-1\fBESC\fR\s+1
+\s-1\fB:\fR\s+1\fR (\s-1\fBESC\fR\s+1 \s-1\fBESC\fR\s+1 for XEmacs
+19.13 and earlier):
 .br
 .sp
   \fB(setq gdb-command-name "@ddd@")\fR
 .sp
 .br
-Use `\fBM-x gdb\fR' or `\fBM-x gdbsrc\fR' 
-to start a debugging session.  Proceed as usual.
+Use `\fBM-x gdb\fR' or `\fBM-x gdbsrc\fR' or `\fBM-x dbx\fR' to start
+a debugging session.  Proceed as usual.
 .\"
 .SS "Using @DDD@ with XXGDB"
 .\"
@@ -4080,6 +4111,12 @@ obscured by the \s-1@DDD@\s+1 main windows.
 .\"
 The following resources determine the inferior debugger.
 .TP
+.B "annotate (\fPclass\fB Annotate)"
+If this is \fB1\fR or more, \s-1@DDD@\s+1 reports the current source
+position on standard output in \s-1GDB\s+1 `\fB\-fullname\fR' format.
+As a side effect, the source window is disabled by default.  Default
+value is \fB0\fR.  See also the `\fB\-\-fullname\fR' option, below.
+.TP
 .B "autoCommands (\fPclass\fB AutoCommands)"
 If this is `\fBon\fR' (default), each line output by the inferior
 debugger beginning with the value of the `\fBautoCommandPrefix\fR'
@@ -4153,11 +4190,9 @@ contrast to `\fBdebuggerHost\fR', using this resource causes
 inferior debugger from the remote shell.  See also the
 `\fB\-\-rhost\fR' option, below, and `\fBREMOTE DEBUGGING\fR', above.
 .TP
-.B "fullNameMode (\fPclass\fB TTYMode)"
-If this is `\fBon\fR', \s-1@DDD@\s+1 reports the current source
-position on standard output in \s-1GDB\s+1 `\fB\-fullname\fR'
-format.  As a side effect, the source window is disabled by default.
-See also the `\fB\-\-fullname\fR' option, below.
+.B "displayTimeout (\fPclass\fB DisplayTimeout)"
+The time (in ms) to wait for the inferior debugger to finish a partial
+display information.  Default is \fB2000\fR.
 .TP
 .B "gdbInitCommands (\fPclass\fB InitCommands)"
 This string contains a list of newline-separated commands that are
@@ -4240,6 +4275,10 @@ also initially sent to \s-1PYDB\s+1.  By default, it is empty.
 .sp
 This resource is used by \s-1@DDD@\s+1 to save and restore \s-1PYDB\s+1
 settings.
+.TP
+.B "positionTimeout (\fPclass\fB PositionTimeout)"
+The time (in ms) to wait for the inferior debugger to finish a partial
+position information.  Default is \fB500\fR.
 .TP
 .B "questionTimeout (\fPclass\fB QuestionTimeout)"
 The time (in seconds) to wait for the inferior debugger to reply.
@@ -5208,6 +5247,17 @@ option, or with a \s-1@DDD@\s+1 option listed here, use the
 .PP
 .\"
 .TP
+.B \-\-annotate \fIlevel\fR
+If \fIlevel\fR is 1 or more, enable \s-1TTY\s+1 interface, taking
+additional debugger commands from standard input and forwarding
+debugger output on standard output.  Current positions are issued in
+\s-1GDB\s+1 `\fB\-fullname\fR' format suitable for debugger
+front-ends.  By default, both the debugger console and source window
+are disabled.  If \fIlevel\fR is 2 or more, \s-1@DDD@\s+1 also issues
+annotations about its current state, like the \s-1GDB\s+1
+`\fB\-annotate=2\fR' format.  These annotations should suffice for
+XEmacs integration.  If \fIlevel\fR is 0, no annotations are made.
+.TP
 .B \-\-attach-windows
 Attach the source and data windows to the debugger console, creating
 one single big \s-1@DDD@\s+1 window.  This is the default setting.
@@ -5279,11 +5329,7 @@ Set the default font size to \fIsize\fR 1\(f/10 points.  To use
 12-point fonts, say `\fB\-\-fontsize 120\fR'.
 .TP
 .B \-\-fullname
-Enable \s-1TTY\s+1 interface, taking additional debugger commands
-from standard input and forwarding debugger output on standard output.
-Current positions are issued in \s-1GDB\s+1 `\fB\-fullname\fR' format
-suitable for debugger front-ends.  By default, both the debugger
-console and source window are disabled.
+Same as `\fB\-\-annotate 1\fR', above.
 .TP
 .B \-\-gdb
 Run the \s-1GDB\s+1 debugger as inferior debugger.
@@ -5909,6 +5955,9 @@ The execution pointer (stopped by signal).
 \s-1@DDD@\s+1 is controlled by the following environment variables:
 .PP
 .TP 20
+.B CLASSPATH
+A colon-separated list of directories in which to search for Java classes.
+.TP
 .B @DDD@_NO_SIGNAL_HANDLERS
 If set, \s-1@DDD@\s+1 does not catch fatal errors.  This is sometimes
 useful when debugging \s-1@DDD@\s+1.
@@ -6480,7 +6529,7 @@ manual page on \s-1UNIX\s+1 systems (as
 .\"
 .SS "\s-1@DDD@\s+1"
 .\"
-\s-1@DDD@\s+1 is Copyright \(co 1995, 1996, 1997, 1998
+\s-1@DDD@\s+1 is Copyright \(co 1995, 1996, 1997, 1998, 1999
 Technische Universität Braunschweig, Germany.
 .PP
 \s-1@DDD@\s+1 is free software; you can redistribute it and/or modify
@@ -6503,7 +6552,7 @@ License\fR'.
 .\"
 .SS "\s-1@DDD@\s+1 Manual"
 .\"
-This \s-1@DDD@\s+1 manual is Copyright \(co 1995, 1996, 1997, 1998
+This \s-1@DDD@\s+1 manual is Copyright \(co 1995, 1996, 1997, 1998, 1999
 Technische Universität Braunschweig, Germany.
 .PP
 Permission is granted to make and distribute verbatim copies of this

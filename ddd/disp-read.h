@@ -158,6 +158,9 @@ bool starts_recording(const string& cmd);
 // True if CMD ends recording commands
 bool ends_recording(const string& cmd);
 
+// True if CMD calls a function
+bool calls_function(const string& cmd);
+
 
 //----------------------------------------------------------------------------
 // Handle `display' output

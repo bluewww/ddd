@@ -1,6 +1,114 @@
 DDD News						-*- text -*-
 ********
 
+DDD 3.1.6
+=========
+
+DDD 3.1.6 brings support for recent tools and components.
+
+- DDD passes all options after `--' to the inferior debugger.
+- [Build] DDD supports EGCS 1.1.2 as well as GCC 2.95 and later
+- [Build] DDD supports LessTif 0.88.9 and later.
+
+There are no new features in DDD 3.1.6.  You don't need to upgrade
+unless you suffer from one of these problems.
+
+
+DDD 3.1.5
+=========
+
+DDD 3.1.5 brings support for recent tools and components.
+
+- [Linux] DDD supports TTYs on Linux with GNU libc 2.1.
+- [Solaris] DDD supports Motif 2.1 on Sun Solaris 7.
+- [XEmacs] DDD supports gud-mode in XEmacs 21.0.
+- [Build] DDD supports Bison 1.27 and Automake 1.4a.
+
+There are no new features in DDD 3.1.5.  You don't need to upgrade
+unless you use one of the listed tools and/or components.
+
+
+DDD 3.1.4
+=========
+
+DDD 3.1.4 brings improved LessTif support and fixes more minor
+problems in DDD 3.1.
+
+- Changing the GDB display radix automatically refreshes displayed values.
+- Searching Java classes visits each file exactly once.
+- [LessTif] LessTif 0.88 is supported.  See `PROBLEMS' for a discussion.
+- [LessTif] Worked around X error when scrolling breakpoint glyphs.
+- [Linux] Improved GNU libc 2.1 support (TTYs).
+- [HP-UX] Improved aCC support.
+- [Solaris] Improved Motif 2.1 support (Pixmaps).
+
+There are no new features in DDD 3.1.4.  You don't need to upgrade
+unless you suffer from one of these problems.
+
+
+DDD 3.1.3
+=========
+
+DDD 3.1.3 fixes more minor bugs in DDD 3.1.
+
+- Invoking DDD with a non-existing file name works.
+- Displays disabled by GDB are created and refreshed properly.
+- [HP-UX, SGI] Perl no longer exits upon start-up.
+- [LessTif] Worked around a LessTif bug that made DDD insensitive to input.
+- [Build] New configuration files from Autoconf 2.13.
+
+There are no new features in DDD 3.1.3.  You don't need to upgrade
+unless you suffer from one of these bugs.
+
+
+DDD 3.1.2
+=========
+
+DDD 3.1.2 fixes more minor bugs in DDD 3.1, most of them related to Perl:
+
+- Show/Hide works properly with deeply nested substructures.
+- Struct members whose name starts with 'END' are properly handled.
+- Starting DDD with `no command tool' set in `~/.ddd/init' works.
+- Console input after `print FUNCTION()' is passed to FUNCTION.
+- [Perl] Arguments of `Program->Run' are processed correctly.
+- [Perl] You can redirect I/O in arguments of `Program->Run'.
+- [Perl] The separate execution window can now be used with Perl.
+- [Perl] DDD handles class prefixes when displaying variables.
+- [Perl] The backtrace window is updated after each command.
+- [Perl] The `Convert to Hex' and `Convert to Oct' conversions work.
+- [Perl] Refreshing the graph via `Data->Refresh Graph' works.
+- [Perl] Changing, saving and restoring various Perl settings works.
+- [Java] DDD uses $CLASSPATH to lookup Java classes on start-up.
+- [DBX] DDD supports execution positions as reported by AIX DBX.
+- [DBX] The registers window is updated after each command.
+- [Build] The splash screen works with C++ compilers other than GCC.
+
+There are no new features in DDD 3.1.2.  You don't need to upgrade
+unless you use Perl or suffer from one of these bugs.
+
+
+DDD 3.1.1
+=========
+
+DDD 3.1.1 fixes a number of minor bugs in DDD 3.1:
+
+- Empty status displays are handled properly.
+- Using a remote GDB, only one execution window is launched.
+- [DBX] DDD handles incomplete DBX output, such as prompts of the
+  debugged program.  See the new `positionTimeout' and
+  `displayTimeout' resources.
+- [DBX] Using DBX and the execution window, `Program->Run Again' and
+  the `Run' command tool button no longer clear all arguments.
+- [Perl] DDD handles multiple breakpoints with Perl 5.005 and later.
+- [Java] DDD no longer hangs searching for a Java class.
+- [Build] EGCS 1.1 on Linux properly compiles DDD.
+- [Build] ostrstream::pcount() is no longer considered `broken' when
+  using `gcc' (instead of `c++' or `g++') as C++ compiler.
+
+There are no new features in DDD 3.1.1.  Unless you suffer from one of
+the bugs listed above, feel free to upgrade at some later time.
+
+
 DDD 3.1
 =======
 

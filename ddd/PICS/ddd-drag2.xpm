@@ -3,7 +3,7 @@ static char * ddd_drag2_xpm@[] = {
 /* width height num_colors chars_per_pixel */
 "157 155 6 1",
 /* colors */
-" 	c white",
+" 	c #ffffff",
 ".	c #c0c0c0",
 "X	c #838383",
 "o	c #000000",

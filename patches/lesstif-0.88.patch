@@ -1,0 +1,55 @@
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Date: Sun, 14 Mar 1999 14:50:01 +0100 (MET)
+To: LessTif Mailing List <lesstif@hungry.com>
+Subject: LessTif 0.88 ignores XtSetValues of XmNbottomShadowPixmap
+X-Mailer: VM 6.43 under 20.4 "Diamond" XEmacs  Lucid
+Message-ID: <14059.48509.533486.968369@infbssts.ips.cs.tu-bs.de>
+FCC: /usr/users/sts1/zeller/private/Mail/Sent
+X-Postal-Address: Bueltenweg 88, D-38092 Braunschweig, Germany
+X-Telephone: +49 531 391-7580
+X-Fax: +49 531 391-8140
+X-URL: http://www.cs.tu-bs.de/~zeller/
+X-FTP: ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/
+--text follows this line--
+Hi!
+
+In LessTif 0.88, calling XtSetValues on a Primitive widget to set the
+bottomShadowPixmap has no effect.  
+
+Within DDD, this causes the `flat' 3-D buttons to fail - after leaving
+the button, the bottom part of the border remains.  
+
+The enclosed patch fixes this such that setting the bottomShadowPixmap
+is handled in a similar manner to setting the topShadowPixmap.
+
+Greetings,
+
+Andreas
+
+-- 
+Andreas Zeller     Technische Universitaet Braunschweig, Germany
+                   mailto:zeller@acm.org http://www.cs.tu-bs.de/~zeller/
+
+*** lesstif-0.88/lib/Xm/Primitive.c.orig     Sun Mar 14 14:39:47 1999
+--- lesstif-0.88/lib/Xm/Primitive.c  Sun Mar 14 14:40:49 1999
+***************
+*** 763,770 ****
+      }
+  
+!     if (Prim_BottomShadowColor(old) != Prim_BottomShadowColor(new_w) ||
+        ((Prim_BottomShadowPixmap(new_w) == None ||
+          Prim_BottomShadowPixmap(new_w) == XmUNSPECIFIED_PIXMAP) &&
+!        Prim_BottomShadowPixmap(old) != Prim_BottomShadowPixmap(new_w)))
+      {
+        XtReleaseGC(new_w, Prim_BottomShadowGC(new_w));
+--- 763,770 ----
+      }
+  
+!     if (Prim_BottomShadowPixmap(old) != Prim_BottomShadowPixmap(new_w) ||
+        ((Prim_BottomShadowPixmap(new_w) == None ||
+          Prim_BottomShadowPixmap(new_w) == XmUNSPECIFIED_PIXMAP) &&
+!        Prim_BottomShadowColor(old) != Prim_BottomShadowColor(new_w)))
+      {
+        XtReleaseGC(new_w, Prim_BottomShadowGC(new_w));

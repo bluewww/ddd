@@ -1,7 +1,7 @@
 # $Id$
 # Adapt BISON output for C++ usage
 
-# Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+# Copyright (C) 1995-1999 Technische Universitaet Braunschweig, Germany.
 # Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 # 
 # This file is part of the ICE Library.
@@ -41,7 +41,8 @@ s!^typedef union\(.*\)$!typedef struct _YYSTYPE \1!
 # Thus, we use new/delete instead (rather ugly).
 
 # Make sure all is deleted when we exit
-\!^#ifndef alloca!i\
+\!^#define YYERRCODE.*!a\
+\
 // This deletes the "kill" array upon destruction.\
 // Will be used as automatic variable in yyparse().\
 // Added by $RCSfile$\
@@ -59,16 +60,11 @@ struct YYMEMHANDLER {\
     }\
 };\
 
-# Use "my-alloca.h" instead of the huge `#if alloca' etc.
-\!^#ifndef alloca!,\!^#endif /\* alloca not defined.  \*/!c\
-#include "my-alloca.h"   /* Added by $RCSfile$ */\
-
-
 \!.int yystacksize!a\
   YYMEMHANDLER yymem; // Added by $RCSfile$
 
 # stack reallocation -> own code
-\!.*yyvs = (YYSTYPE \*!,\!__yy_memcpy!c\
+\!.*yyvs = (YYSTYPE \*!,\!unsigned int!c\
 \
       // Added by $RCSfile$. \
       YYSTYPE *new_yyvs = new YYSTYPE [yystacksize];\

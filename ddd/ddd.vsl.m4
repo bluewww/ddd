@@ -82,6 +82,9 @@ annotation (name) ->
 disabled () -> 
   disabled_color(vcenter(it("(Disabled)") & hfill()));
 
+// No value
+none () -> "";
+
 // Ordinary values
 simple_value (value) -> 
   simple_color(vcenter(value & hfill()));

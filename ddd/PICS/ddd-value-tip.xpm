@@ -4,7 +4,7 @@ static char * ddd_value_tip_xpm@[] = {
 "275 239 13 1",
 /* colors */
 " 	c #bfbfbf",
-".	c white",
+".	c #ffffff",
 "X	c #000080",
 "o	c #0000ff",
 "O	c #000000",

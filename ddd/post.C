@@ -288,6 +288,9 @@ Widget post_gdb_message(string text, bool prompt, Widget w)
     if (text == NO_GDB_ANSWER || text == "")
 	return 0;
 
+    dddlog << "!  " << text << '\n';
+    dddlog.flush();
+
     if (ddd_is_exiting)
     {
 	if (text != "")
@@ -341,6 +344,10 @@ Widget post_gdb_message(string text, bool prompt, Widget w)
 Widget post_error(string text, String name, Widget w)
 {
     strip_trailing_space(text);
+
+    dddlog << "!  " << text << '\n';
+    dddlog.flush();
+
     if (ddd_is_exiting)
     {
 	cerr << ddd_NAME << ": " << text << "\n";
@@ -382,6 +389,10 @@ Widget post_error(string text, String name, Widget w)
 Widget post_warning(string text, String name, Widget w)
 {
     strip_trailing_space(text);
+
+    dddlog << "!  " << text << '\n';
+    dddlog.flush();
+
     if (ddd_is_exiting)
     {
 	cerr << ddd_NAME << ": warning: " << text << "\n";

@@ -76,6 +76,9 @@ void internal_command(const string& command, OQCProc callback, void *data,
 string internal_command(const string& command);
 bool is_internal_command(const string& command);
 
+// Return GDB output that has not been echoed yet
+string buffered_gdb_output();
+
 // True if the debuggee is running
 extern bool debuggee_running;
 

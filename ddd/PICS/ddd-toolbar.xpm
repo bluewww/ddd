@@ -4,7 +4,7 @@ static char * ddd_toolbar_xpm@[] = {
 "605 37 8 1",
 /* colors */
 " 	c #bfbfbf",
-".	c white",
+".	c #ffffff",
 "X	c #c0c0c0",
 "o	c #737373",
 "O	c #000000",

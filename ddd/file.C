@@ -755,9 +755,14 @@ ProgramInfo::ProgramInfo()
 	break;			// FIXME
 
     case PERL:
-	// Just use the current file.
-	file = source_view->file_of_cursor();
-	file = file.before(":");
+	// Use the program we were invoked with
+	file = gdb->program();
+	if (file == "")
+	{
+	    // Not invoked with a program?  Use the current file, then.
+	    file = source_view->file_of_cursor();
+	    file = file.before(":");
+	}
 	core = "";
 	break;
 

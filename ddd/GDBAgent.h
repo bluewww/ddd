@@ -420,7 +420,7 @@ public:
     bool has_enable_command() const
     { 
 	return type() == GDB || type() == XDB || type() == PYDB || 
-	    has_handler_command();
+	       has_handler_command();
     }
     bool has_disable_command() const
     {
@@ -431,7 +431,7 @@ public:
     bool has_ignore_command() const
     {
 	return type() == GDB || type() == XDB || type() == PYDB || 
-	    has_handler_command();
+	       has_handler_command();
     }
 
     // True if debugger can set conditions on breakpoints
@@ -444,7 +444,7 @@ public:
     bool has_delete_command() const
     {
 	return type() == GDB || type() == XDB || 
-	    type() == DBX || type() == PYDB;
+	       type() == DBX || type() == PYDB;
     }
 
     // True if debugger has volatile breakpoints (i.e. breakpoints may
@@ -452,27 +452,28 @@ public:
     bool has_volatile_breakpoints() const
     {
 	return type() == GDB || type() == XDB || 
-	    type() == DBX || type() == PYDB || type() == PERL;
+	       type() == DBX || type() == PYDB || type() == PERL;
     }
 
     // True if debugger supports I/O redirection
     bool has_redirection() const
     {
-	return type() == GDB || type() == XDB || type() == DBX;
+	return type() == GDB || type() == XDB || 
+	       type() == DBX || type() == PERL;
     }
 
     // True if debugger supports assignments
     bool has_assign_command() const
     {
 	return type() == GDB || type() == XDB || type() == DBX || 
-	    type() == PYDB || type() == PERL;
+	       type() == PYDB || type() == PERL;
     }
 
     // True if debugger supports calling system functions
     bool has_system_calls() const
     {
 	return type() == GDB || type() == XDB || type() == DBX || 
-	    type() == PERL;
+	       type() == PERL;
     }
 
     // True if debugger supports loading and examining executables
@@ -503,35 +504,35 @@ public:
     bool has_cd_command() const
     {
 	return type() == GDB || type() == XDB || 
-	    type() == DBX || type() == PYDB || type() == PERL;
+	       type() == DBX || type() == PYDB || type() == PERL;
     }
 
     // True if debugger supports `shell'
     bool has_shell_command() const
     {
 	return type() == GDB || type() == XDB || type() == DBX || 
-	    type() == PERL;
+	       type() == PERL;
     }
 
     // True if debugger has numbered breakpoints
     bool has_numbered_breakpoints()
     {
 	return type() == GDB || type() == DBX || type() == XDB || 
-	    type() == PYDB;
+	       type() == PYDB;
     }
 
     // True if debugger supports temporary breakpoints
     bool has_temporary_breakpoints() const
     {
 	return type() == GDB || type() == XDB || type() == PYDB || 
-	    has_when_command();
+	       has_when_command();
     }
 
     // True if debugger supports breakpoint conditions
     bool has_breakpoint_conditions() const
     {
 	return type() == GDB || type() == XDB || 
-	    type() == DBX || type() == PYDB || type() == PERL;
+	       type() == DBX || type() == PYDB || type() == PERL;
     }
 
     // True if debugger has typed pointers, as in `(TYPE)0x0'
@@ -699,12 +700,7 @@ public:
     string history_file() const;                    // GDB: ~/.gdb_history
 
     // Send DATA to process
-    virtual int write(const char *data, int length)
-    {
-	last_written = string(data, length);
-	echoed_characters = 0;
-	return TTYAgent::write(data, length);
-    }
+    virtual int write(const char *data, int length);
 
     // Custom function
     int write(const string& data)
@@ -714,6 +710,13 @@ public:
 
     bool ends_with_prompt(const string& answer);
     bool ends_with_secondary_prompt(const string& answer);
+
+
+    // Helpers
+    string cmd() const;		// Actual command being executed
+    string debugger() const;	// Debugger of command
+    string args() const;	// Debugger args of command
+    string program() const;	// Program from debugger args
 
 private:
     bool questions_waiting;

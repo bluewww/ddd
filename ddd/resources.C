@@ -785,6 +785,26 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNpositionTimeout,
+	XtCPositionTimeout,
+	XmRInt,
+	sizeof(int),
+	XtOffsetOf(AppData, position_timeout),
+	XtRImmediate,
+	XtPointer(500)
+    },
+
+    {
+	XtNdisplayTimeout,
+	XtCDisplayTimeout,
+	XmRInt,
+	sizeof(int),
+	XtOffsetOf(AppData, display_timeout),
+	XtRImmediate,
+	XtPointer(2000)
+    },
+
+    {
 	XtNsynchronousDebugger,
 	XtCSynchronousDebugger,
 	XtRBoolean,
@@ -1225,13 +1245,13 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNfullNameMode,
-	XtCTTYMode,
-	XtRBoolean,
-	sizeof(Boolean),
-	XtOffsetOf(AppData, full_name_mode),
+	XtNannotate,
+	XtCAnnotate,
+	XtRCardinal,
+	sizeof(Cardinal),
+	XtOffsetOf(AppData, annotate),
 	XtRImmediate,
-	XtPointer(False)
+	XtPointer(0)
     },
 
     {

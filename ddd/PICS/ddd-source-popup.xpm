@@ -4,7 +4,7 @@ static char * ddd_source_popup_xpm@[] = {
 "283 264 7 1",
 /* colors */
 " 	c #bfbfbf",
-".	c white",
+".	c #ffffff",
 "X	c #c0c0c0",
 "o	c #838383",
 "O	c #000000",

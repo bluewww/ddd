@@ -133,6 +133,35 @@ LIBS="$ice_save_LIBS"
 ])dnl
 dnl
 dnl
+dnl ICE_WERROR
+dnl ----------
+dnl
+dnl If the C++ compiler accepts the `-Werror' flag,
+dnl set output variable `WERROR' to `-Werror',
+dnl empty otherwise.
+dnl
+AC_DEFUN(ICE_WERROR,
+[
+AC_REQUIRE([AC_PROG_CXX])
+AC_MSG_CHECKING(whether the C++ compiler (${CXX}) accepts -Werror)
+AC_CACHE_VAL(ice_cv_werror,
+[
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+ice_save_cxxflags="$CXXFLAGS"
+CXXFLAGS="-Werror"
+AC_TRY_COMPILE(,[int a;],
+ice_cv_werror=yes, ice_cv_werror=no)
+CXXFLAGS="$ice_save_cxxflags"
+AC_LANG_RESTORE
+])
+AC_MSG_RESULT($ice_cv_werror)
+if test "$ice_cv_werror" = yes; then
+WERROR=-Werror
+fi
+AC_SUBST(WERROR)
+])dnl
+dnl
 dnl ICE_EXTERNAL_TEMPLATES
 dnl ----------------------
 dnl
@@ -143,13 +172,14 @@ dnl
 AC_DEFUN(ICE_EXTERNAL_TEMPLATES,
 [
 AC_REQUIRE([AC_PROG_CXX])
+AC_REQUIRE([ICE_WERROR])
 AC_MSG_CHECKING(whether the C++ compiler (${CXX}) accepts -fexternal-templates)
 AC_CACHE_VAL(ice_cv_external_templates,
 [
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
 ice_save_cxxflags="$CXXFLAGS"
-CXXFLAGS=-fexternal-templates
+CXXFLAGS="$WERROR -fexternal-templates"
 AC_TRY_COMPILE(,[int a;],
 ice_cv_external_templates=yes, ice_cv_external_templates=no)
 CXXFLAGS="$ice_save_cxxflags"
@@ -174,13 +204,14 @@ dnl
 AC_DEFUN(ICE_NO_IMPLICIT_TEMPLATES,
 [
 AC_REQUIRE([AC_PROG_CXX])
+AC_REQUIRE([ICE_WERROR])
 AC_MSG_CHECKING(whether the C++ compiler (${CXX}) accepts -fno-implicit-templates)
 AC_CACHE_VAL(ice_cv_no_implicit_templates,
 [
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
 ice_save_cxxflags="$CXXFLAGS"
-CXXFLAGS=-fno-implicit-templates
+CXXFLAGS="$WERROR -fno-implicit-templates"
 AC_TRY_COMPILE(,[int a;],
 ice_cv_no_implicit_templates=yes, ice_cv_no_implicit_templates=no)
 CXXFLAGS="$ice_save_cxxflags"
@@ -204,13 +235,14 @@ dnl
 AC_DEFUN(ICE_ELIDE_CONSTRUCTORS,
 [
 AC_REQUIRE([AC_PROG_CXX])
+AC_REQUIRE([ICE_WERROR])
 AC_MSG_CHECKING(whether the C++ compiler (${CXX}) accepts -felide-constructors)
 AC_CACHE_VAL(ice_cv_elide_constructors,
 [
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
 ice_save_cxxflags="$CXXFLAGS"
-CXXFLAGS=-felide-constructors
+CXXFLAGS="$WERROR -felide-constructors"
 AC_TRY_COMPILE(,[int a;],
 ice_cv_elide_constructors=yes, ice_cv_elide_constructors=no)
 CXXFLAGS="$ice_save_cxxflags"
@@ -233,13 +265,14 @@ dnl
 AC_DEFUN(ICE_CONSERVE_SPACE,
 [
 AC_REQUIRE([AC_PROG_CXX])
+AC_REQUIRE([ICE_WERROR])
 AC_MSG_CHECKING(whether the C++ compiler (${CXX}) accepts -fconserve-space)
 AC_CACHE_VAL(ice_cv_conserve_space,
 [
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
 ice_save_cxxflags="$CXXFLAGS"
-CXXFLAGS=-fconserve-space
+CXXFLAGS="$WERROR -fconserve-space"
 AC_TRY_COMPILE(,[int a;],
 ice_cv_conserve_space=yes, ice_cv_conserve_space=no)
 CXXFLAGS="$ice_save_cxxflags"
@@ -265,13 +298,14 @@ dnl
 AC_DEFUN(ICE_WARN_EFFECTIVE_CXX,
 [
 AC_REQUIRE([AC_PROG_CXX])
+AC_REQUIRE([ICE_WERROR])
 AC_MSG_CHECKING(whether the C++ compiler (${CXX}) accepts -Weffc++)
 AC_CACHE_VAL(ice_cv_warn_effective_cxx,
 [
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
 ice_save_cxxflags="$CXXFLAGS"
-CXXFLAGS=-Weffc++
+CXXFLAGS="$WERROR -Weffc++"
 AC_TRY_COMPILE(,[int a;],
 ice_cv_warn_effective_cxx=yes, ice_cv_warn_effective_cxx=no)
 CXXFLAGS="$ice_save_cxxflags"
@@ -286,6 +320,39 @@ AC_SUBST(WARN_EFFECTIVE_CXX)
 AC_SUBST(WARN_NO_EFFECTIVE_CXX)
 ])dnl
 dnl
+dnl ICE_TRIGRAPHS
+dnl -------------
+dnl
+dnl If the C++ compiler accepts the `-trigraphs' flag,
+dnl set output variable `TRIGRAPHS' to `-trigraphs'.  Otherwise,
+dnl leave it empty.
+dnl
+dnl Note: I'm not fond of trigraphs, but enabling `-trigraphs' allows us
+dnl to detect incompatibilities with other C++ compilers
+dnl
+AC_DEFUN(ICE_TRIGRAPHS,
+[
+AC_REQUIRE([AC_PROG_CXX])
+AC_REQUIRE([ICE_WERROR])
+AC_MSG_CHECKING(whether the C++ compiler (${CXX}) accepts -trigraphs)
+AC_CACHE_VAL(ice_cv_trigraphs,
+[
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+ice_save_cxxflags="$CXXFLAGS"
+CXXFLAGS="$WERROR -trigraphs"
+AC_TRY_COMPILE(,[int a;],
+ice_cv_trigraphs=yes, ice_cv_trigraphs=no)
+CXXFLAGS="$ice_save_cxxflags"
+AC_LANG_RESTORE
+])
+AC_MSG_RESULT($ice_cv_trigraphs)
+if test "$ice_cv_trigraphs" = yes; then
+TRIGRAPHS=-trigraphs
+fi
+AC_SUBST(TRIGRAPHS)
+])dnl
+dnl
 dnl ICE_BIG_TOC
 dnl -----------
 dnl
@@ -296,6 +363,7 @@ dnl
 AC_DEFUN(ICE_BIG_TOC,
 [
 AC_REQUIRE([AC_PROG_CXX])
+AC_REQUIRE([ICE_WERROR])
 AC_MSG_CHECKING(whether the C++ compiler (${CXX}) accepts [-Wl,-bbigtoc])
 AC_CACHE_VAL(ice_cv_big_toc,
 [
@@ -326,13 +394,14 @@ dnl
 AC_DEFUN(ICE_MINIMAL_TOC,
 [
 AC_REQUIRE([AC_PROG_CXX])
+AC_REQUIRE([ICE_WERROR])
 AC_MSG_CHECKING(whether the C++ compiler (${CXX}) accepts [-mminimal-toc])
 AC_CACHE_VAL(ice_cv_minimal_toc,
 [
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
 ice_save_cxxflags="$CXXFLAGS"
-CXXFLAGS="-mminimal-toc"
+CXXFLAGS="$WERROR -mminimal-toc"
 AC_TRY_LINK(,[int a;],
 ice_cv_minimal_toc=yes, ice_cv_minimal_toc=no)
 CXXFLAGS="$ice_save_cxxflags"
@@ -343,6 +412,32 @@ if test "$ice_cv_minimal_toc" = yes; then
 MINIMAL_TOC="-mminimal-toc"
 fi
 AC_SUBST(MINIMAL_TOC)
+])dnl
+dnl
+dnl
+dnl ICE_RPATH
+dnl ---------
+dnl
+dnl If the C++ compiler supports `-Wl,-rpath,PATH', set ice_rpath to `yes'.
+dnl
+AC_DEFUN(ICE_RPATH,
+[
+AC_REQUIRE([AC_PROG_CXX])
+AC_REQUIRE([ICE_WERROR])
+AC_MSG_CHECKING(whether the C++ compiler (${CXX}) accepts [-Wl,-rpath,PATH])
+AC_CACHE_VAL(ice_cv_rpath,
+[
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+ice_save_ldflags="$LDFLAGS"
+LDFLAGS="-Wl,-rpath,/usr/lib"
+AC_TRY_LINK(,[int a;],
+ice_cv_rpath=yes, ice_cv_rpath=no)
+LDFLAGS="$ice_save_ldflags"
+AC_LANG_RESTORE
+])
+AC_MSG_RESULT($ice_cv_rpath)
+ice_rpath="$ice_cv_rpath"
 ])dnl
 dnl
 dnl
@@ -357,13 +452,14 @@ dnl
 AC_DEFUN(ICE_WARN_UNINITIALIZED,
 [
 AC_REQUIRE([AC_PROG_CXX])
+AC_REQUIRE([ICE_WERROR])
 AC_MSG_CHECKING(whether the C++ compiler (${CXX}) accepts -Wuninitialized)
 AC_CACHE_VAL(ice_cv_warn_uninitialized,
 [
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
 ice_save_cxxflags="$CXXFLAGS"
-CXXFLAGS=-Wuninitialized
+CXXFLAGS="$WERROR -Wuninitialized"
 AC_TRY_COMPILE(,[int a;],
 ice_cv_warn_uninitialized=yes, ice_cv_warn_uninitialized=no)
 CXXFLAGS="$ice_save_cxxflags"
@@ -390,13 +486,14 @@ dnl
 AC_DEFUN(ICE_XS_DEBUG_INFO,
 [
 AC_REQUIRE([AC_PROG_CXX])
+AC_REQUIRE([ICE_WERROR])
 AC_MSG_CHECKING(whether the C++ compiler (${CXX}) accepts -xs)
 AC_CACHE_VAL(ice_cv_xs_debug_info,
 [
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
 ice_save_cxxflags="$CXXFLAGS"
-CXXFLAGS=-xs
+CXXFLAGS="$WERROR -xs"
 AC_TRY_COMPILE(,[int a;],
 ice_cv_xs_debug_info=yes, ice_cv_xs_debug_info=no)
 CXXFLAGS="$ice_save_cxxflags"
@@ -545,7 +642,7 @@ namespace one {
     extern int f(); 
 };
 
-int one::f() {};
+int one::f() { return 1; };
 
 using namespace one;
 ],[f()],
@@ -779,7 +876,7 @@ fi
 ])dnl
 dnl
 dnl ICE_OSTRSTREAM_PCOUNT_BROKEN
-dnl ----------------------------------
+dnl ----------------------------
 dnl
 dnl If the C++ ostrstream::pcount() is increased by one after calling
 dnl ostrstream::str() (as in the SGI C++ I/O library), 
@@ -795,7 +892,7 @@ AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
 AC_TRY_RUN(
 [
-// Returns 1 if ostrstream::pcount() is broken; 0, otherwise.
+// Returns 0 if ostrstream::pcount() is broken; 1, otherwise.
 #include <iostream.h>
 #include <strstream.h>
 
@@ -804,11 +901,11 @@ int main()
     ostrstream os;
     os << 'a';           // os.pcount() == 1.
     char *s = os.str();  // In the SGI C++ I/O library, os.pcount() is now 2!
-    return os.pcount() - 1;
+    return (os.pcount() == 2) ? 0 : 1;
 }
 ], 
-ice_cv_ostrstream_pcount_broken=no,
 ice_cv_ostrstream_pcount_broken=yes,
+ice_cv_ostrstream_pcount_broken=no,
 ice_cv_ostrstream_pcount_broken=no
 )
 AC_LANG_RESTORE
@@ -858,7 +955,7 @@ AC_CACHE_VAL(ice_cv_have_exceptions,
 [
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
-AC_TRY_COMPILE(,[try { throw 1; } catch(...) { }],
+AC_TRY_COMPILE(,[try { throw 1; } catch(int) { }],
 ice_cv_have_exceptions=yes,
 ice_cv_have_exceptions=no)
 AC_LANG_RESTORE
@@ -891,7 +988,7 @@ AC_TRY_COMPILE([
 #include <math.h>
 ],
 [try { throw runtime_error("too many fingers on keyboard"); }
- catch(const exception& e) { const char *s = e.what(); }],
+ catch(const std::exception& e) { const char *s = e.what(); }],
 ice_cv_have_std_exceptions=yes,
 ice_cv_have_std_exceptions=no)
 AC_LANG_RESTORE
@@ -1243,7 +1340,7 @@ if test "$GXX" = yes; then
   # Check warnings
   ICE_WARN_EFFECTIVE_CXX
   ICE_WARN_UNINITIALIZED
-  
+
   # Check TOC options
   ICE_MINIMAL_TOC
   if test "$ice_cv_minimal_toc" = yes; then
@@ -1302,7 +1399,8 @@ else
 
   for flag in $CXXFLAGS; do
     case $flag in
-      -O*) CXXOPT="$CXXOPT $flag";;
+      -O)  CXXOPT="$CXXOPT $flag";;
+      -O[0123456789]*)  CXXOPT="$CXXOPT $flag";;
       -g*) CXXDEBUG="$CXXDEBUG $flag";;
       -W*) CXXWARNINGS="$CXXWARNINGS $flag";;
       *)   CXXSTUFF="$CXXSTUFF $flag";;
@@ -1333,8 +1431,9 @@ ICE_EXTERNAL_TEMPLATES
 dnl ICE_NO_IMPLICIT_TEMPLATES
 ICE_ELIDE_CONSTRUCTORS
 ICE_CONSERVE_SPACE
+ICE_TRIGRAPHS
 fi
-CXXSTUFF="$CXXSTUFF $EXTERNAL_TEMPLATES $ELIDE_CONSTRUCTORS $CONSERVE_SPACE"
+CXXSTUFF="$CXXSTUFF $EXTERNAL_TEMPLATES $ELIDE_CONSTRUCTORS $CONSERVE_SPACE $TRIGRAPHS"
 AC_SUBST(CXXSTUFF)dnl
 ])dnl
 dnl
@@ -2266,4 +2365,23 @@ ice_cv_translations=translations)
 AC_MSG_RESULT($ice_cv_translations)
 TRANSLATIONS=$ice_cv_translations
 AC_SUBST(TRANSLATIONS)
+])dnl
+dnl
+dnl
+dnl ICE_SETUP_RPATH
+dnl ---------------
+dnl
+dnl For each `-L PATH' option in LDFLAGS, add a `-Wl,-rpath,PATH' option
+dnl if the linker supports it.  This is important on Linux, because
+dnl the path set by `-L PATH' is ignored at run-time.
+dnl
+AC_DEFUN(ICE_SETUP_RPATH,
+[
+AC_REQUIRE([ICE_RPATH])
+if test "$ice_rpath" = yes; then
+changequote(,)dnl
+LDFLAGS=`echo $LDFLAGS | sed 's/-L *\([^ ][^ ]*\)/& -Wl,-rpath,\1/g'`
+ X_LIBS=`echo $X_LIBS  | sed 's/-L *\([^ ][^ ]*\)/& -Wl,-rpath,\1/g'`
+changequote([,])dnl
+fi
 ])dnl
