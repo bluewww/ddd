@@ -811,13 +811,14 @@ static bool move(const string& from, const string& to)
 
 
 // Get core from running program
-static bool _get_core(const string& session, unsigned long flags)
+static bool _get_core(const string& session, unsigned long flags, 
+		      string& target)
 {
     const bool may_kill      = (flags & MAY_KILL);
     const bool dont_save     = (flags & DONT_SAVE);
 
     create_session_dir(session);
-    string target = session_core_file(session);
+    target = session_core_file(session);
 
     ProgramInfo info;
     if (!info.running)
@@ -833,6 +834,12 @@ static bool _get_core(const string& session, unsigned long flags)
 	    {
 		// It is our target.
 		return true;
+	    }
+
+	    if (flags & DONT_COPY_CORE)
+	    {
+		target = info.core;
+		return true;	// Don't copy existing core file
 	    }
 
 	    // Remove old target, if any
@@ -912,7 +919,7 @@ static bool _get_core(const string& session, unsigned long flags)
 		return false;
 	    }
 
-	    if (gdb->type() == GDB && !(flags & DONT_RELOAD))
+	    if (gdb->type() == GDB && !(flags & DONT_RELOAD_CORE))
 	    {
 		// Load the core file just saved, such that we can
 		// keep on examining data in this session.
@@ -935,11 +942,12 @@ static bool _get_core(const string& session, unsigned long flags)
     return false;
 }
 
-static bool get_core(const string& session, unsigned long flags)
+static bool get_core(const string& session, unsigned long flags, 
+		     string& target)
 {
     const bool interact      = (flags & MAY_INTERACT);
 
-    bool ok = _get_core(session, flags);
+    bool ok = _get_core(session, flags, target);
     if (!ok && interact)
 	post_warning("Could not save core file.", "incomplete_save_warning");
 
@@ -948,7 +956,8 @@ static bool get_core(const string& session, unsigned long flags)
 
 static bool must_kill_to_get_core()
 {
-    return !_get_core(app_data.session, DONT_SAVE);
+    string dummy_target;
+    return !_get_core(app_data.session, DONT_SAVE, dummy_target);
 }
 
 
@@ -1437,12 +1446,13 @@ bool save_options(unsigned long flags)
 	StringArray scopes;
 	bool displays_ok = true;
 	bool core_ok = false;
+	string core;
 
 	if (displays_ok)
 	    displays_ok = data_disp->get_scopes(scopes);
 
 	if (save_core)
-	    core_ok = get_core(session, flags);
+	    core_ok = get_core(session, flags, core);
 
 	if (displays_ok)
 	    displays_ok = data_disp->get_state(rs, scopes);
@@ -1459,7 +1469,6 @@ bool save_options(unsigned long flags)
 	ostrstream es;
 
 	// Get exec and core file
-	string core = session_core_file(session);
 	switch (gdb->type())
 	{
 	case GDB:

@@ -43,14 +43,15 @@
 // SAVE_YOURSELF is true, include additional state information.
 // Return true iff successful.
 
-#define CREATE_OPTIONS 1 // Create simple options file if non-existent
-#define SAVE_SESSION   2 // Save additional session information
-#define SAVE_GEOMETRY  4 // Save window geometry
-#define SAVE_CORE      8 // Always include core file
-#define MAY_KILL      16 // True if program can be killed
-#define DONT_SAVE     32 // Only simulate; don't actually save
-#define DONT_RELOAD   64 // Do not load generated core file
-#define MAY_INTERACT 128 // Allow interaction
+#define CREATE_OPTIONS   (1 << 0) // Create simple options file if non-existent
+#define SAVE_SESSION     (1 << 1) // Save additional session information
+#define SAVE_GEOMETRY    (1 << 2) // Save window geometry
+#define SAVE_CORE        (1 << 3) // Always include core file
+#define MAY_KILL         (1 << 4) // True if program can be killed
+#define DONT_SAVE        (1 << 5) // Only simulate; don't actually save
+#define DONT_RELOAD_CORE (1 << 6) // Do not load generated core file
+#define DONT_COPY_CORE   (1 << 7) // Do not copy existing core file
+#define MAY_INTERACT     (1 << 8) // Allow user interaction
 
 #define SAVE_DEFAULT MAY_INTERACT
 

@@ -776,7 +776,8 @@ static void _DDDRestartCB(Widget w, XtPointer client_data, XtPointer call_data)
 // Restart after confirmation
 void DDDRestartCB(Widget w, XtPointer, XtPointer call_data)
 {
-    unsigned long flags = SAVE_SESSION | SAVE_GEOMETRY | DONT_RELOAD;
+    unsigned long flags = 
+	SAVE_SESSION | SAVE_GEOMETRY | DONT_RELOAD_CORE | DONT_COPY_CORE;
     if (gdb->running())
 	flags |= SAVE_CORE;
 
