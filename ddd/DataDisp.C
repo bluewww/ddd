@@ -558,29 +558,13 @@ void DataDisp::toggleDetailCB(Widget dialog,
 	    if (dv == 0)
 		dv = dn->value();
 
-	    if (dv == 0)
+	    if (dn->disabled() || dv->collapsedAll() > 0)
 	    {
-		// No value -- just enable or disable
-		disp_nrs += dn->disp_nr();
-
-		if (dn->disabled())
-		{
-		    // Enable display
-		    do_disable = false;
-		}
-		else
-		{
-		    // Disable display
-		    do_enable = false;
-		}
-	    }
-	    else if (dv->collapsedAll() > 0)
-	    {
-		// Expand just this value
+		// Expand this value
 		dv->collapseAll();
 		dv->expandAll(depth);
 
-		if (dv == dn->value() && dn->disabled())
+		if (dn->disabled())
 		{
 		    // Enable display
 		    disp_nrs += dn->disp_nr();
