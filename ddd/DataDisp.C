@@ -2322,7 +2322,7 @@ void DataDisp::reset()
 
     if (display_nrs.size() > 0)
     {
-	Command c("graph undisplay " + numbers(display_nrs));
+	Command c(delete_display_cmd(display_nrs));
 	c.verbose  = false;
 	c.prompt   = false;
 	c.check    = true;
