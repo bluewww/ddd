@@ -373,7 +373,7 @@ static void repaint()
 		      XmNbackground, &background, 
 		      NULL);
 
-	if (win == NO_ONE || win == CATSEYE || winning[i])
+	if (win == NO_ONE || winning[i])
 	{
 	    if (board[i] == PLAYER1)
 		foreground = color(buttons[i], "red4",
