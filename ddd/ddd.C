@@ -1293,20 +1293,30 @@ static MMDesc font_preferences_menu [] =
 };
 
 
+static Widget extern_plot_window_w;
+static Widget builtin_plot_window_w;
+
+static MMDesc plot_window_menu [] =
+{
+    { "extern", MMToggle, { dddSetBuiltinPlotWindowCB, XtPointer(false) },
+      NULL, &extern_plot_window_w, 0, 0},
+    { "builtin", MMToggle, { dddSetBuiltinPlotWindowCB, XtPointer(true) },
+      NULL, &builtin_plot_window_w, 0, 0},
+    MMEnd
+};
+
 static Widget edit_command_w;
-static Widget plot_command_w;
 static Widget get_core_command_w;
 static Widget ps_command_w;
 static Widget term_command_w;
 static Widget uncompress_command_w;
 static Widget www_command_w;
+static Widget plot_command_w;
 
 static MMDesc helpers_preferences_menu [] =
 {
     { "edit",       MMTextField, { dddSetEditCommandCB, 0 }, 
       NULL, &edit_command_w, 0, 0},
-    { "plot",       MMTextField, { dddSetPlotCommandCB, 0 }, 
-      NULL, &plot_command_w, 0, 0},
     { "get_core",   MMTextField, { dddSetGetCoreCommandCB, 0 }, 
       NULL, &get_core_command_w, 0, 0},
     { "ps",         MMTextField, { dddSetPSCommandCB, 0 },
@@ -1317,6 +1327,9 @@ static MMDesc helpers_preferences_menu [] =
       NULL, &uncompress_command_w, 0, 0},
     { "www",        MMTextField, { dddSetWWWCommandCB, 0 },
       NULL, &www_command_w, 0, 0},
+    { "plot",       MMTextField, { dddSetPlotCommandCB, 0 }, 
+      NULL, &plot_command_w, 0, 0},
+    { "plot_window", MMRadioPanel, MMNoCB, plot_window_menu, 0, 0, 0 },
     MMEnd
 };
 
@@ -3572,6 +3585,8 @@ void update_options()
     set_toggle(uniconify_when_ready_w,   app_data.uniconify_when_ready);
     set_toggle(check_grabs_w,   	 app_data.check_grabs);
     set_toggle(suppress_warnings_w,      app_data.suppress_warnings);
+    set_toggle(builtin_plot_window_w,    app_data.builtin_plot_window);
+    set_toggle(extern_plot_window_w,     !app_data.builtin_plot_window);
 
     set_toggle(cache_source_files_w,     app_data.cache_source_files);
     set_toggle(cache_machine_code_w,     app_data.cache_machine_code);
@@ -4331,12 +4346,15 @@ static bool font_preferences_changed()
 static void ResetHelpersPreferencesCB(Widget, XtPointer, XtPointer)
 {
     set_string(edit_command_w,       initial_app_data.edit_command);
-    set_string(plot_command_w,       initial_app_data.plot_command);
     set_string(get_core_command_w,   initial_app_data.get_core_command);
     set_string(ps_command_w,         initial_app_data.ps_command);
     set_string(term_command_w,       initial_app_data.term_command);
     set_string(uncompress_command_w, initial_app_data.uncompress_command);
     set_string(www_command_w,        initial_app_data.www_command);
+    set_string(plot_command_w,       initial_app_data.plot_command);
+
+    notify_set_toggle(builtin_plot_window_w, 
+		      initial_app_data.builtin_plot_window);
 }
 
 static bool helpers_preferences_changed()
@@ -4362,6 +4380,9 @@ static bool helpers_preferences_changed()
 	return true;
 
     if (string(app_data.www_command) != string(initial_app_data.www_command))
+	return true;
+
+    if (app_data.builtin_plot_window != initial_app_data.builtin_plot_window)
 	return true;
 
     return false;
@@ -5366,8 +5387,7 @@ void _gdb_out(const string& txt)
 	return;
 
     string text(txt);
-    if (gdb->ends_with_prompt(text))
-	gdb_input_at_prompt = true;
+    gdb_input_at_prompt = gdb->ends_with_prompt(text);
 
     if (promptPosition == 0)
 	promptPosition = XmTextGetLastPosition(gdb_w);
