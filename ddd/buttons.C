@@ -600,6 +600,12 @@ static MString gdbDefaultButtonText(Widget widget, XEvent *,
 
     string help_name = gdbHelpName(widget);
 
+    string command = help_name;
+    translate_command(command);
+    string base = command;
+    if (base.contains(' '))
+	base = command.before(' ');
+
     if (help_name.length() == 2 && 
 	help_name[0] == 'r' && isdigit(help_name[1]))
     {
@@ -622,25 +628,44 @@ static MString gdbDefaultButtonText(Widget widget, XEvent *,
 
     strip_leading_space(tip);
 
-    if (tip.contains(help_name + " -", 0))
+    if (gdb->type() == DBX)
     {
-	// Solaris DBX first describes `kill -l', then `kill'.  Check for this.
-	string t = tip.from(help_name + "  ", 0);
-	if (t != "")
-	    tip = t;
+	if (!tip.contains(command, 0))
+	{
+	    // Sometimes, multiple command are listed in one help text.
+	    // Be sure to fetch the correct variant.
+	    int index = tip.index("\n" + command);
+	    if (index > 0)
+		tip = tip.after(index);
+
+	    // Fix Sun DBX `step up' help
+	    tip.gsub("... and ", "Step ");
+	}
+
+	if (tip.contains(command + " -", 0))
+	{
+	    // Solaris DBX first describes `kill -l', then `kill'.
+	    // Check for this.
+	    string t = tip.from(command + "  ", 0);
+	    if (t != "")
+		tip = t;
+	}
     }
 
-    if (tip.contains(help_name, 0))
+    if (tip.contains(command, 0))
     {
-	string t = tip.after(help_name);
+	string t = tip.after(command);
 	if (t != "" && !isalpha(t[0]))
 	{
 	    tip = t;
 	    strip_leading_space(tip);
 	}
     }
+    
+    strip_through(tip, " # ");
+    strip_through(tip, " - ");
 
-    if (gdb->type() == DBX && tip != "" && islower(tip[0]))
+    if (gdb->type() == DBX && tip != "" && !isupper(tip[0]))
     {
 	// Avoid giving help like `step <count>' on `step'.  This happens
 	// with AIX DBX, where the help looks like
@@ -652,6 +677,9 @@ static MString gdbDefaultButtonText(Widget widget, XEvent *,
 	// "\tcommand line arguments [...]"
 
 	string t = tip.from(rxuppercase);
+	if (t.contains("\n" + base))
+	    t = t.before("\n" + base);
+
 	t.gsub('\n', ' ');
 	t.gsub('\t', ' ');
 	t.gsub("  ", " ");
@@ -661,15 +689,12 @@ static MString gdbDefaultButtonText(Widget widget, XEvent *,
 	if (t.contains(';'))
 	    t = t.before(';');
 
-	// Trim AIX `down' help
+	// Fix AIX `down' help
 	t.gsub(", which is used for resolving names,", "");
 
 	if (t.length() > 0)
 	    tip = t;
     }
-    
-    strip_through(tip, " # ");
-    strip_through(tip, " - ");
 
     if (gdb->type() == XDB)
     {
