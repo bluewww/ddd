@@ -34,7 +34,7 @@ char string_functions_rcsid[] =
 #endif
 
 //-----------------------------------------------------------------------------
-// Verschiedene Funktionen auf string
+// Miscellaneous string functions
 //-----------------------------------------------------------------------------
 
 #include "assert.h"
