@@ -11,7 +11,8 @@ DDD 3.0 [in beta test]
       icon tool bar at the top, saving vertical and horizontal space.
     - New KDE-compatible key bindings.  Cut/Copy/Paste is now on
       Ctrl+X/Ctrl+C/Ctrl+V.  To interrupt, use Ctrl+G (as in Emacs).
-      See below for a list of changed key bindings.
+      See below for a ful list of changed key bindings and how to
+      restore old key bindings.
     - Configurable fonts.  You can easily customize DDD font settings
       via `Edit | Preferences | Fonts'.
     - JDB support.  DDD now also supports JDB as inferior debugger.
@@ -92,6 +93,7 @@ DDD 3.0 [in beta test]
     - LessTif 0.83 is supported (and a standard test environment of
       the DDD developers).  See `patches/' for some useful patches.
     - GDB 4.17 is supported.
+    - GCC 2.8.1 with enabled optimization is supported.
 
     Compatibility notes:
     - Some key bindings have been re-assigned for KDE compatibility.
@@ -118,7 +120,18 @@ DDD 3.0 [in beta test]
         Backward      Ctrl+B        Left          Reserved
         Unkill        Ctrl+Y        Shift+Ctrl+Y  Reserved for Redo
 
-      See the `Ddd' app-defaults file to change these key bindings.
+      To enable Motif-style bindings in the `Edit' menu, and to make
+      Ctrl+C interrupt again, use
+
+         Ddd*editMenu.cut.accelerator:		Shift<Key>Delete
+         Ddd*editMenu.cut.acceleratorText:	Shift+Del
+         Ddd*editMenu.copy.accelerator:  	Ctrl<Key>Insert
+         Ddd*editMenu.copy.acceleratorText:	Ctrl+Ins
+         Ddd*editMenu.paste.accelerator:  	Shift<Key>Insert
+         Ddd*editMenu.paste.acceleratorText:	Shift+Ins
+
+      in your ~/.ddd/init file.  See the `Ddd' app-defaults file to
+      change other key bindings.
 
     - Some resources had to be renamed for clarity and/or Motif conflicts:
  

@@ -110,6 +110,21 @@
 ! Ddd*step.tipString: 1 step into
 
 
+
+! ----------------------------------------------------------------------------
+! KEYBOARD
+! ----------------------------------------------------------------------------
+
+! Get a Motif-style `Edit' menu.  This also unbinds Ctrl+C from `Copy',
+! re-establishing its meaning as `Interrupt' character.
+! Ddd*editMenu.cut.accelerator:		Shift<Key>Delete
+! Ddd*editMenu.cut.acceleratorText:	Shift+Del
+! Ddd*editMenu.copy.accelerator:  	Ctrl<Key>Insert
+! Ddd*editMenu.copy.acceleratorText:	Ctrl+Ins
+! Ddd*editMenu.paste.accelerator:  	Shift<Key>Insert
+! Ddd*editMenu.paste.acceleratorText:	Shift+Ins
+
+
 ! ----------------------------------------------------------------------------
 ! MENUS
 ! ----------------------------------------------------------------------------
