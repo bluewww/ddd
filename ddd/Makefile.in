@@ -134,10 +134,10 @@ CXXSTUFF = @CXXSTUFF@
 # Possible extra libraries required for all C++ programs.  ()
 CXXLIBS = @CXXLIBS@
 
-# The `.exe' extension on Windows/Cygwin ()
+# Executable extension.  Empty on Unix, `.exe' on Windows. ()
 EXEEXT = @EXEEXT@
 
-# The `.obj' extension on Windows/Cygwin (.o)
+# Object extension.  `o' on Unix, `obj' on Windows. (o)
 OBJEXT = @OBJEXT@
 
 
@@ -506,13 +506,13 @@ INCLUDE = -I. -I$(srcdir) -I$(srcdir)/.. $(X_INCLUDE)
 ## Implicit rules.
 .SUFFIXES: .C .cc .c .mod .p .Y .YY .L .txt .i .xbm .xbmxx .xpm .xpmxx \
 	   .xface .C~ .c~ .f .f~ .sh .sh~ .fig .eps $(IMGEXT)
-.C$(OBJEXT):
+.C.$(OBJEXT):
 	$(COMPILE.cc) $(INCLUDE) -o $@ $<
-.cc$(OBJEXT):
+.cc.$(OBJEXT):
 	$(COMPILE.cc) $(INCLUDE) -o $@ $<
-.c$(OBJEXT):
+.c.$(OBJEXT):
 	$(COMPILE.c) $(INCLUDE) -o $@ $<
-.p$(OBJEXT):
+.p.$(OBJEXT):
 	$(COMPILE.p) -o $@ $<
 .C.i:
 	$(COMPILE.cc) $(INCLUDE) -E -o $@ $<
@@ -538,7 +538,7 @@ INCLUDE = -I. -I$(srcdir) -I$(srcdir)/.. $(X_INCLUDE)
 	$(YACCTOCXX)
 	$(MV) y.tab.H $@
 	$(RM) y.tab.C y.tab.c y.tab.h
-.Y$(OBJEXT):
+.Y.$(OBJEXT):
 	$(YACC) $(YFLAGS) $<
 	$(YACCTOCXX)
 	$(COMPILE.cc) y.tab.C
@@ -557,7 +557,7 @@ INCLUDE = -I. -I$(srcdir) -I$(srcdir)/.. $(X_INCLUDE)
 	$(LEXTOCXX)
 	$(MV) $(LEX_OUTPUT_ROOT).C $@
 	$(RM) $(LEX_OUTPUT_ROOT).c
-.L$(OBJEXT):
+.L.$(OBJEXT):
 	$(LEX.L) $<
 	$(LEXTOCXX)
 	$(COMPILE.cc) -o $@ $(LEX_OUTPUT_ROOT).C
@@ -670,152 +670,152 @@ IMAGE_WIDTH = 600
 ## Libraries and object files
 # General-purpose utilities: strings, regexps, run-type type info...
 BASE_OBJECTS = \
-	compare$(OBJEXT)    \
-	cook$(OBJEXT)       \
-	cwd$(OBJEXT)        \
-	glob$(OBJEXT)       \
-	hash$(OBJEXT)       \
-	home$(OBJEXT)       \
-	rxclass$(OBJEXT)    \
-	sigName$(OBJEXT)    \
-	strclass$(OBJEXT)   \
-	tabs$(OBJEXT)       \
-	uniquify$(OBJEXT)   \
-	PrintGC$(OBJEXT)    \
-	SignalB$(OBJEXT)    \
-	TypeInfo$(OBJEXT)   \
-	UniqueId$(OBJEXT)   \
-	MemCheck$(OBJEXT)
+	compare.$(OBJEXT)    \
+	cook.$(OBJEXT)       \
+	cwd.$(OBJEXT)        \
+	glob.$(OBJEXT)       \
+	hash.$(OBJEXT)       \
+	home.$(OBJEXT)       \
+	rxclass.$(OBJEXT)    \
+	sigName.$(OBJEXT)    \
+	strclass.$(OBJEXT)   \
+	tabs.$(OBJEXT)       \
+	uniquify.$(OBJEXT)   \
+	PrintGC.$(OBJEXT)    \
+	SignalB.$(OBJEXT)    \
+	TypeInfo.$(OBJEXT)   \
+	UniqueId.$(OBJEXT)   \
+	MemCheck.$(OBJEXT)
 
 # Instantiated templates
 TEMPLATE_OBJECTS = \
-	IntIntAA$(OBJEXT)   \
-	StringA$(OBJEXT)    \
-	StringMap$(OBJEXT)  \
-	StringSA$(OBJEXT)   \
-	VoidArray$(OBJEXT)  \
-	WidgetSA$(OBJEXT)
+	IntIntAA.$(OBJEXT)   \
+	StringA.$(OBJEXT)    \
+	StringMap.$(OBJEXT)  \
+	StringSA.$(OBJEXT)   \
+	VoidArray.$(OBJEXT)  \
+	WidgetSA.$(OBJEXT)
 
 # Interprocess communication
 # Top-level class is `Agent', declared in `Agent.h'
 AGENT_OBJECTS = \
-	Agent$(OBJEXT)      \
-	AgentM$(OBJEXT)     \
-	AsyncAgent$(OBJEXT) \
-	ChunkQueue$(OBJEXT) \
-	DataLength$(OBJEXT) \
-	HandlerL$(OBJEXT)   \
-	LiterateA$(OBJEXT)  \
-	ReadLineA$(OBJEXT)  \
-	TimeOut$(OBJEXT)    \
-	TTYAgent$(OBJEXT)
+	Agent.$(OBJEXT)      \
+	AgentM.$(OBJEXT)     \
+	AsyncAgent.$(OBJEXT) \
+	ChunkQueue.$(OBJEXT) \
+	DataLength.$(OBJEXT) \
+	HandlerL.$(OBJEXT)   \
+	LiterateA.$(OBJEXT)  \
+	ReadLineA.$(OBJEXT)  \
+	TimeOut.$(OBJEXT)    \
+	TTYAgent.$(OBJEXT)
 
 # Miscellaneous utilities for X programs: Motif strings, hourglasses,
 # context-sensitive help...
 XSTUFF_OBJECTS = \
-	charsets$(OBJEXT)   \
-	converters$(OBJEXT) \
-	events$(OBJEXT)     \
-	findParent$(OBJEXT) \
-	findWindow$(OBJEXT) \
-	fileSBF$(OBJEXT)    \
-	frame$(OBJEXT)      \
-	longName$(OBJEXT)   \
-	selection$(OBJEXT)  \
-	simpleMenu$(OBJEXT) \
-	verify$(OBJEXT)     \
-	ComboBox$(OBJEXT)   \
-	Delay$(OBJEXT)      \
-	DestroyCB$(OBJEXT)  \
-	ExitCB$(OBJEXT)     \
-	InitImage$(OBJEXT)  \
-	LabelH$(OBJEXT)     \
-	LessTifH$(OBJEXT)   \
-	MString$(OBJEXT)    \
-	MakeMenu$(OBJEXT)   \
-	SpinBox$(OBJEXT)    \
-	Swallower$(OBJEXT)  \
-	XErrorB$(OBJEXT)
+	charsets.$(OBJEXT)   \
+	converters.$(OBJEXT) \
+	events.$(OBJEXT)     \
+	findParent.$(OBJEXT) \
+	findWindow.$(OBJEXT) \
+	fileSBF.$(OBJEXT)    \
+	frame.$(OBJEXT)      \
+	longName.$(OBJEXT)   \
+	selection.$(OBJEXT)  \
+	simpleMenu.$(OBJEXT) \
+	verify.$(OBJEXT)     \
+	ComboBox.$(OBJEXT)   \
+	Delay.$(OBJEXT)      \
+	DestroyCB.$(OBJEXT)  \
+	ExitCB.$(OBJEXT)     \
+	InitImage.$(OBJEXT)  \
+	LabelH.$(OBJEXT)     \
+	LessTifH.$(OBJEXT)   \
+	MString.$(OBJEXT)    \
+	MakeMenu.$(OBJEXT)   \
+	SpinBox.$(OBJEXT)    \
+	Swallower.$(OBJEXT)  \
+	XErrorB.$(OBJEXT)
 
 # Box library - rectangular composible graphical items
 # Top-level class is `Box', declared in `Box.h'
 BOX_OBJECTS = \
-	printBox$(OBJEXT)   \
-	AlignBox$(OBJEXT)   \
-	ArcBox$(OBJEXT)     \
-	BinBox$(OBJEXT)     \
-	Box$(OBJEXT)        \
-	BoxD$(OBJEXT)       \
-	BoxExtend$(OBJEXT)  \
-	BoxPoint$(OBJEXT)   \
-	BoxRegion$(OBJEXT)  \
-	BoxSize$(OBJEXT)    \
-	ColorBox$(OBJEXT)   \
-	CompositeB$(OBJEXT) \
-	DiagBox$(OBJEXT)    \
-	DummyBox$(OBJEXT)   \
-	FixBox$(OBJEXT)     \
-	FontFixBox$(OBJEXT) \
-	FontTable$(OBJEXT)  \
-	HatBox$(OBJEXT)     \
-	LineBox$(OBJEXT)    \
-	ListBox$(OBJEXT)    \
-	MarkBox$(OBJEXT)    \
-	MatchBox$(OBJEXT)   \
-	PrimitiveB$(OBJEXT) \
-	SlopeBox$(OBJEXT)   \
-	StringBox$(OBJEXT)  \
-	THatBox$(OBJEXT)    \
-	TagBox$(OBJEXT)     \
-	TrueBox$(OBJEXT)
+	printBox.$(OBJEXT)   \
+	AlignBox.$(OBJEXT)   \
+	ArcBox.$(OBJEXT)     \
+	BinBox.$(OBJEXT)     \
+	Box.$(OBJEXT)        \
+	BoxD.$(OBJEXT)       \
+	BoxExtend.$(OBJEXT)  \
+	BoxPoint.$(OBJEXT)   \
+	BoxRegion.$(OBJEXT)  \
+	BoxSize.$(OBJEXT)    \
+	ColorBox.$(OBJEXT)   \
+	CompositeB.$(OBJEXT) \
+	DiagBox.$(OBJEXT)    \
+	DummyBox.$(OBJEXT)   \
+	FixBox.$(OBJEXT)     \
+	FontFixBox.$(OBJEXT) \
+	FontTable.$(OBJEXT)  \
+	HatBox.$(OBJEXT)     \
+	LineBox.$(OBJEXT)    \
+	ListBox.$(OBJEXT)    \
+	MarkBox.$(OBJEXT)    \
+	MatchBox.$(OBJEXT)   \
+	PrimitiveB.$(OBJEXT) \
+	SlopeBox.$(OBJEXT)   \
+	StringBox.$(OBJEXT)  \
+	THatBox.$(OBJEXT)    \
+	TagBox.$(OBJEXT)     \
+	TrueBox.$(OBJEXT)
 
 # VSL library - building boxes from structured data
 # Top-level class is `VSLLib', declared in `VSLLib.h'
 VSL_OBJECTS = \
-	ArgNode$(OBJEXT)    \
-	BuiltinCN$(OBJEXT)  \
-	CallNode$(OBJEXT)   \
-	ConstNode$(OBJEXT)  \
-	DefCallN$(OBJEXT)   \
-	DummyNode$(OBJEXT)  \
-	LetNode$(OBJEXT)    \
-	NameNode$(OBJEXT)   \
-	ListNode$(OBJEXT)   \
-	TestNode$(OBJEXT)   \
-	TrueNode$(OBJEXT)   \
-	VSEFlags$(OBJEXT)   \
-	VSLArgList$(OBJEXT) \
-	VSLBuiltin$(OBJEXT) \
-	VSLDef$(OBJEXT)     \
-	VSLDefList$(OBJEXT) \
-        VSLErr$(OBJEXT)     \
-	VSLLib$(OBJEXT)     \
-	VSLNode$(OBJEXT)    \
-        VSLRead$(OBJEXT)
+	ArgNode.$(OBJEXT)    \
+	BuiltinCN.$(OBJEXT)  \
+	CallNode.$(OBJEXT)   \
+	ConstNode.$(OBJEXT)  \
+	DefCallN.$(OBJEXT)   \
+	DummyNode.$(OBJEXT)  \
+	LetNode.$(OBJEXT)    \
+	NameNode.$(OBJEXT)   \
+	ListNode.$(OBJEXT)   \
+	TestNode.$(OBJEXT)   \
+	TrueNode.$(OBJEXT)   \
+	VSEFlags.$(OBJEXT)   \
+	VSLArgList.$(OBJEXT) \
+	VSLBuiltin.$(OBJEXT) \
+	VSLDef.$(OBJEXT)     \
+	VSLDefList.$(OBJEXT) \
+        VSLErr.$(OBJEXT)     \
+	VSLLib.$(OBJEXT)     \
+	VSLNode.$(OBJEXT)    \
+        VSLRead.$(OBJEXT)
 
 # Graph structure, graph layout and graph editor widget
 # Top-level classes are `Graph', declared in `Graph.h'
 # and the `GraphEdit' widget, deckared in `GraphEdit.h'.
 GRAPH_OBJECTS = \
-	ArcGraphE$(OBJEXT)  \
-	BoxEdgeA$(OBJEXT)   \
-	BoxGraphN$(OBJEXT)  \
-	EdgeA$(OBJEXT)      \
-	EdgeAPA$(OBJEXT)    \
-	Graph$(OBJEXT)      \
-	GraphEdge$(OBJEXT)  \
-	GraphEdit$(OBJEXT)  \
-	GraphGC$(OBJEXT)    \
-	GraphNode$(OBJEXT)  \
-	GraphNPA$(OBJEXT)   \
-	HintGraphN$(OBJEXT) \
-	LineGraphE$(OBJEXT) \
-	LineGESI$(OBJEXT)   \
-	PannedGE$(OBJEXT)   \
-	PosGraphN$(OBJEXT)  \
-	RegionGN$(OBJEXT)   \
-	ScrolledGE$(OBJEXT) \
-	layout$(OBJEXT)
+	ArcGraphE.$(OBJEXT)  \
+	BoxEdgeA.$(OBJEXT)   \
+	BoxGraphN.$(OBJEXT)  \
+	EdgeA.$(OBJEXT)      \
+	EdgeAPA.$(OBJEXT)    \
+	Graph.$(OBJEXT)      \
+	GraphEdge.$(OBJEXT)  \
+	GraphEdit.$(OBJEXT)  \
+	GraphGC.$(OBJEXT)    \
+	GraphNode.$(OBJEXT)  \
+	GraphNPA.$(OBJEXT)   \
+	HintGraphN.$(OBJEXT) \
+	LineGraphE.$(OBJEXT) \
+	LineGESI.$(OBJEXT)   \
+	PannedGE.$(OBJEXT)   \
+	PosGraphN.$(OBJEXT)  \
+	RegionGN.$(OBJEXT)   \
+	ScrolledGE.$(OBJEXT) \
+	layout.$(OBJEXT)
 
 # All these objects were originally part of the NORA library; they are
 # now maintained as part of DDD.
@@ -831,100 +831,100 @@ LIB_OBJECTS = \
 # The DDD application itself.  `ddd.C' is the main program, `SourceView.C'
 # is the source window, `DataDisp.C' is the data window.
 DDD_OBJECTS = \
-	annotation$(OBJEXT) \
-	args$(OBJEXT)       \
-	buttons$(OBJEXT)    \
-	cmdtty$(OBJEXT)     \
-	comm-manag$(OBJEXT) \
-	complete$(OBJEXT)   \
-	ctrl$(OBJEXT)       \
-	data$(OBJEXT)       \
-	dbx-lookup$(OBJEXT) \
-	deref$(OBJEXT)      \
-	disp-read$(OBJEXT)  \
-	editing$(OBJEXT)    \
-	environ$(OBJEXT)    \
-	examine$(OBJEXT)    \
-	exectty$(OBJEXT)    \
-	exit$(OBJEXT)       \
-	expired$(OBJEXT)    \
-	file$(OBJEXT)       \
-	filetype$(OBJEXT)   \
-	fonts$(OBJEXT)      \
-	fortranize$(OBJEXT) \
-	gdbinit$(OBJEXT)    \
-	history$(OBJEXT)    \
-	hostname$(OBJEXT)   \
-	index$(OBJEXT)      \
-	isid$(OBJEXT)       \
-	java$(OBJEXT) 	    \
-	logo$(OBJEXT)       \
-	logplayer$(OBJEXT)  \
-	mainloop$(OBJEXT)   \
-	mydialogs$(OBJEXT)  \
-	options$(OBJEXT)    \
-	plotter$(OBJEXT)    \
-	post$(OBJEXT)       \
-	print$(OBJEXT)      \
-	question$(OBJEXT)   \
-	regexps$(OBJEXT)    \
-	resources$(OBJEXT)  \
-	sashes$(OBJEXT)     \
-	select$(OBJEXT)     \
-	session$(OBJEXT)    \
-	settings$(OBJEXT)   \
-	shell$(OBJEXT)      \
-	shorten$(OBJEXT)    \
-	show$(OBJEXT)       \
-	configinfo$(OBJEXT) \
-	source$(OBJEXT)     \
-	status$(OBJEXT)     \
-	string-fun$(OBJEXT) \
-	tictactoe$(OBJEXT)  \
-	tips$(OBJEXT)       \
-	toolbar$(OBJEXT)    \
-	ungrab$(OBJEXT)     \
-	value-read$(OBJEXT) \
-	windows$(OBJEXT)    \
-	wm$(OBJEXT)         \
-	xconfig$(OBJEXT)    \
-	AliasGE$(OBJEXT)    \
-	ArgField$(OBJEXT)   \
-	BreakPoint$(OBJEXT) \
-	BreakPM$(OBJEXT)    \
-	CodeCache$(OBJEXT)  \
-	Command$(OBJEXT)    \
-	DataDisp$(OBJEXT)   \
-	DispBox$(OBJEXT)    \
-	DispBuffer$(OBJEXT) \
-	DispGraph$(OBJEXT)  \
-	DispNode$(OBJEXT)   \
-	DispNodeM$(OBJEXT)  \
-	DispValue$(OBJEXT)  \
-	DispValueA$(OBJEXT) \
-	DispValueT$(OBJEXT) \
-	EntryType$(OBJEXT)  \
-	GDBAgent$(OBJEXT)   \
-	HelpCB$(OBJEXT)     \
-	HistoryD$(OBJEXT)   \
-	HistoryF$(OBJEXT)   \
-	MinMaxA$(OBJEXT)    \
-	PlotAgent$(OBJEXT)  \
-	PlotArea$(OBJEXT)   \
-	PosBuffer$(OBJEXT)  \
-	ProgressM$(OBJEXT)  \
-	RefreshDI$(OBJEXT)  \
-	SmartC$(OBJEXT)     \
-	SourceView$(OBJEXT) \
-	UndoBuffer$(OBJEXT) \
-	UndoBE$(OBJEXT)     \
-	WhatNextCB$(OBJEXT)
+	annotation.$(OBJEXT) \
+	args.$(OBJEXT)       \
+	buttons.$(OBJEXT)    \
+	cmdtty.$(OBJEXT)     \
+	comm-manag.$(OBJEXT) \
+	complete.$(OBJEXT)   \
+	ctrl.$(OBJEXT)       \
+	data.$(OBJEXT)       \
+	dbx-lookup.$(OBJEXT) \
+	deref.$(OBJEXT)      \
+	disp-read.$(OBJEXT)  \
+	editing.$(OBJEXT)    \
+	environ.$(OBJEXT)    \
+	examine.$(OBJEXT)    \
+	exectty.$(OBJEXT)    \
+	exit.$(OBJEXT)       \
+	expired.$(OBJEXT)    \
+	file.$(OBJEXT)       \
+	filetype.$(OBJEXT)   \
+	fonts.$(OBJEXT)      \
+	fortranize.$(OBJEXT) \
+	gdbinit.$(OBJEXT)    \
+	history.$(OBJEXT)    \
+	hostname.$(OBJEXT)   \
+	index.$(OBJEXT)      \
+	isid.$(OBJEXT)       \
+	java.$(OBJEXT) 	    \
+	logo.$(OBJEXT)       \
+	logplayer.$(OBJEXT)  \
+	mainloop.$(OBJEXT)   \
+	mydialogs.$(OBJEXT)  \
+	options.$(OBJEXT)    \
+	plotter.$(OBJEXT)    \
+	post.$(OBJEXT)       \
+	print.$(OBJEXT)      \
+	question.$(OBJEXT)   \
+	regexps.$(OBJEXT)    \
+	resources.$(OBJEXT)  \
+	sashes.$(OBJEXT)     \
+	select.$(OBJEXT)     \
+	session.$(OBJEXT)    \
+	settings.$(OBJEXT)   \
+	shell.$(OBJEXT)      \
+	shorten.$(OBJEXT)    \
+	show.$(OBJEXT)       \
+	configinfo.$(OBJEXT) \
+	source.$(OBJEXT)     \
+	status.$(OBJEXT)     \
+	string-fun.$(OBJEXT) \
+	tictactoe.$(OBJEXT)  \
+	tips.$(OBJEXT)       \
+	toolbar.$(OBJEXT)    \
+	ungrab.$(OBJEXT)     \
+	value-read.$(OBJEXT) \
+	windows.$(OBJEXT)    \
+	wm.$(OBJEXT)         \
+	xconfig.$(OBJEXT)    \
+	AliasGE.$(OBJEXT)    \
+	ArgField.$(OBJEXT)   \
+	BreakPoint.$(OBJEXT) \
+	BreakPM.$(OBJEXT)    \
+	CodeCache.$(OBJEXT)  \
+	Command.$(OBJEXT)    \
+	DataDisp.$(OBJEXT)   \
+	DispBox.$(OBJEXT)    \
+	DispBuffer.$(OBJEXT) \
+	DispGraph.$(OBJEXT)  \
+	DispNode.$(OBJEXT)   \
+	DispNodeM.$(OBJEXT)  \
+	DispValue.$(OBJEXT)  \
+	DispValueA.$(OBJEXT) \
+	DispValueT.$(OBJEXT) \
+	EntryType.$(OBJEXT)  \
+	GDBAgent.$(OBJEXT)   \
+	HelpCB.$(OBJEXT)     \
+	HistoryD.$(OBJEXT)   \
+	HistoryF.$(OBJEXT)   \
+	MinMaxA.$(OBJEXT)    \
+	PlotAgent.$(OBJEXT)  \
+	PlotArea.$(OBJEXT)   \
+	PosBuffer.$(OBJEXT)  \
+	ProgressM.$(OBJEXT)  \
+	RefreshDI.$(OBJEXT)  \
+	SmartC.$(OBJEXT)     \
+	SourceView.$(OBJEXT) \
+	UndoBuffer.$(OBJEXT) \
+	UndoBE.$(OBJEXT)     \
+	WhatNextCB.$(OBJEXT)
 
 # Objects required for userinfo
 USERINFO_OBJECTS =
 
 # Objects required for huffencode and huffdecode
-HUFFMAN_OBJECTS = strclass$(OBJEXT) cook$(OBJEXT) rxclass$(OBJEXT)
+HUFFMAN_OBJECTS = strclass.$(OBJEXT) cook.$(OBJEXT) rxclass.$(OBJEXT)
 
 ## All objects.
 OBJECTS = $(LIB_OBJECTS) $(DDD_OBJECTS)
@@ -1227,7 +1227,7 @@ DIST_STUFF	 = $(PROG_STUFF) $(MANS) $(PSS) $(ICONS)
 
 # Temporary Files to be cleaned, keeping configuration intact
 CLEAN_STUFF	 = $(ddd)-$(VERSION)-* $(PROGS) $(DEMOS) \
-		   core *$(OBJEXT) *.a *.s *.i \
+		   core *.$(OBJEXT) *.a *.s *.i \
 		   tmp* *.tmp .*hist* *.syms *.log dddgraph.* \
 		   *.au *.aus *.aux *.cm *.cms *.cp *.cps *.en *.ens \
 		   *.fl *.flc *.fls *.fn *.fns *.ky *.kys *.lb *.lbs \
@@ -1550,7 +1550,7 @@ $(srcdir)/tips.html: $(srcdir)/../TIPS
 
 
 # `make depend' fails to find this dependency :-(
-DispBox$(OBJEXT): ddd.vsl.h
+DispBox.$(OBJEXT): ddd.vsl.h
 
 # And these are never computed:
 ddd.vsl.h: $(srcdir)/../vsllib/std.vsl
@@ -1565,92 +1565,92 @@ ddd.vsl.h: $(srcdir)/../vsllib/tab.vsl
 $(ddd)$(EXEEXT): $(ddd_canonical)$(EXEEXT)
 	$(RM) $@ $(SYMS); $(LN_S) $(ddd_canonical)$(EXEEXT) $@
 
-$(ddd_canonical)$(EXEEXT): ddd$(OBJEXT) $(OBJECTS)
-	$(LINK.cc) -o $@ ddd$(OBJEXT) $(OBJECTS) $(ALL_X_LIBS) $(LIBS)
+$(ddd_canonical)$(EXEEXT): ddd.$(OBJEXT) $(OBJECTS)
+	$(LINK.cc) -o $@ ddd.$(OBJEXT) $(OBJECTS) $(ALL_X_LIBS) $(LIBS)
 
 
 ## The demonstration programs.
 
-userinfo$(EXEEXT): userinfo$(OBJEXT) $(USERINFO_OBJECTS)
-	-$(LINK.cc) -o $@ userinfo$(OBJEXT) \
+userinfo$(EXEEXT): userinfo.$(OBJEXT) $(USERINFO_OBJECTS)
+	-$(LINK.cc) -o $@ userinfo.$(OBJEXT) \
 		$(USERINFO_OBJECTS) $(NON_X_LIBS) $(LIBS)
 
-rxtest$(EXEEXT): rxtest$(OBJEXT) $(HUFFMAN_OBJECTS)
-	-$(LINK.cc) -o $@ rxtest$(OBJEXT) \
+rxtest$(EXEEXT): rxtest.$(OBJEXT) $(HUFFMAN_OBJECTS)
+	-$(LINK.cc) -o $@ rxtest.$(OBJEXT) \
 		$(HUFFMAN_OBJECTS) $(NON_X_LIBS) $(LIBS)
 
-huffencode$(EXEEXT): huffencode$(OBJEXT) $(HUFFMAN_OBJECTS)
-	$(LINK.cc) -o $@ huffencode$(OBJEXT) \
+huffencode$(EXEEXT): huffencode.$(OBJEXT) $(HUFFMAN_OBJECTS)
+	$(LINK.cc) -o $@ huffencode.$(OBJEXT) \
 		$(HUFFMAN_OBJECTS) $(NON_X_LIBS) $(LIBS)
 
-huffdecode$(EXEEXT): huffdecode$(OBJEXT) $(HUFFMAN_OBJECTS)
-	$(LINK.cc) -o $@ huffdecode$(OBJEXT) \
+huffdecode$(EXEEXT): huffdecode.$(OBJEXT) $(HUFFMAN_OBJECTS)
+	$(LINK.cc) -o $@ huffdecode.$(OBJEXT) \
 		$(HUFFMAN_OBJECTS) $(NON_X_LIBS) $(LIBS)
 
-stringify$(EXEEXT): stringify$(OBJEXT)
-	$(LINK.cc) -o $@ stringify$(OBJEXT) $(LIBS)
+stringify$(EXEEXT): stringify.$(OBJEXT)
+	$(LINK.cc) -o $@ stringify.$(OBJEXT) $(LIBS)
 
-mmtest$(EXEEXT): mmtest$(OBJEXT) $(LIB_OBJECTS) 
-	$(LINK.cc) -o $@ mmtest$(OBJEXT) $(LIB_OBJECTS) $(ALL_X_LIBS) $(LIBS)
+mmtest$(EXEEXT): mmtest.$(OBJEXT) $(LIB_OBJECTS) 
+	$(LINK.cc) -o $@ mmtest.$(OBJEXT) $(LIB_OBJECTS) $(ALL_X_LIBS) $(LIBS)
 
-gcore$(EXEEXT): gcore$(OBJEXT) $(HUFFMAN_OBJECTS)
-	$(LINK.cc) -o $@ gcore$(OBJEXT) \
+gcore$(EXEEXT): gcore.$(OBJEXT) $(HUFFMAN_OBJECTS)
+	$(LINK.cc) -o $@ gcore.$(OBJEXT) \
 		$(HUFFMAN_OBJECTS) $(NON_X_LIBS) $(LIBS)
 
 logplayer$(EXEEXT): $(srcdir)/logplayer.C $(HUFFMAN_OBJECTS)
 	$(COMPILE_AND_LINK.cc) -DMAIN $(INCLUDE) -o $@ \
 	$(srcdir)/logplayer.C $(HUFFMAN_OBJECTS) $(NON_X_LIBS) $(LIBS)
 
-test-file$(EXEEXT): test-file$(OBJEXT)
-	$(LINK.cc) -o $@ test-file$(OBJEXT) $(ALL_X_LIBS)
+test-file$(EXEEXT): test-file.$(OBJEXT)
+	$(LINK.cc) -o $@ test-file.$(OBJEXT) $(ALL_X_LIBS)
 
-test-graph$(EXEEXT): test-graph$(OBJEXT) $(LIB_OBJECTS) 
-	$(LINK.cc) -o $@ test-graph$(OBJEXT) \
+test-graph$(EXEEXT): test-graph.$(OBJEXT) $(LIB_OBJECTS) 
+	$(LINK.cc) -o $@ test-graph.$(OBJEXT) \
 		$(LIB_OBJECTS) $(ALL_X_LIBS) $(LIBS)
 
-vsl$(EXEEXT):	vsl$(OBJEXT) DocSpace$(OBJEXT) $(LIB_OBJECTS)
-	$(LINK.cc) -o $@ vsl$(OBJEXT) DocSpace$(OBJEXT) \
+vsl$(EXEEXT):	vsl.$(OBJEXT) DocSpace.$(OBJEXT) $(LIB_OBJECTS)
+	$(LINK.cc) -o $@ vsl.$(OBJEXT) DocSpace.$(OBJEXT) \
 		$(LIB_OBJECTS) $(ALL_X_LIBS) $(LIBS)
 
-ttytest$(EXEEXT): ttytest$(OBJEXT) $(BASE_OBJECTS) $(AGENT_OBJECTS)
-	$(LINK.cc) -o $@ ttytest$(OBJEXT) $(BASE_OBJECTS) $(AGENT_OBJECTS) \
+ttytest$(EXEEXT): ttytest.$(OBJEXT) $(BASE_OBJECTS) $(AGENT_OBJECTS)
+	$(LINK.cc) -o $@ ttytest.$(OBJEXT) $(BASE_OBJECTS) $(AGENT_OBJECTS) \
 	$(ALL_X_LIBS) $(LIBS)
 
-bug$(EXEEXT):	bug$(OBJEXT)
-	$(LINK.cc) -o $@ bug$(OBJEXT) $(LIBS)
+bug$(EXEEXT):	bug.$(OBJEXT)
+	$(LINK.cc) -o $@ bug.$(OBJEXT) $(LIBS)
 
-sample$(EXEEXT): sample$(OBJEXT)
-	$(LINK.c) -o $@ sample$(OBJEXT) $(LIBS)
+sample$(EXEEXT): sample.$(OBJEXT)
+	$(LINK.c) -o $@ sample.$(OBJEXT) $(LIBS)
 
-tString$(EXEEXT): tString$(OBJEXT)  $(HUFFMAN_OBJECTS)
-	$(LINK.cc) -o $@ tString$(OBJEXT) \
+tString$(EXEEXT): tString.$(OBJEXT)  $(HUFFMAN_OBJECTS)
+	$(LINK.cc) -o $@ tString.$(OBJEXT) \
 		$(HUFFMAN_OBJECTS) $(NON_X_LIBS) $(LIBS)
 
-cxxtest$(EXEEXT): cxxtest$(OBJEXT)
-	$(LINK.cc) -o $@ cxxtest$(OBJEXT) $(LIBS)
+cxxtest$(EXEEXT): cxxtest.$(OBJEXT)
+	$(LINK.cc) -o $@ cxxtest.$(OBJEXT) $(LIBS)
 
-grabtest$(EXEEXT): grabtest$(OBJEXT)
-	$(LINK.cc) -o $@ grabtest$(OBJEXT) $(ALL_X_LIBS) $(LIBS)
+grabtest$(EXEEXT): grabtest.$(OBJEXT)
+	$(LINK.cc) -o $@ grabtest.$(OBJEXT) $(ALL_X_LIBS) $(LIBS)
 
-ctest$(EXEEXT):  ctest$(OBJEXT)
-	$(LINK.c) -o $@ ctest$(OBJEXT)
+ctest$(EXEEXT):  ctest.$(OBJEXT)
+	$(LINK.c) -o $@ ctest.$(OBJEXT)
 
-ptest$(EXEEXT):  ptest$(OBJEXT)
-	$(LINK.p) -o $@ ptest$(OBJEXT)
+ptest$(EXEEXT):  ptest.$(OBJEXT)
+	$(LINK.p) -o $@ ptest.$(OBJEXT)
 
 m2test$(EXEEXT): $(srcdir)/m2test.mod
 	$(COMPILE_AND_LINK.m2) -o $@ -e $@ $(srcdir)/m2test.mod \
 	-lmodula2 -ltermcap
 
-ftest$(EXEEXT):	ftest$(OBJEXT)
-	$(LINK.f) -o $@ ftest$(OBJEXT)
+ftest$(EXEEXT):	ftest.$(OBJEXT)
+	$(LINK.f) -o $@ ftest.$(OBJEXT)
 
 .PHONY: jtest
 jtest: 	
 	cd $(srcdir)/jtest; $(MAKE) jtest
 
-swallow$(EXEEXT): swallow$(OBJEXT) findWindow$(OBJEXT) Swallower$(OBJEXT)
-	$(LINK.cc) -o $@ swallow$(OBJEXT) findWindow$(OBJEXT) Swallower$(OBJEXT) \
+swallow$(EXEEXT): swallow.$(OBJEXT) findWindow.$(OBJEXT) Swallower.$(OBJEXT)
+	$(LINK.cc) -o $@ swallow.$(OBJEXT) findWindow.$(OBJEXT) Swallower.$(OBJEXT) \
 	$(ALL_X_LIBS) $(LIBS)
 
 # We don't want no optimizing, but debugging info in our test files
@@ -1660,35 +1660,35 @@ $(MAKE) CXXFLAGS="`$(ECHO) '$(CXXFLAGS)' | \
 	CFLAGS="`$(ECHO) '$(CFLAGS)' | \
 	$(SED) 's/-O[^ ]*//' | $(SED) 's/-DNDEBUG//'`"
 
-cxxtest$(OBJEXT): $(srcdir)/cxxtest.C
+cxxtest.$(OBJEXT): $(srcdir)/cxxtest.C
 	@case '$(CXXFLAGS)' in \
 	*-O*) $(MAKE_DEBUG) $@;; \
 	*) set -x; \
 	   $(COMPILE.cc) @CXXDEBUG@ $(INCLUDE) $(srcdir)/cxxtest.C -o $@;; \
 	esac
 
-ctest$(OBJEXT): $(srcdir)/ctest.c
+ctest.$(OBJEXT): $(srcdir)/ctest.c
 	@case '$(CFLAGS)' in \
 	*-O*) $(MAKE_DEBUG) $@;; \
 	*) set -x; \
 	   $(COMPILE.c) -g $(INCLUDE) $(srcdir)/ctest.c -o $@;; \
 	esac
 
-sample$(OBJEXT): $(srcdir)/sample.c
+sample.$(OBJEXT): $(srcdir)/sample.c
 	@case '$(CFLAGS)' in \
 	*-O*) $(MAKE_DEBUG) $@;; \
 	*) set -x; \
 	   $(COMPILE.c) -g $(INCLUDE) $(srcdir)/sample.c -o $@;; \
 	esac
 
-grabtest$(OBJEXT): $(srcdir)/grabtest.C
+grabtest.$(OBJEXT): $(srcdir)/grabtest.C
 	@case '$(CXXFLAGS)' in \
 	*-O*) $(MAKE_DEBUG) $@;; \
 	*) set -x; \
 	   $(COMPILE.cc) @CXXDEBUG@ $(INCLUDE) $(srcdir)/grabtest.C -o $@;; \
 	esac
 
-bug$(OBJEXT):	$(srcdir)/bug.C
+bug.$(OBJEXT):	$(srcdir)/bug.C
 	@case '$(CXXFLAGS)' in \
 	*-O*) $(MAKE_DEBUG) $@;; \
 	*) set -x; \
@@ -1696,11 +1696,11 @@ bug$(OBJEXT):	$(srcdir)/bug.C
 	esac
 
 # These are special.
-huffdecode$(OBJEXT): $(srcdir)/huffdecode.C ddd.man.huff.C
+huffdecode.$(OBJEXT): $(srcdir)/huffdecode.C ddd.man.huff.C
 	$(COMPILE.cc) -DMAIN -DHUFFTEXT='"$(srcdir)/ddd.man.huff.C"' \
 	$(INCLUDE) -o $@ $(srcdir)/huffdecode.C
 
-ftest$(OBJEXT): $(srcdir)/ftest.f
+ftest.$(OBJEXT): $(srcdir)/ftest.f
 	$(COMPILE.f) -c -o $@ $(srcdir)/ftest.f
 
 
@@ -1762,8 +1762,8 @@ rxscan.C: $(srcdir)/rxscan.L
 	$(RM) $(LEX_OUTPUT_ROOT).c
 
 # `make depend' fails to find these dependencies :-(
-VSLRead$(OBJEXT): vsl-lex.C vsl-gramma.h vsl-gramma.C
-regexps$(OBJEXT): rxscan.C
+VSLRead.$(OBJEXT): vsl-lex.C vsl-gramma.h vsl-gramma.C
+regexps.$(OBJEXT): rxscan.C
 
 
 ## The manual page in PostScript format, including all pictures.
@@ -2230,14 +2230,14 @@ NEWS.gz.C: NEWS.gz
 	-./stringify < NEWS.gz > $@~ && $(MV) $@~ $@
 
 # `make depend' fails to find this dependency :-(
-show$(OBJEXT): COPYING.gz.C NEWS.gz.C ddd.man.txt.gz.C
+show.$(OBJEXT): COPYING.gz.C NEWS.gz.C ddd.man.txt.gz.C
 
 
 ## The xlibdir script
 xlibdir.C: xlibdir.txt
 
 # `make depend' fails to find this dependency :-(
-xconfig$(OBJEXT): xlibdir.C
+xconfig.$(OBJEXT): xlibdir.C
 
 
 ## The host type
@@ -2269,7 +2269,7 @@ $(srcdir)/TAGS:	FORCE
 loc stats:
 	cd $(srcdir); \
 	for list in '$(LIB_OBJECTS)' '$(DDD_OBJECTS)' '$(OBJECTS)'; do \
-	pattern=`$(ECHO) $$list | $(SED) 's/\([a-zA-Z0-9_]*\)\$(OBJEXT)/\1\\.*/g'`; \
+	pattern=`$(ECHO) $$list | $(SED) 's/\([a-zA-Z0-9_]*\)\.$(OBJEXT)/\1\\.*/g'`; \
 	$(ECHO) "Lines of code for $$pattern"; \
 	$(CAT) `$(LS) $$pattern | grep '\.[ChLY]'` | \
 		$(GREP) -v '^[ 	]*//' | \
@@ -2300,7 +2300,7 @@ configinfo.C: USERINFO $(srcdir)/config-info
 
 # configinfo.C:	Makefile config.h
 
-configinfo$(OBJEXT):	configinfo.C configinfo.h
+configinfo.$(OBJEXT):	configinfo.C configinfo.h
 
 # If `~/.ddd_userinfo' exists, use this file as personal identification.
 USERINFO: userinfo$(EXEEXT)

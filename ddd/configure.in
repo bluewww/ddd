@@ -234,16 +234,11 @@ ICE_CXX_LIFETIME_OF_TEMPORARIES
 ICE_PROG_CPP_TRADITIONAL
 dnl
 dnl
-dnl Check for .exe and .obj extensions (for the Windows/Cygwin32 environment)
+dnl Check for `.exe' and `.obj' extensions (for Windows/Cygwin)
 dnl
 AC_CYGWIN
 AC_EXEEXT
 AC_OBJEXT
-dnl Be sure OBJEXT starts with a dot (autoconf 2.13 bug)
-case "$OBJEXT" in
-.*) ;;
-*) OBJEXT=".$OBJEXT";;
-esac
 dnl
 dnl
 dnl The C++ compiler is set up.  Use it for further checks.
