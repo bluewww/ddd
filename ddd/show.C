@@ -269,25 +269,6 @@ void show_configuration()
 
 
 //-----------------------------------------------------------------------------
-// Show Resources
-//-----------------------------------------------------------------------------
-
-void show_resources(XrmDatabase db)
-{
-    string tmpfile = tmpnam(0);
-    XrmPutFileDatabase(db, tmpfile);
-    
-    {
-	ifstream is(tmpfile);
-	int c;
-	while ((c = is.get()) != EOF)
-	    cout.put(char(c));
-    }
-
-    unlink(tmpfile);
-}
-
-//-----------------------------------------------------------------------------
 // WWW Page
 //-----------------------------------------------------------------------------
 

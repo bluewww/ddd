@@ -43,7 +43,6 @@
 void show_invocation(DebuggerType type);
 void show_version();
 void show_configuration();
-void show_resources(XrmDatabase database);
 void show_manual();
 void show_license();
 

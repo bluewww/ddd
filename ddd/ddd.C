@@ -422,9 +422,6 @@ static XrmOptionDescRec options[] = {
 { "--configuration",        XtNshowConfiguration,    XrmoptionNoArg, S_true },
 { "-configuration",         XtNshowConfiguration,    XrmoptionNoArg, S_true },
 
-{ "--resources",            XtNshowResources,        XrmoptionNoArg, S_true },
-{ "-resources",             XtNshowResources,        XrmoptionNoArg, S_true },
-
 { "--manual",               XtNshowManual,           XrmoptionNoArg, S_true },
 { "-manual",                XtNshowManual,           XrmoptionNoArg, S_true },
 
@@ -1317,9 +1314,6 @@ int main(int argc, char *argv[])
     if (app_data.show_configuration)
 	show_configuration();
 
-    if (app_data.show_resources)
-	show_resources(XtDatabase(XtDisplay(toplevel)));
-
     if (app_data.show_manual)
 	show_manual();
 
@@ -1329,7 +1323,6 @@ int main(int argc, char *argv[])
     if (app_data.show_version 
 	|| app_data.show_invocation 
 	|| app_data.show_configuration
-	|| app_data.show_resources
 	|| app_data.show_manual
 	|| app_data.show_license)
 	return EXIT_SUCCESS;

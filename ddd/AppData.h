@@ -124,8 +124,6 @@
 #define XtCShowVersion           "ShowVersion"
 #define XtNshowConfiguration     "showConfiguration"
 #define XtCShowConfiguration     "ShowConfiguration"
-#define XtNshowResources         "showResources"
-#define XtCShowResources         "ShowResources"
 #define XtNshowManual            "showManual"
 #define XtCShowManual            "ShowManual"
 #define XtNshowLicense           "showLicense"
@@ -246,7 +244,6 @@ struct AppData {
     Boolean show_invocation;
     Boolean show_version;
     Boolean show_configuration;
-    Boolean show_resources;
     Boolean show_manual;
     Boolean show_license;
     Boolean check_configuration;

@@ -36,7 +36,6 @@
 .TP
 .B @ddd@
 .RB "[\|" \-\-help "\|]"
-.RB "[\|" \-\-nw "\|]"
 .RB "[\|" \-\-gdb "\|]"
 .RB "[\|" \-\-dbx "\|]"
 .RB "[\|" \-\-xdb "\|]"
@@ -48,24 +47,30 @@
 .RB "[\|" \-\-login
 .I username\c
 \&\|]\|]
+.RB "[\|" \-\-rhost
+.I hostname
+.RB "[\|" \-\-login
+.I username\c
+\&\|]\|]
 .RB "[\|" \-\-vsl\-library
 .I library\c
 \&\|]
 .RB "[\|" \-\-vsl\-path
 .I path\c
 \&\|]
-.RB "[\|" \-\-help "\|]"
 .RB "[\|" \-\-exec\-window "\|]"
 .RB "[\|" \-\-no\-exec\-window "\|]"
 .RB "[\|" \-\-attach\-windows "\|]"
 .RB "[\|" \-\-separate\-windows "\|]"
-.RB "[\|" \-\-scrolled\-graph "\|]"
-.RB "[\|" \-\-panned\-graph "\|]"
+.RB "[\|" \-\-scrolled\-graph\-editor "\|]"
+.RB "[\|" \-\-panned\-graph\-editor "\|]"
 .RB "[\|" \-\-trace "\|]"
+.RB "[\|" \-\-nw "\|]"
 .RB "[\|" \-\-tty "\|]"
 .RB "[\|" \-\-fullname "\|]"
 .RB "[\|" \-\-version "\|]"
 .RB "[\|" \-\-configuration "\|]"
+.RB "[\|" \-\-check\-configuration "\|]"
 .RB "[\|" \-\-manual "\|]"
 .RB "[\|" \-\-license "\|]"
 .RB "[\|"\c
@@ -1902,8 +1907,8 @@ This is much more comfortable, but may be incompatible with your Motif
 toolkit.  To set up \s-2@DDD@\s+2 such that it uses panners by
 default, set the `\fBData Scrolling\fR' option to `\fBPanner\fR'.
 This change takes only effect after you have saved options and
-restarted \s-2@DDD@\s+2.  See also the `\fB\-\-panned\-graph\fR' and
-`\fB\-\-scrolled\-graph\fR' options, below.
+restarted \s-2@DDD@\s+2.  See also the `\fB\-\-panned\-graph\-editor\fR' and
+`\fB\-\-scrolled\-graph\-editor\fR' options, below.
 .PP
 By default, \s-2@DDD@\s+2 runs with \s-2GDB\s+2 as inferior debugger.
 To change this default, set the `\fBDebugger Type\fR' option to
@@ -2154,12 +2159,15 @@ Whether to cache source files (`\fBtrue\fR', default) or not
 .TP
 .B "disassemble (\fPclass\fB Disassemble)"
 If this is `\fBtrue\fR', the source code is automatically
-disassembled.  The default is `\fBfalse\fR'.
+disassembled.  The default is `\fBfalse\fR'.  See also the
+`\fB\-\-disassemble\fR' and `\fB\-\-no\-disassemble\fR' options,
+below.
 .TP
 .B "displayGlyphs (\fPclass\fB DisplayGlyphs)"
 If this is `\fBtrue\fR', the current execution position and breakpoints
 are displayed as glyphs; otherwise, they are shown through characters
-in the text.  The default is `\fBtrue\fR'.
+in the text.  The default is `\fBtrue\fR'.  See also the
+`\fB\-\-glyphs\fR' and `\fB\-\-no\-glyphs\fR' options, below.
 .TP
 .B "findWordsOnly (\fPclass\fB FindWordsOnly)"
 If this is `\fBtrue\fR' (default), the `\fBFind\fR' commands find
@@ -2185,7 +2193,9 @@ The number of columns used for the code line number display (default:
 What shall \s-2@DDD@\s+2 use if the graph gets too large to be
 displayed?  If this is `\fBtrue\fR', an Athena panner is used (a kind
 of two-directional scrollbar).  If this is `\fBfalse\fR' (default),
-two Motif scrollbars are used.
+two Motif scrollbars are used.  See also the
+`\fB\-\-scrolled\-graph\-editor\fR' and `\fB\-\-panned\-graph\-editor\fR'
+options, below.
 .TP
 .B "paperSize (\fPclass\fB PaperSize)"
 The paper size used for printing, in format \fIWIDTH\fR x
@@ -3162,7 +3172,7 @@ Enable button tips.
 .B \-\-configuration
 Show the \s-2@DDD@\s+2 configuration settings and exit.
 .TP
-.B \-\-check-configuration
+.B \-\-check\-configuration
 Check the \s-2@DDD@\s+2 environment (in particular, the X configuration),
 report any possible problem causes and exit.
 .TP
@@ -3182,6 +3192,10 @@ For instance, to pass a `\fB\-d \fIdirectory\fR' option to \s-2XDB\s+2, use:
 .br
 .sp
 .TP
+.B \-\-disassemble
+Disassemble the source code.  See also the `\fB\-\-no\-disassemble\fR'
+option, below.
+.TP
 .B \-\-exec\-window
 Run the debugged program in a specially created execution window.
 This is useful for programs that have special terminal requirements
@@ -3196,6 +3210,10 @@ suitable for debugger front-ends.
 .TP
 .B \-\-gdb
 Run the \s-2GDB\s+2 debugger as inferior debugger.
+.TP
+.B \-\-glyphs
+Display the current execution position and breakpoints as glyphs.
+See also the `\fB\-\-no\-glyphs\fR' option, below.
 .TP
 .B \-\-help
 Give a list of frequently used options.  Show options of the
@@ -3217,21 +3235,31 @@ Show this manual page and exit.
 .B \-\-no\-button\-tips
 Disable button tips.
 .TP
+.B \-\-no\-disassemble
+Do not disassemble the source code.
+.TP
 .B \-\-no\-exec\-window
 Do not run the debugged program in a specially created execution
 window; use the debugger console instead.  Useful for programs that have
 little terminal input/output, or for remote debugging.
 .TP
+.B \-\-no\-glyphs
+Display the current execution position and breakpoints as text
+characters.  Do not use glyphs.
+.TP
+.B \-\-no\-value\-tips
+Disable value tips.
+.TP
 .B \-\-nw
 Do not use the X window interface.  Start the inferior debugger on
 the local host.
 .TP
-.B \-\-panned\-graph
+.B \-\-panned\-graph\-editor
 Use an Athena panner to scroll the data window.  Most people prefer
 panners on scroll bars, since panners allow two-dimensional scrolling.
 However, the panner is off by default, since some Motif
 implementations do not work well with Athena widgets.  See also
-\fB\-\-scrolled\-graph\fR, below.
+\fB\-\-scrolled\-graph\-editor\fR, below.
 .TP
 .B \-\-rhost \fIhostname\fR
 Run the inferior debugger interactively on the remote host \fIhostname\fR.
@@ -3241,10 +3269,10 @@ See `\fBREMOTE DEBUGGING\fR', above.
 Separate the console, source and data windows.  See also the
 `\fB\-\-attach\fR' options, above.
 .TP
-.B \-\-scrolled\-graph
+.B \-\-scrolled\-graph\-editor
 Use Motif scroll bars to scroll the data window.  This is the default
 in most \s-2@DDD@\s+2 configurations.  See also
-\fB\-\-panned\-graph\fR, above.
+\fB\-\-panned\-graph\-editor\fR, above.
 .TP
 .B \-\-status\-at\-bottom
 Place the status line at the bottom of the source window.
@@ -3271,6 +3299,9 @@ Show both interaction and shell commands.
 Enable \s-2TTY\s+2 interface, taking additional debugger commands
 from standard input and forwarding debugger output on standard output.
 Current positions are issued in a format readable for humans.
+.TP
+.B \-\-value\-tips
+Enable value tips.
 .TP
 .B \-\-version
 Show the \s-2@DDD@\s+2 version and exit.
