@@ -18,14 +18,14 @@ This is the third beta release of DDD 3.1, fixing some minor bugs:
 - Creating large plots could freeze DDD under certain circumstances.
 - The builtin plot is much faster.
 - The `configure' option `--without-xpm' had no effect.
+- If running DDD on a remote machine, and the remote shell sets
+  DISPLAY (such as `ssh'), don't override the DISPLAY value.
 
 
 There are also some minor new features:
 
 - The maximum size of the undo buffer can be configured at run-time.
-- Turning the `setRemoteDisplay' resource off disables DISPLAY being
-  set over remote channels.  This is useful with remote shells that
-  set DISPLAY on their own, such as `ssh'.
+
 
 See the DDD ChangeLog for more details.
 

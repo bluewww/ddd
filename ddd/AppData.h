@@ -173,8 +173,6 @@
 #define XtCRHostInitCommands     "RHostInitCommands"
 #define XtNrshCommand            "rshCommand"
 #define XtCRshCommand            "RshCommand"
-#define XtNsetRemoteDisplay      "setRemoteDisplay"
-#define XtCSetRemoteDisplay      "SetRemoteDisplay"
 #define XtNlistExecCommand       "listExecCommand"
 #define XtCListExecCommand       "ListExecCommand"
 #define XtNlistSourceCommand     "listSourceCommand"
@@ -456,7 +454,6 @@ struct AppData {
     String    debugger_host_login;
     String    rhost_init_commands;
     String    rsh_command;
-    Boolean   set_remote_display;
     String    list_exec_command;
     String    list_source_command;
     String    list_core_command;

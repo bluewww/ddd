@@ -3464,8 +3464,7 @@ with the `\fB\-\-trace\fR' option.  This prints the shell commands
 issued by \s-1@DDD@\s+1 on standard error.
 .br
 .IP \(bu 2
-See also the `\fBrshCommand\fR' and `\fBsetRemoteDisplay\fR'
-resources, below.
+See also the `\fBrshCommand\fR' resource, below.
 .\"
 .\"
 .SS "Using @DDD@ with a Remote Program"
@@ -4986,12 +4985,6 @@ suppressed, too.
 The remote shell command to invoke \s-1TTY\s+1-based commands on
 remote hosts.  Usually, `\fBremsh\fR', `\fBrsh\fR', `\fBssh\fR', or
 `\fBon\fR'.
-.TP
-.B "setRemoteDisplay (\fPclass\fB SetRemoteDisplay)"
-Whether to pass the `\fBDISPLAY\fR' environment variable to commands
-on remote hosts.  This may be set to `\fNoff\fR' if the remote shell
-command sets `\fBDISPLAY\fR' (such as `\fBssh\fR') and you do not want
-\s-1@DDD@\s+1 to override this setting.  Default is `\fBon\fR'.
 .TP
 .B "termCommand (\fPclass\fB TermCommand)"
 The command to invoke a separate \s-1TTY\s+1 for showing the

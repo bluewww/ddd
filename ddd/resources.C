@@ -815,16 +815,6 @@ XtResource ddd_resources[] = {
     },
 
     {
-        XtNsetRemoteDisplay,
-	XtCSetRemoteDisplay,
-	XtRBoolean,
-	sizeof(Boolean),
-	XtOffsetOf(AppData, set_remote_display),
-	XtRImmediate,
-	XtPointer(True)
-    },
-
-    {
         XtNlistExecCommand,
 	XtCListExecCommand,
 	XtRString,
