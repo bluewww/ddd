@@ -109,7 +109,7 @@ extern "C" {
 
 
 // Do we want to define our own @STRING@ to font converters?
-#define OWN_FONT_CONVERTERS 1
+#define OWN_FONT_CONVERTERS 0
 
 // Declarations
 
