@@ -166,6 +166,26 @@ XtResource ddd_resources[] = {
 	XtPointer("")
     },
 
+    { 
+	XtNjdbInitCommands, 
+	XtCInitCommands, 
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, jdb_init_commands), 
+	XtRString,
+	XtPointer("")
+    },
+
+    { 
+	XtNjdbSettings, 
+	XtCSettings, 
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, jdb_settings), 
+	XtRString,
+	XtPointer("")
+    },
+
     {
 	XtNrestartCommands,
 	XtCInitCommands,
