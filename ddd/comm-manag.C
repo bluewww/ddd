@@ -1567,6 +1567,12 @@ void send_gdb_command(string cmd, Widget origin,
 	    cmds += "info breakpoints";
 	if (extra_data->refresh_where)
 	    cmds += "where";
+	if (extra_data->refresh_data)
+	    extra_data->n_refresh_data = 
+		data_disp->add_refresh_data_commands(cmds);
+	if (extra_data->refresh_user)
+	    extra_data->n_refresh_user = 
+		data_disp->add_refresh_user_commands(cmds);
 	if (extra_data->refresh_disp_info)
 	    cmds += gdb->info_display_command();
 	break;
@@ -1576,6 +1582,12 @@ void send_gdb_command(string cmd, Widget origin,
 	    cmds += gdb->pwd_command();
 	if (extra_data->refresh_breakpoints)
 	    cmds += "L";
+	if (extra_data->refresh_data)
+	    extra_data->n_refresh_data = 
+		data_disp->add_refresh_data_commands(cmds);
+	if (extra_data->refresh_user)
+	    extra_data->n_refresh_user = 
+		data_disp->add_refresh_user_commands(cmds);
 	break;
     }
 
