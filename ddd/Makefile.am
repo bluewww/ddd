@@ -649,6 +649,9 @@ LIBXM = @XM_LIBS@
 # Use this alternative for building `semistatic' executables
 # where Motif libraries are statically linked in.
 # LIBXM = -Wl,-Bstatic @XM_LIBS@ -Wl,-Bdynamic
+# Libtool has a bug and moves -Wl,xxx before any other link flags.
+# The following workaround should work:
+# LIBXM = -Wl,$(X_LDFLAGS) -Wl,-Bstatic -Wl,@XM_LIBS@ -Wl,-Bdynamic
 
 # Athena libraries.  (-lXaw -lXmu)
 LIBXAW = @XAW_LIBS@
