@@ -1047,13 +1047,13 @@ ddd.man: ddd.man.in config.status
 # re-created after each configuration.
 ddd.man.txt: ddd.man.in configure.in
 	$(MAKE) ddd.man
-	$(NROFF) -man ddd.man > $@
+	-$(NROFF) -man ddd.man > $@
 
 # ddd.man.huff.C does NOT depend on huffencode since we don't want it
 # to get re-created after each configuration.
 ddd.man.huff.C: ddd.man.txt
 	$(MAKE) huffencode
-	./huffencode < ddd.man.txt > $@
+	-./huffencode < ddd.man.txt > $@
 
 # `make depend' fails to find this dependency :-(
 show.o: ddd.man.huff.C huffdecode.C
