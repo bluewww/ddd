@@ -115,7 +115,7 @@ with @DDD{}} for @DDD{} Version @value{VERSION}.
 
 @noindent
 @group
-Copyright @copyright{} 2000 Universität Passau @*
+Copyright @copyright{} 2001 Universität Passau @*
 Lehrstuhl für Software-Systeme @*
 Innstraße 33 @*
 D-94032 Passau @*
@@ -175,7 +175,7 @@ Send bug reports to @email{bug-ddd@@gnu.org}. @*
 @end tex
 
 @vskip 0pt plus 1filll
-Copyright @copyright{} 2000 Universität Passau @*
+Copyright @copyright{} 2001 Universität Passau @*
 Lehrstuhl für Software-Systeme @*
 Innstraße 33 @*
 D-94032 Passau @*
@@ -688,7 +688,7 @@ Using @value{DDD} with GDB
 
 @noindent
 @group
-Copyright @copyright{} 2000 Universität Passau @*
+Copyright @copyright{} 2001 Universität Passau @*
 Lehrstuhl für Software-Systeme @*
 Innstraße 33 @*
 D-94032 Passau @*
@@ -1100,7 +1100,7 @@ information as well as a @GDB{} prompt.@footnote{Re-invoke @DDD{} with
 @example
 GNU @value{DDD} Version @value{VERSION}, by Dorothea Lütkehaus and Andreas Zeller.
 Copyright @copyright{} 1999 Technische Universität Braunschweig, Germany.
-Copyright @copyright{} 1999 Universität Passau, Germany.
+Copyright @copyright{} 2001 Universität Passau, Germany.
 Reading symbols from sample@dots{}done.
 (gdb) 
 @end example

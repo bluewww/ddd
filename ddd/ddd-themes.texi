@@ -104,7 +104,7 @@ This is the @value{EDITION} Edition, @value{DATE}, of @cite{Writing
 
 @noindent
 @group
-Copyright @copyright{} 2000 Universität Passau @*
+Copyright @copyright{} 2001 Universität Passau @*
 Lehrstuhl für Software-Systeme @*
 Innstraße 33 @*
 D-94032 Passau @*
@@ -164,7 +164,7 @@ Send bug reports to @email{bug-ddd@@gnu.org}. @*
 @end tex
 
 @vskip 0pt plus 1filll
-Copyright @copyright{} 2000 Universität Passau @*
+Copyright @copyright{} 2001 Universität Passau @*
 Lehrstuhl für Software-Systeme @*
 Innstraße 33 @*
 D-94032 Passau @*
@@ -238,7 +238,7 @@ lists all the lower level nodes in the document.
 
 @noindent
 @group
-Copyright @copyright{} 2000 Universität Passau @*
+Copyright @copyright{} 2001 Universität Passau @*
 Lehrstuhl für Software-Systeme @*
 Innstraße 33 @*
 D-94032 Passau @*

@@ -2,7 +2,7 @@
 // DDD main program (and much more)
 
 // Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
-// Copyright (C) 1999-2000 Universitaet Passau, Germany.
+// Copyright (C) 1999-2001 Universitaet Passau, Germany.
 // Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
 // and Andreas Zeller <zeller@gnu.org>.
 // 
@@ -7127,7 +7127,7 @@ static void setup_version_info()
 		    "by Dorothea L\374tkehaus and Andreas Zeller.\n"
 		    "Copyright \251 1995-1999 "
 		    "Technische Universit\344t Braunschweig, Germany.\n"
-		    "Copyright \251 1999-2000 "
+		    "Copyright \251 1999-2001 "
 		    "Universit\344t Passau, Germany.\n");
 #endif
 }
