@@ -1123,6 +1123,18 @@ void SourceView::clear_file_cache()
     file_cache = empty;
 }
 
+void SourceView::reload()
+{
+    // Reload current file
+    string pos = line_of_cursor(false);
+    string file = pos.before(':');
+    string line = pos.after(':');
+
+    StatusDelay delay("Reloading " + quote(file));
+
+    read_file(file, atoi(line), true);
+}
+
 void SourceView::read_file (string file_name, 
 			    int initial_line,
 			    bool force_reload)
@@ -1897,8 +1909,11 @@ SourceView::SourceView (XtAppContext app_context,
 // ***************************************************************************
 //
 
-void SourceView::show_execution_position (string position)
+void SourceView::show_execution_position (string position, bool stopped)
 {
+    if (stopped)
+	at_lowest_frame = true;
+
     if (position == "")
     {
 	if (!display_glyphs)
@@ -1919,8 +1934,6 @@ void SourceView::show_execution_position (string position)
 	last_pos = last_start_highlight = last_end_highlight = 0;
 	return;
     }
-
-    at_lowest_frame = true;
 
     string file_name = current_file_name;
 
@@ -3858,7 +3871,7 @@ Widget SourceView::create_glyph(Widget form_w,
     XtSetArg(args[arg], XmNmappedWhenManaged, False);         arg++;
     XtSetArg(args[arg], XmNtopAttachment,     XmATTACH_FORM); arg++;
     XtSetArg(args[arg], XmNleftAttachment,    XmATTACH_FORM); arg++;
-    Widget w = XmCreatePushButton(form_w, name, args, arg);
+    Widget w = verify(XmCreatePushButton(form_w, name, args, arg));
     XtRealizeWidget(w);
     XtManageChild(w);
 
@@ -4465,10 +4478,14 @@ void SourceView::refresh_codeWorkProc(XtPointer client_data, XtIntervalId *)
     }
 }
 
+static string last_shown_pc;
+
 // Show program counter location PC
 void SourceView::show_pc(const string& pc, XmHighlightMode mode)
 {
     // clog << "Showing PC " << pc << "\n";
+
+    last_shown_pc = pc;
 
     XmTextPosition pos = find_pc(pc);
 
@@ -4538,7 +4555,6 @@ void SourceView::show_pc(const string& pc, XmHighlightMode mode)
     if (mode == XmHIGHLIGHT_SELECTED)
     {
 	last_execution_pc = pc;
-	at_lowest_frame = true;
 
 	if (!display_glyphs)
 	{
@@ -4593,10 +4609,12 @@ void SourceView::set_disassemble(bool set)
 	else
 	{
 	    XtManageChild(code_form_w);
-	    if (last_execution_pc == "")
-		lookup(line_of_cursor());
-	    else
+	    if (last_execution_pc != "")
 		show_pc(last_execution_pc, XmHIGHLIGHT_SELECTED);
+	    else if (last_shown_pc != "")
+		show_pc(last_shown_pc);
+	    else
+		lookup(line_of_cursor());
 	}
     }
 }

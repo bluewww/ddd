@@ -306,7 +306,9 @@ public:
 
     // Set current execution position, based on the GDB position info
     // POSITION; no arg means clear current position.
-    static void show_execution_position (string position = "");
+    // STOPPED indicates that the program just stopped.
+    static void show_execution_position (string position = "",
+					 bool stopped = false);
 
     // Set cursor position, based on the GDB position info POSITION
     static void show_position           (string position);
@@ -356,6 +358,9 @@ public:
     static void read_file(string file_name,
 			  int initial_line = 1,
 			  bool force_reload = false);
+
+    // Reload current file
+    static void reload();
 
     // Lookup previous/next position
     static void go_back();
