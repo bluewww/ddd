@@ -1462,7 +1462,7 @@ static bool handle_graph_cmd(string& cmd, const string& where_answer,
 
 	for (;;)
 	{
-	    read_leading_blanks(rcmd);
+	    strip_leading_space(rcmd);
 
 #if RUNTIME_REGEX
 	    static regex rxdep("[ \t]+no[ \t]+tnedneped[ \t]+");
@@ -1479,8 +1479,7 @@ static bool handle_graph_cmd(string& cmd, const string& where_answer,
 	    {
 		// Check for `dependent on DISPLAY'
 		depends_on = reverse(rcmd.before(dep_index));
-		read_leading_blanks(depends_on);
-		strip_final_blanks(depends_on);
+		strip_space(depends_on);
 
 		rcmd = rcmd.after(dep_index);
 		rcmd = rcmd.after("tnedneped");
@@ -1491,8 +1490,7 @@ static bool handle_graph_cmd(string& cmd, const string& where_answer,
 	    {
 		// Check for `[now or] when in FUNC'
 		when_in = reverse(rcmd.before(when_index));
-		read_leading_blanks(when_in);
-		strip_final_blanks(when_in);
+		strip_space(when_in);
 		rcmd = rcmd.from(when_index);
 
 		int matchlen = rxwhen.match(rcmd.chars(), rcmd.length());
@@ -1578,8 +1576,7 @@ bool is_known_command(const string& answer)
 {
     string ans = downcase(answer);
 
-    read_leading_blanks(ans);
-    strip_final_blanks(ans);
+    strip_space(ans);
 
     // In longer messages (help texts and such), only check the first
     // and last line.
@@ -1887,7 +1884,7 @@ void plusOQAC (const StringArray& answers,
 	file = answers[qu_count++];
 
 	// Simple sanity check
-	strip_final_blanks(file);
+	strip_trailing_space(file);
 	if (file.contains('\n'))
 	    file = file.before('\n');
 	if (file.contains(' '))

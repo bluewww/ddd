@@ -112,7 +112,7 @@ int get_positive_nr (const string& s)
 }
 
 // Remove leading blanks from S
-void read_leading_blanks (string& s)
+void strip_leading_space (string& s)
 {
     int i = 0;
     while (i < int(s.length()) && isspace(s[i]))
@@ -146,7 +146,7 @@ int read_positive_nr (string& s)
 }
 
 // Strip final characters
-void strip_final_blanks(string& text)
+void strip_trailing_space(string& text)
 {
     int index = text.length() - 1;
     while (index >= 0 && isspace(text[index]))
@@ -159,7 +159,7 @@ void strip_final_blanks(string& text)
 }
 
 // Strip final characters
-void strip_final_newlines(string& text)
+void strip_trailing_newlines(string& text)
 {
     int index = text.length() - 1;
     while (index >= 0 && text[index] == '\n')

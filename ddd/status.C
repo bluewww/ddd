@@ -542,7 +542,7 @@ void set_status_from_gdb(const string& text)
     if (idx >= 0)
 	message = message.before(idx);
 
-    strip_final_newlines(message);
+    strip_trailing_newlines(message);
     if (message == "" && text.contains('\n'))
 	message = text;
 
@@ -561,7 +561,7 @@ void set_status_from_gdb(const string& text)
 	    message = message.before('\n');
     }
 
-    strip_final_newlines(message);
+    strip_trailing_newlines(message);
     if (message == "")
 	return;
 

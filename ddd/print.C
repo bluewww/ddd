@@ -233,7 +233,7 @@ void graphQuickPrintCB(Widget w, XtPointer client_data, XtPointer)
 	string f = file;
 	XtFree(file);
 
-	strip_final_blanks(f);
+	strip_trailing_space(f);
 	if (f == "")
 	    return;
 

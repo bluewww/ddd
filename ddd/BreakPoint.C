@@ -102,7 +102,7 @@ bool BreakPoint::update (string& info_output)
     if (gdb->type() != JDB)
     {
 	// Read leading breakpoint number
-	read_leading_blanks(info_output);
+	strip_leading_space(info_output);
 	string number_str = read_nr_str (info_output);
 	int number = get_positive_nr (number_str);
 	if (number < 0)
@@ -119,7 +119,7 @@ bool BreakPoint::update (string& info_output)
 	    changed = true;
 	}
     }
-    read_leading_blanks (info_output);
+    strip_leading_space (info_output);
 
     switch(gdb->type())
     {
@@ -256,7 +256,7 @@ bool BreakPoint::update (string& info_output)
 		{
 		    string line = lines[i];
 		    bool save_info = true;
-		    read_leading_blanks(line);
+		    strip_leading_space(line);
 
 		    if (line.contains("ignore next ", 0))
 		    {
@@ -340,7 +340,7 @@ bool BreakPoint::update (string& info_output)
 		|| info_output.contains ("stopped ", 0))
 	    {
 		info_output = info_output.after(rxblanks_or_tabs);
-		read_leading_blanks (info_output);
+		strip_leading_space (info_output);
 		if (info_output.contains ("at ", 0))
 		{
 		    info_output = info_output.after(rxblanks_or_tabs);
@@ -442,7 +442,7 @@ bool BreakPoint::update (string& info_output)
 		if (options.contains(" -count "))
 		{
 		    string count = options.after(" -count ");
-		    read_leading_blanks(count);
+		    strip_leading_space(count);
 		    if (count.contains(' '))
 			count = count.before(' ');
 
@@ -482,13 +482,13 @@ bool BreakPoint::update (string& info_output)
 	    if (info_output.contains(':', 0))
 		info_output = info_output.after(0);
 
-	    read_leading_blanks(info_output);
+	    strip_leading_space(info_output);
 
 	    // Skip `count: N'
 	    if (info_output.contains("count:", 0))
 	    {
 		info_output = info_output.after("count:");
-		read_leading_blanks(info_output);
+		strip_leading_space(info_output);
 		string count = info_output.before(rxblanks_or_tabs);
 		info_output = info_output.after(rxblanks_or_tabs);
 
@@ -543,7 +543,7 @@ bool BreakPoint::update (string& info_output)
 
 	    // Examine commands for condition
 	    string commands = info_output;
-	    read_leading_blanks(commands);
+	    strip_leading_space(commands);
 	    if (commands.contains('{', 0))
 	    {
 		// A condition has the form `{if COND {} {Q; c}}'.
@@ -551,7 +551,7 @@ bool BreakPoint::update (string& info_output)
 		{
 		    string cond = commands.after("{if ");
 		    cond = cond.before('{');
-		    strip_final_blanks(cond);
+		    strip_space(cond);
 		    if (cond != mycondition)
 		    {
 			mycondition = cond;

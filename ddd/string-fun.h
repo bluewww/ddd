@@ -60,8 +60,8 @@ int get_nr (const string& s);
 int get_positive_nr (const char* s);
 int get_positive_nr (const string& s);
 
-// Remove leading blanks from S
-void read_leading_blanks (string& value);
+// Remove leading whitespace
+void strip_leading_space (string& value);
 
 // Remove and return a leading integer from S, or "" if none
 string read_nr_str (string& s);
@@ -69,9 +69,16 @@ string read_nr_str (string& s);
 // Remove and return a leading integer from S, or 0 if none
 int read_positive_nr (string& s);
 
-// Strip final characters
-void strip_final_blanks(string& text);
-void strip_final_newlines(string& text);
+// Strip trailing whitespace
+void strip_trailing_space(string& text);
+void strip_trailing_newlines(string& text);
+
+// Strip leading & trailing whitespace
+inline void strip_space(string& text)
+{
+    strip_leading_space(text);
+    strip_trailing_space(text);
+}
 
 #endif // _DDD_string_fun_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

@@ -104,7 +104,7 @@ string dbx_lookup(const string& func_name, bool silent)
 	if (line > 0)
 	{
 	    file = gdb_question("file");
-	    strip_final_blanks(file);
+	    strip_trailing_space(file);
 	}
 	break;
 
@@ -124,7 +124,7 @@ string dbx_lookup(const string& func_name, bool silent)
 	    file = reply.before(':');
 	    reply = reply.after(':'); // Skip file
 	    reply = reply.after(':'); // Skip function
-	    read_leading_blanks(reply);
+	    strip_leading_space(reply);
 	    string line_s = reply.before(':');
 	    line = atoi(line_s);
 	}
@@ -171,11 +171,11 @@ string dbx_path(const string& source)
 	path = gdb_question("file");
     }
 
-    read_leading_blanks(path);
+    strip_leading_space(path);
     if (!path.contains('/', 0) || path.contains(' '))
 	path = source;		// Sanity check
 
-    strip_final_blanks(path);
+    strip_trailing_space(path);
     return path;
 }
 

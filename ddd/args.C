@@ -84,7 +84,7 @@ static string last_cd_argument;
 static void add_argument(string arg, StringArray& arguments, 
 			 string& last, bool& updated)
 {
-    strip_final_blanks(arg);
+    strip_trailing_space(arg);
     while (arg.length() > 0 && isspace(arg[0]))
 	arg = arg.after(0);
 
@@ -431,7 +431,7 @@ void add_running_arguments(string& cmd)
     if (gdb->type() != JDB || !is_run_cmd(cmd))
 	return;
 
-    read_leading_blanks(cmd);
+    strip_leading_space(cmd);
     string args = cmd.after(rxwhite);
     if (args == "")
     {

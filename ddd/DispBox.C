@@ -237,8 +237,7 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
 	else
 	{
 	    string v = dv->value();
-	    read_leading_blanks(v);
-	    strip_final_blanks(v);
+	    strip_space(v);
 	    untabify(v);
 
 	    int n = v.freq('\n');

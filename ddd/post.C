@@ -89,7 +89,7 @@ void YnCB(Widget dialog,
 
 Widget post_gdb_yn(string question, Widget w)
 {
-    strip_final_blanks(question);
+    strip_trailing_space(question);
     if (question == "")
 	return 0;
 
@@ -171,7 +171,7 @@ void unpost_gdb_busy()
 
 Widget post_gdb_died(string reason, int gdb_status, Widget w)
 {
-    strip_final_blanks(reason);
+    strip_trailing_space(reason);
 
     int exit_status = EXIT_FAILURE;
     if (WIFEXITED(gdb_status))
@@ -265,7 +265,7 @@ static void GDBOutCB(XtPointer client_data, XtIntervalId *)
 
 Widget post_gdb_message(string text, Widget w)
 {
-    strip_final_blanks(text);
+    strip_trailing_space(text);
     if (text == NO_GDB_ANSWER)
 	return 0;
 
@@ -324,7 +324,7 @@ Widget post_gdb_message(string text, Widget w)
 
 Widget post_error(string text, String name, Widget w)
 {
-    strip_final_blanks(text);
+    strip_trailing_space(text);
     if (ddd_is_exiting)
     {
 	cerr << ddd_NAME << ": " << text << "\n";
@@ -368,7 +368,7 @@ Widget post_error(string text, String name, Widget w)
 
 Widget post_warning(string text, String name, Widget w)
 {
-    strip_final_blanks(text);
+    strip_trailing_space(text);
     if (ddd_is_exiting)
     {
 	cerr << ddd_NAME << ": warning: " << text << "\n";

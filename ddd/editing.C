@@ -524,7 +524,7 @@ void delete_or_controlAct(Widget w, XEvent *e,
 {
     clear_isearch();
     string input = current_line();
-    strip_final_newlines(input);
+    strip_trailing_newlines(input);
     if (input == "")
 	XtCallActionProc(w, "gdb-control", e, args, *num_args);
     else

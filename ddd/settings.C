@@ -341,8 +341,7 @@ void process_show(string command, string value, bool init)
 	value = value.after(base);
 	if (value.contains('\n'))
 	    value = value.before('\n');
-	read_leading_blanks(value);
-	strip_final_blanks(value);
+	strip_space(value);
     }
 
     if (value.contains('\n'))
@@ -545,19 +544,19 @@ static void strip_leading(string& doc, const string& key)
 {
     if (doc.contains(key, 0))
 	doc = doc.after(key);
-    read_leading_blanks(doc);
+    strip_leading_space(doc);
 }
 
 static void strip_from(string& doc, const string& key)
 {
     if (doc.contains(key))
 	doc = doc.before(key);
-    read_leading_blanks(doc);
+    strip_leading_space(doc);
 }
 
 static void munch_doc(string& doc)
 {
-    read_leading_blanks(doc);
+    strip_leading_space(doc);
 
     // Sun DBX 3.0
     strip_leading(doc, "#");
@@ -760,17 +759,17 @@ static string get_dbx_help(string dbxenv, string base, int width)
 {
     string dbx_help = _get_dbx_help(dbxenv, base);
     dbx_help = dbx_help.after(base);
-    read_leading_blanks(dbx_help);
+    strip_leading_space(dbx_help);
 
     if (dbx_help.contains("  - "))
     {
 	dbx_help = dbx_help.after("  - ");
-	read_leading_blanks(dbx_help);
+	strip_leading_space(dbx_help);
     }
     else if (dbx_help.contains(" # "))
     {
 	dbx_help = dbx_help.after(" # ");
-	read_leading_blanks(dbx_help);
+	strip_leading_space(dbx_help);
     }
 
     // Remove remaining `# ' prefixes (Solaris DBX)
@@ -866,7 +865,7 @@ static string get_dbx_doc(string dbxenv, string base)
     
     // Generic help
     string dbx_doc = get_dbx_help(dbxenv, base, -1);
-    read_leading_blanks(dbx_doc);
+    strip_leading_space(dbx_doc);
 
     dbx_doc.gsub("etc. ", "etc ");
     if (dbx_doc.contains(". "))
@@ -1257,8 +1256,7 @@ static void add_button(Widget form, int& row, DebuggerType type,
 		    option = option.before(separator);
 		options = options.after(separator);
 
-		read_leading_blanks(option);
-		strip_final_blanks(option);
+		strip_space(option);
 
 		string label = option;
 		if (gdb->type() == GDB && option.contains("  "))

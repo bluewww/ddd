@@ -115,10 +115,10 @@ static void fetch_function(const string& answer, int index, string& buffer,
 
     // The function name is the word before the opening parenthesis
     line = line.before('(');
-    strip_final_blanks(line);
+    strip_trailing_space(line);
     int ws_index = line.index(' ', -1) + 1;
     line = line.from(ws_index);
-    read_leading_blanks(line);
+    strip_leading_space(line);
     if (line != "" && line.contains(rxidentifier, 0))
 	buffer = line;
 }
@@ -659,7 +659,7 @@ void PosBuffer::filter (string& answer)
 		string line = answer.from(index);
 		if (line.contains('\n'))
 		    line = line.before('\n');
-		strip_final_blanks(line);
+		strip_trailing_space(line);
 		
 		// XDB uses a format like `ctest.c: main: 4: int a = 33;'
 #if RUNTIME_REGEX
@@ -680,8 +680,8 @@ void PosBuffer::filter (string& answer)
 		    line = line.after(':');
 		    string line_no = line.before(':');
 		    
-		    read_leading_blanks(func);
-		    read_leading_blanks(line_no);
+		    strip_leading_space(func);
+		    strip_leading_space(line_no);
 		    line_no = line_no.through(rxint);
 		    
 		    pos_buffer   = file + ":" + line_no;
@@ -727,7 +727,7 @@ void PosBuffer::filter (string& answer)
 		string line = answer.from(index);
 		if (line.contains('\n'))
 		    line = line.before('\n');
-		strip_final_blanks(line);
+		strip_trailing_space(line);
 
 		// Having reached a breakpoint, JDB uses a format like
 		// `(HelloWorld:3)'.
@@ -763,7 +763,7 @@ void PosBuffer::filter (string& answer)
 		    {
 			string class_name = line.from(class_index);
 			class_name = class_name.before('(');
-			strip_final_blanks(class_name);
+			strip_trailing_space(class_name);
 			if (class_name.contains('.') && 
 			    class_name.matches(rxchain))
 			{

@@ -83,8 +83,8 @@ void wm_set_icon(Widget shell, Pixmap icon, Pixmap mask)
 void wm_set_name(Display *display, Window shell_window,
 		 string title, string icon)
 {
-    strip_final_blanks(title);
-    strip_final_blanks(icon);
+    strip_trailing_space(title);
+    strip_trailing_space(icon);
 
     if (title != "")
 	XStoreName(display, shell_window, (String)title);
@@ -94,8 +94,8 @@ void wm_set_name(Display *display, Window shell_window,
 
 void wm_set_name(Widget shell, string title, string icon)
 {
-    strip_final_blanks(title);
-    strip_final_blanks(icon);
+    strip_trailing_space(title);
+    strip_trailing_space(icon);
 
     XtVaSetValues(shell,
 		  XmNiconName, (char *)icon,

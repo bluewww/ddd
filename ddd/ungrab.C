@@ -110,8 +110,7 @@ static string gdb_value(const string& expr)
     if (val.contains('('), 0)
 	val = val.after(')');
 
-    read_leading_blanks(val);
-    strip_final_blanks(val);
+    strip_space(val);
     return val;
 }
 

@@ -212,7 +212,7 @@ static string gdbHelpName(Widget widget)
 {
     string name = XtName(widget);
     name.gsub('_', ' ');
-    strip_final_blanks(name);
+    strip_trailing_space(name);
 
     return name;
 }
@@ -293,8 +293,7 @@ static string gdbHelp(string command)
 	help = gdb_question("help " + command, help_timeout, true);
     }
 
-    read_leading_blanks(help);
-    strip_final_blanks(help);
+    strip_space(help);
 
     if (help != NO_GDB_ANSWER)
 	help_cache[command] = help;
@@ -359,7 +358,7 @@ static string gdbSettingsValue(string command)
 	    string value = gdb_question("show " + command.after(rxwhite));
 	    if (!value.contains("current"))
 		value.gsub(" is ", " is currently ");
-	    strip_final_blanks(value);
+	    strip_trailing_space(value);
 	    return value;
 	}
 	break;
@@ -431,8 +430,7 @@ string gdbValue(const string& expr)
 	value = gdb_question(gdb->print_command(expr), help_timeout);
 	gdb->addHandler(ReplyRequired, gdb_selectHP);
 
-	read_leading_blanks(value);
-	strip_final_blanks(value);
+	strip_space(value);
     }
 
     if (value != NO_GDB_ANSWER)
@@ -591,14 +589,14 @@ static MString gdbDefaultButtonText(Widget widget, XEvent *,
     if (tip.length() > 80)
 	tip = tip.before(80);
 
-    read_leading_blanks(tip);
+    strip_leading_space(tip);
     if (tip.contains(help_name, 0))
     {
 	string t = tip.after(help_name);
 	if (t != "" && !isalpha(t[0]))
 	{
 	    tip = t;
-	    read_leading_blanks(tip);
+	    strip_leading_space(tip);
 	}
     }
     
@@ -841,8 +839,7 @@ void set_buttons(Widget buttons, String _button_list, bool manage)
 	XtCallbackProc callback = gdbCommandCB;
 
 	string name = commands[i];
-	read_leading_blanks(name);
-	strip_final_blanks(name);
+	strip_space(name);
 
 	if (name == "")
 	    continue;
@@ -852,10 +849,8 @@ void set_buttons(Widget buttons, String _button_list, bool manage)
 	{
 	    string label_s = name.after(app_data.label_delimiter);
 	    name = name.before(app_data.label_delimiter);
-	    read_leading_blanks(label_s);
-	    strip_final_blanks(label_s);
-	    read_leading_blanks(name);
-	    strip_final_blanks(name);
+	    strip_space(label_s);
+	    strip_space(name);
 	    label = MString(label_s);
 	}
 
@@ -1004,8 +999,7 @@ static string normalize(string s)
     for (int i = 0; i < lines; i++)
     {
 	string& cmd = commands[i];
-	read_leading_blanks(cmd);
-	strip_final_blanks(cmd);
+	strip_space(cmd);
 	if (cmd == "")
 	    continue;
 

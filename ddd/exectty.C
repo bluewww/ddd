@@ -237,7 +237,7 @@ static void get_args(string command, string& base, string& args)
 	}
     }
 
-    read_leading_blanks(args);
+    strip_leading_space(args);
 }
 
 
@@ -396,8 +396,7 @@ static void redirect_process(string& command,
     {
 	static string empty;
 	args.gsub(gdb_redirection, empty);
-	strip_final_blanks(args);
-	read_leading_blanks(args);
+	strip_space(args);
     }
 
     gdb_redirection = "";
@@ -530,8 +529,7 @@ static void unredirect_process(string& command,
 	{
 	    static string empty;
 	    args.gsub(gdb_redirection, empty);
-	    strip_final_blanks(args);
-	    read_leading_blanks(args);
+	    strip_space(args);
 	    gdb_command("set args " + args, origin, unredirect_reply);
 	}
     }

@@ -1205,8 +1205,8 @@ void DataDisp::new_displayDCB (Widget dialog, XtPointer client_data, XtPointer)
     string expr(inp);
     XtFree(inp);
 
-    read_leading_blanks(expr);
-    strip_final_blanks(expr);
+    strip_leading_space(expr);
+    strip_trailing_space(expr);
 
     if (expr != "")
     {
@@ -4382,7 +4382,7 @@ void DataDisp::setCB(Widget w, XtPointer, XtPointer)
     static regex rxnl(" *\n *");
 #endif
     value.gsub(rxnl, " ");
-    strip_final_blanks(value);
+    strip_space(value);
 
     MString prompt = bf("Set value of ") + tt(name);
 

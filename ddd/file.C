@@ -694,8 +694,7 @@ ProgramInfo::ProgramInfo()
 	    if (ans.contains("Debugging: ", 0))
 		ans = ans.after(": ");
 
-	    read_leading_blanks(ans);
-	    strip_final_blanks(ans);
+	    strip_space(ans);
 	    if (!ans.contains(' ')) // Sanity check
 		file = ans;
 	}

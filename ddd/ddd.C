@@ -2647,8 +2647,7 @@ XrmDatabase GetFileDatabase(char *filename)
 	    if (line.contains(XtNdddinitVersion ":"))
 	    {
 		version_found = line.after(":");
-		read_leading_blanks(version_found);
-		strip_final_blanks(version_found);
+		strip_space(version_found);
 
 		if (version_found != DDD_VERSION)
 		    version_mismatch = true;
@@ -2767,11 +2766,8 @@ static void set_shortcut_menu(DataDisp *data_disp, string exprs)
 	    item  = item.before(app_data.label_delimiter);
 	}
 
-	read_leading_blanks(item);
-	strip_final_blanks(item);
-
-	read_leading_blanks(label);
-	strip_final_blanks(label);
+	strip_space(item);
+	strip_space(label);
 
 	if (item == "")
 	    continue;

@@ -65,8 +65,7 @@ static regex rxvtable(
 // Determine the type of VALUE.
 DispValueType determine_type (string value)
 {
-    read_leading_blanks (value);
-    strip_final_blanks (value);
+    strip_space (value);
 
     // DBX on DEC prepends `[N]' before array member N
     if (value.matches(rxindex))
@@ -428,7 +427,7 @@ string read_simple_value(string& value, int depth, bool ignore_repeats)
 	}
     }
 
-    strip_final_blanks(ret);
+    strip_trailing_space(ret);
 
     // clog << "read_simple_value() = " << quote(ret) << "\n";
     return ret;
@@ -444,7 +443,7 @@ string read_pointer_value (string& value)
 bool read_array_begin (string& value, string& addr)
 {
     addr = "";
-    read_leading_blanks(value);
+    strip_leading_space(value);
 
     // GDB has a special format for vtables
     if (value.matches(rxvtable))
@@ -467,7 +466,7 @@ bool read_array_begin (string& value, string& addr)
     {
 	addr  = value.at(pointer_index, addr_len);
 	value = value.after(pointer_index + addr_len);
-	read_leading_blanks(value);
+	strip_leading_space(value);
     }
 
     // DBX on DEC prepends `struct' or `class' before each struct;
@@ -492,7 +491,7 @@ bool read_array_begin (string& value, string& addr)
     else
 	return false;
 
-    read_leading_blanks (value);
+    strip_leading_space (value);
 
     // DBX on DEC prepends `[N]' before array member N
     if (value.matches(rxindex))
@@ -602,7 +601,7 @@ int read_repeats(string& value)
 {
     int repeats = 0;
 
-    read_leading_blanks(value);
+    strip_leading_space(value);
     if (value.contains('<', 0) && value.contains(rxrepeats, 0))
     {
 	value = value.from(rxint);
@@ -640,7 +639,7 @@ void munch_dump_line (string& value)
     if (gdb->type() == DBX)
     {
 	string initial_line = value.before('\n');
-	strip_final_blanks(initial_line);
+	strip_trailing_space(initial_line);
 
 #if RUNTIME_REGEX
 	static regex rxdbxframe("[a-zA-Z_$][a-zA-Z_$0-9]*[(].*[)].*"
@@ -750,7 +749,7 @@ string read_member_name (string& value)
     // Strip leading qualifiers.  <Gyula.Kun-Szabo@eth.ericsson.se>
     // reports that his GDB reports static members as `static j = 45'.
     // JDB also qualifies member names (`private String name = Ada`)
-    strip_final_blanks(member_name);
+    strip_trailing_space(member_name);
     while (member_name.contains(' '))
 	member_name = member_name.after(' ');
 
@@ -764,7 +763,7 @@ string read_vtable_entries (string& value)
     static regex rxvtable_entries("[0-9][0-9]* vtable entries,");
 #endif
 
-    read_leading_blanks (value);
+    strip_leading_space (value);
     if (value.contains(rxvtable_entries, 0))
     {
 	string vtable_entries = value.before(',');
@@ -804,18 +803,18 @@ static void read_leading_junk (string& value)
     static regex rxm3comment("\\(\\*.*\\*\\).*");
 #endif
   
-    read_leading_blanks(value);
+    strip_leading_space(value);
   
     while (value.matches(rxm3comment))
     {
 	read_leading_comment(value);
-	read_leading_blanks(value);
+	strip_leading_space(value);
     }
 
     while (value.contains("warning: ", 0))
     {
 	value = value.after('\n');
-	read_leading_blanks(value);
+	strip_leading_space(value);
     }
 }
 
