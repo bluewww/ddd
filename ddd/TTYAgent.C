@@ -344,7 +344,7 @@ void TTYAgent::open_master()
 	    string pty = string("/dev/pty/") + nr;
 	    string tty = string("/dev/ttyp") + nr;
 		
-	    master = open((char *)pty, O_RDWR);
+	    master = open(pty.chars(), O_RDWR);
 	    if (master >= 0)
 	    {
 		if (access(tty, R_OK | W_OK) != 0)
@@ -373,7 +373,7 @@ void TTYAgent::open_master()
 		string pty = "/dev/ptym/pty" + nr;
 		string tty = "/dev/pty/tty" + nr;
 		
-		master = open((char *)pty, O_RDWR);
+		master = open(pty.chars(), O_RDWR);
 		if (master >= 0)
 		{
 		    if (access(tty, R_OK | W_OK) != 0)
@@ -390,26 +390,33 @@ void TTYAgent::open_master()
     }
 
     // Try PTY's in /dev/pty?? -- a BSD and USG feature
-    for (int i = 0; i < int(p1.length()); i++)
+    // Slackware 3.0 wants [/zip]/dev/pty??, as
+    // Jim Van Zandt <jrv@vanzandt.mv.com> suggests.
+    for (int k = 0; k < 2; k++)
     {
-	for (int j = 0; j < int(p2.length()); j++)
-	{
-	    string nr  = string(p1[i]) + p2[j];
-	    string pty = "/dev/pty" + nr;
-	    string tty = "/dev/tty" + nr;
-		
-	    master = open((char *)pty, O_RDWR);
-	    if (master >= 0)
-	    {
-		if (access(tty, R_OK | W_OK) != 0)
-		{
-		    close(master);
-		    continue;
-		}
+	string prefix = (k == 0 ? "" : "/zip");
 
-		_master_tty = pty;
-		_slave_tty  = tty;
-		return;
+	for (int i = 0; i < int(p1.length()); i++)
+	{
+	    for (int j = 0; j < int(p2.length()); j++)
+	    {
+		string nr  = string(p1[i]) + p2[j];
+		string pty = prefix + "/dev/pty" + nr;
+		string tty = prefix + "/dev/tty" + nr;
+
+		master = open(pty.chars(), O_RDWR);
+		if (master >= 0)
+		{
+		    if (access(tty, R_OK | W_OK) != 0)
+		    {
+			close(master);
+			continue;
+		    }
+
+		    _master_tty = pty;
+		    _slave_tty  = tty;
+		    return;
+		}
 	    }
 	}
     }
@@ -423,7 +430,7 @@ void TTYAgent::open_master()
 // in slave_tty by open_master.
 void TTYAgent::open_slave()
 {
-    if ((slave = open((char *)slave_tty(), O_RDWR)) < 0)
+    if ((slave = open(slave_tty().chars(), O_RDWR)) < 0)
     {
 	_raiseIOMsg("cannot open " + slave_tty());
 	return;
