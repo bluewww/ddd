@@ -171,6 +171,8 @@ dnl ICE_CXX_INCLUDE_DIR
 dnl ICE_CXX_LIB_DIR
 ICE_CXX_OPTIONS
 ICE_CXX_BOOL
+ICE_CXX_EXCEPTIONS
+ICE_CXX_TYPEINFO
 ICE_CXX_LONG_LONG
 ICE_CXX_NAMED_RETURN_VALUES
 ICE_CXX_PRETTY_FUNCTION
@@ -449,6 +451,7 @@ AC_CHECK_HEADERS(sys/ioctl.h sys/param.h sys/time.h sys/resource.h sys/timeb.h)
 AC_CHECK_HEADERS(sys/stat.h sys/stropts.h sys/vty.h sys/sysmacros.h sys/core.h)
 AC_CHECK_HEADERS(sys/socket.h sys/termios.h sys/utsname.h sys/user.h)
 AC_CHECK_HEADERS(sys/ptrace.h fcntl.h string.h strings.h netdb.h regex.h rx.h)
+AC_CHECK_HEADERS(stdexcept)
 AC_HEADER_TIME
 AC_HEADER_SYS_WAIT
 AC_HEADER_DIRENT

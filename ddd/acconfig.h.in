@@ -47,6 +47,12 @@
 /* Define if your C++ compiler supports `bool' types. */
 #undef HAVE_BOOL
 
+/* Define if your C++ compiler supports exception handling. */
+#undef HAVE_EXCEPTIONS
+
+/* Define if your C++ compiler supports run-time type information. */
+#undef HAVE_TYPEINFO
+
 /* Define if <sys/core.h> defines CORE_MAGIC to identify core files. */
 #undef HAVE_CORE_MAGIC
 

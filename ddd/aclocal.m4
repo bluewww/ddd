@@ -591,6 +591,56 @@ fi
 ])dnl
 dnl
 dnl
+dnl ICE_CXX_EXCEPTIONS
+dnl ------------------
+dnl
+dnl If the C++ compiler handles exceptions, define `HAVE_EXCEPTIONS'.
+dnl
+AC_DEFUN(ICE_CXX_EXCEPTIONS,
+[
+AC_REQUIRE([AC_PROG_CXX])
+AC_MSG_CHECKING(whether the C++ compiler (${CXX}) supports exception handling)
+AC_CACHE_VAL(ice_cv_have_exceptions,
+[
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_COMPILE(,[try { throw 1; } catch(...) { }],
+ice_cv_have_exceptions=yes,
+ice_cv_have_exceptions=no)
+AC_LANG_RESTORE
+])
+AC_MSG_RESULT($ice_cv_have_exceptions)
+if test "$ice_cv_have_exceptions" = yes; then
+AC_DEFINE(HAVE_EXCEPTIONS)
+fi
+])dnl
+dnl
+dnl ICE_CXX_TYPEINFO
+dnl ----------------
+dnl
+dnl If the C++ compiler supports run-time type info, define `HAVE_TYPEINFO'.
+dnl
+AC_DEFUN(ICE_CXX_TYPEINFO,
+[
+AC_REQUIRE([AC_PROG_CXX])
+AC_MSG_CHECKING(whether the C++ compiler (${CXX}) supports run-time type info)
+AC_CACHE_VAL(ice_cv_have_typeinfo,
+[
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_COMPILE([#include <typeinfo>],
+[int x; const char *s = typeid(x).name();],
+ice_cv_have_typeinfo=yes,
+ice_cv_have_typeinfo=no)
+AC_LANG_RESTORE
+])
+AC_MSG_RESULT($ice_cv_have_typeinfo)
+if test "$ice_cv_have_typeinfo" = yes; then
+AC_DEFINE(HAVE_TYPEINFO)
+fi
+])dnl
+dnl
+dnl
 dnl ICE_PROG_CPP_TRADITIONAL
 dnl ------------------------
 dnl
