@@ -2,6 +2,7 @@
 // Breakpoint management
 
 // Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2000 Universitaet Passau, Germany.
 // Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
 // and Andreas Zeller <zeller@gnu.org>.
 // 
@@ -532,6 +533,12 @@ void BreakPoint::process_jdb(string& info_output)
 	int line_no = get_positive_nr(info_output.after(colon));
 	if (line_no >= 0 && class_name != "")
 	{
+	    // Strip JDB 1.2 info like `breakpoint', etc.
+	    strip_space(class_name);
+	    int last_space = class_name.index(" ", -1);
+	    if (last_space > 0)
+		class_name = class_name.after(last_space);
+
 	    myfile_name = class_name;
 	    myline_nr   = line_no;
 

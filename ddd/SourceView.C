@@ -6632,9 +6632,14 @@ int SourceView::breakpoint_number(const string& bp_info)
 	return -1;			// Never reached
     }
 
-    strip_leading_space(class_name);
-    if (line <= 0 || class_name.contains(' '))
+    if (line <= 0)
 	return -1;		// No breakpoint
+
+    // Strip JDB 1.2 info like `breakpoint', etc.
+    strip_space(class_name);
+    int last_space = class_name.index(" ", -1);
+    if (last_space > 0)
+	class_name = class_name.after(last_space);
 
     MapRef ref;
     for (BreakPoint* bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
