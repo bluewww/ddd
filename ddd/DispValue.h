@@ -26,16 +26,16 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-//-----------------------------------------------------------------------------
-// DispValue liest und speichert Typ und Wert eines Display-Ausdrucks
-//-----------------------------------------------------------------------------
-
-#ifndef _DispValue_h
-#define _DispValue_h
+#ifndef _DDD_DispValue_h
+#define _DDD_DispValue_h
 
 #ifdef __GNUG__
 #pragma interface
 #endif
+
+//-----------------------------------------------------------------------------
+// A DispValue reads and stores type and value of a displayed expression
+//-----------------------------------------------------------------------------
 
 #include "strclass.h"
 #include "bool.h"
@@ -46,10 +46,10 @@
 class DispValue {
     DispValueType mytype;
     DispValue*    myparent;
-    int           mydepth;      // = Verschachtelungstiefe
+    int           mydepth;      // Nesting depth
     bool          myexpanded;
     string        myfull_name;
-    string        print_name;   // name relativ zum parent
+    string        print_name;   // Name relative to MYPARENT
     bool          changed;
 
     union {
@@ -122,5 +122,5 @@ public:
     bool new_BaseClass_name (string name);
 };
 
-
-#endif
+#endif // _DDD_DispValue_h
+// DON'T ADD ANYTHING BEHIND THIS #endif

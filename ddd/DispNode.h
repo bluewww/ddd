@@ -26,16 +26,16 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-//-----------------------------------------------------------------------------
-// DispNode speichert Informationen zu einem Display-Ausdruck
-//-----------------------------------------------------------------------------
-
-#ifndef _DispNode_h
-#define _DispNode_h
+#ifndef _DDD_DispNode_h
+#define _DDD_DispNode_h
 
 #ifdef __GNUG__
 #pragma interface
 #endif
+
+//-----------------------------------------------------------------------------
+// A DispNode keeps all information about a single data display
+//-----------------------------------------------------------------------------
 
 // Misc includes
 #include "strclass.h"
@@ -48,7 +48,7 @@
 #include "DispValue.h"
 #include "DispBox.h"
 
-// Event-Typen
+// Event types
 const unsigned DispNode_Disabled   = 0;
 
 const unsigned DispNode_NTypes  = DispNode_Disabled + 1;
@@ -57,8 +57,9 @@ bool is_user_command(const string& s);
 string user_command(const string& s);
 
 //-----------------------------------------------------------------------------
-// Die Klasse DispNode
+// The DispNode class
 //-----------------------------------------------------------------------------
+
 class DispNode {
 private:
     string        mydisp_nr;
@@ -103,16 +104,16 @@ public:
 
 
 
-    // false, wenn Wert unveraendert.
+    // Update with NEW_VALUE;  return false if value is unchanged
     bool update (string& new_value);
 
-    // erzeugt die Box neu aus dem disp_value
+    // Re-create the box from old DISP_VALUE
     void refresh ();
 
-    // highlights the box related to the display value DV
+    // Highlights the box related to the display value DV
     void select (DispValue *dv = 0);
 
-    // disable and enable manually
+    // Disable and enable manually
     void disable();
     void enable();
 
@@ -120,4 +121,5 @@ private:
     DispBox* disp_box;
 };
 
-#endif
+#endif // _DDD_DispNode_h
+// DON'T ADD ANYTHING BEHIND THIS #endif

@@ -39,8 +39,8 @@
 //    must free the memory claimed by the query array.
 //-----------------------------------------------------------------------------
 
-#ifndef _GDBAgent_h
-#define _GDBAgent_h
+#ifndef _DDD_GDBAgent_h
+#define _DDD_GDBAgent_h
 
 #ifdef __GNUG__
 #pragma interface
@@ -375,5 +375,6 @@ protected:
 
     virtual int setupChildCommunication();
 };
+
 #endif // _DDD_GDBAgent_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

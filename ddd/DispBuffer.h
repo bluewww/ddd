@@ -26,28 +26,27 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-//-----------------------------------------------------------------------------
-// Diese Klasse filtert aus den gdb-Ausgaben die Display-Ausgben heraus.
-//-----------------------------------------------------------------------------
-
-#ifndef _DispBuffer_h
-#define _DispBuffer_h
+#ifndef _DDD_DispBuffer_h
+#define _DDD_DispBuffer_h
 
 #ifdef __GNUG__
 #pragma interface
 #endif
+
+//-----------------------------------------------------------------------------
+// A `DispBuffer' filters display information from GDB output
+//-----------------------------------------------------------------------------
 
 // Misc includes
 #include "bool.h"
 #include "strclass.h"
 
 class DispBuffer {
-    // Was stand in der bisherigen Antwort ?
-    //
+    // What was in the previous answer?
     enum ReadState {Null, DisplayPart, DisplayFound};
     
     string display_buffer;
-    string answer_buffer;      // fuer Vielleicht-Display-Teile
+    string answer_buffer;      // possible parts of display output
     ReadState already_read;
 
 public:
@@ -58,30 +57,20 @@ public:
 	already_read(Null)
     {}
 
-    // Filtert Display-Ausgaben aus answer (ein Antwortteil) heraus und
-    // puffert sie,
-    // answer enthaelt anschliessend nur noch andere Ausgaben,
-    // ggf. werden Teile der Antwort 'auf Verdacht' zurueckgehalten.
-    //
+    // Filter `display' output from ANSWER and buffer them.
+    // After returning, ANSWER contains non-display output.
     void filter (string& answer);
 
-    // Die komplettierung der gdb-Ausgabe hiermit bekanntgeben.
-    // ggf. werden die 'auf Verdacht' zurueckgehaltenen Teile der Antwort
-    // zurueckgegeben.
-    //
+    // The answer has ended; return buffered output.
     string answer_ended ();
 
-    // enthielt die letzte Ausgabe Display-Ausgaben?
-    //
+    // Were there any displays in the last output?
     bool displays_found () const { return display_buffer != ""; }
 
-    // Gibt die gepufferten Display-Ausgaben zurueck.
-    // evtl. stehen nach den Displays noch andere Ausgaben.
-    //
+    // Return any displays found
     string get_displays () const { return display_buffer; }
 
-    // Aufrufen bevor neue Antwort gefiltert wird!
-    //
+    // Call before filtering next answer
     void clear () {
 	display_buffer = "";
 	answer_buffer = "";
@@ -90,4 +79,5 @@ public:
 
 };
 
-#endif
+#endif // _DDD_DispBuffer_h
+// DON'T ADD ANYTHING BEHIND THIS #endif

@@ -26,17 +26,16 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-//-----------------------------------------------------------------------------
-// DispGraph speichert Informationen zu allen graphisch dargestellten
-// Display-Objekten.
-//-----------------------------------------------------------------------------
-
-#ifndef _DispGraph_h
-#define _DispGraph_h
+#ifndef _DDD_DispGraph_h
+#define _DDD_DispGraph_h
 
 #ifdef __GNUG__
 #pragma interface
 #endif
+
+//-----------------------------------------------------------------------------
+// The `DispGraph' class keeps all displayed display expressions
+//-----------------------------------------------------------------------------
 
 // Misc includes
 #include "strclass.h"
@@ -51,16 +50,13 @@
 
 enum Displaying {Both, Enabled, Disabled};
 
-// Event-Typen
-const unsigned DispGraph_Empty = 0;          // DispGraph ist leer
+// Event types
+const unsigned DispGraph_Empty = 0;          // DispGraph is empty
 const unsigned NoEnabled  = DispGraph_Empty + 1;
 const unsigned NoDisabled = NoEnabled + 1;
 
 const unsigned DispGraph_NTypes = NoDisabled + 1;
 
-//-----------------------------------------------------------------------------
-// Die Klasse DispGraph
-//-----------------------------------------------------------------------------
 class DispGraph: public Graph {
     DispNodeMap  idMap;
     HandlerList  handlers;
@@ -94,8 +90,10 @@ public:
     void callHandlers();
 
 
-    // die display_nr bei Erfolg, 0 sonst
+    // Insert a new display DN named DISP_NR
     int insert_new (int disp_nr, DispNode* dn);
+
+    // Insert a new display DN named NEW_DISP_NR dependent on OLD_DISP_NR
     int insert_dependent (int new_disp_nr, DispNode* dn, int old_disp_nr);
 
     // Determine default positions for NEW_NODE
@@ -103,7 +101,7 @@ public:
     BoxPoint default_dependent_box_point (DispNode *new_node, 
 					  Widget w, int disp_nr) const;
     
-    // false, falls nicht vorhanden
+    // Delete DISP_NR; return false if non-existent
     bool   del       (int disp_nr);
 
     DispNode* get       (int disp_nr) const { return idMap.get (disp_nr); }
@@ -111,11 +109,11 @@ public:
 
     bool contains (int disp_nr) const { return idMap.contains (disp_nr); }
     
-    // 0, wenn nicht vorhanden.
+    // Return first/next node; return 0 if non-existent
     DispNode* first (MapRef& ref, Displaying e = Both) const;
     DispNode* next  (MapRef& ref, Displaying e = Both) const;
 
-    // 0, wenn nicht vorhanden.
+    // Return first/next node number; return 0 if non-existent
     int first_nr (MapRef& ref, Displaying e = Both) const;
     int next_nr  (MapRef& ref, Displaying e = Both) const;
 
@@ -134,4 +132,5 @@ private:
 };
 
 
-#endif
+#endif // _DDD_DispGraph_h
+// DON'T ADD ANYTHING BEHIND THIS #endif

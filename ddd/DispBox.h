@@ -26,16 +26,16 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-//-----------------------------------------------------------------------------
-// Klasse zur Erzeugung von DispBoxen mit VSL.
-//-----------------------------------------------------------------------------
-
-#ifndef _DispBox_h
-#define _DispBox_h
+#ifndef _DDD_DispBox_h
+#define _DDD_DispBox_h
 
 #ifdef __GNUG__
 #pragma interface
 #endif
+
+//-----------------------------------------------------------------------------
+// Create display boxes via the VSL library
+//-----------------------------------------------------------------------------
 
 #include "strclass.h"
 #include "Box.h"
@@ -61,7 +61,7 @@ public:
     // Initialize VSL library, using BACKGROUND as work proc
     static void init_vsllib(void (*background)() = 0);
 
-    // bei dv == 0 disabled-box erzeugen
+    // Create a new box; if DV == 0, create a `disabled' box
     DispBox (string disp_nr,
 	     string name,
 	     const DispValue* dv = 0);
@@ -70,7 +70,7 @@ public:
 
     Box* box () const { return mybox; }
 
-    // bei dv == 0 disabled-box erzeugen
+    // Set new value to DV; if DV == 0, create a `disabled' box
     void set_value (const DispValue* dv = 0);
 
 private:
@@ -107,5 +107,5 @@ protected:
     }
 };
 
-
-#endif
+#endif // _DDD_DispBox_h
+// DON'T ADD ANYTHING BEHIND THIS #endif

@@ -26,17 +26,16 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-//-----------------------------------------------------------------------------
-// Diese Klasse filtert aus den gdb-Ausgaben eine Positionsangabe heraus.
-// Voraussetzung: Aufruf des gdb mit Option -f.
-//-----------------------------------------------------------------------------
-
-#ifndef _PosBuffer_h
-#define _PosBuffer_h
+#ifndef _DDD_PosBuffer_h
+#define _DDD_PosBuffer_h
 
 #ifdef __GNUG__
 #pragma interface
 #endif
+
+//-----------------------------------------------------------------------------
+// A `PosBuffer' filters position infos from GDB output.
+//-----------------------------------------------------------------------------
 
 // Misc includes
 #include "bool.h"
@@ -108,4 +107,5 @@ public:
                   "|00+|[(]nil[)]|NIL|16_[0-9a-f]+)"
 extern regex rxaddress;
 
-#endif
+#endif // _DDD_PosBuffer_h
+// DON'T ADD ANYTHING BEHIND THIS #endif
