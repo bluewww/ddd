@@ -584,10 +584,12 @@ static Widget register_w;
 
 static MMDesc stack_menu[] =
 {
-    { "stack",       MMPush, { SourceView::ViewStackFramesCB }, 
+    { "stack",      MMPush,  { SourceView::ViewStackFramesCB }, 
       NULL, &stack_w },
-    { "registers",   MMPush, { SourceView::ViewRegistersCB },
+    { "registers",  MMPush,  { SourceView::ViewRegistersCB },
       NULL, &register_w },
+    { "threads",    MMPush | MMInsensitive },
+    { "infos",      MMPush,  { dddPopupInfosCB }},
     MMSep,
     { "up",         MMPush,  { gdbCommandCB, "up" }},
     { "down",       MMPush,  { gdbCommandCB, "down" }},
@@ -852,10 +854,23 @@ static MMDesc options_menu [] =
 
 
 // Data
+static Widget info_locals_w = 0;
+static Widget info_args_w   = 0;
+static Widget dump_w        = 0;
+static Widget l_w           = 0;
+
 static MMDesc data_menu[] = 
 {
     { "displays",   MMPush,    { DataDisp::EditDisplaysCB }},
-    { "infos",      MMPush,    { dddPopupInfosCB }},
+    MMSep,
+    { "l",           MMToggle | MMUnmanaged, { graphToggleLocalsCB },
+      NULL, &l_w },
+    { "dump",        MMToggle | MMUnmanaged, { graphToggleLocalsCB },
+      NULL, &dump_w },
+    { "info locals", MMToggle | MMUnmanaged, { graphToggleLocalsCB },
+      NULL, &info_locals_w },
+    { "info args",   MMToggle | MMUnmanaged, { graphToggleArgsCB },
+      NULL, &info_args_w },
     MMSep,
     { "align",      MMPush,    { graphAlignCB  }},
     { "rotate",     MMPush,    { graphRotateCB }},
@@ -870,10 +885,11 @@ static MMDesc data_menu[] =
 // Help
 static MMDesc help_menu[] = 
 {
+    {"onVersion",   MMPush, { HelpOnVersionCB }},
+    MMSep,
     {"onContext",   MMPush, { HelpOnContextCB }},
     {"onWindow",    MMPush, { HelpOnWindowCB }},
     {"onHelp",      MMPush, { HelpOnHelpCB }},
-    {"onVersion",   MMPush, { HelpOnVersionCB }},
     MMSep,
     {"index",       MMPush, { DDDManualCB }},
     {"license",     MMPush, { DDDLicenseCB }},
@@ -1715,6 +1731,27 @@ int main(int argc, char *argv[])
 
     // Setup option states
     update_options();
+
+    // Setup info button states
+    switch (gdb->type())
+    {
+    case XDB:
+	XtManageChild(l_w);
+	register_info_button(l_w);
+	break;
+
+    case DBX:
+	XtManageChild(dump_w);
+	register_info_button(dump_w);
+	break;
+
+    case GDB:
+	XtManageChild(info_locals_w);
+	XtManageChild(info_args_w);
+	register_info_button(info_locals_w);
+	register_info_button(info_args_w);
+    }
+    update_infos();
 
     Boolean iconic;
     XtVaGetValues(toplevel, XmNiconic, &iconic, NULL);

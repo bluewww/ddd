@@ -310,6 +310,11 @@ public:
     static void refreshCB(Widget, XtPointer, XtPointer);
     static void selectAllCB(Widget, XtPointer, XtPointer);
     static void deleteCB(Widget, XtPointer, XtPointer);
+
+    // Helpers for user displays
+    static bool have_user_display(const string& name);
+    static void new_user_display(const string& name);
+    static void delete_user_display(const string& name);
 };
 
 #endif // _DDD_DataDisp_h

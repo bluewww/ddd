@@ -302,13 +302,15 @@ public:
     // Usually "print EXPR".  If INTERNAL is set, avoid side effects
     // (such as setting the value history in GDB).
     string print_command(string expr = "", bool internal = true) const; 
-    string display_command(string expr = "") const; // Usually "display EXPR"
-    string where_command() const;	            // Usually "where "
-    string pwd_command() const;	                    // Usually "pwd "
-    string frame_command(string depth = "") const;  // Usually "frame DEPTH"
-    string echo_command(string text) const;         // Usually "echo TEXT"
-    string whatis_command(string text) const;       // Usually "whatis TEXT"
-    string dereferenced_expr(string expr) const;    // Usually "*EXPR"
+    string display_command(string expr = "") const; // GDB: "display EXPR"
+    string where_command() const;	            // GDB: "where "
+    string pwd_command() const;	                    // GDB: "pwd "
+    string frame_command(string depth = "") const;  // GDB: "frame DEPTH"
+    string echo_command(string text) const;         // GDB: "echo TEXT"
+    string whatis_command(string text) const;       // GDB: "whatis TEXT"
+    string dereferenced_expr(string expr) const;    // GDB: "*EXPR"
+    string info_locals_command() const;	            // GDB: "info locals"
+    string info_args_command() const;	            // GDB: "info args"
 
     // Usually "set variable VAR = EXPR"
     string assign_command(string var, string expr) const;

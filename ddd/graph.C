@@ -63,3 +63,25 @@ void graphLayoutCB(Widget, XtPointer, XtPointer)
     XtCallActionProc(data_disp->graph_edit, 
 		     "layout", (XEvent *)0, (String *)0, 0);
 }
+
+void graphToggleLocalsCB(Widget, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *cbs = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    if (cbs->set)
+	data_disp->new_user_display(gdb->info_locals_command());
+    else
+	data_disp->delete_user_display(gdb->info_locals_command());
+}
+
+void graphToggleArgsCB(Widget, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *cbs = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    if (cbs->set)
+	data_disp->new_user_display(gdb->info_args_command());
+    else
+	data_disp->delete_user_display(gdb->info_args_command());
+}

@@ -35,9 +35,12 @@
 
 #include <X11/Intrinsic.h>
 
-extern void graphAlignCB (Widget, XtPointer, XtPointer);
-extern void graphRotateCB (Widget, XtPointer, XtPointer);
-extern void graphLayoutCB (Widget, XtPointer, XtPointer);
+extern void graphAlignCB        (Widget, XtPointer, XtPointer);
+extern void graphRotateCB       (Widget, XtPointer, XtPointer);
+extern void graphLayoutCB       (Widget, XtPointer, XtPointer);
+
+extern void graphToggleLocalsCB (Widget, XtPointer, XtPointer);
+extern void graphToggleArgsCB   (Widget, XtPointer, XtPointer);
 
 #endif // _DDD_graph_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

@@ -62,6 +62,7 @@ char DataDisp_rcsid[] =
 #include "commandQ.h"
 #include "StringMap.h"
 #include "VoidArray.h"
+#include "settings.h"
 #include "status.h"
 
 // Motif includes
@@ -1718,6 +1719,7 @@ void DataDisp::new_userOQC (const string& answer, void* data)
     string nr = dn->disp_nr();
     disp_graph->insert_new (get_nr(nr), dn);
     refresh_graph_edit();
+    update_infos();
 
     delete info;
 }
@@ -2162,6 +2164,8 @@ void DataDisp::delete_displaySQ (const IntArray& display_nrs)
 	if (dn != 0 && (ok || dn->is_user_command()))
 	    disp_graph->del(display_nrs[i]);
     }
+
+    update_infos();
 }
 
 
@@ -2889,6 +2893,58 @@ void DataDisp::setDCB(Widget set_dialog, XtPointer client_data, XtPointer)
     XtFree(value_s);
 
     gdb_command(gdb->assign_command(disp_value->full_name(), value));
+}
+
+//----------------------------------------------------------------------------
+// Helpers for user displays
+//-----------------------------------------------------------------------------
+
+bool DataDisp::have_user_display(const string& name)
+{
+    MapRef ref;
+    for (DispNode* dn = disp_graph->first(ref); 
+	 dn != 0;
+	 dn = disp_graph->next(ref))
+    {
+	if (dn->user_command() == name)
+	    return true;
+    }
+
+    return false;
+}
+
+void DataDisp::new_user_display(const string& name)
+{
+    MapRef ref;
+    for (DispNode* dn = disp_graph->first(ref); 
+	 dn != 0;
+	 dn = disp_graph->next(ref))
+    {
+	if (dn->user_command() == name)
+	    return;
+    }
+
+    gdb_command("graph display `" + name + "`");
+}
+
+void DataDisp::delete_user_display(const string& name)
+{
+    IntArray killme;
+
+    MapRef ref;
+    for (DispNode* dn = disp_graph->first(ref); 
+	 dn != 0;
+	 dn = disp_graph->next(ref))
+    {
+	if (dn->user_command() == name)
+	{
+	    string nr = dn->disp_nr();
+	    killme += get_nr(nr);
+	}
+    }
+
+    delete_displaySQ(killme);
+    refresh_graph_edit();
 }
 
 

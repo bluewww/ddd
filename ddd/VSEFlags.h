@@ -33,11 +33,11 @@
 #include "strclass.h"
 
 // Muss oeffentlich sein, um Compiler nicht zu verwirren
-enum EntryType { LAST, BOOLEAN, INT, STRING, TITLE };
+enum VSEEntryType { LAST, BOOLEAN, INT, STRING, TITLE };
 
 // Tabelle Optionen <-> Namen
-struct OptionTableEntry {
-    EntryType type;     // Typ
+struct VSEOptionTableEntry {
+    VSEEntryType type;  // Typ
     char *name;         // Name
     char *usage;        // Benutzung (Bedeutung)
     void *flag;         // Zeiger auf entsprechenden Flag
@@ -46,7 +46,7 @@ struct OptionTableEntry {
 class VSEFlags {
 private:
     // Abbildung Name -> Flag
-    static OptionTableEntry optionTable[];
+    static VSEOptionTableEntry optionTable[];
 
 public:
     // assertion options

@@ -139,7 +139,7 @@ char *VSEFlags::include_search_path      = "";
 
 
 // Tabelle Optionen <-> Namen
-OptionTableEntry VSEFlags::optionTable[] = {
+VSEOptionTableEntry VSEFlags::optionTable[] = {
 
 // Help options
 { TITLE,    "",                     "Help",
@@ -354,7 +354,7 @@ bool VSEFlags::_parse(int& argc, char**& argv, bool vsl_prefix_required)
 
 	for (int nentry = 0; optionTable[nentry].type != LAST; nentry++)
 	{
-	    OptionTableEntry entry = optionTable[nentry];
+	    VSEOptionTableEntry entry = optionTable[nentry];
 	    string entryName = entry.name;
 
 	    if (entryName.index(optName) == 0)
@@ -544,7 +544,7 @@ string VSEFlags::explain(bool vsl_prefix_required)
 
     for (int nentry = 0; optionTable[nentry].type != LAST; nentry++)
     {
-	OptionTableEntry entry = optionTable[nentry];
+	VSEOptionTableEntry entry = optionTable[nentry];
 
 	if (entry.type == TITLE)
 	{

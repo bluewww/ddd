@@ -1929,18 +1929,21 @@ Ddd*commandsMenu.clear_window.documentationString: \
 @rm Clear all before last debugger prompt
 
 
-! Stack
-Ddd*menubar.stack.labelString:		Stack
+! Status
+Ddd*menubar.stack.labelString:		Status
 Ddd*menubar.stack.mnemonic:		t
 Ddd*menubar.stack*documentationString:  \
 @rm Show the current program state
 Ddd*menubar.stack.helpString:	\
 \
-@rm This is the @sl Stack menu@rm.\n\
+@rm This is the @sl Status menu@rm.\n\
 \n\
 @tt \267 @bf Backtrace... @rm - give a summary of how your program got \
 where it is.\n\
 @tt \267 @bf Registers... @rm - show current processor registers.\n\
+@tt \267 @bf Threads... @rm - show current program threads.\n\
+@tt \267 @bf Other... @rm - create status displays that show things \
+about the program being debugged. \
 \n\
 @tt \267 @bf Up @rm - show the function that called the current one.\n\
 @tt \267 @bf Down @rm - show the function that was called by the current one.
@@ -1954,6 +1957,16 @@ Ddd*stackMenu.registers.labelString:	Registers...
 Ddd*stackMenu.registers.mnemonic:	R
 Ddd*stackMenu.registers.documentationString: \
 @rm Show registers and their contents
+
+Ddd*stackMenu.threads.labelString:	Threads...
+Ddd*stackMenu.threads.mnemonic:		T
+Ddd*stackMenu.threads.documentationString: \
+@rm Show and select current program threads
+
+Ddd*stackMenu.infos.labelString:	Other...
+Ddd*stackMenu.infos.mnemonic:		O
+Ddd*stackMenu.infos.documentationString: \
+@rm Show various things about the program being debugged
 
 Ddd*stackMenu.up.labelString:		Up
 Ddd*stackMenu.up.mnemonic:		U
@@ -2031,8 +2044,9 @@ Ddd*menubar.data*helpString:	\
 @rm This is the @sl Data menu@rm.\n\
 \n\
 @tt \267 @bf Edit Displays... @rm - select, enable and delete displays.\n\
-@tt \267 @bf Info Displays... @rm - create displays that show things about \
-the program being debugged.\n\
+\n\
+@tt \267 @bf Display Local Variables @rm - show current local variables.\n\
+@tt \267 @bf Display Arguments @rm - show current argument variables.\n\
 \n\
 @tt \267 @bf Align Displays @rm - align all displays on the next grid point.\n\
 @tt \267 @bf Rotate Graph @rm - rotate the graph clockwise by 90 degrees.\n\
@@ -2046,13 +2060,32 @@ Ddd*dataMenu.displays.mnemonic:		E
 Ddd*dataMenu.displays.documentationString: \
 @rm Select, enable and delete displays
 
-Ddd*dataMenu.infos.labelString:		Info Displays...
-Ddd*dataMenu.infos.mnemonic:		I
-Ddd*dataMenu.infos.documentationString: \
-@rm Create displays that show things about the program being debugged
+! This item is visible in GDB only.
+Ddd*dataMenu.info locals.labelString:	Display Local Variables
+Ddd*dataMenu.info locals.mnemonic:	V
+Ddd*dataMenu.info locals.documentationString: \
+@rm Display the local variables of the current stack frame.
+
+! This item is visible in GDB only.
+Ddd*dataMenu.info args.labelString:	Display Arguments
+Ddd*dataMenu.info args.mnemonic:	A
+Ddd*dataMenu.info args.documentationString: \
+@rm Display the argument variables of the current stack frame.
+
+! This item is visible in DBX only.
+Ddd*dataMenu.dump.labelString:		Display Local Variables
+Ddd*dataMenu.dump.mnemonic:		V
+Ddd*dataMenu.dump.documentationString: \
+@rm Display all local variables of the current stack frame.
+
+! This item is visible in XDB only.
+Ddd*dataMenu.l.labelString:		Display Local Variables
+Ddd*dataMenu.l.mnemonic:		V
+Ddd*dataMenu.l.documentationString: \
+@rm Display all local variables of the current stack frame.
 
 Ddd*dataMenu.align.labelString:		Align Displays
-Ddd*dataMenu.align.mnemonic:		A
+Ddd*dataMenu.align.mnemonic:		D
 Ddd*dataMenu.align.accelerator:		Meta<Key>A
 Ddd*dataMenu.align.acceleratorText:	Alt+A
 Ddd*dataMenu.align.documentationString:	\
@@ -2080,7 +2113,7 @@ Ddd*dataMenu.selectAll.documentationString:	\
 @rm Select all displays
 
 Ddd*dataMenu.refresh.labelString:	Refresh
-Ddd*dataMenu.refresh.mnemonic:		R
+Ddd*dataMenu.refresh.mnemonic:		f
 Ddd*dataMenu.refresh.accelerator:	Ctrl ~Shift<Key>L
 Ddd*dataMenu.refresh.acceleratorText:	Ctrl+L
 Ddd*dataMenu.refresh.documentationString:	\
@@ -2096,14 +2129,20 @@ Ddd*menubar.help*helpString: \
 \
 @rm This is the @sl Help menu@rm.\n\
 \n\
+@tt \267 @bf About @DDD@... @rm - some general information about @DDD@.\n\
+\n\
 @tt \267 @bf On Context... @rm - click on an item and get help on it.\n\
 @tt \267 @bf On Window... @rm - help on the application itself.\n\
 @tt \267 @bf On Help... @rm - help on how to use the help facility.\n\
-@tt \267 @bf On Version... @rm - some general information about @DDD@.\n\
 \n\
 @tt \267 @bf @DDD@ Manual... @rm - the @DDD@ on-line manual.\n\
 @tt \267 @bf @DDD@ License... @rm - the @DDD@ license.\n\
 @tt \267 @bf @DDD@ WWW Page... @rm - the @DDD@ WWW page.
+
+Ddd*helpMenu.onVersion.labelString:	About @DDD@...
+Ddd*helpMenu.onVersion.mnemonic:	A
+Ddd*helpMenu.onVersion.documentationString:	\
+@rm Information about the version of @DDD@ you are running
 
 Ddd*helpMenu.onContext.labelString:	On Context...
 Ddd*helpMenu.onContext.mnemonic:	C
@@ -2122,11 +2161,6 @@ Ddd*helpMenu.onHelp.labelString:	On Help...
 Ddd*helpMenu.onHelp.mnemonic:		H
 Ddd*helpMenu.onHelp.documentationString:	\
 @rm How to use the context-sensitive help
-
-Ddd*helpMenu.onVersion.labelString:	On Version...
-Ddd*helpMenu.onVersion.mnemonic:	V
-Ddd*helpMenu.onVersion.documentationString:	\
-@rm Information about the version of @DDD@ you are running
 
 Ddd*helpMenu.index.labelString:		@DDD@ Manual...
 Ddd*helpMenu.index.mnemonic:		M
@@ -2472,21 +2506,21 @@ Click on @bf Close @rm to close this window.
 
 Ddd*infos_popup*okLabelString: Close
 Ddd*infos_popup*cancelLabelString: Reset
-Ddd*infos_popup.title: @DDD@: Info Displays
+Ddd*infos_popup.title: @DDD@: Status Displays
 Ddd*infos_popup.autoUnmanage: false
 
-Ddd*infos*title.labelString:			Info Displays
+Ddd*infos*title.labelString:			Status Displays
 Ddd*infos*scroll.scrollingPolicy:		XmAUTOMATIC
 Ddd*infos*scroll.height:			293
-Ddd*infos*scroll.width:				528
-Ddd*infos*form.width:				500
+Ddd*infos*scroll.width:				428
+Ddd*infos*form.width:				400
 Ddd*infos*help.labelString:			?
 Ddd*infos*sep.bottomOffset:			10
 Ddd*infos*leader.bottomOffset:			4
 Ddd*infos*leader.separatorType:			XmSINGLE_DASHED_LINE
 
 Ddd*infos*help.tipString:\
-@rm Get help on this info display
+@rm Get help on this status display
 
 ! An empty help string means that the help text for this command
 ! is to be requested from GDB (via the GDB `help' command).
@@ -2494,9 +2528,9 @@ Ddd*infos*scroll*helpString:
 
 ! The panel itself has a help button, too.
 Ddd*infos*helpString: \
-@rm This is the list of @sl info displays@rm.\n\
+@rm This is the list of @sl status displays@rm.\n\
 \n\
-An @sl info display @rm shows things about the program being debugged\n\
+A @sl status display @rm shows things about the program being debugged\n\
 in the data window.  Please pick your choice from the list.\n\
 \n\
 Click on @bf ? @rm near an item to get further information.\n\

@@ -38,10 +38,7 @@
 #include "GDBAgent.h"
 
 // Popup editor for debugger settings
-void dddPopupSettingsCB (Widget, XtPointer, XtPointer);
-
-// Popup editor for debugger infos
-void dddPopupInfosCB (Widget, XtPointer, XtPointer);
+void dddPopupSettingsCB(Widget, XtPointer, XtPointer);
 
 // Process `show' output
 void process_show(string command, string value, bool init = false);
@@ -54,6 +51,16 @@ string get_dbx_help(string dbxenv, string base);
 		    
 // Mark settings as `saved'
 void save_settings_state();
+
+
+// Popup editor for debugger infos
+void dddPopupInfosCB(Widget, XtPointer, XtPointer);
+
+// Update debugger infos
+void update_infos();
+
+// Register additional info button
+void register_info_button(Widget w);
 
 #endif // _DDD_settings_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

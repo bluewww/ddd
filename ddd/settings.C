@@ -68,13 +68,16 @@ char settings_rcsid[] =
 #include "WidgetSA.h"
 #include "SourceView.h"
 #include "string-fun.h"
+#include "DataDisp.h"
 
-static Widget settings_form  = 0;
-static Widget reset_settings = 0;
-static WidgetArray entries;
-static EntryTypeArray entry_types;
-static WidgetStringAssoc values;
-static WidgetStringAssoc initial_values;
+static Widget            settings_form  = 0;
+static Widget            reset_settings = 0;
+static WidgetArray       settings_entries;
+static EntryTypeArray    settings_entry_types;
+static WidgetStringAssoc settings_values;
+static WidgetStringAssoc settings_initial_values;
+static WidgetArray       infos_entries;
+
 
 // Find widget for command COMMAND
 static Widget command_to_widget(Widget ref, string command)
@@ -105,7 +108,7 @@ static void gdb_set_command(string set_command, string value)
 	string confirm_value = "on";
 	Widget confirm_w = command_to_widget(settings_form, "set confirm");
 	if (confirm_w)
-	    confirm_value = values[confirm_w];
+	    confirm_value = settings_values[confirm_w];
 
 	if (confirm_value == "on")
 	    gdb_command("set confirm off");
@@ -207,16 +210,19 @@ static void SetDisplayCB(Widget, XtPointer client_data, XtPointer call_data)
     XmToggleButtonCallbackStruct *cbs = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
-    // FIXME...
+    if (cbs->set)
+	data_disp->new_user_display((String)client_data);
+    else
+	data_disp->delete_user_display((String)client_data);
 }
 
 // Update state of `reset' button
 static void update_reset_settings()
 {
-    for (int i = 0; i < entries.size(); i++)
+    for (int i = 0; i < settings_entries.size(); i++)
     {
-	Widget entry = entries[i];
-	if (initial_values[entry] != values[entry])
+	Widget entry = settings_entries[i];
+	if (settings_initial_values[entry] != settings_values[entry])
 	{
 	    XtSetSensitive(reset_settings, True);
 	    return;
@@ -226,16 +232,33 @@ static void update_reset_settings()
     XtSetSensitive(reset_settings, False);
 }
 
+// Update states of `info' buttons
+void update_infos()
+{
+    for (int i = 0; i < infos_entries.size(); i++)
+    {
+	Widget button = infos_entries[i];
+	bool set = data_disp->have_user_display(XtName(button));
+	XtVaSetValues(button, XmNset, set, NULL);
+    }
+}
+
+// Register additional info button
+void register_info_button(Widget w)
+{
+    infos_entries += w;
+}
+
 // Save `settings' state
 void save_settings_state()
 {
     if (settings_form == 0)
 	return;
 
-    for (int i = 0; i < entries.size(); i++)
+    for (int i = 0; i < settings_entries.size(); i++)
     {
-	Widget entry = entries[i];
-	initial_values[entry] = values[entry];
+	Widget entry = settings_entries[i];
+	settings_initial_values[entry] = settings_values[entry];
     }
 
     update_reset_settings();
@@ -324,9 +347,9 @@ void process_show(string command, string value, bool init)
 
     if (button != 0)
     {
-	values[button] = value;
+	settings_values[button] = value;
 	if (init)
-	    initial_values[button] = value;
+	    settings_initial_values[button] = value;
     }
 
     if (!init)
@@ -352,10 +375,10 @@ void process_show(string command, string value, bool init)
 	bool set = value != "off" && value != "0" && value != "unlimited" 
 	    && value != "false" && value != "insensitive";
 
-	for (int i = 0; i < entries.size(); i++)
+	for (int i = 0; i < settings_entries.size(); i++)
 	{
-	    if (entries[i] == button
-		&& entry_types[i] == NoNumToggleButtonEntry)
+	    if (settings_entries[i] == button
+		&& settings_entry_types[i] == NoNumToggleButtonEntry)
 	    {
 		set = !set;
 		break;
@@ -762,14 +785,14 @@ static void add_button(Widget form, int& row, DebuggerType type,
 		base = set_command;
 	    show_command = "show " + base;
 
-	    if (base == "args")
-		return; // Already handled in `Run...' editor
-
-	    if (base == "radix")
-		return; // Already handled in input- and output-radix
-
 	    if (entry_filter != DisplayToggleButtonEntry)
 	    {
+		if (base == "args")
+		    return; // Already handled in `Run...' editor
+
+		if (base == "radix")
+		    return; // Already handled in input- and output-radix
+
 		is_set = doc.contains("Set ", 0);
 		is_add = doc.contains("Add ", 0);
 
@@ -804,6 +827,13 @@ static void add_button(Widget form, int& row, DebuggerType type,
 	    }
 	    else
 	    {
+		if (base == "handle")
+		    return;	// We already have `info signals'.
+		if (base == "watchpoints")
+		    return;	// We already have `info breakpoints'.
+		if (base == "target")
+		    return;	// We already have `info files'.
+
 		e_type = DisplayToggleButtonEntry;
 		strip_leading(doc, "Show ");
 		strip_leading(doc, "Print ");
@@ -1133,8 +1163,13 @@ static void add_button(Widget form, int& row, DebuggerType type,
 	process_show(show_command, value, true);
 
 	// Register entry
-	entries     += entry;
-	entry_types += e_type;
+	settings_entries     += entry;
+	settings_entry_types += e_type;
+    }
+    else
+    {
+	// Register entry
+	infos_entries        += entry;
     }
 
     row++;
@@ -1189,11 +1224,11 @@ static void add_separator(Widget form, int& row)
 // Reset settings
 static void ResetSettingsCB (Widget, XtPointer, XtPointer)
 {
-    for (int i = 0; i < entries.size(); i++)
+    for (int i = 0; i < settings_entries.size(); i++)
     {
-	Widget entry = entries[i];
-	if (initial_values[entry] != values[entry])
-	    gdb_set_command(XtName(entry), initial_values[entry]);
+	Widget entry = settings_entries[i];
+	if (settings_initial_values[entry] != settings_values[entry])
+	    gdb_set_command(XtName(entry), settings_initial_values[entry]);
     }
 }
 
@@ -1329,6 +1364,10 @@ static Widget create_panel(DebuggerType type, bool create_settings)
 	reset_settings = cancel;
 	update_reset_settings();
     }
+    else
+    {
+	update_infos();
+    }
 
     if (row > 0)
 	XtVaSetValues(form, XmNfractionBase, row, NULL);
@@ -1389,10 +1428,10 @@ string get_settings(DebuggerType type)
 	return "";
 
     string command = "";
-    for (int i = 0; i < entries.size(); i++)
+    for (int i = 0; i < settings_entries.size(); i++)
     {
-	Widget entry = entries[i];
-	string value = values[entry];
+	Widget entry = settings_entries[i];
+	string value = settings_values[entry];
 	if (value == "unlimited")
 	    value = "0";
 

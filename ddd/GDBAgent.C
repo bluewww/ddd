@@ -978,6 +978,40 @@ string GDBAgent::where_command() const
     return "";			// Never reached
 }
 
+string GDBAgent::info_locals_command() const
+{
+    switch (type())
+    {
+    case GDB:
+	return "info locals";
+
+    case DBX:
+	return "dump";
+
+    case XDB:
+	return "l";
+    }
+
+    return "";			// Never reached
+}
+
+string GDBAgent::info_args_command() const
+{
+    switch (type())
+    {
+    case GDB:
+	return "info args";
+
+    case DBX:
+    case XDB:
+	return info_locals_command();
+    }
+
+    return "";			// Never reached
+}
+
+
+
 // Some DBXes want `sh pwd' instead of `pwd'
 string GDBAgent::pwd_command() const
 {
