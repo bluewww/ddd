@@ -116,10 +116,12 @@ DDD Frequently Asked Questions                                  -*- text -*-
     efficient interface.  So go and support the LessTif team instead.]
 
 
-11. Will DDD compile under LessTif?
+11. Will DDD compile and run under LessTif?
 
-    As of LessTif 0.33, it will.  But it will not run, due to lacking
-    LessTif features.  See also question #10, above.
+    DDD compiles with LessTif 0.33 and later; no special fixes are
+    required.  The resulting DDD executable is far from being usable,
+    though, due to lacking LessTif features.  This will probably get
+    much better while LessTif evolves; see question #10, above.
 
 
 12. DDD reports `imake' and/or `xmkmf' problems when being started.

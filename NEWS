@@ -39,6 +39,10 @@ DDD 1.5 (in development)
       smaller and (hopefully) safer DDD executables.
     - Patches for AIX xlC C++ compiler (and probably others) included.
       Thanks to Jacek Holeczek <holeczek@clri6f.gsi.de>.
+    - DDD now compiles and runs unchanged with LessTif, a free Motif
+      clone under construction.  Note that `runs' is relative: As of
+      LessTif 0.50, DDD is still far from being usable.  This will
+      change as LessTif evolves.
 
     Several bug fixes, including:
     - The execution window can be opened, closed and re-opened
