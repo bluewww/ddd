@@ -99,6 +99,7 @@ char DataDisp_rcsid[] =
 #include <iomanip.h>
 #include <ctype.h>
 
+
 //-----------------------------------------------------------------------
 // Xt-Zeugs
 //-----------------------------------------------------------------------
@@ -1100,6 +1101,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     int count_selected_enabled   = 0;
     int count_selected_expanded  = 0;
     int count_selected_collapsed = 0;
+    int count_selected_data      = 0;
 
     MapRef ref;
     for (DispNode* dn = disp_graph->first(ref); 
@@ -1115,6 +1117,8 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 		count_selected_disabled++;
 	    if (dn->enabled())
 		count_selected_enabled++;
+	    if (!dn->is_user_command())
+		count_selected_data++;
 
 	    DispValue *dv = dn->selected_value();
 	    if (dv == 0)
@@ -1284,8 +1288,11 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     set_sensitive(display_area[DisplayItms::Delete].widget, count_selected);
 
     // Set
-    set_sensitive(graph_cmd_area[ValueItms::Set].widget, count_selected == 1);
-    set_sensitive(display_area[DisplayItms::Set].widget, count_selected == 1);
+    set_sensitive(graph_cmd_area[ValueItms::Set].widget, 
+		  count_selected == 1 && count_selected_data == 1);
+    set_sensitive(display_area[DisplayItms::Set].widget, 
+		  count_selected == 1 && count_selected_data == 1);
+
 
     // Argument field
     if (count_selected > 0)
@@ -2966,8 +2973,8 @@ void DataDisp::refresh_display_list(bool silent)
     selected[count] = false;
     count++;
 
-    MString status_line;
-    int selected_displays = 0;
+    int selected_displays = 0;	// Number of selected displays
+    int index_selected    = -1;	// Index of single selected display
 
     // Set contents
     for (k = disp_graph->first_nr(ref); k != 0; k = disp_graph->next_nr(ref))
@@ -2981,14 +2988,10 @@ void DataDisp::refresh_display_list(bool silent)
 	label_list[count] = line;
 	selected[count]   = dn->selected();
 
-	if (dn->selected() && ++selected_displays == 1)
-	{
-	    // Set up status line for single display
-	    status_line = rm(nums[count] + " ") 
-		+ tt(exprs[count]) + rm(" (" + states[count]);
-	    if (detect_aliases && addrs[count] != "")
-		status_line += rm(", address ") + tt(addrs[count]);
-	    status_line += rm(")");
+	if (dn->selected())
+	{ 
+	    selected_displays++;
+	    index_selected = count;
 	}
 
 	count++;
@@ -3001,11 +3004,26 @@ void DataDisp::refresh_display_list(bool silent)
 
     if (!silent)
     {
+	// Setup status line
+	MString msg;
+
 	if (selected_displays == 1)
-	    set_status_mstring(rm("Display ") + status_line);
+	{
+	    // Show info about single selected display
+	    msg = rm("Display " + nums[index_selected] + " ");
+	    msg += tt(exprs[index_selected]);
+	    msg += rm(" (" + states[index_selected]);
+	    if (detect_aliases && addrs[index_selected] != "")
+	    {
+		msg += rm(", address ");
+		msg += tt(addrs[index_selected]);
+	    }
+	    msg += rm(")");
+	}
 	else if (selected_displays > 1)
 	{
-	    status_line = rm("Displays ");
+	    // Show info about multiple selected displays
+	    msg = rm("Displays ");
 	    IntArray displays;
 	    for (k = disp_graph->first_nr(ref); k != 0; 
 		 k = disp_graph->next_nr(ref))
@@ -3023,21 +3041,20 @@ void DataDisp::refresh_display_list(bool silent)
 		if (k > 0)
 		{
 		    if (displays.size() == 2)
-			status_line += rm(" and ");
+			msg += rm(" and ");
 		    else if (k == displays.size() - 1)
-			status_line += rm(", and ");
+			msg += rm(", and ");
 		    else
-			status_line += rm(", ");
+			msg += rm(", ");
 		}
-		status_line += rm(itostring(displays[k]));
+		msg += rm(itostring(displays[k]));
 	    }
-	    status_line += rm(" (" + itostring(displays.size()) 
+	    msg += rm(" (" + itostring(displays.size()) 
 			      + " displays)");
 
-	    set_status_mstring(status_line);
 	}
-	else
-	    set_status("");
+
+	set_status_mstring(msg);
     }
 
     delete[] label_list;
@@ -3079,7 +3096,9 @@ void DataDisp::setCB(Widget w, XtPointer, XtPointer)
     value.gsub(RXnl, " ");
     strip_final_blanks(value);
 
-    MString prompt = rm("Enter new value for ") + tt(name) + rm(":");
+    MString prompt = rm("Enter new value for ");
+    prompt += tt(name);
+    prompt += rm(":");
 
     Arg args[10];
     int arg = 0;
@@ -3406,15 +3425,6 @@ void DataDisp::sort_last_change(IntArray& disp_nrs)
     } while (h != 1);
 }
 
-MString DataDisp::pretty(int disp_nr)
-{
-    DispNode *node = disp_graph->get(disp_nr);
-    if (node == 0)
-	return "";
-
-    return rm(node->disp_nr() + ": ") + tt(node->name());
-}
-
 // Merge displays in DISPLAYS.  Set CHANGED iff changed.  Set
 // SUPPRESSED if displays were suppressed.
 void DataDisp::merge_displays(IntArray displays,
@@ -3477,11 +3487,13 @@ void DataDisp::merge_displays(IntArray displays,
 
 	if (suppressed_displays.size() == 1)
 	{
-	    msg += rm("display ") + pretty(suppressed_displays[0]);
+	    DispNode *node = disp_graph->get(suppressed_displays[0]);
+	    msg += rm("display " + node->disp_nr() + ": ");
+	    msg += tt(node->name());
 	}
 	else if (suppressed_displays.size() == 2)
 	{
-	    msg += rm("displays " 
+	    msg += rm("displays "
 		      + itostring(suppressed_displays[0])
 		      + " and "
 		      + itostring(suppressed_displays[1]));
@@ -3499,12 +3511,14 @@ void DataDisp::merge_displays(IntArray displays,
 	    }
 	}
 
-	msg += rm(" because ");
 	if (suppressed_displays.size() == 1)
-	    msg += rm("it is an alias");
+	    msg += rm(" because it is an alias");
 	else
-	    msg += rm("they are aliases");
-	msg += rm(" of display ") + pretty(displays[0]);
+	    msg += rm(" because they are aliases");
+
+	DispNode *of = disp_graph->get(displays[0]);
+	msg += rm(" of display " + of->disp_nr() + ": ");
+	msg += tt(of->name());
 
 	set_status_mstring(msg);
     }

@@ -298,7 +298,6 @@ private:
     static bool check_aliases();
     static void sort_last_change(IntArray& disp_nrs);
     static int last_change_of_disp_nr(int disp_nr);
-    static MString pretty(int disp_nr);
 
     // True iff aliases are to be checked regardless of address changes
     static bool force_check_aliases;
