@@ -37,6 +37,10 @@ Examining Data
 
 - Multiple C++ base classes are better supported.
 
+- Names that are keywords in some programming languages (such as
+  `interface', `object', `class') should no longer impose problems when
+  occurring in programs of other languages.
+
 - Several memory leaks have been plugged. (1)
 
 
