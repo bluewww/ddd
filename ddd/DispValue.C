@@ -795,28 +795,19 @@ void DispValue::clear()
 // Cache
 //-----------------------------------------------------------------------------
 
-bool DispValue::cached_box_is_recent(int depth) const
+void DispValue::validate_box_cache()
 {
-    if (cached_box() == 0)
-	return false;
-
-    if (depth != 0)
+    for (int i = 0; i < nchildren(); i++)
     {
-	int i;
-	for (i = 0; i < nchildren(); i++)
-	{
-	    if (child(i)->_cached_box_change > _cached_box_change)
-		return false;
-	}
+	child(i)->validate_box_cache();
 
-	for (i = 0; i < nchildren(); i++)
+	if (child(i)->cached_box() == 0 ||
+	    child(i)->_cached_box_change > _cached_box_change)
 	{
-	    if (!child(i)->cached_box_is_recent(depth - 1))
-		return false;
+	    clear_cached_box();
+	    break;
 	}
     }
-
-    return true;
 }
 
 //-----------------------------------------------------------------------------

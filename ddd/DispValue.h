@@ -374,8 +374,8 @@ public:
 	return _cached_box;
     }
 
-    // True if cached box is recent respective to DEPTH children
-    bool cached_box_is_recent(int depth = -1) const;
+    // Verify if cached box is recent respective to children's caches
+    void validate_box_cache();
 
     void set_cached_box(Box *value)
     {
