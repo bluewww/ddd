@@ -101,8 +101,7 @@ void UndoBuffer::add(const UndoBufferEntry& entry)
 }
 
 // Add status NAME/VALUE to history
-void UndoBuffer::add_status(const string& name, const string& value, 
-			    bool exec_pos)
+void UndoBuffer::add(const string& name, const string& value, bool exec_pos)
 {
     if (locked)
 	return;
@@ -113,26 +112,26 @@ void UndoBuffer::add_status(const string& name, const string& value,
     if (history.size() > 0)
     {
 	UndoBufferEntry& current_entry = history[history_position - 1];
-	if (!current_entry.status.has(name))
+	if (!current_entry.has(name))
 	{
 	    // Add NAME/VALUE to current position
-	    current_entry.status[name] = value;
+	    current_entry[name] = value;
 	    if (exec_pos)
 		current_entry.exec_pos = true;
 	}
-	else if (current_entry.status[name] != value)
+	else if (current_entry[name] != value)
 	{
 	    // VALUE has changed - use new entry instead
-	    new_entry.status[name] = value;
+	    new_entry[name] = value;
 	}
     }
     else
     {
 	// No history yet: create new entry
-	new_entry.status[name] = value;
+	new_entry[name] = value;
     }
 
-    if (new_entry.status.has(name))
+    if (new_entry.has(name))
 	add(new_entry);
 
     log();
@@ -161,7 +160,7 @@ void UndoBuffer::log()
 	clog << '\t';
 
 	bool first_line = true;
-	for (StringStringAssocIter iter(entry.status); iter.ok(); iter++)
+	for (StringStringAssocIter iter(entry); iter.ok(); iter++)
 	{
 	    if (!first_line)
 		clog << "\n\t";
@@ -174,17 +173,17 @@ void UndoBuffer::log()
 #endif
 }
 
-void UndoBuffer::goto_entry(const UndoBufferEntry& entry)
+void UndoBuffer::process(const UndoBufferEntry& entry)
 {
     locked = true;
 
-    // Lookup position in source
+    // Process position
     string pos = "";
     string address = "";
-    if (entry.status.has(UB_POS))
-	pos = entry.status[UB_POS];
-    if (entry.status.has(UB_ADDRESS))
-	address = entry.status[UB_ADDRESS];
+    if (entry.has(UB_POS))
+	pos = entry[UB_POS];
+    if (entry.has(UB_ADDRESS))
+	address = entry[UB_ADDRESS];
 
     if (pos != "" || address != "")
     {
@@ -194,10 +193,10 @@ void UndoBuffer::goto_entry(const UndoBufferEntry& entry)
 				address, entry.exec_pos);
     }
 
-    // Re-process displays
+    // Process displays
     StringArray displays;
     StringArray values;
-    for (StringStringAssocIter iter(entry.status); iter.ok(); iter++)
+    for (StringStringAssocIter iter(entry); iter.ok(); iter++)
     {
 	if (iter.key().contains(UB_DISPLAY_PREFIX, 0))
 	{
@@ -206,6 +205,27 @@ void UndoBuffer::goto_entry(const UndoBufferEntry& entry)
 	}
     }
     data_disp->update_displays(displays, values);
+
+    // Process threads
+    if (entry.has(UB_THREADS))
+    {
+	string threads = entry[UB_THREADS];
+	source_view->process_threads(threads);
+    }
+
+    // Process backtrace
+    if (entry.has(UB_WHERE))
+    {
+	string where = entry[UB_WHERE];
+	source_view->process_where(where);
+    }
+
+    // Process registers
+    if (entry.has(UB_REGISTERS))
+    {
+	string registers = entry[UB_REGISTERS];
+	source_view->process_registers(registers);
+    }
 
     locked = false;
 
@@ -229,7 +249,7 @@ bool UndoBuffer::undo()
     if (history_position > 1 && history.size() > 0)
     {
 	const UndoBufferEntry& entry = history[--history_position - 1];
-	goto_entry(entry);
+	process(entry);
 	return true;
     }
 
@@ -241,7 +261,7 @@ bool UndoBuffer::redo()
     if (history_position < history.size())
     {
 	const UndoBufferEntry& entry = history[history_position++];
-        goto_entry(entry);
+        process(entry);
 	return true;
     }
 

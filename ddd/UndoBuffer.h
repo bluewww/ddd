@@ -35,11 +35,16 @@
 
 #include "bool.h"
 #include "UndoBE.h"
-#include "string-fun.h"
+#include "string-fun.h"		// itostring()
 
 // Special value keys
-#define UB_POS            "pos"
-#define UB_ADDRESS        "address"
+#define UB_POS       "pos"	 // Current source position
+#define UB_ADDRESS   "address"   // Current program counter
+#define UB_WHERE     "where"     // Current backtrace
+#define UB_REGISTERS "registers" // Current register values
+#define UB_THREADS   "threads"   // Current threads
+
+// Prefix for current displays; followed by display name
 #define UB_DISPLAY_PREFIX "display "
 
 class UndoBuffer {
@@ -57,32 +62,47 @@ protected:
     // Add new entry
     static void add(const UndoBufferEntry& entry);
 
-    // Lookup entry in source
-    static void goto_entry(const UndoBufferEntry& entry);
+    // Process entry
+    static void process(const UndoBufferEntry& entry);
 
     // Log current position
     static void log();
 
 public:
-    // Add status NAME/VALUE to history.
-    static void add_status(const string& name, const string& value, 
-			   bool exec_pos = false);
+    // Add NAME/VALUE to history.  If EXEC_POS is set, mark this as
+    // new execution position.
+    static void add(const string& name, const string& value,
+		    bool exec_pos = false);
 
-    // Add position to history.  If EXEC_POS is set, mark this as new
-    // execution position.
+    // Custom calls
     static void add_position(const string& file_name, int line, bool exec_pos)
     {
-	add_status(UB_POS, file_name + ":" + itostring(line), exec_pos);
+	add(UB_POS, file_name + ":" + itostring(line), exec_pos);
     }
 
     static void add_address(const string& address, bool exec_pos)
     {
-	add_status(UB_ADDRESS, address, exec_pos);
+	add(UB_ADDRESS, address, exec_pos);
+    }
+
+    static void add_where(const string& where)
+    {
+	add(UB_WHERE, where);
+    }
+
+    static void add_registers(const string& registers)
+    {
+	add(UB_REGISTERS, registers);
+    }
+
+    static void add_threads(const string& threads)
+    {
+	add(UB_THREADS, threads);
     }
 
     static void add_display(const string& name, const string& value)
     {
-	add_status(UB_DISPLAY_PREFIX + name, value);
+	add(UB_DISPLAY_PREFIX + name, value);
     }
 
     // Lookup previous/next position; return true iff successful
