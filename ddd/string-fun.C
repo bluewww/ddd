@@ -54,7 +54,7 @@ const regex rxblanks_or_tabs  ("[ \t]+");
 // Convert NR to a string
 string itostring (int nr)
 {
-    char buffer[10];
+    char buffer[20];
     sprintf(buffer, "%d", nr);
     return string(buffer);
 }
