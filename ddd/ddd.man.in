@@ -27,9 +27,9 @@
 .\" `http://www.gnu.org/software/ddd/',
 .\" or send a mail to the DDD developers <ddd@gnu.org>.
 .\"
-.TH @ddd@ 1 "1999\-10\-05" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1999\-10\-07" "@DDD@ @VERSION@" "GNU Tools"
 .SH "NAME"
-@ddd@, x@ddd@ - the data display debugger
+@ddd@, x@ddd@ - The Data Display Debugger
 .SH ""
 .PSPIC @srcdir@/PICS/dddlogo.eps 10cm
 .\"
@@ -39,6 +39,7 @@
 .na
 .TP
 .B @ddd@
+.RB "[\|" \-\-help "\|]"
 .RB "[\|" \-\-gdb "\|]"
 .RB "[\|" \-\-dbx "\|]"
 .RB "[\|" \-\-ladebug "\|]"
@@ -55,7 +56,6 @@
 \&]\c
 .I hostname\c
 \&\|]\|]
-.RB "[\|" \-\-help "\|]"
 .RB "[\|" \-\-trace "\|]"
 .RB "[\|" \-\-version "\|]"
 .RB "[\|" \-\-configuration "\|]"
@@ -63,10 +63,10 @@
 .I options...\c
 \&\|]
 .RB "[\|" \c
-.I program
+.I prog\c
 .RB "[\|" \c
-.I core \c
-\&\||\|
+.I core\c
+\&\||\|\c
 .I procID\c
 \&\|]\|]
 .ad b
@@ -106,7 +106,7 @@ effects of one bug and go on to learn about another.
 debugger (\s-1GDB\s+1) provide a command-line interface and a
 multitude of commands for these and other debugging purposes.
 \s-1@DDD@\s+1 is a comfortable \fIgraphical user interface\fR around
-an inferior \s-1GDB\s+1, \s-1DBX\s+1, \s-1LADEBUG\s+1, \s-1XDB\s+1,
+an inferior \s-1GDB\s+1, \s-1DBX\s+1, Ladebug, \s-1XDB\s+1,
 \s-1JDB\s+1, Python debugger, or Perl debugger.
 .PP
 \s-1@DDD@\s+1 is invoked with the shell command \fBddd\fR.  You can
@@ -187,7 +187,7 @@ option is not used, use \fIusername\fR as remote user name.
 Run \s-1JDB\s+1 as inferior debugger.
 .TP
 .B \-\-ladebug
-Run \s-1LADEBUG\s+1 as inferior debugger.
+Run Ladebug as inferior debugger.
 .TP
 .B \-\-perl
 Run Perl as inferior debugger.
@@ -223,10 +223,7 @@ debugger, can be found in the \s-1@DDD@\s+1 manual.
 .BR gdb (1),
 .BR dbx (1),
 .BR xdb (1),
-.BR perldebug (1),
-.BR remsh (1),
-.BR rsh (1),
-.BR gnuplot (1),
+.BR perldebug (1)
 .PP
 .RB "`\|" ddd "\|'"
 entry in \fBinfo\fR.
@@ -235,17 +232,12 @@ entry in \fBinfo\fR.
 entry in \fBinfo\fR.
 .PP
 .I
-Debugging with \s-1@DDD@\s+1: User's Guide and Reference Manual
+Debugging with \s-1@DDD@\s+1: User's Guide and Reference Manual\c
 \&, by Andreas Zeller.
 .PP
 .I
 Using \s-1GDB\s+1: A Guide to the \s-1GNU\s+1 Source-Level Debugger\c
 \&, by Richard M. Stallman and Roland H. Pesch.
-.PP
-.I
-jdb\(em\&The Java Debugger\c
-\&, at \fBhttp://java.sun.com/\fR (and its mirrors) in
-\fB/products/jdk/1.1/docs/tooldocs/solaris/jdb.html\fR
 .PP
 .I
 Java Language Debugging\c
