@@ -867,6 +867,7 @@ DDD_OBJECTS = \
 	MinMaxA.o    \
 	PlotAgent.o  \
 	PosBuffer.o  \
+	ProgressM.o  \
 	RefreshDI.o  \
 	SmartC.o     \
 	SourceView.o \

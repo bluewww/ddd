@@ -82,6 +82,7 @@ char DataDisp_rcsid[] =
 #include "Map.h"
 #include "PannedGE.h"
 #include "PosBuffer.h"
+#include "ProgressM.h"
 #include "ScrolledGE.h"
 #include "SmartC.h"
 #include "StringBox.h"		// StringBox::fontTable
@@ -122,7 +123,6 @@ char DataDisp_rcsid[] =
 #include <Xm/MessageB.h>
 #include <Xm/ToggleB.h>
 #include <Xm/RowColumn.h>	// XmMenuPosition()
-#include <Xm/Scale.h>
 #include <Xm/SelectioB.h>	// XmCreatePromptDialog()
 #include <Xm/TextF.h>		// XmTextFieldGetString()
 #include <Xm/Label.h>
@@ -3130,7 +3130,7 @@ void DataDisp::refresh_builtin_user_displays()
 
     DispValue::value_hook = update_hook;
 
-    StatusShower s("Updating clusters");
+    ProgressMeter s("Updating clusters");
 
     MapRef ref;
     for (DispNode* dn = disp_graph->first(ref); 
@@ -3159,162 +3159,6 @@ void DataDisp::refresh_builtin_user_displays()
     }
 
     DispValue::value_hook = 0;
-}
-
-
-//-----------------------------------------------------------------------------
-// Show progress when creating or updating
-//-----------------------------------------------------------------------------
-
-struct StatusShower {
-    string msg;			// The message shown
-    StatusDelay delay;		// The delay shown
-    int current;		// Current data to be processed
-    int base;			// Data already processed
-    int total;			// Total of data to be processed
-    int last_shown;		// Last shown amount
-    bool (*old_background)(int); // DispValue bg proc
-    bool aborted;		// True iff bg proc aborted
-
-    // Update status message every UPDATE_THRESHOLD characters.
-    static const int UPDATE_THRESHOLD;
-
-    // Show dialog when updating from at least DIALOG_THRESHOLD characters.
-    static const int DIALOG_THRESHOLD;
-
-    static Widget dialog;
-    static Widget scale;
-
-    bool process(int remaining_length);
-
-    static StatusShower *active; // Currently active object
-    static bool _process(int remaining_length)
-    {
-	return active->process(remaining_length);
-    }
-
-    static void CancelCB(Widget, XtPointer, XtPointer);
-
-    StatusShower(const string& _msg)
-	: msg(_msg),
-	  delay(_msg), current(0), base(0), total(0), last_shown(0),
-	  old_background(DispValue::background),
-	  aborted(false)
-    {
-	DispValue::background = _process;
-	active = (StatusShower *)this;
-
-	if (dialog == 0)
-	{
-	    Arg args[10];
-	    Cardinal arg = 0;
-	    XtSetArg(args[arg], XmNdialogStyle, 
-		     XmDIALOG_FULL_APPLICATION_MODAL); arg++;
-	    dialog = verify(XmCreateWorkingDialog(find_shell(), 
-						  "update_displays_dialog", 
-						  args, arg));
-	    XtUnmanageChild(XmMessageBoxGetChild(dialog, 
-						 XmDIALOG_OK_BUTTON));
-	    XtUnmanageChild(XmMessageBoxGetChild(dialog, 
-						 XmDIALOG_HELP_BUTTON));
-
-	    arg = 0;
-	    XtSetArg(args[arg], XmNorientation, XmHORIZONTAL); arg++;
-	    XtSetArg(args[arg], XmNeditable, False);           arg++;
-#if XmVersion >= 2000
-	    XtSetArg(args[arg], XmNslidingMode, XmTHERMOMETER); arg++;
-#endif
-	    scale = verify(XmCreateScale(dialog, "scale", args, arg));
-	    XtManageChild(scale);
-	}
-    }
-
-    ~StatusShower()
-    {
-	DispValue::background = old_background;
-	active = 0;
-	if (aborted)
-	    delay.outcome = "aborted";
-	XtRemoveCallback(dialog, XmNcancelCallback, CancelCB, 
-			 XtPointer(&aborted));
-	XtUnmanageChild(dialog);
-    }
-
-private:
-    // No copy constructor
-    StatusShower(const StatusShower &)
-	: msg(),
-	  delay(""), current(0), base(0), total(0), last_shown(0),
-	  old_background(0),
-	  aborted(false)
-    {
-	assert(0);
-    }
-
-    // No assignment
-    StatusShower& operator = (const StatusShower &)
-    {
-	assert(0); return *this;
-    }
-};
-
-const int StatusShower::UPDATE_THRESHOLD = 512;
-const int StatusShower::DIALOG_THRESHOLD = 4096;
-
-Widget StatusShower::dialog = 0;
-Widget StatusShower::scale  = 0;
-
-StatusShower *StatusShower::active = 0;
-
-void StatusShower::CancelCB(Widget, XtPointer client_data, XtPointer)
-{
-    bool *flag = (bool *)client_data;
-    *flag = true;
-}
-
-bool StatusShower::process(int remaining_length)
-{
-    int processed = base + current - remaining_length;
-
-#if 0
-    clog << "Processed " << processed << "/" <<  total << " characters\n";
-#endif
-
-    if (!aborted && total >= DIALOG_THRESHOLD && !XtIsManaged(dialog))
-    {
-	MString mmsg = rm(msg + "...");
-	XtVaSetValues(dialog, XmNmessageString, mmsg.xmstring(), NULL);
-	string title = DDD_NAME ": " + capitalize(msg);
-	XtVaSetValues(XtParent(dialog), XmNtitle, (char *)title, NULL);
-	XtAddCallback(dialog, XmNcancelCallback, CancelCB, 
-		      XtPointer(&aborted));
-	manage_and_raise(dialog);
-    }
-
-    if (processed - last_shown >= UPDATE_THRESHOLD)
-    {
-	// Another bunch of characters processed.  Wow!
-	int percent = (processed * 100) / total;
-
-	if (XtIsManaged(dialog))
-	    XmScaleSetValue(scale, percent);
-	else
-	    set_status(msg + "... (" + itostring(percent) + "% processed)", 
-		       true);
-
-	last_shown = processed;
-    }
-
-    // Interrupt if emergency
-    if (!aborted && process_emergencies())
-	aborted = true;
-
-    // If we have a dialog, process its events
-    // (The dialog is modal, such that we cannot be called recursively)
-    if (!aborted && XtIsManaged(dialog))
-	process_pending_events();
-
-    return aborted;
 }
 
 
@@ -3400,7 +3244,7 @@ DispNode *DataDisp::new_data_node(const string& given_name,
 	disabling_occurred = true;
     }
 
-    StatusShower s("Creating display");
+    ProgressMeter s("Creating display");
     s.total   = value.length();
     s.current = value.length();
 
@@ -3427,7 +3271,7 @@ DispNode *DataDisp::new_user_node(const string& name,
     // Assign a default number
     int nr = -(next_ddd_display_number++);
 
-    StatusShower s("Creating status display");
+    ProgressMeter s("Creating status display");
     s.total   = answer.length();
     s.current = answer.length();
 
@@ -4677,7 +4521,7 @@ string DataDisp::process_displays(string& displays,
 	    return "";		// No data and no displays
     }
 
-    StatusShower s("Updating displays");
+    ProgressMeter s("Updating displays");
 
     // Store graph displays in DISP_STRING_MAP; return all other
     // (text) displays as well as error messages
@@ -4906,7 +4750,7 @@ void DataDisp::update_displays(const StringArray& displays,
 	}
     }
 
-    StatusShower s("Restoring displays");
+    ProgressMeter s("Restoring displays");
     for (int i = 0; i < values.size(); i++)
 	s.total += values[i].length();
 
@@ -4976,7 +4820,7 @@ void DataDisp::process_user (StringArray& answers)
     if (answers.size() == 0)
 	return;
 
-    StatusShower s("Updating status displays");
+    ProgressMeter s("Updating status displays");
 
     int i;
     for (i = 0; i < answers.size(); i++)
