@@ -3299,8 +3299,11 @@ int DataDisp::add_refresh_user_commands(StringArray& cmds)
 	 dn != 0;
 	 dn = disp_graph->next(ref))
     {
-	if (dn->is_user_command() && dn->enabled() && !dn->deferred())
+	if (dn->is_user_command() && dn->enabled() && 
+	    !dn->deferred() && !dn->constant())
+	{
 	    cmds += dn->user_command();
+	}
     }
 
     return cmds.size() - initial_size;
@@ -4213,7 +4216,8 @@ void DataDisp::process_user (StringArray& answers)
     {
 	DispNode* dn = disp_graph->get(k);
 
-	if (dn->is_user_command() && dn->enabled() && !dn->deferred())
+	if (dn->is_user_command() && dn->enabled() && 
+	    !dn->deferred() && !dn->constant())
 	{
 	    string answer = answers[i++];
 
