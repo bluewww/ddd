@@ -126,7 +126,7 @@ Volunteers for fixing these and other bugs are welcome!
     c. Some Makefiles in the subdirectories do not use CFLAGS thus
        making it neccessary to always edit them to put in the correct
        options.  This is very time consuming in particular on
-       (e.g. myslef) always forgets at least some little wee thing
+       (e.g. myself) always forgets at least some little wee thing
        somewhere....
        [This is a problem of the libiberty and librx maintainers.  -AZ]
  
@@ -146,7 +146,5 @@ Volunteers for fixing these and other bugs are welcome!
 
 281 In auto deiconify mode, the GDB console uniconifies even if other
     windows are already there.
-
-283*Showing and hiding displays issues a GDB prompt.
 
 284 (Insert new bugs here)

@@ -110,4 +110,14 @@ detail.
     HP-UX box, the tooltips are not complete: "Set/Delete Breakpo???",
     "Display/Undisplay???", etc.
 
-281 (Insert new bugs here)
+281 Michael Marxmeier <mike@msede.com> writes: When configuring a
+    separate Command Tool (with separate windows), its location
+    relative to the source window changes.
+    - The border size is not accounted for. Everytime you
+      change the location of the source window, the distance
+      shrinks.
+    - Sometimes, the CMD tool "jumps" to a default location.
+      With DDD 2.2.3, this happened each time a new source
+      file was opened.
+
+282 (Insert new bugs here)
