@@ -225,15 +225,14 @@ static string component(const AppData& ad, DDDFont font, FontComponent n)
 static string override(FontComponent new_n, 
 		       const string& new_value, const string& font = "")
 {
-    string new_font = "";
+    string new_font;
     for (FontComponent n = Foundry; n <= AllComponents; n++)
     {
-	string w;
-	if (n == new_n)
-	    w = new_value;
-	else
-	    w = component(font, n);
-	new_font += "-" + w;
+	new_font += '-';
+	new_font +=
+	  (n == new_n) ?
+	  new_value :
+	  component(font, n);
     }
 
     return new_font;
@@ -241,13 +240,14 @@ static string override(FontComponent new_n,
 
 string make_font(const AppData& ad, DDDFont base, const string& override)
 {
-    string font = "";
+    string font;
     for (FontComponent n = Foundry; n <= AllComponents; n++)
     {
+	font += '-';
 	string w = component(override, n);
 	if (w.empty() || w == " ")
 	    w = component(ad, base, n);
-	font += "-" + w;
+	font += w;
     }
 
 #if 0
@@ -277,11 +277,10 @@ static void define_font(const AppData& ad,
 
     if (ad.show_fonts)
     {
-	string sym;
-	if (name == MSTRING_DEFAULT_CHARSET)
-	    sym = "default";
-	else
-	    sym = "@" + name;
+	const string sym =
+	  (name == MSTRING_DEFAULT_CHARSET) ?
+	  "default" :
+	  "@" + name;
 	std::cout << sym << "\t" << font << "\n";
     }
 }
@@ -302,7 +301,7 @@ static void set_db_font(const AppData& ad, XrmDatabase& db,
 
 static string define_default_font(const string& font_def)
 {
-    string s = "";
+    string s;
 
     // The canonical way of doing it.
     s += font_def + "=" + MSTRING_DEFAULT_CHARSET + ",";
@@ -312,7 +311,8 @@ static string define_default_font(const string& font_def)
     {
 	// This happens in Motif 1.1 and LessTif.  Ensure
 	// compatibility with other Motif versions.
-	s += font_def + "=charset,";
+	s += font_def;
+	s += "=charset,";
     }
 
     return s;
@@ -559,7 +559,7 @@ void setup_fonts(AppData& ad, XrmDatabase db)
 static string simplify_font(const AppData& ad, DDDFont font, 
 			    const string& source)
 {
-    string s = "";
+    string s;
 
     for (FontComponent n = AllComponents; n >= Foundry; n--)
     {
@@ -579,8 +579,10 @@ static string simplify_font(const AppData& ad, DDDFont font,
 
     if (s.empty())
 	s = component(ad, font, Family);
-    if (!s.contains('-'))
-	s += "-" + component(ad, font, Weight);
+    if (!s.contains('-')) {
+	s += '-';
+	s += component(ad, font, Weight);
+    }
 
 #if 0
     std::clog << "simplify_font(" << font_type(font) << ", " 
