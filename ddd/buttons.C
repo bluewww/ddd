@@ -456,75 +456,58 @@ static void VerifyButtonWorkProc(XtPointer client_data, XtIntervalId *id)
     assert(*id == verify_id);
     verify_id = 0;
 
-    int i;
-    for (i = 0; i < buttons_to_be_verified.size(); i++)
-	if (buttons_to_be_verified[i] != 0)
-	    break;
-
-    if (i >= buttons_to_be_verified.size())
-	return;			// All done
-
-    Widget& button = buttons_to_be_verified[i];
-    assert(button != 0);
-    
-    XtAppContext app_context = XtWidgetToApplicationContext(button);
-
-    XtCallbackList callbacks = 0;
-    XmString xmlabelString = 0;
-    XtVaGetValues(button, 
-		  XmNactivateCallback, &callbacks,
-		  XmNlabelString, &xmlabelString,
-		  NULL);
-    MString labelString(xmlabelString, true);
-    XmStringFree(xmlabelString);
-
-    bool enable = true;
-    for (i = 0; callbacks != 0 && callbacks[i].callback != 0; i++)
+    for (int i = 0; i < buttons_to_be_verified.size(); i++)
     {
-	string cmd = String(callbacks[i].closure);
-	cmd = cmd.through(rxidentifier);
-	if (cmd == "")
+	Widget& button = buttons_to_be_verified[i];
+	if (button == 0)
 	    continue;
 
-	if (callbacks[i].callback == gdbCommandCB)
+	XtCallbackList callbacks = 0;
+	XtVaGetValues(button, 
+		      XmNactivateCallback, &callbacks,
+		      NULL);
+
+	for (int j = 0; callbacks != 0 && callbacks[j].callback != 0; j++)
 	{
-	    bool first_time = !help_cache.has(cmd);
-	    (void) first_time;	// Use it
-
-	    string answer = gdbHelp(cmd);
-	    if (answer == NO_GDB_ANSWER)
+	    if (callbacks[j].callback == gdbCommandCB)
 	    {
-		// Try again in 20ms
-		verify_id = XtAppAddTimeOut(app_context, 20, 
-					    VerifyButtonWorkProc, client_data);
-		return;
-	    }
-
-	    if (!is_known_command(answer))
-	    {
-		enable = false;
-#if 0
-		if (first_time)
+		string cmd = String(callbacks[j].closure);
+		cmd = cmd.through(rxidentifier);
+		if (cmd != "")
 		{
-		    MString msg = rm("Disabling ") + labelString
-			+ rm(" button (not supported on " 
-			     + gdb->title() + ")");
-		    set_status_mstring(msg);
+		    int next_invocation = 0;
+		    XtAppContext app_context = 
+			XtWidgetToApplicationContext(button);
+
+		    string answer = gdbHelp(cmd);
+		    if (answer == NO_GDB_ANSWER)
+		    {
+			// No answer - try again in 20ms
+			next_invocation = 20;
+		    }
+		    else
+		    {
+			XtSetSensitive(button, is_known_command(answer));
+			button = 0;          // Don't process this one again
+			next_invocation = 5; // Process next button in 5ms
+		    }
+
+		    verify_id = XtAppAddTimeOut(app_context, next_invocation,
+						VerifyButtonWorkProc, 
+						client_data);
+		    return;
 		}
-#endif
-		break;
 	    }
 	}
     }
+}
 
-    XtSetSensitive(button, enable);
-
-    button = 0;			// Don't process this one again
-
-    // Process next button in 5ms
-    verify_id = XtAppAddTimeOut(app_context, 5,
-				VerifyButtonWorkProc, client_data);
-    return;
+static void DontVerifyButtonCB(Widget w, XtPointer, XtPointer)
+{
+    // W is being destroyed - remove all references
+    for (int i = 0; i < buttons_to_be_verified.size(); i++)
+	if (buttons_to_be_verified[i] == w)
+	    buttons_to_be_verified[i] = 0;
 }
 
 // Make BUTTON insensitive if it is not supported
@@ -542,6 +525,8 @@ void verify_button(Widget button)
 #endif
 
     buttons_to_be_verified += button;
+    XtAddCallback(button, XtNdestroyCallback, 
+		  DontVerifyButtonCB, XtPointer(0));
 
     // Procedure id
     static XtIntervalId verify_id = 0;
