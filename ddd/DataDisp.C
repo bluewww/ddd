@@ -1818,16 +1818,18 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 	graph_arg->set_string("");
     }
 
-    // Set selection
+    // Set selection.
+    // If the entire graph is selected, include position info, too.
+    bool include_position = (count.selected == count.all);
     ostrstream os;
-    get_selection(os);
+    get_selection(os, include_position);
     string cmd(os);
 
     // Setting the string causes the selection to be lost.  By setting
     // LOSE_SELECTION, we make sure the associated callbacks return
     // immediately.
     lose_selection = false;
-    XmTextSetString(graph_selection_w, cmd);
+    XmTextSetString(graph_selection_w, (char *)cmd);
     lose_selection = true;
 
     Time tm = XtLastTimestampProcessed(XtDisplay(graph_selection_w));
@@ -1949,8 +1951,11 @@ void DataDisp::write_restore_scope_command(ostream& os,
     write_frame_command(os, current_frame, target_frame);
 }
 
-bool DataDisp::get_state(ostream& os, bool restore_state,
-			 const StringArray& scopes, int target_frame)
+bool DataDisp::get_state(ostream& os,
+			 bool restore_state,
+			 bool include_position,
+			 const StringArray& scopes,
+			 int target_frame)
 {
     // Sort displays by number, such that old displays appear before
     // newer ones.
@@ -1989,7 +1994,7 @@ bool DataDisp::get_state(ostream& os, bool restore_state,
 
 	os << "graph display " << dn->name();
 
-	if (restore_state)
+	if (include_position)
 	    os << " at " << dn->nodeptr()->pos();
 
 	// Find dependencies
