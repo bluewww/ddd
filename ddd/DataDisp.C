@@ -262,45 +262,45 @@ const int DataDisp::theme_items = 20;
 MMDesc DataDisp::theme_menu[] =
 {
     {"t1",  MMToggle | MMUnmanaged,  
-        { DataDisp::applyThemeCB, XtPointer(1)  }, 0, 0, 0, 0 },  
+        { DataDisp::toggleThemeCB, XtPointer(1)  }, 0, 0, 0, 0 },  
     {"t2",  MMToggle | MMUnmanaged,  
-        { DataDisp::applyThemeCB, XtPointer(2)  }, 0, 0, 0, 0 },  
+        { DataDisp::toggleThemeCB, XtPointer(2)  }, 0, 0, 0, 0 },  
     {"t3",  MMToggle | MMUnmanaged,  
-        { DataDisp::applyThemeCB, XtPointer(3)  }, 0, 0, 0, 0 },  
+        { DataDisp::toggleThemeCB, XtPointer(3)  }, 0, 0, 0, 0 },  
     {"t4",  MMToggle | MMUnmanaged,  
-        { DataDisp::applyThemeCB, XtPointer(4)  }, 0, 0, 0, 0 },  
+        { DataDisp::toggleThemeCB, XtPointer(4)  }, 0, 0, 0, 0 },  
     {"t5",  MMToggle | MMUnmanaged,  
-        { DataDisp::applyThemeCB, XtPointer(5)  }, 0, 0, 0, 0 },  
+        { DataDisp::toggleThemeCB, XtPointer(5)  }, 0, 0, 0, 0 },  
     {"t6",  MMToggle | MMUnmanaged,  
-        { DataDisp::applyThemeCB, XtPointer(6)  }, 0, 0, 0, 0 },  
+        { DataDisp::toggleThemeCB, XtPointer(6)  }, 0, 0, 0, 0 },  
     {"t7",  MMToggle | MMUnmanaged,  
-        { DataDisp::applyThemeCB, XtPointer(7)  }, 0, 0, 0, 0 },  
+        { DataDisp::toggleThemeCB, XtPointer(7)  }, 0, 0, 0, 0 },  
     {"t8",  MMToggle | MMUnmanaged,  
-        { DataDisp::applyThemeCB, XtPointer(8)  }, 0, 0, 0, 0 },  
+        { DataDisp::toggleThemeCB, XtPointer(8)  }, 0, 0, 0, 0 },  
     {"t9",  MMToggle | MMUnmanaged,  
-        { DataDisp::applyThemeCB, XtPointer(9)  }, 0, 0, 0, 0 },  
+        { DataDisp::toggleThemeCB, XtPointer(9)  }, 0, 0, 0, 0 },  
     {"t10", MMToggle | MMUnmanaged,  
-        { DataDisp::applyThemeCB, XtPointer(10) }, 0, 0, 0, 0 },  
+        { DataDisp::toggleThemeCB, XtPointer(10) }, 0, 0, 0, 0 },  
     {"t11", MMToggle | MMUnmanaged,  
-        { DataDisp::applyThemeCB, XtPointer(11) }, 0, 0, 0, 0 },  
+        { DataDisp::toggleThemeCB, XtPointer(11) }, 0, 0, 0, 0 },  
     {"t12", MMToggle | MMUnmanaged,  
-        { DataDisp::applyThemeCB, XtPointer(12) }, 0, 0, 0, 0 },  
+        { DataDisp::toggleThemeCB, XtPointer(12) }, 0, 0, 0, 0 },  
     {"t13", MMToggle | MMUnmanaged,  
-        { DataDisp::applyThemeCB, XtPointer(13) }, 0, 0, 0, 0 },  
+        { DataDisp::toggleThemeCB, XtPointer(13) }, 0, 0, 0, 0 },  
     {"t14", MMToggle | MMUnmanaged,  
-        { DataDisp::applyThemeCB, XtPointer(14) }, 0, 0, 0, 0 },  
+        { DataDisp::toggleThemeCB, XtPointer(14) }, 0, 0, 0, 0 },  
     {"t15", MMToggle | MMUnmanaged,  
-        { DataDisp::applyThemeCB, XtPointer(15) }, 0, 0, 0, 0 },  
+        { DataDisp::toggleThemeCB, XtPointer(15) }, 0, 0, 0, 0 },  
     {"t16", MMToggle | MMUnmanaged,  
-        { DataDisp::applyThemeCB, XtPointer(16) }, 0, 0, 0, 0 },  
+        { DataDisp::toggleThemeCB, XtPointer(16) }, 0, 0, 0, 0 },  
     {"t17", MMToggle | MMUnmanaged,  
-        { DataDisp::applyThemeCB, XtPointer(17) }, 0, 0, 0, 0 },  
+        { DataDisp::toggleThemeCB, XtPointer(17) }, 0, 0, 0, 0 },  
     {"t18", MMToggle | MMUnmanaged,  
-        { DataDisp::applyThemeCB, XtPointer(18) }, 0, 0, 0, 0 },  
+        { DataDisp::toggleThemeCB, XtPointer(18) }, 0, 0, 0, 0 },  
     {"t19", MMToggle | MMUnmanaged,  
-        { DataDisp::applyThemeCB, XtPointer(19) }, 0, 0, 0, 0 },  
+        { DataDisp::toggleThemeCB, XtPointer(19) }, 0, 0, 0, 0 },  
     {"t20", MMToggle | MMUnmanaged,  
-        { DataDisp::applyThemeCB, XtPointer(20) }, 0, 0, 0, 0 },  
+        { DataDisp::toggleThemeCB, XtPointer(20) }, 0, 0, 0, 0 },  
     MMSep, 
     {"edit",  MMPush, { dddPopupThemesCB, 0 }, 0, 0, 0, 0},
     MMEnd
@@ -602,20 +602,31 @@ string DataDisp::selected_pattern()
     if (dv == 0)
 	return "";		// Nothing selected
 
+#if 0
     DispNode *dn = selected_node();
     if (dv == dn->value())
 	return "";		// Top-level selection
+#endif
+    
+    return pattern(dv->full_name());
+}
 
-    string pattern = dv->full_name();
+string DataDisp::pattern(const string& expr, bool shorten)
+{
+    string pattern = expr;
     pattern.gsub("\\", "\\\\");
     pattern.gsub("?", "\\?");
     pattern.gsub("*", "\\*");
     pattern.gsub("[", "\\[");
     pattern.gsub("]", "\\]");
-    if (pattern.contains("->"))
-	pattern = "*" + pattern.from("->", -1);
-    if (pattern.contains("."))
-	pattern = "*" + pattern.from(".", -1);
+
+    if (shorten)
+    {
+	if (pattern.contains("->"))
+	    pattern = "*" + pattern.from("->", -1);
+	if (pattern.contains("."))
+	    pattern = "*" + pattern.from(".", -1);
+    }
 
     return pattern;
 }
@@ -673,6 +684,72 @@ void DataDisp::applyThemeCB (Widget w, XtPointer client_data, XtPointer)
     manage_and_raise(dialog);
 }
 
+// Unapply the theme in CLIENT_DATA from the selected item.
+void DataDisp::unapplyThemeCB (Widget w, XtPointer client_data, XtPointer)
+{
+    set_last_origin(w);
+
+    if (selected_pattern() == "")
+	return;
+
+    DispValue *dv = selected_value();
+    if (dv == 0)
+	return;
+
+    string theme = String(client_data);
+    string expr = dv->full_name();
+
+    ThemePattern tp = DispBox::theme_manager.pattern(theme);
+    if (!tp.active() || !tp.matches(expr))
+	return;			// Nothing to unapply
+
+    // 1. Try to remove expression
+    tp.remove(pattern(expr, false));
+    if (!tp.matches(expr))
+    {
+	unapply_theme(theme, pattern(expr, false), w);
+	return;
+    }
+
+    // 2. Try to remove expression pattern
+    tp.remove(pattern(expr));
+    if (!tp.matches(expr))
+    {
+	unapply_theme(theme, pattern(expr), w);
+	return;
+    }
+
+    // 3. Remove first matching pattern
+    StringArray patterns = tp.patterns();
+    for (int i = 0; i < patterns.size(); i++)
+    {
+	tp.remove(patterns[i]);
+	if (!tp.matches(expr))
+	{
+	    unapply_theme(theme, patterns[i], w);
+	    return;
+	}
+    }
+}
+
+void DataDisp::toggleThemeCB(Widget button, XtPointer, XtPointer call_data)
+{
+    String theme;
+    XtVaGetValues(button, XmNuserData, &theme, NULL);
+
+    if (XmToggleButtonGetState(button))
+    {
+	// Now activated
+	applyThemeCB(button, XtPointer(theme), call_data);
+    }
+    else
+    {
+	// Now deactivated
+	unapplyThemeCB(button, XtPointer(theme), call_data);
+    }
+}
+
+
 // Apply the theme in CLIENT_DATA to the selected item.
 void DataDisp::applyThemeOnAllCB(Widget, XtPointer client_data, XtPointer)
 {
@@ -692,7 +769,7 @@ void DataDisp::applyThemeOnThisCB(Widget, XtPointer client_data, XtPointer)
 	return;
 
     string theme = String(client_data);
-    apply_theme(theme, dv->full_name());
+    apply_theme(theme, pattern(dv->full_name(), false));
 }
 
 string DataDisp::apply_theme_cmd(const string& theme, const string& pattern)
@@ -715,6 +792,13 @@ void DataDisp::apply_themeSQ(const string& theme, const string& pattern,
     strip_space(p);
 
     ThemePattern& tp = DispBox::theme_manager.pattern(t);
+
+    if (!tp.active())
+    {
+	// Make sure that `old' settings are no longer conserved
+	tp = ThemePattern();
+    }
+
     tp.add(p);
     tp.active() = true;
 
@@ -1139,15 +1223,15 @@ void DataDisp::deleteCB (Widget dialog, XtPointer /* client_data */,
 {
     set_last_origin(dialog);
 
-    if (selected_pattern() != "")
+    DispValue *dv = selected_value();
+    DispNode  *dn = selected_node();
+
+    if (dn != 0 && dv != dn->value())
     {
-	// Display part to be undisplayed
+	// Display part to be suppressed
 	applyThemeCB(dialog, XtPointer(app_data.suppress_theme), call_data);
 	return;
     }
-
-    DispValue *dv = selected_value();
-    DispNode  *dn = selected_node();
 
     IntArray disp_nrs;
     VarArray<GraphNode *> ancestors;
@@ -1863,17 +1947,21 @@ void DataDisp::deleteArgCB(Widget dialog, XtPointer client_data,
     {
 	// Delete selected displays
 	deleteCB(dialog, client_data, call_data);
+	return;
     }
-    else if (selected_pattern() != "")
+
+    DispValue *dv = selected_value();
+    DispNode  *dn = selected_node();
+
+    if (dn != 0 && dv != dn->value())
     {
 	// Suppress selected value
 	applyThemeCB(dialog, XtPointer(app_data.suppress_theme), call_data);
+	return;
     }
-    else
-    {
-	// Delete argument
-	delete_display(source_arg->get_string());
-    }
+
+    // Delete argument
+    delete_display(source_arg->get_string());
 }
 
 
@@ -2201,6 +2289,48 @@ void DataDisp::set_args(BoxPoint p, SelectionMode mode)
 		    graphEditRedrawNode(graph_edit, dn);
 	    }
 	}
+    }
+
+    // Themes.
+    static StringArray all_themes;
+    all_themes = DispBox::theme_manager.themes();
+    StringArray current_themes;
+    DispValue *dv = selected_value();
+    if (dv != 0)
+	current_themes = DispBox::theme_manager.themes(dv->full_name());
+
+    int i;
+    for (i = 0; i < all_themes.size() && theme_menu[i].widget != 0; i++)
+    {
+	const string& theme = all_themes[i];
+	Widget& button = theme_menu[i].widget;
+
+	string doc = vsldoc(theme, DispBox::vsllib_path);
+	if (doc.contains("."))
+	    doc = doc.before(".");
+	else if (doc == "")
+	    doc = theme;
+
+	bool set = false;
+	for (int j = 0; j < current_themes.size(); j++)
+	    if (theme == current_themes[j])
+	    {
+		set = true;
+		break;
+	    }
+
+	XtVaSetValues(button, XmNuserData, (String)theme, NULL);
+
+	set_label(button, doc);
+	XmToggleButtonSetState(button, set, False);
+	manage_child(button, true);
+    }
+
+    for (; theme_menu[i].widget != 0; i++)
+    {
+	Widget& button = theme_menu[i].widget;
+	if (XmIsToggleButton(button))
+	    manage_child(button, false);
     }
 
     refresh_args(true);
@@ -2622,7 +2752,8 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 		  count.selected_clustered > 0);
 
     // Shortcut menu
-    for (int i = 0; i < shortcut_items && i < shortcut_exprs.size(); i++)
+    int i;
+    for (i = 0; i < shortcut_items && i < shortcut_exprs.size(); i++)
     {
 	const string& expr = shortcut_exprs[i];
 	bool sens = false;

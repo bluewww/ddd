@@ -189,6 +189,7 @@ class DataDisp {
     static DispValue *selected_value();
     static DispNode  *selected_node();
     static string selected_pattern();
+    static string pattern(const string& expr, bool shorten = true);
 
     static void open_data_window();
     static void close_data_window();
@@ -580,6 +581,8 @@ public:
     static void unselectAllCB(Widget, XtPointer, XtPointer);
     static void deleteCB(Widget, XtPointer, XtPointer);
     static void applyThemeCB(Widget, XtPointer, XtPointer);
+    static void unapplyThemeCB(Widget, XtPointer, XtPointer);
+    static void toggleThemeCB(Widget, XtPointer, XtPointer);
     static void applyThemeOnThisCB(Widget, XtPointer, XtPointer);
     static void applyThemeOnAllCB(Widget, XtPointer, XtPointer);
 
