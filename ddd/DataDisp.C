@@ -4161,11 +4161,20 @@ void DataDisp::merge_displays(IntArray displays,
 
     if (suppressed_displays.size() > 0)
     {
+	// Some displays have been suppressed.
 	suppressed = true;
 
 	sort(suppressed_displays);
 
-	// Some displays have been suppressed.  Generate appropriate message.
+	// Unselect suppressed displays.  Suggested by Christoph Koegl
+	// <koegl@informatik.uni-kl.de>.
+	for (int i = 0; i < suppressed_displays.size(); i++)
+	{
+	    DispNode *node = disp_graph->get(suppressed_displays[i]);
+	    node->selected() = false;
+	}
+
+	// Generate appropriate message.
 	MString msg = rm("Suppressing ");
 
 	if (suppressed_displays.size() == 1)
