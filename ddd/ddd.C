@@ -841,7 +841,6 @@ XmTextPosition messagePosition;
 // Buttons
 static Widget console_buttons_w;
 static Widget source_buttons_w;
-static Widget tool_buttons_w;
 
 // Strings to be ignored in GDB output
 string gdb_out_ignore = "";
@@ -1422,10 +1421,8 @@ DDD_NAME " is free software and you are welcome to distribute copies of it\n"
     XtVaGetValues(toplevel, XmNiconic, &iconic, NULL);
     if (iconic)
     {
-	// Startup all shells iconified.
+	// Startup command shell iconified; others follow as needed
 	initial_popup_shell(command_shell);
-	initial_popup_shell(source_view_shell);
-	initial_popup_shell(data_disp_shell);
     }
     else if (!app_data.tty_mode)
     {
@@ -1468,7 +1465,10 @@ DDD_NAME " is free software and you are welcome to distribute copies of it\n"
 	tool_buttons_w = 
 	    verify(XmCreateForm(tool_shell, "tool_buttons", args, arg));
 	add_buttons(tool_buttons_w, app_data.tool_buttons);
-	XtManageChild(tool_buttons_w);
+
+	// We don't manage the buttons right now, because doing so
+	// causes the tool shell to pop up.  This is why
+	// `tool_buttons_w' is maintained in `windows.C'.
 
 	wm_set_icon(tool_shell,
 		    iconlogo(tool_buttons_w),
@@ -1482,13 +1482,10 @@ DDD_NAME " is free software and you are welcome to distribute copies of it\n"
 			  StructureNotifyEH, XtPointer(0));
 #endif
 
-	recenter_tool_shell(source_view->source());
-
 	if (source_view_shell || iconic || app_data.tty_mode)
 	{
-	    // We don't need the command tool right now 
-	    // - wait for source window to map
-	    popdown_shell(tool_shell);
+	    // We don't need the command tool right now - 
+	    // wait for source window to map
 	}
 	else
 	{

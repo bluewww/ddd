@@ -1345,12 +1345,12 @@ void SourceView::read_file (string file_name,
 	static bool initial_popup = true;
 	if (initial_popup)
 	{
-	    initial_popup_shell(source_view_shell ? 
-				source_view_shell : command_shell);
-	    initial_popup = false;
-
-	    recenter_tool_shell(source_text_w);
+	    Widget shell = source_view_shell ? 
+				source_view_shell : command_shell;
+	    initial_popup_shell(shell);
 	    initial_popup_shell(tool_shell);
+
+	    initial_popup = false;
 	}
     }
 }

@@ -40,6 +40,8 @@ const char windows_rcsid[] =
 #include "exectty.h"
 #include "AppData.h"
 #include "exit.h"
+#include "ddd.h"
+#include "SourceView.h"
 
 #include <Xm/Xm.h>
 #include <X11/Xutil.h>
@@ -55,6 +57,7 @@ Widget source_view_shell;
 
 // Command tool
 Widget tool_shell;
+Widget tool_buttons_w;
 
 // Flags: shell state
 enum WindowState { PoppedUp, PoppedDown, Iconic, Transient };
@@ -63,6 +66,10 @@ static WindowState data_disp_shell_state   = PoppedDown;
 static WindowState source_view_shell_state = PoppedDown;
 static WindowState tool_shell_state        = PoppedDown;
 
+// Place command tool in upper right edge of REF
+static void recenter_tool_shell(Widget ref);
+
+// Popup initial shell
 void initial_popup_shell(Widget w)
 {
     if (w == 0)
@@ -101,16 +108,32 @@ void initial_popup_shell(Widget w)
 		      XmNy, 0,
 		      NULL);
 
-    XtPopup(w, XtGrabNone);
-
-    if (iconic && w == tool_shell)
-	popdown_shell(w);
+    if (w == tool_shell)
+    {
+	if (iconic)
+	{
+	    popdown_shell(w);
+	}
+	else
+	{
+	    XtManageChild(tool_buttons_w);
+	    XtPopup(w, XtGrabNone);
+	    recenter_tool_shell(source_view->source());
+	}
+    }
+    else
+    {
+	XtPopup(w, XtGrabNone);
+    }
 }
 
 void popup_shell(Widget w)
 {
     if (w == 0)
 	return;
+
+    if (w == tool_shell)
+	XtManageChild(tool_buttons_w);
 
     XtPopup(w, XtGrabNone);
 
@@ -418,7 +441,7 @@ int running_shells()
 //-----------------------------------------------------------------------------
 
 // Place command tool in upper right edge of REF
-void recenter_tool_shell(Widget ref)
+static void recenter_tool_shell(Widget ref)
 {
     const int offset = 10;
 

@@ -42,9 +42,7 @@ extern Widget source_view_shell;
 
 // Command tool
 extern Widget tool_shell;
-
-// Place command tool in upper right edge of W
-extern void recenter_tool_shell(Widget w);
+extern Widget tool_buttons_w;
 
 // Shell management
 extern void initial_popup_shell(Widget w);
