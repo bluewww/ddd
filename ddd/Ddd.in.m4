@@ -4644,7 +4644,7 @@ If LBL(All registers) is set, all registers are shown.
 Ddd*thread_dialog_popup.title:	     	     DDD: Threads
 Ddd*thread_dialog.listLabelString:	     Threads
 Ddd*thread_dialog.okLabelString:	     Close
-Ddd*thread_dialog.applyLabelString:	     Update
+Ddd*thread_dialog.applyLabelString:	     All Threads
 Ddd*thread_dialog.listVisibleItemCount:      10
 
 Ddd*thread_dialog*box.orientation:  XmHORIZONTAL
@@ -4659,7 +4659,10 @@ All debugging commands show information from the perspective\n\
 of the current thread.\n\
 \n\
 Select any thread to make it the current thread.\n\
-Click on LBL(Update) to update the list of threads at any time.
+\n\
+In JDB, select a threadgroup to view all threads of this threadgroup.\n\
+In JDB, click on LBL(All Threads) to view all threads of all threadgroups.
+
 
 
 !-----------------------------------------------------------------------------

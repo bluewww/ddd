@@ -627,7 +627,7 @@ public:
     // Refreshing dialogs
     static void refresh_stack_frames();
     static void refresh_registers();
-    static void refresh_threads();
+    static void refresh_threads(bool all_threadgroups);
 
     // Refreshing commands
     static string refresh_registers_command();

@@ -3113,6 +3113,11 @@ void SourceView::create_shells()
 					   XmDIALOG_SELECTION_LABEL));
     XtUnmanageChild(XmSelectionBoxGetChild(thread_dialog_w, 
 					   XmDIALOG_CANCEL_BUTTON));
+
+    if (gdb->type() != JDB)
+	XtUnmanageChild(XmSelectionBoxGetChild(thread_dialog_w, 
+					       XmDIALOG_APPLY_BUTTON));
+	
     arg = 0;
     thread_list_w = XmSelectionBoxGetChild(thread_dialog_w, XmDIALOG_LIST);
     XtVaSetValues(thread_list_w,
@@ -3133,7 +3138,7 @@ void SourceView::create_shells()
     XtAddCallback(thread_dialog_w,
 		  XmNokCallback, ThreadDialogPoppedDownCB, 0);
     XtAddCallback(thread_dialog_w,
-		  XmNapplyCallback, ViewThreadsCB, 0);
+		  XmNapplyCallback, ViewThreadsCB, XtPointer(true));
     XtAddCallback(thread_dialog_w,
 		  XmNhelpCallback, ImmediateHelpCB, 0);
 
@@ -5778,7 +5783,7 @@ void SourceView::process_threads(string& threads_output)
     delete[] selected;
 }
 
-void SourceView::refresh_threads()
+void SourceView::refresh_threads(bool all_threadgroups)
 {
     switch (gdb->type())
     {
@@ -5790,11 +5795,18 @@ void SourceView::refresh_threads()
     }
     case JDB:
     {
-	// In JDB, `threadgroup system' seems to make `threads' list
-	// the threads of *all* threadgroups, not only system threads.
-	gdb_question("threadgroup system");
-	string threads = gdb_question("threads");
-	process_threads(threads);
+	if (all_threadgroups)
+	{
+	    // In JDB, `threadgroup system' seems to make `threads' list
+	    // the threads of *all* threadgroups, not only system threads.
+	    // This command will also automatically trigger an update.
+	    gdb_command("threadgroup system");
+	}
+	else
+	{
+	    string threads = gdb_question("threads");
+	    process_threads(threads);
+	}
 	break;
     }
     case DBX:
@@ -5804,9 +5816,9 @@ void SourceView::refresh_threads()
     }
 }
 
-void SourceView::ViewThreadsCB(Widget, XtPointer, XtPointer)
+void SourceView::ViewThreadsCB(Widget, XtPointer client_data, XtPointer)
 {
-    refresh_threads();
+    refresh_threads(bool(client_data));
     manage_and_raise(thread_dialog_w);
     thread_dialog_popped_up = true;
 }
@@ -5816,14 +5828,42 @@ void SourceView::ThreadDialogPoppedDownCB (Widget, XtPointer, XtPointer)
     thread_dialog_popped_up = false;
 }
 
-void SourceView::SelectThreadCB (Widget, XtPointer, XtPointer)
+void SourceView::SelectThreadCB(Widget w, XtPointer, XtPointer)
 {
     // Get the selected threads
     IntArray threads;
     getDisplayNumbers(thread_list_w, threads);
 
     if (threads.size() == 1)
-	gdb_command("thread " + itostring(threads[0]));
+	gdb_command("thread " + itostring(threads[0]), w);
+    else if (threads.size() == 0 && gdb->type() == JDB)
+    {
+	// Check if we have selected a threadgroup
+	XmStringTable selected_items;
+	int selected_items_count = 0;
+
+	XtVaGetValues(thread_list_w,
+		      XmNselectedItemCount, &selected_items_count,
+		      XmNselectedItems, &selected_items,
+		      NULL);
+
+	if (selected_items_count == 1)
+	{
+	    String _item;
+	    XmStringGetLtoR(selected_items[0], LIST_CHARSET, &_item);
+	    string item(_item);
+	    XtFree(_item);
+	    
+	    // Output has the form `Group jtest.main:'
+	    if (item.contains("Group ", 0))
+	    {
+		string threadgroup = item.after(" ");
+		read_leading_blanks(threadgroup);
+		threadgroup = threadgroup.before(":");
+		gdb_command("threadgroup " + threadgroup, w);
+	    }
+	}
+    }
 }
 
 //-----------------------------------------------------------------------------
