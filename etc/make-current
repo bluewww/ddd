@@ -122,7 +122,7 @@ chgrp ddd ddd
 chmod g+s ddd
 
 # Get the DDD development tree out of CVS.
-cvs checkout ddd
+cvs checkout -P ddd
 cd ddd
 
 if $final; then
@@ -148,7 +148,6 @@ ln -s $CVSROOT/CVSROOT/ddd-log-96 ChangeLog-96
 ln -s $CVSROOT/CVSROOT/ddd-log-95 ChangeLog-95
 autoconf
 (cd ddd && autoconf)
-(cd librx && autoconf)
 (cd termcap && autoconf)
 sh ./configure --x-libraries=/usr/X11R5/lib --x-includes=/usr/X11R5/include -v
 
@@ -156,8 +155,7 @@ sh ./configure --x-libraries=/usr/X11R5/lib --x-includes=/usr/X11R5/include -v
 touch ddd/Makedeps
 
 # Create distribution stuff.
-(cd libiberty; make)
-(cd librx; make)
+(cd libiberty && test -f Makefile && make)
 (cd ddd; make Makefile)
 (cd ddd; make diststuff)
 
