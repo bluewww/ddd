@@ -314,8 +314,17 @@ Ddd*plot2dSettings:   set noborder
 Ddd*plot3dSettings:   set border
 
 ! Which plot window to choose.
-! `on' means to use the plot window built into DDD.
-! `off' means to swallow the plot window supplied by Gnuplot.
+!
+! `on' means to use the plot window built into DDD:
+!      + no interference with window manager
+!      + requires less X resources than Gnuplot window
+!      - slower
+!      - no customization
+! `off' instructs DDD to `swallow' the plot window supplied by Gnuplot:
+!      + works just as Gnuplot users expect
+!      - swallowing may interfere with window manager
+!
+! Default is `off' since no problems with swallowing are yet known.
 Ddd*builtinPlot: off
 
 
