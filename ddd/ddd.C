@@ -314,6 +314,9 @@ static void fix_status_size();
 // Decorate new shell
 static void decorate_new_shell(Widget w);
 
+// Check if window manager decorates transients
+static bool have_decorated_transients(Widget shell);
+
 //-----------------------------------------------------------------------------
 // Xt Stuff
 //-----------------------------------------------------------------------------
@@ -2017,9 +2020,26 @@ int main(int argc, char *argv[])
 	XtSetArg(args[arg], XmNallowShellResize, False);      arg++;
 	XtSetArg(args[arg], XmNmwmDecorations,
 		 MWM_DECOR_BORDER | MWM_DECOR_TITLE | MWM_DECOR_MENU); arg++;
-	tool_shell = 
-	    verify(XmCreateDialogShell(tool_shell_parent, 
-				       "tool_shell", args, arg));
+
+	// It is preferable to realize the command tool as a
+	// DialogShell, since this will cause it to stay on top of
+	// other DDD windows.  Unfortunately, some window managers do
+	// not decorate transient windows such as DialogShells.
+	// In this case, use a TopLevel shell instead and rely
+	// on the DDD auto-raise mechanisms defined in `windows.C'.
+	if (have_decorated_transients(tool_shell_parent))
+	{
+	    tool_shell = 
+		verify(XmCreateDialogShell(tool_shell_parent, 
+					   "tool_shell", args, arg));
+	}
+	else
+	{
+	    tool_shell = 
+		verify(XtCreateWidget("tool_shell", vendorShellWidgetClass,
+				      tool_shell_parent, args, arg));
+	}
+
 	XmAddWMProtocolCallback(tool_shell, WM_DELETE_WINDOW, 
 				gdbCloseToolWindowCB, 0);
 
@@ -4014,6 +4034,50 @@ static void ddd_xt_warning(String message)
 }
 
 
+// Check if window manager decorates transients
+static bool have_decorated_transients(Widget parent)
+{
+    Position pos_x = 0;
+    Position pos_y = 0;
+
+    ostrstream os;
+    os << "+" << pos_x << "+" << pos_y;
+    string geometry(os);
+
+    Pixmap pixmap = versionlogo(parent);
+
+    Arg args[10];
+    int arg = 0;
+    XtSetArg(args[arg], XmNgeometry, geometry.chars()); arg++;
+    XtSetArg(args[arg], XmNx, pos_x);                   arg++;
+    XtSetArg(args[arg], XmNy, pos_y);                   arg++;
+    XtSetArg(args[arg], XmNsymbolPixmap, pixmap);       arg++;
+    Widget init_shell = 
+	verify(XtCreateWidget("init", transientShellWidgetClass,
+			      parent, args, arg));
+    Widget init_label = verify(XmCreateLabel(init_shell, ddd_NAME, args, arg));
+    XtManageChild(init_label);
+    XtRealizeWidget(init_shell);
+    XtPopup(init_shell, XtGrabNone);
+
+    wait_until_mapped(init_shell);
+
+    XWindowAttributes shell_attributes;
+    XGetWindowAttributes(XtDisplay(init_shell), XtWindow(init_shell), 
+			 &shell_attributes);
+
+    XWindowAttributes frame_attributes;
+    XGetWindowAttributes(XtDisplay(init_shell), 
+			 frame(XtDisplay(init_shell), XtWindow(init_shell)), 
+			 &frame_attributes);
+
+    XtDestroyWidget(init_shell);
+    XFreePixmap(XtDisplay(parent), pixmap);
+
+    // If the window manager frame is larger than the shell window,
+    // assume the shell is decorated.
+    return frame_attributes.height - shell_attributes.height > 5;
+}
 
 //-----------------------------------------------------------------------------
 // Emergency

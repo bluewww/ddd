@@ -84,6 +84,10 @@ extern bool have_visible_data_window();
 extern bool have_visible_exec_window();
 extern bool have_visible_tool_window();
 
+
+// Find the WM frame surrounding WINDOW
+Window frame(Display *display, Window window);
+
 extern void DDDCloseCB              (Widget, XtPointer, XtPointer);
 
 // Register this event handler with all shells

@@ -83,6 +83,8 @@ bool popups_disabled = false;
 // Place command tool in upper right edge of REF
 static void recenter_tool_shell(Widget ref);
 
+static string last_tool_shell_geometry = "+0+0";
+
 static void RecenterToolShellCB(XtPointer, XtIntervalId *)
 {
     XWindowAttributes attr;
@@ -408,7 +410,7 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 	else if (w == tool_shell)
 	    tool_shell_visibility = event->xvisibility.state;
 
-	// Check whether command tool is obscured
+	// Auto-raise of command tool
 	if (obscures(command_shell, tool_shell)
 	    || obscures(data_disp_shell, tool_shell)
 	    || obscures(source_view_shell, tool_shell))
@@ -627,6 +629,10 @@ void gdbCloseToolWindowCB(Widget, XtPointer, XtPointer)
 
 void gdbOpenToolWindowCB(Widget, XtPointer, XtPointer)
 {
+    XtVaSetValues(tool_shell,
+		  XmNgeometry, last_tool_shell_geometry.chars(),
+		  NULL);
+
     popup_shell(tool_shell);
     wait_until_mapped(tool_shell);
     recenter_tool_shell(source_view->source());
@@ -728,9 +734,8 @@ void gdbToggleToolWindowCB(Widget w, XtPointer client_data,
 //-----------------------------------------------------------------------------
 
 // Find the WM frame surrounding WINDOW
-static Window frame_window(Window window)
+Window frame(Display *display, Window window)
 {
-    // Find WM frame surrounding tool shell
     Window w = window;
     for (;;)
     {
@@ -738,7 +743,7 @@ static Window frame_window(Window window)
 	Window parent;
 	Window *children = 0;
 	unsigned int nchildren;
-	Status ok = XQueryTree(XtDisplay(tool_shell), w, 
+	Status ok = XQueryTree(display, w, 
 			       &root, &parent, &children, &nchildren);
 	XFree(children);
 
@@ -754,6 +759,12 @@ static Window frame_window(Window window)
     return window;		// Not found
 }
 
+// Find WM frame surrounding the tool shell
+static Window frame_tool_shell()
+{
+    return frame(XtDisplay(tool_shell), XtWindow(tool_shell));
+}
+
 // Place command tool in upper right edge of REF
 static void recenter_tool_shell(Widget ref)
 {
@@ -764,7 +775,7 @@ static void recenter_tool_shell(Widget ref)
 
     Window ref_window  = XtWindow(ref);
     Window tool_window = XtWindow(tool_shell);
-    Window tool_frame  = frame_window(tool_window);
+    Window tool_frame  = frame_tool_shell();
 
     // Get location of upper right edge of REF
     XWindowAttributes ref_attributes;
@@ -805,11 +816,11 @@ static void recenter_tool_shell(Widget ref)
 
     ostrstream os;
     os << "+" << root_x << "+" << root_y;
-    string geometry(os);
+    last_tool_shell_geometry = string(os);
 
     // Move tool shell to ROOT_X, ROOT_Y
     XtVaSetValues(tool_shell,
-		  XmNgeometry, geometry.chars(),
+		  XmNgeometry, last_tool_shell_geometry.chars(),
 		  XmNx, root_x,
 		  XmNy, root_y,
 		  NULL);
@@ -827,7 +838,7 @@ void get_tool_offset()
 
     Window ref_window  = XtWindow(ref);
     Window tool_window = XtWindow(tool_shell);
-    Window tool_frame  = frame_window(tool_window);
+    Window tool_frame  = frame_tool_shell();
 
     // Get location of upper right edge of REF
     XWindowAttributes ref_attributes;
