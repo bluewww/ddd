@@ -1960,6 +1960,36 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNmaintenance,
+	XtCMaintenance,
+	XmRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, maintenance),
+	XmRImmediate,
+	XtPointer(False)
+    },
+
+    {
+	XtNdumpCore,
+	XtCDumpCore,
+	XmRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, dump_core),
+	XmRImmediate,
+	XtPointer(True)
+    },
+
+    {
+	XtNdebugCoreDumps,
+	XtCDebugCoreDumps,
+	XmRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, debug_core_dumps),
+	XmRImmediate,
+	XtPointer(False)
+    },
+
+    {
 	XtNlessTifVersion,
 	XtCLessTifVersion,
 	XmRInt,

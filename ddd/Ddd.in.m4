@@ -2869,6 +2869,45 @@ Ddd*dataMenu.refresh.documentationString:	\
 @rm Redraw all displays, using current values
 
 
+
+! Maintenance menu
+Ddd*menubar.maintenance.labelString:	Maintenance
+Ddd*menubar.maintenance.mnemonic:	M
+Ddd*menubar.maintenance*documentationString:   \
+@rm Debug DDD
+
+define(MAINTENANCE_HELP, [\
+\
+WIDGET(Maintenance Menu)\n\
+\n\
+DESC(Debug [[[[DDD]]]]..., [invoke a debugger on this DDD instance])\n\
+\n\
+DESC(Dump Core Upon Crash, [dump core when DDD crashes])\n\
+DESC(Debug [[[[DDD]]]] Upon Crash, [invoke debugger on DDD when it crashes])
+])dnl
+
+Ddd*menubar.maintenance*helpString: MAINTENANCE_HELP
+Ddd*maintenanceMenu*helpString:     MAINTENANCE_HELP
+Ddd*maintenanceMenu*tearOffTitle:   Maintenance
+
+Ddd*maintenanceMenu.debug.labelString:		Debug DDD...
+Ddd*maintenanceMenu.debug.mnemonic:		D
+Ddd*maintenanceMenu.debug.accelerator:		~Shift ~Ctrl<Key>F12
+Ddd*maintenanceMenu.debug.acceleratorText:	F12
+Ddd*maintenanceMenu.debug.documentationString:	\
+@rm Invoke a debugger on this DDD instance
+
+Ddd*maintenanceMenu.dumpCore.labelString:	Dump Core Upon Crash
+Ddd*maintenanceMenu.dumpCore.mnemonic:		C
+Ddd*maintenanceMenu.dumpCore.documentationString:	\
+@rm Dump core when DDD crashes
+
+Ddd*maintenanceMenu.debugCoreDump.labelString:	Debug DDD Upon Crash
+Ddd*maintenanceMenu.debugCoreDump.mnemonic:	U
+Ddd*maintenanceMenu.debugCoreDump.documentationString:	\
+@rm Invoke debugger on DDD when it crashes
+
+
 ! Help menu
 Ddd*menubar.help.labelString:		Help
 Ddd*menubar.help.mnemonic:		H
@@ -2893,8 +2932,6 @@ DESC(@GDB@ Reference..., [the @GDB@ on-line manual])\n\
 \n\
 DESC([[[[DDD]]]] License..., [copying, distributing, and modifying DDD])\n\
 DESC([[[[DDD]]]] WWW Page..., [the DDD WWW page])\n\
-\n\
-DESC(Debug [[[[DDD]]]]..., [invoke a debugger to debug DDD])\n\
 \n\
 DESC(About [[[[DDD]]]]..., [some general information about DDD])
 ])dnl
@@ -2970,13 +3007,6 @@ Ddd*helpMenu.www.labelString:			DDD WWW Page...
 Ddd*helpMenu.www.mnemonic:			P
 Ddd*helpMenu.www.documentationString:	\
 @rm Invoke a WWW browser with up-to-date DDD information
-
-Ddd*helpMenu.debug.labelString:			Debug DDD...
-Ddd*helpMenu.debug.mnemonic:			D
-Ddd*helpMenu.debug.accelerator:			~Shift Ctrl<Key>F12
-Ddd*helpMenu.debug.acceleratorText:		Ctrl+F12
-Ddd*helpMenu.debug.documentationString:	\
-@rm Invoke a debugger on this DDD instance (for maintenance only)
 
 Ddd*helpMenu.onVersion.labelString:		About DDD...
 Ddd*helpMenu.onVersion.mnemonic:		A

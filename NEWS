@@ -254,6 +254,14 @@ Maintenance
 - All remaining German comments in DDD source have been translated
   into English.
 
+- The `--maintenance' option enables a top-level `Maintenance' menu
+  with additional options for maintaining DDD.
+
+- The resources `dumpCore' and `debugCoreDumps' control what DDD
+  should do when receiving a fatal signal.  If `dumpCore' is set, DDD
+  dumps a core file; if `debugCoreDumps' is set, DDD invokes a
+  debugger on itself.
+
 
 
 DDD 3.0

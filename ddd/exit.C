@@ -495,7 +495,7 @@ static void ddd_fatal(int sig...)
     ddd_install_fatal();
 
     bool have_core_file = false;
-    if (sig != SIGINT)
+    if (sig != SIGINT && app_data.dump_core)
     {
 	// Create core file (without interrupting DDD)
 	unlink("core");
@@ -555,15 +555,23 @@ static bool ddd_dump_core(int sig...)
 	    perror(ddd_NAME);
     }
 
-#if WITH_DEBUGGING_DDD
-    // Invoke debugger
-    debug_ddd();
-#endif
+    if (app_data.debug_core_dumps)
+    {
+	// Invoke debugger
+	debug_ddd();
+    }
 
     if (sig == SIGUSR1)
     {
 	// Re-install handler (for SVR4 and others)
 	signal(sig, SignalProc(ddd_dump_core));
+
+	// Enable maintenance menu
+	if (!app_data.maintenance)
+	{
+	    app_data.maintenance = true;
+	    update_options();
+	}
     }
 
     return false;

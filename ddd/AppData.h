@@ -377,6 +377,12 @@
 #define XtCMaxUndoDepth          "MaxUndoDepth"
 #define XtNmaxUndoSize           "maxUndoSize"
 #define XtCMaxUndoSize           "MaxUndoSize"
+#define XtNdumpCore              "dumpCore"
+#define XtCDumpCore              "DumpCore"
+#define XtNdebugCoreDumps        "debugCoreDumps"
+#define XtCDebugCoreDumps        "DebugCoreDumps"
+#define XtNmaintenance       	 "maintenance"
+#define XtCMaintenance       	 "Maintenance"
 #define XtNlessTifVersion        "lessTifVersion"
 #define XtCLessTifVersion        "LessTifVersion"
 #define XtNdddinitVersion        "dddinitVersion"
@@ -574,6 +580,9 @@ struct AppData {
     BindingStyle select_all_bindings;
     int       max_undo_depth;
     int       max_undo_size;
+    Boolean   maintenance;
+    Boolean   dump_core;
+    Boolean   debug_core_dumps;
     int       lesstif_version;
     String    dddinit_version;
     String    app_defaults_version;

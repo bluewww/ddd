@@ -598,6 +598,12 @@ static XrmOptionDescRec options[] = {
 { "--manual",               XtNshowManual,           XrmoptionNoArg, ON },
 { "-manual",                XtNshowManual,           XrmoptionNoArg, ON },
 
+{ "--maintenance",          XtNmaintenance,          XrmoptionNoArg, ON },
+{ "-maintenance",           XtNmaintenance,          XrmoptionNoArg, ON },
+
+{ "--no-maintenance",       XtNmaintenance,          XrmoptionNoArg, OFF },
+{ "-no-maintenance",        XtNmaintenance,          XrmoptionNoArg, OFF },
+
 { "--license",              XtNshowLicense,          XrmoptionNoArg, ON },
 { "-license",               XtNshowLicense,          XrmoptionNoArg, ON },
 
@@ -1433,6 +1439,23 @@ static MMDesc data_menu[] =
 };
 
 
+// Maintenance
+static Widget dump_core_w       = 0;
+static Widget debug_core_dump_w = 0;
+
+static MMDesc maintenance_menu[] = 
+{
+    { "debug",         MMPush, { DDDDebugCB, 0 }, 0, 0, 0, 0 },
+    MMSep,
+    { "dumpCore",      MMToggle, { dddToggleDumpCoreCB, 0 }, 0,
+      &dump_core_w, 0, 0 },
+    { "debugCoreDump", MMToggle, { dddToggleDebugCoreDumpCB, 0 }, 0,
+      &debug_core_dump_w, 0, 0 },
+    MMEnd
+};
+
+static Widget maintenance_w = 0;
+
 // Menu Bar for DDD command window
 static MMDesc command_menubar[] = 
 {
@@ -1444,6 +1467,8 @@ static MMDesc command_menubar[] =
       				   command_view_menu, 0, 0, 0 },
     { "program",  MMMenu,          MMNoCB, command_program_menu, 0, 0, 0 },
     { "commands", MMMenu,          MMNoCB, command_menu, 0, 0, 0  },
+    { "maintenance", MMMenu | MMUnmanaged, MMNoCB, maintenance_menu, 
+      &maintenance_w, 0, 0  },
     { "help",     MMMenu | MMHelp, MMNoCB, simple_help_menu, 0, 0, 0  },
     MMEnd
 };
@@ -1493,6 +1518,8 @@ static MMDesc common_menubar[] =
     { "stack",      MMMenu,       MMNoCB, stack_menu, 0, 0, 0  },
     { "source",     MMMenu,       MMNoCB, source_menu, 0, 0, 0  },
     { "data",       MMMenu,       MMNoCB, data_menu, 0, 0, 0  },
+    { "maintenance", MMMenu | MMUnmanaged, MMNoCB, maintenance_menu, 
+      &maintenance_w, 0, 0  },
     { "help", MMMenu | MMHelp,    MMNoCB, simple_help_menu, 0, 0, 0  },
     MMEnd
 };
@@ -3959,6 +3986,11 @@ void update_options()
     set_select_all_bindings(command_edit_menu, select_all_style);
     set_select_all_bindings(source_edit_menu,  select_all_style);
     set_select_all_bindings(data_edit_menu,    select_all_style);
+
+    // Maintenance
+    manage_child(maintenance_w,   app_data.maintenance);
+    set_toggle(dump_core_w,       app_data.dump_core);
+    set_toggle(debug_core_dump_w, app_data.debug_core_dumps);
 
     // Check for source toolbar
     Widget arg_cmd_w = XtParent(source_arg->top());

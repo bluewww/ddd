@@ -718,6 +718,30 @@ void dddToggleValueDocsCB (Widget, XtPointer, XtPointer call_data)
 
 
 //-----------------------------------------------------------------------------
+// Maintenance
+//-----------------------------------------------------------------------------
+
+void dddToggleDumpCoreCB(Widget, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    app_data.dump_core = info->set;
+
+    update_options();
+}
+
+void dddToggleDebugCoreDumpCB(Widget, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    app_data.debug_core_dumps = info->set;
+
+    update_options();
+}
+
+//-----------------------------------------------------------------------------
 // Startup Options
 //-----------------------------------------------------------------------------
 
@@ -2652,6 +2676,11 @@ bool save_options(unsigned long flags)
 			 app_data.group_iconify) << '\n';
     os << bool_app_value(XtNuniconifyWhenReady,
 			 app_data.uniconify_when_ready) << '\n';
+
+    // Maintenance
+    os << "\n! Maintenance.\n";
+    os << bool_app_value(XtNdumpCore,       app_data.dump_core) << '\n';
+    os << bool_app_value(XtNdebugCoreDumps, app_data.debug_core_dumps) << '\n';
 
     // Window sizes.
     os << "\n! Window sizes.\n";
