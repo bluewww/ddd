@@ -4859,7 +4859,7 @@ void DataDisp::delete_displayOQC (const string& answer, void *data)
 	if (!reply.contains('y', 0))
 	{
 	    // Deletion was canceled
-	    static IntArray empty;
+	    static const IntArray empty;
 	    info->display_nrs = empty;
 	}
     }

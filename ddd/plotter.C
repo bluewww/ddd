@@ -943,7 +943,7 @@ void clear_plot_window_cache()
 	}
     }
 
-    static VoidArray empty;
+    static const VoidArray empty;
     plot_infos = empty;
 }
 

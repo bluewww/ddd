@@ -212,7 +212,7 @@ void updateLabelList (Widget  selectionList,
 // Fill the item numbers in DISP_NRS
 void getItemNumbers(Widget selectionList, IntArray& numbers)
 {
-    static IntArray empty;
+    static const IntArray empty;
     numbers = empty;
 
     if (selectionList == 0)

@@ -304,7 +304,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 
     const char *initial_value = value.chars();
 
-    static DispValueArray empty(0);
+    static const DispValueArray empty(0);
     _children = empty;
 
     if (background(value.length()))
@@ -859,7 +859,7 @@ void DispValue::clear()
     for (int i = 0; i < nchildren(); i++)
 	child(i)->unlink();
 
-    static DispValueArray empty(0);
+    static const DispValueArray empty(0);
     _children = empty;
 
     if (plotter() != 0)

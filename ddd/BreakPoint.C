@@ -597,7 +597,7 @@ void BreakPoint::process_perl(string& info_output)
 	}
     }
 
-    static StringArray empty;
+    static const StringArray empty;
     mycommands = empty;
     myline_nr = atoi(info_output.chars());
     info_output = info_output.after('\n');

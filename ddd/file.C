@@ -968,7 +968,7 @@ static int ps_pid(const string& line)
 // Fill the pids in DISP_NRS
 static void getPIDs(Widget selectionList, IntArray& disp_nrs)
 {
-    static IntArray empty;
+    static const IntArray empty;
     disp_nrs = empty;
 
     XmStringTable selected_items;
@@ -1362,7 +1362,7 @@ static void warn_if_no_program(Widget popdown)
 // Get the selected item ids
 static void get_items(Widget selectionList, StringArray& itemids)
 {
-    static StringArray empty;
+    static const StringArray empty;
     itemids = empty;
 
     XmStringTable selected_items;
@@ -1482,7 +1482,7 @@ static void SelectSourceCB(Widget w, XtPointer, XtPointer call_data)
 // Get list of sources into SOURCES_LIST
 void get_gdb_sources(StringArray& sources_list)
 {
-    static StringArray empty;
+    static const StringArray empty;
     sources_list = empty;
 
     string ans = gdb_question("info sources");

@@ -2540,15 +2540,15 @@ XmTextPosition SourceView::pos_of_line(int line)
 // Clear the file cache
 void SourceView::clear_file_cache()
 {
-    static StringStringAssoc string_empty;
+    static const StringStringAssoc string_empty;
     file_cache        = string_empty;
     source_name_cache = string_empty;
     file_name_cache   = string_empty;
 
-    static StringOriginAssoc origin_empty;
+    static const StringOriginAssoc origin_empty;
     origin_cache      = origin_empty;
 
-    static StringArray bad_files_empty;
+    static const StringArray bad_files_empty;
     bad_files         = bad_files_empty;
 }
 
@@ -2916,7 +2916,7 @@ void SourceView::refresh_code_bp_disp(bool reset)
 	}
     }
 
-    static StringArray empty;
+    static const StringArray empty;
     bp_addresses = empty;
 
     if (display_glyphs)
@@ -7709,48 +7709,30 @@ string SourceView::get_line(string position)
 // Whether to cache glyph images
 bool SourceView::cache_glyph_images = true;
 
+static
+void DestroyOldWidgets(WidgetArray& Array){
+  const int size = Array.size();
+  for (int i = 0; i < size; i++)
+    {
+      if (Array[i] != 0)
+	XtDestroyWidget(Array[i]);
+    }
+}
+
 // Change number of glyphs
 void SourceView::set_max_glyphs (int nmax)
 {
-    WidgetArray empty(nmax);
+    static const WidgetArray empty;
 
     for (int k = 0; k < 2; k++)
     {
-	int i;
-
 	// Destroy old widgets...
-	for (i = 0; i < plain_stops[k].size(); i++)
-	{
-	    if (plain_stops[k][i] != 0)
-		XtDestroyWidget(plain_stops[k][i]);
-	}
-	for (i = 0; i < grey_stops[k].size(); i++)
-	{
-	    if (grey_stops[k][i] != 0)
-		XtDestroyWidget(grey_stops[k][i]);
-	}
-
-	for (i = 0; i < plain_conds[k].size(); i++)
-	{
-	    if (plain_conds[k][i] != 0)
-		XtDestroyWidget(plain_conds[k][i]);
-	}
-	for (i = 0; i < grey_conds[k].size(); i++)
-	{
-	    if (grey_conds[k][i] != 0)
-		XtDestroyWidget(grey_conds[k][i]);
-	}
-
-	for (i = 0; i < plain_temps[k].size(); i++)
-	{
-	    if (plain_temps[k][i] != 0)
-		XtDestroyWidget(plain_temps[k][i]);
-	}
-	for (i = 0; i < grey_temps[k].size(); i++)
-	{
-	    if (grey_temps[k][i] != 0)
-		XtDestroyWidget(grey_temps[k][i]);
-	}
+        DestroyOldWidgets(plain_stops[k]);
+	DestroyOldWidgets(grey_stops[k]);
+	DestroyOldWidgets(plain_conds[k]);
+	DestroyOldWidgets(grey_conds[k]);
+	DestroyOldWidgets(plain_temps[k]);
+	DestroyOldWidgets(grey_temps[k]);
 
 	// ...make array empty...
 	plain_stops[k] = empty;
@@ -7763,6 +7745,7 @@ void SourceView::set_max_glyphs (int nmax)
 	grey_temps[k]  = empty;
 
 	// ...and make room for new widgets.  The last one is a null pointer.
+	int i;
 	for (i = 0; i < nmax + 1; i++)
 	{
 	    plain_stops[k] += Widget(0);
@@ -8661,7 +8644,7 @@ void SourceView::update_glyphs_now()
 {
     // std::clog << "Updating glyphs...";
 
-    WidgetArray empty;
+    static const WidgetArray empty;
     changed_glyphs = empty;
 
     if (update_source_glyphs)
@@ -8766,7 +8749,7 @@ void SourceView::update_glyphs_now()
 		}
 		else
 		{
-		    // Orindary breakpoint
+		    // Ordinary breakpoint
 		    if (bp->enabled())
 			bp_glyph = map_stop_at(text_w, pos, plain_stops[k],
 					       plain_stops_count, positions);

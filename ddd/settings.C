@@ -3020,7 +3020,7 @@ static Widget create_themes(DebuggerType type)
 	XtDestroyWidget(themes_panel);
 
     // Reset variables
-    static WidgetArray empty;
+    static const WidgetArray empty;
     themes_panel        = 0;
     reset_themes_button = 0;
     apply_themes_button = 0;

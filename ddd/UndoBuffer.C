@@ -929,7 +929,7 @@ void UndoBuffer::done(StatusMsg *msg)
 // Clear history
 void UndoBuffer::clear()
 {
-    static UndoBufferArray empty;
+    static const UndoBufferArray empty;
     history          = empty;
     history_position = 0;
     locked           = false;

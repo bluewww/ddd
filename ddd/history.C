@@ -277,7 +277,7 @@ void load_history(const string& file)
     if (is.bad())
 	return;
 
-    static StringArray empty;
+    static const StringArray empty;
     gdb_history = empty;
 
 #if WITH_READLINE

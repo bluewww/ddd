@@ -70,7 +70,7 @@ static bool expand_label(string& name, const string& full_path, char sep)
 void uniquify(StringArray& files, StringArray& labels, char sep)
 {
     // Start with base names
-    static StringArray empty;
+    static const StringArray empty;
     labels = empty;
     int i;
     for (i = 0; i < files.size(); i++)
