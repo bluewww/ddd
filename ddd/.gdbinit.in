@@ -75,7 +75,6 @@ set history save on
 set history size 1000
 
 # Paths, etc.
-file ddd
 directory @srcdir@
 
 # Default arguments
