@@ -161,8 +161,10 @@ Volunteers for fixing these and other bugs are welcome!
     it popped up.
 
 322*Finish Plots:
-    - Temp files are kept around
-    - After the plot window is killed, we do not get a new one
     - Give a diagnostic when trying to plot non-array data
+    - Add menus for printing and line styles.
 
-324 (Insert new bugs here)
+324 Have a menu bar for all non-transient windows (esp. Reference,
+    News, and License).
+
+325 (Insert new bugs here)

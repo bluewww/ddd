@@ -354,6 +354,9 @@ Volunteers for these and other projects are welcome!
 334 When looking at a C++ identifier X, try `this->X' if `X' is not
     found.  Better yet, try `CLASS::X' if we're in a CLASS member.
 
-336 Plot array data using gnuplot.  See also 273.
+339 Have a `Plot History' option, plotting the value history of a
+    variable.
 
-339 (Insert new project ideas here)
+340 Have `Display Array Slice', a friendly interface to the `@' operator.
+
+341 (Insert new project ideas here)
