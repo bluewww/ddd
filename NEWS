@@ -32,7 +32,7 @@ DDD 2.2 [in development]
         selected displays to the clipboard and paste them later.
       + Several buttons now provide pulldown menus with useful
         functions.  For instance, you can now incrementally `Show More'
-        details of an object, rather than showing them all.
+        details of an object, instead of showing all details at once.
       Due to the new layout, DDD now requires less width and height.
       If you already have a `~/.dddinit' file, resize DDD manually and
       save options.
