@@ -24,6 +24,8 @@ Debuggers and Languages
 
 - Parsing of Perl breakpoint information has been improved.
 
+- Perl hash keys containing spaces are supported. (8)
+
 
 Examining Data
 --------------
@@ -77,6 +79,7 @@ Thanks to:
     (5) Gary Cliff <gary.cliff@cdott.com>
     (6) Danny Van Elsen <Danny_Van_Elsen@village.uunet.be>
     (7) Philippe Midol-Monnet <Philippe.MIDOL-MONNET@airbus.aeromatra.com>
+    (8) Felipe Rivera <felipe@informador.com.mx>
 
 
 DDD 3.2.1
