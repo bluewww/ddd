@@ -43,6 +43,8 @@ char ArgField_rcsid[] =
 #include "verify.h"
 #include "charsets.h"
 #include "buttons.h"
+#include "string-fun.h"		// strip_space()
+#include "tabs.h"		// strip_space()
 
 
 // Constructor
@@ -80,11 +82,11 @@ void ArgField::set_string(string s)
     if (last_nl >= 0)
 	s = s.before(last_nl);
 
-    // XmTextField cannot display tabs
-    s.gsub('\t', ' ');
-
     // Strip blanks
     strip_space(s);
+
+    // XmTextField cannot display tabs
+    untabify(s);
 
     // Set it
     String old_s = XmTextFieldGetString(arg_text_field);
