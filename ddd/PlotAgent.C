@@ -330,6 +330,11 @@ void PlotAgent::dispatch(int type, char *data, int length)
 	data[length - 1] == '\n')
     {
 	// Leave graphics mode
+
+	// If we got multiple plots in one row, only care for the last one
+	int plot_start = plot_commands.index("G\n", -1);
+	plot_commands = plot_commands.from(plot_start);
+
 	DataLength dl(plot_commands.chars(), plot_commands.length());
 	callHandlers(Plot, &dl);
 
