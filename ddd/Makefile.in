@@ -915,6 +915,7 @@ PICS = \
 	$(picdir)/ddd-bp-popup.ps       \
 	$(picdir)/ddd-bp-properties.ps  \
 	$(picdir)/ddd-button-editor.ps  \
+	$(picdir)/ddd-clusters.ps       \
 	$(picdir)/ddd-code.ps           \
 	$(picdir)/ddd-console.ps        \
 	$(picdir)/ddd-data-prefs.ps     \
@@ -1778,6 +1779,12 @@ $(picdir)/ddd-signals.ps: \
 $(picdir)/ddd-examine.ps: \
 	$(picdir)/ddd-examine.fig $(picdir)/ddd-examine.xpm
 	cd $(picdir); $(FIG2PS) ddd-examine.fig > ddd-examine.ps
+
+$(picdir)/ddd-clusters.ps: \
+	$(picdir)/ddd-clusters.fig \
+	$(picdir)/clustered.ps \
+	$(picdir)/unclustered.ps
+	cd $(picdir); $(FIG2PS) ddd-clusters.fig > ddd-clusters.ps
 
 
 # The logo comes in XPM source
