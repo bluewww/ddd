@@ -3154,9 +3154,21 @@ Ddd*graph_cmd_w.graph_cmd_area*delete.labelString:	Delete ()
 ! Ddd*graph_cmd_w.graph_cmd_area*marginTop:	  1
 ! Ddd*graph_cmd_w.graph_cmd_area*marginBottom:	  1
 
+define(ANNOUNCE_PULLDOWN,[\
+Pulldown menu functions (press and hold the \
+BUTTON(left) or BUTTON(right mouse button)):\
+])dnl
+
 Ddd*graph_cmd_w.graph_cmd_area*new.helpString:\
 LBL(New Display)\n\
-Create a new display dependent on the selected display part.
+Create a new display dependent on the selected display part.\n\
+\n\
+ANNOUNCE_PULLDOWN\n\
+DESC(Shortcut 1, [User-defined shortcut 1])\n\
+DESC(Shortcut 2, [User-defined shortcut 2]) ...\n\
+DESC(Other..., [Enter new shortcut])\n\
+DESC(Edit..., [Edit shortcuts])
+
 Ddd*graph_cmd_w.graph_cmd_area*new.tipString:\
 @rm Create new display
 Ddd*graph_cmd_w.graph_cmd_area*new.documentationString:\
@@ -3492,7 +3504,14 @@ Ddd*arg_cmd_w.arg_cmd_area*lookup.documentationString:	\
 
 Ddd*arg_cmd_w.arg_cmd_area*breakAt.helpString:	\
 LBL(Break at ()) / LBL(Clear at ())\n\
-Set or delete a breakpoint at the argument LBL(()).
+Set or delete a breakpoint at the argument LBL(()).\n\
+\n\
+ANNOUNCE_PULLDOWN\n\
+DESC(Set Temporary Breakpoint at (), [set temporary breakpoint])\n\
+DESC(Continue Until (), [set temporary breakpoint and resume execution])\n\
+DESC(Enable / Disable Breakpoint at (), [enable or disable breakpoint])\n\
+DESC(Set Execution Position to (), [move execution position])
+
 Ddd*arg_cmd_w.arg_cmd_area*breakAt.tipString:	\
 @rm Set/Delete breakpoint at LBL(())
 Ddd*arg_cmd_w.arg_cmd_area*breakAt.documentationString:	\
@@ -3509,7 +3528,12 @@ Ddd*arg_cmd_w.arg_cmd_area*setPC.documentationString: \
 
 Ddd*arg_cmd_w.arg_cmd_area*print.helpString:	\
 LBL(Print ())\n\
-Print the argument LBL(()) in the @GDB@ console.
+Print the argument LBL(()) in the @GDB@ console.\n\
+\n\
+ANNOUNCE_PULLDOWN\n\
+DESC(Print *(), [print dereferenced argument])\n\
+DESC(Whatis (), [print type of argument])
+
 Ddd*arg_cmd_w.arg_cmd_area*print.tipString:	\
 @rm Print LBL(()) in the debugger console
 Ddd*arg_cmd_w.arg_cmd_area*print.documentationString:	\
@@ -3521,7 +3545,11 @@ Ddd*arg_cmd_w.arg_cmd_area*whatis.documentationString:	\
 
 Ddd*arg_cmd_w.arg_cmd_area*display.helpString:	\
 LBL(Display ())\n\
-Display the argument LBL(()) in the data window.
+Display the argument LBL(()) in the data window.\n\
+\n\
+ANNOUNCE_PULLDOWN\n\
+DESC(Display *(), [display dereferenced argument])
+
 Ddd*arg_cmd_w.arg_cmd_area*display.tipString:	\
 @rm Display LBL(()) in the data window
 Ddd*arg_cmd_w.arg_cmd_area*display.documentationString:	\
