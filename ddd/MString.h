@@ -202,13 +202,6 @@ public:
     }
 
     // Conversions
-#if 0
-    // TODO remove
- private:
-    operator XmString() const { return _mstring; }
-    operator XmString()       { return _mstring; }
- public:
-#endif
     XmString xmstring() const { return _mstring; }
 
     // Substrings

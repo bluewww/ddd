@@ -866,13 +866,6 @@ public:
     char lastchar() const;
 
     // Conversion
-#if 0
-    // TODO remove
- private:
-    operator const char*() const;
-    operator char*() const;
- public:
-#endif
     const char* chars() const;
 
 
