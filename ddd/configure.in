@@ -354,7 +354,7 @@ then
 AC_CHECK_LIB(Xm, XmCreateOptionMenu, 
 	XM_LIBS="-lXm"
 	AC_DEFINE(HAVE_MOTIF_WIDGETS),,
-	${XPM_LIBS} ${XEXT_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X11_LIBS})
+	${XPM_LIBS} ${XEXT_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X11_LIBS} ${LIBGEN})
 fi
 if test "$XM_LIBS" = ""; then
 dnl Without Motif, we won't get far.  Let the user fix this.
