@@ -83,8 +83,13 @@ void ArgField::set_string(string s)
 {
     // Use the last line only
     int last_nl = s.index('\n', -1);
-    if (last_nl >= 0)
+    if (last_nl == s.length() - 1)
+    {
 	s = s.before(last_nl);
+	last_nl = s.index('\n', -1);
+    }
+    if (last_nl >= 0)
+	s = s.after(last_nl);
 
     // Strip blanks
     strip_space(s);
