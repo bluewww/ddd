@@ -25,7 +25,7 @@
 .\" Contact ddd@ips.cs.tu-bs.de for details.
 .\"
 .\"
-.TH @ddd@ 1 "6 May 1995" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "18 May 1995" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger (v@VERSION@)
 .SH SYNOPSIS
@@ -668,13 +668,17 @@ button\fR on the originating pointer value or name and select the
 `\fBDereference\fR' menu item.
 .\"
 .\"
-.SS "Displaying Successive Array Elements"
+.SS "Displaying Artificial Arrays"
 .\"
+When debugging C or C++ programs, one often has to deal with pointers
+to arrays of dynamically determined size.  Both \s-2@DDD@\s+2 and
+\s-2GDB\s+2 provide special support for such dynamic arrays.
+.PP
 To display several successive objects of the same type (a section of
 an array, or an array of dynamically determined size), use the
-notation [\fIFROM\fR..\fITO\fR] in display expressions.  \fIFROM\fR
-and \fITO\fR denote the first and last array position to display.
-Thus,
+notation \fB[\fIFROM\fB..\fITO\fB]\fR in display expressions.
+\fIFROM\fR and \fITO\fR denote the first and last array position to
+display.  Thus,
 .sp
 .br
   \fBgraph display argv[0..9]\fR
@@ -682,6 +686,18 @@ Thus,
 .br
 creates ten new display nodes for `\fBargv[0]\fR',
 `\fBargv[1]\fR', ..., `\fBargv[9]\fR'.
+.PP
+As an alternative, you can use \s-2GDB\s+2 \fIartificial arrays\fR.
+Typing
+.sp
+.br
+  \fBgraph display *argv @ 10\fR
+.sp
+.br
+creates a single array display node containing `\fBargv[0]\fR' up to
+`\fBargv[9]`\fR'. 
+.PP
+See the \s-2GDB\s+2 documentation, for details on artificial arrays.
 .\"
 .\"
 .SS "Deleting Displays"
