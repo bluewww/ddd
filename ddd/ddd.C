@@ -1928,9 +1928,6 @@ int main(int argc, char *argv[])
 
     // From this point on, we have a true top-level window.
 
-    // Install icon images
-    install_icons(command_shell, app_data.button_color_key);
-
     // Create main window
     arg = 0;
     Widget main_window = XmCreateMainWindow(command_shell, "main_window",
@@ -1990,6 +1987,9 @@ int main(int argc, char *argv[])
 					     app_data.tool_buttons);
 	}
     }
+    
+    // Install icons if not already done
+    install_icons(command_shell, app_data.button_color_key);
 
     // Data window
     Widget data_disp_parent = paned_work_w;

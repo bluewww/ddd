@@ -36,6 +36,7 @@ char toolbar_rcsid[] =
 #include "toolbar.h"
 
 #include "ddd.h"
+#include "logo.h"
 #include "misc.h"
 #include "verify.h"
 #include "HelpCB.h"
@@ -258,6 +259,10 @@ Widget create_toolbar(Widget parent, string /* name */,
     argfield = new ArgField (toolbar, argfield_name);
 
     registerOwnConverters();
+
+    // We install the icons AFTER having created the argument field,
+    // because otherwise we might eat up all colors.
+    install_icons(toolbar, app_data.button_color_key);
 
     if (label_type == XmPIXMAP && app_data.flat_toolbar_buttons)
     {
