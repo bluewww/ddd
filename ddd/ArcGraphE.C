@@ -38,6 +38,7 @@ char ArcGraphEdge_rcsid[] =
 #include "misc.h"
 
 #include <math.h>
+#include <stdlib.h>
 #include "pi.h"
 #include "hypot.h"
 

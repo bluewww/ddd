@@ -56,6 +56,7 @@ char print_rcsid[] =
 
 #include <ctype.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <iostream.h>
 #include <fstream.h>
 #include <string.h>		// strerror()
