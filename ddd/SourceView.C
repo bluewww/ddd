@@ -3333,10 +3333,13 @@ void SourceView::create_text(Widget parent, const string& base, bool editable,
     if (lesstif_version < 1000)
     {
 	// LessTif has trouble with non-editable text windows: cursor
-	// movement is inhibited.
-	editable = true;
+	// movement is inhibited.  Rely on `CheckModificationCB' instead.
+	XtSetArg(args[arg], XmNeditable, True); arg++;
     }
-    XtSetArg(args[arg], XmNeditable, editable); arg++;
+    else
+    {
+	XtSetArg(args[arg], XmNeditable, editable); arg++;
+    }
 
     string text_name = base + "_text_w";
     text = verify(XmCreateScrolledText(form, text_name, args, arg));
