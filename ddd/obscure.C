@@ -210,7 +210,7 @@ void handle_obscure_commands(string& cmd, Widget origin)
 
 	switch (dungeon_collapsed ? 0 : rnd(10))
 	{
-	case 0:
+	default:
 	    callback = NothingHappensCB;
 	    break;
 	case 1:
@@ -218,9 +218,6 @@ void handle_obscure_commands(string& cmd, Widget origin)
 	    break;
 	case 2:
 	    callback = WumpusCB;
-	    break;
-	default:
-	    callback = 0;
 	    break;
 	}
 
