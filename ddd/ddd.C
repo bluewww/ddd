@@ -4487,43 +4487,63 @@ static void gdb_readyHP(Agent *, void *, void *call_data)
 
 
 struct WhenReadyInfo {
-    StatusMsg message;
+    MString message;
     XtCallbackProc proc;
+    XtPointer client_data;
+    XmPushButtonCallbackStruct cbs;
+    XEvent event;
 
-    WhenReadyInfo(string msg, XtCallbackProc p)
+    WhenReadyInfo(MString msg, XtCallbackProc p,
+		  XtPointer cl_data,
+		  const XmPushButtonCallbackStruct& c)
 	: message(msg),
-	  proc(p)
-    {}
+	  proc(p),
+	  client_data(cl_data),
+	  cbs(c)
+    {
+	// Copy event
+	memcpy(cbs.event, c.event, sizeof(cbs.event));
+	cbs.event = &event;
+    }
 };
 
-static void DoneCB(const string& answer, void *qu_data)
+static void DoneCB(const string& /* answer */, void *qu_data)
 {
     WhenReadyInfo *info = (WhenReadyInfo *)qu_data;
+    set_status_mstring(info->message + rm("done."));
 
-    if (answer == NO_GDB_ANSWER)
-    {
-	// Command was canceled
-	info->message.outcome = "canceled";
-    }
-    else
-    {
-	(*info->proc)(gdb_w, XtPointer(0), XtPointer(0));
-    }
+    (*info->proc)(gdb_w, info->client_data, XtPointer(&info->cbs));
     delete info;
 }
 
 // Execute command in (XtCallbackProc)CLIENT_DATA as soon as GDB gets ready
-static void WhenReady(Widget w, XtPointer client_data, XtPointer)
+static void WhenReady(Widget w, XtPointer client_data, XtPointer call_data)
 {
     XtCallbackProc proc = (XtCallbackProc)client_data;
+    XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
+    XtPointer user_client_data = 0; // No way to pass extra values here
+
     if (gdb->isReadyWithPrompt())
     {
-	proc(w, XtPointer(0), XtPointer(0));
+	proc(w, user_client_data, call_data);
 	return;
     }
 
-    string msg = "Delaying action until " + gdb->title() + " gets ready";
-    WhenReadyInfo *info = new WhenReadyInfo(msg, proc);
+    XmString label = 0;
+    XtVaGetValues(w, XmNlabelString, &label, NULL);
+    MString _action(label, true);
+    XmStringFree(label);
+    string action = _action.str();
+    if (action.contains("...", -1))
+	action = action.before("...");
+
+    MString msg = rm(action + ": waiting until " + gdb->title() 
+		     + " gets ready...");
+    WhenReadyInfo *info = new WhenReadyInfo(msg, proc, user_client_data, *cbs);
+
+    // We don't want to lock the status, hence we use an ordinary
+    // `set_status' call instead of the StatusMsg class.
+    set_status_mstring(msg);
 
     Command c(gdb->nop_command(XtName(w)));
     c.origin   = w;
