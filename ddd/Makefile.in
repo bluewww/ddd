@@ -896,67 +896,6 @@ $(srcdir)/../doc/ddd.man.ps: $(srcdir)/ddd.man
 	$(GROFF) -man $(srcdir)/ddd.man > $@
 
 
-## RCS stuff
-# Check if all sources are correctly checked in (or otherwise non-writable)
-
-.PHONY: pending pending-files
-pending pending-files:
-	@$(ECHO) "Pending source files:"
-	@$(LS) -alR > tmp-all
-	@$(LS) -alR `ls $(ULTRACLEAN_STUFF) 2>/dev/null | \
-		$(SED) 's,^./,,' | $(SORT)` > tmp-gen
-	@-$(DIFF) tmp-gen tmp-all | $(GREP) '^> -.w'  | $(GREP) -v 'tmp-'
-	@$(RM) tmp-gen tmp-all
-
-
-# Check for files added to the current directory
-.PHONY: new-files
-new-files:
-	@$(ECHO) "New source files not listed in FILES:"
-	@$(LS) -al | $(GREP) '^-r-' | $(AWK) '{ print $$8 }' > tmp-FILES
-	@-$(DIFF) FILES tmp-FILES | $(GREP) '^> ' | $(CUT) -c3-
-	@$(RM) tmp-FILES
-
-# Check for obsolete files in the current directory
-.PHONY: old-files
-old-files:
-	@$(ECHO) "Obsolete source files listed in FILES:"
-	@$(LS) -al | $(GREP) '^-' | $(AWK) '{ print $$8 }' > tmp-FILES
-	@-$(DIFF) FILES tmp-FILES | $(GREP) '^< ' | $(CUT) -c3-
-	@$(RM) tmp-FILES
-
-
-# Merge in all changes made by others.
-.PHONY: sync sync-files
-sync sync-files: files rcssync
-	@$(ECHO) "Checking out recently changed RCS files."
-	@files=`$(CAT) FILES`; checkout=`./rcssync $$files`; \
-	test "$$checkout" != "" && $(CO) $$checkout; true
-
-rcssync: rcssync.o
-	$(LINK.cc) -o $@ rcssync.o
-	
-
-# Update set of files.
-.PHONY: files
-files:	RCS/FILES,v
-	-@if [ -f FILES ]; then \
-	    $(RCSDIFF) FILES > tmp-diffs 2> /dev/null; \
-	    if [ -s tmp-diffs ]; then \
-		for file in `$(GREP) '^< ' tmp-diffs | $(CUT) -c3-`; do \
-		    $(RM) $$file; \
-		done; \
-		for file in `$(GREP) '^> ' tmp-diffs | $(CUT) -c3-`; do \
-		    $(CO) $$file; \
-		done; \
-	    fi; \
-	    $(RM) tmp-diffs; \
-	    $(CO) FILES; \
-	else \
-	    $(CO) FILES; \
-	    $(CO) `$(CAT) FILES`; \
-	fi
-
 ## Configuration stuff.
 
 Makefile: Makefile.in config.status
@@ -1043,7 +982,7 @@ loc stats:
 	for list in '$(NORA_OBJECTS)' '$(DDD_OBJECTS)' '$(OBJECTS)'; do \
 	pattern=`$(ECHO) $$list | $(SED) 's/\([a-zA-Z0-9_]*\)\.o/\1\\.*/g'`; \
 	$(ECHO) "Lines of code for $$pattern"; \
-	$(CAT) `$(LS) $$pattern | fgrep -f FILES` | \
+	$(CAT) `$(LS) $$pattern | grep '\.[ChLY]'` | \
 		$(GREP) -v '^[ 	]*//' | \
 		$(GREP) -v '^"' | \
 		$(GREP) -v '^[ 	]*$$' | wc -l; \
