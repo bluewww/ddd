@@ -112,9 +112,11 @@ dnl
 dnl SUBITEM issues a dash.
 define([SUBITEM], [@tt - @rm])dnl
 dnl
-dnl BY(AUTHOR, E-MAIL) quotes a tip
-define([BY], [        -- EMPH($1) EMAIL($2)])
+dnl QUOTE(AUTHOR, WORK) quotes a tip
+define([QUOTE], [        -- EMPH($1), $2])
 dnl
+dnl BY(AUTHOR, E-MAIL) is an alternative
+define([BY],    [        -- EMPH($1) EMAIL($2)])
 dnl
 dnl Constants
 dnl ---------
