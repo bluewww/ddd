@@ -108,12 +108,6 @@ Volunteers for fixing these and other bugs are welcome!
 
 056. `Select All' does not select hints.
 
-057. Mike Hoffmann <mike@psa.pencom.com> states: 
-     I had been successfuly using DDD 1.2 on Solaris 2.4 w/ X11R6 fix
-     level 11.  Since then I updated to the latest fix level 12, that
-     came out a few weeks ago.  Now DDD hangs at "random" points when
-     coming up.
-
 059. Having a newline ``stuck'' in the command line makes DDD execute
      each typed letter as a separate command.
 
@@ -132,9 +126,6 @@ Volunteers for fixing these and other bugs are welcome!
 
 064. After changing the source code, the current execution glyph is
      not cleared.
-
-065. Using DDD on a remote host does not automatically
-     qualify the DISPLAY variable.
 
 067. On Solaris 2.x, when attaching with DBX to a running process, 
      ddd gets a seg fault.  The command line is, for example:

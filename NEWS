@@ -4,18 +4,20 @@ Changes in DDD						-*- text -*-
 DDD 1.4b
 --------
 
-   Bug fix release.  No user-visible changes.
+   Bug fix release.
 
    Changes to DDD 1.4a:
-   - On some X11R6 configurations, DDD was caught in a busy loop upon
+   - Much faster start-up, due to delayed parsing of the VSL library.
+   - Custom paper size support for printing graphs.
+   - Paper size and printing command is saved with options.
+   - On some X11 configurations, DDD was caught in a busy loop upon
      invocation.  Now fixed.
    - On some Linux configurations, DDD crashed immediately upon
      invocation.  Now fixed.
-   - Much faster start-up, due to delayed parsing of the VSL library.
    - Manual update of data display (`graph refresh') improved.
-   - `set' and `assign' commands automatically update the data display.
-   - Printing graphs can now be done with custom paper sizes.
-   - Paper size and printing command is saved with options.
+   - `set' and `assign' commands automatically update the data
+     display.
+   - New releases of top-level `configure' and `libiberty' included.
    - Building DDD creates executable with canonical name.
 
 
