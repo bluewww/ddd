@@ -43,7 +43,7 @@
 @set EDITION First
 
 @c !!set DDD manual's revision date
-@set DATE 2000-01-03
+@set DATE 2000-02-11
 
 
 @c Macros
@@ -3301,6 +3301,31 @@ debugger settings.
 @end defvr
 
 
+@node Finding a Place to Start
+@subsubsection Finding a Place to Start
+
+@defvr Resource initSymbols (class InitSymbols)
+When loading an executable, @DDD{} queries the inferior debugger for the
+initial source location---typically the @code{main} function.  If this
+location is not found, @DDD{} tries other symbols from this
+newline-separated list.  The default value makes @DDD{} look for a
+variety of main functions (especially FORTRAN main functions):
+@example
+main\n\
+MAIN\n\
+main_\n\
+MAIN_\n\
+main__\n\
+MAIN__\n\
+_main\n\
+_MAIN\n\
+__main\n\
+__MAIN
+@end example
+@end defvr
+
+
+
 @node Opening the Selection
 @subsubsection Opening the Selection
 
@@ -3312,6 +3337,7 @@ will automatically open this program for debugging.  If this resource
 is @samp{off} (default), @DDD{} invoked without arguments will
 always start without a debugged program.
 @end defvr
+
 
 
 @node Debugger Communication

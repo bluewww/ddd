@@ -269,6 +269,16 @@ XtResource ddd_resources[] = {
     },
 
     { 
+	XtNinitSymbols,
+	XtCInitSymbols,
+	XtRString, 
+	sizeof(String),
+	XtOffsetOf(AppData, init_symbols),
+	XtRString, 
+	XtPointer("main:MAIN__")
+    },
+
+    { 
 	XtNvslPath, 
 	XtCVSLPath, 
 	XtRString, 

@@ -20,7 +20,8 @@ There is more information available at the GNU DDD homepage at
 What's new in DDD?
 ==================
 
-DDD 3.2.1 includes minor bug fixes and major LessTif bug workarounds.
+
+DDD 3.2.1 brings some minor bug fixes and major LessTif bug workarounds.
 
 - [LessTif] Helpers (such as uncompressing the DDD manual) works fine.
 
@@ -31,6 +32,10 @@ DDD 3.2.1 includes minor bug fixes and major LessTif bug workarounds.
 - [LessTif] Small fixes for building with LessTif on SGI.
 
 - [Perl] In the data display, Perl hash keys are properly quoted.
+
+- DDD makes more attempts in locating the initial main function.
+
+- Minor bugs with clustered displays have been fixed.
 
 - DDD PostScript documentation can be printed on multiple pages per sheet.
 

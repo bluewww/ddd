@@ -624,6 +624,12 @@ Ddd*perlSettings:
 Ddd*sourceInitCommands: on
 
 
+! Startup symbol
+! When DDD loads a file, and GDB does not report a source file,
+! DDD looks for these symbols.
+Ddd*initSymbols: main\nMAIN\nmain_\nMAIN_\nmain__\nMAIN__\n\
+_main\n_MAIN\n__main\n__MAIN
+
 ! Auto-command defaults
 
 ! Are auto-commands enabled?  If yes, any output of the inferior debugger

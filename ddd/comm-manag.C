@@ -2,6 +2,7 @@
 // GDB communication manager
 
 // Copyright (C) 1995-1999 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2000 Universitaet Passau, Germany.
 // Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
 // and Andreas Zeller <zeller@gnu.org>.
 // 
@@ -2597,6 +2598,44 @@ static void process_config_program_language(string& lang)
 }
 
 
+
+//-----------------------------------------------------------------------------
+// Find some source file (asynchronously).
+//-----------------------------------------------------------------------------
+
+static string init_symbols = "";
+
+static void FindSourceCB(const string& answer, void *)
+{
+    if (answer == NO_GDB_ANSWER)
+	return;			// Aborted
+
+    string init_symbol;
+    if (init_symbols.contains("\n"))
+	init_symbol = init_symbols.before("\n");
+    else
+	init_symbol = init_symbols;
+    init_symbols = init_symbols.after("\n");
+
+    if (init_symbol == "")
+    {
+	// Tried all symbols.
+	return;
+    }
+
+    string current_file = source_view->file_of_cursor().before(':');
+    if (current_file == "")
+	gdb_command(string("list ") + init_symbol, gdb_w, 
+		    FindSourceCB, 0, false, true);
+}
+
+static void find_some_source()
+{
+    init_symbols = app_data.init_symbols;
+    FindSourceCB("", 0);
+}
+
+
 //-----------------------------------------------------------------------------
 // Handle GDB answers to DDD questions sent after GDB command
 //-----------------------------------------------------------------------------
@@ -2633,6 +2672,8 @@ static void extra_completed (const StringArray& answers,
 	{
 	case GDB:
 	{
+	    string info_line;
+
 	    // Handle `info line' output
 	    string info_line1 = answers[qu_count++];
 	    string list       = answers[qu_count++];
@@ -2644,18 +2685,20 @@ static void extra_completed (const StringArray& answers,
 
 	    if (atoi(list) == 0)
 	    {
-		// No listing => no source => ignore `info line' output
+		// No listing => no source.
+		info_line = "";
 	    }
 	    else
 	    {
 		// Handle `info line' output
-		string info_line = info_line1;
+		info_line = info_line1;
 		if (!info_line.contains("Line ", 0))
 		    info_line = info_line2;
-
-		// Goto initial line
-		source_view->process_info_line_main(info_line);
 	    }
+
+	    // Goto initial line
+	    source_view->process_info_line_main(info_line);
+	    find_some_source();
 	    break;
 	}
 
@@ -2663,6 +2706,7 @@ static void extra_completed (const StringArray& answers,
 	{
 	    // Goto initial line
 	    source_view->process_info_line_main(answers[qu_count++]);
+	    find_some_source();
 	    break;
 	}
 
@@ -2674,6 +2718,7 @@ static void extra_completed (const StringArray& answers,
 	    // Clear caches and such
 	    string dummy = "";
 	    source_view->process_info_line_main(dummy);
+	    find_some_source();
 	    break;
 	}
 	}

@@ -2,6 +2,7 @@
 // DDD application data
 
 // Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2000 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -77,6 +78,8 @@
 #define XtNsourceInitCommands    "sourceInitCommands"
 #define XtCSourceInitCommands    "SourceInitCommands"
 #define XtCSettings              "Settings"
+#define XtNinitSymbols           "initSymbols"
+#define XtCInitSymbols           "InitSymbols"
 #define XtNvslPath               "vslPath"
 #define XtCVSLPath               "VSLPath"
 #define XtNvslLibrary            "vslLibrary"
@@ -420,6 +423,7 @@ struct AppData {
     String    perl_settings;
     String    restart_commands;
     Boolean   source_init_commands;
+    String    init_symbols;
     String    vsl_path;
     String    vsl_library;
     String    vsl_defs;
