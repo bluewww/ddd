@@ -226,20 +226,22 @@ Reported by:  (various)
 
 LessTif
 =======
+    
+    To use DDD with LessTif, get a recent LessTif release from
+    `http://www.lesstif.org' and apply the patches found in the
+    `patches/' subdirectory.
 
     When linking with LessTif instead of OSF/Motif, the following
-    problems occur.  Unless otherwise noted, all problems refer to DDD
-    2.2.1 compiled against LessTif 0.82 on a sparc-sunos-4.1.4 with
-    DDD-specific patches applied.
+    problems remain:
  
-    001. The `F1' menu accelerator (Help|On Context) has no effect.
+    001. The `F1' menu accelerator (Help | On Context) has no effect.
          [behavioral]
-   
+
     002. Some of the dialog shells behave like top-level shells
          (e.g. they are decorated and placed by the user), for
          instance the display editor (Data|Edit Displays) and the
          breakpoint editor (Source|Edit Breakpoints).  [behavioral]
- 
+
     003. Menu items are not made insensitive as they ought to be.
          [behavioral]
 

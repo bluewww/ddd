@@ -122,12 +122,10 @@ What do I need to build DDD?
          are achieved using OSF/Motif 2.0 or later.
 
          DDD also compiles and runs with LessTif, a free Motif clone,
-         release 0.81 or later, without loss of functionality.
-         LessTif is available via `http://www.lesstif.org/'.  Note
-         that DDD/LessTif usability varies with the LessTif version;
-         until LessTif 1.x is ready, OSF/Motif is preferred.  See the
-         DDD WWW site `http://www.cs.tu-bs.de/softech/ddd/' for
-         DDD-specific to recent LessTif releases.
+         release 0.82 or later, without loss of functionality.  Be
+         sure to check the DDD WWW site and the `patches/' directory
+         for patches required to make DDD run.  LessTif is available
+         via `http://www.lesstif.org/'.
 
        * Optionally, in addition to the Motif widget library, the
          Athena Widget library (release 5 or later).  Having the
