@@ -133,7 +133,7 @@ Agent::Agent(const Agent& c):
     _killTimeOut(c._killTimeOut),
     handlers(c.handlers), next(0), _path(c._path)
 {
-    // Assume running unless otherwise proved
+    // Assume running unless shown otherwise
     setRunning();
 }
 
