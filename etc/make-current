@@ -108,8 +108,14 @@ autoconf
 (cd termcap && autoconf)
 sh ./configure --x-libraries=/usr/X11R5/lib --x-includes=/usr/X11R5/include -v
 
-# Create distribution stuff.
+# Create an empty `ddd/Makedeps' such that `make' won't fail.
 touch ddd/Makedeps
+
+# The .xbm files must be newer than the original .xpm files, because
+# we cannot re-create them in batch mode.
+touch icons/*.xbm
+
+# Create distribution stuff.
 (cd libiberty; make)
 (cd librx; make)
 (cd ddd; make Makefile)
