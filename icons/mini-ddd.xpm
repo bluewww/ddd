@@ -1,10 +1,17 @@
 /* XPM */
-static char * mini-ddd_xpm[] = {
-"14 14 4 1",
-" 	c none",
-".	c #000000000000",
-"X	c #C6C6C6C6C6C6",
-"o	c #00000000FFFF",
+static char * mini_ddd_xpm[] = {
+/* $Id$
+ * Minature DDD Logo.  Copyright (C) 1997 TU Braunschweig, Germany.
+ * For details on DDD, see `http://www.cs.tu-bs.de/softech/ddd/'.
+ * width height ncolors chars_per_pixel */
+"  14    14     5       1",
+/* Colors */
+"       c None      m None  g None   g4 None   s Background ",
+".	c black     m black g black  g4 black  s Legs       ",
+"X	c grey      m white g grey   g4 grey   s Stripe     ",
+"o      c blue4     m black g grey25 g4 grey25 s Handle1    ",
+"+	c white     m white g white  g4 white  s Light      ",
+/* Pixels */
 "     .  .     ",
 "     .  .     ",
 " ..   ..   .. ",
@@ -12,10 +19,10 @@ static char * mini-ddd_xpm[] = {
 "   ...XX...   ",
 "     .oooooo  ",
 "   ..ooXXXXoo ",
-"  . .oX....Xo ",
-"..  .oXXXXXXo.",
-"   ..oX....Xo ",
-"  . .oXXXXXXo ",
-"  .  ooXXXXooo",
+"  . .oXX+XXXo ",
+"..  .oX+...Xo.",
+"   ..oX+XXXXo ",
+"  . .oXX..XXo ",
+"  .  ooXXXXoo ",
 "  .   oooooooo",
-" .         ooo"};
+" .          oo"};

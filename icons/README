@@ -10,12 +10,14 @@ X window manager (FVWM: look for the `IconPath' resource in your
 ~/.fvwmrc).  For details on window manager setup, see the WWW site
 `http://www.plig.org/xwinman/'.
 
+Note: as of DDD 2.2, these icons are compiled into DDD (unless you
+don't have the XPM library).
+
 
 ddd.xpm - The `official' DDD icon
 ---------------------------------
 
-    This icon can be associated with DDD windows.  It is a colored
-    version of the black-and-white icon used by DDD.  Insert a line
+    This icon can be associated with DDD windows.  Insert a line
 
         Style "DDD*" Icon ddd.xpm
 
@@ -37,8 +39,8 @@ mini-ddd.xpm - A miniature DDD icon
     in the appropriate menu description.
 
 
-ddd.xbm - The `official' DDD icon (monochrome)
-----------------------------------------------
+ddd.xbm, dddmask.xbm - The `official' DDD icon (monochrome) and its mask
+------------------------------------------------------------------------
 
     This is the monochrome DDD icon in X Bitmap format as used by the
     DDD executable.
