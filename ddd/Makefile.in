@@ -897,6 +897,7 @@ PICS = \
 	$(picdir)/ddd-settings.ps       \
 	$(picdir)/ddd-shortcuts.ps      \
 	$(picdir)/ddd-shortcut-editor.ps \
+	$(picdir)/ddd-signals.ps        \
 	$(picdir)/ddd-source-popup.ps   \
 	$(picdir)/ddd-source-prefs.ps   \
 	$(picdir)/ddd-source.ps         \
@@ -1678,6 +1679,10 @@ $(picdir)/ddd-font-prefs.ps: \
 $(picdir)/ddd-define-command.ps: \
 	$(picdir)/ddd-define-command.fig $(picdir)/ddd-define-command.xpm
 	cd $(picdir); $(FIG2PS) ddd-define-command.fig > ddd-define-command.ps
+
+$(picdir)/ddd-signals.ps: \
+	$(picdir)/ddd-signals.fig $(picdir)/ddd-signals.xpm
+	cd $(picdir); $(FIG2PS) ddd-signals.fig > ddd-signals.ps
 
 
 # The logo comes in XPM source

@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998\-06\-05" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998\-06\-09" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -941,6 +941,85 @@ Click on `\fBResume\fR' to resume execution of the selected threads.
 .PP
 For more information on threads, see the \s-1JDB\s+1 and \s-1GDB\s+2
 documentation.
+.\"
+.\"
+.SS "Handling Signals"
+.\"
+Note: Signal support is available with \s-1GDB\s+1 only.
+.PP
+A signal is an asynchronous event that can happen in a program.  The
+operating system defines the possible kinds of signals, and gives each
+kind a name and a number.  For example, in Unix \fBSIGINT\fR is the
+signal a program gets when you type an interrupt; \fBSIGSEGV\fR is the
+signal a program gets from referencing a place in memory far away from
+all the areas in use; \fBSIGALRM\fR occurs when the alarm clock timer
+goes off (which happens only if your program has requested an alarm).
+.PP
+Some signals, including \fBSIGALRM\fR, are a normal part of the
+functioning of your program.  Others, such as \fBSIGSEGV\fR, indicate
+errors; these signals are \fIfatal\fR (kill your program immediately)
+if the program has not specified in advance some other way to handle
+the signal.  \fBSIGINT\fR does not indicate an error in your program,
+but it is normally fatal so it can carry out the purpose of the
+interrupt: to kill the program.
+.PP
+\s-1GDB\s+2 has the ability to detect any occurrence of a signal in
+your program.  You can tell \s-1GDB\s+1 in advance what to do for each
+kind of signal.
+.PP
+Normally, \s-1@DDD@\s+1 is set up to ignore non-erroneous signals like
+\fBSIGALRM\fR (so as not to interfere with their role in the
+functioning of your program) but to stop your program immediately
+whenever an error signal happens.  In \s-1@DDD@\s+1, you can change
+these settings via `\fBStatus\(->Signals\fR'.
+.PP
+.PSPIC @srcdir@/PICS/ddd-signals.ps 15.3cm
+.PP
+`\fBStatus\(->Signals\fR' pops up a panel showing all the kinds of
+signals and how \s-1GDB\s+1 has been told to handle each one.  The
+settings available for each signal are:
+.TP 10
+.B "Stop"
+If set, \s-1GDB\s+1 should stop your program when this signal happens.
+This also implies `\fBPrint\fR' being set.
+.sp
+If unset, \s-1GDB\s+1 should not stop your program when this signal
+happens.  It may still print a message telling you that the signal has
+come in.
+.TP 10
+.B "Print"
+If set, \s-1GDB\s+1 should print a message when this signal happens.
+.sp
+If unset, \s-1GDB\s+1 should not mention the occurrence of the signal
+at all.  This also implies `\fBStop\fR' being unset.
+.TP 10
+.B "Pass"
+If set, \s-1GDB\s+1 should allow your program to see this signal; your
+program can handle the signal, or else it may terminate if the signal
+is fatal and not handled.
+.sp
+If unset, \s-1GDB\s+1 should not allow your program to see this
+signal.
+.PP
+When a signal stops your program, the signal is not visible until you
+continue.  Your program sees the signal then, if `\fBPass\fR' is in
+effect for the signal in question \fIat that time\fR.  In other words,
+after \s-1GDB\s+1 reports a signal, you can change the
+`\fBStatus\(->Signals\fR' `\fBPass\fR' setting to control whether your
+program sees that signal when you continue.
+.PP
+You can also cause your program to see a signal it normally would not
+see, or to give it any signal at any time.  The `\fBSend\fR' button
+will resume execution where your program stopped, but immediately give
+it the signal shown.
+.PP
+On the other hand, you can also prevent your program from seeing a
+signal.  For example, if your program stopped due to some sort of
+memory reference error, you might store correct values into the
+erroneous variables and continue, hoping to see more execution; but
+your program would probably terminate immediately as a result of the
+fatal signal once it saw the signal.  To prevent this, you can
+resume execution using `\fBCommands\(->Continue Without Signal\fR'.
 .\"
 .\"
 .\" ---------------
