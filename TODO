@@ -94,7 +94,7 @@ Volunteers for these and other projects are welcome!
     implemented as follows: use the `ptype' output to display types
     graphically; dereference type names as required.  -AZ]
 
-115 Have a link from help texts to appropriate sections of the DDD manual.
+115 Have links from help texts to appropriate sections of the DDD manual.
 
 117 Paul Courbis <plc@lexem.fr> says: upon dereferencing a pointer, 
     it would be nice to have a menu to say: display hex data for 255 bytes.
@@ -188,9 +188,6 @@ Volunteers for these and other projects are welcome!
 179 Add `libgdb' as an alternate communication method.
 
 183 Have a way to re-dereference until no more changes occur.
-
-187 Have a `commands' menu listing up all debugger commands.  Could
-    be organized according to `help' classes.
 
 193 Have a way to unfold trees and graphs.  For instance, `Display
     *()' applied to a struct could dereference all contained pointers
@@ -327,4 +324,16 @@ Volunteers for these and other projects are welcome!
     create individual icons), such that the icon creation time is
     minimized.
 
-308 (Insert new project ideas here)
+308 Here's a list of GDB concepts that are not yet covered by the DDD GUI:
+    * Tracepoints: trace, collect, ...  Is there any doc for that?
+    * Overlays: overlay...  Is there any doc for that?
+    * Symbol files: symbol-file, add-shared-symbol-file, sharedlibrary.
+    * Exception breakpoints: catch.
+    * Regular expression breakpoints: rbreak.
+    * Conditions: if, while.
+    * Remote debugging: remote.
+    * Return from frame: return.
+    * Shell command: shell.
+    * Find trace frame: tfind.
+
+309 (Insert new project ideas here)
