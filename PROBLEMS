@@ -333,9 +333,9 @@ EGCS
 
 	warning: ANSI C++ forbids declaration `__in' with no type
 
-    This is an EGCS bug, which has been fixed for the upcoming
-    egcs-1.1.1 release.  As a workaround, create a file `sys/wait.h'
-    in the DDD source directory that contains the following lines:
+    This is an EGCS bug, which has been fixed in the egcs-1.1.1
+    release.  As a workaround, create a file `sys/wait.h' in the DDD
+    source directory that contains the following lines:
 
 	#include_next <sys/wait.h>
 
