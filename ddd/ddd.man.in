@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998-05-04" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998-05-11" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -899,6 +899,11 @@ at the `\fB(gdb)\fR' prompt.
 .SH "WATCHPOINTS"
 .\" ---------------
 .\"
+Note: Watchpoints are available in \s-2GDB\s+2 and some \s-2DBX\s+2
+variants only.  In \s-2XDB\s+2, a similar feature is available via
+\s-2XDB\s+2 \fIassertions\fR; see the \s-2XDB\s+2 documentation for
+details.
+.PP
 You can make the program stop as soon as some variable value changes,
 or when some variable is read or written.  This is called `setting a
 \fIwatchpoint\fR on a variable'.
@@ -908,8 +913,13 @@ can enable and disable them.  You can also set conditions, ignore
 counts, and commands to be executed when a watched variable changes
 its value.
 .PP
-Please note: Unless you have special hardware support, watchpoints
-slow down the debugged program by about two orders of magnitude.
+Please note: on architectures without special watchpoint support,
+watchpoints currently make the program execute two orders of magnitude
+more slowly.  This is so because the inferior debugger must interrupt
+the program after each machine instruction in order to examine whether
+the watched value has changed.  However, this delay can be well worth
+it to catch errors when you have no clue what part of your program is
+the culprit.
 .\"
 .\"
 .SS "Setting Watchpoints"
@@ -1217,6 +1227,8 @@ To create a new display, select the desired variable by clicking
 argument field.  By clicking the `\fBDisplay ()\fR' button, a new
 display is created in the data window.
 .PP
+.PSPIC @srcdir@/PICS/ddd-display.ps 15.3cm
+.PP
 As a shorter alternative, you can simply press \fImouse button 3\fR on the
 variable name and select the `\fBDisplay\fR' item from the popup menu.
 .PP
@@ -1292,7 +1304,6 @@ selection is \fIextended\fR.
 By double-clicking on a display title, the display itself and all
 connected displays are automatically selected.
 .PP
-.PSPIC @srcdir@/PICS/disclaimer.ps 15.3cm
 .PSPIC @srcdir@/PICS/ddd-select-display.ps 15.3cm
 .PP
 .\"
@@ -1305,7 +1316,7 @@ Pascal/MODULA \fIRECORD\fR or \fIARRAY\fR), you can
 select individual parts by clicking on their names or values.  The
 resulting expression is shown in the \fIargument field\fR, below.
 .PP
-Selection of multiple display parts is not supported.
+You can only select one part of a display.
 .\"
 .\"
 .SS "Showing and Hiding Values"
@@ -1391,10 +1402,8 @@ dependency is indicated by arrows leading from the originating display
 to the dependent display.
 .PP
 To create a dependent display, select the originating display or
-display part and click on the `\fBNew Display\fR' button.  A prompt
-dialog appears where you can enter a new expression \fIexpr\fR in the
-argument field.  By clicking on `\fBDisplay\fR', the new display
-showing \fIexpr\fR is created.
+display part and enter the dependent expression in the `\fB():\fR'
+argument field.  Then click on the `\fBDisplay\fR' button.
 .PP
 Using dependent displays, you can investigate the data structure of a
 \*(lqtree\*(rq for example and lay it out according to your intuitive
@@ -1408,14 +1417,11 @@ examine such structures.
 .\"
 .SS "Display Shortcuts"
 .\"
-Each time you enter a new display via the prompt dialog, you can
-insert it in the `\fBNew Display\fR' Menu by activating the
-`\fBInclude in `New Display' Menu\fR' toggle.  The `\fBNew Display\fR'
-menu allows you to repeat the most recent display actions over and
-over again.  It can be accessed in three ways:
+\s-2@DDD@\s+2 maintains a \fIshortcut menu\fR of frequently used
+display expressions.  This menu is activated
 .br
 .IP \(bu 2
-by pressing and holding the `\fBNew Display\fR' button, or
+by pressing and holding the `\fBDisplay\fR' button, or
 .br
 .IP \(bu 2
 by pressing \fImouse button 3\fR on some display and selecting `\fBNew
@@ -1425,14 +1431,20 @@ Display\fR', or
 by pressing \fBShift\fR and \fImouse button 3\fR on some display.
 .br
 .PP
-As an example, assume you have selected a display named `\fBfoo\fR'
-and used `\fBNew Display\fR' to cast the display `\fBfoo\fR' to a new
-display `\fB(char *)foo\fR'.  If the `\fBInclude in `\fBNew Display\fR'
-Menu\fR' toggle was activated, you can now simply choose the
-`\fBDisplay (char *)()\fR' operation from the `\fBNew Display\fR' menu to
-cast \fIany\fR selected display \fIdisplay\fR to `\fB(char
-*)\fIdisplay\fR'.  This shortcut can save you a lot of time when
-examining complex data structures.
+By default, the shortcut menu contains frequently used base
+conversions.
+.PP
+The `\fBOther\fR' entry in the shortcut menu lets you create a new
+display that \fIextends\fR the shortcut menu.  As an example, assume
+you have selected a display named `\fBdate_ptr\fR'.  Selecting
+`\fBDisplay | Other\fR' pops up a dialog that allows you to enter a
+new expression to be displayed -- for instance, you can cast the
+display `\fBdate_ptr\fR' to a new display `\fB(char *)date_ptr\fR'.
+If the `\fBInclude in `\fBNew Display\fR' Menu\fR' toggle was
+activated, the shortcut menu will then contain a new entry `\fBDisplay
+(char *)()\fR' that will cast \fIany\fR selected display \fIdisplay\fR
+to `\fB(char *)\fIdisplay\fR'.  Such shortcuts can save you a lot of
+time when examining complex data structures.
 .PP
 .PSPIC @srcdir@/PICS/ddd-shortcuts.ps 15.3cm
 .PP
@@ -1459,10 +1471,6 @@ base conversions has a label:
 .br
 Feel free to add other conversions here.  \s-2@DDD@\s+2 supports up to 
 20 `\fBNew Display\fR' menu items.
-.PP
-The item `\fBOther\fR' in the `\fBNew Display\fR' menu is equivalent
-to pressing the `\fBNew Display\fR' button\(em\&that is, you can enter
-a new expression to be displayed.
 .\"
 .\"
 .SS "Dereferencing Pointers"
@@ -1499,6 +1507,7 @@ The display showing the local variables can be manipulated just like
 any other data display.  Individual variables can be selected and
 dereferenced.
 .PP
+.PSPIC @srcdir@/PICS/disclaimer.ps 15.3cm
 .PSPIC @srcdir@/PICS/ddd-locals.ps 15.3cm
 .PP
 .\"
@@ -1832,52 +1841,6 @@ Note: Arcs cannot be printed (yet).  Arcs joining two displays are
 printed using straight lines; arcs joining a display with itself are
 suppressed.
 .\"
-.\"
-.\" ---------------
-.SH "WATCHPOINTS"
-.\" ---------------
-.\"
-Note: Watchpoints are available in \s-2GDB\s+2 and some \s-2DBX\s+2
-variants only.  In \s-2XDB\s+2, a similar feature is available via
-\s-2XDB\s+2 \fIassertions\fR; see the \s-2XDB\s+2 documentation for
-details.
-.PP
-Using \fIwatchpoints\fR, you can make your program stop whenever the
-value of an expression changes, without having to predict a particular
-place where this may happen.
-.PP
-To create a new watchpoint, select the variable to be watched by
-clicking \fImouse button 1\fR on its name.  The variable name is
-copied to the argument field.  By clicking the `\fBWatch ()\fR'
-button, \s-2@DDD@\s+2 places a watchpoint on that variable.  From now
-on, \s-2@DDD@\s+2 will interrupt the debugged program whenever the
-variable value changes.
-.PP
-Please note: on architectures without special watchpoint support,
-watchpoints currently make the program execute two orders of magnitude
-more slowly.  This is so because the inferior debugger must interrupt
-the program after each machine instruction in order to examine whether
-the watched value has changed.  However, this delay can be well worth
-it to catch errors when you have no clue what part of your program is
-the culprit.
-.PP
-If supported by your architecture, \s-2@DDD@\s+2 also allows you to
-set \fIread watchpoints\fR, interrupting your program whenever a
-variable is read, and \fIaccess watchpoints\fR, interrupting your
-program whenever a variable is read or written.  These watchpoint
-types can be selected from the pull down menu obtained by pressing and
-holding the `\fBWatch ()\fR' button.
-.PP
-Watchpoints can be manipulated like breakpoints; in particular, you
-can disable them temporarily as well as set ignore counts and
-conditions on them.  To edit watchpoints, select `\fBData | Edit
-Watchpoints\fR'.  This invokes the breakpoint editor, which also
-displays watchpoints.
-.PP
-To delete a watchpoint, select an occurrence of the variable in the
-source text and click the `\fBUnwatch ()\fR' button.  As an
-alternative, you can also select it in the breakpoint editor and click
-on `\fBDelete\fR'.
 .\"
 .\"
 .\"
@@ -2768,8 +2731,8 @@ Whether the hacks are included at run-time depends on the setting of
 the `\fBlessTifVersion\fR' resource.  `\fBlessTifVersion\fR' indicates
 the LessTif version against which \s-2@DDD@\s+2 is linked.  For
 LessTif version \fIx.y\fR, its value is \fIx\fR multiplied by 1000
-plus \fIy\fR\(em\&for instance, the value \fB88\fR stands for LessTif
-0.88 and the value \fB1000\fR stands for LessTif 1.0.  To specify the
+plus \fIy\fR\(em\&for instance, the value \fB95\fR stands for LessTif
+0.95 and the value \fB1000\fR stands for LessTif 1.0.  To specify the
 version number of the LessTif library at \s-2@DDD@\s+2 invocation, you
 can also use the option `\fB\-\-lesstif-version\fR \fIversion\fR'.
 .PP
