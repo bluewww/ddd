@@ -234,7 +234,7 @@ static void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
 
 	if (reply.length() > 2)
 	{
-	    istrstream is(reply);
+	    istrstream is((const char *)reply);
 	    is >> ttyname >> pid >> term >> windowid;
 	}
 
