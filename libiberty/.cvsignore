@@ -9,5 +9,7 @@ needed-list
 needed.awk
 needed2.awk
 required-list
+stamp-config
+stamp-needed
 stamp-picdir
 xhost-mkfrag
