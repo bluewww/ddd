@@ -18,15 +18,6 @@ Volunteers for fixing these and other bugs are welcome!
 003. Using Motif 1.1 or earlier, the command window is scrolled
      whenever obscured.  [This seems to be a Motif bug.]
 
-010. On some systems, switching back from running processes in the
-     execution window to running processes in the command window does
-     not work correctly; processes attempting to read from stdio are
-     interrupted with SIGTTIN.  [This is due to the `tty' command in
-     GDB, which on some systems messes up tty control when applied to
-     the command window pty.  As a workaround, enter a line
-     `*useTTYCommand: false' in `~/.dddinit': this will set up an
-     alternative redirection scheme].
-
 013. Raising windows using the `Windows' menu does not assign them `mwm'
      input focus.  [Anyone willing to give me a hint here?  -AZ]
 
@@ -77,8 +68,8 @@ Volunteers for fixing these and other bugs are welcome!
      know if you need any other info.
      [A bug in Motif 1.1 - does not occur in later Motif versions].
 
-041. Starting DDD iconified under vtwm causes trouble with group
-     iconification.
+041. Starting a multi-window DDD iconified under vtwm and fvwm causes
+     trouble with group iconification.
 
 043. vickery@babbage.cs.qc.edu (Christopher Vickery) states:
      The display() operation generates a segmentation fault if the variable
@@ -125,9 +116,6 @@ Volunteers for fixing these and other bugs are welcome!
      ddd --dbx $PAR_HOME/bin/tesla-wish 20919
      Reported by Joe Hildebrand <hildjj@fuentez.com>
 
-068. On HPUX 9.05, DDD does not pass any characters to the left of the "@"
-     symbol typed into the command line.  [fixed in DDD 1.5  -AZ]
-
 069* Yves Arrouye <Yves.Arrouye@marin.fdn.fr> states:
      [Linux 1.3.38 system, X11R6 (XFree 3.1.1), Motif 2.x]
 
@@ -152,7 +140,7 @@ Volunteers for fixing these and other bugs are welcome!
         assembler window then the line in this window is highlighted, but
         not the one in the source language window.
 
-     5. When one sets a breakpoint or do something that issues a command
+     5* When one sets a breakpoint or do something that issues a command
         to the underlying debugger, the source window is scrolled back
         to the current line. This makes it difficult to see what
         you've actually done, since for example the breakpoint you
@@ -166,31 +154,21 @@ Volunteers for fixing these and other bugs are welcome!
         saved. I find this counter-intuitive, but maybe is this a feature
         (which may be documented in the manual for dumb people like me).
 
-070. Matthias Kurz <mk@baerlap.north.de> complains: When glyphs are
-     enabled, I have endless scrolling as soon as I press a `repeat'
-     button on the DDD source scrollbars.
-
 071. Klaus-Georg Adams <adams@achibm5.chemie.uni-karlsruhe.de> says:
-
      I have got a seg-fault in the stock precompiled ddd-1.4b
      (i486-unknown-linux) and report it dutyfully.
-
      It can be reproduced by doing the following:
      Run your program to a breakpoint.  Select data to display() in
      the data window.  Dereference() a pointer.  Step out of the
      function or kill the program, so that displayed data is disabled.
      Do a `select all' in the data menu.  Hit delete(). That's it.
      (sometimes it takes another klick on run to get the seg-fault).
-
      [I could not reproduce this bug.  Does this also happen on 
       other configurations?  -AZ]
 
 072. Alexander Dvorak <Alexander.Dvorak@physik.uni-regensburg.de>
-     says:
-
-     Dragging and dropping the `Stop' symbol several times causes DDD
-     to crash with a segmentation fault.
-
+     says that dragging and dropping the `Stop' symbol several times
+     causes DDD to crash with a segmentation fault.
      [Pre-compiled DDD as in 071.  Does this also happen on 
       other configurations?  -AZ] 
 
@@ -198,7 +176,6 @@ Volunteers for fixing these and other bugs are welcome!
      causes a core dump.  [Motif/Linux bug?]
 
 076. Jauder Ho <jauderho@umich.edu> says:
-
      DDD 1.4b (i586-unknown-linux) gets fatal signal
      When I run my program after setting a breakpoint and allowing ddd
      to stop at the breakpoint. If at that point I choose to run the
@@ -233,14 +210,11 @@ Volunteers for fixing these and other bugs are welcome!
 080. Suppress those bison/flex warnings and have users report any
      remaining warnings they encounter.
 
-081. Have DDD search source code in a list of directories (for GDB,
-     sync that with `list directories'; how to sync with DBX?).  See
-     also the mail of Tom Weis <tom_weis@mathworks.com>.
-
 084. Configure problems.  Lutz Vieweg <vieweg@iap.uni-frankfurt.de>
      says that the `configure' tests ignore the `CC' and `CXX'
-     environment variables (is this true for the top-level
-     `configure', or for `ddd/configure'?)
+     environment variables.
+     [Is this true for the top-level `configure', or for
+     `ddd/configure'? -AZ]
 
 085. DDD cannot handle `members of T:' GDB output in displays.
      The following is not processed correctly:
@@ -267,30 +241,29 @@ Volunteers for fixing these and other bugs are welcome!
        by hand (is the problem that libiberty/Makefile.in does not
        have an entry for CC= @CC@?)
 
-    - There is some sort of problem when starting up ddd.  It gives
-      the following message on the xterm:
-          (gdb) ioctl ttcompat /dev/pts/0: Invalid argument
+     - There is some sort of problem when starting up ddd.  It gives
+       the following message on the xterm:
+           (gdb) ioctl ttcompat /dev/pts/0: Invalid argument
+       I don't know enough of streams and PTYs on HP-UX 10.10 to
+       tell what's wrong.  The problem is obviously in TTYAgent.C,
+       line 447.
+       [We don't know as well, but this booboo seems to be harmless -AZ]
 
-      I don't know enough of streams and PTYs on HP-UX 10.10 to
-      tell what's wrong.  The problem is obviously in TTYAgent.C,
-      line 447.
-
-    - There is a bug somewhere in graph layout code that manifests
-      only on highest KCC optimization levels (+K2 and +K3).  The
-      result is that if I dereference any pointer, the following
-      happens:
-        - the arrow is drawn to extreme left, beyond the left edge
-        - the panner window becomes very wide and the current view
-          is just a thin line in the panner
-        - moving the panner handle has no effect -- no scrolling is
-          ever done; thus I cannot make the target of the pointer
-          visible
-  
-      This is very repeatable, as it happens every time.  DDD does
-      not crash, however.  My first guess is that somehow something
-      goes either negative or to extremely large positive value.  I
-      could try to narrow down the location of the bug if someone
-      would be nice enough to tell me which functions to look at.
+     - There is a bug somewhere in graph layout code that manifests
+       only on highest KCC optimization levels (+K2 and +K3).  The
+       result is that if I dereference any pointer, the following
+       happens:
+         - the arrow is drawn to extreme left, beyond the left edge
+         - the panner window becomes very wide and the current view
+           is just a thin line in the panner
+         - moving the panner handle has no effect -- no scrolling is
+           ever done; thus I cannot make the target of the pointer
+           visible
+       This is very repeatable, as it happens every time.  DDD does
+       not crash, however.  My first guess is that somehow something
+       goes either negative or to extremely large positive value.  I
+       could try to narrow down the location of the bug if someone
+       would be nice enough to tell me which functions to look at.
 
 085. mayer@paradigml.com (Ron Mayer) says:
 
