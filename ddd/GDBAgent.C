@@ -3041,7 +3041,8 @@ void GDBAgent::abort()
     last_prompt       = "";
     last_written      = "";
     echoed_characters = -1;
-    exception_state   = false;
     questions_waiting = false;
     complete_answer   = "";
+
+    set_exception_state(false);
 }
