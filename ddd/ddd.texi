@@ -3,7 +3,7 @@
 @c DDD Manual
 
 @c Copyright (C) 1999-2001 Universitaet Passau, Germany.
-@c Copyright (C) 2001 Universitaet des Saarlandes, Germany.
+@c Copyright (C) 2001-2004 Universitaet des Saarlandes, Germany.
 @c Written by Andreas Zeller <zeller@gnu.org>.
 @c 
 @c This file is part of DDD.
@@ -53,7 +53,7 @@
 @set EDITION First
 
 @c !!set DDD manual's revision date
-@set DATE 31 March, 2003
+@set DATE 15 January, 2004
 
 @c Index stuff
 @c Labels
@@ -117,7 +117,7 @@ with @DDD{}} for @DDD{} Version @value{VERSION}.
 
 @noindent
 @group
-Copyright @copyright{} 2001 Universität des Saarlandes @*
+Copyright @copyright{} 2004 Universität des Saarlandes @*
 Lehrstuhl Softwaretechnik @*
 Postfach 15 11 50 @*
 66041 Saarbrücken @*
@@ -177,7 +177,7 @@ Send bug reports to @email{bug-ddd@@gnu.org}. @*
 @end tex
 
 @vskip 0pt plus 1filll
-Copyright @copyright{} 2001 Universität des Saarlandes @*
+Copyright @copyright{} 2004 Universität des Saarlandes @*
 Lehrstuhl Softwaretechnik @*
 Postfach 15 11 50 @*
 66041 Saarbrücken @*
@@ -693,7 +693,7 @@ Using @value{DDD} with GDB
 
 @noindent
 @group
-Copyright @copyright{} 2001 Universität des Saarlandes @*
+Copyright @copyright{} 2004 Universität des Saarlandes @*
 Lehrstuhl Softwaretechnik @*
 Postfach 15 11 50 @*
 66041 Saarbrücken @*
@@ -840,6 +840,7 @@ impression of @DDD{}.
 
 @menu
 * About this Manual::           Getting copies in various formats.
+* Typographic Conventions::     Typographic conventions.
 * Free Software::               How to copy and redistribute @DDD{}.
 * Getting @DDD{}::              How to obtain copies of @DDD{}.
 * Contributors::                Who has done all this?
@@ -909,6 +910,71 @@ The manual itself is written in @TeX{}info format; its source code
 The picture sources come in a separate package
 @file{@value{ddd}-@value{VERSION}-pics.tar.gz}; you need this package
 only if you want to re-create the PostScript, HTML, or PDF versions.
+
+
+
+@node Typographic Conventions
+@unnumberedsec Typographic conventions
+
+@table @asis
+@item @key{Ctrl+A}
+The name for a key on the keyboard (or multiple keys pressed simultaneously)
+
+@item @kbd{run}
+A sequence of characters to be typed on the keyboard.
+
+@item @file{~/.@value{ddd}/init}
+A file.
+
+@item @samp{Help}
+A graphical control element, such as a button or menu item.
+
+@item @samp{File @result{} Open Program}
+A sequence of menu items, starting at the top-level menu bar.
+
+@item @code{argc - 1}
+Program code or debugger command.
+
+@item @option{-g}
+A command-line option.
+
+@item @code{$}
+System prompt.
+
+@item @code{(gdb) }
+Debugger prompt.
+
+@item @code{_}
+Cursor position.
+
+@item @var{version}
+A metasyntactic variable; something that stands for another piece of
+text.
+
+@item @dfn{definition}
+A definition.
+
+@item @emph{caution}
+Emphasis.
+
+@item @strong{A warning}
+Strong emphasis.
+
+@item @acronym{DDD}
+An acronym.
+@end table
+
+Here's an example.  @samp{@kbd{break @var{location}}} is a typed command
+at the @samp{@code{(gdb) }} prompt; the metasyntactic variable
+@samp{@var{location}} would be replaced by the actual location.
+@samp{@code{_}} is the cursor position after entering the command.
+
+@example
+(gdb) @kbd{break @var{location}}
+Breakpoint @var{number} at @var{location}
+(gdb) _
+@end example
+
 
 
 @node Free Software
@@ -1065,15 +1131,17 @@ following bug.  Normally, @command{sample} should sort and print its
 arguments numerically, as in the following example:
 
 @example
-$ ./sample 8 7 5 4 1 3
+$ @kbd{./sample 8 7 5 4 1 3}
 1 3 4 5 7 8
+$ _
 @end example
 
 However, with certain arguments, this goes wrong:
 
 @example
-$ ./sample 8000 7000 5000 1000 4000
+$ @kbd{./sample 8000 7000 5000 1000 4000}
 1000 1913 4000 5000 7000
+$ _
 @end example
 
 Although the output is sorted and contains the right number of
@@ -1087,7 +1155,8 @@ Let us use @DDD{} to see what is going on.  First, you must compile
 the @option{-g} flag while compiling:
 
 @example
-$ gcc -g -o sample sample.c
+$ @kbd{gcc -g -o sample sample.c}
+$ _
 @end example
 
 @menu
@@ -1098,7 +1167,7 @@ Now, you can invoke @DDD{} (@pxref{Invocation}) on the
 @command{sample} executable:
 
 @example
-$ ddd sample
+$ @kbd{ddd sample}
 @end example
 
 @page
@@ -1121,9 +1190,9 @@ information as well as a @GDB{} prompt.@footnote{Re-invoke @DDD{} with
 GNU @value{DDD} Version @value{VERSION}, by Dorothea Lütkehaus and Andreas Zeller.
 Copyright @copyright{} 1995-1999 Technische Universität Braunschweig, Germany.
 Copyright @copyright{} 1999-2001 Universität Passau, Germany.
-Copyright @copyright{} 2001 Universität des Saarlandes, Germany.
+Copyright @copyright{} 2001-2004 Universität des Saarlandes, Germany.
 Reading symbols from sample@dots{}done.
-(gdb) 
+(gdb) _
 @end example
 
 The first thing to do now is to place a @dfn{Breakpoint}
@@ -1161,7 +1230,7 @@ Breakpoint 1 at 0x8048666: file sample.c, line 31.
 Starting program: sample 8000 7000 5000 1000 4000
 
 Breakpoint 1, main (argc=6, argv=0xbffff918) at sample.c:31
-(gdb) 
+(gdb) _
 @end example
 
 The current execution line is indicated by a green arrow.
@@ -1198,7 +1267,7 @@ prints the current value of @samp{()} in the debugger console
 @example
 (gdb) print a[0]
 $1 = 0
-(gdb) 
+(gdb) _
 @end example
 
 @noindent
@@ -1215,7 +1284,7 @@ argument field and click on the @samp{Print} button.  You get the first
 @example
 (gdb) print a[0]@@(argc - 1)
 $2 = @{0, 0, 0, 0, 0@}
-(gdb) 
+(gdb) _
 @end example
 
 @page
@@ -1291,7 +1360,7 @@ while the debugger console tells us the function just entered:
 @example
 (gdb) step
 shell_sort (a=0x8049878, size=6) at sample.c:9
-(gdb)
+(gdb) _
 @end example
 
 This output that shows the function where @samp{sample} is now suspended
@@ -1314,7 +1383,7 @@ argument field and click on @samp{Print}:
 @example
 (gdb) print a[0] @@ size
 $4 = @{8000, 7000, 5000, 1000, 4000, 1913@}
-(gdb) 
+(gdb) _
 @end example
 
 Surprise!  Where does this additional value @code{1913} come from?  The
@@ -1343,7 +1412,7 @@ Then, click on @samp{Finish} to resume execution of the
 (gdb) finish
 Run till exit from #0  shell_sort (a=0x8049878, size=5) at sample.c:9
 0x80486ed in main (argc=6, argv=0xbffff918) at sample.c:35
-(gdb) 
+(gdb) _
 @end example
 
 @page
@@ -1365,7 +1434,7 @@ execution.
 1000 4000 5000 7000 8000 
 
 Program exited normally.
-(gdb) 
+(gdb) _
 @end example
 
 The message @samp{Program exited normally.} is from @GDB{}; it indicates
@@ -1388,7 +1457,8 @@ shell_sort(a, argc - 1);
 You can now recompile @command{sample}
 
 @example
-$ gcc -g -o sample sample.c
+$ @kbd{gcc -g -o sample sample.c}
+$ _
 @end example
 
 @noindent
@@ -1403,7 +1473,7 @@ Starting program: sample 8000 7000 5000 1000 4000
 1000 4000 5000 7000 8000 
 
 Program exited normally.
-(gdb) 
+(gdb) _
 @end example
 
 All is done; the program works fine now.  You can end this @DDD{}
@@ -2104,7 +2174,7 @@ details.
 @item --PLAY @var{log-file}
 @flindex log
 Simulate an inferior debugger.  @var{log-file} is a
-@samp{~/.@value{ddd}/log} file as generated by some previous
+@file{~/.@value{ddd}/log} file as generated by some previous
 @DDD{} session (@pxref{Logging}).  When a command is entered, scan
 @var{log-file} for this command and re-issue the logged reply; if the
 command is not found, do nothing.  This is used by the @option{--play}
@@ -2210,7 +2280,7 @@ for details.
 Show the interaction between @DDD{} and the inferior debugger on
 standard error.  This is useful for debugging @DDD{}.  If
 @option{--trace} is not specified, this information is written into
-@file{~/.@value{ddd}/log} (@samp{~} stands for your home directory),
+@file{~/.@value{ddd}/log} (@file{~} stands for your home directory),
 such that you can also do a post-mortem debugging.  @xref{Logging}, for
 details about logging.
 
@@ -2325,9 +2395,10 @@ Specify a resource name and value to override any defaults.
 @node Inferior Debugger Options
 @subsection Inferior Debugger Options
 
-All options that @DDD{} does not recognize are passed to the
-inferior debugger.  This section lists the most useful options of the
-different inferior debuggers supported by @DDD{}.
+All options that @DDD{} does not recognize are passed to the inferior
+debugger.  This section lists the most useful options of the different
+inferior debuggers supported by @DDD{}.  In case these options do not
+work as expected, please lookup the appropriate reference.
 
 @menu
 * GDB Options::                 
@@ -2718,7 +2789,7 @@ current execution position.  To include a core dump, enable
 @end ifnotinfo
 
 After clicking on @samp{Save}, the session is saved in
-@samp{~/.@value{ddd}/sessions/@var{session}}.
+@file{~/.@value{ddd}/sessions/@var{session}}.
 
 Here's a list of the items whose state is saved in a session:
 @itemize @bullet
@@ -2768,13 +2839,13 @@ session defaults:
 @itemize @bullet
 @item
 User options will be saved in
-@samp{~/.@value{ddd}/sessions/@var{session}/init} instead of
-@samp{~/.@value{ddd}/init}.  @xref{Saving Options}, for details.
+@file{~/.@value{ddd}/sessions/@var{session}/init} instead of
+@file{~/.@value{ddd}/init}.  @xref{Saving Options}, for details.
 
 @item
 The @DDD{} command history will be saved in
-@samp{~/.@value{ddd}/sessions/@var{session}/history} instead of
-@samp{~/.@value{ddd}/history}.  @xref{Command History}, for details.
+@file{~/.@value{ddd}/sessions/@var{session}/history} instead of
+@file{~/.@value{ddd}/history}.  @xref{Command History}, for details.
 @end itemize
 
 To make the current session inactive, open the @emph{default session}
@@ -3217,7 +3288,7 @@ changed through the @GDB{} settings panel (although being reset
 upon each new @DDD{} invocation).
 
 Do not use this resource to customize @GDB{}; instead, use a
-personal @samp{~/.gdbinit} file.  See your @GDB{}
+personal @file{~/.gdbinit} file.  See your @GDB{}
 documentation for details.
 @end defvr
 
@@ -3250,7 +3321,7 @@ This string contains a list of newline-separated commands that are
 initially sent to @DBX{}.  By default, it is empty.
 
 Do not use this resource to customize @DBX{}; instead, use a
-personal @samp{~/.dbxinit} or @samp{~/.dbxrc} file.  See
+personal @file{~/.dbxinit} or @file{~/.dbxrc} file.  See
 your @DBX{} documentation for details.
 @end defvr
 
@@ -3268,7 +3339,7 @@ This string contains a list of newline-separated commands that are
 initially sent to @XDB{}.  By default, it is empty.
 
 Do not use this resource to customize @DBX{}; instead, use a
-personal @samp{~/.xdbrc} file.  See your @XDB{}
+personal @file{~/.xdbrc} file.  See your @XDB{}
 documentation for details.
 @end defvr
 
@@ -3648,9 +3719,11 @@ as exiting @DDD{}.
 @table @code
 @item Open Program
 @itemx Open Class
+@kindex Ctrl+O
 @lbindex Open Program
 @lbindex Open Class
-Open a program or class to be debugged.  @xref{Opening Programs}, for details.
+Open a program or class to be debugged (@key{Ctrl+O}).  @xref{Opening
+Programs}, for details.
 
 @item Open Recent
 @lbindex Open Recent
@@ -3669,13 +3742,15 @@ Source Files}, for details.
 
 @item Open Session
 @lbindex Open Session
-Resume a previously saved @DDD{} session.  @xref{Resuming Sessions},
-for details.
+@kindex Ctrl+N
+Resume a previously saved @DDD{} session (@key{Ctrl+N}).  @xref{Resuming
+Sessions}, for details.
 
 @item Save Session As
 @lbindex Save Session As
-Save the current @DDD{} session such that you can resume it later.
-@xref{Saving Sessions}, for details.
+@kindex Ctrl+S
+Save the current @DDD{} session such that you can resume it later
+(@key{Ctrl+S}).  @xref{Saving Sessions}, for details.
 
 @item Attach to Process
 @lbindex Attach to Process
@@ -3699,11 +3774,14 @@ for details.
 
 @item Make
 @lbindex Make
-Run the @code{make} program.  @xref{Recompiling}, for details.
+@kindex Ctrl+M
+Run the @code{make} program (@key{Ctrl+M}).  @xref{Recompiling}, for
+details.
 
 @item Close
 @lbindex Close
-Close this @DDD{} window.
+@kindex Ctrl+W
+Close this @DDD{} window (@key{Ctrl+W}).  @xref{Quitting}, for details.
 
 @item Restart
 @lbindex Restart
@@ -3711,7 +3789,8 @@ Restart @DDD{}.
 
 @item Exit
 @lbindex Exit
-Exit @DDD{}.
+@kindex Ctrl+Q
+Exit @DDD{} (@key{Ctrl+Q}).  @xref{Quitting}, for details.
 @end table
 
 
@@ -3727,43 +3806,55 @@ editing @DDD{} options and preferences.
 @table @code
 @item Undo
 @lbindex Undo
-Undo the most recent action.  Almost all commands can be undone this
-way.  @xref{Undo and Redo}, for details.
+@kindex Ctrl+Z
+Undo the most recent action (@key{Ctrl+Z}).  Almost all commands can be
+undone this way.  @xref{Undo and Redo}, for details.
 
 @item Redo
 @lbindex Redo
-Redo the action most recently undone.  Every command undone can be
-redone this way.  @xref{Undo and Redo}, for details.
+@kindex Ctrl+Y
+Redo the action most recently undone (@key{Ctrl+Y}).  Every command
+undone can be redone this way.  @xref{Undo and Redo}, for details.
 
 @item Cut
 @lbindex Cut
+@kindex Ctrl+X
+@kindex Shift+Del
 Removes the selected text block from the current text area and makes it
-the X clipboard selection.  Before executing this command, you have to
-select a region in a text area---either with the mouse or with the usual
-text selection keys.
+the X clipboard selection (@key{Ctrl+X} or @key{Shift+Del};
+@xref{Customizing the Edit Menu}, for details).  Before executing this
+command, you have to select a region in a text area---either with the
+mouse or with the usual text selection keys.
 
 This item can also be applied to displays (@pxref{Deleting Displays}).
 
 @item Copy
 @lbindex Copy
-Makes a selected text block the X clipboard selection.  You can select
-text by selecting a text region with the usual text selection keys or
-with the mouse.  @xref{Customizing the Edit Menu}, for changing the
-default accelerator.
+@kindex Ctrl+C
+@kindex Ctrl+Ins
+Makes a selected text block the X clipboard selection (@key{Ctrl+C} or
+@key{Ctrl+Ins}; @xref{Customizing the Edit Menu}, for details).  You
+can select text by selecting a text region with the usual text selection
+keys or with the mouse.  @xref{Customizing the Edit Menu}, for changing
+the default accelerator.
 
 This item can also be applied to displays (@pxref{Deleting Displays}).
 
 @item Paste
 @lbindex Paste
+@kindex Ctrl+V
+@kindex Shift+Ins
 Inserts the current value of the X clipboard selection in the most
-recently selected text area.  You can paste in text you have placed in
-the clipboard using @samp{Copy} or @samp{Cut}.  You can also use
-@samp{Paste} to insert text that was pasted into the clipboard from
-other applications.
+recently selected text area (@key{Ctrl+V} or @key{Shift+Ins};
+@xref{Customizing the Edit Menu}, for details).  You can paste in text
+you have placed in the clipboard using @samp{Copy} or @samp{Cut}.  You
+can also use @samp{Paste} to insert text that was pasted into the
+clipboard from other applications.
 
 @item Clear
 @lbindex Clear
-Clears the most recently selected text area.
+@kindex Ctrl+U
+Clears the most recently selected text area (@key{Ctrl+U}).
 
 @item Delete
 @lbindex Delete
@@ -3774,8 +3865,12 @@ This item can also be applied to displays (@pxref{Deleting Displays}).
 
 @item Select All
 @lbindex Select All
-Selects all characters from the most recently selected text area.
-@xref{Customizing the Edit Menu}, for changing the default accelerator.
+@kindex Ctrl+A
+@kindex Ctrl+Shift+A
+Selects all characters from the most recently selected text area
+(@key{Ctrl+A} or or @key{Ctrl+Shift+A}; @pxref{Customizing the Edit
+Menu}, for details).
+
 
 @item Preferences
 @lbindex Preferences
@@ -3812,12 +3907,15 @@ windows.
 @table @code
 @item Command Tool
 @lbindex Command Tool
-Open and recenter the command tool.  @xref{Command Tool}, for details.
+@kindex Alt+8
+Open and recenter the command tool (@key{Alt+8}).  @xref{Command Tool},
+for details.
 
 @item Execution Window
 @lbindex Execution Window
-Open the separate execution window.  @xref{Using the Execution Window},
-for details.
+@kindex Alt+9
+Open the separate execution window (@key{Alt+9}).  @xref{Using the
+Execution Window}, for details.
 
 @item Debugger Console
 @lbindex GDB Console
@@ -3828,19 +3926,23 @@ for details.
 @lbindex PYDB Console
 @lbindex Perl Console
 @lbindex Bash Console
-Open the debugger console.  @xref{Commands}, for details.
+@kindex Alt+1
+Open the debugger console (@key{Alt+1}).  @xref{Commands}, for details.
 
 @item Source Window
 @lbindex Source Window
-Open the source window.  @xref{Navigating}, for details.
+@kindex Alt+2
+Open the source window (@key{Alt+2}).  @xref{Navigating}, for details.
 
 @item Data Window
 @lbindex Data Window
-Open the data window.  @xref{Displaying Values}, for details.
+@kindex Alt+3
+Open the data window (@key{Alt+3}).  @xref{Displaying Values}, for details.
 
 @item Machine Code Window
 @lbindex Machine Code Window
-Show machine code.  @xref{Machine Code}, for details.
+@kindex Alt+4
+Show machine code (@key{Alt+4}).  @xref{Machine Code}, for details.
 @end table
 
 
@@ -3857,12 +3959,14 @@ Most of these operations are also found on the command tool
 @table @code
 @item Run
 @lbindex Run
-Start program execution, prompting for program arguments.
+@kindex F2
+Start program execution, prompting for program arguments (@key{F2}).
 @xref{Starting Program Execution}, for details.
 
 @item Run Again
 @lbindex Run Again
-Start program execution with the most recently used arguments.
+@kindex F3
+Start program execution with the most recently used arguments (@key{F3}).
 @xref{Starting Program Execution}, for details.
 
 @item Run in Execution Window
@@ -3872,69 +3976,85 @@ If enabled, start next program execution in separate execution window.
 
 @item Step
 @lbindex Step
+@kindex F5
 Continue running your program until control reaches a different source
-line, then stop it and return control to @DDD{}.  @xref{Resuming
-Execution}, for details.
+line, then stop it and return control to @DDD{} (@key{F5}).
+@xref{Resuming Execution}, for details.
 
 @item Step Instruction
 @lbindex Step Instruction
-Execute one machine instruction, then stop and return to @DDD{}.
-@xref{Machine Code Execution}, for details.
+@kindex Shift+F5
+Execute one machine instruction, then stop and return to @DDD{}
+(@key{Shift+F5}).  @xref{Machine Code Execution}, for details.
 
 @item Next
 @lbindex Next
-Continue to the next source line in the current (innermost) stack
-frame.  This is similar to @samp{Step}, but function calls that appear
-within the line of code are executed without stopping.
+@kindex F6
+Continue to the next source line in the current (innermost) stack frame
+(@key{F6}).  This is similar to @samp{Step}, but function calls that
+appear within the line of code are executed without stopping.
 @xref{Resuming Execution}, for details.
 
 @item Next Instruction
 @lbindex Next Instruction
+@kindex Shift+F6
 Execute one machine instruction, but if it is a function call,
-proceed until the function returns.
+proceed until the function returns (@key{Shift+F6}).
 @xref{Machine Code Execution}, for details.
 
 @item Until
 @lbindex Until
+@kindex F7
 Continue running until a source line past the current line, in the
-current stack frame, is reached.  @xref{Resuming Execution}, for details.
+current stack frame, is reached (@key{F7}).  @xref{Resuming Execution},
+for details.
 
 @item Finish
 @lbindex Finish
+@kindex F8
 Continue running until just after function in the selected stack frame
-returns.  Print the returned value (if any).  @xref{Resuming Execution},
-for details.
+returns (@key{F8}).  Print the returned value (if any).  @xref{Resuming
+Execution}, for details.
 
 @item Continue
 @lbindex Continue
-Resume program execution, at the address where your program last
-stopped; any breakpoints set at that address are bypassed.
+@kindex F9
+Resume program execution, at the address where your program last stopped
+(@key{F9}); any breakpoints set at that address are bypassed.
 @xref{Resuming Execution}, for details.
 
 @item Continue Without Signal
 @lbindex Continue Without Signal
-Continue execution without giving a signal.  This is useful when your
-program stopped on account of a signal and would ordinary see the signal
-when resumed with @samp{Continue}.  @xref{Signals}, for details.
+@kindex Shift+F9
+Continue execution without giving a signal (@key{Shift+F9}).  This is
+useful when your program stopped on account of a signal and would
+ordinary see the signal when resumed with @samp{Continue}.
+@xref{Signals}, for details.
 
 @item Kill
 @lbindex Kill
-Kill the process of the debugged program.  @xref{Killing the Program},
-for details.
+@kindex F4
+Kill the process of the debugged program (@key{F4}).  @xref{Killing the
+Program}, for details.
 
 @item Interrupt
 @lbindex Interrupt
-Interrupt program execution.  This is equivalent to sending an interrupt
-signal to the process.  @xref{Interrupting}, for details.
+@kindex Esc
+@kindex Ctrl+C
+Interrupt program execution (@key{Esc} or @key{Ctrl+C};
+@pxref{Customizing the Edit Menu}, for details).  This is equivalent to
+sending an interrupt signal to the process.  @xref{Interrupting}, for
+details.
 
 @item Abort
 @lbindex Abort
 @cindex Aborting execution
 @cindex Execution, aborting
 @cindex SIGABRT signal
-Abort program execution (and maybe debugger execution, too).  This is
-equivalent to sending a @code{SIGABRT} signal to the process.
-@xref{Quitting}, for details.
+@kindex Ctrl+\
+Abort program execution (and maybe debugger execution, too;
+@key{Ctrl+\}).  This is equivalent to sending a @code{SIGABRT} signal to
+the process.  @xref{Quitting}, for details.
 @end table
 
 
@@ -3957,47 +4077,57 @@ View the command history.  @xref{Command History}, for details.
 
 @item Previous
 @lbindex Previous
-Show the previous command from the command history.  @xref{Command
-History}, for details.
+@kindex Up
+Show the previous command from the command history (@key{Up}).
+@xref{Command History}, for details.
 
 @item Next
 @lbindex Next
-Show the next command from the command history.  @xref{Command History},
-for details.
+@kindex Down
+Show the next command from the command history (@key{Down}).
+@xref{Command History}, for details.
 
 @item Find Backward
 @lbindex Find Backward
-Do an incremental search backward through the command history.
-@xref{Command History}, for details.
+@kindex Ctrl+B
+Do an incremental search backward through the command history
+(@key{Ctrl+B}).  @xref{Command History}, for details.
 
 @item Find Forward
 @lbindex Find Forward
-Do an incremental search forward through the command history.
+@kindex Ctrl+F
+Do an incremental search forward through the command history (@key{Ctrl+F}).
 @xref{Command History}, for details.
 
 @item Quit Search
 @lbindex Quit Search
-Quit incremental search through the command history.  @xref{Command
-History}, for details.
+@kindex Esc
+Quit incremental search through the command history (@key{Esc}).
+@xref{Command History}, for details.
 
 @item Complete
 @lbindex Complete
-Complete the current command in the debugger console.  @xref{Entering
-Commands}, for details.
+@kindex Tab
+Complete the current command in the debugger console (@key{Tab}).
+@xref{Entering Commands}, for details.
 
 @item Apply
 @lbindex Apply
-Apply the current command in the debugger console.  @xref{Entering
-Commands}, for details.
+@kindex Return
+Apply the current command in the debugger console (@key{Apply}).
+@xref{Entering Commands}, for details.
 
 @item Clear Line
 @lbindex Clear Line
-Clear the current command line in the debugger console.  @xref{Entering
-Commands}, for details.
+@kindex Ctrl+U
+Clear the current command line in the debugger console (@key{Ctrl+U}).
+@xref{Entering Commands}, for details.
 
 @item Clear Window
 @lbindex Clear Window
-Clear the debugger console.  @xref{Entering Commands}, for details.
+@kindex Shift+Ctrl+U
+Clear the debugger console (@key{Shift+Ctrl+U}).  @xref{Entering
+Commands}, for details.
 
 @item Define Command
 @lbindex Define Command
@@ -4035,15 +4165,19 @@ View and edit the current signal handling.  @xref{Signals}, for details.
 
 @item Up
 @lbindex Up
-Select the stack frame (i.e. the function) that called this one.  This
-advances toward the outermost frame, to higher frame numbers, to frames
-that have existed longer.  @xref{Stack}, for details.
+@kindex Ctrl+Up
+Select the stack frame (i.e. the function) that called this one
+(@key{Ctrl+Up}).  This advances toward the outermost frame, to higher
+frame numbers, to frames that have existed longer.  @xref{Stack}, for
+details.
 
 @item Down
 @lbindex Down
-Select the stack frame (i.e. the function) that was called by this one.
-This advances toward the innermost frame, to lower frame numbers, to
-frames that were created more recently.  @xref{Stack}, for details.
+@kindex Ctrl+Down
+Select the stack frame (i.e. the function) that was called by this one
+(@key{Ctrl+Down}).  This advances toward the innermost frame, to lower
+frame numbers, to frames that were created more recently.  @xref{Stack},
+for details.
 @end table
 
 
@@ -4061,52 +4195,62 @@ Edit all Breakpoints.  @xref{Editing all Breakpoints}, for details.
 
 @item Lookup ()
 @lbindex Lookup ()
-Look up the argument @samp{()} in the source code.  @xref{Looking up
-Definitions}, for details.
+@kindex Ctrl+/
+Look up the argument @samp{()} in the source code (@key{Ctrl+/}).
+@xref{Looking up Definitions}, for details.
 
 
 @item Find >> ()
 @lbindex Find >> ()
+@kindex Ctrl+.
 Look up the next occurrence of the argument @samp{()} in the current
-source code.  @xref{Textual Search}, for details.
+source code (@key{Ctrl+.}).  @xref{Textual Search}, for details.
 
 @item Find << ()
 @lbindex Find << ()
+@kindex Ctrl+,
 Look up the previous occurrence of the argument @samp{()} in the current
-source code.  @xref{Textual Search}, for details.
+source code (@key{Ctrl+,}).  @xref{Textual Search}, for details.
 
 
 @item Find Words Only
 @lbindex Find Words Only
-If enabled, find only complete words.  @xref{Textual Search}, for
-details.
+@kindex Alt+W
+If enabled, find only complete words (@key{Alt+W}).  @xref{Textual
+Search}, for details.
 
 
 @item Find Case Sensitive
 @lbindex Find Case Sensitive
-If enabled, find is case-sensitive.  @xref{Textual Search}, for details.
+@kindex Alt+I
+If enabled, find is case-sensitive (@key{Alt+I}).  @xref{Textual
+Search}, for details.
 
 
 @item Display Line Numbers
 @lbindex Display Line Numbers
-If enabled, prefix source lines with their line number.
+@kindex Alt+N
+If enabled, prefix source lines with their line number (@key{Alt+N}).
 @xref{Customizing Source}, for details.
 
 
 @item Display Machine Code
 @lbindex Display Machine Code
-If enabled, show machine code.  @xref{Machine Code}, for details.
+@kindex Alt+4
+If enabled, show machine code (@key{Alt+4}).  @xref{Machine Code}, for details.
 
 
 @item Edit Source
 @lbindex Edit Source
-Invoke an editor for the current source file.  @xref{Editing Source
-Code}, for details.
+@kindex Shift+Ctrl+V
+Invoke an editor for the current source file (@key{Shift+Ctrl+V}).
+@xref{Editing Source Code}, for details.
 
 @item Reload Source
 @lbindex Reload Source
-Reload the current source file.  @xref{Editing Source Code}, for
-details.
+@kindex Shift+Ctrl+L
+Reload the current source file (@key{Shift+Ctrl+L}).  @xref{Editing
+Source Code}, for details.
 @end table
 
 
@@ -4132,27 +4276,32 @@ View a memory dump.  @xref{Examining Memory}, for details.
 
 @item Print ()
 @lbindex Print ()
-Print the value of @samp{()} in the debugger console.  @xref{Printing
-Values}, for details.
+@kindex Ctrl+=
+Print the value of @samp{()} in the debugger console (@key{Ctrl+=}).
+@xref{Printing Values}, for details.
 
 @item Display ()
 @lbindex Display ()
-Display the value of @samp{()} in the data window.  @xref{Displaying
-Values}, for details.
+@kindex Ctrl+-
+Display the value of @samp{()} in the data window (@key{Ctrl+-}).
+@xref{Displaying Values}, for details.
 
 @item Detect Aliases
 @lbindex Detect Aliases
-If enabled, detect shared data structures.  @xref{Shared Structures},
-for a discussion.
+@kindex Alt+A
+If enabled, detect shared data structures (@key{Alt+A}).  @xref{Shared
+Structures}, for a discussion.
 
 @item Display Local Variables
 @lbindex Display Local Variables
-Show all local variables in a display.  @xref{Displaying Local
+@kindex Alt+L
+Show all local variables in a display (@key{Alt+L}).  @xref{Displaying Local
 Variables}, for details.
 
 @item Display Arguments
 @lbindex Display Arguments
-Show all arguments of the current function in a display.
+@kindex Alt+U
+Show all arguments of the current function in a display (@key{Alt+U}).
 @xref{Displaying Local Variables}, for details.
 
 @item Status Displays
@@ -4162,21 +4311,25 @@ Program Status}, for details.
 
 @item Align on Grid
 @lbindex Align on Grid
-Align all displays on the grid.  @xref{Aligning Displays}, for a
+@kindex Alt+G
+Align all displays on the grid (@key{Alt+G}).  @xref{Aligning Displays}, for a
 discussion.
 
 @item Rotate Graph
 @lbindex Rotate Graph
-Rotate the graph by 90 degrees.  @xref{Rotating the Graph}, for details.
+@kindex Alt+R
+Rotate the graph by 90 degrees (@key{Alt+R}).  @xref{Rotating the Graph}, for details.
 
 @item Layout Graph
 @lbindex Layout Graph
-Layout the graph.  @xref{Layouting the Graph}, for details.
+@kindex Alt+Y
+Layout the graph (@key{Alt+Y}).  @xref{Layouting the Graph}, for details.
 
 @item Refresh
 @lbindex Refresh
-Update all values in the data window.  @xref{Refreshing the Data
-Window}, for details.
+@kindex Ctrl+L
+Update all values in the data window (@key{Ctrl+L}).  @xref{Refreshing
+the Data Window}, for details.
 @end table
 
 
@@ -4194,9 +4347,10 @@ fatal signal.
 
 @table @code
 @item Debug @DDD{}
+@kindex F12
 @lbindex Debug @value{DDD}
 Invoke a debugger (typically, @GDB{}) and attach it to this @DDD{}
-process.  This is useful only if you are a @DDD{} maintainer.
+process (@key{F12}).  This is useful only if you are a @DDD{} maintainer.
 
 @item Dump Core Now
 @lbindex Dump Core Now
@@ -5071,14 +5225,14 @@ specify resources are:
 @item
 @flindex init
 @flindex ~
-The @file{~/.@value{ddd}/init} file (@samp{~} stands for your home
+The @file{~/.@value{ddd}/init} file (@file{~} stands for your home
 directory).  This file is read in by @DDD{} upon start-up; the
 resources specified herein override all other sources (except for
 resources given implicitly by command-line options).
 
 @enindex DDD_STATE
 If the environment variable @env{DDD_STATE} is set, its value
-is used instead of @samp{~/.@value{ddd}/}.
+is used instead of @file{~/.@value{ddd}/}.
 
 @item
 @flindex Ddd
@@ -5559,7 +5713,7 @@ insert a line
 @end example
 
 @noindent
-in your @samp{~/.@value{ddd}/init} file.
+in your @file{~/.@value{ddd}/init} file.
 @end defvr
 
 @defvr Resource defaultFontSize  (class FontSize)
@@ -5584,7 +5738,7 @@ To set the variable width @DDD{} font family to, say,
 @end example
 
 @noindent
-in your @samp{~/.@value{ddd}/init} file.
+in your @file{~/.@value{ddd}/init} file.
 @end defvr
 
 @defvr Resource variableWidthFontSize  (class FontSize)
@@ -5611,7 +5765,7 @@ insert a line
 @end example
 
 @noindent
-in your @samp{~/.@value{ddd}/init} file.
+in your @file{~/.@value{ddd}/init} file.
 @end defvr
 
 @defvr Resource fixedWidthFontSize  (class FontSize)
@@ -5637,7 +5791,7 @@ insert a line
 @end example
 
 @noindent
-in your @samp{~/.@value{ddd}/init} file.
+in your @file{~/.@value{ddd}/init} file.
 @end defvr
 
 @defvr Resource dataFontSize  (class FontSize)
@@ -5656,7 +5810,7 @@ to, say, 9.0 points by inserting a line
 @end example
 
 @noindent
-in your @samp{~/.@value{ddd}/init} file.
+in your @file{~/.@value{ddd}/init} file.
 
 Here's how to specify the command to select fonts:
 
@@ -9966,7 +10120,8 @@ sets the horizontal range that will be displayed to
 @var{xmin}@dots{}@var{xmax}.  To plot only the elements 10 to 20, enter:
 
 @example
-gnuplot> set xrange [10:20]
+gnuplot> @kbd{set xrange [10:20]}
+gnuplot> _
 @end example
 
 @cmindex replot
@@ -9979,9 +10134,10 @@ commands saves the plot in @TeX{} format:
 @cmindex set output
 @cmindex set term
 @example
-gnuplot> set output "plot.tex" # Set the output filename
-gnuplot> set term latex        # Set the output format
-gnuplot> set term x11          # Show original picture again
+gnuplot> @kbd{set output "plot.tex"} # Set the output filename
+gnuplot> @kbd{set term latex}        # Set the output format
+gnuplot> @kbd{set term x11}          # Show original picture again
+gnuplot> _
 @end example
 
 Due to the implicit @command{replot} command, the output is automatically
@@ -10263,9 +10419,10 @@ machine code and register windows for this task.
 To enable machine-level support, select @samp{Source @result{} Display
 Machine Code}.  With machine code enabled, an additional @emph{machine
 code window} shows up, displaying the machine code of the current
-function.@footnote{The machine code window is available with @GDB{} only.}
-By moving the sash at the right of the separating line between source
-and machine code, you can resize the source and machine code windows.
+function.@footnote{The machine code window is available with @GDB{} and
+some @DBX{} variants only.}  By moving the sash at the right of the
+separating line between source and machine code, you can resize the
+source and machine code windows.
 
 @ifnotinfo
 @sp 1
@@ -10466,7 +10623,7 @@ xterm -e $@{EDITOR-vi@} +@@LINE@@ @@FILE@@
 @pindex gnuclient
 @pindex gnuserv
 @pindex xemacs
-This @samp{~/.@value{ddd}/init} setting invokes an editing session
+This @file{~/.@value{ddd}/init} setting invokes an editing session
 for an XEmacs editor running @command{gnuserv}:
 
 @example
@@ -10476,7 +10633,7 @@ Ddd*editCommand: gnuclient +@@LINE@@ @@FILE@@
 @pindex emacsclient
 @pindex emacsserver
 @pindex emacs
-This @samp{~/.@value{ddd}/init} setting invokes an editing session for an
+This @file{~/.@value{ddd}/init} setting invokes an editing session for an
 Emacs editor running @command{emacsserver}:
 
 @example
@@ -10491,8 +10648,7 @@ This resource is experimental:
 
 @defvr Resource sourceEditing (class SourceEditing)
 If this is @samp{on}, the displayed source code becomes editable.
-This is an experimental feature and may become obsolete in future
-@DDD{} releases.  Default is @samp{off}.
+This is an experimental feature; Default is @samp{off}.
 @end defvr
 
 
@@ -10525,6 +10681,10 @@ file) for both reading and writing.  This allows alterations to machine
 code, such that you can intentionally patch your program's binary.  For
 example, you might want to turn on internal debugging flags, or even to
 make emergency repairs.
+
+Note that depending on your operating system, special preparation steps,
+such as setting permissions, may be needed before you can change
+executable files.
 
 @lbindex Writing into executable and core files
 To patch the binary, enable @samp{Edit @result{} @GDB{} Settings @result{}
@@ -10589,7 +10749,7 @@ of a word.  If there is only one possibility, @GDB{} fills in the
 word, and waits for you to finish the command (or press @key{RET} to
 enter it).  For example, if you type
 @example
-(gdb) info bre @key{TAB}
+(gdb) @kbd{info bre_@key{TAB}}
 @end example
 
 @noindent
@@ -10597,7 +10757,7 @@ enter it).  For example, if you type
 the only @command{info} subcommand beginning with @samp{bre}:
 
 @example
-(gdb) info breakpoints
+(gdb) @kbd{info breakpoints}
 @end example
 
 @noindent
@@ -10619,14 +10779,14 @@ in your program that begin with those characters.  If you type @key{TAB}
 again, you cycle through the list of completions, for example:
 
 @example
-(gdb) b make_ @key{TAB}
+(gdb) @kbd{b make}_ @key{TAB}
 @exdent @DDD{} sounds bell; press @key{TAB} again, to see:
 make_a_section_from_file     make_environ               
 make_abs_section             make_function_type         
 make_blockvector             make_pointer_type          
 make_cleanup                 make_reference_type        
 make_command                 make_symbol_completion_list
-(gdb) b make_ @key{TAB}
+(gdb) @kbd{b make}_ @key{TAB}
 @exdent @DDD{} presents one expansion after the other:
 (gdb) b make_a_section_from_file @key{TAB}
 (gdb) b make_abs_section @key{TAB}
@@ -10658,9 +10818,9 @@ consider more information than usual when you press @key{TAB} to request
 word completion:
 
 @example
-(gdb) b 'bubble( @key{TAB}
+(gdb) @kbd{b 'bubble(}_@key{TAB}
 bubble(double,double)    bubble(int,int)
-(gdb) b 'bubble(
+(gdb) @kbd{b 'bubble(}_
 @end example
 
 In some cases, @DDD{} can tell that completing a name requires
@@ -10669,9 +10829,9 @@ using quotes.  When this happens, @DDD{} inserts the quote for you
 first place:
 
 @example
-(gdb) b bub @key{TAB}
+(gdb) @kbd{b bub}_@key{TAB}
 @exdent @DDD{} alters your input line to the following, and rings a bell:
-(gdb) b 'bubble(
+(gdb) @kbd{b 'bubble(}_
 @end example
 
 @noindent
@@ -10990,7 +11150,7 @@ visible only if the debugger asks a yes/no question.
 The default resource value is empty---no console buttons are
 created.
 
-Here are some examples to insert into your @samp{~/.@value{ddd}/init} file.
+Here are some examples to insert into your @file{~/.@value{ddd}/init} file.
 These are the settings of @DDD{} 1.x:
 @example
 @value{Ddd}*consoleButtons: Yes\nNo\nbreak^C
@@ -11024,7 +11184,7 @@ console.  Each button issues the command given by its name.  See the
 The default resource value is empty---no source buttons are
 created.
 
-Here are some example to insert into your @samp{~/.@value{ddd}/init} file.
+Here are some example to insert into your @file{~/.@value{ddd}/init} file.
 These are the settings of @DDD{} 1.x:
 
 @example
@@ -11329,7 +11489,7 @@ end
 
 To complete the setting, you must also set the @samp{autoCommandPrefix}
 resource to the @samp{@value{ddd}: } prefix you gave in your command.
-In @samp{~/.@value{ddd}/init}, write:
+In @file{~/.@value{ddd}/init}, write:
 
 @example
 Ddd*autoCommandPrefix: @value{ddd}:\ 
@@ -11961,7 +12121,7 @@ are incomplete or missing X or M*tif installations, for instance, or
 bugs in the X server or M*tif itself.  Running @DDD{} as
 
 @example
-$ @value{ddd} --check-configuration
+$ @kbd{@value{ddd} --check-configuration}
 @end example
 
 checks for common problems and gives hints on how to repair them.
@@ -11971,7 +12131,7 @@ occasionally, they show bugs, too.  To find out whether a bug was
 caused by the inferior debugger, run @DDD{} as
 
 @example
-$ @value{ddd} --trace
+$ @kbd{@value{ddd} --trace}
 @end example
 
 This shows the interaction between @DDD{} and the inferior debugger
@@ -12027,7 +12187,7 @@ following information:
 Your @DDD{} configuration.  Invoke @DDD{} as
 
 @example
-$ @value{ddd} --configuration
+$ @kbd{@value{ddd} --configuration}
 @end example
 
 to get the configuration information.  If this does not work, please
@@ -12080,7 +12240,7 @@ Be sure to include this information in @emph{every} single bug report.
 @flindex log
 If things go wrong, the first and most important information source is
 the @dfn{@DDD{} log file}.  This file, created in
-@file{~/.@value{ddd}/log} (@samp{~} stands for your home directory),
+@file{~/.@value{ddd}/log} (@file{~} stands for your home directory),
 records the following information:
 
 @itemize @bullet{}
@@ -12088,8 +12248,8 @@ records the following information:
 Your @DDD{} configuration (at the top)
 
 @item
-All programs invoked by @DDD{}, shown as @samp{$  @var{program}
-@var{args}@dots{}}
+All programs invoked by @DDD{}, shown as 
+@samp{$ @kbd{@var{program} @var{args}@dots{}}}
 
 @item
 All @DDD{} messages, shown as @samp{#  @var{message}}.
@@ -12146,9 +12306,10 @@ such that logging information is lost.  Enter the following commands at
 the shell prompt:
 
 @example
-$ cd
-$ rm .@value{ddd}/log
-$ ln -s /dev/null .@value{ddd}/log
+$ @kbd{cd}
+$ @kbd{rm .@value{ddd}/log}
+$ @kbd{ln -s /dev/null .@value{ddd}/log}
+$ _
 @end example
 
 Be aware, though, that having logging turned off makes diagnostics much
@@ -12208,7 +12369,7 @@ X configuration), report any possible problem causes and exit.
 
 @defvr Resource dddinitVersion (class Version)
 The version of the @DDD{} executable that last wrote the
-@samp{~/.@value{ddd}/init} file.  If this string does not match the
+@file{~/.@value{ddd}/init} file.  If this string does not match the
 version of the current @DDD{} executable, @DDD{} issues
 a warning.
 @end defvr
@@ -12371,9 +12532,10 @@ It is suggested that a soft link for the version of @GDB{} used for the
 target (i.e. @file{gdbppc}) be made in the same directory:
 
 @example
-bin>ls -l gdb*
+bin>@kbd{ls -l gdb*}
 39 Mar  6 16:14 gdb -> /usr/wind/host/sun4-solaris2/bin/gdbppc*
 1619212 Mar 11  1997 gdbppc*
+bin>_
 @end example
 
 This way @DDD{} will start the correct version of @GDB{} automatically.
