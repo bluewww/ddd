@@ -127,6 +127,7 @@ class SourceView {
     static void EditBreakpointCommandsCB   (Widget, XtPointer, XtPointer);
     static void SetBreakpointIgnoreCountNowCB(XtPointer, XtIntervalId *);
     static void DeleteInfoCB               (Widget, XtPointer, XtPointer);
+    static void RefreshBreakpointsHP       (Agent *, void *, void *);
     static void RecordingHP                (Agent *, void *, void *);
 
     static void UpdateBreakpointButtonsCB (Widget, XtPointer, XtPointer);

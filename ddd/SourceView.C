@@ -1984,7 +1984,7 @@ String SourceView::read_from_gdb(const string& file_name, long& length,
 	    string msg = listing.from(start);
 	    msg = msg.before('\n');
 	    if (!msg.contains("end of file")) // XDB issues this
-		post_gdb_message(msg, source_text_w);
+		post_gdb_message(msg, true, source_text_w);
 	}
     }
 
@@ -3833,8 +3833,7 @@ void SourceView::check_remainder(string& info_output)
 	   info_output[info_output.length() - 1] == '\n')
 	info_output = info_output.before(int(info_output.length() - 1));
 
-    if (info_output != "")
-	post_gdb_message(info_output, source_text_w);
+    post_gdb_message(info_output, true, source_text_w);
 }
 
 
@@ -5672,6 +5671,22 @@ void SourceView::EndBreakpointCommandsCB(Widget w, XtPointer, XtPointer)
     gdb_command("end", w);
 }
 
+void SourceView::RefreshBreakpointsHP(Agent *, void *, void *call_data)
+{
+    bool gdb_ready = bool(call_data);
+    if (gdb_ready && !gdb->recording())
+    {
+	string breakpoints = gdb_question("info breakpoints");
+	if (breakpoints != NO_GDB_ANSWER)
+	{
+	    process_info_bp(breakpoints);
+
+	    // Don't get called again
+	    gdb->removeHandler(ReadyForQuestion, RefreshBreakpointsHP);
+	}
+    }
+}
+
 // Log recording state
 void SourceView::RecordingHP(Agent *, void *client_data, void *call_data)
 {
@@ -5686,6 +5701,9 @@ void SourceView::RecordingHP(Agent *, void *client_data, void *call_data)
     {
 	// Recording is over.  Don't get called again.
 	gdb->removeHandler(Recording, RecordingHP, XtPointer(info));
+
+	// Update breakpoints
+	gdb->addHandler(ReadyForQuestion, RefreshBreakpointsHP);
 
 	// Upon next panel update, propagate command to other breakpoints
 	info->sync_commands = true;
