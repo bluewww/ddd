@@ -204,7 +204,8 @@ Ddd*questionTimeout: 10
 ! All buttons send the named command to GDB.
 ! Commands ending with '...' insert their name, followed by a space.
 ! Commands ending with a control character insert the given
-! control character.
+! control character.  As of DDD 1.5, commands ending with `()' insert
+! the current contents of the argument field `()'.
 !
 ! The following button names have special meanings:
 ! - `Clear'    : Clear current command
@@ -235,17 +236,34 @@ Ddd*sourceButtons:
 ! run:step:next:stepi:nexti:cont:finish:kill:\
 ! up:down:Back:Forward:Edit:interrupt^C
 
-! The command tool buttons.
+! The command tool buttons, as of DDD 1.5 and later.
 Ddd*toolButtons: \
 run:interrupt^C:step:stepi:next:nexti:cont:finish:\
 up:down:Back:Forward:Edit:kill
 
-! Command tool button placement
+! The number of rows in the command tool.
 Ddd*tool_buttons.fractionBase:			8
-Ddd*tool_buttons*topAttachment:      		XmATTACH_POSITION
-Ddd*tool_buttons*bottomAttachment:   		XmATTACH_POSITION
-Ddd*tool_buttons*leftAttachment:     		XmATTACH_POSITION
-Ddd*tool_buttons*rightAttachment:    		XmATTACH_POSITION
+
+! The positions are set up according to the following scheme:
+! 
+!    0 4 8	Each line has its individual number.
+!  0 +-+-+	`topPosition' refers to the line above the button;
+!    | | |  	`bottomPosition' is the line below.  Likewise,
+!  1 +-+-+	`leftPosition' is the line at the left, and
+!    | | |	`rightPosition' is the line to the right.  For instance,
+!  2 +-+-+	the line above the `interrupt' button (aka `Break')
+!    | | |	is line 1 (topPosition), the line below is line 2
+!  3 +-+-+	(bottomPosition), the line to the left is line 0
+!    | | |	(leftPosition), and the line to the right is line 8
+!  4 +-+-+	(rightPosition).
+!    | | |	
+!  5 +-+-+	To replace a button by another command, change the
+!    | | |	`toolButtons' resource, above, and insert appropriate
+!  6 +-+-+	resource values for the new button, specifying its
+!    | | |	location.
+!  7 +-+-+	
+!    | | |	
+!  8 +-+-+	
 
 Ddd*tool_buttons.run.topPosition: 		0
 Ddd*tool_buttons.run.bottomPosition:       	1
@@ -324,6 +342,14 @@ Ddd*tool_buttons.interrupt.fontList:  \
 	-*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*
 Ddd*tool_buttons*fontList:  \
 	-*-helvetica-medium-r-*-*-10-*-*-*-*-*-*-*
+
+
+! Command tool button placement.  Don't change this.
+Ddd*tool_buttons*topAttachment:      		XmATTACH_POSITION
+Ddd*tool_buttons*bottomAttachment:   		XmATTACH_POSITION
+Ddd*tool_buttons*leftAttachment:     		XmATTACH_POSITION
+Ddd*tool_buttons*rightAttachment:    		XmATTACH_POSITION
+
 
 ! Some special labels
 Ddd*run.labelString:       Run
@@ -1671,6 +1697,7 @@ Ddd*graph_cmd_w*contextHelpString: \
 
 
 Ddd*graph_cmd_w.graph_arg_label.labelString:	():
+Ddd*graph_cmd_w.graph_arg_label.marginWidth:	0
 Ddd*graph_cmd_w.graph_arg.columns:              20
 Ddd*graph_cmd_w*graph_arg.editable:		false
 Ddd*graph_cmd_w*graph_arg.contextHelpString:	\
@@ -1682,41 +1709,43 @@ in the data window above.
 
 Ddd*graph_cmd_w.orientation:			XmHORIZONTAL
 Ddd*graph_cmd_w.graph_cmd_area*orientation:	XmHORIZONTAL
-Ddd*graph_cmd_w.graph_cmd_area*packing:	        XmPACK_COLUMN
+Ddd*graph_cmd_w.graph_cmd_area*spacing:		0
+Ddd*graph_cmd_w*spacing:			0
+! Ddd*graph_cmd_w.graph_cmd_area*packing:	  XmPACK_COLUMN
 Ddd*graph_cmd_w.graph_cmd_area*entryAlignment:	XmALIGNMENT_CENTER
 Ddd*graph_cmd_w.graph_cmd_area*alignment:	XmALIGNMENT_CENTER
 
-Ddd*graph_cmd_w.graph_cmd_area*dependent.labelString:	New
-Ddd*graph_cmd_w.graph_cmd_area*dereference.labelString: Display *
-Ddd*graph_cmd_w.graph_cmd_area*detail.labelString:	Show
-Ddd*graph_cmd_w.graph_cmd_area*rotate.labelString:	Rotate
-Ddd*graph_cmd_w.graph_cmd_area*delete.labelString:	Delete
-Ddd*graph_cmd_w.graph_cmd_area*disable.labelString:	Disable
+Ddd*graph_cmd_w.graph_cmd_area*dependent.labelString:	New Display
+Ddd*graph_cmd_w.graph_cmd_area*dereference.labelString: Display *()
+Ddd*graph_cmd_w.graph_cmd_area*detail.labelString:	Show ()
+Ddd*graph_cmd_w.graph_cmd_area*rotate.labelString:	Rotate ()
+Ddd*graph_cmd_w.graph_cmd_area*delete.labelString:	Delete ()
+Ddd*graph_cmd_w.graph_cmd_area*disable.labelString:	Disable ()
 ! Ddd*graph_cmd_w.graph_cmd_area*marginTop:       1
 ! Ddd*graph_cmd_w.graph_cmd_area*marginBottom:    1
 
 Ddd*graph_cmd_w.graph_cmd_area*dependent.contextHelpString:\
-@bf New@rm\n\
+@bf New Display@rm\n\
 Create a new display dependent on the selected display part.
 
 Ddd*graph_cmd_w.graph_cmd_area*dereference.contextHelpString:\
-@bf Display *@rm\n\
+@bf Display *()@rm\n\
 Dereference the selected display.
 
 Ddd*graph_cmd_w.graph_cmd_area*detail.contextHelpString:	\
-@bf Show@rm / @bf Hide@rm\n\
+@bf Show ()@rm / @bf Hide ()@rm\n\
 Show/Hide details of the selected displays.
 
 Ddd*graph_cmd_w.graph_cmd_area*rotate.contextHelpString:	\
-@bf Rotate@rm\n\
+@bf Rotate ()@rm\n\
 Rotate the selected displays.
 
 Ddd*graph_cmd_w.graph_cmd_area*disable.contextHelpString:	\
-@bf Disable@rm / @bf Enable@rm\n\
+@bf Disable ()@rm / @bf Enable ()@rm\n\
 Disable/Enable the selected displays.
 
 Ddd*graph_cmd_w.graph_cmd_area*delete.contextHelpString:	\
-@bf Delete@rm\n\
+@bf Delete ()@rm\n\
 Delete the selected displays.
 
 
@@ -1730,16 +1759,16 @@ Ddd*status_w.contextHelpString:		\
 @rm This @sl status line @rm shows the last message of the inferior debugger.
 
 Ddd*source_text_w.columns:		88
-Ddd*source_text_w.rows:			12
-Ddd*source_view_shell*source_text_w.rows:	20
+Ddd*source_text_w.rows:			24
+Ddd*source_view_shell*source_text_w.rows:	24
 
 Ddd*code_text_w.columns:		88
 Ddd*code_text_w.rows:			2
 Ddd*source_view_shell*code_text_w.rows:	2
 
 Ddd*source_form_w.width:		660
-Ddd*source_form_w.height:		140
-Ddd*source_view_shell*source_form_w.height: 280
+Ddd*source_form_w.height:		320
+Ddd*source_view_shell*source_form_w.height: 320
 
 Ddd*code_form_w.width:			660
 Ddd*code_form_w.height:			50
@@ -1836,6 +1865,7 @@ Enter arguments for @sl name @rm() commands\n\
 in the @bf() @rm field.
 
 Ddd*arg_cmd_w.arg_label.labelString:		():
+Ddd*arg_cmd_w.arg_label.marginWidth:		0
 Ddd*arg_cmd_w.source_arg.contextHelpString:	\
 @rm This is the argument @bf () @rm for the command buttons on the right.\n\
 You can edit this field, or easily change its value\n\
@@ -1846,22 +1876,21 @@ Ddd*arg_cmd_w.source_arg.columns:                20
 Ddd*arg_cmd_w.orientation:				XmHORIZONTAL
 Ddd*arg_cmd_w.arg_cmd_area.orientation:			XmHORIZONTAL
 Ddd*arg_cmd_w.arg_cmd_area.spacing:			0
-Ddd*arg_cmd_w.arg_cmd_area.packing:			XmPACK_COLUMN
+Ddd*arg_cmd_w*spacing:					0
+! Ddd*arg_cmd_w.arg_cmd_area.packing:			XmPACK_COLUMN
 Ddd*arg_cmd_w.arg_cmd_area.entryAlignment:  		XmALIGNMENT_CENTER
 Ddd*arg_cmd_w.arg_cmd_area*alignment:  			XmALIGNMENT_CENTER
-! Ddd*arg_cmd_w.arg_cmd_area*marginTop:			1
-! Ddd*arg_cmd_w.arg_cmd_area*marginBottom:		1
 
-Ddd*arg_cmd_w.arg_cmd_area*lookup.labelString:		Lookup
-Ddd*arg_cmd_w.arg_cmd_area*break.labelString:		Break at
-Ddd*arg_cmd_w.arg_cmd_area*clear.labelString:		Clear at
-Ddd*arg_cmd_w.arg_cmd_area*print.labelString:		Print
-Ddd*arg_cmd_w.arg_cmd_area*display.labelString:		Display
-Ddd*arg_cmd_w.arg_cmd_area*find_backward.labelString:	Find<<
-Ddd*arg_cmd_w.arg_cmd_area*find_forward.labelString:	Find>>
+Ddd*arg_cmd_w.arg_cmd_area*lookup.labelString:		Lookup ()
+Ddd*arg_cmd_w.arg_cmd_area*break.labelString:		Break at ()
+Ddd*arg_cmd_w.arg_cmd_area*clear.labelString:		Clear at ()
+Ddd*arg_cmd_w.arg_cmd_area*print.labelString:		Print ()
+Ddd*arg_cmd_w.arg_cmd_area*display.labelString:		Display ()
+Ddd*arg_cmd_w.arg_cmd_area*find_backward.labelString:	Find<< ()
+Ddd*arg_cmd_w.arg_cmd_area*find_forward.labelString:	Find>> ()
 
 Ddd*arg_cmd_w.arg_cmd_area*lookup.contextHelpString:	\
-@bf Lookup@rm\n\
+@bf Lookup ()@rm\n\
 Lookup a line, file, function, variable, or breakpoint.\n\
 @tt \267 @rm If the argument @bf () @rm is empty, \
 show the current execution position.\n\
@@ -1877,28 +1906,28 @@ lookup that address.\n\
     the definition of that function or variable.
 
 Ddd*arg_cmd_w.arg_cmd_area*break.contextHelpString:	\
-@bf Break at@rm\n\
+@bf Break at ()@rm\n\
 Set a breakpoint at the argument @bf ()@rm.
 
 Ddd*arg_cmd_w.arg_cmd_area*clear.contextHelpString:	\
-@bf Clear at@rm\n\
+@bf Clear at ()@rm\n\
 Clear the breakpoint at the argument @bf ()@rm.
 
 Ddd*arg_cmd_w.arg_cmd_area*print.contextHelpString:	\
-@bf Print@rm\n\
+@bf Print ()@rm\n\
 Print the argument @bf () @rm in the command window.
 
 Ddd*arg_cmd_w.arg_cmd_area*display.contextHelpString:	\
-@bf Display@rm\n\
+@bf Display ()@rm\n\
 Display the argument @bf () @rm in the data display window.
 
 Ddd*arg_cmd_w.arg_cmd_area*find_backward.contextHelpString:	\
-@bf Find<<@rm\n\
+@bf Find<< ()@rm\n\
 Search the previous occurrence of @bf () @rm in the current source text.\n\
 If the option @bf Find Words Only @rm is set, only complete words are found.
 
 Ddd*arg_cmd_w.arg_cmd_area*find_forward.contextHelpString:	\
-@bf Find>>@rm\n\
+@bf Find>> ()@rm\n\
 Search the next occurrence of @bf () @rm in the current source text.\n\
 If the option @bf Find Words Only @rm is set, only complete words are found.
 

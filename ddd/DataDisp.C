@@ -66,6 +66,7 @@ char DataDisp_rcsid[] =
 #include <Xm/RowColumn.h>  // fuer XmMenuPosition()
 #include <Xm/SelectioB.h>  // fuer XmCreatePromptDialog()
 #include <Xm/TextF.h>      // fuer XmTextFieldGetString()
+#include <Xm/Text.h>
 #include <Xm/Label.h>
 #include <Xm/List.h>
 #include <X11/StringDefs.h>
@@ -710,6 +711,10 @@ void DataDisp::new_displayCD (BoxPoint box_point)
     else {
 	*p = box_point;
     }
+
+    Widget text = XmSelectionBoxGetChild(new_display_dialog, XmDIALOG_TEXT);
+    set_string(text, source_arg->get_string());
+
     XtManageChild (new_display_dialog);
 }
 
@@ -1137,7 +1142,7 @@ void DataDisp::refresh_args()
     {
 	// Only disabled displays selected
 	set_label(node_popup[ValueItms::Disable].widget, "Disable Display");
-	set_label(graph_cmd_area[ValueItms::Disable].widget, "Disable");
+	set_label(graph_cmd_area[ValueItms::Disable].widget, "Disable ()");
 	set_sensitive(node_popup[ValueItms::Disable].widget, true);
 	set_sensitive(graph_cmd_area[ValueItms::Disable].widget, true);
     }
@@ -1145,7 +1150,7 @@ void DataDisp::refresh_args()
     {
 	// Only enabled displays selected
 	set_label(node_popup[ValueItms::Disable].widget, "Enable Display");
-	set_label(graph_cmd_area[ValueItms::Disable].widget, "Enable");
+	set_label(graph_cmd_area[ValueItms::Disable].widget, "Enable ()");
 	set_sensitive(node_popup[ValueItms::Disable].widget, true);
 	set_sensitive(graph_cmd_area[ValueItms::Disable].widget, true);
     }
@@ -1169,7 +1174,7 @@ void DataDisp::refresh_args()
     {
 	// Only expanded displays selected
 	set_label(node_popup[ValueItms::Detail].widget, "Hide Detail");
-	set_label(graph_cmd_area[ValueItms::Detail].widget, "Hide");
+	set_label(graph_cmd_area[ValueItms::Detail].widget, "Hide ()");
 	set_sensitive(node_popup[ValueItms::Detail].widget, true);
 	set_sensitive(graph_cmd_area[ValueItms::Detail].widget, true);
     }
@@ -1177,7 +1182,7 @@ void DataDisp::refresh_args()
     {
 	// Only collapsed displays selected
 	set_label(node_popup[ValueItms::Detail].widget, "Show Detail");
-	set_label(graph_cmd_area[ValueItms::Detail].widget, "Show");
+	set_label(graph_cmd_area[ValueItms::Detail].widget, "Show ()");
 	set_sensitive(node_popup[ValueItms::Detail].widget, true);
 	set_sensitive(graph_cmd_area[ValueItms::Detail].widget, true);
     }
