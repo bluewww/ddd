@@ -115,6 +115,7 @@ public:
     bool        user_verbose;	  // Flag as given to send_gdb_command()
     bool        user_prompt;	  // Flag as given to send_gdb_command()
     bool        user_check;	  // Flag as given to send_gdb_command()
+    bool        recorded;	  // True if command was recorded
 
     bool        disabling_occurred; // Flag: GDB disabled displays
 
@@ -160,6 +161,7 @@ public:
 	  user_verbose(true),
 	  user_prompt(true),
 	  user_check(true),
+	  recorded(false),
 
 	  disabling_occurred(false)
     {
@@ -196,7 +198,8 @@ private:
 	  user_data(0),
 	  user_verbose(true),
 	  user_prompt(true),
-	  user_check(true)
+	  user_check(true),
+	  recorded(false)
     {
 	assert(0);
     }
@@ -822,6 +825,7 @@ void send_gdb_command(string cmd, Widget origin,
     cmd_data->disp_buffer   = new DispBuffer;
     cmd_data->pos_buffer    = new PosBuffer;
     cmd_data->user_callback = callback;
+    cmd_data->recorded      = gdb->recording();
 
     ExtraData* extra_data = new ExtraData;
     extra_data->command       = cmd;
@@ -1552,8 +1556,11 @@ static void command_completed(void *data)
     bool verbose   = cmd_data->user_verbose;
     bool do_prompt = cmd_data->user_prompt;
 
-    if (verbose)		// We only undo visible commands
+    if (verbose && !cmd_data->recorded)
+    {
+	// Begin a new undo command
 	undo_buffer.set_source(cmd_data->command);
+    }
 
     string answer = "";
     if (pos_buffer)
