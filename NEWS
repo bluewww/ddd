@@ -85,11 +85,14 @@ DDD 3.1.7
 
 DDD 3.1.7 fixes a number of minor bugs.
 
-- Auto-raise of menus works much better (and is enabled by default).
+- Auto-raised menus work much better (enabled by default).
+- The register window is updated when the current frame changes.
 - Value tips of strings containing ` = ' are displayed correctly.
-- In file names, `//' is no longer normalized to `/'.
-- The array slice syntax `graph display [A..B]' now works for DBX.
-- Using the execution window with Sun DBX 4.0 now should work.
+- In file names, `//' is no longer normalized to `/'.  This is useful 
+  for special file systems, where '//c/foo' is an alias for `c:\foo`.
+- [DBX] The array syntax `graph display [A..B]' works again for DBX.
+- [DBX] Redirection to the execution window with Sun DBX 4.0 no 
+  longer clutters program arguments.
 - [JDB] Thread names with dashes are handled correctly.
 - [HP-UX] Renaming the `~/.ddd/init' file during saving options works.
 - [Build] DDD checks whether -fpermissive is required for old X headers.
