@@ -37,7 +37,6 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <iostream.h>
 #include <strstream.h>
 #include "regex.h"
-#include "constref.h"
 
 struct strRep			// internal string representations
 {

@@ -34,54 +34,54 @@
 #include "strclass.h"
 #include "bool.h"
 
-extern string _cook(CONST_REF(string) raw, bool for_postscript);
+extern string _cook(const string& raw, bool for_postscript);
 
 // Quote any non-printable character via backslash
-inline string cook(CONST_REF(string) raw) 
+inline string cook(const string& raw) 
 { 
     return _cook(raw, false); 
 }
 
 // Same, but quote ( and ) as well
-inline string pscook(CONST_REF(string) raw) 
+inline string pscook(const string& raw) 
 { 
     return _cook(raw, true); 
 }
 
 // Unquote any \-quotations
-extern string uncook(CONST_REF(string) cooked);
+extern string uncook(const string& cooked);
 
 // Strip quotes
-inline string _unquote(CONST_REF(string) s)
+inline string _unquote(const string& s)
 {
-    return ((REF(string))s).at(1, s.length() - 2);
+    return ((string&)s).at(1, s.length() - 2);
 }
 
 // Enclose S in quotes QUOTE
-inline string _quote(CONST_REF(string) s, char quote = '\"')
+inline string _quote(const string& s, char quote = '\"')
 {
     return string(quote) + s + quote;
 }
 
 // Strip any quotes and make it raw
-inline string unquote(CONST_REF(string) s)
+inline string unquote(const string& s)
 {
     return _unquote(uncook(s));
 }
 
 // Same, but only if enclosed in quotes QUOTE
-inline string unquote(CONST_REF(string) s, char quote)
+inline string unquote(const string& s, char quote)
 {
     if (s.length() > 0 && 
-	((REF(string))s)[0] == quote && 
-	((REF(string))s)[s.length() - 1] == quote)
+	((string&)s)[0] == quote && 
+	((string&)s)[s.length() - 1] == quote)
 	return unquote(s);
     else
 	return s;
 }
     
 // Cook S and add quotes
-inline string quote(CONST_REF(string) s, char q = '\"')
+inline string quote(const string& s, char q = '\"')
 {
     return _quote(cook(s), q);
 }

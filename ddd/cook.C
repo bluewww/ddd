@@ -40,7 +40,7 @@ char cook_rcsid[] =
 #include "return.h"
 
 // Transform RAW into C string
-string _cook(CONST_REF(string) raw, bool for_postscript) RETURNS(cooked)
+string _cook(const string& raw, bool for_postscript) RETURNS(cooked)
 {
     RETURN_OBJECT(string, cooked);
     cooked = "";
@@ -187,7 +187,7 @@ static int digit(char c)
 }
 
 // Transform COOKED into C string
-string uncook(CONST_REF(string) cooked) RETURNS(ret)
+string uncook(const string& cooked) RETURNS(ret)
 {
     RETURN_OBJECT(string, ret);
     ret = "";
