@@ -353,9 +353,9 @@ static bool have_decorated_transients();
 // Set `Settings' title
 static void set_settings_title(Widget w);
 
-// Popup DDD logo upon start-up.
-static void popup_startup_logo(Widget parent, string color_key);
-static void popdown_startup_logo(XtPointer data = 0, XtIntervalId *id = 0);
+// Popup DDD splash screen upon start-up.
+static void popup_splash_screen(Widget parent, string color_key);
+static void popdown_splash_screen(XtPointer data = 0, XtIntervalId *id = 0);
 
 // Read in database from FILENAME.  Upon version mismatch, ignore some
 // resources such as window sizes.
@@ -1763,11 +1763,11 @@ int main(int argc, char *argv[])
     (void) CheckDragCB;		// Use it
 #endif
 
-    // Show startup logo
+    // Show splash screen
     Boolean iconic;
     XtVaGetValues(toplevel, XmNiconic, &iconic, NULL);
     if (!iconic && restart_session() == "")
-	popup_startup_logo(toplevel, app_data.show_startup_logo);
+	popup_splash_screen(toplevel, app_data.show_startup_logo);
     last_shown_startup_logo = app_data.show_startup_logo;
 
     // Register own converters
@@ -1850,6 +1850,9 @@ int main(int argc, char *argv[])
 #endif
 
     // From this point on, we have a true top-level window.
+
+    // Install icon images
+    install_icons(command_shell);
 
     // Create main window
     Widget main_window = 
@@ -2125,8 +2128,8 @@ int main(int argc, char *argv[])
     set_settings_title(source_edit_menu[EditItems::Settings].widget);
     set_settings_title(data_edit_menu[EditItems::Settings].widget);
 
-    // The logo is no longer needed now
-    popdown_startup_logo();
+    // Popdown the splash screen before it eats up all colors
+    popdown_splash_screen();
 
     // Realize all top-level widgets
     XtRealizeWidget(command_shell);
@@ -2501,7 +2504,7 @@ XrmDatabase GetFileDatabase(char *filename)
 	XmNwidth, XmNheight,	              // Shell sizes
 	XmNcolumns, XmNrows,	              // Text window sizes
 	XtNtoolRightOffset, XtNtoolTopOffset, // Command tool offset
-	XtNshowStartupLogo,	              // Startup logo
+	XtNshowStartupLogo,	              // Splash screen
 	XtNshowHints,		              // Show edge hints
 	XtNungrabMousePointer,	              // Ungrab pointer settings
     };
@@ -3261,7 +3264,7 @@ void update_options()
 
     if (last_shown_startup_logo != app_data.show_startup_logo)
     {
-	popup_startup_logo(gdb_w, app_data.show_startup_logo);
+	popup_splash_screen(gdb_w, app_data.show_startup_logo);
 
 	static XtIntervalId timer = 0;
 
@@ -3272,7 +3275,7 @@ void update_options()
 	}
 
 	timer = XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 1000, 
-				popdown_startup_logo, (void *)&timer);
+				popdown_splash_screen, (void *)&timer);
     }
 
     set_string(edit_command_w,       app_data.edit_command);
@@ -5131,11 +5134,11 @@ static bool have_decorated_transients()
 // Startup Logo
 //-----------------------------------------------------------------------------
 
-static Widget logo_shell  = 0;
-static Pixmap logo_pixmap;
-static _Delay *logo_delay = 0;
+static Widget splash_shell  = 0;
+static Pixmap splash_pixmap;
+static _Delay *splash_delay = 0;
 
-static void popdown_startup_logo(XtPointer data, XtIntervalId *id)
+static void popdown_splash_screen(XtPointer data, XtIntervalId *id)
 {
     (void) id;			// use it
 
@@ -5146,22 +5149,22 @@ static void popdown_startup_logo(XtPointer data, XtIntervalId *id)
 	*timer = 0;
     }
     
-    if (logo_shell != 0)
+    if (splash_shell != 0)
     {
-	XFreePixmap(XtDisplay(logo_shell), logo_pixmap);
+	XFreePixmap(XtDisplay(splash_shell), splash_pixmap);
 
-	popdown_shell(logo_shell);
-	DestroyWhenIdle(logo_shell);
-	logo_shell = 0;
+	popdown_shell(splash_shell);
+	DestroyWhenIdle(splash_shell);
+	splash_shell = 0;
 
-	delete logo_delay;
-	logo_delay = 0;
+	delete splash_delay;
+	splash_delay = 0;
     }
 }
 
-static void popup_startup_logo(Widget parent, string color_key)
+static void popup_splash_screen(Widget parent, string color_key)
 {
-    popdown_startup_logo();
+    popdown_splash_screen();
 
     last_shown_startup_logo = color_key;
 
@@ -5172,36 +5175,36 @@ static void popup_startup_logo(Widget parent, string color_key)
     int arg = 0;
     XtSetArg(args[arg], XmNallowShellResize, True); arg++;
     XtSetArg(args[arg], XmNborderWidth, 0); arg++;
-    logo_shell = verify(XtCreatePopupShell("logo_shell", 
-					   overrideShellWidgetClass, 
-					   parent, args, arg));
+    splash_shell = verify(XtCreatePopupShell("splash_shell", 
+					     overrideShellWidgetClass, 
+					     parent, args, arg));
 
     arg = 0;
     XtSetArg(args[arg], XmNlabelType, XmPIXMAP); arg++;
     XtSetArg(args[arg], XmNallowResize, True); arg++;
-    Widget logo = verify(XmCreateLabel(logo_shell, "logo", args, arg));
-    XtManageChild(logo);
-    XtRealizeWidget(logo_shell);
+    Widget splash = verify(XmCreateLabel(splash_shell, "splash", args, arg));
+    XtManageChild(splash);
+    XtRealizeWidget(splash_shell);
 
-    logo_delay = new _Delay(logo_shell);
+    splash_delay = new _Delay(splash_shell);
 
-    logo_pixmap = dddlogo(logo, color_key);
-    XtVaSetValues(logo, XmNlabelPixmap, logo_pixmap, NULL);
+    splash_pixmap = dddsplash(splash, color_key);
+    XtVaSetValues(splash, XmNlabelPixmap, splash_pixmap, NULL);
 
     Dimension width, height;
-    XtVaGetValues(logo_shell, XmNwidth, &width, XmNheight, &height, NULL);
+    XtVaGetValues(splash_shell, XmNwidth, &width, XmNheight, &height, NULL);
 
-    int x = (WidthOfScreen(XtScreen(logo_shell)) - width) / 2;
-    int y = (HeightOfScreen(XtScreen(logo_shell)) - height) / 2;
+    int x = (WidthOfScreen(XtScreen(splash_shell)) - width) / 2;
+    int y = (HeightOfScreen(XtScreen(splash_shell)) - height) / 2;
 
-    XtVaSetValues(logo_shell, XmNx, x, XmNy, y, NULL);
+    XtVaSetValues(splash_shell, XmNx, x, XmNy, y, NULL);
 
-    // Place lock warning on top of startup logo
+    // Place lock warning on top of startup splash
     lock_dialog_x = x + 20;
     lock_dialog_y = y + 20;
 
-    popup_shell(logo_shell);
-    wait_until_mapped(logo, logo_shell);
+    popup_shell(splash_shell);
+    wait_until_mapped(splash, splash_shell);
 }
 
 
