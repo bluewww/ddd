@@ -2021,6 +2021,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNthemes,
+	XtCThemes,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, themes),
+	XtRString,
+	XtPointer("")
+    },
+
+    {
 	XtNmaintenance,
 	XtCMaintenance,
 	XmRBoolean,

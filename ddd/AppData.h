@@ -389,6 +389,8 @@
 #define XtCMaxUndoDepth          "MaxUndoDepth"
 #define XtNmaxUndoSize           "maxUndoSize"
 #define XtCMaxUndoSize           "MaxUndoSize"
+#define XtNthemes                "themes"
+#define XtCThemes                "Themes"
 #define XtNdumpCore              "dumpCore"
 #define XtCDumpCore              "DumpCore"
 #define XtNdebugCoreDumps        "debugCoreDumps"
@@ -598,6 +600,7 @@ struct AppData {
     BindingStyle select_all_bindings;
     int       max_undo_depth;
     int       max_undo_size;
+    String    themes;
     Boolean   maintenance;
     Boolean   dump_core;
     Boolean   debug_core_dumps;

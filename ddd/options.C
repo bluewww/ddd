@@ -2579,6 +2579,11 @@ bool save_options(unsigned long flags)
     os << bool_app_value(XtNshowMemberNames,
 			 app_data.show_member_names) << '\n';
 
+    // Themes
+    os << "\n! Themes.\n";
+    os << string_app_value(XtNthemes, app_data.themes, true)
+       << '\n';
+
     // Tips
     os << "\n! Tips.\n";
     os << bool_app_value(XtNbuttonTips,
