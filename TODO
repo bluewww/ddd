@@ -100,7 +100,7 @@ Volunteers for these and other projects are welcome!
 078 Have mirror sites for the DDD WWW page.  Maybe via the DDD FTP
     mirrors?
 
-080 Convert the DDD manual to texinfo, as in ICE, resulting in an
+080*Convert the DDD manual to texinfo, as in ICE, resulting in an
     HTML manual.  See also 102.
 
 083 Include graphplace (or other graph layout) support.
@@ -396,4 +396,6 @@ Volunteers for these and other projects are welcome!
     but we'd have to do a lot more to realize decent editing
     capabilities.
 
-287 (Insert new project ideas here)
+287*Have the DDD windows be resized in font increments.
+
+288 (Insert new project ideas here)
