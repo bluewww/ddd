@@ -284,6 +284,11 @@ The simplest way to compile DDD is:
      want to install it, copy `Ddd' to a place where app-defaults
      files are commonly found.
 
+     If you have a `Ddd' file installed from a previous DDD version,
+     this file will *override* the built-in DDD settings and will
+     cause major problems.  Replace it with the new `ddd/Ddd'
+     app-defaults file, or, better yet, remove it.
+
  14. You can remove the program binaries, libraries and object files
      from the source directory by typing
      
@@ -391,51 +396,73 @@ External Packages
 By default, `configure' will configure DDD to use all supported
 external packages available on your system.
 
-`configure' can usually find the X include and library files
-automatically, but if it doesn't, you can use the `configure' options
-`--x-includes=DIR' and `--x-libraries=DIR' to specify their locations.
+In some cases, `configure' may require additional information about
+these packages:
 
-If `configure' doesn't find the Motif include and library files
-automatically, you can use the `configure' options
-`--with-motif-includes=DIR' and `--with-motif-libraries=DIR' to
-specify their locations.
+* `configure' can usually find the X include and library files
+  automatically, but if it doesn't, you can use the `configure'
+  options `--x-includes=DIR' and `--x-libraries=DIR' to specify their
+  locations.
 
-If `configure' doesn't find the Athena include and library files
-automatically, you can use the `configure' options
-`--with-athena-includes=DIR' and `--with-athena-libraries=DIR' to
-specify their locations.
+* If `configure' doesn't find the Motif include and library files
+  automatically, you can use the `configure' options
+  `--with-motif-includes=DIR' and `--with-motif-libraries=DIR' to
+  specify their locations.
 
-If `configure' doesn't find the Xpm include and library files
-automatically, you can use the `configure' options
-`--with-xpm-includes=DIR' and `--with-xpm-libraries=DIR' to specify
-their locations.
+* If `configure' doesn't find the Athena include and library files
+  automatically, you can use the `configure' options
+  `--with-athena-includes=DIR' and `--with-athena-libraries=DIR' to
+  specify their locations.
 
-If you wish to disable Athena widgets and rely on Motif widgets alone,
-you can use the `configure' option `--without-athena'.  Likewise,
-`--without-xpm' disables XPM support.  Don't use the `--without-motif'
-option; DDD will not compile without Motif.
+* If `configure' doesn't find the XPM include and library files
+  automatically, you can use the `configure' options
+  `--with-xpm-includes=DIR' and `--with-xpm-libraries=DIR' to specify
+  their locations.
+
+
+You can also configure DDD to *ignore* some external packages:
+
+* If you wish to disable Athena widgets and rely on Motif widgets alone,
+  you can use the `configure' option `--without-athena'.
+
+* Likewise, `--without-xpm' disables XPM support.
+
+* There is also a `--without-motif' option.  Don't use it; DDD will
+  not compile without Motif.
 
 
 Optional Features
 -----------------
 
 By default, `configure' will configure DDD to use all supported
-optional DDD features.
+optional DDD features.  There are two optional features.
 
-You can configure DDD such that the `Ddd' application defaults file
-will not be compiled into the DDD executable.  This reduces the size
-of the DDD executable by about 360k.  Note that this requires you to
-install the application defaults file in a place where DDD will find
-it; this also results in trouble if you want to maintain multiple DDD
-versions.  To disable the builtin application defaults file, use the
-`configure' option `--disable-builtin-app-defaults'.
+* You can configure DDD such that the `Ddd' application defaults file
+  will not be compiled into the DDD executable.  This reduces the size
+  of the DDD executable by about 360k.  
 
-You can configure DDD such that the DDD manual will not be compiled
-into the DDD executable.  This reduces the size of the DDD executable
-by about 80k.  `Help->DDD Reference' will then invoke `man ddd' to get
-the DDD manual.  Note that this only works well if you use GNU `groff'
-to format your manual pages.  To disable the builtin DDD manual, use
-the `configure' option `--disable-builtin-manual'.
+  Note that this requires you to install the application defaults file
+  in a place where DDD will find it.  This will also cause trouble if
+  - you want to maintain multiple DDD versions or 
+  - you upgrade to a new DDD version without removing or changing the
+    application defaults file.
+
+  To disable the builtin application defaults file, use the `configure'
+  option `--disable-builtin-app-defaults'.
+
+
+* You can configure DDD such that the DDD manual will not be compiled
+  into the DDD executable.  This reduces the size of the DDD executable
+  by about 80k.
+
+  `Help->DDD Reference' will then invoke `man ddd' to get the DDD
+  manual.  Note that this only works well if man uses GNU `groff' to
+  format manual pages (such as `man' found on Linux).  Be sure to
+  remove or update the manual page when upgrading to a new DDD
+  version.
+
+  To disable the builtin DDD manual, use the `configure' option
+  `--disable-builtin-manual'.
 
 
 
