@@ -1788,17 +1788,21 @@ String SourceView::read_class(const string& class_name,
 			      long& length, bool silent)
 {
     StatusDelay delay("Loading class " + quote(class_name));
+    
+    String text = 0;
     length = 0;
 
     file_name = java_class_file(class_name);
-    
-    String text = 0;
-    if (remote_gdb())
-	text = read_remote(file_name, length, true);
-    else
+
+    if (file_name != "")
     {
-	file_name = full_path(file_name);
-	text = read_local(file_name, length, true);
+	if (remote_gdb())
+	    text = read_remote(file_name, length, true);
+	else
+	{
+	    file_name = full_path(file_name);
+	    text = read_local(file_name, length, true);
+	}
     }
 
     if (text != 0 && length != 0)
@@ -1944,12 +1948,13 @@ String SourceView::read_indented(string& file_name, long& length,
     origin = ORIGIN_NONE;
     string full_file_name = file_name;
 
-    if (gdb->type() == JDB)
+    if (gdb->type() == JDB && !file_name.contains('/'))
     {
-	// Attempt #1.  Search class in JDB `use' path.
+	// FILE_NAME is a class name.  Search class in JDB `use' path.
 	text = read_class(file_name, full_file_name, origin, length, true);
     }
-    else
+
+    if (text == 0 || length == 0)
     {
 	for (int trial = 1; (text == 0 || length == 0) && trial <= 2; trial++)
 	{
