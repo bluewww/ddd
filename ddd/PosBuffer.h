@@ -67,6 +67,11 @@ protected:
     void filter_pydb(string& answer);
     void filter_perl(string& answer);
 
+    // Filter all lines from ANSWER beginning with current line.  This
+    // is required to suppress the line number output after a
+    // `stopping in' message.
+    void filter_line(string& answer);
+
 public:
     bool check_pc;		// Whether to search for PC
     bool check_func;		// Whether to search for function name

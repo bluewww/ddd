@@ -59,8 +59,15 @@ regex rxaddress_start(RXADDRESS_START);
 
 // Filter all lines from ANSWER beginning with LINE.  This is required
 // to suppress the line number output after a `stopping in' message.
-static void filter_line(string& answer, int line)
+void PosBuffer::filter_line(string& answer)
 {
+    if (already_read != PosComplete)
+	return;
+
+    string line_s = pos_buffer;
+    if (line_s.contains(':'))
+	line_s = line_s.after(':');
+    int line = atoi(line_s);
     if (line <= 0)
 	return;
 
@@ -265,29 +272,8 @@ void PosBuffer::filter (string& answer)
     switch (already_read)
     {
     case PosComplete:
-	// Nothing more to filter
-
-	// Skip possible line number info
-	switch (gdb->type())
-	{
-	case GDB:
-	    break;
-
-	case DBX:
-	{
-	    string line_s = pos_buffer;
-	    if (line_s.contains(':'))
-		line_s = line_s.after(':');
-	    int line = atoi(line_s);
-	    filter_line(answer, line);
-	}
-
-	case XDB:
-	case JDB:
-	case PYDB:
-	case PERL:
-	    break;		// Nothing special
-	}
+	// Nothing more to filter - skip possible line number info
+	filter_line(answer);
 	break;
 
     case PosPart:
@@ -325,6 +311,8 @@ void PosBuffer::filter (string& answer)
 	    filter_perl(answer);
 	    break;
 	}
+
+	filter_line(answer);
     }
 
     break;
@@ -756,10 +744,7 @@ void PosBuffer::filter_dbx(string& answer)
 	}
 
 	if (line != "")
-	{
 	    already_read = PosComplete;
-	    filter_line(answer, atoi(line));
-	}
     }
 
 #if RUNTIME_REGEX
@@ -988,7 +973,7 @@ void PosBuffer::filter_jdb(string& answer)
 
 		    if (class_name.contains("." + file), -1)
 		    {
-				// CLASS_NAME is more qualified - use it
+			// CLASS_NAME is more qualified - use it
 			file = class_name;
 		    }
 		}
@@ -1006,6 +991,33 @@ void PosBuffer::filter_jdb(string& answer)
 		next_index++;
 	    answer.at(index, next_index - index) = "";
 #endif
+	    break;
+	}
+	else if (line.contains("line="))
+	{
+	    // JDB 1.2 output format:
+	    // `Step completed: thread="main", jtest.array_test(), 
+	    //  line=77, bci=206'
+
+	    string line_no = line.after("line=");
+	    line_no = line_no.before(", ");
+
+	    string class_name = line.after(", ");
+	    class_name = class_name.before(", ");
+	    if (class_name.contains("("))
+	    {
+		// Within a method
+		class_name = class_name.before('(');
+		if (class_name.contains("."))
+		    class_name = class_name.before('.', -1);
+	    }
+
+	    string file = class_name;
+	    strip_space(file);
+
+	    pos_buffer	 = file + ":" + line_no;
+	    already_read = PosComplete;
+
 	    break;
 	}
 	else
