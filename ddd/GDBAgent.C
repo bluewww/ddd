@@ -1843,6 +1843,14 @@ string GDBAgent::watch_command(string expr, WatchMode w) const
 	return "";
 
     case JDB:
+	if ((w & WATCH_CHANGE) == WATCH_CHANGE)
+	    return "watch all " + expr;
+	if ((w & WATCH_READ) == WATCH_READ)
+	    return "watch access " + expr;
+	if ((w & WATCH_ACCESS) == WATCH_ACCESS)
+	    return "watch access " + expr;
+	return "";
+
     case PYDB:
     case PERL:
 	return "";		// Not available

@@ -287,6 +287,9 @@ static string gdbHelp(string original_command)
 
 	    // Configure debugger
 	    gdb->has_load_command(all_help.contains("load "));
+	    gdb->has_watch_command(
+		all_help.contains("watch ") ? WATCH_ACCESS | WATCH_CHANGE : 0);
+	    update_arg_buttons();
 	}
 
 	int index = all_help.index("\n" + command) + 1;

@@ -275,10 +275,24 @@ void gdbWatchRefCB(Widget w, XtPointer, XtPointer)
 
 void gdbUnwatchCB(Widget, XtPointer, XtPointer)
 {
-    BreakPoint *wp = source_view->watchpoint_at(current_arg());
-    if (wp == 0)
-	return;
-    source_view->delete_bp(wp->number());
+    if (gdb->type() == JDB)
+    {
+	// JDB 1.2 has an `unwatch' command
+	string arg = current_arg();
+	if (arg != "" && !arg.matches(rxwhite))
+	{
+	    gdb_command("unwatch all " + arg);
+	    gdb_command("unwatch access " + arg);
+	}
+    }
+    else
+    {
+	// All other debuggers handle watchpoints like breakpoints
+	BreakPoint *wp = source_view->watchpoint_at(current_arg());
+	if (wp == 0)
+	    return;
+	source_view->delete_bp(wp->number());
+    }
 }
 
 void gdbToggleWatchCB(Widget w, XtPointer client_data, XtPointer call_data)
