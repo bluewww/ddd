@@ -1034,18 +1034,6 @@ Ctrl<Key>backslash:	gdb-control(^\\)	    \n\
 Ctrl<Key>R:		gdb-isearch-prev()          \n\
 Ctrl<Key>S:		gdb-isearch-next()  	    \n\
 Ctrl<Key>T:		gdb-complete-command()	    \n\
-None<Key>Escape:	gdb-interrupt()             \n\
-None<Key>osfCancel:	gdb-interrupt()             \n\
-None<Key>osfUp:		gdb-previous-history()	    \n\
-None<Key>osfDown:	gdb-next-history()	    \n\
-None<Key>osfLeft:	gdb-backward-character()    \n\
-None<Key>osfRight:	gdb-forward-character()	    \n\
-None<Key>osfBeginLine:	gdb-beginning-of-line()	    \n\
-None<Key>osfEndLine:	gdb-end-of-line()	    \n\
-None<Key>osfBeginData:	gdb-beginning-of-line()	    \n\
-None<Key>osfEndData:	gdb-end-of-line()	    \n\
-None<Key>Home:		gdb-beginning-of-line()	    \n\
-None<Key>End:		gdb-end-of-line()	    \n\
 ~Shift<Key>osfPageUp:	previous-page()		    \n\
 ~Shift<Key>osfPageDown:	next-page()	            \n\
 ~Shift<Key>Prior:	previous-page()		    \n\
@@ -1054,9 +1042,24 @@ Shift<Key>osfPageUp:	previous-page(extend)	    \n\
 Shift<Key>osfPageDown:	next-page(extend)           \n\
 Shift<Key>Prior:	previous-page(extend)	    \n\
 Shift<Key>Next:		next-page(extend)	    \n\
-None<Key>R7:		gdb-beginning-of-line()	    \n\
-None<Key>R13:		gdb-end-of-line()	    \n\
-None<Key>Tab:		gdb-complete-command()	    \n
+~Ctrl Shift<Key>Delete: cut-clipboard()             \n\
+~Shift Ctrl<Key>Insert: copy-clipboard()            \n\
+~Ctrl Shift<Key>Insert: paste-clipboard()           \n\
+~Ctrl ~Shift ~Meta<Key>Escape:		gdb-interrupt()         \n\
+~Ctrl ~Shift ~Meta<Key>osfCancel:	gdb-interrupt()         \n\
+~Ctrl ~Shift ~Meta<Key>osfUp:		gdb-previous-history()	\n\
+~Ctrl ~Shift ~Meta<Key>osfDown:		gdb-next-history()	\n\
+~Ctrl ~Shift ~Meta<Key>osfLeft:		gdb-backward-character()\n\
+~Ctrl ~Shift ~Meta<Key>osfRight:	gdb-forward-character()	\n\
+~Ctrl ~Shift ~Meta<Key>osfBeginLine:	gdb-beginning-of-line()	\n\
+~Ctrl ~Shift ~Meta<Key>osfEndLine:	gdb-end-of-line()	\n\
+~Ctrl ~Shift ~Meta<Key>osfBeginData:	gdb-beginning-of-line()	\n\
+~Ctrl ~Shift ~Meta<Key>osfEndData:	gdb-end-of-line()	\n\
+~Ctrl ~Shift ~Meta<Key>Home:		gdb-beginning-of-line()	\n\
+~Ctrl ~Shift ~Meta<Key>End:		gdb-end-of-line()	\n\
+~Ctrl ~Shift ~Meta<Key>R7:		gdb-beginning-of-line()	\n\
+~Ctrl ~Shift ~Meta<Key>R13:		gdb-end-of-line()	\n\
+~Ctrl ~Shift ~Meta<Key>Tab:		gdb-complete-command()	\n
 
 dnl Basic translations for all other texts and text fields
 define(EMACS_TRANSLATIONS,[\
@@ -1067,8 +1070,8 @@ Ctrl<Key>E:		end-of-line()		    \n\
 Ctrl<Key>F:		gdb-forward-character()	    \n\
 Ctrl<Key>G:		gdb-control(^C)		    \n\
 <Key>Break:		gdb-interrupt()		    \n\
-None<Key>Escape:	gdb-interrupt()             \n\
-None<Key>osfCancel:	gdb-interrupt()             \n\
+~Ctrl ~Shift ~Meta<Key>Escape:	gdb-interrupt()             \n\
+~Ctrl ~Shift ~Meta<Key>osfCancel:	gdb-interrupt()             \n\
 Ctrl<Key>H:		delete-previous-character() \n\
 Ctrl<Key>I:		self-insert()               \n\
 Ctrl<Key>K:		delete-to-end-of-line()	    \n\
@@ -1079,7 +1082,10 @@ Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
 ~Shift <Key>R7:		beginning-of-line()	    \n\
 ~Shift <Key>R13:	end-of-line()		    \n\
 ~Shift <Key>Home:	beginning-of-line()	    \n\
-~Shift <Key>End:	end-of-line()		    \n])dnl
+~Shift <Key>End:	end-of-line()		    \n\
+~Ctrl Shift<Key>Delete: cut-clipboard()             \n\
+~Shift Ctrl<Key>Insert: copy-clipboard()            \n\
+~Ctrl Shift<Key>Insert: paste-clipboard()           \n])dnl
 dnl
 dnl Emacs + TAB completion.
 define(COMPLETE_TRANSLATIONS, EMACS_TRANSLATIONS[\
@@ -1106,14 +1112,11 @@ define(COMPLETE_TEXT_TRANSLATIONS, TEXT_TRANSLATIONS[\
 Ctrl<Key>T:		gdb-complete-arg($1)	    \n\
 ~Shift <Key>Tab:	gdb-complete-tab($1)	    \n])dnl
 dnl
-dnl Dialogs also have Cut/Copy/Paste.
+dnl In dialogs, we can always use KDE Cut/Copy/Paste bindings.
 define(CLIPBOARD_TRANSLATIONS, [\
-~Ctrl Shift<Key>Delete: cut-clipboard()\n\
-~Shift Ctrl<Key>Insert: copy-clipboard()\n\
-~Ctrl Shift<Key>Insert: paste-clipboard()\n\
-~Shift Ctrl<Key>X:      cut-clipboard()\n\
-~Shift Ctrl<Key>C:      copy-clipboard()\n\
-~Shift Ctrl<Key>V:      paste-clipboard()\n])dnl
+~Shift Ctrl<Key>X:      cut-clipboard()             \n\
+~Shift Ctrl<Key>C:      copy-clipboard()            \n\
+~Shift Ctrl<Key>V:      paste-clipboard()           \n])dnl
 
 ! Have some of these in argument fields as well
 Ddd*XmTextField.translations: \
@@ -1210,6 +1213,9 @@ Ctrl<Key>V:		next-page()		    \
 			source-update-glyphs()	    \n\
 Meta<Key>V:		previous-page()		    \
 			source-update-glyphs()	    \n\
+~Ctrl Shift<Key>Delete: cut-clipboard()             \n\
+~Shift Ctrl<Key>Insert: copy-clipboard()            \n\
+~Ctrl Shift<Key>Insert: paste-clipboard()           \n\
 ~Shift <Key>R7:		beginning-of-line()	    \n\
 ~Shift <Key>R13:	end-of-line()		    \n\
 ~Shift <Key>Tab:	PrimitiveNextTabGroup()	    \n\
@@ -2276,7 +2282,7 @@ Ddd*commandsMenu.next.documentationString: \
 
 Ddd*commandsMenu.complete.labelString:	        Complete
 Ddd*commandsMenu.complete.mnemonic:	        C
-! Ddd*commandsMenu.complete.accelerator:	None<Key>Tab
+! Ddd*commandsMenu.complete.accelerator:	~Ctrl ~Shift ~Meta<Key>Tab
 ! Ddd*commandsMenu.complete.accelerator:	Ctrl<Key>I
 Ddd*commandsMenu.complete.acceleratorText:	Tab
 Ddd*commandsMenu.complete.documentationString: \
@@ -2284,7 +2290,7 @@ Ddd*commandsMenu.complete.documentationString: \
 
 Ddd*commandsMenu.apply.labelString:	        Apply
 Ddd*commandsMenu.apply.mnemonic:	        A
-! Ddd*commandsMenu.apply.accelerator:	        None<Key>Return
+! Ddd*commandsMenu.apply.accelerator:	        ~Ctrl ~Shift ~Meta<Key>Return
 Ddd*commandsMenu.apply.acceleratorText:         Return
 Ddd*commandsMenu.apply.documentationString: \
 @rm Execute current command
@@ -2664,14 +2670,14 @@ DESC(On Window..., [help on the application itself])\n\
 DESC(What Now?..., [give help on what to do now])\n\
 DESC(Tip of the Day..., [give a useful tip on DDD usage])\n\
 \n\
-DESC([[DDD]] Reference..., [the DDD on-line manual])\n\
-DESC([[DDD]] News..., [what's new in DDD])\n\
+DESC([[[[DDD]]]] Reference..., [the DDD on-line manual])\n\
+DESC([[[[DDD]]]] News..., [what's new in DDD])\n\
 DESC(@GDB@ Reference..., [the @GDB@ on-line manual])\n\
 \n\
-DESC([[DDD]] License..., [copying, distributing, and modifying DDD])\n\
-DESC([[DDD]] WWW Page..., [the DDD WWW page])\n\
+DESC([[[[DDD]]]] License..., [copying, distributing, and modifying DDD])\n\
+DESC([[[[DDD]]]] WWW Page..., [the DDD WWW page])\n\
 \n\
-DESC(About [[DDD]]..., [some general information about DDD])
+DESC(About [[[[DDD]]]]..., [some general information about DDD])
 ])dnl
 
 Ddd*menubar.help*helpString: HELP_HELP
@@ -5512,7 +5518,7 @@ ITEM DDD passes all unknown options to @GDB@.  If @GDB@ choked on\n\
 ITEM If @GDB@ could not be invoked due to some communication failure,\n\
     try changing the SAMP(.blockTTYInput) resource.\n\
 For details on options and resources, see the DDD manual: select\n\
-LBL(Help, [DDD] Reference) \
+LBL(Help, [[[[DDD]]]] Reference) \
 or invoke DDD with the SAMP(--manual) option.\n\
 \n\
 Click on LBL(Exit) to exit DDD.
@@ -5884,7 +5890,7 @@ Ddd*expired_warning_popup.title: DDD: DDD Expired
 Ddd*expired_warning*helpString: \
 @rm DDD @VERSION@ has been superseded by a newer DDD version.\n\
 DDD @VERSION@ should no longer be used.\n\
-To get the most recent DDD version, see the LBL(Help, [DDD] WWW Page).
+To get the most recent DDD version, see the LBL(Help, [[[[DDD]]]] WWW Page).
 
 Ddd*core_missing_warning_popup.title: DDD: Core Missing
 Ddd*core_missing_warning*helpString: \
