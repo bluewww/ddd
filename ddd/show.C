@@ -537,7 +537,7 @@ int ddd_license(std::ostream& os)
     (void) uncompress;		// Use it
 
 #if WITH_BUILTIN_LICENSE
-    static const char *COPYING =
+    static const char COPYING[] =
 #include "COPYING.gz.C"
 	;
 
@@ -579,7 +579,7 @@ void DDDLicenseCB(Widget w, XtPointer, XtPointer call_data)
 int ddd_news(std::ostream& os)
 {
 #if WITH_BUILTIN_NEWS
-    static const char *NEWS =
+    static const char NEWS[] =
 #include "NEWS.gz.C"
 	;
 
@@ -622,7 +622,7 @@ void DDDNewsCB(Widget w, XtPointer, XtPointer call_data)
 int ddd_man(std::ostream& os)
 {
 #if WITH_BUILTIN_MANUAL
-    static const char *MANUAL =
+    static const char MANUAL[] =
 #include "ddd.info.txt.gz.C"
 	;
 
