@@ -195,6 +195,25 @@ BreakPoint::BreakPoint (string& info_output, string arg)
 			myline_nr     = get_positive_nr(line_s);
 		    }
 		}
+
+		// Sun DBX 3.2 issues extra characters like 
+		// (2) stop in main -count 0/10
+		// [3] stop in main -disable
+		string options;
+		if (info_output.contains('\n'))
+		    options = info_output.before('\n');
+		else
+		    options = info_output;
+		myenabled = !options.contains(" -disable");
+
+		if (options.contains(" -count "))
+		{
+		    string count = options.after(" -count ");
+		    myinfos = "count " + count;
+		    if (count.contains('/'))
+			count = count.after('/');
+		    myignore_count = read_nr_str(count);
+		}
 	    }
 	    info_output = info_output.after('\n');
 	}
@@ -446,6 +465,44 @@ bool BreakPoint::update (string& info_output)
 			}
 		    }
 		}
+
+		// Sun DBX 3.0 issues extra characters like 
+		// (2) stop in main -count 0/10
+		// [3] stop in main -disable
+		string options;
+		if (info_output.contains('\n'))
+		    options = info_output.before('\n');
+		else
+		    options = info_output;
+		bool new_enabled = !options.contains(" -disable");
+		if (new_enabled != myenabled)
+		{
+		    myenabled = new_enabled;
+		    changed = myenabled_changed = true;
+		}
+
+		if (options.contains(" -count "))
+		{
+		    string count = options.after(" -count ");
+		    myinfos = "count " + count;
+		    if (count.contains('/'))
+			count = count.after('/');
+		    count = read_nr_str(count);
+
+		    if (count != myignore_count)
+		    {
+			myignore_count = count;
+			changed = true;
+		    }
+		}
+		else
+		{
+		    if (myinfos != "")
+		    {
+			changed = true;
+			myinfos = "";
+		    }
+		}
 	    }
 	    info_output = info_output.after('\n');
 	}
@@ -539,10 +596,8 @@ string BreakPoint::ignore_count() const
     break;
 
     case DBX:
-	return "";		// FIXME
-
     case XDB:
-	return ignore_count();
+	return myignore_count;
     }
 
     return "";			// Never reached
@@ -611,13 +666,13 @@ bool BreakPoint::get_state(ostream& os, int nr, bool dummy, string pos)
 	{
 	    // Extra infos
 	    if (!enabled())
-		os << "disable " << num << "\n";
+		os << gdb->disable_command(num) << "\n";
 	    string ignore = ignore_count();
 	    if (ignore != "")
-		os << "ignore " << num << " " << ignore << "\n";
+		os << gdb->ignore_command(num, atoi(ignore)) << "\n";
 	    string cond = condition();
 	    if (cond != "")
-		os << "condition " << num << " " << cond << "\n";
+		os << gdb->condition_command(num, cond) << "\n";
 	}
 	break;
     }
@@ -633,6 +688,16 @@ bool BreakPoint::get_state(ostream& os, int nr, bool dummy, string pos)
 	    os << "file "    << pos.before(':') << "\n";
 	    os << "stop at " << pos.after(':')  << "\n";
 	}
+
+	if (!dummy)
+	{
+	    // Extra infos
+	    if (!enabled() && gdb->has_disable_command())
+		os << gdb->disable_command(num) << "\n";
+	    string ignore = ignore_count();
+	    if (ignore != "" && gdb->has_ignore_command())
+		os << gdb->ignore_command(num, atoi(ignore)) << "\n";
+	}
 	break;
     }
 
@@ -647,10 +712,10 @@ bool BreakPoint::get_state(ostream& os, int nr, bool dummy, string pos)
 	{
 	    // Extra infos
 	    if (!enabled())
-		os << "sb " << num << "\n";
+		os << gdb->disable_command(num) << "\n";
 	    string ignore = ignore_count();
 	    if (ignore != "")
-		os << "bc " << num << " " << "\n";
+		os << gdb->ignore_command(num, atoi(ignore)) << "\n";
 	}
 	break;
     }
