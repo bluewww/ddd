@@ -1094,9 +1094,42 @@ bool DispValue::structurally_equal(const DispValue *source,
 // Plotting
 //-----------------------------------------------------------------------------
 
-bool DispValue::can_plot() const
+int DispValue::can_plot() const
 {
-    return can_plot2d() || can_plot3d();
+    if (can_plot3d())
+	return 3;
+
+    if (can_plot2d())
+	return 2;
+
+    if (can_plot1d())
+	return 1;
+
+    // Search for plottable array children
+    int ndim = 0;
+    for (int i = 0; i < nchildren(); i++)
+	ndim = max(ndim, child(i)->can_plot());
+
+    return ndim;
+}
+
+inline bool starts_number(char c)
+{
+    return c == '.' || c == '+' || c == '-' || isdigit(c);
+}
+
+bool DispValue::can_plot1d() const
+{
+    if (type() != Simple)
+	return false;
+
+    const string& v = value();
+    if (v.length() == 0)
+	return false;	// Empty value
+    if (!starts_number(v[0]))
+	return false;	// Not a numeric value
+
+    return true;
 }
 
 bool DispValue::can_plot2d() const
@@ -1106,14 +1139,8 @@ bool DispValue::can_plot2d() const
 
     for (int i = 0; i < nchildren(); i++)
     {
-	if (child(i)->type() != Simple)
+	if (!child(i)->can_plot1d())
 	    return false;
-
-	const string& v = child(i)->value();
-	if (v.length() == 0)
-	    return false;	// Empty value
-	if (v[0] != '.' && v[0] != '+' && v[0] != '-' && !isdigit(v[0]))
-	    return false;	// Not a numeric value
     }
 
     return true;
@@ -1149,6 +1176,10 @@ int DispValue::nchildren_with_repeats() const
 
 void DispValue::plot() const
 {
+    int ndim = can_plot();
+    if (ndim == 0)
+	return;
+
     if (plotter() == 0)
     {
 	((DispValue *)this)->_plotter = new_plotter(full_name());
@@ -1158,33 +1189,58 @@ void DispValue::plot() const
     plotter()->plot_2d_settings = app_data.plot_2d_settings;
     plotter()->plot_3d_settings = app_data.plot_3d_settings;
 
-    _plot(plotter());
+    _plot(plotter(), ndim);
 
     plotter()->flush();
 }
 
-void DispValue::_plot(PlotAgent *plotter) const
+void DispValue::_plot(PlotAgent *plotter, int ndim) const
 {
-    if (can_plot2d())
+    if (can_plot3d())
     {
-	plot2d(plotter);
+	plot3d(plotter, ndim);
 	return;
     }
 
-    if (can_plot3d())
+    if (can_plot2d())
     {
-	plot3d(plotter);
+	plot2d(plotter, ndim);
+	return;
+    }
+
+    if (can_plot1d())
+    {
+	plot1d(plotter, ndim);
 	return;
     }
 
     // Plot all array children into one window
     for (int i = 0; i < nchildren(); i++)
-	child(i)->_plot(plotter);
+	child(i)->_plot(plotter, ndim);
 }
 
-void DispValue::plot2d(PlotAgent *plotter) const
+string DispValue::num_value() const
 {
-    plotter->start_plot(full_name());
+    const string& v = value();
+    if (v.contains(rxdouble, 0))
+	return v.through(rxdouble);
+
+    if (v.contains(rxint, 0))
+	return v.through(rxint);
+
+    return "0";			// Illegal value
+}
+
+void DispValue::plot1d(PlotAgent *plotter, int ndim) const
+{
+    plotter->start_plot(full_name(), ndim);
+    plotter->add_point(num_value());
+    plotter->end_plot();
+}
+
+void DispValue::plot2d(PlotAgent *plotter, int ndim) const
+{
+    plotter->start_plot(full_name(), ndim);
 
     int index;
     if (_have_index_base)
@@ -1196,15 +1252,17 @@ void DispValue::plot2d(PlotAgent *plotter) const
     {
 	DispValue *c = child(i);
 	for (int ii = 0; ii < c->repeats(); ii++)
-	    plotter->add_point(index++, c->value());
+	{
+	    plotter->add_point(index++, c->num_value());
+	}
     }
 
     plotter->end_plot();
 }
 
-void DispValue::plot3d(PlotAgent *plotter) const
+void DispValue::plot3d(PlotAgent *plotter, int ndim) const
 {
-    plotter->start_plot(full_name());
+    plotter->start_plot(full_name(), ndim);
 
     int index;
     if (_have_index_base)
@@ -1227,7 +1285,7 @@ void DispValue::plot3d(PlotAgent *plotter) const
 	    {
 		DispValue *cc = c->child(j);
 		for (int jj = 0; jj < cc->repeats(); jj++)
-		    plotter->add_point(index, c_index++, cc->value());
+		    plotter->add_point(index, c_index++, cc->num_value());
 	    }
 
 	    index++;

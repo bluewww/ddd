@@ -49,9 +49,11 @@ void PlotAgent::start(const string& init)
 }
 
 // Start a new plot
-void PlotAgent::start_plot(const string& title)
+void PlotAgent::start_plot(const string& title, int n)
 {
     titles += title;
+    values += "";
+    ndim = n;
 
     while (files.size() < titles.size())
     {
@@ -73,26 +75,27 @@ void PlotAgent::end_plot()
 // Flush it all
 int PlotAgent::flush()
 {
-    if (mode == None || titles.size() == 0)
+    if (ndim == 0 || titles.size() == 0)
     {
 	// No data - ignore
     }
     else
     {
 	string cmd;
-	switch (mode)
+	switch (ndim)
 	{
-	case None:
+	case 0:
 	    break;
 
-	case TwoD:
-	    cmd = "plot ";
+	case 1:
+	case 2:
+	    cmd = "set noparametric\nplot ";
 	    if (plot_2d_settings != "")
 		cmd.prepend(plot_2d_settings + "\n");
 	    break;
 
-	case ThreeD:
-	    cmd = "splot ";
+	case 3:
+	    cmd = "set parametric\nsplot ";
 	    if (plot_3d_settings != "")
 		cmd.prepend(plot_3d_settings + "\n");
 	    break;
@@ -102,8 +105,25 @@ int PlotAgent::flush()
 	{
 	    if (i > 0)
 		cmd += ", ";
-	    cmd += quote(files[i]);
+
+	    const string& v = values[i];
+	    if (v != "")
+	    {
+		// Plot atomic value
+		if (ndim == 3)
+		    cmd += "0,0," + v;
+		else
+		    cmd += v;
+	    }
+	    else
+	    {
+		// Plot a file
+		cmd += quote(files[i]);
+	    }
 	    cmd += " title " + quote(titles[i]);
+
+	    if (v != "" && ndim == 3)
+		cmd += " with points";
 	}
 	cmd += "\n";
 
@@ -126,4 +146,29 @@ void PlotAgent::abort()
 
     // We're done
     LiterateAgent::abort();
+}
+
+
+// Add plot point
+void PlotAgent::add_point(const string& v)
+{
+    if (ndim > 1)
+	add_point(0, v);
+    else
+	values[values.size() - 1] = v;
+}
+
+void PlotAgent::add_point(int x, const string& v)
+{
+    if (ndim > 2)
+	add_point(x, 0, v);
+    else
+	plot_os << x << '\t' << v << '\n';
+}
+
+void PlotAgent::add_point(int x, int y, const string& v)
+{
+    assert(ndim == 3);
+
+    plot_os << x << '\t' << y << '\t' << v << '\n';
 }

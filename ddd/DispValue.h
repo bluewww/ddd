@@ -93,9 +93,11 @@ class DispValue {
 				  const string& member_name);
 
     // Plotting stuff
-    void _plot(PlotAgent *plotter) const;
-    void plot2d(PlotAgent *plotter) const;
-    void plot3d(PlotAgent *plotter) const;
+    void _plot(PlotAgent *plotter, int ndim) const;
+    void plot1d(PlotAgent *plotter, int ndim) const;
+    void plot2d(PlotAgent *plotter, int ndim) const;
+    void plot3d(PlotAgent *plotter, int ndim) const;
+    bool can_plot1d() const;
     bool can_plot2d() const;
     bool can_plot3d() const;
 
@@ -119,6 +121,9 @@ protected:
     // True if more sequence members are coming
     bool sequence_pending(const string& value, 
 			  const DispValue *parent) const;
+
+    // Numeric value
+    string num_value() const;
 
     // The DispValue type and address are determined from VALUE
     DispValue (DispValue *parent, 
@@ -293,7 +298,12 @@ public:
     }
 
     // Plotting
-    bool can_plot() const;
+
+    // Return 0 if we cannot plot; return number of required
+    // dimensions, otherwise (1, 2, or 3)
+    int can_plot() const;
+
+    // Plot value
     void plot() const;
 
     // Background processing.  PROCESSED is the number of characters

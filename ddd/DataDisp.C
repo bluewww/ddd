@@ -1997,9 +1997,8 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     set_sensitive(graph_popup[GraphItms::Refresh].widget,   count.all > 0);
     set_sensitive(graph_popup[GraphItms::SelectAll].widget, count.visible > 0);
 
-    Boolean dereference_ok  = False;
-    Boolean rotate_ok = False;
-    Boolean plot_ok = False;
+    bool dereference_ok = false;
+    bool rotate_ok      = false;
 
     if (disp_value_arg != 0)
     {
@@ -2017,7 +2016,6 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 
 	case Array:
 	    rotate_ok = disp_value_arg->expanded();
-	    plot_ok   = disp_value_arg->can_plot();
 	    break;
 
 	case Sequence:
@@ -2032,10 +2030,12 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     }
 
     // Argument
-    bool arg_ok = false;
+    bool arg_ok  = false;
+    bool plot_ok = false;
     if (disp_value_arg != 0)
     {
 	arg_ok = true;
+	plot_ok = disp_value_arg->can_plot();
     }
     else
     {

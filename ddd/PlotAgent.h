@@ -41,16 +41,15 @@
 
 class PlotAgent: public LiterateAgent {
 
-    enum PlotMode { NoPlotMode = 0, TwoD = 2, ThreeD = 3 };
-
 public:
     DECLARE_TYPE_INFO
 
 private:
     StringArray files;		// Temporary files allocated by this Agent
     StringArray titles;		// Titles currently plotted
-    ofstream plot_os;		// File stream used for adding data
-    PlotMode mode;
+    StringArray values;		// One-dimensional values
+    ofstream plot_os;		// Stream used for adding data
+    int ndim;			// Number of dimensions used so far
 
 public:
     static string plot_2d_settings;
@@ -60,7 +59,7 @@ public:
     PlotAgent(XtAppContext app_context, const string& pth,
 	      unsigned nTypes = LiterateAgent_NTypes)
 	: LiterateAgent(app_context, pth, nTypes),
-	  files(), titles(), plot_os(), mode(NoPlotMode)
+	  files(), titles(), plot_os(), ndim(0)
     {}
 
     // Start and initialize
@@ -69,23 +68,13 @@ public:
     // Kill
     void abort();
 
-    // Start plotting new data
-    void start_plot(const string& title);
+    // Start plotting new data with TITLE in NDIM dimensions
+    void start_plot(const string& title, int ndim);
 
     // Add plot point
-    void add_point(int x, const string& y)
-    {
-	assert(mode == NoPlotMode || mode == TwoD);
-	plot_os << x << '\t' << y << '\n';
-	mode = TwoD;
-    }
-
-    void add_point(int x, int y, const string& z)
-    {
-	assert(mode == NoPlotMode || mode == ThreeD);
-	plot_os << x << '\t' << y << '\t' << z << '\n';
-	mode = ThreeD;
-    }
+    void add_point(const string& v);
+    void add_point(int x, const string& v);
+    void add_point(int x, int y, const string& v);
 
     // End plot
     void end_plot();
