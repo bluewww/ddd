@@ -2368,7 +2368,7 @@ void SourceView::process_info_line_main(string& info_output)
 void SourceView::check_remainder(string& info_output)
 {
     // Any remaining input is an informative GDB message.
-    // Strip newlines at beginning and end; post the message.
+    // Strip newlines around the message and post it.
 
     while (info_output.length() > 0 && 
 	   info_output[0] == '\n')
@@ -3800,11 +3800,12 @@ void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
 		    int line = 0;
 
 		    // Check if line was contained in `frame' reply
-		    PosBuffer buffer;
-		    buffer.filter(reply);
-		    if (buffer.pos_found())
+		    PosBuffer pos_buffer;
+		    pos_buffer.filter(reply);
+		    pos_buffer.answer_ended();
+		    if (pos_buffer.pos_found())
 		    {
-			string line_s = buffer.get_position();
+			string line_s = pos_buffer.get_position();
 			if (line_s.contains(':'))
 			    line_s = line_s.after(':');
 			line = atoi(line_s);
