@@ -707,6 +707,7 @@ TEMPLATE_OBJECTS = \
 	StringA.$(OBJEXT)    \
 	StringMap.$(OBJEXT)  \
 	StringSA.$(OBJEXT)   \
+	StringSAA.$(OBJEXT)  \
 	VoidArray.$(OBJEXT)  \
 	WidgetSA.$(OBJEXT)
 
@@ -939,6 +940,7 @@ DDD_OBJECTS = \
 	RefreshDI.$(OBJEXT)  \
 	SmartC.$(OBJEXT)     \
 	SourceView.$(OBJEXT) \
+	ThemeM.$(OBJEXT)     \
 	Tool.$(OBJEXT)       \
 	UndoBuffer.$(OBJEXT) \
 	UndoBE.$(OBJEXT)     \
