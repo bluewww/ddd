@@ -34,7 +34,57 @@
 char cxxtest_rcsid[] =
     "$Id$";
 
+#include "config.h"
+#include "bool.h"
+
 #include <iostream.h>
+#include <stdlib.h>
+#include <time.h>
+
+//--------------------------------------------------------------------------
+extern "C" {
+#if HAVE_RANDOM && !HAVE_RANDOM_DECL && !defined(random)
+long int random();
+#endif
+#if HAVE_SRANDOM && !HAVE_SRANDOM_DECL && !defined(srandom)
+void srandom(unsigned int seed);
+#endif
+#if HAVE_RAND && !HAVE_RAND_DECL && !defined(rand)
+int rand();
+#endif
+#if HAVE_SRAND && !HAVE_SRAND_DECL && !defined(srand)
+void srand(unsigned int seed);
+#endif
+};
+
+static void init_random_seed()
+{
+    static bool seed_initialized = false;
+    if (seed_initialized)
+	return;
+
+    time_t tm;
+    time(&tm);
+
+#if HAVE_SRAND
+    srand((int)tm);
+#elif HAVE_SRANDOM
+    srandom((int)tm);
+#endif
+
+    seed_initialized = true;
+}
+
+static int rnd(int x)
+{ 
+    init_random_seed();
+
+#if HAVE_RAND
+    return rand() % x;
+#else /* HAVE_RANDOM */
+    return random() % x;
+#endif
+}
 
 enum DayOfWeek {Sun, Mon, Tue, Wed, Thu, Fri, Sat};
 
@@ -213,6 +263,39 @@ void array_test()
 }
 
 //--------------------------------------------------------------------------
+#define numbers(x) (sizeof((x)) / sizeof((x)[0]))
+
+void shell_sort(int a[], int size)
+{
+    int h = 1;
+    do {
+	h = h * 3 + 1;
+    } while (h <= size);
+    do {
+	h /= 3;
+	for (int i = h; i < size; i++)
+	{
+	    int v = a[i];
+	    int j;
+	    for (j = i; j >= h && a[j - h] > v; j -= h)
+		a[j] = a[j - h];
+	    if (i != j)
+		a[j] = v;
+	}
+    } while (h != 1);
+}
+
+void plot_test()
+{
+    static int ir[100];
+
+    for (int i = 0; i < numbers(ir); i++)
+	ir[i] = rnd(100);
+
+    shell_sort(ir, numbers(ir));
+}
+
+//--------------------------------------------------------------------------
 void type_test()
 {
     Holiday new_years_eve(Sat, 31, 12, 1994, 
@@ -286,6 +369,8 @@ int main(int /* argc */, char ** /* argv */)
     list_test(i);
     i++;
     array_test();
+    i++;
+    plot_test();
     i++;
     type_test();
     --i;

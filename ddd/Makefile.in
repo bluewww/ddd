@@ -861,6 +861,7 @@ DDD_OBJECTS = \
 	HistoryD.o   \
 	HistoryF.o   \
 	MinMaxA.o    \
+	PlotAgent.o  \
 	PosBuffer.o  \
 	SmartC.o     \
 	SourceView.o \
@@ -993,6 +994,7 @@ XBM_ICONS = \
 	$(toolbardir)/newbreak.xbm \
 	$(toolbardir)/newdisplay.xbm \
 	$(toolbardir)/newwatch.xbm \
+	$(toolbardir)/plot.xbm \
 	$(toolbardir)/print.xbm \
 	$(toolbardir)/properties.xbm \
 	$(toolbardir)/rotate.xbm \
@@ -1019,6 +1021,7 @@ XPM_XX_ICONS = \
 	$(toolbardir)/newbreak.xpmxx \
 	$(toolbardir)/newdisplay.xpmxx \
 	$(toolbardir)/newwatch.xpmxx \
+	$(toolbardir)/plot.xpmxx \
 	$(toolbardir)/print.xpmxx \
 	$(toolbardir)/properties.xpmxx \
 	$(toolbardir)/rotate.xpmxx \
@@ -1045,6 +1048,7 @@ XBM_XX_ICONS = \
 	$(toolbardir)/newbreak.xbmxx \
 	$(toolbardir)/newdisplay.xbmxx \
 	$(toolbardir)/newwatch.xbmxx \
+	$(toolbardir)/plot.xbmxx \
 	$(toolbardir)/print.xbmxx \
 	$(toolbardir)/properties.xbmxx \
 	$(toolbardir)/rotate.xbmxx \
@@ -1490,16 +1494,16 @@ jtest:
 
 # We don't want no optimizing, but debugging info in our test files
 bug.o:	$(srcdir)/bug.C
-	$(CC) -g -c -o $@ $(srcdir)/bug.C
+	$(CXX) $(INCLUDE) -g -c -o $@ $(srcdir)/bug.C
 
 cxxtest.o: $(srcdir)/cxxtest.C
-	$(CXX) -g -c -o $@ $(srcdir)/cxxtest.C
+	$(CXX) $(INCLUDE) -g -c -o $@ $(srcdir)/cxxtest.C
 
 grabtest.o: $(srcdir)/grabtest.C
 	$(CXX) $(X_INCLUDE) -g -c -o $@ $(srcdir)/grabtest.C
 
 ctest.o: $(srcdir)/ctest.c
-	$(CC) -g -c -o $@ $(srcdir)/ctest.c
+	$(CC) $(INCLUDE) -g -c -o $@ $(srcdir)/ctest.c
 
 huffdecode.o: $(srcdir)/huffdecode.C ddd.man.huff.C
 	$(COMPILE.cc) -DMAIN -DHUFFTEXT='"$(srcdir)/ddd.man.huff.C"' \

@@ -312,6 +312,7 @@ Pixmap dddsplash(Widget w, const string& color_key)
 #include "icons/toolbar/newbreak.xbm"
 #include "icons/toolbar/newdisplay.xbm"
 #include "icons/toolbar/newwatch.xbm"
+#include "icons/toolbar/plot.xbm"
 #include "icons/toolbar/print.xbm"
 #include "icons/toolbar/properties.xbm"
 #include "icons/toolbar/rotate.xbm"
@@ -337,6 +338,7 @@ Pixmap dddsplash(Widget w, const string& color_key)
 #include "icons/toolbar/newbreak.xbmxx"
 #include "icons/toolbar/newdisplay.xbmxx"
 #include "icons/toolbar/newwatch.xbmxx"
+#include "icons/toolbar/plot.xbmxx"
 #include "icons/toolbar/print.xbmxx"
 #include "icons/toolbar/properties.xbmxx"
 #include "icons/toolbar/rotate.xbmxx"
@@ -363,6 +365,7 @@ Pixmap dddsplash(Widget w, const string& color_key)
 #include "icons/toolbar/newbreak.xpm"
 #include "icons/toolbar/newdisplay.xpm"
 #include "icons/toolbar/newwatch.xpm"
+#include "icons/toolbar/plot.xpm"
 #include "icons/toolbar/print.xpm"
 #include "icons/toolbar/properties.xpm"
 #include "icons/toolbar/rotate.xpm"
@@ -388,6 +391,7 @@ Pixmap dddsplash(Widget w, const string& color_key)
 #include "icons/toolbar/newbreak.xpmxx"
 #include "icons/toolbar/newdisplay.xpmxx"
 #include "icons/toolbar/newwatch.xpmxx"
+#include "icons/toolbar/plot.xpmxx"
 #include "icons/toolbar/print.xpmxx"
 #include "icons/toolbar/properties.xpmxx"
 #include "icons/toolbar/rotate.xpmxx"
@@ -413,6 +417,7 @@ static char **maketemp_xpm       = 0;
 static char **newbreak_xpm       = 0;
 static char **newdisplay_xpm     = 0;
 static char **newwatch_xpm       = 0;
+static char **plot_xpm           = 0;
 static char **print_xpm          = 0;
 static char **properties_xpm     = 0;
 static char **rotate_xpm         = 0;
@@ -437,6 +442,7 @@ static char **maketemp_xx_xpm    = 0;
 static char **newbreak_xx_xpm    = 0;
 static char **newdisplay_xx_xpm  = 0;
 static char **newwatch_xx_xpm    = 0;
+static char **plot_xx_xpm        = 0;
 static char **print_xx_xpm       = 0;
 static char **properties_xx_xpm  = 0;
 static char **rotate_xx_xpm      = 0;
@@ -814,6 +820,13 @@ void install_icons(Widget shell,
       		        newwatch_xpm, newwatch_xx_xpm,
 		        newwatch_bits, newwatch_xx_bits, 
 		        newwatch_width, newwatch_height,
+			color_key, active_color_key,
+			background, arm_background, win_attr);
+
+    install_button_icon(shell, PLOT_ICON, 
+      		        plot_xpm, plot_xx_xpm,
+		        plot_bits, plot_xx_bits, 
+		        plot_width, plot_height,
 			color_key, active_color_key,
 			background, arm_background, win_attr);
 

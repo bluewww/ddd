@@ -43,6 +43,10 @@
 #include "DispValueT.h"
 #include "StringSA.h"
 
+#include <X11/Intrinsic.h>	// XtAppContext
+
+class PlotAgent;
+
 enum DispValueAlignment {Vertical, Horizontal};
 
 class DispValue {
@@ -63,6 +67,7 @@ class DispValue {
     int _index_base;		// First index
     bool _have_index_base;	// True if INDEX_BASE is valid
     DispValueAlignment _alignment; // Array alignment
+    PlotAgent *_plotter;	// Plotting agent
 
     // initialize from VALUE.  If TYPE is given, use TYPE as type
     // instead of inferring it.
@@ -86,6 +91,22 @@ class DispValue {
     static string add_member_name(const string& base, 
 				  const string& member_name);
 
+    // Plotting stuff
+    void _plot() const;
+    void plot2d() const;
+    void plot3d() const;
+    void add_points(int prefix, bool three_d) const;
+    void add_points() const
+    {
+	add_points(0, false);
+    }
+    void add_points(int prefix) const
+    {
+	add_points(prefix, true);
+    }
+    bool can_plot2d() const;
+    bool can_plot3d() const;
+
 protected:
     int _links;			// #references (>= 1)
 
@@ -93,6 +114,9 @@ protected:
     // Expand/collapse single value
     void _expand()    { myexpanded = true;  }
     void _collapse()  { myexpanded = false; }
+
+    // Plot Agent
+    PlotAgent *plotter() const { return _plotter; }
 
     // True if more sequence members are coming
     bool sequence_pending(const string& value, 
@@ -138,6 +162,11 @@ protected:
 public:
     // Global settings
     static bool expand_repeated_values;
+
+    static string plot_command;
+    static string plot_init_commands;
+    static string plot_settings;
+    static XtAppContext plot_context;
 
     // Parse VALUE into a DispValue tree
     static DispValue *parse(string& value, const string& name)
@@ -210,6 +239,7 @@ public:
     // Array, Struct, List, Sequence ...
     int nchildren() const { return _children.size(); }
     DispValue *child(int i) const { return _children[i]; }
+    int nchildren_with_repeats() const;
 
     // General modifiers
 
@@ -268,6 +298,10 @@ public:
 	const DispValue *dummy = 0;
 	return structurally_equal(source, 0, dummy);
     }
+
+    // Plotting
+    bool can_plot() const;
+    void plot() const;
 
     // Background processing.  PROCESSED is the number of characters
     // processed so far.  If this returns true, abort operation.

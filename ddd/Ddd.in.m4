@@ -226,6 +226,14 @@ Ddd*printCommand: @PRINT_COMMAND@
 Ddd*paperSize: 210mm x 297mm
 
 
+! The `gnuplot' command.
+Ddd*plotCommand: gnuplot -xrm '*line1Color: DATA_COLOR' \
+                 -font '@FONT@' -title 'DDD: Plot Window'
+Ddd*plotInitCommands:
+Ddd*plotSettings: set noborder\n
+
+
+
 ! The `edit' command to invoke an editor on the specific file.
 ! `@LINE@' is replaced by the current line number,
 ! `@FILE@' by the file name.  Default is to invoke $XEDITOR first,

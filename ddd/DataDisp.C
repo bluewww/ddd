@@ -1463,12 +1463,18 @@ void DataDisp::dependentCB(Widget w, XtPointer client_data,
 void DataDisp::displayArgCB(Widget w, XtPointer client_data, 
 			    XtPointer call_data)
 {
+    DispValue *disp_value_arg = selected_value();
+
+    if (disp_value_arg != 0 && disp_value_arg->can_plot())
+    {
+	disp_value_arg->plot();
+	return;
+    }
+
     bool check_pointer = bool((int)(long)client_data);
 
     if (check_pointer)
     {
-	DispValue *disp_value_arg = selected_value();
-
 	if (disp_value_arg != 0 && disp_value_arg->type() == Pointer)
 	{
 	    // Dereference selected pointer
@@ -1977,6 +1983,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 
     Boolean dereference_ok  = False;
     Boolean rotate_ok = False;
+    Boolean plot_ok = False;
 
     if (disp_value_arg != 0)
     {
@@ -1994,6 +2001,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 
 	case Array:
 	    rotate_ok = disp_value_arg->expanded();
+	    plot_ok   = disp_value_arg->can_plot();
 	    break;
 
 	case Sequence:
@@ -2028,7 +2036,11 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     }
     else
 #endif
-    if (dereference_ok)
+    if (plot_ok)
+    {
+	set_label(graph_cmd_area[CmdItms::New].widget, "Plot ()", PLOT_ICON);
+    }
+    else if (dereference_ok)
     {
 	string label("Display " + gdb->dereferenced_expr("()"));
 	set_label(graph_cmd_area[CmdItms::New].widget, label, DISPREF_ICON);

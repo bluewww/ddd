@@ -354,7 +354,7 @@ Box *DispBox::_create_value_box(const DispValue *dv, const DispValue *parent)
 		    if (dv->vertical_aligned())
 		    {
 			// Sub-arrays are aligned vertically;
-			// each sub-array is layed out horizontally
+			// each sub-array is laid out horizontally
 			for (int i = 0; i < count; i++)
 			{
 			    DispValue *c = dv->child(i);
@@ -377,7 +377,7 @@ Box *DispBox::_create_value_box(const DispValue *dv, const DispValue *parent)
 		    else
 		    {
 			// Sub-arrays are aligned horizontally;
-			// each sub-array is layed out vertically
+			// each sub-array is laid out vertically
 			int max_cc = 0;
 			for (int j = 0; j < count; j++)
 			    max_cc = max(max_cc, dv->child(j)->nchildren());

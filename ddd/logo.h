@@ -80,6 +80,7 @@ extern void set_label(Widget w, const MString& new_label,
 #define NEW_BREAK_ICON     "new_break"
 #define NEW_DISPLAY_ICON   "new_display"
 #define NEW_WATCH_ICON     "new_watch"
+#define PLOT_ICON          "plot"
 #define PRINT_ICON         "print"
 #define PROPERTIES_ICON    "properties"
 #define ROTATE_ICON        "rotate"

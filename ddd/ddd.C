@@ -1938,6 +1938,12 @@ int main(int argc, char *argv[])
     DispValue::expand_repeated_values = app_data.expand_repeated_values;
     DispGraph::hide_inactive_displays = app_data.hide_inactive_displays;
 
+    // Global variables: Setup plot settings
+    DispValue::plot_command       = app_data.plot_command;
+    DispValue::plot_init_commands = app_data.plot_init_commands;
+    DispValue::plot_settings      = app_data.plot_settings;
+    DispValue::plot_context       = XtWidgetToApplicationContext(toplevel);
+
     // Global variables: Set delays for button and value tips
     help_button_tip_delay = app_data.button_tip_delay;
     help_value_tip_delay  = app_data.value_tip_delay;

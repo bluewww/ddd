@@ -43,17 +43,21 @@ char DispValue_rcsid[] =
 //-----------------------------------------------------------------------------
 
 #include "DispValue.h"
+
+#include "AppData.h"
+#include "DispNode.h"
 #include "DispValueA.h"
-#include "string-fun.h"
 #include "DynArray.h"
+#include "GDBAgent.h"
+#include "PlotAgent.h"
 #include "assert.h"
 #include "cook.h"
-#include "GDBAgent.h"
 #include "ddd.h"
-#include "question.h"
+#include "fonts.h"
 #include "misc.h"
-#include "DispNode.h"
+#include "question.h"
 #include "regexps.h"
+#include "string-fun.h"
 #include "value-read.h"
 
 #include <ctype.h>
@@ -125,6 +129,7 @@ void DispValue::clear_type_cache()
 bool DispValue::expand_repeated_values = false;
 DispValue *(*DispValue::value_hook)(string& value) = 0;
 
+
 //-----------------------------------------------------------------------------
 // Function defs
 //-----------------------------------------------------------------------------
@@ -140,7 +145,7 @@ DispValue::DispValue (DispValue* parent,
       myfull_name(f_n), print_name(p_n), changed(false), myrepeats(1),
       _value(""), _dereferenced(false), _children(0),
       _index_base(0), _have_index_base(false), _alignment(Horizontal),
-      _links(1)
+      _plotter(0), _links(1)
 {
     init(parent, depth, value, given_type);
 
@@ -1060,6 +1065,171 @@ bool DispValue::structurally_equal(const DispValue *source,
 
     return false;		// Not found
 }
+
+//-----------------------------------------------------------------------------
+// Plotting
+//-----------------------------------------------------------------------------
+
+bool DispValue::can_plot() const
+{
+    return can_plot2d() || can_plot3d();
+}
+
+bool DispValue::can_plot2d() const
+{
+    if (type() != Array)
+	return false;
+
+    for (int i = 0; i < nchildren(); i++)
+    {
+	if (child(i)->type() != Simple)
+	    return false;
+
+	const string& v = child(i)->value();
+	if (v.length() == 0)
+	    return false;	// Empty value
+	if (v[0] != '.' && !isdigit(v[0]))
+	    return false;	// Not a numeric value
+    }
+
+    return true;
+}
+
+bool DispValue::can_plot3d() const
+{
+    if (type() != Array)
+	return false;
+
+    int grandchildren = -1;
+    for (int i = 0; i < nchildren(); i++)
+    {
+	if (!child(i)->can_plot2d())
+	    return false;
+
+	if (grandchildren < 0)
+	    grandchildren = child(i)->nchildren_with_repeats();
+	else if (child(i)->nchildren_with_repeats() != grandchildren)
+	    return false;	// Differing number of grandchildren
+    }
+
+    return true;
+}
+
+int DispValue::nchildren_with_repeats() const
+{
+    int sum = 0;
+    for (int i = 0; i < nchildren(); i++)
+	sum += child(i)->repeats();
+    return sum;
+}
+
+
+string DispValue::plot_command;
+string DispValue::plot_init_commands;
+string DispValue::plot_settings;
+XtAppContext DispValue::plot_context;
+
+void DispValue::plot() const
+{
+    if (plotter() == 0)
+    {
+	string cmd = plot_command;
+	cmd.gsub("@FONT@", make_font(app_data, FixedWidthDDDFont));
+
+	((DispValue *)this)->_plotter = new PlotAgent(plot_context, cmd);
+
+	string init = plot_init_commands;
+	if (init != "" && !init.contains('\n', -1))
+	    init += '\n';
+
+	plotter()->start(init);
+    }
+
+    string settings = plot_settings;
+    if (settings != "" && !settings.contains('\n', -1))
+	settings += '\n';
+
+    plotter()->write(settings.chars(), settings.length());
+
+    _plot();
+
+    plotter()->flush();
+}
+
+void DispValue::_plot() const
+{
+    if (can_plot2d())
+    {
+	plot2d();
+	return;
+    }
+
+    if (can_plot3d())
+    {
+	plot3d();
+	return;
+    }
+
+    // Plot all array children into one window
+    for (int i = 0; i < nchildren(); i++)
+	child(i)->_plot();
+}
+
+void DispValue::plot2d() const
+{
+    plotter()->start_plot(full_name());
+
+    add_points();
+
+    plotter()->end_plot();
+}
+
+void DispValue::add_points(int prefix, bool three_d) const
+{
+    int index;
+    if (_have_index_base)
+	index = _index_base;
+    else
+	index = gdb->default_index_base();
+
+    for (int i = 0; i < nchildren(); i++)
+    {
+	DispValue *c = child(i);
+	for (int j = 0; j < c->repeats(); j++)
+	{
+	    if (three_d)
+	    {
+		plotter()->add_point(prefix, index++, c->value());
+	    }
+	    else
+	    {
+		plotter()->add_point(index++, c->value());
+	    }
+	}
+    }
+}
+
+void DispValue::plot3d() const
+{
+    plotter()->start_plot(full_name());
+
+    int index;
+    if (_have_index_base)
+	index = _index_base;
+    else
+	index = gdb->default_index_base();
+
+    for (int i = 0; i < nchildren(); i++)
+    {
+	DispValue *c = child(i);
+	for (int j = 0; j < c->repeats(); j++)
+	    c->add_points(i);
+    }
+    
+    plotter()->end_plot();
+}
+
+
 
 //-----------------------------------------------------------------------------
 // Background processing
