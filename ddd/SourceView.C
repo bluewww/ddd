@@ -78,6 +78,7 @@ char SourceView_rcsid[] =
 #include "AppData.h"
 #include "ComboBox.h"
 #include "Command.h"
+#include "DataDisp.h"
 #include "Delay.h"
 #include "DestroyCB.h"
 #include "HelpCB.h"
@@ -1539,6 +1540,14 @@ void SourceView::set_source_argCB(Widget text_w,
     XmTextPosition startPos, endPos;
     Boolean have_selection = 
 	XmTextGetSelectionPosition(text_w, &startPos, &endPos);
+
+    if (have_selection && lesstif_version < 1000)
+    {
+	// In LessTif 0.87, the unmanaged DataDisp::graph_selection_w
+	// text widget is not notified that it just has lost the
+	// selection.  Notify explicitly.
+	data_disp->SelectionLostCB();
+    }
 
     if (!have_selection || (app_data.source_editing && startPos == endPos))
     {
@@ -4825,7 +4834,7 @@ void SourceView::endSelectWordAct (Widget text_w, XEvent* e,
     selection_click = false;
 
     XtCallActionProc(text_w, "extend-end", e, params, *num_params);
-    
+
     if (e->type != ButtonPress && e->type != ButtonRelease)
 	return;
 
