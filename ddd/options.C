@@ -455,7 +455,7 @@ void dddToggleUngrabMousePointerCB (Widget, XtPointer, XtPointer call_data)
 
     app_data.ungrab_mouse_pointer = info->set;
     string automatic_ungrabbing_of_mouse_pointer =
-	"Automatic ungrabbing of mouse pointer";
+	"Automatic ungrabbing of mouse pointer ";
 
     if (info->set)
 	set_status(automatic_ungrabbing_of_mouse_pointer + "enabled.");
