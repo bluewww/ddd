@@ -35,6 +35,7 @@
 
 #include "LiterateA.h"
 #include <unistd.h>
+#include <stdlib.h>
 
 const unsigned TTYAgent_NTypes = LiterateAgent_NTypes;
 
@@ -58,6 +59,14 @@ protected:
     virtual int setupChildCommunication();
     virtual int setupParentCommunication();
 
+    // Duplicator -- too complicated yet
+    TTYAgent (const TTYAgent& tty)
+	: LiterateAgent(tty)
+    {
+	// Never used
+	::abort();
+    };
+    
 public:
     // Constructors
     TTYAgent(XtAppContext app_context, string pth,

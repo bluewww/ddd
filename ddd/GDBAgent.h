@@ -124,6 +124,15 @@ private:
     void*           _user_data;
     HandlerList     busy_handlers;
 
+protected:
+    // Copy constructor - too complicated yet
+    GDBAgent (const GDBAgent& gdb)
+	: TTYAgent(gdb)
+    {
+	// Never used
+	::abort();
+    };
+
 public:
     GDBAgent (XtAppContext app_context,
 	      const string& gdb_call,
