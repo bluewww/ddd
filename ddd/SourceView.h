@@ -69,6 +69,7 @@
 #include "CodeCache.h"
 #include "Delay.h"
 #include "StringSA.h"
+#include "MString.h"
 
 //-----------------------------------------------------------------------------
 extern GDBAgent* gdb;
@@ -131,6 +132,8 @@ class SourceView {
     static Widget create_glyph(Widget form_w, String name, 
 			       char *bits, int width, int height);
     static void map_glyph(Widget& w, Position x, Position y);
+    static void unmap_glyph(Widget w);
+
     static void update_title ();
     static void update_glyphs ();
     static void UpdateGlyphsWorkProc(XtPointer, XtIntervalId *);
@@ -500,6 +503,9 @@ public:
 
     // Get the line at POSITION
     static string get_line(string position);
+
+    // Get a help string for GLYPH; return 0 if none
+    static MString help_on_glyph(Widget glyph, bool detailed);
 
     // Get the position of breakpoint NUM
     static string bp_pos(int num);

@@ -3268,38 +3268,17 @@ Ddd*source_form_w.XmPushButton.marginHeight:	   0
 Ddd*source_form_w.XmPushButton.marginWidth:	   0
 Ddd*source_form_w.XmPushButton.borderWidth:	   0
 
+Ddd*code_form_w.XmPushButton.shadowThickness:	   0
+Ddd*code_form_w.XmPushButton.highlightThickness:   0
+Ddd*code_form_w.XmPushButton.marginHeight:	   0
+Ddd*code_form_w.XmPushButton.marginWidth:	   0
+Ddd*code_form_w.XmPushButton.borderWidth:	   0
+
 Ddd*source_form_w.plain_arrow*helpString: \
 @bf Plain arrow\n\
 @rm shows the current execution position in the lowest frame.
 Ddd*source_form_w.plain_arrow*tipString: \
 @rm Current execution position
-
-Ddd*source_form_w.grey_arrow*helpString: \
-@bf Grey arrow\n\
-@rm shows the last execution position in the selected frame.
-Ddd*source_form_w.grey_arrow*tipString: \
-@rm Last execution position in selected frame
-
-Ddd*source_form_w.plain_stop*helpString: \
-@bf Plain stop sign\n\
-@rm A breakpoint (enabled).\n\
-Press the @bf right mouse button @rm to change its properties.
-Ddd*source_form_w.plain_stop*tipString: \
-@rm Breakpoint (enabled)
-
-Ddd*source_form_w.grey_stop*helpString: \
-@bf Grey stop sign\n\
-@rm A breakpoint (disabled).\n\
-Press the @bf right mouse button @rm to change its properties.
-Ddd*source_form_w.grey_stop*tipString: \
-@rm Breakpoint (disabled)
-
-
-Ddd*code_form_w.XmPushButton.shadowThickness:	 0
-Ddd*code_form_w.XmPushButton.highlightThickness: 0
-Ddd*code_form_w.XmPushButton.marginHeight:	 0
-Ddd*code_form_w.XmPushButton.marginWidth:	 0
-Ddd*code_form_w.XmPushButton.borderWidth:	 0
 
 Ddd*code_form_w.plain_arrow*helpString: \
 @bf Plain arrow\n\
@@ -3313,19 +3292,25 @@ Ddd*code_form_w.grey_arrow*helpString: \
 Ddd*code_form_w.grey_arrow*tipString: \
 @rm Last program counter in selected frame
 
-Ddd*code_form_w.plain_stop*helpString: \
+Ddd*source_form_w.grey_arrow*helpString: \
+@bf Grey arrow\n\
+@rm shows the last execution position in the selected frame.
+Ddd*source_form_w.grey_arrow*tipString: \
+@rm Last execution position in selected frame
+
+Ddd*plain_stop.helpString: \
 @bf Plain stop sign\n\
 @rm A breakpoint (enabled).\n\
 Press the @bf right mouse button @rm to change its properties.
-Ddd*code_form_w.plain_stop*tipString: \
-@rm Breakpoint (enabled)
+Ddd*plain_stop.tipString: 
+Ddd*plain_stop.documentationString: 
 
-Ddd*code_form_w.grey_stop*helpString: \
+Ddd*grey_stop.helpString: \
 @bf Grey stop sign\n\
 @rm A breakpoint (disabled).\n\
 Press the @bf right mouse button @rm to change its properties.
-Ddd*code_form_w.grey_stop*tipString: \
-@rm Breakpoint (disabled)
+Ddd*grey_stop.tipString: 
+Ddd*grey_stop.documentationString: 
 
 
 !-----------------------------------------------------------------------------

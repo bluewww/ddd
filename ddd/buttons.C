@@ -373,8 +373,13 @@ static MString gdbDefaultValueText(Widget widget, XEvent *event,
 }
 
 // Get tip string for button widget WIDGET.
-static MString gdbDefaultButtonText(Widget widget, XEvent *, bool)
+static MString gdbDefaultButtonText(Widget widget, XEvent *, 
+				    bool for_documentation)
 {
+    MString bp_help = source_view->help_on_glyph(widget, for_documentation);
+    if (bp_help.xmstring() != 0)
+	return bp_help;
+
     string help_name = gdbHelpName(widget);
     string tip = gdbHelp(help_name);
     if (tip == NO_GDB_ANSWER)
