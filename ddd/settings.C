@@ -1931,38 +1931,56 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	switch (gdb->type())
 	{
 	case GDB:
-	    if (base == "architecture")
+	    options = cached_gdb_question("set " + base);
+	    if((base == "architecture")
+	    || (base == "demangle-style")
+	    || (base == "disassembly-flavor")
+	    || (base == "endian")
+	    || (base == "follow-fork-mode")
+	    || (base == "scheduler-locking"))
 	    {
-		// Possible options are listed upon `info architecture'
-		// and separated by ` '.
-		options = cached_gdb_question("info " + base);
-		options = "auto" + options.from('\n');
-		separator = ' ';
-	    }
-	    else if (base == "endian")
-	    {
-		// Hardwired options
-		options = "auto\nbig endian\nlittle endian\n";
-	    }
-	    else if (base == "follow-fork-mode")
-	    {
-		// Hardwired options
-		options = "parent\nchild\nask\n";
-	    }
-	    else if (base == "disassembly-flavor")
-	    {
-		// Hardwired options
-		options = "intel\natt\n";
-	    }
-	    else if (base == "scheduler-locking")
-	    {
-		// Hardwired options
-		options = "off\non\nstep\n";
-	    }
-	    else
-	    {
-		// Possible options are listed upon `set BASE'
-		options = cached_gdb_question("set " + base);
+		// First look for the reponse in the format of GDB-5.x or
+		// newer. Possible options are listed upon `set endian'
+		// (or whatever) and separated by `,'.
+		if (options.contains("Requires an argument. Valid arguments are"))
+		{
+		    strip_leading(options, "Requires an argument. Valid arguments are");
+		    // remove trailing .\n (if any)
+		    if (options.contains(".\n"))
+		    {
+			options = options.before(".\n");
+		    }
+		    separator = ',';
+		}
+		// OK, so it doesn't match GDB-5.x output; go with 4.x format
+		else if (base == "architecture")
+		{
+		    // Possible options are listed upon `info architecture'
+		    // and separated by ` '.
+		    options = cached_gdb_question("info " + base);
+		    options = "auto" + options.from('\n');
+		    separator = ' ';
+		}
+		else if (base == "disassembly-flavor")
+		{
+		    // Hardwired options
+		    options = "intel\natt\n";
+		}
+		else if (base == "endian")
+		{
+		    // Hardwired options
+		    options = "auto\nbig endian\nlittle endian\n";
+		}
+		else if (base == "follow-fork-mode")
+		{
+		    // Hardwired options
+		    options = "parent\nchild\nask\n";
+		}
+		else if (base == "scheduler-locking")
+		{
+		    // Hardwired options
+		    options = "off\non\nstep\n";
+		}
 	    }
 	    break;
 
