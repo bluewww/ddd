@@ -2195,8 +2195,8 @@ ice_cv_athena_includes=
 ice_cv_athena_includes=no
 for dir in "$x_includes" "${prefix}/include" /usr/include /usr/local/include \
            /usr/include/Motif2.0 /usr/include/Motif1.2 /usr/include/Motif1.1 \
-           /usr/include/X11R6 /usr/include/X11R5 /usr/include/X11R4 \
-           /usr/contrib/X11R6/include \
+           /usr/include/X11R6 /usr/contrib/X11R6/include \
+           /usr/include/X11R5 /usr/include/X11R4 \
            /usr/dt/include /usr/openwin/include \
            /usr/dt/*/include /opt/*/include /usr/include/Motif* \
            /usr/*/include/X11R6 /usr/*/include/X11R5 /usr/*/include/X11R4 \
