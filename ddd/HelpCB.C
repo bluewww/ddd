@@ -1168,8 +1168,8 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
 
 
 // In LessTif, XmTrackingEvent() is somewhat broken - it returns on
-// KeyRelease events, and it does not return the event.  Here's a
-// patched implementation.
+// KeyRelease events, and it does not return the event.  Here's an
+// improved implementation.
 static Widget
 TrackingEvent(Widget widget, Cursor cursor,
 	      Boolean confine_to, XEvent *event_return)
@@ -1270,10 +1270,8 @@ void HelpOnContextCB(Widget widget, XtPointer client_data, XtPointer call_data)
 	    item = XmTrackingEvent(toplevel, cursor, False, &ev);
 #endif
 
-	if (item)
+	if (item != 0)
 	    ImmediateHelpCB(item, client_data, call_data);
-	else
-	    ImmediateHelpCB(toplevel, client_data, call_data);
 
 	// Some Motif versions get confused if this function is invoked
 	// via a menu accelerator; the keyboard remains grabbed. Hence, we
