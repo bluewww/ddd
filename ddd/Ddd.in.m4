@@ -1115,7 +1115,7 @@ Ctrl ~Shift<Key>E:	gdb-end-of-line()	    \n\
 Ctrl<Key>F:		gdb-forward-character()	    \n\
 Ctrl<Key>G:		gdb-control(^C)		    \n\
 Ctrl<Key>H:		delete-previous-character() \n\
-Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl ~Shift<Key>K:	delete-to-end-of-line()	    \n\
 Ctrl<Key>N:		gdb-next-history()	    \n\
 Ctrl<Key>P:		gdb-previous-history()	    \n\
 Ctrl<Key>U: 		gdb-set-line("")	    \n\
@@ -1153,15 +1153,15 @@ None<Key>R13:		gdb-end-of-line()	    \n\
 None<Key>Tab:		gdb-complete-command()	    \n
 
 dnl Basic translations for all other texts and text fields
-define(EMACS_TRANSLATIONS,[#override\n\
+define(EMACS_TRANSLATIONS,[\
 Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
-Ctrl<Key>B:		backward-character()	    \n\
-Ctrl<Key>D:		delete-next-character()	    \n\
+Ctrl<Key>B:		gdb-backward-character()    \n\
+Ctrl<Key>D:		delete-next-character()     \n\
 Ctrl ~Shift<Key>E:	end-of-line()		    \n\
-Ctrl<Key>F:		forward-character()	    \n\
+Ctrl<Key>F:		gdb-forward-character()	    \n\
 Ctrl<Key>H:		delete-previous-character() \n\
 Ctrl<Key>I:		self-insert()               \n\
-Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl ~Shift<Key>K:	delete-to-end-of-line()	    \n\
 Ctrl<Key>U: 		beginning-of-line()	    \
 			delete-to-end-of-line()	    \n\
 Ctrl<Key>W:		delete-previous-word()	    \n\
@@ -1180,8 +1180,8 @@ dnl Emacs + extra pageup/pagedown and newline capabilities
 define(TEXT_TRANSLATIONS, EMACS_TRANSLATIONS[\
 Ctrl<Key>J:		newline()                   \n\
 Ctrl<Key>M:		newline()                   \n\
-Ctrl<Key>N:		process-down()		    \n\
-Ctrl<Key>P:		process-up()                \n\
+Ctrl<Key>N:		gdb-next-history()	    \n\
+Ctrl<Key>P:		gdb-previous-history()      \n\
 Meta<Key>V:		previous-page()		    \n\
 Ctrl<Key>V:		next-page()		    \n\
 ~Shift<Key>Prior:	previous-page()		    \n\
@@ -1198,64 +1198,79 @@ None<Key>Tab:		gdb-complete-tab($1)	    \n])dnl
 dnl
 
 ! Have some of these in argument fields as well
-Ddd*XmTextField.translations: COMPLETE_TRANSLATIONS(print)
+Ddd*XmTextField.translations: \
+#override\n COMPLETE_TRANSLATIONS(print)
 
-Ddd*XmText.translations:      COMPLETE_TEXT_TRANSLATIONS(print)
+Ddd*XmText.translations:      \
+#override\n COMPLETE_TEXT_TRANSLATIONS(print)
 
 ! In breakpoint dialogs, use a `break' completion
-Ddd*new_breakpoint_dialog*XmText.translations:   COMPLETE_TRANSLATIONS(break)
+Ddd*new_breakpoint_dialog*XmText.translations:   \
+#override\n COMPLETE_TRANSLATIONS(break)
 
 Ddd*new_breakpoint_dialog*XmTextField.translations: \
-COMPLETE_TRANSLATIONS(break)
+#override\n COMPLETE_TRANSLATIONS(break)
 
 ! In watchpoint dialogs, use a `print' completion
-Ddd*new_watchpoint_dialog*XmText.translations:   COMPLETE_TRANSLATIONS(print)
+Ddd*new_watchpoint_dialog*XmText.translations:   \
+#override\n COMPLETE_TRANSLATIONS(print)
 
 Ddd*new_watchpoint_dialog*XmTextField.translations: \
-COMPLETE_TRANSLATIONS(print)
+#override\n COMPLETE_TRANSLATIONS(print)
 
 
 ! In file dialogs, use a `file' completion
-Ddd*XmFileSelectionBox*XmText.translations:      COMPLETE_TRANSLATIONS(file)
+Ddd*XmFileSelectionBox*XmText.translations:      \
+#override\n COMPLETE_TRANSLATIONS(file)
 
-Ddd*XmFileSelectionBox*XmTextField.translations: COMPLETE_TRANSLATIONS(file)
+Ddd*XmFileSelectionBox*XmTextField.translations: \
+#override\n COMPLETE_TRANSLATIONS(file)
 
 
 ! In `print', `make', and `cd' dialogs, use a `file' completion, too.
-Ddd*print_popup*XmText.translations: 		 COMPLETE_TRANSLATIONS(file)
+Ddd*print_popup*XmText.translations: 		 \
+#override\n COMPLETE_TRANSLATIONS(file)
 
-Ddd*print_popup*XmTextField.translations:        COMPLETE_TRANSLATIONS(file)
+Ddd*print_popup*XmTextField.translations:        \
+#override\n COMPLETE_TRANSLATIONS(file)
 
-Ddd*make_dialog*XmText.translations: 		 COMPLETE_TRANSLATIONS(file)
+Ddd*make_dialog*XmText.translations: 		 \
+#override\n COMPLETE_TRANSLATIONS(file)
 
-Ddd*make_dialog*XmTextField.translations:        COMPLETE_TRANSLATIONS(file)
+Ddd*make_dialog*XmTextField.translations:        \
+#override\n COMPLETE_TRANSLATIONS(file)
 
-Ddd*cd_dialog*XmText.translations: 		 COMPLETE_TRANSLATIONS(file)
+Ddd*cd_dialog*XmText.translations: 		 \
+#override\n COMPLETE_TRANSLATIONS(file)
 
-Ddd*cd_dialog*XmTextField.translations:        COMPLETE_TRANSLATIONS(file)
+Ddd*cd_dialog*XmTextField.translations:          \
+#override\n COMPLETE_TRANSLATIONS(file)
 
 ! In selection boxes, use `shell' completion.
-Ddd*XmSelectionBox*XmText.translations: 	 COMPLETE_TRANSLATIONS(shell)
+Ddd*XmSelectionBox*XmText.translations: 	 \
+#override\n COMPLETE_TRANSLATIONS(shell)
 
-Ddd*XmSelectionBox*XmTextField.translations:     COMPLETE_TRANSLATIONS(shell)
+Ddd*XmSelectionBox*XmTextField.translations:     \
+#override\n COMPLETE_TRANSLATIONS(shell)
 
 ! In the button editor, we have no completion.
-Ddd*edit_buttons*XmText.translations: 	 	 TEXT_TRANSLATIONS
+Ddd*edit_buttons*XmText.translations: 	 	 \
+#override\n TEXT_TRANSLATIONS
 
 
 
 
 ! The source window is especially tuned for word selection.
-define(SOURCE_TRANSLATIONS,[#override\n\
+define(SOURCE_TRANSLATIONS,[\
 <Btn3Down>:		source-popup-menu() \n\
 ~Ctrl ~Shift<Btn1Down>:	source-start-select-word()  \n\
 ~Ctrl ~Shift<Btn1Up>:	source-end-select-word()    \n\
 Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
-Ctrl<Key>B:		backward-character()	    \n\
+Ctrl<Key>B:		gdb-backward-character()    \n\
 Ctrl ~Shift<Key>E:	end-of-line()		    \n\
-Ctrl<Key>F:		forward-character()	    \n\
-Ctrl<Key>N:		process-down()		    \n\
-Ctrl<Key>P:		process-up()                \n\
+Ctrl<Key>F:		gdb-forward-character()	    \n\
+Ctrl<Key>N:		gdb-next-history()	    \n\
+Ctrl<Key>P:		gdb-previous-history()      \n\
 Ctrl<Key>V:		next-page()		    \
 			source-update-glyphs()	    \n\
 Meta<Key>V:		previous-page()		    \
@@ -1286,14 +1301,14 @@ Shift<Key>Next:		next-page(extend)	    \
 ! If you know of a better way than by using such huge translation tables,
 ! please let me know.
 define(GDB_TRANSLATIONS,[\
-~Meta<Key>osfBackSpace:		     gdb-process()\n\
-~Meta<Key>osfCancel:		     gdb-process()\n\
-~Ctrl ~Meta<Key>BackSpace:	     gdb-process()\n\
-~Meta<Key>Tab:			     gdb-process()\n\
-~Ctrl ~Meta<Key>Return:		     gdb-process()\n\
-~Ctrl ~Meta<Key>Linefeed:	     gdb-process()\n\
-~Ctrl ~Meta<Key>Escape:		     gdb-process()\n\
-~Meta<Key>Delete:		     gdb-process()\n\
+~Meta<Key>osfBackSpace:		     gdb-process(delete-previous-character)\n\
+~Meta<Key>osfCancel:		     gdb-process(process-cancel)\n\
+~Ctrl ~Meta<Key>BackSpace:	     gdb-process(delete-previous-character)\n\
+~Meta<Key>Tab:			     gdb-process(process-tab)\n\
+~Ctrl ~Meta<Key>Return:		     gdb-process(process-return)\n\
+~Ctrl ~Meta<Key>Linefeed:	     gdb-process(process-return)\n\
+~Ctrl ~Meta<Key>Escape:		     gdb-process(process-cancel)\n\
+~Meta<Key>Delete:		     gdb-process(delete-next-character)\n\
 ~Ctrl ~Meta<Key>space:		     gdb-process()\n\
 ~Ctrl ~Meta<Key>exclam:		     gdb-process()\n\
 ~Ctrl ~Meta<Key>quotedbl:	     gdb-process()\n\
@@ -1410,14 +1425,18 @@ define(GDB_TRANSLATIONS,[\
 ~Ctrl ~Meta<Key>KP_Decimal:	     gdb-process()\n\
 ~Ctrl ~Meta<Key>KP_Divide:	     gdb-process()\n\
 Ctrl ~Meta<Key>C:		     gdb-process()\n\
-Ctrl ~Meta<Key>D:		     gdb-process()\n\
-Ctrl ~Meta<Key>U:		     gdb-process()])dnl
+Ctrl ~Meta<Key>D:		     gdb-process(process-delete)\n\
+Ctrl ~Meta ~Shift<Key>K:	     gdb-process(delete-to-end-of-line)\n\
+Ctrl ~Meta<Key>W:		     gdb-process(delete-previous-word)\n\
+Ctrl ~Meta<Key>U:		     gdb-process()\n])dnl
 
-Ddd*source_text_w.translations: SOURCE_TRANSLATIONS GDB_TRANSLATIONS
-Ddd*code_text_w.translations:   SOURCE_TRANSLATIONS GDB_TRANSLATIONS
+Ddd*source_text_w.translations: \
+#override\n SOURCE_TRANSLATIONS GDB_TRANSLATIONS TEXT_TRANSLATIONS
+Ddd*code_text_w.translations:   \
+#override\n SOURCE_TRANSLATIONS GDB_TRANSLATIONS TEXT_TRANSLATIONS
 
 ! Realize glyph drag and drop as well as glyph menu popups
-define(GLYPH_TRANSLATIONS,[#override\n\
+define(GLYPH_TRANSLATIONS,[\
 <Btn1Down>:	  ArmAndActivate() source-drag-glyph()	\n\
 <Btn1Motion>: 	  source-follow-glyph()                 \n\
 ~Shift <Btn1Up>:  source-drop-glyph(move)               \n\
@@ -1430,22 +1449,22 @@ Shift <Btn2Up>:   source-drop-glyph(copy)               \n\
 
 dnl This uses too much space:
 dnl Ddd*source_form_w.XmPushButton.translations: \
-dnl GLYPH_TRANSLATIONS GDB_TRANSLATIONS
+dnl #override\n GLYPH_TRANSLATIONS GDB_TRANSLATIONS
 dnl Ddd*code_form_w.XmPushButton.translations:   \
-dnl GLYPH_TRANSLATIONS GDB_TRANSLATIONS
+dnl #override\n GLYPH_TRANSLATIONS GDB_TRANSLATIONS
 dnl
 dnl Use this instead:
-Ddd*source_form_w.XmPushButton.translations: GLYPH_TRANSLATIONS
-Ddd*code_form_w.XmPushButton.translations:   GLYPH_TRANSLATIONS
+Ddd*source_form_w.XmPushButton.translations: #override\n GLYPH_TRANSLATIONS
+Ddd*code_form_w.XmPushButton.translations:   #override\n GLYPH_TRANSLATIONS
 
 ! This defines the popup menus in the graph window.
-define(GRAPH_TRANSLATIONS,[#override\n\
+define(GRAPH_TRANSLATIONS,[\
 ~Shift<Btn1Down>: graph-select-or-move()\n\
 Shift<Btn1Down>:  graph-toggle-or-move()\n\
 <Btn2Down>:	  graph-toggle-or-move()\n\
 <Btn3Down>:	  graph-select() graph-popup-menu()\n])dnl
 
-Ddd*graph_edit.translations: GRAPH_TRANSLATIONS GDB_TRANSLATIONS
+Ddd*graph_edit.translations: #override\n GRAPH_TRANSLATIONS GDB_TRANSLATIONS
 
 dnl The following would forward all keyboard events to the debugger console,
 dnl but it does not work for Motif 1.1
@@ -1455,16 +1474,16 @@ dnl GDB_TRANSLATIONS
 dnl 
 dnl An alternative would be to define translations for all labels 
 dnl and several buttons.  The following might work:
-dnl define(BUTTON_TRANSLATIONS,[#augment\n\
+dnl define(BUTTON_TRANSLATIONS,[\
 dnl ~Ctrl<Btn1Down>:	Arm()\n\
 dnl ~Ctrl<Btn1Up>:        Activate() Disarm()\n])dnl
 dnl
 dnl Ddd*tool_shell*XmPushButton.translations: \
-dnl BUTTON_TRANSLATIONS GDB_TRANSLATIONS
+dnl #augment\n BUTTON_TRANSLATIONS GDB_TRANSLATIONS
 dnl Ddd*toolbar*XmPushButton.translations: \
-dnl BUTTON_TRANSLATIONS GDB_TRANSLATIONS
+dnl #augment\n BUTTON_TRANSLATIONS GDB_TRANSLATIONS
 dnl Ddd*source.buttons*XmPushButton.translations: \
-dnl BUTTON_TRANSLATIONS GDB_TRANSLATIONS
+dnl #augment\n BUTTON_TRANSLATIONS GDB_TRANSLATIONS
 dnl
 dnl Ddd*XmLabel.translations: \
 dnl #augment\n\
@@ -2279,29 +2298,29 @@ Ddd*commandsMenu.history.documentationString: \
 
 Ddd*commandsMenu.prev.labelString:	        Previous
 Ddd*commandsMenu.prev.mnemonic:		        P
-! *commandsMenu.prev.accelerator:	        Ctrl<Key>P
-Ddd*commandsMenu.prev.acceleratorText:	        Up
+! Ddd*commandsMenu.prev.accelerator:	        Ctrl<Key>P
+Ddd*commandsMenu.prev.acceleratorText:	        Ctrl+P
 Ddd*commandsMenu.prev.documentationString: \
 @rm Get previous command
 
 Ddd*commandsMenu.next.labelString:	        Next
 Ddd*commandsMenu.next.mnemonic:		        N
-! *commandsMenu.next.accelerator:	        Ctrl<Key>N
-Ddd*commandsMenu.next.acceleratorText:	        Down
+! Ddd*commandsMenu.next.accelerator:	        Ctrl<Key>N
+Ddd*commandsMenu.next.acceleratorText:	        Ctrl+N
 Ddd*commandsMenu.next.documentationString: \
 @rm Get next command
 
 Ddd*commandsMenu.complete.labelString:	        Complete
 Ddd*commandsMenu.complete.mnemonic:	        C
-! *commandsMenu.complete.accelerator:	        None<Key>Tab
-! *commandsMenu.complete.accelerator:	        Ctrl<Key>I
+! Ddd*commandsMenu.complete.accelerator:	None<Key>Tab
+! Ddd*commandsMenu.complete.accelerator:	Ctrl<Key>I
 Ddd*commandsMenu.complete.acceleratorText:	Tab
 Ddd*commandsMenu.complete.documentationString: \
 @rm Complete current command
 
 Ddd*commandsMenu.apply.labelString:	        Apply
 Ddd*commandsMenu.apply.mnemonic:	        A
-! *commandsMenu.apply.accelerator:	        None<Key>Return
+! Ddd*commandsMenu.apply.accelerator:	        None<Key>Return
 Ddd*commandsMenu.apply.acceleratorText:         Return
 Ddd*commandsMenu.apply.documentationString: \
 @rm Execute current command
