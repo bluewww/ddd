@@ -1064,7 +1064,13 @@ DataDispCount::DataDispCount(DispGraph *disp_graph)
 	if (dn->selected())
 	{
 	    selected++;
-	    if (!dn->deferred())
+	    if (dn->deferred())
+	    {
+		selected_titles++;
+		if (!dn->is_user_command())
+		    selected_data++;
+	    }
+	    else
 	    {
 		DispValue *dv = dn->selected_value();
 		if (dv == 0)
@@ -5174,8 +5180,12 @@ DataDisp::DataDisp(Widget parent)
     }
 
     if (arg_label != 0)
+    {
 	XtAddCallback(arg_label, XmNactivateCallback,
 		      SelectionLostCB, XtPointer(0));
+	XtAddCallback(arg_label, XmNactivateCallback, 
+		      ClearTextFieldCB, graph_arg->widget());
+    }
 
     // Create (unmanaged) selection widget
     graph_selection_w =
