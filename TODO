@@ -412,7 +412,8 @@ Volunteers for these and other projects are welcome!
 296*Have a `Open Recent...' item in the `Open' menu that lets you open
     up to 9 most recently used executables.
 
-298*If an item is selected in the reference browser, have it copied to 
-    `():'.
+298*If an item is selected in the reference browser, have it copied to `():'.
 
-299 (Insert new project ideas here)
+299*Have a ComboBox for the selection of user-defined commands.
+
+300 (Insert new project ideas here)

@@ -26,8 +26,8 @@ Volunteers for fixing these and other bugs are welcome!
     results in an error message and no new display.  However, the
     expression is entered as an ordinary display.
 
-026 Using DBX with PASCAL or Modula-2, selected array elements are
-    always counted from zero, instead of the starting index of the array.
+026 Using Sun DBX with PASCAL or Modula-2, selected array elements are
+    not counted from the starting index of the array.
 
 041 Starting a multi-window DDD iconified under vtwm and fvwm causes
     trouble with group iconification.
@@ -98,9 +98,8 @@ Volunteers for fixing these and other bugs are welcome!
 155 DBX `dump` output is not understood if local arrays are shown.
     (DBX prints these as `ARRAY')
 
-168 Jens Albrecht <Jens.Albrecht@informatik.uni-erlangen.de>
-    complains that using DBX, the `file' command does not change the
-    source file.
+168 Jens Albrecht <Jens.Albrecht@informatik.uni-erlangen.de> complains 
+    that using DBX, the `file' command does not change the source file.
 
 169 The Manual Browser does not recognize manual (sub-)titles for
     ULTRIX and HP-UX `man' formats (probably problems with others, too)
@@ -137,14 +136,9 @@ Volunteers for fixing these and other bugs are welcome!
 255 In Java programs, the `info set' status display is treated as
     variable list.
 
-262 Ordinarily labeled toolbars don't show up as they should.  Motif
-    bug?
-
 272 (LessTif) The `select' font selection method works only once.
 
 281 In auto deiconify mode, the GDB console uniconifies even if other
     windows are already there.
-
-285*Opening a session results in several GDB prompts.
 
 286 (Insert new bugs here)
