@@ -961,7 +961,7 @@ XtResource ddd_resources[] = {
 	sizeof(String),
 	XtOffsetOf(AppData, www_page),
 	XtRString,
-	XtPointer("http://www.cs.tu-bs.de/softech/ddd/")
+	XtPointer("http://www.fmi.uni-passau.de/st/ddd/")
     },
 
     {

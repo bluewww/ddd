@@ -314,8 +314,9 @@ static void show_configuration(ostream& os, bool version_only)
     string s;
 
     // Version info
-    s = "@(#)" DDD_NAME " " DDD_VERSION " (" DDD_HOST "), "
-	"Copyright (C) 1999 TU Braunschweig.\n";
+    s = string("@(#)" DDD_NAME " " DDD_VERSION " (" DDD_HOST ")\n") +
+	"@(#)Copyright (C) 1995-1999 Technische Universitaet Braunschweig\n" +
+        "@(#)Copyright (C) 1999 Universitaet Passau\n";
     s.gsub(sccs, string(""));
     os << s;
 
@@ -383,7 +384,7 @@ static void show_configuration(ostream& os, bool version_only)
 	", Manual"
 #endif
 #if WITH_BUILTIN_APP_DEFAULTS
-	", App-defaults"
+	", App defaults"
 #endif
 #ifdef XpmFormat
 	", XPM " stringize(XpmFormat) "." stringize(XpmVersion) 

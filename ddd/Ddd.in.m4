@@ -6,6 +6,7 @@ DDD_APP_WARNING
 Ddd*appDefaultsVersion: @VERSION@
 
 ! Copyright (C) 1995-1999 Technische Universitaet Braunschweig, Germany.
+! Copyright (C) 1999 Universitaet Passau, Germany.
 ! Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 ! 
 ! This file is part of DDD.
@@ -299,7 +300,7 @@ Ddd*uncompressCommand: @UNCOMPRESS@
 
 
 ! The DDD WWW page.
-Ddd*wwwPage: http://www.cs.tu-bs.de/softech/ddd/
+Ddd*wwwPage: http://www.fmi.uni-passau.de/st/ddd/
 
 
 ! Command to invoke a WWW browser.  @URL@ stands for the URL to open.
@@ -4774,7 +4775,8 @@ Ddd.main_window.helpString: MAIN_WINDOW_HELP
 
 Ddd*gdb_w.value: \
 DDD @VERSION@ (@host@), by Dorothea L\374tkehaus and Andreas Zeller.\n\
-Copyright \251 1999 Technische Universit\344t Braunschweig, Germany.\n
+Copyright \251 1995-1999 Technische Universit\344t Braunschweig, Germany.\n\
+Copyright \251 1999 Universit\344t Passau, Germany.\n
 
 Ddd*gdb_w.editable:			on
 Ddd*gdb_w.allowResize:			on
@@ -6452,7 +6454,7 @@ Ddd*fatal_dialog*helpString: \
 You should better restart DDD now; DDD may fail again soon.\n\
 \n\
 If you can reproduce this bug, please send a bug report\n\
-to EMAIL([ddd]-bugs@ ips.cs.tu-bs.de), giving a subject like\n\
+to EMAIL([ddd]-bugs@ fmi.uni-passau.de), giving a subject like\n\
 \n\
     DDD @VERSION@ (@host@) gets @CAUSE@\n\
 \n\

@@ -91,11 +91,11 @@ GERMANY
 
 Phone: +49 531 391-7580
 Fax: +49 531 391-8940
-E-mail: @email{@value{ddd}@@ips.cs.tu-bs.de}
+E-mail: @email{@value{ddd}@@fmi.uni-passau.de}
 @end group
 
 @value{DDD} and this manual are available via
-@uref{http://www.cs.tu-bs.de/softech/ddd/, the @value{DDD} WWW page}.
+@uref{http://www.fmi.uni-passau.de/st/ddd/, the @value{DDD} WWW page}.
 @end format
 
 Permission is granted to make and distribute verbatim copies of
@@ -140,7 +140,7 @@ into another language, under the above conditions for modified versions.
 @page
 @tex
 {\parskip=0pt
-\hfill (Send bugs and comments on @value{DDD} to ddd\@ips.cs.tu-bs.de.)\par
+\hfill (Send bugs and comments on @value{DDD} to ddd\@fmi.uni-passau.de.)\par
 \hfill {\it Debugging with @value{DDD}}\par
 \hfill \TeX{}info \texinfoversion\par
 }
@@ -158,10 +158,10 @@ GERMANY @*
 
 Phone: +49 531 391-7580 @*
 Fax: +49 531 391-8940 @*
-E-mail: @email{@value{ddd}@@ips.cs.tu-bs.de} @*
+E-mail: @email{@value{ddd}@@fmi.uni-passau.de} @*
 
 @value{DDD} and this manual are available via @*
-@uref{http://www.cs.tu-bs.de/softech/ddd/, the @value{DDD} WWW page}.
+@uref{http://www.fmi.uni-passau.de/st/ddd/, the @value{DDD} WWW page}.
 
 Permission is granted to make and distribute verbatim copies of
 this manual provided the copyright notice and this permission notice
@@ -340,7 +340,7 @@ The @emph{Info} format is used for browsing on character devices; it
 comes without pictures.  You should have a local copy installed, which
 you can browse via Emacs, the standalone @file{info} program, or from
 DDD via @samp{Help @result{} @value{DDD} Manual}.  Info files can be
-downloaded via @uref{http://www.cs.tu-bs.de/softech/ddd/, the
+downloaded via @uref{http://www.fmi.uni-passau.de/st/ddd/, the
 @value{DDD} WWW page}.
 
 @item
@@ -348,14 +348,14 @@ The @emph{HTML} format is used for browsing on bitmap devices; it
 includes several pictures.  You can view it using a HTML browser,
 typically from a local copy.  Online copies of the most recent
 @value{DDD} manual are available via
-@uref{http://www.cs.tu-bs.de/softech/ddd/, the @value{DDD} WWW page}.
+@uref{http://www.fmi.uni-passau.de/st/ddd/, the @value{DDD} WWW page}.
 You can also download HTML files there to install them locally
 (recommended).
 
 @item
 The @emph{PostScript} format is used for printing on paper; it comes
 with pictures as well.  The PostScript format can be downloaded via
-@uref{http://www.cs.tu-bs.de/softech/ddd/, the @value{DDD} WWW page}.
+@uref{http://www.fmi.uni-passau.de/st/ddd/, the @value{DDD} WWW page}.
 @end itemize
 
 
@@ -476,7 +476,7 @@ GERMANY
 
 @cindex Guestbook
 You may also leave a message in the @emph{@value{DDD} Guestbook}. It is
-accessible via @uref{http://www.cs.tu-bs.de/softech/ddd/, the
+accessible via @uref{http://www.fmi.uni-passau.de/st/ddd/, the
 @value{DDD} WWW page}.
 
 
@@ -8201,7 +8201,7 @@ browser; if this fails, it starts a new @code{netscape-4.0} process.
 
 @defvr Resource wwwPage (class WWWPage)
 The @value{DDD} WWW page.  Value:
-@uref{http://www.cs.tu-bs.de/softech/ddd/}
+@uref{http://www.fmi.uni-passau.de/st/ddd/}
 @end defvr
 
 

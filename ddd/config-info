@@ -39,7 +39,7 @@ for file in "$@"; do
     test -f $file && break
   fi
 done
-userinfo=`cat $file || echo "the DDD development team <ddd@ips.cs.tu-bs.de>"`
+userinfo=`cat $file || echo "the DDD development team <ddd@fmi.uni-passau.de>"`
 userinfo=`echo "$userinfo." | 
 sed ':a
 \/......................................................../q

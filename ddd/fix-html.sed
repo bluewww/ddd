@@ -4,7 +4,7 @@
 # Set up a style
 \!</HEAD!i\
 <LINK REL=StyleSheet HREF="style.css" TYPE="text/css" MEDIA=screen>\
-<LINK REV="made" HREF="mailto:ddd@ips.cs.tu-bs.de">
+<LINK REV="made" HREF="mailto:ddd@fmi.uni-passau.de">
 
 
 # Set up a suitable background
@@ -20,7 +20,7 @@ s!<BODY>!<BODY BACKGROUND="PICS/dddback.gif" BGCOLOR="#f5f5f5">!
 s!<P><HR><P>!!
 
 # Add the WWW page to the `go to' line
-s!^<p>\(Go to .*\)\.$!\1, <A HREF="http://www.cs.tu-bs.de/softech/ddd/">DDD home page</A>!
+s!^<p>\(Go to .*\)\.$!\1, <A HREF="http://www.fmi.uni-passau.de/st/ddd/">DDD home page</A>!
 
 # Add a logo before first header
 \!<H1>!i\
