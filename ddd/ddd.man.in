@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998\-09\-01" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998\-09\-19" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -1323,8 +1323,16 @@ and
   \fBgraph enable display \fIdisplays...\fR
 .sp
 .br
-at the debugger prompt.  \fIdisplays...\fR is wither a space-separated
-list of display numbers to disable or enable or a single display name.
+at the debugger prompt.  \fIdisplays...\fR is either
+.br
+.IP \(bu 2
+a space-separated list of display numbers to disable or enable, or
+.br
+.IP \(bu 2
+a single display name.  If you specify a display by name, all displays 
+with this name will be affected.
+.br
+.PP
 .\"
 .\"
 .SS "Rotating Arrays"
@@ -1604,8 +1612,15 @@ As an alternative, you can also type
   \fBgraph undisplay \fIdisplays...\fR
 .sp
 .br
-at the debugger prompt, where \fIdisplays...\fR is a space-separated
-list of display numbers to delete or a single display name.
+at the debugger prompt.  \fIdisplays...\fR is either
+.br
+.IP \(bu 2
+a space-separated list of display numbers to delete, or
+.br
+.IP \(bu 2
+a single display name.  If you specify a display by name, all displays
+with this name will be deleted.
+.br
 .PP
 If you are using stacked windows, deleting the last display from the
 data window also automatically closes the data window.  (You can

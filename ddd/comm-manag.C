@@ -1806,19 +1806,21 @@ static void command_completed(void *data)
 // Process DDD `graph' commands (graph display, graph refresh).
 //-----------------------------------------------------------------------------
 
-// Fetch display numbers from COMMAND into NUMBERS
-static bool read_displays(string command, IntArray& numbers, bool verbose)
+// Fetch display numbers from ARG into NUMBERS
+static bool read_displays(string arg, IntArray& numbers, bool verbose)
 {
-    while (has_nr(command))
-	numbers += atoi(read_nr_str(command));
+    while (has_nr(arg))
+	numbers += atoi(read_nr_str(arg));
 
-    strip_space(command);
-    if (command != "")
+    strip_space(arg);
+    if (arg != "")
     {
-	int nr = data_disp->display_number(command, verbose);
+	int nr = data_disp->display_number(arg, verbose);
 	if (nr == 0)
 	    return false;	// No such display
-	numbers += nr;
+
+	// Get all displays with name ARG
+	data_disp->get_display_numbers(arg, numbers);
     }
 
     return true;		// Ok

@@ -583,8 +583,9 @@ public:
     // True if the selection was lost
     static void SelectionLostCB(Widget = 0, XtPointer = 0, XtPointer = 0);
 
-    // Get number of display NAME
+    // Get number(s) of display NAME
     static int display_number(const string& name, bool verbose = false);
+    static void get_display_numbers(const string& name, IntArray& numbers);
 
     // Refresh titles after change in APP_DATA
     static void refresh_titles();

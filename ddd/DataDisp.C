@@ -2805,6 +2805,17 @@ int DataDisp::display_number(const string& name, bool verbose)
     return nr;
 }
 
+void DataDisp::get_display_numbers(const string& name, IntArray& numbers)
+{
+    MapRef ref;
+    for (DispNode* dn = disp_graph->first(ref); dn != 0;
+	 dn = disp_graph->next(ref))
+    {
+	if (dn->name() == name)
+	    numbers += dn->disp_nr();
+    }
+}
+
 void DataDisp::new_displaySQ (string display_expression,
 			      string scope, BoxPoint *p,
 			      string depends_on,
