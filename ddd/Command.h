@@ -80,10 +80,8 @@ struct Command
     bool verbose;		// Flag: issue answer in GDB console?
     bool prompt;		// Flag: issue prompt in GDB console?
     bool check;			// Flag: add extra commands to get GDB state?
-    bool undo_source;		// Flag: individual undo command?
+    bool start_undo;		// Flag: individual undo command?
     int priority;		// Priority (highest get executed first)
-
-    static bool undo_source_default; // Default for undo source
 
 private:
     static void clear_origin(Widget w, XtPointer client_data, 
@@ -96,7 +94,7 @@ public:
 	    bool v = false, bool c = false, int p = COMMAND_PRIORITY_SYSTEM)
 	: command(cmd), origin(w), callback(cb), extra_callback(0), data(d), 
 	  echo(v), verbose(v), prompt(v), check(c), 
-	  undo_source(!CommandGroup::active || CommandGroup::first_command), 
+	  start_undo(!CommandGroup::active || CommandGroup::first_command), 
 	  priority(p)
     {
 	add_destroy_callback();
@@ -106,7 +104,7 @@ public:
     Command(const string& cmd, Widget w = 0)
 	: command(cmd), origin(w), callback(0), extra_callback(0), data(0), 
 	  echo(true), verbose(true), prompt(true), check(true), 
-	  undo_source(!CommandGroup::active || CommandGroup::first_command),
+	  start_undo(!CommandGroup::active || CommandGroup::first_command),
 	  priority(COMMAND_PRIORITY_USER)
     {
 	add_destroy_callback();
@@ -117,7 +115,7 @@ public:
 	: command(c.command), origin(c.origin), callback(c.callback),
 	  extra_callback(c.extra_callback), data(c.data), 
 	  echo(c.echo), verbose(c.verbose), prompt(c.prompt),
-	  check(c.check), undo_source(c.undo_source), priority(c.priority)
+	  check(c.check), start_undo(c.start_undo), priority(c.priority)
     {
 	add_destroy_callback();
     }
@@ -142,7 +140,7 @@ public:
 	    verbose        = c.verbose;
 	    prompt         = c.prompt;
 	    check          = c.check;
-	    undo_source    = c.undo_source;
+	    start_undo     = c.start_undo;
 	    priority       = c.priority;
 
 	    add_destroy_callback();
@@ -161,7 +159,7 @@ public:
 	    && verbose == c.verbose
 	    && prompt == c.prompt
 	    && check == c.check
-	    && undo_source == c.undo_source
+	    && start_undo == c.start_undo
 	    && priority == c.priority;
     }
 };
