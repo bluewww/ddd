@@ -412,6 +412,7 @@ static XrmOptionDescRec options[] = {
 
 { "--font",                 XtNdefaultFont,          XrmoptionSepArg, NULL },
 { "-font",                  XtNdefaultFont,          XrmoptionSepArg, NULL },
+{ "-fn",                    XtNdefaultFont,          XrmoptionSepArg, NULL },
 
 { "--fontsize",             XtCFontSize,             XrmoptionSepArg, NULL },
 { "-fontsize",              XtCFontSize,             XrmoptionSepArg, NULL },
@@ -751,9 +752,9 @@ static MMDesc command_menu[] =
     { "prev",     MMPush, { gdbPrevCB }},
     { "next",     MMPush, { gdbNextCB }},
     MMSep,
-    { "isearch_prev", MMPush, { WhenReady, gdbISearchPrevCB }},
-    { "isearch_next", MMPush, { WhenReady, gdbISearchNextCB }},
-    { "isearch_exit", MMPush, { WhenReady, gdbISearchExitCB }},
+    { "isearch_prev", MMPush, { gdbISearchPrevCB }},
+    { "isearch_next", MMPush, { gdbISearchNextCB }},
+    { "isearch_exit", MMPush, { gdbISearchExitCB }},
     MMSep,
     { "complete", MMPush, { WhenReady, gdbCompleteCB }},
     { "apply",    MMPush, { WhenReady, gdbApplyCB }},
