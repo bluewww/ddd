@@ -219,18 +219,111 @@ Ddd*questionTimeout: 10
 ! - `Yes'      : Answer current GDB prompt
 ! - `No'       : Answer current GDB prompt
 
-! The command window buttons.
+! The command window buttons (none: no buttons)
+Ddd*commandButtons:
+! The following setting was effective in DDD 1.4d and earlier:
+! Ddd*commandButtons: \
+! 	Yes:No:interrupt^C
+! Here is a very extensive setting:
 ! Ddd*commandButtons: \
 ! 	Yes:No:run:Clear:Prev:Next:Apply:interrupt^C
-Ddd*commandButtons:
-! Ddd*commandButtons: \
-	Yes:No:interrupt^C
 
-! The source window buttons.
+! The source window buttons (none: no buttons)
+Ddd*sourceButtons:
+! The following setting was effective in DDD 1.4d and earlier:
 ! Ddd*sourceButtons:   	    \
 ! run:step:next:stepi:nexti:cont:finish:kill:\
 ! up:down:Back:Forward:Edit:interrupt^C
-Ddd*sourceButtons:
+
+! The command tool buttons.
+Ddd*toolButtons: \
+run:interrupt^C:step:stepi:next:nexti:cont:finish:\
+up:down:Back:Forward:Edit:kill
+
+! Command tool button placement
+Ddd*tool_buttons.fractionBase:			8
+Ddd*tool_buttons*topAttachment:      		XmATTACH_POSITION
+Ddd*tool_buttons*bottomAttachment:   		XmATTACH_POSITION
+Ddd*tool_buttons*leftAttachment:     		XmATTACH_POSITION
+Ddd*tool_buttons*rightAttachment:    		XmATTACH_POSITION
+
+Ddd*tool_buttons.run.topPosition: 		0
+Ddd*tool_buttons.run.bottomPosition:       	1
+Ddd*tool_buttons.run.leftPosition: 		0
+Ddd*tool_buttons.run.rightPosition:       	8
+
+Ddd*tool_buttons.interrupt.topPosition: 	1
+Ddd*tool_buttons.interrupt.bottomPosition:      2
+Ddd*tool_buttons.interrupt.leftPosition: 	0
+Ddd*tool_buttons.interrupt.rightPosition:       8
+
+Ddd*tool_buttons.step.topPosition: 		2
+Ddd*tool_buttons.step.bottomPosition:      	3
+Ddd*tool_buttons.step.leftPosition: 		0
+Ddd*tool_buttons.step.rightPosition:       	4
+
+Ddd*tool_buttons.stepi.topPosition: 		2
+Ddd*tool_buttons.stepi.bottomPosition:      	3
+Ddd*tool_buttons.stepi.leftPosition: 		4
+Ddd*tool_buttons.stepi.rightPosition:       	8
+
+Ddd*tool_buttons.next.topPosition: 		3
+Ddd*tool_buttons.next.bottomPosition:      	4
+Ddd*tool_buttons.next.leftPosition: 		0
+Ddd*tool_buttons.next.rightPosition:       	4
+
+Ddd*tool_buttons.nexti.topPosition: 		3
+Ddd*tool_buttons.nexti.bottomPosition:      	4
+Ddd*tool_buttons.nexti.leftPosition: 		4
+Ddd*tool_buttons.nexti.rightPosition:       	8
+
+Ddd*tool_buttons.cont.topPosition: 		4
+Ddd*tool_buttons.cont.bottomPosition:      	5
+Ddd*tool_buttons.cont.leftPosition: 		0
+Ddd*tool_buttons.cont.rightPosition:       	4
+
+Ddd*tool_buttons.finish.topPosition: 		4
+Ddd*tool_buttons.finish.bottomPosition:      	5
+Ddd*tool_buttons.finish.leftPosition: 		4
+Ddd*tool_buttons.finish.rightPosition:       	8
+
+Ddd*tool_buttons.up.topPosition: 		5
+Ddd*tool_buttons.up.bottomPosition:      	6
+Ddd*tool_buttons.up.leftPosition: 		0
+Ddd*tool_buttons.up.rightPosition:       	4
+
+Ddd*tool_buttons.down.topPosition: 		5
+Ddd*tool_buttons.down.bottomPosition:      	6
+Ddd*tool_buttons.down.leftPosition: 		4
+Ddd*tool_buttons.down.rightPosition:       	8
+
+Ddd*tool_buttons.Back.topPosition: 		6
+Ddd*tool_buttons.Back.bottomPosition:      	7
+Ddd*tool_buttons.Back.leftPosition: 		0
+Ddd*tool_buttons.Back.rightPosition:       	4
+
+Ddd*tool_buttons.Forward.topPosition: 		6
+Ddd*tool_buttons.Forward.bottomPosition:      	7
+Ddd*tool_buttons.Forward.leftPosition: 		4
+Ddd*tool_buttons.Forward.rightPosition:       	8
+
+Ddd*tool_buttons.Edit.topPosition: 		7
+Ddd*tool_buttons.Edit.bottomPosition:      	8
+Ddd*tool_buttons.Edit.leftPosition: 		0
+Ddd*tool_buttons.Edit.rightPosition:       	4
+
+Ddd*tool_buttons.kill.topPosition: 		7
+Ddd*tool_buttons.kill.bottomPosition:      	8
+Ddd*tool_buttons.kill.leftPosition: 		4
+Ddd*tool_buttons.kill.rightPosition:       	8
+
+! Command tool fonts
+Ddd*tool_buttons.run.fontList: \
+	-*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*
+Ddd*tool_buttons.interrupt.fontList:  \
+	-*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*
+Ddd*tool_buttons*fontList:  \
+	-*-helvetica-medium-r-*-*-10-*-*-*-*-*-*-*
 
 ! Some special labels
 Ddd*run.labelString:       Run
@@ -370,6 +463,10 @@ Ddd*keyboardFocusPolicy:	POINTER
 ! X Warnings
 ! Do we wish to suppress X warnings?
 Ddd*suppressWarnings:		false
+
+! A little less highlighting
+Ddd*highlightThickness:      	1
+
 
 
 !-----------------------------------------------------------------------------
@@ -1555,13 +1652,12 @@ the visible part of the data window.
 
 Ddd*graph_popup.selectAll.labelString:	Select All
 Ddd*graph_popup.refresh.labelString:	Refresh
-Ddd*graph_popup.new_arg.labelString:	New ()
 Ddd*graph_popup.new.labelString:	New Display...
 
 Ddd*node_popup.dereference.labelString:	Display *
-Ddd*node_popup.dependent.labelString:	Display
 Ddd*node_popup.detail.labelString:	Show Detail
 Ddd*node_popup.rotate.labelString: 	Rotate
+Ddd*node_popup.dependent.labelString:	New Display...
 Ddd*node_popup.delete.labelString:	Delete Display
 Ddd*node_popup.disable.labelString:	Disable Display
 
@@ -1590,7 +1686,7 @@ Ddd*graph_cmd_w.graph_cmd_area*packing:	        XmPACK_COLUMN
 Ddd*graph_cmd_w.graph_cmd_area*entryAlignment:	XmALIGNMENT_CENTER
 Ddd*graph_cmd_w.graph_cmd_area*alignment:	XmALIGNMENT_CENTER
 
-Ddd*graph_cmd_w.graph_cmd_area*dependent.labelString:	Display
+Ddd*graph_cmd_w.graph_cmd_area*dependent.labelString:	New
 Ddd*graph_cmd_w.graph_cmd_area*dereference.labelString: Display *
 Ddd*graph_cmd_w.graph_cmd_area*detail.labelString:	Show
 Ddd*graph_cmd_w.graph_cmd_area*rotate.labelString:	Rotate
@@ -1600,7 +1696,7 @@ Ddd*graph_cmd_w.graph_cmd_area*disable.labelString:	Disable
 ! Ddd*graph_cmd_w.graph_cmd_area*marginBottom:    1
 
 Ddd*graph_cmd_w.graph_cmd_area*dependent.contextHelpString:\
-@bf Display@rm\n\
+@bf New@rm\n\
 Create a new display dependent on the selected display part.
 
 Ddd*graph_cmd_w.graph_cmd_area*dereference.contextHelpString:\
@@ -2327,7 +2423,7 @@ Ddd*edit_displays_dialog*contextHelpString:       \
 \n\
 Select displays on the left; operations on the right.\n\
 \n\
-@tt \267 @bf Display @rm - create a new display.\n\
+@tt \267 @bf New Display @rm - create a new display.\n\
 @tt \267 @bf Display * @rm - dereference the selected display.\n\
 @tt \267 @bf Show Detail @rm - show the details of all selected displays.\n\
 @tt \267 @bf Hide Detail @rm - hide the details of all selected displays.\n\
@@ -2383,11 +2479,10 @@ Ddd*dependent_display_dialog.selectionLabelString:	\
 @rm Modify dependent display expression:
 
 Ddd*dependent_display_dialog*contextHelpString:	\
-\
 @rm Please modify the display expression displayed in the argument field.\n\
 The current value of the expression is shown each time the program stops.
 
-Ddd*edit_displays_dialog*buttons*dependent.labelString:     Display
+Ddd*edit_displays_dialog*buttons*dependent.labelString:     New Display
 Ddd*edit_displays_dialog*buttons*dependent.contextHelpString:  \
 @rm Create a data display dependent on the selected data display,\n\
 or a new data display if none is selected.

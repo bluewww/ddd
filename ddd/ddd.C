@@ -147,6 +147,8 @@ char ddd_rcsid[] =
 #include <Xm/RowColumn.h>	// XmCreateWorkArea()
 #include <Xm/Protocols.h>
 #include <Xm/SelectioB.h>
+#include <Xm/DialogS.h>
+#include <Xm/Form.h>
 #include <X11/Shell.h>
 
 #ifdef HAVE_X11_XMU_EDITRES_H
@@ -1291,7 +1293,6 @@ int main(int argc, char *argv[])
 		   XmNworkWindow, paned_work_w,
 		   NULL);
 
-
     // All widgets are created at this point.
     set_status("Welcome to " DDD_NAME " " DDD_VERSION "!");
 
@@ -1423,6 +1424,20 @@ DDD_NAME " is free software and you are welcome to distribute copies of it\n"
     // single-processor machines since DDD is idle when the debugger
     // starts.
     wait_until_mapped(command_shell);
+
+    // Create command tool
+    Widget tool_shell_parent = 
+	source_view_shell ? source_view_shell : command_shell;
+    arg = 0;
+    Widget tool_shell = 
+	verify(XmCreateDialogShell(tool_shell_parent, 
+				   "tool_shell", args, arg));
+    arg = 0;
+    Widget tool_buttons = 
+	verify(XmCreateForm(tool_shell, "tool_buttons", args, arg));
+    add_buttons(tool_buttons, app_data.tool_buttons);
+    XtManageChild(tool_buttons);
+    XtManageChild(tool_shell);
 
     // Setup TTY interface
     if (app_data.tty_mode)
