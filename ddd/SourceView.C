@@ -2026,11 +2026,12 @@ SourceView::SourceView (XtAppContext app_context,
 
     // Create source code window
     create_text(parent, "source", source_form_w, source_text_w);
+    XtManageChild(source_form_w);
 
     // Create machine code window
     create_text(parent, "code", code_form_w, code_text_w);
-    if (!disassemble)
-	XtUnmanageChild(code_form_w);
+    if (disassemble)
+	XtManageChild(code_form_w);
 
     // Create breakpoint editor
     arg = 0;
@@ -2282,7 +2283,6 @@ void SourceView::create_text(Widget parent,
     string text_name = base + "_text_w";
     text = verify(XmCreateScrolledText(form, text_name, args, arg));
     XtManageChild(text);
-    XtManageChild(form);
 
     XtAddCallback(text, XmNgainPrimaryCallback, 
 		  set_source_argCB, XtPointer(false));

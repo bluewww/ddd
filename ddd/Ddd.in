@@ -2774,19 +2774,15 @@ Ddd*status_lines.spacing:		0
 
 Ddd*source_text_w.columns:		88
 Ddd*source_text_w.rows:			24
-Ddd*source_view_shell*source_text_w.rows:	24
 
 Ddd*code_text_w.columns:		88
 Ddd*code_text_w.rows:			2
-Ddd*source_view_shell*code_text_w.rows:	2
 
 Ddd*source_form_w.width:		660
 Ddd*source_form_w.height:		320
-Ddd*source_view_shell*source_form_w.height: 320
 
 Ddd*code_form_w.width:			660
 Ddd*code_form_w.height:			50
-Ddd*source_view_shell*code_form_w.height: 50
 
 
 Ddd*source_text_w.editable:		false

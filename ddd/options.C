@@ -49,6 +49,8 @@ char options_rcsid[] =
 #include "settings.h"
 
 #include <Xm/Xm.h>
+#include <Xm/Text.h>
+#include <Xm/TextF.h>
 #include <Xm/ToggleB.h>
 #include <Xm/Scale.h>
 #include <Xm/DialogS.h>
@@ -672,7 +674,7 @@ string string_app_value(const string& name, string value)
     return DDD_CLASS_NAME "*" + name + ": " + value;
 }
 
-string widget_value(Widget w, String name)
+static string widget_value(Widget w, String name)
 {
     String value = 0;
     XtVaGetValues(w, 
@@ -683,6 +685,34 @@ string widget_value(Widget w, String name)
 	value = (String)XtNewString("");
 
     return string_app_value(string(XtName(w)) + "." + name, value);
+}
+
+static string widget_size(Widget w)
+{
+    Dimension width, height;
+    XtVaGetValues(w, XmNwidth, &width, XmNheight, &height, NULL);
+
+    string s;
+    s += int_app_value(string(XtName(w)) + "." + XmNwidth, width);
+    s += '\n';
+    s += int_app_value(string(XtName(w)) + "." + XmNheight, height);
+
+    if (XmIsText(w) || XmIsTextField(w))
+    {
+	short columns;
+	XtVaGetValues(w, XmNcolumns, &columns, NULL);
+	s += '\n';
+	s += int_app_value(string(XtName(w)) + "." + XmNcolumns, columns);
+    }
+    if (XmIsText(w))
+    {
+	short rows;
+	XtVaGetValues(w, XmNrows, &rows, NULL);
+	s += '\n';
+	s += int_app_value(string(XtName(w)) + "." + XmNrows, rows);
+    }
+
+    return s;
 }
 
 string options_file()
@@ -865,13 +895,53 @@ void save_options(Widget origin)
 		  NULL);
     if (grid_width == grid_height)
     {
-	os << int_app_value(XtCGridSize, grid_width) << "\n";
+	os << int_app_value(string(XtName(data_disp->graph_edit)) + "." 
+			    + XtCGridSize, grid_width) << "\n";
     }
     else
     {
-	os << int_app_value(XtNgridWidth,  grid_width) << "\n";
-	os << int_app_value(XtNgridHeight, grid_height) << "\n";
+	os << int_app_value(string(XtName(data_disp->graph_edit)) + "." 
+			    + XtNgridWidth,  grid_width) << "\n";
+	os << int_app_value(string(XtName(data_disp->graph_edit)) + "." 
+			    + XtNgridHeight, grid_height) << "\n";
     }
+
+    // Some widget sizes.
+
+    // We must enable all PanedWindow children in order to get the
+    // correct sizes.  Ugly hack.
+    popups_disabled  = true;
+    bool had_data    = have_data_window();
+    bool had_source  = have_source_window();
+    bool had_code    = XtIsManaged(source_view->code_form());
+    bool had_command = have_command_window();
+
+    gdbOpenDataWindowCB(gdb_w, 0, 0);
+    gdbOpenSourceWindowCB(gdb_w, 0, 0);
+    XtManageChild(source_view->code_form());
+    gdbOpenCommandWindowCB(gdb_w, 0, 0);
+
+    os << widget_size(data_disp->graph_edit)           << "\n";
+    Widget porthole_w = XtParent(data_disp->graph_edit);
+    if (porthole_w != data_disp->graph_form())
+	os << widget_size(porthole_w) << "\n";
+    os << widget_size(data_disp->graph_form())         << "\n";
+    os << widget_size(source_view->source())           << "\n";
+    os << widget_size(source_view->source_form())      << "\n";
+    os << widget_size(source_view->code())             << "\n";
+    os << widget_size(source_view->code_form())        << "\n";
+    os << widget_size(gdb_w)                           << "\n";
+    os << widget_size(XtParent(gdb_w))                 << "\n";
+
+    if (!had_data)
+	gdbCloseDataWindowCB(gdb_w, 0, 0);
+    if (!had_source)
+	gdbCloseSourceWindowCB(gdb_w, 0, 0);
+    if (!had_code)
+	XtUnmanageChild(source_view->code_form());
+    if (!had_command)
+	gdbCloseCommandWindowCB(gdb_w, 0, 0);
+    popups_disabled = false;
 
     save_option_state();
     save_settings_state();

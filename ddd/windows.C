@@ -69,6 +69,9 @@ static WindowState data_disp_shell_state   = PoppedDown;
 static WindowState source_view_shell_state = PoppedDown;
 static WindowState tool_shell_state        = PoppedDown;
 
+// Disable popups
+bool popups_disabled = false;
+
 // Place command tool in upper right edge of REF
 static void recenter_tool_shell(Widget ref);
 
@@ -91,7 +94,7 @@ static void RecenterToolShellCB(XtPointer, XtIntervalId *)
 // Popup initial shell
 void initial_popup_shell(Widget w)
 {
-    if (w == 0)
+    if (w == 0 || popups_disabled)
 	return;
 
     // assert(XtIsTopLevelShell(w));
@@ -150,7 +153,7 @@ void initial_popup_shell(Widget w)
 
 void popup_shell(Widget w)
 {
-    if (w == 0)
+    if (w == 0 || popups_disabled)
 	return;
 
     if (w == tool_shell)
@@ -174,7 +177,7 @@ void popup_shell(Widget w)
 
 void popdown_shell(Widget w)
 {
-    if (w == 0)
+    if (w == 0 || popups_disabled)
 	return;
 
     if (w == command_shell)
@@ -191,7 +194,7 @@ void popdown_shell(Widget w)
 
 void iconify_shell(Widget w)
 {
-    if (w == 0)
+    if (w == 0 || popups_disabled)
 	return;
 
     if (w == command_shell)
@@ -209,7 +212,7 @@ void iconify_shell(Widget w)
 
 void popup_tty(Widget shell)
 {
-    if (exec_tty_window())
+    if (exec_tty_window() && !popups_disabled)
     {
 	// Deiconify window
 	XMapWindow(XtDisplay(shell), exec_tty_window());
@@ -225,7 +228,7 @@ void popup_tty(Widget shell)
 
 void iconify_tty(Widget shell)
 {
-    if (exec_tty_window())
+    if (exec_tty_window() && !popups_disabled)
     {
 	XIconifyWindow(XtDisplay(shell), exec_tty_window(),
 		       XScreenNumberOfScreen(XtScreen(shell)));

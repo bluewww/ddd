@@ -52,11 +52,11 @@ DDD 2.1 [in beta test; scheduled for May, 1997]
         to avoid confusion with the `Break At' button.
       + The `Quit' menu item is now named `Abort', to avoid confusion
         with the `Exit' menu item (which issues a `quit' command).
-    - Some key bindings have been re-assigned.  Generally, the CTRL
-      key is now associated with debugger commands, and the ALT key is
-      associated with debugger settings.  Hence, Ctrl+M invokes `make'
-      and Ctrl+Q invokes `quit', while Alt+M enables or disables the
-      machine code window.  `Run' is now on Ctrl+X (for eXecute).
+    - Some key bindings have been re-assigned.  Generally, `Ctrl'
+      invokes debugger or editing commands, and `Alt' changes debugger
+      settings.  Hence, Ctrl+M invokes `make' and Ctrl+Q invokes
+      `quit', while Alt+M enables or disables the machine code window.
+      `Run' is now on Ctrl+X (for eXecute).
     - DBX settings can now be viewed and changed at run time, using
       the `Settings' panel.
     - In GDB, there is a `status displays' panel for displaying 
@@ -79,6 +79,7 @@ DDD 2.1 [in beta test; scheduled for May, 1997]
       prompt `():'.
     - In the source argument field `()', pressing RETURN activates
       the `Lookup ()' button.
+    - `Save Options' saves window sizes for later DDD settings.
     - Unnecessary redisplays have been significantly reduced, causing
       much less flickering.
     - If you specify some overloaded or ambiguous identifier, DDD now
