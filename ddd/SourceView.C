@@ -748,6 +748,11 @@ bool SourceView::file_matches(const string& file1, const string& file2)
     return file1 == file2 || full_path(file1) == full_path(file2);
 }
 
+bool SourceView::base_matches(const string& file1, const string& file2)
+{
+    return string(basename(file1.chars())) == string(basename(file2.chars()));
+}
+
 // Check if BP occurs in the current source text
 bool SourceView::bp_matches(BreakPoint *bp)
 {
@@ -1103,7 +1108,7 @@ String SourceView::read_indented(string& file_name, long& length)
 
     if (text == 0 || length == 0)
     {
-	string source_name = basename((const char *)file_name);
+	string source_name = basename(file_name.chars());
 	text = read_from_gdb(source_name, length);
 
 	if (text != 0 && text[0] != '\0')
@@ -1327,14 +1332,15 @@ void SourceView::read_file (string file_name,
     SetInsertionPosition(source_text_w, initial_pos, true);
 
     current_file_name = file_name;
+
+    // Refresh title
     update_title();
 
-    // Breakpoint-Anzeige aktualisieren
+    // Refresh breakpoints
     static Assoc<int, VarArray<int> > empty_bps;
     bps_in_line = empty_bps;
     static StringArray empty_addresses;
     bp_addresses = empty_addresses;
-
     refresh_bp_disp();
 
     XtManageChild(source_text_w);
@@ -1360,6 +1366,7 @@ void SourceView::read_file (string file_name,
 		       XmHIGHLIGHT_NORMAL);
     last_top = last_pos = last_start_highlight = last_end_highlight = 0;
     last_start_secondary_highlight = last_end_secondary_highlight = 0;
+    update_glyphs();
 
     if (source_view_shell || app_data.tty_mode)
     {
@@ -1384,8 +1391,8 @@ void SourceView::update_title()
     string title   = string(DDD_NAME) + ": " + current_file_name;
     String title_s = title;
 
-    string icon   = string(DDD_NAME) + ": " 
-	+ basename((const char *)current_file_name);
+    string icon   = 
+	string(DDD_NAME) + ": " + basename(current_file_name.chars());
     String icon_s = icon;
 
     XtVaSetValues(toplevel_w,
@@ -2065,6 +2072,9 @@ SourceView::SourceView (XtAppContext app_context,
 // ***************************************************************************
 //
 
+// Set current execution position, based on the GDB position info
+// POSITION; no arg means clear current position.
+// STOPPED indicates that the program just stopped.
 void SourceView::show_execution_position (string position, bool stopped)
 {
     if (stopped)
@@ -2876,8 +2886,12 @@ string SourceView::current_source_name()
 	    if (ans != NO_GDB_ANSWER)
 	    {
 		ans = ans.before('\n');
-		ans = ans.after(' ', -1);
-		source_name_cache[current_file_name] = ans;
+		ans = ans.before(' ', -1);
+
+		// For security, we request that source and current
+		// file have the same basename.
+		if (base_matches(ans, current_file_name))
+		    source_name_cache[current_file_name] = ans;
 	    }
 	}
 
@@ -2892,10 +2906,10 @@ string SourceView::current_source_name()
     case XDB:
 	break;			// FIXME
     }
-    
+
     // In case this does not work, use the current base name.
     if (source == "")
-	source = basename((const char *)current_file_name);
+	source = basename(current_file_name.chars());
 
     return source;
 }
@@ -4565,6 +4579,7 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *)
     Boolean pos_displayed = False;
 
     if (display_glyphs
+	&& base_matches(current_file_name, last_execution_file)
 	&& pos_of_line != 0
 	&& last_execution_line > 0
 	&& last_execution_line <= line_count)
@@ -4768,6 +4783,8 @@ void SourceView::set_display_glyphs(bool set)
 {
     if (display_glyphs != set)
     {
+	StatusDelay delay(set ? "Enabling glyphs" : "Disabling glyphs");
+
 	if (XtIsRealized(source_text_w))
 	{
 	    display_glyphs = false;	
