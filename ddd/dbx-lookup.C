@@ -60,7 +60,7 @@ string dbx_lookup(const string& func_name)
     {
     case GDB:
     case DBX:
-	reply = gdb_question("func " + func_name);
+	reply = gdb_question("list " + func_name);
 	break;
 
     case XDB:
@@ -81,34 +81,7 @@ string dbx_lookup(const string& func_name)
     case GDB:
     case DBX:
 	{
-	    static regex RXcolons(": *[0-9][0-9]*");
-	    if (reply.contains(RXcolons))
-	    {
-		// DEC DBX issues line number immediately after `func'
-		line = reply.after(":");
-		line = itostring(atoi(line));
-	    }
-	    else
-	    {
-		if (reply != "")
-		{
-		    post_gdb_message(reply);
-		    return "";
-		}
-
-		if (gdb->has_line_command())
-		{
-		    line = gdb_question("line");
-		}
-		else
-		{
-		    line = gdb_question("list");
-
-		    // DBX 1.0 lists 10 lines; the current line is the 5th one.
-		    line = itostring(atoi(line) + 5);
-		}
-	    }
-
+	    line = itostring(line_of_listing(reply));
 	    file = gdb_question("file");
 	    strip_final_blanks(file);
 	}
@@ -133,6 +106,9 @@ string dbx_lookup(const string& func_name)
 	}
     }
 
+    if (atoi(line) == 0)
+	return "";
+
     string pos = file + ":" + line;
 
     pos_cache[func_name] = pos;
@@ -143,4 +119,47 @@ void clear_dbx_lookup_cache()
 {
     static Assoc<string, string> empty;
     pos_cache = empty;
+}
+
+int line_of_listing(string& listing)
+{
+    string message;
+    while (listing != "" && atoi(listing) == 0)
+    {
+	message += listing.through('\n');
+	listing = listing.after('\n');
+    }
+
+    if (message != "")
+	post_gdb_message(message);
+
+    // DEC DBX issues a `>' before the current line, which is quite useful
+    int line;
+    int idx = listing.index("\n>");
+    if (idx >= 0)
+    {
+	string current_line = listing.after(idx);
+	current_line = current_line.after('>');
+	line = atoi(current_line);
+    }
+    else if (listing.contains('>', 0))
+    {
+	string current_line = listing.after('>');
+	line = atoi(current_line);
+    }
+    else
+    {
+	line = atoi(listing);
+	if (line == 0)
+	{
+	    // Weird.  No source?
+	}
+	else
+	{
+	    // The position we are looking for is in the middle
+	    line += (listing.freq('\n') + 1) / 2 - 1;
+	}
+    }
+
+    return line;
 }

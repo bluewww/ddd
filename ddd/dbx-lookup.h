@@ -39,5 +39,8 @@
 string dbx_lookup(const string& func_name);
 void clear_dbx_lookup_cache();
 
+// Find line# in listing
+int line_of_listing(string& listing);
+
 #endif // _DDD_dbx_lookup_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
