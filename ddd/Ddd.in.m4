@@ -5210,7 +5210,7 @@ or restarting DDD.\n\
 Click on LBL(Exit) to exit DDD.\n\
 Click on LBL(Restart) to restart DDD (and @GDB@) from scratch.
 
-Ddd*exited_dialog_popup.title: DDD: Death on Arrival
+Ddd*exited_dialog_popup.title: DDD: Debugger hat fertig
 ! Ddd*exited_dialog.messageString:   \
 ! @rm @GDB@ exited.
 Ddd*exited_dialog*okLabelString:	   Exit
@@ -5590,7 +5590,7 @@ Ddd*print_warning*helpString:	\
 @rm This is the output of your printing command.\n\
 For more details, consult your system documentation.
 
-Ddd*grab_warning_popup.title: DDD: Frozen Pointer
+Ddd*grab_warning_popup.title: DDD: When your Heart is not Open
 Ddd*grab_warning*helpString: \
 @rm DDD has detected a frozen (grabbed) mouse pointer.\n\
 \n\
