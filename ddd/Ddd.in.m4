@@ -3118,9 +3118,9 @@ Ddd*preferences*data*helpString:	\
 @rm These are the EMPH(Data Preferences).\n\
 \n\
 ITEM Using LBL(Show), you can define the appearance of the data:\n\
-SUBITEM LBL(Edge hints) enables handles for multi-line and arc edges.\n\
-SUBITEM LBL(Edge annotations) enables named edges.\n\
-SUBITEM LBL(Titles) enables titles of dependent displays.\n\
+    SUBITEM LBL(Edge hints) enables handles for multi-line and arc edges.\n\
+    SUBITEM LBL(Edge annotations) enables named edges.\n\
+    SUBITEM LBL(Titles) enables titles of dependent displays.\n\
 ITEM If LBL(Detect aliases) is set, DDD detects displays with the same\n\
     physical address and suppresses all aliases except the one that was\n\
     least recently changed.  Useful for examining shared data structures.\n\
