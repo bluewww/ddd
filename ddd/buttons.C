@@ -260,7 +260,6 @@ void add_buttons(Widget buttons, const string& button_list)
 	if (name.contains("..."))
 	{
 	    name = name.before("...");
-	    command = name + ' ';
 	}
 	else if (name.contains('^'))
 	{
