@@ -69,6 +69,7 @@ char DataDisp_rcsid[] =
 #include "shorten.h"
 #include "charsets.h"
 #include "DispGraph.h"
+#include "AliasGE.h"
 
 // Motif includes
 #include <Xm/MessageB.h>
@@ -529,7 +530,9 @@ void DataDisp::dependentCB(Widget w, XtPointer client_data,
 
     DispNode *disp_node_arg   = selected_node();
     DispValue *disp_value_arg = selected_value();
-    if (disp_node_arg == 0 || disp_value_arg == 0)
+    if (disp_node_arg == 0 
+	|| disp_value_arg == 0
+	|| disp_node_arg->nodeptr()->hidden())
     {
 	newCB(w, client_data, call_data);
 	return;
@@ -1349,6 +1352,17 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     }
 }
 
+static int alias_display_nr(GraphNode *node)
+{
+    if (!node->isHint())
+	return 0;
+    AliasGraphEdge *edge = ptr_cast(AliasGraphEdge, node->firstTo());
+    if (edge == 0)
+	return 0;
+
+    return edge->disp_nr();
+}
+
 
 // Update graph editor selection after a change in the display editor
 void DataDisp::UpdateGraphEditorSelectionCB(Widget, XtPointer, XtPointer)
@@ -1380,6 +1394,24 @@ void DataDisp::UpdateGraphEditorSelectionCB(Widget, XtPointer, XtPointer)
 	    dn->selected() = select;
 	    graphEditRedrawNode(graph_edit, dn->nodeptr());
 	}
+
+	if (dn->nodeptr()->hidden())
+	{
+	    // Synchronize hint nodes with this alias node
+	    for (GraphNode *node = disp_graph->firstNode();
+		 node != 0;
+		 node = disp_graph->nextNode(node))
+	    {
+		if (alias_display_nr(node) == display_nr)
+		{
+		    if (node->selected() != dn->selected())
+		    {
+			node->selected() = dn->selected();
+			graphEditRedrawNode(graph_edit, node);
+		    }
+		}
+	    }
+	}
     }
 
     refresh_args();
@@ -1389,6 +1421,26 @@ void DataDisp::UpdateGraphEditorSelectionCB(Widget, XtPointer, XtPointer)
 // Update display editor selection after a change in the graph editor
 void DataDisp::UpdateDisplayEditorSelectionCB(Widget, XtPointer, XtPointer)
 {
+    // Synchronize alias nodes with hint nodes
+    for (GraphNode *node = disp_graph->firstNode();
+	 node != 0;
+	 node = disp_graph->nextNode(node))
+    {
+	int nr = alias_display_nr(node);
+	if (nr > 0)
+	{
+	    DispNode *dn = disp_graph->get(nr);
+	    if (dn != 0)
+	    {
+		if (node->selected() != dn->selected())
+		{
+		    dn->selected() = node->selected();
+		    graphEditRedrawNode(graph_edit, dn->nodeptr());
+		}
+	    }
+	}
+    }
+
     refresh_args();
     refresh_display_list();
 }
