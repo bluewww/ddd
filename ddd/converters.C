@@ -371,12 +371,6 @@ static String locateBitmap(Display *display, String basename)
 			     &subst, 1,    // %B = basename
 			     NULL);        // no checking for valid bitmap
 }
-    
-    
-
-
-
-
 
 
 // Convert String to XmString, using `@' for font specs:
@@ -449,20 +443,21 @@ Boolean CvtStringToAlignment(Display*   display,
                              XrmValue*  toVal,
                              XtPointer* )
 {
-    String theAlignment = downcase((String)fromVal->addr);
- 
-    if      (theAlignment=="beginning")
+    string theAlignment = downcase((String)fromVal->addr);
+    if (theAlignment.contains("xm", 0))
+	theAlignment = theAlignment.after("xm");
+    if (theAlignment.contains("alignment_", 0))
+	theAlignment = theAlignment.after("alignment_");
+
+    if      (theAlignment == "beginning")
 	done(unsigned char, XmALIGNMENT_BEGINNING);
-    else if (theAlignment=="center")
+    else if (theAlignment == "center")
 	done(unsigned char, XmALIGNMENT_CENTER);
-    else if (theAlignment=="end")
+    else if (theAlignment == "end")
 	done(unsigned char, XmALIGNMENT_END);
-    else
-    {
-	XtDisplayStringConversionWarning(display, fromVal->addr, 
-					 "Alignment");
-	return False;
-    }
+
+    XtDisplayStringConversionWarning(display, fromVal->addr, XmCAlignment);
+    return False;
 }
 
 
@@ -476,16 +471,18 @@ Boolean CvtStringToOrientation(Display*         display,
                                XrmValue*        toVal,
                                XtPointer*       )
 {
-    String theOrientation = downcase((String)fromVal->addr);
+    string theOrientation = downcase((String)fromVal->addr);
+    if (theOrientation.contains("xm", 0))
+	theOrientation = theOrientation.after("xm");
   
-    if      (theOrientation=="vertical")
+    if      (theOrientation == "vertical")
 	done(unsigned char, XmVERTICAL);
-    else if (theOrientation=="horizontal")
+    else if (theOrientation == "horizontal")
 	done(unsigned char, XmHORIZONTAL);
     else
     {
 	XtDisplayStringConversionWarning(display, fromVal->addr, 
-					 "Orientation");
+					 XmCOrientation);
 	return False;
     }
 }
@@ -501,22 +498,51 @@ Boolean CvtStringToPacking(Display*     display,
                            XrmValue*    toVal,
                            XtPointer*   )
 {
-    String thePacking = downcase((String)fromVal->addr);
+    string thePacking = downcase((String)fromVal->addr);
+    if (thePacking.contains("xm", 0))
+	thePacking = thePacking.after("xm");
+    if (thePacking.contains("pack_", 0))
+	thePacking = thePacking.after("pack_");
   
-    if      (thePacking=="tight")
+    if      (thePacking == "tight")
 	done(unsigned char, XmPACK_TIGHT);
-    else if (thePacking=="column")
+    else if (thePacking == "column")
 	done(unsigned char, XmPACK_COLUMN);
-    else if (thePacking=="none")
+    else if (thePacking == "none")
 	done(unsigned char, XmPACK_NONE);
-    else
-    {
-	XtDisplayStringConversionWarning(display, fromVal->addr, 
-					 "Packing");
-	return False;
-    }
+
+
+    XtDisplayStringConversionWarning(display, fromVal->addr, XmRPacking);
+    return False;
 }
 
+// Convert the strings 'pixels', '100th_millimeters' and so on
+// to unit types.
+Boolean CvtStringToUnitType(Display*     display, 
+			    XrmValue*    ,
+			    Cardinal*    , 
+			    XrmValue*    fromVal,
+			    XrmValue*    toVal,
+			    XtPointer*   )
+{
+    string theType = downcase((String)fromVal->addr);
+    if (theType.contains("xm", 0))
+	theType = theType.after("xm");
+  
+    if      (theType == "pixels")
+	done(unsigned char, XmPIXELS);
+    else if (theType == "100th_millimeters")
+	done(unsigned char, Xm100TH_MILLIMETERS);
+    else if (theType == "1000th_inches")
+	done(unsigned char, Xm1000TH_INCHES);
+    else if (theType == "100th_points")
+	done(unsigned char, Xm100TH_POINTS);
+    else if (theType == "100th_font_units")
+	done(unsigned char, Xm100TH_FONT_UNITS);
+
+    XtDisplayStringConversionWarning(display, fromVal->addr, XmRUnitType);
+    return False;
+}
 
 
 // register all converters
@@ -557,6 +583,11 @@ void registerOwnConverters()
 
     // string -> xmstring
     XtSetTypeConverter(XmRString, XmRXmString, CvtStringToXmString,
+		       NULL, 0, XtCacheAll, 
+		       XtDestructor(NULL));
+
+    // string -> unitType
+    XtSetTypeConverter(XmRString, XmRUnitType, CvtStringToUnitType,
 		       NULL, 0, XtCacheAll, 
 		       XtDestructor(NULL));
 
