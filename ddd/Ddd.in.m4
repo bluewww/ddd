@@ -1264,7 +1264,7 @@ Ddd*manual_help*findForward.documentationString:	\
 @rm Search the next occurrence of LBL(()) in the manual
 
 Ddd*manual_help*helpString: \
-@rm This is the EMPH(DDD Manual Browser).\n\
+@rm This is the EMPH([DDD] Manual Browser).\n\
 \n\
 To view a specific section, select its title from the index at the top.\n\
 \n\
@@ -1293,7 +1293,7 @@ Ddd*text_help*textSW.width:		600
 Ddd*text_help*textSW.height:		320
 
 Ddd*text_help*helpString: \
-@rm This is the EMPH(DDD License,) a GNU General Public License.\n\
+@rm This is the EMPH([DDD] License,) a GNU General Public License.\n\
 \n\
 It describes the terms and conditions for copying, distributing\n\
 and modifying DDD.\n\
@@ -3109,7 +3109,7 @@ Ddd*grey_stop.documentationString:
 !-----------------------------------------------------------------------------
 
 Ddd.helpString:				\
-@rm This is the EMPH(DDD Main Window).\n\
+@rm This is the EMPH([DDD] Main Window).\n\
 \n\
 From top to bottom, it shows the following areas:\n\
 \n\
@@ -3980,14 +3980,14 @@ Ddd*fatal_dialog*helpString: \
 You should better save your work immediately; DDD may fail again soon.\n\
 \n\
 If you can reproduce this bug, please send a bug report\n\
-to EMAIL(ddd-bugs@ ips.cs.tu-bs.de), giving a subject like\n\
+to EMAIL([ddd]-bugs@ ips.cs.tu-bs.de), giving a subject like\n\
 \n\
     DDD @VERSION@ (@host@) gets @CAUSE@\n\
 \n\
 To enable us to fix the bug, you should include the following information:\n\
 ITEM What you were doing to get this message.  Report all the facts.\n\
 ITEM The DDD configuration.  \
-Run KBD(ddd --configuration) to get it.\n\
+Run KBD([ddd] --configuration) to get it.\n\
 ITEM Invoke DDD with the SAMP(--trace) option, and if you can\n\
     reproduce the bug, include the trace output in your bug report.\n\
 Please read also the section ``Reporting Bugs'' in the DDD manual.\n\
@@ -4161,7 +4161,7 @@ You can tell DDD to not use the KBD(tty) command, but to use explicit\n\
 redirection instead, using shell redirection operators.\n\
 To do so, include a line\n\
 \n\
-CODE(Ddd*useTTYCommand: false)\n\
+CODE([Ddd]*useTTYCommand: false)\n\
 \n\
 in your FILE(~/.dddinit) file and restart DDD.
 
@@ -4237,7 +4237,7 @@ Ddd*expired_warning.title: DDD: DDD Expired
 Ddd*expired_warning*helpString: \
 @rm DDD @VERSION@ has been superseded by a newer DDD version.\n\
 DDD @VERSION@ should no longer be used.\n\
-To get the most recent DDD version, see the LBL(Help) | LBL(DDD WWW Page).
+To get the most recent DDD version, see the LBL(Help) | LBL([DDD] WWW Page).
 
 
 !-----------------------------------------------------------------------------

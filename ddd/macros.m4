@@ -113,8 +113,8 @@ dnl Constants
 dnl ---------
 dnl
 dnl LBL_FIND_PREV and LBL_FIND_NEXT are the labels used for the Find buttons
-define([LBL_FIND_PREV], [Find@small<< @bf()@rm ])dnl
-define([LBL_FIND_NEXT], [Find@small>> @bf()@rm ])dnl
+define([LBL_FIND_PREV], [@bf Find@small<< @bf()@rm ])dnl
+define([LBL_FIND_NEXT], [@bf Find@small>> @bf()@rm ])dnl
 dnl
 dnl POSTSCRIPT includes a (TM) symbol
 define([POSTSCRIPT], [PostScript@symbol \344 @rm ])dnl
