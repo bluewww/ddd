@@ -172,7 +172,7 @@ void handle_obscure_commands(string& cmd, Widget origin)
 	}
 	else
 	{
-	    cmd = gdb->echo_command("The dungeon shakes violently!\n");
+	    cmd = gdb->echo_command("The dungeon shakes violently! \n");
 
 	    static int dungeon_collapsing = 0;
 	    if (dungeon_collapsing++ == 0)

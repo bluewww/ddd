@@ -844,7 +844,7 @@ string GDBAgent::echo_command(string text) const
     switch (type())
     {
     case GDB:
-	return "echo " + text;
+	return "echo " + cook(text);
 
     case DBX:
 	return print_command() + " " + quote(text);
