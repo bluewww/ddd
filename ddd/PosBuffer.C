@@ -480,7 +480,12 @@ void PosBuffer::filter_gdb(string& answer)
 	    // Try to construct position from `at FILE:POS' (vxworks)
 	    string file = answer.after(" at ");
 	    file = file.before('\n');
-	    if (file != "")
+
+	    if (file.contains(rxaddress, 0))
+	    {
+		// This is `at ADDRESS' (GDB output)
+	    }
+	    else if (file.contains(":") && !file.contains(": "))
 	    {
 		pos_buffer = file;
 		already_read = PosComplete;
