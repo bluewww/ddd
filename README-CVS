@@ -55,9 +55,9 @@ To checkout and build DDD from the public CVS archive, follow these steps:
    Messages about missing `.in' or `ChangeLog' files can be safely ignored.
 
    Note: You may require special tools to setup the distribution,
-   including `flex', `bison' and `makeinfo'.  If `CVSMake' fails at
-   some point, install the necessary package and simply run `CVSMake'
-   again.
+   including `automake', `aclocal', `flex', `bison' and `makeinfo'.
+   If `CVSMake' fails at some point, install the necessary package and
+   simply run `CVSMake' again.
 
    Note: running `CVSMake' takes some time.
 
