@@ -97,8 +97,11 @@ C	(.|\n)*
 /* `virtual table', in all variants */
 V	v(irtual{W})?t(a)?bl(e)?
 
-/* A Java identifier */
-J       [A-Za-z][A-Za-z0-9.]*
+/* A `standard' identifier */
+I       [A-Za-z_$][A-Za-z0-9_$]*
+
+/* A Java class identifier */
+J       [A-Za-z_$][A-Za-z0-9_$.]*
 
 
 /* This lexer is quite huge.  Sun LEX wants some extra sizes. */
@@ -275,7 +278,7 @@ J       [A-Za-z][A-Za-z0-9.]*
 <S048>{P}		 		return &rxgdb_disp_nr;
 <S049>{C}((class|interface)[(]{J}[)]|[(]{J}:{P}[)]) return &rxjdbpos;
 <S050>{_}graph{W}{C}			return &rxgraph_cmd;
-<S051>[A-Za-z_$][A-Za-z0-9_$]*		return &rxidentifier;
+<S051>{I}				return &rxidentifier;
 <S052>[[]-?{D}]{C}			return &rxindex;
 <S053>-?{D}		 		return &rxint;
 <S054>([a-zA-Z]+{W}[a-zA-Z]+{C}|{C}[a-zA-Z]+{W}[a-zA-Z]+(\.|>)?)\n?  return &rxinvalid_value;
@@ -337,6 +340,6 @@ J       [A-Za-z][A-Za-z0-9.]*
 <S110>{C}Standard{W}input:{W}END{C} 	return &rxxdb;
 <S111>[^ \t]*:.*:{w}{P}[: ]{C} 	        return &rxxdbpos;
 <S112>[<]repeats{W}{P}{W}times[>]       return &rxrepeats;
-<S113>[-a-zA-Z0-9_>.]+                  return &rxchain;
+<S113>{I}(([.]|->){I})*			return &rxchain;
 <*>.|\n				        return 0;  // Anything else
 %%

@@ -477,11 +477,15 @@ static MString gdbDefaultValueText(Widget widget, XEvent *event,
     if (bp_help.xmstring() == 0 && expr == "")
 	return MString(0, true); // Nothing pointed at
 
+#if RUNTIME_REGEX
+    static regex rxchain("[-a-zA-Z0-9_>.]+");
+#endif
+
     // Don't invoke the debugger if EXPR is not an identifier.
     // Otherwise, we might point at `i++' or `f()' and have weird side
     // effects.
     MString clear = for_documentation ? rm(" ") : MString(0, true);
-    if (bp_help.xmstring() == 0 && !expr.matches(rxidentifier))
+    if (bp_help.xmstring() == 0 && !expr.matches(rxchain))
 	return clear;
 
     // Change EVENT such that the popup tip will remain at the same

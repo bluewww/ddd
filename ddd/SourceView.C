@@ -2760,7 +2760,7 @@ bool SourceView::get_line_of_pos (Widget   w,
 }
 
 // ***************************************************************************
-// Find word around POS.  STARTPOS is the first character, ENDPOS
+// Find word around POS.  STARTPOS is the first character, ENDPOS + 1
 // is the last character in the word.
 void SourceView::find_word_bounds (Widget text_w,
 				   const XmTextPosition pos,
@@ -2783,14 +2783,37 @@ void SourceView::find_word_bounds (Widget text_w,
 	return;
     }
 
-    while (startpos > 0 
-	   && startpos < XmTextPosition(text.length())
-	   && isid(text[startpos - 1]))
-	startpos--;
-
-    while (endpos < XmTextPosition(text.length())
-	   && isid(text[endpos]))
+    // Find end of word
+    while (endpos < XmTextPosition(text.length()) && isid(text[endpos]))
 	endpos++;
+
+    // Find start of word
+    if (startpos >= XmTextPosition(text.length()))
+	startpos = XmTextPosition(text.length() - 1);
+
+    while (startpos > 0)
+    {
+	while (startpos > 0 && isid(text[startpos - 1]))
+	    startpos--;
+
+	if (startpos > 2 && 
+	    isid(text[startpos - 2]) &&
+	    text[startpos - 1] == '.')
+	{
+	    // Select A.B as a whole
+	    startpos -= 1;
+	}
+	else if (startpos > 3 && 
+		 isid(text[startpos - 3]) &&
+		 text[startpos - 2] == '-' &&
+		 text[startpos - 1] == '>')
+	{
+	    // Select A->B as a whole
+	    startpos -= 2;
+	}
+	else
+	    break;
+    }
 }
 
 // Get the word at event position

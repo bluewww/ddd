@@ -19,6 +19,8 @@ DDD 2.3 [in development]
     - Tear-off menus are supported (and enabled by default).
     - Conditional breakpoints and breakpoints with ignore counts are now
       indicated by special breakpoint symbols.
+    - Value tips and selections now work for struct members, too: you
+      can point at `A.B' or `A->B' and get the current value.
 
     Bug fixes:
     - Using Sun DBX 3.x, data displays are no longer cluttered by DBX
