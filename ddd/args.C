@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
 // Argument Dialog
 
-// Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of DDD.
@@ -45,6 +45,7 @@ char args_rcsid[] =
 #include "file.h"
 #include "mydialogs.h"
 #include "options.h"
+#include "cook.h"
 #include "regexps.h"
 #include "string-fun.h"
 #include "verify.h"
@@ -56,6 +57,7 @@ char args_rcsid[] =
 #include <Xm/Text.h>
 
 #include <ctype.h>
+
 
 //-----------------------------------------------------------------------------
 // Run, Make, and CD Dialogs
@@ -121,10 +123,10 @@ void add_to_arguments(string line)
 	add_argument(args, run_arguments, last_run_argument, 
 		     run_arguments_updated);
     }
-    else if (gdb->type() == PERL && line.contains("@ARGV", 0))
+    else if (gdb->type() == PERL && line.contains("@ARGV = ", 0))
     {
-	// @ARGV = ($ARGV[0], 'arg1', 'arg2', )
-	string args = line.after(", '");
+	// @ARGV = ('arg1', 'arg2', )
+	string args = line.after("('");
 	args.gsub("', '", " ");
 	args = args.before("', )");
 
@@ -149,6 +151,14 @@ void add_to_arguments(string line)
 	add_argument(args, make_arguments, last_make_argument, 
 		     make_arguments_updated);
     }
+    else if (gdb->type() == PERL && line.contains("system 'make", 0))
+    {
+	string args = line.after("make");
+	args = args.after(rxwhite);
+	args = args.before("'");
+	add_argument(args, make_arguments, last_make_argument, 
+		     make_arguments_updated);
+    }
     else if (is_cd_cmd(line))
     {
 	string dir = line.after("cd");
@@ -157,6 +167,13 @@ void add_to_arguments(string line)
 	if (dir.contains('/', 0))
 	    add_argument(dir, cd_arguments, last_cd_argument, 
 			 cd_arguments_updated);
+    }
+    else if (gdb->type() == PERL && line.contains("chdir '", 0))
+    {
+	string dir = line.after("'");
+	dir = dir.before("'");
+	add_argument(dir, cd_arguments, last_cd_argument, 
+		     cd_arguments_updated);
     }
     else if (gdb->type() == PERL && is_file_cmd(line, gdb))
     {
@@ -391,7 +408,11 @@ static void gdbChangeDirectoryDCB(Widget, XtPointer, XtPointer)
     string args(_args);
     XtFree(_args);
 
-    gdb_command("cd " + source_view->full_path(args));
+    string path = source_view->full_path(args);
+    if (gdb->type() == PERL)
+	gdb_command("chdir " + quote(path, '\''));
+    else
+	gdb_command("cd " + path);
 }
 
 // Create `ChangeDirectory' dialog
