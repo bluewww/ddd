@@ -5,7 +5,8 @@
 #else /* not __GNUC__ */
 #ifdef sparc
 #include <alloca.h>
-extern void *__builtin_alloca();  /* Stupid include file doesn't declare it */
+/* Stupid include file doesn't declare it */
+extern PTR __builtin_alloca();
 #else
 #ifdef __STDC__
 PTR alloca (size_t);
