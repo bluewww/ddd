@@ -590,8 +590,32 @@ int TTYAgent::setupChildCommunication()
 #ifdef ONLCR
 	settings.c_oflag &= ~ONLCR;     // Do not map NL to CR-NL on output
 #endif
+#ifdef VDSUSP
+	settings.c_cc[VSUSP] = '\031';  // Set DELAYED SUSPEND to ^Y
+#endif
+#ifdef VEOF
+	settings.c_cc[VEOF] = '\004';   // Set EOF character to ^D
+#endif
+#ifdef VERASE
+	settings.c_cc[VERASE] = '\010'; // Set ERASE character to ^H
+#endif
 #ifdef VINTR
-	settings.c_cc[VINTR] = '\003';  // Set interrupt to ^C
+	settings.c_cc[VINTR] = '\003';  // Set INTERRUPT to ^C
+#endif
+#ifdef VKILL
+	settings.c_cc[VKILL] = '\025';  // Set KILL character to ^U
+#endif
+#ifdef VQUIT
+	settings.c_cc[VQUIT] = '\034';  // Set QUIT to ^\  
+#endif
+#ifdef VSUSP
+	settings.c_cc[VSUSP] = '\032';  // Set SUSPEND to ^Z
+#endif
+#ifdef VREPRINT
+	settings.c_cc[VREPRINT] = '\022'; // Set REPRINT character to ^R
+#endif
+#ifdef VWERASE
+	settings.c_cc[VWERASE] = '\027'; // Set WERASE character to ^W
 #endif
 	result = tcsetattr(slave, TCSANOW, &settings);
 	if (result < 0)
@@ -633,9 +657,35 @@ int TTYAgent::setupChildCommunication()
 #ifdef ONLCR
 	settings.c_oflag &= ~ONLCR;	// Do not map NL to CR-NL on output
 #endif
-#ifdef VINTR
-	settings.c_cc[VINTR] = '\003';  // Set interrupt to ^C
+#ifdef VDSUSP
+	settings.c_cc[VSUSP] = '\031';  // Set DELAYED SUSPEND to ^Y
 #endif
+#ifdef VEOF
+	settings.c_cc[VEOF] = '\004';   // Set EOF character to ^D
+#endif
+#ifdef VERASE
+	settings.c_cc[VERASE] = '\010'; // Set ERASE character to ^H
+#endif
+#ifdef VINTR
+	settings.c_cc[VINTR] = '\003';  // Set INTERRUPT to ^C
+#endif
+#ifdef VKILL
+	settings.c_cc[VKILL] = '\025';  // Set KILL character to ^U
+#endif
+#ifdef VQUIT
+	settings.c_cc[VQUIT] = '\034';  // Set QUIT to ^\  
+#endif
+#ifdef VSUSP
+	settings.c_cc[VSUSP] = '\032';  // Set SUSPEND to ^Z
+#endif
+#ifdef VREPRINT
+	settings.c_cc[VREPRINT] = '\022'; // Set REPRINT character to ^R
+#endif
+#ifdef VWERASE
+	settings.c_cc[VWERASE] = '\027'; // Set WERASE character to ^W
+#endif
+
+
 	result = ioctl(slave, TCSETA, &settings);
 	if (result < 0)
 	    _raiseIOMsg("cannot set slave terminal settings");
