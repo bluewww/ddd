@@ -94,8 +94,10 @@ static bool is_archive(const string& loc)
 // Main functions
 //-----------------------------------------------------------------------------
 
-// Store all classes matching BASE in CLASSES_LIST
-void get_java_classes(StringArray& classes_list, const string& base)
+// Store all classes matching MASK in CLASSES_LIST.  If WITH_SOURCE_ONLY
+// is set, only those classes with loadable sources are considered.
+void get_java_classes(StringArray& classes_list, const string& mask,
+		      bool with_source_only)
 {
     string use = source_view->class_path();
     while (use != "")
@@ -114,39 +116,51 @@ void get_java_classes(StringArray& classes_list, const string& base)
 	}
 	else
 	{
-	    string mask;
+	    string dir_mask;
 
 	    if (loc == "" || loc == ".")
 	    {
-		mask = base;
+		dir_mask = mask;
 	    }
 	    else
 	    {
 		if (!loc.contains('/', -1))
 		    loc += '/';
-		mask = loc + base;
+		dir_mask = loc + mask;
 	    }
 
-	    char **files = glob_filename(mask);
+	    char **files = glob_filename(dir_mask);
 	    if (files == (char **)0)
 	    {
-		cerr << mask << ": glob failed\n";
+		cerr << dir_mask << ": glob failed\n";
 	    }
 	    else if (files == (char **)-1)
 	    {
-#if 0
-		// No *.java in directory
-		post_error(string(mask) + ": " + strerror(errno));
-#endif
+		// No `*.class' in this directory
 	    }
 	    else
 	    {
 		for (int i = 0; files[i] != 0; i++)
 		{
 		    string file = files[i];
-		    file = basename(file);
-		    strip_java_suffix(file);
-		    classes_list += file;
+		    string class_name = basename(file);
+		    strip_java_suffix(class_name);
+
+		    bool have_source = true;
+		    if (with_source_only)
+		    {
+			// Check whether we have some .java source for
+			// this class
+			string class_file = java_class_file(class_name);
+			have_source = (class_file != "");
+		    }
+
+		    if (have_source)
+		    {
+			// Okay - we have a class and a corresponding
+			// .java source file.  Go for it.
+			classes_list += class_name;
+		    }
 
 		    free(files[i]);
 		}
@@ -158,7 +172,7 @@ void get_java_classes(StringArray& classes_list, const string& base)
     sortClasses(classes_list);
 }
 
-// Remove `.java' suffix from S
+// Remove `.java' and `.class' suffix from S
 void strip_java_suffix(string& s)
 {
     if (s.contains(JAVA_SRC_SUFFIX, -1))

@@ -39,14 +39,16 @@
 #define JAVA_SRC_SUFFIX   ".java"
 #define JAVA_CLASS_SUFFIX ".class"
 
-// Store all classes matching MASK in CLASSES_LIST
-void get_java_classes(StringArray& classes_list, 
-		      const string& mask = "*" JAVA_SRC_SUFFIX);
+// Store all classes matching MASK in CLASSES_LIST.  If WITH_SOURCE_ONLY
+// is set, only those classes with loadable sources are considered.
+void get_java_classes(StringArray& classes_list,
+		      const string& mask = "*" JAVA_CLASS_SUFFIX,
+		      bool with_source_only = true);
 
 // Return source file of CLASS_NAME; "" if none
 string java_class_file(const string& class_name, bool search_classes = true);
 
-// Remove `.java' suffix from S
+// Remove `.java' and `.class' suffix from S
 void strip_java_suffix(string& s);
 
 // Return the position of CLASS_NAME definition in TEXT; -1 if none
