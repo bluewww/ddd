@@ -40,7 +40,7 @@
 .RB "[\|" \-\-dbx "\|]"
 .RB "[\|" \-\-xdb "\|]"
 .RB "[\|" \-\-debugger
-.I gdb-name\c
+.I name\c
 \&\|]
 .RB "[\|" \-\-host
 .I hostname
@@ -88,7 +88,6 @@ but usually just
 .B @ddd@
 .I program
 .ad b
-.PP
 .\"
 .\" ---------------
 .SH DESCRIPTION
@@ -125,7 +124,6 @@ In addition to the command-line interface of the inferior debugger,
 interface\fR to support common debugging tasks.  The \s-2@DDD@\s+2
 \fIgraphical data display\fR allows for interactive exploration of
 data structures.
-.PP
 .\"
 .\" ---------------
 .SH "INVOKING @DDD@"
@@ -186,7 +184,6 @@ To learn more about \s-2@DDD@\s+2 options, run
 .sp
 to get a list of frequently used options, or see the `\fBOPTIONS\fR'
 section, below.
-.PP
 .\"
 .\" ---------------
 .SH "GETTING HELP"
@@ -201,7 +198,6 @@ You can get help on \s-2GDB\s+2 and \s-2DBX\s+2 commands by entering
 get help on \s-2XDB\s+2 commands by entering `\fBhelp\fR' at the
 `\fB>\fR' prompt.  See the following section for details on entering
 commands.
-.PP
 .\"
 .\" ---------------
 .SH "ENTERING COMMANDS"
@@ -386,7 +382,6 @@ Exit \s-2@DDD@\s+2.
 .PP
 For full details on \s-2XDB\s+2 commands, see the \s-2XDB\s+2
 documentation.
-.PP
 .\"
 .\" ---------------
 .SH "OPENING FILES"
@@ -551,7 +546,6 @@ the `\fBHelp\fR' button.
 .PP
 More breakpoint features can be invoked through the debugger console.
 Enter `\fBhelp breakpoints\fR' at the `\fB(gdb)\fR' prompt.
-.PP
 .\"
 .\" ---------------
 .SH "LOOKING UP ITEMS"
@@ -610,7 +604,6 @@ button to find its definition.
 .\"
 Use the `\fBBack\fR' and `\fBForward\fR' buttons to lookup previous or
 next looked-up locations.  The location found is underlined.
-.PP
 .\"
 .\" ---------------
 .SH "RUNNING THE PROGRAM"
@@ -630,10 +623,11 @@ Again\fR' from the `\fBProgram\fR' menu or press the `\fBRun\fR'
 button below.  You may also enter `\fBrun\fR', followed by arguments
 at the debugger prompt instead.
 .PP
-When the program is first started, \s-2@DDD@\s+2 invokes an \fIexecution
-window\fR, where the program terminal input and output is shown.  (You
-can disable this feature by starting \s-2@DDD@\s+2 with the
-`\fB\-\-no\-exec\-window\fR' option.)
+By default, input and output of the debugged program go to the debugger
+console.  As an alternative, \s-2@DDD@\s+2 can also invoke an \fIexecution
+window\fR, where the program terminal input and output is shown.  See
+the `\fBRun in Execution Window\fR' item in the `\fBOptions...\fR'
+menu for details.
 .\"
 .\"
 .SS "Stopping the Program"
@@ -682,7 +676,6 @@ the current one.
 .PP
 You can also directly type the `\fBup\fR' and `\fBdown\fR' commands at
 the debugger prompt.
-.PP
 .\"
 .\" ---------------
 .SH "EXAMINING DATA"
@@ -807,9 +800,9 @@ image of the \*(lqtree\*(rq data structure.
 .\"
 .SS "Dereferencing Pointers"
 .\"
-Since so many data structures are realized using pointers,
-there is a shortcut for creating dependent displays showing the value
-of a dereferenced pointer.
+Since so many data structures are realized using pointers, there is a
+shortcut for creating dependent displays showing the value of a
+dereferenced pointer.
 .PP
 To dereference a pointer, select the originating pointer value or name
 and click on the `\fBDisplay * ()\fR' button.  A new display showing
@@ -953,7 +946,6 @@ Typing
 .sp
 .br
 at the debugger prompt has the same effect.
-.PP
 .\"
 .\" ---------------
 .SH "GRAPH EDITING"
@@ -1052,7 +1044,6 @@ PostScript - suitable for enclosing it in another document;
 \s-2XFIG\s+2 - suitable for editing, using the \s-2XFIG\s+2 graphic
 editor, or for conversion into other formats using the
 \s-2TRANSFIG\s+2 package.
-.PP
 .\"
 .\"
 .\" ---------------
@@ -1110,7 +1101,6 @@ window, select `\fBShow Registers\fR' from the `\fBStack\fR' menu.
 By selecting one of the registers, its name is copied to the argument
 field.  You can use it as value for `\fBDisplay()\fR', for instance,
 to have its value displayed in the data window.
-.PP
 .\"
 .\"
 .\" ---------------------
@@ -1154,7 +1144,6 @@ Source...\fR' item from the `\fBSource\fR' menu.  This reloads the
 source code shown from the source file.  As \s-2@DDD@\s+2
 automatically reloads the source code if the debugged program has been
 recompiled, this should seldom be necessary.
-.PP
 .\"
 .\"
 .\" ---------------
@@ -1180,7 +1169,6 @@ shell \s-2@DDD@\s+2 was started from, or by using the \s-2UNIX\s+2
 inferior debugger is interrupted as well.  Since this interrupt signal
 can result in internal inconsistencies, use this as a last resort in
 emergencies only\(em\&if \s-2@DDD@\s+2 hangs, for example.
-.PP
 .\"
 .\"
 .\" ---------------
@@ -1236,7 +1224,6 @@ operation than normal.
 To help you find problems due to remote execution, run \s-2@DDD@\s+2 with the
 `\fB\-\-trace\-shell\-commands\fR' option.  This prints the shell
 commands issued by \s-2@DDD@\s+2 on standard error.
-.PP
 .\"
 .\"
 .\" ---------------
@@ -1262,11 +1249,10 @@ to debug programs with root privileges.
 .PP
 Since a program like `\fBrootgdb\fR' grants root privileges to any
 invoking user, you should give it very limited access.
-.PP
 .\"
 .\"
 .\" ---------------
-.SH "INTEGRATING DDD"
+.SH "INTEGRATING @DDD@"
 .\" ---------------
 .\"
 You can run \s-2@DDD@\s+2 as an inferior debugger in other debugger
@@ -1319,47 +1305,25 @@ Use `\fBM-x gdb\fR' to start a debugging session.  Proceed as usual.
 Invoke \fBxxgdb\fR as
 .br
 .sp
- \fBxxgdb \-db_name ddd \-db_prompt '(gdb) '
+ \fBxxgdb \-db_name @ddd@ \-db_prompt '(gdb) '
 .sp
 .br
-.PP
 .\" ---------------
-.SH "CUSTOMIZING @DDD@"
+.SH "PREFERENCES"
 .\" ---------------
 .\"
 You can set up your personal \s-2@DDD@\s+2 preferences by using the
 `\fBOptions\fR' menu from the menu bar.  These options affect your
-running \s-2@DDD@\s+2 process only, unless you save these options for
-a later \s-2@DDD@\s+2 invocation.
+running \s-2@DDD@\s+2 process only, unless you save these preferences
+for a later \s-2@DDD@\s+2 invocation.
 .\"
-.SS "General Options"
-These items are found in the `\fBOptions\fR' menu:
-.PP
-If you frequently switch between \s-2@DDD@\s+2 and other multi-window
-applications, you may like to set the `\fBGroup Iconify\fR' option.
-This way, all \s-2@DDD@\s+2 windows are iconified and deiconified as a
-group.
-.PP
-If you want to use \s-2\fBTAB\fR\s+2 key completion in all text windows, set
-the `\fBGlobal Tab Completion\fR' option.  This is useful if you have
-pointer-driven keyboard focus (see below) and no special usage for the
-\s-2\fBTAB\fR\s+2 key.
-.PP
+.SS "Frequent Preferences"
 If you want to run your debugged process in a separate terminal
 emulator window, set the `\fBRun in Execution Window\fR' option.  This
 is useful for programs that have special terminal requirements not
 provided by the debugger window, as raw keyboard processing or
 terminal control sequences.
 .PP
-If you want to save changed options automatically for the next
-\s-2@DDD@\s+2 invocation, set the `\fBSave Options on Exit\fR' option.
-.PP
-If you want to save the command history for the next \s-2@DDD@\s+2
-invocation, set the `\fBSave Options on Exit\fR' option.  Note: This
-option is always set if your \s-2GDB\s+2 is set up to save its command
-history.
-.\"
-.SS "Source Options"
 By default, \s-2@DDD@\s+2 finds only complete words.  This is
 convenient for clicking on an identifier in the source text and search
 for exactly this identifier.  If you want to find all occurrences,
@@ -1369,23 +1333,48 @@ If you wish to display machine code of selected funtions, set the
 `\fBDisplay Machine Code\fR' option.  This makes \s-2@DDD@\s+2 run a
 little slower, so it is disabled by default.
 .PP
-As of this \s-2@DDD@\s+2 release, the current execution position and
-breakpoints are indicated by symbols (``glyphs'') in the source text.
-Previous releases used special texts for this purpose.  If you wish to
-disable glyphs, unset the `\fBDisplay Glyphs\fR' option.  This also
+Through the `\fBPreferences...\fR' item, you can set up more
+preferences:
+.\"
+.SS "General Preferences"
+These items are found in the `\fBGeneral Preferences\fR' menu:
+.PP
+If you frequently switch between \s-2@DDD@\s+2 and other multi-window
+applications, you may like to set the `\fBIconify all windows at
+once\fR' option.  This way, all \s-2@DDD@\s+2 windows are iconified
+and deiconified as a group.
+.PP
+If you want to use \s-2\fBTAB\fR\s+2 key completion in all text
+windows, set the `\fBTab key completes in all windows\fR' option.
+This is useful if you have pointer-driven keyboard focus (see below)
+and no special usage for the \s-2\fBTAB\fR\s+2 key.
+.PP
+If you are bothered by X warnings, you can suppress them by setting
+the `\fBSuppress X warnings\fR' option.
+.PP
+If you want to save the command history for the next \s-2@DDD@\s+2
+invocation, set the `\fBSave command history on exit\fR' option.
+Note: This option is always set if your \s-2GDB\s+2 is set up to save
+its command history.
+.\"
+.SS "Source Preferences"
+In the source text, the current execution position and breakpoints are
+indicated by symbols (``glyphs'').  As an alternative, \s-2@DDD@\s+2
+can also indicate these positions using text characters.  If you wish
+to disable glyphs, unset the `\fBUse Glyphs\fR' option.  This also
 makes \s-2@DDD@\s+2 run slightly faster, especially when scrolling.
 .PP
 By default, \s-2@DDD@\s+2 caches source files in memory.  This is
 convenient for remote debugging, since remote file access may be slow.
-If you want to reduce memory usage, unset the `\fBCache Sources\fR'
-option.
+If you want to reduce memory usage, unset the `\fBCache source
+files\fR' option.
 .PP
 By default, \s-2@DDD@\s+2 caches machine code in memory.  This is bad
 for memory usage, but convenient for speed, since disassembling a
 function each time it is reached may take time.  If you want to reduce
-memory usage, unset the `\fBCache Machine Code\fR' option.
+memory usage, unset the `\fBCache machine code\fR' option.
 .\"
-.SS "Data Options"
+.SS "Data Preferences"
 By default, \s-2@DDD@\s+2 displays a grid in the data window to
 facilitate display alignment.  If you prefer not to have a grid, unset
 the `\fBShow Grid\fR' option.
@@ -1409,7 +1398,7 @@ To enforce layout, you can set the `\fBAutomatic Layout\fR' option.
 If `\fBAutomatic Layout\fR' is enabled, the graph is layouted after
 each change.
 .\"
-.SS "Startup Options"
+.SS "Startup Preferences"
 By default, \s-2@DDD@\s+2 uses three separate windows for commands,
 source, and data.  To attach the source and data windows to the
 debugger console, creating one single big \s-2@DDD@\s+2 window, set the
@@ -1447,12 +1436,861 @@ named `\fB.dddinit\fR' in your home directory.
 .\"
 .SS "Other Customizations"
 Other personal \s-2@DDD@\s+2 resources can also be set in your
-`\fB.dddinit\fR' file.  To find out which resources are available, and
-how they are set by default, look at the `\fBDdd\fR' application
-defaults file, which is shipped with the \s-2@DDD@\s+2 source.  For
-individual customization, copy the lines of resources you want to 
-change into your `\fB.dddinit\fR' file and modify them as you like.
+`\fB.dddinit\fR' file.  See the `\fBRESOURCES\fR' section, below.
 .PP
+The inferior debugger can be customized through the
+`\fBSettings...\fR' item.  See the `\fBDEBUGGER SETTINGS\fR' section,
+below.
+.\"
+.\" ---------------
+.SH "DEBUGGER SETTINGS"
+.\" ---------------
+.\"
+If you use \s-2GDB\s+2 as inferior debugger, you can change its
+settings using the `\fBSettings...\fR' item in the `\fBOptions\fR'
+menu.  Using the settings editor, you can determine whether C++ names
+are to be demangled, how many array elements are to print, and so on.
+.PP
+The capabilities of the settings editor depend on the capabilities of
+your inferior debugger\(em\&that is, your \s-2GDB\s+2 version.
+Clicking on `\fB?\fR' gives an an explanation on the specific item;
+the \s-2GDB\s+2 documentation gives more details.
+.PP
+Debugger settings are not saved with \s-2@DDD@\s+2 options.  Instead,
+insert the associated commands in your personal \fB$HOME/.gdbinit\fR
+file to customize \s-2GDB\s+2.
+.\"
+.\"
+.\" ---------------
+.SH "RESOURCES"
+.\" ---------------
+.\"
+\s-2@DDD@\s+2 understands all of the core X Toolkit resource names and
+classes.  The following resources are specific to \s-2@DDD@\s+2.
+.\"
+.\"
+.\"
+.SS "Options and Preferences"
+.TP
+.B "cacheMachineCode (\fPclass\fB CacheMachineCode)"
+Whether to cache disassembled machine code (`\fBtrue\fR', default) or
+not (`\fBfalse\fR').  Caching machine code requires more memory, but
+makes \s-2@DDD@\s+2 run faster.
+.TP
+.B "cacheSourceFiles (\fPclass\fB CacheSourceFiles)"
+Whether to cache source files (`\fBtrue\fR', default) or not
+(`\fBfalse\fR').  Caching source files requires more memory, but makes
+\s-2@DDD@\s+2 run faster.
+.TP
+.B "disassemble (\fPclass\fB Disassemble)"
+If this is `\fBtrue\fR', the source code is automatically
+disassembled.  The default is `\fBfalse\fR'.
+.TP
+.B "displayGlyphs (\fPclass\fB DisplayGlyphs)"
+If this is `\fBtrue\fR', the current execution position and breakpoints
+are displayed as glyphs; otherwise, they are shown through characters
+in the text.  The default is `\fBtrue\fR'.
+.TP
+.B "findWordsOnly (\fPclass\fB FindWordsOnly)"
+If this is `\fBtrue\fR' (default), the `\fBFind\fR' commands find
+complete words only.  Otherwise, arbitrary occurrences are found.
+.TP
+.B "globalTabCompletion (\fPclass\fB GlobalTabCompletion)"
+If this is `\fBtrue\fR' (default), the \s-2\fBTAB\fR\s+2 key completes
+arguments in all windows.  If this is `\fBfalse\fR', the
+\s-2\fBTAB\fR\s+2 key completes arguments in the debugger console
+only.
+.TP
+.B "groupIconify (\fPclass\fB GroupIconify)"
+If this is `\fBtrue\fR', (de)iconifying any \s-2@DDD@\s+2 window
+causes all other \s-2@DDD@\s+2 windows to (de)iconify as well.
+Default is `\fBfalse\fR', meaning that each \s-2@DDD@\s+2 window can
+be iconified on its own.
+.TP
+.B "indentAmount (\fPclass\fB IndentAmount)"
+The number of columns used for the code line number display (default:
+\fB8\fR)
+.TP
+.B "maxNameLength (\fPclass\fB MaxNameLength)"
+The maximum number of characters allowed in a data display title
+(default: \fB20\fR).  Components of longer names are replaced by
+`\fB..\fR'\(em\&for instance, `\fBfoo->bar->blue\fR' becomes
+`\fBfoo->..->blue\fR'.
+.TP
+.B "pannedGraphEditor (\fPclass\fB PannedGraphEditor)"
+What shall \s-2@DDD\s+2 use if the graph gets too large to be
+displayed?  If this is `\fBtrue\fR', an Athena panner is used (a kind
+of two-directional scrollbar).  If this is `\fBfalse\fR' (default),
+two Motif scrollbars are used.
+.TP
+.B "paperSize (\fPclass\fB PaperSize)"
+The paper size used for printing, in format \fIWIDTH\fR x
+\fIHEIGHT\fR.  The default is A4 format, or `\fB210mm x 297mm\fR'.
+.TP
+.B "saveHistoryOnExit (\fPclass\fB SaveHistoryOnExit)"
+If `\fBtrue\fR' (default), the command history is automatically saved
+when \s-2@DDD@\s+2 exits.  If the inferior debugger saves its
+command history, its history file is used, otherwise,
+`\fB$HOME/.ddd_history\fR' is used.
+.TP
+.B "separateDataWindow (\fPclass\fB Separate)"
+If `\fBtrue\fR' (default), the data window and the debugger console
+are realized in different top-level windows.  If `\fBfalse\fR', the
+data window is attached to the debugger console.  See also the
+`\fB\-\-attach\-windows\fR' and `\fB\-\-attach\-data-window\fR'
+options, below.
+.TP
+.B "separateExecWindow (\fPclass\fB Separate)"
+If `\fBtrue\fR', the debugged program is executed in a separate
+execution window.  If `\fBfalse\fR' (default), the debugged program is
+executed in the console window.  See also the `\fB\-\-exec\-window\fR'
+and `\fB\-\-no\-exec\-window\fR' options, below.
+.TP
+.B "separateSourceWindow (\fPclass\fB Separate)"
+If `\fBtrue\fR' (default), the source window and the debugger console
+are realized in different top-level windows.  If `\fBfalse\fR', the
+source window is attached to the debugger console.  See also the
+`\fB\-\-attach\-windows\fR' and `\fB\-\-attach\-source-window\fR'
+options, below.
+.TP
+.B "suppressWarnings (\fPclass\fB SuppressWarnings)"
+If `\fBtrue\fR', X warnings are suppressed.  This is
+sometimes useful for executables that were built on a machine with a
+different X or Motif configuration.  By default, this is
+`\fBfalse\fR'.
+.\"
+.\"
+.\"
+.SS "Debugger Settings"
+.TP
+.B "dbxInitCommands (\fPclass\fB DBXInitCommands)"
+This string contains a list of newline-separated commands that are
+initially sent to \s-2DBX\s+2.  By default, it is empty.
+.br
+Do not use this resource to customize \s-2DBX\s+2; instead, use a
+personal `\fB$HOME/.dbxinit\fR' or `\fB$HOME/.dbxrc\fR' file.  See
+your \s-2DBX\s+2 documentation for details.
+.TP
+.B "debugger (\fPclass\fB Debugger)"
+The type of the inferior debugger (`\fBgdb\fR', `\fBdbx\fR', or
+`\fBxdb\fR').  Default value is `\fBgdb\fR'.  This resource is usually
+set through the `\fB\-\-gdb\fR', `\fB\-\-dbx\fR', and `\fB\-\-xdb\fR'
+options; see below for details.
+.TP
+.B "debuggerCommand (\fPclass\fB DebuggerCommand)"
+The name under which the inferior debugger is to be invoked.  If this
+string is empty, the debugger type (`\fBdebugger\fR' resource) is
+used.  This resource is usually set through the `\fB\-\-debugger\fR'
+option; see below for details.
+.TP
+.B "debuggerHost (\fPclass\fB DebuggerHost)"
+The host where the inferior debugger is to be executed; an empty
+string (default) means the local host.  See the `\fB\-\-host\fR'
+option, below, and `\fBREMOTE MODE\fR', above.
+.TP
+.B "debuggerHostLogin (\fPclass\fB DebuggerHostLogin)"
+The login user name on the remote host; an empty string (default)
+means using the local user name.  See the `\fB\-\-login\fR'
+option, below, and `\fBREMOTE MODE\fR', above.
+.TP
+.B "fullNameMode (\fPclass\fB TTYMode)"
+If this is `\fBtrue\fR', \s-2@DDD@\s+2 reports the current source
+position on standard output in \s-2GDB\s+2 `\fB\-\-fullname\fR'
+format.  See also the `\fB\-\-fullname\fR' option, below.
+.TP
+.B "gdbInitCommands (\fPclass\fB GDBInitCommands)"
+This string contains a list of newline-separated commands that are
+initially sent to \s-2GDB\s+2.  By default, it contains some settings
+vital to \s-2@DDD@\s+2:
+.sp
+.br
+  \fB@Ddd@*gdbInitCommands: \\
+  set height 0\\n\\
+  set width 0\\n\\
+  set print repeats 0\\n\\
+  set verbose off\\n\\
+  set print asm-demangle on\\n\\
+  set prompt (gdb) \\n\fR
+.br
+.sp
+Do not use this resource to customize \s-2GDB\s+2; instead, use a
+personal `\fB$HOME/.gdbinit\fR' file.  See your \s-2GDB\s+2
+documentation for details.
+.TP
+.B "questionTimeout (\fPclass\fB QuestionTimeout)"
+The time (in seconds) to wait for the inferior debugger to reply.
+Default is \fB10\fR.
+.TP
+.B "synchronousDebugger (\fPclass\fB SynchronousDebugger)"
+If `\fBtrue\fR', X events are not processed while the debugger is
+busy.  This may result in slightly better performance on
+single-processor systems.  See also the `\fB\-\-sync\-debugger\fR'
+option, below.
+.TP
+.B "ttyMode (\fPclass\fB TTYMode)"
+If `\fBtrue\fR', enable \s-2TTY\s+2 interface, taking additional
+debugger commands from standard input and forwarding debugger output
+on standard output.  See also the `\fB\-\-tty\fR' and
+`\fB\-\-fullname\fR' options, below.
+.TP
+.B "useTTYCommand (\fPclass\fB UseTTYCommand)"
+If `\fBtrue\fR', use the \s-2GDB\s+2 `\fBtty\fR' command for
+redirecting input/output to the separate execution window.  If
+`\fBfalse\fR', use explicit redirection through shell redirection
+operators `\fB<\fR' and `\fB>\fR'.  The default is `\fBfalse\fR'
+(explicit redirection), since on some systems, the `\fBtty\fR' command
+does not work properly.
+.TP
+.B "xdbInitCommands (\fPclass\fB XDBInitCommands)"
+This string contains a list of newline-separated commands that are
+initially sent to \s-2XDB\s+2.  By default, it is empty.
+.br
+Do not use this resource to customize \s-2DBX\s+2; instead, use a
+personal `\fB$HOME/.xdbrc\fR' file.  See your \s-2XDB\s+2
+documentation for details.
+.\"
+.\"
+.\"
+.SS "User-defined Buttons"
+.TP
+.B "consoleButtons (\fPclass\fB ConsoleButtons)"
+A colon-separated list of buttons to be added under the debugger
+console.  Each button issues the command given by its name.
+.sp
+The following characters have special meanings:
+.RS
+.br
+.IP \(bu 2
+Commands ending with '\fB...\fR' insert their name, followed by a space, in
+the debugger console.
+.br
+.IP \(bu 2
+Commands ending with a control character (that is, `\fB^\fR' followed
+by a letter or `\fB?\fR') insert the given control character.
+.br
+.IP \(bu 2
+The string `\fB()\fR' is replaced by the current contents 
+of the argument field `()'.
+.RE
+.sp
+.RS
+The following button names are reserved:
+.TP 10
+.B "Clear"
+Clear current command
+.TP 10
+.B "Prev"
+Show previous command
+.TP 10
+.B "Next"
+Show next command
+.TP 10
+.B "Apply"
+Send the given command to the debugger.
+.TP 10
+.B "Back"
+Lookup previously selected source position.
+.TP 10
+.B "Forward"
+Lookup next selected source position.
+.TP 10
+.B "Edit"
+Edit current source file.
+.TP 10
+.B "Reload"
+Reload source file.
+.TP 10
+.B "Complete"
+Complete current command.
+.TP 10
+.B "Yes"
+Answer current debugger prompt with `\fByes\fR'.  This button is
+visible only if the debugger asks a yes/no question.
+.TP 10
+.B "No"
+Answer current debugger prompt with `\fBno\fR'.  This button is
+visible only if the debugger asks a yes/no question.
+.RE
+.sp
+.RS
+.PP
+The name of the button widget is built from the button specification.
+First, trailing `\fB...\fR' and `\fB^\fR' specifications removed.
+Then, any non-identifier character (letter, number, underscore) is
+replaced by `\fB_\fR' (underscore).  Thus, the button specification
+`\fBdisplay *()...\fR' results in a widget named `\fBdisplay____\fR'.
+Unless a `\fBlabelString\fR' resource is specified, the capitalized
+button specification is used as label.
+.PP
+The default resource value is empty\(em\&no console buttons are
+created.
+.PP
+Here are some examples to insert into your `\fB$HOME/.dddinit\fR' file.
+These are the settings of \s-2@DDD@\s+2 1.x:
+.sp
+.br
+  \fB@Ddd@*consoleButtons: Yes:No:Interrupt^C\fR
+.br
+.sp
+This setting creates some more buttons:
+.sp
+.br
+  \fB@Ddd@*consoleButtons: \\
+  Yes:No:run:Clear:Prev:Next:Apply:interrupt^C\fR
+.br
+.sp
+See also the `\fBsourceButtons\fR' and `\fBtoolButtons\fR' resources,
+below.
+.RE
+.sp
+.TP
+.B "sourceButtons (\fPclass\fB SourceButtons)"
+A colon-separated list of buttons to be added under the debugger
+console.  Each button issues the command given by its name.  See the
+`\fBconsoleButtons\fR' resource, above, for details on button syntax.
+.RS
+.PP
+The default resource value is empty\(em\&no source buttons are
+created.
+.PP
+Here are some example to insert into your `\fB$HOME/.dddinit\fR' file.
+These are the settings of \s-2@DDD@\s+2 1.x:
+.sp
+.br
+  \fB@Ddd@*sourceButtons: \\
+  run:step:next:stepi:nexti:cont:finish:kill:\\
+  up:down:Back:Forward:Edit:interrupt^C\fR
+.br
+.sp
+This setting creates some buttons which are not found on the command tool:
+.sp
+.br
+  \fB@Ddd@*sourceButtons: \\
+  print *():graph display *():print /x ():\\
+  whatis ():ptype ():watch ():until:shell\fR
+.br
+.sp
+An even more professional setting uses customized button labels:
+.sp
+.br
+  \fB@Ddd@*sourceButtons: \\
+  print *(()):graph display *(()):print /x ():\\
+  whatis ():ptype ():watch ():until:shell
+  @Ddd@*graph_display______.labelString: Display *()
+  @Ddd@*print______.labelString:         Print *()
+  @Ddd@*whatis___.labelString:           What is ()\fR
+.br
+.sp
+See also the `\fBconsoleButtons\fR' resource, above, and the
+`\fBtoolButtons\fR' resource, below.
+.RE
+.TP
+.B "toolButtons (\fPclass\fB ToolButtons)"
+A colon-separated list of buttons to be included in the command tool.
+Each button issues the command given by its name.  See the
+`\fBconsoleButtons\fR' resource, above, for details on button syntax.
+.RS
+.PP
+The default resource value is
+.sp
+.br
+  \fB@Ddd@*toolButtons: \\
+  run:interrupt^C:step:stepi:\\
+  next:nexti:cont:finish:\\
+  up:down:Back:Forward:Edit:kill\fR
+.br
+.sp
+For each button, its location in the command tool must be specified
+using \fBXmForm\fR constraint resources.  Each side of a button is
+attached to a row or column position.  Rows are numbered from 0 (top
+side) to 8 (bottom side); columns likewise are numbered from 0 (left
+side) to 8 (right side).  The position of the \fBbreak\fR button, for
+instance, is specified as:
+.sp
+.br
+  \fB@Ddd@*tool_buttons.break.topPosition:    1
+  @Ddd@*tool_buttons.break.bottomPosition: 2
+  @Ddd@*tool_buttons.break.leftPosition:   0
+  @Ddd@*tool_buttons.break.rightPosition:  8\fR
+.br
+.sp
+while the \fBBack\fR button position is specified as
+.sp
+.br
+  \fB@Ddd@*tool_buttons.Back.topPosition:     6
+  @Ddd@*tool_buttons.Back.bottomPosition:  7
+  @Ddd@*tool_buttons.Back.leftPosition:    0
+  @Ddd@*tool_buttons.Back.rightPosition:   4\fR
+.br
+.sp
+The number of rows and columns (default: 8) can be changed by setting the
+`\fBfractionBase\fR' resource to a different value:
+.sp
+.br
+  \fB@Ddd@*tool_buttons.fractionBase:         10\fR
+.br
+.sp
+If you change the `\fBfractionBase\fR' resource, you must provide new
+positions for \fIall\fR buttons in the command tool.  See the
+`\fBDdd\fR' app-defaults file for more details.
+.RE
+.\"
+.\"
+.\"
+.SS "Fonts and Colors"
+.TP
+.B "General font settings"
+These are the fonts used in \s-2@DDD@\s+2:
+.RS
+.TP 10
+.B "charset" 
+The default font in buttons, menus, etc.
+.TP 10
+.B "small"
+The default font in a slightly smaller size. 
+.TP 10
+.B "tt"
+The fixed-width font (teletype) used in texts.
+.TP 10
+.B "key"
+The font used for describing key caps.
+.TP 10
+.B "rm"
+Roman font.  In help texts.
+.TP 10
+.B "sl"
+Slanted font.  In help texts.
+.TP 10
+.B "bf"
+Bold face.  In help texts.
+.TP 10
+.B "bs"
+Slanted bold face.  In help texts.
+.TP 10
+.B "Logo"
+The \s-2@DDD@\s+2 logo font (uppercase letters).
+.TP 10
+.B "logo"
+The \s-2@DDD@\s+2 logo font (lowercase letters).
+.TP 10
+.B "symbol"
+The symbol font.  In help texts.
+.RE
+.sp
+.RS
+This is the default font setting:
+.sp
+.br
+  \fB@Ddd@*fontList: \\
+  -*-helvetica-bold-r-*-*-*-100-\\
+  *-*-*-*-*-*=charset,\\
+  -*-helvetica-bold-r-*-*-*-80-*-*-*-*-*-*=small,\\
+  -*-lucidatypewriter-medium-r-*-*-*-90-\\
+  *-*-*-*-*-*=tt,\\
+  -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=key,\\
+  -*-helvetica-medium-r-*-*-*-100-*-*-*-*-*-*=rm,\\
+  -*-helvetica-medium-o-*-*-*-100-*-*-*-*-*-*=sl,\\
+  -*-helvetica-bold-r-*-*-*-100-*-*-*-*-*-*=bf,\\
+  -*-helvetica-bold-o-*-*-*-100-*-*-*-*-*-*=bs,\\
+  -*-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*=Logo,\\
+  -*-helvetica-bold-r-*-*-*-100-*-*-*-*-*-*=logo,\\
+  -*-symbol-*-*-*-*-*-100-*-*-*-*-*-*=symbol\fR
+.br
+.sp
+Here is an alternative setting with slightly smaller fonts:
+.sp
+.br
+  \fB@Ddd@*fontList: \\
+  -*-helvetica-bold-r-*-*-*-90-\\
+  *-*-*-*-*-*=charset,\\
+  -*-helvetica-bold-r-*-*-*-80-*-*-*-*-*-*=small,\\
+  -*-lucidatypewriter-medium-r-*-*-*-90-\\
+  *-*-*-*-*-*=tt,\\
+  -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=key,\\
+  -*-helvetica-medium-r-*-*-*-90-*-*-*-*-*-*=rm,\\
+  -*-helvetica-medium-o-*-*-*-90-*-*-*-*-*-*=sl,\\
+  -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=bf,\\
+  -*-helvetica-bold-o-*-*-*-90-*-*-*-*-*-*=bs,\\
+  -*-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*=Logo,\\
+  -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=logo,\\
+  -*-symbol-*-*-*-*-*-90-*-*-*-*-*-*=symbol\fR
+.br
+.sp
+The fonts in text fields are specified as follows:
+.sp
+.br
+  \fB@Ddd@*XmTextField.FontList: \\
+  -*-lucidatypewriter-medium-r-*-*-*-90-\\
+  *-*-*-*-*-*=charset
+  @Ddd@*XmText.FontList:	  \\
+  -*-lucidatypewriter-medium-r-*-*-*-90-\\
+  *-*-*-*-*-*=charset\fR
+.br
+.sp
+The fonts in the command tool are also set differently.
+.sp
+.br
+  \fB@Ddd@*tool_buttons.run.fontList:   \\
+  -*-helvetica-bold-r-*-*-*-100-\\
+  *-*-*-*-*-*=charset
+  @Ddd@*tool_buttons.break.fontList:  \\
+  -*-helvetica-bold-r-*-*-*-100-\\
+  *-*-*-*-*-*=charset
+  @Ddd@*tool_buttons*fontList:        \\
+  -*-helvetica-medium-r-*-*-*-90-\\
+  *-*-*-*-*-*=charset\fR
+.br
+.sp
+For fonts in the data display, see the `\fBvslDefs\fR' resource,
+below.
+.RE
+.sp
+.TP
+.B "General color settings"
+These are the most important color resources used in \s-2@DDD@\s+2:
+.sp
+.br
+\fB@Ddd@*foreground:              black
+.br
+@Ddd@*background:              grey
+.br
+@Ddd@*XmText.background:       grey90
+.br
+@Ddd@*XmTextField.background:  grey90
+.br
+@Ddd@*GraphEdit.background:    grey90
+.br
+@Ddd@*XmList.background:       grey90
+.sp
+@Ddd@*graph_edit.nodeColor:    black
+.br
+@Ddd@*graph_edit.edgeColor:    blue4
+.br
+@Ddd@*graph_edit.selectColor:  black
+.br
+@Ddd@*graph_edit.gridColor:    black
+.br
+@Ddd@*graph_edit.frameColor:   grey50
+.br
+@Ddd@*graph_edit.outlineColor: grey50\fR
+.br
+.sp
+For colors within the data displays, see the `\fBvslDefs\fR' resource,
+below.
+.RE
+.TP
+.B "vslDefs (\fPclass\fB VSLDefs)"
+A string with additional \s-2VSL\s+2 definitions that are appended to
+the builtin \s-2VSL\s+2 library.  This resource can be used to
+override specific \s-2VSL\s+2 definitions that affect the data display.
+.RS
+.PP
+The general pattern to replace a function definition \fIFUNCTION\fR with a new
+definition \fINEW_DEF\fR is:
+.sp
+.br
+\fB#replace \fIFUNCTION\fR
+.br
+\fIFUNCTION\fB(\fIARGS\fR...\fB) = \fINEW_DEF\fB;\fR
+.br
+.sp
+The following \s-2VSL\s+2 functions are frequently used:
+.TP 10
+.B "color(\fIBOX\fB, \fIFOREGROUND\fB [\|, \fIBACKGROUND\fB\|])"
+Set the \fIFOREGROUND\fR and \fIBACKGROUND\fR colors of \fIBOX\fR.
+.TP 10
+.B "display_color(\fIBOX\fB)"
+The color used in data displays.
+Default: \fBcolor(\fIBOX\fB, "black", "grey95")
+.TP 10
+.B "title_color(\fIBOX\fB)"
+The color used in the title bar.
+Default: \fBcolor(\fIBOX\fB, "black")
+.TP 10
+.B "disabled_color(\fIBOX\fB)"
+The color used for disabled boxes.
+Default: \fBcolor(\fIBOX\fB, "white", "grey50")
+.TP 10
+.B "simple_color(\fIBOX\fB)"
+The color used for simple values.
+Default: \fBcolor(\fIBOX\fB, "black")
+.TP 10
+.B "pointer_color(\fIBOX\fB)"
+The color used for pointers.
+Default: \fBcolor(\fIBOX\fB, "blue4")
+.TP 10
+.B "struct_color(\fIBOX\fB)"
+The color used for structures.
+Default: \fBcolor(\fIBOX\fB, "black")
+.TP 10
+.B "array_color(\fIBOX\fB)"
+The color used for arrays.
+Default: \fBcolor(\fIBOX\fB, "blue4")
+.TP 10
+.B "reference_color(\fIBOX\fB)"
+The color used for references.
+Default: \fBcolor(\fIBOX\fB, "blue4")
+.TP 10
+.B "stdfontfamily()"
+The font family used.  One of \fBfamily_times()\fR, 
+\fBfamily_courier()\fR, \fBfamily_helvetica()\fR, 
+\fBfamily_new_century()\fR, or \fBfamily_typewriter()\fR (default).
+.TP 10
+.B "stdfontsize()"
+The font size used (in 1/10 points).  Default: \fB90\fR.
+.TP 10
+.B "stdfontweight()"
+The font weight used.  One of \fBweight_medium()\fR (default) or
+\fBweight_bold()\fR.
+.PP
+To set the default font size to 12 points, use
+.sp
+.br
+  \fB@Ddd@*vslDefs: \\
+  #replace stdfontsize\\n\\
+  stdfontsize() = 120;\\n\fR
+.br
+.sp
+To set the pointer color to "red4", use
+.sp
+.br
+  \fB@Ddd@*vslDefs: \\
+  #replace pointer_color\\n\\
+  pointer_color(box) = color(box, "red4");\\n\fR
+.br
+.sp
+To set the default font to 10-point courier, use
+.sp
+.br
+  \fB@Ddd@*vslDefs: \\
+  #replace stdfontsize\\n\\
+  #replace stdfontfamily\\n\\
+  stdfontsize() = 100;\\n\\
+  stdfontfamily() = family_courier();\\n\fR
+.br
+.sp
+See the file `\fBddd.vsl\fR' for further definitions to override using
+the `\fBvslDefs\fR' resource.
+.RE
+.TP
+.B "vslLibrary (\fPclass\fB VSLLibrary)"
+The \s-2VSL\s+2 library to use.  `\fBbuiltin\fR' (default) means to
+use the built-in library, any other value is used as file name.
+.TP
+.B "vslPath (\fPclass\fB VSLPath)"
+A colon-separated list of directories to search for \s-2VSL\s+2
+include files.  Default is `\fB.\fR', the current directory.
+.RS
+.PP
+If your \s-2@DDD@\s+2 source distribution is installed in
+`\fB/usr/local/src\fR', you can use the following settings to read the
+\s-2VSL\s+2 library from `\fB/home/joe/ddd.vsl\fR':
+.sp
+.br
+  \fB@Ddd@*vslLibrary:  /home/joe/ddd.vsl
+  @Ddd@*vslPath:  \\
+  .:/usr/local/src/ddd/ddd:\\
+  /usr/local/src/ddd/vsllib\fR
+.br
+.sp
+\s-2VSL\s+2 include files referenced by `\fB/home/joe/ddd.vsl\fR' are
+searched first in the current directory `\fB.\fR', then in
+`\fB/usr/local/src/ddd/ddd/\fR', and then in
+`\fB/usr/local/src/ddd/vsllib/\fR'.
+.PP
+Instead of supplying another \s-2VSL\s+2 library, it is often easier
+to specify some minor changes to the built-in library.  See the
+`\fBvslDefs\fR' resource, above, for details.
+.RE
+.\"
+.\"
+.\"
+.\"
+.\"
+.\"
+.SS "Helper Programs"
+.TP
+.B "editCommand (\fPclass\fB EditCommand)"
+A command string to invoke an editor on the specific file.
+`\fB@LINE@\fR' is replaced by the current line number, `\fB@FILE@\fR'
+by the file name.  The default is to invoke \fB$XEDITOR\fR first, then
+\fB$EDITOR\fR, then \fBvi\fR:
+.sp
+.br
+  \fB@Ddd@*editCommand: \\
+  ${XEDITOR=false} +@LINE@ @FILE@ \\
+  || xterm -e ${EDITOR=vi} +@LINE@ @FILE@\fR
+.br
+.sp
+.br
+This `\fB.dddinit\fR' setting invokes an editing session
+for an \fIXEmacs\fR editor running \fIgnuserv\fR:
+.sp
+.br
+  \fB@Ddd@*editCommand: gnuclient +@FILE@ @LINE@\fR
+.br
+.sp
+This `\fB.dddinit\fR' setting invokes an editing session
+for an \fIEmacs\fR editor running \fIemacsserver\fR:
+.sp
+.br
+  \fB@Ddd@*editCommand: emacsclient +@FILE@ @LINE@\fR
+.br
+.sp
+.TP
+.B "listCoreCommand (\fPclass\fB listCoreCommand)"
+The commmand to list all core files on the remote host.  The string
+`\fB@MASK@\fR' is replaced by a file filter.  The default setting is:
+.sp
+.br
+  \fB@Ddd@*listCoreCommand: \\
+  file @MASK@ | grep '.*:.*core.*' \\
+  | cut -d: -f1\fR
+.br
+.sp
+.TP
+.B "listDirCommand (\fPclass\fB listDirCommand)"
+The commmand to list all directories on the remote host.  The string
+`\fB@MASK@\fR' is replaced by a file filter.  The default setting is:
+.sp
+.br
+  \fB@Ddd@*listDirCommand: \\
+  file @MASK@ | grep '.*:.*directory.*' \\
+  | cut -d: -f1\fR
+.br
+.sp
+.TP
+.B "listExecCommand (\fPclass\fB listExecCommand)"
+The commmand to list all executable files on the remote host.  The string
+`\fB@MASK@\fR' is replaced by a file filter.  The default setting is:
+.sp
+.br
+  \fB@Ddd@*listExecCommand: \\
+  file @MASK@ | grep '.*:.*exec.*' \\
+  | grep -v  '.*:.*script.*' \\
+  | cut -d: -f1 | grep -v '.*\\.o$'\fR
+.br
+.sp
+.TP
+.B "listSourceCommand (\fPclass\fB listSourceCommand)"
+The commmand to list all source files on the remote host.  The string
+`\fB@MASK@\fR' is replaced by a file filter.  The default setting is:
+.sp
+.br
+  \fB@Ddd@*listSourceCommand: \\
+  file @MASK@ | grep '.*:.*text.*' \\
+  | cut -d: -f1\fR
+.br
+.sp
+.TP
+.B "printCommand (\fPclass\fB PrintCommand)"
+The command to print a postscript file.  Usually `\fBlp\fR' or
+`\fBlpr\fR'.
+.TP
+.B "rshCommand (\fPclass\fB RshCommand)"
+The remote shell command to invoke tty-based commands on remote
+hosts.  Usually, `\fBremsh\fR', `\fBrsh\fR', or `\fBon\fR'.
+.TP
+.B "termCommand (\fPclass\fB TermCommand)"
+The command to invoke a separate tty for showing the input/output of
+the debugged program.  A bourne shell command to run in the separate
+tty is appended this string.  A simple value is
+.sp
+.br
+  \fB@Ddd@*termCommand: xterm -e /bin/sh -c\fR
+.br
+.sp
+.TP
+.B "termType (\fPclass\fB TermType)"
+The terminal type provided by the `\fBtermCommand\fR'
+resource\(em\&that is, the value of the \fBTERM\fR environment
+variable to be passed to the debugged program.  Default:
+`\fBxterm\fR'.
+.TP
+.B "wwwCommand (\fPclass\fB WWWCommand)"
+The command to invoke a \s-2WWW\s+2 browser.  The string `\fB@URL@\fR'
+is replaced by the \s-2URL\s+2 to open.  Default is to try a running
+Netscape first, then to invoke a new Netscape process, then to let a
+running Emacs do the job, then to invoke Mosaic, then to invoke Lynx.
+.RS
+.PP
+To specify `\fBnetscape-3.0\fR' as browser, use the setting:
+.sp
+.br
+  \fB@Ddd@*wwwCommand: \\
+  netscape-3.0 -remote 'openURL(@URL@)' \\
+  || netscape-3.0 '@URL@'\fR
+.br
+.sp
+This command first tries to connect to a running \fBnetscape-3.0\fR browser;
+if this fails, it starts a new \fBnetscape-3.0\fR process.
+.RE
+.TP
+.B "wwwPage (\fPclass\fB WWWPage)"
+The \s-2@DDD@\s+2 \s-2WWW\s+2 page.  Value:
+.sp
+.br
+  \fB@Ddd@*wwwPage: http://www.cs.tu-bs.de/softech/ddd/\fR
+.br
+.sp
+.\"
+.\"
+.\"
+.SS "Diagnostics"
+.TP
+.B "appDefaultsVersion (\fPclass\fB Version)"
+The version of the \s-2@DDD@\s+2 app-defaults file.  If this string
+does not match the version of the current \s-2@DDD@\s+2 executable,
+\s-2@DDD@\s+2 issues a warning.
+.TP
+.B "checkConfiguration (\fPclass\fB CheckConfiguration)"
+If true, check the \s-2@DDD@\s+2 environment (in particular, the X
+configuration), report any possible problem causes and exit.  See also
+the `\fB\-\-check\-configuration\fR' option, below.
+.TP
+.B "dddinitVersion (\fPclass\fB Version)"
+The version of the \s-2@DDD@\s+2 executable that last wrote the
+`\fB$HOME/.dddinit\fR' file.  If this string does not match the
+version of the current \s-2@DDD@\s+2 executable, \s-2@DDD@\s+2 issues
+a warning.
+.TP
+.B "showConfiguration (\fPclass\fB ShowConfiguration)"
+If `\fBtrue\fR', show the \s-2@DDD@\s+2 configuration on standard
+output and exit.  See also the `\fB\-\-configuration\fR' option,
+below.
+.TP
+.B "showInvocation (\fPclass\fB ShowInvocation)"
+If `\fBtrue\fR', show the \s-2@DDD@\s+2 invocation options on standard
+output and exit.  See also the `\fB\-\-help\fR' option, below.
+.TP
+.B "showLicense (\fPclass\fB ShowLicense)"
+If `\fBtrue\fR', show the \s-2@DDD@\s+2 license on standard output and
+exit.  See also the `\fB\-\-license\fR' option, below.
+.TP
+.B "showManual (\fPclass\fB ShowManual)"
+If `\fBtrue\fR', show this \s-2@DDD@\s+2 manual page on standard
+output and exit.  If the standard output is a terminal, the manual
+page is shown in a pager (\fB$PAGER\fR, `\fBless\fR' or `\fBmore\fR').
+See also the `\fB\-\-manual\fR' option, below.
+.TP
+.B "showVersion (\fPclass\fB ShowVersion)"
+If `\fBtrue\fR', show the \s-2@DDD@\s+2 version on standard output and
+exit.  See also the `\fB\-\-version\fR' option, below.
+.TP
+.B "traceDialog (\fPclass\fB Trace)"
+If `\fBtrue\fR', show the dialog between \s-2@DDD@\s+2 and the
+inferior debugger on standard output.  Default is `\fBfalse\fR'.
+.TP
+.B "traceShellCommands (\fPclass\fB Trace)"
+If `\fBtrue\fR', show the programs invoked by \s-2@DDD@\s+2 on
+standard output.  Default is `\fBfalse\fR'.
+.\"
+.\"
+.\"
+.SS "More Resources"
+See the `\fBDdd\fR' application defaults file for more information
+about setting \s-2@DDD@\s+2 resources.  The `\fBDdd\fR' file comes
+with the \s-2@DDD@\s+2 distribution.
 .\"
 .\" ---------------
 .SH "EXTENDING @DDD@"
@@ -1467,31 +2305,27 @@ If you wish something done in \s-2@DDD@\s+2, but cannot do it
 yourself, you can \fIfinance\fR specific \s-2@DDD@\s+2 extensions.
 For details, contact `\fBddd@ips.cs.tu-bs.de\fR'; direct mail is also
 welcome.
-.PP
-Some of the people offering \s-2@DDD@\s+2 support may also accept
-offers to extend \s-2@DDD@\s+2.  For a list of people offering
-\s-2@DDD@\s+2 support, see the file `\fBSERVICE\fR' in the
-\s-2@DDD@\s+2 distribution.
-.PP
 .\"
 .\" ---------------
-.SH "IF YOU LIKE DDD..."
+.SH "IF YOU LIKE @DDD@..."
 .\" ---------------
 If you appreciate this software, or have any suggestions, 
 please send us a picture postcard.  Our address is:
 .PP
 .DS
-Technische Universitaet Braunschweig 
+  Technische Universitaet Braunschweig 
 .br
-Institut fuer Programmiersprachen und Informationssysteme 
+  Institut fuer Programmiersprachen
 .br
-Abteilung Softwaretechnologie 
+  und Informationssysteme 
 .br
-Bueltenweg 88
+  Abteilung Softwaretechnologie 
 .br
-D-38092 Braunschweig 
+  Bueltenweg 88
 .br
-\s-2GERMANY\s+2 
+  D-38092 Braunschweig 
+.br
+  \s-2GERMANY\s+2 
 .br
 .DE
 .PP
@@ -1502,7 +2336,6 @@ It is accessible via our \s-2@DDD@\s+2 \s-2WWW\s+2 page,
   \fBhttp://www.cs.tu-bs.de/softech/ddd/\fR .
 .br
 .sp
-.PP
 .\"
 .\" ---------------
 .SH "OPTIONS"
@@ -1516,8 +2349,7 @@ inferior debugger.
 .TP
 .B \-\-attach\-windows
 Attach the source and data windows to the debugger console, creating one
-single big \s-2@DDD@\s+2 window.  This gives the good ole
-`\fBxxgdb\fR' or `\fBxdbx\fR' feeling.
+single big \s-2@DDD@\s+2 window.
 .TP
 .B \-\-attach\-source\-window
 Attaches only the source window to the debugger console.
@@ -1561,13 +2393,13 @@ inferior debugger as well.
 .TP
 .B \-\-host \fIhostname\fR
 Run the inferior debugger on the remote host \fIhostname\fR.  See
-\fBREMOTE MODE\fR, above.
+`\fBREMOTE MODE\fR', above.
 .TP
 .B \-\-license
 Show the \s-2@DDD@\s+2 license and exit.
 .TP
 .B \-\-login \fIusername\fR
-Use \fIusername\fR as remote user name.  See \fBREMOTE MODE\fR, above.
+Use \fIusername\fR as remote user name.  See `\fBREMOTE MODE\fR', above.
 .TP
 .B \-\-manual
 Show this manual page and exit.
@@ -1635,16 +2467,7 @@ interpreter.  These options are intended for debugging purposes and
 are subject to change without further notice.
 .TP
 .B \-\-xdb
-Run the \s-2XDB\s+2 debugger as inferior debugger.
-.PP
-.\" ---------------
-.SH "RESOURCES"
-.\" ---------------
-.\"
-See the `\fBDdd\fR' application defaults file for full information
-about customizing \s-2@DDD@\s+2.  The `\fBDdd\fR' file comes with
-the \s-2@DDD@\s+2 distribution.
-.PP
+Run \s-2XDB\s+2 as inferior debugger.
 .\"
 .\" ---------------
 .SH "FILES"
@@ -1655,16 +2478,21 @@ the \s-2@DDD@\s+2 distribution.
 .B $HOME/.dddinit
 Individual \s-2DDD\s+2 resource file.  \s-2DDD\s+2 options are saved here.
 .TP
+.B $HOME/.ddd_history
+Default \s-2DDD\s+2 command history file.
+.TP
 .B $HOME/.gdbinit
 \s-2GDB\s+2 initialization file.
 .TP
 .B $HOME/.dbxinit
 \s-2DBX\s+2 initialization file.
 .TP
+.B $HOME/.dbxrc
+Alternate \s-2DBX\s+2 initialization file.
+.TP
 .B $HOME/.xdbrc
 \s-2XDB\s+2 initialization file.
 .PD
-.PP
 .\"
 .\" ---------------
 .SH "SEE ALSO"
@@ -1791,10 +2619,8 @@ program and the output of the inferior debugger.  For instance, if
 your program output includes debugger prompts or debugger-like output,
 \s-2@DDD@\s+2 will become confused.  Use the separate execution window
 to avoid such problems.
-.PP
-Paper sizes larger than 2,147,483,648pt (757km, 470 miles) can not be
-handled.
-.PP
+.\"
+.\"
 .\"
 .\" ---------------
 .SH "REPORTING BUGS"
@@ -1819,19 +2645,21 @@ As a last resort, send bug reports on paper to:
 .sp
 .br
 .DS
-Technische Universitaet Braunschweig 
+  Technische Universitaet Braunschweig 
 .br
-Institut fuer Programmiersprachen und Informationssysteme 
+  Institut fuer Programmiersprachen
 .br
-Abteilung Softwaretechnologie 
+  und Informationssysteme 
 .br
-\s-2DDD\s+2-Bugs 
+  Abteilung Softwaretechnologie 
 .br
-Bueltenweg 88
+  \s-2DDD\s+2-Bugs 
 .br
-D-38092 Braunschweig 
+  Bueltenweg 88
 .br
-\s-2GERMANY\s+2 
+  D-38092 Braunschweig 
+.br
+  \s-2GERMANY\s+2 
 .br
 .DE
 .\"
@@ -1933,7 +2761,6 @@ diffs.  If you even discuss something in the \s-2@DDD@\s+2 source, refer to
 it by context, \fInever\fR by line number.
 .PP
 Be sure to include this information in \fIevery\fR single bug report.
-.PP
 .\"
 .\"
 .\" ---------------
@@ -1983,7 +2810,6 @@ September, 1996
 \s-2@DDD@\s+2 2.0: Colored displays, \s-2XDB\s+2
 support, generic \s-2DBX\s+2 support, command tool.
 .PD
-.PP
 .\"
 .\"
 .\" --------------------
@@ -1995,17 +2821,19 @@ installation as formatted manual page (as
 `\fB/usr/local/man/cat1/ddd.1\fR' or similar) on \s-2UNIX\s+2 systems.
 .PP
 A PostScript copy of this manual page, suitable for printing, is
-included in the DDD source distribution and available separately as
+included in the \s-2@DDD@\s+2 source distribution and available
+separately as
 .sp
 .br
   \fBftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/doc/ddd-man.ps.gz\fR
 .br
 .sp
+.PP
 A \s-2ROFF\s+2 copy of this manual page, suitable for installation as
 manual page on \s-2UNIX\s+2 systems (as
-`\fB/usr/local/man/man1/ddd.1\fR' or similar), is included in the DDD
-source distribution.
-.PP
+`\fB/usr/local/man/man1/ddd.1\fR' or similar), is included in the
+\s-2@DDD@\s+2 source distribution.
+.sp
 .\"
 .\"
 .\" ---------------
@@ -2047,4 +2875,3 @@ manual page into another language, under the above conditions for
 modified versions, except that this permission notice may be included
 in translations approved by the Free Software Foundation instead of in
 the original English.
-.PP
