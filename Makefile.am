@@ -30,10 +30,17 @@
 # `http://www.gnu.org/software/ddd/',
 # or send a mail to the DDD developers <ddd@gnu.org>.
 
+# -----------------------------------------------------------------------------
+# Subdirectories.
+# -----------------------------------------------------------------------------
+
 SUBDIRS = @subdirs@
 
 
-# Distribution stuff
+
+# -----------------------------------------------------------------------------
+# Distribution (via etc/make-final).
+# -----------------------------------------------------------------------------
 
 # Build a DDD distribution from CVS archive.
 .PHONY: cvsdist

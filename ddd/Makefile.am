@@ -30,6 +30,10 @@
 # `http://www.gnu.org/software/ddd/',
 # or send a mail to the DDD developers <ddd@gnu.org>.
 
+# -----------------------------------------------------------------------------
+# Settings.
+# -----------------------------------------------------------------------------
+
 # The build number.  (This must be set from outside)
 REL = 1
 
@@ -113,7 +117,10 @@ CXXWARNINGS = @CXXWARNINGS@
 CXXFLAGS = $(CXXOPT) $(CXXDEBUG) $(CXXWARNINGS)
 
 
+
+# -----------------------------------------------------------------------------
 # DDD Sources.
+# -----------------------------------------------------------------------------
 
 # General-purpose utilities: strings, regexps, run-type type info...
 BASE_SOURCES = \
@@ -632,6 +639,11 @@ DDD_SOURCES = \
 	WhatNextCB.C \
 	WhatNextCB.h
 
+
+# -----------------------------------------------------------------------------
+# DDD Libraries.
+# -----------------------------------------------------------------------------
+
 # Local libraries.
 
 # POSIX regex routines (from system or ../librx/librx.a)
@@ -663,7 +675,10 @@ DDD_LIBS = $(CXXLIBS) $(LIBREADLINE) $(LIBSOCKET) $(LIBNSL) $(LIBRX) \
 	$(LIBTERMCAP) $(LIBY) $(LIBIBERTY) $(LIBM) $(LIBELF)
 
 
-# X Libraries
+
+# -----------------------------------------------------------------------------
+# X Libraries.
+# -----------------------------------------------------------------------------
 
 # Special flags for linking with X.  (-L/usr/X11R5/lib)
 X_LDFLAGS = @X_LIBS@
@@ -701,6 +716,9 @@ ALL_X_LIBS = $(X_LDFLAGS) $(LIBXM) $(LIBXP) $(LIBXPM) $(LIBXAW) $(LIBXEXT) \
 	     $(LIBXT) $(LIBX11) $(LIBGEN)
 
 
+# -----------------------------------------------------------------------------
+# Building DDD (and others).
+# -----------------------------------------------------------------------------
 
 bin_PROGRAMS = ddd
 noinst_PROGRAMS = stringify userinfo ctest cxxtest
@@ -725,8 +743,115 @@ X_INCLUDE = @X_CFLAGS@
 INCLUDES = -I$(srcdir)/.. $(X_INCLUDE)
 
 
+# -----------------------------------------------------------------------------
+# DDD App-Defaults.
+# -----------------------------------------------------------------------------
 
-# Picture conversions.
+# The resource header and app-default files.
+
+Ddd.ad.h: Ddd $(srcdir)/ad2c.sed
+	$(SED) -n -f $(srcdir)/ad2c.sed Ddd > $@~ && $(MV) $@~ $@
+
+$(srcdir)/Ddd.in: $(srcdir)/Ddd.in.m4 $(srcdir)/tips.m4 \
+	$(srcdir)/macros.m4 $(srcdir)/colors.m4 
+	( \
+	( \
+		echo "define(srcdir, \`$(srcdir)')dnl"; \
+		echo "include(srcdir()/Ddd.in.m4)dnl" \
+	) | $(M4); \
+        ( \
+		echo "define(srcdir, \`$(srcdir)')dnl"; \
+		echo "include(srcdir()/tips.m4)dnl" \
+	) | $(M4); \
+	) > $@~ && $(MV) $@~ $@
+
+$(srcdir)/tips.m4: $(srcdir)/../TIPS $(srcdir)/tips2m4.awk
+	$(AWK) -f $(srcdir)/tips2m4.awk $(srcdir)/../TIPS > $@~ && $(MV) $@~ $@
+
+$(srcdir)/tips.html: $(srcdir)/../TIPS
+	( \
+		echo "define(srcdir, \`$(srcdir)')dnl"; \
+		echo "define(macros, \`$(srcdir)/html.m4')dnl"; \
+		echo "include(srcdir()/../TIPS)dnl" \
+	) | $(M4) | $(AWK) -f $(srcdir)/tips2html.awk | \
+	$(SED) 's/\\133/\[/g' | $(SED) 's/\\135/\]/g' | \
+	$(SED) 's/@\([A-Z][A-Z]*\)@/\1/g' | $(SED) 's/@ /@/g' \
+	> $@~ && $(MV) $@~ $@
+
+
+
+# -----------------------------------------------------------------------------
+# DDD VSL header.
+# -----------------------------------------------------------------------------
+
+# The VSL header files.
+
+VSLDIR  = $(srcdir)/../vsllib
+
+VSL_CPP = $(CPP) -I$(VSLDIR) -I$(prefix)/lib/vsl-include
+
+VSLSOURCES = \
+	$(VSLDIR)/std.vsl \
+	$(VSLDIR)/builtin.vsl \
+	$(VSLDIR)/tab.vsl \
+	$(VSLDIR)/fonts.vsl \
+	$(VSLDIR)/colors.vsl
+
+$(srcdir)/ddd.vsl.h: $(srcdir)/ddd.vsl $(srcdir)/vsl2c.sed $(VSLSOURCES)
+	$(CAT) $(srcdir)/ddd.vsl > tmp.c
+	$(VSL_CPP) tmp.c | $(SED) -f $(srcdir)/vsl2c.sed > $@
+	$(RM) tmp.c
+
+$(srcdir)/ddd.vsl: $(srcdir)/ddd.vsl.m4 $(srcdir)/colors.m4
+	( \
+		echo "define(srcdir, \`$(srcdir)')dnl"; \
+		echo "include(srcdir()/ddd.vsl.m4)dnl" \
+	) | $(M4) > $@~ && $(MV) $@~ $@
+
+
+
+
+# -----------------------------------------------------------------------------
+# Lex & Yacc
+# -----------------------------------------------------------------------------
+
+# YACC commands.
+YY = yy
+YACCTOCXX = $(srcdir)/yacctoC
+
+# LEX commands.
+LEXTOCXX = $(srcdir)/lextoC
+
+# The lex output root (lex.yy)
+LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
+
+# VSL parsers.
+vsl-lex.C: $(srcdir)/vsl-lex.L
+	$(LEX) $(LFLAGS) $(srcdir)/vsl-lex.L
+	$(SHELL) $(LEXTOCXX) -prefix vsl
+	$(MV) $(LEX_OUTPUT_ROOT).C $@
+	$(RM) $(LEX_OUTPUT_ROOT).c
+
+vsl-gramma.h vsl-gramma.C: $(srcdir)/vsl-gramma.Y \
+	$(YACCTOCXX) $(YACCTOCXX).bison $(YACCTOCXX).h $(YACCTOCXX).sun
+	$(YACC) $(YFLAGS) -d $(srcdir)/vsl-gramma.Y
+	$(SHELL) $(YACCTOCXX) -prefix vsl
+	$(MV) y.tab.H vsl-gramma.h
+	$(MV) y.tab.C vsl-gramma.C
+	$(RM) y.tab.c y.tab.h
+
+# DDD regexp parsers.
+rxscan.C: $(srcdir)/rxscan.L
+	$(LEX) $(LFLAGS) $(srcdir)/rxscan.L
+	$(SHELL) $(LEXTOCXX) -prefix "ddd"
+	$(MV) $(LEX_OUTPUT_ROOT).C $@
+	$(RM) $(LEX_OUTPUT_ROOT).c
+
+
+
+# -----------------------------------------------------------------------------
+# Text files compiled into DDD.
+# -----------------------------------------------------------------------------
 
 # Script rules
 .txt.C:
@@ -743,6 +868,143 @@ INCLUDES = -I$(srcdir)/.. $(X_INCLUDE)
 	) > tmp.C; \
 	$(CPP) -C -P -undef $(CPPFLAGS) $(DEFS) $(INCLUDE) tmp.C > $@; \
 	$(RM) tmp.C
+
+# The info file, in text format
+# ddd.info.txt does NOT depend on ddd.info since we don't want it to get
+# re-created after each configuration.
+ddd.info.txt: $(srcdir)/ddd.texi configure.in
+	$(MAKE) ddd.info
+	info --subnodes -o - -f ddd.info > $@~ && $(MV) $@~ $@
+
+# ddd.man.txt may reside in $(srcdir) or `.' , hence the `$?'
+ddd.info.txt.gz: ddd.info.txt
+	$(COMPRESS) $? > $@~ && $(MV) $@~ $@
+
+ddd.info.txt.gz.C: ddd.info.txt.gz
+	$(MAKE) stringify$(EXEEXT)
+	-./stringify < $? > $@~ && $(MV) $@~ $@
+
+# COPYING.huff.C does NOT depend on huffencode since we don't want it
+# to get re-created after each configuration.
+COPYING.huff.C: $(srcdir)/../COPYING
+	$(MAKE) huffencode$(EXEEXT)
+	-$(SED) 's///' < $(srcdir)/../COPYING | ./huffencode > $@~ && \
+	$(MV) $@~ $@
+
+COPYING.gz: $(srcdir)/../COPYING
+	$(COMPRESS) $(srcdir)/../COPYING > $@
+
+COPYING.gz.C: COPYING.gz
+	$(MAKE) stringify$(EXEEXT)
+	-./stringify < COPYING.gz > $@~ && $(MV) $@~ $@
+
+# NEWS.huff.C does NOT depend on huffencode since we don't want it
+# to get re-created after each configuration.
+NEWS.huff.C: $(srcdir)/../NEWS
+	$(MAKE) huffencode$(EXEEXT)
+	-$(SED) 's///' < $(srcdir)/../NEWS | ./huffencode > $@~ && \
+	$(MV) $@~ $@
+
+NEWS.gz: $(srcdir)/../NEWS
+	$(COMPRESS) $(srcdir)/../NEWS > $@~ && $(MV) $@~ $@
+
+NEWS.gz.C: NEWS.gz
+	$(MAKE) stringify$(EXEEXT)
+	-./stringify < NEWS.gz > $@~ && $(MV) $@~ $@
+
+show.$(OBJEXT): COPYING.gz.C NEWS.gz.C ddd.info.txt.gz.C
+
+
+# Configuration info stuff
+configinfo.C: USERINFO $(srcdir)/config-info
+	$(SHELL) $(srcdir)/config-info $(srcdir)/USERINFO USERINFO > $@~ && \
+	$(MV) $@~ $@
+
+
+# If `~/.ddd_userinfo' exists, use this file as personal identification.
+USERINFO: userinfo$(EXEEXT)
+	-(cat $$HOME/.ddd_userinfo 2> /dev/null || \
+	./userinfo || echo '(unknown)') > $@~ && $(MV) $@~ $@
+	@$(ECHO) ""
+	@$(ECHO) "Please check your name and e-mail address:"
+	@$(ECHO) ""
+	@$(CAT) $@
+	@$(ECHO) ""
+	@$(ECHO) "This information will be compiled into $(DDD)."
+	@$(ECHO) "If it is not correct, please edit $@ and re-compile."
+	@$(ECHO) ""
+
+
+# EPS code stuff.
+$(srcdir)/header.str: $(srcdir)/header.ps
+	$(SED) 's/^.*$$/"&\\n"/' $(srcdir)/header.ps > $@~ && $(MV) $@~ $@
+
+$(srcdir)/trailer.str: $(srcdir)/trailer.ps
+	$(SED) 's/^.*$$/"&\\n"/' $(srcdir)/trailer.ps > $@~ && $(MV) $@~ $@
+
+$(srcdir)/eps-code.h: \
+	$(srcdir)/header.str $(srcdir)/trailer.str $(srcdir)/eps-code.x
+	$(SED) -e '/prolog/r $(srcdir)/header.str' \
+	       -e '/trailer/r $(srcdir)/trailer.str' $(srcdir)/eps-code.x \
+	> $@~ && $(MV) $@~ $@
+
+
+# -----------------------------------------------------------------------------
+# Demos.
+# -----------------------------------------------------------------------------
+
+# For demonstration and debugging purposes
+.PHONY: check
+check: Ddd ./$(ddd)$(EXEEXT) cxxtest$(EXEEXT)
+	XUSERFILESEARCHPATH=%N XAPPLRESDIR=. ./$(ddd)$(EXEEXT) $(DDD_OPTIONS) cxxtest$(EXEEXT)
+
+# We don't want no optimizing, but debugging info in our test files
+MAKE_DEBUG = \
+$(MAKE) CXXFLAGS="`$(ECHO) '$(CXXFLAGS)' | \
+	$(SED) 's/-O[^ ]*//' | $(SED) 's/-DNDEBUG//'`" \
+	CFLAGS="`$(ECHO) '$(CFLAGS)' | \
+	$(SED) 's/-O[^ ]*//' | $(SED) 's/-DNDEBUG//'`"
+
+cxxtest.$(OBJEXT): $(srcdir)/cxxtest.C
+	@case '$(CXXFLAGS)' in \
+	*-O*) $(MAKE_DEBUG) $@;; \
+	*) set -x; \
+	   $(CXXCOMPILE) -c @CXXDEBUG@ $(srcdir)/cxxtest.C -o $@;; \
+	esac
+
+ctest.$(OBJEXT): $(srcdir)/ctest.c
+	@case '$(CFLAGS)' in \
+	*-O*) $(MAKE_DEBUG) $@;; \
+	*) set -x; \
+	   $(COMPILE) -c -g $(srcdir)/ctest.c -o $@;; \
+	esac
+
+sample.$(OBJEXT): $(srcdir)/sample.c
+	@case '$(CFLAGS)' in \
+	*-O*) $(MAKE_DEBUG) $@;; \
+	*) set -x; \
+	   $(COMPILE) -c -g $(srcdir)/sample.c -o $@;; \
+	esac
+
+grabtest.$(OBJEXT): $(srcdir)/grabtest.C
+	@case '$(CXXFLAGS)' in \
+	*-O*) $(MAKE_DEBUG) $@;; \
+	*) set -x; \
+	   $(CXXCOMPILE) -c @CXXDEBUG@ $(srcdir)/grabtest.C -o $@;; \
+	esac
+
+bug.$(OBJEXT):	$(srcdir)/bug.C
+	@case '$(CXXFLAGS)' in \
+	*-O*) $(MAKE_DEBUG) $@;; \
+	*) set -x; \
+	   $(CXXCOMPILE) -c @CXXDEBUG@ $(srcdir)/bug.C -o $@;; \
+	esac
+
+
+
+# -----------------------------------------------------------------------------
+# Icons.
+# -----------------------------------------------------------------------------
 
 # Icon rules
 .xpm.xbm:
@@ -799,34 +1061,150 @@ INCLUDES = -I$(srcdir)/.. $(X_INCLUDE)
 	$(SED) "s/static char/static unsigned char/g" > $@~
 	@test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; test -s $@)
 
-# Picture conversions
+# Icons and logos.
 
-# Width of image in HTML manual (pixels)
-IMAGE_WIDTH = 600
+.PHONY: icons
+icons:	$(ICONS)
+	@:
 
-# We use giftoppm/ppmtogif to get optimal GIF compression.
-.eps.gif:
-	$(CONVERT) -geometry $(IMAGE_WIDTH) $< $@
+# All X bitmaps are derived from the XPM sources.
 
-.eps.jpg:
-	$(CONVERT) -geometry $(IMAGE_WIDTH) -quality 100 $< $@
+$(icondir)/dddmask.xpm: $(icondir)/ddd.xpm
+	$(SED) 's/[wW]hite/black/g' $(icondir)/ddd.xpm > $@
 
-.eps.png:
-	$(CONVERT) -geometry $(IMAGE_WIDTH) -quality 100 $< $@
+$(icondir)/ddd.xbm: $(icondir)/ddd.xpm
 
-.eps.pdf:
-	$(EPSTOPDF) $< --outfile=$@
+$(icondir)/ddd.xface: $(icondir)/ddd.xbm
 
-.fig.eps:
-	(cd `dirname $<` && $(FIG2PS) `basename $<` ) > $@
+$(icondir)/dddmask.xbm: $(icondir)/dddmask.xpm
 
-.texi.pdf:
-	TEXINPUTS=$(top_srcdir)/../texinfo:$$TEXINPUTS \
-	  MAKEINFO='$(MAKEINFO) -I $(srcdir)' $(TEXI2PDF) $<
+# Original filter for dddsplash to extract g4 info
+# $(SED) 's/[	 ][cmg][ 	][#a-zA-Z0-9][#a-zA-Z0-9]*//g' | \
+#
+
+$(icondir)/dddsplash.xbm: $(icondir)/dddsplash.xpm
+	@$(ECHO) "Creating $@"
+	@-$(CAT) $(icondir)/dddsplash.xpm | \
+	$(XPMTOPPM) | $(PNMDEPTH) 255 | $(PNMGAMMA) 0.4 | $(PPMTOPGM) | \
+	$(PGMENHANCE) -7 | \
+	$(PGMTOPBM) | $(PBMTOXBM) | $(SED) 's/noname/dddsplash/g' | \
+	$(SED) "s/static char/static unsigned char/g" > $@~
+	@test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; test -s $@)
+
+$(icondir)/dddlogo.xpm: $(icondir)/dddsplash.xpm
+	$(CONVERT) -pen white \
+	-draw 'rectangle 0,0 409,139' -draw 'rectangle 1,1 408,138' $< $@
+
+
+# The (derived) icons.
+# Icon directories
+icondir = $(srcdir)/../icons
+toolbardir = $(icondir)/toolbar
+
+# XBM icons are derived from XPM sources
+XBM_ICONS = \
+	$(toolbardir)/breakat.xbm \
+	$(toolbardir)/clearat.xbm \
+	$(toolbardir)/cluster.xbm \
+	$(toolbardir)/delete.xbm \
+	$(toolbardir)/deref.xbm \
+	$(toolbardir)/disable.xbm \
+	$(toolbardir)/display.xbm \
+	$(toolbardir)/findbwd.xbm \
+	$(toolbardir)/findfwd.xbm \
+	$(toolbardir)/enable.xbm \
+	$(toolbardir)/hide.xbm \
+	$(toolbardir)/lookup.xbm \
+	$(toolbardir)/maketemp.xbm \
+	$(toolbardir)/newbreak.xbm \
+	$(toolbardir)/newdisplay.xbm \
+	$(toolbardir)/newwatch.xbm \
+	$(toolbardir)/plot.xbm \
+	$(toolbardir)/print.xbm \
+	$(toolbardir)/properties.xbm \
+	$(toolbardir)/rotate.xbm \
+	$(toolbardir)/set.xbm \
+	$(toolbardir)/show.xbm \
+	$(toolbardir)/uncluster.xbm \
+	$(toolbardir)/undisplay.xbm \
+	$(toolbardir)/unwatch.xbm \
+	$(toolbardir)/watch.xbm 
+
+# XPMXX icons (insensitive XPM icons) are derived from XBM sources
+XPM_XX_ICONS = \
+	$(toolbardir)/breakat.xpmxx \
+	$(toolbardir)/clearat.xpmxx \
+	$(toolbardir)/cluster.xpmxx \
+	$(toolbardir)/delete.xpmxx \
+	$(toolbardir)/deref.xpmxx \
+	$(toolbardir)/disable.xpmxx \
+	$(toolbardir)/display.xpmxx \
+	$(toolbardir)/findbwd.xpmxx \
+	$(toolbardir)/findfwd.xpmxx \
+	$(toolbardir)/enable.xpmxx \
+	$(toolbardir)/hide.xpmxx \
+	$(toolbardir)/lookup.xpmxx \
+	$(toolbardir)/maketemp.xpmxx \
+	$(toolbardir)/newbreak.xpmxx \
+	$(toolbardir)/newdisplay.xpmxx \
+	$(toolbardir)/newwatch.xpmxx \
+	$(toolbardir)/plot.xpmxx \
+	$(toolbardir)/print.xpmxx \
+	$(toolbardir)/properties.xpmxx \
+	$(toolbardir)/rotate.xpmxx \
+	$(toolbardir)/set.xpmxx \
+	$(toolbardir)/show.xpmxx \
+	$(toolbardir)/uncluster.xpmxx \
+	$(toolbardir)/undisplay.xpmxx \
+	$(toolbardir)/unwatch.xpmxx \
+	$(toolbardir)/watch.xpmxx 
+
+# XBMXX icons (insensitive XBM icons) are derived from XPM sources
+XBM_XX_ICONS = \
+	$(toolbardir)/breakat.xbmxx \
+	$(toolbardir)/clearat.xbmxx \
+	$(toolbardir)/cluster.xbmxx \
+	$(toolbardir)/delete.xbmxx \
+	$(toolbardir)/deref.xbmxx \
+	$(toolbardir)/disable.xbmxx \
+	$(toolbardir)/display.xbmxx \
+	$(toolbardir)/findbwd.xbmxx \
+	$(toolbardir)/findfwd.xbmxx \
+	$(toolbardir)/enable.xbmxx \
+	$(toolbardir)/hide.xbmxx \
+	$(toolbardir)/lookup.xbmxx \
+	$(toolbardir)/maketemp.xbmxx \
+	$(toolbardir)/newbreak.xbmxx \
+	$(toolbardir)/newdisplay.xbmxx \
+	$(toolbardir)/newwatch.xbmxx \
+	$(toolbardir)/plot.xbmxx \
+	$(toolbardir)/print.xbmxx \
+	$(toolbardir)/properties.xbmxx \
+	$(toolbardir)/rotate.xbmxx \
+	$(toolbardir)/set.xbmxx \
+	$(toolbardir)/show.xbmxx \
+	$(toolbardir)/uncluster.xbmxx \
+	$(toolbardir)/undisplay.xbmxx \
+	$(toolbardir)/unwatch.xbmxx \
+	$(toolbardir)/watch.xbmxx
+
+# All derived icons
+# Order is significant here!  First sources, then derived files.
+ICONS = \
+	$(icondir)/ddd.xbm \
+	$(icondir)/dddmask.xbm \
+	$(icondir)/dddsplash.xbm \
+	$(icondir)/ddd.xface \
+	$(XBM_ICONS) \
+	$(XPM_XX_ICONS) \
+	$(XBM_XX_ICONS)
 
 
 
+# -----------------------------------------------------------------------------
 # DDD Manual.
+# -----------------------------------------------------------------------------
+
 info_TEXINFOS = ddd.texi
 ddd_TEXINFOS = $(srcdir)/config.texi $(srcdir)/gpl.texinfo
 texidir = $(srcdir)/../texinfo
@@ -840,6 +1218,12 @@ $(srcdir)/gpl.texinfo: $(texidir)/gpl.texinfo
 	$(RM) $@; $(LN_S) $(texidir)/gpl.texinfo $@
 
 ddd.dvi: $(PS_IMAGES)
+
+
+# The DDD manual in PostScript format, including all pictures.
+
+$(docdir)/ddd.ps: ddd.dvi
+	$(DVIPS) ddd.dvi -o $@
 
 
 # The DDD manual in PDF format, including all pictures.
@@ -888,6 +1272,34 @@ man_MANS = ddd.1
 ddd.1:   ddd.man $(srcdir)/unumlaut.sed
 	-$(SED) -f $(srcdir)/unumlaut.sed ddd.man > $@~ && $(MV) $@~ $@
 
+
+
+# -----------------------------------------------------------------------------
+# DDD Manual Pictures.
+# -----------------------------------------------------------------------------
+
+# Width of image in HTML manual (pixels)
+IMAGE_WIDTH = 600
+
+# We use giftoppm/ppmtogif to get optimal GIF compression.
+.eps.gif:
+	$(CONVERT) -geometry $(IMAGE_WIDTH) $< $@
+
+.eps.jpg:
+	$(CONVERT) -geometry $(IMAGE_WIDTH) -quality 100 $< $@
+
+.eps.png:
+	$(CONVERT) -geometry $(IMAGE_WIDTH) -quality 100 $< $@
+
+.eps.pdf:
+	$(EPSTOPDF) $< --outfile=$@
+
+.fig.eps:
+	(cd `dirname $<` && $(FIG2PS) `basename $<` ) > $@
+
+.texi.pdf:
+	TEXINPUTS=$(top_srcdir)/../texinfo:$$TEXINPUTS \
+	  MAKEINFO='$(MAKEINFO) -I $(srcdir)' $(TEXI2PDF) $<
 
 # PostScript pictures in the DDD manual.
 # All of these are generated from FIG and XPM files.
@@ -1391,208 +1803,10 @@ $(picdir)/dddback.png: $(icondir)/dddback.xpm
 	$(CONVERT) -quality 100 $(icondir)/dddback.xpm $@
 
 
-# The DDD manual in PostScript format, including all pictures.
 
-$(docdir)/ddd.ps: ddd.dvi
-	$(DVIPS) ddd.dvi -o $@
-
-
-# Icons and logos.
-
-.PHONY: icons
-icons:	$(ICONS)
-	@:
-
-# All X bitmaps are derived from the XPM sources.
-
-$(icondir)/dddmask.xpm: $(icondir)/ddd.xpm
-	$(SED) 's/[wW]hite/black/g' $(icondir)/ddd.xpm > $@
-
-$(icondir)/ddd.xbm: $(icondir)/ddd.xpm
-
-$(icondir)/ddd.xface: $(icondir)/ddd.xbm
-
-$(icondir)/dddmask.xbm: $(icondir)/dddmask.xpm
-
-# Original filter for dddsplash to extract g4 info
-# $(SED) 's/[	 ][cmg][ 	][#a-zA-Z0-9][#a-zA-Z0-9]*//g' | \
-#
-
-$(icondir)/dddsplash.xbm: $(icondir)/dddsplash.xpm
-	@$(ECHO) "Creating $@"
-	@-$(CAT) $(icondir)/dddsplash.xpm | \
-	$(XPMTOPPM) | $(PNMDEPTH) 255 | $(PNMGAMMA) 0.4 | $(PPMTOPGM) | \
-	$(PGMENHANCE) -7 | \
-	$(PGMTOPBM) | $(PBMTOXBM) | $(SED) 's/noname/dddsplash/g' | \
-	$(SED) "s/static char/static unsigned char/g" > $@~
-	@test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; test -s $@)
-
-$(icondir)/dddlogo.xpm: $(icondir)/dddsplash.xpm
-	$(CONVERT) -pen white \
-	-draw 'rectangle 0,0 409,139' -draw 'rectangle 1,1 408,138' $< $@
-
-
-# The (derived) icons.
-# Icon directories
-icondir = $(srcdir)/../icons
-toolbardir = $(icondir)/toolbar
-
-# XBM icons are derived from XPM sources
-XBM_ICONS = \
-	$(toolbardir)/breakat.xbm \
-	$(toolbardir)/clearat.xbm \
-	$(toolbardir)/cluster.xbm \
-	$(toolbardir)/delete.xbm \
-	$(toolbardir)/deref.xbm \
-	$(toolbardir)/disable.xbm \
-	$(toolbardir)/display.xbm \
-	$(toolbardir)/findbwd.xbm \
-	$(toolbardir)/findfwd.xbm \
-	$(toolbardir)/enable.xbm \
-	$(toolbardir)/hide.xbm \
-	$(toolbardir)/lookup.xbm \
-	$(toolbardir)/maketemp.xbm \
-	$(toolbardir)/newbreak.xbm \
-	$(toolbardir)/newdisplay.xbm \
-	$(toolbardir)/newwatch.xbm \
-	$(toolbardir)/plot.xbm \
-	$(toolbardir)/print.xbm \
-	$(toolbardir)/properties.xbm \
-	$(toolbardir)/rotate.xbm \
-	$(toolbardir)/set.xbm \
-	$(toolbardir)/show.xbm \
-	$(toolbardir)/uncluster.xbm \
-	$(toolbardir)/undisplay.xbm \
-	$(toolbardir)/unwatch.xbm \
-	$(toolbardir)/watch.xbm 
-
-# XPMXX icons (insensitive XPM icons) are derived from XBM sources
-XPM_XX_ICONS = \
-	$(toolbardir)/breakat.xpmxx \
-	$(toolbardir)/clearat.xpmxx \
-	$(toolbardir)/cluster.xpmxx \
-	$(toolbardir)/delete.xpmxx \
-	$(toolbardir)/deref.xpmxx \
-	$(toolbardir)/disable.xpmxx \
-	$(toolbardir)/display.xpmxx \
-	$(toolbardir)/findbwd.xpmxx \
-	$(toolbardir)/findfwd.xpmxx \
-	$(toolbardir)/enable.xpmxx \
-	$(toolbardir)/hide.xpmxx \
-	$(toolbardir)/lookup.xpmxx \
-	$(toolbardir)/maketemp.xpmxx \
-	$(toolbardir)/newbreak.xpmxx \
-	$(toolbardir)/newdisplay.xpmxx \
-	$(toolbardir)/newwatch.xpmxx \
-	$(toolbardir)/plot.xpmxx \
-	$(toolbardir)/print.xpmxx \
-	$(toolbardir)/properties.xpmxx \
-	$(toolbardir)/rotate.xpmxx \
-	$(toolbardir)/set.xpmxx \
-	$(toolbardir)/show.xpmxx \
-	$(toolbardir)/uncluster.xpmxx \
-	$(toolbardir)/undisplay.xpmxx \
-	$(toolbardir)/unwatch.xpmxx \
-	$(toolbardir)/watch.xpmxx 
-
-# XBMXX icons (insensitive XBM icons) are derived from XPM sources
-XBM_XX_ICONS = \
-	$(toolbardir)/breakat.xbmxx \
-	$(toolbardir)/clearat.xbmxx \
-	$(toolbardir)/cluster.xbmxx \
-	$(toolbardir)/delete.xbmxx \
-	$(toolbardir)/deref.xbmxx \
-	$(toolbardir)/disable.xbmxx \
-	$(toolbardir)/display.xbmxx \
-	$(toolbardir)/findbwd.xbmxx \
-	$(toolbardir)/findfwd.xbmxx \
-	$(toolbardir)/enable.xbmxx \
-	$(toolbardir)/hide.xbmxx \
-	$(toolbardir)/lookup.xbmxx \
-	$(toolbardir)/maketemp.xbmxx \
-	$(toolbardir)/newbreak.xbmxx \
-	$(toolbardir)/newdisplay.xbmxx \
-	$(toolbardir)/newwatch.xbmxx \
-	$(toolbardir)/plot.xbmxx \
-	$(toolbardir)/print.xbmxx \
-	$(toolbardir)/properties.xbmxx \
-	$(toolbardir)/rotate.xbmxx \
-	$(toolbardir)/set.xbmxx \
-	$(toolbardir)/show.xbmxx \
-	$(toolbardir)/uncluster.xbmxx \
-	$(toolbardir)/undisplay.xbmxx \
-	$(toolbardir)/unwatch.xbmxx \
-	$(toolbardir)/watch.xbmxx
-
-# All derived icons
-# Order is significant here!  First sources, then derived files.
-ICONS = \
-	$(icondir)/ddd.xbm \
-	$(icondir)/dddmask.xbm \
-	$(icondir)/dddsplash.xbm \
-	$(icondir)/ddd.xface \
-	$(XBM_ICONS) \
-	$(XPM_XX_ICONS) \
-	$(XBM_XX_ICONS)
-
-
-
-# The resource header and app-default files.
-
-Ddd.ad.h: Ddd $(srcdir)/ad2c.sed
-	$(SED) -n -f $(srcdir)/ad2c.sed Ddd > $@~ && $(MV) $@~ $@
-
-$(srcdir)/Ddd.in: $(srcdir)/Ddd.in.m4 $(srcdir)/tips.m4 \
-	$(srcdir)/macros.m4 $(srcdir)/colors.m4 
-	( \
-	( \
-		echo "define(srcdir, \`$(srcdir)')dnl"; \
-		echo "include(srcdir()/Ddd.in.m4)dnl" \
-	) | $(M4); \
-        ( \
-		echo "define(srcdir, \`$(srcdir)')dnl"; \
-		echo "include(srcdir()/tips.m4)dnl" \
-	) | $(M4); \
-	) > $@~ && $(MV) $@~ $@
-
-$(srcdir)/tips.m4: $(srcdir)/../TIPS $(srcdir)/tips2m4.awk
-	$(AWK) -f $(srcdir)/tips2m4.awk $(srcdir)/../TIPS > $@~ && $(MV) $@~ $@
-
-$(srcdir)/tips.html: $(srcdir)/../TIPS
-	( \
-		echo "define(srcdir, \`$(srcdir)')dnl"; \
-		echo "define(macros, \`$(srcdir)/html.m4')dnl"; \
-		echo "include(srcdir()/../TIPS)dnl" \
-	) | $(M4) | $(AWK) -f $(srcdir)/tips2html.awk | \
-	$(SED) 's/\\133/\[/g' | $(SED) 's/\\135/\]/g' | \
-	$(SED) 's/@\([A-Z][A-Z]*\)@/\1/g' | $(SED) 's/@ /@/g' \
-	> $@~ && $(MV) $@~ $@
-
-
-# The VSL header files.
-
-VSLDIR  = $(srcdir)/../vsllib
-
-VSL_CPP = $(CPP) -I$(VSLDIR) -I$(prefix)/lib/vsl-include
-
-VSLSOURCES = \
-	$(VSLDIR)/std.vsl \
-	$(VSLDIR)/builtin.vsl \
-	$(VSLDIR)/tab.vsl \
-	$(VSLDIR)/fonts.vsl \
-	$(VSLDIR)/colors.vsl
-
-$(srcdir)/ddd.vsl.h: $(srcdir)/ddd.vsl $(srcdir)/vsl2c.sed $(VSLSOURCES)
-	$(CAT) $(srcdir)/ddd.vsl > tmp.c
-	$(VSL_CPP) tmp.c | $(SED) -f $(srcdir)/vsl2c.sed > $@
-	$(RM) tmp.c
-
-$(srcdir)/ddd.vsl: $(srcdir)/ddd.vsl.m4 $(srcdir)/colors.m4
-	( \
-		echo "define(srcdir, \`$(srcdir)')dnl"; \
-		echo "include(srcdir()/ddd.vsl.m4)dnl" \
-	) | $(M4) > $@~ && $(MV) $@~ $@
-
+# -----------------------------------------------------------------------------
+# Configuration.
+# -----------------------------------------------------------------------------
 
 # Special rules for configuration.
 # autoheader might not change config.h.in
@@ -1626,166 +1840,11 @@ host.h: $(srcdir)/host.h.in config.status
 	$(SED) "s%@TARGET_CANONICAL@%$(target_canonical)%" > $@~ && \
 	$(MV) $@~ $@
 
-# EPS code stuff.
-$(srcdir)/header.str: $(srcdir)/header.ps
-	$(SED) 's/^.*$$/"&\\n"/' $(srcdir)/header.ps > $@~ && $(MV) $@~ $@
-
-$(srcdir)/trailer.str: $(srcdir)/trailer.ps
-	$(SED) 's/^.*$$/"&\\n"/' $(srcdir)/trailer.ps > $@~ && $(MV) $@~ $@
-
-$(srcdir)/eps-code.h: \
-	$(srcdir)/header.str $(srcdir)/trailer.str $(srcdir)/eps-code.x
-	$(SED) -e '/prolog/r $(srcdir)/header.str' \
-	       -e '/trailer/r $(srcdir)/trailer.str' $(srcdir)/eps-code.x \
-	> $@~ && $(MV) $@~ $@
 
 
-# Lex and Yacc stuff.
-
-# YACC commands.
-YY = yy
-YACCTOCXX = $(srcdir)/yacctoC
-
-# LEX commands.
-LEXTOCXX = $(srcdir)/lextoC
-
-# The lex output root (lex.yy)
-LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
-
-# VSL parsers.
-vsl-lex.C: $(srcdir)/vsl-lex.L
-	$(LEX) $(LFLAGS) $(srcdir)/vsl-lex.L
-	$(SHELL) $(LEXTOCXX) -prefix vsl
-	$(MV) $(LEX_OUTPUT_ROOT).C $@
-	$(RM) $(LEX_OUTPUT_ROOT).c
-
-vsl-gramma.h vsl-gramma.C: $(srcdir)/vsl-gramma.Y \
-	$(YACCTOCXX) $(YACCTOCXX).bison $(YACCTOCXX).h $(YACCTOCXX).sun
-	$(YACC) $(YFLAGS) -d $(srcdir)/vsl-gramma.Y
-	$(SHELL) $(YACCTOCXX) -prefix vsl
-	$(MV) y.tab.H vsl-gramma.h
-	$(MV) y.tab.C vsl-gramma.C
-	$(RM) y.tab.c y.tab.h
-
-# DDD regexp parsers.
-rxscan.C: $(srcdir)/rxscan.L
-	$(LEX) $(LFLAGS) $(srcdir)/rxscan.L
-	$(SHELL) $(LEXTOCXX) -prefix "ddd"
-	$(MV) $(LEX_OUTPUT_ROOT).C $@
-	$(RM) $(LEX_OUTPUT_ROOT).c
-
-
-
-# The info file, in text format
-# ddd.info.txt does NOT depend on ddd.info since we don't want it to get
-# re-created after each configuration.
-ddd.info.txt: $(srcdir)/ddd.texi configure.in
-	$(MAKE) ddd.info
-	info --subnodes -o - -f ddd.info > $@~ && $(MV) $@~ $@
-
-# ddd.man.txt may reside in $(srcdir) or `.' , hence the `$?'
-ddd.info.txt.gz: ddd.info.txt
-	$(COMPRESS) $? > $@~ && $(MV) $@~ $@
-
-ddd.info.txt.gz.C: ddd.info.txt.gz
-	$(MAKE) stringify$(EXEEXT)
-	-./stringify < $? > $@~ && $(MV) $@~ $@
-
-# COPYING.huff.C does NOT depend on huffencode since we don't want it
-# to get re-created after each configuration.
-COPYING.huff.C: $(srcdir)/../COPYING
-	$(MAKE) huffencode$(EXEEXT)
-	-$(SED) 's///' < $(srcdir)/../COPYING | ./huffencode > $@~ && \
-	$(MV) $@~ $@
-
-COPYING.gz: $(srcdir)/../COPYING
-	$(COMPRESS) $(srcdir)/../COPYING > $@
-
-COPYING.gz.C: COPYING.gz
-	$(MAKE) stringify$(EXEEXT)
-	-./stringify < COPYING.gz > $@~ && $(MV) $@~ $@
-
-# NEWS.huff.C does NOT depend on huffencode since we don't want it
-# to get re-created after each configuration.
-NEWS.huff.C: $(srcdir)/../NEWS
-	$(MAKE) huffencode$(EXEEXT)
-	-$(SED) 's///' < $(srcdir)/../NEWS | ./huffencode > $@~ && \
-	$(MV) $@~ $@
-
-NEWS.gz: $(srcdir)/../NEWS
-	$(COMPRESS) $(srcdir)/../NEWS > $@~ && $(MV) $@~ $@
-
-NEWS.gz.C: NEWS.gz
-	$(MAKE) stringify$(EXEEXT)
-	-./stringify < NEWS.gz > $@~ && $(MV) $@~ $@
-
-show.$(OBJEXT): COPYING.gz.C NEWS.gz.C ddd.info.txt.gz.C
-
-
-# Configuration info stuff
-configinfo.C: USERINFO $(srcdir)/config-info
-	$(SHELL) $(srcdir)/config-info $(srcdir)/USERINFO USERINFO > $@~ && \
-	$(MV) $@~ $@
-
-# If `~/.ddd_userinfo' exists, use this file as personal identification.
-USERINFO: userinfo$(EXEEXT)
-	-(cat $$HOME/.ddd_userinfo 2> /dev/null || \
-	./userinfo || echo '(unknown)') > $@~ && $(MV) $@~ $@
-	@$(ECHO) ""
-	@$(ECHO) "Please check your name and e-mail address:"
-	@$(ECHO) ""
-	@$(CAT) $@
-	@$(ECHO) ""
-	@$(ECHO) "This information will be compiled into $(DDD)."
-	@$(ECHO) "If it is not correct, please edit $@ and re-compile."
-	@$(ECHO) ""
-
-# For demonstration and debugging purposes
-.PHONY: check
-check: Ddd ./$(ddd)$(EXEEXT) cxxtest$(EXEEXT)
-	XUSERFILESEARCHPATH=%N XAPPLRESDIR=. ./$(ddd)$(EXEEXT) $(DDD_OPTIONS) cxxtest$(EXEEXT)
-
-# We don't want no optimizing, but debugging info in our test files
-MAKE_DEBUG = \
-$(MAKE) CXXFLAGS="`$(ECHO) '$(CXXFLAGS)' | \
-	$(SED) 's/-O[^ ]*//' | $(SED) 's/-DNDEBUG//'`" \
-	CFLAGS="`$(ECHO) '$(CFLAGS)' | \
-	$(SED) 's/-O[^ ]*//' | $(SED) 's/-DNDEBUG//'`"
-
-cxxtest.$(OBJEXT): $(srcdir)/cxxtest.C
-	@case '$(CXXFLAGS)' in \
-	*-O*) $(MAKE_DEBUG) $@;; \
-	*) set -x; \
-	   $(CXXCOMPILE) -c @CXXDEBUG@ $(srcdir)/cxxtest.C -o $@;; \
-	esac
-
-ctest.$(OBJEXT): $(srcdir)/ctest.c
-	@case '$(CFLAGS)' in \
-	*-O*) $(MAKE_DEBUG) $@;; \
-	*) set -x; \
-	   $(COMPILE) -c -g $(srcdir)/ctest.c -o $@;; \
-	esac
-
-sample.$(OBJEXT): $(srcdir)/sample.c
-	@case '$(CFLAGS)' in \
-	*-O*) $(MAKE_DEBUG) $@;; \
-	*) set -x; \
-	   $(COMPILE) -c -g $(srcdir)/sample.c -o $@;; \
-	esac
-
-grabtest.$(OBJEXT): $(srcdir)/grabtest.C
-	@case '$(CXXFLAGS)' in \
-	*-O*) $(MAKE_DEBUG) $@;; \
-	*) set -x; \
-	   $(CXXCOMPILE) -c @CXXDEBUG@ $(srcdir)/grabtest.C -o $@;; \
-	esac
-
-bug.$(OBJEXT):	$(srcdir)/bug.C
-	@case '$(CXXFLAGS)' in \
-	*-O*) $(MAKE_DEBUG) $@;; \
-	*) set -x; \
-	   $(CXXCOMPILE) -c @CXXDEBUG@ $(srcdir)/bug.C -o $@;; \
-	esac
+# -----------------------------------------------------------------------------
+# Distribution.
+# -----------------------------------------------------------------------------
 
 # RPM spec
 .PHONY:	spec
@@ -1794,7 +1853,6 @@ spec: ../$(ddd)-$(VERSION)-$(REL).spec
 	CONFIG_FILES=../ddd.spec CONFIG_HEADERS= $(SHELL) ./config.status
 	$(SED) 's/@REL@/$(REL)/g' ../ddd.spec > $@
 	$(RM) ../ddd.spec
-
 
 # Architecture-independent files required for building DDD.
 # In a distribution, these should be already built.
