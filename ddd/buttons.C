@@ -325,10 +325,6 @@ static string gdbHelp(string original_command)
 
     strip_space(help);
 
-    // `step up' help is part of `step' help.
-    if (original_command == "step up" && !help.contains(original_command))
-	return "undefined command";
-
     if (help != NO_GDB_ANSWER)
 	help_cache[command] = help;
 
