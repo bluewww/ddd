@@ -125,4 +125,10 @@ Volunteers for fixing these and other bugs are welcome!
 
 375 Improve Python support (in DDD 3.2)
 
+376 In DDD 3.2.90 and later, the resource
+
+    Ddd*enableBtn1Transfer: False
+
+    only works if the `Ddd' app-defaults file is installed.
+
 382 (Insert new bugs here)

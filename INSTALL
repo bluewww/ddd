@@ -256,7 +256,21 @@ The simplest way to compile DDD is:
      the DDD WWW page `http://www.gnu.org/software/ddd/' for
      patches, people, and pointers.
 
- 11. Type
+ 11. If you want to use DDD on your own program, please install it
+     first (see the next step, below).  If you absolutely *must* run 
+     DDD without installing it, be sure that the following environment
+     variables are properly set:
+
+     - DDD_HOME must point to the top-level source package directory
+       (such that `$DDD_HOME/NEWS' is the DDD news)
+
+     - XUSERFILESEARCHPATH must contain the path of the `Ddd'
+       app-defaults file, where `Ddd' is substituted by `%N'.
+
+     See the DDD invocation in `make check', above, to see typical
+     values of these variables.
+
+ 12. Type
  
 	$ make install
 	
@@ -278,32 +292,35 @@ The simplest way to compile DDD is:
      See `Installation Names', below, on how to configure DDD to use
      other locations and names.
 
- 12. This distribution also comes with documentation in PostScript,
+ 13. This distribution also comes with documentation in PostScript,
      PDF, and HTML format.  You will find these files in the `doc/'
      subdirectory.  Feel free to install them in some public place.
 
- 13. If you have a `Ddd' app-defaults file installed from a previous
+ 14. If you have a `Ddd' app-defaults file installed from a previous
      DDD version, this file will *override* the DDD settings compiled 
      into DDD and cause major problems.  Remove it.
 
- 14. Like every good X citizen, DDD comes with an application defaults
+ 15. Like every good X citizen, DDD comes with an application defaults
      file, named `ddd/Ddd'.  By default, this file is already installed as
      a DDD run-time resource (and possibly also compiled into DDD), so you
-     need not install it.
+     need not install it in the default application defaults directory.
 
      In fact, we **STRONGLY RECOMMEND** not to install it; there is a
      whole slew of version-skew problems associated with app-defaults
      files, which are best avoided by simply not using them.  For
-     details, see step 13, above, and the comment at the `Ddd' top.
+     details, see step 14, above, and the comment at the `Ddd' top.
 
      If you absolutely want to install it (or if you configured DDD
      such that `Ddd' is not compiled into DDD), copy `Ddd' to a place
      where app-defaults files are commonly found.
 
- 15. You can remove the program binaries, libraries and object files
+ 16. You can remove the program binaries, libraries and object files
      from the source directory by typing
      
 	$ make clean
+
+     (There is also `make mostlyclean', which removes all object
+     files, but keeps the executables.)
 
      To also remove the Makefiles, the header files containing
      system-dependent definitions, and `config.status' (all the files
@@ -311,16 +328,11 @@ The simplest way to compile DDD is:
      
 	$ make distclean
 
-     To also remove the system-independent derived files included in
-     the DDD distribution for your convenience (such as LEX and YACC
-     output), type
-     
-	$ make realclean
+     (There is also `make maintainer-clean', which removes *every*
+     derived file included in the DDD distribution - such as LEX and
+     YACC output.  Do not use this unless you know what you're doing.)
 
-     instead.  (There is also `make ultraclean' that removes *every*
-     derived file; don't use it unless you know what you do.)
-
- 16. You can remove DDD from your system by typing
+ 17. You can remove DDD from your system by typing
  
 	$ make uninstall
 
