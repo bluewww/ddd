@@ -46,7 +46,6 @@
 ! Ddd*source_view_shell.geometry: +0+220
 ! Ddd*data_disp_shell.geometry: +0+670
 
-
 ! ----------------------------------------------------------------------------
 ! BUTTONS
 ! ----------------------------------------------------------------------------
@@ -109,6 +108,15 @@
 ! that auto-raises windows - and sometimes raises an application above
 ! its own menus.  This is off by default, since it may interfere with Motif.
 ! Ddd*autoRaiseMenus: true
+
+! ----------------------------------------------------------------------------
+! SHADOWS
+! ----------------------------------------------------------------------------
+
+! These settings make the menubar and the command tool somewhat `lighter'
+! Ddd*menubar.shadowThickness: 1
+! Ddd*tool_shell*shadowThickness: 1
+
 
 ! ----------------------------------------------------------------------------
 ! COLORS
