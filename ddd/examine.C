@@ -202,7 +202,7 @@ static string examine_command()
     {
     case DBX:
 	// x ADDRESS /FMT
-	return "x" + address + " " + fmt;
+	return "x " + address + " " + fmt;
 
     case GDB:
 	// x /FMT ADDRESS
