@@ -411,8 +411,7 @@ void show_license()
 
 void DDDLicenseCB(Widget w, XtPointer, XtPointer call_data)
 {
-    string msg = "Invoking " DDD_NAME " license browser...";
-    set_status(msg);
+    StatusMsg msg("Invoking " DDD_NAME " license browser");
 
     ostrstream license;
     int ret = ddd_license(license);
@@ -422,8 +421,6 @@ void DDDLicenseCB(Widget w, XtPointer, XtPointer call_data)
     if (ret != 0 || !s.contains("GNU"))
 	post_error("The license could not be uncompressed.", 
 		   "no_license_error", w);
-
-    set_status(msg + "done.");
 }
 
 
@@ -452,8 +449,7 @@ void show_manual()
 
 void DDDManualCB(Widget w, XtPointer, XtPointer)
 {
-    string msg = "Invoking " DDD_NAME " manual browser...";
-    set_status(msg);
+    StatusMsg msg("Invoking " DDD_NAME " manual browser");
     
     ostrstream man;
     int ret = ddd_man(man);
@@ -465,14 +461,11 @@ void DDDManualCB(Widget w, XtPointer, XtPointer)
     if (ret != 0 || !s.contains(DDD_NAME))
 	post_error("The manual could not be uncompressed.", 
 		   "no_ddd_manual_error", w);
-
-    set_status(msg + "done.");
 }
 
 void GDBManualCB(Widget w, XtPointer, XtPointer)
 {
-    string msg = "Invoking " + gdb->title() + " manual browser...";
-    set_status(msg);
+    StatusMsg msg("Invoking " + gdb->title() + " manual browser");
 
     string cmd = "man " + downcase(gdb->title());
 
@@ -505,6 +498,4 @@ void GDBManualCB(Widget w, XtPointer, XtPointer)
 
 	pclose(fp);
     }
-
-    set_status(msg + "done.");
 }
