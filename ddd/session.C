@@ -636,7 +636,7 @@ void set_session(const string& v)
     else
 	session_name = quote(app_data.session);
 
-    set_status("Current session is " + session_name);
+    set_status("Current session is " + session_name + ".");
     create_session_dir(app_data.session);
 }
 
