@@ -1834,6 +1834,15 @@ It is possible to have the inferior debugger run on a remote
 network connection or when \s-2@DDD@\s+2 is available on the local
 host only.
 .PP
+Furthermore, the inferior debugger may support debugging a program on
+a remote host.  This is useful when the inferior debugger is not
+available on the remote host\(em\&for instance, because the remote
+system does not have a general purpose operating system powerful
+enough to run a full-featured debugger.
+.\"
+.\"
+.SS "Using @DDD@ with a Remote Debugger"
+.\"
 In order to run the inferior debugger on a remote host, you need
 `\fBremsh\fR' (called `\fBrsh\fR' on \s-2BSD\s+2 systems) access on
 the remote host.
@@ -1892,6 +1901,33 @@ operation than normal.
 To help you find problems due to remote execution, run \s-2@DDD@\s+2 with the
 `\fB\-\-trace-shell-commands\fR' option.  This prints the shell
 commands issued by \s-2@DDD@\s+2 on standard error.
+.\"
+.\"
+.SS "Using @DDD@ with a Remote Program"
+.\"
+The \s-2GDB\s+2 debugger allows you to run the \fIdebugged program\fR
+on a remote machine (called \fIremote target\fR), while \s-2GDB\s+2
+runs on the local machine.
+.PP
+The section `\fBRemote debugging\fR' in the \s-2GDB\s+2 documentation
+contains all the details.  Basically, the following steps are required:
+.IP \(bu 2
+Transfer the executable to the remote target.
+.IP \(bu 2
+Start `\fBgdbserver\fR' on the remote target.
+.IP \(bu 2
+Start \s-2@DDD@\s+2 using \s-2GDB\s+2 on the local machine, and load the same
+executable using the '\fBfile\fR' command.
+.IP \(bu 2
+Attach to the remote `\fBgdbserver\fR' using the '\fBtarget remote\fR'
+command.
+.PP
+The local `\fB.gdbinit\fR' file is useful for setting up directory
+search paths, etc.
+.PP
+Of course, you can also combine \s-2@DDD@\s+2 remote mode and
+\s-2GDB\s+2 remote mode, running \s-2@DDD@\s+2, \s-2GDB\s+2, and the
+debugged program each on a different machine.
 .\"
 .\"
 .\" ---------------
