@@ -2962,8 +2962,17 @@ void update_options()
     if (last_shown_startup_logo != app_data.show_startup_logo)
     {
 	popup_startup_logo(gdb_w, app_data.show_startup_logo);
-	XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 1000, 
-			popdown_startup_logo, 0);
+
+	static XtIntervalId timer = 0;
+
+	if (timer != 0)
+	{
+	    XtRemoveTimeOut(timer);
+	    timer = 0;
+	}
+
+	timer = XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 1000, 
+				popdown_startup_logo, (void *)&timer);
     }
 
     update_reset_preferences();
@@ -4689,12 +4698,22 @@ static bool have_decorated_transients()
 //-----------------------------------------------------------------------------
 
 static Widget logo_shell  = 0;
+static Pixmap logo_pixmap;
 static _Delay *logo_delay = 0;
 
-static void popdown_startup_logo(XtPointer, XtIntervalId *)
+static void popdown_startup_logo(XtPointer data, XtIntervalId *id)
 {
+    if (data != 0)
+    {
+	XtIntervalId *timer = (XtIntervalId *)data;
+	assert(*timer == *id);
+	*timer = 0;
+    }
+    
     if (logo_shell != 0)
     {
+	XFreePixmap(XtDisplay(logo_shell), logo_pixmap);
+
 	popdown_shell(logo_shell);
 	DestroyWhenIdle(logo_shell);
 	logo_shell = 0;
@@ -4729,8 +4748,8 @@ static void popup_startup_logo(Widget parent, string color_key)
 
     logo_delay = new _Delay(logo_shell);
 
-    Pixmap pixmap = dddlogo(logo, color_key);
-    XtVaSetValues(logo, XmNlabelPixmap, pixmap, NULL);
+    logo_pixmap = dddlogo(logo, color_key);
+    XtVaSetValues(logo, XmNlabelPixmap, logo_pixmap, NULL);
 
     Dimension width, height;
     XtVaGetValues(logo_shell, XmNwidth, &width, XmNheight, &height, NULL);

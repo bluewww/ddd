@@ -140,14 +140,8 @@ extern "C" {
 #include "regexps.h"
 #include "index.h"
 
-// Glyphs
-#include "arrow.xbm"
-#include "greyarrow.xbm"
-#include "signalarrow.xbm"
-#include "temparrow.xbm"
-#include "stop.xbm"
-#include "greystop.xbm"
-#include "tempstop.xbm"
+
+
 
 // Additional macros
 inline int isid(char c)
@@ -269,6 +263,117 @@ MMDesc SourceView::text_popup[] =
     {"clearAt",    MMPush, {SourceView::text_popup_clearCB}},
     MMEnd
 };
+
+
+//-----------------------------------------------------------------------
+// Glyphs and images
+//-----------------------------------------------------------------------
+
+#include "arrow.xbm"
+static XImage arrow_image = {
+    arrow_width,		// width
+    arrow_height,		// height
+    0,				// xoffset
+    XYBitmap,			// format
+    arrow_bits,			// data
+    MSBFirst,			// byte_order
+    8,				// bitmap_unit
+    LSBFirst,			// bitmap_bit_order
+    8,				// bitmap_pad
+    1,				// depth
+    2				// bytes_per_line
+};
+
+#include "greyarrow.xbm"
+static XImage grey_arrow_image = {
+    grey_arrow_width,		// width
+    grey_arrow_height,		// height
+    0,				// xoffset
+    XYBitmap,			// format
+    grey_arrow_bits,		// data
+    MSBFirst,			// byte_order
+    8,				// bitmap_unit
+    LSBFirst,			// bitmap_bit_order
+    8,				// bitmap_pad
+    1,				// depth
+    2				// bytes_per_line
+};
+
+#include "signalarrow.xbm"
+static XImage signal_arrow_image = {
+    signal_arrow_width,		// width
+    signal_arrow_height,	// height
+    0,				// xoffset
+    XYBitmap,			// format
+    signal_arrow_bits,		// data
+    MSBFirst,			// byte_order
+    8,				// bitmap_unit
+    LSBFirst,			// bitmap_bit_order
+    8,				// bitmap_pad
+    1,				// depth
+    2				// bytes_per_line
+};
+
+#include "temparrow.xbm"
+static XImage temp_arrow_image = {
+    temp_arrow_width,		// width
+    temp_arrow_height,		// height
+    0,				// xoffset
+    XYBitmap,			// format
+    temp_arrow_bits,		// data
+    MSBFirst,			// byte_order
+    8,				// bitmap_unit
+    LSBFirst,			// bitmap_bit_order
+    8,				// bitmap_pad
+    1,				// depth
+    2				// bytes_per_line
+};
+
+#include "stop.xbm"
+static XImage stop_image = {
+    stop_width,			// width
+    stop_height,		// height
+    0,				// xoffset
+    XYBitmap,			// format
+    stop_bits,			// data
+    MSBFirst,			// byte_order
+    8,				// bitmap_unit
+    LSBFirst,			// bitmap_bit_order
+    8,				// bitmap_pad
+    1,				// depth
+    2				// bytes_per_line
+};
+
+#include "greystop.xbm"
+static XImage grey_stop_image = {
+    grey_stop_width,		// width
+    grey_stop_height,		// height
+    0,				// xoffset
+    XYBitmap,			// format
+    grey_stop_bits,		// data
+    MSBFirst,			// byte_order
+    8,				// bitmap_unit
+    LSBFirst,			// bitmap_bit_order
+    8,				// bitmap_pad
+    1,				// depth
+    2				// bytes_per_line
+};
+
+#include "tempstop.xbm"
+static XImage temp_stop_image = {
+    temp_stop_width,		// width
+    temp_stop_height,		// height
+    0,				// xoffset
+    XYBitmap,			// format
+    temp_stop_bits,		// data
+    MSBFirst,			// byte_order
+    8,				// bitmap_unit
+    LSBFirst,			// bitmap_bit_order
+    8,				// bitmap_pad
+    1,				// depth
+    2				// bytes_per_line
+};
+
 
 
 //-----------------------------------------------------------------------
@@ -2582,6 +2687,15 @@ SourceView::SourceView(XtAppContext app_context, Widget parent)
 
     // Setup actions
     XtAppAddActions (app_context, actions, XtNumber (actions));
+
+    // Install images
+    XmInstallImage(&arrow_image,        "plain_arrow");
+    XmInstallImage(&grey_arrow_image,   "grey_arrow");
+    XmInstallImage(&signal_arrow_image, "signal_arrow");
+    XmInstallImage(&temp_arrow_image,   "temp_arrow");
+    XmInstallImage(&stop_image,         "plain_stop");
+    XmInstallImage(&grey_stop_image,    "grey_stop");
+    XmInstallImage(&temp_stop_image,    "temp_stop");
 
     // Create glyphs in the background
     XtAppAddWorkProc (app_context, CreateGlyphsWorkProc, XtPointer(0));
@@ -4989,24 +5103,6 @@ void SourceView::MoveCursorToGlyphPosCB(Widget w,
 	SetInsertionPosition(text_w, pos);
 }
 
-
-// Return pixmaps suitable for the widget W
-static Pixmap pixmap(Widget w, char *bits, int width, int height)
-{
-    Pixel foreground, background;
-
-    XtVaGetValues(w,
-		  XmNforeground, &foreground,
-		  XmNbackground, &background,
-		  NULL);
-
-    int depth = PlanesOfScreen(XtScreen(w));
-    Pixmap pix = XCreatePixmapFromBitmapData(XtDisplay(w),
-	XtWindow(w), bits, width, height, foreground, background, depth);
-
-    return pix;
-}
-
 #if XmVERSION >= 2
 const int motif_offset = 1;  // Motif 2.0 adds a 1 pixel border around glyphs
 #else
@@ -5033,14 +5129,13 @@ Widget SourceView::create_glyph(Widget form_w,
     XtSetArg(args[arg], XmNshadowThickness,    0);             arg++;
     XtSetArg(args[arg], XmNhighlightThickness, 0);             arg++;
     XtSetArg(args[arg], XmNborderWidth,        0);             arg++;
+    XtSetArg(args[arg], XmNlabelType,  XmPIXMAP);              arg++;
     XtSetArg(args[arg], XmNmultiClick, XmMULTICLICK_DISCARD);  arg++;
     XtSetArg(args[arg], XmNalignment, XmALIGNMENT_BEGINNING);  arg++;
     XtSetArg(args[arg], XmNuserData,           XtPointer(0));  arg++;
     Widget w = verify(XmCreatePushButton(form_w, name, args, arg));
     XtRealizeWidget(w);
     XtManageChild(w);
-
-    Pixmap pix = pixmap(w, bits, width, height);
 
     unsigned char unit_type;
     XtVaGetValues(w, XmNunitType, &unit_type, NULL);
@@ -5053,8 +5148,6 @@ Widget SourceView::create_glyph(Widget form_w,
     XtVaGetValues(w, XmNbackground, &background, NULL);
 
     arg = 0;
-    XtSetArg(args[arg], XmNlabelType,   XmPIXMAP);   arg++;
-    XtSetArg(args[arg], XmNlabelPixmap, pix);        arg++;
     XtSetArg(args[arg], XmNwidth,       new_width);  arg++;
     XtSetArg(args[arg], XmNheight,      new_height); arg++;
     XtSetArg(args[arg], XmNfillOnArm,   True);       arg++;

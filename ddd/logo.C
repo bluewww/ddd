@@ -128,7 +128,9 @@ static int xpm(String name, int ret)
 Pixmap iconlogo(Widget w)
 {
     Window root = RootWindowOfScreen(XtScreen(w));
-    Pixmap icon  = 0;
+    static Pixmap icon = 0;
+    if (icon != 0)
+	return icon;
 
 #ifdef XpmVersion
     if (app_data.color_icons)
@@ -183,14 +185,16 @@ Pixmap iconmask(Widget w)
 // Return a small DDD logo suitable for the widget W
 Pixmap versionlogo(Widget w)
 {
+    static Pixmap logo = 0;
+    if (logo != 0)
+	return logo;
+
     Pixel foreground, background;
 
     XtVaGetValues(w,
 		  XmNforeground, &foreground,
 		  XmNbackground, &background,
 		  NULL);
-    Pixmap logo = 0;
-
 #ifdef XpmVersion
     XWindowAttributes win_attr;
     XGetWindowAttributes(XtDisplay(w), XtWindow(w), &win_attr);
@@ -226,7 +230,6 @@ Pixmap versionlogo(Widget w)
 				       ddd_bits, ddd_width, ddd_height,
 				       foreground, background,
 				       depth);
-
     return logo;
 }
 
@@ -247,7 +250,6 @@ static Pixel color(Widget w, String name, Pixel pixel)
 Pixmap dddlogo(Widget w, const string& color_key)
 {
     Pixmap logo = 0;
-
     int depth = PlanesOfScreen(XtScreen(w));
 
 #ifdef XpmVersion

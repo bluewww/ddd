@@ -883,6 +883,20 @@ Ddd*graph_edit.outlineColor:	   grey50
 
 
 !-----------------------------------------------------------------------------
+! Bitmaps
+!-----------------------------------------------------------------------------
+
+! These bitmap names are predefined by DDD.  Feel free to use others.
+Ddd*plain_arrow.labelPixmap:	plain_arrow
+Ddd*grey_arrow.labelPixmap:	grey_arrow
+Ddd*temp_arrow.labelPixmap:	temp_arrow
+Ddd*signal_arrow.labelPixmap:	signal_arrow
+Ddd*plain_stop.labelPixmap:	plain_stop
+Ddd*temp_stop.labelPixmap:	temp_stop
+Ddd*grey_stop.labelPixmap:	grey_stop
+
+
+!-----------------------------------------------------------------------------
 ! Data display fonts and colors
 !-----------------------------------------------------------------------------
 
