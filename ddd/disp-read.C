@@ -154,7 +154,7 @@ bool is_frame_cmd (const string& cmd)
     static regex RXframe_cmd(
 	"[ \t]*"
 	"(up"
-	"|do|down|"
+	"|do|down"
 	"|f|fra|fram|frame"
 	"|top|V"
 	")([ \t]+.*)?");
