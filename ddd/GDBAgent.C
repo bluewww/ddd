@@ -985,6 +985,10 @@ void GDBAgent::InputHP(Agent *agent, void *, void *call_data)
 	}
     }
 
+    // Strip all control characters
+    gdb->strip_control(answer);
+    gdb->strip_dbx_comments(answer);
+
     // Check for `More' prompt
     string reply = gdb->requires_reply(answer);
     if (reply != "")
@@ -1037,8 +1041,6 @@ void GDBAgent::InputHP(Agent *agent, void *, void *call_data)
 	if (!gdb->ends_with_prompt(answer))
 	{
             // Received only part of the answer
-	    gdb->strip_control(answer);
-	    gdb->strip_dbx_comments(answer);
 	    if (gdb->_on_answer != 0)
 		gdb->_on_answer (answer, gdb->_user_data);
 	}
@@ -1055,12 +1057,12 @@ void GDBAgent::InputHP(Agent *agent, void *, void *call_data)
 	    {
 		if (!gdb->questions_waiting) 
 		{
+		    if (gdb->_on_answer_completion != 0)
+			gdb->_on_answer_completion (gdb->_user_data);
+
 		    gdb->state = ReadyWithPrompt;
 		    gdb->callHandlers(ReadyForCmd, (void *)true);
 		    gdb->callHandlers(ReadyForQuestion, (void *)true);
-
-		    if (gdb->_on_answer_completion != 0)
-			gdb->_on_answer_completion (gdb->_user_data);
 		}
 		else
 		{
@@ -1073,11 +1075,11 @@ void GDBAgent::InputHP(Agent *agent, void *, void *call_data)
 	    }
 	    else if (!gdb->questions_waiting)
 	    {
-		gdb->state = ReadyWithPrompt;
-		gdb->callHandlers(ReadyForQuestion, (void *)true);
-
 		if (gdb->_on_answer_completion != 0)
 		    gdb->_on_answer_completion (gdb->_user_data);
+
+		gdb->state = ReadyWithPrompt;
+		gdb->callHandlers(ReadyForQuestion, (void *)true);
 	    }
 	    else
 	    {
@@ -1103,14 +1105,14 @@ void GDBAgent::InputHP(Agent *agent, void *, void *call_data)
 	    gdb->complete_answer += answer;
 	    gdb->normalize_answer(gdb->complete_answer);
 
+	    if (gdb->_on_question_completion != 0)
+		gdb->_on_question_completion (gdb->complete_answer, 
+					      gdb->_qu_data);
+
             // Set new state
 	    gdb->state = ReadyWithPrompt;
 	    gdb->callHandlers(ReadyForQuestion, (void *)true);
 	    gdb->callHandlers(ReadyForCmd, (void *)true);
-
-	    if (gdb->_on_question_completion != 0)
-		gdb->_on_question_completion (gdb->complete_answer, 
-					      gdb->_qu_data);
 	}
 	break;
 
@@ -1133,10 +1135,6 @@ void GDBAgent::InputHP(Agent *agent, void *, void *call_data)
 	    {
 		// Received all answers
 
-		// Set new state
-		gdb->state = ReadyWithPrompt;
-		gdb->callHandlers(ReadyForCmd, (void *)true);
-
 		if (gdb->questions_waiting)
 		{
 		    // We did not call the OACProc yet.
@@ -1147,14 +1145,17 @@ void GDBAgent::InputHP(Agent *agent, void *, void *call_data)
 		    gdb->questions_waiting = false;
 		}
 
-		gdb->callHandlers(ReadyForQuestion, (void *)true);
-
 		if (gdb->_on_qu_array_completion != 0)
 		{
 		    gdb->_on_qu_array_completion (gdb->complete_answers,
 						  gdb->_qu_datas,
 						  gdb->_qa_data);
 		}
+
+		// Set new state
+		gdb->state = ReadyWithPrompt;
+		gdb->callHandlers(ReadyForQuestion, (void *)true);
+		gdb->callHandlers(ReadyForCmd, (void *)true);
 	    }
 	    else
 	    {
