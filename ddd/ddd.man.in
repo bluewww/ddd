@@ -2678,6 +2678,15 @@ amount of grey.  If \s-1@DDD@\s+1 was built using Motif 2.0 and later,
 you can also choose an `indeterminate' setting, causing the buttons to
 appear in grey by default and in color when entered.
 .PP
+By default, the \s-1@DDD@\s+1 tool bars are located on top of the
+window.  If you prefer the tool bar being located at the bottom, as in
+\s-1@DDD@\s+1 2.x and earlier, enable the `\fBBottom\fR' toggle.  The
+bottom setting is only supported for separate tool bars\(em\&that is,
+you must either choose separate windows or configure the tool bar to
+have neither images nor captions.
+.PP
+.PSPIC @srcdir@/PICS/ddd-toolbars.ps 15.3cm
+.PP
 By default, \s-1@DDD@\s+1 directs keyboard input to the item your
 mouse pointer points at.  If you prefer a click-to-type keyboard focus
 (that is, click on an item to make it accept keyboard input), set the
@@ -3167,8 +3176,6 @@ details.
 To make the current session inactive, open the \fIdefault session\fR
 named `\fB[None]\fR'; see below for details on opening sessions.
 .PP
-.PSPIC @srcdir@/PICS/ddd-save-session.ps 15.3cm
-.PP
 If your program is running, or if you have opened a core file,
 \s-1@DDD@\s+1 can include a core file in the session such that the
 debuggee data will be restored when re-opening it.  To get a core
@@ -3176,6 +3183,8 @@ file, \s-1@DDD@\s+1 typically must kill the debuggee.  This means that
 you cannot resume program execution after saving a session.  Depending
 on your architecture, other options for getting a core file may also
 be available.
+.PP
+.PSPIC @srcdir@/PICS/ddd-save-session.ps 15.3cm
 .PP
 If a core file is \fInot\fR to be included in the session, \s-1DDD\s+1
 data displays are saved as \fIdeferred\fR; that is, they will be
@@ -4459,8 +4468,10 @@ above, and the `\fBtoolButtons\fR' resource, below.
 .B "toolbarsAtBottom (\fPclass\fB ToolbarsAtBottom)"
 Whether source and data tool bars should be placed above source and
 data, respectively (`\fBoff\fR', default), or below, as in
-\s-1@DDD@\s+1 2.x (`\fBon\fR').
-,TP
+\s-1@DDD@\s+1 2.x (`\fBon\fR').  See also the
+`\fB\-\-toolbars-at-bottom\fR' and `\fB\-\-toolbars-at-top\fR'
+options, below.
+.TP
 .B "toolButtons (\fPclass\fB Buttons)"
 A newline-separated list of buttons to be included in the command tool
 or the command tool bar (see the `\fBcommandToolBar\fR' resource,
@@ -5312,6 +5323,12 @@ Place the status line at the top of the source window.
 .B \-\-sync-debugger
 Do not process X events while the debugger is busy.  This may result
 in slightly better performance on single-processor systems.
+.TP
+.B \-\-toolbars-at-bottom
+Place the toolbars the bottom of the window.
+.TP
+.B \-\-toolbars-at-top
+Place the toolbars at the top of the window.
 .TP
 .B \-\-trace
 Show the interaction between \s-1@DDD@\s+1 and the inferior debugger
