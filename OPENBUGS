@@ -150,11 +150,6 @@ detail.
     is. I could not yet (after 20 seconds of experimenting) see a
     pattern.
 
-735 Zdenek Sekera <zs@sgi.com> reports that 'run' on command tools
-    will not forget the choice and rerun with default (blank)
-    parameters when running in the execution window.  See the test
-    `dbx-rerun-tty' for details.
-
 737 Joonas Lehtinen <phoenix@jole.fi> reports that DDD 3.1 coredumps
     after a few replots.
 
