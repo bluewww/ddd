@@ -813,6 +813,9 @@ void set_buttons(Widget buttons, String _button_list)
     TextPosOfEvent            = textPosOfEvent;
 
     DisplayDocumentation      = showDocumentationInStatusLine;
+
+    // Install tips
+    InstallButtonTips(buttons);
 }
 
 
