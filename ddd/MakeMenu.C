@@ -854,7 +854,7 @@ static void PopupPushMenuCB(XtPointer client_data, XtIntervalId *id)
 }
 
 static void ReflattenButtonCB(Widget /* shell */, XtPointer client_data, 
-			      XtPointer)
+			      XtPointer = 0)
 {
     Widget w = (Widget)client_data;
     EventMask event_mask = EnterWindowMask | LeaveWindowMask;
@@ -862,6 +862,21 @@ static void ReflattenButtonCB(Widget /* shell */, XtPointer client_data,
 		      XtPointer(0));
     flatten_button(w);
 }
+
+static void ReflattenButtonEH(Widget shell, XtPointer client_data, 
+			      XEvent *event, Boolean *)
+{
+    switch (event->type)
+    {
+    case UnmapNotify:
+	ReflattenButtonCB(shell, client_data);
+	break;
+
+    default:
+	break;
+    }
+}
+
 
 static void PopupPushMenuAct(Widget w, XEvent *event, String *, Cardinal *)
 {
@@ -903,6 +918,13 @@ static void PopupPushMenuAct(Widget w, XEvent *event, String *, Cardinal *)
 			     XtPointer(0));
 	XtAddCallback(shell, XtNpopdownCallback, ReflattenButtonCB, 
 		      XtPointer(w));
+
+	if (lesstif_version < 1000)
+	{
+	    // The popDownCallback isn't called by LessTif.  *Sigh*.
+	    XtAddEventHandler(shell, StructureNotifyMask, False, 
+			      ReflattenButtonEH, XtPointer(w));
+	}
     }
 
     XtManageChild(info->subMenu);
