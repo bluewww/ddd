@@ -38,7 +38,7 @@
 #include "TypeInfo.h"
 #include "assert.h"
 
-#if defined(HAVE_MEMCPY) && !defined(HAVE_MEMCPY_DECL)
+#if HAVE_MEMCPY && !HAVE_MEMCPY_DECL
 extern "C" void *memcpy(void *to, const void *from, size_t size);
 #endif
 

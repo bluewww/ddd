@@ -1158,7 +1158,7 @@ strRep* string_Scapitalize(strRep* src, strRep* dest)
     return dest;
 }
 
-#if defined(HAVE_NAMED_RETURN_VALUES)
+#if HAVE_NAMED_RETURN_VALUES
 
 #if 0				// already defined in -lg++
 string replicate(char c, int n) return w;
@@ -1210,7 +1210,7 @@ string common_suffix(const string& x, const string& y, int startpos) return r;
     r.rep = string_Salloc(r.rep, ++xs, l, l);
 }
 
-#else // !defined(HAVE_NAMED_RETURN_VALUES)
+#else // !HAVE_NAMED_RETURN_VALUES
 
 #if 0
 string replicate(char c, int n)
@@ -1270,7 +1270,7 @@ string common_suffix(const string& x, const string& y, int startpos)
     return r;
 }
 
-#endif // !defined(HAVE_NAMED_RETURN_VALUES)
+#endif // !HAVE_NAMED_RETURN_VALUES
 
 // IO
 

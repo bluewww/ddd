@@ -48,7 +48,7 @@ void operator delete(void *p)
     MemCheck::free(p);
 }
 
-#ifdef HAVE_ARRAY_OPERATOR_NEW
+#if HAVE_ARRAY_OPERATOR_NEW
 // Array new/delete ops - will be called for C++ array free store operations
 void *operator new[](size_t nbytes)
 {
@@ -59,4 +59,4 @@ void operator delete[](void *p)
 {
     MemCheck::free(p);
 }
-#endif // defined(HAVE_ARRAY_OPERATOR_NEW)
+#endif // HAVE_ARRAY_OPERATOR_NEW

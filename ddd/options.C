@@ -90,12 +90,19 @@ extern int ptrace(int request, int pid, int addr, int data);
 }
 #endif
 
-#if defined(HAVE_LINK) && !defined(HAVE_LINK_DECL)
+#if HAVE_LINK && !HAVE_LINK_DECL
 extern "C" int link (const char *oldname, const char *newname);
 #endif
 
-#if defined(HAVE_SYMLINK) && !defined(HAVE_SYMLINK_DECL)
+#if HAVE_SYMLINK && !HAVE_SYMLINK_DECL
 extern "C" int symlink (const char *oldname, const char *newname);
+#endif
+
+#if !HAVE_POPEN_DECL
+extern "C" FILE *popen(const char *command, const char *mode);
+#endif
+#if !HAVE_PCLOSE_DECL
+extern "C" int pclose(FILE *stream);
 #endif
 
 

@@ -36,7 +36,7 @@ char gcore_rcsid[] =
 #include "config.h"
 #include "version.h"
 
-#if !defined(HAVE_PTRACE) || !defined(HAVE_PTRACE_DUMPCORE)
+#if !HAVE_PTRACE || !HAVE_PTRACE_DUMPCORE
 #error gcore requires a ptrace() interface and a PTRACE_DUMPCORE request
 #endif
 

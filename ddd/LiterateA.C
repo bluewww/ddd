@@ -45,7 +45,7 @@ char LiterateAgent_rcsid[] =
 #include <fcntl.h>
 #endif
 
-#if defined(HAVE_FCNTL) && !defined(HAVE_FCNTL_DECL) && !defined(fcntl)
+#if HAVE_FCNTL && !HAVE_FCNTL_DECL && !defined(fcntl)
 extern "C" int fcntl(int fd, int command, ...);
 #endif
 

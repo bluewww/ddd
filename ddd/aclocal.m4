@@ -1222,21 +1222,21 @@ extern "C" {
 #endif
 
 // Some old versions of libg++ contain a <regex.h> file.  Avoid this.
-#if !defined(REG_EXTENDED) && defined(HAVE_REGEX_H)
+#if !defined(REG_EXTENDED) && HAVE_REGEX_H
 #include <regex.h>		// POSIX.2 interface
 #endif
 
 // Try hard-wired path to get native <regex.h>.
-#if !defined(REG_EXTENDED) && defined(HAVE_REGEX_H)
+#if !defined(REG_EXTENDED) && HAVE_REGEX_H
 #include </usr/include/regex.h>	// POSIX.2 interface
 #endif
 
 // Some more GNU headers.
-#if !defined(REG_EXTENDED) && defined(HAVE_RX_H)
+#if !defined(REG_EXTENDED) && HAVE_RX_H
 #include <rx.h>	 	        // Header from GNU rx 0.07
 #endif
 
-#if !defined(REG_EXTENDED) && defined(HAVE_RXPOSIX_H)
+#if !defined(REG_EXTENDED) && HAVE_RXPOSIX_H
 #include <rxposix.h>		// Header from GNU rx 1.0 and later
 #endif
 }
@@ -1268,21 +1268,21 @@ extern "C" {
 #endif
 
 // Some old versions of libg++ contain a <regex.h> file.  Avoid this.
-#if !defined(REG_EXTENDED) && defined(HAVE_REGEX_H)
+#if !defined(REG_EXTENDED) && HAVE_REGEX_H
 #include <regex.h>		// POSIX.2 interface
 #endif
 
 // Try hard-wired path to get native <regex.h>.
-#if !defined(REG_EXTENDED) && defined(HAVE_REGEX_H)
+#if !defined(REG_EXTENDED) && HAVE_REGEX_H
 #include </usr/include/regex.h>	// POSIX.2 interface
 #endif
 
 // Some more GNU headers.
-#if !defined(REG_EXTENDED) && defined(HAVE_RX_H)
+#if !defined(REG_EXTENDED) && HAVE_RX_H
 #include <rx.h>	 	        // Header from GNU rx 0.07
 #endif
 
-#if !defined(REG_EXTENDED) && defined(HAVE_RXPOSIX_H)
+#if !defined(REG_EXTENDED) && HAVE_RXPOSIX_H
 #include <rxposix.h>		// Header from GNU rx 1.0 and later
 #endif
 }
@@ -1335,21 +1335,21 @@ extern "C" {
 #endif
 
 // Some old versions of libg++ contain a <regex.h> file.  Avoid this.
-#if !defined(REG_EXTENDED) && defined(HAVE_REGEX_H)
+#if !defined(REG_EXTENDED) && HAVE_REGEX_H
 #include <regex.h>		// POSIX.2 interface
 #endif
 
 // Try hard-wired path to get native <regex.h>.
-#if !defined(REG_EXTENDED) && defined(HAVE_REGEX_H)
+#if !defined(REG_EXTENDED) && HAVE_REGEX_H
 #include </usr/include/regex.h>	// POSIX.2 interface
 #endif
 
 // Some more GNU headers.
-#if !defined(REG_EXTENDED) && defined(HAVE_RX_H)
+#if !defined(REG_EXTENDED) && HAVE_RX_H
 #include <rx.h>	 	        // Header from GNU rx 0.07
 #endif
 
-#if !defined(REG_EXTENDED) && defined(HAVE_RXPOSIX_H)
+#if !defined(REG_EXTENDED) && HAVE_RXPOSIX_H
 #include <rxposix.h>		// Header from GNU rx 1.0 and later
 #endif
 }

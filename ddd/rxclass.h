@@ -54,24 +54,24 @@ extern "C" {
 #define __STDC__ 1              // Reguired for KCC when using GNU includes
 #endif
 
-#if defined(HAVE_REGCOMP) && defined(HAVE_REGEXEC) && !defined(REGCOMP_BROKEN)
+#if HAVE_REGCOMP && HAVE_REGEXEC && !REGCOMP_BROKEN
 
 // Some old versions of libg++ contain a `regex.h' file.  Avoid this.
-#if !defined(REG_EXTENDED) && defined(HAVE_REGEX_H)
+#if !defined(REG_EXTENDED) && HAVE_REGEX_H
 #include <regex.h>		// POSIX.2 interface
 #endif
 
 // Try hard-wired path to get native <regex.h>.
-#if !defined(REG_EXTENDED) && defined(HAVE_REGEX_H)
+#if !defined(REG_EXTENDED) && HAVE_REGEX_H
 #include </usr/include/regex.h>	// POSIX.2 interface
 #endif
 
 // Some more GNU headers.
-#if !defined(REG_EXTENDED) && defined(HAVE_RX_H)
+#if !defined(REG_EXTENDED) && HAVE_RX_H
 #include <rx.h>	 	        // Header from GNU rx 0.07
 #endif
 
-#if !defined(REG_EXTENDED) && defined(HAVE_RXPOSIX_H)
+#if !defined(REG_EXTENDED) && HAVE_RXPOSIX_H
 #include <rxposix.h>		// Header from GNU rx 1.0 and later
 #endif
 
@@ -168,9 +168,9 @@ private:
 // Return number of expressions
 inline size_t regex::nexprs() const
 {
-#if defined(HAVE_REGEX_T_RE_NSUB)
+#if HAVE_REGEX_T_RE_NSUB
     return compiled.re_nsub + 1;
-#elif defined(HAVE_REGEX_T_N_SUBEXPS)
+#elif HAVE_REGEX_T_N_SUBEXPS
     return compiled.n_subexps + 1;
 #else
     return 32;  // Should be sufficient

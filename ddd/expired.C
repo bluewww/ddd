@@ -96,7 +96,7 @@ string ddd_expiration_date()
     char buffer[1024];
     strftime(buffer, sizeof buffer, "%x", localtime(&expiration_time));
     pretty_expiration_date = buffer;
-#elif defined(HAVE_ASCTIME)
+#elif HAVE_ASCTIME
     pretty_expiration_date = asctime(localtime(&expiration_time));
     pretty_expiration_date.gsub("\n", "");
 #else
