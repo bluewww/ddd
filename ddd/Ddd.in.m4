@@ -1082,8 +1082,6 @@ Ctrl<Key>E:		end-of-line()		    \n\
 Ctrl<Key>F:		gdb-forward-character()	    \n\
 Ctrl<Key>G:		gdb-control(^C)		    \n\
 <Key>Break:		gdb-interrupt()		    \n\
-~Ctrl ~Shift ~Meta<Key>Escape:	gdb-interrupt()             \n\
-~Ctrl ~Shift ~Meta<Key>osfCancel:	gdb-interrupt()             \n\
 Ctrl<Key>H:		delete-previous-character() \n\
 Ctrl<Key>I:		self-insert()               \n\
 Ctrl<Key>K:		delete-to-end-of-line()	    \n\
@@ -1095,6 +1093,12 @@ Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
 ~Shift <Key>R13:	end-of-line()		    \n\
 ~Shift <Key>Home:	beginning-of-line()	    \n\
 ~Shift <Key>End:	end-of-line()		    \n\
+<Key>Escape:	        gdb-interrupt()             \n\
+<Key>osfCancel:         gdb-interrupt()             \n\
+~Ctrl ~Shift<Key>osfBeginLine: beginning-of-line()  \n\
+~Ctrl ~Shift<Key>osfEndLine:   end-of-line()        \n\
+~Ctrl ~Shift<Key>osfBeginData: beginning-of-line()  \n\
+~Ctrl ~Shift<Key>osfEndData:   end-of-line()        \n\
 ~Ctrl Shift<Key>Delete: cut-clipboard()             \n\
 ~Shift Ctrl<Key>Insert: copy-clipboard()            \n\
 ~Ctrl Shift<Key>Insert: paste-clipboard()           \n])dnl
@@ -1151,60 +1155,39 @@ define(CLIPBOARD_TRANSLATIONS, [\
 ~Shift Ctrl<Key>V:      paste-clipboard()           \n])dnl
 
 ! Have some of these in argument fields as well
-Ddd*XmTextField.@TRANSLATIONS@: \
-#override\n COMPLETE_TRANSLATIONS(print)
 
 Ddd*XmText.@TRANSLATIONS@:      \
 #override\n COMPLETE_TEXT_TRANSLATIONS(print)
 
-! In breakpoint dialogs, use a `break' completion
-Ddd*new_breakpoint_dialog*XmText.@TRANSLATIONS@:   \
-#override\n COMPLETE_TRANSLATIONS(break) CLIPBOARD_TRANSLATIONS
+Ddd*XmTextField.@TRANSLATIONS@: \
+#override\n COMPLETE_TRANSLATIONS(print)
 
+! In breakpoint dialogs, use a `break' completion
 Ddd*new_breakpoint_dialog*XmTextField.@TRANSLATIONS@: \
 #override\n COMPLETE_TRANSLATIONS(break) CLIPBOARD_TRANSLATIONS
 
 ! In watchpoint dialogs, use a `print' completion
-Ddd*new_watchpoint_dialog*XmText.@TRANSLATIONS@:   \
-#override\n COMPLETE_TRANSLATIONS(print) CLIPBOARD_TRANSLATIONS
-
 Ddd*new_watchpoint_dialog*XmTextField.@TRANSLATIONS@: \
 #override\n COMPLETE_TRANSLATIONS(print) CLIPBOARD_TRANSLATIONS
 
 
 ! In file dialogs, use a `file' completion
-Ddd*XmFileSelectionBox*XmText.@TRANSLATIONS@:      \
-#override\n COMPLETE_TRANSLATIONS(file) CLIPBOARD_TRANSLATIONS
-
 Ddd*XmFileSelectionBox*XmTextField.@TRANSLATIONS@: \
 #override\n COMPLETE_TRANSLATIONS(file) CLIPBOARD_TRANSLATIONS
 
 
 ! In `print', `make', and `cd' dialogs, use a `file' completion, too.
-Ddd*print_popup*XmText.@TRANSLATIONS@: 		 \
-#override\n COMPLETE_TRANSLATIONS(file) CLIPBOARD_TRANSLATIONS
-
 Ddd*print_popup*XmTextField.@TRANSLATIONS@:        \
 #override\n COMPLETE_TRANSLATIONS(file) CLIPBOARD_TRANSLATIONS
 
-Ddd*make_dialog*XmText.@TRANSLATIONS@: 		 \
-#override\n COMPLETE_TRANSLATIONS(file) CLIPBOARD_TRANSLATIONS
-
 Ddd*make_dialog*XmTextField.@TRANSLATIONS@:        \
-#override\n COMPLETE_TRANSLATIONS(file) CLIPBOARD_TRANSLATIONS
-
-Ddd*cd_dialog*XmText.@TRANSLATIONS@: 		 \
 #override\n COMPLETE_TRANSLATIONS(file) CLIPBOARD_TRANSLATIONS
 
 Ddd*cd_dialog*XmTextField.@TRANSLATIONS@:          \
 #override\n COMPLETE_TRANSLATIONS(file) CLIPBOARD_TRANSLATIONS
 
 ! In selection boxes, use `shell' completion.
-Ddd*XmSelectionBox*XmText.@TRANSLATIONS@: 	 \
-#override\n COMPLETE_TRANSLATIONS(shell) CLIPBOARD_TRANSLATIONS
 Ddd*XmSelectionBox*XmTextField.@TRANSLATIONS@:     \
-#override\n COMPLETE_TRANSLATIONS(shell) CLIPBOARD_TRANSLATIONS
-Ddd*XmDialogShell*XmText.@TRANSLATIONS@: 	 \
 #override\n COMPLETE_TRANSLATIONS(shell) CLIPBOARD_TRANSLATIONS
 Ddd*XmDialogShell*XmTextField.@TRANSLATIONS@:     \
 #override\n COMPLETE_TRANSLATIONS(shell) CLIPBOARD_TRANSLATIONS
@@ -1216,12 +1199,8 @@ Ddd*edit_buttons*XmText.@TRANSLATIONS@: 	 	 \
 ! In command definitions, we have command completion.
 Ddd*breakpoint_properties*XmTextField.@TRANSLATIONS@: \
 #override\n COMPLETE_TRANSLATIONS(print) CLIPBOARD_TRANSLATIONS
-Ddd*breakpoint_properties*XmText.@TRANSLATIONS@:      \
-#override\n COMPLETE_TRANSLATIONS(" ") CLIPBOARD_TRANSLATIONS
 
 Ddd*define_command*XmTextField.@TRANSLATIONS@:        \
-#override\n COMPLETE_TRANSLATIONS(" ") CLIPBOARD_TRANSLATIONS
-Ddd*define_command*XmText.@TRANSLATIONS@:             \
 #override\n COMPLETE_TRANSLATIONS(" ") CLIPBOARD_TRANSLATIONS
 
 
@@ -4716,6 +4695,7 @@ To print, click on LBL(Print).
 
 Ddd*paper_size_dialog_popup.title:  		DDD: Paper Size
 Ddd*paper_size_dialog.selectionLabelString: 	Paper size
+Ddd*paper_size_dialog.textAccelerators:
 Ddd*paper_size_dialog*helpString: \
 @rm Please enter the paper size in the format \
 KBD(VAR(width) CODE(x) VAR(height)).\n\
@@ -5025,6 +5005,7 @@ Ddd*edit_breakpoints_dialog*delete.documentationString:     \
 Ddd*new_breakpoint_dialog_popup.title: DDD: New Breakpoint
 Ddd*new_breakpoint_dialog*label.labelString: Set Breakpoint at
 Ddd*new_breakpoint_dialog.okLabelString: Set
+Ddd*new_breakpoint_dialog.textAccelerators:
 
 Ddd*new_breakpoint_dialog*helpString:	\
 \
@@ -5051,7 +5032,8 @@ Ddd*new_watchpoint_dialog*cwatch.labelString:	Watchpoint
 Ddd*new_watchpoint_dialog*rwatch.labelString:	Read Watchpoint
 Ddd*new_watchpoint_dialog*awatch.labelString:	Access Watchpoint
 Ddd*new_watchpoint_dialog*on.labelString:	on
-Ddd*new_breakpoint_dialog.okLabelString: Set
+Ddd*new_watchpoint_dialog.okLabelString: Set
+Ddd*new_watchpoint_dialog.textAccelerators:
 
 Ddd*new_watchpoint_dialog*helpString:	\
 @rm Please enter a variable whose value you want to watch.\n\
@@ -5818,6 +5800,7 @@ Otherwise, click on LBL(No) and be sure to save your changes\n\
 using LBL(Edit, Save Options).
 
 Ddd*set_dialog_popup.title: DDD: Set Value
+Ddd*set_dialog.textAccelerators:
 Ddd*set_dialog*helpString:	\
 @rm You can now change the value of the variable in LBL(()).\n\
 If you want to keep it unchanged, click on LBL(Cancel).
