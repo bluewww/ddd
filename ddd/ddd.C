@@ -2085,7 +2085,7 @@ int main(int argc, char *argv[])
     string expires = ddd_expiration_date();
     if (expires != "")
     {
-	string expired_msg = "This version ";
+	string expired_msg = DDD_NAME " " DDD_VERSION " ";
 	if (ddd_expired())
 	    expired_msg += "has expired since " + expires;
 	else
@@ -2104,8 +2104,10 @@ int main(int argc, char *argv[])
 	+ rm(" for " DDD_NAME "; see the ") + cr()
 	+ rm(DDD_NAME " License for details.") + cr()
 	+ cr()
-	+ rm("If you appreciate this software, "
-	     "please send a picture postcard to:") + cr()
+	+ sl(DDD_NAME " needs your support!")
+	+ rm(" If you have any " DDD_NAME " success stories, ") + cr()
+        + rm("please write them down on a picture postcard "
+	     "and send them to us:") + cr()
 	+ cr()
 	+ rm("    Technische Universit\344t Braunschweig") + cr()
 	+ rm("    Abteilung Softwaretechnologie") + cr()
@@ -2120,7 +2122,11 @@ int main(int argc, char *argv[])
 	+ rm("Send comments and suggestions to <")
 	+ tt(ddd_NAME "@ips.cs.tu-bs.de") + rm(">.") + cr()
 	+ cr()
-	+ rm (DDD_NAME " WWW page: ") + tt(app_data.www_page);
+	+ rm(DDD_NAME " WWW page: ") + tt(app_data.www_page) + cr()
+	+ rm(DDD_NAME " discussions: <")
+	+ tt(ddd_NAME "-users-request@ips.cs.tu-bs.de") + rm(">") + cr()
+	+ rm(DDD_NAME " announcements: <")
+	+ tt(ddd_NAME "-announce-request@ips.cs.tu-bs.de") + rm(">");
 
     // Customize `settings' title.
     set_settings_title(command_edit_menu[EditItems::Settings].widget);
