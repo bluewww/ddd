@@ -2,7 +2,7 @@
 @c $Id$
 @c DDD Manual
 
-@c Copyright (C) 1999 Universitaet Passau, Germany.
+@c Copyright (C) 1999-2000 Universitaet Passau, Germany.
 @c Written by Andreas Zeller <zeller@gnu.org>.
 @c 
 @c This file is part of DDD.
@@ -43,7 +43,7 @@
 @set EDITION First
 
 @c !!set DDD manual's revision date
-@set DATE 1999-12-20
+@set DATE 2000-01-03
 
 
 @c Macros
@@ -157,7 +157,7 @@ with @DDD{}} for @DDD{} Version @value{VERSION}.
 
 @noindent
 @group
-Copyright @copyright{} 1999 Universität Passau @*
+Copyright @copyright{} 2000 Universität Passau @*
 Lehrstuhl für Software-Systeme @*
 Innstraße 33 @*
 D-94032 Passau @*
@@ -233,7 +233,7 @@ Send bug reports to @email{bug-ddd@@gnu.org}. @*
 @end tex
 
 @vskip 0pt plus 1filll
-Copyright @copyright{} 1999 Universität Passau @*
+Copyright @copyright{} 2000 Universität Passau @*
 Lehrstuhl für Software-Systeme @*
 Innstraße 33 @*
 D-94032 Passau @*
@@ -742,7 +742,7 @@ Configuration Notes
 
 @noindent
 @group
-Copyright @copyright{} 1999 Universität Passau @*
+Copyright @copyright{} 2000 Universität Passau @*
 Lehrstuhl für Software-Systeme @*
 Innstraße 33 @*
 D-94032 Passau @*
@@ -1092,7 +1092,7 @@ command tool.
 @item December, 1998
 @DDD{} 3.1: Data plotting, Perl support, Python support, Undo/Redo.
 
-@item October, 1999
+@item January, 2000
 @DDD{} 3.2: New manual, Readline support, Ladebug support.
 @end table
 
