@@ -2733,26 +2733,24 @@ showing the data displays of the debugged program.\n\
 @tt \267 @sl Click @rm on the background to create new displays via a menu.
 
 Ddd*data_disp_shell.helpString:	\
-@rm This is the @sl Data Display @rm \n\
+@rm This is the @sl Data Window @rm \n\
 showing the data displays of the debugged program.\n\
 \n\
 @bf Left mouse button:@rm\n\
-@tt \267 @sl Click @rm on a display @sl DISPLAY @rm to select @sl DISPLAY @rm.\n\
+@tt \267 @sl Click @rm on a display to select it.\n\
 @tt \267 @sl Double-click @rm on a display to select all connected displays.\n\
 @tt \267 @sl Double-click @rm on the background to select all displays.\n\
 @tt \267 @sl Drag @rm on a display to move selected displays.\n\
-@tt \267 @sl Drag @rm on the background to select framed displays.\n\
+@tt \267 @sl Drag @rm on the background to select several displays.\n\
 \n\
-@bf Middle mouse button:@rm\n\
-@tt \267 @sl Click @rm on a display @sl DISPLAY @rm to add @sl DISPLAY @rm \
-to the selection.\n\
+@bf Middle mouse button (or Shift + Left mouse button):@rm\n\
+@tt \267 @sl Click @rm on a display to toggle its selection state.\n\
+@tt \267 @sl Double-click @rm on a display to toggle all connected displays.\n\
 @tt \267 @sl Drag @rm on a display to move selected displays.\n\
-@tt \267 @sl Drag @rm on the background to add framed displays\n\
-    to the selection.\n\
+@tt \267 @sl Drag @rm on the background to toggle several displays.\n\
 \n\
 @bf Right mouse button:@rm\n\
-@tt \267 @sl Click @rm on some display @sl DISPLAY @rm to\
-modify @sl DISPLAY @rm via a menu.\n\
+@tt \267 @sl Click @rm on some display to modify it.\n\
 @tt \267 @sl Click @rm on the background to create new displays via a menu.
 
 Ddd*graph_edit_panner.helpString:	\
@@ -3312,19 +3310,17 @@ Ddd*gdb_w.autoShowCursorPosition:	true
 Ddd*gdb_w.cursorPositionVisible:	true
 
 Ddd*gdb_w.helpString:		\
-\
 @rm This is the @sl debugger console window.@rm\n\
 \n\
 You can enter debugging commands here.\n\
-Enter ``@tt help@rm'' at the debugger prompt\n\
+Enter `@tt help@rm' at the debugger prompt\n\
 to get help on debugging commands.
 
 Ddd*command_shell.helpString:		\
-\
 @rm This is the @sl debugger console window.@rm\n\
 \n\
 You can enter debugging commands here.\n\
-Enter ``@tt help@rm'' at the debugger prompt\n\
+Enter `@tt help@rm' at the debugger prompt\n\
 to get help on debugging commands.
 
 

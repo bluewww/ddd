@@ -275,7 +275,7 @@ Volunteers for these and other projects are welcome!
 135. Have node reference points be at the upper left instead of the
      center.
 
-143* Have a list of regexes that match suppressed displays.  See also
+143. Have a list of regexes that match suppressed displays.  See also
      #128 and #088.
 
 144. (Insert your project idea here)

@@ -170,7 +170,7 @@ Volunteers for fixing these and other bugs are welcome!
 113. Matthias Kurz <mk@baerlap.north.de> states:
      If I resize the data display the background doesn't get refreshed.
 
-114* Avi Cohen Stuart <avi@baan.nl> noticed that "a lot of texts on
+114. Avi Cohen Stuart <avi@baan.nl> noticed that "a lot of texts on
      several windows are redisplayed more that two times, for example
      texts in the source window, and the graphics window.  Is the
      frequent redisplay a 'feature' or is it something that needs to
