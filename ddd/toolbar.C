@@ -71,7 +71,29 @@ static void set_label_type(MMDesc items[], unsigned char label_type)
     {
 	Widget w = item->widget;
 	if (w != 0 && XmIsLabel(w))
+	{
+#if 0				// Doesn't work -AZ
+	    if (label_type == XmPIXMAP)
+	    {
+		// If this is a pixmap, set a small font.  This might
+		// help in Motif 2.0 to minimize flickering.
+		const string fontList = 
+		    string("fixed=") + MSTRING_DEFAULT_CHARSET;
+		XtVaSetValues(w,
+			      XmNlabelType, label_type,
+			      XtVaTypedArg, 
+			      XmNfontList, XtRString, 
+			      fontList.chars(), fontList.length() + 1,
+			      NULL);
+	    }
+	    else
+	    {
+		XtVaSetValues(w, XmNlabelType, label_type, NULL);
+	    }
+#else
 	    XtVaSetValues(w, XmNlabelType, label_type, NULL);
+#endif
+	}
     }
 }
 
