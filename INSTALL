@@ -19,6 +19,7 @@ To build a complete DDD from sources, you need:
      - SGI CC: safe if full ISO C++ is supported (including `bool').
                Earlier versions are unsafe: DDD may compile, but
                crashes after a few interactions.
+     - DEC CXX: safe if full ISO C++ is supported (including `bool').
      - AIX xlC: unsafe. Introduces some minor errors.
      - Cfront 3.0: unsafe. Does not compile DDD.
 
@@ -74,19 +75,17 @@ To run DDD, you need:
        (`g77') and GNU Modula-2.
 
      - As an alternative to GDB, DDD also supports the DBX debugger as
-       found on SUN, DEC, AIX, and IRIX systems.  Using DBX, you can
-       debug programs written in C, C++, Pascal, Fortran, and
-       Modula-2.  DDD adapts automatically to a wide range of other
-       DBX variants.
+       found on SUN, DEC, AIX, and IRIX systems.  This is useful if
+       you use a compiler that is better supported by DBX than by GDB.
+       DDD adapts automatically to a wide range of DBX variants.
 
-     - As another alternative, DDD also supports the XDB debugger as
-       found on HP-UX systems.  XDB usage has been tested for C
+     - As another alternative, DDD may also support the XDB debugger
+       as found on HP-UX systems.  XDB usage has been tested for C
        programs only, but may work for other languages as well.
 
-       XDB will no longer be supported in future DDD releases.  You
-       can use HP's Wildebeest (WDB) instead, a free GDB port to HP-UX
-       (`http://www.hp.com/lang/tools/Debuggers/WDB/').  Please let us
-       know your experiences with DDD and WDB.
+       Note that XDB support is no longer maintained in this DDD
+       release.  You can use HP's Wildebeest (WDB) instead, a free GDB
+       port to HP-UX (`http://www.hp.com/lang/tools/Debuggers/WDB/').
 
      - To debug Java bytecode programs, DDD supports JDB, the Java
        Debugger, as of JDK 1.1 and later.
@@ -504,9 +503,9 @@ Documentation
 The DDD Manual, contained in the file `ddd/ddd.man', is the official
 DDD reference.  Note that DDD also has various on-line facilities.
 
-A DDD manual in PostScript format, as well as other documents related
-to DDD are contained in the `./doc' directory.  See the `./doc/README'
-file for details.
+A DDD manual in PostScript format (including several screen shots), as
+well as other documents related to DDD are contained in the `./doc'
+directory.  See the `./doc/README' file for details.
 
 
 $Id$
