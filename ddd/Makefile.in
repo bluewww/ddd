@@ -392,6 +392,10 @@ PNMGAMMA   = pnmgamma
 PGMENHANCE = pgmenhance
 PNMDEPTH   = pnmdepth
 
+# The face-generating program from the `compface' package
+XBM2XFACE  = xbm2xface.pl
+
+
 ### END OF CUSTOMIZATION SECTION ---
 ### You shouldn't need to change anything below this line.
 
@@ -474,7 +478,7 @@ X_INCLUDE = @X_CFLAGS@
 INCLUDE = -I. -I$(srcdir) -I$(srcdir)/.. $(X_INCLUDE)
 
 ## Implicit rules.
-.SUFFIXES: .C .cc .c .mod .p .Y .YY .L .txt .i .xbm .xpm
+.SUFFIXES: .C .cc .c .mod .p .Y .YY .L .txt .i .xbm .xpm .xface
 .C.o:
 	$(COMPILE.cc) $(INCLUDE) -o $@ $<
 .cc.o:
@@ -554,6 +558,9 @@ INCLUDE = -I. -I$(srcdir) -I$(srcdir)/.. $(X_INCLUDE)
 	$(PBMTOXBM) | $(SED) "s/noname/$${base}/g" | \
 	$(SED) "s/static char/static unsigned char/g" > $@~
 	test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; false)
+
+.xbm.xface:
+	echo "X-Face:`$(XBM2XFACE) $<`" > $@
 
 # Old makes will fail on pattern rules.  No big deal, unless you want to
 # modify the icons.  In case of trouble, use GNU make.
@@ -889,6 +896,7 @@ ICONS = \
 	$(icondir)/ddd.xbm \
 	$(icondir)/dddmask.xbm \
 	$(icondir)/dddsplash.xbm \
+	$(icondir)/ddd.xface \
 	$(toolbardir)/breakat-xx.xpm \
 	$(toolbardir)/clearat-xx.xpm \
 	$(toolbardir)/delete-xx.xpm \
@@ -1625,6 +1633,8 @@ $(icondir)/dddmask.xpm: $(icondir)/ddd.xpm
 	$(SED) 's/[wW]hite/black/g' $(icondir)/ddd.xpm > $@
 
 $(icondir)/ddd.xbm: $(icondir)/ddd.xpm
+
+$(icondir)/ddd.xface: $(icondir)/ddd.xbm
 
 $(icondir)/dddmask.xbm: $(icondir)/dddmask.xpm
 
