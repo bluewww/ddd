@@ -48,14 +48,14 @@ const char question_rcsid[] =
 bool gdb_question_running; // Is gdb_question() running?
 
 struct GDBReply {
-    string answer;    // The answer text (string(-1) if timeout)
+    string answer;    // The answer text (NO_GDB_ANSWER if timeout)
     bool received;    // true iff we found an answer
 };
 
 static void gdb_reply_timeout(XtPointer client_data, XtIntervalId *)
 {
     GDBReply *reply = (GDBReply *)client_data;
-    reply->answer   = string(-1);
+    reply->answer   = NO_GDB_ANSWER;
     reply->received = true;
 }
 
@@ -69,7 +69,8 @@ static void gdb_reply(const string& complete_answer, void *qu_data)
 string gdb_question(const string& command, int timeout)
 {
     if (gdb_question_running)
-	return string(-1);
+	return NO_GDB_ANSWER;
+
     gdb_question_running = true;
 
     static GDBReply reply;
@@ -77,7 +78,7 @@ string gdb_question(const string& command, int timeout)
 
     bool ok = gdb->send_question(command, gdb_reply, (void *)&reply);
     if (!ok)
-	return string(-1);	// GDB not ready
+	return NO_GDB_ANSWER;	// GDB not ready
 
     if (timeout == 0)
 	timeout = app_data.question_timeout;
@@ -94,7 +95,7 @@ string gdb_question(const string& command, int timeout)
 	XtAppProcessEvent(XtWidgetToApplicationContext(gdb_w), 
 			  XtIMTimer | XtIMAlternateInput);
 
-    if (reply.answer != string(-1))
+    if (reply.answer != NO_GDB_ANSWER)
     {
 	if (timer && timeout > 0)
 	    XtRemoveTimeOut(timer);

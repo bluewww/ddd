@@ -3104,7 +3104,7 @@ void SourceView::EditBreakpointConditionCB(Widget,
     {
 	string info = 
 	    gdb_question("info breakpoint " + itostring(bp_nr));
-	if (info == string(-1))
+	if (info == NO_GDB_ANSWER)
 	    return;
 
 	string cond = info.after("stop only if ");
@@ -3208,7 +3208,7 @@ void SourceView::EditBreakpointIgnoreCountCB(Widget,
     {
 	string info = 
 	    gdb_question("info breakpoint " + itostring(bp_nr));
-	if (info == string(-1))
+	if (info == NO_GDB_ASNWER)
 	    return;
 
 	string ignore = info.after("ignore next ");
@@ -3400,7 +3400,7 @@ void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
 	    // DBX 1.x lacks a `frame' command.  Use this kludge instead.
 
 	    string reply = gdb_question("func main");
-	    if (reply == string(-1))
+	    if (reply == NO_GDB_ANSWER)
 	    {
 		post_gdb_busy(w);
 		return;
@@ -3413,7 +3413,7 @@ void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
 	    {
 		reply = 
 		    gdb_question("down " + itostring(cbs->item_position - 1));
-		if (reply == string(-1))
+		if (reply == NO_GDB_ANSWER)
 		{
 		    post_gdb_busy(w);
 		    return;
@@ -3454,7 +3454,7 @@ void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
 	    string reply = 
 		gdb_question("frame " + 
 			     itostring(count - cbs->item_position + 1));
-	    if (reply == string(-1))
+	    if (reply == NO_GDB_ANSWER)
 	    {
 		post_gdb_busy(w);
 		return;
@@ -3473,7 +3473,7 @@ void SourceView::refresh_stack_frames()
 {
     // Allow unlimited time to find out where we are
     string where_s = gdb_question(gdb->where_command(), -1);
-    if (where_s == string(-1))
+    if (where_s == NO_GDB_ANSWER)
 	where_s = "No stack.";
     process_where(where_s);
 
@@ -3745,7 +3745,7 @@ void SourceView::process_register(string& register_output)
 void SourceView::refresh_registers()
 {
     string registers = gdb_question("info registers");
-    if (registers == string(-1))
+    if (registers == NO_GDB_ANSWER)
 	registers = "No registers.";
     process_register(registers);
 }

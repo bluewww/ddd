@@ -36,10 +36,12 @@
 #include "strclass.h"
 #include "bool.h"
 
-// Send COMMAND to GDB; return answer (`string(-1)' if none)
+// Send COMMAND to GDB; return answer (NO_GDB_ANSWER if none)
 // TIMEOUT is either 0 (= use default timeout), -1 (= no timeout)
 // or maximal time in seconds
 string gdb_question(const string& command, int timeout = 0);
+
+const string NO_GDB_ANSWER(char(-1));
 
 extern bool gdb_question_running; // Is gdb_question running?
 

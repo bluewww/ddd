@@ -163,7 +163,7 @@ static Widget file_dialog(Widget w, const string& name,
     if (remote_gdb())
     {
 	pwd = gdb_question("pwd");
-	if (pwd == string(-1))
+	if (pwd == NO_GDB_ANSWER)
 	{
 	    post_error("Cannot get current remote directory", "pwd_error", w);
 	    pwd = "";
@@ -440,7 +440,7 @@ static string get_file(Widget w, XtPointer, XtPointer call_data)
 
     String s;
     if (!XmStringGetLtoR(cbs->value, MSTRING_DEFAULT_CHARSET, &s))
-	return string(-1);
+	return NO_GDB_ANSWER;
 
     string filename = s;
     XtFree(s);
@@ -449,7 +449,7 @@ static string get_file(Widget w, XtPointer, XtPointer call_data)
     {
 	String dir;
 	if (!XmStringGetLtoR(cbs->dir, MSTRING_DEFAULT_CHARSET, &dir))
-	    return string(-1);
+	    return NO_GDB_ANSWER;
 
 	filename = string(dir) + "/" + filename;
 	XtFree(dir);
@@ -474,7 +474,7 @@ static void openFileDone(Widget w, XtPointer client_data, XtPointer call_data)
 
     XtUnmanageChild(w);
 
-    if (filename != string(-1))
+    if (filename != NO_GDB_ANSWER)
     {
 	switch(gdb->type())
 	{
@@ -498,7 +498,7 @@ static void openCoreDone(Widget w, XtPointer client_data, XtPointer call_data)
 
     XtUnmanageChild(w);
 
-    if (corefile != string(-1))
+    if (corefile != NO_GDB_ANSWER)
     {
 	switch(gdb->type())
 	{
@@ -508,7 +508,7 @@ static void openCoreDone(Widget w, XtPointer client_data, XtPointer call_data)
 
 	case DBX:
 	    string file = gdb_question("debug");
-	    if (file == string(-1))
+	    if (file == NO_GDB_ANSWER)
 		post_gdb_busy();
 	    else if (file.contains("Debugging: ", 0))
 	    {
@@ -532,7 +532,7 @@ static void openSourceDone(Widget w, XtPointer client_data,
 
     XtUnmanageChild(w);
 
-    if (filename != string(-1))
+    if (filename != NO_GDB_ANSWER)
 	source_view->read_file(filename);
 }
 

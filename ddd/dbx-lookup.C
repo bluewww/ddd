@@ -55,7 +55,7 @@ string dbx_lookup(const string& func_name)
 	return pos_cache[func_name];
 
     string reply = gdb_question("func " + func_name);
-    if (reply == string(-1))
+    if (reply == NO_GDB_ANSWER)
     {
 	post_gdb_busy();
 	return "";

@@ -259,7 +259,7 @@ void gdb_set_tty(const string& tty_name,
 	    string tty_cmd = string("tty ") + tty_name;
 	    string reply = gdb_question(tty_cmd);
 
-	    if (reply == string(-1))
+	    if (reply == NO_GDB_ANSWER)
 	    {
 		post_error("GDB I/O error: cannot send tty command", 
 			   "tty_command_error", origin);
@@ -275,7 +275,7 @@ void gdb_set_tty(const string& tty_name,
 	// Set remote terminal type
 	string env_cmd = string("set environment TERM ") + term_type;
 	string reply = gdb_question(env_cmd);
-	if (reply == string(-1))
+	if (reply == NO_GDB_ANSWER)
 	{
 	    post_error("GDB I/O error: cannot send tty command", 
 		       "tty_command_error", origin);
@@ -294,7 +294,7 @@ void gdb_set_tty(const string& tty_name,
 	    string command = string("dbxenv run_io pty");
 	    string reply = gdb_question(command);
 
-	    if (reply == string(-1))
+	    if (reply == NO_GDB_ANSWER)
 	    {
 		post_error("DBX I/O error: cannot send dbxenv run_io command",
 			   "tty_command_error", origin);
@@ -308,7 +308,7 @@ void gdb_set_tty(const string& tty_name,
 		command = string("dbxenv run_pty ") + tty_name;
 		reply = gdb_question(command);
 
-		if (reply == string(-1))
+		if (reply == NO_GDB_ANSWER)
 		{
 		post_error("DBX I/O error: cannot send dbxenv run_pty command",
 			   "tty_command_error", origin);
@@ -324,7 +324,7 @@ void gdb_set_tty(const string& tty_name,
 	// Set remote terminal type
 	string env_cmd = string("setenv TERM ") + term_type;
 	string reply = gdb_question(env_cmd);
-	if (reply == string(-1))
+	if (reply == NO_GDB_ANSWER)
 	{
 	    post_error("GDB I/O error: cannot send tty command", 
 		       "tty_command_error", origin);

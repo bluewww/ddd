@@ -75,7 +75,7 @@ MString gdbDefaultHelp(Widget widget)
     string name = XtName(widget);
 
     string help = gdb_question("help " + name);
-    if (help == string(-1))
+    if (help == NO_GDB_ANSWER)
     {
 	help = "No help available now.\n"
 	    "Please try again when the debugger is ready.";
