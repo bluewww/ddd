@@ -170,4 +170,8 @@ Volunteers for fixing these and other bugs are welcome!
     that the `Displays' cluster should have two or more columns in
     order to fit the visible part of the display.
 
-331 (Insert new bugs here)
+331*Paul Sydney <sydney@ulua.mhpcc.af.mil>, Jim Van Zandt
+    <jrv@mbunix.mitre.org>, and Bob Full <roundman@biz-tech.net>
+    report `MakeMenu' problems with EGCS.
+
+332 (Insert new bugs here)
