@@ -71,7 +71,7 @@ protected:
     }
 
 private:
-    const DefCallNode& operator = (const DefCallNode&)
+    DefCallNode& operator = (const DefCallNode&)
     {
 	assert(0); return *this;
     }

@@ -131,7 +131,7 @@ struct GraphGC {
     {}
 
     // Assignment
-    const GraphGC& operator = (const GraphGC& g)
+    GraphGC& operator = (const GraphGC& g)
     {
 	if (&g != this)
 	{

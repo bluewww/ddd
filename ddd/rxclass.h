@@ -161,7 +161,7 @@ private:
 #endif
 	matcher(0), data(0) {} // no X(X&)
 
-    const regex& operator = (const regex&) { return *this; } // no assignment
+    regex& operator = (const regex&) { return *this; } // no assignment
 };
 
 #if WITH_RUNTIME_REGEX

@@ -98,7 +98,7 @@ public:
     }
 
     // Assignment: just the same.
-    const VSLArg& operator = (Box *box)
+    VSLArg& operator = (Box *box)
     {
 	if (box != _box)
 	{
@@ -109,7 +109,7 @@ public:
 	return *this;
     }
 
-    const VSLArg& operator = (const VSLArg& arg)
+    VSLArg& operator = (const VSLArg& arg)
     {
 	if (arg.box() != _box)
 	{
@@ -253,7 +253,7 @@ private:
     friend int VSLLib_parse();
 
     VSLLib(const VSLLib&): _lib_name(), _first(0), _last(0) { assert(0); }
-    const VSLLib& operator = (const VSLLib&)   { assert(0); return *this; }
+    VSLLib& operator = (const VSLLib&)   { assert(0); return *this; }
 
 public:
     // Build

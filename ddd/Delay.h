@@ -53,7 +53,7 @@ private:
     static Cursor hourglass_cache;
 
     _Delay(const _Delay&): widget(0), old_cursor(0) { assert(0); }
-    const _Delay& operator = (const _Delay&) { assert(0); return *this; }
+    _Delay& operator = (const _Delay&) { assert(0); return *this; }
 
 protected:
     static void DestroyCB(Widget, XtPointer, XtPointer);

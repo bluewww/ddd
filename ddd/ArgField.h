@@ -72,7 +72,7 @@ class ArgField {
 private:
     ArgField(const ArgField&): 
 	arg_text_field(0), handlers(), is_empty(false) { assert(0); }
-    const ArgField& operator = (const ArgField&)       { assert(0); }
+    ArgField& operator = (const ArgField&)       { assert(0); return *this; }
 
 public:
     // Constructor

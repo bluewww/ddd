@@ -66,10 +66,9 @@ class DispValue {
     void init(string& value, DispValueType type = UnknownType);
     void clear();
 
-    const DispValue& operator = (const DispValue&)
+    DispValue& operator = (const DispValue&)
     {
-	assert(0);
-	return *this;
+	assert(0); return *this;
     }
 
 protected:

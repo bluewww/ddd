@@ -1023,7 +1023,7 @@ private:
     {
 	assert(0);
     }
-    const NewDisplayInfo& operator = (const NewDisplayInfo&)
+    NewDisplayInfo& operator = (const NewDisplayInfo&)
     {
 	assert(0); return *this;
     }
@@ -2419,9 +2419,9 @@ private:
 	assert(0);
     }
 
-    const StatusShower& operator = (const StatusShower&)
+    StatusShower& operator = (const StatusShower&)
     {
-	assert(0);
+	assert(0); return *this;
     }
 };
 

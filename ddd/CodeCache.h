@@ -53,7 +53,7 @@ struct CodeCacheEntry {
     CodeCacheEntry(const CodeCacheEntry& cce)
 	: start(cce.start), end(cce.end), code(cce.code)
     {}
-    const CodeCacheEntry& operator=(const CodeCacheEntry& cce)
+    CodeCacheEntry& operator = (const CodeCacheEntry& cce)
     {
 	start = cce.start;
 	end   = cce.end;

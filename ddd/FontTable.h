@@ -50,7 +50,7 @@ struct FontTableHashEntry {
 private:
     FontTableHashEntry(const FontTableHashEntry&)
 	: font(0), name() { assert(0); }
-    const FontTableHashEntry& operator = (const FontTableHashEntry&)
+    FontTableHashEntry& operator = (const FontTableHashEntry&)
 	{ assert(0); return *this; }
 };
 
@@ -63,7 +63,7 @@ private:
     Display *_display;
 
     FontTable(const FontTable&): _display(0) { assert(0); }
-    const FontTable& operator = (const FontTable&)    { assert(0); }
+    FontTable& operator = (const FontTable&) { assert(0); return *this; }
 
 public:
     FontTable(Display *display):

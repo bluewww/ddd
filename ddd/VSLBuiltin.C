@@ -135,7 +135,7 @@ static Box *normalize(AlignBox *box)
 
     for (int i = 0; i < box->nchildren(); i++)
     {
-	const Box *child = (*box)[i];
+	Box *child = (*box)[i];
 	if (ptr_type_info(box) == ptr_type_info(child))
 	{
 	    need_assoc_restructuring = true;

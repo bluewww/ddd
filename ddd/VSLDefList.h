@@ -83,7 +83,7 @@ private:
 	assert(0);
     }
 
-    const VSLDefList& operator = (const VSLDefList&) 
+    VSLDefList& operator = (const VSLDefList&) 
     { 
 	assert(0); return *this; 
     }

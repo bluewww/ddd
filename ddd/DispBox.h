@@ -51,7 +51,7 @@ private:
     Box* title_box;
 
     DispBox(const DispBox&): mybox(0), title_box(0) { assert(0); }
-    const DispBox& operator = (const DispBox&) { assert(0); return *this; }
+    DispBox& operator = (const DispBox&) { assert(0); return *this; }
 
 public:
     // Must be initialized from outside!

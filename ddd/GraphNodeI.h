@@ -62,7 +62,7 @@ private:
     GraphNode *prev;		// For collectors
     Graph *graph;		// For collectors
 
-    const GraphNode& operator = (const GraphNode&) { assert(0); return *this; }
+    GraphNode& operator = (const GraphNode&) { assert(0); return *this; }
 
 protected:
     // Copy Constructor

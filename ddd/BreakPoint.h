@@ -102,7 +102,7 @@ private:
     {
 	assert(0);
     }
-    const BreakPoint& operator = (const BreakPoint&)
+    BreakPoint& operator = (const BreakPoint&)
     {
 	assert(0); return *this;
     }

@@ -70,7 +70,7 @@ private:
 	assert(0);
     }
 
-    const TimerInfo& operator = (const TimerInfo&)
+    TimerInfo& operator = (const TimerInfo&)
     {
 	assert(0); return *this;
     }

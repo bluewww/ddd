@@ -115,7 +115,7 @@ private:
 			   const BoxRegion& region, 
 			   const BoxPostScriptGC& gc);
 
-    const Box& operator = (const Box&) { assert(0); }
+    Box& operator = (const Box&) { assert(0); return *this; }
 
 protected:
     int _links;			// #references (>= 1)
@@ -247,7 +247,7 @@ public:
 
     // Check for equality
     bool operator == (const Box& b) const;
-    bool operator != (const Box& b) const { return !(operator== (b)); }
+    bool operator != (const Box& b) const { return !(operator == (b)); }
 
     // Check class
     virtual bool isStringBox() const  { return false; }

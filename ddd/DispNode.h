@@ -100,7 +100,7 @@ private:
     {
 	assert(0);
     }
-    const DispNode& operator = (const DispNode&) { assert(0); return *this; }
+    DispNode& operator = (const DispNode&) { assert(0); return *this; }
 
 public:
     // Create a new display numbered DISP_NR, named NAME, created at

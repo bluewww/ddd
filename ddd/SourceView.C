@@ -6419,7 +6419,7 @@ private:
     {
 	assert(0);
     }
-    const RefreshInfo& operator = (const RefreshInfo&)
+    RefreshInfo& operator = (const RefreshInfo&)
     {
 	assert(0); return *this;
     }

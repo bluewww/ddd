@@ -51,7 +51,7 @@ private:
 	assert(0);
     }
 
-    const QueueRec<E>& operator = (const QueueRec<E>&)
+    QueueRec<E>& operator = (const QueueRec<E>&)
     {
 	assert(0); return *this;
     }
@@ -114,7 +114,7 @@ public:
     }
 
     // Assignment
-    const Queue<E>& operator = (const Queue<E>& e)
+    Queue<E>& operator = (const Queue<E>& e)
     {
 	if (&e != this)
 	{

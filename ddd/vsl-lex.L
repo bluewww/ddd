@@ -262,7 +262,7 @@ private:
     {
 	assert(0);
     }
-    const yyNameSet& operator = (const yyNameSet&)
+    yyNameSet& operator = (const yyNameSet&)
     {
 	assert(0); return *this;
     }

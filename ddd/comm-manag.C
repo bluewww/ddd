@@ -168,7 +168,7 @@ private:
 	assert(0);
     }
 
-    const CmdData& operator = (const CmdData&)
+    CmdData& operator = (const CmdData&)
     {
 	assert(0); return *this;
     }

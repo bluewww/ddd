@@ -73,7 +73,7 @@ private:
 	assert(0);
     }
 
-    const ChunkQueue& operator = (const ChunkQueue&)
+    ChunkQueue& operator = (const ChunkQueue&)
     {
 	assert(0); return *this;
     }

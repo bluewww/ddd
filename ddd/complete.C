@@ -107,7 +107,7 @@ private:
 	assert(0);
     }
 
-    const CompletionInfo& operator = (const CompletionInfo&)
+    CompletionInfo& operator = (const CompletionInfo&)
     {
 	assert(0); return *this;
     }

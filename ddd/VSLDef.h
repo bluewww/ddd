@@ -102,7 +102,7 @@ private:
 	assert(0);
     }
 
-    const VSLDef& operator = (const VSLDef&) { assert(0); return *this; }
+    VSLDef& operator = (const VSLDef&) { assert(0); return *this; }
 
 public:
     // Ressourcen

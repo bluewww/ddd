@@ -95,10 +95,7 @@ protected:
     const Box *call(Box *) const  { assert(0); return 0; }
 
 private:
-    const LetNode& operator = (const LetNode&)
-    {
-	assert(0); return *this;
-    }
+    LetNode& operator = (const LetNode&) { assert(0); return *this; }
 
 public:
     // LetNode erzeugen

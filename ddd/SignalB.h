@@ -63,7 +63,7 @@ private:
 #endif
 
     // No assignments and copies
-    const SignalBlocker& operator = (const SignalBlocker&) 
+    SignalBlocker& operator = (const SignalBlocker&) 
     {
 	assert(0);
 	return *this;

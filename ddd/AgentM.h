@@ -42,6 +42,7 @@
 #include "config.h"
 #include "TypeInfo.h"
 #include "bool.h"
+#include "assert.h"
 
 #if !defined(SIGCHLD) && defined(SIGCLD)
 #define SIGCHLD SIGCLD
@@ -68,7 +69,7 @@ private:
 private:
     AgentManager(const AgentManager&): 
 	first(0), old_pipe_handler(0), old_chld_handler(0) { assert(0); }
-    const AgentManager& operator = (const AgentManager&)   { assert(0); }
+    AgentManager& operator = (const AgentManager&) { assert(0); return *this; }
 
 public:
     DECLARE_TYPE_INFO

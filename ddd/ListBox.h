@@ -56,7 +56,7 @@ private:
     Box     *&_head()   { return _child(0); }
     Box     *&_tail()   { return _child(1); }
 
-    const ListBox& operator = (const ListBox&) { assert(0); }
+    ListBox& operator = (const ListBox&) { assert(0); return *this; }
 
 public:
     const Box *head() const 

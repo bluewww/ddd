@@ -66,7 +66,7 @@ private:
     {
 	assert(0);
     }
-    const AssocRec<K,V>& operator = (const AssocRec<K, V>&)
+    AssocRec<K,V>& operator = (const AssocRec<K, V>&)
     {
 	assert(0); return *this;
     }
@@ -174,7 +174,7 @@ public:
     }
 
     // Assignment
-    const _Assoc<K, V> operator = (const _Assoc<K,V>& m)
+    _Assoc<K, V> operator = (const _Assoc<K,V>& m)
     {
 	if (this != &m)
 	{
@@ -208,12 +208,12 @@ public:
     AssocMark(const AssocMark<K,V>& mark):
 	rec(mark.rec)
     {}
-    const AssocMark<K,V>& operator = (const Assoc<K,V>& assoc)
+    AssocMark<K,V>& operator = (const Assoc<K,V>& assoc)
     {
 	rec = assoc.entries;
 	return *this;
     }
-    const AssocMark<K,V>& operator = (const AssocMark<K,V>& mark)
+    AssocMark<K,V>& operator = (const AssocMark<K,V>& mark)
     {
 	rec = mark.rec;
 	return *this;
@@ -235,12 +235,12 @@ public:
     AssocIter(const AssocIter<K,V>& iter):
 	AssocMark<K,V>(iter)
     {}
-    const AssocIter<K,V>& operator = (const Assoc<K,V>& assoc)
+    AssocIter<K,V>& operator = (const Assoc<K,V>& assoc)
     {
 	AssocMark<K,V>::operator = (assoc);
 	return *this;
     }
-    const AssocIter<K,V>& operator = (const AssocIter<K,V>& iter)
+    AssocIter<K,V>& operator = (const AssocIter<K,V>& iter)
     {
 	AssocMark<K,V>::operator = (iter);
 	return *this;

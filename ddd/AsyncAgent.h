@@ -81,7 +81,7 @@ private:
     {
 	assert(0);
     }
-    const AsyncAgentWorkProcInfo& operator = (const AsyncAgentWorkProcInfo&)
+    AsyncAgentWorkProcInfo& operator = (const AsyncAgentWorkProcInfo&)
     {
 	assert(0); return *this;
     }
@@ -106,7 +106,7 @@ private:
     {
 	assert(0);
     }
-    const AsyncAgentWorkProc& operator = (const AsyncAgentWorkProc&)
+    AsyncAgentWorkProc& operator = (const AsyncAgentWorkProc&)
     {
 	assert(0); return *this;
     }
@@ -205,7 +205,7 @@ private:
         }
     }
 
-    const AsyncAgent& operator = (const AsyncAgent&)
+    AsyncAgent& operator = (const AsyncAgent&)
     {
 	assert(0);
 	return *this;

@@ -60,7 +60,7 @@ private:
     private:
 	HandlerRec(const HandlerRec&):
 	    proc(0), client_data(0), next(0), remove_me(false) { assert(0); }
-	const HandlerRec& operator = (const HandlerRec&)       { assert(0); }
+	HandlerRec& operator = (const HandlerRec&) { assert(0); return *this; }
     };
 
     static int compare(const HandlerRec& l1, const HandlerRec& l2)
@@ -79,7 +79,7 @@ protected:
     void processRemovals(unsigned type) const;
 
 private:
-    const HandlerList& operator = (const HandlerList&) { assert(0); }
+    HandlerList& operator = (const HandlerList&) { assert(0); return *this; }
 
 public:
     // Constructor

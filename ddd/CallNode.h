@@ -81,7 +81,7 @@ protected:
     }
 
 private:
-    const CallNode& operator = (const CallNode&)
+    CallNode& operator = (const CallNode&)
     {
 	assert(0); return *this;
     }

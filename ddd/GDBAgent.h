@@ -178,7 +178,7 @@ private:
     string last_written;	// Last command sent
     int echoed_characters;      // # of echoed characters so far (-1: no echo)
 
-    const GDBAgent& operator = (const GDBAgent&) { assert(0); return *this; }
+    GDBAgent& operator = (const GDBAgent&) { assert(0); return *this; }
 
 protected:
     // Return PREFIX + EXPR, parenthesizing EXPR if needed
