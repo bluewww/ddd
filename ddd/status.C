@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
 // Show messages in status line
 
-// Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of DDD.
@@ -77,6 +77,9 @@ static MString current_status_text;
 
 // Non-zero if status is locked (i.e. unchangeable)
 static int status_locked = 0;
+
+// True iff status is to be logged
+static bool log_status = true;
 
 
 //-----------------------------------------------------------------------------
@@ -565,7 +568,11 @@ void set_status_from_gdb(const string& text)
     if (message == "")
 	return;
 
+    // Don't log this stuff - it's already logged
+    bool old_log_status = log_status;
+    log_status = false;
     set_status(message);
+    log_status = old_log_status;
 }
 
 // Show MESSAGE in status window.
@@ -605,7 +612,7 @@ void set_status_mstring(MString message, bool temporary)
     XFlush(XtDisplay(status_w));
     XmUpdateDisplay(status_w);
 
-    if (!temporary)
+    if (log_status && !temporary)
     {
 	// Log status message
 	string s = str(message);
