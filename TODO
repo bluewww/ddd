@@ -380,7 +380,7 @@ Volunteers for these and other projects are welcome!
 
 252 Print via the X Printer extension (-lXp).
 
-253*Realize CDE style guide requirements.  In particular,
+253 Realize CDE style guide requirements.  In particular,
     - F1 should give help on the element that has the focus; 
       Shift+F1 should give context help.
     - Use `Over_v_iew' instead of `Main Window'; make this the 1st
