@@ -483,15 +483,14 @@ int TTYAgent::setupParentCommunication()
 
     _outputfp = _inputfp;
     _errorfp  = NULL;
-    
-#if 0
-    // lee@champion.tcs.co.jp (Lee Hounshell) removed this code:
-    // Set line buffered mode
-#if !defined(__osf__) && defined(HAVE_SETVBUF) && defined(_IONBF)
-    setvbuf(_outputfp, NULL, _IONBF, BUFSIZ);
-#elif defined(__osf__) || defined(HAVE_SETBUF)
+
+#if defined(__osf__) || defined(HAVE_SETBUF)
+    // Set unbuffered mode
     setbuf(_outputfp, NULL);
-#endif
+#elif !defined(__osf__) && defined(HAVE_SETVBUF) && defined(_IONBF)
+    // According to lee@champion.tcs.co.jp (Lee Hounshell), this
+    // won't work on Linux ELF systems:
+    setvbuf(_outputfp, NULL, _IONBF, BUFSIZ);
 #endif
 
     return 0;
