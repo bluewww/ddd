@@ -34,10 +34,13 @@
 #endif
 
 #include <X11/Intrinsic.h>
+#include "strclass.h"
 
 extern void gdbOpenFileCB   (Widget, XtPointer, XtPointer);
 extern void gdbOpenCoreCB   (Widget, XtPointer, XtPointer);
 extern void gdbOpenSourceCB (Widget, XtPointer, XtPointer);
+
+extern void process_cd(string pwd);
 
 #endif // _DDD_file_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

@@ -162,36 +162,9 @@ static Widget file_dialog(Widget w, const string& name,
 
     if (remote_gdb())
     {
-	pwd = gdb_question(gdb->pwd_command());
-	if (pwd == NO_GDB_ANSWER)
-	{
-	    post_error("Cannot get current remote directory", "pwd_error", w);
-	    pwd = "";
-	}
-	else
-	{
-	    switch(gdb->type())
-	    {
-	    case GDB:
-		pwd = pwd.after("directory ");
-		pwd = pwd.before(int(pwd.length()) - 2);
-		break;
-
-	    case DBX:
-	    case XDB:
-		// Use last line only
-		if (pwd.contains('\n'))
-		    pwd = pwd.after('\n', -1);
-		break;
-	    }
-	}
-
-	if (pwd != "")
-	{
-	    static MString xmpwd;
-	    xmpwd = pwd;
-	    XtSetArg(args[arg], XmNdirectory, xmpwd.xmstring()); arg++;
-	}
+	static MString xmpwd;
+	xmpwd = SourceView::pwd();
+	XtSetArg(args[arg], XmNdirectory, xmpwd.xmstring()); arg++;
     }
 
     Widget dialog = 
@@ -596,4 +569,19 @@ void gdbOpenSourceCB(Widget w, XtPointer, XtPointer)
     }
 
     XtManageChild(dialog);
+}
+
+// Synchronize file dialogs with current directory
+void process_cd(string pwd)
+{
+    current_file_filter = pwd + "/*";
+
+    for (int i = 0; i < file_filters.size(); i++)
+    {
+	if (file_filters[i] != 0)
+	{
+	    XmTextSetString(file_filters[i], current_file_filter);
+	    break;
+	}
+    }
 }

@@ -421,6 +421,9 @@ public:
     // Return `{ COMMAND; }'
     static string command_list(string cmd);
 
+    // Return current directory
+    static string pwd() { return current_pwd; }
+
     // Clear caches
     static void clear_file_cache();
     static void clear_code_cache();

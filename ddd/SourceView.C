@@ -123,6 +123,7 @@ extern "C" {
 #include "dbx-lookup.h"
 #include "question.h"
 #include "status.h"
+#include "file.h"
 
 // Glyphs
 #include "arrow.xbm"
@@ -2483,35 +2484,48 @@ void SourceView::lookup(string s)
 
 
 // ***************************************************************************
-// PWD
+// Current directory
 // ***************************************************************************
 
 void SourceView::process_pwd(string& pwd_output)
 {
-    string pwd = pwd_output;
+    strip_final_blanks(pwd_output);
 
-    strip_final_blanks(pwd);
-
-    // Use last line only
-    if (pwd.contains('\n'))
-	pwd = pwd.after('\n', -1);
-
-    switch (gdb->type())
+    while (pwd_output != "")
     {
-    case GDB:			// 'Working directory PATH.'
-	pwd = pwd.before('.', -1);
-	pwd = pwd.after(' ', -1);
-	break;
+	string pwd;
+	if (pwd_output.contains('\n'))
+	{
+	    pwd        = pwd_output.before('\n');
+	    pwd_output = pwd_output.after('\n');
+	}
+	else
+	{
+	    pwd        = pwd_output;
+	    pwd_output = "";
+	}
 
-    case XDB:
-    case DBX:			// 'PATH'
-	if (pwd.contains(" "))
-	    return;		// This is an error message, not a path
+	switch (gdb->type())
+	{
+	case GDB:			// 'Working directory PATH.'
+	    if (pwd.contains("Working directory", 0))
+	    {
+		pwd = pwd.before('.', -1);
+		pwd = pwd.after(' ', -1);
+	    }
+	    // FALL THROUGH
 
-	break;
+	case XDB:
+	case DBX:		// 'PATH'
+	    if (pwd.contains('/', 0) && !pwd.contains(" "))
+	    {
+		current_pwd = pwd;
+		process_cd(current_pwd);
+		return;
+	    }
+	    break;
+	}
     }
-
-    current_pwd = pwd;
 }
 
 // ***************************************************************************
