@@ -82,3 +82,12 @@ define([CHANGED_COLOR], [#ffffcc])dnl
 dnl
 dnl TIP_COLOR is the color for toolbar and value tips.
 define([TIP_COLOR], [#ffffcc])dnl
+dnl
+dnl
+dnl Some warnings
+dnl -------------
+dnl
+define([DDD_APP_WARNING], 
+       [! Generated automatically from [Ddd].in.m4 by m4.  DO NOT EDIT.])dnl
+define([DDD_VSL_WARNING], 
+       [// Generated automatically from ddd.vsl.m4 by m4.  DO NOT EDIT.])dnl

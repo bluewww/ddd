@@ -28,7 +28,6 @@ dnl
 dnl
 dnl Include a note that we're generated automatically
 dnl
-! Generated automatically from .m4 source by @M4@ -- DO NOT EDIT
 dnl
 dnl
 dnl

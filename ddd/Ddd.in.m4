@@ -1,7 +1,8 @@
 ! $Id$ -*- xrdb -*-
 ! DDD Resource File.  DO NOT INSTALL THIS FILE!  See below for details.
-! @configure_input@
 include(ifdef(`srcdir',srcdir()/macros.m4,macros.m4))dnl
+DDD_APP_WARNING
+! @configure_input@
 Ddd*appDefaultsVersion: @VERSION@
 
 ! Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.

@@ -37,6 +37,7 @@ BEGIN {
     tips  = 0;			# Next tip number
     intip = 0;			# Whether we're in a tip text or not
     seen  = 0;			# Whether we've seen a non-comment yet
+    printf("! Generated automatically from TIPS by tips2m4 -- DO NOT EDIT\n");
     }
 
 # Handle comments

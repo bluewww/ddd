@@ -1,6 +1,7 @@
 // $Id$ -*- c++ -*-
 // VSL functions for DDD graph display
 include(ifdef(`srcdir',srcdir()/colors.m4,colors.m4))dnl
+DDD_VSL_WARNING
 
 // Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
