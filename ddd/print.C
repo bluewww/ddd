@@ -186,6 +186,9 @@ static Widget          custom_paper_size;
 // Go and print according to local state
 void graphQuickPrintCB(Widget w, XtPointer client_data, XtPointer)
 {
+    const bool unmanage = (int(client_data) & 1);
+    const bool override = (int(client_data) & 2);
+
     if (print_to_printer)
     {
 	static string command;
@@ -201,7 +204,7 @@ void graphQuickPrintCB(Widget w, XtPointer client_data, XtPointer)
 	app_data.print_command = command;
 	if (print(command, print_postscript_gc, print_selected_only) == 0)
 	{
-	    if (print_dialog)
+	    if (unmanage && print_dialog)
 		XtUnmanageChild(print_dialog);
 	}
     }
@@ -228,12 +231,12 @@ void graphQuickPrintCB(Widget w, XtPointer client_data, XtPointer)
 	if (f == "")
 	    return;
 
-	if (access(f, W_OK) || !is_regular_file(f) || client_data)
+	if (access(f, W_OK) || !is_regular_file(f) || override)
 	{
 	    // File does not exist, is special, or override is on
 	    if (convert(f, gc, print_selected_only) == 0)
 	    {
-		if (print_dialog)
+		if (unmanage && print_dialog)
 		    XtUnmanageChild(print_dialog);
 	    }
 	}
@@ -249,7 +252,8 @@ void graphQuickPrintCB(Widget w, XtPointer client_data, XtPointer)
 					      NULL, 0));
 	    Delay::register_shell(confirm_overwrite_dialog);
 	    XtAddCallback(confirm_overwrite_dialog, 
-			  XmNokCallback,   graphQuickPrintCB, (void *)1);
+			  XmNokCallback,   graphQuickPrintCB, 
+			  XtPointer(int(client_data) | 2));
 	    XtAddCallback(confirm_overwrite_dialog, 
 			  XmNhelpCallback, ImmediateHelpCB, 0);
 
@@ -589,7 +593,14 @@ void graphPrintCB(Widget w, XtPointer, XtPointer)
 	XtUnmanageChild(XmSelectionBoxGetChild(print_dialog,
 					       XmDIALOG_APPLY_BUTTON));
 
-    XtAddCallback(print_dialog, XmNokCallback,     
+#if XmVersion >= 1002
+    XtManageChild(XmSelectionBoxGetChild(print_dialog,
+					 XmDIALOG_APPLY_BUTTON));
+#endif
+
+    XtAddCallback(print_dialog, XmNokCallback,
+		  graphQuickPrintCB, XtPointer(1));
+    XtAddCallback(print_dialog, XmNapplyCallback,
 		  graphQuickPrintCB, XtPointer(0));
     XtAddCallback(print_dialog, XmNcancelCallback, 
 		  UnmanageThisCB, XtPointer(print_dialog));
