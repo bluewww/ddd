@@ -524,8 +524,10 @@ void start_gdb()
 		     plusOQAC,
 		     (void*)plus_cmd_data);
 
-    // Enqueue restart and settings commands
-    init_session(restart, settings);
+    // Enqueue restart and settings commands.  Since we're starting up
+    // and don't care for detailed diagnostics, we allow the GDB
+    // `source' command.
+    init_session(restart, settings, true);
 
     // One last command to clear the delay, set up breakpoints and
     // issue prompt
@@ -556,14 +558,9 @@ static void SourceDoneCB(const string& answer, void *qu_data)
 	// ordinary way.
 	init_session(info->restart, info->settings, false);
     }
-    if (answer != "")
-	post_gdb_message(answer);
 
     delete info;
 }
-
-// Experimental: set to true to enable command sourcing
-const bool SOURCE_COMMANDS = false;
 
 // Enqueue init commands
 void init_session(const string& restart, const string& settings, 
@@ -571,25 +568,26 @@ void init_session(const string& restart, const string& settings,
 {
     string init_commands = restart + settings;
 
-    if (SOURCE_COMMANDS && try_source && !remote_gdb() && gdb->type() == GDB)
+    if (try_source && !remote_gdb() && gdb->type() == GDB)
     {
-	// In GDB, source start-up commands from temp file
+	// Source start-up commands from temp file
 	InitSessionInfo *info = new InitSessionInfo;
 	info->restart  = restart;
 	info->settings = settings;
 	info->tempfile = tmpnam(0);
 
-	ofstream os(info->tempfile);
-	while (init_commands != "")
 	{
-	    string cmd = init_commands.before('\n');
-	    fix_symbols(cmd);
-	    if (is_graph_cmd(cmd))
-		add_auto_command_prefix(cmd);
-	    os << cmd << "\n";
-	    init_commands = init_commands.after('\n');
+	    ofstream os(info->tempfile);
+	    while (init_commands != "")
+	    {
+		string cmd = init_commands.before('\n');
+		fix_symbols(cmd);
+		if (is_graph_cmd(cmd))
+		    add_auto_command_prefix(cmd);
+		os << cmd << "\n";
+		init_commands = init_commands.after('\n');
+	    }
 	}
-	os.close();
 
 	Command c("source " + info->tempfile, Widget(0), 
 		  SourceDoneCB, (void *)info);
