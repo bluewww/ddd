@@ -2295,7 +2295,7 @@ bool DataDisp::get_state(ostream& os,
 
     // ... and refresh the graph.
     if (restore_state && nrs.size() > 0)
-	os << "graph refresh\n";
+	os << refresh_display_cmd() << "\n";
 
     return ok;
 }
