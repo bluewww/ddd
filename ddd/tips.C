@@ -1,5 +1,5 @@
 // $Id$ -*- C++ -*-
-// Show startup tips
+// Show tip of the day
 
 // Copyright (C) 1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -56,9 +56,9 @@ char tips_rcsid[] =
 #include <Xm/PushB.h>
 
 
-static MString get_startup_tip(Widget w, int n)
+static MString get_tip_of_the_day(Widget w, int n)
 {
-    struct tip_resource_values {
+    struct tip_of_the_day_resource_values {
 	XmString tip;
     };
 
@@ -69,11 +69,11 @@ static MString get_startup_tip(Widget w, int n)
     r.resource_class  = "Tip";
     r.resource_type   = XmRXmString;
     r.resource_size   = sizeof(XmString);
-    r.resource_offset = XtOffsetOf(tip_resource_values, tip);
+    r.resource_offset = XtOffsetOf(tip_of_the_day_resource_values, tip);
     r.default_type    = XtRImmediate;
     r.default_addr    = XtPointer(0);
 
-    tip_resource_values values;
+    tip_of_the_day_resource_values values;
     XtGetApplicationResources(w, &values, &r, 1, NULL, 0);
 
     return MString(values.tip, true);
@@ -119,20 +119,20 @@ inline bool is_tip(const MString& m)
 
 static bool refresh_tip_dialog(Widget w)
 {
-    MString tip = get_startup_tip(w, app_data.startup_tip_count);
+    MString tip = get_tip_of_the_day(w, app_data.startup_tip_count);
     if (!is_tip(tip))
     {
 	// Restart from first tip
 	app_data.startup_tip_count = 0;
-	tip = get_startup_tip(w, app_data.startup_tip_count);
+	tip = get_tip_of_the_day(w, app_data.startup_tip_count);
     }
     if (!is_tip(tip))
 	return false;
 
     XtVaSetValues(w, XmNmessageString, tip.xmstring(), NULL);
 
-    MString next_tip = get_startup_tip(w, app_data.startup_tip_count + 1);
-    MString prev_tip = get_startup_tip(w, app_data.startup_tip_count - 1);
+    MString next_tip = get_tip_of_the_day(w, app_data.startup_tip_count + 1);
+    MString prev_tip = get_tip_of_the_day(w, app_data.startup_tip_count - 1);
 
     set_sensitive(XmMessageBoxGetChild(w, XmDIALOG_CANCEL_BUTTON),
 		  is_tip(prev_tip));
