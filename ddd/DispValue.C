@@ -134,6 +134,13 @@ void DispValue::init(string& value)
 	break;
     }
     case Array: {
+
+	static regex RXsimple("\\([][a-zA-Z0-9_().]\\|->\\)*", true);
+
+	string base = myfull_name;
+	if (!base.matches(RXsimple))
+	    base = "(" + base + ")";
+
 	v.array = new ArrayDispValue;
 	myexpanded = (mydepth > 0) ? false : true;
 	v.array->align = Vertical;
@@ -163,7 +170,7 @@ void DispValue::init(string& value)
  	    v.array->members[v.array->member_count++] = 
 		new DispValue (this, mydepth + 1,
 			       value, 
-			       myfull_name + member_name, member_name);
+			       base + member_name, member_name);
 	} while (read_array_next (value) != 0);
 	read_array_end (value);
 
