@@ -1494,7 +1494,7 @@ int main(int argc, char *argv[])
     register_environ();
 
     // This one is required for error messages
-    const char *program_name = argc > 0 ? argv[0] : ddd_NAME;
+    char *program_name = (char *)(argc > 0 ? argv[0] : ddd_NAME);
 
     // Install signal handlers
 
