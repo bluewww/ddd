@@ -45,8 +45,12 @@ char fonts_rcsid[] =
 // -fndry-fmly-wght-slant-sWdth-ad-pxlsz-ptSz-resx-resy-spc-avgW-rgstry-encdng
 
 // Return the Nth component from NAME, or DEFAULT_VALUE if none
-static string word(const string& name, int n, const string& default_value)
+static string word(string name, int n, const string& default_value)
 {
+    // If name does not begin with `-', assume it's a font family
+    if (!name.contains('-', 0))
+	name.prepend("-*-");
+
     // Let I point to the Nth occurrence of `-'
     int i = -1;
     while (n > 0 && (i = name.index('-', i + 1)) >= 0)
@@ -56,7 +60,8 @@ static string word(const string& name, int n, const string& default_value)
     if (i >= 0)
     {
 	w = name.after(i);
-	w = w.before('-');
+	if (w.contains('-'))
+	    w = w.before('-');
     }
 
     if (w == "")
@@ -118,14 +123,14 @@ static void setup_x_fonts()
 		family(app_data.default_font),
 		weight(app_data.default_font),
 		slant(app_data.default_font),
-		app_data.default_font_size - 10,
+		((app_data.default_font_size * 8) / 90) * 10,
 		registry(app_data.default_font));
 
     define_font("LIGHT",
 		family(app_data.default_font),
 		"medium",
 		slant(app_data.default_font),
-		app_data.default_font_size - 10,
+		((app_data.default_font_size * 8) / 90) * 10,
 		registry(app_data.default_font));
 
     define_font("LOGO",
@@ -139,7 +144,7 @@ static void setup_x_fonts()
 		family(app_data.default_font),
 		"bold",
 		slant(app_data.default_font),
-		app_data.default_font_size + 30,
+		((app_data.default_font_size * 3) / 20) * 10,
 		registry(app_data.default_font));
 
     define_font("KEY",
@@ -210,7 +215,7 @@ static void setup_x_fonts()
 
 static void _replace_vsl_def(string& s, const string& func, const string& val)
 {
-    s += "#replace " + func + "\n" + func + "() = " + val + ";\n";
+    s += "#pragma replace " + func + "\n" + func + "() = " + val + ";\n";
 }
 
 static void replace_vsl_def(string& s, const string& func, int val)
