@@ -58,7 +58,7 @@ extern "C" {
 inline bool is_letter(char c)
 {
     return c != '\0' && (!isascii(c) || isalpha(c) || isspace(c) || 
-			 c == '.' || c == '-');
+			 c == '.' || c == '-' || c == '\'');
 }
 
 // Return true if C is a letter not found in e-mail addresses
