@@ -58,6 +58,11 @@ DDD 2.1 [in beta test; scheduled for April, 1997]
       reducing startup time drastically.
     - In the data window, the middle mouse button now toggles 
       the display selection instead of simply extending it.
+    - The most important data window operations can now also be
+      invoked via the debugger console.  For instance, the command
+      `graph display *next at (50, 50) dependent on 1' creates a new
+      dependent display at (50, 50).  In the long term, this feature
+      will serve to save and restore display state.
     - In the debugger console, the right mouse button invokes a small
       popup menu which you can use to clear the line or the window.
     - Ever suffered from a frozen display while debugging a modal
@@ -108,6 +113,8 @@ DDD 2.1 [in beta test; scheduled for April, 1997]
       (Several Linux Motif libraries are broken in this aspect.)
     - DDD now sets the WM_COMMAND resource such that X session
       managers can save and restore DDD state.
+    - The data window now uses a command queue for operations on data
+      displays, disabling `The debugger is busy' messages.
     - And again, dozens of minor bug fixes and improvements.
 
     Release policy:

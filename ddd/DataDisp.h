@@ -123,9 +123,11 @@ class DataDisp {
     //-----------------------------------------------------------------------
     static void RefreshGraphEditCB(XtPointer client_data, XtIntervalId *id);
     static void RefreshArgsCB     (XtPointer client_data, XtIntervalId *id);
+    static void RefreshAddrCB     (XtPointer client_data, XtIntervalId *id);
 
     static XtIntervalId refresh_args_timer;
     static XtIntervalId refresh_graph_edit_timer;
+    static XtIntervalId refresh_addr_timer;
 
     //-----------------------------------------------------------------------
     // Sorting nodes for layout
@@ -135,7 +137,7 @@ class DataDisp {
     //-----------------------------------------------------------------------
     // Create dialogs
     //-----------------------------------------------------------------------
-    static void new_displayCD (BoxPoint box_point = BoxPoint(-1,-1));
+    static void new_displayCD (BoxPoint box_point = BoxPoint());
 
     //-----------------------------------------------------------------------
     // Set sensitivity
@@ -148,7 +150,7 @@ class DataDisp {
 
     static void graph_unselectHP (void*, void*, void*);
 
-    static void set_args(BoxPoint p = BoxPoint(-1, -1),
+    static void set_args(BoxPoint p = BoxPoint(),
 			 SelectionMode mode = SetSelection);
 
     static void refresh_args();
@@ -220,6 +222,16 @@ public:
     // Delete displays given in DISPLAY_NRS.  Sends `delete display' to GDB.
     static void delete_displaySQ    (IntArray& display_nrs);
 
+    // Same, but via GDB_COMMAND
+    static void new_display       (string display_expression,
+				   BoxPoint *pos = 0,
+				   int depends_on = 0,
+				   Widget origin = 0);
+    static void refresh_display   (Widget origin = 0);
+    static void disable_display   (IntArray& display_nrs);
+    static void enable_display    (IntArray& display_nrs);
+    static void delete_display    (IntArray& display_nrs);
+
     // Process 'info display' output in INFO_DISPLAY_ANSWER.  Deletes
     // displays if needed.
     static void process_info_display (string& info_display_answer);
@@ -262,6 +274,8 @@ private:
     static void disable_displayOQC   (const string& answer, void* data);
     static void enable_displayOQC    (const string& answer, void* data);
     static void delete_displayOQC    (const string& answer, void* data);
+
+    static void sort_and_check(IntArray& a);
 
     static void select_with_all_descendants(GraphNode *node);
     static void select_with_all_ancestors(GraphNode *node);
