@@ -27,11 +27,15 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "8 Oct 1997" "@DDD@ @VERSION@"
-.SH NAME
+.TH @ddd@ 1 "16 Oct 1997" "@DDD@ @VERSION@"
+.\" ---------------
+.SH "NAME"
+.\" ---------------
 @ddd@, x@ddd@ - the data display debugger
 .PSPIC @srcdir@/PICS/dddlogo.ps 10cm
-.SH SYNOPSIS
+.\" ---------------
+.SH "SYNOPSIS"
+.\" ---------------
 .na
 .TP
 .B @ddd@
@@ -2162,6 +2166,8 @@ option.  This is useful if you have pointer-driven keyboard focus (see
 below) and no special usage for the \s-2\fBTAB\fR\s+2 key.  Otherwise,
 the \s-2\fBTAB\fR\s+2 key completes in the debugger console only.
 .PP
+.PSPIC @srcdir@/PICS/ddd-general-prefs.ps 15.3cm
+.PP
 If you frequently switch between \s-2@DDD@\s+2 and other multi-window
 applications, you may like to set the `\fBIconify all windows at
 once\fR' option.  This way, all \s-2@DDD@\s+2 windows are iconified
@@ -2181,14 +2187,12 @@ pointer such that you can continue to use your display.
 If you want to save the command history for the next \s-2@DDD@\s+2
 invocation, set the `\fBSave command history on exit\fR' option.
 .PP
-.PSPIC @srcdir@/PICS/ddd-general-prefs.ps 15.3cm
-.PP
 The `\fBReset\fR' button restores the most recently saved preferences.
 .\"
 .SS "Source Preferences"
 .PP
 In the source text, the current execution position and breakpoints are
-indicated by symbols (``glyphs'').  As an alternative, \s-2@DDD@\s+2
+indicated by symbols (\*(lqglyphs\*(rq).  As an alternative, \s-2@DDD@\s+2
 can also indicate these positions using text characters.  If you wish
 to disable glyphs, unset the `\fBUse Glyphs\fR' option.  This also
 makes \s-2@DDD@\s+2 run slightly faster, especially when scrolling.
@@ -2203,6 +2207,8 @@ convenient for remote debugging, since remote file access may be slow.
 If you want to reduce memory usage, unset the `\fBCache source
 files\fR' option.
 .PP
+.PSPIC @srcdir@/PICS/ddd-source-prefs.ps 15.3cm
+.PP
 By default, \s-2@DDD@\s+2 caches machine code in memory.  This is bad
 for memory usage, but convenient for speed, since disassembling a
 function each time it is reached may take time.  If you want to reduce
@@ -2215,8 +2221,6 @@ to sources by full path name\fR' option.
 .PP
 If your source code uses a tab width different from 8 (the default),
 you can set an alternate width using the `\fBTab width\fR' slider.
-.PP
-.PSPIC @srcdir@/PICS/ddd-source-prefs.ps 15.3cm
 .PP
 The `\fBReset\fR' button restores the most recently saved preferences.
 .\"
@@ -2318,8 +2322,6 @@ where each line contains the command for exactly one button.  Clicking
 on `\fBApply\fR' creates the appropriate buttons from the text.  If
 the text is empty (the default), no button is created.
 .PP
-.PSPIC @srcdir@/PICS/ddd-button-editor.ps 15.3cm
-.PP
 As a simple example, assume you want to create a `\fBprint i\fR'
 button.  Invoke `\fBCommands | Edit Buttons\fR' and enter a line
 saying `\fBprint i\fR' in the button editor.  Then click on
@@ -2334,6 +2336,8 @@ supported by the inferior debugger.  To enable such buttons, unset the
 \s-2@DDD@\s+2 also allows you to specify control sequences and special
 labels for user-defined buttons.  See the examples in `\fBUser-defined
 Buttons\fR' in the `\fBRESOURCES\fR' section, below.
+.PP
+.PSPIC @srcdir@/PICS/ddd-button-editor.ps 15.3cm
 .\"
 .\"
 .SS "Saving Options"
@@ -2774,7 +2778,7 @@ window manager decorates transients.  If yes, the command tool is
 realized as a transient window (as in the \fBfalse\fR setting); if no,
 the command tool is realized as a top-level window (as in the
 \fBtrue\fR setting).  Hence, the command tool is always decorated
-using the `best' method, but the extra check takes some time.
+using the \*(lqbest\*(rq method, but the extra check takes some time.
 .br
 .RE
 .PP
@@ -2843,8 +2847,8 @@ debugger via the pseudo-tty interface.  Some systems \fIrequire\fR
 this, such as Linux with libc 5.4.33 and earlier; set it to
 `\fBtrue\fR'.  Some other systems \fIprohibit\fR this, such as Linux
 with GNU libc 6 and later; set it to `\fBfalse\fR'.  The value
-`\fBauto\fR' (default) will always select the `best' choice (that is,
-the best choice known to the \s-2@DDD@\s+2 developers).
+`\fBauto\fR' (default) will always select the \*(lqbest\*(rq choice
+(that is, the best choice known to the \s-2@DDD@\s+2 developers).
 .TP
 .B "dbxInitCommands (\fPclass\fB InitCommands)"
 This string contains a list of newline-separated commands that are
@@ -3201,7 +3205,7 @@ upper border of the source text (in pixels).  Default is 8 pixels.
 If true (default), verify for each button whether its command is
 actually supported by the inferior debugger.  If the command is
 unknown, the button is disabled.  If this resource is false, no
-checking is done: all commands are accepted `as is'.
+checking is done: all commands are accepted \*(lqas is\*(rq.
 .\"
 .\"
 .\"
@@ -3914,6 +3918,10 @@ For instance, to pass a `\fB\-d \fIdirectory\fR' option to \s-2XDB\s+2, use:
   \fB@ddd@\ \-\-debugger "xdb \-d \fIdirectory\fB"\fR
 .br
 .sp
+If you use the `\fB\-\-debugger\fR' option, be sure that the type of
+inferior debugger is specified as well.  That is, use one of the
+options `\fB\-\-gdb\fR', `\fB\-\-dbx\fR', or
+`\fB\-\-xdb\fR'\(em\&unless the default setting works fine.
 .TP
 .B \-\-disassemble
 Disassemble the source code.  See also the `\fB\-\-no-disassemble\fR'
@@ -4173,7 +4181,7 @@ For more information on this list, send a mail to
 .PP
 .\"
 .\" ---------------
-.SH LIMITATIONS
+.SH "LIMITATIONS"
 .\" ---------------
 .\"
 .SS "Limitations using GDB"
@@ -4411,8 +4419,9 @@ Be sure to include this information in \fIevery\fR single bug report.
 .\"
 .\"
 .\" ---------------
-.SH HISTORY
+.SH "HISTORY"
 .\" ---------------
+.\"
 The history of \s-2@DDD@\s+2 is a story of code recycling.  The oldest
 parts of \s-2@DDD@\s+2 were written in 1990, when \fIAndreas Zeller\fR
 designed \s-2VSL\s+2, a box-based visual structure language for
@@ -4471,12 +4480,13 @@ please send them to `\fBddd@ips.cs.tu-bs.de\fR'.  For suggestions on
 what might be done, see the file `\fBTODO\fR' in the \s-2@DDD@\s+2
 distribution.
 .\"
+.\"
 .\" ---------------
-.SH "IF YOU LIKE @DDD@..."
+.SH "@DDD@ NEEDS YOUR SUPPORT!"
 .\" ---------------
 .\"
-If you appreciate this software, or have any suggestions, 
-please send us a picture postcard.  Our address is:
+@DDD@ needs your support!  If you have any success stories related to
+@DDD@, please write them down on a picture postcard and send them to us:
 .PP
 .DS
   Technische Universität Braunschweig 
@@ -4502,8 +4512,10 @@ is accessible via our \s-2@DDD@\s+2 \s-2WWW\s+2 page,
   \fBhttp://www.cs.tu-bs.de/softech/ddd/\fR .
 .br
 .sp
+.\"
+.\"
 .\" --------------------
-.SH PRINTING THIS MANUAL
+.SH "PRINTING THIS MANUAL"
 .\" --------------------
 .\"
 Invoke \s-2@DDD@\s+2 with the `\fB\-\-manual\fR' option to show this
@@ -4530,7 +4542,7 @@ manual page on \s-2UNIX\s+2 systems (as
 .\"
 .\"
 .\" ---------------
-.SH COPYRIGHT
+.SH "COPYRIGHT"
 .\" ---------------
 .\"
 \s-2@DDD@\s+2 is Copyright \(co 1995, 1996, 1997
