@@ -46,6 +46,7 @@ char print_rcsid[] =
 #include "Command.h"
 #include "cook.h"
 #include "cwd.h"
+#include "file.h"
 #include "filetype.h"
 #include "post.h"
 #include "regexps.h"
@@ -76,6 +77,7 @@ char print_rcsid[] =
 #include <Xm/Text.h>
 #include <Xm/TextF.h>
 #include <Xm/PushB.h>
+#include <Xm/FileSB.h>
 
 #ifndef R_OK
 /* 3b2 doesn't define these according to jthomas@nmsu.edu. */
@@ -243,6 +245,7 @@ static PrintType       print_type = PRINT_POSTSCRIPT;
 static Widget          print_dialog = 0;
 static Widget          print_command_field   = 0;
 static Widget          print_file_name_field = 0;
+static Widget 	       print_file_name_box   = 0;
 static Widget          paper_size_dialog = 0;
 
 static Widget          a4_paper_size;
@@ -359,6 +362,17 @@ static string suffix(PrintType print_type)
     return "";
 }
 
+static void set_print_file_name(const string& name)
+{
+    XmTextFieldSetString(print_file_name_field, (String)name);
+
+    XmTextPosition last_pos = 
+	XmTextFieldGetLastPosition(print_file_name_field);
+    XmTextFieldSetInsertionPosition(print_file_name_field, last_pos);
+    XmTextFieldShowPosition(print_file_name_field, 0);
+    XmTextFieldShowPosition(print_file_name_field, last_pos);
+}
+
 static void SetPrintTypeCB(Widget w, XtPointer client_data, XtPointer)
 {
     if (!XmToggleButtonGetState(w))
@@ -377,7 +391,7 @@ static void SetPrintTypeCB(Widget w, XtPointer client_data, XtPointer)
 	int idx = file_name.index(old_suffix, -1);
 	file_name = file_name.before(idx) + new_suffix;
 
-	XmTextFieldSetString(print_file_name_field, (char *)file_name.chars());
+	set_print_file_name(file_name);
     }
 }
 
@@ -702,6 +716,71 @@ static void SetGCOrientation(Widget w, XtPointer, XtPointer)
 static void NopCB(Widget, XtPointer, XtPointer)
 {}
 
+static void SetPrintFileNameCB(Widget w,
+			       XtPointer client_data, 
+			       XtPointer call_data)
+{
+    string target = get_file(w, client_data, call_data);
+    if (target != "")
+    {
+	set_print_file_name(target);
+	XtUnmanageChild(w);
+    }
+}
+
+static void BrowseNameCB(Widget w, XtPointer, XtPointer)
+{
+    Delay delay;
+
+    static Widget dialog = 0;
+
+    static MString pattern;
+
+    String file = XmTextFieldGetString(print_file_name_field);
+    string f = file;
+    XtFree(file);
+
+    if (f.contains('.'))
+	pattern = "*" + f.from('.', -1);
+    else
+    {
+	switch (print_type)
+	{
+	case PRINT_POSTSCRIPT:
+	    pattern = "*.ps";
+	    break;
+
+	case PRINT_FIG:
+	    pattern = "*.fig";
+	    break;
+	}
+    }
+
+    Arg args[10];
+    Cardinal arg = 0;
+
+    if (dialog == 0)
+    {
+	XtSetArg(args[arg], XmNpattern, pattern.xmstring()); arg++;
+	dialog = 
+	    verify(XmCreateFileSelectionDialog(find_shell(w), 
+					       "browse_print", args, arg));
+
+	Delay::register_shell(dialog);
+	XtAddCallback(dialog, XmNokCallback, SetPrintFileNameCB, 0);
+	XtAddCallback(dialog, XmNcancelCallback, UnmanageThisCB, 
+		      XtPointer(dialog));
+	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, XtPointer(0));
+    }
+    else
+    {
+	XtSetArg(args[arg], XmNpattern, pattern.xmstring()); arg++;
+	XtSetValues(dialog, args, arg);
+    }
+
+    manage_and_raise(dialog);
+}
+
 static void PrintCB(Widget parent, bool displays)
 {
     print_displays = displays;
@@ -822,11 +901,21 @@ static void PrintCB(Widget parent, bool displays)
 	MMEnd
     };
 
+    static MMDesc name_menu[] = 
+    {
+	{"name", 	MMTextField | MMUnmanagedLabel, MMNoCB, 
+	 0, &print_file_name_field, 0, 0},
+	{"browse",      MMPush, { BrowseNameCB, 0 }, 0, 0, 0, 0 },
+	MMEnd
+    };
+
     static MMDesc menu[] =
     {
 	{"to",          MMRadioPanel, MMNoCB, print_to_menu, 0, 0, 0 },
 	{"command",     MMTextField,  MMNoCB, 0, &print_command_field, 0, 0 },
-	{"name", 	MMTextField,  MMNoCB, 0, &print_file_name_field, 0, 0},
+	{"name", 	MMPanel,      MMNoCB, name_menu, 
+	 &print_file_name_box, 0, 0},
+	MMSep,
 	{"type", 	MMPanel,      MMNoCB, type_menu, 0, 0, 0 },
 	{"what",        MMPanel,      MMNoCB, what_menu, 0, 0, 0 },
 	{"orientation", MMRadioPanel, MMNoCB, orientation_menu, 0, 0, 0 },
@@ -847,7 +936,7 @@ static void PrintCB(Widget parent, bool displays)
 		  SetSensitiveCB,   XtPointer(menu[1].label));
 
     XtAddCallback(print_to_printer_w, XmNvalueChangedCallback,
-		  UnsetSensitiveCB, XtPointer(print_file_name_field));
+		  UnsetSensitiveCB, XtPointer(print_file_name_box));
     XtAddCallback(print_to_printer_w, XmNvalueChangedCallback,
 		  UnsetSensitiveCB, XtPointer(menu[2].label));
     XtAddCallback(print_to_printer_w, XmNvalueChangedCallback,
@@ -864,7 +953,7 @@ static void PrintCB(Widget parent, bool displays)
 		  UnsetSensitiveCB, XtPointer(menu[1].label));
 
     XtAddCallback(print_to_file_w, XmNvalueChangedCallback,   
-		  SetSensitiveCB,   XtPointer(print_file_name_field));
+		  SetSensitiveCB,   XtPointer(print_file_name_box));
     XtAddCallback(print_to_file_w, XmNvalueChangedCallback,
 		  SetSensitiveCB,   XtPointer(menu[2].label));
     XtAddCallback(print_to_file_w, XmNvalueChangedCallback,   
