@@ -2217,6 +2217,7 @@ void DataDisp::delete_displaySQ (const IntArray& display_nrs)
     if (!sent && ok)
     {
 	// Refresh addresses now
+	force_check_aliases = true;
 	refresh_addr();
     }
 
@@ -2252,6 +2253,7 @@ void DataDisp::delete_displayOQC (const string& answer, void *)
 	post_gdb_message (ans, last_origin);
 
     // Refresh remaining addresses
+    force_check_aliases = true;
     refresh_addr();
 }
 
@@ -2572,6 +2574,7 @@ void DataDisp::process_info_display (string& info_display_answer)
 
     // Eigene Display-Infos verarbeiten
     bool changed = false;
+    bool deleted = false;
     MapRef ref;
     for (int k = disp_graph->first_nr(ref); 
 	     k != 0 ; 
@@ -2583,8 +2586,8 @@ void DataDisp::process_info_display (string& info_display_answer)
 	    if (!info_disp_string_map.contains (k))
 	    {
 		// Display is not contained in `display' output
-		disp_graph->del (k);
-		changed = true;
+		disp_graph->del(k);
+		changed = deleted = true;
 	    }
 	    else
 	    {
@@ -2613,6 +2616,12 @@ void DataDisp::process_info_display (string& info_display_answer)
     }
 
     assert (info_disp_string_map.length() == 0); // alles verarbeitet ?
+
+    if (deleted)
+    {
+	force_check_aliases = true;
+	refresh_addr();
+    }
     if (changed)
 	refresh_graph_edit();
 
@@ -3153,6 +3162,7 @@ void DataDisp::check_aliases()
     if (!detect_aliases)
 	return;
 
+    // Group displays into equivalence classes depending on their address.
     StringIntArrayAssoc equivalences;
 
     MapRef ref;
@@ -3167,6 +3177,7 @@ void DataDisp::check_aliases()
 	}
     }
 
+    // Merge displays with identical address.
     bool changed = false;
 
     string msg;
@@ -3191,26 +3202,20 @@ void DataDisp::check_aliases()
     }
 
     if (msg != "")
-    {
-	if (msg.freq('\n') > 0)
-	{
-	    post_warning(msg, "suppressed_alias_warning", graph_edit);
-	}
-	else
-	{
-	    set_status(msg);
-	}
-    }
+	post_gdb_message(msg, last_origin);
 
     if (changed)
 	refresh_graph_edit();
 }
 
-// Return last change
+// Return last change, or INT_MAX if hidden
 int DataDisp::last_change_of_disp_nr(int disp_nr)
 {
     DispNode *dn = disp_graph->get(disp_nr);
     assert(dn != 0);
+
+    if (dn->nodeptr()->hidden())
+	return INT_MAX;
 
     return dn->last_change();
 }
@@ -3268,14 +3273,36 @@ bool DataDisp::merge_displays(IntArray displays, string& msg)
 #endif
 
     bool changed = false;
+    DispNode *d0 = disp_graph->get(displays[0]);
+    if (d0->nodeptr()->hidden())
+    {
+	// All aliases are hidden.  Make sure we see at least the
+	// least recently changed one.
+	changed = unmerge_display(displays[0]) || changed;
+    }
+
     IntArray suppressed_displays;
     for (int i = 1; i < displays.size(); i++)
     {
-	bool c = disp_graph->alias(displays[0], displays[i]);
-	if (c)
+	int disp_nr = displays[i];
+	DispNode *dn = disp_graph->get(disp_nr);
+	bool hidden = dn->nodeptr()->hidden();
+
+	if (!hidden && dn->nodeptr()->firstTo() == 0)
 	{
-	    suppressed_displays += displays[i];
-	    changed = true;
+	    // There is no edge pointing at this node.  Don't merge it
+	    // because it would simply disappear.
+	    changed = unmerge_display(disp_nr) || changed;
+	}
+	else
+	{
+	    bool c = disp_graph->alias(displays[0], disp_nr);
+	    if (c)
+	    {
+		if (!hidden)
+		    suppressed_displays += disp_nr;
+		changed = true;
+	    }
 	}
     }
 
