@@ -1272,6 +1272,8 @@ void HelpOnContextCB(Widget widget, XtPointer client_data, XtPointer call_data)
 
 	if (item != 0)
 	    ImmediateHelpCB(item, client_data, call_data);
+	else
+	    ImmediateHelpCB(toplevel, client_data, call_data);
 
 	// Some Motif versions get confused if this function is invoked
 	// via a menu accelerator; the keyboard remains grabbed. Hence, we
