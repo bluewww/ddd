@@ -58,6 +58,7 @@ __arc(start, length, linethickness); // Arc
 __square(box);			// A square with BOX size
 __tag(box);			// A tag box
 __string(box);			// The string in BOX
+__chars(box);			// The characters in BOX
 __font(box, font);		// Set the font of BOX to FONT
 __fontfix(box);			// Freeze the font of BOX
 __background(box, color);	// Display BOX using COLOR as background
@@ -105,6 +106,7 @@ arc(start, length, linethickness) = __arc(start, length, linethickness);
 square(box)                       = __square(box);
 tag(box)                          = __tag(box);
 string(box)                       = __string(box);
+chars(box)                        = __chars(box);
 font(box, font)                   = __font(box, font);
 fontfix(box)                      = __fontfix(box);
 background(box, color)            = __background(box, color);

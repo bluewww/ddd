@@ -555,6 +555,25 @@ static Box *str(ListBox *args)
 }
 
 
+// Return list of characters from box
+
+// chars(box)
+static Box *chars(ListBox *args)
+{
+    ListBox *list = new ListBox;
+
+    string str = (*args)[0]->str();
+    for (unsigned int i = 0; i < str.length(); i++)
+    {
+	StringBox *s = new StringBox(string(str[i]));
+	*list += s;
+	s->unlink();
+    }
+
+    return list;
+}
+
+
 // Set font
 
 // font(box, font)
@@ -724,6 +743,7 @@ static BuiltinRec builtins[] = {
 { 0,    "__square",     false,  false,  false,  square },
 { 0,    "__tag",        false,  false,  false,  tag },
 { 0,    "__string",     false,  false,  false,  str },
+{ 0,    "__chars",      false,  false,  false,  chars },
 { 0,    "__font",       false,  false,  false,  font },
 { 0,    "__fontfix",    false,  false,  false,  fontfix },
 { 0,    "__background", false,  false,  false,  background },
