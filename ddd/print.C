@@ -48,6 +48,7 @@ char print_rcsid[] =
 #include "string-fun.h"
 #include "verify.h"
 #include "wm.h"
+#include "charsets.h"
 
 #include <ctype.h>
 #include <stdio.h>
@@ -246,11 +247,10 @@ void graphQuickPrintCB(Widget w, XtPointer client_data, XtPointer)
 			   (void *)1);
 	    XtAddCallback (yn_dialog, XmNhelpCallback, ImmediateHelpCB, 0);
 
-	    string question = "Overwrite existing file " + quote(f) + "?";
-	    XmString xmtext = XmStringCreateLtoR (question, "rm");
-	    XtVaSetValues (yn_dialog, XmNmessageString, xmtext, NULL);
-	    XmStringFree (xmtext);
-
+	    MString question = rm("Overwrite existing file " 
+				  + quote(f) + "?");
+	    XtVaSetValues (yn_dialog, XmNmessageString, 
+			   question.xmstring(), NULL);
 	    XtManageChild (yn_dialog);
 	}
     }

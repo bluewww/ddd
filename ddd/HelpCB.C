@@ -538,6 +538,7 @@ static void HighlightSectionCB(Widget w, XtPointer client_data,
 			       XtPointer call_data)
 {
     XmTextVerifyCallbackStruct *cbs = (XmTextVerifyCallbackStruct *)call_data;
+    Widget list = Widget(client_data);
 
     XmTextPosition cursor = cbs->newInsert;
 
@@ -546,13 +547,12 @@ static void HighlightSectionCB(Widget w, XtPointer client_data,
     XtFree(text_s);
 
     XmTextPosition title_start = find_title(text, cursor);
-    string title = text.from(int(title_start));
-    title = title.before('\n');
+    string t = text.from(int(title_start));
+    t = t.before('\n');
 
-    MString item(title, title.contains(' ', 0) ? "rm" : "bf");
-    Widget list = Widget(client_data);
+    MString title = (t.contains(' ', 0)) ? rm(t) : bf(t);
 
-    int pos = XmListItemPos(list, item.xmstring());
+    int pos = XmListItemPos(list, title.xmstring());
     if (pos > 0)
 	ListSetAndSelectPos(list, pos);
 }
@@ -789,7 +789,8 @@ void ManualStringHelpCB(Widget widget, XtPointer client_data,
     {
 	xmtitles[i] = 
 	    XmStringCreateLtoR(titles[i], 
-			       titles[i].contains(' ', 0) ? "rm" : "bf");
+			       titles[i].contains(' ', 0) ? 
+			       CHARSET_RM : CHARSET_BF);
     }
 
     XtVaSetValues(help_index,

@@ -38,7 +38,7 @@ char status_rcsid[] =
 #include "Delay.h"
 #include "GDBAgent.h"
 #include "HelpCB.h"
-#include "MString.h"
+#include "charsets.h"
 #include "commandQ.h"
 #include "ddd.h"
 #include "mydialogs.h"
@@ -287,16 +287,18 @@ void set_status_from_gdb(const string& text)
 
 // Show MESSAGE in status window.  If FORCE is true, ensure that
 // the entire message is visible.
-void set_status(const string& message, bool force)
+void set_status(string message, bool force)
 {
     if (status_w == 0)
 	return;
 
-    string m = message;
-    if (m != "" && !m.contains("=") && isascii(m[0]) && islower(m[0]))
-	m[0] = toupper(m[0]);
+    if (message.length() > 0
+	&& !message.contains("=") 
+	&& isascii(message[0])
+	&& islower(message[0]))
+	message[0] = toupper(message[0]);
 
-    set_status_mstring(MString(m, "rm"), force);
+    set_status_mstring(rm(message), force);
 }
 
 // Same, but use an MString.

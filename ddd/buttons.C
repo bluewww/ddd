@@ -36,8 +36,8 @@ char buttons_rcsid[] =
 #include "buttons.h"
 
 #include "HelpCB.h"
-#include "MString.h"
 #include "bool.h"
+#include "charsets.h"
 #include "ctrl.h"
 #include "ddd.h"
 #include "editing.h"
@@ -221,7 +221,7 @@ static MString gdbDefaultHelpText(Widget widget)
 	    "Please try again when " +  gdb->title() + " is ready.";
     }
 
-    return MString(name, "bf") + MString("\n" + help, "rm");
+    return bf(name) + rm("\n" + help);
 }
 
 
@@ -281,7 +281,7 @@ static XmTextPosition textPosOfEvent(Widget widget, XEvent *event)
 static MString gdbDefaultText(Widget widget, XEvent *event, 
 			      bool for_documentation)
 {
-    static MString empty(" ", "rm");
+    static MString empty = rm(" ");
 
     string tip;
     if (XmIsText(widget))
@@ -390,7 +390,7 @@ static MString gdbDefaultText(Widget widget, XEvent *event,
 	    tip = tip.before('.');
     }
 
-    return MString(tip, "rm");
+    return rm(tip);
 }
 
 static MString gdbDefaultTipText(Widget widget, XEvent *event)

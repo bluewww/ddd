@@ -44,6 +44,7 @@
 #include "strclass.h"
 #include "bool.h"
 #include "IntArray.h"
+#include "charsets.h"
 
 // Create a display selection list
 Widget createDisplaySelectionList (Widget parent, String name,
@@ -68,10 +69,10 @@ void setLabelList (Widget  selectionList,
 		   bool    notify);
 
 // The default list charset
-#define LIST_CHARSET "tt"
+#define LIST_CHARSET CHARSET_TT
 
 // The default list title charset
-#define LIST_TITLE_CHARSET "tb"
+#define LIST_TITLE_CHARSET CHARSET_TB
 
 // Select POS in LIST and make it visible
 void ListSetAndSelectPos(Widget list, int pos);

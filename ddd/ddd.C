@@ -173,6 +173,7 @@ char ddd_rcsid[] =
 #include "assert.h"
 #include "bool.h"
 #include "buttons.h"
+#include "charsets.h"
 #include "cmdtty.h"
 #include "comm-manag.h"
 #include "commandQ.h"
@@ -1667,7 +1668,7 @@ int main(int argc, char *argv[])
     helpOnVersionPixmapProc = versionlogo;
 
     // Setup version info
-    helpOnVersionExtraText = MString(string(config_info).through(".\n"), "rm");
+    helpOnVersionExtraText = rm(string(config_info).through(".\n"));
 
     string expires = ddd_expiration_date();
     if (expires != "")
@@ -1678,16 +1679,16 @@ int main(int argc, char *argv[])
 	else
 	    expired_msg += "expires " + expires;
 
-	helpOnVersionExtraText += MString(expired_msg + ".\n", "rm");
+	helpOnVersionExtraText += rm(expired_msg + ".\n");
     }
 
-    helpOnVersionExtraText += MString("\n" DDD_NAME " is ", "rm")
-	+ MString("free software", "sl")
-	+ MString(" and you are welcome to distribute copies of it\n"
+    helpOnVersionExtraText += rm("\n" DDD_NAME " is ")
+	+ sl("free software")
+	+ rm(" and you are welcome to distribute copies of it\n"
 "under certain conditions; select `" DDD_NAME " License' in the `Help' menu\n"
 "to see the conditions. "
-"There is ", "rm") + MString("absolutely no warranty", "sl")
-+ MString(" for " DDD_NAME ";\n"
+"There is ") + sl("absolutely no warranty")
++ rm(" for " DDD_NAME ";\n"
 "see the " DDD_NAME " License for details.\n"
 "\n"
 "If you appreciate this software, please send a picture postcard to:\n"
@@ -1700,7 +1701,7 @@ int main(int argc, char *argv[])
 "\n"
 "Send bug reports to <" ddd_NAME "-bugs@ips.cs.tu-bs.de>;\n"
 "see the " DDD_NAME " manual for details on reporting bugs.\n"
-"Send comments and suggestions to <" ddd_NAME "@ips.cs.tu-bs.de>.", "rm");
+"Send comments and suggestions to <" ddd_NAME "@ips.cs.tu-bs.de>.");
 
     // Customize `settings' and `status displays' titles.
     MString settings_title(gdb->title() + " Settings...");
@@ -2638,8 +2639,8 @@ static void create_status(Widget parent)
     // Give some `dummy' status message.  Some Motif versions limit
     // the size of the status window to the length of the very first
     // message, so we give some huge string at the beginning.
-    MString msg("Welcome to " DDD_NAME " " DDD_VERSION "!", "rm");
-    msg += MString(replicate(' ', 120), "rm");
+    MString msg = rm("Welcome to " DDD_NAME " " DDD_VERSION "!") 
+	+ rm(replicate(' ', 120));
 
     arg = 0;
     XtSetArg(args[arg], XmNlabelString,      msg.xmstring()); arg++;

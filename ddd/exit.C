@@ -41,7 +41,7 @@ char exit_rcsid[] =
 #include "ExitCB.h"
 #include "GDBAgent.h"
 #include "HelpCB.h"
-#include "MString.h"
+#include "charsets.h"
 #include "commandQ.h"
 #include "ddd.h"
 #include "exectty.h"
@@ -175,7 +175,7 @@ void ddd_show_signal(int sig)
 	XtAddCallback (fatal_dialog, XmNcancelCallback, DDDExitCB,       0);
 
 	string msg = string("Internal error (") + sigName(sig) + ")";
-	MString mtext(msg, "rm");
+	MString mtext = rm(msg);
 	XtVaSetValues (fatal_dialog,
 		       XmNmessageString, mtext.xmstring(),
 		       0);
@@ -345,9 +345,8 @@ void DDDExitCB(Widget w, XtPointer client_data, XtPointer call_data)
 	DestroyWhenIdle(yn_dialog);
 
     arg = 0;
-    MString msg(gdb->title() + " is still busy.  "
-		"Exit anyway (and kill it)?", 
-		"rm");
+    MString msg = rm(gdb->title() + " is still busy.  "
+		     "Exit anyway (and kill it)?");
     XtSetArg(args[arg], XmNmessageString, msg.xmstring()); arg++;
     yn_dialog = verify(XmCreateQuestionDialog(find_shell(w),
 					      "quit_dialog", args, arg));
@@ -383,9 +382,8 @@ void DDDRestartCB(Widget w, XtPointer client_data, XtPointer call_data)
 	DestroyWhenIdle(yn_dialog);
 
     arg = 0;
-    MString msg(gdb->title() + " is still busy.  "
-		"Restart anyway (and kill it)?", 
-		"rm");
+    MString msg = rm(gdb->title() + " is still busy.  "
+		     "Restart anyway (and kill it)?");
     XtSetArg(args[arg], XmNmessageString, msg.xmstring()); arg++;
     yn_dialog = verify(XmCreateQuestionDialog(find_shell(w),
 					      "quit_dialog", args, arg));

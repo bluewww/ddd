@@ -76,7 +76,7 @@ char SourceView_rcsid[] =
 #include "assert.h"
 #include "HelpCB.h"
 #include "DestroyCB.h"
-#include "MString.h"
+#include "charsets.h"
 #include "events.h"
 #include "cook.h"
 #include "misc.h"
@@ -129,6 +129,7 @@ extern "C" {
 #include "file.h"
 #include "AppData.h"
 #include "options.h"
+#include "charsets.h"
 
 // Glyphs
 #include "arrow.xbm"
@@ -3530,8 +3531,8 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 
 	string popup_arg = word;
 	shorten(popup_arg, max_popup_expr_length);
-	MString current_arg(popup_arg, "tt");
-	MString current_ref_arg(gdb->dereferenced_expr(popup_arg), "tt");
+	MString current_arg = tt(popup_arg);
+	MString current_ref_arg = tt(gdb->dereferenced_expr(popup_arg));
 
 	Arg args[5];
 	int arg = 0;
@@ -3997,7 +3998,7 @@ void SourceView::process_breakpoints(string& info_breakpoints_output)
     }
 
     setLabelList(breakpoint_list_w, breakpoint_list, selected, count,
-		 true, false);
+		 gdb->type() == GDB && count > 1, false);
     UpdateBreakpointButtonsCB(breakpoint_list_w, XtPointer(0), XtPointer(0));
 
     delete[] breakpoint_list;

@@ -44,6 +44,7 @@ char post_rcsid[] =
 #include "AppData.h"
 #include "string-fun.h"
 #include "GDBAgent.h"
+#include "charsets.h"
 
 #include <Xm/Xm.h>
 #include <Xm/MessageB.h>
@@ -80,9 +81,8 @@ void post_gdb_yn(string question, Widget w)
     XtAddCallback (yn_dialog, XmNcancelCallback, YnCB, (void *)"no");
     XtAddCallback (yn_dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
 
-    XmString xmtext = XmStringCreateLtoR (question, "rm");
-    XtVaSetValues (yn_dialog, XmNmessageString, xmtext, NULL);
-    XmStringFree (xmtext);
+    MString mquestion = rm(question);
+    XtVaSetValues (yn_dialog, XmNmessageString, mquestion.xmstring(), NULL);
 
     XtManageChild (yn_dialog);
 }
@@ -137,7 +137,7 @@ void post_gdb_died(string reason, Widget w)
     if (gdb_initialized)
     {
 	arg = 0;
-	MString msg(gdb->title() + " terminated abnormally.", "rm");
+	MString msg = rm(gdb->title() + " terminated abnormally.");
 	XtSetArg(args[arg], XmNmessageString, msg.xmstring()); arg++;
 	died_dialog = 
 	    verify(XmCreateErrorDialog (find_shell(w), 
@@ -149,7 +149,7 @@ void post_gdb_died(string reason, Widget w)
     else
     {
 	arg = 0;
-	MString msg(gdb->title() + " could not be started.", "rm");
+	MString msg = rm(gdb->title() + " could not be started.");
 	XtSetArg(args[arg], XmNmessageString, msg.xmstring()); arg++;
 	died_dialog = 
 	    verify(XmCreateErrorDialog (find_shell(w), 
@@ -196,7 +196,7 @@ void post_gdb_message(string text, Widget w)
 		   ImmediateHelpCB,
 		   NULL);
 
-    MString mtext(text, "rm");
+    MString mtext = rm(text);
     XtVaSetValues (gdb_message_dialog,
 		   XmNmessageString, mtext.xmstring(),
 		   NULL);
@@ -234,7 +234,7 @@ void post_error (string text, String name, Widget w)
 		     (ddd_error, XmDIALOG_CANCEL_BUTTON));
     XtAddCallback (ddd_error, XmNhelpCallback, ImmediateHelpCB, NULL);
 
-    MString mtext(text, "rm");
+    MString mtext = rm(text);
     XtVaSetValues (ddd_error,
 		   XmNmessageString, mtext.xmstring(),
 		   NULL);
@@ -272,7 +272,7 @@ void post_warning (string text, String name, Widget w)
 		     (ddd_warning, XmDIALOG_CANCEL_BUTTON));
     XtAddCallback (ddd_warning, XmNhelpCallback, ImmediateHelpCB, NULL);
 
-    MString mtext(text, "rm");
+    MString mtext = rm(text);
     XtVaSetValues (ddd_warning,
 		   XmNmessageString, mtext.xmstring(),
 		   NULL);

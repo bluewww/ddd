@@ -41,7 +41,7 @@
 
 // Show MESSAGE in status window.  If FORCE is true, ensure that
 // the entire message is visible.
-void set_status(const string& message, bool force = false);
+void set_status(string message, bool force = false);
 
 // Same, but use an MString.
 void set_status_mstring(const MString& text, bool force = false);

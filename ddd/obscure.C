@@ -39,7 +39,7 @@ char obscure_rcsid[] =
 #include "Delay.h"
 #include "HelpCB.h"
 #include "DestroyCB.h"
-#include "MString.h"
+#include "charsets.h"
 #include "commandQ.h"
 #include "ddd.h"
 #include "verify.h"
@@ -99,7 +99,7 @@ static void DungeonCollapseCB(XtPointer client_data, XtIntervalId *)
 		    (dungeon_error, XmDIALOG_CANCEL_BUTTON));
     XtAddCallback(dungeon_error, XmNhelpCallback, ImmediateHelpCB, NULL);
 
-    MString mtext("Suddenly, the dungeon collapses.", "rm");
+    MString mtext = rm("Suddenly, the dungeon collapses.");
     XtVaSetValues (dungeon_error,
 		   XmNmessageString, mtext.xmstring(),
 		   NULL);
