@@ -911,9 +911,10 @@ void set_label(Widget w, const MString& new_label, char *image)
 
     assert(XtIsSubclass(w, xmLabelWidgetClass));
 
-    XmString old_label;
+    XmString old_label = 0;
     XtVaGetValues(w, XmNlabelString, &old_label, NULL);
-    if (XmStringCompare(new_label.xmstring(), old_label) == 0)
+    if (old_label == 0 ||
+	XmStringCompare(new_label.xmstring(), old_label) == 0)
     {
 	Arg args[10];
 	Cardinal arg = 0;

@@ -89,11 +89,11 @@ extern "C" {
 #define MAXHOSTNAMELEN 1024
 #endif
 
-// Return the host name
+// Return local host name
 char *hostname()
 {
     static char *name = 0;
-    if (name)
+    if (name != 0)
 	return name;
 
     char buffer[MAXHOSTNAMELEN];
@@ -126,9 +126,11 @@ char *hostname()
     }
 
     if (okay)
-	return name = strcpy(new char[strlen(buffer) + 1], buffer);
+	name = strcpy(new char[strlen(buffer) + 1], buffer);
     else
-	return name = "unknown";
+	name = "unknown";
+
+    return name;
 }
 
 // Return the number of '.' in STR
