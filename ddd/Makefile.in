@@ -322,13 +322,13 @@ MAKEINFO = @MAKEINFO@
 TEXINDEX = texindex
 
 # The texi2html program.  (texi2html)
-TEXI2HTML = texi2html -split_chapter
+TEXI2HTML = $(MAKEINFO) --html
 
 # The texi2dvi program.  (texi2dvi)
 TEXI2DVI = texi2dvi
 
 # The texi2pdf program.  (texi2pdf)
-TEXI2PDF = texi2pdf
+TEXI2PDF = texi2dvi --pdf
 
 # The epstopdf program.  (epstopdf)
 # Available from http://www.tug.org/applications/pdftex/epstopdf
@@ -1045,14 +1045,14 @@ PS_IMAGES = \
 
 PDF_IMAGES = \
 	$(picdir)/disclaimer.pdf           \
-	$(picdir)/dddback.pdf		\
+	$(picdir)/dddback.pdf		   \
 	$(picdir)/dddlogo.pdf              \
 	$(picdir)/dddsplash.pdf            \
 	$(picdir)/ddd-aliases.pdf          \
 	$(picdir)/ddd-all.pdf              \
 	$(picdir)/ddd-arguments.pdf        \
 	$(picdir)/ddd-attach.pdf           \
-	$(picdir)/ddd-backtrace.pdf	\
+	$(picdir)/ddd-backtrace.pdf	   \
 	$(picdir)/ddd-bp-popup.pdf         \
 	$(picdir)/ddd-bp-properties.pdf    \
 	$(picdir)/ddd-button-editor.pdf    \
@@ -1068,12 +1068,12 @@ PDF_IMAGES = \
 	$(picdir)/ddd-examine.pdf          \
 	$(picdir)/ddd-font-prefs.pdf       \
 	$(picdir)/ddd-general-prefs.pdf    \
-	$(picdir)/ddd-helpers.pdf  	\
+	$(picdir)/ddd-helpers.pdf  	   \
 	$(picdir)/ddd-hide-display.pdf     \
 	$(picdir)/ddd-history.pdf          \
 	$(picdir)/ddd-layout.pdf           \
 	$(picdir)/ddd-line-popup.pdf       \
-	$(picdir)/ddd-locals.pdf	        \
+	$(picdir)/ddd-locals.pdf	   \
 	$(picdir)/ddd-open.pdf             \
 	$(picdir)/ddd-open-session.pdf     \
 	$(picdir)/ddd-plots.pdf            \
@@ -1086,7 +1086,7 @@ PDF_IMAGES = \
 	$(picdir)/ddd-save-session.pdf     \
 	$(picdir)/ddd-select-display.pdf   \
 	$(picdir)/ddd-separate.pdf         \
-	$(picdir)/ddd-set.pdf	        \
+	$(picdir)/ddd-set.pdf	           \
 	$(picdir)/ddd-settings.pdf         \
 	$(picdir)/ddd-shortcuts.pdf        \
 	$(picdir)/ddd-shortcut-editor.pdf  \
@@ -1309,7 +1309,7 @@ CLEAN_STUFF	 = $(ddd)-$(VERSION)-* $(PROGS) $(DEMOS) \
 		   *.au *.aus *.aux *.cm *.cms *.cp *.cps *.en *.ens \
 		   *.fl *.flc *.fls *.fn *.fns *.ky *.kys *.lb *.lbs \
 		   *.log *.pg *.pgs *.toc *.tp *.tps *.vr *.vrs \
-		   *.info* *.html *.dvi ddd-pdf.* pdftexinfo.tex \
+		   *.info* *.html *.dvi \
 		   gpl.texinfo lgpl.texinfo texinfo.tex epsf.tex xepsf.tex \
 		   *.tar *.tar.gz *~ lex.* y.tab.* site.* *.sum \
 		   *.diff *.private USERINFO *.huff.C \
@@ -2141,21 +2141,6 @@ $(docdir)/ddd.ps: ddd.dvi
 	$(DVIPS) ddd.dvi -o $@
 
 
-## The DDD manual in PDF format, including all pictures.
-
-$(docdir)/ddd.pdf: ddd-pdf.texi $(PDF_IMAGES)
-	-test -d PICS || $(LN_S) $(picdir) .
-	$(TEXI2PDF) ddd-pdf.texi
-	$(INSTALL_DATA) ddd-pdf.pdf $@
-
-# pdftexinfo cannot expand @value{...} in PDF primitives, so we do it by hand
-ddd-pdf.texi: $(srcdir)/ddd.texi $(INCLUDES)
-	$(SED) 's,\\input texinfo,\\input pdftexinfo,' $(srcdir)/ddd.texi |\
-	$(SED) 's/@value{DDD}/@DDD@/g' | \
-	$(SED) 's/@value{Ddd}/@Ddd@/g' | \
-	$(SED) 's/@value{ddd}/@ddd@/g' > $@~ && \
-	$(MV) $@~ $@
-
 ## The DDD manual in DVI format.
 
 INCLUDES = \
@@ -2163,7 +2148,6 @@ INCLUDES = \
 	gpl.texinfo \
 	lgpl.texinfo \
 	texinfo.tex \
-	pdftexinfo.tex \
 	epsf.tex \
 	xepsf.tex
 
@@ -2182,9 +2166,6 @@ lgpl.texinfo: $(texidir)/lgpl.texinfo
 texinfo.tex: $(texidir)/texinfo.tex
 	$(RM) $@; $(LN_S) $(texidir)/texinfo.tex $@
 
-pdftexinfo.tex: $(texidir)/pdftexinfo.tex
-	$(RM) $@; $(LN_S) $(texidir)/pdftexinfo.tex $@
-
 epsf.tex: $(texidir)/epsf.tex
 	$(RM) $@; $(LN_S) $(texidir)/epsf.tex $@
 
@@ -2192,10 +2173,20 @@ xepsf.tex: epsf.tex
 	$(RM) $@; $(LN_S) epsf.tex $@
 
 
+## The DDD manual in PDF format, including all pictures.
+
+$(docdir)/ddd.pdf: ddd.pdf
+	$(INSTALL_DATA) ddd.pdf $@
+
+ddd.pdf: ddd.texi $(INCLUDES) $(PDF_IMAGES)
+	-test -d PICS || $(LN_S) $(picdir) .
+	$(TEXI2PDF) $(srcdir)/ddd.texi
+
+
 ## The DDD manual in HTML format.
 
 $(htmldir)/index.html: ddd.texi $(INCLUDES) $(HTML_IMAGES) \
-	style.css $(srcdir)/fix-html.sed $(srcdir)/fix-toc.sed
+	style.css $(srcdir)/fix-html.sed
 	@-test -d $(htmldir) || $(MKDIR) $(htmldir)
 	@-test -d $(htmldir)/PICS || $(MKDIR) $(htmldir)/PICS
 	@-test -d PICS || $(LN_S) $(picdir) .
@@ -2206,15 +2197,13 @@ $(htmldir)/index.html: ddd.texi $(INCLUDES) $(HTML_IMAGES) \
 		$(SED) 's/@IMGEXT@/\$(IMGEXT)/g' > $$file~ && \
 		$(MV) $$file~ $$file; \
 	done
-	$(SED) -f $(srcdir)/fix-toc.sed ddd_toc.html > ddd_toc.html~ && \
-		$(MV) ddd_toc.html~ ddd_toc.html
 	cd $(htmldir) && $(RM) ddd*.html style.css PICS/*
 	$(INSTALL_DATA) ddd*.html $(srcdir)/style.css $(htmldir)
 	@$(ECHO) Installing images...
 	@$(INSTALL_DATA) $(HTML_IMAGES) $(htmldir)/PICS
 	@$(ECHO) Installing images...done.
 	$(RM) $(htmldir)/index.html
-	$(LN_S) ddd_toc.html $@
+	$(LN_S) ddd.html $@
 
 ## The DDD manual in Info format.
 
