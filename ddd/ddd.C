@@ -27,19 +27,9 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-
-// This file does most of the application work in DDD.  That is:
-// - DDD main function
-// - Creation of Source and Data Windows
-// - Menu bars
-// - Handling of separate execution window
-// - Command window
-// - Command completion
-// and more...
+// Introduction to DDD
+// ===================
 //
-// (Some day, this file shall be split into several modules. - AZ)
-
-
 // :bug: n.  An unwanted and unintended property of a program or
 // piece of hardware, esp. one that causes it to malfunction.
 // Antonym of {feature}.  Examples: "There's a bug in the editor: 
