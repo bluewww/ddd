@@ -1510,7 +1510,7 @@ string GDBAgent::print_command(string expr, bool internal) const
 
     if (expr != "")
     {
-	if (!has_named_values())
+	if (!internal && !has_named_values())
 	{
 	    switch (type())
 	    {
