@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 .\"
-.TH @ddd@ 1 "18 March 1997" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "20 March 1997" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger
 .PSPIC PICS/dddlogo21.ps 10cm
@@ -929,10 +929,16 @@ resulting prompt dialog.
 Finally, you may also enter
 .sp
 .br
-  \fBgraph display \fIexpr\fR
+  \fBgraph display \fIexpr\fR [\|\fBat (\fIx, y\fB)\fR\|] [\|\fBdependent
+on \fIdisplay\fR\|]
 .sp
 .br
-\&at the debugger prompt.
+\&at the debugger prompt.  If the suffix `\fBat \fB(\fIx, y\fB)\fR' is
+specified, the new data display is created at the position (\fIx\fR,
+\fIy\fR); otherwise, a default position is assigned.  If the suffix
+`\fBdependent on \fIdisplay\fR' is given, an edge from display
+numbered \fIdisplay\fR to the new display is created; otherwise, no
+edge is created.
 .\"
 .\"
 .SS "Selecting Displays"
@@ -1169,17 +1175,16 @@ the usual way and delete them by pressing `\fBDelete\fR'.
 As an alternative, you can also type
 .sp
 .br
-  \fBundisplay \fINUM...\fR
+  \fBgraph undisplay \fIdisplays...\fR
 .sp
 .br
-at the debugger prompt, where \fINUM...\fR is a space-separated list
-of the displays to delete.  You may need to refresh the data window
-afterwards (see below).
+at the debugger prompt, where \fIdisplays...\fR is a space-separated
+list of display numbers to delete.
 .\"
 .\"
 .SS "Disabling or Enabling Displays"
 .\"
-Note: \s-2DBX\s+2 does not support display disabling.
+Note: \s-2DBX\s+2 and \s-2XDB\2+2 do not support display disabling.
 .PP
 Unlike a \fIdeleted\fR display item, a \fIdisabled\fR display item
 remains in the display, but its value is not shown until it is enabled
@@ -1190,19 +1195,21 @@ the `\fBDisable()\fR'/`\fBEnable()\fR' button, the
 `\fBDisable\fR'/`\fBEnable Display\fR' popup menu item, or the
 `\fBDisable\fR'/`\fBEnable\fR' buttons in the Display Editor.
 .PP
-The corresponding \s-2GDB\s+2 commands are
+As an alternative, you can also type
 .sp
 .br
-  \fBdisable display \fINUM...\fR
+  \fBgraph disable display \fIdisplays...\fR
 .sp
 .br
 and
 .sp
 .br
-  \fBenable display \fINUM...\fR
+  \fBgraph enable display \fIdisplays...\fR
 .sp
 .br
-respectively.
+at the debugger prompt.  \fIdisplays...\fR is a space-separated list
+of display numbers to disable or enable.
+
 .\"
 .SS "Examining Shared Data Structures"
 .\"
