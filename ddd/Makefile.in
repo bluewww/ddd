@@ -715,6 +715,7 @@ AGENT_OBJECTS = \
 XSTUFF_OBJECTS = \
 	charsets.$(OBJEXT)   \
 	converters.$(OBJEXT) \
+	decoration.$(OBJEXT) \
 	events.$(OBJEXT)     \
 	findParent.$(OBJEXT) \
 	findWindow.$(OBJEXT) \
@@ -916,6 +917,7 @@ DDD_OBJECTS = \
 	RefreshDI.$(OBJEXT)  \
 	SmartC.$(OBJEXT)     \
 	SourceView.$(OBJEXT) \
+	Tool.$(OBJEXT)       \
 	UndoBuffer.$(OBJEXT) \
 	UndoBE.$(OBJEXT)     \
 	WhatNextCB.$(OBJEXT)

@@ -157,7 +157,6 @@ char ddd_rcsid[] =
 #include <Xm/ToggleB.h>
 #include <Xm/PushB.h>
 #include <Xm/ArrowB.h>
-#include <Xm/MwmUtil.h>
 #include <X11/Shell.h>
 
 #if XmVersion >= 1002
@@ -371,10 +370,6 @@ static void fix_status_size();
 // Setup new shell
 static void setup_new_shell(Widget w);
 
-// Check if window manager decorates transients
-static void start_have_decorated_transients(Widget parent);
-static bool have_decorated_transients();
-
 // Set `Settings' title
 static void set_settings_title(Widget w);
 
@@ -399,7 +394,6 @@ static bool lock_ddd(Widget parent, LockInfo& info);
 // Various setups
 static void setup_version_info();
 static void setup_environment();
-static void setup_command_tool();
 static void setup_options(int& argc, char *argv[],
 			  StringArray& saved_options, string& gdb_name,
 			  bool& no_windows);
@@ -2657,14 +2651,6 @@ int main(int argc, char *argv[])
 				     + quote(app_data.session));
     }
 
-    if (app_data.decorate_tool == Auto)
-    {
-	// Check for decorated transient windows.  We can do this only
-	// after the command shell has been realized, because
-	// otherwise the init shell might always be decorated.
-	start_have_decorated_transients(command_shell);
-    }
-
     // Remove unnecessary sashes
     untraverse_sashes(source_view_parent);
 
@@ -2753,10 +2739,6 @@ int main(int argc, char *argv[])
     // starts.
     wait_until_mapped(command_shell);
 #endif
-
-    // Create command tool
-    if (app_data.tool_buttons && strlen(app_data.tool_buttons) > 0)
-	setup_command_tool();
 
     // Setup TTY interface
     setup_command_tty();
@@ -6466,106 +6448,6 @@ static void ddd_xt_warning(String message)
 
 
 //-----------------------------------------------------------------------------
-// Decoration
-//-----------------------------------------------------------------------------
-
-static Widget init_label, init_shell;
-
-// Return a transient position on SCREEN (for command tool etc.) in POS_X/POS_Y
-static void get_transient_pos(Screen *screen, Position& pos_x, Position& pos_y)
-{
-    (void) screen;		// Use it
-#if 0
-    // Use lower right corner.
-    pos_x = WidthOfScreen(screen) - 1;
-    pos_y = HeightOfScreen(screen) - 1;
-#else
-    // This loses on some window managers; upper left corner is safer.
-    pos_x = 0;
-    pos_y = 0;
-#endif
-}
-
-// Check if window manager decorates transients
-static void start_have_decorated_transients(Widget parent)
-{
-    Position pos_x, pos_y;
-    get_transient_pos(XtScreen(parent), pos_x, pos_y);
-
-    ostrstream os;
-    os << "+" << pos_x << "+" << pos_y;
-    string geometry(os);
-
-    Arg args[10];
-    int arg = 0;
-    XtSetArg(args[arg], XmNgeometry, geometry.chars()); arg++;
-    XtSetArg(args[arg], XmNx, pos_x);                   arg++;
-    XtSetArg(args[arg], XmNy, pos_y);                   arg++;
-    init_shell = verify(XmCreateDialogShell(parent, "init_shell", args, arg));
-
-    arg = 0;
-    MString label(DDD_NAME " " DDD_VERSION);
-    XtSetArg(args[arg], XmNlabelString, label.xmstring()); arg++;
-    init_label = verify(XmCreateLabel(init_shell, ddd_NAME, args, arg));
-    XtManageChild(init_label);
-
-    wait_until_mapped(init_label, init_shell);
-    XmUpdateDisplay(init_label);
-}
-
-static bool have_decorated_transients()
-{
-    if (init_label == 0 || init_shell == 0)
-	start_have_decorated_transients(command_shell);
-
-    XWindowAttributes shell_attributes;
-    XGetWindowAttributes(XtDisplay(init_shell), XtWindow(init_shell), 
-			 &shell_attributes);
-
-#if 0
-    clog << "shell window: " << XtWindow(init_shell)
-	 << ", size: " << BoxPoint(shell_attributes.width, 
-				       shell_attributes.height) << "\n";
-#endif
-
-    // Wait up to 5 seconds until WM has decorated the init shell.
-    // Problem: If we have no WM or a non-decorating WM, this delays
-    // DDD for 5 seconds; this can be avoided by using an explicit
-    // `decorateTool' resource value.
-    Window frame_window = 0;
-    for (int trial = 1; trial < 5; trial++)
-    {
-	frame_window = frame(XtDisplay(init_shell), XtWindow(init_shell));
-	if (frame_window != XtWindow(init_shell))
-	    break;
-	XSync(XtDisplay(init_label), False);
-	sleep(1);
-    }
-
-    XWindowAttributes frame_attributes;
-    XGetWindowAttributes(XtDisplay(init_shell), frame_window,
-			 &frame_attributes);
-
-#if 0
-    clog << "frame window: " << frame_window 
-	 << ", size: " << BoxPoint(frame_attributes.width, 
-				       frame_attributes.height) << "\n";
-#endif
-
-    XtUnmapWidget(init_shell);
-    DestroyWhenIdle(init_shell);
-
-    // If the border supplied by the window manager border is more
-    // than 5 pixels higher than wider, assume we have some kind of
-    // title bar - the shell is decorated.
-    int border_height = frame_attributes.height - shell_attributes.height;
-    int border_width  = frame_attributes.width  - shell_attributes.width;
-
-    return border_height - border_width > 5;
-}
-
-
-//-----------------------------------------------------------------------------
 // Splash Screen
 //-----------------------------------------------------------------------------
 
@@ -7061,107 +6943,6 @@ static void setup_environment()
 
     // Let the debugger know that we're here
     put_environment(DDD_NAME, ddd_NAME "-" DDD_VERSION "-" DDD_HOST);
-}
-
-static void setup_command_tool()
-{
-    // It is preferable to realize the command tool as a DialogShell,
-    // since this will cause it to stay on top of other DDD windows.
-    // Unfortunately, some window managers do not decorate transient
-    // windows such as DialogShells.  In this case, use a TopLevel
-    // shell instead and rely on the DDD auto-raise mechanisms defined
-    // in `windows.C'.
-    //
-    // Nobody ever honors all this work.  -AZ
-
-    bool use_transient_tool_shell = true;
-    switch (app_data.decorate_tool)
-    {
-    case On:
-	use_transient_tool_shell = false;
-	break;
-    case Off:
-	use_transient_tool_shell = true;
-	break;
-    case Auto:
-	use_transient_tool_shell = have_decorated_transients();
-	break;
-    }
-
-    Widget tool_shell_parent = 
-	source_view_shell ? source_view_shell : command_shell;
-
-    Arg args[10];
-    int arg = 0;
-
-    XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
-    XtSetArg(args[arg], XmNallowShellResize, False);      arg++;
-    XtSetArg(args[arg], XmNmwmDecorations,
-	     MWM_DECOR_BORDER | MWM_DECOR_TITLE | MWM_DECOR_MENU); arg++;
-    XtSetArg(args[arg], XmNmwmFunctions, 
-	     MWM_FUNC_MOVE | MWM_FUNC_CLOSE); arg++;
-
-    if (use_transient_tool_shell)
-    {
-	tool_shell = 
-	    verify(XmCreateDialogShell(tool_shell_parent, 
-				       "tool_shell", args, arg));
-    }
-    else
-    {
-	tool_shell = 
-	    verify(XtCreateWidget("tool_shell", vendorShellWidgetClass,
-				  tool_shell_parent, args, arg));
-    }
-
-    XmAddWMProtocolCallback(tool_shell, WM_DELETE_WINDOW, 
-			    gdbCloseToolWindowCB, 0);
-
-    arg = 0;
-    tool_buttons_w = 
-	verify(XmCreateForm(tool_shell, "tool_buttons", args, arg));
-    set_buttons(tool_buttons_w, app_data.tool_buttons, false);
-
-    Delay::register_shell(tool_shell);
-    XtAddEventHandler(tool_shell, STRUCTURE_MASK, False,
-		      StructureNotifyEH, XtPointer(0));
-
-#if XmVersion >= 1002
-#define FIXED_COMMAND_TOOL 1
-#endif
-
-#if FIXED_COMMAND_TOOL
-    // Some FVWM flavors have trouble in finding the `best' window size.
-    // Determine `best' size for tool shell.
-    XtWidgetGeometry size;
-    size.request_mode = CWHeight | CWWidth;
-    XtQueryGeometry(tool_buttons_w, NULL, &size);
-#endif
-
-    // Set shell geometry
-    Position pos_x, pos_y;
-    get_transient_pos(XtScreen(tool_shell_parent), pos_x, pos_y);
-
-    ostrstream os;
-#if FIXED_COMMAND_TOOL
-    os << size.width << "x" << size.height;
-#endif
-    os << "+" << pos_x << "+" << pos_y;
-    string geometry(os);
-
-    XtSetArg(args[arg], XmNgeometry, geometry.chars()); arg++;
-    XtSetArg(args[arg], XmNx, pos_x);                   arg++;
-    XtSetArg(args[arg], XmNy, pos_y);                   arg++;
-
-#if FIXED_COMMAND_TOOL
-    // Some FVWM flavors have trouble in finding the `best' window size.
-    XtSetArg(args[arg], XmNmaxWidth,  size.width);      arg++;
-    XtSetArg(args[arg], XmNmaxHeight, size.height);     arg++;
-    XtSetArg(args[arg], XmNminWidth,  size.width);      arg++;
-    XtSetArg(args[arg], XmNminHeight, size.height);     arg++;
-#endif
-
-    XtSetValues(tool_shell, args, arg);
 }
 
 static void setup_options(int& argc, char *argv[],

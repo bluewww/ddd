@@ -467,7 +467,7 @@ Ddd*stickyTool: on
 ! * If `auto', DDD checks the window manager.  If it decorates
 !   transients, the command tool is realized as a transient, and as
 !   a top-level-window. otherwise.
-Ddd*decoratedTool: auto
+Ddd*decorateTool: auto
 
 ! Do we want an auto-raised command tool?  If on, DDD will always 
 ! keep the command tool on top of other DDD windows.  If this setting
