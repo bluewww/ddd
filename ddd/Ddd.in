@@ -192,7 +192,7 @@ Ddd*wwwCommand: \
 || xterm -e lynx '@URL@'
 
 ! The time (in seconds) to wait for synchronous GDB questions to complete
-Ddd*questionTimeout: 5
+Ddd*questionTimeout: 10
 
 
 ! Colon-separated lists of GDB commands for which buttons are to be created.
@@ -1841,7 +1841,7 @@ Ddd*gdb_w.rows:			10
 Ddd*gdb_w.columns:		88
 
 Ddd*gdb_wSW.width:		660
-Ddd*gdb_wSW.height:		120
+Ddd*gdb_wSW.height:		124
 
 Ddd*gdb_w.editable:		true
 Ddd*gdb_w.allowResize:		true
@@ -2454,6 +2454,13 @@ For more details, consult the GDB or DBX documentation.
 Ddd*gdb_message_dialog_popup.title: @DDD@: Debugger Message
 Ddd*gdb_message_dialog*contextHelpString:	\
 @rm This is a message of the inferior debugger.\n\
+For more details, consult the GDB or DBX documentation.
+
+Ddd*gdb_selection_dialog_popup.title: @DDD@: Selection
+Ddd*gdb_selection_dialog*okLabelString:    Select
+Ddd*gdb_selection_dialog*listLabelString:  Choices
+Ddd*gdb_selection_dialog*contextHelpString:	\
+@rm This is a selection menu of the inferior debugger.\n\
 For more details, consult the GDB or DBX documentation.
 
 Ddd*confirm_overwrite_dialog_popup.title: @DDD@: File Exists
