@@ -252,6 +252,7 @@ dnl
 AC_PATH_XTRA
 ICE_FIND_MOTIF
 ICE_FIND_ATHENA
+ICE_FIND_XPM
 dnl
 dnl Autoconf bug fix: Sun CC 3.0 requires `-R lib', g++ requires `-Rlib'.
 changequote(,)dnl

@@ -265,10 +265,15 @@ Optional Features
     `--with-athena-includes=DIR' and `--with-athena-libraries=DIR' to
     specify their locations.
 
+    If `configure' doesn't find the Xpm include and library files
+    automatically, you can use the `configure' options
+    `--with-xpm-includes=DIR' and `--with-xpm-libraries=DIR' to
+    specify their locations.
+
     If you wish to disable Athena widgets and rely on Motif widgets
     alone, you can use the `configure' option `--without-athena'.
-    Don't use the `--without-motif' option; DDD will not compile
-    without Motif.
+    Likewise, `--without-xpm' disables XPM support.  Don't use the
+    `--without-motif' option; DDD will not compile without Motif.
 
 
 Specifying the System Type
