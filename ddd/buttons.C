@@ -106,9 +106,11 @@ static void showDocumentationInStatusLine(const MString& doc)
 	    }
 	    else
 	    {
-		// Message has been overwritten.  This is a button effect,
-		// so clear the message.
+		// Message has been overwritten.
+#if 0 
+		// This is a button effect, hence clear the message.
 		set_status("");
+#endif
 	    }
 	    current_status_message = MString(0, true);
 	}
