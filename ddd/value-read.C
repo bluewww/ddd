@@ -859,6 +859,13 @@ string read_member_name (string& value)
 	    member_name = m;
     }
 
+    if (gdb->type() == PERL && 
+	member_name.contains('\'', 0) && member_name.contains('\'', -1))
+    {
+	// Some Perl debugger flavours quote the member name.
+	member_name = unquote(member_name);
+    }
+
     read_leading_junk (member_name);
 
     if (member_name == "")
