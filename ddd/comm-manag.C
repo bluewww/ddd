@@ -125,6 +125,7 @@ typedef struct PlusCmdData {
     bool     config_when_semicolon;    // try 'help when'
     bool     config_err_redirection;   // try 'help run'
     bool     config_page;	       // try 'set $page = 0'
+    bool     config_xdb;	       // try XDB settings
 
     PlusCmdData () :
 	refresh_main(false),
@@ -151,7 +152,8 @@ typedef struct PlusCmdData {
 	config_named_values(false),
 	config_when_semicolon(false),
 	config_err_redirection(false),
-	config_page(false)
+	config_page(false),
+	config_xdb(false)
     {}
 };
 
@@ -231,6 +233,16 @@ void start_gdb()
 	plus_cmd_data->refresh_pwd = true;
 	cmds += "lb";
 	plus_cmd_data->refresh_bpoints = true;
+
+	cmds += "sm";
+	cmds += "tm";
+	cmds += "def run r";
+	cmds += "def cont c";
+	cmds += "def next S";
+	cmds += "def step s";
+	cmds += "def quit q";
+	cmds += "def finish { bu \\1t ; c ; L }";
+	plus_cmd_data->config_xdb = true;
 	break;
     }
 
@@ -539,6 +551,7 @@ void user_cmdSUC (string cmd, Widget origin)
     assert(!plus_cmd_data->config_when_semicolon);
     assert(!plus_cmd_data->config_err_redirection);
     assert(!plus_cmd_data->config_page);
+    assert(!plus_cmd_data->config_xdb);
     
     // Setup additional trailing commands
     switch (gdb->type())
@@ -878,6 +891,22 @@ static void process_config_page(string&)
     // Nothing yet...
 }
 
+static void process_config_sm(string&)
+{
+    // Nothing yet...
+}
+
+static void process_config_tm(string& answer)
+{
+    if (answer.contains("SUSPENDED"))
+	user_rawSUC("tm", 0);
+}
+
+static void process_config_def(string&)
+{
+    // Nothing yet...
+}
+
 
 // ***************************************************************************
 // Behandelt die Antworten auf die hinterhergeschickten Anfragen
@@ -958,6 +987,18 @@ void plusOQAC (string answers[],
     if (plus_cmd_data->config_page) {
 	assert (qu_count < count);
 	process_config_page(answers[qu_count++]);
+    }
+
+    if (plus_cmd_data->config_xdb) {
+	assert (qu_count < count);
+	process_config_sm(answers[qu_count++]);
+	process_config_tm(answers[qu_count++]);
+	process_config_def(answers[qu_count++]); // def run r
+	process_config_def(answers[qu_count++]); // def cont c
+	process_config_def(answers[qu_count++]); // def next S
+	process_config_def(answers[qu_count++]); // def step s
+	process_config_def(answers[qu_count++]); // def quit q
+	process_config_def(answers[qu_count++]); // def finish { ... }
     }
 
     if (plus_cmd_data->refresh_pwd) {

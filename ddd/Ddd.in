@@ -410,23 +410,14 @@ set print asm-demangle on\n\
 set prompt (gdb) \n
 
 
-! The DBX initialization commands.  Nothing special yet.
-! Use a personal `~/.dbxinit' file instead to customize DBX.
+! The DBX initialization commands.  Nothing special yet.  
+! Use a personal `~/.dbxinit' or `~/.dbxrc' file to customize DBX.
 Ddd*dbxInitCommands:
 
 
-! The XDB initialization commands.  We define a few useful macros
-! such that we do not need to redefine our buttons; `tm' activates them.
-! Use a personal `~/.xdbrc' file instead to customize XDB.
-Ddd*xdbInitCommands:	\
-sm\n\
-def run r\n\
-def cont c\n\
-def next S\n\
-def step s\n\
-def quit q\n\
-def finish { bu \1t ; c ; L }\n\
-tm\n
+! The XDB initialization commands.  Nothing special yet.
+! Use a personal `~/.xdbrc' file to customize XDB.
+Ddd*xdbInitCommands:
 
 
 ! The VSL library for displaying graph nodes.  `builtin' means the VSL
