@@ -589,7 +589,7 @@ public:
     string whatis_command(string expr) const;       // GDB: "whatis EXPR"
     string dereferenced_expr(string expr) const;    // GDB: "*EXPR"
     string address_expr(string expr) const;         // GDB: "&EXPR"
-    string index_expr(string expr, int index) const; // GDB: "EXPR[INDEX]"
+    string index_expr(string expr, string index) const; // GDB: "EXPR[INDEX]"
     int default_index_base() const;                 // GDB: 0 in C, else 1
     string info_locals_command() const;	            // GDB: "info locals"
     string info_args_command() const;	            // GDB: "info args"

@@ -2126,15 +2126,15 @@ string GDBAgent::address_expr(string expr) const
 }
 
 // Give the index of an expression.
-string GDBAgent::index_expr(string expr, int index) const
+string GDBAgent::index_expr(string expr, string index) const
 {
     switch (program_language())
     {
     case LANGUAGE_FORTRAN:
-	return expr + "(" + itostring(index) + ")";
+	return expr + "(" + index + ")";
 
     default:
-	return expr + "[" + itostring(index) + "]";
+	return expr + "[" + index + "]";
     }
 
     return "";			// All other languages
