@@ -53,9 +53,9 @@ Widget findShellParent(Widget w)
     while (w != 0 && (!XtIsWidget(w)
 		      || !XtIsShell(w)
 		      || !XtIsRealized(w)
-		      || XtDisplay(w) == 0
-		      || XtScreen(w) == 0
-		      || XtWindow(w) == 0))
+		      || XtDisplay(w) == None
+		      || XtScreen(w) == None
+		      || XtWindow(w) == None))
 	w = XtParent(w);
 
     if (findParent_debug)

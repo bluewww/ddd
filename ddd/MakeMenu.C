@@ -717,8 +717,11 @@ static void PopupPushMenuCB(XtPointer client_data, XtIntervalId *id)
     XtCallActionProc(w, "Disarm",          &last_push_menu_event, 0, 0);
 
 #if XmVersion < 1002
-    // In Motif 1.1, the PushButton does not redisplay after being disarmed
-    XClearArea(XtDisplay(w), XtWindow(w), 0, 0, 0, 0, True);
+    if (XtIsRealized(w))
+    {
+	// In Motif 1.1, the PushButton does not redisplay after being disarmed
+	XClearArea(XtDisplay(w), XtWindow(w), 0, 0, 0, 0, True);
+    }
 #endif
 }
 
@@ -759,7 +762,7 @@ void PopupPushMenuAct(Widget w, XEvent *event, String *, Cardinal *)
 
 void DecoratePushMenuAct(Widget w, XEvent */* event */, String *, Cardinal *)
 {
-    if (!XmIsPushButton(w))
+    if (!XmIsPushButton(w) || !XtIsRealized(w))
 	return;
 
     // clog << "Redraw " << XtName(w) << "\n";

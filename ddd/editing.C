@@ -57,6 +57,11 @@ char editing_rcsid[] =
 #include <Xm/TextF.h>
 #include <Xm/RowColumn.h>	// XmMenuPosition()
 
+// ANSI C++ doesn't like the XtIsRealized() macro
+#ifdef XtIsRealized
+#undef XtIsRealized
+#endif
+
 // True if last input was at gdb prompt
 bool gdb_input_at_prompt = true;
 
@@ -393,7 +398,7 @@ void processAct(Widget w, XEvent *e, String *, Cardinal *)
 
     static bool running = false;
 
-    if (running)
+    if (running || !XtIsRealized(gdb_w))
     {
 	// Ignore event
 	return;

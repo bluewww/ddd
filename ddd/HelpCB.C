@@ -1280,10 +1280,17 @@ static void PopupTip(XtPointer client_data, XtIntervalId *timer)
 
     TipInfo *ti = (TipInfo *)client_data;
     Widget& w = ti->widget;
+
+    if (w == 0)
+	return;
+
     XtRemoveCallback(w, XmNdestroyCallback, CancelRaiseTip, 0);
 
     MString tip = get_tip_string(w, &ti->event);
     if (tip.isNull() || isNone(tip) || tip.isEmpty())
+	return;
+
+    if (!XtIsRealized(w))
 	return;
 
     if (tip_shell == 0)

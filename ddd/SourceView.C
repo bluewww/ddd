@@ -5181,6 +5181,9 @@ void SourceView::MoveCursorToGlyphPosCB(Widget w,
     else
 	return;
 
+    if (!XtIsRealized(text_w))
+	return;
+
     // Set up event such that it applies to the source window
     XButtonEvent *event = (XButtonEvent *) e;
 
@@ -6120,6 +6123,9 @@ void SourceView::dragGlyphAct (Widget w, XEvent *e, String *, Cardinal *)
     else
 	return;			// Bad widget
 
+    if (!XtIsRealized(text_w))
+	return;
+
     int k;
     for (k = 0; k < 2; k++)
     {
@@ -6202,6 +6208,9 @@ void SourceView::dropGlyphAct (Widget w, XEvent *e, String *, Cardinal *)
 	text_w = code_text_w;
     else
 	return;			// Bad widget
+
+    if (!XtIsRealized(text_w))
+	return;
 
     XUndefineCursor(XtDisplay(w), XtWindow(w));
 

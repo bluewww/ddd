@@ -54,6 +54,11 @@ char Command_rcsid[] =
 #include <Xm/Text.h>
 #include <X11/StringDefs.h>
 
+// ANSI C++ doesn't like the XtIsRealized() macro
+#ifdef XtIsRealized
+#undef XtIsRealized
+#endif
+
 #define LOG_QUEUE 0
 
 // Origin of last command
@@ -320,7 +325,7 @@ Widget find_shell(Widget w)
 	return command_shell;
 
     Widget parent = findTopLevelShellParent(w);
-    if (parent == 0)
+    if (parent == 0 || !XtIsRealized(parent))
 	return command_shell;
 
     XWindowAttributes xwa;

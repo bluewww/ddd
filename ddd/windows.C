@@ -155,7 +155,7 @@ static void RecenterToolShellCB(XtPointer = 0, XtIntervalId * = 0)
 {
     bool have_visible_tool_shell = false;
 
-    if (XtIsRealized(tool_shell))
+    if (XtIsRealized(tool_buttons_w))
     {
 	XWindowAttributes attr;
 	XGetWindowAttributes(XtDisplay(tool_buttons_w), 

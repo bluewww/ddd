@@ -178,6 +178,11 @@ extern "C" {
 }
 #include "LessTifH.h"
 
+// ANSI C++ doesn't like the XtIsRealized() macro
+#ifdef XtIsRealized
+#undef XtIsRealized
+#endif
+
 // Lots of DDD stuff
 #include "AgentM.h"
 #include "AppData.h"
@@ -2646,7 +2651,7 @@ static void fix_status_size()
 	}
     }
 
-    if (sash == 0)
+    if (sash == 0 || !XtIsRealized(sash))
 	return;			// No sash found
 
 
@@ -5202,6 +5207,7 @@ static void setup_version_info()
     if (cinfo_lt >= 0 && cinfo_gt >= 0)
     {
 	helpOnVersionExtraText = rm(cinfo.through(cinfo_lt));
+	helpOnVersionExtraText += cr();
 	helpOnVersionExtraText += tt(cinfo(cinfo_lt + 1, 
 					   cinfo_gt - cinfo_lt - 1));
 	helpOnVersionExtraText += rm(cinfo.from(cinfo_gt));
