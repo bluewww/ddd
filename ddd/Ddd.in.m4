@@ -863,13 +863,13 @@ Ddd*maxDisplayNumber:    99
 ! Fonts
 
 ! The default font to use for labels, etc.
-Ddd*defaultFont:       -*-helvetica-bold-r-*-*-*-90-*-*-*-*-iso8859-*
+Ddd*defaultFont:       helvetica-bold-r
 
 ! The font to use for help texts.
-Ddd*variableWidthFont: -*-helvetica-medium-r-*-*-*-90-*-*-*-*-iso8859-*
+Ddd*variableWidthFont: helvetica-medium-r
 
 ! The font to use for fixed-width fields, such as the source code.
-Ddd*fixedWidthFont:    -*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-iso8859-*
+Ddd*fixedWidthFont:    lucidatypewriter-medium-r
 
 ! The base font size; overrides the point settings as set above.
 Ddd*FontSize:          90
