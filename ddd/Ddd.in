@@ -2554,7 +2554,6 @@ Ddd*settings_popup*cancelLabelString: Reset
 Ddd*settings_popup.title: @DDD@: Debugger Settings
 Ddd*settings_popup.autoUnmanage: false
 
-Ddd*settings*title.labelString:			Debugger Settings
 Ddd*settings*scroll.scrollingPolicy:		XmAUTOMATIC
 Ddd*settings*scroll.height:			293
 Ddd*settings*scroll.width:			528
@@ -2609,7 +2608,6 @@ Ddd*infos_popup*cancelLabelString: Reset
 Ddd*infos_popup.title: @DDD@: Status Displays
 Ddd*infos_popup.autoUnmanage: false
 
-Ddd*infos*title.labelString:			Status Displays
 Ddd*infos*scroll.scrollingPolicy:		XmAUTOMATIC
 Ddd*infos*scroll.height:			293
 Ddd*infos*scroll.width:				428

@@ -217,6 +217,7 @@ public:
 
     // Resources
     DebuggerType type()       const { return _type; }
+    string title()            const;
     bool isReadyWithPrompt()  const { return state == ReadyWithPrompt; }
     bool isBusyOnCmd()        const { return state == BusyOnCmd
 					  || state == BusyOnInitialCmds; }

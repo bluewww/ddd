@@ -1280,8 +1280,12 @@ static string get_help_line(string command, DebuggerType type)
 // Create settings or infos editor
 static Widget create_panel(DebuggerType type, bool create_settings)
 {
-    StatusDelay delay(create_settings ? "Retrieving debugger settings" 
-		      : "Retrieving info commands");
+    string title_msg;
+    if (create_settings)
+	title_msg = gdb->title() + " settings";
+    else
+	title_msg = gdb->title() + " status displays";
+    StatusDelay delay("Retrieving " + title_msg);
 
     Arg args[10];
     int arg;
@@ -1325,8 +1329,9 @@ static Widget create_panel(DebuggerType type, bool create_settings)
 
     // Add a label
     arg = 0;
-    Widget title =
-        verify(XmCreateLabel(column, "title", args, arg));
+    MString xmtitle(title_msg);
+    XtSetArg(args[arg], XmNlabelString, xmtitle.xmstring()); arg++;
+    Widget title = verify(XmCreateLabel(column, "title", args, arg));
     XtManageChild(title);
 
     // Add a scrolled window...

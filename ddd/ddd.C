@@ -1988,23 +1988,12 @@ static void install_button_tips()
 
 static void setup_settings_title()
 {
-    string gdb_path = app_data.debugger_command;
-    string gdb_base = gdb_path;
-
-    for (int i = 0; i < int(gdb_path.length()); i++)
-    {
-	if (gdb_path[i] == '/')
-	    gdb_base = gdb_path.after(i);
-    }
-
-    gdb_base.upcase();
-
     XmString xmlabel;
     XtVaGetValues(settings_w, XmNlabelString, &xmlabel, NULL);
     MString label(xmlabel, true);
     XmStringFree(xmlabel);
 
-    label.prepend(MString(gdb_base + " "));
+    label.prepend(MString(gdb->title() + " "));
     XtVaSetValues(settings_w, XmNlabelString, label.xmstring(), NULL);
 }
 

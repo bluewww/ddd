@@ -185,6 +185,22 @@ string GDBAgent::default_prompt() const
     return "(???) ";
 }
 
+// Return default title
+string GDBAgent::title() const
+{
+    switch (type())
+    {
+    case GDB:
+	return "GDB";
+    case DBX:
+	return "DBX";
+    case XDB:
+	return "XDB";
+    }
+
+    return "debugger";
+}
+
 
 // ***************************************************************************
 // Trace communication
