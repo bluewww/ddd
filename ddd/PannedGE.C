@@ -184,6 +184,11 @@ Widget createPannedGraphEdit(Widget parent, String name,
 
     string porthole_name = string(name) + "_porthole";
     arg = 0;
+    XtSetArg(args[arg], XtNresizable, True);           arg++;
+    XtSetArg(args[arg], XtNbottom,    XawChainBottom); arg++;
+    XtSetArg(args[arg], XtNtop,       XawChainTop);    arg++;
+    XtSetArg(args[arg], XtNleft,      XawChainLeft);   arg++;
+    XtSetArg(args[arg], XtNright,     XawChainRight);  arg++;
     Widget porthole = 
 	verify(XtCreateManagedWidget(porthole_name,
 				     pannedGraphEditWidgetClass, 
@@ -199,6 +204,18 @@ Widget createPannedGraphEdit(Widget parent, String name,
     // Allow the porthole and the panner to talk to each other
     XtAddCallback(porthole, XtNreportCallback, PortholeCB, XtPointer(panner));
     XtAddCallback(panner, XtNreportCallback, PannerCB, XtPointer(graph_edit));
+
+    // Propagate requested width and height of graph editor to form
+    Dimension width, height;
+    XtVaGetValues(graph_edit,
+		  XtNrequestedWidth, &width,
+		  XtNrequestedHeight, &height,
+		  NULL);
+
+    if (width > 0)
+	XtVaSetValues(form, XmNwidth, width, NULL);
+    if (height > 0)
+	XtVaSetValues(form, XmNheight, height, NULL);
 
     return graph_edit;
 }
