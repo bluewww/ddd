@@ -28,6 +28,10 @@ DDD News
     us track this bug down.  Thanks to all who encouraged us in our
     work.
 
+    Changes to DDD 1.0:
+    - C++ References and VTables are fully supported.
+    - The source popup menu no longer changes the source selection.
+
 
 Summary of DDD
 ==============

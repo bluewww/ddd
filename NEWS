@@ -14,14 +14,9 @@ DDD 1.1
     places.  This bug has been fixed; some other minor bugs were
     fixed, too.  See the `ChangeLog' file for details.
 
-    Our apologies to all who got and tried to compile and run a
-    defective DDD.  You should be able to repair the DDD 1.0 release
-    by inserting the line
-
-    > XtRemoveCallback(widget, XtNdestroyCallback, DestroyCB, this);
-
-    at the very end of the `_Delay::~_Delay()' function in `Delay.C'.
-
+    Changes to DDD 1.0:
+    - C++ References and VTables are fully supported.
+    - The source popup menu no longer changes the source selection.
 
 
 DDD 1.0a
