@@ -633,19 +633,30 @@ void gdbModifyCB(Widget gdb_w, XtPointer, XtPointer call_data)
     if (change->startPos < promptPosition)
     {
 	// Attempt to change text before prompt
-#ifdef LESSTIF_VERSION
+#if 0
 	// This only works in LessTif.  
 	// With Motif, this causes a core dump on Solaris.  - AZ
 	change->doit = false;
 #else
 	// Make it a no-op
 	XmTextPosition lastPos = XmTextGetLastPosition(gdb_w);
-	change->startPos = promptPosition;
-	change->endPos = change->newInsert = change->currInsert = lastPos;
-	if (change->text->length == 0 && change->event != 0)
-	    XtCallActionProc(gdb_w, "beep", change->event, 0, 0);
-	XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0, 
-			move_to_end_of_line, XtPointer(0));
+	XmTextPosition newPos = lastPos;
+
+	if (change->text->length == 0)
+	{
+	    // Deletion
+	    newPos = promptPosition;
+	    if (change->event != 0)
+		XtCallActionProc(gdb_w, "beep", change->event, 0, 0);
+	}
+	else
+	{
+	    // Some character
+	    XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0, 
+			    move_to_end_of_line, XtPointer(0));
+	}
+	change->startPos = change->endPos = 
+	    change->newInsert = change->currInsert = newPos;
 #endif
 	return;
     }
