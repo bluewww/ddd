@@ -732,7 +732,7 @@ dnl
 dnl
 dnl That's all, folks!
 dnl
-AC_OUTPUT(Makefile vr.h Ddd ddd.man .gdbinit, date > stamp-h)
+AC_OUTPUT(Makefile vr.h bld.h Ddd ddd.man .gdbinit, date > stamp-h)
 dnl
 dnl 
 dnl Give some warnings
