@@ -1,5 +1,5 @@
 /* ANSI-compatible clock function.
-   Copyright (C) 1994, 1995 Free Software Foundation, Inc.
+   Copyright (C) 1994, 1995, 1999 Free Software Foundation, Inc.
 
 This file is part of the libiberty library.  This library is free
 software; you can redistribute it and/or modify it under the
@@ -36,6 +36,22 @@ the executable file might be covered by the GNU General Public License. */
 #include <sys/times.h>
 #endif
 
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+
+#ifdef _SC_CLK_TCK
+#define GNU_HZ  sysconf(_SC_CLK_TCK)
+#else
+#ifdef HZ
+#define GNU_HZ  HZ
+#else
+#ifdef CLOCKS_PER_SEC
+#define GNU_HZ  CLOCKS_PER_SEC
+#endif
+#endif
+#endif
+
 /* FIXME: should be able to declare as clock_t. */
 
 long
@@ -52,7 +68,7 @@ clock ()
   struct tms tms;
 
   times (&tms);
-  return (tms.tms_utime + tms.tms_stime) * (1000000 / HZ);
+  return (tms.tms_utime + tms.tms_stime) * (1000000 / GNU_HZ);
 #else
 #ifdef VMS
   struct
