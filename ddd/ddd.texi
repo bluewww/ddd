@@ -27,6 +27,8 @@
 @c `http://www.gnu.org/software/ddd/',
 @c or send a mail to the DDD developers <ddd@gnu.org>.
 
+@c Note: This file contains 8-bit characters (Latin1 encoding)
+
 @c %**start of header
 
 @setfilename ddd.info
@@ -62,6 +64,7 @@
 
 @c PDF hacks
 @iftex
+@ifnothtml
 @newif@ifpdf
 @ifx@pdfoutput@undefined
 @c we are running TeX
@@ -73,7 +76,6 @@
 @fi
 
 @c PDF settings
-@iftex
 @ifpdf
 @pdfcompresslevel=9
 @pdfinfo{
@@ -83,6 +85,7 @@
     /Keywords (Debugging Debugger DDD GDB DBX XDB)
 }
 @fi
+@end ifnothtml
 @end iftex
 
 @iftex
@@ -114,14 +117,17 @@ with @value{DDD}} for @value{DDD} Version @value{VERSION}.
 
 @noindent
 @group
-Copyright (C) 1999 Universit@"at Passau, Germany @*
-Lehrstuhl f@"ur Software-Systeme @*
+Copyright (C) 1999 Universität Passau, Germany @*
+Lehrstuhl für Software-Systeme @*
 Innstrasse 33 @*
 D-94032 Passau @*
 GERMANY
 
-@noindent
-E-mail: @email{@value{ddd}@@gnu.org}
+Distributed by @*
+Free Software Foundation, Inc. @*
+59 Temple Place - Suite 330 @*
+Boston, MA 02111-1307 @*
+USA
 
 @noindent
 @value{DDD} and this manual are available via
@@ -146,6 +152,9 @@ permission notice identical to this one.
 
 Permission is granted to copy and distribute translations of this manual
 into another language, under the above conditions for modified versions.
+
+Send questions, comments, suggestions, etc. to @email{ddd@@gnu.org}. @*
+Send bug reports to @email{bug-ddd@@gnu.org}. @*
 @end ifinfo
 
 @titlepage
@@ -170,22 +179,21 @@ into another language, under the above conditions for modified versions.
 @page
 @tex
 {\parskip=0pt
-\hfill (Send bugs and comments on @value{DDD} to bug-ddd\@gnu.org.)\par
-\hfill {\it Debugging with @value{DDD}}\par
-\hfill \TeX{}info \texinfoversion\par
+\hfill \textsf{Debugging with @value{DDD}}\par
+\hfill \textsf{User's Guide and Reference Manual}\par
 }
 @end tex
 
 @vskip 0pt plus 1filll
 Copyright @copyright{} 1995--1999 
-Technische Universit@"at Braunschweig, Germany @*
+Technische Universität Braunschweig, Germany @*
 Copyright @copyright{} 1999 
-Universit@"at Passau, Germany
+Universität Passau, Germany
 @sp 2
 
 Published by @*
-Universit@"at Passau @*
-Lehrstuhl f@"ur Software-Systeme @*
+Universität Passau @*
+Lehrstuhl für Software-Systeme @*
 Innstrasse 33 @*
 D-94032 Passau @*
 GERMANY
@@ -197,8 +205,6 @@ Free Software Foundation, Inc. @*
 Boston, MA 02111-1307 @*
 USA
 @sp 1
-
-@value{DDD} e-mail: @email{@value{ddd}@@gnu.org} @*
 
 @value{DDD} and this manual are available via @*
 @uref{http://www.gnu.org/software/ddd/, the @value{DDD} WWW page}.
@@ -214,6 +220,11 @@ permission notice identical to this one.
 
 Permission is granted to copy and distribute translations of this manual
 into another language, under the above conditions for modified versions.
+
+Send questions, comments, suggestions, etc. to
+@email{ddd@@gnu.org}. @*
+Send bug reports to @email{bug-ddd@@gnu.org}. @*
+
 @end titlepage
 @page
 
@@ -911,10 +922,10 @@ the latest known list.
 @cindex Contributors
 
 @auindex Zeller, Andreas
-@auindex L@"utkehaus, Dorothea
+@auindex Lütkehaus, Dorothea
 @flindex ChangeLog
 @flindex TODO
-Dorothea L@"utkehaus and Andreas Zeller were the original authors of
+Dorothea Lütkehaus and Andreas Zeller were the original authors of
 @value{DDD}.  Many others have contributed to its development.  The
 files @file{ChangeLog} and @file{THANKS} in the @value{DDD} distribution
 approximates a blow-by-blow account.
@@ -934,7 +945,7 @@ and program structures.  The VSL interpreter and the Box library became
 part of Andreas' Diploma Thesis, a graphical syntax editor based on the
 Programming System Generator PSG.
 
-@auindex L@"utkehaus, Dorothea
+@auindex Lütkehaus, Dorothea
 @cindex NORA
 @cindex Box library
 @cindex VSL
@@ -942,7 +953,7 @@ In 1992, the VSL and Box libraries were recycled for the NORA project.
 For NORA, an experimental inference-based software development tool set,
 Andreas wrote a graph editor (based on VSL and the Box libraries) and
 facilities for inter-process knowledge exchange.  Based on these tools,
-@emph{Dorothea L@"utkehaus} (now @emph{Dorothea Krabiell}) realized
+@emph{Dorothea Lütkehaus} (now @emph{Dorothea Krabiell}) realized
 @value{DDD} as her Diploma Thesis, 1994
 
 The original @value{DDD} had no source window; this was added by
@@ -1054,9 +1065,9 @@ information as well as a GDB prompt.@footnote{Re-invoke @value{DDD} with
 (@pxref{Choosing an Inferior Debugger})}
 
 @example
-@value{DDD} Version @value{VERSION}, by Dorothea L@"utkehaus and Andreas Zeller.
-Copyright @copyright{} 1995-1999 Technische Universit@"at Braunschweig, Germany.
-Copyright @copyright{} 1999 Universit@"at Passau, Germany.
+@value{DDD} Version @value{VERSION}, by Dorothea Lütkehaus and Andreas Zeller.
+Copyright @copyright{} 1995-1999 Technische Universität Braunschweig, Germany.
+Copyright @copyright{} 1999 Universität Passau, Germany.
 Reading symbols from sample@dots{}done.
 (gdb) 
 @end example
@@ -12189,7 +12200,7 @@ DB<> exec "perl -d @var{script} < @var{input} > @var{output}"
 @node I cannot access any common FORTRAN variables from DDD!
 @section I cannot access any common FORTRAN variables from DDD!
 
-Jochen Sch@"utze <jos@@gbf.de> says:
+Jochen Schütze <jos@@gbf.de> says:
 
 GDB simply doesn't know enough about common blocks, which in turn partly
 is due to the fact that g77 doesn't include enough debug information
@@ -12378,7 +12389,7 @@ page} for recent announcements and other news related to @value{DDD}.
 @printindex fl
 
 @node Concept Index
-@unnumbered Concepts Index
+@unnumbered Concept Index
 @printindex cp
 
 @shortcontents
