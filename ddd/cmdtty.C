@@ -40,6 +40,7 @@ char cmdtty_rcsid[] =
 #include "LiterateA.h"
 #include "SourceView.h"
 #include "ddd.h"
+#include "exit.h"
 
 #include <Xm/Xm.h>
 #include <Xm/Text.h>
@@ -72,6 +73,7 @@ void tty_eof(Agent *, void *, void *)
 {
     // Forward EOF to GDB (or whatever GDB is just running)
     gdb->write("\004", 1);
+    gdb_is_exiting = true;
 }
 
 // Echo on TTY
