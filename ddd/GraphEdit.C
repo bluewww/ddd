@@ -2344,7 +2344,7 @@ static void considerEdges(Widget w, XEvent *, String *params,
     enum { Nope = 0, Both = 1, From = 2, To = 3, Any = 4 } themode = Nope;
     bool changedSomething = false;
 
-    string p = "all";
+    string p = "any";
     if (*num_params >= 1)
 	p = params[0];
 
