@@ -685,6 +685,11 @@ string read_member_name (string& value)
 	return " ";
     }
 
+    // Strip leading qualifiers.  <Gyula.Kun-Szabo@eth.ericsson.se>
+    // reports that his GDB reports static members as `static j = 45'.
+    while (member_name.contains(' '))
+	member_name = member_name.after(' ');
+
     return member_name;
 }
 
