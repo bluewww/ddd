@@ -2690,6 +2690,7 @@ static int index_control(const string& text)
     {
 	switch (text[i])
 	{
+	case '\0':		// NUL
 	case '\001':		// SOH
 	case '\002':		// STX
 	case '\003':		// ETX
@@ -2741,7 +2742,7 @@ void gdb_ctrl(char ctrl)
 	    string message = s;
 	    XtFree(s);
 
-	    XmTextPosition startOfLine = promptPosition;
+	    XmTextPosition startOfLine = min(promptPosition, message.length());
 	    while (startOfLine - 1 >= 0 && message[startOfLine - 1] != '\n')
 		startOfLine--;
 
@@ -2834,27 +2835,31 @@ void _gdb_out(string text)
     tty_out(text);
 
     // Output TEXT in debugger console
-    char ctrl;
     do {
+	char ctrl      = '\0';
+	bool have_ctrl = false;
+
 	check_emergencies();
 
 	string block = text;
 	int i = index_control(block);
-	ctrl = '\0';
 	if (i >= 0)
 	{
-	    ctrl  = block[i];
-	    block = block.before(i);
-	    text  = text.after(i);
+	    ctrl      = block[i];
+	    have_ctrl = true;
+	    block     = block.before(i);
+	    text      = text.after(i);
 	}
 	else
+	{
 	    text = "";
+	}
 
 	XmTextInsert(gdb_w, promptPosition, (String)block);
 	promptPosition += block.length();
 	// XmTextShowPosition(gdb_w, promptPosition);
 
-	if (ctrl)
+	if (have_ctrl)
 	    gdb_ctrl(ctrl);
     } while (text != "");
 
