@@ -506,6 +506,15 @@ void ManualStringHelpCB(Widget widget, XtPointer client_data,
     stripped_text.from(target) = "";
 
 
+    // Handle umlauts
+    stripped_text.gsub("\"\ba", "\344");
+    stripped_text.gsub("\"\bo", "\366");
+    stripped_text.gsub("\"\bu", "\374");
+    stripped_text.gsub("_\b\"\b_\ba", "_\b\344");
+    stripped_text.gsub("_\b\"\b_\bo", "_\b\366");
+    stripped_text.gsub("_\b\"\b_\bu", "_\b\374");
+
+
     // Handle underlines via selections
     int size = stripped_text.length();
     bool *underlined    = new bool[size];
