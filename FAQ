@@ -132,18 +132,25 @@ DDD Frequently Asked Questions                                  -*- text -*-
     better while LessTif evolves; see question #10, above.
 
 
-12. DDD reports `imake' and/or `xmkmf' problems when being started.
-    How come?
+12. DDD reports `imake', `Imakefile', and/or `xmkmf' problems when
+    being started.  How come?
 
     To run properly, OSF/Motif requires a file called `XKeysymDB' in
     the X project root.  Since we distribute DDD binaries, the X
     project root compiled into the X libraries (and thus hard-coded in
-    the DDD binary) may not be valid on the actual machine.  DDD tries
-    to repair this situation by calling `xmkmf' to determine the X
-    project root.  Usually, this is not required if DDD runs on the
-    machine it was compiled on.  You may run `ddd
-    --check-configuration' to find out why DDD finds it necessary to
-    determine the X project root.  The code for this hack can be found
+    the DDD binary) may not be valid on the actual machine.
+
+    Upon start-up, DDD checks for `XKeysymDB' in its built-in X
+    project root.  If `XKeysymDB' is not found, Motif won't be able to
+    find it as well.  DDD fixes this situation by calling `xmkmf' to
+    determine the X project root and setting up its environment
+    accordingly before creating the first Motif widget.
+
+    Usually, determining the X project root is not required if DDD
+    runs on the machine it was compiled on.  If this happens anyway,
+    run `ddd --check-configuration' to find out why DDD finds it
+    necessary to determine the X project root and to identify possible
+    flaws in your X configuration.  The code for all this can be found
     in `xconfig.C'.
 
     As of DDD 2.0, `xmkmf' is called only if it resides in your path.
@@ -218,10 +225,10 @@ DDD Frequently Asked Questions                                  -*- text -*-
 
     For DDD 2.0 and later, see the section `RESOURCES' in the manual.
 
-    The general scheme is to see the `fontList' resources in the `Ddd'
-    file and copy/modify the appropriate lines to your `~/.dddinit'
-    file.  (Note: This won't work for the data display.  See question
-    #18, below.)
+    For DDD 1.x, the general scheme is to see the `fontList' resources
+    in the `Ddd' file and copy/modify the appropriate lines to your
+    `~/.dddinit' file.  (Note: This won't work for the data display.
+    See question #18, below.)
 
     These are the settings from DDD 1.4b:
 
@@ -316,7 +323,7 @@ DDD Frequently Asked Questions                                  -*- text -*-
 
     to your `~/.dddinit' file.
 
-    In DDD 1.4d and earlier, you can proceed as follows:
+    In DDD 1.x, you can proceed as follows:
     a) WITH recompiling:
        In the file `fonts.vsl', change the line
 
@@ -351,8 +358,8 @@ DDD Frequently Asked Questions                                  -*- text -*-
     Entering `foo' in the `()' argument field and pressing `print *()'
     invokes the GDB command `print *foo'.
 
-    For DDD 1.4d and earlier, the `commandButtons' and `sourceButtons'
-    resources are already defined as follows:
+    For DDD 1.x, the `commandButtons' and `sourceButtons' resources
+    are already defined as follows:
 
     Ddd*commandButtons: Yes:No:interrupt^C
     
