@@ -66,16 +66,6 @@ extern "C" int pclose(FILE *stream);
 #endif
 
 //-----------------------------------------------------------------------------
-// Show version
-//-----------------------------------------------------------------------------
-
-void show_version(ostream& os)
-{
-    os << "@(#)" DDD_NAME " " DDD_VERSION " (" DDD_HOST "), "
-	"Copyright (C) 1998 TU Braunschweig.\n" + 4;
-}
-
-//-----------------------------------------------------------------------------
 // Show invocation
 //-----------------------------------------------------------------------------
 
@@ -284,22 +274,27 @@ void show_invocation(const string& gdb_command, ostream& os)
 
 
 //-----------------------------------------------------------------------------
-// Show Configuration
+// Show Version and Configuration
 //-----------------------------------------------------------------------------
 
 #define _stringize(x) #x
 #define stringize(x) _stringize(x)
 
-void show_configuration(ostream& os)
-{    
-    string cinfo = string(config_info).before("\n");
-    while (cinfo.contains(' ', -1))
-	cinfo = cinfo.before(int(cinfo.length()) - 1);
-
-    show_version(os);
+static void show_configuration(ostream& os, bool version_only)
+{
+    // Storing this as a string literal would create an SCCS entry
     string sccs = "@(" + string("#)");
 
     string s;
+
+    // Version info
+    s = "@(#)" DDD_NAME " " DDD_VERSION " (" DDD_HOST "), "
+	"Copyright (C) 1998 TU Braunschweig.\n";
+    s.gsub(sccs, string(""));
+    os << s;
+
+    if (version_only)
+	return;
 
     // Compilation stuff
     s = "@(#)Compiled with "
@@ -349,7 +344,9 @@ void show_configuration(ostream& os)
     os << s;
 
 #if HAVE_XMUSEVERSION
-    if (xmUseVersion != XmVersion)
+    // xmUseVersion may be uninitialized (zero) if no Motif widget has
+    // yet been created.
+    if (xmUseVersion != 0 && xmUseVersion != XmVersion)
     {
 	os << "(Note: Compiled using Motif " 
 	   << XmVersion / 1000 << "." << XmVersion % 1000 
@@ -376,9 +373,23 @@ void show_configuration(ostream& os)
 #endif
 	"\n";
     s.gsub(sccs, string(""));
-    os << s << cinfo << "\n";
+    os << s;
+
+    string cinfo = string(config_info).before("\n");
+    while (cinfo.contains(' ', -1))
+	cinfo = cinfo.before(int(cinfo.length()) - 1);
+    os << cinfo << "\n";
 }
 
+void show_version(ostream& os)
+{
+    show_configuration(os, true);
+}
+
+void show_configuration(ostream& os)
+{    
+    show_configuration(os, false);
+}
 
 //-----------------------------------------------------------------------------
 // Helpers
