@@ -1,7 +1,7 @@
-# $Id$
-# Set up GDB to debug DDD
+# $Id$ -*- sh -*-
+# Setup GDB for debugging DDD
 
-# Copyright (C) 1997 Technische Universitaet Braunschweig, Germany.
+# Copyright (C) 1998 Technische Universitaet Braunschweig, Germany.
 # Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 # 
 # This file is part of the DDD Library.
@@ -60,6 +60,9 @@
 # W. QUOCK, San Mateo, California
 # Communications of the ACM, August 1997/Vol.40, No. 8, p. 31
 
+# Setup DDD environment
+
+define ddd
 # Conveniences
 set verbose on
 set print pretty on
@@ -71,7 +74,32 @@ set history filename .gdbhist
 set history save on
 set history size 1000
 
-# String command
+# Paths, etc.
+file ddd
+directory @srcdir@
+
+# Default arguments
+set args --trace cxxtest
+
+# Environment
+set environment XUSERFILESEARCHPATH .
+set environment XAPPLRESDIR .
+
+# Stop on fatal errors
+b ddd_x_fatal
+b ddd_x_error
+b ddd_xt_error
+b ddd_fatal
+b ddd_signal
+
+# That's all!
+echo Enter `run' to start DDD.\n
+end
+document ddd
+    Setup environment for debugging DDD
+end
+
+# Facility for printing DDD string types
 define string
     p *((char *)$->rep->s)@($->rep->len + 1)
 end
@@ -79,14 +107,5 @@ document string
     Print value of last viewed DDD string
 end
 
-# Paths, etc
-directory .
-
-# Environment
-set environment XUSERFILESEARCHPATH .
-set environment XAPPLRESDIR .
-
-# Start DDD
-set args --trace cxxtest
-echo Starting ddd --trace cxxtest...\n
-run
+# Just let the user know we're here.
+echo Enter `ddd' to debug DDD.\n

@@ -1229,8 +1229,8 @@ check: Ddd ddd cxxtest
 	XUSERFILESEARCHPATH=. XAPPLRESDIR=. ./ddd cxxtest
 
 .PHONY: debug
-debug: Ddd $(ddd) cxxtest ddd.gdb syms
-	$(GDB) -x $(srcdir)/ddd.gdb ./$(ddd)
+debug: Ddd $(ddd) cxxtest .gdbinit syms
+	$(GDB) ./$(ddd)
 
 $(ddd).syms: $(ddd)
 	@echo 'Creating $@...'
@@ -1481,6 +1481,9 @@ Makefile: $(srcdir)/Makefile.in config.status
 	CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
 Ddd: $(srcdir)/Ddd.in config.status
+	CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
+
+.gdbinit: $(srcdir)/.gdbinit.in config.status
 	CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
 $(srcdir)/configure: $(srcdir)/configure.in $(srcdir)/aclocal.m4
