@@ -1708,7 +1708,18 @@ string GDBAgent::watch_command(string expr, WatchMode w) const
    
     case DBX:
 	if ((w & WATCH_CHANGE) == WATCH_CHANGE)
-	    return "stop " + expr;
+	{
+	    if (has_handler_command())
+	    {
+		// Solaris 2.6 DBX wants `stop change VARIABLE'
+		return "stop change " + expr;
+	    }
+	    else
+	    {
+		// `Traditional' DBX notation
+		return "stop " + expr;
+	    }
+	}
 	return "";
 
     case XDB:
