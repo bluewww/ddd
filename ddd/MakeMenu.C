@@ -130,7 +130,7 @@ static void AutoRaiseEH(Widget w, XtPointer, XEvent *event, Boolean *)
     switch (event->xvisibility.state)
     {
     case VisibilityFullyObscured:
-    // case VisibilityPartiallyObscured:
+    case VisibilityPartiallyObscured:
 	XRaiseWindow(XtDisplay(w), frame(w));
 	break;
     }

@@ -1418,13 +1418,13 @@ dnl GDB_TRANSLATIONS
 ! Combo Boxes
 !-----------------------------------------------------------------------------
 
-! The default number of visinle items in a combo box
-Ddd*XmComboBox*visibleItemCount:    5
-Ddd*comboBoxShell*visibleItemCount: 5
+! The default number of visible items in a combo box
+Ddd*XmComboBox*visibleItemCount:    10
+Ddd*comboBoxShell*visibleItemCount: 10
 
-! Have some more items for toolbar argument fields
-Ddd*toolbar*XmComboBox*visibleItemCount:    10
-Ddd*toolbar*comboBoxShell*visibleItemCount: 10
+! In dialogs, have less items
+Ddd*XmSelectionBox*XmComboBox*visibleItemCount:    5
+Ddd*XmSelectionBox*comboBoxShell*visibleItemCount: 5
 
 ! Have somewhat lighter combo box arrows
 Ddd*XmComboBox.arrowSize:  15
@@ -1884,6 +1884,9 @@ Ddd*menubar*recentMenu.r9.mnemonic: 9
 
 ! Get the file names dynamically
 Ddd*menubar*recentMenu*documentationString: 
+
+! Don't auto-raise this one
+Ddd*menubar*popup_recentMenu*autoRaiseMenu: off
 
 
 ! Edit menu
