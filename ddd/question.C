@@ -85,12 +85,6 @@ string gdb_question(const string& command, int timeout, bool verbatim)
     if (gdb_question_running)
 	return NO_GDB_ANSWER;
 
-    // Don't show delays for trivial questions
-    Delay *delay = 0;
-    if (!command.contains("help ", 0) 
-	&& !command.contains(gdb->print_command(), 0))
-	delay = new Delay;
-
     // Block against reentrant calls
     gdb_question_running = true;
 
@@ -119,6 +113,12 @@ string gdb_question(const string& command, int timeout, bool verbatim)
 				    gdb_reply_timeout, (void *)&reply);
 	}
 
+	// Set delay (unless this is a trivial question)
+	Delay *delay = 0;
+	if (!command.contains("help", 0)
+	    && !command.contains(gdb->print_command(), 0))
+	    delay = new Delay;
+
 	// Process all GDB input and timer events
 	while (!reply.received && gdb->running())
 	    XtAppProcessEvent(XtWidgetToApplicationContext(gdb_w), 
@@ -130,6 +130,9 @@ string gdb_question(const string& command, int timeout, bool verbatim)
 	    if (timer && timeout > 0)
 		XtRemoveTimeOut(timer);
 	}
+
+	// Clear delay again
+	delete delay;
     }
 
     // Restore old verbatim mode
@@ -137,9 +140,6 @@ string gdb_question(const string& command, int timeout, bool verbatim)
 
     // Unblock against reentrant calls
     gdb_question_running = false;
-
-    // Clear delay
-    delete delay;
 
     // Return answer
     return reply.answer;
