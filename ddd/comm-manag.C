@@ -71,6 +71,7 @@ char comm_manager_rcsid[] =
 #include "settings.h"
 #include "string-fun.h"
 #include "version.h"
+#include "windows.h"
 
 #include <ctype.h>
 
@@ -97,7 +98,8 @@ public:
     int         set_frame_arg;    // Argument: 0: reset, +/-N: move N frames
     string      set_frame_func;   // Argument: new function
     string      graph_cmd;	  // Graph command
-    string      list_arg;	  // Argument when listing sources
+    string      lookup_arg;	  // Argument when looking up sources
+    bool        lookup_verbose;	  // Verbosity when looking up sources
 
     string      user_answer;	  // Buffer for the complete answer
     OQCProc     user_callback;	  // User callback
@@ -138,7 +140,8 @@ public:
 	  set_frame_arg(0),
 	  set_frame_func(""),
 	  graph_cmd(""),
-	  list_arg(""),
+	  lookup_arg(""),
+	  lookup_verbose(false),
 
 	  user_answer(""),
 	  user_callback(0),
@@ -171,7 +174,8 @@ private:
 	  set_frame_arg(0),
 	  set_frame_func(""),
 	  graph_cmd(""),
-	  list_arg(""),
+	  lookup_arg(""),
+	  lookup_verbose(false),
 
 	  user_answer(""),
 	  user_callback(0),
@@ -664,10 +668,6 @@ void send_gdb_command(string cmd, Widget origin,
     cmd_data->disp_buffer   = new DispBuffer;
     cmd_data->pos_buffer    = new PosBuffer;
     cmd_data->user_callback = callback;
-    cmd_data->user_data     = data;
-    cmd_data->user_verbose  = verbose;
-    cmd_data->user_prompt   = prompt;
-    cmd_data->user_check    = check;
 
     PlusCmdData* plus_cmd_data = new PlusCmdData;
     plus_cmd_data->command = cmd;
@@ -878,8 +878,19 @@ void send_gdb_command(string cmd, Widget origin,
     }
     else if (is_list_cmd(cmd))
     {
-	// As a side effect of `list X', lookup X in the source
-	cmd_data->list_arg = cmd.after(rxwhite);
+	// As a side effect, lookup argument in the source window
+	cmd_data->lookup_arg     = cmd.after(rxwhite);
+	cmd_data->lookup_verbose = false;
+
+	if (gdb->type() == GDB && have_source_window())
+	{
+	    // We have a source window, thus there is no need to list
+	    // the argument in the debugger console.  Rely on the
+	    // `info line' command used by GDB lookup instead.
+	    cmd = gdb->nop_command(cmd);
+	    cmd_data->lookup_verbose = verbose;
+	    check = verbose = false;
+	}
 
 	plus_cmd_data->refresh_breakpoints = false;
 	plus_cmd_data->refresh_where       = false;
@@ -1219,6 +1230,11 @@ void send_gdb_command(string cmd, Widget origin,
 	    cmd = gdb->where_command();
     }
 
+    cmd_data->user_data    = data;
+    cmd_data->user_verbose = verbose;
+    cmd_data->user_prompt  = prompt;
+    cmd_data->user_check   = check;
+
     // Send commands
     bool send_ok;
     if (cmds.size() > 0)
@@ -1516,10 +1532,12 @@ void user_cmdOAC(void *data)
 	ProgramInfo info;
     }
 
-    if (cmd_data->list_arg != "")
+    if (cmd_data->lookup_arg != "")
     {
 	// As a side effect of `list X', lookup X in the source
-	source_view->lookup(cmd_data->list_arg, true);
+	source_view->lookup(cmd_data->lookup_arg, false, 
+			    cmd_data->lookup_verbose, do_prompt);
+	do_prompt = false;	// `lookup' already did it for us
     }
 
     delete cmd_data;

@@ -138,6 +138,7 @@ extern "C" {
 #include "MakeMenu.h"
 #include "PosBuffer.h"
 #include "charsets.h"
+#include "cmdtty.h"
 #include "dbx-lookup.h"
 #include "ddd.h"
 #include "file.h"
@@ -3842,7 +3843,7 @@ void SourceView::check_remainder(string& info_output)
 // Locate position
 //-----------------------------------------------------------------------
 
-void SourceView::lookup(string s, bool silent)
+void SourceView::lookup(string s, bool echo, bool verbose, bool do_prompt)
 {
     if (s != "" && isspace(s[0]))
 	s = s.after(rxwhite);
@@ -3867,7 +3868,7 @@ void SourceView::lookup(string s, bool silent)
 	    // Show last execution position
 	    _show_execution_position(last_execution_file, 
 				     last_execution_line,
-				     silent);
+				     !verbose);
 	}
 	else
 	{
@@ -3888,10 +3889,11 @@ void SourceView::lookup(string s, bool silent)
 	    {
 		Command c("info line " + current_source_name() + ":" + 
 			  itostring(line));
-		c.verbose = !silent;
-		c.prompt  = !silent;
-		c.echo    = !silent;
+		c.verbose = verbose;
+		c.prompt  = do_prompt;
+		c.echo    = echo;
 		gdb_command(c);
+		do_prompt = false;
 		break;
 	    }
 		
@@ -3909,7 +3911,7 @@ void SourceView::lookup(string s, bool silent)
 	}
 	else
 	{
-	    if (!silent)
+	    if (verbose)
 		post_error("No line " 
 			   + itostring(line) + " in current source.",
 			   "no_such_line_error", source_text_w);
@@ -3934,7 +3936,7 @@ void SourceView::lookup(string s, bool silent)
 		}
 	    }
 
-	    if (bp == 0 && !silent)
+	    if (bp == 0 && verbose)
 		post_error("No breakpoint number " + itostring(nr) + ".", 
 			   "no_such_breakpoint_error", source_text_w);
 	}
@@ -3945,10 +3947,11 @@ void SourceView::lookup(string s, bool silent)
 	if (gdb->type() == GDB)
 	{
 	    Command c("info line " + s);
-	    c.verbose = !silent;
-	    c.prompt  = !silent;
-	    c.echo    = !silent;
+	    c.verbose = verbose;
+	    c.prompt  = do_prompt;
+	    c.echo    = echo;
 	    gdb_command(c);
+	    do_prompt = false;
 	}
 	else
 	    show_position(s);
@@ -3965,17 +3968,18 @@ void SourceView::lookup(string s, bool silent)
 	    if (s[0] != '\'' && s[0] != '*')
 		s = string('\'') + s + '\'';
 	    Command c("info line " + s);
-	    c.verbose = !silent;
-	    c.prompt  = !silent;
-	    c.echo    = !silent;
+	    c.verbose = verbose;
+	    c.prompt  = do_prompt;
+	    c.echo    = echo;
 	    gdb_command(c);
+	    do_prompt = false;
 	    break;
 	}
 
 	case DBX:
 	case JDB:
 	{
-	    string pos = dbx_lookup(s, silent);
+	    string pos = dbx_lookup(s, !verbose);
 	    if (pos != "")
 		show_position(pos);
 	    break;
@@ -3984,14 +3988,18 @@ void SourceView::lookup(string s, bool silent)
 	case XDB:
 	{
 	    Command c("v " + s);
-	    c.verbose = !silent;
-	    c.prompt  = !silent;
-	    c.echo    = !silent;
+	    c.verbose = verbose;
+	    c.prompt  = do_prompt;
+	    c.echo    = echo;
 	    gdb_command(c);
+	    do_prompt = false;
 	    break;
 	}
 	}
     }
+
+    if (do_prompt)
+	prompt();
 }
 
 
