@@ -6,6 +6,7 @@
 # DDD top-level Makefile.
 
 # Copyright (C) 2000 Universitaet Passau, Germany.
+# Copyright (C) 2001 Universitaet des Saarlandes, Germany.
 # Written by Andreas Zeller <zeller@gnu.org>.
 # 
 # This file is part of DDD.
@@ -49,6 +50,15 @@ SUBDIRS = @subdirs@
 
 
 # -----------------------------------------------------------------------------
+# Tools.
+# -----------------------------------------------------------------------------
+
+TAR  = @TAR@
+GZIP = gzip
+SED  = sed
+
+
+# -----------------------------------------------------------------------------
 # Distribution (via etc/make-final).
 # -----------------------------------------------------------------------------
 
@@ -87,9 +97,9 @@ snapshot:
 	rm -fr proto-toplev; mkdir proto-toplev
 	( \
 	    srcroot=`cd $(srcdir); pwd`; export srcroot; \
-	    ddd=`sed -n < $(srcdir)/ddd/acinclude.m4 's/^ddd *= *//p'`; \
-	    VER=`sed -n < $(srcdir)/ddd/acinclude.m4 's/^VERSION *= *//p'`; \
-	    VER=`echo $$VER | sed 's/[^0-9]*\([0-9][^ ]*\) .*/\1/'`; \
+	    ddd=`$(SED) -n < $(srcdir)/ddd/acinclude.m4 's/^ddd *= *//p'`; \
+	    VER=`$(SED) -n < $(srcdir)/ddd/acinclude.m4 's/^VERSION *= *//p'`; \
+	    VER=`echo $$VER | $(SED) 's/[^0-9]*\([0-9][^ ]*\) .*/\1/'`; \
 	    echo "==> Making $$ddd-$$VER.tar.gz"; \
 	    rm -f $$ddd-$$VER.tar.gz; \
 	    ln -s $$srcroot proto-toplev/$$ddd-$$VER; \
@@ -117,11 +127,11 @@ snapshot:
 		-o -name "linux" -prune \
 		-o -name "config.cache" -prune \
 		-o -type f -print -o -type l -print | \
-	        sed "s,^$(srcdir)/,$$ddd-$$VER/," | sort \
+	        $(SED) "s,^$(srcdir)/,$$ddd-$$VER/," | sort \
 		> proto-toplev/FILES; \
-	    ( cd proto-toplev; gtar --create --dereference \
+	    ( cd proto-toplev; $(TAR) --create --dereference \
 		--verbose --files-from FILES \
-		--file - ) | gzip -v -9 > $$ddd-$$VER.tar.gz; \
+		--file - ) | $(GZIP) -v -9 > $$ddd-$$VER.tar.gz; \
 	)
 	rm -fr proto-toplev
 
@@ -132,9 +142,9 @@ htmldist:
 	rm -fr proto-toplev; mkdir proto-toplev
 	( \
 	    srcroot=`cd $(srcdir); pwd`; export srcroot; \
-	    ddd=`sed -n < ddd/acinclude.m4 's/^ddd *= *//p'`; \
-	    VER=`sed -n < ddd/acinclude.m4 's/^VERSION *= *//p'`; \
-	    VER=`echo $$VER | sed 's/[^0-9]*\([0-9][^ ]*\) .*/\1/'`; \
+	    ddd=`$(SED) -n < ddd/acinclude.m4 's/^ddd *= *//p'`; \
+	    VER=`$(SED) -n < ddd/acinclude.m4 's/^VERSION *= *//p'`; \
+	    VER=`echo $$VER | $(SED) 's/[^0-9]*\([0-9][^ ]*\) .*/\1/'`; \
 	    echo "==> Making $$ddd-$$VER-html-manual.tar.gz"; \
 	    rm -f $$ddd-$$VER-pics.tar.gz; \
 	    ln -s $$srcroot proto-toplev/$$ddd-$$VER; \
@@ -147,11 +157,11 @@ htmldist:
 		-o -name '*~' -prune \
 		-o -name '*#' -prune \
 		-o -type f -print -o -type l -print | \
-	        sed "s,^$(srcdir)/,$$ddd-$$VER/," | sort \
+	        $(SED) "s,^$(srcdir)/,$$ddd-$$VER/," | sort \
 		> proto-toplev/FILES; \
-	    ( cd proto-toplev; gtar --create --dereference \
+	    ( cd proto-toplev; $(TAR) --create --dereference \
 		--verbose --files-from FILES \
-		--file - ) | gzip -v -9 > $$ddd-$$VER-html-manual.tar.gz; \
+		--file - ) | $(GZIP) -v -9 > $$ddd-$$VER-html-manual.tar.gz; \
 	)
 	rm -fr proto-toplev
 
@@ -162,9 +172,9 @@ picsdist:
 	rm -fr proto-toplev; mkdir proto-toplev
 	( \
 	    srcroot=`cd $(srcdir); pwd`; export srcroot; \
-	    ddd=`sed -n < ddd/acinclude.m4 's/^ddd *= *//p'`; \
-	    VER=`sed -n < ddd/acinclude.m4 's/^VERSION *= *//p'`; \
-	    VER=`echo $$VER | sed 's/[^0-9]*\([0-9][^ ]*\) .*/\1/'`; \
+	    ddd=`$(SED) -n < ddd/acinclude.m4 's/^ddd *= *//p'`; \
+	    VER=`$(SED) -n < ddd/acinclude.m4 's/^VERSION *= *//p'`; \
+	    VER=`echo $$VER | $(SED) 's/[^0-9]*\([0-9][^ ]*\) .*/\1/'`; \
 	    echo "==> Making $$ddd-$$VER-pics.tar.gz"; \
 	    rm -f $$ddd-$$VER-pics.tar.gz; \
 	    ln -s $$srcroot proto-toplev/$$ddd-$$VER; \
@@ -177,11 +187,11 @@ picsdist:
 		-o -name '*~' -prune \
 		-o -name '*#' -prune \
 		-o -type f -print -o -type l -print | \
-	        sed "s,^$(srcdir)/,$$ddd-$$VER/," | sort \
+	        $(SED) "s,^$(srcdir)/,$$ddd-$$VER/," | sort \
 		> proto-toplev/FILES; \
-	    ( cd proto-toplev; gtar --create --dereference \
+	    ( cd proto-toplev; $(TAR) --create --dereference \
 		--verbose --files-from FILES \
-		--file - ) | gzip -v -9 > $$ddd-$$VER-pics.tar.gz; \
+		--file - ) | $(GZIP) -v -9 > $$ddd-$$VER-pics.tar.gz; \
 	)
 	rm -fr proto-toplev
 
@@ -194,6 +204,7 @@ CVS2CL = etc/cvs2cl.pl
 USERMAP = etc/users
 $(srcdir)/ChangeLog: $(srcdir)/Makefile.am
 	cd $(srcdir); $(CVS2CL) --separate-header --no-wrap --revisions --utc --usermap $(USERMAP)
+	rm -f $(srcdir)/ChangeLog.bak
 
 
 # -----------------------------------------------------------------------------

@@ -55,6 +55,9 @@ AM_INIT_AUTOMAKE(${PACKAGE}, ${VERSION})
 AC_PROG_MAKE_SET
 dnl
 dnl
+dnl Making distributions requires `tar' (preferring GNU tar)
+dnl
+AC_CHECK_PROGS(TAR, gtar tar)
 dnl
 dnl Not much to do here.  Configure the sub-directories.
 dnl
