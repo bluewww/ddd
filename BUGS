@@ -81,9 +81,7 @@ Volunteers for fixing these and other bugs are welcome!
 
 024. [fixed]
 
-025. DBX on mips-dec-ultrix4 is only partially supported since it has
-     an entirely different output format than Sun's DBX.  [If someone
-     convinces us that s/he requires ULTRIX DBX support, we'll do it.]
+025. [fixed]
 
 026. Using DBX with PASCAL or Modula-2, selected array elements are
      always counted from zero, instead of the starting index of the array.
@@ -152,15 +150,7 @@ Volunteers for fixing these and other bugs are welcome!
 
 044. [fixed]
 
-045. Some DDD binaries on Linux crash as soon as `Open Source' is
-     selected.  As is stated in the Motif FAQ:
-
-	 Make sure you use libc version 4.6.27 or later.  Linux Motif's are
-	 very sensitive about this.
-
-     As a workaround, use the GDB `file' and `core' commands; to open
-     a specific source, use the GDB `info file FUNCTION' command,
-     where FUNCTION is a function defined in that source file.
+045. [fixed]
 
 046. Line continuations (i.e. GDB commands ended by `\' and continued
      on the next line) are not handled.
