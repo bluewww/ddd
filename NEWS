@@ -30,8 +30,9 @@ Debuggers and Languages
 
 - GDB 5.0 is supported.
 
-- WindRiver's version of GDB (within the Tornado/vxworks environment) 
-  is supported.  See the DDD Reference for details. (5)
+- WindRiver's version of GDB (within the Tornado/vxworks environment)
+  is supported.  See the DDD Reference, Section `WindRiver GDB' for
+  details. (5)
 
 - SGI DBX, Sun DBX, other DBXes as well as Compaq Ladebug can now
   attach to processes via DDD. (1)
@@ -41,6 +42,10 @@ Debuggers and Languages
 - Parsing of Perl breakpoint information has been improved.
 
 - Perl hash keys containing spaces are supported. (8)
+
+- Using the separate execution window now improves parsing debugger
+  output.  See the DDD documentation for the new `bufferGDBOutput'
+  resource.
 
 
 Examining Data
