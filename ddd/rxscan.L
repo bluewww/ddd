@@ -259,7 +259,7 @@ V	v(irtual{W})?t(a)?bl(e)?
 <S038>{_}enable{W}display({W}{C})?	return &rxenable;
 <S039>[^{};,\n= ]+{W}={W}[^{}();,\n= ]+{W}={W}{C} return &rxeqeq;
 <S040>{_}file({W}{C})?			return &rxfile_cmd;
-<S041>[^ /]*\/				return &rxfilepath;
+<S041>[^ "'/]*\/			return &rxfilepath;
 <S042>[_A-Za-z][-_A-Za-z0-9]*		return &rxfont_id;
 <S043>#{D}{W}{A}			return &rxframe;
 <S044>{_}(up|do|down|f|fra|fram|frame|top|V)({W}{C})? return &rxframe_cmd;
