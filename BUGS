@@ -83,8 +83,8 @@ Volunteers for fixing these and other bugs are welcome!
      > Warning: Actions not found: select-start, extend-end, doTheRightThing
      > (gdb)  write failed: Resource temporarily unavailable
      > ddd hangs.
-     [We cannot determine what causes this error.  On Solaris 2.3, DDD
-     runs fine.]
+     [We cannot determine what causes this error.  On Solaris 2.4, DDD
+      runs fine.]
 
 023. Doug.Royer@eng.sun.com (Doug Royer [KD6HBW]) states:
      > On Solaris 2.5, when I try to 'file->open file...', I get not errors,
