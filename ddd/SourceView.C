@@ -7373,8 +7373,17 @@ void SourceView::update_glyphs(Widget glyph)
     if (update_glyph_id != 0)
 	XtRemoveTimeOut(update_glyph_id);
 
+    // Chris van Engelen reports:
+    // When reading in a new file, there is an infinite loop involving
+    // function SourceView::UpdateGlyphsWorkProc: function
+    // XtAppPending always returns a value indicating that there are
+    // events pending, and since there always is at least one glyph to
+    // be updated (the execution position arrow), the function returns
+    // with a new call to UpdateGlyphsWorkProc scheduled. This problem
+    // was solved by increasing the delay time for the first
+    // scheduling to 50ms.
     update_glyph_id = 
-	XtAppAddTimeOut(XtWidgetToApplicationContext(source_text_w), 1,
+	XtAppAddTimeOut(XtWidgetToApplicationContext(source_text_w), 50,
 			UpdateGlyphsWorkProc, XtPointer(&update_glyph_id));
 }
 
@@ -7891,12 +7900,12 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *id)
 	if (glyphs.size() > 0)
 	{
 	    // Change is imminent - unmap all glyphs that will change
-	    // and try again in 10ms
+	    // and try again in 50ms
 	    for (int i = 0; i < glyphs.size(); i++)
 		unmap_glyph(glyphs[i]);
 
 	    XtIntervalId new_id = 
-		XtAppAddTimeOut(app_context, 10,
+		XtAppAddTimeOut(app_context, 50,
 				UpdateGlyphsWorkProc, client_data);
 	    if (proc_id != 0)
 		*proc_id = new_id;
