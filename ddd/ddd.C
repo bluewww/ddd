@@ -597,7 +597,7 @@ static MMDesc stack_menu[] =
       NULL, &stack_w },
     { "registers",  MMPush,  { SourceView::ViewRegistersCB },
       NULL, &registers_w },
-    { "threads",    MMPush | MMInsensitive, { NULL },
+    { "threads",    MMPush,  { SourceView::ViewThreadsCB },
       NULL, &threads_w },
     MMSep,
     { "infos",      MMPush,  { dddPopupInfosCB },
@@ -1799,11 +1799,13 @@ int main(int argc, char *argv[])
 	XtAddEventHandler(data_disp_shell, StructureNotifyMask, False,
 			  StructureNotifyEH, XtPointer(0));
 
+#if 0
     // Wait for the command shell to be mapped, such that we don't
     // lose debugger output.  This also decreases system load on
     // single-processor machines since DDD is idle when the debugger
     // starts.
     wait_until_mapped(command_shell);
+#endif
 
     // Create command tool
     if (app_data.tool_buttons && strlen(app_data.tool_buttons) > 0)

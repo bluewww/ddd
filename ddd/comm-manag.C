@@ -116,7 +116,8 @@ typedef struct PlusCmdData {
     bool     refresh_bpoints;          // send 'info b'
     bool     refresh_where;            // send 'where'
     bool     refresh_frame;            // send 'frame'
-    bool     refresh_register;         // send 'info registers'
+    bool     refresh_registers;        // send 'info registers'
+    bool     refresh_threads;          // send 'info threads'
     bool     refresh_data;             // send 'display'
     bool     refresh_user;             // send user-defined commands
     bool     refresh_disp_info;        // send 'info display'
@@ -155,7 +156,8 @@ typedef struct PlusCmdData {
 	refresh_bpoints(false),
 	refresh_where(false),
 	refresh_frame(false),
-	refresh_register(false),
+	refresh_registers(false),
+	refresh_threads(false),
 	refresh_data(false),
 	refresh_user(false),
 	refresh_disp_info(false),
@@ -426,7 +428,12 @@ void user_cmdSUC (string cmd, Widget origin)
 
     if (source_view->register_required())
     {
-	plus_cmd_data->refresh_register = true;
+	plus_cmd_data->refresh_registers = true;
+    }
+
+    if (source_view->thread_required())
+    {
+	plus_cmd_data->refresh_threads = true;
     }
 
     if (data_disp->count_all() == 0)
@@ -460,10 +467,11 @@ void user_cmdSUC (string cmd, Widget origin)
 	cmd_data->filter_disp = NoFilter;
 
 	// Breakpoints, Frames, Code and Registers won't change
-	plus_cmd_data->refresh_bpoints  = false;
-	plus_cmd_data->refresh_where    = false;
-	plus_cmd_data->refresh_frame    = false;
-	plus_cmd_data->refresh_register = false;
+	plus_cmd_data->refresh_bpoints   = false;
+	plus_cmd_data->refresh_where     = false;
+	plus_cmd_data->refresh_frame     = false;
+	plus_cmd_data->refresh_registers = false;
+	plus_cmd_data->refresh_threads   = false;
     }
     else if (is_running_cmd(cmd, gdb))
     {
@@ -486,11 +494,12 @@ void user_cmdSUC (string cmd, Widget origin)
 	cmd_data->filter_disp           = NoFilter;
 	cmd_data->new_frame_pos         = true;
 
-	plus_cmd_data->refresh_bpoints  = false;
-	plus_cmd_data->refresh_where    = false;
-	plus_cmd_data->refresh_frame    = true;
-	plus_cmd_data->refresh_register = false;
-	plus_cmd_data->refresh_data     = true;
+	plus_cmd_data->refresh_bpoints   = false;
+	plus_cmd_data->refresh_where     = false;
+	plus_cmd_data->refresh_frame     = true;
+	plus_cmd_data->refresh_registers = false;
+	plus_cmd_data->refresh_threads   = true;
+	plus_cmd_data->refresh_data      = true;
 
 	switch (gdb->type())
 	{
@@ -503,6 +512,20 @@ void user_cmdSUC (string cmd, Widget origin)
 	    plus_cmd_data->refresh_file  = true;
 	    break;
 	}
+	if (!gdb->has_display_command())
+	    plus_cmd_data->refresh_data = true;
+    }
+    else if (is_thread_cmd(cmd))
+    {
+	// Update displays
+	cmd_data->filter_disp            = NoFilter;
+	cmd_data->new_frame_pos          = true;
+
+	plus_cmd_data->refresh_bpoints   = true;
+	plus_cmd_data->refresh_where     = true;
+	plus_cmd_data->refresh_frame     = true;
+	plus_cmd_data->refresh_data      = true;
+
 	if (!gdb->has_display_command())
 	    plus_cmd_data->refresh_data = true;
     }
@@ -521,24 +544,31 @@ void user_cmdSUC (string cmd, Widget origin)
 	    plus_cmd_data->refresh_file  = true;
 	    plus_cmd_data->refresh_line  = true;
 	}
-	plus_cmd_data->refresh_bpoints  = false;
-	plus_cmd_data->refresh_where    = false;
-	plus_cmd_data->refresh_register = false;
+	plus_cmd_data->refresh_bpoints   = false;
+	plus_cmd_data->refresh_where     = false;
+	plus_cmd_data->refresh_registers = false;
+	plus_cmd_data->refresh_threads   = false;
 
 	if (!gdb->has_display_command())
 	    plus_cmd_data->refresh_data = true;
     }
     else if (is_cd_cmd(cmd))
     {
-	plus_cmd_data->refresh_pwd      = true;
+	plus_cmd_data->refresh_pwd       = true;
+	plus_cmd_data->refresh_bpoints   = false;
+	plus_cmd_data->refresh_where     = false;
+	plus_cmd_data->refresh_frame     = false;
+	plus_cmd_data->refresh_registers = false;
+	plus_cmd_data->refresh_threads   = false;
     }
     else if (is_nop_cmd(cmd))
     {
-	cmd_data->filter_disp           = NoFilter;
-	plus_cmd_data->refresh_bpoints  = false;
-	plus_cmd_data->refresh_where    = false;
-	plus_cmd_data->refresh_frame    = false;
-	plus_cmd_data->refresh_register = false;
+	cmd_data->filter_disp            = NoFilter;
+	plus_cmd_data->refresh_bpoints   = false;
+	plus_cmd_data->refresh_where     = false;
+	plus_cmd_data->refresh_frame     = false;
+	plus_cmd_data->refresh_registers = false;
+	plus_cmd_data->refresh_threads   = false;
     }
 
     if (is_setting_cmd(cmd))
@@ -604,9 +634,10 @@ void user_cmdSUC (string cmd, Widget origin)
 	    plus_cmd_data->refresh_data = true;
     }
 
-    if (gdb->type() == DBX)
+    if (gdb->type() != GDB)
     {
-	plus_cmd_data->refresh_register = false;
+	plus_cmd_data->refresh_registers = false;
+	plus_cmd_data->refresh_threads   = false;
     }
 
     gdb_out(cmd);
@@ -652,8 +683,10 @@ void user_cmdSUC (string cmd, Widget origin)
 	    cmds += "where";
 	if (plus_cmd_data->refresh_frame)
 	    cmds += gdb->frame_command();
-	if (plus_cmd_data->refresh_register)
+	if (plus_cmd_data->refresh_registers)
 	    cmds += "info registers";
+	if (plus_cmd_data->refresh_threads)
+	    cmds += "info threads";
 	if (plus_cmd_data->refresh_data)
 	    plus_cmd_data->n_refresh_data = 
 		data_disp->add_refresh_data_commands(cmds);
@@ -702,7 +735,8 @@ void user_cmdSUC (string cmd, Widget origin)
 	    assert(gdb->has_frame_command());
 	    cmds += gdb->frame_command();
 	}
-	assert (!plus_cmd_data->refresh_register);
+	assert (!plus_cmd_data->refresh_registers);
+	assert (!plus_cmd_data->refresh_threads);
 	if (plus_cmd_data->refresh_data)
 	    plus_cmd_data->n_refresh_data = 
 		data_disp->add_refresh_data_commands(cmds);
@@ -731,7 +765,8 @@ void user_cmdSUC (string cmd, Widget origin)
 	    cmds += "t";
 	if (plus_cmd_data->refresh_frame)
 	    cmds += gdb->frame_command();
-	assert (!plus_cmd_data->refresh_register);
+	assert (!plus_cmd_data->refresh_registers);
+	assert (!plus_cmd_data->refresh_threads);
 	if (plus_cmd_data->refresh_data)
 	    plus_cmd_data->n_refresh_data = 
 		data_disp->add_refresh_data_commands(cmds);
@@ -1292,9 +1327,14 @@ void plusOQAC (string answers[],
 	source_view->process_frame(answers[qu_count++]);
     }
 
-    if (plus_cmd_data->refresh_register) {
+    if (plus_cmd_data->refresh_registers) {
 	assert (qu_count < count);
-	source_view->process_register(answers[qu_count++]);
+	source_view->process_registers(answers[qu_count++]);
+    }
+
+    if (plus_cmd_data->refresh_threads) {
+	assert (qu_count < count);
+	source_view->process_threads(answers[qu_count++]);
     }
 
     if (plus_cmd_data->refresh_data) {

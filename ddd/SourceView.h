@@ -119,11 +119,14 @@ class SourceView {
     static void CheckScrollCB(Widget, XtPointer, XtPointer);
     static void CheckScrollWorkProc(XtPointer, XtIntervalId *);
 
-    static void StackDialogPoppedDownCB (Widget, XtPointer, XtPointer);
-    static void CodeDialogPoppedDownCB (Widget, XtPointer, XtPointer);
+    static void StackDialogPoppedDownCB    (Widget, XtPointer, XtPointer);
+    static void CodeDialogPoppedDownCB     (Widget, XtPointer, XtPointer);
     static void RegisterDialogPoppedDownCB (Widget, XtPointer, XtPointer);
-    static void SelectFrameCB (Widget, XtPointer, XtPointer);
+    static void ThreadDialogPoppedDownCB   (Widget, XtPointer, XtPointer);
+
+    static void SelectFrameCB    (Widget, XtPointer, XtPointer);
     static void SelectRegisterCB (Widget, XtPointer, XtPointer);
+    static void SelectThreadCB   (Widget, XtPointer, XtPointer);
 
     static void fill_labels(const string& info_output);
 
@@ -237,6 +240,10 @@ private:
     static Widget all_registers_w;            // Display all registers
     static bool register_dialog_popped_up;    // True if registers are visible
 
+    static Widget thread_dialog_w;            // Dialog for threads
+    static Widget thread_list_w;              // Thread list inside
+    static bool thread_dialog_popped_up;      // True if registers are visible
+
     static bool display_glyphs;	              // Display glyphs?
     static bool disassemble;	              // Disassemble code?
     static bool all_registers;	              // Show all registers?
@@ -333,6 +340,9 @@ private:
     static bool is_code_widget(Widget w);
     static string& current_text(Widget w);
 
+    // Format `where' and `thread' lines
+    static void setup_where_line(string& line);
+
     // Assembler code display routines.
     static Delay *refresh_code_pending;
     static XmTextPosition find_pc(const string& pc);
@@ -378,7 +388,10 @@ public:
     static void process_frame           (string& frame_output);
 
     // Handle 'info register' information
-    static void process_register        (string& where_output);
+    static void process_registers       (string& info_register_output);
+
+    // Handle 'info threads' information
+    static void process_threads         (string& info_threads_output);
 
     // Handle 'disassemble' information
     static void process_disassemble     (const string& disassemble_output);
@@ -427,14 +440,17 @@ public:
     static void EditBreakpointsCB(Widget, XtPointer, XtPointer);
     static void ViewStackFramesCB(Widget, XtPointer, XtPointer);
     static void ViewRegistersCB(Widget, XtPointer, XtPointer);
+    static void ViewThreadsCB(Widget, XtPointer, XtPointer);
 
     // Refreshing dialogs
     static void refresh_stack_frames();
     static void refresh_registers();
+    static void refresh_threads();
 
     // Check whether specific commands are required at next prompt
     static bool where_required();
     static bool register_required();
+    static bool thread_required();
 
     // Check whether source files and code are to be cached
     static bool cache_source_files;

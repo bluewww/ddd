@@ -283,9 +283,12 @@ Widget SourceView::register_dialog_w         = 0;
 Widget SourceView::register_list_w           = 0;
 Widget SourceView::all_registers_w           = 0;
 Widget SourceView::int_registers_w           = 0;
+Widget SourceView::thread_dialog_w           = 0;
+Widget SourceView::thread_list_w             = 0;
 
 bool SourceView::stack_dialog_popped_up    = false;
 bool SourceView::register_dialog_popped_up = false;
+bool SourceView::thread_dialog_popped_up   = false;
 
 bool SourceView::cache_source_files     = true;
 bool SourceView::cache_machine_code     = true;
@@ -2308,6 +2311,45 @@ SourceView::SourceView (XtAppContext app_context,
 		  XmNhelpCallback, ImmediateHelpCB, 0);
 
 
+    // Create thread view
+    arg = 0;
+    XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
+    thread_dialog_w = 
+	verify(XmCreateSelectionDialog(parent, 
+				       "thread_dialog", args, arg));
+    Delay::register_shell(thread_dialog_w);
+
+    XtUnmanageChild(XmSelectionBoxGetChild(thread_dialog_w, 
+					   XmDIALOG_TEXT));
+    XtUnmanageChild(XmSelectionBoxGetChild(thread_dialog_w, 
+					   XmDIALOG_SELECTION_LABEL));
+    XtUnmanageChild(XmSelectionBoxGetChild(thread_dialog_w, 
+					   XmDIALOG_APPLY_BUTTON));
+    XtUnmanageChild(XmSelectionBoxGetChild(thread_dialog_w, 
+					   XmDIALOG_CANCEL_BUTTON));
+    arg = 0;
+    thread_list_w = XmSelectionBoxGetChild(thread_dialog_w, XmDIALOG_LIST);
+    XtVaSetValues(thread_list_w,
+		  XmNselectionPolicy, XmSINGLE_SELECT,
+		  NULL);
+
+    XtAddCallback(thread_list_w,
+		  XmNsingleSelectionCallback, SelectThreadCB, 0);
+    XtAddCallback(thread_list_w,
+		  XmNmultipleSelectionCallback, SelectThreadCB, 0);
+    XtAddCallback(thread_list_w,
+		  XmNextendedSelectionCallback, SelectThreadCB, 0);
+    XtAddCallback(thread_list_w,
+		  XmNbrowseSelectionCallback, SelectThreadCB, 0);
+
+    XtAddCallback(thread_dialog_w,
+		  XmNokCallback, UnmanageThisCB, thread_dialog_w);
+    XtAddCallback(thread_dialog_w,
+		  XmNokCallback, ThreadDialogPoppedDownCB, 0);
+    XtAddCallback(thread_dialog_w,
+		  XmNhelpCallback, ImmediateHelpCB, 0);
+
+
     // Setup actions
     XtAppAddActions (app_context, actions, XtNumber (actions));
 
@@ -3117,10 +3159,6 @@ void SourceView::find(const string& s,
     if (pos > 0)
     {
 	XmTextSetSelection(source_text_w, pos, pos + matchlen, time);
-#if 0
-	XmTextSetHighlight(source_text_w, pos, pos + matchlen,
-			   XmHIGHLIGHT_SECONDARY_SELECTED);
-#endif
 	SetInsertionPosition(source_text_w, cursor, false);
     }
     else
@@ -4139,6 +4177,22 @@ void SourceView::ViewStackFramesCB(Widget, XtPointer, XtPointer)
     stack_dialog_popped_up = true;
 }
 
+void SourceView::setup_where_line(string& line)
+{
+    const int min_width = 40;
+
+    // Remove argument list and file paths
+    // (otherwise line can be too long for dbx)
+    //   ... n.b. with templates, line can still be rather long
+    static regex arglist("[(][^)]*[)]");
+    static regex filepath("/.*/");
+    line.gsub(arglist, "()");
+    line.gsub(filepath, "");
+
+    if (int(line.length()) < min_width)
+	line += replicate(' ', min_width - line.length());
+}
+
 void SourceView::process_where (string& where_output)
 {
     int count          = where_output.freq('\n') + 1;
@@ -4162,24 +4216,10 @@ void SourceView::process_where (string& where_output)
     }
 
     // Make sure we have a minimum width
-    const int min_width = 40;
     for (int i = 0; i < count; i++)
     {
 	selected[i] = false;
-
-	// Remove argument list and file paths
-	// (otherwise line can be too long for dbx)
-	//   ... n.b. with templates, line can still be rather long
-	static regex arglist("[(][^)]*[)]");
-	static regex filepath("/.*/");
-	frame_list[i].gsub(arglist, "()");
-	frame_list[i].gsub(filepath, "");
-
-	if (int(frame_list[i].length()) < min_width)
-	{
-	    frame_list[i] += 
-		replicate(' ', min_width - frame_list[i].length());
-	}
+	setup_where_line(frame_list[i]);
     }
 
     setLabelList(frame_list_w, frame_list, selected, count);
@@ -4242,13 +4282,7 @@ void SourceView::process_frame (string& frame_output)
 	    break;
 	}
 
-	XmListSelectPos(frame_list_w, pos, False);
-	if (pos == 1)
-	    XmListSetPos(frame_list_w, pos);
-	else if (pos - 1 < top_item)
-	    XmListSetPos(frame_list_w, pos - 1);
-	else if (pos + 1 >= top_item + visible_items)
-	    XmListSetBottomPos(frame_list_w, pos + 1);
+	ListSetAndSelectPos(frame_list_w, pos);
 
 	XtSetSensitive(up_w,   pos > 1);
 	XtSetSensitive(down_w, pos < count);
@@ -4303,17 +4337,11 @@ void SourceView::set_frame_pos(int arg, int pos)
 	return;
     }
 
-    int count         = 0;
-    int top_item      = 0;
-    int visible_items = 0;
-    XtVaGetValues(frame_list_w,
-		  XmNitemCount, &count,
-		  XmNtopItemPosition, &top_item,
-		  XmNvisibleItemCount, &visible_items,
-		  NULL);
+    int items = 0;
+    XtVaGetValues(frame_list_w, XmNitemCount, &items, NULL);
 
     if (pos == 0)
-	pos = count;
+	pos = items;
     if (arg != 0)
     {
 	int *position_list;
@@ -4326,34 +4354,29 @@ void SourceView::set_frame_pos(int arg, int pos)
 	    XtFree((char *)position_list);
 	} else
 	    return;
-	if (position_count != 1 || pos < 1 || pos > count)
+	if (position_count != 1 || pos < 1 || pos > items)
 	    return;
     }
 
-    XmListSelectPos(frame_list_w, pos, False);
-    if (pos == 1)
-	XmListSetPos(frame_list_w, pos);
-    else if (pos - 1 < top_item)
-	XmListSetPos(frame_list_w, pos - 1);
-    else if (pos + 1 >= top_item + visible_items)
-	XmListSetBottomPos(frame_list_w, pos + 1);
+    ListSetAndSelectPos(frame_list_w, pos);
 
     last_frame_pos = pos;
 
     XtSetSensitive(up_w,   pos > 1);
-    XtSetSensitive(down_w, pos < count);
+    XtSetSensitive(down_w, pos < items);
 }
 
 bool SourceView::where_required()    { return stack_dialog_popped_up; }
 bool SourceView::register_required() { return register_dialog_popped_up; }
+bool SourceView::thread_required()   { return thread_dialog_popped_up; }
 
 
 
 //-----------------------------------------------------------------------------
-// Machine stuff
+// Register stuff
 //----------------------------------------------------------------------------
 
-void SourceView::process_register(string& register_output)
+void SourceView::process_registers(string& register_output)
 {
     register_output.gsub(";\n", "\n");
     register_output.gsub("; ", "\n");
@@ -4387,7 +4410,7 @@ void SourceView::refresh_registers()
 	gdb_question(all_registers ? "info all-registers" : "info registers");
     if (registers == NO_GDB_ANSWER)
 	registers = "No registers.";
-    process_register(registers);
+    process_registers(registers);
 }
 
 void SourceView::ViewRegistersCB(Widget, XtPointer, XtPointer)
@@ -4419,6 +4442,71 @@ void SourceView::SelectRegisterCB (Widget, XtPointer, XtPointer call_data)
 	item = "/x $" + item.through(rxalphanum);
 	source_arg->set_string(item);
     }
+}
+
+//-----------------------------------------------------------------------------
+// Thread stuff
+//----------------------------------------------------------------------------
+
+void SourceView::process_threads(string& threads_output)
+{
+    if (threads_output == NO_GDB_ANSWER 
+	|| threads_output == ""
+	|| threads_output.matches(rxwhite))
+	threads_output = "No threads.\n";
+
+    int count           = threads_output.freq('\n') + 1;
+    string *thread_list = new string[count];
+    bool *selected      = new bool[count];
+
+    split(threads_output, thread_list, count, '\n');
+
+    while (count > 0 && thread_list[count - 1] == "")
+	count--;
+
+    for (int i = 0; i < count; i++)
+    {
+	selected[i] = thread_list[i].contains('*', 0);
+	if (selected[i])
+	    thread_list[i] = thread_list[i].after(0);
+	read_leading_blanks(thread_list[i]);
+	setup_where_line(thread_list[i]);
+    }
+
+    setLabelList(thread_list_w, thread_list, selected, count, false);
+
+    delete[] thread_list;
+    delete[] selected;
+}
+
+void SourceView::refresh_threads()
+{
+    string threads = gdb_question("info threads");
+    process_threads(threads);
+}
+
+void SourceView::ViewThreadsCB(Widget, XtPointer, XtPointer)
+{
+    refresh_threads();
+    XtManageChild(thread_dialog_w);
+    raise_shell(thread_dialog_w);
+    
+    thread_dialog_popped_up = true;
+}
+
+void SourceView::ThreadDialogPoppedDownCB (Widget, XtPointer, XtPointer)
+{
+    thread_dialog_popped_up = false;
+}
+
+void SourceView::SelectThreadCB (Widget, XtPointer, XtPointer)
+{
+    // Get the selected threads
+    IntArray threads;
+    getDisplayNumbers(thread_list_w, threads);
+
+    if (threads.size() == 1)
+	gdb_command("thread " + itostring(threads[0]));
 }
 
 //-----------------------------------------------------------------------------

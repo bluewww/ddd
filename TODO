@@ -227,12 +227,6 @@ Volunteers for these and other projects are welcome!
 
 102. Have a WWW tutorial for DDD.  Any volunteers?
 
-105* Thread support. Siddharth Ram <srram@qualcomm.com> and James
-     Njeru <njeru@oec.com> state: It should be easy to add some sort
-     of menu choice (based on the dbx, xdb, gdb in use) to switch
-     threads.  Another useful feature is allowing one to choose to
-     follow child forked processes or not.
-
 108. David M. Karr <dkarr@nmo.gtegsc.com> suggests:
      In the SparcWorks debugger, if I use the "list" command at the
      internal dbx prompt, it lists the object or lines I specify in the
@@ -289,7 +283,5 @@ Volunteers for these and other projects are welcome!
 
 135. Have node reference points be at the upper left instead of the
      center.
-
-137* Have a `Find' button in the DDD manual browser.
  
 138. (Insert your project idea here)
