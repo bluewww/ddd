@@ -8,7 +8,7 @@
 #include "assert.h"
 #include "config.h"
 
-#include <iostream.h>
+#include <iostream>
 
 // can't nicely echo assertions because they contain quotes
 
@@ -33,12 +33,12 @@
 void decltest()
 {
   string x;
-  cout << "an empty string:" << x << "\n";
+  std::cout << "an empty string:" << x << "\n";
   assert(x.OK());
   assert(x == "");
 
   string y = "Hello";
-  cout << "A string initialized to Hello:" << y << "\n";
+  std::cout << "A string initialized to Hello:" << y << "\n";
   assert(y.OK());
   assert(y == "Hello");
 
@@ -48,30 +48,30 @@ void decltest()
   y = "Hello";
 
   string a = y;
-  cout << "A string initialized to previous string:" << a << "\n";
+  std::cout << "A string initialized to previous string:" << a << "\n";
   assert(a.OK());
   assert(a == "Hello");
   assert(a == y);
 
   string b (a.at(1, 2));
-  cout << "A string initialized to previous string.at(1, 2):" << b << "\n";
+  std::cout << "A string initialized to previous string.at(1, 2):" << b << "\n";
   assert(b.OK());
   assert(b == "el");
 
   char ch = '@';
   string z(ch); 
-  cout << "A string initialized to @:" << z << "\n";
+  std::cout << "A string initialized to @:" << z << "\n";
   assert(z.OK());
   assert(z == "@");
 
   string n = "20";
-  cout << "A string initialized to 20:" << n << "\n";
+  std::cout << "A string initialized to 20:" << n << "\n";
   assert(n.OK());
   assert(n == "20");
 
-  int i = atoi(n);
-  double f = atof(n);
-  cout << "n = " << n << " atoi(n) = " << i << " atof(n) = " << f << "\n";
+  int i = atoi(n.chars());
+  double f = atof(n.chars());
+  std::cout << "n = " << n << " atoi(n) = " << i << " atof(n) = " << f << "\n";
   assert(i == 20);
   assert(f == 20);
 
@@ -92,14 +92,14 @@ void cattest()
   string x = X;
   string y = Y;
   string z = x + y;
-  cout << "z = x + y = " << z << "\n";
+  std::cout << "z = x + y = " << z << "\n";
   assert(x.OK());
   assert(y.OK());
   assert(z.OK());
   assert(z == "Helloworld");
 
   x += y;
-  cout << "x += y; x = " << x << "\n";
+  std::cout << "x += y; x = " << x << "\n";
   assert(x.OK());
   assert(y.OK());
   assert(x == "Helloworld");
@@ -107,27 +107,27 @@ void cattest()
   y = Y;
   x = X;
   y.prepend(x);
-  cout << "y.prepend(x); y = " << y << "\n";
+  std::cout << "y.prepend(x); y = " << y << "\n";
   assert(y == "Helloworld");
 
 #if 0
   y = Y;
   x = X;
   cat(x, y, x, x);
-  cout << "cat(x, y, x, x); x = " << x << "\n";
+  std::cout << "cat(x, y, x, x); x = " << x << "\n";
   assert(x == "HelloworldHello");
 
   y = Y;
   x = X;
   cat(y, x, x, x);
-  cout << "cat(y, x, x, x); x = " << x << "\n";
+  std::cout << "cat(y, x, x, x); x = " << x << "\n";
   assert(x == "worldHelloHello");
 #endif
 
   x = X;
   y = Y;
   z = x + s + ' ' + y.at("w") + y.after("w") + ".";
-  cout << "z = x + s +  + y.at(w) + y.after(w) + . = " << z << "\n";
+  std::cout << "z = x + s +  + y.at(w) + y.after(w) + . = " << z << "\n";
   assert(z.OK());
   assert(z == "Hello, world.");
 
@@ -184,98 +184,98 @@ void substrtest()
   string x = X;
 
   char ch = x[0];
-  cout << "ch = x[0] = " << ch << "\n";
+  std::cout << "ch = x[0] = " << ch << "\n";
   assert(ch == 'H');
 
   string z = x.at(2, 3);
-  cout << "z = x.at(2, 3) = " << z << "\n";
+  std::cout << "z = x.at(2, 3) = " << z << "\n";
   assert(z.OK());
   assert(z == "llo");
 
   x.at(2, 2) = "r";
-  cout << "x.at(2, 2) = r; x = " << x << "\n";
+  std::cout << "x.at(2, 2) = r; x = " << x << "\n";
   assert(x.OK());
   assert(x.at(2,2).OK());
   assert(x == "Hero");
 
   x = X;
   x.at(0, 1) = "j";
-  cout << "x.at(0, 1) = j; x = " << x << "\n";
+  std::cout << "x.at(0, 1) = j; x = " << x << "\n";
   assert(x.OK());
   assert(x == "jello");
 
   x = X;
   x.at("He") = "je";
-  cout << "x.at(He) = je; x = " << x << "\n";
+  std::cout << "x.at(He) = je; x = " << x << "\n";
   assert(x.OK());
   assert(x == "jello");
 
   x = X;
   x.at("l", -1) = "i";
-  cout << "x.at(l, -1) = i; x = " << x << "\n";
+  std::cout << "x.at(l, -1) = i; x = " << x << "\n";
   assert(x.OK());
   assert(x == "Helio");
   
 #if RUNTIME_REGEX
   x = X;
   z = x.at(r);
-  cout << "z = x.at(r) = " << z << "\n";
+  std::cout << "z = x.at(r) = " << z << "\n";
   assert(z.OK());
   assert(z == "ello");
 #endif
 
   x = X;
   z = x.before("o");
-  cout << "z = x.before(o) = " << z << "\n";
+  std::cout << "z = x.before(o) = " << z << "\n";
   assert(z.OK());
   assert(z == "Hell");
 
   x = X;
   x = x.before("o");
-  cout << "x = x.before(o) = " << x << "\n";
+  std::cout << "x = x.before(o) = " << x << "\n";
   assert(x.OK());
   assert(x == "Hell");
 
   x = X;
   x = x.from("e");
-  cout << "x = x.from(e) = " << x << "\n";
+  std::cout << "x = x.from(e) = " << x << "\n";
   assert(x.OK());
   assert(x == "ello");
 
   x = X;
   x.before("ll") = "Bri";
-  cout << "x.before(ll) = Bri; x = " << x << "\n";
+  std::cout << "x.before(ll) = Bri; x = " << x << "\n";
   assert(x.OK());
   assert(x == "Brillo");
 
   x = X;
   z = x.before(2);
-  cout << "z = x.before(2) = " << z << "\n";
+  std::cout << "z = x.before(2) = " << z << "\n";
   assert(z.OK());
   assert(z == "He");
 
   x = X;
   z = x.after("Hel");
-  cout << "z = x.after(Hel) = " << z << "\n";
+  std::cout << "z = x.after(Hel) = " << z << "\n";
   assert(z.OK());
   assert(z == "lo");
 
   x = X;
   x.after("Hel") = "p";  
-  cout << "x.after(Hel) = p; x = " << x << "\n";
+  std::cout << "x.after(Hel) = p; x = " << x << "\n";
   assert(x.OK());
   assert(x == "Help");
 
   x = X;
   z = x.after(3);
-  cout << "z = x.after(3) = " << z << "\n";
+  std::cout << "z = x.after(3) = " << z << "\n";
   assert(z.OK());
   assert(z == "o");
 
 #if RUNTIME_REGEX
   z = "  a bc";
   z  = z.after(rxwhite);
-  cout << "z =   a bc; z = z.after(rxwhite); z =" << z << "\n";
+  std::cout << "z =   a bc; z = z.after(rxwhite); z =" << z << "\n";
   assert(z.OK());
   assert(z == "a bc");
 #endif
@@ -286,7 +286,7 @@ void utiltest()
 {
   string x = X;
   int matches = x.gsub("l", "ll");
-  cout << "x.gsub(l, ll); x = " << x << "\n";
+  std::cout << "x.gsub(l, ll); x = " << x << "\n";
   assert(x.OK());
   assert(matches == 2);
   assert(x == "Hellllo");
@@ -296,7 +296,7 @@ void utiltest()
   assert(x.OK());
   matches = x.gsub(r, "ello should have been replaced by this string");
   assert(x.OK());
-  cout << "x.gsub(r, ...); x = " << x << "\n";
+  std::cout << "x.gsub(r, ...); x = " << x << "\n";
   assert(x.OK());
   assert(matches == 1);
   assert(x == "Hello should have been replaced by this string");
@@ -304,50 +304,50 @@ void utiltest()
 
 #if RUNTIME_REGEX
   matches = x.gsub(rxwhite, "#");
-  cout << "x.gsub(rxwhite, #); x = " << x << "\n";
+  std::cout << "x.gsub(rxwhite, #); x = " << x << "\n";
   assert(matches == 7);
   assert(x.OK());
 #endif
 
   string z = X + Y;
   z.del("loworl");
-  cout << "z = x+y; z.del(loworl); z = " << z << "\n";
+  std::cout << "z = x+y; z.del(loworl); z = " << z << "\n";
   assert(z.OK());
   assert(z == "Held");
 
   x = X;
   z = reverse(x);
-  cout << "reverse(x) = " << z << "\n";
+  std::cout << "reverse(x) = " << z << "\n";
   assert(z.OK());
   assert(z == "olleH");
 
   x.reverse();
-  cout << "x.reverse() = " << x << "\n";
+  std::cout << "x.reverse() = " << x << "\n";
   assert(x.OK());
   assert(x == z);
 
   x = X;
   z = upcase(x);
-  cout << "upcase(x) = " << z << "\n";
+  std::cout << "upcase(x) = " << z << "\n";
   assert(z.OK());
   assert(z == "HELLO");
 
   z = downcase(x);
-  cout << "downcase(x) = " << z << "\n";
+  std::cout << "downcase(x) = " << z << "\n";
   assert(z.OK());
   assert(z == "hello");
 
   z = capitalize(x);
-  cout << "capitalize(x) = " << z << "\n";
+  std::cout << "capitalize(x) = " << z << "\n";
   assert(z.OK());
   assert(z == "Hello");
 
   /* Let's see how apostrophe is handled. */
   z = "he asked:'this is nathan's book?'. 'no, it's not',i said.";
-  cout << "capitalize(z) = " << capitalize (z) << "\n";
+  std::cout << "capitalize(z) = " << capitalize (z) << "\n";
   
   z = replicate('*', 10);
-  cout << "z = replicate(*, 10) = " << z << "\n";
+  std::cout << "z = replicate(*, 10) = " << z << "\n";
   assert(z.OK());
   assert(z == "**********");
   assert(z.length() == 10);
@@ -357,15 +357,15 @@ void splittest()
 {
 #if RUNTIME_REGEX
   string z = "This string\thas\nfive words";
-  cout << "z = " << z << "\n";
+  std::cout << "z = " << z << "\n";
   string w[10];
   int nw = split(z, w, 10, rxwhite);
   assert(nw == 5);
-  cout << "from split(z, rxwhite, w, 10), n words = " << nw << ":\n";
+  std::cout << "from split(z, rxwhite, w, 10), n words = " << nw << ":\n";
   for (int i = 0; i < nw; ++i)
   {
     assert(w[i].OK());
-    cout << w[i] << "\n";
+    std::cout << w[i] << "\n";
   }
   assert(w[0] == "This");
   assert(w[1] == "string");
@@ -375,7 +375,7 @@ void splittest()
   assert(w[5] == (char *)0);
 
   z = join(w, nw, "/");
-  cout << "z = join(w, nw, /); z =" << z << "\n";
+  std::cout << "z = join(w, nw, /); z =" << z << "\n";
   assert(z.OK());
   assert(z == "This/string/has/five/words");
 #endif
@@ -385,10 +385,10 @@ void splittest()
 void iotest()
 {
   string z;
-  cout << "enter a word:";
-  cin >> z;
-  cout << "word =" << z << " ";
-  cout << "length = " << z.length() << "\n";
+  std::cout << "enter a word:";
+  std::cin >> z;
+  std::cout << "word =" << z << " ";
+  std::cout << "length = " << z.length() << "\n";
 }
 
 void identitytest(string a, string b)
@@ -454,6 +454,6 @@ int main()
   identitytest(X, Y);
   identitytest(X+Y+N+X+Y+N, "A string that will be used in identitytest but is otherwise just another useless string.");
   iotest();
-  cout << "\nEnd of test\n";
+  std::cout << "\nEnd of test\n";
   return 0;
 }
