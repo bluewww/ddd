@@ -796,7 +796,7 @@ string read_member_name (string& value)
     // GDB, DBX, and XDB separate member names and values by ` = '; 
     // GDB using the Java language uses `: ' instead.
     // JDB printing classes uses `:\n' for the interface list.
-    // GDB with GNAT support uses `=> '.
+    // GDB with GNAT support and Perl use `=> '.
     string member_name;
     if (v.contains("Virtual table at ", 0))
     {
@@ -820,7 +820,9 @@ string read_member_name (string& value)
 	member_name = v.before(":\n");
 	value = value.after(":\n");
     }
-    else if (gdb->program_language() == LANGUAGE_ADA && v.contains("=> "))
+    else if ((gdb->program_language() == LANGUAGE_ADA ||
+	      gdb->program_language() == LANGUAGE_PERL)
+	     && v.contains("=> "))
     {
 	member_name = v.before("=> ");
 	value = value.after("=> ");
