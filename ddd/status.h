@@ -95,8 +95,8 @@ public:
 
 class StatusMsg: public _StatusMsg {
 public:
-    StatusMsg(const string& cause)
-	: _StatusMsg(cause)
+    StatusMsg(const string& c)
+	: _StatusMsg(c)
     {
 	lock_status();
     }
@@ -108,8 +108,8 @@ public:
 
 class StatusDelay: public StatusMsg, public Delay {
 public:
-    StatusDelay(const string& cause)
-	: StatusMsg(cause)
+    StatusDelay(const string& c)
+	: StatusMsg(c)
     {}
 };
 

@@ -403,11 +403,11 @@ private:
     static Widget grey_stops[2][MAX_GLYPHS + 1];
     static Widget temp_stops[2];
 
-    // Map stop sign in W at position POS.  Get widget from
-    // STOPS[COUNT]; store location in STOPS.  Return widget.
+    // Map stop sign in W at position POS.  Get widget from STOPS[COUNT];
+    // store location in POSITIONS.  Return mapped widget (0 if none)
     static Widget map_stop_at(Widget w, XmTextPosition pos,
 			      Widget stops[], int& count,
-			      TextPositionArray& stops);
+			      TextPositionArray& positions);
 
     // Map arrow/temp arrow/temp stop in W at POS.  If ORIGIN is
     // given, use colors from ORIGIN.
@@ -442,7 +442,7 @@ private:
     // Callback when state has been reset
     static void reset_done(const string& answer, void *data);
 
-    static int max_breakpoint_number_seen = 0;
+    static int max_breakpoint_number_seen;
 
 public:
     // Constructor
