@@ -837,9 +837,12 @@ useful for large dynamic structures.
 .\"
 .SS "Displaying Simple Values"
 To display the value of a simple variable, move the mouse pointer on
-its name.  After a second, a small window pops up showing its value.
-The window disappears as soon as you move the mouse pointer away from
-the variable.  The value is also shown in the status line.
+its name.  After a second, a small window (called \fIvalue tip\fR)
+pops up showing the value of the variable pointed at.  The window
+disappears as soon as you move the mouse pointer away from the
+variable.  The value is also shown in the status line.
+.PP
+.PSPIC PICS/ddd-value-tip.ps 15.3cm
 .PP
 The variable value can also be printed in the debugger console, making
 it available for further operations.  To print a variable value,
@@ -851,6 +854,8 @@ data window.
 As a shorter alternative, you can simply press the \fIright mouse
 button\fR on the variable name and select the `\fBPrint\fR' item from
 the popup menu.
+.PP
+.PSPIC PICS/ddd-print-popup.ps 15.3cm
 .\"
 .SS "Displaying Complex Values"
 To explore complex data structures, you can use the \fIgraphical data
@@ -867,15 +872,17 @@ As a shorter alternative, you can simply press the \fIright mouse
 button\fR on the variable name and select the `\fBDisplay\fR' item from
 the popup menu.
 .PP
-As another alternative, you may also enter the variable name in the
-argument field and press the `\fBDisplay()\fR' button.
+As another alternative, you may also enter the expression to be
+displayed in the argument field and press the `\fBDisplay()\fR'
+button.
 .PP
-If the data window is visible, you may invoke the `\fBEdit
-Displays...\fR' item from the `\fBData\fR' menu and click on the
-`\fBNew...\fR' button.  Enter the variable name in the resulting
-prompt dialog.
+If the data window is visible, you may click on the `\fBNew
+Display\fR' button.  Enter the expression to be displayed in the
+resulting prompt dialog.
 .PP
-Finally, you may enter
+.PSPIC PICS/ddd-new-display.ps 15.3cm
+.PP
+Finally, you may also enter
 .sp
 .br
   \fBgraph display \fIexpr\fR
@@ -894,8 +901,10 @@ You can select individual displays by clicking on them with the
 \fIleft mouse button\fR.  The resulting expression is shown in the
 \fIargument field\fR, below.
 .PP
-You can \fIextend\fR an existing selection by pressing the
-\fBShift\fR key while selecting.
+You can \fIextend\fR an existing selection by pressing the \fBShift\fR
+key while selecting.  You can also \fItoggle\fR an existing selection
+by pressing the \fBShift\fR key while selecting already selected
+displays.
 .PP
 Single displays may also be selected by using the arrow keys.
 .\"
@@ -908,8 +917,14 @@ pointer while holding the button, a selection rectangle is shown; all
 displays fitting in the rectangle are selected when the mouse button
 is released.
 .PP
+If the \fBShift\fR key is pressed while selecting, the existing
+selection is \fIextended\fR.
+.PP
 By double-clicking on a display, the display itself and all connected
 displays are automatically selected.
+.PP
+.PSPIC PICS/ddd-select-display.ps 15.3cm
+.PP
 .\"
 .\"
 .SS "Selecting Display Parts"
@@ -930,7 +945,7 @@ displaying all details, or \fIhidden\fR, that is, displayed as
 `\fB{...}\fR'.
 .PP
 To show details about an aggregate, select the aggregate by clicking
-the \fIleft mouse button\fR o	n its name or value and click on the
+the \fIleft mouse button\fR on its name or value and click on the
 `\fBShow()\fR' button.  Details are shown for the aggregate itself as
 well as for all contained sub-aggregates.
 .PP
@@ -940,6 +955,9 @@ the \fIleft mouse button\fR on its name or value and click on the
 .PP
 As a faster alternative, you can also press the \fIright mouse
 button\fR on the aggregate and select the appropriate menu item.
+.PP
+.PSPIC PICS/ddd-hide-display.ps 15.3cm
+.PP
 .\"
 .\"
 .SS "Rotating Arrays"
@@ -949,6 +967,9 @@ button.
 .PP
 As a faster alternative, you can also press the \fIright mouse
 button\fR on the array and select the `\fBRotate\fR' menu item.
+.PP
+.PSPIC PICS/ddd-rotate-display.ps 15.3cm
+.PP
 .\"
 .\"
 .SS "Displaying Dependent Values"
@@ -987,6 +1008,53 @@ button\fR on the originating pointer value or name and select the
 `\fBDisplay *\fR' menu item.
 .\"
 .\"
+.SS "Displaying Local Variables"
+.\"
+You can display all local variables at once by choosing `\fBDisplay
+Local Variables\fR' from the `\fBData\fR' menu.  When you using
+\s-2DBX\s+2 or \s-2XDB\s+2, this displays all local variables,
+including the arguments of the current function.  When you are using
+\s-2GDB\s+2, function arguments are contained in a separate display,
+activated by `\fBDisplay Arguments\fR'.
+.PP
+The display showing the local variables can be manipulated just like
+any other data display.  Individual variables can be selected and
+dereferenced.
+.PP
+.PSPIC PICS/ddd-locals.ps 15.3cm
+.PP
+.\"
+.\"
+.SS "Displaying Program Status Information"
+.\"
+Besides local variables, you can create a display from the output of
+an arbitrary debugger command.  By entering
+.sp
+.br
+  \fBgraph display `\fIcommand\fB`\fR
+.sp
+.br
+the output of \fIcommand\fR is turned into a \fIstatus display\fR
+updated each time the program stops.  For instance, by entering
+.sp
+.br
+  \fBgraph display `where`\fR
+.sp
+.br
+a status display named `\fBWhere\fR' is created that shows the current
+backtrace.
+.PP
+If you are using \s-2GDB\s+2, \s-2@DDD@\s+2 provides a panel from
+which you can choose useful status displays.  In the `\fBStatus\fR'
+menu, select the `\fBStatus Displays...\fR' item and pick your choice
+from the list.
+.PP
+.PSPIC PICS/ddd-status-displays.ps 15.3cm
+.PP
+Note that status displays are quite time-consuming, so you
+should delete them as soon as you don't need them any more.
+.\"
+.\"
 .SS "Displaying Multiple Array Items"
 .\"
 When debugging C or C++ programs, one often has to deal with pointers
@@ -1020,48 +1088,6 @@ can specify the number of array elements to be displayed.
 For more details on artificial arrays, see the \s-2GDB\s+2 documentation.
 .\"
 .\"
-.SS "Displaying Local Variables"
-.\"
-You can display all local variables at once by choosing `\fBDisplay
-Local Variables\fR' from the `\fBData\fR' menu.  When you using
-\s-2DBX\s+2 or \s-2XDB\s+2, this displays all local variables,
-including the arguments of the current function.  When you are using
-\s-2GDB\s+2, function arguments are contained in a separate display,
-activated by `\fBDisplay Arguments\fR'.
-.PP
-The display showing the local variables can be manipulated just like
-any other data display.  Individual variables can be selected and
-dereferenced.
-.\"
-.\"
-.SS "Displaying Program Status Information"
-.\"
-Besides local variables, you can create a display from the output of
-an arbitrary debugger command.  By entering
-.sp
-.br
-  \fBgraph display `\fIcommand\fB`\fR
-.sp
-.br
-the output of \fIcommand\FR is turned into a \fIstatus display\fR
-updated each time the program stops.  For instance, by entering
-.sp
-.br
-  \fBgraph display `where`\fR
-.sp
-.br
-a status display named `\fBWhere\fR' is created that shows the current
-backtrace.
-.PP
-If you are using \s-2GDB\s+2, \s-2@DDD@\s+2 provides a panel from
-which you can choose useful status displays.  In the `\fBStatus\fR'
-menu, select the `\fBOther...\fR' item and pick your choice from the
-list.
-.PP
-Note that status displays are quite time-consuming, so you
-should delete them as soon as you don't need them any more.
-.\"
-.\"
 .SS "Altering Variable Values"
 .\"
 Using the `\fBSet ()\fR' button or the `\fBSet Value\fR' menu item in
@@ -1073,6 +1099,8 @@ modify the variable value at will; clicking the `\fBOK\fR' or
 Note that most inferior debuggers have no support for changing entire
 structures; you must change each primitive structure member
 separately.
+.PP
+.PSPIC PICS/ddd-set.ps 15.3cm
 .\"
 .\"
 .SS "Deleting Displays"
@@ -1225,6 +1253,8 @@ only.
 You can enforce layout by setting the `\fBAutomatic Layout\fR' option
 in the `\fBData Options\fR' menu.  If `\fBAutomatic Layout\fR' is
 enabled, the graph is layouted after each change.
+.PP
+.PSPIC PICS/ddd-layout.ps 15.3cm
 .\"
 .\"
 .SS "Rotating the Display Graph"
@@ -1241,9 +1271,11 @@ Subsequent layouts will respect the direction of the last rotation.
 \s-2@DDD@\s+2 allows for printing the graph picture on PostScript
 printers or into files.  This is useful for documenting program states.
 .PP
+.PSPIC PICS/ddd-print-graph.ps 15.3cm
+.PP
 To print the graph on a PostScript printer, select the `\fBPrint
 Graph...\fR' item from the `\fBFile\fR' menu.  Enter the printing
-command in the `\fBPrinter Command\fR' field.  Click on the
+command in the `\fBPrint Command\fR' field.  Click on the
 `\fBPrint\fR' button to start printing.
 .PP
 To re-print the display graph using the previous settings, select the
@@ -1261,8 +1293,10 @@ When the graph is printed in a file, two formats are available:
 .IP \(bu 2
 \fB\s-2FIG\s+2\fR - suitable for editing, using the \s-2XFIG\s+2 graphic
 editor, or for conversion into other formats (among others
-\s-2IBMGL\s+2, LaTeX, \s-2PIC\s+2), 
+\s-2IBMGL\s+2, \s-2L\s-2A\s+2T\dE\uX\s+2, \s-2PIC\s+2), 
 using the \s-2TRANSFIG\s+2 or \s-2FIG2DEV\s+2 package.
+.PP
+.PSPIC PICS/ddd-print-output.ps 15.3cm
 .\"
 .\"
 .\" ---------------
@@ -1310,6 +1344,8 @@ To execute just one machine instruction, click on the `\fBStepi\fR' button.
 To continue to the next instruction in the current function, click on
 the `\fBNexti\fR' button.  This is similar to `\fBStepi\fR', but any
 subroutine calls are executed without stopping.
+.PP
+.PSPIC PICS/ddd-code.ps 15.3cm
 .\"
 .\"
 .SS "Registers"
@@ -1320,6 +1356,8 @@ window, select `\fBRegisters...\fR' from the `\fBStatus\fR' menu.
 By selecting one of the registers, its name is copied to the argument
 field.  You can use it as value for `\fBDisplay()\fR', for instance,
 to have its value displayed in the data window.
+.PP
+.PSPIC PICS/ddd-registers.ps 15.3cm
 .\"
 .\"
 .\" ---------------------
@@ -1560,6 +1598,9 @@ running \s-2@DDD@\s+2 process only, unless you save these preferences
 for a later \s-2@DDD@\s+2 invocation.
 .\"
 .SS "Frequent Preferences"
+.PP
+.PSPIC PICS/ddd-prefs-menu.ps 15.3cm
+.PP
 If you want to run your debugged process in a separate terminal
 emulator window, set the `\fBRun in Execution Window\fR' option.  This
 is useful for programs that have special terminal requirements not
@@ -1576,10 +1617,11 @@ If you wish to display machine code of selected funtions, set the
 little slower, so it is disabled by default.
 .PP
 Through the `\fBPreferences...\fR' item, you can set up more
-preferences:
+preferences, which are dicussed here.
 .\"
 .SS "General Preferences"
-These items are found in the `\fBGeneral Preferences\fR' menu:
+.PP
+.PSPIC PICS/ddd-general-prefs.ps 15.3cm
 .PP
 By default, when you move the pointer over a button, \s-2@DDD@\s+2
 gives a hint on the button's meaning in a small window.  Experienced
@@ -1603,25 +1645,39 @@ variable values in status line (by unsetting the `\fBAutomatic display
 of variable values in the status line\fR' option) and disabling value
 tips as well will make \s-2@DDD@\s+2 run slightly faster.
 .PP
+If you want to use \s-2\fBTAB\fR\s+2 key completion in all text
+windows, set the `\fBTAB key completes in all windows\fR' option.
+This is useful if you have pointer-driven keyboard focus (see below)
+and no special usage for the \s-2\fBTAB\fR\s+2 key.  Otherwise, the
+\s-2\fBTAB\fR\s+2 key completes in the debugger console only.
+.PP
 If you frequently switch between \s-2@DDD@\s+2 and other multi-window
 applications, you may like to set the `\fBIconify all windows at
 once\fR' option.  This way, all \s-2@DDD@\s+2 windows are iconified
 and deiconified as a group.
 .PP
-If you want to use \s-2\fBTAB\fR\s+2 key completion in all text
-windows, set the `\fBTAB key completes in all windows\fR' option.
-This is useful if you have pointer-driven keyboard focus (see below)
-and no special usage for the \s-2\fBTAB\fR\s+2 key.
-.PP
 If you are bothered by X warnings, you can suppress them by setting
 the `\fBSuppress X warnings\fR' option.
+.PP
+When debugging a modal X application, \s-2@DDD@\s+2 may interrupt it
+while it has grabbed the pointer, making further interaction
+impossible.  If the `\fBUngrab mouse pointer when interrupting modal X
+application\\fR' option is set, \s-2@DDD@\s+2 will check after each
+interaction whether the pointer is grabbed.  If this is so,
+\s-2@DDD@\s+2 will instruct the debugged program to ungrab the mouse
+pointer such that you can continue to use your display.
 .PP
 If you want to save the command history for the next \s-2@DDD@\s+2
 invocation, set the `\fBSave command history on exit\fR' option.
 Note: This option is always set if your \s-2GDB\s+2 is set up to save
 its command history.
+.PP
+The `\fBReset\fR' button restores the most recently saved preferences.
 .\"
 .SS "Source Preferences"
+.PP
+.PSPIC PICS/ddd-source-prefs.ps 15.3cm
+.PP
 In the source text, the current execution position and breakpoints are
 indicated by symbols (``glyphs'').  As an alternative, \s-2@DDD@\s+2
 can also indicate these positions using text characters.  If you wish
@@ -1642,8 +1698,13 @@ Some \s-2DBX\s+2 and \s-2XDB\s+2 variants do not properly handle paths
 in source file specifications.  If you want the inferior debugger to
 refer to source locations by source base names only, unset the `\fBRefer
 to sources by full path name\fR' option.
+.PP
+The `\fBReset\fR' button restores the most recently saved preferences.
 .\"
 .SS "Data Preferences"
+.PP
+.PSPIC PICS/ddd-data-prefs.ps 15.3cm
+.PP
 By default, \s-2@DDD@\s+2 displays a grid in the data window to
 facilitate display alignment.  If you prefer not to have a grid, unset
 the `\fBShow Grid\fR' option.
@@ -1666,8 +1727,16 @@ suitable for homogeneous data structures only.
 To enforce layout, you can set the `\fBAutomatic Layout\fR' option.
 If `\fBAutomatic Layout\fR' is enabled, the graph is layouted after
 each change.
+.PP
+In the `\fBGrid Size\fR' scale, you can choose a grid size for the
+data window.  Default is 16.
+.PP
+The `\fBReset\fR' button restores the most recently saved preferences.
 .\"
 .SS "Startup Preferences"
+.PP
+.PSPIC PICS/ddd-startup-prefs.ps 15.3cm
+.PP
 By default, \s-2@DDD@\s+2 uses three separate windows for commands,
 source, and data.  To attach the source and data windows to the
 debugger console, creating one single big \s-2@DDD@\s+2 window, set the
@@ -1677,7 +1746,13 @@ takes only effect after you have saved options and restarted
 and `\fB\-\-separate\-windows\fR' options, below.
 .PP
 \s-2@DDD@\s+2 can display the status line at the bottom (`\fBat
-bottom\fR') or at the top (`\fBat top\fR').  Pick your choice.
+bottom\fR') or at the top (`\fBat top\fR').  This change
+takes only effect after you have saved options and restarted
+\s-2@DDD@\s+2.  Pick your choice.
+.PP
+\s-2@DDD@\s+2 can locate the tool buttons in the command tool (`\fBin
+command tool\fR') or in another line of buttons below the program
+source (`\fBin source window\fR').  Pick your choice.
 .PP
 By default, \s-2@DDD@\s+2 directs keyboard input to the item your
 mouse pointer points at.  If you prefer a click-to-type keyboard focus
@@ -1700,6 +1775,8 @@ To change this default, set the `\fBDebugger Type\fR' option to
 another debugger.  This change takes only effect after you have saved
 options and restarted \s-2@DDD@\s+2.  See also the `\fB\-\-gdb\fR',
 `\fB\-\-dbx\fR', and `\fB\-\-xdb\fR' options, below.
+.PP
+The `\fBReset\fR' button restores the most recently saved preferences.
 .\"
 .SS "Saving Options"
 You can save the current option settings by selecting `\fBSave
@@ -1723,11 +1800,14 @@ settings using the `\fBSettings...\fR' item in the `\fBOptions\fR'
 menu.  Using the settings editor, you can determine whether C++ names
 are to be demangled, how many array elements are to print, and so on.
 .PP
+.PSPIC PICS/ddd-settings.ps 15.3cm
+.PP
 The capabilities of the settings editor depend on the capabilities of
 your inferior debugger\(em\&that is, your \s-2GDB\s+2 version.
 Clicking on `\fB?\fR' gives an an explanation on the specific item;
-the \s-2GDB\s+2 documentation gives more details.  Clicking on
-`\fBReset\fR' restores the initial settings.
+the \s-2GDB\s+2 documentation gives more details.
+.PP
+Clicking on `\fBReset\fR' restores the most recently saved settings.
 .PP
 Some debugger settings are insensitive and cannot be changed, because
 doing so would endanger \s-2@DDD@\s+2 operation.  See the
@@ -1866,33 +1946,43 @@ the `\fBvslDefs\fR' resource, below.
 .SS "Setting @DDD@ Colors"
 .PP
 These are the most important color resources used in \s-2@DDD@\s+2:
-.sp
-.br
-  \fB@Ddd@*foreground:              black
-.br
-  @Ddd@*background:              grey
-.br
-  @Ddd@*XmText.background:       grey90
-.br
-  @Ddd@*XmTextField.background:  grey90
-.br
-  @Ddd@*GraphEdit.background:    grey90
-.br
-  @Ddd@*XmList.background:       grey90
-.sp
-  @Ddd@*graph_edit.nodeColor:    black
-.br
-  @Ddd@*graph_edit.edgeColor:    blue4
-.br
-  @Ddd@*graph_edit.selectColor:  black
-.br
-  @Ddd@*graph_edit.gridColor:    black
-.br
-  @Ddd@*graph_edit.frameColor:   grey50
-.br
-  @Ddd@*graph_edit.outlineColor: grey50\fR
-.br
-.sp
+.TP 30
+.B @Ddd@*foreground:
+.B black
+.TP 30
+.B @Ddd@*background:
+.B grey
+.TP 30
+.B @Ddd@*XmText.background:
+.B grey90
+.TP 30 
+.B @Ddd@*XmTextField.background:
+.B grey90
+.TP 30 
+.B @Ddd@*GraphEdit.background:
+.B grey90
+.TP 30 
+.B @Ddd@*XmList.background:
+.B grey90
+.TP 30 
+.B @Ddd@*graph_edit.nodeColor:
+.B black
+.TP 30 
+.B @Ddd@*graph_edit.edgeColor:
+.B blue4
+.TP 30 
+.B @Ddd@*graph_edit.selectColor:
+.B black
+.TP 30 
+.B @Ddd@*graph_edit.gridColor:
+.B black
+.TP 30 
+.B @Ddd@*graph_edit.frameColor:
+.B grey50
+.TP 30 
+.B @Ddd@*graph_edit.outlineColor:
+.B grey50
+.PP
 Again, you can copy and modify the appropriate resources to your
 `\fB$HOME/.dddinit\fR' file.  For colors within the data display, see
 the `\fBvslDefs\fR' resource, below.
@@ -2004,12 +2094,12 @@ different X or Motif configuration.  By default, this is
 The tab width used in the source window (default: \fB8\fR)
 .TP
 .B "ungrabMousePointer (\fPclass\fB UngrabMousePointer)"
-When debugging an X program, \s-2@DDD@\s+2 may interrupt it while it
-has grabbed the pointer, making further interaction impossible.  If
-this is `\fBtrue\fR' (default), \s-2@DDD@\s+2 will check after each
-interaction whether the pointer is grabbed.  If this is so,
-\s-2@DDD@\s+2 will instruct the debugged program to ungrab the mouse
-pointer.
+When debugging a modal X application, \s-2@DDD@\s+2 may interrupt it
+while it has grabbed the pointer, making further interaction
+impossible.  If this is `\fBtrue\fR' (default), \s-2@DDD@\s+2 will
+check after each interaction whether the pointer is grabbed.  If this
+is so, \s-2@DDD@\s+2 will instruct the debugged program to ungrab the
+mouse pointer.
 .TP
 .B "useSourcePath (\fPclass\fB UseSourcePath)"
 If this is `\fBfalse\fR' (default), the inferior debugger refers to
@@ -3092,13 +3182,13 @@ Using \s-2GDB\s+2: A Guide to the \s-2GNU\s+2 Source-Level Debugger\c
 .PP
 .I
 \s-2DDD\s+2\(em\&A Free Graphical Front-End for \s-2UNIX\s+2 Debuggers\c
-\&, by Andreas Zeller and Dorothea Luetkehaus, Computer Science Report
-95-07, Technische Universitaet Braunschweig, 1995.
+\&, by Andreas Zeller and Dorothea L\o'"u'tkehaus, Computer Science Report
+95-07, Technische Universit\o'"a't Braunschweig, 1995.
 .PP
 .I
 \s-2DDD\s+2 \(em ein Debugger mit graphischer Datendarstellung\c
-\&, by Dorothea Luetkehaus, Diploma Thesis, Technische
-Universitaet Braunschweig, 1994.
+\&, by Dorothea L\o'"u'tkehaus, Diploma Thesis, Technische
+Universit\o'"a't Braunschweig, 1994.
 .PP
 The \s-2@DDD@\s+2 
 .IR "\s-2FTP\s+2 site" ,
@@ -3228,9 +3318,9 @@ As a last resort, send bug reports on paper to:
 .sp
 .br
 .DS
-  Technische Universitaet Braunschweig 
+  Technische Universit\o'"a't Braunschweig 
 .br
-  Institut fuer Programmiersprachen
+  Institut f\o'"u'r Programmiersprachen
 .br
   und Informationssysteme 
 .br
@@ -3238,7 +3328,7 @@ As a last resort, send bug reports on paper to:
 .br
   \s-2@DDD@\s+2-Bugs 
 .br
-  Bueltenweg 88
+  B\o'"u'ltenweg 88
 .br
   D-38092 Braunschweig 
 .br
@@ -3362,7 +3452,7 @@ In 1992, the \s-2VSL\s+2 and Box libraries were recycled for the
 inference-based software development tool set, Andreas wrote a graph
 editor (based on \s-2VSL\s+2 and the \s-2BOX\s+2 libraries) and
 facilities for inter-process knowledge exchange.  Based on these
-tools, \fIDorothea Luetkehaus\fR realized \s-2@DDD@\s+2 as her Diploma
+tools, \fIDorothea L\o'"u'tkehaus\fR realized \s-2@DDD@\s+2 as her Diploma
 Thesis, 1994.
 .PP
 The original \s-2@DDD@\s+2 had no source window; this was added by
@@ -3392,6 +3482,10 @@ December, 1995
 October, 1996
 \s-2@DDD@\s+2 2.0: Colored displays, \s-2XDB\s+2
 support, generic \s-2DBX\s+2 support, command tool.
+.TP
+March, 1997
+\s-2@DDD@\s+2 2.1: Button and value tips, status displays, automatic
+pointer ungrabbing.
 .PD
 .\"
 .\"
@@ -3416,15 +3510,15 @@ If you appreciate this software, or have any suggestions,
 please send us a picture postcard.  Our address is:
 .PP
 .DS
-  Technische Universitaet Braunschweig 
+  Technische Universit\o'"a't Braunschweig 
 .br
-  Institut fuer Programmiersprachen
+  Institut f\o'"u'r Programmiersprachen
 .br
   und Informationssysteme 
 .br
   Abteilung Softwaretechnologie 
 .br
-  Bueltenweg 88
+  B\o'"u'ltenweg 88
 .br
   D-38092 Braunschweig 
 .br
@@ -3447,12 +3541,12 @@ manual page on standard output.  This text output is suitable for
 installation as formatted manual page (as
 `\fB/usr/local/man/cat1/ddd.1\fR' or similar) on \s-2UNIX\s+2 systems.
 .PP
-A PostScript copy of this manual page, suitable for printing, is
-included in the \s-2@DDD@\s+2 source distribution and available
-separately as
+A PostScript copy of this manual page, including several \s-2@DDD@\s+2
+screen shots and diagrams, is included in the \s-2@DDD@\s+2 source
+distribution and available separately as
 .sp
 .br
-  \fBftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/doc/ddd-man.ps.gz\fR
+  \fBftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/doc/ddd.man.ps.gz\fR
 .br
 .sp
 .PP
@@ -3467,7 +3561,7 @@ manual page on \s-2UNIX\s+2 systems (as
 .SH COPYRIGHT
 .\" ---------------
 \s-2@DDD@\s+2 is Copyright \(co 1995, 1996, 1997
-Technische Universitaet Braunschweig, Germany.
+Technische Universit\o'"a't Braunschweig, Germany.
 .PP
 \s-2@DDD@\s+2 is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -3486,7 +3580,7 @@ output.  To read the License from within \s-2@DDD@\s+2, use the
 `\fB@DDD@ License...\fR' item in the `\fBHelp\fR' menu.
 .PP
 This \s-2@DDD@\s+2 manual page is Copyright \(co 1995, 1996, 1997
-Technische Universitaet Braunschweig, Germany.
+Technische Universit\o'"a't Braunschweig, Germany.
 .PP
 Permission is granted to make and distribute verbatim copies of this
 manual page provided the copyright notice and this permission notice
