@@ -117,9 +117,6 @@ Volunteers for these and other projects are welcome!
     [Could this done by pressing `delete' on members?  And should other
      displayed items be affected, too?  -AZ]
 
-152 When dereferencing, make new displays inherit the show/hide,
-    enable/disable state of their ancestors.  How about selection state?
-
 153 Include assembler support for Sun DBX (they have a `dis' command).
 
 154 Allow users to specify geometries for dialog windows.
