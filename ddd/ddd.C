@@ -162,6 +162,7 @@ char ddd_rcsid[] =
 #if XmVersion >= 1002
 #include <Xm/Display.h>
 #include <Xm/DragDrop.h>
+#include <Xm/RepType.h>		// XmRepTypeInstallTearOffModelConverter()
 #endif
 
 #if HAVE_X11_XMU_EDITRES_H
@@ -296,6 +297,7 @@ static void gdbUnselectAllCB     (Widget, XtPointer, XtPointer);
 static void gdbUpdateEditCB      (Widget, XtPointer, XtPointer);
 static void gdbUpdateFileCB      (Widget, XtPointer, XtPointer);
 static void gdbUpdateViewsCB     (Widget, XtPointer, XtPointer);
+static void gdbUpdateAllMenus();
 
 // Preferences
 static void make_preferences (Widget parent);
@@ -1766,6 +1768,11 @@ int main(int argc, char *argv[])
     // Register own converters
     registerOwnConverters();
 
+    // Install special Motif converters
+#if XmVersion >= 1002
+    XmRepTypeInstallTearOffModelConverter();
+#endif
+
     // Lock `~/.ddd/'.
     lock_ddd(toplevel);
 
@@ -2316,6 +2323,9 @@ void process_next_event()
 
     // Check for emergencies
     process_emergencies();
+
+    // Update tear-off menus
+    gdbUpdateAllMenus();
 
     // Restart blinker
     blink(!gdb->isReadyWithPrompt());
@@ -4290,7 +4300,14 @@ void update_arg_buttons()
 
 }
 
+// Arg changed - re-label buttons
 static void source_argHP(void *, void *, void *)
+{
+    update_arg_buttons();
+}
+
+// Language changed - re-label buttons
+static void language_changedHP(Agent *, void *, void *)
 {
     update_arg_buttons();
 }
@@ -4951,12 +4968,40 @@ static void gdbDeleteSelectionCB(Widget w, XtPointer client_data,
 }
 
 
+//-----------------------------------------------------------------------------
+// Update menu entries
+//-----------------------------------------------------------------------------
+
 static void gdbUpdateEditCB(Widget, XtPointer client_data, XtPointer)
 {
     DDDWindow win = ddd_window(client_data);
-    XmTextPosition start, end;
+
+    // Fetch menu
+    MMDesc *menu = 0;
+    switch (win)
+    {
+    case GDBWindow:
+    case CommonWindow:
+	menu = command_edit_menu;
+	break;
+
+    case SourceWindow:
+	menu = source_edit_menu;
+	break;
+
+    case DataWindow:
+	menu = data_edit_menu;
+	break;
+
+    default:
+	break;
+    }
+
+    if (menu == 0 || menu[0].widget == 0)
+	return;
 
     // Check if we have something to cut
+    XmTextPosition start, end;
     bool can_cut  = false;
 
     // Try debugger console
@@ -4971,7 +5016,6 @@ static void gdbUpdateEditCB(Widget, XtPointer client_data, XtPointer)
     // Try data display
     if (!can_cut && (win == DataWindow || win == CommonWindow))
 	can_cut = data_disp->have_selection();
-
 
     // Check if we have something to copy
     bool can_copy = can_cut;
@@ -5000,40 +5044,18 @@ static void gdbUpdateEditCB(Widget, XtPointer client_data, XtPointer)
 	break;
     }
 
-    // Fetch menu
-    MMDesc *menu = 0;
-    switch (win)
-    {
-    case GDBWindow:
-    case CommonWindow:
-	menu = command_edit_menu;
-	break;
-
-    case SourceWindow:
-	menu = source_edit_menu;
-	break;
-
-    case DataWindow:
-	menu = data_edit_menu;
-	break;
-
-    default:
-	break;
-    }
-
-    if (menu != 0)
-    {
-	set_sensitive(menu[EditItems::Cut].widget,    can_cut);
-	set_sensitive(menu[EditItems::Copy].widget,   can_copy);
-	set_sensitive(menu[EditItems::Paste].widget,  can_paste);
-	set_sensitive(menu[EditItems::Delete].widget, can_cut);
-	set_sensitive(menu[EditItems::UnselectAll].widget, can_copy);
-    }
+    set_sensitive(menu[EditItems::Cut].widget,         can_cut);
+    set_sensitive(menu[EditItems::Copy].widget,        can_copy);
+    set_sensitive(menu[EditItems::Paste].widget,       can_paste);
+    set_sensitive(menu[EditItems::Delete].widget,      can_cut);
+    set_sensitive(menu[EditItems::UnselectAll].widget, can_copy);
 }
 
 static void gdbUpdateFileCB(Widget, XtPointer client_data, XtPointer)
 {
     MMDesc *file_menu = (MMDesc *)client_data;
+    if (file_menu == 0 || file_menu[0].widget == 0)
+	return;
 
     // Check whether we can print something
     Graph *graph = graphEditGetGraph(data_disp->graph_edit);
@@ -5053,9 +5075,11 @@ static void gdbUpdateFileCB(Widget, XtPointer client_data, XtPointer)
 #endif
 }
 
-void gdbUpdateViewsCB(Widget, XtPointer client_data, XtPointer)
+static void gdbUpdateViewsCB(Widget, XtPointer client_data, XtPointer)
 {
     MMDesc *view_menu = (MMDesc *)client_data;
+    if (view_menu == 0 || view_menu[0].widget == 0)
+	return;
 
     set_toggle(view_menu[DataWindow].widget,   have_visible_data_window());
     set_toggle(view_menu[SourceWindow].widget, 
@@ -5063,10 +5087,18 @@ void gdbUpdateViewsCB(Widget, XtPointer client_data, XtPointer)
     set_toggle(view_menu[GDBWindow].widget,    have_visible_command_window());
 }
 
-// Language changed - re-label buttons
-static void language_changedHP(Agent *, void *, void *)
+// In case we have tear-off menus, all these menus must be updated at
+// all times.
+static void gdbUpdateAllMenus()
 {
-    update_arg_buttons();
+    gdbUpdateEditCB(gdb_w, XtPointer(GDBWindow), NULL);
+    gdbUpdateEditCB(gdb_w, XtPointer(SourceWindow), NULL);
+    gdbUpdateEditCB(gdb_w, XtPointer(DataWindow), NULL);
+    gdbUpdateEditCB(gdb_w, XtPointer(CommonWindow), NULL);
+    gdbUpdateFileCB(gdb_w, XtPointer(command_file_menu), NULL);
+    gdbUpdateFileCB(gdb_w, XtPointer(source_file_menu), NULL);
+    gdbUpdateFileCB(gdb_w, XtPointer(data_file_menu), NULL);
+    gdbUpdateViewsCB(gdb_w, XtPointer(views_menu), NULL);
 }
 
 

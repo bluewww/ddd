@@ -732,6 +732,10 @@ Ddd*ungrabMousePointer: false
 Ddd*highlightThickness: 1
 
 
+! Menus
+! Enable tear-off menus
+Ddd*tearOffModel: XmTEAR_OFF_ENABLED
+
 
 ! Logos and icons
 
@@ -1485,7 +1489,7 @@ Copyright \251 1998 Technische Universit\344t Braunschweig, Germany.\n
 
 ! The default Help Text.
 Ddd*helpString:	\
-@rm This item has no function.
+@rm This item has no function, or is not documented.
 
 ! Some trival help
 Ddd*XmScrollBar.helpString: \
@@ -1677,8 +1681,8 @@ Ddd*menubar.file.labelString:		File
 Ddd*menubar.file*documentationString:	\
 @rm Open program and source files
 Ddd*menubar.file.mnemonic:		F
-Ddd*menubar.file*helpString:	\
-\
+
+define(FILE_HELP, [\
 @rm This is the EMPH(File Menu).\n\
 \n\
 DESC(Open Program..., [open the program to be debugged])\n\
@@ -1698,6 +1702,10 @@ DESC(Make..., [run the CODE(make) program])\n\
 DESC(Close, [close this window])\n\
 DESC(Restart, [restart DDD])\n\
 DESC(Exit, [exit DDD])
+])dnl
+
+Ddd*menubar.file*helpString: FILE_HELP
+Ddd*fileMenu*helpString:     FILE_HELP
 
 Ddd*menubar*fileMenu.open_file.labelString: Open Program...
 Ddd*menubar*fileMenu.open_file.mnemonic:    O
@@ -1801,8 +1809,8 @@ Ddd*menubar.edit.labelString:		Edit
 Ddd*menubar.edit.mnemonic:		E
 Ddd*menubar.edit*documentationString:	\
 @rm Cut, copy, paste from and to the clipboard
-Ddd*menubar.edit*helpString:	\
-\
+
+define(EDIT_HELP, [\
 @rm This is the EMPH(Edit Menu).\n\
 \n\
 DESC(Cut, [remove the selected text to the clipboard])\n\
@@ -1817,6 +1825,10 @@ DESC(Settings..., [invokes a panel for setting @GDB@ options])\n\
 \n\
 DESC(Save Options, [saves options, preferences, and @GDB@ settings\n\
     for the next DDD invocation.])
+])dnl
+
+Ddd*menubar.edit*helpString: EDIT_HELP
+Ddd*editMenu*helpString:     EDIT_HELP
 
 Ddd*editMenu.cut.labelString:				Cut
 Ddd*editMenu.cut.mnemonic:				t
@@ -1885,8 +1897,8 @@ Ddd*menubar.views.labelString:		View
 Ddd*menubar.views.mnemonic:		V
 Ddd*menubar.view*documentationString:	\
 @rm Open and close DDD windows
-Ddd*menubar.views.helpString:	\
-\
+
+define(VIEWS_HELP, [\
 @rm This is the EMPH(View Menu).\n\
 \n\
 DESC(Command Tool..., [open and recenter the command tool])\n\
@@ -1895,6 +1907,10 @@ DESC(Execution Window..., [open the execution window])\n\
 DESC(Data Window, [toggle display of program data])\n\
 DESC(Source Window, [toggle display of program source])\n\
 DESC(@GDB@ Console, [toggle display of debugger console])
+])dnl
+
+Ddd*menubar.views.helpString:	VIEWS_HELP
+Ddd*viewsMenu*helpString:	VIEWS_HELP
 
 Ddd*viewsMenu.tool.labelString:			Command Tool...
 Ddd*viewsMenu.tool.mnemonic:			T
@@ -1937,7 +1953,8 @@ Ddd*menubar.view.labelString:		View
 Ddd*menubar.view.mnemonic:		V
 Ddd*menubar.view*documentationString:	\
 @rm Open DDD windows
-Ddd*menubar.view.helpString:	\
+
+define(VIEW_HELP, [\
 \
 @rm This is the EMPH(View Menu).\n\
 \n\
@@ -1947,6 +1964,10 @@ DESC(Execution Window..., [open the execution window])\n\
 DESC(Data Window..., [open the program data window])\n\
 DESC(Source Window..., [open the program source window])\n\
 DESC(@GDB@ Console..., [open the debugger console window])
+])dnl
+
+Ddd*menubar.view.helpString:	VIEW_HELP
+Ddd*viewMenu*helpString:	VIEW_HELP
 
 Ddd*viewMenu.tool.labelString:			Command Tool...
 Ddd*viewMenu.tool.mnemonic:			T
@@ -1989,7 +2010,8 @@ Ddd*menubar.program.labelString:		Program
 Ddd*menubar.program.mnemonic:			P
 Ddd*menubar.program*documentationString:	\
 @rm Control the execution of the debugged program
-Ddd*menubar.program*helpString:	\
+
+define(PROGRAM_HELP, [\
 \
 @rm This is the EMPH(Program Menu).\n\
 \n\
@@ -2014,6 +2036,10 @@ DESC(Finish, [execute until function returns])\n\
 DESC(Kill, [kill execution of program being debugged])\n\
 DESC(Interrupt, [interrupt program (or current @GDB@ command)])\n\
 DESC(Abort, [abort program (or current @GDB@ command)])
+])dnl
+
+Ddd*menubar.program*helpString:	PROGRAM_HELP
+Ddd*programMenu*helpString:	PROGRAM_HELP
 
 Ddd*menubar*programMenu.run.labelString:	   Run...
 Ddd*menubar*programMenu.run.mnemonic:		   R
@@ -2098,7 +2124,8 @@ Ddd*menubar.commands.labelString:	Commands
 Ddd*menubar.commands.mnemonic:		C
 Ddd*menubar.commands*documentationString: \
 @rm Enter and modify @GDB@ commands
-Ddd*menubar.commands*helpString:	\
+
+define(COMMANDS_HELP, [\
 \
 @rm This is the EMPH(Commands Menu).\n\
 \n\
@@ -2118,6 +2145,10 @@ DESC(Clear Line, [clear @GDB@ command line])\n\
 DESC(Clear Window, [clear all before last @GDB@ prompt])\n\
 \n\
 DESC(Edit Buttons..., [edit command buttons])
+])dnl
+
+Ddd*menubar.commands*helpString:	COMMANDS_HELP
+Ddd*commandsMenu*helpString:		COMMANDS_HELP
 
 Ddd*commandsMenu.history.labelString:	        Command History...
 Ddd*commandsMenu.history.mnemonic:	        H
@@ -2198,7 +2229,8 @@ Ddd*menubar.stack.labelString:		Status
 Ddd*menubar.stack.mnemonic:		t
 Ddd*menubar.stack*documentationString:  \
 @rm Show the current program state
-Ddd*menubar.stack.helpString:	\
+
+define(STACK_HELP, [\
 \
 @rm This is the EMPH(Status Menu).\n\
 \n\
@@ -2208,6 +2240,10 @@ DESC(Threads..., [show current program threads])\n\
 \n\
 DESC(Up, [show the function that called the current one])\n\
 DESC(Down, [show the function that was called by the current one])
+])dnl
+
+Ddd*menubar.stack.helpString:	STACK_HELP
+Ddd*stackMenu*helpString:	STACK_HELP
 
 Ddd*stackMenu.stack.labelString:	Backtrace...
 Ddd*stackMenu.stack.mnemonic:		B
@@ -2245,7 +2281,8 @@ Ddd*menubar.source.labelString:		Source
 Ddd*menubar.source.mnemonic:		S
 Ddd*menubar.source*documentationString: \
 @rm Set and edit breakpoints in source files
-Ddd*menubar.source.helpString:	\
+
+define(SOURCE_HELP, [\
 \
 @rm This is the EMPH(Source Menu).\n\
 \n\
@@ -2265,6 +2302,10 @@ DESC(Reload Source , [reload current source file])\n\
 \n\
 DESC(Back, [return to previous source position])\n\
 DESC(Forward, [move forward to next source position])
+])dnl
+
+Ddd*menubar.source.helpString:	SOURCE_HELP
+Ddd*sourceMenu.helpString:	SOURCE_HELP
 
 Ddd*sourceMenu.breakpoints.labelString:	Edit Breakpoints...
 Ddd*sourceMenu.breakpoints.mnemonic:	d
@@ -2326,7 +2367,8 @@ Ddd*menubar.data.labelString:		Data
 Ddd*menubar.data.mnemonic:		D
 Ddd*menubar.data*documentationString:   \
 @rm Create and modify data displays
-Ddd*menubar.data*helpString:	\
+
+define(DATA_HELP, [\
 \
 @rm This is the EMPH(Data Menu).\n\
 \n\
@@ -2346,6 +2388,10 @@ DESC(Layout Graph, [layout the graph])\n\
 \n\
 DESC(Select All, [select all displays])\n\
 DESC(Refresh, [update all displays])
+])dnl
+
+Ddd*menubar.data*helpString:	DATA_HELP
+Ddd*dataMenu*helpString:	DATA_HELP
 
 Ddd*dataMenu.displays.labelString:	Edit Displays...
 Ddd*dataMenu.displays.mnemonic:		D
@@ -2450,7 +2496,8 @@ Ddd*menubar.help.labelString:		Help
 Ddd*menubar.help.mnemonic:		H
 Ddd*menubar.help*documentationString:   \
 @rm Get more information
-Ddd*menubar.help*helpString: \
+
+define(HELP_HELP, [\
 \
 @rm This is the EMPH(Help Menu).\n\
 \n\
@@ -2468,6 +2515,10 @@ DESC([[DDD]] License..., [copying, distributing, and modifying DDD])\n\
 DESC([[DDD]] WWW Page..., [the DDD WWW page])\n\
 \n\
 DESC(About [[DDD]]..., [some general information about DDD])
+])dnl
+
+Ddd*menubar.help*helpString: HELP_HELP
+Ddd*helpMenu*helpString:     HELP_HELP
 
 Ddd*helpMenu.whatNext.labelString:		What Now?...
 Ddd*helpMenu.whatNext.mnemonic:			N
@@ -3265,15 +3316,20 @@ Pulldown menu functions (press and hold BUTTON(1)):\
 
 define(MORE_PULLDOWN,[(hold for menu)])dnl
 
+define(NEW_DISPLAY_HELP, [\
+DESC(Shortcut 1, [User-defined shortcut 1])\n\
+DESC(Shortcut 2, [User-defined shortcut 2]) ...\n\
+DESC(Other..., [Enter new shortcut])\n\
+DESC(Edit..., [Edit shortcuts])
+])dnl
+
 Ddd*graph_cmd_w.graph_cmd_area*new.helpString:\
 LBL(New Display)\n\
 Create a new display dependent on the selected display part.\n\
 \n\
 ANNOUNCE_PULLDOWN\n\
-DESC(Shortcut 1, [User-defined shortcut 1])\n\
-DESC(Shortcut 2, [User-defined shortcut 2]) ...\n\
-DESC(Other..., [Enter new shortcut])\n\
-DESC(Edit..., [Edit shortcuts])
+NEW_DISPLAY_HELP
+Ddd*newMenu*helpString: NEW_DISPLAY_HELP
 
 Ddd*graph_cmd_w.graph_cmd_area*new.tipString:\
 @rm Create new display
@@ -3288,15 +3344,21 @@ Ddd*graph_cmd_w.graph_cmd_area*dereference.tipString:\
 Ddd*graph_cmd_w.graph_cmd_area*dereference.documentationString:\
 @rm Dereference the selected display
 
+define(DETAIL_HELP, [\
+DESC(Show More, [Show more details])\n\
+DESC(Show Just, [Show details, excluding substructures]) ...\n\
+DESC(Show All, [Show all details, including substructures])\n\
+DESC(Hide, [Hide Details])
+])dnl
+
 Ddd*graph_cmd_w.graph_cmd_area*detail.helpString:	\
 LBL(Show ()) / LBL(Hide ())\n\
 Show/Hide details of the selected displays.\n\
 \n\
 ANNOUNCE_PULLDOWN\n\
-DESC(Show More, [Show more details])\n\
-DESC(Show Just, [Show details, excluding substructures]) ...\n\
-DESC(Show All, [Show all details, including substructures])\n\
-DESC(Hide, [Hide Details])
+DETAIL_HELP
+
+Ddd*detailMenu*helpString:	DETAIL_HELP
 
 Ddd*graph_cmd_w.graph_cmd_area*detail.tipString:	\
 @rm Show/Hide selected details
@@ -3312,12 +3374,19 @@ Ddd*graph_cmd_w.graph_cmd_area*show_detail.documentationString: \
 Ddd*graph_cmd_w.graph_cmd_area*hide_detail.documentationString: \
 @rm Hide details of the selected displays
 
+define(ROTATE_HELP, [\
+DESC(Rotate All, [Rotate substructures too])
+])dnl
+
 Ddd*graph_cmd_w.graph_cmd_area*rotate.helpString:	\
 LBL(Rotate ())\n\
 Rotate the selected displays.\n\
 \n\
 ANNOUNCE_PULLDOWN\n\
-DESC(Rotate All, [Rotate substructures too])
+ROTATE_HELP
+
+Ddd*rotateMenu*helpString:	ROTATE_HELP
+
 Ddd*graph_cmd_w.graph_cmd_area*rotate.tipString:	\
 @rm Rotate selected displays
 Ddd*graph_cmd_w.graph_cmd_area*rotate.documentationString: \
@@ -3637,15 +3706,21 @@ Ddd*arg_cmd_w.arg_cmd_area*lookup.tipString:	\
 Ddd*arg_cmd_w.arg_cmd_area*lookup.documentationString:	\
 @rm Lookup a line, file, function, variable or breakpoint in the source
 
+define(BREAK_HELP, [\
+DESC(Set Temporary Breakpoint at (), [set temporary breakpoint])\n\
+DESC(Continue Until (), [set temporary breakpoint and resume execution])\n\
+DESC(Enable / Disable Breakpoint at (), [enable or disable breakpoint])\n\
+DESC(Set Execution Position to (), [move execution position])
+])dnl
+
 Ddd*arg_cmd_w.arg_cmd_area*breakAt.helpString:	\
 LBL(Break at ()) / LBL(Clear at ())\n\
 Set or delete a breakpoint at the argument LBL(()).\n\
 \n\
 ANNOUNCE_PULLDOWN\n\
-DESC(Set Temporary Breakpoint at (), [set temporary breakpoint])\n\
-DESC(Continue Until (), [set temporary breakpoint and resume execution])\n\
-DESC(Enable / Disable Breakpoint at (), [enable or disable breakpoint])\n\
-DESC(Set Execution Position to (), [move execution position])
+BREAK_HELP
+
+Ddd*breakAtMenu*helpString:	BREAK_HELP
 
 Ddd*arg_cmd_w.arg_cmd_area*breakAt.tipString:	\
 @rm Set/Delete breakpoint at LBL(())
@@ -3661,13 +3736,18 @@ Ddd*arg_cmd_w.arg_cmd_area*enable.documentationString: \
 Ddd*arg_cmd_w.arg_cmd_area*setPC.documentationString: \
 @rm Set the current execution position to LBL(())
 
+define(PRINT_HELP, [\
+DESC(Print *(), [print dereferenced argument])\n\
+DESC(Whatis (), [print type of argument])
+])dnl
+
 Ddd*arg_cmd_w.arg_cmd_area*print.helpString:	\
 LBL(Print ())\n\
 Print the argument LBL(()) in the @GDB@ console.\n\
 \n\
 ANNOUNCE_PULLDOWN\n\
-DESC(Print *(), [print dereferenced argument])\n\
-DESC(Whatis (), [print type of argument])
+PRINT_HELP
+Ddd*printMenu*helpString:	PRINT_HELP
 
 Ddd*arg_cmd_w.arg_cmd_area*print.tipString:	\
 @rm Print LBL(()) in the debugger console
@@ -3678,12 +3758,18 @@ Ddd*arg_cmd_w.arg_cmd_area*printRef.documentationString:	\
 Ddd*arg_cmd_w.arg_cmd_area*whatis.documentationString:	\
 @rm Print the type of the argument LBL(()) in the @GDB@ console
 
+define(DISPLAY_HELP, [\
+DESC(Display *(), [display dereferenced argument])
+])dnl
+
 Ddd*arg_cmd_w.arg_cmd_area*display.helpString:	\
 LBL(Display ())\n\
 Display the argument LBL(()) in the data window.\n\
 \n\
 ANNOUNCE_PULLDOWN\n\
-DESC(Display *(), [display dereferenced argument])
+DISPLAY_HELP
+Ddd*displayMenu*helpString:	DISPLAY_HELP
+
 
 Ddd*arg_cmd_w.arg_cmd_area*display.tipString:	\
 @rm Display LBL(()) in the data window
@@ -3691,6 +3777,15 @@ Ddd*arg_cmd_w.arg_cmd_area*display.documentationString:	\
 @rm Display the argument LBL(()) in the data window MORE_PULLDOWN()
 Ddd*arg_cmd_w.arg_cmd_area*dispRef.documentationString:	\
 @rm Display the dereferenced argument LBL(()) in the data window
+
+define(WATCH_HELP, [\
+DESC(Set watchpoint on (), [stop whenever LBL(()) changes; same as LBL(Watch())])\n\
+DESC(Set read watchpoint on (), [stop whenever LBL(()) is read])\n\
+DESC(Set access watchpoint on (), [stop whenever LBL(()) is either read or written])\n\
+\n\
+Unless you have special hardware support, watchpoints slow down the\n\
+debugged program by about two orders of magnitude.
+])dnl
 
 Ddd*arg_cmd_w.arg_cmd_area*watch.helpString:	\
 LBL(Watch ()) / LBL(Unwatch())\n\
@@ -3703,12 +3798,8 @@ managed like any other breakpoint, via LBL(Source) | LBL(Edit Breakpoints).\n\
 LBL(Unwatch()) deletes the EMPH(watchpoint) associated with LBL(()).\n\
 \n\
 ANNOUNCE_PULLDOWN\n\
-DESC(Set watchpoint on (), [stop whenever LBL(()) changes; same as LBL(Watch())])\n\
-DESC(Set read watchpoint on (), [stop whenever LBL(()) is read])\n\
-DESC(Set access watchpoint on (), [stop whenever LBL(()) is either read or written])\n\
-\n\
-Unless you have special hardware support, watchpoints slow down the\n\
-debugged program by about two orders of magnitude.
+WATCH_HELP
+Ddd*watchMenu*helpString:	WATCH_HELP
 
 Ddd*arg_cmd_w.arg_cmd_area*watch.tipString:	\
 @rm Stop whenever LBL(()) changes
@@ -3721,6 +3812,11 @@ Ddd*arg_cmd_w.arg_cmd_area*rwatch.documentationString:	\
 Ddd*arg_cmd_w.arg_cmd_area*awatch.documentationString:	\
 @rm Stop whenever LBL(()) is either read or written (requires hardware support)
 
+define(FIND_HELP, [\
+DESC(LBL_FIND_PREV, [find backwards])\n\
+DESC(LBL_FIND_NEXT, [find forwards])
+])dnl
+
 Ddd*arg_cmd_w.arg_cmd_area*find.helpString:	\
 LBL(LBL_FIND_PREV / LBL_FIND_NEXT)\n\
 Search an occurrence of LBL(()) in the current source text.\n\
@@ -3728,8 +3824,8 @@ Search an occurrence of LBL(()) in the current source text.\n\
 See LBL(Edit) | LBL(Preferences) | LBL(Source) for search settings.\n\
 \n\
 ANNOUNCE_PULLDOWN\n\
-DESC(LBL_FIND_PREV, [find backwards])\n\
-DESC(LBL_FIND_NEXT, [find forwards])
+FIND_HELP
+Ddd*findMenu*helpString:	FIND_HELP
 
 Ddd*arg_cmd_w.arg_cmd_area*find.tipString:	\
 @rm Find LBL(()) in source
