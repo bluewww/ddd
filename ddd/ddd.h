@@ -133,6 +133,8 @@
 #define XtCCacheSourceFiles      "CacheSourceFiles"
 #define XtNsuppressWarnings      "suppressWarnings"
 #define XtCSuppressWarnings      "SuppressWarnings"
+#define XtNttyMode               "ttyMode"
+#define XtCTTYMode               "TTYMode"
 #define XtNdddinitVersion        "dddinitVersion"
 #define XtNappDefaultsVersion    "appDefaultsVersion"
 #define XtCVersion               "Version"
@@ -184,6 +186,7 @@ typedef struct {
     Boolean save_history_on_exit;
     Boolean cache_source_files;
     Boolean suppress_warnings;
+    Boolean tty_mode;
     String  dddinit_version;
     String  app_defaults_version;
 } AppData;
@@ -202,6 +205,12 @@ extern void gdb_out(const string& text);
 
 // Output TEXT in GDB window (unconditionally)
 extern void _gdb_out(string text);
+
+// Output TEXT on controlling TTY, unless we've just composed a command
+extern void tty_out(const string& text);
+
+// Output TEXT on controlling TTY (unconditionally)
+extern void _tty_out(const string& text);
 
 // Error handling
 extern void post_gdb_busy(Widget origin = 0);

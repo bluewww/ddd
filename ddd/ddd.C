@@ -398,6 +398,10 @@ void startup_exec_tty(string& command, Widget origin = 0);
 void kill_exec_tty();
 void remove_init_file();
 
+// Controlling TTY
+void tty_command(Agent *source, void *client_data, void *call_data);
+void tty_eof(Agent *source, void *client_data, void *call_data);
+
 // Help texts
 void show_invocation(DebuggerType type);
 void show_version();
@@ -848,6 +852,15 @@ static XtResource resources[] = {
 	XtPointer(False)
     },
     {
+	XtNttyMode,
+	XtCTTYMode,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, tty_mode),
+	XtRImmediate,
+	XtPointer(False)
+    },
+    {
 	XtNdddinitVersion,
 	XtCVersion,
 	XtRString,
@@ -941,6 +954,10 @@ static XrmOptionDescRec options[] = {
 { "--login",                XtNdebuggerHostLogin,    XrmoptionSepArg, NULL },
 { "-login",                 XtNdebuggerHostLogin,    XrmoptionSepArg, NULL },
 { "-l",                     XtNdebuggerHostLogin,    XrmoptionSepArg, NULL },
+
+{ "--tty",                  XtNttyMode,              XrmoptionNoArg, "true" },
+{ "-tty",                   XtNttyMode,              XrmoptionNoArg, "true" },
+{ "-t",                     XtNttyMode,              XrmoptionNoArg, "true" },
 
 { "--version",              XtNshowVersion,          XrmoptionNoArg, "true" },
 { "-version",               XtNshowVersion,          XrmoptionNoArg, "true" },
@@ -1368,6 +1385,9 @@ static MMDesc arg_cmd_area[] =
 // All communication with GDB passes through this variable
 GDBAgent*     gdb = 0;
 
+// All communication with the command TTY passes through this variable
+LiterateAgent* command_tty = 0;
+
 // Application resources
 AppData       app_data;
 
@@ -1453,6 +1473,7 @@ string gdb_redirection = "";
 // Command management
 static bool private_gdb_output;   // true if output is running
 static bool private_gdb_input;    // true if input is running
+static bool tty_gdb_input;        // true if input comes from command tty
 static bool private_gdb_history;  // true if history command was issued
 static bool gdb_keyboard_command; // true if last cmd came from GDB window
 static Widget gdb_last_origin;    // origin of last command
@@ -2166,10 +2187,14 @@ int main(int argc, char *argv[])
 	initial_popup_shell(source_view_shell);
 	initial_popup_shell(data_disp_shell);
     }
-    else
+    else if (!app_data.tty_mode)
     {
 	// Popup the command shell only; other shells follow as needed
 	initial_popup_shell(command_shell);
+    }
+    else
+    {
+	// TTY mode: all shells follow as needed
     }
 
     // If some window is iconified, iconify all others as well
@@ -2190,6 +2215,23 @@ int main(int argc, char *argv[])
     wait_until_mapped(command_shell);
     XmUpdateDisplay(command_shell);
 
+    // Setup TTY interface
+    if (app_data.tty_mode)
+    {
+	command_tty = new LiterateAgent(app_context);
+	command_tty->addHandler(Input, tty_command);
+	command_tty->addHandler(InputEOF, tty_eof);
+	command_tty->start();
+
+	string init_msg = XmTextGetString(gdb_w);
+	// init_msg.gsub("\344", "ae");
+	// init_msg.gsub("\366", "oe");
+	// init_msg.gsub("\374", "ue");
+	// init_msg.gsub("\337", "ss");
+	// init_msg.gsub("\251", "(C)");
+	tty_out(init_msg);
+    }
+
     // Start debugger
     start_gdb();
     gdb_tty = gdb->slave_tty();
@@ -2200,13 +2242,16 @@ int main(int argc, char *argv[])
     if ((sig = setjmp(main_loop_env)))
     {
         // Caught a signal
-        cerr << sigName(sig) << "\n";
-
         if (sig == SIGINT)
 	{
 	    // Propagate interrupt to GDB
 	    gdb_keyboard_command = true;
 	    _gdb_command("\003", gdb_w);
+	}
+	else
+	{
+	    // Show diagnostic
+	    cerr << sigName(sig) << "\n";
 	}
     }
 
@@ -2658,7 +2703,7 @@ void show_invocation(DebuggerType type)
 	"\n"
 	"For more information, consult the " DDD_NAME " `Help' menu,"
 	" type `help' from\n"
-	"within " DDD_NAME ","
+	"within " DDD_NAME ", "
 	"or consult the manual pages of " DDD_NAME " and your debugger.\n";
 }
 
@@ -5722,7 +5767,7 @@ void gdbChangeCB(Widget w, XtPointer, XtPointer)
 	gdb_input_at_prompt = true;
 
     string input = current_line();
-
+	
     int newlines = input.freq('\n');
     string *lines = new string[newlines + 1];
     split(input, lines, newlines, '\n');
@@ -5741,6 +5786,7 @@ void gdbChangeCB(Widget w, XtPointer, XtPointer)
 	for (int i = 0; i < newlines; i++)
 	{
 	    string cmd = lines[i];
+	    tty_out(cmd + "\n");
 
 	    if (gdb_input_at_prompt)
 	    {
@@ -6067,6 +6113,8 @@ void _gdb_out(string text)
     set_status_from_gdb(text);
     set_tty_from_gdb(text);
 
+    tty_out(text);
+
     char ctrl;
     do {
 	string block = text;
@@ -6106,6 +6154,46 @@ void gdb_out(const string& text)
 }
 
 
+//-----------------------------------------------------------------------------
+// Command TTY
+//-----------------------------------------------------------------------------
+
+// TTY input received
+void tty_command(Agent *, void *, void *call_data)
+{
+    DataLength *d = (DataLength *)call_data;
+    if (promptPosition == 0)
+	promptPosition = XmTextGetLastPosition(gdb_w);
+
+    // Simply insert text, invoking all necessary callbacks
+    tty_gdb_input = true;
+    XmTextInsert(gdb_w, promptPosition, (String)d->data);
+    tty_gdb_input = false;
+}
+
+// TTY EOF received
+void tty_eof(Agent *, void *, void *)
+{
+    // Kill and exit
+    gdb->terminate();
+}
+
+// Echo on TTY
+void tty_out(const string& text)
+{
+    if (tty_gdb_input)
+	return;
+
+    _tty_out(text);
+}
+
+void _tty_out(const string& text)
+{
+    if (command_tty == 0)
+	return;
+
+    command_tty->write((char *)text, text.length());
+}
 
 //-----------------------------------------------------------------------------
 // Exiting
