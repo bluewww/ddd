@@ -107,9 +107,8 @@ extern "C" {
 #include <fcntl.h>
 #endif
 
-#if HAVE_SYS_IOCTL_H && defined(__FreeBSD__)
+#if HAVE_SYS_IOCTL_H
 #include <sys/ioctl.h>
-#define HAVE_IOCTL_DECL 1
 #endif
 
 #if HAVE_SYS_VTY_H
