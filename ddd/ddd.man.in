@@ -27,9 +27,9 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 .\"
-.TH @ddd@ 1 "10 December 1996" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "10 December 1996" "@DDD@ @VERSION@"
 .SH NAME
-@ddd@, x@ddd@ - the data display debugger (v@VERSION@)
+@ddd@, x@ddd@ - the data display debugger
 .SH SYNOPSIS
 .na
 .TP
@@ -2917,10 +2917,9 @@ correct array subscripts.
 .PP
 With some \s-2DBX\s+2 versions (notably Solaris \s-2DBX\s+2),
 \s-2@DDD@\s+2 strips C-style and C++-style comments from the
-\s-2DBX\s+2 output in order to interpret \s-2DBX\s+2 output properly.
-This also affects the output of the debugged program when sent to the
-debugger console.  Using the separate execution window avoids these
-problems.
+\s-2DBX\s+2 output in order to interpret it properly.  This also
+affects the output of the debugged program when sent to the debugger
+console.  Using the separate execution window avoids these problems.
 .PP
 In some \s-2DBX\s+2 versions (notably \s-2DEC\s+2 \s-2DBX\s+2 and
 \s-2AIX\s+2 \s-2DBX\s+2), there is no automatic data display.
@@ -2940,8 +2939,8 @@ If command output is sent to the debugger console, it is impossible
 for \s-2@DDD@\s+2 to distinguish between the output of the debugged
 program and the output of the inferior debugger.  For instance, if
 your program output includes debugger prompts or debugger-like output,
-\s-2@DDD@\s+2 will likely become confused.  Use the separate execution
-window to avoid such problems.
+\s-2@DDD@\s+2 will likely become confused.  To avoid such problems,
+use the separate execution window.
 .PP
 If the inferior debugger changes the default \s-2TTY\s+2 settings, for
 instance through a `\fBstty\fR' command in its initialization file,

@@ -1418,7 +1418,7 @@ Ddd*menubar.helpString:		\
 
 ! File menu
 Ddd*menubar.file.labelString:		File
-Ddd*menubar.file*documentationString:	@rm File menu
+Ddd*menubar.file*documentationString:	@rm Open program and source files
 Ddd*menubar.file.mnemonic:		F
 Ddd*menubar.file*helpString:	\
 \
@@ -1491,7 +1491,8 @@ Ddd*menubar*fileMenu.exit.documentationString:   \
 ! Edit menu
 Ddd*menubar.edit.labelString:		Edit
 Ddd*menubar.edit.mnemonic:		E
-Ddd*menubar.edit*documentationString:	@rm Edit menu
+Ddd*menubar.edit*documentationString:	\
+@rm Cut, copy, paste from and to the clipboard
 Ddd*menubar.edit*helpString:	\
 \
 @rm This is the @sl Edit menu@rm.\n\
@@ -1544,7 +1545,8 @@ Ddd*editMenu.delete.documentationString: \
 ! Options menu
 Ddd*menubar.options.labelString:	 Options
 Ddd*menubar.options.mnemonic:		 O
-Ddd*menubar.options*documentationString: @rm Options menu
+Ddd*menubar.options*documentationString: \
+@rm Modify the debugger configuration
 
 Ddd*menubar.options*helpString:	\
 @rm This is the @sl Options @rm menu.\n\
@@ -1568,12 +1570,12 @@ for the next @DDD@ invocation.
 Ddd*optionsMenu.preferences.labelString:		Preferences...
 Ddd*optionsMenu.preferences.mnemonic:			P
 Ddd*optionsMenu.preferences.documentationString:\
-@rm Modify @DDD@ configuration
+@rm Modify the @DDD@ configuration
 
 Ddd*optionsMenu.settings.labelString:			Settings...
 Ddd*optionsMenu.settings.mnemonic:			S
 Ddd*optionsMenu.settings.documentationString:\
-@rm Modify configuration of the inferior debugger
+@rm Modify the configuration of the inferior debugger
 
 Ddd*optionsMenu.separateExecWindow.labelString:		Run in Execution Window
 Ddd*optionsMenu.separateExecWindow.mnemonic:		E
@@ -1605,7 +1607,8 @@ Ddd*optionsMenu.saveOptions.documentationString:\
 ! Windows menu
 Ddd*menubar.view.labelString:		Windows
 Ddd*menubar.view.mnemonic:		W
-Ddd*menubar.view*documentationString:	@rm Windows menu
+Ddd*menubar.view*documentationString:	\
+@rm Open @DDD@ windows
 Ddd*menubar.view.helpString:	\
 \
 @rm This is the @sl Windows menu@rm.\n\
@@ -1645,7 +1648,8 @@ Ddd*viewMenu.exec.documentationString: \
 ! Program menu
 Ddd*menubar.program.labelString:		Program
 Ddd*menubar.program.mnemonic:			P
-Ddd*menubar.program*documentationString:	@rm Program menu
+Ddd*menubar.program*documentationString:	\
+@rm Control the execution of the debugged program
 Ddd*menubar.program*helpString:	\
 \
 @rm This is the @sl Program menu@rm.\n\
@@ -1741,7 +1745,8 @@ Ddd*menubar*programMenu.quit.documentationString: \
 ! Commands
 Ddd*menubar.commands.labelString:	Commands
 Ddd*menubar.commands.mnemonic:		C
-Ddd*menubar.commands*documentationString: @rm Commands menu
+Ddd*menubar.commands*documentationString: \
+@rm Enter and modify debugger commands
 Ddd*menubar.commands*helpString:	\
 \
 @rm This is the @sl Commands menu@rm.\n\
@@ -1826,7 +1831,8 @@ Ddd*commandsMenu.clear_window.documentationString: \
 ! Stack
 Ddd*menubar.stack.labelString:		Stack
 Ddd*menubar.stack.mnemonic:		t
-Ddd*menubar.stack*documentationString:  @rm Stack menu
+Ddd*menubar.stack*documentationString:  \
+@rm Show the current program state
 Ddd*menubar.stack.helpString:	\
 \
 @rm This is the @sl Stack menu@rm.\n\
@@ -1860,14 +1866,15 @@ Ddd*stackMenu.down.mnemonic:		D
 Ddd*stackMenu.down.accelerator:		Ctrl<Key>Down
 Ddd*stackMenu.down.acceleratorText:	Ctrl+Down
 Ddd*stackMenu.down.documentationString: \
-@rm Show the function that was called the current one
+@rm Show the function that was called by the current one
 
 
 
 ! Source menu
 Ddd*menubar.source.labelString:		Source
 Ddd*menubar.source.mnemonic:		S
-Ddd*menubar.source*documentationString: @rm Source menu
+Ddd*menubar.source*documentationString: \
+@rm Set and edit breakpoints in source files
 Ddd*menubar.source.helpString:	\
 \
 @rm This is the @sl Source menu@rm.\n\
@@ -1876,8 +1883,8 @@ Ddd*menubar.source.helpString:	\
 @tt \267 @bf Edit Source... @rm - invoke text editor for current source.\n\
 @tt \267 @bf Reload Source  @rm - reload current source file.\n\
 \n\
-@tt \267 @bf Back @rm - show the previous source position.\n\
-@tt \267 @bf Forward @rm - show the next source position.
+@tt \267 @bf Back @rm - return to previous source position.\n\
+@tt \267 @bf Forward @rm - move forward to next source position.
 
 Ddd*sourceMenu.breakpoints.labelString:	Edit Breakpoints...
 Ddd*sourceMenu.breakpoints.mnemonic:	B
@@ -1903,20 +1910,21 @@ Ddd*sourceMenu.back.mnemonic:		B
 Ddd*sourceMenu.back.accelerator:	Ctrl<Key>Left
 Ddd*sourceMenu.back.acceleratorText:	Ctrl+Left
 Ddd*sourceMenu.back.documentationString: \
-@rm Show previous source position
+@rm Return to previous source position
 
 Ddd*sourceMenu.forward.labelString:	Forward
 Ddd*sourceMenu.forward.mnemonic:	F
 Ddd*sourceMenu.forward.accelerator:	Ctrl<Key>Right
 Ddd*sourceMenu.forward.acceleratorText:	Ctrl+Right
 Ddd*sourceMenu.forward.documentationString: \
-@rm Show next source position
+@rm Move forward to next source position
 
 
 ! Data menu
 Ddd*menubar.data.labelString:		Data
 Ddd*menubar.data.mnemonic:		D
-Ddd*menubar.data*documentationString:   @rm Data menu
+Ddd*menubar.data*documentationString:   \
+@rm Create and modify data displays
 Ddd*menubar.data*helpString:	\
 \
 @rm This is the @sl Data menu@rm.\n\
@@ -1968,13 +1976,14 @@ Ddd*dataMenu.refresh.mnemonic:		R
 Ddd*dataMenu.refresh.accelerator:	Ctrl ~Shift<Key>L
 Ddd*dataMenu.refresh.acceleratorText:	Ctrl+L
 Ddd*dataMenu.refresh.documentationString:	\
-@rm Redraw all displays
+@rm Redraw all displays, using current values
 
 
 ! Help menu
 Ddd*menubar.help.labelString:		Help
 Ddd*menubar.help.mnemonic:		H
-Ddd*menubar.help*documentationString:   @rm Help menu
+Ddd*menubar.help*documentationString:   \
+@rm Get more information
 Ddd*menubar.help*helpString: \
 \
 @rm This is the @sl Help menu@rm.\n\
@@ -1994,7 +2003,7 @@ Ddd*helpMenu.onContext.accelerator:	None<Key>F1
 ! *helpMenu.onContext.accelerator:	<Key>osfHelp
 Ddd*helpMenu.onContext.acceleratorText:	F1
 Ddd*helpMenu.onContext.documentationString:	\
-@rm Click on item and get help on it
+@rm Click on an item and get help on it
 
 Ddd*helpMenu.onWindow.labelString:	On Window...
 Ddd*helpMenu.onWindow.mnemonic:		W
@@ -2004,12 +2013,12 @@ Ddd*helpMenu.onWindow.documentationString:	\
 Ddd*helpMenu.onHelp.labelString:	On Help...
 Ddd*helpMenu.onHelp.mnemonic:		H
 Ddd*helpMenu.onHelp.documentationString:	\
-@rm Information about the context-sensitive help
+@rm How to use the context-sensitive help
 
 Ddd*helpMenu.onVersion.labelString:	On Version...
 Ddd*helpMenu.onVersion.mnemonic:	V
 Ddd*helpMenu.onVersion.documentationString:	\
-@rm Information about version of @DDD@ you are running
+@rm Information about the version of @DDD@ you are running
 
 Ddd*helpMenu.index.labelString:		@DDD@ Manual...
 Ddd*helpMenu.index.mnemonic:		M
@@ -2019,12 +2028,12 @@ Ddd*helpMenu.index.documentationString:	\
 Ddd*helpMenu.license.labelString:	@DDD@ License...
 Ddd*helpMenu.license.mnemonic:		L
 Ddd*helpMenu.license.documentationString:	\
-@rm The @DDD@ license
+@rm Terms and conditions for copying, distributing, and modifying @DDD@
 
 Ddd*helpMenu.www.labelString:		@DDD@ WWW Page...
 Ddd*helpMenu.www.mnemonic:		P
 Ddd*helpMenu.www.documentationString:	\
-@rm Invoke a WWW browser with the @DDD@ WWW page
+@rm Invoke a WWW browser with up-to-date @DDD@ information
 
 
 
@@ -3011,13 +3020,13 @@ Ddd*?*Apply.tipString: \
 
 Ddd*?*Back.helpString:	\
 @bf Back@rm\n\
-Go to the previous source position.
+Return to the previous source position.
 Ddd*?*Back.tipString: \
 @rm Previous source position
 
 Ddd*?*Forward.helpString:	\
 @bf Forward@rm\n\
-Go to the next source position.
+Move forward to the next source position.
 Ddd*?*Forward.tipString: \
 @rm Next source position
 
