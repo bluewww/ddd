@@ -5203,8 +5203,7 @@ static void ReportStartHP(Agent *agent, void *, void *)
 
     running_msg = new StatusMsg("Running " + gdb->title() + 
 				" (pid " + itostring(gdb->pid()) + 
-				", slave tty " + gdb->slave_tty() +
-				", master tty " + gdb->master_tty() + ")");
+				", tty " + gdb->slave_tty() + ")");
     unlock_status();
 }
 
