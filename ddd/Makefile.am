@@ -1256,7 +1256,7 @@ ddd.1:   ddd.man $(srcdir)/unumlaut.sed
 IMGEXT     = .jpg
 
 # Width of image in HTML manual (pixels)
-IMAGE_WIDTH = 600
+IMAGE_WIDTH = 800
 
 # Some XPM/PPM/PostScript converters, from the netpbm and pbmplus packages.
 PBMTOXBM   = pbmtoxbm
