@@ -268,7 +268,7 @@ J       [A-Za-z][A-Za-z0-9.]*
 <S041>[^ "'/]*\/			return &rxfilepath;
 <S042>{_}use{W}{C}			return &rxuse_cmd;
 <S043>#{D}{W}{A}			return &rxframe;
-<S044>{_}(up|do|down|f|fra|fram|frame|top|V|suspend)({W}{C})? return &rxframe_cmd;
+<S044>{_}(up|do|down|f|fra|fram|frame|top|V|suspend|resume)({W}{C})? return &rxframe_cmd;
 <S045>[a-zA-Z0-9_$][(]			return &rxfunction_call;
 <S046>{P}:{W}[^ ]			return &rxgdb_begin_of_display;
 <S047>{P}:{w}{w}{w}			return &rxgdb_begin_of_display_info;
