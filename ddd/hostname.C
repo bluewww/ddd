@@ -110,7 +110,7 @@ char *hostname()
 }
 
 // Return the number of '.' in STR
-inline int dots(char *str)
+inline int dots(const char *str)
 {
     int dots = 0;
     while (*str != '\0')
