@@ -5,10 +5,12 @@ ddd-arguments.ps
 ddd-attach.ps
 ddd-backtrace.ps
 ddd-bp-popup.ps
+ddd-button-editor.ps
 ddd-code.ps
 ddd-cond.ps
 ddd-console.ps
 ddd-data-prefs.ps
+ddd-drag.ps
 ddd-edit-displays.ps
 ddd-general-prefs.ps
 ddd-hide-display.ps
@@ -29,6 +31,8 @@ ddd-save-session.ps
 ddd-select-display.ps
 ddd-set.ps
 ddd-settings.ps
+ddd-shortcut-editor.ps
+ddd-shortcuts.ps
 ddd-source-popup.ps
 ddd-source-prefs.ps
 ddd-source.ps
