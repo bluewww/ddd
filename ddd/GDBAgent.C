@@ -1157,8 +1157,11 @@ void GDBAgent::handle_reply(string& answer)
 
 bool GDBAgent::recording(bool val)
 {
-    _recording = val;
-    callHandlers(Recording, (void *)recording());
+    if (_recording != val)
+    {
+	_recording = val;
+	callHandlers(Recording, (void *)recording());
+    }
     return recording();
 }
 
