@@ -67,7 +67,7 @@ README="ANNOUNCE    \
 "
 
 # Documentation files
-DOC="ddd.man.ps"
+DOC="ddd.man.ps ddd.man-nopics.ps"
 
 # Files to be ignored in DIFF files
 DIFF_IGNORE="
