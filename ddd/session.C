@@ -927,7 +927,7 @@ void RestartDebuggerCB(Widget, XtPointer, XtPointer)
     (void) get_restart_commands(restart_commands, flags);
     app_data.restart_commands = restart_commands;
 
-    _gdb_out("Restarting " + gdb->title() + "...\n");
+    _gdb_out("Restarting " + gdb->title() + "\n");
 
     // Clear all breakpoints and displays
     source_view->reset();
