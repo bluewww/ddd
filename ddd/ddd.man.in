@@ -3014,6 +3014,12 @@ case-sensitive.  Otherwise, occurrences are found regardless of case.
 If this is `\fBon\fR' (default), the `\fBFind\fR' commands find
 complete words only.  Otherwise, arbitrary occurrences are found.
 .TP
+.B "glyphUpdateDelay (\fPclass\fB GlyphUpdateDelay)"
+A delay (in ms) that says how much time to wait before updating glyphs
+while scrolling the source text.  A small value results in glyphs
+being scrolled with the text, a large value disables glyphs while
+scrolling and makes scrolling faster.  Default: \fB10\fR.
+.TP
 .B "indentCode (\fPclass\fB Indent)"
 The number of columns to indent the machine code, such that there is
 enough place to display breakpoint locations.  Default: \fB4\fR.

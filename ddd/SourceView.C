@@ -6335,9 +6335,9 @@ void SourceView::update_glyphs(Widget glyph)
 
 
 // Invoked by scrolling keys
-void SourceView::updateGlyphsAct(Widget, XEvent*, String *, Cardinal *)
+void SourceView::updateGlyphsAct(Widget w, XEvent*, String *, Cardinal *)
 {
-    CheckScrollWorkProc(0, 0);
+    CheckScrollCB(w, 0, 0);
 }
 
 // Invoked whenever the text widget may be about to scroll
@@ -6350,9 +6350,10 @@ void SourceView::CheckScrollCB(Widget, XtPointer, XtPointer)
 	XtRemoveTimeOut(check_scroll_id);
 	check_scroll_id = 0;
     }
-    
+
     check_scroll_id = 
-	XtAppAddTimeOut(XtWidgetToApplicationContext(source_text_w), 1,
+	XtAppAddTimeOut(XtWidgetToApplicationContext(source_text_w),
+			app_data.glyph_update_delay,
 			CheckScrollWorkProc, XtPointer(&check_scroll_id));
 }
 

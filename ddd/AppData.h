@@ -197,6 +197,8 @@
 #define XtCMaxGlyphs             "MaxGlyphs"
 #define XtNcacheGlyphImages      "cacheGlyphImages"
 #define XtCCacheGlyphImages      "CacheGlyphImages"
+#define XtNglyphUpdateDelay      "glyphUpdateDelay"
+#define XtCGlyphUpdateDelay      "GlyphUpdateDelay"
 #define XtNdisplayLineNumbers    "displayLineNumbers"
 #define XtCDisplayLineNumbers    "DisplayLineNumbers"
 #define XtNdisassemble           "disassemble"
@@ -372,6 +374,7 @@ struct AppData {
     Boolean   display_glyphs;
     Cardinal  max_glyphs;
     Boolean   cache_glyph_images;
+    Cardinal  glyph_update_delay;
     Boolean   display_line_numbers;
     Boolean   disassemble;
     Cardinal  max_disassemble;

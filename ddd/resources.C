@@ -899,6 +899,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNglyphUpdateDelay,
+	XtCGlyphUpdateDelay,
+	XtRCardinal,
+	sizeof(Cardinal),
+	XtOffsetOf(AppData, glyph_update_delay),
+	XtRImmediate,
+	XtPointer(10)
+    },
+
+    {
 	XtNdisplayLineNumbers,
 	XtCDisplayLineNumbers,
 	XtRBoolean,

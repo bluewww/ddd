@@ -654,7 +654,10 @@ Ddd*displayGlyphs: on
 ! What is the maximum number of glyphs at one time?
 Ddd*maxGlyphs: 10
 
-! Shall we cache glyph images?  (Won't work with Motif 2.1 on XFree86)
+! The time (in ms) to wait before updating glyph positions while scrolling
+Ddd*glyphUpdateDelay: 10
+
+! Shall we cache glyph images?  (Reported to fail with Motif 2.1 on XFree86)
 ! Ddd*cacheGlyphImages: on
 
 ! Do we wish to display line numbers? (Default in DDD 2.1.1 and earlier)
