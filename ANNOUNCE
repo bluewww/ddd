@@ -36,6 +36,8 @@ DDD News
       execution.
     - You can inquire the types of variables and functions (`whatis') 
       through the source popup menu.
+    - Selecting a data display item now also sets the `()' argument field
+      in the source window, making it available for further commands.
     - `New display' subsumes `Dependent display': if a display is
       selected, the new display is made dependent on it.
     - Option editors.  New panels for DDD preferences and GDB settings.

@@ -576,8 +576,8 @@ details.
 .\"
 If the item you wish to search is visible in the source text, click
 with the \fIleft mouse button\fR on it.  The identifier is copied to
-the argument field.  Click on the `\fBFind>>()\fR' button to find
-following occurrences and on the  `\fBFind<<()\fR' button to find
+the argument field.  Click on the `\fBFind\s-2>>\s+2()\fR' button to find
+following occurrences and on the  `\fBFind\s-2<<\s+2()\fR' button to find
 previous occurrences.
 .PP
 As an alternative, you can enter the item in the argument field and
