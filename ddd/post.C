@@ -63,11 +63,16 @@ extern "C" {
 
 
 
-//-----------------------------------------------------------------------------
+//=============================================================================
 // Dialogs
+//=============================================================================
+
+
+//-----------------------------------------------------------------------------
+// Yes/No dialogs
 //-----------------------------------------------------------------------------
 
-Widget yn_dialog;
+static Widget yn_dialog;
 
 // Issue CLIENT_DATA as command and unmanage YN_DIALOG.
 void YnCB(Widget dialog, 
@@ -75,8 +80,7 @@ void YnCB(Widget dialog,
 	  XtPointer call_data)
 {
     gdbCommandCB(dialog, client_data, call_data);
-    if (yn_dialog)
-	XtUnmanageChild(yn_dialog);
+    unpost_gdb_yn();
 }
 
 Widget post_gdb_yn(string question, Widget w)
@@ -113,12 +117,24 @@ Widget post_gdb_yn(string question, Widget w)
     return yn_dialog;
 }
 
+void unpost_gdb_yn()
+{
+    if (yn_dialog)
+	XtUnmanageChild(yn_dialog);
+}
+
+
+//-----------------------------------------------------------------------------
+// GDB is busy
+//-----------------------------------------------------------------------------
+
+static Widget busy_dialog = 0;
+
 Widget post_gdb_busy(Widget w)
 {
     if (ddd_is_exiting)
 	return 0;
 
-    static Widget busy_dialog = 0;
     if (busy_dialog)
 	DestroyWhenIdle(busy_dialog);
 
@@ -131,6 +147,17 @@ Widget post_gdb_busy(Widget w)
     manage_and_raise(busy_dialog);
     return busy_dialog;
 }
+
+void unpost_gdb_busy()
+{
+    if (busy_dialog)
+	XtUnmanageChild(busy_dialog);
+}
+
+
+//-----------------------------------------------------------------------------
+// GDB terminated abnormally
+//-----------------------------------------------------------------------------
 
 Widget post_gdb_died(string reason, int gdb_status, Widget w)
 {
@@ -197,6 +224,11 @@ Widget post_gdb_died(string reason, int gdb_status, Widget w)
     return died_dialog;
 }
 
+
+//-----------------------------------------------------------------------------
+// GDB issued a message
+//-----------------------------------------------------------------------------
+
 static void GDBOutCB(XtPointer client_data, XtIntervalId *)
 {
     string *text_ptr = (string *)client_data;
@@ -250,6 +282,11 @@ Widget post_gdb_message(string text, Widget w)
     return gdb_message_dialog;
 }
 
+
+//-----------------------------------------------------------------------------
+// DDD errors
+//-----------------------------------------------------------------------------
+
 Widget post_error(string text, String name, Widget w)
 {
     strip_final_blanks(text);
@@ -288,6 +325,11 @@ Widget post_error(string text, String name, Widget w)
     manage_and_raise(ddd_error);
     return ddd_error;
 }
+
+
+//-----------------------------------------------------------------------------
+// DDD warnings
+//-----------------------------------------------------------------------------
 
 Widget post_warning(string text, String name, Widget w)
 {

@@ -313,19 +313,20 @@ void _DDDExitCB(Widget w, XtPointer client_data, XtPointer call_data)
     if (startup_preferences_changed())
     {
 	// Startup options are still changed; request confirmation
-	if (yn_dialog)
-	    DestroyWhenIdle(yn_dialog);
-	yn_dialog = 
+	static Widget save_options_dialog = 0;
+	if (save_options_dialog)
+	    DestroyWhenIdle(save_options_dialog);
+	save_options_dialog = 
 	    verify(XmCreateQuestionDialog(find_shell(w), 
 					  "save_options_dialog", 0, 0));
-	Delay::register_shell(yn_dialog);
-	XtAddCallback(yn_dialog, XmNokCallback,
+	Delay::register_shell(save_options_dialog);
+	XtAddCallback(save_options_dialog, XmNokCallback,
 		      SaveOptionsAndExitCB, client_data);
-	XtAddCallback(yn_dialog, XmNcancelCallback,
+	XtAddCallback(save_options_dialog, XmNcancelCallback,
 		      closure, client_data);
-	XtAddCallback(yn_dialog, XmNhelpCallback,
+	XtAddCallback(save_options_dialog, XmNhelpCallback,
 		      ImmediateHelpCB, 0);
-	manage_and_raise(yn_dialog);
+	manage_and_raise(save_options_dialog);
     }
     else
     {
@@ -353,8 +354,9 @@ static void DDDDoneCB(Widget w, XtPointer client_data, XtPointer call_data)
     Arg args[10];
     int arg;
 
-    if (yn_dialog)
-	DestroyWhenIdle(yn_dialog);
+    static Widget quit_dialog = 0;
+    if (quit_dialog)
+	DestroyWhenIdle(quit_dialog);
 
     arg = 0;
     MString msg = rm(gdb->title() + " is still busy.  "
@@ -362,14 +364,14 @@ static void DDDDoneCB(Widget w, XtPointer client_data, XtPointer call_data)
 		     + " anyway (and kill it)?");
     XtSetArg(args[arg], XmNmessageString, msg.xmstring()); arg++;
     XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
-    yn_dialog = verify(XmCreateQuestionDialog(find_shell(w),
+    quit_dialog = verify(XmCreateQuestionDialog(find_shell(w),
 					      "quit_dialog", args, arg));
-    Delay::register_shell(yn_dialog);
-    XtAddCallback(yn_dialog, XmNokCallback,   _DDDExitCB, client_data);
-    XtAddCallback(yn_dialog, XmNcancelCallback, UnmanageThisCB, yn_dialog);
-    XtAddCallback(yn_dialog, XmNhelpCallback, ImmediateHelpCB, 0);
+    Delay::register_shell(quit_dialog);
+    XtAddCallback(quit_dialog, XmNokCallback,   _DDDExitCB, client_data);
+    XtAddCallback(quit_dialog, XmNcancelCallback, UnmanageThisCB, quit_dialog);
+    XtAddCallback(quit_dialog, XmNhelpCallback, ImmediateHelpCB, 0);
 
-    manage_and_raise(yn_dialog);
+    manage_and_raise(quit_dialog);
 }
 
 // Exit after confirmation

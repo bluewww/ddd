@@ -50,8 +50,9 @@ extern Widget post_gdb_died(string reason, int gdb_status, Widget origin = 0);
 extern Widget post_error(string text, String name = 0, Widget origin = 0);
 extern Widget post_warning(string text, String name = 0, Widget origin = 0);
 
-// General yes/no widget
-extern Widget yn_dialog;
+// Unpost specific messages
+extern void unpost_gdb_busy();
+extern void unpost_gdb_yn();
 
 // Issue CLIENT_DATA as command and unmanage YN_DIALOG.
 void YnCB(Widget dialog, XtPointer client_data, XtPointer call_data);

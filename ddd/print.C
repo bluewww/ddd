@@ -239,22 +239,24 @@ void graphQuickPrintCB(Widget w, XtPointer client_data, XtPointer)
 	else
 	{
 	    // File exists - request confirmation
-	    if (yn_dialog)
-		DestroyWhenIdle(yn_dialog);
-	    yn_dialog = 
+	    static Widget confirm_overwrite_dialog = 0;
+	    if (confirm_overwrite_dialog)
+		DestroyWhenIdle(confirm_overwrite_dialog);
+	    confirm_overwrite_dialog = 
 		verify(XmCreateQuestionDialog(find_shell(w),
 					      "confirm_overwrite_dialog", 
 					      NULL, 0));
-	    Delay::register_shell(yn_dialog);
-	    XtAddCallback (yn_dialog, XmNokCallback,   graphQuickPrintCB, 
-			   (void *)1);
-	    XtAddCallback (yn_dialog, XmNhelpCallback, ImmediateHelpCB, 0);
+	    Delay::register_shell(confirm_overwrite_dialog);
+	    XtAddCallback(confirm_overwrite_dialog, 
+			  XmNokCallback,   graphQuickPrintCB, (void *)1);
+	    XtAddCallback(confirm_overwrite_dialog, 
+			  XmNhelpCallback, ImmediateHelpCB, 0);
 
 	    MString question = rm("Overwrite existing file " 
 				  + quote(f) + "?");
-	    XtVaSetValues (yn_dialog, XmNmessageString, 
+	    XtVaSetValues (confirm_overwrite_dialog, XmNmessageString, 
 			   question.xmstring(), NULL);
-	    manage_and_raise(yn_dialog);
+	    manage_and_raise(confirm_overwrite_dialog);
 	}
     }
 }

@@ -92,8 +92,7 @@ void set_buttons_from_gdb(Widget buttons, string& text)
     else if (gdb->isReadyWithPrompt())
     {
 	gdb_asks_yn = false;
-	if (yn_dialog)
-	    XtUnmanageChild(yn_dialog);
+	unpost_gdb_yn();
     }
 
     if (yn && !gdb_keyboard_command)
