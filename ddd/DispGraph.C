@@ -949,108 +949,6 @@ bool DispGraph::hint_positions_ok(Widget w,
     return true;
 }
 
-// Replace 2-hint alias edge with 1-hint alias edge
-bool DispGraph::replace_two_hint_edge(Widget w,
-				      PosGraphNode *from, 
-				      PosGraphNode *to,
-				      const BoxPoint& offset)
-{
-    BoxPoint pos1 = graphEditFinalPosition(w, from->pos() + offset);
-    BoxPoint pos2 = graphEditFinalPosition(w, to->pos() + offset);
-
-    for (GraphEdge *edge1 = from->firstFrom(); edge1 != 0; 
-	 edge1 = from->nextFrom(edge1))
-    {
-	if (!edge1->to()->isHint())
-	    continue;
-	if (ptr_cast(AliasGraphEdge, edge1) == 0)
-	    continue;
-
-	HintGraphNode *hint1 = ptr_cast(HintGraphNode, edge1->to());
-	if (hint1->pos() != pos1)
-	    continue;
-
-	for (GraphEdge *edge2 = hint1->firstFrom(); edge2 != 0;
-	     edge2 = hint1->nextFrom(edge2))
-	{
-	    if (!edge2->to()->isHint())
-		continue;
-	    if (ptr_cast(AliasGraphEdge, edge2) == 0)
-		continue;
-
-	    HintGraphNode *hint2 = ptr_cast(HintGraphNode, edge2->to());
-	    if (hint2->pos() != pos2)
-		continue;
-
-	    for (GraphEdge *edge3 = hint2->firstFrom(); edge3 != 0;
-		 edge3 = hint2->nextFrom(edge3))
-	    {
-		if (edge3->to() != to)
-		    continue;
-		if (ptr_cast(AliasGraphEdge, edge3) == 0)
-		    continue;
-
-		// Got it: remove hint and edges
-		*this -= edge1; delete edge1;
-		*this -= edge2; delete edge2;
-		*this -= hint1; delete hint1;
-
-		// Move HINT2 to CENTER
-		BoxPoint dist   = to->pos() - from->pos();
-		BoxPoint center = from->pos() + dist / 2;
-		hint2->moveTo(graphEditFinalPosition(w, center + offset));
-
-		// Add new edge to HINT2
-		int disp_nr = ptr_cast(AliasGraphEdge, edge3)->disp_nr();
-		*this += new AliasGraphEdge(disp_nr, from, hint2);
-
-		// That's it!
-		return true;
-	    }
-	}
-    }
-
-    return false;
-}
-
-// Return true iff there is a one_hint edge at OFFSET
-bool DispGraph::have_one_hint_edge(Widget w,
-				   PosGraphNode *from, 
-				   PosGraphNode *to,
-				   const BoxPoint& offset) const
-{
-    BoxPoint dist   = to->pos() - from->pos();
-    BoxPoint center = from->pos() + dist / 2 + offset;
-    BoxPoint pos    = graphEditFinalPosition(w, center + offset);
-
-    for (GraphEdge *edge1 = from->firstFrom(); edge1 != 0; 
-	 edge1 = from->nextFrom(edge1))
-    {
-	if (!edge1->to()->isHint())
-	    continue;
-	if (ptr_cast(AliasGraphEdge, edge1) == 0)
-	    continue;
-
-	HintGraphNode *hint = ptr_cast(HintGraphNode, edge1->to());
-	if (hint->pos() != pos)
-	    continue;
-
-	for (GraphEdge *edge2 = hint->firstFrom(); edge2 != 0;
-	     edge2 = hint->nextFrom(edge2))
-	{
-	    if (edge2->to() != to)
-		continue;
-	    if (ptr_cast(AliasGraphEdge, edge2) == 0)
-		continue;
-
-	    // Got it!
-	    return true;
-	}
-    }
-
-    return false;
-}
-
 
 // Add edge from FROM to TO, inserting hints if required
 void DispGraph::add_routed_alias_edge(Widget w, int alias_disp_nr, 
@@ -1077,12 +975,10 @@ void DispGraph::add_routed_alias_edge(Widget w, int alias_disp_nr,
     offsets[LEFT]  = rotate_offset(grid_offset, +90);
     offsets[RIGHT] = rotate_offset(grid_offset, -90);
 
-    bool one_hint_edges_only[2];
-    one_hint_edges_only[LEFT]  = false;
-    one_hint_edges_only[RIGHT] = false;
-
+#if 0
     clog << "offsets[LEFT]  = " << offsets[LEFT]  << "\n";
     clog << "offsets[RIGHT] = " << offsets[RIGHT] << "\n";
+#endif
 
     // Try hint offsets
     BoxPoint pos1, pos2;
@@ -1096,39 +992,24 @@ void DispGraph::add_routed_alias_edge(Widget w, int alias_disp_nr,
 	    {
 		BoxPoint offset = offsets[side] * i;
 
-		if (!one_hint)
+		if (i == 0)
 		{
-		    // Be sure we don't enclose a one-hint edge with a
-		    // two-hint edge.
-		    if (have_one_hint_edge(w, from, to, offset))
-		    {
-			one_hint_edges_only[side] = true;
-		    }
-
-		    if (one_hint_edges_only[side])
-			continue;
-		}
-
-		if (one_hint && i > 0)
+		    // Try direct edge
+		    pos1 = from->pos() + offset;
+		    pos2 = to->pos()   + offset;
+		}		
+		else
 		{
 		    // Try one-hint edge
 		    pos1 = pos2 = center + offset;
-
-		    // If there is a two-hint edge at this position,
-		    // replace it by a one-hint edge.
-		    replace_two_hint_edge(w, from, to, offset);
-		}
-		else
-		{
-		    // Try two-hint edge
-		    pos1 = from->pos() + offset;
-		    pos2 = to->pos()   + offset;
 		}
 
+#if 0
 		clog << "#" << i << " - "
 		     << (side == LEFT ? "left side:  " : "right side: ")
 		     << "trying pos1 = " << pos1 
 		     << " and pos2 = " << pos2 << "\n";
+#endif
 
 		found = hint_positions_ok(w, from, to, pos1, pos2);
 	    }
@@ -1149,8 +1030,10 @@ void DispGraph::add_routed_alias_edge(Widget w, int alias_disp_nr,
 	// No need for hints - add direct edge
 	add_direct_alias_edge(w, alias_disp_nr, from, to);
     }
-    else if (pos1 == pos2)
+    else
     {
+	assert(pos1 == pos2);
+
 	// Add single hint
 	HintGraphNode *hint = new HintGraphNode(pos1);
 	*this += hint;
@@ -1158,18 +1041,5 @@ void DispGraph::add_routed_alias_edge(Widget w, int alias_disp_nr,
 	// Add edges
 	*this += new AliasGraphEdge(alias_disp_nr, from, hint);
 	*this += new AliasGraphEdge(alias_disp_nr, hint, to);
-    }
-    else
-    {
-	// Add two hints
-	HintGraphNode *hint1 = new HintGraphNode(pos1);
-	HintGraphNode *hint2 = new HintGraphNode(pos2);
-	*this += hint1;
-	*this += hint2;
-
-	// Add edges
-	*this += new AliasGraphEdge(alias_disp_nr, from, hint1);
-	*this += new AliasGraphEdge(alias_disp_nr, hint1, hint2);
-	*this += new AliasGraphEdge(alias_disp_nr, hint2, to);
     }
 }

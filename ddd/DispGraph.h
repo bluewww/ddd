@@ -162,18 +162,6 @@ private:
     bool hint_positions_ok(Widget w,
 			   PosGraphNode *from, PosGraphNode *to,
 			   const BoxPoint& p1, const BoxPoint& p2) const;
-
-    // Return true iff there is a one_hint edge at OFFSET
-    bool have_one_hint_edge(Widget w,
-			    PosGraphNode *from, 
-			    PosGraphNode *to,
-			    const BoxPoint& offset) const;
-
-    // Replace 2-hint alias edge with 1-hint alias edge; return true iff found
-    bool replace_two_hint_edge(Widget w,
-			       PosGraphNode *from, 
-			       PosGraphNode *to,
-			       const BoxPoint& offset);
 };
 
 #endif // _DDD_DispGraph_h
