@@ -113,6 +113,7 @@ char SourceView_rcsid[] =
 #include "shorten.h"
 #include "status.h"
 #include "string-fun.h"
+#include "strtoul.h"
 #include "tabs.h"
 #include "verify.h"
 #include "version.h"
@@ -159,7 +160,11 @@ extern "C" {
 #include <ctype.h>
 #include <time.h>
 #include <errno.h>
+#include <limits.h>
 
+#ifndef ULONG_MAX
+#define	ULONG_MAX	((unsigned long)(~0L))		/* 0xFFFFFFFF */
+#endif
 
 
 
@@ -8821,8 +8826,13 @@ bool SourceView::function_is_larger_than(string pc, int max_size)
 
     // Get the function name at function start + MAX_SIZE.  If this is
     // the same name as the name at start, the function is too large.
-    long pc_l = strtol(pc.chars(), NULL, 0);
-    long next_l = pc_l - pc_offset + max_size;
+    unsigned long pc_l = strtoul(pc.chars(), NULL, 0);
+    unsigned long next_l = pc_l - pc_offset + max_size;
+    if (next_l < pc_l)
+    {
+	// Overflow
+	next_l = ULONG_MAX;
+    }
     string next = make_address(next_l);
 
     string next_func;
@@ -8891,8 +8901,14 @@ void SourceView::show_pc(const string& pc, XmHighlightMode mode,
 	    function_is_larger_than(pc, app_data.max_disassemble))
 	{
 	    // Disassemble only MAX_DISASSEMBLE bytes after PC
-	    long pc_l = strtol(pc.chars(), NULL, 0);
-	    end = make_address(pc_l + app_data.max_disassemble);
+	    unsigned long pc_l = strtoul(pc.chars(), NULL, 0);
+	    unsigned long next_l = pc_l + app_data.max_disassemble;
+	    if (next_l < pc_l)
+	    {
+		// Overflow
+		next_l = ULONG_MAX;
+	    }
+	    end = make_address(next_l);
 	}
 
 	string msg = "Disassembling location " + start;

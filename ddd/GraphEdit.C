@@ -60,7 +60,9 @@ char GraphEdit_rcsid[] =
 #include "layout.h"
 #include "misc.h"
 #include "cook.h"
+#include "strtoul.h"
 #include "TimeOut.h"
+
 
 
 static BoxRegion EVERYWHERE(BoxPoint(0,0), BoxSize(INT_MAX, INT_MAX));
@@ -2523,7 +2525,7 @@ static Widget layout_widget = 0;
 
 static void LayoutNodeCB(char *node_name, int x, int y)
 {
-    GraphNode *node = (GraphNode *)strtol(node_name, 0, 16);
+    GraphNode *node = (GraphNode *)strtoul(node_name, 0, 16);
     assert(node != 0);
 
     node->moveTo(BoxPoint(x, y));
@@ -2531,9 +2533,9 @@ static void LayoutNodeCB(char *node_name, int x, int y)
 
 static void LayoutHintCB(char *from_name, char *to_name, int x, int y)
 {
-    GraphNode *from = (GraphNode *)strtol(from_name, 0, 16);
+    GraphNode *from = (GraphNode *)strtoul(from_name, 0, 16);
     assert(from != 0);
-    GraphNode *to   = (GraphNode *)strtol(to_name, 0, 16);
+    GraphNode *to   = (GraphNode *)strtoul(to_name, 0, 16);
     assert(to != 0);
 
     for (GraphEdge *edge = from->firstFrom();
@@ -2566,9 +2568,9 @@ static void LayoutHintCB(char *from_name, char *to_name, int x, int y)
 
 static int LayoutCompareCB(char *name1, char *name2)
 {
-    GraphNode *node1 = (GraphNode *)strtol(name1, 0, 16);
+    GraphNode *node1 = (GraphNode *)strtoul(name1, 0, 16);
     assert(node1 != 0);
-    GraphNode *node2 = (GraphNode *)strtol(name2, 0, 16);
+    GraphNode *node2 = (GraphNode *)strtoul(name2, 0, 16);
     assert(node2 != 0);
 
     GraphEditCompareNodesInfo info;
