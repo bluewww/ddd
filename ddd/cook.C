@@ -39,13 +39,11 @@ char cook_rcsid[] =
 
 #include "bool.h"
 #include "cook.h"
-#include "return.h"
 
 // Transform RAW into C string
-string _cook(const string& raw, bool for_postscript) RETURNS(cooked)
+string _cook(const string& raw, bool for_postscript)
 {
-    RETURN_OBJECT(string, cooked);
-    cooked = "";
+    ostrstream cooked;
     const char *raw_s = (char *)raw;
 
     for (unsigned i = 0; i < raw.length(); i++)
@@ -56,41 +54,41 @@ string _cook(const string& raw, bool for_postscript) RETURNS(cooked)
 	switch(c) 
 	{
 	case '\a':
-	    cooked += "\\a";
+	    cooked << "\\a";
 	    break;
 
 	case '\b':
-	    cooked += "\\b";
+	    cooked << "\\b";
 	    break;
 
 #if defined(__GNUG__) && !defined(__STRICT_ANSI__)
 	case '\e':
-	    cooked += "\\e";
+	    cooked << "\\e";
 	    break;
 #endif
 
 	case '\f':
-	    cooked += "\\f";
+	    cooked << "\\f";
 	    break;
 
 	case '\n':
-	    cooked += "\\n";
+	    cooked << "\\n";
 	    break;
 
 	case '\r':
-	    cooked += "\\r";
+	    cooked << "\\r";
 	    break;
 
 	case '\t':
-	    cooked += "\\t";
+	    cooked << "\\t";
 	    break;
 
 	case '\v':
-	    cooked += "\\v";
+	    cooked << "\\v";
 	    break;
 
 	case '\0':
-	    cooked += "\\0";
+	    cooked << "\\0";
 	    break;
 	    
 	case '(':
@@ -103,25 +101,21 @@ string _cook(const string& raw, bool for_postscript) RETURNS(cooked)
 	case '\"':
 	case '\'':
 	case '\\':
-	    cooked += "\\";
-	    cooked += c;
+	    cooked << "\\";
+	    cooked << c;
 	    break;
 
 	standard:
 	default:
 	    if (isascii(c) && isprint(c))
-		cooked += c;
+		cooked << c;
 	    else
-	    {
-		ostrstream os;
-		os << "\\" << oct << setw(3) << setfill('0') << int(c);
-		cooked += string(os);
-	    }
+		cooked << "\\" << oct << setw(3) << setfill('0') << int(c);
 	    break;
 	}
     }
 
-    RETURN(cooked);
+    return string(cooked);
 }
 
 // Return the digit represented by C
@@ -189,11 +183,9 @@ static int digit(char c)
 }
 
 // Transform COOKED into C string
-string uncook(const string& cooked) RETURNS(ret)
+string uncook(const string& cooked)
 {
-    RETURN_OBJECT(string, ret);
-    ret = "";
-
+    ostrstream uncooked;
     int n;
     int count;
 
@@ -209,44 +201,44 @@ string uncook(const string& cooked) RETURNS(ret)
 		break;
 
 	    case 'a':
-		ret += '\a';
+		uncooked << '\a';
 		i++;
 		break;
 
 	    case 'b':
-		ret += '\b';
+		uncooked << '\b';
 		i++;
 		break;
 
 #if defined(__GNUG__) && !defined(__STRICT_ANSI__)
 	    case 'e':
-		ret += '\e';
+		uncooked << '\e';
 		i++;
 		break;
 #endif
 
 	    case 'f':
-		ret += '\f';
+		uncooked << '\f';
 		i++;
 		break;
 
 	    case 'n':
-		ret += '\n';
+		uncooked << '\n';
 		i++;
 		break;
 
 	    case 'r':
-		ret += '\r';
+		uncooked << '\r';
 		i++;
 		break;
 
 	    case 't':
-		ret += '\t';
+		uncooked << '\t';
 		i++;
 		break;
 
 	    case 'v':
-		ret += '\v';
+		uncooked << '\v';
 		i++;
 		break;
 
@@ -276,7 +268,7 @@ string uncook(const string& cooked) RETURNS(ret)
 		    n = (n << 3) + d;
 		    i++;
 		}
-		ret += char(n);
+		uncooked << char(n);
 		break;
 
 	    hex:
@@ -293,20 +285,20 @@ string uncook(const string& cooked) RETURNS(ret)
 		    n = (n << 4) + d;
 		    i++;
 		}
-		ret += char(n);
+		uncooked << char(n);
 		break;
 
 	    case '\"':
 	    case '\'':
 	    case '\\':
 	    default:
-		ret += *i++;
+		uncooked << *i++;
 		break;
 	    }
 	}
 	else
-	    ret += *i++;
+	    uncooked << *i++;
     }
 
-    RETURN(ret);
+    return uncooked;
 }
