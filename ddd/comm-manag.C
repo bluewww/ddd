@@ -1114,7 +1114,7 @@ void send_gdb_command(string cmd, Widget origin,
 	    break;
 
 	case JDB:
-	    if (!gdb->has_debug_command())
+	    if (!is_reset_cmd && !gdb->has_debug_command())
 	    {
 		// JDB 1.2 cannot load classes.  Lookup source instead.
 		string cls = cmd.after(" ");
