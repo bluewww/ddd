@@ -38,7 +38,6 @@ char post_rcsid[] =
 #include "AppData.h"
 #include "Command.h"
 #include "Delay.h"
-#include "DestroyCB.h"
 #include "GDBAgent.h"
 #include "HelpCB.h"
 #include "TimeOut.h"
@@ -71,19 +70,6 @@ extern "C" {
 //=============================================================================
 // Dialogs
 //=============================================================================
-
-static void ClearReferenceCB(Widget w, XtPointer client_data, XtPointer)
-{
-    Widget& reference = *((Widget *)client_data);
-
-    if (reference != 0)
-    {
-	(void) w;		// Use it
-	assert(reference == w);
-	reference = 0;
-    }
-}
-
 
 //-----------------------------------------------------------------------------
 // Yes/No dialogs
@@ -207,15 +193,7 @@ Widget post_gdb_died(string reason, int state, Widget w)
     Arg args[10];
     int arg;
 
-    static Widget died_dialog = 0;
-    if (died_dialog)
-    {
-	XtRemoveCallback(died_dialog, XmNdestroyCallback, 
-			 ClearReferenceCB, XtPointer(&died_dialog));
-	DestroyWhenIdle(XtParent(died_dialog));
-	died_dialog = 0;
-    }
-
+    Widget died_dialog = 0;
     if (gdb_initialized)
     {
 	String name;
@@ -259,9 +237,6 @@ Widget post_gdb_died(string reason, int state, Widget w)
 	XtAddCallback(died_dialog, XmNokCallback,
 		      DDDExitCB, XtPointer(exit_state));
     }
-
-    XtAddCallback(died_dialog, XmNdestroyCallback, 
-		  ClearReferenceCB, XtPointer(&died_dialog));
 
     Delay::register_shell(died_dialog);
     manage_and_raise(died_dialog);
@@ -371,27 +346,17 @@ Widget post_error(string text, String name, Widget w)
     if (name == 0)
 	name = "ddd_error";
 
-    static Widget ddd_error = 0;
-    if (ddd_error)
-    {
-	XtRemoveCallback(ddd_error, XmNdestroyCallback, 
-			 ClearReferenceCB, XtPointer(&ddd_error));
-	DestroyWhenIdle(XtParent(ddd_error));
-	ddd_error = 0;
-    }
-
     Arg args[10];
     int arg = 0;
 
     MString mtext = rm(text);
     XtSetArg(args[arg], XmNmessageString, mtext.xmstring()); arg++;
 
-    ddd_error = verify(XmCreateErrorDialog(find_shell(w), name, args, arg));
+    Widget ddd_error = 
+	verify(XmCreateErrorDialog(find_shell(w), name, args, arg));
     Delay::register_shell(ddd_error);
     XtUnmanageChild(XmMessageBoxGetChild(ddd_error, XmDIALOG_CANCEL_BUTTON));
     XtAddCallback(ddd_error, XmNhelpCallback, ImmediateHelpCB, NULL);
-    XtAddCallback(ddd_error, XmNdestroyCallback, 
-		  ClearReferenceCB, XtPointer(&ddd_error));
 
     manage_and_raise(ddd_error);
     return ddd_error;
@@ -422,28 +387,17 @@ Widget post_warning(string text, String name, Widget w)
     if (name == 0)
 	name = "ddd_warning";
 
-    static Widget ddd_warning = 0;
-    if (ddd_warning)
-    {
-	XtRemoveCallback(ddd_warning, XmNdestroyCallback, 
-			 ClearReferenceCB, XtPointer(&ddd_warning));
-	DestroyWhenIdle(XtParent(ddd_warning));
-	ddd_warning = 0;
-    }
-
     Arg args[10];
     int arg = 0;
 
     MString mtext = rm(text);
     XtSetArg(args[arg], XmNmessageString, mtext.xmstring()); arg++;
 
-    ddd_warning = 
+    Widget ddd_warning = 
 	verify(XmCreateWarningDialog(find_shell(w), name, args, arg));
     Delay::register_shell(ddd_warning);
     XtUnmanageChild(XmMessageBoxGetChild(ddd_warning, XmDIALOG_CANCEL_BUTTON));
     XtAddCallback(ddd_warning, XmNhelpCallback, ImmediateHelpCB, NULL);
-    XtAddCallback(ddd_warning, XmNdestroyCallback, 
-		  ClearReferenceCB, XtPointer(&ddd_warning));
 
     manage_and_raise(ddd_warning);
     return ddd_warning;
