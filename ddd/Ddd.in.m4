@@ -4691,7 +4691,7 @@ You may wish to examine the final @GDB@ output before exiting\n\
 or restarting DDD.\n\
 \n\
 Click on LBL(Exit) to exit DDD.\n\
-Click on LBL(Restart) to restart DDD from scratch.
+Click on LBL(Restart) to restart DDD (and @GDB@) from scratch.
 
 Ddd*no_debugger_dialog_popup.title: DDD: Losing my Religion
 ! Ddd*no_debugger_dialog.messageString:   \
