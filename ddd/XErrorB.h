@@ -35,6 +35,7 @@
 
 #include <X11/Intrinsic.h>
 #include "bool.h"
+#include "assert.h"
 
 class XErrorBlocker {
     Display *_display;
@@ -55,8 +56,18 @@ public:
     XErrorBlocker(Display *display);
     virtual ~XErrorBlocker();
 
-    bool error_occurred() const            { sync(); return _error_occurred; }
-    const XErrorEvent& error_event() const { return _event; }
+    bool error_occurred() const
+    {
+	if (!_error_occurred)
+	    sync();
+	return _error_occurred;
+    }
+
+    const XErrorEvent& error_event() const
+    {
+	assert(_error_occurred);
+	return _event;
+    }
 };
 
 #endif // _DDD_XErrorBlocker_h
