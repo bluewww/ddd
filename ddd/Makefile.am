@@ -2027,20 +2027,8 @@ stamp-h: config.h.in $(top_builddir)/config.status
 	CONFIG_FILES= CONFIG_HEADERS=config.h $(top_builddir)/config.status
 	$(DATE) | $(DELETE_CR) > $@~ && $(MV) $@~ $@
 
-$(srcdir)/config.h.in: stamp-h.in
-$(srcdir)/stamp-h.in: $(srcdir)/acconfig.h
+$(srcdir)/config.h.in:
 	cd $(srcdir)/.. && $(AUTOHEADER) -I ddd
-	$(DATE) | $(DELETE_CR) > $@~ && $(MV) $@~ $@
-
-$(srcdir)/acconfig.h: $(srcdir)/acconfig.h.in $(srcdir)/acspecial.h
-	( \
-		echo "define(srcdir, \`$(srcdir)')dnl"; \
-		echo "include(srcdir()/acconfig.h.in)dnl" \
-	) | $(M4) | $(DELETE_CR) > $@~ && $(MV) $@~ $@
-
-$(srcdir)/acspecial.h: $(srcdir)/../configure.ac
-	$(GREP) '^ICE_[a-zA-Z0-9_]* *(' $(srcdir)/../configure.ac > $@~ && \
-	$(MV) $@~ $@
 
 # Special program includes
 # Note: we use `build.h' instead of `./build.h', because `./build.h'
@@ -2093,8 +2081,7 @@ PROG_STUFF = $(LEXTOCXX).flex $(LEXTOCXX).sun \
 	     vsl-lex.L $(LEXTOCXX) vsl-lex.C \
 	     $(YACCTOCXX).bison $(YACCTOCXX).sun \
 	     vsl-gramma.Y $(YACCTOCXX) yacctoC.h vsl-gramma.h vsl-gramma.C \
-	     rxscan.L rxscan.C acconfig.h.in acconfig.h \
-	     acspecial.h stamp-h.in \
+	     rxscan.L rxscan.C \
              $(srcdir)/../TIPS $(srcdir)/tips.m4 \
 	     $(srcdir)/tips2m4.awk $(srcdir)/tips.html \
 	     $(srcdir)/macros.m4 $(srcdir)/colors.m4 \
@@ -2139,9 +2126,9 @@ MOSTLYCLEANFILES = ddd.au ddd.cm ddd.cms ddd.en ddd.fl ddd.fls ddd.lb ddd.lbs \
 MAINTAINERCLEANFILES = Ddd.in ddd.vsl.h ddd.info.txt.gz gfdl.texinfo \
 	NEWS.gz.C ddd.info.txt.gz.C ddd.info \
 	NEWS.gz ddd.info.txt tips.m4 gpl.texinfo vsl-lex.C \
-	COPYING.gz acspecial.h config.h.in config.texi vsl-gramma.C \
-	vsl-gramma.h xlibdir.C trailer.str stamp-h.in tips.html \
-	COPYING.gz.C header.str version.h rxscan.C acconfig.h \
+	COPYING.gz config.h.in config.texi vsl-gramma.C \
+	vsl-gramma.h xlibdir.C trailer.str tips.html \
+	COPYING.gz.C header.str version.h rxscan.C \
 	../icons/ddd.xface ../icons/dddsplash.xbm \
 	../vsllib/ddd.vsl
 

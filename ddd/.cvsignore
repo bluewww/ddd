@@ -17,9 +17,7 @@ NEWS.gz
 NEWS.gz.C
 OldMakefile
 USERINFO
-acconfig.h
 aclocal.m4
-acspecial.h
 autom4te.cache
 bld.h
 build.h
@@ -135,7 +133,6 @@ root.h
 rxscan.C
 stamp-h
 stamp-h*
-stamp-h.in
 stringify
 tips.html
 tips.m4
