@@ -46,26 +46,6 @@ extern "C" {
 #endif
 
 #include <fcntl.h>
-
-#ifdef HAVE_CORE_MAGIC
-#ifdef HAVE_SYS_PARAM_H
-#include <sys/param.h>
-#endif
-// AIX and DEC alpha OSF/1 v3.0 require <sys/user.h> being included
-// before <sys/core.h>.  Reported by bas@phys.uva.nl (Bas V. de
-// Bakker) and dmitzel@everest.hitc.com.
-#ifdef HAVE_SYS_USER_H
-#ifndef __hpux
-// On HP-UX, either don't include sys/user.h, or else you must include
-// sys/param.h first.  Reported by neal@ctd.comsat.com (Neal Becker)
-#include <sys/user.h>
-#endif
-#endif
-#ifdef HAVE_SYS_CORE_H
-#include <sys/core.h>		// CORE_MAGIC
-#endif
-
-#endif // HAVE_CORE_MAGIC
 }
 
 #include "regexps.h"
@@ -144,26 +124,14 @@ bool is_core_file(const string& file_name)
     if (!S_ISREG(sb.st_mode))
 	return false;		// not a regular file
 
-#ifdef CORE_MAGIC
-    int magic = 0;
-
-    int fd = open(file_name, O_RDONLY);
-    if (fd < 0)
-	return false;
-    read(fd, (char *)&magic, sizeof(magic));
-    close(fd);
-
-    return magic == CORE_MAGIC;
-#else // !defined(CORE_MAGIC)
     // Let's try some heuristics to exclude other files...
+    if (file_name.contains("core", -1))
+	return true;		// looks like a core file
 
     // Paul E. Raines states: My source files are on an NFS mounted
     // VMS partition that in translation all files are marked
-    // executable (like mounting DOS under Linux)
-    // Hence, be sure to leave at least all files named `core'.
-
-    if (sb.st_mode & (S_IXUSR | S_IXGRP | S_IXOTH) 
-	&& !file_name.contains("core"))
+    // executable (like mounting DOS under Linux).
+    if (sb.st_mode & (S_IXUSR | S_IXGRP | S_IXOTH))
 	return false;		// executable
 
     if (!is_binary_file(file_name))
@@ -192,7 +160,6 @@ bool is_core_file(const string& file_name)
     }
 
     return true;		// `file' not found
-#endif // !defined(CORE_MAGIC)
 }
 
 // True if FILE_NAME is a source file
