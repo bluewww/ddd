@@ -1,11 +1,11 @@
+
 DDD News						-*- text -*-
 ********
 
 DDD 3.1 [in development]
 ========================
 
-DDD 3.1 brings edge annotations, display clusters, and a bunch of
-minor improvements.
+DDD 3.1 brings new data display features and several minor improvements.
 
 
 Appearance
@@ -41,11 +41,11 @@ Data exploration
 - Titles on dependent displays are now disabled by default, as they
   can be inferred from edge annotations.  Saves screen space.
 
-- Clusters.  You can combine several data displays in a cluster,
-  showing them like local variables or arguments and saving screen space.
+- Clusters.  You can join several data displays into a cluster display,
+  showing data like local variables.  Saves screen space.
 
-- When displaying a list A -> B -> C, the offset between items remains 
-  constant.
+- When displaying a list of displays A -> B -> C, the offset between
+  items remains constant.
 
 - Several improvements in processing data output of the inferior debugger:
   * Many more data formats are recognized.
@@ -88,11 +88,6 @@ Printing
 - The default setting for printing is to print all displays.
 
 
-- Improved redirection handling.  You can redirect stderr away from
-  the execution window, using `run 2> FILE'.  The debugger command
-  `run 2> /dev/tty' will redirect stderr to the debugger console.
-
-
 Platforms
 ---------
 
@@ -109,14 +104,18 @@ Customization
   pop-down value histories as well as the way they are sorted.  See
   the `popdownHistorySize' and `sortPopdownHistory' resources.
 
+
+Sessions
+--------
+
 - Signal settings are saved with the current session.
+
+- DBX breakpoints are saved referring to the function name, if possible.
+  This is useful when working with derived sources.
 
 
 Program Execution
 -----------------
-
-- This release brings major performance improvements, especially when
-  processing large chunks of data.
 
 - The function keys F2-F9 are bound to frequently used commands:
 
@@ -132,15 +131,32 @@ Program Execution
   The bindings from DDD 3.0 and earlier (Ctrl+E for Run, Ctrl+I for
   Step, etc.) are still available.
 
+- Improved redirection handling.  You can redirect stderr away from
+  the execution window, using `run 2> FILE'.  The debugger command
+  `run 2> /dev/tty' will redirect stderr to the debugger console.
+
+
+Performance
+-----------
+
+- This release brings major performance improvements, especially when
+  processing large chunks of data.
+
 
 Bug fixes
 ---------
+
+- Sun DBX warnings like `warning: -r option only recognized for C++'
+  are properly suppressed.
 
 - The `Disp *' button dereferences pointers as it should.
 
 - In a separate window setting, data buttons are properly placed.
 
 - The `Home' and `End' keys work in all text fields.
+
+
+
 
 DDD 3.0
 =======
