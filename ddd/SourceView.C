@@ -234,7 +234,7 @@ static String text_cmd_labels[] =
     "", 
     "Lookup " , 
     "Break at ", 
-    "Cont at "
+    "Clear at "
 };
 
 MMDesc SourceView::text_popup[] =
