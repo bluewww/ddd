@@ -3194,8 +3194,13 @@ Boolean ddd_setup_done(XtPointer)
 
 	if (running_shells() == 0)
 	{
-	    // We have no shell (yet) -- be sure to popup something
-	    gdbOpenCommandWindowCB(gdb_w, 0, 0);
+	    // We have no shell (yet).  Be sure to popup at least one shell.
+	    if (app_data.source_window)
+		gdbOpenSourceWindowCB(gdb_w, 0, 0);
+	    else if (app_data.data_window)
+		gdbOpenDataWindowCB(gdb_w, 0, 0);
+	    else
+		gdbOpenCommandWindowCB(gdb_w, 0, 0);
 	}
 
 	// Initialize `views' menu.  LessTif needs this.
@@ -5044,11 +5049,10 @@ void _gdb_out(const string& txt)
 
     // Output TEXT on TTY
     tty_out(text);
-    bool line_buffered = app_data.line_buffered_console;
-
-    static bool cr_pending = false;
 
     // Output TEXT in debugger console
+    bool line_buffered = app_data.line_buffered_console;
+    static bool cr_pending = false;
     do {
 	char ctrl      = '\0';
 	bool have_ctrl = false;
