@@ -54,6 +54,8 @@ Debuggers and Languages
 
 - GDB 4.17 is supported.
 
+- WDB (HP's Wildebeest debugger) is supported.
+
 - SGI DBX (especially `DBX Settings') is supported.
 
 - DBX on Solaris 2.5 (prompting with `(dbx N)') is supported.
@@ -105,8 +107,9 @@ Data exploration
 - Watchpoints.  You can have the debugged program stop automatically
   whenever a particular variable is read or written.
 
-- `Data->Examine Memory' lets you examine memory in any of several
-  formats, independently of your program's data types.
+- Memory Dumps. Using GDB, `Data->Examine Memory' lets you examine
+  memory in any of several formats, independently of your program's
+  data types.
 
 - In `stacked window' configuration, the data window automatically
   pops up as soon as some value is displayed, and it pops down as soon
