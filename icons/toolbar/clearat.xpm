@@ -3,7 +3,7 @@ static char * clearat_xpm[] = {
 "29 25 5 1",
 " 	c none    g none    m none   s Background",
 "X	c black   g black   m black",
-"_	c grey25  g grey25  m white",
+"_	c grey25  g grey25  m black",
 "o	c grey50  g grey50  m black",
 "# 	c grey50  g grey50  m black",
 "                             ",
