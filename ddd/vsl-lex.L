@@ -1,4 +1,4 @@
-/* $Id$ */
+/* $Id$ -*- C++ -*- */
 /* VSL lexical analysis */
 
 %{
@@ -109,7 +109,7 @@ static int do_input()
 #endif
 
 #undef yywrap
-int yywrap() 
+extern "C" int yywrap() 
 { 
     if (switchdown())
 	return 1;
@@ -137,8 +137,8 @@ W			[ \f\t]*
 
 {S}	 	return STRING;			// string
 
-"//".*		; 				// C++ Kommentar
-"/*"		{				// C Kommentar
+"//".*		; 				// C++ comment
+"/*"		{				// C comment
 			// aus `man lex`
 			loop:
 			while (yyinput() != '*');
@@ -148,8 +148,11 @@ W			[ \f\t]*
 				case '*': unput('*');
 				default : goto loop;
 				}
+
+			// Avoid warnings about unused function
+			(void) yyunput;
 		}
-^{W}#!.* 		; 				// Unix exec() tag
+^{W}#!.* 		; 			// Unix exec() tag
 
 ^{W}#{W}include{W}{CS}.* { 			// #include "..."
 			char buf[BUFSIZ];

@@ -1,10 +1,5 @@
-/*
- * $Id$
- *
- * VSL grammar
- * -----------
- *
- */
+/* $Id$ -*- C++ -*- */
+/* VSL grammar */
 
 %{
 
@@ -32,6 +27,7 @@
 // For details, see the DDD World-Wide-Web page, 
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
+
 
 // Some declarations and utilities
 

@@ -202,9 +202,6 @@ Volunteers for fixing these and other bugs are welcome!
      redraw is such a manner as to hide all the breakpoints, once this
      has happened, I can never see breakpoints in this window again.
 
-080. Suppress those bison/flex warnings and have users report any
-     remaining warnings they encounter.
-
 084. Configure problems.  Lutz Vieweg <vieweg@iap.uni-frankfurt.de>
      says that the `configure' tests ignore the `CC' and `CXX'
      environment variables.
@@ -274,7 +271,6 @@ Volunteers for fixing these and other bugs are welcome!
 093* `Up' and `Down' in XDB mode won't work.
 
 095* DDD 1.5 with AIX DBX and `ctest':
-     - the `func' line is += 5
      - displaying `dates' causes a seg fault.
 
 099* With DEC DBX, a display once disabled is never enabled again.
