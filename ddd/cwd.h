@@ -33,9 +33,14 @@
 #pragma interface
 #endif
 
+#include "bool.h"
 #include "strclass.h"
 
+// Return current working directory
 extern string cwd();
+
+// Rteurn true if two files are identical
+extern bool same_file(const string& s1, const string& s2);
 
 #endif // _DDD_cwd_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

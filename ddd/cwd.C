@@ -41,24 +41,33 @@ char cwd_rcsid[] =
 #include <stdio.h>
 #include <stdlib.h>
 
+// Return true iff S1 and S2 are identical
+bool same_file(const string& s1, const string& s2)
+{
+    if (s1 == s2)
+	return true;
+
+    struct stat s1_stat;
+    struct stat s2_stat;
+
+    if (stat(s1, &s1_stat) == 0 &&
+	stat(s2, &s2_stat) == 0 &&
+	s1_stat.st_dev == s2_stat.st_dev &&
+	s1_stat.st_ino == s2_stat.st_ino)
+	return true;
+
+    return false;
+}
+
 // Return current working directory
 string cwd()
 {
     // Try $PWD
     char *pwd = getenv("PWD");
-    if (pwd != 0)
+    if (pwd != 0 && same_file(pwd, "."))
     {
-	struct stat pwd_stat;
-	struct stat dot_stat;
-
-	if (stat(pwd, &pwd_stat) == 0 &&
-	    stat(".", &dot_stat) == 0 &&
-	    pwd_stat.st_dev == dot_stat.st_dev &&
-	    pwd_stat.st_ino == dot_stat.st_ino)
-	{
-	    // $PWD points to the current dirctory
-	    return pwd;
-	}
+	// $PWD points to the current dirctory
+	return pwd;
     }
 
     // Try getcwd()
