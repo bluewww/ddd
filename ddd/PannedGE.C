@@ -36,7 +36,7 @@ char PannedGraphEdit_rcsid[] =
 #include "PannedGE.h"
 #include "BoxPoint.h"
 
-#if 0 && defined(HAVE_ATHENA_WIDGETS) \
+#if defined(HAVE_ATHENA_WIDGETS) \
     && defined(HAVE_X11_XAW_FORM_H) \
     && defined(HAVE_X11_XAW_PANNER_H) \
     && defined(HAVE_X11_XAW_PORTHOLE_H)
@@ -138,7 +138,7 @@ static void Resize(Widget w)
     XtCheckSubclass(w, pannedGraphEditWidgetClass, "Bad widget class");
     const PannedGraphEditWidget pw = PannedGraphEditWidget(w);
 
-    for (int i = 0; i < pw->composite.num_children; i++)
+    for (unsigned i = 0; i < pw->composite.num_children; i++)
     {
 	// Resize each graphEdit child
 	Widget child = pw->composite.children[i];
@@ -312,7 +312,7 @@ static void PortholeCB(Widget w,
     }
 }
 
-static void PannerCB(Widget panner,
+static void PannerCB(Widget /* panner */,
 		     XtPointer client_data, 
 		     XtPointer call_data)
 {
