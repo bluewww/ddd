@@ -82,6 +82,11 @@ class SourceView {
     static void line_popup_setCB         (Widget, XtPointer, XtPointer);
     static void line_popup_set_tempCB    (Widget, XtPointer, XtPointer);
     static void line_popup_temp_n_contCB (Widget, XtPointer, XtPointer);
+
+    static void address_popup_setCB         (Widget, XtPointer, XtPointer);
+    static void address_popup_set_tempCB    (Widget, XtPointer, XtPointer);
+    static void address_popup_temp_n_contCB (Widget, XtPointer, XtPointer);
+
     static void bp_popup_infoCB          (Widget, XtPointer, XtPointer);
     static void bp_popup_deleteCB        (Widget, XtPointer, XtPointer);
     static void bp_popup_disableCB       (Widget, XtPointer, XtPointer);
@@ -139,6 +144,7 @@ class SourceView {
     static bool get_line_of_pos (Widget w,
 				 XmTextPosition pos,
 				 int& line_nr,
+				 string& address,
 				 bool& in_text,
 				 int& bp_nr);
 
@@ -184,6 +190,7 @@ private:
     // Menues
     //-----------------------------------------------------------------------
     static MMDesc line_popup[];
+    static MMDesc address_popup[];
     static MMDesc bp_popup_gdb[];
     static MMDesc bp_popup_dbx[];
     static MMDesc text_popup[];

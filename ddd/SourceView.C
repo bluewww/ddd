@@ -34,6 +34,39 @@
 char SourceView_rcsid[] =
     "$Id$";
 
+
+// Fixing Some Bugs on a Sunday Evening
+// ------------------------------------
+// 
+// Whose bugs these are I think I know,
+// But now he works at 3DO;
+// He will not see me working here
+// To fix his code and make it go.
+// 
+// The saner folk must think it queer
+// To trace without the source code near
+// After a launch and frozen mouse
+// The weirdest stack crawl of the year.
+// 
+// I give my nodding head a shake
+// To see if I can stay awake
+// The only other thing to do
+// Is find some more coffeine to take.
+// 
+// This bug is pretty hard to nip,
+// But I have other ones to fix,
+// And tons to go before we ship,
+// And tons to go before we ship.
+//
+//
+// Written by David A. Lyons (dlyons@apple.com), January 1994
+// (with apologies to Robert Frost)
+// 
+// Hey, it's fiction.  Close to reality in spirit,
+// but does not refer to a specific project, bug, Sunday,
+// or brand of soft drink.
+
+
 //-----------------------------------------------------------------------------
 #include "Delay.h"		// must be included first for GCC 2.5.8
 #include "SourceView.h"
@@ -111,12 +144,21 @@ XtActionsRec SourceView::actions [] = {
 //-----------------------------------------------------------------------
 
 // Popup-Menues - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-struct LineItms { enum Itms {SetBP, SetTempBP}; };
+struct LineItms { enum Itms {SetBP, SetTempBP, TempNContBP}; };
 MMDesc SourceView::line_popup[] =
 {
     {"set",         MMPush, {SourceView::line_popup_setCB}},
     {"set_temp",    MMPush, {SourceView::line_popup_set_tempCB}},
     {"temp_n_cont", MMPush, {SourceView::line_popup_temp_n_contCB}},
+    MMEnd
+};
+
+struct AddressItms { enum Itms {SetBP, SetTempBP, TempNContBP}; };
+MMDesc SourceView::address_popup[] =
+{
+    {"set",         MMPush, {SourceView::address_popup_setCB}},
+    {"set_temp",    MMPush, {SourceView::address_popup_set_tempCB}},
+    {"temp_n_cont", MMPush, {SourceView::address_popup_temp_n_contCB}},
     MMEnd
 };
 
@@ -170,15 +212,15 @@ struct TextItms {
 
 static String text_cmd_labels[] =
 {
-    "print ", 
-    "display ", 
+    "Print ", 
+    "Display ", 
     "", 
-    "print ", 
-    "display ", 
+    "Print ", 
+    "Display ", 
     "", 
-    "lookup " , 
-    "break ", 
-    "clear "
+    "Lookup " , 
+    "Break ", 
+    "Clear "
 };
 
 MMDesc SourceView::text_popup[] =
@@ -346,6 +388,22 @@ void SourceView::line_popup_setCB (Widget w,
     }
 }
 
+void SourceView::address_popup_setCB (Widget w,
+				      XtPointer client_data,
+				      XtPointer)
+{
+    string address = *((string *)client_data);
+    switch (gdb->type())
+    {
+    case GDB:
+	gdb_command("break *" + address, w);
+	break;
+	
+    case DBX:
+	gdb_command("stopi at " + address, w);
+	break;
+    }
+}
 
 // ***************************************************************************
 //
@@ -370,6 +428,24 @@ void SourceView::line_popup_set_tempCB (Widget w,
     }
 }
 
+void SourceView::address_popup_set_tempCB (Widget w,
+					   XtPointer client_data,
+					   XtPointer)
+{
+    string address = *((string *)client_data);
+    switch (gdb->type())
+    {
+    case GDB:
+	gdb_command("tbreak *" + address, w);
+	break;
+
+    case DBX:
+	gdb_command("stopi at " + address, w);
+	// How do I set a condition at an address in DBX???
+	break;
+    }
+}
+
 // ***************************************************************************
 //
 void SourceView::line_popup_temp_n_contCB (Widget w,
@@ -382,6 +458,24 @@ void SourceView::line_popup_temp_n_contCB (Widget w,
     case GDB:
 	gdb_command("until " + basename(current_file_name) + ":" + 
 		    itostring(line_nr), w);
+	break;
+    
+    case DBX:
+	line_popup_set_tempCB(w, client_data, call_data);
+	gdb_command("cont", w);
+	break;
+    }
+}
+
+void SourceView::address_popup_temp_n_contCB (Widget w,
+					      XtPointer client_data,
+					      XtPointer call_data)
+{
+    string address = *((string *)client_data);
+    switch (gdb->type())
+    {
+    case GDB:
+	gdb_command("until *" + address, w);
 	break;
     
     case DBX:
@@ -555,41 +649,78 @@ void SourceView::set_source_argCB(Widget text_w,
 	if (endPos > 0)
 	    endIndex = text.index('\n', endPos - text.length()) + 1;
 
-	if (text_w == source_text_w
-	    && selection_click
+	bool bp_selected = false;
+	if (selection_click
 	    && startIndex == endIndex
 	    && startPos < XmTextPosition(text.length())
 	    && endPos < XmTextPosition(text.length())
 	    && text[startPos] != '\n'
-	    && text[endPos] != '\n'
-	    && startPos - startIndex <= bp_indent_amount
-	    && endPos - endIndex <= bp_indent_amount)
+	    && text[endPos] != '\n')
 	{
-	    // Selection from line number area: prepend source file name
-	    string line = text(startIndex, bp_indent_amount);
-	    int line_nr = atoi(line);
-	    source_arg->set_string(
-		basename(current_file_name) + ":" + itostring(line_nr));
-
-	    // If a breakpoint is here, select this one only
-	    MapRef ref;
-	    for (BreakPoint* bp = bp_map.first(ref);
-		 bp != 0;
-		 bp = bp_map.next(ref))
+	    if (text_w == source_text_w
+		&& startPos - startIndex <= bp_indent_amount
+		&& endPos - endIndex <= bp_indent_amount)
 	    {
-		bp->selected() = 
-		    (bp->type() == BREAKPOINT
-		     && (bp->file_name() == "" || 
-			 basename(bp->file_name()) == 
-			 basename(current_file_name))
-		     && bp->line_nr() == line_nr);
-	    }
+		// Selection from line number area: prepend source file name
+		string line = text(startIndex, bp_indent_amount);
+		int line_nr = atoi(line);
+		source_arg->set_string(basename(current_file_name)
+				       + ":" + itostring(line_nr));
 
+		// If a breakpoint is here, select this one only
+		MapRef ref;
+		for (BreakPoint* bp = bp_map.first(ref);
+		     bp != 0;
+		     bp = bp_map.next(ref))
+		{
+		    bp->selected() = 
+			(bp->type() == BREAKPOINT
+			 && (bp->file_name() == "" || 
+			     basename(bp->file_name()) == 
+			     basename(current_file_name))
+			 && bp->line_nr() == line_nr);
+		}
+
+		bp_selected = true;
+	    }
+	    else if (text_w == code_text_w
+		     && startPos - startIndex <= code_indent_amount
+		     && endPos - endIndex <= code_indent_amount)
+	    {
+		// Selection from address area
+		int index = text.index("0x", startPos);
+		if (index >= 0)
+		{
+		    string address = text.from(index);
+		    address = address.through(rxalphanum);
+
+		    source_arg->set_string(address);
+
+		    // If a breakpoint is here, select this one only
+		    MapRef ref;
+		    for (BreakPoint* bp = bp_map.first(ref);
+			 bp != 0;
+			 bp = bp_map.next(ref))
+		    {
+			bp->selected() = 
+			    (bp->type() == BREAKPOINT
+			     && (compare_address(address, 
+						 bp->address()) == 0));
+		    }
+		
+		    bp_selected = true;
+		}
+	    }
+	}
+
+	if (bp_selected)
+	{
+	    // Update breakpoint selection
 	    fill_labels(last_info_output);
 	}
 	else
 	{
-	    // Selection from source
+	    // Selection from source or code
 	    string s;
 	    if (startPos < XmTextPosition(text.length())
 		&& endPos < XmTextPosition(text.length()))
@@ -1255,23 +1386,55 @@ void SourceView::refresh_code_bp_disp()
 // bp_nr ist die Nr des Breakpoints, der an Position pos
 // dargestellt wird, 0 sonst.
 //
-bool SourceView::get_line_of_pos (Widget   text_w,
+bool SourceView::get_line_of_pos (Widget   w,
 				  XmTextPosition pos,
 				  int&     line_nr,
+				  string&  address,
 				  bool&    in_text,
 				  int&     bp_nr)
 {
     bool found = false;
 
-    line_nr = 1;
+    line_nr = 0;
+    address = "";
     in_text = true;
     bp_nr   = 0;
+
+    Widget text_w;
+    if (is_source_widget(w))
+	text_w = source_text_w;
+    else if (is_code_widget(w))
+	text_w = code_text_w;
+    else
+	return false;
+
+    if (w != text_w)
+    {
+	// Glyph selected
+
+	MapRef ref;
+	for (BreakPoint *bp = bp_map.first(ref);
+	     bp != 0;
+	     bp = bp_map.next(ref))
+	{
+	    if (w == bp->source_glyph() || w == bp->code_glyph())
+	    {
+		// Breakpoint glyph found
+		line_nr = bp->line_nr();
+		address = bp->address();
+		in_text = false;
+		bp_nr   = bp->number();
+		return true;
+	    }
+	}
+    }
 
     if (pos >= int(current_text(text_w).length()))
 	return false;
 
-    if (is_source_widget(text_w))
+    if (text_w == source_text_w)
     {
+	// Search in source code
 	XmTextPosition line_pos = 0;
 	XmTextPosition next_line_pos = 0;
 
@@ -1303,6 +1466,7 @@ bool SourceView::get_line_of_pos (Widget   text_w,
 		    {
 			BreakPoint* bp = bp_map.get(bps[i]);
 			assert (bp);
+
 			bp_disp_pos += 2; // respect '#' and '_';
 			bp_disp_pos += bp->number_str().length();
 			if (pos < bp_disp_pos)
@@ -1327,8 +1491,9 @@ bool SourceView::get_line_of_pos (Widget   text_w,
 	    }
 	}
     }
-    else if (is_code_widget(text_w))
+    else if (text_w == code_text_w)
     {
+	// Search in machine code
 	XmTextPosition line_pos = pos;
 	while (line_pos >= 0 && current_code[line_pos] != '\n')
 	    line_pos--;
@@ -1343,8 +1508,8 @@ bool SourceView::get_line_of_pos (Widget   text_w,
 	    int index = current_code.index("0x", pos);
 	    if (index >= 0)
 	    {
-		string pc = current_code.from(index);
-		pc = pc.through(rxalphanum);
+		address = current_code.from(index);
+		address = address.through(rxalphanum);
 
 		VarArray<int> bps;
 
@@ -1353,7 +1518,7 @@ bool SourceView::get_line_of_pos (Widget   text_w,
 		     bp != 0;
 		     bp = bp_map.next(ref))
 		{
-		    if (compare_address(pc, bp->address()) == 0)
+		    if (compare_address(address, bp->address()) == 0)
 			bps += bp->number();
 		}
 		if (bps.size() == 1)
@@ -1398,6 +1563,19 @@ void SourceView::find_word_bounds (Widget text_w,
     startpos = endpos = pos;
 
     string& text = current_text(text_w);
+
+    XmTextPosition line_pos = pos;
+    if (line_pos < XmTextPosition(text.length()))
+	while (line_pos > 0 && text[line_pos - 1] != '\n')
+	    line_pos--;
+
+    int offset = pos - line_pos;
+    if ((is_source_widget(text_w) && offset < bp_indent_amount)
+	|| (is_code_widget(text_w) && offset < code_indent_amount))
+    {
+	// Do not select words in breakpoint area
+	return;
+    }
 
     while (startpos > 0 
 	   && startpos < XmTextPosition(text.length())
@@ -2054,7 +2232,7 @@ void SourceView::lookup(string s)
 					 last_execution_line);
 	}
     }
-    else if (isdigit(s[0]))
+    else if (s[0] != '0' && isdigit(s[0]))
     {
 	// Line number given
 	int line = atoi(s);
@@ -2116,11 +2294,13 @@ void SourceView::lookup(string s)
     }
     else
     {
-	// Function given
+	// Function or *address given
 	switch (gdb->type())
 	{
 	case GDB:
-	    if (s.length() > 0 && s[0] != '\'')
+	    if (s[0] == '0')	// Address given
+		s = "*" + s;
+	    if (s.length() > 0 && s[0] != '\'' && s[0] != '*')
 		s = string('\'') + s + '\'';
 	    gdb_command("info line " + s);
 	    break;
@@ -2354,9 +2534,10 @@ string SourceView::line_of_cursor(bool basename)
     int line_nr;
     bool in_text;
     int bp_nr;
+    string address;
 
     if (get_line_of_pos(source_text_w,
-			pos, line_nr, in_text, bp_nr) == false)
+			pos, line_nr, address, in_text, bp_nr) == false)
 	return "";
 
     string file_name = current_file_name;
@@ -2484,7 +2665,9 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
     static int line_nr;
     bool in_text;
     static int bp_nr;
-    bool pos_found = get_line_of_pos (text_w, pos, line_nr, in_text, bp_nr);
+    static string address;
+    bool pos_found = 
+	get_line_of_pos (w, pos, line_nr, address, in_text, bp_nr);
 
     if (!pos_found) // Wahrsch. noch ein Text-File geladen
 	return; 
@@ -2532,17 +2715,30 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
     else if (!in_text) 
     {
 	// Popup-Menu fuer Zeile line_nr oeffnen
-	static Widget line_popup_w = 0;
-	if (line_popup_w == 0)
+	if (is_source_widget(w))
 	{
-	    line_popup_w = MMcreatePopupMenu (w,
-					      "line_popup",
-					      line_popup);
-	    MMaddCallbacks (line_popup, XtPointer(&line_nr));
+	    static Widget line_popup_w = 0;
+	    if (line_popup_w == 0)
+	    {
+		line_popup_w = 
+		    MMcreatePopupMenu (w, "line_popup", line_popup);
+		MMaddCallbacks (line_popup, XtPointer(&line_nr));
+	    }
+	    XmMenuPosition (line_popup_w, event);
+	    XtManageChild (line_popup_w);
 	}
-	XmMenuPosition (line_popup_w, event);
-	XtManageChild (line_popup_w);
-
+	else if (is_code_widget(w))
+	{
+	    static Widget address_popup_w = 0;
+	    if (address_popup_w == 0)
+	    {
+		address_popup_w = 
+		    MMcreatePopupMenu (w, "address_popup", address_popup);
+		MMaddCallbacks (address_popup, XtPointer(&address));
+	    }
+	    XmMenuPosition (address_popup_w, event);
+	    XtManageChild (address_popup_w);
+	}
     }
     else
     {
@@ -2654,6 +2850,8 @@ void SourceView::NewBreakpointDCB(Widget w, XtPointer, XtPointer call_data)
     switch (gdb->type())
     {
     case GDB:
+	if (input[0] == '0')
+	    input = "*" + input; // Address given
 	gdb_command("break " + input);
 	break;
 
@@ -2794,6 +2992,10 @@ void SourceView::EditBreakpointConditionCB(Widget,
 	XtVaSetValues(edit_breakpoint_condition_dialog,
 		      XmNtextString, xmcond.xmstring(),
 		      NULL);
+
+	Widget text = XmSelectionBoxGetChild(edit_breakpoint_condition_dialog,
+					     XmDIALOG_TEXT);
+	XmTextSetSelection(text, 0, cond.length(), CurrentTime);
     }
 
     XtManageChild(edit_breakpoint_condition_dialog);
@@ -2892,6 +3094,10 @@ void SourceView::EditBreakpointIgnoreCountCB(Widget,
 	XtVaSetValues(edit_breakpoint_ignore_count_dialog,
 		      XmNtextString, xmignore.xmstring(),
 		      NULL);
+	Widget text = 
+	    XmSelectionBoxGetChild(edit_breakpoint_ignore_count_dialog,
+				   XmDIALOG_TEXT);
+	XmTextSetSelection(text, 0, ignore.length(), CurrentTime);
     }
 
     XtManageChild(edit_breakpoint_ignore_count_dialog);
@@ -3678,7 +3884,10 @@ const int max_glyphs = 20;
 const int arrow_x_offset = -5;
 
 // Horizontal breakpoint symbol offset (pixels)
-const int break_x_offset = +6;
+const int stop_x_offset = +6;
+
+// Additional offset for multiple breakpoints (pixels)
+const int multiple_stop_x_offset = stop_width - 2;
 
 void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *)
 {
@@ -3807,6 +4016,8 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *)
 	int& source_p                = plain[0];
 	int& source_g                = grey[0];
 
+	VarArray<XmTextPosition> source_stops;
+
 	// Map breakpoint glyphs
 	// clog << "Source breakpoints:\n";
 	MapRef ref;
@@ -3814,6 +4025,8 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *)
 	     bp != 0;
 	     bp = bp_map.next(ref))
 	{
+	    bp->source_glyph() = 0;
+
 	    if (bp->type() == BREAKPOINT
 		&& (bp->file_name() == "" || 
 		    basename(bp->file_name()) == 
@@ -3836,7 +4049,15 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *)
 			    source_grey_stops_w[source_g++] : 0;
 
 		    if (glyph != 0)
-			map_glyph(glyph, x + break_x_offset, y);
+		    {
+			for (int i = 0; i < source_stops.size(); i++)
+			    if (pos == source_stops[i])
+				x += multiple_stop_x_offset;
+
+			map_glyph(glyph, x + stop_x_offset, y);
+			source_stops += pos;
+			bp->source_glyph() = glyph;
+		    }
 		}
 	    }
 	}
@@ -3850,6 +4071,8 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *)
 	int& code_p                = plain[1];
 	int& code_g                = grey[1];
 
+	VarArray<XmTextPosition> code_stops;
+
 	// Map breakpoint glyphs
 	// clog << "Code breakpoints:\n";
 	MapRef ref2;
@@ -3857,6 +4080,8 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *)
 	     bp != 0;
 	     bp = bp_map.next(ref2))
 	{
+	    bp->code_glyph() = 0;
+
 	    if (bp->type() != BREAKPOINT)
 		continue;
 
@@ -3874,7 +4099,15 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *)
 			code_grey_stops_w[code_g++] : 0;
 
 		if (glyph != 0)
-		    map_glyph(glyph, x + break_x_offset, y);
+		{
+		    for (int i = 0; i < code_stops.size(); i++)
+			if (pos == code_stops[i])
+			    x += multiple_stop_x_offset;
+
+		    map_glyph(glyph, x + stop_x_offset, y);
+		    code_stops += pos;
+		    bp->code_glyph() = glyph;
+		}
 	    }
 	}
     }
