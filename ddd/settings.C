@@ -3480,7 +3480,7 @@ string get_defines(DebuggerType type, unsigned long /* flags */)
     if (confirm_value == "on")
 	defines += "set confirm off\n";
 
-    for (StringStringAssocIter iter(defs); iter.ok(); iter++)
+    for (StringStringAssocIter iter(defs); iter.ok(); ++iter)
     {
 	string cmd = iter.key();
 	cmd.downcase();		// GDB 5.0 makes all commands lower case
@@ -3667,7 +3667,7 @@ static void refresh_combo_box()
 
     // Refresh combo box
     StringArray commands;
-    for (StringStringAssocIter iter(defs); iter.ok(); iter++)
+    for (StringStringAssocIter iter(defs); iter.ok(); ++iter)
 	commands += iter.key();
     smart_sort(commands);
     ComboBoxSetList(name_w, commands);

@@ -608,14 +608,14 @@ static WidgetHistoryFilterAssoc combo_boxes;
 // Update all combo boxes
 static void update_combo_boxes()
 {
-    for (WidgetHistoryFilterAssocIter iter(combo_boxes); iter.ok(); iter++)
+    for (WidgetHistoryFilterAssocIter iter(combo_boxes); iter.ok(); ++iter)
 	update_combo_box(iter.key(), iter.value());
 }
 
 // Update combo boxes listening to NEW_ENTRY
 static void update_combo_boxes(const string& new_entry)
 {
-    for (WidgetHistoryFilterAssocIter iter(combo_boxes); iter.ok(); iter++)
+    for (WidgetHistoryFilterAssocIter iter(combo_boxes); iter.ok(); ++iter)
     {
 	HistoryFilter filter = iter.value();
 	string arg = filter(new_entry);

@@ -6570,7 +6570,7 @@ bool DataDisp::check_aliases()
     bool changed    = false;
     bool suppressed = false;
 
-    for (StringIntArrayArrayAssocIter iter(equivalences); iter.ok(); iter++)
+    for (StringIntArrayArrayAssocIter iter(equivalences); iter.ok(); ++iter)
     {
 	string addr = iter.key();
 	IntArrayArray& list = iter.value();
