@@ -5513,10 +5513,10 @@ struct WhenReadyInfo {
 	: message(msg),
 	  proc(p),
 	  client_data(cl_data),
-	  cbs(c),
+	  cbs(c)
 	  // Initializing `event' causes an error in GCC 2.8.1
 	  // Reported by "Derks, Victor" <Victor.Derks@nl2.vdogrp.de>
-	  // event()
+	  // , event()
     {
 	// Copy event
 	if (c.event == 0)
