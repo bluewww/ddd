@@ -30,9 +30,12 @@ DDD 2.2 [in development]
       + The `Edit' menu has been completely rewritten, allowing for
         better clipboard operations.  For instance, you can now copy
         selected displays to the clipboard and paste them later.
-      + Several buttons now have pulldown menus with useful functions.
-      DDD now requires less width and height.  If you already have a
-      `~/.dddinit' file, resize DDD manually and save options.
+      + Several buttons now provide pulldown menus with useful
+        functions.  For instance, you can now incrementally `Show More'
+        details of an object, rather than showing them all.
+      Due to the new layout, DDD now requires less width and height.
+      If you already have a `~/.dddinit' file, resize DDD manually and
+      save options.
     - Support for debugging processes running outside of DDD.  You can
       attach to a running process, examine it, and resume its execution.
     - Improved online manuals:
@@ -50,10 +53,11 @@ DDD 2.2 [in development]
       and continues (instead of using the GDB `until' command).  If
       the temporary breakpoint is not reached, it is deleted.
     - Using GDB, you can now alter the current execution position
-      interactively.  This allows you to back up - perhaps with more
-      breakpoints set-over a portion of a program that has already
-      executed, in order to examine its execution in more detail.
-      Breakpoints can be dragged and dropped, too.
+      interactively - just drag and drop the execution arrow.  This
+      allows you to back up - perhaps with more breakpoints set-over a
+      portion of a program that has already executed, in order to
+      examine its execution in more detail.
+    - Breakpoints can be dragged and dropped, too.
     - Improved display of breakpoints and execution positions:
       + The current execution position is now properly cleared if
         undetermined (no source, program terminated, etc.)
@@ -65,14 +69,14 @@ DDD 2.2 [in development]
     - Resource files have been renamed.  All files are now located
       under `~/.ddd/'.  The file `~/.dddinit' has been replaced by
       `~/.ddd/init'; `~/.ddd_history' is now `~/.ddd/history'.  The
-       directory `~/.ddd/sessions/' contains saved DDD sessions.
-    - Your window manager running DDD should now show multi-color
-      DDD icons. (requires XPM)
+      new directory `~/.ddd/sessions/' contains saved DDD sessions.
+    - Your favourite window manager should now show multi-color DDD
+      icons. (requires XPM)
     - During start-up, DDD shows a multi-color logo in a transient
-      window. (can be disabled)
+      window. (requires XPM; can be disabled)
     - Memory savings.  DDD regular expressions are now compiled during
       DDD construction (instead of being compiled during DDD
-      execution).  On our box, this results in 35% less memory usage.
+      execution).  On our box, DDD now requires 35% less memory.
 
     Bug fixes:
     - DDD now runs on Linux with GNU libc 5.4.35 and later.
