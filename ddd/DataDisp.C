@@ -3750,7 +3750,7 @@ void DataDisp::setCB(Widget w, XtPointer, XtPointer)
     value.gsub(rxnl, " ");
     strip_final_blanks(value);
 
-    MString prompt = bf(name);
+    MString prompt = bf("Set value of ") + tt(name);
 
     Arg args[10];
     int arg = 0;
