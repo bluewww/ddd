@@ -82,7 +82,7 @@ Source exploration
 
 - Regexp Breakpoints.  Using GDB, you can set breakpoints at all
   functions matching a regular expression:
-  * `^Date::' sets a breakpoint on every mamber of class `Date'
+  * `^Date::' sets a breakpoint on every member of class `Date'
   * `_fun' sets a breakpoint on every function whose name contains `_fun'
   See `Break At ()->Set Breakpoints at Regexp ()'.
 
