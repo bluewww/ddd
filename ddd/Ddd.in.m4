@@ -128,6 +128,11 @@ Ddd*saveOptionsOnExit: off
 Ddd*termCommand: xterm -bg 'grey90' -fg 'black' -cr 'DarkGreen' -fn '@FONT@' \
 -title 'DDD: Execution Window' -e /bin/sh -c
 
+! The command to invoke to select fonts.
+! The string `@FONT@' is replaced by the current DDD default font.
+Ddd*fontSelectCommand: xfontsel -bg 'grey' -fg 'black' -fn '@FONT@' \
+-title 'DDD: @TYPE@ selector' -print
+
 
 ! The terminal type provided by `termCommand' (that is, the value of
 ! the TERM environment variable to be passed to the debugged program)
@@ -2818,10 +2823,11 @@ Ddd*preferences*buttons*shadowThickness:	2
 Ddd*preferences*buttons*alignment:		XmALIGNMENT_CENTER
 Ddd*preferences*panel*XmRowColumn.marginHeight: 0
 
-Ddd*preferences*buttons*general.labelString:	\ \ \ \ \ General\ \ \ \ \ 
+Ddd*preferences*buttons*general.labelString:	\ \ \ General\ \ \ 
 Ddd*preferences*buttons*source.labelString:	Source
 Ddd*preferences*buttons*data.labelString:	Data
 Ddd*preferences*buttons*startup.labelString:	Startup
+Ddd*preferences*buttons*fonts.labelString:	Fonts
 Ddd*preferences*buttons*helpers.labelString:	Helpers
 
 Ddd*preferences*general*helpString:	\
@@ -3078,6 +3084,15 @@ Ddd*showStartupLogoMenu*none.labelString:	None
 
 Ddd*preferences*showStartupTips.labelString:	Show Tip of the Day
 
+Ddd*preferences*fonts*default.labelString:	 Default Font
+Ddd*preferences*fonts*variableWidth.labelString: Variable Width
+Ddd*preferences*fonts*fixedWidth.labelString:	 Fixed Width
+
+Ddd*preferences*fonts*name.text.columns:	 32
+Ddd*preferences*fonts*size.label.labelString:	 Size
+Ddd*preferences*fonts*size.text.columns:	 3
+Ddd*preferences*fonts*browse.labelString:	 Browse...
+
 
 Ddd*preferences*helpers*helpString: \
 @rm These are the EMPH([DDD] Helpers), external applications used by DDD.\n\
@@ -3085,7 +3100,7 @@ Ddd*preferences*helpers*helpString: \
 ITEM LBL(Edit Sources) invokes an X editor for the current source file.\n\
     SAMP(@ FILE@ ) is replaced by the current file name.\n\
     SAMP(@ LINE@ ) is replaced by the current line.\n\
-    Example: SAMP(xedit @ FILE@ )\n\
+    Example: SAMP(nedit @ FILE@ )\n\
 ITEM LBL(Get Core File) is a command to get a core file \
 from a running process.\n\
     SAMP(@ FILE@ ) is replaced by the base name of the target core file.\n\
@@ -5738,7 +5753,12 @@ Ddd*print_warning*helpString:	\
 @rm This is the output of your printing command.\n\
 For more details, consult your system documentation.
 
-Ddd*grab_warning_popup.title: DDD: When your Heart is not Open
+Ddd*font_selector_warning_popup.title: DDD: Font Selector Output
+Ddd*font_selector_warning*helpString:	\
+@rm This is the output of the font selection program.\n\
+For more details, consult your system documentation.
+
+Ddd*grab_warning_popup.title: DDD: Pointer Frozen
 Ddd*grab_warning*helpString: \
 @rm DDD has detected a frozen (grabbed) mouse pointer.\n\
 \n\

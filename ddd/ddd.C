@@ -1089,6 +1089,34 @@ static MMDesc startup_preferences_menu [] =
 };
 
 
+static Widget font_names[4];
+static Widget font_sizes[4];
+
+#define FONT_MENU(font) \
+{ \
+    { "name",   MMTextField | MMUnmanagedLabel, \
+    { SetFontNameCB, XtPointer(font) }, NULL, \
+    &font_names[int(font)] }, \
+    { "size",   MMTextField, \
+    { SetFontSizeCB, XtPointer(font) }, NULL, \
+    &font_sizes[int(font)] }, \
+    { "browse", MMPush, { BrowseFontCB, XtPointer(font) }}, \
+    MMEnd \
+}
+
+static MMDesc default_font_menu        [] = FONT_MENU(DefaultDDDFont);
+static MMDesc variable_width_font_menu [] = FONT_MENU(VariableWidthDDDFont);
+static MMDesc fixed_width_font_menu    [] = FONT_MENU(FixedWidthDDDFont);
+
+static MMDesc font_preferences_menu [] =
+{
+    { "default",         MMPanel,  MMNoCB, default_font_menu },
+    { "variableWidth",   MMPanel,  MMNoCB, variable_width_font_menu },
+    { "fixedWidth",      MMPanel,  MMNoCB, fixed_width_font_menu },
+    MMEnd
+};
+
+
 static Widget edit_command_w;
 static Widget get_core_command_w;
 static Widget ps_command_w;
@@ -1394,33 +1422,8 @@ static Atom WM_DELETE_WINDOW;
 static ostrstream devnull;
 ostream *_dddlog = &devnull;
 
-
-//-----------------------------------------------------------------------------
 // Message handling
-//-----------------------------------------------------------------------------
-
 static MString version_warnings;
-
-
-
-//-----------------------------------------------------------------------------
-// Transient position
-//-----------------------------------------------------------------------------
-
-// Return a transient position on SCREEN (for command tool etc.) in POS_X/POS_Y
-static void get_transient_pos(Screen *screen, Position& pos_x, Position& pos_y)
-{
-    (void) screen;		// Use it
-#if 0
-    // Use lower right corner.
-    pos_x = WidthOfScreen(screen) - 1;
-    pos_y = HeightOfScreen(screen) - 1;
-#else
-    // This loses on some window managers; upper left corner is safer.
-    pos_x = 0;
-    pos_y = 0;
-#endif
-}
 
 
 //-----------------------------------------------------------------------------
@@ -3461,6 +3464,21 @@ void update_options()
 
     set_label(arg_cmd_area[ArgItems::Find].widget, new_label, icon);
 
+    // Font stuff
+    XmTextFieldSetString(font_names[DefaultDDDFont], 
+			 app_data.default_font);
+    XmTextFieldSetString(font_names[VariableWidthDDDFont],
+			 app_data.variable_width_font);
+    XmTextFieldSetString(font_names[FixedWidthDDDFont],
+			 app_data.fixed_width_font);
+    string value;
+    value = itostring(app_data.default_font_size);
+    XmTextFieldSetString(font_sizes[DefaultDDDFont],       (String)value);
+    value = itostring(app_data.variable_width_font_size);
+    XmTextFieldSetString(font_sizes[VariableWidthDDDFont], (String)value);
+    value = itostring(app_data.fixed_width_font_size);
+    XmTextFieldSetString(font_sizes[FixedWidthDDDFont],    (String)value);
+
     // Check for source toolbar
     Widget arg_cmd_w = XtParent(source_arg->widget());
     if (data_disp->graph_cmd_w == arg_cmd_w)
@@ -3784,6 +3802,39 @@ static bool startup_preferences_changed()
 	      != string(initial_app_data.show_startup_logo);
 }
 
+static void ResetFontPreferencesCB(Widget, XtPointer, XtPointer)
+{
+    set_font(DefaultDDDFont,       initial_app_data.default_font);
+    set_font(VariableWidthDDDFont, initial_app_data.variable_width_font);
+    set_font(FixedWidthDDDFont,    initial_app_data.fixed_width_font);
+
+    app_data.default_font_size = 
+	initial_app_data.default_font_size;
+    app_data.variable_width_font_size = 
+	initial_app_data.variable_width_font_size;
+    app_data.fixed_width_font_size = 
+	initial_app_data.fixed_width_font_size;
+
+    update_options();
+}
+
+
+static bool font_preferences_changed()
+{
+    return string(app_data.default_font)
+	   != string(initial_app_data.default_font) 
+	|| string(app_data.variable_width_font) 
+	   != string(initial_app_data.variable_width_font) 
+	|| string(app_data.fixed_width_font) 
+	   != string(initial_app_data.fixed_width_font) 
+	|| app_data.default_font_size 
+	   != initial_app_data.default_font_size 
+	|| app_data.variable_width_font_size
+	   != initial_app_data.variable_width_font_size 
+	|| app_data.fixed_width_font_size 
+	   != initial_app_data.fixed_width_font_size;
+}
+
 static void ResetHelpersPreferencesCB(Widget, XtPointer, XtPointer)
 {
     set_string(edit_command_w,       initial_app_data.edit_command);
@@ -3825,6 +3876,8 @@ static void ResetPreferencesCB(Widget w, XtPointer client_data,
 	ResetDataPreferencesCB(w, client_data, call_data);
     else if (panel_name == "startup")
 	ResetStartupPreferencesCB(w, client_data, call_data);
+    else if (panel_name == "fonts")
+	ResetFontPreferencesCB(w, client_data, call_data);
     else if (panel_name == "helpers")
 	ResetHelpersPreferencesCB(w, client_data, call_data);
 }
@@ -3845,6 +3898,8 @@ void update_reset_preferences()
 	    sensitive = data_preferences_changed();
 	else if (panel_name == "startup")
 	    sensitive = startup_preferences_changed();
+	else if (panel_name == "fonts")
+	    sensitive = font_preferences_changed();
 	else if (panel_name == "helpers")
 	    sensitive = helpers_preferences_changed();
 
@@ -4029,6 +4084,8 @@ static void make_preferences(Widget parent)
     add_panel(change, buttons, "data",    data_preferences_menu,    
 	      max_width, max_height, false);
     add_panel(change, buttons, "startup", startup_preferences_menu, 
+	      max_width, max_height, false);
+    add_panel(change, buttons, "fonts", font_preferences_menu,
 	      max_width, max_height, false);
     add_panel(change, buttons, "helpers", helpers_preferences_menu, 
 	      max_width, max_height, false);
@@ -5265,6 +5322,21 @@ static void ddd_xt_warning(String message)
 
 static Widget init_label, init_shell;
 
+// Return a transient position on SCREEN (for command tool etc.) in POS_X/POS_Y
+static void get_transient_pos(Screen *screen, Position& pos_x, Position& pos_y)
+{
+    (void) screen;		// Use it
+#if 0
+    // Use lower right corner.
+    pos_x = WidthOfScreen(screen) - 1;
+    pos_y = HeightOfScreen(screen) - 1;
+#else
+    // This loses on some window managers; upper left corner is safer.
+    pos_x = 0;
+    pos_y = 0;
+#endif
+}
+
 // Check if window manager decorates transients
 static void start_have_decorated_transients(Widget parent)
 {
@@ -5526,6 +5598,7 @@ static void sync_args(ArgField *source, ArgField *target)
     target->addHandler(Changed, SyncArgHP, (void *)source);
 }
 
+
 //-----------------------------------------------------------------------------
 // Various setups
 //-----------------------------------------------------------------------------
@@ -5671,6 +5744,9 @@ static void setup_command_tool(bool iconic)
     // windows such as DialogShells.  In this case, use a TopLevel
     // shell instead and rely on the DDD auto-raise mechanisms defined
     // in `windows.C'.
+    //
+    // Nobody ever honors all this work.  -AZ
+
     bool use_transient_tool_shell = true;
     switch (app_data.decorate_tool)
     {

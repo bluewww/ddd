@@ -35,12 +35,20 @@ char fonts_rcsid[] =
 
 #include "fonts.h"
 
-#include "converters.h"
-#include "strclass.h"
 #include "AppData.h"
-#include "string-fun.h"
-#include "cook.h"
+#include "LiterateA.h"
 #include "assert.h"
+#include "converters.h"
+#include "cook.h"
+#include "ddd.h"
+#include "shell.h"
+#include "status.h"
+#include "strclass.h"
+#include "string-fun.h"
+#include "post.h"
+
+#include <ctype.h>
+#include <Xm/TextF.h>
 
 
 //-----------------------------------------------------------------------------
@@ -117,19 +125,37 @@ static string userfont(DDDFont font)
     return "";			// Never reached
 }
 
+// Return a symbolic name for FONT
+static string font_type(DDDFont font)
+{
+    switch (font)
+    {
+    case DefaultDDDFont:
+	return "default font";
+    case VariableWidthDDDFont:
+ 	return "variable width font";
+    case FixedWidthDDDFont:
+ 	return "fixed width font";
+    case SymbolDDDFont:
+ 	return "symbol font";
+    default:
+	assert(0);
+    }
+}
+
 // defaults to use if nothing is specified
 static string fallbackfont(DDDFont font)
 {
     switch (font) 
     {
     case DefaultDDDFont:
- 	return "-*-helvetica-bold-r-*-*-*-90-*-*-*-*-iso8859-*";
+ 	return "-*-helvetica-bold-r-*-*-*-120-*-*-*-*-iso8859-*";
     case VariableWidthDDDFont:
- 	return "-*-helvetica-medium-r-*-*-*-90-*-*-*-*-iso8859-*";
+ 	return "-*-helvetica-medium-r-*-*-*-120-*-*-*-*-iso8859-*";
     case FixedWidthDDDFont:
- 	return "-*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-iso8859-*";
+ 	return "-*-lucidatypewriter-medium-r-*-*-*-120-*-*-*-*-iso8859-*";
     case SymbolDDDFont:
- 	return "-*-symbol-*-*-*-*-*-90-*-*-*-*-adobe-*";
+ 	return "-*-symbol-*-*-*-*-*-120-*-*-*-*-adobe-*";
     }
 
     assert(0);
@@ -200,6 +226,11 @@ string make_font(DDDFont base, const string& override = "")
 	    w = component(base, n);
 	font += "-" + w;
     }
+
+#if 0
+    clog << "make_font(" << font_type(base) << ", " << quote(override) 
+	 << ") = " << quote(font) << "\n";
+#endif
 
     return font;
 }
@@ -303,4 +334,196 @@ void setup_fonts()
 {
     setup_x_fonts();
     setup_vsl_fonts();
+}
+
+
+
+//-----------------------------------------------------------------------------
+// Set font resources
+//-----------------------------------------------------------------------------
+
+// Simplify font specs
+static string simplify_font(DDDFont font, const string& source)
+{
+    string s = "";
+
+    for (FontComponent n = AllComponents; n >= Foundry; n--)
+    {
+	string c = component(source, n);
+	if (s == "" && c == component(font, n))
+	{
+	    // Default setting -- ignore
+	}
+	else
+	{
+	    s.prepend("-" + c);
+	}
+    }
+
+    if (s.contains("-*-", 0))
+	s = s.after("-*-");
+
+    if (s == "")
+	s = component(font, Family);
+    if (!s.contains('-'))
+	s += "-" + component(font, Weight);
+
+#if 0
+    clog << "simplify_font(" << font_type(font) << ", " 
+	 << quote(source) << ") = " << quote(s) << "\n";
+#endif
+
+    return s;
+}
+
+// Set a new font resource
+void set_font(DDDFont font, const string& name)
+{
+    switch (font)
+    {
+    case DefaultDDDFont:
+    {
+	static string s;
+	s = name;
+	app_data.default_font = s;
+	break;
+    }
+    case VariableWidthDDDFont:
+    {
+	static string s;
+	s = name;
+	app_data.variable_width_font = s;
+	break;
+    }
+    case FixedWidthDDDFont:
+    {
+	static string s;
+	s = name;
+	app_data.fixed_width_font = s;
+	break;
+    }
+    default:
+	assert(0);
+    }
+}
+
+// Set a new font resource
+void set_font_size(DDDFont font, int size)
+{
+    switch (font)
+    {
+    case DefaultDDDFont:
+	app_data.default_font_size = size;
+	break;
+    case VariableWidthDDDFont:
+	app_data.variable_width_font_size = size;
+	break;
+    case FixedWidthDDDFont:
+	app_data.fixed_width_font_size = size;
+	break;
+    default:
+	assert(0);
+    }
+}
+
+
+void SetFontNameCB(Widget w, XtPointer client_data, XtPointer)
+{
+    DDDFont font = (DDDFont)client_data;
+    String s = XmTextFieldGetString(w);
+    set_font(font, s);
+    XtFree(s);
+
+    update_reset_preferences();
+}
+
+void SetFontSizeCB(Widget w, XtPointer client_data, XtPointer)
+{
+    DDDFont font = (DDDFont)client_data;
+    String s = XmTextFieldGetString(w);
+    set_font_size(font, atoi(s));
+    XtFree(s);
+
+    update_reset_preferences();
+}
+
+//-----------------------------------------------------------------------------
+// Font browser
+//-----------------------------------------------------------------------------
+
+static void gdbDeleteFontSelectAgent(XtPointer client_data, XtIntervalId *)
+{
+    // Delete agent after use
+    Agent *font_select_agent = (Agent *)client_data;
+    delete font_select_agent;
+}
+
+static void DeleteAgentHP(Agent *agent, void *, void *)
+{
+    // Agent has died -- delete it
+    XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0, 
+		    gdbDeleteFontSelectAgent, 
+		    XtPointer(agent));
+}
+
+static void FontSelectionErrorHP(Agent *, void *, void *call_data)
+{
+    // Fetch stderr output from font selector
+    DataLength *input = (DataLength *)call_data;
+    post_warning(string(input->data, input->length), "font_selector_warning");
+}
+
+static void FontSelectionDoneHP(Agent *agent, void *client_data, 
+				void *call_data)
+{
+    DDDFont font = (DDDFont)client_data;
+
+    // Fetch string from font selector
+    DataLength *d = (DataLength *)call_data;
+    string fontspec(d->data, d->length);
+    strip_space(fontspec);
+
+    if (!fontspec.contains('-', 0))
+    {
+	// Treat as error
+	FontSelectionErrorHP(agent, client_data, call_data);
+	return;
+    }
+
+    string sz = component(fontspec, PointSize);
+    if (sz != "*")
+	set_font_size(font, atoi(sz));
+
+    fontspec.gsub('*', ' ');
+    set_font(font, simplify_font(font, make_font(font, fontspec)));
+
+    update_options();
+}
+
+// Browse fonts
+void BrowseFontCB(Widget w, XtPointer client_data, XtPointer)
+{
+    DDDFont font = (DDDFont)client_data;
+
+    StatusDelay delay("Invoking " + font_type(font) + " selector");
+
+    string cmd = app_data.font_select_command;
+    cmd.gsub("@FONT@", make_font(DefaultDDDFont));
+    string type = font_type(font);
+    type[0] = toupper(type[0]);
+    cmd.gsub("@TYPE@", type);
+    cmd = sh_command(cmd, true);
+
+    // Invoke a font selector
+    LiterateAgent *font_select_agent = 
+	new LiterateAgent(XtWidgetToApplicationContext(w), cmd);
+    font_select_agent->removeAllHandlers(Died);
+    font_select_agent->addHandler(Died, DeleteAgentHP);
+    font_select_agent->addHandler(Input,
+				  FontSelectionDoneHP, 
+				  (void *)font);
+    font_select_agent->addHandler(Error,
+				  FontSelectionErrorHP, 
+				  (void *)font);
+    font_select_agent->start();
 }

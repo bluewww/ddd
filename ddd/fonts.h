@@ -34,11 +34,12 @@
 #endif
 
 #include "strclass.h"
+#include <X11/Intrinsic.h>
 
-enum DDDFont { DefaultDDDFont,
-	       VariableWidthDDDFont,
-	       FixedWidthDDDFont,
-	       SymbolDDDFont };
+enum DDDFont { DefaultDDDFont       = 0,
+	       VariableWidthDDDFont = 1,
+	       FixedWidthDDDFont    = 2,
+	       SymbolDDDFont        = 3 };
 
 extern void setup_fonts();
 
@@ -46,6 +47,16 @@ extern void setup_fonts();
 // Override contains "-SPEC-SPEC-..."; each non-empty SPEC overrides
 // the default in BASE.
 extern string make_font(DDDFont base, const string& override = "");
+
+// Set a new font resource
+extern void set_font(DDDFont n, const string& name);
+
+// Browse fonts
+extern void BrowseFontCB(Widget w, XtPointer, XtPointer);
+
+// Set font name and size
+extern void SetFontNameCB(Widget w, XtPointer, XtPointer);
+extern void SetFontSizeCB(Widget w, XtPointer, XtPointer);
 
 #endif // _DDD_fonts_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
