@@ -157,7 +157,6 @@ MMDesc DataDisp::graph_popup[] =
 const int DataDisp::shortcut_items = 20;
 
 #define SHORTCUT_MENU \
-{ \
     {"s1",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(1)  }}, \
     {"s2",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(2)  }}, \
     {"s3",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(3)  }}, \
@@ -181,17 +180,26 @@ const int DataDisp::shortcut_items = 20;
     {"other", MMPush, { DataDisp::dependentCB }}, \
     MMSep, \
     {"edit",  MMPush, { dddEditShortcutsCB }}, \
-    MMEnd, \
-}
+    MMEnd
 
 // The menu used in the `New Display' button.
-MMDesc DataDisp::shortcut_menu[]   = SHORTCUT_MENU;
+
+
+struct ShortcutItms { enum Itms {Dereference}; };
+
+MMDesc DataDisp::shortcut_menu[]   = 
+{
+    {"deref", MMPush, {DataDisp::dereferenceArgCB}},
+    SHORTCUT_MENU 
+};
+
+#define shortcut_menu1 (&shortcut_menu[1])
 
 // A stand-alone popup menu.
-MMDesc DataDisp::shortcut_popup1[] = SHORTCUT_MENU;
+MMDesc DataDisp::shortcut_popup1[] = { SHORTCUT_MENU };
 
 // The sub-menu in the `New Display' item.
-MMDesc DataDisp::shortcut_popup2[] = SHORTCUT_MENU;
+MMDesc DataDisp::shortcut_popup2[] = { SHORTCUT_MENU };
 
 struct RotateItms { enum Itms {RotateAll}; };
 
@@ -223,7 +231,7 @@ MMDesc DataDisp::graph_cmd_area[] =
 {
     {"new",           MMPush,                 {DataDisp::dependentArgCB},
                                                DataDisp::shortcut_menu },
-    {"dereference",   MMPush | MMInsensitive, {DataDisp::dereferenceArgCB}},
+    {"dereference",   MMPush | MMInsensitive | MMUnmanaged, {DataDisp::dereferenceArgCB}},
     {"detail",        MMPush | MMInsensitive, {DataDisp::toggleDetailCB,
 					       XtPointer(-1)},
                                                DataDisp::detail_menu },
@@ -928,7 +936,7 @@ void DataDisp::set_shortcut_menu(const StringArray& exprs,
     {
 	Widget popup1_item = shortcut_popup1[i].widget;
 	Widget popup2_item = shortcut_popup2[i].widget;
-	Widget menu_item   = shortcut_menu[i].widget;
+	Widget menu_item   = shortcut_menu1[i].widget;
 
 	if (i < exprs.size())
 	{
@@ -982,7 +990,7 @@ MString DataDisp::shortcut_help(Widget w)
 {
     for (int i = 0; i < shortcut_items; i++)
     {
-	if (w == shortcut_menu[i].widget
+	if (w == shortcut_menu1[i].widget
 	    || w == shortcut_popup1[i].widget
 	    || w == shortcut_popup2[i].widget)
 	{
@@ -1327,13 +1335,21 @@ void DataDisp::dependentCB(Widget w, XtPointer client_data,
     manage_and_raise(dependent_display_dialog);
 }
 
-void DataDisp::dependentArgCB(Widget w, XtPointer, XtPointer call_data)
+void DataDisp::dependentArgCB(Widget w, XtPointer client_data, 
+			      XtPointer call_data)
 {
     DataDispCount count(disp_graph);
+    DispValue *disp_value_arg = selected_value();
+
     if (count.selected_titles > 0)
     {
 	// Delete selected displays
 	deleteCB(w, XtPointer(False), call_data);
+    }
+    else if (disp_value_arg != 0 && disp_value_arg->type() == Pointer)
+    {
+	// Dereference selected pointer
+	dereferenceCB(w, client_data, call_data);
     }
     else
     {
@@ -1832,23 +1848,28 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 	set_label(graph_cmd_area[CmdItms::New].widget,
 		  "Undisplay ()", UNDISPLAY_ICON);
     }
+    else if (dereference_ok)
+    {
+	string label("Display " + gdb->dereferenced_expr("()"));
+	set_label(graph_cmd_area[CmdItms::New].widget, label, DISPREF_ICON);
+    }
     else
     {
 	set_label(graph_cmd_area[CmdItms::New].widget,
 		  "Display ()", DISPLAY_ICON);
     }
+    set_sensitive(graph_cmd_area[CmdItms::New].widget, arg_ok);
+    set_sensitive(display_area[DisplayItms::New].widget, true);
 
     // Dereference
     set_sensitive(node_popup[NodeItms::Dereference].widget,
 		  dereference_ok);
+    set_sensitive(shortcut_menu[ShortcutItms::Dereference].widget,
+		  dereference_ok || (count.selected == 0 && arg_ok));
     set_sensitive(graph_cmd_area[CmdItms::Dereference].widget,
 		  dereference_ok || (count.selected == 0 && arg_ok));
     set_sensitive(display_area[DisplayItms::Dereference].widget,
 		  dereference_ok);
-
-    // Dependent
-    set_sensitive(graph_cmd_area[CmdItms::New].widget, arg_ok);
-    set_sensitive(display_area[DisplayItms::New].widget, true);
 
     // Rotate
     set_sensitive(node_popup[NodeItms::Rotate].widget,
@@ -1928,7 +1949,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 
 	set_sensitive(shortcut_popup1[i].widget, sens);
 	set_sensitive(shortcut_popup2[i].widget, sens);
-	set_sensitive(shortcut_menu  [i].widget, sens);
+	set_sensitive(shortcut_menu1 [i].widget, sens);
     }
 
     // Argument field
@@ -4494,6 +4515,7 @@ void DataDisp::language_changedHP(Agent *source, void *, void *)
 
     string label("Display " + gdb->dereferenced_expr("()"));
 
+    set_label(shortcut_menu[ShortcutItms::Dereference].widget, label);
     set_label(node_popup[NodeItms::Dereference].widget, label);
     set_label(display_area[DisplayItms::Dereference].widget, label);
     set_label(graph_cmd_area[CmdItms::Dereference].widget, label);
