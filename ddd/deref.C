@@ -69,7 +69,7 @@ string deref(const string& expr, const string& sym)
 
 	string val = gdbValue(expr, print_command);
 	if (val.matches(rxperlref))
-	    ref = val.through(rxidentifier);
+	    ref = val.at(rxidentifier, val.index("=") + 1);
     }
 
 #if 0
