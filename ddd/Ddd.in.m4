@@ -4720,13 +4720,14 @@ Ddd*edit_breakpoints_dialog.childPlacement:  XmPLACE_TOP
 Ddd*edit_breakpoints_dialog*helpString:	     \
 WIDGET(Breakpoint and Watchpoint Editor)\n\
 \n\
+DESC(Props..., [set or modify an item's properties])\n\
+DESC(Lookup, [lookup selected item])\n\
+DESC(Print, [print value of selected breakpoint])\n\
 DESC(Break..., [create a new breakpoint])\n\
 DESC(Watch..., [create a new watchpoint])\n\
-DESC(Lookup, [lookup selected item])\n\
 DESC(Enable, [enable all selected items])\n\
 DESC(Disable, [disable all selected items])\n\
-DESC(Props..., [set or modify an item's properties])\n\
-DESC(Clear, [delete all selected items])\n\
+DESC(Delete, [delete all selected items])\n\
 \n\
 Use KEY(Ctrl)+BUTTON(1) to toggle selections.
 
@@ -4817,7 +4818,7 @@ Ddd*edit_breakpoints_dialog*delete.documentationString:     \
 !-----------------------------------------------------------------------------
 
 Ddd*new_breakpoint_dialog_popup.title: DDD: New Breakpoint
-Ddd*new_breakpoint_dialog.selectionLabelString:	New Breakpoint
+Ddd*new_breakpoint_dialog.selectionLabelString:	Set Breakpoint at
 
 Ddd*new_breakpoint_dialog*helpString:	\
 \
