@@ -1119,7 +1119,7 @@ DataDispCount::DataDispCount(DispGraph *disp_graph)
 	    else
 	    {
 		DispValue *dv = dn->selected_value();
-		if (dv == 0)
+		if (dv == 0 || dv == dn->value())
 		    selected_titles++;
 
 		if (!dn->is_user_command() && !dn->clustered())
@@ -2053,7 +2053,8 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     // Delete
     bool have_display_arg = (display_number(source_arg->get_string()) != 0);
     set_sensitive(graph_cmd_area[CmdItms::Delete].widget,
-		  have_display_arg || record_ok || count.selected_titles > 0);
+		  (count.selected == 0 && have_display_arg) || 
+		  record_ok || count.selected_titles > 0);
     set_sensitive(display_area[DisplayItms::Delete].widget,
 		  count.selected > 0);
 
