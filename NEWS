@@ -114,7 +114,7 @@ DDD 2.1 [in beta test; scheduled for April, 1997]
     - DDD now sets the WM_COMMAND resource such that X session
       managers can save and restore DDD state.
     - The data window now uses a command queue for operations on data
-      displays, disabling `The debugger is busy' messages.
+      displays.  No more `The debugger is busy' messages.
     - And again, dozens of minor bug fixes and improvements.
 
     Release policy:

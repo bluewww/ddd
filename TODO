@@ -307,4 +307,7 @@ Volunteers for these and other projects are welcome!
      to find a string that does not appear elsewhere in the current
      file should produce a message on the status line.
 
-160. (Insert your project idea here)
+160. Support DEC `decladebug'.  Jens Albrecht
+     <Jens.Albrecht@informatik.uni-erlangen.de> has a trace.
+
+161. (Insert your project idea here)
