@@ -1947,7 +1947,8 @@ Ddd*menubar.stack.helpString:	\
 where it is.\n\
 @tt \267 @bf Registers... @rm - show current processor registers.\n\
 @tt \267 @bf Threads... @rm - show current program threads.\n\
-@tt \267 @bf Other... @rm - create status displays that show things \
+\n\
+@tt \267 @bf Status Displays... @rm - create status displays that show things \
 about the program being debugged.\n\
 \n\
 @tt \267 @bf Up @rm - show the function that called the current one.\n\
@@ -1968,8 +1969,8 @@ Ddd*stackMenu.threads.mnemonic:		T
 Ddd*stackMenu.threads.documentationString: \
 @rm Show and select current program threads
 
-Ddd*stackMenu.infos.labelString:	Other...
-Ddd*stackMenu.infos.mnemonic:		O
+Ddd*stackMenu.infos.labelString:	Status Displays...
+Ddd*stackMenu.infos.mnemonic:		S
 Ddd*stackMenu.infos.documentationString: \
 @rm Show various things about the program being debugged
 

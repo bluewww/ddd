@@ -596,6 +596,7 @@ static MMDesc stack_menu[] =
       NULL, &registers_w },
     { "threads",    MMPush | MMInsensitive, { NULL },
       NULL, &threads_w },
+    MMSep,
     { "infos",      MMPush,  { dddPopupInfosCB },
       NULL, &infos_w },
     MMSep,
