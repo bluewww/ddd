@@ -33,7 +33,7 @@ char DestroyCB_rcsid[] =
 #include "TimeOut.h"
 #include <Xm/DialogS.h>
 
-static void CancelTimer(Widget w, XtPointer client_data, XtPointer)
+static void CancelTimer(Widget, XtPointer client_data, XtPointer)
 {
     XtIntervalId id = XtIntervalId(client_data);
     XtRemoveTimeOut(id);
