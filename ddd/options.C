@@ -52,6 +52,7 @@ char options_rcsid[] =
 #include "filetype.h"
 #include "frame.h"
 #include "gdbinit.h"
+#include "plotter.h"
 #include "post.h"
 #include "resources.h"
 #include "session.h"
@@ -594,6 +595,19 @@ void dddToggleSuppressWarningsCB (Widget, XtPointer, XtPointer call_data)
     else
 	set_status("X Warnings are not suppressed.");
 
+    update_options();
+}
+
+void dddSetBuiltinPlotWindowCB (Widget, XtPointer client_data, XtPointer)
+{
+    app_data.builtin_plot_window = bool((int)(long)client_data);
+
+    if (app_data.builtin_plot_window)
+	set_status("Plotting using builtin " DDD_NAME " window.");
+    else
+	set_status("Plotting using external Gnuplot window.");
+
+    clear_plot_window_cache();
     update_options();
 }
 
@@ -2086,8 +2100,6 @@ bool save_options(unsigned long flags)
     os << "\n! Helpers.\n";
     os << string_app_value(XtNeditCommand,    app_data.edit_command, true)
        << '\n';
-    os << string_app_value(XtNplotCommand,    app_data.plot_command, true)
-       << '\n';
     os << string_app_value(XtNgetCoreCommand, app_data.get_core_command, true)
        << '\n';
     os << string_app_value(XtNpsCommand,      app_data.ps_command, true)
@@ -2099,6 +2111,10 @@ bool save_options(unsigned long flags)
        << '\n';
     os << string_app_value(XtNwwwCommand,     app_data.www_command, true) 
        << '\n';
+    os << string_app_value(XtNplotCommand,    app_data.plot_command, true)
+       << '\n';
+    os << bool_app_value(XtNbuiltinPlotWindow, 
+			 app_data.builtin_plot_window) << '\n';
     os << string_app_value(XtNprintCommand,   app_data.print_command, true) 
        << '\n';
 

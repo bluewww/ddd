@@ -3379,8 +3379,6 @@ ITEM LBL(Edit Sources) invokes an X editor for the current source file.\n\
     SAMP(@ FILE@ ) is replaced by the current file name.\n\
     SAMP(@ LINE@ ) is replaced by the current line.\n\
     Example: SAMP(nedit @ FILE@ )\n\
-ITEM LBL(Plot) invokes a Gnuplot program for array data.\n\
-    Example: SAMP(gnuplot)\n\
 ITEM LBL(Get Core File) is a command to get a core file \
 from a running process.\n\
     SAMP(@ FILE@ ) is replaced by the base name of the target core file.\n\
@@ -3395,23 +3393,30 @@ ITEM LBL(Execution Window) is a command to start a terminal emulator.\n\
     within the execution window.\n\
     Example: SAMP(xterm -e /bin/sh -c)\n\
 ITEM LBL(Uncompress) is an uncompression command.\n\
-    The command reads from standard input and writes to \
-standard output.\n\
+    The command reads from standard input and writes to standard output.\n\
     Example: SAMP(gunzip -c)\n\
 ITEM LBL(Web Browser) invokes a WWW browser.\n\
     SAMP(@ URL@ ) is replaced by the URL to be shown.\n\
     Example: SAMP(netscape @ URL@ )\n\
+ITEM LBL(Plot) invokes a Gnuplot program for plotting data.\n\
+    Example: SAMP(gnuplot)\n\
+ITEM LBL(Plot Window) indicates the type of plot window to use.\n\
+    SUBITEM The LBL(builtin) DDD window uses fewer resources.\n\
+    SUBITEM The LBL(external) Gnuplot window is much faster.\n\
 \n\
 Use the buttons above to view and change other preferences.\n\
 Click on LBL(Reset) to restore the saved preferences.
 
 Ddd*preferences*edit*labelString:		Edit Sources
-Ddd*preferences*plot*labelString:		Plot
 Ddd*preferences*get_core*labelString:		Get Core File
 Ddd*preferences*ps*labelString:			List Processes
 Ddd*preferences*term*labelString:		Execution Window
 Ddd*preferences*uncompress*labelString:		Uncompress
 Ddd*preferences*www*labelString:		Web Browser
+Ddd*preferences*plot*labelString:		Plot
+Ddd*preferences*plot_window*labelString:	Plot Window
+Ddd*preferences*extern*labelString:		External
+Ddd*preferences*builtin*labelString:		Builtin
 Ddd*preferences*text.columns:			50
 
 

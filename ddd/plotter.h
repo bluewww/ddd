@@ -41,5 +41,8 @@ class DispValue;
 // Create a new plot window
 PlotAgent *new_plotter(string name, DispValue *src);
 
+// Clear cached plot decorations
+void clear_plot_window_cache();
+
 #endif // _DDD_plotter_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

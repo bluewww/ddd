@@ -585,16 +585,16 @@ static void PlotterNotFoundHP(Agent *plotter, void *client_data, void *)
 #define SWALLOWER_NAME "swallower"
 #define PLOT_AREA_NAME "area"
 
+static VoidArray plot_infos;
+
 static PlotWindowInfo *new_decoration(const string& name)
 {
-    static VoidArray infos;
-
     PlotWindowInfo *plot = 0;
 
     // Check whether we can reuse an existing decoration
-    for (int i = 0; i < infos.size(); i++)
+    for (int i = 0; i < plot_infos.size(); i++)
     {
-	PlotWindowInfo *info = (PlotWindowInfo *)infos[i];
+	PlotWindowInfo *info = (PlotWindowInfo *)plot_infos[i];
 	if (info->plotter == 0)
 	{
 	    // Shell is unused - use this one
@@ -691,7 +691,7 @@ static PlotWindowInfo *new_decoration(const string& name)
 	Delay::register_shell(plot->shell);
 	InstallButtonTips(plot->shell);
 
-	infos += plot;
+	plot_infos += plot;
     }
 
     string title = DDD_NAME ": " + name;
@@ -700,11 +700,7 @@ static PlotWindowInfo *new_decoration(const string& name)
 		  XmNiconName, title.chars(),
 		  NULL);
 
-    if (app_data.builtin_plot_window)
-    {
-	// Nothing to do
-    }
-    else
+    if (plot->swallower != 0)
     {
 	XtRemoveAllCallbacks(plot->swallower, XtNwindowCreatedCallback);
 	XtAddCallback(plot->swallower, XtNwindowCreatedCallback,
@@ -718,6 +714,30 @@ static PlotWindowInfo *new_decoration(const string& name)
 
     return plot;
 }
+
+// Remove all unused decorations from cache
+void clear_plot_window_cache()
+{
+    for (int i = 0; i < plot_infos.size(); i++)
+    {
+	PlotWindowInfo *info = (PlotWindowInfo *)plot_infos[i];
+	if (info->plotter == 0)
+	{
+	    // Shell is unused -- destroy it
+	    XtDestroyWidget(info->shell);
+	    info->shell = 0;
+	}
+	else
+	{
+	    // A running shell should be destroyed after invocation.
+	    // (FIXME)
+	}
+    }
+
+    static VoidArray empty;
+    plot_infos = empty;
+}
+
 
 // Create a new plot window
 PlotAgent *new_plotter(string name, DispValue *source)
