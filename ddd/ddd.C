@@ -3267,7 +3267,7 @@ static void lock_ddd(Widget parent)
     XtManageChild(kill);
     XtAddCallback(kill, XmNactivateCallback,
 		  KillLockerCB, XtPointer(&info));
-    XtSetSensitive(kill, on_local_host);
+    set_sensitive(kill, on_local_host);
 #endif
 
     XtAddCallback(lock_dialog, XmNhelpCallback,
@@ -4266,7 +4266,7 @@ void update_reset_preferences()
 	else if (panel_name == "helpers")
 	    sensitive = helpers_preferences_changed();
 
-	XtSetSensitive(reset_preferences_w, sensitive);
+	set_sensitive(reset_preferences_w, sensitive);
     }
 }
 

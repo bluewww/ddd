@@ -576,7 +576,7 @@ static void _MStringHelpCB(Widget widget,
     // If this is a recursive call, disable the help button
     Widget help_button = 
 	XmMessageBoxGetChild(help_dialog, XmDIALOG_HELP_BUTTON);
-    XtSetSensitive(help_button, !help_on_help);
+    set_sensitive(help_button, !help_on_help);
 
     // Popup help_dialog
     manage_and_raise(help_dialog);

@@ -3221,8 +3221,8 @@ void SourceView::create_shells()
     up_w   = XmSelectionBoxGetChild(stack_dialog_w, XmDIALOG_OK_BUTTON);
     down_w = XmSelectionBoxGetChild(stack_dialog_w, XmDIALOG_APPLY_BUTTON);
 
-    XtSetSensitive(up_w,   False);
-    XtSetSensitive(down_w, False);
+    set_sensitive(up_w,   False);
+    set_sensitive(down_w, False);
 
     arg = 0;
     frame_list_w = XmSelectionBoxGetChild(stack_dialog_w, XmDIALOG_LIST);
@@ -4786,7 +4786,7 @@ void SourceView::set_text_popup_label(int item, const string& arg, bool sens)
     MString label = MString(text_cmd_labels[item]) + tt(arg);
 
     XtVaSetValues(w, XmNlabelString, label.xmstring(), NULL);
-    XtSetSensitive(w, sens);
+    set_sensitive(w, sens);
 }
 
 void SourceView::set_text_popup_resource(int item, const string& arg)
@@ -4897,8 +4897,8 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	}
 
 	// Grey out unsupported functions
-	XtSetSensitive(bp_popup[BPItms::Disable].widget, gdb->can_disable());
-	XtSetSensitive(bp_popup[BPItms::SetPC].widget,
+	set_sensitive(bp_popup[BPItms::Disable].widget, gdb->can_disable());
+	set_sensitive(bp_popup[BPItms::SetPC].widget,
 		       gdb->has_jump_command() || gdb->has_assign_command());
 
 	MString label(bp_map.get(bp_nr)->enabled() ? 
@@ -4923,9 +4923,9 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	    MMaddHelpCallback(line_popup, ImmediateHelpCB);
 	    InstallButtonTips(line_popup_w);
 
-	    XtSetSensitive(line_popup[LineItms::SetTempBP].widget, 
+	    set_sensitive(line_popup[LineItms::SetTempBP].widget, 
 			   gdb->has_temporary_breakpoints());
-	    XtSetSensitive(line_popup[LineItms::SetPC].widget,
+	    set_sensitive(line_popup[LineItms::SetPC].widget,
 			   gdb->has_jump_command() || 
 			   gdb->has_assign_command());
 	}
@@ -5267,11 +5267,11 @@ void SourceView::NewWatchpointCB(Widget w, XtPointer, XtPointer)
 	MMaddCallbacks(wp_menu);
 	MMaddHelpCallback(wp_menu, ImmediateHelpCB);
 
-	XtSetSensitive(cwatch_w, (gdb->has_watch_command() & WATCH_CHANGE) 
+	set_sensitive(cwatch_w, (gdb->has_watch_command() & WATCH_CHANGE) 
 		       == WATCH_CHANGE);
-	XtSetSensitive(rwatch_w, (gdb->has_watch_command() & WATCH_READ) 
+	set_sensitive(rwatch_w, (gdb->has_watch_command() & WATCH_READ) 
 		       == WATCH_READ);
-	XtSetSensitive(awatch_w, (gdb->has_watch_command() & WATCH_ACCESS) 
+	set_sensitive(awatch_w, (gdb->has_watch_command() & WATCH_ACCESS) 
 		       == WATCH_ACCESS);
 
 	// Initialize: use CWATCH as default menu item
@@ -6348,16 +6348,16 @@ void SourceView::UpdateBreakpointButtonsCB(Widget, XtPointer,
     }
 
     // Update buttons
-    XtSetSensitive(bp_area[BPButtons::NewWP].widget, gdb->has_watch_command());
-    XtSetSensitive(bp_area[BPButtons::Lookup].widget, selected == 1);
-    XtSetSensitive(bp_area[BPButtons::Print].widget, 
+    set_sensitive(bp_area[BPButtons::NewWP].widget, gdb->has_watch_command());
+    set_sensitive(bp_area[BPButtons::Lookup].widget, selected == 1);
+    set_sensitive(bp_area[BPButtons::Print].widget, 
 		   selected == 1 && selected_bp->type() == WATCHPOINT);
-    XtSetSensitive(bp_area[BPButtons::Enable].widget,
+    set_sensitive(bp_area[BPButtons::Enable].widget,
 		   gdb->can_enable() && selected_disabled > 0);
-    XtSetSensitive(bp_area[BPButtons::Disable].widget,
+    set_sensitive(bp_area[BPButtons::Disable].widget,
 		   gdb->can_disable() && selected_enabled > 0);
-    XtSetSensitive(bp_area[BPButtons::Properties].widget, selected > 0);
-    XtSetSensitive(bp_area[BPButtons::Delete].widget, selected > 0);
+    set_sensitive(bp_area[BPButtons::Properties].widget, selected > 0);
+    set_sensitive(bp_area[BPButtons::Delete].widget, selected > 0);
 }
 
 void SourceView::EditBreakpointsCB(Widget, XtPointer, XtPointer)
@@ -6385,8 +6385,8 @@ void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
 		  XmNitemCount, &count,
 		  NULL);
 
-    XtSetSensitive(up_w,   cbs->item_position > 1);
-    XtSetSensitive(down_w, cbs->item_position < count);
+    set_sensitive(up_w,   cbs->item_position > 1);
+    set_sensitive(down_w, cbs->item_position < count);
 
     switch (gdb->type())
     {
@@ -6603,16 +6603,16 @@ void SourceView::process_frame (string& frame_output)
 
 	ListSetAndSelectPos(frame_list_w, pos);
 
-	XtSetSensitive(up_w,   pos > 1);
-	XtSetSensitive(down_w, pos < count);
+	set_sensitive(up_w,   pos > 1);
+	set_sensitive(down_w, pos < count);
 
 	update_glyphs();
 	current_frame = frame;
     }
     else
     {
-	XtSetSensitive(up_w,   False);
-	XtSetSensitive(down_w, False);
+	set_sensitive(up_w,   False);
+	set_sensitive(down_w, False);
 	current_frame = -1;
     }
 }
@@ -6683,8 +6683,8 @@ void SourceView::set_frame_pos(int arg, int pos)
 
     last_frame_pos = pos;
 
-    XtSetSensitive(up_w,   pos > 1);
-    XtSetSensitive(down_w, pos < items);
+    set_sensitive(up_w,   pos > 1);
+    set_sensitive(down_w, pos < items);
 }
 
 bool SourceView::where_required()    { return stack_dialog_popped_up; }

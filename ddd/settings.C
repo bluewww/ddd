@@ -61,6 +61,7 @@ char settings_rcsid[] =
 #include "GDBAgent.h"
 #include "HelpCB.h"
 #include "LessTifH.h"
+#include "MakeMenu.h"
 #include "SmartC.h"
 #include "SourceView.h"
 #include "StringSA.h"
@@ -367,12 +368,12 @@ static void update_reset_settings_button()
 	Widget entry = settings_entries[i];
 	if (settings_initial_values[entry] != settings_values[entry])
 	{
-	    XtSetSensitive(reset_settings_button, True);
+	    set_sensitive(reset_settings_button, True);
 	    return;
 	}
     }
 
-    XtSetSensitive(reset_settings_button, False);
+    set_sensitive(reset_settings_button, False);
 }
 
 static void update_reset_signals_button()
@@ -385,12 +386,12 @@ static void update_reset_signals_button()
 	Widget entry = signals_entries[i];
 	if (signals_initial_values[entry] != signals_values[entry])
 	{
-	    XtSetSensitive(reset_signals_button, True);
+	    set_sensitive(reset_signals_button, True);
 	    return;
 	}
     }
 
-    XtSetSensitive(reset_signals_button, False);
+    set_sensitive(reset_signals_button, False);
 }
 
 // Update states of `info' buttons
@@ -407,7 +408,7 @@ void update_infos()
     }
 
     if (reset_infos_button != 0)
-	XtSetSensitive(reset_infos_button, have_info);
+	set_sensitive(reset_infos_button, have_info);
 }
 
 // Register additional info button
@@ -1717,9 +1718,9 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	int idx = init.index(set_command);
 	if (idx == 0 || idx > 0 && init[idx - 1] == '\n')
 	{
-	    XtSetSensitive(entry,  False);
-	    XtSetSensitive(label,  False);
-	    XtSetSensitive(leader, False);
+	    set_sensitive(entry,  False);
+	    set_sensitive(label,  False);
+	    set_sensitive(leader, False);
 	}
 
 	// Initialize button

@@ -320,7 +320,7 @@ static void SetPrintTypeCB(Widget w, XtPointer client_data, XtPointer)
 static void SetSensitiveCB(Widget w, XtPointer client_data, XtPointer)
 {
     if (XmToggleButtonGetState(w))
-	XtSetSensitive(Widget(client_data), True);
+	set_sensitive(Widget(client_data), True);
 }
 
 static void TakeFocusCB(Widget w, XtPointer client_data, XtPointer)
@@ -332,7 +332,7 @@ static void TakeFocusCB(Widget w, XtPointer client_data, XtPointer)
 static void UnsetSensitiveCB(Widget w, XtPointer client_data, XtPointer)
 {
     if (XmToggleButtonGetState(w))
-	XtSetSensitive(Widget(client_data), False);
+	set_sensitive(Widget(client_data), False);
 }
 
 static void SetPrintSelectedNodesCB(Widget w, XtPointer, XtPointer)
@@ -600,7 +600,7 @@ static void CheckPaperSizeCB(Widget text, XtPointer client_data, XtPointer)
     int hsize, vsize;
     get_paper_size(size, hsize, vsize);
 
-    XtSetSensitive(ok_button, hsize >= 0 && vsize >= 0);
+    set_sensitive(ok_button, hsize >= 0 && vsize >= 0);
 }
 
 static void ResetPaperSizeCB(Widget w, XtPointer, XtPointer)

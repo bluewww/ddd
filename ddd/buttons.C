@@ -734,7 +734,7 @@ static void VerifyButtonWorkProc(XtPointer client_data, XtIntervalId *id)
 		}
 		else
 		{
-		    XtSetSensitive(button, is_known_command(answer));
+		    set_sensitive(button, is_known_command(answer));
 		    button = 0;	           // Don't process this one again
 		    next_invocation = 50;  // Process next button in 50ms
 		}
@@ -767,7 +767,7 @@ void verify_button(Widget button)
 	return;
 
 #if 0
-    XtSetSensitive(button, False);
+    set_sensitive(button, False);
 #endif
 
     buttons_to_be_verified += button;

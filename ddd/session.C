@@ -428,7 +428,7 @@ static void update_delete(Widget dialog)
     }
 
     Widget delete_w = XmSelectionBoxGetChild(dialog, XmDIALOG_APPLY_BUTTON);
-    XtSetSensitive(delete_w, sensitive);
+    set_sensitive(delete_w, sensitive);
 }
 
 // Update list of sessions
@@ -666,15 +666,15 @@ static void SetGCoreSensitivityCB(Widget = 0, XtPointer = 0, XtPointer = 0)
     bool set = 
 	XmToggleButtonGetState(dump_core_w) && XtIsSensitive(dump_core_w);
 
-    XtSetSensitive(gcore_methods_w, set);
+    set_sensitive(gcore_methods_w, set);
 
-    XtSetSensitive(may_kill_w, set);
-    XtSetSensitive(may_gcore_w, set && gdb->type() == GDB &&
+    set_sensitive(may_kill_w, set);
+    set_sensitive(may_gcore_w, set && gdb->type() == GDB &&
 		   string(app_data.get_core_command) != "");
 #if HAVE_PTRACE_DUMPCORE
-    XtSetSensitive(may_ptrace_w, set && gdb->type() == GDB);
+    set_sensitive(may_ptrace_w, set && gdb->type() == GDB);
 #else
-    XtSetSensitive(may_ptrace_w, False);
+    set_sensitive(may_ptrace_w, False);
 #endif
 }
 
@@ -753,7 +753,7 @@ void SaveSessionAsCB(Widget w, XtPointer, XtPointer)
     bool have_data = 
 	info.running || (info.core != NO_GDB_ANSWER && info.core != "");
     XmToggleButtonSetState(dump_core_w, have_data, True);
-    XtSetSensitive(dump_core_w, info.running);
+    set_sensitive(dump_core_w, info.running);
     SetGCoreSensitivityCB();
 
     string name = "";

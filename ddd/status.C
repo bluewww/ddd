@@ -35,18 +35,19 @@ char status_rcsid[] =
 
 #include "status.h"
 
+#include "Command.h"
 #include "Delay.h"
+#include "DestroyCB.h"
 #include "GDBAgent.h"
 #include "HelpCB.h"
+#include "MakeMenu.h"
 #include "charsets.h"
-#include "Command.h"
 #include "ddd.h"
+#include "findParent.h"
 #include "mydialogs.h"
 #include "post.h"
 #include "string-fun.h"
 #include "verify.h"
-#include "DestroyCB.h"
-#include "findParent.h"
 
 #include <ctype.h>
 #include <Xm/Xm.h>
@@ -152,7 +153,7 @@ void set_buttons_from_gdb(Widget buttons, string& text)
 
     if (XtIsComposite(buttons))
     {
-	XtSetSensitive(buttons, false);
+	set_sensitive(buttons, false);
 
 	WidgetList children   = 0;
 	Cardinal num_children = 0;
@@ -177,7 +178,7 @@ void set_buttons_from_gdb(Widget buttons, string& text)
 		XtUnmanageChild(w);
 	}
 
-	XtSetSensitive(buttons, true);
+	set_sensitive(buttons, true);
     }
 }
 

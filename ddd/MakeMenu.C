@@ -574,7 +574,7 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	    panel = widget;
 
 	if (flags & MMInsensitive)
-	    XtSetSensitive(panel, False);
+	    set_sensitive(panel, False);
 
 	if (!(flags & MMUnmanaged))
 	    XtManageChild(panel);
@@ -820,7 +820,7 @@ static void addCallback(MMDesc *item, XtPointer default_closure)
 			  callback.callback, 
 			  callback.closure);
 	else
-	    XtSetSensitive(widget, False);
+	    set_sensitive(widget, False);
 	break;
     }
 
@@ -833,7 +833,7 @@ static void addCallback(MMDesc *item, XtPointer default_closure)
 			  callback.callback, 
 			  callback.closure);
 	else
-	    XtSetSensitive(widget, False);
+	    set_sensitive(widget, False);
 	break;
     }
 

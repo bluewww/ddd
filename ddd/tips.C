@@ -39,6 +39,7 @@ char tips_rcsid[] =
 #include "Command.h"
 #include "DestroyCB.h"
 #include "HelpCB.h"
+#include "MakeMenu.h"
 #include "cook.h"
 #include "ddd.h"
 #include "post.h"
@@ -133,10 +134,10 @@ static bool refresh_tip_dialog(Widget w)
     MString next_tip = get_startup_tip(w, app_data.startup_tip_count + 1);
     MString prev_tip = get_startup_tip(w, app_data.startup_tip_count - 1);
 
-    XtSetSensitive(XmMessageBoxGetChild(w, XmDIALOG_CANCEL_BUTTON),
-		   is_tip(prev_tip));
-    XtSetSensitive(XmMessageBoxGetChild(w, XmDIALOG_HELP_BUTTON),
-		   is_tip(next_tip));
+    set_sensitive(XmMessageBoxGetChild(w, XmDIALOG_CANCEL_BUTTON),
+		  is_tip(prev_tip));
+    set_sensitive(XmMessageBoxGetChild(w, XmDIALOG_HELP_BUTTON),
+		  is_tip(next_tip));
 
     string title = DDD_NAME " Tip of the Day #" + 
 	itostring(app_data.startup_tip_count);
