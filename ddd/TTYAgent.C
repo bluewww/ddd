@@ -59,6 +59,34 @@ DEFINE_TYPE_INFO_1(TTYAgent, LiterateAgent)
 
 extern "C" {
 
+#if HAVE_SYS_IOCTL_H
+#include <sys/ioctl.h>
+#endif
+
+#if defined(ECHO) && (HAVE_TERMIOS_H || HAVE_TERMIO_H)
+// On SunOS 4.1.4, these symbols are defined in <sys/ioctl.h> *and*
+// <termios.h>.  Prefer the <termios.h> ones.
+#undef ECHO
+#undef NL0
+#undef NL1
+#undef TAB0
+#undef TAB1
+#undef TAB2
+#undef XTABS
+#undef CR0
+#undef CR1
+#undef CR2
+#undef CR3
+#undef FF0
+#undef FF1
+#undef BS0
+#undef BS1
+#undef TOSTOP
+#undef FLUSHO
+#undef PENDIN
+#undef NOFLSH
+#endif
+
 // Nico van Waes <nico@yegal.njit.edu> says: under Solaris 2.6, one
 // must include <sys/types.h> before <termios.h>.
 #if HAVE_SYS_TYPES_H
@@ -73,7 +101,7 @@ extern "C" {
 // DEC OSF has some special treatment in this file; I hope these
 // `#ifdef __osf__' flags will be deleted by an OSF expert some day. - AZ
 #include <termio.h>
-#else
+#else // !__osf__
 #if HAVE_TCGETATTR && HAVE_TCSETATTR
 #if HAVE_TERMIOS_H
 #include <termios.h>
@@ -105,10 +133,6 @@ extern "C" {
 
 #if HAVE_FCNTL_H
 #include <fcntl.h>
-#endif
-
-#if HAVE_SYS_IOCTL_H
-#include <sys/ioctl.h>
 #endif
 
 #if HAVE_SYS_VTY_H
