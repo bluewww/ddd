@@ -21,6 +21,8 @@ DDD 1.2
       correctly.  Unprintable characters are also handled.
     - There is an option to suppress X warnings.  This may be useful
       for people annoyed by tons of Motif Keysym warnings.
+    - We have started to compile a FAQ list to reduce our daily mail
+      load.  See the file `FAQ' for details.
 
     Thanks to all who sent in bug reports and suggestions.
 

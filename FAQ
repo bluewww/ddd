@@ -1,7 +1,7 @@
 DDD Frequently Asked Questions					-*- text -*-
 ******************************
 
-1. Is there a way to edit the source in the source window ?
+1. Is there a way to edit the source in the source window?
 
 No.  First, although the Motif Text widget supports editing sources,
 this would be difficult to realize because of the line numbers,
@@ -14,7 +14,7 @@ should be able to; we don't think it is useful to implement yet
 another Emacs.
 
 
-2. Can I dereference a multi-length array graphically via the mouse ?
+2. Can I dereference a multi-length array graphically via the mouse?
 
 The problem is that GDB does not know the actual length of the array;
 you have to supply it by hand (i.e. using the keyboard).
@@ -38,34 +38,45 @@ graph display *pi@10
 This will create an array starting with pi showing the first 10 elements.
 
 
-3. Does ddd sit on top of gdb, or is it integrated with gdb source ?
+3. Does DDD sit on top of GDB, or is it integrated with gdb source?
 
-It sits on top of a separate GDB process.  Use `ddd --trace' to see
+DDD sits on top of a separate GDB process.  Use `ddd --trace' to see
 the interaction.
 
 
-4. If it sits on top, how can gdb upgrades be incorporated ?
+4. If it sits on top, how can GDB upgrades be incorporated?
 
 By getting and installing the new GDB.  No changes to DDD are
-necessary, unless the GNU people introduce incompatible changes.
+necessary, unless the GDB developers introduce incompatible changes.
 
 
-5. Can I change the 'break point' symbol ?
+5. Does DDD work with DBX on other systems than Sun?
+
+DDD has been reported to run with Sun DBX as shipped with SunOS 4.x
+and Solaris 2.  Unfortunately, DBX is quite different across machines
+since every vendor icorporated his own extensions.  As long as some
+basics stay the same, DDD may work more or less with other DBX
+versions as well.  If not, extending the DDD code to support other DBX
+versions is not too difficult.  Use `ddd --trace' to see the
+interaction.
+
+
+6. I don't like the 'break point' symbol.  Can I change it?
 
 Yes - by altering the code :-).  I may make it user-defineable some
 day, but the choice is limited to text characters unless you supply
 your own text font.
 
 
-6. When I hit a break point, can the break line
-   be brought to the center of the source window ?
+7. When I hit a break point, can the break line
+   be brought to the center of the source window?
 
 Again, by altering the code - I guess I'll realize that in a future
 DDD release.
 
 
-7. I compiled DDD on my machine and it fails.  I got the executable
-   from your FTP site and it runs.  What is the difference? Is there
+8. I compiled DDD on my machine and it fails.  I got the executable
+   from an FTP site and it runs.  What is the difference? Is there
    some compilation setup I need to do, or is the executable patched?
 
 It is a frequently observed effect that our executables work while the
@@ -84,6 +95,11 @@ Users compiling DDD on their local machine will encounter other
 problems, but will not know how to fix them.  That is, while the DDD
 code stays the same, the executables may vary a lot.
 
+
+9. I have heard that there is a magic command built into DDD.
+   Is this true, and what is this magic command for?
+
+You'll have to find out this one for yourself.  Use the source, Luke.
 
 
 $Id$
