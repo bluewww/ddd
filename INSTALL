@@ -96,12 +96,17 @@ Basic Installation
          program `cxxtest' and then runs DDD on it by invoking `./ddd
          cxxtest'.  Enjoy!
 
-      7. Optionally, type `make strip' to reduce the size of the `ddd'
+      7. If DDD crashes immediately after startup or after a few
+         interactions, it is usually easy to fix: See the `PROBLEMS'
+         file and rebuild DDD.  If your problem is not listed, report
+         it to `ddd-bugs@ips.cs.tu-bs.de'.
+
+      8. Optionally, type `make strip' to reduce the size of the `ddd'
          executable by stripping the debugging information.
 
-      8. Type `make install' to install the DDD program and manual page.
+      9. Type `make install' to install the DDD program and manual page.
 
-      9. Optionally, you can install the DDD application defaults
+     10. Optionally, you can install the DDD application defaults
          file, `ddd/Ddd', in a place where app-defaults files are
          commonly found.  However, DDD runs perfectly without
          app-defaults file.  See the comment at the beginning of

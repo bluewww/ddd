@@ -1,8 +1,6 @@
 Problems in building and installing DDD                          -*- text -*-
 ***************************************
 
-Note: For problems occurring when *running* DDD, see the file `BUGS'.
-
 AIX
 ===
 
@@ -92,6 +90,12 @@ HP-UX
 LINUX
 =====
 
+Reported by: Ronald Wahl <Ronald.Wahl@Informatik.TU-Chemnitz.DE>
+
+     Remove the double `-lc' when linking DDD to avoid a
+     segmentation fault immediately after startup.
+
+
 Reported by:  Bernie Borenstein <c372321@hc1056.mdc.com>
 
      Make sure you use libc version 4.6.27 or later.  Otherwise some
@@ -103,11 +107,6 @@ Reported by:  Bernie Borenstein <c372321@hc1056.mdc.com>
      commands; to open a specific source, use the GDB `info file
      FUNCTION' command, where FUNCTION is a function defined in that
      source file.
-
-Reported by: Ronald Wahl <Ronald.Wahl@Informatik.TU-Chemnitz.DE>
-
-     I had to remove the double `-lc' when linking DDD to avoid a
-     segmentation fault immediately after startup.
 
 
 
