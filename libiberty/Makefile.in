@@ -267,7 +267,9 @@ libiberty.html : $(srcdir)/libiberty.texi $(TEXISRC)
 @MAINT@	echo stamp > stamp-functions
 
 INSTALL_DEST = @INSTALL_DEST@
-install: install_to_$(INSTALL_DEST) install-subdir
+## DDD modification
+##install: install_to_$(INSTALL_DEST) install-subdir
+install:
 
 install_to_libdir: all
 	${mkinstalldirs} $(DESTDIR)$(libdir)$(MULTISUBDIR)
