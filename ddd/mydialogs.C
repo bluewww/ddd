@@ -174,3 +174,11 @@ static void freeXmStringTable (XmStringTable xmlist, int list_length)
 	xmlist++;
     }
 }
+
+// Set and select a text string
+void set_string(Widget w, const string& text, Time time = CurrentTime)
+{
+    XmTextSetString(w, (String)text);
+    XmTextSetInsertionPosition(w, XmTextGetLastPosition(w));
+    XmTextSetSelection(w, 0, XmTextGetInsertionPosition(w), time);
+}
