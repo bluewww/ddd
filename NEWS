@@ -15,6 +15,8 @@ DDD 2.3 [in development]
     - The maximum number of glyphs is now configurable at startup time.
       See the `maxGlyphs' resource for details.
     - Tear-off menus are supported (and enabled by default).
+    - Conditional breakpoints and breakpoints with ignore counts can now
+      be visually distinguished from ordinary breakpoints.
 
     Bug fixes:
     - Using Sun DBX 3.x, data displays are no longer cluttered by DBX
