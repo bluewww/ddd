@@ -153,8 +153,10 @@ touch icons/*.xbm
 (cd ddd; make diststuff)
 
 # Add a RELEASE tag
-echo "ddd-$date: released `date`" > ./.RELEASE
-cvs commit -m"ddd-$date released" .RELEASE
+if $final; then
+  echo "ddd-$date: released `date`" > ./.RELEASE
+  cvs commit -m"ddd-$date released" .RELEASE
+fi
 
 # Create distribution.
 make dist
