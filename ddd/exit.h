@@ -51,6 +51,7 @@ extern void ddd_install_xt_error(XtAppContext app_context);
 void _DDDExitCB   (Widget, XtPointer, XtPointer); // GDB exited normally
 void DDDExitCB    (Widget, XtPointer, XtPointer); // Exit DDD
 void DDDRestartCB (Widget, XtPointer, XtPointer); // Restart DDD
+void DDDDebugCB   (Widget, XtPointer, XtPointer); // Debug DDD
 
 // Helpers
 class Agent;

@@ -39,6 +39,7 @@ char simpleMenu_rcsid[] =
 #include "HelpCB.h"
 #include "WhatNextCB.h"
 #include "events.h"
+#include "exit.h"
 #include "findParent.h"
 #include "tips.h"
 #include "show.h"
@@ -340,6 +341,8 @@ MMDesc simple_help_menu[] =
     MMSep,
     {"license",     MMPush, { DDDLicenseCB, 0}, 0, 0, 0, 0},
     {"www",         MMPush, { DDDWWWPageCB, 0}, 0, 0, 0, 0},
+    MMSep,
+    {"debug",       MMPush, { DDDDebugCB, 0}, 0, 0, 0, 0},
     MMSep,
     {"onVersion",   MMPush, { HelpOnVersionCB, 0}, 0, 0, 0, 0},
     MMEnd

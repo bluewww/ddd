@@ -84,6 +84,7 @@ char exit_rcsid[] =
 #include "exectty.h"
 #include "findParent.h"
 #include "filetype.h"
+#include "fonts.h"
 #include "history.h"
 #include "host.h"
 #include "longName.h"
@@ -93,8 +94,10 @@ char exit_rcsid[] =
 #include "post.h"
 #include "question.h"
 #include "session.h"
+#include "shell.h"
 #include "sigName.h"
 #include "status.h"
+#include "string-fun.h"
 #include "verify.h"
 #include "version.h"
 #include "windows.h"
@@ -105,6 +108,7 @@ char exit_rcsid[] =
 #include <ctype.h>
 #include <errno.h>
 #include <sys/wait.h>
+#include <stdlib.h>
 
 #include <Xm/Xm.h>
 #include <Xm/MessageB.h>
@@ -264,9 +268,11 @@ void ddd_install_fatal(char * /* program_name */)
 }
 
 // Post a dialog containing TITLE and CAUSE
-static void post_fatal(string title, string cause, string cls)
+static void post_fatal(string title, string cause, string cls, 
+		       bool core_dumped = false)
 {
     static Widget fatal_dialog = 0;
+    static Widget debug        = 0;
     if (fatal_dialog == 0)
     {
 	fatal_dialog = verify(XmCreateErrorDialog (find_shell(),
@@ -282,14 +288,22 @@ static void post_fatal(string title, string cause, string cls)
 		      StopSOSCB, XtPointer(0));
 
 #if XmVersion >= 1002
-	Widget exit = 
-	    verify(XmCreatePushButton(fatal_dialog, "exit", 0, 0));
+	debug = verify(XmCreatePushButton(fatal_dialog, "debug", 0, 0));
+	XtManageChild(debug);
+
+	Widget exit = verify(XmCreatePushButton(fatal_dialog, "exit", 0, 0));
 	XtManageChild(exit);
 	XtAddCallback(exit, XmNactivateCallback,
 		      DDDExitCB, XtPointer(EXIT_FAILURE));
-	XtAddCallback(exit, XmNactivateCallback,
-		      StopSOSCB, XtPointer(0));
+	XtAddCallback(exit, XmNactivateCallback, StopSOSCB, XtPointer(0));
 #endif
+    }
+
+    if (debug != 0)
+    {
+	XtRemoveAllCallbacks(debug, XmNactivateCallback);
+	XtAddCallback(debug, XmNactivateCallback, DDDDebugCB, 
+		      XtPointer((long)(int)core_dumped));
     }
 
     defineConversionMacro("CLASS", cls);
@@ -346,7 +360,7 @@ void ddd_show_signal(int sig)
 	if (core_dumped)
 	    title += " (core dumped)";
 
-	post_fatal(title, cause, "Internal error");
+	post_fatal(title, cause, "Internal error", core_dumped);
     }
 }
 
@@ -1004,6 +1018,28 @@ void DDDRestartCB(Widget w, XtPointer, XtPointer call_data)
 	_DDDRestartCB(w, XtPointer(flags), call_data);
 }
 
+
+// Debug DDD
+void DDDDebugCB(Widget, XtPointer client_data, XtPointer)
+{
+    bool core_dumped = (int)(long)client_data;
+
+    string term_command = app_data.term_command;
+    term_command.gsub("Execution", "Debug");
+    term_command.gsub("@FONT@", make_font(app_data, FixedWidthDDDFont));
+
+    string gdb_command = string("gdb ") + saved_argv()[0] + " ";
+    if (core_dumped)
+	gdb_command += "core";
+    else
+	gdb_command += itostring(getpid());
+
+    gdb_command.prepend("echo \"Debugging " DDD_NAME ".  "
+			"Enter \\`quit' to quit.\"; ");
+
+    term_command += " " + sh_quote(gdb_command) + " &";
+    system(sh_command(term_command, true));
+}
 
 
 //-----------------------------------------------------------------------------
