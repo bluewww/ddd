@@ -46,5 +46,7 @@ void gdbChangeDirectoryCB(Widget w, XtPointer, XtPointer);
 void add_to_arguments(string line);
 void update_arguments();
 
+void add_running_arguments(string& cmd);
+
 #endif // _DDD_args_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

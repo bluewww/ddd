@@ -235,13 +235,8 @@ static void gdbRunDCB(Widget, XtPointer, XtPointer)
 	break;
 
     case JDB:
-    {
-	// JDB wants the current class name
-	string class_name = source_view->line_of_cursor().before(":");
-	if (class_name != "")
-	gdb_command("run " + class_name + args, run_dialog);
+	gdb_command("run " + args, run_dialog);
 	break;
-    }
 
     case XDB:
 	if (args == "")
@@ -421,4 +416,24 @@ void gdbChangeDirectoryCB(Widget w, XtPointer, XtPointer)
 
     update_cd_arguments();
     manage_and_raise(cd_dialog);
+}
+
+//-----------------------------------------------------------------------------
+// `run' arguments
+//-----------------------------------------------------------------------------
+
+void add_running_arguments(string& cmd)
+{
+    if (gdb->type() != JDB || !is_run_cmd(cmd))
+	return;
+
+    read_leading_blanks(cmd);
+    string args = cmd.after(rxwhite);
+    if (args == "")
+    {
+	// JDB requires at least a class name after the `run' command.
+	string class_name = source_view->line_of_cursor();
+	class_name = class_name.before(":");
+	cmd += " " + class_name;
+    }
 }
