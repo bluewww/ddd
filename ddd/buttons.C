@@ -93,11 +93,14 @@ Widget make_buttons(Widget parent, const string& name,
     if (button_list == "")
 	return 0;
 
-    Widget buttons = verify(XmCreateWorkArea(parent, name, 0, 0));
+    Arg args[10];
+    int arg = 0;
+    XtSetArg(args[arg], XmNorientation, XmHORIZONTAL); arg++;
+    Widget buttons = verify(XmCreateWorkArea(parent, name, args, arg));
     if (buttons == 0)
     {
 	// Not available in LessTif 0.1
-	buttons = verify(XmCreateRowColumn(parent, name, 0, 0));
+	buttons = verify(XmCreateRowColumn(parent, name, args, arg));
     }
 
     add_buttons(buttons, button_list);
