@@ -62,6 +62,8 @@
 #define XtCCommandButtons        "CommandButtons"
 #define XtNsourceButtons         "sourceButtons"
 #define XtCSourceButtons         "sourceButtons"
+#define XtNtoolButtons           "toolButtons"
+#define XtCToolButtons           "ToolButtons"
 #define XtNseparateDataWindow    "separateDataWindow"
 #define XtNseparateSourceWindow  "separateSourceWindow"
 #define XtNseparateExecWindow    "separateExecWindow"
@@ -158,6 +160,7 @@ struct AppData {
     int     indent_amount;
     String  command_buttons;
     String  source_buttons;
+    String  tool_buttons;
     Boolean separate_data_window;
     Boolean separate_source_window;
     Boolean separate_exec_window;

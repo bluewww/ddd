@@ -142,7 +142,7 @@ XtResource ddd_resources[] = {
 	sizeof(String),
 	XtOffsetOf(AppData, command_buttons),
 	XtRString,
-	XtPointer("Yes:No:Interrupt^C")
+	XtPointer("")
     },
     {
 	XtNsourceButtons,
@@ -151,7 +151,16 @@ XtResource ddd_resources[] = {
 	sizeof(String),
 	XtOffsetOf(AppData, source_buttons),
 	XtRString,
-	XtPointer("run:next:step:continue:finish:up:down")
+	XtPointer("")
+    },
+    {
+	XtNtoolButtons,
+	XtCToolButtons,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, tool_buttons),
+	XtRString,
+	XtPointer("run:interrupt^C:next:step:continue:finish:up:down")
     },
     {
 	XtNseparateDataWindow,
