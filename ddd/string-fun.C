@@ -59,6 +59,13 @@ static void read_leading_parentheses(string& s)
     while (s.length() > 0 && (isspace(s[0]) || s[0] == '(' || s[0] == '['))
 	s = s.after(0);
 }
+
+static void read_trailing_parentheses(string& s)
+{
+    while (s.length() > 0 && (isspace(s[0]) || s[0] == ')' || s[0] == ']'))
+	s = s.after(0);
+}
+    
     
 
 // ***************************************************************************
@@ -98,8 +105,7 @@ int get_positive_nr (/*const*/ string& s)
     if (int_string == "")
 	return -1;
 
-    int i = atoi((const char *)int_string);
-    return i;
+    return atoi((const char *)int_string);
 }
 
 
@@ -121,19 +127,15 @@ string read_nr_str (string& s)
 
     string int_string = s.through(rxint);
     s = s.from(int(int_string.length()));
+    read_trailing_parentheses(s);
+
     return int_string;
 }
 
 // ***************************************************************************
 int read_positive_nr (string& s)
 {
-    read_leading_parentheses(s);
-    if (s == "" || !isdigit(s[0]))
-	return -1;
-
-    string int_string = s.through(rxint);
-    s = s.from(int(int_string.length()));
-    return atoi(int_string);
+    return atoi(read_nr_str(s));
 }
 
 
