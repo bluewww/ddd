@@ -183,6 +183,8 @@ static void freeXmStringTable (XmStringTable xmlist, int list_length)
 // Select POS in LIST and make it visible
 void ListSetAndSelectPos(Widget list, int pos)
 {
+    assert(XmIsList(list));
+
     int top_item      = 0;
     int visible_items = 0;
     int items         = 0;
