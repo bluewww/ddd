@@ -5901,46 +5901,54 @@ bool SourceView::change_glyphs = true;
 WidgetArray SourceView::changed_glyphs;
 
 // Unmap glyph W
-void SourceView::unmap_glyph(Widget w)
+void SourceView::unmap_glyph(Widget glyph)
 {
-    if (w == 0)
+    if (glyph == 0)
 	return;
 
-    assert(is_code_widget(w) || is_source_widget(w));
+    assert(is_code_widget(glyph) || is_source_widget(glyph));
 
     XtPointer user_data;
-    XtVaGetValues(w, XmNuserData, &user_data, NULL);
+    XtVaGetValues(glyph, XmNuserData, &user_data, NULL);
     if (user_data == 0)
 	return;			// Already unmapped
 
     if (change_glyphs)
     {
+	const Position invisible_x = -100;
+	const Position invisible_y = -100;
+
 	// Unmapping the glyph while dragging breaks the drag.
 	// Move the glyph to an invisible position instead.
-	XtVaSetValues(w,
-		      XmNleftOffset, -100,
-		      XmNtopOffset,  -100,
+	XtVaSetValues(glyph,
+		      XmNleftOffset, invisible_x,
+		      XmNtopOffset,  invisible_y,
 		      XmNuserData, XtPointer(0),
 		      NULL);
 
-	// log_glyphs();
+	if (lesstif_version < 1000)
+	{
+	    // LessTif wants it the hard way.
+	    XtMoveWidget(glyph, invisible_x, invisible_y);
+	}
+	// log_glyph(glyph);
     }
 
-    changed_glyphs += w;
+    changed_glyphs += glyph;
 }
 
-// Map glyph W in (X, Y)
-void SourceView::map_glyph(Widget& w, Position x, Position y)
+// Map glyph GLYPH in (X, Y)
+void SourceView::map_glyph(Widget& glyph, Position x, Position y)
 {
-    while (w == 0)
+    while (glyph == 0)
 	CreateGlyphsWorkProc(0);
 
-    assert(is_code_widget(w) || is_source_widget(w));
+    assert(is_code_widget(glyph) || is_source_widget(glyph));
 
     // clog << "Mapping glyph at (" << x << ", " << y << ")\n";
 
     Widget text_w;
-    if (is_source_widget(w))
+    if (is_source_widget(glyph))
 	text_w = source_text_w;
     else
 	text_w = code_text_w;
@@ -5953,7 +5961,7 @@ void SourceView::map_glyph(Widget& w, Position x, Position y)
     Dimension highlight_thickness = 0;
     int old_x                     = 0;
     int old_y                     = 0; 
-    XtVaGetValues(w,
+    XtVaGetValues(glyph,
 		  XmNheight,             &height,
 		  XmNborderWidth,        &border_width,
 		  XmNmarginHeight,       &margin_height,
@@ -5973,10 +5981,16 @@ void SourceView::map_glyph(Widget& w, Position x, Position y)
     {
 	if (change_glyphs)
 	{
-	    XtVaSetValues(w, XmNleftOffset, x, XmNtopOffset, y, NULL);
-	    // log_glyphs();
+	    if (lesstif_version < 1000)
+	    {
+		// LessTif wants it the hard way.
+		XtMoveWidget(glyph, x, y);
+	    }
+
+	    XtVaSetValues(glyph, XmNleftOffset, x, XmNtopOffset, y, NULL);
+	    // log_glyph(glyph);
 	}
-	changed_glyphs += w;
+	changed_glyphs += glyph;
     }
 
     if (user_data != 0)
@@ -5984,20 +5998,20 @@ void SourceView::map_glyph(Widget& w, Position x, Position y)
 
     if (change_glyphs)
     {
-	XtMapWidget(w);
+	XtMapWidget(glyph);
 
 #if XmVersion >= 2001
 	// Place the glyph above the text.  Dirty hack for Motif 2.1.
 	XWindowChanges xwc;
 	xwc.sibling = XtWindow(XtParent(text_w));
 	xwc.stack_mode = Above;
-	XConfigureWindow(XtDisplay(w), XtWindow(w), 
+	XConfigureWindow(XtDisplay(glyph), XtWindow(glyph), 
 			 CWSibling | CWStackMode, &xwc);
 #endif
 
-	XtVaSetValues(w, XmNuserData, XtPointer(1), NULL);
-	// log_glyphs();
-	changed_glyphs += w;
+	XtVaSetValues(glyph, XmNuserData, XtPointer(1), NULL);
+	// log_glyph(glyph);
+	changed_glyphs += glyph;
     }
 }
 
@@ -6006,17 +6020,17 @@ void SourceView::map_glyph(Widget& w, Position x, Position y)
 bool SourceView::update_code_glyphs   = false;
 bool SourceView::update_source_glyphs = false;
 
-// Update glyphs for widget W (0: all)
-void SourceView::update_glyphs(Widget w)
+// Update glyphs for widget GLYPH (0: all)
+void SourceView::update_glyphs(Widget glyph)
 {
     static XtWorkProcId update_glyph_id = 0;
     static time_t update_glyph_called   = 0;
 
-    if (w == 0)
+    if (glyph == 0)
 	update_source_glyphs = update_code_glyphs = true;
-    else if (is_source_widget(w))
+    else if (is_source_widget(glyph))
 	update_source_glyphs = true;
-    else if (is_code_widget(w))
+    else if (is_code_widget(glyph))
 	update_code_glyphs = true;
 
     if (update_glyph_id == 0)
@@ -6203,16 +6217,16 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
     return True;		// all done
 }
 
-// Map stop sign in W at position POS.  Get widget from STOPS[COUNT];
+// Map stop sign GLYPH at position POS.  Get widget from STOPS[COUNT];
 // store location in POSITIONS.  Return mapped widget (0 if none)
-Widget SourceView::map_stop_at(Widget w, XmTextPosition pos,
+Widget SourceView::map_stop_at(Widget glyph, XmTextPosition pos,
 			       WidgetArray& stops, int& count,
 			       TextPositionArray& positions)
 {
-    assert (is_source_widget(w) || is_code_widget(w));
+    assert (is_source_widget(glyph) || is_code_widget(glyph));
 
     Position x, y;
-    Boolean pos_displayed = XmTextPosToXY(w, pos, &x, &y);
+    Boolean pos_displayed = XmTextPosToXY(glyph, pos, &x, &y);
     if (pos_displayed)
     {
 	while (stops[count] == 0)
@@ -6246,7 +6260,7 @@ Widget SourceView::map_stop_at(Widget w, XmTextPosition pos,
 
 	    if (!warning_posted)
 	    {
-		post_warning(msg, "out_of_glyphs_warning", w);
+		post_warning(msg, "out_of_glyphs_warning", glyph);
 		warning_posted = true;
 	    }
 	}
@@ -6255,16 +6269,16 @@ Widget SourceView::map_stop_at(Widget w, XmTextPosition pos,
     return 0;
 }
 
-// Map arrow in W at POS.  Return mapped arrow widget (0 if none)
-Widget SourceView::map_arrow_at(Widget w, XmTextPosition pos)
+// Map arrow in GLYPH at POS.  Return mapped arrow widget (0 if none)
+Widget SourceView::map_arrow_at(Widget glyph, XmTextPosition pos)
 {
-    assert (is_source_widget(w) || is_code_widget(w));
+    assert (is_source_widget(glyph) || is_code_widget(glyph));
 
     Position x, y;
     Boolean pos_displayed = (pos != XmTextPosition(-1) 
-			     && XmTextPosToXY(w, pos, &x, &y));
+			     && XmTextPosToXY(glyph, pos, &x, &y));
 
-    int k = int(is_code_widget(w));
+    int k = int(is_code_widget(glyph));
 
     Widget& signal_arrow = signal_arrows[k];
     Widget& plain_arrow  = plain_arrows[k];
@@ -6309,8 +6323,8 @@ Widget SourceView::map_arrow_at(Widget w, XmTextPosition pos)
     return 0;
 }
 
-// Copy glyph foreground and background colors from ORIGIN to W
-void SourceView::copy_colors(Widget w, Widget origin)
+// Copy glyph foreground and background colors from ORIGIN to GLYPH
+void SourceView::copy_colors(Widget glyph, Widget origin)
 {
     if (origin == 0)
 	return;
@@ -6322,28 +6336,28 @@ void SourceView::copy_colors(Widget w, Widget origin)
 		  NULL);
 
     Pixmap pixmap = 
-	XmGetPixmap(XtScreen(w), XtName(w), foreground, background);
+	XmGetPixmap(XtScreen(glyph), XtName(glyph), foreground, background);
     if (pixmap != XmUNSPECIFIED_PIXMAP)
     {
 	Pixmap old_pixmap;
-	XtVaGetValues(w, XmNlabelPixmap, &old_pixmap, NULL);
-	XmDestroyPixmap(XtScreen(w), old_pixmap);
+	XtVaGetValues(glyph, XmNlabelPixmap, &old_pixmap, NULL);
+	XmDestroyPixmap(XtScreen(glyph), old_pixmap);
 
-	XtVaSetValues(w, XmNlabelPixmap, pixmap, NULL);
+	XtVaSetValues(glyph, XmNlabelPixmap, pixmap, NULL);
     }
 }
 
 // Map temporary stop sign at position POS.  If ORIGIN is given, use
 // colors from ORIGIN.
-Widget SourceView::map_temp_stop_at(Widget w, XmTextPosition pos, 
+Widget SourceView::map_temp_stop_at(Widget glyph, XmTextPosition pos, 
 				    Widget origin)
 {
-    assert (is_source_widget(w) || is_code_widget(w));
+    assert (is_source_widget(glyph) || is_code_widget(glyph));
     Position x, y;
     Boolean pos_displayed = (pos != XmTextPosition(-1) 
-			     && XmTextPosToXY(w, pos, &x, &y));
+			     && XmTextPosToXY(glyph, pos, &x, &y));
 
-    int k = int(is_code_widget(w));
+    int k = int(is_code_widget(glyph));
 
     Widget& temp_stop = temp_stops[k];
 
@@ -6372,15 +6386,15 @@ Widget SourceView::map_temp_stop_at(Widget w, XmTextPosition pos,
 
 // Map temporary arrow at position POS.  If ORIGIN is given, use
 // colors from ORIGIN.
-Widget SourceView::map_temp_arrow_at(Widget w, XmTextPosition pos, 
+Widget SourceView::map_temp_arrow_at(Widget glyph, XmTextPosition pos, 
 				     Widget origin)
 {
-    assert (is_source_widget(w) || is_code_widget(w));
+    assert (is_source_widget(glyph) || is_code_widget(glyph));
     Position x, y;
     Boolean pos_displayed = (pos != XmTextPosition(-1) 
-			     && XmTextPosToXY(w, pos, &x, &y));
+			     && XmTextPosToXY(glyph, pos, &x, &y));
 
-    int k = int(is_code_widget(w));
+    int k = int(is_code_widget(glyph));
 
     Widget& temp_arrow = temp_arrows[k];
 
@@ -6535,11 +6549,11 @@ void SourceView::update_glyphs_now()
 	}
 
 	// Unmap remaining breakpoint glyphs
-	Widget w;
-	while ((w = plain_stops[k][plain_count++]))
-	    unmap_glyph(w);
-	while ((w = grey_stops[k][grey_count++]))
-	    unmap_glyph(w);
+	Widget glyph;
+	while ((glyph = plain_stops[k][plain_count++]))
+	    unmap_glyph(glyph);
+	while ((glyph = grey_stops[k][grey_count++]))
+	    unmap_glyph(glyph);
     }
 
     if (change_glyphs)
@@ -6612,10 +6626,10 @@ void SourceView::set_display_line_numbers(bool set)
 }
 
 // Return help on a glyph
-MString SourceView::help_on_glyph(Widget w, bool detailed)
+MString SourceView::help_on_glyph(Widget glyph, bool detailed)
 {
     XmTextPosition dummy;
-    return help_on_pos(w, 0, dummy, detailed);
+    return help_on_pos(glyph, 0, dummy, detailed);
 }
 
 // Return help on a breakpoint position
@@ -6680,21 +6694,22 @@ MString SourceView::help_on_bp(int bp_nr, bool detailed)
 
 // Glyph drag & drop
 
-XmTextPosition SourceView::glyph_position(Widget w, XEvent *e, bool normalize)
+XmTextPosition SourceView::glyph_position(Widget glyph, XEvent *e, 
+					  bool normalize)
 {
     Widget text_w;
-    if (is_source_widget(w))
+    if (is_source_widget(glyph))
 	text_w = source_text_w;
-    else if (is_code_widget(w))
+    else if (is_code_widget(glyph))
 	text_w = code_text_w;
     else
 	return XmTextPosition(-1);
 
     BoxPoint p = point(e);
-    if (w != source_text_w && w != code_text_w)
+    if (glyph != source_text_w && glyph != code_text_w)
     {
 	// Called from a glyph: add glyph position to event position
-	translate_glyph_pos(w, text_w, p[X], p[Y]);
+	translate_glyph_pos(glyph, text_w, p[X], p[Y]);
     }
 
     // Get the position
@@ -6721,7 +6736,7 @@ XmTextPosition SourceView::glyph_position(Widget w, XEvent *e, bool normalize)
 
     if (normalize)
     {
-	const string& text = current_text(w);
+	const string& text = current_text(glyph);
 	pos = min(pos, text.length());
 	while (pos > 0 && text[pos - 1] != '\n')
 	    pos--;
@@ -6737,15 +6752,15 @@ Widget SourceView::current_drag_origin     = 0;
 // The breakpoint being dragged, or 0 if execution position
 int    SourceView::current_drag_breakpoint = -1;
 
-void SourceView::dragGlyphAct (Widget w, XEvent *e, String *, Cardinal *)
+void SourceView::dragGlyphAct(Widget glyph, XEvent *e, String *, Cardinal *)
 {
     if (e->type != ButtonPress && e->type != ButtonRelease)
 	return;
 
     Widget text_w;
-    if (is_source_widget(w))
+    if (is_source_widget(glyph))
 	text_w = source_text_w;
-    else if (is_code_widget(w))
+    else if (is_code_widget(glyph))
 	text_w = code_text_w;
     else
 	return;			// Bad widget
@@ -6756,12 +6771,12 @@ void SourceView::dragGlyphAct (Widget w, XEvent *e, String *, Cardinal *)
     int k;
     for (k = 0; k < 2; k++)
     {
-	if (w == grey_arrows[k])
+	if (glyph == grey_arrows[k])
 	{
 	    // Cannot drag last execution position
 	    return;
 	}
-	else if (w == plain_arrows[k])
+	else if (glyph == plain_arrows[k])
 	{
 	    if (!gdb->has_jump_command() && !gdb->has_assign_command())
 	    {
@@ -6769,30 +6784,30 @@ void SourceView::dragGlyphAct (Widget w, XEvent *e, String *, Cardinal *)
 		return;
 	    }
 	}
-	else if (w == temp_stops[k] || w == temp_arrows[k])
+	else if (glyph == temp_stops[k] || glyph == temp_arrows[k])
 	{
 	    // Temp glyph cannot be dragged
 	    return;
 	}
     }
 
-    static Cursor move_cursor = XCreateFontCursor(XtDisplay(w), XC_fleur);
+    static Cursor move_cursor = XCreateFontCursor(XtDisplay(glyph), XC_fleur);
 
-    // clog << "Dragging " << XtName(w) << " [" << w << "]\n";
+    // clog << "Dragging " << XtName(glyph) << " [" << glyph << "]\n";
 
-    XDefineCursor(XtDisplay(w), XtWindow(w), move_cursor);
+    XDefineCursor(XtDisplay(glyph), XtWindow(glyph), move_cursor);
 
     map_temp_stop_at(text_w, XmTextPosition(-1));
     map_temp_arrow_at(text_w, XmTextPosition(-1));
 
-    current_drag_origin     = w;
+    current_drag_origin     = glyph;
     current_drag_breakpoint = 0;
 
     // Check for breakpoint
     MapRef ref;
     for (BreakPoint *bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
     {
-	if (w == bp->source_glyph() || w == bp->code_glyph())
+	if (glyph == bp->source_glyph() || glyph == bp->code_glyph())
 	{
 	    current_drag_breakpoint = bp->number();
 	    break;
@@ -6800,45 +6815,45 @@ void SourceView::dragGlyphAct (Widget w, XEvent *e, String *, Cardinal *)
     }
 }
 
-void SourceView::followGlyphAct  (Widget w, XEvent *e, String *, Cardinal *)
+void SourceView::followGlyphAct(Widget glyph, XEvent *e, String *, Cardinal *)
 {
-    if (w != current_drag_origin)
+    if (glyph != current_drag_origin)
 	return;
 
     Widget text_w;
-    if (is_source_widget(w))
+    if (is_source_widget(glyph))
 	text_w = source_text_w;
-    else if (is_code_widget(w))
+    else if (is_code_widget(glyph))
 	text_w = code_text_w;
     else
 	return;			// Bad widget
 
-    XmTextPosition pos = glyph_position(w, e);
+    XmTextPosition pos = glyph_position(glyph, e);
 
     // Make sure we see the position
     ShowPosition(text_w, pos);
 
     // Update glyphs in case we had to scroll
-    CheckScrollCB(w, XtPointer(0), XtPointer(0));
+    CheckScrollCB(glyph, XtPointer(0), XtPointer(0));
 
     if (current_drag_breakpoint)
-	map_temp_stop_at(text_w, pos, w);
+	map_temp_stop_at(text_w, pos, glyph);
     else
-	map_temp_arrow_at(text_w, pos, w);
+	map_temp_arrow_at(text_w, pos, glyph);
 }
 
-void SourceView::dropGlyphAct (Widget w, XEvent *e, String *, Cardinal *)
+void SourceView::dropGlyphAct (Widget glyph, XEvent *e, String *, Cardinal *)
 {
     if (e->type != ButtonPress && e->type != ButtonRelease)
 	return;
 
-    if (w != current_drag_origin)
+    if (glyph != current_drag_origin)
 	return;
 
     Widget text_w;
-    if (is_source_widget(w))
+    if (is_source_widget(glyph))
 	text_w = source_text_w;
-    else if (is_code_widget(w))
+    else if (is_code_widget(glyph))
 	text_w = code_text_w;
     else
 	return;			// Bad widget
@@ -6846,7 +6861,7 @@ void SourceView::dropGlyphAct (Widget w, XEvent *e, String *, Cardinal *)
     if (!XtIsRealized(text_w))
 	return;
 
-    XUndefineCursor(XtDisplay(w), XtWindow(w));
+    XUndefineCursor(XtDisplay(glyph), XtWindow(glyph));
 
     // Unmap temp glyph
     map_temp_stop_at(text_w, XmTextPosition(-1));
@@ -6857,10 +6872,12 @@ void SourceView::dropGlyphAct (Widget w, XEvent *e, String *, Cardinal *)
 
     int k;
     for (k = 0; k < 2; k++)
-	if (w == grey_arrows[k] || w == temp_stops[k] || w == temp_arrows[k])
+	if (glyph == grey_arrows[k] || 
+	    glyph == temp_stops[k] || 
+	    glyph == temp_arrows[k])
 	    return;
 
-    XmTextPosition pos = glyph_position(w, e);
+    XmTextPosition pos = glyph_position(glyph, e);
     if (pos == XmTextPosition(-1))
 	return;			// No position
 
@@ -6885,7 +6902,7 @@ void SourceView::dropGlyphAct (Widget w, XEvent *e, String *, Cardinal *)
 	address = current_source_name() + ':' + itostring(line_nr);
     }
 
-    // clog << "Dropping " << XtName(w) << " [" << w << "] at " 
+    // clog << "Dropping " << XtName(glyph) << " [" << glyph << "] at " 
     //      << address << "\n";
 
     if (text_w == code_text_w)
@@ -6922,21 +6939,25 @@ void SourceView::dropGlyphAct (Widget w, XEvent *e, String *, Cardinal *)
 }
 
 // Report glyph state (for debugging)
-void SourceView::log_glyph(Widget w, int n)
+void SourceView::log_glyph(Widget glyph, int n)
 {
-    if (w == 0)
+    if (glyph == 0)
 	return;
     
-    int old_x = 0;
-    int old_y = 0; 
+    int left = 0;
+    int top  = 0;
+    Position x = 0;
+    Position y = 0;
     XtPointer user_data;
-    XtVaGetValues(w,
+    XtVaGetValues(glyph,
 		  XmNuserData,           &user_data,
-		  XmNleftOffset,         &old_x,
-		  XmNtopOffset,          &old_y,
+		  XmNleftOffset,         &left,
+		  XmNtopOffset,          &top,
+		  XmNx,                  &x,
+		  XmNy,                  &y,
 		  NULL);
 
-    clog << XtName(w);
+    clog << XtName(glyph);
     if (n >= 0)
 	clog << "s[" << n << "]";
     clog << ": ";
@@ -6945,7 +6966,8 @@ void SourceView::log_glyph(Widget w, int n)
     else
 	clog << "unmapped";
 
-    clog << " at (" << old_x << ", " << old_y << ")\n";
+    clog << " at (" << left << ", " << top << " / "
+	 << x << ", " << y << ")\n";
 }
 
 void SourceView::log_glyphs()

@@ -266,9 +266,7 @@ LessTif
 
     With LessTif 0.83, the following problems are known:
 
-    * Glyphs occasionally get lost.
-
-    * The popup menu won't work when selected from a breakpoint.
+    * The breakpoint popup menu won't work when selected from a breakpoint.
  
 
 Linux
