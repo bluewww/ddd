@@ -50,9 +50,6 @@ Documentation
 - There is a new DDD manual, generated from Texinfo source, and coming
   in HTML, PDF, PostScript, Info, as well as plain text format.
 
-- The DDD manual page is no longer supported, but still included in this
-  distribution.
-
 
 Debuggers and Languages
 -----------------------
