@@ -63,22 +63,26 @@ static void trace(const string& prefix, void *call_data)
 
     cerr << prefix << s << '\n';
 }
-    
+
+// Invoked whenever text is received from the inferior
 void traceInputHP(Agent *, void *, void *call_data)
 {
     trace("<- ", call_data);
 }
 
+// Invoked whenever text is sent to the inferior
 void traceOutputHP(Agent *, void *, void *call_data)
 {
     trace("-> ", call_data);
 }
 
+// Invoked whenever error messages are received from the inferior
 void traceErrorHP (Agent *, void *, void *call_data)
 {
     trace("<= ", call_data);
 }
 
+// Invoked whenever text is received from standard input
 void sendInputHP(Agent *, void *client_data, void *call_data)
 {
     TTYAgent& tty = *((TTYAgent *)client_data);
@@ -87,9 +91,17 @@ void sendInputHP(Agent *, void *client_data, void *call_data)
     tty.write(dl->data, dl->length);
 }
 
+// Invoked whenever EOF is received from standard input
 void exitHP(Agent *, void *client_data, void *)
 {
-    cerr << "EOF\n";
+    TTYAgent& tty = *((TTYAgent *)client_data);
+    tty.shutdown();
+}
+
+// Invoked whenever the inferior dies
+void diedHP(Agent *a, void *client_data, void *call_data)
+{
+    cerr << a->path() << ": " << (char *)call_data << "\n";
 
     TTYAgent& tty = *((TTYAgent *)client_data);
     tty.shutdown();
@@ -119,11 +131,14 @@ int main(int argc, char *argv[])
 	return 1;
     }
 
+    // `tty' handles communication with the inferior
     TTYAgent tty(app_context, command);
     tty.addHandler(Input,  traceInputHP);
     tty.addHandler(Output, traceOutputHP);
     tty.addHandler(Error,  traceErrorHP);
+    tty.addHandler(Died,   diedHP, &tty);
 
+    // `me' handles communication with standard input and output
     LiterateAgent me(app_context);
     me.addHandler(Input, sendInputHP, &tty);
     me.addHandler(InputEOF, exitHP, &tty);
@@ -133,5 +148,5 @@ int main(int argc, char *argv[])
 
     XtAppMainLoop(app_context);
 
-    return EXIT_SUCCESS;
+    return EXIT_SUCCESS;	// Never reached
 }
