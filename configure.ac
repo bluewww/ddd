@@ -30,10 +30,6 @@ dnl
 dnl
 dnl
 dnl
-dnl Zdenek Sekera <zs@cray.com> says that if CDPATH is set, it may break
-dnl this script.
-unset CDPATH
-dnl
 dnl The product version, in the form `MAJOR-NUMBER.MINOR-NUMBER[.PATCHLEVEL]'
 dnl A version in the form `YYYY-MM-DD' is a release-of-the-day, i.e. a
 dnl snapshot of the current development tree.
@@ -330,7 +326,7 @@ AC_CHECK_LIB(cxxinst, main, CXXLIBS="-lcxxinst $CXXLIBS")
 fi
 dnl
 dnl
-dnl If we already have -liberty, -ltermcap, etc.,
+dnl If we already have -ltermcap, etc.,
 dnl there is no need to build them.
 ddd_have_termcap=false
 dnl
