@@ -1584,10 +1584,10 @@ void DataDisp::new_displaysSQA (string display_expression, BoxPoint* p)
     string postfix = display_expression.after(RXmore_than_one);
     string range = display_expression.from (RXmore_than_one);
     range.del("[");
-    int start = get_nr(range);
+    int start = ::get_nr(range);
     assert(start >= 0);
     range = range.after("..");
-    int stop = get_nr (range);
+    int stop = ::get_nr(range);
     assert (stop >= start);
     int count = stop + 1 - start;
 
@@ -2081,10 +2081,10 @@ void DataDisp::dependent_displaysSQA (string display_expression,
     string postfix = display_expression.after(RXmore_than_one);
     string range = display_expression.from (RXmore_than_one);
     range.del("[");
-    int start = get_nr(range);
+    int start = ::get_nr(range);
     assert(start >= 0);
     range = range.after("..");
-    int stop = get_nr (range);
+    int stop = ::get_nr(range);
     assert (stop >= start);
     int count = stop + 1 - start;
 

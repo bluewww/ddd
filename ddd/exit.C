@@ -287,7 +287,8 @@ static void SaveOptionsAndExitCB(Widget w, XtPointer client_data,
 {
     ddd_cleanup();
 
-    XtCallbackProc closure = ddd_is_restarting ? RestartCB : ExitCB;
+    XtCallbackProc closure = 
+	ddd_is_restarting ? XtCallbackProc(RestartCB) : XtCallbackProc(ExitCB);
 
     DDDSaveOptionsCB(w, client_data, call_data);
     closure(w, client_data, call_data);
