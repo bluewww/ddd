@@ -562,6 +562,7 @@ void set_status_from_gdb(const string& text)
     }
 
     strip_trailing_newlines(message);
+    message.gsub('\t', ' ');
     if (message == "")
 	return;
 
