@@ -1877,9 +1877,15 @@ DispNode *DataDisp::new_data_node(const string& given_name, string& answer)
     // consider `print tree_test(42)'.  Hence, if a function call
     // occurs in an expression, we use the name specified by the user,
     // not the name supplied by GDB.
+
+    // Upon some occasions, GDB gives names like 
+    // `{<text variable, no debug info>} 0x2270 <main>'.  In such cases,
+    // also use the user-given name instead.
     static regex rxfunction_call("[a-zA-Z0-9_$][(]");
     string title = display_name;
-    if (title.contains(rxfunction_call))
+    if (title.contains(rxfunction_call) 
+	|| title.contains('{')
+	|| title.contains('}'))
 	title = given_name;
 
     if (is_disabling(answer, gdb))
