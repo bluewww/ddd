@@ -155,7 +155,7 @@ _Delay::_Delay(Widget w):
 	XFlush(display);
     }
 
-    XtAddCallback(widget, XtNdestroyCallback, DestroyCB, this);
+    XtAddCallback(widget, XtNdestroyCallback, _Delay::DestroyCB, this);
 }
 
 _Delay::~_Delay()
@@ -174,7 +174,7 @@ _Delay::~_Delay()
     }
 
     current_cursor = old_cursor;
-    XtRemoveCallback(widget, XtNdestroyCallback, DestroyCB, this);
+    XtRemoveCallback(widget, XtNdestroyCallback, _Delay::DestroyCB, this);
 }
 
 // Make sure we do not attempt to delete a delay on a destroyed widget
