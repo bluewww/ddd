@@ -240,9 +240,9 @@ V	v(irtual{W})?t(a)?bl(e)?
 <S018>{_}[a-z ]*display({W}-?{D}{C})?	return &rxdata;
 <S019>[^ \t\n)}][^=\n]*{w}={w}		return &rxdbx_begin_of_display;
 <S020>[(]{P}[)]{w}			return &rxdbx_begin_of_display_info;
-<S021>[a-zA-Z_0-9]*`			return &rxdbx_scope;
+<S021>[a-zA-Z_$0-9]*`			return &rxdbx_scope;
 <S022>[a-zA-Z_$][a-zA-Z_$0-9]*[(]{C}[)]{C}([[]{C}[]]|\,{w}line{w}{C})	return &rxdbxframe;
-<S023>[a-zA-Z_][^:]*:{_}{P}{W}{C}	return &rxdbxfunc;
+<S023>[a-zA-Z_$][^:]*:{_}{P}{W}{C}	return &rxdbxfunc;
 <S024>{C}line{W}{P}{W}in{W}(file{W})?\"[^\"]*\"\n{C}	return &rxdbxfunc2;
 <S025>[[][^]]*:{P}[^]]*]{C}		return &rxdbxpos;
 <S026>dbx:{W}warning:.option{W}only{W}recognized{W}for.*\n	return &rxdbxwarn1;
@@ -261,7 +261,7 @@ V	v(irtual{W})?t(a)?bl(e)?
 <S039>[^{};,\n= ]+{W}={W}[^{}();,\n= ]+{W}={W}{C} return &rxeqeq;
 <S040>{_}file({W}{C})?			return &rxfile_cmd;
 <S041>[^ "'/]*\/			return &rxfilepath;
-<S042>[_A-Za-z][-_A-Za-z0-9]*		return &rxfont_id;
+<S042>[A-Za-z_][-_A-Za-z0-9]*		return &rxfont_id;
 <S043>#{D}{W}{A}			return &rxframe;
 <S044>{_}(up|do|down|f|fra|fram|frame|top|V)({W}{C})? return &rxframe_cmd;
 <S045>[a-zA-Z0-9_$][(]			return &rxfunction_call;
@@ -312,7 +312,7 @@ V	v(irtual{W})?t(a)?bl(e)?
 <S091>{_}(set|p|print|output){W}[^=]+=[^=]{C}	return &rxset2_cmd;
 <S092>{_}set{W}args({W}{C})?		return &rxset_args_cmd;
 <S093>{_}(set|dbxenv){W}{C}		return &rxsetting_cmd;
-<S094>([][a-zA-Z0-9_().]|->)*		return &rxsimple;
+<S094>([][a-zA-Z0-9_$().]|->)*		return &rxsimple;
 <S095>{_}disp(lay){W}[^ ]+		return &rxsingle_display_cmd;
 <S096>{C}(--More--|line{w}{d}).* 	return &rxspace;
 <S097>Breakpoint{W}{P}\,{W}{A}	return &rxstopped;

@@ -297,5 +297,5 @@ const regex rxalpha("[A-Za-z]+");
 const regex rxlowercase("[a-z]+");
 const regex rxuppercase("[A-Z]+");
 const regex rxalphanum("[0-9A-Za-z]+");
-const regex rxidentifier("[A-Za-z_][A-Za-z0-9_]*");
+const regex rxidentifier("[A-Za-z_$][A-Za-z0-9_$]*");
 #endif // WITH_RUNTIME_REGEX
