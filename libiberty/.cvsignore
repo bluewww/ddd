@@ -8,5 +8,6 @@ lneeded-list
 needed-list
 needed.awk
 needed2.awk
+required-list
 stamp-picdir
 xhost-mkfrag
