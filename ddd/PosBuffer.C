@@ -288,8 +288,8 @@ void PosBuffer::filter (string& answer)
 
 	    case DBX:
 	    {
-		string file;
-		string line;
+		string file;	// File name found
+		string line;	// Line number found
 
 		if (answer.contains('(', 0) || answer.contains('[', 0))
 		{
@@ -307,12 +307,31 @@ void PosBuffer::filter (string& answer)
 		static regex RXdbxfunc("[a-zA-Z_][^:]*: *[1-9][0-9]*  *.*");
 		if (answer.matches(RXdbxfunc))
 		{
-		    // DEC dbx issues `up', `down' and `func' output
-		    // in the format
-		    // "free_tree: 122  free_tree(tree->left);"
+		    // DEC DBX issues `up', `down' and `func' output
+		    // in the format `FUNCTION: LINE  TEXT'
 
 		    line = answer.after(":");
 		    line = line.through(rxint);
+		    already_read = PosComplete;
+
+		    answer = answer.after("\n");
+		}
+
+		static regex RXdbxfunc2("[a-zA-Z_][^(]*([^)]*),  *"
+					"line  *[1-9][0-9]*  *"
+					"in  *\"[^\"]\".*");
+		if (answer.matches(RXdbxfunc2))
+		{
+		    // AIX DBX issues `up', `down' and `func' output
+		    // in the format `FUNCTION(), line LINE in "FILE"'
+
+		    line = answer.after("line");
+		    line = line.through(rxint);
+
+		    file = answer.after("in ");
+		    file = file.after('\"');
+		    file = file.before('\"');
+
 		    already_read = PosComplete;
 
 		    answer = answer.after("\n");
