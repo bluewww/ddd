@@ -763,8 +763,9 @@ public:
 	set_bp_commands(nrs, commands, origin);
     }
 
-    static string numbers(IntArray& nrs);
-    static bool all_bps(IntArray& nrs);
+    static string numbers(const IntArray& nrs);
+    static string all_numbers(const IntArray& nrs);
+    static bool all_bps(const IntArray& nrs);
 	    
     // Move PC to ADDRESS
     static void move_pc(const string& address, Widget origin = 0);

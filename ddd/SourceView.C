@@ -972,11 +972,8 @@ void SourceView::bp_popup_disableCB (Widget w,
 }
 
 // Convert NRS to a list of numbers
-string SourceView::numbers(IntArray& nrs)
+string SourceView::numbers(const IntArray& nrs)
 {
-    if (all_bps(nrs))
-	return "";		// In GDB, no arg means `all'
-
     string cmd = ""; 
     for (int i = 0; i < nrs.size(); i++)
     {
@@ -987,23 +984,30 @@ string SourceView::numbers(IntArray& nrs)
     return cmd;
 }
 
+// Same, but use "" if we have GDB and all numbers are used
+string SourceView::all_numbers(const IntArray& nrs)
+{
+    if (gdb->type() == GDB && all_bps(nrs))
+	return "";		// In GDB, no arg means `all'
+    else
+	return numbers(nrs);
+}
+
 // Return true if NRS contains all breakpoints and
 // a GDB delete/disable/enable command can be given without args.
-bool SourceView::all_bps(IntArray& nrs)
+bool SourceView::all_bps(const IntArray& nrs)
 {
     if (gdb->type() != GDB || nrs.size() < 2)
 	return false;
-
-    IntArray work(nrs);
 
     MapRef ref;
     BreakPoint *bp = 0;
     for (bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
     {
 	bool found = false;
-	for (int i = 0; !found && i < work.size(); i++)
+	for (int i = 0; !found && i < nrs.size(); i++)
 	{
-	    if (bp->number() == work[i])
+	    if (bp->number() == nrs[i])
 		found = true;
 	}
 
@@ -1017,13 +1021,13 @@ bool SourceView::all_bps(IntArray& nrs)
 void SourceView::enable_bps(IntArray& nrs, Widget w)
 {
     if (gdb->has_enable_command())
-	gdb_command(gdb->enable_command(numbers(nrs)), w);
+	gdb_command(gdb->enable_command(all_numbers(nrs)), w);
 }
 
 void SourceView::disable_bps(IntArray& nrs, Widget w)
 {
     if (gdb->has_disable_command())
-	gdb_command(gdb->disable_command(numbers(nrs)), w);
+	gdb_command(gdb->disable_command(all_numbers(nrs)), w);
 }
 
 void SourceView::delete_bps(IntArray& nrs, Widget w)
@@ -1040,7 +1044,7 @@ void SourceView::delete_bps(IntArray& nrs, Widget w)
     }
     else if (gdb->has_delete_command())
     {
-	gdb_command(gdb->delete_command(numbers(nrs)), w);
+	gdb_command(gdb->delete_command(all_numbers(nrs)), w);
     }
     else
     {
@@ -5070,6 +5074,7 @@ void SourceView::NewWatchpointCB(Widget w, XtPointer, XtPointer)
 
 struct BreakpointPropertiesInfo {
     IntArray nrs;		// The affected breakpoints
+
     Widget dialog;		// The widgets of the properties panel
     Widget title;
     Widget lookup;
@@ -5084,9 +5089,11 @@ struct BreakpointPropertiesInfo {
     Widget end;
     Widget edit;
     Widget editor;
-    XtIntervalId timer;
-    bool spin_locked;
-    bool sync_commands;
+
+    XtIntervalId timer;		// The spinbox timer
+    bool spin_locked;		// If true, don't invoke spinbox callbacks
+    int ignore_spin_update;	// If > 0, don't update spinbox from bp info
+    bool sync_commands;		// If true, propagate cmd to other breakpoints
     BreakpointPropertiesInfo *next; // Next info in list
 
     static BreakpointPropertiesInfo *all; // List of all infos
@@ -5096,7 +5103,8 @@ struct BreakpointPropertiesInfo {
 	  dialog(0), title(0), 
 	  lookup(0), enable(0), disable(0), temp(0), del(0),
 	  ignore(0), condition(0), record(0), edit(0), editor(0),
-	  timer(0), spin_locked(false), sync_commands(false), next(all)
+	  timer(0), spin_locked(false), ignore_spin_update(0),
+	  sync_commands(false), next(all)
     {
 	all = this;
     }
@@ -5238,28 +5246,35 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
 
     XmTextSetString(info->editor, commands);
 
-    bool lock = info->spin_locked;
-    info->spin_locked = true;
-#if XmVersion >= 2000
-    if (XmIsSpinBox(XtParent(info->ignore)))
+    if (info->ignore_spin_update > 0)
     {
-	XtVaSetValues(info->ignore, XmNposition, bp->ignore_count(), NULL);
+	info->ignore_spin_update--;
     }
     else
-#endif
     {
-	String old_ignore = XmTextFieldGetString(info->ignore);
-	if (atoi(old_ignore) != bp->ignore_count())
+	bool lock = info->spin_locked;
+	info->spin_locked = true;
+#if XmVersion >= 2000
+	if (XmIsSpinBox(XtParent(info->ignore)))
 	{
-	    string ignore = itostring(bp->ignore_count());
-	    if (ignore == "0")
-		ignore = "";
-
-	    XmTextFieldSetString(info->ignore, (String)ignore);
+	    XtVaSetValues(info->ignore, XmNposition, bp->ignore_count(), NULL);
 	}
-	XtFree(old_ignore);
+	else
+#endif
+	{
+	    String old_ignore = XmTextFieldGetString(info->ignore);
+	    if (atoi(old_ignore) != bp->ignore_count())
+	    {
+		string ignore = itostring(bp->ignore_count());
+		if (ignore == "0")
+		    ignore = "";
+
+		XmTextFieldSetString(info->ignore, (String)ignore);
+	    }
+	    XtFree(old_ignore);
+	}
+	info->spin_locked = lock;
     }
-    info->spin_locked = lock;
 
     XmTextFieldSetString(info->condition, (String)bp->condition());
 
@@ -5579,6 +5594,7 @@ void SourceView::SetBreakpointIgnoreCountNowCB(XtPointer client_data,
     for (int i = 0; i < info->nrs.size(); i++)
     {
 	gdb_command(gdb->ignore_command(itostring(info->nrs[i]), count));
+	info->ignore_spin_update++;
     }
 }
 
