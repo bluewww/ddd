@@ -1359,8 +1359,8 @@ $(htmldir)/ddd.html $(htmldir)/ddd-themes.html: \
 	@-test -d $(htmldir)/PICS || mkdir $(htmldir)/PICS
 	@-test -d PICS || mkdir PICS
 	$(RM) ddd*.html
-	$(MAKEINFO) --html -I $(srcdir) -I $(texidir) $(srcdir)/ddd-themes.texi --no-split
-	$(MAKEINFO) --html -I $(srcdir) -I $(texidir) $(srcdir)/ddd.texi --no-split
+	$(MAKEINFOHTML) -I $(srcdir) -I $(texidir) $(srcdir)/ddd-themes.texi --no-split
+	$(MAKEINFOHTML) -I $(srcdir) -I $(texidir) $(srcdir)/ddd.texi --no-split
 	for file in ddd*.html; do \
 		$(SED) -f $(srcdir)/fix-html.sed $$file | \
 		$(SED) 's/$(IMGEXT)/\$(IMGEXT2)/g' > $$file~ && \
