@@ -58,14 +58,21 @@ char DataDisp_rcsid[] =
 
 // Misc includes
 #include "AliasGE.h"
+#include "AppData.h"		// Constructors
+#include "ArgField.h"
 #include "ComboBox.h"
+#include "Command.h"
 #include "CompositeB.h"
 #include "DestroyCB.h"
 #include "DispGraph.h"
+#include "DispNode.h"		// Constructors
 #include "GraphEdit.h"		// XtNgraph
 #include "HistoryD.h"
 #include "IntIntAA.h"
+#include "LessTifH.h"
 #include "MString.h"
+#include "MakeMenu.h"
+#include "Map.h"
 #include "PannedGE.h"
 #include "PosBuffer.h"
 #include "ScrolledGE.h"
@@ -82,12 +89,24 @@ char DataDisp_rcsid[] =
 #include "buttons.h"
 #include "charsets.h"
 #include "cmdtty.h"
-#include "Command.h"
+#include "comm-manag.h"
 #include "converters.h"
 #include "cook.h"
+#include "ddd.h"
+#include "disp-read.h"
 #include "history.h"
 #include "logo.h"
+#include "mydialogs.h"
 #include "post.h"
+#include "regexps.h"
+#include "settings.h"
+#include "status.h"
+#include "string-fun.h"
+#include "toolbar.h"
+#include "value-read.h"
+#include "verify.h"
+#include "windows.h"
+#include "wm.h"
 
 // Motif includes
 #include <Xm/List.h>
@@ -97,26 +116,6 @@ char DataDisp_rcsid[] =
 #include <Xm/TextF.h>		// XmTextFieldGetString()
 #include <Xm/Label.h>
 #include <X11/StringDefs.h>
-
-// DDD includes
-#include "AppData.h"		// Constructors
-#include "ArgField.h"
-#include "DispNode.h"		// Constructors
-#include "LessTifH.h"
-#include "MakeMenu.h"
-#include "Map.h"
-#include "comm-manag.h"
-#include "ddd.h"
-#include "disp-read.h"
-#include "mydialogs.h"
-#include "regexps.h"
-#include "settings.h"
-#include "status.h"
-#include "string-fun.h"
-#include "toolbar.h"
-#include "verify.h"
-#include "windows.h"
-#include "wm.h"
 
 // System includes
 #include <iostream.h>
@@ -1909,8 +1908,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 
 	case Sequence:
 	case List:
-	case StructOrClass:
-	case BaseClass:
+	case Struct:
 	    break;
 
 	case UnknownType:

@@ -435,8 +435,7 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
     }
 
     case List:
-    case StructOrClass:
-    case BaseClass:
+    case Struct:
     {
 	String collapsed_value = (dv->type() == List ? 
 				  "collapsed_list_value" :
@@ -529,8 +528,7 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
 			    member_name_width);
 	    break;
 
-	case StructOrClass:
-	case BaseClass:
+	case Struct:
 	    if (dv->name() == "" || dv->name().matches(rxwhite))
 	    {
 		// Don't prepend an empty member name
