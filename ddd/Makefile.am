@@ -643,11 +643,11 @@ LIBGEN = @LIBGEN@
 # X toolkit library.  (-lXt)
 LIBXT = @XT_LIBS@
 
-# X library.  (-lSM -lICE -lX11 -lnsl -lsocket)
+# X library.  (-lX11 -lSM -lICE -lnsl -lsocket)
 LIBX11 = @X_PRE_LIBS@ @X11_LIBS@ @X_EXTRA_LIBS@
 
 # All libraries shown above
-ALL_X_LIBS = $(X_LDFLAGS) $(LIBXM) $(LIBXP) $(LIBXPM) $(LIBXAW) $(LIBXEXT) \
+ALL_X_LIBS = $(X_LDFLAGS) $(LIBXM) $(LIBXP) $(LIBXAW) $(LIBXPM) $(LIBXEXT) \
 	     $(LIBXT) $(LIBX11) $(LIBGEN)
 
 

@@ -410,7 +410,8 @@ void ddd_show_exception(const char *c, const char *what)
 }
 
 // Issue fatal message on stderr
-static void print_fatal_msg(char *title, char *cause, char *cls)
+static void print_fatal_msg(const char *title, const char *cause, 
+			    const char *cls)
 {
     static const char *msg =
 	"\n%s (%s).\n"
@@ -491,7 +492,7 @@ static void ddd_fatal(int sig...)
 
 	if (sig != SIGINT)
 	{
-	    char *title = sigName(sig);
+	    const char *title = sigName(sig);
 	    char cause[BUFSIZ];
 	    sprintf(cause, "`%s' signal", title);
 	    print_fatal_msg(title, cause, "Internal error");

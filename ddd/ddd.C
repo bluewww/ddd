@@ -3074,7 +3074,7 @@ static void ddd_check_version()
 }
 
 #if HAVE_MKSTEMP && !HAVE_MKSTEMP_DECL
-extern "C" int mkstemp(char *template);
+extern "C" int mkstemp(char *templ);
 #endif
 
 // Read in database from FILENAME.  Upon version mismatch, ignore some

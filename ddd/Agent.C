@@ -539,7 +539,7 @@ void Agent::abort()
     if (_lastStatus >= 0)
     {
 	// Call "Died" message handlers
-	callHandlers(Died, statusName(_lastStatus));
+	callHandlers(Died, (char *)statusName(_lastStatus));
 	_lastStatus = -1;
     }
 }

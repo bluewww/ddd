@@ -29,7 +29,7 @@
 #ifndef _DDD_sigName_h
 #define _DDD_sigName_h
 
-extern char *sigName(int number);
-extern char *statusName(int number);
+extern const char *sigName(int number);
+extern const char *statusName(int number);
 
 #endif

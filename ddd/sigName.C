@@ -43,16 +43,25 @@ extern "C" {
 #include "strclass.h"
 #include "sigName.h"
 
-extern "C" char *strsignal(int signo);
+#if HAVE_STRSIGNAL && !HAVE_STRSIGNAL_DECL
+extern "C" const char *strsignal(int signo);
+#endif
 
 // Convert signal number into name
-char *sigName(int signo)
+const char *sigName(int signo)
 {
+#if HAVE_STRSIGNAL
     return strsignal(signo);
+#else
+    static char buffer[256];
+
+    sprintf(buffer, "Signal %d", signo);
+    return buffer;
+#endif
 }
 
 // Convert wait() status into name
-char *statusName(int state)
+const char *statusName(int state)
 {
     if (WIFEXITED(((state))))
     {
@@ -66,5 +75,5 @@ char *statusName(int state)
     else if (WIFSTOPPED(((state))))
         return sigName(WSTOPSIG(((state))));
 
-    return (char *)"Unknown state change";
+    return "Unknown state change";
 }
