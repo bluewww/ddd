@@ -99,6 +99,8 @@ bool UndoBuffer::has_effect(const UndoBufferEntry& entry)
 
 void UndoBuffer::add(const UndoBufferEntry& entry)
 {
+    restore_current_state();
+
     if (entry.has_exec_pos())
     {
 	// Adding a new execution position - remove all non-exec
@@ -704,21 +706,26 @@ void UndoBuffer::done(StatusMsg *msg)
 
     if (history.size() > 0)
     {
-	const UndoBufferEntry& current = history[history.size() - 1];
+	// Check the current and all redoable entries.  If one of them
+	// contains a state field whose value differs from the last
+	// one, we're in an earlier state.
+	const UndoBufferEntry& last = history[history.size() - 1];
 
-	for (int i = history_position - 1; 
+	for (int i = history_position - 1;
 	     !earlier && i < history.size() - 1; i++)
-	    if (in_earlier_state(history[i], current))
+	{
+	    if (in_earlier_state(history[i], last))
 		earlier = true;
+	}
     }
 
     showing_earlier_state(earlier, msg);
     refresh_buttons();
 }
 
-// Return true if ENTRY is in an earlier state than CURRENT 
+// Return true if ENTRY is in an earlier state than LAST
 bool UndoBuffer::in_earlier_state(const UndoBufferEntry& entry,
-				  const UndoBufferEntry& current)
+				  const UndoBufferEntry& last)
 {
     if (!entry.has_exec_pos())
 	return false;
@@ -731,7 +738,7 @@ bool UndoBuffer::in_earlier_state(const UndoBufferEntry& entry,
 	if (key == UB_COMMAND || key == UB_EXEC_COMMAND || key == UB_SOURCE)
 	    continue;
 
-	if (current.has(key) && current[key] != value)
+	if (last.has(key) && last[key] != value)
 	    return true;
     }
 
@@ -795,6 +802,8 @@ void UndoBuffer::restore_current_state()
     if (!showing_earlier_state())
 	return;
 
+    StatusDelay delay("Restoring state");
+
     UndoBufferArray new_history;
     for (int i = 0; i < history.size(); i++)
     {
@@ -812,7 +821,7 @@ void UndoBuffer::restore_current_state()
 
     history_position = history.size();
 
-    done();
+    done(&delay);
 }
 
 // Invariant
