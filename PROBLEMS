@@ -79,10 +79,19 @@ HP-UX
 LINUX
 =====
 
+Reported by: Jim Van Zandt <jrv@vanzandt.mv.com>
+
+     Under slackware 3.1, the file permissions in `/dev/ptyp?' do not
+     allow for DDD <-> GDB interaction.  I did "cd /dev; rm pty*;
+     MAKEDEV ptyp ptyq ptys ptyt", the former permissions and device
+     numbers were restored, and DDD worked.
+     [Can anyone tell me how to circumvent this within DDD?  - AZ]
+
 Reported by: Ronald Wahl <Ronald.Wahl@Informatik.TU-Chemnitz.DE>
 
      Remove the double `-lc' when linking DDD to avoid a
      segmentation fault immediately after startup.
+     [This should be fixed in DDD 2.0  - AZ]
 
 Reported by: Gilad Gam <gilad@vocaltec.com>
 
@@ -91,6 +100,7 @@ Reported by: Gilad Gam <gilad@vocaltec.com>
      commented out the LIBC and LIBM variables.  I added -lg++ to
      EXTRA_LIBS and also to LINK.cc (to enable compilation of
      cxxtest).
+     [This should be fixed in DDD 2.0  - AZ]
 
 Reported by:  Bernie Borenstein <c372321@hc1056.mdc.com>
 
