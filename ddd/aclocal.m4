@@ -54,6 +54,33 @@ AC_SUBST(EXTERNAL_TEMPLATES)
 ])dnl
 dnl
 dnl
+dnl If the C++ compiler accepts the `-fno-implicit-templates' flag,
+dnl set output variable `NO_IMPLICIT_TEMPLATES' to `-fno-implicit-templates',
+dnl empty otherwise.
+dnl
+AC_DEFUN(ICE_NO_IMPLICIT_TEMPLATES,
+[
+AC_REQUIRE([AC_PROG_CXX])
+AC_MSG_CHECKING(whether ${CXX} accepts the -fno-implicit-templates flag)
+AC_CACHE_VAL(ice_cv_no_implicit_templates,
+[
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+ice_save_cxxflags="$CXXFLAGS"
+CXXFLAGS=-fno-implicit-templates
+AC_TRY_COMPILE(,[int a;],
+ice_cv_no_implicit_templates=yes, ice_cv_no_implicit_templates=no)
+CXXFLAGS="$ice_save_cxxflags"
+AC_LANG_RESTORE
+])
+AC_MSG_RESULT($ice_cv_no_implicit_templates)
+if test "$ice_cv_no_implicit_templates" = yes; then
+NO_IMPLICIT_TEMPLATES=-fno-implicit-templates
+fi
+AC_SUBST(NO_IMPLICIT_TEMPLATES)
+])dnl
+dnl
+dnl
 dnl If the C++ compiler accepts the `-felide-constructors' flag,
 dnl set output variable `ELIDE_CONSTRUCTORS' to `-felide-constructors',
 dnl empty otherwise.
@@ -163,6 +190,32 @@ AC_LANG_RESTORE
 AC_MSG_RESULT($ice_cv_have_named_return_values)
 if test "$ice_cv_have_named_return_values" = yes; then
 AC_DEFINE(HAVE_NAMED_RETURN_VALUES)
+fi
+])dnl
+dnl
+dnl
+dnl If the C++ compiler supports explicit template instantiation, 
+dnl define `HAVE_EXPLICIT_TEMPLATE_INSTANTIATION'.
+dnl
+AC_DEFUN(ICE_CXX_EXPLICIT_TEMPLATE_INSTANTIATION,
+[
+AC_REQUIRE([AC_PROG_CXX])
+AC_MSG_CHECKING(whether ${CXX} supports explicit template instantiation)
+AC_CACHE_VAL(ice_cv_have_explicit_template_instantiation,
+[
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_COMPILE([
+template <class T> class Pointer { public: T *value; };
+template class Pointer<char>;
+], [/* empty */],
+ice_cv_have_explicit_template_instantiation=yes,
+ice_cv_have_explicit_template_instantiation=no)
+AC_LANG_RESTORE
+])
+AC_MSG_RESULT($ice_cv_have_explicit_template_instantiation)
+if test "$ice_cv_have_explicit_template_instantiation" = yes; then
+AC_DEFINE(HAVE_EXPLICIT_TEMPLATE_INSTANTIATION)
 fi
 ])dnl
 dnl
@@ -552,6 +605,7 @@ AC_SUBST(CXXDYNAMIC_BINDING)dnl
 dnl
 if test "$GXX" = yes; then
 ICE_EXTERNAL_TEMPLATES
+ICE_NO_IMPLICIT_TEMPLATES
 ICE_ELIDE_CONSTRUCTORS
 fi
 CXXSTUFF="$EXTERNAL_TEMPLATES $ELIDE_CONSTRUCTORS"
@@ -671,10 +725,10 @@ AC_DEFUN(ICE_FIND_MOTIF,
 [
 AC_REQUIRE([AC_PATH_XTRA])
 AC_ARG_WITH(motif-includes,
-[  --with-motif-includes=DIR   Motif include files are in DIR],
+[  --with-motif-includes=DIR    Motif include files are in DIR],
 motif_includes="$withval", motif_includes=)
 AC_ARG_WITH(motif-libraries,
-[  --with-motif-libraries=DIR  Motif libraries are in DIR],
+[  --with-motif-libraries=DIR   Motif libraries are in DIR],
 motif_libraries="$withval", motif_libraries=)
 AC_MSG_CHECKING(for OSF/Motif)
 #
@@ -774,10 +828,10 @@ fi
 done
 ])
 #
-ice_motif_save_LIBS="$LIBS"
-ice_motif_save_CFLAGS="$CFLAGS"
-ice_motif_save_CPPFLAGS="$CPPFLAGS"
-ice_motif_save_LDFLAGS="$LDFLAGS"
+LIBS="$ice_motif_save_LIBS"
+CFLAGS="$ice_motif_save_CFLAGS"
+CPPFLAGS="$ice_motif_save_CPPFLAGS"
+LDFLAGS="$ice_motif_save_LDFLAGS"
 ])
 #
 motif_libraries="$ice_cv_motif_libraries"
@@ -929,10 +983,10 @@ fi
 done
 ])
 #
-ice_athena_save_LIBS="$LIBS"
-ice_athena_save_CFLAGS="$CFLAGS"
-ice_athena_save_CPPFLAGS="$CPPFLAGS"
-ice_athena_save_LDFLAGS="$LDFLAGS"
+LIBS="$ice_athena_save_LIBS"
+CFLAGS="$ice_athena_save_CFLAGS"
+CPPFLAGS="$ice_athena_save_CPPFLAGS"
+LDFLAGS="$ice_athena_save_LDFLAGS"
 ])
 #
 athena_libraries="$ice_cv_athena_libraries"
