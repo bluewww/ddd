@@ -20,6 +20,7 @@ There is more information available at the GNU DDD homepage at
 What's new in DDD?
 ==================
 
+
 DDD 3.3 [in beta test]
 =======
 
@@ -30,7 +31,7 @@ Data Themes
 -----------
 
 - DDD supports _data themes_ - modifiers that change the appearance of 
-  program data.
+  program data.  Try `Data->Themes'.
 
 - Data themes included with this release are:
   * Show specific expressions in a smaller font (useful for arrays).
@@ -87,14 +88,37 @@ Examining Data
 User Interface
 --------------
 
-- In LessTif, combo boxes (drop-down text boxes) no longer shrink.
+- You can interact with the debugger while the program is running;
+  DDD automatically interrupts and resumes debuggee execution.  See the
+  `stopAndContinue' resource for details.
 
-- In LessTif, Text selection works better.
+- Undo and Redo now apply on logical groups of commands.  If an action
+  caused multiple commands, Undo will undo them with one click.
 
 - Interrupts (Ctrl+C) from the controlling TTY can be issued multiple times.
 
+- With LessTif, the source window no longer scrolls around when
+  setting or deleting breakpoints.
+
+- With LessTif, combo boxes (drop-down text boxes) no longer shrink.
+
+- With LessTif, Text selection works better.
+
+- With LessTif, typing in the debugger console works better.
+
+- Drag and Drop of breakpoints in the machine code is supported.
+
+- Spin boxes (used to step values) have been slightly improved.
+
 - Forwarding of keyboard events from the source window into the
   debugger console is now optional.  See the `consoleHasFocus' resource. (10)
+
+
+Printing
+--------
+
+- PostScript printing includes background colors (e.g. changed values)
+
 
 
 Installation
@@ -121,6 +145,12 @@ Installation
 - A bad wildcard use in the Makefile has been fixed. (3)
 
 - A compilation problem in `PannedGE.C' with some GCC variants has been fixed.
+
+- DDD now compiles cleanly even with `gcc -Wwrite-strings'.  This
+  avoids several warnings/errors on C++ compilers other than GCC. (1)
+
+- The `--configuration' option now gives more information about the
+  compiler being used to compile DDD. (1)
 
 - ddd.texi rules in the Makefile have been fixed. (4)
 
@@ -150,12 +180,6 @@ Tracking Code Changes
   interface.  See the file `README-CVS' in the CVS archive for details.
 
 
-Known Issues
-------------
-
-- Data themes are not documented yet.
-
-
 Acknowledgments
 ---------------
 
@@ -170,7 +194,6 @@ Thanks to:
     (8) Felipe Rivera <felipe@informador.com.mx>
     (9) Thomas Anders <anders@hmi.de>
    (10) Colin <cbyh@yahoo.com>
-
 
 
 Where can you get it?  How can you compile it?
