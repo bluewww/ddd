@@ -122,6 +122,7 @@ extern "C" {
 #include "post.h"
 #include "shell.h"
 #include "windows.h"
+#include "wm.h"
 #include "dbx-lookup.h"
 #include "question.h"
 #include "status.h"
@@ -2395,15 +2396,8 @@ void SourceView::lookup(string s)
 	    show_pc(last_execution_pc, XmHIGHLIGHT_SELECTED);
 
 	if (last_execution_file != "")
-	{
-	    if (gdb->type() == GDB)
-		gdb_command("info line " 
-			    + last_execution_file
-			    + ":" + itostring(last_execution_line));
-	    else
-		_show_execution_position(last_execution_file, 
-					 last_execution_line);
-	}
+	    _show_execution_position(last_execution_file, 
+				     last_execution_line);
     }
     else if (s[0] != '0' && isdigit(s[0]))
     {
@@ -3389,6 +3383,7 @@ void SourceView::EditBreakpointConditionCB(Widget,
     }
 
     XtManageChild(edit_breakpoint_condition_dialog);
+    raise_shell(edit_breakpoint_condition_dialog);
 }
 
 
@@ -3530,6 +3525,7 @@ void SourceView::EditBreakpointIgnoreCountCB(Widget,
     }
 
     XtManageChild(edit_breakpoint_ignore_count_dialog);
+    raise_shell(edit_breakpoint_ignore_count_dialog);
 }
 
 
@@ -3676,7 +3672,10 @@ void SourceView::UpdateBreakpointButtonsCB(Widget, XtPointer, XtPointer)
 void SourceView::EditBreakpointsCB(Widget, XtPointer, XtPointer)
 {
     if (edit_breakpoints_dialog_w)
+    {
 	XtManageChild(edit_breakpoints_dialog_w);
+	raise_shell(edit_breakpoints_dialog_w);
+    }
 }
 
 
@@ -3850,6 +3849,7 @@ void SourceView::ViewStackFramesCB(Widget, XtPointer, XtPointer)
 {
     refresh_stack_frames();
     XtManageChild(stack_dialog_w);
+    raise_shell(stack_dialog_w);
     
     stack_dialog_popped_up = true;
 }
@@ -4153,6 +4153,7 @@ void SourceView::ViewRegistersCB(Widget, XtPointer, XtPointer)
 {
     refresh_registers();
     XtManageChild(register_dialog_w);
+    raise_shell(stack_dialog_w);
     
     register_dialog_popped_up = true;
 }
