@@ -34,14 +34,6 @@ Volunteers for these and other projects are welcome!
     LENS (see ftp.cc.gatech.edu:pub/people/stasko).  Suggested by
     bruce@liverpool.ac.uk (Bruce Stephens).
 
-069 Yves Arrouye <Yves.Arrouye@marin.fdn.fr> states:
-    Let one colorize the displays. By using regexps on types or names
-    of the fields, it would already be extremely useful (or with a
-    match on the typed expression, having a list of regexps to match,
-    the first match giving color, so that given blue for ` pr_.*' and
-    red for `^int .*' one would see `int pr_var' in blue but all
-    other int variables in red).
-
 070 Matthias Kurz <mk@baerlap.north.de> suggests an option to set
     debuggee arguments when invoking DDD.  A simple way of
     implementing that would be: if more than one argument is given,
@@ -59,11 +51,6 @@ Volunteers for these and other projects are welcome!
 085 Include xDuel support.  See `http://www.math.tau.ac.il/~frangy/'
     for details.
 
-094 Have a VSL 'string()' function that extracts the string from a
-    box.  With an additional VSL 'matches()' function that matches
-    regexps, one may display different types in different
-    colors, fonts, etc.
-
 110 N. Dan Zou <zou@hooked.net> suggests a way to display the class
     structure of an existing program graphically.  [Should be
     implemented as follows: use the `ptype' output to display types
@@ -77,10 +64,6 @@ Volunteers for these and other projects are welcome!
 
 131 Include the Athena Panner widget in the DDD distribution, such
     that Athena/Motif conflicts are removed.
-
-143 Have a list of regexes that suppress or hide displays when matched.
-    [Could this done by pressing `delete' on members?  And should other
-     displayed items be affected, too?  -AZ]
 
 153 Include assembler support for Sun DBX (they have a `dis' command).
 
@@ -106,9 +89,6 @@ Volunteers for these and other projects are welcome!
       browser)
 
 171 Use double-buffering to display the graph.  Even less flickering.
-
-175 Theodore Papadopoulo <papadop@sophia.inria.fr> suggests a smaller 
-    font for large matrices.
 
 176 Theodore Papadopoulo <papadop@sophia.inria.fr> wants the
     capability of "freezing" some displayed values. By this, I mean
@@ -331,9 +311,9 @@ Volunteers for these and other projects are welcome!
     `http://sourceware.cygnus.com/gdb/onlinedocs/gdbmi_toc.html'.
 
 384 Finish themes support:
-    * Finish pop-up themes menu.
     * Populate user's DDD directory with themes.
     * Cache computed VSL libraries (clear when changed).
+    * Cache VSL docs.
     * Allow for interaction between VSL and DDD.
     * Document it all.
 
