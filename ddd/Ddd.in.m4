@@ -570,17 +570,18 @@ Ddd*jdbSettings:
 ! Auto-command defaults
 
 ! Are auto-commands enabled?  If yes, any output of the inferior debugger
-! in the form `ddd: COMMAND' will cause DDD to execute the so-called 
+! in the form `PREFIX: COMMAND' (where PREFIX is the autoCommandPrefix, 
+! as defined below) will cause DDD to execute the so-called 
 ! auto-command COMMAND.  This is useful for defining own DDD command 
 ! sequences.
 ! Unfortunately, this is also a security problem - just imagine some
-! malicuous program to issue a string like `ddd: shell rm foobar'.
-! Consequently, this feature is disabled by default.
-Ddd*autoCommands: off
+! malicuous program to issue a string like `PREFIX: shell rm foobar'.
+! Hence, we create PREFIX dynamically for each DDD session.
+Ddd*autoCommands: on
 
-! The prefix of auto-commands (by default, `ddd: ' - note the trailing space).
-! You are encouraged to change this value in your `~/.ddd/init' file.
-Ddd*autoCommandPrefix: ddd:\ 
+! The prefix of auto-commands.
+! No value means to generate a new PREFIX for each DDD session.
+Ddd*autoCommandPrefix:
 
 
 ! Graph Editor Defaults
@@ -4588,8 +4589,8 @@ Ddd*paper_size_dialog*helpString: \
 KBD(VAR(width) CODE(x) VAR(height)).\n\
 \n\
 Examples:\n\
-KBD(42cm x 59.4cm) - A2 paper\n\
-KBD(7.5in x 10in) - Executive paper\n\
+KBD(42cm x 59.4cm) DASH A2 paper\n\
+KBD(7.5in x 10in) DASH Executive paper\n\
 \n\
 Recognized units include:\n\
 KBD(pt) (points), KBD(in) (inches), KBD(mm) (millimeters),\n\
@@ -4865,7 +4866,7 @@ Ddd*edit_breakpoints_dialog*buttons*delete.documentationString:     \
 ! Breakpoint Properties
 !-----------------------------------------------------------------------------
 
-Ddd*breakpoint_properties_popup.title:    DDD: Breakpoint Properties
+Ddd*breakpoint_properties_popup.title:    DDD: Properties
 
 Ddd*breakpoint_properties.okLabelString:    		Close
 Ddd*breakpoint_properties.cancelLabelString:    	Delete
@@ -4876,7 +4877,7 @@ Ddd*breakpoint_properties*title.recomputeSize:		off
 
 Ddd*breakpoint_properties*enabled.labelString:		Enabled
 Ddd*breakpoint_properties*temporary.labelString:	Temporary
-Ddd*breakpoint_properties*lookup.labelString:		Lookup
+Ddd*breakpoint_properties*lookup.labelString:		\ \ Lookup\ \ 
 
 Ddd*breakpoint_properties*condition.label.labelString:	Condition
 Ddd*breakpoint_properties*condition.label.width:	120
@@ -4900,23 +4901,30 @@ Ddd*breakpoint_properties*commands.recomputeSize:	off
 
 Ddd*breakpoint_properties*commandsMenu.packing:		XmPACK_COLUMN
 Ddd*breakpoint_properties*commandsMenu.entryAlignment:	XmALIGNMENT_CENTER
-Ddd*breakpoint_properties*record.labelString:		\ \ \ Record...\ \ \ 
+Ddd*breakpoint_properties*record.labelString:		\ \ Record\ \ 
+Ddd*breakpoint_properties*end.labelString:		End
 Ddd*breakpoint_properties*edit.labelString:		Edit...
 
 Ddd*breakpoint_properties*helpString:		\
 @rm WIDGET(Breakpoint Properties)\n\
 \n\
-ITEM LBL(Condition) lets you specify a condition.\n\
-    The breakpoints break only if the condition evaluates to non-zero.\n\
-\n\
-ITEM LBL(Ignore Count) lets you set an ignore count VAR(count).\n\
-     The next VAR(count) hits of the breakpoints will be ignored.\n\
-\n\
-ITEM LBL(Commands) lets you record and edit command sequences.\n\
-     These command sequences will be executed when the breakpoints are hit.\n\
+DESC(Enabled, [enable or disable the breakpoint.])\n\
+DESC(Temporary, [make the breakpoint temporary.])\n\
+DESC(Condition, [specify a breakpoint condition.\n\
+    The breakpoint breaks only if the condition evaluates to non-zero.])\n\
+DESC(Ignore Count, [set an ignore count VAR(count).\n\
+    The next VAR(count) hits of the breakpoint will be ignored.])\n\
+DESC(Commands, [record and edit @GDB@ command sequences.\n\
+    These commands will be executed when the breakpoint is hit.\n\
+    To record a command sequence, follow these steps:\n\
+    SUBITEM Click on LBL(Record) to begin the recording.\n\
+    SUBITEM Now interact with DDD.\n\
+        The recorded @GDB@ commands are shown in the @GDB@ console.\n\
+    SUBITEM Click on LBL(End) to stop the recording.])\n\
 \n\
 Click on LBL(Close) to close this window.\n\
-Clock on LBL(Delete) to delete the breakpoints.
+Click on LBL(Delete) to delete the breakpoints.
+
 
 
 
@@ -5201,7 +5209,10 @@ LBL(Program) | LBL(Interrupt) (or typing KEY(Ctrl+C)).\n\
 \n\
 If @GDB@ is busy running your debugged program, interrupting\n\
 @GDB@ means to interrupt program execution, such that you can\n\
-examine the current program state.
+examine the current program state.\n\
+\n\
+If @GDB@ is busy recording commands, simply enter KBD(end) 
+at the @GDB@ prompt.
 
 Ddd*quit_dialog_popup.title: DDD: Debugger Still Busy
 ! Ddd*quit_dialog.messageString:	 \
@@ -5700,22 +5711,22 @@ To edit the list of display shortcuts, use LBL(New Display) | LBL(Edit).
 
 Ddd*gdb_io_error_popup.title: DDD: I/O Error
 Ddd*gdb_io_error*helpString: \
-@rm The communication between GDB and DDD does not work correctly.\n\
+@rm The communication between @GDB@ and DDD does not work correctly.\n\
 This is probably due to a bad DDD configuration.\n\
 \n\
 DDD cannot work around this problem, so you may not be able to continue.
 
 Ddd*gdb_io_warning_popup.title: DDD: I/O Warning
 Ddd*gdb_io_warning*helpString: \
-@rm The communication between GDB and DDD does not work correctly.\n\
+@rm The communication between @GDB@ and DDD does not work correctly.\n\
 This is probably due to a bad DDD configuration.\n\
 \n\
 DDD can work around this problem, so you may continue working.
 
 Ddd*gdb_echo_warning_popup.title: DDD: Echo mode Active
 Ddd*gdb_echo_warning*helpString: \
-@rm The communication between GDB and DDD does not work correctly - \n\
-GDB echoes back every character typed by DDD.\n\
+@rm The communication between @GDB@ and DDD does not work correctly - \n\
+@GDB@ echoes back every character typed by DDD.\n\
 This is probably due to a bad DDD configuration.\n\
 \n\
 DDD can work around this problem, so you can continue working.
@@ -5760,6 +5771,18 @@ Ddd*no_source_and_no_code.helpString: \
 \n\
 Here are some hints that may help you out:\n\
 NO_SOURCE_HELP
+
+Ddd*recording.helpString: \
+@rm @GDB@ is recording commands.\n\
+\n\
+While recording, commands are not executed; instead, \
+@GDB@ EMPH(records) them\n\
+for execution when a breakpoint is reached or for user-defined commands.\n\
+\n\
+ITEM To end the recording, click on LBL(End) \
+or enter KBD(end) at the @GDB@ prompt.\n\
+ITEM To cancel the recording, select LBL(Program) | LBL(Interrupt) \
+or press KEY(Ctrl+C).
 
 Ddd*program_not_running.helpString: \
 @rm Your program is not running.\n\
