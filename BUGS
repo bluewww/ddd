@@ -229,12 +229,6 @@ Volunteers for fixing these and other bugs are welcome!
 
 204. Switching from glyphs to text loses the current PC.
 
-206. In AfterStep, The decoration check for the DDD command tool fails
-     if DDD is not mapped after 5s.
-
-210. With Motif 2.0, pressing Backspace in the source window has no
-     effect.
-
 211. Graham Hudspith <ghudspit@mltsa.uk.lucent.com> reports that the
      HP-UX version of DDD 2.1.95 crashes at start-up.
 
@@ -255,9 +249,6 @@ Volunteers for fixing these and other bugs are welcome!
         12 is already reserved.
 
      [Should be fixed in DDD 2.2  -AZ]
-
-214. The check for decorated transients sometimes fails with the
-     AfterStep WM.
 
 215. With separate windows, a newly created assembler window has zero
      height.
