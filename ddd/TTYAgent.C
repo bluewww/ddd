@@ -53,8 +53,8 @@ DEFINE_TYPE_INFO_1(TTYAgent, LiterateAgent)
 extern "C" {
 
 #ifdef __osf__
-// DEC OSF has some special treatment in this file; I guess these `#ifdef
-// __osf__' flags should be deleted by an OSF expert some day.   - AZ
+// DEC OSF has some special treatment in this file; I hope these
+// `#ifdef __osf__' flags will be deleted by an OSF expert some day. - AZ
 #include <termio.h>
 #else
 #if HAVE_TCGETATTR && HAVE_TCSETATTR
@@ -96,7 +96,7 @@ extern "C" {
 
 #if HAVE_SYS_IOCTL_H && defined(__FreeBSD__)
 #include <sys/ioctl.h>
-#define HAVE_IOCTL_DECL
+#define HAVE_IOCTL_DECL 1
 #endif
 
 #ifdef HAVE_SYS_VTY_H
@@ -120,7 +120,7 @@ extern "C" {
 #if !HAVE_SETPGRP2_DECL && !defined(setpgrp2)
     int setpgrp2(pid_t pid, pid_t pgrp);
 #define setpgid setpgrp2
-#define HAVE_SETPGID
+#define HAVE_SETPGID 1
 #endif
 #endif
 #if !HAVE_SETPGID && HAVE_SETPGRP && !defined(setpgid)
@@ -131,7 +131,7 @@ extern "C" {
     int setpgrp(pid_t pid, pid_t pgrp);
 #endif // HAVE_SETPRGP_VOID
 #define setpgid setpgrp
-#define HAVE_SETPGID
+#define HAVE_SETPGID 1
 #endif
 #endif
 #if HAVE_TCGETATTR && !HAVE_TCGETATTR_DECL && !defined(tcgetattr)
@@ -163,7 +163,7 @@ extern "C" {
 #endif
 #if !HAVE_SETSID && HAVE_SETPGRP && defined(SETPGRP_VOID)
 #define setsid() setpgrp()
-#define HAVE_SETSID
+#define HAVE_SETSID 1
 #endif
 }
 
@@ -173,7 +173,7 @@ extern "C" {
 #if !defined(__osf__) && HAVE_PTSNAME && HAVE_GRANTPT \
     && HAVE_UNLOCKPT && HAVE_IOCTL
 
-#define HAVE_STREAMS
+#define HAVE_STREAMS 1
 
 // Provide C++ declarations
 extern "C" {
@@ -292,7 +292,7 @@ void TTYAgent::open_master()
 	}
     }
 
-#ifdef HAVE_STREAMS
+#if HAVE_STREAMS
     if (stat("/dev/ptmx", &sb) == 0)
     {
 	// Try STREAMS - a SVR4 feature
