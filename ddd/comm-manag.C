@@ -683,11 +683,6 @@ void send_gdb_command(string cmd, Widget origin,
 	// No displays
 	cmd_data->filter_disp = NoFilter;
     }
-
-    if (gdb->recording() && ends_recording(cmd))
-    {
-	gdb->recording(false);
-    }
     
     if (!check || 
 	gdb->recording() ||
