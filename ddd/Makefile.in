@@ -441,6 +441,9 @@ DDD = @DDD@
 # The version number.  (1.4c)
 VERSION = @VERSION@
 
+# The build.  (This must be set from outside)
+REL = 1
+
 # Canonical program and distribution base name.
 ddd_canonical = $(ddd)-$(VERSION)-$(target_canonical)
 
@@ -1299,7 +1302,8 @@ PROG_STUFF       = vsl-lex.C vsl-gramma.h vsl-gramma.C rxscan.C \
 		   $(srcdir)/ddd.vsl $(srcdir)/ddd.vsl.h \
 		   vr.h version.h bld.h build.h configinfo.C \
                    COPYING.gz.C NEWS.gz.C ddd.info.txt.gz.C \
-                   xlibdir.C eps-code.h .gdbinit
+                   xlibdir.C eps-code.h .gdbinit \
+		   ../$(ddd)-$(VERSION)-$(REL).spec
 
 # Extra files to be built for the distribution
 # In a distribution, these should be already built.
@@ -2270,6 +2274,13 @@ Ddd: $(srcdir)/Ddd.in config.status
 
 .gdbinit: $(srcdir)/.gdbinit.in config.status
 	CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
+
+.PHONY:	spec
+spec: ../$(ddd)-$(VERSION)-$(REL).spec
+../$(ddd)-$(VERSION)-$(REL).spec: $(srcdir)/../ddd.spec.in config.status
+	CONFIG_FILES=../ddd.spec CONFIG_HEADERS= $(SHELL) ./config.status
+	$(SED) 's/@REL@/$(REL)/g' ../ddd.spec > $@
+	$(RM) ../ddd.spec
 
 $(srcdir)/configure: $(srcdir)/configure.in $(srcdir)/aclocal.m4
 	-cd $(srcdir) && $(AUTOCONF)
