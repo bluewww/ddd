@@ -572,7 +572,7 @@ bool BreakPoint::update(string& info_output,
 			ostream& undo_commands,
 			bool& need_total_undo)
 {
-    BreakPoint new_bp(info_output);
+    BreakPoint new_bp(info_output, arg(), number(), file_name());
 
     bool changed       = false;
     myenabled_changed  = false;
