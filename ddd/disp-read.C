@@ -271,7 +271,7 @@ string get_display_expression (const string& display_cmd)
 //----------------------------------------------------------------------------
 
 static regex RXgdb_begin_of_display(
-    "^[1-9][0-9]*: [^ ]",
+    "^[1-9][0-9]*:  *[^ ]",
     true);
 
 static regex RXdbx_begin_of_display(
