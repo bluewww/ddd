@@ -493,6 +493,7 @@ ICE_TYPE_REGEX_T
 ICE_REGCOMP_BROKEN
 dnl
 dnl
+ICE_CHECK_DECL(alloca, malloc.h stdlib.h)
 ICE_CHECK_DECL(asctime, time.h)
 ICE_CHECK_DECL(difftime, time.h)
 ICE_CHECK_DECL(dup2, unistd.h)

@@ -25,28 +25,27 @@
 
 #include "config.h"
 
-// From the `autoconf' documentation...
-
-// Check for alloca
-// AIX requires this to be the first thing in the file.  */
+// Check for alloca()
+// AIX requires this to be the first thing in the file.
 #ifdef __GNUC__
 # define alloca __builtin_alloca
-#else
+#else /* not GNU C */
 # if HAVE_ALLOCA_H
 #  include <alloca.h>
-# else
+# else /* no <alloca.h> */
 #  ifdef _AIX
  #pragma alloca
-#if HAVE_MALLOC_H
-#include <malloc.h>
-#endif
-#  else
-#   ifndef alloca /* predefined by HP cc +Olibcalls */
-extern "C" char *alloca (int size);
+#  else /* not AIX */
+#   include <stdlib.h>		// alloca may be declared in <stdlib.h> ...
+#   if HAVE_MALLOC_H
+#    include <malloc.h>		// ... or in <malloc.h>.
 #   endif
-#  endif
-# endif
-#endif
+#   if !defined(alloca) && !HAVE_ALLOCA_DECL
+extern "C" char *alloca(int size);
+#   endif /* no alloca decl */
+#  endif /* not AIX */
+# endif /* no <alloca.h> */
+#endif /* not GNU C */
 
 #include <sys/types.h>
 
