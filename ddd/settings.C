@@ -2339,15 +2339,19 @@ static void ResetSettingsCB(Widget, XtPointer, XtPointer)
 // Reset signals
 static void ResetSignalsCB(Widget, XtPointer, XtPointer)
 {
+    string command = "";
+
     for (int i = 0; i < signals_entries.size(); i++)
     {
 	Widget entry = signals_entries[i];
 	if (signals_initial_values[entry] != signals_values[entry])
 	{
 	    bool set = (signals_initial_values[entry] == "yes");
-	    gdb_command(handle_command(entry, set));
+	    command += handle_command(entry, set) + "\n";
 	}
     }
+
+    gdb_command(command);
 }
 
 // Apply settings
