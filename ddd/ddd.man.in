@@ -4754,7 +4754,7 @@ free Motif-compliant widget set.  Check out their \s-2WWW\s+2 page at
 `\fBhttp://www.lesstif.org/\fR'.
 .\"
 .SS "Will @DDD@ work with LessTif?"
-As of LessTif 0.81, the resulting \s-2@DDD@\s+2 executable is quite
+As of LessTif 0.83, the resulting \s-2@DDD@\s+2 executable is quite
 usable; there are several \s-2@DDD@\s+2 users who use a \s-2@DDD@\s+2
 built with LessTif.  See the file `\s-2PROBLEMS\s+2' for a recent list
 of problems and fixes.
