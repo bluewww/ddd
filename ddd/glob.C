@@ -42,7 +42,7 @@
 #endif
 #  else
 #   ifndef alloca /* predefined by HP cc +Olibcalls */
-extern "C" char *alloca ();
+extern "C" char *alloca (int size);
 #   endif
 #  endif
 # endif
