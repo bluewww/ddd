@@ -1793,9 +1793,8 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
 
     if (!contains_display (answer, gdb))
     {
-	post_gdb_message (answer, last_origin);
+	post_gdb_message(answer, last_origin);
 	delete info;
-	// prompt();
 	return;
     }
 
@@ -1814,7 +1813,6 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
     if (dn == 0)
     {
 	delete info;
-	prompt();
 	return;
     }
 
