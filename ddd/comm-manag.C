@@ -547,7 +547,7 @@ void user_cmdSUC (string cmd, Widget origin,
 	plus_cmd_data->refresh_where     = false;
 	plus_cmd_data->refresh_frame     = true;
 	plus_cmd_data->refresh_registers = false;
-	plus_cmd_data->refresh_threads   = true;
+	plus_cmd_data->refresh_threads   = false;
 	plus_cmd_data->refresh_data      = true;
 
 	switch (gdb->type())
@@ -574,6 +574,7 @@ void user_cmdSUC (string cmd, Widget origin,
 	plus_cmd_data->refresh_where     = true;
 	plus_cmd_data->refresh_frame     = true;
 	plus_cmd_data->refresh_data      = true;
+	plus_cmd_data->refresh_threads   = true;
 
 	if (!gdb->has_display_command())
 	    plus_cmd_data->refresh_data = true;
