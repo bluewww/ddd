@@ -1,7 +1,7 @@
 # $Id$
 # DDD top-level Makefile
 
-# Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+# Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
 # Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
 # 
 # This file is part of the DDD Library.
@@ -26,37 +26,42 @@
 # `http://www.cs.tu-bs.de/softech/ddd/',
 # or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-### The shell to use (/bin/sh)
+### CUSTOMIZATION SECTION --- Please check the settings below.
+# Typical values are enclosed in ().
 
+## The shell to use.  (/bin/sh)
 SHELL = /bin/sh
 
+## The source directory.  (.)
+srcdir = @srcdir@
+VPATH = @srcdir@
 
-### The source directory
+## Subdirectories.  (libiberty librx termcap ddd)
+SUBDIRS = @subdirs@
 
-srcdir = .
+## Architecture.
+# The host we were compiled on.  (CPU-COMPANY-SYSTEM)
+host_canonical = @host@
 
+# The target we were compiled for.  (CPU-COMPANY-SYSTEM)
+target_canonical = @target@
 
-### Subdirectories
+### END OF CUSTOMIZATION SECTION ---
+### You shouldn't need to change anything below this line.
 
-SUBDIRS = "this is set via configure, don't edit this"
-
-
-### Default target: build all
+## Default target: build all
 
 default: all
 	@:
 .PHONY: default
 
-
-### Recursive targets
+## Recursive targets
 
 FLAGS_TO_PASS=\
 "host_canonical=$(host_canonical)"\
 "target_canonical=$(target_canonical)"
 
-
-
-## distclean, realclean -- must cleanup top-level directory
+# distclean, realclean -- must cleanup top-level directory
 
 DISTCLEAN_TARGETS = distclean realclean
 
@@ -76,7 +81,7 @@ $(DISTCLEAN_TARGETS): FORCE
 	rm -f config.status config.cache config.log Makefile MakeOut .gdbhist
 
 
-## other recursive targets
+# other recursive targets
 
 OTHER_TARGETS = all clean mostlyclean TAGS
 
@@ -95,7 +100,7 @@ $(OTHER_TARGETS): FORCE
 
 
 
-### DDD-only targets
+## DDD-only targets
 
 DDD_TARGETS = \
 	check tests strip dvi ps man html \
@@ -160,11 +165,18 @@ diststuff:
 
 ## Configuration stuff.
 
-Makefile: Makefile.in config.status
-	$(SHELL) ./config.status
-config.status: ./configure
-	$(SHELL) ./configure -v
+AUTOCONF = autoconf
 
+Makefile: Makefile.in config.status
+	CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
+
+$(srcdir)/configure: $(srcdir)/configure.in
+	cd $(srcdir) && $(AUTOCONF)
+
+config.status: $(srcdir)/configure
+	-$(SHELL) ./config.status --recheck || $(SHELL) $(srcdir)/configure -v
+
+.PRECIOUS: Makefile configure config.status
 
 ## FORCE target
 
