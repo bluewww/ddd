@@ -334,7 +334,7 @@ void PosBuffer::filter (string& answer)
 		    // AIX DBX issues `up', `down' and `func' output
 		    // in the format `FUNCTION(ARGS), line LINE in "FILE"'
 
-		    line = answer.after("line");
+		    line = answer.after("line ");
 		    line = line.through(rxint);
 
 		    file = answer.after("in ");
