@@ -774,6 +774,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+        XtNshowFonts,
+	XtCShowFonts,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, show_fonts),
+	XtRImmediate,
+	XtPointer(False)
+    },
+
+    {
         XtNcheckConfiguration,
 	XtCCheckConfiguration,
 	XtRBoolean,

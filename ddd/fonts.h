@@ -33,7 +33,7 @@
 #pragma interface
 #endif
 
-extern void setup_fonts();
+extern void setup_fonts(bool show = false);
 
 #endif // _DDD_fonts_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

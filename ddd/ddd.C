@@ -528,6 +528,9 @@ static XrmOptionDescRec options[] = {
 { "--news",                 XtNshowNews,             XrmoptionNoArg, S_true },
 { "-news",                  XtNshowNews,             XrmoptionNoArg, S_true },
 
+{ "--fonts",                XtNshowFonts,            XrmoptionNoArg, S_true },
+{ "-fonts",                 XtNshowFonts,            XrmoptionNoArg, S_true },
+
 { "--check-configuration",  XtNcheckConfiguration,   XrmoptionNoArg, S_true },
 { "-check-configuration",   XtNcheckConfiguration,   XrmoptionNoArg, S_true },
 
@@ -1659,7 +1662,7 @@ int main(int argc, char *argv[])
     // From this point on, APP_DATA is valid.
 
     // Define font macros
-    setup_fonts();
+    setup_fonts(app_data.show_fonts);
 
     // Create new session dir if needed
     create_session_dir(app_data.session, messages);
@@ -1747,7 +1750,8 @@ int main(int argc, char *argv[])
 	|| app_data.show_configuration
 	|| app_data.show_news
 	|| app_data.show_license
-	|| app_data.show_manual)
+	|| app_data.show_manual
+	|| app_data.show_fonts)
 	return EXIT_SUCCESS;
 
     // From this point on, we'll be running under X.

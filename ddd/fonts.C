@@ -101,58 +101,68 @@ static string make_font(const string& fam, const string& weight,
 static void define_font(const string& name,
 			const string& fam, const string& weight,
 			const string& slant, int size,
-			const string& registry)
+			const string& registry, bool show)
 {
     string font = make_font(fam, weight, slant, size, registry);
     defineConversionMacro(name, font);
 
-    // clog << "Font @" << name << "@ = " << font << "\n";
+    if (show)
+	cout << "Font @" << name << "@ =\t" << font << "\n";
 }
 
-static void setup_x_fonts()
+static void setup_x_fonts(bool show)
 {
+    Dimension small_size = 
+	((app_data.default_font_size * 8) / 90) * 10;
+    Dimension llogo_size =
+	((app_data.default_font_size * 3) / 20) * 10;
+
+    if (small_size < 80)
+	small_size = app_data.default_font_size;
+
+	
     // Default font
     define_font("CHARSET",
 		family(app_data.default_font),
 		weight(app_data.default_font),
 		slant(app_data.default_font),
 		app_data.default_font_size,
-		registry(app_data.default_font));
+		registry(app_data.default_font), show);
 
     define_font("SMALL",
 		family(app_data.default_font),
 		weight(app_data.default_font),
 		slant(app_data.default_font),
-		((app_data.default_font_size * 8) / 90) * 10,
-		registry(app_data.default_font));
+		small_size,
+		registry(app_data.default_font), show);
 
     define_font("LIGHT",
 		family(app_data.default_font),
 		"medium",
 		slant(app_data.default_font),
-		((app_data.default_font_size * 8) / 90) * 10,
-		registry(app_data.default_font));
+		small_size,
+		registry(app_data.default_font), show);
 
     define_font("LOGO",
 		family(app_data.default_font),
 		"bold",
 		slant(app_data.default_font),
 		app_data.default_font_size,
-		registry(app_data.default_font));
+		registry(app_data.default_font), show);
 
     define_font("LLOGO",
 		family(app_data.default_font),
 		"bold",
 		slant(app_data.default_font),
-		((app_data.default_font_size * 3) / 20) * 10,
-		registry(app_data.default_font));
+		llogo_size,
+		registry(app_data.default_font), show);
 
     define_font("KEY",
 		family(app_data.default_font),
 		weight(app_data.default_font),
 		slant(app_data.default_font),
 		app_data.default_font_size,
-		registry(app_data.default_font));
+		registry(app_data.default_font), show);
 
     // Text fonts
     define_font("TEXT",
@@ -160,7 +170,7 @@ static void setup_x_fonts()
 		weight(app_data.fixed_width_font),
 		slant(app_data.fixed_width_font),
 		app_data.fixed_width_font_size,
-		registry(app_data.fixed_width_font));
+		registry(app_data.fixed_width_font), show);
 
     // Text fonts
     define_font("RM",
@@ -168,49 +178,49 @@ static void setup_x_fonts()
 		weight(app_data.variable_width_font),
 		"r",
 		app_data.variable_width_font_size,
-		registry(app_data.variable_width_font));
+		registry(app_data.variable_width_font), show);
 
     define_font("SL",
 		family(app_data.variable_width_font),
 		weight(app_data.variable_width_font),
 		"*",	// matches both "i" and "o"
 		app_data.variable_width_font_size,
-		registry(app_data.variable_width_font));
+		registry(app_data.variable_width_font), show);
 
     define_font("BF",
 		family(app_data.variable_width_font),
 		"bold",
 		"r",
 		app_data.variable_width_font_size,
-		registry(app_data.variable_width_font));
+		registry(app_data.variable_width_font), show);
 
     define_font("BS",
 		family(app_data.variable_width_font),
 		"bold",
 		"*",	// matches both "i" and "o"
 		app_data.variable_width_font_size,
-		registry(app_data.variable_width_font));
+		registry(app_data.variable_width_font), show);
 
     define_font("TT",
 		family(app_data.fixed_width_font),
 		weight(app_data.fixed_width_font),
 		slant(app_data.fixed_width_font),
 		app_data.variable_width_font_size,
-		registry(app_data.fixed_width_font));
+		registry(app_data.fixed_width_font), show);
 
     define_font("TB",
 		family(app_data.fixed_width_font),
 		"bold",
 		slant(app_data.fixed_width_font),
 		app_data.variable_width_font_size,
-		registry(app_data.fixed_width_font));
+		registry(app_data.fixed_width_font), show);
 
     define_font("SYMBOL",
 		"symbol",
 		"*",
 		"*",
 		app_data.variable_width_font_size,
-		"adobe");
+		"adobe", show);
 }
 
 static void _replace_vsl_def(string& s, const string& func, const string& val)
@@ -228,7 +238,7 @@ static void replace_vsl_def(string& s, const string& func, const string& val)
     _replace_vsl_def(s, func, quote(val));
 }
 
-static void setup_vsl_fonts()
+static void setup_vsl_fonts(bool show)
 {
     static string defs;
 
@@ -237,12 +247,15 @@ static void setup_vsl_fonts()
     replace_vsl_def(defs, "stdfontfamily", family(app_data.fixed_width_font));
     replace_vsl_def(defs, "stdfontweight", weight(app_data.fixed_width_font));
 
+    if (show)
+	cout << defs;
+
     defs += app_data.vsl_base_defs;
     app_data.vsl_base_defs = defs;
 }
 
-void setup_fonts()
+void setup_fonts(bool show)
 {
-    setup_x_fonts();
-    setup_vsl_fonts();
+    setup_x_fonts(show);
+    setup_vsl_fonts(show);
 }
