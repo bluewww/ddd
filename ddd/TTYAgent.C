@@ -242,17 +242,6 @@ int TTYAgent::open_master()
 	{
 	    _master_tty  = ttyname(master);
 	    _slave_tty   = line;
-
-#if 1
-	    // Re-open master to avoid _getpty() trouble.  Experimental.
-	    int fd = open((char *)master_tty(), O_RDWR);
-	    if (fd >= 0)
-	    {
-		close(master);
-		master = fd;
-	    }
-#endif
-
 	    return master;
 	}
 	close(master);
@@ -560,6 +549,9 @@ int TTYAgent::setupChildCommunication()
     else
     {
 	settings.c_lflag &= ~ECHO;      // No echo
+#ifdef ISIG
+	settings.c_lflag |= ISIG;       // Enable signals
+#endif
 #ifdef ONLCR
 	settings.c_oflag &= ~ONLCR;     // Do not map NL to CR-NL on output
 #endif
@@ -579,6 +571,9 @@ int TTYAgent::setupChildCommunication()
     else
     {
 	settings.sg_flags &= ~ECHO;	// No echo
+#ifdef ISIG
+	settings.sg_flags |= ISIG;      // Enable signals
+#endif
 #ifdef CRMOD
 	settings.sg_flags &= ~CRMOD;	// Do not map NL to CR-NL on output
 #endif
@@ -594,6 +589,9 @@ int TTYAgent::setupChildCommunication()
     else
     {
 	settings.c_lflag &= ~ECHO;      // No echo
+#ifdef ISIG
+	settings.c_lflag |= ISIG;       // Enable signals
+#endif
 #ifdef ONLCR
 	settings.c_oflag &= ~ONLCR;	// Do not map NL to CR-NL on output
 #endif
