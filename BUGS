@@ -123,12 +123,12 @@ Volunteers for fixing these and other bugs are welcome!
     [Johan Vermeire <jvme@se.bel.alcatel.be> reports that
      lowering the `glyphUpdateDelay' resource fixes this.]
 
-309 DDD does not run correctly with CDE.  Michael Marxmeier
-    <mike@msede.com> and Stefan von Dombrowski
+309 DDD does not run correctly with the CDE Window Manager.  Michael
+    Marxmeier <mike@msede.com> and Stefan von Dombrowski
     <Stefan.von.Dombrowski@dlr.de> state that every time you move the
     main window a constant offset is added to the relative position of
     the tool window. This has the effect that the tool window at last
-    moves to the lower left of the screen.  
+    moves to the lower left of the screen.
 
     Every time you change the location of the source window, the
     distance shrinks.  The border_width structure member

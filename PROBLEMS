@@ -396,6 +396,15 @@ Reported by:  Andreas Zeller <zeller@acm.org>
 Solaris 2.x
 ===========
 
+Reported by:  Matthias Klose <doko@cs.tu-berlin.de>
+
+    If you configure DDD in Solaris with gcc and you have installed
+    the libg++/libstdc++ libraries as shared libraries, you may try to
+    run configure with LDFLAGS set to -R<prefix of libstdc++>/lib. If
+    libstdc++/libg++ are installed in /usr/xyz, call configure with
+
+	LDFLAGS=-R/usr/xyz/lib configure  <configure flags ...>
+
 Reported by:  Blair Zajac <blair@olympia.gps.caltech.edu>
 
     When using Sun cc to compile `libiberty' as shipped with DDD, change
@@ -407,6 +416,7 @@ Reported by:  Andreas Zeller <zeller@acm.org>
 
     Solaris CC (SC4.0 18 Oct 1995 C++ 4.1) is safe for compiling DDD.
     Executables are larger compared to those compiled with GCC.
+
 
 SunOS
 =====
