@@ -6,16 +6,20 @@ DDD 2.2.1 [in development]
 
     DDD 2.2.1 fixes some bugs introduced in DDD 2.2.
 
-    Changes to DDD 2.2:
+    User-visible changes to DDD 2.2:
     - Auto-raised menus have been disabled by default; use
       `Ddd*autoRaiseMenu: true' in `~/.ddd/init' to re-enable them.
+    - By default, DDD now stops disassembling after 256 bytes.  This
+      is useful when working with the machine code of huge functions.
+      See the `maxDisassemble' resource for more info.
 
     Bug fixes:
     - DDD now works with Linux libc 5.4.38 and later.
     - The `gcore' method for getting core files now works.
     - When running in the background, DDD is no longer interrupted by
       `tty output' signals upon initializing the execution window.
-    - PushButton menus now work with LessTif 0.82 and later.
+    - PushButton menus now work with LessTif 0.82 and later as well as 
+      with Motif 1.1 and earlier.
     - Improved way of creating decorated command tool.
 
     And again, a couple of minor improvements and bug fixes.  See the

@@ -192,6 +192,8 @@
 #define XtCDisplayLineNumbers    "DisplayLineNumbers"
 #define XtNdisassemble           "disassemble"
 #define XtCDisassemble           "Disassemble"
+#define XtNmaxDisassemble        "maxDisassemble"
+#define XtCMaxDisassemble        "MaxDisassemble"
 #define XtNuseSourcePath         "useSourcePath"
 #define XtCUseSourcePath         "UseSourcePath"
 #define XtNallRegisters          "allRegisters"
@@ -339,6 +341,7 @@ struct AppData {
     Boolean display_glyphs;
     Boolean display_line_numbers;
     Boolean disassemble;
+    int     max_disassemble;
     Boolean use_source_path;
     Boolean all_registers;
     Boolean button_tips;

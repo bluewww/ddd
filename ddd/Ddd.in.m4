@@ -602,6 +602,10 @@ Ddd*findWordsOnly:		true
 ! Do we wish to show machine code? (Makes DDD run somewhat slower)
 Ddd*disassemble: false
 
+! How many bytes of the current function should we disassemble? (0
+! means disassemble entire function; default in DDD 2.2 and earlier)
+Ddd*maxDisassemble: 256
+
 ! Do we wish to display glyphs? (Makes DDD run somewhat slower)
 Ddd*displayGlyphs: true
 
@@ -4745,7 +4749,7 @@ a core dump reflecting the current memory contents.\n\
 \n\
 To save the entire state without a core dump, click on LBL(Yes).
 
-Ddd*lock_dialog_popup.title: DDD: Another DDD is running
+Ddd*lock_dialog_popup.title: DDD: There can be only one
 Ddd*lock_dialog*helpString:	\
 @rm Another DDD is running, sharing state with this DDD instance.\n\
 \n\
@@ -4829,7 +4833,7 @@ Ddd*no_source_edit_error_popup.title: DDD: No Source
 Ddd*no_source_edit_error*helpString:	\
 @rm There is no current source text to edit.
 
-Ddd*no_such_line_error_popup.title: DDD: No Such Line
+Ddd*no_such_line_error_popup.title: DDD: No such line
 Ddd*no_such_line_error*helpString:	\
 @rm There is no such line in the current source text.
 
@@ -4919,7 +4923,7 @@ Ddd*no_license_error_popup.title: DDD: No License
 Ddd*no_license_error*helpString:	\
 @rm The DDD license COULD_NOT_BE_UNCOMPRESSED
 
-Ddd*no_news_error_popup.title: DDD: No News is Good News
+Ddd*no_news_error_popup.title: DDD: No news is good news
 Ddd*no_news_error*helpString:	\
 @rm The DDD news COULD_NOT_BE_UNCOMPRESSED
 
@@ -4946,12 +4950,12 @@ Ddd*invalid_range_error_popup.title: DDD: Invalid Range
 Ddd*invalid_range_error*helpString: \
 @rm You entered an invalid range VAR(x)..VAR(y), with VAR(x) > VAR(y).
 
-Ddd*paper_size_value_error_popup.title: DDD: Unrecognized Paper Size
+Ddd*paper_size_value_error_popup.title: DDD: Unrecognized Paper size
 Ddd*paper_size_value_error*helpString:	\
 @rm DDD could not parse your paper size specification.\n\
 Please verify the paper size and try again.
 
-Ddd*paper_size_unit_error_popup.title: DDD: Unrecognized Paper Size Unit
+Ddd*paper_size_unit_error_popup.title: DDD: Unrecognized Paper size unit
 Ddd*paper_size_unit_error*helpString:	\
 @rm DDD did not recognize your paper size unit.\n\
 Recognized units include:\n\
@@ -4982,7 +4986,7 @@ Ddd*delete_session_error_popup.title: DDD: Delete Session Failed
 Ddd*delete_session_error*helpString: \
 @rm DDD could not entirely remove the session directory from the repository.
 
-Ddd*too_many_shortcuts_warning_popup.title: DDD: Too Many Shortcuts
+Ddd*too_many_shortcuts_warning_popup.title: DDD: Too many Shortcuts
 Ddd*too_many_shortcuts_warning*helpString:	\
 @rm DDD has not enough room for all display shortcuts and will\n\
 only display the most recently created shortcuts.\n\
@@ -5002,7 +5006,7 @@ This is probably due to a bad DDD configuration.\n\
 \n\
 DDD can work around this problem, so you may continue working.
 
-Ddd*gdb_echo_warning_popup.title: DDD: Echo Mode Active
+Ddd*gdb_echo_warning_popup.title: DDD: Echo mode Active
 Ddd*gdb_echo_warning*helpString: \
 @rm The communication between GDB and DDD does not work correctly - \n\
 GDB echoes back every character typed by DDD.\n\
@@ -5012,7 +5016,7 @@ DDD can work around this problem, so you can continue working.
 
 
 !-----------------------------------------------------------------------------
-! Hints on specific DDD states (`What next')
+! Hints on specific DDD states (`What now')
 !-----------------------------------------------------------------------------
 
 Ddd*no_program.helpString: \
@@ -5138,3 +5142,8 @@ Ddd*stopped.helpString: \
 STOPPED_HELP\n\
 ITEM Use the functions of the LBL(Program) menu to resume execution\n\
     and step through your program.
+
+! Local Variables:
+! font-lock-keywords: (t ("\\(\\bdnl.*\\|\\!.*\\)" (1 font-lock-comment-face t)) ("@[a-zA-Z0-9_@]*" (0 font-lock-variable-name-face)) ("\\([A-Z]+\\)(" (1 font-lock-keyword-face)) ("\\b\\(define\\|include\\|ifdef\\)\\b" (0 font-lock-preprocessor-face)))
+! comment-start: "! "
+! End:

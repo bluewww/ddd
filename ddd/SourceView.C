@@ -6415,6 +6415,37 @@ void SourceView::refresh_codeOQC(const string& answer, void *client_data)
     delete info;
 }
 
+static void normalize_address(string& addr)
+{
+    addr.downcase();
+    if (addr.contains("0", 0))
+	addr = addr.after("0");
+    if (addr.contains("x", 0))
+	addr = addr.after("x");
+    if (addr.contains("h'", 0))
+	addr = addr.after("h'");
+    if (addr.contains("h", -1))
+	addr = addr.before(int(addr.length()) - 1);
+    addr.prepend("0x");
+}
+
+static string make_address(long pc)
+{
+    ostrstream os;
+    os << "0x" << setbase(16) << (unsigned long)pc;
+    return string(os);
+}
+
+static string get_func_at(const string& address)
+{
+    string x = gdb_question("x /i " + address);
+    x = x.after("<");
+    x = x.before(">");
+    if (x.contains("+"))
+	x = x.before("+");
+    return x;
+}
+
 // Show program counter location PC
 // If MODE is given, highlight PC line.
 // STOPPED indicates that the program just stopped.
@@ -6457,12 +6488,39 @@ void SourceView::show_pc(const string& pc, XmHighlightMode mode,
     if (pos == XmTextPosition(-1))
     {
 	// PC not found in current code: disassemble location
+
+	string start = pc;
+	string end   = "";
+	if (app_data.max_disassemble > 0 && gdb->type() == GDB)
+	{
+	    // Verify function size.  We get the function name at PC
+	    // and the function name at PC + MAX_DISASSEMBLE.  If both
+	    // function names are equal, the function is too large.
+	    normalize_address(start);
+	    long start_l = strtol(start.chars(), NULL, 0);
+	    long next_l  = start_l + app_data.max_disassemble;
+	    string next  = make_address(next_l);
+
+	    string start_func = get_func_at(start);
+	    string next_func  = get_func_at(next);
+
+	    if (start_func == next_func)
+	    {
+		// Disassemble only MAX_DISASSEMBLE bytes after PC
+		end = next;
+	    }
+	}
+
+	string msg = "Disassembling location " + start;
+	if (end != "")
+	    msg += " to " + end;
+
 	RefreshInfo *info = new RefreshInfo;
 	info->pc    = pc;
 	info->mode  = mode;
-	info->delay = new StatusDelay("Disassembling location " + pc);
+	info->delay = new StatusDelay(msg);
 
-	gdb_command(gdb->disassemble_command(info->pc), 0,
+	gdb_command(gdb->disassemble_command(start, end), 0,
 		    refresh_codeOQC, (void *)info);
 	return;
     }

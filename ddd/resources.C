@@ -854,6 +854,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNmaxDisassemble,
+	XtCMaxDisassemble,
+	XmRInt,
+	sizeof(int),
+	XtOffsetOf(AppData, max_disassemble),
+	XmRImmediate,
+	XtPointer(256)
+    },
+
+    {
 	XtNuseSourcePath,
 	XtCUseSourcePath,
 	XtRBoolean,
