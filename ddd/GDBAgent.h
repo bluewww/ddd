@@ -68,8 +68,9 @@ enum DebuggerType { GDB, DBX, XDB };
 
 enum ProgramLanguage { 
     LANGUAGE_C,			// C-like: C, C++
-    LANGUAGE_PASCAL,		// PASCAL-like: Pascal, Modula, Ada
-    LANGUAGE_FORTRAN,		// Fortran.  Pure and simple.
+    LANGUAGE_PASCAL,		// Pascal-like: Pascal, Modula, Ada
+    LANGUAGE_CHILL,		// Chill, as supported by GDB.
+    LANGUAGE_FORTRAN,		// FORTRAN, as supported by GDB.
     LANGUAGE_OTHER		// Others
 };
 
@@ -154,6 +155,13 @@ private:
 
     bool _trace_dialog;
     bool _verbatim;
+
+protected:
+    // Return PREFIX + EXPR, parenthesizing EXPR if needed
+    static string prepend_prefix(const string& prefix, const string& expr);
+
+    // Return EXPR + SUFFIX, parenthesizing EXPR if needed
+    static string append_suffix(const string& expr, const string& suffix);
 
 public:
     // Constructor

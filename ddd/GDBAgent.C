@@ -1080,23 +1080,49 @@ string GDBAgent::whatis_command(string text) const
     return "";			// Never reached
 }
 
+
+// Return PREFIX + EXPR, parenthesizing EXPR if needed
+string GDBAgent::prepend_prefix(const string& prefix, const string& expr)
+{
+    if (expr.matches(rxidentifier)
+	|| expr.contains("(", 0) && expr.contains(")", -1))
+	return prefix + expr;
+    else if (expr == "")
+	return prefix;
+    else
+	return prefix + "(" + expr + ")";
+}
+
+// Return EXPR + SUFFIX, parenthesizing EXPR if needed
+string GDBAgent::append_suffix(const string& expr, const string& suffix)
+{
+    if (expr.matches(rxidentifier)
+	|| expr.contains("(", 0) && expr.contains(")", -1))
+	return expr + suffix;
+    else if (expr == "")
+	return suffix;
+    else
+	return "(" + expr + ")" + suffix;
+}
+
 // Dereference an expression.
 string GDBAgent::dereferenced_expr(string expr) const
 {
     switch (program_language())
     {
-    case LANGUAGE_FORTRAN:	// FIXME
     case LANGUAGE_C:
-	if (expr.matches(rxidentifier)
-	    || expr.contains("(", 0) && expr.contains(")", -1))
-	    return "*" + expr;
-	else if (expr == "")
-	    return "*";
-	else
-	    return "*(" + expr + ")";
+	return prepend_prefix("*", expr);
+
+    case LANGUAGE_FORTRAN:
+	// The GDB source `f-lang.c' says `**' is the FORTRAN
+	// indirection operator.  Well, if GDB wants it so...
+	return prepend_prefix("**", expr);
+
+    case LANGUAGE_CHILL:
+	return append_suffix(expr, "->");
 
     case LANGUAGE_PASCAL:
-	return expr + "^";
+	return append_suffix(expr, "^");
 
     case LANGUAGE_OTHER:
 	return "";		// All other languages
@@ -1110,19 +1136,16 @@ string GDBAgent::address_expr(string expr) const
 {
     switch (program_language())
     {
-    case LANGUAGE_FORTRAN:	// FIXME
     case LANGUAGE_C:
-	if (expr.matches(rxidentifier)
-	    || expr.contains("(", 0) && expr.contains(")", -1))
-	    return "&" + expr;
-	else if (expr == "")
-	    return "&";
-	else
-	    return "&(" + expr + ")";
+	return prepend_prefix("&", expr);
 
     case LANGUAGE_PASCAL:
 	return "ADR(" + expr + ")"; // Modula-2 address operator
 
+    case LANGUAGE_CHILL:	// FIXME: untested.
+	return prepend_prefix("->", expr);
+
+    case LANGUAGE_FORTRAN:	// FIXME
     case LANGUAGE_OTHER:
 	return "";		// All other languages
     }
@@ -1161,6 +1184,7 @@ string GDBAgent::assign_command(string var, string expr) const
 	break;
 
     case LANGUAGE_PASCAL:
+    case LANGUAGE_CHILL:
 	cmd += ":=";
 	break;
     }
@@ -1173,12 +1197,15 @@ string GDBAgent::disassemble_command(string pc) const
 {
     // In C, hexadecimal integers are specified by a leading "0x".
     // In Modula-2, hexadecimal integers are specified by a trailing "H".
+    // In Chill, hexadecimal integers are specified by a leading "H'".
 
     pc.downcase();
     if (pc.contains("0", 0))
 	pc = pc.after("0");
     if (pc.contains("x", 0))
 	pc = pc.after("x");
+    if (pc.contains("h'", 0))
+	pc = pc.after("h'");
     if (pc.contains("h", -1))
 	pc = pc.before(int(pc.length()) - 1);
 
@@ -1188,6 +1215,9 @@ string GDBAgent::disassemble_command(string pc) const
     case LANGUAGE_FORTRAN:
     case LANGUAGE_OTHER:
 	return "disassemble 0x" + pc;
+
+    case LANGUAGE_CHILL:
+	return "disassemble H'0" + upcase(pc);
 
     case LANGUAGE_PASCAL:
 	return "disassemble 0" + upcase(pc) + "H";
@@ -1215,6 +1245,10 @@ ProgramLanguage GDBAgent::program_language(string text)
 	else if (text.contains("fortran"))
 	{
 	    program_language(LANGUAGE_FORTRAN);
+	}
+	else if (text.contains("chill"))
+	{
+	    program_language(LANGUAGE_CHILL);
 	}
 	else if (text.contains("c"))
 	{
