@@ -212,9 +212,9 @@ void VSLDef::compilePattern() const
 	m->unlink();
     }
 
-    ((VSLDef *)this)->being_compiled = true;
+    MUTABLE_THIS(VSLDef *)->being_compiled = true;
     const Box *result = _node_pattern->eval(list);
-    ((VSLDef *)this)->being_compiled = false;
+    MUTABLE_THIS(VSLDef *)->being_compiled = false;
 
     list->unlink();
 
@@ -249,7 +249,7 @@ void VSLDef::compilePattern() const
 	delete[] instances;
     }
 
-    ((VSLDef *)this)->_box_pattern = (Box *)result;
+    MUTABLE_THIS(VSLDef *)->_box_pattern = (Box *)result;
 }
 
 

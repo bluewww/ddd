@@ -1546,7 +1546,7 @@ void DispValue::plot() const
     if (plotter() == 0)
     {
 	string title = make_title(full_name());
-	((DispValue *)this)->_plotter = new_plotter(title, (DispValue *)this);
+	MUTABLE_THIS(DispValue *)->_plotter = new_plotter(title, CONST_CAST(DispValue *,this));
 	if (plotter() == 0)
 	    return;
 
@@ -1631,8 +1631,8 @@ void DispValue::plot1d(PlotAgent *plotter, int ndim) const
 	    }
 	}
 	
-	((DispValue *)this)->_orientation = orientation;
-	((DispValue *)this)->_has_plot_orientation = true;
+	MUTABLE_THIS(DispValue *)->_orientation = orientation;
+	MUTABLE_THIS(DispValue *)->_has_plot_orientation = true;
     }
 
     plotter->add_point(val, orientation() == Horizontal ? 0 : 1);

@@ -60,9 +60,9 @@ void ColorBox::convert_color(Widget w) const
 
     if (ok)
     {
-	((ColorBox *)this)->_red   = exact_def.red;
-	((ColorBox *)this)->_green = exact_def.green;
-	((ColorBox *)this)->_blue  = exact_def.blue;
+	MUTABLE_THIS(ColorBox *)->_red   = exact_def.red;
+	MUTABLE_THIS(ColorBox *)->_green = exact_def.green;
+	MUTABLE_THIS(ColorBox *)->_blue  = exact_def.blue;
     }
     else
     {
@@ -77,11 +77,11 @@ void ColorBox::convert_color(Widget w) const
 
     if (!XtConvertAndStore(w, XtRString, &from, XtRPixel, &to))
     {
-	((ColorBox *)this)->_color_failed = true;
+	MUTABLE_THIS(ColorBox *)->_color_failed = true;
 	return;
     }
 
-    ((ColorBox *)this)->_color_valid = true;
+    MUTABLE_THIS(ColorBox *)->_color_valid = true;
 }
 
 // Draw using color

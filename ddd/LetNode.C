@@ -257,9 +257,9 @@ void LetNode::compilePatterns(VSLDef *cdef) const
 	m->unlink();
     }
 
-    ((LetNode *)this)->being_compiled = true;
+    MUTABLE_THIS(LetNode *)->being_compiled = true;
     const Box *result = node_pattern()->eval(list);
-    ((LetNode *)this)->being_compiled = false;
+    MUTABLE_THIS(LetNode *)->being_compiled = false;
 
     list->unlink();
 
@@ -293,7 +293,7 @@ void LetNode::compilePatterns(VSLDef *cdef) const
 	delete[] instances;
     }
 
-    ((LetNode *)this)->_box_pattern = (Box *)result;
+    MUTABLE_THIS(LetNode *)->_box_pattern = (Box *)result;
 }
 
 

@@ -38,6 +38,7 @@
 #include "Box.h"
 #include "THatBox.h"
 #include "TypeInfo.h"
+#include "mutable.h"
 
 #include <X11/X.h>
 #include <X11/Xlib.h>
@@ -53,11 +54,11 @@ public:
 private:
     string _color_name;		// The color name, as string
     Pixel _color;		// The color itself, as pixel
-    bool _color_valid;		// True if COLOR is valid
-    bool _color_failed;		// True if conversion failed
-    unsigned short _red;	// Exact color values, scaled 0..65535
-    unsigned short _green;
-    unsigned short _blue;
+    mutable bool _color_valid;		// True if COLOR is valid
+    mutable bool _color_failed;		// True if conversion failed
+    mutable unsigned short _red;	// Exact color values, scaled 0..65535
+    mutable unsigned short _green;
+    mutable unsigned short _blue;
 
 protected:
     // Copy Constructor

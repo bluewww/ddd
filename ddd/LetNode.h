@@ -44,6 +44,7 @@
 #include "assert.h"
 #include <iostream>
 
+#include "mutable.h"
 #include "VSLNode.h"
 #include "ListNode.h"
 #include "CallNode.h"
@@ -59,12 +60,12 @@ public:
 
 private:
     VSLNode *_node_pattern;	// Pattern
-    Box *_box_pattern;		// Compiled pattern
+    mutable Box *_box_pattern;		// Compiled pattern
 
     unsigned _nargs;		// Number of args
     bool _straight;		// Flag: use argument list `as is'?
 
-    bool being_compiled;	// Protect against recursive patterns
+    mutable bool being_compiled;	// Protect against recursive patterns
 
     ListNode *_args() const      { return (ListNode *)arg(); }
     ListNode *_body() const      { return (ListNode *)(_args()->tail()); }
@@ -137,9 +138,9 @@ public:
     {
 	CallNode::uncompilePatterns(cdef);
 
-	if (_box_pattern) 
-	    ((LetNode *)this)->_box_pattern->unlink();
-	((LetNode *)this)->_box_pattern = 0;
+	if (_box_pattern)
+	    MUTABLE_THIS(LetNode *)->_box_pattern->unlink();
+	MUTABLE_THIS(LetNode *)->_box_pattern = 0;
     }
 
     // Resolve all names

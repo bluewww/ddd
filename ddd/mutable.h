@@ -39,5 +39,13 @@
 #define mutable
 #endif
 
+#include "casts.h"
+
+#if HAVE_MUTABLE
+# define MUTABLE_THIS(TYPE) this
+#else
+# define MUTABLE_THIS(TYPE) CONST_CAST(TYPE,this)
+#endif
+
 #endif // _DDD_mutable_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

@@ -35,6 +35,7 @@
 
 #include "strclass.h"
 #include "bool.h"
+#include "mutable.h"
 #include "Box.h"
 #include "Widget.h"
 #include "THatBox.h"
@@ -45,7 +46,7 @@ public:
     DECLARE_TYPE_INFO
 
 protected:
-    BoxRegion _region;          // Region of last draw
+    mutable BoxRegion _region;          // Region of last draw
 
     // Draw
     virtual void _draw(Widget w, 

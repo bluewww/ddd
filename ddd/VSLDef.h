@@ -39,6 +39,7 @@
 #include <iostream>
 #include "strclass.h"
 #include "bool.h"
+#include "mutable.h"
 #include "VSLNode.h"
 #include "TypeInfo.h"
 #include "assert.h"
@@ -53,7 +54,7 @@ public:
 private:
     VSLNode *_expr;             // Expr (definition body)
     VSLNode *_node_pattern;     // Pattern
-    Box *_box_pattern;          // Compiled pattern
+    mutable Box *_box_pattern;          // Compiled pattern
 
     unsigned _nargs;            // Number of args
     bool _straight;		// Flag: Can we use arg list `as is'?
@@ -67,7 +68,7 @@ private:
 
     string args() const;        // Create argument list
 
-    bool being_compiled;	// Protect against recursive compilePattern()
+    mutable bool being_compiled;	// Protect against recursive compilePattern()
 
 public:
     VSLDefList *deflist;        // Parent
@@ -125,8 +126,8 @@ public:
     void uncompilePattern() const
     {
 	if (_box_pattern) 
-	    ((VSLDef *)this)->_box_pattern->unlink();
-	((VSLDef *)this)->_box_pattern = 0;
+	    MUTABLE_THIS(VSLDef *)->_box_pattern->unlink();
+	MUTABLE_THIS(VSLDef *)->_box_pattern = 0;
     }
 
     // Resolve names

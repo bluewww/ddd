@@ -39,6 +39,7 @@
 
 #include "strclass.h"
 #include "bool.h"
+#include "mutable.h"
 #include "DispValueA.h"
 #include "DispValueT.h"
 #include "StringSA.h"
@@ -70,11 +71,11 @@ class DispValue {
     DispValueArray _children;	// Array or Struct members 
     int _index_base;		// First index
     bool _have_index_base;	// True if INDEX_BASE is valid
-    DispValueOrientation _orientation; // Array orientation
-    bool _has_plot_orientation;   // True if plotter set the orientation
+    mutable DispValueOrientation _orientation; // Array orientation
+    mutable bool _has_plot_orientation;   // True if plotter set the orientation
 
     // Plotting stuff
-    PlotAgent *_plotter;	// Plotting agent
+    mutable PlotAgent *_plotter;	// Plotting agent
 
     // Caching stuff
     Box *_cached_box;		// Last box

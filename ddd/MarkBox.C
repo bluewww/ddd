@@ -55,7 +55,7 @@ void MarkBox::_draw(Widget w,
 	sonRegion.space(Y) = size(Y);
 
     // Save the region
-    ((MarkBox *)this)->_region = sonRegion;
+    MUTABLE_THIS(MarkBox *)->_region = sonRegion;
 
     // Keep on drawing...
     TransparentHatBox::_draw(w, r, exposed, gc, context_selected);
