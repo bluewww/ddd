@@ -1,8 +1,8 @@
 DDD 2.2.3 is available					-*- text -*-
 ======================
 
-    Release 2.2.3 of the Data Display Debugger (DDD), a common graphical
-    front-end for GDB, DBX, and XDB debuggers, is now available at
+    Release 2.2.3 of the Data Display Debugger (DDD), the popular
+    graphical front-end for UNIX debuggers, is now available at
 
         ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/ddd-2.2.3.tar.gz
 
@@ -34,39 +34,35 @@ What's new in DDD?
 What is DDD, anyway?
 ====================
 
-    The Data Display Debugger (DDD) is a common graphical user
-    interface to GDB, DBX, and XDB, the popular UNIX debuggers.
-    Besides ``usual'' features such as viewing source texts and
-    breakpoints, DDD provides a graphical data display, where data
-    structures are displayed as graphs.  A simple mouse click
-    dereferences pointers or reveals structure contents, updated each
-    time the program stops.  Using DDD, you can reason about your
-    application by viewing its data, not just by viewing it execute
-    lines of source code.
+    The Data Display Debugger (DDD) is a popular graphical user
+    interface to UNIX debuggers such as GDB, DBX, and XDB.  Besides
+    ``usual'' front-end features such as viewing source texts and
+    breakpoints, DDD got famous for its interactive graphical data
+    display, where data structures are displayed as graphs.  Using
+    DDD, you can reason about your application by watching its data,
+    not just by viewing it execute lines of source code.
 
-    Other DDD features include: debugging of programs written in C,
-    C++, Ada, Fortran, Pascal, Modula-2, or Modula-3; machine-level
+    Other DDD features include: debugging of programs written in Ada,
+    C, C++, Chill, Fortran, Java, Modula, and Pascal; machine-level
     debugging; hypertext source navigation and lookup; breakpoint,
     backtrace, and history editors; preferences and settings editors;
     program execution in terminal emulator window; debugging on remote
     host; on-line manual; interactive help on the Motif user
-    interface; GDB/DBX/XDB command-line interface with full editing,
-    history, and completion capabilities.  DDD has been designed to
-    compete with well-known commercial debuggers.
-    
+    interface; command-line interface with full editing, history, and
+    completion capabilities.  DDD has been designed to compete with
+    well-known commercial debuggers and is being used for software
+    development by all major suppliers of information technology.
+
     Speaking of platforms: DDD configures, compiles and runs
-    out-of-the-box on every major UNIX platform, including AIX
-    (powerpc-ibm-aix3, rs6000-ibm-aix3), FreeBSD
-    (i386-intel-freebsd1), HP-UX (hppa1.1-hp-hpux9, m68k-hp-hpux9),
-    IRIX (mips-sgi-irix5), Linux (i[3456]86-unknown-linux,
-    i[3456]86-unknown-linuxaout), Alpha OSF (alpha-osf3), Solaris
-    (i386-sun-solaris2, sparc-sun-solaris2), SunOS (sparc-sun-sunos4),
-    and ULTRIX (mips-dec-ultrix4).
+    out-of-the-box on all major UNIX platforms, including
+    hppa1.1-hp-hpux, i386-pc-linux, i386-pc-sco, i386-pc-solaris,
+    i386-unknown-freebsd, i386-unknown-netbsd, i386-univel-sysv.
+    m68k-hp-hpux, mips-dec-ultrix, mips-sgi-irix, powerpc-ibm-aix,
+    rs6000-ibm-aix, sparc-sun-solaris, and sparc-sun-sunos.
 
     DDD is free software, protected by the GNU general public license.
-    It is actively maintained by its authors, Dorothea Luetkehaus and
-    Andreas Zeller at the Technische Universitaet Braunschweig,
-    Germany.
+    It is actively maintained by its co-author, Andreas Zeller at the
+    Technische Universitaet Braunschweig, Germany.
 
 
 What do I need to build DDD?
