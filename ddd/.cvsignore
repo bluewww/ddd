@@ -48,6 +48,7 @@ trailer.str
 userinfo
 version.h
 vr.h
+vsl
 vsl-gramma.C
 vsl-gramma.h
 vsl-lex.C
