@@ -50,6 +50,7 @@ char value_read_rcsid[] =
 #include "comm-manag.h"
 #include "cook.h"
 #include "ddd.h"
+#include "isid.h"
 #include "regexps.h"
 #include "GDBAgent.h"
 #include "PosBuffer.h"
@@ -441,12 +442,12 @@ static void read_token(const char *value, int& pos)
 	break;
 
     default:
-	if (isalnum(value[pos]))
+	if (isid(value[pos]))
 	{
 	    // Name or number
 	    int start = pos;
 	    pos++;
-	    while (isalnum(value[pos]))
+	    while (isid(value[pos]))
 		pos++;
 
 	    if (gdb && gdb->program_language() != LANGUAGE_JAVA)
