@@ -672,7 +672,7 @@ void DataDisp::dependentCB(Widget w, XtPointer client_data,
 					 NULL, 0));
 	Delay::register_shell(dependent_display_dialog);
 
-	if (lesstif_hacks_enabled)
+	if (lesstif_version < 1000)
 	    XtUnmanageChild(XmSelectionBoxGetChild(dependent_display_dialog,
 						   XmDIALOG_APPLY_BUTTON));
 
@@ -874,7 +874,7 @@ void DataDisp::new_displayCD (Widget w, BoxPoint box_point)
 					 NULL, 0));
 	Delay::register_shell(new_display_dialog);
 
-	if (lesstif_hacks_enabled)
+	if (lesstif_version < 1000)
 	    XtUnmanageChild(XmSelectionBoxGetChild(new_display_dialog,
 						   XmDIALOG_APPLY_BUTTON));
 
@@ -3413,7 +3413,7 @@ void DataDisp::setCB(Widget w, XtPointer, XtPointer)
 
     Delay::register_shell(set_dialog);
 
-    if (lesstif_hacks_enabled)
+    if (lesstif_version < 1000)
 	XtUnmanageChild(XmSelectionBoxGetChild(set_dialog,
 					       XmDIALOG_APPLY_BUTTON));
 
@@ -4014,7 +4014,7 @@ DataDisp::DataDisp (XtAppContext app_context,
 				    "edit_displays_dialog", 
 				    NULL, 0));
 
-    if (lesstif_hacks_enabled)
+    if (lesstif_version < 1000)
 	XtUnmanageChild(XmSelectionBoxGetChild(edit_displays_dialog_w,
 					       XmDIALOG_APPLY_BUTTON));
 

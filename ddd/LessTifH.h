@@ -33,9 +33,8 @@
 #pragma interface
 #endif
 
-#include "bool.h"
-
-extern bool lesstif_hacks_enabled;
+// The LessTif version number: 1000 * version + revision
+extern int lesstif_version;
 
 #endif // _DDD_LessTifHacks_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

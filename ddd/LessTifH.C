@@ -34,5 +34,13 @@ char LessTifHacks_rcsid[] =
 #endif
 
 #include "LessTifH.h"
+#include <Xm/Xm.h>
 
-bool lesstif_hacks_enabled;
+// The LessTif version number: 1000 * version + revision
+
+#if defined(LesstifVersion)
+int lesstif_version = LesstifVersion;
+#else
+// Treat OSF/Motif like LessTif 1.0
+int lesstif_version = 1000;
+#endif

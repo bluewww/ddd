@@ -25,7 +25,7 @@
 // DDD is the data display debugger.
 // For details, see the DDD World-Wide-Web page, 
 // `http://www.cs.tu-bs.de/softech/ddd/',
-// or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
+// or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
 // Introduction to DDD
 // ===================
@@ -342,8 +342,8 @@ static void popdown_startup_logo(XtPointer data = 0, XtIntervalId *id = 0);
 // Xt Stuff
 //-----------------------------------------------------------------------------
 
-static char S_true[]  = "true";
-static char S_false[] = "false";
+static char S_true[]    = "true";
+static char S_false[]   = "false";
 
 // Options
 // Note: we support both the GDB '--OPTION' and the X '-OPTION' convention.
@@ -490,11 +490,14 @@ static XrmOptionDescRec options[] = {
 { "--check-configuration",  XtNcheckConfiguration,   XrmoptionNoArg, S_true },
 { "-check-configuration",   XtNcheckConfiguration,   XrmoptionNoArg, S_true },
 
-{ "--lesstif-hacks",        XtNlessTifHacks,         XrmoptionNoArg, S_true },
-{ "-lesstif-hacks",         XtNlessTifHacks,         XrmoptionNoArg, S_true },
+{ "--lesstif-hacks",        XtNlessTifVersion,       XrmoptionNoArg, "81" },
+{ "-lesstif-hacks",         XtNlessTifVersion,       XrmoptionNoArg, "81" },
 
-{ "--no-lesstif-hacks",     XtNlessTifHacks,         XrmoptionNoArg, S_false },
-{ "-no-lesstif-hacks",      XtNlessTifHacks,         XrmoptionNoArg, S_false },
+{ "--no-lesstif-hacks",     XtNlessTifVersion,       XrmoptionNoArg, "1000" },
+{ "-no-lesstif-hacks",      XtNlessTifVersion,       XrmoptionNoArg, "1000" },
+
+{ "--lesstif-version",      XtNlessTifVersion,       XrmoptionSepArg, NULL },
+{ "-lesstif-version",       XtNlessTifVersion,       XrmoptionSepArg, NULL },
 
 { "--help",                 XtNshowInvocation,       XrmoptionNoArg, S_true },
 { "-help",                  XtNshowInvocation,       XrmoptionNoArg, S_true },
@@ -1669,8 +1672,8 @@ int main(int argc, char *argv[])
     // Register own converters
     registerOwnConverters();
 
-    // Global variables: Set lesstif hacks
-    lesstif_hacks_enabled             = app_data.lesstif_hacks;
+    // Global variables: Set lesstif version
+    lesstif_version = app_data.lesstif_version;
 
     // Global variables: Set maximum lengths for `shorten' calls
     max_value_tip_length              = app_data.max_value_tip_length;
@@ -2588,7 +2591,7 @@ static void fix_status_size()
 		  XmNallowResize, False,
 		  NULL);
 
-    if (!lesstif_hacks_enabled)
+    if (lesstif_version >= 1000)
 	return;
 
     // Simulate a drag of the lowest sash to the bottom.  Ugly LessTif hack.
@@ -3388,7 +3391,7 @@ static void make_preferences(Widget parent)
 	verify(XmCreatePromptDialog(parent, "preferences", args, arg));
     Delay::register_shell(preferences_dialog);
 
-    if (lesstif_hacks_enabled)
+    if (lesstif_version < 1000)
 	XtUnmanageChild(XmSelectionBoxGetChild(preferences_dialog,
 					       XmDIALOG_APPLY_BUTTON));
 
@@ -3489,7 +3492,7 @@ static void create_status(Widget parent)
     XtSetArg(args[arg], XmNset,                True); arg++;
 
     MString spaces("   ");
-    if (lesstif_hacks_enabled)
+    if (lesstif_version < 1000)
     {
 	XtSetArg(args[arg], XmNlabelString,        spaces.xmstring()); arg++;
     }
@@ -3555,7 +3558,7 @@ static void create_status(Widget parent)
     Dimension new_height = XmConvertUnits(status_w, XmVERTICAL, XmPIXELS, 
 					  size.height, unit_type);
 
-    if (lesstif_hacks_enabled)
+    if (lesstif_version < 1000)
 	XtVaSetValues(led_w, XmNindicatorSize, new_height - 3, NULL);
     else
 	XtVaSetValues(led_w, XmNindicatorSize, new_height - 1, NULL);

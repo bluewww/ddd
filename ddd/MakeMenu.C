@@ -165,11 +165,11 @@ static void addItems(Widget /* parent */, Widget shell, MMDesc items[],
 	    XtSetArg(args[arg], XmNsubMenuId, subMenu); arg++;
 	    widget = verify(XmCreateCascadeButton(shell, name, args, arg));
 
-            if (lesstif_hacks_enabled)
+            if (lesstif_version <= 79)
 	    {
-		// LessTif has a very tight packing of menu items;
-		// place a few spaces around the labels to increase
-		// item distance.
+		// LessTif 0.79 and earlier has a very tight packing
+		// of menu items; place a few spaces around the labels
+		// to increase item distance.
 		XmString old_label;
 		XtVaGetValues(widget, XmNlabelString, &old_label, NULL);
 		MString new_label(old_label, true);

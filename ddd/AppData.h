@@ -243,8 +243,8 @@
 #define XtCShowStartupLogo       "ShowStartupLogo"
 #define XtNcolorIcons            "colorIcons"
 #define XtCColorIcons            "ColorIcons"
-#define XtNlessTifHacks          "lessTifHacks"
-#define XtCLessTifHacks          "LessTifHacks"
+#define XtNlessTifVersion        "lessTifVersion"
+#define XtCLessTifVersion        "LessTifVersion"
 #define XtNdddinitVersion        "dddinitVersion"
 #define XtNappDefaultsVersion    "appDefaultsVersion"
 #define XtCVersion               "Version"
@@ -360,7 +360,7 @@ struct AppData {
     int     max_display_number;
     String  show_startup_logo;
     Boolean color_icons;
-    Boolean lesstif_hacks;
+    int     lesstif_version;
     String  dddinit_version;
     String  app_defaults_version;
 };

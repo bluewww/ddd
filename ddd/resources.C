@@ -1117,16 +1117,16 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNlessTifHacks,
-	XtCLessTifHacks,
-	XmRBoolean,
-	sizeof(Boolean),
-	XtOffsetOf(AppData, lesstif_hacks),
+	XtNlessTifVersion,
+	XtCLessTifVersion,
+	XmRInt,
+	sizeof(int),
+	XtOffsetOf(AppData, lesstif_version),
 	XmRImmediate,
-#if !defined(LesstifVersion) || LesstifVersion >= 1000
-	XtPointer(False)
+#if !defined(LesstifVersion)
+	XtPointer(1000)		// No special handling for LessTif 1.0 and later
 #else
-	XtPointer(True)
+	XtPointer(LesstifVersion)
 #endif
     },
 
