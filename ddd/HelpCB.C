@@ -676,7 +676,11 @@ static void FindCB(Widget w, XtPointer client_data, XtPointer call_data,
     }
 
     if (next_occurrence < 0)
+    {
+	// FIXME: This should be in some status line.  Unfortunately,
+	// we don't have any...
 	post_warning(quote(key) + " not found.", "manual_find_error", w);
+    }
     else
     {
 	// LessTif 0.79 sometimes returns NULL in cbs->event.  Handle this.
