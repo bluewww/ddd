@@ -4161,6 +4161,13 @@ void DataDisp::process_addr (StringArray& answers)
 	if (dn->active() && !dn->is_user_command())
 	{
 	    string addr = answers[i++];
+
+	    if (addr.contains('(', 0) || addr.contains('{', 0))
+	    {
+		// Skip type prefix
+		read_token(addr);
+	    }
+
 	    addr = addr.from(rxaddress);
 	    addr = addr.through(rxaddress);
 

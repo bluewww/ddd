@@ -49,6 +49,12 @@ char value_read_rcsid[] =
 #include "GDBAgent.h"
 #include "PosBuffer.h"
 
+static void read_token(const char *value, int& pos);
+static void read_leading_junk(string& value);
+static void read_leading_comment(string& value);
+
+//-----------------------------------------------------------------------------
+
 #if RUNTIME_REGEX
 static regex rxindex("[[]-?[0-9][0-9]*].*");
 static regex rxvtable(
@@ -178,27 +184,19 @@ DispValueType determine_type (string value)
 #else
     int pointer_index = 0;
 
-    if (value.contains('(', 0))
+    if (value.contains('(', 0) || value.contains('{', 0))
     {
-	int space_index = value.index(')') + 1;
-	if (value.contains(' ', space_index))
+	int pos = 0;
+	read_token(value, pos);
+	if (pos < int(value.length()) && value.contains(' ', pos))
 	{
-	    pointer_index = space_index;
+	    pointer_index = pos;
 	    while (value.contains(' ', pointer_index))
 		pointer_index++;
 	}
     }
     if (value.contains(rxaddress, pointer_index))
 	return Pointer;
-
-    if (value.contains('{', 0))
-    {
-	pointer_index = value.index('}') + 1;
-	while (value.contains(' ', pointer_index))
-	    pointer_index++;
-	if (value.contains(rxaddress_start, pointer_index))
-	    return Pointer;
-    }
 #endif
 
     // Arrays.
@@ -214,10 +212,6 @@ DispValueType determine_type (string value)
     return Simple;
 }
 
-
-static void read_token(const char *value, int& pos);
-static void read_leading_junk(string& value);
-static void read_leading_comment(string& value);
 
 // Read tokens up to character DELIM
 static void read_up_to(const char *value, int& pos, char delim)
