@@ -109,8 +109,6 @@
 #define XtCCheckConfiguration    "CheckConfiguration"
 #define XtNprintCommand          "printCommand"
 #define XtCPrintCommand          "PrintCommand"
-#define XtNprinter               "printer"
-#define XtCPrinter               "Printer"
 #define XtNpannedGraphEditor     "pannedGraphEditor"
 #define XtCPannedGraphEditor     "PannedGraphEditor"
 #define XtNfindWordsOnly         "findWordsOnly"
@@ -165,7 +163,6 @@ typedef struct {
     Boolean show_manual;
     Boolean check_configuration;
     String  print_command;
-    String  printer;
     Boolean panned_graph_editor;
     Boolean find_words_only;
     Boolean group_iconify;
