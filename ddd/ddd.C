@@ -2195,10 +2195,11 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     XtAddCallback(toplevel, XtNdieCallback, ShutdownSmSessionCB, XtPointer(0));
 #else
     // Note: the cast on ddd_fallback_resources is safe.
-    Widget toplevel = 
+    Widget toplevel =
 	XtAppInitialize(&app_context, DDD_CLASS_NAME,
-			XrmOptionDescList(0), 0, 
-			&argc, argv, ddd_fallback_resources, args, arg);
+			XrmOptionDescList(0), 0,
+			&argc, argv, (String *)ddd_fallback_resources,
+			args, arg);
 #endif
     ddd_install_xt_error(app_context);
 
