@@ -397,6 +397,8 @@ void ddd_show_exception(const char *c, const char *what)
 // Issue fatal message on stderr
 static void print_fatal_msg(char *title, char *cause, char *cls)
 {
+    (void) ddd_invoke_name;	// Use it
+
     static const char *msg =
 	"\n%s (%s).\n"
 	"\n"
@@ -583,6 +585,8 @@ static XtAppContext xt_error_app_context = 0;
 
 static void ddd_xt_error(String message = 0)
 {
+    (void) old_xt_error_handler; // Use it
+
     ddd_has_crashed = true;
 
     dddlog << "!  Xt error";

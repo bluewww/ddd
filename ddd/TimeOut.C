@@ -114,6 +114,7 @@ static void MyTimerProc(XtPointer client_data, XtIntervalId *)
 	}
     }
 
+    (void) removed;		// Use it
     assert (removed);
 
 #if LOG_TIMERS

@@ -218,7 +218,7 @@ class DataDisp {
     static MMDesc shortcut_menu[];
     static MMDesc rotate_menu[];
 
-    static const int DataDisp::shortcut_items;
+    static const int shortcut_items;
 
 
     // Array of shortcut expressions

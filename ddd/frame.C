@@ -58,7 +58,7 @@ Window frame(Display *display, Window window)
 	XFree(children);
 
 	if (!ok)
-	    return window;	// Not found
+	    break;		// Not found
 
 	if (parent == root)
 	    return w;		// Got it

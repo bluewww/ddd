@@ -41,6 +41,7 @@ char AsyncAgent_rcsid[] =
 #include <sys/types.h>
 #include <strstream.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 DEFINE_TYPE_INFO_1(AsyncAgent, Agent)
 DEFINE_TYPE_INFO_0(AsyncAgentWorkProc)

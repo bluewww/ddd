@@ -203,6 +203,7 @@ bool VSLDefList::OK() const
 	count++;
     }
     assert (count == _ndefs);
+    (void) lastdef;		// Use it
     assert (lastdef == _last);
 
     // Pruefen, ob Zeiger auf DefList ok

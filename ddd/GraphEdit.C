@@ -2387,8 +2387,6 @@ static void _SnapToGrid(Widget w, XEvent *, String *params,
     if (*num_params >= 2)
 	grid[Y] = atoi(params[1]);
 
-    Boolean redraw = False;
-
     for (GraphNode *node = graph->firstVisibleNode(); node != 0;
 	node = graph->nextVisibleNode(node))
     {
@@ -2397,7 +2395,6 @@ static void _SnapToGrid(Widget w, XEvent *, String *params,
 	{
             // Set new node position
 	    moveTo(w, node, pos, graph->nextVisibleNode(node) == 0);
-	    redraw = True;
 	}
     }
 }
@@ -2779,8 +2776,6 @@ static void _Normalize(Widget w, XEvent *, String *, Cardinal *)
 
     BoxRegion r = graph->region(graphGC);
 
-    Boolean redraw = False;
-
     for (GraphNode *node = graph->firstVisibleNode(); 
 	 node != 0;
 	 node = graph->nextVisibleNode(node))
@@ -2792,7 +2787,6 @@ static void _Normalize(Widget w, XEvent *, String *, Cardinal *)
 	{
             // set new node position
 	    moveTo(w, node, pos, graph->nextVisibleNode(node) == 0);
-	    redraw = True;
 	}
     }
 }

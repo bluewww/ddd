@@ -3930,7 +3930,6 @@ static void create_status(Widget parent)
 
 static bool blinker_active        = false; // True iff status LED is active
 static XtIntervalId blink_timer   = 0;     // Timer for blinking
-static time_t blink_timer_called  = 0;     // Time of blink_timer call
 
 static void BlinkCB(XtPointer client_data, XtIntervalId *id)
 {
@@ -3965,7 +3964,6 @@ static void BlinkCB(XtPointer client_data, XtIntervalId *id)
 	blink_timer = XtAppAddTimeOut(XtWidgetToApplicationContext(led_w),
 				      app_data.busy_blink_rate, BlinkCB,
 				      XtPointer(int(!set)));
-	blink_timer_called = time((time_t *)0);
     }
 }
 
@@ -3985,25 +3983,6 @@ static void blink(bool set)
 	    BlinkCB(XtPointer(int(true)), &blink_timer);
 	}
     }
-#if 0
-    else
-    {
-	// The blinker hangs up occasionally - that is, BLINK_TIMER != 0
-	// holds, but BlinkCB() is never called.  Hence, we check for the
-	// time elapsed since we added the BlinkCB() timeout.
-	time_t seconds_since_timer_call = 
-	    (time((time_t *)0) - blink_timer_called);
-	bool timer_should_have_been_called = 
-	    seconds_since_timer_call >= app_data.busy_blink_rate / 1000 + 1;
-
-	if (timer_should_have_been_called && blink_timer != 0)
-	{
-	    // Remove timer and re-activate it again
-	    XtRemoveTimeOut(blink_timer);
-	    BlinkCB(XtPointer(int(blinker_active)), &blink_timer);
-	}
-    }
-#endif
 }
 
 static void DisableBlinkHP(Agent *, void *, void *)
