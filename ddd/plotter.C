@@ -129,15 +129,23 @@ static MMDesc view_menu[] =
     MMSep,
     { "xzeroaxis", MMToggle, { ToggleOptionCB, 0 }, 0, 0, 0, 0 },
     { "yzeroaxis", MMToggle, { ToggleOptionCB, 0 }, 0, 0, 0, 0 },
+    MMEnd
+};
+
+static MMDesc contour_menu[] = 
+{
+    { "base",      MMToggle, { SetContourCB, 0 }, 0, 0, 0, 0 },
+    { "surface",   MMToggle, { SetContourCB, 0 }, 0, 0, 0, 0 },
+    MMEnd
+};
+
+static MMDesc scale_menu[] = 
+{
+    { "logscale",  MMToggle, { ToggleLogscaleCB, 0 }, 0, 0, 0, 0 },
     MMSep,
     { "xtics",     MMToggle, { ToggleOptionCB, 0 }, 0, 0, 0, 0 },
     { "ytics",     MMToggle, { ToggleOptionCB, 0 }, 0, 0, 0, 0 },
     { "ztics",     MMToggle, { ToggleOptionCB, 0 }, 0, 0, 0, 0 },
-    MMSep,
-    { "base",      MMToggle, { SetContourCB, 0 }, 0, 0, 0, 0 },
-    { "surface",   MMToggle, { SetContourCB, 0 }, 0, 0, 0, 0 },
-    MMSep,
-    { "logscale",  MMToggle, { ToggleLogscaleCB, 0 }, 0, 0, 0, 0 },
     MMEnd
 };
 
@@ -158,11 +166,13 @@ static MMDesc plot_menu[] =
 
 static MMDesc menubar[] = 
 {
-    { "file",    MMMenu, MMNoCB, file_menu, 0, 0, 0 },
-    { "edit",    MMMenu, MMNoCB, simple_edit_menu, 0, 0, 0 },
-    { "plotView", MMMenu, MMNoCB, view_menu, 0, 0, 0 },
-    { "plot",    MMRadioMenu, MMNoCB, plot_menu, 0, 0, 0 },
-    { "help",    MMMenu | MMHelp, MMNoCB, simple_help_menu, 0, 0, 0 },
+    { "file",     MMMenu,          MMNoCB, file_menu,        0, 0, 0 },
+    { "edit",     MMMenu,          MMNoCB, simple_edit_menu, 0, 0, 0 },
+    { "plotView", MMMenu,          MMNoCB, view_menu,        0, 0, 0 },
+    { "plot",     MMRadioMenu,     MMNoCB, plot_menu,        0, 0, 0 },
+    { "scale",    MMMenu,          MMNoCB, scale_menu,       0, 0, 0 },
+    { "contour",  MMMenu,          MMNoCB, contour_menu,     0, 0, 0 },
+    { "help",     MMMenu | MMHelp, MMNoCB, simple_help_menu, 0, 0, 0 },
     MMEnd
 };
 
@@ -207,8 +217,47 @@ static string plot_settings(PlotWindowInfo *plot)
     return settings;
 }
 
+static void configure_options(PlotWindowInfo *plot, MMDesc *menu, 
+			      const string& settings)
+{
+    for (int i = 0; menu[i].name != 0; i++)
+    {
+	if ((menu[i].type & MMTypeMask) != MMToggle)
+	    continue;
+
+	string name = menu[i].name;
+
+	Widget w = XtNameToWidget(plot->shell, "*" + name);
+	XtCallbackProc callback = menu[i].callback.callback;
+
+	bool set = false;
+	if (callback == ToggleOptionCB)
+	{
+	    set = settings.contains("\nset " + name + "\n");
+	}
+	else if (callback == SetContourCB)
+	{
+	    if (name == "base")
+		set = settings.contains("\nset contour base\n") ||
+		    settings.contains("\nset contour both\n");
+	    else if (name == "surface")
+		set = settings.contains("\nset contour surface\n") ||
+		    settings.contains("\nset contour both\n");
+	}
+	else if (callback == ToggleLogscaleCB)
+	{
+	    set = settings.contains("\nset logscale ");
+	}
+
+	XmToggleButtonSetState(w, set, False);
+    }
+}
+
 static void configure_plot(PlotWindowInfo *plot)
 {
+    if (plot->plotter == 0)
+	return;
+
     int ndim = plot->plotter->dimensions();
 
     // Set up plot menu
@@ -252,38 +301,9 @@ static void configure_plot(PlotWindowInfo *plot)
 
     // Get settings
     string settings = plot_settings(plot);
-
-    for (i = 0; view_menu[i].name != 0; i++)
-    {
-	if ((view_menu[i].type & MMTypeMask) != MMToggle)
-	    continue;
-
-	string name = view_menu[i].name;
-
-	Widget w = XtNameToWidget(plot->shell, "*" + name);
-	XtCallbackProc callback = view_menu[i].callback.callback;
-
-	bool set = false;
-	if (callback == ToggleOptionCB)
-	{
-	    set = settings.contains("\nset " + name + "\n");
-	}
-	else if (callback == SetContourCB)
-	{
-	    if (name == "base")
-		set = settings.contains("\nset contour base\n") ||
-		    settings.contains("\nset contour both\n");
-	    else if (name == "surface")
-		set = settings.contains("\nset contour surface\n") ||
-		    settings.contains("\nset contour both\n");
-	}
-	else if (callback == ToggleLogscaleCB)
-	{
-	    set = settings.contains("\nset logscale ");
-	}
-
-	XmToggleButtonSetState(w, set, False);
-    }
+    configure_options(plot, view_menu,    settings);
+    configure_options(plot, contour_menu, settings);
+    configure_options(plot, scale_menu,   settings);
 
     // Get style
     for (i = 0; plot_menu[i].name != 0; i++)
@@ -347,7 +367,7 @@ static void SwallowCB(Widget swallower, XtPointer client_data,
 
 	XtVaSetValues(swallower, XtNwindow, window, NULL);
 
-	if (!plot->active)
+	if (!plot->active && plot->plotter != 0)
 	{
 	    configure_plot(plot);
 
@@ -433,7 +453,7 @@ static void GetPlotHP(Agent *, void *client_data, void *call_data)
     XtUnmanageChild(plot->dialog);
     XtPopdown(XtParent(plot->dialog));
 
-    if (!plot->active)
+    if (!plot->active && plot->plotter != 0)
     {
 	// Setup menu
 	configure_plot(plot);
@@ -546,6 +566,11 @@ static PlotWindowInfo *new_decoration(const string& name)
 		      SetViewCB, XtPointer(plot));
 	XtAddCallback(plot->vsb, XmNvalueChangedCallback,
 		      SetViewCB, XtPointer(plot));
+
+#if 0
+	XtAddCallback(plot->hsb, XmNdragCallback, SetViewCB, XtPointer(plot));
+	XtAddCallback(plot->vsb, XmNdragCallback, SetViewCB, XtPointer(plot));
+#endif
 
 	XmScrolledWindowSetAreas(scroll, plot->hsb, plot->vsb, work);
 

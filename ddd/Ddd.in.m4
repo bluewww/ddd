@@ -236,17 +236,6 @@ Ddd*printCommand: @PRINT_COMMAND@
 Ddd*paperSize: 210mm x 297mm
 
 
-! The `gnuplot' command.
-! The string `@FONT@' is replaced by the current DDD default font.
-Ddd*plotCommand: gnuplot -font '@FONT@' -geometry +5000+5000
-Ddd*plotInitCommands: \
-set parametric\n\
-set urange \1330:1\135\n\
-set vrange \1330:1\135\n\
-set trange \1330:1\135\n
-Ddd*plot2dSettings:   set noborder
-Ddd*plot3dSettings:   set border
-
 
 
 ! The `edit' command to invoke an editor on the specific file.
@@ -304,6 +293,30 @@ Ddd*wwwCommand: \
 || mosaic '@URL@' \
 || Mosaic '@URL@' \
 || xterm -e lynx '@URL@'
+
+
+! Plotting stuff.
+
+! The Gnuplot command.
+! The string `@FONT@' is replaced by the current DDD default font.
+Ddd*plotCommand: \
+gnuplot -font '@FONT@' -geometry +5000+5000 -bw 0 -bg 'TEXT_BACKGROUND_COLOR'
+
+! Gnuplot initialization commands.  Issued at the start of each Gnuplot
+Ddd*plotInitCommands: \
+set parametric\n\
+set urange \1330:1\135\n\
+set vrange \1330:1\135\n\
+set trange \1330:1\135\n
+
+! Gnuplot settings.  Issued for 2-D plots and 3-D plots, respectively.
+Ddd*plot2dSettings:   set noborder
+Ddd*plot3dSettings:   set border
+
+! Which plot window to choose.
+! `on' means to use the plot window built into DDD.
+! `off' means to swallow the plot window supplied by Gnuplot.
+Ddd*builtinPlot: off
 
 
 ! The time (in seconds) to wait for synchronous GDB questions to complete
@@ -4593,7 +4606,7 @@ Press KEY_HELP on a button to get a short command description.
 
 
 !-----------------------------------------------------------------------------
-! DDD Plot
+! Plots
 !-----------------------------------------------------------------------------
 
 define(PLOT_WINDOW_HELP, [\
@@ -4614,6 +4627,13 @@ Ddd*plot*area.width:        640
 Ddd*plot*area.height:       450
 Ddd*plot*area.background:   TEXT_BACKGROUND_COLOR
 
+! Ideally, these values would come from the swallowed window.
+! Unfortunately, LessTif has problems with these, so we specify them.
+Ddd*plot*swallower.width:        640
+Ddd*plot*swallower.height:       450
+Ddd*plot*swallower.background:   TEXT_BACKGROUND_COLOR
+
+
 Ddd*plot*menubar.helpString:		\
 WIDGET(Menu Bar)\n\
 \n\
@@ -4621,6 +4641,8 @@ DESC(File, [print plot and close this window])\n\
 DESC(Edit, [cut, copy, and paste text])\n\
 DESC(View, [set plot options])\n\
 DESC(Plot, [set plot style])\n\
+DESC(Scale, [set scale style])\n\
+DESC(Contour, [set contour style])\n\
 DESC(Help, [on-line help and version information])
 
 Ddd*menubar.plotView.labelString:  	View
@@ -4636,16 +4658,7 @@ DESC(Grid, [display grid])\n\
 DESC(Time, [display time of plot])\n\
 \n\
 DESC(X Axis, [display X zero axis])\n\
-DESC(Y Axis, [display Y zero axis])\n\
-\n\
-DESC(X Tics, [display tics on X axis])\n\
-DESC(Y Tics, [display tics on Y axis])\n\
-DESC(Z Tics, [display tics on Z axis])\n\
-\n\
-DESC(Base Contour, [draw contour on base])\n\
-DESC(Surface Contour, [draw contour on surface])\n\
-\n\
-DESC(Log Scale, [toggle logarithmic scaling])
+DESC(Y Axis, [display Y zero axis])
 ])dnl
 
 Ddd*menubar.plotView.helpString: PLOT_VIEW_HELP
@@ -4667,45 +4680,17 @@ Ddd*plotViewMenu.time.mnemonic:      	T
 Ddd*plotViewMenu.time.documentationString:	\
 @rm Toggle plot time
 
-Ddd*plotViewMenu.xzeroaxis.labelString:	X Axis
-Ddd*plotViewMenu.xzeroaxis.mnemonic:	A
+Ddd*plotViewMenu.xzeroaxis.labelString:	X Zero Axis
+Ddd*plotViewMenu.xzeroaxis.mnemonic:	X
 Ddd*plotViewMenu.xzeroaxis.documentationString:	\
 @rm Toggle X zero axis
 
-Ddd*plotViewMenu.yzeroaxis.labelString:	Y Axis
-Ddd*plotViewMenu.yzeroaxis.mnemonic:	i
+Ddd*plotViewMenu.yzeroaxis.labelString:	Y Zero Axis
+Ddd*plotViewMenu.yzeroaxis.mnemonic:	Y
 Ddd*plotViewMenu.yzeroaxis.documentationString:	\
 @rm Toggle Y zero axis
 
-Ddd*plotViewMenu.xtics.labelString:	X Tics
-Ddd*plotViewMenu.xtics.mnemonic:	X
-Ddd*plotViewMenu.xtics.documentationString:	\
-@rm Toggle tics on X axis
 
-Ddd*plotViewMenu.ytics.labelString:	Y Tics
-Ddd*plotViewMenu.ytics.mnemonic:	Y
-Ddd*plotViewMenu.ytics.documentationString:	\
-@rm Toggle tics on Y axis
-
-Ddd*plotViewMenu.ztics.labelString:	Z Tics
-Ddd*plotViewMenu.ztics.mnemonic:	Z
-Ddd*plotViewMenu.ztics.documentationString:	\
-@rm Toggle tics on Z axis
-
-Ddd*plotViewMenu.base.labelString:	Base Contour
-Ddd*plotViewMenu.base.mnemonic:		C
-Ddd*plotViewMenu.base.documentationString:	\
-@rm Draw contour on base
-
-Ddd*plotViewMenu.surface.labelString:   Surface Contour
-Ddd*plotViewMenu.surface.mnemonic:	S
-Ddd*plotViewMenu.surface.documentationString:	\
-@rm Draw contour on surface
-
-Ddd*plotViewMenu.logscale.labelString:	Log Scale
-Ddd*plotViewMenu.logscale.mnemonic:	L
-Ddd*plotViewMenu.logscale.documentationString:	\
-@rm Toggle logarithmic scaling
 
 Ddd*menubar.plot.labelString:  		Plot
 Ddd*menubar.plot.mnemonic:     		P
@@ -4774,6 +4759,73 @@ Ddd*plotMenu.boxes2d.labelString:	Boxes
 Ddd*plotMenu.boxes2d.mnemonic:		B
 Ddd*plotMenu.boxes2d.documentationString:	\
 @rm Draw a vertical box from the x axis to each point
+
+
+Ddd*menubar.scale.labelString:  	Scale
+Ddd*menubar.scale.mnemonic:     	S
+Ddd*menubar.scale.documentationString:   \
+@rm Set scale style
+
+define(SCALE_HELP, [\
+WIDGET(Scale Menu)\n\
+\n\
+DESC(Log Scale, [toggle logarithmic scaling])\n\
+\n\
+DESC(X Tics, [display tics on X axis])\n\
+DESC(Y Tics, [display tics on Y axis])\n\
+DESC(Z Tics, [display tics on Z axis])
+])dnl
+
+Ddd*menubar.scale.helpString: SCALE_HELP
+Ddd*scaleMenu*helpString:     SCALE_HELP
+Ddd*scaleMenu*tearOffTitle:   Scale
+
+Ddd*scaleMenu.logscale.labelString:	Log Scale
+Ddd*scaleMenu.logscale.mnemonic:	L
+Ddd*scaleMenu.logscale.documentationString:	\
+@rm Toggle logarithmic scaling
+
+Ddd*scaleMenu.xtics.labelString:	X Tics
+Ddd*scaleMenu.xtics.mnemonic:		X
+Ddd*scaleMenu.xtics.documentationString:	\
+@rm Toggle tics on X axis
+
+Ddd*scaleMenu.ytics.labelString:	Y Tics
+Ddd*scaleMenu.ytics.mnemonic:		Y
+Ddd*scaleMenu.ytics.documentationString:	\
+@rm Toggle tics on Y axis
+
+Ddd*scaleMenu.ztics.labelString:	Z Tics
+Ddd*scaleMenu.ztics.mnemonic:		Z
+Ddd*scaleMenu.ztics.documentationString:	\
+@rm Toggle tics on Z axis
+
+
+Ddd*menubar.contour.labelString:  	Contour
+Ddd*menubar.contour.mnemonic:     	C
+Ddd*menubar.contour.documentationString:   \
+@rm Set contour style
+
+define(CONTOUR_HELP, [\
+WIDGET(Contour Menu)\n\
+\n\
+DESC(Base, [draw contour on base])\n\
+DESC(Surface, [draw contour on surface])
+])dnl
+
+Ddd*menubar.contour.helpString: CONTOUR_HELP
+Ddd*contourMenu*helpString:     CONTOUR_HELP
+Ddd*contourMenu*tearOffTitle:   Contour
+
+Ddd*contourMenu.base.labelString:	Base
+Ddd*contourMenu.base.mnemonic:		B
+Ddd*contourMenu.base.documentationString:	\
+@rm Draw contour on base
+
+Ddd*contourMenu.surface.labelString:	Surface
+Ddd*contourMenu.surface.mnemonic:	S
+Ddd*contourMenu.surface.documentationString:	\
+@rm Draw contour on surface
 
 
 
