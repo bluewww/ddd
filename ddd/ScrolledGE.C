@@ -40,7 +40,7 @@ char ScrolledGraphEdit_rcsid[] =
 
 #define EVERYWHERE (BoxRegion(BoxPoint(0,0), BoxSize(INT_MAX, INT_MAX)))
 
-#if USE_OWN_SCROLLED_WINDOW
+#if OWN_SCROLLED_WINDOW
 
 // Method function declarations
 
@@ -131,7 +131,7 @@ static void Resize(Widget w)
     scrolledGraphEditClassRec.core_class.superclass->core_class.resize(w);
 }
 
-#else // !USE_OWN_SCROLLED_WINDOW
+#else // !OWN_SCROLLED_WINDOW
 
 // In Motif 2.0 or later, the definition above crashes.
 // Use a standard scrolled window instead.
@@ -140,6 +140,12 @@ static void Resize(Widget w)
 // for Motif 1.2 => use this definition all the time.
 
 WidgetClass scrolledGraphEditWidgetClass = xmScrolledWindowWidgetClass;
+
+static void ResizeEH(Widget, XtPointer client_data, XEvent *, Boolean *)
+{
+    Widget graphEdit = Widget(client_data);
+    graphEditSizeChanged(graphEdit);
+}
 
 #endif
 
@@ -157,8 +163,17 @@ Widget createScrolledGraphEdit(Widget parent, String name,
 				     scrolledGraphEditWidgetClass,
 				     parent, args, arg));
 
-    return verify(XtCreateManagedWidget(name, graphEditWidgetClass,
-					scrolledWindow, arglist, argcount));
+    Widget graphEdit = 
+	verify(XtCreateManagedWidget(name, graphEditWidgetClass,
+				     scrolledWindow, arglist, argcount));
+
+
+#if !OWN_SCROLLED_WINDOW
+    XtAddEventHandler(scrolledWindow, StructureNotifyMask, False,
+		      ResizeEH, XtPointer(graphEdit));
+#endif
+
+    return graphEdit;
 }
 
 // For a given graph editor W, return its scroller

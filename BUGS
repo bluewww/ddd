@@ -54,10 +54,6 @@ Volunteers for fixing these and other bugs are welcome!
         in the gdb window ddd seems to lock up very often.
     [I could not reproduce this bug.  Can anyone clarify this?  -AZ]
 
-113 Matthias Kurz <mk@baerlap.north.de> states:
-    If I resize the data display the background doesn't get
-    refreshed.  [Use an Athena Panner instead of Motif scrollbars. -AZ]
-
 118 SGI CC compiles DDD, but the resulting executable soon dies with a
     segmentation fault.  [Use GCC instead.  -AZ]
 
