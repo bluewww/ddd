@@ -287,8 +287,12 @@ static string getHome()
     // try using passwd entry
     if (home == "")
     {
-	struct passwd *pw;
+	struct passwd *pw = NULL;
+
 	char *user = getenv("USER");
+	if (user == NULL)
+	    user = getenv("LOGNAME");
+
 	if (user != NULL)
 	    pw = getpwnam(user);
 	else
