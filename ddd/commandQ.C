@@ -74,6 +74,12 @@ void _gdb_command(string command, Widget origin)
     handle_running_commands(command, origin);
     handle_obscure_commands(command, origin);
 
+    if (command.length() == 0)
+    {
+	_gdb_out(gdb->default_prompt());
+	return;
+    }
+
     gdb_keyboard_command = private_gdb_input;
     gdb_last_origin = (gdb_keyboard_command ? gdb_w : origin);
 

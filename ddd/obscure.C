@@ -48,6 +48,9 @@ char obscure_rcsid[] =
 #include "misc.h"
 #include "GDBAgent.h"
 #include "post.h"
+#include "status.h"
+#include "logo.h"
+#include "Delay.h"
 
 #include <stdio.h>
 #include <unistd.h>
@@ -70,7 +73,6 @@ void srand(unsigned int seed);
 };
 
 #include <X11/Xlib.h>
-#include <X11/cursorfont.h>
 #include <Xm/Xm.h>
 #include <Xm/MessageB.h>
 
@@ -123,56 +125,6 @@ static void LetDungeonCollapseCB(Widget w, XtPointer, XtPointer)
 		    XtPointer(w));
 }
 
-static void AdventureCB(XtPointer client_data, XtIntervalId *)
-{
-    post_gdb_message("Welcome to adventure!");
-
-    static Widget adventure_dialog = 0;
-    if (adventure_dialog == 0)
-    {
-	Widget w = Widget(client_data);
-	Widget shell = find_shell(w);
-
-	adventure_dialog = 
-	    verify(XmCreateQuestionDialog(shell, "adventure", NULL, 0));
-	Delay::register_shell(adventure_dialog);
-	XtAddCallback(adventure_dialog, 
-		      XmNhelpCallback, ImmediateHelpCB, NULL);
-	XtAddCallback(adventure_dialog,
-		      XmNokCallback, LetDungeonCollapseCB, NULL);
-    }
-
-    XtManageChild(adventure_dialog);
-}
-
-static void WumpusCB(XtPointer client_data, XtIntervalId *)
-{
-    post_gdb_message("Welcome to `Hunt the Wumpus.'");
-
-    static Widget wumpus_dialog = 0;
-    if (wumpus_dialog == 0)
-    {
-	Widget w = Widget(client_data);
-	Widget shell = find_shell(w);
-
-	wumpus_dialog = 
-	    verify(XmCreateQuestionDialog(shell, "wumpus", NULL, 0));
-	Delay::register_shell(wumpus_dialog);
-	XtAddCallback(wumpus_dialog, 
-		      XmNhelpCallback, ImmediateHelpCB, NULL);
-	XtAddCallback(wumpus_dialog,
-		      XmNokCallback, LetDungeonCollapseCB, NULL);
-    }
-
-    XtManageChild(wumpus_dialog);
-}
-
-static void NothingHappensCB(XtPointer, XtIntervalId *)
-{
-    post_gdb_message("Nothing happens.");
-}
-
-
 #ifdef HAVE_RAND
 inline int rnd(int x) { return rand() % x; }
 #else /* HAVE_RANDOM */
@@ -206,27 +158,45 @@ void handle_obscure_commands(string& cmd, Widget origin)
 	&& cmd[0] + cmd[1] + cmd[2] + cmd[3] + cmd[4] + '<' == 666)
     {
 	init_random_seed();
-	XtTimerCallbackProc callback;
+	string msg;
+	string name;
 
-	switch (dungeon_collapsed ? 0 : rnd(10))
+	switch (dungeon_collapsed ? 0 : rnd(5))
 	{
 	default:
-	    callback = NothingHappensCB;
+	    msg = "Nothing happens.";
 	    break;
 	case 1:
-	    callback = AdventureCB;
+	    msg  = "Welcome to adventure!";
+	    name = "adventure";
 	    break;
 	case 2:
-	    callback = WumpusCB;
+	    msg  = "Welcome to `Hunt the Wumpus.'";
+	    name = "wumpus";
 	    break;
 	}
 
-	if (callback)
+	if (msg != "")
 	{
+	    _gdb_out(msg + '\n');
+	    set_status(msg);
+	    cmd = "";
+	}
+
+	if (name != "")
+	{
+	    static Widget dialog = 0;
+	    if (dialog != 0)
+		DestroyWhenIdle(dialog);
+
 	    Widget w = origin ? origin : command_shell;
-	    XtAppAddTimeOut(XtWidgetToApplicationContext(w), 500,
-			    callback, XtPointer(w));
-	    cmd = gdb->echo_command("");
+	    Widget shell = find_shell(w);
+
+	    dialog = verify(XmCreateQuestionDialog(shell, name, NULL, 0));
+	    Delay::register_shell(dialog);
+	    XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, NULL);
+	    XtAddCallback(dialog, XmNokCallback, LetDungeonCollapseCB, NULL);
+	    XtManageChild(dialog);
 	}
     }
 }
@@ -284,8 +254,19 @@ const int FINISHED = 50;	// 50
 // window.
 static void meltdown(Display *dpy, const WidgetArray& ws)
 {
-    init_random_seed();
+    Delay delay;
+    Cursor cursor = logocursor(command_shell);
+
     int wi;
+    for (wi = 0; wi < ws.size(); wi++)
+    {
+	// Setup logo cursors.  These will be restored as the delay goes.
+	Widget w = ws[wi];
+	if (w != 0 && w != Widget(-1) && XtIsRealized(w))
+	    XDefineCursor(XtDisplay(w), XtWindow(w), cursor);
+    }
+
+    init_random_seed();
 
     Window *windows = new Window[ws.size()];
     for (wi = 0; wi < ws.size(); wi++)
@@ -350,7 +331,6 @@ static void meltdown(Display *dpy, const WidgetArray& ws)
 	gcvals.foreground = BlackPixel(dpy, screen);
 	GC fillgc = XCreateGC(dpy, win, GCForeground, &gcvals);
 
-	Cursor cursor = XCreateFontCursor(dpy, XC_top_left_arrow);
 	XDefineCursor(dpy, win, cursor);
 	XMapWindow(dpy, win);
 
@@ -408,7 +388,6 @@ static void meltdown(Display *dpy, const WidgetArray& ws)
 	delete[] heights;
 	XFreeGC(dpy, copygc);
 	XFreeGC(dpy, fillgc);
-	XFreeCursor(dpy, cursor);
 
 	// sleep(1);
     }
@@ -425,6 +404,7 @@ static void meltdown(Display *dpy, const WidgetArray& ws)
 	    XDestroyWindow(dpy, win);
 	}
     }
+    XFreeCursor(dpy, cursor);
 
     delete[] windows;
 

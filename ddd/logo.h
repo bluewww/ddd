@@ -39,6 +39,7 @@
 extern Pixmap iconlogo(Widget shell);
 extern Pixmap iconmask(Widget shell);
 extern Pixmap versionlogo(Widget shell);
+extern Cursor logocursor(Widget shell);
 
 #endif // _DDD_logo_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

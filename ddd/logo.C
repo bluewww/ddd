@@ -92,3 +92,35 @@ Pixmap versionlogo(Widget w)
 
     return logo;
 }
+
+// Return a logo cursor
+Cursor logocursor(Widget w)
+{
+    Pixmap source = 
+	XCreateBitmapFromData(XtDisplay(w), RootWindowOfScreen(XtScreen(w)),
+			      dddlogo_bits, dddlogo_width, dddlogo_height);
+    Pixmap mask   = 
+	XCreateBitmapFromData(XtDisplay(w), RootWindowOfScreen(XtScreen(w)),
+			      dddmask_bits, dddmask_width, dddmask_height);
+
+    XColor foreground;
+    foreground.pixel = 0;
+    foreground.red   = 0;
+    foreground.green = 0;
+    foreground.blue  = 0;
+    foreground.flags = 0;
+
+    XColor background;
+    background.pixel = ~0;
+    background.red   = ~0;
+    background.green = ~0;
+    background.blue  = ~0;
+    background.flags = DoRed | DoGreen | DoBlue;
+
+    return XCreatePixmapCursor(XtDisplay(w),
+			       source, mask,
+			       &foreground, &background,
+			       dddlogo_x_hot, dddlogo_y_hot);
+}
+			       
+			       
