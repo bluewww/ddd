@@ -5146,9 +5146,8 @@ static void ddd_xt_warning(String message)
 
 	if (!informed)
 	{
-	    cerr << "(Use 'Edit | Preferences | General | "
-		    "Suppress X Warnings'\n"
-		    " to suppress these warnings.)\n";
+	    cerr << "(Annoyed?  "
+		"Try 'Edit | Preferences | General | Suppress X Warnings'!)\n";
 	    informed = true;
 	}
     }
