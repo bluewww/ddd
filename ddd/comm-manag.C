@@ -2873,7 +2873,7 @@ static void extra_completed (StringArray& answers,
 			     const VoidArray& /* qu_datas */,
 			     void*  data)
 {
-    int count = answers.size();
+    const int count = answers.size();
     for (int i = 0; i < count; i++)
 	filter_junk(answers[i]);
 
@@ -2946,7 +2946,7 @@ static void extra_completed (StringArray& answers,
 	case PERL:
 	case PYDB:
 	{
-            if (gdb->type() == DBX && gdb->isSunDBX())
+            if (gdb->type() == DBX)
 	    {
 		string list = (qu_count<count)?(answers[qu_count++]):("");
 		string line = (qu_count<count)?(answers[qu_count++]):("");
@@ -2960,10 +2960,13 @@ static void extra_completed (StringArray& answers,
 	        find_some_source();
 		source_view->lookup(pos, true);
 	    }
-	    // Clear caches and such
-	    string dummy = "";
-	    source_view->process_info_line_main(dummy);
-	    find_some_source();
+	    else
+	    {
+	        // Clear caches and such
+	        string dummy = "";
+	        source_view->process_info_line_main(dummy);
+	        find_some_source();
+	    }
 	    break;
 	}
 	}
