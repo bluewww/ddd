@@ -125,16 +125,21 @@ bool BreakPoint::update (string& info_output)
     {
     case GDB:
 	{
-	    // Read "Type" (breakpoint or watchpoint)
+	    // Read type (`breakpoint' or `watchpoint')
+	    // The type may be prefixed by `hw ' or other details.
 	    string word1 = info_output.before('\n');
 	    string word2 = word1.after(rxblanks_or_tabs);
 
 	    if (word1.contains("watchpoint", 0) || 
 		word2.contains("watchpoint", 0))
 	    {
-		changed |= (mytype != WATCHPOINT);
-		mytype = WATCHPOINT;
+		if (mytype != WATCHPOINT)
+		{
+		    changed = myenabled_changed = true;
+		    mytype = WATCHPOINT;
+		}
 
+		// Fetch breakpoint mode detail (`acc' or `read')
 		if (word1.contains("acc ", 0))
 		    mywatch_mode = WATCH_ACCESS;
 		else if (word1.contains("read ", 0))
@@ -145,40 +150,55 @@ bool BreakPoint::update (string& info_output)
 	    else if (word1.contains("breakpoint", 0) || 
 		     word2.contains("breakpoint", 0))
 	    {
-		changed |= (mytype != BREAKPOINT);
-		mytype = BREAKPOINT;
+		if (mytype != BREAKPOINT)
+		{
+		    changed = myenabled_changed = true;
+		    mytype = BREAKPOINT;
+		}
 	    }
 	    info_output = info_output.after("point");
 	    info_output = info_output.after(rxblanks_or_tabs);
 
-	    // Read "Disp" (disposition)
+	    // Read disposition (`dis', `del', or `keep')
 	    if (info_output.contains("dis", 0))
 	    {
-		changed |= (mydispo != BPDIS);
-		mydispo = BPDIS;
+		if (mydispo != BPDIS)
+		{
+		    changed = myenabled_changed = true;
+		    mydispo = BPDIS;
+		}
 	    }
 	    else if (info_output.contains("del", 0))
 	    {
-		changed |= (mydispo != BPDEL);
-		mydispo = BPDEL;
+		if (mydispo != BPDEL)
+		{
+		    changed = myenabled_changed = true;
+		    mydispo = BPDEL;
+		}
 	    }
 	    else if (info_output.contains("keep", 0))
 	    {
-		changed |= (mydispo != BPKEEP);
-		mydispo = BPKEEP;
+		if (mydispo != BPKEEP)
+		{
+		    changed = myenabled_changed = true;
+		    mydispo = BPKEEP;
+		}
 	    }
 	    info_output = info_output.after(rxblanks_or_tabs);
 
-	    // Read "Enb" (enabled or disabled)
-	    if (info_output.index ("y") == 0) {
-		if (myenabled != true) {
+	    // Read enabled flag (`y' or `n')
+	    if (info_output.contains('y', 0))
+	    {
+		if (!myenabled)
+		{
 		    changed = myenabled_changed = true;
 		    myenabled = true;
 		}
 	    }
-	    else if (info_output.contains("n", 0))
+	    else if (info_output.contains('n', 0))
 	    {
-		if (myenabled != false) {
+		if (myenabled)
+		{
 		    changed = myenabled_changed = true;
 		    myenabled = false;
 		}
