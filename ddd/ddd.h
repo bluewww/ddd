@@ -95,6 +95,10 @@
 #define XtCListCoreCommand       "ListCoreCommand"
 #define XtNlistDirCommand        "listDirCommand"
 #define XtCListDirCommand        "ListDirCommand"
+#define XtNwwwPage               "wwwPage"
+#define XtCWWWPage               "WWWPage"
+#define XtNwwwCommand            "wwwCommand"
+#define XtCWWWCommand            "WWWCommand"
 #define XtNshowInvocation        "showInvocation"
 #define XtCShowInvocation        "ShowInvocation"
 #define XtNshowVersion           "showVersion"
@@ -160,6 +164,8 @@ typedef struct {
     String  list_source_command;
     String  list_core_command;
     String  list_dir_command;
+    String  www_page;
+    String  www_command;
     Boolean show_invocation;
     Boolean show_version;
     Boolean show_configuration;
@@ -226,7 +232,7 @@ void gdbCommandCB(Widget w, XtPointer call_data, XtPointer client_data);
 
 // Command management
 extern bool remote_gdb();
-extern string sh_command(string command);
+extern string sh_command(string command, bool force_local = false);
 extern string sh_quote(string s);
 
 // Shell management

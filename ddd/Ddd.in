@@ -171,7 +171,24 @@ Ddd*listDirCommand:   \
 	file @MASK@ | grep '.*:.*directory.*' | cut -d: -f1
 
 
-! The time (in seconds) to wait for synchonous GDB questions to complete
+! The DDD WWW page.
+Ddd*wwwPage: http://www.cs.tu-bs.de/softech/software/ddd_e.html
+
+! Command to invoke the WWW page.  @URL@ stands for the URL to open.
+! Default is to try a running Netscape first, then to invoke a new 
+! Netscape process, then to let a running Emacs do the job, then to
+! invoke Mosaic, then to invoke Lynx.
+! Note that if you don't have WWW access, letting all these commands fail
+! may take a lot of time...
+Ddd*wwwCommand: \
+   netscape -remote 'openURL(@URL@)' \
+|| netscape '@URL@' \
+|| gnudoit '(w3-fetch \042@URL@\042)' \
+|| mosaic '@URL@' \
+|| Mosaic '@URL@' \
+|| xterm -e lynx '@URL@'
+
+! The time (in seconds) to wait for synchronous GDB questions to complete
 Ddd*questionTimeout: 5
 
 
@@ -1213,6 +1230,8 @@ Ddd*menubar.help*contextHelpString: \
 @tt \267 @bf On Version... @rm - some general information about @DDD@.\n\
 @tt \267 @bf On Debugging... @rm - some general information about debugging.\n\
 \n\
+@tt \267 @bf @DDD@ WWW Page... @rm - the @DDD@ WWW page.\
+\n\
 @tt \267 @bf @DDD@ Manual... @rm - the @DDD@ on-line manual.
 
 Ddd*helpMenu.onContext.labelString:	On Context...
@@ -1232,6 +1251,9 @@ Ddd*helpMenu.onVersion.mnemonic:	V
 
 Ddd*helpMenu.onDebugging.labelString:	On Debugging...
 Ddd*helpMenu.onDebugging.mnemonic:	D
+
+Ddd*helpMenu.www.labelString:		@DDD@ WWW Page...
+Ddd*helpMenu.www.mnemonic:		P
 
 Ddd*helpMenu.index.labelString:		@DDD@ Manual...
 Ddd*helpMenu.index.mnemonic:		M

@@ -300,6 +300,7 @@ void DDDCloseCB              (Widget, XtPointer, XtPointer);
 void DDDSaveOptionsCB        (Widget, XtPointer, XtPointer);
 
 void HelpOnDebuggingCB       (Widget, XtPointer, XtPointer);
+void DDDWWWPageCB            (Widget, XtPointer, XtPointer);
 
 void graphQuickPrintCB       (Widget, XtPointer, XtPointer);
 void graphPrintCB            (Widget, XtPointer, XtPointer);
@@ -680,6 +681,24 @@ static XtResource resources[] = {
 	XtOffsetOf(AppData, list_dir_command),
 	XtRString,
 	XtPointer("file @MASK@ | grep '.*:.*directory.*' | cut -d: -f1")
+    },
+    {
+        XtNwwwPage,
+	XtCWWWPage,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, www_page),
+	XtRString,
+	XtPointer("http://www.cs.tu-bs.de/softech/")
+    },
+    {
+        XtNwwwCommand,
+	XtCWWWCommand,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, www_command),
+	XtRString,
+	XtPointer("netscape @URL@")
     },
     {
         XtNshowInvocation,
@@ -1230,7 +1249,7 @@ static MMDesc options_menu [] =
     { "generalOptions", MMMenu, MMNoCB, ddd_options_menu     },
     { "sourceOptions",  MMMenu, MMNoCB, source_options_menu  },
     { "dataOptions",    MMMenu, MMNoCB, data_options_menu    },
-    { "startupOptions", MMMenu, MMNoCB, startup_options_menu    },
+    { "startupOptions", MMMenu, MMNoCB, startup_options_menu },
     MMSep,
     { "saveOptions",    MMPush,   { DDDSaveOptionsCB }},
     MMEnd
@@ -1256,6 +1275,8 @@ static MMDesc help_menu[] =
     {"onHelp",      MMPush, { HelpOnHelpCB }},
     {"onVersion",   MMPush, { HelpOnVersionCB }},
     {"onDebugging", MMPush, { HelpOnDebuggingCB }},
+    MMSep,
+    {"www",         MMPush, { DDDWWWPageCB }},
     MMSep,
     {"index",       MMPush, { ManualStringHelpCB, XtPointer(ddd_man_page) }},
     MMEnd
@@ -1496,9 +1517,9 @@ string sh_quote(string s)
     return string('\'') + s + '\'';
 }
 
-static string _sh_command(string command)
+static string _sh_command(string command, bool force_local)
 {
-    if (!remote_gdb())
+    if (force_local || !remote_gdb())
 	return "/bin/sh -c " + sh_quote(command);
 
     string rsh = app_data.rsh_command;
@@ -1509,7 +1530,7 @@ static string _sh_command(string command)
     string display = getenv("DISPLAY");
     if (display.contains("unix:", 0) || display.contains(":", 0))
 	display = string(fullhostname()) + display.from(":");
-	
+
     string settings = "DISPLAY='" + display + "'; export DISPLAY; ";
     command = settings + command;
 
@@ -1518,9 +1539,9 @@ static string _sh_command(string command)
     return rsh;
 }
 
-string sh_command(string command)
+string sh_command(string command, bool force_local)
 {
-    string ret = _sh_command(command);
+    string ret = _sh_command(command, force_local);
     if (app_data.trace_shell_commands)
 	clog << "+ " << ret << "\n";
     return ret;
@@ -6297,6 +6318,24 @@ void gdb_eofHP(Agent *, void *, void *)
 {
     // Kill and exit
     gdb->terminate();
+}
+
+
+//-----------------------------------------------------------------------------
+// WWW Page
+//-----------------------------------------------------------------------------
+
+void DDDWWWPageCB(Widget, XtPointer, XtPointer)
+{
+    string url = app_data.www_page;
+    string cmd = app_data.www_command;
+
+    StatusDelay delay("Invoking WWW browser for " + quote(url));
+
+    cmd.gsub("@URL@", url);
+    cmd += " &";
+    cmd = sh_command(cmd, true);
+    system(cmd);
 }
 
 
