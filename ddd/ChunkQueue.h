@@ -34,8 +34,12 @@
 
 #include "assert.h"
 #include <stdio.h>
-#include <memory.h>
+#include <string.h>
 #include "TypeInfo.h"
+
+#if defined(HAVE_MEMCPY) && !defined(HAVE_MEMCPY_DECL)
+extern "C" void *memcpy(void *to, const void *from, size_t size);
+#endif
 
 /*
     ChunkQueue is a character array that grows dynamically.

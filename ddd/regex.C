@@ -42,10 +42,6 @@ char regex_rcsid[] =
 #include <iostream.h>
 #include <string.h>
 
-#ifdef HAVE_MEMORY_H
-#include <memory.h>
-#endif
-
 #if defined(HAVE_MEMSET) && !defined(HAVE_MEMSET_DECL)
 extern "C" void *memset(void *s, int c, size_t n);
 #endif

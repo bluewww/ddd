@@ -73,9 +73,12 @@ extern "C" char *alloca ();
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <string.h>
-#include <memory.h>
 #include <stdlib.h>
 #include <stdio.h>
+
+#if defined(HAVE_MEMCPY) && !defined(HAVE_MEMCPY_DECL)
+extern "C" void *memcpy(void *to, const void *from, size_t size);
+#endif
 
 // These should be checked by autoconf, but we prefer to play it safe
 #define _POSIX_SOURCE
