@@ -7561,13 +7561,14 @@ static void setup_options(int& argc, const char *argv[],
 	    gdb_option_offset = 2;
 	}
 
-	if (arg == "--dbx" || arg == "-dbx" 
-	    || arg == "--gdb" || arg == "-gdb"
-	    || arg == "--xdb" || arg == "-xdb"
-	    || arg == "--jdb" || arg == "-jdb"
-	    || arg == "--pydb" || arg == "-pydb"
-	    || arg == "--perl" || arg == "-perl"
-	    || arg == "--dbg"  || arg == "-dbg")
+	if ( arg == "--bash"    || arg == "-bash" 
+	     || arg == "--dbg"  || arg == "-dbg"
+	     || arg == "--dbx"  || arg == "-dbx"
+	     || arg == "--gdb"  || arg == "-gdb"
+	     || arg == "--jdb"  || arg == "-jdb"
+	     || arg == "--pydb" || arg == "-pydb"
+	     || arg == "--perl" || arg == "-perl"
+	     || arg == "--xdb"  || arg == "-xdb" )
 	{
 	    gdb_name = arg.after('-', -1);
 	    gdb_option_pos    = i;

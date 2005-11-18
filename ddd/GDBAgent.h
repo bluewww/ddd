@@ -598,7 +598,7 @@ public:
     // True if `display X' automatically prints X
     bool display_prints_values() const
     {
-      return type() == GDB || type() == PYDB || type() == BASH;
+      return type() == GDB || type() == PYDB ;
     }
 
     // True if debugger can enable displays

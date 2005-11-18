@@ -481,16 +481,8 @@ static void searchLocalExecFiles(Widget fs,
 {
     switch (gdb->type())
     {
-    case PYDB:
-	searchLocal(fs, cbs, is_python_file);
-	break;
-
-    case PERL:
-	searchLocal(fs, cbs, is_perl_file);
-	break;
-
     case BASH:
-	searchLocal(fs, cbs, is_perl_file);
+	searchLocal(fs, cbs, is_bash_file);
 	break;
 
     case DBG:
@@ -499,6 +491,14 @@ static void searchLocalExecFiles(Widget fs,
     
     case GDB:
 	searchLocal(fs, cbs, is_debuggee_file);
+	break;
+
+    case PERL:
+	searchLocal(fs, cbs, is_perl_file);
+	break;
+
+    case PYDB:
+	searchLocal(fs, cbs, is_python_file);
 	break;
 
     default:
