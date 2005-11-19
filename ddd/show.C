@@ -139,7 +139,7 @@ void show_invocation(const string& gdb_command, std::ostream& os)
     {
 	title = "BASH";
 	base  = "the BASH debugger.";
-	options += "  [Berl options]     Pass option to Bash.";
+	options += "  [bash options]     Pass option to Bash.";
 	args = "program-file [args]";
     }
     break;
