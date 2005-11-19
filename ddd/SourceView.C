@@ -3980,7 +3980,7 @@ void SourceView::process_info_bp (string& info_output,
     {
     case GDB:
     case BASH:
-	// If this is no breakpoint info, process it as GDB message
+	// If there is no breakpoint info, process it as GDB message.
 	if (!info_output.contains("Num", 0) && 
 	    !info_output.contains("No breakpoints", 0))
 	    check_remainder(info_output);
