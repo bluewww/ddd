@@ -2639,6 +2639,7 @@ string GDBAgent::run_command(string args) const
 	else
 	    return "run" + args;
 
+    case BASH:
     case DBG:
     case JDB:
     case PYDB:
@@ -2652,9 +2653,6 @@ string GDBAgent::run_command(string args) const
 
     case PERL:
 	return "exec " + quote(debugger() + " -d " + program() + args);
-
-    case BASH:
-	return "restart";
     }
 
     return "";			// Never reached
