@@ -1916,7 +1916,7 @@ string GDBAgent::pwd_command() const
 	return "!pwd";
 
     case BASH:
-	return "!! pwd";
+	return "shell pwd";
 
     case PERL:
 	return "p $ENV{'PWD'} || `pwd`";
@@ -1954,7 +1954,7 @@ string GDBAgent::make_command(const string& args) const
 	    return "system 'make " + args + "'";
 
     case BASH:
-	cmd = "!! make";
+	cmd = "shell make";
 	break;
 
     case JDB:
@@ -2213,26 +2213,26 @@ string GDBAgent::echo_command(const string& text) const
 {
     switch (type())
     {
-    case GDB:
-	return "echo " + cook(text);
-
     case BASH:
 	return "print " + quote(text);
 
+    case DBG:
+	return " ";
+	
     case DBX:
 	return print_command(quote(text), false);
 
-    case XDB:
-	return quote(text);
+    case GDB:
+	return "echo " + cook(text);
 
     case PERL:
 	// We use `print DB::OUT' instead of `p' since this also works
 	// in actions.
 	return "print DB::OUT " + quote(text, '\"');
 
-    case DBG:
-	return " ";
-	
+    case XDB:
+	return quote(text);
+
     case JDB:
     case PYDB:
 	return "";		// Not available
@@ -2909,12 +2909,12 @@ int GDBAgent::default_index_base() const
 	return 1;
 
     case LANGUAGE_ADA:
+    case LANGUAGE_BASH:
     case LANGUAGE_C:
     case LANGUAGE_JAVA:
     case LANGUAGE_PERL:
     case LANGUAGE_PHP:
     case LANGUAGE_PYTHON:
-    case LANGUAGE_BASH:
     case LANGUAGE_OTHER:
 	return 0;
     }
