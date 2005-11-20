@@ -744,7 +744,7 @@ bool GDBAgent::ends_with_prompt (const string& ans)
 	// Since N does not make sense in DDD, we use `DB<> ' instead.
 
 #if RUNTIME_REGEX
-	static regex rxbashprompt("bashdb<+[(][0-9][)]*>+");
+	static regex rxbashprompt("bashdb<+[(]*[0-9][)]*>+");
 #endif
 
 	int i = answer.length() - 1;
@@ -936,6 +936,8 @@ bool GDBAgent::ends_with_secondary_prompt (const string& ans) const
 	return answer == "> " || ends_in(answer, "\n> ");
 	
     case BASH:
+        return false; // No secondary prompt
+
     case DBG:
     case JDB:
     case PERL:
