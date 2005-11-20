@@ -212,6 +212,15 @@ void show_invocation(const string& gdb_command, std::ostream& os)
     }
     break;
 
+    case MAKE:
+    {
+	title = "MAKE";
+	base  = "the GNU Make debugger.";
+	options += "  [make options]     Pass option to GNU Make.";
+	args = "program-file [args]";
+    }
+    break;
+
     case PYDB:
     {
 	title = "PYDB";

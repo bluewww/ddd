@@ -56,14 +56,15 @@ class PosBuffer {
     string auto_cmd_part;	// Prefix of AutoCommand found
 
 protected:
-    void filter_gdb(string& answer);
-    void filter_dbx(string& answer);
-    void filter_xdb(string& answer);
-    void filter_jdb(string& answer);
-    void filter_pydb(string& answer);
-    void filter_dbg(string& answer);
-    void filter_perl(string& answer);
     void filter_bash(string& answer);
+    void filter_dbg(string& answer);
+    void filter_dbx(string& answer);
+    void filter_gdb(string& answer);
+    void filter_jdb(string& answer);
+    void filter_perl(string& answer);
+    void filter_pydb(string& answer);
+    void filter_make(string& answer);
+    void filter_xdb(string& answer);
 
     // Filter all lines from ANSWER beginning with current line.  This
     // is required to suppress the line number output after a

@@ -102,6 +102,7 @@ BreakPoint::BreakPoint(string& info_output, const string& arg,
     switch(gdb->type())
     {
     case GDB:
+    case MAKE:
     case BASH:
 	process_gdb(info_output);
 	break;
@@ -879,8 +880,9 @@ X(ADA_FALSE,"FALSE")
     switch (gdb->program_language())
     {
     case LANGUAGE_BASH:
-    case LANGUAGE_PHP:
     case LANGUAGE_C:
+    case LANGUAGE_PHP:
+    case LANGUAGE_MAKE:
     case LANGUAGE_PYTHON:
     case LANGUAGE_OTHER:
 	return Falses[C_FALSE];
@@ -934,6 +936,7 @@ X(PYTHON_AND," and ")
     case LANGUAGE_C:
     case LANGUAGE_PERL:
     case LANGUAGE_BASH:
+    case LANGUAGE_MAKE:
     case LANGUAGE_JAVA:
     case LANGUAGE_PHP:
     case LANGUAGE_OTHER:
@@ -1029,6 +1032,7 @@ bool BreakPoint::get_state(std::ostream& os, int nr, bool as_dummy,
     {
     case BASH:
     case GDB:
+    case MAKE:
     case PYDB:
     case DBG:
     {

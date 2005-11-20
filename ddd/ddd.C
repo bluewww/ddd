@@ -514,6 +514,11 @@ static XrmOptionDescRec options[] = {
 { XRMOPTSTR("-jdb"),                   XRMOPTSTR(XtNdebugger),             
                                         XrmoptionNoArg,  XPointer("jdb") },
 
+{ XRMOPTSTR("--make"),                 XRMOPTSTR(XtNdebugger),             
+                                        XrmoptionNoArg,  XPointer("make") },
+{ XRMOPTSTR("-make"),                  XRMOPTSTR(XtNdebugger),             
+                                        XrmoptionNoArg,  XPointer("make") },
+
 { XRMOPTSTR("--perl"),                 XRMOPTSTR(XtNdebugger),             
                                         XrmoptionNoArg,  XPointer("perl") },
 { XRMOPTSTR("-perl"),                  XRMOPTSTR(XtNdebugger),             
@@ -1524,6 +1529,7 @@ static Widget set_debugger_dbg_w;
 static Widget set_debugger_dbx_w;
 static Widget set_debugger_gdb_w;
 static Widget set_debugger_jdb_w;
+static Widget set_debugger_make_w;
 static Widget set_debugger_perl_w;
 static Widget set_debugger_pydb_w;
 static Widget set_debugger_xdb_w;
@@ -3570,6 +3576,8 @@ static void set_shortcut_menu(DataDisp *data_disp)
     case DBX:  display_shortcuts = app_data.dbx_display_shortcuts;  break;
     case GDB:  display_shortcuts = app_data.gdb_display_shortcuts;  break;
     case JDB:  display_shortcuts = app_data.jdb_display_shortcuts;  break;
+    case MAKE: display_shortcuts = app_data.bash_display_shortcuts; break;
+      //    case MAKE: display_shortcuts = app_data.make_display_shortcuts; break;
     case PERL: display_shortcuts = app_data.perl_display_shortcuts; break;
     case PYDB: display_shortcuts = app_data.pydb_display_shortcuts; break;
     case XDB:  display_shortcuts = app_data.xdb_display_shortcuts;  break;
@@ -5709,6 +5717,7 @@ static std::ostream& operator<< (std::ostream& os, ProgramLanguage lang)
     case LANGUAGE_CHILL:   os << "Chill";         break;
     case LANGUAGE_FORTRAN: os << "Fortran";       break;
     case LANGUAGE_JAVA:    os << "Java";          break;
+    case LANGUAGE_MAKE:    os << "GNU Make";      break;
     case LANGUAGE_PASCAL:  os << "Pascal/Modula"; break;
     case LANGUAGE_PERL:    os << "Perl";          break;
     case LANGUAGE_PHP:     os << "PHP";           break;
@@ -7488,6 +7497,7 @@ static void setup_environment()
     case DBG:
     case DBX:
     case GDB:
+    case MAKE:
     case PERL:
 	// The debugger console has few capabilities.
 	// When starting the execution TTY, we set the correct type.
@@ -7566,6 +7576,7 @@ static void setup_options(int& argc, const char *argv[],
 	     || arg == "--dbx"  || arg == "-dbx"
 	     || arg == "--gdb"  || arg == "-gdb"
 	     || arg == "--jdb"  || arg == "-jdb"
+	     || arg == "--make" || arg == "-make"
 	     || arg == "--pydb" || arg == "-pydb"
 	     || arg == "--perl" || arg == "-perl"
 	     || arg == "--xdb"  || arg == "-xdb" )
@@ -7852,6 +7863,7 @@ static void setup_options()
     set_sensitive(set_debugger_dbx_w,  have_cmd("dbx") || have_cmd("ladebug"));
     set_sensitive(set_debugger_gdb_w,  have_cmd("gdb"));
     set_sensitive(set_debugger_jdb_w,  have_cmd("jdb"));
+    set_sensitive(set_debugger_make_w, have_cmd("make"));
     set_sensitive(set_debugger_perl_w, have_cmd("perl"));
     set_sensitive(set_debugger_pydb_w, have_cmd("pydb"));
     set_sensitive(set_debugger_xdb_w,  have_cmd("xdb"));

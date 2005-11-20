@@ -67,24 +67,6 @@ GDBAgent *new_gdb(DebuggerType type,
     {
 	switch(type)
 	{
-	case GDB:
-	    // Do not issue introductiory messages; output full file names.
-	    gdb_call += " -q -fullname";
-	    break;
-
-	case DBX:
-	    // Nothing special.  (Anyway, every DBX has its own sets of
-	    // options, so there is not much we could do here.)
-	    break;
-
-	case JDB:
-	    // Nothing special.
-	    break;
-
-	case PERL:
-	    // Be sure to invoke the debugger.
-	    gdb_call += " -d";
-	    break;
 
 	case BASH:
 	    // Be sure to invoke the debugger.
@@ -93,6 +75,32 @@ GDBAgent *new_gdb(DebuggerType type,
 
 	case DBG:
 	    // Nothing special?
+	    break;
+
+	case DBX:
+	    // Nothing special.  (Anyway, every DBX has its own sets of
+	    // options, so there is not much we could do here.)
+	    break;
+
+	case GDB:
+	    // Do not issue introductiory messages; output full file names.
+	    gdb_call += " -q -fullname";
+	    break;
+
+	case JDB:
+	    // Nothing special.
+	    break;
+
+	case MAKE:
+	    // For now we have debuggable make installed as "remake"
+	    // Be sure to invoke the debugger.
+	    // gdb_call += " --debugger";
+	    gdb_call = "remake --debugger -f";
+	    break;
+
+	case PERL:
+	    // Be sure to invoke the debugger.
+	    gdb_call += " -d";
 	    break;
 
 	case PYDB:
@@ -516,6 +524,7 @@ static struct table {
     { DBX,  "dbx"  },
     { DBX,  "ladebug" },
     { JDB,  "jdb"  },
+    { MAKE, "make" },
     { PERL, "perl" },
     { PYDB, "pydb" },
     { XDB,  "xdb"  }

@@ -146,6 +146,12 @@ void PosBuffer::filter (string& answer)
     switch (gdb->type())
     {
     case BASH:
+    {
+ 	if (has_prefix(answer, "Reading "))
+ 	    started = true;
+	break;
+    }
+
     case GDB:
     {
 	// If GDB prints a "Current function" line, it overrides whatever
@@ -202,6 +208,13 @@ void PosBuffer::filter (string& answer)
 	    signaled = true;
     }
     break;
+
+    case MAKE:
+    {
+ 	if (has_prefix(answer, "Reading makefiles..."))
+ 	    started = true;
+	break;
+    }
 
     case PERL:
     {
@@ -299,36 +312,40 @@ void PosBuffer::filter (string& answer)
 	// Now go for the actual position.
 	switch (gdb->type())
 	{
-	case GDB:
-	    filter_gdb(answer);
-	    break;
-
-	case DBX:
-	    filter_dbx(answer);
-	    break;
-
-	case XDB:
-	    filter_xdb(answer);
-	    break;
-
-	case JDB:
-	    filter_jdb(answer);
-	    break;
-
-	case PYDB:
-	    filter_pydb(answer);
-	    break;
-
-	case PERL:
-	    filter_perl(answer);
-	    break;
-
 	case BASH:
 	    filter_bash(answer);
 	    break;
 	
 	case DBG:
 	    filter_dbg(answer);
+	    break;
+
+	case DBX:
+	    filter_dbx(answer);
+	    break;
+
+	case GDB:
+	    filter_gdb(answer);
+	    break;
+
+	case JDB:
+	    filter_jdb(answer);
+	    break;
+
+	case MAKE:
+	    filter_make(answer);
+	    break;
+
+	case PERL:
+	    filter_perl(answer);
+	    break;
+
+	case PYDB:
+	    filter_pydb(answer);
+	    break;
+
+	case XDB:
+	    filter_xdb(answer);
 	    break;
 	}
 
@@ -1373,6 +1390,90 @@ void PosBuffer::filter_bash(string& answer)
 	    static regex rxbashpos("[(][^:]*:[1-9][0-9]*[)]:");
 #endif
 	    if (line.matches(rxbashpos))
+	    {
+		// Fetch position
+		pos_buffer = line.after('(');
+		pos_buffer = pos_buffer.before(')');
+		already_read = PosComplete;
+
+		// Delete this line from output
+		int next_index = answer.index('\n', index);
+		if (next_index < 0)
+		    next_index = answer.length();
+		else
+		    next_index++;
+		answer.at(index, next_index - index) = "";
+		break;
+	    }
+	    else
+	    {
+		// Look at next line
+		index = answer.index('\n', index);
+		if (index >= 0)
+		    index++;
+	    }
+	}
+    }
+}
+
+void PosBuffer::filter_make(string& answer)
+{
+    // Check for regular source info
+    int index1 = answer.index ("\032\032");
+	    
+    if (index1 < 0) 
+    {
+	int index_p = answer.index ("\032");
+	if (index_p >= 0 && index_p == int(answer.length()) - 1)
+	{
+	    // Possible begin of position info at end of ANSWER
+	    answer_buffer = "\032";
+	    answer = answer.before (index_p);
+	    already_read = PosPart;
+	    return;
+	}
+    }
+    else
+    {
+	// ANSWER contains position info
+	int index2 = answer.index("\n", index1);
+	    
+	if (index2 == -1)
+	{
+	    // Position info is incomplete
+	    answer_buffer = answer.from (index1);
+	    answer = answer.before (index1);
+	    already_read = PosPart;
+	    return;
+	}
+	else
+	{
+	    assert (index1 < index2);
+	    
+	    // Position info is complete
+	    already_read = PosComplete;
+	    pos_buffer = answer.at(index1 + 2, index2 - (index1 + 2));
+	    answer.at(index1, index2 - index1 + 1) = "";
+	}
+    }
+
+    if (already_read != PosComplete)
+    {
+	// Try '(FILE:LINE):\n';
+
+	// INDEX points at the start of a line
+	int index = 0;
+	while (index >= 0 && !answer.empty())
+	{
+	    string line = answer.from(index);
+	    if (line.contains('\n'))
+		line = line.before('\n');
+	    strip_trailing_space(line);
+		    
+#if RUNTIME_REGEX
+	    static regex rxmakepos("[(][^:]*:[0-9][0-9]*[)]:");
+#endif
+	    if (line.matches(rxmakepos))
 	    {
 		// Fetch position
 		pos_buffer = line.after('(');

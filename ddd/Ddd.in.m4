@@ -81,7 +81,8 @@ Ddd*appDefaultsVersion: @VERSION@
 ! User-settable resources
 !-----------------------------------------------------------------------------
 
-! The inferior debugger type. One of: gdb, dbx, xdb, jdb, pydb, perl or bash.
+! The inferior debugger type. One of: bash, dbx, gdb, jdb, makedb, perl, pydb, 
+!	                              or xdb.
 Ddd*debugger: gdb
 
 ! If true, determine debugger automatically from args upon start-up.
@@ -622,9 +623,17 @@ def step s\n\
 def quit q\n\
 def finish { bu \\1t ; c ; L }\n
 
-! The XDB settings.  Usually overridden in `~/.ddd/init'.
-Ddd*xdbSettings:
+Ddd*bashInitCommands: \
+  set prompt bashdb$_Dbg_less$_Dbg_greater$_Dbg_space\n
 
+! The Bash Debugger settings.  Usually overridden in `~/.ddd/init'.
+Ddd*bashSettings:
+
+! The PHP DBG initialization commands.  Nothing special.
+Ddd*dbgInitCommands:
+
+! The PHP DBG Debugger settings.  Usually overridden in `~/.ddd/init'.
+Ddd*dbgSettings:
 
 ! The JDB initialization commands.  Nothing special.
 Ddd*jdbInitCommands:
@@ -632,6 +641,19 @@ Ddd*jdbInitCommands:
 ! The JDB settings.  Usually overridden in `~/.ddd/init'.
 Ddd*jdbSettings:
 
+! The Make Debuggger initialization commands.  Nothing special.
+Ddd*makeInitCommands:
+
+! The Make Debugger Debugger settings.  Usually overridden in `~/.ddd/init'.
+Ddd*makeSettings:
+
+! The Perl Debugger initialization commands.  
+! Disable ornaments; enable emacs mode; set output format.
+Ddd*perlInitCommands: \
+o CommandSet=580\n
+
+! The Perl Debugger settings.  Usually overridden in `~/.ddd/init'.
+Ddd*perlSettings:
 
 ! The PYDB initialization commands.  Nothing special.
 Ddd*pydbInitCommands:
@@ -639,26 +661,8 @@ Ddd*pydbInitCommands:
 ! The PYDB settings.  Usually overridden in `~/.ddd/init'.
 Ddd*pydbSettings:
 
-
-! The Perl Debugger initialization commands.  
-! Disable ornaments; enable emacs mode; set output format.
-Ddd*perlInitCommands: \
-o CommandSet=580\n
-
-
-! The Perl Debugger settings.  Usually overridden in `~/.ddd/init'.
-Ddd*perlSettings:
-
-Ddd*bashInitCommands: \
-  set prompt bashdb$_Dbg_less$_Dbg_greater$_Dbg_space\n
-
-! The Bash Debugger settings.  Usually overridden in `~/.ddd/init'.
-Ddd*bashSettings:
-
-Ddd*dbgInitCommands:
-
-! The PHP DBG Debugger settings.  Usually overridden in `~/.ddd/init'.
-Ddd*dbgSettings:
+! The XDB settings.  Usually overridden in `~/.ddd/init'.
+Ddd*xdbSettings:
 
 ! If on, let GDB source all initialization commands from a temporary file.
 ! This is slightly faster than processing each command separately,

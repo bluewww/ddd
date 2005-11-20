@@ -53,7 +53,7 @@
 // Debugger types
 //-----------------------------------------------------------------------------
 
-enum DebuggerType { BASH, DBG, DBX, GDB, JDB, PERL, PYDB, XDB };
+enum DebuggerType { BASH, DBG, DBX, GDB, JDB, PERL, PYDB, XDB, MAKE };
 //-----------------------------------------------------------------------------
 // Program language
 //-----------------------------------------------------------------------------
@@ -69,6 +69,7 @@ enum ProgramLanguage {
     LANGUAGE_CHILL,		// Chill, as supported by GDB.
     LANGUAGE_FORTRAN,		// FORTRAN, as supported by GDB.
     LANGUAGE_JAVA,		// Java, as supported by GDB.
+    LANGUAGE_MAKE,		// Make, as supported by makedb.
     LANGUAGE_PASCAL,		// Pascal-like: Pascal, Modula...
     LANGUAGE_PERL,		// Perl, as supported by Perl.
     LANGUAGE_PHP,		// PHP, as supported by DBG.
@@ -538,7 +539,7 @@ public:
     bool has_shell_command() const
     {
       return type() == GDB || type() == XDB || type() == DBX || 
-	type() == PERL || type() == BASH ;
+	type() == PERL || type() == BASH || type() == MAKE;
     }
 
     // True if debugger has numbered breakpoints
@@ -567,8 +568,8 @@ public:
     // True if debugger supports breakpoint commands
     bool has_breakpoint_commands() const
     {
-        return type() == GDB || type() == XDB || type() == BASH || 
-	       has_when_command() || type() == PERL;
+        return type() == GDB || type() == XDB || type() == BASH
+	  || type() == MAKE || has_when_command() || type() == PERL;
     }
 
     // True if debugger has typed pointers, as in `(TYPE)0x0'

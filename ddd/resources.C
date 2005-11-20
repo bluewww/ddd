@@ -266,6 +266,26 @@ XtResource ddd_resources[] = {
 	XtPointer("")
     },
 
+    { 
+	XTRESSTR(XtNmakeInitCommands), 
+	XTRESSTR(XtCInitCommands), 
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, make_init_commands), 
+	XtRString,
+	XtPointer("")
+    },
+
+    { 
+	XTRESSTR(XtNmakeSettings), 
+	XTRESSTR(XtCSettings), 
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, make_settings),
+	XtRString,
+	XtPointer("")
+    },
+
     {
 	XTRESSTR(XtNrestartCommands),
 	XTRESSTR(XtCInitCommands),

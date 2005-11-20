@@ -86,6 +86,10 @@ string dbx_lookup(const string& func_name, bool silent)
     case BASH:
 	reply = gdb_question("l " + func_name, 0, true);
 	break;
+
+    case MAKE:
+	reply = gdb_question("target " + func_name, 0, true);
+	break;
     }
 
     if (reply == NO_GDB_ANSWER)
@@ -120,6 +124,7 @@ string dbx_lookup(const string& func_name, bool silent)
     case BASH:
     case DBG:
     case JDB:
+    case MAKE:
     case PERL:
 	line = line_of_listing(reply, silent);
 	file = source_view->line_of_cursor();

@@ -185,6 +185,7 @@ void translate_command(string& command)
 	break;
 
     case BASH: // I think this is right.
+    case MAKE: // I think this is right.
     case DBG:  // I think this is right.
     case GDB:
 	break;
