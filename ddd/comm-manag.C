@@ -2600,6 +2600,8 @@ bool is_known_command(const string& answer)
     }
 
     if (gdb->type() == BASH) {
+      // Note: Current versions of the bash don't use this.
+      // This can be removed at some convenient cleanup point.
       if (ans.contains("help subcommands fully not done")) 
 	return false;
     } else if (gdb->type() == PERL) {
@@ -2626,7 +2628,7 @@ bool is_known_command(const string& answer)
     if (ans.contains("there is no running program")) // Ladebug
 	return true;
 
-    if (ans.contains("undefined command"))    // GDB
+    if (ans.contains("undefined command"))    // BASH, GDB, MAKE
 	return false;
 
     if (ans.contains("ambiguous command"))    // GDB
