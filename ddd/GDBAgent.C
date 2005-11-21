@@ -2857,6 +2857,8 @@ string GDBAgent::dereferenced_expr(const string& expr) const
     case LANGUAGE_C:
 	return prepend_prefix("*", expr);
 
+    case LANGUAGE_BASH:
+    case LANGUAGE_MAKE:
     case LANGUAGE_PHP:
     case LANGUAGE_PERL:
 	// Perl has three `dereferencing' operators, depending on the
@@ -2888,10 +2890,8 @@ string GDBAgent::dereferenced_expr(const string& expr) const
 	// GDB 4.16.gnat.1.13 prepends `*' as in C
 	return prepend_prefix("*", expr);
 
-    case LANGUAGE_BASH:
-    case LANGUAGE_MAKE:
     case LANGUAGE_PYTHON:
-	return "";		// No such thing in Python/PYDB and bash
+	return "";		// No such thing in Python/PYDB
 
     case LANGUAGE_OTHER:
 	return expr;		// All other languages
@@ -2959,6 +2959,10 @@ string GDBAgent::index_expr(const string& expr, const string& index) const
 
     case LANGUAGE_BASH:
       return "${" + expr + "[" + index + "]}";
+
+    // Not sure if this is really right.
+    case LANGUAGE_MAKE:
+      return "$(word $(" + expr + ")," + index + ")";
 
     default:
 	break;
@@ -3237,20 +3241,21 @@ ProgramLanguage GDBAgent::program_language(string text)
 	const char *name;
 	ProgramLanguage language;
     } const language_table[] = {
+	{ "ada",     LANGUAGE_ADA },
+	{ "bash",    LANGUAGE_BASH },
+	{ "c",       LANGUAGE_C },
+	{ "c++",     LANGUAGE_C },
+	{ "chill",   LANGUAGE_CHILL },
 	{ "fortran", LANGUAGE_FORTRAN },
 	{ "f",       LANGUAGE_FORTRAN }, // F77, F90, F
 	{ "java",    LANGUAGE_JAVA },
-	{ "chill",   LANGUAGE_CHILL },
-	{ "pascal",  LANGUAGE_PASCAL },
+	{ "make",    LANGUAGE_MAKE },
 	{ "modula",  LANGUAGE_PASCAL },
 	{ "m",       LANGUAGE_PASCAL }, // M2, M3 or likewise
-	{ "ada",     LANGUAGE_ADA },
-	{ "python",  LANGUAGE_PYTHON },
-	{ "bash",    LANGUAGE_BASH },
+	{ "pascal",  LANGUAGE_PASCAL },
 	{ "perl",    LANGUAGE_PERL },
+	{ "python",  LANGUAGE_PYTHON },
 	{ "php",     LANGUAGE_PHP },
-	{ "c",       LANGUAGE_C },
-	{ "c++",     LANGUAGE_C },
 	{ "auto",    LANGUAGE_OTHER }  // Keep current language
     };
 
