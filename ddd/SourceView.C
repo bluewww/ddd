@@ -3185,23 +3185,29 @@ void SourceView::find_word_bounds (Widget text_w,
     int offset = pos - line_pos;
     if (offset == 0 || offset < indent_amount(text_w))
     {
-	// Do not select words in breakpoint area
+	// Do not select words in breakpoint area.
 	return;
     }
 
-    // We first check the special case in BASH and MAKE were we are 
+    // We first check the special case in BASH and MAKE where we are 
     // looking at a $ which often surrounds an identifier. 
     // The exception to this is $$. 
     // We also dispose of the special automatic variables of GNU make: 
-    // $@, $<, etc.
+    // $@, $<, etc and special variables of BASH: $*, $@, $? $$, etc.
     if ( '$' == text[endpos] && endpos < XmTextPosition(text.length()) 
 	 && (endpos - 1 <= 0 || '$' != text[endpos-1]) )
     {
-      if ( gdb->program_language() == LANGUAGE_BASH 
-	   && text[endpos+1] == '{' ) 
-	// Advance position over ${
-	startpos = endpos += 2;
-      else if ( gdb->program_language() == LANGUAGE_MAKE ) {
+      if ( gdb->program_language() == LANGUAGE_BASH ) {
+	if ( text[endpos+1] == '{' )
+	  // Advance position over ${
+	  startpos = endpos += 2;
+	else if (is_bash_special(text[endpos+1])) {
+	  // Found a Bash special variable
+	  startpos = endpos;
+	  endpos  =  endpos+2;
+	  return;
+	}
+      } else if ( gdb->program_language() == LANGUAGE_MAKE ) {
 	if ( text[endpos+1] == '(' )
 	  // Advance position over $(
 	  startpos = endpos += 2;
@@ -3212,12 +3218,21 @@ void SourceView::find_word_bounds (Widget text_w,
 	  return;
 	}
       }
-    } else if ( gdb->program_language() == LANGUAGE_MAKE &&
-		is_make_automatic(text[endpos]) &&
-		endpos - 1 > 0 || '$' == text[endpos-1]) {
-      // Found a GNU Make automatic variable
-      startpos = endpos-1;
-      endpos  =  endpos+1;
+    } else if (endpos - 1 > 0 || '$' == text[endpos-1]) {
+      /* Previous character was a $ - check it out. */
+      if ( gdb->program_language() == LANGUAGE_MAKE &&
+	   is_make_automatic(text[endpos]) ) {
+	// Found a GNU Make automatic variable
+	startpos = endpos-1;
+	endpos  =  endpos+1;
+	return;
+      } else if ( gdb->program_language() == LANGUAGE_BASH &&
+	   is_bash_special(text[endpos]) ) {
+	// Found a Bash special variable
+	startpos = endpos-1;
+	endpos  =  endpos+1;
+	return;
+      }
     }
 
     // Find end of word - Start scanning for a non-identifier
