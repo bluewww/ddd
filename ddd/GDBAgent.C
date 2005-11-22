@@ -3058,7 +3058,7 @@ string GDBAgent::assign_command(const string& var, const string& expr) const
 	break;
 
     case BASH:
-	if (!var.empty() && !is_bash_prefix(var[0]))
+       if (!var.empty() && ! ('$' == var[0]))
 	    return "";		// Cannot set this
 
 	cmd = "eval ";

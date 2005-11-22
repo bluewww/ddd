@@ -32,6 +32,7 @@ char settings_rcsid[] =
 
 #include "settings.h"
 
+
 #include <Xm/Xm.h>
 #include <Xm/SelectioB.h>
 #include <Xm/DialogS.h>
@@ -727,7 +728,8 @@ void process_show(const string& command, string value, bool init)
     if (!init)
 	set_status(value);
 
-    if (gdb->type() == BASH || gdb->type() == DBG || gdb->type() == GDB)
+    if ( gdb->type() == BASH || gdb->type() == DBG || gdb->type() == GDB
+	|| gdb->type() == MAKE )
     {
 	if (value.contains(" is "))
 	    value = value.after(" is ", -1);

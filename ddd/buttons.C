@@ -604,7 +604,7 @@ static MString gdbDefaultValueText(Widget widget, XEvent *event,
     // effects.
     MString clear = for_documentation ? rm(" ") : MString(0, true);
     if (bp_help.xmstring() == 0 && !expr.matches(rxchain) 
-	&& gdb->type() != BASH)
+	&& !(BASH == gdb->type() || MAKE == gdb->type()))
 	return clear;
 
     // Change EVENT such that the popup tip will remain at the same

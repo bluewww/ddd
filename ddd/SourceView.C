@@ -3189,7 +3189,38 @@ void SourceView::find_word_bounds (Widget text_w,
 	return;
     }
 
-    // Find end of word
+    // We first check the special case in BASH and MAKE were we are 
+    // looking at a $ which often surrounds an identifier. 
+    // The exception to this is $$. 
+    // We also dispose of the special automatic variables of GNU make: 
+    // $@, $<, etc.
+    if ( '$' == text[endpos] && endpos < XmTextPosition(text.length()) 
+	 && (endpos - 1 <= 0 || '$' != text[endpos-1]) )
+    {
+      if ( gdb->program_language() == LANGUAGE_BASH 
+	   && text[endpos+1] == '{' ) 
+	// Advance position over ${
+	startpos = endpos += 2;
+      else if ( gdb->program_language() == LANGUAGE_MAKE ) {
+	if ( text[endpos+1] == '(' )
+	  // Advance position over $(
+	  startpos = endpos += 2;
+	else if (is_make_automatic(text[endpos+1])) {
+	  // Found a GNU Make automatic variable
+	  startpos = endpos;
+	  endpos  =  endpos+2;
+	  return;
+	}
+      }
+    } else if ( gdb->program_language() == LANGUAGE_MAKE &&
+		is_make_automatic(text[endpos]) &&
+		endpos - 1 > 0 || '$' == text[endpos-1]) {
+      // Found a GNU Make automatic variable
+      startpos = endpos-1;
+      endpos  =  endpos+1;
+    }
+
+    // Find end of word - Start scanning for a non-identifier
     while (endpos < XmTextPosition(text.length()) && isid(text[endpos]))
 	endpos++;
 
@@ -3211,17 +3242,8 @@ void SourceView::find_word_bounds (Widget text_w,
 	    break;
 	}
 	else if (gdb->program_language() == LANGUAGE_BASH &&
-		 startpos > 1 &&
-		 is_bash_prefix(text[startpos - 1]))
-	{
-	  // Include $variable rather than variable
-	  startpos -= 1;
-	  break;
-	}
-	else if (gdb->program_language() == LANGUAGE_BASH &&
-		 startpos > 2 && text[startpos -1] == '{' &&
-		 is_bash_prefix(text[startpos - 2])
-		 )
+		 startpos > 2 && text[startpos - 1] == '{' &&
+		 text[startpos - 2] == '$')
 	{
 	  // Include ${...} rather than ...
 	  int brace_count=1;
@@ -3236,6 +3258,30 @@ void SourceView::find_word_bounds (Widget text_w,
 		brace_count--;
 		if (brace_count==0) {
 		  startpos -= 2; // Go back over ${
+		  endpos=new_endpos+1;
+		  break;
+		}
+	      }
+	    }
+	  break;
+	}
+	else if (gdb->program_language() == LANGUAGE_MAKE &&
+		 startpos > 2 && text[startpos -1] == '(' &&
+		 text[startpos - 2] == '$')
+	{
+	  // Include $(...) rather than ...
+	  int brace_count=1;
+	  int new_endpos=startpos;
+	  for (new_endpos=startpos+1; 
+	       new_endpos < XmTextPosition(text.length()) 
+		 && new_endpos-startpos < 30; 
+	       new_endpos++) 
+	    {
+	      if (text[new_endpos] == '(') brace_count++;
+	      if (text[new_endpos] == ')') {
+		brace_count--;
+		if (brace_count==0) {
+		  startpos -= 2; // Go back over $(
 		  endpos=new_endpos+1;
 		  break;
 		}
