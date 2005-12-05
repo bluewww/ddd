@@ -10,6 +10,9 @@ The DDD Maintainers
 Major code contributions:
 
 Rocky BERNSTEIN <rocky@panix.com>         - BASH debugger support
+                                          - GNU Make debugger support
+                                            (well, actually the 
+	                                     debuggers too)
 J.H.M. DASSEN <jdassen@wi.leidenuniv.nl>  - Tips and bug reports
 Dmitri DMITRIENKO <dd.cron.ru>            - PHP support
 Christian LINDIG <lindig@ips.cs.tu-bs.de> - PostScript and XFIG printing
