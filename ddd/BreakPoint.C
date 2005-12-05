@@ -136,6 +136,16 @@ BreakPoint::BreakPoint(string& info_output, const string& arg,
     file = file_name();
 }
 
+
+// Parse the output of a a gdb "info break" line. This routine is 
+// also used for BASH, MAKE and possibly others (e.g. DBG, PYDB)
+//
+// Sample gdb info output:
+// 1   breakpoint     keep y   0x080696fa in main at ddd.C:3160
+//
+// Sample bashdb output: 
+// 1   breakpoint     keep y   /etc/init.d/network:20
+
 void BreakPoint::process_gdb(string& info_output)
 {
     // Read type (`breakpoint' or `watchpoint')
@@ -193,23 +203,26 @@ void BreakPoint::process_gdb(string& info_output)
     string new_info = "";
     if (mytype == BREAKPOINT) 
     {
-	// Read address
-	myaddress = info_output.through(rxalphanum);
-
-	info_output = info_output.after(myaddress);
-	strip_leading_space(info_output);
-
-	if (info_output.contains("in ", 0))
+        if (MAKE != gdb->type() && BASH != gdb->type()) 
 	{
-	    // Function name
-	    string func = info_output.after("in ");
-	    if (func.contains('\n'))
-		func = func.before('\n');
-	    if (func.contains(" at "))
-		func = func.before(" at ");
-	    strip_space(func);
+	    // Read address
+	    myaddress = info_output.through(rxalphanum);
+	  
+	    info_output = info_output.after(myaddress);
+	    strip_leading_space(info_output);
+	  
+	  if (info_output.contains("in ", 0))
+	  {
+	      // Function name
+	      string func = info_output.after("in ");
+	      if (func.contains('\n'))
+		  func = func.before('\n');
+	      if (func.contains(" at "))
+		  func = func.before(" at ");
+	      strip_space(func);
 
-	    myfunc = func;
+	      myfunc = func;
+	  }
 	}
 
 	// Location
