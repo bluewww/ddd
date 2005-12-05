@@ -1,9 +1,11 @@
 DDD News						-*- text -*-
 ********
 
-DDD-3.3.12
+DDD-3.3.12-test
 ==========
 
+- GNU Make debugger support
+- Fixes to Bash debugger (remove stack movement crashes, show breakpoints)
 - ...
 
 DDD-3.3.11
