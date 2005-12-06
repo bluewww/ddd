@@ -203,14 +203,17 @@ void BreakPoint::process_gdb(string& info_output)
     string new_info = "";
     if (mytype == BREAKPOINT) 
     {
-        if (MAKE != gdb->type() && BASH != gdb->type()) 
+        if (MAKE != gdb->type() && BASH != gdb->type())
 	{
 	    // Read address
 	    myaddress = info_output.through(rxalphanum);
 	  
 	    info_output = info_output.after(myaddress);
 	    strip_leading_space(info_output);
+	    
+	}
 	  
+        if (BASH != gdb->type()) {
 	  if (info_output.contains("in ", 0))
 	  {
 	      // Function name
