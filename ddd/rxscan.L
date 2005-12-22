@@ -364,7 +364,7 @@ C9bashdb<+[(]*[0-9]*[)]*>+{w}		RETURN(&rxbashprompt);
 D0[(][^:]*:{P}[)]:.*	                RETURN(&rxbashpos);
 D1[^ \t]*:{_}{P}{_}<.*>       		RETURN(&rxdbgpos);
 D2#{D}{_}<.*>{_}at{_}[^ \t]*:{_}{P}	RETURN(&rxdbgframepos);
-D3makedb<+[(]*[0-9]*[)]*>+{w}		RETURN(&rxmakeprompt);
+D3mdb<+[(]*[0-9]*[)]*>+{w}		RETURN(&rxmakeprompt);
 D4[(][^:]+:{P}[)](:.*)?	                RETURN(&rxmakepos);
 (.|\n)				        RETURN(0);  // Anything else
 %%

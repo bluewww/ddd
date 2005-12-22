@@ -81,7 +81,7 @@ Ddd*appDefaultsVersion: @VERSION@
 ! User-settable resources
 !-----------------------------------------------------------------------------
 
-! The inferior debugger type. One of: bash, dbx, gdb, jdb, makedb, perl, pydb, 
+! The inferior debugger type. One of: bash, dbx, gdb, jdb, mdb, perl, pydb, 
 !	                              or xdb.
 Ddd*debugger: gdb
 
