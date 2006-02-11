@@ -220,6 +220,11 @@ int LiterateAgent::_readNonBlocking(char *buffer, int nelems, FILE *fp)
 	_raiseIOWarning("cannot set file to non-blocking mode");
 #endif
 
+    /*
+     * On Linux, this call is returning zero with errno set to EIO
+     * when we are exiting.  That causes an infinite loop unless
+     * the caller checks with ferror().
+     */
     // Read stuff
     int nitems = fread(buffer, sizeof(char), nelems, fp);
 
@@ -366,7 +371,8 @@ void LiterateAgent::inputReady(AsyncAgent *c)
 	int length = lc->readInput(datap);
 	if (length > 0)
 	    lc->dispatch(Input, datap, length);
-	else if (length == 0 && lc->inputfp() != 0 && feof(lc->inputfp()))
+	else if (length == 0 && lc->inputfp() != 0
+		&& (feof(lc->inputfp()) || ferror(lc->inputfp())))
 	    lc->inputEOF();
     }
 }

@@ -43,6 +43,17 @@ char mainloop_rcsid[] =
 bool main_loop_entered = false;
 
 static jmp_buf main_loop_env;
+/*
+ * Wrap ddd_setup_done so we can install it as a timer rather than a
+ * workproc.  It seems that workprocs on Linux burn a lot of CPU
+ * and starve GDB
+ */
+static void wrap_ddd_setup_done(XtPointer, XtIntervalId *)
+{
+    if (!ddd_setup_done(0))
+	XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 10, 
+					wrap_ddd_setup_done, 0);
+}
 
 // DDD main loop.  This is placed in a separate module to avoid
 // warnings about longjmp() clobbering local variables.
@@ -95,7 +106,14 @@ void ddd_main_loop()
 
     // Set `main_loop_entered' to true as soon 
     // as DDD becomes idle again.
-    XtAppAddWorkProc(XtWidgetToApplicationContext(gdb_w), ddd_setup_done, 0);
+
+    // Something about Linux's implementation of workprocs makes them burn
+    // a lot of CPU, which has the nasty side effect of slowing down the
+    // app we're waiting for (GDB), which has the nasty side effect of
+    // giving us more time to burn even more CPU.  So don't use workprocs.
+    // We'll poll ddd_setup_done every 10ms instead of the bazillion times
+    // per second that it as being polled via the workproc.
+    XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 10, wrap_ddd_setup_done, 0);
 
     // Main Loop
     for (;;)
