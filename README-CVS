@@ -77,7 +77,8 @@ To checkout and build DDD from the public CVS archive, follow these steps:
 
    However, you can create formatted documentation from source.  For
    this, you need several typesetting and graphics tools, such as
-   LaTeX, PDFLaTeX, netpbm, pbmplus, ...  The `INSTALL' file has a list.
+   LaTeX, PDFLaTeX, netpbm, pbmplus, ImageMagick, ... 
+   The `INSTALL' file has a list.
 
    To create formatted documentation from source, type
 
