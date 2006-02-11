@@ -7,8 +7,7 @@ DDD-3.3.12-test
 - GNU Make debugger support
 - Fixes to Bash debugger (remove stack movement crashes, show
   breakpoints), better word parsing, e.g ${foo[@]}
-
-- ...
+- Fixed a couple of warnings.
 
 DDD-3.3.11
 ==========
