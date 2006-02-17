@@ -131,6 +131,8 @@ extern const regex rxmakeref;
 extern const regex rxprocess1;
 extern const regex rxprocess2;
 extern const regex rxprompt;
+extern const regex rxpypos;
+extern const regex rxpyprompt;
 extern const regex rxq;
 extern const regex rxreference;
 extern const regex rxrefresh_cmd;

@@ -7788,7 +7788,7 @@ static void setup_auto_command_prefix()
 // All options that remain fixed for a session go here.
 static void setup_options()
 {
-    set_sensitive(disassemble_w, gdb->type() == GDB);
+    set_sensitive(disassemble_w, gdb->type() == GDB || gdb->type() == PYDB);
     set_sensitive(code_indent_w, gdb->type() == GDB);
     set_sensitive(examine_w,            gdb->has_examine_command());
     set_sensitive(print_examine_w,      gdb->has_examine_command());
