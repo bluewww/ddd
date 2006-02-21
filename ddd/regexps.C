@@ -253,3 +253,5 @@ const regex rxmakeprompt                (rx_matcher, (void *)"D3");
 const regex rxmakepos                   (rx_matcher, (void *)"D4");
 const regex rxpyprompt                  (rx_matcher, (void *)"D5");
 const regex rxpypos                     (rx_matcher, (void *)"D6");
+const regex rxfixednum                  (rx_matcher, (void *)"D7");
+const regex rxstring                    (rx_matcher, (void *)"D8");

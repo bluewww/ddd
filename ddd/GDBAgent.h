@@ -478,9 +478,8 @@ public:
     // change at any time)
     bool has_volatile_breakpoints() const
     {
-	return type() == GDB || type() == XDB || 
-	       type() == DBX || type() == PYDB || type() == PERL || 
-	       type() == DBG;
+	return type() == DBG  || type() == DBX  || type() == GDB  || 
+	       type() == PERL || type() == PYDB || type() == XDB;
     }
 
     // True if debugger supports I/O redirection

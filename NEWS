@@ -1,6 +1,11 @@
 DDD News						-*- text -*-
 ********
 
+DDD-3.3.12-test2
+- Extended python debugger support. Sort of a merge of pdb.py, ddd's old
+  pydb.py and new things.
+
+==========
 DDD-3.3.12-test
 ==========
 
