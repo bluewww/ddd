@@ -1561,7 +1561,7 @@ bool SourceView::file_matches(const string& file1, const string& file2)
 
 bool SourceView::is_current_file(const string& file)
 {
-    if (gdb->type() == JDB || gdb->type() == PYDB)
+    if (gdb->type() == JDB)
 	return file == current_source_name();
     else
 	return file_matches(file, current_file_name);
@@ -4049,6 +4049,7 @@ void SourceView::process_info_bp (string& info_output,
     {
     case GDB:
     case BASH:
+    case PYDB:
 	// If there is no breakpoint info, process it as GDB message.
 	if (!info_output.contains("Num", 0) && 
 	    !info_output.contains("No breakpoints", 0))
@@ -4060,7 +4061,6 @@ void SourceView::process_info_bp (string& info_output,
     case XDB:
     case JDB:
     case MAKE:
-    case PYDB:
     case PERL:
 	break;
     }
@@ -7016,6 +7016,7 @@ void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
     case DBG:
     case GDB:
     case MAKE:
+    case PYDB:
 	// GDB frame output is caught by our routines.
 	gdb_command(gdb->frame_command(count - cbs->item_position));
 	break;
@@ -7027,7 +7028,6 @@ void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
 
     case DBX:
     case JDB:
-    case PYDB:
     case PERL:
 	if (gdb->has_frame_command())
 	{
@@ -7036,7 +7036,7 @@ void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
 	}
 	else
 	{
-	    // JDB, PYDB and some DBXes lack a `frame' command.
+	    // JDB, and some DBXes lack a `frame' command.
 	    // Use `up N'/`down N' instead.
 	    int offset = cbs->item_position - last_frame_pos;
 	    if (offset != 0)

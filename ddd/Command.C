@@ -160,12 +160,6 @@ void translate_command(string& command)
 	    command = "step up";
 	break;
 
-    case PYDB:
-	// PYDB uses `return' instead of `finish'.
-	if (command == "finish")
-	    command = "return";
-	break;
-
     case PERL:
 	// PERL only has one-letter commands
         // BASHDB doesn't but it accepts perl's one-letter commands
@@ -184,10 +178,11 @@ void translate_command(string& command)
 	    command = "r";
 	break;
 
-    case BASH: // I think this is right.
-    case MAKE: // I think this is right.
+    case BASH:
     case DBG:  // I think this is right.
     case GDB:
+    case MAKE:
+    case PYDB:
 	break;
     }
 

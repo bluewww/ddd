@@ -224,7 +224,7 @@ void show_invocation(const string& gdb_command, std::ostream& os)
     case PYDB:
     {
 	title = "PYDB";
-	base  = "PYDB, the Python debugger.";
+	base  = "PYDB, the Extended Python debugger.";
 	options += "  [PYDB options]     Pass option to PYDB.";
 	args = "program-file";
     }
