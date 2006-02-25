@@ -1,6 +1,18 @@
 DDD News						-*- text -*-
 ********
 
+==========
+DDD-3.3.12-test3
+- Extended python debugger support. Sort of a merge of pdb.py, ddd's old
+  pydb.py and new things.
+==========
+
+==========
+DDD-3.3.12-test2
+- GNU Make (mdb) support.
+==========
+
+==========
 DDD-3.3.12-test
 ==========
 

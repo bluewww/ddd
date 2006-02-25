@@ -643,19 +643,11 @@ void start_gdb(bool config)
 	extra_data->refresh_initial_line = true;
 	break;
 
-    case PYDB:
-	extra_data->refresh_initial_line = true;
-
-	cmds += "pwd";
-	extra_data->refresh_pwd = true;
-	cmds += "info breakpoints";
-	extra_data->refresh_breakpoints = true;
-	break;
-
     case BASH:
     case MAKE:
     case PERL:
-	// Bash, Make and Perl start immediately with execution.
+    case PYDB:
+	// All of these start immediately with execution.
 	cmd_data->new_exec_pos = true;
 
 	cmds += gdb->pwd_command();
@@ -1775,7 +1767,7 @@ void send_gdb_command(string cmd, Widget origin,
 	if (extra_data->refresh_pwd)
 	    cmds += gdb->pwd_command();
 	if (extra_data->refresh_breakpoints)
-	    cmds += "info breakpoints";
+	    cmds += "info break";
 	if (extra_data->refresh_where)
 	    cmds += gdb->where_command();
 	if (extra_data->refresh_data)
@@ -1786,6 +1778,8 @@ void send_gdb_command(string cmd, Widget origin,
 		data_disp->add_refresh_user_commands(cmds);
 	if (extra_data->refresh_disp_info)
 	    cmds += gdb->info_display_command();
+	if (extra_data->refresh_setting)
+	    cmds += show_command(cmd, gdb->type());
 	break;
 
     case BASH:

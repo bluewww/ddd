@@ -366,5 +366,9 @@ D1[^ \t]*:{_}{P}{_}<.*>       		RETURN(&rxdbgpos);
 D2#{D}{_}<.*>{_}at{_}[^ \t]*:{_}{P}	RETURN(&rxdbgframepos);
 D3mdb<+[(]*[0-9]*[)]*>+{w}		RETURN(&rxmakeprompt);
 D4[(][^:]+:{P}[)](:.*)?	                RETURN(&rxmakepos);
+D5[(]+Pydb[)]+{w}		        RETURN(&rxpyprompt);
+D6[(][^:]*:{P}[)]:.*	                RETURN(&rxpypos);
+D7{D}(\.{D})?	                        RETURN(&rxfixednum);
+D8".*"	                                RETURN(&rxstring);
 (.|\n)				        RETURN(0);  // Anything else
 %%

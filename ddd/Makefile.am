@@ -1316,14 +1316,6 @@ builddocdir = $(top_builddir)/doc
 .PHONY: ps
 ps: $(builddocdir)/ddd.ps $(builddocdir)/ddd-themes.ps
 
-$(builddocdir)/ddd.ps: ddd.dvi
-	@-test -d $(builddocdir) || mkdir $(builddocdir)
-	$(DVIPS) ddd.dvi -o $@
-
-$(builddocdir)/ddd-themes.ps: ddd-themes.dvi
-	@-test -d $(builddocdir) || mkdir $(builddocdir)
-	$(DVIPS) ddd-themes.dvi -o $@
-
 # The DDD manual in PDF format, including all pictures.
 
 .PHONY: pdf
@@ -1459,9 +1451,9 @@ FIG2PDF = $(FIG2DEV) -L pdf
 	@-test -f texinfo.tex || $(LN_S) $(texidir)/texinfo.tex .
 	$(TEXI2DVI) -I $(srcdir) -I $(texidir) $<
 
-.dvi.ps:
+.pdf.ps:
 	test -d $(docdir) || mkdir $(docdir)
-	$(DVIPS) $< -o $@
+	pdf2ps $< $@
 
 
 # PostScript pictures in the DDD manual.
@@ -2050,17 +2042,6 @@ dddapp_DATA = Ddd
 # Distribution.
 # -----------------------------------------------------------------------------
 
-# The build number.  (This must be set from outside)
-REL = 1
-
-# RPM spec
-.PHONY:	spec
-spec: $(srcdir)/../$(ddd)-$(VERSION)-$(REL).spec
-$(srcdir)/../$(ddd)-$(VERSION)-$(REL).spec: $(srcdir)/../ddd.spec.in $(top_builddir)/config.status
-	CONFIG_FILES=$(srcdir)/../ddd.spec CONFIG_HEADERS= $(SHELL) $(top_builddir)/config.status
-	$(SED) 's/@REL@/$(REL)/g' $(srcdir)/../ddd.spec > $@
-	$(RM) $(srcdir)/../ddd.spec
-
 # Architecture-independent files required for building DDD.
 # In a distribution, these should be already built.
 #
@@ -2084,8 +2065,7 @@ PROG_STUFF = $(LEXTOCXX).flex $(LEXTOCXX).sun \
 	     .gdbinit $(ICONS)
 
 # Additional files to be included in the distribution.
-DIST_STUFF = $(srcdir)/../$(ddd)-$(VERSION)-$(REL).spec \
-	     $(srcdir)/header.ps $(srcdir)/trailer.ps \
+DIST_STUFF = $(srcdir)/header.ps $(srcdir)/trailer.ps \
 	     $(docdir)/ddd.ps $(docdir)/ddd.pdf \
 	     $(docdir)/ddd-themes.ps $(docdir)/ddd-themes.pdf \
 	     $(docdir)/ddd-paper.ps \
