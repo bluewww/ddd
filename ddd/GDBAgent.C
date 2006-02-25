@@ -1831,7 +1831,7 @@ string GDBAgent::print_command(const char *expr, bool internal) const
 	break;
 
     case PYDB:
-	cmd = "examine";
+	cmd = "print";
 	break;
 
     case JDB:

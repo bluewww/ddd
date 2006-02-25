@@ -65,10 +65,22 @@ SED  = sed
 # Distribution (via etc/make-final).
 # -----------------------------------------------------------------------------
 
+# The build number.  (This must be set from outside)
+REL = 1
+
 # Build a DDD distribution from CVS archive.
 .PHONY: cvsdist
 cvsdist: $(srcdir)/ChangeLog diststuff disttouch distclean \
 	snapshot htmldist picsdist
+
+# RPM spec
+.PHONY:	spec
+spec: $(srcdir)$(ddd)-$(VERSION)-$(REL).spec
+$(ddd)-$(VERSION)-$(REL).spec: $(srcdir)/ddd.spec.in $(top_builddir)/config.status
+	CONFIG_FILES=$(srcdir)/ddd.spec CONFIG_HEADERS= $(SHELL) $(top_builddir)/config.status
+	$(SED) 's/@REL@/$(REL)/g' $(srcdir)/ddd.spec > $@
+	$(RM) $(srcdir)/ddd.spec
+
 
 # Create architecture-independent files in DDD subdirectory.
 .PHONY: diststuff progstuff
@@ -216,6 +228,7 @@ EXTRA_DIST = \
 	$(TEXINFO_DISTFILES) \
 	$(CVS2CL) \
 	$(USERMAP) \
+	$(ddd)-$(VERSION)-$(REL).spec \
         PROBLEMS \
         CREDITS
 
