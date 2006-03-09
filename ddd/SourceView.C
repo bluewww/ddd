@@ -4049,6 +4049,7 @@ void SourceView::process_info_bp (string& info_output,
     {
     case GDB:
     case BASH:
+    case MAKE:
     case PYDB:
 	// If there is no breakpoint info, process it as GDB message.
 	if (!info_output.contains("Num", 0) && 
@@ -4060,7 +4061,6 @@ void SourceView::process_info_bp (string& info_output,
     case DBX:
     case XDB:
     case JDB:
-    case MAKE:
     case PERL:
 	break;
     }

@@ -644,7 +644,6 @@ void start_gdb(bool config)
 	break;
 
     case BASH:
-    case MAKE:
     case PERL:
     case PYDB:
 	// All of these start immediately with execution.
@@ -661,6 +660,16 @@ void start_gdb(bool config)
 	cmds += "pwd";
 	extra_data->refresh_pwd = true;
 	cmds += "info breakpoints";
+	extra_data->refresh_breakpoints = true;
+	break;
+
+    case MAKE:
+	// All of these start immediately with execution.
+	cmd_data->new_exec_pos = true;
+
+	cmds += gdb->pwd_command();
+	extra_data->refresh_pwd = true;
+	cmds += "info break";
 	extra_data->refresh_breakpoints = true;
 	break;
     }
@@ -1783,12 +1792,28 @@ void send_gdb_command(string cmd, Widget origin,
 	break;
 
     case BASH:
-    case MAKE:
     case PERL:
 	if (extra_data->refresh_pwd)
 	    cmds += gdb->pwd_command();
 	if (extra_data->refresh_breakpoints)
 	    cmds += "L";
+	if (extra_data->refresh_where)
+	    cmds += gdb->where_command();
+	if (extra_data->refresh_data)
+	    extra_data->n_refresh_data = 
+		data_disp->add_refresh_data_commands(cmds);
+	if (extra_data->refresh_user)
+	    extra_data->n_refresh_user = 
+		data_disp->add_refresh_user_commands(cmds);
+	if (extra_data->refresh_setting)
+	    cmds += show_command(cmd, gdb->type());
+	break;
+
+    case MAKE:
+	if (extra_data->refresh_pwd)
+	    cmds += gdb->pwd_command();
+	if (extra_data->refresh_breakpoints)
+	    cmds += "info break";
 	if (extra_data->refresh_where)
 	    cmds += gdb->where_command();
 	if (extra_data->refresh_data)
