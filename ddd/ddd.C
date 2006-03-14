@@ -7866,7 +7866,7 @@ static void setup_options()
     set_sensitive(source_edit_menu[EditItems::Settings].widget, have_settings);
     set_sensitive(data_edit_menu[EditItems::Settings].widget,   have_settings);
 
-    set_sensitive(complete_w,  gdb->type() == GDB);
+    set_sensitive(complete_w,  gdb->type() == GDB || gdb->type() == PYDB);
     set_sensitive(define_w,    gdb->type() == GDB);
     set_sensitive(signals_w,   gdb->type() == GDB);
 
