@@ -2137,17 +2137,14 @@ String SourceView::read_from_gdb(const string& file_name, long& length,
     switch (gdb->type())
     {
     case BASH:
-	command = "list 1 " HUGE_LINE_NUMBER;
+    case DBX:
+    case PYDB:
+	command = "list 1," HUGE_LINE_NUMBER;
 	break;
 
     case DBG: // Is this correct? DBG "list" sommand seems not to do anything
     case GDB:
 	command = "list " + file_name + ":1," HUGE_LINE_NUMBER;
-	break;
-
-    case DBX:
-    case PYDB:
-	command = "list 1," HUGE_LINE_NUMBER;
 	break;
 
     case PERL:
@@ -4674,7 +4671,9 @@ void SourceView::process_pwd(string& pwd_output)
 
 	switch (gdb->type())
 	{
-	case GDB:			// 'Working directory PATH.'
+	case BASH:              // 'Working directory PATH.'
+	case GDB:
+	case MAKE:
 	case PYDB:
 	    if (pwd.contains("Working directory", 0))
 	    {
@@ -4683,11 +4682,9 @@ void SourceView::process_pwd(string& pwd_output)
 	    }
 	    // FALL THROUGH
 
-	case BASH:
 	case DBG:
 	case DBX:		// 'PATH'
 	case JDB:
-	case MAKE:
 	case PERL:
 	case XDB:
 	    if (pwd.contains('/', 0) && !pwd.contains(" "))
@@ -9930,12 +9927,12 @@ bool SourceView::get_state(std::ostream& os)
     // Restore current cursor position
     switch (gdb->type())
     {
+    case BASH:
     case GDB:
     case PYDB:
 	os << "info line " << line_of_cursor() << '\n';
 	break;
 
-    case BASH:
     case DBG:
     case DBX:
     case MAKE:

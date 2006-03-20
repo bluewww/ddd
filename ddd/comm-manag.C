@@ -1013,6 +1013,7 @@ void send_gdb_command(string cmd, Widget origin,
 		// Lookup ARG in source window only
 		switch (gdb->type())
 		{
+		case BASH:
 		case GDB:
 		case MAKE:
 		case PYDB:
@@ -1028,10 +1029,9 @@ void send_gdb_command(string cmd, Widget origin,
 		    cmd_data->lookup_arg = arg;
 		    break;
 
-		case BASH:
 		case DBG:
 		case PERL:
-		    // Perl/bash `l' command issues a position anyway.
+		    // Perl `l' command issues a position anyway.
 		    break;
 		}
 	    }

@@ -7866,16 +7866,17 @@ static void setup_options()
     set_sensitive(source_edit_menu[EditItems::Settings].widget, have_settings);
     set_sensitive(data_edit_menu[EditItems::Settings].widget,   have_settings);
 
-    set_sensitive(complete_w,  gdb->type() == GDB || gdb->type() == PYDB);
+    set_sensitive(complete_w,  gdb->type() == BASH || gdb->type() == GDB 
+		  || gdb->type() == PYDB);
     set_sensitive(define_w,    gdb->type() == GDB);
     set_sensitive(signals_w,   gdb->type() == GDB);
 
-    set_sensitive(set_debugger_bash_w, have_cmd("bash"));
+    set_sensitive(set_debugger_bash_w, have_cmd("bashdb"));
     set_sensitive(set_debugger_dbg_w,  have_cmd("dbg"));
     set_sensitive(set_debugger_dbx_w,  have_cmd("dbx") || have_cmd("ladebug"));
     set_sensitive(set_debugger_gdb_w,  have_cmd("gdb"));
     set_sensitive(set_debugger_jdb_w,  have_cmd("jdb"));
-    set_sensitive(set_debugger_make_w, have_cmd("make"));
+    set_sensitive(set_debugger_make_w, have_cmd("remake"));
     set_sensitive(set_debugger_perl_w, have_cmd("perl"));
     set_sensitive(set_debugger_pydb_w, have_cmd("pydb"));
     set_sensitive(set_debugger_xdb_w,  have_cmd("xdb"));

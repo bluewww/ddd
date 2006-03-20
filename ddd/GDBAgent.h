@@ -531,8 +531,8 @@ public:
     // True if debugger supports `cd'
     bool has_cd_command() const
     {
-      return type() == GDB || type() == XDB || 
-	type() == DBX || type() == PYDB || type() == PERL || type() == BASH;
+      return type() == BASH || type() == GDB || type() == DBX 
+	|| type() == PERL || type() == PYDB  || type() == XDB;
     }
 
     // True if debugger supports `shell'
