@@ -699,19 +699,6 @@ bool GDBAgent::ends_with_prompt (const string& ans)
 	}
 	return false;
     }
-    case DBG:
-    {
-	unsigned beginning_of_line = answer.index('\n', -1) + 1;
-	if ( beginning_of_line < answer.length()
-	    && answer.length() > 0
-	    && answer.matches(DBG_PROMPT,beginning_of_line)) 
-	{
-	    recording(false);
-	    last_prompt = DBG_PROMPT;
-	    return true;
-	}
-	return false;
-    }
     case GDB:
 	// GDB reads in breakpoint commands using a `>' prompt
 	if (recording() && answer.contains('>', -1))
@@ -755,99 +742,19 @@ bool GDBAgent::ends_with_prompt (const string& ans)
 	return false;
     }
 
-    case XDB:
+    case DBG:
     {
-	// Any line equal to `>' is a prompt.
-	const unsigned beginning_of_line = answer.index('\n', -1) + 1;
-	if (beginning_of_line < answer.length()
+	unsigned beginning_of_line = answer.index('\n', -1) + 1;
+	if ( beginning_of_line < answer.length()
 	    && answer.length() > 0
-	    && answer[beginning_of_line] == '>')
+	    && answer.matches(DBG_PROMPT,beginning_of_line)) 
 	{
-	    last_prompt = ">";
+	    recording(false);
+	    last_prompt = DBG_PROMPT;
 	    return true;
 	}
 	return false;
     }
-
-    case MAKE:
-    {
-	// Any line ending in `mdb<...> ' is a prompt.
-	// Since N does not make sense in DDD, we use `DB<> ' instead.
-
-#if RUNTIME_REGEX
-	static regex rxmakeprompt("mdb<+[(]*[0-9][)]*>+");
-#endif
-
-	int i = answer.length() - 1;
-	if (i < 1 || answer[i] != ' ' || answer[i - 1] != '>')
-	    return false;
-
-	while (i >= 0 && answer[i] != '\n' ) {
-	  if (answer.contains("mdb<", i)) {
-	    string possible_prompt = answer.from(i);
-	    if (possible_prompt.matches(rxmakeprompt)) {
-	      last_prompt = possible_prompt;
-	      return true;
-	    }
-	  }
-	  i--;
-	}
-	return false;
-    }
-    case PERL:
-    {
-	// Any line ending in `DB<N> ' is a prompt.
-	// Since N does not make sense in DDD, we use `DB<> ' instead.
-	//
-	// "T. Pospisek's MailLists" <tpo2@sourcepole.ch> reports that
-	// under Debian, Perl issues a prompt with control characters:
-	// <- "\001\002  DB<1> \001\002"
-
-#if RUNTIME_REGEX
-	static regex rxperlprompt("[ \t\001\002]*DB<+[0-9]*>+[ \t\001\002]*");
-#endif
-
-	int i = answer.length() - 1;
-	if (i < 1 || answer[i] != ' ' || answer[i - 1] != '>')
-	    return false;
-
-	while (i > 0 && answer[i - 1] != '\n' && !answer.contains("DB", i))
-	    i--;
-
-	string possible_prompt = answer.from(i);
-	if (possible_prompt.matches(rxperlprompt))
-	{
-	    last_prompt = "DB<> ";
-	    return true;
-	}
-	return false;
-    }
-
-    case PYDB:
-    {
-	// Any line ending in `(Pydb) ' is a prompt.
-
-#if RUNTIME_REGEX
-	static regex rxpyprompt("[(]+Pydb[)]+");
-#endif
-
-	int i = answer.length() - 1;
-	if (i < 1 || answer[i] != ' ' || answer[i - 1] != ')')
-	    return false;
-
-	while (i >= 0 && answer[i] != '\n' ) {
-	  if (answer.contains("(Pydb)", i)) {
-	    string possible_prompt = answer.from(i);
-	    if (possible_prompt.matches(rxpyprompt)) {
-	      last_prompt = possible_prompt;
-	      return true;
-	    }
-	  }
-	  i--;
-	}
-	return false;
-    }
-
     case JDB:
     {
 	// JDB prompts using "> " or "THREAD[DEPTH] ".  All these
@@ -914,6 +821,98 @@ bool GDBAgent::ends_with_prompt (const string& ans)
 
 	return false;
     }
+    case MAKE:
+    {
+	// Any line ending in `mdb<...> ' is a prompt.
+	// Since N does not make sense in DDD, we use `DB<> ' instead.
+
+#if RUNTIME_REGEX
+	static regex rxmakeprompt("mdb<+[(]*[0-9][)]*>+");
+#endif
+
+	int i = answer.length() - 1;
+	if (i < 1 || answer[i] != ' ' || answer[i - 1] != '>')
+	    return false;
+
+	while (i >= 0 && answer[i] != '\n' ) {
+	  if (answer.contains("mdb<", i)) {
+	    string possible_prompt = answer.from(i);
+	    if (possible_prompt.matches(rxmakeprompt)) {
+	      last_prompt = possible_prompt;
+	      return true;
+	    }
+	  }
+	  i--;
+	}
+	return false;
+    }
+    case PERL:
+    {
+	// Any line ending in `DB<N> ' is a prompt.
+	// Since N does not make sense in DDD, we use `DB<> ' instead.
+	//
+	// "T. Pospisek's MailLists" <tpo2@sourcepole.ch> reports that
+	// under Debian, Perl issues a prompt with control characters:
+	// <- "\001\002  DB<1> \001\002"
+
+#if RUNTIME_REGEX
+	static regex rxperlprompt("[ \t\001\002]*DB<+[0-9]*>+[ \t\001\002]*");
+#endif
+
+	int i = answer.length() - 1;
+	if (i < 1 || answer[i] != ' ' || answer[i - 1] != '>')
+	    return false;
+
+	while (i > 0 && answer[i - 1] != '\n' && !answer.contains("DB", i))
+	    i--;
+
+	string possible_prompt = answer.from(i);
+	if (possible_prompt.matches(rxperlprompt))
+	{
+	    last_prompt = "DB<> ";
+	    return true;
+	}
+	return false;
+    }
+    case PYDB:
+    {
+	// Any line ending in `(Pydb) ' is a prompt.
+
+#if RUNTIME_REGEX
+	static regex rxpyprompt("[(]+Pydb[)]+");
+#endif
+
+	int i = answer.length() - 1;
+	if (i < 1 || answer[i] != ' ' || answer[i - 1] != ')')
+	    return false;
+
+	while (i >= 0 && answer[i] != '\n' ) {
+	  if (answer.contains("(Pydb)", i)) {
+	    string possible_prompt = answer.from(i);
+	    if (possible_prompt.matches(rxpyprompt)) {
+	      last_prompt = possible_prompt;
+	      return true;
+	    }
+	  }
+	  i--;
+	}
+	return false;
+    }
+    case XDB:
+    {
+	// Any line equal to `>' is a prompt.
+	const unsigned beginning_of_line = answer.index('\n', -1) + 1;
+	if (beginning_of_line < answer.length()
+	    && answer.length() > 0
+	    && answer[beginning_of_line] == '>')
+	{
+	    last_prompt = ">";
+	    return true;
+	}
+	return false;
+    }
+
+
     }
 
     return false;		// Never reached
@@ -1115,6 +1114,9 @@ void GDBAgent::cut_off_prompt(string& answer) const
 
 	// FALL THROUGH
     case DBX:
+	answer = answer.before('(', -1);
+	break;
+
     case DBG:
     {
 	int i = answer.index(DBG_PROMPT, -1);
