@@ -75,11 +75,11 @@ cvsdist: $(srcdir)/ChangeLog diststuff disttouch distclean \
 
 # RPM spec
 .PHONY:	spec
-spec: $(srcdir)$(ddd)-$(VERSION)-$(REL).spec
+spec: $(top_builddir)/$(ddd)-$(VERSION)-$(REL).spec
 $(ddd)-$(VERSION)-$(REL).spec: $(srcdir)/ddd.spec.in $(top_builddir)/config.status
 	CONFIG_FILES=$(srcdir)/ddd.spec CONFIG_HEADERS= $(SHELL) $(top_builddir)/config.status
-	$(SED) 's/@REL@/$(REL)/g' $(srcdir)/ddd.spec > $@
-	$(RM) $(srcdir)/ddd.spec
+	$(SED) 's/@REL@/$(REL)/g' $(top_builddir)/ddd.spec > $@
+	$(RM) $(top_builddir)/ddd.spec
 
 
 # Create architecture-independent files in DDD subdirectory.
@@ -226,8 +226,6 @@ $(srcdir)/ChangeLog: $(srcdir)/Makefile.am
 EXTRA_DIST = \
 	ddd.spec.in \
 	$(TEXINFO_DISTFILES) \
-	$(CVS2CL) \
-	$(USERMAP) \
 	$(ddd)-$(VERSION)-$(REL).spec \
         PROBLEMS \
         CREDITS

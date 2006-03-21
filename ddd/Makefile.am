@@ -6,8 +6,9 @@
 # DDD Makefile.
 
 # Copyright (C) 2000-2001 Universitaet Passau, Germany.
-# Copyright (C) 2001-2004 Free Software Foundation, USA.
 # Written by Andreas Zeller <zeller@gnu.org>.
+#
+# Copyright (C) 2001-2004, 2006 Free Software Foundation, USA.
 # 
 # This file is part of DDD.
 # 
@@ -1086,6 +1087,7 @@ icons:	$(ICONS)
 # All X bitmaps are derived from the XPM sources.
 
 $(buildicondir)/dddmask.xpm: $(icondir)/ddd.xpm
+	@test -d $(buildicondir) || mkdir $(buildicondir)
 	$(SED) 's/[wW]hite/black/g' $(icondir)/ddd.xpm | $(DELETE_CR) > $@
 
 $(buildicondir)/ddd.xbm: $(icondir)/ddd.xpm
@@ -1099,6 +1101,7 @@ $(buildicondir)/dddmask.xbm: $(icondir)/dddmask.xpm
 #
 
 $(buildicondir)/dddsplash.xbm: $(icondir)/dddsplash.xpm
+	@test -d $(buildicondir) || mkdir $(buildicondir)
 	@$(ECHO) "Creating $@"
 	@-$(CAT) $(icondir)/dddsplash.xpm | \
 	$(XPMTOPPM) | $(PNMDEPTH) 255 | $(PNMGAMMA) 0.4 | $(PPMTOPGM) | \
@@ -1108,6 +1111,7 @@ $(buildicondir)/dddsplash.xbm: $(icondir)/dddsplash.xpm
 	@test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; test -s $@)
 
 $(buildicondir)/dddlogo.xpm: $(icondir)/dddsplash.xpm
+	@test -d $(buildicondir) || mkdir $(buildicondir)
 	$(CONVERT) -fill white \
 	-draw 'rectangle 0,138 409,139' -draw 'rectangle 408,0 409,139' $< $@
 
@@ -1303,7 +1307,7 @@ $(srcdir)/gpl.texinfo: $(texidir)/gpl.texinfo
 $(srcdir)/gfdl.texinfo: $(texidir)/gfdl.texinfo
 	$(RM) $@; cp $(texidir)/gfdl.texinfo $@
 
-ddd.dvi: $(PS_IMAGES) $(ddd_TEXINFOS)
+ddd.dvi: $(PDF_IMAGES) $(ddd_TEXINFOS)
 
 ddd-themes.dvi: $(ddd_themes_TEXINFOS)
 
@@ -1671,6 +1675,8 @@ IMAGES = $(PS_IMAGES) $(PDF_IMAGES) $(HTML_IMAGES)
 
 $(buildpicdir)/ddd-all.eps: \
 	$(picdir)/ddd-all.fig $(picdir)/ddd-all.png
+$(buildpicdir)/ddd-clusters.eps: \
+	$(picdir)/ddd-clusters.fig $(picdir)/ddd-clusters.png
 $(buildpicdir)/ddd-console.eps: \
 	$(picdir)/ddd-console.fig $(picdir)/ddd-console.png
 $(buildpicdir)/ddd-history.eps: \
@@ -1962,17 +1968,17 @@ $(buildpicdir)/dddsplash.jpg: $(icondir)/dddsplash.xpm
 $(buildpicdir)/dddsplash.png: $(icondir)/dddsplash.xpm
 	$(CONVERT) -quality 100 $(icondir)/dddsplash.xpm $@
 
-$(buildpicdir)/dddlogo.eps: $(icondir)/dddlogo.xpm
-	$(CONVERT) $(icondir)/dddlogo.xpm $@
+$(buildpicdir)/dddlogo.eps: $(buildicondir)/dddlogo.xpm
+	$(CONVERT) $(buildicondir)/dddlogo.xpm $@
 
-$(buildpicdir)/dddlogo.gif: $(icondir)/dddlogo.xpm
-	$(CONVERT) $(icondir)/dddlogo.xpm $@
+$(buildpicdir)/dddlogo.gif: $(buildicondir)/dddlogo.xpm
+	$(CONVERT) $(buildicondir)/dddlogo.xpm $@
 
-$(buildpicdir)/dddlogo.jpg: $(icondir)/dddlogo.xpm
-	$(CONVERT) -quality 100 $(icondir)/dddlogo.xpm $@
+$(buildpicdir)/dddlogo.jpg: $(buildicondir)/dddlogo.xpm
+	$(CONVERT) -quality 100 $(buildicondir)/dddlogo.xpm $@
 
-$(buildpicdir)/dddlogo.png: $(icondir)/dddlogo.xpm
-	$(CONVERT) -quality 100 $(icondir)/dddlogo.xpm $@
+$(buildpicdir)/dddlogo.png: $(buildicondir)/dddlogo.xpm
+	$(CONVERT) -quality 100 $(buildicondir)/dddlogo.xpm $@
 
 $(buildpicdir)/dddback.eps: $(icondir)/dddback.xpm
 	$(CONVERT) $(icondir)/dddback.xpm $@
@@ -2097,8 +2103,11 @@ MAINTAINERCLEANFILES = Ddd.in ddd.vsl.h ddd.info.txt.gz gfdl.texinfo \
 	COPYING.gz config.h.in config.texi vsl-gramma.C \
 	vsl-gramma.h xlibdir.C trailer.str tips.html \
 	COPYING.gz.C header.str version.h rxscan.C \
-	../icons/ddd.xface ../icons/dddsplash.xbm \
-	../vsllib/ddd.vsl
+	ddd/PICS/*.gif \
+	ddd/PICS/*.jpg \
+	ddd/PICS/*.pdf \
+	$(buildicondir)/ddd.xface $(buildicondir)/dddsplash.xbm \
+	$(vsldir)/ddd.vsl
 
 # `make diststuff' creates all files required for a distribution.
 diststuff: $(EXTRA_DIST)
