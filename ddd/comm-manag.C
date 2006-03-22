@@ -645,7 +645,6 @@ void start_gdb(bool config)
 
     case BASH:
     case PERL:
-    case PYDB:
 	// All of these start immediately with execution.
 	cmd_data->new_exec_pos = true;
 
@@ -667,6 +666,14 @@ void start_gdb(bool config)
 	// All of these start immediately with execution.
 	cmd_data->new_exec_pos = true;
 
+	cmds += gdb->pwd_command();
+	extra_data->refresh_pwd = true;
+	cmds += "info break";
+	extra_data->refresh_breakpoints = true;
+	break;
+
+    case PYDB:
+	cmd_data->new_exec_pos = false;
 	cmds += gdb->pwd_command();
 	extra_data->refresh_pwd = true;
 	cmds += "info break";
@@ -3257,6 +3264,7 @@ static void extra_completed (StringArray& answers,
 	string ans = "";
 	for (int i = 0; i < extra_data->n_refresh_data; i++)
 	{
+	  if (qu_count > 0 && qu_count < extra_data->extra_commands.size()) {
 	    const string& cmd = extra_data->extra_commands[qu_count];
 	    string var = cmd.after(rxwhite);
 
@@ -3266,6 +3274,7 @@ static void extra_completed (StringArray& answers,
 	    string value = answers[qu_count++];
 	    gdb->munch_value(value, var);
 	    ans += value + "\n";
+	  }
 	}
 
 	if (extra_data->n_refresh_data > 0)

@@ -3868,6 +3868,14 @@ void SourceView::show_execution_position (const string& position_,
     {
 	file_name = position.before(":");
 	position  = position.after(":");
+
+	/* The Python debugger puts the in <string> when an exec is
+	   done.  There's probably a better place to catch this and
+	   deal with it. The right thing to do is ignore this line
+	   and use the next valid position.
+	 */
+	if (gdb->type() == PYDB && file_name.contains("<string>")) 
+	  return;
     }
 
     int line = get_positive_nr(position);
@@ -3974,6 +3982,7 @@ void SourceView::show_position(string position, bool silent)
 	file_name = position.before(':');
 	position  = position.after(':');
     }
+
     int line = get_positive_nr(position);
 
     // In case of `Open Source', we get FILE:1 positions.  Be sure to
