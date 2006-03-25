@@ -6,8 +6,9 @@
 # DDD Makefile.
 
 # Copyright (C) 2000-2001 Universitaet Passau, Germany.
-# Copyright (C) 2001-2004 Free Software Foundation, USA.
 # Written by Andreas Zeller <zeller@gnu.org>.
+#
+# Copyright (C) 2001-2004, 2006 Free Software Foundation, USA.
 # 
 # This file is part of DDD.
 # 
@@ -1086,6 +1087,7 @@ icons:	$(ICONS)
 # All X bitmaps are derived from the XPM sources.
 
 $(buildicondir)/dddmask.xpm: $(icondir)/ddd.xpm
+	@test -d $(buildicondir) || mkdir $(buildicondir)
 	$(SED) 's/[wW]hite/black/g' $(icondir)/ddd.xpm | $(DELETE_CR) > $@
 
 $(buildicondir)/ddd.xbm: $(icondir)/ddd.xpm
@@ -1099,6 +1101,7 @@ $(buildicondir)/dddmask.xbm: $(icondir)/dddmask.xpm
 #
 
 $(buildicondir)/dddsplash.xbm: $(icondir)/dddsplash.xpm
+	@test -d $(buildicondir) || mkdir $(buildicondir)
 	@$(ECHO) "Creating $@"
 	@-$(CAT) $(icondir)/dddsplash.xpm | \
 	$(XPMTOPPM) | $(PNMDEPTH) 255 | $(PNMGAMMA) 0.4 | $(PPMTOPGM) | \
@@ -1108,6 +1111,7 @@ $(buildicondir)/dddsplash.xbm: $(icondir)/dddsplash.xpm
 	@test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; test -s $@)
 
 $(buildicondir)/dddlogo.xpm: $(icondir)/dddsplash.xpm
+	@test -d $(buildicondir) || mkdir $(buildicondir)
 	$(CONVERT) -fill white \
 	-draw 'rectangle 0,138 409,139' -draw 'rectangle 408,0 409,139' $< $@
 
@@ -1303,7 +1307,7 @@ $(srcdir)/gpl.texinfo: $(texidir)/gpl.texinfo
 $(srcdir)/gfdl.texinfo: $(texidir)/gfdl.texinfo
 	$(RM) $@; cp $(texidir)/gfdl.texinfo $@
 
-ddd.dvi: $(PS_IMAGES) $(ddd_TEXINFOS)
+ddd.dvi: $(PDF_IMAGES) $(ddd_TEXINFOS)
 
 ddd-themes.dvi: $(ddd_themes_TEXINFOS)
 
@@ -1315,14 +1319,6 @@ builddocdir = $(top_builddir)/doc
 
 .PHONY: ps
 ps: $(builddocdir)/ddd.ps $(builddocdir)/ddd-themes.ps
-
-$(builddocdir)/ddd.ps: ddd.dvi
-	@-test -d $(builddocdir) || mkdir $(builddocdir)
-	$(DVIPS) ddd.dvi -o $@
-
-$(builddocdir)/ddd-themes.ps: ddd-themes.dvi
-	@-test -d $(builddocdir) || mkdir $(builddocdir)
-	$(DVIPS) ddd-themes.dvi -o $@
 
 # The DDD manual in PDF format, including all pictures.
 
@@ -1459,9 +1455,9 @@ FIG2PDF = $(FIG2DEV) -L pdf
 	@-test -f texinfo.tex || $(LN_S) $(texidir)/texinfo.tex .
 	$(TEXI2DVI) -I $(srcdir) -I $(texidir) $<
 
-.dvi.ps:
+.pdf.ps:
 	test -d $(docdir) || mkdir $(docdir)
-	$(DVIPS) $< -o $@
+	pdf2ps $< $@
 
 
 # PostScript pictures in the DDD manual.
@@ -1679,6 +1675,8 @@ IMAGES = $(PS_IMAGES) $(PDF_IMAGES) $(HTML_IMAGES)
 
 $(buildpicdir)/ddd-all.eps: \
 	$(picdir)/ddd-all.fig $(picdir)/ddd-all.png
+$(buildpicdir)/ddd-clusters.eps: \
+	$(picdir)/ddd-clusters.fig $(picdir)/ddd-clusters.png
 $(buildpicdir)/ddd-console.eps: \
 	$(picdir)/ddd-console.fig $(picdir)/ddd-console.png
 $(buildpicdir)/ddd-history.eps: \
@@ -1970,17 +1968,17 @@ $(buildpicdir)/dddsplash.jpg: $(icondir)/dddsplash.xpm
 $(buildpicdir)/dddsplash.png: $(icondir)/dddsplash.xpm
 	$(CONVERT) -quality 100 $(icondir)/dddsplash.xpm $@
 
-$(buildpicdir)/dddlogo.eps: $(icondir)/dddlogo.xpm
-	$(CONVERT) $(icondir)/dddlogo.xpm $@
+$(buildpicdir)/dddlogo.eps: $(buildicondir)/dddlogo.xpm
+	$(CONVERT) $(buildicondir)/dddlogo.xpm $@
 
-$(buildpicdir)/dddlogo.gif: $(icondir)/dddlogo.xpm
-	$(CONVERT) $(icondir)/dddlogo.xpm $@
+$(buildpicdir)/dddlogo.gif: $(buildicondir)/dddlogo.xpm
+	$(CONVERT) $(buildicondir)/dddlogo.xpm $@
 
-$(buildpicdir)/dddlogo.jpg: $(icondir)/dddlogo.xpm
-	$(CONVERT) -quality 100 $(icondir)/dddlogo.xpm $@
+$(buildpicdir)/dddlogo.jpg: $(buildicondir)/dddlogo.xpm
+	$(CONVERT) -quality 100 $(buildicondir)/dddlogo.xpm $@
 
-$(buildpicdir)/dddlogo.png: $(icondir)/dddlogo.xpm
-	$(CONVERT) -quality 100 $(icondir)/dddlogo.xpm $@
+$(buildpicdir)/dddlogo.png: $(buildicondir)/dddlogo.xpm
+	$(CONVERT) -quality 100 $(buildicondir)/dddlogo.xpm $@
 
 $(buildpicdir)/dddback.eps: $(icondir)/dddback.xpm
 	$(CONVERT) $(icondir)/dddback.xpm $@
@@ -2050,17 +2048,6 @@ dddapp_DATA = Ddd
 # Distribution.
 # -----------------------------------------------------------------------------
 
-# The build number.  (This must be set from outside)
-REL = 1
-
-# RPM spec
-.PHONY:	spec
-spec: $(srcdir)/../$(ddd)-$(VERSION)-$(REL).spec
-$(srcdir)/../$(ddd)-$(VERSION)-$(REL).spec: $(srcdir)/../ddd.spec.in $(top_builddir)/config.status
-	CONFIG_FILES=$(srcdir)/../ddd.spec CONFIG_HEADERS= $(SHELL) $(top_builddir)/config.status
-	$(SED) 's/@REL@/$(REL)/g' $(srcdir)/../ddd.spec > $@
-	$(RM) $(srcdir)/../ddd.spec
-
 # Architecture-independent files required for building DDD.
 # In a distribution, these should be already built.
 #
@@ -2084,8 +2071,7 @@ PROG_STUFF = $(LEXTOCXX).flex $(LEXTOCXX).sun \
 	     .gdbinit $(ICONS)
 
 # Additional files to be included in the distribution.
-DIST_STUFF = $(srcdir)/../$(ddd)-$(VERSION)-$(REL).spec \
-	     $(srcdir)/header.ps $(srcdir)/trailer.ps \
+DIST_STUFF = $(srcdir)/header.ps $(srcdir)/trailer.ps \
 	     $(docdir)/ddd.ps $(docdir)/ddd.pdf \
 	     $(docdir)/ddd-themes.ps $(docdir)/ddd-themes.pdf \
 	     $(docdir)/ddd-paper.ps \
@@ -2117,8 +2103,11 @@ MAINTAINERCLEANFILES = Ddd.in ddd.vsl.h ddd.info.txt.gz gfdl.texinfo \
 	COPYING.gz config.h.in config.texi vsl-gramma.C \
 	vsl-gramma.h xlibdir.C trailer.str tips.html \
 	COPYING.gz.C header.str version.h rxscan.C \
-	../icons/ddd.xface ../icons/dddsplash.xbm \
-	../vsllib/ddd.vsl
+	ddd/PICS/*.gif \
+	ddd/PICS/*.jpg \
+	ddd/PICS/*.pdf \
+	$(buildicondir)/ddd.xface $(buildicondir)/dddsplash.xbm \
+	$(vsldir)/ddd.vsl
 
 # `make diststuff' creates all files required for a distribution.
 diststuff: $(EXTRA_DIST)

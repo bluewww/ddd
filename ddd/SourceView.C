@@ -1561,7 +1561,7 @@ bool SourceView::file_matches(const string& file1, const string& file2)
 
 bool SourceView::is_current_file(const string& file)
 {
-    if (gdb->type() == JDB || gdb->type() == PYDB)
+    if (gdb->type() == JDB)
 	return file == current_source_name();
     else
 	return file_matches(file, current_file_name);
@@ -2137,17 +2137,14 @@ String SourceView::read_from_gdb(const string& file_name, long& length,
     switch (gdb->type())
     {
     case BASH:
-	command = "list 1 " HUGE_LINE_NUMBER;
+    case DBX:
+    case PYDB:
+	command = "list 1," HUGE_LINE_NUMBER;
 	break;
 
     case DBG: // Is this correct? DBG "list" sommand seems not to do anything
     case GDB:
 	command = "list " + file_name + ":1," HUGE_LINE_NUMBER;
-	break;
-
-    case DBX:
-    case PYDB:
-	command = "list 1," HUGE_LINE_NUMBER;
 	break;
 
     case PERL:
@@ -3871,6 +3868,14 @@ void SourceView::show_execution_position (const string& position_,
     {
 	file_name = position.before(":");
 	position  = position.after(":");
+
+	/* The Python debugger puts the in <string> when an exec is
+	   done.  There's probably a better place to catch this and
+	   deal with it. The right thing to do is ignore this line
+	   and use the next valid position.
+	 */
+	if (gdb->type() == PYDB && file_name.contains("<string>")) 
+	  return;
     }
 
     int line = get_positive_nr(position);
@@ -3977,6 +3982,7 @@ void SourceView::show_position(string position, bool silent)
 	file_name = position.before(':');
 	position  = position.after(':');
     }
+
     int line = get_positive_nr(position);
 
     // In case of `Open Source', we get FILE:1 positions.  Be sure to
@@ -4049,6 +4055,8 @@ void SourceView::process_info_bp (string& info_output,
     {
     case GDB:
     case BASH:
+    case MAKE:
+    case PYDB:
 	// If there is no breakpoint info, process it as GDB message.
 	if (!info_output.contains("Num", 0) && 
 	    !info_output.contains("No breakpoints", 0))
@@ -4059,8 +4067,6 @@ void SourceView::process_info_bp (string& info_output,
     case DBX:
     case XDB:
     case JDB:
-    case MAKE:
-    case PYDB:
     case PERL:
 	break;
     }
@@ -4674,7 +4680,9 @@ void SourceView::process_pwd(string& pwd_output)
 
 	switch (gdb->type())
 	{
-	case GDB:			// 'Working directory PATH.'
+	case BASH:              // 'Working directory PATH.'
+	case GDB:
+	case MAKE:
 	case PYDB:
 	    if (pwd.contains("Working directory", 0))
 	    {
@@ -4683,11 +4691,9 @@ void SourceView::process_pwd(string& pwd_output)
 	    }
 	    // FALL THROUGH
 
-	case BASH:
 	case DBG:
 	case DBX:		// 'PATH'
 	case JDB:
-	case MAKE:
 	case PERL:
 	case XDB:
 	    if (pwd.contains('/', 0) && !pwd.contains(" "))
@@ -7016,6 +7022,7 @@ void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
     case DBG:
     case GDB:
     case MAKE:
+    case PYDB:
 	// GDB frame output is caught by our routines.
 	gdb_command(gdb->frame_command(count - cbs->item_position));
 	break;
@@ -7027,7 +7034,6 @@ void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
 
     case DBX:
     case JDB:
-    case PYDB:
     case PERL:
 	if (gdb->has_frame_command())
 	{
@@ -7036,7 +7042,7 @@ void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
 	}
 	else
 	{
-	    // JDB, PYDB and some DBXes lack a `frame' command.
+	    // JDB, and some DBXes lack a `frame' command.
 	    // Use `up N'/`down N' instead.
 	    int offset = cbs->item_position - last_frame_pos;
 	    if (offset != 0)
@@ -9930,12 +9936,12 @@ bool SourceView::get_state(std::ostream& os)
     // Restore current cursor position
     switch (gdb->type())
     {
+    case BASH:
     case GDB:
     case PYDB:
 	os << "info line " << line_of_cursor() << '\n';
 	break;
 
-    case BASH:
     case DBG:
     case DBX:
     case MAKE:

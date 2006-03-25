@@ -4281,7 +4281,8 @@ void update_options()
 
     source_view->set_display_line_numbers(app_data.display_line_numbers);
     source_view->set_display_glyphs(app_data.display_glyphs);
-    source_view->set_disassemble(gdb->type() == GDB && app_data.disassemble);
+    source_view->set_disassemble(gdb->type() == GDB || gdb->type() == PYDB
+				 && app_data.disassemble);
     source_view->set_all_registers(app_data.all_registers);
     source_view->set_tab_width(app_data.tab_width);
     source_view->set_indent(app_data.indent_source, app_data.indent_code);
@@ -7571,6 +7572,17 @@ static void setup_options(int& argc, const char *argv[],
 	    gdb_option_offset = 2;
 	}
 
+#if FIXED
+	if ( arg == "-python"   || arg == "--python" )
+	  arg = "-pydb";
+	else if ( arg == "-mdb" || arg == "--mdb" )
+	  arg = "--make";
+	else if ( arg == "-bashdb" || arg == "--bashdb" )
+	  arg = "--bash";
+	else if ( arg == "-java"|| arg == "--java" )
+	  arg = "--jdb";
+#endif
+
 	if ( arg == "--bash"    || arg == "-bash" 
 	     || arg == "--dbg"  || arg == "-dbg"
 	     || arg == "--dbx"  || arg == "-dbx"
@@ -7788,7 +7800,7 @@ static void setup_auto_command_prefix()
 // All options that remain fixed for a session go here.
 static void setup_options()
 {
-    set_sensitive(disassemble_w, gdb->type() == GDB);
+    set_sensitive(disassemble_w, gdb->type() == GDB || gdb->type() == PYDB);
     set_sensitive(code_indent_w, gdb->type() == GDB);
     set_sensitive(examine_w,            gdb->has_examine_command());
     set_sensitive(print_examine_w,      gdb->has_examine_command());
@@ -7849,21 +7861,22 @@ static void setup_options()
     set_sensitive(source_file_menu[FileItems::CD].widget,             have_cd);
     set_sensitive(data_file_menu[FileItems::CD].widget,               have_cd);
 
-    bool have_settings = (gdb->type() != XDB && gdb->type() != PYDB);
+    bool have_settings = (gdb->type() != XDB);
     set_sensitive(command_edit_menu[EditItems::Settings].widget,have_settings);
     set_sensitive(source_edit_menu[EditItems::Settings].widget, have_settings);
     set_sensitive(data_edit_menu[EditItems::Settings].widget,   have_settings);
 
-    set_sensitive(complete_w,  gdb->type() == GDB);
+    set_sensitive(complete_w,  gdb->type() == BASH || gdb->type() == GDB 
+		  || gdb->type() == PYDB);
     set_sensitive(define_w,    gdb->type() == GDB);
     set_sensitive(signals_w,   gdb->type() == GDB);
 
-    set_sensitive(set_debugger_bash_w, have_cmd("bash"));
+    set_sensitive(set_debugger_bash_w, have_cmd("bashdb"));
     set_sensitive(set_debugger_dbg_w,  have_cmd("dbg"));
     set_sensitive(set_debugger_dbx_w,  have_cmd("dbx") || have_cmd("ladebug"));
     set_sensitive(set_debugger_gdb_w,  have_cmd("gdb"));
     set_sensitive(set_debugger_jdb_w,  have_cmd("jdb"));
-    set_sensitive(set_debugger_make_w, have_cmd("make"));
+    set_sensitive(set_debugger_make_w, have_cmd("remake"));
     set_sensitive(set_debugger_perl_w, have_cmd("perl"));
     set_sensitive(set_debugger_pydb_w, have_cmd("pydb"));
     set_sensitive(set_debugger_xdb_w,  have_cmd("xdb"));

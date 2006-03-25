@@ -643,19 +643,9 @@ void start_gdb(bool config)
 	extra_data->refresh_initial_line = true;
 	break;
 
-    case PYDB:
-	extra_data->refresh_initial_line = true;
-
-	cmds += "pwd";
-	extra_data->refresh_pwd = true;
-	cmds += "info breakpoints";
-	extra_data->refresh_breakpoints = true;
-	break;
-
     case BASH:
-    case MAKE:
     case PERL:
-	// Bash, Make and Perl start immediately with execution.
+	// All of these start immediately with execution.
 	cmd_data->new_exec_pos = true;
 
 	cmds += gdb->pwd_command();
@@ -669,6 +659,24 @@ void start_gdb(bool config)
 	cmds += "pwd";
 	extra_data->refresh_pwd = true;
 	cmds += "info breakpoints";
+	extra_data->refresh_breakpoints = true;
+	break;
+
+    case MAKE:
+	// All of these start immediately with execution.
+	cmd_data->new_exec_pos = true;
+
+	cmds += gdb->pwd_command();
+	extra_data->refresh_pwd = true;
+	cmds += "info break";
+	extra_data->refresh_breakpoints = true;
+	break;
+
+    case PYDB:
+	cmd_data->new_exec_pos = false;
+	cmds += gdb->pwd_command();
+	extra_data->refresh_pwd = true;
+	cmds += "info break";
 	extra_data->refresh_breakpoints = true;
 	break;
     }
@@ -1012,6 +1020,7 @@ void send_gdb_command(string cmd, Widget origin,
 		// Lookup ARG in source window only
 		switch (gdb->type())
 		{
+		case BASH:
 		case GDB:
 		case MAKE:
 		case PYDB:
@@ -1027,10 +1036,9 @@ void send_gdb_command(string cmd, Widget origin,
 		    cmd_data->lookup_arg = arg;
 		    break;
 
-		case BASH:
 		case DBG:
 		case PERL:
-		    // Perl/bash `l' command issues a position anyway.
+		    // Perl `l' command issues a position anyway.
 		    break;
 		}
 	    }
@@ -1775,7 +1783,7 @@ void send_gdb_command(string cmd, Widget origin,
 	if (extra_data->refresh_pwd)
 	    cmds += gdb->pwd_command();
 	if (extra_data->refresh_breakpoints)
-	    cmds += "info breakpoints";
+	    cmds += "info break";
 	if (extra_data->refresh_where)
 	    cmds += gdb->where_command();
 	if (extra_data->refresh_data)
@@ -1786,15 +1794,33 @@ void send_gdb_command(string cmd, Widget origin,
 		data_disp->add_refresh_user_commands(cmds);
 	if (extra_data->refresh_disp_info)
 	    cmds += gdb->info_display_command();
+	if (extra_data->refresh_setting)
+	    cmds += show_command(cmd, gdb->type());
 	break;
 
     case BASH:
-    case MAKE:
     case PERL:
 	if (extra_data->refresh_pwd)
 	    cmds += gdb->pwd_command();
 	if (extra_data->refresh_breakpoints)
 	    cmds += "L";
+	if (extra_data->refresh_where)
+	    cmds += gdb->where_command();
+	if (extra_data->refresh_data)
+	    extra_data->n_refresh_data = 
+		data_disp->add_refresh_data_commands(cmds);
+	if (extra_data->refresh_user)
+	    extra_data->n_refresh_user = 
+		data_disp->add_refresh_user_commands(cmds);
+	if (extra_data->refresh_setting)
+	    cmds += show_command(cmd, gdb->type());
+	break;
+
+    case MAKE:
+	if (extra_data->refresh_pwd)
+	    cmds += gdb->pwd_command();
+	if (extra_data->refresh_breakpoints)
+	    cmds += "info break";
 	if (extra_data->refresh_where)
 	    cmds += gdb->where_command();
 	if (extra_data->refresh_data)
@@ -3238,6 +3264,7 @@ static void extra_completed (StringArray& answers,
 	string ans = "";
 	for (int i = 0; i < extra_data->n_refresh_data; i++)
 	{
+	  if (qu_count > 0 && qu_count < extra_data->extra_commands.size()) {
 	    const string& cmd = extra_data->extra_commands[qu_count];
 	    string var = cmd.after(rxwhite);
 
@@ -3247,6 +3274,7 @@ static void extra_completed (StringArray& answers,
 	    string value = answers[qu_count++];
 	    gdb->munch_value(value, var);
 	    ans += value + "\n";
+	  }
 	}
 
 	if (extra_data->n_refresh_data > 0)

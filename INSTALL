@@ -122,6 +122,11 @@ To run DDD, you need:
        fact, XDB support is no longer maintained.  Try WDB or GDB 4.18
        or later; these support HP-UX compilers.
 
+     - To debug Bash programs, you will need a version of Bash that
+       has the debugger extensions compiled in and the bash debugger,
+       bashdb. Get bashdb from
+       http://bashdb.sourceforge.net/download.html
+
      - To debug Java bytecode programs, DDD supports JDB, the Java
        Debugger, as of JDK 1.1 and later.
 
@@ -129,11 +134,18 @@ To run DDD, you need:
        debugger.  DDD does its best to overcome JDB's limitations, but
        if you have an alternative to DDD/JDB, try it first.
 
-     - To debug Python programs, DDD supports PYDB, a PDB extension.
-       PYDB is included in the DDD distribution.
-
      - To debug Perl programs, DDD supports the Perl debugger as of
        Perl 5.003 and later.
+
+     - To debug GNU Make Makefiles, you will need a version of GNU
+       Make has the debugging extensions compiled. For now, the
+       installed "make" is called usually called "remake". Get
+       the GNU Make + debugger from 
+       http://bashdb.sourceforge.net/remake/
+
+     - To debug Python programs, DDD supports an extended version 
+       of the stock Python debugger called PYDB. Get pydb from 
+       the download link at http://bashdb.sourceforge.net/pydb/
 
 
 The following recommended helper applications should be in the user path:

@@ -109,6 +109,7 @@ void show_invocation(const string& gdb_command, std::ostream& os)
 	"  --gdb              Invoke GDB as inferior debugger.",
 	"  --ladebug          Invoke Ladebug as inferior debugger.",
 	"  --jdb              Invoke JDB as inferior debugger.",
+	"  --make             Invoke remake (GNU Make) inferior debugger.",
 	"  --perl             Invoke Perl as inferior debugger.",
 	"  --pydb             Invoke PYDB as inferior debugger.",
 	"  --wdb              Invoke WDB as inferior debugger.",
@@ -224,7 +225,7 @@ void show_invocation(const string& gdb_command, std::ostream& os)
     case PYDB:
     {
 	title = "PYDB";
-	base  = "PYDB, the Python debugger.";
+	base  = "PYDB, the Extended Python debugger.";
 	options += "  [PYDB options]     Pass option to PYDB.";
 	args = "program-file";
     }
