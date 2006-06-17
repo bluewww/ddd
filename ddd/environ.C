@@ -37,6 +37,10 @@ char environ_rcsid[] =
 #include <stdlib.h>		// getenv, putenv
 #include <string.h>
 
+#if !HAVE_PUTENV_DECL
+extern "C" int putenv(char *string);
+#endif
+
 static StringArray environment_names;
 
 // Put NAME=VALUE into the environment

@@ -116,6 +116,9 @@ extern "C" {
 #define S_IRWXO 07
 #endif
 
+#if !HAVE_PUTENV_DECL
+extern "C" int putenv(char *string);
+#endif
 
 // ---------------------------------------------------------------------------
 // How to present a default session to the user
