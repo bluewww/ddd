@@ -58,7 +58,9 @@ extern "C" FILE *popen(const char *command, const char *mode);
 #if !HAVE_PCLOSE_DECL
 extern "C" int pclose(FILE *stream);
 #endif
-
+#if !HAVE_PUTENV_DECL
+extern "C" int putenv(char *string);
+#endif
 
 //-----------------------------------------------------------------------------
 // Determine X project root

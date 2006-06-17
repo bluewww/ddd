@@ -1439,7 +1439,7 @@ static bool _get_core(const string& session, unsigned long flags,
 
 #if HAVE_SYMLINK
 	    // Try a symlink link from target to current core file
-	    if (symlink(info.core.chars(), target.chars()) == 0)
+	    if (symlink((char *)info.core.chars(), (char *)target.chars()) == 0)
 		return true;
 #endif
 
