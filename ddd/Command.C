@@ -160,6 +160,11 @@ void translate_command(string& command)
 	    command = "step up";
 	break;
 
+    case PYDB:
+	if (command == "cont")
+	  command = "continue";
+	break;
+
     case PERL:
 	// PERL only has one-letter commands
         // BASHDB doesn't but it accepts perl's one-letter commands
@@ -182,7 +187,6 @@ void translate_command(string& command)
     case DBG:  // I think this is right.
     case GDB:
     case MAKE:
-    case PYDB:
 	break;
     }
 
