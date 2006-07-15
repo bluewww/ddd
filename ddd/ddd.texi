@@ -58,7 +58,7 @@
 @set EDITION First
 
 @c !!set DDD manual's revision date
-@set DATE 10 January, 2005
+@set DATE 15 July, 2006
 
 @c Index stuff
 @c Labels
