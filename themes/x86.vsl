@@ -1,5 +1,33 @@
 // $Id$
-// Intel x86 register and flag-bit theme. Contributed by Zarko Zivanov
+// Intel x86 flag bits and registers. Contributed by Zarko Zivanov.
+
+
+// To use this theme, set up some data buttons like this:
+//
+//   Ddd*dataButtons: \
+//   graph display ($eflags & 1) != 0 // c\n\
+//   graph display ($eflags & 64) != 0 // z\n\
+//   graph display ($eflags & 128) != 0 // s\n\
+//   graph display ($eflags & 1024) != 0 // d\n\
+//   graph display ($eflags & 2048) != 0 // o\n\
+//   graph display $eax & 255 // al\n\
+//   graph display $eax >> 8 & 255 // ah\n\
+//   graph display $eax & 65535 // ax\n\
+//   graph display $ebx & 255 // bl\n\
+//   graph display $ebx >> 8 & 255 // bh\n\
+//   graph display $ebx & 65535 // bx\n\
+//   graph display $ecx & 255 // cl\n\
+//   graph display $ecx >> 8 & 255 // ch\n\
+//   graph display $ecx & 65535 // cx\n\
+//   graph display $edx & 255 // dl\n\
+//   graph display $edx >> 8 & 255 // dh\n\
+//   graph display $edx & 65535 // dx
+//
+// Whenever the these displays is shown, the 
+// title will be replaced by a more intuitive
+// title like "carry", or "zero" for one of the
+// flag bits and "al" "ax", etc. for one of the 
+// registers.
 
 
 /////////////////////////////////////////////////////

@@ -84,16 +84,14 @@
 
 @c PDF settings
 @iftex
-@ifpdf
 @pdfcompresslevel=9
 @pdfinfo{
     /Title (Debugging with DDD)
     /Author (Andreas Zeller et. al.)
     /Subject (DDD - the Data Display Debugger)
-    /Keywords (Debugging Debugger DDD GNU GDB DBX XDB JDB Ladebug WDB 
-               Python Perl Bash GNU Make)
+    /Keywords (Bash Debugging Debugger DDD GNU GDB DBX JDB Ladebug GNU Make 
+               Perl Python WDB XDB)
 }
-@fi
 @end iftex
 
 @c Formatting
@@ -170,7 +168,6 @@ Send bug reports to @email{bug-ddd@@gnu.org}. @*
 \subtitle \textsf{\value{EDITION} Edition, for \value{DDD} Version \value{VERSION}}
 \subtitle \textsf{Last updated \value{DATE}}
 \sp 2
-\center \image{PICS/dddlogo, 15cm}
 \author \titlesf{Andreas Zeller}
 @end tex
 @page
@@ -9477,16 +9474,61 @@ installed with @DDD{} include:
 @table @samp
 @item Small Titles
 @lbindex Small Titles
-Apply this theme to show display titles in a smaller font.
+If enabled, display titles in a smaller font.
 @item Small Values
 @lbindex Small Values
 Apply this theme to display values in a smaller font.
 @item Tiny Values
 @lbindex Tiny Values
+If enabled, display values in a tiny font.
+This could be combined with a pattern like @code{*\[*\]} to make
+all array members tiny.
 Apply this theme to display values in a tiny font.
 @item Suppress Values
 @lbindex Suppress Values
-Apply this theme to display values not at all.
+If enabled, the given value will be suppressed.  This should be
+combined with a pattern like @code{*->X} to suppress all members named
+`X'.  Apply this theme to display values not at all.
+@item Red Background
+@lbindex Red Background
+Use this with a self-defined button
+associated with the command @code{graph apply red.vsl "()"}
+@item Red nil pointers
+@lbindex Red Background
+If enabled, show nil pointers in red.
+@item Green background
+@lbindex Green background
+Use this with a self-defined button associated with the command
+@code{graph apply green.vsl "()"}.
+@item Intel x86 flag bits and registers
+@lbindex Intel x86 flab gits and registers
+To use this theme, set up some data buttons like this:
+
+@example
+   Ddd*dataButtons: \
+   graph display ($eflags & 1) != 0 // c\n\
+   graph display ($eflags & 64) != 0 // z\n\
+   graph display ($eflags & 128) != 0 // s\n\
+   graph display ($eflags & 1024) != 0 // d\n\
+   graph display ($eflags & 2048) != 0 // o\n\
+   graph display $eax & 255 // al\n\
+   graph display $eax >> 8 & 255 // ah\n\
+   graph display $eax & 65535 // ax\n\
+   graph display $ebx & 255 // bl\n\
+   graph display $ebx >> 8 & 255 // bh\n\
+   graph display $ebx & 65535 // bx\n\
+   graph display $ecx & 255 // cl\n\
+   graph display $ecx >> 8 & 255 // ch\n\
+   graph display $ecx & 65535 // cx\n\
+   graph display $edx & 255 // dl\n\
+   graph display $edx >> 8 & 255 // dh\n\
+   graph display $edx & 65535 // dx
+@end example
+
+Whenever the these displays is shown, the title will be replaced by a
+more intuitive title like ``carry'', or ``zero'' for one of the flag bits
+and ``al'' ``ax'', etc. for one of the registers.
+
 @end table
 
 Each of these themes can be applied for specific displays.
@@ -12833,14 +12875,14 @@ In short, make sure you use a newer version of @PYDB{}, one from
 been supplied with @DDD{} will no longer work.
 
 History: Up to around 1999 there was parallel development that went on
-between @DDD{}'s Python debugger pydb, and the stock python debugger
-pdb. These were not necessarily @emph{competing} efforts, just
+between @DDD{}'s Python debugger @PYDB{} and the stock python debugger
+@code{pdb}. These were not necessarily @emph{competing} efforts, just
 parallel. In fact the same person worked a little bit on both.
 
-One feature that @PYDB{} supported that wasn't in pdb was gdb's
-display command.
+One feature that @PYDB{} supported that wasn't in @code{pdb} was @GDB{}'s
+@code{display} command.
 
-After 1999, maintaining @PYDB{} more or less fell into disuse and pdb
+After 1999, maintaining @PYDB{} more or less fell into disuse and @code{pdb}
 sort of inched ahead with bug fixes and redisigned interaces. Around
 the beginning of 2006, new work was started to enhance pdb and to make
 it more like @GDB{}. Since @DDD{} already understands a large set of
@@ -12849,7 +12891,7 @@ realizable by @DDD{}. These things include command completion,
 restarting the debugger, and using set/show/info commands.
 
 With the blessing of the original author of @PYDB{}, the new effort
-took over the name of the old one. Although it did not actually start
+took over the name of the old one, Although it did not actually start
 out from the @PYDB{} base but from pdb adding the old @PYDB{}
 features.
 
