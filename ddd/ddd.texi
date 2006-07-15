@@ -820,32 +820,33 @@ To debug @emph{Java byte code programs}, you can use @DDD{} with
 (@DDD{} has been tested with @JDK{} 1.1 and @JDK{} 1.2.)
 
 @item
-@cindex @acronym{PYDB}
-@cindex Python
-To debug @emph{Python programs}, you can use @DDD{} with
-@dfn{@PYDB{}}, a Python debugger.
+@item
+@cindex Bash
+To debug @emph{Bash programs}, you need a version Bash that supports
+extended debugging support; see
+@uref{http://bashdb.sourceforge.net}. It important to make sure you
+get the right version of the debugger that matches your version of
+Bash. For bash version 2.05b, you need a patched version of bash as
+well as the debugger for bash.
 
 @item
-@cindex Perl
+@cindex GNU Make
+To debug @emph{GNU Make Makefiles}, you need a version GNU Make that supports
+extended debugging support. To get this enhanced version see
+@uref{http://bashdb.sourceforge.net/remake}.
+
+@item
 @cindex Perl
 To debug @emph{Perl programs}, you can use @DDD{} with the @dfn{Perl
 debugger,} as of Perl 5.003 and later.
 
 @item
-@cindex Bash
-@cindex Bash
-To debug @emph{Bash programs}, you need a version Bash that supports
-extended debugging support. To get this enhanced version see
-@uref{http://bashdb.sourceforge.net}. You will need version
-2.05b-debugger-0.32 or later to work with @DDD{}.
+@cindex Python
+@cindex pydb
 
-@item
-@cindex GNU Make
-@cindex GNU Make
-To debug @emph{GNU Make Makefiles}, you need a version GNU Make that supports
-extended debugging support. To get this enhanced version see
-@uref{http://bashdb.sourceforge.net/remake}. You will need version
-2.05b-debugger-0.32 or later to work with @DDD{}.
+To debug @emph{Python programs}, you need an extended version of the
+python debugger called @dfn{@PYDB{}}. To get this, see
+@uref{http://bashdb.sourceforge.net/pydb}.
 @end itemize
 
 @xref{Choosing an Inferior Debugger}, for choosing the appropriate
@@ -1130,7 +1131,10 @@ command tool.
 to Daniel Schepler.
 
 @item Dec, 2005
-@DDD{} 3.3.12: GNU Make support added.
+@DDD{} 3.3.12-test: GNU Make support added.
+
+@item Feb, 2006
+@DDD{} 3.3.12-test3: Modernize Python debugging 
 @end table
 
 
@@ -5481,7 +5485,7 @@ To view @WWW{} pages, you can define a @samp{Web Browser} command:
 @pindex mozilla
 @pindex emacs
 @pindex xemacs
-@pindex mosaic
+@pindex firefox
 @pindex gnudoit
 @pindex lynx
 The command to invoke a @WWW{} browser.  The string @samp{@@URL@@} is
@@ -5489,7 +5493,7 @@ replaced by the @acronym{URL} to open.  Default is to try a running
 Netscape first (trying @command{mozilla}, then @command{netscape}), then
 @command{$WWWBROWSER}, then to invoke a new Netscape process, then to
 let a running Emacs or XEmacs do the job (via @command{gnudoit}), then
-to invoke Mosaic, then to invoke Lynx in an xterm.
+to invoke Firefox, then to invoke Lynx in an xterm.
 
 To specify @samp{netscape-6.0} as browser, use the setting:
 
@@ -10770,11 +10774,17 @@ type in and edit these commands directly.
 
 In the @emph{debugger console}, you can interact with the command
 interface of the inferior debugger.  Enter commands at the
-@emph{debugger prompt}---that is, @samp{(gdb)} for @GDB{},
-@samp{(dbx)} for @DBX{}, @samp{(ladebug)} for Ladebug, @samp{>} for
-@XDB{}, @samp{>} and @samp{@var{thread}[@var{depth}]} for @JDB{}, or
-@samp{(Pydb)} for @PYDB{}, or @samp{DB<>} for Perl, or
-@samp{bashdb<>} for Bash.  You can use arbitrary debugger commands; use the
+@emph{debugger prompt}---that is, 
+@samp{(gdb)} for @GDB{},
+@samp{bashdb<>} for Bash,
+@samp{(dbx)} for @DBX{}, 
+@samp{>} @samp{@var{thread}[@var{depth}]} for @JDB{},
+@samp{(ladebug)} for Ladebug, 
+@samp{mdb<>} for the GNU Make debugger, 
+@samp{DB<>} for Perl, 
+@samp{(Pydb)} for @PYDB{}, 
+or @samp{>} for @XDB{}.
+You can use arbitrary debugger commands; use the
 @key{Return} key to enter them.
 
 @menu
