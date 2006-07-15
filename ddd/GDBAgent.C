@@ -276,7 +276,7 @@ GDBAgent::GDBAgent (XtAppContext app_context,
     else
 	_has_watch_command = 0;
     
-    _cpu = cpu_unknown;
+    cpu = cpu_unknown;
 }
 
 

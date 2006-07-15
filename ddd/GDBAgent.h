@@ -145,7 +145,7 @@ struct ReplyRequiredInfo {
 class GDBAgent: public TTYAgent {
 public:
     DECLARE_TYPE_INFO
-    DebuggerCPU     _cpu;
+    DebuggerCPU cpu;
 
 protected:
     enum State {

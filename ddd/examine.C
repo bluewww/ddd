@@ -197,7 +197,7 @@ static string examine_command()
     strip_space(repeat);
     strip_space(address);
 
-    if (GDB == gdb->type() && gdb->_cpu == cpu_intel) {
+    if (GDB == gdb->type() && gdb->cpu == cpu_intel) {
       
       /* Intel x86 8 and 16-bit handling: 
 	 When you have an assembly line like this:

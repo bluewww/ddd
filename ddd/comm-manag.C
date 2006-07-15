@@ -2879,7 +2879,7 @@ static void process_config_gdb_version(const string& answer)
     gdb->is_windriver_gdb(answer.contains("vxworks"));
     if (answer.contains("i686") || answer.contains("i586") 
 	|| answer.contains("i386")) {
-      gdb->_cpu = cpu_intel;
+      gdb->cpu = cpu_intel;
     }
 }
 
