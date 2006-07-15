@@ -4,9 +4,10 @@
 
 @c Copyright (C) 1999-2001 Universitaet Passau, Germany.
 @c Copyright (C) 2001-2004 Universitaet des Saarlandes, Germany.
+@c Copyright (C) 2006 Free Software Foundation, Inc.
 @c
-@c Sections on GNU Make and Bash 
-@c Copyright (C) 2005 Rocky Bernstein <rocky@panix.com>
+@c Sections on GNU Make, Bash, and Python
+@c Copyright (C) 2005, 2006 Rocky Bernstein <rocky@gnu.org>
 @c
 @c Written by Andreas Zeller <zeller@gnu.org>.
 @c 
@@ -2665,17 +2666,21 @@ enables several important warnings.  For further options, see the
 @subsubsection Bash Options
 
 If you have the proper bash installed, the option needed to specify
-debugging support is @option{--debugger}. (If your bash doesn't
+debugging support is @option{--debugger}. If your bash doesn't
 understand this option you need to pick up a version of bash that does
-from @uref{http://bashdb.sourceforge.net}.) 
+from @uref{http://bashdb.sourceforge.net}.  Other options can be found
+from the on-line documentation at
+@uref{http://bashdb.sourceforge.net/bashdb.html}
 
 @node GNU Make Options
 @subsubsection GNU Make Options
 
 If you have the proper @code{make} installed (for now it is probably
-called @code{remake}, the option needed to specify debugging support
-is @option{--debugger} and you can pick up a debugger-enabled version
-from @uref{http://bashdb.sourceforge.net/remake}.)
+called @code{remake}), the option needed to specify debugging support
+is @option{--debugger}. You can pick up a debugger-enabled version
+from @uref{http://bashdb.sourceforge.net/remake}. Other options can be
+found from the on-line documentation at
+@uref{http://bashdb.sourceforge.net/remake/mdb.html}
 
 @node Multiple Instances
 @subsection Multiple @value{DDD} Instances
