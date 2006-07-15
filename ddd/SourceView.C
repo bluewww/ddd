@@ -3,6 +3,7 @@
 
 // Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
 // Copyright (C) 2000 Universitaet Passau, Germany.
+// Copyright (C) 2001-2006 Free Software Foundation, Inc.
 // Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
 // and Andreas Zeller <zeller@gnu.org>.
 // 
@@ -7508,7 +7509,7 @@ void SourceView::SelectRegisterCB (Widget, XtPointer, XtPointer call_data)
     {
 	string regname = item.through(rxidentifier);
 	strip_space(regname);
-	item = "/x $" + regname;
+	item = "$" + regname;
 	source_arg->set_string(item);
     }
 }

@@ -2,6 +2,23 @@ DDD News						-*- text -*-
 ********
 
 ==========
+DDD-3.3.12-test6
+
+- Remove pydb in this directory. Use
+  http://bashdb.sourceforge.net/pydb instead
+
+- "cont"inue button for pydb was broken. 
+
+-  Start informing ddd that bash and pydb now have (or will have in the
+   next release) "commands", and "display".
+
+-  LynxOS support via Olli Savia
+
+- Add x86 theme for changing display expressions to x86 registers and
+  flag-bits. Change Data/Memory examine behavior when used on Intel
+  registers so that %reg is the same as $reg. 
+  Contributed by Zarko Zivanov.
+
 DDD-3.3.12-test5
 - Had broken gdb support
 

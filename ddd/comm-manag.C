@@ -1,4 +1,4 @@
-// $Id$
+// $Id$ -*- C++ -*-
 // GDB communication manager
 
 // Copyright (C) 1995-1999 Technische Universitaet Braunschweig, Germany.
@@ -2877,6 +2877,10 @@ static void process_config_program_language(const string& lang)
 static void process_config_gdb_version(const string& answer)
 {
     gdb->is_windriver_gdb(answer.contains("vxworks"));
+    if (answer.contains("i686") || answer.contains("i586") 
+	|| answer.contains("i386")) {
+      gdb->_cpu = cpu_intel;
+    }
 }
 
 

@@ -1,4 +1,4 @@
-// $Id$
+// $Id$ -*- C++ -*-
 // Communicate with separate GDB process
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
@@ -54,6 +54,7 @@
 //-----------------------------------------------------------------------------
 
 enum DebuggerType { BASH, DBG, DBX, GDB, JDB, PERL, PYDB, XDB, MAKE };
+enum DebuggerCPU { cpu_intel, cpu_unknown};
 //-----------------------------------------------------------------------------
 // Program language
 //-----------------------------------------------------------------------------
@@ -144,6 +145,7 @@ struct ReplyRequiredInfo {
 class GDBAgent: public TTYAgent {
 public:
     DECLARE_TYPE_INFO
+    DebuggerCPU     _cpu;
 
 protected:
     enum State {
