@@ -2974,11 +2974,11 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	// We don't need the source window, since we're invoked by Emacs.
 	gdbCloseSourceWindowCB(gdb_w, 0, 0);
 
-	if (!app_data.disassemble)
+	if (!app_data.disassemble && !gdb->has_disassembly())
 	    gdbCloseToolWindowCB(gdb_w, 0, 0);
     }
 
-    if (!app_data.disassemble)
+    if (!app_data.disassemble && !gdb->has_disassembly())
     {
 	// We don't disassemble.
 	gdbCloseCodeWindowCB(gdb_w, 0, 0);
@@ -7806,7 +7806,7 @@ static void setup_auto_command_prefix()
 // All options that remain fixed for a session go here.
 static void setup_options()
 {
-    set_sensitive(disassemble_w, gdb->type() == GDB || gdb->type() == PYDB);
+    set_sensitive(disassemble_w, gdb->has_disassembly());
     set_sensitive(code_indent_w, gdb->type() == GDB);
     set_sensitive(examine_w,            gdb->has_examine_command());
     set_sensitive(print_examine_w,      gdb->has_examine_command());
