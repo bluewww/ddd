@@ -1979,7 +1979,7 @@ for details.
 Run @JDB{} as inferior debugger.
 
 Giving this option is equivalent to setting the @DDD{}
-@samp{debugger} resource to @samp{gdb}.  @xref{Customizing Debugger Interaction},
+@samp{debugger} resource to @samp{jdb}.  @xref{Customizing Debugger Interaction},
 for details.
 
 

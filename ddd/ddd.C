@@ -592,8 +592,14 @@ static XrmOptionDescRec options[] = {
 
 { XRMOPTSTR("--attach"),               XRMOPTSTR(XtCSeparate),             
                                         XrmoptionNoArg, XPointer(OFF) },
+/* -attach is used by jdb to attach to another another running JVM.
+It is even described as a useful option to use in the ddd reference.
+If we add this as an option as yet a 4th way to specify --attach-windows,
+we prevent its use in jdb. 
+
 { XRMOPTSTR("-attach"),                XRMOPTSTR(XtCSeparate),             
                                         XrmoptionNoArg, XPointer(OFF) },
+*/
 { XRMOPTSTR("--attach-windows"),       XRMOPTSTR(XtCSeparate),             
                                         XrmoptionNoArg, XPointer(OFF) },
 { XRMOPTSTR("-attach-windows"),        XRMOPTSTR(XtCSeparate),             
