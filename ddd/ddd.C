@@ -7910,12 +7910,7 @@ static void setup_theme_manager()
             if (strcmp(theme, "rednil.vsl") == 0) {
 	        p.active() = true;
                 p.add("*");
-            } else if (strcmp(theme, "x86flags.vsl") == 0) {
-	        p.active() = true;
-                p.add("($eflags &*");
-            } else if (strcmp(theme, "x86regs.vsl") == 0) {
-	        p.active() = true;
-                p.add("$eax*;$ebx*;$ecx*;$edx*");
+            //ZARKO - automatsko aktiviranje flags i regs tema
             } else if (strcmp(theme, "x86.vsl") == 0) {
 	        p.active() = true;
                 p.add("$eax*;$ebx*;$ecx*;$edx*");
