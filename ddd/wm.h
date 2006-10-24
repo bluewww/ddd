@@ -29,16 +29,23 @@
 #ifndef _DDD_wm_h
 #define _DDD_wm_h
 
+#ifdef IF_MOTIF
+
 #include <X11/Intrinsic.h>
+
+#endif // IF_MOTIF
+
+#include "gtk_wrapper.h"
+
 #include "strclass.h"
 
 // Window manager
 extern void wm_set_icon(Widget shell, Pixmap icon, Pixmap mask);
-extern void wm_set_icon(Display *display, Window shell,
+extern void wm_set_icon(DISPLAY_P display, Window shell,
 			Pixmap icon, Pixmap mask);
 
 extern void wm_set_name(Widget shell, string title = "", string icon = "");
-extern void wm_set_name(Display *display, Window shell,
+extern void wm_set_name(DISPLAY_P display, Window shell,
 			string title = "", string icon = "");
 
 // Misc functions

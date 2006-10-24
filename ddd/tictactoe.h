@@ -29,7 +29,13 @@
 #ifndef _DDD_tictactoe_h
 #define _DDD_tictactoe_h
 
+#ifdef IF_MOTIF
+
 #include <X11/Intrinsic.h>
+
+#endif
+
+#include "gtk_wrapper.h"
 
 extern void TicTacToeCB(Widget w, XtPointer, XtPointer);
 

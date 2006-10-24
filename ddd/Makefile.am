@@ -131,6 +131,13 @@ TEMPLATE_SRC = \
 	VoidArray.h  \
 	WidgetSA.h
 
+if WITH_GTK
+COND_AGENT_SRC =
+else
+COND_AGENT_SRC = \
+	TimeOut.C    \
+	TimeOut.h
+endif
 # Interprocess communication
 # Top-level class is `Agent', declared in `Agent.h'
 AGENT_SRC = \
@@ -150,40 +157,59 @@ AGENT_SRC = \
 	LiterateA.h  \
 	ReadLineA.C  \
 	ReadLineA.h  \
-	TimeOut.C    \
-	TimeOut.h    \
 	TTYAgent.C   \
-	TTYAgent.h
+	TTYAgent.h   \
+	$(COND_AGENT_SRC)
 
+
+# converters: is used to parse resources.
+# findWindow: is used to find Gnuplot window for Swallower.
+# fileSBF: just wraps the XmFileSelectonBox value in an MString.
+# frame: is used to mess with WM stuff.
+# selection: For now, use native cut/paste support for GTK.
+# AutoRaise: use default behaviour for menus.
+# InitImage: only used for logo.
+# Swallower: only used for gnuplot graphs.
+# XErrorB: X Error blocker, unknown function.
+if WITH_GTK
+COND_XSTUFF_SRC =
+else
+COND_XSTUFF_SRC = \
+	converters.C \
+	converters.h \
+	findWindow.C \
+	findWindow.h \
+	frame.C      \
+	frame.h      \
+	selection.C  \
+	selection.h  \
+	fileSBF.C    \
+	fileSBF.h    \
+	AutoRaise.C  \
+	AutoRaise.h  \
+	DeleteWCB.C  \
+	DeleteWCB.h  \
+	Swallower.C  \
+	Swallower.h  \
+	SwallowerP.h \
+	XErrorB.C    \
+	XErrorB.h
+endif
 # Miscellaneous utilities for X programs: Motif strings, hourglasses,
 # context-sensitive help...
 XSTUFF_SRC = \
 	charsets.C   \
 	charsets.h   \
-	converters.C \
-	converters.h \
 	events.C     \
 	events.h     \
 	findParent.C \
 	findParent.h \
-	findWindow.C \
-	findWindow.h \
-	fileSBF.C    \
-	fileSBF.h    \
-	frame.C      \
-	frame.h      \
 	longName.C   \
 	longName.h   \
-	selection.C  \
-	selection.h  \
 	verify.C     \
 	verify.h     \
-	AutoRaise.C  \
-	AutoRaise.h  \
 	Delay.C      \
 	Delay.h      \
-	DeleteWCB.C  \
-	DeleteWCB.h  \
 	DestroyCB.C  \
 	DestroyCB.h  \
 	ExitCB.C     \
@@ -192,33 +218,37 @@ XSTUFF_SRC = \
 	InitImage.h  \
 	OnOff.h      \
 	Sash.h       \
-	Swallower.C  \
-	Swallower.h  \
-	SwallowerP.h \
 	Widget.h     \
 	Xpm.h        \
-	XErrorB.C    \
-	XErrorB.h
+	$(COND_XSTUFF_SRC)
 
-# Same, but for Motif
-MSTUFF_SRC = \
+# freeXmST: Very Motif-specific
+# LabelH: LabelHackWidget, very Motif-specific
+if WITH_GTK
+COND_MSTUFF_SRC =
+else
+COND_MSTUFF_SRC = \
 	freeXmST.C   \
 	freeXmST.h   \
 	LabelH.C     \
 	LabelH.h     \
 	LabelHP.h    \
-	LessTifH.C   \
-	LessTifH.h   \
-	MakeMenu.C   \
-	MakeMenu.h   \
-	MString.C    \
-	MString.h    \
 	ComboBox.C   \
 	ComboBox.h   \
 	SpinBox.C    \
 	SpinBox.h    \
 	TextSetS.C   \
 	TextSetS.h
+endif
+# Same, but for Motif
+MSTUFF_SRC = \
+	LessTifH.C   \
+	LessTifH.h   \
+	MakeMenu.C   \
+	MakeMenu.h   \
+	MString.C    \
+	MString.h    \
+	$(COND_MSTUFF_SRC)
 
 # Box library - rectangular composible graphical items
 # Top-level class is `Box', declared in `Box.h'
@@ -328,6 +358,18 @@ VSL_SRC = \
 	VSLNode.h    \
         VSLRead.C
 
+if WITH_GTK
+COND_GRAPH_SRC =
+else
+COND_GRAPH_SRC = \
+	PannedGE.C   \
+	PannedGE.h   \
+	PannedGEP.h  \
+	ScrolledGE.C \
+	ScrolledGE.h \
+	ScrolleGEP.h
+endif
+
 # Graph structure, graph layout and graph editor widget
 # Top-level classes are `Graph', declared in `Graph.h'
 # and the `GraphEdit' widget, declared in `GraphEdit.h'.
@@ -360,18 +402,42 @@ GRAPH_SRC = \
 	LineGraphE.h \
 	LineGESI.C   \
 	LineGESI.h   \
-	PannedGE.C   \
-	PannedGE.h   \
-	PannedGEP.h  \
 	PosGraphN.C  \
 	PosGraphN.h  \
 	RegionGN.C   \
 	RegionGN.h   \
-	ScrolledGE.C \
-	ScrolledGE.h \
-	ScrolleGEP.h \
 	layout.C     \
-	layout.h
+	layout.h     \
+	$(COND_GRAPH_SRC)
+
+if WITH_GTK
+COND_DDD_SRC = \
+	GtkScrolledText.C \
+	GtkScrolledText.h \
+	GtkMultiPaned.C \
+	GtkMultiPaned.h \
+	file_database.C
+else
+COND_DDD_SRC = \
+	decoration.C \
+	decoration.h \
+	tictactoe.C  \
+	tictactoe.h  \
+	fonts.C      \
+	fonts.h      \
+	plotter.C    \
+	plotter.h    \
+	sashes.C     \
+	sashes.h     \
+	simpleMenu.C \
+	simpleMenu.h \
+	tips.C       \
+	tips.h       \
+	xconfig.C    \
+	xconfig.h    \
+	PlotArea.C   \
+	PlotArea.h
+endif
 
 # The DDD application itself.  `ddd.C' is the main program, `SourceView.C'
 # is the source window, `DataDisp.C' is the data window.
@@ -396,8 +462,6 @@ DDD_SRC = \
 	dbx-lookup.C \
 	dbx-lookup.h \
 	ddd.vsl.h    \
-	decoration.C \
-	decoration.h \
 	deref.C      \
 	deref.h      \
 	disp-read.C  \
@@ -418,12 +482,12 @@ DDD_SRC = \
 	file.h       \
 	filetype.C   \
 	filetype.h   \
-	fonts.C      \
-	fonts.h      \
 	fortranize.C \
 	fortranize.h \
 	gdbinit.C    \
 	gdbinit.h    \
+	HelpCB.C     \
+	HelpCB.h     \
 	history.C    \
 	history.h    \
 	hostname.C   \
@@ -442,12 +506,12 @@ DDD_SRC = \
 	mydialogs.h  \
 	options.C    \
 	options.h    \
-	plotter.C    \
-	plotter.h    \
 	post.C       \
 	post.h       \
 	print.C      \
 	print.h      \
+	ProgressM.C  \
+	ProgressM.h  \
 	question.C   \
 	question.h   \
 	regexps.C    \
@@ -456,8 +520,6 @@ DDD_SRC = \
 	resolveP.h   \
 	resources.C  \
 	resources.h  \
-	sashes.C     \
-	sashes.h     \
 	select.C     \
 	select.h     \
 	session.C    \
@@ -470,8 +532,6 @@ DDD_SRC = \
 	shorten.h    \
 	show.C       \
 	show.h       \
-	simpleMenu.C \
-	simpleMenu.h \
 	source.C     \
 	source.h     \
 	status.C     \
@@ -481,10 +541,6 @@ DDD_SRC = \
 	stty.h       \
 	tempfile.h   \
 	tempfile.C   \
-	tictactoe.C  \
-	tictactoe.h  \
-	tips.C       \
-	tips.h       \
 	toolbar.C    \
 	toolbar.h    \
 	ungrab.C     \
@@ -497,11 +553,10 @@ DDD_SRC = \
 	windows.h    \
 	wm.C         \
 	wm.h         \
-	xconfig.C    \
-	xconfig.h    \
 	AliasGE.C    \
 	AliasGE.h    \
 	AppData.h    \
+	AppData.C    \
 	ArgField.C   \
 	ArgField.h   \
 	BindingS.h   \
@@ -532,8 +587,6 @@ DDD_SRC = \
 	EntryType.h  \
 	GDBAgent.C   \
 	GDBAgent.h   \
-	HelpCB.C     \
-	HelpCB.h     \
 	HistoryD.C   \
 	HistoryD.h   \
 	HistoryF.h   \
@@ -542,12 +595,8 @@ DDD_SRC = \
 	MinMaxA.h    \
 	PlotAgent.C  \
 	PlotAgent.h  \
-	PlotArea.C   \
-	PlotArea.h   \
 	PosBuffer.C  \
 	PosBuffer.h  \
-	ProgressM.C  \
-	ProgressM.h  \
 	RefreshDI.C  \
 	RefreshDI.h  \
 	SmartC.C     \
@@ -567,7 +616,8 @@ DDD_SRC = \
 	UndoBE.C     \
 	UndoBE.h     \
 	WhatNextCB.C \
-	WhatNextCB.h
+	WhatNextCB.h \
+	$(COND_DDD_SRC)
 
 # Automatically generated source files which should not be distributed.
 nodist_ddd_SOURCES = \
@@ -715,10 +765,10 @@ vsl_SOURCES       = vsl.C \
 	$(VSL_SRC)
 
 cxxtest_LDADD = $(LIBM)
-ddd_LDADD = $(RPATH) $(ALL_X_LIBS) $(ALL_LIBS)
+ddd_LDADD = $(RPATH) $(GTKMM_LIBS) $(ALL_X_LIBS) $(ALL_LIBS) 
 vsl_LDADD = $(RPATH) $(ALL_X_LIBS) $(ALL_LIBS)
 X_INCLUDE = @X_CFLAGS@
-AM_CPPFLAGS = -I$(srcdir)/.. $(X_INCLUDE)
+AM_CPPFLAGS = -I$(srcdir)/.. $(GTKMM_CFLAGS) $(X_INCLUDE)
 
 # -----------------------------------------------------------------------------
 # DDD Application Defaults.

@@ -29,12 +29,30 @@
 #ifndef _DDD_tips_h
 #define _DDD_tips_h
 
+#ifdef IF_MOTIF
+
 #include <X11/Intrinsic.h>
 
+#else // NOT IF_MOTIF
+
+#include <gtkmm/togglebutton.h>
+
+#endif // IF_MOTIF
+
+#include "gtk_wrapper.h"
+
 extern void TipOfTheDayCB(Widget w, XtPointer = 0, XtPointer = 0);
-extern void SetStartupTipsCB(Widget w, XtPointer, XtPointer);
+extern void SetStartupTipsCB(CB_ARG_LIST_TOGGLE(,));
+
+#ifdef IF_MOTIF
 
 extern Widget set_startup_tips_w;
+
+#else // NOT IF_MOTIF
+
+extern Gtk::ToggleButton *set_startup_tips_w;
+
+#endif // IF_MOTIF
 
 #endif // _DDD_tips_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

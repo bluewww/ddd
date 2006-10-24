@@ -29,13 +29,19 @@
 #ifndef _DDD_findParent_h
 #define _DDD_findParent_h
 
+#ifdef IF_MOTIF
+
 #include <X11/Intrinsic.h>
+
+#endif // IF_MOTIF
+
+#include "gtk_wrapper.h"
 
 // find a (realized) Shell
 Widget findShellParent(Widget w);
 
 // find a (realized) toplevel Shell
-Widget findTopLevelShellParent(Widget w);
+WINDOW_P findTopLevelShellParent(Widget w);
 
 // find highest (realized) toplevel Shell
 Widget findTheTopLevelShell(Widget w);

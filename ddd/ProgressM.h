@@ -33,7 +33,13 @@
 #include "strclass.h"
 #include "status.h"
 
+#ifdef IF_MOTIF
+
 #include <X11/Intrinsic.h>
+
+#else // NOT IF_MOTIF
+
+#endif // IF_MOTIF
 
 
 //-----------------------------------------------------------------------------

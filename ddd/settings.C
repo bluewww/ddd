@@ -30,8 +30,11 @@
 char settings_rcsid[] = 
     "$Id$";
 
+#include "config.h"
+
 #include "settings.h"
 
+#ifdef IF_MOTIF
 #include <Xm/Xm.h>
 #include <Xm/SelectioB.h>
 #include <Xm/DialogS.h>
@@ -46,13 +49,18 @@ char settings_rcsid[] =
 #include <Xm/LabelG.h>
 #include <Xm/MwmUtil.h>
 #include <Xm/Separator.h>
+#else // NOT IF_MOTIF
+#include <gtkmm/separator.h>
+#endif // IF_MOTIF
 #include <ctype.h>
 #include <string.h>
 #include <stdio.h>
 
 #include "AppData.h"
 #include "Assoc.h"
+#ifdef IF_MOTIF
 #include "ComboBox.h"
+#endif // IF_MOTIF
 #include "Command.h"
 #include "DataDisp.h"
 #include "Delay.h"
@@ -114,9 +122,9 @@ enum SettingsType { SETTINGS, INFOS, SIGNALS, THEMES };
 
 static Widget            settings_panel = 0;
 static Widget            settings_form  = 0;
-static Widget            reset_settings_button = 0;
-static Widget            apply_settings_button = 0;
-static WidgetArray       settings_entries;
+static BUTTON_P          reset_settings_button = 0;
+static BUTTON_P          apply_settings_button = 0;
+static VarArray<ENTRY_P>       settings_entries;
 static EntryTypeArray    settings_entry_types;
 static WidgetStringAssoc settings_values;
 static WidgetStringAssoc settings_initial_values;
@@ -131,14 +139,14 @@ static WidgetStringAssoc signals_initial_values;
 static bool              need_reload_signals = false;
 
 static Widget            themes_panel = 0;
-static Widget            reset_themes_button = 0;
-static Widget            apply_themes_button = 0;
-static WidgetArray       themes_entries;
-static WidgetArray       themes_labels;
+static BUTTON_P          reset_themes_button = 0;
+static BUTTON_P          apply_themes_button = 0;
+static VarArray<ENTRY_P>       themes_entries;
+static VarArray<TOGGLEBUTTON_P>       themes_labels;
 
 static Widget            infos_panel        = 0;
 static Widget            reset_infos_button = 0;
-static WidgetArray       infos_entries;
+static VarArray<Widget>       infos_entries;
 
 
 
@@ -155,6 +163,7 @@ static void set_arg();
 // Find widget for command COMMAND
 static Widget command_to_widget(Widget ref, string command)
 {
+#ifdef IF_MOTIF
     Widget found = 0;
     while (!command.empty() && (found = XtNameToWidget(ref, command.chars())) == 0)
     {
@@ -164,6 +173,10 @@ static Widget command_to_widget(Widget ref, string command)
     }
 
     return found;
+#else // NOT IF_MOTIF
+    std::cerr << "command_to_widget not implemented!\n";
+    return NULL;
+#endif // IF_MOTIF
 }
 
 // Issue `set' command
@@ -221,65 +234,114 @@ static void SetOptionCB(Widget w, XtPointer client_data, XtPointer)
 }
 
 // ToggleButton reply
+#ifdef IF_MOTIF
 static void SetOnOffCB(Widget, XtPointer client_data, XtPointer call_data)
+#else // NOT IF_MOTIF
+static void SetOnOffCB(TOGGLEBUTTON_P w, const char *client_data)
+#endif // IF_MOTIF
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *cbs = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     gdb_set_command((const _XtString)client_data, cbs->set ? "on":"off");
+#else // NOT IF_MOTIF
+    gdb_set_command(client_data, w->get_active() ? "on":"off");
+#endif // IF_MOTIF
 }
 
 // ToggleButton reply
+#ifdef IF_MOTIF
 static void SetTrueFalseCB(Widget, XtPointer client_data, XtPointer call_data)
+#else // NOT IF_MOTIF
+static void SetTrueFalseCB(TOGGLEBUTTON_P w, const char *client_data)
+#endif // IF_MOTIF
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *cbs = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     gdb_set_command((const _XtString)client_data, cbs->set ? "true":"false");
+#else // NOT IF_MOTIF
+    gdb_set_command(client_data, w->get_active() ? "true":"false");
+#endif // IF_MOTIF
 }
 
 // ToggleButton reply
+#ifdef IF_MOTIF
 static void SetSensitiveCB(Widget, XtPointer client_data, XtPointer call_data)
+#else // NOT IF_MOTIF
+static void SetSensitiveCB(TOGGLEBUTTON_P w, const char *client_data)
+#endif // IF_MOTIF
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *cbs = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     gdb_set_command((const _XtString)client_data,
 		    cbs->set ? "sensitive":"insensitive");
+#else // NOT IF_MOTIF
+    gdb_set_command(client_data,
+		    w->get_active() ? "sensitive":"insensitive");
+#endif // IF_MOTIF
 }
 
 // ToggleButton reply
+#ifdef IF_MOTIF
 static void SetNumCB(Widget, XtPointer client_data, XtPointer call_data)
+#else // NOT IF_MOTIF
+static void SetNumCB(TOGGLEBUTTON_P w, const char *client_data)
+#endif // IF_MOTIF
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *cbs = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     gdb_set_command((const _XtString)client_data, cbs->set ? "1":"0");
+#else // NOT IF_MOTIF
+    gdb_set_command(client_data, w->get_active() ? "1":"0");
+#endif // IF_MOTIF
 }
 
 // ToggleButton reply
+#ifdef IF_MOTIF
 static void SetNoNumCB(Widget, XtPointer client_data, XtPointer call_data)
+#else // NOT IF_MOTIF
+static void SetNoNumCB(TOGGLEBUTTON_P w, const char *client_data)
+#endif // IF_MOTIF
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *cbs = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     gdb_set_command((const _XtString)client_data, cbs->set ? "0":"1");
+#else // NOT IF_MOTIF
+    gdb_set_command(client_data, w->get_active() ? "0":"1");
+#endif // IF_MOTIF
 }
 
 // ToggleButton reply
+#ifdef IF_MOTIF
 static void SetDisplayCB(Widget, XtPointer client_data, XtPointer call_data)
+#else // NOT IF_MOTIF
+static void SetDisplayCB(TOGGLEBUTTON_P w, const char *client_data)
+#endif // IF_MOTIF
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *cbs = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     if (cbs->set)
+#else // NOT IF_MOTIF
+    if (w->get_active())
+#endif // IF_MOTIF
       data_disp->new_user_display((const _XtString)client_data);
     else
       data_disp->delete_user_display((const _XtString)client_data);
 }
 
 // ToggleButton reply
-static void SendSignalCB(Widget, XtPointer client_data, XtPointer)
+static void SendSignalCB(CB_ALIST_2(XtP(Widget) client_data))
 {
     gdb_command(string("signal ") + XtName(Widget(client_data)));
 }
@@ -301,14 +363,23 @@ static string handle_command(Widget w, bool set)
 }
 
 // ToggleButton reply
+#ifdef IF_MOTIF
 static void SignalCB(Widget w, XtPointer, XtPointer call_data)
+#else // NOT IF_MOTIF
+static void SignalCB(TOGGLEBUTTON_P w)
+#endif // IF_MOTIF
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *cbs = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     gdb_command(handle_command(w, cbs->set));
+#else // NOT IF_MOTIF
+    gdb_command(handle_command(w, w->get_active()));
+#endif // IF_MOTIF
 }
 
+#ifdef IF_MOTIF
 // Get help on signal - using `info' on `libc'
 static void HelpOnSignalCB(Widget w, XtPointer client_data, 
 			   XtPointer call_data)
@@ -379,6 +450,11 @@ static void HelpOnSignalCB(Widget w, XtPointer client_data,
 
     MStringHelpCB(w, XtPointer(text.xmstring()), call_data);
 }
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning No help on signals
+#endif
+#endif // IF_MOTIF
 
 
 // Update state of `reset' button
@@ -391,14 +467,18 @@ static void update_reset_settings_button()
 
     for (int i = 0; i < settings_entries.size(); i++)
     {
-	Widget entry = settings_entries[i];
+	ENTRY_P entry = settings_entries[i];
 
 	string value = settings_values[entry];
 	if (settings_entry_types[i] == TextFieldEntry)
 	{
+#ifdef IF_MOTIF
 	    String value_s = XmTextFieldGetString(entry);
 	    value = value_s;
 	    XtFree(value_s);
+#else // NOT IF_MOTIF
+	    value = string(entry->get_text().c_str());
+#endif // IF_MOTIF
 
 	    if (value != settings_values[entry])
 	    {
@@ -427,11 +507,15 @@ static void update_apply_settings_button()
 	if (settings_entry_types[i] != TextFieldEntry)
 	    continue;
 
-	Widget entry = settings_entries[i];
+	ENTRY_P entry = settings_entries[i];
 
+#ifdef IF_MOTIF
 	String value_s = XmTextFieldGetString(entry);
 	string value(value_s);
 	XtFree(value_s);
+#else // NOT IF_MOTIF
+	string value(entry->get_text().c_str());
+#endif // IF_MOTIF
 
 	if (value != settings_values[entry])
 	{
@@ -477,7 +561,7 @@ static void update_themes_buttons()
 
     for (i = 0; i < themes_entries.size(); i++)
     {
-	Widget entry = themes_entries[i];
+	ENTRY_P entry = themes_entries[i];
 	string theme = basename(XtName(entry));
 	ThemePattern p;
 
@@ -488,9 +572,13 @@ static void update_themes_buttons()
 	os << p;
 	string current_value = string(os);
 
+#ifdef IF_MOTIF
 	String value_s = XmTextFieldGetString(entry);
 	string value(value_s);
 	XtFree(value_s);
+#else // NOT IF_MOTIF
+	string value(entry->get_text().c_str());
+#endif // IF_MOTIF
 
 	string old_value;
 
@@ -517,7 +605,7 @@ static void update_themes_buttons()
     {
 	for (i = 0; i < themes_labels.size(); i++)
 	{
-	    Widget button = themes_labels[i];
+	    TOGGLEBUTTON_P button = themes_labels[i];
 	    string theme = basename(XtName(button));
 	    bool old_set = old_tm.has_pattern(theme);
 
@@ -552,43 +640,81 @@ void update_infos()
 	Widget button = infos_entries[i];
 	bool set = data_disp->have_user_display(XtName(button));
 	have_info = have_info || set;
+#ifdef IF_MOTIF
 	XtVaSetValues(button, XmNset, set, XtPointer(0));
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Using the widget name like this is naff but
+#warning necessary for Motif. Use user data instead.
+#endif
+	std::cerr << "Should set toggle button properly\n";
+	Gtk::ToggleButton *tb = dynamic_cast<Gtk::ToggleButton *>(button);
+	if (tb)
+	    tb->set_active(set);
+	Gtk::CheckMenuItem *cmi = dynamic_cast<Gtk::CheckMenuItem *>(button);
+	if (cmi)
+	    cmi->set_active(set);
+#endif // IF_MOTIF
     }
 
     if (reset_infos_button != 0)
 	set_sensitive(reset_infos_button, have_info);
 }
 
+#ifdef IF_MOTIF
 static void UpdateSettingsButtonsNowCB(XtPointer, XtIntervalId *)
+#else // NOT IF_MOTIF
+static bool UpdateSettingsButtonsNowCB(void)
+#endif // IF_MOTIF
 {
     update_apply_settings_button();
     update_reset_settings_button();
 }
 
 // TextField reply
+#ifdef IF_MOTIF
 static void UpdateSettingsButtonsCB(Widget w, XtPointer client_data, 
 				    XtPointer)
+#else // NOT IF_MOTIF
+static void UpdateSettingsButtonsCB(void)
+#endif // IF_MOTIF
 {
     // The TextField value has not yet changed.  Call again later.
+#ifdef IF_MOTIF
     XtAppAddTimeOut(XtWidgetToApplicationContext(w), 0,
 		    UpdateSettingsButtonsNowCB, client_data);
+#else // NOT IF_MOTIF
+    Glib::signal_idle().connect(sigc::bind_return(PTR_FUN(UpdateSettingsButtonsNowCB), false));
+#endif // IF_MOTIF
 }
 
-
+#ifdef IF_MOTIF
 static void UpdateThemesButtonsNowCB(XtPointer, XtIntervalId *)
+#else // NOT IF_MOTIF
+static void UpdateThemesButtonsNowCB(void)
+#endif // IF_MOTIF
 {
     update_themes_buttons();
 }
 
 // TextField reply
+#ifdef IF_MOTIF
 static void UpdateThemesButtonsCB(Widget w, XtPointer client_data, 
 				  XtPointer)
+#else // NOT IF_MOTIF
+static void UpdateThemesButtonsCB(void)
+#endif // IF_MOTIF
 {
     // The TextField value has not yet changed.  Call again later.
+#ifdef IF_MOTIF
     XtAppAddTimeOut(XtWidgetToApplicationContext(w), 0,
 		    UpdateThemesButtonsNowCB, client_data);
+#else // NOT IF_MOTIF
+    Glib::signal_idle().connect(sigc::bind_return(PTR_FUN(UpdateThemesButtonsNowCB), false));
+#endif // IF_MOTIF
 }
 
+#ifdef IF_MOTIF
 static void HelpOnThemeCB(Widget w, XtPointer client_data, 
 			  XtPointer call_data)
 {
@@ -601,8 +727,16 @@ static void HelpOnThemeCB(Widget w, XtPointer client_data,
     MString mtext = bf(basename(file.chars())) + cr() + cr() + rm(text);
     MStringHelpCB(w, XtPointer(mtext.xmstring()), call_data);
 }
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning No help on themes
+#endif
+#endif // IF_MOTIF
 
-static void ApplyThemesCB(Widget, XtPointer, XtPointer)
+// Note: The arguments are not actually used; they are here for
+// consistency so that a common signature can be used for all
+// callbacks.
+static void ApplyThemesCB(CB_ALIST_12(TOGGLEBUTTON_P w, XtP(const char *) client_data))
 {
     Delay d;
 
@@ -610,13 +744,17 @@ static void ApplyThemesCB(Widget, XtPointer, XtPointer)
 
     for (int i = 0; i < themes_entries.size(); i++)
     {
-	Widget button = themes_labels[i];
+	TOGGLEBUTTON_P button = themes_labels[i];
 	bool active = XmToggleButtonGetState(button);
 
-	Widget entry  = themes_entries[i];
+	ENTRY_P entry  = themes_entries[i];
+#ifdef IF_MOTIF
 	String value_s = XmTextFieldGetString(entry);
 	string value = value_s;
 	XtFree(value_s);
+#else // NOT IF_MOTIF
+	string value(entry->get_text().c_str());
+#endif // IF_MOTIF
 
 	t.add(basename(XtName(entry)), ThemePattern(value, active));
     }
@@ -625,14 +763,13 @@ static void ApplyThemesCB(Widget, XtPointer, XtPointer)
     update_themes_buttons();
 }
 
-static void ResetThemesCB(Widget w, XtPointer client_data, 
-			  XtPointer call_data)
+static void ResetThemesCB(CB_ALIST_NULL)
 {
     CommandGroup cg;
 
     data_disp->set_theme_manager(ThemeManager(app_data.themes));
     update_themes();
-    ApplyThemesCB(w, client_data, call_data);
+    ApplyThemesCB(CB_ARGS_12(NULL, NULL));
 }
 
 
@@ -783,6 +920,7 @@ void process_show(const string& command, string value, bool init)
 	set_command = "set " + set_command.after(rxwhite);
     }
 
+#ifdef IF_MOTIF
     Widget button = command_to_widget(settings_form, set_command);
     if (button == 0)
 	button = command_to_widget(settings_form, command);
@@ -850,6 +988,11 @@ void process_show(const string& command, string value, bool init)
 		      XtPointer(0));
 	return;
     }
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning command_to_widget does not work yet, so this is not implemented.
+#endif
+#endif // IF_MOTIF
 
 #if 0
     std::cerr << "Warning: cannot set " << quote(set_command)
@@ -860,6 +1003,7 @@ void process_show(const string& command, string value, bool init)
 // Process output of `handle' command
 void process_handle(string output, bool init)
 {
+#ifdef IF_MOTIF
     if (signals_form == 0)
 	return;
 
@@ -918,6 +1062,9 @@ void process_handle(string output, bool init)
 	undo_buffer.add_command(undo_command);
 
     update_reset_signals_button();
+#else // NOT IF_MOTIF
+    std::cerr << "Cannot process output of \"handle\" command\n";
+#endif // IF_MOTIF
 }
 
 
@@ -1374,6 +1521,7 @@ static string get_dbx_doc(const string& dbxenv, const string& base)
     return dbx_doc;
 }
 
+#ifdef IF_MOTIF
 static Dimension preferred_width(Widget w)
 {
     if (w == 0)
@@ -1401,8 +1549,13 @@ static Dimension preferred_height(Widget w)
     XtQueryGeometry(w, (XtWidgetGeometry *)0, &size);
     return size.height;
 }
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Preferred_width, preferred_height not implemented
+#endif
+#endif // IF_MOTIF
 
-static void add_settings(Widget form, int& row, Dimension& max_width,
+static void add_settings(CONTAINER_P form, int& row, Dimension& max_width,
 			 DebuggerType type, EntryType entry_filter, 
 			 const string& gdb_class = "set");
 
@@ -1411,12 +1564,13 @@ static Widget create_signal_button(Widget label,
 				   int row,
 				   Widget rightmost = 0)
 {
+    MString lbl(capitalize(name));
+
+#ifdef IF_MOTIF
     Arg args[15];
     Cardinal arg = 0;
 
-    MString lbl(capitalize(name));
     XtSetArg(args[arg], XmNlabelString, lbl.xmstring()); arg++;
-
     if (rightmost != 0)
     {
 	XtSetArg(args[arg], XmNrightAttachment, XmATTACH_WIDGET); arg++;
@@ -1449,6 +1603,28 @@ static Widget create_signal_button(Widget label,
 
 	XtAddCallback(w, XmNvalueChangedCallback, SignalCB, XtPointer(label));
     }
+#else // NOT IF_MOTIF
+    Widget w = 0;
+    if (name == "send")
+    {
+	Gtk::Button *button;
+	w = button = new Gtk::Button(lbl.xmstring());
+	w->set_name(XMST(name.chars()));
+	w->show();
+	label->get_parent()->add(*w);
+	button->signal_clicked().connect(sigc::bind(PTR_FUN(SendSignalCB), label));
+    }
+    else
+    {
+	Gtk::ToggleButton *button;
+	string fullname = string(XtName(label)) + "-" + name;
+	w = button = new Gtk::ToggleButton(lbl.xmstring());
+	w->set_name(XMST(fullname.chars()));
+	w->show();
+	label->get_parent()->add(*w);
+	button->signal_toggled().connect(sigc::bind(PTR_FUN(SignalCB), label));
+    }
+#endif // IF_MOTIF
 
     return w;
 }
@@ -1516,7 +1692,7 @@ static const _XtString const perl_taboos[] =
 };
 
 // Add single button
-static void add_button(Widget form, int& row, Dimension& max_width,
+static void add_button(CONTAINER_P form, int& row, Dimension& max_width,
 		       DebuggerType type, EntryType entry_filter,
 		       string line)
 {
@@ -1770,82 +1946,116 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	    return;		// No need to support undocumented stuff
     }
 
+#ifdef IF_MOTIF
     Arg args[15];
     int arg;
+#endif // IF_MOTIF
 
     // Add label
     Widget label = 0;
     Widget entry = 0;
+    ENTRY_P entry_w = 0;
 
     String set_command_s = new char[set_command.length() + 1];
     strcpy(set_command_s, set_command.chars());
 
     MString labelString(doc);
+#ifdef IF_MOTIF
     arg = 0;
     XtSetArg(args[arg], XmNlabelString,      labelString.xmstring()); arg++;
     XtSetArg(args[arg], XmNleftAttachment,   XmATTACH_FORM);          arg++;
     XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_POSITION);      arg++;
     XtSetArg(args[arg], XmNbottomPosition,   row + 1);                arg++;
     XtSetArg(args[arg], XmNalignment,        XmALIGNMENT_BEGINNING);  arg++;
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     XtCallbackProc callback = 0;
+#else // NOT IF_MOTIF
+    sigc::slot<void, TOGGLEBUTTON_P, const char *> callback;
+#endif // IF_MOTIF
 
     switch (e_type)
     {
     case OnOffToggleButtonEntry:
-	callback = SetOnOffCB;
+	callback = PTR_FUN(SetOnOffCB);
 	break;
 
     case TrueFalseToggleButtonEntry:
-	callback = SetTrueFalseCB;
+	callback = PTR_FUN(SetTrueFalseCB);
 	break;
 
     case SensitiveToggleButtonEntry:
-	callback = SetSensitiveCB;
+	callback = PTR_FUN(SetSensitiveCB);
 	break;
 
     case NumToggleButtonEntry:
-	callback = SetNumCB;
+	callback = PTR_FUN(SetNumCB);
 	break;
 
     case NoNumToggleButtonEntry:
-	callback = SetNoNumCB;
+	callback = PTR_FUN(SetNoNumCB);
 	break;
 
     case DisplayToggleButtonEntry:
-	callback = SetDisplayCB;
+	callback = PTR_FUN(SetDisplayCB);
 	break;
 
     case ThemeEntry:
-	callback = ApplyThemesCB;
+	callback = PTR_FUN(ApplyThemesCB);
 	break;
 
     default:
+#ifdef IF_MOTIF
 	callback = 0;
+#endif // IF_MOTIF
 	break;
     }
 
     if (callback == 0)
     {
-	if (is_set)
+	if (is_set) {
+#ifdef IF_MOTIF
 	    label = verify(XmCreateLabel(form, XMST(base.chars()), args, arg));
+#else // NOT IF_MOTIF
+	    label = new Gtk::Label(labelString.xmstring());
+	    label->set_name(XMST(base.chars()));
+	    form->add(*label);
+#endif // IF_MOTIF
+	}
 	else {
-	  const string s1 = string("the") + base;
-	  label = verify(XmCreateLabel(form, XMST(s1.chars()), args, arg));
+	    const string s1 = string("the") + base;
+#ifdef IF_MOTIF
+	    label = verify(XmCreateLabel(form, XMST(s1.chars()), args, arg));
+#else // NOT IF_MOTIF
+	    label = new Gtk::Label(XMST(s1.chars()));
+	    label->set_name(XMST(base.chars()));
+	    form->add(*label);
+#endif // IF_MOTIF
 	}
 
 	XtManageChild(label);
     }
     else
     {
+#ifdef IF_MOTIF
 	entry = label = 
 	    verify(XmCreateToggleButton(form, XMST(set_command.chars()), args, arg));
 	XtManageChild(label);
 
 	XtAddCallback(entry, XmNvalueChangedCallback,
 		      callback, XtPointer(set_command_s));
+#else // NOT IF_MOTIF
+	Gtk::ToggleButton *button = 
+	    new Gtk::ToggleButton(labelString.xmstring());
+	entry = label = button;
+	label->set_name(XMST(set_command.chars()));
+	label->show();
+	button->signal_toggled().connect(sigc::bind(callback, button, set_command_s));
+#endif // IF_MOTIF
     }
 
+#ifdef IF_MOTIF
     // Add help button
     arg = 0;
     XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_FORM);      arg++;
@@ -1856,24 +2066,36 @@ static void add_button(Widget form, int& row, Dimension& max_width,
     XtSetArg(args[arg], XmNalignment,        XmALIGNMENT_CENTER); arg++;
     Widget help = verify(XmCreatePushButton(form, XMST("help"), args, arg));
     XtManageChild(help);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning No help button
+#endif
+    Widget help = 0;
+#endif // IF_MOTIF
 
-    Widget send  = 0;
-    Widget pass  = 0;
-    Widget print = 0;
-    Widget stop  = 0;
+    BUTTON_P send  = 0;
+    TOGGLEBUTTON_P pass  = 0;
+    TOGGLEBUTTON_P print = 0;
+    TOGGLEBUTTON_P stop  = 0;
     if (e_type == SignalEntry)
     {
-	send  = create_signal_button(label, "send",  row, help);
-	pass  = create_signal_button(label, "pass",  row, send);
-	print = create_signal_button(label, "print", row, pass);
-	stop  = create_signal_button(label, "stop",  row, print);
+	send  = (BUTTON_P)create_signal_button(label, "send",  row, help);
+	pass  = (TOGGLEBUTTON_P)create_signal_button(label, "pass",  row, send);
+	print = (TOGGLEBUTTON_P)create_signal_button(label, "print", row, pass);
+	stop  = (TOGGLEBUTTON_P)create_signal_button(label, "stop",  row, print);
 
 	if (base == "all")
 	{
 	    set_sensitive(send, false);
+#ifdef IF_MOTIF
 	    XtVaSetValues(pass,  XmNset, True, XtPointer(0));
 	    XtVaSetValues(print, XmNset, True, XtPointer(0));
 	    XtVaSetValues(stop,  XmNset, True, XtPointer(0));
+#else // NOT IF_MOTIF
+	    pass->set_active(true);
+	    print->set_active(true);
+	    stop->set_active(true);
+#endif // IF_MOTIF
 	}
     }
 
@@ -1893,6 +2115,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
     case CheckOptionMenuEntry:
     {
 	// `set check'
+#ifdef IF_MOTIF
 	arg = 0;
 	Widget menu = verify(XmCreatePulldownMenu(form, 
 						  XMST("menu"), args, arg));
@@ -1932,6 +2155,9 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 
 	Widget option_label = XmOptionLabelGadget(entry);
 	XtUnmanageChild(option_label);
+#else // NOT IF_MOTIF
+	std::cerr << "CheckOptionMenuEntry - not supported!\n";
+#endif // IF_MOTIF
 	break;
     }
 
@@ -1947,6 +2173,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	// set language / set demangle / set architecture / set endian /
 	// set follow-fork-mode / set disassembly-flavor / 
 	// set scheduler-locking
+#ifdef IF_MOTIF
 	arg = 0;
 	Widget menu = verify(XmCreatePulldownMenu(form, 
 						  XMST("menu"), args, arg));
@@ -2116,6 +2343,9 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 
 	Widget option_label = XmOptionLabelGadget(entry);
 	XtUnmanageChild(option_label);
+#else // NOT IF_MOTIF
+	std::cerr << "SchedulerOptionMenuEntry - not supported!\n";
+#endif // IF_MOTIF
 	break;
     }
 
@@ -2123,20 +2353,37 @@ static void add_button(Widget form, int& row, Dimension& max_width,
     case TextFieldEntry:
     {
 	// Some other value
+#ifdef IF_MOTIF
 	arg = 0;
 	XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_WIDGET);   arg++;
 	XtSetArg(args[arg], XmNrightWidget,      help);              arg++;
 	XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_POSITION); arg++;
 	XtSetArg(args[arg], XmNbottomPosition,   row + 1);           arg++;
 	entry = verify(XmCreateTextField(form, XMST(set_command.chars()), args, arg));
+#else // NOT IF_MOTIF
+	entry = entry_w = new Gtk::Entry();
+	entry->set_name(XMST(set_command.chars()));
+	form->add(*entry);
+	entry->show();
+#endif // IF_MOTIF
 	XtManageChild(entry);
 
-	if (e_type == TextFieldEntry)
+	if (e_type == TextFieldEntry) {
+#ifdef IF_MOTIF
 	    XtAddCallback(entry, XmNvalueChangedCallback, 
 			  UpdateSettingsButtonsCB, XtPointer(0));
-	else // ThemeEntry
+#else // NOT IF_MOTIF
+	    entry_w->signal_changed().connect(PTR_FUN(UpdateSettingsButtonsCB));
+#endif // IF_MOTIF
+	}
+	else { // ThemeEntry
+#ifdef IF_MOTIF
 	    XtAddCallback(entry, XmNvalueChangedCallback, 
 			  UpdateThemesButtonsCB, XtPointer(0));
+#else // NOT IF_MOTIF
+	    entry_w->signal_changed().connect(PTR_FUN(UpdateThemesButtonsCB));
+#endif // IF_MOTIF
+	}
     }
     }
 
@@ -2146,6 +2393,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
     if (stop != 0)
         rightmost = stop;
 
+#ifdef IF_MOTIF
     Dimension width = preferred_width(label);
     if (entry != label)
 	width += preferred_width(entry);
@@ -2187,7 +2435,9 @@ static void add_button(Widget form, int& row, Dimension& max_width,
     Widget leader = verify(XmCreateSeparator(form, 
 					     XMST("leader"), args, arg));
     XtManageChild(leader);
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     // Add help callback
     switch (e_type)
     {
@@ -2206,6 +2456,10 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 		      HelpOnThisCB, XtPointer(entry));
 	break;
     }
+#ifdef NAG_ME
+#warning No help on settings
+#endif
+#endif // IF_MOTIF
 
     if (e_type == SignalEntry)
     {
@@ -2223,8 +2477,8 @@ static void add_button(Widget form, int& row, Dimension& max_width,
     else if (e_type == ThemeEntry)
     {
 	// Register entry
-	themes_entries += entry;
-	themes_labels  += label;
+	themes_entries += entry_w;
+	themes_labels  += (TOGGLEBUTTON_P)label;
     }
     else if (e_type != DisplayToggleButtonEntry)
     {
@@ -2248,14 +2502,16 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	{
 	    set_sensitive(entry,  false);
 	    set_sensitive(label,  false);
+#ifdef IF_MOTIF
 	    set_sensitive(leader, false);
+#endif // IF_MOTIF
 	}
 
 	// Initialize button
 	process_show(show_command, value, true);
 
 	// Register entry
-	settings_entries     += entry;
+	settings_entries     += (ENTRY_P)entry;
 	settings_entry_types += e_type;
     }
     else
@@ -2264,14 +2520,17 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	infos_entries += entry;
     }
 
+#ifdef IF_MOTIF
     max_width = max(width, max_width);
+#endif // IF_MOTIF
 
     row++;
 }
 
 // Add separator
-static void add_separator(Widget form, int& row)
+static void add_separator(CONTAINER_P form, int& row)
 {
+#ifdef IF_MOTIF
     Arg args[10];
     int arg = 0;
     XtSetArg(args[arg], XmNleftAttachment,   XmATTACH_FORM);     arg++;
@@ -2281,12 +2540,17 @@ static void add_separator(Widget form, int& row)
     XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_POSITION); arg++;
     XtSetArg(args[arg], XmNbottomPosition,   row + 1);           arg++;
     Widget sep = verify(XmCreateSeparator(form, XMST("sep"), args, arg));
+#else // NOT IF_MOTIF
+    Widget sep = new Gtk::HSeparator();
+    form->add(*sep);
+    sep->show();
+#endif // IF_MOTIF
     XtManageChild(sep);
     row++;
 }
 
 // Add buttons
-static void add_settings(Widget form, int& row, Dimension& max_width,
+static void add_settings(CONTAINER_P form, int& row, Dimension& max_width,
 			 DebuggerType type, EntryType entry_filter,
 			 const string& gdb_class)
 {
@@ -2405,7 +2669,7 @@ void update_settings()
 }
 
 // Reset settings
-static void ResetSettingsCB(Widget, XtPointer, XtPointer)
+static void ResetSettingsCB(CB_ALIST_NULL)
 {
     CommandGroup cg;
 
@@ -2416,14 +2680,24 @@ static void ResetSettingsCB(Widget, XtPointer, XtPointer)
 	string value = settings_values[entry];
 	if (settings_entry_types[i] == TextFieldEntry)
 	{
+#ifdef IF_MOTIF
 	    String value_s = XmTextFieldGetString(entry);
 	    value = value_s;
 	    XtFree(value_s);
+#else // NOT IF_MOTIF
+	    ENTRY_P entry_w = dynamic_cast<Gtk::Entry *>(entry);
+	    assert(entry_w);
+	    value = string(entry_w->get_text().c_str());
+#endif // IF_MOTIF
 
 	    if (value != settings_values[entry])
 	    {
 		value = settings_values[entry];
+#ifdef IF_MOTIF
 		XmTextFieldSetString(entry, XMST(value.chars()));
+#else // NOT IF_MOTIF
+		entry_w->set_text(XMST(value.chars()));
+#endif // IF_MOTIF
 	    }
 	}
 
@@ -2433,7 +2707,7 @@ static void ResetSettingsCB(Widget, XtPointer, XtPointer)
 }
 
 // Reset signals
-static void ResetSignalsCB(Widget, XtPointer, XtPointer)
+static void ResetSignalsCB(CB_ALIST_NULL)
 {
     CommandGroup cg;
 
@@ -2453,7 +2727,7 @@ static void ResetSignalsCB(Widget, XtPointer, XtPointer)
 }
 
 // Apply settings
-static void ApplySettingsCB(Widget, XtPointer, XtPointer)
+static void ApplySettingsCB(CB_ALIST_NULL)
 {
     CommandGroup cg;
 
@@ -2464,9 +2738,15 @@ static void ApplySettingsCB(Widget, XtPointer, XtPointer)
 
 	Widget entry = settings_entries[i];
 
+#ifdef IF_MOTIF
 	String value_s = XmTextFieldGetString(entry);
 	string value(value_s);
 	XtFree(value_s);
+#else // NOT IF_MOTIF
+	ENTRY_P entry_w = dynamic_cast<Gtk::Entry *>(entry);
+	assert(entry_w);
+	string value(entry_w->get_text().c_str());
+#endif // IF_MOTIF
 
 	if (value != settings_values[entry])
 	    gdb_set_command(XtName(entry), value);
@@ -2474,11 +2754,16 @@ static void ApplySettingsCB(Widget, XtPointer, XtPointer)
 }
 
 // Delete all infos
-static void DeleteAllInfosCB (Widget, XtPointer, XtPointer)
+static void DeleteAllInfosCB (CB_ARG_LIST_NULL)
 {
     for (int i = 0; i < infos_entries.size(); i++)
     {
+#ifdef IF_MOTIF
 	Widget entry = infos_entries[i];
+#else // NOT IF_MOTIF
+	TOGGLEBUTTON_P entry = dynamic_cast<Gtk::ToggleButton *>(infos_entries[i]);
+	assert(entry);
+#endif // IF_MOTIF
 	XmToggleButtonSetState(entry, False, True);
     }
 }
@@ -2494,6 +2779,7 @@ static string get_help_line(const string& command, DebuggerType /*type*/)
     return reply;
 }
 
+#ifdef IF_MOTIF
 // ClipWindow translation stuff
 static void ClipDo(Widget w, XEvent *event, 
 		   String *params, Cardinal *num_params)
@@ -2540,7 +2826,7 @@ static void fix_clip_window_translations(Widget scroll)
     XtTranslations tr = XtParseTranslationTable(clip_translations);
     XtOverrideTranslations(clip, tr);
 }
-
+#endif // IF_MOTIF
 
 // Themes
 
@@ -2599,7 +2885,7 @@ void get_themes(StringArray& themes)
     delete[] dirs;
 }
 
-static void add_themes(Widget form, int& row, Dimension& max_width)
+static void add_themes(CONTAINER_P form, int& row, Dimension& max_width)
 {
     clear_vsldoc_cache();
     StringArray themes;
@@ -2640,13 +2926,18 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
 
     StatusDelay delay("Retrieving " + title_msg);
 
+#ifdef IF_MOTIF
     Arg args[10];
     int arg=0;
     XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
     Widget panel = verify(XmCreatePromptDialog(find_shell(), 
 					       CONST_CAST(char*,dialog_name.chars()), args, arg));
+#else // NOT IF_MOTIF
+    DIALOG_P panel = new Gtk::Dialog(XMST(dialog_name.chars()), *find_shell());
+#endif // IF_MOTIF
     Delay::register_shell(panel);
 
+#ifdef IF_MOTIF
     Widget apply_button = XmSelectionBoxGetChild(panel, XmDIALOG_OK_BUTTON);
     set_sensitive(apply_button, False);
 
@@ -2659,33 +2950,61 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
 
     XtAddCallback(panel, XmNhelpCallback, ImmediateHelpCB, 0);
     XtAddCallback(panel, XmNcancelCallback, UnmanageThisCB, XtPointer(panel));
+#else // NOT IF_MOTIF
+    BUTTON_P button, reset_button, apply_button;
+#endif // IF_MOTIF
 
     switch (stype)
     {
     case SETTINGS:
+#ifdef IF_MOTIF
 	XtAddCallback(panel, XmNokCallback, ApplySettingsCB, 0);
 	XtAddCallback(panel, XmNapplyCallback, ResetSettingsCB, 0);
 	apply_settings_button = apply_button;
+#else // NOT IF_MOTIF
+	button = apply_settings_button = panel->add_button(XMST("Apply"), 0);
+	button->signal_clicked().connect(PTR_FUN(ApplySettingsCB));
+	button = reset_settings_button = panel->add_button(XMST("Reset"), 0);
+	button->signal_clicked().connect(PTR_FUN(ResetSettingsCB));
+#endif // IF_MOTIF
 	break;
 
     case INFOS:
+#ifdef IF_MOTIF
 	XtAddCallback(panel, XmNapplyCallback, DeleteAllInfosCB, 0);
 	XtUnmanageChild(apply_button); // No text entries
+#else // NOT IF_MOTIF
+	button = apply_settings_button = panel->add_button(XMST("Delete"), 0);
+	button->signal_clicked().connect(PTR_FUN(DeleteAllInfosCB));
+#endif // IF_MOTIF
 	break;
 
     case SIGNALS:
+#ifdef IF_MOTIF
 	XtAddCallback(panel, XmNapplyCallback, ResetSignalsCB, 0);
 	XtUnmanageChild(apply_button); // No text entries
+#else // NOT IF_MOTIF
+	button = reset_button = panel->add_button(XMST("Reset"), 0);
+	button->signal_clicked().connect(PTR_FUN(ResetSignalsCB));
+#endif // IF_MOTIF
 	break;
 
     case THEMES:
+#ifdef IF_MOTIF
 	XtAddCallback(panel, XmNokCallback,    ApplyThemesCB, 0);
 	XtAddCallback(panel, XmNapplyCallback, ResetThemesCB, 0);
 	apply_themes_button = apply_button;
+#else // NOT IF_MOTIF
+	button = apply_themes_button = panel->add_button(XMST("Apply"), 0);
+	button->signal_clicked().connect(sigc::bind(PTR_FUN(ApplyThemesCB), button, ""));
+	button = reset_button = panel->add_button(XMST("Reset"), 0);
+	button->signal_clicked().connect(PTR_FUN(ResetThemesCB));
+#endif // IF_MOTIF
 	break;
     }
 
     // Add a rowcolumn widget
+#ifdef IF_MOTIF
     arg = 0;
     XtSetArg(args[arg], XmNborderWidth,  0); arg++;
     XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
@@ -2694,26 +3013,47 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
     Widget column =
         verify(XmCreateRowColumn(panel, CONST_CAST(char *,"column"), args, arg));
     XtManageChild(column);
+#else // NOT IF_MOTIF
+    BOX_P column = new Gtk::VBox();
+    panel->get_vbox()->add(*column);
+    column->show();
+#endif // IF_MOTIF
 
     // Add a label
+#ifdef IF_MOTIF
     arg = 0;
     MString xmtitle(title_msg);
     XtSetArg(args[arg], XmNlabelString, xmtitle.xmstring()); arg++;
     Widget title = verify(XmCreateLabel(column, CONST_CAST(char *,"title"), args, arg));
     XtManageChild(title);
+#else // NOT IF_MOTIF
+    LABEL_P title = new Gtk::Label(XMST("title"));
+    column->pack_start(*title, Gtk::PACK_SHRINK);
+    title->show();
+#endif // IF_MOTIF
 
     // Add a scrolled window.
+#ifdef IF_MOTIF
     arg = 0;
     XtSetArg(args[arg], XmNvisualPolicy, XmCONSTANT); arg++;
     XtSetArg(args[arg], XmNscrollingPolicy, XmAUTOMATIC); arg++;
     Widget scroll = 
 	verify(XmCreateScrolledWindow(column, CONST_CAST(char *,"scroll"), args, arg));
     fix_clip_window_translations(scroll);
+#else // NOT IF_MOTIF
+    SCROLLEDWINDOW_P scroll = new Gtk::ScrolledWindow();
+    column->pack_start(*scroll);
+#endif // IF_MOTIF
 
     // Add a form.
+#ifdef IF_MOTIF
     arg = 0;
     Widget form = verify(XmCreateForm(scroll,
-                            XMST("form"), args, arg));
+				      XMST("form"), args, arg));
+#else // NOT IF_MOTIF
+    BOX_P form = new Gtk::VBox();
+    scroll->add(*form);
+#endif // IF_MOTIF
 
     switch (stype)
     {
@@ -2824,11 +3164,14 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
 	break;
     }
 
+#ifdef IF_MOTIF
     // Set number of rows
     if (row > 0)
 	XtVaSetValues(form, XmNfractionBase, row, XtPointer(0));
+#endif // IF_MOTIF
     XtManageChild(form);
 
+#ifdef IF_MOTIF
     // Set sizes
     max_width += EXTRA_SPACE;
     XtVaSetValues(form, 
@@ -2891,6 +3234,7 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
                   XmNrightAttachment,  XmATTACH_FORM,
                   XmNbottomAttachment, XmATTACH_FORM,
                   XtPointer(0));
+#endif // IF_MOTIF
 
     XtManageChild(scroll);
 
@@ -2898,6 +3242,7 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
     Dimension h, w, x, y;
 
     // prevent the window from being made smaller or bigger than it initially is
+#ifdef IF_MOTIF
     XtVaGetValues(panel,
                   XmNwidth,  &w,
                   XmNheight, &h,
@@ -2927,6 +3272,7 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
                   XmNx, x/2 - w/2,
                   XmNy, y/2 - h/2,
                   XtPointer(0));
+#endif // IF_MOTIF
 
     InstallButtonTips(panel);
 
@@ -3013,16 +3359,22 @@ static Widget create_themes(DebuggerType type)
 {
     check_options_file();
 
-    if (themes_panel != 0)
+    if (themes_panel != 0) {
+#ifdef IF_MOTIF
 	XtDestroyWidget(themes_panel);
+#else // NOT IF_MOTIF
+	delete themes_panel;
+#endif // IF_MOTIF
+    }
 
     // Reset variables
-    static const WidgetArray empty;
+    static const VarArray<ENTRY_P>       	empty_themes;
+    static const VarArray<TOGGLEBUTTON_P>       empty_labels;
     themes_panel        = 0;
     reset_themes_button = 0;
     apply_themes_button = 0;
-    themes_entries = empty;
-    themes_labels  = empty;
+    themes_entries = empty_themes;
+    themes_labels  = empty_labels;
 
     themes_panel = create_panel(type, THEMES);
 
@@ -3037,8 +3389,8 @@ void update_themes()
 
     for (int i = 0; i < themes_entries.size(); i++)
     {
-	Widget entry  = themes_entries[i];
-	Widget button = themes_labels[i];
+	ENTRY_P entry  = themes_entries[i];
+	TOGGLEBUTTON_P button = themes_labels[i];
 	string theme = basename(XtName(entry));
 	ThemePattern p;
 	bool set = false;
@@ -3058,15 +3410,20 @@ void update_themes()
 	    set = false;
 	}
 
+#ifdef IF_MOTIF
 	XmTextFieldSetString(entry, XMST(value.chars()));
 	XtVaSetValues(button, XmNset, set, XtPointer(0));
+#else // NOT IF_MOTIF
+	entry->set_text(XMST(value.chars()));
+	button->set_active(set);
+#endif // IF_MOTIF
     }
 }
 
 
 
 // Popup editor for debugger settings
-void dddPopupSettingsCB (Widget, XtPointer, XtPointer)
+void dddPopupSettingsCB (CB_ARG_LIST_NULL)
 {
     Widget settings = create_settings(gdb->type());
     if (settings == 0)
@@ -3076,7 +3433,7 @@ void dddPopupSettingsCB (Widget, XtPointer, XtPointer)
 }
 
 // Popup editor for debugger infos
-void dddPopupInfosCB (Widget, XtPointer, XtPointer)
+void dddPopupInfosCB (CB_ARG_LIST_NULL)
 {
     Widget infos = create_infos(gdb->type());
     if (infos == 0)
@@ -3086,7 +3443,7 @@ void dddPopupInfosCB (Widget, XtPointer, XtPointer)
 }
 
 // Popup editor for debugger infos
-void dddPopupSignalsCB (Widget, XtPointer, XtPointer)
+void dddPopupSignalsCB (CB_ARG_LIST_NULL)
 {
     Widget signals = create_signals(gdb->type());
     if (signals == 0)
@@ -3096,7 +3453,7 @@ void dddPopupSignalsCB (Widget, XtPointer, XtPointer)
 }
 
 // Popup editor for display themes
-void dddPopupThemesCB (Widget, XtPointer, XtPointer)
+void dddPopupThemesCB (CB_ARG_LIST_NULL)
 {
     Widget themes = create_themes(gdb->type());
     if (themes == 0)
@@ -3512,19 +3869,23 @@ bool is_defined_cmd(const string& command)
 
 // Data
 
-static Widget name_w;		// Name of defined command
-static Widget arg_w;		// `()' toggle
-static Widget record_w;		// `Record' button
-static Widget end_w;		// `End' button
-static Widget edit_w;		// `Edit>>' button
-static Widget editor_w;		// Command definition editor
-static Widget apply_w;		// `Apply' button
+static ENTRY_P name_w;			// Name of defined command
+static TOGGLEBUTTON_P arg_w;		// `()' toggle
+static BUTTON_P record_w;		// `Record' button
+static BUTTON_P end_w;			// `End' button
+static BUTTON_P edit_w;			// `Edit>>' button
+static SCROLLEDTEXT_P editor_w;		// Command definition editor
+static BUTTON_P apply_w;		// `Apply' button
 
 static string current_name()
 {
+#ifdef IF_MOTIF
     String name_s = XmTextFieldGetString(name_w);
     string name(name_s);
     XtFree(name_s);
+#else // NOT IF_MOTIF
+    string name(name_w->get_text().c_str());
+#endif // IF_MOTIF
     strip_space(name);
     return name;
 }
@@ -3580,17 +3941,25 @@ static const _XtString &target_string(ButtonTarget t)
     return null;
 }
 
-static void ToggleButtonCB(Widget, XtPointer client_data, XtPointer call_data)
+#ifdef IF_MOTIF
+static void ToggleButtonCB(Widget w, XtPointer client_data, XtPointer call_data)
+#else // NOT IF_MOTIF
+static void ToggleButtonCB(TOGGLEBUTTON_P w, ButtonTarget client_data)
+#endif // IF_MOTIF
 {
     string name = current_name();
     ButtonTarget target = (ButtonTarget) (long) client_data;
 
+    const _XtString& str = target_string(target);
+
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
-    const _XtString& str = target_string(target);
-
     if (info->set)
+#else // NOT IF_MOTIF
+    if (w->get_active())
+#endif // IF_MOTIF
     {
 	add_button(name, str);
     }
@@ -3604,12 +3973,12 @@ static void ToggleButtonCB(Widget, XtPointer client_data, XtPointer call_data)
 
 static MMDesc button_menu[] =
 {
-    { "console", MMToggle, 
-      { ToggleButtonCB, XtPointer(ConsoleTarget) }, 0, 0, 0, 0},
-    { "source",  MMToggle, 
-      { ToggleButtonCB, XtPointer(SourceTarget) }, 0, 0, 0, 0},
-    { "data",    MMToggle, 
-      { ToggleButtonCB, XtPointer(DataTarget) }, 0, 0, 0, 0},
+    { NM("console", "console"), MMToggle, 
+      BIND_1(PTR_FUN(ToggleButtonCB), ConsoleTarget), 0, 0, 0, 0},
+    { NM("source", "source"),   MMToggle, 
+      BIND_1(PTR_FUN(ToggleButtonCB), SourceTarget), 0, 0, 0, 0},
+    { NM("data", "data"),       MMToggle, 
+      BIND_1(PTR_FUN(ToggleButtonCB), DataTarget), 0, 0, 0, 0},
     MMEnd
 };
 
@@ -3620,12 +3989,23 @@ static void refresh_toggle(ButtonTarget t)
     string name = current_name();
 
     Boolean old_state;
+#ifdef IF_MOTIF
     XtVaGetValues(w, XmNset, &old_state, XtPointer(0));
+#else // NOT IF_MOTIF
+    TOGGLEBUTTON_P tb = dynamic_cast<TOGGLEBUTTON_P>(w);
+    assert(tb);
+    old_state = tb->get_active();
+#endif // IF_MOTIF
 
     Boolean new_state = 
 	s.contains("\n" + name + "\n") || s.contains("\n" + name + " ()\n");
-    if (old_state != new_state)
+    if (old_state != new_state) {
+#ifdef IF_MOTIF
 	XtVaSetValues(w, XmNset, new_state, XtPointer(0));
+#else // NOT IF_MOTIF
+	tb->set_active(new_state);
+#endif // IF_MOTIF
+    }
 
 #if 1
     set_sensitive(w, !name.empty());
@@ -3655,13 +4035,17 @@ static void refresh_combo_box()
     for (StringStringAssocIter iter(defs); iter.ok(); ++iter)
 	commands += iter.key();
     smart_sort(commands);
+#ifdef IF_MOTIF
     ComboBoxSetList(name_w, commands);
+#else // NOT IF_MOTIF
+    std::cerr << "SET COMBO BOX LIST\n";
+#endif // IF_MOTIF
 }
 
 // Editing stuff
 
 // Text field has changed -- update buttons
-void UpdateDefinePanelCB(Widget w, XtPointer, XtPointer)
+void UpdateDefinePanelCB(CB_ARG_LIST_1(w))
 {
     if (name_w == 0)
 	return;			// Not yet created
@@ -3721,19 +4105,19 @@ void update_define_later(const string& command)
     UpdateDefinePanelCB();
 }
 
-static void RecordCommandDefinitionCB(Widget w, XtPointer, XtPointer)
+static void RecordCommandDefinitionCB(CB_ARG_LIST_1(w))
 {
     string name = current_name();
     gdb_command("define " + name, w);
 }
 
-static void EndCommandDefinitionCB(Widget w, XtPointer, XtPointer)
+static void EndCommandDefinitionCB(CB_ARG_LIST_1(w))
 {
     if (gdb->recording())
 	gdb_command("end", w);
 }
 
-static void DoneEditCommandDefinitionCB(Widget w, XtPointer, XtPointer)
+static void DoneEditCommandDefinitionCB(CB_ARG_LIST_1(w))
 {
     if (!XtIsManaged(XtParent(editor_w)))
 	return;
@@ -3747,9 +4131,13 @@ static void DoneEditCommandDefinitionCB(Widget w, XtPointer, XtPointer)
     MString label = "Edit " + MString(">>", CHARSET_SMALL);
     set_label(edit_w, label);
 
+#ifdef IF_MOTIF
     String _commands = XmTextGetString(editor_w);
     string cmd = _commands;
     XtFree(_commands);
+#else // NOT IF_MOTIF
+    string cmd(editor_w->get_text().c_str());
+#endif // IF_MOTIF
 
     if (!cmd.contains('\n', -1))
 	cmd += '\n';
@@ -3779,7 +4167,7 @@ static void DoneEditCommandDefinitionCB(Widget w, XtPointer, XtPointer)
     }
 }
 
-static void EditCommandDefinitionCB(Widget, XtPointer, XtPointer)
+static void EditCommandDefinitionCB(CB_ALIST_NULL)
 {
     if (XtIsManaged(XtParent(editor_w)))
 	return;
@@ -3794,29 +4182,32 @@ static void EditCommandDefinitionCB(Widget, XtPointer, XtPointer)
     if (defs.has(name))
 	def = defs[name];
 
+#ifdef IF_MOTIF
     XmTextSetString(editor_w, XMST(def.chars()));
+#else // NOT IF_MOTIF
+    editor_w->set_text(XMST(def.chars()));
+#endif // IF_MOTIF
 
     XtManageChild(XtParent(editor_w));
     MString label = "Edit " + MString("<<", CHARSET_SMALL);
     set_label(edit_w, label);
 }
 
-static void ToggleEditCommandDefinitionCB(Widget w, XtPointer client_data, 
-					  XtPointer call_data)
+static void ToggleEditCommandDefinitionCB(CB_ARG_LIST_1(w))
 {
     if (XtIsManaged(XtParent(editor_w)))
-	DoneEditCommandDefinitionCB(w, client_data, call_data);
+	DoneEditCommandDefinitionCB(CB_ARGS_1(w));
     else
-	EditCommandDefinitionCB(w, client_data, call_data);
+	EditCommandDefinitionCB(CB_ARGS_NULL);
 }
 
 // Apply the given command
-static void ApplyCB(Widget w, XtPointer client_data, XtPointer call_data)
+static void ApplyCB(CB_ARG_LIST_1(w))
 {
     if (gdb->recording())
-	EndCommandDefinitionCB(w, client_data, call_data);
+	EndCommandDefinitionCB(CB_ARGS_1(w));
 
-    DoneEditCommandDefinitionCB(w, client_data, call_data);
+    DoneEditCommandDefinitionCB(CB_ARGS_1(w));
 
     string cmd = current_name();
     if (!cmd.empty())
@@ -3881,53 +4272,58 @@ static void set_arg()
     }
 }
 
-static void ToggleArgCB(Widget, XtPointer, XtPointer)
+static void ToggleArgCB(CB_ARG_LIST_NULL)
 {
     set_arg();
 }
 
 static MMDesc commands_menu[] =
 {
-    { "record", MMPush, 
-      { RecordCommandDefinitionCB, 0 }, 0, &record_w, 0, 0 },
-    { "end",    MMPush | MMInsensitive, 
-      { EndCommandDefinitionCB, 0 }, 0, &end_w, 0, 0},
-    { "edit",   MMPush, 
-      { ToggleEditCommandDefinitionCB, 0 }, 0, &edit_w, 0, 0 },
+    { NM("record", "record"), MMPush, 
+      BIND_0(PTR_FUN(RecordCommandDefinitionCB)), 0, (Widget *)&record_w, 0, 0 },
+    { NM("end", "end"),       MMPush | MMInsensitive, 
+      BIND_0(PTR_FUN(EndCommandDefinitionCB)), 0, (Widget *)&end_w, 0, 0},
+    { NM("edit", "edit"),     MMPush, 
+      BIND_0(PTR_FUN(ToggleEditCommandDefinitionCB)), 0, (Widget *)&edit_w, 0, 0 },
     MMEnd
 };
 
 static MMDesc name_menu[] =
 {
-    { "name",     MMComboBox | MMUnmanagedLabel, 
-      { UpdateDefinePanelCB, 0 }, 0, &name_w, 0, 0 },
-    { "arg",      MMToggle, { ToggleArgCB, 0 }, 0, &arg_w, 0, 0 },
+    { NM("name", "name"),     MMComboBox | MMUnmanagedLabel, 
+      BIND_0(PTR_FUN(UpdateDefinePanelCB)), 0, (Widget *)&name_w, 0, 0 },
+    { NM("arg", "arg"),       MMToggle, HIDE_0(PTR_FUN(ToggleArgCB)), 0, (Widget *)&arg_w, 0, 0 },
     MMEnd
 };
 
 static MMDesc panel_menu[] = 
 {
-    { "name",     MMButtonPanel, MMNoCB, name_menu, 0, 0, 0 },
-    { "commands", MMButtonPanel, MMNoCB, commands_menu, 0, 0, 0 },
-    { "button",   MMButtonPanel, MMNoCB, button_menu, 0, 0, 0 },
+    { NM("name", "name"),         MMButtonPanel, MMNoCB, name_menu, 0, 0, 0 },
+    { NM("commands", "commands"), MMButtonPanel, MMNoCB, commands_menu, 0, 0, 0 },
+    { NM("button", "button"),     MMButtonPanel, MMNoCB, button_menu, 0, 0, 0 },
     MMEnd
 };
 
 
 // Define command
-void dddDefineCommandCB(Widget w, XtPointer, XtPointer)
+void dddDefineCommandCB(CB_ARG_LIST_1(w))
 {
-    static Widget dialog = 0;
+    static DIALOG_P dialog = 0;
 
     if (dialog == 0)
     {
+#ifdef IF_MOTIF
 	Arg args[10];
 	int arg = 0;
 	XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
 	dialog = verify(XmCreatePromptDialog(find_shell(w),
 					     XMST("define_command"),
 					     args, arg));
+#else // NOT IF_MOTIF
+	dialog = new Gtk::Dialog(XMST("define_command"), *find_shell(w));
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
 	// Remove old prompt
 	Widget text = XmSelectionBoxGetChild(dialog, XmDIALOG_TEXT);
 	XtUnmanageChild(text);
@@ -3940,32 +4336,48 @@ void dddDefineCommandCB(Widget w, XtPointer, XtPointer)
 	XtManageChild(apply_w);
 
 	XtUnmanageChild(XmSelectionBoxGetChild(dialog, XmDIALOG_OK_BUTTON));
+#endif // IF_MOTIF
 
 	Delay::register_shell(dialog);
 
+#ifdef IF_MOTIF
 	arg = 0;
 	XtSetArg(args[arg], XmNorientation, XmHORIZONTAL); arg++;
 	Widget form = XmCreateRowColumn(dialog, XMST("form"), args, arg);
 	XtManageChild(form);
+#else // NOT IF_MOTIF
+	BOX_P form = new Gtk::HBox();
+	dialog->get_vbox()->pack_start(*form, Gtk::PACK_SHRINK);
+	form->show();
+#endif // IF_MOTIF
 
 	Widget panel = MMcreatePanel(form, "panel", panel_menu);
 
+#ifdef IF_MOTIF
 	XtVaSetValues(panel,
 		      XmNmarginWidth,    0,
 		      XmNmarginHeight,   0,
 		      XtPointer(0));
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
 	arg = 0;
 	XtSetArg(args[arg], XmNeditMode, XmMULTI_LINE_EDIT); arg++;
         editor_w = XmCreateScrolledText(form, XMST("text"), args, arg);
 	XtUnmanageChild(XtParent(editor_w));
 	XtManageChild(editor_w);
+#else // NOT IF_MOTIF
+        editor_w = new GtkScrolledText();
+	form->pack_start(*editor_w, Gtk::PACK_SHRINK);
+	editor_w->show();
+#endif // IF_MOTIF
 
 	MMaddCallbacks(panel_menu);
 	InstallButtonTips(panel);
 
 	MMadjustPanel(panel_menu);
 
+#ifdef IF_MOTIF
 	XtAddCallback(dialog, XmNokCallback, UnmanageThisCB, 
 		      XtPointer(dialog));
 	XtAddCallback(dialog, XmNokCallback, DoneEditCommandDefinitionCB, 
@@ -3980,6 +4392,14 @@ void dddDefineCommandCB(Widget w, XtPointer, XtPointer)
 
 	XtAddCallback(dialog, XmNhelpCallback,
 		      ImmediateHelpCB, XtPointer(0));
+#else // NOT IF_MOTIF
+	BUTTON_P button;
+	button = apply_w = dialog->add_button(XMST("Apply"), 0);
+	button->signal_clicked().connect(sigc::bind(PTR_FUN(ApplyCB), dialog));
+	button = apply_w = dialog->add_button(XMST("Cancel"), 0);
+	button->signal_clicked().connect(sigc::bind(PTR_FUN(EndCommandDefinitionCB), dialog));
+	button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB), dialog));
+#endif // IF_MOTIF
 
 	set_need_load_defines(true);
 	update_defines();

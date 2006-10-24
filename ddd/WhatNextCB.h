@@ -29,7 +29,14 @@
 #ifndef _DDD_WhatNextCB_h
 #define _DDD_WhatNextCB_h
 
+#ifdef IF_MOTIF
+
 #include <X11/Intrinsic.h>
+
+#endif // IF_MOTIF
+
+#include "gtk_wrapper.h"
+
 #include "bool.h"
 #include "strclass.h"
 

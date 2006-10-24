@@ -29,37 +29,44 @@
 #ifndef _DDD_source_h
 #define _DDD_source_h
 
+#ifdef IF_MOTIF
+
 #include <X11/Intrinsic.h>
+
+#endif // IF_MOTIF
+
+#include "gtk_wrapper.h"
+
 #include "bool.h"
 #include "SourceView.h"
 
-extern void gdbBreakAtCB      (Widget, XtPointer, XtPointer);
-extern void gdbClearAtCB      (Widget, XtPointer, XtPointer);
-extern void gdbToggleBreakCB  (Widget, XtPointer, XtPointer);
-extern void gdbLookupCB       (Widget, XtPointer, XtPointer);
+extern void gdbBreakAtCB      (CB_ALIST_1(Widget));
+extern void gdbClearAtCB      (CB_ALIST_1(Widget));
+extern void gdbToggleBreakCB  (CB_ALIST_1(Widget));
+extern void gdbLookupCB       (CB_ALIST_NULL);
 
-extern void gdbTempBreakAtCB  (Widget, XtPointer, XtPointer);
-extern void gdbRegexBreakAtCB (Widget, XtPointer, XtPointer);
-extern void gdbContUntilCB    (Widget, XtPointer, XtPointer);
-extern void gdbSetPCCB        (Widget, XtPointer, XtPointer);
+extern void gdbTempBreakAtCB  (CB_ALIST_1(Widget));
+extern void gdbRegexBreakAtCB (CB_ALIST_1(Widget));
+extern void gdbContUntilCB    (CB_ALIST_1(Widget));
+extern void gdbSetPCCB        (CB_ALIST_1(Widget));
 
-extern void gdbPrintCB        (Widget, XtPointer, XtPointer);
-extern void gdbDisplayCB      (Widget, XtPointer, XtPointer);
-extern void gdbWatchCB        (Widget, XtPointer, XtPointer);
-extern void gdbUnwatchCB      (Widget, XtPointer, XtPointer);
-extern void gdbToggleWatchCB  (Widget, XtPointer, XtPointer);
+extern void gdbPrintCB        (CB_ALIST_12(Widget, XtP(bool)));
+extern void gdbDisplayCB      (CB_ALIST_1(Widget));
+extern void gdbWatchCB        (CB_ALIST_12(Widget, XtP(long)));
+extern void gdbUnwatchCB      (CB_ALIST_NULL);
+extern void gdbToggleWatchCB  (CB_ALIST_12(Widget, XtP(long)));
 
-extern void gdbPrintRefCB     (Widget, XtPointer, XtPointer);
-extern void gdbDispRefCB      (Widget, XtPointer, XtPointer);
+extern void gdbPrintRefCB     (CB_ALIST_12(Widget, XtP(bool)));
+extern void gdbDispRefCB      (CB_ALIST_1(Widget));
 extern void gdbWatchRefCB     (Widget, XtPointer, XtPointer);
 
-extern void gdbWhatisCB       (Widget, XtPointer, XtPointer);
+extern void gdbWhatisCB       (CB_ALIST_1(Widget));
 
-extern void gdbEditSourceCB   (Widget, XtPointer, XtPointer);
-extern void gdbReloadSourceCB (Widget, XtPointer, XtPointer);
+extern void gdbEditSourceCB   (CB_ALIST_1(Widget));
+extern void gdbReloadSourceCB (CB_ALIST_NULL);
 
-extern void gdbUndoCB         (Widget, XtPointer, XtPointer);
-extern void gdbRedoCB         (Widget, XtPointer, XtPointer);
+extern void gdbUndoCB         (CB_ALIST_NULL);
+extern void gdbRedoCB         (CB_ALIST_NULL);
 
 extern bool have_breakpoint_at_arg();
 extern bool have_enabled_breakpoint_at_arg();
@@ -68,14 +75,14 @@ extern bool have_watchpoint_at_arg();
 extern bool have_watchpoint_at_ref_arg();
 extern bool have_enabled_watchpoint_at_arg();
 
-extern void gdbEditBreakpointPropertiesCB (Widget, XtPointer, XtPointer);
-extern void gdbEditWatchpointPropertiesCB (Widget, XtPointer, XtPointer);
+extern void gdbEditBreakpointPropertiesCB (CB_ALIST_NULL);
+extern void gdbEditWatchpointPropertiesCB (CB_ALIST_NULL);
 
-extern void gdbToggleEnableBreakpointCB (Widget, XtPointer, XtPointer);
-extern void gdbToggleEnableWatchpointCB (Widget, XtPointer, XtPointer);
+extern void gdbToggleEnableBreakpointCB (CB_ALIST_1(Widget));
+extern void gdbToggleEnableWatchpointCB (CB_ALIST_1(Widget));
 
-extern void gdbFindCB         (Widget, XtPointer, XtPointer);
-extern void gdbFindAgainCB    (Widget, XtPointer, XtPointer);
+extern void gdbFindCB         (CB_ALIST_12(Widget, XtP(SourceView::SearchDirection)));
+extern void gdbFindAgainCB    (CB_ALIST_1(Widget));
 
 extern SourceView::SearchDirection current_find_direction();
 

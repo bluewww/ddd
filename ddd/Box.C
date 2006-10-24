@@ -32,9 +32,13 @@ char Box_rcsid[] =
 #include <string.h>
 
 #include "assert.h"
+#ifdef IF_MOTIF
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
+#else // NOT IF_MOTIF
+#include "gtk_wrapper.h"
+#endif // IF_MOTIF
 
 #include "Box.h"
 #include "TagBox.h"
@@ -63,8 +67,13 @@ void Box::draw(Widget w,
     assert(!(size() > r.space()));
 
     // Use default GC if needed
-    if (gc == 0)
+    if (gc == NO_GC) {
+#ifdef IF_MOTIF
 	gc = DefaultGCOfScreen(XtScreen(w));
+#else // NOT IF_MOTIF
+	gc = w->get_style()->get_black_gc();
+#endif // IF_MOTIF
+    }
 
     // Go and draw
     _draw(w, r, exposed, gc, context_selected);

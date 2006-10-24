@@ -47,6 +47,7 @@ char status_rcsid[] =
 #include "verify.h"
 
 #include <ctype.h>
+#ifdef IF_MOTIF
 #include <Xm/Xm.h>
 #include <Xm/Text.h>
 #include <Xm/SelectioB.h>
@@ -54,8 +55,10 @@ char status_rcsid[] =
 #include <Xm/Label.h>
 #include <Xm/MenuShell.h>
 
+
 #include <X11/IntrinsicP.h>	// LessTif hacks
 #include "LessTifH.h"
+#endif // IF_MOTIF
 
 //-----------------------------------------------------------------------------
 // Data
@@ -115,13 +118,14 @@ void set_buttons_from_gdb(Widget buttons, string& text)
 
     if (yn && !gdb_keyboard_command)
     {
+	// FIXME: Handle JDB
+	char prompt_start = (gdb->type() == XDB ? '>' : '(');
+
+#ifdef IF_MOTIF
 	// Fetch previous output lines, in case this is a multi-line message.
 	String s = XmTextGetString(gdb_w);
 	string prompt(s);
 	XtFree(s);
-
-	// FIXME: Handle JDB
-	char prompt_start = (gdb->type() == XDB ? '>' : '(');
 
 	int pos = prompt.index(prompt_start, -1);
 	if (pos >= 0)
@@ -133,6 +137,16 @@ void set_buttons_from_gdb(Widget buttons, string& text)
 	promptPosition = pos;
 
 	prompt = prompt.from(pos);
+#else // NOT IF_MOTIF
+	XmTextPosition pos = gdb_w->find_backward(prompt_start);
+	if (pos >= 0)
+	    pos = gdb_w->find_backward('\n', pos) + 1;
+	if (pos == 0)
+	    pos = messagePosition;
+	string prompt = string(gdb_w->get_text(pos, -1).c_str());
+
+	gdb_w->replace(pos, -1, XMST(""));
+#endif // IF_MOTIF
 	if (text.contains('('))
 	    prompt += text.before('(', -1); // Don't repeat `(y or n)'
 	else
@@ -152,6 +166,7 @@ void set_buttons_from_gdb(Widget buttons, string& text)
 
     last_yn = yn;
 
+#ifdef IF_MOTIF
     if (XtIsComposite(buttons))
     {
 	set_sensitive(buttons, false);
@@ -181,6 +196,12 @@ void set_buttons_from_gdb(Widget buttons, string& text)
 
 	set_sensitive(buttons, true);
     }
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning How did we get here?
+#endif
+    std::cerr << "How did we get here?\n";
+#endif // IF_MOTIF
 }
 
 
@@ -195,6 +216,7 @@ static int current_history = 0;
 static Widget history_label = 0;
 static Widget history_row   = 0;
 
+#ifdef IF_MOTIF
 static Widget create_status_history(Widget parent)
 {
     static Widget history_shell = 0;
@@ -232,9 +254,11 @@ static Widget create_status_history(Widget parent)
 
     return history_shell;
 }
+#endif // IF_MOTIF
 
-Widget status_history(Widget parent)
+MENU_P status_history(Widget parent)
 {
+#ifdef IF_MOTIF
     Widget history_shell = create_status_history(parent);
 
     MString history_msg;
@@ -281,8 +305,13 @@ Widget status_history(Widget parent)
 		  XtPointer(0));
 
     return history_shell;
+#else // NOT IF_MOTIF
+    std::cerr << "NO STATUS HISTORY: WILL CRASH\n";
+    return NULL;
+#endif // IF_MOTIF
 }
 
+#ifdef IF_MOTIF
 // Return true iff S1 is a prefix of S2
 static bool is_prefix(const MString& m1, const MString& m2)
 {
@@ -450,6 +479,11 @@ static void add_to_status_history(const MString& message)
     history[current_history] = message;
     current_history = (current_history + 1) % status_history_size;
 }
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Status history not supported.
+#endif
+#endif // IF_MOTIF
 
 //-----------------------------------------------------------------------------
 // Status recognition
@@ -464,9 +498,13 @@ void set_status_from_gdb(const string& text)
 	return;
 
     // Fetch line before prompt in GDB window
+#ifdef IF_MOTIF
     String s = XmTextGetString(gdb_w);
     string message = s + messagePosition;
     XtFree(s);
+#else // NOT IF_MOTIF
+    string message(gdb_w->get_text(messagePosition, -1).c_str());
+#endif // IF_MOTIF
 
     if (message.empty() && text.contains('\n'))
 	message = text;
@@ -486,7 +524,11 @@ void set_status_from_gdb(const string& text)
 
     if (show_next_line_in_status)
     {
+#ifdef IF_MOTIF
 	messagePosition = XmTextGetLastPosition(gdb_w) + text.length();
+#else // NOT IF_MOTIF
+	messagePosition = gdb_w->get_last_position() + text.length();
+#endif // IF_MOTIF
 	show_next_line_in_status = false;
 	message.gsub('\n', ' ');
     }
@@ -534,18 +576,28 @@ void set_status_mstring(const MString& message, bool temporary)
     if (status_w == 0)
 	return;
 
+#ifdef IF_MOTIF
     if (!temporary)
 	add_to_status_history(message);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Status history not implemented
+#endif
+#endif // IF_MOTIF
 
     if (!status_locked)
     {
 	current_status_text = message;
 
+#ifdef IF_MOTIF
 	XtVaSetValues(status_w,
 		      XmNlabelString, message.xmstring(),
 		      XtPointer(0));
 	XFlush(XtDisplay(status_w));
 	XmUpdateDisplay(status_w);
+#else // NOT IF_MOTIF
+	status_w->push(message.xmstring());
+#endif // IF_MOTIF
     }
 
     if (log_status && !temporary)

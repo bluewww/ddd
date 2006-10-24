@@ -36,8 +36,10 @@ char StringBox_rcsid[] =
 #include "assert.h"
 #include "cook.h"
 
+#ifdef IF_MOTIF
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
+#endif // IF_MOTIF
 #include <ctype.h>
 #include <sstream>
 
@@ -60,11 +62,26 @@ Box *StringBox::resize()
     if (_font != 0)
     {
 	int direction, font_ascent, font_descent;
+#ifdef IF_MOTIF
 	XCharStruct overall;
 
 	XTextExtents(_font, _string.chars(), _string.length(),
 	    &direction, &font_ascent, &font_descent, &overall);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning FIXME: We should possibly hold a complete Pango::Context in the StringBox class.
+#warning FIXME: I do not understand font description / font etc.
+#endif
+	Glib::RefPtr<Pango::Context> context = Glib::wrap(gdk_pango_context_get_for_screen(gdk_screen_get_default()));
+	context->set_font_description(_font->describe());
+	Glib::RefPtr<Pango::Layout> pl = Pango::Layout::create(context);
+	pl->set_text(Glib::ustring(_string.chars()));
+	Pango::Rectangle overall = pl->get_logical_extents();
+	font_ascent = overall.get_ascent();
+	font_descent = overall.get_descent();
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
 #if USE_MAX_BOUNDS
 	XCharStruct max_bounds = _font->max_bounds;
 
@@ -75,6 +92,13 @@ Box *StringBox::resize()
 	_ascent = font_ascent;
 	thesize() = BoxSize(overall.width, font_ascent + font_descent);
 #endif
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Cannot get max_bounds of a Pango font.
+#endif
+	_ascent = font_ascent;
+	thesize() = BoxSize(overall.get_width(), font_ascent + font_descent);
+#endif // IF_MOTIF
     }
 
     return this;
@@ -89,11 +113,22 @@ void StringBox::_draw(Widget w,
 {
     BoxPoint origin = r.origin();
 
+#ifdef IF_MOTIF
     if (_font != 0)
 	XSetFont(XtDisplay(w), gc, _font->fid);
 
     XDrawString(XtDisplay(w), XtWindow(w), gc, origin[X], origin[Y] + _ascent,
 		_string.chars(), _string.length());
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning FIXME Different pango context to that used in resize().
+#endif
+    Glib::RefPtr<Pango::Context> context = w->get_pango_context();
+    context->set_font_description(_font->describe());
+    Glib::RefPtr<Pango::Layout> pl = Pango::Layout::create(context);
+    pl->set_text(Glib::ustring(_string.chars()));
+    w->get_window()->draw_layout(gc, origin[X], origin[Y] + _ascent, pl);
+#endif // IF_MOTIF
 }
 
 

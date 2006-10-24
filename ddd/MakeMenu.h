@@ -29,7 +29,14 @@
 #ifndef _DDD_MakeMenu_h
 #define _DDD_MakeMenu_h
 
+#ifdef IF_MOTIF
+
 #include <X11/Intrinsic.h>
+
+#endif // IF_MOTIF
+
+#include "gtk_wrapper.h"
+
 #include "bool.h"
 #include "StringA.h"
 
@@ -54,8 +61,14 @@ const MMType MMArrow       = 14; // Create an arrow button
 const MMType MMSpinBox     = 15; // Like MMTextField, but add two spin buttons
 const MMType MMComboBox    = 16; // Create a combo box
 
-const MMType MMTypeMask    = 31; // mask to find type
+#ifdef IF_MOTIF
+#define MMRadio MMToggle
+#else // NOT IF_MOTIF
+const MMType MMMenuItem    = 17; // Create a MenuItem (same as MMPush for Motif)
+const MMType MMRadio       = 18; // Create a RadioButton (same as MMToggle for Motif)
+#endif // IF_MOTIF
 
+const MMType MMTypeMask    = 31; // mask to find type
 
 // Special attributes, to be ORed with types
 
@@ -75,12 +88,16 @@ const MMAttr MMAttrMask       = ~MMTypeMask;
 
 struct MMDesc {
     const char *name;	     // Widget name
+#ifndef IF_MOTIF
+    Glib::ustring label_string;
+    XIMAGE_P *image;
+#endif // IF_MOTIF
     MMType type;	     // Widget type
     XtCallbackRec callback;  // Associated callback
     MMDesc *items;	     // Submenus (0 if none)
     Widget *widgetptr;       // Where to store the resulting widget (0 if not)
     Widget widget;	     // The resulting widget
-    Widget label;	     // The resulting label
+    LABEL_P label;	     // The resulting label
 };
 
 
@@ -102,25 +119,56 @@ typedef void (*MMItemProc)(const MMDesc items[], XtPointer closure);
 
 
 // Creators
-Widget MMcreatePulldownMenu      (Widget parent, const _XtString name, MMDesc items[],
-				  ArgList args = 0, Cardinal arg = 0);
-Widget MMcreateRadioPulldownMenu (Widget parent, const _XtString name, MMDesc items[],
-				  ArgList args = 0, Cardinal arg = 0);
-Widget MMcreatePopupMenu         (Widget parent, const _XtString name, MMDesc items[],
-				  ArgList args = 0, Cardinal arg = 0);
-Widget MMcreateMenuBar           (Widget parent, const _XtString name, MMDesc items[],
-				  ArgList args = 0, Cardinal arg = 0);
-Widget MMcreateWorkArea          (Widget parent, const _XtString name, MMDesc items[],
-				  ArgList args = 0, Cardinal arg = 0);
-Widget MMcreatePanel             (Widget parent, const _XtString name, MMDesc items[],
-				  ArgList args = 0, Cardinal arg = 0);
-Widget MMcreateRadioPanel        (Widget parent, const _XtString name, MMDesc items[],
-				  ArgList args = 0, Cardinal arg = 0);
-Widget MMcreateButtonPanel       (Widget parent, const _XtString name, MMDesc items[],
-				  ArgList args = 0, Cardinal arg = 0);
-Widget MMcreatePushMenu          (Widget parent, const _XtString name, MMDesc items[],
-				  ArgList args = 0, Cardinal arg = 0);
-
+MENU_P       MMcreatePulldownMenu        (CONTAINER_P parent, NAME_T name, MMDesc items[]
+#ifdef IF_MOTIF
+					  , ArgList args = 0, Cardinal arg = 0
+#endif // IF_MOTIF
+					  );
+MENU_P       MMcreateRadioPulldownMenu   (CONTAINER_P parent, NAME_T name, MMDesc items[]
+#ifdef IF_MOTIF
+					  , ArgList args = 0, Cardinal arg = 0
+#endif // IF_MOTIF
+					  );
+MENU_P       MMcreatePopupMenu           (Widget parent, NAME_T name, MMDesc items[]
+#ifdef IF_MOTIF
+					  , ArgList args = 0, Cardinal arg = 0
+#endif // IF_MOTIF
+					  );
+MENUBAR_P    MMcreateMenuBar             (CONTAINER_P parent, NAME_T name, MMDesc items[]
+#ifdef IF_MOTIF
+					  , ArgList args = 0, Cardinal arg = 0
+#endif // IF_MOTIF
+					  );
+CONTAINER_P  MMcreateWorkArea            (DIALOG_P parent, NAME_T name, MMDesc items[]
+#ifdef IF_MOTIF
+					  , ArgList args = 0, Cardinal arg = 0
+#endif // IF_MOTIF
+					  );
+BOX_P        MMcreatePanel               (CONTAINER_P parent, NAME_T name, MMDesc items[]
+#ifdef IF_MOTIF
+					  , ArgList args = 0, Cardinal arg = 0
+#endif // IF_MOTIF
+					  );
+BOX_P        MMcreateRadioPanel          (CONTAINER_P parent, NAME_T name, MMDesc items[]
+#ifdef IF_MOTIF
+					  , ArgList args = 0, Cardinal arg = 0
+#endif // IF_MOTIF
+					  );
+BOX_P        MMcreateButtonPanel         (CONTAINER_P parent, NAME_T name, MMDesc items[]
+#ifdef IF_MOTIF
+					  , ArgList args = 0, Cardinal arg = 0
+#endif // IF_MOTIF
+					  );
+BOX_P        MMcreateVButtonPanel        (CONTAINER_P parent, NAME_T name, MMDesc items[]
+#ifdef IF_MOTIF
+					  , ArgList args = 0, Cardinal arg = 0
+#endif // IF_MOTIF
+					  );
+MENU_P       MMcreatePushMenu            (CONTAINER_P parent, NAME_T name, MMDesc items[]
+#ifdef IF_MOTIF
+					  , ArgList args = 0, Cardinal arg = 0
+#endif // IF_MOTIF
+					  );
 
 // Align panel items along their labels
 void MMadjustPanel(const MMDesc items[], Dimension space = 15);
@@ -136,12 +184,20 @@ void MMonItems(const MMDesc items[], MMItemProc proc, XtPointer closure = 0,
 	       int depth = -1);
 
 // Add ITEMS to SHELL.  If IGNORE_SEPS is set, all separators are ignored.
+#ifdef IF_MOTIF
 void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps = false);
+#else // NOT IF_MOTIF
+void MMaddItems(CONTAINER_P shell, MMDesc items[], bool ignore_seps = false);
+#endif // IF_MOTIF
 
 // Conveniences
+#ifdef IF_MOTIF
 #define MMNoCB { 0, 0 }
-#define MMEnd  { 0, MMPush, MMNoCB, 0, 0, 0, 0 }
-#define MMSep  { "separator", MMSeparator, MMNoCB, 0, 0, 0, 0 }
+#else // NOT IF_MOTIF
+#define MMNoCB BIND_1( PTR_FUN((GTK_PROC_WP)0), (XtPointer)0 )
+#endif // IF_MOTIF
+#define MMEnd  { NM(0, ""), MMPush, MMNoCB, 0, 0, 0, 0 }
+#define MMSep  { NM("separator", ""), MMSeparator, MMNoCB, 0, 0, 0, 0 }
 
 // New resources
 #define XtNpushMenuPopupTime  "pushMenuPopupTime"

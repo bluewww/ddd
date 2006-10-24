@@ -32,7 +32,13 @@
 #include "VarArray.h"
 #include "DynArray.h"
 
+#ifdef IF_MOTIF
+
 #include <Xm/Xm.h>
+
+#else // NOT IF_MOTIF
+
+#endif // IF_MOTIF
 
 typedef VarArray<XmTextPosition> VarTextPositionArray;
 typedef DynArray<XmTextPosition> DynTextPositionArray;

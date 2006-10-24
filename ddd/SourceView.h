@@ -47,8 +47,18 @@
 #ifndef _DDD_SourceView_h
 #define _DDD_SourceView_h
 
+#ifdef IF_MOTIF
+
 // Motif includes
 #include <Xm/Xm.h>
+
+#else // NOT IF_MOTIF
+
+#include <gdkmm/pixbuf.h>
+
+#endif // IF_MOTIF
+
+#include "gtk_wrapper.h"
 
 // Misc includes
 #include "strclass.h"
@@ -78,85 +88,110 @@ class SourceView {
     //-----------------------------------------------------------------------
     // Callbacks
     //-----------------------------------------------------------------------
+#ifdef IF_MOTIF
     static void set_source_argCB         (Widget, XtPointer, XtPointer);
+#else // NOT IF_MOTIF
+    static void set_source_argCB         (CB_ALIST_12(SCROLLEDTEXT_P text_w, XtP(bool) client_data));
+#endif // IF_MOTIF
 
-    static void line_popup_setCB         (Widget, XtPointer, XtPointer);
-    static void line_popup_set_tempCB    (Widget, XtPointer, XtPointer);
-    static void line_popup_temp_n_contCB (Widget, XtPointer, XtPointer);
-    static void line_popup_set_pcCB      (Widget, XtPointer, XtPointer);
+    static void line_popup_setCB         (CB_ALIST_12(Widget, XtP(const string *)));
+    static void line_popup_set_tempCB    (CB_ALIST_12(Widget, XtP(const string *)));
+    static void line_popup_temp_n_contCB (CB_ALIST_12(Widget, XtP(const string *)));
+    static void line_popup_set_pcCB      (CB_ALIST_12(Widget, XtP(const string *)));
 
-    static void bp_popup_infoCB          (Widget, XtPointer, XtPointer);
-    static void bp_popup_deleteCB        (Widget, XtPointer, XtPointer);
-    static void bp_popup_disableCB       (Widget, XtPointer, XtPointer);
-    static void bp_popup_set_pcCB        (Widget, XtPointer, XtPointer);
+    // static void bp_popup_infoCB          (CB_ALIST_12(Widget, XtP(int *)));
+    static void bp_popup_deleteCB        (CB_ALIST_12(Widget, XtP(int *)));
+    static void bp_popup_disableCB       (CB_ALIST_12(Widget, XtP(int *)));
+    static void bp_popup_set_pcCB        (CB_ALIST_12(Widget, XtP(int *)));
 
-    static void text_popup_printCB       (Widget, XtPointer, XtPointer);
-    static void text_popup_dispCB        (Widget, XtPointer, XtPointer);
-    static void text_popup_watchCB       (Widget, XtPointer, XtPointer);
-    static void text_popup_print_refCB   (Widget, XtPointer, XtPointer);
-    static void text_popup_disp_refCB    (Widget, XtPointer, XtPointer);
-    static void text_popup_watch_refCB   (Widget, XtPointer, XtPointer);
-    static void text_popup_whatisCB      (Widget, XtPointer, XtPointer);
-    static void text_popup_lookupCB      (Widget, XtPointer, XtPointer);
-    static void text_popup_breakCB       (Widget, XtPointer, XtPointer);
-    static void text_popup_clearCB       (Widget, XtPointer, XtPointer);
+    static void text_popup_printCB       (CB_ALIST_12(Widget, XtP(const string *)));
+    static void text_popup_dispCB        (CB_ALIST_12(Widget, XtP(const string *)));
+    static void text_popup_watchCB       (CB_ALIST_12(Widget, XtP(const string *)));
+    static void text_popup_print_refCB   (CB_ALIST_12(Widget, XtP(const string *)));
+    static void text_popup_disp_refCB    (CB_ALIST_12(Widget, XtP(const string *)));
+    static void text_popup_watch_refCB   (CB_ALIST_12(Widget, XtP(const string *)));
+    static void text_popup_whatisCB      (CB_ALIST_12(Widget, XtP(const string *)));
+    static void text_popup_lookupCB      (CB_ALIST_2(XtP(const string *)));
+    static void text_popup_breakCB       (CB_ALIST_12(Widget, XtP(const string *)));
+    static void text_popup_clearCB       (CB_ALIST_12(Widget, XtP(const string *)));
 
-    static void NewBreakpointDCB         (Widget, XtPointer, XtPointer);
-    static void NewBreakpointCB          (Widget, XtPointer, XtPointer);
+    static void NewBreakpointDCB         (CB_ALIST_12(Widget, XtP(COMBOBOXENTRYTEXT_P)));
+    static void NewBreakpointCB          (CB_ALIST_1(Widget));
 
-    static void NewWatchpointDCB         (Widget, XtPointer, XtPointer);
-    static void NewWatchpointCB          (Widget, XtPointer, XtPointer);
+    static void NewWatchpointDCB         (CB_ALIST_12(Widget, XtP(COMBOBOXENTRYTEXT_P)));
+    static void NewWatchpointCB          (CB_ALIST_1(Widget));
 
-    static void LookupBreakpointCB       (Widget, XtPointer, XtPointer);
-    static void PrintWatchpointCB        (Widget, XtPointer, XtPointer);
-    static void BreakpointCmdCB          (Widget, XtPointer, XtPointer);
+    static void LookupBreakpointCB       (CB_ALIST_2(XtP(BreakpointPropertiesInfo *)));
+    static void PrintWatchpointCB        (CB_ALIST_12(Widget, XtP(BreakpointPropertiesInfo *)));
+    static void BreakpointCmdCB          (CB_ALIST_2(XtP(const char *)));
 
-    static void EditBreakpointPropertiesCB (Widget, XtPointer, XtPointer);
-    static void ApplyBreakpointPropertiesCB(Widget, XtPointer, XtPointer);
+    static void EditBreakpointPropertiesCB (CB_ALIST_2(XtP(int *)));
+    static void ApplyBreakpointPropertiesCB(CB_ALIST_12(Widget, XtP(BreakpointPropertiesInfo *)));
+#ifdef IF_MOTIF
     static void SetBreakpointIgnoreCountCB (Widget, XtPointer, XtPointer);
     static void SetBreakpointConditionCB   (Widget, XtPointer, XtPointer);
-    static void EnableBreakpointsCB        (Widget, XtPointer, XtPointer);
-    static void DisableBreakpointsCB       (Widget, XtPointer, XtPointer);
-    static void MakeBreakpointsTempCB      (Widget, XtPointer, XtPointer);
-    static void DeleteBreakpointsCB        (Widget, XtPointer, XtPointer);
-    static void RecordBreakpointCommandsCB (Widget, XtPointer, XtPointer);
-    static void EndBreakpointCommandsCB    (Widget, XtPointer, XtPointer);
-    static void EditBreakpointCommandsCB   (Widget, XtPointer, XtPointer);
-    static void SetBreakpointIgnoreCountNowCB(XtPointer, XtIntervalId *);
+#else // NOT IF_MOTIF
+    static void SetBreakpointIgnoreCountCB (Widget, BreakpointPropertiesInfo *);
+    static void SetBreakpointConditionCB   (COMBOBOXENTRYTEXT_P, BreakpointPropertiesInfo *);
+#endif // IF_MOTIF
+    static void EnableBreakpointsCB        (CB_ALIST_12(Widget, XtP(BreakpointPropertiesInfo *)));
+    static void DisableBreakpointsCB       (CB_ALIST_2(XtP(BreakpointPropertiesInfo *)));
+    static void MakeBreakpointsTempCB      (CB_ALIST_2(XtP(BreakpointPropertiesInfo *)));
+    static void DeleteBreakpointsCB        (CB_ALIST_12(Widget, XtP(BreakpointPropertiesInfo *)));
+    static void RecordBreakpointCommandsCB (CB_ALIST_12(Widget,
+							XtP(BreakpointPropertiesInfo *)));
+    static void EndBreakpointCommandsCB    (CB_ALIST_1(Widget));
+    static void EditBreakpointCommandsCB   (CB_ALIST_12(Widget,
+							XtP(BreakpointPropertiesInfo *)));
+    static TIMEOUT_RETURN_TYPE SetBreakpointIgnoreCountNowCB(TM_ALIST_1(XtP(BreakpointPropertiesInfo *)));
+#ifdef IF_MOTIF
     static void DeleteInfoCB               (Widget, XtPointer, XtPointer);
+#else // NOT IF_MOTIF
+    static void *DeleteInfoCB              (void *);
+#endif // IF_MOTIF
     static void RefreshBreakpointsHP       (Agent *, void *, void *);
     static void RecordingHP                (Agent *, void *, void *);
 
-    static void UpdateBreakpointButtonsCB (Widget, XtPointer, XtPointer);
+    static void UpdateBreakpointButtonsCB (CB_ALIST_NULL);
 
-    static void CheckScrollCB(Widget, XtPointer, XtPointer);
-    static void CheckScrollWorkProc(XtPointer, XtIntervalId *);
+    static void CheckScrollCB(CB_ALIST_NULL);
+    static TIMEOUT_RETURN_TYPE CheckScrollWorkProc(TM_ALIST_1(XtP(XtIntervalId *)));
 
     static void CheckModificationCB        (Widget, XtPointer, XtPointer);
 
-    static void StackDialogPoppedDownCB    (Widget, XtPointer, XtPointer);
-    static void CodeDialogPoppedDownCB     (Widget, XtPointer, XtPointer);
-    static void RegisterDialogPoppedDownCB (Widget, XtPointer, XtPointer);
-    static void ThreadDialogPoppedDownCB   (Widget, XtPointer, XtPointer);
+    static void StackDialogPoppedDownCB    (CB_ALIST_NULL);
+    static void CodeDialogPoppedDownCB     (CB_ALIST_NULL);
+    static void RegisterDialogPoppedDownCB (CB_ALIST_NULL);
+    static void ThreadDialogPoppedDownCB   (CB_ALIST_NULL);
 
+#ifdef IF_MOTIF
     static void SelectFrameCB    (Widget, XtPointer, XtPointer);
     static void SelectRegisterCB (Widget, XtPointer, XtPointer);
-    static void SelectThreadCB   (Widget, XtPointer, XtPointer);
-    static void ThreadCommandCB  (Widget, XtPointer, XtPointer);
+#else // NOT IF_MOTIF
+    static void SelectFrameCB    (TREEVIEW_P);
+    static void SelectRegisterCB (TREEVIEW_P);
+#endif // IF_MOTIF
+    static void SelectThreadCB   (CB_ALIST_1(Widget));
+    static void ThreadCommandCB  (CB_ALIST_12(Widget, XtP(const char *)));
 
+#ifdef IF_MOTIF
     static void SetWatchModeCB(Widget, XtPointer, XtPointer);
     static void ActivateGlyphCB(Widget, XtPointer, XtPointer);
+#else // NOT IF_MOTIF
+    static void SetWatchModeCB(int);
+    static void ActivateGlyphCB(Widget);
+#endif // IF_MOTIF
 
     // Set shell title
     static void update_title();
 
     // Return height of a text line
-    static int line_height(Widget text_w);
+    static int line_height(SCROLLEDTEXT_P text_w);
 
     // Create text or code widget
-    static void create_text(Widget parent,
+    static void create_text(CONTAINER_P parent,
 			    const char *base, bool editable,
-			    Widget& form, Widget& text);
+			    FIXED_P& form, SCROLLEDTEXT_P& text);
 
     // Refresh displays
     static void refresh_bp_disp(bool reset = false);
@@ -164,7 +199,7 @@ class SourceView {
     static void refresh_code_bp_disp(bool reset = false);
 
     // Clear breakpoint helpers
-    static void clearBP(void *client_data, XtIntervalId *timer);
+    static TIMEOUT_RETURN_TYPE clearBP(TM_ALIST_1(XtP(int) client_data));
     static void clearJumpBP(const string& answer, void *client_data);
 
     // Move/Copy breakpoint NR to ADDRESS; return true if changed
@@ -236,8 +271,8 @@ class SourceView {
     // Action procedures
     //-----------------------------------------------------------------------
     static void srcpopupAct       (Widget, XEvent*, String*, Cardinal*);
-    static void startSelectWordAct(Widget, XEvent*, String*, Cardinal*);
-    static void endSelectWordAct  (Widget, XEvent*, String*, Cardinal*);
+    static void startSelectWordAct(SCROLLEDTEXT_P, XEvent*, String*, Cardinal*);
+    static void endSelectWordAct  (SCROLLEDTEXT_P, XEvent*, String*, Cardinal*);
     static void updateGlyphsAct   (Widget, XEvent*, String*, Cardinal*);
     static void dragGlyphAct      (Widget, XEvent*, String*, Cardinal*);
     static void followGlyphAct    (Widget, XEvent*, String*, Cardinal*);
@@ -249,7 +284,7 @@ class SourceView {
     //-----------------------------------------------------------------------
     // Timer procedures
     //-----------------------------------------------------------------------
-    static void setSelection(XtPointer client_data, XtIntervalId *timer);
+    static TIMEOUT_RETURN_TYPE setSelection(TM_ALIST_1(XtP(SCROLLEDTEXT_P)));
 
     //-----------------------------------------------------------------------
     // Action decls
@@ -275,29 +310,29 @@ class SourceView {
 
     static Widget toplevel_w;	 // Top-level widget
 
-    static Widget source_form_w; // Form around text and glyphs
-    static Widget source_text_w; // Source text
-    static Widget code_form_w;   // Form around Machine code and glyphs
-    static Widget code_text_w;   // Machine code text
+    static FIXED_P source_form_w;        // Form around text and glyphs
+    static SCROLLEDTEXT_P source_text_w; // Source text
+    static FIXED_P code_form_w;          // Form around Machine code and glyphs
+    static SCROLLEDTEXT_P code_text_w;   // Machine code text
 
-    static Widget edit_breakpoints_dialog_w; // Dialog for editing breakpoints
-    static Widget breakpoint_list_w;         // The breakpoint list
+    static DIALOG_P edit_breakpoints_dialog_w; // Dialog for editing breakpoints
+    static TREEVIEW_P breakpoint_list_w;       // The breakpoint list
 
-    static Widget stack_dialog_w;            // Dialog for viewing the stack
-    static Widget frame_list_w;              // The frame list
-    static Widget up_w;                      // The `Up' button
-    static Widget down_w;                    // The `Down' button
+    static DIALOG_P stack_dialog_w;          // Dialog for viewing the stack
+    static TREEVIEW_P frame_list_w;          // The frame list
+    static BUTTON_P up_w;                    // The `Up' button
+    static BUTTON_P down_w;                  // The `Down' button
     static bool stack_dialog_popped_up;	     // True if the stack is visible
 
-    static Widget register_dialog_w;          // Dialog for registers
-    static Widget register_list_w;            // Register list inside
-    static Widget int_registers_w;            // Display integer registers
-    static Widget all_registers_w;            // Display all registers
+    static DIALOG_P register_dialog_w;        // Dialog for registers
+    static TREEVIEW_P register_list_w;        // Register list inside
+    static RADIOBUTTON_P int_registers_w;     // Display integer registers
+    static RADIOBUTTON_P all_registers_w;     // Display all registers
     static bool register_dialog_popped_up;    // True if registers are visible
 
-    static Widget thread_dialog_w;            // Dialog for threads
-    static Widget thread_list_w;              // Thread list inside
-    static bool thread_dialog_popped_up;      // True if registers are visible
+    static DIALOG_P thread_dialog_w;          // Dialog for threads
+    static TREEVIEW_P thread_list_w;          // Thread list inside
+    static bool thread_dialog_popped_up;      // True if threads are visible
 
     static bool display_glyphs;	              // Display glyphs?
     static bool display_line_numbers;	      // Display line numbers?
@@ -424,11 +459,11 @@ class SourceView {
 			    bool silent = false);
 
     // Set insertion position to POS.
-    static void SetInsertionPosition(Widget w, XmTextPosition pos, 
+    static void SetInsertionPosition(SCROLLEDTEXT_P w, XmTextPosition pos, 
 				     bool fromTop = false);
 
     // Make position POS visible.
-    static void ShowPosition(Widget w, XmTextPosition pos, 
+    static void ShowPosition(SCROLLEDTEXT_P w, XmTextPosition pos, 
 			     bool fromTop = false);
 
     static bool is_source_widget(Widget w);
@@ -475,7 +510,11 @@ class SourceView {
     //-----------------------------------------------------------------------
 
     // Create a pixmap from BITS suitable for the widget W
+#ifdef IF_MOTIF
     static Pixmap pixmap(Widget w, unsigned char *bits, int width, int height);
+#else // NOT IF_MOTIF
+    static Glib::RefPtr<Gdk::Pixbuf> pixmap(Widget w, unsigned char *bits, int width, int height);
+#endif // IF_MOTIF
 
     // Create glyph in FORM_W named NAME from given BITS
     static Widget create_glyph(Widget form_w, const _XtString name, 
@@ -564,8 +603,8 @@ private:
     static bool update_source_glyphs;
 
     // Helping background procedures
-    static void UpdateGlyphsWorkProc(XtPointer, XtIntervalId *);
-    static Boolean CreateGlyphsWorkProc(XtPointer);
+    static TIMEOUT_RETURN_TYPE UpdateGlyphsWorkProc(TM_ALIST_1(XtP(XtIntervalId *)));
+    static WP_RETURN_TYPE CreateGlyphsWorkProc(WP_ALIST_NULL);
 
     // Update all glyphs now (without delay).
     static void update_glyphs_now();
@@ -590,7 +629,7 @@ private:
 
 public:
     // Constructor
-    SourceView(Widget parent);
+    SourceView(CONTAINER_P parent);
 
     // Shell constructor
     void create_shells();
@@ -688,10 +727,10 @@ public:
     static string file_of_cursor();
 
     // Callbacks for menu bar
-    static void EditBreakpointsCB(Widget, XtPointer, XtPointer);
-    static void ViewStackFramesCB(Widget, XtPointer, XtPointer);
-    static void ViewRegistersCB(Widget, XtPointer, XtPointer);
-    static void ViewThreadsCB(Widget, XtPointer, XtPointer);
+    static void EditBreakpointsCB(CB_ARG_LIST_NULL);
+    static void ViewStackFramesCB(CB_ARG_LIST_NULL);
+    static void ViewRegistersCB(CB_ARG_LIST_NULL);
+    static void ViewThreadsCB(CB_ARG_LIST_NULL);
 
     // Refreshing dialogs
     static void refresh_stack_frames();
@@ -874,13 +913,13 @@ public:
     static BreakPoint *watchpoint_at(const string& expr);
 
     // Get the word at position of EVENT
-    static string get_word_at_event(Widget w,
+    static string get_word_at_event(SCROLLEDTEXT_P w,
 				    XEvent *event,
 				    XmTextPosition& first_pos,
 				    XmTextPosition& last_pos);
 
     // Get the word at position POS
-    static string get_word_at_pos(Widget w,
+    static string get_word_at_pos(SCROLLEDTEXT_P w,
 				  XmTextPosition pos,
 				  XmTextPosition& startpos,
 				  XmTextPosition& endpos);

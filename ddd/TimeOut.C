@@ -29,6 +29,8 @@
 char TimeOut_rcsid[] = 
     "$Id$";
 
+#include "config.h"
+
 #include "TimeOut.h"
 #include "strclass.h"
 #include "assert.h"

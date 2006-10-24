@@ -29,6 +29,8 @@
 char findWindow_rcsid[] = 
     "$Id$";
 
+#include "config.h"
+
 #include "findWindow.h"
 
 #include "XErrorB.h"

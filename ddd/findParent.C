@@ -29,17 +29,23 @@
 char findParent_rcsid[] = 
     "$Id$";
 
+#include "config.h"
+
+#ifdef IF_MOTIF
 #include <Xm/Xm.h>
+#endif // IF_MOTIF
 #include <iostream>
 
 #include "findParent.h"
 #include "longName.h"
 #include "bool.h"
 
+#ifdef IF_MOTIF
 // ANSI C++ doesn't like the XtIsRealized() macro
 #ifdef XtIsRealized
 #undef XtIsRealized
 #endif
+#endif // IF_MOTIF
 
 // Set this to true to allow debugging
 static const bool findParent_debug = false;
@@ -53,9 +59,9 @@ Widget findShellParent(Widget w)
     while (w != 0 && (!XtIsWidget(w)
 		      || !XtIsShell(w)
 		      || !XtIsRealized(w)
-		      || XtDisplay(w) == None
-		      || XtScreen(w) == None
-		      || XtWindow(w) == None))
+		      || XtDisplay(w)
+		      || XtScreen(w)
+		      || XtWindow(w)))
 	w = XtParent(w);
 
     if (findParent_debug)
@@ -72,7 +78,7 @@ Widget findShellParent(Widget w)
 
 
 // find a (realized) toplevel Shell
-Widget findTopLevelShellParent(Widget w)
+WINDOW_P findTopLevelShellParent(Widget w)
 {
     if (findParent_debug)
 	std::clog << "findTopLevelShellParent(" << longName(w) << ") = ";
@@ -80,9 +86,9 @@ Widget findTopLevelShellParent(Widget w)
     while (w != 0 && (!XtIsWidget(w)
 		      || !XtIsTopLevelShell(w)
 		      || !XtIsRealized(w)
-		      || XtDisplay(w) == 0
-		      || XtScreen(w) == 0
-		      || XtWindow(w) == 0))
+		      || XtDisplay(w)
+		      || XtScreen(w)
+		      || XtWindow(w)))
 	w = XtParent(w);
 
     if (findParent_debug)
@@ -94,7 +100,11 @@ Widget findTopLevelShellParent(Widget w)
 	std::clog << "\n";
     }
 
+#ifdef IF_MOTIF
     return w;
+#else // NOT IF_MOTIF
+    return dynamic_cast<Gtk::Window *>(w);
+#endif // IF_MOTIF
 }
 
 

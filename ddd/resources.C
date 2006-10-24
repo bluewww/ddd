@@ -30,6 +30,8 @@
 char resources_rcsid[] = 
     "$Id$";
 
+#include "config.h"
+
 #include "resources.h"
 #include "version.h"
 #include "AppData.h"
@@ -38,7 +40,11 @@ char resources_rcsid[] =
 #include "resolveP.h"
 #include "tabs.h"
 
+#ifdef IF_MOTIF
 #include <Xm/Xm.h>
+#endif // IF_MOTIF
+
+#ifdef IF_MOTIF
 
 // Application resource definitions
 XtResource ddd_resources[] = {
@@ -2225,6 +2231,8 @@ XtResource ddd_resources[] = {
 
 const int ddd_resources_size = XtNumber(ddd_resources);
 
+#endif // IF_MOTIF
+
 // Application resources
 AppData app_data;
 
@@ -2297,6 +2305,7 @@ static void CopyArg(XtPointer src, XtPointer dest, Cardinal size)
 // This constructor is invoked before program start
 AppDataInitializer::AppDataInitializer()
 {
+#ifdef IF_MOTIF
     // Copy resources to appropriate fields in APP_DATA
     for (int i = 0; i < int(ddd_resources_size); i++)
     {
@@ -2307,6 +2316,11 @@ AppDataInitializer::AppDataInitializer()
 
 	CopyArg(src, dest, size);
     }
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning AppDataInitializer: NOT IMPLEMENTED
+#endif
+#endif // IF_MOTIF
 }
 
 // Fallback resources
@@ -2322,6 +2336,7 @@ const _XtString const ddd_fallback_resources[] = {
 };
 
 
+#ifdef IF_MOTIF
 // Return a database of default settings
 XrmDatabase app_defaults(Display *display)
 {
@@ -2372,3 +2387,4 @@ XrmDatabase app_defaults(Display *display)
 
     return db;
 }
+#endif // IF_MOTIF

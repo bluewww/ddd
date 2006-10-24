@@ -40,9 +40,11 @@ char LineGraphEdge_rcsid[] =
 #include <string.h>
 #include <stdlib.h>
 
+#ifdef IF_MOTIF
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
+#endif // IF_MOTIF
 
 #include "GraphNode.h"
 #include "LineGESI.h"
@@ -232,8 +234,13 @@ void LineGraphEdge::drawLine(Widget w,
     if (l1 == l2)
 	return;
 
+#ifdef IF_MOTIF
     XDrawLine(XtDisplay(w), XtWindow(w), gc.edgeGC,
 	      l1[X], l1[Y], l2[X], l2[Y]);
+#else // NOT IF_MOTIF
+    w->get_window()->draw_line(gc.edgeGC,
+			       l1[X], l1[Y], l2[X], l2[Y]);
+#endif // IF_MOTIF
 
     // Draw annotation
     BoxPoint anno_pos = annotationPosition(gc);
@@ -264,6 +271,7 @@ void LineGraphEdge::drawArrowHead(Widget w,
     const int length    = gc.arrowLength;		// Length
 
     // Get coordinates
+#ifdef IF_MOTIF
     XPoint points[3];
     points[0].x = pos[X];
     points[0].y = pos[Y];
@@ -271,6 +279,15 @@ void LineGraphEdge::drawArrowHead(Widget w,
     points[1].y = short(pos[Y] + length * sin(alpha + offset / 2));
     points[2].x = short(pos[X] + length * cos(alpha - offset / 2));
     points[2].y = short(pos[Y] + length * sin(alpha - offset / 2));
+#else // NOT IF_MOTIF
+    Gdk::Point points[3] = {
+	Gdk::Point(pos[X], pos[Y]),
+	Gdk::Point((int)(pos[X] + length * cos(alpha + offset / 2)),
+		   (int)(pos[Y] + length * sin(alpha + offset / 2))),
+	Gdk::Point((int)(pos[X] + length * cos(alpha - offset / 2)),
+		   (int)(pos[Y] + length * sin(alpha - offset / 2)))
+    };
+#endif // IF_MOTIF
 
 #if 0
 	std::clog << "\nangle = " << (alpha / (PI * 2.0)) * 360.0  << "\n";
@@ -279,8 +296,12 @@ void LineGraphEdge::drawArrowHead(Widget w,
 		      << BoxPoint(points[i].x, points[i].y) << "\n";
 #endif
 
+#ifdef IF_MOTIF
     XFillPolygon(XtDisplay(w), XtWindow(w), gc.edgeGC, points,
 		 XtNumber(points), Convex, CoordModeOrigin);
+#else // NOT IF_MOTIF
+    w->get_window()->draw_polygon(gc.edgeGC, true, points);
+#endif // IF_MOTIF
 }
 
 
@@ -336,9 +357,15 @@ void LineGraphEdge::drawSelf(Widget w,
 
     LineGraphEdgeSelfInfo info(region, gc);
 
+#ifdef IF_MOTIF
     XDrawArc(XtDisplay(w), XtWindow(w), gc.edgeGC, info.arc_pos[X],
 	     info.arc_pos[Y], info.diameter, info.diameter,
 	     info.arc_start * 64, info.arc_extend * 64);
+#else // NOT IF_MOTIF
+    w->get_window()->draw_arc(gc.edgeGC, false, info.arc_pos[X],
+			      info.arc_pos[Y], info.diameter, info.diameter,
+			      info.arc_start * 64, info.arc_extend * 64);
+#endif // IF_MOTIF
 
     if (annotation() != 0)
     {

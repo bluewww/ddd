@@ -886,7 +886,11 @@ void UndoBuffer::showing_earlier_state(bool set, StatusMsg *msg)
 	    msg->outcome += ".  Back in current program state";
     }
 
+#ifdef IF_MOTIF
     XtVaSetValues(data_disp->graph_edit, XtNdashedLines, set, XtPointer(0));
+#else // NOT IF_MOTIF
+    data_disp->graph_edit->set_dashed_lines(set);
+#endif // IF_MOTIF
     update_arg_buttons();
     data_disp->refresh_args();
     source_view->showing_earlier_state(set);

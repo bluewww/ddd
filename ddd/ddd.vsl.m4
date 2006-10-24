@@ -251,7 +251,7 @@ changed_value (value) ->
 
 // A value that is repeated N times
 repeated_value (value, n) ->
-  value & vcenter(value_rm(" <" & dec(n) & "\327>"));
+  value & vcenter(value_rm(" <" & dec(n) & "\303\227>"));
 
 // The entire value
 value_box (value) -> 

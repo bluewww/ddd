@@ -39,8 +39,10 @@ char cmdtty_rcsid[] =
 #include "editing.h"
 #include "exit.h"
 
+#ifdef IF_MOTIF
 #include <Xm/Xm.h>
 #include <Xm/Text.h>
+#endif // IF_MOTIF
 
 //-----------------------------------------------------------------------------
 // Command TTY
@@ -61,7 +63,11 @@ static void tty_command(Agent *, void *, void *call_data)
 
     // Simply insert text, invoking all necessary callbacks
     tty_gdb_input = true;
+#ifdef IF_MOTIF
     XmTextInsert(gdb_w, XmTextGetLastPosition(gdb_w), (String)d->data);
+#else // NOT IF_MOTIF
+    gdb_w->insert(gdb_w->get_last_position(), Glib::ustring(d->data));
+#endif // IF_MOTIF
     tty_gdb_input = false;
 }
 
@@ -83,6 +89,24 @@ void tty_out(const string& text)
     _tty_out(text);
 }
 
+#ifndef IF_MOTIF
+
+void tty_out(const char *text)
+{
+    tty_out(string(text));
+}
+
+void tty_out(const Glib::ustring& text)
+{
+#ifdef NAG_ME
+#warning FIXME: Write unicode?
+#endif
+    tty_out(text.c_str());
+}
+
+#endif
+
+
 // Output TEXT on controlling TTY (unconditionally)
 void _tty_out(const string& text)
 {
@@ -91,6 +115,23 @@ void _tty_out(const string& text)
 
     command_tty->write(text.chars(), text.length());
 }
+
+#ifndef IF_MOTIF
+
+void _tty_out(const char *text)
+{
+    _tty_out(string(text));
+}
+
+void _tty_out(const Glib::ustring& text)
+{
+#ifdef NAG_ME
+#warning FIXME: Write unicode?
+#endif
+    _tty_out(text.c_str());
+}
+
+#endif
 
 // Output TEXT on controlling TTY if we're in annotation mode
 void tty_full_name(const string& pos)
@@ -114,6 +155,23 @@ void tty_full_name(const string& pos)
 	    _tty_out(line + "\n");
     }
 }
+
+#ifndef IF_MOTIF
+
+void tty_full_name(const char *text)
+{
+    tty_full_name(string(text));
+}
+
+void tty_full_name(const Glib::ustring& text)
+{
+#ifdef NAG_ME
+#warning FIXME: Write unicode?
+#endif
+    tty_full_name(text.c_str());
+}
+
+#endif
 
 // Issue an artificial prompt
 void prompt()

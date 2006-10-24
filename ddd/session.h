@@ -29,7 +29,19 @@
 #ifndef _DDD_session_h
 #define _DDD_session_h
 
+#ifdef IF_MOTIF
+
 #include <X11/Intrinsic.h>
+
+#else // NOT IF_MOTIF
+
+#include <glibmm/refptr.h>
+#include <gdkmm/window.h>
+
+#endif // IF_MOTIF
+
+#include "gtk_wrapper.h"
+
 #include "strclass.h"
 #include "version.h"
 
@@ -109,7 +121,7 @@ struct LockInfo {
 
 // Lock session.  Return true iff successful.  Otherwise, return
 // false, and return info about the locking process in INFO.
-bool lock_session_dir(Display *display, const string& session, LockInfo& info);
+bool lock_session_dir(DISPLAY_P display, const string& session, LockInfo& info);
 
 // Unlock session.  Return true iff successful.
 bool unlock_session_dir(const string& session);
@@ -140,11 +152,11 @@ extern void SaveSmSessionCB(Widget, XtPointer, XtPointer);
 extern void ShutdownSmSessionCB(Widget, XtPointer, XtPointer);
 
 // Session editor
-extern void OpenSessionCB(Widget, XtPointer, XtPointer);
-extern void SaveSessionAsCB(Widget, XtPointer, XtPointer);
+extern void OpenSessionCB(CB_ARG_LIST_1(w));
+extern void SaveSessionAsCB(CB_ARG_LIST_1(w));
 
 // Restart inferior debugger
-extern void RestartDebuggerCB(Widget, XtPointer, XtPointer);
+extern void RestartDebuggerCB(CB_ALIST_NULL);
 
 #endif // _DDD_session_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

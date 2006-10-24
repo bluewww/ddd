@@ -29,5 +29,7 @@
 char charsets_rcsid[] = 
     "$Id$";
 
+#include "config.h"
+
 #include "charsets.h"
 

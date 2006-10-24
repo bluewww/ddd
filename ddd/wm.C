@@ -29,6 +29,8 @@
 char wm_rcsid[] = 
     "$Id$";
 
+#include "config.h"
+
 #include "wm.h"
 
 #include "Command.h"
@@ -36,6 +38,7 @@ char wm_rcsid[] =
 #include "string-fun.h"
 #include "findParent.h"
 
+#ifdef IF_MOTIF
 #include <Xm/Xm.h>
 #include <Xm/DialogS.h>
 #include <X11/Xutil.h>
@@ -44,13 +47,15 @@ char wm_rcsid[] =
 #ifdef XtIsRealized
 #undef XtIsRealized
 #endif
+#endif // IF_MOTIF
 
 //-----------------------------------------------------------------------------
 // Window Manager Functions
 //-----------------------------------------------------------------------------
     
-void wm_set_icon(Display *display, Window shell, Pixmap icon, Pixmap mask)
+void wm_set_icon(DISPLAY_P display, Window shell, Pixmap icon, Pixmap mask)
 {
+#ifdef IF_MOTIF
     XWMHints *wm_hints = XAllocWMHints();
 
     wm_hints->flags       = IconPixmapHint | IconMaskHint;
@@ -60,10 +65,16 @@ void wm_set_icon(Display *display, Window shell, Pixmap icon, Pixmap mask)
     XSetWMHints(display, shell, wm_hints);
 
     XFree((void *)wm_hints);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning wm_set_icon not implemented
+#endif
+#endif // IF_MOTIF
 }
 
 void wm_set_icon(Widget shell, Pixmap icon, Pixmap mask)
 {
+#ifdef IF_MOTIF
     if (XtIsWMShell(shell))
     {
 	XtVaSetValues(shell,
@@ -75,18 +86,34 @@ void wm_set_icon(Widget shell, Pixmap icon, Pixmap mask)
 #if 0				// This should be done by the shell.
     wm_set_icon(XtDisplay(shell), XtWindow(shell), icon, mask);
 #endif
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning wm_set_icon not implemented
+#endif
+#endif // IF_MOTIF
 }
 
-void wm_set_name(Display *display, Window shell_window,
+void wm_set_name(DISPLAY_P display, Window shell_window,
 		 string title, string icon)
 {
     strip_space(title);
     strip_space(icon);
 
-    if (!title.empty())
+    if (!title.empty()) {
+#ifdef IF_MOTIF
 	XStoreName(display, shell_window, title.chars());
+#else // NOT IF_MOTIF
+	shell_window->set_title(XMST(title.chars()));
+#endif // IF_MOTIF
+    }
+#ifdef IF_MOTIF
     if (!icon.empty())
 	XSetIconName(display, shell_window, icon.chars());
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Set icon?
+#endif 
+#endif // IF_MOTIF
 }
 
 void wm_set_name(Widget shell, string title, string icon)
@@ -94,10 +121,14 @@ void wm_set_name(Widget shell, string title, string icon)
     strip_space(title);
     strip_space(icon);
 
+#ifdef IF_MOTIF
     XtVaSetValues(shell,
 		  XmNiconName, icon.chars(),
 		  XmNtitle,    title.chars(),
 		  XtPointer(0));
+#else // NOT IF_MOTIF
+    std::cerr << "SET_TITLE\n";
+#endif // IF_MOTIF
     
 #if 0				// This should be done by the shell.
     wm_set_name(XtDisplay(shell), XtWindow(shell), title, icon);
@@ -107,6 +138,7 @@ void wm_set_name(Widget shell, string title, string icon)
 // Wait until W is mapped
 void wait_until_mapped(Widget w, Widget shell)
 {
+#ifdef IF_MOTIF
     XSync(XtDisplay(w), False);
     XmUpdateDisplay(w);
 
@@ -132,6 +164,11 @@ void wait_until_mapped(Widget w, Widget shell)
 
     XSync(XtDisplay(w), False);
     XmUpdateDisplay(w);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning wait_until_mapped not implemented.
+#endif
+#endif // IF_MOTIF
 }
 
 void raise_shell(Widget w)
@@ -143,7 +180,11 @@ void raise_shell(Widget w)
     Widget shell = findShellParent(w);
     if (shell != 0 && XtIsRealized(shell))
     {
+#ifdef IF_MOTIF
 	XRaiseWindow(XtDisplay(w), XtWindow(shell));
+#else // NOT IF_MOTIF
+	shell->show();
+#endif // IF_MOTIF
 
 #if 0
 	wait_until_mapped(w);
@@ -154,7 +195,13 @@ void raise_shell(Widget w)
 #endif
 
 	// Try this one
+#ifdef IF_MOTIF
 	XmProcessTraversal(w, XmTRAVERSE_CURRENT);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning XmProcessTraversal not implemented
+#endif
+#endif // IF_MOTIF
     }
 }
 
@@ -165,6 +212,7 @@ void manage_and_raise(Widget w)
 	// If top-level shell is withdrawn or iconic, realize dialog as icon
 	bool iconic = false;
 	Widget shell = find_shell(w);
+#ifdef IF_MOTIF
 	if (shell != 0)
 	{
 	    XWindowAttributes attr;
@@ -176,6 +224,11 @@ void manage_and_raise(Widget w)
 	    if (iconic)
 		XtVaSetValues(w, XmNinitialState, IconicState, XtPointer(0));
 	}
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Check for iconic?
+#endif
+#endif // IF_MOTIF
 
 	XtManageChild(w);
 
@@ -187,9 +240,29 @@ void manage_and_raise(Widget w)
 	{
 	    if (!XtIsRealized(shell))
 		XtRealizeWidget(shell);
+#ifdef IF_MOTIF
 	    XtPopup(shell, XtGrabNone);
+#else // NOT IF_MOTIF
+	    shell->show();
+#endif // IF_MOTIF
 	}
 
 	raise_shell(w);
     }
 }
+
+#ifndef IF_MOTIF
+
+bool
+text_copy_from(Widget w)
+{
+    std::cerr << "text_copy_from: not implemented\n";
+}
+
+bool
+text_cut_from(Widget w)
+{
+    std::cerr << "text_cut_from: not implemented\n";
+}
+
+#endif // IF_MOTIF

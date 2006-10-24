@@ -56,13 +56,17 @@ char DataDisp_rcsid[] =
 // Data Display Implementation
 //-----------------------------------------------------------------------------
 
+#include "config.h"
+
 #include "DataDisp.h"
 
 // Misc includes
 #include "AliasGE.h"
 #include "AppData.h"		// Constructors
 #include "ArgField.h"
+#ifdef IF_MOTIF
 #include "ComboBox.h"
+#endif // IF_MOTIF
 #include "Command.h"
 #include "CompositeB.h"
 #include "DestroyCB.h"
@@ -77,15 +81,21 @@ char DataDisp_rcsid[] =
 #include "MString.h"
 #include "MakeMenu.h"
 #include "Map.h"
+#ifdef IF_MOTIF
 #include "PannedGE.h"
+#endif // IF_MOTIF
 #include "PosBuffer.h"
 #include "ProgressM.h"
+#ifdef IF_MOTIF
 #include "ScrolledGE.h"
+#endif // IF_MOTIF
 #include "SmartC.h"
 #include "StringBox.h"		// StringBox::fontTable
 #include "StringMap.h"
 #include "TagBox.h"
+#ifdef IF_MOTIF
 #include "TextSetS.h"
+#endif // IF_MOTIF
 #include "TimeOut.h"
 #include "UndoBuffer.h"
 #include "VSEFlags.h"
@@ -97,7 +107,9 @@ char DataDisp_rcsid[] =
 #include "charsets.h"
 #include "cmdtty.h"
 #include "comm-manag.h"
+#ifdef IF_MOTIF
 #include "converters.h"
+#endif // IF_MOTIF
 #include "cook.h"
 #include "ddd.h"
 #include "deref.h"
@@ -121,6 +133,7 @@ char DataDisp_rcsid[] =
 #include "wm.h"
 
 // Motif includes
+#ifdef IF_MOTIF
 #include <Xm/List.h>
 #include <Xm/MessageB.h>
 #include <Xm/ToggleB.h>
@@ -130,6 +143,9 @@ char DataDisp_rcsid[] =
 #include <Xm/Label.h>
 #include <Xm/PushB.h>
 #include <X11/StringDefs.h>
+#else // NOT IF_MOTIF
+#include <gtkmm/liststore.h>
+#endif // IF_MOTIF
 
 // System includes
 #include <iostream>
@@ -160,64 +176,67 @@ XtActionsRec DataDisp::actions [] = {
 struct GraphItms { enum Itms {SelectAll, Refresh, NewArg, New}; };
 MMDesc DataDisp::graph_popup[] =
 {
-    {"selectAll", MMPush,               
-     {DataDisp::selectAllCB, 0}, 0, 0, 0, 0},
-    {"refresh",   MMPush,               
-     {DataDisp::refreshCB, 0}, 0, 0, 0, 0},
-    {"new_arg",   MMPush | MMUnmanaged, 
-     {DataDisp::popup_new_argCB, 0}, 0, 0, 0, 0},
-    {"new",       MMPush,               
-     {DataDisp::popup_newCB, 0}, 0, 0, 0, 0},
+    {NM("selectAll", "Select All"), MMPush,               
+     BIND_0(PTR_FUN(DataDisp::selectAllCB)), 0, 0, 0, 0},
+    {NM("refresh", "Refresh"),      MMPush,               
+     BIND_0(PTR_FUN(DataDisp::refreshCB)), 0, 0, 0, 0},
+    {NM("new_arg", "new_arg"),      MMPush | MMUnmanaged, 
+     BIND_1(PTR_FUN(DataDisp::popup_new_argCB), (BoxPoint *)0), 0, 0, 0, 0},
+    {NM("new", "New Display..."),   MMPush,               
+     BIND_1(PTR_FUN(DataDisp::popup_newCB), (BoxPoint *)0), 0, 0, 0, 0},
     MMEnd
 };
 
 // Number of shortcut items
 const int DataDisp::shortcut_items = 20;
 
-#define SHORTCUT_MENU \
-    {"s1",  MMPush | MMUnmanaged, \
-        { DataDisp::shortcutCB, XtPointer(1)  }, 0, 0, 0, 0 }, \
-    {"s2",  MMPush | MMUnmanaged, \
-        { DataDisp::shortcutCB, XtPointer(2)  }, 0, 0, 0, 0 }, \
-    {"s3",  MMPush | MMUnmanaged, \
-        { DataDisp::shortcutCB, XtPointer(3)  }, 0, 0, 0, 0 }, \
-    {"s4",  MMPush | MMUnmanaged, \
-        { DataDisp::shortcutCB, XtPointer(4)  }, 0, 0, 0, 0 }, \
-    {"s5",  MMPush | MMUnmanaged, \
-        { DataDisp::shortcutCB, XtPointer(5)  }, 0, 0, 0, 0 }, \
-    {"s6",  MMPush | MMUnmanaged, \
-        { DataDisp::shortcutCB, XtPointer(6)  }, 0, 0, 0, 0 }, \
-    {"s7",  MMPush | MMUnmanaged, \
-        { DataDisp::shortcutCB, XtPointer(7)  }, 0, 0, 0, 0 }, \
-    {"s8",  MMPush | MMUnmanaged, \
-        { DataDisp::shortcutCB, XtPointer(8)  }, 0, 0, 0, 0 }, \
-    {"s9",  MMPush | MMUnmanaged, \
-        { DataDisp::shortcutCB, XtPointer(9)  }, 0, 0, 0, 0 }, \
-    {"s10", MMPush | MMUnmanaged, \
-        { DataDisp::shortcutCB, XtPointer(10) }, 0, 0, 0, 0 }, \
-    {"s11", MMPush | MMUnmanaged, \
-        { DataDisp::shortcutCB, XtPointer(11) }, 0, 0, 0, 0 }, \
-    {"s12", MMPush | MMUnmanaged, \
-        { DataDisp::shortcutCB, XtPointer(12) }, 0, 0, 0, 0 }, \
-    {"s13", MMPush | MMUnmanaged, \
-        { DataDisp::shortcutCB, XtPointer(13) }, 0, 0, 0, 0 }, \
-    {"s14", MMPush | MMUnmanaged, \
-        { DataDisp::shortcutCB, XtPointer(14) }, 0, 0, 0, 0 }, \
-    {"s15", MMPush | MMUnmanaged, \
-        { DataDisp::shortcutCB, XtPointer(15) }, 0, 0, 0, 0 }, \
-    {"s16", MMPush | MMUnmanaged, \
-        { DataDisp::shortcutCB, XtPointer(16) }, 0, 0, 0, 0 }, \
-    {"s17", MMPush | MMUnmanaged, \
-        { DataDisp::shortcutCB, XtPointer(17) }, 0, 0, 0, 0 }, \
-    {"s18", MMPush | MMUnmanaged, \
-        { DataDisp::shortcutCB, XtPointer(18) }, 0, 0, 0, 0 }, \
-    {"s19", MMPush | MMUnmanaged, \
-        { DataDisp::shortcutCB, XtPointer(19) }, 0, 0, 0, 0 }, \
-    {"s20", MMPush | MMUnmanaged, \
-        { DataDisp::shortcutCB, XtPointer(20) }, 0, 0, 0, 0 }, \
-    {"other", MMPush, { DataDisp::dependentCB, 0 }, 0, 0, 0, 0}, \
-    MMSep, \
-    {"edit",  MMPush, { dddEditShortcutsCB, 0 }, 0, 0, 0, 0}
+#define SHORTCUT_MENU						\
+    {NM("s1", "s1"),  MMPush | MMUnmanaged,			\
+     BIND_1(PTR_FUN(DataDisp::shortcutCB), 1  ), 0, 0, 0, 0 },	\
+    {NM("s2", "s2"),  MMPush | MMUnmanaged,			\
+     BIND_1(PTR_FUN(DataDisp::shortcutCB), 2  ), 0, 0, 0, 0 },	\
+    {NM("s3", "s3"),  MMPush | MMUnmanaged,			\
+     BIND_1(PTR_FUN(DataDisp::shortcutCB), 3  ), 0, 0, 0, 0 },	\
+    {NM("s4", "s4"),  MMPush | MMUnmanaged,			\
+     BIND_1(PTR_FUN(DataDisp::shortcutCB), 4  ), 0, 0, 0, 0 },	\
+    {NM("s5", "s5"),  MMPush | MMUnmanaged,			\
+     BIND_1(PTR_FUN(DataDisp::shortcutCB), 5  ), 0, 0, 0, 0 },	\
+    {NM("s6", "s6"),  MMPush | MMUnmanaged,			\
+     BIND_1(PTR_FUN(DataDisp::shortcutCB), 6  ), 0, 0, 0, 0 },	\
+    {NM("s7", "s7"),  MMPush | MMUnmanaged,			\
+     BIND_1(PTR_FUN(DataDisp::shortcutCB), 7  ), 0, 0, 0, 0 },	\
+    {NM("s8", "s8"),  MMPush | MMUnmanaged,			\
+     BIND_1(PTR_FUN(DataDisp::shortcutCB), 8  ), 0, 0, 0, 0 },	\
+    {NM("s9", "s9"),  MMPush | MMUnmanaged,			\
+     BIND_1(PTR_FUN(DataDisp::shortcutCB), 9  ), 0, 0, 0, 0 },	\
+    {NM("s10", "s10"), MMPush | MMUnmanaged,			\
+     BIND_1(PTR_FUN(DataDisp::shortcutCB), 10 ), 0, 0, 0, 0 },	\
+    {NM("s11", "s11"), MMPush | MMUnmanaged,			\
+     BIND_1(PTR_FUN(DataDisp::shortcutCB), 11 ), 0, 0, 0, 0 },	\
+    {NM("s12", "s12"), MMPush | MMUnmanaged,			\
+     BIND_1(PTR_FUN(DataDisp::shortcutCB), 12 ), 0, 0, 0, 0 },	\
+    {NM("s13", "s13"), MMPush | MMUnmanaged,			\
+     BIND_1(PTR_FUN(DataDisp::shortcutCB), 13 ), 0, 0, 0, 0 },	\
+    {NM("s14", "s14"), MMPush | MMUnmanaged,			\
+     BIND_1(PTR_FUN(DataDisp::shortcutCB), 14 ), 0, 0, 0, 0 },	\
+    {NM("s15", "s15"), MMPush | MMUnmanaged,			\
+     BIND_1(PTR_FUN(DataDisp::shortcutCB), 15 ), 0, 0, 0, 0 },	\
+    {NM("s16", "s16"), MMPush | MMUnmanaged,			\
+     BIND_1(PTR_FUN(DataDisp::shortcutCB), 16 ), 0, 0, 0, 0 },	\
+    {NM("s17", "s17"), MMPush | MMUnmanaged,			\
+     BIND_1(PTR_FUN(DataDisp::shortcutCB), 17 ), 0, 0, 0, 0 },	\
+    {NM("s18", "s18"), MMPush | MMUnmanaged,			\
+     BIND_1(PTR_FUN(DataDisp::shortcutCB), 18 ), 0, 0, 0, 0 },	\
+    {NM("s19", "s19"), MMPush | MMUnmanaged,			\
+     BIND_1(PTR_FUN(DataDisp::shortcutCB), 19 ), 0, 0, 0, 0 },	\
+    {NM("s20", "s20"), MMPush | MMUnmanaged,			\
+     BIND_1(PTR_FUN(DataDisp::shortcutCB), 20 ), 0, 0, 0, 0 },	\
+    {NM("other", "Other..."),     MMPush,			\
+     BIND_0(PTR_FUN(DataDisp::dependentCB)), 0, 0, 0, 0},	\
+    MMSep,							\
+    {NM("edit", "Edit Menu..."),  MMPush,			\
+     BIND_0(PTR_FUN(dddEditShortcutsCB)), 0, 0, 0, 0}
+
 
 // The menu used in the `New Display' button.
 
@@ -233,8 +252,10 @@ MMDesc DataDisp::shortcut_menu[]   =
 {
     SHORTCUT_MENU,
     MMSep,
-    {"new2", MMPush, {DataDisp::displayArgCB, XtPointer(false)}, 0, 0, 0, 0 },
-    {"dereference2", MMPush, {DataDisp::dereferenceArgCB, 0}, 0, 0, 0, 0 },
+    {NIM("new2", "Display ()", DISPLAY_ICON),            MMPush,
+     BIND_1(PTR_FUN(DataDisp::displayArgCB), false), 0, 0, 0, 0 },
+    {NIM("dereference2", "Display *()", DISPREF_ICON),   MMPush,
+     BIND_0(PTR_FUN(DataDisp::dereferenceArgCB)), 0, 0, 0, 0 },
     MMEnd
 };
 
@@ -248,8 +269,8 @@ struct RotateItms { enum Itms {RotateAll}; };
 
 MMDesc DataDisp::rotate_menu[] =
 {
-    {"rotateAll",     MMPush | MMInsensitive, 
-     {DataDisp::rotateCB, XtPointer(true)}, 0, 0, 0, 0},
+    {NM("rotateAll", "Rotate All ()"),     MMPush | MMInsensitive, 
+     BIND_1(PTR_FUN(DataDisp::rotateCB), true), 0, 0, 0, 0},
     MMEnd
 };
 
@@ -258,48 +279,49 @@ const int DataDisp::theme_items = 20;
 
 MMDesc DataDisp::theme_menu[] =
 {
-    {"t1",  MMToggle | MMUnmanaged,  
-        { DataDisp::toggleThemeCB, XtPointer(1)  }, 0, 0, 0, 0 },  
-    {"t2",  MMToggle | MMUnmanaged,  
-        { DataDisp::toggleThemeCB, XtPointer(2)  }, 0, 0, 0, 0 },  
-    {"t3",  MMToggle | MMUnmanaged,  
-        { DataDisp::toggleThemeCB, XtPointer(3)  }, 0, 0, 0, 0 },  
-    {"t4",  MMToggle | MMUnmanaged,  
-        { DataDisp::toggleThemeCB, XtPointer(4)  }, 0, 0, 0, 0 },  
-    {"t5",  MMToggle | MMUnmanaged,  
-        { DataDisp::toggleThemeCB, XtPointer(5)  }, 0, 0, 0, 0 },  
-    {"t6",  MMToggle | MMUnmanaged,  
-        { DataDisp::toggleThemeCB, XtPointer(6)  }, 0, 0, 0, 0 },  
-    {"t7",  MMToggle | MMUnmanaged,  
-        { DataDisp::toggleThemeCB, XtPointer(7)  }, 0, 0, 0, 0 },  
-    {"t8",  MMToggle | MMUnmanaged,  
-        { DataDisp::toggleThemeCB, XtPointer(8)  }, 0, 0, 0, 0 },  
-    {"t9",  MMToggle | MMUnmanaged,  
-        { DataDisp::toggleThemeCB, XtPointer(9)  }, 0, 0, 0, 0 },  
-    {"t10", MMToggle | MMUnmanaged,  
-        { DataDisp::toggleThemeCB, XtPointer(10) }, 0, 0, 0, 0 },  
-    {"t11", MMToggle | MMUnmanaged,  
-        { DataDisp::toggleThemeCB, XtPointer(11) }, 0, 0, 0, 0 },  
-    {"t12", MMToggle | MMUnmanaged,  
-        { DataDisp::toggleThemeCB, XtPointer(12) }, 0, 0, 0, 0 },  
-    {"t13", MMToggle | MMUnmanaged,  
-        { DataDisp::toggleThemeCB, XtPointer(13) }, 0, 0, 0, 0 },  
-    {"t14", MMToggle | MMUnmanaged,  
-        { DataDisp::toggleThemeCB, XtPointer(14) }, 0, 0, 0, 0 },  
-    {"t15", MMToggle | MMUnmanaged,  
-        { DataDisp::toggleThemeCB, XtPointer(15) }, 0, 0, 0, 0 },  
-    {"t16", MMToggle | MMUnmanaged,  
-        { DataDisp::toggleThemeCB, XtPointer(16) }, 0, 0, 0, 0 },  
-    {"t17", MMToggle | MMUnmanaged,  
-        { DataDisp::toggleThemeCB, XtPointer(17) }, 0, 0, 0, 0 },  
-    {"t18", MMToggle | MMUnmanaged,  
-        { DataDisp::toggleThemeCB, XtPointer(18) }, 0, 0, 0, 0 },  
-    {"t19", MMToggle | MMUnmanaged,  
-        { DataDisp::toggleThemeCB, XtPointer(19) }, 0, 0, 0, 0 },  
-    {"t20", MMToggle | MMUnmanaged,  
-        { DataDisp::toggleThemeCB, XtPointer(20) }, 0, 0, 0, 0 },  
+    {NM("t1", "t1"),  MMToggle | MMUnmanaged,  
+     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 1  ), 0, 0, 0, 0 },  
+    {NM("t2", "t2"),  MMToggle | MMUnmanaged,  
+     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 2  ), 0, 0, 0, 0 },  
+    {NM("t3", "t3"),  MMToggle | MMUnmanaged,  
+     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 3  ), 0, 0, 0, 0 },  
+    {NM("t4", "t4"),  MMToggle | MMUnmanaged,  
+     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 4  ), 0, 0, 0, 0 },  
+    {NM("t5", "t5"),  MMToggle | MMUnmanaged,  
+     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 5  ), 0, 0, 0, 0 },  
+    {NM("t6", "t6"),  MMToggle | MMUnmanaged,  
+     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 6  ), 0, 0, 0, 0 },  
+    {NM("t7", "t7"),  MMToggle | MMUnmanaged,  
+     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 7  ), 0, 0, 0, 0 },  
+    {NM("t8", "t8"),  MMToggle | MMUnmanaged,  
+     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 8  ), 0, 0, 0, 0 },  
+    {NM("t9", "t9"),  MMToggle | MMUnmanaged,  
+     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 9  ), 0, 0, 0, 0 },  
+    {NM("t10", "t10"), MMToggle | MMUnmanaged,  
+     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 10 ), 0, 0, 0, 0 },  
+    {NM("t11", "t11"), MMToggle | MMUnmanaged,  
+     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 11 ), 0, 0, 0, 0 },  
+    {NM("t12", "t12"), MMToggle | MMUnmanaged,  
+     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 12 ), 0, 0, 0, 0 },  
+    {NM("t13", "t13"), MMToggle | MMUnmanaged,  
+     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 13 ), 0, 0, 0, 0 },  
+    {NM("t14", "t14"), MMToggle | MMUnmanaged,  
+     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 14 ), 0, 0, 0, 0 },  
+    {NM("t15", "t15"), MMToggle | MMUnmanaged,  
+     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 15 ), 0, 0, 0, 0 },  
+    {NM("t16", "t16"), MMToggle | MMUnmanaged,  
+     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 16 ), 0, 0, 0, 0 },  
+    {NM("t17", "t17"), MMToggle | MMUnmanaged,  
+     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 17 ), 0, 0, 0, 0 },  
+    {NM("t18", "t18"), MMToggle | MMUnmanaged,  
+     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 18 ), 0, 0, 0, 0 },  
+    {NM("t19", "t19"), MMToggle | MMUnmanaged,  
+     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 19 ), 0, 0, 0, 0 },  
+    {NM("t20", "t20"), MMToggle | MMUnmanaged,  
+     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 20 ), 0, 0, 0, 0 },  
     MMSep, 
-    {"edit",  MMPush, { dddPopupThemesCB, 0 }, 0, 0, 0, 0},
+    {NM("edit", "Edit Themes..."),  MMPush,
+     HIDE_0(PTR_FUN(dddPopupThemesCB)), 0, 0, 0, 0},
     MMEnd
 };
 
@@ -309,18 +331,22 @@ struct NodeItms { enum Itms {Dereference, New, Theme, Sep1,
 
 MMDesc DataDisp::node_popup[] =
 {
-    {"dereference",   MMPush,   {DataDisp::dereferenceCB, 0}, 0, 0, 0, 0},
-    {"new",           MMMenu,   MMNoCB, DataDisp::shortcut_popup2, 0, 0, 0},
-    {"theme",         MMMenu,   MMNoCB, DataDisp::theme_menu, 0, 0, 0},
+    {NM("dereference", "Display *"),   MMPush,
+     BIND_0(PTR_FUN(DataDisp::dereferenceCB)), 0, 0, 0, 0},
+    {NM("new", "New Display"),         MMMenu,
+     MMNoCB, DataDisp::shortcut_popup2, 0, 0, 0},
+    {NM("theme", "Theme"),             MMMenu,
+     MMNoCB, DataDisp::theme_menu, 0, 0, 0},
     MMSep,
-    {"detail",        MMPush,   
-     {DataDisp::toggleDetailCB, XtPointer(-1)}, 0, 0, 0, 0},
-    {"rotate",        MMPush,   
-     {DataDisp::rotateCB, XtPointer(false) }, 0, 0, 0, 0},
-    {"set",           MMPush,   {DataDisp::setCB, 0}, 0, 0, 0, 0},
+    {NM("detail", "Show Detail"),      MMPush,   
+     BIND_1(PTR_FUN(DataDisp::toggleDetailCB), -1), 0, 0, 0, 0},
+    {NM("rotate", "Rotate"),           MMPush,   
+     BIND_1(PTR_FUN(DataDisp::rotateCB), false), 0, 0, 0, 0},
+    {NM("set", "Set Value..."),        MMPush,
+     BIND_0(PTR_FUN(DataDisp::setCB)), 0, 0, 0, 0},
     MMSep,
-    {"delete",        MMPush,   
-     {DataDisp::deleteCB, 0}, 0, 0, 0, 0},
+    {NM("delete", "Undisplay"),        MMPush,   
+     BIND_0(PTR_FUN(DataDisp::deleteCB)), 0, 0, 0, 0},
     MMEnd
 };
 
@@ -329,7 +355,8 @@ struct DeleteItms { enum Itms {Cluster}; };
 
 MMDesc DataDisp::delete_menu[] =
 {
-    {"cluster",     MMPush, {DataDisp::toggleClusterSelectedCB, 0}, 
+    {NM("cluster", "Cluster"),     MMPush,
+     HIDE_0(PTR_FUN(DataDisp::toggleClusterSelectedCB)), 
      0, 0, 0, 0},
     MMEnd
 };
@@ -338,7 +365,8 @@ struct PlotItms { enum Itms { History }; };
 
 MMDesc DataDisp::plot_menu[] =
 {
-    {"history",     MMPush, {DataDisp::plotHistoryCB, 0}, 
+    {NM("history", "Plot history of ()"),     MMPush,
+     BIND_0(PTR_FUN(DataDisp::plotHistoryCB)), 
      0, 0, 0, 0},
     MMEnd
 };
@@ -349,23 +377,23 @@ struct CmdItms { enum Itms {New, Dereference, Plot,
 
 MMDesc DataDisp::graph_cmd_area[] =
 {
-    {"new",           MMPush,                 
-     {DataDisp::displayArgCB, XtPointer(true)}, 
+    {IM("new", DISPLAY_ICON),           MMPush,                 
+     BIND_1(PTR_FUN(DataDisp::displayArgCB), true), 
      DataDisp::shortcut_menu, 0, 0, 0 },
-    {"dereference",   MMPush | MMInsensitive | MMUnmanaged, 
-     {DataDisp::dereferenceArgCB, 0}, 0, 0, 0, 0},
-    {"plot",          MMPush | MMInsensitive,
-     {DataDisp::plotArgCB, 0}, 
+    {IM("dereference", DISPREF_ICON),   MMPush | MMInsensitive | MMUnmanaged, 
+     BIND_0(PTR_FUN(DataDisp::dereferenceArgCB)), 0, 0, 0, 0},
+    {IM("plot", PLOT_ICON),             MMPush | MMInsensitive,
+     BIND_0(PTR_FUN(DataDisp::plotArgCB)), 
      DataDisp::plot_menu, 0, 0, 0},
-    {"detail",        MMPush | MMInsensitive, 
-     {DataDisp::toggleDetailCB, XtPointer(-1)}, 
+    {IM("detail", SHOW_ICON),           MMPush | MMInsensitive, 
+     BIND_1(PTR_FUN(DataDisp::toggleDetailCB), -1), 
      DataDisp::detail_menu, 0, 0, 0 },
-    {"rotate",        MMPush | MMInsensitive, 
-     {DataDisp::rotateCB, XtPointer(false)}, DataDisp::rotate_menu, 0, 0, 0 },
-    {"set",           MMPush | MMInsensitive, 
-     {DataDisp::setCB, 0}, 0, 0, 0, 0 },
-    {"delete",        MMPush | MMInsensitive, 
-     {DataDisp::deleteArgCB, XtPointer(true)},
+    {IM("rotate", ROTATE_ICON),         MMPush | MMInsensitive, 
+     BIND_1(PTR_FUN(DataDisp::rotateCB), false), DataDisp::rotate_menu, 0, 0, 0 },
+    {IM("set", SET_ICON),               MMPush | MMInsensitive, 
+     BIND_0(PTR_FUN(DataDisp::setCB)), 0, 0, 0, 0 },
+    {IM("delete", UNDISPLAY_ICON),      MMPush | MMInsensitive, 
+     BIND_0(PTR_FUN(DataDisp::deleteArgCB)),
      DataDisp::delete_menu, 0, 0, 0 },
     MMEnd
 };
@@ -376,14 +404,14 @@ struct DetailItms { enum Itms { ShowMore, ShowJust,
 
 MMDesc DataDisp::detail_menu[] =
 {
-    {"show_more",    MMPush, 
-     {DataDisp::showMoreDetailCB, XtPointer(1) }, 0, 0, 0, 0},
-    {"show_just",    MMPush, 
-     {DataDisp::showDetailCB, XtPointer(1) }, 0, 0, 0, 0},
-    {"show_detail",  MMPush, 
-     {DataDisp::showDetailCB, XtPointer(-1) }, 0, 0, 0, 0},
-    {"hide_detail",  MMPush, 
-     {DataDisp::hideDetailCB, XtPointer(-1) }, 0, 0, 0, 0},
+    {NM("show_more", "Show More ()"),      MMPush, 
+     BIND_1(PTR_FUN(DataDisp::showMoreDetailCB), 1), 0, 0, 0, 0},
+    {NM("show_just", "Show Just ()"),      MMPush, 
+     BIND_1(PTR_FUN(DataDisp::showDetailCB), 1), 0, 0, 0, 0},
+    {NM("show_detail", "Show All ()"),  MMPush, 
+     BIND_1(PTR_FUN(DataDisp::showDetailCB), -1), 0, 0, 0, 0},
+    {NM("hide_detail", "Hide ()"),  MMPush, 
+     BIND_0(PTR_FUN(DataDisp::hideDetailCB)), 0, 0, 0, 0},
     MMEnd
 };
 
@@ -393,32 +421,39 @@ struct DisplayItms { enum Itms {New, Dereference,
 
 MMDesc DataDisp::display_area[] =
 {
-    {"new",          MMPush,   {DataDisp::dependentCB, 0 }, 0, 0, 0, 0},
-    {"dereference",  MMPush,   {DataDisp::dereferenceCB, 0 }, 0, 0, 0, 0},
-    {"show_detail",  MMPush,   
-     {DataDisp::showDetailCB, XtPointer(-1) }, 0, 0, 0, 0},
-    {"hide_detail",  MMPush,   
-     {DataDisp::hideDetailCB, XtPointer(-1) }, 0, 0, 0, 0},
-    {"set",          MMPush, {DataDisp::setCB, 0}, 0, 0, 0, 0},
-    {"cluster",      MMPush, {DataDisp::clusterSelectedCB, 0}, 0, 0, 0, 0},
-    {"uncluster",    MMPush, {DataDisp::unclusterSelectedCB, 0}, 0, 0, 0, 0},
-    {"delete",       MMPush | MMHelp, 
-     {DataDisp::deleteCB, 0}, 0, 0, 0, 0},
+    {NM("new", "New..."),                  MMPush,
+     BIND_0(PTR_FUN(DataDisp::dependentCB)), 0, 0, 0, 0},
+    {NM("dereference", "Display *"),       MMPush,
+     BIND_0(PTR_FUN(DataDisp::dereferenceCB)), 0, 0, 0, 0},
+    {NM("show_detail", "Show All ()"),     MMPush,   
+     BIND_1(PTR_FUN(DataDisp::showDetailCB), -1), 0, 0, 0, 0},
+    {NM("hide_detail", "Hide ()"),         MMPush,   
+     BIND_0(PTR_FUN(DataDisp::hideDetailCB)), 0, 0, 0, 0},
+    {NM("set", "Set ()"),                  MMPush,
+     BIND_0(PTR_FUN(DataDisp::setCB)), 0, 0, 0, 0},
+    {NM("cluster", "Cluster ()"),          MMPush,
+     HIDE_0(PTR_FUN(DataDisp::clusterSelectedCB)), 0, 0, 0, 0},
+    {NM("uncluster", "Uncluster"),         MMPush,
+     HIDE_0(PTR_FUN(DataDisp::unclusterSelectedCB)), 0, 0, 0, 0},
+    {NM("delete", "Undisplay"),            MMPush | MMHelp, 
+     BIND_0(PTR_FUN(DataDisp::deleteCB)), 0, 0, 0, 0},
     MMEnd
 };
 
-DispGraph *DataDisp::disp_graph             = 0;
-Widget     DataDisp::graph_edit             = 0;
-Widget     DataDisp::graph_form_w           = 0;
-Widget     DataDisp::last_origin            = 0;
-ArgField  *DataDisp::graph_arg              = 0;
-Widget     DataDisp::graph_cmd_w            = 0;
-Widget     DataDisp::graph_selection_w      = 0;
-Widget     DataDisp::edit_displays_dialog_w = 0;
-Widget     DataDisp::display_list_w         = 0;
-Widget     DataDisp::graph_popup_w          = 0;
-Widget     DataDisp::node_popup_w           = 0;
-Widget     DataDisp::shortcut_popup_w       = 0;
+DispGraph    *DataDisp::disp_graph             = 0;
+GRAPH_EDIT_P DataDisp::graph_edit             = 0;
+Widget       DataDisp::graph_form_w           = 0;
+Widget       DataDisp::last_origin            = 0;
+ArgField    *DataDisp::graph_arg              = 0;
+CONTAINER_P  DataDisp::graph_cmd_w            = 0;
+#ifdef IF_MOTIF
+ENTRY_P      DataDisp::graph_selection_w      = 0;
+#endif // IF_MOTIF
+DIALOG_P     DataDisp::edit_displays_dialog_w = 0;
+TREEVIEW_P   DataDisp::display_list_w         = 0;
+MENU_P       DataDisp::graph_popup_w          = 0;
+MENU_P       DataDisp::node_popup_w           = 0;
+MENU_P       DataDisp::shortcut_popup_w       = 0;
 
 bool DataDisp::detect_aliases   = false;
 bool DataDisp::cluster_displays = false;
@@ -427,13 +462,49 @@ bool DataDisp::arg_needs_update = false;
 int DataDisp::next_ddd_display_number = 1;
 int DataDisp::next_gdb_display_number = 1;
 
-XtIntervalId DataDisp::refresh_args_timer       = 0;
-XtIntervalId DataDisp::refresh_addr_timer       = 0;
-XtIntervalId DataDisp::refresh_graph_edit_timer = 0;
+XtIntervalId DataDisp::refresh_args_timer       = NO_TIMER;
+XtIntervalId DataDisp::refresh_addr_timer       = NO_TIMER;
+XtIntervalId DataDisp::refresh_graph_edit_timer = NO_TIMER;
 
 // Array of shortcut expressions and their labels
 StringArray DataDisp::shortcut_exprs;
 StringArray DataDisp::shortcut_labels;
+
+#ifndef IF_MOTIF
+
+#include <gtkmm/treemodelcolumn.h>
+
+// Models for the ListStore for Displays
+class DisplayListColumns: public Gtk::TreeModel::ColumnRecord
+{
+public:
+  Gtk::TreeModelColumn<int> num;
+  Gtk::TreeModelColumn<const char *> expression;
+  Gtk::TreeModelColumn<bool> state;
+  Gtk::TreeModelColumn<const char *> scope;
+  Gtk::TreeModelColumn<void *> address;
+  DisplayListColumns()
+  {
+    add(num);
+    add(expression);
+    add(state);
+    add(scope);
+    add(address);
+  }
+};
+
+static DisplayListColumns *
+display_list_columns_p(void)
+{
+    static DisplayListColumns *dlc = NULL;
+    if (!dlc)
+	dlc = new DisplayListColumns;
+    return dlc;
+}
+
+#define display_list_columns (*display_list_columns_p())
+
+#endif // IF_MOTIF
 
 //----------------------------------------------------------------------------
 // Helpers
@@ -480,6 +551,7 @@ static void sort(IntArray& a, bool (*le)(int, int) = default_le)
 // Origin
 //-----------------------------------------------------------------------------
 
+#ifdef IF_MOTIF
 void DataDisp::ClearOriginCB(Widget w, XtPointer, XtPointer)
 {
     if (last_origin == w)
@@ -487,19 +559,36 @@ void DataDisp::ClearOriginCB(Widget w, XtPointer, XtPointer)
 	last_origin = 0;
     }
 }
+#else // NOT IF_MOTIF
+void *DataDisp::ClearOriginCB(void *w)
+{
+    if (last_origin == (Widget)w)
+    {
+        last_origin = 0;
+    }
+}
+#endif // IF_MOTIF
 
 void DataDisp::set_last_origin(Widget w)
 {
     if (last_origin != 0)
     {
+#ifdef IF_MOTIF
 	XtRemoveCallback(last_origin, XtNdestroyCallback, ClearOriginCB, 0);
+#else // NOT IF_MOTIF
+	last_origin->remove_destroy_notify_callback(&last_origin);
+#endif // IF_MOTIF
     }
 
     last_origin = find_shell(w);
 
     if (last_origin != 0)
     {
+#ifdef IF_MOTIF
 	XtAddCallback(last_origin, XtNdestroyCallback, ClearOriginCB, 0);
+#else // NOT IF_MOTIF
+	last_origin->add_destroy_notify_callback(&last_origin, ClearOriginCB);
+#endif // IF_MOTIF
     }
 }
 
@@ -632,8 +721,7 @@ string DataDisp::pattern(const string& expr, bool shorten)
 }
 
 // Apply the theme in CLIENT_DATA to the selected item.
-void DataDisp::applyThemeCB (Widget w, XtPointer client_data, 
-			     XtPointer call_data)
+void DataDisp::applyThemeCB (CB_ALIST_12(Widget w, XtP(const char *) client_data))
 {
     set_last_origin(w);
 
@@ -659,11 +747,13 @@ void DataDisp::applyThemeCB (Widget w, XtPointer client_data,
     else if (doc.empty())
 	doc = theme;
 
+#ifdef IF_MOTIF
     defineConversionMacro("THEME", theme.chars());
     defineConversionMacro("THEME_DOC", doc.chars());
     defineConversionMacro("PATTERN", p.chars());
     const string s1 = dv->full_name();
     defineConversionMacro("EXPR", s1.chars());
+#endif // IF_MOTIF
 
     bool select = 
 	(pattern(dv->full_name(), true) != pattern(dv->full_name(), false));
@@ -671,41 +761,61 @@ void DataDisp::applyThemeCB (Widget w, XtPointer client_data,
     if (!select && theme != app_data.suppress_theme)
     {
 	// Don't ask for confirmation -- just apply.  We can undo anyway.
-	applyThemeOnThisCB(w, client_data, call_data);
+	applyThemeOnThisCB(CB_ARGS_2(client_data));
 	return;
     }
 
+    string name = 
+	(select ? "select_apply_theme_dialog" : "confirm_apply_theme_dialog");
+#ifdef IF_MOTIF
     Arg args[10];
     Cardinal arg = 0;
 
     XtSetArg(args[arg], XmNdeleteResponse, XmDESTROY); arg++;
     XtSetArg(args[arg], XmNautoUnmanage,   False);     arg++;
-    string name = 
-	(select ? "select_apply_theme_dialog" : "confirm_apply_theme_dialog");
     Widget dialog = 
 	verify(XmCreateQuestionDialog(find_shell(w), XMST(name.chars()), args, arg));
+#else // NOT IF_MOTIF
+    DIALOG_P dialog = 
+	new Gtk::Dialog(XMST(name.chars()), *find_shell(w));
+#endif // IF_MOTIF
 
     if (select)
     {
+#ifdef IF_MOTIF
 	arg = 0;
 	Widget apply = XmCreatePushButton(dialog, XMST("apply"), args, arg);
 	XtManageChild(apply);
 	XtAddCallback(apply, XmNactivateCallback, 
 		      applyThemeOnThisCB, client_data);
 	XtAddCallback(apply, XmNactivateCallback, DestroyShellCB, 0);
+#else // NOT IF_MOTIF
+	BUTTON_P apply = dialog->add_button(XMST("apply"), 0);
+	apply->signal_activate().connect(sigc::bind(PTR_FUN(applyThemeOnThisCB), client_data));
+	apply->signal_activate().connect(sigc::bind(PTR_FUN(DestroyShellCB), dialog));
+#endif // IF_MOTIF
     }
 
     Delay::register_shell(dialog);
+#ifdef IF_MOTIF
     XtAddCallback(dialog, XmNokCallback,      applyThemeOnAllCB, client_data);
     XtAddCallback(dialog, XmNokCallback,      DestroyShellCB, 0);
     XtAddCallback(dialog, XmNcancelCallback,  DestroyShellCB, 0);
     XtAddCallback(dialog, XmNhelpCallback,    ImmediateHelpCB, 0);
+#else // NOT IF_MOTIF
+    BUTTON_P button;
+    button = dialog->add_button(XMST("OK"), 0);
+    button->signal_clicked().connect(sigc::bind(PTR_FUN(applyThemeOnAllCB), client_data));
+    button->signal_clicked().connect(sigc::bind(PTR_FUN(DestroyShellCB), dialog));
+    button = dialog->add_button(XMST("Cancel"), 0);
+    button->signal_clicked().connect(sigc::bind(PTR_FUN(DestroyShellCB), dialog));
+#endif // IF_MOTIF
 
     manage_and_raise(dialog);
 }
 
 // Unapply the theme in CLIENT_DATA from the selected item.
-void DataDisp::unapplyThemeCB (Widget w, XtPointer client_data, XtPointer)
+void DataDisp::unapplyThemeCB (CB_ALIST_12(Widget w, XtP(const char *) client_data))
 {
     set_last_origin(w);
 
@@ -759,26 +869,34 @@ void DataDisp::unapplyThemeCB (Widget w, XtPointer client_data, XtPointer)
     }
 }
 
-void DataDisp::toggleThemeCB(Widget button, XtPointer, XtPointer call_data)
+void DataDisp::toggleThemeCB(CB_ALIST_12(TOGGLEBUTTON_P button, XtP(int) num))
 {
     String theme;
+#ifdef IF_MOTIF
     XtVaGetValues(button, XmNuserData, &theme, XtPointer(0));
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Using user data in this way is evil in an OO program.
+#warning We should have a class ThemeButton: public Gtk::Button
+#endif
+    theme = (String)(void *)button->property_user_data();
+#endif // IF_MOTIF
 
     if (XmToggleButtonGetState(button))
     {
 	// Now activated
-	applyThemeCB(button, XtPointer(theme), call_data);
+	applyThemeCB(CB_ARGS_12(button, theme));
     }
     else
     {
 	// Now deactivated
-	unapplyThemeCB(button, XtPointer(theme), call_data);
+	unapplyThemeCB(CB_ARGS_12(button, theme));
     }
 }
 
 
 // Apply the theme in CLIENT_DATA to the selected item.
-void DataDisp::applyThemeOnAllCB(Widget, XtPointer client_data, XtPointer)
+void DataDisp::applyThemeOnAllCB(CB_ALIST_2(XtP(const char *) client_data))
 {
     string pattern = selected_pattern();
     if (pattern.empty())
@@ -789,7 +907,7 @@ void DataDisp::applyThemeOnAllCB(Widget, XtPointer client_data, XtPointer)
 }
 
 // Apply the theme in CLIENT_DATA to the selected item.
-void DataDisp::applyThemeOnThisCB(Widget, XtPointer client_data, XtPointer)
+void DataDisp::applyThemeOnThisCB(CB_ALIST_2(XtP(const char *) client_data))
 {
     string theme = String(client_data);
     apply_theme(theme, quote(source_arg->get_string()));
@@ -881,8 +999,7 @@ void DataDisp::toggle_themeSQ(const string& theme, const string& pattern,
 // Button Callbacks
 //-----------------------------------------------------------------------------
 
-void DataDisp::dereferenceCB(Widget w, XtPointer client_data, 
-			     XtPointer call_data)
+void DataDisp::dereferenceCB(CB_ALIST_1(Widget w))
 {
     set_last_origin(w);
 
@@ -890,7 +1007,7 @@ void DataDisp::dereferenceCB(Widget w, XtPointer client_data,
     DispValue *disp_value_arg = selected_value();
     if (disp_node_arg == 0 || disp_value_arg == 0)
     {
-	newCB(w, client_data, call_data);
+	newCB(CB_ARGS_1(w));
 	return;
     }
 
@@ -908,7 +1025,7 @@ void DataDisp::dereferenceCB(Widget w, XtPointer client_data,
 }
 
 // Replace node by its dereferenced variant
-void DataDisp::dereferenceInPlaceCB(Widget w, XtPointer, XtPointer)
+void DataDisp::dereferenceInPlaceCB(CB_ALIST_1(Widget w))
 {
     DispNode *disp_node_arg   = selected_node();
     DispValue *disp_value_arg = selected_value();
@@ -926,25 +1043,22 @@ void DataDisp::dereferenceInPlaceCB(Widget w, XtPointer, XtPointer)
     delete_display(nrs, w);
 }
 
-void DataDisp::dereferenceArgCB(Widget w, XtPointer client_data, 
-				XtPointer call_data)
+void DataDisp::dereferenceArgCB(CB_ALIST_1(Widget w))
 {
     if (selected_value() != 0)
     {
-	dereferenceCB(w, client_data, call_data);
+	dereferenceCB(CB_ARGS_1(w));
 	return;
     }
 
     new_display(deref(source_arg->get_string()), 0, "", false, false, w);
 }
 
-void DataDisp::toggleDetailCB(Widget dialog,
-			      XtPointer client_data,
-			      XtPointer call_data)
+void DataDisp::toggleDetailCB(CB_ALIST_12(Widget dialog, XtP(int) client_data))
 {
     if (gdb->recording())
     {
-	showDetailCB(dialog, client_data, call_data);
+	showDetailCB(CB_ARGS_12(dialog, client_data));
 	return;
     }
 
@@ -1015,14 +1129,13 @@ void DataDisp::toggleDetailCB(Widget dialog,
 	refresh_graph_edit();
 }
 
-void DataDisp::showDetailCB (Widget dialog, XtPointer client_data, XtPointer)
+void DataDisp::showDetailCB (CB_ALIST_12(Widget dialog, XtP(int) client_data))
 {
     int depth = (int)(long)client_data;
     show(dialog, depth, 0);
 }
 
-void DataDisp::showMoreDetailCB(Widget dialog, XtPointer client_data, 
-				XtPointer)
+void DataDisp::showMoreDetailCB(CB_ALIST_12(Widget dialog, XtP(int) client_data))
 {
     int more = (int)(long)client_data;
     show(dialog, 0, more);
@@ -1085,7 +1198,7 @@ void DataDisp::show(Widget dialog, int depth, int more)
 
 
 
-void DataDisp::hideDetailCB (Widget dialog, XtPointer, XtPointer)
+void DataDisp::hideDetailCB (CB_ALIST_1(Widget dialog))
 {
     set_last_origin(dialog);
 
@@ -1182,7 +1295,7 @@ void DataDisp::rotate_node(DispNode *dn, bool all)
     dn->refresh();
 }
 
-void DataDisp::rotateCB(Widget w, XtPointer client_data, XtPointer)
+void DataDisp::rotateCB(CB_ALIST_12(Widget w, XtP(bool) client_data))
 {
     bool rotate_all = bool(client_data);
 
@@ -1200,7 +1313,7 @@ void DataDisp::rotateCB(Widget w, XtPointer client_data, XtPointer)
     refresh_graph_edit();
 }
 
-void DataDisp::toggleDisableCB (Widget dialog, XtPointer, XtPointer)
+void DataDisp::toggleDisableCB (CB_ALIST_1(Widget dialog))
 {
     set_last_origin(dialog);
     IntArray disp_nrs;
@@ -1266,8 +1379,7 @@ void DataDisp::select_with_all_ancestors(GraphNode *node)
 }
 
 // Upon deletion, select the ancestor and all siblings
-void DataDisp::deleteCB (Widget dialog, XtPointer /* client_data */,
-			 XtPointer call_data)
+void DataDisp::deleteCB (CB_ARG_LIST_1(dialog))
 {
     set_last_origin(dialog);
 
@@ -1277,7 +1389,7 @@ void DataDisp::deleteCB (Widget dialog, XtPointer /* client_data */,
     if (dn != 0 && dv != dn->value())
     {
 	// Display part to be suppressed
-	applyThemeCB(dialog, XtPointer(app_data.suppress_theme), call_data);
+	applyThemeCB(CB_ARGS_12(dialog, app_data.suppress_theme));
 	return;
     }
 
@@ -1327,7 +1439,7 @@ void DataDisp::deleteCB (Widget dialog, XtPointer /* client_data */,
     delete_display(disp_nrs, dialog);
 }
 
-void DataDisp::refreshCB(Widget w, XtPointer, XtPointer)
+void DataDisp::refreshCB(CB_ALIST_1(Widget w))
 {
     // Unmerge all displays
     MapRef ref;
@@ -1342,27 +1454,41 @@ void DataDisp::refreshCB(Widget w, XtPointer, XtPointer)
     refresh_display(w);
 }
 
-void DataDisp::selectAllCB(Widget w, XtPointer, XtPointer)
+void DataDisp::selectAllCB(CB_ALIST_1(Widget w))
 {
     // StatusDelay d("Selecting all displays");
 
     set_last_origin(w);
+#ifdef IF_MOTIF
     XtCallActionProc(graph_edit, 
 		     "select-all", (XEvent *)0, (String *)0, 0);
+#else // NOT IF_MOTIF
+    std::cerr << "XtCallActionProc (graph_edit, \"select-all\") not supported.\n";
+#ifdef NAG_ME
+#warning XtCallActionProc (graph_edit, "select-all") not supported.
+#endif
+#endif // IF_MOTIF
     refresh_graph_edit();
 }
 
-void DataDisp::unselectAllCB(Widget w, XtPointer, XtPointer)
+void DataDisp::unselectAllCB(CB_ALIST_1(Widget w))
 {
     // StatusDelay d("Unselecting all displays");
 
     set_last_origin(w);
+#ifdef IF_MOTIF
     XtCallActionProc(graph_edit, 
 		     "unselect-all", (XEvent *)0, (String *)0, 0);
+#else // NOT IF_MOTIF
+    std::cerr << "XtCallActionProc (graph_edit, \"unselect-all\") not supported.\n";
+#ifdef NAG_ME
+#warning XtCallActionProc (graph_edit, "unselect-all") not supported.
+#endif
+#endif // IF_MOTIF
     refresh_graph_edit();
 }
 
-void DataDisp::enableCB(Widget w, XtPointer, XtPointer)
+void DataDisp::enableCB(CB_ALIST_1(Widget w))
 {
     set_last_origin(w);
 
@@ -1382,7 +1508,7 @@ void DataDisp::enableCB(Widget w, XtPointer, XtPointer)
     enable_display(disp_nrs, w);
 }
 
-void DataDisp::disableCB(Widget w, XtPointer, XtPointer)
+void DataDisp::disableCB(CB_ALIST_1(Widget w))
 {
     set_last_origin(w);
 
@@ -1403,7 +1529,7 @@ void DataDisp::disableCB(Widget w, XtPointer, XtPointer)
 }
 
 
-void DataDisp::shortcutCB(Widget w, XtPointer client_data, XtPointer)
+void DataDisp::shortcutCB(CB_ALIST_12(Widget w, XtP(int) client_data))
 {
     int number = ((int)(long)client_data) - 1;
 
@@ -1616,7 +1742,7 @@ DataDispCount::DataDispCount(DispGraph *disp_graph)
 // Double click callback
 //-----------------------------------------------------------------------------
 
-void DataDisp::DoubleClickCB(Widget w, XtPointer, XtPointer call_data)
+void DataDisp::DoubleClickCB(CB_ALIST_13(GRAPH_EDIT_P w, XtP(GraphEditPreSelectionInfo *) call_data))
 {
     GraphEditPreSelectionInfo *info = (GraphEditPreSelectionInfo *)call_data;
 
@@ -1633,14 +1759,20 @@ void DataDisp::DoubleClickCB(Widget w, XtPointer, XtPointer call_data)
 	return;
 
     XEvent *ev = info->event;
+#ifdef IF_MOTIF
     bool control = (ev != 0 && 
 		    (ev->type == ButtonPress || ev->type == ButtonRelease) &&
 		    (ev->xbutton.state & ControlMask) != 0);
+#else // NOT IF_MOTIF
+    bool control = (ev != 0 && 
+		    (ev->type == ButtonPress || ev->type == ButtonRelease) &&
+		    (ev->button.state & ControlMask) != 0);
+#endif // IF_MOTIF
 
     // Do the right thing
     if (disp_node_arg->disabled())
     {
-	showMoreDetailCB(w, XtPointer(1), 0); // Show 1 level more
+	showMoreDetailCB(CB_ARGS_12(w, 1)); // Show 1 level more
     }
     else
     {
@@ -1654,19 +1786,19 @@ void DataDisp::DoubleClickCB(Widget w, XtPointer, XtPointer call_data)
 	{
 	    // Dereference
 	    if (control)
-		dereferenceInPlaceCB(w, XtPointer(true), 0);
+		dereferenceInPlaceCB(CB_ARGS_1(w));
 	    else
-		dereferenceCB(w, 0, 0);
+		dereferenceCB(CB_ARGS_1(w));
 	}
 	else if (count.selected_collapsed > 0)
 	{
 	    // Show 1 level more
-	    showMoreDetailCB(w, XtPointer(1), 0);
+	    showMoreDetailCB(CB_ARGS_12(w, 1));
 	}
 	else
 	{
 	    // Hide all
-	    hideDetailCB(w, XtPointer(-1), 0);
+	    hideDetailCB(CB_ARGS_1(w));
 	}
     }
 
@@ -1679,9 +1811,7 @@ void DataDisp::DoubleClickCB(Widget w, XtPointer, XtPointer call_data)
 // Popup menu callbacks
 //-----------------------------------------------------------------------------
 
-void DataDisp::popup_new_argCB (Widget    display_dialog,
-				XtPointer client_data,
-				XtPointer)
+void DataDisp::popup_new_argCB (CB_ALIST_12(Widget display_dialog, XtP(BoxPoint *) client_data))
 {
     set_last_origin(display_dialog);
 
@@ -1690,9 +1820,7 @@ void DataDisp::popup_new_argCB (Widget    display_dialog,
 }
 
 
-void DataDisp::popup_newCB (Widget    display_dialog,
-			    XtPointer client_data,
-			    XtPointer)
+void DataDisp::popup_newCB (CB_ALIST_12(Widget display_dialog, XtP(BoxPoint *) client_data))
 {
     set_last_origin(display_dialog);
 
@@ -1716,8 +1844,8 @@ public:
     BoxPoint *point_ptr;
     string depends_on;
     Widget origin;
-    Widget shortcut;
-    Widget text;
+    TOGGLEBUTTON_P shortcut;
+    COMBOBOXENTRYTEXT_P text;
     bool verbose;
     bool prompt;
     bool constant;
@@ -1779,15 +1907,19 @@ private:
 int NewDisplayInfo::cluster_nr     = 0;
 int NewDisplayInfo::cluster_offset = 0;
 
-void DataDisp::new_displayDCB (Widget dialog, XtPointer client_data, XtPointer)
+void DataDisp::new_displayDCB (CB_ALIST_12(Widget dialog, XtP(NewDisplayInfo *) client_data))
 {
     set_last_origin(dialog);
 
     NewDisplayInfo *info = (NewDisplayInfo *)client_data;
 
+#ifdef IF_MOTIF
     char *inp = XmTextFieldGetString(info->text);
     string expr(inp);
     XtFree(inp);
+#else // NOT IF_MOTIF
+    string expr(info->text->get_entry()->get_text().c_str());
+#endif // IF_MOTIF
 
     strip_leading_space(expr);
     strip_trailing_space(expr);
@@ -1811,13 +1943,18 @@ void DataDisp::new_displayDCB (Widget dialog, XtPointer client_data, XtPointer)
 Widget DataDisp::create_display_dialog(Widget parent, const _XtString name,
 				       NewDisplayInfo& info)
 {
+#ifdef IF_MOTIF
     Arg args[10];
     int arg = 0;
 
     Widget dialog = verify(XmCreatePromptDialog(find_shell(parent),
 						XMST(name), args, arg));
+#else // NOT IF_MOTIF
+    DIALOG_P dialog = new Gtk::Dialog(XMST(name), *find_shell(parent));
+#endif // IF_MOTIF
     Delay::register_shell(dialog);
 
+#ifdef IF_MOTIF
     if (lesstif_version <= 79)
 	XtUnmanageChild(XmSelectionBoxGetChild(dialog, XmDIALOG_APPLY_BUTTON));
     XtUnmanageChild(XmSelectionBoxGetChild(dialog, XmDIALOG_TEXT));
@@ -1825,7 +1962,14 @@ Widget DataDisp::create_display_dialog(Widget parent, const _XtString name,
 
     XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, 0);
     XtAddCallback(dialog, XmNokCallback, new_displayDCB, XtPointer(&info));
+#else // NOT IF_MOTIF
+    BUTTON_P button;
+    button = dialog->add_button(XMST("OK"), 0);
+    button->signal_clicked().connect(sigc::bind(PTR_FUN(new_displayDCB),
+						 dialog, &info));
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     arg = 0;
     XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
     XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
@@ -1833,18 +1977,36 @@ Widget DataDisp::create_display_dialog(Widget parent, const _XtString name,
     XtSetArg(args[arg], XmNadjustMargin, False); arg++;
     Widget box = verify(XmCreateRowColumn(dialog, XMST("box"), args, arg));
     XtManageChild(box);
+#else // NOT IF_MOTIF
+    BOX_P box = new Gtk::VBox();
+    dialog->get_vbox()->pack_start(*box, Gtk::PACK_SHRINK);
+    box->show();
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     arg = 0;
     XtSetArg(args[arg], XmNalignment, XmALIGNMENT_BEGINNING); arg++;
     Widget label = verify(XmCreateLabel(box, XMST("label"), args, arg));
     XtManageChild(label);
+#else // NOT IF_MOTIF
+    LABEL_P label = new Gtk::Label(XMST("label"));
+    box->pack_start(*label, Gtk::PACK_SHRINK);
+    label->show();
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     arg = 0;
     info.text = verify(CreateComboBox(box, "text", args, arg));
     XtManageChild(info.text);
+#else // NOT IF_MOTIF
+    info.text = new Gtk::ComboBoxEntryText();
+    box->pack_start(*info.text, Gtk::PACK_SHRINK);
+    box->show();
+#endif // IF_MOTIF
 
     tie_combo_box_to_history(info.text, display_history_filter);
 
+#ifdef IF_MOTIF
     arg = 0;
     XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
     XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
@@ -1853,17 +2015,40 @@ Widget DataDisp::create_display_dialog(Widget parent, const _XtString name,
     XtSetArg(args[arg], XmNorientation, XmHORIZONTAL); arg++;
     Widget box2 = verify(XmCreateRowColumn(box, XMST("box2"), args, arg));
     XtManageChild(box2);
+#else // NOT IF_MOTIF
+    BOX_P box2 = new Gtk::HBox();
+    box->pack_start(*box2, Gtk::PACK_SHRINK);
+    box2->show();
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     arg = 0;
     XtSetArg(args[arg], XmNalignment, XmALIGNMENT_BEGINNING); arg++;
     info.shortcut = verify(
 	XmCreateToggleButton(box2, XMST("shortcut"), args, arg));
     XtManageChild(info.shortcut);
+#else // NOT IF_MOTIF
+    info.shortcut = new Gtk::ToggleButton(XMST("shortcut"));
+    box2->pack_start(*info.shortcut, Gtk::PACK_SHRINK);
+    info.shortcut->show();
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     Widget display = verify(XmCreateLabel(box2, XMST("display"), args, arg));
     XtManageChild(display);
+#else // NOT IF_MOTIF
+    LABEL_P display = new Gtk::Label(XMST("display"));
+    box2->pack_start(*display, Gtk::PACK_SHRINK);
+    display->show();
+#endif // IF_MOTIF
+#ifdef IF_MOTIF
     Widget menu = verify(XmCreateLabel(box2, XMST("menu"), args, arg));
     XtManageChild(menu);
+#else // NOT IF_MOTIF
+    LABEL_P menu = new Gtk::Label(XMST("menu"));
+    box2->pack_start(*menu, Gtk::PACK_SHRINK);
+    menu->show();
+#endif // IF_MOTIF
 
     return dialog;
 }
@@ -1883,21 +2068,24 @@ void DataDisp::new_displayCD (Widget w, const BoxPoint &box_point)
 
     *(info.point_ptr) = box_point;
     info.display_expression = source_arg->get_string();
+#ifdef IF_MOTIF
     XmTextSetString(info.text, XMST(info.display_expression.chars()));
+#else // NOT IF_MOTIF
+    info.text->get_entry()->set_text(XMST(info.display_expression.chars()));
+#endif // IF_MOTIF
 
     manage_and_raise(new_display_dialog);
 }
 
 // Create a new display
-void DataDisp::newCB(Widget w, XtPointer, XtPointer)
+void DataDisp::newCB(CB_ALIST_1(Widget w))
 {
     set_last_origin(w);
     new_displayCD(w);
 }
 
 // Create a new dependent display
-void DataDisp::dependentCB(Widget w, XtPointer client_data, 
-			   XtPointer call_data)
+void DataDisp::dependentCB(CB_ALIST_1(Widget w))
 {
     set_last_origin(w);
 
@@ -1907,7 +2095,7 @@ void DataDisp::dependentCB(Widget w, XtPointer client_data,
 	|| disp_value_arg == 0
 	|| disp_node_arg->hidden())
     {
-	newCB(w, client_data, call_data);
+	newCB(CB_ARGS_1(w));
 	return;
     }
 
@@ -1925,12 +2113,15 @@ void DataDisp::dependentCB(Widget w, XtPointer client_data,
     XmToggleButtonSetState(info.shortcut, True, False);
 
     info.display_expression = disp_value_arg->full_name();
+#ifdef IF_MOTIF
     XmTextSetString(info.text, XMST(info.display_expression.chars()));
+#else // NOT IF_MOTIF
+    info.text->get_entry()->set_text(XMST(info.display_expression.chars()));
+#endif // IF_MOTIF
     manage_and_raise(dependent_display_dialog);
 }
 
-void DataDisp::displayArgCB(Widget w, XtPointer client_data, 
-			    XtPointer call_data)
+void DataDisp::displayArgCB(CB_ALIST_12(Widget w, XtP(bool) client_data))
 {
     bool check_pointer = bool((int)(long)client_data);
 
@@ -1941,7 +2132,7 @@ void DataDisp::displayArgCB(Widget w, XtPointer client_data,
 	if (disp_value_arg != 0 && disp_value_arg->type() == Pointer)
 	{
 	    // Dereference selected pointer
-	    dereferenceCB(w, client_data, call_data);
+	    dereferenceCB(CB_ARGS_1(w));
 	    return;
 	}
     }
@@ -1962,7 +2153,7 @@ void DataDisp::displayArgCB(Widget w, XtPointer client_data,
     new_display(arg, 0, depends_on, false, false, w);
 }
 
-void DataDisp::plotArgCB(Widget w, XtPointer, XtPointer)
+void DataDisp::plotArgCB(CB_ALIST_1(Widget w))
 {
     DispValue *disp_value_arg = selected_value();
     if (disp_value_arg != 0)
@@ -1977,22 +2168,21 @@ void DataDisp::plotArgCB(Widget w, XtPointer, XtPointer)
     new_display(arg, 0, "", false, true, w);
 }
 
-void DataDisp::plotHistoryCB(Widget w, XtPointer, XtPointer)
+void DataDisp::plotHistoryCB(CB_ALIST_1(Widget w))
 {
     // Create new display and plot its history
     const string arg = "`graph history " + source_arg->get_string() + "`";
     new_display(arg, 0, "", false, true, w);
 }
 
-void DataDisp::deleteArgCB(Widget dialog, XtPointer client_data, 
-			   XtPointer call_data)
+void DataDisp::deleteArgCB(CB_ALIST_1(Widget dialog))
 {
     DataDispCount count(disp_graph);
 
     if (count.selected_titles > 0)
     {
 	// Delete selected displays
-	deleteCB(dialog, client_data, call_data);
+	deleteCB(CB_ARGS_1(dialog));
 	return;
     }
 
@@ -2002,7 +2192,7 @@ void DataDisp::deleteArgCB(Widget dialog, XtPointer client_data,
     if (dn != 0 && dv != dn->value())
     {
 	// Suppress selected value
-	applyThemeCB(dialog, XtPointer(app_data.suppress_theme), call_data);
+	applyThemeCB(CB_ARGS_12(dialog, app_data.suppress_theme));
 	return;
     }
 
@@ -2015,26 +2205,33 @@ void DataDisp::deleteArgCB(Widget dialog, XtPointer client_data,
 // Redraw graph and update display list
 //-----------------------------------------------------------------------------
 
-struct GraphEditState {
-    Boolean autoLayout;
-    Boolean snapToGrid;
-};
-
 void DataDisp::refresh_graph_edit(bool silent)
 {
     // Save current graph editor state
-    static GraphEditState state;
+    static GraphEditLayoutState state;
 
+#ifdef IF_MOTIF
     XtVaGetValues(graph_edit,
 		  XtNautoLayout, &state.autoLayout,
 		  XtNsnapToGrid, &state.snapToGrid,
 		  XtPointer(0));
+#else // NOT IF_MOTIF
+    state.autoLayout = graph_edit->get_auto_layout();
+    state.snapToGrid = graph_edit->get_snap_to_grid();
+#endif // IF_MOTIF
 
     if (refresh_graph_edit_timer == 0)
     {
+#ifdef IF_MOTIF
 	refresh_graph_edit_timer = 
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(graph_edit),
 			    0, RefreshGraphEditCB, XtPointer(&state));
+#else // NOT IF_MOTIF
+	refresh_graph_edit_timer = 
+	    Glib::signal_idle().connect(sigc::bind_return(sigc::bind(PTR_FUN(RefreshGraphEditCB),
+								     &state),
+							  false));
+#endif // IF_MOTIF
     }
 
     refresh_builtin_user_displays();
@@ -2042,24 +2239,27 @@ void DataDisp::refresh_graph_edit(bool silent)
     refresh_display_list(silent);
 }
 
-void DataDisp::RefreshGraphEditCB(XtPointer client_data, XtIntervalId *id)
+TIMEOUT_RETURN_TYPE DataDisp::RefreshGraphEditCB(TM_ALIST_1(XtP(GraphEditLayoutState *)client_data))
 {
-    (void) id;			// Use it
+    refresh_graph_edit_timer = NO_TIMER;
 
-    assert(*id == refresh_graph_edit_timer);
-    refresh_graph_edit_timer = 0;
+    static GraphEditLayoutState state;
 
-    static GraphEditState state;
-
+#ifdef IF_MOTIF
     XtVaGetValues(graph_edit,
 		  XtNautoLayout, &state.autoLayout,
 		  XtNsnapToGrid, &state.snapToGrid,
 		  XtPointer(0));
+#else // NOT IF_MOTIF
+    state.autoLayout = graph_edit->get_auto_layout();
+    state.snapToGrid = graph_edit->get_snap_to_grid();
+#endif // IF_MOTIF
 
-    const GraphEditState& old_state = *((GraphEditState *) client_data);
+    const GraphEditLayoutState& old_state = *((GraphEditLayoutState *) client_data);
 
     static Graph *dummy = new Graph;
 
+#ifdef IF_MOTIF
     XtVaSetValues(graph_edit,
 		  XtNautoLayout, old_state.autoLayout,
 		  XtNsnapToGrid, old_state.snapToGrid,
@@ -2068,17 +2268,24 @@ void DataDisp::RefreshGraphEditCB(XtPointer client_data, XtIntervalId *id)
     XtVaSetValues(graph_edit,
 		  XtNgraph, (Graph *)disp_graph,
 		  XtPointer(0));
-    XtVaSetValues(graph_edit,
-		  XtNautoLayout, state.autoLayout,
-		  XtNsnapToGrid, state.snapToGrid,
-		  XtPointer(0));
+#else // NOT IF_MOTIF
+    graph_edit->set_auto_layout(old_state.autoLayout);
+    graph_edit->set_snap_to_grid(old_state.snapToGrid);
+    graph_edit->set_graph(disp_graph);
+    graph_edit->set_auto_layout(state.autoLayout);
+    graph_edit->set_snap_to_grid(state.snapToGrid);
+#endif // IF_MOTIF
 }
 
 // ***************************************************************************
 //
 inline int DataDisp::getDispNrAtPoint (const BoxPoint& point)
 {
+#ifdef IF_MOTIF
     GraphNode* gn = graphEditGetNodeAtPoint (graph_edit, point);
+#else // NOT IF_MOTIF
+    GraphNode* gn = graph_edit->graphEditGetNodeAtPoint(point);
+#endif // IF_MOTIF
     if (gn == 0)
 	return 0;
 
@@ -2109,7 +2316,7 @@ void DataDisp::no_displaysHP (void*, void* , void* call_data)
 
 bool DataDisp::lose_selection = true;
 
-void DataDisp::SelectionLostCB(Widget, XtPointer, XtPointer)
+void DataDisp::SelectionLostCB(CB_ALIST_NULL)
 {
     if (!lose_selection)
 	return;
@@ -2123,7 +2330,11 @@ void DataDisp::SelectionLostCB(Widget, XtPointer, XtPointer)
 	{
 	    gn->selected() = false;
 	    changed = true;
+#ifdef IF_MOTIF
 	    graphEditRedrawNode(graph_edit, gn);
+#else // NOT IF_MOTIF
+	    graph_edit->graphEditRedrawNode(gn);
+#endif // IF_MOTIF
 	}
     }
 
@@ -2140,7 +2351,7 @@ void DataDisp::SelectionLostCB(Widget, XtPointer, XtPointer)
 
 void DataDisp::graph_dereferenceAct (Widget w, XEvent*, String*, Cardinal*)
 {
-    dereferenceCB(w, 0, 0);
+    dereferenceCB(CB_ARGS_1(w));
 }
 
 void DataDisp::graph_detailAct (Widget w, XEvent *, 
@@ -2150,17 +2361,17 @@ void DataDisp::graph_detailAct (Widget w, XEvent *,
     if (params != 0 && num_params != 0 && *num_params >= 1)
 	depth = atoi(params[0]);
 
-    toggleDetailCB(w, XtPointer(depth), 0);
+    toggleDetailCB(CB_ARGS_12(w, depth));
 }
 
 void DataDisp::graph_rotateAct (Widget w, XEvent*, String*, Cardinal*)
 {
-    rotateCB(w, XtPointer(false), 0);
+    rotateCB(CB_ARGS_12(w, false));
 }
 
 void DataDisp::graph_dependentAct (Widget w, XEvent*, String*, Cardinal*)
 {
-    dependentCB(w, 0, 0);
+    dependentCB(CB_ARGS_1(w));
 }
 
 
@@ -2176,11 +2387,23 @@ void DataDisp::call_selection_proc(Widget w,
 {
     // Let multi-clicks pass right through
     Time t = time(event);
+#ifdef IF_MOTIF
     if (Time(t - last_select_time) > Time(XtGetMultiClickTime(XtDisplay(w))))
 	set_args(point(event), mode);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning multi-click time hardwired.
+#endif
+    if (Time(t - last_select_time) > Time(200))
+	set_args(point(event), mode);
+#endif // IF_MOTIF
     last_select_time = t;
 
+#ifdef IF_MOTIF
     XtCallActionProc(w, name, event, args, num_args);
+#else // NOT IF_MOTIF
+    std::cerr << "XtCallActionProc " << name << "\n";
+#endif // IF_MOTIF
 }
 
 void DataDisp::graph_selectAct (Widget, XEvent* event, String* args, 
@@ -2237,9 +2460,9 @@ void DataDisp::graph_popupAct (Widget, XEvent* event, String *args,
 	MMaddCallbacks(node_popup,      XtPointer(p));
 	MMaddCallbacks(shortcut_popup1, XtPointer(p));
 
-	MMaddHelpCallback(graph_popup,     ImmediateHelpCB);
-	MMaddHelpCallback(node_popup,      ImmediateHelpCB);
-	MMaddHelpCallback(shortcut_popup1, ImmediateHelpCB);
+	MMaddHelpCallback(graph_popup,     PTR_FUN(ImmediateHelpCB));
+	MMaddHelpCallback(node_popup,      PTR_FUN(ImmediateHelpCB));
+	MMaddHelpCallback(shortcut_popup1, PTR_FUN(ImmediateHelpCB));
     }
     *p = point(event);
 
@@ -2249,11 +2472,16 @@ void DataDisp::graph_popupAct (Widget, XEvent* event, String *args,
     if (num_args != 0 && *num_args > 0)
 	arg = downcase(args[0]);
 
-    Widget popup = 0;
+    MENU_P popup = 0;
     if (arg == "graph" || selected_node() == 0)
 	popup = graph_popup_w;
     else if (arg == "shortcut" 
-	     || (arg.empty() && event->xbutton.state & ShiftMask))
+#ifdef IF_MOTIF
+	     || (arg.empty() && event->xbutton.state & ShiftMask)
+#else // NOT IF_MOTIF
+	     || (arg.empty() && event->button.state & ShiftMask)
+#endif // IF_MOTIF
+	)
 	popup = shortcut_popup_w;
     else if (arg == "node" || arg.empty())
 	popup = node_popup_w;
@@ -2262,8 +2490,12 @@ void DataDisp::graph_popupAct (Widget, XEvent* event, String *args,
 
     if (popup != 0)
     {
+#ifdef IF_MOTIF
 	XmMenuPosition(popup, &event->xbutton);
 	XtManageChild(popup);
+#else // NOT IF_MOTIF
+	popup->popup(0, 0);
+#endif // IF_MOTIF
     }
 }
 
@@ -2294,7 +2526,11 @@ void DataDisp::set_args(const BoxPoint& p, SelectionMode mode)
 		// so toggle the entire node.
 		disp_node->selected() = false;
 		disp_node->select(0);
+#ifdef IF_MOTIF
 		graphEditRedrawNode(graph_edit, disp_node);
+#else // NOT IF_MOTIF
+		graph_edit->graphEditRedrawNode(disp_node);
+#endif // IF_MOTIF
 		break;
 	    }
 	    // FALL THROUGH
@@ -2303,7 +2539,11 @@ void DataDisp::set_args(const BoxPoint& p, SelectionMode mode)
 	    if (disp_value != disp_node->selected_value())
 	    {
 		disp_node->select(disp_value);
+#ifdef IF_MOTIF
 		graphEditRedrawNode(graph_edit, disp_node);
+#else // NOT IF_MOTIF
+		graph_edit->graphEditRedrawNode(disp_node);
+#endif // IF_MOTIF
 	    }
 	    break;
 	}
@@ -2332,8 +2572,13 @@ void DataDisp::set_args(const BoxPoint& p, SelectionMode mode)
 		    redraw = (dn->highlight() != 0);
 		dn->select(0);
 
-		if (redraw)
+		if (redraw) {
+#ifdef IF_MOTIF
 		    graphEditRedrawNode(graph_edit, dn);
+#else // NOT IF_MOTIF
+		    graph_edit->graphEditRedrawNode(dn);
+#endif // IF_MOTIF
+		}
 	    }
 	}
     }
@@ -2350,9 +2595,19 @@ void DataDisp::set_args(const BoxPoint& p, SelectionMode mode)
     for (i = 0; i < all_themes.size() && theme_menu[i].widget != 0; i++)
     {
 	const string& theme = all_themes[i];
-	Widget& button = theme_menu[i].widget;
+#ifdef NAG_ME
+#warning Do we really need a reference here?
+#endif
+	TOGGLEBUTTON_P button = static_cast<TOGGLEBUTTON_P>(theme_menu[i].widget);
+#ifdef IF_MOTIF
 	XtVaSetValues(button, XmNuserData, theme.chars(), XtPointer(0));
-
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Using user data in this way is evil in an OO program.
+#warning We should have a class ThemeButton: public Gtk::Button
+#endif
+	button->property_user_data() = (void *)theme.chars();
+#endif // IF_MOTIF
 	bool set = false;
 	for (int j = 0; j < current_themes.size(); j++)
 	    if (theme == current_themes[j])
@@ -2498,11 +2753,16 @@ void DataDisp::refresh_args(bool update_arg)
     if (update_arg)
 	arg_needs_update = true;
 
-    if (refresh_args_timer == 0)
+    if (refresh_args_timer == NO_TIMER)
     {
+#ifdef IF_MOTIF
 	refresh_args_timer = 
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(graph_edit),
 			    0, RefreshArgsCB, XtPointer(graph_edit));
+#else // NOT IF_MOTIF
+	refresh_args_timer = 
+	    Glib::signal_idle().connect(PTR_FUN(RefreshArgsCB));
+#endif // IF_MOTIF
     }
 
     // Synchronize node selection with cluster: if cluster is
@@ -2553,16 +2813,18 @@ void DataDisp::refresh_args(bool update_arg)
 
 	if (dn->selected() != old_selected || dn->highlight() != old_highlight)
 	{
+#ifdef IF_MOTIF
 	    graphEditRedrawNode(graph_edit, dn);
+#else // NOT IF_MOTIF
+	    graph_edit->graphEditRedrawNode(dn);
+#endif // IF_MOTIF
 	}
     }
 }
 
-void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
+TIMEOUT_RETURN_TYPE DataDisp::RefreshArgsCB(TM_ALIST_NULL)
 {
-    (void) timer_id;		// Use it
-    assert(*timer_id == refresh_args_timer);
-    refresh_args_timer = 0;
+    refresh_args_timer = NO_TIMER;
 
     DataDispCount count(disp_graph);
 
@@ -2577,8 +2839,13 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 	    bool redraw = (dn->highlight() != 0);
 
 	    dn->select(0);
-	    if (redraw)
+	    if (redraw) {
+#ifdef IF_MOTIF
 		graphEditRedrawNode(graph_edit, dn);
+#else // NOT IF_MOTIF
+		graph_edit->graphEditRedrawNode(dn);
+#endif // IF_MOTIF
+	    }
 	}
     }
 
@@ -2854,22 +3121,42 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     // LOSE_SELECTION, we make sure the associated callbacks return
     // immediately.
     lose_selection = false;
+#ifdef IF_MOTIF
     XmTextSetString(graph_selection_w, XMST(cmd.chars()));
+#else // NOT IF_MOTIF
+    std::cerr << "Set text in graph_selection_w not implemented\n";
+    // graph_selection_w->set_text(XMST(cmd.chars()));
+#endif // IF_MOTIF
     lose_selection = true;
 
+#ifdef IF_MOTIF
     Time tm = XtLastTimestampProcessed(XtDisplay(graph_selection_w));
+#endif // IF_MOTIF
 
     if (cmd.empty())
     {
 	// Nothing selected - clear selection explicitly
+#ifdef IF_MOTIF
 	XmTextClearSelection(graph_selection_w, tm);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning XmTextClearSelection not implemented.
+#endif
+#endif // IF_MOTIF
     }
     else
     {
 	// Own the selection
+#ifdef IF_MOTIF
 	TextSetSelection(graph_selection_w, 
 			 0, XmTextGetLastPosition(graph_selection_w), tm);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning TextSetSelection not implemented.
+#endif
+#endif // IF_MOTIF
     }
+    return MAYBE_FALSE;
 }
 
 
@@ -3016,8 +3303,12 @@ void DataDisp::get_node_state(std::ostream& os, DispNode *dn, bool include_posit
 
 		BoxPoint offset = 
 		    (dn->box()->size() - empty_cluster.box()->size()) / 2;
-		    
+
+#ifdef IF_MOTIF		    
 		pos = graphEditFinalPosition(graph_edit, pos - offset);
+#else // NOT IF_MOTIF
+		pos = graph_edit->final_position(pos - offset);
+#endif // IF_MOTIF
 	    }
 
 	    os << " at " << pos;
@@ -3168,7 +3459,7 @@ int DataDisp::alias_display_nr(GraphNode *node)
 }
 
 // Update graph editor selection after a change in the display editor
-void DataDisp::UpdateGraphEditorSelectionCB(Widget, XtPointer, XtPointer)
+void DataDisp::UpdateGraphEditorSelectionCB(CB_ALIST_NULL)
 {
     IntArray display_nrs;
     getItemNumbers(display_list_w, display_nrs);
@@ -3206,7 +3497,11 @@ void DataDisp::UpdateGraphEditorSelectionCB(Widget, XtPointer, XtPointer)
 	if (select != dn->selected())
 	{
 	    dn->selected() = select;
+#ifdef IF_MOTIF
 	    graphEditRedrawNode(graph_edit, dn);
+#else // NOT IF_MOTIF
+	    graph_edit->graphEditRedrawNode(dn);
+#endif // IF_MOTIF
 	}
 
 	if (dn->hidden())
@@ -3221,7 +3516,11 @@ void DataDisp::UpdateGraphEditorSelectionCB(Widget, XtPointer, XtPointer)
 		    if (node->selected() != dn->selected())
 		    {
 			node->selected() = dn->selected();
+#ifdef IF_MOTIF
 			graphEditRedrawNode(graph_edit, node);
+#else // NOT IF_MOTIF
+			graph_edit->graphEditRedrawNode(node);
+#endif // IF_MOTIF
 		    }
 		}
 	    }
@@ -3235,7 +3534,11 @@ void DataDisp::UpdateGraphEditorSelectionCB(Widget, XtPointer, XtPointer)
 	if (is_cluster(dn) && dn->selected_value() != 0)
 	{
 	    dn->select();
+#ifdef IF_MOTIF
 	    graphEditRedrawNode(graph_edit, dn);
+#else // NOT IF_MOTIF
+	    graph_edit->graphEditRedrawNode(dn);
+#endif // IF_MOTIF
 	}
     }
 
@@ -3294,7 +3597,11 @@ void DataDisp::UpdateGraphEditorSelectionCB(Widget, XtPointer, XtPointer)
 	    }
 	}
 
+#ifdef IF_MOTIF
 	graphEditRedrawNode(graph_edit, cluster);
+#else // NOT IF_MOTIF
+	graph_edit->graphEditRedrawNode(cluster);
+#endif // IF_MOTIF
     }
 
     refresh_args(true);
@@ -3302,7 +3609,7 @@ void DataDisp::UpdateGraphEditorSelectionCB(Widget, XtPointer, XtPointer)
 }
 
 // Update display editor selection after a change in the graph editor
-void DataDisp::UpdateDisplayEditorSelectionCB(Widget, XtPointer, XtPointer)
+void DataDisp::UpdateDisplayEditorSelectionCB(CB_ALIST_NULL)
 {
     // Synchronize alias nodes with hint nodes
     for (GraphNode *node = disp_graph->firstNode();
@@ -3320,7 +3627,11 @@ void DataDisp::UpdateDisplayEditorSelectionCB(Widget, XtPointer, XtPointer)
 	if (node->selected() != dn->selected())
 	{
 	    dn->selected() = node->selected();
+#ifdef IF_MOTIF
 	    graphEditRedrawNode(graph_edit, dn);
+#else // NOT IF_MOTIF
+	    graph_edit->graphEditRedrawNode(dn);
+#endif // IF_MOTIF
 	}
     }
 
@@ -3333,7 +3644,7 @@ void DataDisp::UpdateDisplayEditorSelectionCB(Widget, XtPointer, XtPointer)
 // Sorting nodes for layout
 //-----------------------------------------------------------------------
 
-void DataDisp::CompareNodesCB(Widget, XtPointer, XtPointer call_data)
+void DataDisp::CompareNodesCB(CB_ALIST_3(XtP(GraphEditCompareNodesInfo *) call_data))
 {
     GraphEditCompareNodesInfo *info = (GraphEditCompareNodesInfo *)call_data;
 
@@ -3402,7 +3713,7 @@ void DataDisp::CompareNodesCB(Widget, XtPointer, XtPointer call_data)
 static regex rxmore_than_one ("-?[0-9]+\\.\\.-?[0-9]+");
 #endif
 
-void DataDisp::again_new_displaySQ (XtPointer client_data, XtIntervalId *)
+TIMEOUT_RETURN_TYPE DataDisp::again_new_displaySQ (TM_ALIST_1(XtP(NewDisplayInfo *) client_data))
 {
     NewDisplayInfo *info = (NewDisplayInfo *)client_data;
     new_displaySQ(info->display_expression, info->scope, info->point_ptr, 
@@ -3497,9 +3808,16 @@ void DataDisp::new_displaySQ (const string& display_expression,
 
 	// As soon as the VSL library will be completely read, we
 	// shall enter the main DDD event loop and get called again.
+#ifdef IF_MOTIF
 	XtAppAddTimeOut(XtWidgetToApplicationContext(graph_edit),
 			100, again_new_displaySQ, 
 			new NewDisplayInfo(info));
+#else // NOT IF_MOTIF
+	Glib::signal_timeout().connect(sigc::bind_return(sigc::bind(PTR_FUN(again_new_displaySQ),
+								    new NewDisplayInfo(info)),
+							 false),
+				       100);
+#endif // IF_MOTIF
 	return;
     }
     delete reading_delay;
@@ -3839,7 +4157,11 @@ void DataDisp::refresh_builtin_user_displays()
 	}
 
 	dn->refresh();
+#ifdef IF_MOTIF
 	graphEditRedrawNode(graph_edit, dn);
+#else // NOT IF_MOTIF
+	graph_edit->graphEditRedrawNode(dn);
+#endif // IF_MOTIF
     }
 
     delete s;
@@ -3855,7 +4177,7 @@ void DataDisp::refresh_builtin_user_displays()
 void DataDisp::open_data_window()
 {
     // Make sure graph is visible
-    gdbOpenDataWindowCB(graph_edit, 0, 0);
+    gdbOpenDataWindowCB(CB_ARGS_NULL);
 }
 
 void DataDisp::close_data_window()
@@ -3866,7 +4188,7 @@ void DataDisp::close_data_window()
     }
     else
     {
-	gdbCloseDataWindowCB(graph_edit, 0, 0);
+	gdbCloseDataWindowCB(CB_ARGS_1(graph_edit));
     }
 }
 
@@ -5659,16 +5981,20 @@ void DataDisp::refresh_display_list(bool silent)
 
     // We refresh the list as soon as we return from the callback
     // (LessTif is sensitive about this)
+#ifdef IF_MOTIF
     XtAppAddTimeOut(XtWidgetToApplicationContext(display_list_w),
 		    0, RefreshDisplayListCB,
 		    (silent ? XtPointer(1):XtPointer(0)) );
+#else // NOT IF_MOTIF
+    Glib::signal_idle().connect(sigc::bind_return(sigc::bind(PTR_FUN(RefreshDisplayListCB),
+							     (silent?1:0)),
+						  false));
+#endif // IF_MOTIF
 }
 
 
-void DataDisp::RefreshDisplayListCB(XtPointer client_data, XtIntervalId *id)
+TIMEOUT_RETURN_TYPE DataDisp::RefreshDisplayListCB(TM_ALIST_1(XtP(bool) client_data))
 {
-    (void) id;			// Use it
-
     const bool silent = client_data?true:false;
     const int number_of_displays = disp_graph->count_all();
 
@@ -5890,7 +6216,7 @@ void DataDisp::RefreshDisplayListCB(XtPointer client_data, XtIntervalId *id)
 }
 
 
-void DataDisp::EditDisplaysCB(Widget, XtPointer, XtPointer)
+void DataDisp::EditDisplaysCB(CB_ALIST_NULL)
 {
     manage_and_raise(edit_displays_dialog_w);
 }
@@ -5902,8 +6228,8 @@ void DataDisp::EditDisplaysCB(Widget, XtPointer, XtPointer)
 
 struct SetInfo {
     string name;		// The variable to be set
-    Widget text;		// The widget containing the value
-    Widget dialog;		// The prompt dialog used
+    COMBOBOXENTRYTEXT_P text;	// The widget containing the value
+    DIALOG_P dialog;		// The prompt dialog used
     bool running;		// True if a command has been submitted
 
     SetInfo()
@@ -5915,7 +6241,11 @@ private:
     SetInfo& operator=(const SetInfo&);
 };
 
+#ifdef IF_MOTIF
 void DataDisp::DeleteSetInfoCB(Widget, XtPointer client_data, XtPointer)
+#else // NOT IF_MOTIF
+void *DataDisp::DeleteSetInfoCB(void *client_data)
+#endif // IF_MOTIF
 {
     SetInfo *info = (SetInfo *)client_data;
     info->dialog = 0;
@@ -5931,7 +6261,7 @@ void DataDisp::DeleteSetInfoCB(Widget, XtPointer client_data, XtPointer)
     }
 }
 
-void DataDisp::setCB(Widget w, XtPointer, XtPointer)
+void DataDisp::setCB(CB_ALIST_1(Widget w))
 {
     if (!gdb->has_assign_command())
 	return;
@@ -5966,6 +6296,7 @@ void DataDisp::setCB(Widget w, XtPointer, XtPointer)
     info->name = name;
     info->running = false;
 
+#ifdef IF_MOTIF
     Arg args[10];
     int arg = 0;
 
@@ -5974,9 +6305,14 @@ void DataDisp::setCB(Widget w, XtPointer, XtPointer)
     info->dialog = 
 	verify(XmCreatePromptDialog(find_shell(w), 
 				    XMST("set_dialog"), args, arg));
+#else // NOT IF_MOTIF
+    info->dialog = 
+	new Gtk::Dialog(XMST("set_dialog"), *find_shell(w));
+#endif // IF_MOTIF
 
     Delay::register_shell(info->dialog);
 
+#ifdef IF_MOTIF
     XtAddCallback(info->dialog, XmNdestroyCallback, 
 		  DeleteSetInfoCB, XtPointer(info));
 
@@ -5987,7 +6323,11 @@ void DataDisp::setCB(Widget w, XtPointer, XtPointer)
 					   XmDIALOG_TEXT));
     XtUnmanageChild(XmSelectionBoxGetChild(info->dialog, 
 					   XmDIALOG_SELECTION_LABEL));
+#else // NOT IF_MOTIF
+    info->dialog->add_destroy_notify_callback(info, DeleteSetInfoCB);
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     arg = 0;
     XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
     XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
@@ -5996,21 +6336,39 @@ void DataDisp::setCB(Widget w, XtPointer, XtPointer)
     Widget box = verify(XmCreateRowColumn(info->dialog, 
 					  XMST("box"), args, arg));
     XtManageChild(box);
+#else // NOT IF_MOTIF
+    BOX_P box = new Gtk::HBox();
+    info->dialog->get_vbox()->pack_start(*box, Gtk::PACK_SHRINK);
+    box->show();
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     arg = 0;
     MString prompt = MString("Set value of ") + tt(name);
     XtSetArg(args[arg], XmNalignment, XmALIGNMENT_BEGINNING); arg++;
     XtSetArg(args[arg], XmNlabelString, prompt.xmstring());   arg++;
     Widget label = verify(XmCreateLabel(box, XMST("label"), args, arg));
     XtManageChild(label);
+#else // NOT IF_MOTIF
+    LABEL_P label = new Gtk::Label(XMST("label"));
+    box->pack_start(*label, Gtk::PACK_SHRINK);
+    label->show();
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     arg = 0;
     XtSetArg(args[arg], XmNvalue, value.chars()); arg++;
     info->text = verify(CreateComboBox(box, "text", args, arg));
     XtManageChild(info->text);
+#else // NOT IF_MOTIF
+    info->text = new Gtk::ComboBoxEntryText();
+    box->pack_start(*info->text, Gtk::PACK_SHRINK);
+    info->text->show();
+#endif // IF_MOTIF
 
     tie_combo_box_to_history(info->text, set_history_filter);
 
+#ifdef IF_MOTIF
     XtAddCallback(info->dialog, XmNokCallback,     setDCB, XtPointer(info));
     XtAddCallback(info->dialog, XmNapplyCallback,  setDCB, XtPointer(info));
     XtAddCallback(info->dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
@@ -6020,6 +6378,15 @@ void DataDisp::setCB(Widget w, XtPointer, XtPointer)
 
     Widget apply = XmSelectionBoxGetChild(info->dialog, XmDIALOG_APPLY_BUTTON);
     XtManageChild(apply);
+#else // NOT IF_MOTIF
+    BUTTON_P button;
+    button = info->dialog->add_button(XMST("OK"), 0);
+    button->signal_clicked().connect(sigc::bind(PTR_FUN(setDCB), info, 0));
+    button = info->dialog->add_button(XMST("Apply"), 0);
+    button->signal_clicked().connect(sigc::bind(PTR_FUN(setDCB), info, 1));
+    button = info->dialog->add_button(XMST("Cancel"), 0);
+    button->signal_clicked().connect(sigc::bind(PTR_FUN(DestroyThisCB), info->dialog));
+#endif // IF_MOTIF
     manage_and_raise(info->dialog);
 }
 
@@ -6041,25 +6408,46 @@ void DataDisp::SetDone(const string& complete_answer, void *qu_data)
 	return;			// Bad value - keep dialog open
 
     // All done - pop down dialog
+#ifdef IF_MOTIF
     XtDestroyWidget(info->dialog);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Delete widget OK?
+#endif
+    delete info->dialog;
+#endif // IF_MOTIF
 }
 
+#ifdef IF_MOTIF
 void DataDisp::setDCB(Widget, XtPointer client_data, XtPointer call_data)
+#else // NOT IF_MOTIF
+void DataDisp::setDCB(SetInfo *client_data, int apply)
+#endif // IF_MOTIF
 {
     SetInfo *info = (SetInfo *)client_data;
 
     if (info->running)
 	return;			// Already running with a value
 
+#ifdef IF_MOTIF
     XmSelectionBoxCallbackStruct *cbs = 
 	(XmSelectionBoxCallbackStruct *)call_data;
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     String value_s = XmTextFieldGetString(info->text);
     string value(value_s);
     XtFree(value_s);
+#else // NOT IF_MOTIF
+    string value(info->text->get_entry()->get_text().c_str());
+#endif // IF_MOTIF
 
     Command c(gdb->assign_command(info->name, value), last_origin);
+#ifdef IF_MOTIF
     if (cbs->reason != XmCR_APPLY)
+#else // NOT IF_MOTIF
+    if (!apply)
+#endif // IF_MOTIF
     {
 	// We've pressed OK => destroy widget as soon as command completes.
 
@@ -6218,23 +6606,22 @@ void DataDisp::set_cluster_displays(bool value)
     }
 }
 
-void DataDisp::toggleClusterSelectedCB(Widget w, XtPointer client_data, 
-				       XtPointer call_data)
+void DataDisp::toggleClusterSelectedCB(CB_ALIST_NULL)
 {
     DataDispCount count(disp_graph);
 
     if (count.selected_unclustered > 0)
     {
-	clusterSelectedCB(w, client_data, call_data);
+	clusterSelectedCB(CB_ARGS_NULL);
     }
     else
     {
-	unclusterSelectedCB(w, client_data, call_data);
+	unclusterSelectedCB(CB_ARGS_NULL);
     }
 }
 
 // Uncluster selected nodes (and clusters)
-void DataDisp::unclusterSelectedCB(Widget, XtPointer, XtPointer)
+void DataDisp::unclusterSelectedCB(CB_ALIST_NULL)
 {
     // Uncluster selected nodes
     MapRef ref;
@@ -6275,7 +6662,7 @@ void DataDisp::unclusterSelectedCB(Widget, XtPointer, XtPointer)
 }
 
 // Cluster selected nodes into a new cluster
-void DataDisp::clusterSelectedCB(Widget, XtPointer, XtPointer)
+void DataDisp::clusterSelectedCB(CB_ALIST_NULL)
 {
     int target_cluster = 0;
     IntArray all_clusters;
@@ -6384,26 +6771,22 @@ int DataDisp::add_refresh_addr_commands(StringArray& cmds, DispNode *dn)
 // Refresh all addresses
 void DataDisp::refresh_addr(DispNode *dn)
 {
-    if (refresh_addr_timer != 0)
+    if (refresh_addr_timer != NO_TIMER)
     {
+#ifdef IF_MOTIF
 	XtRemoveTimeOut(refresh_addr_timer);
-	refresh_addr_timer = 0;
+#else // NOT IF_MOTIF
+	refresh_addr_timer.disconnect();
+#endif // IF_MOTIF
+	refresh_addr_timer = NO_TIMER;
 	dn = 0;
     }
 
-    RefreshAddrCB(XtPointer(dn), (XtIntervalId *)0);
+    RefreshAddr(dn);
 }
 
-void DataDisp::RefreshAddrCB(XtPointer client_data, XtIntervalId *id)
+TIMEOUT_RETURN_TYPE DataDisp::RefreshAddr(DispNode *dn, bool in_cb)
 {
-    if (id != 0)
-    {
-	assert (*id == refresh_addr_timer);
-	refresh_addr_timer = 0;
-    }
-
-    DispNode *dn = (DispNode *)client_data;
-
     bool ok = false;
     bool sent = false;
     if (can_do_gdb_command())
@@ -6440,18 +6823,48 @@ void DataDisp::RefreshAddrCB(XtPointer client_data, XtIntervalId *id)
 
     if (!ok)
     {
+#ifdef IF_MOTIF
 	// Commands not sent - try again in 50 ms
 	refresh_addr_timer = 
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(graph_edit),
-			    50, RefreshAddrCB, client_data);
+			    50, RefreshAddrCB, dn);
+#else // NOT IF_MOTIF
+	if (!in_cb) {
+	    refresh_addr_timer = 
+		Glib::signal_timeout().connect(sigc::bind(PTR_FUN(RefreshAddrCB), dn), 50);
+	}
+	return true;
+#endif // IF_MOTIF
+    }
+    else {
+#ifndef IF_MOTIF
+	refresh_addr_timer = NO_TIMER;
+#endif // IF_MOTIF
     }
 
     if (sent)
     {
 	// At least one command sent - disable redisplay until we have
 	// processed all addresses
+#ifdef IF_MOTIF
 	graphEditEnableRedisplay(graph_edit, False);
+#else // NOT IF_MOTIF
+	graph_edit->enable_redisplay(false);
+#endif // IF_MOTIF
     }
+    return MAYBE_FALSE;
+}
+
+TIMEOUT_RETURN_TYPE DataDisp::RefreshAddrCB(TM_ALIST_1(XtP(DispNode *) client_data))
+{
+#ifdef IF_MOTIF
+    refresh_addr_timer = NO_TIMER;
+#endif // IF_MOTIF
+
+    DispNode *dn = (DispNode *)client_data;
+
+    return RefreshAddr(dn, true);
+
 }
 
 // Handle output of addr commands
@@ -6497,7 +6910,11 @@ void DataDisp::process_addr (StringArray& answers)
     }
 
     // Re-enable redisplay
+#ifdef IF_MOTIF
     graphEditEnableRedisplay(graph_edit, True);
+#else // NOT IF_MOTIF
+    graph_edit->enable_redisplay(true);
+#endif // IF_MOTIF
 
     if (changed)
 	refresh_display_list(suppressed);
@@ -6741,17 +7158,21 @@ bool DataDisp::unmerge_display(int disp_nr)
     return disp_graph->unalias(disp_nr);
 }
 
-void DataDisp::PreLayoutCB(Widget w, XtPointer, XtPointer)
+void DataDisp::PreLayoutCB(CB_ALIST_1(GRAPH_EDIT_P w))
 {
     if (detect_aliases)
     {
 	// Don't redisplay while or after layouting
+#ifdef IF_MOTIF
 	graphEditEnableRedisplay(w, False);
+#else // NOT IF_MOTIF
+	w->enable_redisplay(false);
+#endif // IF_MOTIF
     }
 }
 
 // Re-enable aliases after layouting
-void DataDisp::PostLayoutCB(Widget w, XtPointer, XtPointer)
+void DataDisp::PostLayoutCB(CB_ALIST_1(GRAPH_EDIT_P w))
 {
     if (detect_aliases)
     {
@@ -6766,7 +7187,11 @@ void DataDisp::PostLayoutCB(Widget w, XtPointer, XtPointer)
 	check_aliases();
 
 	// Okay - we can redisplay now
+#ifdef IF_MOTIF
 	graphEditEnableRedisplay(w, True);
+#else // NOT IF_MOTIF
+	w->enable_redisplay(true);
+#endif // IF_MOTIF
 	refresh_graph_edit();
     }
 }
@@ -6825,7 +7250,11 @@ bool DataDisp::bump(RegionGraphNode *node, const BoxSize& newSize)
     if (dn != 0 && (!dn->active() || dn->clustered()))
 	return true;		// Clustered or inactive
 
+#ifdef IF_MOTIF
     const GraphGC& gc = graphEditGetGraphGC(graph_edit);
+#else // NOT IF_MOTIF
+    const GraphGC& gc = graph_edit->get_graph_GC();
+#endif // IF_MOTIF
     BoxRegion oldRegion = node->region(gc);
 
     // Do the resize, but don't get called recursively
@@ -6898,7 +7327,7 @@ void DataDisp::set_theme_manager(const ThemeManager& t)
 	dn->reset();
     }
 
-    unselectAllCB(graph_edit, 0, 0);
+    unselectAllCB(CB_ARGS_1(graph_edit));
 }
 
 
@@ -6907,11 +7336,17 @@ void DataDisp::set_theme_manager(const ThemeManager& t)
 // Constructor
 //----------------------------------------------------------------------------
 
-DataDisp::DataDisp(Widget parent, Widget& data_buttons_w)
+DataDisp::DataDisp(CONTAINER_P parent, Widget& data_buttons_w)
 {
     XtAppContext app_context = XtWidgetToApplicationContext(parent);
 
+#ifdef IF_MOTIF
     registerOwnConverters();
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Converters not implemented.
+#endif
+#endif // IF_MOTIF
 
     // Init globals
     StringBox::fontTable      = new FontTable (XtDisplay(parent));
@@ -6935,7 +7370,7 @@ DataDisp::DataDisp(Widget parent, Widget& data_buttons_w)
     if (app_data.button_captions || app_data.button_images)
 	label_type = XmPIXMAP;
 
-    Widget arg_label = 0;
+    BUTTON_P arg_label = 0;
     if (graph_cmd_w == 0 && !app_data.toolbars_at_bottom)
     {
 	graph_cmd_w = create_toolbar(parent, "graph", 
@@ -6949,6 +7384,7 @@ DataDisp::DataDisp(Widget parent, Widget& data_buttons_w)
 	    make_buttons(parent, "data_buttons", app_data.data_buttons);
 
     // Create graph editor
+#ifdef IF_MOTIF
     Arg args[10];
     int arg = 0;
     XtSetArg (args[arg], ARGSTR(XtNgraph), (Graph *)disp_graph); arg++;
@@ -6964,15 +7400,31 @@ DataDisp::DataDisp(Widget parent, Widget& data_buttons_w)
 	graph_edit = createScrolledGraphEdit(parent, "graph_edit", args, arg);
 	graph_form_w = scrollerOfGraphEdit(graph_edit);
     }
+#else // NOT IF_MOTIF
+    graph_edit = new GtkGraphEdit();
+    graph_form_w = graph_edit;
+#endif // IF_MOTIF
 
     set_last_origin(graph_edit);
 
+#ifdef IF_MOTIF
     // Add actions
     XtAppAddActions (app_context, actions, XtNumber (actions));
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Actions not implemented.
+#endif
+#endif // IF_MOTIF
     XtManageChild (graph_edit);
 
     // Create buttons
+#ifdef IF_MOTIF
     registerOwnConverters();
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Converters not implemented.
+#endif
+#endif // IF_MOTIF
 
     if (graph_cmd_w == 0)
     {
@@ -6983,24 +7435,39 @@ DataDisp::DataDisp(Widget parent, Widget& data_buttons_w)
 
     if (arg_label != 0)
     {
+#ifdef IF_MOTIF
 	XtAddCallback(arg_label, XmNactivateCallback,
 		      SelectionLostCB, XtPointer(0));
 	XtAddCallback(arg_label, XmNactivateCallback, 
 		      ClearTextFieldCB, graph_arg->text());
+#else // NOT IF_MOTIF
+	arg_label->signal_activate().connect(PTR_FUN(SelectionLostCB));
+	arg_label->signal_activate().connect(sigc::bind(PTR_FUN(ClearTextFieldCB), graph_arg->text()));
+#endif // IF_MOTIF
     }
 
     // Create (unmanaged) selection widget
+#ifdef IF_MOTIF
     graph_selection_w =
 	verify(XmCreateText(graph_cmd_w, XMST("graph_selection"), 
 			    ArgList(0), 0));
     XtAddCallback(graph_selection_w, XmNlosePrimaryCallback, 
 		  SelectionLostCB, XtPointer(0));
+#else // NOT IF_MOTIF
+    std::cerr << "Create graph_selection_w: not implemented\n";
+    // graph_selection_w = new GtkScrolledText();
+#ifdef NAG_ME
+#warning Unmanaged graph selection widget callbacks not implemented.
+#endif
+#endif // IF_MOTIF
 }
 
 void DataDisp::create_shells()
 {
+#ifdef IF_MOTIF
     Arg args[10];
     Cardinal arg = 0;
+#endif // IF_MOTIF
 
     // Create menus
     graph_popup_w = 
@@ -7018,14 +7485,20 @@ void DataDisp::create_shells()
     disp_graph->callHandlers();
 
     // Create display editor
+#ifdef IF_MOTIF
     arg = 0;
     XtSetArg(args[arg], XmNvisibleItemCount, 0); arg++;
     edit_displays_dialog_w =
 	verify(createTopLevelSelectionDialog(find_shell(graph_edit), 
 					     "edit_displays_dialog", 
 					     args, arg));
+#else // NOT IF_MOTIF
+    edit_displays_dialog_w =
+	new Gtk::Dialog(XMST("edit_displays_dialog"), *find_shell(graph_edit));
+#endif // IF_MOTIF
     Delay::register_shell(edit_displays_dialog_w);
 
+#ifdef IF_MOTIF
     XtUnmanageChild(XmSelectionBoxGetChild(edit_displays_dialog_w,
 					   XmDIALOG_TEXT));
     XtUnmanageChild(XmSelectionBoxGetChild(edit_displays_dialog_w,
@@ -7039,6 +7512,18 @@ void DataDisp::create_shells()
 
     display_list_w = 
 	XmSelectionBoxGetChild(edit_displays_dialog_w, XmDIALOG_LIST);
+#else // NOT IF_MOTIF
+    Glib::RefPtr<Gtk::ListStore> display_list_store = Gtk::ListStore::create(display_list_columns);
+    display_list_w = 
+	new Gtk::TreeView(display_list_store);
+
+    display_list_w->append_column("Num", display_list_columns.num);
+    display_list_w->append_column("Expression", display_list_columns.expression);
+    display_list_w->append_column("State", display_list_columns.state);
+    display_list_w->append_column("Scope", display_list_columns.scope);
+    display_list_w->append_column("Address", display_list_columns.address);
+
+#endif // IF_MOTIF
 
     if (app_data.flat_dialog_buttons)
     {
@@ -7051,6 +7536,7 @@ void DataDisp::create_shells()
 
     Widget buttons = verify(MMcreateWorkArea(edit_displays_dialog_w, 
 					     "buttons", display_area));
+#ifdef IF_MOTIF
     XtVaSetValues(buttons,
 		  XmNmarginWidth,     0, 
 		  XmNmarginHeight,    0, 
@@ -7058,12 +7544,14 @@ void DataDisp::create_shells()
 		  XmNshadowThickness, 0, 
 		  XmNspacing,         0,
 		  XtPointer(0));
+#endif // IF_MOTIF
 
     MMaddCallbacks (display_area);
-    MMaddHelpCallback(display_area, ImmediateHelpCB);
+    MMaddHelpCallback(display_area, PTR_FUN(ImmediateHelpCB));
     register_menu_shell(display_area);
 
     // Add widget callbacks
+#ifdef IF_MOTIF
     XtAddCallback(graph_edit, XtNpreSelectionCallback,
 		  DoubleClickCB, XtPointer(this));
     XtAddCallback(graph_edit, XtNselectionChangedCallback,
@@ -7074,9 +7562,17 @@ void DataDisp::create_shells()
 		  PreLayoutCB, XtPointer(this));
     XtAddCallback(graph_edit, XtNpostLayoutCallback,
 		  PostLayoutCB, XtPointer(this));
+#else // NOT IF_MOTIF
+    graph_edit->signal_pre_selection().connect(sigc::bind<0>(PTR_FUN(&DataDisp::DoubleClickCB), graph_edit));
+    graph_edit->signal_selection_changed().connect(sigc::hide(PTR_FUN(&DataDisp::UpdateDisplayEditorSelectionCB)));
+    graph_edit->signal_compare_nodes().connect(PTR_FUN(&DataDisp::CompareNodesCB));
+    graph_edit->signal_pre_layout().connect(sigc::hide(sigc::bind<0>(PTR_FUN(&DataDisp::PreLayoutCB), graph_edit)));
+    graph_edit->signal_post_layout().connect(sigc::hide(sigc::bind<0>(PTR_FUN(&DataDisp::PostLayoutCB), graph_edit)));
+#endif // IF_MOTIF
 
     if (display_list_w != 0)
     {
+#ifdef IF_MOTIF
 	XtAddCallback(display_list_w,
 		      XmNsingleSelectionCallback,
 		      UpdateGraphEditorSelectionCB,
@@ -7093,10 +7589,14 @@ void DataDisp::create_shells()
 		      XmNbrowseSelectionCallback,
 		      UpdateGraphEditorSelectionCB,
 		      0);
+#else // NOT IF_MOTIF
+	display_list_w->get_selection()->signal_changed().connect(PTR_FUN(UpdateGraphEditorSelectionCB));
+#endif // IF_MOTIF
     }
 
     if (edit_displays_dialog_w != 0)
     {
+#ifdef IF_MOTIF
 	XtAddCallback(edit_displays_dialog_w,
 		      XmNokCallback,
 		      UnmanageThisCB,
@@ -7105,6 +7605,11 @@ void DataDisp::create_shells()
 		      XmNhelpCallback,
 		      ImmediateHelpCB,
 		      0);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning edit_displays_dialog_w OK button callback.
+#endif
+#endif // IF_MOTIF
     }
 
     // Add graph callbacks

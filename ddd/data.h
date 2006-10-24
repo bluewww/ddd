@@ -29,14 +29,20 @@
 #ifndef _DDD_data_h
 #define _DDD_data_h
 
+#ifdef IF_MOTIF
+
 #include <X11/Intrinsic.h>
 
-extern void graphAlignCB        (Widget, XtPointer, XtPointer);
-extern void graphRotateCB       (Widget, XtPointer, XtPointer);
-extern void graphLayoutCB       (Widget, XtPointer, XtPointer);
+#endif // IF_MOTIF
 
-extern void graphToggleLocalsCB (Widget, XtPointer, XtPointer);
-extern void graphToggleArgsCB   (Widget, XtPointer, XtPointer);
+#include "gtk_wrapper.h"
+
+extern void graphAlignCB        (CB_ALIST_NULL);
+extern void graphRotateCB       (CB_ALIST_NULL);
+extern void graphLayoutCB       (CB_ALIST_NULL);
+
+extern void graphToggleLocalsCB (CB_ARG_LIST_TOGGLE(,));
+extern void graphToggleArgsCB   (CB_ARG_LIST_TOGGLE(,));
 
 #endif // _DDD_data_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

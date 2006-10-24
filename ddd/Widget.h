@@ -29,10 +29,18 @@
 #ifndef _DDD_Widget_h
 #define _DDD_Widget_h
 
+#ifdef IF_MOTIF
+
 extern "C" {
     typedef struct _WidgetRec *Widget;
     typedef struct _XGC *GC;
 }
+
+#else // NOT IF_MOTIF
+
+#include "gtk_wrapper.h"
+
+#endif // IF_MOTIF
 
 #endif // _DDD_Widget_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

@@ -32,6 +32,10 @@
 #include "bool.h"
 #include "strclass.h"
 
+#ifndef IF_MOTIF
+#include <glibmm/ustring.h>
+#endif // IF_MOTIF
+
 // Initialize command tty
 extern void init_command_tty();
 
@@ -44,6 +48,7 @@ extern bool tty_running();
 // Output annotation TEXT when in annotation mode
 extern void annotate(const char * text);
 
+#ifdef IF_MOTIF
 // Output TEXT on controlling TTY, unless we've just composed a command
 extern void tty_out(const string& text);
 
@@ -52,6 +57,22 @@ extern void _tty_out(const string& text);
 
 // Output TEXT on controlling TTY if we're in full_name_mode
 extern void tty_full_name(const string& text);
+#else // NOT IF_MOTIF
+// Output TEXT on controlling TTY, unless we've just composed a command
+extern void tty_out(const Glib::ustring& text);
+extern void tty_out(const string& text);
+extern void tty_out(const char *text);
+
+// Output TEXT on controlling TTY (unconditionally)
+extern void _tty_out(const Glib::ustring& text);
+extern void _tty_out(const string& text);
+extern void _tty_out(const char *text);
+
+// Output TEXT on controlling TTY if we're in full_name_mode
+extern void tty_full_name(const Glib::ustring& text);
+extern void tty_full_name(const string& text);
+extern void tty_full_name(const char *text);
+#endif // IF_MOTIF
 
 // Give an artificial prompt
 extern void prompt();

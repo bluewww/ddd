@@ -29,6 +29,8 @@
 char simpleMenu_rcsid[] = 
     "$Id$";
 
+#include "config.h"
+
 #include "simpleMenu.h"
 
 #include "config.h"
@@ -42,8 +44,10 @@ char simpleMenu_rcsid[] =
 #include "tips.h"
 #include "show.h"
 
+#ifdef IF_MOTIF
 #include <Xm/Text.h>
 #include <Xm/TextF.h>
+#endif // IF_MOTIF
 
 
 //-----------------------------------------------------------------------------

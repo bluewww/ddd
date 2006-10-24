@@ -38,19 +38,24 @@ char toolbar_rcsid[] =
 #include "HelpCB.h"
 #include "Delay.h"
 #include "AppData.h"
+#ifdef IF_MOTIF
 #include "converters.h"
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
 #include <Xm/Xm.h>
 #include <Xm/Form.h>
 #include <Xm/Label.h>
 #include <Xm/PushB.h>
 #include <Xm/PanedW.h>
+#endif // IF_MOTIF
 
 
 //-----------------------------------------------------------------------
 // Helpers
 //-----------------------------------------------------------------------
 
+#ifdef IF_MOTIF
 // Return the preferred height of W
 static Dimension preferred_height(Widget w)
 {
@@ -61,7 +66,13 @@ static Dimension preferred_height(Widget w)
     XtVaGetValues(w, XmNheight, &real_height, XtPointer(0));
     return max(size.height, real_height);
 }
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning toolbar preferred_height not implemented
+#endif
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
 static void set_label_type(MMDesc items[], unsigned char label_type)
 {
     for (MMDesc *item = items; item != 0 && item->name != 0; item++)
@@ -124,6 +135,11 @@ static void set_label_type(MMDesc items[], unsigned char label_type)
 	}
     }
 }
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning set_label_type not supported.
+#endif
+#endif // IF_MOTIF
 
 static void flatten_buttons(MMDesc items[])
 {
@@ -135,6 +151,7 @@ static void flatten_buttons(MMDesc items[])
     }
 }
 
+#ifdef IF_MOTIF
 static Widget align_buttons(const MMDesc *items1, const MMDesc *items2)
 {
     Widget last_button  = 0;
@@ -182,9 +199,14 @@ static Widget align_buttons(const MMDesc *items1, const MMDesc *items2)
 
     return last_button;
 }
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning align_buttons not implemented.
+#endif
+#endif // IF_MOTIF
 
 
-
+#ifdef IF_MOTIF
 static void ResetLabelEH(Widget w, XtPointer, XEvent *, Boolean *)
 {
     XmString label_string;
@@ -199,7 +221,9 @@ static void ResetLabelEH(Widget w, XtPointer, XEvent *, Boolean *)
     XtRemoveEventHandler(w, ExposureMask, False, 
 			 ResetLabelEH, XtPointer(0));
 }
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
 static void center_buttons(const MMDesc items[], Dimension offset)
 {
     for (const MMDesc *item = items; item != 0 && item->name != 0; item++)
@@ -221,7 +245,11 @@ static void center_buttons(const MMDesc items[], Dimension offset)
 			  ResetLabelEH, XtPointer(0));
     }
 }
-
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning center_buttons not supported.
+#endif
+#endif // IF_MOTIF
 
 //-----------------------------------------------------------------------
 // Toolbar creation
@@ -229,25 +257,39 @@ static void center_buttons(const MMDesc items[], Dimension offset)
 
 // Create a toolbar as child of parent, named `toolbar', having
 // the buttons ITEMS.  Return LABEL and ARGFIELD.
-Widget create_toolbar(Widget parent, const string& /* name */,
-		      MMDesc *items1, MMDesc *items2,
-		      Widget& label, ArgField*& argfield,
-		      unsigned char label_type)
+CONTAINER_P create_toolbar(CONTAINER_P parent, const string& /* name */,
+			   MMDesc *items1, MMDesc *items2,
+			   BUTTON_P &label, ArgField*& argfield,
+			   unsigned char label_type)
 {
     assert(label_type == XmPIXMAP || label_type == XmSTRING);
 
+#ifdef IF_MOTIF
     Arg args[10];
     Cardinal arg = 0;
+#endif // IF_MOTIF
 
     // Create toolbar
     const string toolbar_name = "toolbar";
 
+#ifdef IF_MOTIF
     arg = 0;
     XtSetArg(args[arg], XmNmarginWidth,        0); arg++;
     XtSetArg(args[arg], XmNmarginHeight,       0); arg++;
     XtSetArg(args[arg], XmNborderWidth,        0); arg++;
     XtSetArg(args[arg], XmNhighlightThickness, 0); arg++;
-    Widget toolbar = verify(XmCreateForm(parent, XMST(toolbar_name.chars()), args, arg));
+    TOOLBAR_P toolbar = verify(XmCreateForm(parent, XMST(toolbar_name.chars()), args, arg));
+#else // NOT IF_MOTIF
+    TOOLBAR_P toolbar = new Gtk::Toolbar();
+    toolbar->set_name(XMST(toolbar_name.chars()));
+    Gtk::Box *box = dynamic_cast<Gtk::Box *>(parent);
+    if (box) {
+	box->pack_start(*toolbar, Gtk::PACK_SHRINK);
+    }
+    else {
+	parent->add(*toolbar);
+    }
+#endif // IF_MOTIF
 
     // Create `():'
     label = create_arg_label(toolbar);
@@ -257,7 +299,13 @@ Widget create_toolbar(Widget parent, const string& /* name */,
     argfield = new ArgField (toolbar, argfield_name.chars());
     Widget combobox = argfield->top();
 
+#ifdef IF_MOTIF
     registerOwnConverters();
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning registerOwnConverters() not implemented.
+#endif
+#endif // IF_MOTIF
 
     // We install the icons AFTER having created the argument field,
     // because otherwise we might eat up all colors.
@@ -275,19 +323,46 @@ Widget create_toolbar(Widget parent, const string& /* name */,
     // Create buttons
     MMaddItems(toolbar, items1);
     MMaddCallbacks(items1);
+#ifdef IF_MOTIF
     MMaddHelpCallback(items1, ImmediateHelpCB);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning ImmediateHelpCB not implemented
+#endif
+#endif // IF_MOTIF
+#ifdef IF_MOTIF
     set_label_type(items1, label_type);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning set_label_type not implemented
+#endif
+#endif // IF_MOTIF
 
     if (items2 != 0)
     {
 	MMaddItems(toolbar, items2);
 	MMaddCallbacks(items2);
+#ifdef IF_MOTIF
 	MMaddHelpCallback(items2, ImmediateHelpCB);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning ImmediateHelpCB not implemented
+#endif
+#endif // IF_MOTIF
+#ifdef IF_MOTIF
 	set_label_type(items2, label_type);
+#endif // IF_MOTIF
     }
 
+#ifdef IF_MOTIF
     Widget first_button = align_buttons(items1, items2);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning align_buttons not implemented
+#endif
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     // Set form constraints
     XtVaSetValues(label,
 		  XmNresizable,        False,
@@ -304,6 +379,7 @@ Widget create_toolbar(Widget parent, const string& /* name */,
 		  XmNrightWidget,      first_button,
 		  XmNtopAttachment,    XmATTACH_FORM,
 		  XtPointer(0));
+#endif // IF_MOTIF
 
     XtManageChild(toolbar);
     register_menu_shell(items1);
@@ -312,11 +388,18 @@ Widget create_toolbar(Widget parent, const string& /* name */,
 	register_menu_shell(items2);
 
     // Check geometry
+#ifdef IF_MOTIF
     Dimension button_height  = preferred_height(items1[0].widget);
     Dimension arg_height     = preferred_height(combobox);
     Dimension toolbar_height = max(button_height, arg_height);
     XtVaSetValues(toolbar, XmNheight, toolbar_height, XtPointer(0));
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Set Dimensions?
+#endif
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     if (XmIsPanedWindow(parent))
     {
 	// Make sure the toolbar cannot be resized
@@ -347,6 +430,7 @@ Widget create_toolbar(Widget parent, const string& /* name */,
 			  XtPointer(0));
 	}
     }
+#endif // IF_MOTIF
 
     return toolbar;
 }

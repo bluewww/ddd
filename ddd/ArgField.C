@@ -30,11 +30,15 @@ char ArgField_rcsid[] =
     "$Id$";
 
 //-----------------------------------------------------------------------------
+#include "config.h"
+
 #include "ArgField.h"
 #include <ctype.h>
 
+#ifdef IF_MOTIF
 #include <Xm/TextF.h>
 #include <Xm/PushB.h>
+#endif // IF_MOTIF
 
 #include "verify.h"
 #include "charsets.h"
@@ -42,14 +46,17 @@ char ArgField_rcsid[] =
 #include "buttons.h"
 #include "string-fun.h"		// strip_space()
 #include "tabs.h"		// tabify()
+#ifdef IF_MOTIF
 #include "ComboBox.h"
+#endif // IF_MOTIF
 
 
 // Constructor
-ArgField::ArgField (Widget parent, const char* name)
+ArgField::ArgField (CONTAINER_P parent, const char* name)
     : arg_text_field(0), handlers(ArgField_NTypes), is_empty(true), 
       locked(false)
 {
+#ifdef IF_MOTIF
     Arg args[10];
     Cardinal arg = 0;
 
@@ -65,13 +72,24 @@ ArgField::ArgField (Widget parent, const char* name)
 		  valueChangedCB, this);
     XtAddCallback(arg_text_field, XmNlosePrimaryCallback,
 		  losePrimaryCB, this);
+#else // NOT IF_MOTIF
+
+    arg_text_field = new Gtk::ComboBoxEntryText();
+    arg_text_field->set_name(name);
+    parent->add(*arg_text_field);
+    arg_text_field->show();
+#endif // IF_MOTIF
 }
 
 string ArgField::get_string () const
 {
+#ifdef IF_MOTIF
     String arg = XmTextFieldGetString (arg_text_field);
     string str(arg);
     XtFree (arg);
+#else // NOT IF_MOTIF
+    string str(arg_text_field->get_entry()->get_text().c_str());
+#endif // IF_MOTIF
     strip_space(str);
     return str;
 }
@@ -91,11 +109,20 @@ void ArgField::set_string(string s)
     s.gsub('\n', ' ');
 
     // Set it
+#ifdef IF_MOTIF
     String old_s = XmTextFieldGetString(arg_text_field);
+#else // NOT IF_MOTIF
+    string old_s(arg_text_field->get_entry()->get_text().c_str());
+#endif // IF_MOTIF
     if (s != old_s)
     {
+#ifdef IF_MOTIF
 	XmTextFieldSetString(arg_text_field, XMST(s.chars()));
+#else // NOT IF_MOTIF
+	arg_text_field->get_entry()->set_text(XMST(s.chars()));
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
 	if (XtIsRealized(arg_text_field)) // LessTif 0.1 crashes otherwise
 	{
 	    XmTextPosition last_pos = 
@@ -104,9 +131,12 @@ void ArgField::set_string(string s)
 	    XmTextFieldShowPosition(arg_text_field, 0);
 	    XmTextFieldShowPosition(arg_text_field, last_pos);
 	}
+#endif // IF_MOTIF
     }
 
+#ifdef IF_MOTIF
     XtFree(old_s);
+#endif // IF_MOTIF
 }
 
 void ArgField::valueChangedCB(Widget,
@@ -167,18 +197,32 @@ void ArgField::callHandlers ()
     handlers.call(Empty, this, (void*)is_empty);
 }
 
-Widget ArgField::top() const { return ComboBoxTop(text()); }
+Widget ArgField::top() const
+{
+#ifdef IF_MOTIF
+    return ComboBoxTop(text());
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning ArgField::top()?
+#endif
+    return text();
+#endif // IF_MOTIF
+}
 
 
 // Clear the text field given in Widget(CLIENT_DATA)
-void ClearTextFieldCB(Widget, XtPointer client_data, XtPointer)
+void ClearTextFieldCB(CB_ALIST_2(XtP(COMBOBOXENTRYTEXT_P) client_data))
 {
+#ifdef IF_MOTIF
     Widget arg_field = Widget(client_data);
     XmTextFieldSetString(arg_field, XMST(""));
+#else // NOT IF_MOTIF
+    client_data->get_entry()->set_text(XMST(""));
+#endif // IF_MOTIF
 }
 
 // Create a `():' label named "arg_label" for ARG_FIELD
-Widget create_arg_label(Widget parent)
+BUTTON_P create_arg_label(CONTAINER_P parent)
 {
     return create_flat_button(parent, "arg_label");
 }

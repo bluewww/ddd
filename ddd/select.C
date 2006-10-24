@@ -44,14 +44,16 @@ char select_rcsid[] =
 #include "verify.h"
 #include "wm.h"
 
+#ifdef IF_MOTIF
 #include <Xm/List.h>
 #include <Xm/SelectioB.h>
 #include <Xm/Text.h>
+#endif // IF_MOTIF
 
-Widget gdb_selection_dialog = 0;
-static Widget gdb_selection_list_w = 0;
+DIALOG_P gdb_selection_dialog = 0;
+static TREEVIEW_P gdb_selection_list_w = 0;
 
-static void SelectCB(Widget, XtPointer client_data, XtPointer)
+static void SelectCB(CB_ALIST_2(XtP(string *) client_data))
 {
     string& reply = *((string *)client_data);
 
@@ -61,7 +63,7 @@ static void SelectCB(Widget, XtPointer client_data, XtPointer)
 	reply = itostring(numbers[0]) + "\n";
 }
 
-static void CancelCB(Widget, XtPointer client_data, XtPointer)
+static void CancelCB(CB_ALIST_2(XtP(string *) client_data))
 {
     string& reply = *((string *)client_data);
     reply = "\003";
@@ -113,6 +115,7 @@ static void select_from_gdb(const string& question, string& reply)
 
     if (gdb_selection_dialog == 0)
     {
+#ifdef IF_MOTIF
 	Arg args[10];
 	Cardinal arg = 0;
 	XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
@@ -121,26 +124,51 @@ static void select_from_gdb(const string& question, string& reply)
 	    verify(XmCreateSelectionDialog(find_shell(gdb_w),
 					   XMST("gdb_selection_dialog"),
 					   args, arg));
+#else // NOT IF_MOTIF
+	gdb_selection_dialog = 
+	    new Gtk::Dialog(XMST("gdb_selection_dialog"), *find_shell(gdb_w));
+#endif // IF_MOTIF
 	Delay::register_shell(gdb_selection_dialog);
 
+#ifdef IF_MOTIF
 	XtUnmanageChild(XmSelectionBoxGetChild(gdb_selection_dialog,
 					       XmDIALOG_TEXT));
 	XtUnmanageChild(XmSelectionBoxGetChild(gdb_selection_dialog, 
 					       XmDIALOG_SELECTION_LABEL));
 	XtUnmanageChild(XmSelectionBoxGetChild(gdb_selection_dialog, 
 					       XmDIALOG_APPLY_BUTTON));
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
 	gdb_selection_list_w = XmSelectionBoxGetChild(gdb_selection_dialog, 
 						      XmDIALOG_LIST);
+#else // NOT IF_MOTIF
+	gdb_selection_list_w = new Gtk::TreeView();
+	gdb_selection_dialog->get_vbox()->pack_start(*gdb_selection_list_w, Gtk::PACK_EXPAND_WIDGET);
+	gdb_selection_list_w->show();
+#endif // IF_MOTIF
+#ifdef IF_MOTIF
 	XtVaSetValues(gdb_selection_list_w,
 		      XmNselectionPolicy, XmSINGLE_SELECT,
 		      XtPointer(0));
+#else // NOT IF_MOTIF
+	gdb_selection_list_w->get_selection()->set_mode(Gtk::SELECTION_SINGLE);
+#endif // IF_MOTIF
+
+#ifdef IF_MOTIF
 	XtAddCallback(gdb_selection_dialog,
 		      XmNokCallback, SelectCB, &selection_reply);
 	XtAddCallback(gdb_selection_dialog,
 		      XmNcancelCallback, CancelCB, &selection_reply);
 	XtAddCallback(gdb_selection_dialog,
 		      XmNhelpCallback, ImmediateHelpCB, 0);
+#else // NOT IF_MOTIF
+	Gtk::Button *button;
+	button = gdb_selection_dialog->add_button(XMST("OK"), 0);
+	button->signal_clicked().connect(sigc::bind(PTR_FUN(SelectCB), &selection_reply));
+	button = gdb_selection_dialog->add_button(XMST("Cancel"), 0);
+	button->signal_clicked().connect(sigc::bind(PTR_FUN(CancelCB), &selection_reply));
+#endif // IF_MOTIF
     }
 
     setLabelList(gdb_selection_list_w, choices, selected, count, false, false);
@@ -152,8 +180,13 @@ static void select_from_gdb(const string& question, string& reply)
 
     selection_reply = "";
     while (selection_reply.empty() 
-	   && gdb->running() && !gdb->isReadyWithPrompt())
+	   && gdb->running() && !gdb->isReadyWithPrompt()) {
+#ifdef IF_MOTIF
 	XtAppProcessEvent(XtWidgetToApplicationContext(gdb_w), XtIMAll);
+#else // NOT IF_MOTIF
+	Glib::MainContext::get_default()->iteration(false);
+#endif // IF_MOTIF
+    }
 
     // Found a reply - return
     reply = selection_reply;
@@ -162,12 +195,17 @@ static void select_from_gdb(const string& question, string& reply)
 // Select a file
 static void select_file(const string& /* question */, string& reply)
 {
-    gdbOpenFileCB(find_shell(), 0, 0);
+    gdbOpenFileCB(CB_ARGS_1(find_shell()));
 
     open_file_reply = "";
     while (open_file_reply.empty() 
-	   && gdb->running() && !gdb->isReadyWithPrompt())
+	   && gdb->running() && !gdb->isReadyWithPrompt()) {
+#ifdef IF_MOTIF
 	XtAppProcessEvent(XtWidgetToApplicationContext(gdb_w), XtIMAll);
+#else // NOT IF_MOTIF
+	Glib::MainContext::get_default()->iteration(false);
+#endif // IF_MOTIF
+    }
 
     // Found a reply - return
     reply = open_file_reply + "\n";
@@ -187,10 +225,14 @@ void gdb_selectHP(Agent *, void *, void *call_data)
 #endif
 
     // Fetch previous output lines, in case this is a multi-line message.
+#ifdef IF_MOTIF
     String s = XmTextGetString(gdb_w);
     string prompt(s);
     XtFree(s);
     prompt = prompt.from(int(messagePosition)) + info->question;
+#else // NOT IF_MOTIF
+    string prompt = string(gdb_w->get_text(messagePosition, -1).c_str()) + info->question;
+#endif // IF_MOTIF
 
     // Issue prompt right now
     _gdb_out(info->question);

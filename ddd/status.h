@@ -33,7 +33,16 @@
 #include "bool.h"
 #include "Delay.h"
 #include "MString.h"
+
+#ifdef IF_MOTIF
+
 #include <X11/Intrinsic.h>
+
+#else // NOT IF_MOTIF
+
+#include "gtk_wrapper.h"
+
+#endif // IF_MOTIF
 
 // Show MESSAGE in status window.
 // If TEMPORARY is set, override locks and do not add to status history.
@@ -46,7 +55,7 @@ void set_status_mstring(const MString& text, bool temporary = false);
 extern const MString& current_status(void);
 
 // Status history
-extern Widget status_history(Widget parent);
+extern MENU_P status_history(Widget parent);
 
 // Buttons and state
 void set_buttons_from_gdb(Widget w, string& text);

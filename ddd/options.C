@@ -65,7 +65,9 @@ extern int ptrace(int request, int pid, int addr, int data);
 #include "filetype.h"
 #include "frame.h"
 #include "gdbinit.h"
+#ifdef IF_MOTIF
 #include "plotter.h"
+#endif // IF_MOTIF
 #include "post.h"
 #include "resources.h"
 #include "session.h"
@@ -77,6 +79,7 @@ extern int ptrace(int request, int pid, int addr, int data);
 #include "windows.h"
 #include "wm.h"
 
+#ifdef IF_MOTIF
 #include <Xm/Xm.h>
 #include <Xm/Text.h>
 #include <Xm/TextF.h>
@@ -86,6 +89,7 @@ extern int ptrace(int request, int pid, int addr, int data);
 #include <Xm/BulletinB.h>
 #include <Xm/MessageB.h>
 #include <Xm/PanedW.h>
+#endif // IF_MOTIF
 
 #include <stdio.h>
 #include <fstream>
@@ -133,85 +137,106 @@ static bool options_file_has_changed(ChangeMode mode, bool reset = false);
 // Source Options
 //-----------------------------------------------------------------------------
 
-void sourceToggleFindWordsOnlyCB (Widget, XtPointer, XtPointer call_data)
+void sourceToggleFindWordsOnlyCB (CB_ARG_LIST_TOGGLE(w, call_data))
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.find_words_only = info->set;
+#else // NOT IF_MOTIF
+    app_data.find_words_only = w->get_active();
+#endif // IF_MOTIF
 
-    if (info->set)
+    if (app_data.find_words_only)
 	set_status("Finding only complete words.");
     else
 	set_status("Finding arbitrary occurrences.");
 
-    update_options();
+    update_options(NO_UPDATE);
 }
 
-void sourceToggleFindCaseSensitiveCB (Widget, XtPointer, XtPointer call_data)
+void sourceToggleFindCaseSensitiveCB (CB_ARG_LIST_TOGGLE(w, call_data))
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.find_case_sensitive = info->set;
+#else // NOT IF_MOTIF
+    app_data.find_case_sensitive = w->get_active();
+#endif // IF_MOTIF
 
-    if (info->set)
+    if (app_data.find_case_sensitive)
 	set_status("Case-sensitive search enabled.");
     else
 	set_status("Case-sensitive search disabled.");
 
-    update_options();
+    update_options(NO_UPDATE);
 }
 
-void sourceToggleCacheSourceFilesCB (Widget, XtPointer, XtPointer call_data)
+void sourceToggleCacheSourceFilesCB (CB_ARG_LIST_TOGGLE(w, call_data))
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.cache_source_files = info->set;
+#else // NOT IF_MOTIF
+    app_data.cache_source_files = w->get_active();
+#endif // IF_MOTIF
 
-    if (info->set)
+    if (app_data.cache_source_files)
 	set_status("Caching source texts.");
     else
 	set_status("Not caching source texts.  "
 		   "Source text cache has been cleared.");
 
-    update_options();
+    update_options(NO_UPDATE);
 }
 
-void sourceToggleCacheMachineCodeCB (Widget, XtPointer, XtPointer call_data)
+void sourceToggleCacheMachineCodeCB (CB_ARG_LIST_TOGGLE(w, call_data))
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.cache_machine_code = info->set;
+#else // NOT IF_MOTIF
+    app_data.cache_machine_code = w->get_active();
+#endif // IF_MOTIF
 
-    update_options();
+    update_options(NO_UPDATE);
 
-    if (info->set)
+    if (app_data.cache_machine_code)
 	set_status("Caching machine code.");
     else
 	set_status("Not caching machine code.  "
 		   "Machine code cache has been cleared.");
 }
 
-void sourceToggleDisplayLineNumbersCB (Widget, XtPointer, XtPointer call_data)
+void sourceToggleDisplayLineNumbersCB (CB_ARG_LIST_TOGGLE(w, call_data))
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.display_line_numbers = info->set;
-    update_options();
+#else // NOT IF_MOTIF
+    app_data.display_line_numbers = w->get_active();
+#endif // IF_MOTIF
+
+    update_options(NO_UPDATE);
 
 #if 0
-    if (info->set)
+    if (app_data.display_line_numbers)
 	set_status("Displaying line numbers.");
     else
 	set_status("Not displaying line numbers.");
 #endif
 }
 
-void sourceSetUseSourcePathCB (Widget, XtPointer client_data, XtPointer)
+void sourceSetUseSourcePathCB (CB_ARG_LIST_2(client_data))
 {
     Boolean state = (int)(long)client_data;
 
@@ -225,16 +250,16 @@ void sourceSetUseSourcePathCB (Widget, XtPointer client_data, XtPointer)
 	set_status(referring_to_sources_using + "source file base names.");
 
     source_arg->set_string(source_view->line_of_cursor());
-    update_options();
+    update_options(NO_UPDATE);
 }
 
-void sourceSetDisplayGlyphsCB (Widget, XtPointer client_data, XtPointer)
+void sourceSetDisplayGlyphsCB (CB_ARG_LIST_2(client_data))
 {
     Boolean state = (int)(long)client_data;
 
     app_data.display_glyphs = state;
 
-    update_options();
+    update_options(NO_UPDATE);
 
     string displaying =	"Displaying breakpoints and positions ";
     if (state)
@@ -243,60 +268,92 @@ void sourceSetDisplayGlyphsCB (Widget, XtPointer client_data, XtPointer)
 	set_status(displaying + "as text characters.");
 }
 
-void sourceSetAllRegistersCB (Widget, XtPointer, XtPointer call_data)
+void sourceSetAllRegistersCB (CB_ARG_LIST_TOGGLE(w, call_data))
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     if (info->set)
+#else // NOT IF_MOTIF
+    if (w->get_active())
+#endif // IF_MOTIF
     {
 	set_status("Showing all registers.");
 	app_data.all_registers = true;
     }
 
-    update_options();
+    update_options(NO_UPDATE);
 }
 
-void sourceSetIntRegistersCB (Widget, XtPointer, XtPointer call_data)
+void sourceSetIntRegistersCB (CB_ARG_LIST_TOGGLE(w, call_data))
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     if (info->set)
+#else // NOT IF_MOTIF
+    if (w->get_active())
+#endif // IF_MOTIF
     {
 	set_status("Showing integer registers only.");
 	app_data.all_registers = false;
     }
 
-    update_options();
+    update_options(NO_UPDATE);
 }
 
-void sourceSetTabWidthCB (Widget, XtPointer, XtPointer call_data)
+#ifdef IF_MOTIF
+void sourceSetTabWidthCB (CB_ARG_LIST_3(call_data))
+#else // NOT IF_MOTIF
+void sourceSetTabWidthCB (RANGE_P w)
+#endif // IF_MOTIF
 {
+#ifdef IF_MOTIF
     XmScaleCallbackStruct *info = (XmScaleCallbackStruct *)call_data;
 
     app_data.tab_width = info->value;
+#else // NOT IF_MOTIF
+    app_data.tab_width = (Cardinal)w->get_value();
+#endif // IF_MOTIF
     update_options();
 
     set_status("Tab width set to " + itostring(app_data.tab_width) + ".");
 }
 
-void sourceSetSourceIndentCB (Widget, XtPointer, XtPointer call_data)
+#ifdef IF_MOTIF
+void sourceSetSourceIndentCB (CB_ARG_LIST_3(call_data))
+#else // NOT IF_MOTIF
+void sourceSetSourceIndentCB (RANGE_P w)
+#endif // IF_MOTIF
 {
+#ifdef IF_MOTIF
     XmScaleCallbackStruct *info = (XmScaleCallbackStruct *)call_data;
 
     app_data.indent_source = info->value;
+#else // NOT IF_MOTIF
+    app_data.indent_source = (Cardinal)w->get_value();
+#endif // IF_MOTIF
     update_options();
 
     set_status("Source indentation set to " + 
 	       itostring(app_data.indent_source) + ".");
 }
 
-void sourceSetCodeIndentCB (Widget, XtPointer, XtPointer call_data)
+#ifdef IF_MOTIF
+void sourceSetCodeIndentCB (CB_ARG_LIST_3(call_data))
+#else // NOT IF_MOTIF
+void sourceSetCodeIndentCB (RANGE_P w)
+#endif // IF_MOTIF
 {
+#ifdef IF_MOTIF
     XmScaleCallbackStruct *info = (XmScaleCallbackStruct *)call_data;
 
     app_data.indent_code = info->value;
+#else // NOT IF_MOTIF
+    app_data.indent_code = (Cardinal)w->get_value();
+#endif // IF_MOTIF
     update_options();
 
     set_status("Code indentation set to " + 
@@ -307,41 +364,50 @@ void sourceSetCodeIndentCB (Widget, XtPointer, XtPointer call_data)
 // Graph Options
 //-----------------------------------------------------------------------------
 
-void graphToggleDetectAliasesCB(Widget, XtPointer, XtPointer call_data)
+void graphToggleDetectAliasesCB(CB_ARG_LIST_TOGGLE(w, call_data))
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.detect_aliases = info->set;
+#else // NOT IF_MOTIF
+    app_data.detect_aliases = w->get_active();
+#endif // IF_MOTIF
     const string alias_detection = "Alias detection ";
 
-    if (info->set)
+    if (app_data.detect_aliases)
 	set_status(alias_detection + "enabled.");
     else
 	set_status(alias_detection + "disabled.");
 
-    update_options();
+    update_options(NO_UPDATE);
 }
 
-void graphToggleAlign2dArraysCB(Widget, XtPointer, XtPointer call_data)
+void graphToggleAlign2dArraysCB(CB_ARG_LIST_TOGGLE(w, call_data))
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.align_2d_arrays = info->set;
+#else // NOT IF_MOTIF
+    app_data.align_2d_arrays = w->get_active();
+#endif // IF_MOTIF
     string displaying_arrays_as = 
 	"Two-dimensional arrays will be displayed as ";
 
-    if (info->set)
+    if (app_data.align_2d_arrays)
 	set_status(displaying_arrays_as + "tables.");
     else
 	set_status(displaying_arrays_as + "nested one-dimensional arrays.");
 
-    update_options();
+    update_options(NO_UPDATE);
 }
 
-void graphToggleShowHintsCB(Widget, XtPointer, XtPointer call_data)
+void graphToggleShowHintsCB(CB_ARG_LIST_TOGGLE(w, call_data))
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
@@ -354,12 +420,20 @@ void graphToggleShowHintsCB(Widget, XtPointer, XtPointer call_data)
 	set_status("Hints on.");
     else
 	set_status("Hints off.");
+#else // NOT IF_MOTIF
+    data_disp->graph_edit->set_show_hints(w->get_active());
+    if (data_disp->graph_edit->get_show_hints())
+	set_status("Hints on.");
+    else
+	set_status("Hints off.");
+#endif // IF_MOTIF
 
-    update_options();
+    update_options(NO_UPDATE);
 }
 
-void graphToggleShowAnnotationsCB(Widget, XtPointer, XtPointer call_data)
+void graphToggleShowAnnotationsCB(CB_ARG_LIST_TOGGLE(w, call_data))
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
@@ -372,45 +446,61 @@ void graphToggleShowAnnotationsCB(Widget, XtPointer, XtPointer call_data)
 	set_status("Annotations on.");
     else
 	set_status("Annotations off.");
+#else // NOT IF_MOTIF
+    data_disp->graph_edit->set_show_annotations(w->get_active());
+    if (data_disp->graph_edit->get_show_annotations())
+	set_status("Annotations on.");
+    else
+	set_status("Annotations off.");
+#endif // IF_MOTIF
 
     data_disp->refresh_titles();
 
-    update_options();
+    update_options(NO_UPDATE);
 }
 
-void graphToggleShowDependentTitlesCB(Widget, XtPointer, XtPointer call_data)
+void graphToggleShowDependentTitlesCB(CB_ARG_LIST_TOGGLE(w, call_data))
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.show_dependent_display_titles = info->set;
-    if (info->set)
+#else // NOT IF_MOTIF
+    app_data.show_dependent_display_titles = w->get_active();
+#endif // IF_MOTIF
+    if (app_data.show_dependent_display_titles)
 	set_status("Dependent titles on.");
     else
 	set_status("Dependent titles off.");
 
     data_disp->refresh_titles();
 
-    update_options();
+    update_options(NO_UPDATE);
 }
 
-void graphToggleClusterDisplaysCB(Widget, XtPointer, XtPointer call_data)
+void graphToggleClusterDisplaysCB(CB_ARG_LIST_TOGGLE(w, call_data))
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.cluster_displays = info->set;
+#else // NOT IF_MOTIF
+    app_data.cluster_displays = w->get_active();
+#endif // IF_MOTIF
 
-    if (info->set)
+    if (app_data.cluster_displays)
 	set_status("Display clustering enabled.");
     else
 	set_status("Display clustering disabled.");
 
-    update_options();
+    update_options(NO_UPDATE);
 }
 
-void graphToggleSnapToGridCB(Widget, XtPointer, XtPointer call_data)
+void graphToggleSnapToGridCB(CB_ARG_LIST_TOGGLE(w, call_data))
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
@@ -423,13 +513,20 @@ void graphToggleSnapToGridCB(Widget, XtPointer, XtPointer call_data)
 	set_status("Snap to grid on.");
     else
 	set_status("Snap to grid off.");
+#else // NOT IF_MOTIF
+    data_disp->graph_edit->set_snap_to_grid(w->get_active());
+    if (data_disp->graph_edit->get_snap_to_grid())
+	set_status("Snap to grid on.");
+    else
+	set_status("Snap to grid off.");
+#endif // IF_MOTIF
 
-    update_options();
+    update_options(NO_UPDATE);
 }
 
-
-void graphToggleCompactLayoutCB(Widget, XtPointer, XtPointer call_data)
+void graphToggleCompactLayoutCB(CB_ARG_LIST_TOGGLE(w, call_data))
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
@@ -446,12 +543,20 @@ void graphToggleCompactLayoutCB(Widget, XtPointer, XtPointer call_data)
 	set_status("Compact layout enabled.");
     else
 	set_status("Regular layout enabled.");
+#else // NOT IF_MOTIF
+    data_disp->graph_edit->set_layout_mode(w->get_active()?CompactLayoutMode:RegularLayoutMode);
+    if (data_disp->graph_edit->get_layout_mode() == CompactLayoutMode)
+	set_status("Compact layout enabled.");
+    else
+	set_status("Regular layout enabled.");
+#endif // IF_MOTIF
 
-    update_options();
+    update_options(NO_UPDATE);
 }
 
-void graphToggleAutoLayoutCB(Widget, XtPointer, XtPointer call_data)
+void graphToggleAutoLayoutCB(CB_ARG_LIST_TOGGLE(w, call_data))
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
@@ -464,57 +569,95 @@ void graphToggleAutoLayoutCB(Widget, XtPointer, XtPointer call_data)
 	set_status("Automatic layout on.");
     else
 	set_status("Automatic layout off.");
+#else // NOT IF_MOTIF
+    data_disp->graph_edit->set_auto_layout(w->get_active());
+    if (data_disp->graph_edit->get_auto_layout())
+	set_status("Automatic layout on.");
+    else
+	set_status("Automatic layout off.");
+#endif // IF_MOTIF
 
-    update_options();
+    update_options(NO_UPDATE);
 }
 
-void graphToggleAutoCloseCB(Widget, XtPointer, XtPointer call_data)
+void graphToggleAutoCloseCB(CB_ARG_LIST_TOGGLE(w, call_data))
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.auto_close_data_window = info->set;
+#else // NOT IF_MOTIF
+    app_data.auto_close_data_window = w->get_active();
+#endif // IF_MOTIF
 
-    if (info->set)
+    if (app_data.auto_close_data_window)
 	set_status("Automatic closing on.");
     else
 	set_status("Automatic closing off.");
 
-    update_options();
+    update_options(NO_UPDATE);
 }
 
-void graphSetGridSizeCB (Widget, XtPointer, XtPointer call_data)
+#ifdef IF_MOTIF
+void graphSetGridSizeCB (CB_ARG_LIST_3(call_data))
+#else // NOT IF_MOTIF
+void graphSetGridSizeCB (RANGE_P w)
+#endif // IF_MOTIF
 {
+#ifdef IF_MOTIF
     XmScaleCallbackStruct *info = (XmScaleCallbackStruct *)call_data;
 
     Arg args[10];
     Cardinal arg = 0;
 
-    if (info->value >= 2)
+    Cardinal value = info->value;
+#else // NOT IF_MOTIF
+    Cardinal value = (Cardinal)w->get_value();
+#endif // IF_MOTIF
+
+    if (value >= 2)
     {
-	XtSetArg(args[arg], ARGSTR(XtNgridWidth),  info->value); arg++;
-	XtSetArg(args[arg], ARGSTR(XtNgridHeight), info->value); arg++;
+#ifdef IF_MOTIF
+	XtSetArg(args[arg], ARGSTR(XtNgridWidth),  value); arg++;
+	XtSetArg(args[arg], ARGSTR(XtNgridHeight), value); arg++;
 	XtSetArg(args[arg], ARGSTR(XtNshowGrid),   True); arg++;
 	XtSetValues(data_disp->graph_edit, args, arg);
-	set_status("Grid size set to " + itostring(info->value) + ".");
+#else // NOT IF_MOTIF
+	data_disp->graph_edit->set_grid_width(value);
+	data_disp->graph_edit->set_grid_height(value);
+	data_disp->graph_edit->set_show_grid(true);
+#endif // IF_MOTIF
+	set_status("Grid size set to " + itostring(value) + ".");
     }
     else
     {
+#ifdef IF_MOTIF
 	XtSetArg(args[arg], ARGSTR(XtNshowGrid), False); arg++;
 	XtSetValues(data_disp->graph_edit, args, arg);
+#else // NOT IF_MOTIF
+	data_disp->graph_edit->set_show_grid(false);
+#endif // IF_MOTIF
 	set_status("Grid off.");
     }
 
     update_options();
 }
 
-void graphSetDisplayPlacementCB(Widget, XtPointer client_data,
-				XtPointer call_data)
+#ifdef IF_MOTIF
+void graphSetDisplayPlacementCB(CB_ARG_LIST_23(client_data, call_data))
+#else // NOT IF_MOTIF
+void graphSetDisplayPlacementCB(TOGGLEBUTTON_P w, XmOrientation client_data)
+#endif // IF_MOTIF
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     if (info->set)
+#else // NOT IF_MOTIF
+    if (w->get_active())
+#endif // IF_MOTIF
     {
 	unsigned char orientation = (unsigned char)(int)(long)client_data;
 	app_data.display_placement = orientation;
@@ -532,7 +675,7 @@ void graphSetDisplayPlacementCB(Widget, XtPointer client_data,
 	    break;
 	}
 
-	update_options();
+	update_options(NO_UPDATE);
     }
 }
 
@@ -541,40 +684,48 @@ void graphSetDisplayPlacementCB(Widget, XtPointer client_data,
 // General Options
 //-----------------------------------------------------------------------------
 
-void dddToggleGroupIconifyCB (Widget, XtPointer, XtPointer call_data)
+void dddToggleGroupIconifyCB (CB_ARG_LIST_TOGGLE(w, call_data))
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.group_iconify = info->set;
+#else // NOT IF_MOTIF
+    app_data.group_iconify = w->get_active();
+#endif // IF_MOTIF
     string ddd_windows_are_iconified = 
 	DDD_NAME " windows are iconified ";
 
-    if (info->set)
+    if (app_data.group_iconify)
 	set_status(ddd_windows_are_iconified + "as a group.");
     else
 	set_status(ddd_windows_are_iconified + "separately.");
 
-    update_options();
+    update_options(NO_UPDATE);
 }
 
-void dddToggleUniconifyWhenReadyCB (Widget, XtPointer, XtPointer call_data)
+void dddToggleUniconifyWhenReadyCB (CB_ARG_LIST_TOGGLE(w, call_data))
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.uniconify_when_ready = info->set;
+#else // NOT IF_MOTIF
+    app_data.uniconify_when_ready = w->get_active();
+#endif // IF_MOTIF
 
-    if (info->set)
+    if (app_data.uniconify_when_ready)
 	set_status(DDD_NAME " windows will be uniconified automatically "
 		   "whenever " DDD_NAME " becomes ready.");
     else
 	set_status(DDD_NAME " windows always remain iconified.");
 
-    update_options();
+    update_options(NO_UPDATE);
 }
 
-void dddSetGlobalTabCompletionCB(Widget, XtPointer client_data, XtPointer)
+void dddSetGlobalTabCompletionCB(CB_ALIST_12(Widget w, XtP(long) client_data))
 {
     Boolean state = (int)(long)client_data;
 
@@ -585,91 +736,115 @@ void dddSetGlobalTabCompletionCB(Widget, XtPointer client_data, XtPointer)
     else
 	set_status("TAB key completes in " DDD_NAME " debugger console only.");
 
-    update_options();
+    update_options(NO_UPDATE);
 }
 
-void dddToggleSeparateExecWindowCB (Widget, XtPointer, XtPointer call_data)
+void dddToggleSeparateExecWindowCB (CB_ARG_LIST_TOGGLE(w, call_data))
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.separate_exec_window = info->set;
+#else // NOT IF_MOTIF
+    app_data.separate_exec_window = w->get_active();
+#endif // IF_MOTIF
     string debugged_program_will_be_executed_in =
 	"Debugged program will be executed in ";
 
-    if (info->set)
+    if (app_data.separate_exec_window)
 	set_status(debugged_program_will_be_executed_in 
 		   + "a separate execution window.");
     else
 	set_status(debugged_program_will_be_executed_in 
 		   + "the " DDD_NAME " debugger console.");
 
-    update_options();
+    update_options(NO_UPDATE);
 }
 
-void dddToggleCheckGrabsCB (Widget, XtPointer, XtPointer call_data)
+void dddToggleCheckGrabsCB (CB_ARG_LIST_TOGGLE(w, call_data))
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.check_grabs = info->set;
+#else // NOT IF_MOTIF
+    app_data.check_grabs = w->get_active();
+#endif // IF_MOTIF
 
-    if (info->set)
+    if (app_data.check_grabs)
 	set_status("Checking for grabs.");
     else
 	set_status("Not checking for grabs.");
 
-    update_options();
+    update_options(NO_UPDATE);
 }
 
-void dddToggleSaveHistoryOnExitCB (Widget, XtPointer, XtPointer call_data)
+void dddToggleSaveHistoryOnExitCB (CB_ARG_LIST_TOGGLE(w, call_data))
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.save_history_on_exit = info->set;
+#else // NOT IF_MOTIF
+    app_data.save_history_on_exit = w->get_active();
+#endif // IF_MOTIF
 
-    if (info->set)
+    if (app_data.save_history_on_exit)
 	set_status("History will be saved when " DDD_NAME " exits.");
     else
 	set_status("History will not be saved.");
 
-    update_options();
+    update_options(NO_UPDATE);
 }
 
-void dddToggleSuppressWarningsCB (Widget, XtPointer, XtPointer call_data)
+void dddToggleSuppressWarningsCB (CB_ARG_LIST_TOGGLE(w, call_data))
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.suppress_warnings = info->set;
+#else // NOT IF_MOTIF
+    app_data.suppress_warnings = w->get_active();
+#endif // IF_MOTIF
 
-    if (info->set)
+    if (app_data.suppress_warnings)
 	set_status("X Warnings are suppressed.");
     else
 	set_status("X Warnings are not suppressed.");
 
-    update_options();
+    update_options(NO_UPDATE);
 }
 
-void dddToggleWarnIfLockedCB (Widget, XtPointer, XtPointer call_data)
+void dddToggleWarnIfLockedCB (CB_ARG_LIST_TOGGLE(w, call_data))
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.warn_if_locked = info->set;
+#else // NOT IF_MOTIF
+    app_data.warn_if_locked = w->get_active();
+#endif // IF_MOTIF
 
-    if (info->set)
+    if (app_data.warn_if_locked)
 	set_status(DDD_NAME " will warn you "
 		   "when multiple " DDD_NAME " instances are running.");
     else
 	set_status(DDD_NAME " will not warn you "
 		   "when multiple " DDD_NAME " instances are running.");
 
-    update_options();
+    update_options(NO_UPDATE);
 }
 
-void dddSetBuiltinPlotWindowCB (Widget, XtPointer client_data, XtPointer)
+#ifdef IF_MOTIF
+void dddSetBuiltinPlotWindowCB (CB_ARG_LIST_2(client_data))
+#else // NOT IF_MOTIF
+void dddSetBuiltinPlotWindowCB (long client_data)
+#endif // IF_MOTIF
 {
     if ((int)(long)client_data)
 	app_data.plot_term_type = "xlib";
@@ -692,83 +867,107 @@ void dddSetBuiltinPlotWindowCB (Widget, XtPointer client_data, XtPointer)
 	set_status("Next plot will be done in an unknown place.");
     }
 
+#ifdef IF_MOTIF
     clear_plot_window_cache();
-    update_options();
+#else // NOT IF_MOTIF
+    std::cerr << "clear_plot_window_cache()?\n";
+#endif // IF_MOTIF
+    update_options(NO_UPDATE);
 }
 
-void dddToggleButtonTipsCB (Widget, XtPointer, XtPointer call_data)
+void dddToggleButtonTipsCB (CB_ARG_LIST_TOGGLE(w, call_data))
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.button_tips = info->set;
+#else // NOT IF_MOTIF
+    app_data.button_tips = w->get_active();
+#endif // IF_MOTIF
 
-    if (info->set)
+    if (app_data.button_tips)
 	set_status("Button tips enabled.");
     else
 	set_status("Button tips disabled.");
 
-    update_options();
+    update_options(NO_UPDATE);
 }
 
-void dddToggleValueTipsCB (Widget, XtPointer, XtPointer call_data)
+void dddToggleValueTipsCB (CB_ARG_LIST_TOGGLE(w, call_data))
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.value_tips = info->set;
+#else // NOT IF_MOTIF
+    app_data.value_tips = w->get_active();
+#endif // IF_MOTIF
 
-    if (info->set)
+    if (app_data.value_tips)
 	set_status("Value tips enabled.");
     else
 	set_status("Value tips disabled.");
 
-    update_options();
+    update_options(NO_UPDATE);
 }
 
-void dddToggleButtonDocsCB (Widget, XtPointer, XtPointer call_data)
+void dddToggleButtonDocsCB (CB_ARG_LIST_TOGGLE(w, call_data))
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.button_docs = info->set;
+#else // NOT IF_MOTIF
+    app_data.button_docs = w->get_active();
+#endif // IF_MOTIF
 
-    if (info->set)
+    if (app_data.button_docs)
 	set_status("Button docs enabled.");
     else
 	set_status("Button docs disabled.");
 
-    update_options();
+    update_options(NO_UPDATE);
 }
 
-void dddToggleValueDocsCB (Widget, XtPointer, XtPointer call_data)
+void dddToggleValueDocsCB (CB_ARG_LIST_TOGGLE(w, call_data))
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.value_docs = info->set;
+#else // NOT IF_MOTIF
+    app_data.value_docs = w->get_active();
+#endif // IF_MOTIF
 
-    if (info->set)
+    if (app_data.value_docs)
 	set_status("Value docs enabled.");
     else
 	set_status("Value docs disabled.");
 
-    update_options();
+    update_options(NO_UPDATE);
 }
 
-void dddToggleSaveOptionsOnExitCB (Widget, XtPointer, XtPointer call_data)
+void dddToggleSaveOptionsOnExitCB (CB_ARG_LIST_TOGGLE(w, call_data))
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.save_options_on_exit = info->set;
+#else // NOT IF_MOTIF
+    app_data.save_options_on_exit = w->get_active();
+#endif // IF_MOTIF
 
-    if (info->set)
+    if (app_data.save_options_on_exit)
 	set_status("Current options will be saved when exiting DDD.");
     else
 	set_status("Current options will not be saved when exiting DDD.");
 
-    update_options();
+    update_options(NO_UPDATE);
 }
 
 
@@ -776,7 +975,7 @@ void dddToggleSaveOptionsOnExitCB (Widget, XtPointer, XtPointer call_data)
 // Maintenance
 //-----------------------------------------------------------------------------
 
-void dddSetCrashCB(Widget, XtPointer client_data, XtPointer)
+void dddSetCrashCB(CB_ALIST_2(XtP(long) client_data))
 {
     int state = (int)(long)client_data;
     string msg = "When " DDD_NAME " crashes, ";
@@ -806,7 +1005,7 @@ void dddSetCrashCB(Widget, XtPointer client_data, XtPointer)
     update_options();
 }
 
-void dddClearMaintenanceCB(Widget, XtPointer, XtPointer)
+void dddClearMaintenanceCB(CB_ALIST_NULL)
 {
     app_data.maintenance = False;
     update_options();
@@ -835,7 +1034,7 @@ static void post_startup_warning(Widget w)
 static string next_ddd_will_start_with = 
     "Next " DDD_NAME " invocation will start-up with ";
 
-void dddSetSeparateWindowsCB (Widget w, XtPointer client_data, XtPointer)
+void dddSetSeparateWindowsCB (CB_ARG_LIST_12(w, client_data))
 {
     int state = (int)(long)client_data;
     switch (state)
@@ -866,7 +1065,7 @@ void dddSetSeparateWindowsCB (Widget w, XtPointer client_data, XtPointer)
     else
 	set_status(next_ddd_will_start_with + "one window, two toolbars.");
 
-    update_options();
+    update_options(NO_UPDATE);
     post_startup_warning(w);
 }
 
@@ -881,11 +1080,11 @@ void dddSetStatusAtBottomCB (Widget w, XtPointer client_data, XtPointer)
     else
 	set_status(next_ddd_will_start_with + "status line at top.");
 
-    update_options();
+    update_options(NO_UPDATE);
     post_startup_warning(w);
 }
 
-void dddSetToolBarCB (Widget w, XtPointer client_data, XtPointer)
+void dddSetToolBarCB (CB_ARG_LIST_12(w, client_data))
 {
     Boolean state = (int)(long)client_data;
 
@@ -897,12 +1096,13 @@ void dddSetToolBarCB (Widget w, XtPointer client_data, XtPointer)
     else
 	set_status(tool_buttons_are_located_in + "command tool.");
 
-    update_options();
+    update_options(NO_UPDATE);
     post_startup_warning(w);
 }
 
-void dddSetKeyboardFocusPolicyCB (Widget w, XtPointer client_data, XtPointer)
+void dddSetKeyboardFocusPolicyCB (CB_ARG_LIST_12(w, client_data))
 {
+#ifdef IF_MOTIF
     unsigned char policy = (unsigned char)(int)(long)client_data;
 
     if (policy != XmEXPLICIT && policy != XmPOINTER)
@@ -965,10 +1165,13 @@ void dddSetKeyboardFocusPolicyCB (Widget w, XtPointer client_data, XtPointer)
 	XmProcessTraversal(w, XmTRAVERSE_CURRENT);
     }
 
-    update_options();
+    update_options(NO_UPDATE);
+#else // NOT IF_MOTIF
+    std::cerr << "Keyboard focus policy not implemented\n";
+#endif // IF_MOTIF
 }
 
-void dddSetPannerCB (Widget w, XtPointer client_data, XtPointer)
+void dddSetPannerCB (CB_ARG_LIST_12(w, client_data))
 {
     Boolean state = (int)(long)client_data;
     app_data.panned_graph_editor = state;
@@ -978,7 +1181,7 @@ void dddSetPannerCB (Widget w, XtPointer client_data, XtPointer)
     else
 	set_status(next_ddd_will_start_with + "a scrolled graph editor.");
 
-    update_options();
+    update_options(NO_UPDATE);
     post_startup_warning(w);
 }
 
@@ -1003,8 +1206,13 @@ static void report_debugger_type()
     }
 }
 
-void dddSetDebuggerCB (Widget w, XtPointer client_data, XtPointer call_data)
+#ifdef IF_MOTIF
+void dddSetDebuggerCB (CB_ARG_LIST_123(w, client_data, call_data))
+#else // NOT IF_MOTIF
+void dddSetDebuggerCB (TOGGLEBUTTON_P w, DebuggerType type)
+#endif // IF_MOTIF
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
@@ -1012,31 +1220,47 @@ void dddSetDebuggerCB (Widget w, XtPointer client_data, XtPointer call_data)
 	return;
 
     DebuggerType type = DebuggerType((int)(long)client_data);
+#else // NOT IF_MOTIF
+    if (!w->get_active())
+	return;
+#endif // IF_MOTIF
     app_data.debugger = default_debugger(type);
     app_data.auto_debugger = false;
 
     report_debugger_type();
 
-    update_options();
+    update_options(NO_UPDATE);
     post_startup_warning(w);
 }
 
-void dddToggleAutoDebuggerCB(Widget w, XtPointer, XtPointer call_data)
+#ifdef IF_MOTIF
+void dddToggleAutoDebuggerCB(CB_ARG_LIST_13(w, call_data))
+#else // NOT IF_MOTIF
+void dddToggleAutoDebuggerCB(TOGGLEBUTTON_P w)
+#endif // IF_MOTIF
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.auto_debugger = info->set;
+#else // NOT IF_MOTIF
+    app_data.auto_debugger = w->get_active();
+#endif // IF_MOTIF
 
     report_debugger_type();
 
-    update_options();
+    update_options(NO_UPDATE);
     post_startup_warning(w);
 }
 
-void dddSetCutCopyPasteBindingsCB (Widget, XtPointer client_data, 
-				   XtPointer call_data)
+#ifdef IF_MOTIF
+void dddSetCutCopyPasteBindingsCB (CB_ARG_LIST_23(client_data, call_data))
+#else // NOT IF_MOTIF
+void dddSetCutCopyPasteBindingsCB (TOGGLEBUTTON_P w, BindingStyle style)
+#endif // IF_MOTIF
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
@@ -1044,6 +1268,10 @@ void dddSetCutCopyPasteBindingsCB (Widget, XtPointer client_data,
 	return;
 
     BindingStyle style = BindingStyle((int)(long)client_data);
+#else // NOT IF_MOTIF
+    if (!w->get_active())
+	return;
+#endif // IF_MOTIF
     app_data.cut_copy_paste_bindings = style;
 
     switch (style)
@@ -1058,12 +1286,16 @@ void dddSetCutCopyPasteBindingsCB (Widget, XtPointer client_data,
 	break;
     }
 
-    update_options();
+    update_options(NO_UPDATE);
 }
 
-void dddSetSelectAllBindingsCB (Widget, XtPointer client_data, 
-				XtPointer call_data)
+#ifdef IF_MOTIF
+void dddSetSelectAllBindingsCB (CB_ARG_LIST_23(client_data, call_data))
+#else // NOT IF_MOTIF
+void dddSetSelectAllBindingsCB (TOGGLEBUTTON_P w, BindingStyle style)
+#endif // IF_MOTIF
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
@@ -1071,6 +1303,10 @@ void dddSetSelectAllBindingsCB (Widget, XtPointer client_data,
 	return;
 
     BindingStyle style = BindingStyle((int)(long)client_data);
+#else // NOT IF_MOTIF
+    if (!w->get_active())
+	return;
+#endif // IF_MOTIF
     app_data.select_all_bindings = style;
 
     switch (style)
@@ -1085,14 +1321,19 @@ void dddSetSelectAllBindingsCB (Widget, XtPointer client_data,
 	break;
     }
 
-    update_options();
+    update_options(NO_UPDATE);
 }
 
-void dddSetUndoBufferSizeCB(Widget w, XtPointer, XtPointer)
+void dddSetUndoBufferSizeCB(CB_ALIST_1(ENTRY_P w))
 {
+#ifdef IF_MOTIF
     String s = XmTextFieldGetString(w);
     string value = s;
     XtFree(s); s = 0;
+#else // NOT IF_MOTIF
+    string value = string(w->get_text().c_str());
+    char *s;
+#endif // IF_MOTIF
 
     s = CONST_CAST(char*,value.chars());
     long val = strtol(value.chars(), &s, 0);
@@ -1105,19 +1346,27 @@ void dddSetUndoBufferSizeCB(Widget w, XtPointer, XtPointer)
     update_reset_preferences();
 }
 
-void dddClearUndoBufferCB(Widget, XtPointer, XtPointer)
+void dddClearUndoBufferCB(CB_ARG_LIST_NULL)
 {
     StatusDelay delay("Clearing undo buffer");
     undo_buffer.clear();
 }
 
+#ifdef IF_MOTIF
 static void toggle_button_appearance(Widget w, Boolean& data, 
 				     XtPointer call_data)
+#else // NOT IF_MOTIF
+static void toggle_button_appearance(TOGGLEBUTTON_P w, Boolean& data)
+#endif // IF_MOTIF
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     data = info->set;
+#else // NOT IF_MOTIF
+    data = w->get_active();
+#endif // IF_MOTIF
     
     string msg = next_ddd_will_start_with;
     if (app_data.button_images && app_data.button_captions)
@@ -1137,44 +1386,78 @@ static void toggle_button_appearance(Widget w, Boolean& data,
 	msg += " ordinary labels";
     }
 
-    update_options();
+    update_options(NO_UPDATE);
     post_startup_warning(w);
 }
 
-void dddToggleButtonCaptionsCB(Widget w, XtPointer, XtPointer call_data)
+#ifdef IF_MOTIF
+void dddToggleButtonCaptionsCB(CB_ARG_LIST_13(w, call_data))
+#else // NOT IF_MOTIF
+void dddToggleButtonCaptionsCB(TOGGLEBUTTON_P w)
+#endif // IF_MOTIF
 {
-    toggle_button_appearance(w, app_data.button_captions, call_data);
+    toggle_button_appearance(w, app_data.button_captions
+#ifdef IF_MOTIF
+			     , call_data
+#endif // IF_MOTIF
+	);
 }
 
-void dddToggleButtonImagesCB(Widget w, XtPointer, XtPointer call_data)
+#ifdef IF_MOTIF
+void dddToggleButtonImagesCB(CB_ARG_LIST_13(w, call_data))
+#else // NOT IF_MOTIF
+void dddToggleButtonImagesCB(TOGGLEBUTTON_P w)
+#endif // IF_MOTIF
 {
-    toggle_button_appearance(w, app_data.button_images, call_data);
+    toggle_button_appearance(w, app_data.button_images
+#ifdef IF_MOTIF
+			     , call_data
+#endif // IF_MOTIF
+	);
 }
 
-void dddToggleFlatButtonsCB(Widget w, XtPointer, XtPointer call_data)
+#ifdef IF_MOTIF
+void dddToggleFlatButtonsCB(CB_ARG_LIST_13(w, call_data))
+#else // NOT IF_MOTIF
+void dddToggleFlatButtonsCB(TOGGLEBUTTON_P w)
+#endif // IF_MOTIF
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
+    bool data = info->set;
+#else // NOT IF_MOTIF
+    bool data = w->get_active();
+#endif // IF_MOTIF
 
-    app_data.flat_toolbar_buttons = info->set;
-    app_data.flat_dialog_buttons  = info->set;
+    app_data.flat_toolbar_buttons = data;
+    app_data.flat_dialog_buttons  = data;
 
-    if (info->set)
+    if (data)
 	set_status(next_ddd_will_start_with + "flat buttons.");
     else
 	set_status(next_ddd_will_start_with + "raised buttons.");
 
-    update_options();
+    update_options(NO_UPDATE);
     post_startup_warning(w);
 }
 
-void dddToggleColorButtonsCB(Widget w, XtPointer, XtPointer call_data)
+#ifdef IF_MOTIF
+void dddToggleColorButtonsCB(CB_ARG_LIST_13(w, call_data))
+#else // NOT IF_MOTIF
+void dddToggleColorButtonsCB(TOGGLEBUTTON_P w)
+#endif // IF_MOTIF
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
+    int data = info->set;
+#else // NOT IF_MOTIF
+    int data = w->get_active();
+#endif // IF_MOTIF
 
 #if XmVersion >= 2000
-    switch (info->set)
+    switch (data)
     {
     case XmSET:
 	app_data.button_color_key        = "c";
@@ -1192,7 +1475,7 @@ void dddToggleColorButtonsCB(Widget w, XtPointer, XtPointer call_data)
 	break;
     }
 #else
-    if (info->set)
+    if (data)
 	app_data.button_color_key = "c";
     else
 	app_data.button_color_key = "g";
@@ -1208,23 +1491,31 @@ void dddToggleColorButtonsCB(Widget w, XtPointer, XtPointer call_data)
     else			// indeterminate
 	set_status(next_ddd_will_start_with + "grey/color buttons.");
 
-    update_options();
+    update_options(NO_UPDATE);
     post_startup_warning(w);
 }
 
-void dddToggleToolbarsAtBottomCB(Widget w, XtPointer, XtPointer call_data)
+#ifdef IF_MOTIF
+void dddToggleToolbarsAtBottomCB(CB_ARG_LIST_13(w, call_data))
+#else // NOT IF_MOTIF
+void dddToggleToolbarsAtBottomCB(TOGGLEBUTTON_P w)
+#endif // IF_MOTIF
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.toolbars_at_bottom = info->set;
+#else // NOT IF_MOTIF
+    app_data.toolbars_at_bottom = w->get_active();
+#endif // IF_MOTIF
 
-    if (info->set)
+    if (app_data.toolbars_at_bottom)
 	set_status(next_ddd_will_start_with + "toolbars at bottom.");
     else
 	set_status(next_ddd_will_start_with + "toolbars at top.");
 
-    update_options();
+    update_options(NO_UPDATE);
     post_startup_warning(w);
 }
 
@@ -1233,63 +1524,85 @@ void dddToggleToolbarsAtBottomCB(Widget w, XtPointer, XtPointer call_data)
 // Helpers
 // ---------------------------------------------------------------------------
 
-void dddSetEditCommandCB(Widget w, XtPointer, XtPointer)
+void dddSetEditCommandCB(CB_ALIST_1(ENTRY_P w))
 {
+#ifdef IF_MOTIF
     String s = XmTextFieldGetString(w);
     static string command;
     command = s;
     XtFree(s);
+#else // NOT IF_MOTIF
+    static string command;
+    command = string(w->get_text().c_str());
+#endif // IF_MOTIF
 
     app_data.edit_command = command.chars();
     // set_status("Edit Sources command is " + quote(command));
     update_reset_preferences();
 }
 
-void dddSetPlotCommandCB(Widget w, XtPointer, XtPointer)
+void dddSetPlotCommandCB(CB_ALIST_1(ENTRY_P w))
 {
+#ifdef IF_MOTIF
     String s = XmTextFieldGetString(w);
     static string command;
     command = s;
     XtFree(s);
+#else // NOT IF_MOTIF
+    static string command;
+    command = string(w->get_text().c_str());
+#endif // IF_MOTIF
 
     app_data.plot_command = command.chars();
     // set_status("Edit Sources command is " + quote(command));
     update_reset_preferences();
 }
 
-
-void dddSetGetCoreCommandCB(Widget w, XtPointer, XtPointer)
+void dddSetGetCoreCommandCB(CB_ALIST_1(ENTRY_P w))
 {
+#ifdef IF_MOTIF
     String s = XmTextFieldGetString(w);
     static string command;
     command = s;
     XtFree(s);
+#else // NOT IF_MOTIF
+    static string command;
+    command = string(w->get_text().c_str());
+#endif // IF_MOTIF
 
     app_data.get_core_command = command.chars();
     // set_status("Get Core command is " + quote(command));
     update_reset_preferences();
 }
 
-
-void dddSetPSCommandCB(Widget w, XtPointer, XtPointer)
+void dddSetPSCommandCB(CB_ALIST_1(ENTRY_P w))
 {
+#ifdef IF_MOTIF
     String s = XmTextFieldGetString(w);
     static string command;
     command = s;
     XtFree(s);
+#else // NOT IF_MOTIF
+    static string command;
+    command = string(w->get_text().c_str());
+#endif // IF_MOTIF
 
     app_data.ps_command = command.chars();
     // set_status("List Processes command is " + quote(command));
     update_reset_preferences();
 }
 
-
-void dddSetTermCommandCB(Widget w, XtPointer, XtPointer)
+void dddSetTermCommandCB(CB_ALIST_1(ENTRY_P w))
 {
+#ifdef IF_MOTIF
     String s = XmTextFieldGetString(w);
     static string command;
     command = s;
     XtFree(s);
+#else // NOT IF_MOTIF
+    static string command;
+    command = string(w->get_text().c_str());
+#endif // IF_MOTIF
 
     app_data.term_command = command.chars();
     // set_status("Execution Window command is " + quote(command));
@@ -1297,12 +1610,17 @@ void dddSetTermCommandCB(Widget w, XtPointer, XtPointer)
 }
 
 
-void dddSetUncompressCommandCB(Widget w, XtPointer, XtPointer)
+void dddSetUncompressCommandCB(CB_ALIST_1(ENTRY_P w))
 {
+#ifdef IF_MOTIF
     String s = XmTextFieldGetString(w);
     static string command;
     command = s;
     XtFree(s);
+#else // NOT IF_MOTIF
+    static string command;
+    command = string(w->get_text().c_str());
+#endif // IF_MOTIF
 
     app_data.uncompress_command = command.chars();
     // set_status("Uncompress command is " + quote(command));
@@ -1310,12 +1628,17 @@ void dddSetUncompressCommandCB(Widget w, XtPointer, XtPointer)
 }
 
 
-void dddSetWWWCommandCB(Widget w, XtPointer, XtPointer)
+void dddSetWWWCommandCB(CB_ALIST_1(ENTRY_P w))
 {
+#ifdef IF_MOTIF
     String s = XmTextFieldGetString(w);
     static string command;
     command = s;
     XtFree(s);
+#else // NOT IF_MOTIF
+    static string command;
+    command = string(w->get_text().c_str());
+#endif // IF_MOTIF
 
     app_data.www_command = command.chars();
     // set_status("Web Browser is " + quote(command));
@@ -1756,12 +2079,17 @@ static Boolean done_if_idle(XtPointer data)
 
 static void done(const string&, void *data)
 {
+#ifdef IF_MOTIF
     XtAppAddWorkProc(XtWidgetToApplicationContext(command_shell),
 		     done_if_idle, data);
+#else // NOT IF_MOTIF
+    Glib::signal_idle().connect(sigc::bind(PTR_FUN(done_if_idle), data));
+#endif // IF_MOTIF
 }
 
 static void reload_options()
 {
+#ifdef IF_MOTIF
     static string session;
     session = app_data.session;
 
@@ -1859,68 +2187,115 @@ static void reload_options()
     c.prompt   = false;
     c.check    = true;
     gdb_command(c);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning reload_options not implemented.
+#endif
+#endif // IF_MOTIF
 }
 
-static void ReloadOptionsCB(Widget, XtPointer, XtPointer)
+static void ReloadOptionsCB(CB_ALIST_NULL)
 {
     reload_options();
 }
 
-static void DontReloadOptionsCB(Widget, XtPointer, XtPointer)
+static void DontReloadOptionsCB(CB_ALIST_NULL)
 {
     // Acknowledge change
     options_file_has_changed(ACKNOWLEDGE, true);
 }
 
 // Pending timer
-static XtIntervalId check_options_timer = 0;
+static XtIntervalId check_options_idle = NO_TIMER;
+static XtIntervalId check_options_timer = NO_TIMER;
 
-static void CheckOptionsFileCB(XtPointer client_data, XtIntervalId *id)
+TIMEOUT_RETURN_TYPE CheckOptionsFileCB(TM_ALIST_NULL)
 {
-    (void) id;			// Use it
-
-    assert(*id == check_options_timer);
-    check_options_timer = 0;
+#ifdef IF_MOTIF
+    check_options_timer = NO_TIMER;
+#endif // IF_MOTIF
 
     if (options_file_has_changed(ACKNOWLEDGE))
     {
 	// Options file has changed since last acknowledgement -- offer reload
-	static Widget dialog = 0;
+	static DIALOG_P dialog = 0;
 
 	if (dialog == 0)
 	{
+#ifdef IF_MOTIF
 	    dialog = verify(XmCreateQuestionDialog(
 				find_shell(),
 				XMST("reload_options_dialog"),
 				0, 0));
+#else // NOT IF_MOTIF
+	    dialog = new Gtk::Dialog(XMST("reload_options_dialog"), *find_shell());
+#endif // IF_MOTIF
 	    Delay::register_shell(dialog);
+#ifdef IF_MOTIF
 	    XtAddCallback(dialog, XmNokCallback,     ReloadOptionsCB, 0);
 	    XtAddCallback(dialog, XmNcancelCallback, DontReloadOptionsCB, 0);
 	    XtAddCallback(dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
+#else // NOT IF_MOTIF
+	    Gtk::Button *button;
+	    button = dialog->add_button(XMST("OK"), 0);
+	    button->signal_clicked().connect(PTR_FUN(ReloadOptionsCB));
+	    button = dialog->add_button(XMST("Cancel"), 0);
+	    button->signal_clicked().connect(PTR_FUN(DontReloadOptionsCB));
+#endif // IF_MOTIF
 	}
 
 	if (!XtIsManaged(dialog))
 	    manage_and_raise(dialog);
     }
-    
+
+#ifdef IF_MOTIF    
     if (app_data.check_options > 0)
     {
 	// Try again later
 	check_options_timer = 
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(find_shell()),
 			    app_data.check_options * 1000,
-			    CheckOptionsFileCB, client_data);
+			    CheckOptionsFileCB, NULL);
     }
+#else // NOT IF_MOTIF
+    if (app_data.check_options > 0) {
+	// First entry is on idle callback.  Subsequent entries are on timer.
+	if (check_options_idle != NO_TIMER) {
+	    check_options_idle.disconnect();
+	    check_options_idle = NO_TIMER;
+	    if (check_options_timer != NO_TIMER)
+		check_options_timer.disconnect();
+	    check_options_timer = 
+		Glib::signal_timeout().connect(PTR_FUN(CheckOptionsFileCB),
+					       app_data.check_options * 1000);
+	}
+	return true;
+    }
+#endif // IF_MOTIF
 }
 
 void check_options_file()
 {
+#ifdef IF_MOTIF
     if (check_options_timer != 0)
 	XtRemoveTimeOut(check_options_timer);
 
     check_options_timer = 
 	XtAppAddTimeOut(XtWidgetToApplicationContext(find_shell()), 0,
 			CheckOptionsFileCB, XtPointer(0));
+#else // NOT IF_MOTIF
+    if (check_options_timer != NO_TIMER) {
+	check_options_timer.disconnect();
+	check_options_timer = NO_TIMER;
+    }
+    if (check_options_idle != NO_TIMER) {
+	check_options_idle.disconnect();
+	check_options_idle = NO_TIMER;
+    }
+
+    check_options_idle = 
+	Glib::signal_idle().connect(PTR_FUN(CheckOptionsFileCB));
+#endif // IF_MOTIF
 }
 
 
@@ -1931,6 +2306,8 @@ void check_options_file()
 static bool is_fallback_value(const string& resource, string val)
 {
     static XrmDatabase default_db = app_defaults(XtDisplay(find_shell()));
+
+#ifdef IF_MOTIF
 
     static String app_name  = 0;
     static String app_class = 0;
@@ -1968,11 +2345,18 @@ static bool is_fallback_value(const string& resource, string val)
 #endif
 
     return val == default_val;
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning is_fallback_value() not implemented.
+#endif
+    return false;
+#endif // IF_MOTIF
 }
 
 static string app_value(const string& resource, const string& value, 
 			Boolean check_default)
 {
+#ifdef IF_MOTIF
     static String app_name  = 0;
     static String app_class = 0;
 
@@ -1995,6 +2379,12 @@ static string app_value(const string& resource, const string& value,
 	s.gsub('\n', "\n" + prefix);
 
     return s;
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning app_value() not implemented.
+#endif
+    return string("UNKNOWN");
+#endif // IF_MOTIF
 }
 
 inline const _XtString bool_value(Boolean value)
@@ -2063,6 +2453,7 @@ static string string_app_value(const string& name, const _XtString v,
 static string widget_value(Widget w, const _XtString name,
 			   Boolean check_default = False)
 {
+#ifdef IF_MOTIF
     String value = 0;
     XtVaGetValues(w, 
 		  XtVaTypedArg, name, XtRString, &value, sizeof(value),
@@ -2070,6 +2461,12 @@ static string widget_value(Widget w, const _XtString name,
 
     return string_app_value(string(XtName(w)) + "." + name, value, 
 			    check_default);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning 
+#endif
+    return string("UNKNOWN");
+#endif // IF_MOTIF
 }
 
 static string orientation_app_value(const string& name, unsigned char v,
@@ -2097,9 +2494,11 @@ static string orientation_app_value(const string& name, unsigned char v,
 
 static string paned_widget_size(Widget w, bool height_only = false)
 {
+#ifdef IF_MOTIF
     string s;
     const Boolean check_default = False;
 
+#ifdef IF_MOTIF
     if (XmIsText(w) || XmIsTextField(w))
     {
 	// Store rows and columns
@@ -2126,6 +2525,43 @@ static string paned_widget_size(Widget w, bool height_only = false)
 	    }
 	}
     }
+#else // NOT IF_MOTIF
+    GtkScrolledText *scrolled_text;
+    Gtk::Entry *entry;
+    if (scrolled_text = dynamic_cast<GtkScrolledText *>(w))
+    {
+	// Store rows and columns
+	short columns = scrolled_text->get_columns();
+	if (!height_only && columns > 0)
+	{
+	    if (!s.empty())
+		s += '\n';
+	    s += int_app_value(string(XtName(w)) + "." + XmNcolumns, columns,
+			       check_default);
+	}
+
+	short rows = scrolled_text->get_rows();
+	if (rows > 0)
+	{
+	    if (!s.empty())
+		s += '\n';
+	    s += int_app_value(string(XtName(w)) + "." + XmNrows, rows,
+			       check_default);
+	}
+    }
+    else if (entry = dynamic_cast<Gtk::Entry *>(w))
+    {
+	// Store rows and columns
+	short columns = scrolled_text->get_columns();
+	if (!height_only && columns > 0)
+	{
+	    if (!s.empty())
+		s += '\n';
+	    s += int_app_value(string(XtName(w)) + "." + XmNcolumns, columns,
+			       check_default);
+	}
+    }
+#endif // IF_MOTIF
     else
     {
 	// We store the size of the paned child, in order to account
@@ -2150,7 +2586,12 @@ static string paned_widget_size(Widget w, bool height_only = false)
 	s += int_app_value(string(XtName(w)) + "." + XmNheight, height,
 			   check_default);
     }
-
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning paned_widget_size unimplemented.
+#endif
+    string s("UNKNOWN");
+#endif // IF_MOTIF
     return s;
 }
 
@@ -2163,6 +2604,7 @@ static string widget_geometry(Widget w, bool include_size = false)
 {
     const Boolean check_default = False;
 
+#ifdef IF_MOTIF
     Dimension width, height;
     XtVaGetValues(w, XmNwidth, &width, XmNheight, &height, XtPointer(0));
 
@@ -2177,6 +2619,12 @@ static string widget_geometry(Widget w, bool include_size = false)
 
     return string_app_value(string(XtName(w)) + ".geometry", geo.chars(), 
 			    check_default);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning widget_geometry() unimplemented.
+#endif
+    return string("UNKNOWN");
+#endif // IF_MOTIF
 }
 
 bool saving_options_kills_program(unsigned long flags)
@@ -2338,6 +2786,8 @@ bool get_restart_commands(string& restart, unsigned long flags)
 
 bool save_options(unsigned long flags)
 {
+    std::cerr << "Skipping save_options...\n";
+    return true;
     const bool create        = (flags & CREATE_OPTIONS);
     const bool save_session  = (flags & SAVE_SESSION);
     const bool save_geometry = (flags & SAVE_GEOMETRY);
@@ -2528,6 +2978,7 @@ bool save_options(unsigned long flags)
     os << int_app_value(XtNmaxUndoSize,
 			 app_data.max_undo_size, True) << '\n';
 
+#ifdef IF_MOTIF
     // Misc stuff
     os << "\n! Misc preferences.\n";
     unsigned char policy = '\0';
@@ -2545,6 +2996,11 @@ bool save_options(unsigned long flags)
 	   << '\n';
 	break;
     }
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Keyboard focus not implemented.
+#endif
+#endif // IF_MOTIF
 
     os << bool_app_value(XtNstatusAtBottom,
 			 app_data.status_at_bottom) << '\n';
@@ -2592,10 +3048,15 @@ bool save_options(unsigned long flags)
 			 app_data.auto_close_data_window) << '\n';
 
     Dimension grid_width, grid_height;
+#ifdef IF_MOTIF
     XtVaGetValues(data_disp->graph_edit,
 		  XtNgridWidth, &grid_width,
 		  XtNgridHeight, &grid_height,
 		  XtPointer(0));
+#else // NOT IF_MOTIF
+    grid_width = data_disp->graph_edit->get_grid_width();
+    grid_height = data_disp->graph_edit->get_grid_height();
+#endif // IF_MOTIF
     if (!save_session && grid_width == grid_height)
     {
 	os << int_app_value(string(XtName(data_disp->graph_edit)) + "." 
@@ -2917,14 +3378,14 @@ bool save_options(unsigned long flags)
 // Callbacks
 // ---------------------------------------------------------------------------
 
-static void DoSaveOptionsCB(Widget, XtPointer client_data, XtPointer)
+static void DoSaveOptionsCB(CB_ALIST_2(XtP(unsigned long) client_data))
 {
     unsigned long flags = (unsigned long)client_data;
     save_options(flags);
 }
 
 // Save options
-void DDDSaveOptionsCB(Widget w, XtPointer client_data, XtPointer call_data)
+void DDDSaveOptionsCB(CB_ALIST_12(Widget w, XtP(unsigned long) client_data))
 {
     unsigned long flags = (unsigned long)client_data;
     if ((flags & SAVE_SESSION) && app_data.session == DEFAULT_SESSION)
@@ -2935,59 +3396,86 @@ void DDDSaveOptionsCB(Widget w, XtPointer client_data, XtPointer call_data)
     else if (options_file_has_changed(ACCESS))
     {
 	// Options file has changed since last access; request confirmation
-	static Widget dialog = 0;
+	static DIALOG_P dialog = 0;
 	if (dialog)
 	    DestroyWhenIdle(dialog);
 
+#ifdef IF_MOTIF
 	dialog = verify(XmCreateQuestionDialog(
 			    find_shell(w), 
 			    XMST("overwrite_options_dialog"),
 			    0, 0));
+#else // NOT IF_MOTIF
+	dialog = new Gtk::Dialog(XMST("overwrite_options_dialog"), *find_shell(w));
+#endif // IF_MOTIF
 	Delay::register_shell(dialog);
+#ifdef IF_MOTIF
 	XtAddCallback(dialog, XmNokCallback, DoSaveOptionsCB, 
 		      XtPointer(flags));
 	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, 0);
+#else // NOT IF_MOTIF
+	Gtk::Button *button = dialog->add_button(XMST("OK"), 0);
+	button->signal_clicked().connect(sigc::bind(PTR_FUN(DoSaveOptionsCB), flags));
+#endif // IF_MOTIF
 
 	manage_and_raise(dialog);
     }
     else if (saving_options_kills_program(flags))
     {
 	// Saving session would kill program; request confirmation
-	static Widget dialog = 0;
+	static DIALOG_P dialog = 0;
 	if (dialog)
 	    DestroyWhenIdle(dialog);
 
+#ifdef IF_MOTIF
 	dialog = verify(XmCreateQuestionDialog(
 			    find_shell(w), 
 			    XMST("kill_to_save_dialog"),
 			    0, 0));
+#else // NOT IF_MOTIF
+	dialog = new Gtk::Dialog(XMST("kill_to_save_dialog"), *find_shell(w));
+#endif // IF_MOTIF
 	Delay::register_shell(dialog);
+#ifdef IF_MOTIF
 	XtAddCallback(dialog, XmNokCallback, DoSaveOptionsCB, 
 		      XtPointer(flags | MAY_KILL));
 	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, 0);
+#else // NOT IF_MOTIF
+	Gtk::Button *button = dialog->add_button(XMST("OK"), 0);
+	button->signal_clicked().connect(sigc::bind(PTR_FUN(DoSaveOptionsCB), (flags | MAY_KILL)));
+#endif // IF_MOTIF
 
 	manage_and_raise(dialog);
     }
     else if (saving_options_excludes_data(flags))
     {
 	// Saving session results in data loss; request confirmation
-	static Widget dialog = 0;
+	static DIALOG_P dialog = 0;
 	if (dialog)
 	    DestroyWhenIdle(dialog);
 
+#ifdef IF_MOTIF
 	dialog = verify(XmCreateQuestionDialog(
 			    find_shell(w), 
 			    XMST("data_not_saved_dialog"),
 			    0, 0));
+#else // NOT IF_MOTIF
+	dialog = new Gtk::Dialog(XMST("data_not_saved_dialog"), *find_shell(w));
+#endif // IF_MOTIF
 	Delay::register_shell(dialog);
+#ifdef IF_MOTIF
 	XtAddCallback(dialog, XmNokCallback, DoSaveOptionsCB, 
 		      XtPointer(flags));
 	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, 0);
+#else // NOT IF_MOTIF
+	Gtk::Button *button = dialog->add_button(XMST("OK"), 0);
+	button->signal_clicked().connect(sigc::bind(PTR_FUN(DoSaveOptionsCB), flags));
+#endif // IF_MOTIF
 
 	manage_and_raise(dialog);
     }
     else
     {
-	DoSaveOptionsCB(w, client_data, call_data);
+	DoSaveOptionsCB(CB_ARGS_2(client_data));
     }
 }

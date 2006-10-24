@@ -134,6 +134,7 @@ char ddd_rcsid[] =
 
 #include "ddd.h"
 
+#ifdef IF_MOTIF
 // Motif stuff
 #include <Xm/Xm.h>
 #include <Xm/AtomMgr.h>
@@ -179,6 +180,20 @@ char ddd_rcsid[] =
 #ifdef XtIsRealized
 #undef XtIsRealized
 #endif
+#else // NOT IF_MOTIF
+#include <glibmm/main.h>
+
+#include <gtkmm/main.h>
+#include <gtkmm/window.h>
+#include <gtkmm/dialog.h>
+#include <gtkmm/paned.h>
+#include <gtkmm/messagedialog.h>
+#include <gtkmm/scale.h>
+#include <gtkmm/entry.h>
+#include <gtkmm/frame.h>
+
+#include "GtkMultiPaned.h"
+#endif // IF_MOTIF
 
 // Lots of DDD stuff
 #include "AgentM.h"
@@ -195,12 +210,16 @@ char ddd_rcsid[] =
 #include "GraphEdit.h"
 #include "GDBAgent.h"
 #include "HistoryD.h"
+#ifdef IF_MOTIF
 #include "LabelH.h"
+#endif // IF_MOTIF
 #include "MakeMenu.h"
 #include "PlotAgent.h"
 #include "SourceView.h"
+#ifdef IF_MOTIF
 #include "Swallower.h"
 #include "TextSetS.h"
+#endif // IF_MOTIF
 #include "TimeOut.h"
 #include "UndoBuffer.h"
 #include "VSEFlags.h"
@@ -216,7 +235,9 @@ char ddd_rcsid[] =
 #include "comm-manag.h"
 #include "Command.h"
 #include "complete.h"
+#ifdef IF_MOTIF
 #include "converters.h"
+#endif // IF_MOTIF
 #include "cook.h"
 #include "data.h"
 #include "dbx-lookup.h"
@@ -231,7 +252,9 @@ char ddd_rcsid[] =
 #include "file.h"
 #include "filetype.h"
 #include "findParent.h"
+#ifdef IF_MOTIF
 #include "fonts.h"
+#endif // IF_MOTIF
 #include "frame.h"
 #include "gdbinit.h"
 #include "getrlimit.h"
@@ -258,7 +281,9 @@ char ddd_rcsid[] =
 #include "shell.h"
 #include "shorten.h"
 #include "show.h"
+#ifdef IF_MOTIF
 #include "simpleMenu.h"
+#endif // IF_MOTIF
 #include "source.h"
 #include "status.h"
 #include "strclass.h"
@@ -266,7 +291,9 @@ char ddd_rcsid[] =
 #include "tabs.h"
 #include "tempfile.h"
 #include "tictactoe.h"
+#ifdef IF_MOTIF
 #include "tips.h"
+#endif // IF_MOTIF
 #include "toolbar.h"
 #include "ungrab.h"
 #include "verify.h"
@@ -302,6 +329,16 @@ extern "C" {
 #endif
 
 
+enum DDDWindow { OtherWindow = -1,
+		 ToolWindow  = 0, 
+		 ExecWindow, 
+		 Sep,
+		 GDBWindow, 
+		 SourceWindow,
+		 DataWindow, 
+		 CodeWindow,
+		 CommonWindow };
+
 //-----------------------------------------------------------------------------
 // Forward function decls
 //-----------------------------------------------------------------------------
@@ -316,31 +353,37 @@ static void language_changedHP (Agent *, void *, void *);
 static void report_languageHP  (Agent *, void *, void *);
 static void source_argHP       (void *, void *, void *call_data);
 
+#ifdef IF_MOTIF
 // Warning proc
 static void ddd_xt_warning(String message);
+#endif // IF_MOTIF
 
 // Getting ready
+#ifdef IF_MOTIF
 static void WhenReady            (Widget, XtPointer, XtPointer);
+#else // NOT IF_MOTIF
+static void WhenReady            (Widget, XtPointer);
+#endif // IF_MOTIF
 
 // Cut and Paste
-static void gdbCutSelectionCB    (Widget, XtPointer, XtPointer);
-static void gdbCopySelectionCB   (Widget, XtPointer, XtPointer);
-static void gdbPasteClipboardCB  (Widget, XtPointer, XtPointer);
-static void gdbDeleteSelectionCB (Widget, XtPointer, XtPointer);
-static void gdbClearAllCB        (Widget, XtPointer, XtPointer);
-static void gdbSelectAllCB       (Widget, XtPointer, XtPointer);
-static void gdbUnselectAllCB     (Widget, XtPointer, XtPointer);
+static void gdbCutSelectionCB    (CB_ALIST_12(Widget, XtP(DDDWindow)));
+static void gdbCopySelectionCB   (CB_ALIST_12(Widget, XtP(DDDWindow)));
+static void gdbSelectAllCB       (CB_ALIST_12(Widget, XtP(DDDWindow)));
+static void gdbPasteClipboardCB  (CB_ALIST_12(Widget, XtP(DDDWindow)));
+static void gdbDeleteSelectionCB (CB_ALIST_12(Widget, XtP(DDDWindow)));
+static void gdbClearAllCB        (CB_ALIST_NULL);
+static void gdbUnselectAllCB     (CB_ALIST_NULL);
 
 // Update menus
-static void gdbUpdateEditCB      (Widget, XtPointer, XtPointer);
-static void gdbUpdateFileCB      (Widget, XtPointer, XtPointer);
-static void gdbUpdateViewCB      (Widget, XtPointer, XtPointer);
-static void gdbUpdateViewsCB     (Widget, XtPointer, XtPointer);
+static void gdbUpdateEditCB      (CB_ALIST_12(Widget, XtP(DDDWindow)));
+static void gdbUpdateFileCB      (CB_ARG_LIST_2());
+static void gdbUpdateViewCB      (CB_ARG_LIST_2());
+static void gdbUpdateViewsCB     (CB_ARG_LIST_2());
 static void gdbUpdateAllMenus();
 
 // Preferences
 static void make_preferences (Widget parent);
-static void dddPopupPreferencesCB (Widget, XtPointer, XtPointer);
+static void dddPopupPreferencesCB (CB_ALIST_NULL);
 
 // Synchronize `():' fields
 static void sync_args(ArgField *a1, ArgField *a2);
@@ -349,11 +392,15 @@ static void sync_args(ArgField *a1, ArgField *a2);
 static bool pending_interaction();
 
 // Create status line
-static void create_status(Widget parent);
+static void create_status(CONTAINER_P parent);
 
 // Status LED
 static void blink(bool set);
-static void ToggleBlinkCB(Widget, XtPointer client_data, XtPointer call_data);
+static void ToggleBlinkCB(TOGGLEBUTTON_P w,
+#ifdef IF_MOTIF
+			  XtPointer client_data,
+#endif
+			  XtPointer call_data);
 static void DisableBlinkHP(Agent *, void *, void *);
 
 // GDB Status
@@ -361,9 +408,14 @@ static void ReportStartHP(Agent *, void *, void *);
 static void ReportDeathHP(Agent *, void *, void *);
 
 // Status history
-static void PopupStatusHistoryCB(Widget, XtPointer, XtPointer);
-static void PopdownStatusHistoryCB(Widget, XtPointer, XtPointer);
+#ifdef IF_MOTIF
+static void PopupStatusHistoryCB(CB_ALIST_NULL);
+static void PopdownStatusHistoryCB(CB_ALIST_NULL);
 static void PopdownStatusHistoryEH(Widget, XtPointer, XEvent *, Boolean *);
+#else // NOT IF_MOTIF
+static bool PopupStatusHistoryCB(GdkEventButton *, Widget);
+static bool PopdownStatusHistoryCB(GdkEventButton *);
+#endif // IF_MOTIF
 
 // Argument callback
 static void ActivateCB(Widget, XtPointer client_data, XtPointer call_data);
@@ -394,7 +446,11 @@ static void set_cut_copy_paste_bindings(MMDesc *menu, BindingStyle style);
 static void set_select_all_bindings(MMDesc *menu, BindingStyle style);
 
 // Popup DDD splash screen upon start-up.
-static void SetSplashScreenCB(Widget, XtPointer, XtPointer);
+#ifdef IF_MOTIF
+static void SetSplashScreenCB(CB_ARG_LIST_3());
+#else // NOT IF_MOTIF
+static void SetSplashScreenCB(TOGGLEBUTTON_P);
+#endif // IF_MOTIF
 static void popup_splash_screen(Widget parent, const string& color_key);
 static void popdown_splash_screen(XtPointer data = 0, XtIntervalId *id = 0);
 
@@ -428,9 +484,11 @@ static void PostHelpOnItem(Widget item);
 // Log player stuff
 static void check_log(const string& logname, DebuggerType& type);
 
+#ifdef IF_MOTIF
 // Add current selection as argument
 static void add_arg_from_selection(Widget toplevel, 
 				   int& argc, const char **&argv);
+#endif // IF_MOTIF
 
 #if XmVersion < 2000 || defined(LESSTIF_VERSION)
 static void toggleOverstrikeAct (Widget, XEvent*, String*, Cardinal*)
@@ -462,7 +520,7 @@ static void vsl_echo(const string& msg);
 static const char * ON  = "on";
 static const char * OFF = "off";
 
-
+#ifdef IF_MOTIF
 // Options
 // Note: we support both the GDB '--OPTION' and the X '-OPTION' convention.
 static XrmOptionDescRec options[] = {
@@ -844,41 +902,51 @@ static XrmOptionDescRec options[] = {
                                         XrmoptionNoArg, XPointer(ON) },
 
 };
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Rewrite options using popt.
+#endif
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
 // Actions
 static XtActionsRec actions [] = {
-    {XTARECSTR("gdb-control"),            controlAct},
-    {XTARECSTR("gdb-interrupt"),          interruptAct},
-    {XTARECSTR("gdb-command"),            commandAct},
-    {XTARECSTR("gdb-process"),            processAct},
-    {XTARECSTR("gdb-delete-or-control"),  delete_or_controlAct},
-    {XTARECSTR("gdb-prev-history"),       prev_historyAct},
-    {XTARECSTR("gdb-previous-history"),   prev_historyAct},
-    {XTARECSTR("gdb-next-history"),       next_historyAct},
-    {XTARECSTR("gdb-beginning-of-line"),  beginning_of_lineAct},
-    {XTARECSTR("gdb-end-of-line"),        end_of_lineAct},
-    {XTARECSTR("gdb-forward-character"),  forward_characterAct},
-    {XTARECSTR("gdb-backward-character"), backward_characterAct},
-    {XTARECSTR("gdb-set-line"),           set_lineAct},
-    {XTARECSTR("gdb-complete-command"),   complete_commandAct},
-    {XTARECSTR("gdb-complete-arg"),       complete_argAct},
-    {XTARECSTR("gdb-complete-tab"),       complete_tabAct},
-    {XTARECSTR("gdb-insert-source-arg"),  insert_source_argAct},
-    {XTARECSTR("gdb-insert-graph-arg"),   insert_graph_argAct},
-    {XTARECSTR("gdb-isearch-prev"),       isearch_prevAct},
-    {XTARECSTR("gdb-isearch-next"),       isearch_nextAct},
-    {XTARECSTR("gdb-isearch-exit"),       isearch_exitAct},
-    {XTARECSTR("gdb-popup-menu"),         popupAct},
-    {XTARECSTR("ddd-next-tab-group"),     next_tab_groupAct},
-    {XTARECSTR("ddd-prev-tab-group"),     prev_tab_groupAct},
-    {XTARECSTR("ddd-previous-tab-group"), prev_tab_groupAct},
-    {XTARECSTR("ddd-get-focus"),          get_focusAct},
-    {XTARECSTR("ddd-select-all"),         select_allAct},
+    {XTARECSTR("gdb-control"),            PTR_FUN(controlAct)},
+    {XTARECSTR("gdb-interrupt"),          PTR_FUN(interruptAct)},
+    {XTARECSTR("gdb-command"),            PTR_FUN(commandAct)},
+    {XTARECSTR("gdb-process"),            PTR_FUN(processAct)},
+    {XTARECSTR("gdb-delete-or-control"),  PTR_FUN(delete_or_controlAct)},
+    {XTARECSTR("gdb-prev-history"),       PTR_FUN(prev_historyAct)},
+    {XTARECSTR("gdb-previous-history"),   PTR_FUN(prev_historyAct)},
+    {XTARECSTR("gdb-next-history"),       PTR_FUN(next_historyAct)},
+    {XTARECSTR("gdb-beginning-of-line"),  PTR_FUN(beginning_of_lineAct)},
+    {XTARECSTR("gdb-end-of-line"),        PTR_FUN(end_of_lineAct)},
+    {XTARECSTR("gdb-forward-character"),  PTR_FUN(forward_characterAct)},
+    {XTARECSTR("gdb-backward-character"), PTR_FUN(backward_characterAct)},
+    {XTARECSTR("gdb-set-line"),           PTR_FUN(set_lineAct)},
+    {XTARECSTR("gdb-complete-command"),   PTR_FUN(complete_commandAct)},
+    {XTARECSTR("gdb-complete-arg"),       PTR_FUN(complete_argAct)},
+    {XTARECSTR("gdb-complete-tab"),       PTR_FUN(complete_tabAct)},
+    {XTARECSTR("gdb-insert-source-arg"),  PTR_FUN(insert_source_argAct)},
+    {XTARECSTR("gdb-insert-graph-arg"),   PTR_FUN(insert_graph_argAct)},
+    {XTARECSTR("gdb-isearch-prev"),       PTR_FUN(isearch_prevAct)},
+    {XTARECSTR("gdb-isearch-next"),       PTR_FUN(isearch_nextAct)},
+    {XTARECSTR("gdb-isearch-exit"),       PTR_FUN(isearch_exitAct)},
+    {XTARECSTR("gdb-popup-menu"),         PTR_FUN(popupAct)},
+    {XTARECSTR("ddd-next-tab-group"),     PTR_FUN(next_tab_groupAct)},
+    {XTARECSTR("ddd-prev-tab-group"),     PTR_FUN(prev_tab_groupAct)},
+    {XTARECSTR("ddd-previous-tab-group"), PTR_FUN(prev_tab_groupAct)},
+    {XTARECSTR("ddd-get-focus"),          PTR_FUN(get_focusAct)},
+    {XTARECSTR("ddd-select-all"),         PTR_FUN(select_allAct)},
 #if XmVersion < 2000 || defined(LESSTIF_VERSION)
-    {XTARECSTR("toggle-overstrike"),      toggleOverstrikeAct},
+    {XTARECSTR("toggle-overstrike"),      PTR_FUN(toggleOverstrikeAct)},
 #endif
 };
-
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Actions not supported
+#endif
+#endif // IF_MOTIF
 
 //-----------------------------------------------------------------------------
 // Menus
@@ -886,16 +954,16 @@ static XtActionsRec actions [] = {
 
 #define RECENT_MENU \
 { \
-    { "r1", MMPush, { gdbOpenRecentCB, XtPointer(1) }, 0, 0, 0, 0 }, \
-    { "r2", MMPush, { gdbOpenRecentCB, XtPointer(2) }, 0, 0, 0, 0 }, \
-    { "r3", MMPush, { gdbOpenRecentCB, XtPointer(3) }, 0, 0, 0, 0 }, \
-    { "r4", MMPush, { gdbOpenRecentCB, XtPointer(4) }, 0, 0, 0, 0 }, \
-    { "r5", MMPush, { gdbOpenRecentCB, XtPointer(5) }, 0, 0, 0, 0 }, \
-    { "r6", MMPush, { gdbOpenRecentCB, XtPointer(6) }, 0, 0, 0, 0 }, \
-    { "r7", MMPush, { gdbOpenRecentCB, XtPointer(7) }, 0, 0, 0, 0 }, \
-    { "r8", MMPush, { gdbOpenRecentCB, XtPointer(8) }, 0, 0, 0, 0 }, \
-    { "r9", MMPush, { gdbOpenRecentCB, XtPointer(9) }, 0, 0, 0, 0 }, \
-    MMEnd \
+    { NM("r1", "r1"), MMPush, BIND_1( PTR_FUN(gdbOpenRecentCB), XtPointer(1) ), 0, 0, 0, 0 }, \
+    { NM("r2", "r2"), MMPush, BIND_1( PTR_FUN(gdbOpenRecentCB), XtPointer(2) ), 0, 0, 0, 0 }, \
+    { NM("r3", "r3"), MMPush, BIND_1( PTR_FUN(gdbOpenRecentCB), XtPointer(3) ), 0, 0, 0, 0 }, \
+    { NM("r4", "r4"), MMPush, BIND_1( PTR_FUN(gdbOpenRecentCB), XtPointer(4) ), 0, 0, 0, 0 }, \
+    { NM("r5", "r5"), MMPush, BIND_1( PTR_FUN(gdbOpenRecentCB), XtPointer(5) ), 0, 0, 0, 0 }, \
+    { NM("r6", "r6"), MMPush, BIND_1( PTR_FUN(gdbOpenRecentCB), XtPointer(6) ), 0, 0, 0, 0 }, \
+    { NM("r7", "r7"), MMPush, BIND_1( PTR_FUN(gdbOpenRecentCB), XtPointer(7) ), 0, 0, 0, 0 }, \
+    { NM("r8", "r8"), MMPush, BIND_1( PTR_FUN(gdbOpenRecentCB), XtPointer(8) ), 0, 0, 0, 0 }, \
+    { NM("r9", "r9"), MMPush, BIND_1( PTR_FUN(gdbOpenRecentCB), XtPointer(9) ), 0, 0, 0, 0 }, \
+    MMEnd					\
 }
 
 static MMDesc command_recent_menu[] = RECENT_MENU;
@@ -913,61 +981,76 @@ struct FileItems {
     };
 };
 
+#ifdef IF_MOTIF
+
 // Auxiliary struct used by WhenReady. A pointer to function can not
 // be passed directly in a XtPointer.
 struct WhenReadyProc_t {
   XtCallbackProc proc;
 };
-#define DECL_WR(PROC) \
- static WhenReadyProc_t WR_##PROC = { PROC }
-DECL_WR(gdbOpenClassCB);
-DECL_WR(gdbOpenFileCB);
-DECL_WR(gdbOpenCoreCB);
-DECL_WR(OpenSessionCB);
-DECL_WR(SaveSessionAsCB);
-DECL_WR(gdbOpenProcessCB);
-DECL_WR(gdbChangeDirectoryCB);
-DECL_WR(gdbMakeCB);
-DECL_WR(gdbMakeAgainCB);
+#define DECL_WR(NAME, PROC)			\
+    static WhenReadyProc_t NAME = { PROC }
 
-#define FILE_MENU(recent_menu) \
-{ \
-    { "open_class",    MMPush | MMUnmanaged, \
-        { WhenReady, XtPointer(&WR_gdbOpenClassCB) }, 0, 0, 0, 0 }, \
-    { "open_file",     MMPush, \
-        { WhenReady, XtPointer(&WR_gdbOpenFileCB) }, 0, 0, 0, 0 }, \
-    { "recent",        MMMenu, MMNoCB, recent_menu, 0, 0, 0 }, \
-    { "open_core",     MMPush, \
-        { WhenReady, XtPointer(&WR_gdbOpenCoreCB) }, 0, 0, 0, 0}, \
-    { "open_source",   MMPush, { gdbLookupSourceCB, 0 }, 0, 0, 0, 0 }, \
-    MMSep, \
-    { "open_session",  MMPush, \
-        { WhenReady, XtPointer(&WR_OpenSessionCB) }, 0, 0, 0, 0 }, \
-    { "save_session",  MMPush, \
-        { WhenReady, XtPointer(&WR_SaveSessionAsCB) }, 0, 0, 0, 0 }, \
-    MMSep, \
-    { "attach",        MMPush, \
-        { WhenReady, XtPointer(&WR_gdbOpenProcessCB) }, 0, 0, 0, 0 }, \
-    { "detach",        MMPush, \
-        { gdbCommandCB, XtPointer("detach") }, 0, 0, 0, 0 }, \
-    MMSep, \
-    { "print",         MMPush, { PrintGraphCB, XtPointer(0) }, 0, 0, 0, 0 }, \
-    { "printAgain",    MMPush | MMUnmanaged, \
- 	{ PrintAgainCB, XtPointer(1) }, 0, 0, 0, 0 }, \
-    { "separator",     MMSeparator | MMUnmanaged, MMNoCB, 0, 0, 0, 0 }, \
-    { "cd",            MMPush, \
-        { WhenReady, XtPointer(&WR_gdbChangeDirectoryCB) }, 0, 0, 0, 0 }, \
-    { "separator",     MMSeparator | MMUnmanaged, MMNoCB, 0, 0, 0, 0 }, \
-    { "make",          MMPush, \
-        { WhenReady, XtPointer(&WR_gdbMakeCB) }, 0, 0, 0, 0 }, \
-    { "makeAgain",     MMPush | MMUnmanaged, \
-        { WhenReady, XtPointer(&WR_gdbMakeAgainCB) }, 0, 0, 0, 0 }, \
-    MMSep, \
-    { "close",         MMPush, { DDDCloseCB, 0 }, 0, 0, 0, 0 }, \
-    { "restart",       MMPush, { DDDRestartCB, 0 }, 0, 0, 0, 0 }, \
-    { "exit",          MMPush, \
-        { DDDExitCB, XtPointer(EXIT_SUCCESS) }, 0, 0, 0, 0 }, \
-    MMEnd \
+#else // NOT IF_MOTIF
+
+// Bind everything except the widget argument.  The widget will be
+// filled in when we queue the event for processing.
+typedef GTK_SLOT_W WhenReadyProc_t;
+#define DECL_WR(NAME, PROC)			\
+    static WhenReadyProc_t NAME = PROC
+
+#endif // IF_MOTIF
+
+DECL_WR(WR_gdbOpenClassCB, PTR_FUN(gdbOpenClassCB));
+DECL_WR(WR_gdbOpenFileCB, PTR_FUN(gdbOpenFileCB));
+DECL_WR(WR_gdbOpenCoreCB, PTR_FUN(gdbOpenCoreCB));
+DECL_WR(WR_OpenSessionCB, PTR_FUN(OpenSessionCB));
+DECL_WR(WR_SaveSessionAsCB, PTR_FUN(SaveSessionAsCB));
+DECL_WR(WR_gdbOpenProcessCB, PTR_FUN(gdbOpenProcessCB));
+DECL_WR(WR_gdbChangeDirectoryCB, PTR_FUN(gdbChangeDirectoryCB));
+DECL_WR(WR_gdbMakeCB, PTR_FUN(gdbMakeCB));
+DECL_WR(WR_gdbMakeAgainCB, CB_ARG_HIDE_0(PTR_FUN(gdbMakeAgainCB)));
+
+#define FILE_MENU(recent_menu)						\
+{									\
+    { NM("open_class", "Open Class..."), MMPush | MMUnmanaged,		\
+      BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_gdbOpenClassCB)), 0, 0, 0, 0 }, \
+    { NM("open_file", "Open Program..."), MMPush,			\
+      BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_gdbOpenFileCB)), 0, 0, 0, 0 }, \
+    { NM("recent", "Open Recent"), MMMenu, MMNoCB, recent_menu, 0, 0, 0 }, \
+    { NM("open_core", "Open Core Dump..."), MMPush,			\
+      BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_gdbOpenCoreCB)), 0, 0, 0, 0}, \
+    { NM("open_source", "Open Source..."), MMPush, 			\
+      BIND_0(PTR_FUN(gdbLookupSourceCB)), 0, 0, 0, 0 }, 		\
+    MMSep,								\
+    { NM("open_session", "Open Session..."),  MMPush,			\
+      BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_OpenSessionCB)), 0, 0, 0, 0 }, \
+    { NM("save_session", "Save Session As..."), MMPush,		\
+      BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_SaveSessionAsCB)), 0, 0, 0, 0 },	\
+    MMSep,								\
+    { NM("attach", "Attach to Process..."), MMPush,			\
+      BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_gdbOpenProcessCB)), 0, 0, 0, 0 }, \
+    { NM("detach", "Detach Process"), MMPush,				\
+      BIND_1(PTR_FUN(gdbCommandCB), XtPointer("detach")), 0, 0, 0, 0 },	\
+    MMSep,								\
+    { NM("print", "Print Graph..."), MMPush,				\
+      BIND_0(PTR_FUN(PrintGraphCB)), 0, 0, 0, 0 },			\
+    { NM("printAgain", "Print Again"), MMPush | MMUnmanaged,		\
+      BIND_1(PTR_FUN(PrintAgainCB), 1), 0, 0, 0, 0 },			\
+    { NM("separator", ""), MMSeparator | MMUnmanaged, MMNoCB, 0, 0, 0, 0 }, \
+    { NM("cd", "Change Directory..."), MMPush,				\
+      BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_gdbChangeDirectoryCB)), 0, 0, 0, 0 }, \
+    MMSep,								\
+    { NM("make", "Make..."), MMPush,					\
+      BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_gdbMakeCB)), 0, 0, 0, 0 }, \
+    { NM("makeAgain", "Make Again"), MMPush | MMUnmanaged,		\
+      BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_gdbMakeAgainCB)), 0, 0, 0, 0 }, \
+    MMSep,								\
+    { NM("close", "Close"), MMPush, BIND_0(PTR_FUN(DDDCloseCB)), 0, 0, 0, 0 }, \
+    { NM("restart", "Restart"), MMPush, BIND_0(PTR_FUN(DDDRestartCB)), 0, 0, 0, 0 }, \
+    { NM("exit", "Exit"), MMPush,					\
+      BIND_1(PTR_FUN(DDDExitCB), EXIT_SUCCESS), 0, 0, 0, 0 },		\
+    MMEnd								\
 }
 
 static MMDesc command_file_menu[] = FILE_MENU(command_recent_menu);
@@ -984,34 +1067,51 @@ struct ProgramItems {
     };
 };
 
-#define PROGRAM_MENU(w) \
-{ \
-    { "run",       MMPush, { gdbRunCB, 0 }, 0, 0, 0, 0 }, \
-    { "run_again", MMPush, { gdbCommandCB, XtPointer("run") }, 0, 0, 0, 0 }, \
-    MMSep, \
-    { "separateExecWindow",  MMToggle, \
-	{ dddToggleSeparateExecWindowCB, 0 }, 0, &(w), 0, 0 }, \
-    MMSep, \
-    { "step",     MMPush, { gdbCommandCB, XtPointer("step") }, 0, 0, 0, 0 }, \
-    { "stepi",    MMPush, { gdbCommandCB, XtPointer("stepi") }, 0, 0, 0, 0 }, \
-    { "next",     MMPush, { gdbCommandCB, XtPointer("next") }, 0, 0, 0, 0 }, \
-    { "nexti",    MMPush, { gdbCommandCB, XtPointer("nexti") }, 0, 0, 0, 0}, \
-    { "until",    MMPush, { gdbCommandCB, XtPointer("until") }, 0, 0, 0, 0}, \
-    { "finish",   MMPush, { gdbCommandCB, XtPointer("finish") }, 0, 0, 0, 0}, \
-    MMSep, \
-    { "cont",     MMPush, { gdbCommandCB, XtPointer("cont") }, 0, 0, 0, 0}, \
-    { "signal0",  MMPush, \
-                      { gdbCommandCB, XtPointer("signal 0") }, 0, 0, 0, 0}, \
-    MMSep, \
-    { "kill",     MMPush, { gdbCommandCB, XtPointer("kill") }, 0, 0, 0, 0}, \
-    { "break",    MMPush, { gdbCommandCB, XtPointer("\003") }, 0, 0, 0, 0}, \
-    { "quit",     MMPush, { gdbCommandCB, XtPointer("\034") }, 0, 0, 0, 0}, \
-    MMEnd \
+#define PROGRAM_MENU(w)							\
+{									\
+    { NM("run", "Run..."), MMPush, BIND_0(PTR_FUN(gdbRunCB)), 0, 0, 0, 0 },	\
+    { NM("run_again", "Run Again"), MMPush,				\
+      BIND_1(PTR_FUN(gdbCommandCB), "run"), 0, 0, 0, 0 },		\
+    MMSep,								\
+    { NM("separateExecWindow", "Run in Execution Window"), MMToggle,	\
+      BIND_0(PTR_FUN(dddToggleSeparateExecWindowCB)), 0, (Widget *)&(w), 0, 0 }, \
+    MMSep,								\
+    { NM("step", "Step"), MMPush,					\
+      BIND_1(PTR_FUN(gdbCommandCB), "step"), 0, 0, 0, 0 },		\
+    { NM("stepi", "Step Instruction"), MMPush,				\
+      BIND_1(PTR_FUN(gdbCommandCB), "stepi"), 0, 0, 0, 0 },		\
+    { NM("next", "Next"), MMPush,					\
+      BIND_1(PTR_FUN(gdbCommandCB), "next"), 0, 0, 0, 0 },		\
+    { NM("nexti", "Next Instruction"), MMPush,				\
+      BIND_1(PTR_FUN(gdbCommandCB), "nexti"), 0, 0, 0, 0},		\
+    { NM("until", "Until"), MMPush,					\
+      BIND_1(PTR_FUN(gdbCommandCB), "until"), 0, 0, 0, 0},		\
+    { NM("finish", "Finish"), MMPush,					\
+      BIND_1(PTR_FUN(gdbCommandCB), "finish"), 0, 0, 0, 0},		\
+    MMSep,								\
+    { NM("cont", "Continue"), MMPush,					\
+      BIND_1(PTR_FUN(gdbCommandCB), "cont"), 0, 0, 0, 0},		\
+    { NM("signal0", "Continue Without Signal"), MMPush,			\
+      BIND_1(PTR_FUN(gdbCommandCB), "signal 0"), 0, 0, 0, 0},		\
+    MMSep,								\
+    { NM("kill", "Kill"), MMPush,					\
+      BIND_1(PTR_FUN(gdbCommandCB), "kill"), 0, 0, 0, 0},		\
+    { NM("break", "Interrupt"), MMPush,					\
+      BIND_1(PTR_FUN(gdbCommandCB), "\003"), 0, 0, 0, 0},		\
+    { NM("quit", "Abort"), MMPush,					\
+      BIND_1(PTR_FUN(gdbCommandCB), "\034"), 0, 0, 0, 0},		\
+    MMEnd								\
 }
 
+#ifdef IF_MOTIF
 static Widget command_separate_exec_window_w;
 static Widget source_separate_exec_window_w;
 static Widget data_separate_exec_window_w;
+#else // NOT IF_MOTIF
+static Gtk::ToggleButton *command_separate_exec_window_w;
+static Gtk::ToggleButton *source_separate_exec_window_w;
+static Gtk::ToggleButton *data_separate_exec_window_w;
+#endif // IF_MOTIF
 
 static MMDesc command_program_menu[]
     = PROGRAM_MENU(command_separate_exec_window_w);
@@ -1020,27 +1120,22 @@ static MMDesc source_program_menu[]
 static MMDesc data_program_menu[]
     = PROGRAM_MENU(data_separate_exec_window_w);
 
-enum DDDWindow { OtherWindow = -1,
-		 ToolWindow  = 0, 
-		 ExecWindow, 
-		 Sep,
-		 GDBWindow, 
-		 SourceWindow,
-		 DataWindow, 
-		 CodeWindow,
-		 CommonWindow };
-
-#define VIEW_MENU \
-{ \
-    { "tool",    MMPush,   { gdbOpenToolWindowCB, 0 }, 0, 0, 0, 0}, \
-    { "exec",    MMPush,   { gdbOpenExecWindowCB, 0 }, 0, 0, 0, 0}, \
-    MMSep, \
-    { "console", MMPush,   { gdbOpenCommandWindowCB, 0 }, 0, 0, 0, 0}, \
-    { "source",  MMPush,   { gdbOpenSourceWindowCB, 0 }, 0, 0, 0, 0}, \
-    { "data",    MMPush,   { gdbOpenDataWindowCB, 0 }, 0, 0, 0, 0}, \
-    { "code",    MMToggle | MMUnmanaged, \
-        { gdbToggleCodeWindowCB, 0 }, 0, 0, 0, 0}, \
-    MMEnd \
+#define VIEW_MENU							\
+{									\
+    { NM("tool", "Command Tool..."), MMPush,				\
+      HIDE_0( PTR_FUN(gdbOpenToolWindowCB) ), 0, 0, 0, 0},		\
+    { NM("exec", "Execution Window..."), MMPush,			\
+      HIDE_0( PTR_FUN(gdbOpenExecWindowCB) ), 0, 0, 0, 0},		\
+    MMSep,								\
+    { NM("console", "@GDB@ Console"), MMPush,				\
+      HIDE_0( PTR_FUN(gdbOpenCommandWindowCB) ), 0, 0, 0, 0},		\
+    { NM("source", "Source Window"), MMPush,				\
+      HIDE_0( PTR_FUN(gdbOpenSourceWindowCB) ), 0, 0, 0, 0},		\
+    { NM("data", "Data Window"),					\
+      MMPush,   HIDE_0( PTR_FUN(gdbOpenDataWindowCB) ), 0, 0, 0, 0},	\
+    { NM("code", "Machine Code Window"), MMToggle | MMUnmanaged,	\
+        BIND_0( PTR_FUN(gdbToggleCodeWindowCB) ), 0, 0, 0, 0},		\
+    MMEnd								\
 }
 
 static MMDesc command_view_menu[] = VIEW_MENU;
@@ -1049,13 +1144,19 @@ static MMDesc data_view_menu[]    = VIEW_MENU;
 
 static MMDesc views_menu[] = 
 {
-    { "tool",    MMPush,   { gdbOpenToolWindowCB, 0 }, 0, 0, 0, 0},
-    { "exec",    MMPush,   { gdbOpenExecWindowCB, 0 }, 0, 0, 0, 0},
+    { NM("tool", "Command Tool..."), MMPush,
+      HIDE_0( PTR_FUN(gdbOpenToolWindowCB) ), 0, 0, 0, 0},
+    { NM("exec", "Execution Window..."), MMPush,
+      HIDE_0( PTR_FUN(gdbOpenExecWindowCB) ), 0, 0, 0, 0},
     MMSep,
-    { "console", MMToggle, { gdbToggleCommandWindowCB, 0 }, 0, 0, 0, 0},
-    { "source",  MMToggle, { gdbToggleSourceWindowCB, 0 }, 0, 0, 0, 0},
-    { "data",    MMToggle, { gdbToggleDataWindowCB, 0 }, 0, 0, 0, 0},
-    { "code",    MMToggle, { gdbToggleCodeWindowCB, 0 }, 0, 0, 0, 0},
+    { NM("console", "@GDB@ Console"), MMToggle,
+      BIND_0( PTR_FUN(gdbToggleCommandWindowCB) ), 0, 0, 0, 0},
+    { NM("source", "Source Window"), MMToggle,
+      BIND_0( PTR_FUN(gdbToggleSourceWindowCB) ), 0, 0, 0, 0},
+    { NM("data", "Data Window"), MMToggle,
+      BIND_0( PTR_FUN(gdbToggleDataWindowCB) ), 0, 0, 0, 0},
+    { NM("code", "Machine Code Window"), MMToggle,
+      BIND_0( PTR_FUN(gdbToggleCodeWindowCB) ), 0, 0, 0, 0},
     MMEnd
 };
 
@@ -1069,41 +1170,48 @@ struct EditItems {
     };
 };
 
-DECL_WR(dddPopupSettingsCB);
+DECL_WR(WR_dddPopupSettingsCB, CB_ARG_HIDE_0(PTR_FUN(dddPopupSettingsCB)));
 
-#define EDIT_MENU(win, w) \
-{ \
-    { "undo",        MMPush,  { gdbUndoCB, 0 }, 0, 0, 0, 0}, \
-    { "redo",        MMPush,  { gdbRedoCB, 0 }, 0, 0, 0, 0}, \
-    MMSep, \
-    { "cut",         MMPush,  \
-      { gdbCutSelectionCB,    XtPointer(win) }, 0, 0, 0, 0}, \
-    { "copy",        MMPush,  \
-      { gdbCopySelectionCB,   XtPointer(win) }, 0, 0, 0, 0}, \
-    { "paste",       MMPush,  \
-      { gdbPasteClipboardCB,  XtPointer(win) }, 0, 0, 0, 0}, \
-    { "clearAll",    MMPush,  \
-      { gdbClearAllCB,        XtPointer(win) }, 0, 0, 0, 0}, \
-    { "delete",      MMPush,  \
-      { gdbDeleteSelectionCB, XtPointer(win) }, 0, 0, 0, 0}, \
-    MMSep, \
-    { "selectAll",   MMPush,  \
-      { gdbSelectAllCB,       XtPointer(win) }, 0, 0, 0, 0}, \
-    MMSep, \
-    { "preferences", MMPush,  \
-      { dddPopupPreferencesCB, 0 }, 0, 0, 0, 0}, \
-    { "settings",    MMPush,  \
-      { WhenReady, XtPointer(&WR_dddPopupSettingsCB) }, 0, 0, 0, 0}, \
-    MMSep, \
-    { "saveOptions", MMToggle,  \
-      { dddToggleSaveOptionsOnExitCB, 0 }, 0, &(w), 0, 0}, \
-    MMEnd \
+#define EDIT_MENU(win, w)						\
+{									\
+    { NM("undo", "Undo"),                  MMPush,			\
+      HIDE_0( PTR_FUN(gdbUndoCB) ), 0, 0, 0, 0},			\
+    { NM("redo", "Redo"),                  MMPush,			\
+      HIDE_0( PTR_FUN(gdbRedoCB) ), 0, 0, 0, 0},			\
+    MMSep,								\
+    { NM("cut", "Cut"),                    MMPush,			\
+      BIND_1(PTR_FUN(gdbCutSelectionCB),    win), 0, 0, 0, 0},		\
+    { NM("copy", "Copy"),                  MMPush,			\
+      BIND_1(PTR_FUN(gdbCopySelectionCB),   win), 0, 0, 0, 0},		\
+    { NM("paste", "Paste"),                MMPush,			\
+      BIND_1(PTR_FUN(gdbPasteClipboardCB),  win), 0, 0, 0, 0},		\
+    { NM("clearAll", "Clear"),             MMPush,			\
+      HIDE_0( PTR_FUN(gdbClearAllCB) ), 0, 0, 0, 0},			\
+    { NM("delete", "Delete"),              MMPush,			\
+      BIND_1( PTR_FUN(gdbDeleteSelectionCB), win), 0, 0, 0, 0},		\
+    MMSep,								\
+    { NM("selectAll", "Select All"),       MMPush,			\
+      BIND_1( PTR_FUN(gdbSelectAllCB),       win), 0, 0, 0, 0},		\
+    MMSep,								\
+    { NM("preferences", "Preferences..."), MMPush,			\
+      HIDE_0( PTR_FUN(dddPopupPreferencesCB) ), 0, 0, 0, 0},		\
+    { NM("settings", "Settings..."),       MMPush,			\
+      BIND_1( PTR_FUN(WhenReady), XtPointer(&WR_dddPopupSettingsCB) ), 0, 0, 0, 0}, \
+    MMSep,								\
+    { NM("saveOptions", "Save Options"),   MMToggle,			\
+      BIND_0( PTR_FUN(dddToggleSaveOptionsOnExitCB) ), 0, (Widget *)&(w), 0, 0}, \
+    MMEnd								\
 }
 
-
+#ifdef IF_MOTIF
 static Widget command_save_options_w;
 static Widget source_save_options_w;
 static Widget data_save_options_w;
+#else // NOT IF_MOTIF
+static Gtk::ToggleButton *command_save_options_w;
+static Gtk::ToggleButton *source_save_options_w;
+static Gtk::ToggleButton *data_save_options_w;
+#endif // IF_MOTIF
 
 static MMDesc command_edit_menu[] = EDIT_MENU(GDBWindow, 
 					      command_save_options_w);
@@ -1115,29 +1223,41 @@ static MMDesc data_edit_menu[]    = EDIT_MENU(DataWindow,
 static Widget complete_w;
 static Widget define_w;
 
-DECL_WR(gdbCompleteCB);
-DECL_WR(gdbApplyCB);
+DECL_WR(WR_gdbCompleteCB, PTR_FUN(gdbCompleteCB));
+DECL_WR(WR_gdbApplyCB, PTR_FUN(gdbApplyCB));
 
 static MMDesc command_menu[] =
 {
-    { "history",  MMPush, { gdbHistoryCB, 0 }, 0, 0, 0, 0},
+    { NM("history", "Command History..."),  MMPush,
+      BIND_0( PTR_FUN(gdbHistoryCB) ), 0, 0, 0, 0},
     MMSep,
-    { "prev",     MMPush, { gdbPrevCB, 0 }, 0, 0, 0, 0},
-    { "next",     MMPush, { gdbNextCB, 0 }, 0, 0, 0, 0},
+    { NM("prev", "Previous"),               MMPush,
+      BIND_0( PTR_FUN(gdbPrevCB) ), 0, 0, 0, 0},
+    { NM("next", "Next"),                   MMPush,
+      BIND_0( PTR_FUN(gdbNextCB) ), 0, 0, 0, 0},
     MMSep,
-    { "isearch_prev", MMPush, { gdbISearchPrevCB, 0 }, 0, 0, 0, 0},
-    { "isearch_next", MMPush, { gdbISearchNextCB, 0 }, 0, 0, 0, 0},
-    { "isearch_exit", MMPush, { gdbISearchExitCB, 0 }, 0, 0, 0, 0},
+    { NM("isearch_prev", "Find Backward"),  MMPush,
+      BIND_0( PTR_FUN(gdbISearchPrevCB) ), 0, 0, 0, 0},
+    { NM("isearch_next", "Find Forward"),   MMPush,
+      BIND_0( PTR_FUN(gdbISearchNextCB) ), 0, 0, 0, 0},
+    { NM("isearch_exit", "Quit Search"),    MMPush,
+      BIND_0( PTR_FUN(gdbISearchExitCB) ), 0, 0, 0, 0},
     MMSep,
-    { "complete", MMPush, { WhenReady, XtPointer(&WR_gdbCompleteCB) }, 
+    { NM("complete", "Complete"),           MMPush,
+      BIND_1( PTR_FUN(WhenReady), XtPointer(&WR_gdbCompleteCB) ), 
       0, &complete_w, 0, 0 },
-    { "apply",    MMPush, { WhenReady, XtPointer(&WR_gdbApplyCB) }, 0, 0, 0, 0},
+    { NM("apply", "Apply"),                 MMPush,
+      BIND_1( PTR_FUN(WhenReady), XtPointer(&WR_gdbApplyCB) ), 0, 0, 0, 0},
     MMSep,
-    { "clear_line",   MMPush, { gdbClearCB, 0 }, 0, 0, 0, 0},
-    { "clear_window", MMPush, { gdbClearWindowCB, 0 }, 0, 0, 0, 0},
+    { NM("clear_line", "Clear Line"),       MMPush,
+      HIDE_0( PTR_FUN(gdbClearCB) ), 0, 0, 0, 0},
+    { NM("clear_window", "Clear Window"),   MMPush,
+      HIDE_0( PTR_FUN(gdbClearWindowCB) ), 0, 0, 0, 0},
     MMSep,
-    { "define",   MMPush, { dddDefineCommandCB, 0 }, 0, &define_w, 0, 0 },
-    { "buttons",  MMPush, { dddEditButtonsCB, 0 }, 0, 0, 0, 0},
+    { NM("define", "Define Command..."),    MMPush,
+      BIND_0( PTR_FUN(dddDefineCommandCB) ), 0, &define_w, 0, 0 },
+    { NM("buttons", "Edit Buttons..."),     MMPush,
+      BIND_0( PTR_FUN(dddEditButtonsCB) ), 0, 0, 0, 0},
     MMEnd
 };
 
@@ -1146,30 +1266,33 @@ static Widget registers_w;
 static Widget threads_w;
 static Widget signals_w;
 
-static WhenReadyProc_t WR_ViewStackFramesCB = { SourceView::ViewStackFramesCB };
-static WhenReadyProc_t WR_ViewRegistersCB = { SourceView::ViewRegistersCB };
-static WhenReadyProc_t WR_ViewThreadsCB = { SourceView::ViewThreadsCB };
-DECL_WR(dddPopupSignalsCB);
+DECL_WR(WR_ViewStackFramesCB, CB_ARG_HIDE_0(PTR_FUN( SourceView::ViewStackFramesCB )));
+DECL_WR(WR_ViewRegistersCB, CB_ARG_HIDE_0(PTR_FUN( SourceView::ViewRegistersCB )));
+DECL_WR(WR_ViewThreadsCB, CB_ARG_HIDE_0(PTR_FUN( SourceView::ViewThreadsCB )));
+DECL_WR(WR_dddPopupSignalsCB, CB_ARG_HIDE_0(PTR_FUN(dddPopupSignalsCB)));
 static MMDesc stack_menu[] =
 {
-    { "stack",      MMPush,  { WhenReady, 
-			       XtPointer(&WR_ViewStackFramesCB) },
+    { NM("stack", "Backtrace..."),      MMPush,
+      BIND_1( PTR_FUN(WhenReady), XtPointer(&WR_ViewStackFramesCB) ),
       0, &stack_w, 0, 0 },
-    { "registers",  MMPush,  { WhenReady, 
-			       XtPointer(&WR_ViewRegistersCB) },
+    { NM("registers", "Registers..."),  MMPush,
+      BIND_1( PTR_FUN(WhenReady), XtPointer(&WR_ViewRegistersCB) ),
       0, &registers_w, 0, 0 },
-    { "threads",    MMPush,  { WhenReady,
-			       XtPointer(&WR_ViewThreadsCB) },
+    { NM("threads", "Threads..."),      MMPush,
+      BIND_1( PTR_FUN(WhenReady), XtPointer(&WR_ViewThreadsCB) ),
       0, &threads_w, 0, 0 },
-    { "signals",    MMPush,  { WhenReady,
-			       XtPointer(&WR_dddPopupSignalsCB) },
+    { NM("signals", "Signals..."),      MMPush,
+      BIND_1( PTR_FUN(WhenReady), XtPointer(&WR_dddPopupSignalsCB) ),
       0, &signals_w, 0, 0 },
     MMSep,
-    { "up",         MMPush,  { gdbCommandCB, XtPointer("up") }, 0, 0, 0, 0},
-    { "down",       MMPush,  { gdbCommandCB, XtPointer("down") }, 0, 0, 0, 0},
+    { NM("up", "Up"),                   MMPush,
+      BIND_1( PTR_FUN(gdbCommandCB), XtPointer("up") ), 0, 0, 0, 0},
+    { NM("down", "Down"),               MMPush,
+      BIND_1( PTR_FUN(gdbCommandCB), XtPointer("down") ), 0, 0, 0, 0},
     MMEnd
 };
 
+#ifdef IF_MOTIF
 static Widget lookup_w;
 static Widget find_forward_w;
 static Widget find_backward_w;
@@ -1179,32 +1302,50 @@ static Widget disassemble_w;
 static Widget edit_source_w;
 static Widget reload_source_w;
 static Widget line_numbers1_w;
+#else // NOT IF_MOTIF
+static Widget lookup_w;
+static Widget find_forward_w;
+static Widget find_backward_w;
+static Gtk::ToggleButton *find_words_only_w;
+static Gtk::ToggleButton *find_case_sensitive_w;
+static Gtk::ToggleButton *disassemble_w;
+static Widget edit_source_w;
+static Widget reload_source_w;
+static Gtk::ToggleButton *line_numbers1_w;
+#endif // IF_MOTIF
 
 static MMDesc source_menu[] =
 {
-    { "breakpoints", MMPush, { SourceView::EditBreakpointsCB, 0 }, 0, 0, 0, 0},
+    { NM("breakpoints", "Breakpoints..."), MMPush,
+      HIDE_0(PTR_FUN(SourceView::EditBreakpointsCB)), 0, 0, 0, 0},
     MMSep,
-    {"lookup",        MMPush, { gdbLookupCB, 0 },
-      0, &lookup_w, 0, 0 },
-    { "findForward",  MMPush, { gdbFindCB, XtPointer(SourceView::forward) },
-      0, &find_forward_w, 0, 0 },
-    { "findBackward", MMPush, { gdbFindCB, XtPointer(SourceView::backward) },
-      0, &find_backward_w, 0, 0 },
+    { NM("lookup", "Lookup"),                                    MMPush,
+      HIDE_0(PTR_FUN(gdbLookupCB)), 0, (Widget *)&lookup_w, 0, 0 },
+    { NM("findForward", "@charset Find@small>> @charset()@rm"),  MMPush,
+      BIND_1(PTR_FUN(gdbFindCB), SourceView::forward),
+      0, (Widget *)&find_forward_w, 0, 0 },
+    { NM("findBackward", "@charset Find@small<< @charset()@rm"), MMPush,
+      BIND_1(PTR_FUN(gdbFindCB), SourceView::backward),
+      0, (Widget *)&find_backward_w, 0, 0 },
     MMSep,
-    { "findWordsOnly",       MMToggle, { sourceToggleFindWordsOnlyCB, 0 }, 
-      0, &find_words_only_w, 0, 0 },
-    { "findCaseSensitive",   MMToggle, { sourceToggleFindCaseSensitiveCB, 0 }, 
-      0, &find_case_sensitive_w, 0, 0 },
+    { NM("findWordsOnly", "Find Words Only"),                    MMToggle,
+      BIND_0(PTR_FUN(sourceToggleFindWordsOnlyCB)), 
+      0, (Widget *)&find_words_only_w, 0, 0 },
+    { NM("findCaseSensitive", "Find Case Sensitive"),            MMToggle,
+      BIND_0(PTR_FUN(sourceToggleFindCaseSensitiveCB)), 
+      0, (Widget *)&find_case_sensitive_w, 0, 0 },
     MMSep,
-    { "lineNumbers",         MMToggle, { sourceToggleDisplayLineNumbersCB, 0 },
-      0, &line_numbers1_w, 0, 0 },
-    { "disassemble",         MMToggle,  { gdbToggleCodeWindowCB, 0 },
-      0, &disassemble_w, 0, 0 },
+    { NM("lineNumbers", "Display Line Numbers"),                 MMToggle,
+      BIND_0(PTR_FUN(sourceToggleDisplayLineNumbersCB)),
+      0, (Widget *)&line_numbers1_w, 0, 0 },
+    { NM("disassemble", "Display Machine Code"),                 MMToggle,
+      BIND_0(PTR_FUN(gdbToggleCodeWindowCB)),
+      0, (Widget *)&disassemble_w, 0, 0 },
     MMSep,
-    { "edit",       MMPush,  
-      { gdbEditSourceCB, 0 }, 0, &edit_source_w, 0, 0 },
-    { "reload",     MMPush,  
-      { gdbReloadSourceCB, 0 }, 0, &reload_source_w, 0, 0},
+    { NM("edit", "Edit Source..."),                              MMPush,  
+      BIND_0(PTR_FUN(gdbEditSourceCB)), 0, (Widget *)&edit_source_w, 0, 0 },
+    { NM("reload", "Reload Source"),                             MMPush,  
+      HIDE_0(PTR_FUN(gdbReloadSourceCB)), 0, (Widget *)&reload_source_w, 0, 0},
     MMEnd
 };
 
@@ -1213,312 +1354,514 @@ static MMDesc source_menu[] =
 
 // General preferences
 
+#ifdef IF_MOTIF
 static Widget button_tips_w;
 static Widget button_docs_w;
+#else // NOT IF_MOTIF
+static Gtk::ToggleButton *button_tips_w;
+static Gtk::ToggleButton *button_docs_w;
+#endif // IF_MOTIF
+
 static MMDesc button_menu [] = 
 {
-    { "tips",  MMToggle, { dddToggleButtonTipsCB, 0 }, 0, &button_tips_w, 0,0},
-    { "docs",  MMToggle, { dddToggleButtonDocsCB, 0 }, 0, &button_docs_w, 0,0},
+    { NM("tips", "as Popup Tips"),       MMToggle,
+      BIND_0( PTR_FUN(dddToggleButtonTipsCB) ),
+      0, (Widget *)&button_tips_w, 0,0},
+    { NM("docs", "in the Status Line"),  MMToggle,
+      BIND_0( PTR_FUN(dddToggleButtonDocsCB) ),
+      0, (Widget *)&button_docs_w, 0,0},
     MMEnd
 };
 
+#ifdef IF_MOTIF
 static Widget value_tips_w;
 static Widget value_docs_w;
+#else // NOT IF_MOTIF
+static Gtk::ToggleButton *value_tips_w;
+static Gtk::ToggleButton *value_docs_w;
+#endif // IF_MOTIF
+
 static MMDesc value_menu [] = 
 {
-    { "tips",  MMToggle, { dddToggleValueTipsCB, 0 }, 0, &value_tips_w, 0, 0 },
-    { "docs",  MMToggle, { dddToggleValueDocsCB, 0 }, 0, &value_docs_w, 0, 0 },
+    { NM("tips", "as Popup Tips"),       MMToggle,
+      BIND_0( PTR_FUN(dddToggleValueTipsCB) ),
+      0, (Widget *)&value_tips_w, 0, 0 },
+    { NM("docs", "in the Status Line"),  MMToggle,
+      BIND_0( PTR_FUN(dddToggleValueDocsCB) ),
+      0, (Widget *)&value_docs_w, 0, 0 },
     MMEnd
 };
 
+#ifdef IF_MOTIF
 static Widget set_global_completion_w;
 static Widget set_console_completion_w;
+#else // NOT IF_MOTIF
+static Gtk::ToggleButton *set_global_completion_w;
+static Gtk::ToggleButton *set_console_completion_w;
+#endif // IF_MOTIF
+
 static MMDesc completion_menu [] = 
 {
-    { "inAllWindows", MMToggle, 
-      { dddSetGlobalTabCompletionCB, XtPointer(True) }, 
-      0, &set_global_completion_w, 0, 0 },
-    { "inConsole", MMToggle, { dddSetGlobalTabCompletionCB, XtPointer(False) },
-      0, &set_console_completion_w, 0, 0 },
+    { NM("inAllWindows", "in All Windows"),  MMRadio, 
+      BIND_1(PTR_FUN(dddSetGlobalTabCompletionCB), True), 
+      0, (Widget *)&set_global_completion_w, 0, 0 },
+    { NM("inConsole", "in Console Only"),    MMRadio,
+      BIND_1(PTR_FUN(dddSetGlobalTabCompletionCB), False),
+      0, (Widget *)&set_console_completion_w, 0, 0 },
     MMEnd
 };
 
+#ifdef IF_MOTIF
 static Widget max_undo_size_w;
+#else // NOT IF_MOTIF
+static Gtk::Entry *max_undo_size_w;
+#endif // IF_MOTIF
+
 static MMDesc undo_menu [] =
 {
-    { "size", MMTextField | MMUnmanagedLabel, { dddSetUndoBufferSizeCB, 0 }, 
-      0, &max_undo_size_w, 0, 0 },
-    { "kbytes", MMLabel, MMNoCB, 0, 0, 0, 0 },
-    { "clear", MMPush, { dddClearUndoBufferCB, 0 }, 0, 0, 0, 0 },
+    { NM("size", "Undo Buffer Size"),    MMTextField | MMUnmanagedLabel,
+      BIND_0(PTR_FUN(dddSetUndoBufferSizeCB)), 
+      0, (Widget *)&max_undo_size_w, 0, 0 },
+    { NM("kbytes", "kBytes"),            MMLabel,
+      MMNoCB, 0, 0, 0, 0 },
+    { NM("clear", "Clear Undo Buffer"),  MMPush,
+      HIDE_0(PTR_FUN(dddClearUndoBufferCB)), 0, 0, 0, 0 },
     MMEnd
 };
 
+#ifdef IF_MOTIF
 static Widget group_iconify_w;
 static Widget uniconify_when_ready_w;
 static Widget suppress_warnings_w;
 static Widget warn_if_locked_w;
 static Widget check_grabs_w;
+#else // NOT IF_MOTIF
+static Gtk::ToggleButton *group_iconify_w;
+static Gtk::ToggleButton *uniconify_when_ready_w;
+static Gtk::ToggleButton *suppress_warnings_w;
+static Gtk::ToggleButton *warn_if_locked_w;
+static Gtk::ToggleButton *check_grabs_w;
+#endif // IF_MOTIF
 
 static MMDesc general_preferences_menu[] = 
 {
-    { "buttonHints",         MMButtonPanel, MMNoCB, button_menu, 0, 0, 0 },
-    { "valueHints",          MMButtonPanel, MMNoCB, value_menu, 0, 0, 0 },
-    { "tabCompletion",       MMRadioPanel,  MMNoCB, completion_menu, 0, 0, 0 },
-    { "groupIconify",        MMToggle, { dddToggleGroupIconifyCB, 0 },
-      0, &group_iconify_w, 0, 0 },
-    { "uniconifyWhenReady",  MMToggle, { dddToggleUniconifyWhenReadyCB, 0 },
-      0, &uniconify_when_ready_w, 0, 0 },
-    { "suppressWarnings",    MMToggle, { dddToggleSuppressWarningsCB, 0 },
-      0, &suppress_warnings_w, 0, 0 },
-    { "warnIfLocked",        MMToggle, { dddToggleWarnIfLockedCB, 0 }, 
-      0, &warn_if_locked_w, 0, 0 },
-    { "checkGrabs",          MMToggle, { dddToggleCheckGrabsCB, 0 },
-      0, &check_grabs_w, 0, 0 },
-    { "undoSize",            MMPanel,  MMNoCB, undo_menu, 0, 0, 0 },
+    { NM("buttonHints", "Automatic Display of Button Hints"),     MMButtonPanel,
+      MMNoCB, button_menu, 0, 0, 0 },
+    { NM("valueHints", "Automatic Display of Variable Values"),   MMButtonPanel,
+      MMNoCB, value_menu, 0, 0, 0 },
+    { NM("tabCompletion", "TAB Key Completes"),                   MMRadioPanel,
+      MMNoCB, completion_menu, 0, 0, 0 },
+    { NM("groupIconify", "Iconify all Windows at Once"),          MMToggle,
+      BIND_0( PTR_FUN(dddToggleGroupIconifyCB) ),
+      0, (Widget *)&group_iconify_w, 0, 0 },
+    { NM("uniconifyWhenReady", "Uniconify When Ready"),           MMToggle,
+      BIND_0( PTR_FUN(dddToggleUniconifyWhenReadyCB) ),
+      0, (Widget *)&uniconify_when_ready_w, 0, 0 },
+    { NM("suppressWarnings", "Suppress X Warnings"),              MMToggle,
+      BIND_0( PTR_FUN(dddToggleSuppressWarningsCB) ),
+      0, (Widget *)&suppress_warnings_w, 0, 0 },
+    { NM("warnIfLocked", "Warn if Multiple DDD Instances are Running"), MMToggle,
+      BIND_0( PTR_FUN(dddToggleWarnIfLockedCB) ), 
+      0, (Widget *)&warn_if_locked_w, 0, 0 },
+    { NM("checkGrabs", "Continue Automatically when Mouse Pointer is Frozen"), MMToggle,
+      BIND_0( PTR_FUN(dddToggleCheckGrabsCB) ),
+      0, (Widget *)&check_grabs_w, 0, 0 },
+    { NM("undoSize", "Undo Buffer Size"),                         MMPanel,
+      MMNoCB, undo_menu, 0, 0, 0 },
     MMEnd
 };
 
 
 // Source preferences
+
+#ifdef IF_MOTIF
 static Widget set_display_glyphs_w;
 static Widget set_display_text_w;
+#else // NOT IF_MOTIF
+static Gtk::ToggleButton *set_display_glyphs_w;
+static Gtk::ToggleButton *set_display_text_w;
+#endif // IF_MOTIF
+
 static MMDesc glyph_menu[] =
 {
-    { "asGlyphs", MMToggle, { sourceSetDisplayGlyphsCB, XtPointer(True) },
-      0, &set_display_glyphs_w, 0, 0 },
-    { "asText", MMToggle, { sourceSetDisplayGlyphsCB, XtPointer(False) },
-      0, &set_display_text_w, 0, 0 },
+    { NM("asGlyphs", "as Glyphs"),         MMRadio,
+      HIDE_0_BIND_1(PTR_FUN(sourceSetDisplayGlyphsCB), XtPointer(True)),
+      0, (Widget *)&set_display_glyphs_w, 0, 0 },
+    { NM("asText", "as Text Characters"),  MMRadio,
+      HIDE_0_BIND_1(PTR_FUN(sourceSetDisplayGlyphsCB), XtPointer(False)),
+      0, (Widget *)&set_display_text_w, 0, 0 },
     MMEnd
 };
 
+#ifdef IF_MOTIF
 static Widget set_tool_buttons_in_toolbar_w;
 static Widget set_tool_buttons_in_command_tool_w;
+#else // NOT IF_MOTIF
+static Gtk::ToggleButton *set_tool_buttons_in_toolbar_w;
+static Gtk::ToggleButton *set_tool_buttons_in_command_tool_w;
+#endif // IF_MOTIF
+
 static MMDesc tool_buttons_menu [] = 
 {
-    { "commandTool",  MMToggle, { dddSetToolBarCB, XtPointer(False) },
-      0, &set_tool_buttons_in_command_tool_w, 0, 0 },
-    { "sourceWindow", MMToggle, { dddSetToolBarCB, XtPointer(True) },
-      0, &set_tool_buttons_in_toolbar_w, 0, 0 },
+    { NM("commandTool", "Command Tool"),    MMRadio,
+      BIND_1( PTR_FUN(dddSetToolBarCB), XtPointer(False) ),
+      0, (Widget *)&set_tool_buttons_in_command_tool_w, 0, 0 },
+    { NM("sourceWindow", "Source Window"),  MMRadio,
+      BIND_1( PTR_FUN(dddSetToolBarCB), XtPointer(True) ),
+      0, (Widget *)&set_tool_buttons_in_toolbar_w, 0, 0 },
     MMEnd
 };
 
+#ifdef IF_MOTIF
 static Widget set_refer_path_w;
 static Widget set_refer_base_w;
+#else // NOT IF_MOTIF
+static Gtk::ToggleButton *set_refer_path_w;
+static Gtk::ToggleButton *set_refer_base_w;
+#endif // IF_MOTIF
+
 static MMDesc refer_menu[] =
 {
-    { "byPath", MMToggle, { sourceSetUseSourcePathCB, XtPointer(True) },
-      0, &set_refer_path_w, 0, 0 },
-    { "byBase", MMToggle, { sourceSetUseSourcePathCB, XtPointer(False) },
-      0, &set_refer_base_w, 0, 0 },
+    { NM("byPath", "by Path Name"),  MMRadio,
+      HIDE_0_BIND_1(PTR_FUN(sourceSetUseSourcePathCB), XtPointer(True)),
+      0, (Widget *)&set_refer_path_w, 0, 0 },
+    { NM("byBase", "by Base Name"),  MMRadio,
+      HIDE_0_BIND_1(PTR_FUN(sourceSetUseSourcePathCB), XtPointer(False)),
+      0, (Widget *)&set_refer_base_w, 0, 0 },
     MMEnd
 };
 
+#ifdef IF_MOTIF
 static Widget words_only_w;
 static Widget case_sensitive_w;
+#else // NOT IF_MOTIF
+static Gtk::ToggleButton *words_only_w;
+static Gtk::ToggleButton *case_sensitive_w;
+#endif // IF_MOTIF
+
 static MMDesc find_preferences_menu[] =
 {
-    { "wordsOnly", MMToggle, { sourceToggleFindWordsOnlyCB, 0 }, 
-      0, &words_only_w, 0, 0 },
-    { "caseSensitive", MMToggle, { sourceToggleFindCaseSensitiveCB, 0 }, 
-      0, &case_sensitive_w, 0, 0 },
+    { NM("wordsOnly", "Words Only"),          MMToggle,
+      BIND_0( PTR_FUN(sourceToggleFindWordsOnlyCB) ), 
+      0, (Widget *)&words_only_w, 0, 0 },
+    { NM("caseSensitive", "Case Sensitive"),  MMToggle,
+      BIND_0( PTR_FUN(sourceToggleFindCaseSensitiveCB) ), 
+      0, (Widget *)&case_sensitive_w, 0, 0 },
     MMEnd
 };
 
+#ifdef IF_MOTIF
 static Widget cache_source_files_w;
 static Widget cache_machine_code_w;
+#else // NOT IF_MOTIF
+static Gtk::ToggleButton *cache_source_files_w;
+static Gtk::ToggleButton *cache_machine_code_w;
+#endif // IF_MOTIF
+
 static MMDesc cache_menu[] =
 {
-    { "cacheSource", MMToggle, { sourceToggleCacheSourceFilesCB, 0 }, 
-      0, &cache_source_files_w, 0, 0 },
-    { "cacheCode", MMToggle, { sourceToggleCacheMachineCodeCB, 0 }, 
-      0, &cache_machine_code_w, 0, 0 },
+    { NM("cacheSource", "Soruce Files"),  MMToggle,
+      BIND_0( PTR_FUN(sourceToggleCacheSourceFilesCB) ), 
+      0, (Widget *)&cache_source_files_w, 0, 0 },
+    { NM("cacheCode", "Machine Code"),    MMToggle,
+      BIND_0( PTR_FUN(sourceToggleCacheMachineCodeCB) ), 
+      0, (Widget *)&cache_machine_code_w, 0, 0 },
     MMEnd
 };
 
+#ifdef IF_MOTIF
 static Widget tab_width_w;
 static Widget source_indent_w;
 static Widget code_indent_w;
+#else // NOT IF_MOTIF
+static Gtk::Scale *tab_width_w;
+static Gtk::Scale *source_indent_w;
+static Gtk::Scale *code_indent_w;
+#endif // IF_MOTIF
+
 static MMDesc scales_menu[] = 
 {
-    { "tabWidth", MMScale, 
-      { sourceSetTabWidthCB, 0 }, 0, &tab_width_w, 0, 0 },
-    { "sourceIndent", MMScale, 
-      { sourceSetSourceIndentCB, 0 }, 0, &source_indent_w, 0, 0 },
-    { "codeIndent", MMScale, 
-      { sourceSetCodeIndentCB, 0 }, 0, &code_indent_w, 0, 0 },
+    { NM("tabWidth", "Tab Width"),                   MMScale, 
+      BIND_0( PTR_FUN(sourceSetTabWidthCB) ),
+      0, (Widget *)&tab_width_w, 0, 0 },
+    { NM("sourceIndent", "Source Indentation"),      MMScale, 
+      BIND_0( PTR_FUN(sourceSetSourceIndentCB) ),
+      0, (Widget *)&source_indent_w, 0, 0 },
+    { NM("codeIndent", "Machine Code Indentation"),  MMScale, 
+      BIND_0( PTR_FUN(sourceSetCodeIndentCB) ),
+      0, (Widget *)&code_indent_w, 0, 0 },
     MMEnd
 };
 
-
+#ifdef IF_MOTIF
 static Widget line_numbers2_w;
 static Widget refer_sources_w;
+#else // NOT IF_MOTIF
+static Gtk::ToggleButton *line_numbers2_w;
+static Widget refer_sources_w;
+
+#endif
+
 static MMDesc source_preferences_menu[] = 
 {
-    { "showExecPos",  MMRadioPanel, MMNoCB, glyph_menu, 0, 0, 0 },
-    { "toolButtons",  MMRadioPanel,  MMNoCB, tool_buttons_menu, 0, 0, 0 },
-    { "referSources", MMRadioPanel, MMNoCB, refer_menu, &refer_sources_w, 0,0},
-    { "find",         MMButtonPanel, MMNoCB, find_preferences_menu, 0, 0, 0 },
-    { "cache",        MMButtonPanel, MMNoCB, cache_menu, 0, 0, 0 },
-    { "lineNumbers",  MMToggle,
-      { sourceToggleDisplayLineNumbersCB, 0 }, 0, 
-      &line_numbers2_w, 0, 0 },
-    { "scales",       MMPanel | MMUnmanagedLabel, 
-      			MMNoCB, scales_menu, 0, 0, 0 },
+    { NM("showExecPos", "Show Position and Breakpoints"),  MMRadioPanel,
+      MMNoCB, glyph_menu, 0, 0, 0 },
+    { NM("toolButtons", "Tool Buttons Location"),          MMRadioPanel,
+      MMNoCB, tool_buttons_menu, 0, 0, 0 },
+    { NM("referSources", "Refer to Program Sources"),      MMRadioPanel,
+      MMNoCB, refer_menu, &refer_sources_w, 0,0},
+    { NM("find", "Find"),                                  MMButtonPanel,
+      MMNoCB, find_preferences_menu, 0, 0, 0 },
+    { NM("cache", "Cache"),                                MMButtonPanel,
+      MMNoCB, cache_menu, 0, 0, 0 },
+    { NM("lineNumbers", "Display Source Line Numbers"),    MMToggle,
+      BIND_0(PTR_FUN(sourceToggleDisplayLineNumbersCB)), 0, 
+      (Widget *)&line_numbers2_w, 0, 0 },
+    { NM("scales", "scales"),                              MMPanel | MMUnmanagedLabel, 
+      MMNoCB, scales_menu, 0, 0, 0 },
     MMEnd
 };
 
 
 // Data preferences
 
+#ifdef IF_MOTIF
 static Widget graph_show_hints_w;
 static Widget graph_show_annotations_w;
 static Widget graph_show_dependent_titles_w;
+#else // NOT IF_MOTIF
+static Gtk::ToggleButton *graph_show_hints_w;
+static Gtk::ToggleButton *graph_show_annotations_w;
+static Gtk::ToggleButton *graph_show_dependent_titles_w;
+#endif // IF_MOTIF
 
 static MMDesc show_menu[] = 
 {
-    { "hints", MMToggle, { graphToggleShowHintsCB, 0 },
-      0, &graph_show_hints_w, 0, 0 },
-    { "annotations", MMToggle, { graphToggleShowAnnotationsCB, 0 },
-      0, &graph_show_annotations_w, 0, 0 },
-    { "dependentTitles", MMToggle, { graphToggleShowDependentTitlesCB, 0 },
-      0, &graph_show_dependent_titles_w, 0, 0 },
+    { NM("hints", "Edge Hints"),                              MMToggle,
+      BIND_0( PTR_FUN(graphToggleShowHintsCB) ),
+      0, (Widget *)&graph_show_hints_w, 0, 0 },
+    { NM("annotations", "Edge Annotations"),                  MMToggle,
+      BIND_0( PTR_FUN(graphToggleShowAnnotationsCB) ),
+      0, (Widget *)&graph_show_annotations_w, 0, 0 },
+    { NM("dependentTitles", "Titles of Dependent Displays"),  MMToggle,
+      BIND_0( PTR_FUN(graphToggleShowDependentTitlesCB) ),
+      0, (Widget *)&graph_show_dependent_titles_w, 0, 0 },
     MMEnd
 };
 
+#ifdef IF_MOTIF
 static Widget graph_compact_layout_w;
 static Widget graph_auto_layout_w;
+#else // NOT IF_MOTIF
+static Gtk::ToggleButton *graph_compact_layout_w;
+static Gtk::ToggleButton *graph_auto_layout_w;
+#endif // IF_MOTIF
 
 static MMDesc layout_menu[] =
 {
-    { "compact", MMToggle,  { graphToggleCompactLayoutCB, 0 },
-      0, &graph_compact_layout_w, 0, 0 },
-    { "auto",    MMToggle,  { graphToggleAutoLayoutCB, 0 },
-      0, &graph_auto_layout_w, 0, 0 },
+    { NM("compact", "Compact"),   MMToggle,
+      BIND_0(PTR_FUN(graphToggleCompactLayoutCB)),
+      0, (Widget *)&graph_compact_layout_w, 0, 0 },
+    { NM("auto", "Automatic"),    MMToggle,
+      BIND_0(PTR_FUN(graphToggleAutoLayoutCB)),
+      0, (Widget *)&graph_auto_layout_w, 0, 0 },
     MMEnd
 };
 
+#ifdef IF_MOTIF
 static Widget graph_top_to_bottom_w;
 static Widget graph_left_to_right_w;
+#else // NOT IF_MOTIF
+static Gtk::ToggleButton *graph_top_to_bottom_w;
+static Gtk::ToggleButton *graph_left_to_right_w;
+#endif // IF_MOTIF
 
 static MMDesc direction_menu[] =
 {
-    { "topToBottom",    MMToggle,  { graphSetDisplayPlacementCB, 
-					 XtPointer(XmVERTICAL) },
-      0, &graph_top_to_bottom_w, 0, 0 },
-    { "leftToRight",    MMToggle,  { graphSetDisplayPlacementCB, 
-					 XtPointer(XmHORIZONTAL) },
-      0, &graph_left_to_right_w, 0, 0 },
+    { NM("topToBottom", "Top to bottom"),    MMRadio,
+      BIND_1(PTR_FUN(graphSetDisplayPlacementCB), XmVERTICAL),
+      0, (Widget *)&graph_top_to_bottom_w, 0, 0 },
+    { NM("leftToRight", "Left to right"),    MMRadio,
+      BIND_1(PTR_FUN(graphSetDisplayPlacementCB), XmHORIZONTAL),
+      0, (Widget *)&graph_left_to_right_w, 0, 0 },
     MMEnd
 };
 
+#ifdef IF_MOTIF
 static Widget graph_cluster_displays_w;
+#else // NOT IF_MOTIF
+static Gtk::ToggleButton *graph_cluster_displays_w;
+#endif // IF_MOTIF
 
 static MMDesc placement_menu[] =
 {
-    { "direction", MMRadioPanel | MMUnmanagedLabel,
-	  MMNoCB, direction_menu, 0, 0, 0 },
-    { "clusterDisplays", MMToggle, { graphToggleClusterDisplaysCB, 0 },
-      0, &graph_cluster_displays_w, 0, 0 },
+    { NM("direction", ""),                MMRadioPanel | MMUnmanagedLabel,
+      MMNoCB, direction_menu, 0, 0, 0 },
+    { NM("clusterDisplays", "Clustered"), MMToggle,
+      BIND_0( PTR_FUN(graphToggleClusterDisplaysCB) ),
+      0, (Widget *)&graph_cluster_displays_w, 0, 0 },
     MMEnd
 };
 
+#ifdef IF_MOTIF
 static Widget graph_snap_to_grid_w;
+#else // NOT IF_MOTIF
+static Gtk::ToggleButton *graph_snap_to_grid_w;
+#endif // IF_MOTIF
 
 static MMDesc themes_menu[] = 
 {
-    { "snapToGrid",    MMToggle,  { graphToggleSnapToGridCB, 0 },
-      0, &graph_snap_to_grid_w, 0, 0 },
-    { "themes", MMPush, { dddPopupThemesCB, 0 }, 0, 0, 0, 0 },
+    { NM("snapToGrid", "Auto-Align Displays on Nearest Grid Point"),    MMToggle,
+      BIND_0( PTR_FUN(graphToggleSnapToGridCB) ),
+      0, (Widget *)&graph_snap_to_grid_w, 0, 0 },
+    { NM("themes", "Themes..."),                                        MMPush,
+      HIDE_0( PTR_FUN(dddPopupThemesCB) ), 0, 0, 0, 0 },
     MMEnd
 };
 
+#ifdef IF_MOTIF
 static Widget graph_grid_size_w;
+#else // NOT IF_MOTIF
+static Gtk::Scale *graph_grid_size_w;
+#endif // IF_MOTIF
 
 static MMDesc grid_menu[] =
 {
-    { "gridSize",      MMScale,   { graphSetGridSizeCB, 0 },
-      0, &graph_grid_size_w, 0, 0 },
+    { NM("gridSize", "Grid Size"),      MMScale,
+      BIND_0( PTR_FUN(graphSetGridSizeCB) ),
+      0, (Widget *)&graph_grid_size_w, 0, 0 },
     MMEnd
 };
 
+#ifdef IF_MOTIF
 static Widget graph_detect_aliases_w;
 static Widget graph_align_2d_arrays_w;
 static Widget graph_auto_close_w;
+#else // NOT IF_MOTIF
+static Gtk::ToggleButton *graph_detect_aliases_w;
+static Gtk::ToggleButton *graph_align_2d_arrays_w;
+static Gtk::ToggleButton *graph_auto_close_w;
+#endif // IF_MOTIF
 
 static MMDesc data_preferences_menu[] = 
 {
-    { "show",          MMPanel, MMNoCB, show_menu, 0, 0, 0 },
-    { "placement",     MMPanel, MMNoCB, placement_menu, 0, 0, 0 },
-    { "layout",        MMPanel, MMNoCB, layout_menu, 0, 0, 0 },
-    { "detectAliases", MMToggle, { graphToggleDetectAliasesCB, 0 },
-      0, &graph_detect_aliases_w, 0, 0 },
-    { "align2dArrays", MMToggle,  { graphToggleAlign2dArraysCB, 0 },
-      0, &graph_align_2d_arrays_w, 0, 0 },
-    { "autoClose",     MMToggle,  { graphToggleAutoCloseCB, 0 },
-      0, &graph_auto_close_w, 0, 0 },
-    { "themes",    MMPanel | MMUnmanagedLabel, 
-	  MMNoCB, themes_menu, 0, 0, 0 },
-    { "grid",    MMPanel | MMUnmanagedLabel, MMNoCB, grid_menu, 0, 0, 0 },
+    { NM("show", "Show"),                     MMPanel,
+      MMNoCB, show_menu, 0, 0, 0 },
+    { NM("placement", "Placement"),                                    MMPanel,
+      MMNoCB, placement_menu, 0, 0, 0 },
+    { NM("layout", "Layout"),                                          MMPanel,
+      MMNoCB, layout_menu, 0, 0, 0 },
+    { NM("detectAliases", "Detect Aliases"),                           MMToggle,
+      BIND_0( PTR_FUN(graphToggleDetectAliasesCB) ),
+      0, (Widget *)&graph_detect_aliases_w, 0, 0 },
+    { NM("align2dArrays", "Display Two-Dimensional Arrays as Tables"), MMToggle,
+      BIND_0( PTR_FUN(graphToggleAlign2dArraysCB) ),
+      0, (Widget *)&graph_align_2d_arrays_w, 0, 0 },
+    { NM("autoClose", "Close Data Window when Deleting last Display"), MMToggle,
+      BIND_0( PTR_FUN(graphToggleAutoCloseCB) ),
+      0, (Widget *)&graph_auto_close_w, 0, 0 },
+    { NM("themes", ""),                                                MMPanel | MMUnmanagedLabel, 
+      MMNoCB, themes_menu, 0, 0, 0 },
+    { NM("grid", ""),                                                  MMPanel | MMUnmanagedLabel,
+      MMNoCB, grid_menu, 0, 0, 0 },
     MMEnd
 };
 
 
 // Startup preferences
+
+#ifdef IF_MOTIF
 static Widget set_separate_windows_w;
 static Widget set_attached_windows_w;
+#else // NOT IF_MOTIF
+static Gtk::ToggleButton *set_separate_windows_w;
+static Gtk::ToggleButton *set_attached_windows_w;
+#endif // IF_MOTIF
+
 static MMDesc window_mode_menu [] = 
 {
-    { "attached",  MMToggle, { dddSetSeparateWindowsCB, XtPointer(1) },
-      0, &set_attached_windows_w, 0, 0 },
-    { "separate",  MMToggle, { dddSetSeparateWindowsCB, XtPointer(0) },
-      0, &set_separate_windows_w, 0, 0 },
+    { NM("attached", "Stacked Windows"),   MMRadio,
+      BIND_1( PTR_FUN(dddSetSeparateWindowsCB), XtPointer(1) ),
+      0, (Widget *)&set_attached_windows_w, 0, 0 },
+    { NM("separate", "Separate Windows"),  MMRadio,
+      BIND_1( PTR_FUN(dddSetSeparateWindowsCB), XtPointer(0) ),
+      0, (Widget *)&set_separate_windows_w, 0, 0 },
     MMEnd
 };
 
+#ifdef IF_MOTIF
 static Widget set_button_images_w;
 static Widget set_button_captions_w;
 static Widget set_flat_buttons_w;
 static Widget set_color_buttons_w;
 static Widget set_toolbars_at_bottom_w;
+#else // NOT IF_MOTIF
+static Gtk::ToggleButton *set_button_images_w;
+static Gtk::ToggleButton *set_button_captions_w;
+static Gtk::ToggleButton *set_flat_buttons_w;
+static Gtk::ToggleButton *set_color_buttons_w;
+static Gtk::ToggleButton *set_toolbars_at_bottom_w;
+#endif // IF_MOTIF
+
 static MMDesc button_appearance_menu [] = 
 {
-    { "images",   MMToggle, { dddToggleButtonImagesCB, 0 },
-      0, &set_button_images_w, 0, 0 },
-    { "captions", MMToggle, { dddToggleButtonCaptionsCB, 0 },
-      0, &set_button_captions_w, 0, 0 },
-    { "flat", MMToggle, { dddToggleFlatButtonsCB, 0 },
-      0, &set_flat_buttons_w, 0, 0 },
-    { "color", MMToggle, { dddToggleColorButtonsCB, 0 },
-      0, &set_color_buttons_w, 0, 0 },
-    { "bottom", MMToggle, { dddToggleToolbarsAtBottomCB, 0 },
-      0, &set_toolbars_at_bottom_w, 0, 0 },
+    { NM("images", "Images"),      MMToggle,
+      BIND_0( PTR_FUN(dddToggleButtonImagesCB) ),
+      0, (Widget *)&set_button_images_w, 0, 0 },
+    { NM("captions", "Captions"),  MMToggle,
+      BIND_0( PTR_FUN(dddToggleButtonCaptionsCB) ),
+      0, (Widget *)&set_button_captions_w, 0, 0 },
+    { NM("flat", "Flat"),          MMToggle,
+      BIND_0( PTR_FUN(dddToggleFlatButtonsCB) ),
+      0, (Widget *)&set_flat_buttons_w, 0, 0 },
+    { NM("color", "Color"),        MMToggle,
+      BIND_0( PTR_FUN(dddToggleColorButtonsCB) ),
+      0, (Widget *)&set_color_buttons_w, 0, 0 },
+    { NM("bottom", "Bottom"),      MMToggle,
+      BIND_0( PTR_FUN(dddToggleToolbarsAtBottomCB) ),
+      0, (Widget *)&set_toolbars_at_bottom_w, 0, 0 },
     MMEnd
 };
 
+#ifdef IF_MOTIF
 static Widget set_focus_pointer_w;
 static Widget set_focus_explicit_w;
+#else // NOT IF_MOTIF
+static Gtk::ToggleButton *set_focus_pointer_w;
+static Gtk::ToggleButton *set_focus_explicit_w;
+#endif // IF_MOTIF
+
 static MMDesc keyboard_focus_menu [] = 
 {
-    { "pointer",  MMToggle, { dddSetKeyboardFocusPolicyCB, 
-			    XtPointer(XmPOINTER) },
-      0, &set_focus_pointer_w, 0, 0 },
-    { "explicit", MMToggle, { dddSetKeyboardFocusPolicyCB, 
-			    XtPointer(XmEXPLICIT) },
-      0, &set_focus_explicit_w, 0, 0 },
+    { NM("pointer", "Point to Type"),   MMRadio,
+      BIND_1( PTR_FUN(dddSetKeyboardFocusPolicyCB), XtPointer(XmPOINTER) ),
+      0, (Widget *)&set_focus_pointer_w, 0, 0 },
+    { NM("explicit", "Click to Type"),  MMRadio,
+      BIND_1( PTR_FUN(dddSetKeyboardFocusPolicyCB), XtPointer(XmEXPLICIT) ),
+      0, (Widget *)&set_focus_explicit_w, 0, 0 },
     MMEnd
 };
 
+#ifdef IF_MOTIF
 static Widget set_scrolling_panner_w;
 static Widget set_scrolling_scrollbars_w;
+#else // NOT IF_MOTIF
+static Gtk::ToggleButton *set_scrolling_panner_w;
+static Gtk::ToggleButton *set_scrolling_scrollbars_w;
+#endif // IF_MOTIF
+
 static MMDesc data_scrolling_menu [] = 
 {
-    { "panner", MMToggle,     { dddSetPannerCB, XtPointer(True) },
-      0, &set_scrolling_panner_w, 0, 0 },
-    { "scrollbars", MMToggle, { dddSetPannerCB, XtPointer(False) },
-      0, &set_scrolling_scrollbars_w, 0, 0 },
+    { NM("panner", "Panner"),          MMRadio,
+      BIND_1( PTR_FUN(dddSetPannerCB), XtPointer(true) ),
+      0, (Widget *)&set_scrolling_panner_w, 0, 0 },
+    { NM("scrollbars", "Scrollbars"),  MMRadio,
+      BIND_1( PTR_FUN(dddSetPannerCB), XtPointer(false) ),
+      0, (Widget *)&set_scrolling_scrollbars_w, 0, 0 },
     MMEnd
 };
 
+#ifdef IF_MOTIF
 static Widget set_debugger_bash_w;
 static Widget set_debugger_dbg_w;
 static Widget set_debugger_dbx_w;
@@ -1527,135 +1870,197 @@ static Widget set_debugger_jdb_w;
 static Widget set_debugger_perl_w;
 static Widget set_debugger_pydb_w;
 static Widget set_debugger_xdb_w;
+#else // NOT IF_MOTIF
+static Gtk::ToggleButton *set_debugger_bash_w;
+static Gtk::ToggleButton *set_debugger_dbg_w;
+static Gtk::ToggleButton *set_debugger_dbx_w;
+static Gtk::ToggleButton *set_debugger_gdb_w;
+static Gtk::ToggleButton *set_debugger_jdb_w;
+static Gtk::ToggleButton *set_debugger_perl_w;
+static Gtk::ToggleButton *set_debugger_pydb_w;
+static Gtk::ToggleButton *set_debugger_xdb_w;
+#endif // IF_MOTIF
+
 static MMDesc debugger_menu [] = 
 {
-    { "bash", MMToggle, { dddSetDebuggerCB, XtPointer(BASH) },
-      0, &set_debugger_bash_w, 0, 0 },
-    { "dbg", MMToggle, { dddSetDebuggerCB, XtPointer(DBG) },
-      0, &set_debugger_dbg_w, 0, 0 },
-    { "dbx", MMToggle, { dddSetDebuggerCB, XtPointer(DBX) },
-      0, &set_debugger_dbx_w, 0, 0 },
-    { "gdb", MMToggle, { dddSetDebuggerCB, XtPointer(GDB) },
-      0, &set_debugger_gdb_w, 0, 0 },
-    { "jdb", MMToggle, { dddSetDebuggerCB, XtPointer(JDB) },
-      0, &set_debugger_jdb_w, 0, 0 },
-    { "perl", MMToggle, { dddSetDebuggerCB, XtPointer(PERL) },
-      0, &set_debugger_perl_w, 0, 0 },
-    { "pydb", MMToggle, { dddSetDebuggerCB, XtPointer(PYDB) },
-      0, &set_debugger_pydb_w, 0, 0 },
-    { "xdb", MMToggle, { dddSetDebuggerCB, XtPointer(XDB) },
-      0, &set_debugger_xdb_w, 0, 0 },
+    { NM("bash", "Bash"), MMRadio, BIND_1( PTR_FUN(dddSetDebuggerCB), BASH ),
+      0, (Widget *)&set_debugger_bash_w, 0, 0 },
+    { NM("dbg", "DBG"), MMRadio, BIND_1( PTR_FUN(dddSetDebuggerCB), DBG ),
+      0, (Widget *)&set_debugger_dbg_w, 0, 0 },
+    { NM("dbx", "DBX"), MMRadio, BIND_1( PTR_FUN(dddSetDebuggerCB), DBX ),
+      0, (Widget *)&set_debugger_dbx_w, 0, 0 },
+    { NM("gdb", "GDB"), MMRadio, BIND_1( PTR_FUN(dddSetDebuggerCB), GDB ),
+      0, (Widget *)&set_debugger_gdb_w, 0, 0 },
+    { NM("jdb", "JDB"), MMRadio, BIND_1( PTR_FUN(dddSetDebuggerCB), JDB ),
+      0, (Widget *)&set_debugger_jdb_w, 0, 0 },
+    { NM("perl", "Perl"), MMRadio, BIND_1( PTR_FUN(dddSetDebuggerCB), PERL ),
+      0, (Widget *)&set_debugger_perl_w, 0, 0 },
+    { NM("pydb", "PYDB"), MMRadio, BIND_1( PTR_FUN(dddSetDebuggerCB), PYDB ),
+      0, (Widget *)&set_debugger_pydb_w, 0, 0 },
+    { NM("xdb", "XDB"), MMRadio, BIND_1( PTR_FUN(dddSetDebuggerCB), XDB ),
+      0, (Widget *)&set_debugger_xdb_w, 0, 0 },
     MMEnd
 };
 
+#ifdef IF_MOTIF
 static Widget auto_debugger_w;
+#else // NOT IF_MOTIF
+static Gtk::ToggleButton *auto_debugger_w;
+#endif // IF_MOTIF
+
+
 static MMDesc auto_debugger_menu [] =
 {
-    { "automatic", MMToggle, { dddToggleAutoDebuggerCB, 0 },
-      0, &auto_debugger_w, 0, 0 },
+    { NM("automatic", "Determine Automatically from Arguments"), MMToggle,
+      BIND_0( PTR_FUN(dddToggleAutoDebuggerCB) ), 0, (Widget *)&auto_debugger_w, 0, 0 },
     MMEnd
 };
 
+#ifdef IF_MOTIF
 static Widget startup_tips_w;
 static Widget splash_screen_w;
+#else // NOT IF_MOTIF
+static Gtk::ToggleButton *startup_tips_w;
+static Gtk::ToggleButton *splash_screen_w;
+#endif // IF_MOTIF
 
 static MMDesc startup_menu [] =
 {
-    { "splashScreen", MMToggle, { SetSplashScreenCB, 0 }, 
-      0, &splash_screen_w, 0, 0 },
-    { "startupTips",  MMToggle, { SetStartupTipsCB, 0 },  
-      0, &startup_tips_w, 0, 0 },
+    { NM("splashScreen", "DDD Splash Screen"), MMToggle,
+      BIND_0( PTR_FUN(SetSplashScreenCB) ), 0, (Widget *)&splash_screen_w, 0, 0 },
+#ifdef IF_MOTIF
+    { NM("startupTips", "Tip of the Day"),     MMToggle,
+      BIND_0( PTR_FUN(SetStartupTipsCB) ), 0, (Widget *)&startup_tips_w, 0, 0 },
+#endif // IF_MOTIF
     MMEnd
 };
 
+#ifdef IF_MOTIF
 static Widget cut_copy_paste_kde_w;
 static Widget cut_copy_paste_motif_w;
+#else // NOT IF_MOTIF
+static Gtk::ToggleButton *cut_copy_paste_kde_w;
+static Gtk::ToggleButton *cut_copy_paste_motif_w;
+#endif // IF_MOTIF
 
 static MMDesc cut_copy_paste_menu [] =
 {
-    { "kde",    MMToggle, { dddSetCutCopyPasteBindingsCB, 
-			    XtPointer(KDEBindings) }, 
-      0, &cut_copy_paste_kde_w, 0, 0 },
-    { "motif",  MMToggle, { dddSetCutCopyPasteBindingsCB, 
-			    XtPointer(MotifBindings) },
-      0, &cut_copy_paste_motif_w, 0, 0 },
+    { NM("kde", "Copy"),         MMRadio,
+      BIND_1( PTR_FUN(dddSetCutCopyPasteBindingsCB), KDEBindings ), 
+      0, (Widget *)&cut_copy_paste_kde_w, 0, 0 },
+    { NM("motif", "Interrupt"),  MMRadio,
+      BIND_1( PTR_FUN(dddSetCutCopyPasteBindingsCB), MotifBindings ),
+      0, (Widget *)&cut_copy_paste_motif_w, 0, 0 },
     MMEnd
 };
 
+#ifdef IF_MOTIF
 static Widget select_all_kde_w;
 static Widget select_all_motif_w;
+#else // NOT IF_MOTIF
+static Gtk::ToggleButton *select_all_kde_w;
+static Gtk::ToggleButton *select_all_motif_w;
+#endif // IF_MOTIF
 
 static MMDesc select_all_menu [] =
 {
-    { "kde",    MMToggle, { dddSetSelectAllBindingsCB, 
-			    XtPointer(KDEBindings) }, 
-      0, &select_all_kde_w, 0, 0 },
-    { "motif",  MMToggle, { dddSetSelectAllBindingsCB, 
-			    XtPointer(MotifBindings) },
-      0, &select_all_motif_w, 0, 0 },
+    { NM("kde", "Select All"),           MMRadio,
+      BIND_1( PTR_FUN(dddSetSelectAllBindingsCB), KDEBindings ), 
+      0, (Widget *)&select_all_kde_w, 0, 0 },
+    { NM("motif", "Beginning of Line"),  MMRadio,
+      BIND_1( PTR_FUN(dddSetSelectAllBindingsCB), MotifBindings ),
+      0, (Widget *)&select_all_motif_w, 0, 0 },
     MMEnd
 };
 
 static MMDesc startup_preferences_menu [] =
 {
-    { "windows",         MMRadioPanel,  MMNoCB, window_mode_menu, 0, 0, 0 },
-    { "cutCopyPaste",    MMRadioPanel,  MMNoCB, cut_copy_paste_menu, 0, 0, 0 },
-    { "selectAll",       MMRadioPanel,  MMNoCB, select_all_menu, 0, 0, 0 },
-    { "buttons",         MMButtonPanel, MMNoCB, 
-                                        button_appearance_menu, 0, 0, 0 },
-    { "keyboardFocus",   MMRadioPanel,  MMNoCB, keyboard_focus_menu, 0, 0, 0 },
-    { "dataScrolling",   MMRadioPanel,  MMNoCB, data_scrolling_menu, 0, 0, 0 },
-    { "autoDebugger",    MMButtonPanel, MMNoCB,
-                                        auto_debugger_menu, 0, 0, 0 },
-    { "debugger",        MMRadioPanel,  MMNoCB,
-      					debugger_menu, 0, 0, 0 },
-    { "startupWindows",  MMButtonPanel, MMNoCB, startup_menu, 0, 0, 0 },
+    { NM("windows", "Window Layout"),          MMRadioPanel,
+      MMNoCB, window_mode_menu, 0, 0, 0 },
+    { NM("cutCopyPaste", "Ctrl+C is"),         MMRadioPanel,
+      MMNoCB, cut_copy_paste_menu, 0, 0, 0 },
+    { NM("selectAll", "Ctrl+A is"),            MMRadioPanel,
+      MMNoCB, select_all_menu, 0, 0, 0 },
+    { NM("buttons", "Tool Bar Appearance"),    MMButtonPanel,
+      MMNoCB, button_appearance_menu, 0, 0, 0 },
+#ifdef IF_MOTIF
+    { NM("keyboardFocus", "Keyboard Focus"),   MMRadioPanel,
+      MMNoCB, keyboard_focus_menu, 0, 0, 0 },
+#endif // IF_MOTIF
+    { NM("dataScrolling", "Data Scrolling"),   MMRadioPanel,
+      MMNoCB, data_scrolling_menu, 0, 0, 0 },
+    { NM("autoDebugger", "Debugger Type"),     MMButtonPanel,
+      MMNoCB, auto_debugger_menu, 0, 0, 0 },
+    { NM("debugger", ""),                      MMRadioPanel,
+      MMNoCB, debugger_menu, 0, 0, 0 },
+    { NM("startupWindows", "Startup Windows"), MMButtonPanel,
+      MMNoCB, startup_menu, 0, 0, 0 },
     MMEnd
 };
 
-
+#ifdef IF_MOTIF
 static Widget font_names[5];
 static Widget font_sizes[5];
+#else // NOT IF_MOTIF
+static Gtk::Entry *font_names[5];
+static Gtk::Entry *font_sizes[5];
+#endif // IF_MOTIF
 
-#define FONT_MENU(font) \
-{ \
-    { "name",   MMTextField | MMUnmanagedLabel, \
-    { SetFontNameCB, XtPointer(font) }, 0, \
-    &font_names[int(font)], 0, 0 }, \
-    { "size",   MMTextField, \
-    { SetFontSizeCB, XtPointer(font) }, 0, \
-    &font_sizes[int(font)], 0, 0 }, \
-    { "browse", MMPush, { BrowseFontCB, XtPointer(font) }, 0, 0, 0, 0 }, \
-    MMEnd \
+#ifdef IF_MOTIF
+#define FONT_MENU(font)							\
+{									\
+    { NM("name", ""),                    MMTextField | MMUnmanagedLabel, \
+      BIND_1( PTR_FUN(SetFontNameCB), font ), 0,			\
+    (Widget *)&font_names[int(font)], 0, 0 },				\
+    { NM("size", "Size"),                MMTextField,			\
+      BIND_1( PTR_FUN(SetFontSizeCB), font ), 0,			\
+    (Widget *)&font_sizes[int(font)], 0, 0 },				\
+    { NM("browse", "Browse..."),         MMPush,			\
+      BIND_1( PTR_FUN(BrowseFontCB), font ), 0, 0, 0, 0 },		\
+    MMEnd								\
 }
 
 static MMDesc default_font_menu        [] = FONT_MENU(DefaultDDDFont);
 static MMDesc variable_width_font_menu [] = FONT_MENU(VariableWidthDDDFont);
 static MMDesc fixed_width_font_menu    [] = FONT_MENU(FixedWidthDDDFont);
 static MMDesc data_font_menu           [] = FONT_MENU(DataDDDFont);
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
 static MMDesc font_preferences_menu [] =
 {
-    { "default",         MMPanel,  MMNoCB, default_font_menu, 0, 0, 0 },
-    { "variableWidth",   MMPanel,  MMNoCB, variable_width_font_menu, 0, 0, 0 },
-    { "fixedWidth",      MMPanel,  MMNoCB, fixed_width_font_menu, 0, 0, 0 },
-    { "data",            MMPanel,  MMNoCB, data_font_menu, 0, 0, 0 },
+    { NM("default", "Default Font"),          MMPanel,
+      MMNoCB, default_font_menu, 0, 0, 0 },
+    { NM("variableWidth", "Variable Width"),  MMPanel,
+      MMNoCB, variable_width_font_menu, 0, 0, 0 },
+    { NM("fixedWidth", "Fixed Width"),        MMPanel,
+      MMNoCB, fixed_width_font_menu, 0, 0, 0 },
+    { NM("data", "Data"),                     MMPanel,
+      MMNoCB, data_font_menu, 0, 0, 0 },
     MMEnd
 };
+#endif // IF_MOTIF
 
-
+#ifdef IF_MOTIF
 static Widget extern_plot_window_w;
 static Widget builtin_plot_window_w;
+#else // NOT IF_MOTIF
+static Gtk::ToggleButton *extern_plot_window_w;
+static Gtk::ToggleButton *builtin_plot_window_w;
+#endif // IF_MOTIF
 
 static MMDesc plot_window_menu [] =
 {
-    { "extern", MMToggle, { dddSetBuiltinPlotWindowCB, XtPointer(false) },
-      0, &extern_plot_window_w, 0, 0},
-    { "builtin", MMToggle, { dddSetBuiltinPlotWindowCB, XtPointer(true) },
-      0, &builtin_plot_window_w, 0, 0},
+    { NM("extern", "External"), MMRadio,
+      HIDE_0_BIND_1(PTR_FUN(dddSetBuiltinPlotWindowCB), false),
+      0, (Widget *)&extern_plot_window_w, 0, 0},
+    { NM("builtin", "Builtin"), MMRadio,
+      HIDE_0_BIND_1(PTR_FUN(dddSetBuiltinPlotWindowCB), true),
+      0, (Widget *)&builtin_plot_window_w, 0, 0},
     MMEnd
 };
 
+#ifdef IF_MOTIF
 static Widget edit_command_w;
 static Widget get_core_command_w;
 static Widget ps_command_w;
@@ -1663,84 +2068,122 @@ static Widget term_command_w;
 static Widget uncompress_command_w;
 static Widget www_command_w;
 static Widget plot_command_w;
+#else // NOT IF_MOTIF
+static Gtk::Entry *edit_command_w;
+static Gtk::Entry *get_core_command_w;
+static Gtk::Entry *ps_command_w;
+static Gtk::Entry *term_command_w;
+static Gtk::Entry *uncompress_command_w;
+static Gtk::Entry *www_command_w;
+static Gtk::Entry *plot_command_w;
+#endif // IF_MOTIF
 
 static MMDesc helpers_preferences_menu [] =
 {
-    { "edit",       MMTextField, { dddSetEditCommandCB, 0 }, 
-      0, &edit_command_w, 0, 0},
-    { "get_core",   MMTextField, { dddSetGetCoreCommandCB, 0 }, 
-      0, &get_core_command_w, 0, 0},
-    { "ps",         MMTextField, { dddSetPSCommandCB, 0 },
-      0, &ps_command_w, 0, 0},
-    { "term",       MMTextField, { dddSetTermCommandCB, 0 },
-      0, &term_command_w, 0, 0},
-    { "uncompress", MMTextField, { dddSetUncompressCommandCB, 0 },
-      0, &uncompress_command_w, 0, 0},
-    { "www",        MMTextField, { dddSetWWWCommandCB, 0 },
-      0, &www_command_w, 0, 0},
-    { "plot",       MMTextField, { dddSetPlotCommandCB, 0 }, 
-      0, &plot_command_w, 0, 0},
-    { "plot_window", MMRadioPanel, MMNoCB, plot_window_menu, 0, 0, 0 },
+    { NM("edit", "Edit Sources"),        MMTextField,
+      BIND_0( PTR_FUN(dddSetEditCommandCB) ), 
+      0, (Widget *)&edit_command_w, 0, 0},
+    { NM("get_core", "Get Core File"),   MMTextField,
+      BIND_0( PTR_FUN(dddSetGetCoreCommandCB) ), 
+      0, (Widget *)&get_core_command_w, 0, 0},
+    { NM("ps", "List Processes"),        MMTextField,
+      BIND_0( PTR_FUN(dddSetPSCommandCB) ),
+      0, (Widget *)&ps_command_w, 0, 0},
+    { NM("term", "Execution Window"),    MMTextField,
+      BIND_0( PTR_FUN(dddSetTermCommandCB) ),
+      0, (Widget *)&term_command_w, 0, 0},
+    { NM("uncompress", "Uncompress"),    MMTextField,
+      BIND_0( PTR_FUN(dddSetUncompressCommandCB) ),
+      0, (Widget *)&uncompress_command_w, 0, 0},
+    { NM("www", "Web Browser"),          MMTextField,
+      BIND_0( PTR_FUN(dddSetWWWCommandCB) ),
+      0, (Widget *)&www_command_w, 0, 0},
+    { NM("plot", "Plot"),                MMTextField,
+      BIND_0( PTR_FUN(dddSetPlotCommandCB) ), 
+      0, (Widget *)&plot_command_w, 0, 0},
+    { NM("plot_window", "Plot Window"),  MMRadioPanel,
+      MMNoCB, plot_window_menu, 0, 0, 0 },
     MMEnd
 };
 
 
 // Data
+
 static Widget print_w            = 0;
 static Widget display_w          = 0;
 static Widget examine_w          = 0;
-static Widget locals_w           = 0;
-static Widget args_w             = 0;
-static Widget detect_aliases_w   = 0;
+static TOGGLEBUTTON_P locals_w   = 0;
+static TOGGLEBUTTON_P args_w     = 0;
+static TOGGLEBUTTON_P detect_aliases_w   = 0;
 static Widget infos_w            = 0;
 static Widget align_w            = 0;
 static Widget edit_watchpoints_w = 0;
 
-DECL_WR(dddPopupInfosCB);
+DECL_WR(WR_dddPopupInfosCB, CB_ARG_HIDE_0(PTR_FUN(dddPopupInfosCB)));
 static MMDesc data_menu[] = 
 {
-    { "displays",    MMPush,    { DataDisp::EditDisplaysCB, 0 }, 0, 0, 0, 0},
-    { "themes",      MMPush,    { dddPopupThemesCB, 0 }, 0, 0, 0, 0},
-    { "watchpoints", MMPush,   { SourceView::EditBreakpointsCB, 0 }, 
-                                 0, &edit_watchpoints_w, 0, 0 },
-    { "examine",     MMPush,  { gdbExamineCB, 0 }, 0, &examine_w, 0, 0},
+    { NM("displays", "Displays..."),                MMPush,
+      HIDE_0(PTR_FUN(DataDisp::EditDisplaysCB)), 0, 0, 0, 0},
+    { NM("themes", "Themes..."),                    MMPush,
+      HIDE_0(PTR_FUN(dddPopupThemesCB)), 0, 0, 0, 0},
+    { NM("watchpoints", "Watchpoints..."),          MMPush,
+      HIDE_0(PTR_FUN(SourceView::EditBreakpointsCB)), 
+      0, &edit_watchpoints_w, 0, 0 },
+    { NM("examine", "Memory..."),                   MMPush,
+      BIND_0(PTR_FUN(gdbExamineCB)), 0, &examine_w, 0, 0},
     MMSep,
-    { "print",       MMPush,  
-	{ gdbPrintCB, XtPointer(False) }, 0, &print_w, 0, 0 },
-    { "display",     MMPush,  { gdbDisplayCB, 0 }, 0, &display_w, 0, 0 },
+    { NM("print", "Print ()"),                      MMPush,  
+      BIND_1(PTR_FUN(gdbPrintCB), XtPointer(False)), 0, &print_w, 0, 0 },
+    { NM("display", "Display ()"),                  MMPush,
+      BIND_0(PTR_FUN(gdbDisplayCB)), 0, &display_w, 0, 0 },
     MMSep,
-    { "detectAliases", MMToggle, { graphToggleDetectAliasesCB, 0 },
-      0, &detect_aliases_w, 0, 0 },
+    { NM("detectAliases", "Detect Aliases"),        MMToggle,
+      BIND_0(PTR_FUN(graphToggleDetectAliasesCB)),
+      0, (Widget *)&detect_aliases_w, 0, 0 },
     MMSep,
-    { "info locals", MMToggle,  { graphToggleLocalsCB, 0 }, 
-      0, &locals_w, 0, 0 },
-    { "info args",   MMToggle,  { graphToggleArgsCB, 0 }, 
-      0, &args_w, 0, 0 },
-    { "infos",       MMPush,    { WhenReady, XtPointer(&WR_dddPopupInfosCB) }, 
+    { NM("info locals", "Display Local Variables"), MMToggle,
+      BIND_0(PTR_FUN(graphToggleLocalsCB)), 
+      0, (Widget *)&locals_w, 0, 0 },
+    { NM("info args", "Display Arguments"),         MMToggle,
+      BIND_0(PTR_FUN(graphToggleArgsCB)), 
+      0, (Widget *)&args_w, 0, 0 },
+    { NM("infos", "Status Displays..."),            MMPush,
+      BIND_1(PTR_FUN(WhenReady), &WR_dddPopupInfosCB), 
       0, &infos_w, 0, 0 },
     MMSep,
-    { "align",      MMPush,    { graphAlignCB, 0  }, 0, &align_w, 0, 0 },
-    { "rotate",     MMPush,    { graphRotateCB, 0 }, 0, 0, 0, 0},
-    { "layout",     MMPush,    { graphLayoutCB, 0 }, 0, 0, 0, 0},
+    { NM("align", "Align on Grid"),                 MMPush,
+      HIDE_0(PTR_FUN(graphAlignCB)), 0, &align_w, 0, 0 },
+    { NM("rotate", "Rotate Graph"),                 MMPush,
+      HIDE_0(PTR_FUN(graphRotateCB)), 0, 0, 0, 0},
+    { NM("layout", "Layout Graph"),                 MMPush,
+      HIDE_0(PTR_FUN(graphLayoutCB)), 0, 0, 0, 0},
     MMSep,
-    { "refresh",    MMPush,    { DataDisp::refreshCB, 0 }, 0, 0, 0, 0},
+    { NM("refresh", "Refresh"),                     MMPush,
+      BIND_0(PTR_FUN(DataDisp::refreshCB)), 0, 0, 0, 0},
     MMEnd
 };
 
 
 // Maintenance
+
+#ifdef IF_MOTIF
 static Widget crash_debug_w     = 0;
 static Widget crash_dump_core_w = 0;
 static Widget crash_nothing_w   = 0;
+#else // NOT IF_MOTIF
+static Gtk::ToggleButton *crash_debug_w     = 0;
+static Gtk::ToggleButton *crash_dump_core_w = 0;
+static Gtk::ToggleButton *crash_nothing_w   = 0;
+#endif // IF_MOTIF
 
 static MMDesc crash_menu[] = 
 {
-    { "debug",         MMToggle, { dddSetCrashCB, XtPointer(2) }, 0,
-      &crash_debug_w, 0, 0 },
-    { "dumpCore",      MMToggle, { dddSetCrashCB, XtPointer(1) }, 0,
-      &crash_dump_core_w, 0, 0 },
-    { "nothing",       MMToggle, { dddSetCrashCB, XtPointer(0) }, 0,
-      &crash_nothing_w, 0, 0 },
+    { NM("debug", "Debug DDD"),     MMToggle,
+      HIDE_0_BIND_1(PTR_FUN(dddSetCrashCB), 2), 0, (Widget *)&crash_debug_w, 0, 0 },
+    { NM("dumpCore", "Dump Core Now"), MMToggle,
+      HIDE_0_BIND_1(PTR_FUN(dddSetCrashCB), 1), 0, (Widget *)&crash_dump_core_w, 0, 0 },
+    { NM("nothing", "Do Nothing"),     MMToggle,
+      HIDE_0_BIND_1(PTR_FUN(dddSetCrashCB), 0), 0, (Widget *)&crash_nothing_w, 0, 0 },
     MMEnd
 };
 
@@ -1750,16 +2193,22 @@ static Widget valgrindLeakCheck_w = 0;
 
 static MMDesc maintenance_menu[] = 
 {
-    { "debug",         MMPush, { DDDDebugCB, 0 }, 0, &debug_ddd_w, 0, 0 },
-    { "dumpCore",      MMPush, { DDDDumpCoreCB, 0 }, 0, &dump_core_w, 0, 0 },
-    { "tictactoe",     MMPush, { TicTacToeCB, 0 }, 0, 0, 0, 0 },
+    { NM("debug", "Debug DDD..."),                   MMPush,
+      HIDE_0_BIND_1(PTR_FUN(DDDDebugCB), 0), 0, &debug_ddd_w, 0, 0 },
+    { NM("dumpCore", "Dump Core Now"),               MMPush,
+      HIDE_0(PTR_FUN(DDDDumpCoreCB)), 0, &dump_core_w, 0, 0 },
+//  { NM("tictactoe", "Tic Tac Toe..."),             MMPush,
+//    HIDE_0(PTR_FUN(TicTacToeCB)), 0, 0, 0, 0 },
     MMSep,
-    { "crash",         MMRadioMenu, MMNoCB, crash_menu, 0, 0, 0 },
+    { NM("crash", "When DDD Crashes"),               MMRadioMenu,
+      MMNoCB, crash_menu, 0, 0, 0},
     MMSep,
-    { "valgrindLeak",  MMPush | MMUnmanaged, { dddValgrindLeakCheckCB, 0 },
+    { NM("valgrindLeak", "Do Valgrind Leak Check"),  MMPush | MMUnmanaged,
+      HIDE_0(PTR_FUN(dddValgrindLeakCheckCB)),
       0, &valgrindLeakCheck_w, 0, 0 },
     MMSep,
-    { "remove",        MMPush, { dddClearMaintenanceCB, 0 }, 0, 0, 0, 0 },
+    { NM("remove", "Remove Menu"),                   MMPush,
+      HIDE_0(PTR_FUN(dddClearMaintenanceCB)), 0, 0, 0, 0 },
     MMEnd
 };
 
@@ -1768,68 +2217,104 @@ static Widget maintenance_w = 0;
 // Menu Bar for DDD command window
 static MMDesc command_menubar[] = 
 {
-    { "file",     MMMenu,          { gdbUpdateFileCB, command_file_menu }, 
-                                   command_file_menu, 0, 0, 0 },
-    { "edit",     MMMenu,          { gdbUpdateEditCB, XtPointer(GDBWindow) }, 
-                                   command_edit_menu, 0, 0, 0 },
-    { "view",    MMMenu,          { gdbUpdateViewCB, command_view_menu }, 
-      				   command_view_menu, 0, 0, 0 },
-    { "program",  MMMenu,          MMNoCB, command_program_menu, 0, 0, 0 },
-    { "commands", MMMenu,          MMNoCB, command_menu, 0, 0, 0  },
-    { "maintenance", MMMenu | MMUnmanaged, MMNoCB, maintenance_menu, 
+    { NM("file", "File"),               MMMenu,
+      HIDE_0_BIND_1(PTR_FUN(gdbUpdateFileCB), command_file_menu), 
+      command_file_menu, 0, 0, 0 },
+    { NM("edit", "Edit"),               MMMenu,
+      BIND_1(PTR_FUN(gdbUpdateEditCB), GDBWindow),
+      command_edit_menu, 0, 0, 0 },
+    { NM("view", "View"),               MMMenu,
+      HIDE_0_BIND_1(PTR_FUN(gdbUpdateViewCB), command_view_menu), 
+      command_view_menu, 0, 0, 0 },
+    { NM("program", "Program"),         MMMenu,
+      MMNoCB, command_program_menu, 0, 0, 0 },
+    { NM("commands", "Commands"),       MMMenu,
+      MMNoCB, command_menu, 0, 0, 0  },
+    { NM("maintenance", "Maintenance"), MMMenu | MMUnmanaged, MMNoCB, maintenance_menu, 
       &maintenance_w, 0, 0  },
-    { "help",     MMMenu | MMHelp, MMNoCB, simple_help_menu, 0, 0, 0  },
+#ifdef IF_MOTIF
+    { NM("help", "Help"),               MMMenu | MMHelp,
+      MMNoCB, simple_help_menu, 0, 0, 0  },
+#endif // IF_MOTIF
     MMEnd
 };
 
 // Menu Bar for DDD source view
 static MMDesc source_menubar[] = 
 {
-    { "file",    MMMenu,          { gdbUpdateFileCB, source_file_menu }, 
-                                  source_file_menu, 0, 0, 0  },
-    { "edit",    MMMenu,          { gdbUpdateEditCB, XtPointer(SourceWindow) },
-                                  source_edit_menu, 0, 0, 0  },
-    { "view",    MMMenu,          { gdbUpdateViewCB, source_view_menu },
-				  source_view_menu, 0, 0, 0  },
-    { "program", MMMenu,          MMNoCB, source_program_menu, 0, 0, 0  },
-    { "stack",   MMMenu,          MMNoCB, stack_menu, 0, 0, 0  },
-    { "source",  MMMenu,          MMNoCB, source_menu, 0, 0, 0  },
-    { "help",    MMMenu | MMHelp, MMNoCB, simple_help_menu, 0, 0, 0  },
+    { NM("file", "File"),       MMMenu,
+      HIDE_0_BIND_1(PTR_FUN(gdbUpdateFileCB), source_file_menu), 
+      source_file_menu, 0, 0, 0  },
+    { NM("edit", "Edit"),       MMMenu,
+      BIND_1(PTR_FUN(gdbUpdateEditCB), SourceWindow),
+      source_edit_menu, 0, 0, 0  },
+    { NM("view", "View"),       MMMenu,
+      HIDE_0_BIND_1(PTR_FUN(gdbUpdateViewCB), source_view_menu),
+      source_view_menu, 0, 0, 0  },
+    { NM("program", "Program"), MMMenu,
+      MMNoCB, source_program_menu, 0, 0, 0  },
+    { NM("stack", "Status"),    MMMenu,
+      MMNoCB, stack_menu, 0, 0, 0  },
+    { NM("source", "Source"),   MMMenu,
+      MMNoCB, source_menu, 0, 0, 0  },
+#ifdef IF_MOTIF
+    { NM("help", "Help"),       MMMenu | MMHelp,
+      MMNoCB, simple_help_menu, 0, 0, 0  },
+#endif // IF_MOTIF
     MMEnd
 };
 
 // Menu Bar for DDD data window
 static MMDesc data_menubar[] = 
 {
-    { "file",    MMMenu,          { gdbUpdateFileCB, data_file_menu }, 
-                                  data_file_menu, 0, 0, 0  },
-    { "edit",    MMMenu,          { gdbUpdateEditCB, XtPointer(DataWindow) },
-                                  data_edit_menu, 0, 0, 0  },
-    { "view",    MMMenu,          { gdbUpdateViewCB, data_view_menu }, 
-      				  data_view_menu, 0, 0, 0  },
-    { "program", MMMenu,          MMNoCB, data_program_menu, 0, 0, 0  },
-    { "data",    MMMenu,          MMNoCB, data_menu, 0, 0, 0  },
-    { "help",    MMMenu | MMHelp, MMNoCB, simple_help_menu, 0, 0, 0  },
+    { NM("file", "File"),       MMMenu,
+      HIDE_0_BIND_1(PTR_FUN(gdbUpdateFileCB), data_file_menu), 
+      data_file_menu, 0, 0, 0  },
+    { NM("edit", "Edit"),       MMMenu,
+      BIND_1(PTR_FUN(gdbUpdateEditCB), DataWindow),
+      data_edit_menu, 0, 0, 0  },
+    { NM("view", "View"),       MMMenu,
+      HIDE_0_BIND_1(PTR_FUN(gdbUpdateViewCB), data_view_menu), 
+      data_view_menu, 0, 0, 0  },
+    { NM("program", "Program"), MMMenu,
+      MMNoCB, data_program_menu, 0, 0, 0  },
+    { NM("data", "Data"),       MMMenu,
+      MMNoCB, data_menu, 0, 0, 0  },
+#ifdef IF_MOTIF
+    { NM("help", "Help"),       MMMenu | MMHelp,
+      MMNoCB, simple_help_menu, 0, 0, 0  },
+#endif // IF_MOTIF
     MMEnd
 };
 
 // Menu Bar for common DDD data/command window
 static MMDesc common_menubar[] = 
 {
-    { "file",       MMMenu,       { gdbUpdateFileCB, command_file_menu }, 
-                                  command_file_menu, 0, 0, 0  },
-    { "edit",       MMMenu,       { gdbUpdateEditCB, XtPointer(CommonWindow) },
-                                  command_edit_menu, 0, 0, 0  },
-    { "views",      MMMenu,       { gdbUpdateViewsCB, views_menu }, 
-                                  views_menu, 0, 0, 0  },
-    { "program",    MMMenu,       MMNoCB, command_program_menu, 0, 0, 0  },
-    { "commands",   MMMenu,       MMNoCB, command_menu, 0, 0, 0  },
-    { "stack",      MMMenu,       MMNoCB, stack_menu, 0, 0, 0  },
-    { "source",     MMMenu,       MMNoCB, source_menu, 0, 0, 0  },
-    { "data",       MMMenu,       MMNoCB, data_menu, 0, 0, 0  },
-    { "maintenance", MMMenu | MMUnmanaged, MMNoCB, maintenance_menu, 
-      &maintenance_w, 0, 0  },
-    { "help", MMMenu | MMHelp,    MMNoCB, simple_help_menu, 0, 0, 0  },
+    { NM("file", "File"),               MMMenu,
+      HIDE_0_BIND_1(PTR_FUN(gdbUpdateFileCB), command_file_menu), 
+      command_file_menu, 0, 0, 0  },
+    { NM("edit", "Edit"),               MMMenu,
+      BIND_1(PTR_FUN(gdbUpdateEditCB), CommonWindow),
+      command_edit_menu, 0, 0, 0  },
+    { NM("views", "Views"),             MMMenu,
+      HIDE_0_BIND_1(PTR_FUN(gdbUpdateViewsCB), views_menu), 
+      views_menu, 0, 0, 0  },
+    { NM("program", "Program"),         MMMenu,
+      MMNoCB, command_program_menu, 0, 0, 0  },
+    { NM("commands", "Commands"),       MMMenu,
+      MMNoCB, command_menu, 0, 0, 0  },
+    { NM("stack", "Status"),            MMMenu,
+      MMNoCB, stack_menu, 0, 0, 0  },
+    { NM("source", "Source"),           MMMenu,
+      MMNoCB, source_menu, 0, 0, 0  },
+    { NM("data", "Data"),               MMMenu,
+      MMNoCB, data_menu, 0, 0, 0  },
+    { NM("maintenance", "Maintenance"), MMMenu | MMUnmanaged,
+      MMNoCB, maintenance_menu, &maintenance_w, 0, 0  },
+#ifdef IF_MOTIF
+    { NM("help", "Help"),               MMMenu | MMHelp,
+      MMNoCB, simple_help_menu, 0, 0, 0  },
+#endif // IF_MOTIF
     MMEnd
 };
 
@@ -1844,14 +2329,14 @@ static Widget print_examine_w = 0;
 
 static MMDesc print_menu[] =
 {
-    { "printRef",        MMPush,
-	{ gdbPrintRefCB, XtPointer(False) }, 0, &print_ref_w, 0, 0 },
-    { "dump",            MMPush, 
-	{ gdbPrintCB, XtPointer(True) }, 0, &print_dump_w, 0, 0 },
-    { "whatis",          MMPush, 
-	{ gdbWhatisCB, 0 }, 0, &print_whatis_w, 0, 0 },
-    { "examine",         MMPush, 
-	{ gdbExamineCB, 0 }, 0, &print_examine_w, 0, 0 },
+    { NM("printRef", "Print *()"),      MMPush,
+      BIND_1(PTR_FUN(gdbPrintRefCB), false), 0, &print_ref_w, 0, 0 },
+    { NM("dump", "Dump ()"),            MMPush, 
+      BIND_1(PTR_FUN(gdbPrintCB), true), 0, &print_dump_w, 0, 0 },
+    { NM("whatis", "Whatis ()"),        MMPush, 
+      BIND_0(PTR_FUN(gdbWhatisCB)), 0, &print_whatis_w, 0, 0 },
+    { NM("examine", "Examine ()..."),   MMPush, 
+      BIND_0(PTR_FUN(gdbExamineCB)), 0, &print_examine_w, 0, 0 },
     MMEnd
 };
 
@@ -1863,7 +2348,8 @@ static Widget disp_ref_w     = 0;
 
 static MMDesc display_menu[] =
 {
-    { "dispRef",        MMPush, { gdbDispRefCB, 0 }, 0, &disp_ref_w, 0, 0 },
+    { NM("dispRef", "Display *()"),        MMPush,
+      BIND_0(PTR_FUN(gdbDispRefCB)), 0, &disp_ref_w, 0, 0 },
     MMEnd
 };
 
@@ -1873,24 +2359,25 @@ struct WatchItems {
 
 static MMDesc watch_menu[] =
 {
-    { "watchProperties",  MMPush, 
-      { gdbEditWatchpointPropertiesCB, 0 }, 0, 0, 0, 0},
-    { "enableWatch",      MMPush, 
-      { gdbToggleEnableWatchpointCB, 0 }, 0, 0, 0, 0},
+    { NM("watchProperties", "Watchpoint Properties..."),  MMPush, 
+      HIDE_0(PTR_FUN(gdbEditWatchpointPropertiesCB)), 0, 0, 0, 0},
+    { NM("enableWatch", "Enable Watchpoint at ()"),       MMPush, 
+      BIND_0(PTR_FUN(gdbToggleEnableWatchpointCB)), 0, 0, 0, 0},
     MMSep,
-    { "cwatch",       MMPush, 
-      { gdbWatchCB, XtPointer(WATCH_CHANGE) }, 0, 0, 0, 0 },
-    { "rwatch",       MMPush, 
-      { gdbWatchCB, XtPointer(WATCH_READ)   }, 0, 0, 0, 0 },
-    { "awatch",       MMPush, 
-      { gdbWatchCB, XtPointer(WATCH_ACCESS) }, 0, 0, 0, 0 },
+    { NM("cwatch", "Set Watchpoint on ()"),               MMPush, 
+      BIND_1(PTR_FUN(gdbWatchCB), WATCH_CHANGE), 0, 0, 0, 0 },
+    { NM("rwatch", "Set Read Watchpoint on ()"),          MMPush, 
+      BIND_1(PTR_FUN(gdbWatchCB), WATCH_READ), 0, 0, 0, 0 },
+    { NM("awatch", "Set Access Watchpoint on ()"),        MMPush, 
+      BIND_1(PTR_FUN(gdbWatchCB), WATCH_ACCESS), 0, 0, 0, 0 },
 
     // It would be nice to have an `unwatch' command here, for
     // recording commands.  Unfortunately, GDB needs a watchpoint
     // number for deleting watchpoints.
 #if 0	
     MMSep,
-    { "unwatch",      MMPush, { gdbUnwatchCB, 0 }, 0, 0, 0, 0},
+    { NM("unwatch", "Unwatch ()"),                        MMPush,
+      BIND_0( PTR_FUN(gdbUnwatchCB) ), 0, 0, 0, 0},
 #endif
     MMEnd
 };
@@ -1902,17 +2389,22 @@ struct BreakItems {
 
 static MMDesc break_menu[] = 
 {
-    { "tempBreakAt",     MMPush, { gdbTempBreakAtCB, 0 }, 0, 0, 0, 0},
-    { "regexBreakAt",    MMPush, { gdbRegexBreakAtCB, 0 }, 0, 0, 0, 0},
-    { "breakProperties", MMPush, 
-      { gdbEditBreakpointPropertiesCB, 0 }, 0, 0, 0, 0},
-    { "enableBreak",     MMPush, 
-      { gdbToggleEnableBreakpointCB, 0 }, 0, 0, 0, 0},
+    { NM("tempBreakAt", "Set Temporary Breakpoint at ()"),     MMPush,
+      BIND_0(PTR_FUN(gdbTempBreakAtCB)), 0, 0, 0, 0},
+    { NM("regexBreakAt", "Set Breakpoints at Regexp ()"),      MMPush,
+      BIND_0(PTR_FUN(gdbRegexBreakAtCB)), 0, 0, 0, 0},
+    { NM("breakProperties", "Breakpoint Properties..."),       MMPush, 
+      HIDE_0(PTR_FUN(gdbEditBreakpointPropertiesCB)), 0, 0, 0, 0},
+    { NM("enableBreak", "Enable Breakpoint at ()"),            MMPush, 
+      BIND_0(PTR_FUN(gdbToggleEnableBreakpointCB)), 0, 0, 0, 0},
     MMSep,
-    { "contUntil",       MMPush, { gdbContUntilCB, 0 }, 0, 0, 0, 0},
-    { "setPC",           MMPush, { gdbSetPCCB, 0 }, 0, 0, 0, 0},
+    { NM("contUntil", "Continue Until ()"),                    MMPush,
+      BIND_0(PTR_FUN(gdbContUntilCB)), 0, 0, 0, 0},
+    { NM("setPC", "Set Execution Position to ()"),             MMPush,
+      BIND_0(PTR_FUN(gdbSetPCCB)), 0, 0, 0, 0},
     MMSep,
-    { "clearAt2",        MMPush, { gdbClearAtCB, 0 }, 0, 0, 0, 0},
+    { NM("clearAt2", "Clear Breakpoint at ()"),                MMPush,
+      BIND_0(PTR_FUN(gdbClearAtCB)), 0, 0, 0, 0},
     MMEnd
 };
 
@@ -1922,10 +2414,10 @@ struct FindItems {
 
 static MMDesc find_menu[] = 
 {
-    { "findForward",  MMPush, 
-      { gdbFindCB, XtPointer(SourceView::forward) }, 0, 0, 0, 0},
-    { "findBackward", MMPush, 
-      { gdbFindCB, XtPointer(SourceView::backward) }, 0, 0, 0, 0},
+    { NM("findForward", "@charset Find@small>> @charset()@rm"),  MMPush, 
+      BIND_1(PTR_FUN(gdbFindCB), SourceView::forward), 0, 0, 0, 0},
+    { NM("findBackward", "@charset Find@small<< @charset()@rm"), MMPush, 
+      BIND_1(PTR_FUN(gdbFindCB), SourceView::backward), 0, 0, 0, 0},
     MMEnd
 };
 
@@ -1935,16 +2427,16 @@ struct ArgItems {
 
 static MMDesc arg_cmd_area[] = 
 {
-    {"lookup",        MMPush,  
-     { gdbLookupCB, 0 }, 0, 0, 0, 0},
-    {"find",          MMPush | MMInsensitive, 
-     { gdbFindAgainCB, 0 }, find_menu, 0, 0, 0 },
-    {"breakAt",       MMPush,  { gdbToggleBreakCB, 0 }, break_menu, 0, 0, 0 },
-    {"watch",         MMPush,  
-	{ gdbToggleWatchCB, XtPointer(WATCH_CHANGE) }, watch_menu, 0, 0, 0 },
-    {"print",         MMPush,  
-	{ gdbPrintCB, XtPointer(False) }, print_menu, 0, 0, 0 },
-    {"display",       MMPush,  { gdbDisplayCB, 0 }, display_menu, 0, 0, 0 },
+    { IM("lookup", LOOKUP_ICON),      MMPush,
+     HIDE_0(PTR_FUN(gdbLookupCB)), 0, 0, 0, 0},
+    { IM("find", FIND_FORWARD_ICON),  MMPush | MMInsensitive, 
+     BIND_0(PTR_FUN(gdbFindAgainCB)), find_menu, 0, 0, 0 },
+    { IM("breakAt", BREAK_AT_ICON),   MMPush,  BIND_0(PTR_FUN(gdbToggleBreakCB)), break_menu, 0, 0, 0 },
+    { IM("watch", WATCH_ICON),        MMPush,  
+     BIND_1(PTR_FUN(gdbToggleWatchCB), WATCH_CHANGE), watch_menu, 0, 0, 0 },
+    { IM("print", PRINT_ICON),        MMPush,  
+     BIND_1(PTR_FUN(gdbPrintCB), false), print_menu, 0, 0, 0 },
+    { IM("display", DISPLAY_ICON),    MMPush,  BIND_0(PTR_FUN(gdbDisplayCB)), display_menu, 0, 0, 0 },
     MMEnd
 };
 
@@ -1966,16 +2458,16 @@ SourceView*   source_view;
 ArgField*     source_arg;
 
 // Argument toolbar
-static Widget arg_cmd_w;
+static CONTAINER_P arg_cmd_w;
 
 // GDB input/output widget
-Widget gdb_w;
+SCROLLEDTEXT_P gdb_w;
 
 // GDB status line
-Widget status_w;
+STATUSBAR_P status_w;
 
 // GDB activity led
-static Widget led_w;
+static TOGGLEBUTTON_P led_w;
 
 // Last output position
 XmTextPosition promptPosition;
@@ -1999,8 +2491,10 @@ bool private_gdb_input;    // true if input is running
 // true, if initial gdb prompt appeared
 bool gdb_initialized;
 
+#ifdef IF_MOTIF
 // The Xt Warning handler
 static XtErrorHandler ddd_original_xt_warning_handler;
+#endif // IF_MOTIF
 
 // Initial delays
 static StatusMsg *init_delay = 0;
@@ -2081,6 +2575,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	return DDD_EXIT_FAILURE;
     }
 
+#ifdef IF_MOTIF
     // Initialize X toolkit
     Arg args[10];
     int arg = 0;
@@ -2088,6 +2583,11 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     // Install X error handlers
     ddd_install_x_fatal();
     ddd_install_x_error();
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Error handlers?
+#endif
+#endif // IF_MOTIF
 
     std::ostringstream messages;
 
@@ -2097,25 +2597,48 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     // Read ~/.ddd/init resources
     XrmDatabase dddinit = 
 	GetFileDatabase(session_state_file(DEFAULT_SESSION));
-    if (dddinit == 0)
+    if (dddinit == 0) {
+#ifdef IF_MOTIF
 	dddinit = XrmGetStringDatabase("");
+#else // NOT IF_MOTIF
+	dddinit = get_string_database("");
+#endif // IF_MOTIF
+    }
 
     // Read ~/.ddd/tips resources
     XrmDatabase dddtips =
 	GetFileDatabase(session_tips_file());
-    if (dddtips != 0)
+    if (dddtips != 0) {
+#ifdef IF_MOTIF
 	XrmMergeDatabases(dddtips, &dddinit);
+#else // NOT IF_MOTIF
+	merge_databases(dddtips, dddinit);
+#endif // IF_MOTIF
+    }
 
+#ifdef IF_MOTIF
     // Let command-line arguments override ~/.ddd/init
     XrmParseCommand(&dddinit, options, XtNumber(options), 
 		    DDD_CLASS_NAME, &argc, (char**)argv);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Implement XrmParseCommand analogue using popt
+#endif
+#endif // IF_MOTIF
 
     const _XtString session_id = 0;
+
+#ifdef IF_MOTIF
     if (session_id == 0)
     {
 	// Determine session
 	char *session_rtype = 0;
+#ifdef IF_MOTIF
 	XrmValue session_value;
+#else // NOT IF_MOTIF
+	Glib::Value<std::string> session_value;
+	session_value.init(Glib::Value<std::string>::value_type());
+#endif // IF_MOTIF
 
 	string Nsession   = string(DDD_CLASS_NAME ".") + XtNsession;
 	string CSessionID = string(DDD_CLASS_NAME ".") + XtCSessionID;
@@ -2124,6 +2647,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 #endif
 
 	// Try resource or option
+#ifdef IF_MOTIF
 	if (
 #if XtSpecificationRelease >= 6
 	    XrmGetResource(dddinit, NsessionID.chars(), CSessionID.chars(),
@@ -2139,6 +2663,14 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 		session_id = id.chars();
 	    }
 	}
+#else // NOT IF_MOTIF
+	if (
+	    get_resource(dddinit, Nsession.chars(), CSessionID.chars(),
+			 session_value))
+	{
+	  session_id = session_value.get().c_str();
+	}
+#endif // IF_MOTIF
 
 	if (session_id == 0)
 	{
@@ -2154,22 +2686,38 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 			j++;
 			
 		    session_id = basename(argv[i]);
+#ifdef IF_MOTIF
 		    session_value.addr = CONST_CAST(char*,session_id);
 		    session_value.size = strlen(session_id) + 1;
 		    XrmPutResource(&dddinit, Nsession.chars(), XtRString, 
 				   &session_value);
+#else // NOT IF_MOTIF
+		    session_value.set(CONST_CAST(char*,session_id));
+		    put_resource(dddinit, Nsession.chars(), XtRString, 
+				 session_value);
+#endif // IF_MOTIF
 		}
 	    }
 	}
     }
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning BUGGER THIS: Glib::Value is totally undocumented cruft.
+#endif
+#endif // IF_MOTIF
 
     if (!restart_session().empty())
     {
 	// A session is given in $DDD_SESSION: override everything.
 	XrmDatabase session_db = 
 	    GetFileDatabase(session_state_file(restart_session()));
-	if (session_db != 0)
+	if (session_db != 0) {
+#ifdef IF_MOTIF
 	    XrmMergeDatabases(session_db, &dddinit);
+#else // NOT IF_MOTIF
+	    merge_databases(session_db, dddinit);
+#endif // IF_MOTIF
+	}
     }
     else if (session_id != 0)
     {
@@ -2177,19 +2725,30 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	// well as the command-line options.
 	XrmDatabase session_db = 
 	    GetFileDatabase(session_state_file(session_id));
-	if (session_db != 0)
+	if (session_db != 0) {
+#ifdef IF_MOTIF
 	    XrmMergeDatabases(session_db, &dddinit);
+#else // NOT IF_MOTIF
+	    merge_databases(session_db, dddinit);
+#endif // IF_MOTIF
+	}
     }
 
+#ifdef IF_MOTIF
 #if HAVE_ATHENA
     // Initialize Xaw widget set, registering the Xaw Converters.
     // This is done before installing our own converters.
     XawInitializeWidgetSet();
 #endif
+#else // NOT IF_MOTIF
+    Gtk::Main *gtk_main_loop = new Gtk::Main(argc, argv);
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     // Register own converters.  This must be done here to install the
     // String -> Cardinal converter.
     registerOwnConverters();
+#endif // IF_MOTIF
 
     // Handle `--version', `--help', etc.  We do this here, since we
     // might want to use them even without X access.
@@ -2199,6 +2758,8 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 
     // Open X connection and create top-level application shell
     XtAppContext app_context;
+
+#ifdef IF_MOTIF
     arg = 0;
     XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
 
@@ -2216,8 +2777,8 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 			  sessionShellWidgetClass,
 			  args, arg);
 
-    XtAddCallback(toplevel, XtNsaveCallback, SaveSmSessionCB, XtPointer(0));
-    XtAddCallback(toplevel, XtNdieCallback, ShutdownSmSessionCB, XtPointer(0));
+    XtAddCallback(toplevel, XtNsaveCallback, SaveSmSessionCB, XtNIL);
+    XtAddCallback(toplevel, XtNdieCallback, ShutdownSmSessionCB, XtNIL);
 #else
     // Note: the cast on ddd_fallback_resources is safe.
     Widget toplevel =
@@ -2226,16 +2787,34 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 			&argc, argv, (String *)ddd_fallback_resources,
 			args, arg);
 #endif
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Should be some arguments here
+#endif
+    app_context = new Gtk::Window();
+    Gtk::Window *toplevel = app_context;
+    toplevel->show();
+#endif // IF_MOTIF
+
+#ifdef IF_MOTIF
     ddd_install_xt_error(app_context);
+#endif // IF_MOTIF
 
     // Check Motif version.  We can do this only now after the first
     // Motif widget has been created.
     setup_motif_version_warnings();
 
+#ifdef IF_MOTIF
     // Setup top-level actions; this must be done before reading
     // application defaults.
     XtAppAddActions(app_context, actions, XtNumber(actions));
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning XtAppAddActions: this stuff is a bit like glade...
+#endif
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     // Register string -> OnOff converter; this must be done before
     // reading application defaults.
     XtSetTypeConverter(XmRString, XtROnOff, CvtStringToOnOff,
@@ -2245,7 +2824,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     // Get application resources into APP_DATA
     XtVaGetApplicationResources(toplevel, (XtPointer)&app_data,
 				ddd_resources, ddd_resources_size,
-				XtPointer(0));
+				XtNIL);
 
     // If we have no application defaults so far, or if the
     // application defaults have the wrong version, try to load our own.
@@ -2269,12 +2848,12 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     // Read APP_DATA again
     XtVaGetApplicationResources(toplevel, (XtPointer)&app_data,
 				ddd_resources, ddd_resources_size,
-				XtPointer(0));
+				XtNIL);
 
 #if XtSpecificationRelease >= 6
     // Synchronize SESSION_ID and APP_DATA.session
     if (session_id == 0)
-	XtVaGetValues(toplevel, XtNsessionID, &session_id, XtPointer(0));
+	XtVaGetValues(toplevel, XtNsessionID, &session_id, XtNIL);
     if (session_id != 0)
 	app_data.session = session_id;
 #endif
@@ -2288,6 +2867,11 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	app_data.session = s.chars();
     }
     session_id = app_data.session;
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning No resource database: no need for converters yet.
+#endif
+#endif // IF_MOTIF
 
     // From this point on, APP_DATA is valid.
 
@@ -2303,10 +2887,17 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     }
 #endif
 
+#ifdef IF_MOTIF
     // Setup label hack
     arg = 0;
     XtCreateWidget("label_hack", xmLabelHackWidgetClass, toplevel, args, arg);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning LabelHack not defined - what is it?
+#endif
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     // Set key bindings
     setup_cut_copy_paste_bindings(XtDatabase(XtDisplay(toplevel)));
     setup_select_all_bindings(XtDatabase(XtDisplay(toplevel)));
@@ -2319,6 +2910,11 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     setup_fonts(app_data, XtDatabase(XtDisplay(toplevel)));
     if (app_data.show_fonts)
 	return DDD_EXIT_SUCCESS;
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning XtDatabase not defined: is there any equivalent?
+#endif
+#endif // IF_MOTIF
 
     // Create a new auto_command_prefix if needed
     setup_auto_command_prefix();
@@ -2350,12 +2946,17 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	// SGI CC wants this:
 	const char **tmp_argv = (const char**)argv;
 
+#ifdef IF_MOTIF
 	// No args given - try to get one from current selection
 	add_arg_from_selection(toplevel, argc, tmp_argv);
+#else // NOT IF_MOTIF
+	std::cerr << "SORRY, add_arg_from_selection not supported yet\n";
+#endif // IF_MOTIF
 
 	argv = (char **)tmp_argv;
     }
 
+#ifdef IF_MOTIF
     // Check the X configuration
     if (app_data.check_configuration)
     {
@@ -2367,10 +2968,13 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 
     // If needed, fix the X configuration silently
     check_x_configuration(toplevel, false);
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     // Set up warning handler
     ddd_original_xt_warning_handler =
 	XtAppSetWarningHandler(app_context, ddd_xt_warning);
+#endif // IF_MOTIF
 
     // Determine debugger type
     DebuggerType debugger_type = DebuggerType(-1);
@@ -2455,8 +3059,10 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     // Warn for incompatible `Ddd' and `~/.ddd/init' files
     setup_ddd_version_warnings();
 
+#ifdef IF_MOTIF
     // Global variables: Set LessTif version
     lesstif_version = app_data.lesstif_version;
+#endif // IF_MOTIF
 
     // Global variables: Set maximum lengths
     max_value_tip_length              = app_data.max_value_tip_length;
@@ -2477,31 +3083,49 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     PlotAgent::plot_3d_settings = app_data.plot_3d_settings;
 
     // Global variables: Set delays for button and value tips
+#ifdef IF_MOTIF
     help_button_tip_delay = app_data.button_tip_delay;
     help_value_tip_delay  = app_data.value_tip_delay;
     help_button_doc_delay = app_data.button_doc_delay;
     help_value_doc_delay  = app_data.value_doc_delay;
     help_clear_doc_delay  = app_data.clear_doc_delay;
     help_clear_tip_delay  = app_data.clear_tip_delay;
+#endif // IF_MOTIF
 
     // Re-register own converters.  Motif may have overridden some of
     // these, so register them again.
+#ifdef IF_MOTIF
     registerOwnConverters();
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     // Show splash screen
     Boolean iconic;
-    XtVaGetValues(toplevel, XmNiconic, &iconic, XtPointer(0));
+    XtVaGetValues(toplevel, XmNiconic, &iconic, XtNIL);
     if (app_data.splash_screen && !iconic && restart_session().empty())
 	popup_splash_screen(toplevel, app_data.splash_screen_color_key);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Forget the splash screen for now.
+#endif
+#endif // IF_MOTIF
 
     // Re-register own converters.  Motif has overridden some of
     // these, so register them again.
+#ifdef IF_MOTIF
     registerOwnConverters();
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     // Install special Motif converters
 #if XmVersion >= 1002
     XmRepTypeInstallTearOffModelConverter();
 #endif
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning XmRepTypeInstallTearOffModelConverter?
+#endif
+#endif // IF_MOTIF
 
     // Lock `~/.ddd/'.
     LockInfo lock_info;
@@ -2529,11 +3153,17 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 
     // Create GDB interface
     gdb = new_gdb(debugger_type, app_data, app_context, argc, argv);
+#ifdef IF_MOTIF
     const string s1 = gdb->title();
     defineConversionMacro("GDB",      s1.chars());
     defineConversionMacro("THEHOST",  DDD_HOST);
     defineConversionMacro("ROOT",     DDD_ROOT);
     defineConversionMacro("ALT_ROOT", DDD_ALT_ROOT);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Converters?
+#endif
+#endif // IF_MOTIF
 
     // Set up GDB handlers
     gdb->addHandler(ReadyForQuestion, gdb_readyHP);
@@ -2567,6 +3197,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     while (original_argv[original_argc] != 0)
 	original_argc++;
 
+#ifdef IF_MOTIF
     arg = 0;
     XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
     XtSetArg(args[arg], XmNargc,           original_argc); arg++;
@@ -2574,7 +3205,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 
     // Forward toplevel geometry (as given by `-geometry') to command shell
     String toplevel_geometry = 0;
-    XtVaGetValues(toplevel, XmNgeometry, &toplevel_geometry, XtPointer(0));
+    XtVaGetValues(toplevel, XmNgeometry, &toplevel_geometry, XtNIL);
     if (toplevel_geometry != 0)
     {
 	XtSetArg(args[arg], XmNgeometry, toplevel_geometry); arg++;
@@ -2592,13 +3223,27 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 
     // Create main window
     arg = 0;
+
     Widget main_window = XmCreateMainWindow(command_shell, 
 					    XMST("main_window"),
 					    args, arg);
     XtManageChild(main_window);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Weirdness: which is the real toplevel?
+#endif
+    CONTAINER_P main_window = new Gtk::VBox();
+    main_window->set_name("MAIN BOX");
+    toplevel->add(*main_window);
+    main_window->show();
+
+    command_shell = new Gtk::Dialog(XMST("Commands"), *toplevel);
+#endif // IF_MOTIF
 
     // Re-register own converters to override Motif converters.
+#ifdef IF_MOTIF
     registerOwnConverters();
+#endif // IF_MOTIF
 
     // Create menu bar
     MMDesc *menubar = common_menubar;
@@ -2607,11 +3252,13 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 
     Widget menubar_w = MMcreateMenuBar(main_window, "menubar", menubar);
     MMaddCallbacks(menubar);
-    MMaddHelpCallback(menubar, ImmediateHelpCB);
+    MMaddHelpCallback(menubar, PTR_FUN(ImmediateHelpCB));
     verify_buttons(menubar);
     register_menu_shell(menubar);
 
     // Create Paned Window
+
+#ifdef IF_MOTIF
     arg = 0;
     XtSetArg(args[arg], XmNborderWidth,     0); arg++;
     XtSetArg(args[arg], XmNmarginWidth,     0); arg++;
@@ -2621,10 +3268,19 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 				   XMST("paned_work_w"),
 				   args, arg));
     XtManageChild(paned_work_w);
+    CONTAINER_P main_vbox = paned_work_w;
+#else // NOT IF_MOTIF
+    // Note: On Motif it is possible to force a pane to have
+    // fixed size.  On Gtk this does not seem possible.  Therefore
+    // the toolbar and status bar must go in a VBox.
+    Gtk::Box *main_vbox = new Gtk::VBox();
+    main_vbox->show();
+    main_window->add(*main_vbox);
+#endif // IF_MOTIF
 
     // Status line
     if (!app_data.separate_source_window && !app_data.status_at_bottom)
-	create_status(paned_work_w);
+	create_status(main_vbox);
 
     // Toolbar label type
     unsigned char label_type = XmSTRING;
@@ -2635,13 +3291,14 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     if (!app_data.button_captions && !app_data.button_images)
 	app_data.common_toolbar = false;
 
-    Widget arg_label = 0;
+    BUTTON_P arg_label = 0;
+
     if (!app_data.separate_source_window &&
 	!app_data.separate_data_window &&
 	app_data.common_toolbar)
     {
 	arg_cmd_area[ArgItems::Display].type |= MMUnmanaged;
-	arg_cmd_w = create_toolbar(paned_work_w, "common",
+	arg_cmd_w = create_toolbar(main_vbox, "common",
 				   arg_cmd_area, DataDisp::graph_cmd_area,
 				   arg_label, source_arg, XmPIXMAP);
 
@@ -2649,23 +3306,32 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 
 	if (command_toolbar_w == 0)
 	{
-	    command_toolbar_w = make_buttons(paned_work_w, 
+	    command_toolbar_w = make_buttons(main_vbox, 
 					     "command_toolbar", 
 					     app_data.tool_buttons);
 	}
     }
+
+#ifndef IF_MOTIF
+    Gtk::Container *paned_work_w = new GtkMultiPaned();
+    main_vbox->add(*paned_work_w);
+#endif // IF_MOTIF
     
     // Install icons if not already done
+#ifdef IF_MOTIF
     install_icons(command_shell, 
 		  app_data.button_color_key,
 		  app_data.active_button_color_key);
+#endif // IF_MOTIF
 
     // Data window
-    Widget data_disp_parent = paned_work_w;
+    CONTAINER_P data_disp_parent = paned_work_w;
     Widget data_menubar_w = 0;
     Widget data_main_window_w = 0;
     if (app_data.separate_data_window)
     {
+
+#ifdef IF_MOTIF
 	arg = 0;
 	XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
 	data_disp_shell =
@@ -2700,30 +3366,43 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 				       XMST("data_paned_work_w"),
 				       args, arg));
 	XtManageChild(data_disp_parent);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Create separate data display window
+#endif
+#endif // IF_MOTIF
+
     }
 
     // Create data display
     data_disp = new DataDisp(data_disp_parent, data_buttons_w);
 
+#ifdef IF_MOTIF
     if (app_data.separate_data_window)
     {
 	// More values for main window
 	XtVaSetValues (data_main_window_w,
 		       XmNmenuBar,    data_menubar_w,
 		       XmNworkWindow, data_disp_parent,
-		       XtPointer(0));
+		       XtNIL);
     }
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Set values for data window?
+#endif
+#endif // IF_MOTIF
 
     if (data_buttons_w == 0)
 	data_buttons_w = make_buttons(data_disp_parent, "data_buttons", 
 				      app_data.data_buttons);
 
     // Source window
-    Widget source_view_parent = paned_work_w;
+    CONTAINER_P source_view_parent = paned_work_w;
     Widget source_menubar_w = 0;
     Widget source_main_window_w = 0;
     if (app_data.separate_source_window)
     {
+#ifdef IF_MOTIF
 	arg = 0;
 	XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
 	source_view_shell = 
@@ -2761,6 +3440,11 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	// Status line
 	if (!app_data.status_at_bottom)
 	    create_status(source_view_parent);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Create separate source window
+#endif
+#endif // IF_MOTIF
     }
 
     // Add toolbar
@@ -2785,43 +3469,77 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 					app_data.source_buttons);
     }
 
+#ifndef IF_MOTIF
+    source_view_parent->modify_bg(Gtk::STATE_NORMAL, Gdk::Color("white"));
+#endif
     source_view = new SourceView(source_view_parent);
     source_view->set_max_glyphs(app_data.max_glyphs);
     source_view->cache_glyph_images = app_data.cache_glyph_images;
 
+#ifdef IF_MOTIF
     if (app_data.separate_source_window)
     {
 	// More values for main window
 	XtVaSetValues (source_main_window_w,
 		       XmNmenuBar,    source_menubar_w,
 		       XmNworkWindow, source_view_parent,
-		       XtPointer(0));
+		       XtNIL);
     }
+#endif // IF_MOTIF
 
     // Source toolbar
     if (arg_cmd_w == 0)
 	arg_cmd_w = create_toolbar(source_view_parent, "source",
 				   arg_cmd_area, 0, arg_label, source_arg,
 				   label_type);
+#ifdef NAG_ME
+#warning In general, it is better to connect() to a class method.
+#endif
+#ifdef IF_MOTIF
     XtAddCallback(arg_label, XmNactivateCallback, 
 		  ClearTextFieldCB, source_arg->text());
+#else // NOT IF_MOTIF
+    arg_label->signal_activate().connect(sigc::bind(PTR_FUN(ClearTextFieldCB),
+						    source_arg->text()));
+#endif // IF_MOTIF
 
     if (DataDisp::graph_cmd_w == arg_cmd_w)
     {
 	// Common toolbar
+#ifdef IF_MOTIF
 	XtAddCallback(arg_label, XmNactivateCallback, 
-		      DataDisp::SelectionLostCB, XtPointer(0));
+		      DataDisp::SelectionLostCB, XtNIL);
+#else // NOT IF_MOTIF
+	arg_label->signal_activate().connect(PTR_FUN(DataDisp::SelectionLostCB));
+#endif // IF_MOTIF
     }
 
+#ifdef IF_MOTIF
     XtAddCallback(source_arg->text(), XmNactivateCallback, 
 		  ActivateCB, 
 		  XtPointer(arg_cmd_area[ArgItems::Lookup].widget));
+#else // NOT IF_MOTIF
+    //source_arg->text()->signal_changed().connect(sigc::bind(PTR_FUN(ActivateCB),
+    //							    arg_cmd_area[ArgItems::Lookup].widget));
+#ifdef NAG_ME
+#warning How to activate combobox?
+#endif
+#endif // IF_MOTIF
     sync_args(source_arg, data_disp->graph_arg);
 
-    if (data_disp->graph_arg != 0)
+    if (data_disp->graph_arg != 0) {
+#ifdef IF_MOTIF
 	XtAddCallback(data_disp->graph_arg->text(), XmNactivateCallback, 
 		      ActivateCB, 
 		      XtPointer(data_disp->graph_cmd_area[0].widget));
+#else // NOT IF_MOTIF
+	// data_disp->graph_arg->text()->signal_changed().connect(sigc::bind(PTR_FUN(ActivateCB),
+	//								  data_disp->graph_cmd_area[0].widget));
+#ifdef NAG_ME
+#warning How to activate combobox widget?
+#endif
+#endif // IF_MOTIF
+    }
 
     if (command_toolbar_w == 0)
     {
@@ -2845,37 +3563,62 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	console_buttons_w = make_buttons(paned_work_w, "console_buttons", 
 					 app_data.console_buttons);
 
+#ifdef IF_MOTIF
     arg = 0;
     gdb_w = verify(XmCreateScrolledText(paned_work_w, 
 					XMST("gdb_w"), args, arg));
+#else // NOT IF_MOTIF
+    gdb_w = new GtkScrolledText();
+    gdb_w->set_size_request(400, 200);
+    paned_work_w->add(*gdb_w);
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     XtAddCallback (gdb_w,
 		   XmNmodifyVerifyCallback,
 		   gdbModifyCB,
-		   XtPointer(0));
+		   XtNIL);
     XtAddCallback (gdb_w,
 		   XmNmotionVerifyCallback,
 		   gdbMotionCB,
-		   XtPointer(0));
+		   XtNIL);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning How to verify changes and motion?
+#endif
+#endif // IF_MOTIF
+
+#ifdef IF_MOTIF
     XtAddCallback (gdb_w,
 		   XmNvalueChangedCallback,
 		   gdbChangeCB,
-		   XtPointer(0));
+		   XtNIL);
+#else // NOT IF_MOTIF
+    gdb_w->signal_changed().connect(sigc::bind(PTR_FUN(gdbChangeCB), gdb_w));
+#endif // IF_MOTIF
     XtManageChild (gdb_w);
 
+#ifdef IF_MOTIF
     if (!app_data.separate_source_window || !app_data.separate_data_window)
     {
 	// Don't resize the debugger console when resizing the main
 	// window - resize source and/or data windows instead
-	XtVaSetValues(XtParent(gdb_w), XmNskipAdjust, True, XtPointer(0));
+	XtVaSetValues(XtParent(gdb_w), XmNskipAdjust, True, XtNIL);
     }
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning skipAdjust?
+#endif
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     // Set up the scrolled window
     XtVaSetValues(XtParent(gdb_w),
 		  XmNspacing,         0,
 		  XmNborderWidth,     0,
 		  XmNshadowThickness, 0,
-		  XtPointer(0));
+		  XtNIL);
+#endif // IF_MOTIF
 
     // Give the ScrolledWindow the size specified for the debugger console
     set_scrolled_window_size(gdb_w);
@@ -2891,16 +3634,23 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 
     // Status line
     if (app_data.status_at_bottom && !app_data.separate_source_window)
-	create_status(source_view_parent);
+	create_status(main_vbox);
 
     // Paned Window is done
     XtManageChild (paned_work_w);
 
+#ifdef IF_MOTIF
     // More values for main window
     XtVaSetValues (main_window,
 		   XmNmenuBar,    menubar_w,
 		   XmNworkWindow, paned_work_w,
-		   XtPointer(0));
+		   XtNIL);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Setup areas for main window
+#endif
+#endif // IF_MOTIF
+
 
     // All main widgets (except shells) are created at this point.
 
@@ -2928,13 +3678,20 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     source_arg->addHandler (Changed, source_argHP);
     source_arg->callHandlers();
 
+#ifdef IF_MOTIF
     // Setup insertion position
     promptPosition = messagePosition = XmTextGetLastPosition(gdb_w);
     XmTextSetInsertionPosition(gdb_w, messagePosition);
+#else // NOT IF_MOTIF
+    promptPosition = messagePosition = gdb_w->get_last_position();
+    gdb_w->set_insertion_position(messagePosition);
+#endif // IF_MOTIF
 
     // Setup help hooks
+#ifdef IF_MOTIF
     PreHelpOnContextHook = PreHelpOnContext;
     PostHelpOnItemHook   = PostHelpOnItem;
+#endif // IF_MOTIF
 
     // Setup version info
     setup_version_info();
@@ -2953,23 +3710,23 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	!app_data.data_window && !app_data.annotate)
     {
 	// We don't want the data window.
-	gdbCloseDataWindowCB(gdb_w, 0, 0);
+	gdbCloseDataWindowCB(CB_ARGS_1(gdb_w));
     }
 
     if (!app_data.separate_source_window && 
 	(!app_data.source_window || app_data.annotate))
     {
 	// We don't need the source window, since we're invoked by Emacs.
-	gdbCloseSourceWindowCB(gdb_w, 0, 0);
+	gdbCloseSourceWindowCB(CB_ARGS_1(gdb_w));
 
 	if (!app_data.disassemble)
-	    gdbCloseToolWindowCB(gdb_w, 0, 0);
+	    gdbCloseToolWindowCB(CB_ARGS_NULL);
     }
 
     if (!app_data.disassemble)
     {
 	// We don't disassemble.
-	gdbCloseCodeWindowCB(gdb_w, 0, 0);
+	gdbCloseCodeWindowCB(CB_ARGS_1(gdb_w));
     }
 
     if ((!app_data.separate_source_window && have_source_window() || 
@@ -2977,7 +3734,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	(!app_data.debugger_console || app_data.tty_mode))
     {
 	// We don't need the debugger console, since we have a TTY.
-	gdbCloseCommandWindowCB(gdb_w, 0, 0);
+	gdbCloseCommandWindowCB(CB_ARGS_1(gdb_w));
     }
 
     if (data_disp_shell != 0)
@@ -3022,8 +3779,10 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 				     + quote(app_data.session));
     }
 
+#ifdef IF_MOTIF
     // Remove unnecessary sashes
     untraverse_sashes(source_view_parent);
+#endif // IF_MOTIF
 
     // The sash in the source view is kept, as it separates source and
     // assembler code windows.
@@ -3032,6 +3791,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
        unmanage_sashes(source_view_parent);
 #endif
 
+#ifdef IF_MOTIF
     untraverse_sashes(data_disp_parent);
     if (data_disp_shell)
 	unmanage_sashes(data_disp_parent);
@@ -3039,6 +3799,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     untraverse_sashes(paned_work_w);
     if (source_view_shell && data_disp_shell)
 	unmanage_sashes(paned_work_w);
+#endif // IF_MOTIF
 
     // Create subshells.  We do this after the main window has been
     // realized, since LessTif won't make the shells transient otherwise.
@@ -3058,12 +3819,18 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 
     // Setup info buttons
 
+#ifdef IF_MOTIF
     // Our info routines require that the widgets be named after the
     // info command.  Ugly hack.
     const string tmp_1_ = gdb->info_locals_command();
     strcpy(XtName(locals_w), tmp_1_.chars());
     const string tmp_2_ = gdb->info_args_command();
     strcpy(XtName(args_w),   tmp_2_.chars());
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Ugly hack for info locals and info args?
+#endif
+#endif // IF_MOTIF
     
     if (gdb->info_locals_command() != gdb->info_args_command())
     {
@@ -3077,8 +3844,9 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     }
     update_infos();
 
+#ifdef IF_MOTIF
     // Startup shells
-    XtVaGetValues(toplevel, XmNiconic, &iconic, XtPointer(0));
+    XtVaGetValues(toplevel, XmNiconic, &iconic, XtNIL);
     if (iconic)
     {
 	// Startup command shell iconified; others follow as needed
@@ -3093,17 +3861,28 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	// Popup the command shell only; other shells follow as needed
 	initial_popup_shell(command_shell);
     }
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Popup shells (iconified?)
+#endif
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     // Trace positions and visibility of all DDD windows
     if (command_shell)
 	XtAddEventHandler(command_shell, STRUCTURE_MASK, False,
-			  StructureNotifyEH, XtPointer(0));
+			  StructureNotifyEH, XtNIL);
     if (source_view_shell)
 	XtAddEventHandler(source_view_shell, STRUCTURE_MASK, False,
-			  StructureNotifyEH, XtPointer(0));
+			  StructureNotifyEH, XtNIL);
     if (data_disp_shell)
 	XtAddEventHandler(data_disp_shell, STRUCTURE_MASK, False,
-			  StructureNotifyEH, XtPointer(0));
+			  StructureNotifyEH, XtNIL);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning No urgent need to track window positions
+#endif
+#endif // IF_MOTIF
 
 #if 0
     // Wait for the command shell to be mapped, such that we don't
@@ -3203,6 +3982,7 @@ void process_next_event()
     // Restart blinker
     blink(gdb->recording() || !gdb->isReadyWithPrompt());
 
+#ifdef IF_MOTIF
     // Get X event
     XtAppContext app_context = XtWidgetToApplicationContext(command_shell);
 
@@ -3234,6 +4014,13 @@ void process_next_event()
 
     // Dispatch event.
     XtDispatchEvent(&event);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Cannot check events before dispatch?
+#endif
+
+    Gtk::Main::iteration();
+#endif // IF_MOTIF
 
     // Update tear-off menus.
     gdbUpdateAllMenus();
@@ -3260,9 +4047,14 @@ void process_pending_events()
     if (command_shell == 0)
 	return;
 
+#ifdef IF_MOTIF
     XtAppContext app_context = XtWidgetToApplicationContext(command_shell);
     while (XtAppPending(app_context) & XtIMXEvent)
 	process_next_event();
+#else // NOT IF_MOTIF
+    while (Gtk::Main::events_pending())
+	process_next_event();
+#endif // IF_MOTIF
 }
 
 
@@ -3272,12 +4064,20 @@ void process_pending_events()
 
 static bool pending_interaction()
 {
+#ifdef IF_MOTIF
     XEvent event;
     const long mask = KeyPressMask | ButtonMotionMask | ButtonPressMask;
     Bool pending = XCheckMaskEvent(XtDisplay(command_shell), mask, &event);
     if (pending)
 	XPutBackEvent(XtDisplay(command_shell), &event);
     return pending;
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Implement pending_interation?
+#endif
+
+    return false;
+#endif // IF_MOTIF
 }
 
 //-----------------------------------------------------------------------------
@@ -3298,6 +4098,7 @@ static void ddd_check_version()
     // Tell user once more about version mismatches
     if (!version_warnings.isEmpty())
     {
+#ifdef IF_MOTIF
 	Arg args[10];
 	int arg = 0;
 
@@ -3309,7 +4110,14 @@ static void ddd_check_version()
 					 args, arg));
 	Delay::register_shell(warning);
 	XtUnmanageChild(XmMessageBoxGetChild(warning, XmDIALOG_CANCEL_BUTTON));
-	XtAddCallback(warning, XmNhelpCallback, ImmediateHelpCB, XtPointer(0));
+	XtAddCallback(warning, XmNhelpCallback, ImmediateHelpCB, XtNIL);
+#else // NOT IF_MOTIF
+	Widget warning = new Gtk::MessageDialog(*command_shell,
+						version_warnings.xmstring());
+#ifdef NAG_ME
+#warning HelpCB?
+#endif
+#endif // IF_MOTIF
 
 	manage_and_raise(warning);
     }
@@ -3318,7 +4126,9 @@ static void ddd_check_version()
 	string(app_data.dddinit_version) != DDD_VERSION)
     {
 	// We have no ~/.ddd/init file or an old one: show version info
+#ifdef IF_MOTIF
 	HelpOnVersionCB(command_shell, 0, 0);
+#endif // IF_MOTIF
 
 	// We have no ~/.ddd/init file: create a simple one
 	if (app_data.dddinit_version == 0)
@@ -3341,8 +4151,10 @@ static void ddd_check_version()
 	post_warning(string(msg), "expired_warning");
     }
 
+#ifdef IF_MOTIF
     if (app_data.startup_tips)
 	TipOfTheDayCB(gdb_w);
+#endif // IF_MOTIF
 }
 
 // Read in database from FILENAME.  Upon version mismatch, ignore some
@@ -3358,6 +4170,7 @@ XrmDatabase GetFileDatabase(const string& filename)
     std::clog << "Copying " << filename.chars() << " to " << tmpfile << "\n";
 #endif
 
+#ifdef IF_MOTIF
     // Resources to ignore upon copying
     static const char * const do_not_copy[] = 
     { 
@@ -3366,6 +4179,11 @@ XrmDatabase GetFileDatabase(const string& filename)
 	XtNtoolRightOffset, XtNtoolTopOffset, // Command tool offset
 	XtNshowHints,		              // Show edge hints
     };
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Resource database not defined
+#endif
+#endif // IF_MOTIF
 
     bool version_mismatch = false;
     while (is)
@@ -3398,6 +4216,7 @@ XrmDatabase GetFileDatabase(const string& filename)
 		line.gsub(XtNdisplayShortcuts ":", XtNgdbDisplayShortcuts ":");
 	    }
 
+#ifdef IF_MOTIF
 	    for (int i = 0; copy && i < int(XtNumber(do_not_copy)); i++)
 	    {
 		string res(".");
@@ -3412,6 +4231,7 @@ XrmDatabase GetFileDatabase(const string& filename)
 		    copy = false;
 		}
 	    }
+#endif // IF_MOTIF
 	}
 
 	if (copy)
@@ -3479,6 +4299,7 @@ void init_dddlog()
 
 static void install_button_tips()
 {
+#ifdef IF_MOTIF
     const WidgetArray& shells = Delay::shells();
     for (int i = 0; i < shells.size(); i++)
     {
@@ -3488,10 +4309,16 @@ static void install_button_tips()
 	if (shell)
 	    InstallButtonTips(shell);
     }
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Do not install button tips for now
+#endif
+#endif // IF_MOTIF
 }
 
 void register_menu_shell(const MMDesc *items)
 {
+#ifdef IF_MOTIF
     if (items == 0)
 	return;
 
@@ -3505,6 +4332,11 @@ void register_menu_shell(const MMDesc *items)
     // Register shells of submenus
     for (int i = 0; items[i].widget != 0; i++)
 	register_menu_shell(items[i].items);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Delay not defined yet
+#endif
+#endif // IF_MOTIF
 }
 
 
@@ -3583,6 +4415,7 @@ static void set_shortcut_menu(DataDisp *data_disp)
 
 static void fix_status_size()
 {
+#ifdef IF_MOTIF
     if (!app_data.status_at_bottom)
 	return;
 
@@ -3594,7 +4427,7 @@ static void fix_status_size()
     XtVaGetValues(status_form,
 		  XmNpaneMaximum, &pane_maximum, 
 		  XmNheight, &height,
-		  XtPointer(0));
+		  XtNIL);
 
     if (height <= pane_maximum)
 	return;
@@ -3603,7 +4436,7 @@ static void fix_status_size()
 		  XmNallowResize, True,
 		  XmNheight, pane_maximum,
 		  XmNallowResize, False,
-		  XtPointer(0));
+		  XtNIL);
 
     if (lesstif_version <= 79)
     {
@@ -3618,7 +4451,7 @@ static void fix_status_size()
 	XtVaGetValues(paned, 
 		      XmNchildren, &children,
 		      XmNnumChildren, &num_children,
-		      XtPointer(0));
+		      XtNIL);
 
 	// The sash controlling the status line is the lowest of all
 	Widget sash = 0;
@@ -3633,8 +4466,8 @@ static void fix_status_size()
 
 		if (sash != 0)
 		{
-		    XtVaGetValues(sash,  XmNy, &sash_y, XtPointer(0));
-		    XtVaGetValues(child, XmNy, &child_y, XtPointer(0));
+		    XtVaGetValues(sash,  XmNy, &sash_y, XtNIL);
+		    XtVaGetValues(child, XmNy, &child_y, XtNIL);
 		}
 
 		if (child_y > sash_y)
@@ -3726,6 +4559,11 @@ static void fix_status_size()
 	    XtDispatchEvent(&event);
 	}
     }
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning fix_status_size is not needed?
+#endif
+#endif // IF_MOTIF
 }
 
 
@@ -3737,12 +4575,16 @@ static bool continue_despite_lock = false;
 static int lock_dialog_x = -1;
 static int lock_dialog_y = -1;
 
-static void ContinueDespiteLockCB(Widget, XtPointer, XtPointer)
+static void ContinueDespiteLockCB(CB_ALIST_NULL)
 {
     continue_despite_lock = true;
 }
 
+#ifdef IF_MOTIF
 static void TryLock(XtPointer client_data, XtIntervalId *)
+#else // NOT IF_MOTIF
+static bool TryLock(XtPointer client_data)
+#endif // IF_MOTIF
 {
     Widget w = (Widget)client_data;
 
@@ -3752,15 +4594,22 @@ static void TryLock(XtPointer client_data, XtIntervalId *)
     if (lock_ok)
     {
 	continue_despite_lock = true;
-	return;
+	return MAYBE_FALSE;
     }
 
+#ifdef IF_MOTIF
     XtAppAddTimeOut(XtWidgetToApplicationContext(w), 500, 
-		    TryLock, client_data);
+		    PTR_FUN(TryLock), client_data);
+#else // NOT IF_MOTIF
+    static sigc::connection trylock_conn;
+    if (!trylock_conn)
+      trylock_conn = Glib::signal_timeout().connect(sigc::bind(PTR_FUN(TryLock), client_data), 500);
+    return true;
+#endif // IF_MOTIF
 }
 
 #if XmVersion >= 1002
-static void KillLockerCB(Widget w, XtPointer client_data, XtPointer)
+static void KillLockerCB(CB_ARG_LIST_12(w, client_data))
 {
     static int attempts_to_kill = 0;
 
@@ -3771,7 +4620,11 @@ static void KillLockerCB(Widget w, XtPointer client_data, XtPointer)
     if (attempts_to_kill++ == 0)
     {
 	// Try locking again until successful
+#ifdef IF_MOTIF
 	TryLock(XtPointer(w), 0);
+#else // NOT IF_MOTIF
+	TryLock(XtPointer(w));
+#endif // IF_MOTIF
     }
 }
 #endif
@@ -3820,6 +4673,9 @@ static bool lock_ddd(Widget parent, LockInfo& info)
 	+ cr()
 	+ rm("To continue despite the other " DDD_NAME " instance, ")
 	+ rm("click on ") + bf("Continue") + rm(".") + cr();
+#ifdef NAG_ME
+#warning XmVersion?
+#endif
 #if XmVersion >= 1002
     if (on_local_host)
 	msg += rm("To kill the other " DDD_NAME " instance and continue, ")
@@ -3828,7 +4684,8 @@ static bool lock_ddd(Widget parent, LockInfo& info)
 
     msg += rm("To exit this " DDD_NAME " instance, click on ") 
 	+ bf("Exit") + rm(".");
-	
+
+#ifdef IF_MOTIF
     Arg args[10];
     int arg = 0;
 	
@@ -3851,8 +4708,13 @@ static bool lock_ddd(Widget parent, LockInfo& info)
     Widget lock_dialog =
 	verify(XmCreateQuestionDialog(parent, XMST("lock_dialog"), 
 				      args, arg));
+#else // NOT IF_MOTIF
+    Gtk::Dialog *lock_dialog = new Gtk::Dialog(XMST("lock_dialog"), *find_shell(parent));
+#endif // IF_MOTIF
+
     Delay::register_shell(lock_dialog);
 
+#ifdef IF_MOTIF
 #if XmVersion >= 1002
     Widget kill = verify(XmCreatePushButton(lock_dialog, XMST("kill"), 
 					    0, 0));
@@ -3863,12 +4725,22 @@ static bool lock_ddd(Widget parent, LockInfo& info)
 #endif
 
     XtAddCallback(lock_dialog, XmNhelpCallback,
-		  ImmediateHelpCB, XtPointer(0));
+		  ImmediateHelpCB, XtNIL);
     XtAddCallback(lock_dialog, XmNokCallback,
-		  ContinueDespiteLockCB, XtPointer(0));
+		  ContinueDespiteLockCB, XtNIL);
     XtAddCallback(lock_dialog, XmNcancelCallback, ExitCB, 
 		  XtPointer(EXIT_FAILURE));
+#else // NOT IF_MOTIF
+    Gtk::Button *button;
+    button = lock_dialog->add_button(XMST("kill"), 0);
+    button->signal_clicked().connect(sigc::bind(PTR_FUN(KillLockerCB), lock_dialog, XtPointer(&info)));
+    button = lock_dialog->add_button(XMST("continue"), 0);
+    button->signal_clicked().connect(PTR_FUN(ContinueDespiteLockCB));
+    button = lock_dialog->add_button(XMST("cancel"), 0);
+    button->signal_clicked().connect(sigc::bind(PTR_FUN(ExitCB), EXIT_FAILURE));
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     if (!geometry.empty())
     {
 	Widget shell = lock_dialog;
@@ -3881,14 +4753,24 @@ static bool lock_ddd(Widget parent, LockInfo& info)
 	XtSetArg(args[arg], XmNy, lock_dialog_y); arg++;
 	XtSetValues(shell, args, arg);
     }
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning No geometry settings yet
+#endif
+#endif // IF_MOTIF
 
     continue_despite_lock = false;
+
+#ifdef IF_MOTIF
     manage_and_raise(lock_dialog);
 
     while (!continue_despite_lock)
 	XtAppProcessEvent(XtWidgetToApplicationContext(lock_dialog), XtIMAll);
 
     XtDestroyWidget(lock_dialog);
+#else // NOT IF_MOTIF
+    lock_dialog->run();
+#endif // IF_MOTIF
 
     // Try locking once more
     return lock_session_dir(XtDisplay(parent), DEFAULT_SESSION, info);
@@ -3899,7 +4781,11 @@ static bool lock_ddd(Widget parent, LockInfo& info)
 // Setup
 //-----------------------------------------------------------------------------
 
-static Boolean session_setup_done(XtPointer)
+static Boolean session_setup_done(
+#ifdef IF_MOTIF
+				  XtPointer
+#endif // IF_MOTIF
+				  )
 {
     if (emptyCommandQueue() && gdb->isReadyWithPrompt())
     {
@@ -3949,13 +4835,13 @@ Boolean ddd_setup_done(XtPointer)
 	{
 	    // We have no shell (yet).  Be sure to popup at least one shell.
 	    if (app_data.annotate)
-		gdbOpenDataWindowCB(gdb_w, 0, 0);
+		gdbOpenDataWindowCB(CB_ARGS_NULL);
 	    else if (app_data.source_window)
-		gdbOpenSourceWindowCB(gdb_w, 0, 0);
+		gdbOpenSourceWindowCB(CB_ARGS_NULL);
 	    else if (app_data.data_window)
-		gdbOpenDataWindowCB(gdb_w, 0, 0);
+		gdbOpenDataWindowCB(CB_ARGS_NULL);
 	    else
-		gdbOpenCommandWindowCB(gdb_w, 0, 0);
+		gdbOpenCommandWindowCB(CB_ARGS_NULL);
 	}
 
 	main_loop_entered = true;
@@ -3966,8 +4852,12 @@ Boolean ddd_setup_done(XtPointer)
 	if (init_delay != 0 || app_data.initial_session != 0)
 	{
 	    // Restoring session may still take time
+#ifdef IF_MOTIF
 	    XtAppAddWorkProc(XtWidgetToApplicationContext(command_shell),
 			     session_setup_done, 0);
+#else // NOT IF_MOTIF
+	    Glib::signal_idle().connect(PTR_FUN(session_setup_done));
+#endif // IF_MOTIF
 	}
 	return True;		// Remove from the list of work procs
     }
@@ -3983,10 +4873,16 @@ Boolean ddd_setup_done(XtPointer)
 
 static void ActivateCB(Widget, XtPointer client_data, XtPointer call_data)
 {
+#ifdef IF_MOTIF
     XmAnyCallbackStruct *cbs = (XmAnyCallbackStruct *)call_data;
     
     Widget button = Widget(client_data);
     XtCallActionProc(button, "ArmAndActivate", cbs->event, (String *)0, 0);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning How do it call ArmAndActivate?
+#endif
+#endif // IF_MOTIF
 }
 
 
@@ -4022,6 +4918,7 @@ static void PostHelpOnItem(Widget item)
 // Option handling
 //-----------------------------------------------------------------------------
 
+#ifdef IF_MOTIF
 static void set_toggle(Widget w, unsigned char new_state, bool notify = false)
 {
     if (w == 0)
@@ -4034,22 +4931,65 @@ static void set_toggle(Widget w, unsigned char new_state, bool notify = false)
 #else
     unsigned char old_state;
 #endif
-    XtVaGetValues(w, XmNset, &old_state, XtPointer(0));
+    XtVaGetValues(w, XmNset, &old_state, XtNIL);
 
     if (old_state != new_state)
     {
 	if (notify)
 	    XmToggleButtonSetState(w, new_state, True);
 	else
-	    XtVaSetValues(w, XmNset, new_state, XtPointer(0));
+	    XtVaSetValues(w, XmNset, new_state, XtNIL);
     }
 }
 
+#else // NOT IF_MOTIF
+
+static void set_toggle(Widget w, bool new_state, Widget ignore=NULL)
+{
+#ifdef NAG_ME
+#warning set_toggle is sometimes called with a base Widget *
+#endif
+#ifdef NAG_ME
+#warning set_toggle: "notify" is ignored
+#endif
+
+    if (w == 0)
+	return;
+
+    if (w == ignore)
+	return;
+
+    Gtk::ToggleButton *tb = dynamic_cast<Gtk::ToggleButton *>(w);
+    if (tb) {
+	if (tb->get_active() != new_state)
+	{
+	    tb->set_active(new_state);
+	}
+    }
+    Gtk::CheckMenuItem *cmi = dynamic_cast<Gtk::CheckMenuItem *>(w);
+    if (cmi) {
+	if (cmi->get_active() != new_state)
+	{
+	    cmi->set_active(new_state);
+	}
+    }
+}
+
+#endif // IF_MOTIF
+
+#ifdef IF_MOTIF
 inline void notify_set_toggle(Widget w, Boolean new_state)
 {
     set_toggle(w, new_state, true);
 }
+#else // NOT IF_MOTIF
+inline void notify_set_toggle(Widget w, Boolean new_state)
+{
+    set_toggle(w, new_state, NULL);
+}
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
 static void set_string(Widget w, const _XtString value)
 {
     if (w == 0)
@@ -4058,10 +4998,19 @@ static void set_string(Widget w, const _XtString value)
     // Note: XtVaSetValues(w, XmNvalue, value, ...) 
     // doesn't work properly with LessTif 0.89.9
     XmTextFieldSetString(w, XMST(value));
-    XtVaSetValues(w, XmNcursorPosition, 0, XtPointer(0));
+    XtVaSetValues(w, XmNcursorPosition, 0, XtNIL);
 }
+#else // NOT IF_MOTIF
+static void set_string(Gtk::Entry *w, const _XtString value)
+{
+    if (w == 0)
+	return;
 
-static void set_string_int(Widget w, int value)
+    w->set_text(XMST(value));
+}
+#endif // IF_MOTIF
+
+static void set_string_int(ENTRY_P w, int value)
 {
     string v = itostring(value);
     set_string(w, v.chars());
@@ -4072,9 +5021,33 @@ static bool have_cmd(const string& cmd)
     return cmd_file(cmd).contains('/', 0);
 }
 
-// Reflect state in option menus
-void update_options()
+#ifdef IF_MOTIF
+static void set_scale(Widget w, int val)
 {
+    if (w == 0)
+	return;
+
+    assert(XmIsScale(w));
+
+    XtVaSetValues(w, XmNvalue, val, XtNIL);
+}
+#else // NOT IF_MOTIF
+static void set_scale(Gtk::Scale *w, int val)
+{
+    if (w == 0)
+	return;
+
+    w->set_value(val);
+}
+#endif // IF_MOTIF
+
+// Reflect state in option menus
+void update_options(bool noupd)
+{
+#ifndef IF_MOTIF
+    if (noupd)
+	return;
+#endif // IF_MOTIF
     set_toggle(find_words_only_w, app_data.find_words_only);
     set_toggle(words_only_w, app_data.find_words_only);
 
@@ -4121,12 +5094,9 @@ void update_options()
 
     if (tab_width_w != 0)
     {
-	XtVaSetValues(tab_width_w,     XmNvalue, app_data.tab_width,     
-		      XtPointer(0));
-	XtVaSetValues(source_indent_w, XmNvalue, app_data.indent_source, 
-		      XtPointer(0));
-	XtVaSetValues(code_indent_w,   XmNvalue, app_data.indent_code,   
-		      XtPointer(0));
+	set_scale(tab_width_w, app_data.tab_width);
+	set_scale(source_indent_w, app_data.indent_source);
+	set_scale(code_indent_w,   app_data.indent_code);
     }
 
     set_toggle(led_w, app_data.blink_while_busy);
@@ -4135,6 +5105,7 @@ void update_options()
     LayoutMode layout_mode;
     Dimension grid_width, grid_height;
 
+#ifdef IF_MOTIF
     XtVaGetValues(data_disp->graph_edit, 
  		  XtNshowGrid,   &show_grid,
  		  XtNsnapToGrid, &snap_to_grid,
@@ -4144,7 +5115,17 @@ void update_options()
 		  XtNlayoutMode, &layout_mode,
 		  XtNgridWidth,  &grid_width,
 		  XtNgridHeight, &grid_height,
-		  XtPointer(0));
+		  XtNIL);
+#else // NOT IF_MOTIF
+    show_grid = data_disp->graph_edit->get_show_grid();
+    snap_to_grid = data_disp->graph_edit->get_snap_to_grid();
+    show_hints = data_disp->graph_edit->get_show_hints();
+    show_annotations = data_disp->graph_edit->get_show_annotations();
+    auto_layout = data_disp->graph_edit->get_auto_layout();
+    layout_mode = data_disp->graph_edit->get_layout_mode();
+    grid_width = data_disp->graph_edit->get_grid_width();
+    grid_height = data_disp->graph_edit->get_grid_height();
+#endif // IF_MOTIF
 
     set_toggle(detect_aliases_w, app_data.detect_aliases);
     set_toggle(graph_detect_aliases_w, app_data.detect_aliases);
@@ -4156,16 +5137,24 @@ void update_options()
 	if (!show_grid && XtIsSensitive(graph_snap_to_grid_w))
 	{
 	    // Grid has been disabled - disable `snap to grid' as well
+#ifdef IF_MOTIF
 	    XtVaSetValues(data_disp->graph_edit, XtNsnapToGrid, False, 
-			  XtPointer(0));
+			  XtNIL);
+#else // NOT IF_MOTIF
+	    data_disp->graph_edit->set_snap_to_grid(false);
+#endif // IF_MOTIF
 	}
 	else if (show_grid && !XtIsSensitive(graph_snap_to_grid_w))
 	{
 	    // Grid has been re-enabled - restore `snap to grid' setting
+#ifdef IF_MOTIF
 	    XtVaSetValues(data_disp->graph_edit, 
 			  XtNsnapToGrid, 
 			  XmToggleButtonGetState(graph_snap_to_grid_w), 
-			  XtPointer(0));
+			  XtNIL);
+#else // NOT IF_MOTIF
+	    data_disp->graph_edit->set_snap_to_grid(graph_snap_to_grid_w->get_active());
+#endif // IF_MOTIF
 	}
 	else
 	{
@@ -4192,16 +5181,27 @@ void update_options()
     set_toggle(graph_show_dependent_titles_w,
 	       app_data.show_dependent_display_titles);
 
-    if (graph_grid_size_w != 0)
+    if (graph_grid_size_w != 0) {
+#ifdef IF_MOTIF
 	XtVaSetValues(graph_grid_size_w, XmNvalue, show_grid ? grid_width : 0, 
-		      XtPointer(0));
+		      XtNIL);
+#else // NOT IF_MOTIF
+	graph_grid_size_w->set_value(show_grid ? grid_width : 0);
+#endif // IF_MOTIF
+    }
 
 
+#ifdef IF_MOTIF
     unsigned char policy = '\0';
     XtVaGetValues(command_shell, XmNkeyboardFocusPolicy, &policy, 
-		  XtPointer(0));
+		  XtNIL);
     set_toggle(set_focus_pointer_w,        policy == XmPOINTER);
     set_toggle(set_focus_explicit_w,       policy == XmEXPLICIT);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Focus policy not implemented
+#endif
+#endif // IF_MOTIF
 
     set_toggle(set_scrolling_panner_w,     app_data.panned_graph_editor);
     set_toggle(set_scrolling_scrollbars_w, !app_data.panned_graph_editor);
@@ -4215,7 +5215,10 @@ void update_options()
 
     string button_color_key        = app_data.button_color_key;
     string active_button_color_key = app_data.active_button_color_key;
-#if XmVersion < 2000
+#if XmVersion < 2000 || !defined(IF_MOTIF)
+#ifdef NAG_ME
+#warning XmINDETERMINATE has no analogue?
+#endif
     set_toggle(set_color_buttons_w, button_color_key == 'c');
 #else
     if (button_color_key == 'c' && active_button_color_key == 'c')
@@ -4254,8 +5257,14 @@ void update_options()
     set_toggle(auto_debugger_w, app_data.auto_debugger);
 
     set_toggle(splash_screen_w, app_data.splash_screen);
+#ifdef IF_MOTIF
     set_toggle(startup_tips_w,  app_data.startup_tips);
     set_toggle(set_startup_tips_w, app_data.startup_tips);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Tips not supported
+#endif
+#endif // IF_MOTIF
 
     if (app_data.cache_source_files != source_view->cache_source_files)
     {
@@ -4299,11 +5308,19 @@ void update_options()
     switch (app_data.display_placement)
     {
     case XmVERTICAL:
-	XtVaSetValues(data_disp->graph_edit, XtNrotation, 0, XtPointer(0));
+#ifdef IF_MOTIF
+	XtVaSetValues(data_disp->graph_edit, XtNrotation, 0, XtNIL);
+#else // NOT IF_MOTIF
+	data_disp->graph_edit->set_rotation(0);
+#endif // IF_MOTIF
 	break;
 	    
     case XmHORIZONTAL:
-	XtVaSetValues(data_disp->graph_edit, XtNrotation, 90, XtPointer(0));
+#ifdef IF_MOTIF
+	XtVaSetValues(data_disp->graph_edit, XtNrotation, 90, XtNIL);
+#else // NOT IF_MOTIF
+	data_disp->graph_edit->set_rotation(90);
+#endif // IF_MOTIF
 	break;
     }
 
@@ -4312,20 +5329,22 @@ void update_options()
     {
 	if (app_data.source_window)
 	    XtManageChild(command_toolbar_w);
-	gdbCloseToolWindowCB(command_shell, 0, 0);
+	gdbCloseToolWindowCB(CB_ARGS_NULL);
     }
     else if (!app_data.command_toolbar && 
 	     command_toolbar_w != 0 && XtIsManaged(command_toolbar_w))
     {
 	XtUnmanageChild(command_toolbar_w);
 	if (app_data.source_window)
-	    gdbOpenToolWindowCB(command_shell, 0, 0);
+	    gdbOpenToolWindowCB(CB_ARGS_NULL);
     }
 
+#ifdef IF_MOTIF
     EnableButtonTips(app_data.button_tips);
     EnableButtonDocs(app_data.button_docs);
     EnableTextTips(app_data.value_tips);
     EnableTextDocs(app_data.value_docs);
+#endif // IF_MOTIF
 
     set_string(edit_command_w,       app_data.edit_command);
     set_string(plot_command_w,       app_data.plot_command);
@@ -4337,7 +5356,11 @@ void update_options()
 
     // Set `find' label
     Widget find_label_ref = 0;
+#ifdef IF_MOTIF
     const char *icon = 0;
+#else // NOT IF_MOTIF
+    XIMAGE_P *icon = 0;
+#endif // IF_MOTIF
     switch (current_find_direction())
     {
     case SourceView::forward:
@@ -4351,12 +5374,17 @@ void update_options()
 	break;
     }
     XmString label;
-    XtVaGetValues(find_label_ref, XmNlabelString, &label, XtPointer(0));
+#ifdef IF_MOTIF
+    XtVaGetValues(find_label_ref, XmNlabelString, &label, XtNIL);
     MString new_label(label, true);
     XmStringFree(label);
+#else // NOT IF_MOTIF
+    MString new_label = get_label(find_label_ref);
+#endif // IF_MOTIF
 
     set_label(arg_cmd_area[ArgItems::Find].widget, new_label, icon);
 
+#ifdef IF_MOTIF
     // Font stuff
     if (font_names[DefaultDDDFont] != 0)
     {
@@ -4375,6 +5403,7 @@ void update_options()
 	set_string_int(font_sizes[DataDDDFont], 
 		       app_data.data_font_size);
     }
+#endif // IF_MOTIF
 
     // Key Bindings
     BindingStyle cut_copy_paste_style = app_data.cut_copy_paste_bindings;
@@ -4414,11 +5443,15 @@ void update_options()
     }
     else
     {
+#ifdef IF_MOTIF
 	if (XtIsManaged(source_view->source_form()) ||
 	    XtIsManaged(source_view->code_form()))
 	    manage_paned_child(arg_cmd_w);
 	else
 	    unmanage_paned_child(arg_cmd_w);
+#else // NOT IF_MOTIF
+	std::cerr << "Paned children?\n";
+#endif // IF_MOTIF
     }
 
     // Setup undo buffer size
@@ -4431,14 +5464,19 @@ void update_options()
     fix_status_size();
 }
 
-
 static void set_settings_title(Widget w)
 {
     if (w != 0)
     {
 	MString settings_title(gdb->title() + " Settings...");
+#ifdef IF_MOTIF
 	XtVaSetValues(w, XmNlabelString, settings_title.xmstring(), 
-		      XtPointer(0));
+		      XtNIL);
+#else // NOT IF_MOTIF
+	Gtk::MenuItem *mi = dynamic_cast<Gtk::MenuItem *>(w);
+	mi->remove();
+	mi->add_label(settings_title.xmstring());
+#endif // IF_MOTIF
     }
 }
 
@@ -4461,8 +5499,11 @@ static Dimension     initial_grid_height;
 static LayoutMode    initial_layout_mode;
 static unsigned char initial_focus_policy;
 
-static Widget preferences_dialog;
-static Widget reset_preferences_w;
+static DIALOG_P preferences_dialog;
+static BUTTON_P reset_preferences_w;
+#ifndef IF_MOTIF
+static sigc::connection reset_preferences_connection;
+#endif // IF_MOTIF
 static Widget current_panel;
 
 void save_option_state()
@@ -4499,6 +5540,7 @@ void save_option_state()
     initial_app_data.www_command = www_command.chars();
 
     // Fetch data display resources
+#ifdef IF_MOTIF
     XtVaGetValues(data_disp->graph_edit, 
 		  XtNshowGrid,        &initial_show_grid,
 		  XtNshowAnnotations, &initial_show_annotations,
@@ -4508,19 +5550,37 @@ void save_option_state()
 		  XtNautoLayout,      &initial_auto_layout,
 		  XtNgridWidth,       &initial_grid_width,
 		  XtNgridHeight,      &initial_grid_height,
-		  XtPointer(0));
+		  XtNIL);
+#else // NOT IF_MOTIF
+    initial_show_grid = data_disp->graph_edit->get_show_grid();
+    initial_show_annotations = data_disp->graph_edit->get_show_annotations();
+    initial_show_hints = data_disp->graph_edit->get_show_hints();
+    initial_snap_to_grid = data_disp->graph_edit->get_snap_to_grid();
+    initial_layout_mode = data_disp->graph_edit->get_layout_mode(); 
+    initial_auto_layout = data_disp->graph_edit->get_auto_layout();
+    initial_grid_width = data_disp->graph_edit->get_grid_width();
+    initial_grid_height = data_disp->graph_edit->get_grid_height();
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     XtVaGetValues(command_shell,
-		  XmNkeyboardFocusPolicy, &initial_focus_policy, XtPointer(0));
+		  XmNkeyboardFocusPolicy, &initial_focus_policy, XtNIL);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Focus policy not supported
+#endif
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     Widget paned_work_w = XtParent(XtParent(gdb_w));
     save_preferred_paned_sizes(paned_work_w);
+#endif // IF_MOTIF
 
     option_state_saved = true;
     update_reset_preferences();
 }
 
-static void ResetGeneralPreferencesCB(Widget, XtPointer, XtPointer)
+static void ResetGeneralPreferencesCB(CB_ALIST_NULL)
 {
     notify_set_toggle(button_tips_w, initial_app_data.button_tips);
     notify_set_toggle(button_docs_w, initial_app_data.button_docs);
@@ -4582,7 +5642,7 @@ static bool general_preferences_changed()
     return false;
 }
 
-static void ResetSourcePreferencesCB(Widget, XtPointer, XtPointer)
+static void ResetSourcePreferencesCB(CB_ALIST_NULL)
 {
     notify_set_toggle(set_display_glyphs_w, initial_app_data.display_glyphs);
     notify_set_toggle(set_display_glyphs_w, !initial_app_data.display_glyphs);
@@ -4663,7 +5723,7 @@ static bool source_preferences_changed()
     return false;
 }
 
-static void ResetDataPreferencesCB(Widget, XtPointer, XtPointer)
+static void ResetDataPreferencesCB(CB_ALIST_NULL)
 {
     notify_set_toggle(detect_aliases_w, initial_app_data.detect_aliases);
     notify_set_toggle(graph_detect_aliases_w, initial_app_data.detect_aliases);
@@ -4683,18 +5743,28 @@ static void ResetDataPreferencesCB(Widget, XtPointer, XtPointer)
 
     Boolean show_hints, show_annotations;
 
+#ifdef IF_MOTIF
     XtVaGetValues(data_disp->graph_edit, 
 		  XtNshowHints,       &show_hints,
 		  XtNshowAnnotations, &show_annotations,
-		  XtPointer(0));
+		  XtNIL);
+#else // NOT IF_MOTIF
+    show_hints = data_disp->graph_edit->get_show_hints();
+    show_annotations = data_disp->graph_edit->get_show_annotations();
+#endif // IF_MOTIF
 
     if (show_hints  != initial_show_hints ||
 	show_annotations != initial_show_annotations)
     {
+#ifdef IF_MOTIF
 	XtVaSetValues(data_disp->graph_edit,
 		      XtNshowHints,       initial_show_hints,
 		      XtNshowAnnotations, initial_show_annotations,
-		      XtPointer(0));
+		      XtNIL);
+#else // NOT IF_MOTIF
+	data_disp->graph_edit->set_show_hints(initial_show_hints);
+	data_disp->graph_edit->set_show_annotations(initial_show_annotations);
+#endif // IF_MOTIF
 		      
 	update_options();
     }
@@ -4706,21 +5776,33 @@ static void ResetDataPreferencesCB(Widget, XtPointer, XtPointer)
 
     Dimension grid_width, grid_height;
     Boolean show_grid;
+#ifdef IF_MOTIF
     XtVaGetValues(data_disp->graph_edit, 
 		  XtNgridWidth,  &grid_width,
 		  XtNgridHeight, &grid_height,
 		  XtNshowGrid,   &show_grid,
-		  XtPointer(0));
+		  XtNIL);
+#else // NOT IF_MOTIF
+    grid_width = data_disp->graph_edit->get_grid_width();
+    grid_height = data_disp->graph_edit->get_grid_height();
+    show_grid = data_disp->graph_edit->get_show_grid();
+#endif // IF_MOTIF
 
     if (grid_width  != initial_grid_width || 
 	grid_height != initial_grid_height ||
 	show_grid   != initial_show_grid)
     {
+#ifdef IF_MOTIF
 	XtVaSetValues(data_disp->graph_edit,
 		      XtNgridWidth,  initial_grid_width,
 		      XtNgridHeight, initial_grid_height,
 		      XtNshowGrid,   initial_show_grid,
-		      XtPointer(0));
+		      XtNIL);
+#else // NOT IF_MOTIF
+	data_disp->graph_edit->set_grid_width(initial_grid_width);
+	data_disp->graph_edit->set_grid_height(initial_grid_height);
+	data_disp->graph_edit->set_show_grid(initial_show_grid);
+#endif // IF_MOTIF
 		      
 	update_options();
     }
@@ -4729,10 +5811,15 @@ static void ResetDataPreferencesCB(Widget, XtPointer, XtPointer)
 static bool data_preferences_changed()
 {
     Boolean show_hints, show_annotations;
+#ifdef IF_MOTIF
     XtVaGetValues(data_disp->graph_edit, 
 		  XtNshowHints,       &show_hints,
 		  XtNshowAnnotations, &show_annotations,
-		  XtPointer(0));
+		  XtNIL);
+#else // NOT IF_MOTIF
+    show_hints = data_disp->graph_edit->get_show_hints();
+    show_annotations = data_disp->graph_edit->get_show_annotations();
+#endif // IF_MOTIF
 
     if (app_data.detect_aliases != initial_app_data.detect_aliases)
 	return true;
@@ -4763,6 +5850,7 @@ static bool data_preferences_changed()
     LayoutMode layout_mode;
     Dimension grid_width, grid_height;
 
+#ifdef IF_MOTIF
     XtVaGetValues(data_disp->graph_edit, 
 		  XtNshowGrid,   &show_grid,
 		  XtNsnapToGrid, &snap_to_grid,
@@ -4770,7 +5858,15 @@ static bool data_preferences_changed()
 		  XtNautoLayout, &auto_layout,
 		  XtNgridWidth,  &grid_width,
 		  XtNgridHeight, &grid_height,
-		  XtPointer(0));
+		  XtNIL);
+#else // NOT IF_MOTIF
+    show_grid = data_disp->graph_edit->get_show_grid();
+    snap_to_grid = data_disp->graph_edit->get_snap_to_grid();
+    layout_mode = data_disp->graph_edit->get_layout_mode(); 
+    auto_layout = data_disp->graph_edit->get_auto_layout();
+    grid_width = data_disp->graph_edit->get_grid_width();
+    grid_height = data_disp->graph_edit->get_grid_height();
+#endif // IF_MOTIF
 
     if (show_grid    != initial_show_grid)
 	return true;
@@ -4793,7 +5889,7 @@ static bool data_preferences_changed()
     return false;
 }
 
-static void ResetStartupPreferencesCB(Widget, XtPointer, XtPointer)
+static void ResetStartupPreferencesCB(CB_ALIST_NULL)
 {
     Boolean separate = initial_app_data.separate_data_window 
 	|| initial_app_data.separate_source_window;
@@ -4808,7 +5904,10 @@ static void ResetStartupPreferencesCB(Widget, XtPointer, XtPointer)
 
     string button_color_key        = initial_app_data.button_color_key;
     string active_button_color_key = initial_app_data.active_button_color_key;
-#if XmVersion < 2000
+#if XmVersion < 2000 || !defined(IF_MOTIF)
+#ifdef NAG_ME
+#warning  XmINDETERMINATE has no analogue?
+#endif
     notify_set_toggle(set_color_buttons_w, button_color_key == 'c');
 #else
     if (button_color_key == 'c' && active_button_color_key == 'c')
@@ -4911,11 +6010,17 @@ static bool startup_preferences_changed()
 	string(initial_app_data.active_button_color_key))
 	return true;
 
+#ifdef IF_MOTIF
     unsigned char focus_policy;
     XtVaGetValues(command_shell, XmNkeyboardFocusPolicy, &focus_policy, 
-		  XtPointer(0));
+		  XtNIL);
     if (focus_policy != initial_focus_policy)
 	return true;
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Focus policy not implemented
+#endif
+#endif // IF_MOTIF
 
     if (app_data.panned_graph_editor != initial_app_data.panned_graph_editor)
 	return true;
@@ -4929,12 +6034,18 @@ static bool startup_preferences_changed()
     return false;
 }
 
-static void ResetFontPreferencesCB(Widget, XtPointer, XtPointer)
+static void ResetFontPreferencesCB(CB_ALIST_NULL)
 {
+#ifdef IF_MOTIF
     set_font(DefaultDDDFont,       initial_app_data.default_font);
     set_font(VariableWidthDDDFont, initial_app_data.variable_width_font);
     set_font(FixedWidthDDDFont,    initial_app_data.fixed_width_font);
     set_font(DataDDDFont,          initial_app_data.data_font);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Font configuration
+#endif
+#endif // IF_MOTIF
 
     app_data.default_font_size = 
 	initial_app_data.default_font_size;
@@ -4984,7 +6095,7 @@ static bool font_preferences_changed()
     return false;
 }
 
-static void ResetHelpersPreferencesCB(Widget, XtPointer, XtPointer)
+static void ResetHelpersPreferencesCB(CB_ALIST_NULL)
 {
     set_string(edit_command_w,       initial_app_data.edit_command);
     set_string(get_core_command_w,   initial_app_data.get_core_command);
@@ -5031,31 +6142,30 @@ static bool helpers_preferences_changed()
 }
 
 
-static void ResetPreferencesCB(Widget w, XtPointer client_data, 
-  			       XtPointer call_data)
+static void ResetPreferencesCB(CB_ARG_LIST_2(client_data))
 {
     Widget panel = (Widget)client_data;
-    string panel_name = XtName(panel);
+    WidgetNameType panel_name = XtName(panel);
 
     if (panel_name == "general")
-	ResetGeneralPreferencesCB(w, client_data, call_data);
+	ResetGeneralPreferencesCB(CB_ARGS_NULL);
     else if (panel_name == "source")
-	ResetSourcePreferencesCB(w, client_data, call_data);
+	ResetSourcePreferencesCB(CB_ARGS_NULL);
     else if (panel_name == "data")
-	ResetDataPreferencesCB(w, client_data, call_data);
+	ResetDataPreferencesCB(CB_ARGS_NULL);
     else if (panel_name == "startup")
-	ResetStartupPreferencesCB(w, client_data, call_data);
+	ResetStartupPreferencesCB(CB_ARGS_NULL);
     else if (panel_name == "fonts")
-	ResetFontPreferencesCB(w, client_data, call_data);
+	ResetFontPreferencesCB(CB_ARGS_NULL);
     else if (panel_name == "helpers")
-	ResetHelpersPreferencesCB(w, client_data, call_data);
+	ResetHelpersPreferencesCB(CB_ARGS_NULL);
 }
 
 void update_reset_preferences()
 {
     if (current_panel != 0 && reset_preferences_w != 0 && option_state_saved)
     {
-	string panel_name = XtName(current_panel);
+	WidgetNameType panel_name = XtName(current_panel);
 
 	bool sensitive = false;
 
@@ -5079,52 +6189,111 @@ void update_reset_preferences()
 	check_options_file();
 }
 
-static void ChangePanelCB(Widget, XtPointer client_data, XtPointer call_data)
+#ifdef IF_MOTIF
+#ifdef NAG_ME
+#warning ChangePanelCB: This stuff can be replaced by a Gtk::Notebook.
+#endif
+#endif // IF_MOTIF
+static void ChangePanelCB(TOGGLEBUTTON_P w, XtPointer client_data, XtPointer call_data)
 {
     Widget panel = (Widget)client_data;
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *cbs = 
 	(XmToggleButtonCallbackStruct *)call_data;
+    bool set = cbs->set;
+#else // NOT IF_MOTIF
+    bool set = w->get_active();
+#endif // IF_MOTIF
 
-    if (cbs->set)
+    if (set)
     {
 	// Manage this child
 	XtManageChild(panel);
+#ifdef IF_MOTIF
 	XtAddCallback(preferences_dialog, XmNhelpCallback,
 		      HelpOnThisCB, XtPointer(panel));
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning HelpCB?
+#endif
+#endif // IF_MOTIF
+
+#ifdef IF_MOTIF
 	XtAddCallback(reset_preferences_w, XmNactivateCallback,
 		      ResetPreferencesCB, XtPointer(panel));
+#else // NOT IF_MOTIF
+	reset_preferences_connection =
+	    reset_preferences_w->signal_activate().connect(sigc::bind(PTR_FUN(ResetPreferencesCB),
+								      panel));
+#endif // IF_MOTIF
 	current_panel = panel;
 
 	update_reset_preferences();
 
+#ifdef IF_MOTIF
 	// Unmanage all other children
 	WidgetList children;
 	Cardinal num_children;
 	XtVaGetValues(XtParent(panel), 
 		      XmNchildren, &children,
 		      XmNnumChildren, &num_children,
-		      XtPointer(0));
+		      XtNIL);
+#else // NOT IF_MOTIF
+	WidgetList children = panel->get_parent()->get_children();
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
 	for (Cardinal i = 0; i < num_children; i++)
 	{
 	    Widget child = children[i];
+#if 0 // FIX INDENTATION
+	}
+#endif
+#else // NOT IF_MOTIF
+	for (WidgetListIterator i = children.begin(); i != children.end(); i++)
+	{
+	    Widget child = *i;
+#endif // IF_MOTIF
 	    if (child != panel)
 	    {
 		XtUnmanageChild(child);
+#ifdef IF_MOTIF
 		XtRemoveCallback(preferences_dialog, XmNhelpCallback,
 				 HelpOnThisCB, XtPointer(child));
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning HelpCB?
+#endif
+#endif // IF_MOTIF
+#ifdef IF_MOTIF
 		XtRemoveCallback(reset_preferences_w, XmNactivateCallback,
 				 ResetPreferencesCB, XtPointer(child));
+#else // NOT IF_MOTIF
+		reset_preferences_connection.disconnect();
+#endif // IF_MOTIF
 	    }
 	}
     }
 }
 
-static Widget add_panel(Widget parent, Widget buttons, 
-			const _XtString name, MMDesc items[],
-			Dimension& max_width, Dimension& max_height,
-			bool set = false)
+#ifdef IF_MOTIF
+#define OLD_PANELS
+#endif
+
+#ifdef OLD_PANELS
+static TOGGLEBUTTON_P add_panel(BOX_P parent,
+				BOX_P buttons, 
+				const _XtString name, MMDesc items[],
+				Dimension& max_width, Dimension& max_height,
+				bool set = false)
+#else // NOT OLD_PANELS
+static int add_panel(NOTEBOOK_P parent,
+		     const _XtString name, Glib::ustring label,
+		     MMDesc items[],
+		     bool set = false)
+#endif // OLD_PANELS
 {
+#ifdef IF_MOTIF
     Arg args[10];
     int arg;
 
@@ -5134,63 +6303,128 @@ static Widget add_panel(Widget parent, Widget buttons,
     XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
     XtSetArg(args[arg], XmNborderWidth,  0); arg++;
     Widget form = verify(XmCreateRowColumn(parent, XMST(name), args, arg));
+#else // NOT IF_MOTIF
+    Gtk::Box *form = new Gtk::HBox();
+    // Used to identify panels by ResetPreferencesCB,
+    // update_reset_preferences.
+    form->set_name(XMST(name));
+#ifdef OLD_PANELS
+    parent->pack_start(*form, Gtk::PACK_SHRINK);
+#else
+    int pageno = parent->get_n_pages();
+    parent->append_page(*form, label);
+#endif
+#endif // IF_MOTIF
     XtManageChild(form);
 
     // Add panel
     Widget panel = MMcreatePanel(form, "panel", items);
     MMadjustPanel(items);
     MMaddCallbacks(items);
-    MMaddHelpCallback(items, ImmediateHelpCB);
+    MMaddHelpCallback(items, PTR_FUN(ImmediateHelpCB));
     XtManageChild(panel);
     register_menu_shell(items);
 
     // Fetch panel geometry
+#ifdef IF_MOTIF
     XtWidgetGeometry size;
     size.request_mode = CWHeight | CWWidth;
     XtQueryGeometry(form, (XtWidgetGeometry *)0, &size);
+    Dimension size_width = size.width;
+    Dimension size_height = size.height;
 
-    size.width  += 10;		// Compensate for small rounding errors
-    size.height += 10;
+    size_width  += 10;		// Compensate for small rounding errors
+    size_height += 10;
 
-    max_width  = max(max_width,  size.width);
-    max_height = max(max_height, size.height);
+    max_width  = max(max_width,  size_width);
+    max_height = max(max_height, size_height);
 
     // Add button
+
     arg = 0;
     Widget button = verify(XmCreateToggleButton(buttons, XMST(name), args, arg));
     XtManageChild(button);
-
     XtAddCallback(button, XmNvalueChangedCallback, ChangePanelCB, 
 		  XtPointer(form));
+#else // NOT IF_MOTIF
+#ifdef OLD_PANELS
+    Gtk::RadioButton *button = NULL;
+    Glib::ListHandle<Gtk::Widget*> kids = buttons->get_children();
+    for (Glib::ListHandle<Gtk::Widget*>::iterator iter = kids.begin();
+	 iter != kids.end();
+	 iter++) {
+	Gtk::RadioButton *old = dynamic_cast<Gtk::RadioButton *>(*iter);
+	if (old) {
+	    Gtk::RadioButtonGroup group = old->get_group();
+	    button = new Gtk::RadioButton(group, XMST(name));
+	    break;
+	}
+    }
+    if (!button) {
+	button = new Gtk::RadioButton(XMST(name));
+    }
+    buttons->pack_start(*button, Gtk::PACK_EXPAND_PADDING);
+    button->show();
+    button->signal_toggled().connect(sigc::bind(PTR_FUN(ChangePanelCB),
+						button, form, XtNIL));
+#endif
+#endif // IF_MOTIF
 
+#ifdef OLD_PANELS
     XmToggleButtonSetState(button, Boolean(set), False);
 
     if (set)
     {
+#ifdef IF_MOTIF
 	XmToggleButtonCallbackStruct cbs;
 	cbs.set = set;
 	ChangePanelCB(button, XtPointer(form), &cbs);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Do we need to call ChangePanelCB after set_active()?
+#endif
+	ChangePanelCB(button, form, NULL);
+#endif // IF_MOTIF
     }
+#endif
 
+#ifdef OLD_PANELS
     return button;
+#else
+    return pageno;
+#endif
 }
 
-static void OfferRestartCB(Widget dialog, XtPointer, XtPointer)
+static void OfferRestartCB(Widget dialog
+#ifdef IF_MOTIF
+			   , XtPointer, XtPointer
+#endif // IF_MOTIF
+			   )
 {
     if (startup_preferences_changed() || font_preferences_changed())
     {
-	static Widget restart_dialog = 0;
+	static DIALOG_P restart_dialog = 0;
 	if (restart_dialog == 0)
 	{
+#ifdef IF_MOTIF
 	    restart_dialog = 
 		verify(XmCreateQuestionDialog(find_shell(dialog), 
 					      XMST("restart_dialog"),
 					      0, 0));
+#else // NOT IF_MOTIF
+	    restart_dialog = new Gtk::Dialog(XMST("restart_dialog"), *find_shell(dialog));
+#endif // IF_MOTIF
 	    Delay::register_shell(restart_dialog);
+#ifdef IF_MOTIF
 	    XtAddCallback(restart_dialog, XmNokCallback,
 			  DDDRestartCB, 0);
 	    XtAddCallback(restart_dialog, XmNhelpCallback,
 			  ImmediateHelpCB, 0);
+#else // NOT IF_MOTIF
+	    Gtk::Button *button;
+	    button = restart_dialog->add_button(XMST("OK"), 0);
+	    button->signal_clicked().connect(sigc::bind(PTR_FUN(DDDRestartCB), restart_dialog));
+#endif // IF_MOTIF
 	}
 	manage_and_raise(restart_dialog);
     }
@@ -5199,6 +6433,7 @@ static void OfferRestartCB(Widget dialog, XtPointer, XtPointer)
 // Create preferences dialog
 static void make_preferences(Widget parent)
 {
+#ifdef IF_MOTIF
     Arg args[10];
     int arg;
 
@@ -5206,16 +6441,31 @@ static void make_preferences(Widget parent)
     preferences_dialog = 
 	verify(XmCreatePromptDialog(parent, 
 				    XMST("preferences"), args, arg));
+#else // NOT IF_MOTIF
+    preferences_dialog = 
+	new Gtk::Dialog(XMST("preferences"), *find_shell(parent));
+#endif // IF_MOTIF
     Delay::register_shell(preferences_dialog);
+#ifdef IF_MOTIF
     XtVaSetValues(preferences_dialog, XmNdefaultButton, Widget(0), 
-		  XtPointer(0));
+		  XtNIL);
     XtAddCallback(preferences_dialog, XmNunmapCallback, OfferRestartCB,
-		  XtPointer(0));
+		  XtNIL);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning No default button
+#endif
+    preferences_dialog->signal_unmap().connect(sigc::bind(PTR_FUN(OfferRestartCB),
+							  preferences_dialog));
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     if (lesstif_version <= 79)
 	XtUnmanageChild(XmSelectionBoxGetChild(preferences_dialog,
 					       XmDIALOG_APPLY_BUTTON));
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     // Remove old prompt
     Widget text = XmSelectionBoxGetChild(preferences_dialog, XmDIALOG_TEXT);
     XtUnmanageChild(text);
@@ -5227,7 +6477,11 @@ static void make_preferences(Widget parent)
     reset_preferences_w = 
         XmSelectionBoxGetChild(preferences_dialog, XmDIALOG_CANCEL_BUTTON);
     XtRemoveAllCallbacks(reset_preferences_w, XmNactivateCallback);
+#else // NOT IF_MOTIF
+    reset_preferences_w = preferences_dialog->add_button(XMST("Reset"), 0);
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     arg = 0;
     XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
     XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
@@ -5236,16 +6490,16 @@ static void make_preferences(Widget parent)
 	verify(XmCreateRowColumn(preferences_dialog, XMST("box"), 
 				 args, arg));
     XtManageChild(box);
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     arg = 0;
     Widget buttons =
 	verify(XmCreateRadioBox(box, XMST("buttons"), args, arg));
     XtManageChild(buttons);
-
     arg = 0;
     Widget frame = verify(XmCreateFrame(box, XMST("frame"), args, arg));
     XtManageChild(frame);
-
     arg = 0;
     XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
     XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
@@ -5253,11 +6507,29 @@ static void make_preferences(Widget parent)
     Widget change =
 	verify(XmCreateRowColumn(frame, XMST("change"), args, arg));
     XtManageChild(change);
+#else // NOT IF_MOTIF
+#ifdef OLD_PANELS
+    Gtk::Box *buttons = new Gtk::HBox();
+    box->pack_start(*buttons, Gtk::PACK_SHRINK);
+    buttons->show();
+    Gtk::Frame *frame = new Gtk::Frame(XMST("frame"));
+    box->pack_start(*frame, Gtk::PACK_EXPAND_WIDGET);
+    frame->show();
+    Gtk::Box *change = new Gtk::HBox();
+    frame->add(*change);
+    change->show();
+#else // NOT OLD_PANELS
+    Gtk::Notebook *change = new Gtk::Notebook();
+    preferences_dialog->get_vbox()->pack_start(*change, Gtk::PACK_SHRINK);
+    change->show();
+#endif // OLD_PANELS
+#endif // IF_MOTIF
 
     Dimension max_width  = 0;
     Dimension max_height = 0;
 
-    Widget general_button =
+#ifdef OLD_PANELS
+    TOGGLEBUTTON_P general_button =
 	add_panel(change, buttons, "general", general_preferences_menu, 
 	      max_width, max_height, false);
     add_panel(change, buttons, "source",  source_preferences_menu, 
@@ -5266,23 +6538,55 @@ static void make_preferences(Widget parent)
 	      max_width, max_height, false);
     add_panel(change, buttons, "startup", startup_preferences_menu, 
 	      max_width, max_height, false);
+#ifdef IF_MOTIF
     add_panel(change, buttons, "fonts", font_preferences_menu,
 	      max_width, max_height, false);
+#endif // IF_MOTIF
     add_panel(change, buttons, "helpers", helpers_preferences_menu, 
 	      max_width, max_height, false);
+#else // NOT OLD_PANELS
+    int general_button =
+	add_panel(change, "general", "General", general_preferences_menu, 
+		  false);
+    add_panel(change, "source", "Source", source_preferences_menu, 
+	      false);
+    add_panel(change, "data", "Data", data_preferences_menu, 
+	      false);
+    add_panel(change, "startup", "Startup", startup_preferences_menu, 
+	      false);
+#ifdef IF_MOTIF
+    add_panel(change, "fonts", "Fonts", font_preferences_menu,
+	      false);
+#endif // IF_MOTIF
+    add_panel(change, "helpers", "Helpers", helpers_preferences_menu, 
+	      false);
+#endif
 
+#ifdef IF_MOTIF
     XtVaSetValues(change,
 		  XmNwidth, max_width,
 		  XmNheight, max_height,
 		  XmNresizeWidth, False,
 		  XmNresizeHeight, False,
-		  XtPointer(0));
+		  XtNIL);
+#else // NOT IF_MOTIF
+#ifdef OLD_PANELS
+#ifdef NAG_ME
+#warning How to calculate sizes of panels before realizing them?
+#endif
+    change->set_size_request(max_width, max_height);
+#endif
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     XmToggleButtonSetState(general_button, True, True);
+#else // NOT IF_MOTIF
+    change->set_current_page(general_button);
+#endif // IF_MOTIF
 }
 
 // Popup Preference Panel
-static void dddPopupPreferencesCB (Widget, XtPointer, XtPointer)
+static void dddPopupPreferencesCB (CB_ALIST_NULL)
 {
     manage_and_raise(preferences_dialog);
     check_options_file();
@@ -5293,16 +6597,33 @@ static void dddPopupPreferencesCB (Widget, XtPointer, XtPointer)
 // Create status line
 //-----------------------------------------------------------------------------
 
-static void create_status(Widget parent)
+static void create_status(CONTAINER_P parent)
 {
+#ifdef IF_MOTIF
     Arg args[15];
     int arg = 0;
     XtSetArg(args[arg], XmNresizePolicy, XmRESIZE_ANY); arg++;
     Widget status_form = 
 	verify(XmCreateForm(parent, XMST("status_form"), args, arg));
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Note: We can use a Box instead of a Form because all we need
+#warning is pack_start and pack_end.
+#endif
+    BOX_P status_form = new Gtk::HBox();
+    status_form->set_name(XMST("status_form"));
+    Gtk::Box *box = dynamic_cast<Gtk::Box *>(parent);
+    if (box) {
+	box->pack_end(*status_form, Gtk::PACK_SHRINK);
+    }
+    else {
+	parent->add(*status_form);
+    }
+#endif // IF_MOTIF
     XtManageChild(status_form);
 
     // Create LED
+#ifdef IF_MOTIF
     arg = 0;
     XtSetArg(args[arg], XmNtopAttachment,      XmATTACH_FORM); arg++;
     XtSetArg(args[arg], XmNbottomAttachment,   XmATTACH_FORM); arg++;
@@ -5319,12 +6640,28 @@ static void create_status(Widget parent)
 
     led_w = verify(XmCreateToggleButton(status_form, 
 					XMST("led"), args, arg));
+#else // NOT IF_MOTIF
+    led_w = new Gtk::ToggleButton(XMST(""));
+    led_w->set_name(XMST("led"));
+    status_form->pack_start(*led_w);
+#ifdef NAG_ME
+#warning How to fill toggle button with Green color?
+#endif
+#endif // IF_MOTIF
     XtManageChild(led_w);
 
-    XtAddCallback(led_w, XmNvalueChangedCallback, ToggleBlinkCB, XtPointer(0));
+#ifdef IF_MOTIF
+    XtAddCallback(led_w, XmNvalueChangedCallback, ToggleBlinkCB, XtNIL);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning We do not use the call_data here
+#endif
+    led_w->signal_toggled().connect(sigc::bind(PTR_FUN(ToggleBlinkCB), led_w, XtNIL));
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     Pixel arrow_foreground;
-    XtVaGetValues(status_form, XmNbackground, &arrow_foreground, XtPointer(0));
+    XtVaGetValues(status_form, XmNbackground, &arrow_foreground, XtNIL);
 
     // Create `Get more status messages' button
     arg = 0;
@@ -5338,6 +6675,15 @@ static void create_status(Widget parent)
 	     (app_data.status_at_bottom ? XmARROW_UP : XmARROW_DOWN)); arg++;
     Widget arrow_w = 
 	verify(XmCreateArrowButton(status_form, XMST("arrow"), args, arg));
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Set arrow as pixmap in button.
+#endif
+    Widget arrow_w = new Gtk::Button();
+    arrow_w->set_name(XMST("arrow"));
+    status_form->pack_start(*arrow_w);
+#endif
+
     XtManageChild(arrow_w);
 
     // Give some `dummy' status message.  Some Motif versions limit
@@ -5346,6 +6692,7 @@ static void create_status(Widget parent)
     MString short_msg = rm("Hello, world!");
     MString long_msg = short_msg + rm(replicate(' ', 90));
 
+#ifdef IF_MOTIF
     arg = 0;
     XtSetArg(args[arg], XmNlabelString,      long_msg.xmstring()); arg++;
     XtSetArg(args[arg], XmNtopAttachment,    XmATTACH_FORM); arg++;
@@ -5359,6 +6706,11 @@ static void create_status(Widget parent)
     XtSetArg(args[arg], XmNshadowThickness,  0); arg++;
     status_w = verify(XmCreatePushButton(status_form, 
 					 XMST("status"), args, arg));
+#else // NOT IF_MOTIF
+    status_w = new Gtk::Statusbar();
+    status_w->set_name(XMST("status"));
+    status_form->pack_start(*status_w);
+#endif // IF_MOTIF
     XtManageChild(status_w);
 
     // Initialize status history
@@ -5367,44 +6719,80 @@ static void create_status(Widget parent)
     set_status("");
     set_status_mstring(short_msg);
 
+#ifdef IF_MOTIF
     XtAddCallback(status_w, XmNarmCallback, 
-		  PopupStatusHistoryCB, XtPointer(0));
+		  PopupStatusHistoryCB, XtNIL);
     XtAddCallback(status_w, XmNactivateCallback, 
-		  PopdownStatusHistoryCB, XtPointer(0));
+		  PopdownStatusHistoryCB, XtNIL);
     XtAddCallback(status_w, XmNdisarmCallback, 
-		  PopdownStatusHistoryCB, XtPointer(0));
+		  PopdownStatusHistoryCB, XtNIL);
+#else // NOT IF_MOTIF
+    status_w->signal_button_press_event().connect(sigc::bind(PTR_FUN(PopupStatusHistoryCB), status_w));
+    status_w->signal_button_release_event().connect(PTR_FUN(PopdownStatusHistoryCB));
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     XtAddCallback(arrow_w, XmNarmCallback, 
-		  PopupStatusHistoryCB, XtPointer(0));
+		  PopupStatusHistoryCB, XtNIL);
     XtAddCallback(arrow_w, XmNactivateCallback, 
-		  PopdownStatusHistoryCB, XtPointer(0));
+		  PopdownStatusHistoryCB, XtNIL);
     XtAddCallback(arrow_w, XmNdisarmCallback, 
-		  PopdownStatusHistoryCB, XtPointer(0));
+		  PopdownStatusHistoryCB, XtNIL);
+#else // NOT IF_MOTIF
+    arrow_w->signal_button_press_event().connect(sigc::bind(PTR_FUN(PopupStatusHistoryCB), arrow_w));
+    arrow_w->signal_button_release_event().connect(PTR_FUN(PopdownStatusHistoryCB));
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     // Using LessTif 0.88, you can release button 1 while outside the
     // status bar; no disarm callback is invoked.  Prevent against this.
     XtAddEventHandler(status_w, ButtonReleaseMask, False,
-		      PopdownStatusHistoryEH, XtPointer(0));
+		      PopdownStatusHistoryEH, XtNIL);
     XtAddEventHandler(arrow_w, ButtonReleaseMask, False, 
-		      PopdownStatusHistoryEH, XtPointer(0));
+		      PopdownStatusHistoryEH, XtNIL);
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     XtWidgetGeometry size;
     size.request_mode = CWHeight;
     XtQueryGeometry(status_w, (XtWidgetGeometry *)0, &size);
 
-    if (lesstif_version <= 87)
-	XtVaSetValues(led_w, XmNindicatorSize, size.height - 4, XtPointer(0));
-    else
-	XtVaSetValues(led_w, XmNindicatorSize, size.height - 1, XtPointer(0));
+    Dimension size_height = size.height;
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Is height set properly?
+#endif
+    Dimension size_height = status_w->get_height();
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
+    if (lesstif_version <= 87)
+	XtVaSetValues(led_w, XmNindicatorSize, size_height - 4, XtNIL);
+    else
+	XtVaSetValues(led_w, XmNindicatorSize, size_height - 1, XtNIL);
+#else // NOT IF_MOTIF
+    led_w->set_size_request(-1, size_height-1);
+#endif // IF_MOTIF
+
+#ifdef IF_MOTIF
     XtVaSetValues(arrow_w,
-		  XmNheight, size.height - 2,
-		  XmNwidth,  size.height - 2,
-		  XtPointer(0));
+		  XmNheight, size_height - 2,
+		  XmNwidth,  size_height - 2,
+		  XtNIL);
+#else // NOT IF_MOTIF
+    arrow_w->set_size_request(size_height-2, size_height-2);
+#endif // IF_MOTIF
+
+#ifdef IF_MOTIF
     XtVaSetValues(status_form,
-		  XmNpaneMaximum, size.height,
-		  XmNpaneMinimum, size.height,
-		  XtPointer(0));
+		  XmNpaneMaximum, size_height,
+		  XmNpaneMinimum, size_height,
+		  XtNIL);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning XmNpaneMaximum analogue?
+#endif
+#endif // IF_MOTIF
 
     set_toggle(led_w, app_data.blink_while_busy);
     blink(true);
@@ -5416,44 +6804,89 @@ static void create_status(Widget parent)
 //-----------------------------------------------------------------------------
 
 static bool blinker_active        = false; // True iff status LED is active
-static XtIntervalId blink_timer   = 0;     // Timer for blinking
+#ifdef IF_MOTIF
+static XtIntervalId blink_timer = 0;     // Timer for blinking
+#else // NOT IF_MOTIF
+static sigc::connection blink_timer;         // Timer for blinking
+#endif // IF_MOTIF
 
-static void BlinkCB(XtPointer client_data, XtIntervalId *id)
+static
+#ifdef IF_MOTIF
+void
+#else // NOT IF_MOTIF
+bool
+#endif // IF_MOTIF
+BlinkCB(
+#ifdef IF_MOTIF
+    XtPointer client_data, XtIntervalId *id
+#else // NOT IF_MOTIF
+    bool *set_p
+#endif // IF_MOTIF
+    )
 {
+#ifdef IF_MOTIF
     (void) id;			// use it
     assert(*id == blink_timer);
     blink_timer = 0;
+#endif // IF_MOTIF
 
     static bool have_led_colors = false;
+#ifdef IF_MOTIF
     static Pixel led_select_color;
     static Pixel led_background_color;
+#else // NOT IF_MOTIF
+    static Gdk::Color led_select_color;
+    static Gdk::Color led_background_color;
+#endif // IF_MOTIF
+
 
     if (!have_led_colors)
     {
+#ifdef IF_MOTIF
 	XtVaGetValues(led_w,
 		      XmNbackground, &led_background_color,
 		      XmNselectColor, &led_select_color,
-		      XtPointer(0));
+		      XtNIL);
+#else // NOT IF_MOTIF
+	led_background_color = led_w->get_style()->get_bg(Gtk::STATE_NORMAL);
+	led_select_color = led_w->get_style()->get_bg(Gtk::STATE_SELECTED);
+#endif // IF_MOTIF
 	have_led_colors = true;
     }
 
+#ifdef IF_MOTIF
     bool set = bool(long(client_data));
     if (set)
 	XtVaSetValues(led_w, XmNselectColor, led_select_color, 
-		      XtPointer(0));
+		      XtNIL);
     else
 	XtVaSetValues(led_w, XmNselectColor, led_background_color, 
-		      XtPointer(0));
+		      XtNIL);
+#else // NOT IF_MOTIF
+    bool set = *set_p;
+    *set_p = !set;
+    if (set)
+	led_w->get_style()->set_bg(Gtk::STATE_SELECTED, led_select_color);
+    else
+	led_w->get_style()->set_bg(Gtk::STATE_SELECTED, led_background_color);
+#endif // IF_MOTIF
 
     XFlush(XtDisplay(led_w));
     XmUpdateDisplay(led_w);
 
     if ((blinker_active || set) && app_data.busy_blink_rate > 0)
     {
+#ifdef IF_MOTIF
 	blink_timer = XtAppAddTimeOut(XtWidgetToApplicationContext(led_w),
-				      app_data.busy_blink_rate, BlinkCB,
+				      app_data.busy_blink_rate, PTR_FUN(BlinkCB),
 				      XtPointer(int(!set)));
+#else // NOT IF_MOTIF
+	return true;
+#endif // IF_MOTIF
     }
+#ifndef IF_MOTIF
+    return false;
+#endif // IF_MOTIF
 }
 
 // Enable or disable blinking
@@ -5469,7 +6902,13 @@ static void blink(bool set)
 	if (blinker_active)
 	{
 	    // Restart blink timer
+#ifdef IF_MOTIF
 	    BlinkCB(XtPointer(int(true)), &blink_timer);
+#else // NOT IF_MOTIF
+	    static bool blink_state = false;
+	    blink_timer = Glib::signal_timeout().connect(sigc::bind(PTR_FUN(BlinkCB), &blink_state),
+							 app_data.busy_blink_rate);
+#endif // IF_MOTIF
 	}
     }
 }
@@ -5480,12 +6919,18 @@ static void DisableBlinkHP(Agent *, void *, void *)
     XmToggleButtonSetState(led_w, False, False);
 }
 
-static void ToggleBlinkCB(Widget, XtPointer, XtPointer call_data)
+static void ToggleBlinkCB(TOGGLEBUTTON_P w,
+#ifdef IF_MOTIF
+			  XtPointer, 
+#endif // IF_MOTIF
+			  XtPointer call_data
+			  )
 {
-    XmToggleButtonCallbackStruct *info = 
-	(XmToggleButtonCallbackStruct *)call_data;
     string debugger_status_indicator =
 	"Debugger status indicator ";
+#ifdef IF_MOTIF
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.blink_while_busy = info->set;
 
@@ -5493,6 +6938,16 @@ static void ToggleBlinkCB(Widget, XtPointer, XtPointer call_data)
 	set_status(debugger_status_indicator + "enabled.");
     else
 	set_status(debugger_status_indicator + "disabled.");
+#else // NOT IF_MOTIF
+    bool set = w->get_active();
+
+    app_data.blink_while_busy = set;
+
+    if (set)
+	set_status(debugger_status_indicator + "enabled.");
+    else
+	set_status(debugger_status_indicator + "disabled.");
+#endif // IF_MOTIF
 
     // Restart blinker
     blink(blinker_active);
@@ -5504,55 +6959,100 @@ static void ToggleBlinkCB(Widget, XtPointer, XtPointer call_data)
 
 const Dimension y_popup_offset = 5;
 
-static Widget history_shell = 0;
-static void PopupStatusHistoryCB(Widget w, XtPointer client_data, 
-				 XtPointer call_data)
+static MENU_P history_shell = 0;
+static BUTTON_CB_RETURN_TYPE
+PopupStatusHistoryCB(
+#ifdef IF_MOTIF
+		     Widget w, XtPointer client_data, XtPointer call_data
+#else // NOT IF_MOTIF
+		     GdkEventButton *, Widget w
+#endif // IF_MOTIF
+		     )
 {
-    (void) call_data;		// Use it
-    (void) client_data;		// Use it
-
     history_shell = status_history(w);
 
+#ifdef IF_MOTIF
     Position shell_x, shell_y;
     XtTranslateCoords(find_shell(status_w), 0, 0, &shell_x, &shell_y);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Coordinates?
+#endif
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     Position status_x, status_y;
     XtTranslateCoords(status_w, 0, 0, &status_x, &status_y);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Coordinates?
+#endif
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     XtWidgetGeometry size;
     size.request_mode = CWHeight;
+#endif // IF_MOTIF
+    Dimension size_height;
     Position x, y;
     if (app_data.status_at_bottom)
     {
+#ifdef IF_MOTIF
 	XtQueryGeometry(history_shell, (XtWidgetGeometry *)0, &size);
 
 	x = shell_x;
 	y = status_y - size.height - y_popup_offset;
+#else // NOT IF_MOTIF
+	int size_height = history_shell->get_height();
+#endif // IF_MOTIF
     }
     else
     {
+#ifdef IF_MOTIF
 	XtQueryGeometry(status_w, (XtWidgetGeometry *)0, &size);
 
 	x = shell_x;
 	y = status_y + size.height + y_popup_offset;
+#else // NOT IF_MOTIF
+	int size_height = status_w->get_height();
+#endif // IF_MOTIF
     }
 
-    XtVaSetValues(history_shell, XmNx, x, XmNy, y, XtPointer(0));
+#ifdef IF_MOTIF
+    XtVaSetValues(history_shell, XmNx, x, XmNy, y, XtNIL);
     XtPopup(history_shell, XtGrabNone);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Can we choose the position of the popup menu (SlotPositionCalc?)
+#endif
+    history_shell->popup(0, gtk_get_current_event_time());
+#endif // IF_MOTIF
 }
 
-static void PopdownStatusHistoryCB(Widget, XtPointer, XtPointer)
+static BUTTON_CB_RETURN_TYPE
+PopdownStatusHistoryCB(
+#ifdef IF_MOTIF
+		       Widget, XtPointer, XtPointer
+#else // NOT IF_MOTIF
+		       GdkEventButton *
+#endif // IF_MOTIF
+		       )
 {
     if (history_shell != 0)
 	XtPopdown(history_shell);
 }
 
+#ifdef IF_MOTIF
 static void PopdownStatusHistoryEH(Widget w, XtPointer client_data, 
 				   XEvent *event, Boolean *)
 {
     PopdownStatusHistoryCB(w, client_data, (XtPointer)event);
 }
-
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning PopdownStatusHistoryEH unimplemented?
+#endif
+#endif // IF_MOTIF
 
 
 //-----------------------------------------------------------------------------
@@ -5659,14 +7159,22 @@ void update_arg_buttons()
     string deref_arg = deref(arg, "()");
 
     MString print_ref_label("Print " + deref_arg);
+#ifdef IF_MOTIF
     XtVaSetValues(print_menu[PrintItems::PrintRef].widget,
 		  XmNlabelString, print_ref_label.xmstring(),
-		  XtPointer(0));
+		  XtNIL);
+#else // NOT IF_MOTIF
+    set_label(print_menu[PrintItems::PrintRef].widget, print_ref_label);
+#endif // IF_MOTIF
 
     MString disp_ref_label("Display " + deref_arg);
+#ifdef IF_MOTIF
     XtVaSetValues(display_menu[DispItems::DispRef].widget,
 		  XmNlabelString, disp_ref_label.xmstring(),
-		  XtPointer(0));
+		  XtNIL);
+#else // NOT IF_MOTIF
+    set_label(display_menu[DispItems::DispRef].widget, disp_ref_label);
+#endif // IF_MOTIF
 
     bool can_dereference = !gdb->dereferenced_expr("").empty();
     manage_child(print_ref_w, can_dereference);
@@ -5729,9 +7237,15 @@ static void report_languageHP(Agent *, void *, void *)
 
 void update_user_buttons()
 {
+#ifdef IF_MOTIF
     set_buttons(data_buttons_w,    app_data.data_buttons);
     set_buttons(source_buttons_w,  app_data.source_buttons);
     set_buttons(console_buttons_w, app_data.console_buttons);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning set_buttons not implemented
+#endif
+#endif // IF_MOTIF
     set_shortcut_menu(data_disp);
 }
 
@@ -5752,9 +7266,14 @@ static void gdb_readyHP(Agent *, void *, void *call_data)
 	}
 
 	// Process next pending command as soon as we return
-	if (!emptyCommandQueue())
+	if (!emptyCommandQueue()) {
+#ifdef IF_MOTIF
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0, 
-			    processCommandQueue, XtPointer(0));
+			    PTR_FUN(processCommandQueue), XtNIL);
+#else // NOT IF_MOTIF
+	    Glib::signal_idle().connect(PTR_FUN(processCommandQueue));
+#endif // IF_MOTIF
+	}
 
 	// Check for mouse pointer grabs
 	check_grabs(true);
@@ -5784,13 +7303,19 @@ static void gdb_readyHP(Agent *, void *, void *call_data)
 
 struct WhenReadyInfo {
     MString message;
-    XtCallbackProc proc;
+    GTK_SLOT_W proc;
+#ifdef IF_MOTIF
     XtPointer client_data;
     XmPushButtonCallbackStruct cbs;
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning WhenReady: callback structure not used?
+#endif
+#endif // IF_MOTIF
     XEvent event;
 
-    WhenReadyInfo(const MString &msg, XtCallbackProc p,
-		  XtPointer cl_data,
+#ifdef IF_MOTIF
+    WhenReadyInfo(const MString &msg, XtCallbackProc p, XtPointer cl_data,
 		  const XmPushButtonCallbackStruct& c)
 	: message(msg),
 	  proc(p),
@@ -5811,7 +7336,13 @@ struct WhenReadyInfo {
 	    cbs.event = &event;
 	}
     }
-
+#else // NOT IF_MOTIF
+    WhenReadyInfo(const MString &msg, GTK_SLOT_W p)
+	: message(msg),
+	  proc(p)
+    {
+    }
+#endif // IF_MOTIF
 private:
     WhenReadyInfo(const WhenReadyInfo&);
     WhenReadyInfo& operator= (const WhenReadyInfo&);
@@ -5822,39 +7353,68 @@ static void DoneCB(const string& /* answer */, void *qu_data)
     WhenReadyInfo *info = (WhenReadyInfo *)qu_data;
     set_status_mstring(info->message + rm("done."));
 
+#ifdef IF_MOTIF
     (*info->proc)(gdb_w, info->client_data, XtPointer(&info->cbs));
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning We cannot pass the callback structure: maybe do not need it?
+#endif
+    (info->proc)(gdb_w);
+#endif // IF_MOTIF
     delete info;
 }
 
 // Execute command in (XtCallbackProc)CLIENT_DATA as soon as GDB gets ready
-static void WhenReady(Widget w, XtPointer client_data, XtPointer call_data)
+static void WhenReady(Widget w, XtPointer client_data
+#ifdef IF_MOTIF
+		      , XtPointer call_data
+#endif // IF_MOTIF
+		      )
 {
+#ifdef IF_MOTIF
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
     if (cbs == 0)
 	return;	    // This happens with old LessTif versions
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     XtCallbackProc proc = STATIC_CAST(WhenReadyProc_t*,client_data)->proc;
+#else // NOT IF_MOTIF
+    GTK_SLOT_W proc = *STATIC_CAST(GTK_SLOT_W*,client_data);
+#endif // IF_MOTIF
     XtPointer user_client_data = 0; // No way to pass extra values here
 
     if (can_do_gdb_command())
     {
 	// GDB is ready: do command now
+#ifdef IF_MOTIF
 	proc(w, user_client_data, call_data);
+#else // NOT IF_MOTIF
+	proc(w);
+#endif // IF_MOTIF
 	return;
     }
 
     // Execute command as soon as GDB gets ready
+#ifdef IF_MOTIF
     XmString label = 0;
-    XtVaGetValues(w, XmNlabelString, &label, XtPointer(0));
+    XtVaGetValues(w, XmNlabelString, &label, XtNIL);
     MString _action(label, true);
     XmStringFree(label);
+#else // NOT IF_MOTIF
+    MString _action = get_label(w);
+#endif // IF_MOTIF
     string action = _action.str();
     if (action.contains("...", -1))
 	action = action.before("...");
 
     MString msg = rm(action + ": waiting until " + gdb->title() 
 		     + " gets ready...");
+#ifdef IF_MOTIF
     WhenReadyInfo *info = new WhenReadyInfo(msg, proc, user_client_data, *cbs);
+#else // NOT IF_MOTIF
+    WhenReadyInfo *info = new WhenReadyInfo(msg, proc);
+#endif // IF_MOTIF
 
     // We don't want to lock the status, hence we use an ordinary
     // `set_status' call instead of the StatusMsg class.
@@ -6007,6 +7567,7 @@ static void gdb_ctrl(char ctrl)
 {
     switch (ctrl)
     {
+#ifdef IF_MOTIF
     case '\t':
     case '\r':
     {
@@ -6043,11 +7604,19 @@ static void gdb_ctrl(char ctrl)
 	}
 	break;
     }
-
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Cannot handle tab or CR characters from gdb
+#endif
+#endif // IF_MOTIF
     case '\b':
     {
 	// Erase last character
+#ifdef IF_MOTIF
 	XmTextReplace(gdb_w, promptPosition - 1, promptPosition, XMST(""));
+#else // NOT IF_MOTIF
+	gdb_w->replace(promptPosition - 1, promptPosition, XMST(""));
+#endif // IF_MOTIF
 	promptPosition--;
     }
     break;
@@ -6055,11 +7624,19 @@ static void gdb_ctrl(char ctrl)
     case '\n':
     {
 	string c = ctrl;
+#ifdef IF_MOTIF
 	XmTextInsert(gdb_w, promptPosition, XMST(c.chars()));
+#else // NOT IF_MOTIF
+	gdb_w->insert(promptPosition, XMST(c.chars()));
+#endif // IF_MOTIF
 	promptPosition += c.length();
 
 	// Flush output
+#ifdef IF_MOTIF
 	XmTextShowPosition(gdb_w, promptPosition);
+#else // NOT IF_MOTIF
+	gdb_w->show_position(promptPosition);
+#endif // IF_MOTIF
     }
     break;
 
@@ -6071,7 +7648,11 @@ static void gdb_ctrl(char ctrl)
 	    c = string("^") + char('@' + ctrl);
 	else
 	    c = "^?";
+#ifdef IF_MOTIF
 	XmTextInsert(gdb_w, promptPosition, XMST(c.chars()));
+#else // NOT IF_MOTIF
+	gdb_w->insert(promptPosition, XMST(c.chars()));
+#endif // IF_MOTIF
 	promptPosition += c.length();
     }
     break;
@@ -6098,8 +7679,13 @@ void _gdb_out(const string& txt)
     if (gdb_input_at_prompt)
 	debuggee_running = false;
 
-    if (promptPosition == 0)
+    if (promptPosition == 0) {
+#ifdef IF_MOTIF
 	promptPosition = XmTextGetLastPosition(gdb_w);
+#else // NOT IF_MOTIF
+	promptPosition = gdb_w->get_last_position();
+#endif // IF_MOTIF
+    }
 
     private_gdb_output = true;
 
@@ -6117,7 +7703,7 @@ void _gdb_out(const string& txt)
     set_tty_from_gdb(text);
 
     // Output TEXT on TTY
-    tty_out(text);
+    tty_out(USTRING(text));
 
     // Output TEXT in debugger console
     bool line_buffered = app_data.line_buffered_console;
@@ -6161,7 +7747,11 @@ void _gdb_out(const string& txt)
 		cr_pending = false;
 	    }
 
+#ifdef IF_MOTIF
 	    XmTextInsert(gdb_w, promptPosition, XMST(block.chars()));
+#else // NOT IF_MOTIF
+	    gdb_w->insert(promptPosition, XMST(block.chars()));
+#endif // IF_MOTIF
 	    promptPosition += block.length();
 	    // XmTextShowPosition(gdb_w, promptPosition);
 	}
@@ -6193,9 +7783,15 @@ void _gdb_out(const string& txt)
 	}
     } while (!text.empty());
 
+#ifdef IF_MOTIF
     XmTextPosition lastPos = XmTextGetLastPosition(gdb_w);
     XmTextSetInsertionPosition(gdb_w, lastPos);
     XmTextShowPosition(gdb_w, lastPos);
+#else // NOT IF_MOTIF
+    XmTextPosition lastPos = gdb_w->get_last_position();
+    gdb_w->set_insertion_position(lastPos);
+    gdb_w->show_position(lastPos);
+#endif // IF_MOTIF
 
     private_gdb_output = false;
 }
@@ -6216,7 +7812,7 @@ void gdb_out(const string& text)
 // Cut/Copy/Paste
 //-----------------------------------------------------------------------------
 
-static DDDWindow ddd_window(XtPointer client_data)
+static DDDWindow ddd_window(XtP(DDDWindow) client_data)
 {
     if (source_view_shell == 0 && data_disp_shell == 0)
 	return CommonWindow;
@@ -6224,91 +7820,144 @@ static DDDWindow ddd_window(XtPointer client_data)
 	return DDDWindow(long(client_data));
 }
 
-static void gdbCutSelectionCB(Widget w, XtPointer client_data, 
-			      XtPointer call_data)
+static void gdbCutSelectionCB(CB_ALIST_12(Widget w, XtP(DDDWindow) client_data))
 {
-    XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
-    Time tm = time(cbs->event);
+#ifdef IF_MOTIF
+    Time tm = time(XtLastEventProcessed(XtDisplay(w)));
+#endif // IF_MOTIF
 
     DDDWindow win = ddd_window(client_data);
     Boolean success = False;
-    Widget dest = XmGetDestination(XtDisplay(w));
-
     // Try data arg
     if (!success && (win == DataWindow || win == CommonWindow))
     {
 	if (data_disp->have_selection())
 	{
+#ifdef IF_MOTIF
 	    success = XmTextCopy(DataDisp::graph_selection_w, tm);
+#else // NOT IF_MOTIF
+	    std::cerr << "Copy from graph_selection_w not implemented\n";
+	    // success = text_copy_from(DataDisp::graph_selection_w);
+#endif // IF_MOTIF
 	    if (success)
-		DataDisp::deleteCB(w, client_data, call_data);
+		DataDisp::deleteCB(CB_ARGS_1(w));
 	}
     }
 
+#ifdef IF_MOTIF
     // Try destination window
+    Widget dest = XmGetDestination(XtDisplay(w));
     if (!success && dest != 0 && XmIsText(dest))
 	success = XmTextCut(dest, tm);
     if (!success && dest != 0 && XmIsTextField(dest))
 	success = XmTextFieldCut(dest, tm);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning XmGetDestination?
+#endif
+#endif // IF_MOTIF
 
     // Try debugger console
-    if (!success && (win == GDBWindow || win == CommonWindow))
+    if (!success && (win == GDBWindow || win == CommonWindow)) {
+#ifdef IF_MOTIF
 	success = XmTextCut(gdb_w, tm);
+#else // NOT IF_MOTIF
+	success = text_cut_from(gdb_w);
+#endif // IF_MOTIF
+    }
 
     // Try source arg
-    if (!success && (win == SourceWindow || win == CommonWindow))
+    if (!success && (win == SourceWindow || win == CommonWindow)) {
+#ifdef IF_MOTIF
 	success = XmTextFieldCut(source_arg->text(), tm);
+#else // NOT IF_MOTIF
+	success = text_cut_from(source_arg->text());
+#endif // IF_MOTIF
+    }
 
     if (success)
-	gdbUnselectAllCB(w, client_data, call_data);
+	gdbUnselectAllCB(CB_ARGS_NULL);
 }
 
-static void gdbCopySelectionCB(Widget w, XtPointer client_data, 
-			       XtPointer call_data)
+static void gdbCopySelectionCB(CB_ALIST_12(Widget w, XtP(DDDWindow) client_data))
 {
-    XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
-    Time tm = time(cbs->event);
+#ifdef IF_MOTIF
+    Time tm = time(XtLastEventProcessed(XtDisplay(w)));
+#endif // IF_MOTIF
     
     DDDWindow win = ddd_window(client_data);
     Boolean success = False;
-    Widget dest = XmGetDestination(XtDisplay(w));
 
     // Try data arg
     if (!success && (win == DataWindow || win == CommonWindow))
 	if (data_disp->have_selection())
 	{
+#ifdef IF_MOTIF
 	    success = XmTextCopy(DataDisp::graph_selection_w, tm);
+#else // NOT IF_MOTIF
+	    std::cerr << "Copy from graph_selection_w not implemented\n";
+	    // success = text_copy_from(DataDisp::graph_selection_w);
+#endif // IF_MOTIF
 	}
 
+#ifdef IF_MOTIF
     // Try destination window
+    Widget dest = XmGetDestination(XtDisplay(w));
     if (!success && dest != 0 && XmIsText(dest))
 	success = XmTextCopy(dest, tm);
     if (!success && dest != 0 && XmIsTextField(dest))
 	success = XmTextFieldCopy(dest, tm);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning XmGetDestination?
+#endif
+#endif // IF_MOTIF
 
     // Try debugger console
-    if (!success && (win == GDBWindow || win == CommonWindow))
+    if (!success && (win == GDBWindow || win == CommonWindow)) {
+#ifdef IF_MOTIF
 	success = XmTextCopy(gdb_w, tm);
+#else // NOT IF_MOTIF
+	success = text_copy_from(gdb_w);
+#endif // IF_MOTIF
+    }
 
     // Try source arg
-    if (!success && (win == SourceWindow || win == CommonWindow))
+    if (!success && (win == SourceWindow || win == CommonWindow)) {
+#ifdef IF_MOTIF
 	success = XmTextFieldCopy(source_arg->text(), tm);
+#else // NOT IF_MOTIF
+	success = text_copy_from(source_arg->text());
+#endif // IF_MOTIF
+    }
 
     // Try source
-    if (!success && (win == SourceWindow || win == CommonWindow))
+    if (!success && (win == SourceWindow || win == CommonWindow)) {
+#ifdef IF_MOTIF
 	success = XmTextCopy(source_view->source(), tm);
+#else // NOT IF_MOTIF
+	success = text_copy_from(source_view->source());
+#endif // IF_MOTIF
+    }
 
     // Try code
-    if (!success && (win == SourceWindow || win == CommonWindow))
+    if (!success && (win == SourceWindow || win == CommonWindow)) {
+#ifdef IF_MOTIF
 	success = XmTextCopy(source_view->code(), tm);
+#else // NOT IF_MOTIF
+	success = text_copy_from(source_view->code());
+#endif // IF_MOTIF
+    }
 }
 
-static void gdbPasteClipboardCB(Widget w, XtPointer client_data, XtPointer)
+static void gdbPasteClipboardCB(CB_ALIST_12(Widget w, XtP(DDDWindow) client_data))
 {
+#ifdef IF_MOTIF
     DDDWindow win = ddd_window(client_data);
 
     // Try destination window
     bool success = false;
+#ifdef IF_MOTIF
     Widget dest = XmGetDestination(XtDisplay(w));
     if (dest != 0)
     {
@@ -6324,6 +7973,11 @@ static void gdbPasteClipboardCB(Widget w, XtPointer client_data, XtPointer)
 	if (!success && XmIsTextField(dest))
 	    success = XmTextFieldPaste(dest);
     }
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Paste: XmGetDestination?
+#endif
+#endif // IF_MOTIF
     if (success)
 	return;
 
@@ -6347,13 +8001,20 @@ static void gdbPasteClipboardCB(Widget w, XtPointer client_data, XtPointer)
 	// Cannot paste into exec window
 	break;
     }
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Paste not implemented
+#endif
+#endif // IF_MOTIF
 }
 
-static void gdbUnselectAllCB(Widget w, XtPointer client_data,
-			     XtPointer call_data)
+static void gdbUnselectAllCB(CB_ALIST_NULL)
 {
-    XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
-    Time tm = time(cbs->event);
+#ifdef IF_MOTIF
+#ifdef NAG_ME
+#warning FIXME: No timestamp.
+#endif
+    Time tm = Time(0);
 
     XmTextClearSelection(gdb_w, tm);
     XmTextFieldClearSelection(source_arg->text(), tm);
@@ -6365,23 +8026,30 @@ static void gdbUnselectAllCB(Widget w, XtPointer client_data,
     if (data_disp->graph_selection_w != 0)
 	XmTextClearSelection(data_disp->graph_selection_w, tm);
 
-    DataDisp::unselectAllCB(w, client_data, call_data);
+    DataDisp::unselectAllCB(CB_ARGS_NULL);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning gdbUnselectAllCB not implemented
+#endif
+#endif // IF_MOTIF
 }
 
-static void gdbClearAllCB(Widget w, XtPointer client_data, XtPointer call_data)
+static void gdbClearAllCB(CB_ALIST_NULL)
 {
-    gdbUnselectAllCB(w, client_data, call_data);
+#ifdef NAG_ME
+#warning Call data is only used for timestamp.
+#endif
+    gdbUnselectAllCB(CB_ARGS_NULL);
     source_arg->set_string("");
-    gdbClearCB(w, client_data, call_data);
+    gdbClearCB(CB_ARGS_NULL);
 }
 
-static void gdbSelectAllCB(Widget w, XtPointer client_data, 
-			   XtPointer call_data)
+static void gdbSelectAllCB(CB_ALIST_12(Widget w, XtP(DDDWindow) client_data))
 {
+#ifdef IF_MOTIF
     DDDWindow win = ddd_window(client_data);
 
-    XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
-    Time tm = time(cbs->event);
+    Time tm = time(XtLastEventProcessed(XtDisplay(w)));
 
     bool success = false;
     Widget dest = XmGetDestination(XtDisplay(w));
@@ -6389,7 +8057,7 @@ static void gdbSelectAllCB(Widget w, XtPointer client_data,
     {
 	if (!success && dest == DataDisp::graph_selection_w)
 	{
-	    DataDisp::selectAllCB(w, client_data, call_data);
+	    DataDisp::selectAllCB(CB_ARGS_NULL);
 	    success = true;
 	}
 	if (!success && XmIsText(dest))
@@ -6418,7 +8086,7 @@ static void gdbSelectAllCB(Widget w, XtPointer client_data,
     }
 
     case DataWindow:
-	DataDisp::selectAllCB(w, client_data, call_data);
+	DataDisp::selectAllCB(CB_ARGS_NULL);
 	break;
 
     case GDBWindow:
@@ -6429,12 +8097,17 @@ static void gdbSelectAllCB(Widget w, XtPointer client_data,
     default:
 	break;
     }
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning gdbSelectAllCB not implemented
+#endif
+#endif // IF_MOTIF
 }
 
 
-static void gdbDeleteSelectionCB(Widget w, XtPointer client_data, 
-				 XtPointer call_data)
+static void gdbDeleteSelectionCB(CB_ALIST_12(Widget w, XtP(DDDWindow) client_data))
 {
+#ifdef IF_MOTIF
     DDDWindow win = ddd_window(client_data);
     Boolean success = False;
     Widget dest = XmGetDestination(XtDisplay(w));
@@ -6444,7 +8117,7 @@ static void gdbDeleteSelectionCB(Widget w, XtPointer client_data,
     {
 	if (data_disp->have_selection())
 	{
-	    DataDisp::deleteCB(w, client_data, call_data);
+	    DataDisp::deleteCB(CB_ARGS_NULL);
 	    success = true;
 	}
     }
@@ -6468,13 +8141,18 @@ static void gdbDeleteSelectionCB(Widget w, XtPointer client_data,
     {
 	if (data_disp->have_selection())
 	{
-	    DataDisp::deleteCB(w, client_data, call_data);
+	    DataDisp::deleteCB(CB_ARGS_NULL);
 	    success = true;
 	}
     }
 
     if (success)
-	gdbUnselectAllCB(w, client_data, call_data);
+	gdbUnselectAllCB(CB_ARGS_NULL);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning gdbDeleteSelectionCB not implemented
+#endif
+#endif // IF_MOTIF
 }
 
 // Update cut/copy/paste bindings
@@ -6496,15 +8174,15 @@ static void set_cut_copy_paste_bindings(MMDesc *menu, BindingStyle style)
 	XtVaSetValues(menu[EditItems::Cut].widget,
 		      XmNaccelerator, "~Shift Ctrl<Key>X",
 		      XmNacceleratorText, cut.xmstring(),
-		      XtPointer(0));
+		      XtNIL);
 	XtVaSetValues(menu[EditItems::Copy].widget,
 		      XmNaccelerator, "~Shift Ctrl<Key>C",
 		      XmNacceleratorText, copy.xmstring(),
-		      XtPointer(0));
+		      XtNIL);
 	XtVaSetValues(menu[EditItems::Paste].widget,
 		      XmNaccelerator, "~Shift Ctrl<Key>V",
 		      XmNacceleratorText, paste.xmstring(),
-		      XtPointer(0));
+		      XtNIL);
 	break;
     }
 
@@ -6517,15 +8195,15 @@ static void set_cut_copy_paste_bindings(MMDesc *menu, BindingStyle style)
 	XtVaSetValues(menu[EditItems::Cut].widget,
 		      XmNaccelerator, "~Ctrl Shift<Key>Delete",
 		      XmNacceleratorText, cut.xmstring(),
-		      XtPointer(0));
+		      XtNIL);
 	XtVaSetValues(menu[EditItems::Copy].widget,
 		      XmNaccelerator, "~Shift Ctrl<Key>Insert",
 		      XmNacceleratorText, copy.xmstring(),
-		      XtPointer(0));
+		      XtNIL);
 	XtVaSetValues(menu[EditItems::Paste].widget,
 		      XmNaccelerator, "~Ctrl Shift<Key>Insert",
 		      XmNacceleratorText, paste.xmstring(),
-		      XtPointer(0));
+		      XtNIL);
 	break;
     }
     }
@@ -6562,9 +8240,17 @@ static void setup_cut_copy_paste_bindings(XrmDatabase db)
 	break;
     }
 
+#ifdef IF_MOTIF
     XrmDatabase bindings = XrmGetStringDatabase(resources);
+#else // NOT IF_MOTIF
+    XrmDatabase bindings = get_string_database(resources);
+#endif // IF_MOTIF
     assert(bindings != 0);
+#ifdef IF_MOTIF
     XrmMergeDatabases(bindings, &db);
+#else // NOT IF_MOTIF
+    merge_databases(bindings, db);
+#endif // IF_MOTIF
 }
 
 
@@ -6580,9 +8266,15 @@ static void set_select_all_bindings(MMDesc *menu, BindingStyle style)
     {
 	MString select_all("Ctrl+A");
 
+#ifdef IF_MOTIF
 	XtVaSetValues(menu[EditItems::SelectAll].widget,
 		      XmNacceleratorText, select_all.xmstring(),
-		      XtPointer(0));
+		      XtNIL);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Set accelerator?
+#endif
+#endif // IF_MOTIF
 	break;
     }
 
@@ -6590,9 +8282,15 @@ static void set_select_all_bindings(MMDesc *menu, BindingStyle style)
     {
 	MString select_all("Shift+Ctrl+A");
 
+#ifdef IF_MOTIF
 	XtVaSetValues(menu[EditItems::SelectAll].widget,
 		      XmNacceleratorText, select_all.xmstring(),
-		      XtPointer(0));
+		      XtNIL);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Set accelerator?
+#endif
+#endif // IF_MOTIF
 	break;
     }
     }
@@ -6616,9 +8314,15 @@ static void setup_select_all_bindings(XrmDatabase db)
 	break;
     }
 
+#ifdef IF_MOTIF
     XrmDatabase bindings = XrmGetStringDatabase(resources);
     assert(bindings != 0);
     XrmMergeDatabases(bindings, &db);
+#else // NOT IF_MOTIF
+    XrmDatabase bindings = get_string_database(resources);
+    assert(bindings != 0);
+    merge_databases(bindings, db);
+#endif // IF_MOTIF
 }
 
 
@@ -6630,6 +8334,7 @@ static int _mapped_menus = 0;
 
 static int mapped_menus()
 {
+#ifdef IF_MOTIF
     if (lesstif_version <= 87)
     {
 	// LessTif 0.87 and earlier does not issue a XmCR_MAP callback
@@ -6637,13 +8342,22 @@ static int mapped_menus()
 	// have some mapped menu.
 	return 1;
     }
+#endif // IF_MOTIF
 
     return _mapped_menus;
 }
 
-static void count_mapped_menus(Widget, XtPointer, XtPointer call_data)
+static void count_mapped_menus(
+#ifdef IF_MOTIF
+    Widget, XtPointer, XtPointer call_data
+#else // NOT IF_MOTIF
+    GdkEventAny *ev
+#endif // IF_MOTIF
+)
 {
+#ifdef IF_MOTIF
     XmRowColumnCallbackStruct *cbs = (XmRowColumnCallbackStruct *)call_data;
+
     if (cbs == 0)
 	return;
 
@@ -6670,12 +8384,34 @@ static void count_mapped_menus(Widget, XtPointer, XtPointer call_data)
     default:
 	break;
     }
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Event data in count_mapped_menus?
+#endif
+    if (ev == 0)
+	return;
 
+    switch (ev->type)
+    {
+    case GDK_MAP:
+	_mapped_menus++;
+	break;
+
+    case GDK_UNMAP:
+	_mapped_menus--;
+	break;
+
+#ifdef NAG_ME
+#warning Tear-off menus?
+#endif
+    default:
+	break;
+    }
+#endif // IF_MOTIF
     // std::clog << _mapped_menus << " mapped menus\n";
 }
 
-static void gdbUpdateEditCB(Widget w, XtPointer client_data, 
-			    XtPointer call_data)
+static void gdbUpdateEditCB(CB_ALIST_12(Widget w, XtP(DDDWindow) client_data))
 {
     DDDWindow win = ddd_window(client_data);
 
@@ -6702,8 +8438,10 @@ static void gdbUpdateEditCB(Widget w, XtPointer client_data,
 
     if (menu == 0 || menu[0].widget == 0)
 	return;
-
-    count_mapped_menus(w, client_data, call_data);
+#ifdef NAG_ME
+#warning count_mapped_menus arg
+#endif
+    count_mapped_menus(CB_ARGS_3(0));
 
     // Reset undo/redo actions
     string undo_action = undo_buffer.undo_action();
@@ -6733,10 +8471,11 @@ static void gdbUpdateEditCB(Widget w, XtPointer client_data,
 	set_sensitive(menu[EditItems::Redo].widget, true);
     }
 
-
+#ifdef IF_MOTIF
     // Check if we have something to cut
     XmTextPosition start, end;
     bool can_cut = false;
+#ifdef IF_MOTIF
     Widget dest  = XmGetDestination(XtDisplay(w));
 
     // Try destination window
@@ -6744,6 +8483,11 @@ static void gdbUpdateEditCB(Widget w, XtPointer client_data,
 	can_cut = XmTextGetSelectionPosition(dest, &start, &end);
     if (!can_cut && dest != 0 && XmIsTextField(dest))
 	can_cut = XmTextFieldGetSelectionPosition(dest, &start, &end);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning XmGetDestination?
+#endif
+#endif // IF_MOTIF
 
     // Try debugger console
     if (!can_cut && (win == GDBWindow || win == CommonWindow))
@@ -6777,19 +8521,27 @@ static void gdbUpdateEditCB(Widget w, XtPointer client_data,
     set_sensitive(menu[EditItems::Copy].widget,   can_copy);
     set_sensitive(menu[EditItems::Paste].widget,  can_paste);
     set_sensitive(menu[EditItems::Delete].widget, can_cut);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Fix sensitivity of cut/copy/paste menu items
+#endif
+#endif // IF_MOTIF
 }
 
-static void gdbUpdateFileCB(Widget w, XtPointer client_data, 
-			    XtPointer call_data)
+static void gdbUpdateFileCB(CB_ARG_LIST_2(client_data))
 {
     MMDesc *file_menu = (MMDesc *)client_data;
     if (file_menu == 0 || file_menu[0].widget == 0)
 	return;
 
-    count_mapped_menus(w, client_data, call_data);
+    count_mapped_menus(CB_ARGS_3(NULL));
 
     // Check whether we can print something
+#ifdef IF_MOTIF
     Graph *graph = graphEditGetGraph(data_disp->graph_edit);
+#else // NOT IF_MOTIF
+    Graph *graph = data_disp->graph_edit->get_graph();
+#endif // IF_MOTIF
     bool can_print = (graph->firstNode() != 0);
     set_sensitive(file_menu[FileItems::Print].widget,      can_print);
     set_sensitive(file_menu[FileItems::PrintAgain].widget, can_print);
@@ -6806,23 +8558,21 @@ static void gdbUpdateFileCB(Widget w, XtPointer client_data,
 #endif
 }
 
-static void gdbUpdateViewCB(Widget w, XtPointer client_data, 
-			    XtPointer call_data)
+static void gdbUpdateViewCB(CB_ARG_LIST_2(client_data))
 {
     MMDesc *view_menu = (MMDesc *)client_data;
     if (view_menu == 0 || view_menu[0].widget == 0)
 	return;
 
-    count_mapped_menus(w, client_data, call_data);
+    count_mapped_menus(CB_ARGS_3(NULL));
 
     set_sensitive(view_menu[CodeWindow].widget, gdb->type() == GDB);
     set_sensitive(view_menu[ExecWindow].widget, gdb->has_redirection());
 }
 
-static void gdbUpdateViewsCB(Widget w, XtPointer client_data, 
-			     XtPointer call_data)
+static void gdbUpdateViewsCB(CB_ARG_LIST_2(client_data))
 {
-    gdbUpdateViewCB(w, client_data, call_data);
+    gdbUpdateViewCB(CB_ARGS_2(client_data));
 
     MMDesc *view_menu = (MMDesc *)client_data;
     if (view_menu == 0 || view_menu[0].widget == 0)
@@ -6841,9 +8591,9 @@ void update_edit_menus()
 
     XtPointer call_data = 0;
 
-    gdbUpdateEditCB(gdb_w, XtPointer(GDBWindow),    call_data);
-    gdbUpdateEditCB(gdb_w, XtPointer(SourceWindow), call_data);
-    gdbUpdateEditCB(gdb_w, XtPointer(DataWindow),   call_data);
+    gdbUpdateEditCB(CB_ARGS_12(gdb_w, GDBWindow));
+    gdbUpdateEditCB(CB_ARGS_12(gdb_w, SourceWindow));
+    gdbUpdateEditCB(CB_ARGS_12(gdb_w, DataWindow));
 }
 
 // In case we have tear-off menus, all these menus must be updated at
@@ -6857,15 +8607,15 @@ static void gdbUpdateAllMenus()
 
     XtPointer call_data = 0;
 
-    gdbUpdateFileCB(gdb_w, XtPointer(command_file_menu), call_data);
-    gdbUpdateFileCB(gdb_w, XtPointer(source_file_menu),  call_data);
-    gdbUpdateFileCB(gdb_w, XtPointer(data_file_menu),    call_data);
+    gdbUpdateFileCB(CB_ARGS_2(XtPointer(command_file_menu)));
+    gdbUpdateFileCB(CB_ARGS_2(XtPointer(source_file_menu)));
+    gdbUpdateFileCB(CB_ARGS_2(XtPointer(data_file_menu)));
 
-    gdbUpdateViewsCB(gdb_w, XtPointer(views_menu),       call_data);
+    gdbUpdateViewsCB(CB_ARGS_2(XtPointer(views_menu)));
 
-    gdbUpdateViewCB(gdb_w, XtPointer(command_view_menu), call_data);
-    gdbUpdateViewCB(gdb_w, XtPointer(source_view_menu),  call_data);
-    gdbUpdateViewCB(gdb_w, XtPointer(data_view_menu),    call_data);
+    gdbUpdateViewCB(CB_ARGS_2(XtPointer(command_view_menu)));
+    gdbUpdateViewCB(CB_ARGS_2(XtPointer(source_view_menu)));
+    gdbUpdateViewCB(CB_ARGS_2(XtPointer(data_view_menu)));
 }
 
 //-----------------------------------------------------------------------------
@@ -6883,25 +8633,34 @@ static void setup_new_shell(Widget w)
     if (shell == 0)
 	return;
 
+#ifdef IF_MOTIF
 #if HAVE_X11_XMU_EDITRES_H
     // Make the shell handle EditRes messages
     XtRemoveEventHandler(shell, EventMask(0), True,
 			 XtEventHandler(_XEditResCheckMessages), 
-			 XtPointer(0));
+			 XtNIL);
     XtAddEventHandler(shell, EventMask(0), True,
 		      XtEventHandler(_XEditResCheckMessages),
-		      XtPointer(0));
+		      XtNIL);
 #endif
+#endif // IF_MOTIF
 
     // Use DDD logo as icon of the new shell
+#ifdef IF_MOTIF
     if (shell != 0 && XtIsRealized(shell))
 	wm_set_icon(shell, iconlogo(w), iconmask(w));
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning wm_set_icon not implemented
+#endif
+#endif // IF_MOTIF
 }
 
 //-----------------------------------------------------------------------------
 // Misc functions
 //-----------------------------------------------------------------------------
 
+#ifdef IF_MOTIF
 // Xt Warning handler
 static void ddd_xt_warning(String message)
 {
@@ -6929,7 +8688,7 @@ static void ddd_xt_warning(String message)
 	XFlush(XtDisplay(gdb_w));
     }
 }
-
+#endif // IF_MOTIF
 
 
 
@@ -6938,7 +8697,12 @@ static void ddd_xt_warning(String message)
 //-----------------------------------------------------------------------------
 
 static Widget splash_shell  = 0;
+#ifdef IF_MOTIF
 static Pixmap splash_pixmap = None;
+#else // NOT IF_MOTIF
+// Cannot initialize Glib::RefPtr.
+static Pixmap splash_pixmap;
+#endif // IF_MOTIF
 static _Delay *splash_delay = 0;
 
 static void popdown_splash_screen(XtPointer data, XtIntervalId *id)
@@ -6947,15 +8711,24 @@ static void popdown_splash_screen(XtPointer data, XtIntervalId *id)
 
     if (data != 0)
     {
+#ifdef IF_MOTIF
 	XtIntervalId *timer = (XtIntervalId *)data;
 	assert(*timer == *id);
 	*timer = 0;
+#else // NOT IF_MOTIF
+	std::cerr << "popdown_splash_screen(): timer?\n";
+#endif // IF_MOTIF
     }
     
     if (splash_shell != 0)
     {
-	if (splash_pixmap != None)
+	if (splash_pixmap) {
+#ifdef IF_MOTIF
 	    XFreePixmap(XtDisplay(splash_shell), splash_pixmap);
+#else // NOT IF_MOTIF
+	    splash_pixmap.clear();
+#endif // IF_MOTIF
+	}
 
 	popdown_shell(splash_shell);
 	DestroyWhenIdle(splash_shell);
@@ -6968,9 +8741,12 @@ static void popdown_splash_screen(XtPointer data, XtIntervalId *id)
 
 static void popup_splash_screen(Widget parent, const string& color_key)
 {
+#ifdef IF_MOTIF
     popdown_splash_screen();
 
+#ifdef IF_MOTIF
     XErrorBlocker blocker(XtDisplay(parent));
+#endif // IF_MOTIF
 
     Arg args[10];
     int arg = 0;
@@ -6996,8 +8772,14 @@ static void popup_splash_screen(Widget parent, const string& color_key)
     Dimension width, height;
     splash_pixmap = dddsplash(splash, color_key, width, height);
 
+#ifdef IF_MOTIF
     if (blocker.error_occurred())
 	splash_pixmap = None;
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning XErrorBlocker not defined
+#endif
+#endif // IF_MOTIF
 
     if (splash_pixmap == None)
 	return;
@@ -7006,12 +8788,12 @@ static void popup_splash_screen(Widget parent, const string& color_key)
 		  XmNbackgroundPixmap, splash_pixmap,
 		  XmNwidth, width,
 		  XmNheight, height,
-		  XtPointer(0));
+		  XtNIL);
 
     int x = (WidthOfScreen(XtScreen(splash_shell)) - width) / 2;
     int y = (HeightOfScreen(XtScreen(splash_shell)) - height) / 2;
 
-    XtVaSetValues(splash_shell, XmNx, x, XmNy, y, XtPointer(0));
+    XtVaSetValues(splash_shell, XmNx, x, XmNy, y, XtNIL);
 
     // Place lock warning on top of startup splash
     lock_dialog_x = x + 20;
@@ -7023,16 +8805,31 @@ static void popup_splash_screen(Widget parent, const string& color_key)
 
     popup_shell(splash_shell);
     wait_until_mapped(splash, splash_shell);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Implement splash screen?
+#endif
+#endif // IF_MOTIF
 }
 
-static void SetSplashScreenCB(Widget, XtPointer, XtPointer call_data)
+#ifdef IF_MOTIF
+static void SetSplashScreenCB(CB_ARG_LIST_3(call_data))
+#else // NOT IF_MOTIF
+static void SetSplashScreenCB(TOGGLEBUTTON_P w)
+#endif // IF_MOTIF
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.splash_screen = info->set;
 
-    update_options();
+    update_options(NO_UPDATE);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Implement splash screen?
+#endif
+#endif // IF_MOTIF
 }
 
 
@@ -7059,6 +8856,7 @@ static void ReportStartHP(Agent *agent, void *, void *)
 
 static void ReportDeathHP(Agent *agent, void *, void *call_data)
 {
+    std::cerr << "FIXME: ReportDeathHP\n";
     GDBAgent *gdb = ptr_cast(GDBAgent, agent);
     if (gdb == 0)
 	return;
@@ -7084,12 +8882,13 @@ static void vsl_echo(const string& msg)
 
     if (dialog == 0)
     {
-	Arg args[10];
-	Cardinal arg = 0;
-
 	// We report only the first message.  
 	// Everything else only goes into the status line.
 	MString message = rm("The VSL interpreter failed:") + cr() + tt(msg);
+
+#ifdef IF_MOTIF
+	Arg args[10];
+	Cardinal arg = 0;
 
 	XtSetArg(args[arg], XmNdeleteResponse, XmDESTROY);          arg++;
 	XtSetArg(args[arg], XmNautoUnmanage,   False);              arg++;
@@ -7097,7 +8896,6 @@ static void vsl_echo(const string& msg)
 	dialog = verify(XmCreateWarningDialog(find_shell(gdb_w), 
 					      XMST("vsl_message"), 
 					      args, arg));
-
 	XtUnmanageChild(XmMessageBoxGetChild(dialog, 
 					     XmDIALOG_CANCEL_BUTTON));
 
@@ -7106,6 +8904,10 @@ static void vsl_echo(const string& msg)
 	XtAddCallback(dialog, XmNcancelCallback,  DestroyShellCB, 0);
 	XtAddCallback(dialog, XmNhelpCallback,    ImmediateHelpCB, 0);
 	XtAddCallback(dialog, XmNdestroyCallback, ClearDialogCB, &dialog);
+#else // NOT IF_MOTIF
+	dialog = new Gtk::MessageDialog(message.xmstring(), false, Gtk::MESSAGE_WARNING);
+#endif // IF_MOTIF
+
     }
 
     manage_and_raise(dialog);
@@ -7119,17 +8921,22 @@ static void vsl_echo(const string& msg)
 //-----------------------------------------------------------------------------
 
 extern "C" {
-    static Bool is_emergency(Display *, XEvent *event, char *)
+    static Bool is_emergency(DISPLAY_P, XEvent *event, char *)
     {
 	switch (event->type)
 	{
 	case KeyPress:
 	{
+#ifdef IF_MOTIF
 	    char buffer[1024];
 	    KeySym keysym;
 
 	    int len = XLookupString(&event->xkey, buffer, sizeof buffer, 
 				    &keysym, (XComposeStatus *)0);
+#else // NOT IF_MOTIF
+	    int len = event->key.length;
+	    char *buffer = event->key.string;
+#endif // IF_MOTIF
 	    if (len == 1)
 	    {
 		char c = buffer[0];
@@ -7149,12 +8956,18 @@ extern "C" {
 bool process_emergencies()
 {
     XEvent event;
+#ifdef IF_MOTIF
     if (XCheckIfEvent(XtDisplay(gdb_w), &event, is_emergency, 0))
     {
 	// Emergency: process this event immediately
 	XtDispatchEvent(&event);
 	return true;
     }
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning process_emergencies: scan event queue for high-priority events?
+#endif
+#endif // IF_MOTIF
 
     return false;
 }
@@ -7228,14 +9041,35 @@ static string resource_value(XrmDatabase db, const string& app_name, const char 
     string str_class = string(DDD_CLASS_NAME) + "." + res_name;
 
     char *type;
+#ifdef IF_MOTIF
+#ifdef IF_MOTIF
     XrmValue xrmvalue;
+#else // NOT IF_MOTIF
+    Glib::Value<std::string> xrmvalue;
+    xrmvalue.init(Glib::Value<std::string>::value_type());
+#endif // IF_MOTIF
+#ifdef IF_MOTIF
     Bool success = XrmGetResource(db, str_name.chars(), str_class.chars(), &type, &xrmvalue);
+#else // NOT IF_MOTIF
+    Bool success = get_resource(db, str_name.chars(), str_class.chars(), xrmvalue);
+#endif // IF_MOTIF
     if (!success)
 	return "";		// Resource not found
 
+#ifdef IF_MOTIF
     const char *str = (const char *)xrmvalue.addr;
     int len   = xrmvalue.size - 1; // includes the final `\0'
+#else // NOT IF_MOTIF
+    const char *str = xrmvalue.get().c_str();
+    int len = strlen(str);
+#endif // IF_MOTIF
     return string(str, len);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning BUGGER THIS: Glib::Value is totally undocumented cruft.
+#endif
+    return string();
+#endif // IF_MOTIF
 }
 
 static bool is_set(string value)
@@ -7322,6 +9156,7 @@ static void setup_version_info()
     // Set e-mail address in @tt; the remainder in @rm
     int cinfo_lt = cinfo.index('<', -1);
     int cinfo_gt = cinfo.index('>', -1);
+#ifdef IF_MOTIF
     if (cinfo_lt >= 0 && cinfo_gt >= 0)
     {
 	helpOnVersionExtraText = rm(cinfo.before(cinfo_lt));
@@ -7337,6 +9172,7 @@ static void setup_version_info()
     {
 	helpOnVersionExtraText = rm(cinfo);
     }
+#endif // IF_MOTIF
 
     string expires = ddd_expiration_date();
     if (!expires.empty())
@@ -7348,9 +9184,12 @@ static void setup_version_info()
 	else
 	    expired_msg += "expires " + expires;
 
+#ifdef IF_MOTIF
 	helpOnVersionExtraText += rm(expired_msg + ".") + cr();
+#endif // IF_MOTIF
     }
 
+#ifdef IF_MOTIF
     helpOnVersionExtraText += cr() 
 	+ rm(DDD_NAME " is ") + sl("free software")
 	+ rm(" and you are welcome to distribute copies of it") + cr()
@@ -7370,11 +9209,13 @@ static void setup_version_info()
 	+ rm("    59 Temple Place - Suite 330") + cr()
 	+ rm("    Boston, MA  02111-1307, USA") + cr();
 #endif
+#endif // IF_MOTIF
 
     string log = session_log_file();
     if (log.contains(gethome(), 0))
 	log = "~" + log.after(gethome());
 
+#ifdef IF_MOTIF
     helpOnVersionExtraText += cr()
 	+ rm("Send bug reports to <")
 	+ tt(PACKAGE_BUGREPORT) + rm(">.") + cr()
@@ -7387,6 +9228,7 @@ static void setup_version_info()
 	+ rm(DDD_NAME " WWW page: ") + tt(app_data.www_page) + cr()
 	+ rm(DDD_NAME " mailing list: <")
 	+ tt("ddd-request@gnu.org") + rm(">") + cr();
+#endif // IF_MOTIF
 
 #if SHOW_COPYRIGHT_IN_SOURCE_WINDOW
     // Duplicate version info in source window
@@ -7409,6 +9251,7 @@ static void setup_version_info()
     s += "To start, select `Help->What Now?'.";
     XmTextSetString(SourceView::source(), s);
 #else
+#ifdef IF_MOTIF
     XmTextSetString(gdb_w, XMST(
 		    "GNU " DDD_NAME " " DDD_VERSION " (" DDD_HOST "), "
 		    "by Dorothea L\374tkehaus and Andreas Zeller.\n"
@@ -7420,10 +9263,26 @@ static void setup_version_info()
 		    "Universit\344t des Saarlandes, Germany.\n"
 		    "Copyright \251 2001-2004 "
 		    "Free Software Foundation, Inc.\n"));
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Translate this message to UTF-8
+#endif
+    gdb_w->set_text(XMST("GNU " DDD_NAME " " DDD_VERSION " (" DDD_HOST "), "
+			 "by Dorothea Luetkehaus and Andreas Zeller.\n"
+			 "Copyright (c) 1995-1999 "
+			 "Technische Universitaet Braunschweig, Germany.\n"
+			 "Copyright (c) 1999-2001 "
+			 "Universitaet Passau, Germany.\n"
+			 "Copyright (c) 2001 "
+			 "Universitaet des Saarlandes, Germany.\n"
+			 "Copyright (c) 2001-2004 "
+			 "Free Software Foundation, Inc.\n"));
+#endif // IF_MOTIF
 #endif
 }
 
 
+#ifdef IF_MOTIF
 // Add current selection as argument
 static void add_arg_from_selection(Widget toplevel, int& argc, const char **&argv)
 {
@@ -7478,6 +9337,11 @@ static void add_arg_from_selection(Widget toplevel, int& argc, const char **&arg
 	}
     }
 }
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Selection does not work yet
+#endif
+#endif // IF_MOTIF
 
 static void setup_environment()
 {
@@ -7666,12 +9530,16 @@ static void setup_command_tty()
 	init_command_tty();
 
 	// Issue init msg (using 7-bit characters)
+#ifdef IF_MOTIF
 	string init_msg = XmTextGetString(gdb_w);
 	init_msg.gsub("\344", "ae");
 	init_msg.gsub("\366", "oe");
 	init_msg.gsub("\374", "ue");
 	init_msg.gsub("\337", "ss");
 	init_msg.gsub("\251", "(C)");
+#else // NOT IF_MOTIF
+	Glib::ustring init_msg = gdb_w->get_text();
+#endif // IF_MOTIF
 	tty_out(init_msg);
     }
 }
@@ -7738,6 +9606,7 @@ static void setup_motif_version_warnings()
     // Version warnings
     bool risky = false;
 
+#ifdef IF_MOTIF
 #if HAVE_XMUSEVERSION
     if (xmUseVersion != XmVersion)
     {
@@ -7750,6 +9619,7 @@ static void setup_motif_version_warnings()
 	risky = true;
     }
 #endif
+#endif // IF_MOTIF
 
     if (risky)
 	std::cerr << "Continue at own risk.\n";
@@ -7862,6 +9732,7 @@ static void setup_options()
 
 static void setup_theme_manager()
 {
+#ifdef IF_MOTIF
     DispBox::theme_manager = ThemeManager(app_data.themes);
     StringArray available_themes;
     get_themes(available_themes);
@@ -7884,6 +9755,11 @@ static void setup_theme_manager()
 	    DispBox::theme_manager.pattern(theme) = p;
 	}
     }
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning No themes yet
+#endif
+#endif // IF_MOTIF
 }
 
 static void setup_core_limit()

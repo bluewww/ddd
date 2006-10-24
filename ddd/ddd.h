@@ -32,16 +32,29 @@
 #include "strclass.h"
 #include <fstream>
 
+#include "gtk_wrapper.h"
+
+#ifdef IF_MOTIF
+
 #include <X11/Intrinsic.h>
 #include <Xm/Xm.h>
 
+#else // NOT IF_MOTIF
+
+#include "GtkScrolledText.h"
+
+#endif // IF_MOTIF
+
 #include "bool.h"
 
+// Main window widget
+extern CONTAINER_P main_window;
+
 // GDB command widget
-extern Widget gdb_w;
+extern SCROLLEDTEXT_P gdb_w;
 
 // Status line widget
-extern Widget status_w;
+extern STATUSBAR_P status_w;
 
 // Output TEXT in GDB window, unless we've just composed a command
 extern void gdb_out(const string& text);
@@ -50,7 +63,10 @@ extern void gdb_out(const string& text);
 extern void _gdb_out(const string& text);
 
 // Update option menus
-extern void update_options();
+extern void update_options(bool noupd=false);
+
+// Update option menus after toggle
+extern void toggle_update_options();
 
 // Update `Reset' button in preferences panel
 extern void update_reset_preferences();

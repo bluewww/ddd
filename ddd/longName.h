@@ -31,6 +31,8 @@
 
 #include "strclass.h"
 
+#include "gtk_wrapper.h"
+
 extern string longName(Widget w);
 
 #endif

@@ -31,7 +31,14 @@
 
 #include "strclass.h"
 #include <stdlib.h>
+
+#ifdef IF_MOTIF
+
 #include <X11/Intrinsic.h>
+
+#endif // IF_MOTIF
+
+#include "gtk_wrapper.h"
 
 // Execution TTY
 

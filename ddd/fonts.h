@@ -32,7 +32,13 @@
 #include "strclass.h"
 #include "AppData.h"
 
+#ifdef IF_MOTIF
+
 #include <X11/Intrinsic.h>
+
+#endif // IF_MOTIF
+
+#include "gtk_wrapper.h"
 
 // Font types
 enum DDDFont { DefaultDDDFont       = 0,
@@ -54,11 +60,11 @@ extern string make_font(const AppData& ad, DDDFont base,
 extern void set_font(DDDFont n, const string& name);
 
 // Browse fonts
-extern void BrowseFontCB(Widget w, XtPointer, XtPointer);
+extern void BrowseFontCB(CB_ALIST_12(BUTTON_P w, XtP(DDDFont)));
 
 // Set font name and size
-extern void SetFontNameCB(Widget w, XtPointer, XtPointer);
-extern void SetFontSizeCB(Widget w, XtPointer, XtPointer);
+extern void SetFontNameCB(CB_ALIST_12(ENTRY_P, XtP(DDDFont)));
+extern void SetFontSizeCB(CB_ALIST_12(ENTRY_P, XtP(DDDFont)));
 
 #endif // _DDD_fonts_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

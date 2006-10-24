@@ -30,9 +30,15 @@
 #ifndef _DDD_AppData_h
 #define _DDD_AppData_h
 
+#ifdef IF_MOTIF
+
 #include <Xm/Xm.h>
 #include <X11/StringDefs.h>
 #include <X11/Xlib.h>
+
+#endif // IF_MOTIF
+
+#include "gtk_wrapper.h"
 
 #include "version.h"
 #include "OnOff.h"
@@ -642,6 +648,9 @@ struct AppData {
     int       lesstif_version;
     const _XtString    dddinit_version;
     const _XtString    app_defaults_version;
+#ifndef IF_MOTIF
+    AppData(void);
+#endif // IF_MOTIF
 };
 
 extern AppData app_data;

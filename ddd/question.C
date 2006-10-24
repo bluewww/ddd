@@ -42,11 +42,13 @@ char question_rcsid[] =
 #include "TimeOut.h"
 #include "disp-read.h"
 
+#ifdef IF_MOTIF
 #include <X11/Intrinsic.h>
+#endif // IF_MOTIF
 #include <iostream>
 
 #ifndef LOG_GDB_QUESTION
-#define LOG_GDB_QUESTION 0
+#define LOG_GDB_QUESTION 1
 #endif
 
 //-----------------------------------------------------------------------------
@@ -68,7 +70,11 @@ struct GDBReply {
 };
 
 // Timeout proc - called from XtAppAddTimeOut()
+#ifdef IF_MOTIF
 static void gdb_reply_timeout(XtPointer client_data, XtIntervalId *)
+#else // NOT IF_MOTIF
+static bool gdb_reply_timeout(GDBReply *client_data)
+#endif // IF_MOTIF
 {
 #if LOG_GDB_QUESTION
     std::clog << "gdb_question: TimeOut\n";
@@ -82,6 +88,9 @@ static void gdb_reply_timeout(XtPointer client_data, XtIntervalId *)
     reply->answer   = NO_GDB_ANSWER;
     reply->received = true;
     reply->answered = false;
+#ifndef IF_MOTIF
+    return false;
+#endif // IF_MOTIF
 }
 
 // GDB sent a reply - Called from GDBAgent::send_question()
@@ -133,25 +142,42 @@ static void wait_for_gdb_reply(GDBReply *reply, int timeout)
     if (timeout == 0)
 	timeout = app_data.question_timeout;
 
-    XtIntervalId timer = 0;
+    XtIntervalId timer = NO_TIMER;
     if (timeout > 0)
     {
+#ifdef IF_MOTIF
 	timer = XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 
 				timeout * 1000,
 				gdb_reply_timeout, (void *)reply);
+#else // NOT IF_MOTIF
+	timer = Glib::signal_timeout().connect(sigc::bind(PTR_FUN(gdb_reply_timeout), reply),
+					       timeout * 1000);
+#endif // IF_MOTIF
     }
 
     // Process all GDB input and timer events
-    while (!reply->received && gdb->running())
+    while (!reply->received && gdb->running()) {
+#ifdef IF_MOTIF
 	XtAppProcessEvent(XtWidgetToApplicationContext(gdb_w), 
 			  XtIMTimer | XtIMAlternateInput);
+#else // NOT IF_MOTIF
+	Glib::MainContext::get_default()->iteration(true);
+#endif // IF_MOTIF
+    }
+    std::cerr << "reply->received=" << reply->received << "\n";
+    std::cerr << "reply->answered=" << reply->answered << "\n";
 
     if (reply->answered || !reply->received)
     {
 	// Reply has been answered or will not be answered any more:
 	// Remove timeout
-	if (timeout > 0)
+	if (timeout > 0) {
+#ifdef IF_MOTIF
 	    XtRemoveTimeOut(timer);
+#else // NOT IF_MOTIF
+	    timer.disconnect();
+#endif // IF_MOTIF
+	}
     }
 }
 

@@ -29,7 +29,14 @@
 #ifndef _DDD_FontTable_h
 #define _DDD_FontTable_h
 
+#ifdef IF_MOTIF
+
 #include <X11/Xlib.h>
+
+#endif // IF_MOTIF
+
+#include "gtk_wrapper.h"
+
 #include "strclass.h"
 #include "TypeInfo.h"
 #include "assert.h"
@@ -37,7 +44,7 @@
 #define MAX_FONTS 511 /* Max #Fonts */
 
 struct FontTableHashEntry {
-    XFontStruct *font;
+    FONT_P font;
     string name;
 
     FontTableHashEntry(): font(0), name() {}
@@ -53,28 +60,33 @@ public:
 
 private:
     FontTableHashEntry table[MAX_FONTS];
-    Display *_display;
+    DISPLAY_P _display;
 
     FontTable(const FontTable&);
     FontTable& operator = (const FontTable&);
 
 public:
-    FontTable(Display *display):
+    FontTable(DISPLAY_P display):
 	_display(display)
     {
 	for (unsigned i = 0; i < MAX_FONTS; i++)
 	{
-	    table[i].font = 0;
+	    table[i].font = NO_FONT;
 	    table[i].name = "";
 	}
     }
     virtual ~FontTable()
     {
 	for (unsigned i = 0; i < MAX_FONTS; i++)
-	    if (table[i].font != 0)
+	    if (table[i].font != 0) {
+#ifdef IF_MOTIF
 		XFreeFont(_display, table[i].font);
+#else
+		table[i].font.clear();
+#endif
+	    }
     }
-    XFontStruct *operator[](const string& name);
+    FONT_P operator[](const string& name);
 };
 
 #endif

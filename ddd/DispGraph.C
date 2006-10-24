@@ -221,12 +221,16 @@ int DispGraph::insert(int new_disp_nr, DispNode *new_dn, int depends_on)
 
 // Get a good position for NEW_NODE
 BoxPoint DispGraph::adjust_position (DispNode *new_node,
-				     Widget w,
+				     GRAPH_EDIT_P w,
 				     BoxPoint pos,
 				     const BoxPoint& offset,
 				     BoxPoint grid) const
 {
+#ifdef IF_MOTIF
     const GraphGC& graphGC = graphEditGetGraphGC(w);
+#else // NOT IF_MOTIF
+    const GraphGC& graphGC = w->get_graph_GC();
+#endif // IF_MOTIF
 
     // std::clog << "new node       at " << pos << "\n";
 
@@ -272,16 +276,22 @@ BoxPoint DispGraph::adjust_position (DispNode *new_node,
 
 // Return a default position for NEW_NODE
 BoxPoint DispGraph::default_pos(DispNode *new_node, 
-				Widget w, int depends_on) const
+				GRAPH_EDIT_P w, int depends_on) const
 {
     Dimension grid_height = 16;
     Dimension grid_width  = 16;
     Cardinal rotation     = 0;
+#ifdef IF_MOTIF
     XtVaGetValues(w,
 		  XtNgridHeight, &grid_height,
 		  XtNgridWidth,  &grid_width,
 		  XtNrotation,   &rotation,
 		  XtPointer(0));
+#else // NOT IF_MOTIF
+    grid_height = w->get_grid_height();
+    grid_width = w->get_grid_width();
+    rotation = w->get_rotation();
+#endif // IF_MOTIF
 
     BoxPoint grid(max(grid_height, 1), max(grid_width, 1));
     BoxPoint delta(grid[X] * 3, grid[Y] * 2);
@@ -300,7 +310,11 @@ BoxPoint DispGraph::default_pos(DispNode *new_node,
 	// New node: start with the top-level visible position
 	Position x = 0;
 	Position y = 0;
+#ifdef IF_MOTIF
 	XtVaGetValues(w, XtNx, &x, XtNy, &y, XtPointer(0));
+#else // NOT IF_MOTIF
+	w->translate_coordinates(*w->get_parent(), 0, 0, x, y);
+#endif // IF_MOTIF
 	pos = BoxPoint(max(-x, grid[X]), max(-y, grid[Y] * 2));
 
 	// Add size offset
@@ -308,7 +322,11 @@ BoxPoint DispGraph::default_pos(DispNode *new_node,
 	pos += new_size / 2;
 
 	// Round to nearest grid position
+#ifdef IF_MOTIF
 	pos = graphEditFinalPosition(w, pos);
+#else // NOT IF_MOTIF
+	pos = w->final_position(pos);
+#endif // IF_MOTIF
     }
     else
     {
@@ -706,7 +724,7 @@ void DispGraph::disp_node_disabledHP (void*,
 //-------------------------------------------------------------------------
 
 // Make DISP_NR an alias of ALIAS_DISP_NR.  Suppress ALIAS_DISP_NR.
-bool DispGraph::alias(Widget w, int disp_nr, int alias_disp_nr)
+bool DispGraph::alias(GRAPH_EDIT_P w, int disp_nr, int alias_disp_nr)
 {
     DispNode *d0 = get(disp_nr);
     DispNode *dn = get(alias_disp_nr);
@@ -908,7 +926,7 @@ bool DispGraph::has_angle(PosGraphNode *node, const BoxPoint& p)
 }
 
 // Add a new edge in existing graph
-void DispGraph::add_alias_edge(Widget w, int alias_disp_nr, 
+void DispGraph::add_alias_edge(GRAPH_EDIT_P w, int alias_disp_nr, 
 			       GraphNode *_from, GraphNode *_to,
 			       EdgeAnnotation *anno)
 {
@@ -932,7 +950,7 @@ void DispGraph::add_alias_edge(Widget w, int alias_disp_nr,
 }
 
 // Add a direct edge from FROM to TO
-void DispGraph::add_direct_alias_edge(Widget, int alias_disp_nr, 
+void DispGraph::add_direct_alias_edge(GRAPH_EDIT_P, int alias_disp_nr, 
 				      GraphNode *from, GraphNode *to,
 				      EdgeAnnotation *anno)
 {
@@ -940,9 +958,13 @@ void DispGraph::add_direct_alias_edge(Widget, int alias_disp_nr,
 }
 
 // Check whether P is obscured by any node
-bool DispGraph::is_hidden(Widget w, const BoxPoint& p) const
+bool DispGraph::is_hidden(GRAPH_EDIT_P w, const BoxPoint& p) const
 {
+#ifdef IF_MOTIF
     const GraphGC& graphGC = graphEditGetGraphGC(w);
+#else // NOT IF_MOTIF
+    const GraphGC& graphGC = w->get_graph_GC();
+#endif // IF_MOTIF
 
     for (GraphNode *n = firstVisibleNode(); n != 0; n = nextVisibleNode(n))
     {
@@ -974,14 +996,19 @@ BoxPoint DispGraph::rotate_offset(const BoxPoint& p, int angle)
 
 
 // Check whether POS1 and POS2 are okay as hint positions for FROM and TO
-bool DispGraph::hint_positions_ok(Widget w,
+bool DispGraph::hint_positions_ok(GRAPH_EDIT_P w,
 				  PosGraphNode *from,
 				  PosGraphNode *to,
 				  const BoxPoint& pos1,
 				  const BoxPoint& pos2) const
 {
+#ifdef IF_MOTIF
     BoxPoint p1 = graphEditFinalPosition(w, pos1);
     BoxPoint p2 = graphEditFinalPosition(w, pos2);
+#else // NOT IF_MOTIF
+    BoxPoint p1 = w->final_position(pos1);
+    BoxPoint p2 = w->final_position(pos2);
+#endif // IF_MOTIF
 
     if (p1[X] <= 0 || p2[X] <= 0 || p1[Y] <= 0 || p2[Y] <= 0)
 	return false;		// Bad coordinates
@@ -1010,7 +1037,11 @@ bool DispGraph::hint_positions_ok(Widget w,
     BoxPoint dist = p2 - p1;
     if (dist[X] > 0 || dist[Y] > 0)
     {
+#ifdef IF_MOTIF
 	BoxPoint center = graphEditFinalPosition(w, p1 + dist / 2);
+#else // NOT IF_MOTIF
+	BoxPoint center = w->final_position(p1 + dist / 2);
+#endif // IF_MOTIF
 	if (is_hidden(w, center))	// Center obscured by existing node
 	    return false;
     }
@@ -1020,17 +1051,22 @@ bool DispGraph::hint_positions_ok(Widget w,
 
 
 // Add edge from FROM to TO, inserting hints if required
-void DispGraph::add_routed_alias_edge(Widget w, int alias_disp_nr, 
+void DispGraph::add_routed_alias_edge(GRAPH_EDIT_P w, int alias_disp_nr, 
 				      PosGraphNode *from, PosGraphNode *to,
 				      EdgeAnnotation *anno)
 {
     // Determine hint offsets
     Dimension grid_height = 16;
     Dimension grid_width  = 16;
+#ifdef IF_MOTIF
     XtVaGetValues(w,
 		  XtNgridHeight, &grid_height,
 		  XtNgridWidth,  &grid_width,
 		  XtPointer(0));
+#else // NOT IF_MOTIF
+    grid_height = w->get_grid_height();
+    grid_width = w->get_grid_width();
+#endif // IF_MOTIF
 
     BoxPoint dist   = to->pos() - from->pos();
     BoxPoint center = from->pos() + dist / 2;

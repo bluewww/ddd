@@ -41,8 +41,12 @@
 #  define REINTERPRET_CAST(TYPE,OBJ) ((TYPE)(OBJ))
 #endif
 
+#ifdef IF_MOTIF
 // Motif does not use "const _XtString" and this leads to many const_cast.
 #define XMST(OBJ) CONST_CAST(char *,OBJ)
+#else
+#define XMST(OBJ) Glib::ustring(OBJ)
+#endif
 
 // first three fields of XtResource are char*.
 #define XTRESSTR(OBJ) CONST_CAST(char *,OBJ)

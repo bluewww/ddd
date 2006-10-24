@@ -29,6 +29,8 @@
 char examine_rcsid[] = 
     "$Id$";
 
+#include "config.h"
+
 #include "examine.h"
 
 #include "bool.h"
@@ -47,23 +49,25 @@ char examine_rcsid[] =
 #include "HistoryD.h"
 #include "MakeMenu.h"
 
+#ifdef IF_MOTIF
 #include <Xm/SelectioB.h>
 #include <Xm/TextF.h>
+#endif // IF_MOTIF
 
 
-static Widget repeat_w;		// Repeat count
-static Widget address_w;	// Starting address
+static SPINBUTTON_P repeat_w;	// Repeat count
+static COMBOBOXENTRYTEXT_P address_w;	// Starting address
 
 static string the_format = "";	// The format
 
-static void SetFormatCB(Widget w, XtPointer, XtPointer)
+static void SetFormatCB(CB_ALIST_1(Widget w))
 {
     the_format = XtName(w);
 }
 
 static string the_size   = "";	// The size
 
-static void SetSizeCB(Widget w, XtPointer, XtPointer)
+static void SetSizeCB(CB_ALIST_1(Widget w))
 {
     the_size = XtName(w);
 }
@@ -79,35 +83,35 @@ static Widget wide_char_w;
 static Widget wide_string_w;
 
 static MMDesc format_menu[] = { 
-    { "o", MMPush, { SetFormatCB, 0 }, 0, &octal_w, 0, 0 },
-    { "x", MMPush, { SetFormatCB, 0 }, 0, 0, 0, 0},
-    { "d", MMPush, { SetFormatCB, 0 }, 0, 0, 0, 0},
-    { "u", MMPush, { SetFormatCB, 0 }, 0, &unsigned_char_w, 0, 0 },
-    { "t", MMPush, { SetFormatCB, 0 }, 0, &binary_w, 0, 0 },
-    { "f", MMPush, { SetFormatCB, 0 }, 0, 0, 0, 0},
-    { "a", MMPush, { SetFormatCB, 0 }, 0, &address_format_w, 0, 0 },
-    { "i", MMPush, { SetFormatCB, 0 }, 0, 0, 0, 0},
-    { "c", MMPush, { SetFormatCB, 0 }, 0, 0, 0, 0},
-    { "C", MMPush, { SetFormatCB, 0 }, 0, &wide_char_w, 0, 0 },
-    { "s", MMPush, { SetFormatCB, 0 }, 0, 0, 0, 0},
-    { "W", MMPush, { SetFormatCB, 0 }, 0, &wide_string_w, 0, 0 },
+    { NM("o", "o"), MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, &octal_w, 0, 0 },
+    { NM("x", "x"), MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, 0, 0, 0},
+    { NM("d", "d"), MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, 0, 0, 0},
+    { NM("u", "u"), MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, &unsigned_char_w, 0, 0 },
+    { NM("t", "t"), MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, &binary_w, 0, 0 },
+    { NM("f", "f"), MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, 0, 0, 0},
+    { NM("a", "a"), MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, &address_format_w, 0, 0 },
+    { NM("i", "i"), MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, 0, 0, 0},
+    { NM("c", "c"), MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, 0, 0, 0},
+    { NM("C", "C"), MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, &wide_char_w, 0, 0 },
+    { NM("s", "s"), MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, 0, 0, 0},
+    { NM("W", "W"), MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, &wide_string_w, 0, 0 },
     MMEnd
 };
 
 static MMDesc size_menu[] = { 
-    { "b", MMPush, { SetSizeCB, 0 }, 0, &byte_w, 0, 0 },
-    { "h", MMPush, { SetSizeCB, 0 }, 0, 0, 0, 0},
-    { "w", MMPush, { SetSizeCB, 0 }, 0, 0, 0, 0},
-    { "g", MMPush, { SetSizeCB, 0 }, 0, 0, 0, 0},
-    { "G", MMPush, { SetSizeCB, 0 }, 0, &long_w, 0, 0 },
+    { NM("b", "b"), MMPush, BIND_0(PTR_FUN(SetSizeCB)), 0, &byte_w, 0, 0 },
+    { NM("h", "h"), MMPush, BIND_0(PTR_FUN(SetSizeCB)), 0, 0, 0, 0},
+    { NM("w", "w"), MMPush, BIND_0(PTR_FUN(SetSizeCB)), 0, 0, 0, 0},
+    { NM("g", "g"), MMPush, BIND_0(PTR_FUN(SetSizeCB)), 0, 0, 0, 0},
+    { NM("G", "G"), MMPush, BIND_0(PTR_FUN(SetSizeCB)), 0, &long_w, 0, 0 },
     MMEnd
 };
 
 static MMDesc examine_menu[] = { 
-    { "examine", MMSpinBox,    MMNoCB, 0, &repeat_w, 0, 0 },
-    { "format",  MMOptionMenu, MMNoCB, format_menu, 0, 0, 0 },
-    { "size",    MMOptionMenu, MMNoCB, size_menu, 0, 0, 0 },
-    { "address", MMComboBox,   MMNoCB, 0, &address_w, 0, 0 },
+    { NM("examine", "examine"), MMSpinBox,    MMNoCB, 0, (Widget *)&repeat_w, 0, 0 },
+    { NM("format", "format"),   MMOptionMenu, MMNoCB, format_menu, 0, 0, 0 },
+    { NM("size", "size"),       MMOptionMenu, MMNoCB, size_menu, 0, 0, 0 },
+    { NM("address", "address"), MMComboBox,   MMNoCB, 0, (Widget *)&address_w, 0, 0 },
     MMEnd
 };
 
@@ -184,13 +188,23 @@ static string format(const string& format, const string& size)
 
 static string examine_command()
 {
+#ifdef IF_MOTIF
     String s_repeat = XmTextFieldGetString(repeat_w);
     string repeat(s_repeat);
     XtFree(s_repeat);
+#else // NOT IF_MOTIF
+    const char *s_repeat = repeat_w->get_text().c_str();
+    string repeat(s_repeat);
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     String s_address = XmTextFieldGetString(address_w);
     string address(s_address);
     XtFree(s_address);
+#else // NOT IF_MOTIF
+    const char *s_address = address_w->get_entry()->get_text().c_str();
+    string address(s_address);
+#endif // IF_MOTIF
 
     strip_space(repeat);
     strip_space(address);
@@ -218,35 +232,46 @@ static string examine_command()
     return "";
 }
 
-static void DisplayExaminedCB(Widget w, XtPointer, XtPointer)
+static void DisplayExaminedCB(CB_ALIST_1(Widget w))
 {
     gdb_command("graph display `" + examine_command() + "`", w);
 }
 
-static void PrintExaminedCB(Widget w, XtPointer, XtPointer)
+static void PrintExaminedCB(CB_ALIST_1(Widget w))
 {
     gdb_command(examine_command(), w);
 }
 
-void gdbExamineCB(Widget w, XtPointer, XtPointer)
+void gdbExamineCB(CB_ALIST_1(Widget w))
 {
-    static Widget dialog = 0;
+    static DIALOG_P dialog = 0;
     if (dialog == 0)
     {
+#ifdef IF_MOTIF
 	Arg args[10];
 	Cardinal arg = 0;
 	XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
 	dialog = verify(XmCreatePromptDialog(find_shell(w),
 					     XMST("examine_dialog"),
 					     args, arg));
+#else // NOT IF_MOTIF
+	dialog = new Gtk::Dialog(XMST("examine_dialog"), *find_shell(w));
+#endif // IF_MOTIF
 	Delay::register_shell(dialog);
 
+#ifdef IF_MOTIF
 	XtManageChild(XmSelectionBoxGetChild(dialog,
 					     XmDIALOG_APPLY_BUTTON));
 	XtUnmanageChild(XmSelectionBoxGetChild(dialog, 
 					       XmDIALOG_SELECTION_LABEL));
 	XtUnmanageChild(XmSelectionBoxGetChild(dialog, XmDIALOG_TEXT));
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Dialog buttons?
+#endif
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
 	arg = 0;
 	XtSetArg(args[arg], XmNorientation, XmHORIZONTAL); arg++;
 	XtSetArg(args[arg], XmNborderWidth,  0); arg++;
@@ -256,9 +281,13 @@ void gdbExamineCB(Widget w, XtPointer, XtPointer)
 	XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
 	Widget panel = MMcreateButtonPanel(dialog, "panel", examine_menu, 
 					   args, arg);
+#else // NOT IF_MOTIF
+	Widget panel = MMcreateButtonPanel(dialog, "panel", examine_menu);
+#endif // IF_MOTIF
+
 	(void) panel;
 	MMaddCallbacks(examine_menu);
-	MMaddHelpCallback(examine_menu, ImmediateHelpCB);
+	MMaddHelpCallback(examine_menu, PTR_FUN(ImmediateHelpCB));
 
 	manage_child(unsigned_char_w,  gdb->type() == GDB);
 	manage_child(binary_w,         gdb->type() == GDB);
@@ -267,14 +296,21 @@ void gdbExamineCB(Widget w, XtPointer, XtPointer)
 	manage_child(wide_string_w,    gdb->type() == DBX);
 	manage_child(long_w,           gdb->type() == DBX);
 
+#ifdef IF_MOTIF
 	// Initialize: use `o' and `b' as default menu items
 	XtCallActionProc(octal_w, "ArmAndActivate", 
 			 (XEvent *)0, (String *)0, 0);
 	XtCallActionProc(byte_w, "ArmAndActivate", 
 			 (XEvent *)0, (String *)0, 0);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning ArmAndActivate action undefined
+#endif
+#endif // IF_MOTIF
 
 	tie_combo_box_to_history(address_w, arg_history_filter);
 
+#ifdef IF_MOTIF
 	XtAddCallback(dialog, XmNokCallback,
 		      PrintExaminedCB, XtPointer(0));
 	XtAddCallback(dialog, XmNapplyCallback, 
@@ -283,11 +319,25 @@ void gdbExamineCB(Widget w, XtPointer, XtPointer)
 		      UnmanageThisCB, XtPointer(dialog));
 	XtAddCallback(dialog, XmNhelpCallback,
 		      ImmediateHelpCB, XtPointer(0));
+#else // NOT IF_MOTIF
+    Gtk::Button *button;
+    button = dialog->add_button(XMST("OK"), 0);
+    button->signal_clicked().connect(sigc::bind(PTR_FUN(PrintExaminedCB), dialog));
+    button = dialog->add_button(XMST("Apply"), 0);
+    button->signal_clicked().connect(sigc::bind(PTR_FUN(DisplayExaminedCB), dialog));
+    button = dialog->add_button(XMST("Cancel"), 0);
+    button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB), dialog));
+#endif // IF_MOTIF
     }
 
     string arg = source_arg->get_string();
-    if (!is_file_pos(arg) && !arg.empty())
+    if (!is_file_pos(arg) && !arg.empty()) {
+#ifdef IF_MOTIF
 	XmTextFieldSetString(address_w, XMST(arg.chars()));
+#else // NOT IF_MOTIF
+	address_w->get_entry()->set_text(XMST(arg.chars()));
+#endif // IF_MOTIF
+    }
 
     manage_and_raise(dialog);
 }

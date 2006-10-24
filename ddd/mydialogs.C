@@ -42,11 +42,13 @@ char mydialogs_rcsid[] =
 #include <stdlib.h>
 
 // Motif includes
+#ifdef IF_MOTIF
 #include <Xm/Xm.h>
 #include <Xm/SelectioB.h>
 #include <Xm/List.h>
 #include <Xm/MwmUtil.h>
 #include <X11/Shell.h>
+#endif // IF_MOTIF
 
 // Misc includes
 #include "assert.h"
@@ -59,7 +61,7 @@ char mydialogs_rcsid[] =
 // Own includes
 #include "string-fun.h"
 
-
+#ifdef IF_MOTIF
 // Create a selection box with a top-level shell
 Widget createTopLevelSelectionDialog(Widget parent, const _XtString name,
 				     ArgList args, Cardinal num_args)
@@ -109,8 +111,7 @@ Widget createTopLevelSelectionDialog(Widget parent, const _XtString name,
 
     return box;
 }
-
-
+#endif // IF_MOTIF
 
 // Set the elements of the display selection list
 // LABEL_LIST:      Labels, using the format disp_nr ": " disp_name.
@@ -119,7 +120,7 @@ Widget createTopLevelSelectionDialog(Widget parent, const _XtString name,
 // HIGHLIGHT_TITLE: Whether the first line should be highlighted
 // NOTIFY:          Whether callbacks should be invoked
 //
-void setLabelList (Widget  selectionList,
+void setLabelList (TREEVIEW_P  selectionList,
 		   const string  label_list[],
 		   const bool selected[],
 		   int     list_length,
@@ -129,6 +130,7 @@ void setLabelList (Widget  selectionList,
     if (selectionList == 0)
 	return;
 
+#ifdef IF_MOTIF
     XmStringTable xmlabel_list = 
 	makeXmStringTable(label_list, list_length, highlight_title);
 
@@ -153,14 +155,23 @@ void setLabelList (Widget  selectionList,
 		   XtPointer(0));
 
     freeXmStringTable(xmlabel_list, list_length);
+#else // NOT IF_MOTIF
+    Glib::RefPtr<Gtk::TreeModel> model = selectionList->get_model();
+    std::cerr << "setLabelList not supported YET\n";
+#ifdef NAG_ME
+#warning The problem is we cannot use insert(), append() on an arbitrary
+#warning Gtk::TreeModel.  We need to have the derived ListStore.
+#endif
+#endif // IF_MOTIF
 }
 
 // Replace all elements in SELECTIONLIST with the corresponding
 // entries in LABEL_LIST (i.e. with the same leading number).
-void updateLabelList (Widget  selectionList,
+void updateLabelList (TREEVIEW_P  selectionList,
 		      const string  label_list[],
 		      int     list_length)
 {
+#ifdef IF_MOTIF
     if (selectionList == 0)
 	return;
 
@@ -202,12 +213,16 @@ void updateLabelList (Widget  selectionList,
 	    break;
 	}
     }
+#else // NOT IF_MOTIF
+    std::cerr << "updateLabelList: not implemented\n";
+#endif // IF_MOTIF
 }
 
 
 // Fill the item numbers in DISP_NRS
-void getItemNumbers(Widget selectionList, IntArray& numbers)
+void getItemNumbers(TREEVIEW_P selectionList, IntArray& numbers)
 {
+#ifdef IF_MOTIF
     static const IntArray empty;
     numbers = empty;
 
@@ -234,8 +249,19 @@ void getItemNumbers(Widget selectionList, IntArray& numbers)
 	if (has_nr(item))
 	    numbers += get_nr(item);
     }
+#else // NOT IF_MOTIF
+    Glib::RefPtr<Gtk::TreeModel> model = selectionList->get_model();
+    Glib::RefPtr<Gtk::TreeSelection> sel = selectionList->get_selection();
+    std::list<Gtk::TreeModel::Path> paths = sel->get_selected_rows();
+    std::list<Gtk::TreeModel::Path>::iterator iter;
+    std::cerr << "Get paths\n";
+    for (iter = paths.begin(); iter != paths.end(); iter++) {
+	numbers += (*iter)[0];
+    }
+#endif // IF_MOTIF
 }
 
+#ifdef IF_MOTIF
 // Create an array of XmStrings from the list LABEL_LIST of length
 // LIST_LENGTH.  If HIGHLIGHT_TITLE is set, let the first line be bold.
 XmStringTable makeXmStringTable (const string label_list[],
@@ -259,10 +285,12 @@ XmStringTable makeXmStringTable (const string label_list[],
 
     return xmlist;
 }
+#endif // IF_MOTIF
 
 // Select POS in LIST and make it visible
-void ListSetAndSelectPos(Widget list, int pos)
+void ListSetAndSelectPos(TREEVIEW_P list, int pos)
 {
+#ifdef IF_MOTIF
     if (list == 0)
 	return;
 
@@ -310,4 +338,7 @@ void ListSetAndSelectPos(Widget list, int pos)
 	XmListSetPos(list, pos - 1);
     else if (pos + 1 >= top_item + visible_items)
 	XmListSetBottomPos(list, pos + 1);
+#else // NOT IF_MOTIF
+    std::cerr << "ListSetAndSelectPos: not implemented\n";
+#endif // IF_MOTIF
 }

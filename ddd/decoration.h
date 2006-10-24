@@ -29,11 +29,18 @@
 #ifndef _DDD_decoration_h
 #define _DDD_decoration_h
 
+#ifdef IF_MOTIF
+
 #include <X11/Intrinsic.h>
+
+#endif // IF_MOTIF
+
+#include "gtk_wrapper.h"
+
 #include "bool.h"
 
 // Return a transient position on SCREEN (for command tool etc.) in POS_X/POS_Y
-extern void get_transient_pos(Screen *screen,
+extern void get_transient_pos(SCREEN_P screen,
 			      Position& pos_x, Position& pos_y);
 
 // Start check for window manager decoration

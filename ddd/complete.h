@@ -29,7 +29,13 @@
 #ifndef _DDD_complete_h
 #define _DDD_complete_h
 
+#ifdef IF_MOTIF
+
 #include <X11/Intrinsic.h>
+
+#endif // IF_MOTIF
+
+#include "gtk_wrapper.h"
 
 // Actions
 extern void complete_commandAct  (Widget, XEvent*, String*, Cardinal*);

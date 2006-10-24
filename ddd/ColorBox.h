@@ -36,9 +36,15 @@
 #include "TypeInfo.h"
 #include "mutable.h"
 
+#ifdef IF_MOTIF
+
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
+
+#else // NOT IF_MOTIF
+
+#endif // IF_MOTIF
 
 // Associate a color with a box
 class ColorBox: public TransparentHatBox {
@@ -49,12 +55,16 @@ public:
 
 private:
     string _color_name;		// The color name, as string
-    Pixel _color;		// The color itself, as pixel
     mutable bool _color_valid;		// True if COLOR is valid
     mutable bool _color_failed;		// True if conversion failed
+#ifdef IF_MOTIF
+    Pixel _color;		// The color itself, as pixel
     mutable unsigned short _red;	// Exact color values, scaled 0..65535
     mutable unsigned short _green;
     mutable unsigned short _blue;
+#else // NOT IF_MOTIF
+    mutable Gdk::Color _color;
+#endif // IF_MOTIF
 
 protected:
     // Copy Constructor
@@ -63,10 +73,12 @@ protected:
 	_color_name(box._color_name),
 	_color(box._color),
 	_color_valid(box._color_valid),
-	_color_failed(box._color_failed),
-	_red(box._red),
+	_color_failed(box._color_failed)
+#ifdef IF_MOTIF
+	, _red(box._red),
 	_green(box._green),
 	_blue(box._blue)
+#endif // IF_MOTIF
     {}
 
     // Just draw the child
@@ -89,25 +101,38 @@ protected:
 public:
     // Constructor
     ColorBox(Box *box, const string& name)
-	: TransparentHatBox(box), _color_name(name), _color(0),
-	  _color_valid(false), _color_failed(false),
-	  _red(0), _green(0), _blue(0)
+	: TransparentHatBox(box), _color_name(name),
+	  _color_valid(false), _color_failed(false)
+#ifdef IF_MOTIF
+	, _color(0), _red(0), _green(0), _blue(0)
+#endif // IF_MOTIF
     {}
 
     // Resources
     const string& color_name() const { return _color_name; }
     bool color_valid() const         { return _color_valid; }
     bool color_failed() const        { return _color_failed; }
+#ifdef IF_MOTIF
     Pixel color() const              { assert(color_valid()); return _color; }
     unsigned short red()   const     { return _red; }
     unsigned short green() const     { return _green; }
     unsigned short blue()  const     { return _blue; }
+#else // NOT IF_MOTIF
+    Gdk::Color color() const         { return _color; }
+    unsigned short red()   const     { return _color.get_red(); }
+    unsigned short green() const     { return _color.get_green(); }
+    unsigned short blue()  const     { return _color.get_blue(); }
+#endif // IF_MOTIF
 
     // Set RGB color directly
     void set_rgb(unsigned short red, unsigned short green, unsigned short blue)
     {
+#ifdef IF_MOTIF
 	_red = red; _green = green; _blue = blue;
+#else // NOT IF_MOTIF
+#endif // IF_MOTIF
 	_color_valid = true;
+
     }
 };
 

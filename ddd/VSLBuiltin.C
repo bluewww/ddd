@@ -578,7 +578,14 @@ static Box *font(ListBox *args)
     // Copy first arg and set its font
 
     Box *ret = ((Box *)(*args)[0])->dup();
+#ifdef IF_MOTIF
     ret->newFont((*args)[1]->str());
+#else // NOT IF_MOTIF
+    std::cerr << "CANNOT SET FONT IN VSLBuiltin.C\n";
+#ifdef NAG_ME
+#warning Eventually should use PANGO fonts here.
+#endif
+#endif // IF_MOTIF
 
     return ret;
 }

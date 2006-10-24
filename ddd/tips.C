@@ -30,6 +30,8 @@
 char tips_rcsid[] = 
     "$Id$";
 
+#include "config.h"
+
 #include "tips.h"
 
 #include "AppData.h"
@@ -157,7 +159,7 @@ static void NextTipCB(Widget w, XtPointer, XtPointer)
     refresh_tip_dialog(w);
 }
 
-void SetStartupTipsCB(Widget, XtPointer, XtPointer call_data)
+void SetStartupTipsCB(CB_ARG_LIST_TOGGLE(w, call_data))
 {
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;

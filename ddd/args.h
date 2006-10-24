@@ -29,16 +29,23 @@
 #ifndef _DDD_args_h
 #define _DDD_args_h
 
+#ifdef IF_MOTIF
+
 #include <X11/Intrinsic.h>
+
+#endif // IF_MOTIF
+
+#include "gtk_wrapper.h"
+
 #include "strclass.h"
 #include "bool.h"
 
-void gdbRunCB(Widget w, XtPointer, XtPointer);
+void gdbRunCB(CB_ARG_LIST_1(w));
 
-void gdbMakeCB(Widget w, XtPointer, XtPointer);
-void gdbMakeAgainCB(Widget w, XtPointer, XtPointer);
+void gdbMakeCB(CB_ARG_LIST_1(w));
+void gdbMakeAgainCB(CB_ARG_LIST_NULL);
 
-void gdbChangeDirectoryCB(Widget w, XtPointer, XtPointer);
+void gdbChangeDirectoryCB(CB_ARG_LIST_1(w));
 
 void add_to_arguments(const string& line);
 void update_arguments();

@@ -29,18 +29,31 @@
 #ifndef _DDD_file_h
 #define _DDD_file_h
 
+#ifdef IF_MOTIF
+
 #include <X11/Intrinsic.h>
+
+#else // NOT IF_MOTIF
+
+#include <gtkmm/filechooser.h>
+
+#endif // IF_MOTIF
+
+#include "gtk_wrapper.h"
+
 #include "strclass.h"
 #include "StringA.h"
 
 // Open file, process, core, source ...
-extern void gdbOpenFileCB     (Widget, XtPointer, XtPointer);
-extern void gdbOpenRecentCB   (Widget, XtPointer, XtPointer);
-extern void gdbOpenClassCB    (Widget, XtPointer, XtPointer);
-extern void gdbOpenProcessCB  (Widget, XtPointer, XtPointer);
-extern void gdbOpenCoreCB     (Widget, XtPointer, XtPointer);
-extern void gdbOpenSourceCB   (Widget, XtPointer, XtPointer);
-extern void gdbLookupSourceCB (Widget, XtPointer, XtPointer);
+extern void gdbOpenRecentCB   (CB_ARG_LIST_12(w, client_data));
+extern void gdbOpenProcessCB  (CB_ARG_LIST_1(w));
+extern void gdbOpenClassCB    (CB_ARG_LIST_1(w));
+
+extern void gdbOpenFileCB     (CB_ARG_LIST_1(w));
+extern void gdbOpenCoreCB     (CB_ARG_LIST_1(w));
+extern void gdbOpenSourceCB   (CB_ARG_LIST_1(w));
+
+extern void gdbLookupSourceCB (CB_ARG_LIST_1(w));
 
 // Get all sources from GDB
 void get_gdb_sources(StringArray& sources_list);
@@ -52,7 +65,13 @@ void update_sources();
 extern void process_cd(const string& pwd);
 
 // Get the file name from the file selection box W
-string get_file(Widget w, XtPointer, XtPointer call_data);
+string get_file(
+#ifdef IF_MOTIF
+    Widget w, XtPointer, XtPointer call_data
+#else // NOT IF_MOTIF
+    FILECHOOSERDIALOG_P w
+#endif // IF_MOTIF
+    );
 
 // Capture information on current program
 struct ProgramInfo {

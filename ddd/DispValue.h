@@ -40,7 +40,14 @@
 #include "DispValueT.h"
 #include "StringSA.h"
 #include "Box.h"
+
+#ifdef IF_MOTIF
+
 #include <Xm/Xm.h>
+
+#else // NOT IF_MOTIF
+
+#endif // IF_MOTIF
 
 class Agent;
 class PlotAgent;

@@ -32,8 +32,12 @@ char ArcBox_rcsid[] =
 #include "ArcBox.h"
 #include "printBox.h"
 
+#ifdef IF_MOTIF
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
+#else // NOT IF_MOTIF
+#include "gtk_wrapper.h"
+#endif // IF_MOTIF
 
 // Some systems define these values in <values.h> and re-define them 
 // DIFFERENTLY in <math.h>.  Prefer the <math.h> definitions.
@@ -109,9 +113,16 @@ void ArcBox::__draw(Widget w,
 	    std::cerr << "ArcBox::_draw(): illegal length\n";
     }
 
-    if (space[X] > 0 && space[Y] > 0 && _length > 0)
+    if (space[X] > 0 && space[Y] > 0 && _length > 0) {
+#ifdef IF_MOTIF
 	XDrawArc(XtDisplay(w), XtWindow(w), gc, origin[X], origin[Y],
 		 space[X], space[Y], _start * 64, _length * 64);
+#else // NOT IF_MOTIF
+	w->get_window()->draw_arc(gc, false, origin[X], origin[Y],
+				  space[X], space[Y],
+				  _start * 64, _length * 64);
+#endif // IF_MOTIF
+    }
 }
 
 void ArcBox::dump(std::ostream& s) const

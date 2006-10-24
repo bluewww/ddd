@@ -34,7 +34,13 @@
 #include "StringA.h"
 #include "HistoryF.h"
 
+#ifdef IF_MOTIF
+
 #include <X11/Intrinsic.h>
+
+#else // NOT IF_MOTIF
+
+#endif // IF_MOTIF
 
 
 // History management
@@ -71,7 +77,7 @@ extern int search_history(const string& text, int direction,
 extern void goto_history(int pos = -1);
 
 // Invoke history dialog
-extern void gdbHistoryCB(Widget, XtPointer, XtPointer);
+extern void gdbHistoryCB(CB_ARG_LIST_1());
 
 // Tie a ComboBox to global history
 extern void tie_combo_box_to_history(Widget text, HistoryFilter filter);

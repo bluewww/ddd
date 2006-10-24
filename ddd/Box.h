@@ -34,6 +34,8 @@
 // extensibility. The contents of the box are determined by the
 // drawing function _draw().
 
+#include "config.h"
+
 #include "assert.h"
 #include <string.h>
 #include "strclass.h"
@@ -51,6 +53,8 @@
 #include "UniqueId.h"
 #include "DataLink.h"
 #include "TypeInfo.h"
+
+#include "gtk_wrapper.h"
 
 class TagBox;
 
@@ -171,7 +175,7 @@ public:
 	      const BoxRegion& region, 
 	      const BoxRegion& exposed = BoxRegion(BoxPoint(0,0),
 						   BoxSize(INT_MAX, INT_MAX)), 
-	      GC gc = 0, 
+	      GC gc = NO_GC, 
 	      bool context_selected = false) const;
 
     // Print box; Header/trailer must be pre-/postfixed

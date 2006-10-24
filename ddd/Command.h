@@ -83,8 +83,12 @@ struct Command
     int priority;		// Priority (highest get executed first)
 
 private:
+#ifdef IF_MOTIF
     static void clear_origin(Widget w, XtPointer client_data, 
 			     XtPointer call_data);
+#else // NOT IF_MOTIF
+    static void *clear_origin(void *client_data);
+#endif // IF_MOTIF
     void add_destroy_callback();
     void remove_destroy_callback();
 
@@ -225,9 +229,6 @@ COMMAND(const string &)
 // True if GDB can run a command
 bool can_do_gdb_command();
 
-// Pass the COMMAND given in CLIENT_DATA to gdb_command()
-extern void gdbCommandCB(Widget w, XtPointer call_data, XtPointer client_data);
-
 // Check if command queue is empty
 extern bool emptyCommandQueue();
 
@@ -238,10 +239,10 @@ extern void clearCommandQueue();
 extern void syncCommandQueue();
 
 // Return a shell widget according to last command origin
-extern Widget find_shell(Widget w = 0);
+extern WINDOW_P find_shell(Widget w = 0);
 
 // Process next element from command queue
-extern void processCommandQueue(XtPointer = 0, XtIntervalId *id = 0);
+extern TIMEOUT_RETURN_TYPE processCommandQueue(TIMEOUT_ARG_LIST(p = 0, id = 0));
 
 // True if GDB processed any user command (= we had user interaction)
 extern bool userInteractionSeen();

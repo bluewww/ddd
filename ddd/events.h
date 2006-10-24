@@ -29,7 +29,16 @@
 #ifndef _DDD_events_h
 #define _DDD_events_h
 
+#ifdef IF_MOTIF
+
 #include <X11/Xlib.h>
+
+#else // NOT IF_MOTIF
+
+#include "gtk_wrapper.h"
+
+#endif // IF_MOTIF
+
 #include "BoxPoint.h"
 #include "BoxSize.h"
 

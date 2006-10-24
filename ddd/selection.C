@@ -29,11 +29,15 @@
 char selection_rcsid[] = 
     "$Id$";
 
+#include "config.h"
+
 #include "selection.h"
 #include "bool.h"
 #include "casts.h"
 
+#ifdef IF_MOTIF
 #include <Xm/CutPaste.h>
+#endif // IF_MOTIF
 
 // Return the current clipboard selection
 string current_clipboard(Widget w)

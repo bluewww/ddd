@@ -33,8 +33,14 @@
 
 #include "DocSpace.h"
 
+#ifdef IF_MOTIF
+
 /* superclass private header file */
 #include <X11/CoreP.h>
+
+#else // NOT IF_MOTIF
+
+#endif // IF_MOTIF
 
 /* define unique representation types not found in <X11/StringDefs.h> */
 

@@ -61,14 +61,19 @@ void ddd_main_loop()
 	{
 	    // We had a core dump
 	    if (app_data.debug_core_dumps)
-		DDDDebugCB(gdb_w, XtPointer(True), 0);
+		DDDDebugCB(CB_ARGS_2(true));
 	    report_core(dddlog);
 	}
 
 	// Bring X in a consistent state
+#ifdef IF_MOTIF
 	XUngrabPointer(XtDisplay(gdb_w), CurrentTime);
 	XUngrabKeyboard(XtDisplay(gdb_w), CurrentTime);
 	XUngrabServer(XtDisplay(gdb_w));
+#else // NOT IF_MOTIF
+	gdb_w->get_display()->pointer_ungrab(CurrentTime);
+	gdb_w->get_display()->keyboard_ungrab(CurrentTime);
+#endif // IF_MOTIF
 
 	// Enable maintenance menu
 	if (!app_data.maintenance)
@@ -95,7 +100,11 @@ void ddd_main_loop()
 
     // Set `main_loop_entered' to true as soon 
     // as DDD becomes idle again.
+#ifdef IF_MOTIF
     XtAppAddWorkProc(XtWidgetToApplicationContext(gdb_w), ddd_setup_done, 0);
+#else // NOT IF_MOTIF
+    Glib::signal_idle().connect(sigc::bind(PTR_FUN(ddd_setup_done), XtPointer(0)));
+#endif // IF_MOTIF
 
     // Main Loop
     for (;;)

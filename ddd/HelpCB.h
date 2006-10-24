@@ -29,8 +29,15 @@
 #ifndef _DDD_HelpCB_h
 #define _DDD_HelpCB_h
 
+#ifdef IF_MOTIF
+
 #include <X11/Intrinsic.h>
 #include <Xm/Text.h>
+
+#endif // IF_MOTIF
+
+#include "gtk_wrapper.h"
+
 #include "MString.h"
 #include "bool.h"
 
@@ -83,8 +90,7 @@ extern void HelpOnHelpCB(Widget widget, XtPointer client_data,
 
 // Call help for associated widget.
 // May be used as help callback for any primitive widget.
-extern void ImmediateHelpCB(Widget widget, XtPointer client_data, 
-			    XtPointer call_data);
+extern void ImmediateHelpCB(CB_ARG_LIST_123(widget, client_data, call_data));
 
 // Call help for widget given in "Widget w = (Widget)client_data".
 extern void HelpOnThisCB(Widget widget, XtPointer client_data, 
@@ -144,7 +150,7 @@ extern MString (*DefaultTipText)(Widget widget, XEvent *event);
 extern MString (*DefaultDocumentationText)(Widget widget, XEvent *event);
 
 // Return a text position associated with this event
-extern XmTextPosition (*TextPosOfEvent)(Widget widget, XEvent *event);
+extern XmTextPosition (*TextPosOfEvent)(SCROLLEDTEXT_P widget, XEvent *event);
 
 // Hook for displaying documentation
 extern void (*DisplayDocumentation)(const MString& doc);

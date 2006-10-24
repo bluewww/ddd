@@ -29,7 +29,15 @@
 #ifndef _DDD_verify_h
 #define _DDD_verify_h
 
+#ifdef IF_MOTIF
+
 #include <X11/Intrinsic.h>
+
+#else // NOT IF_MOTIF
+
+#include "gtk_wrapper.h"
+
+#endif // IF_MOTIF
 
 extern void widget_creation_error();
 

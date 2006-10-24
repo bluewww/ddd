@@ -33,8 +33,10 @@ char DiagBox_rcsid[] =
 
 #include "PrimitiveB.h"
 #include "StringBox.h"
+#ifdef IF_MOTIF
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
+#endif // IF_MOTIF
 #include "DiagBox.h"
 
 DEFINE_TYPE_INFO_1(DiagBox, PrimitiveBox)
@@ -52,13 +54,25 @@ void DiagBox::_draw(Widget w,
 
     // Draw a 10-pixel-grid
     BoxCoordinate i;
-    for (i = 0; i < space[X]; i += 10)
+    for (i = 0; i < space[X]; i += 10) {
+#ifdef IF_MOTIF
 	XDrawLine(XtDisplay(w), XtWindow(w), gc,
 	    origin[X] + i, origin[Y], origin[X] + i, origin[Y] + space[Y]);
+#else // NOT IF_MOTIF
+	w->get_window()->draw_line(gc, origin[X] + i, origin[Y],
+				   origin[X] + i, origin[Y] + space[Y]);
+#endif // IF_MOTIF
+    }
 
-    for (i = 0; i < space[Y]; i += 10)
+    for (i = 0; i < space[Y]; i += 10) {
+#ifdef IF_MOTIF
 	XDrawLine(XtDisplay(w), XtWindow(w), gc,
 	    origin[X], origin[Y] + i, origin[X] + space[X], origin[Y] + i);
+#else // NOT IF_MOTIF
+	w->get_window()->draw_line(gc, origin[X], origin[Y] + i,
+				   origin[X] + space[X], origin[Y] + i);
+#endif // IF_MOTIF
+    }
 
     // Make space info
     std::ostringstream oss;
@@ -71,8 +85,16 @@ void DiagBox::_draw(Widget w,
     const BoxSize  stringSize = s->size();
     const BoxPoint stringOrigin = origin + space/2 - stringSize/2;
 
+#ifdef IF_MOTIF
     XClearArea(XtDisplay(w), XtWindow(w), stringOrigin[X], stringOrigin[Y],
 	stringSize[X], stringSize[Y], False);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning No analogue for exposures argument?
+#endif
+    w->get_window()->clear_area(stringOrigin[X], stringOrigin[Y],
+				stringSize[X], stringSize[Y]);
+#endif // IF_MOTIF
     s->draw(w, BoxRegion(stringOrigin, stringSize), exposed,
 	    gc, context_selected);
 

@@ -29,25 +29,35 @@
 #ifndef _DDD_DestroyCB_h
 #define _DDD_DestroyCB_h
 
+#ifdef IF_MOTIF
+
 #include <X11/Intrinsic.h>
+
+#endif // IF_MOTIF
+
+#include "gtk_wrapper.h"
 
 // Destroy WIDGET as soon as we are idle
 extern void DestroyWhenIdle(Widget widget);
 
 // Destroy the surrounding shell
-extern void DestroyShellCB(Widget widget, XtPointer client_data,
-			   XtPointer call_data);
+extern void DestroyShellCB(CB_ARG_LIST_1());
 
 // Destroy specific widget
-extern void DestroyThisCB(Widget widget, XtPointer client_data,
-			  XtPointer call_data);
+#ifdef IF_MOTIF
+extern void DestroyThisCB(Widget, XtPointer client_data, XtPointer);
+#else // NOT IF_MOTIF
+extern void DestroyThisCB(Widget);
+#endif // IF_MOTIF
 
 // Unmanage the surrounding shell
-extern void UnmanageShellCB(Widget widget, XtPointer client_data,
-			    XtPointer call_data);
+extern void UnmanageShellCB(CB_ARG_LIST_1());
 
 // Unmanage specific widget
-extern void UnmanageThisCB(Widget widget, XtPointer client_data,
-			   XtPointer call_data);
+#ifdef IF_MOTIF
+extern void UnmanageThisCB(Widget, XtPointer client_data, XtPointer);
+#else // NOT IF_MOTIF
+extern void UnmanageThisCB(Widget);
+#endif // IF_MOTIF
 
 #endif

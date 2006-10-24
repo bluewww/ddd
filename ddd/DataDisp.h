@@ -46,7 +46,14 @@
 //-----------------------------------------------------------------------------
 
 // Motif includes
+
+#ifdef IF_MOTIF
+
 #include <Xm/Xm.h>
+
+#else // NOT IF_MOTIF
+
+#endif // IF_MOTIF
 
 // DDD includes
 #include "ArgField.h"
@@ -78,6 +85,11 @@ enum DeferMode {
     DeferNever			// Create display now
 };
 
+struct GraphEditLayoutState {
+    Boolean autoLayout;
+    Boolean snapToGrid;
+};
+
 class NewDisplayInfo;
 class DispGraph;
 class DispNode;
@@ -85,6 +97,8 @@ class DispBox;
 class DispValue;
 class RegionGraphNode;
 class ThemeManager;
+
+struct SetInfo;
 
 //-----------------------------------------------------------------------------
 class DataDisp {
@@ -99,45 +113,45 @@ class DataDisp {
     //-----------------------------------------------------------------------
     // Button callbacks
     //-----------------------------------------------------------------------
-    static void dereferenceCB           (Widget, XtPointer, XtPointer);
-    static void dereferenceArgCB        (Widget, XtPointer, XtPointer);
-    static void dereferenceInPlaceCB    (Widget, XtPointer, XtPointer);
-    static void toggleDetailCB          (Widget, XtPointer, XtPointer);
-    static void toggleRotateCB          (Widget, XtPointer, XtPointer);
-    static void toggleDisableCB         (Widget, XtPointer, XtPointer);
-    static void rotateCB                (Widget, XtPointer, XtPointer);
-    static void newCB                   (Widget, XtPointer, XtPointer);
-    static void enableCB                (Widget, XtPointer, XtPointer);
-    static void disableCB               (Widget, XtPointer, XtPointer);
-    static void showDetailCB            (Widget, XtPointer, XtPointer);
-    static void showMoreDetailCB        (Widget, XtPointer, XtPointer);
-    static void hideDetailCB            (Widget, XtPointer, XtPointer);
-    static void dependentCB             (Widget, XtPointer, XtPointer);
-    static void displayArgCB            (Widget, XtPointer, XtPointer);
-    static void plotArgCB               (Widget, XtPointer, XtPointer);
-    static void plotHistoryCB           (Widget, XtPointer, XtPointer);
-    static void setCB                   (Widget, XtPointer, XtPointer);
-    static void shortcutCB              (Widget, XtPointer, XtPointer);
-    static void deleteArgCB		(Widget, XtPointer, XtPointer);
-    static void clusterSelectedCB       (Widget, XtPointer, XtPointer);
-    static void unclusterSelectedCB     (Widget, XtPointer, XtPointer);
-    static void toggleClusterSelectedCB (Widget, XtPointer, XtPointer);
+    static void dereferenceCB           (CB_ALIST_1(Widget));
+    static void dereferenceArgCB        (CB_ALIST_1(Widget));
+    static void dereferenceInPlaceCB    (CB_ALIST_1(Widget));
+    static void toggleDetailCB          (CB_ALIST_12(Widget, XtP(int)));
+    // static void toggleRotateCB          (Widget, XtPointer, XtPointer);
+    static void toggleDisableCB         (CB_ALIST_1(Widget));
+    static void rotateCB                (CB_ALIST_12(Widget, XtP(bool)));
+    static void newCB                   (CB_ALIST_1(Widget));
+    static void enableCB                (CB_ALIST_1(Widget));
+    static void disableCB               (CB_ALIST_1(Widget));
+    static void showDetailCB            (CB_ALIST_12(Widget, XtP(int)));
+    static void showMoreDetailCB        (CB_ALIST_12(Widget, XtP(int)));
+    static void hideDetailCB            (CB_ALIST_1(Widget));
+    static void dependentCB             (CB_ALIST_1(Widget));
+    static void displayArgCB            (CB_ALIST_12(Widget, XtP(bool)));
+    static void plotArgCB               (CB_ALIST_1(Widget));
+    static void plotHistoryCB           (CB_ALIST_1(Widget));
+    static void setCB                   (CB_ALIST_1(Widget));
+    static void shortcutCB              (CB_ALIST_12(Widget, XtP(int)));
+    static void deleteArgCB		(CB_ALIST_1(Widget));
+    static void clusterSelectedCB       (CB_ALIST_NULL);
+    static void unclusterSelectedCB     (CB_ALIST_NULL);
+    static void toggleClusterSelectedCB (CB_ALIST_NULL);
 
     //-----------------------------------------------------------------------
     // Popup menu callbacks
     //-----------------------------------------------------------------------
-    static void popup_new_argCB         (Widget, XtPointer, XtPointer);
-    static void popup_newCB             (Widget, XtPointer, XtPointer);
-    static void new_displayDCB          (Widget, XtPointer, XtPointer);
+    static void popup_new_argCB         (CB_ALIST_12(Widget display_dialog, XtP(BoxPoint *) client_data));
+    static void popup_newCB             (CB_ALIST_12(Widget display_dialog, XtP(BoxPoint *) client_data));
+    static void new_displayDCB          (CB_ALIST_12(Widget dialog, XtP(NewDisplayInfo *) client_data));
 
     //-----------------------------------------------------------------------
     // Callbacks of the display editor
     //-----------------------------------------------------------------------
-    static void UpdateGraphEditorSelectionCB   (Widget, XtPointer, XtPointer);
-    static void UpdateDisplayEditorSelectionCB (Widget, XtPointer, XtPointer);
-    static void PreLayoutCB                    (Widget, XtPointer, XtPointer);
-    static void PostLayoutCB                   (Widget, XtPointer, XtPointer);
-    static void DoubleClickCB                  (Widget, XtPointer, XtPointer);
+    static void UpdateGraphEditorSelectionCB   (CB_ALIST_NULL);
+    static void UpdateDisplayEditorSelectionCB (CB_ALIST_NULL);
+    static void PreLayoutCB                    (CB_ALIST_1(GRAPH_EDIT_P));
+    static void PostLayoutCB                   (CB_ALIST_1(GRAPH_EDIT_P));
+    static void DoubleClickCB                  (CB_ALIST_13(GRAPH_EDIT_P, XtP(GraphEditPreSelectionInfo *)));
 
     //-----------------------------------------------------------------------
     // Graph callbacks
@@ -147,9 +161,11 @@ class DataDisp {
     //-----------------------------------------------------------------------
     // Timers and timer callbacks
     //-----------------------------------------------------------------------
-    static void RefreshGraphEditCB(XtPointer client_data, XtIntervalId *id);
-    static void RefreshArgsCB     (XtPointer client_data, XtIntervalId *id);
-    static void RefreshAddrCB     (XtPointer client_data, XtIntervalId *id);
+    static TIMEOUT_RETURN_TYPE RefreshGraphEditCB(TM_ALIST_1(XtP(GraphEditLayoutState *)));
+    static TIMEOUT_RETURN_TYPE RefreshArgsCB (TM_ALIST_NULL);
+    static TIMEOUT_RETURN_TYPE RefreshAddrCB (TM_ALIST_1(XtP(DispNode *)));
+
+    static TIMEOUT_RETURN_TYPE RefreshAddr   (DispNode *, bool=false);
 
     static XtIntervalId refresh_args_timer;
     static XtIntervalId refresh_graph_edit_timer;
@@ -158,7 +174,7 @@ class DataDisp {
     //-----------------------------------------------------------------------
     // Sorting nodes for layout
     //-----------------------------------------------------------------------
-    static void CompareNodesCB (Widget, XtPointer, XtPointer);
+    static void CompareNodesCB (CB_ALIST_3(XtP(GraphEditCompareNodesInfo *)));
 
     //-----------------------------------------------------------------------
     // Create dialogs
@@ -180,7 +196,7 @@ class DataDisp {
 			 SelectionMode mode = SetSelection);
 
     static void refresh_display_list(bool silent = false);
-    static void RefreshDisplayListCB(XtPointer, XtIntervalId *id);
+    static TIMEOUT_RETURN_TYPE RefreshDisplayListCB(TM_ALIST_1(XtP(bool)));
 
     static DispValue *selected_value();
     static DispNode  *selected_node();
@@ -215,8 +231,16 @@ class DataDisp {
     static void select_node(DispNode *dn, int src = 0);
 
     // Setting values
+#ifdef IF_MOTIF
     static void setDCB (Widget, XtPointer, XtPointer);
+#else // NOT IF_MOTIF
+    static void setDCB (SetInfo *, int);
+#endif // IF_MOTIF
+#ifdef IF_MOTIF
     static void DeleteSetInfoCB(Widget, XtPointer client_data, XtPointer);
+#else // NOT IF_MOTIF
+    static void *DeleteSetInfoCB(void *);
+#endif // IF_MOTIF
     static void SetDone(const string& answer, void *qu_data);
 
     // Builtin user displays
@@ -454,7 +478,7 @@ public:
 
 private:
     // Call me back again
-    static void again_new_displaySQ (XtPointer client_data, XtIntervalId *id);
+    static TIMEOUT_RETURN_TYPE again_new_displaySQ (TM_ALIST_1(XtP(NewDisplayInfo *)));
 
     // Tons of helpers
     static void new_data_displayOQC      (const string& answer, void* data);
@@ -498,15 +522,19 @@ private:
     static bool cluster_displays;
     static bool arg_needs_update;
 
-    static Widget graph_popup_w;
-    static Widget node_popup_w;
-    static Widget shortcut_popup_w;
+    static MENU_P graph_popup_w;
+    static MENU_P node_popup_w;
+    static MENU_P shortcut_popup_w;
 
-    static Widget edit_displays_dialog_w;
-    static Widget display_list_w;
+    static DIALOG_P edit_displays_dialog_w;
+    static TREEVIEW_P display_list_w;
 
     // Origin handling
+#ifdef IF_MOTIF
     static void ClearOriginCB(Widget, XtPointer, XtPointer);
+#else // NOT IF_MOTIF
+    static void *ClearOriginCB(void *);
+#endif // IF_MOTIF
     static void set_last_origin(Widget origin);
 
     // Alias checking
@@ -559,14 +587,16 @@ private:
     static DispValue *update_hook(string& value);
 
 public:
-    static Widget graph_edit;
-    static Widget graph_cmd_w;
-    static Widget graph_selection_w;
+    static GRAPH_EDIT_P graph_edit;
+    static CONTAINER_P graph_cmd_w;
+#ifdef IF_MOTIF
+    static SCROLLEDTEXT_P graph_selection_w;
+#endif // IF_MOTIF
     static ArgField *graph_arg;
     static bool bump_displays;
 
     // Constructor
-    DataDisp(Widget parent, Widget& data_buttons_w);
+    DataDisp(CONTAINER_P parent, Widget& data_buttons_w);
 
     void create_shells();
 
@@ -585,16 +615,16 @@ public:
     static int add_refresh_addr_commands(StringArray& cmds, DispNode *dn = 0);
 
     // Callbacks for menu bar
-    static void EditDisplaysCB(Widget, XtPointer, XtPointer);
-    static void refreshCB(Widget, XtPointer, XtPointer);
-    static void selectAllCB(Widget, XtPointer, XtPointer);
-    static void unselectAllCB(Widget, XtPointer, XtPointer);
-    static void deleteCB(Widget, XtPointer, XtPointer);
-    static void applyThemeCB(Widget, XtPointer, XtPointer);
-    static void unapplyThemeCB(Widget, XtPointer, XtPointer);
-    static void toggleThemeCB(Widget, XtPointer, XtPointer);
-    static void applyThemeOnThisCB(Widget, XtPointer, XtPointer);
-    static void applyThemeOnAllCB(Widget, XtPointer, XtPointer);
+    static void EditDisplaysCB(CB_ALIST_NULL);
+    static void refreshCB(CB_ALIST_1(Widget));
+    static void selectAllCB(CB_ALIST_1(Widget));
+    static void unselectAllCB(CB_ALIST_1(Widget));
+    static void deleteCB(CB_ALIST_1(Widget));
+    static void applyThemeCB (CB_ALIST_12(Widget, XtP(const char *)));
+    static void unapplyThemeCB(CB_ALIST_12(Widget, XtP(const char *)));
+    static void toggleThemeCB(CB_ALIST_12(TOGGLEBUTTON_P, XtP(int)));
+    static void applyThemeOnThisCB(CB_ALIST_2(XtP(const char *)));
+    static void applyThemeOnAllCB(CB_ALIST_2(XtP(const char *)));
 
     // Helpers for user displays
     static bool have_user_display(const string& name);
@@ -642,7 +672,7 @@ public:
     static void reset();
 
     // True if the selection was lost
-    static void SelectionLostCB(Widget = 0, XtPointer = 0, XtPointer = 0);
+    static void SelectionLostCB(CB_ALIST_NULL);
 
     // Get number(s) of display NAME
     static int display_number(const string& name, bool verbose = false);

@@ -26,7 +26,9 @@
 // `http://www.gnu.org/software/ddd/',
 // or send a mail to the DDD developers <ddd@gnu.org>.
 
+#ifdef IF_MOTIF
 #include <X11/Intrinsic.h>
+#endif // IF_MOTIF
 #include "longName.h"
 
 char longName_rcsid[] = 

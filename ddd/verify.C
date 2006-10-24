@@ -29,6 +29,8 @@
 char verify_rcsid[] = 
     "$Id$";
 
+#include "config.h"
+
 #include <iostream>
 #include <stdlib.h>
 

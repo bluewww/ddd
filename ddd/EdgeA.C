@@ -30,7 +30,9 @@ char EdgeAnnotation_rcsid[] =
     "$Id$";
 
 #include "EdgeA.h"
+#ifdef IF_MOTIF
 #include <X11/Intrinsic.h>
+#endif // IF_MOTIF
 
 DEFINE_TYPE_INFO_0(EdgeAnnotation)
 

@@ -29,10 +29,14 @@
 char WhatNextCB_rcsid[] = 
     "$Id$";
 
+#include "config.h"
+
 #include "WhatNextCB.h"
 
 #include "Command.h"
+#ifdef IF_MOTIF
 #include "converters.h"
+#endif // IF_MOTIF
 #include "comm-manag.h"
 #include "ddd.h"
 #include "editing.h"
@@ -52,16 +56,23 @@ char WhatNextCB_rcsid[] =
 #include "SourceView.h"
 #include "UndoBuffer.h"
 
+#ifdef IF_MOTIF
 #include <Xm/Xm.h>
 #include <Xm/Text.h>
 #include <Xm/MessageB.h>
+#endif // IF_MOTIF
 
 // Show a suggestion named NAME
 static void hint_on(const _XtString name)
 {
+#ifdef IF_MOTIF
     // Create some `dummy' widget and create a help text for it
     Widget suggestion = 
 	verify(XmCreateInformationDialog(find_shell(), XMST(name), 0, 0));
+#else // NOT IF_MOTIF
+    Widget suggestion = 
+	new Gtk::Dialog(XMST(name), *find_shell());
+#endif // IF_MOTIF
 
     ImmediateHelpCB(suggestion, XtPointer(0), XtPointer(0));
 
@@ -104,9 +115,15 @@ static int passed_to_program(const string& program_state)
 
 	if (signal_description.empty())
 	    signal_description = signal;
-	
+
+#ifdef IF_MOTIF	
 	defineConversionMacro("SIGNAL", signal.chars());
 	defineConversionMacro("SIGNAL_DESCRIPTION", signal_description.chars());
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning No conversion macros
+#endif
+#endif // IF_MOTIF
 
 	string ans = gdb_question("info handle " + signal);
 
@@ -221,7 +238,13 @@ void WhatNextCB(Widget, XtPointer, XtPointer)
     }
 
     // Program has stopped and nothing is selected.
+#ifdef IF_MOTIF
     defineConversionMacro("PROGRAM_STATE", info.state.chars());
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning  No conversion macros
+#endif
+#endif // IF_MOTIF
 
     if (code_but_no_source())
     {

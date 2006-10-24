@@ -29,6 +29,8 @@
 char sashes_rcsid[] = 
     "$Id$";
 
+#include "config.h"
+
 #include "sashes.h"
 
 #include <Xm/Xm.h>

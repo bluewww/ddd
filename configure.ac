@@ -474,7 +474,18 @@ ICE_STREAMPOS
 ICE_STD_STREAMPOS
 dnl ICE_IOSTATE
 dnl
+AC_ARG_WITH([gtk],AS_HELP_STRING([--with-gtk],[Use GTK interface (experimental)]),[with_gtk="${withval}"],[with_gtk=no])
+AM_CONDITIONAL([WITH_GTK],[test "$with_gtk" = yes])
 dnl
+if test "$with_gtk" = yes; then
+dnl
+dnl Check for GTK stuff
+PKG_CHECK_MODULES(GTKMM, [gtkmm-2.4])
+AC_SUBST(GTKMM_LIBS)
+AC_SUBST(GTKMM_CFLAGS)
+dnl
+else
+AC_DEFINE([IF_MOTIF], 1, [Define if using Motif interface])
 dnl
 dnl
 dnl Check for X stuff
@@ -732,6 +743,7 @@ LDFLAGS="$ice_save_LDFLAGS"
 fi
 dnl
 dnl
+fi
 dnl
 dnl
 dnl Setup library loading flags

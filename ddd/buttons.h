@@ -30,14 +30,21 @@
 #define _DDD_buttons_h
 
 #include "strclass.h"
+
+#ifdef IF_MOTIF
+
 #include <X11/Intrinsic.h>
+
+#endif // IF_MOTIF
+
+#include "gtk_wrapper.h"
 
 // Create a button row named NAME with buttons as specified in LIST
 Widget make_buttons(Widget parent, const char *name, const _XtString list);
 
 // Assign BUTTONS the buttons specified in LIST.  If MANAGE is set,
 // (un)manage BUTTONS depending on the number of buttons.
-void set_buttons(Widget buttons, const _XtString list, bool manage = true);
+void set_buttons(BOX_P buttons, const _XtString list, bool manage = true);
 
 // Make BUTTON insensitive if it is not supported
 void verify_button(Widget button);
@@ -53,8 +60,8 @@ extern int max_value_doc_length;
 extern void clear_value_cache();
 
 // Invoke button and shortcut editors
-void dddEditButtonsCB  (Widget, XtPointer, XtPointer);
-void dddEditShortcutsCB(Widget, XtPointer, XtPointer);
+void dddEditButtonsCB  (CB_ALIST_1(Widget));
+void dddEditShortcutsCB(CB_ALIST_1(Widget));
 
 // Refresh button editor after external change
 void refresh_button_editor();
@@ -66,7 +73,7 @@ string gdbValue(const string& expr, string print_command = "");
 string assignment_value(const string& expr);
 
 // Create a flat PushButton named NAME
-Widget create_flat_button(Widget parent, const string& name);
+BUTTON_P create_flat_button(CONTAINER_P parent, const string& name);
 
 // Remove command from help cache.
 void clear_help_cache(const string& command);

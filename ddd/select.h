@@ -30,10 +30,17 @@
 #define _DDD_select_h
 
 #include "Agent.h"
+
+#ifdef IF_MOTIF
+
 #include <X11/Intrinsic.h>
 
+#endif // IF_MOTIF
+
+#include "gtk_wrapper.h"
+
 // Selection
-extern Widget gdb_selection_dialog;
+extern DIALOG_P gdb_selection_dialog;
 
 // Select from GDB choice
 void gdb_selectHP(Agent *agent, void *client_data, void *call_data);

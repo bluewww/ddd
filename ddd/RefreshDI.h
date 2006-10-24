@@ -31,7 +31,14 @@
 
 #include "strclass.h"
 #include "status.h"
+
+#ifdef IF_MOTIF
+
 #include <Xm/Text.h>
+
+#else // NOT IF_MOTIF
+
+#endif // IF_MOTIF
 
 
 // This is used in SourceView.

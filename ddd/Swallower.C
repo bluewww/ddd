@@ -29,6 +29,8 @@
 char Swallower_rcsid[] = 
     "$Id$";
 
+#include "config.h"
+
 #include "Swallower.h"
 #include "SwallowerP.h"
 

@@ -137,21 +137,35 @@ public:
     XtIntervalId display_timer;   // Still waiting for partial display
 
 private:
+#ifdef IF_MOTIF
     static void clear_origin(Widget w, XtPointer client_data, 
 			     XtPointer call_data);
+#else // NOT IF_MOTIF
+    static void *clear_origin(void *data);
+#endif // IF_MOTIF
 
     void add_destroy_callback()
     {
-	if (origin != 0)
+	if (origin != 0) {
+#ifdef IF_MOTIF
 	    XtAddCallback(origin, XtNdestroyCallback, clear_origin, 
 			  (XtPointer)this);
+#else // NOT IF_MOTIF
+	    origin->add_destroy_notify_callback(this, clear_origin);
+#endif // IF_MOTIF
+	}
     }
 
     void remove_destroy_callback()
     {
-	if (origin != 0)
+	if (origin != 0) {
+#ifdef IF_MOTIF
 	    XtRemoveCallback(origin, XtNdestroyCallback, clear_origin,
 			     (XtPointer)this);
+#else // NOT IF_MOTIF
+	    origin->remove_destroy_notify_callback(this);
+#endif // IF_MOTIF
+	}
     }
 
 public:
@@ -184,10 +198,12 @@ public:
 	  disabling_occurred(false),
 
 	  init_perl(""),
-	  init_bash(""),
+	  init_bash("")
 
-	  position_timer(0),
+#ifdef IF_MOTIF
+	, position_timer(0),
 	  display_timer(0)
+#endif // IF_MOTIF
     {
 	add_destroy_callback();
     }
@@ -199,10 +215,15 @@ public:
 	delete disp_buffer;
 	delete pos_buffer;
 
+#ifdef IF_MOTIF
 	if (position_timer != 0)
 	    XtRemoveTimeOut(position_timer);
 	if (display_timer != 0)
 	    XtRemoveTimeOut(display_timer);
+#else // NOT IF_MOTIF
+	position_timer.disconnect();
+	display_timer.disconnect();
+#endif // IF_MOTIF
     }
 
 private:
@@ -210,6 +231,7 @@ private:
     CmdData& operator = (const CmdData&);
 };
 
+#ifdef IF_MOTIF
 void CmdData::clear_origin(Widget w, XtPointer client_data, XtPointer)
 {
     (void) w;                        // Use it 
@@ -220,6 +242,14 @@ void CmdData::clear_origin(Widget w, XtPointer client_data, XtPointer)
     cmd_data->origin = 0;
 }
 
+#else // NOT IF_MOTIF
+void *CmdData::clear_origin(void *client_data)
+{
+    // The widget is being destroyed.  Remove all references.
+    CmdData *cmd_data = (CmdData *)client_data;
+    cmd_data->origin = 0;
+}
+#endif // IF_MOTIF
 
 // Data given to extra commands.
 class ExtraData {
@@ -1875,25 +1905,41 @@ static void print_partial_answer(const string& answer, CmdData *cmd_data)
     }
 }
 
-static void CancelPartialPositionCB(XtPointer client_data, XtIntervalId *id)
+static void CancelPartialPositionCB(XtPointer client_data
+#ifdef IF_MOTIF
+				    , XtIntervalId *id
+#endif // IF_MOTIF
+    )
 {
+#ifdef IF_MOTIF
     (void) id;			// Use it
+#endif // IF_MOTIF
 
     CmdData *cmd_data = (CmdData *)client_data;
+#ifdef IF_MOTIF
     assert(cmd_data->position_timer == *id);
-    cmd_data->position_timer = 0;
+#endif // IF_MOTIF
+    cmd_data->position_timer = NO_TIMER;
 
     string ans = cmd_data->pos_buffer->answer_ended();
     print_partial_answer(ans, cmd_data);
 }
 
-static void CancelPartialDisplayCB(XtPointer client_data, XtIntervalId *id)
+static void CancelPartialDisplayCB(XtPointer client_data
+#ifdef IF_MOTIF
+				   , XtIntervalId *id
+#endif // IF_MOTIF
+    )
 {
+#ifdef IF_MOTIF
     (void) id;			// Use it
+#endif // IF_MOTIF
 
     CmdData *cmd_data = (CmdData *)client_data;
+#ifdef IF_MOTIF
     assert(cmd_data->display_timer == *id);
-    cmd_data->display_timer = 0;
+#endif // IF_MOTIF
+    cmd_data->display_timer = NO_TIMER;
 
     string ans = cmd_data->disp_buffer->answer_ended();
     print_partial_answer(ans, cmd_data);
@@ -1933,9 +1979,14 @@ static void partial_answer_received(const string& answer, void *data)
 	if (cmd_data->pos_buffer->pos_found() || 
 	    cmd_data->pos_buffer->partial_pos_found())
 	{
-	    if (cmd_data->position_timer != 0)
+	    if (cmd_data->position_timer != NO_TIMER) {
+#ifdef IF_MOTIF
 		XtRemoveTimeOut(cmd_data->position_timer);
-	    cmd_data->position_timer = 0;
+#else // NOT IF_MOTIF
+		cmd_data->position_timer.disconnect();
+#endif // IF_MOTIF
+	    }
+	    cmd_data->position_timer = NO_TIMER;
 	}
 
 	if (cmd_data->pos_buffer->partial_pos_found())
@@ -1945,10 +1996,15 @@ static void partial_answer_received(const string& answer, void *data)
 	    {
 		assert(cmd_data->position_timer == 0);
 
+#ifdef IF_MOTIF
 		cmd_data->position_timer = 
 		    XtAppAddTimeOut(app_con, app_data.position_timeout,
 				    CancelPartialPositionCB, 
 				    XtPointer(cmd_data));
+#else // NOT IF_MOTIF
+		cmd_data->position_timer = 
+		    Glib::signal_timeout().connect(sigc::bind_return(sigc::bind(PTR_FUN(CancelPartialPositionCB), cmd_data), false), app_data.position_timeout);
+#endif // IF_MOTIF
 	    }
 	}
     }
@@ -1961,9 +2017,14 @@ static void partial_answer_received(const string& answer, void *data)
 	if (cmd_data->disp_buffer->displays_found() || 
 	    cmd_data->disp_buffer->partial_displays_found())
 	{
-	    if (cmd_data->display_timer != 0)
+	    if (cmd_data->display_timer != NO_TIMER) {
+#ifdef IF_MOTIF
 		XtRemoveTimeOut(cmd_data->display_timer);
-	    cmd_data->display_timer = 0;
+#else // NOT IF_MOTIF
+		cmd_data->display_timer.disconnect();
+#endif // IF_MOTIF
+	    }
+	    cmd_data->display_timer = NO_TIMER;
 	}
 
 	if (cmd_data->disp_buffer->partial_displays_found())
@@ -1973,10 +2034,15 @@ static void partial_answer_received(const string& answer, void *data)
 	    {
 		assert(cmd_data->display_timer == 0);
 
+#ifdef IF_MOTIF
 		cmd_data->display_timer = 
 		    XtAppAddTimeOut(app_con, app_data.display_timeout,
 				    CancelPartialDisplayCB,
 				    XtPointer(cmd_data));
+#else // NOT IF_MOTIF
+		cmd_data->display_timer = 
+		    Glib::signal_timeout().connect(sigc::bind_return(sigc::bind(PTR_FUN(CancelPartialDisplayCB), cmd_data), false), app_data.display_timeout);
+#endif // IF_MOTIF
 	    }
 	}
     }
@@ -2013,13 +2079,23 @@ static void command_completed(void *data)
     bool do_prompt   = cmd_data->user_prompt;
     bool start_undo  = cmd_data->start_undo;
 
-    if (cmd_data->position_timer != 0)
+    if (cmd_data->position_timer != NO_TIMER) {
+#ifdef IF_MOTIF
 	XtRemoveTimeOut(cmd_data->position_timer);
-    cmd_data->position_timer = 0;
+#else // NOT IF_MOTIF
+	cmd_data->position_timer.disconnect();
+#endif // IF_MOTIF
+    }
+    cmd_data->position_timer = NO_TIMER;
 
-    if (cmd_data->display_timer != 0)
+    if (cmd_data->display_timer != NO_TIMER) {
+#ifdef IF_MOTIF
 	XtRemoveTimeOut(cmd_data->display_timer);
-    cmd_data->display_timer = 0;
+#else // NOT IF_MOTIF
+	cmd_data->display_timer.disconnect();
+#endif // IF_MOTIF
+    }
+    cmd_data->display_timer = NO_TIMER;
 
     if (verbose && !cmd_data->recorded && start_undo)
     {

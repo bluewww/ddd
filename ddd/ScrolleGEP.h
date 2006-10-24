@@ -29,6 +29,8 @@
 #ifndef _DDD_ScrolledGraphEditPrivate_h
 #define _DDD_ScrolledGraphEditPrivate_h
 
+#ifdef IF_MOTIF
+
 #include <Xm/Xm.h>
 
 // Superclasses
@@ -39,6 +41,10 @@
 #include <Xm/ScrolledWP.h>
 #undef new
 #undef class
+
+#else // NOT IF_MOTIF
+
+#endif // IF_MOTIF
 
 #ifdef MAX
 #undef MAX			// <Xm/XmP.h> on HP-UX defines this

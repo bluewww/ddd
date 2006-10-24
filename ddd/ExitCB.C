@@ -29,11 +29,15 @@
 char ExitCB_rcsid[] = 
     "$Id$";
 
+#include "config.h"
+
 #include <stdlib.h>
 #include <unistd.h>             // environ, execvp()
 #include <stdio.h>		// perror()
+#ifdef IF_MOTIF
 #include <Xm/Xm.h>
 #include <Xm/MessageB.h>
+#endif // IF_MOTIF
 
 #include "findParent.h"
 #include "ExitCB.h"
@@ -44,9 +48,9 @@ extern "C" char **environ;
 // Callbacks
 
 // Leave program
-void ExitCB(Widget, XtPointer client_data, XtPointer)
+void ExitCB(CB_ALIST_2(XtP(long) status))
 {
-    exit((int)(long)client_data);
+    exit((int)(long)status);
 }
 
 static char **_saved_argv    = 0;
@@ -57,7 +61,7 @@ char **saved_argv()    { return _saved_argv; }
 char **saved_environ() { return _saved_environ; }
 
 // Restart program
-void RestartCB(Widget, XtPointer, XtPointer)
+void RestartCB(CB_ALIST_NULL)
 {
     environ = saved_environ();
     execvp(saved_argv()[0], saved_argv());

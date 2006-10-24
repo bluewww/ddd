@@ -48,23 +48,37 @@ void ColorBox::convert_color(Widget w) const
 	return;
 
     Colormap colormap;
+#ifdef IF_MOTIF
     XtVaGetValues(w, XtNcolormap, &colormap, XtPointer(0));
+#else // NOT IF_MOTIF
+    colormap = w->get_colormap();
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     XColor exact_def;
     Status ok = 
 	XParseColor(XtDisplay(w), colormap, color_name().chars(), &exact_def);
+#else // NOT IF_MOTIF
+    Gdk::Color exact_def(Glib::ustring(color_name().chars()));
+    bool ok = colormap->alloc_color(exact_def);
+#endif // IF_MOTIF
 
     if (ok)
     {
+#ifdef IF_MOTIF
 	MUTABLE_THIS(ColorBox *)->_red   = exact_def.red;
 	MUTABLE_THIS(ColorBox *)->_green = exact_def.green;
 	MUTABLE_THIS(ColorBox *)->_blue  = exact_def.blue;
+#else // NOT IF_MOTIF
+	_color = exact_def;
+#endif // IF_MOTIF
     }
     else
     {
 	// Let XtConvertAndStore generate an appropriate message
     }
 
+#ifdef IF_MOTIF
     XrmValue from, to;
     from.size = color_name().length();
     from.addr = CONST_CAST(char*,color_name().chars());
@@ -76,6 +90,7 @@ void ColorBox::convert_color(Widget w) const
 	MUTABLE_THIS(ColorBox *)->_color_failed = true;
 	return;
     }
+#endif // IF_MOTIF
 
     MUTABLE_THIS(ColorBox *)->_color_valid = true;
 }
@@ -108,6 +123,7 @@ void ForegroundColorBox::color_draw(Widget w,
 				    GC gc,
 				    bool context_selected) const
 {
+#ifdef IF_MOTIF
     XGCValues gc_values;
     XGetGCValues(XtDisplay(w), gc, GCBackground | GCForeground, &gc_values);
 
@@ -117,6 +133,9 @@ void ForegroundColorBox::color_draw(Widget w,
 
     // Restore old foreground
     XSetForeground(XtDisplay(w), gc, gc_values.foreground);
+#else // NOT IF_MOTIF
+    gc->set_foreground(color());
+#endif // IF_MOTIF
 }
 
 
@@ -127,8 +146,13 @@ void BackgroundColorBox::color_draw(Widget w,
 				    GC gc,
 				    bool context_selected) const
 {
+#ifdef IF_MOTIF
     XGCValues gc_values;
     XGetGCValues(XtDisplay(w), gc, GCBackground | GCForeground, &gc_values);
+#else // NOT IF_MOTIF
+    GdkGCValues gc_values;
+    gdk_gc_get_values(gc->gobj(), &gc_values);
+#endif // IF_MOTIF
 
     BoxRegion r = region & exposed;
 
@@ -139,15 +163,27 @@ void BackgroundColorBox::color_draw(Widget w,
 		   extend(Y) ? space[Y] : size(Y));
 
     // Fill child area with background color
+#ifdef IF_MOTIF
     XSetForeground(XtDisplay(w), gc, color());
     XFillRectangle(XtDisplay(w), XtWindow(w), gc,
 		   origin[X], origin[Y], width[X], width[Y]);
     XSetForeground(XtDisplay(w), gc, gc_values.foreground);
+#else // NOT IF_MOTIF
+    gc->set_foreground(color());
+    w->get_window()->draw_rectangle(gc, true, origin[X], origin[Y], width[X], width[Y]);
+    gdk_gc_set_values(gc->gobj(), &gc_values, GDK_GC_FOREGROUND);
+#endif // IF_MOTIF
 
     // Draw child with new background color
+#ifdef IF_MOTIF
     XSetBackground(XtDisplay(w), gc, color());
     TransparentHatBox::_draw(w, region, exposed, gc, context_selected);
     XSetBackground(XtDisplay(w), gc, gc_values.background);
+#else // NOT IF_MOTIF
+    gc->set_background(color());
+    TransparentHatBox::_draw(w, region, exposed, gc, context_selected);
+    gc->set_background(Glib::wrap(&gc_values.background));
+#endif // IF_MOTIF
 }
 
 

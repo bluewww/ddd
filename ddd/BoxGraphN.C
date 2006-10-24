@@ -60,9 +60,15 @@ void BoxGraphNode::forceDraw(Widget w,
 
 	if (r <= exposed)
 	{
+#ifdef IF_MOTIF
 	    XFillRectangle(XtDisplay(w), XtWindow(w), gc.clearGC,
 			   r.origin(X), r.origin(Y),
 			   r.space(X), r.space(Y));
+#else // NOT IF_MOTIF
+	    w->get_window()->draw_rectangle(gc.clearGC, true,
+					    r.origin(X), r.origin(Y),
+					    r.space(X), r.space(Y));
+#endif // IF_MOTIF
 	    highlight()->draw(w, r, r, gc.nodeGC, false);
 	}
 	ColorBox::use_color = use_color;

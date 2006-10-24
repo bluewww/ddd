@@ -29,10 +29,11 @@
 #ifndef _DDD_frame_h
 #define _DDD_frame_h
 
-#include <X11/Intrinsic.h>
+#include "gtk_wrapper.h"
 
 // Find the WM frame surrounding WINDOW
-Window frame(Display *display, Window window);
+Window frame(DISPLAY_P display, Window window);
+
 inline Window frame(Widget w) { return frame(XtDisplay(w), XtWindow(w)); }
 
 #endif // _DDD_frame_h

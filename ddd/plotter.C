@@ -68,6 +68,7 @@ char plotter_rcsid[] =
 #include <stdio.h>
 #include <fstream>
 
+#ifdef IF_MOTIF
 #include <Xm/Command.h>
 #include <Xm/MainW.h>
 #include <Xm/MessageB.h>
@@ -80,6 +81,7 @@ char plotter_rcsid[] =
 #include <Xm/Text.h>
 #include <Xm/TextF.h>
 #include <Xm/ToggleB.h>
+#endif // IF_MOTIF
 
 static void TraceInputHP (Agent *source, void *, void *call_data);
 static void TraceOutputHP(Agent *source, void *, void *call_data);

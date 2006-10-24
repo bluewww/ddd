@@ -29,7 +29,15 @@
 #ifndef _DDD_resources_h
 #define _DDD_resources_h
 
+#ifdef IF_MOTIF
+
 #include <X11/Intrinsic.h>
+
+#endif // IF_MOTIF
+
+#include "gtk_wrapper.h"
+
+#ifdef IF_MOTIF
 
 // DDD resource definitions
 extern XtResource ddd_resources[];
@@ -38,8 +46,16 @@ extern const int ddd_resources_size;
 // Resources to use if `Ddd' app-defaults are not found
 extern const _XtString const ddd_fallback_resources[];
 
+#else // NOT IF_MOTIF
+
+#ifdef NAG_ME
+#warning Resource database not fully implemented.
+#endif
+
+#endif // IF_MOTIF
+
 // Default resources
-extern XrmDatabase app_defaults(Display *display);
+extern XrmDatabase app_defaults(DISPLAY_P display);
 
 #endif // _DDD_resources_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

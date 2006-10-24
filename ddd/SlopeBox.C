@@ -32,8 +32,10 @@ char SlopeBox_rcsid[] =
 #include "SlopeBox.h"
 #include "printBox.h"
 
+#ifdef IF_MOTIF
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
+#endif // IF_MOTIF
 
 DEFINE_TYPE_INFO_1(SlopeBox, LineBox)
 DEFINE_TYPE_INFO_1(FallBox, SlopeBox)
@@ -52,8 +54,13 @@ void FallBox::__draw(Widget w,
     BoxSize space   = r.space();
     BoxPoint origin = r.origin();
 
+#ifdef IF_MOTIF
     XDrawLine(XtDisplay(w), XtWindow(w), gc, origin[X], origin[Y],
 	origin[X] + space[X], origin[Y] + space[Y]);
+#else // NOT IF_MOTIF
+    w->get_window()->draw_line(gc, origin[X], origin[Y],
+			       origin[X] + space[X], origin[Y] + space[Y]);
+#endif // IF_MOTIF
 }
 
 // Print
@@ -100,8 +107,13 @@ void RiseBox::__draw(Widget w,
     BoxSize space   = r.space();
     BoxPoint origin = r.origin();
 
+#ifdef IF_MOTIF
     XDrawLine(XtDisplay(w), XtWindow(w), gc, origin[X], origin[Y] + space[Y],
 	origin[X] + space[X], origin[Y]);
+#else // NOT IF_MOTIF
+    w->get_window()->draw_line(gc, origin[X], origin[Y] + space[Y],
+			       origin[X] + space[X], origin[Y]);
+#endif // IF_MOTIF
 }
 
 // Print

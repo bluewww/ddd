@@ -32,9 +32,11 @@ char Graph_rcsid[] =
 #include "Graph.h"
 #include "assert.h"
 
+#ifdef IF_MOTIF
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
+#endif // IF_MOTIF
 
 DEFINE_TYPE_INFO_0(Graph)
 
@@ -394,6 +396,7 @@ void Graph::draw(Widget w, const BoxRegion& exposed, const GraphGC& _gc) const
     GraphGC gc(_gc);
 
     // get default gcs
+#ifdef IF_MOTIF
     if (gc.nodeGC   == 0)
 	gc.nodeGC   = DefaultGCOfScreen(XtScreen(w));
     if (gc.edgeGC   == 0)
@@ -402,6 +405,16 @@ void Graph::draw(Widget w, const BoxRegion& exposed, const GraphGC& _gc) const
 	gc.invertGC = DefaultGCOfScreen(XtScreen(w));
     if (gc.clearGC  == 0)
 	gc.clearGC  = DefaultGCOfScreen(XtScreen(w));
+#else // NOT IF_MOTIF
+    if (gc.nodeGC   == 0)
+      gc.nodeGC = w->get_style()->get_black_gc();
+    if (gc.edgeGC   == 0)
+      gc.edgeGC = w->get_style()->get_black_gc();
+    if (gc.invertGC   == 0)
+      gc.invertGC = w->get_style()->get_black_gc();
+    if (gc.clearGC   == 0)
+      gc.clearGC = w->get_style()->get_white_gc();
+#endif // IF_MOTIF
 
     // draw all edges
     for (GraphEdge *edge = firstVisibleEdge(); edge != 0; 

@@ -29,7 +29,16 @@
 #ifndef _DDD_selection_h
 #define _DDD_selection_h
 
+#ifdef IF_MOTIF
+
 #include <Xm/Xm.h>
+
+#else // NOT IF_MOTIF
+
+#include "gtk_wrapper.h"
+
+#endif // IF_MOTIF
+
 #include "strclass.h"
 
 // Return the current clipboard selection

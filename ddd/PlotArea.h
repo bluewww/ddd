@@ -30,7 +30,15 @@
 #define _DDD_PlotArea_h
 
 #include "strclass.h"
+
+#ifdef IF_MOTIF
+
 #include <X11/Intrinsic.h>
+
+#endif // IF_MOTIF
+
+#include "gtk_wrapper.h"
+
 #include "ChunkQueue.h"
 #include "assert.h"
 
@@ -42,14 +50,14 @@ class PlotArea;
 
 class PlotArea {
     Widget area;		// Widget to draw upon
-    Display *dpy;		// ... its display
+    DISPLAY_P dpy;		// ... its display
     Window win;			// ... its window
 
     int cx, cy;			// Current position
     int px, py;			// Current point size
     double xscale, yscale;	// Current scaling
     GC gc;			// Current graphics context
-    XFontStruct *font;		// Font to use
+    FONT_P font;		// Font to use
     int vchar;			// Its height
     Pixel colors[Ncolors];	// Colors to use
     char dashes[Ndashes][5];	// Dashes to use

@@ -66,6 +66,7 @@ char print_rcsid[] =
 #include <errno.h>
 #include <unistd.h>
 
+#ifdef IF_MOTIF
 #include <Xm/Xm.h>
 #include <Xm/ToggleB.h>
 #include <Xm/RowColumn.h>
@@ -76,6 +77,7 @@ char print_rcsid[] =
 #include <Xm/TextF.h>
 #include <Xm/PushB.h>
 #include <Xm/FileSB.h>
+#endif // IF_MOTIF
 
 #ifndef R_OK
 /* 3b2 doesn't define these according to jthomas@nmsu.edu. */
@@ -108,6 +110,7 @@ static string msg(const string& path, bool displays, bool to_file)
 static int print_to_file(const string& filename, PrintGC& gc, 
 			 bool selectedOnly, bool displays)
 {
+#ifdef IF_MOTIF
     string path = filename;
     if (!filename.contains('/', 0))
 	path.prepend(cwd() + '/');
@@ -155,15 +158,26 @@ static int print_to_file(const string& filename, PrintGC& gc,
 	os.close();
 	graph->print_plots(filename, graphGC);
     }
-
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Printing not implemented
+#endif
+#endif // IF_MOTIF
     return 0;
 }
 
+#ifdef IF_MOTIF
 static void deletePrintAgent(XtPointer client_data, XtIntervalId *)
+#else // NOT IF_MOTIF
+static bool deletePrintAgent(Agent *client_data)
+#endif // IF_MOTIF
 {
     // Delete agent after use
     Agent *edit_agent = (Agent *)client_data;
     delete edit_agent;
+#ifndef IF_MOTIF
+    return false;
+#endif // IF_MOTIF
 }
 
 static void unlinkPrintFile(XtPointer client_data, XtIntervalId *)
@@ -183,10 +197,14 @@ static void printDoneHP(Agent *print_agent, void *client_data, void *)
     print_agent->removeAllHandlers(Died);
 
     // Printing is done: remove temporary file
+#ifdef IF_MOTIF
     XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0, deletePrintAgent, 
 		    XtPointer(print_agent));
     XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0, unlinkPrintFile, 
 		    XtPointer(client_data));
+#else // NOT IF_MOTIF
+    Glib::signal_idle().connect(sigc::bind(PTR_FUN(deletePrintAgent), print_agent));
+#endif // IF_MOTIF
 
     if (!output_buffer.empty())
 	set_status("");
@@ -246,23 +264,24 @@ static PostScriptPrintGC print_postscript_gc;
 static FigPrintGC        print_xfig_gc;
 static PrintType       print_type = PRINT_POSTSCRIPT;
 
-static Widget          print_dialog = 0;
-static Widget          print_command_field   = 0;
-static Widget          print_file_name_field = 0;
+static DIALOG_P        print_dialog = 0;
+static ENTRY_P         print_command_field   = 0;
+static ENTRY_P         print_file_name_field = 0;
 static Widget 	       print_file_name_box   = 0;
-static Widget          paper_size_dialog = 0;
+static DIALOG_P        paper_size_dialog = 0;
 
-static Widget          a4_paper_size;
-static Widget          a3_paper_size;
-static Widget          letter_paper_size;
-static Widget          legal_paper_size;
-static Widget          executive_paper_size;
-static Widget          custom_paper_size;
+static TOGGLEBUTTON_P  a4_paper_size;
+static TOGGLEBUTTON_P  a3_paper_size;
+static TOGGLEBUTTON_P  letter_paper_size;
+static TOGGLEBUTTON_P  legal_paper_size;
+static TOGGLEBUTTON_P  executive_paper_size;
+static TOGGLEBUTTON_P  custom_paper_size;
 
 
 // Go and print according to local state
-void PrintAgainCB(Widget w, XtPointer client_data, XtPointer)
+void PrintAgainCB(CB_ALIST_12(Widget w, XtP(long) client_data))
 {
+#ifdef IF_MOTIF
     const bool unmanage = ((int)(long)client_data & 1);
     const bool override = ((int)(long)client_data & 2);
 
@@ -275,9 +294,13 @@ void PrintAgainCB(Widget w, XtPointer client_data, XtPointer)
 
 	if (print_command_field != 0)
 	{
+#ifdef IF_MOTIF
 	    String c = XmTextFieldGetString(print_command_field);
 	    command = c;
 	    XtFree(c);
+#else // NOT IF_MOTIF
+	    command = print_command_field->get_text().c_str();
+#endif // IF_MOTIF
 	}
 
 	app_data.print_command = command.chars();
@@ -306,9 +329,13 @@ void PrintAgainCB(Widget w, XtPointer client_data, XtPointer)
 	}
 	PrintGC& gc = *gc_ptr;
 
+#ifdef IF_MOTIF
 	String file = XmTextFieldGetString(print_file_name_field);
 	string f = file;
 	XtFree(file);
+#else // NOT IF_MOTIF
+	string f(print_file_name_field->get_text().c_str());
+#endif // IF_MOTIF
 
 	strip_trailing_space(f);
 	if (f.empty())
@@ -351,6 +378,9 @@ void PrintAgainCB(Widget w, XtPointer client_data, XtPointer)
 	break;
     }
     }
+#else // NOT IF_MOTIF
+    std::cerr << "PrintAgainCB not implemented\n";
+#endif // IF_MOTIF
 }
 
 static string suffix(PrintType print_type)
@@ -369,6 +399,7 @@ static string suffix(PrintType print_type)
 
 static void set_print_file_name(const string& name)
 {
+#ifdef IF_MOTIF
     XmTextFieldSetString(print_file_name_field, XMST(name.chars()));
 
     XmTextPosition last_pos = 
@@ -376,10 +407,14 @@ static void set_print_file_name(const string& name)
     XmTextFieldSetInsertionPosition(print_file_name_field, last_pos);
     XmTextFieldShowPosition(print_file_name_field, 0);
     XmTextFieldShowPosition(print_file_name_field, last_pos);
+#else // NOT IF_MOTIF
+    std::cerr << "set_print_file_name unimplemented: " << name << "\n";
+#endif // IF_MOTIF
 }
 
-static void SetPrintTypeCB(Widget w, XtPointer client_data, XtPointer)
+static void SetPrintTypeCB(CB_ALIST_12(Widget w, XtP(long) client_data))
 {
+#ifdef IF_MOTIF
     if (!XmToggleButtonGetState(w))
 	return;
 
@@ -398,40 +433,59 @@ static void SetPrintTypeCB(Widget w, XtPointer client_data, XtPointer)
 
 	set_print_file_name(file_name);
     }
+#else // NOT IF_MOTIF
+    std::cerr << "SetPrintTypeCB not implemented\n";
+#endif // IF_MOTIF
 }
 
-static void SetSensitiveCB(Widget w, XtPointer client_data, XtPointer)
+static void SetSensitiveCB(CB_ALIST_12(Widget w, XtP(Widget) client_data))
 {
+#ifdef IF_MOTIF
     if (XmToggleButtonGetState(w))
 	set_sensitive(Widget(client_data), true);
+#else // NOT IF_MOTIF
+    std::cerr << "SetSensitive not implemented\n";
+#endif // IF_MOTIF
 }
 
-static void TakeFocusCB(Widget w, XtPointer client_data, XtPointer)
+static void TakeFocusCB(CB_ALIST_12(Widget w, XtP(Widget) client_data))
 {
+#ifdef IF_MOTIF
     if (XmToggleButtonGetState(w))
 	XmProcessTraversal(Widget(client_data), XmTRAVERSE_CURRENT);
+#else // NOT IF_MOTIF
+    std::cerr << "TakeFocusCB not implemented\n";
+#endif // IF_MOTIF
 }
 
-static void UnsetSensitiveCB(Widget w, XtPointer client_data, XtPointer)
+static void UnsetSensitiveCB(CB_ALIST_12(Widget w, XtP(Widget) client_data))
 {
+#ifdef IF_MOTIF
     if (XmToggleButtonGetState(w))
 	set_sensitive(Widget(client_data), false);
+#else // NOT IF_MOTIF
+    std::cerr << "UnsetSensitiveCB not implemented\n";
+#endif // IF_MOTIF
 }
 
-static void SetPrintDisplaysCB(Widget w, XtPointer client_data, XtPointer)
+static void SetPrintDisplaysCB(CB_ALIST_12(TOGGLEBUTTON_P w, XtP(bool) client_data))
 {
+#ifdef IF_MOTIF
     if (!XmToggleButtonGetState(w))
 	return;
 
     print_displays = bool((int)(long)client_data);
+#else // NOT IF_MOTIF
+    std::cerr << "SetPrintDisplaysCB not implemented\n";
+#endif // IF_MOTIF
 }
 
-static void SetPrintSelectedNodesCB(Widget w, XtPointer, XtPointer)
+static void SetPrintSelectedNodesCB(CB_ALIST_1(TOGGLEBUTTON_P w))
 {
     print_selected_only = XmToggleButtonGetState(w);
 }
 
-static void SetPrintTargetCB(Widget w, XtPointer client_data, XtPointer)
+static void SetPrintTargetCB(CB_ALIST_12(TOGGLEBUTTON_P w, XtP(long) client_data))
 {
     if (!XmToggleButtonGetState(w))
 	return;
@@ -441,20 +495,24 @@ static void SetPrintTargetCB(Widget w, XtPointer client_data, XtPointer)
 
 static void set_paper_size_string(const char *s)
 {
+#ifdef IF_MOTIF
     Widget text = XmSelectionBoxGetChild(paper_size_dialog, XmDIALOG_TEXT);
     XmTextSetString(text, XMST(s));
 
     static string current_paper_size;
     current_paper_size = s;
     app_data.paper_size = current_paper_size.chars();
+#else // NOT IF_MOTIF
+    std::cerr << "set_paper_size_string " << s << "\n";
+#endif // IF_MOTIF
 }
 
-static void SetGCColorCB(Widget w, XtPointer, XtPointer)
+static void SetGCColorCB(CB_ALIST_1(TOGGLEBUTTON_P w))
 {
     print_postscript_gc.color = XmToggleButtonGetState(w);
 }
 
-static void SetGCA3(Widget w, XtPointer, XtPointer)
+static void SetGCA3(CB_ALIST_1(TOGGLEBUTTON_P w))
 {
     if (XmToggleButtonGetState(w))
     {
@@ -466,7 +524,7 @@ static void SetGCA3(Widget w, XtPointer, XtPointer)
     }
 }
 
-static void SetGCA4(Widget w, XtPointer, XtPointer)
+static void SetGCA4(CB_ALIST_1(TOGGLEBUTTON_P w))
 {
     if (XmToggleButtonGetState(w))
     {
@@ -478,7 +536,7 @@ static void SetGCA4(Widget w, XtPointer, XtPointer)
     }
 }
 
-static void SetGCLetter(Widget w, XtPointer, XtPointer)
+static void SetGCLetter(CB_ALIST_1(TOGGLEBUTTON_P w))
 {
     PostScriptPrintGC gc;
 
@@ -490,7 +548,7 @@ static void SetGCLetter(Widget w, XtPointer, XtPointer)
     }
 }
 
-static void SetGCLegal(Widget w, XtPointer, XtPointer)
+static void SetGCLegal(CB_ALIST_1(TOGGLEBUTTON_P w))
 {
     PostScriptPrintGC gc;
 
@@ -502,7 +560,7 @@ static void SetGCLegal(Widget w, XtPointer, XtPointer)
     }
 }
 
-static void SetGCExecutive(Widget w, XtPointer, XtPointer)
+static void SetGCExecutive(CB_ALIST_1(TOGGLEBUTTON_P w))
 {
     PostScriptPrintGC gc;
 
@@ -665,8 +723,13 @@ static bool set_paper_size(const string& s)
     return true;
 }
 
-static void SetPaperSizeCB(Widget w, XtPointer, XtPointer call_data)
+#ifdef IF_MOTIF
+static void SetPaperSizeCB(CB_ALIST_13(Widget w, XtP(XmFileSelectionBoxCallbackStruct *) call_data))
+#else // NOT IF_MOTIF
+static void SetPaperSizeCB(CB_ALIST_1(Widget w))
+#endif // IF_MOTIF
 {
+#ifdef IF_MOTIF
     XmFileSelectionBoxCallbackStruct *cbs =
 	(XmFileSelectionBoxCallbackStruct *)call_data;
 
@@ -686,15 +749,24 @@ static void SetPaperSizeCB(Widget w, XtPointer, XtPointer call_data)
 
     if (ok)
 	XtUnmanageChild(w);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning SetPaperSizeCB not implemented.
+#endif
+#endif // IF_MOTIF
 }
 
-static void CheckPaperSizeCB(Widget text, XtPointer client_data, XtPointer)
+static void CheckPaperSizeCB(CB_ALIST_12(ENTRY_P text, XtP(Widget) client_data))
 {
     Widget ok_button = Widget(client_data);
+#ifdef IF_MOTIF
     String value;
     XtVaGetValues(text, XmNvalue, &value, XtPointer(0));
     string size(value);
     XtFree(value);
+#else // NOT IF_MOTIF
+    string size(text->get_text().c_str());
+#endif // IF_MOTIF
 
     int hsize, vsize;
     get_paper_size(size, hsize, vsize);
@@ -702,13 +774,13 @@ static void CheckPaperSizeCB(Widget text, XtPointer client_data, XtPointer)
     set_sensitive(ok_button, hsize >= 0 && vsize >= 0);
 }
 
-static void ResetPaperSizeCB(Widget w, XtPointer, XtPointer)
+static void ResetPaperSizeCB(CB_ALIST_1(Widget w))
 {
     set_paper_size(app_data.paper_size);
     XtUnmanageChild(w);
 }
 
-static void SetGCCustom(Widget w, XtPointer, XtPointer)
+static void SetGCCustom(CB_ALIST_1(TOGGLEBUTTON_P w))
 {
     if (!XmToggleButtonGetState(w))
 	return;
@@ -716,7 +788,7 @@ static void SetGCCustom(Widget w, XtPointer, XtPointer)
     manage_and_raise(paper_size_dialog);
 }
 
-static void SetGCOrientation(Widget w, XtPointer client_data, XtPointer)
+static void SetGCOrientation(CB_ALIST_12(TOGGLEBUTTON_P w, XtP(long) client_data))
 {
     if (!XmToggleButtonGetState(w))
 	return;
@@ -725,11 +797,9 @@ static void SetGCOrientation(Widget w, XtPointer client_data, XtPointer)
 	PostScriptPrintGC::Orientation((int)(long)client_data);
 }
 
-static void SetPrintFileNameCB(Widget w,
-			       XtPointer client_data, 
-			       XtPointer call_data)
+static void SetPrintFileNameCB(CB_ALIST_1(FILECHOOSERDIALOG_P w))
 {
-    string target = get_file(w, client_data, call_data);
+    string target = get_file(CB_ARGS_1(w));
     if (!target.empty())
     {
 	set_print_file_name(target);
@@ -737,17 +807,21 @@ static void SetPrintFileNameCB(Widget w,
     }
 }
 
-static void BrowseNameCB(Widget w, XtPointer, XtPointer)
+static void BrowseNameCB(CB_ALIST_1(Widget w))
 {
     Delay delay;
 
-    static Widget dialog = 0;
+    static FILECHOOSERDIALOG_P dialog = 0;
 
     static MString pattern;
 
+#ifdef IF_MOTIF
     String file = XmTextFieldGetString(print_file_name_field);
     string f = file;
     XtFree(file);
+#else // NOT IF_MOTIF
+    string f(print_file_name_field->get_text().c_str());
+#endif // IF_MOTIF
 
     if (f.contains('.'))
 	pattern = "*" + f.from('.', -1);
@@ -765,27 +839,52 @@ static void BrowseNameCB(Widget w, XtPointer, XtPointer)
 	}
     }
 
+#ifdef IF_MOTIF
     Arg args[10];
     Cardinal arg = 0;
+#endif // IF_MOTIF
 
     if (dialog == 0)
     {
+#ifdef IF_MOTIF
 	XtSetArg(args[arg], XmNpattern, pattern.xmstring()); arg++;
 	dialog = 
 	    verify(XmCreateFileSelectionDialog(find_shell(w), 
 					       XMST("browse_print"), 
 					       args, arg));
+#else // NOT IF_MOTIF
+	dialog = new Gtk::FileChooserDialog(*find_shell(w), 
+					    XMST("browse_print"),
+					    Gtk::FILE_CHOOSER_ACTION_SAVE);
+#ifdef NAG_ME
+#warning Set file filter.
+#endif
+#endif // IF_MOTIF
 
 	Delay::register_shell(dialog);
+#ifdef IF_MOTIF
 	XtAddCallback(dialog, XmNokCallback, SetPrintFileNameCB, 0);
 	XtAddCallback(dialog, XmNcancelCallback, UnmanageThisCB, 
 		      XtPointer(dialog));
 	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, XtPointer(0));
+#else // NOT IF_MOTIF
+	Gtk::Button *button;
+	button = dialog->add_button(XMST("OK"), 0);
+	button->signal_clicked().connect(sigc::bind(PTR_FUN(SetPrintFileNameCB), dialog));
+	button = dialog->add_button(XMST("Cancel"), 0);
+	button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB), dialog));
+#endif // IF_MOTIF
     }
     else
     {
+#ifdef IF_MOTIF
 	XtSetArg(args[arg], XmNpattern, pattern.xmstring()); arg++;
 	XtSetValues(dialog, args, arg);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Set file filters?
+#endif
+#endif // IF_MOTIF
     }
 
     manage_and_raise(dialog);
@@ -795,9 +894,9 @@ static void PrintCB(Widget parent, bool displays)
 {
     print_displays = displays;
 
-    static Widget print_displays_w;
-    static Widget print_plots_w;
-    static Widget print_selected_w;
+    static TOGGLEBUTTON_P print_displays_w;
+    static TOGGLEBUTTON_P print_plots_w;
+    static TOGGLEBUTTON_P print_selected_w;
 
     if (print_dialog != 0)
     {
@@ -810,6 +909,7 @@ static void PrintCB(Widget parent, bool displays)
 	return;
     }
 
+#ifdef IF_MOTIF
     Arg args[10];
     Cardinal arg = 0;
     XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
@@ -817,12 +917,18 @@ static void PrintCB(Widget parent, bool displays)
 	verify(XmCreatePromptDialog(find_shell(parent),
 				    XMST("print"), 
 				    args, arg));
+#else // NOT IF_MOTIF
+    print_dialog = new Gtk::Dialog(XMST("print"), *find_shell(parent));
+#endif // IF_MOTIF
     Delay::register_shell(print_dialog);
 
+#ifdef IF_MOTIF
     if (lesstif_version <= 79)
 	XtUnmanageChild(XmSelectionBoxGetChild(print_dialog,
 					       XmDIALOG_APPLY_BUTTON));
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     XtAddCallback(print_dialog, XmNokCallback,
  		  PrintAgainCB, XtPointer(1));
     XtAddCallback(print_dialog, XmNapplyCallback,
@@ -831,115 +937,122 @@ static void PrintCB(Widget parent, bool displays)
 		  UnmanageThisCB, XtPointer(print_dialog));
     XtAddCallback(print_dialog, XmNhelpCallback,
 		  ImmediateHelpCB, XtPointer(0));
+#else // NOT IF_MOTIF
+    Gtk::Button *button;
+    button = print_dialog->add_button(XMST("OK"), 0);
+    button->signal_clicked().connect(sigc::bind(PTR_FUN(PrintAgainCB), button, 1));
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     // Remove old prompt
     XtUnmanageChild(XmSelectionBoxGetChild(print_dialog, XmDIALOG_TEXT));
     XtUnmanageChild(XmSelectionBoxGetChild(print_dialog, 
 					   XmDIALOG_SELECTION_LABEL));
+#endif // IF_MOTIF
 
     // Create menu
-    static Widget print_to_printer_w;
-    static Widget print_to_file_w;
+    static TOGGLEBUTTON_P print_to_printer_w;
+    static TOGGLEBUTTON_P print_to_file_w;
     static MMDesc print_to_menu[] = 
     {
-	{"printer", MMToggle, 
-	    { SetPrintTargetCB, XtPointer(TARGET_PRINTER) }, 
-	     0, &print_to_printer_w, 0, 0},
-	{"file",    MMToggle, 
-	    { SetPrintTargetCB, XtPointer(TARGET_FILE) }, 
-	     0, &print_to_file_w, 0, 0 },
+	{NM("printer", "printer"), MMToggle, 
+	 BIND_1(PTR_FUN(SetPrintTargetCB), TARGET_PRINTER), 
+	 0, (Widget *)&print_to_printer_w, 0, 0},
+	{NM("file", "file"),       MMToggle, 
+	 BIND_1(PTR_FUN(SetPrintTargetCB), TARGET_FILE), 
+	 0, (Widget *)&print_to_file_w, 0, 0 },
 	MMEnd
     };
 
-    static Widget postscript_w;
+    static TOGGLEBUTTON_P postscript_w;
     static Widget fig_w;
     static MMDesc type2_menu[] = 
     {
-	{"postscript", MMToggle, 
-	 { SetPrintTypeCB, XtPointer(PRINT_POSTSCRIPT) }, 
-	 0, &postscript_w, 0, 0 },
-	{"xfig",       MMToggle,
-	  { SetPrintTypeCB, XtPointer(PRINT_FIG) }, 0, &fig_w, 0, 0},
+	{NM("postscript", "postscript"), MMToggle, 
+	 BIND_1(PTR_FUN(SetPrintTypeCB), PRINT_POSTSCRIPT), 
+	 0, (Widget *)&postscript_w, 0, 0 },
+	{NM("xfig", "xfig"),             MMToggle,
+	 BIND_1(PTR_FUN(SetPrintTypeCB), PRINT_FIG), 0, &fig_w, 0, 0},
 	MMEnd
     };
 
-    static Widget print_color_w;
+    static TOGGLEBUTTON_P print_color_w;
     static MMDesc type_menu[] = 
     {
-	{"type2",    MMRadioPanel | MMUnmanagedLabel, 
+	{NM("type2", "type2"),    MMRadioPanel | MMUnmanagedLabel, 
 	 MMNoCB, type2_menu, 0, 0, 0 },
-	{"color",    MMToggle, { SetGCColorCB, 0 }, 
-	             0, &print_color_w, 0, 0 },
+	{NM("color", "color"),    MMToggle, BIND_0(PTR_FUN(SetGCColorCB)), 
+	 0, (Widget *)&print_color_w, 0, 0 },
 	MMEnd
     };
 
     static MMDesc what2_menu[] = 
     {
-	{"displays", MMToggle, { SetPrintDisplaysCB, XtPointer(true) }, 
-	 0, &print_displays_w, 0, 0 },
-	{"plots",    MMToggle, { SetPrintDisplaysCB, XtPointer(false) }, 
-	 0, &print_plots_w, 0, 0 },
+	{NM("displays", "displays"), MMToggle, BIND_1(PTR_FUN(SetPrintDisplaysCB), true), 
+	 0, (Widget *)&print_displays_w, 0, 0 },
+	{NM("plots", "plots"),       MMToggle, BIND_1(PTR_FUN(SetPrintDisplaysCB), false), 
+	 0, (Widget *)&print_plots_w, 0, 0 },
 	MMEnd
     };
 
     static MMDesc what_menu[] = 
     {
-	{"what2",    MMRadioPanel | MMUnmanagedLabel, 
+	{NM("what2", "what2"),       MMRadioPanel | MMUnmanagedLabel, 
 	 MMNoCB, what2_menu, 0, 0, 0 },
-	{"selected", MMToggle, { SetPrintSelectedNodesCB, 0 }, 
-	             0, &print_selected_w, 0, 0 },
+	{NM("selected", "selected"), MMToggle, BIND_0(PTR_FUN(SetPrintSelectedNodesCB)), 
+	 0, (Widget *)&print_selected_w, 0, 0 },
 	MMEnd
     };
 
-    static Widget print_portrait_w;
-    static Widget print_landscape_w;
+    static TOGGLEBUTTON_P print_portrait_w;
+    static TOGGLEBUTTON_P print_landscape_w;
     static MMDesc orientation_menu[] = 
     {
-	{"portrait",  MMToggle, 
-	 { SetGCOrientation, XtPointer(PostScriptPrintGC::PORTRAIT) }, 
-	     0, &print_portrait_w, 0, 0},
-	{"landscape", MMToggle,
-	 { SetGCOrientation, XtPointer(PostScriptPrintGC::LANDSCAPE) },
-	     0, &print_landscape_w, 0, 0},
+	{NM("portrait", "portrait"),   MMToggle, 
+	 BIND_1(PTR_FUN(SetGCOrientation), PostScriptPrintGC::PORTRAIT), 
+	 0, (Widget *)&print_portrait_w, 0, 0},
+	{NM("landscape", "landscape"), MMToggle,
+	 BIND_1(PTR_FUN(SetGCOrientation), PostScriptPrintGC::LANDSCAPE),
+	 0, (Widget *)&print_landscape_w, 0, 0},
 	MMEnd
     };
 
     static MMDesc paper_menu[] = 
     {
-	{"a4",        MMToggle, 
-	 {SetGCA4, 0},        0, &a4_paper_size, 0, 0},
-	{"a3",        MMToggle, 
-	 {SetGCA3, 0},        0, &a3_paper_size, 0, 0},
-	{"letter",    MMToggle, 
-	 {SetGCLetter, 0},    0, &letter_paper_size, 0, 0},
-	{"legal",     MMToggle, 
-	 {SetGCLegal, 0},     0, &legal_paper_size, 0, 0},
-	{"executive", MMToggle, 
-	 {SetGCExecutive, 0}, 0, &executive_paper_size, 0, 0},
-	{"custom",    MMToggle, 
-	 {SetGCCustom, 0},    0, &custom_paper_size, 0, 0},
+	{NM("a4", "a4"),               MMToggle, 
+	 BIND_0(PTR_FUN(SetGCA4)),        0, (Widget *)&a4_paper_size, 0, 0},
+	{NM("a3", "a3"),               MMToggle, 
+	 BIND_0(PTR_FUN(SetGCA3)),        0, (Widget *)&a3_paper_size, 0, 0},
+	{NM("letter", "letter"),       MMToggle, 
+	 BIND_0(PTR_FUN(SetGCLetter)),    0, (Widget *)&letter_paper_size, 0, 0},
+	{NM("legal", "legal"),         MMToggle, 
+	 BIND_0(PTR_FUN(SetGCLegal)),     0, (Widget *)&legal_paper_size, 0, 0},
+	{NM("executive", "executive"), MMToggle, 
+	 BIND_0(PTR_FUN(SetGCExecutive)), 0, (Widget *)&executive_paper_size, 0, 0},
+	{NM("custom", "custom"),       MMToggle, 
+	 BIND_0(PTR_FUN(SetGCCustom)),    0, (Widget *)&custom_paper_size, 0, 0},
 	MMEnd
     };
 
     static MMDesc name_menu[] = 
     {
-	{"name", 	MMTextField | MMUnmanagedLabel, MMNoCB, 
-	 0, &print_file_name_field, 0, 0},
-	{"browse",      MMPush, { BrowseNameCB, 0 }, 0, 0, 0, 0 },
+	{NM("name", "name"), 	  MMTextField | MMUnmanagedLabel, MMNoCB, 
+	 0, (Widget *)&print_file_name_field, 0, 0},
+	{NM("browse", "browse"),  MMPush, BIND_0(PTR_FUN(BrowseNameCB)), 0, 0, 0, 0 },
 	MMEnd
     };
 
     static MMDesc menu[] =
     {
-	{"to",          MMRadioPanel, MMNoCB, print_to_menu, 0, 0, 0 },
-	{"command",     MMTextField,  MMNoCB, 0, &print_command_field, 0, 0 },
-	{"name", 	MMPanel,      MMNoCB, name_menu, 
-	 &print_file_name_box, 0, 0},
+	{NM("to", "to"),            MMRadioPanel, MMNoCB, print_to_menu, 0, 0, 0 },
+	{NM("command", "command"),  MMTextField,  MMNoCB, 0, (Widget *)&print_command_field, 0, 0 },
+	{NM("name", "name"), 	    MMPanel,      MMNoCB, name_menu, 
+	 (Widget *)&print_file_name_box, 0, 0},
 	MMSep,
-	{"type", 	MMPanel,      MMNoCB, type_menu, 0, 0, 0 },
-	{"what",        MMPanel,      MMNoCB, what_menu, 0, 0, 0 },
-	{"orientation", MMRadioPanel, MMNoCB, orientation_menu, 0, 0, 0 },
-	{"size",        MMRadioPanel, MMNoCB, paper_menu, 0, 0, 0 },
+	{NM("type", "type"), 	    MMPanel,      MMNoCB, type_menu, 0, 0, 0 },
+	{NM("what", "what"),        MMPanel,      MMNoCB, what_menu, 0, 0, 0 },
+	{NM("orientation", "orientation"), MMRadioPanel, MMNoCB, orientation_menu, 0, 0, 0 },
+	{NM("size", "size"),        MMRadioPanel, MMNoCB, paper_menu, 0, 0, 0 },
 	MMEnd
     };
 
@@ -950,6 +1063,7 @@ static void PrintCB(Widget parent, bool displays)
     // Add callbacks
     MMaddCallbacks(menu);
 
+#ifdef IF_MOTIF
     XtAddCallback(print_to_printer_w, XmNvalueChangedCallback,   
 		  SetSensitiveCB,   XtPointer(print_command_field));
     XtAddCallback(print_to_printer_w, XmNvalueChangedCallback,   
@@ -983,17 +1097,71 @@ static void PrintCB(Widget parent, bool displays)
 
     XtAddCallback(print_to_file_w, XmNvalueChangedCallback,
 		  TakeFocusCB,      XtPointer(print_file_name_field));
+#else // NOT IF_MOTIF
+    print_to_printer_w->signal_toggled().connect(sigc::bind(PTR_FUN(SetSensitiveCB),
+							    print_to_printer_w,
+							    print_command_field));
+    print_to_printer_w->signal_toggled().connect(sigc::bind(PTR_FUN(SetSensitiveCB),
+							    print_to_printer_w,
+							    menu[1].label));
 
+    print_to_printer_w->signal_toggled().connect(sigc::bind(PTR_FUN(UnsetSensitiveCB),
+							    print_to_printer_w,
+							    print_file_name_box));
+    print_to_printer_w->signal_toggled().connect(sigc::bind(PTR_FUN(UnsetSensitiveCB),
+							    print_to_printer_w,
+							    menu[2].label));
+    print_to_printer_w->signal_toggled().connect(sigc::bind(PTR_FUN(UnsetSensitiveCB),
+							    print_to_printer_w,
+							    postscript_w));
+    print_to_printer_w->signal_toggled().connect(sigc::bind(PTR_FUN(UnsetSensitiveCB),
+							    print_to_printer_w,
+							    fig_w));
+
+    print_to_printer_w->signal_toggled().connect(sigc::bind(PTR_FUN(TakeFocusCB),
+							    print_to_printer_w,
+							    print_command_field));
+
+    print_to_file_w->signal_toggled().connect(sigc::bind(PTR_FUN(UnsetSensitiveCB),
+							 print_to_file_w,
+							 print_command_field));
+    print_to_file_w->signal_toggled().connect(sigc::bind(PTR_FUN(UnsetSensitiveCB),
+							 print_to_file_w,
+							 menu[1].label));
+
+    print_to_file_w->signal_toggled().connect(sigc::bind(PTR_FUN(SetSensitiveCB),
+							 print_to_file_w,
+							 print_file_name_box));
+    print_to_file_w->signal_toggled().connect(sigc::bind(PTR_FUN(SetSensitiveCB),
+							 print_to_file_w,
+							 menu[2].label));
+    print_to_file_w->signal_toggled().connect(sigc::bind(PTR_FUN(SetSensitiveCB),
+							 print_to_file_w,
+							 postscript_w));
+    print_to_file_w->signal_toggled().connect(sigc::bind(PTR_FUN(SetSensitiveCB),
+							 print_to_file_w,
+							 fig_w));
+
+    print_to_file_w->signal_toggled().connect(sigc::bind(PTR_FUN(TakeFocusCB),
+							 print_to_file_w,
+							 print_file_name_field));
+#endif // IF_MOTIF
 
     // Create size dialog
+#ifdef IF_MOTIF
     arg = 0;
     XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
     paper_size_dialog = 
 	verify(XmCreatePromptDialog(find_shell(parent), 
 				    XMST("paper_size_dialog"), 
 				    args, arg));
+#else // NOT IF_MOTIF
+    paper_size_dialog = 
+	new Gtk::Dialog(XMST("paper_size_dialog"), *find_shell(parent));
+#endif // IF_MOTIF
     Delay::register_shell(paper_size_dialog);
 
+#ifdef IF_MOTIF
     if (lesstif_version <= 79)
 	XtUnmanageChild(XmSelectionBoxGetChild(paper_size_dialog,
 					       XmDIALOG_APPLY_BUTTON));
@@ -1004,13 +1172,27 @@ static void PrintCB(Widget parent, bool displays)
 		  ResetPaperSizeCB, XtPointer(0));
     XtAddCallback(paper_size_dialog, XmNhelpCallback,   
 		  ImmediateHelpCB, XtPointer(0));
+#else // NOT IF_MOTIF
+    Gtk::Entry *entry;
+    entry = new Gtk::Entry();
+    entry->show();
+    paper_size_dialog->get_vbox()->pack_start(*entry, Gtk::PACK_SHRINK);
+    Gtk::Button *ok_button = paper_size_dialog->add_button(XMST("OK"), 0);
+    ok_button->signal_clicked().connect(sigc::bind(PTR_FUN(SetPaperSizeCB), paper_size_dialog));
+    button = paper_size_dialog->add_button(XMST("Cancel"), 0);
+    button->signal_clicked().connect(sigc::bind(PTR_FUN(ResetPaperSizeCB), paper_size_dialog));
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     Widget size = XmSelectionBoxGetChild(paper_size_dialog,
 					 XmDIALOG_TEXT);
     Widget ok_button = XmSelectionBoxGetChild(paper_size_dialog, 
 					      XmDIALOG_OK_BUTTON);
     XtAddCallback(size, XmNvalueChangedCallback, 
 		  CheckPaperSizeCB, XtPointer(ok_button));
+#else // NOT IF_MOTIF
+    entry->signal_activate().connect(sigc::bind(PTR_FUN(CheckPaperSizeCB), entry, ok_button));
+#endif // IF_MOTIF
 
     // Set initial state
     XmToggleButtonSetState(print_to_printer_w, True, True);
@@ -1035,12 +1217,12 @@ static void PrintCB(Widget parent, bool displays)
     manage_and_raise(print_dialog);
 }
 
-void PrintGraphCB(Widget w, XtPointer, XtPointer)
+void PrintGraphCB(CB_ARG_LIST_1(w))
 {
     PrintCB(w, true);
 }
 
-void PrintPlotCB(Widget w, XtPointer, XtPointer)
+void PrintPlotCB(CB_ARG_LIST_1(w))
 {
     PrintCB(w, false);
 }

@@ -39,9 +39,11 @@ char ArcGraphEdge_rcsid[] =
 #include "pi.h"
 #include "hypot.h"
 
+#ifdef IF_MOTIF
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
+#endif // IF_MOTIF
 
 DEFINE_TYPE_INFO_1(ArcGraphEdge, LineGraphEdge);
 
@@ -254,9 +256,15 @@ void ArcGraphEdge::makeLine(Widget w,
 
     if (w != 0)
     {
+#ifdef IF_MOTIF
 	XDrawArc(XtDisplay(w), XtWindow(w), gc.edgeGC,
 		 int(cx - radius), int(cy - radius),
 		 unsigned(radius) * 2, unsigned(radius) * 2, angle, path);
+#else // NOT IF_MOTIF
+	w->get_window()->draw_arc(gc.edgeGC, false, int(cx - radius), int(cy - radius),
+				  unsigned(radius) * 2, unsigned(radius) * 2,
+				  angle, path);
+#endif // IF_MOTIF
     }
     else if (gc.printGC->isPostScript())
     {

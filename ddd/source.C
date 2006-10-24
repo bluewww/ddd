@@ -29,6 +29,8 @@
 char source_rcsid[] = 
     "$Id$";
 
+#include "config.h"
+
 #include "source.h"
 
 #include "AppData.h"
@@ -51,8 +53,10 @@ char source_rcsid[] =
 #include "fortranize.h"
 
 #include <iostream>
+#ifdef IF_MOTIF
 #include <Xm/Xm.h>
 #include <Xm/Text.h>
+#endif // IF_MOTIF
 
 
 //-----------------------------------------------------------------------------
@@ -68,17 +72,17 @@ static string current_arg(bool globals_first = false)
 // Moving
 //-----------------------------------------------------------------------------
 
-void gdbLookupCB(Widget, XtPointer, XtPointer)
+void gdbLookupCB(CB_ARG_LIST_NULL)
 {
     source_view->lookup(current_arg(true));
 }
 
-void gdbUndoCB(Widget, XtPointer, XtPointer)
+void gdbUndoCB(CB_ARG_LIST_NULL)
 {
     undo_buffer.undo();
 }
 
-void gdbRedoCB(Widget, XtPointer, XtPointer)
+void gdbRedoCB(CB_ARG_LIST_NULL)
 {
     undo_buffer.redo();
 }
@@ -88,7 +92,7 @@ void gdbRedoCB(Widget, XtPointer, XtPointer)
 // Printing
 //-----------------------------------------------------------------------------
 
-void gdbPrintCB(Widget w, XtPointer client_data, XtPointer)
+void gdbPrintCB(CB_ALIST_12(Widget w, XtP(bool) client_data))
 {
     const bool internal = (bool)(long)client_data;
 
@@ -98,7 +102,7 @@ void gdbPrintCB(Widget w, XtPointer client_data, XtPointer)
 	gdb_command(gdb->print_command(arg, internal), w);
 }
 
-void gdbPrintRefCB(Widget w, XtPointer client_data, XtPointer)
+void gdbPrintRefCB(CB_ALIST_12(Widget w, XtP(bool) client_data))
 {
     const bool internal = (bool)(long)client_data;
 
@@ -108,7 +112,7 @@ void gdbPrintRefCB(Widget w, XtPointer client_data, XtPointer)
 	gdb_command(gdb->print_command(deref(arg), internal), w);
 }
 
-void gdbDisplayCB(Widget w, XtPointer, XtPointer)
+void gdbDisplayCB(CB_ALIST_1(Widget w))
 {
     string arg = current_arg();
 
@@ -116,7 +120,7 @@ void gdbDisplayCB(Widget w, XtPointer, XtPointer)
 	gdb_command("graph display " + arg, w);
 }
 
-void gdbDispRefCB(Widget w, XtPointer, XtPointer)
+void gdbDispRefCB(CB_ALIST_1(Widget w))
 {
     string arg = current_arg();
 
@@ -124,7 +128,7 @@ void gdbDispRefCB(Widget w, XtPointer, XtPointer)
 	gdb_command("graph display " + deref(arg), w);
 }
 
-void gdbWhatisCB(Widget w, XtPointer, XtPointer)
+void gdbWhatisCB(CB_ALIST_1(Widget w))
 {
     string arg = current_arg();
 
@@ -150,43 +154,43 @@ bool have_enabled_breakpoint_at_arg()
     return bp != 0 && bp->enabled();
 }
 
-void gdbBreakAtCB(Widget w, XtPointer, XtPointer)
+void gdbBreakAtCB(CB_ARG_LIST_1(w))
 {
     source_view->create_bp(current_arg(true), w);
 }
 
-void gdbTempBreakAtCB(Widget w, XtPointer, XtPointer)
+void gdbTempBreakAtCB(CB_ALIST_1(Widget w))
 {
     source_view->create_temp_bp(current_arg(true), w);
 }
 
-void gdbRegexBreakAtCB(Widget w, XtPointer, XtPointer)
+void gdbRegexBreakAtCB(CB_ALIST_1(Widget w))
 {
     gdb_command("rbreak " + source_arg->get_string(), w);
 }
 
-void gdbClearAtCB(Widget w, XtPointer, XtPointer)
+void gdbClearAtCB(CB_ARG_LIST_1(w))
 {
     source_view->clear_bp(current_arg(true), w);
 }
 
-void gdbToggleBreakCB(Widget w, XtPointer, XtPointer)
+void gdbToggleBreakCB(CB_ARG_LIST_1(w))
 {
     source_view->set_bp(current_arg(true), 
 		       !have_breakpoint_at_arg(), false, "", w);
 }
 
-void gdbContUntilCB(Widget w, XtPointer, XtPointer)
+void gdbContUntilCB(CB_ALIST_1(Widget w))
 {
     source_view->temp_n_cont(current_arg(true), w);
 }
 
-void gdbSetPCCB(Widget w, XtPointer, XtPointer)
+void gdbSetPCCB(CB_ALIST_1(Widget w))
 {
     source_view->move_pc(current_arg(true), w);
 }
 
-void gdbToggleEnableBreakpointCB(Widget w, XtPointer, XtPointer)
+void gdbToggleEnableBreakpointCB(CB_ALIST_1(Widget w))
 {
     BreakPoint *bp = source_view->breakpoint_at(current_arg(true));
     if (bp != 0)
@@ -198,7 +202,7 @@ void gdbToggleEnableBreakpointCB(Widget w, XtPointer, XtPointer)
     }
 }
 
-void gdbToggleEnableWatchpointCB(Widget w, XtPointer, XtPointer)
+void gdbToggleEnableWatchpointCB(CB_ALIST_1(Widget w))
 {
     BreakPoint *bp = source_view->watchpoint_at(current_arg(true));
     if (bp != 0)
@@ -210,14 +214,14 @@ void gdbToggleEnableWatchpointCB(Widget w, XtPointer, XtPointer)
     }
 }
 
-void gdbEditBreakpointPropertiesCB(Widget, XtPointer, XtPointer)
+void gdbEditBreakpointPropertiesCB(CB_ALIST_NULL)
 {
     BreakPoint *bp = source_view->breakpoint_at(current_arg(true));
     if (bp != 0)
 	source_view->edit_breakpoint_properties(bp->number());
 }
 
-void gdbEditWatchpointPropertiesCB(Widget, XtPointer, XtPointer)
+void gdbEditWatchpointPropertiesCB(CB_ALIST_NULL)
 {
     BreakPoint *bp = source_view->watchpoint_at(current_arg(true));
     if (bp != 0)
@@ -247,9 +251,8 @@ bool have_enabled_watchpoint_at_arg()
     return bp != 0 && bp->enabled();
 }
 
-void gdbWatchCB(Widget w, XtPointer client_data, XtPointer call_data)
+void gdbWatchCB(CB_ALIST_12(Widget w, XtP(long) client_data))
 {
-    (void) call_data;		// Use it
     const string arg = current_arg();
 
 #if 0 // We may have different kinds of watchpoints!
@@ -273,7 +276,7 @@ void gdbWatchRefCB(Widget w, XtPointer, XtPointer)
 	gdb_command(gdb->watch_command(deref(arg)), w);
 }
 
-void gdbUnwatchCB(Widget, XtPointer, XtPointer)
+void gdbUnwatchCB(CB_ALIST_NULL)
 {
     if (gdb->type() == JDB)
     {
@@ -295,13 +298,13 @@ void gdbUnwatchCB(Widget, XtPointer, XtPointer)
     }
 }
 
-void gdbToggleWatchCB(Widget w, XtPointer client_data, XtPointer call_data)
+void gdbToggleWatchCB(CB_ALIST_12(Widget w, XtP(long) client_data))
 {
     BreakPoint *bp = source_view->watchpoint_at(current_arg());
     if (bp == 0)
-	gdbWatchCB(w, client_data, call_data);
+	gdbWatchCB(CB_ARGS_12(w, client_data));
     else
-	gdbUnwatchCB(w, client_data, call_data);
+	gdbUnwatchCB(CB_ARGS_NULL);
 }
 
 
@@ -311,9 +314,7 @@ void gdbToggleWatchCB(Widget w, XtPointer client_data, XtPointer call_data)
 
 static SourceView::SearchDirection last_find_direction = SourceView::forward;
 
-void gdbFindCB(Widget w, 
-	       XtPointer client_data,
-	       XtPointer call_data)
+void gdbFindCB(CB_ALIST_12(Widget w, XtP(SourceView::SearchDirection) client_data))
 {
     SourceView::SearchDirection direction = 
 	(SourceView::SearchDirection) (long) client_data;
@@ -327,15 +328,12 @@ void gdbFindCB(Widget w,
 	update_options();
     }
 
-    XmPushButtonCallbackStruct *cbs = 
-	(XmPushButtonCallbackStruct *)call_data;
-
-    // LessTif 0.79 sometimes returns 0 in cbs->event.  Handle this.
-    Time tm;
-    if (cbs->event != 0)
-	tm = time(cbs->event);
-    else
-	tm = XtLastTimestampProcessed(XtDisplay(w));
+    // Forget the exact timestamp; use the last processed.
+#ifdef IF_MOTIF
+    Time tm = XtLastTimestampProcessed(XtDisplay(w));
+#else // NOT IF_MOTIF
+    Time tm = 0;
+#endif // IF_MOTIF
 
     string key = source_arg->get_string();
     source_view->find(key, direction, 
@@ -345,9 +343,10 @@ void gdbFindCB(Widget w,
     source_arg->set_string(key);
 }
 
-void gdbFindAgainCB(Widget w, XtPointer, XtPointer call_data)
+
+void gdbFindAgainCB(CB_ALIST_1(Widget w))
 {
-    gdbFindCB(w, XtPointer(current_find_direction()), call_data);
+    gdbFindCB(CB_ARGS_12(w, current_find_direction()));
 }
 
 SourceView::SearchDirection current_find_direction()
@@ -360,7 +359,7 @@ SourceView::SearchDirection current_find_direction()
 // Editor invocation
 //-----------------------------------------------------------------------------
 
-static void gdbDeleteEditAgent(XtPointer client_data, XtIntervalId *)
+static void gdbDeleteEditAgent(TM_ALIST_1(XtP(Agent *) client_data))
 {
     // Delete agent after use
     Agent *edit_agent = (Agent *)client_data;
@@ -386,17 +385,23 @@ static void gdbEditDoneHP(Agent *edit_agent, void *, void *)
 {
     // Editor has terminated: reload current source file
 
+#ifdef IF_MOTIF
     XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0, 
 		    gdbDeleteEditAgent, 
 		    XtPointer(edit_agent));
+#else // NOT IF_MOTIF
+    Glib::signal_idle().connect(sigc::bind_return(sigc::bind(PTR_FUN(gdbDeleteEditAgent),
+							     edit_agent),
+						  false));
+#endif // IF_MOTIF
 
-    gdbReloadSourceCB(gdb_w, 0, 0);
+    gdbReloadSourceCB(CB_ARGS_NULL);
 
     edit_agent->removeHandler(InputEOF, gdbEditDoneHP);
     edit_agent->removeHandler(Died,     gdbEditDoneHP);
 }
 
-void gdbEditSourceCB  (Widget w, XtPointer, XtPointer)
+void gdbEditSourceCB  (CB_ARG_LIST_1(w))
 {
     string pos = source_view->file_of_cursor();
     string file = pos.before(':');
@@ -429,7 +434,7 @@ void gdbEditSourceCB  (Widget w, XtPointer, XtPointer)
     edit_agent->start();
 }
 
-void gdbReloadSourceCB(Widget, XtPointer, XtPointer)
+void gdbReloadSourceCB(CB_ARG_LIST_NULL)
 {
     source_view->reload();
 }

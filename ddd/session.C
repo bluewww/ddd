@@ -30,13 +30,15 @@
 char session_rcsid[] = 
     "$Id$";
 
-#include "session.h"
-
 #include "config.h"
 
+#include "session.h"
+
+#ifdef IF_MOTIF
 #if XtSpecificationRelease >= 6
 #include <X11/SM/SM.h>
 #endif
+#endif // IF_MOTIF
 
 #include <sys/types.h>
 #include <stdlib.h>		// putenv(), getenv(), getuid()
@@ -85,6 +87,7 @@ char session_rcsid[] =
 #include "windows.h"
 #include "wm.h"
 
+#ifdef IF_MOTIF
 #include <Xm/Xm.h>
 #include <Xm/List.h>
 #include <Xm/MessageB.h>
@@ -93,6 +96,7 @@ char session_rcsid[] =
 #include <Xm/ToggleB.h>
 #include <Xm/Text.h>
 #include <Xm/TextF.h>
+#endif // IF_MOTIF
 
 extern "C" {
 #include <sys/types.h>
@@ -328,7 +332,7 @@ void create_session_dir(const string& session)
 // Session locks
 // ---------------------------------------------------------------------------
 
-bool lock_session_dir(Display *display,
+bool lock_session_dir(DISPLAY_P display,
 		      const string& session, 
 		      LockInfo& info)
 {
@@ -456,6 +460,7 @@ static void get_sessions(StringArray& arr)
     }
 }
 
+#ifdef IF_MOTIF
 // Update state of `delete' button
 static void update_delete(Widget dialog)
 {
@@ -663,13 +668,18 @@ static void DeleteSessionsCB(Widget dialog, XtPointer client_data, XtPointer)
 
     update_sessions(dialog);
 }
-
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Sessions not implemented
+#endif
+#endif // IF_MOTIF
 
 
 // ---------------------------------------------------------------------------
 // Session save
 // ---------------------------------------------------------------------------
 
+#ifdef IF_MOTIF
 static string get_chosen_session(Widget dialog)
 {
     Widget text     = XmSelectionBoxGetChild(dialog, XmDIALOG_TEXT);
@@ -685,6 +695,11 @@ static string get_chosen_session(Widget dialog)
 	value = DEFAULT_SESSION;
     return value;
 }
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Sessions not implemented
+#endif
+#endif // IF_MOTIF
 
 // Set session to V
 void set_session(const string& v)
@@ -704,6 +719,7 @@ void set_session(const string& v)
     create_session_dir(app_data.session);
 }
 
+#ifdef IF_MOTIF
 // Set the current session
 static void SetSessionCB(Widget dialog, XtPointer, XtPointer)
 {
@@ -728,14 +744,19 @@ static void SetSessionCB(Widget dialog, XtPointer, XtPointer)
 	    }
     }
 }
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Sessions not implemented
+#endif
+#endif // IF_MOTIF
 
-static Widget dump_core_w     = 0;
+static TOGGLEBUTTON_P dump_core_w     = 0;
 static Widget may_kill_w      = 0;
 static Widget may_gcore_w     = 0;
 static Widget may_ptrace_w    = 0;
 static Widget gcore_methods_w = 0;
 
-static void SetGCoreSensitivityCB(Widget = 0, XtPointer = 0, XtPointer = 0)
+static void SetGCoreSensitivityCB(CB_ALIST_NULL)
 {
     bool set = 
 	XmToggleButtonGetState(dump_core_w) && XtIsSensitive(dump_core_w);
@@ -754,32 +775,33 @@ static void SetGCoreSensitivityCB(Widget = 0, XtPointer = 0, XtPointer = 0)
 
 static unsigned long gcore_method = 0;
 
-static void SetGCoreMethodCB(Widget, XtPointer client_data, XtPointer)
+static void SetGCoreMethodCB(CB_ALIST_2(XtP(unsigned long) client_data))
 {
     gcore_method = (unsigned long)client_data;
 }
 
 static MMDesc gcore_methods[] =
 {
-    { "kill",   MMPush, 
-      { SetGCoreMethodCB, XtPointer(0) }, 0, &may_kill_w, 0, 0 },
-    { "gcore",  MMPush, 
-      { SetGCoreMethodCB, XtPointer(MAY_GCORE) }, 0, &may_gcore_w, 0, 0 },
-    { "ptrace", MMPush, 
-      { SetGCoreMethodCB, XtPointer(MAY_PTRACE) }, 0, &may_ptrace_w, 0, 0 },
+    { NM("kill", "kill"),     MMPush, 
+      HIDE_0_BIND_1(PTR_FUN(SetGCoreMethodCB), 0), 0, &may_kill_w, 0, 0 },
+    { NM("gcore", "gcore"),   MMPush, 
+      HIDE_0_BIND_1(PTR_FUN(SetGCoreMethodCB), MAY_GCORE), 0, &may_gcore_w, 0, 0 },
+    { NM("ptrace", "ptrace"), MMPush, 
+      HIDE_0_BIND_1(PTR_FUN(SetGCoreMethodCB), MAY_PTRACE), 0, &may_ptrace_w, 0, 0 },
     MMEnd
 };
 
 static MMDesc gcore_items[] =
 {
-    { "dump",     MMToggle, 
-      { SetGCoreSensitivityCB, 0 }, 0, &dump_core_w, 0, 0 },
-    { "method",   MMOptionMenu, 
-      { SetGCoreSensitivityCB, 0 }, gcore_methods, &gcore_methods_w, 0, 0 },
+    { NM("dump", "dump"),       MMToggle, 
+      HIDE_0(PTR_FUN(SetGCoreSensitivityCB)), 0, (Widget *)&dump_core_w, 0, 0 },
+    { NM("method", "method"),   MMOptionMenu, 
+      HIDE_0(PTR_FUN(SetGCoreSensitivityCB)), gcore_methods, &gcore_methods_w, 0, 0 },
     MMEnd
 };
 
 
+#ifdef IF_MOTIF
 // OK pressed in `save session'
 static void SaveSessionCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
@@ -798,10 +820,16 @@ static void SaveSessionCB(Widget w, XtPointer client_data, XtPointer call_data)
     // Mark as `non-temporary'
     set_temporary_session(app_data.session, false);
 }
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Sessions not implemented.
+#endif
+#endif // IF_MOTIF
 
 // Save current session from a list of choices
-void SaveSessionAsCB(Widget w, XtPointer, XtPointer)
+void SaveSessionAsCB(CB_ARG_LIST_1(w))
 {
+#ifdef IF_MOTIF
     static Widget dialog = 
 	create_session_panel(w, "sessions_to_save",
 			     SaveSessionCB, DeleteSessionsCB);
@@ -831,7 +859,7 @@ void SaveSessionAsCB(Widget w, XtPointer, XtPointer)
 	info.running || (info.core != NO_GDB_ANSWER && !info.core.empty());
     XmToggleButtonSetState(dump_core_w, have_data, True);
     set_sensitive(dump_core_w, info.running);
-    SetGCoreSensitivityCB();
+    SetGCoreSensitivityCB(CB_ARGS_NULL);
 
     string name = "";
     if (app_data.session == DEFAULT_SESSION)
@@ -854,8 +882,10 @@ void SaveSessionAsCB(Widget w, XtPointer, XtPointer)
 
     update_sessions(dialog);
     manage_and_raise(dialog);
+#else // NOT IF_MOTIF
+    std::cerr << "SaveSessionAsCB not supported\n";
+#endif // IF_MOTIF
 }
-
 
 
 // ---------------------------------------------------------------------------
@@ -865,6 +895,7 @@ void SaveSessionAsCB(Widget w, XtPointer, XtPointer)
 // Get a string resource from DB named NAME with class CLS
 static string get_resource(XrmDatabase db, string name, string cls)
 {
+#ifdef IF_MOTIF
     static string prefix = DDD_CLASS_NAME ".";
     name.prepend(prefix);
     cls.prepend(prefix);
@@ -877,9 +908,21 @@ static string get_resource(XrmDatabase db, string name, string cls)
 	return string((char *)value.addr, value.size - 1);
 
     return "";		// Not found
+#else // NOT IF_MOTIF
+    __gnu_cxx::hash_map<const char *, XrmValue *>::iterator entry = db->find(name.chars());
+    if (entry != db->end()) {
+#ifdef NAG_ME
+#warning We have no guarantee this is the right type.
+#endif
+	Glib::Value<string> *val = static_cast<Glib::Value<string> *>((*entry).second);
+	if (val) {
+	    return val->get();
+	}
+    }
+#endif // IF_MOTIF
 }
 
-static Boolean done_if_idle(XtPointer data)
+static Boolean done_if_idle(XtP(Delay *) data)
 {
     if (emptyCommandQueue() && can_do_gdb_command())
     {
@@ -895,8 +938,12 @@ static Boolean done_if_idle(XtPointer data)
 
 static void done(const string&, void *data)
 {
+#ifdef IF_MOTIF
     XtAppAddWorkProc(XtWidgetToApplicationContext(command_shell),
 		     done_if_idle, data);
+#else // NOT IF_MOTIF
+    Glib::signal_idle().connect(sigc::bind(PTR_FUN(done_if_idle), data));
+#endif // IF_MOTIF
 }
 
 // Open the session given in SESSION
@@ -946,7 +993,7 @@ static void open_session(const string& session)
     }
 
     // Clear debugger console
-    gdbClearWindowCB(0, 0, 0);
+    gdbClearWindowCB(CB_ARGS_NULL);
 
     // Load session-specific command history
     load_history(session_history_file(session));
@@ -1076,7 +1123,7 @@ static void open_session(const string& session)
 }
 
 // Restart GDB only.
-void RestartDebuggerCB(Widget, XtPointer, XtPointer)
+void RestartDebuggerCB(CB_ALIST_NULL)
 {
     static string restart_commands;
     static string settings;
@@ -1138,6 +1185,7 @@ void RestartDebuggerCB(Widget, XtPointer, XtPointer)
 }
 
 
+#ifdef IF_MOTIF
 // OK pressed in `open session'
 static void OpenThisSessionCB(Widget w, XtPointer client_data, 
 			      XtPointer call_data)
@@ -1151,10 +1199,12 @@ static void OpenThisSessionCB(Widget w, XtPointer client_data,
 	set_temporary_session(app_data.session, false);
     }
 }
+#endif // IF_MOTIF
 
 // Load session from a list of choices
-void OpenSessionCB(Widget w, XtPointer, XtPointer)
+void OpenSessionCB(CB_ARG_LIST_1(w))
 {
+#ifdef IF_MOTIF
     static Widget dialog = 
 	create_session_panel(w, "sessions_to_open",
 			     OpenThisSessionCB, DeleteSessionsCB);
@@ -1168,6 +1218,9 @@ void OpenSessionCB(Widget w, XtPointer, XtPointer)
 
     update_sessions(dialog);
     manage_and_raise(dialog);
+#else // NOT IF_MOTIF
+    std::cerr << "OpenSessionCB not implemented\n";
+#endif // IF_MOTIF
 }
 
 // Name of restart session

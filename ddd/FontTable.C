@@ -34,8 +34,10 @@ char FontTable_rcsid[] =
 #include "strclass.h"
 
 #include <iostream>
+#ifdef IF_MOTIF
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
+#endif // IF_MOTIF
 
 #include "FontTable.h"
 
@@ -50,7 +52,7 @@ inline unsigned hash(const char *name)
 }
 
 // Return XFontStruct for given font name NAME
-XFontStruct *FontTable::operator[](const string& name)
+FONT_P FontTable::operator[](const string& name)
 {
     int i = hash(name.chars());
     while (table[i].font != 0 && name != table[i].name)
@@ -63,32 +65,60 @@ XFontStruct *FontTable::operator[](const string& name)
     {
 	// Insert new font
 	table[i].name = name;
+
+#ifdef IF_MOTIF
 	table[i].font = XLoadQueryFont(_display, name.chars());
+#else // NOT IF_MOTIF
+	Glib::RefPtr<Pango::Context> context = Glib::wrap(gdk_pango_context_get_for_screen(gdk_screen_get_default()));
+#ifdef NAG_ME
+#warning CHANGE TO USE PANGO FONT NAMES
+#endif
+	Pango::FontDescription pfd(Glib::ustring(name.chars()));
+	table[i].font = context->load_font(pfd);
+#endif // IF_MOTIF
 
 	if (table[i].font == 0)
 	{
 	    std::cerr << "Warning: Could not load font \"" << name << "\"";
 
 	    // Try default font
+#ifdef IF_MOTIF
 	    GC default_gc = 
 		DefaultGCOfScreen(DefaultScreenOfDisplay(_display));
 	    XGCValues gc_values;
 	    if (XGetGCValues(_display, default_gc, GCFont, &gc_values))
 	    {
 		const Font& font_id = gc_values.font;
-		XFontStruct *font = XQueryFont(_display, font_id);
+		FONT_P font = XQueryFont(_display, font_id);
 		if (font != 0)
 		{
 		    std::cerr << ", using default font instead\n";
 		    table[i].font = font;
 		}
 	    }
+#else // NOT IF_MOTIF
+	    Pango::FontDescription pfd = context->get_font_description();
+	    if (pfd.gobj())
+	    {
+		FONT_P font = context->load_font(pfd);
+		if (font != 0)
+		{
+		    std::cerr << ", using default font instead\n";
+		    table[i].font = font;
+		}
+	    }
+#endif // IF_MOTIF
 	}
 
 	if (table[i].font == 0)
 	{
 	    // Try "fixed" font
-	    XFontStruct *font = XLoadQueryFont(_display, "fixed");
+#ifdef IF_MOTIF
+	    FONT_P font = XLoadQueryFont(_display, "fixed");
+#else // NOT IF_MOTIF
+	    Pango::FontDescription pfd(Glib::ustring("Fixed"));
+	    FONT_P font = context->load_font(pfd);
+#endif // IF_MOTIF
 	    if (font != 0)
 	    {
 		std::cerr << ", using font \"fixed\" instead\n";

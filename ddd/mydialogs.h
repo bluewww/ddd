@@ -33,8 +33,14 @@
 #ifndef _DDD_mydialogs_h
 #define _DDD_mydialogs_h
 
+#ifdef IF_MOTIF
+
 // Motif includes
 #include <Xm/Xm.h>
+
+#else // NOT IF_MOTIF
+
+#endif // IF_MOTIF
 
 // DDD includes
 #include "strclass.h"
@@ -44,11 +50,14 @@
 
 // Create a selection box with a top-level shell.  This is like
 // XmCreateSelectionDialog, but the parent is a top-level shell.
-Widget createTopLevelSelectionDialog(Widget parent, const _XtString name,
-				     ArgList args, Cardinal num_args);
+Widget createTopLevelSelectionDialog(Widget parent, const _XtString name
+#ifdef IF_MOTIF
+				     , ArgList args, Cardinal num_args
+#endif // IF_MOTIF
+				     );
 
 // Get the item numbers
-void getItemNumbers(Widget selectionList, IntArray& arr);
+void getItemNumbers(TREEVIEW_P selectionList, IntArray& arr);
 
 
 // Set the elements of the display selection list
@@ -58,7 +67,7 @@ void getItemNumbers(Widget selectionList, IntArray& arr);
 // HIGHLIGHT_TITLE: Whether the first line should be highlighted
 // NOTIFY:          Whether callbacks should be invoked
 //
-void setLabelList (Widget  selectionList,
+void setLabelList (TREEVIEW_P  selectionList,
 		   const string  label_list[],
 		   const bool selected[],
 		   int     list_length,
@@ -67,7 +76,7 @@ void setLabelList (Widget  selectionList,
 
 // Replace all elements in SELECTIONLIST with the corresponding
 // entries in LABEL_LIST (i.e. with the same leading number).
-void updateLabelList (Widget  selectionList,
+void updateLabelList (TREEVIEW_P  selectionList,
 		      const string  label_list[],
 		      int     list_length);
 
@@ -78,8 +87,9 @@ void updateLabelList (Widget  selectionList,
 #define LIST_TITLE_CHARSET CHARSET_TB
 
 // Select POS in LIST and make it visible
-void ListSetAndSelectPos(Widget list, int pos);
+void ListSetAndSelectPos(TREEVIEW_P list, int pos);
 
+#ifdef IF_MOTIF
 // Create an array of XmStrings from the list LABEL_LIST of length
 // LIST_LENGTH.  If HIGHLIGHT_TITLE is set, let the first line be bold.
 XmStringTable makeXmStringTable(const string label_list[],
@@ -88,6 +98,7 @@ XmStringTable makeXmStringTable(const string label_list[],
 
 // Free the XmString table XMLIST of length LIST_LENGTH
 void freeXmStringTable(XmStringTable xmlist, int list_length);
+#endif // IF_MOTIF
 
 
 #endif // _DDD_mydialogs_h

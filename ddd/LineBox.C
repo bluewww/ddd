@@ -31,8 +31,10 @@ char LineBox_rcsid[] =
 
 #include "LineBox.h"
 
+#ifdef IF_MOTIF
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
+#endif // IF_MOTIF
 
 DEFINE_TYPE_INFO_1(LineBox, PrimitiveBox)
 
@@ -45,6 +47,7 @@ void LineBox::_draw(Widget w,
 		    GC gc,
 		    bool context_selected) const
 {
+#ifdef IF_MOTIF
     XGCValues gcvalues;
 
     // Set width and cap style; project beyond end point up to 1/2
@@ -52,6 +55,10 @@ void LineBox::_draw(Widget w,
     gcvalues.line_width = _linethickness;
     gcvalues.cap_style = CapProjecting;
     XChangeGC(XtDisplay(w), gc, GCLineWidth | GCCapStyle, &gcvalues);
+#else // NOT IF_MOTIF
+    gc->set_line_attributes(_linethickness, Gdk::LINE_SOLID,
+			    Gdk::CAP_PROJECTING, Gdk::JOIN_MITER);
+#endif // IF_MOTIF
 
     // Keep an empty frame of 1/2 line thickness around R (X may cross
     // R's boundaries otherwise)

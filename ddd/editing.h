@@ -29,7 +29,14 @@
 #ifndef _DDD_editing_h
 #define _DDD_editing_h
 
+#ifdef IF_MOTIF
+
 #include <X11/Intrinsic.h>
+
+#endif // IF_MOTIF
+
+#include "gtk_wrapper.h"
+
 #include "bool.h"
 #include "strclass.h"
 
@@ -59,18 +66,33 @@ extern void popupAct              (Widget, XEvent*, String*, Cardinal*);
 // Callbacks
 extern void gdbModifyCB          (Widget, XtPointer, XtPointer);
 extern void gdbMotionCB          (Widget, XtPointer, XtPointer);
+#ifdef IF_MOTIF
 extern void gdbChangeCB          (Widget, XtPointer, XtPointer);
+#else // NOT IF_MOTIF
+extern void gdbChangeCB          (SCROLLEDTEXT_P);
+#endif // IF_MOTIF
 
-extern void gdbNextCB            (Widget, XtPointer, XtPointer);
-extern void gdbPrevCB            (Widget, XtPointer, XtPointer);
-extern void gdbISearchNextCB     (Widget, XtPointer, XtPointer);
-extern void gdbISearchPrevCB     (Widget, XtPointer, XtPointer);
-extern void gdbISearchExitCB     (Widget, XtPointer, XtPointer);
-extern void gdbClearCB           (Widget, XtPointer, XtPointer);
-extern void gdbCompleteCB        (Widget, XtPointer, XtPointer);
-extern void gdbApplyCB           (Widget, XtPointer, XtPointer);
-extern void gdbApplySelectionCB  (Widget, XtPointer, XtPointer);
-extern void gdbClearWindowCB     (Widget, XtPointer, XtPointer);
+#ifdef IF_MOTIF
+extern void gdbNextCB            (CB_ARG_LIST_13(,));
+extern void gdbPrevCB            (CB_ARG_LIST_13(,));
+extern void gdbISearchNextCB     (CB_ARG_LIST_13(,));
+extern void gdbISearchPrevCB     (CB_ARG_LIST_13(,));
+extern void gdbISearchExitCB     (CB_ARG_LIST_13(,));
+extern void gdbCompleteCB        (CB_ARG_LIST_13(,));
+extern void gdbApplyCB           (CB_ARG_LIST_13(,));
+extern void gdbApplySelectionCB  (CB_ARG_LIST_13(,));
+#else // NOT IF_MOTIF
+extern void gdbNextCB            (CB_ARG_LIST_1());
+extern void gdbPrevCB            (CB_ARG_LIST_1());
+extern void gdbISearchNextCB     (CB_ARG_LIST_1());
+extern void gdbISearchPrevCB     (CB_ARG_LIST_1());
+extern void gdbISearchExitCB     (CB_ARG_LIST_1());
+extern void gdbCompleteCB        (CB_ARG_LIST_1());
+extern void gdbApplyCB           (CB_ARG_LIST_1());
+extern void gdbApplySelectionCB  (CB_ARG_LIST_NULL);
+#endif // IF_MOTIF
+extern void gdbClearCB           (CB_ARG_LIST_NULL);
+extern void gdbClearWindowCB     (CB_ARG_LIST_NULL);
 
 // Return current GDB command line.
 extern string current_line();
@@ -89,7 +111,11 @@ extern bool gdb_debuggee_running;
 extern void clear_isearch(bool reset = false, bool show = true);
 
 // Pass the COMMAND given in CLIENT_DATA to gdb_button_command()
-void gdbCommandCB(Widget w, XtPointer client_data, XtPointer call_data);
+#ifdef IF_MOTIF
+void gdbCommandCB(CB_ALIST_123(Widget, XtPointer, XtPointer));
+#else // NOT IF_MOTIF
+void gdbCommandCB(CB_ALIST_12(Widget, const char *));
+#endif // IF_MOTIF
 
 // Like gdb_command(), but perform `...' and `()' substitutions
 void gdb_button_command(const string& command, Widget origin = 0);

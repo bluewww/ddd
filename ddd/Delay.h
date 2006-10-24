@@ -29,8 +29,14 @@
 #ifndef _DDD_Delay_h
 #define _DDD_Delay_h
 
+#ifdef IF_MOTIF
+
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
+
+#endif // IF_MOTIF
+
+#include "gtk_wrapper.h"
 
 #include "TypeInfo.h"
 #include "VarArray.h"
@@ -52,7 +58,11 @@ private:
     _Delay& operator = (const _Delay&);
 
 protected:
+#ifdef IF_MOTIF
     static void DestroyCB(Widget, XtPointer, XtPointer);
+#else // NOT IF_MOTIF
+    void DestroyCB();
+#endif // IF_MOTIF
     virtual Cursor hourglass_cursor();
 
 public:
@@ -72,7 +82,8 @@ private:
     static int delay_count;
     static WidgetArray _shells;
     static DelayArray delays;
-    static void DestroyCB(Widget, XtPointer, XtPointer);
+    static void DestroyCB(CB_ARG_LIST_1());
+
 
     Delay(const Delay&);
     Delay& operator = (const Delay&);

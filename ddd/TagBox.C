@@ -31,9 +31,11 @@ char TagBox_rcsid[] =
 
 #include "assert.h"
 
+#ifdef IF_MOTIF
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
+#endif // IF_MOTIF
 #include "TagBox.h"
 #include "VSEFlags.h"
 
@@ -124,6 +126,7 @@ void TagBox::_draw(Widget w,
 
 	BoxRegion clipRegion = exposed & r;    // Schnittmenge
 
+#ifdef IF_MOTIF
 	XGCValues gcvalues;
 	XGetGCValues(XtDisplay(w), gc, GCFunction, &gcvalues);
 	XSetFunction(XtDisplay(w), gc, GXinvert);
@@ -133,6 +136,19 @@ void TagBox::_draw(Widget w,
 	    clipRegion.space(X), clipRegion.space(Y));
 
 	XSetFunction(XtDisplay(w), gc, gcvalues.function);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning BASTARDs in gtkmm failed to wrap an essential function
+#endif
+	GdkGCValues gcvalues;
+	gdk_gc_get_values(gc->gobj(), &gcvalues);
+	gc->set_function(Gdk::INVERT);
+
+	w->get_window()->draw_rectangle(gc, true,
+					clipRegion.origin(X), clipRegion.origin(Y),
+					clipRegion.space(X), clipRegion.space(Y));
+	gdk_gc_set_values(gc->gobj(), &gcvalues, GDK_GC_FUNCTION);
+#endif // IF_MOTIF
     }
 }
 

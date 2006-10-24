@@ -31,8 +31,16 @@
 
 #include "ddd.h"
 #include "GDBAgent.h"
+
+#ifdef IF_MOTIF
+
 #include <X11/Intrinsic.h>
 #include <X11/Xresource.h>
+
+#else // NOT IF_MOTIF
+
+#endif // IF_MOTIF
+
 #include <iostream>
 
 // Help texts

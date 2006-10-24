@@ -29,6 +29,8 @@
 char graph_rcsid[] = 
     "$Id$";
 
+#include "config.h"
+
 #include "data.h"
 #include "DataDisp.h"
 #include "ddd.h"
@@ -39,35 +41,54 @@ char graph_rcsid[] =
 // Other Graph Functions
 //-----------------------------------------------------------------------------
 
-void graphAlignCB(Widget, XtPointer, XtPointer)
+void graphAlignCB(CB_ALIST_NULL)
 {
     StatusDelay delay("Aligning displays");
 
+#ifdef IF_MOTIF
     XtCallActionProc(data_disp->graph_edit, 
 		     "snap-to-grid", (XEvent *)0, (String *)0, 0);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning graphAlignCB not implemented
+#endif
+#endif // IF_MOTIF
 }
 
-void graphRotateCB(Widget, XtPointer, XtPointer)
+void graphRotateCB(CB_ALIST_NULL)
 {
     StatusDelay delay("Rotating graph");
 
     const _XtString params[1];
     params[0] = "+90";
 
+#ifdef IF_MOTIF
     XtCallActionProc(data_disp->graph_edit,
 		     "rotate", (XEvent *)0, (char**)params, 1);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning graphRotateCB not implemented
+#endif
+#endif // IF_MOTIF
 }
 
-void graphLayoutCB(Widget, XtPointer, XtPointer)
+void graphLayoutCB(CB_ALIST_NULL)
 {
     StatusDelay delay("Layouting graph");
 
+#ifdef IF_MOTIF
     XtCallActionProc(data_disp->graph_edit, 
 		     "layout", (XEvent *)0, (String *)0, 0);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning graphLayoutCB not implemeneted
+#endif
+#endif // IF_MOTIF
 }
 
-void graphToggleLocalsCB(Widget, XtPointer, XtPointer call_data)
+void graphToggleLocalsCB(CB_ARG_LIST_TOGGLE(w, call_data))
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *cbs = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
@@ -75,10 +96,16 @@ void graphToggleLocalsCB(Widget, XtPointer, XtPointer call_data)
 	data_disp->new_user_display(gdb->info_locals_command());
     else
 	data_disp->delete_user_display(gdb->info_locals_command());
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning graphToggleLocalsCB not implemented
+#endif
+#endif // IF_MOTIF
 }
 
-void graphToggleArgsCB(Widget, XtPointer, XtPointer call_data)
+void graphToggleArgsCB(CB_ARG_LIST_TOGGLE(w, call_data))
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *cbs = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
@@ -86,4 +113,9 @@ void graphToggleArgsCB(Widget, XtPointer, XtPointer call_data)
 	data_disp->new_user_display(gdb->info_args_command());
     else
 	data_disp->delete_user_display(gdb->info_args_command());
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning graphToggleArgsCB not implemented
+#endif
+#endif // IF_MOTIF
 }

@@ -29,12 +29,18 @@
 char RegionGraphNode_rcsid[] = 
     "$Id$";
 
+#include "config.h"
+
 #include <iostream>
 #include <string.h>
 
+#ifdef IF_MOTIF
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
+#else // NOT IF_MOTIF
+#include "gtk_wrapper.h"
+#endif // IF_MOTIF
 
 #include "RegionGN.h"
 #include "printBox.h"
@@ -66,6 +72,7 @@ void RegionGraphNode::draw(Widget w,
     if (!(r <= exposed) || r.space(X) == 0 || r.space(Y) == 0)
 	return;
 
+#ifdef IF_MOTIF
     Display *display = XtDisplay(w);
     Window window = XtWindow(w);
 
@@ -73,6 +80,11 @@ void RegionGraphNode::draw(Widget w,
     XFillRectangle(display, window, gc.clearGC,
 		   r.origin(X), r.origin(Y),
 		   r.space(X), r.space(Y));
+#else // NOT IF_MOTIF
+    w->get_window()->draw_rectangle(gc.clearGC, true,
+				    r.origin(X), r.origin(Y),
+				    r.space(X), r.space(Y));
+#endif // IF_MOTIF
 
     // draw contents
     forceDraw(w, exposed, gc);
@@ -82,9 +94,15 @@ void RegionGraphNode::draw(Widget w,
     {
 	const BoxRegion& h = highlightRegion(gc);
 
+#ifdef IF_MOTIF
 	XFillRectangle(display, window, gc.invertGC,
 		       h.origin(X), h.origin(Y),
 		       h.space(X), h.space(Y));
+#else // NOT IF_MOTIF
+	w->get_window()->draw_rectangle(gc.invertGC, true,
+					h.origin(X), h.origin(Y),
+					h.space(X), h.space(Y));
+#endif // IF_MOTIF
     }
 }
 

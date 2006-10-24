@@ -29,6 +29,7 @@
 char printBox_rcsid[] = 
     "$Id$";
 
+#include "config.h"
 
 #include "Box.h"
 #include "printBox.h"

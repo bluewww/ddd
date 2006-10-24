@@ -52,7 +52,15 @@
 
 
 #include "assert.h"
+
+#ifdef IF_MOTIF
+
 #include <X11/Intrinsic.h>
+
+#endif // IF_MOTIF
+
+#include "gtk_wrapper.h"
+
 #include "Agent.h"
 
 // Set to 1 if you want asynchronous notification
@@ -128,7 +136,13 @@ private:
     AsyncAgentWorkProc *workProcs;	// working procedures
 
     // dispatch event
-    void dispatch(int *fid, XtInputId *id);
+    void dispatch(
+#ifdef IF_MOTIF
+	int *fid, XtInputId *inputId
+#else // NOT IF_MOTIF
+	int type
+#endif // IF_MOTIF
+	);
 
     // used in childStatusChange()
     int new_status;
@@ -157,17 +171,22 @@ private:
 #endif
 
     // X Event Handlers
-    static void somethingHappened(XtPointer client_data,
-				  int *fid, XtInputId *id);
+#ifdef IF_MOTIF
+    static void somethingHappened(XtPointer client_data, int *fid,
+				  XtInputId *inputId);
+#else // NOT IF_MOTIF
+    bool somethingHappened(Glib::IOCondition cond, int type);
+#endif // IF_MOTIF
     static void childStatusChange(Agent *agent, void *client_data,
 				  void *call_data);
     static Boolean callTheHandlers(XtPointer client_data);
-    static void callTheHandlersIfIdle(XtPointer client_data, XtIntervalId *id);
+    static TIMEOUT_RETURN_TYPE callTheHandlersIfIdle(TM_ALIST_1(XtP(AsyncAgentWorkProcInfo *)));
 
     // Helping functions
-    static void terminateProcess(XtPointer, XtIntervalId *);
-    static void hangupProcess(XtPointer, XtIntervalId *);
-    static void killProcess(XtPointer, XtIntervalId *);
+    
+    static TIMEOUT_RETURN_TYPE terminateProcess(TM_ALIST_1(XtP(pid_t)));
+    static TIMEOUT_RETURN_TYPE hangupProcess(TM_ALIST_1(XtP(pid_t)));
+    static TIMEOUT_RETURN_TYPE killProcess(TM_ALIST_1(XtP(pid_t)));
 
 protected:
     // Set handler
@@ -205,7 +224,7 @@ private:
 	if (id(type))
 	{
 	    XtRemoveInput(id(type));
-            _ids[type] = 0;
+            _ids[type] = NO_WORK;
         }
     }
 
@@ -220,7 +239,10 @@ public:
 	       unsigned nTypes = AsyncAgent_NTypes):
 	Agent(pth, nTypes), _appContext(app_context), workProcs(0), 
 	new_status(0), status_change_pending(false), 
-	signal_id(0), killing_asynchronously(false)
+#ifdef IF_MOTIF
+	signal_id(0),
+#endif // IF_MOTIF
+	killing_asynchronously(false)
     {
 	initHandlers();
 	addDeathOfChildHandler();
@@ -230,7 +252,10 @@ public:
 	FILE *err = 0, unsigned nTypes = AsyncAgent_NTypes):
 	Agent(in, out, err, nTypes), _appContext(app_context), workProcs(0),
 	new_status(0), status_change_pending(false),
-	signal_id(0), killing_asynchronously(false)
+#ifdef IF_MOTIF
+	signal_id(0),
+#endif // IF_MOTIF
+	killing_asynchronously(false)
     {
 	initHandlers();
     }
@@ -239,7 +264,10 @@ public:
 	unsigned nTypes = AsyncAgent_NTypes):
 	Agent(dummy, nTypes), _appContext(app_context), workProcs(0),
 	new_status(0), status_change_pending(false),
-	signal_id(0), killing_asynchronously(false)
+#ifdef IF_MOTIF
+	signal_id(0),
+#endif // IF_MOTIF
+	killing_asynchronously(false)
     {
 	initHandlers();
     }
@@ -248,7 +276,10 @@ public:
     AsyncAgent(const AsyncAgent& c):
 	Agent(c), _appContext(c.appContext()), workProcs(0), 
 	new_status(0), status_change_pending(false),
-	signal_id(0), killing_asynchronously(false)
+#ifdef IF_MOTIF
+	signal_id(0),
+#endif // IF_MOTIF
+	killing_asynchronously(false)
     {
 	initHandlers();
     }

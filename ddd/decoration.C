@@ -29,6 +29,8 @@
 char decoration_rcsid[] = 
     "$Id$";
 
+#include "config.h"
+
 #include "decoration.h"
 
 #include <unistd.h>		// sleep()

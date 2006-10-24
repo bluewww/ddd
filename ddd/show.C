@@ -58,10 +58,17 @@ char show_rcsid[] =
 #include <string.h>
 #include <errno.h>
 
+#ifdef IF_MOTIF
+
 #include "Xpm.h"
 #if HAVE_ATHENA
 #include <X11/Xaw/XawInit.h>
 #endif
+
+#else // NOT IF_MOTIF
+
+#endif
+
 #include "HelpCB.h"
 
 #if !HAVE_POPEN_DECL
@@ -573,7 +580,9 @@ void DDDLicenseCB(Widget w, XtPointer, XtPointer call_data)
     string s(license);
     s.prepend("@license@");
 
+#ifdef IF_MOTIF
     TextHelpCB(w, XtPointer(s.chars()), call_data);
+#endif // IF_MOTIF
 
     if (ret != 0 || !s.contains("GNU"))
 	post_error("The " DDD_NAME " license could not be uncompressed.", 
@@ -614,7 +623,9 @@ void DDDNewsCB(Widget w, XtPointer, XtPointer call_data)
     string s(news);
     s.prepend("@news@");
 
+#ifdef IF_MOTIF
     TextHelpCB(w, XtPointer(s.chars()), call_data);
+#endif // IF_MOTIF
 
     if (ret != 0 || !s.contains(DDD_NAME))
 	post_error("The " DDD_NAME " news could not be uncompressed.", 

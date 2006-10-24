@@ -33,6 +33,8 @@ char windows_rcsid[] =
 #define LOG_EVENTS   0
 #define LOG_MOVES    0
 
+#include "config.h"
+
 #include "windows.h"
 
 #include "AppData.h"
@@ -53,6 +55,7 @@ char windows_rcsid[] =
 #include "Tool.h"
 #include "XErrorB.h"
 
+#ifdef IF_MOTIF
 #include <Xm/Xm.h>
 #include <Xm/DialogS.h>
 #include <Xm/PanedW.h>
@@ -73,19 +76,20 @@ char windows_rcsid[] =
 #ifdef XtIsRealized
 #undef XtIsRealized
 #endif
+#endif // IF_MOTIF
 
 //-----------------------------------------------------------------------------
 // Window management
 //-----------------------------------------------------------------------------
 
 // Shells (only used if separate windows are used)
-Widget command_shell;
-Widget data_disp_shell;
-Widget source_view_shell;
+WINDOW_P command_shell;
+WINDOW_P data_disp_shell;
+WINDOW_P source_view_shell;
 
 // Command tool
-Widget tool_shell;
-Widget tool_buttons_w;
+WINDOW_P tool_shell;
+BOX_P tool_buttons_w;
 
 // Shell state stuff
 enum WindowState { PoppingUp, PoppedUp, PoppedDown, 
@@ -194,6 +198,7 @@ static void initialize_offsets()
     }
 }
 
+#ifdef IF_MOTIF
 // Return current tool shell position relative to root window
 static BoxPoint tool_shell_pos()
 {
@@ -213,8 +218,13 @@ static BoxPoint tool_shell_pos()
 
     return BoxPoint(root_x, root_y);
 }
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning tool_shell_pos not supported.
+#endif
+#endif // IF_MOTIF
 
-static XtIntervalId move_tool_shell_timer = 0;
+static XtIntervalId move_tool_shell_timer = NO_TIMER;
 
 static BoxPoint last_tool_shell_position;
 static BoxPoint tool_shell_move_offset(0, 0);
@@ -226,19 +236,24 @@ static void VerifyToolShellPositionCB(XtPointer = 0, XtIntervalId *id = 0)
 {
     (void) id;			// Use it
     assert (*id == move_tool_shell_timer);
-    move_tool_shell_timer = 0;
+    move_tool_shell_timer = NO_TIMER;
 
 #if LOG_MOVES
     std::clog << "Tool position found:    " << tool_shell_pos() << "\n";
     std::clog << "Tool position expected: " << last_tool_shell_position << "\n";
 #endif
 
+#ifdef IF_MOTIF
     BoxPoint diff = tool_shell_pos() - last_tool_shell_position;
     if (diff != BoxPoint(0, 0))
     {
 	tool_shell_move_offset = -diff;
 	move_tool_shell(last_tool_shell_position, false);
     }
+#ifdef NAG_ME
+#warning Do not move tool shell
+#endif
+#endif // IF_MOTIF
 }
 
 // Move tool shell to POS.  If VERIFY is set, verify and correct 
@@ -254,6 +269,7 @@ static void move_tool_shell(const BoxPoint& pos, bool verify)
     if (tool_shell == 0)
 	return;
 
+#ifdef IF_MOTIF
     if (pos != tool_shell_pos())
     {
 #if LOG_MOVES
@@ -288,8 +304,14 @@ static void move_tool_shell(const BoxPoint& pos, bool verify)
 				100, VerifyToolShellPositionCB, XtPointer(0));
 	}
     }
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Do not move tool shell
+#endif
+#endif // IF_MOTIF
 }
 
+#ifdef IF_MOTIF
 static void RecenterToolShellCB(XtPointer = 0, XtIntervalId *id = 0)
 {
     if (tool_shell == 0)
@@ -330,6 +352,11 @@ static void RecenterToolShellCB(XtPointer = 0, XtIntervalId *id = 0)
 			    200, RecenterToolShellCB, XtPointer(0));
     }
 }
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning RecenterToolShellCB not implemented
+#endif
+#endif // IF_MOTIF
 
 static void follow_tool_shell(Widget ref)
 {
@@ -337,6 +364,7 @@ static void follow_tool_shell(Widget ref)
     recenter_tool_shell(ref, last_top_offset, last_right_offset);
 }
 
+#ifdef IF_MOTIF
 static void FollowToolShellCB(XtPointer = 0, XtIntervalId *id = 0)
 {
     if (tool_shell == 0)
@@ -377,7 +405,13 @@ static void FollowToolShellCB(XtPointer = 0, XtIntervalId *id = 0)
 			    200, FollowToolShellCB, XtPointer(0));
     }
 }
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning FollowToolShellCB not implemented
+#endif
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
 bool started_iconified(Widget w)
 {
     Widget toplevel = w;
@@ -391,6 +425,11 @@ bool started_iconified(Widget w)
     XtVaGetValues(toplevel, XmNiconic, &iconic, XtPointer(0));
     return iconic;
 }
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning started_iconified not implemented
+#endif
+#endif // IF_MOTIF
 
 // Popup initial shell
 void initial_popup_shell(Widget w)
@@ -398,6 +437,7 @@ void initial_popup_shell(Widget w)
     if (w == 0)
 	return;
 
+#ifdef IF_MOTIF
     Boolean iconic = started_iconified(w);
     XtVaSetValues(w, 
 		  XmNiconic, iconic,
@@ -413,14 +453,17 @@ void initial_popup_shell(Widget w)
 		      XmNx, 0,
 		      XmNy, 0,
 		      XtPointer(0));
+#endif // IF_MOTIF
 
     if (w == tool_shell)
     {
 	XtManageChild(tool_buttons_w);
 	if (!XtIsRealized(tool_shell))
 	    XtRealizeWidget(tool_shell);
+#ifdef IF_MOTIF
 	if (!iconic)
 	    RecenterToolShellCB();
+#endif // IF_MOTIF
     }
 
     Widget toplevel = w;
@@ -428,8 +471,13 @@ void initial_popup_shell(Widget w)
 	toplevel = XtParent(toplevel);
     assert(XtIsTopLevelShell(toplevel));
 
-    if (w != toplevel && XtIsRealized(w))
+    if (w != toplevel && XtIsRealized(w)) {
+#ifdef IF_MOTIF
 	XtPopup(w, XtGrabNone);
+#else // NOT IF_MOTIF
+	w->show();
+#endif // IF_MOTIF
+    }
 }
 
 void popup_shell(Widget w)
@@ -442,20 +490,33 @@ void popup_shell(Widget w)
 	if (!XtIsRealized(tool_shell))
 	{
 	    initial_popup_shell(tool_shell);
+#ifdef IF_MOTIF
 	    RecenterToolShellCB();
+#endif // IF_MOTIF
 	}
 
 	XtManageChild(tool_buttons_w);
     }
 
-    if (XtIsRealized(w))
+    if (XtIsRealized(w)) {
+#ifdef IF_MOTIF
 	XtPopup(w, XtGrabNone);
+#else // NOT IF_MOTIF
+	w->show();
+#endif // IF_MOTIF
+    }
 
     set_state(w, PoppingUp);
 
     // Uniconify window
+#ifdef IF_MOTIF
     if (XtIsRealized(w))
 	XMapWindow(XtDisplay(w), XtWindow(w));
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Iconified windows not handled.
+#endif
+#endif // IF_MOTIF
     raise_shell(w);
 }
 
@@ -474,6 +535,7 @@ void popdown_shell(Widget w)
 
 void iconify_shell(Widget w)
 {
+#ifdef IF_MOTIF
     if (w == 0 || !XtIsRealized(w))
 	return;
 
@@ -481,10 +543,14 @@ void iconify_shell(Widget w)
 
     XIconifyWindow(XtDisplay(w), XtWindow(w),
 		   XScreenNumberOfScreen(XtScreen(w)));
+#else // NOT IF_MOTIF
+    std::cerr << "iconify_shell not supported.\n";
+#endif // IF_MOTIF
 }
 
 void uniconify_shell(Widget w)
 {
+#ifdef IF_MOTIF
     if (w == 0)
 	return;
 
@@ -492,12 +558,16 @@ void uniconify_shell(Widget w)
     {
 	popup_shell(w);
     }
+#else // NOT IF_MOTIF
+    std::cerr << "uniconify_shell not supported.\n";
+#endif // IF_MOTIF
 }
 
 static void popup_tty(Widget shell)
 {
     if (exec_tty_window())
     {
+#ifdef IF_MOTIF
 	XErrorBlocker blocker(XtDisplay(shell));
 
 	// Uniconify window
@@ -505,9 +575,13 @@ static void popup_tty(Widget shell)
 
 	// Place window on top
 	XRaiseWindow(XtDisplay(shell), exec_tty_window());
+#else // NOT IF_MOTIF
+	std::cerr << "popup_tty called\n";
+#endif // IF_MOTIF
     }
 }
 
+#ifdef IF_MOTIF
 static void iconify_tty(Widget shell)
 {
     if (exec_tty_window())
@@ -516,7 +590,9 @@ static void iconify_tty(Widget shell)
 		       XScreenNumberOfScreen(XtScreen(shell)));
     }
 }
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
 // Shell visibility stuff
 static int& visibility(Widget w)
 {
@@ -795,6 +871,7 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 	break;
     }
 }
+#endif // IF_MOTIF
 
 
 //-----------------------------------------------------------------------------
@@ -820,11 +897,11 @@ int running_shells()
 
 
 // Generic close callback
-void DDDCloseCB(Widget w, XtPointer client_data, XtPointer call_data)
+void DDDCloseCB(CB_ARG_LIST_1(w))
 {
     if (running_shells() == 1)
     {
-	DDDExitCB(w, XtPointer(EXIT_SUCCESS), 0);
+	DDDExitCB(CB_ARGS_12(w, EXIT_SUCCESS));
 	return;
     }
 
@@ -834,23 +911,23 @@ void DDDCloseCB(Widget w, XtPointer client_data, XtPointer call_data)
     {
 	if (data_disp_shell == 0)
 	{
-	    gdbCloseDataWindowCB(w, client_data, call_data);
+	    gdbCloseDataWindowCB(CB_ARGS_1(w));
 	}
 
 	if (source_view_shell == 0)
 	{
-	    gdbCloseCodeWindowCB(w, client_data, call_data);
-	    gdbCloseSourceWindowCB(w, client_data, call_data);
+	    gdbCloseCodeWindowCB(CB_ARGS_1(w));
+	    gdbCloseSourceWindowCB(CB_ARGS_1(w));
 	}
 
-	gdbCloseCommandWindowCB(w, client_data, call_data);
+	gdbCloseCommandWindowCB(CB_ARGS_1(w));
     }
     else if (shell == data_disp_shell)
-	gdbCloseDataWindowCB(w, client_data, call_data);
+	gdbCloseDataWindowCB(CB_ARGS_1(w));
     else if (shell == source_view_shell)
-	gdbCloseSourceWindowCB(w, client_data, call_data);
+	gdbCloseSourceWindowCB(CB_ARGS_1(w));
     else if (shell == tool_shell)
-	gdbCloseToolWindowCB(w, client_data, call_data);
+	gdbCloseToolWindowCB(CB_ARGS_NULL);
     else
 	popdown_shell(shell);
 }
@@ -860,12 +937,12 @@ void DDDCloseCB(Widget w, XtPointer client_data, XtPointer call_data)
 // Specific close and open callbacks
 
 // Debugger console
-void gdbCloseCommandWindowCB(Widget w, XtPointer, XtPointer)
+void gdbCloseCommandWindowCB(CB_ARG_LIST_1(w))
 {
     if (!app_data.tty_mode && 
 	!have_data_window() && !have_source_window() && !have_code_window())
     {
-	DDDExitCB(w, XtPointer(EXIT_SUCCESS), 0);
+	DDDExitCB(CB_ARGS_12(w, EXIT_SUCCESS));
 	return;
     }
 
@@ -882,7 +959,7 @@ void gdbCloseCommandWindowCB(Widget w, XtPointer, XtPointer)
     update_options();
 }
 
-void gdbOpenCommandWindowCB(Widget, XtPointer, XtPointer)
+void gdbOpenCommandWindowCB(CB_ARG_LIST_NULL)
 {
     manage_paned_child(XtParent(gdb_w));
 
@@ -901,13 +978,12 @@ bool have_command_window()
 
 
 // Source window
-void gdbCloseSourceWindowCB(Widget w, XtPointer client_data, 
-			    XtPointer call_data)
+void gdbCloseSourceWindowCB(CB_ARG_LIST_1(w))
 {
     if (!app_data.tty_mode && 
 	!have_command_window() && !have_data_window() && !have_code_window())
     {
-	DDDExitCB(w, XtPointer(EXIT_SUCCESS), 0);
+	DDDExitCB(CB_ARGS_12(w, EXIT_SUCCESS));
 	return;
     }
 
@@ -930,20 +1006,19 @@ void gdbCloseSourceWindowCB(Widget w, XtPointer client_data,
 	unmanage_paned_child(source_view->code_form());
 
     if (!XtIsManaged(source_view->code_form()))
-	gdbCloseToolWindowCB(w, client_data, call_data);
+	gdbCloseToolWindowCB(CB_ARGS_NULL);
 
     app_data.source_window = false;
 
     update_options();
 }
 
-void gdbCloseCodeWindowCB(Widget w, XtPointer client_data, 
-			    XtPointer call_data)
+void gdbCloseCodeWindowCB(CB_ARG_LIST_1(w))
 {
     if (!app_data.tty_mode && 
 	!have_command_window() && !have_data_window() && !have_source_window())
     {
-	DDDExitCB(w, XtPointer(EXIT_SUCCESS), 0);
+	DDDExitCB(CB_ARGS_12(w, EXIT_SUCCESS));
 	return;
     }
 
@@ -951,15 +1026,14 @@ void gdbCloseCodeWindowCB(Widget w, XtPointer client_data,
     unmanage_paned_child(source_view->code_form());
 
     if (!XtIsManaged(source_view->source_form()))
-	gdbCloseToolWindowCB(w, client_data, call_data);
+	gdbCloseToolWindowCB(CB_ARGS_NULL);
 
     app_data.disassemble = false;
 
     update_options();
 }
 
-void gdbOpenSourceWindowCB(Widget w, XtPointer client_data,
-			   XtPointer call_data)
+void gdbOpenSourceWindowCB(CB_ARG_LIST_NULL)
 {
     manage_paned_child(source_view->source_form());
     if (source_view_shell != 0 && app_data.disassemble)
@@ -973,15 +1047,14 @@ void gdbOpenSourceWindowCB(Widget w, XtPointer client_data,
 	popup_shell(command_shell);
 
     if (!app_data.command_toolbar)
-	gdbOpenToolWindowCB(w, client_data, call_data);
+	gdbOpenToolWindowCB(CB_ARGS_NULL);
 
     app_data.source_window = true;
 
     update_options();
 }
 
-void gdbOpenCodeWindowCB(Widget w, XtPointer client_data,
-			 XtPointer call_data)
+void gdbOpenCodeWindowCB(CB_ARG_LIST_NULL)
 {
     manage_paned_child(source_view->code_form());
     Widget arg_cmd_w = XtParent(source_arg->top());
@@ -993,7 +1066,7 @@ void gdbOpenCodeWindowCB(Widget w, XtPointer client_data,
 	popup_shell(command_shell);
 
     if (!app_data.command_toolbar)
-	gdbOpenToolWindowCB(w, client_data, call_data);
+	gdbOpenToolWindowCB(CB_ARGS_NULL);
 
     app_data.disassemble = true;
 
@@ -1012,12 +1085,12 @@ bool have_code_window()
 
 
 // Data window
-void gdbCloseDataWindowCB(Widget w, XtPointer, XtPointer)
+void gdbCloseDataWindowCB(CB_ARG_LIST_1(w))
 {
     if (!app_data.tty_mode && 
 	!have_source_window() && !have_command_window() && !have_code_window())
     {
-	DDDExitCB(w, XtPointer(EXIT_SUCCESS), 0);
+	DDDExitCB(CB_ARGS_12(w, EXIT_SUCCESS));
 	return;
     }
 
@@ -1049,7 +1122,7 @@ void gdbCloseDataWindowCB(Widget w, XtPointer, XtPointer)
     update_options();
 }
 
-void gdbOpenDataWindowCB(Widget, XtPointer, XtPointer)
+void gdbOpenDataWindowCB(CB_ARG_LIST_NULL)
 {
     manage_paned_child(data_disp->graph_cmd_w);
     manage_paned_child(data_disp->graph_form());
@@ -1071,7 +1144,7 @@ bool have_data_window()
 
 
 // Execution window
-void gdbCloseExecWindowCB(Widget, XtPointer, XtPointer)
+void gdbCloseExecWindowCB(CB_ARG_LIST_NULL)
 {
     app_data.separate_exec_window = False;
 
@@ -1079,7 +1152,7 @@ void gdbCloseExecWindowCB(Widget, XtPointer, XtPointer)
     update_options();
 }
 
-void gdbOpenExecWindowCB(Widget, XtPointer, XtPointer)
+void gdbOpenExecWindowCB(CB_ARG_LIST_NULL)
 {
     app_data.separate_exec_window = True;
 
@@ -1097,7 +1170,7 @@ bool have_exec_window()
 
 
 // Tool window
-void gdbCloseToolWindowCB(Widget, XtPointer, XtPointer)
+void gdbCloseToolWindowCB(CB_ARG_LIST_NULL)
 {
     if (tool_shell == 0 || !XtIsRealized(tool_shell))
 	return;
@@ -1106,7 +1179,7 @@ void gdbCloseToolWindowCB(Widget, XtPointer, XtPointer)
     update_options();
 }
 
-void gdbOpenToolWindowCB(Widget, XtPointer, XtPointer)
+void gdbOpenToolWindowCB(CB_ARG_LIST_NULL)
 {
     if (tool_shell == 0)
 	create_command_tool();
@@ -1114,14 +1187,18 @@ void gdbOpenToolWindowCB(Widget, XtPointer, XtPointer)
     if (tool_shell == 0 || !XtIsRealized(tool_shell))
 	return;
 
+#ifdef IF_MOTIF
     XtVaSetValues(tool_shell,
 		  XmNgeometry, last_tool_shell_geometry.chars(),
 		  XtPointer(0));
+#endif // IF_MOTIF
 
     popup_shell(tool_shell);
 
     wait_until_mapped(tool_shell);
+#ifdef IF_MOTIF
     RecenterToolShellCB();
+#endif // IF_MOTIF
 
     update_options();
 }
@@ -1136,78 +1213,97 @@ bool have_tool_window()
 // Toggling shells
 //-----------------------------------------------------------------------------
 
-void gdbToggleCommandWindowCB(Widget w, XtPointer client_data,
-			      XtPointer call_data)
+void gdbToggleCommandWindowCB(CB_ARG_LIST_TOGGLE(w, call_data))
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
-    if (info->set)
-	gdbOpenCommandWindowCB(w, client_data, call_data);
+    bool set = info->set;
+#else // NOT IF_MOTIF
+    bool set = w->get_active();
+#endif // IF_MOTIF
+    if (set)
+	gdbOpenCommandWindowCB(CB_ARGS_NULL);
     else
-	gdbCloseCommandWindowCB(w, client_data, call_data);
+	gdbCloseCommandWindowCB(CB_ARGS_1(w));
 }
 
-void gdbToggleSourceWindowCB(Widget w, XtPointer client_data,
-			      XtPointer call_data)
+void gdbToggleSourceWindowCB(CB_ARG_LIST_TOGGLE(w, call_data))
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     if (info->set)
-	gdbOpenSourceWindowCB(w, client_data, call_data);
+#else // NOT IF_MOTIF
+    if (w->get_active())
+#endif // IF_MOTIF
+	gdbOpenSourceWindowCB(CB_ARGS_NULL);
     else
-	gdbCloseSourceWindowCB(w, client_data, call_data);
+	gdbCloseSourceWindowCB(CB_ARGS_1(w));
 }
 
-void gdbToggleCodeWindowCB(Widget w, XtPointer client_data,
-			   XtPointer call_data)
+void gdbToggleCodeWindowCB(CB_ARG_LIST_TOGGLE(w, call_data))
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     if (info->set)
-	gdbOpenCodeWindowCB(w, client_data, call_data);
+#else // NOT IF_MOTIF
+    if (w->get_active())
+#endif // IF_MOTIF
+	gdbOpenCodeWindowCB(CB_ARGS_NULL);
     else
-	gdbCloseCodeWindowCB(w, client_data, call_data);
+	gdbCloseCodeWindowCB(CB_ARGS_1(w));
 
-    update_options();
+    update_options(NO_UPDATE);
 }
 
-void gdbToggleDataWindowCB(Widget w, XtPointer client_data,
-			      XtPointer call_data)
+void gdbToggleDataWindowCB(CB_ARG_LIST_TOGGLE(w, call_data))
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     if (info->set)
-	gdbOpenDataWindowCB(w, client_data, call_data);
+#else // NOT IF_MOTIF
+    if (w->get_active())
+#endif // IF_MOTIF
+	gdbOpenDataWindowCB(CB_ARGS_NULL);
     else
-	gdbCloseDataWindowCB(w, client_data, call_data);
+	gdbCloseDataWindowCB(CB_ARGS_1(w));
 }
 
-void gdbToggleExecWindowCB(Widget w, XtPointer client_data,
-			      XtPointer call_data)
+void gdbToggleExecWindowCB(CB_ARG_LIST_TOGGLE(w, call_data))
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     if (info->set)
-	gdbOpenExecWindowCB(w, client_data, call_data);
+#else // NOT IF_MOTIF
+    if (w->get_active())
+#endif // IF_MOTIF
+	gdbOpenExecWindowCB(CB_ARGS_NULL);
     else
-	gdbCloseExecWindowCB(w, client_data, call_data);
+	gdbCloseExecWindowCB(CB_ARGS_NULL);
 }
 
-void gdbToggleToolWindowCB(Widget w, XtPointer client_data,
-			      XtPointer call_data)
+void gdbToggleToolWindowCB(CB_ARG_LIST_TOGGLE(w, call_data))
 {
+#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     if (info->set)
-	gdbOpenToolWindowCB(w, client_data, call_data);
+#else // NOT IF_MOTIF
+    if (w->get_active())
+#endif // IF_MOTIF
+	gdbOpenToolWindowCB(CB_ARGS_NULL);
     else
-	gdbCloseToolWindowCB(w, client_data, call_data);
+	gdbCloseToolWindowCB(CB_ARGS_NULL);
 }
 
 
@@ -1215,6 +1311,7 @@ void gdbToggleToolWindowCB(Widget w, XtPointer client_data,
 // Command tool placement
 //-----------------------------------------------------------------------------
 
+#ifdef IF_MOTIF
 static void RecenteredToolShellCB(XtPointer, XtIntervalId *id)
 {
     (void) id;			// Use it
@@ -1385,10 +1482,12 @@ static bool get_tool_offset(Widget ref, int& top_offset, int& right_offset)
     right_offset = x;
     return true;
 }
+#endif // IF_MOTIF
 
 // Store current offset of command tool in APP_DATA
 void get_tool_offset()
 {
+#ifdef IF_MOTIF
     initialize_offsets();
 
     if (get_tool_offset(0, last_top_offset, last_right_offset))
@@ -1396,12 +1495,17 @@ void get_tool_offset()
 	app_data.tool_top_offset   = last_top_offset;
 	app_data.tool_right_offset = last_right_offset;
     }
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning get_tool_offset not supported.
+#endif
+#endif // IF_MOTIF
 }
-
 
 
 // Manage paned child with minimum size
 
+#ifdef IF_MOTIF
 inline bool is_internal_paned_child(Widget w)
 {
     return XmIsSash(w) || XmIsSeparator(w) || XmIsSeparatorGadget(w) 
@@ -1462,9 +1566,11 @@ static void paned_changed(Widget /* paned */)
 	source_view->update_glyphs();
     }
 }
+#endif // IF_MOTIF
 
 void manage_paned_child(Widget w)
 {
+#ifdef IF_MOTIF
     Widget paned = XtParent(w);
 
     if (paned == 0 || !XmIsPanedWindow(paned) || XtIsManaged(w))
@@ -1592,8 +1698,12 @@ void manage_paned_child(Widget w)
     }
 
     paned_changed(w);
+#else // NOT IF_MOTIF
+    std::cerr << "manage_paned_child() not implemented\n";
+#endif // IF_MOTIF
 }
 
+#ifdef IF_MOTIF
 // Return the number of resizable children of PANED
 static int resizable_children(Widget paned)
 {
@@ -1625,11 +1735,12 @@ static int resizable_children(Widget paned)
 
     return n;
 }
-
+#endif // IF_MOTIF
 
 // Unmanage W, but be sure the command window doesn't grow.
 void unmanage_paned_child(Widget w)
 {
+#ifdef IF_MOTIF
     Widget paned = XtParent(w);
     if (paned == 0 || !XmIsPanedWindow(paned) || !XtIsManaged(w))
     {
@@ -1672,14 +1783,17 @@ void unmanage_paned_child(Widget w)
     }
 
     paned_changed(w);
+#else // NOT IF_MOTIF
+    std::cerr << "unmanage_paned_child() not implemented\n";
+#endif // IF_MOTIF
 }
-
 
 // Set the width of PANED to the maximum width of its children
 
 // Fetch the maximum width.  Do this for each paned window.
 void get_paned_window_width(Widget paned, Dimension& max_width)
 {
+#ifdef IF_MOTIF
     if (paned == 0 || !XtIsSubclass(paned, xmPanedWindowWidgetClass))
 	return;
 
@@ -1709,11 +1823,15 @@ void get_paned_window_width(Widget paned, Dimension& max_width)
 
 	max_width = max(size.width, max_width);
     }
+#else // NOT IF_MOTIF
+    max_width = 0;
+#endif // IF_MOTIF
 }
 
 // Set the found value.
 void set_paned_window_size(Widget paned, Dimension max_width)
 {
+#ifdef IF_MOTIF
     if (paned == 0 || !XtIsSubclass(paned, xmPanedWindowWidgetClass))
 	return;
 
@@ -1774,9 +1892,8 @@ void set_paned_window_size(Widget paned, Dimension max_width)
 		  XmNwidth, max_width + 2 * margin_width,
 		  XmNheight, total_height + 2 * margin_height,
 		  XtPointer(0));
+#endif // IF_MOTIF
 }
-
-
 
 //-----------------------------------------------------------------------------
 // Main Window stuff
@@ -1785,6 +1902,7 @@ void set_paned_window_size(Widget paned, Dimension max_width)
 // Set main window size
 void set_main_window_size(Widget main)
 {
+#ifdef IF_MOTIF
     if (main == 0 || !XtIsSubclass(main, xmMainWindowWidgetClass))
 	return;
 
@@ -1836,16 +1954,17 @@ void set_main_window_size(Widget main)
 		  XmNwidth, max_width, 
 		  XmNheight, total_height, 
 		  XtPointer(0));
+#endif // IF_MOTIF
 }
-
 
 //-----------------------------------------------------------------------------
 // Scrolled Window stuff
 //-----------------------------------------------------------------------------
 
 // Promote child size to scrolled window
-void set_scrolled_window_size(Widget child, Widget target)
+void set_scrolled_window_size(SCROLLEDWINDOW_P child, Widget target)
 {
+#ifdef IF_MOTIF
     Widget scroll = XtParent(child);
 
     assert(XmIsScrolledWindow(scroll));
@@ -1904,4 +2023,9 @@ void set_scrolled_window_size(Widget child, Widget target)
 	margin_height * 2;
 
     XtVaSetValues(target, XmNwidth,  width, XmNheight, height, XtPointer(0));
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning set_scrolled_window_size not implemented.
+#endif
+#endif // IF_MOTIF
 }

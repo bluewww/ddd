@@ -29,7 +29,14 @@
 #ifndef _DDD_GraphGC_h
 #define _DDD_GraphGC_h
 
+#ifdef IF_MOTIF
+
 #include <X11/Xlib.h>
+
+#else // NOT IF_MOTIF
+
+#endif // IF_MOTIF
+
 #include "BoxPoint.h"
 #include "Box.h"
 #include "TypeInfo.h"
@@ -93,7 +100,7 @@ struct GraphGC {
     static PostScriptPrintGC defaultPrintGC;
 
     // Default Constructor
-    explicit GraphGC(GC n = 0, GC e = 0, GC i = 0, GC c = 0):
+    explicit GraphGC(GC n = NO_GC, GC e = NO_GC, GC i = NO_GC, GC c = NO_GC):
 	redraw(false),
         nodeGC(n),
         hintGC(n),

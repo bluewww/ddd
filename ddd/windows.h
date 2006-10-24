@@ -29,17 +29,24 @@
 #ifndef _DDD_windows_h
 #define _DDD_windows_h
 
+#ifdef IF_MOTIF
+
 #include <X11/Intrinsic.h>
+
+#endif // IF_MOTIF
+
+#include "gtk_wrapper.h"
+
 #include "bool.h"
 
 // Shells (only used if separate windows are used)
-extern Widget command_shell;
-extern Widget data_disp_shell;
-extern Widget source_view_shell;
+extern WINDOW_P command_shell;
+extern WINDOW_P data_disp_shell;
+extern WINDOW_P source_view_shell;
 
 // Command tool
-extern Widget tool_shell;
-extern Widget tool_buttons_w;
+extern WINDOW_P tool_shell;
+extern BOX_P tool_buttons_w;
 
 // Shell management
 extern void initial_popup_shell(Widget w);
@@ -50,28 +57,30 @@ extern void uniconify_shell(Widget w);
 extern int running_shells();
 
 // True if W was started iconified
+#ifdef IF_MOTIF
 extern bool started_iconified(Widget w);
+#endif // IF_MOTIF
 
-extern void gdbOpenCommandWindowCB  (Widget, XtPointer, XtPointer);
-extern void gdbOpenSourceWindowCB   (Widget, XtPointer, XtPointer);
-extern void gdbOpenCodeWindowCB     (Widget, XtPointer, XtPointer);
-extern void gdbOpenDataWindowCB     (Widget, XtPointer, XtPointer);
-extern void gdbOpenExecWindowCB     (Widget, XtPointer, XtPointer);
-extern void gdbOpenToolWindowCB     (Widget, XtPointer, XtPointer);
+extern void gdbOpenCommandWindowCB  (CB_ARG_LIST_NULL);
+extern void gdbOpenSourceWindowCB   (CB_ARG_LIST_NULL);
+extern void gdbOpenCodeWindowCB     (CB_ARG_LIST_NULL);
+extern void gdbOpenDataWindowCB     (CB_ARG_LIST_NULL);
+extern void gdbOpenExecWindowCB     (CB_ARG_LIST_NULL);
+extern void gdbOpenToolWindowCB     (CB_ARG_LIST_NULL);
 
-extern void gdbCloseCommandWindowCB (Widget, XtPointer, XtPointer);
-extern void gdbCloseSourceWindowCB  (Widget, XtPointer, XtPointer);
-extern void gdbCloseCodeWindowCB    (Widget, XtPointer, XtPointer);
-extern void gdbCloseDataWindowCB    (Widget, XtPointer, XtPointer);
-extern void gdbCloseExecWindowCB    (Widget, XtPointer, XtPointer);
-extern void gdbCloseToolWindowCB    (Widget, XtPointer, XtPointer);
+extern void gdbCloseCommandWindowCB (CB_ARG_LIST_1());
+extern void gdbCloseSourceWindowCB  (CB_ARG_LIST_1());
+extern void gdbCloseCodeWindowCB    (CB_ARG_LIST_1());
+extern void gdbCloseDataWindowCB    (CB_ARG_LIST_1());
+extern void gdbCloseExecWindowCB    (CB_ARG_LIST_NULL);
+extern void gdbCloseToolWindowCB    (CB_ARG_LIST_NULL);
 
-extern void gdbToggleCommandWindowCB(Widget, XtPointer, XtPointer);
-extern void gdbToggleSourceWindowCB (Widget, XtPointer, XtPointer);
-extern void gdbToggleCodeWindowCB   (Widget, XtPointer, XtPointer);
-extern void gdbToggleDataWindowCB   (Widget, XtPointer, XtPointer);
-extern void gdbToggleExecWindowCB   (Widget, XtPointer, XtPointer);
-extern void gdbToggleToolWindowCB   (Widget, XtPointer, XtPointer);
+extern void gdbToggleCommandWindowCB(CB_ARG_LIST_TOGGLE(,));
+extern void gdbToggleSourceWindowCB (CB_ARG_LIST_TOGGLE(,));
+extern void gdbToggleCodeWindowCB   (CB_ARG_LIST_TOGGLE(,));
+extern void gdbToggleDataWindowCB   (CB_ARG_LIST_TOGGLE(,));
+extern void gdbToggleExecWindowCB   (CB_ARG_LIST_TOGGLE(,));
+extern void gdbToggleToolWindowCB   (CB_ARG_LIST_TOGGLE(,));
 
 extern bool have_command_window();
 extern bool have_source_window();
@@ -82,7 +91,7 @@ extern bool have_tool_window();
 
 
 // Close current window
-extern void DDDCloseCB              (Widget, XtPointer, XtPointer);
+extern void DDDCloseCB              (CB_ARG_LIST_1());
 
 // Register this event handler with all shells
 extern void StructureNotifyEH(Widget, XtPointer, XEvent *, Boolean *);
@@ -95,7 +104,7 @@ extern void manage_paned_child(Widget w);
 extern void unmanage_paned_child(Widget w);
 
 // Promote size of ScrolledWindow child CHILD to TARGET (default: parent)
-extern void set_scrolled_window_size(Widget child, Widget target = 0);
+extern void set_scrolled_window_size(SCROLLEDWINDOW_P child, Widget target = 0);
 
 // Set the width of PANED to the maximum width of its children
 extern void get_paned_window_width(Widget paned, Dimension& max_width);

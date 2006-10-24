@@ -29,9 +29,17 @@
 #ifndef _DDD_findWindow_h
 #define _DDD_findWindow_h
 
+#ifdef IF_MOTIF
+
 #include <X11/Intrinsic.h>
+
+#endif // IF_MOTIF
+
+#include "gtk_wrapper.h"
+
 #include "bool.h"
 
+#ifdef IF_MOTIF
 // Return true if one of the following is true:
 // - TITLE is non-null and WINDOW has the title TITLE
 // - APP_NAME is non-null and WINDOW has the application name APP_NAME
@@ -72,6 +80,11 @@ inline Window findWindow(Widget w, const _XtString name)
 {
     return findWindow(w, name, name, name);
 }
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Implement the findWindow stuff?
+#endif
+#endif // IF_MOTIF
 
 #endif // _DDD_findWindow_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

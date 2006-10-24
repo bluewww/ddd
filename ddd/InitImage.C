@@ -29,6 +29,10 @@
 char InitImage_rcsid[] = 
     "$Id$";
 
+#include "config.h"
+
+#include <iostream>
+
 #include "InitImage.h"
 
 #include "config.h"
@@ -38,14 +42,16 @@ char InitImage_rcsid[] =
 // These three are required for #including <X11/Xlibint.h>
 #include <string.h>		// bcopy()
 #include <sys/types.h>		// size_t
+#ifdef IF_MOTIF
 #include <X11/Xlib.h>		// anything else
 
 #include <X11/Xlibint.h>	// Xcalloc()
 #include <X11/Xutil.h>		// XGetPixel(), etc.
 
 #include <Xm/Xm.h>		// XmInstallImage()
+#endif // IF_MOTIF
 
-#if XlibSpecificationRelease < 6
+#if defined(IF_MOTIF) && XlibSpecificationRelease < 6
 
 // We're stuck with X11R5 or earlier, so we Provide a simple
 // XInitImage() replacement.  These GetPixel, PutPixel, and SubImage
@@ -165,8 +171,9 @@ static XImage *SubImage (XImage *image, int x, int y,
 
 
 
-void InitImage(XImage *image)
+void InitImage(XIMAGE_P image)
 {
+#ifdef IF_MOTIF
 #if XlibSpecificationRelease >= 6
     XInitImage(image);
 #else
@@ -183,11 +190,13 @@ void InitImage(XImage *image)
     image->f.put_pixel = PutPixel;
     image->f.sub_image = SubImage;
 #endif
+#endif // IF_MOTIF
 }
 
-XImage *CreateImageFromBitmapData(unsigned char *bits, int width, int height)
+XIMAGE_P CreateImageFromBitmapData(unsigned char *bits, int width, int height)
 {
-    XImage *image = (XImage *)Xcalloc(1, sizeof(XImage));
+#ifdef IF_MOTIF
+    XIMAGE_P image = (XIMAGE_P )Xcalloc(1, sizeof(XImage));
     image->width            = width;
     image->height           = height;
     image->xoffset          = 0;
@@ -199,13 +208,21 @@ XImage *CreateImageFromBitmapData(unsigned char *bits, int width, int height)
     image->bitmap_pad       = 8;
     image->depth            = 1;
     image->bytes_per_line   = (width + 7) / 8;
+#else // NOT IF_MOTIF
+    XIMAGE_P image = Gdk::Pixbuf::create(Gdk::COLORSPACE_RGB,
+					 false, 8, width, height);
+#endif // IF_MOTIF
 
     InitImage(image);
 
     return image;
 }
 
-Boolean InstallImage(XImage *image, const char *image_name)
+#ifdef IF_MOTIF
+Boolean InstallImage(XIMAGE_P image, const char *image_name)
+#else // NOT IF_MOTIF
+Boolean InstallImage(XIMAGE_P image, XIMAGE_P *image_name)
+#endif // IF_MOTIF
 {
     // Dave Larson <davlarso@plains.nodak.edu> writes: DDD doesn't
     // work with the Motif 2.1 libraries shipped w/ Solaris 7: the
@@ -218,16 +235,25 @@ Boolean InstallImage(XImage *image, const char *image_name)
     // arguments.  If I simply change the three calls to
     // XmInstallImage to Xm21InstallImage, the problem is solved.
 
+#ifdef IF_MOTIF
 #if HAVE_XM21INSTALLIMAGE
     return Xm21InstallImage(image, XMST(image_name));
 #else
     return XmInstallImage(image, XMST(image_name));
 #endif
+#else // NOT IF_MOTIF
+    std::cerr << "setting image " << image_name << "\n";
+    *image_name = image;
+#endif // IF_MOTIF
 }
 
 // Install the given X bitmap as NAME
+#ifdef IF_MOTIF
 Boolean InstallBitmap(unsigned char *bits, int width, int height, const char *name)
+#else // NOT IF_MOTIF
+Boolean InstallBitmap(unsigned char *bits, int width, int height, XIMAGE_P *name)
+#endif // IF_MOTIF
 {
-    XImage *image = CreateImageFromBitmapData(bits, width, height);
+    XIMAGE_P image = CreateImageFromBitmapData(bits, width, height);
     return InstallImage(image, name);
 }

@@ -33,12 +33,15 @@
 #include "MakeMenu.h"
 #include "ArgField.h"
 
+#include "gtk_wrapper.h"
+
 // Create a toolbar as child of parent, named `NAME_toolbar', having
 // the buttons ITEMS.  Return LABEL and ARGFIELD.
-extern Widget create_toolbar(Widget parent, const string& name, 
-			     MMDesc *items1, MMDesc *items2,
-			     Widget& label, ArgField*& argfield,
-			     unsigned char label_type);
+extern CONTAINER_P create_toolbar(CONTAINER_P parent, const string& name, 
+				  MMDesc *items1, MMDesc *items2,
+				  BUTTON_P &label, ArgField*& argfield,
+				  unsigned char label_type);
+
 
 #endif // _DDD_toolbar_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

@@ -33,7 +33,14 @@ char logo_rcsid[] =
 #include "logo.h"
 #include "config.h"
 
+#ifdef IF_MOTIF
+
 #include "Xpm.h"
+
+#else // NOT IF_MOTIF
+
+#endif // IF_MOTIF
+
 #include "assert.h"
 #include "string-fun.h"
 #include "AppData.h"
@@ -47,7 +54,7 @@ char logo_rcsid[] =
 #include "icons/dddsplash.xbm"
 
 // X pixmaps
-#ifdef XpmVersion
+#if defined(XpmVersion) || !defined(IF_MOTIF)
 
 // To avoid compilation warnings, make all char *'s constant
 // We cannot do this in the XPM file since this violates XPM format specs
@@ -65,6 +72,7 @@ static const char **ddd_xpm = 0;
 
 #include <iostream>
 #include <string.h>
+#ifdef IF_MOTIF
 #include <X11/Xlib.h>
 #include <X11/StringDefs.h>
 #include <Xm/Xm.h>
@@ -74,7 +82,12 @@ static const char **ddd_xpm = 0;
 #ifdef XtIsRealized
 #undef XtIsRealized
 #endif
+#else // NOT IF_MOTIF
+#include <gtkmm/image.h>
+#endif // IF_MOTIF
 
+
+#ifdef IF_MOTIF
 
 //-----------------------------------------------------------------------------
 // DDD logo
@@ -309,6 +322,7 @@ Pixmap dddsplash(Widget w, const string& color_key,
 }
 
 
+#endif // IF_MOTIF
 
 //-----------------------------------------------------------------------
 // Toolbar icons
@@ -370,7 +384,7 @@ Pixmap dddsplash(Widget w, const string& color_key,
 #include "icons/toolbar/unwatch.xbmxx"
 #include "icons/toolbar/watch.xbmxx"
 
-#ifdef XpmVersion
+#if defined(XpmVersion) || !defined(IF_MOTIF)
 
 // To avoid compilation warnings, make all char *'s constant
 // We cannot do this in the XPM file since this violates XPM format specs
@@ -491,6 +505,40 @@ static const char **unwatch_xx_xpm     = 0;
 static const char **watch_xx_xpm       = 0;
 #endif // !XpmVersion
 
+#ifndef IF_MOTIF
+
+XIMAGE_P DDD_ICON[1];
+XIMAGE_P BREAK_AT_ICON[4];
+XIMAGE_P CLEAR_AT_ICON[4];
+XIMAGE_P CLUSTER_ICON[4];
+XIMAGE_P DELETE_ICON[4];
+XIMAGE_P DISABLE_ICON[4];
+XIMAGE_P DISPREF_ICON[4];
+XIMAGE_P DISPLAY_ICON[4];
+XIMAGE_P ENABLE_ICON[4];
+XIMAGE_P FIND_BACKWARD_ICON[4];
+XIMAGE_P FIND_FORWARD_ICON[4];
+XIMAGE_P HIDE_ICON[4];
+XIMAGE_P LOOKUP_ICON[4];
+XIMAGE_P MAKETEMP_ICON[4];
+XIMAGE_P NEW_BREAK_ICON[4];
+XIMAGE_P NEW_DISPLAY_ICON[4];
+XIMAGE_P NEW_WATCH_ICON[4];
+XIMAGE_P PLOT_ICON[4];
+XIMAGE_P PRINT_ICON[4];
+XIMAGE_P PROPERTIES_ICON[4];
+XIMAGE_P ROTATE_ICON[4];
+XIMAGE_P SET_ICON[4];
+XIMAGE_P SHOW_ICON[4];
+XIMAGE_P UNCLUSTER_ICON[4];
+XIMAGE_P UNDISPLAY_ICON[4];
+XIMAGE_P UNWATCH_ICON[4];
+XIMAGE_P WATCH_ICON[4];
+
+#endif // IF_MOTIF
+
+#ifdef IF_MOTIF
+
 static char get_sign(string& g)
 {
     if (g.contains('+', 0) || g.contains('-', 0) || g.contains('x', 0))
@@ -583,13 +631,19 @@ static XImage *get_button_subimage(XImage *image, const _XtString name)
 }
 
 
+#endif
 
-static void install_icon(Widget w, const _XtString name,
+static void install_icon(Widget w,
+#ifdef IF_MOTIF
+			 const _XtString name,
+#else // NOT IF_MOTIF
+			 XIMAGE_P *name,
+#endif // IF_MOTIF
 			 const char **xpm_data, 
 			 const unsigned char *xbm_data,
 			 int width, int height,
 			 const string& color_key,
-			 Pixel background,
+			 ImageColor background,
 			 const XWindowAttributes& win_attr,
 			 bool is_button = false)
 {
@@ -653,10 +707,15 @@ static void install_icon(Widget w, const _XtString name,
     (void) win_attr;
 #endif // !defined(XpmVersion)
 
+#ifdef IF_MOTIF
     // Install the bitmap version
-    XImage *image = CreateImageFromBitmapData((unsigned char *)xbm_data, 
+    XIMAGE_P image = CreateImageFromBitmapData((unsigned char *)xbm_data, 
 					      width, height);
+#else // NOT IF_MOTIF
+    XIMAGE_P image = Gdk::Pixbuf::create_from_xpm_data(xpm_data);
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     if (is_button)
     {
 	XImage *subimage = get_button_subimage(image, name);
@@ -668,17 +727,29 @@ static void install_icon(Widget w, const _XtString name,
 	    image = subimage;
 	}
     }
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Subimage - not used
+#endif
+#endif // IF_MOTIF
 
     Boolean ok = InstallImage(image, name);
     if (ok)
 	return;
 
+#ifdef IF_MOTIF
     std::cerr << "Could not install " << quote(name) << " bitmap\n";
     if (image != 0)
 	XDestroyImage(image);
+#endif // IF_MOTIF
 }
 
-static void install_button_icon(Widget w, const _XtString name,
+static void install_button_icon(Widget w,
+#ifdef IF_MOTIF
+				const _XtString name,
+#else // NOT IF_MOTIF
+				XIMAGE_P *name,
+#endif // IF_MOTIF
 				const char **xpm_data, 
 				const char **xpm_xx_data,
 				const unsigned char *xbm_data,
@@ -686,9 +757,10 @@ static void install_button_icon(Widget w, const _XtString name,
 				int width, int height, 
 				const string& color_key,
 				const string& active_color_key,
-				Pixel background,
-				Pixel arm_background,
-				const XWindowAttributes& win_attr)
+				ImageColor background,
+				ImageColor arm_background,
+				const XWindowAttributes& win_attr
+				)
 {
     install_icon(w, name,
 		 xpm_data,
@@ -696,26 +768,50 @@ static void install_button_icon(Widget w, const _XtString name,
 		 width, height,
 		 color_key, background, win_attr, true);
 
+#ifdef IF_MOTIF
     string insensitive_name = string(name) + "-xx";
     install_icon(w, insensitive_name.chars(),
 		 xpm_xx_data,
 		 xbm_xx_data, 
 		 width, height,
 		 color_key, background, win_attr, true);
+#else // NOT IF_MOTIF
+    install_icon(w, name+1,
+		 xpm_xx_data,
+		 xbm_xx_data, 
+		 width, height,
+		 color_key, background, win_attr, true);
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     string armed_name = string(name) + "-arm";
     install_icon(w, armed_name.chars(),
 		 xpm_data,
 		 xbm_data,
 		 width, height,
 		 active_color_key, arm_background, win_attr, true);
+#else // NOT IF_MOTIF
+    install_icon(w, name+2,
+		 xpm_data,
+		 xbm_data,
+		 width, height,
+		 active_color_key, arm_background, win_attr, true);
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     string highlight_name = string(name) + "-hi";
     install_icon(w, highlight_name.chars(),
 		 xpm_data,
 		 xbm_data,
 		 width, height,
 		 active_color_key, background, win_attr, true);
+#else // NOT IF_MOTIF
+    install_icon(w, name+3,
+		 xpm_data,
+		 xbm_data,
+		 width, height,
+		 active_color_key, background, win_attr, true);
+#endif // IF_MOTIF
 }
 
 // Install toolbar icons in Motif cache.  COLOR_KEY indicates the XPM
@@ -732,6 +828,7 @@ void install_icons(Widget shell,
 
     // Determine attributes
     XWindowAttributes win_attr;
+#ifdef IF_MOTIF
     XGetWindowAttributes(XtDisplay(shell), 
 			 RootWindowOfScreen(XtScreen(shell)),
 			 &win_attr);
@@ -750,6 +847,11 @@ void install_icons(Widget shell,
 	arm_background = background;
     else
 	arm_background = select;
+#else // NOT IF_MOTIF
+    shell->ensure_style();
+    ImageColor background = shell->get_style()->get_bg(Gtk::STATE_NORMAL);
+    ImageColor arm_background = shell->get_style()->get_bg(Gtk::STATE_PRELIGHT);
+#endif // IF_MOTIF
 
     // DDD icon (always in color)
     install_icon(shell, DDD_ICON, 
@@ -943,16 +1045,20 @@ void install_icons(Widget shell,
 }
 
 
-
 //-----------------------------------------------------------------------
 // Set pixmap and label
 //-----------------------------------------------------------------------
 
+#ifdef IF_MOTIF
 void set_label(Widget w, const MString& new_label, const char *image)
+#else // NOT IF_MOTIF
+void set_label(Widget w, const MString& new_label, XIMAGE_P *image)
+#endif // IF_MOTIF
 {
     if (w == 0)
 	return;
 
+#ifdef IF_MOTIF
     assert(XtIsSubclass(w, xmLabelWidgetClass));
 
     XmString old_label = 0;
@@ -1016,4 +1122,73 @@ void set_label(Widget w, const MString& new_label, const char *image)
 	XtSetValues(w, args, arg);
     }
     XmStringFree(old_label);
+#else // NOT IF_MOTIF
+    Gtk::Bin *bin = dynamic_cast<Gtk::Bin *>(w);
+#if 0
+    if (bin && bin->get_child()) {
+	Gtk::Label *label = dynamic_cast<Gtk::Label *>(bin->get_child());
+	if (label) {
+	    label->set_text(new_label.xmstring());
+	}
+	else {
+	    std::cerr << "Cannot set label for non-label item\n";
+	}
+    }
+    else {
+	std::cerr << "Cannot set label for item\n";
+    }
+#else
+    if (bin) {
+	Gtk::Widget *child = bin->get_child();
+	Gtk::Image *old_img = child?dynamic_cast<Gtk::Image *>(child):NULL;
+	Gtk::Label *old_lab = child?dynamic_cast<Gtk::Label *>(child):NULL;
+	if (image && !old_lab) {
+#ifdef NAG_ME
+#warning HOW TO SET DIFFERENT PIXMAPS FOR STATES
+#endif
+	    XIMAGE_P p1 = image[0];
+	    XIMAGE_P p2 = image[1];
+	    XIMAGE_P p3 = image[2];
+	    XIMAGE_P p4 = image[3];
+	    if (p1)
+	    {
+		Gtk::Image *img = new Gtk::Image(p1);
+		bin->remove();
+		bin->add(*img);
+		img->show();
+	    }
+	}
+	else if (!old_img) {
+	    bin->remove();
+	    Gtk::Label *label = new Gtk::Label(new_label.xmstring());
+	    bin->add(*label);
+	    label->show();
+	}
+    }
+    else {
+	std::cerr << "ERROR: Set label on something not a Gtk::Bin\n";
+    }
+#endif
+#endif // IF_MOTIF
 }
+
+#ifndef IF_MOTIF
+MString
+get_label(Widget w)
+{
+    Glib::ustring str;
+    Gtk::Button *button = dynamic_cast<Gtk::Button *>(w);
+    if (button)
+	return MString(button->get_label(), true);
+    Gtk::MenuItem *menuitem = dynamic_cast<Gtk::MenuItem *>(w);
+    if (menuitem) {
+	Gtk::Widget *child = menuitem->get_child();
+	if (child) {
+	    Gtk::Label *label = dynamic_cast<Gtk::Label *>(child);
+	    if (label)
+		return MString(label->get_text(), true);
+	}
+    }
+    return MString();
+}
+#endif // IF_MOTIF

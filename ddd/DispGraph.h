@@ -43,6 +43,8 @@
 #include "GraphNPA.h"
 #include "DispNodeM.h"
 
+#include "GraphEdit.h"
+
 //-----------------------------------------------------------------------------
 
 enum Displaying {Both, Enabled, Disabled};
@@ -99,7 +101,7 @@ public:
 
     // Make DISP_NR an alias of ALIAS_DISP_NR.  Suppress
     // ALIAS_DISP_NR.  Return true iff changed.
-    bool alias (Widget w, int disp_nr, int alias_disp_nr);
+    bool alias (GRAPH_EDIT_P w, int disp_nr, int alias_disp_nr);
 
     // Un-alias ALIAS_DISP_NR.  Unsuppress ALIAS_DISP_NR.  Return true
     // iff changed.
@@ -117,7 +119,7 @@ public:
     }
 
     // Determine default positions for NEW_NODE
-    BoxPoint default_pos(DispNode *new_node, Widget w, 
+    BoxPoint default_pos(DispNode *new_node, GRAPH_EDIT_P w, 
 			 int depends_on = 0) const;
 
     // Delete DISP_NR; return false if non-existent
@@ -158,13 +160,13 @@ public:
 
 protected:
     BoxPoint adjust_position (DispNode *new_node,
-			      Widget w,
+			      GRAPH_EDIT_P w,
 			      BoxPoint pos,
 			      const BoxPoint& offset,
 			      BoxPoint grid) const;
 
     // Add a new alias edge
-    void add_alias_edge(Widget w, int alias_disp_nr,
+    void add_alias_edge(GRAPH_EDIT_P w, int alias_disp_nr,
 			GraphNode *from, GraphNode *to,
 			EdgeAnnotation *anno);
 
@@ -185,18 +187,18 @@ private:
 
     void add_edge(DispNode *from, DispNode *to);
     
-    void add_direct_alias_edge(Widget w, int alias_disp_nr, 
+    void add_direct_alias_edge(GRAPH_EDIT_P w, int alias_disp_nr, 
 			       GraphNode *from, GraphNode *to,
 			       EdgeAnnotation *anno);
-    void add_routed_alias_edge(Widget w, int alias_disp_nr, 
+    void add_routed_alias_edge(GRAPH_EDIT_P w, int alias_disp_nr, 
 			       PosGraphNode *from, PosGraphNode *to,
 			       EdgeAnnotation *anno);
 
-    bool is_hidden(Widget w, const BoxPoint& p) const;
+    bool is_hidden(GRAPH_EDIT_P w, const BoxPoint& p) const;
     static BoxPoint rotate_offset(const BoxPoint& p, int angle);
 
     // Check whether P1 and P2 are okay as hint positions for FROM and TO
-    bool hint_positions_ok(Widget w,
+    bool hint_positions_ok(GRAPH_EDIT_P w,
 			   PosGraphNode *from, PosGraphNode *to,
 			   const BoxPoint& p1, const BoxPoint& p2) const;
 

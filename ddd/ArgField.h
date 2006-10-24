@@ -33,8 +33,14 @@
 // An `ArgField' is a Text field with handler procs.
 //-----------------------------------------------------------------------------
 
+#ifdef IF_MOTIF
+
 // Motif includes
 #include <X11/Intrinsic.h>
+
+#endif // IF_MOTIF
+
+#include "gtk_wrapper.h"
 
 // Misc includes
 #include "HandlerL.h"
@@ -52,7 +58,7 @@ const unsigned LosePrimary = Changed + 1;
 const unsigned ArgField_NTypes = LosePrimary + 1;
 
 class ArgField {
-    Widget      arg_text_field;
+    COMBOBOXENTRYTEXT_P   arg_text_field;
     HandlerList handlers;
     bool     is_empty;
     bool     locked;
@@ -70,7 +76,7 @@ private:
 
 public:
     // Constructor
-    ArgField(Widget parent, const char *name);
+    ArgField(CONTAINER_P parent, const char *name);
 
     bool empty () const { return is_empty; }
 
@@ -79,7 +85,7 @@ public:
 
     void lock(bool locked = true);
 
-    Widget text() const { return arg_text_field; };
+    COMBOBOXENTRYTEXT_P text() const { return arg_text_field; };
     Widget top()  const;
 
     void addHandler (unsigned    type,
@@ -94,10 +100,10 @@ public:
 };
 
 // Create a `():' label named "arg_label"
-Widget create_arg_label(Widget parent);
+BUTTON_P create_arg_label(CONTAINER_P parent);
 
 // Clear the text field given in Widget(CLIENT_DATA)
-void ClearTextFieldCB(Widget w, XtPointer client_data, XtPointer call_data);
+void ClearTextFieldCB(CB_ALIST_2(XtP(COMBOBOXENTRYTEXT_P)));
 
 #endif // _DDD_ArgField_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

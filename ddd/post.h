@@ -31,7 +31,14 @@
 
 #include "strclass.h"
 #include "bool.h"
+
+#ifdef IF_MOTIF
+
 #include <X11/Intrinsic.h>
+
+#endif // IF_MOTIF
+
+#include "gtk_wrapper.h"
 
 // Error handling
 
@@ -45,15 +52,19 @@ extern Widget post_gdb_message(string text, bool prompt = true,
 			       Widget origin = 0);
 extern Widget post_gdb_yn(string text, Widget origin = 0);
 extern Widget post_gdb_died(string reason, int gdb_status, Widget origin = 0);
-extern Widget post_error(string text, const _XtString name = 0, Widget origin = 0);
-extern Widget post_warning(string text, const _XtString name = 0, Widget origin = 0);
+extern DIALOG_P post_error(string text, const _XtString name = 0, Widget origin = 0);
+extern DIALOG_P post_warning(string text, const _XtString name = 0, Widget origin = 0);
 
 // Unpost specific messages
 extern void unpost_gdb_busy();
 extern void unpost_gdb_yn();
 
 // Issue CLIENT_DATA as command and unmanage YN_DIALOG.
+#ifdef IF_MOTIF
 void YnCB(Widget dialog, XtPointer client_data, XtPointer call_data);
+#else // NOT IF_MOTIF
+void YnCB(CB_ALIST_12(Widget dialog, XtP(const char *) client_data));
+#endif // IF_MOTIF
 
 #endif // _DDD_post_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

@@ -34,7 +34,9 @@ char VSEFlags_rcsid[] =
 #include <string.h>
 #include <sstream>
 #include <ctype.h>
+#ifdef IF_MOTIF
 #include <X11/Intrinsic.h>
+#endif // IF_MOTIF
 
 #include "assert.h"
 #include "strclass.h"
@@ -508,9 +510,15 @@ void VSEFlags::getDefaults(bool warn)
 	    argv[2] = "";
 	    if (nargs >= 1)
 	    {
+#ifdef IF_MOTIF
 		argv[1] = (String)XtNewString(buf1);
 		if (nargs >= 2)
 		    argv[2] = (String)XtNewString(buf2);
+#else // NOT IF_MOTIF
+		argv[1] = strdup(buf1);
+		if (nargs >= 2)
+		    argv[2] = strdup(buf2);
+#endif // IF_MOTIF
 	    }
 	    int myargc = nargs + 1;
 	    const char **myargv = argv;

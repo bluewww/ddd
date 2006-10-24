@@ -29,6 +29,8 @@
 char args_rcsid[] = 
     "$Id$";
 
+#include "config.h"
+
 #include "args.h"
 
 #include "Delay.h"
@@ -48,11 +50,15 @@ char args_rcsid[] =
 #include "verify.h"
 #include "wm.h"
 
+#ifdef IF_MOTIF
 #include <Xm/Xm.h>
 #include <Xm/List.h>
 #include <Xm/MessageB.h>
 #include <Xm/SelectioB.h>
 #include <Xm/Text.h>
+#else // NOT IF_MOTIF
+#include "gtk_wrapper.h"
+#endif // IF_MOTIF
 
 #include <ctype.h>
 
@@ -62,21 +68,21 @@ char args_rcsid[] =
 //-----------------------------------------------------------------------------
 
 // Argument storage
-static Widget run_dialog;
-static Widget run_arguments_w;
+static DIALOG_P run_dialog;
+static COMBOBOXENTRYTEXT_P run_arguments_w;
 static StringArray run_arguments;
 static string last_run_argument;
 static bool run_arguments_updated = false;
 
-static Widget make_dialog;
+static DIALOG_P make_dialog;
 static StringArray make_arguments;
-static Widget make_arguments_w;
+static COMBOBOXENTRYTEXT_P make_arguments_w;
 static bool make_arguments_updated = false;
 static string last_make_argument;
 
-static Widget cd_dialog;
+static DIALOG_P cd_dialog;
 static StringArray cd_arguments;
-static Widget cd_arguments_w;
+static COMBOBOXENTRYTEXT_P cd_arguments_w;
 static bool cd_arguments_updated = false;
 static string last_cd_argument;
 
@@ -208,6 +214,7 @@ static void update_arguments(Widget dialog, Widget arguments_w,
 			     StringArray& arguments, const string& last,
 			     bool& updated)
 {
+#ifdef IF_MOTIF
     if (updated || dialog == 0)
 	return;
 
@@ -232,6 +239,9 @@ static void update_arguments(Widget dialog, Widget arguments_w,
 
     Widget text_w = XmSelectionBoxGetChild(dialog, XmDIALOG_TEXT);
     XmTextSetString(text_w, XMST(last.chars()));
+#else // NOT IF_MOTIF
+    std::cerr << "FIXME: UPDATE LIST?\n";
+#endif // IF_MOTIF
 
     updated = true;
 }
@@ -266,13 +276,17 @@ void update_arguments()
 //-----------------------------------------------------------------------------
 
 // Run program with given arguments
-static void gdbRunDCB(Widget, XtPointer, XtPointer)
+static void gdbRunDCB(CB_ARG_LIST_NULL)
 {
-
+#ifdef IF_MOTIF
     Widget text  = XmSelectionBoxGetChild(run_dialog, XmDIALOG_TEXT);
     String _args = XmTextGetString(text);
     string args(_args);
     XtFree(_args);
+#else // NOT IF_MOTIF
+    Glib::ustring _args = run_arguments_w->get_entry()->get_text();
+    string args(_args.c_str());
+#endif // IF_MOTIF
 
     string cmd = gdb->run_command(args);
     while (!cmd.empty())
@@ -287,8 +301,9 @@ static void gdbRunDCB(Widget, XtPointer, XtPointer)
     }
 }
 
+#ifdef IF_MOTIF
 // Set program arguments from list
-static void SelectRunArgsCB(Widget, XtPointer, XtPointer call_data)
+static void SelectRunArgsCB(CB_ARG_LIST_3(call_data))
 {
     XmListCallbackStruct *cbs = (XmListCallbackStruct *)call_data;
     int pos = cbs->item_position - 1;
@@ -297,12 +312,14 @@ static void SelectRunArgsCB(Widget, XtPointer, XtPointer call_data)
     Widget text_w = XmSelectionBoxGetChild(run_dialog, XmDIALOG_TEXT);
     XmTextSetString(text_w, XMST(args.chars()));
 }
+#endif // IF_MOTIF
 
 // Create `Run' dialog
-void gdbRunCB(Widget w, XtPointer, XtPointer)
+void gdbRunCB(CB_ARG_LIST_1(w))
 {
     if (run_dialog == 0)
     {
+#ifdef IF_MOTIF
 	Arg args[10];
 	int arg = 0;
 
@@ -312,12 +329,21 @@ void gdbRunCB(Widget w, XtPointer, XtPointer)
 					   args, arg));
 	XtUnmanageChild(XmSelectionBoxGetChild(run_dialog, 
 					       XmDIALOG_APPLY_BUTTON));
+#else // NOT IF_MOTIF
+	run_dialog = new Gtk::Dialog(XMST("run_dialog"), *find_shell(w));
+#endif // IF_MOTIF
 
 	Delay::register_shell(run_dialog);
+#ifdef IF_MOTIF
 	XtAddCallback(run_dialog, XmNokCallback,     gdbRunDCB, 0);
 	XtAddCallback(run_dialog, XmNapplyCallback,  gdbRunDCB, 0);
 	XtAddCallback(run_dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
+#else // NOT IF_MOTIF
+	Gtk::Button *button = run_dialog->add_button(Glib::ustring("Run"), 0);
+	button->signal_clicked().connect(PTR_FUN(gdbRunDCB));
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
 	run_arguments_w = XmSelectionBoxGetChild(run_dialog, XmDIALOG_LIST);
 	XtAddCallback(run_arguments_w, XmNsingleSelectionCallback,
 		      SelectRunArgsCB, 0);
@@ -327,6 +353,11 @@ void gdbRunCB(Widget w, XtPointer, XtPointer)
 		      SelectRunArgsCB, 0);
 	XtAddCallback(run_arguments_w, XmNbrowseSelectionCallback,
 		      SelectRunArgsCB, 0);
+#else // NOT IF_MOTIF
+	run_arguments_w = new Gtk::ComboBoxEntryText();
+	run_arguments_w->show();
+	run_dialog->get_vbox()->add(*run_arguments_w);
+#endif // IF_MOTIF
     }
 
     update_run_arguments();
@@ -338,6 +369,7 @@ void gdbRunCB(Widget w, XtPointer, XtPointer)
 // Make Dialog
 //-----------------------------------------------------------------------------
 
+#ifdef IF_MOTIF
 // Set program arguments from list
 static void SelectMakeArgsCB(Widget, XtPointer, XtPointer call_data)
 {
@@ -348,31 +380,38 @@ static void SelectMakeArgsCB(Widget, XtPointer, XtPointer call_data)
     Widget text_w = XmSelectionBoxGetChild(make_dialog, XmDIALOG_TEXT);
     XmTextSetString(text_w, XMST(args.chars()));
 }
+#endif // IF_MOTIF
 
 // Make program with given arguments
-static void gdbMakeDCB(Widget, XtPointer, XtPointer)
+static void gdbMakeDCB(CB_ARG_LIST_NULL)
 {
+#ifdef IF_MOTIF
     Widget text = XmSelectionBoxGetChild(make_dialog, XmDIALOG_TEXT);
     String _args = XmTextGetString(text);
     string args(_args);
     XtFree(_args);
+#else // NOT IF_MOTIF
+    Glib::ustring _args = make_arguments_w->get_entry()->get_text();
+    string args(_args.c_str());
+#endif // IF_MOTIF
 
     gdb_command(gdb->make_command(args));
 }
 
-void gdbMakeAgainCB(Widget, XtPointer, XtPointer)
+void gdbMakeAgainCB(CB_ARG_LIST_NULL)
 {
     gdb_command(gdb->make_command(last_make_argument));
 }
 
 // Create `Make' dialog
-void gdbMakeCB(Widget w, XtPointer, XtPointer)
+void gdbMakeCB(CB_ARG_LIST_1(w))
 {
     if (!gdb->has_make_command())
 	return;
 
     if (make_dialog == 0)
     {
+#ifdef IF_MOTIF
 	Arg args[10];
 	int arg = 0;
 
@@ -382,12 +421,21 @@ void gdbMakeCB(Widget w, XtPointer, XtPointer)
 					   args, arg));
 	XtUnmanageChild(XmSelectionBoxGetChild(make_dialog, 
 					       XmDIALOG_APPLY_BUTTON));
+#else // NOT IF_MOTIF
+	make_dialog = new Gtk::Dialog(XMST("make_dialog"), *find_shell(w));
+#endif // IF_MOTIF
 
 	Delay::register_shell(make_dialog);
+#ifdef IF_MOTIF
 	XtAddCallback(make_dialog, XmNokCallback,     gdbMakeDCB, 0);
 	XtAddCallback(make_dialog, XmNapplyCallback,  gdbMakeDCB, 0);
 	XtAddCallback(make_dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
+#else // NOT IF_MOTIF
+	Gtk::Button *button = make_dialog->add_button(Glib::ustring("Make"), 0);
+	button->signal_clicked().connect(PTR_FUN(gdbMakeDCB));
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
 	make_arguments_w = XmSelectionBoxGetChild(make_dialog, XmDIALOG_LIST);
 	XtAddCallback(make_arguments_w, XmNsingleSelectionCallback,
 		      SelectMakeArgsCB, 0);
@@ -397,6 +445,12 @@ void gdbMakeCB(Widget w, XtPointer, XtPointer)
 		      SelectMakeArgsCB, 0);
 	XtAddCallback(make_arguments_w, XmNbrowseSelectionCallback,
 		      SelectMakeArgsCB, 0);
+#else // NOT IF_MOTIF
+	make_arguments_w = new Gtk::ComboBoxEntryText();
+	make_arguments_w->show();
+	make_dialog->get_vbox()->add(*make_arguments_w);
+#endif // IF_MOTIF
+
     }
 
     update_make_arguments();
@@ -409,6 +463,7 @@ void gdbMakeCB(Widget w, XtPointer, XtPointer)
 // CD Dialog
 //-----------------------------------------------------------------------------
 
+#ifdef IF_MOTIF
 // Set program arguments from list
 static void SelectChangeDirectoryArgsCB(Widget, XtPointer, XtPointer call_data)
 {
@@ -419,14 +474,20 @@ static void SelectChangeDirectoryArgsCB(Widget, XtPointer, XtPointer call_data)
     Widget text_w = XmSelectionBoxGetChild(cd_dialog, XmDIALOG_TEXT);
     XmTextSetString(text_w, XMST(args.chars()));
 }
+#endif // IF_MOTIF
 
 // ChangeDirectory program with given arguments
-static void gdbChangeDirectoryDCB(Widget, XtPointer, XtPointer)
+static void gdbChangeDirectoryDCB(CB_ARG_LIST_NULL)
 {
+#ifdef IF_MOTIF
     Widget text = XmSelectionBoxGetChild(cd_dialog, XmDIALOG_TEXT);
     String _args = XmTextGetString(text);
     string args(_args);
     XtFree(_args);
+#else // NOT IF_MOTIF
+    Glib::ustring _args = cd_arguments_w->get_entry()->get_text();
+    string args(_args.c_str());
+#endif // IF_MOTIF
 
     string path = source_view->full_path(args);
     switch (gdb->type()) {
@@ -443,10 +504,11 @@ static void gdbChangeDirectoryDCB(Widget, XtPointer, XtPointer)
 }
 
 // Create `ChangeDirectory' dialog
-void gdbChangeDirectoryCB(Widget w, XtPointer, XtPointer)
+void gdbChangeDirectoryCB(CB_ARG_LIST_1(w))
 {
     if (cd_dialog == 0)
     {
+#ifdef IF_MOTIF
 	Arg args[10];
 	int arg = 0;
 
@@ -456,12 +518,21 @@ void gdbChangeDirectoryCB(Widget w, XtPointer, XtPointer)
 					   args, arg));
 	XtUnmanageChild(XmSelectionBoxGetChild(cd_dialog, 
 					       XmDIALOG_APPLY_BUTTON));
+#else // NOT IF_MOTIF
+	cd_dialog = new Gtk::Dialog(XMST("cd_dialog"), *find_shell(w));
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
 	Delay::register_shell(cd_dialog);
 	XtAddCallback(cd_dialog, XmNokCallback,     gdbChangeDirectoryDCB, 0);
 	XtAddCallback(cd_dialog, XmNapplyCallback,  gdbChangeDirectoryDCB, 0);
 	XtAddCallback(cd_dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
+#else // NOT IF_MOTIF
+	Gtk::Button *button = cd_dialog->add_button(Glib::ustring("Change"), 0);
+	button->signal_clicked().connect(PTR_FUN(gdbChangeDirectoryDCB));
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
 	cd_arguments_w = XmSelectionBoxGetChild(cd_dialog, XmDIALOG_LIST);
 	XtAddCallback(cd_arguments_w, XmNsingleSelectionCallback,
 		      SelectChangeDirectoryArgsCB, 0);
@@ -471,6 +542,7 @@ void gdbChangeDirectoryCB(Widget w, XtPointer, XtPointer)
 		      SelectChangeDirectoryArgsCB, 0);
 	XtAddCallback(cd_arguments_w, XmNbrowseSelectionCallback,
 		      SelectChangeDirectoryArgsCB, 0);
+#endif // IF_MOTIF
 
 	add_argument("..", cd_arguments, last_cd_argument, 
 		     cd_arguments_updated);
@@ -484,10 +556,10 @@ void gdbChangeDirectoryCB(Widget w, XtPointer, XtPointer)
 // `run' arguments
 //-----------------------------------------------------------------------------
 
-static void RestartAndRunCB(Widget w, 
-			    XtPointer client_data, XtPointer call_data)
+static void RestartAndRunCB(CB_ALIST_12(Widget w, 
+					XtPointer client_data))
 {
-    RestartDebuggerCB(w, client_data, call_data);
+    RestartDebuggerCB(CB_ARGS_NULL);
 
     const string& cmd = *((const string *)client_data);
     gdb_command(cmd, w);
@@ -524,6 +596,7 @@ bool add_running_arguments(string& cmd, Widget origin)
 
 	if (restart_jdb == 0)
 	{
+#ifdef IF_MOTIF
 	    restart_jdb = 
 		verify(XmCreateQuestionDialog(find_shell(origin),
 				 XMST("confirm_restart_gdb_dialog"), 
@@ -533,10 +606,15 @@ bool add_running_arguments(string& cmd, Widget origin)
 			  ImmediateHelpCB, XtPointer(0));
 	    XtAddCallback(restart_jdb, XmNokCallback,     
 			  RestartAndRunCB, (XtPointer)&saved_run_command);
+#else // NOT IF_MOTIF
+	    std::cerr << "JDB: not supported yet\n";
+#endif // IF_MOTIF
 	}
 
 	saved_run_command = cmd;
+#ifdef IF_MOTIF
 	XtManageChild(restart_jdb);
+#endif // IF_MOTIF
 
 	return false;		// Don't perform the command yet
     }

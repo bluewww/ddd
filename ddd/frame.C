@@ -29,6 +29,8 @@
 char frame_rcsid[] = 
     "$Id$";
 
+#include "config.h"
+
 #include "frame.h"
 #include "bool.h"
 #include "XErrorB.h"

@@ -31,7 +31,17 @@
 
 #include "strclass.h"
 #include "bool.h"
+
+#ifdef IF_MOTIF
+
 #include <X11/Intrinsic.h>
+
+#endif // IF_MOTIF
+
+#include "gtk_wrapper.h"
+
+#include "BindingS.h" // for BindingType
+#include "GDBAgent.h" // for DebuggerType
 
 // Options
 
@@ -67,80 +77,116 @@ bool get_restart_commands(string& restart, unsigned long flags);
 void check_options_file();
 
 // Lots and lots of callbacks
-extern void sourceToggleFindWordsOnlyCB     (Widget, XtPointer, XtPointer);
-extern void sourceToggleFindCaseSensitiveCB (Widget, XtPointer, XtPointer);
-extern void sourceToggleCacheSourceFilesCB  (Widget, XtPointer, XtPointer);
-extern void sourceToggleCacheMachineCodeCB  (Widget, XtPointer, XtPointer);
-extern void sourceToggleDisplayLineNumbersCB(Widget, XtPointer, XtPointer);
-extern void sourceSetIntRegistersCB         (Widget, XtPointer, XtPointer);
-extern void sourceSetAllRegistersCB         (Widget, XtPointer, XtPointer);
-extern void sourceSetDisplayGlyphsCB        (Widget, XtPointer, XtPointer);
-extern void sourceSetUseSourcePathCB        (Widget, XtPointer, XtPointer);
-extern void sourceSetTabWidthCB             (Widget, XtPointer, XtPointer);
-extern void sourceSetSourceIndentCB 	    (Widget, XtPointer, XtPointer);
-extern void sourceSetCodeIndentCB 	    (Widget, XtPointer, XtPointer);
+extern void sourceToggleFindWordsOnlyCB     (CB_ARG_LIST_TOGGLE(,));
+extern void sourceToggleFindCaseSensitiveCB (CB_ARG_LIST_TOGGLE(,));
+extern void sourceToggleCacheSourceFilesCB  (CB_ARG_LIST_TOGGLE(,));
+extern void sourceToggleCacheMachineCodeCB  (CB_ARG_LIST_TOGGLE(,));
+extern void sourceToggleDisplayLineNumbersCB(CB_ARG_LIST_TOGGLE(,));
+extern void sourceSetIntRegistersCB         (CB_ARG_LIST_TOGGLE(,));
+extern void sourceSetAllRegistersCB         (CB_ARG_LIST_TOGGLE(,));
+extern void sourceSetDisplayGlyphsCB        (CB_ARG_LIST_2());
+extern void sourceSetUseSourcePathCB        (CB_ARG_LIST_2());
+#ifdef IF_MOTIF
+extern void sourceSetTabWidthCB             (CB_ARG_LIST_3());
+extern void sourceSetSourceIndentCB 	    (CB_ARG_LIST_3());
+extern void sourceSetCodeIndentCB 	    (CB_ARG_LIST_3());
+#else // NOT IF_MOTIF
+extern void sourceSetTabWidthCB             (RANGE_P);
+extern void sourceSetSourceIndentCB 	    (RANGE_P);
+extern void sourceSetCodeIndentCB 	    (RANGE_P);
+#endif // IF_MOTIF
 
-extern void graphToggleDetectAliasesCB      (Widget, XtPointer, XtPointer);
-extern void graphToggleAlign2dArraysCB      (Widget, XtPointer, XtPointer);
-extern void graphToggleShowGridCB           (Widget, XtPointer, XtPointer);
-extern void graphToggleShowHintsCB          (Widget, XtPointer, XtPointer);
-extern void graphToggleSnapToGridCB         (Widget, XtPointer, XtPointer);
-extern void graphToggleCompactLayoutCB      (Widget, XtPointer, XtPointer);
-extern void graphToggleAutoLayoutCB         (Widget, XtPointer, XtPointer);
-extern void graphToggleAutoCloseCB          (Widget, XtPointer, XtPointer);
-extern void graphToggleShowAnnotationsCB    (Widget, XtPointer, XtPointer);
-extern void graphToggleShowDependentTitlesCB(Widget, XtPointer, XtPointer);
-extern void graphToggleClusterDisplaysCB    (Widget, XtPointer, XtPointer);
-extern void graphSetGridSizeCB              (Widget, XtPointer, XtPointer);
-extern void graphSetDisplayPlacementCB      (Widget, XtPointer, XtPointer);
+extern void graphToggleDetectAliasesCB      (CB_ARG_LIST_TOGGLE(,));
+extern void graphToggleAlign2dArraysCB      (CB_ARG_LIST_TOGGLE(,));
+extern void graphToggleShowGridCB           (CB_ARG_LIST_TOGGLE(,));
+extern void graphToggleShowHintsCB          (CB_ARG_LIST_TOGGLE(,));
+extern void graphToggleSnapToGridCB         (CB_ARG_LIST_TOGGLE(,));
+extern void graphToggleCompactLayoutCB      (CB_ARG_LIST_TOGGLE(,));
+extern void graphToggleAutoLayoutCB         (CB_ARG_LIST_TOGGLE(,));
+extern void graphToggleAutoCloseCB          (CB_ARG_LIST_TOGGLE(,));
+extern void graphToggleShowAnnotationsCB    (CB_ARG_LIST_TOGGLE(,));
+extern void graphToggleShowDependentTitlesCB(CB_ARG_LIST_TOGGLE(,));
+extern void graphToggleClusterDisplaysCB    (CB_ARG_LIST_TOGGLE(,));
+#ifdef IF_MOTIF
+extern void graphSetGridSizeCB              (CB_ARG_LIST_3());
+extern void graphSetDisplayPlacementCB      (CB_ARG_LIST_23(,));
+#else // NOT IF_MOTIF
+extern void graphSetGridSizeCB              (RANGE_P);
+extern void graphSetDisplayPlacementCB      (TOGGLEBUTTON_P w, XmOrientation);
+#endif // IF_MOTIF
 
-extern void dddToggleGroupIconifyCB         (Widget, XtPointer, XtPointer);
-extern void dddToggleUniconifyWhenReadyCB   (Widget, XtPointer, XtPointer);
-extern void dddToggleSeparateExecWindowCB   (Widget, XtPointer, XtPointer);
-extern void dddToggleCheckGrabsCB           (Widget, XtPointer, XtPointer);
-extern void dddToggleSaveHistoryOnExitCB    (Widget, XtPointer, XtPointer);
-extern void dddToggleSuppressWarningsCB     (Widget, XtPointer, XtPointer);
-extern void dddToggleWarnIfLockedCB         (Widget, XtPointer, XtPointer);
-extern void dddToggleSaveOptionsOnExitCB    (Widget, XtPointer, XtPointer);
+#ifdef IF_MOTIF
+extern void dddToggleGroupIconifyCB         (CB_ARG_LIST_3());
+extern void dddToggleUniconifyWhenReadyCB   (CB_ARG_LIST_3());
+extern void dddToggleSeparateExecWindowCB   (CB_ARG_LIST_3());
+extern void dddToggleCheckGrabsCB           (CB_ARG_LIST_3());
+extern void dddToggleSaveHistoryOnExitCB    (CB_ARG_LIST_3());
+extern void dddToggleSuppressWarningsCB     (CB_ARG_LIST_3());
+extern void dddToggleWarnIfLockedCB         (CB_ARG_LIST_3());
+extern void dddToggleSaveOptionsOnExitCB    (CB_ARG_LIST_3());
+#else // NOT IF_MOTIF
+extern void dddToggleGroupIconifyCB         (TOGGLEBUTTON_P);
+extern void dddToggleUniconifyWhenReadyCB   (TOGGLEBUTTON_P);
+extern void dddToggleSeparateExecWindowCB   (TOGGLEBUTTON_P);
+extern void dddToggleCheckGrabsCB           (TOGGLEBUTTON_P);
+extern void dddToggleSaveHistoryOnExitCB    (TOGGLEBUTTON_P);
+extern void dddToggleSuppressWarningsCB     (TOGGLEBUTTON_P);
+extern void dddToggleWarnIfLockedCB         (TOGGLEBUTTON_P);
+extern void dddToggleSaveOptionsOnExitCB    (TOGGLEBUTTON_P);
+#endif // IF_MOTIF
 
-extern void dddToggleButtonTipsCB           (Widget, XtPointer, XtPointer);
-extern void dddToggleValueTipsCB            (Widget, XtPointer, XtPointer);
-extern void dddToggleButtonDocsCB           (Widget, XtPointer, XtPointer);
-extern void dddToggleValueDocsCB            (Widget, XtPointer, XtPointer);
+extern void dddToggleButtonTipsCB           (CB_ARG_LIST_TOGGLE(,));
+extern void dddToggleValueTipsCB            (CB_ARG_LIST_TOGGLE(,));
+extern void dddToggleButtonDocsCB           (CB_ARG_LIST_TOGGLE(,));
+extern void dddToggleValueDocsCB            (CB_ARG_LIST_TOGGLE(,));
+#ifdef IF_MOTIF
+extern void dddToggleButtonCaptionsCB       (CB_ARG_LIST_13(,));
+extern void dddToggleButtonImagesCB         (CB_ARG_LIST_13(,));
+extern void dddToggleFlatButtonsCB          (CB_ARG_LIST_13(,));
+extern void dddToggleColorButtonsCB         (CB_ARG_LIST_13(,));
+extern void dddToggleToolbarsAtBottomCB     (CB_ARG_LIST_13(,));
+#else // NOT IF_MOTIF
+extern void dddToggleButtonCaptionsCB       (TOGGLEBUTTON_P);
+extern void dddToggleButtonImagesCB         (TOGGLEBUTTON_P);
+extern void dddToggleFlatButtonsCB          (TOGGLEBUTTON_P);
+extern void dddToggleColorButtonsCB         (TOGGLEBUTTON_P);
+extern void dddToggleToolbarsAtBottomCB     (TOGGLEBUTTON_P);
+#endif // IF_MOTIF
 
-extern void dddToggleButtonCaptionsCB       (Widget, XtPointer, XtPointer);
-extern void dddToggleButtonImagesCB         (Widget, XtPointer, XtPointer);
-extern void dddToggleFlatButtonsCB          (Widget, XtPointer, XtPointer);
-extern void dddToggleColorButtonsCB         (Widget, XtPointer, XtPointer);
-extern void dddToggleToolbarsAtBottomCB     (Widget, XtPointer, XtPointer);
+extern void dddSetCrashCB                   (CB_ALIST_2(XtP(long)));
+extern void dddClearMaintenanceCB           (CB_ALIST_NULL);
 
-extern void dddSetCrashCB                   (Widget, XtPointer, XtPointer);
-extern void dddClearMaintenanceCB           (Widget, XtPointer, XtPointer);
-
-extern void dddSetGlobalTabCompletionCB     (Widget, XtPointer, XtPointer);
-extern void dddSetSeparateWindowsCB         (Widget, XtPointer, XtPointer);
+extern void dddSetGlobalTabCompletionCB     (CB_ALIST_12(Widget, XtP(long)));
+extern void dddSetSeparateWindowsCB         (CB_ARG_LIST_12(,));
 extern void dddSetStatusAtBottomCB          (Widget, XtPointer, XtPointer);
-extern void dddSetToolBarCB                 (Widget, XtPointer, XtPointer);
-extern void dddSetKeyboardFocusPolicyCB     (Widget, XtPointer, XtPointer);
-extern void dddSetPannerCB                  (Widget, XtPointer, XtPointer);
-extern void dddSetDebuggerCB                (Widget, XtPointer, XtPointer);
-extern void dddToggleAutoDebuggerCB         (Widget, XtPointer, XtPointer);
-extern void dddSetCutCopyPasteBindingsCB    (Widget, XtPointer, XtPointer);
-extern void dddSetSelectAllBindingsCB       (Widget, XtPointer, XtPointer);
+extern void dddSetToolBarCB                 (CB_ARG_LIST_12(,));
+extern void dddSetKeyboardFocusPolicyCB     (CB_ARG_LIST_12(,));
+extern void dddSetPannerCB                  (CB_ARG_LIST_12(,));
+#ifdef IF_MOTIF
+extern void dddSetDebuggerCB                (CB_ARG_LIST_123(,,));
+extern void dddToggleAutoDebuggerCB         (CB_ARG_LIST_13(,));
+extern void dddSetCutCopyPasteBindingsCB    (CB_ARG_LIST_23(,));
+extern void dddSetSelectAllBindingsCB       (CB_ARG_LIST_23(,));
+#else // NOT IF_MOTIF
+extern void dddSetDebuggerCB                (TOGGLEBUTTON_P, DebuggerType);
+extern void dddToggleAutoDebuggerCB         (TOGGLEBUTTON_P);
+extern void dddSetCutCopyPasteBindingsCB    (TOGGLEBUTTON_P, BindingStyle);
+extern void dddSetSelectAllBindingsCB       (TOGGLEBUTTON_P, BindingStyle);
+#endif // IF_MOTIF
 
-extern void dddSetUndoBufferSizeCB          (Widget, XtPointer, XtPointer);
-extern void dddClearUndoBufferCB            (Widget, XtPointer, XtPointer);
+extern void dddSetUndoBufferSizeCB          (CB_ALIST_1(ENTRY_P));
+extern void dddClearUndoBufferCB            (CB_ARG_LIST_NULL);
 
-extern void dddSetEditCommandCB             (Widget, XtPointer, XtPointer);
-extern void dddSetPlotCommandCB             (Widget, XtPointer, XtPointer);
-extern void dddSetGetCoreCommandCB          (Widget, XtPointer, XtPointer);
-extern void dddSetPSCommandCB               (Widget, XtPointer, XtPointer);
-extern void dddSetTermCommandCB             (Widget, XtPointer, XtPointer);
-extern void dddSetUncompressCommandCB       (Widget, XtPointer, XtPointer);
-extern void dddSetWWWCommandCB              (Widget, XtPointer, XtPointer);
-extern void dddSetBuiltinPlotWindowCB       (Widget, XtPointer, XtPointer);
+extern void dddSetEditCommandCB             (CB_ALIST_1(ENTRY_P));
+extern void dddSetPlotCommandCB             (CB_ALIST_1(ENTRY_P));
+extern void dddSetGetCoreCommandCB          (CB_ALIST_1(ENTRY_P));
+extern void dddSetPSCommandCB               (CB_ALIST_1(ENTRY_P));
+extern void dddSetTermCommandCB             (CB_ALIST_1(ENTRY_P));
+extern void dddSetUncompressCommandCB       (CB_ALIST_1(ENTRY_P));
+extern void dddSetWWWCommandCB              (CB_ALIST_1(ENTRY_P));
+extern void dddSetBuiltinPlotWindowCB       (CB_ALIST_2(XtP(long)));
 
-extern void DDDSaveOptionsCB                (Widget, XtPointer, XtPointer);
+extern void DDDSaveOptionsCB                (CB_ALIST_12(Widget, XtP(unsigned long)));
 extern void DDDSaveOptionsAsCB              (Widget, XtPointer, XtPointer);
 
 #endif // _DDD_options_h

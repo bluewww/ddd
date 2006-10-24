@@ -30,9 +30,16 @@
 #ifndef _DDD_MString_h
 #define _DDD_MString_h
 
+#ifdef IF_MOTIF
+
 // An "MString" is but a C++ wrapper around Motif composite strings.
 
 #include <Xm/Xm.h>
+
+#endif // IF_MOTIF
+
+#include "gtk_wrapper.h"
+
 #include "strclass.h"
 #include "assert.h"
 #include "casts.h"
@@ -42,6 +49,8 @@
 #else
 #define MSTRING_DEFAULT_CHARSET XmSTRING_DEFAULT_CHARSET
 #endif
+
+#ifdef IF_MOTIF
 
 class MString {
 private:
@@ -213,7 +222,6 @@ public:
     Boolean OK() const;
 };
 
-
 // Concatenation
 inline MString operator + (const MString& m1, const MString& m2)
 {
@@ -230,6 +238,215 @@ inline MString operator + (const MString& m1, const MString& m2)
     XmStringFree(tmp);
     return ret;
 }
+
+#else // NOT IF_MOTIF
+
+// Note: Motif Compound String should really be mapped to a
+// Pango GlyphString?
+
+class MString {
+private:
+    XmString _mstring;		// Motif internals
+
+public:
+    // Constructors
+    MString():
+	_mstring()
+    {
+	assert(OK());
+    }
+
+    MString(const char *text,
+	    XmStringCharSet charset = MSTRING_DEFAULT_CHARSET):
+	_mstring(text)
+    {
+	assert(OK());
+    }
+
+    MString(const string& text,
+	    XmStringCharSet charset = MSTRING_DEFAULT_CHARSET):
+	_mstring(text.chars())
+    {
+	assert(OK());
+    }
+
+    // In Motif 1.1, `XmString' is defined as `char *'; hence the
+    // DUMMY parameter
+    MString(XmString text, bool /* dummy */):
+	_mstring(text)
+    {
+	assert(OK());
+    }
+
+    // Copy constructor
+    MString(const MString& m):
+	_mstring(m._mstring)
+    {
+	assert(m.OK());
+	assert(OK());
+    }
+
+    // Destructor
+    ~MString()
+    {
+	assert(OK());
+	// Nothing to do.
+    }
+
+    // Resources
+    Dimension baseline(XmFontList fontlist) const
+    {
+#ifdef NAG_ME
+#warning Implement MString::baseline!
+#endif
+	fprintf(stderr, "Implement MString::baseline!\n");
+	return 0;
+    }
+
+    Boolean isEmpty() const
+    {
+	return _mstring.empty();
+    }
+
+    Boolean isNull() const
+    {
+#ifdef NAG_ME
+#warning Cannot happen
+#endif
+	return False;
+    }
+
+    int lineCount() const
+    {
+	if (_mstring.empty()) return 0;
+	int lc = 1;
+	for (Glib::ustring::const_iterator i = _mstring.begin();
+	     i != _mstring.end();
+	     i++) {
+#ifdef NAG_ME
+#warning Unicode?
+#endif
+	    if (*i == '\n') lc++;
+	}
+	return lc;
+    }
+
+    void extent(Dimension& x, Dimension& y, XmFontList fontlist) const
+    {
+	Glib::RefPtr<Pango::Layout> lo = Pango::Layout::create(pango_context);
+	lo->set_text(_mstring);
+	lo->get_pixel_size(x, y);
+    }
+
+    Dimension height(XmFontList fontlist) const
+    {
+	int x, y;
+	Glib::RefPtr<Pango::Layout> lo = Pango::Layout::create(pango_context);
+	lo->set_text(_mstring);
+	lo->get_pixel_size(x, y);
+	return y;
+    }
+
+    Dimension width(XmFontList fontlist) const
+    {
+	int x, y;
+	Glib::RefPtr<Pango::Layout> lo = Pango::Layout::create(pango_context);
+	lo->set_text(_mstring);
+	lo->get_pixel_size(x, y);
+	return x;
+    }
+
+#ifdef NAG_ME
+#warning Does length() have a meaning for our strings?
+#endif
+
+#if 0
+    int length() const
+    {
+	return XmStringLength(_mstring);
+    }
+#endif
+
+    // Return all characters, regardless of charset
+    string str() const;
+
+    // Assignment
+    MString& operator = (const MString& m)
+    {
+	assert(OK());
+	assert(m.OK());
+
+	if ( this != &m ) { 
+	  _mstring = m._mstring;
+	}
+
+	return *this;
+    }
+
+    // Concatenation
+    MString& operator += (const MString& m)
+    {
+	assert(OK());
+	assert(m.OK());
+
+	_mstring = _mstring + m._mstring;
+
+	return *this;
+    }
+
+    MString& prepend(const MString& m)
+    {
+	assert(OK());
+	assert(m.OK());
+
+	_mstring = m._mstring + _mstring;
+
+	return *this;
+    }
+
+    // Comparison
+    Boolean operator == (const MString& m) const
+    {
+	assert(OK());
+	assert(m.OK());
+	return (_mstring == m._mstring);
+    }
+
+    Boolean operator != (const MString& m) const
+    {
+	assert(OK());
+	assert(m.OK());
+	return !(_mstring == m._mstring);
+    }
+
+    // Conversions
+    XmString xmstring() const { return _mstring; }
+
+    // Substrings
+    Boolean contains(const MString& m) const
+    {
+	assert(OK());
+	assert(m.OK());
+	return (_mstring.find(m._mstring) != GLIB_NOSTRING);
+    }
+
+    // Invariant
+    Boolean OK() const;
+};
+
+// Concatenation
+inline MString operator + (const MString& m1, const MString& m2)
+{
+    assert(m1.OK());
+    assert(m2.OK());
+
+    Glib::ustring tmp = m1.xmstring() + m2.xmstring();
+    MString ret(tmp, true);
+    return ret;
+}
+
+#endif // IF_MOTIF
+
 
 inline MString operator + (const MString& m, const char *s)
 {

@@ -30,7 +30,14 @@
 #define _DDD_ExitCB_h
 
 #include <stdlib.h>
+
+#ifdef IF_MOTIF
+
 #include <X11/Intrinsic.h>
+
+#endif // IF_MOTIF
+
+#include "gtk_wrapper.h"
 
 #ifndef EXIT_SUCCESS
 #define EXIT_SUCCESS 0
@@ -41,10 +48,10 @@
 #endif
 
 // Exit program
-extern void ExitCB(Widget, XtPointer, XtPointer);
+extern void ExitCB(CB_ALIST_2(XtP(long) status));
 
 // Restart program
-extern void RestartCB(Widget, XtPointer, XtPointer);
+extern void RestartCB(CB_ALIST_NULL);
 
 // Save argv
 extern void register_argv(const char * const argv[]);

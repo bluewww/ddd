@@ -29,11 +29,22 @@
 #ifndef _DDD_DeleteWindowCallBack_h
 #define _DDD_DeleteWindowCallBack_h
 
+#ifdef IF_MOTIF
+
 #include <X11/Intrinsic.h>
 
+#endif // IF_MOTIF
+
+#include "gtk_wrapper.h"
+
+#ifdef IF_MOTIF
 extern void AddDeleteWindowCallback(Widget shell,
 				    XtCallbackProc callback, 
 				    XtPointer closure = 0);
+#else // NOT IF_MOTIF
+extern void AddDeleteWindowCallback(Widget shell,
+				    GTK_SLOT_);
+#endif // IF_MOTIF
 
 #endif // _DDD_DeleteWindowCallBack_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

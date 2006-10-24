@@ -145,7 +145,7 @@ inline MString bs(const char *text)
 
 
 // Newline function
-#if XmVERSION == 1 && XmREVISION <= 1
+#if !defined(XmVERSION) || XmVERSION == 1 && XmREVISION <= 1
 inline MString cr() { return rm("\n"); }
 #else
 inline MString cr() 

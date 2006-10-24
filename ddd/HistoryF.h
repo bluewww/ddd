@@ -33,7 +33,13 @@
 #include "strclass.h"
 #include "Assoc.h"
 
+#ifdef IF_MOTIF
+
 #include <X11/Intrinsic.h>
+
+#endif // IF_MOTIF
+
+#include "gtk_wrapper.h"
 
 typedef string (*HistoryFilter)(const string& entry);
 

@@ -37,7 +37,7 @@ char Command_rcsid[] =
     "$Id$";
 
 #ifndef LOG_COMMAND_QUEUE
-#define LOG_COMMAND_QUEUE 0
+#define LOG_COMMAND_QUEUE 1
 #endif
 
 #include "Command.h"
@@ -59,6 +59,8 @@ char Command_rcsid[] =
 
 #include <ctype.h>
 #include <string.h>
+
+#ifdef IF_MOTIF
 #include <Xm/Xm.h>
 #include <Xm/Text.h>
 #include <X11/StringDefs.h>
@@ -67,6 +69,9 @@ char Command_rcsid[] =
 #ifdef XtIsRealized
 #undef XtIsRealized
 #endif
+#else // NOT IF_MOTIF
+#include "gtk_wrapper.h"
+#endif // IF_MOTIF
 
 // Origin of last command
 static Widget gdb_last_origin;
@@ -120,11 +125,20 @@ void strip_auto_command_prefix(string& cmd)
 // GDB command management
 //-----------------------------------------------------------------------------
 
+#ifdef IF_MOTIF
 static void ClearOriginCB(Widget w, XtPointer, XtPointer)
 {
     if (gdb_last_origin == w)
 	gdb_last_origin = 0;
 }
+#else // NOT IF_MOTIF
+static void *ClearOriginCB(void *w)
+{
+    if (gdb_last_origin == (Widget)w)
+	gdb_last_origin = 0;
+    return NULL;
+}
+#endif // IF_MOTIF
 
 // Translate frequently used commands
 void translate_command(string& command)
@@ -208,7 +222,7 @@ void translate_command(string& command)
 }
 
 #if LOG_COMMAND_QUEUE
-static ostream& operator<<(ostream& os, const Command& c)
+static std::ostream& operator<<(std::ostream& os, const Command& c)
 {
     os << quote(c.command) << "<" << c.priority << ">";
     if (!c.start_undo)
@@ -224,7 +238,7 @@ static ostream& operator<<(ostream& os, const Command& c)
 static bool processing_gdb_commands = false;
 
 // Non-zero in the first 200ms after continuing
-static XtIntervalId continuing = 0;
+static XtIntervalId continuing = NO_TIMER;
 
 // True when interrupting running command
 static bool interrupting = false;
@@ -236,12 +250,13 @@ static Command current_gdb_command("echo");
 static Command running_gdb_command("run");
 
 
-static void ClearContinuingCB(XtPointer, XtIntervalId *)
+TIMEOUT_RETURN_TYPE ClearContinuingCB(TIMEOUT_ARG_LIST(,))
 {
     // std::clog << "Continuing...done.\n";
 
-    continuing = 0;
+    continuing = NO_TIMER;
     processCommandQueue();
+    return MAYBE_FALSE;
 }
 
 // Process command C; do it right now.
@@ -266,7 +281,11 @@ static void _do_gdb_command(const Command& c, bool is_command = true)
 
 	if (cmd.length() == 1 && iscntrl(cmd[0]))
 	{
+#ifdef IF_MOTIF
 	    promptPosition = messagePosition = XmTextGetLastPosition(gdb_w);
+#else // NOT IF_MOTIF
+	    promptPosition = messagePosition = gdb_w->get_last_position();
+#endif // IF_MOTIF
 	}
 	else if (cmd.length() > 0 && c.echo)
 	{
@@ -294,20 +313,34 @@ static void _do_gdb_command(const Command& c, bool is_command = true)
     if (is_command)
 	current_gdb_command = c;
 
+#ifdef IF_MOTIF
     gdb_keyboard_command = private_gdb_input;
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning gdb_keyboard_command not used
+#endif
+#endif // IF_MOTIF
 
     if (gdb_last_origin != 0)
     {
+#ifdef IF_MOTIF
 	XtRemoveCallback(gdb_last_origin, XtNdestroyCallback, 
 			 ClearOriginCB, 0);
+#else // NOT IF_MOTIF
+	gdb_last_origin->remove_destroy_notify_callback(gdb_last_origin);
+#endif // IF_MOTIF
     }
 
     gdb_last_origin = find_shell(gdb_keyboard_command ? gdb_w : c.origin);
 
     if (gdb_last_origin != 0)
     {
+#ifdef IF_MOTIF
 	XtAddCallback(gdb_last_origin, XtNdestroyCallback, 
 		      ClearOriginCB, 0);
+#else // NOT IF_MOTIF
+	gdb_last_origin->add_destroy_notify_callback(gdb_last_origin, ClearOriginCB);
+#endif // IF_MOTIF
     }
 
     translate_command(cmd);
@@ -326,7 +359,11 @@ static void _do_gdb_command(const Command& c, bool is_command = true)
 			 c.echo, c.verbose, c.prompt, c.check, c.start_undo);
     }
 
+#ifdef IF_MOTIF
     messagePosition = XmTextGetLastPosition(gdb_w);
+#else // NOT IF_MOTIF
+    messagePosition = gdb_w->get_last_position();
+#endif // IF_MOTIF
 
     processing_gdb_commands = saved_processing_gdb_commands;
 }
@@ -343,7 +380,7 @@ bool can_do_gdb_command()
     if (gdb_prompts_y_or_n())
 	return false;		// GDB prompts
 
-    if (app_data.stop_and_continue && !gdb->recording() && !continuing)
+    if (app_data.stop_and_continue && !gdb->recording() && continuing == NO_TIMER)
     {
 	if (is_cont_cmd(current_gdb_command.command))
 	    return true;	// We can interrupt `run' and `cond'
@@ -433,12 +470,22 @@ static void do_gdb_command(Command& given_c, bool is_command = true)
 	    else
 		timeout = app_data.cont_interrupt_delay;
 
-	    if (continuing)
+	    if (continuing != NO_TIMER) {
+#ifdef IF_MOTIF
 		XtRemoveTimeOut(continuing);
+#else // NOT IF_MOTIF
+		continuing.disconnect();
+#endif // IF_MOTIF
+	    }
 
+#ifdef IF_MOTIF
 	    continuing = 
 		XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 
 				timeout, ClearContinuingCB, XtPointer(0));
+#else // NOT IF_MOTIF
+	    continuing = 
+		Glib::signal_timeout().connect(PTR_FUN(ClearContinuingCB), timeout);
+#endif // IF_MOTIF
 
 	    // std::clog << "Continuing...\n";
 	}
@@ -449,7 +496,7 @@ static void do_gdb_command(Command& given_c, bool is_command = true)
 	     !gdb->recording() &&
 	     !gdb_prompts_y_or_n() &&
 	     is_cont_cmd(current_gdb_command.command) &&
-	     !continuing &&
+	     continuing == NO_TIMER &&
 	     !interrupting)
     {
 #if LOG_COMMAND_QUEUE
@@ -531,18 +578,29 @@ bool CommandGroup::first_command = true;
 
 void Command::add_destroy_callback()
 {
-    if (origin != 0)
+    if (origin != 0) {
+#ifdef IF_MOTIF
 	XtAddCallback(origin, XtNdestroyCallback, clear_origin, 
 		      (XtPointer)this);
+#else // NOT IF_MOTIF
+	origin->add_destroy_notify_callback(this, clear_origin);
+#endif // IF_MOTIF
+    }
 }
 
 void Command::remove_destroy_callback()
 {
-    if (origin != 0)
+    if (origin != 0) {
+#ifdef IF_MOTIF
 	XtRemoveCallback(origin, XtNdestroyCallback, clear_origin,
 			 (XtPointer)this);
+#else // NOT IF_MOTIF
+	origin->remove_destroy_notify_callback(this);
+#endif // IF_MOTIF
+    }
 }
 
+#ifdef IF_MOTIF
 void Command::clear_origin(Widget w, XtPointer client_data, XtPointer)
 {
     (void) w;			// Use it
@@ -552,6 +610,15 @@ void Command::clear_origin(Widget w, XtPointer client_data, XtPointer)
     assert(w == command->origin);
     command->origin = 0;
 }
+#else // NOT IF_MOTIF
+void *Command::clear_origin(void *client_data)
+{
+    // The widget is being destroyed.  Remove all references.
+    Command *command = (Command *)client_data;
+    command->origin = 0;
+    return NULL;
+}
+#endif // IF_MOTIF
 
 typedef Queue<Command> CommandQueue;
 typedef QueueIter<Command> CommandQueueIter;
@@ -559,8 +626,10 @@ typedef QueueIter<Command> CommandQueueIter;
 static CommandQueue commandQueue;
 
 #if LOG_COMMAND_QUEUE
-static ostream& operator<<(ostream& os, const CommandQueue& queue)
+static std::ostream& operator<<(std::ostream& os, const CommandQueue& queue)
 {
+    os << &queue;
+    return os;
     os << "[";
     bool first = true;
     for (CommandQueueIter i = queue; i.ok(); i = i.next())
@@ -675,10 +744,12 @@ void gdb_command(const Command& c0)
     gdb_enqueue_command(c);
 }
 
-static XtIntervalId process_timeout = 0;
+static XtIntervalId process_timeout = NO_TIMER;
 
 static void gdb_enqueue_command(const Command& c)
 {
+    std::cerr << "gdb_enqueue_command(" << c.command << ")\n";
+
     if (c.verbose)
     {
 	string title = c.command;
@@ -726,22 +797,30 @@ static void gdb_enqueue_command(const Command& c)
     std::clog << "Command queue: " << commandQueue << "\n";
 #endif
 
-    if (process_timeout == 0)
+    if (process_timeout == NO_TIMER)
     {
 	// Be sure to process the new command queue
+#ifdef IF_MOTIF
 	process_timeout = 
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 
 			    200, processCommandQueue, XtPointer(0));
+#else // NOT IF_MOTIF
+	process_timeout = 
+	    Glib::signal_timeout().connect(PTR_FUN(processCommandQueue), 200);
+#endif // IF_MOTIF
     }
 }
 
-void processCommandQueue(XtPointer, XtIntervalId *id)
+TIMEOUT_RETURN_TYPE
+processCommandQueue(TIMEOUT_ARG_LIST(, id))
 {
+#ifdef IF_MOTIF
     if (id != 0)
-	process_timeout = 0;		// Called by timeout
+	process_timeout = NO_TIMER;		// Called by timeout
+#endif // IF_MOTIF
 
     if (emptyCommandQueue())
-	return;
+	return MAYBE_FALSE;
 
     if (can_do_gdb_command())
     {
@@ -757,13 +836,17 @@ void processCommandQueue(XtPointer, XtIntervalId *id)
 #endif
     }
 
-    if (process_timeout == 0)
+#ifdef IF_MOTIF
+    if (process_timeout == NO_TIMER)
     {
 	// Check again later...
 	process_timeout = 
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 
 			    200, processCommandQueue, XtPointer(0));
     }
+#else // NOT IF_MOTIF
+    return true;
+#endif // IF_MOTIF
 }
 
 // Wait for command queue to drain
@@ -791,29 +874,39 @@ void syncCommandQueue()
 	process_emergencies();
 
 	// Process input from GDB
+#ifdef IF_MOTIF
 	XtAppProcessEvent(XtWidgetToApplicationContext(command_shell),
 			  XtIMTimer | XtIMAlternateInput);
+#else // NOT IF_MOTIF
+	Glib::MainContext::get_default()->iteration(false);
+#endif // IF_MOTIF
     }
 
     app_data.stop_and_continue = saved_stop_and_continue;
 }
 
 // Shell finder
-Widget find_shell(Widget w)
+WINDOW_P find_shell(Widget w)
 {
     if (w == 0)
 	w = gdb_last_origin;
     if (w == 0)
 	return command_shell;
 
-    Widget parent = findTopLevelShellParent(w);
+    WINDOW_P parent = findTopLevelShellParent(w);
     if (parent == 0 || !XtIsRealized(parent))
 	return command_shell;
 
+#ifdef IF_MOTIF
     XWindowAttributes xwa;
     XGetWindowAttributes(XtDisplay(parent), XtWindow(parent), &xwa);
     if (xwa.map_state != IsViewable)
 	return command_shell;
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning IsViewable attribute?
+#endif
+#endif // IF_MOTIF
 
     return parent;
 }

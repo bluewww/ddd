@@ -29,7 +29,14 @@
 #ifndef _DDD_WidgetStringAssoc_h
 #define _DDD_WidgetStringAssoc_h
 
+#ifdef IF_MOTIF
+
 #include <X11/Intrinsic.h>
+
+#else // NOT IF_MOTIF
+
+#endif // IF_MOTIF
+
 #include "Assoc.h"
 #include "strclass.h"
 

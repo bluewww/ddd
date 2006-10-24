@@ -30,6 +30,8 @@
 #ifndef _DDD_PannedGraphEditPrivate_h
 #define _DDD_PannedGraphEditPrivate_h
 
+#ifdef IF_MOTIF
+
 #include <Xm/Xm.h>
 
 // Superclasses
@@ -42,6 +44,10 @@ extern "C" {
 }
 #undef new
 #undef class
+
+#else // NOT IF_MOTIF
+
+#endif // IF_MOTIF
 
 // This class
 #include "PannedGE.h"

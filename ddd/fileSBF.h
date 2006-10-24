@@ -29,7 +29,16 @@
 #ifndef _DDD_fileSelectionBoxFilename_h
 #define _DDD_fileSelectionBoxFilename_h
 
+#ifdef IF_MOTIF
+
 #include <Xm/Xm.h>
+
+#else // NOT IF_MOTIF
+
+#include "gtk_wrapper.h"
+
+#endif // IF_MOTIF
+
 #include "strclass.h"
 
 extern string fileSelectionBoxFilename(XtPointer call_data);

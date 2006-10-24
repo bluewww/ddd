@@ -30,8 +30,10 @@ char PrimitiveBox_rcsid[] =
     "$Id$";
 
 #include "PrimitiveB.h"
+#ifdef IF_MOTIF
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
+#endif // IF_MOTIF
 #include "strclass.h"
 #include "printBox.h"
 
@@ -60,20 +62,35 @@ void RuleBox::_draw(Widget w,
     if (width[Y] == 1)
     {
 	// Horizontal line
+#ifdef IF_MOTIF
 	XDrawLine(XtDisplay(w), XtWindow(w), gc,
 		  origin[X], origin[Y], origin[X] + width[X], origin[Y]);
+#else // NOT IF_MOTIF
+	w->get_window()->draw_line(gc, origin[X], origin[Y],
+				   origin[X] + width[X], origin[Y]);
+#endif // IF_MOTIF
     }
     else if (width[X] == 1)
     {
 	// Vertical line
+#ifdef IF_MOTIF
 	XDrawLine(XtDisplay(w), XtWindow(w), gc,
 		  origin[X], origin[Y], origin[X], origin[Y] + width[Y]);
+#else // NOT IF_MOTIF
+	w->get_window()->draw_line(gc, origin[X], origin[Y],
+				   origin[X], origin[Y] + width[Y]);
+#endif // IF_MOTIF
     }
     else
     {
 	// Rectangle
+#ifdef IF_MOTIF
 	XFillRectangle(XtDisplay(w), XtWindow(w), gc, origin[X], origin[Y],
 		       width[X], width[Y]);
+#else // NOT IF_MOTIF
+	w->get_window()->draw_rectangle(gc, true, origin[X], origin[Y],
+					width[X], width[Y]);
+#endif // IF_MOTIF
     }
 }
 

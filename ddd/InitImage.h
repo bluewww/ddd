@@ -29,21 +29,35 @@
 #ifndef _DDD_InitImage_h
 #define _DDD_InitImage_h
 
+#ifdef IF_MOTIF
+
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
 
+#endif // IF_MOTIF
+
+#include "gtk_wrapper.h"
+
 // Initialize IMAGE
-extern void InitImage(XImage *image);
+extern void InitImage(XIMAGE_P image);
 
 // Create IMAGE from bitmap source
-extern XImage *CreateImageFromBitmapData(unsigned char *bits,
-					 int width, int height);
+extern XIMAGE_P CreateImageFromBitmapData(unsigned char *bits,
+					  int width, int height);
 
 // Install IMAGE in Motif cache
-Boolean InstallImage(XImage *image, const char *name);
+#ifdef IF_MOTIF
+Boolean InstallImage(XIMAGE_P image, const char *name);
+#else // NOT IF_MOTIF
+Boolean InstallImage(XIMAGE_P image, XIMAGE_P *pointer);
+#endif // IF_MOTIF
 
 // Install bitmap in Motif cache
+#ifdef IF_MOTIF
 Boolean InstallBitmap(unsigned char *bits, int width, int height, const char *name);
+#else // NOT IF_MOTIF
+Boolean InstallBitmap(unsigned char *bits, int width, int height, XIMAGE_P *name);
+#endif // IF_MOTIF
 
 #endif // _DDD_InitImage_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

@@ -65,6 +65,8 @@ char exit_rcsid[] =
 // W. QUOCK, San Mateo, California
 // Communications of the ACM, August 1997/Vol.40, No. 8, p. 31
 
+#include "config.h"
+
 #include "exit.h"
 
 #include "AgentM.h"
@@ -77,7 +79,9 @@ char exit_rcsid[] =
 #include "charsets.h"
 #include "Command.h"
 #include "cmdtty.h"
+#ifdef IF_MOTIF
 #include "converters.h"
+#endif // IF_MOTIF
 #include "ddd.h"
 #include "exectty.h"
 #include "findParent.h"
@@ -110,10 +114,12 @@ char exit_rcsid[] =
 #include <stdlib.h>
 #include <stdio.h>
 
+#ifdef IF_MOTIF
 #include <Xm/Xm.h>
 #include <Xm/MessageB.h>
 #include <Xm/PushB.h>
 #include <Xm/Text.h>
+#endif // IF_MOTIF
 
 #if HAVE_RAISE
 #if !HAVE_RAISE_DECL
@@ -147,8 +153,7 @@ bool ddd_is_shutting_down = false;
 // True if DDD has crashed and needs restarting
 bool ddd_has_crashed = false;
 
-static void DDDDoneAnywayCB(Widget w, XtPointer client_data, 
-			    XtPointer call_data);
+static void DDDDoneAnywayCB(CB_ALIST_12(Widget w, XtP(long) client_data));
 
 //-----------------------------------------------------------------------------
 // General clean-up actions before exiting DDD
@@ -167,19 +172,23 @@ void ddd_cleanup()
         save_options(SAVE_DEFAULT);
     }
 
+#ifdef IF_MOTIF
     if (!ddd_is_restarting)
     {
         // Delete restart session, if any
         delete_session(restart_session(), true);
         set_restart_session();
     }
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     if (!ddd_is_shutting_down)
     {
       // If current session is temporary, delete it
       if (is_temporary_session(app_data.session))
 	  delete_session(app_data.session);
     }
+#endif // IF_MOTIF
 
     kill_exec_tty();
     kill_command_tty();
@@ -294,14 +303,18 @@ static void post_fatal(const string& title, const string& cause,
 {
     (void) core_dumped;		// Use it
 
-    static Widget fatal_dialog = 0;
+    static DIALOG_P fatal_dialog = 0;
 
 #if DEBUG_BUTTON
-    static Widget debug = 0;
+    static BUTTON_P debug = 0;
+#endif
+#ifndef IF_MOTIF
+    static Gtk::Label *label = 0;
 #endif
 
     if (fatal_dialog == 0)
     {
+#ifdef IF_MOTIF
 	fatal_dialog = verify(XmCreateErrorDialog (find_shell(),
 						   XMST("fatal_dialog"), 
 						   0, 0));
@@ -324,6 +337,23 @@ static void post_fatal(const string& title, const string& cause,
 #endif
 
 #endif
+#else // NOT IF_MOTIF
+	fatal_dialog = new Gtk::Dialog(XMST("fatal_dialog"), *find_shell());
+	Delay::register_shell(fatal_dialog);
+
+	Gtk::Button *button;
+	button = fatal_dialog->add_button(XMST("Restart"), 0);
+	button->signal_clicked().connect(sigc::bind(PTR_FUN(DDDRestartCB), button));
+	button = fatal_dialog->add_button(XMST("Exit"), 0);
+	button->signal_clicked().connect(sigc::bind(PTR_FUN(DDDExitCB), button, EXIT_FAILURE));
+#if DEBUG_BUTTON
+	debug = fatal_dialog->add_button(XMST("Debug"), 0);
+	debug->signal_activate().connect(sigc::bind(PTR_FUN(DDDDebugCB), EXIT_FAILURE));
+#endif
+	label = new Gtk::Label();
+	fatal_dialog->get_vbox()->pack_start(*label, Gtk::PACK_SHRINK);
+	label->show();
+#endif // IF_MOTIF
     }
 
 #if DEBUG_BUTTON
@@ -333,22 +363,38 @@ static void post_fatal(const string& title, const string& cause,
 	XtUnmanageChild(debug);
 #endif
 
+#ifdef IF_MOTIF
     defineConversionMacro("CLASS", cls.chars());
     defineConversionMacro("TITLE", title.chars());
     defineConversionMacro("CAUSE", cause.chars());
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning No conversions
+#endif
+#endif // IF_MOTIF
 
     string msg = cls + ": " + title;
     MString mtext = rm(msg);
+#ifdef IF_MOTIF
     XtVaSetValues (fatal_dialog,
 		   XmNmessageString, mtext.xmstring(),
 		   XtPointer(0));
+#else // NOT IF_MOTIF
+    label->set_text(mtext.xmstring());
+#endif // IF_MOTIF
 
     manage_and_raise(fatal_dialog);
 
     // Wait until dialog is mapped and synchronize, such that DDD will
     // exit if we get another signal or X error during that time.
     wait_until_mapped(fatal_dialog);
+#ifdef IF_MOTIF
     XSync(XtDisplay(fatal_dialog), False);
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning XSync?
+#endif
+#endif // IF_MOTIF
 }
 
 // Show the user that a signal has been raised
@@ -586,7 +632,7 @@ static bool ddd_dump_core(int sig...)
     return false;
 }
 
-void DDDDumpCoreCB(Widget, XtPointer, XtPointer)
+void DDDDumpCoreCB(CB_ALIST_NULL)
 {
     StatusDelay delay("Dumping core");
 
@@ -608,6 +654,7 @@ void DDDDumpCoreCB(Widget, XtPointer, XtPointer)
 // X I/O error
 //-----------------------------------------------------------------------------
 
+#ifdef IF_MOTIF
 extern "C" {
     static int (*old_x_fatal_handler)(Display *display) = 0;
 }
@@ -636,8 +683,12 @@ void ddd_install_x_fatal()
 {
     old_x_fatal_handler = XSetIOErrorHandler(ddd_x_fatal);
 }
+#ifdef NAG_ME
+#warning X Error handlers?
+#endif
+#endif // IF_MOTIF
 
-
+#ifdef IF_MOTIF
 //-----------------------------------------------------------------------------
 // Xt and Motif errors
 //-----------------------------------------------------------------------------
@@ -701,8 +752,13 @@ void ddd_install_xt_error(XtAppContext app_context)
     (void) XtAppSetErrorHandler(app_context, ddd_xt_error);
     xt_error_app_context = app_context;
 }
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Xt/Motif errors?
+#endif
+#endif // IF_MOTIF
 
-
+#ifdef IF_MOTIF
 //-----------------------------------------------------------------------------
 // Other X errors
 //-----------------------------------------------------------------------------
@@ -899,8 +955,11 @@ void ddd_install_x_error()
 {
     old_x_error_handler = XSetErrorHandler(ddd_x_error);
 }
-
-
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Other error handlers
+#endif
+#endif // IF_MOTIF
 
 
 //-----------------------------------------------------------------------------
@@ -924,12 +983,18 @@ void gdb_eofHP(Agent *agent, void *, void *)
 }
 
 
-static XtIntervalId post_exception_timer = 0;
-static void PostExceptionCB(XtPointer, XtIntervalId *id)
+static XtIntervalId post_exception_timer = NO_TIMER;
+static void PostExceptionCB(
+#ifdef IF_MOTIF
+			    XtPointer, XtIntervalId *id
+#endif // IF_MOTIF
+			    )
 {
+#ifdef IF_MOTIF
     assert (*id == post_exception_timer);
     (void) id;			// Use it
-    post_exception_timer = 0;
+#endif // IF_MOTIF
+    post_exception_timer = NO_TIMER;
 
     post_gdb_died(gdb->title() + ": internal exception", -1);
 }
@@ -960,17 +1025,27 @@ void gdb_exceptionHP(Agent *agent, void *, void *call_data)
 #endif
 
 	// Wait 5 seconds before offering a restart
+#ifdef IF_MOTIF
 	post_exception_timer = 
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 5000,
 			    PostExceptionCB, 0);
+#else // NOT IF_MOTIF
+	post_exception_timer = 
+	    Glib::signal_timeout().connect(sigc::bind_return(PTR_FUN(PostExceptionCB), false), 5000);
+#endif // IF_MOTIF
     }
     else
     {
 	// Left exception state (i.e. prompt appeared)
 
-	if (post_exception_timer)
+	if (post_exception_timer) {
+#ifdef IF_MOTIF
 	    XtRemoveTimeOut(post_exception_timer);
-	post_exception_timer = 0;
+#else // NOT IF_MOTIF
+	    post_exception_timer.disconnect();
+#endif // IF_MOTIF
+	}
+	post_exception_timer = NO_TIMER;
     }
 }
 
@@ -991,19 +1066,29 @@ void gdb_diedHP(Agent *gdb, void *, void *call_data)
 	if (!tty_running())
 	{
 	    // Forward diagnostics from debugger console to stderr
+#ifdef IF_MOTIF
 	    String s = XmTextGetString(gdb_w);
 	    string message = s + messagePosition;
 	    XtFree(s);
+#else // NOT IF_MOTIF
+	    Glib::ustring ustr = gdb_w->get_text(messagePosition, -1);
+	    string message(ustr.c_str());
+#endif // IF_MOTIF
 	    std::cerr << message;
 	}
 
-	_DDDExitCB(gdb_w, XtPointer(EXIT_FAILURE), XtPointer(0));
+	_DDDExitCB(CB_ARGS_2(EXIT_FAILURE));
     }
 
     // Don't care about any exceptions seen before the exit
-    if (post_exception_timer)
+    if (post_exception_timer) {
+#ifdef IF_MOTIF
 	XtRemoveTimeOut(post_exception_timer);
-    post_exception_timer = 0;
+#else // NOT IF_MOTIF
+	post_exception_timer.disconnect();
+#endif // IF_MOTIF
+    }
+    post_exception_timer = NO_TIMER;
 }
 
 
@@ -1012,12 +1097,14 @@ void gdb_diedHP(Agent *gdb, void *, void *call_data)
 //-----------------------------------------------------------------------------
 
 // Exit callback
-void _DDDExitCB(Widget w, XtPointer client_data, XtPointer call_data)
+void _DDDExitCB(CB_ALIST_2(XtP(long) status))
 {
     ddd_cleanup();
 
-    XtCallbackProc closure = ddd_is_restarting ? RestartCB : ExitCB;
-    closure(w, client_data, call_data);
+    if (ddd_is_restarting)
+	RestartCB(CB_ARGS_NULL);
+    else
+	ExitCB(CB_ARGS_2(status));
 }
 
 // `quit' has been canceled
@@ -1028,13 +1115,13 @@ static void DDDQuitCanceledCB(const string&, void *)
 
 // Exit/Restart after confirmation, depending on the setting of
 // DDD_IS_RESTARTING
-static void DDDDoneCB(Widget w, XtPointer client_data, XtPointer call_data)
+static void DDDDoneCB(CB_ALIST_12(Widget w, XtP(long) client_data))
 {
     gdb_is_exiting = true;
 
     if (gdb == 0 || !gdb->running())
     {
-	_DDDExitCB(w, client_data, call_data);
+	_DDDExitCB(CB_ARGS_2(client_data));
 	return;
     }
 
@@ -1047,52 +1134,67 @@ static void DDDDoneCB(Widget w, XtPointer client_data, XtPointer call_data)
     }
 
     // Debugger is still running; request confirmation
+#ifdef IF_MOTIF
     Arg args[10];
     int arg;
+#endif // IF_MOTIF
 
-    static Widget quit_dialog = 0;
+    static DIALOG_P quit_dialog = 0;
     if (quit_dialog)
 	DestroyWhenIdle(quit_dialog);
 
-    arg = 0;
     MString msg = rm(gdb->title() + " is still busy.  "
 		     + (ddd_is_restarting ? "Restart" : "Exit")
 		     + " anyway (and kill it)?");
+#ifdef IF_MOTIF
+    arg = 0;
     XtSetArg(args[arg], XmNmessageString, msg.xmstring()); arg++;
     XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
     quit_dialog = verify(XmCreateQuestionDialog(find_shell(w),
 						XMST("quit_dialog"), 
 						args, arg));
+#else // NOT IF_MOTIF
+    quit_dialog = new Gtk::Dialog(XMST("quit_dialog"), *find_shell(w));
+    Gtk::Label *label = new Gtk::Label(msg.xmstring());
+    quit_dialog->get_vbox()->pack_start(*label, Gtk::PACK_SHRINK);
+#endif // IF_MOTIF
     Delay::register_shell(quit_dialog);
+#ifdef IF_MOTIF
     XtAddCallback(quit_dialog, XmNokCallback,   DDDDoneAnywayCB, client_data);
     XtAddCallback(quit_dialog, XmNcancelCallback, UnmanageThisCB, quit_dialog);
     XtAddCallback(quit_dialog, XmNhelpCallback, ImmediateHelpCB, 0);
+#else // NOT IF_MOTIF
+    Gtk::Button *button;
+    button = quit_dialog->add_button(XMST("OK"), 0);
+    button->signal_clicked().connect(sigc::bind(PTR_FUN(DDDDoneAnywayCB), button, client_data));
+    button = quit_dialog->add_button(XMST("Cancel"), 0);
+    button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB), quit_dialog));
+#endif // IF_MOTIF
 
     manage_and_raise(quit_dialog);
 }
 
 // Exit immediately if DDD is not ready
-static void DDDDoneAnywayCB(Widget w, XtPointer client_data, 
-			    XtPointer call_data)
+static void DDDDoneAnywayCB(CB_ALIST_12(Widget w, XtP(long) client_data))
 {
     // If GDB has gotten ready in between, use controlled exit.
     if (gdb && gdb->isReadyWithPrompt())
-	DDDDoneCB(w, client_data, call_data);
+	DDDDoneCB(CB_ARGS_12(w, client_data));
     else
-	_DDDExitCB(w, client_data, call_data);
+	_DDDExitCB(CB_ARGS_2(client_data));
 }
 
 // Exit after confirmation
-void DDDExitCB(Widget w, XtPointer client_data, XtPointer call_data)
+void DDDExitCB(CB_ALIST_12(Widget w, XtP(long) client_data))
 {
     ddd_is_restarting    = false;
     ddd_is_shutting_down = false;
-    DDDDoneCB(w, client_data, call_data);
+    DDDDoneCB(CB_ARGS_12(w, client_data));
 }
 
 
 // Restart unconditionally
-static void _DDDRestartCB(Widget w, XtPointer client_data, XtPointer call_data)
+static void _DDDRestartCB(CB_ALIST_12(Widget w, XtP(long) client_data))
 {
     static string initial_session;
     initial_session = app_data.session;
@@ -1101,19 +1203,19 @@ static void _DDDRestartCB(Widget w, XtPointer client_data, XtPointer call_data)
     set_session(RESTART_SESSION);
 
     unsigned long flags = (unsigned long)client_data;
-    DDDSaveOptionsCB(w, XtPointer(flags), call_data);
+    DDDSaveOptionsCB(CB_ARGS_12(w, flags));
 
     set_restart_session(app_data.session);
     register_environ();
 
     ddd_is_restarting    = true;
     ddd_is_shutting_down = false;
-    DDDDoneCB(w, client_data, call_data);
+    DDDDoneCB(CB_ARGS_12(w, client_data));
 }
 
 
 // Restart after confirmation
-void DDDRestartCB(Widget w, XtPointer, XtPointer call_data)
+void DDDRestartCB(CB_ARG_LIST_1(w))
 {
     unsigned long flags = 
 	SAVE_SESSION | SAVE_GEOMETRY | DONT_RELOAD_CORE | DONT_COPY_CORE;
@@ -1123,23 +1225,35 @@ void DDDRestartCB(Widget w, XtPointer, XtPointer call_data)
     if (saving_options_kills_program(flags))
     {
 	// Saving session would kill program; request confirmation
-	static Widget dialog = 0;
+	static DIALOG_P dialog = 0;
 	if (dialog)
 	    DestroyWhenIdle(dialog);
 
+#ifdef IF_MOTIF
 	dialog = verify(
 	    XmCreateQuestionDialog(find_shell(w),
 				   XMST("confirm_restart_dialog"),
 				   0, 0));
+#else // NOT IF_MOTIF
+	dialog = new Gtk::Dialog(XMST("confirm_restart_dialog"), *find_shell(w));
+#endif // IF_MOTIF
 	Delay::register_shell(dialog);
+#ifdef IF_MOTIF
 	XtAddCallback(dialog, XmNokCallback, _DDDRestartCB,
 		      XtPointer(flags | MAY_KILL));
 	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, 0);
+#else // NOT IF_MOTIF
+	Gtk::Label *label = new Gtk::Label("Restart?");
+	dialog->get_vbox()->pack_start(*label, Gtk::PACK_SHRINK);
+	Gtk::Button *button;
+	button = dialog->add_button(XMST("OK"), 0);
+	button->signal_clicked().connect(sigc::bind(PTR_FUN(_DDDRestartCB), button, (flags | MAY_KILL)));
+#endif // IF_MOTIF
     
 	manage_and_raise(dialog);
     }
     else
-	_DDDRestartCB(w, XtPointer(flags), call_data);
+	_DDDRestartCB(CB_ARGS_12(w, flags));
 }
 
 static void debug_ddd(bool core_dumped)
@@ -1148,7 +1262,9 @@ static void debug_ddd(bool core_dumped)
 
     string term_command = app_data.term_command;
     term_command.gsub("Execution", "Debug");
+#ifdef IF_MOTIF
     term_command.gsub("@FONT@", make_font(app_data, FixedWidthDDDFont));
+#endif // IF_MOTIF
 
     string gdb_command = string("gdb ") + saved_argv()[0] + " ";
 
@@ -1198,7 +1314,7 @@ void report_core(std::ostream& log)
 }
 
 // Debug DDD
-void DDDDebugCB(Widget, XtPointer client_data, XtPointer)
+void DDDDebugCB(CB_ALIST_2(XtP(long) client_data))
 {
     bool core_dumped = (int)(long)client_data;
     debug_ddd(core_dumped);
@@ -1227,7 +1343,7 @@ bool RunningOnValgrind()
   return RUNNING_ON_VALGRIND;
 }
 
-void dddValgrindLeakCheckCB(Widget, XtPointer, XtPointer)
+void dddValgrindLeakCheckCB(CB_ALIST_NULL)
 {
   VALGRIND_DO_LEAK_CHECK
 }

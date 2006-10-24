@@ -31,7 +31,14 @@
 
 #include "GDBAgent.h"
 #include "AppData.h"
+
+#ifdef IF_MOTIF
+
 #include <X11/Intrinsic.h>
+
+#endif // IF_MOTIF
+
+#include "gtk_wrapper.h"
 
 // Create new GDB process
 extern GDBAgent *new_gdb(DebuggerType type,

@@ -29,82 +29,132 @@
 char DestroyCB_rcsid[] = 
     "$Id$";
 
+#include "config.h"
+
 #include "DestroyCB.h"
 #include "TimeOut.h"
+
+#ifdef IF_MOTIF
 #include <Xm/DialogS.h>
 #include <Xm/Xm.h>
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
 static void CancelTimer(Widget, XtPointer client_data, XtPointer)
 {
     XtIntervalId id = XtIntervalId(client_data);
     XtRemoveTimeOut(id);
 }
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
 static void DestroyCB(XtPointer client_data, XtIntervalId *id)
+#else // NOT IF_MOTIF
+static bool DestroyCB(Widget w)
+#endif // IF_MOTIF
 {
+#ifdef IF_MOTIF
     Widget w = Widget(client_data);
+#endif // IF_MOTIF
 
     if (w != 0)
     {
+#ifdef IF_MOTIF
 	XtRemoveCallback(w, XmNdestroyCallback, CancelTimer, XtPointer(*id));
 	XtDestroyWidget(w);
+#else // NOT IF_MOTIF
+	delete w;
+	return false;
+#endif // IF_MOTIF
     }
 }
 
 // Destroy WIDGET as soon as we are idle
 void DestroyWhenIdle(Widget widget)
 {
+#ifdef IF_MOTIF
     XtIntervalId id = 
 	XtAppAddTimeOut(XtWidgetToApplicationContext(widget), 0, DestroyCB, 
 			XtPointer(widget));
 
     // Should WIDGET be destroyed beforehand, cancel the timer
     XtAddCallback(widget, XmNdestroyCallback, CancelTimer, XtPointer(id));
+#else // NOT IF_MOTIF
+    XtIntervalId id = 
+	Glib::signal_idle().connect(sigc::bind(PTR_FUN(DestroyCB), widget));
+
+    // Should WIDGET be destroyed beforehand, cancel the timer
+#ifdef NAG_ME
+#warning Destroy signal?
+#endif
+#endif // IF_MOTIF
 }
 
 
 // Callbacks
 
 // Destroy the ancestor shell
-void DestroyShellCB(Widget widget, XtPointer, XtPointer call_data)
+void DestroyShellCB(CB_ARG_LIST_1(widget))
 {
     Widget w = widget;
 
     while (w != 0 && !XtIsShell(XtParent(w)))
 	w = XtParent(w);
 
-    DestroyThisCB(widget, XtPointer(w), call_data);
+#ifdef IF_MOTIF
+    DestroyThisCB(widget, XtPointer(w), XtPointer(0));
+#else // NOT IF_MOTIF
+    DestroyThisCB(w);
+#endif // IF_MOTIF
 }
 
 // Destroy specific widget
-void DestroyThisCB(Widget, XtPointer client_data, XtPointer)
+void DestroyThisCB(
+#ifdef IF_MOTIF
+    Widget, XtPointer client_data, XtPointer
+#else // NOT IF_MOTIF
+    Widget w
+#endif // IF_MOTIF
+    )
 {
+#ifdef IF_MOTIF
     Widget w = Widget(client_data);
+#endif // IF_MOTIF
     DestroyWhenIdle(w);
 }
 
 // Unmanage the ancestor shell
-void UnmanageShellCB(Widget widget, XtPointer, XtPointer call_data)
+void UnmanageShellCB(CB_ARG_LIST_1(widget))
 {
     Widget w = widget;
 
     while (w != 0 && !XtIsShell(XtParent(w)))
 	w = XtParent(w);
 
-    UnmanageThisCB(widget, XtPointer(w), call_data);
+#ifdef IF_MOTIF
+    UnmanageThisCB(widget, XtPointer(w), XtPointer(0));
+#else // NOT IF_MOTIF
+    UnmanageThisCB(w);
+#endif // IF_MOTIF
 }
 
 // Unmanage specific widget
+#ifdef IF_MOTIF
 void UnmanageThisCB(Widget, XtPointer client_data, XtPointer)
+#else // NOT IF_MOTIF
+void UnmanageThisCB(Widget w)
+#endif // IF_MOTIF
 {
+#ifdef IF_MOTIF
     Widget w = Widget(client_data);
+#endif // IF_MOTIF
 
     Widget shell = w;
     if (!XtIsShell(shell))
 	shell = XtParent(shell);
 
     if (shell != 0 && XtIsShell(shell) && !XmIsDialogShell(shell))
-	XtPopdown(shell);
+	XtPopdown(XtCastShell(shell));
 
     XtUnmanageChild(w);
 }

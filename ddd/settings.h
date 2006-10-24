@@ -29,7 +29,16 @@
 #ifndef _DDD_settings_h
 #define _DDD_settings_h
 
+#ifdef IF_MOTIF
+
 #include <X11/Intrinsic.h>
+
+#else // NOT IF_MOTIF
+
+#include "gtk_wrapper.h"
+
+#endif // IF_MOTIF
+
 #include "bool.h"
 #include "strclass.h"
 #include "GDBAgent.h"
@@ -39,7 +48,7 @@
 // Debugger settings
 
 // Popup editor for debugger settings
-extern void dddPopupSettingsCB(Widget, XtPointer, XtPointer);
+extern void dddPopupSettingsCB(CB_ARG_LIST_NULL);
 
 // Process `show' output
 extern void process_show(const string& command, string value, bool init = false);
@@ -70,7 +79,7 @@ extern string show_command(const string& cmd, DebuggerType type);
 // User Status Displays
 
 // Popup editor for debugger infos
-extern void dddPopupInfosCB(Widget, XtPointer, XtPointer);
+extern void dddPopupInfosCB(CB_ARG_LIST_NULL);
 
 // Update debugger infos
 extern void update_infos();
@@ -82,7 +91,7 @@ extern void register_info_button(Widget w);
 // Signal Handling
 
 // Popup editor for signal handling
-extern void dddPopupSignalsCB(Widget, XtPointer, XtPointer);
+extern void dddPopupSignalsCB(CB_ARG_LIST_NULL);
 
 // Process `handle' output
 extern void process_handle(string line, bool init = false);
@@ -114,7 +123,7 @@ void get_themes(StringArray& themes);
 extern void update_themes();
 
 // Popup themes editor
-extern void dddPopupThemesCB(Widget, XtPointer, XtPointer);
+extern void dddPopupThemesCB(CB_ARG_LIST_NULL);
 
 
 // Command Definitions
@@ -140,10 +149,14 @@ extern bool is_defined_cmd(const string& command);
 void update_define_later(const string& command);
 
 // Define command
-extern void dddDefineCommandCB(Widget, XtPointer, XtPointer);
+extern void dddDefineCommandCB(CB_ALIST_1(Widget w));
 
 // Update define buttons
-void UpdateDefinePanelCB(Widget = 0, XtPointer = 0, XtPointer = 0);
+#ifdef IF_MOTIF
+void UpdateDefinePanelCB(Widget w=NULL, XtPointer=NULL, XtPointer=NULL);
+#else // NOT IF_MOTIF
+void UpdateDefinePanelCB(CB_ALIST_1(Widget w=NULL));
+#endif // IF_MOTIF
 
 #endif // _DDD_settings_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

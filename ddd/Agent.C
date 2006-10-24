@@ -165,6 +165,7 @@ void Agent::startChildProcess()
 	return;
     }
     
+    std::cerr << "EXECUTE: \"" << path() << "\"\n";
     if ((_pid = fork()) == 0)
     {
 	if (setupChildCommunication())

@@ -31,8 +31,10 @@ char HintGraphNode_rcsid[] =
 
 #include "HintGraphN.h"
 
+#ifdef IF_MOTIF
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
+#endif // IF_MOTIF
 
 DEFINE_TYPE_INFO_1(HintGraphNode, RegionGraphNode)
 
@@ -43,8 +45,14 @@ void HintGraphNode::forceDraw(Widget w, const BoxRegion&,
     {
 	const BoxRegion& r = region(gc);
 
+#ifdef IF_MOTIF
 	XDrawRectangle(XtDisplay(w), XtWindow(w), gc.hintGC, 
 		       r.origin(X), r.origin(Y),
 		       r.space(X), r.space(Y));
+#else // NOT IF_MOTIF
+	w->get_window()->draw_rectangle(gc.hintGC, false,
+					r.origin(X), r.origin(Y),
+					r.space(X), r.space(Y));
+#endif // IF_MOTIF
     }
 }

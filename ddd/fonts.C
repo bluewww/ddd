@@ -39,7 +39,9 @@ char fonts_rcsid[] =
 #include "StringSA.h"
 #include "TextSetS.h"
 #include "assert.h"
+#ifdef IF_MOTIF
 #include "converters.h"
+#endif // IF_MOTIF
 #include "cook.h"
 #include "ddd.h"
 #include "events.h"
@@ -52,10 +54,12 @@ char fonts_rcsid[] =
 
 #include <stdlib.h>		// atoi()
 #include <ctype.h>
+#ifdef IF_MOTIF
 #include <Xm/TextF.h>
 #include <Xm/Text.h>
 #include <Xm/PushB.h>
 #include <X11/Xatom.h>		// XA_...
+#endif // IF_MOTIF
 
 
 //-----------------------------------------------------------------------------
@@ -650,8 +654,7 @@ static void set_font_size(DDDFont font, int size)
     }
 }
 
-
-void SetFontNameCB(Widget w, XtPointer client_data, XtPointer)
+void SetFontNameCB(CB_ALIST_12(Widget w, XtP(DDDFont) client_data))
 {
     DDDFont font = (DDDFont) (long) client_data;
     String s = XmTextFieldGetString(w);
@@ -661,7 +664,11 @@ void SetFontNameCB(Widget w, XtPointer client_data, XtPointer)
     update_reset_preferences();
 }
 
-void SetFontSizeCB(Widget w, XtPointer client_data, XtPointer)
+#ifdef IF_MOTIF
+void SetFontSizeCB(CB_ARG_LIST_12(w, client_data))
+#else // NOT IF_MOTIF
+void SetFontSizeCB(ENTRY_P w, DDDFont font)
+#endif // IF_MOTIF
 {
     DDDFont font = (DDDFont) (long) client_data;
     String s = XmTextFieldGetString(w);
@@ -808,12 +815,18 @@ static void SelectionLostCB(Widget w, XtPointer client_data, XtPointer)
 
 
 // Browse fonts
-void BrowseFontCB(Widget w, XtPointer client_data, XtPointer call_data)
+#ifdef IF_MOTIF
+void BrowseFontCB(CB_ARG_LIST_12(w, client_data))
+#else // NOT IF_MOTIF
+void BrowseFontCB(BUTTON_P w, DDDFont font)
+#endif // IF_MOTIF
 {
     Time tm = CurrentTime;
+#if 0
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
     if (cbs && cbs->event)
 	tm = time(cbs->event);
+#endif
 
     DDDFont font = (DDDFont) (long) client_data;
 
