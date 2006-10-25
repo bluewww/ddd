@@ -5,6 +5,7 @@ srcdir = .
 M4 = m4
 MV = mv
 DELETE_CR = cat
+AWK = awk
 
 $(srcdir)/Ddd.in: $(srcdir)/Ddd.in.m4 $(srcdir)/tips.m4 \
 	$(srcdir)/macros.m4 $(srcdir)/colors.m4 
@@ -19,3 +20,6 @@ $(srcdir)/Ddd.in: $(srcdir)/Ddd.in.m4 $(srcdir)/tips.m4 \
 	) | $(M4); \
 	) | $(DELETE_CR) > $@~ && $(MV) $@~ $@
 
+$(srcdir)/tips.m4: $(srcdir)/../TIPS $(srcdir)/tips2m4.awk
+	$(AWK) -f $(srcdir)/tips2m4.awk $(srcdir)/../TIPS | $(DELETE_CR) \
+	    > $@~ && $(MV) $@~ $@
