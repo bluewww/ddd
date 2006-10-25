@@ -1,0 +1,21 @@
+# Extracted from Makefile.
+# This is called by CVSMake, before real Makefile is created.
+
+srcdir = .
+M4 = m4
+MV = mv
+DELETE_CR = cat
+
+$(srcdir)/Ddd.in: $(srcdir)/Ddd.in.m4 $(srcdir)/tips.m4 \
+	$(srcdir)/macros.m4 $(srcdir)/colors.m4 
+	( \
+	( \
+		echo "define(srcdir, \`$(srcdir)')dnl"; \
+		echo "include(srcdir()/Ddd.in.m4)dnl" \
+	) | $(M4); \
+        ( \
+		echo "define(srcdir, \`$(srcdir)')dnl"; \
+		echo "include(srcdir()/tips.m4)dnl" \
+	) | $(M4); \
+	) | $(DELETE_CR) > $@~ && $(MV) $@~ $@
+
