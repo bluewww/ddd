@@ -736,7 +736,8 @@ CXXSTUFF = @CXXSTUFF@ @X_PERMISSIVE@
 CXXFLAGS = $(CXXOPT) $(CXXDEBUG) $(CXXWARNINGS) $(CXXSTUFF)
 
 bin_PROGRAMS = ddd
-noinst_PROGRAMS = stringify userinfo ctest cxxtest vsl
+noinst_PROGRAMS = stringify userinfo ctest cxxtest
+# vsl
 ddd_SOURCES = ddd.C \
 	$(BASE_SRC) \
 	$(TEMPLATE_SRC) \
@@ -752,21 +753,21 @@ stringify_SOURCES = stringify.C
 userinfo_SOURCES  = userinfo.C
 ctest_SOURCES     = ctest.c
 cxxtest_SOURCES   = cxxtest.C
-vsl_SOURCES       = vsl.C \
-	DocSpace.c \
-	DocSpace.h \
-	DocSpaceP.h \
-	$(BASE_SRC) \
-	$(TEMPLATE_SRC) \
-	$(AGENT_SRC) \
-	$(XSTUFF_SRC) \
-	$(MSTUFF_SRC) \
-	$(BOX_SRC) \
-	$(VSL_SRC)
+# vsl_SOURCES       = vsl.C \
+# 	DocSpace.c \
+# 	DocSpace.h \
+# 	DocSpaceP.h \
+# 	$(BASE_SRC) \
+# 	$(TEMPLATE_SRC) \
+# 	$(AGENT_SRC) \
+# 	$(XSTUFF_SRC) \
+# 	$(MSTUFF_SRC) \
+# 	$(BOX_SRC) \
+# 	$(VSL_SRC)
 
 cxxtest_LDADD = $(LIBM)
 ddd_LDADD = $(RPATH) $(GTKMM_LIBS) $(ALL_X_LIBS) $(ALL_LIBS) 
-vsl_LDADD = $(RPATH) $(ALL_X_LIBS) $(ALL_LIBS)
+# vsl_LDADD = $(RPATH) $(ALL_X_LIBS) $(ALL_LIBS)
 X_INCLUDE = @X_CFLAGS@
 AM_CPPFLAGS = -I$(srcdir)/.. $(GTKMM_CFLAGS) $(X_INCLUDE)
 
