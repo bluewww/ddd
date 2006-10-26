@@ -85,7 +85,7 @@ void
 GtkScrolledText::set_insertion_position(long pos)
 {
     Gtk::TextIter iter = tb_->get_iter_at_offset(pos);
-    tb_->move_mark(tb_->get_insert(), iter);
+    tb_->place_cursor(iter);
 }
 
 void

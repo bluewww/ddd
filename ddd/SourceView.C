@@ -2074,7 +2074,7 @@ void SourceView::SetInsertionPosition(SCROLLEDTEXT_P text_w,
     Glib::RefPtr<Gtk::TextBuffer> buf = text_w->buffer();
     
     Gtk::TextIter iter = buf->get_iter_at_offset(pos);
-    buf->move_mark(buf->get_insert(), iter);
+    buf->place_cursor(iter);
 #endif // IF_MOTIF
 }
 
