@@ -517,7 +517,7 @@ class SourceView {
 #endif // IF_MOTIF
 
     // Create glyph in FORM_W named NAME from given BITS
-    static Widget create_glyph(Widget form_w, const _XtString name, 
+    static Widget create_glyph(CONTAINER_P form_w, const _XtString name, 
 			       unsigned char *bits, int width, int height);
 
     // Map glyph W in (X, Y)
@@ -965,6 +965,10 @@ public:
 
     // Set or unset showing earlier state
     static void showing_earlier_state(bool set);
+
+#ifndef IF_MOTIF
+    bool clicked_cb(GdkEventButton *ev);
+#endif // IF_MOTIF
 };
 
 inline void SourceView::create_bp(const string& a, Widget w)

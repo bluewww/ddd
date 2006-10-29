@@ -417,31 +417,35 @@ static const _XtString const text_cmd_labels[] =
     "Clear at "
 };
 
+static string callback_word;
+
+// In the GTK version, it is not possible to change the
+// callback closure.  Therefore we use a global callback_word.
 MMDesc SourceView::text_popup[] =
 {
     {NM("print", "print"),         MMPush,
-     BIND_1(PTR_FUN(SourceView::text_popup_printCB), (string *)0), 0, 0, 0, 0},
+     BIND_1(PTR_FUN(SourceView::text_popup_printCB), (string *)&callback_word), 0, 0, 0, 0},
     {NM("disp", "disp"),           MMPush,
-     BIND_1(PTR_FUN(SourceView::text_popup_dispCB), (string *)0), 0, 0, 0, 0},
+     BIND_1(PTR_FUN(SourceView::text_popup_dispCB), (string *)&callback_word), 0, 0, 0, 0},
     {NM("watch", "watch"),         MMPush | MMUnmanaged, 
-     BIND_1(PTR_FUN(SourceView::text_popup_watchCB), (string *)0), 0, 0, 0, 0},
+     BIND_1(PTR_FUN(SourceView::text_popup_watchCB), (string *)&callback_word), 0, 0, 0, 0},
     MMSep,
     {NM("printRef", "printRef"),   MMPush, 
-     BIND_1(PTR_FUN(SourceView::text_popup_print_refCB), (string *)0), 0, 0, 0, 0},
+     BIND_1(PTR_FUN(SourceView::text_popup_print_refCB), (string *)&callback_word), 0, 0, 0, 0},
     {NM("dispRef", "dispRef"),     MMPush, 
-     BIND_1(PTR_FUN(SourceView::text_popup_disp_refCB), (string *)0), 0, 0, 0, 0},
+     BIND_1(PTR_FUN(SourceView::text_popup_disp_refCB), (string *)&callback_word), 0, 0, 0, 0},
     {NM("watchRef", "watchRef"),   MMPush | MMUnmanaged, 
-     BIND_1(PTR_FUN(SourceView::text_popup_watch_refCB), (string *)0), 0, 0, 0, 0},
+     BIND_1(PTR_FUN(SourceView::text_popup_watch_refCB), (string *)&callback_word), 0, 0, 0, 0},
     MMSep,
     {NM("whatis", "whatis"),       MMPush,
-     BIND_1(PTR_FUN(SourceView::text_popup_whatisCB), (string *)0), 0, 0, 0, 0},
+     BIND_1(PTR_FUN(SourceView::text_popup_whatisCB), (string *)&callback_word), 0, 0, 0, 0},
     MMSep,
     {NM("lookup", "lookup"),       MMPush,
-     HIDE_0_BIND_1(PTR_FUN(SourceView::text_popup_lookupCB), (string *)0), 0, 0, 0, 0},
+     HIDE_0_BIND_1(PTR_FUN(SourceView::text_popup_lookupCB), (string *)&callback_word), 0, 0, 0, 0},
     {NM("breakAt", "breakAt"),     MMPush,
-     BIND_1(PTR_FUN(SourceView::text_popup_breakCB), (string *)0), 0, 0, 0, 0},
+     BIND_1(PTR_FUN(SourceView::text_popup_breakCB), (string *)&callback_word), 0, 0, 0, 0},
     {NM("clearAt", "clearAt"),     MMPush,
-     BIND_1(PTR_FUN(SourceView::text_popup_clearCB), (string *)0), 0, 0, 0, 0},
+     BIND_1(PTR_FUN(SourceView::text_popup_clearCB), (string *)&callback_word), 0, 0, 0, 0},
     MMEnd
 };
 
@@ -3547,6 +3551,18 @@ static void InstallBitmapAsImage(unsigned char *bits, int width, int height,
 #endif // IF_MOTIF
 }
 
+#ifndef IF_MOTIF
+bool
+SourceView::clicked_cb(GdkEventButton *ev)
+{
+    if (ev->state == 0 && ev->button == 3) {
+	std::cerr << "Click at " << ev->x << " " << ev->y << "!\n";
+	srcpopupAct(source_text_w, (XEvent *)ev, NULL, NULL);
+	return true; // Terminate emission
+    }
+    return false;
+}
+#endif // IF_MOTIF
 
 SourceView::SourceView(CONTAINER_P parent)
 {
@@ -3593,16 +3609,20 @@ SourceView::SourceView(CONTAINER_P parent)
     // Setup actions
 #ifdef IF_MOTIF
     XtAppAddActions (app_context, actions, XtNumber (actions));
-#else // NOT IF_MOTIF
-#ifdef NAG_ME
-#warning No actions
-#endif
 #endif // IF_MOTIF
 
     // Create source code window
     create_text(parent, "source", app_data.source_editing,
 		source_form_w, source_text_w);
     XtManageChild(source_form_w);
+#ifndef IF_MOTIF
+    // We just hardcode the callbacks, whereas Motif uses an external
+    // translation table.
+    // Note: connect() by default passes after=true.  This would mean that
+    // our handler was never called since the class default handler would
+    // terminates the signal emission.
+    source_text_w->view().signal_button_press_event().connect(MEM_FUN(*this, &SourceView::clicked_cb), false);
+#endif // IF_MOTIF
 
     // Create machine code window
     create_text(parent, "code", false, code_form_w, code_text_w);
@@ -5830,16 +5850,15 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
     else
     {
 	// Determine surrounding token (or selection) and create popup
-	static string word;
 
 	XmTextPosition startpos = 0;
 	XmTextPosition endpos   = 0;
 
 	if (pos_found)
-	    word = get_word_at_pos(text_w, pos, startpos, endpos);
+	    callback_word = get_word_at_pos(text_w, pos, startpos, endpos);
 
 	// Popup specific word menu
-	string current_arg = word;
+	string current_arg = callback_word;
 	shorten(current_arg, max_popup_expr_length);
 	string current_ref_arg = deref(current_arg);
 
@@ -5865,7 +5884,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 
 	MENU_P text_popup_w = 
 	    MMcreatePopupMenu(text_w, "text_popup", text_popup);
-	MMaddCallbacks(text_popup, XtPointer(&word));
+	MMaddCallbacks(text_popup, XtPointer(&callback_word));
 #ifdef IF_MOTIF
 	MMaddHelpCallback(text_popup, PTR_FUN(ImmediateHelpCB));
 	InstallButtonTips(text_popup_w);
@@ -5879,7 +5898,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	text_popup_w->signal_unmap().connect(sigc::bind(PTR_FUN(DestroyThisCB), text_popup_w));
 #endif // IF_MOTIF
 
-	bool has_arg = (word.length() > 0);
+	bool has_arg = (callback_word.length() > 0);
 	bool has_watch = has_arg && gdb->has_watch_command();
 	set_text_popup_label(TextItms::Print,    current_arg, has_arg);
 	set_text_popup_label(TextItms::Disp,     current_arg, has_arg);
@@ -5908,7 +5927,11 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	}
 
 	XmMenuPosition (text_popup_w, event);
+#ifdef IF_MOTIF
 	XtManageChild (text_popup_w);
+#else // NOT IF_MOTIF
+	text_popup_w->popup(0, 0);
+#endif // IF_MOTIF
     }
 }
 
@@ -8776,7 +8799,7 @@ Glib::RefPtr<Gdk::Pixbuf> SourceView::pixmap(Widget w, unsigned char *bits, int 
 
 
 // Create glyph in FORM_W named NAME from given BITS
-Widget SourceView::create_glyph(Widget form_w,
+Widget SourceView::create_glyph(CONTAINER_P form_w,
 				const _XtString name,
 				unsigned char *bits,
 				int width, int height)
@@ -8821,6 +8844,7 @@ Widget SourceView::create_glyph(Widget form_w,
     Widget w = verify(XmCreatePushButton(form_w, XMST(name), args, arg));
 #else // NOT IF_MOTIF
     BUTTON_P w = new Gtk::Button();
+    form_w->add(*w);
 #endif // IF_MOTIF
 
     if (XtIsRealized(form_w))
@@ -8841,6 +8865,7 @@ Widget SourceView::create_glyph(Widget form_w,
 #else // NOT IF_MOTIF
     XIMAGE_P pix = pixmap(w, bits, width, height);
     Gtk::Image *im = new Gtk::Image(pix);
+    im->show();
     w->add(*im);
 #endif // IF_MOTIF
 
@@ -9084,8 +9109,8 @@ void SourceView::update_glyphs(Widget glyph)
 			UpdateGlyphsWorkProc, XtPointer(&update_glyph_id));
 #else // NOT IF_MOTIF
     update_glyph_id = 
-	Glib::signal_idle().connect(sigc::bind(PTR_FUN(UpdateGlyphsWorkProc),
-					       &update_glyph_id), 50);
+	Glib::signal_timeout().connect(sigc::bind(PTR_FUN(UpdateGlyphsWorkProc),
+						  &update_glyph_id), 50);
 #endif // IF_MOTIF
 }
 
@@ -9198,7 +9223,7 @@ WP_RETURN_TYPE SourceView::CreateGlyphsWorkProc(WP_ALIST_NULL)
 	// pleasing results than vice-versa, so place arrow glyph
 	// below sign glyphs.
 
-	Widget form_w = k ? code_form_w : source_form_w;
+	CONTAINER_P form_w = k ? code_form_w : source_form_w;
 
 	if (form_w == 0)
 	    continue;
@@ -9256,7 +9281,7 @@ WP_RETURN_TYPE SourceView::CreateGlyphsWorkProc(WP_ALIST_NULL)
    
     for (k = 0; k < 2; k++)
     {
-	Widget form_w = k ? code_form_w : source_form_w;
+	CONTAINER_P form_w = k ? code_form_w : source_form_w;
 
 	if (form_w == 0)
 	    continue;

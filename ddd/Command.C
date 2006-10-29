@@ -37,7 +37,7 @@ char Command_rcsid[] =
     "$Id$";
 
 #ifndef LOG_COMMAND_QUEUE
-#define LOG_COMMAND_QUEUE 1
+#define LOG_COMMAND_QUEUE 0
 #endif
 
 #include "Command.h"

@@ -206,8 +206,11 @@ GtkScrolledText::pos_to_xy(long pos, double &x, double &y)
 void
 GtkScrolledText::clear_selection(void)
 {
-    Glib::RefPtr<Gtk::TextMark> sel = tb_->get_selection_bound();
-    tb_->delete_mark(sel);
+    // Glib::RefPtr<Gtk::TextMark> sel = tb_->get_selection_bound();
+    // tb_->delete_mark(sel);
+    Glib::RefPtr<Gtk::TextMark> ins = tb_->get_insert();
+    Gtk::TextIter iter = tb_->get_iter_at_mark(ins);
+    tb_->select_range(iter, iter);
 }
 
 long

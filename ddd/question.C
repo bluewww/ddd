@@ -48,7 +48,7 @@ char question_rcsid[] =
 #include <iostream>
 
 #ifndef LOG_GDB_QUESTION
-#define LOG_GDB_QUESTION 1
+#define LOG_GDB_QUESTION 0
 #endif
 
 //-----------------------------------------------------------------------------
