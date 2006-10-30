@@ -4080,7 +4080,7 @@ GtkForm::GtkForm(void):
 void
 GtkForm::on_size_allocate(Gtk::Allocation &allocation)
 {
-    std::cerr << "GtkForm::on_size_allocate\n";
+    // std::cerr << "GtkForm::on_size_allocate\n";
     // Do the usual stuff inherited from Gtk::Fixed.
     Gtk::Fixed::on_size_allocate(allocation);
 #if 0
@@ -4116,7 +4116,7 @@ GtkForm::on_size_allocate(Gtk::Allocation &allocation)
 void
 GtkForm::on_size_request(Gtk::Requisition *requisition)
 {
-    std::cerr << "GtkForm::on_size_request\n";
+    // std::cerr << "GtkForm::on_size_request\n";
     Gtk::Fixed::on_size_request(requisition);
     return;
 }
