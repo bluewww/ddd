@@ -1918,7 +1918,8 @@ void DataDisp::new_displayDCB (CB_ALIST_12(Widget dialog, XtP(NewDisplayInfo *) 
     string expr(inp);
     XtFree(inp);
 #else // NOT IF_MOTIF
-    string expr(info->text->get_entry()->get_text().c_str());
+    Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(info->text->get_child());
+    string expr(entry->get_text().c_str());
 #endif // IF_MOTIF
 
     strip_leading_space(expr);
@@ -2071,7 +2072,8 @@ void DataDisp::new_displayCD (Widget w, const BoxPoint &box_point)
 #ifdef IF_MOTIF
     XmTextSetString(info.text, XMST(info.display_expression.chars()));
 #else // NOT IF_MOTIF
-    info.text->get_entry()->set_text(XMST(info.display_expression.chars()));
+    Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(info.text->get_child());
+    entry->set_text(XMST(info.display_expression.chars()));
 #endif // IF_MOTIF
 
     manage_and_raise(new_display_dialog);
@@ -2116,7 +2118,8 @@ void DataDisp::dependentCB(CB_ALIST_1(Widget w))
 #ifdef IF_MOTIF
     XmTextSetString(info.text, XMST(info.display_expression.chars()));
 #else // NOT IF_MOTIF
-    info.text->get_entry()->set_text(XMST(info.display_expression.chars()));
+    Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(info.text->get_child());
+    entry->set_text(XMST(info.display_expression.chars()));
 #endif // IF_MOTIF
     manage_and_raise(dependent_display_dialog);
 }
@@ -6439,7 +6442,8 @@ void DataDisp::setDCB(SetInfo *client_data, int apply)
     string value(value_s);
     XtFree(value_s);
 #else // NOT IF_MOTIF
-    string value(info->text->get_entry()->get_text().c_str());
+    Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(info->text->get_child());
+    string value(entry->get_text().c_str());
 #endif // IF_MOTIF
 
     Command c(gdb->assign_command(info->name, value), last_origin);

@@ -1069,7 +1069,12 @@ void MMadjustPanel(const MMDesc items[], Dimension space)
 	XtQueryGeometry(item->label, (XtWidgetGeometry *)0, &size);
 	Dimension size_width = size.width;
 #else // NOT IF_MOTIF
+#ifdef GTKMM_DISABLE_DEPRECATED
 	Gtk::Requisition req = item->label->size_request();
+#else
+	Gtk::Requisition req;
+	item->label->size_request(req);
+#endif
 	Dimension size_width = req.width;
 #endif // IF_MOTIF
 	max_label_width = max(max_label_width, size_width);

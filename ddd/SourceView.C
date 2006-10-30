@@ -4067,7 +4067,8 @@ class GtkForm: public Gtk::Fixed
 {
 public:
     GtkForm(void);
-    void on_size_allocate(Gtk::Allocation& allocation);
+    void on_size_allocate(Gtk::Allocation &allocation);
+    void on_size_request(Gtk::Requisition *requisition);
 };
 
 GtkForm::GtkForm(void):
@@ -4077,10 +4078,13 @@ GtkForm::GtkForm(void):
 }
 
 void
-GtkForm::on_size_allocate(Gtk::Allocation& allocation)
+GtkForm::on_size_allocate(Gtk::Allocation &allocation)
 {
+    std::cerr << "GtkForm::on_size_allocate\n";
+    // Do the usual stuff inherited from Gtk::Fixed.
+    Gtk::Fixed::on_size_allocate(allocation);
+#if 0
     Gtk::Allocation child_allocation;
-    // Gtk::Fixed::on_size_allocate(allocation);
     if (!has_no_window()) {
 	if (is_realized()) {
 	    get_window()->move_resize(allocation.get_x(),
@@ -4089,15 +4093,32 @@ GtkForm::on_size_allocate(Gtk::Allocation& allocation)
 				      allocation.get_height());
 	}
     }
+#endif
+    // Now stretch the first child (the ScrolledText widget) to
+    // occupy the whole widget.
     int border_width = get_border_width();
 
     Glib::ListHandle<Widget*> kids = get_children();
     Glib::ListHandle<Widget*>::iterator iter = kids.begin();
+    // The first child (the ScrolledText widget) is allocated.
     if (iter != kids.end()) {
 	Gtk::Widget *child = *iter;
-	std::cerr << "ALLOCATE " << child << "\n";
 	child->size_allocate(allocation);
     }
+#if 0
+    std::cerr << "nkids=" << kids.size() << "\n";
+    for (iter = kids.begin(); iter != kids.end(); iter++) {
+	std::cerr << "child height = " << (*iter)->get_height() << "\n";
+    }
+#endif
+}
+
+void
+GtkForm::on_size_request(Gtk::Requisition *requisition)
+{
+    std::cerr << "GtkForm::on_size_request\n";
+    Gtk::Fixed::on_size_request(requisition);
+    return;
 }
 
 #endif // IF_MOTIF
@@ -6137,7 +6158,8 @@ void SourceView::NewBreakpointDCB(CB_ALIST_12(Widget w, XtP(COMBOBOXENTRYTEXT_P)
     string input(_input);
     XtFree(_input);
 #else // NOT IF_MOTIF
-    string input(client_data->get_entry()->get_text().c_str());
+    Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(client_data->get_child());
+    string input(entry->get_text().c_str());
 #endif // IF_MOTIF
     if (input.empty())
 	return;
@@ -6243,7 +6265,8 @@ void SourceView::NewWatchpointDCB(CB_ALIST_12(Widget w, XtP(COMBOBOXENTRYTEXT_P)
     string input(_input);
     XtFree(_input);
 #else // NOT IF_MOTIF
-    string input(client_data->get_entry()->get_text().c_str());
+    Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(client_data->get_child());
+    string input(entry->get_text().c_str());
 #endif // IF_MOTIF
 
     strip_space(input);
@@ -6679,7 +6702,8 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
 #ifdef IF_MOTIF
 	XmTextFieldSetString(info->condition, XMST(s1.chars()));
 #else // NOT IF_MOTIF
-	info->condition->get_entry()->set_text(XMST(s1.chars()));
+	Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(info->condition->get_child());
+	entry->set_text(XMST(s1.chars()));
 #endif // IF_MOTIF
     }
 #ifdef IF_MOTIF
@@ -7067,7 +7091,8 @@ void SourceView::SetBreakpointConditionCB(Widget w,
 void SourceView::SetBreakpointConditionCB(COMBOBOXENTRYTEXT_P w,
 					  BreakpointPropertiesInfo *info)
 {
-    const char *cond = info->condition->get_entry()->get_text().c_str();
+    Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(info->condition->get_child());
+    const char *cond = entry->get_text().c_str();
     std::cerr << "set_bps_cond\n";
     set_bps_cond(info->nrs, cond, w);
 }
@@ -7090,7 +7115,8 @@ void SourceView::ApplyBreakpointPropertiesCB(CB_ALIST_12(Widget w, XtP(Breakpoin
     set_bps_cond(info->nrs, cond, w);
     XtFree(cond);
 #else // NOT IF_MOTIF
-    const char *cond = info->condition->get_entry()->get_text().c_str();
+    Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(info->condition->get_child());
+    const char *cond = entry->get_text().c_str();
     std::cerr << "set_bps_cond\n";
     set_bps_cond(info->nrs, cond, w);
 #endif // IF_MOTIF
@@ -8907,8 +8933,6 @@ int SourceView::line_height(SCROLLEDTEXT_P text_w)
 
     int height = abs(second_y - top_y);
 #else // NOT IF_MOTIF
-    int buf_x, buf_y;
-    text_w->view().window_to_buffer_coords(Gtk::TEXT_WINDOW_TEXT, 0, 0, buf_x, buf_y);
     Gtk::TextIter iter;
     text_w->view().get_iter_at_location(iter, 0, 0);
     int y, height;

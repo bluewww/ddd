@@ -352,17 +352,18 @@ static void RecenterToolShellCB(XtPointer = 0, XtIntervalId *id = 0)
 			    200, RecenterToolShellCB, XtPointer(0));
     }
 }
-#else // NOT IF_MOTIF
-#ifdef NAG_ME
-#warning RecenterToolShellCB not implemented
-#endif
-#endif // IF_MOTIF
 
 static void follow_tool_shell(Widget ref)
 {
     initialize_offsets();
     recenter_tool_shell(ref, last_top_offset, last_right_offset);
 }
+
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning RecenterToolShellCB not implemented
+#endif
+#endif // IF_MOTIF
 
 #ifdef IF_MOTIF
 static void FollowToolShellCB(XtPointer = 0, XtIntervalId *id = 0)

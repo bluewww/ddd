@@ -2305,9 +2305,8 @@ void check_options_file()
 
 static bool is_fallback_value(const string& resource, string val)
 {
-    static XrmDatabase default_db = app_defaults(XtDisplay(find_shell()));
-
 #ifdef IF_MOTIF
+    static XrmDatabase default_db = app_defaults(XtDisplay(find_shell()));
 
     static String app_name  = 0;
     static String app_class = 0;

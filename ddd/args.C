@@ -284,7 +284,8 @@ static void gdbRunDCB(CB_ARG_LIST_NULL)
     string args(_args);
     XtFree(_args);
 #else // NOT IF_MOTIF
-    Glib::ustring _args = run_arguments_w->get_entry()->get_text();
+    Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(run_arguments_w->get_child());
+    Glib::ustring _args = entry->get_text();
     string args(_args.c_str());
 #endif // IF_MOTIF
 
@@ -391,7 +392,8 @@ static void gdbMakeDCB(CB_ARG_LIST_NULL)
     string args(_args);
     XtFree(_args);
 #else // NOT IF_MOTIF
-    Glib::ustring _args = make_arguments_w->get_entry()->get_text();
+    Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(make_arguments_w->get_child());
+    Glib::ustring _args = entry->get_text();
     string args(_args.c_str());
 #endif // IF_MOTIF
 
@@ -485,7 +487,8 @@ static void gdbChangeDirectoryDCB(CB_ARG_LIST_NULL)
     string args(_args);
     XtFree(_args);
 #else // NOT IF_MOTIF
-    Glib::ustring _args = cd_arguments_w->get_entry()->get_text();
+    Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(cd_arguments_w->get_child());
+    Glib::ustring _args = entry->get_text();
     string args(_args.c_str());
 #endif // IF_MOTIF
 

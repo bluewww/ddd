@@ -202,7 +202,8 @@ static string examine_command()
     string address(s_address);
     XtFree(s_address);
 #else // NOT IF_MOTIF
-    const char *s_address = address_w->get_entry()->get_text().c_str();
+    Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(address_w->get_child());
+    const char *s_address = entry->get_text().c_str();
     string address(s_address);
 #endif // IF_MOTIF
 
@@ -335,7 +336,8 @@ void gdbExamineCB(CB_ALIST_1(Widget w))
 #ifdef IF_MOTIF
 	XmTextFieldSetString(address_w, XMST(arg.chars()));
 #else // NOT IF_MOTIF
-	address_w->get_entry()->set_text(XMST(arg.chars()));
+	Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(address_w->get_child());
+	entry->set_text(XMST(arg.chars()));
 #endif // IF_MOTIF
     }
 

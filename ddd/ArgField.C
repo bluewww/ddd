@@ -88,7 +88,8 @@ string ArgField::get_string () const
     string str(arg);
     XtFree (arg);
 #else // NOT IF_MOTIF
-    string str(arg_text_field->get_entry()->get_text().c_str());
+    Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(arg_text_field->get_child());
+    string str(entry->get_text().c_str());
 #endif // IF_MOTIF
     strip_space(str);
     return str;
@@ -112,14 +113,16 @@ void ArgField::set_string(string s)
 #ifdef IF_MOTIF
     String old_s = XmTextFieldGetString(arg_text_field);
 #else // NOT IF_MOTIF
-    string old_s(arg_text_field->get_entry()->get_text().c_str());
+    Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(arg_text_field->get_child());
+    string old_s(entry->get_text().c_str());
 #endif // IF_MOTIF
     if (s != old_s)
     {
 #ifdef IF_MOTIF
 	XmTextFieldSetString(arg_text_field, XMST(s.chars()));
 #else // NOT IF_MOTIF
-	arg_text_field->get_entry()->set_text(XMST(s.chars()));
+	Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(arg_text_field->get_child());
+	entry->set_text(XMST(s.chars()));
 #endif // IF_MOTIF
 
 #ifdef IF_MOTIF
@@ -217,7 +220,8 @@ void ClearTextFieldCB(CB_ALIST_2(XtP(COMBOBOXENTRYTEXT_P) client_data))
     Widget arg_field = Widget(client_data);
     XmTextFieldSetString(arg_field, XMST(""));
 #else // NOT IF_MOTIF
-    client_data->get_entry()->set_text(XMST(""));
+    Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(client_data->get_child());
+    entry->set_text(XMST(""));
 #endif // IF_MOTIF
 }
 
