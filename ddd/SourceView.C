@@ -9038,9 +9038,9 @@ void SourceView::map_glyph(Widget& glyph, Position x, Position y)
 #else // NOT IF_MOTIF
 	    FIXED_P form_w;
 	    if (is_source_widget(glyph))
-		form_w = code_form_w;
-	    else
 		form_w = source_form_w;
+	    else
+		form_w = code_form_w;
 	    form_w->move(*glyph, x, y);
 #endif // IF_MOTIF
 	    log_glyph(glyph);
