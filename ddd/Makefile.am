@@ -1080,6 +1080,9 @@ bug.$(OBJEXT):	$(srcdir)/bug.C
 	@test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; test -s $@)
 
 
+.xbm.glyph_h:
+	gdk-pixbuf-csource --raw --name=`basename $*`_bits $< > $*.glyph_h
+
 # This jewel makes an `emboss' effect in two steps:
 # 1. Create a displaced mask in FILE-mask.pbm, using `pnmcut' and `pnmpaste'
 # 2. Add the mask to FILE.xbm, using `pnmarith'.
@@ -1179,6 +1182,8 @@ XBM_GLYPH_ICONS = \
 	$(glyphsdir)/signalarrow.xbm \
 	$(glyphsdir)/stop.xbm \
 	$(glyphsdir)/temp.xbm
+
+GDK_GLYPH_ICONS = $(XBM_GLYPH_ICONS:.xbm=.glyph_h)
 
 XBM_CURSORS_ICONS = \
 	$(cursorsdir)/time16.xbm \
@@ -1309,6 +1314,12 @@ XBM_XX_ICONS = \
 
 # All icons
 # Order is significant here!  First sources, then derived files.
+if WITH_GTK
+GLYPH_ICONS = $(GDK_GLYPH_ICONS)
+else
+GLYPH_ICONS = $(XBM_GLYPH_ICONS)
+endif
+
 ICONS = \
 	$(icondir)/ddd.xpm \
 	$(icondir)/ddd.xbm \
@@ -1320,7 +1331,7 @@ ICONS = \
 	$(buildicondir)/ddd.xface \
 	$(XPM_ICONS) \
 	$(XBM_CURSORS_ICONS) \
-	$(XBM_GLYPH_ICONS) \
+	$(GLYPH_ICONS) \
 	$(XBM_TICTACTOE_ICONS) \
 	$(XBM_ICONS) \
 	$(XPM_XX_ICONS) \

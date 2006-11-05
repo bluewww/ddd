@@ -517,8 +517,14 @@ class SourceView {
 #endif // IF_MOTIF
 
     // Create glyph in FORM_W named NAME from given BITS
+#ifdef IF_MOTIF
     static Widget create_glyph(CONTAINER_P form_w, const _XtString name, 
 			       unsigned char *bits, int width, int height);
+#else // NOT IF_MOTIF
+    // This version uses the inline data created by gdk-pixbuf-csource.
+    static Widget create_glyph(CONTAINER_P form_w, const _XtString name, 
+			       const unsigned char *bits);
+#endif // IF_MOTIF
 
     // Map glyph W in (X, Y)
     static void map_glyph(Widget& w, Position x, Position y);

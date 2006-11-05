@@ -205,20 +205,20 @@ extern "C" {
 #define DRAG_COND "drag_cond"
 #define DRAG_TEMP "drag_temp"
 #else // NOT IF_MOTIF
-XIMAGE_P PLAIN_ARROW[1];
-XIMAGE_P GREY_ARROW[1];
-XIMAGE_P PAST_ARROW[1];
-XIMAGE_P SIGNAL_ARROW[1];
-XIMAGE_P DRAG_ARROW[1];
-XIMAGE_P PLAIN_STOP[1];
-XIMAGE_P PLAIN_COND[1];
-XIMAGE_P PLAIN_TEMP[1];
-XIMAGE_P GREY_STOP[1];
-XIMAGE_P GREY_COND[1];
-XIMAGE_P GREY_TEMP[1];
-XIMAGE_P DRAG_STOP[1];
-XIMAGE_P DRAG_COND[1];
-XIMAGE_P DRAG_TEMP[1];
+XIMAGE_P PLAIN_ARROW;
+XIMAGE_P GREY_ARROW;
+XIMAGE_P PAST_ARROW;
+XIMAGE_P SIGNAL_ARROW;
+XIMAGE_P DRAG_ARROW;
+XIMAGE_P PLAIN_STOP;
+XIMAGE_P PLAIN_COND;
+XIMAGE_P PLAIN_TEMP;
+XIMAGE_P GREY_STOP;
+XIMAGE_P GREY_COND;
+XIMAGE_P GREY_TEMP;
+XIMAGE_P DRAG_STOP;
+XIMAGE_P DRAG_COND;
+XIMAGE_P DRAG_TEMP;
 #endif // IF_MOTIF
 
 #ifndef IF_MOTIF
@@ -454,6 +454,7 @@ MMDesc SourceView::text_popup[] =
 // Glyphs and images
 //-----------------------------------------------------------------------
 
+#ifdef IF_MOTIF
 #include "icons/glyphs/arrow.xbm"
 #include "icons/glyphs/greyarrow.xbm"
 #include "icons/glyphs/pastarrow.xbm"
@@ -468,6 +469,22 @@ MMDesc SourceView::text_popup[] =
 #include "icons/glyphs/temp.xbm"
 #include "icons/glyphs/greytemp.xbm"
 #include "icons/glyphs/dragtemp.xbm"
+#else // NOT IF_MOTIF
+#include "icons/glyphs/arrow.glyph_h"
+#include "icons/glyphs/greyarrow.glyph_h"
+#include "icons/glyphs/pastarrow.glyph_h"
+#include "icons/glyphs/signalarrow.glyph_h"
+#include "icons/glyphs/dragarrow.glyph_h"
+#include "icons/glyphs/stop.glyph_h"
+#include "icons/glyphs/greystop.glyph_h"
+#include "icons/glyphs/dragstop.glyph_h"
+#include "icons/glyphs/cond.glyph_h"
+#include "icons/glyphs/greycond.glyph_h"
+#include "icons/glyphs/dragcond.glyph_h"
+#include "icons/glyphs/temp.glyph_h"
+#include "icons/glyphs/greytemp.glyph_h"
+#include "icons/glyphs/dragtemp.glyph_h"
+#endif // IF_MOTIF
 
 
 //-----------------------------------------------------------------------
@@ -3574,6 +3591,7 @@ SourceView::SourceView(CONTAINER_P parent)
 	toplevel_w = XtParent(toplevel_w);
 
     // Install glyph images
+#ifdef IF_MOTIF
     InstallBitmapAsImage(arrow_bits, arrow_width, arrow_height, 
 			 PLAIN_ARROW);
     InstallBitmapAsImage(grey_arrow_bits, grey_arrow_width, grey_arrow_height, 
@@ -3584,7 +3602,14 @@ SourceView::SourceView(CONTAINER_P parent)
 			 signal_arrow_height, SIGNAL_ARROW);
     InstallBitmapAsImage(drag_arrow_bits, drag_arrow_width, drag_arrow_height, 
 			 DRAG_ARROW);
+#else // NOT IF_MOTIF
+    PLAIN_ARROW = Gdk::Pixbuf::create_from_inline(-1, arrow_bits);
+    GREY_ARROW = Gdk::Pixbuf::create_from_inline(-1, greyarrow_bits);
+    PAST_ARROW = Gdk::Pixbuf::create_from_inline(-1, pastarrow_bits);
+    DRAG_ARROW = Gdk::Pixbuf::create_from_inline(-1, dragarrow_bits);
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     InstallBitmapAsImage(stop_bits, stop_width, stop_height, 
 			 PLAIN_STOP);
     InstallBitmapAsImage(cond_bits, cond_width, cond_height, 
@@ -3605,6 +3630,7 @@ SourceView::SourceView(CONTAINER_P parent)
 			 DRAG_COND);
     InstallBitmapAsImage(drag_temp_bits, drag_temp_width, drag_temp_height, 
 			 DRAG_TEMP);
+#endif // IF_MOTIF
 
     // Setup actions
 #ifdef IF_MOTIF
@@ -8825,10 +8851,16 @@ Glib::RefPtr<Gdk::Pixbuf> SourceView::pixmap(Widget w, unsigned char *bits, int 
 
 
 // Create glyph in FORM_W named NAME from given BITS
+#ifdef IF_MOTIF
 Widget SourceView::create_glyph(CONTAINER_P form_w,
 				const _XtString name,
 				unsigned char *bits,
 				int width, int height)
+#else // NOT IF_MOTIF
+Widget SourceView::create_glyph(CONTAINER_P form_w,
+				const _XtString name,
+				const unsigned char *bits)
+#endif // IF_MOTIF
 {
     // Get background color from text
     Widget text_w;
@@ -8889,7 +8921,7 @@ Widget SourceView::create_glyph(CONTAINER_P form_w,
     XtSetArg(args[arg], XmNheight, height); arg++;
     XtSetValues(w, args, arg);
 #else // NOT IF_MOTIF
-    XIMAGE_P pix = pixmap(w, bits, width, height);
+    XIMAGE_P pix = Gdk::Pixbuf::create_from_inline(-1, bits);
     Gtk::Image *im = new Gtk::Image(pix);
     im->show();
     w->add(*im);
@@ -9212,7 +9244,14 @@ Position SourceView::arrow_x_offset = -5;
 Position SourceView::stop_x_offset = +6;
 
 // Additional offset for multiple breakpoints (pixels)
+#ifdef IF_MOTIF
 Position SourceView::multiple_stop_x_offset = stop_width;
+#else // NOT IF_MOTIF
+#ifdef NAG_ME
+#warning Hardcoded stop_width
+#endif
+Position SourceView::multiple_stop_x_offset = 15;
+#endif // IF_MOTIF
 
 
 // Glyph locations: x[0] is source, x[1] is code
@@ -9254,51 +9293,76 @@ WP_RETURN_TYPE SourceView::CreateGlyphsWorkProc(WP_ALIST_NULL)
 
 	if (past_arrows[k] == 0)
 	{
+#ifdef IF_MOTIF
 	    past_arrows[k] = 
 		create_glyph(form_w, "past_arrow",
 			     past_arrow_bits, 
 			     past_arrow_width, 
 			     past_arrow_height);
+#else // NOT IF_MOTIF
+	    past_arrows[k] = 
+		create_glyph(form_w, "past_arrow", pastarrow_bits);
+#endif // IF_MOTIF
 	    return IDLE_CONT;
 	}
 
 	if (plain_arrows[k] == 0)
 	{
+#ifdef IF_MOTIF
 	    plain_arrows[k] = 
 		create_glyph(form_w, "plain_arrow",
 			     arrow_bits, 
 			     arrow_width,
 			     arrow_height);
+#else // NOT IF_MOTIF
+	    plain_arrows[k] = 
+		create_glyph(form_w, "plain_arrow", arrow_bits);
+#endif // IF_MOTIF
 	    return IDLE_CONT;
 	}
 
 	if (grey_arrows[k] == 0)
 	{
+#ifdef IF_MOTIF
 	    grey_arrows[k] = 
 		create_glyph(form_w, "grey_arrow",
 			     grey_arrow_bits, 
 			     grey_arrow_width, 
 			     grey_arrow_height);
+#else // NOT IF_MOTIF
+	    grey_arrows[k] = 
+		create_glyph(form_w, "grey_arrow", greyarrow_bits);
+#endif // IF_MOTIF
 	    return IDLE_CONT;
 	}
 
 	if (signal_arrows[k] == 0)
 	{
+#ifdef IF_MOTIF
 	    signal_arrows[k] = 
 		create_glyph(form_w, "signal_arrow",
 			     signal_arrow_bits, 
 			     signal_arrow_width,
 			     signal_arrow_height);
+#else // NOT IF_MOTIF
+	    signal_arrows[k] = 
+		create_glyph(form_w, "signal_arrow", signalarrow_bits);
+#endif // IF_MOTIF
 	    return IDLE_CONT;
 	}
 
 	if (drag_arrows[k] == 0)
 	{
+#ifdef IF_MOTIF
 	    drag_arrows[k] = 
 		create_glyph(form_w, "drag_arrow",
 			     drag_arrow_bits, 
 			     drag_arrow_width,
 			     drag_arrow_height);
+#else // NOT IF_MOTIF
+	    drag_arrows[k] = 
+		create_glyph(form_w, "drag_arrow", dragarrow_bits);
+#endif // IF_MOTIF
 	    return IDLE_CONT;
 	}
     }
@@ -9316,11 +9380,16 @@ WP_RETURN_TYPE SourceView::CreateGlyphsWorkProc(WP_ALIST_NULL)
 	{
 	    if (plain_stops[k][i] == 0)
 	    {
+#ifdef IF_MOTIF
 		plain_stops[k][i] = 
 		    create_glyph(form_w, "plain_stop",
 				 stop_bits, 
 				 stop_width,
 				 stop_height);
+#else // NOT IF_MOTIF
+		plain_stops[k][i] = 
+		    create_glyph(form_w, "plain_stop", stop_bits);
+#endif // IF_MOTIF
 		return IDLE_CONT;
 	    }
 	}
@@ -9329,11 +9398,16 @@ WP_RETURN_TYPE SourceView::CreateGlyphsWorkProc(WP_ALIST_NULL)
 	{
 	    if (plain_temps[k][i] == 0)
 	    {
+#ifdef IF_MOTIF
 		plain_temps[k][i] = 
 		    create_glyph(form_w, "plain_temp",
 				 temp_bits, 
 				 temp_width,
 				 temp_height);
+#else // NOT IF_MOTIF
+		plain_temps[k][i] = 
+		    create_glyph(form_w, "plain_temp", temp_bits);
+#endif // IF_MOTIF
 		return IDLE_CONT;
 	    }
 	}
@@ -9342,11 +9416,16 @@ WP_RETURN_TYPE SourceView::CreateGlyphsWorkProc(WP_ALIST_NULL)
 	{
 	    if (plain_conds[k][i] == 0)
 	    {
+#ifdef IF_MOTIF
 		plain_conds[k][i] = 
 		    create_glyph(form_w, "plain_cond",
 				 cond_bits, 
 				 cond_width,
 				 cond_height);
+#else // NOT IF_MOTIF
+		plain_conds[k][i] = 
+		    create_glyph(form_w, "plain_cond", cond_bits);
+#endif // IF_MOTIF
 		return IDLE_CONT;
 	    }
 	}
@@ -9354,11 +9433,16 @@ WP_RETURN_TYPE SourceView::CreateGlyphsWorkProc(WP_ALIST_NULL)
 	{
 	    if (grey_stops[k][i] == 0)
 	    {
+#ifdef IF_MOTIF
 		grey_stops[k][i] = 
 		    create_glyph(form_w, "grey_stop",
 				 grey_stop_bits, 
 				 grey_stop_width,
 				 grey_stop_height);
+#else // NOT IF_MOTIF
+		grey_stops[k][i] = 
+		    create_glyph(form_w, "grey_stop", greystop_bits);
+#endif // IF_MOTIF
 		return IDLE_CONT;
 	    }
 	}
@@ -9367,11 +9451,16 @@ WP_RETURN_TYPE SourceView::CreateGlyphsWorkProc(WP_ALIST_NULL)
 	{
 	    if (grey_temps[k][i] == 0)
 	    {
+#ifdef IF_MOTIF
 		grey_temps[k][i] = 
 		    create_glyph(form_w, "grey_temp",
 				 grey_temp_bits, 
 				 grey_temp_width,
 				 grey_temp_height);
+#else // NOT IF_MOTIF
+		grey_temps[k][i] = 
+		    create_glyph(form_w, "grey_temp", greytemp_bits);
+#endif // IF_MOTIF
 		return IDLE_CONT;
 	    }
 	}
@@ -9380,42 +9469,62 @@ WP_RETURN_TYPE SourceView::CreateGlyphsWorkProc(WP_ALIST_NULL)
 	{
 	    if (grey_conds[k][i] == 0)
 	    {
+#ifdef IF_MOTIF
 		grey_conds[k][i] = 
 		    create_glyph(form_w, "grey_cond",
 				 grey_cond_bits, 
 				 grey_cond_width,
 				 grey_cond_height);
+#else // NOT IF_MOTIF
+		grey_conds[k][i] = 
+		    create_glyph(form_w, "grey_cond", greycond_bits);
+#endif // IF_MOTIF
 		return IDLE_CONT;
 	    }
 	}
 
 	if (drag_stops[k] == 0)
 	{
+#ifdef IF_MOTIF
 	    drag_stops[k] = 
 		create_glyph(form_w, "drag_stop",
 			     drag_stop_bits, 
 			     drag_stop_width,
 			     drag_stop_height);
+#else // NOT IF_MOTIF
+	    drag_stops[k] = 
+		create_glyph(form_w, "drag_stop", dragstop_bits);
+#endif // IF_MOTIF
 	    return IDLE_CONT;
 	}
 
 	if (drag_temps[k] == 0)
 	{
+#ifdef IF_MOTIF
 	    drag_temps[k] = 
 		create_glyph(form_w, "drag_temp",
 			     drag_temp_bits, 
 			     drag_temp_width,
 			     drag_temp_height);
+#else // NOT IF_MOTIF
+	    drag_temps[k] = 
+		create_glyph(form_w, "drag_temp", dragtemp_bits);
+#endif // IF_MOTIF
 	    return IDLE_CONT;
 	}
 
 	if (drag_conds[k] == 0)
 	{
+#ifdef IF_MOTIF
 	    drag_conds[k] = 
 		create_glyph(form_w, "drag_cond",
 			     drag_cond_bits, 
 			     drag_cond_width,
 			     drag_cond_height);
+#else // NOT IF_MOTIF
+	    drag_conds[k] = 
+		create_glyph(form_w, "drag_cond", dragcond_bits);
+#endif // IF_MOTIF
 	    return IDLE_CONT;
 	}
     }
