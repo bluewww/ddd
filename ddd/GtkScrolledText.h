@@ -12,10 +12,26 @@ enum XmHighlightMode {
   XmSEE_DETAIL
 };
 
+struct GtkGlyphMark
+{
+    Glib::RefPtr<Gdk::Pixbuf> glyph;
+    int x;
+    int y;
+};
+
+class GtkMarkedTextView: public Gtk::TextView
+{
+    bool on_expose_event(GdkEventExpose *event);
+    std::list<GtkGlyphMark *> marks;
+public:
+    void map_glyph(Glib::RefPtr<Gdk::Pixbuf> glyph, int x, int y);
+    void unmap_glyph(Glib::RefPtr<Gdk::Pixbuf> glyph, int x, int y);
+};
+
 class GtkScrolledText: public Gtk::ScrolledWindow
 {
 private:
-    Gtk::TextView tv_;
+    GtkMarkedTextView tv_;
     Glib::RefPtr<Gtk::TextBuffer> tb_;
 public:
     GtkScrolledText(void);
@@ -33,7 +49,7 @@ public:
     Glib::ustring get_text(void);
     Glib::ustring get_text(long, long);
     void show_position(long pos);
-    Gtk::TextView &view(void);
+    GtkMarkedTextView &view(void);
     Glib::RefPtr<Gtk::TextBuffer> buffer(void);
     void set_highlight(long pos1, long pos2, XmHighlightMode);
     long find_forward(Glib::ustring str, long start=0);

@@ -739,9 +739,11 @@ static MString gdbDefaultValueText(SCROLLEDTEXT_P widget, XEvent *event,
 static MString gdbDefaultButtonText(Widget widget, XEvent *, 
 				    bool for_documentation)
 {
+#ifdef IF_MOTIF
     MString bp_help = source_view->help_on_glyph(widget, for_documentation);
     if (!bp_help.isNull())
 	return bp_help;
+#endif // IF_MOTIF
 
     MString shortcut_help = data_disp->shortcut_help(widget);
     if (!shortcut_help.isNull())

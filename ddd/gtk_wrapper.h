@@ -153,6 +153,8 @@ typedef XtCallbackProc GTK_PROC_;
 
 typedef Pixel ImageColor;
 
+typedef Widget Glyph_T;
+
 #else // NOT IF_MOTIF
 
 typedef double DimType;
@@ -803,8 +805,8 @@ extern XrmDatabase get_file_database(const char *f);
 #define IM(a,b) a, Glib::ustring(), b
 #define NIM(a,b,c) a, b, c
 
-
-
+class GtkGlyphMark;
+typedef GtkGlyphMark *Glyph_T;
 
 
 

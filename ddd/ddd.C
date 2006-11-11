@@ -3473,8 +3473,10 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     source_view_parent->modify_bg(Gtk::STATE_NORMAL, Gdk::Color("white"));
 #endif
     source_view = new SourceView(source_view_parent);
+#ifdef IF_MOTIF
     source_view->set_max_glyphs(app_data.max_glyphs);
     source_view->cache_glyph_images = app_data.cache_glyph_images;
+#endif // IF_MOTIF
 
 #ifdef IF_MOTIF
     if (app_data.separate_source_window)
@@ -5281,7 +5283,9 @@ void update_options(bool noupd)
     }
 
     source_view->set_display_line_numbers(app_data.display_line_numbers);
+#ifdef IF_MOTIF
     source_view->set_display_glyphs(app_data.display_glyphs);
+#endif // IF_MOTIF
     source_view->set_disassemble(gdb->type() == GDB && app_data.disassemble);
     source_view->set_all_registers(app_data.all_registers);
     source_view->set_tab_width(app_data.tab_width);

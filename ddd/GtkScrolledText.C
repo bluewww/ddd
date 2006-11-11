@@ -2,6 +2,13 @@
 
 #include "GtkScrolledText.h"
 
+bool
+GtkMarkedTextView::on_expose_event(GdkEventExpose *event)
+{
+    Gtk::TextView::on_expose_event(event);
+}
+
+
 GtkScrolledText::GtkScrolledText(void)
 {
     tb_ = tv_.get_buffer();
@@ -100,7 +107,7 @@ GtkScrolledText::signal_changed(void)
     return tb_->signal_changed();
 }
 
-Gtk::TextView &
+GtkMarkedTextView &
 GtkScrolledText::view(void)
 {
     return tv_;

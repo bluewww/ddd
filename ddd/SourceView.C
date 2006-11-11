@@ -492,9 +492,9 @@ MMDesc SourceView::text_popup[] =
 //-----------------------------------------------------------------------
 
 Widget SourceView::toplevel_w                = 0;
-FIXED_P SourceView::source_form_w            = 0;
+BOX_P SourceView::source_form_w              = 0;
 SCROLLEDTEXT_P SourceView::source_text_w     = 0;
-FIXED_P SourceView::code_form_w              = 0;
+BOX_P SourceView::code_form_w                = 0;
 SCROLLEDTEXT_P SourceView::code_text_w       = 0;
 DIALOG_P SourceView::edit_breakpoints_dialog_w = 0;
 TREEVIEW_P SourceView::breakpoint_list_w     = 0;
@@ -4065,7 +4065,7 @@ void SourceView::create_shells()
 #ifdef IF_MOTIF
     XtAppAddWorkProc (app_context, CreateGlyphsWorkProc, XtPointer(0));
 #else // NOT IF_MOTIF
-    Glib::signal_idle().connect(PTR_FUN(CreateGlyphsWorkProc));
+    CreateGlyphsNow();
 #endif // IF_MOTIF
 }
 
@@ -4151,7 +4151,7 @@ GtkForm::on_size_request(Gtk::Requisition *requisition)
 
 // Create source or code window
 void SourceView::create_text(CONTAINER_P parent, const char *base, bool editable,
-			     FIXED_P& form, SCROLLEDTEXT_P& text)
+			     BOX_P& form, SCROLLEDTEXT_P& text)
 {
 #ifdef IF_MOTIF
     Arg args[15];
@@ -4164,8 +4164,17 @@ void SourceView::create_text(CONTAINER_P parent, const char *base, bool editable
     const string form_name = string(base) + "_form_w";
     form = verify(XmCreateForm(parent, XMST(form_name.chars()), args, arg));
 #else // NOT IF_MOTIF
-    form = new GtkForm();
-    form->modify_bg(Gtk::STATE_NORMAL, Gdk::Color("white"));
+    // FIXME: This used to be a GtkForm, a custom class derived from
+    // Gtk::Fixed.  The TextView and the buttons (glyphs) were
+    // attached to this form, in a way similar to the Motif version.
+    // However, this caused many problems with Gtk, so a different
+    // approach has been implemented.  The form is here for the sake
+    // of form, it does nothing useful.  The glyphs are to be drawn
+    // directly on a TextView subclass.
+    // form = new GtkForm();
+    form = new Gtk::HBox();
+    // FIXME: testing
+    form->modify_bg(Gtk::STATE_NORMAL, Gdk::Color("red"));
     form->show();
     parent->add(*form);
 #endif // IF_MOTIF
@@ -5720,22 +5729,20 @@ void SourceView::set_text_popup_resource(int item, const string& arg)
 #endif // IF_MOTIF
 }
 
+#ifdef IF_MOTIF
 // Get relative coordinates of GLYPH in TEXT
-void SourceView::translate_glyph_pos(Widget glyph, Widget text, int& x, int& y)
+void SourceView::translate_glyph_pos(Glyph_T glyph, Widget text, int& x, int& y)
 {
     int dest_x, dest_y;
     Window child;
-#ifdef IF_MOTIF
     XTranslateCoordinates(XtDisplay(glyph), 
 			  XtWindow(glyph), XtWindow(text), 
 			  x, y, &dest_x, &dest_y, &child);
-#else // NOT IF_MOTIF
-    glyph->translate_coordinates(*text, x, y, dest_x, dest_y);
-#endif // IF_MOTIF
 
     x = dest_x;
     y = dest_y;
 }
+#endif // IF_MOTIF
 
 // Popup button3 source menu
 void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
@@ -5763,7 +5770,12 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
     if (w != source_text_w && w != code_text_w)
     {
 	// Called from a glyph: translate glyph position to text position
+#ifdef IF_MOTIF
 	translate_glyph_pos(w, text_w, x, y);
+#else // NOT IF_MOTIF
+	std::cerr << "THIS IS IMPOSSIBLE\n";
+	return;
+#endif // IF_MOTIF
     }
 
     // Get the position
@@ -6010,7 +6022,12 @@ void SourceView::doubleClickAct(Widget w, XEvent *e, String *params,
     if (w != source_text_w && w != code_text_w)
     {
 	// Called from a glyph: translate glyph position to text position
+#ifdef IF_MOTIF
 	translate_glyph_pos(w, text_w, x, y);
+#else // NOT IF_MOTIF
+	std::cerr << "THIS IS IMPOSSIBLE\n";
+	return;
+#endif // IF_MOTIF
     }
 
     if (w == source_text_w || w == code_text_w)
@@ -8716,8 +8733,10 @@ string SourceView::get_line(string position)
 //----------------------------------------------------------------------------
 
 
+#ifdef IF_MOTIF
 // Whether to cache glyph images
 bool SourceView::cache_glyph_images = true;
+#endif // IF_MOTIF
 
 static
 void DestroyOldWidgets(WidgetArray& Array){
@@ -8734,6 +8753,7 @@ void DestroyOldWidgets(WidgetArray& Array){
     }
 }
 
+#ifdef IF_MOTIF
 // Change number of glyphs
 void SourceView::set_max_glyphs (int nmax)
 {
@@ -8774,16 +8794,13 @@ void SourceView::set_max_glyphs (int nmax)
 	}
     }
 }
+#endif // IF_MOTIF
 
 
 // Glyph has been activated - catch the double click in Motif 1.x
 #ifdef IF_MOTIF
 void SourceView::ActivateGlyphCB(Widget glyph, XtPointer, XtPointer call_data)
-#else // NOT IF_MOTIF
-void SourceView::ActivateGlyphCB(Widget glyph)
-#endif // IF_MOTIF
 {
-#ifdef IF_MOTIF
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
     XEvent *e = cbs->event;
     if (e->type != ButtonRelease)
@@ -8794,20 +8811,14 @@ void SourceView::ActivateGlyphCB(Widget glyph)
 
     if (cbs->click_count > 1)
 	XtCallActionProc(glyph, "source-double-click", e, params, 0);
-#else // NOT IF_MOTIF
-    std::cerr << "ActivateGlyphCB\n";
-#endif // IF_MOTIF
 }
-
-
-// Create a pixmap from BITS suitable for the widget W
-#ifdef IF_MOTIF
-Pixmap SourceView::pixmap(Widget w, unsigned char *bits, int width, int height)
-#else // NOT IF_MOTIF
-Glib::RefPtr<Gdk::Pixbuf> SourceView::pixmap(Widget w, unsigned char *bits, int width, int height)
 #endif // IF_MOTIF
-{
+
+
 #ifdef IF_MOTIF
+// Create a pixmap from BITS suitable for the widget W
+Pixmap SourceView::pixmap(Widget w, unsigned char *bits, int width, int height)
+{
     Pixel foreground, background;
 
     XtVaGetValues(w,
@@ -8819,35 +8830,21 @@ Glib::RefPtr<Gdk::Pixbuf> SourceView::pixmap(Widget w, unsigned char *bits, int 
     Pixmap pix = XCreatePixmapFromBitmapData(XtDisplay(w), XtWindow(w), 
 					     (char *)bits, width, height, 
 					     foreground, background, depth);
+    return pix;
+}
+
 #else // NOT IF_MOTIF
-    Glib::RefPtr<Gdk::Window> win = w->get_window();
-    int depth;
-    if (win)
-	depth = win->get_depth();
-    else {
-	std::cerr << "Pixmap created before window: assuming default visual!\n";
-	// Assume window will be created with default display/screen/visual!
-	Glib::RefPtr<Gdk::DisplayManager> dm = Gdk::DisplayManager::get();
-	Glib::RefPtr<Gdk::Display> display = dm->get_default_display();
-	Glib::RefPtr<Gdk::Screen> screen = display->get_default_screen();
-	Glib::RefPtr<Gdk::Visual> vis = screen->get_system_visual();
-	depth = vis->gobj()->depth;
-    }
-    const Gdk::Color background = w->get_style()->get_bg(Gtk::STATE_NORMAL);
-    const Gdk::Color foreground = w->get_style()->get_fg(Gtk::STATE_NORMAL);
-#if 0
-    Pixmap pix = Gdk::Pixmap::create_from_data(win,
-					       (char *)bits, 
-					       width, height, depth,
-					       foreground, background);
-#else
+
+// Create a pixmap from BITS suitable for the widget W
+Glib::RefPtr<Gdk::Pixbuf> SourceView::pixmap(unsigned char *bits, int width, int height)
+{
     XIMAGE_P pix = Gdk::Pixbuf::create_from_data(bits,
 						 Gdk::COLORSPACE_RGB,
 						 false, 8, width, height, width);
-#endif
-#endif // IF_MOTIF
     return pix;
 }
+
+#endif // IF_MOTIF
 
 
 // Create glyph in FORM_W named NAME from given BITS
@@ -8856,11 +8853,6 @@ Widget SourceView::create_glyph(CONTAINER_P form_w,
 				const _XtString name,
 				unsigned char *bits,
 				int width, int height)
-#else // NOT IF_MOTIF
-Widget SourceView::create_glyph(CONTAINER_P form_w,
-				const _XtString name,
-				const unsigned char *bits)
-#endif // IF_MOTIF
 {
     // Get background color from text
     Widget text_w;
@@ -8868,15 +8860,10 @@ Widget SourceView::create_glyph(CONTAINER_P form_w,
 	text_w = code_text_w;
     else
 	text_w = source_text_w;
-#ifdef IF_MOTIF
     Pixel background;
     XtVaGetValues(text_w, XmNbackground, &background, XtPointer(0));
-#else // NOT IF_MOTIF
-    const Gdk::Color background = text_w->get_style()->get_bg(Gtk::STATE_NORMAL);
-#endif // IF_MOTIF
 
     // Create push button
-#ifdef IF_MOTIF
     Arg args[30];
     Cardinal arg = 0;
     XtSetArg(args[arg], XmNmappedWhenManaged,  False);         arg++;
@@ -8900,17 +8887,11 @@ Widget SourceView::create_glyph(CONTAINER_P form_w,
     XtSetArg(args[arg], XmNarmColor,           background);    arg++;
     XtSetArg(args[arg], XmNbackground,         background);    arg++;
     Widget w = verify(XmCreatePushButton(form_w, XMST(name), args, arg));
-#else // NOT IF_MOTIF
-    BUTTON_P w = new Gtk::Button();
-    form_w->add(*w);
-#endif // IF_MOTIF
-
     if (XtIsRealized(form_w))
 	XtRealizeWidget(w);
 
     XtManageChild(w);
 
-#ifdef IF_MOTIF
     arg = 0;
     if (!cache_glyph_images)
     {
@@ -8920,22 +8901,13 @@ Widget SourceView::create_glyph(CONTAINER_P form_w,
     XtSetArg(args[arg], XmNwidth,  width);  arg++;
     XtSetArg(args[arg], XmNheight, height); arg++;
     XtSetValues(w, args, arg);
-#else // NOT IF_MOTIF
-    XIMAGE_P pix = Gdk::Pixbuf::create_from_inline(-1, bits);
-    Gtk::Image *im = new Gtk::Image(pix);
-    im->show();
-    w->add(*im);
-#endif // IF_MOTIF
 
-#ifdef IF_MOTIF
     XtAddCallback(w, XmNactivateCallback, ActivateGlyphCB, 0);
     InstallButtonTips(w);
-#else // NOT IF_MOTIF
-    w->signal_activate().connect(sigc::bind(PTR_FUN(ActivateGlyphCB), w));
-#endif // IF_MOTIF
 
     return w;
 }
+#endif // IF_MOTIF
 
 // Return height of a single line
 int SourceView::line_height(SCROLLEDTEXT_P text_w)
@@ -8980,6 +8952,7 @@ int SourceView::line_height(SCROLLEDTEXT_P text_w)
 }
 
 
+#ifdef IF_MOTIF
 // If false, don't change glyphs - just check if they would change
 bool SourceView::change_glyphs = true;
 
@@ -8987,9 +8960,8 @@ bool SourceView::change_glyphs = true;
 WidgetArray SourceView::changed_glyphs;
 
 // Unmap glyph W
-void SourceView::unmap_glyph(Widget glyph)
+void SourceView::unmap_glyph(Glyph_T glyph)
 {
-#ifdef IF_MOTIF
     if (glyph == 0)
 	return;
 
@@ -9022,13 +8994,10 @@ void SourceView::unmap_glyph(Widget glyph)
     }
 
     changed_glyphs += glyph;
-#else // NOT IF_MOTIF
-    std::cerr << "UNmap glyph?\n";
-#endif // IF_MOTIF
 }
 
 // Map glyph GLYPH in (X, Y)
-void SourceView::map_glyph(Widget& glyph, Position x, Position y)
+void SourceView::map_glyph(Glyph_T& glyph, Position x, Position y)
 {
     while (glyph == 0)
 	CreateGlyphsWorkProc(WP_ARGS_NULL);
@@ -9041,7 +9010,6 @@ void SourceView::map_glyph(Widget& glyph, Position x, Position y)
     else
 	text_w = code_text_w;
 
-#ifdef IF_MOTIF
     XtPointer user_data;
     Dimension height              = 0;
     Dimension border_width        = 0;
@@ -9063,63 +9031,36 @@ void SourceView::map_glyph(Widget& glyph, Position x, Position y)
     Dimension glyph_height = 
 	height + border_width + margin_height
 	+ shadow_thickness + highlight_thickness;
-#else // NOT IF_MOTIF
-    int old_x, old_y, glyph_height;
-    glyph->translate_coordinates(*text_w, 0, 0, old_x, old_y);
-    glyph_height = glyph->get_height();
-#endif // IF_MOTIF
 
     y -= (line_height(text_w) + glyph_height) / 2 - 2;
 
-#ifdef IF_MOTIF
     if (lesstif_version <= 87)
 	x += 2;
-#endif // IF_MOTIF
 
     if (x != old_x || y != old_y)
     {
 	if (change_glyphs)
 	{
-#ifdef IF_MOTIF
 	    if (lesstif_version <= 84)
 	    {
 		// LessTif 0.84 and earlier want it the hard way.
 		XtMoveWidget(glyph, x, y);
 	    }
-#endif // IF_MOTIF
 
-#ifdef IF_MOTIF
 	    XtVaSetValues(glyph, XmNleftOffset, x, XmNtopOffset, y, 
 			  XtPointer(0));
-#else // NOT IF_MOTIF
-	    FIXED_P form_w;
-	    if (is_source_widget(glyph))
-		form_w = source_form_w;
-	    else
-		form_w = code_form_w;
-	    form_w->move(*glyph, x, y);
-#endif // IF_MOTIF
 	    log_glyph(glyph);
 	}
 	changed_glyphs += glyph;
     }
 
-#ifdef IF_MOTIF
     if (user_data != 0)
 	return;			// Already mapped
-#else // NOT IF_MOTIF
-    if (glyph->is_visible())
-	return;			// Already mapped
-#endif // IF_MOTIF
 
     if (change_glyphs)
     {
-#ifdef IF_MOTIF
 	XtMapWidget(glyph);
 	XtVaSetValues(glyph, XmNuserData, XtPointer(1), XtPointer(0));
-#else // NOT IF_MOTIF
-	glyph->show();
-#endif // IF_MOTIF
 	log_glyph(glyph);
 	changed_glyphs += glyph;
     }
@@ -9130,9 +9071,12 @@ void SourceView::map_glyph(Widget& glyph, Position x, Position y)
 bool SourceView::update_code_glyphs   = false;
 bool SourceView::update_source_glyphs = false;
 
+#endif // IF_MOTIF
+
 // Update glyphs for widget GLYPH (0: all)
 void SourceView::update_glyphs(Widget glyph)
 {
+#ifdef IF_MOTIF
     static XtWorkProcId update_glyph_id = NO_TIMER;
 
     if (glyph == 0)
@@ -9143,11 +9087,7 @@ void SourceView::update_glyphs(Widget glyph)
 	update_code_glyphs = true;
 
     if (update_glyph_id != NO_TIMER) {
-#ifdef IF_MOTIF
 	XtRemoveTimeOut(update_glyph_id);
-#else // NOT IF_MOTIF
-	update_glyph_id.disconnect();
-#endif // IF_MOTIF
     }
 
     // Chris van Engelen reports:
@@ -9159,23 +9099,21 @@ void SourceView::update_glyphs(Widget glyph)
     // with a new call to UpdateGlyphsWorkProc scheduled. This problem
     // was solved by increasing the delay time for the first
     // scheduling to 50ms.
-#ifdef IF_MOTIF
     update_glyph_id = 
 	XtAppAddTimeOut(XtWidgetToApplicationContext(source_text_w), 50,
 			UpdateGlyphsWorkProc, XtPointer(&update_glyph_id));
 #else // NOT IF_MOTIF
-    update_glyph_id = 
-	Glib::signal_timeout().connect(sigc::bind(PTR_FUN(UpdateGlyphsWorkProc),
-						  &update_glyph_id), 50);
+    std::cerr << "Update glyphs\n";
 #endif // IF_MOTIF
 }
 
-
+#ifdef IF_MOTIF
 // Invoked by scrolling keys
 void SourceView::updateGlyphsAct(Widget w, XEvent*, String *, Cardinal *)
 {
     CheckScrollCB(CB_ARGS_NULL);
 }
+#endif // IF_MOTIF
 
 // Invoked whenever the text widget may be about to scroll
 void SourceView::CheckScrollCB(CB_ALIST_NULL)
@@ -9254,6 +9192,7 @@ Position SourceView::multiple_stop_x_offset = 15;
 #endif // IF_MOTIF
 
 
+#ifdef IF_MOTIF
 // Glyph locations: x[0] is source, x[1] is code
 Widget SourceView::plain_arrows[2]  = {0, 0};
 Widget SourceView::grey_arrows[2]   = {0, 0};
@@ -9273,8 +9212,25 @@ WidgetArray SourceView::grey_conds[2];
 
 WidgetArray SourceView::plain_temps[2];
 WidgetArray SourceView::grey_temps[2];
+#else // NOT IF_MOTIF
+Glib::RefPtr<Gdk::Pixbuf> SourceView::plain_arrow;
+Glib::RefPtr<Gdk::Pixbuf> SourceView::grey_arrow;
+Glib::RefPtr<Gdk::Pixbuf> SourceView::past_arrow;
+Glib::RefPtr<Gdk::Pixbuf> SourceView::signal_arrow;
+Glib::RefPtr<Gdk::Pixbuf> SourceView::drag_arrow;
+Glib::RefPtr<Gdk::Pixbuf> SourceView::plain_stop;
+Glib::RefPtr<Gdk::Pixbuf> SourceView::grey_stop;
+Glib::RefPtr<Gdk::Pixbuf> SourceView::plain_cond;
+Glib::RefPtr<Gdk::Pixbuf> SourceView::grey_cond;
+Glib::RefPtr<Gdk::Pixbuf> SourceView::plain_temp;
+Glib::RefPtr<Gdk::Pixbuf> SourceView::grey_temp;
+Glib::RefPtr<Gdk::Pixbuf> SourceView::drag_stop;
+Glib::RefPtr<Gdk::Pixbuf> SourceView::drag_cond;
+Glib::RefPtr<Gdk::Pixbuf> SourceView::drag_temp;
+#endif // IF_MOTIF
 
 
+#ifdef IF_MOTIF
 // Create glyphs in the background
 WP_RETURN_TYPE SourceView::CreateGlyphsWorkProc(WP_ALIST_NULL)
 {
@@ -9293,76 +9249,51 @@ WP_RETURN_TYPE SourceView::CreateGlyphsWorkProc(WP_ALIST_NULL)
 
 	if (past_arrows[k] == 0)
 	{
-#ifdef IF_MOTIF
 	    past_arrows[k] = 
 		create_glyph(form_w, "past_arrow",
 			     past_arrow_bits, 
 			     past_arrow_width, 
 			     past_arrow_height);
-#else // NOT IF_MOTIF
-	    past_arrows[k] = 
-		create_glyph(form_w, "past_arrow", pastarrow_bits);
-#endif // IF_MOTIF
 	    return IDLE_CONT;
 	}
 
 	if (plain_arrows[k] == 0)
 	{
-#ifdef IF_MOTIF
 	    plain_arrows[k] = 
 		create_glyph(form_w, "plain_arrow",
 			     arrow_bits, 
 			     arrow_width,
 			     arrow_height);
-#else // NOT IF_MOTIF
-	    plain_arrows[k] = 
-		create_glyph(form_w, "plain_arrow", arrow_bits);
-#endif // IF_MOTIF
 	    return IDLE_CONT;
 	}
 
 	if (grey_arrows[k] == 0)
 	{
-#ifdef IF_MOTIF
 	    grey_arrows[k] = 
 		create_glyph(form_w, "grey_arrow",
 			     grey_arrow_bits, 
 			     grey_arrow_width, 
 			     grey_arrow_height);
-#else // NOT IF_MOTIF
-	    grey_arrows[k] = 
-		create_glyph(form_w, "grey_arrow", greyarrow_bits);
-#endif // IF_MOTIF
 	    return IDLE_CONT;
 	}
 
 	if (signal_arrows[k] == 0)
 	{
-#ifdef IF_MOTIF
 	    signal_arrows[k] = 
 		create_glyph(form_w, "signal_arrow",
 			     signal_arrow_bits, 
 			     signal_arrow_width,
 			     signal_arrow_height);
-#else // NOT IF_MOTIF
-	    signal_arrows[k] = 
-		create_glyph(form_w, "signal_arrow", signalarrow_bits);
-#endif // IF_MOTIF
 	    return IDLE_CONT;
 	}
 
 	if (drag_arrows[k] == 0)
 	{
-#ifdef IF_MOTIF
 	    drag_arrows[k] = 
 		create_glyph(form_w, "drag_arrow",
 			     drag_arrow_bits, 
 			     drag_arrow_width,
 			     drag_arrow_height);
-#else // NOT IF_MOTIF
-	    drag_arrows[k] = 
-		create_glyph(form_w, "drag_arrow", dragarrow_bits);
-#endif // IF_MOTIF
 	    return IDLE_CONT;
 	}
     }
@@ -9380,16 +9311,11 @@ WP_RETURN_TYPE SourceView::CreateGlyphsWorkProc(WP_ALIST_NULL)
 	{
 	    if (plain_stops[k][i] == 0)
 	    {
-#ifdef IF_MOTIF
 		plain_stops[k][i] = 
 		    create_glyph(form_w, "plain_stop",
 				 stop_bits, 
 				 stop_width,
 				 stop_height);
-#else // NOT IF_MOTIF
-		plain_stops[k][i] = 
-		    create_glyph(form_w, "plain_stop", stop_bits);
-#endif // IF_MOTIF
 		return IDLE_CONT;
 	    }
 	}
@@ -9398,16 +9324,11 @@ WP_RETURN_TYPE SourceView::CreateGlyphsWorkProc(WP_ALIST_NULL)
 	{
 	    if (plain_temps[k][i] == 0)
 	    {
-#ifdef IF_MOTIF
 		plain_temps[k][i] = 
 		    create_glyph(form_w, "plain_temp",
 				 temp_bits, 
 				 temp_width,
 				 temp_height);
-#else // NOT IF_MOTIF
-		plain_temps[k][i] = 
-		    create_glyph(form_w, "plain_temp", temp_bits);
-#endif // IF_MOTIF
 		return IDLE_CONT;
 	    }
 	}
@@ -9416,16 +9337,11 @@ WP_RETURN_TYPE SourceView::CreateGlyphsWorkProc(WP_ALIST_NULL)
 	{
 	    if (plain_conds[k][i] == 0)
 	    {
-#ifdef IF_MOTIF
 		plain_conds[k][i] = 
 		    create_glyph(form_w, "plain_cond",
 				 cond_bits, 
 				 cond_width,
 				 cond_height);
-#else // NOT IF_MOTIF
-		plain_conds[k][i] = 
-		    create_glyph(form_w, "plain_cond", cond_bits);
-#endif // IF_MOTIF
 		return IDLE_CONT;
 	    }
 	}
@@ -9433,16 +9349,11 @@ WP_RETURN_TYPE SourceView::CreateGlyphsWorkProc(WP_ALIST_NULL)
 	{
 	    if (grey_stops[k][i] == 0)
 	    {
-#ifdef IF_MOTIF
 		grey_stops[k][i] = 
 		    create_glyph(form_w, "grey_stop",
 				 grey_stop_bits, 
 				 grey_stop_width,
 				 grey_stop_height);
-#else // NOT IF_MOTIF
-		grey_stops[k][i] = 
-		    create_glyph(form_w, "grey_stop", greystop_bits);
-#endif // IF_MOTIF
 		return IDLE_CONT;
 	    }
 	}
@@ -9451,16 +9362,11 @@ WP_RETURN_TYPE SourceView::CreateGlyphsWorkProc(WP_ALIST_NULL)
 	{
 	    if (grey_temps[k][i] == 0)
 	    {
-#ifdef IF_MOTIF
 		grey_temps[k][i] = 
 		    create_glyph(form_w, "grey_temp",
 				 grey_temp_bits, 
 				 grey_temp_width,
 				 grey_temp_height);
-#else // NOT IF_MOTIF
-		grey_temps[k][i] = 
-		    create_glyph(form_w, "grey_temp", greytemp_bits);
-#endif // IF_MOTIF
 		return IDLE_CONT;
 	    }
 	}
@@ -9469,69 +9375,70 @@ WP_RETURN_TYPE SourceView::CreateGlyphsWorkProc(WP_ALIST_NULL)
 	{
 	    if (grey_conds[k][i] == 0)
 	    {
-#ifdef IF_MOTIF
 		grey_conds[k][i] = 
 		    create_glyph(form_w, "grey_cond",
 				 grey_cond_bits, 
 				 grey_cond_width,
 				 grey_cond_height);
-#else // NOT IF_MOTIF
-		grey_conds[k][i] = 
-		    create_glyph(form_w, "grey_cond", greycond_bits);
-#endif // IF_MOTIF
 		return IDLE_CONT;
 	    }
 	}
 
 	if (drag_stops[k] == 0)
 	{
-#ifdef IF_MOTIF
 	    drag_stops[k] = 
 		create_glyph(form_w, "drag_stop",
 			     drag_stop_bits, 
 			     drag_stop_width,
 			     drag_stop_height);
-#else // NOT IF_MOTIF
-	    drag_stops[k] = 
-		create_glyph(form_w, "drag_stop", dragstop_bits);
-#endif // IF_MOTIF
 	    return IDLE_CONT;
 	}
 
 	if (drag_temps[k] == 0)
 	{
-#ifdef IF_MOTIF
 	    drag_temps[k] = 
 		create_glyph(form_w, "drag_temp",
 			     drag_temp_bits, 
 			     drag_temp_width,
 			     drag_temp_height);
-#else // NOT IF_MOTIF
-	    drag_temps[k] = 
-		create_glyph(form_w, "drag_temp", dragtemp_bits);
-#endif // IF_MOTIF
 	    return IDLE_CONT;
 	}
 
 	if (drag_conds[k] == 0)
 	{
-#ifdef IF_MOTIF
 	    drag_conds[k] = 
 		create_glyph(form_w, "drag_cond",
 			     drag_cond_bits, 
 			     drag_cond_width,
 			     drag_cond_height);
-#else // NOT IF_MOTIF
-	    drag_conds[k] = 
-		create_glyph(form_w, "drag_cond", dragcond_bits);
-#endif // IF_MOTIF
 	    return IDLE_CONT;
 	}
     }
 
     return IDLE_STOP;		// all done
 }
+#else // NOT IF_MOTIF
+void SourceView::CreateGlyphsNow(void)
+{
+    past_arrow = Gdk::Pixbuf::create_from_inline(-1, pastarrow_bits);
+    plain_arrow = Gdk::Pixbuf::create_from_inline(-1, arrow_bits);
+    grey_arrow = Gdk::Pixbuf::create_from_inline(-1, greyarrow_bits);
+    signal_arrow = Gdk::Pixbuf::create_from_inline(-1, signalarrow_bits);
+    drag_arrow = Gdk::Pixbuf::create_from_inline(-1, dragarrow_bits);
+    plain_stop = Gdk::Pixbuf::create_from_inline(-1, stop_bits);
+    plain_temp = Gdk::Pixbuf::create_from_inline(-1, temp_bits);
+    plain_cond = Gdk::Pixbuf::create_from_inline(-1, cond_bits);
+    grey_stop = Gdk::Pixbuf::create_from_inline(-1, greystop_bits);
+    grey_temp = Gdk::Pixbuf::create_from_inline(-1, greytemp_bits);
+    grey_cond = Gdk::Pixbuf::create_from_inline(-1, greycond_bits);
+    drag_stop = Gdk::Pixbuf::create_from_inline(-1, dragstop_bits);
+    drag_temp = Gdk::Pixbuf::create_from_inline(-1, dragtemp_bits);
+    drag_cond = Gdk::Pixbuf::create_from_inline(-1, dragcond_bits);
+}
+#endif // IF_MOTIF
 
+
+#ifdef IF_MOTIF
 // Return position POS of glyph GLYPH in X/Y.  Return true iff displayed.
 bool SourceView::glyph_pos_to_xy(Widget glyph, XmTextPosition pos,
 				 Position& x, Position& y)
@@ -9547,16 +9454,8 @@ bool SourceView::glyph_pos_to_xy(Widget glyph, XmTextPosition pos,
     else
 	text_w = code_text_w;
 
-#ifdef IF_MOTIF
     Boolean pos_displayed = XmTextPosToXY(text_w, pos, &x, &y);
-#else // NOT IF_MOTIF
-    double dx, dy;
-    bool pos_displayed = text_w->pos_to_xy(pos, dx, dy);
-    x = (int)dx;
-    y = (int)dy;
-#endif // IF_MOTIF
 
-#ifdef IF_MOTIF
     // In LessTif 0.87 and later, XmTextPosToXY() returns True even if
     // the position is *below* the last displayed line.  Verify.
     Dimension width, height;
@@ -9567,12 +9466,12 @@ bool SourceView::glyph_pos_to_xy(Widget glyph, XmTextPosition pos,
 	// Below last displayed position
 	pos_displayed = False;
     }
-#endif // IF_MOTIF
 
     return pos_displayed;
 }
+#endif // IF_MOTIF
 
-
+#ifdef IF_MOTIF
 // Map stop sign GLYPH at position POS.  Get widget from STOPS[COUNT];
 // store location in POSITIONS.  Return mapped widget (0 if none)
 Widget SourceView::map_stop_at(Widget glyph, XmTextPosition pos,
@@ -9623,7 +9522,9 @@ Widget SourceView::map_stop_at(Widget glyph, XmTextPosition pos,
 
     return 0;
 }
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
 // Map arrow in GLYPH at POS.  Return mapped arrow widget (0 if none)
 Widget SourceView::map_arrow_at(Widget glyph, XmTextPosition pos)
 {
@@ -9690,25 +9591,21 @@ Widget SourceView::map_arrow_at(Widget glyph, XmTextPosition pos)
     }
     return 0;
 }
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
 // Copy glyph foreground and background colors from ORIGIN to GLYPH
 void SourceView::copy_colors(Widget glyph, Widget origin)
 {
     if (origin == 0)
 	return;
 
-#ifdef IF_MOTIF
     Pixel background, foreground;
     XtVaGetValues(origin,
 		  XmNforeground, &foreground,
 		  XmNbackground, &background,
 		  XtPointer(0));
-#else // NOT IF_MOTIF
-    const Gdk::Color background = origin->get_style()->get_bg(Gtk::STATE_NORMAL);
-    const Gdk::Color foreground = origin->get_style()->get_fg(Gtk::STATE_NORMAL);
-#endif // IF_MOTIF
 
-#ifdef IF_MOTIF
     Pixmap pixmap = 
 	XmGetPixmap(XtScreen(glyph), XtName(glyph), foreground, background);
     if (pixmap != XmUNSPECIFIED_PIXMAP)
@@ -9719,11 +9616,10 @@ void SourceView::copy_colors(Widget glyph, Widget origin)
 
 	XtVaSetValues(glyph, XmNlabelPixmap, pixmap, XtPointer(0));
     }
-#else // NOT IF_MOTIF
-    std::cerr << "GET CACHED PIXMAP\n";
-#endif // IF_MOTIF
 }
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
 // Map temporary stop sign at position POS.  If ORIGIN is given, use
 // colors from ORIGIN.
 Widget SourceView::map_drag_stop_at(Widget glyph, XmTextPosition pos, 
@@ -9813,7 +9709,9 @@ Widget SourceView::map_drag_stop_at(Widget glyph, XmTextPosition pos,
 	return 0;
     }
 }
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
 // Map temporary arrow at position POS.  If ORIGIN is given, use
 // colors from ORIGIN.
 Widget SourceView::map_drag_arrow_at(Widget glyph, XmTextPosition pos, 
@@ -9843,9 +9741,11 @@ Widget SourceView::map_drag_arrow_at(Widget glyph, XmTextPosition pos,
 
     return drag_arrow;
 }
+#endif // IF_MOTIF
 
 
 
+#ifdef IF_MOTIF
 // Update glyphs after interval
 TIMEOUT_RETURN_TYPE SourceView::UpdateGlyphsWorkProc(TM_ALIST_1(XtP(XtIntervalId *) client_data))
 {
@@ -9856,12 +9756,8 @@ TIMEOUT_RETURN_TYPE SourceView::UpdateGlyphsWorkProc(TM_ALIST_1(XtP(XtIntervalId
 	*proc_id = NO_TIMER;
     }
 
-#ifdef IF_MOTIF
     XtAppContext app_context = XtWidgetToApplicationContext(source_text_w);
     if (XtAppPending(app_context) & (XtIMXEvent | XtIMAlternateInput))
-#else // NOT IF_MOTIF
-    if (Gtk::Main::events_pending())
-#endif // IF_MOTIF
     {
 	// Other events pending - check if we shall change something
 	const WidgetArray& glyphs = glyphs_to_be_updated();
@@ -9873,16 +9769,12 @@ TIMEOUT_RETURN_TYPE SourceView::UpdateGlyphsWorkProc(TM_ALIST_1(XtP(XtIntervalId
 	    for (int i = 0; i < glyphs.size(); i++)
 		unmap_glyph(glyphs[i]);
 
-#ifdef IF_MOTIF
 	    XtIntervalId new_id = 
 		XtAppAddTimeOut(app_context, 50,
 				UpdateGlyphsWorkProc, client_data);
 	    if (proc_id != 0)
 		*proc_id = new_id;
 	    return;
-#else // NOT IF_MOTIF
-	    return true;
-#endif // IF_MOTIF
 	}
     }
 
@@ -9891,8 +9783,10 @@ TIMEOUT_RETURN_TYPE SourceView::UpdateGlyphsWorkProc(TM_ALIST_1(XtP(XtIntervalId
     update_glyphs_now();
     return MAYBE_FALSE;
 }
+#endif // IF_MOTIF
 
 
+#ifdef IF_MOTIF
 // The function that does the real work
 void SourceView::update_glyphs_now()
 {
@@ -10038,8 +9932,10 @@ void SourceView::update_glyphs_now()
 
     // std::clog << "done.\n";
 }
+#endif // IF_MOTIF
 
 
+#ifdef IF_MOTIF
 // Return all glyphs that would change
 const WidgetArray& SourceView::glyphs_to_be_updated()
 {
@@ -10054,8 +9950,10 @@ const WidgetArray& SourceView::glyphs_to_be_updated()
 
     return changed_glyphs;
 }
+#endif // IF_MOTIF
 
 
+#ifdef IF_MOTIF
 // Change setting of display_glyphs
 void SourceView::set_display_glyphs(bool set)
 {
@@ -10072,11 +9970,7 @@ void SourceView::set_display_glyphs(bool set)
 	{
 	    display_glyphs = false;	
 	    show_execution_position();
-	    UpdateGlyphsWorkProc(0
-#ifdef IF_MOTIF
-				 , 0
-#endif // IF_MOTIF
-		);
+	    UpdateGlyphsWorkProc(0, 0);
 
 	    display_glyphs = true;
 	    refresh_bp_disp(true);
@@ -10097,6 +9991,7 @@ void SourceView::set_display_glyphs(bool set)
 	}
     }
 }
+#endif // IF_MOTIF
 
 // Change setting of display_line_numbers
 void SourceView::set_display_line_numbers(bool set)
@@ -10114,12 +10009,14 @@ void SourceView::set_display_line_numbers(bool set)
     }
 }
 
+#ifdef IF_MOTIF
 // Return help on a glyph
 MString SourceView::help_on_glyph(Widget glyph, bool detailed)
 {
     XmTextPosition dummy;
     return help_on_pos(glyph, 0, dummy, detailed);
 }
+#endif // IF_MOTIF
 
 // Return help on a breakpoint position
 MString SourceView::help_on_pos(Widget w, XmTextPosition pos, 
@@ -10186,6 +10083,7 @@ MString SourceView::help_on_bp(int bp_nr, bool detailed)
 
 // Glyph drag & drop
 
+#ifdef IF_MOTIF
 XmTextPosition SourceView::glyph_position(Widget glyph, XEvent *e, 
 					  bool normalize)
 {
@@ -10269,14 +10167,18 @@ XmTextPosition SourceView::glyph_position(Widget glyph, XEvent *e,
 
     return pos;
 }
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
 // Data associated with current drag operation
 // The Glyph being dragged
 Widget SourceView::current_drag_origin     = 0;
 
 // The breakpoint being dragged, or 0 if execution position
 int    SourceView::current_drag_breakpoint = -1;
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
 void SourceView::dragGlyphAct(Widget glyph, XEvent *e, String *params, 
 			      Cardinal *num_params)
 {
@@ -10295,36 +10197,16 @@ void SourceView::dragGlyphAct(Widget glyph, XEvent *e, String *params,
 	return;
 
     // Move cursor to glyph position
-#ifdef IF_MOTIF
     XButtonEvent *event = &e->xbutton;
     translate_glyph_pos(glyph, text_w, event->x, event->y);
     event->window = XtWindow(text_w);
-#else // NOT IF_MOTIF
-#ifdef NAG_ME
-#warning This is ugly; but for some reason Gtk events use double coords.
-#endif
-    XButtonEvent *event = &e->button;
-    int evx = (int)event->x;
-    int evy = (int)event->y;
-    translate_glyph_pos(glyph, text_w, evx, evy);
-    event->x = evx;
-    event->y = evy;
-    event->window = XtWindow(text_w)->gobj();
-#endif // IF_MOTIF
 
-#ifdef IF_MOTIF
     XtCallActionProc(text_w, "source-start-select-word", e, 
 		     params, *num_params);
 
     // Check for double clicks
     XtCallActionProc(text_w, "source-double-click", e,
 		     params, *num_params);
-#else // NOT IF_MOTIF
-#ifdef NAG_ME
-#warning XtCallActionProc not supported
-#endif
-    std::cerr << "Action procs for source window\n";
-#endif // IF_MOTIF
 
     // Now start the drag
     int k;
@@ -10353,17 +10235,11 @@ void SourceView::dragGlyphAct(Widget glyph, XEvent *e, String *params,
 	}
     }
 
-#ifdef IF_MOTIF
     static Cursor move_cursor = XCreateFontCursor(XtDisplay(glyph), XC_fleur);
 
     // std::clog << "Dragging " << XtName(glyph) << " [" << glyph << "]\n";
 
     XDefineCursor(XtDisplay(glyph), XtWindow(glyph), move_cursor);
-#else // NOT IF_MOTIF
-#ifdef NAG_ME
-#warning XDefineCursor not implemented
-#endif
-#endif // IF_MOTIF
 
     unmap_drag_stop(text_w);
     unmap_drag_arrow(text_w);
@@ -10382,7 +10258,9 @@ void SourceView::dragGlyphAct(Widget glyph, XEvent *e, String *params,
 	}
     }
 }
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
 void SourceView::followGlyphAct(Widget glyph, XEvent *e, String *, Cardinal *)
 {
     if (glyph != current_drag_origin)
@@ -10436,13 +10314,7 @@ void SourceView::dropGlyphAct (Widget glyph, XEvent *e,
     if (!XtIsRealized(text_w))
 	return;
 
-#ifdef IF_MOTIF
     XUndefineCursor(XtDisplay(glyph), XtWindow(glyph));
-#else // NOT IF_MOTIF
-#ifdef NAG_ME
-#warning XUndefineCursor not implemented
-#endif
-#endif // IF_MOTIF
 
     // Unmap temp glyphs
     unmap_drag_stop(text_w);
@@ -10534,17 +10406,15 @@ void SourceView::dropGlyphAct (Widget glyph, XEvent *e,
     if (changed)
     {
 	// Make sure this position is kept visible
-#ifdef IF_MOTIF
 	SetInsertionPosition(text_w, pos);
-#else // NOT IF_MOTIF
-	text_w->set_insertion_position(pos);
-#endif // IF_MOTIF
     }
 
     current_drag_origin     = 0;
     current_drag_breakpoint = 0;
 }
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
 // Report glyph state (for debugging)
 void SourceView::log_glyph(Widget glyph, int n)
 {
@@ -10623,8 +10493,10 @@ void SourceView::log_glyphs()
     }
 #endif
 }
+#endif // IF_MOTIF
 
 
+#ifdef IF_MOTIF
 // Delete glyph (breakpoints)
 void SourceView::deleteGlyphAct(Widget glyph, XEvent *, String *, Cardinal *)
 {
@@ -10640,6 +10512,7 @@ void SourceView::deleteGlyphAct(Widget glyph, XEvent *, String *, Cardinal *)
 
     delete_bps(bps, glyph);
 }
+#endif // IF_MOTIF
 
 
 //----------------------------------------------------------------------------

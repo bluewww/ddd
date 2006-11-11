@@ -179,7 +179,6 @@ class SourceView {
     static void ActivateGlyphCB(Widget, XtPointer, XtPointer);
 #else // NOT IF_MOTIF
     static void SetWatchModeCB(int);
-    static void ActivateGlyphCB(Widget);
 #endif // IF_MOTIF
 
     // Set shell title
@@ -191,7 +190,7 @@ class SourceView {
     // Create text or code widget
     static void create_text(CONTAINER_P parent,
 			    const char *base, bool editable,
-			    FIXED_P& form, SCROLLEDTEXT_P& text);
+			    BOX_P& form, SCROLLEDTEXT_P& text);
 
     // Refresh displays
     static void refresh_bp_disp(bool reset = false);
@@ -273,11 +272,13 @@ class SourceView {
     static void srcpopupAct       (Widget, XEvent*, String*, Cardinal*);
     static void startSelectWordAct(SCROLLEDTEXT_P, XEvent*, String*, Cardinal*);
     static void endSelectWordAct  (SCROLLEDTEXT_P, XEvent*, String*, Cardinal*);
+#ifdef IF_MOTIF
     static void updateGlyphsAct   (Widget, XEvent*, String*, Cardinal*);
     static void dragGlyphAct      (Widget, XEvent*, String*, Cardinal*);
     static void followGlyphAct    (Widget, XEvent*, String*, Cardinal*);
     static void dropGlyphAct      (Widget, XEvent*, String*, Cardinal*);
     static void deleteGlyphAct    (Widget, XEvent*, String*, Cardinal*);
+#endif // IF_MOTIF
     static void doubleClickAct    (Widget, XEvent*, String*, Cardinal*);
     static void setArgAct         (Widget, XEvent*, String*, Cardinal*);
 
@@ -310,9 +311,9 @@ class SourceView {
 
     static Widget toplevel_w;	 // Top-level widget
 
-    static FIXED_P source_form_w;        // Form around text and glyphs
+    static BOX_P source_form_w;          // Form around text and glyphs
     static SCROLLEDTEXT_P source_text_w; // Source text
-    static FIXED_P code_form_w;          // Form around Machine code and glyphs
+    static BOX_P code_form_w;            // Form around Machine code and glyphs
     static SCROLLEDTEXT_P code_text_w;   // Machine code text
 
     static DIALOG_P edit_breakpoints_dialog_w; // Dialog for editing breakpoints
@@ -513,19 +514,13 @@ class SourceView {
 #ifdef IF_MOTIF
     static Pixmap pixmap(Widget w, unsigned char *bits, int width, int height);
 #else // NOT IF_MOTIF
-    static Glib::RefPtr<Gdk::Pixbuf> pixmap(Widget w, unsigned char *bits, int width, int height);
+    static Glib::RefPtr<Gdk::Pixbuf> pixmap(unsigned char *bits, int width, int height);
 #endif // IF_MOTIF
 
-    // Create glyph in FORM_W named NAME from given BITS
 #ifdef IF_MOTIF
+    // Create glyph in FORM_W named NAME from given BITS
     static Widget create_glyph(CONTAINER_P form_w, const _XtString name, 
 			       unsigned char *bits, int width, int height);
-#else // NOT IF_MOTIF
-    // This version uses the inline data created by gdk-pixbuf-csource.
-    static Widget create_glyph(CONTAINER_P form_w, const _XtString name, 
-			       const unsigned char *bits);
-#endif // IF_MOTIF
-
     // Map glyph W in (X, Y)
     static void map_glyph(Widget& w, Position x, Position y);
 
@@ -549,6 +544,7 @@ class SourceView {
 
     // The breakpoint being dragged, or 0 if execution position
     static int current_drag_breakpoint;
+#endif // IF_MOTIF
 
 public:
     // Horizontal arrow offset (pixels)
@@ -561,6 +557,7 @@ public:
     static Position multiple_stop_x_offset;
 
 private:
+#ifdef IF_MOTIF
     // Glyph locations: X[0] is source, X[1] is code
     static Widget plain_arrows[2];
     static Widget grey_arrows[2];
@@ -576,7 +573,24 @@ private:
     static Widget drag_stops[2];
     static Widget drag_conds[2];
     static Widget drag_temps[2];
+#else // NOT IF_MOTIF
+    static Glib::RefPtr<Gdk::Pixbuf> plain_arrow;
+    static Glib::RefPtr<Gdk::Pixbuf> grey_arrow;
+    static Glib::RefPtr<Gdk::Pixbuf> past_arrow;
+    static Glib::RefPtr<Gdk::Pixbuf> signal_arrow;
+    static Glib::RefPtr<Gdk::Pixbuf> drag_arrow;
+    static Glib::RefPtr<Gdk::Pixbuf> plain_stop;
+    static Glib::RefPtr<Gdk::Pixbuf> grey_stop;
+    static Glib::RefPtr<Gdk::Pixbuf> plain_cond;
+    static Glib::RefPtr<Gdk::Pixbuf> grey_cond;
+    static Glib::RefPtr<Gdk::Pixbuf> plain_temp;
+    static Glib::RefPtr<Gdk::Pixbuf> grey_temp;
+    static Glib::RefPtr<Gdk::Pixbuf> drag_stop;
+    static Glib::RefPtr<Gdk::Pixbuf> drag_cond;
+    static Glib::RefPtr<Gdk::Pixbuf> drag_temp;
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     // Return position POS of glyph GLYPH in X/Y.  Return true iff displayed.
     static bool glyph_pos_to_xy(Widget glyph, XmTextPosition pos,
 				Position& x, Position& y);
@@ -621,6 +635,10 @@ private:
     // Helpers needed by glyphs_to_be_changed
     static bool change_glyphs;
     static WidgetArray changed_glyphs;
+
+#else // NOT IF_MOTIF
+    static void CreateGlyphsNow(void);
+#endif // IF_MOTIF
 
     // Callback when state has been reset
     static void reset_done(const string& answer, void *data);
@@ -759,8 +777,10 @@ public:
     static bool cache_source_files;
     static bool cache_machine_code;
 
+#ifdef IF_MOTIF
     // Set whether glyphs are to be displayed
     static void set_display_glyphs(bool value);
+#endif // IF_MOTIF
 
     // Set whether line numbers are to be displayed
     static void set_display_line_numbers(bool value);
@@ -777,11 +797,13 @@ public:
     // Set the indentation
     static void set_indent(int source_indent, int code_indent);
 
+#ifdef IF_MOTIF
     // Set the max number of glyphs
     static void set_max_glyphs(int max_glyphs);
 
     // Whether to cache glyph images
     static bool cache_glyph_images;
+#endif // IF_MOTIF
 
     // Maximum length of expr in source popup
     static int max_popup_expr_length;
@@ -904,8 +926,10 @@ public:
     // Get the line at POSITION
     static string get_line(string position);
 
+#ifdef IF_MOTIF
     // Get a help string for GLYPH; return 0 if none
     static MString help_on_glyph(Widget glyph, bool detailed);
+#endif // IF_MOTIF
     static MString help_on_pos(Widget w, XmTextPosition pos, 
 			       XmTextPosition& ref, bool detailed);
 
