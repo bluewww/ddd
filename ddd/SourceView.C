@@ -5820,8 +5820,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
     bool in_text;
     static int bp_nr;
     static string address;
-    assert(w == text_w);
-    bool pos_found = get_line_of_pos(text_w, pos, line_nr, address, in_text, bp_nr);
+    bool pos_found = get_line_of_pos(w, pos, line_nr, address, in_text, bp_nr);
 
     bool right_of_text = 
 	pos < XmTextPosition(current_text(w).length()) 
