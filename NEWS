@@ -3,7 +3,9 @@ DDD News						-*- text -*-
 
 DDD-3.3.12-test
 ==========
-
+- Fixed a bug parsing the gdb annotations -- this should improve
+  the source code tracking accuracy.
+- Fixed a bug where gdb annotations were sent to the command window.
 - GNU Make debugger support
 - Fixes to Bash debugger (remove stack movement crashes, show
   breakpoints), better word parsing, e.g ${foo[@]}
