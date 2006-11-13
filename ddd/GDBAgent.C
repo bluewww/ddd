@@ -682,7 +682,7 @@ bool GDBAgent::ends_with_prompt (const string& ans)
 	    return true;
 	}
 
-	// In annotation level 2, GDB `annotates' its prompt.
+	// In annotation level 1, GDB `annotates' its prompt.
 	if (answer.contains("\032\032prompt\n", -1))
 	    return true;
 
@@ -1282,14 +1282,21 @@ void GDBAgent::strip_control(string& answer) const
 	    break;
 
 	case '\032':
-	    // In annotation level 2, GDB sends out `annotation'
-	    // sequences like `\n\032\032prompt\n'.  Future DDD
-	    // versions might want to look at these annotations; right
-	    // now, we simply weed them out.
-	    if (target_index > 0 &&
-		answer[target_index - 1] == '\n' &&
-		source_index + 1 < int(answer.length()) && 
-		answer[source_index + 1] == '\032')
+	    // In annotation level 1, GDB sends out `annotation'
+	    // sequences like `\n\032\032prompt\n' or `\032\032prompt\n'.
+	    // We use some of these to find the current source position.
+	    if (
+		  (
+		    ( // if we've just seen a newline
+		 	target_index > 0 && answer[target_index - 1] == '\n'
+		    )
+		    ||   // or if this is the start of the line
+		    target_index == 0
+		  )
+		  &&    // and the next character's also a Ctrl-Z
+		  source_index + 1 < int(answer.length()) &&
+		  answer[source_index + 1] == '\032'
+	        )
 	    {
 		// Ignore everything up to and including the next '\n'.
 		int i = source_index;
@@ -1309,10 +1316,12 @@ void GDBAgent::strip_control(string& answer) const
 		else
 		{
 		    // Annotation found -- ignore it
-		    assert(answer[target_index - 1] == '\n');
-		    target_index--;
-
-		    assert(answer[i] == '\n');
+		    if (target_index > 0)
+		    {
+			assert(answer[target_index - 1] == '\n');
+			target_index--;
+			assert(answer[i] == '\n');
+		    }
 		    source_index = i;
 		}
 	    }
