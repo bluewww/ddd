@@ -6,8 +6,65 @@ bool
 GtkMarkedTextView::on_expose_event(GdkEventExpose *event)
 {
     Gtk::TextView::on_expose_event(event);
+    std::list<GtkGlyphMark *>::iterator iter;
+    for (iter = marks.begin(); iter != marks.end(); iter++) {
+	std::cerr << "AT (" << (*iter)->x << "," << (*iter)->y << ")\n";
+	Glib::RefPtr<Gdk::Window> win = get_window(Gtk::TEXT_WINDOW_TEXT);
+	Glib::RefPtr<Gtk::Style> style = get_style();
+	Glib::RefPtr<Gdk::GC> gc = style->get_light_gc(Gtk::STATE_NORMAL);
+	Glib::RefPtr<Gdk::Pixbuf> glyph = (*iter)->glyph;
+	int ix, iy;
+	buffer_to_window_coords(Gtk::TEXT_WINDOW_TEXT,
+				(*iter)->x, (*iter)->y,
+				ix, iy);
+	win->draw_pixbuf(gc, glyph, 0, 0, ix, iy,
+			 glyph->get_width(), glyph->get_height(),
+			 Gdk::RGB_DITHER_NONE, 0, 0);
+    }
 }
 
+
+GtkGlyphMark *
+GtkMarkedTextView::map_glyph(Glib::RefPtr<Gdk::Pixbuf> glyph, int x, int y)
+{
+    std::cerr << "GtkMarkedTextView::map_glyph(Glib::RefPtr<Gdk::Pixbuf> glyph, double x, double y)\n";
+    GtkGlyphMark *new_mark = new GtkGlyphMark(glyph, x, y);
+    marks.push_back(new_mark);
+}
+
+bool
+GtkMarkedTextView::pos_to_xy(long pos, int &x, int &y)
+{
+    Gtk::TextIter iter;
+    iter = get_buffer()->get_iter_at_offset(pos);
+    Gdk::Rectangle location;
+    get_iter_location(iter, location);
+#if 0
+    int ix, iy;
+    buffer_to_window_coords(Gtk::TEXT_WINDOW_TEXT,
+			    location.get_x(), location.get_y(),
+			    x, y);
+#else
+    x = (int)location.get_x();
+    y = (int)location.get_y();
+#endif
+    std::cerr << "WHAT TO RETURN?\n";
+    return true;
+}
+
+GtkGlyphMark *
+GtkMarkedTextView::map_glyph(Glib::RefPtr<Gdk::Pixbuf> glyph, long pos)
+{
+    int x, y;
+    pos_to_xy(pos, x, y);
+    return map_glyph(glyph, x, y);
+}
+
+void
+GtkMarkedTextView::unmap_glyph(GtkGlyphMark *mark)
+{
+    std::cerr << "GtkMarkedTextView::unmap_glyph(GtkGlyphMark *mark)\n";
+}
 
 GtkScrolledText::GtkScrolledText(void)
 {
@@ -194,18 +251,15 @@ GtkScrolledText::get_selection_bounds(long &begin, long &end)
 }
 
 bool
-GtkScrolledText::pos_to_xy(long pos, double &x, double &y)
+GtkScrolledText::pos_to_xy(long pos, int &x, int &y)
 {
     Gtk::TextIter iter;
     iter = tb_->get_iter_at_offset(pos);
     Gdk::Rectangle location;
     tv_.get_iter_location(iter, location);
-    int ix, iy;
     tv_.buffer_to_window_coords(Gtk::TEXT_WINDOW_TEXT,
 				location.get_x(), location.get_y(),
-				ix, iy);
-    x = ix;
-    y = iy;
+				x, y);
     std::cerr << "pos_to_xy: what to return?\n";
     return true;
 }

@@ -9066,24 +9066,24 @@ void SourceView::map_glyph(Glyph_T& glyph, Position x, Position y)
 }
 
 
+#endif // IF_MOTIF
+
 // True if code/source glyphs need to be updated
 bool SourceView::update_code_glyphs   = false;
 bool SourceView::update_source_glyphs = false;
 
-#endif // IF_MOTIF
-
 // Update glyphs for widget GLYPH (0: all)
 void SourceView::update_glyphs(Widget glyph)
 {
-#ifdef IF_MOTIF
-    static XtWorkProcId update_glyph_id = NO_TIMER;
-
     if (glyph == 0)
 	update_source_glyphs = update_code_glyphs = true;
     else if (is_source_widget(glyph))
 	update_source_glyphs = true;
     else if (is_code_widget(glyph))
 	update_code_glyphs = true;
+
+#ifdef IF_MOTIF
+    static XtWorkProcId update_glyph_id = NO_TIMER;
 
     if (update_glyph_id != NO_TIMER) {
 	XtRemoveTimeOut(update_glyph_id);
@@ -9103,6 +9103,7 @@ void SourceView::update_glyphs(Widget glyph)
 			UpdateGlyphsWorkProc, XtPointer(&update_glyph_id));
 #else // NOT IF_MOTIF
     std::cerr << "Update glyphs\n";
+    update_glyphs_now();
 #endif // IF_MOTIF
 }
 
@@ -9471,6 +9472,7 @@ bool SourceView::glyph_pos_to_xy(Widget glyph, XmTextPosition pos,
 #endif // IF_MOTIF
 
 #ifdef IF_MOTIF
+
 // Map stop sign GLYPH at position POS.  Get widget from STOPS[COUNT];
 // store location in POSITIONS.  Return mapped widget (0 if none)
 Widget SourceView::map_stop_at(Widget glyph, XmTextPosition pos,
@@ -9521,9 +9523,32 @@ Widget SourceView::map_stop_at(Widget glyph, XmTextPosition pos,
 
     return 0;
 }
+
+#else // NOT IF_MOTIF
+
+// Map stop sign GLYPH at position POS.  Get widget from STOPS[COUNT];
+// store location in POSITIONS.  Return mapped widget (0 if none)
+GtkGlyphMark *SourceView::map_stop_at(GtkScrolledText *w, XmTextPosition pos,
+				      Glib::RefPtr<Gdk::Pixbuf> stop,
+				      TextPositionArray& positions)
+{
+    GtkMarkedTextView &view = w->view();
+
+    int x, y;
+    view.pos_to_xy(pos, x, y);
+    for (int i = 0; i < positions.size(); i++)
+	if (pos == positions[i])
+	    x += multiple_stop_x_offset;
+
+    GtkGlyphMark *glyph = view.map_glyph(stop, x + stop_x_offset, y);
+    positions += pos;
+    return glyph;
+}
+
 #endif // IF_MOTIF
 
 #ifdef IF_MOTIF
+
 // Map arrow in GLYPH at POS.  Return mapped arrow widget (0 if none)
 Widget SourceView::map_arrow_at(Widget glyph, XmTextPosition pos)
 {
@@ -9590,6 +9615,33 @@ Widget SourceView::map_arrow_at(Widget glyph, XmTextPosition pos)
     }
     return 0;
 }
+
+#else // NOT IF_MOTIF
+
+// Map arrow in GLYPH at POS.  Return mapped arrow widget (0 if none)
+GtkGlyphMark *SourceView::map_arrow_at(GtkScrolledText *w, XmTextPosition pos)
+{
+    GtkMarkedTextView &view = w->view();
+
+    if (undo_buffer.showing_earlier_state())
+    {
+	return view.map_glyph(past_arrow, pos);
+    }
+    else if (at_lowest_frame && signal_received)
+    {
+	return view.map_glyph(signal_arrow, pos);
+    }
+    else if (at_lowest_frame)
+    {
+	return view.map_glyph(plain_arrow, pos);
+    }
+    else
+    {
+	return view.map_glyph(grey_arrow, pos);
+    }
+    return NULL;
+}
+
 #endif // IF_MOTIF
 
 #ifdef IF_MOTIF
@@ -9786,6 +9838,7 @@ TIMEOUT_RETURN_TYPE SourceView::UpdateGlyphsWorkProc(TM_ALIST_1(XtP(XtIntervalId
 
 
 #ifdef IF_MOTIF
+
 // The function that does the real work
 void SourceView::update_glyphs_now()
 {
@@ -9931,6 +9984,120 @@ void SourceView::update_glyphs_now()
 
     // std::clog << "done.\n";
 }
+
+#else // NOT IF_MOTIF
+
+// The function that does the real work
+void SourceView::update_glyphs_now()
+{
+    std::clog << "Updating glyphs NOW\n";
+
+    // FIXME if (update_source_glyphs)
+    {
+	// Show current execution position
+	XmTextPosition pos = XmTextPosition(-1);
+
+	if (display_glyphs &&
+	    (is_current_file(last_execution_file) ||
+	     base_matches(last_execution_file, current_file_name)) &&
+	     line_count > 0 &&
+	     last_execution_line > 0 &&
+	     last_execution_line <= line_count)
+	{
+	    pos = pos_of_line(last_execution_line);
+	}
+
+	map_arrow_at(source_text_w, pos);
+    }
+
+    // FIXME if (update_code_glyphs)
+    {
+	// Show current PC
+	XmTextPosition pos = XmTextPosition(-1);
+
+	if (display_glyphs && !last_execution_pc.empty())
+	    pos = find_pc(last_execution_pc);
+
+	map_arrow_at(code_text_w, pos);
+    }
+
+    // Map breakpoint glyphs
+    for (int k = 0; k < 2; k++)
+    {
+	if (k == 0 && !update_source_glyphs)
+	    continue;
+	if (k == 1 && !update_code_glyphs)
+	    continue;
+
+	if (display_glyphs)
+	{
+	    TextPositionArray positions;
+	    
+	    MapRef ref;
+	    for (BreakPoint *bp = bp_map.first(ref);
+		 bp != 0;
+		 bp = bp_map.next(ref))
+	    {
+		if (bp->type() != BREAKPOINT)
+		    continue;
+
+		Widget& bp_glyph = k ? bp->code_glyph() : bp->source_glyph();
+		SCROLLEDTEXT_P text_w    = k ? code_text_w      : source_text_w;
+		bp_glyph = 0;
+
+		XmTextPosition pos;
+		if (k == 0)
+		{
+		    // Find source position
+		    if (!bp_matches(bp)
+			|| line_count <= 0
+			|| bp->line_nr() <= 0
+			|| bp->line_nr() > line_count)
+			continue;
+
+		    pos = pos_of_line(bp->line_nr());
+		}
+		else
+		{
+		    // Find code position
+		    pos = find_pc(bp->address());
+		}
+
+		if (bp->dispo() != BPKEEP)
+		{
+		    // Temporary breakpoint
+		    if (bp->enabled())
+			map_stop_at(text_w, pos, plain_temp, positions);
+		    else
+			map_stop_at(text_w, pos, grey_temp, positions);
+		}
+		else if (!bp->condition().empty() || bp->ignore_count() != 0)
+		{
+		    // Conditional breakpoint
+		    if (bp->enabled())
+			map_stop_at(text_w, pos, plain_cond, positions);
+		    else
+			map_stop_at(text_w, pos, grey_cond, positions);
+		}
+		else
+		{
+		    // Ordinary breakpoint
+		    if (bp->enabled())
+			map_stop_at(text_w, pos, plain_stop, positions);
+		    else
+			map_stop_at(text_w, pos, grey_stop, positions);
+		}
+	    }
+	}
+
+    }
+
+    update_source_glyphs = false;
+    update_code_glyphs   = false;
+
+    // std::clog << "done.\n";
+}
+
 #endif // IF_MOTIF
 
 

@@ -17,6 +17,11 @@ struct GtkGlyphMark
     Glib::RefPtr<Gdk::Pixbuf> glyph;
     int x;
     int y;
+    GtkGlyphMark(Glib::RefPtr<Gdk::Pixbuf> g0, int x0, int y0) {
+	glyph = g0;
+	x = x0;
+	y = y0;
+    }
 };
 
 class GtkMarkedTextView: public Gtk::TextView
@@ -24,8 +29,10 @@ class GtkMarkedTextView: public Gtk::TextView
     bool on_expose_event(GdkEventExpose *event);
     std::list<GtkGlyphMark *> marks;
 public:
-    void map_glyph(Glib::RefPtr<Gdk::Pixbuf> glyph, int x, int y);
-    void unmap_glyph(Glib::RefPtr<Gdk::Pixbuf> glyph, int x, int y);
+    bool pos_to_xy(long pos, int &x, int &y);
+    GtkGlyphMark *map_glyph(Glib::RefPtr<Gdk::Pixbuf> glyph, int x, int y);
+    GtkGlyphMark *map_glyph(Glib::RefPtr<Gdk::Pixbuf> glyph, long pos);
+    void unmap_glyph(GtkGlyphMark *mark);
 };
 
 class GtkScrolledText: public Gtk::ScrolledWindow
@@ -57,7 +64,7 @@ public:
     long find_forward(gunichar c, long start=0);
     long find_backward(gunichar c, long start=-1);
     long xy_to_pos(double x, double y);
-    bool pos_to_xy(long pos, double &x, double &y);
+    bool pos_to_xy(long pos, int &x, int &y);
     int get_rows();
     int get_columns();
 };

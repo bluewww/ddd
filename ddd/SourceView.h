@@ -594,16 +594,24 @@ private:
     // Return position POS of glyph GLYPH in X/Y.  Return true iff displayed.
     static bool glyph_pos_to_xy(Widget glyph, XmTextPosition pos,
 				Position& x, Position& y);
+#endif // IF_MOTIF
 
+#ifdef IF_MOTIF
     // Map stop sign in W at position POS.  Get widget from STOPS[COUNT];
     // store location in POSITIONS.  Return mapped widget (0 if none)
     static Widget map_stop_at(Widget w, XmTextPosition pos,
 			      WidgetArray& stops, int& count,
 			      TextPositionArray& positions);
-
     // Map arrow/drag arrow/drag stop in W at POS.  If ORIGIN is
     // given, use colors from ORIGIN.
     static Widget map_arrow_at     (Widget w, XmTextPosition pos);
+#else // NOT IF_MOTIF
+    static GtkGlyphMark *map_stop_at(GtkScrolledText *w, XmTextPosition pos,
+				     Glib::RefPtr<Gdk::Pixbuf> stop,
+				     TextPositionArray& positions);
+    static GtkGlyphMark *map_arrow_at(GtkScrolledText *w, XmTextPosition pos);
+#endif // IF_MOTIF
+#ifdef IF_MOTIF
     static Widget map_drag_arrow_at(Widget w, XmTextPosition pos,
 				    Widget origin = 0);
     static inline void unmap_drag_arrow(Widget w)
@@ -618,17 +626,19 @@ private:
     }
     static void copy_colors(Widget w, Widget origin);
 
+    // Helping background procedures
+    static TIMEOUT_RETURN_TYPE UpdateGlyphsWorkProc(TM_ALIST_1(XtP(XtIntervalId *)));
+    static WP_RETURN_TYPE CreateGlyphsWorkProc(WP_ALIST_NULL);
+#endif // IF_MOTIF
+
     // True if code/source glyphs need to be updated
     static bool update_code_glyphs;
     static bool update_source_glyphs;
 
-    // Helping background procedures
-    static TIMEOUT_RETURN_TYPE UpdateGlyphsWorkProc(TM_ALIST_1(XtP(XtIntervalId *)));
-    static WP_RETURN_TYPE CreateGlyphsWorkProc(WP_ALIST_NULL);
-
     // Update all glyphs now (without delay).
     static void update_glyphs_now();
 
+#ifdef IF_MOTIF
     // Return all glyphs that would change
     static const WidgetArray& glyphs_to_be_updated();
 
