@@ -748,8 +748,6 @@ static XtIntervalId process_timeout = NO_TIMER;
 
 static void gdb_enqueue_command(const Command& c)
 {
-    std::cerr << "gdb_enqueue_command(" << c.command << ")\n";
-
     if (c.verbose)
     {
 	string title = c.command;

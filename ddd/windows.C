@@ -1700,7 +1700,8 @@ void manage_paned_child(Widget w)
 
     paned_changed(w);
 #else // NOT IF_MOTIF
-    std::cerr << "manage_paned_child() not implemented\n";
+    static int errcnt = 0;
+    if (errcnt++ == 0) std::cerr << "manage_paned_child() not implemented\n";
 #endif // IF_MOTIF
 }
 
@@ -1785,7 +1786,8 @@ void unmanage_paned_child(Widget w)
 
     paned_changed(w);
 #else // NOT IF_MOTIF
-    std::cerr << "unmanage_paned_child() not implemented\n";
+    static int errcnt = 0;
+    if (errcnt++ == 0) std::cerr << "unmanage_paned_child() not implemented\n";
 #endif // IF_MOTIF
 }
 

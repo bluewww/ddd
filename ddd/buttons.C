@@ -1056,7 +1056,8 @@ void verify_button(Widget button)
 				    XtPointer(&verify_id));
     }
 #else // NOT IF_MOTIF
-    std::cerr << "VerifyButton not supported.\n";
+    static int errcnt = 0;
+    if (!errcnt++) std::cerr << "VerifyButton not supported.\n";
 #endif // IF_MOTIF
 }
 

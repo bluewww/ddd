@@ -2,11 +2,24 @@
 
 #include "GtkScrolledText.h"
 
+#include "SourceView.h"
+
+extern SCROLLEDTEXT_P gdb_w;
+
 bool
 GtkMarkedTextView::on_expose_event(GdkEventExpose *event)
 {
     Gtk::TextView::on_expose_event(event);
     std::list<GtkGlyphMark *>::iterator iter;
+    if (this == &SourceView::source_text_w->view())
+	std::cerr << "SOURCE ";
+    else if (this == &SourceView::code_text_w->view())
+	std::cerr << "CODE   ";
+    else if (this == &gdb_w->view())
+	std::cerr << "GDB    ";
+    else
+	std::cerr << "????   ";
+    std::cerr << "LIST: " << marks.size() << "\n";
     for (iter = marks.begin(); iter != marks.end(); iter++) {
 	std::cerr << "AT (" << (*iter)->x << "," << (*iter)->y << ")\n";
 	Glib::RefPtr<Gdk::Window> win = get_window(Gtk::TEXT_WINDOW_TEXT);
@@ -27,29 +40,19 @@ GtkMarkedTextView::on_expose_event(GdkEventExpose *event)
 GtkGlyphMark *
 GtkMarkedTextView::map_glyph(Glib::RefPtr<Gdk::Pixbuf> glyph, int x, int y)
 {
-    std::cerr << "GtkMarkedTextView::map_glyph(Glib::RefPtr<Gdk::Pixbuf> glyph, double x, double y)\n";
     GtkGlyphMark *new_mark = new GtkGlyphMark(glyph, x, y);
     marks.push_back(new_mark);
 }
 
-bool
+void
 GtkMarkedTextView::pos_to_xy(long pos, int &x, int &y)
 {
     Gtk::TextIter iter;
     iter = get_buffer()->get_iter_at_offset(pos);
     Gdk::Rectangle location;
     get_iter_location(iter, location);
-#if 0
-    int ix, iy;
-    buffer_to_window_coords(Gtk::TEXT_WINDOW_TEXT,
-			    location.get_x(), location.get_y(),
-			    x, y);
-#else
     x = (int)location.get_x();
     y = (int)location.get_y();
-#endif
-    std::cerr << "WHAT TO RETURN?\n";
-    return true;
 }
 
 GtkGlyphMark *
@@ -64,6 +67,29 @@ void
 GtkMarkedTextView::unmap_glyph(GtkGlyphMark *mark)
 {
     std::cerr << "GtkMarkedTextView::unmap_glyph(GtkGlyphMark *mark)\n";
+    std::list<GtkGlyphMark *>::iterator iter;
+    for (iter = marks.begin(); iter != marks.end(); iter++) {
+	if ((*iter) == mark) {
+	    std::cerr << "DELETING " << mark << "\n";
+	    marks.erase(iter);
+	    break;
+	}
+    }
+}
+
+void
+GtkMarkedTextView::unmap_glyph(Glib::RefPtr<Gdk::Pixbuf> glyph)
+{
+    std::cerr << "GtkMarkedTextView::unmap_glyph(Glib::RefPtr<Gdk::Pixbuf> glyph)\n";
+    std::list<GtkGlyphMark *>::iterator iter;
+redo:
+    for (iter = marks.begin(); iter != marks.end(); iter++) {
+	if ((*iter)->glyph == glyph) {
+	    std::cerr << "DELETING " << (*iter) << "\n";
+	    marks.erase(iter);
+	    goto redo;
+	}
+    }
 }
 
 GtkScrolledText::GtkScrolledText(void)

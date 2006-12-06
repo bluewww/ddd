@@ -3127,7 +3127,8 @@ TIMEOUT_RETURN_TYPE DataDisp::RefreshArgsCB(TM_ALIST_NULL)
 #ifdef IF_MOTIF
     XmTextSetString(graph_selection_w, XMST(cmd.chars()));
 #else // NOT IF_MOTIF
-    std::cerr << "Set text in graph_selection_w not implemented\n";
+    static int errcnt = 0;
+    if (errcnt++ == 0) std::cerr << "Set text in graph_selection_w not implemented\n";
     // graph_selection_w->set_text(XMST(cmd.chars()));
 #endif // IF_MOTIF
     lose_selection = true;

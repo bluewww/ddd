@@ -311,6 +311,11 @@ class SourceView {
 
     static Widget toplevel_w;	 // Top-level widget
 
+#ifdef NAG_ME
+#warning This for debugging only.
+#endif
+    friend class GtkMarkedTextView;
+
     static BOX_P source_form_w;          // Form around text and glyphs
     static SCROLLEDTEXT_P source_text_w; // Source text
     static BOX_P code_form_w;            // Form around Machine code and glyphs

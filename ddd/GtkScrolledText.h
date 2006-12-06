@@ -29,10 +29,13 @@ class GtkMarkedTextView: public Gtk::TextView
     bool on_expose_event(GdkEventExpose *event);
     std::list<GtkGlyphMark *> marks;
 public:
-    bool pos_to_xy(long pos, int &x, int &y);
+    void pos_to_xy(long pos, int &x, int &y);
     GtkGlyphMark *map_glyph(Glib::RefPtr<Gdk::Pixbuf> glyph, int x, int y);
     GtkGlyphMark *map_glyph(Glib::RefPtr<Gdk::Pixbuf> glyph, long pos);
+    // Unmark a particular glyph:
     void unmap_glyph(GtkGlyphMark *mark);
+    // Unmark all instances of a glyph:
+    void unmap_glyph(Glib::RefPtr<Gdk::Pixbuf> glyph);
 };
 
 class GtkScrolledText: public Gtk::ScrolledWindow

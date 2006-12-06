@@ -164,8 +164,6 @@ static void wait_for_gdb_reply(GDBReply *reply, int timeout)
 	Glib::MainContext::get_default()->iteration(true);
 #endif // IF_MOTIF
     }
-    std::cerr << "reply->received=" << reply->received << "\n";
-    std::cerr << "reply->answered=" << reply->answered << "\n";
 
     if (reply->answered || !reply->received)
     {

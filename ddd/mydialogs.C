@@ -157,7 +157,8 @@ void setLabelList (TREEVIEW_P  selectionList,
     freeXmStringTable(xmlabel_list, list_length);
 #else // NOT IF_MOTIF
     Glib::RefPtr<Gtk::TreeModel> model = selectionList->get_model();
-    std::cerr << "setLabelList not supported YET\n";
+    static int errcnt = 0;
+    if (errcnt++ == 0) std::cerr << "setLabelList not supported YET\n";
 #ifdef NAG_ME
 #warning The problem is we cannot use insert(), append() on an arbitrary
 #warning Gtk::TreeModel.  We need to have the derived ListStore.

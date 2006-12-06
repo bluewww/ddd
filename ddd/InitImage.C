@@ -219,10 +219,8 @@ XIMAGE_P CreateImageFromBitmapData(unsigned char *bits, int width, int height)
 }
 
 #ifdef IF_MOTIF
+
 Boolean InstallImage(XIMAGE_P image, const char *image_name)
-#else // NOT IF_MOTIF
-Boolean InstallImage(XIMAGE_P image, XIMAGE_P *image_name)
-#endif // IF_MOTIF
 {
     // Dave Larson <davlarso@plains.nodak.edu> writes: DDD doesn't
     // work with the Motif 2.1 libraries shipped w/ Solaris 7: the
@@ -235,17 +233,22 @@ Boolean InstallImage(XIMAGE_P image, XIMAGE_P *image_name)
     // arguments.  If I simply change the three calls to
     // XmInstallImage to Xm21InstallImage, the problem is solved.
 
-#ifdef IF_MOTIF
 #if HAVE_XM21INSTALLIMAGE
     return Xm21InstallImage(image, XMST(image_name));
 #else
     return XmInstallImage(image, XMST(image_name));
 #endif
-#else // NOT IF_MOTIF
-    std::cerr << "setting image " << image_name << "\n";
-    *image_name = image;
-#endif // IF_MOTIF
 }
+
+#else // NOT IF_MOTIF
+
+// Just store it in a variable!
+Boolean InstallImage(XIMAGE_P image, XIMAGE_P *image_name)
+{
+    *image_name = image;
+}
+
+#endif // IF_MOTIF
 
 // Install the given X bitmap as NAME
 #ifdef IF_MOTIF

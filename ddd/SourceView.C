@@ -9623,6 +9623,10 @@ GtkGlyphMark *SourceView::map_arrow_at(GtkScrolledText *w, XmTextPosition pos)
 {
     GtkMarkedTextView &view = w->view();
 
+    view.unmap_glyph(signal_arrow);
+    view.unmap_glyph(plain_arrow);
+    view.unmap_glyph(grey_arrow);
+    view.unmap_glyph(past_arrow);
     if (undo_buffer.showing_earlier_state())
     {
 	return view.map_glyph(past_arrow, pos);
@@ -10033,6 +10037,19 @@ void SourceView::update_glyphs_now()
 	{
 	    TextPositionArray positions;
 	    
+	    GtkMarkedTextView *view;
+	    if (k == 0)
+		view = &source_text_w->view();
+	    if (k == 1)
+		view = &code_text_w->view();
+	    
+	    view->unmap_glyph(plain_temp);
+	    view->unmap_glyph(grey_temp);
+	    view->unmap_glyph(plain_cond);
+	    view->unmap_glyph(grey_cond);
+	    view->unmap_glyph(plain_stop);
+	    view->unmap_glyph(grey_stop);
+
 	    MapRef ref;
 	    for (BreakPoint *bp = bp_map.first(ref);
 		 bp != 0;
