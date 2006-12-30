@@ -38,6 +38,9 @@
 #define Ddd_NAME     "@Ddd@"
 #define DDD_NAME     "@DDD@"
 
+#define ddd_DIR_NAME ".gddd"
+#define DDD_ENV_NAME "GDDD"
+
 // The product version, as `MAJOR-NUMBER.MINOR-NUMBER[.PATCHLEVEL]'.
 // A version in the form `YYYY-MM-DD' is a release-of-the-day, i.e. a
 // snapshot of the current development tree.

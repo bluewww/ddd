@@ -134,16 +134,16 @@ const string NO_SESSION = "[none]";
 
 string session_state_dir()
 {
-    const char *ddd_state = getenv(DDD_NAME "_STATE");
+    const char *ddd_state = getenv(DDD_ENV_NAME "_STATE");
     if (ddd_state != 0)
 	return ddd_state;
     else
-	return string(gethome()) + "/." ddd_NAME;
+	return string(gethome()) + "/" ddd_DIR_NAME;
 }
 
 static string session_base_dir()
 {
-    const char *ddd_sessions = getenv(DDD_NAME "_SESSIONS");
+    const char *ddd_sessions = getenv(DDD_ENV_NAME "_SESSIONS");
     if (ddd_sessions != 0)
 	return ddd_sessions;
     else
@@ -909,6 +909,7 @@ static string get_resource(XrmDatabase db, string name, string cls)
 
     return "";		// Not found
 #else // NOT IF_MOTIF
+#if 0
     __gnu_cxx::hash_map<const char *, XrmValue *>::iterator entry = db->find(name.chars());
     if (entry != db->end()) {
 #ifdef NAG_ME
@@ -919,6 +920,10 @@ static string get_resource(XrmDatabase db, string name, string cls)
 	    return val->get();
 	}
     }
+#else
+    std::cerr << "ERROR: CANNOT GET RESOURCE\n";
+    return string("");
+#endif
 #endif // IF_MOTIF
 }
 
@@ -1226,7 +1231,7 @@ void OpenSessionCB(CB_ARG_LIST_1(w))
 // Name of restart session
 string restart_session()
 {
-    if (getenv(DDD_NAME "_SESSION") != 0)
+    if (getenv(DDD_ENV_NAME "_SESSION") != 0)
 	return getenv(DDD_NAME "_SESSION");
     return "";
 }
@@ -1234,7 +1239,7 @@ string restart_session()
 void set_restart_session(const string& session)
 {
     static string env;
-    env = DDD_NAME "_SESSION=" + session;
+    env = DDD_ENV_NAME "_SESSION=" + session;
     putenv(CONST_CAST(char*,env.chars()));
 }
 

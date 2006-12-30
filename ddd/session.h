@@ -62,7 +62,11 @@ string session_file(const string& session, const char *name);
 // Custom calls
 inline string session_state_file(const string& session)
 {
+#ifdef IF_MOTIF
     return session_file(session, "init");
+#else // NOT IF_MOTIF
+    return session_file(session, "ginit");
+#endif // IF_MOTIF
 }
 
 string session_core_file(const string& session);
@@ -84,7 +88,11 @@ inline string session_log_file()
 
 inline string session_tips_file()
 {
+#ifdef IF_MOTIF
     return session_file(DEFAULT_SESSION, "tips");
+#else // NOT IF_MOTIF
+    return session_file(DEFAULT_SESSION, "gtips");
+#endif // IF_MOTIF
 }
 
 inline string session_themes_dir()

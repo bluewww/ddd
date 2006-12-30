@@ -308,3 +308,16 @@ GtkScrolledText::get_insertion_position(void)
     return iter.get_offset();
 }
 
+int GtkScrolledText::get_rows()
+{
+    std::cerr << "GtkScrolledText: ROWS\n";
+    return 0;
+}
+
+int
+GtkScrolledText::get_columns()
+{
+    std::cerr << "GtkScrolledText: COLUMNS\n";
+    return 0;
+}
+

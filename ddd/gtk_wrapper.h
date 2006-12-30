@@ -162,7 +162,7 @@ typedef double DimType;
 #include <glibmm/listhandle.h>
 #include <glibmm/main.h>
 #include <gtkmm/widget.h>
-
+#include <libxml/tree.h>
 #include <ext/hash_map>
 
 // Macros
@@ -604,6 +604,13 @@ typedef Gtk::Container *CONTAINER_P;
 
 // End widgets
 
+// Resources
+
+#define XmNcolumns "columns"
+#define XmNrows "rows"
+#define XmNwidth "width"
+#define XmNheight "height"
+
 // Windows
 
 #include <gtkmm/window.h>
@@ -785,7 +792,21 @@ typedef Gtk::TextView *TEXTVIEW_P;
 
 typedef Glib::ValueBase XrmValue;
 
+#if 0
 typedef  __gnu_cxx::hash_map<const char *, XrmValue *> *XrmDatabase;
+#else
+typedef xmlDoc *XrmDatabase;
+#endif
+
+typedef struct _XtResource {
+    String	resource_name;	/* Resource name			    */
+    String	resource_class;	/* Resource class			    */
+    String	resource_type;	/* Representation type desired		    */
+    Cardinal	resource_size;	/* Size in bytes of representation	    */
+    Cardinal	resource_offset;/* Offset from base to put resource value   */
+    String	default_type;	/* representation type of specified default */
+    XtPointer	default_addr;	/* Address of default resource		    */
+} XtResource, *XtResourceList;
 
 extern XrmDatabase get_string_database(const char *s);
 void merge_databases(XrmDatabase source_db, XrmDatabase target_db);
@@ -797,7 +818,48 @@ Gtk::Window *find_toplevel(Gtk::Widget *w);
 #define XrmGetFileDatabase(f) get_file_database(f)
 extern XrmDatabase get_file_database(const char *f);
 
+#define XtRBitmap "Bitmap"
+#define XtRBool "Bool"
+#define XtRBoolean "Boolean"
+#define XtRCallback "Callback"
+#define XtRCallProc "CallProc"
+#define XtRCardinal "Cardinal"
+#define XtRColor "Color"
+#define XtRColormap "Colormap"
+#define XtRCursor "Cursor"
+#define XtRDimension "Dimension"
+#define XtRDisplay "Display"
+#define XtREditMode "EditMode"
+#define XtREnum "Enum"
+#define XtRFile "File"
+#define XtRFloat "Float"
+#define XtRFont "Font"
+#define XtRFontStruct "FontStruct"
+#define XtRFunction "Function"
+#define XtRGeometry "Geometry"
+#define XtRImmediate "Immediate"
+#define XtRInitialState "InitialState"
+#define XtRInt "Int"
+#define XtRJustify "Justify"
+#define XtRLongBoolean "Bool"
+#define XtRObject "Object"
+#define XtROrientation "Orientation"
+#define XtRPixel "Pixel"
+#define XtRPixmap "Pixmap"
+#define XtRPointer "Pointer"
+#define XtRPosition "Position"
+#define XtRScreen "Screen"
+#define XtRShort "Short"
 #define XtRString "String"
+#define XtRStringArray "StringArray"
+#define XtRStringTable "StringTable"
+#define XtRUnsignedChar "UnsignedChar"
+#define XtRTranslationTable "TranslationTable"
+#define XtRVisual "Visual"
+#define XtRWidget "Widget"
+#define XtRWidgetClass "WidgetClass"
+#define XtRWidgetList "WidgetList"
+#define XtRWindow "Window"
 
 // End Databases
 

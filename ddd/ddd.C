@@ -2871,6 +2871,8 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 #ifdef NAG_ME
 #warning No resource database: no need for converters yet.
 #endif
+    get_application_resources(dddinit, &app_data,
+			      ddd_resources, ddd_resources_size);
 #endif // IF_MOTIF
 
     // From this point on, APP_DATA is valid.

@@ -89,6 +89,9 @@ extern int ptrace(int request, int pid, int addr, int data);
 #include <Xm/BulletinB.h>
 #include <Xm/MessageB.h>
 #include <Xm/PanedW.h>
+#else // NOT IF_MOTIF
+#include <libxml/tree.h>
+#include <gtkmm/paned.h>
 #endif // IF_MOTIF
 
 #include <stdio.h>
@@ -2303,6 +2306,8 @@ void check_options_file()
 // Write state
 //-----------------------------------------------------------------------------
 
+#ifdef IF_MOTIF
+
 static bool is_fallback_value(const string& resource, string val)
 {
 #ifdef IF_MOTIF
@@ -2493,11 +2498,9 @@ static string orientation_app_value(const string& name, unsigned char v,
 
 static string paned_widget_size(Widget w, bool height_only = false)
 {
-#ifdef IF_MOTIF
     string s;
     const Boolean check_default = False;
 
-#ifdef IF_MOTIF
     if (XmIsText(w) || XmIsTextField(w))
     {
 	// Store rows and columns
@@ -2524,43 +2527,6 @@ static string paned_widget_size(Widget w, bool height_only = false)
 	    }
 	}
     }
-#else // NOT IF_MOTIF
-    GtkScrolledText *scrolled_text;
-    Gtk::Entry *entry;
-    if (scrolled_text = dynamic_cast<GtkScrolledText *>(w))
-    {
-	// Store rows and columns
-	short columns = scrolled_text->get_columns();
-	if (!height_only && columns > 0)
-	{
-	    if (!s.empty())
-		s += '\n';
-	    s += int_app_value(string(XtName(w)) + "." + XmNcolumns, columns,
-			       check_default);
-	}
-
-	short rows = scrolled_text->get_rows();
-	if (rows > 0)
-	{
-	    if (!s.empty())
-		s += '\n';
-	    s += int_app_value(string(XtName(w)) + "." + XmNrows, rows,
-			       check_default);
-	}
-    }
-    else if (entry = dynamic_cast<Gtk::Entry *>(w))
-    {
-	// Store rows and columns
-	short columns = scrolled_text->get_columns();
-	if (!height_only && columns > 0)
-	{
-	    if (!s.empty())
-		s += '\n';
-	    s += int_app_value(string(XtName(w)) + "." + XmNcolumns, columns,
-			       check_default);
-	}
-    }
-#endif // IF_MOTIF
     else
     {
 	// We store the size of the paned child, in order to account
@@ -2585,12 +2551,6 @@ static string paned_widget_size(Widget w, bool height_only = false)
 	s += int_app_value(string(XtName(w)) + "." + XmNheight, height,
 			   check_default);
     }
-#else // NOT IF_MOTIF
-#ifdef NAG_ME
-#warning paned_widget_size unimplemented.
-#endif
-    string s("UNKNOWN");
-#endif // IF_MOTIF
     return s;
 }
 
@@ -2603,7 +2563,6 @@ static string widget_geometry(Widget w, bool include_size = false)
 {
     const Boolean check_default = False;
 
-#ifdef IF_MOTIF
     Dimension width, height;
     XtVaGetValues(w, XmNwidth, &width, XmNheight, &height, XtPointer(0));
 
@@ -2618,13 +2577,163 @@ static string widget_geometry(Widget w, bool include_size = false)
 
     return string_app_value(string(XtName(w)) + ".geometry", geo.chars(), 
 			    check_default);
-#else // NOT IF_MOTIF
-#ifdef NAG_ME
-#warning widget_geometry() unimplemented.
-#endif
-    return string("UNKNOWN");
-#endif // IF_MOTIF
 }
+
+#else // NOT IF_MOTIF
+
+static void
+set_xml_prop(xmlNodePtr tree, const char *name, const char *value, bool is_default=false)
+{
+  xmlNodePtr node = xmlNewChild(tree, NULL, (const xmlChar *)"entry", NULL);
+  xmlSetProp(node, (const xmlChar *)"name", (const xmlChar *)name);
+  xmlSetProp(node, (const xmlChar *)"value", (const xmlChar *)value);
+  if (is_default) xmlSetProp(node, (const xmlChar *)"is_default", (const xmlChar *)"1");
+}
+
+static void
+set_xml_prop(xmlNodePtr tree, const char *name, double val, bool is_default=false)
+{
+  char buf[80];
+  snprintf(buf, sizeof(buf), "%f", val);
+  set_xml_prop(tree, name, buf, is_default);
+}
+
+static void
+set_xml_prop(xmlNodePtr tree, const char *name, const double *val, int n, bool is_default=false)
+{
+  char buf[80];
+  int offset = 0;
+  int i;
+  for (i = 0; i < n; i++)
+    offset += snprintf(&buf[offset], sizeof(buf)-offset, " %f", val[i]);
+  set_xml_prop(tree, name, buf, is_default);
+}
+
+static void
+set_xml_prop(xmlNodePtr tree, const char *name, float *val, int n, bool is_default=false)
+{
+  char buf[80];
+  int offset = 0;
+  int i;
+  for (i = 0; i < n; i++)
+    offset += snprintf(&buf[offset], sizeof(buf)-offset, " %f", val[i]);
+  set_xml_prop(tree, name, buf, is_default);
+}
+
+static void
+set_xml_prop(xmlNodePtr tree, const char *name, int val, bool is_default=false)
+{
+  char buf[80];
+  snprintf(buf, sizeof(buf), "%d", val);
+  set_xml_prop(tree, name, buf, is_default);
+}
+
+static void
+set_xml_prop(xmlNodePtr tree, const char *name, unsigned int val, bool is_default=false)
+{
+  char buf[80];
+  snprintf(buf, sizeof(buf), "%u", val);
+  set_xml_prop(tree, name, buf, is_default);
+}
+
+static void
+set_xml_prop(xmlNodePtr tree, const char *name, const Widget *val, bool is_default=false)
+{
+  char buf[80];
+  snprintf(buf, sizeof(buf), "%p", val);
+  set_xml_prop(tree, name, buf, is_default);
+}
+
+static void set_xml_paned_widget_size(xmlNode *tree, Widget w, bool height_only = false)
+{
+    const Boolean check_default = False;
+
+    GtkScrolledText *scrolled_text;
+    Gtk::Entry *entry;
+    xmlNode *subtree = xmlNewChild(tree, NULL, (const xmlChar *)"paned", NULL);
+    if (!subtree) {
+	std::cerr << "Error: Failed to create XML subtree\n";
+	return;
+    }
+    xmlSetProp(subtree, (const xmlChar *)"name", (const xmlChar *)XtName(w));
+    if (scrolled_text = dynamic_cast<GtkScrolledText *>(w))
+    {
+	// Store rows and columns
+	short columns = scrolled_text->get_columns();
+	if (!height_only && columns > 0)
+	{
+	    set_xml_prop(subtree, XmNcolumns, columns, check_default);
+	}
+
+	short rows = scrolled_text->get_rows();
+	if (rows > 0)
+	{
+	    set_xml_prop(subtree, XmNrows, rows, check_default);
+	}
+    }
+    else if (entry = dynamic_cast<Gtk::Entry *>(w))
+    {
+	// Store rows and columns
+	short columns = entry->get_width_chars();
+	if (!height_only && columns > 0)
+	{
+	    set_xml_prop(subtree, XmNcolumns, columns, check_default);
+	}
+    }
+    else
+    {
+	// We store the size of the paned child, in order to account
+	// for scrolled windows etc.
+	Widget ref = w;
+	while (ref->get_parent() != 0 && !dynamic_cast<Gtk::Paned *>(ref->get_parent()))
+	    ref = ref->get_parent();
+	if (ref->get_parent() == 0)
+	    ref = w;
+
+	// Store absolute sizes
+	Dimension width  = ref->get_width();
+	Dimension height = ref->get_height();
+
+	if (!height_only)
+	    set_xml_prop(subtree, XmNwidth, width, check_default);
+
+	set_xml_prop(subtree, XmNheight, height, check_default);
+    }
+}
+
+inline void set_xml_paned_widget_height(xmlNode *tree, Widget w)
+{
+    set_xml_paned_widget_size(tree, w, true);
+}
+
+static void set_xml_widget_geometry(xmlNode *tree, const char *name, Widget w,
+				    bool include_size = false)
+{
+    const Boolean check_default = False;
+
+    Dimension width = w->get_width();
+    Dimension height = w->get_height();
+
+#ifdef NAG_ME
+#warning XGetWindowAttributes?
+#endif
+
+    std::ostringstream geometry;
+    if (include_size)
+	geometry << width << "x" << height;
+    // geometry << "+" << attr.x << "+" << attr.y;
+    string geo(geometry);
+
+    xmlNode *subtree = xmlNewChild(tree, NULL, (const xmlChar *)"geometry", NULL);
+    if (!subtree) {
+	std::cerr << "Failed to create XML subtree\n";
+	return;
+    }
+    xmlSetProp(subtree, (const xmlChar *)"name", (const xmlChar *)name);
+    set_xml_prop(subtree, "geometry", geo.chars(), check_default);
+}
+
+#endif // IF_MOTIF
 
 bool saving_options_kills_program(unsigned long flags)
 {
@@ -2783,10 +2892,12 @@ bool get_restart_commands(string& restart, unsigned long flags)
     return ok;
 }
 
+#ifdef IF_MOTIF
+
 bool save_options(unsigned long flags)
 {
-    std::cerr << "Skipping save_options...\n";
-    return true;
+    std::cerr << "Running save_options...\n";
+
     const bool create        = (flags & CREATE_OPTIONS);
     const bool save_session  = (flags & SAVE_SESSION);
     const bool save_geometry = (flags & SAVE_GEOMETRY);
@@ -2977,7 +3088,6 @@ bool save_options(unsigned long flags)
     os << int_app_value(XtNmaxUndoSize,
 			 app_data.max_undo_size, True) << '\n';
 
-#ifdef IF_MOTIF
     // Misc stuff
     os << "\n! Misc preferences.\n";
     unsigned char policy = '\0';
@@ -2995,11 +3105,6 @@ bool save_options(unsigned long flags)
 	   << '\n';
 	break;
     }
-#else // NOT IF_MOTIF
-#ifdef NAG_ME
-#warning Keyboard focus not implemented.
-#endif
-#endif // IF_MOTIF
 
     os << bool_app_value(XtNstatusAtBottom,
 			 app_data.status_at_bottom) << '\n';
@@ -3047,15 +3152,10 @@ bool save_options(unsigned long flags)
 			 app_data.auto_close_data_window) << '\n';
 
     Dimension grid_width, grid_height;
-#ifdef IF_MOTIF
     XtVaGetValues(data_disp->graph_edit,
 		  XtNgridWidth, &grid_width,
 		  XtNgridHeight, &grid_height,
 		  XtPointer(0));
-#else // NOT IF_MOTIF
-    grid_width = data_disp->graph_edit->get_grid_width();
-    grid_height = data_disp->graph_edit->get_grid_height();
-#endif // IF_MOTIF
     if (!save_session && grid_width == grid_height)
     {
 	os << int_app_value(string(XtName(data_disp->graph_edit)) + "." 
@@ -3372,6 +3472,405 @@ bool save_options(unsigned long flags)
 
     return ok;
 }
+
+#else // NOT IF_MOTIF
+
+// The main structural difference between this and the Motif version
+// is that the options are distinguished by Name only, the Class is
+// ignored.
+bool save_options(unsigned long flags)
+{
+    std::cerr << "Running save_options...\n";
+
+    const bool create        = (flags & CREATE_OPTIONS);
+    const bool save_session  = (flags & SAVE_SESSION);
+    const bool save_geometry = (flags & SAVE_GEOMETRY);
+    const bool interact      = (flags & MAY_INTERACT);
+
+    string session = 
+	(save_session ? app_data.session : DEFAULT_SESSION.chars());
+
+    create_session_dir(session);
+    const string file = session_state_file(session);
+
+    string options = (save_session ? "session" : "options");
+    string status = (create ? "Creating " : "Saving ") + options + " in ";
+
+    StatusDelay delay(status + quote(file));
+
+    xmlDoc *xml_doc = xmlNewDoc((const xmlChar *)"1.0");
+
+#ifdef NAG_ME
+#warning FIXME: SAVE DOCUMENT
+#endif
+#if 0
+    std::ofstream os(workfile.chars());
+    if (os.bad())
+    {
+	workfile = file;
+	os.open(workfile.chars());
+    }
+    if (os.bad())
+    {
+	if (interact)
+	    post_error("Cannot save " + options + " in " + quote(workfile),
+		       "options_save_error");
+	delay.outcome = "failed";
+	return false;
+    }
+#endif
+
+    xmlNodePtr root = xmlNewDocNode(xml_doc, NULL, (const xmlChar *)"GDdd", (const xmlChar *)0);
+    xmlDocSetRootElement(xml_doc, root);
+    xmlSetProp(xmlDocGetRootElement(xml_doc), (const xmlChar *)"Version", (const xmlChar *)"1.0");
+
+    set_xml_prop(root, XtNdddinitVersion, DDD_VERSION);
+
+    if (create)
+    {
+	std::cerr << "SIMPLE XML PROPERTIES?\n";
+    }
+
+    if (app_data.initial_session != 0)
+    {
+	set_xml_prop(root, XtNinitialSession, app_data.initial_session);
+    }
+
+    set_xml_prop(root, XtNautoDebugger, app_data.auto_debugger);
+    set_xml_prop(root, XtNdebugger, app_data.debugger);
+    set_xml_prop(root, XtNuseSourcePath, app_data.use_source_path);
+
+    string bash_settings = app_data.bash_settings;
+    string dbg_settings  = app_data.dbg_settings;
+    string dbx_settings  = app_data.dbx_settings;
+    string gdb_settings  = app_data.gdb_settings;
+    string xdb_settings  = app_data.xdb_settings;
+    string jdb_settings  = app_data.jdb_settings;
+    string perl_settings = app_data.perl_settings;
+    string pydb_settings = app_data.pydb_settings;
+
+    if (need_settings() || need_save_defines())
+    {
+	string settings;
+
+	settings += get_settings(gdb->type(), flags);
+	settings += get_defines(gdb->type(), flags);
+
+	settings.gsub(app_data.auto_command_prefix, "@AUTO@");
+
+	switch (gdb->type())
+	{
+	case BASH:
+	    bash_settings = settings;
+	    break;
+
+	case DBG:
+	    dbg_settings = settings;
+	    break;
+
+	case DBX:
+	    dbx_settings = settings;
+	    break;
+
+	case GDB:
+	    gdb_settings = settings;
+	    break;
+
+	case XDB:
+	    xdb_settings = settings;
+	    break;
+
+	case JDB:
+	    jdb_settings = settings;
+	    break;
+
+	case PYDB:
+	    pydb_settings = settings;
+	    break;
+
+	case PERL:
+	    perl_settings = settings;
+	    break;
+
+	}
+    }
+
+    set_xml_prop(root, XtNbashSettings, bash_settings.chars(), true);
+    set_xml_prop(root, XtNdbgSettings,  dbg_settings.chars(), true);
+    set_xml_prop(root, XtNdbxSettings,  dbx_settings.chars(), true);
+    set_xml_prop(root, XtNgdbSettings,  gdb_settings.chars(), true);
+    set_xml_prop(root, XtNjdbSettings,  jdb_settings.chars(), true);
+    set_xml_prop(root, XtNperlSettings, perl_settings.chars(), true);
+    set_xml_prop(root, XtNpydbSettings, pydb_settings.chars(), true);
+    set_xml_prop(root, XtNxdbSettings,  xdb_settings.chars(), true);
+
+    set_xml_prop(root, XtNfindWordsOnly, app_data.find_words_only);
+    set_xml_prop(root, XtNfindCaseSensitive, app_data.find_case_sensitive);
+    set_xml_prop(root, XtNtabWidth, app_data.tab_width, true);
+    set_xml_prop(root, XtNindentSource, app_data.indent_source, true);
+    set_xml_prop(root, XtNindentCode, app_data.indent_code, true);
+    set_xml_prop(root, XtNcacheSourceFiles, app_data.cache_source_files);
+    set_xml_prop(root, XtNcacheMachineCode, app_data.cache_machine_code);
+    set_xml_prop(root, XtNdisplayGlyphs, app_data.display_glyphs);
+    set_xml_prop(root, XtNdisplayLineNumbers, app_data.display_line_numbers);
+    set_xml_prop(root, XtNdisassemble, app_data.disassemble);
+    set_xml_prop(root, XtNallRegisters, app_data.all_registers);
+
+    set_xml_prop(root, XtNmaxUndoDepth, app_data.max_undo_depth, true);
+    set_xml_prop(root, XtNmaxUndoSize, app_data.max_undo_size, true);
+
+    // Misc stuff
+#ifdef NAG_ME
+#warning Keyboard focus not implemented.
+#endif
+
+    set_xml_prop(root, XtNstatusAtBottom, app_data.status_at_bottom);
+    set_xml_prop(root, XtNsuppressWarnings, app_data.suppress_warnings);
+    set_xml_prop(root, XtNwarnIfLocked, app_data.warn_if_locked);
+    set_xml_prop(root, XtNcheckGrabs, app_data.check_grabs);
+    set_xml_prop(root, XtNsaveHistoryOnExit, app_data.save_history_on_exit);
+    set_xml_prop(root, XtNpaperSize, app_data.paper_size);
+    set_xml_prop(root, XtNblinkWhileBusy, app_data.blink_while_busy);
+    set_xml_prop(root, XtNsplashScreen, app_data.splash_screen);
+    set_xml_prop(root, XtNstartupTips, app_data.startup_tips);
+
+    // Keys
+    set_xml_prop(root, XtNglobalTabCompletion, app_data.global_tab_completion);
+    set_xml_prop(root, XtNcutCopyPasteBindings, app_data.cut_copy_paste_bindings);
+    set_xml_prop(root, XtNselectAllBindings, app_data.select_all_bindings);
+
+    // Graph editor
+    set_xml_prop(root, XtNpannedGraphEditor, app_data.panned_graph_editor);
+#if 0
+    set_xml_prop(root, data_disp->graph_edit, XtNshowGrid);
+    set_xml_prop(root, data_disp->graph_edit, XtNsnapToGrid);
+    set_xml_prop(root, data_disp->graph_edit, XtNshowHints);
+    set_xml_prop(root, data_disp->graph_edit, XtNshowAnnotations);
+    set_xml_prop(root, data_disp->graph_edit, XtNlayoutMode);
+    set_xml_prop(root, data_disp->graph_edit, XtNautoLayout);
+#endif
+#ifdef NAG_ME
+#warning Save GraphEdit properties.
+#endif
+    set_xml_prop(root, XtNshowBaseDisplayTitles, app_data.show_base_display_titles);
+    set_xml_prop(root, XtNshowDependentDisplayTitles, app_data.show_dependent_display_titles);
+    set_xml_prop(root, XtNautoCloseDataWindow, app_data.auto_close_data_window);
+
+    Dimension grid_width, grid_height;
+    grid_width = data_disp->graph_edit->get_grid_width();
+    grid_height = data_disp->graph_edit->get_grid_height();
+    set_xml_prop(root, (string(XtName(data_disp->graph_edit)) + "." 
+			+ XtNgridWidth).chars(),  grid_width, true);
+    set_xml_prop(root, (string(XtName(data_disp->graph_edit)) + "." 
+			+ XtNgridHeight).chars(), grid_height, true);
+    set_xml_prop(root, XtNdetectAliases,  app_data.detect_aliases);
+    set_xml_prop(root, XtNclusterDisplays,app_data.cluster_displays);
+
+    set_xml_prop(root, XtNdisplayPlacement, app_data.display_placement);
+
+    set_xml_prop(root, XtNalign2dArrays, app_data.align_2d_arrays);
+
+    set_xml_prop(root, XtNarrayOrientation, app_data.array_orientation);
+    set_xml_prop(root, XtNstructOrientation, app_data.struct_orientation);
+    set_xml_prop(root, XtNshowMemberNames, app_data.show_member_names);
+
+    // Themes
+    std::ostringstream themes;
+    themes << DispBox::theme_manager;
+    static string themes_s;
+    themes_s = themes;
+    app_data.themes = themes_s.chars();
+    set_xml_prop(root, XtNthemes, themes_s.chars());
+
+    // Tips
+    set_xml_prop(root, XtNbuttonTips, app_data.button_tips);
+    set_xml_prop(root, XtNvalueTips, app_data.value_tips);
+    set_xml_prop(root, XtNbuttonDocs, app_data.button_docs);
+    set_xml_prop(root, XtNvalueDocs, app_data.value_docs);
+
+    // Helpers
+    set_xml_prop(root, XtNeditCommand, app_data.edit_command);
+    set_xml_prop(root, XtNgetCoreCommand, app_data.get_core_command);
+    set_xml_prop(root, XtNpsCommand, app_data.ps_command);
+    set_xml_prop(root, XtNtermCommand, app_data.term_command);
+    set_xml_prop(root, XtNuncompressCommand, app_data.uncompress_command);
+    set_xml_prop(root, XtNwwwCommand, app_data.www_command);
+    set_xml_prop(root, XtNplotCommand, app_data.plot_command);
+    set_xml_prop(root, XtNplotTermType, app_data.plot_term_type);
+    set_xml_prop(root, XtNprintCommand, app_data.print_command);
+
+    // Toolbar
+
+#if 0  // We cannot change this interactively.  Don't save.
+    set_xml_prop(root, XtNcommonToolBar, app_data.common_toolbar);
+#endif
+
+    set_xml_prop(root, XtNtoolbarsAtBottom, app_data.toolbars_at_bottom);
+    set_xml_prop(root, XtNbuttonImages, app_data.button_images);
+    set_xml_prop(root, XtNbuttonCaptions, app_data.button_captions);
+
+    set_xml_prop(root, XtNflatToolbarButtons, app_data.flat_toolbar_buttons);
+    set_xml_prop(root, XtNflatDialogButtons, app_data.flat_dialog_buttons);
+    set_xml_prop(root, XtNbuttonColorKey, app_data.button_color_key);
+    set_xml_prop(root, XtNactiveButtonColorKey, app_data.active_button_color_key);
+
+    // Command tool
+    get_tool_offset();
+    set_xml_prop(root, XtNcommandToolBar, app_data.command_toolbar);
+    set_xml_prop(root, XtNtoolRightOffset, app_data.tool_right_offset);
+    set_xml_prop(root, XtNtoolTopOffset, app_data.tool_top_offset);
+
+    // Buttons
+    set_xml_prop(root, XtNconsoleButtons, app_data.console_buttons);
+    set_xml_prop(root, XtNsourceButtons, app_data.source_buttons);
+    set_xml_prop(root, XtNdataButtons, app_data.data_buttons);
+    set_xml_prop(root, XtNverifyButtons,    app_data.verify_buttons);
+
+    // Shortcut expressions
+    {
+	StringArray exprs;
+	StringArray labels;
+	data_disp->get_shortcut_menu(exprs, labels);
+	string expr = "";
+
+	for (int i = 0; i < exprs.size(); i++)
+	{
+	    if (i > 0)
+		expr += '\n';
+
+	    expr += exprs[i];
+
+	    if (!labels[i].empty())
+	    {
+		expr += string('\t') + app_data.label_delimiter + ' ' + 
+		    labels[i];
+	    }
+	}
+
+	string bash_display_shortcuts = app_data.bash_display_shortcuts;
+ 	string dbg_display_shortcuts  = app_data.dbg_display_shortcuts;
+	string dbx_display_shortcuts  = app_data.dbx_display_shortcuts;
+	string gdb_display_shortcuts  = app_data.gdb_display_shortcuts;
+	string jdb_display_shortcuts  = app_data.jdb_display_shortcuts;
+	string pydb_display_shortcuts = app_data.pydb_display_shortcuts;
+	string perl_display_shortcuts = app_data.perl_display_shortcuts;
+	string xdb_display_shortcuts  = app_data.xdb_display_shortcuts;
+
+	switch (gdb->type())
+	{
+	case BASH: bash_display_shortcuts = expr; break;
+ 	case DBG:  dbg_display_shortcuts  = expr; break;
+	case DBX:  dbx_display_shortcuts  = expr; break;
+	case GDB:  gdb_display_shortcuts  = expr; break;
+	case JDB:  jdb_display_shortcuts  = expr; break;
+	case PERL: perl_display_shortcuts = expr; break;
+	case PYDB: pydb_display_shortcuts = expr; break;
+	case XDB:  xdb_display_shortcuts  = expr; break;
+	}
+
+	set_xml_prop(root, XtNbashDisplayShortcuts, bash_display_shortcuts.chars());
+ 	set_xml_prop(root, XtNdbgDisplayShortcuts, dbg_display_shortcuts.chars());
+	set_xml_prop(root, XtNdbxDisplayShortcuts, dbx_display_shortcuts.chars());
+	set_xml_prop(root, XtNgdbDisplayShortcuts, gdb_display_shortcuts.chars());
+	set_xml_prop(root, XtNjdbDisplayShortcuts, jdb_display_shortcuts.chars());
+	set_xml_prop(root, XtNperlDisplayShortcuts, perl_display_shortcuts.chars());
+	set_xml_prop(root, XtNpydbDisplayShortcuts, pydb_display_shortcuts.chars());
+	set_xml_prop(root, XtNxdbDisplayShortcuts, xdb_display_shortcuts.chars());
+    }
+
+    // Fonts
+    set_xml_prop(root, XtNdefaultFont, app_data.default_font);
+    set_xml_prop(root, XtNvariableWidthFont, app_data.variable_width_font);
+    set_xml_prop(root, XtNfixedWidthFont, app_data.fixed_width_font);
+    set_xml_prop(root, XtNdataFont, app_data.data_font);
+    set_xml_prop(root, XtNdefaultFontSize, app_data.default_font_size);
+    set_xml_prop(root, XtNvariableWidthFontSize, app_data.variable_width_font_size);
+    set_xml_prop(root, XtNfixedWidthFontSize, app_data.fixed_width_font_size);
+    set_xml_prop(root, XtNdataFontSize, app_data.data_font_size);
+
+    // Windows.
+    set_xml_prop(root, XtNopenDataWindow, app_data.data_window);
+    set_xml_prop(root, XtNopenSourceWindow, app_data.source_window);
+    set_xml_prop(root, XtNopenDebuggerConsole, app_data.debugger_console);
+
+    set_xml_prop(root, XtNseparateSourceWindow, app_data.separate_source_window);
+    set_xml_prop(root, XtNseparateDataWindow, app_data.separate_data_window);
+    set_xml_prop(root, XtNseparateExecWindow, app_data.separate_exec_window);
+    set_xml_prop(root, XtNgroupIconify, app_data.group_iconify);
+    set_xml_prop(root, XtNuniconifyWhenReady, app_data.uniconify_when_ready);
+
+    // Maintenance
+    set_xml_prop(root, XtNdumpCore,       app_data.dump_core);
+    set_xml_prop(root, XtNdebugCoreDumps, app_data.debug_core_dumps);
+
+    // Window sizes.
+
+    set_xml_paned_widget_height(root, data_disp->graph_edit);
+    set_xml_paned_widget_size(root, source_view->source());
+    set_xml_paned_widget_size(root, source_view->code());
+    set_xml_paned_widget_size(root, gdb_w);
+
+    if (save_geometry)
+    {
+	// Widget geometry
+	if (command_shell)
+	    set_xml_widget_geometry(root, "command_shell", command_shell);
+	if (source_view_shell)
+	    set_xml_widget_geometry(root, "source_view_shell", source_view_shell);
+	if (data_disp_shell)
+	    set_xml_widget_geometry(root, "data_disp_shell", data_disp_shell);
+    }
+
+    bool ok = true;
+
+    if (save_session)
+    {
+	// Restart commands
+
+	string restart;
+	bool restart_ok = get_restart_commands(restart, flags);
+	if (!restart_ok)
+	    ok = false;
+
+	set_xml_prop(root, XtNrestartCommands, restart.chars());
+    }
+
+    bool saved = true;
+
+    string workfile = file + "#";
+    FILE *fp;
+    if (fp = fopen(workfile.chars(), "w")) {
+
+	xmlDocFormatDump(fp, xml_doc, 1);
+
+	xmlFreeDoc(xml_doc);
+
+	fclose(fp);
+    }
+
+    std::cerr << "FIXME: unlink if save fails!\n";
+
+    if (workfile != file && rename(workfile.chars(), file.chars()) != 0)
+    {
+	if (interact)
+	    post_error("Cannot rename " + quote(workfile)
+		       + " to " + quote(file) + ": " + strerror(errno),
+		       "options_save_error");
+	ok = saved = false;
+	unlink(workfile.chars());
+    }
+
+    if (saved)
+    {
+	save_option_state();
+	save_settings_state();
+	options_file_has_changed(ACCESS, true);
+    }
+
+    return ok;
+}
+
+#endif // IF_MOTIF
 
 // ---------------------------------------------------------------------------
 // Callbacks

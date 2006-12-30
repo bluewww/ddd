@@ -37,11 +37,11 @@
 
 #include "gtk_wrapper.h"
 
-#ifdef IF_MOTIF
-
 // DDD resource definitions
 extern XtResource ddd_resources[];
 extern const int ddd_resources_size;
+
+#ifdef IF_MOTIF
 
 // Resources to use if `Ddd' app-defaults are not found
 extern const _XtString const ddd_fallback_resources[];
@@ -51,6 +51,10 @@ extern const _XtString const ddd_fallback_resources[];
 #ifdef NAG_ME
 #warning Resource database not fully implemented.
 #endif
+extern void get_application_resources(XrmDatabase db,
+				      void *app_data,
+				      XtResource *resources,
+				      int resources_size);
 
 #endif // IF_MOTIF
 

@@ -766,10 +766,10 @@ cxxtest_SOURCES   = cxxtest.C
 # 	$(VSL_SRC)
 
 cxxtest_LDADD = $(LIBM)
-ddd_LDADD = $(RPATH) $(GTKMM_LIBS) $(ALL_X_LIBS) $(ALL_LIBS) 
+ddd_LDADD = $(RPATH) $(GTKMM_LIBS) $(LIBXML_LIBS) $(ALL_X_LIBS) $(ALL_LIBS) 
 # vsl_LDADD = $(RPATH) $(ALL_X_LIBS) $(ALL_LIBS)
 X_INCLUDE = @X_CFLAGS@
-AM_CPPFLAGS = -I$(srcdir)/.. $(GTKMM_CFLAGS) $(X_INCLUDE)
+AM_CPPFLAGS = -I$(srcdir)/.. $(GTKMM_CFLAGS) $(LIBXML_CFLAGS) $(X_INCLUDE)
 
 # -----------------------------------------------------------------------------
 # DDD Application Defaults.

@@ -44,7 +44,27 @@ char resources_rcsid[] =
 #include <Xm/Xm.h>
 #endif // IF_MOTIF
 
-#ifdef IF_MOTIF
+#include "gtk_wrapper.h"
+
+#ifndef IF_MOTIF
+
+#define XtOffset(p_type,field) \
+	((Cardinal) (((char *) (&(((p_type)256)->field))) - ((char *)256)))
+
+#define XtOffsetOf(s_type,field) XtOffset(s_type*,field)
+
+// DUMMY
+#define XtCOrientation ""
+
+#define XmRBoolean XtRBoolean
+#define XmRImmediate XtRImmediate
+#define XmRInt XtRInt
+#define XmRPosition XtRPosition
+#define XmRString XtRString
+
+#define XmCBlinkRate ""
+
+#endif // IF_MOTIF
 
 // Application resource definitions
 XtResource ddd_resources[] = {
@@ -2231,8 +2251,6 @@ XtResource ddd_resources[] = {
 
 const int ddd_resources_size = XtNumber(ddd_resources);
 
-#endif // IF_MOTIF
-
 // Application resources
 AppData app_data;
 
@@ -2387,4 +2405,65 @@ XrmDatabase app_defaults(Display *display)
 
     return db;
 }
+#endif // IF_MOTIF
+
+
+
+#ifndef IF_MOTIF
+
+void get_application_resources(XrmDatabase db,
+			       void *app_data,
+			       XtResource *resources,
+			       int resources_size)
+{
+    int i, j;
+    xmlNodePtr root, child;
+    if (!db) {
+	std::cerr << "get_application_resources: db=NULL\n";
+	return;
+    }
+    char *base = (char *)app_data;
+    root = xmlDocGetRootElement(db);
+    for (child = root->children; child; child = child->next) {
+	if (xmlStrcmp(child->name, (const xmlChar *)"entry")) continue;
+	xmlChar *entry_name = xmlGetProp(child, (const xmlChar *)"name");
+	xmlChar *entry_value = xmlGetProp(child, (const xmlChar *)"value");
+	for (i = 0; i < resources_size; i++) {
+	    if (!strcasecmp(resources[i].resource_name,
+			    (char *)entry_name)) {
+		XtResource *r = &resources[i];
+		printf("%s %s\n", entry_name, entry_value);
+		const char *t = r->resource_type;
+		if (!strcmp(t, XtRBoolean)) {
+		    *(Boolean *)(base+r->resource_offset) = atoi((char *)entry_value);
+		}
+		else if (!strcmp(t, XtRCardinal)) {
+		    *(Cardinal *)(base+r->resource_offset) = atoi((char *)entry_value);
+		}
+		else if (!strcmp(t, XtROrientation)) {
+		    *(unsigned char *)(base+r->resource_offset) = atoi((char *)entry_value);
+		}
+		else if (!strcmp(t, XtRString)) {
+		    *(char **)(base+r->resource_offset) = strdup((char *)entry_value);
+		}
+		else if (!strcmp(t, XtRInt)) {
+		    *(int *)(base+r->resource_offset) = atoi((char *)entry_value);
+		}
+		else if (!strcmp(t, XtRPosition)) {
+		    *(Position *)(base+r->resource_offset) = atoi((char *)entry_value);
+		}
+		else if (!strcmp(t, XtRBindingStyle)) {
+		    *(BindingStyle *)(base+r->resource_offset) = (BindingStyle)atoi((char *)entry_value);
+		}
+		else {
+		    printf("ERROR: UNKNOWN TYPE %s\n", t);
+		}
+	    }
+	}
+	xmlFree(entry_name);
+	xmlFree(entry_value);
+    }
+
+}
+
 #endif // IF_MOTIF
