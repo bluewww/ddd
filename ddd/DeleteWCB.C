@@ -29,7 +29,9 @@
 char DeleteWindowCallBack_rcsid[] = 
     "$Id: DeleteWCB.C,v 1.1.1.1 2003/03/03 00:44:05 rockyb Exp $";
 
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif
 
 #include "DeleteWCB.h"
 #include "casts.h"
@@ -40,9 +42,14 @@ char DeleteWindowCallBack_rcsid[] =
 #include <Xm/Protocols.h>
 #endif // IF_MOTIF
 
-void AddDeleteWindowCallback(Widget shell,
-			     XtCallbackProc callback, 
-			     XtPointer closure)
+#ifdef IF_MOTIF
+extern void AddDeleteWindowCallback(Widget shell,
+				    XtCallbackProc callback, 
+				    XtPointer closure)
+#else // NOT IF_MOTIF
+extern void AddDeleteWindowCallback(Widget shell,
+				    GTK_SLOT_ callback)
+#endif // IF_MOTIF
 {
 #ifdef IF_MOTIF
     static Atom WM_DELETE_WINDOW =
@@ -62,6 +69,6 @@ void AddDeleteWindowCallback(Widget shell,
 #endif
     // sigc::hide<0> discards the GdkEventAny argument.
     // sigc::bind_return provides a return value.
-    shell->signal_delete_event().connect(sigc::hide<0>(sigc::bind_return(sigc::bind(callback, shell, closure, XtPointer(0)), false)));
+    shell->signal_delete_event().connect(sigc::hide<0>(sigc::bind_return(callback, false)));
 #endif // IF_MOTIF
 }

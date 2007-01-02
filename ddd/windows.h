@@ -57,9 +57,7 @@ extern void uniconify_shell(Widget w);
 extern int running_shells();
 
 // True if W was started iconified
-#ifdef IF_MOTIF
 extern bool started_iconified(Widget w);
-#endif // IF_MOTIF
 
 extern void gdbOpenCommandWindowCB  (CB_ARG_LIST_NULL);
 extern void gdbOpenSourceWindowCB   (CB_ARG_LIST_NULL);

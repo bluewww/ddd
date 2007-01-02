@@ -187,8 +187,6 @@ COND_XSTUFF_SRC = \
 	fileSBF.h    \
 	AutoRaise.C  \
 	AutoRaise.h  \
-	DeleteWCB.C  \
-	DeleteWCB.h  \
 	Swallower.C  \
 	Swallower.h  \
 	SwallowerP.h \
@@ -210,6 +208,8 @@ XSTUFF_SRC = \
 	verify.h     \
 	Delay.C      \
 	Delay.h      \
+	DeleteWCB.C  \
+	DeleteWCB.h  \
 	DestroyCB.C  \
 	DestroyCB.h  \
 	ExitCB.C     \

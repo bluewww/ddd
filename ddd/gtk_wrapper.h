@@ -571,19 +571,19 @@ enum {
 
 #define XtManageChild(w) (w)->show()
 #define XtUnmanageChild(w) (w)->hide()
-#define XtRealizeWidget(w) (w)->show()
+extern void XtRealizeWidget(Widget w);
 
 #define XtName(w) (w)->get_name().c_str()
 #define XtIsSensitive(w) (w)->is_sensitive()
 
-#define XtWindow(w) (w)->get_window()
-#define XtDisplay(w) (w)->get_display()
-#define XtScreen(w) (w)->get_screen()
+extern Glib::RefPtr<Gdk::Window> XtWindow(Widget w);
+extern Glib::RefPtr<Gdk::Display> XtDisplay(Widget w);
+extern Glib::RefPtr<Gdk::Screen> XtScreen(Widget w);
 
-#define XtIsWidget(w) (dynamic_cast<Gtk::Widget *>(w) != NULL)
+extern bool XtIsWidget(Widget w);
 
 #define XtIsManaged(w) (w)->is_visible()
-#define XtIsRealized(w) (w)->is_realized()
+extern Boolean XtIsRealized(Widget w);
 
 #define XtParent(w) (w)->get_parent()
 
@@ -617,14 +617,12 @@ typedef Gtk::Container *CONTAINER_P;
 
 typedef Gtk::Window *WINDOW_P;
 
-#ifdef NAG_ME
-#warning Fix the distinctions between the various shells.
-#endif
-#define XtIsShell(w) (dynamic_cast<Gtk::Window *>(w) != NULL)
-#define XtIsTopLevelShell(w) (dynamic_cast<Gtk::Window *>(w) != NULL)
-#define XtIsWMShell(w) (dynamic_cast<Gtk::Window *>(w) != NULL)
+extern bool XtIsShell(Widget w);
+extern bool XtIsTopLevelShell(Widget w);
+extern bool XtIsWMShell(Widget w);
+extern bool XmIsDialogShell(Widget w);
+
 #define XtCastShell(w) dynamic_cast<Gtk::Window *>(w)
-#define XmIsDialogShell(w) (dynamic_cast<Gtk::Dialog *>(w) != NULL)
 #define XmCastDialogShell(w) dynamic_cast<Gtk::Dialog *>(w)
 
 // End windows

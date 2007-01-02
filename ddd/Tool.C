@@ -119,6 +119,7 @@ void create_command_tool()
     }
 #else // NOT IF_MOTIF
     tool_shell = new Gtk::Window();
+    tool_shell->set_name(XMST("tool_shell"));
 #endif // IF_MOTIF
 
 #ifdef IF_MOTIF
@@ -133,6 +134,7 @@ void create_command_tool()
 	verify(XmCreateForm(tool_shell, XMST("tool_buttons"), args, arg));
 #else // NOT IF_MOTIF
     tool_buttons_w = new Gtk::VBox();
+    tool_buttons_w->set_name(XMST("tool_buttons"));
     tool_shell->add(*tool_buttons_w);
     tool_buttons_w->show();
 #endif // IF_MOTIF

@@ -2944,13 +2944,8 @@ void SourceView::read_file (string file_name,
 	    if (!app_data.command_toolbar)
 		initial_popup_shell(tool_shell);
 
-#ifdef IF_MOTIF
 	    if (!started_iconified(shell))
-		gdbOpenSourceWindowCB(source_text_w, 0, 0);
-#ifdef NAG_ME
-#warning started_iconified() not supported
-#endif
-#endif // IF_MOTIF
+		gdbOpenSourceWindowCB(CB_ARGS_NULL);
 	}
 
 	popped_up = true;

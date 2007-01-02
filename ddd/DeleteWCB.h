@@ -29,6 +29,10 @@
 #ifndef _DDD_DeleteWindowCallBack_h
 #define _DDD_DeleteWindowCallBack_h
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #ifdef IF_MOTIF
 
 #include <X11/Intrinsic.h>

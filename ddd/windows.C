@@ -30,7 +30,7 @@ char windows_rcsid[] =
     "$Id$";
 
 #define LOG_GEOMETRY 0
-#define LOG_EVENTS   0
+#define LOG_EVENTS   1
 #define LOG_MOVES    0
 
 #include "config.h"
@@ -96,7 +96,7 @@ enum WindowState { PoppingUp, PoppedUp, PoppedDown,
 		   Iconic, Transient, UnknownShell };
 
 #if LOG_EVENTS
-static ostream& operator << (ostream& os, WindowState s)
+static std::ostream& operator << (std::ostream& os, WindowState s)
 {
     switch (s)
     {
@@ -412,9 +412,9 @@ static void FollowToolShellCB(XtPointer = 0, XtIntervalId *id = 0)
 #endif
 #endif // IF_MOTIF
 
-#ifdef IF_MOTIF
 bool started_iconified(Widget w)
 {
+#ifdef IF_MOTIF
     Widget toplevel = w;
     while (XtParent(toplevel))
 	toplevel = XtParent(toplevel);
@@ -425,12 +425,13 @@ bool started_iconified(Widget w)
     Boolean iconic;
     XtVaGetValues(toplevel, XmNiconic, &iconic, XtPointer(0));
     return iconic;
-}
 #else // NOT IF_MOTIF
 #ifdef NAG_ME
 #warning started_iconified not implemented
 #endif
+    return false;
 #endif // IF_MOTIF
+}
 
 // Popup initial shell
 void initial_popup_shell(Widget w)
@@ -454,6 +455,11 @@ void initial_popup_shell(Widget w)
 		      XmNx, 0,
 		      XmNy, 0,
 		      XtPointer(0));
+#else // NOT IF_MOTIF
+    // FIXME: Is it possible to start a Gnome application iconified
+    // (like the -iconic option in X)?  If not, we need not worry
+    // about the possibility of an Iconic state.
+    set_state(w, PoppingUp);
 #endif // IF_MOTIF
 
     if (w == tool_shell)
@@ -467,18 +473,18 @@ void initial_popup_shell(Widget w)
 #endif // IF_MOTIF
     }
 
+#ifdef IF_MOTIF
     Widget toplevel = w;
     while (XtParent(toplevel))
 	toplevel = XtParent(toplevel);
     assert(XtIsTopLevelShell(toplevel));
 
     if (w != toplevel && XtIsRealized(w)) {
-#ifdef IF_MOTIF
 	XtPopup(w, XtGrabNone);
-#else // NOT IF_MOTIF
-	w->show();
-#endif // IF_MOTIF
     }
+#else // NOT IF_MOTIF
+    w->show();
+#endif // IF_MOTIF
 }
 
 void popup_shell(Widget w)
@@ -2032,3 +2038,62 @@ void set_scrolled_window_size(SCROLLEDWINDOW_P child, Widget target)
 #endif
 #endif // IF_MOTIF
 }
+
+#ifndef IF_MOTIF
+
+// GTK Replacements for Xt Widget stuff
+
+// It is hardly ever necessary to realize a widget explicitly in Gtk.
+Boolean XtIsRealized(Widget w)
+{
+    return w->is_realized();
+}
+
+void XtRealizeWidget(Widget w)
+{
+    gtk_widget_realize(w->gobj());
+}
+
+bool XtIsWidget(Widget w)
+{
+    return (dynamic_cast<Gtk::Widget *>(w) != NULL);
+}
+
+// FIXME: Distinguish these types.
+
+Glib::RefPtr<Gdk::Window> XtWindow(Widget w)
+{
+    return w->get_window();
+}
+
+Glib::RefPtr<Gdk::Display> XtDisplay(Widget w)
+{
+    return w->get_display();
+}
+
+Glib::RefPtr<Gdk::Screen> XtScreen(Widget w)
+{
+    return w->get_screen();
+}
+
+bool XtIsShell(Widget w)
+{
+    return (dynamic_cast<Gtk::Window *>(w) != NULL);
+}
+
+bool XtIsTopLevelShell(Widget w)
+{
+    return (dynamic_cast<Gtk::Window *>(w) != NULL);
+}
+
+bool XtIsWMShell(Widget w)
+{
+    return (dynamic_cast<Gtk::Window *>(w) != NULL);
+}
+
+bool XmIsDialogShell(Widget w)
+{
+    return (dynamic_cast<Gtk::Dialog *>(w) != NULL);
+}
+
+#endif // IF_MOTIF

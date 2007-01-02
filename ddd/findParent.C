@@ -86,9 +86,9 @@ WINDOW_P findTopLevelShellParent(Widget w)
     while (w != 0 && (!XtIsWidget(w)
 		      || !XtIsTopLevelShell(w)
 		      || !XtIsRealized(w)
-		      || XtDisplay(w)
-		      || XtScreen(w)
-		      || XtWindow(w)))
+		      || !XtDisplay(w)
+		      || !XtScreen(w)
+		      || !XtWindow(w)))
 	w = XtParent(w);
 
     if (findParent_debug)

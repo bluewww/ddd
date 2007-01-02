@@ -2791,9 +2791,8 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 #ifdef NAG_ME
 #warning Should be some arguments here
 #endif
-    app_context = new Gtk::Window();
-    Gtk::Window *toplevel = app_context;
-    toplevel->show();
+    Gtk::Window *toplevel = new Gtk::Window;
+    app_context = toplevel;
 #endif // IF_MOTIF
 
 #ifdef IF_MOTIF
@@ -3100,9 +3099,10 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     registerOwnConverters();
 #endif // IF_MOTIF
 
+    Boolean iconic;
+
 #ifdef IF_MOTIF
     // Show splash screen
-    Boolean iconic;
     XtVaGetValues(toplevel, XmNiconic, &iconic, XtNIL);
     if (app_data.splash_screen && !iconic && restart_session().empty())
 	popup_splash_screen(toplevel, app_data.splash_screen_color_key);
@@ -3231,15 +3231,13 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 					    args, arg);
     XtManageChild(main_window);
 #else // NOT IF_MOTIF
-#ifdef NAG_ME
-#warning Weirdness: which is the real toplevel?
-#endif
+    command_shell = new Gtk::Window();
+    command_shell->set_name(XMST("command_shell"));
+    command_shell->set_title(XMST("command_shell"));
     CONTAINER_P main_window = new Gtk::VBox();
-    main_window->set_name("MAIN BOX");
-    toplevel->add(*main_window);
+    main_window->set_name(XMST("main_window"));
+    command_shell->add(*main_window);
     main_window->show();
-
-    command_shell = new Gtk::Dialog(XMST("Commands"), *toplevel);
 #endif // IF_MOTIF
 
     // Re-register own converters to override Motif converters.
@@ -3329,10 +3327,9 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     // Data window
     CONTAINER_P data_disp_parent = paned_work_w;
     Widget data_menubar_w = 0;
-    Widget data_main_window_w = 0;
+    CONTAINER_P data_main_window_w = 0;
     if (app_data.separate_data_window)
     {
-
 #ifdef IF_MOTIF
 	arg = 0;
 	XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
@@ -3341,24 +3338,38 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 				      topLevelShellWidgetClass,
 				      toplevel, args, arg));
 
-	AddDeleteWindowCallback(data_disp_shell, DDDCloseCB);
+#else // NOT IF_MOTIF
+	data_disp_shell = new Gtk::Window();
+	data_disp_shell->set_name(XMST("data_disp_shell"));
+	data_disp_shell->set_title(XMST("data_disp_shell"));
+#endif // IF_MOTIF
 
+	AddDeleteWindowCallback(data_disp_shell, BIND_1(PTR_FUN(DDDCloseCB), data_disp_shell));
+
+#ifdef IF_MOTIF
 	arg = 0;
 	data_main_window_w = 
 	    XmCreateMainWindow(data_disp_shell, 
 			       XMST("data_main_window"),
 			       args, arg);
 	XtManageChild(data_main_window_w);
+#else // NOT IF_MOTIF
+	data_main_window_w = new Gtk::VBox();
+	data_main_window_w->set_name(XMST("data_main_window"));
+	data_disp_shell->add(*data_main_window_w);
+	data_main_window_w->show();
+#endif // IF_MOTIF
 
 	// Add menu bar
 	data_menubar_w = 
 	    MMcreateMenuBar (data_main_window_w, 
 			     "menubar", data_menubar);
 	MMaddCallbacks(data_menubar);
-	MMaddHelpCallback(menubar, ImmediateHelpCB);
+	MMaddHelpCallback(menubar, PTR_FUN(ImmediateHelpCB));
 	verify_buttons(data_menubar);
 	register_menu_shell(data_menubar);
 
+#ifdef IF_MOTIF
 	arg = 0;
 	XtSetArg(args[arg], XmNborderWidth,     0); arg++;
 	XtSetArg(args[arg], XmNmarginWidth,     0); arg++;
@@ -3369,11 +3380,13 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 				       args, arg));
 	XtManageChild(data_disp_parent);
 #else // NOT IF_MOTIF
-#ifdef NAG_ME
-#warning Create separate data display window
-#endif
+	// Note: On Motif it is possible to force a pane to have
+	// fixed size.  On Gtk this does not seem possible.  Therefore
+	// the toolbar and status bar must go in a VBox.
+	data_disp_parent = new Gtk::VBox();
+	data_disp_parent->show();
+	data_main_window_w->add(*data_disp_parent);
 #endif // IF_MOTIF
-
     }
 
     // Create data display
@@ -3851,6 +3864,10 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 #ifdef IF_MOTIF
     // Startup shells
     XtVaGetValues(toplevel, XmNiconic, &iconic, XtNIL);
+#else // NOT IF_MOTIF
+    // FIXME: Can the Gtk app start iconified?
+    iconic = false;
+#endif // IF_MOTIF
     if (iconic)
     {
 	// Startup command shell iconified; others follow as needed
@@ -3865,11 +3882,6 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	// Popup the command shell only; other shells follow as needed
 	initial_popup_shell(command_shell);
     }
-#else // NOT IF_MOTIF
-#ifdef NAG_ME
-#warning Popup shells (iconified?)
-#endif
-#endif // IF_MOTIF
 
 #ifdef IF_MOTIF
     // Trace positions and visibility of all DDD windows
