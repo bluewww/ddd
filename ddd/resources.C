@@ -2432,7 +2432,6 @@ void get_application_resources(XrmDatabase db,
 	    if (!strcasecmp(resources[i].resource_name,
 			    (char *)entry_name)) {
 		XtResource *r = &resources[i];
-		printf("%s %s\n", entry_name, entry_value);
 		const char *t = r->resource_type;
 		if (!strcmp(t, XtRBoolean)) {
 		    *(Boolean *)(base+r->resource_offset) = atoi((char *)entry_value);
@@ -2456,7 +2455,7 @@ void get_application_resources(XrmDatabase db,
 		    *(BindingStyle *)(base+r->resource_offset) = (BindingStyle)atoi((char *)entry_value);
 		}
 		else {
-		    printf("ERROR: UNKNOWN TYPE %s\n", t);
+		    std::cerr << "ERROR: get_application_resources: unknown type " << t << "\n";
 		}
 	    }
 	}

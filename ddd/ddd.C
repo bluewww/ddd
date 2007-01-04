@@ -3218,9 +3218,15 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     command_shell = verify(XtCreatePopupShell("command_shell",
 					      applicationShellWidgetClass,
 					      toplevel, args, arg));
+#else // NOT IF_MOTIF
+    command_shell = new Gtk::Window();
+    command_shell->set_name(XMST("command_shell"));
+    command_shell->set_title(XMST("command_shell"));
+#endif // IF_MOTIF
 
-    AddDeleteWindowCallback(command_shell, DDDCloseCB);
+    AddDeleteWindowCallback(command_shell, BIND_1(PTR_FUN(DDDCloseCB), command_shell));
 
+#ifdef IF_MOTIF
     // From this point on, we have a true top-level window.
 
     // Create main window
@@ -3231,9 +3237,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 					    args, arg);
     XtManageChild(main_window);
 #else // NOT IF_MOTIF
-    command_shell = new Gtk::Window();
-    command_shell->set_name(XMST("command_shell"));
-    command_shell->set_title(XMST("command_shell"));
+
     CONTAINER_P main_window = new Gtk::VBox();
     main_window->set_name(XMST("main_window"));
     command_shell->add(*main_window);
@@ -3414,7 +3418,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     // Source window
     CONTAINER_P source_view_parent = paned_work_w;
     Widget source_menubar_w = 0;
-    Widget source_main_window_w = 0;
+    CONTAINER_P source_main_window_w = 0;
     if (app_data.separate_source_window)
     {
 #ifdef IF_MOTIF
@@ -3424,24 +3428,38 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	    verify(XtCreatePopupShell("source_view_shell",
 				      topLevelShellWidgetClass,
 				      toplevel, args, arg));
-	AddDeleteWindowCallback(source_view_shell, DDDCloseCB);
+#else // NOT IF_MOTIF
+	source_view_shell = new Gtk::Window;
+	source_view_shell->set_name(XMST("source_view_shell"));
+	source_view_shell->set_title(XMST("source_view_shell"));
+#endif // IF_MOTIF
 
+	AddDeleteWindowCallback(source_view_shell, BIND_1(PTR_FUN(DDDCloseCB), source_view_shell));
+
+#ifdef IF_MOTIF
 	arg = 0;
 	source_main_window_w = 
 	    XmCreateMainWindow(source_view_shell,
 			       XMST("source_main_window"),
 			       args, arg);
 	XtManageChild(source_main_window_w);
+#else // NOT IF_MOTIF
+	source_main_window_w = new Gtk::VBox();
+	source_main_window_w->set_name(XMST("source_main_window"));
+	source_view_shell->add(*source_main_window_w);
+	source_main_window_w->show();
+#endif // IF_MOTIF
 
 	// Add menu bar
 	source_menubar_w = 
 	    MMcreateMenuBar (source_main_window_w, "menubar", source_menubar);
 	MMaddCallbacks(source_menubar);
-	MMaddHelpCallback(menubar, ImmediateHelpCB);
+	MMaddHelpCallback(menubar, PTR_FUN(ImmediateHelpCB));
 	verify_buttons(source_menubar);
 	register_menu_shell(source_menubar);
 
 	// Add source window
+#ifdef IF_MOTIF
 	arg = 0;
 	XtSetArg(args[arg], XmNborderWidth,     0); arg++;
 	XtSetArg(args[arg], XmNmarginWidth,     0); arg++;
@@ -3451,15 +3469,18 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 				       XMST("source_paned_work_w"), 
 				       args, arg));
 	XtManageChild(source_view_parent);
+#else // NOT IF_MOTIF
+	// Note: On Motif it is possible to force a pane to have
+	// fixed size.  On Gtk this does not seem possible.  Therefore
+	// the toolbar and status bar must go in a VBox.
+	source_view_parent = new Gtk::VBox();
+	source_view_parent->show();
+	source_main_window_w->add(*source_view_parent);
+#endif // IF_MOTIF
 
 	// Status line
 	if (!app_data.status_at_bottom)
 	    create_status(source_view_parent);
-#else // NOT IF_MOTIF
-#ifdef NAG_ME
-#warning Create separate source window
-#endif
-#endif // IF_MOTIF
     }
 
     // Add toolbar
@@ -5468,7 +5489,8 @@ void update_options(bool noupd)
 	else
 	    unmanage_paned_child(arg_cmd_w);
 #else // NOT IF_MOTIF
-	std::cerr << "Paned children?\n";
+	static int errcnt = 0;
+	if (complain && !errcnt++) std::cerr << "Paned children?\n";
 #endif // IF_MOTIF
     }
 

@@ -918,9 +918,6 @@ MENU_P MMcreatePulldownMenu(CONTAINER_P parent, NAME_T name, MMDesc items[]
 #else // NOT IF_MOTIF
     MENU_P menu = new Gtk::Menu();
     menu->set_name(name);
-    static int errcnt = 0;
-    if (errcnt++ == 0) std::cerr << "HOW DO I REPARENT NEW MENU?\n";
-    // menu->reparent(*parent);
 #endif // IF_MOTIF
     MMaddItems(menu, items);
 #ifdef IF_MOTIF
@@ -1558,9 +1555,6 @@ MENU_P MMcreatePushMenu(CONTAINER_P parent, NAME_T name, MMDesc items[]
 #else // NOT IF_MOTIF
     MENU_P menu = new Gtk::Menu();
     menu->set_name(XMST(name));
-    static int errcnt = 0;
-    if (errcnt++ == 0) std::cerr << "HOW DO I REPARENT MENU?\n";
-    // menu->reparent(*parent);
 #endif // IF_MOTIF
 
     MMaddItems(menu, items);

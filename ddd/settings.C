@@ -643,11 +643,10 @@ void update_infos()
 #ifdef IF_MOTIF
 	XtVaSetValues(button, XmNset, set, XtPointer(0));
 #else // NOT IF_MOTIF
-#ifdef NAG_ME
-#warning Using the widget name like this is naff but
-#warning necessary for Motif. Use user data instead.
-#endif
-	std::cerr << "Should set toggle button properly\n";
+	// Using the widget name like this is naff but
+	// necessary for Motif. Use user data instead.
+	static int errcnt = 0;
+	if (complain && !errcnt++) std::cerr << "Should set toggle button properly\n";
 	Gtk::ToggleButton *tb = dynamic_cast<Gtk::ToggleButton *>(button);
 	if (tb)
 	    tb->set_active(set);

@@ -1057,7 +1057,7 @@ void verify_button(Widget button)
     }
 #else // NOT IF_MOTIF
     static int errcnt = 0;
-    if (!errcnt++) std::cerr << "VerifyButton not supported.\n";
+    if (complain && !errcnt++) std::cerr << "VerifyButton not supported.\n";
 #endif // IF_MOTIF
 }
 

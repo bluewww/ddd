@@ -306,7 +306,8 @@ MENU_P status_history(Widget parent)
 
     return history_shell;
 #else // NOT IF_MOTIF
-    std::cerr << "NO STATUS HISTORY: WILL CRASH\n";
+    static int errcnt = 0;
+    if (complain && !errcnt++) std::cerr << "No status history: may crash!\n";
     return NULL;
 #endif // IF_MOTIF
 }

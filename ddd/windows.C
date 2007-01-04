@@ -1707,7 +1707,7 @@ void manage_paned_child(Widget w)
     paned_changed(w);
 #else // NOT IF_MOTIF
     static int errcnt = 0;
-    if (errcnt++ == 0) std::cerr << "manage_paned_child() not implemented\n";
+    if (complain && !errcnt++ == 0) std::cerr << "manage_paned_child() not implemented\n";
 #endif // IF_MOTIF
 }
 
@@ -1793,7 +1793,7 @@ void unmanage_paned_child(Widget w)
     paned_changed(w);
 #else // NOT IF_MOTIF
     static int errcnt = 0;
-    if (errcnt++ == 0) std::cerr << "unmanage_paned_child() not implemented\n";
+    if (complain && !errcnt++ == 0) std::cerr << "unmanage_paned_child() not implemented\n";
 #endif // IF_MOTIF
 }
 
@@ -2041,7 +2041,11 @@ void set_scrolled_window_size(SCROLLEDWINDOW_P child, Widget target)
 
 #ifndef IF_MOTIF
 
+// ****************************************************************************
+
 // GTK Replacements for Xt Widget stuff
+
+int complain = 0;
 
 // It is hardly ever necessary to realize a widget explicitly in Gtk.
 Boolean XtIsRealized(Widget w)

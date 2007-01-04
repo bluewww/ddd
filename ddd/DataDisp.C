@@ -3128,7 +3128,7 @@ TIMEOUT_RETURN_TYPE DataDisp::RefreshArgsCB(TM_ALIST_NULL)
     XmTextSetString(graph_selection_w, XMST(cmd.chars()));
 #else // NOT IF_MOTIF
     static int errcnt = 0;
-    if (errcnt++ == 0) std::cerr << "Set text in graph_selection_w not implemented\n";
+    if (complain && !errcnt++ == 0) std::cerr << "Set text in graph_selection_w not implemented\n";
     // graph_selection_w->set_text(XMST(cmd.chars()));
 #endif // IF_MOTIF
     lose_selection = true;
@@ -7459,7 +7459,8 @@ DataDisp::DataDisp(CONTAINER_P parent, Widget& data_buttons_w)
     XtAddCallback(graph_selection_w, XmNlosePrimaryCallback, 
 		  SelectionLostCB, XtPointer(0));
 #else // NOT IF_MOTIF
-    std::cerr << "Create graph_selection_w: not implemented\n";
+    static int errcnt = 0;
+    if (complain && !errcnt++) std::cerr << "Create graph_selection_w: not implemented\n";
     // graph_selection_w = new GtkScrolledText();
 #ifdef NAG_ME
 #warning Unmanaged graph selection widget callbacks not implemented.

@@ -11,17 +11,7 @@ GtkMarkedTextView::on_expose_event(GdkEventExpose *event)
 {
     Gtk::TextView::on_expose_event(event);
     std::list<GtkGlyphMark *>::iterator iter;
-    if (this == &SourceView::source_text_w->view())
-	std::cerr << "SOURCE ";
-    else if (this == &SourceView::code_text_w->view())
-	std::cerr << "CODE   ";
-    else if (this == &gdb_w->view())
-	std::cerr << "GDB    ";
-    else
-	std::cerr << "????   ";
-    std::cerr << "LIST: " << marks.size() << "\n";
     for (iter = marks.begin(); iter != marks.end(); iter++) {
-	std::cerr << "AT (" << (*iter)->x << "," << (*iter)->y << ")\n";
 	Glib::RefPtr<Gdk::Window> win = get_window(Gtk::TEXT_WINDOW_TEXT);
 	Glib::RefPtr<Gtk::Style> style = get_style();
 	Glib::RefPtr<Gdk::GC> gc = style->get_light_gc(Gtk::STATE_NORMAL);
@@ -66,11 +56,9 @@ GtkMarkedTextView::map_glyph(Glib::RefPtr<Gdk::Pixbuf> glyph, long pos)
 void
 GtkMarkedTextView::unmap_glyph(GtkGlyphMark *mark)
 {
-    std::cerr << "GtkMarkedTextView::unmap_glyph(GtkGlyphMark *mark)\n";
     std::list<GtkGlyphMark *>::iterator iter;
     for (iter = marks.begin(); iter != marks.end(); iter++) {
 	if ((*iter) == mark) {
-	    std::cerr << "DELETING " << mark << "\n";
 	    marks.erase(iter);
 	    break;
 	}
@@ -80,12 +68,10 @@ GtkMarkedTextView::unmap_glyph(GtkGlyphMark *mark)
 void
 GtkMarkedTextView::unmap_glyph(Glib::RefPtr<Gdk::Pixbuf> glyph)
 {
-    std::cerr << "GtkMarkedTextView::unmap_glyph(Glib::RefPtr<Gdk::Pixbuf> glyph)\n";
     std::list<GtkGlyphMark *>::iterator iter;
 redo:
     for (iter = marks.begin(); iter != marks.end(); iter++) {
 	if ((*iter)->glyph == glyph) {
-	    std::cerr << "DELETING " << (*iter) << "\n";
 	    marks.erase(iter);
 	    goto redo;
 	}
@@ -205,7 +191,8 @@ GtkScrolledText::buffer(void)
 void
 GtkScrolledText::set_highlight(long pos1, long pos2, XmHighlightMode mode)
 {
-    std::cerr << "set_highlight(" << pos1 << "," << pos2 << "," << mode << ")\n";
+    static int errcnt = 0;
+    if (complain && !errcnt++) std::cerr << "set_highlight(" << pos1 << "," << pos2 << "," << mode << ")\n";
 }
 
 long
@@ -310,14 +297,16 @@ GtkScrolledText::get_insertion_position(void)
 
 int GtkScrolledText::get_rows()
 {
-    std::cerr << "GtkScrolledText: ROWS\n";
+    static int errcnt = 0;
+    if (complain && !errcnt++) std::cerr << "GtkScrolledText: ROWS\n";
     return 0;
 }
 
 int
 GtkScrolledText::get_columns()
 {
-    std::cerr << "GtkScrolledText: COLUMNS\n";
+    static int errcnt = 0;
+    if (complain && !errcnt++) std::cerr << "GtkScrolledText: COLUMNS\n";
     return 0;
 }
 

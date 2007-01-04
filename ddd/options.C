@@ -873,7 +873,8 @@ void dddSetBuiltinPlotWindowCB (long client_data)
 #ifdef IF_MOTIF
     clear_plot_window_cache();
 #else // NOT IF_MOTIF
-    std::cerr << "clear_plot_window_cache()?\n";
+    static int errcnt = 0;
+    if (complain && !errcnt++) std::cerr << "clear_plot_window_cache()?\n";
 #endif // IF_MOTIF
     update_options(NO_UPDATE);
 }

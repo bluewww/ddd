@@ -352,8 +352,8 @@ public:
 
     // Add event handler
     void addHandler(unsigned type, 
-			    AgentHandlerProc proc,
-			    void *client_data = 0)
+		    AgentHandlerProc proc,
+		    void *client_data = 0)
     {
 	SignalBlocker sb(SIGCHLD);
 

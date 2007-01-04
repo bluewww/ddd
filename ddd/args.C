@@ -240,7 +240,8 @@ static void update_arguments(Widget dialog, Widget arguments_w,
     Widget text_w = XmSelectionBoxGetChild(dialog, XmDIALOG_TEXT);
     XmTextSetString(text_w, XMST(last.chars()));
 #else // NOT IF_MOTIF
-    std::cerr << "FIXME: UPDATE LIST?\n";
+    static int errcnt = 0;
+    if (complain && !errcnt++) std::cerr << "update_arguments not implemented\n";
 #endif // IF_MOTIF
 
     updated = true;

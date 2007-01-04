@@ -556,7 +556,8 @@ void GtkGraphEdit::graphEditSizeChanged()
 	graphEditRedraw(w);
     }
 #else // NOT IF_MOTIF
-    std::cerr << "graphEditSizeChanged not implemented\n";
+    static int errcnt = 0;
+    if (complain && !errcnt++) std::cerr << "graphEditSizeChanged not implemented\n";
 #endif // IF_MOTIF
 }
 

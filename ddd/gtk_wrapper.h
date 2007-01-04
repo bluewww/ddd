@@ -155,7 +155,11 @@ typedef Pixel ImageColor;
 
 typedef Widget Glyph_T;
 
+// ****************************************************************************
+
 #else // NOT IF_MOTIF
+
+extern int complain;
 
 typedef double DimType;
 

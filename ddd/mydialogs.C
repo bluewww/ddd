@@ -158,11 +158,9 @@ void setLabelList (TREEVIEW_P  selectionList,
 #else // NOT IF_MOTIF
     Glib::RefPtr<Gtk::TreeModel> model = selectionList->get_model();
     static int errcnt = 0;
-    if (errcnt++ == 0) std::cerr << "setLabelList not supported YET\n";
-#ifdef NAG_ME
-#warning The problem is we cannot use insert(), append() on an arbitrary
-#warning Gtk::TreeModel.  We need to have the derived ListStore.
-#endif
+    if (complain && !errcnt++ == 0) std::cerr << "setLabelList not supported YET\n";
+    // The problem is we cannot use insert(), append() on an arbitrary
+    // Gtk::TreeModel.  We need to have the derived ListStore.
 #endif // IF_MOTIF
 }
 
@@ -255,7 +253,6 @@ void getItemNumbers(TREEVIEW_P selectionList, IntArray& numbers)
     Glib::RefPtr<Gtk::TreeSelection> sel = selectionList->get_selection();
     std::list<Gtk::TreeModel::Path> paths = sel->get_selected_rows();
     std::list<Gtk::TreeModel::Path>::iterator iter;
-    std::cerr << "Get paths\n";
     for (iter = paths.begin(); iter != paths.end(); iter++) {
 	numbers += (*iter)[0];
     }

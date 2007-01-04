@@ -582,7 +582,7 @@ static Box *font(ListBox *args)
     ret->newFont((*args)[1]->str());
 #else // NOT IF_MOTIF
     static int errcnt = 0;
-    if (errcnt++ == 0) std::cerr << "CANNOT SET FONT IN VSLBuiltin.C\n";
+    if (complain && !errcnt++ == 0) std::cerr << "CANNOT SET FONT IN VSLBuiltin.C\n";
 #ifdef NAG_ME
 #warning Eventually should use Pango fonts here.
 #endif

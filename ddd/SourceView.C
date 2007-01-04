@@ -9097,7 +9097,6 @@ void SourceView::update_glyphs(Widget glyph)
 	XtAppAddTimeOut(XtWidgetToApplicationContext(source_text_w), 50,
 			UpdateGlyphsWorkProc, XtPointer(&update_glyph_id));
 #else // NOT IF_MOTIF
-    std::cerr << "Update glyphs\n";
     update_glyphs_now();
 #endif // IF_MOTIF
 }
@@ -9989,8 +9988,6 @@ void SourceView::update_glyphs_now()
 // The function that does the real work
 void SourceView::update_glyphs_now()
 {
-    std::clog << "Updating glyphs NOW\n";
-
     // FIXME if (update_source_glyphs)
     {
 	// Show current execution position

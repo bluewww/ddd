@@ -122,11 +122,7 @@ void create_command_tool()
     tool_shell->set_name(XMST("tool_shell"));
 #endif // IF_MOTIF
 
-#ifdef IF_MOTIF
     AddDeleteWindowCallback(tool_shell, PTR_FUN(gdbCloseToolWindowCB));
-#else // NOT IF_MOTIF
-    std::cerr << "AddDeleteWindowCallback: not implemented\n";
-#endif // IF_MOTIF
 
 #ifdef IF_MOTIF
     arg = 0;

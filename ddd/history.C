@@ -637,7 +637,8 @@ static void update_combo_box(Widget text, HistoryFilter filter)
 #ifdef IF_MOTIF
     ComboBoxSetList(text, entries);
 #else // NOT IF_MOTIF
-    std::cerr << "ComboBoxSetList not supported\n";
+    static int errcnt = 0;
+    if (complain && !errcnt++) std::cerr << "ComboBoxSetList not supported\n";
 #endif // IF_MOTIF
 }
 
