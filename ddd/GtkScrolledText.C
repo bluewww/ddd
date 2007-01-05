@@ -26,12 +26,29 @@ GtkMarkedTextView::on_expose_event(GdkEventExpose *event)
     }
 }
 
+void
+GtkMarkedTextView::refresh_line(int y, int height)
+{
+    Glib::RefPtr<Gdk::Window> win = get_window(Gtk::TEXT_WINDOW_TEXT);
+    if (win) {
+	Gdk::Rectangle rect;
+	int x1, y1;
+	buffer_to_window_coords(Gtk::TEXT_WINDOW_TEXT, 0, y, x1, y1);
+	std::cerr << "this=" << this << " y=" << y << " y1=" << y1 << "\n";
+	rect.set_x(x1);
+	rect.set_y(y1);
+	rect.set_width(get_width());
+	rect.set_height(height);
+	win->invalidate_rect(rect, false);
+    }
+}
 
 GtkGlyphMark *
 GtkMarkedTextView::map_glyph(Glib::RefPtr<Gdk::Pixbuf> glyph, int x, int y)
 {
     GtkGlyphMark *new_mark = new GtkGlyphMark(glyph, x, y);
     marks.push_back(new_mark);
+    refresh_line(y, glyph->get_height());
 }
 
 void
@@ -59,7 +76,11 @@ GtkMarkedTextView::unmap_glyph(GtkGlyphMark *mark)
     std::list<GtkGlyphMark *>::iterator iter;
     for (iter = marks.begin(); iter != marks.end(); iter++) {
 	if ((*iter) == mark) {
+	    int x = mark->x;
+	    int y = mark->y;
+	    int height = mark->glyph->get_height();
 	    marks.erase(iter);
+	    refresh_line(y, height);
 	    break;
 	}
     }
@@ -72,7 +93,11 @@ GtkMarkedTextView::unmap_glyph(Glib::RefPtr<Gdk::Pixbuf> glyph)
 redo:
     for (iter = marks.begin(); iter != marks.end(); iter++) {
 	if ((*iter)->glyph == glyph) {
+	    int x = (*iter)->x;
+	    int y = (*iter)->y;
+	    int height = (*iter)->glyph->get_height();
 	    marks.erase(iter);
+	    refresh_line(y, height);
 	    goto redo;
 	}
     }

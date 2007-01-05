@@ -36,6 +36,7 @@ public:
     void unmap_glyph(GtkGlyphMark *mark);
     // Unmark all instances of a glyph:
     void unmap_glyph(Glib::RefPtr<Gdk::Pixbuf> glyph);
+    void refresh_line(int y, int height);
 };
 
 class GtkScrolledText: public Gtk::ScrolledWindow
