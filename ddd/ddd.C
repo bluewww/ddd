@@ -3218,13 +3218,14 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     command_shell = verify(XtCreatePopupShell("command_shell",
 					      applicationShellWidgetClass,
 					      toplevel, args, arg));
+    AddDeleteWindowCallback(command_shell, DDDCloseCB);
 #else // NOT IF_MOTIF
     command_shell = new Gtk::Window();
     command_shell->set_name(XMST("command_shell"));
     command_shell->set_title(XMST("command_shell"));
+    AddDeleteWindowCallback(command_shell, BIND_1(PTR_FUN(DDDCloseCB), command_shell));
 #endif // IF_MOTIF
 
-    AddDeleteWindowCallback(command_shell, BIND_1(PTR_FUN(DDDCloseCB), command_shell));
 
 #ifdef IF_MOTIF
     // From this point on, we have a true top-level window.
@@ -3342,13 +3343,14 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 				      topLevelShellWidgetClass,
 				      toplevel, args, arg));
 
+	AddDeleteWindowCallback(data_disp_shell, DDDCloseCB);
 #else // NOT IF_MOTIF
 	data_disp_shell = new Gtk::Window();
 	data_disp_shell->set_name(XMST("data_disp_shell"));
 	data_disp_shell->set_title(XMST("data_disp_shell"));
+	AddDeleteWindowCallback(data_disp_shell, BIND_1(PTR_FUN(DDDCloseCB), data_disp_shell));
 #endif // IF_MOTIF
 
-	AddDeleteWindowCallback(data_disp_shell, BIND_1(PTR_FUN(DDDCloseCB), data_disp_shell));
 
 #ifdef IF_MOTIF
 	arg = 0;
@@ -3428,13 +3430,14 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	    verify(XtCreatePopupShell("source_view_shell",
 				      topLevelShellWidgetClass,
 				      toplevel, args, arg));
+	AddDeleteWindowCallback(source_view_shell, DDDCloseCB);
 #else // NOT IF_MOTIF
 	source_view_shell = new Gtk::Window;
 	source_view_shell->set_name(XMST("source_view_shell"));
 	source_view_shell->set_title(XMST("source_view_shell"));
+	AddDeleteWindowCallback(source_view_shell, BIND_1(PTR_FUN(DDDCloseCB), source_view_shell));
 #endif // IF_MOTIF
 
-	AddDeleteWindowCallback(source_view_shell, BIND_1(PTR_FUN(DDDCloseCB), source_view_shell));
 
 #ifdef IF_MOTIF
 	arg = 0;
