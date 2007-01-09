@@ -494,7 +494,6 @@ void MMaddItems(CONTAINER_P shell, MMDesc items[], bool ignore_seps)
 	    else
 		widget = new Gtk::CheckButton(label_string);
 	    pack_item(container, widget);
-	    widget->show();
 #endif // IF_MOTIF
 	    break;
 	}
@@ -507,7 +506,6 @@ void MMaddItems(CONTAINER_P shell, MMDesc items[], bool ignore_seps)
 
 	    widget = new Gtk::RadioButton(group, label_string);
 	    pack_item(container, widget);
-	    widget->show();
 	    break;
 	}
 #endif // IF_MOTIF
@@ -525,7 +523,6 @@ void MMaddItems(CONTAINER_P shell, MMDesc items[], bool ignore_seps)
 	    widget->modify_fg(Gtk::STATE_NORMAL, Gdk::Color("red"));
 	    label->set_alignment(Gtk::ALIGN_LEFT);
 	    pack_item(container, widget);
-	    widget->show();
 #endif // IF_MOTIF
 	    break;
 	}
@@ -607,7 +604,6 @@ void MMaddItems(CONTAINER_P shell, MMDesc items[], bool ignore_seps)
 		widget = new Gtk::Button(label_string);
 	    }
 	    pack_item(container, widget);
-	    widget->show();
 #endif // IF_MOTIF
 	    break;
 	}
@@ -634,7 +630,6 @@ void MMaddItems(CONTAINER_P shell, MMDesc items[], bool ignore_seps)
 		widget = new Gtk::Button(label_string);
 	    }
 	    pack_item(container, widget);
-	    widget->show();
 #endif // IF_MOTIF
 	    break;
 	}
@@ -659,7 +654,6 @@ void MMaddItems(CONTAINER_P shell, MMDesc items[], bool ignore_seps)
 #endif
 	    pack_item(container, widget);
 	    om->set_menu(*subMenu);
-	    widget->show();
 #endif // IF_MOTIF
 	    break;
 	}
@@ -693,7 +687,6 @@ void MMaddItems(CONTAINER_P shell, MMDesc items[], bool ignore_seps)
 	    widget = box = new Gtk::HBox();
 	    widget->set_name(XMST(panelName.chars()));
 	    pack_item(container, widget);
-	    widget->show();
 
 	    label = new Gtk::Label(label_string);
 	    label->modify_fg(Gtk::STATE_NORMAL, Gdk::Color("dark green"));
@@ -750,7 +743,6 @@ void MMaddItems(CONTAINER_P shell, MMDesc items[], bool ignore_seps)
 	    XtManageChild(subMenu);
 #else // NOT IF_MOTIF
 	    box = create_panel(box, subMenuName.chars(), subitems);
-	    box->show();
 #endif // IF_MOTIF
 
 	    break;
@@ -795,7 +787,6 @@ void MMaddItems(CONTAINER_P shell, MMDesc items[], bool ignore_seps)
 	    panel = new Gtk::HBox();
 	    panel->set_name(XMST(name));
 	    pack_item(container, panel);
-	    panel->show();
 #endif // IF_MOTIF
 
 #ifdef IF_MOTIF
@@ -818,7 +809,6 @@ void MMaddItems(CONTAINER_P shell, MMDesc items[], bool ignore_seps)
 		widget = CreateSpinBox(panel, textName.chars(), args, arg);
 #else // NOT IF_MOTIF
 		widget = new Gtk::SpinButton();
-		widget->show();
 		pack_item(panel, widget);
 #endif // IF_MOTIF
 		break;
@@ -831,7 +821,6 @@ void MMaddItems(CONTAINER_P shell, MMDesc items[], bool ignore_seps)
 		widget = new Gtk::ComboBoxEntryText();
 		widget->set_name(XMST(textName.chars()));
 		pack_item(panel, widget);
-		widget->show();
 #endif // IF_MOTIF
 		break;
 
