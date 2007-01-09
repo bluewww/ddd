@@ -1120,7 +1120,7 @@ static MMDesc source_program_menu[]
 static MMDesc data_program_menu[]
     = PROGRAM_MENU(data_separate_exec_window_w);
 
-#define VIEW_MENU							\
+#define VIEW_MENU(x)							\
 {									\
     { NM("tool", "Command Tool..."), MMPush,				\
       HIDE_0( PTR_FUN(gdbOpenToolWindowCB) ), 0, 0, 0, 0},		\
@@ -1133,14 +1133,14 @@ static MMDesc data_program_menu[]
       HIDE_0( PTR_FUN(gdbOpenSourceWindowCB) ), 0, 0, 0, 0},		\
     { NM("data", "Data Window"),					\
       MMPush,   HIDE_0( PTR_FUN(gdbOpenDataWindowCB) ), 0, 0, 0, 0},	\
-    { NM("code", "Machine Code Window"), MMToggle | MMUnmanaged,	\
+    { NM("code", "Machine Code Window"), MMToggle | x,			\
         BIND_0( PTR_FUN(gdbToggleCodeWindowCB) ), 0, 0, 0, 0},		\
     MMEnd								\
 }
 
-static MMDesc command_view_menu[] = VIEW_MENU;
-static MMDesc source_view_menu[]  = VIEW_MENU;
-static MMDesc data_view_menu[]    = VIEW_MENU;
+static MMDesc command_view_menu[] = VIEW_MENU(MMUnmanaged);
+static MMDesc source_view_menu[]  = VIEW_MENU(0);
+static MMDesc data_view_menu[]    = VIEW_MENU(MMUnmanaged);
 
 static MMDesc views_menu[] = 
 {
