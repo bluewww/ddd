@@ -8620,6 +8620,7 @@ static void gdbUpdateViewCB(CB_ARG_LIST_2(client_data))
 
     set_sensitive(view_menu[CodeWindow].widget, gdb->type() == GDB);
     set_sensitive(view_menu[ExecWindow].widget, gdb->has_redirection());
+    set_toggle(view_menu[CodeWindow].widget,   app_data.disassemble);
 }
 
 static void gdbUpdateViewsCB(CB_ARG_LIST_2(client_data))
@@ -8632,7 +8633,6 @@ static void gdbUpdateViewsCB(CB_ARG_LIST_2(client_data))
 
     set_toggle(view_menu[DataWindow].widget,   have_data_window());
     set_toggle(view_menu[SourceWindow].widget, have_source_window());
-    set_toggle(view_menu[CodeWindow].widget,   app_data.disassemble);
     set_toggle(view_menu[GDBWindow].widget,    have_command_window());
 }
 
