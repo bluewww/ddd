@@ -2423,6 +2423,12 @@ Ddd*viewMenu.data.accelerator:			Meta<Key>3
 Ddd*viewMenu.data.documentationString: \
 @rm Open the data window
 
+Ddd*viewMenu.code.labelString:			Machine Code Window...
+Ddd*viewMenu.code.mnemonic:			M
+Ddd*viewMenu.code.acceleratorText:		Alt+4
+Ddd*viewMenu.code.accelerator:			Meta<Key>4
+Ddd*viewMenu.code.documentationString: \
+@rm Toggle showing the machine code window
 
 ! Program menu
 Ddd*menubar.program.labelString:		Program

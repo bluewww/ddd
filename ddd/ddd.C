@@ -3419,6 +3419,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 
     // Source window
     CONTAINER_P source_view_parent = paned_work_w;
+    CONTAINER_P source_vbox = main_vbox;
     Widget source_menubar_w = 0;
     CONTAINER_P source_main_window_w = 0;
     if (app_data.separate_source_window)
@@ -3472,38 +3473,39 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 				       XMST("source_paned_work_w"), 
 				       args, arg));
 	XtManageChild(source_view_parent);
+	source_vbox = source_view_parent;
 #else // NOT IF_MOTIF
 	// Note: On Motif it is possible to force a pane to have
 	// fixed size.  On Gtk this does not seem possible.  Therefore
 	// the toolbar and status bar must go in a VBox.
-	source_view_parent = new Gtk::VBox();
-	source_view_parent->show();
-	source_main_window_w->add(*source_view_parent);
+	source_vbox = new Gtk::VBox();
+	source_vbox->show();
+	source_main_window_w->add(*source_vbox);
 #endif // IF_MOTIF
 
 	// Status line
 	if (!app_data.status_at_bottom)
-	    create_status(source_view_parent);
+	    create_status(source_vbox);
     }
 
     // Add toolbar
     if (arg_cmd_w == 0 && !app_data.toolbars_at_bottom)
     {
-	arg_cmd_w = create_toolbar(source_view_parent, "source",
+	arg_cmd_w = create_toolbar(source_vbox, "source",
 				   arg_cmd_area, 0, arg_label, source_arg,
 				   label_type);
     }
 
     if (command_toolbar_w == 0 && !app_data.toolbars_at_bottom)
     {
-	command_toolbar_w = make_buttons(source_view_parent, 
+	command_toolbar_w = make_buttons(source_vbox, 
 					 "command_toolbar", 
 					 app_data.tool_buttons);
     }
 
     if (source_buttons_w == 0 && !app_data.toolbars_at_bottom)
     {
-	source_buttons_w = make_buttons(source_view_parent, 
+	source_buttons_w = make_buttons(source_vbox, 
 					"source_buttons", 
 					app_data.source_buttons);
     }
@@ -3511,6 +3513,13 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 #ifndef IF_MOTIF
     source_view_parent->modify_bg(Gtk::STATE_NORMAL, Gdk::Color("white"));
 #endif
+#ifndef IF_MOTIF
+    if (app_data.separate_source_window) {
+	source_view_parent = new GtkMultiPaned();
+	source_view_parent->show();
+	source_vbox->add(*source_view_parent);
+    }
+#endif // IF_MOTIF
     source_view = new SourceView(source_view_parent);
 #ifdef IF_MOTIF
     source_view->set_max_glyphs(app_data.max_glyphs);
@@ -3530,7 +3539,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 
     // Source toolbar
     if (arg_cmd_w == 0)
-	arg_cmd_w = create_toolbar(source_view_parent, "source",
+	arg_cmd_w = create_toolbar(source_vbox, "source",
 				   arg_cmd_area, 0, arg_label, source_arg,
 				   label_type);
 #ifdef NAG_ME
@@ -3584,7 +3593,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 
     if (command_toolbar_w == 0)
     {
-	command_toolbar_w = make_buttons(source_view_parent, 
+	command_toolbar_w = make_buttons(source_vbox, 
 					 "command_toolbar", 
 					 app_data.tool_buttons);
     }
@@ -3592,12 +3601,12 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	XtUnmanageChild(command_toolbar_w);
 
     if (source_buttons_w == 0)
-	source_buttons_w = make_buttons(source_view_parent, "source_buttons", 
+	source_buttons_w = make_buttons(source_vbox, "source_buttons", 
 					app_data.source_buttons);
 
     // Status line
     if (app_data.separate_source_window && app_data.status_at_bottom)
-	create_status(source_view_parent);
+	create_status(source_vbox);
 
     // Debugger console
     if (console_buttons_w == 0 && !app_data.toolbars_at_bottom)
