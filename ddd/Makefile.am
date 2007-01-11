@@ -233,6 +233,8 @@ COND_MSTUFF_SRC = \
 	LabelH.C     \
 	LabelH.h     \
 	LabelHP.h    \
+	LessTifH.C   \
+	LessTifH.h   \
 	ComboBox.C   \
 	ComboBox.h   \
 	SpinBox.C    \
@@ -242,8 +244,6 @@ COND_MSTUFF_SRC = \
 endif
 # Same, but for Motif
 MSTUFF_SRC = \
-	LessTifH.C   \
-	LessTifH.h   \
 	MakeMenu.C   \
 	MakeMenu.h   \
 	MString.C    \

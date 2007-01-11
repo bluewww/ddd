@@ -29,7 +29,6 @@
 char CodeCache_rcsid[] = 
     "$Id$";
 
-#include <Xm/Xm.h>
 #include "CodeCache.h"
 
 // Return digit value
