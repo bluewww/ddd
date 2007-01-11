@@ -1066,6 +1066,8 @@ AC_DEFINE(WITH_BUILTIN_VSLLIB,1,
 [Define if you want the DDD VSL library to be compiled into DDD.])
 fi
 dnl
+risky_lesstif=false
+if test "$with_gtk" != yes; then
 dnl Check for risky LessTif versions.
 dnl
 risky_lesstif=false
@@ -1077,6 +1079,7 @@ AC_PREPROC_IFELSE([AC_LANG_PROGRAM([[#include <Xm/Xm.h>
 #error LessTif 0.86 or earlier
 #endif
 #endif]])],[risky_lesstif=false],[risky_lesstif=true])
+fi
 CPPFLAGS="$ice_save_CPPFLAGS"
 dnl
 dnl
