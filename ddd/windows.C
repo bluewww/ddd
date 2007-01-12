@@ -1228,7 +1228,7 @@ void gdbToggleCommandWindowCB(CB_ARG_LIST_TOGGLE(w, call_data))
 
     bool set = info->set;
 #else // NOT IF_MOTIF
-    bool set = w->get_active();
+    bool set = get_active(w);
 #endif // IF_MOTIF
     if (set)
 	gdbOpenCommandWindowCB(CB_ARGS_NULL);
@@ -1244,7 +1244,7 @@ void gdbToggleSourceWindowCB(CB_ARG_LIST_TOGGLE(w, call_data))
 
     if (info->set)
 #else // NOT IF_MOTIF
-    if (w->get_active())
+    if (get_active(w))
 #endif // IF_MOTIF
 	gdbOpenSourceWindowCB(CB_ARGS_NULL);
     else
@@ -1259,7 +1259,7 @@ void gdbToggleCodeWindowCB(CB_ARG_LIST_TOGGLE(w, call_data))
 
     if (info->set)
 #else // NOT IF_MOTIF
-    if (w->get_active())
+    if (get_active(w))
 #endif // IF_MOTIF
 	gdbOpenCodeWindowCB(CB_ARGS_NULL);
     else
@@ -1276,7 +1276,7 @@ void gdbToggleDataWindowCB(CB_ARG_LIST_TOGGLE(w, call_data))
 
     if (info->set)
 #else // NOT IF_MOTIF
-    if (w->get_active())
+    if (get_active(w))
 #endif // IF_MOTIF
 	gdbOpenDataWindowCB(CB_ARGS_NULL);
     else
@@ -1291,7 +1291,7 @@ void gdbToggleExecWindowCB(CB_ARG_LIST_TOGGLE(w, call_data))
 
     if (info->set)
 #else // NOT IF_MOTIF
-    if (w->get_active())
+    if (get_active(w))
 #endif // IF_MOTIF
 	gdbOpenExecWindowCB(CB_ARGS_NULL);
     else
@@ -1306,7 +1306,7 @@ void gdbToggleToolWindowCB(CB_ARG_LIST_TOGGLE(w, call_data))
 
     if (info->set)
 #else // NOT IF_MOTIF
-    if (w->get_active())
+    if (get_active(w))
 #endif // IF_MOTIF
 	gdbOpenToolWindowCB(CB_ARGS_NULL);
     else
@@ -2098,6 +2098,20 @@ bool XtIsWMShell(Widget w)
 bool XmIsDialogShell(Widget w)
 {
     return (dynamic_cast<Gtk::Dialog *>(w) != NULL);
+}
+
+bool
+get_active(Widget w)
+{
+    // This convenience function is needed because some callbacks are associated
+    // both with ToggleButton and with a CheckMenuItem.
+    Gtk::ToggleButton *tb = dynamic_cast<Gtk::ToggleButton *>(w);
+    if (tb)
+	return tb->get_active();
+    Gtk::CheckMenuItem *mi = dynamic_cast<Gtk::CheckMenuItem *>(w);
+    if (mi)
+	return mi->get_active();
+    return false;
 }
 
 #endif // IF_MOTIF

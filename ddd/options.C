@@ -148,7 +148,7 @@ void sourceToggleFindWordsOnlyCB (CB_ARG_LIST_TOGGLE(w, call_data))
 
     app_data.find_words_only = info->set;
 #else // NOT IF_MOTIF
-    app_data.find_words_only = w->get_active();
+    app_data.find_words_only = get_active(w);
 #endif // IF_MOTIF
 
     if (app_data.find_words_only)
@@ -167,7 +167,7 @@ void sourceToggleFindCaseSensitiveCB (CB_ARG_LIST_TOGGLE(w, call_data))
 
     app_data.find_case_sensitive = info->set;
 #else // NOT IF_MOTIF
-    app_data.find_case_sensitive = w->get_active();
+    app_data.find_case_sensitive = get_active(w);
 #endif // IF_MOTIF
 
     if (app_data.find_case_sensitive)
@@ -186,7 +186,7 @@ void sourceToggleCacheSourceFilesCB (CB_ARG_LIST_TOGGLE(w, call_data))
 
     app_data.cache_source_files = info->set;
 #else // NOT IF_MOTIF
-    app_data.cache_source_files = w->get_active();
+    app_data.cache_source_files = get_active(w);
 #endif // IF_MOTIF
 
     if (app_data.cache_source_files)
@@ -206,7 +206,7 @@ void sourceToggleCacheMachineCodeCB (CB_ARG_LIST_TOGGLE(w, call_data))
 
     app_data.cache_machine_code = info->set;
 #else // NOT IF_MOTIF
-    app_data.cache_machine_code = w->get_active();
+    app_data.cache_machine_code = get_active(w);
 #endif // IF_MOTIF
 
     update_options(NO_UPDATE);
@@ -226,7 +226,7 @@ void sourceToggleDisplayLineNumbersCB (CB_ARG_LIST_TOGGLE(w, call_data))
 
     app_data.display_line_numbers = info->set;
 #else // NOT IF_MOTIF
-    app_data.display_line_numbers = w->get_active();
+    app_data.display_line_numbers = get_active(w);
 #endif // IF_MOTIF
 
     update_options(NO_UPDATE);
@@ -279,7 +279,7 @@ void sourceSetAllRegistersCB (CB_ARG_LIST_TOGGLE(w, call_data))
 
     if (info->set)
 #else // NOT IF_MOTIF
-    if (w->get_active())
+    if (get_active(w))
 #endif // IF_MOTIF
     {
 	set_status("Showing all registers.");
@@ -297,7 +297,7 @@ void sourceSetIntRegistersCB (CB_ARG_LIST_TOGGLE(w, call_data))
 
     if (info->set)
 #else // NOT IF_MOTIF
-    if (w->get_active())
+    if (get_active(w))
 #endif // IF_MOTIF
     {
 	set_status("Showing integer registers only.");
@@ -375,7 +375,7 @@ void graphToggleDetectAliasesCB(CB_ARG_LIST_TOGGLE(w, call_data))
 
     app_data.detect_aliases = info->set;
 #else // NOT IF_MOTIF
-    app_data.detect_aliases = w->get_active();
+    app_data.detect_aliases = get_active(w);
 #endif // IF_MOTIF
     const string alias_detection = "Alias detection ";
 
@@ -395,7 +395,7 @@ void graphToggleAlign2dArraysCB(CB_ARG_LIST_TOGGLE(w, call_data))
 
     app_data.align_2d_arrays = info->set;
 #else // NOT IF_MOTIF
-    app_data.align_2d_arrays = w->get_active();
+    app_data.align_2d_arrays = get_active(w);
 #endif // IF_MOTIF
     string displaying_arrays_as = 
 	"Two-dimensional arrays will be displayed as ";
@@ -424,7 +424,7 @@ void graphToggleShowHintsCB(CB_ARG_LIST_TOGGLE(w, call_data))
     else
 	set_status("Hints off.");
 #else // NOT IF_MOTIF
-    data_disp->graph_edit->set_show_hints(w->get_active());
+    data_disp->graph_edit->set_show_hints(get_active(w));
     if (data_disp->graph_edit->get_show_hints())
 	set_status("Hints on.");
     else
@@ -450,7 +450,7 @@ void graphToggleShowAnnotationsCB(CB_ARG_LIST_TOGGLE(w, call_data))
     else
 	set_status("Annotations off.");
 #else // NOT IF_MOTIF
-    data_disp->graph_edit->set_show_annotations(w->get_active());
+    data_disp->graph_edit->set_show_annotations(get_active(w));
     if (data_disp->graph_edit->get_show_annotations())
 	set_status("Annotations on.");
     else
@@ -470,7 +470,7 @@ void graphToggleShowDependentTitlesCB(CB_ARG_LIST_TOGGLE(w, call_data))
 
     app_data.show_dependent_display_titles = info->set;
 #else // NOT IF_MOTIF
-    app_data.show_dependent_display_titles = w->get_active();
+    app_data.show_dependent_display_titles = get_active(w);
 #endif // IF_MOTIF
     if (app_data.show_dependent_display_titles)
 	set_status("Dependent titles on.");
@@ -490,7 +490,7 @@ void graphToggleClusterDisplaysCB(CB_ARG_LIST_TOGGLE(w, call_data))
 
     app_data.cluster_displays = info->set;
 #else // NOT IF_MOTIF
-    app_data.cluster_displays = w->get_active();
+    app_data.cluster_displays = get_active(w);
 #endif // IF_MOTIF
 
     if (app_data.cluster_displays)
@@ -517,7 +517,7 @@ void graphToggleSnapToGridCB(CB_ARG_LIST_TOGGLE(w, call_data))
     else
 	set_status("Snap to grid off.");
 #else // NOT IF_MOTIF
-    data_disp->graph_edit->set_snap_to_grid(w->get_active());
+    data_disp->graph_edit->set_snap_to_grid(get_active(w));
     if (data_disp->graph_edit->get_snap_to_grid())
 	set_status("Snap to grid on.");
     else
@@ -547,7 +547,7 @@ void graphToggleCompactLayoutCB(CB_ARG_LIST_TOGGLE(w, call_data))
     else
 	set_status("Regular layout enabled.");
 #else // NOT IF_MOTIF
-    data_disp->graph_edit->set_layout_mode(w->get_active()?CompactLayoutMode:RegularLayoutMode);
+    data_disp->graph_edit->set_layout_mode(get_active(w)?CompactLayoutMode:RegularLayoutMode);
     if (data_disp->graph_edit->get_layout_mode() == CompactLayoutMode)
 	set_status("Compact layout enabled.");
     else
@@ -573,7 +573,7 @@ void graphToggleAutoLayoutCB(CB_ARG_LIST_TOGGLE(w, call_data))
     else
 	set_status("Automatic layout off.");
 #else // NOT IF_MOTIF
-    data_disp->graph_edit->set_auto_layout(w->get_active());
+    data_disp->graph_edit->set_auto_layout(get_active(w));
     if (data_disp->graph_edit->get_auto_layout())
 	set_status("Automatic layout on.");
     else
@@ -591,7 +591,7 @@ void graphToggleAutoCloseCB(CB_ARG_LIST_TOGGLE(w, call_data))
 
     app_data.auto_close_data_window = info->set;
 #else // NOT IF_MOTIF
-    app_data.auto_close_data_window = w->get_active();
+    app_data.auto_close_data_window = get_active(w);
 #endif // IF_MOTIF
 
     if (app_data.auto_close_data_window)
@@ -695,7 +695,7 @@ void dddToggleGroupIconifyCB (CB_ARG_LIST_TOGGLE(w, call_data))
 
     app_data.group_iconify = info->set;
 #else // NOT IF_MOTIF
-    app_data.group_iconify = w->get_active();
+    app_data.group_iconify = get_active(w);
 #endif // IF_MOTIF
     string ddd_windows_are_iconified = 
 	DDD_NAME " windows are iconified ";
@@ -716,7 +716,7 @@ void dddToggleUniconifyWhenReadyCB (CB_ARG_LIST_TOGGLE(w, call_data))
 
     app_data.uniconify_when_ready = info->set;
 #else // NOT IF_MOTIF
-    app_data.uniconify_when_ready = w->get_active();
+    app_data.uniconify_when_ready = get_active(w);
 #endif // IF_MOTIF
 
     if (app_data.uniconify_when_ready)
@@ -750,7 +750,7 @@ void dddToggleSeparateExecWindowCB (CB_ARG_LIST_TOGGLE(w, call_data))
 
     app_data.separate_exec_window = info->set;
 #else // NOT IF_MOTIF
-    app_data.separate_exec_window = w->get_active();
+    app_data.separate_exec_window = get_active(w);
 #endif // IF_MOTIF
     string debugged_program_will_be_executed_in =
 	"Debugged program will be executed in ";
@@ -773,7 +773,7 @@ void dddToggleCheckGrabsCB (CB_ARG_LIST_TOGGLE(w, call_data))
 
     app_data.check_grabs = info->set;
 #else // NOT IF_MOTIF
-    app_data.check_grabs = w->get_active();
+    app_data.check_grabs = get_active(w);
 #endif // IF_MOTIF
 
     if (app_data.check_grabs)
@@ -792,7 +792,7 @@ void dddToggleSaveHistoryOnExitCB (CB_ARG_LIST_TOGGLE(w, call_data))
 
     app_data.save_history_on_exit = info->set;
 #else // NOT IF_MOTIF
-    app_data.save_history_on_exit = w->get_active();
+    app_data.save_history_on_exit = get_active(w);
 #endif // IF_MOTIF
 
     if (app_data.save_history_on_exit)
@@ -811,7 +811,7 @@ void dddToggleSuppressWarningsCB (CB_ARG_LIST_TOGGLE(w, call_data))
 
     app_data.suppress_warnings = info->set;
 #else // NOT IF_MOTIF
-    app_data.suppress_warnings = w->get_active();
+    app_data.suppress_warnings = get_active(w);
 #endif // IF_MOTIF
 
     if (app_data.suppress_warnings)
@@ -830,7 +830,7 @@ void dddToggleWarnIfLockedCB (CB_ARG_LIST_TOGGLE(w, call_data))
 
     app_data.warn_if_locked = info->set;
 #else // NOT IF_MOTIF
-    app_data.warn_if_locked = w->get_active();
+    app_data.warn_if_locked = get_active(w);
 #endif // IF_MOTIF
 
     if (app_data.warn_if_locked)
@@ -887,7 +887,7 @@ void dddToggleButtonTipsCB (CB_ARG_LIST_TOGGLE(w, call_data))
 
     app_data.button_tips = info->set;
 #else // NOT IF_MOTIF
-    app_data.button_tips = w->get_active();
+    app_data.button_tips = get_active(w);
 #endif // IF_MOTIF
 
     if (app_data.button_tips)
@@ -906,7 +906,7 @@ void dddToggleValueTipsCB (CB_ARG_LIST_TOGGLE(w, call_data))
 
     app_data.value_tips = info->set;
 #else // NOT IF_MOTIF
-    app_data.value_tips = w->get_active();
+    app_data.value_tips = get_active(w);
 #endif // IF_MOTIF
 
     if (app_data.value_tips)
@@ -925,7 +925,7 @@ void dddToggleButtonDocsCB (CB_ARG_LIST_TOGGLE(w, call_data))
 
     app_data.button_docs = info->set;
 #else // NOT IF_MOTIF
-    app_data.button_docs = w->get_active();
+    app_data.button_docs = get_active(w);
 #endif // IF_MOTIF
 
     if (app_data.button_docs)
@@ -944,7 +944,7 @@ void dddToggleValueDocsCB (CB_ARG_LIST_TOGGLE(w, call_data))
 
     app_data.value_docs = info->set;
 #else // NOT IF_MOTIF
-    app_data.value_docs = w->get_active();
+    app_data.value_docs = get_active(w);
 #endif // IF_MOTIF
 
     if (app_data.value_docs)
@@ -963,7 +963,7 @@ void dddToggleSaveOptionsOnExitCB (CB_ARG_LIST_TOGGLE(w, call_data))
 
     app_data.save_options_on_exit = info->set;
 #else // NOT IF_MOTIF
-    app_data.save_options_on_exit = w->get_active();
+    app_data.save_options_on_exit = get_active(w);
 #endif // IF_MOTIF
 
     if (app_data.save_options_on_exit)

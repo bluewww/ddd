@@ -62,10 +62,13 @@ const MMType MMSpinBox     = 15; // Like MMTextField, but add two spin buttons
 const MMType MMComboBox    = 16; // Create a combo box
 
 #ifdef IF_MOTIF
+#define MMMenuItem MMPush
+#define MMCheckItem MMToggle
 #define MMRadio MMToggle
 #else // NOT IF_MOTIF
 const MMType MMMenuItem    = 17; // Create a MenuItem (same as MMPush for Motif)
-const MMType MMRadio       = 18; // Create a RadioButton (same as MMToggle for Motif)
+const MMType MMCheckItem   = 18; // Create a CheckMenuItem (same as MMToggle for Motif)
+const MMType MMRadio       = 19; // Create a RadioButton (same as MMToggle for Motif)
 #endif // IF_MOTIF
 
 const MMType MMTypeMask    = 31; // mask to find type
@@ -194,7 +197,8 @@ void MMaddItems(CONTAINER_P shell, MMDesc items[], bool ignore_seps = false);
 #ifdef IF_MOTIF
 #define MMNoCB { 0, 0 }
 #else // NOT IF_MOTIF
-#define MMNoCB BIND_1( PTR_FUN((GTK_PROC_WP)0), (XtPointer)0 )
+extern void dummy_callback(Widget);
+#define MMNoCB PTR_FUN(dummy_callback)
 #endif // IF_MOTIF
 #define MMEnd  { NM(0, ""), MMPush, MMNoCB, 0, 0, 0, 0 }
 #define MMSep  { NM("separator", ""), MMSeparator, MMNoCB, 0, 0, 0, 0 }

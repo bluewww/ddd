@@ -1073,7 +1073,7 @@ struct ProgramItems {
     { NM("run_again", "Run Again"), MMPush,				\
       BIND_1(PTR_FUN(gdbCommandCB), "run"), 0, 0, 0, 0 },		\
     MMSep,								\
-    { NM("separateExecWindow", "Run in Execution Window"), MMToggle,	\
+    { NM("separateExecWindow", "Run in Execution Window"), MMCheckItem,	\
       BIND_0(PTR_FUN(dddToggleSeparateExecWindowCB)), 0, (Widget *)&(w), 0, 0 }, \
     MMSep,								\
     { NM("step", "Step"), MMPush,					\
@@ -1133,7 +1133,7 @@ static MMDesc data_program_menu[]
       HIDE_0( PTR_FUN(gdbOpenSourceWindowCB) ), 0, 0, 0, 0},		\
     { NM("data", "Data Window"),					\
       MMPush,   HIDE_0( PTR_FUN(gdbOpenDataWindowCB) ), 0, 0, 0, 0},	\
-    { NM("code", "Machine Code Window"), MMToggle | x,			\
+    { NM("code", "Machine Code Window"), MMCheckItem | x,		\
         BIND_0( PTR_FUN(gdbToggleCodeWindowCB) ), 0, 0, 0, 0},		\
     MMEnd								\
 }
@@ -1149,13 +1149,13 @@ static MMDesc views_menu[] =
     { NM("exec", "Execution Window..."), MMPush,
       HIDE_0( PTR_FUN(gdbOpenExecWindowCB) ), 0, 0, 0, 0},
     MMSep,
-    { NM("console", "@GDB@ Console"), MMToggle,
+    { NM("console", "@GDB@ Console"), MMCheckItem,
       BIND_0( PTR_FUN(gdbToggleCommandWindowCB) ), 0, 0, 0, 0},
-    { NM("source", "Source Window"), MMToggle,
+    { NM("source", "Source Window"), MMCheckItem,
       BIND_0( PTR_FUN(gdbToggleSourceWindowCB) ), 0, 0, 0, 0},
-    { NM("data", "Data Window"), MMToggle,
+    { NM("data", "Data Window"), MMCheckItem,
       BIND_0( PTR_FUN(gdbToggleDataWindowCB) ), 0, 0, 0, 0},
-    { NM("code", "Machine Code Window"), MMToggle,
+    { NM("code", "Machine Code Window"), MMCheckItem,
       BIND_0( PTR_FUN(gdbToggleCodeWindowCB) ), 0, 0, 0, 0},
     MMEnd
 };
@@ -1198,7 +1198,7 @@ DECL_WR(WR_dddPopupSettingsCB, CB_ARG_HIDE_0(PTR_FUN(dddPopupSettingsCB)));
     { NM("settings", "Settings..."),       MMPush,			\
       BIND_1( PTR_FUN(WhenReady), XtPointer(&WR_dddPopupSettingsCB) ), 0, 0, 0, 0}, \
     MMSep,								\
-    { NM("saveOptions", "Save Options"),   MMToggle,			\
+    { NM("saveOptions", "Save Options"),   MMCheckItem,			\
       BIND_0( PTR_FUN(dddToggleSaveOptionsOnExitCB) ), 0, (Widget *)&(w), 0, 0}, \
     MMEnd								\
 }
@@ -1328,17 +1328,17 @@ static MMDesc source_menu[] =
       BIND_1(PTR_FUN(gdbFindCB), SourceView::backward),
       0, (Widget *)&find_backward_w, 0, 0 },
     MMSep,
-    { NM("findWordsOnly", "Find Words Only"),                    MMToggle,
+    { NM("findWordsOnly", "Find Words Only"),                    MMCheckItem,
       BIND_0(PTR_FUN(sourceToggleFindWordsOnlyCB)), 
       0, (Widget *)&find_words_only_w, 0, 0 },
-    { NM("findCaseSensitive", "Find Case Sensitive"),            MMToggle,
+    { NM("findCaseSensitive", "Find Case Sensitive"),            MMCheckItem,
       BIND_0(PTR_FUN(sourceToggleFindCaseSensitiveCB)), 
       0, (Widget *)&find_case_sensitive_w, 0, 0 },
     MMSep,
-    { NM("lineNumbers", "Display Line Numbers"),                 MMToggle,
+    { NM("lineNumbers", "Display Line Numbers"),                 MMCheckItem,
       BIND_0(PTR_FUN(sourceToggleDisplayLineNumbersCB)),
       0, (Widget *)&line_numbers1_w, 0, 0 },
-    { NM("disassemble", "Display Machine Code"),                 MMToggle,
+    { NM("disassemble", "Display Machine Code"),                 MMCheckItem,
       BIND_0(PTR_FUN(gdbToggleCodeWindowCB)),
       0, (Widget *)&disassemble_w, 0, 0 },
     MMSep,
@@ -2137,14 +2137,14 @@ static MMDesc data_menu[] =
     { NM("display", "Display ()"),                  MMPush,
       BIND_0(PTR_FUN(gdbDisplayCB)), 0, &display_w, 0, 0 },
     MMSep,
-    { NM("detectAliases", "Detect Aliases"),        MMToggle,
+    { NM("detectAliases", "Detect Aliases"),        MMCheckItem,
       BIND_0(PTR_FUN(graphToggleDetectAliasesCB)),
       0, (Widget *)&detect_aliases_w, 0, 0 },
     MMSep,
-    { NM("info locals", "Display Local Variables"), MMToggle,
+    { NM("info locals", "Display Local Variables"), MMCheckItem,
       BIND_0(PTR_FUN(graphToggleLocalsCB)), 
       0, (Widget *)&locals_w, 0, 0 },
-    { NM("info args", "Display Arguments"),         MMToggle,
+    { NM("info args", "Display Arguments"),         MMCheckItem,
       BIND_0(PTR_FUN(graphToggleArgsCB)), 
       0, (Widget *)&args_w, 0, 0 },
     { NM("infos", "Status Displays..."),            MMPush,
@@ -2178,11 +2178,11 @@ static Gtk::ToggleButton *crash_nothing_w   = 0;
 
 static MMDesc crash_menu[] = 
 {
-    { NM("debug", "Debug DDD"),     MMToggle,
+    { NM("debug", "Debug DDD"),     MMCheckItem,
       HIDE_0_BIND_1(PTR_FUN(dddSetCrashCB), 2), 0, (Widget *)&crash_debug_w, 0, 0 },
-    { NM("dumpCore", "Dump Core Now"), MMToggle,
+    { NM("dumpCore", "Dump Core Now"), MMCheckItem,
       HIDE_0_BIND_1(PTR_FUN(dddSetCrashCB), 1), 0, (Widget *)&crash_dump_core_w, 0, 0 },
-    { NM("nothing", "Do Nothing"),     MMToggle,
+    { NM("nothing", "Do Nothing"),     MMCheckItem,
       HIDE_0_BIND_1(PTR_FUN(dddSetCrashCB), 0), 0, (Widget *)&crash_nothing_w, 0, 0 },
     MMEnd
 };
@@ -5091,7 +5091,11 @@ static void set_scale(Gtk::Scale *w, int val)
 #endif // IF_MOTIF
 
 // Reflect state in option menus
+#ifdef IF_MOTIF
 void update_options(bool noupd)
+#else // NOT IF_MOTIF
+static void real_update_options(bool noupd)
+#endif // IF_MOTIF
 {
 #ifndef IF_MOTIF
     if (noupd)
@@ -5515,6 +5519,17 @@ void update_options(bool noupd)
     update_reset_preferences();
     fix_status_size();
 }
+
+#ifndef IF_MOTIF
+void update_options(bool noupd)
+{
+    // Danger: update_options() is sometimes called from a toggle
+    // callback.  Potentially this can lead to recursive calls.  So we
+    // defer this until the idle loop.
+    Glib::signal_idle().connect(sigc::bind_return(sigc::bind(PTR_FUN(real_update_options), noupd), false));
+}
+#endif // IF_MOTIF
+
 
 static void set_settings_title(Widget w)
 {
@@ -8594,9 +8609,15 @@ static void gdbUpdateFileCB(CB_ARG_LIST_2(client_data))
 #else // NOT IF_MOTIF
     Graph *graph = data_disp->graph_edit->get_graph();
 #endif // IF_MOTIF
-    bool can_print = (graph->firstNode() != 0);
-    set_sensitive(file_menu[FileItems::Print].widget,      can_print);
-    set_sensitive(file_menu[FileItems::PrintAgain].widget, can_print);
+    if (!graph)
+	std::cerr << "ERROR: get_graph() returned NULL\n";
+    else
+    {
+	bool can_print = (graph->firstNode() != 0);
+	set_sensitive(file_menu[FileItems::Print].widget,      can_print);
+	set_sensitive(file_menu[FileItems::PrintAgain].widget, can_print);
+    }
+
 
     // Check whether we can close something
     bool can_close = (running_shells() > 1);

@@ -125,14 +125,14 @@ extern void dddToggleSuppressWarningsCB     (CB_ARG_LIST_3());
 extern void dddToggleWarnIfLockedCB         (CB_ARG_LIST_3());
 extern void dddToggleSaveOptionsOnExitCB    (CB_ARG_LIST_3());
 #else // NOT IF_MOTIF
-extern void dddToggleGroupIconifyCB         (TOGGLEBUTTON_P);
-extern void dddToggleUniconifyWhenReadyCB   (TOGGLEBUTTON_P);
-extern void dddToggleSeparateExecWindowCB   (TOGGLEBUTTON_P);
-extern void dddToggleCheckGrabsCB           (TOGGLEBUTTON_P);
-extern void dddToggleSaveHistoryOnExitCB    (TOGGLEBUTTON_P);
-extern void dddToggleSuppressWarningsCB     (TOGGLEBUTTON_P);
-extern void dddToggleWarnIfLockedCB         (TOGGLEBUTTON_P);
-extern void dddToggleSaveOptionsOnExitCB    (TOGGLEBUTTON_P);
+extern void dddToggleGroupIconifyCB         (Widget);
+extern void dddToggleUniconifyWhenReadyCB   (Widget);
+extern void dddToggleSeparateExecWindowCB   (Widget);
+extern void dddToggleCheckGrabsCB           (Widget);
+extern void dddToggleSaveHistoryOnExitCB    (Widget);
+extern void dddToggleSuppressWarningsCB     (Widget);
+extern void dddToggleWarnIfLockedCB         (Widget);
+extern void dddToggleSaveOptionsOnExitCB    (Widget);
 #endif // IF_MOTIF
 
 extern void dddToggleButtonTipsCB           (CB_ARG_LIST_TOGGLE(,));

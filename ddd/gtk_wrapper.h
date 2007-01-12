@@ -16,6 +16,7 @@ typedef Screen *SCREEN_P;
 
 typedef Widget CONTAINER_P;
 typedef Widget TOGGLEBUTTON_P;
+typedef Widget CHECKMENUITEM_P;
 typedef Widget RADIOBUTTON_P;
 typedef Widget BUTTON_P;
 typedef Widget DIALOG_P;
@@ -527,10 +528,10 @@ struct XtActionsRec {
 // A simple toggle.  In Motif, the set/unset state is
 // passed in the callback structure.
 // In gtkmm, we read it fron the widget w.
-#define CB_ARG_LIST_TOGGLE(w, call_data) TOGGLEBUTTON_P w
+// Note that the widget may either be a ToggleButton or a CheckMenuItem.
+#define CB_ARG_LIST_TOGGLE(w, call_data) Widget w
 // A toggle with an additional client_data argument.
-#define CB_ARG_LIST_TOGGLE_X(w, client_data, call_data) \
-TOGGLEBUTTON_P w, XtPointer client_data
+#define CB_ARG_LIST_TOGGLE_X(w, client_data, call_data) Widget w, XtPointer client_data
 
 #define M_ARGS_1(w) 
 #define M_ARGS_2(w, a) a
@@ -659,8 +660,10 @@ typedef Gtk::Notebook *NOTEBOOK_P;
 
 #include <gtkmm/togglebutton.h>
 #include <gtkmm/radiobutton.h>
+#include <gtkmm/checkmenuitem.h>
 
 typedef Gtk::ToggleButton *TOGGLEBUTTON_P;
+typedef Gtk::CheckMenuItem *CHECKMENUITEM_P;
 typedef Gtk::RadioButton *RADIOBUTTON_P;
 typedef Gtk::Button *BUTTON_P;
 

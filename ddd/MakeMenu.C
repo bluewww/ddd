@@ -489,14 +489,28 @@ void MMaddItems(CONTAINER_P shell, MMDesc items[], bool ignore_seps)
 	    arg = 0;
 	    widget = verify(XmCreateToggleButton(shell, XMST(name), args, arg));
 #else // NOT IF_MOTIF
-	    if (menushell)
+	    if (menushell) {
+		std::cerr << "*** ERROR: CREATE MMToggle IN MENU ***\n";
 		widget = new Gtk::CheckMenuItem(label_string);
+	    }
 	    else
 		widget = new Gtk::CheckButton(label_string);
 	    pack_item(container, widget);
 #endif // IF_MOTIF
 	    break;
 	}
+
+#ifndef IF_MOTIF
+	case MMCheckItem:
+	{
+	    // Create a CheckItem
+	    assert(subitems == 0);
+
+	    widget = new Gtk::CheckMenuItem(label_string);
+	    pack_item(container, widget);
+	    break;
+	}
+#endif
 
 #ifndef IF_MOTIF
 	case MMRadio:
@@ -1283,6 +1297,7 @@ static void addCallback(const MMDesc *item, XtPointer default_closure)
 
 #ifdef IF_MOTIF
     case MMToggle:
+      // case MMCheckItem:
     case MMScale:
     {
 	if (callback.callback != 0)
@@ -1296,12 +1311,18 @@ static void addCallback(const MMDesc *item, XtPointer default_closure)
     }
 #else // NOT IF_MOTIF
     case MMToggle:
+    case MMCheckItem:
     case MMRadio:
     {
 	if (callback) {
 	    Gtk::ToggleButton *button = dynamic_cast<Gtk::ToggleButton *>(widget);
+	    Gtk::CheckMenuItem *mi = dynamic_cast<Gtk::CheckMenuItem *>(widget);
 	    if (button)
 		button->signal_toggled().connect(sigc::bind(callback, widget));
+	    else if (mi)
+		mi->signal_toggled().connect(sigc::bind(callback, widget));
+	    else
+		std::cerr << "WARNING: Item " << item->name << " has unexpected type\n";
 	}
 	else
 	    set_sensitive(widget, false);
@@ -1440,6 +1461,20 @@ static void addCallback(const MMDesc *item, XtPointer default_closure)
 #ifdef NAG_ME
 #warning FIXME: Add callbacks to update menus.
 #endif
+	{
+	    Gtk::MenuItem *mi = dynamic_cast<Gtk::MenuItem *>(widget);
+	    Gtk::Menu *subMenu = NULL;
+	    if (mi)
+		subMenu = mi->get_submenu();
+	    else
+		std::cerr << "MenuItem is not a MenuItem!\n";
+
+	    if (subMenu != 0 && callback)
+	    {
+		subMenu->signal_map().connect(sigc::bind(callback, widget));
+		subMenu->signal_unmap().connect(sigc::bind(callback, widget));
+	    }
+	}
 #endif // IF_MOTIF
 	break;
     }
@@ -1848,3 +1883,14 @@ void set_sensitive(Widget w, bool state)
 #endif // IF_MOTIF
     }
 }
+
+#ifndef IF_MOTIF
+#ifdef NAG_ME
+#warning Can we not just test for a NULL callback and not connect anything?
+#endif
+void
+dummy_callback(Widget)
+{
+}
+#endif // IF_MOTIF
+
