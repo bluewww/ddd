@@ -56,6 +56,33 @@ GtkMultiPaned::debug(void)
     }
 }
 
+void
+GtkMultiPaned::show_child(Gtk::Widget* w)
+{
+    w->show();
+    Gtk::Widget *paned = w->get_parent();
+    if (paned)
+	paned->show();
+}
+
+void
+GtkMultiPaned::hide_child(Gtk::Widget *w)
+{
+    w->hide();
+    Gtk::Widget *parent = w->get_parent();
+    if (!parent) return;
+    Gtk::Paned *paned = dynamic_cast<Gtk::Paned *>(parent);
+    if (paned) {
+	Gtk::Widget *w1 = paned->get_child1();
+	Gtk::Widget *w2 = paned->get_child2();
+	// A GtkMultiPaned child is always the first child of a
+	// Gtk::Paned widget.
+	assert (w == w1);
+	if (!(w2 && w2->is_visible()))
+	    paned->hide();
+    }
+}
+
 #ifdef NAG_ME
 #warning DEBUGGING CODE
 #endif

@@ -13,6 +13,8 @@ public:
     void on_add(Gtk::Widget* widget);
     bool on_expose_event(GdkEventExpose* event);
     void debug(void);
+    static void show_child(Gtk::Widget* widget);
+    static void hide_child(Gtk::Widget* widget);
 };
 
 #endif

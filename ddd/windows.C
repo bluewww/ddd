@@ -76,6 +76,8 @@ char windows_rcsid[] =
 #ifdef XtIsRealized
 #undef XtIsRealized
 #endif
+#else // NOT IF_MOTIF
+#include "GtkMultiPaned.h"
 #endif // IF_MOTIF
 
 //-----------------------------------------------------------------------------
@@ -959,7 +961,12 @@ void gdbCloseCommandWindowCB(CB_ARG_LIST_1(w))
 	popdown_shell(command_shell);
     }
 
+#ifdef IF_MOTIF
+    // Unmanaged the ScrolledWindow parent:
     unmanage_paned_child(XtParent(gdb_w));
+#else // NOT IF_MOTIF
+    unmanage_paned_child(gdb_w);
+#endif // IF_MOTIF
 
     app_data.debugger_console = false;
 
@@ -968,7 +975,12 @@ void gdbCloseCommandWindowCB(CB_ARG_LIST_1(w))
 
 void gdbOpenCommandWindowCB(CB_ARG_LIST_NULL)
 {
+#ifdef IF_MOTIF
+    // Manage the ScrolledWindow parent:
     manage_paned_child(XtParent(gdb_w));
+#else // NOT IF_MOTIF
+    manage_paned_child(gdb_w);
+#endif // IF_MOTIF
 
     if (app_data.separate_source_window)
 	popup_shell(command_shell);
@@ -980,7 +992,12 @@ void gdbOpenCommandWindowCB(CB_ARG_LIST_NULL)
 
 bool have_command_window()
 {
+#ifdef IF_MOTIF
+    // Refers to ScrolledWindow parent:
     return XtIsManaged(XtParent(gdb_w));
+#else // NOT IF_MOTIF
+    return XtIsManaged(gdb_w);
+#endif // IF_MOTIF
 }
 
 
@@ -1708,6 +1725,7 @@ void manage_paned_child(Widget w)
 #else // NOT IF_MOTIF
     static int errcnt = 0;
     if (complain && !errcnt++ == 0) std::cerr << "manage_paned_child() not implemented\n";
+    GtkMultiPaned::show_child(w);
 #endif // IF_MOTIF
 }
 
@@ -1792,8 +1810,7 @@ void unmanage_paned_child(Widget w)
 
     paned_changed(w);
 #else // NOT IF_MOTIF
-    static int errcnt = 0;
-    if (complain && !errcnt++ == 0) std::cerr << "unmanage_paned_child() not implemented\n";
+    GtkMultiPaned::hide_child(w);
 #endif // IF_MOTIF
 }
 
