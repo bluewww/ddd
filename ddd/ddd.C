@@ -6344,21 +6344,17 @@ static void ChangePanelCB(TOGGLEBUTTON_P w, XtPointer client_data, XtPointer cal
 }
 
 #ifdef IF_MOTIF
-#define OLD_PANELS
-#endif
-
-#ifdef OLD_PANELS
 static TOGGLEBUTTON_P add_panel(BOX_P parent,
 				BOX_P buttons, 
 				const _XtString name, MMDesc items[],
 				Dimension& max_width, Dimension& max_height,
 				bool set = false)
-#else // NOT OLD_PANELS
+#else // NOT IF_MOTIF
 static int add_panel(NOTEBOOK_P parent,
 		     const _XtString name, Glib::ustring label,
 		     MMDesc items[],
 		     bool set = false)
-#endif // OLD_PANELS
+#endif // IF_MOTIF
 {
 #ifdef IF_MOTIF
     Arg args[10];
@@ -6375,12 +6371,8 @@ static int add_panel(NOTEBOOK_P parent,
     // Used to identify panels by ResetPreferencesCB,
     // update_reset_preferences.
     form->set_name(XMST(name));
-#ifdef OLD_PANELS
-    parent->pack_start(*form, Gtk::PACK_SHRINK);
-#else
     int pageno = parent->get_n_pages();
     parent->append_page(*form, label);
-#endif
 #endif // IF_MOTIF
     XtManageChild(form);
 
@@ -6413,49 +6405,20 @@ static int add_panel(NOTEBOOK_P parent,
     XtManageChild(button);
     XtAddCallback(button, XmNvalueChangedCallback, ChangePanelCB, 
 		  XtPointer(form));
-#else // NOT IF_MOTIF
-#ifdef OLD_PANELS
-    Gtk::RadioButton *button = NULL;
-    Glib::ListHandle<Gtk::Widget*> kids = buttons->get_children();
-    for (Glib::ListHandle<Gtk::Widget*>::iterator iter = kids.begin();
-	 iter != kids.end();
-	 iter++) {
-	Gtk::RadioButton *old = dynamic_cast<Gtk::RadioButton *>(*iter);
-	if (old) {
-	    Gtk::RadioButtonGroup group = old->get_group();
-	    button = new Gtk::RadioButton(group, XMST(name));
-	    break;
-	}
-    }
-    if (!button) {
-	button = new Gtk::RadioButton(XMST(name));
-    }
-    buttons->pack_start(*button, Gtk::PACK_EXPAND_PADDING);
-    button->show();
-    button->signal_toggled().connect(sigc::bind(PTR_FUN(ChangePanelCB),
-						button, form, XtNIL));
-#endif
 #endif // IF_MOTIF
 
-#ifdef OLD_PANELS
+#ifdef IF_MOTIF
     XmToggleButtonSetState(button, Boolean(set), False);
 
     if (set)
     {
-#ifdef IF_MOTIF
 	XmToggleButtonCallbackStruct cbs;
 	cbs.set = set;
 	ChangePanelCB(button, XtPointer(form), &cbs);
-#else // NOT IF_MOTIF
-#ifdef NAG_ME
-#warning Do we need to call ChangePanelCB after set_active()?
-#endif
-	ChangePanelCB(button, form, NULL);
-#endif // IF_MOTIF
     }
 #endif
 
-#ifdef OLD_PANELS
+#ifdef IF_MOTIF
     return button;
 #else
     return pageno;
@@ -6575,27 +6538,15 @@ static void make_preferences(Widget parent)
 	verify(XmCreateRowColumn(frame, XMST("change"), args, arg));
     XtManageChild(change);
 #else // NOT IF_MOTIF
-#ifdef OLD_PANELS
-    Gtk::Box *buttons = new Gtk::HBox();
-    box->pack_start(*buttons, Gtk::PACK_SHRINK);
-    buttons->show();
-    Gtk::Frame *frame = new Gtk::Frame(XMST("frame"));
-    box->pack_start(*frame, Gtk::PACK_EXPAND_WIDGET);
-    frame->show();
-    Gtk::Box *change = new Gtk::HBox();
-    frame->add(*change);
-    change->show();
-#else // NOT OLD_PANELS
     Gtk::Notebook *change = new Gtk::Notebook();
     preferences_dialog->get_vbox()->pack_start(*change, Gtk::PACK_SHRINK);
     change->show();
-#endif // OLD_PANELS
 #endif // IF_MOTIF
 
     Dimension max_width  = 0;
     Dimension max_height = 0;
 
-#ifdef OLD_PANELS
+#ifdef IF_MOTIF
     TOGGLEBUTTON_P general_button =
 	add_panel(change, buttons, "general", general_preferences_menu, 
 	      max_width, max_height, false);
@@ -6605,13 +6556,11 @@ static void make_preferences(Widget parent)
 	      max_width, max_height, false);
     add_panel(change, buttons, "startup", startup_preferences_menu, 
 	      max_width, max_height, false);
-#ifdef IF_MOTIF
     add_panel(change, buttons, "fonts", font_preferences_menu,
 	      max_width, max_height, false);
-#endif // IF_MOTIF
     add_panel(change, buttons, "helpers", helpers_preferences_menu, 
 	      max_width, max_height, false);
-#else // NOT OLD_PANELS
+#else // NOT IF_MOTIF
     int general_button =
 	add_panel(change, "general", "General", general_preferences_menu, 
 		  false);
@@ -6621,10 +6570,6 @@ static void make_preferences(Widget parent)
 	      false);
     add_panel(change, "startup", "Startup", startup_preferences_menu, 
 	      false);
-#ifdef IF_MOTIF
-    add_panel(change, "fonts", "Fonts", font_preferences_menu,
-	      false);
-#endif // IF_MOTIF
     add_panel(change, "helpers", "Helpers", helpers_preferences_menu, 
 	      false);
 #endif
@@ -6636,13 +6581,6 @@ static void make_preferences(Widget parent)
 		  XmNresizeWidth, False,
 		  XmNresizeHeight, False,
 		  XtNIL);
-#else // NOT IF_MOTIF
-#ifdef OLD_PANELS
-#ifdef NAG_ME
-#warning How to calculate sizes of panels before realizing them?
-#endif
-    change->set_size_request(max_width, max_height);
-#endif
 #endif // IF_MOTIF
 
 #ifdef IF_MOTIF
