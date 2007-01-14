@@ -477,8 +477,10 @@ dnl
 AC_SUBST(gddd)
 AC_SUBST(GDDD)
 AC_ARG_WITH([gtk],AS_HELP_STRING([--with-gtk],[Use GTK interface (experimental)]),[with_gtk="${withval}"],[with_gtk=no])
+AC_ARG_WITH([xmmm],AS_HELP_STRING([--with-xmmm],[Use new Motif interface (experimental)]),[with_xmmm="${withval}"],[with_xmmm=no])
 AM_CONDITIONAL([WITH_GTK],[test "$with_gtk" = yes])
 dnl
+echo "with_gtk = $with_gtk"
 if test "$with_gtk" = yes; then
 dnl
 gddd=gddd
@@ -496,6 +498,12 @@ else
 dnl
 gddd=ddd
 GDDD=DDD
+XMMM_LIBS=""
+if test "$with_xmmm" = yes; then
+AC_DEFINE([IF_XMMM], 1, [Define if using New Motif interface])
+XMMM_LIBS="-lXmmm"
+fi
+AC_SUBST(XMMM_LIBS)
 AC_DEFINE([IF_MOTIF], 1, [Define if using Motif interface])
 dnl
 dnl
