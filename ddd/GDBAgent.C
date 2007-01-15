@@ -3181,16 +3181,16 @@ void GDBAgent::normalize_address(string& addr) const
 string GDBAgent::disassemble_command(string start, const char *end) const
 {
     string cmd;
-    if (type() != GDB)
+    if (type() != GDB && type() != PYDB)
 	return cmd;
 
-    normalize_address(start);
+    if (type() != PYDB) normalize_address(start);
     cmd = "disassemble " + start;
 
     if (strlen(end) != 0)
     {
         string end_( end );
-	normalize_address(end_);
+	if (type() != PYDB) normalize_address(end_);
 	cmd += ' ';
 	cmd += end_;
     }

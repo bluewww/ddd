@@ -7875,7 +7875,7 @@ static void setup_options()
     set_sensitive(complete_w,  gdb->type() == BASH || gdb->type() == GDB 
 		  || gdb->type() == PYDB);
     set_sensitive(define_w,    gdb->type() == GDB);
-    set_sensitive(signals_w,   gdb->type() == GDB);
+    set_sensitive(signals_w,   gdb->type() == GDB || gdb->type() == PYDB);
 
     set_sensitive(set_debugger_bash_w, have_cmd("bashdb"));
     set_sensitive(set_debugger_dbg_w,  have_cmd("dbg"));

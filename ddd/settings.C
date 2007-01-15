@@ -345,7 +345,7 @@ static void HelpOnSignalCB(Widget w, XtPointer client_data,
 	pclose(fp);
 	
 	s = info;
-	int start = s.index(" - Macro: int " + sig);
+	int start = s.index("- Macro: int " + sig);
 	start = s.index('\n', start);
 	s = s.after(start);
 	int end = s.index("\n - ");
@@ -1595,6 +1595,9 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 		doc  = doc.after(rxwhite);
 		doc  = doc.after(rxwhite);
 		doc  = doc.after(rxwhite);
+		if (type == PYDB)
+		  doc  = base;
+
 		e_type = SignalEntry;
 	    }
 	    else if (entry_filter != DisplayToggleButtonEntry)
@@ -3340,7 +3343,7 @@ string get_settings(DebuggerType type, unsigned long flags)
 // Fetch GDB signal handling string
 string get_signals(DebuggerType type, unsigned long /* flags */)
 {
-    if (type != GDB)
+    if (type != GDB && type != PYDB)
 	return "";		// Not supported yet
 
     create_signals(type);
