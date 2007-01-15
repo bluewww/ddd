@@ -7,10 +7,13 @@ DDD-3.3.12-test6
 - Remove pydb in this directory. Use
   http://bashdb.sourceforge.net/pydb instead
 
-- "cont"inue button for pydb was broken. 
+- pydb improvements/fixes
+  * "cont"inue button for pydb was broken. 
+  * signal handling menu/support
+  * disassembly window 
 
--  Start informing ddd that bash and pydb now have (or will have in the
-   next release) "commands", and "display".
+- ddd that bash and pydb now have "commands", and "display" debugger
+  commands.
 
 -  LynxOS support via Olli Savia
 
