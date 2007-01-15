@@ -345,7 +345,7 @@ static void HelpOnSignalCB(Widget w, XtPointer client_data,
 	pclose(fp);
 	
 	s = info;
-	int start = s.index(" - Macro: int " + sig);
+	int start = s.index("- Macro: int " + sig);
 	start = s.index('\n', start);
 	s = s.after(start);
 	int end = s.index("\n - ");
