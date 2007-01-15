@@ -7658,6 +7658,7 @@ void SourceView::refresh_threads(bool all_threadgroups)
     switch (gdb->type())
     {
     case GDB:
+    case PYDB:
     {
 	string threads = gdb_question("info threads");
 	process_threads(threads);
@@ -7692,7 +7693,6 @@ void SourceView::refresh_threads(bool all_threadgroups)
     case DBG:
     case MAKE:
     case PERL:
-    case PYDB:
     case XDB:
 	// No threads.
 	break;

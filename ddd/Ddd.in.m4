@@ -6222,7 +6222,8 @@ The current thread is highlighted.\n\
 All debugging commands show information from the perspective\n\
 of the current thread.\n\
 \n\
-Select any thread to make it the current thread.\n\
+PYDB will only allow you to see threads.\n\
+If not using PYDB, select any thread to make it the current thread.\n\
 \n\
 In JDB, you can also\n\
 ITEM select a threadgroup to switch between viewing all threads\n\

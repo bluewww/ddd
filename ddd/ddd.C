@@ -5690,8 +5690,9 @@ void update_arg_buttons()
     set_sensitive(stack_w,     !undoing);
     set_sensitive(registers_w, gdb->has_regs_command() && !undoing);
     set_sensitive(threads_w,   (gdb->type() == GDB
-				|| gdb->type() == JDB
 				|| (gdb->type() == DBX && gdb->isSunDBX())
+				|| (gdb->type() == JDB)
+				|| (gdb->type() == PYDB)
 				) &&
 		                !undoing);
     set_sensitive(infos_w,     (gdb->type() == GDB || gdb->type() == PYDB) &&
