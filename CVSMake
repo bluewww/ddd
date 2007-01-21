@@ -32,6 +32,11 @@ libtoolize
 autoconf
 automake --include-deps --add-missing --verbose
 
+echo "*** RUNNING autogen IN SUBDIRS ***"
+(cd xmmm && sh ./autogen.sh) || true
+(cd gtkx && sh ./autogen.sh) || true
+echo "*** FINISHED autogen IN SUBDIRS ***"
+
 # Configure the package once, using default arguments (or given arguments)
 sh ./configure "$@"
 

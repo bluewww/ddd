@@ -502,12 +502,12 @@ else
 dnl
 gddd=ddd
 GDDD=DDD
-XMMM_LIBS=""
 if test "$with_xmmm" = yes; then
 AC_DEFINE([IF_XMMM], 1, [Define if using New Motif interface])
-XMMM_LIBS="-lXmmm"
-fi
+XMMM_LIBS="-L\$(top_builddir)/xmmm -lXmmm"
+XMMM_CFLAGS="-I\$(top_srcdir)/xmmm"
 AC_SUBST(XMMM_LIBS)
+fi
 AC_DEFINE([IF_MOTIF], 1, [Define if using Motif interface])
 dnl
 dnl

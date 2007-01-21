@@ -676,9 +676,6 @@ X_LDFLAGS = @X_LIBS@
 # Special flags to set the run-time library search path.
 RPATH = @RPATH@
 
-# Motif C++ wrapper library.  (-lXmmm)
-LIBXMMM = @XMMM_LIBS@
-
 # Motif library.  (-lXm)
 LIBXM = @XM_LIBS@
 
@@ -719,7 +716,7 @@ LIBXT = @XT_LIBS@
 LIBX11 = @X_PRE_LIBS@ @X11_LIBS@ @X_EXTRA_LIBS@
 
 # All libraries shown above
-ALL_X_LIBS = $(X_LDFLAGS) $(LIBXMMM) $(LIBXM) $(LIBXAW) $(LIBXMU) $(LIBXT) $(LIBXPM) \
+ALL_X_LIBS = $(X_LDFLAGS) $(XMMM_LIBS) $(LIBXM) $(LIBXAW) $(LIBXMU) $(LIBXT) $(LIBXPM) \
              $(LIBXP) $(LIBXEXT) $(LIBX11) $(LIBGEN)
 
 
@@ -772,7 +769,7 @@ cxxtest_LDADD = $(LIBM)
 ddd_LDADD = $(RPATH) $(GTKX_LIBS) $(GTKMM_LIBS) $(LIBXML_LIBS) $(ALL_X_LIBS) $(ALL_LIBS) 
 # vsl_LDADD = $(RPATH) $(ALL_X_LIBS) $(ALL_LIBS)
 X_INCLUDE = @X_CFLAGS@
-AM_CPPFLAGS = -I$(srcdir)/.. $(GTKX_CFLAGS) $(GTKMM_CFLAGS) $(LIBXML_CFLAGS) $(X_INCLUDE)
+AM_CPPFLAGS = -I$(srcdir)/.. $(GTKX_CFLAGS) $(GTKMM_CFLAGS) $(LIBXML_CFLAGS) $(XMMM_CFLAGS) $(X_INCLUDE)
 
 # -----------------------------------------------------------------------------
 # DDD Application Defaults.
