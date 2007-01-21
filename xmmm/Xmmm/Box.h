@@ -1,4 +1,4 @@
-#include <Xmmm/container.h>
+#include <Xmmm/Container.h>
 #include <Xm/RowColumn.h>
 
 // High-level GUI wrapper for Gtkmm.

@@ -26,7 +26,7 @@
 // the constructor, unlike the Gtk ones.  Motif (Xt) widgets cannot be
 // reparented.  Therefore we need a constructor with extra arguments.
 
-#include <Xmmm/container.h>
+#include <Xmmm/Container.h>
 #include <Xm/RowColumn.h>
 
 namespace Xmmm {

@@ -1,4 +1,4 @@
-#include <Xmmm/box.h>
+#include <Xmmm/Box.h>
 
 using namespace Xmmm;
 
