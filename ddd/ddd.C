@@ -303,7 +303,7 @@ char ddd_rcsid[] =
 #include "xconfig.h"
 
 #ifdef IF_XMMM
-#include <Xmmm/box.h>
+#include <Xmmm/Box.h>
 #endif // IF_XMMM
 
 #ifndef IF_MOTIF

@@ -507,6 +507,9 @@ AC_DEFINE([IF_XMMM], 1, [Define if using New Motif interface])
 XMMM_LIBS="-L\$(top_builddir)/xmmm -lXmmm"
 XMMM_CFLAGS="-I\$(top_srcdir)/xmmm"
 AC_SUBST(XMMM_LIBS)
+AC_SUBST(XMMM_CFLAGS)
+else
+AC_DEFINE([IF_XM], 1, [Define if using Old Motif interface])
 fi
 AC_DEFINE([IF_MOTIF], 1, [Define if using Motif interface])
 dnl
