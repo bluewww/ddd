@@ -49,7 +49,7 @@ dddroot_DATA = NEWS COPYING
 # Subdirectories.
 # -----------------------------------------------------------------------------
 
-SUBDIRS = themes vsllib ddd
+SUBDIRS = themes vsllib $(IF_SUBDIRS) ddd
 
 
 # -----------------------------------------------------------------------------

@@ -302,6 +302,14 @@ char ddd_rcsid[] =
 #include "wm.h"
 #include "xconfig.h"
 
+#ifdef IF_XMMM
+#include <Xmmm/box.h>
+#endif // IF_XMMM
+
+#ifndef IF_MOTIF
+#include <GtkX/Box.h>
+#endif // IF_MOTIF
+
 // Standard stuff
 #include <stdlib.h>
 #include <iostream>
@@ -3238,10 +3246,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 					    args, arg);
     XtManageChild(main_window);
 #else // NOT IF_MOTIF
-
-    CONTAINER_P main_window = new Gtk::VBox();
-    main_window->set_name(XMST("main_window"));
-    command_shell->add(*main_window);
+    CONTAINER_P main_window = new GtkX::VBox(*command_shell, "main_window");
     main_window->show();
 #endif // IF_MOTIF
 
@@ -6359,6 +6364,11 @@ static int add_panel(NOTEBOOK_P parent,
 #ifdef IF_MOTIF
     Arg args[10];
     int arg;
+#endif // IF_MOTIF
+#ifdef IF_XMMM
+    Xmmm::VBox *form_xo = new Xmmm::VBox(parent, name);
+    CONTAINER_P form = form_xo->xt();
+#elif IF_MOTIF
 
     // Add two rows
     arg = 0;
@@ -6367,12 +6377,8 @@ static int add_panel(NOTEBOOK_P parent,
     XtSetArg(args[arg], XmNborderWidth,  0); arg++;
     Widget form = verify(XmCreateRowColumn(parent, XMST(name), args, arg));
 #else // NOT IF_MOTIF
-    Gtk::Box *form = new Gtk::HBox();
-    // Used to identify panels by ResetPreferencesCB,
-    // update_reset_preferences.
-    form->set_name(XMST(name));
     int pageno = parent->get_n_pages();
-    parent->append_page(*form, label);
+    Gtk::Box *form = new GtkX::HBox(*parent, name);
 #endif // IF_MOTIF
     XtManageChild(form);
 

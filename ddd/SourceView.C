@@ -152,6 +152,11 @@ char SourceView_rcsid[] =
 #include <X11/StringDefs.h>
 #include <X11/cursorfont.h>
 
+#ifdef IF_XMMM
+#include <Xmmm/WidgetPtr.h>
+#include <Xmmm/RadioBox.h>
+#endif
+
 #if XmVersion >= 2000
 #include <Xm/SpinB.h>
 #ifndef XmIsSpinBox
@@ -168,6 +173,8 @@ char SourceView_rcsid[] =
 #include <gtkmm/image.h>
 #include <gtkmm/main.h>
 #include <gdkmm/displaymanager.h>
+
+#include <GtkX/RadioBox.h>
 
 #endif // IF_MOTIF
 
@@ -3887,13 +3894,15 @@ void SourceView::create_shells()
 					   XmDIALOG_CANCEL_BUTTON));
 #endif // IF_MOTIF
 
-#ifdef IF_MOTIF
+#ifdef IF_XMMM
+    Xmmm::WidgetPtr<Xmmm::RadioBox> box = new Xmmm::RadioBox(register_dialog_w, "box", Xmmm::ORIENTATION_HORIZONTAL);
+    XtManageChild(box);
+#elif IF_MOTIF
     arg = 0;
     Widget box = XmCreateRadioBox(register_dialog_w, XMST("box"), args, arg);
     XtManageChild(box);
 #else // NOT IF_MOTIF
-    BOX_P box = new Gtk::HBox();
-    register_dialog_w->get_vbox()->pack_start(*box, Gtk::PACK_SHRINK);
+    GtkX::RadioBox *box = new GtkX::RadioBox(*register_dialog_w->get_vbox(), "box", GtkX::ORIENTATION_HORIZONTAL);
     box->show();
 #endif // IF_MOTIF
 
@@ -3906,7 +3915,7 @@ void SourceView::create_shells()
     Gtk::RadioButtonGroup group;
     int_registers_w = 
 	new Gtk::RadioButton(group, XMST("int_registers"));
-    box->pack_start(*int_registers_w, Gtk::PACK_SHRINK);
+    box->pack_start(*int_registers_w, GtkX::PACK_SHRINK);
 #endif // IF_MOTIF    
     XtManageChild(int_registers_w);
     
@@ -3919,7 +3928,7 @@ void SourceView::create_shells()
 #else // NOT IF_MOTIF
     all_registers_w = 
 	new Gtk::RadioButton(group, XMST("all_registers"));
-    box->pack_start(*all_registers_w, Gtk::PACK_SHRINK);
+    box->pack_start(*all_registers_w, GtkX::PACK_SHRINK);
 #endif // IF_MOTIF
     XtManageChild(all_registers_w);
 

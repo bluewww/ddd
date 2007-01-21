@@ -489,6 +489,10 @@ dnl Check for GTK stuff
 PKG_CHECK_MODULES(GTKMM, [gtkmm-2.4])
 AC_SUBST(GTKMM_LIBS)
 AC_SUBST(GTKMM_CFLAGS)
+GTKX_LIBS="-L\$(top_builddir)/gtkx -lGtkX"
+GTKX_CFLAGS="-I\$(top_srcdir)/gtkx"
+AC_SUBST(GTKX_LIBS)
+AC_SUBST(GTKX_CFLAGS)
 dnl
 PKG_CHECK_MODULES(LIBXML, [libxml-2.0 >= 2.4.24])
 AC_SUBST(LIBXML_LIBS)
@@ -1123,6 +1127,16 @@ AC_CONFIG_FILES([Makefile ddd/Makefile ddd/OldMakefile ddd/vr.h ddd/bld.h
 		 ddd/Ddd ddd/ddd.man ddd/cfg.texi ddd/.gdbinit ddd.spec
 		 themes/Makefile vsllib/Makefile])
 AC_CONFIG_COMMANDS([ddd/stamp-h], [date > ddd/stamp-h])
+IF_SUBDIRS=
+if test "$with_xmmm" = yes; then
+   AC_CONFIG_SUBDIRS([xmmm])
+   IF_SUBDIRS="$IF_SUBDIRS xmmm"
+fi
+if test "$with_gtk" = yes; then
+   AC_CONFIG_SUBDIRS([gtkx])
+   IF_SUBDIRS="$IF_SUBDIRS gtkx"
+fi
+AC_SUBST(IF_SUBDIRS)
 AC_OUTPUT
 dnl
 dnl
