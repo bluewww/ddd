@@ -152,11 +152,6 @@ char SourceView_rcsid[] =
 #include <X11/StringDefs.h>
 #include <X11/cursorfont.h>
 
-#ifdef IF_XMMM
-#include <Xmmm/WidgetPtr.h>
-#include <Xmmm/RadioBox.h>
-#endif
-
 #if XmVersion >= 2000
 #include <Xm/SpinB.h>
 #ifndef XmIsSpinBox
@@ -174,9 +169,14 @@ char SourceView_rcsid[] =
 #include <gtkmm/main.h>
 #include <gdkmm/displaymanager.h>
 
-#include <GtkX/RadioBox.h>
-
 #endif // IF_MOTIF
+
+#if !defined(IF_XM)
+#include <GUI/WidgetPtr.h>
+#include <GUI/RadioBox.h>
+#include <GUI/SelectionDialog.h>
+#include <GUI/RadioButton.h>
+#endif
 
 // System stuff
 extern "C" {
@@ -509,10 +509,23 @@ DIALOG_P SourceView::stack_dialog_w          = 0;
 TREEVIEW_P SourceView::frame_list_w          = 0;
 BUTTON_P SourceView::up_w                    = 0;
 BUTTON_P SourceView::down_w                  = 0;
+
+#if defined(IF_XM)
 DIALOG_P SourceView::register_dialog_w       = 0;
+#else
+GUI::WidgetPtr<GUI::SelectionDialog> SourceView::register_dialog_w       = 0;
+#endif
+
 TREEVIEW_P SourceView::register_list_w       = 0;
-RADIOBUTTON_P SourceView::all_registers_w    = 0;
+
+#if defined(IF_XM)
 RADIOBUTTON_P SourceView::int_registers_w    = 0;
+RADIOBUTTON_P SourceView::all_registers_w    = 0;
+#else
+GUI::WidgetPtr<GUI::RadioButton> SourceView::int_registers_w    = 0;
+GUI::WidgetPtr<GUI::RadioButton> SourceView::all_registers_w    = 0;
+#endif
+
 DIALOG_P SourceView::thread_dialog_w         = 0;
 TREEVIEW_P SourceView::thread_list_w         = 0;
 
@@ -3871,19 +3884,22 @@ void SourceView::create_shells()
 
 
     // Create register view
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     arg = 0;
     XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
     register_dialog_w = 
 	verify(createTopLevelSelectionDialog(parent, 
 					     "register_dialog", args, arg));
-#else // NOT IF_MOTIF
+#elif defined(IF_XMMM)
     register_dialog_w = 
-	new Gtk::Dialog(XMST("register_dialog"), *parent);
-#endif // IF_MOTIF
+	new GUI::SelectionDialog(parent, "register_dialog");
+#else // Gtk
+    register_dialog_w = 
+	new GUI::SelectionDialog(*parent, "register_dialog");
+#endif
     Delay::register_shell(register_dialog_w);
 
-#ifdef IF_MOTIF
+#ifdef IF_XM
     XtUnmanageChild(XmSelectionBoxGetChild(register_dialog_w, 
 					   XmDIALOG_TEXT));
     XtUnmanageChild(XmSelectionBoxGetChild(register_dialog_w, 
@@ -3892,44 +3908,38 @@ void SourceView::create_shells()
 					   XmDIALOG_APPLY_BUTTON));
     XtUnmanageChild(XmSelectionBoxGetChild(register_dialog_w, 
 					   XmDIALOG_CANCEL_BUTTON));
-#endif // IF_MOTIF
+#endif // IF_XM
 
-#ifdef IF_XMMM
-    Xmmm::WidgetPtr<Xmmm::RadioBox> box = new Xmmm::RadioBox(register_dialog_w, "box", Xmmm::ORIENTATION_HORIZONTAL);
-    XtManageChild(box);
-#elif IF_MOTIF
+#if defined(IF_XM)
     arg = 0;
     Widget box = XmCreateRadioBox(register_dialog_w, XMST("box"), args, arg);
     XtManageChild(box);
-#else // NOT IF_MOTIF
-    GtkX::RadioBox *box = new GtkX::RadioBox(*register_dialog_w->get_vbox(), "box", GtkX::ORIENTATION_HORIZONTAL);
-    box->show();
-#endif // IF_MOTIF
+#else
+    GUI::WidgetPtr<GUI::RadioBox> box = new GUI::RadioBox(*register_dialog_w, "box", GUI::ORIENTATION_HORIZONTAL);
+    XtManageChild(box);
+#endif
 
-#ifdef IF_MOTIF
+#ifdef IF_XM
     arg = 0;
     XtSetArg(args[arg], XmNset, !all_registers); arg++;
     int_registers_w = 
 	XmCreateToggleButton(box, XMST("int_registers"), args, arg);
-#else // NOT IF_MOTIF
-    Gtk::RadioButtonGroup group;
-    int_registers_w = 
-	new Gtk::RadioButton(group, XMST("int_registers"));
-    box->pack_start(*int_registers_w, GtkX::PACK_SHRINK);
-#endif // IF_MOTIF    
+#else // NOT IF_XM
+    int_registers_w =
+	new GUI::RadioButton(*box, "int_registers");
+#endif // IF_XM    
     XtManageChild(int_registers_w);
     
 
-#ifdef IF_MOTIF
+#ifdef IF_XM
     arg = 0;
     XtSetArg(args[arg], XmNset, all_registers); arg++;
     all_registers_w = 
 	XmCreateToggleButton(box, XMST("all_registers"), args, arg);
-#else // NOT IF_MOTIF
-    all_registers_w = 
-	new Gtk::RadioButton(group, XMST("all_registers"));
-    box->pack_start(*all_registers_w, GtkX::PACK_SHRINK);
-#endif // IF_MOTIF
+#else // NOT IF_XM
+    all_registers_w =
+	new GUI::RadioButton(*box, "all_registers");
+#endif // IF_XM
     XtManageChild(all_registers_w);
 
 #ifdef IF_MOTIF

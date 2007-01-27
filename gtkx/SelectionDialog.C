@@ -1,5 +1,3 @@
-// -*- C++ -*-
-
 // High-level GUI wrapper for Gtkmm.
 
 // Copyright (C) 2007 Peter Wainwright <prw@ceiriog.eclipse.co.uk>
@@ -26,29 +24,58 @@
 // the constructor, unlike the Gtk ones.  Motif (Xt) widgets cannot be
 // reparented.  Therefore we need a constructor with extra arguments.
 
-#ifndef XMMM_RADIOBOX_H
-#define XMMM_RADIOBOX_H
+#include <gtkmm/treemodel.h>
 
-#include <Xmmm/Container.h>
-#include <Xm/RowColumn.h>
+#include <GtkX/SelectionDialog.h>
 
-namespace Xmmm {
+using namespace GtkX;
 
-    enum Orientation
-    {
-	ORIENTATION_HORIZONTAL,
-	ORIENTATION_VERTICAL
-    };
+class ModelColumns: public Gtk::TreeModel::ColumnRecord
+{
+public:
+  Gtk::TreeModelColumn<Glib::ustring> name;
+  ModelColumns()
+  {
+    add(name);
+  }
+};
 
-    class RadioBox: public Container {
-	::Widget box_;
-    public:
-	RadioBox(Xmmm::Widget &parent, const char *name, Xmmm::Orientation orientation);
-	RadioBox(::Widget parent, const char *name, Xmmm::Orientation orientation); // TEMPORARY
-	~RadioBox(void);
-	::Widget xt(void); // TEMPORARY
-    };
+ModelColumns model;
 
+SelectionDialog::SelectionDialog(Gtk::Window &parent,
+				 const GtkX::String &name):
+    Dialog(name.s(), parent)
+{
+    store_ = Gtk::ListStore::create(model);
+
+    treeview_ = new Gtk::TreeView(store_);
+
+    treeview_->set_size_request(-1, 100);
+
+    get_vbox()->pack_start(*treeview_, Gtk::PACK_SHRINK);
+    treeview_->show();
+
+    treeview_->append_column("Name", model.name);
+
+    set_name(name.s());
 }
 
-#endif // XMMM_RADIOBOX_H
+SelectionDialog::~SelectionDialog(void)
+{
+    delete treeview_;
+}
+
+Gtk::Widget *
+SelectionDialog::gtk_widget(void)
+{
+    return this;
+}
+
+// In the case of Dialogs, we almost always want to add to the VBox
+// returned by get_vbox().
+Gtk::Container *
+GtkX::SelectionDialog::gtk_container(void)
+{
+    return get_vbox();
+}
+

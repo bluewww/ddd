@@ -26,29 +26,22 @@
 // the constructor, unlike the Gtk ones.  Motif (Xt) widgets cannot be
 // reparented.  Therefore we need a constructor with extra arguments.
 
-#ifndef XMMM_RADIOBOX_H
-#define XMMM_RADIOBOX_H
+#ifndef XMMM_SELECTIONDIALOG_H
+#define XMMM_SELECTIONDIALOG_H
 
 #include <Xmmm/Container.h>
-#include <Xm/RowColumn.h>
+#include <Xm/SelectioB.h>
 
 namespace Xmmm {
 
-    enum Orientation
-    {
-	ORIENTATION_HORIZONTAL,
-	ORIENTATION_VERTICAL
-    };
-
-    class RadioBox: public Container {
-	::Widget box_;
+    class SelectionDialog: public Container {
+	::Widget dlg_;
     public:
-	RadioBox(Xmmm::Widget &parent, const char *name, Xmmm::Orientation orientation);
-	RadioBox(::Widget parent, const char *name, Xmmm::Orientation orientation); // TEMPORARY
-	~RadioBox(void);
+	SelectionDialog(::Widget parent, const char *name); // TEMPORARY
+	~SelectionDialog(void);
 	::Widget xt(void); // TEMPORARY
     };
 
 }
 
-#endif // XMMM_RADIOBOX_H
+#endif // XMMM_SELECTIONDIALOG_H

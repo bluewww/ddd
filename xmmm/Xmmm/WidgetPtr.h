@@ -26,33 +26,47 @@
 // the constructor, unlike the Gtk ones.  Motif (Xt) widgets cannot be
 // reparented.  Therefore we need a constructor with extra arguments.
 
+#ifndef XMMM_WIDGETPTR_H
+#define XMMM_WIDGETPTR_H
+
 namespace Xmmm {
 
-  template <class T>
-  class WidgetPtr {
-    T *p_;
-  public:
-    WidgetPtr(T *p)
-    {
-      p_ = p;
-    }
-    operator T *(void)
-    {
-      return p_;
+    template <class T>
+    class WidgetPtr {
+	T *p_;
+    public:
+	WidgetPtr(T *p)
+	    {
+		p_ = p;
+	    }
+	operator void *(void)
+	    {
+		// FIXME: This is a very temporary kludge while we use XtPointer
+		// data in callbacks.
+		return p_->xt();
+	    };
+	operator T *(void)
+	    {
+		return p_;
+	    };
+	operator bool(void)
+	    {
+		return p_;
+	    };
+	operator ::Widget(void)
+	    {
+		return p_->xt();
+	    }
+	T &operator*(void) const
+	    {
+		return *p_;
+	    }
+	T *operator->() const
+	    {
+		return p_;
+	    }
     };
-    operator Widget(void)
-    {
-      return p_->xt();
-    }
-    T &operator*(void) const
-    {
-      return *p_;
-    }
-    T *operator->() const
-    {
-      return p_;
-    }
-  };
 
 }
 
+#endif // XMMM_WIDGETPTR_H

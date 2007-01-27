@@ -303,11 +303,11 @@ char ddd_rcsid[] =
 #include "xconfig.h"
 
 #ifdef IF_XMMM
-#include <Xmmm/Box.h>
+#include <GUI/Box.h>
 #endif // IF_XMMM
 
 #ifndef IF_MOTIF
-#include <GtkX/Box.h>
+#include <GUI/Box.h>
 #endif // IF_MOTIF
 
 // Standard stuff
@@ -3246,7 +3246,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 					    args, arg);
     XtManageChild(main_window);
 #else // NOT IF_MOTIF
-    CONTAINER_P main_window = new GtkX::VBox(*command_shell, "main_window");
+    CONTAINER_P main_window = new GUI::VBox(*command_shell, "main_window");
     main_window->show();
 #endif // IF_MOTIF
 
@@ -6366,7 +6366,7 @@ static int add_panel(NOTEBOOK_P parent,
     int arg;
 #endif // IF_MOTIF
 #ifdef IF_XMMM
-    Xmmm::VBox *form_xo = new Xmmm::VBox(parent, name);
+    GUI::VBox *form_xo = new GUI::VBox(parent, name);
     CONTAINER_P form = form_xo->xt();
 #elif IF_MOTIF
 
@@ -6378,7 +6378,7 @@ static int add_panel(NOTEBOOK_P parent,
     Widget form = verify(XmCreateRowColumn(parent, XMST(name), args, arg));
 #else // NOT IF_MOTIF
     int pageno = parent->get_n_pages();
-    Gtk::Box *form = new GtkX::HBox(*parent, name);
+    Gtk::Box *form = new GUI::HBox(*parent, name);
 #endif // IF_MOTIF
     XtManageChild(form);
 

@@ -26,23 +26,27 @@
 // A brief look at QT indicates that this will be required there as
 // well.
 
+#ifndef GTKX_BOX_H
+#define GTKX_BOX_H
+
 #include <gtkmm/container.h>
 #include <gtkmm/box.h>
+#include <GtkX/Container.h>
 
 namespace GtkX {
 
-    class VBox: public Gtk::VBox {
+    class VBox: public Gtk::VBox, public GtkX::Container {
     public:
-	void init(Gtk::Container &parent, const Glib::ustring &name);
-	VBox(Gtk::Container &parent, const Glib::ustring &name);
-	VBox(Gtk::Container &parent, const char *name);
+	VBox(Gtk::Container &parent, const GtkX::String &name);
+	Gtk::Widget *gtk_widget(void);
     };
 
-    class HBox: public Gtk::HBox {
+    class HBox: public Gtk::HBox, public GtkX::Container {
     public:
-	void init(Gtk::Container &parent, const Glib::ustring &name);
-	HBox(Gtk::Container &parent, const Glib::ustring &name);
-	HBox(Gtk::Container &parent, const char *name);
+	HBox(Gtk::Container &parent, const GtkX::String &name);
+	Gtk::Widget *gtk_widget(void);
     };
 
 }
+
+#endif // GTKX_BOX_H

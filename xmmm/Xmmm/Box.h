@@ -1,6 +1,3 @@
-#include <Xmmm/Container.h>
-#include <Xm/RowColumn.h>
-
 // High-level GUI wrapper for Gtkmm.
 
 // Copyright (C) 2007 Peter Wainwright <prw@ceiriog.eclipse.co.uk>
@@ -27,24 +24,31 @@
 // the constructor, unlike the Gtk ones.  Motif (Xt) widgets cannot be
 // reparented.  Therefore we need a constructor with extra arguments.
 
+#ifndef XMMM_BOX_H
+#define XMMM_BOX_H
+
+#include <Xmmm/Container.h>
+#include <Xm/RowColumn.h>
+
 namespace Xmmm {
 
-  class VBox: public Container {
-    Widget rc_;
-  public:
-    VBox(Widget parent, const char *name); // TEMPORARY
-    ~VBox(void);
-    Widget xt(void); // TEMPORARY
-    operator Widget(void); // TEMPORARY
-  };
+    class VBox: public Container {
+	::Widget rc_;
+    public:
+		    VBox(::Widget parent, const char *name); // TEMPORARY
+		    ~VBox(void);
+		    ::Widget xt(void); // TEMPORARY
+		    operator ::Widget(void); // TEMPORARY
+    };
 
-  class HBox: public Container {
-    Widget rc_;
-  public:
-    HBox(Widget parent, const char *name); // TEMPORARY
-    ~HBox(void);
-    Widget xt(void); // TEMPORARY
-  };
+    class HBox: public Container {
+	::Widget rc_;
+    public:
+		    HBox(::Widget parent, const char *name); // TEMPORARY
+		    ~HBox(void);
+		    ::Widget xt(void); // TEMPORARY
+    };
 
 }
 
+#endif // XMMM_BOX_H

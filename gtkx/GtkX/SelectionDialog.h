@@ -21,34 +21,29 @@
 // If not, write to the Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-// High level object-oriented wrapper must support Gtk and Motif.
-// Unfortunately Motif widgets require parent and name arguments to
-// the constructor, unlike the Gtk ones.  Motif (Xt) widgets cannot be
-// reparented.  Therefore we need a constructor with extra arguments.
+#ifndef GTKX_SELECTIONDIALOG_H
+#define GTKX_SELECTIONDIALOG_H
 
-#ifndef XMMM_RADIOBOX_H
-#define XMMM_RADIOBOX_H
+#include <gtkmm/window.h>
+#include <gtkmm/box.h>
+#include <gtkmm/dialog.h>
+#include <gtkmm/liststore.h>
+#include <gtkmm/treeview.h>
 
-#include <Xmmm/Container.h>
-#include <Xm/RowColumn.h>
+#include <GtkX/Container.h>
 
-namespace Xmmm {
+namespace GtkX {
 
-    enum Orientation
-    {
-	ORIENTATION_HORIZONTAL,
-	ORIENTATION_VERTICAL
-    };
-
-    class RadioBox: public Container {
-	::Widget box_;
+    class SelectionDialog: public Gtk::Dialog, public GtkX::Container {
+	Glib::RefPtr<Gtk::ListStore> store_;
+	Gtk::TreeView *treeview_;
     public:
-	RadioBox(Xmmm::Widget &parent, const char *name, Xmmm::Orientation orientation);
-	RadioBox(::Widget parent, const char *name, Xmmm::Orientation orientation); // TEMPORARY
-	~RadioBox(void);
-	::Widget xt(void); // TEMPORARY
+	SelectionDialog(Gtk::Window &parent, const GtkX::String &name);
+	Gtk::Widget *gtk_widget(void);
+	Gtk::Container *gtk_container(void);
+	~SelectionDialog(void);
     };
 
 }
 
-#endif // XMMM_RADIOBOX_H
+#endif // GTKX_SELECTIONDIALOG_H

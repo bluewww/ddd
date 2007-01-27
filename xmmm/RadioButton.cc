@@ -1,23 +1,21 @@
-// -*- C++ -*-
-
-// High-level GUI wrapper for Gtkmm.
+// High-level GUI wrapper for Xmmm.
 
 // Copyright (C) 2007 Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
-// This file is part of GtkX.
+// This file is part of Xmmm.
 // 
-// GtkX is free software; you can redistribute it and/or
+// Xmmm is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public
 // License as published by the Free Software Foundation; either
 // version 2 of the License, or (at your option) any later version.
 // 
-// GtkX is distributed in the hope that it will be useful,
+// Xmmm is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // See the GNU General Public License for more details.
 // 
 // You should have received a copy of the GNU General Public
-// License along with GtkX -- see the file COPYING.
+// License along with Xmmm -- see the file COPYING.
 // If not, write to the Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
@@ -26,29 +24,27 @@
 // the constructor, unlike the Gtk ones.  Motif (Xt) widgets cannot be
 // reparented.  Therefore we need a constructor with extra arguments.
 
-#ifndef XMMM_RADIOBOX_H
-#define XMMM_RADIOBOX_H
+#include <Xmmm/RadioButton.h>
 
-#include <Xmmm/Container.h>
-#include <Xm/RowColumn.h>
+using namespace Xmmm;
 
-namespace Xmmm {
-
-    enum Orientation
-    {
-	ORIENTATION_HORIZONTAL,
-	ORIENTATION_VERTICAL
-    };
-
-    class RadioBox: public Container {
-	::Widget box_;
-    public:
-	RadioBox(Xmmm::Widget &parent, const char *name, Xmmm::Orientation orientation);
-	RadioBox(::Widget parent, const char *name, Xmmm::Orientation orientation); // TEMPORARY
-	~RadioBox(void);
-	::Widget xt(void); // TEMPORARY
-    };
-
+RadioButton::RadioButton(::Widget parent, const char *name)
+{
+    button_ = XmCreateToggleButton(parent, (char *)name, NULL, 0);
 }
 
-#endif // XMMM_RADIOBOX_H
+RadioButton::RadioButton(Xmmm::Widget &parent, const char *name)
+{
+    button_ = XmCreateToggleButton(parent.xt(), (char *)name, NULL, 0);
+}
+
+RadioButton::~RadioButton(void)
+{
+    XtDestroyWidget(button_);
+}
+
+::Widget RadioButton::xt(void)
+{
+    return button_;
+}
+

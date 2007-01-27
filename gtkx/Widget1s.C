@@ -1,5 +1,3 @@
-// -*- C++ -*-
-
 // High-level GUI wrapper for Gtkmm.
 
 // Copyright (C) 2007 Peter Wainwright <prw@ceiriog.eclipse.co.uk>
@@ -26,29 +24,32 @@
 // the constructor, unlike the Gtk ones.  Motif (Xt) widgets cannot be
 // reparented.  Therefore we need a constructor with extra arguments.
 
-#ifndef XMMM_RADIOBOX_H
-#define XMMM_RADIOBOX_H
+#include <GtkX/Widget.h>
+#include <GtkX/Widget1s.h>
 
-#include <Xmmm/Container.h>
-#include <Xm/RowColumn.h>
+using namespace GtkX;
 
-namespace Xmmm {
-
-    enum Orientation
-    {
-	ORIENTATION_HORIZONTAL,
-	ORIENTATION_VERTICAL
-    };
-
-    class RadioBox: public Container {
-	::Widget box_;
-    public:
-	RadioBox(Xmmm::Widget &parent, const char *name, Xmmm::Orientation orientation);
-	RadioBox(::Widget parent, const char *name, Xmmm::Orientation orientation); // TEMPORARY
-	~RadioBox(void);
-	::Widget xt(void); // TEMPORARY
-    };
-
+template <class T>
+Widget1s<T>::Widget1s(GtkX::Container &parent, const GtkX::String &name):
+    T(name.s())
+{
+    T::set_name(name.s());
+    parent.add_child(*this);
+    // parent.gtk_container()->add(*this);
 }
 
-#endif // XMMM_RADIOBOX_H
+template <class T>
+Widget1s<T>::~Widget1s(void)
+{
+}
+
+template <class T>
+Gtk::Widget *
+Widget1s<T>::gtk_widget(void)
+{
+    return this;
+}
+
+#include <gtkmm/radiobutton.h>
+
+template class Widget1s<Gtk::RadioButton>;

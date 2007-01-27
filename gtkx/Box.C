@@ -33,45 +33,35 @@ using namespace GtkX;
 #warning Remove this special case notebook stuff?
 #endif
 
-void
-VBox::init(Gtk::Container &parent, const Glib::ustring &name)
+VBox::VBox(Gtk::Container &parent, const GtkX::String &name)
 {
-    set_name(name);
+    set_name(name.s());
     Gtk::Notebook *nb = dynamic_cast<Gtk::Notebook *>(&parent);
     if (nb)
-	nb->append_page(*this, name);
+	nb->append_page(*this, name.s());
     else
 	parent.add(*this);
 }
 
-VBox::VBox(Gtk::Container &parent, const Glib::ustring &name)
+Gtk::Widget *
+VBox::gtk_widget(void)
 {
-    init(parent, name);
+    return this;
 }
 
-VBox::VBox(Gtk::Container &parent, const char *name)
+HBox::HBox(Gtk::Container &parent, const GtkX::String &name)
 {
-    init(parent, Glib::ustring(name));
-}
-
-void
-HBox::init(Gtk::Container &parent, const Glib::ustring &name)
-{
-    set_name(name);
+    set_name(name.s());
     Gtk::Notebook *nb = dynamic_cast<Gtk::Notebook *>(&parent);
     if (nb)
-	nb->append_page(*this, name);
+	nb->append_page(*this, name.s());
     else
 	parent.add(*this);
 }
 
-HBox::HBox(Gtk::Container &parent, const Glib::ustring &name)
+Gtk::Widget *
+HBox::gtk_widget(void)
 {
-    init(parent, name);
-}
-
-HBox::HBox(Gtk::Container &parent, const char *name)
-{
-    init(parent, Glib::ustring(name));
+    return this;
 }
 

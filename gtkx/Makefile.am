@@ -2,7 +2,8 @@ SUBDIRS = GtkX
 
 lib_LTLIBRARIES = libGtkX.la
 
-libGtkX_la_SOURCES = Box.C RadioBox.C
+libGtkX_la_SOURCES = Widget.C Container.C Box.C RadioBox.C SelectionDialog.C \
+	Widget1s.C
 
 AM_CPPFLAGS = $(GTKMM_CFLAGS)
 

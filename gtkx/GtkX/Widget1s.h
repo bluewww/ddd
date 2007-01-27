@@ -28,48 +28,23 @@
 // A brief look at QT indicates that this will be required there as
 // well.
 
-#ifndef GTKX_RADIOBOX_H
-#define GTKX_RADIOBOX_H
-
-#include <gtkmm/container.h>
-#include <gtkmm/box.h>
-#include <gtkmm/radiobuttongroup.h>
+#ifndef GTKX_WIDGET1S_H
+#define GTKX_WIDGET1S_H
 
 #include <GtkX/Container.h>
 
+// Template for a widget taking a single string constructor argument.
+
 namespace GtkX {
 
-    // Compatibility with Gtkmm:
-    enum PackOptions
-    {
-	PACK_SHRINK, /**< Space is contracted to the child widget size. */
-	PACK_EXPAND_PADDING, /**< Space is expanded, with extra space filled with padding. */
-	PACK_EXPAND_WIDGET /**< Space is expanded, with extra space filled by increasing the child widget size. */
-    };
-    enum Orientation
-    {
-	ORIENTATION_HORIZONTAL,
-	ORIENTATION_VERTICAL
-    };
-
-
-    // FIXME: Tried to derive from Gtk::Bin, but as Bin is an
-    // "abstract" base class we would need to implement more method.
-    class RadioBox: public Gtk::VBox, public GtkX::Container {
-	Gtk::Box *box_;
-	Gtk::RadioButtonGroup group_;
+    template <class T>
+    class Widget1s: public GtkX::Widget, public T {
     public:
-	void create_box(GtkX::Orientation orientation=GtkX::ORIENTATION_VERTICAL);
-	RadioBox(GtkX::Container &parent, const GtkX::String &name,
-		 GtkX::Orientation orientation);
-	~RadioBox(void);
+	Widget1s(GtkX::Container &parent, const GtkX::String &name);
+	~Widget1s(void);
 	Gtk::Widget *gtk_widget(void);
-	Gtk::Container *gtk_container(void);
-	void add_child(GtkX::Widget &child);
-	void on_add(Gtk::Widget *child);
-	void pack_start(Gtk::Widget &child, PackOptions options = PACK_EXPAND_WIDGET, int padding = 0);
     };
 
 }
 
-#endif // GTKX_RADIOBOX_H
+#endif // GTKX_WIDGET1S_H

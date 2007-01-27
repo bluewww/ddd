@@ -476,6 +476,9 @@ dnl ICE_IOSTATE
 dnl
 AC_SUBST(gddd)
 AC_SUBST(GDDD)
+dnl Create symbolic links to GUI headers
+${LN_S} Xmmm xmmm/GUI
+${LN_S} GtkX gtkx/GUI
 AC_ARG_WITH([gtk],AS_HELP_STRING([--with-gtk],[Use GTK interface (experimental)]),[with_gtk="${withval}"],[with_gtk=no])
 AC_ARG_WITH([xmmm],AS_HELP_STRING([--with-xmmm],[Use new Motif interface (experimental)]),[with_xmmm="${withval}"],[with_xmmm=no])
 AM_CONDITIONAL([WITH_GTK],[test "$with_gtk" = yes])
@@ -498,6 +501,7 @@ PKG_CHECK_MODULES(LIBXML, [libxml-2.0 >= 2.4.24])
 AC_SUBST(LIBXML_LIBS)
 AC_SUBST(LIBXML_CFLAGS)
 dnl
+AC_DEFINE([GUI],[GtkX],[GUI flavor])
 else
 dnl
 gddd=ddd
@@ -508,6 +512,7 @@ XMMM_LIBS="-L\$(top_builddir)/xmmm -lXmmm"
 XMMM_CFLAGS="-I\$(top_srcdir)/xmmm"
 AC_SUBST(XMMM_LIBS)
 AC_SUBST(XMMM_CFLAGS)
+AC_DEFINE([GUI],[Xmmm],[GUI flavor])
 else
 AC_DEFINE([IF_XM], 1, [Define if using Old Motif interface])
 fi

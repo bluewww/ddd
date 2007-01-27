@@ -58,6 +58,12 @@
 
 #endif // IF_MOTIF
 
+#if !defined(IF_XM)
+#include <GUI/WidgetPtr.h>
+#include <GUI/SelectionDialog.h>
+#include <GUI/RadioButton.h>
+#endif
+
 #include "gtk_wrapper.h"
 
 // Misc includes
@@ -330,10 +336,22 @@ class SourceView {
     static BUTTON_P down_w;                  // The `Down' button
     static bool stack_dialog_popped_up;	     // True if the stack is visible
 
+#if defined(IF_XM)
     static DIALOG_P register_dialog_w;        // Dialog for registers
+#else
+    static GUI::WidgetPtr<GUI::SelectionDialog> register_dialog_w;        // Dialog for registers
+#endif
+
     static TREEVIEW_P register_list_w;        // Register list inside
+
+#if defined(IF_XM)
     static RADIOBUTTON_P int_registers_w;     // Display integer registers
     static RADIOBUTTON_P all_registers_w;     // Display all registers
+#else
+    static GUI::WidgetPtr<GUI::RadioButton> int_registers_w;
+    static GUI::WidgetPtr<GUI::RadioButton> all_registers_w;
+#endif
+
     static bool register_dialog_popped_up;    // True if registers are visible
 
     static DIALOG_P thread_dialog_w;          // Dialog for threads

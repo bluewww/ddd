@@ -24,13 +24,13 @@
 // the constructor, unlike the Gtk ones.  Motif (Xt) widgets cannot be
 // reparented.  Therefore we need a constructor with extra arguments.
 
+#include <gtkmm/radiobutton.h>
 #include <GtkX/RadioBox.h>
 
 using namespace GtkX;
 
 void
-RadioBox::init(Gtk::Container &parent, const Glib::ustring &name,
-	       GtkX::Orientation orientation)
+RadioBox::create_box(GtkX::Orientation orientation)
 {
     switch(orientation) {
     case Gtk::ORIENTATION_VERTICAL:
@@ -41,21 +41,16 @@ RadioBox::init(Gtk::Container &parent, const Glib::ustring &name,
 	break;
     }
     box_->show();
-    add(*box_);
-    set_name(name);
-    parent.add(*this);
+    // FIXME: Do not allow the virtual on_add to be called here.
+    Gtk::VBox::pack_start(*box_, Gtk::PACK_SHRINK);
 }
 
-RadioBox::RadioBox(Gtk::Container &parent, const Glib::ustring &name,
+RadioBox::RadioBox(GtkX::Container &parent, const GtkX::String &name,
 		   GtkX::Orientation orientation)
 {
-    init(parent, name, orientation);
-}
-
-RadioBox::RadioBox(Gtk::Container &parent, const char *name,
-		   GtkX::Orientation orientation)
-{
-    init(parent, Glib::ustring(name), orientation);
+    create_box(orientation);
+    set_name(name.s());
+    parent.gtk_container()->add(*this);
 }
 
 RadioBox::~RadioBox(void)
@@ -63,9 +58,41 @@ RadioBox::~RadioBox(void)
     delete box_;
 }
 
+Gtk::Widget *
+RadioBox::gtk_widget(void)
+{
+    return this;
+}
+
+Gtk::Container *
+RadioBox::gtk_container(void)
+{
+    return box_;
+}
+
 void
-RadioBox::pack_start(Gtk::Widget& child, PackOptions options, int padding)
+RadioBox::add_child(GtkX::Widget &child)
+{
+    add(*child.gtk_widget());
+}
+
+void
+RadioBox::on_add(Gtk::Widget *child)
+{
+    box_->add(*child);
+    Gtk::RadioButton *rb = dynamic_cast<Gtk::RadioButton *>(child);
+    if (rb) {
+	rb->set_group(group_);
+    }
+}
+
+void
+RadioBox::pack_start(Gtk::Widget &child, PackOptions options, int padding)
 {
     box_->pack_start(child, (Gtk::PackOptions)(int)options, (guint)padding);
+    Gtk::RadioButton *rb = dynamic_cast<Gtk::RadioButton *>(&child);
+    if (rb) {
+	rb->set_group(group_);
+    }
 }
 
