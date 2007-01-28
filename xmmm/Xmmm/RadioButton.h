@@ -29,18 +29,27 @@
 #ifndef XMMM_RADIOBUTTON_H
 #define XMMM_RADIOBUTTON_H
 
+#include <sigc++/signal.h>
 #include <Xmmm/Widget.h>
 #include <Xm/ToggleB.h>
 
 namespace Xmmm {
 
     class RadioButton: public Widget {
+    private:
 	::Widget button_;
+	void init_signals(void);
+    protected:
+	sigc::signal<void> signal_toggled_;
+	static void signal_toggled_callback(::Widget widget, XtPointer data);
     public:
 	RadioButton(Xmmm::Widget &parent, const char *name);
 	RadioButton(::Widget parent, const char *name); // TEMPORARY
 	~RadioButton(void);
 	::Widget xt(void); // TEMPORARY
+	void set_active(bool);
+	bool get_active(void);
+	sigc::signal<void> &signal_toggled(void);
     };
 
 }

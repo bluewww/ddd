@@ -483,12 +483,15 @@ AC_ARG_WITH([gtk],AS_HELP_STRING([--with-gtk],[Use GTK interface (experimental)]
 AC_ARG_WITH([xmmm],AS_HELP_STRING([--with-xmmm],[Use new Motif interface (experimental)]),[with_xmmm="${withval}"],[with_xmmm=no])
 AM_CONDITIONAL([WITH_GTK],[test "$with_gtk" = yes])
 dnl
-echo "with_gtk = $with_gtk"
+dnl PKG_CONFIG must be defined before we enter the conditional section
+PKG_PROG_PKG_CONFIG
+dnl
 if test "$with_gtk" = yes; then
+dnl
+dnl Check for GTK stuff
 dnl
 gddd=gddd
 GDDD=GDDD
-dnl Check for GTK stuff
 PKG_CHECK_MODULES(GTKMM, [gtkmm-2.4])
 AC_SUBST(GTKMM_LIBS)
 AC_SUBST(GTKMM_CFLAGS)
@@ -496,22 +499,29 @@ GTKX_LIBS="-L\$(top_builddir)/gtkx -lGtkX"
 GTKX_CFLAGS="-I\$(top_srcdir)/gtkx"
 AC_SUBST(GTKX_LIBS)
 AC_SUBST(GTKX_CFLAGS)
-dnl
 PKG_CHECK_MODULES(LIBXML, [libxml-2.0 >= 2.4.24])
 AC_SUBST(LIBXML_LIBS)
 AC_SUBST(LIBXML_CFLAGS)
-dnl
 AC_DEFINE([GUI],[GtkX],[GUI flavor])
+dnl
 else
+dnl
+dnl Check for Motif stuff
 dnl
 gddd=ddd
 GDDD=DDD
 if test "$with_xmmm" = yes; then
+dnl
+dnl New O-O Motif interface
+dnl
 AC_DEFINE([IF_XMMM], 1, [Define if using New Motif interface])
 XMMM_LIBS="-L\$(top_builddir)/xmmm -lXmmm"
 XMMM_CFLAGS="-I\$(top_srcdir)/xmmm"
 AC_SUBST(XMMM_LIBS)
 AC_SUBST(XMMM_CFLAGS)
+PKG_CHECK_MODULES(SIGC, [sigc++-2.0])
+AC_SUBST(SIGC_LIBS)
+AC_SUBST(SIGC_CFLAGS)
 AC_DEFINE([GUI],[Xmmm],[GUI flavor])
 else
 AC_DEFINE([IF_XM], 1, [Define if using Old Motif interface])

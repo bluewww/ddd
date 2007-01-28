@@ -271,16 +271,20 @@ void sourceSetDisplayGlyphsCB (CB_ARG_LIST_2(client_data))
 	set_status(displaying + "as text characters.");
 }
 
-void sourceSetAllRegistersCB (CB_ARG_LIST_TOGGLE(w, call_data))
+#if defined(IF_XM)
+void sourceSetAllRegistersCB (Widget w, XtPointer, XtPointer call_data)
+#else
+void sourceSetAllRegistersCB (GUI::RadioButton *w)
+#endif
 {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     if (info->set)
-#else // NOT IF_MOTIF
-    if (get_active(w))
-#endif // IF_MOTIF
+#else
+    if (w->get_active())
+#endif
     {
 	set_status("Showing all registers.");
 	app_data.all_registers = true;
@@ -289,16 +293,20 @@ void sourceSetAllRegistersCB (CB_ARG_LIST_TOGGLE(w, call_data))
     update_options(NO_UPDATE);
 }
 
-void sourceSetIntRegistersCB (CB_ARG_LIST_TOGGLE(w, call_data))
+#if defined(IF_XM)
+void sourceSetIntRegistersCB (Widget w, XtPointer, XtPointer call_data)
+#else
+void sourceSetIntRegistersCB (GUI::RadioButton *w)
+#endif
 {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     if (info->set)
-#else // NOT IF_MOTIF
-    if (get_active(w))
-#endif // IF_MOTIF
+#else
+    if (w->get_active())
+#endif
     {
 	set_status("Showing integer registers only.");
 	app_data.all_registers = false;

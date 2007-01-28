@@ -3899,7 +3899,7 @@ void SourceView::create_shells()
 #endif
     Delay::register_shell(register_dialog_w);
 
-#ifdef IF_XM
+#if defined(IF_XM)
     XtUnmanageChild(XmSelectionBoxGetChild(register_dialog_w, 
 					   XmDIALOG_TEXT));
     XtUnmanageChild(XmSelectionBoxGetChild(register_dialog_w, 
@@ -3919,38 +3919,42 @@ void SourceView::create_shells()
     XtManageChild(box);
 #endif
 
-#ifdef IF_XM
+#if defined(IF_XM)
     arg = 0;
     XtSetArg(args[arg], XmNset, !all_registers); arg++;
     int_registers_w = 
 	XmCreateToggleButton(box, XMST("int_registers"), args, arg);
-#else // NOT IF_XM
+    XtManageChild(int_registers_w);
+#else
     int_registers_w =
 	new GUI::RadioButton(*box, "int_registers");
-#endif // IF_XM    
-    XtManageChild(int_registers_w);
+    int_registers_w->set_active(!all_registers);
+    int_registers_w->show();
+#endif
     
 
-#ifdef IF_XM
+#if defined(IF_XM)
     arg = 0;
     XtSetArg(args[arg], XmNset, all_registers); arg++;
     all_registers_w = 
 	XmCreateToggleButton(box, XMST("all_registers"), args, arg);
+    XtManageChild(all_registers_w);
 #else // NOT IF_XM
     all_registers_w =
 	new GUI::RadioButton(*box, "all_registers");
+    all_registers_w->set_active(all_registers);
+    all_registers_w->show();
 #endif // IF_XM
-    XtManageChild(all_registers_w);
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     XtAddCallback(int_registers_w, XmNvalueChangedCallback, 
 		  sourceSetIntRegistersCB, XtPointer(0));
     XtAddCallback(all_registers_w, XmNvalueChangedCallback, 
 		  sourceSetAllRegistersCB, XtPointer(0));
-#else // NOT IF_MOTIF
-    int_registers_w->signal_toggled().connect(sigc::bind(PTR_FUN(sourceSetIntRegistersCB), int_registers_w));
-    all_registers_w->signal_toggled().connect(sigc::bind(PTR_FUN(sourceSetAllRegistersCB), all_registers_w));
-#endif // IF_MOTIF
+#else
+    int_registers_w->signal_toggled().connect(sigc::bind(sigc::ptr_fun(sourceSetIntRegistersCB), int_registers_w));
+    all_registers_w->signal_toggled().connect(sigc::bind(sigc::ptr_fun(sourceSetAllRegistersCB), all_registers_w));
+#endif
 
 #ifdef IF_MOTIF
     arg = 0;

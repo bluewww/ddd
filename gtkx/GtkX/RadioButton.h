@@ -32,6 +32,7 @@
 #define GTKX_RADIOBUTTON_H
 
 #include <GtkX/Widget1s.h>
+#include <gtkmm/radiobutton.h>
 
 namespace GtkX {
 

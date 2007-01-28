@@ -58,6 +58,10 @@ AC_PROG_LIBTOOL
 
 ICE_FIND_MOTIF
 
+PKG_CHECK_MODULES(SIGC, [sigc++-2.0])
+AC_SUBST(SIGC_LIBS)
+AC_SUBST(SIGC_CFLAGS)
+
 #########################################################################
 #  C++ checks
 #########################################################################

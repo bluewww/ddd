@@ -29,14 +29,17 @@
 #ifndef _DDD_options_h
 #define _DDD_options_h
 
+#include "config.h"
 #include "strclass.h"
 #include "bool.h"
 
 #ifdef IF_MOTIF
-
 #include <X11/Intrinsic.h>
-
 #endif // IF_MOTIF
+
+#if !defined(IF_XM)
+#include <GUI/RadioButton.h>
+#endif
 
 #include "gtk_wrapper.h"
 
@@ -82,8 +85,13 @@ extern void sourceToggleFindCaseSensitiveCB (CB_ARG_LIST_TOGGLE(,));
 extern void sourceToggleCacheSourceFilesCB  (CB_ARG_LIST_TOGGLE(,));
 extern void sourceToggleCacheMachineCodeCB  (CB_ARG_LIST_TOGGLE(,));
 extern void sourceToggleDisplayLineNumbersCB(CB_ARG_LIST_TOGGLE(,));
+#if defined(IF_XM)
 extern void sourceSetIntRegistersCB         (CB_ARG_LIST_TOGGLE(,));
 extern void sourceSetAllRegistersCB         (CB_ARG_LIST_TOGGLE(,));
+#else
+extern void sourceSetIntRegistersCB         (GUI::RadioButton *);
+extern void sourceSetAllRegistersCB         (GUI::RadioButton *);
+#endif
 extern void sourceSetDisplayGlyphsCB        (CB_ARG_LIST_2());
 extern void sourceSetUseSourcePathCB        (CB_ARG_LIST_2());
 #ifdef IF_MOTIF

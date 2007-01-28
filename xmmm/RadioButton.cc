@@ -28,14 +28,24 @@
 
 using namespace Xmmm;
 
+void
+RadioButton::init_signals(void)
+{
+    XtAddCallback(button_, XmNvalueChangedCallback, 
+		  (XtCallbackProc)RadioButton::signal_toggled_callback,
+		  XtPointer(this));
+}
+
 RadioButton::RadioButton(::Widget parent, const char *name)
 {
     button_ = XmCreateToggleButton(parent, (char *)name, NULL, 0);
+    init_signals();
 }
 
 RadioButton::RadioButton(Xmmm::Widget &parent, const char *name)
 {
     button_ = XmCreateToggleButton(parent.xt(), (char *)name, NULL, 0);
+    init_signals();
 }
 
 RadioButton::~RadioButton(void)
@@ -46,5 +56,31 @@ RadioButton::~RadioButton(void)
 ::Widget RadioButton::xt(void)
 {
     return button_;
+}
+
+void
+RadioButton::set_active(bool on)
+{
+    XtVaSetValues(button_, XmNset, on, 0);
+}
+
+bool
+RadioButton::get_active(void)
+{
+    Boolean on;
+    XtVaGetValues(button_, XmNset, &on, 0);
+    return on;
+}
+
+sigc::signal<void> &
+RadioButton::signal_toggled(void)
+{
+    return signal_toggled_;
+}
+
+void
+RadioButton::signal_toggled_callback(::Widget widget, XtPointer data)
+{
+    ((RadioButton *)data)->signal_toggled_();
 }
 
