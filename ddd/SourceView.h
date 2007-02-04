@@ -62,6 +62,7 @@
 #include <GUI/WidgetPtr.h>
 #include <GUI/SelectionDialog.h>
 #include <GUI/RadioButton.h>
+#include <GUI/ListView.h>
 #endif
 
 #include "gtk_wrapper.h"
@@ -175,7 +176,7 @@ class SourceView {
     static void SelectRegisterCB (Widget, XtPointer, XtPointer);
 #else // NOT IF_MOTIF
     static void SelectFrameCB    (TREEVIEW_P);
-    static void SelectRegisterCB (TREEVIEW_P);
+    static void SelectRegisterCB (GUI::SelectionDialog *);
 #endif // IF_MOTIF
     static void SelectThreadCB   (CB_ALIST_1(Widget));
     static void ThreadCommandCB  (CB_ALIST_12(Widget, XtP(const char *)));
@@ -337,19 +338,15 @@ class SourceView {
     static bool stack_dialog_popped_up;	     // True if the stack is visible
 
 #if defined(IF_XM)
-    static DIALOG_P register_dialog_w;        // Dialog for registers
+    static Widget register_dialog_w;        // Dialog for registers
+    static Widget register_list_w;          // Register list inside
+    static Widget int_registers_w;          // Display integer registers
+    static Widget all_registers_w;          // Display all registers
 #else
-    static GUI::WidgetPtr<GUI::SelectionDialog> register_dialog_w;        // Dialog for registers
-#endif
-
-    static TREEVIEW_P register_list_w;        // Register list inside
-
-#if defined(IF_XM)
-    static RADIOBUTTON_P int_registers_w;     // Display integer registers
-    static RADIOBUTTON_P all_registers_w;     // Display all registers
-#else
-    static GUI::WidgetPtr<GUI::RadioButton> int_registers_w;
-    static GUI::WidgetPtr<GUI::RadioButton> all_registers_w;
+    static GUI::WidgetPtr<GUI::SelectionDialog> register_dialog_w;    // Dialog for registers
+    static GUI::WidgetPtr<GUI::ListView> register_list_w;             // Register list inside
+    static GUI::WidgetPtr<GUI::RadioButton> int_registers_w;          // Display integer registers
+    static GUI::WidgetPtr<GUI::RadioButton> all_registers_w;          // Display all registers
 #endif
 
     static bool register_dialog_popped_up;    // True if registers are visible

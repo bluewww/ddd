@@ -29,11 +29,13 @@
 #ifndef _DDD_wm_h
 #define _DDD_wm_h
 
-#ifdef IF_MOTIF
-
+#if defined(IF_MOTIF)
 #include <X11/Intrinsic.h>
+#endif
 
-#endif // IF_MOTIF
+#if !defined(IF_XM)
+#include <GUI/Widget.h>
+#endif
 
 #include "gtk_wrapper.h"
 
@@ -52,6 +54,9 @@ extern void wm_set_name(DISPLAY_P display, Window shell,
 void wait_until_mapped(Widget w, Widget shell = 0);
 void raise_shell(Widget w);
 void manage_and_raise(Widget w);
+#if !defined(IF_XM)
+void manage_and_raise1(GUI::Widget *w);
+#endif
 
 #endif // _DDD_wm_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

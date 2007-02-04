@@ -1,43 +1,64 @@
 #include <GtkX/Widget.h>
 
-GtkX::String::String(const Glib::ustring &s0)
+using namespace GtkX;
+
+String::String(const Glib::ustring &s0)
 {
     s_ = s0;
 }
 
-GtkX::String::String(const char *s0)
+String::String(const char *s0)
 {
     s_ = Glib::ustring(s0);
 }
 
-GtkX::String::~String(void)
+String::~String(void)
 {
 }
 
 Glib::ustring &
-GtkX::String::s(void)
+String::s(void)
 {
     return s_;
 }
 
 const Glib::ustring &
-GtkX::String::s(void) const
+String::s(void) const
 {
     return s_;
 }
 
-GtkX::Widget::Widget(void)
+String
+String::operator+(const String &str) const
+{
+    return String(s()+str.s());
+}
+
+Widget::Widget(void)
 {
 }
 
-GtkX::Widget::~Widget(void)
+Widget::~Widget(void)
 {
 }
 
 #if 0
 Gtk::Widget *
-GtkX::Widget::gtk_widget(void)
+Widget::gtk_widget(void)
 {
     return NULL;
 }
 #endif
+
+void
+Widget::show(void)
+{
+    gtk_widget()->show();
+}
+
+void
+Widget::hide(void)
+{
+    gtk_widget()->hide();
+}
+

@@ -251,6 +251,17 @@ void manage_and_raise(Widget w)
     }
 }
 
+#if !defined(IF_XM)
+void manage_and_raise1(GUI::Widget *w)
+{
+#ifdef NAG_ME
+#warning Raise not implemented.
+#endif
+    if (w != 0)
+	w->show();
+}
+#endif
+
 #ifndef IF_MOTIF
 
 bool

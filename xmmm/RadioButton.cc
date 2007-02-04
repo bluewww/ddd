@@ -44,7 +44,7 @@ RadioButton::RadioButton(::Widget parent, const char *name)
 
 RadioButton::RadioButton(Xmmm::Widget &parent, const char *name)
 {
-    button_ = XmCreateToggleButton(parent.xt(), (char *)name, NULL, 0);
+    button_ = XmCreateToggleButton(parent.xt_container(), (char *)name, NULL, 0);
     init_signals();
 }
 

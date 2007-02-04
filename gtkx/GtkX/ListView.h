@@ -21,52 +21,31 @@
 // If not, write to the Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-// High level object-oriented wrapper must support Gtk and Motif.
-// Unfortunately Motif widgets require parent and name arguments to
-// the constructor, unlike the Gtk ones.  Motif (Xt) widgets cannot be
-// reparented.  Therefore we need a constructor with extra arguments.
+#ifndef GTKX_LISTVIEW_H
+#define GTKX_LISTVIEW_H
 
-#ifndef XMMM_WIDGETPTR_H
-#define XMMM_WIDGETPTR_H
+#include <vector>
 
-namespace Xmmm {
+#include <gtkmm/window.h>
+#include <gtkmm/box.h>
+#include <gtkmm/dialog.h>
+#include <gtkmm/liststore.h>
+#include <gtkmm/treeview.h>
 
-    template <class T>
-    class WidgetPtr {
-	T *p_;
+#include <GtkX/Container.h>
+
+namespace GtkX {
+
+    class ListView: public Gtk::TreeView {
+	Glib::RefPtr<Gtk::ListStore> store_;
     public:
-	WidgetPtr(T *p)
-	    {
-		p_ = p;
-	    }
-	operator void *(void)
-	    {
-		// FIXME: This is a very temporary kludge while we use XtPointer
-		// data in callbacks.
-		return p_->xt();
-	    };
-	operator T *(void)
-	    {
-		return p_;
-	    };
-	operator bool(void)
-	    {
-		return p_;
-	    };
-	operator ::Widget(void)
-	    {
-		return p_?p_->xt():NULL;
-	    }
-	T &operator*(void) const
-	    {
-		return *p_;
-	    }
-	T *operator->() const
-	    {
-		return p_;
-	    }
+	ListView(GtkX::Container &parent, const GtkX::String &name,
+		 const std::vector<GtkX::String> &headers);
+	Gtk::Widget *gtk_widget(void);
+	~ListView(void);
+	std::string get_selected(void);
     };
 
 }
 
-#endif // XMMM_WIDGETPTR_H
+#endif // GTKX_LISTVIEW_H

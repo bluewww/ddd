@@ -15,6 +15,7 @@ namespace GtkX {
 	~String(void);
 	Glib::ustring &s(void);
 	const Glib::ustring &s(void) const;
+	String operator+(const String &str) const;
     };
 
     class Widget {
@@ -23,6 +24,8 @@ namespace GtkX {
 	~Widget(void);
 	// *Instantiable* subclasses will have an associated GTK(mm) widget:
 	virtual Gtk::Widget *gtk_widget(void) = 0;
+	void show(void);
+	void hide(void);
     };
 
 }

@@ -511,19 +511,15 @@ BUTTON_P SourceView::up_w                    = 0;
 BUTTON_P SourceView::down_w                  = 0;
 
 #if defined(IF_XM)
-DIALOG_P SourceView::register_dialog_w       = 0;
+Widget SourceView::register_dialog_w         = 0;
+Widget SourceView::register_list_w           = 0;
+Widget SourceView::int_registers_w           = 0;
+Widget SourceView::all_registers_w           = 0;
 #else
-GUI::WidgetPtr<GUI::SelectionDialog> SourceView::register_dialog_w       = 0;
-#endif
-
-TREEVIEW_P SourceView::register_list_w       = 0;
-
-#if defined(IF_XM)
-RADIOBUTTON_P SourceView::int_registers_w    = 0;
-RADIOBUTTON_P SourceView::all_registers_w    = 0;
-#else
-GUI::WidgetPtr<GUI::RadioButton> SourceView::int_registers_w    = 0;
-GUI::WidgetPtr<GUI::RadioButton> SourceView::all_registers_w    = 0;
+GUI::WidgetPtr<GUI::SelectionDialog> SourceView::register_dialog_w = 0;
+GUI::WidgetPtr<GUI::ListView> SourceView::register_list_w          = 0;
+GUI::WidgetPtr<GUI::RadioButton> SourceView::int_registers_w       = 0;
+GUI::WidgetPtr<GUI::RadioButton> SourceView::all_registers_w       = 0;
 #endif
 
 DIALOG_P SourceView::thread_dialog_w         = 0;
@@ -3890,14 +3886,18 @@ void SourceView::create_shells()
     register_dialog_w = 
 	verify(createTopLevelSelectionDialog(parent, 
 					     "register_dialog", args, arg));
+    Delay::register_shell(register_dialog_w);
 #elif defined(IF_XMMM)
     register_dialog_w = 
 	new GUI::SelectionDialog(parent, "register_dialog");
 #else // Gtk
+    std::vector<GtkX::String> headers;
+    headers.push_back("One");
+    headers.push_back("Two");
+    headers.push_back("Three");
     register_dialog_w = 
-	new GUI::SelectionDialog(*parent, "register_dialog");
+	new GUI::SelectionDialog(*parent, "register_dialog", headers);
 #endif
-    Delay::register_shell(register_dialog_w);
 
 #if defined(IF_XM)
     XtUnmanageChild(XmSelectionBoxGetChild(register_dialog_w, 
@@ -3956,18 +3956,12 @@ void SourceView::create_shells()
     all_registers_w->signal_toggled().connect(sigc::bind(sigc::ptr_fun(sourceSetAllRegistersCB), all_registers_w));
 #endif
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     arg = 0;
     register_list_w = XmSelectionBoxGetChild(register_dialog_w, XmDIALOG_LIST);
-#else // NOT IF_MOTIF
-    Glib::RefPtr<Gtk::ListStore> register_list_store = Gtk::ListStore::create(register_list_columns);
-    register_list_w = 
-	new Gtk::TreeView(register_list_store);
-
-    register_list_w->append_column("Name", register_list_columns.name);
-    register_list_w->append_column("Hex", register_list_columns.hex);
-    register_list_w->append_column("Dec", register_list_columns.dec);
-#endif // IF_MOTIF
+#else
+    register_list_w = register_dialog_w->list();
+#endif
 
 #ifdef IF_MOTIF
     XtVaSetValues(register_list_w,
@@ -3983,7 +3977,11 @@ void SourceView::create_shells()
     XtAddCallback(register_list_w,
 		  XmNbrowseSelectionCallback, SelectRegisterCB, 0);
 #else // NOT IF_MOTIF
-    register_list_w->get_selection()->signal_changed().connect(sigc::bind(PTR_FUN(SelectRegisterCB), register_list_w));
+#ifdef NAG_ME
+#warning Probably should have some custom widget as child of dialog.
+#warning For now pass the whole dialog.
+#endif
+    register_list_w->get_selection()->signal_changed().connect(sigc::bind(PTR_FUN(SelectRegisterCB), register_dialog_w));
 #endif // IF_MOTIF
 
 #ifdef IF_MOTIF
@@ -8400,7 +8398,7 @@ string SourceView::refresh_registers_command()
 void SourceView::ViewRegistersCB(CB_ARG_LIST_NULL)
 {
     refresh_registers();
-    manage_and_raise(register_dialog_w);
+    manage_and_raise1(register_dialog_w);
     register_dialog_popped_up = true;
 }
 
@@ -8412,7 +8410,7 @@ void SourceView::RegisterDialogPoppedDownCB (CB_ALIST_NULL)
 #ifdef IF_MOTIF
 void SourceView::SelectRegisterCB (Widget, XtPointer, XtPointer call_data)
 #else // NOT IF_MOTIF
-void SourceView::SelectRegisterCB (TREEVIEW_P w)
+void SourceView::SelectRegisterCB (GUI::SelectionDialog *w)
 #endif // IF_MOTIF
 {
 #ifdef IF_MOTIF
@@ -8424,8 +8422,7 @@ void SourceView::SelectRegisterCB (TREEVIEW_P w)
     string item(_item);
     XtFree(_item);
 #else // NOT IF_MOTIF
-    Gtk::TreeIter iter = w->get_selection()->get_selected();
-    string item = (*iter)[simple_list_columns.value];
+    string item = w->get_selected().c_str();
 #endif // IF_MOTIF
 
     if (!item.empty() && item[item.length() - 1] != '.')

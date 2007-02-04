@@ -1,6 +1,4 @@
-// -*- C++ -*-
-
-// High-level GUI wrapper for Gtkmm.
+// High-level GUI wrapper for Motif.
 
 // Copyright (C) 2007 Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
@@ -26,29 +24,30 @@
 // the constructor, unlike the Gtk ones.  Motif (Xt) widgets cannot be
 // reparented.  Therefore we need a constructor with extra arguments.
 
-#ifndef XMMM_RADIOBOX_H
-#define XMMM_RADIOBOX_H
-
-#include <Xmmm/Container.h>
+#include <Xmmm/ListView.h>
+#include <Xm/DialogS.h>
 #include <Xm/RowColumn.h>
+#include <string>
 
-namespace Xmmm {
+using namespace Xmmm;
 
-    enum Orientation
-    {
-	ORIENTATION_HORIZONTAL,
-	ORIENTATION_VERTICAL
-    };
-
-    class RadioBox: public Container {
-	::Widget box_;
-    public:
-	RadioBox(Xmmm::Widget &parent, const char *name, Xmmm::Orientation orientation);
-	RadioBox(::Widget parent, const char *name, Xmmm::Orientation orientation); // TEMPORARY
-	~RadioBox(void);
-	::Widget xt(void); // TEMPORARY
-    };
-
+ListView::ListView(Xmmm::Container &parent, const Xmmm::String &name)
+{
+    list_ = XmCreateList(parent.xt_container(), (char *)name.c(), NULL, 0);
 }
 
-#endif // XMMM_RADIOBOX_H
+ListView::ListView(::Widget parent, const Xmmm::String &name)
+{
+    list_ = XmCreateList(parent, (char *)name.c(), NULL, 0);
+}
+
+ListView::~ListView(void)
+{
+    if (list_) XtDestroyWidget(list_);
+}
+
+::Widget ListView::xt(void)
+{
+    return list_;
+}
+

@@ -24,30 +24,73 @@
 // the constructor, unlike the Gtk ones.  Motif (Xt) widgets cannot be
 // reparented.  Therefore we need a constructor with extra arguments.
 
+#include <string>
+#include <iostream>
+
 #include <Xmmm/SelectionDialog.h>
+#include <Xm/DialogS.h>
+#include <Xm/RowColumn.h>
+#include <Xm/MwmUtil.h>
 
 using namespace Xmmm;
 
-SelectionDialog::SelectionDialog(::Widget parent, const char *name)
+static void
+close_shell(::Widget w, XtPointer client_data, XtPointer call_data)
 {
-    dlg_ = XmCreateSelectionDialog(parent, (char *)name, NULL, 0);
-    XtUnmanageChild(XmSelectionBoxGetChild(dlg_, 
-					   XmDIALOG_TEXT));
-    XtUnmanageChild(XmSelectionBoxGetChild(dlg_, 
-					   XmDIALOG_SELECTION_LABEL));
-    XtUnmanageChild(XmSelectionBoxGetChild(dlg_, 
-					   XmDIALOG_APPLY_BUTTON));
-    XtUnmanageChild(XmSelectionBoxGetChild(dlg_, 
-					   XmDIALOG_CANCEL_BUTTON));
+    XtPopdown(w);
+}
+
+SelectionDialog::SelectionDialog(::Widget parent, const Xmmm::String &name)
+{
+    Arg args[10];
+    int nargs = 0;
+
+    int decorations = 
+	MWM_DECOR_BORDER | MWM_DECOR_RESIZEH | 
+	MWM_DECOR_TITLE | MWM_DECOR_MENU | 
+	MWM_DECOR_MINIMIZE;
+    int functions = 
+	MWM_FUNC_RESIZE | MWM_FUNC_MOVE | MWM_FUNC_MINIMIZE | MWM_FUNC_CLOSE;
+
+    XtSetArg(args[nargs], XmNdialogType, XmDIALOG_SELECTION); nargs++; // ??
+    XtSetArg(args[nargs], XmNallowShellResize, True); nargs++;
+    XtSetArg(args[nargs], XmNmwmDecorations, decorations); nargs++;
+    XtSetArg(args[nargs], XmNmwmFunctions, functions); nargs++;
+    XtSetArg(args[nargs], XmNautoUnmanage, False); nargs++;
+    // Suppress the normal response to the WM delete button.
+    XtSetArg(args[nargs], XmNdeleteResponse, XmDO_NOTHING); nargs++;
+    // Standard Motif maps/unmaps the child to popup the shell.
+    // We want to take control instead.
+    XtSetArg(args[nargs], XmNmappedWhenManaged, False); nargs++;
+
+    dlg_ = XmCreateDialogShell(parent, (char *)name.c(), args, nargs);
+    WM_set_close_callback(dlg_, close_shell, NULL);
+    box_ = new VBox(dlg_, name+Xmmm::String("_vbox"));
+    box_->show();
+    list_ = new ListView(*box_, name+Xmmm::String("_list"));
+    list_->show();
 }
 
 SelectionDialog::~SelectionDialog(void)
 {
+    if (box_) delete box_;
+    if (list_) delete list_;
     XtDestroyWidget(dlg_);
 }
 
 ::Widget SelectionDialog::xt(void)
 {
     return dlg_;
+}
+
+::Widget SelectionDialog::xt_container(void)
+{
+    return box_->xt();
+}
+
+ListView *
+SelectionDialog::list(void) const
+{
+    return list_;
 }
 

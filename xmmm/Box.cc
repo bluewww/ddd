@@ -4,9 +4,14 @@ using namespace Xmmm;
 
 // ***
 
-VBox::VBox(::Widget parent, const char *name)
+VBox::VBox(Xmmm::Widget parent, const Xmmm::String &name)
 {
-    rc_ = XmCreateRowColumn(parent, (char *)name, NULL, 0);
+    rc_ = XmCreateRowColumn(parent.xt_container(), (char *)name.c(), NULL, 0);
+}
+
+VBox::VBox(::Widget parent, const Xmmm::String &name)
+{
+    rc_ = XmCreateRowColumn(parent, (char *)name.c(), NULL, 0);
 }
 
 VBox::~VBox(void)
@@ -21,13 +26,18 @@ VBox::~VBox(void)
 
 // ***
 
-HBox::HBox(::Widget parent, const char *name)
+HBox::HBox(Xmmm::Widget parent, const Xmmm::String &name)
 {
-    Arg args[10];
-    int arg;
-    arg = 0;
-    XtSetArg(args[arg], XmNorientation,  XmHORIZONTAL); arg++;
-    rc_ = XmCreateRowColumn(parent, (char *)name, NULL, 0);
+    Arg args[1];
+    XtSetArg(args[0], XmNorientation,  XmHORIZONTAL);
+    rc_ = XmCreateRowColumn(parent.xt_container(), (char *)name.c(), args, 1);
+}
+
+HBox::HBox(::Widget parent, const Xmmm::String &name)
+{
+    Arg args[1];
+    XtSetArg(args[0], XmNorientation,  XmHORIZONTAL);
+    rc_ = XmCreateRowColumn(parent, (char *)name.c(), args, 1);
 }
 
 HBox::~HBox(void)

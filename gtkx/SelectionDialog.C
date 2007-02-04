@@ -24,45 +24,32 @@
 // the constructor, unlike the Gtk ones.  Motif (Xt) widgets cannot be
 // reparented.  Therefore we need a constructor with extra arguments.
 
+#include <cassert>
+
 #include <gtkmm/treemodel.h>
 
 #include <GtkX/SelectionDialog.h>
 
 using namespace GtkX;
 
-class ModelColumns: public Gtk::TreeModel::ColumnRecord
-{
-public:
-  Gtk::TreeModelColumn<Glib::ustring> name;
-  ModelColumns()
-  {
-    add(name);
-  }
-};
-
-ModelColumns model;
-
 SelectionDialog::SelectionDialog(Gtk::Window &parent,
-				 const GtkX::String &name):
+				 const String &name,
+				 const std::vector<String> &headers):
     Dialog(name.s(), parent)
 {
-    store_ = Gtk::ListStore::create(model);
-
-    treeview_ = new Gtk::TreeView(store_);
-
-    treeview_->set_size_request(-1, 100);
-
-    get_vbox()->pack_start(*treeview_, Gtk::PACK_SHRINK);
-    treeview_->show();
-
-    treeview_->append_column("Name", model.name);
-
     set_name(name.s());
+
+    listview_ = new GtkX::ListView(*this, name+String("_list"), headers);
+
+    listview_->set_size_request(-1, 100);
+
+    get_vbox()->pack_start(*listview_, Gtk::PACK_SHRINK);
+    listview_->show();
 }
 
 SelectionDialog::~SelectionDialog(void)
 {
-    delete treeview_;
+    delete listview_;
 }
 
 Gtk::Widget *
@@ -74,8 +61,20 @@ SelectionDialog::gtk_widget(void)
 // In the case of Dialogs, we almost always want to add to the VBox
 // returned by get_vbox().
 Gtk::Container *
-GtkX::SelectionDialog::gtk_container(void)
+SelectionDialog::gtk_container(void)
 {
     return get_vbox();
+}
+
+GtkX::ListView *
+SelectionDialog::list(void)
+{
+    return listview_;
+}
+
+std::string
+SelectionDialog::get_selected(void)
+{
+    return listview_->get_selected();
 }
 

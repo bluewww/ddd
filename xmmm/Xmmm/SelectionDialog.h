@@ -30,16 +30,21 @@
 #define XMMM_SELECTIONDIALOG_H
 
 #include <Xmmm/Container.h>
-#include <Xm/SelectioB.h>
+#include <Xmmm/Box.h>
+#include <Xmmm/ListView.h>
 
 namespace Xmmm {
 
     class SelectionDialog: public Container {
 	::Widget dlg_;
+	VBox *box_;
+	ListView *list_;
     public:
-	SelectionDialog(::Widget parent, const char *name); // TEMPORARY
+	SelectionDialog(::Widget parent, const Xmmm::String &name); // TEMPORARY
 	~SelectionDialog(void);
-	::Widget xt(void); // TEMPORARY
+	::Widget xt(void);
+	::Widget xt_container(void);
+	ListView *list(void) const;
     };
 
 }

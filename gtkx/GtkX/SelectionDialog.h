@@ -24,24 +24,26 @@
 #ifndef GTKX_SELECTIONDIALOG_H
 #define GTKX_SELECTIONDIALOG_H
 
+#include <vector>
+
 #include <gtkmm/window.h>
-#include <gtkmm/box.h>
 #include <gtkmm/dialog.h>
-#include <gtkmm/liststore.h>
-#include <gtkmm/treeview.h>
 
 #include <GtkX/Container.h>
+#include <GtkX/ListView.h>
 
 namespace GtkX {
 
     class SelectionDialog: public Gtk::Dialog, public GtkX::Container {
-	Glib::RefPtr<Gtk::ListStore> store_;
-	Gtk::TreeView *treeview_;
+	GtkX::ListView *listview_;
     public:
-	SelectionDialog(Gtk::Window &parent, const GtkX::String &name);
+	SelectionDialog(Gtk::Window &parent, const GtkX::String &name,
+			const std::vector<GtkX::String> &headers);
 	Gtk::Widget *gtk_widget(void);
 	Gtk::Container *gtk_container(void);
 	~SelectionDialog(void);
+	GtkX::ListView *list(void);
+	std::string get_selected(void);
     };
 
 }
