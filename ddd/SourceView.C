@@ -8398,7 +8398,11 @@ string SourceView::refresh_registers_command()
 void SourceView::ViewRegistersCB(CB_ARG_LIST_NULL)
 {
     refresh_registers();
+#if defined(IF_XM)
+    manage_and_raise(register_dialog_w);
+#else
     manage_and_raise1(register_dialog_w);
+#endif
     register_dialog_popped_up = true;
 }
 
