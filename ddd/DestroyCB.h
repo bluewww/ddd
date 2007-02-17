@@ -29,11 +29,9 @@
 #ifndef _DDD_DestroyCB_h
 #define _DDD_DestroyCB_h
 
-#ifdef IF_MOTIF
-
+#if defined(IF_XM)
 #include <X11/Intrinsic.h>
-
-#endif // IF_MOTIF
+#endif
 
 #include "gtk_wrapper.h"
 
@@ -54,10 +52,13 @@ extern void DestroyThisCB(Widget);
 extern void UnmanageShellCB(CB_ARG_LIST_1());
 
 // Unmanage specific widget
-#ifdef IF_MOTIF
-extern void UnmanageThisCB(Widget, XtPointer client_data, XtPointer);
-#else // NOT IF_MOTIF
-extern void UnmanageThisCB(Widget);
-#endif // IF_MOTIF
+#if defined(IF_MOTIF)
+extern void UnmanageThisCB1(Widget, XtPointer client_data, XtPointer); // FIXME compat
+#endif
+
+#if !defined(IF_XM)
+extern void UnmanageThisCB(GUI::Widget *);
+extern void UnmanageThisCB2(Widget); // FIXME compat
+#endif
 
 #endif

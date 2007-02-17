@@ -482,6 +482,7 @@ ${LN_S} GtkX gtkx/GUI
 AC_ARG_WITH([gtk],AS_HELP_STRING([--with-gtk],[Use GTK interface (experimental)]),[with_gtk="${withval}"],[with_gtk=no])
 AC_ARG_WITH([xmmm],AS_HELP_STRING([--with-xmmm],[Use new Motif interface (experimental)]),[with_xmmm="${withval}"],[with_xmmm=no])
 AM_CONDITIONAL([WITH_GTK],[test "$with_gtk" = yes])
+AM_CONDITIONAL([WITH_XMMM],[test "$with_xmmm" = yes])
 dnl
 dnl PKG_CONFIG must be defined before we enter the conditional section
 PKG_PROG_PKG_CONFIG

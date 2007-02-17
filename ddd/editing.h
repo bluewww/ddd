@@ -111,11 +111,17 @@ extern bool gdb_debuggee_running;
 extern void clear_isearch(bool reset = false, bool show = true);
 
 // Pass the COMMAND given in CLIENT_DATA to gdb_button_command()
-#ifdef IF_MOTIF
-void gdbCommandCB(CB_ALIST_123(Widget, XtPointer, XtPointer));
-#else // NOT IF_MOTIF
-void gdbCommandCB(CB_ALIST_12(Widget, const char *));
-#endif // IF_MOTIF
+#if defined(IF_MOTIF)
+void gdbCommandCB1(Widget, XtPointer, XtPointer); // FIXME compat
+#define gdbCommandCB12 gdbCommandCB1
+#else
+#define gdbCommandCB12 gdbCommandCB2
+#endif
+
+#if !defined(IF_XM)
+void gdbCommandCB(GUI::Widget *, const char *);
+void gdbCommandCB2(Widget, const char *); // FIXME: compat
+#endif
 
 // Like gdb_command(), but perform `...' and `()' substitutions
 void gdb_button_command(const string& command, Widget origin = 0);

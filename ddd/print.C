@@ -372,7 +372,7 @@ void PrintAgainCB(CB_ALIST_12(Widget w, XtP(long) client_data))
 				  + quote(f) + "?");
 	    XtVaSetValues (confirm_overwrite_dialog, XmNmessageString, 
 			   question.xmstring(), XtPointer(0));
-	    manage_and_raise(confirm_overwrite_dialog);
+	    manage_and_raise1(confirm_overwrite_dialog);
 	}
 
 	break;
@@ -785,7 +785,7 @@ static void SetGCCustom(CB_ALIST_1(TOGGLEBUTTON_P w))
     if (!XmToggleButtonGetState(w))
 	return;
 
-    manage_and_raise(paper_size_dialog);
+    manage_and_raise1(paper_size_dialog);
 }
 
 static void SetGCOrientation(CB_ALIST_12(TOGGLEBUTTON_P w, XtP(long) client_data))
@@ -864,7 +864,7 @@ static void BrowseNameCB(CB_ALIST_1(Widget w))
 	Delay::register_shell(dialog);
 #ifdef IF_MOTIF
 	XtAddCallback(dialog, XmNokCallback, SetPrintFileNameCB, 0);
-	XtAddCallback(dialog, XmNcancelCallback, UnmanageThisCB, 
+	XtAddCallback(dialog, XmNcancelCallback, UnmanageThisCB1, 
 		      XtPointer(dialog));
 	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, XtPointer(0));
 #else // NOT IF_MOTIF
@@ -872,7 +872,7 @@ static void BrowseNameCB(CB_ALIST_1(Widget w))
 	button = dialog->add_button(XMST("OK"), 0);
 	button->signal_clicked().connect(sigc::bind(PTR_FUN(SetPrintFileNameCB), dialog));
 	button = dialog->add_button(XMST("Cancel"), 0);
-	button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB), dialog));
+	button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB2), dialog));
 #endif // IF_MOTIF
     }
     else
@@ -887,7 +887,7 @@ static void BrowseNameCB(CB_ALIST_1(Widget w))
 #endif // IF_MOTIF
     }
 
-    manage_and_raise(dialog);
+    manage_and_raise1(dialog);
 }
 
 static void PrintCB(Widget parent, bool displays)
@@ -905,7 +905,7 @@ static void PrintCB(Widget parent, bool displays)
 	XmToggleButtonSetState(print_displays_w, displays, True);
 	XmToggleButtonSetState(print_selected_w, 
 			       data_disp->have_selection(), True);
-	manage_and_raise(print_dialog);
+	manage_and_raise1(print_dialog);
 	return;
     }
 
@@ -934,7 +934,7 @@ static void PrintCB(Widget parent, bool displays)
     XtAddCallback(print_dialog, XmNapplyCallback,
 		  PrintAgainCB, XtPointer(0));
     XtAddCallback(print_dialog, XmNcancelCallback, 
-		  UnmanageThisCB, XtPointer(print_dialog));
+		  UnmanageThisCB1, XtPointer(print_dialog));
     XtAddCallback(print_dialog, XmNhelpCallback,
 		  ImmediateHelpCB, XtPointer(0));
 #else // NOT IF_MOTIF
@@ -1214,7 +1214,7 @@ static void PrintCB(Widget parent, bool displays)
     XmTextFieldSetString(print_command_field, XMST(command.chars()));
 
     // Gofer it!
-    manage_and_raise(print_dialog);
+    manage_and_raise1(print_dialog);
 }
 
 void PrintGraphCB(CB_ARG_LIST_1(w))

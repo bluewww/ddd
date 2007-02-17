@@ -39,13 +39,6 @@
 
 namespace GtkX {
 
-    // Compatibility with Gtkmm:
-    enum PackOptions
-    {
-	PACK_SHRINK, /**< Space is contracted to the child widget size. */
-	PACK_EXPAND_PADDING, /**< Space is expanded, with extra space filled with padding. */
-	PACK_EXPAND_WIDGET /**< Space is expanded, with extra space filled by increasing the child widget size. */
-    };
     enum Orientation
     {
 	ORIENTATION_HORIZONTAL,
@@ -55,19 +48,28 @@ namespace GtkX {
 
     // FIXME: Tried to derive from Gtk::Bin, but as Bin is an
     // "abstract" base class we would need to implement more method.
-    class RadioBox: public Gtk::VBox, public GtkX::Container {
+    class RadioBox: public Gtk::VBox, public Container {
 	Gtk::Box *box_;
 	Gtk::RadioButtonGroup group_;
     public:
-	void create_box(GtkX::Orientation orientation=GtkX::ORIENTATION_VERTICAL);
-	RadioBox(GtkX::Container &parent, const GtkX::String &name,
-		 GtkX::Orientation orientation);
+	void create_box(Orientation orientation=ORIENTATION_VERTICAL);
+	RadioBox(GtkX::Container &parent, const String &name,
+		 Orientation orientation,
+		 PackOptions options=PACK_SHRINK,
+		 int padding=0);
 	~RadioBox(void);
-	Gtk::Widget *gtk_widget(void);
+	Gtk::Widget *internal(void);
 	Gtk::Container *gtk_container(void);
-	void add_child(GtkX::Widget &child);
+	void add_child(GtkX::Widget &child,
+		       PackOptions options=PACK_SHRINK,
+		       int padding=0);
 	void on_add(Gtk::Widget *child);
-	void pack_start(Gtk::Widget &child, PackOptions options = PACK_EXPAND_WIDGET, int padding = 0);
+	void pack_start(Gtk::Widget &child,
+			PackOptions options=PACK_SHRINK,
+			int padding=0);
+	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
+	void show(void) {Widget::show();}
+	void hide(void) {Widget::hide();}
     };
 
 }

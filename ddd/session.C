@@ -586,7 +586,7 @@ static Widget create_session_panel(Widget parent, const _XtString name,
     XtAddCallback(dialog, XmNapplyCallback, 
 		  apply, XtPointer(sessions));
     XtAddCallback(dialog, XmNcancelCallback, 
-		  UnmanageThisCB, XtPointer(dialog));
+		  UnmanageThisCB1, XtPointer(dialog));
     XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, 0);
 
     return dialog;
@@ -881,7 +881,7 @@ void SaveSessionAsCB(CB_ARG_LIST_1(w))
     XtVaSetValues(dialog, XmNtextString, text.xmstring(), XtPointer(0));
 
     update_sessions(dialog);
-    manage_and_raise(dialog);
+    manage_and_raise1(dialog);
 #else // NOT IF_MOTIF
     std::cerr << "SaveSessionAsCB not supported\n";
 #endif // IF_MOTIF
@@ -1222,7 +1222,7 @@ void OpenSessionCB(CB_ARG_LIST_1(w))
     }
 
     update_sessions(dialog);
-    manage_and_raise(dialog);
+    manage_and_raise1(dialog);
 #else // NOT IF_MOTIF
     std::cerr << "OpenSessionCB not implemented\n";
 #endif // IF_MOTIF
@@ -1462,7 +1462,7 @@ static void ask(const string& text, const _XtString name, XtCheckpointToken toke
     XtAddCallback(dialog, XmNcancelCallback, no, XtPointer(token));
     XtAddCallback(dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
 
-    manage_and_raise(dialog);
+    manage_and_raise1(dialog);
 }
 
 #else // XtSpecificationRelease < 6

@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-// High-level GUI wrapper for Gtkmm.
+// High-level GUI wrapper for Xm.
 
 // Copyright (C) 2007 Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
@@ -30,7 +30,7 @@
 #define XMMM_RADIOBUTTON_H
 
 #include <sigc++/signal.h>
-#include <Xmmm/Widget.h>
+#include <Xmmm/Container.h>
 #include <Xm/ToggleB.h>
 
 namespace Xmmm {
@@ -41,12 +41,12 @@ namespace Xmmm {
 	void init_signals(void);
     protected:
 	sigc::signal<void> signal_toggled_;
-	static void signal_toggled_callback(::Widget widget, XtPointer data);
+	static void toggled_callback(::Widget widget, XtPointer data);
     public:
-	RadioButton(Xmmm::Widget &parent, const char *name);
-	RadioButton(::Widget parent, const char *name); // TEMPORARY
+	RadioButton(Xmmm::Container &parent, const Xmmm::String &name);
+	RadioButton(::Widget parent, const Xmmm::String &name); // TEMPORARY
 	~RadioButton(void);
-	::Widget xt(void); // TEMPORARY
+	::Widget internal(void); // TEMPORARY
 	void set_active(bool);
 	bool get_active(void);
 	sigc::signal<void> &signal_toggled(void);

@@ -131,23 +131,19 @@ void UnmanageShellCB(CB_ARG_LIST_1(widget))
     while (w != 0 && !XtIsShell(XtParent(w)))
 	w = XtParent(w);
 
-#ifdef IF_MOTIF
-    UnmanageThisCB(widget, XtPointer(w), XtPointer(0));
-#else // NOT IF_MOTIF
-    UnmanageThisCB(w);
-#endif // IF_MOTIF
+#if defined(IF_XM)
+    UnmanageThisCB1(widget, XtPointer(w), XtPointer(0));
+#else
+    UnmanageThisCB2(widget);
+#endif
 }
 
 // Unmanage specific widget
-#ifdef IF_MOTIF
-void UnmanageThisCB(Widget, XtPointer client_data, XtPointer)
-#else // NOT IF_MOTIF
-void UnmanageThisCB(Widget w)
-#endif // IF_MOTIF
+#if defined(IF_MOTIF)
+
+void UnmanageThisCB1(Widget, XtPointer client_data, XtPointer)
 {
-#ifdef IF_MOTIF
     Widget w = Widget(client_data);
-#endif // IF_MOTIF
 
     Widget shell = w;
     if (!XtIsShell(shell))
@@ -158,3 +154,24 @@ void UnmanageThisCB(Widget w)
 
     XtUnmanageChild(w);
 }
+
+#endif
+
+#if !defined(IF_XM)
+
+void UnmanageThisCB(GUI::Widget *w)
+{
+    w->hide();
+}
+
+void UnmanageThisCB2(Widget w)
+{
+#if defined(IF_XMMM)
+    UnmanageThisCB1(w, NULL, NULL);
+#else
+    w->hide();
+#endif
+}
+
+#endif
+

@@ -36,14 +36,32 @@
 
 namespace GtkX {
 
-    class ListView: public Gtk::TreeView {
+    class ListView;
+
+    class ListView: public Widget, public Gtk::TreeView {
+    private:
 	Glib::RefPtr<Gtk::ListStore> store_;
+    protected:
+	sigc::signal<void> signal_selection_changed_;
+	static void selection_changed_callback(ListView *lv);
     public:
-	ListView(GtkX::Container &parent, const GtkX::String &name,
-		 const std::vector<GtkX::String> &headers);
-	Gtk::Widget *gtk_widget(void);
+	void init_signals(void);
+	ListView(GtkX::Container &parent,
+		 const GtkX::String &name,
+		 const std::vector<GtkX::String> &headers,
+		 PackOptions options=PACK_SHRINK,
+		 int padding=0);
+	Gtk::Widget *internal(void);
 	~ListView(void);
 	std::string get_selected(void);
+	void clear(void);
+	void append(const GtkX::String &item);
+	int get_selected_pos(void);
+	int count(void) const;
+	sigc::signal<void> &signal_selection_changed(void);
+	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
+	void show(void) {Widget::show();}
+	void hide(void) {Widget::hide();}
     };
 
 }

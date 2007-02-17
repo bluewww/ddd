@@ -40,10 +40,12 @@ close_shell(::Widget w, XtPointer client_data, XtPointer call_data)
     XtPopdown(w);
 }
 
-SelectionDialog::SelectionDialog(::Widget parent, const Xmmm::String &name)
+SelectionDialog::SelectionDialog(::Widget parent, const Xmmm::String &name,
+				 const std::vector<String> &headers)
 {
     Arg args[10];
-    int nargs = 0;
+    int nargs;
+    std::vector<Arg> vargs;
 
     int decorations = 
 	MWM_DECOR_BORDER | MWM_DECOR_RESIZEH | 
@@ -52,6 +54,7 @@ SelectionDialog::SelectionDialog(::Widget parent, const Xmmm::String &name)
     int functions = 
 	MWM_FUNC_RESIZE | MWM_FUNC_MOVE | MWM_FUNC_MINIMIZE | MWM_FUNC_CLOSE;
 
+    nargs = 0;
     XtSetArg(args[nargs], XmNdialogType, XmDIALOG_SELECTION); nargs++; // ??
     XtSetArg(args[nargs], XmNallowShellResize, True); nargs++;
     XtSetArg(args[nargs], XmNmwmDecorations, decorations); nargs++;
@@ -65,32 +68,62 @@ SelectionDialog::SelectionDialog(::Widget parent, const Xmmm::String &name)
 
     dlg_ = XmCreateDialogShell(parent, (char *)name.c(), args, nargs);
     WM_set_close_callback(dlg_, close_shell, NULL);
+#if 0
     box_ = new VBox(dlg_, name+Xmmm::String("_vbox"));
     box_->show();
-    list_ = new ListView(*box_, name+Xmmm::String("_list"));
+#else
+    box1_ = new Box1(dlg_, name+Xmmm::String("_vbox"));
+    box1_->show();
+#endif
+    vargs.resize(6);
+    XtSetArg(vargs[0], XmNscrollBarDisplayPolicy, XmAS_NEEDED);
+    // FIXME: Lesstif does not apparently allow separate setting of
+    // XmNvisualPolicy: it is always set according to the value of
+    // XmNscrollingPolicy.  G*d, I hate Motif...
+    //XtSetArg(vargs[1], XmNscrollingPolicy, XmAUTOMATIC);
+    //XtSetArg(vargs[2], XmNvisualPolicy, XmCONSTANT);
+    XtSetArg(vargs[1], XmNscrollingPolicy, XmAPPLICATION_DEFINED);
+    XtSetArg(vargs[2], XmNvisualPolicy, XmVARIABLE);
+    XtSetArg(vargs[3], XmNscrollBarDisplayPolicy, XmSTATIC);
+    XtSetArg(vargs[4], XmNshadowThickness, 0);
+    XtSetArg(vargs[5], "pack_options", 2);
+    sw_ = new ScrolledWindow(*box1_, name+Xmmm::String("_sw"), vargs);
+    list_ = new ListView(*sw_, name+Xmmm::String("_list"), headers);
+    // FIXME: If the ScrolledWindow is realized before the list is
+    // managed, it will resize the list (so that the visibleItemCount
+    // resource is ignored).  This will not matter when we have proper
+    // geometry management for the Box1 widget.
     list_->show();
+    sw_->show();
 }
 
 SelectionDialog::~SelectionDialog(void)
 {
     if (box_) delete box_;
+    if (box1_) delete box1_;
     if (list_) delete list_;
     XtDestroyWidget(dlg_);
 }
 
-::Widget SelectionDialog::xt(void)
+::Widget SelectionDialog::internal(void)
 {
     return dlg_;
 }
 
 ::Widget SelectionDialog::xt_container(void)
 {
-    return box_->xt();
+    return box1_->internal();
 }
 
 ListView *
 SelectionDialog::list(void) const
 {
     return list_;
+}
+
+Button *
+SelectionDialog::add_button(const String &name)
+{
+    return new Button(*this, name);
 }
 

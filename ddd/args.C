@@ -363,7 +363,7 @@ void gdbRunCB(CB_ARG_LIST_1(w))
     }
 
     update_run_arguments();
-    manage_and_raise(run_dialog);
+    manage_and_raise1(run_dialog);
 }
 
 
@@ -457,7 +457,7 @@ void gdbMakeCB(CB_ARG_LIST_1(w))
     }
 
     update_make_arguments();
-    manage_and_raise(make_dialog);
+    manage_and_raise1(make_dialog);
 }
 
 
@@ -553,7 +553,7 @@ void gdbChangeDirectoryCB(CB_ARG_LIST_1(w))
     }
 
     update_cd_arguments();
-    manage_and_raise(cd_dialog);
+    manage_and_raise1(cd_dialog);
 }
 
 //-----------------------------------------------------------------------------

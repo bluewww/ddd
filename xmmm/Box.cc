@@ -19,7 +19,7 @@ VBox::~VBox(void)
     XtDestroyWidget(rc_);
 }
 
-::Widget VBox::xt(void)
+::Widget VBox::internal(void)
 {
     return rc_;
 }
@@ -45,7 +45,7 @@ HBox::~HBox(void)
     XtDestroyWidget(rc_);
 }
 
-::Widget HBox::xt(void)
+::Widget HBox::internal(void)
 {
     return rc_;
 }

@@ -1,7 +1,7 @@
 #ifndef GTK_WRAPPER_H
 #define GTK_WRAPPER_H
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 
 #include <X11/Intrinsic.h>
 
@@ -896,5 +896,18 @@ public:
 };
 
 #endif // IF_MOTIF
+
+#if defined(IF_XM)
+
+#define ListView_P Widget
+
+#else
+
+#include <GUI/WidgetPtr.h>
+#include <GUI/ListView.h>
+
+#define ListView_P GUI::WidgetPtr<GUI::ListView>
+
+#endif
 
 #endif // GTK_WRAPPER_H

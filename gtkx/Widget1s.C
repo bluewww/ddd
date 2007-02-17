@@ -34,8 +34,14 @@ Widget1s<T>::Widget1s(GtkX::Container &parent, const GtkX::String &name):
     T(name.s())
 {
     T::set_name(name.s());
-    parent.add_child(*this);
+    // We cannot use this:
     // parent.gtk_container()->add(*this);
+    // If we always had parent.gtk_container() == &parent we could just
+    // override the on_add() method to do what we want.  However,
+    // sometimes parent.gtk_container() is a standard Gtk widget.
+    // In such a case (e.g. RadioBox) we need to override add_child()
+    // instead.
+    parent.add_child(*this);
 }
 
 template <class T>
@@ -45,7 +51,7 @@ Widget1s<T>::~Widget1s(void)
 
 template <class T>
 Gtk::Widget *
-Widget1s<T>::gtk_widget(void)
+Widget1s<T>::internal(void)
 {
     return this;
 }
@@ -53,3 +59,4 @@ Widget1s<T>::gtk_widget(void)
 #include <gtkmm/radiobutton.h>
 
 template class Widget1s<Gtk::RadioButton>;
+template class Widget1s<Gtk::Button>;

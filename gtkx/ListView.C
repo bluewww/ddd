@@ -50,9 +50,16 @@ public:
 
 static ModelColumns model;
 
+void
+ListView::init_signals(void)
+{
+}
+
 ListView::ListView(GtkX::Container &parent,
 		   const String &name,
-		   const std::vector<String> &headers)
+		   const std::vector<String> &headers,
+		   PackOptions options,
+		   int padding)
 {
     set_name(name.s());
     store_ = Gtk::ListStore::create(model);
@@ -71,6 +78,9 @@ ListView::ListView(GtkX::Container &parent,
     row[model.c2] = "test 2";
     row[model.c3] = "test 3";
     row[model.c4] = "test 4";
+
+    init_signals();
+    parent.add_child(*this);
 }
 
 ListView::~ListView(void)
@@ -78,7 +88,7 @@ ListView::~ListView(void)
 }
 
 Gtk::Widget *
-ListView::gtk_widget(void)
+ListView::internal(void)
 {
     return this;
 }
@@ -94,5 +104,48 @@ ListView::get_selected(void)
 	+ row[model.c2] + tab
 	+ row[model.c3] + tab
 	+ row[model.c4];
+}
+
+void
+ListView::clear(void)
+{
+    store_->clear();
+}
+
+void
+ListView::append(const GtkX::String &item)
+{
+    Gtk::TreeModel::Row row = *store_->append();
+    row[model.c1] = item.s();
+    row[model.c2] = "";
+    row[model.c3] = "";
+    row[model.c4] = "";
+}
+
+int
+ListView::get_selected_pos(void)
+{
+    Gtk::TreeSelection::ListHandle_Path paths = get_selection()->get_selected_rows();
+    if (paths.begin() == paths.end())
+	return -1;
+    return (*paths.begin())[0];
+}
+
+int
+ListView::count(void) const
+{
+    return store_->children().size();
+}
+
+sigc::signal<void> &
+ListView::signal_selection_changed(void)
+{
+    return signal_selection_changed_;
+}
+
+void
+ListView::selection_changed_callback(ListView *lv)
+{
+    lv->signal_selection_changed_();
 }
 

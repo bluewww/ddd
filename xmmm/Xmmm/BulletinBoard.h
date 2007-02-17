@@ -1,4 +1,6 @@
-// High-level GUI wrapper for Motif.
+// -*- C++ -*-
+
+// High-level GUI wrapper for Xm.
 
 // Copyright (C) 2007 Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
@@ -24,28 +26,26 @@
 // the constructor, unlike the Gtk ones.  Motif (Xt) widgets cannot be
 // reparented.  Therefore we need a constructor with extra arguments.
 
-#include <Xmmm/RadioBox.h>
+#ifndef XMMM_BULLETINBOARD_H
+#define XMMM_BULLETINBOARD_H
 
-using namespace Xmmm;
+#include <Xmmm/Container.h>
+#include <Xm/BulletinB.h>
 
-RadioBox::RadioBox(::Widget parent, const Xmmm::String &name,
-		   Xmmm::Orientation orientation)
-{
-    box_ = XmCreateRadioBox(parent, (char *)name.c(), NULL, 0);
+namespace Xmmm {
+
+    class BulletinBoard: public Container {
+	::Widget bb_;
+    public:
+	BulletinBoard(Xmmm::Widget parent, const Xmmm::String &name,
+		      std::vector<Arg> &args=NO_ARGS);
+	BulletinBoard(::Widget parent, const Xmmm::String &name,
+		      std::vector<Arg> &args=NO_ARGS); // TEMPORARY
+	~BulletinBoard(void);
+	::Widget internal(void); // TEMPORARY
+	operator ::Widget(void); // TEMPORARY
+    };
+
 }
 
-RadioBox::RadioBox(Xmmm::Container &parent, const Xmmm::String &name, Xmmm::Orientation orientation)
-{
-    box_ = XmCreateRadioBox(parent.xt_container(), (char *)name.c(), NULL, 0);
-}
-
-RadioBox::~RadioBox(void)
-{
-    XtDestroyWidget(box_);
-}
-
-::Widget RadioBox::internal(void)
-{
-    return box_;
-}
-
+#endif // XMMM_BULLETINBOARD_H

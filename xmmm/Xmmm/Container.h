@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-// High-level GUI wrapper for Gtkmm.
+// High-level GUI wrapper for Xm.
 
 // Copyright (C) 2007 Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
@@ -34,6 +34,14 @@
 #include <Xmmm/Widget.h>
 
 namespace Xmmm {
+
+    // Compatibility with Gtkmm:
+    enum PackOptions
+    {
+	PACK_SHRINK,
+	PACK_EXPAND_PADDING,
+	PACK_EXPAND_WIDGET
+    };
 
     class Container: public Widget {
     public:

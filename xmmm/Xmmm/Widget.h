@@ -1,11 +1,12 @@
+#ifndef XMMM_WIDGET_H
+#define XMMM_WIDGET_H
+
 
 #include <X11/Intrinsic.h>
 
 #include <string>
+#include <vector>
 #include <sigc++/sigc++.h>
-
-#ifndef XMMM_WIDGET_H
-#define XMMM_WIDGET_H
 
 namespace Xmmm {
 
@@ -27,12 +28,13 @@ namespace Xmmm {
     public:
 	Widget(void);
 	~Widget(void);
-	virtual ::Widget xt(void);
+	virtual ::Widget internal(void);
 	virtual ::Widget xt_container(void);
 	void show(void);
 	void hide(void);
     };
 
+    extern std::vector<Arg> NO_ARGS;
 }
 
 extern "C" {

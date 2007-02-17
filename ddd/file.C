@@ -259,12 +259,12 @@ static Widget file_dialog(WINDOW_P w, const string& name,
     }
 
 #ifdef IF_MOTIF
-    XtAddCallback(dialog, XmNcancelCallback, UnmanageThisCB, 
+    XtAddCallback(dialog, XmNcancelCallback, UnmanageThisCB1, 
 		  XtPointer(dialog));
     XtAddCallback(dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
 #else // NOT IF_MOTIF
     button = dialog->add_button(XMST("Cancel"), 0);
-    button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB), dialog));
+    button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB2), dialog));
 #endif // IF_MOTIF
 
 #ifdef IF_MOTIF
@@ -1462,8 +1462,8 @@ static void openProcessDone(Widget w, XtPointer client_data,
 static void RemoveCallbacksCB(Widget w, XtPointer client_data, XtPointer)
 {
     Widget ref = Widget(client_data);
-    XtRemoveCallback(ref, XmNokCallback,      UnmanageThisCB, XtPointer(w));
-    XtRemoveCallback(ref, XmNcancelCallback,  UnmanageThisCB, XtPointer(w));
+    XtRemoveCallback(ref, XmNokCallback,      UnmanageThisCB1, XtPointer(w));
+    XtRemoveCallback(ref, XmNcancelCallback,  UnmanageThisCB1, XtPointer(w));
     XtRemoveCallback(ref, XmNdestroyCallback, RemoveCallbacksCB, XtPointer(w));
 }
 #else // NOT IF_MOTIF
@@ -1488,24 +1488,24 @@ static void warn_if_no_program(Widget popdown)
 	    // so is the other.
 #ifdef IF_MOTIF
 	    XtAddCallback(warning, XmNokCallback, 
-			  UnmanageThisCB, XtPointer(popdown));
+			  UnmanageThisCB1, XtPointer(popdown));
 	    XtAddCallback(warning, XmNcancelCallback, 
-			  UnmanageThisCB, XtPointer(popdown));
+			  UnmanageThisCB1, XtPointer(popdown));
 	    XtAddCallback(popdown, XmNdestroyCallback,
 			  RemoveCallbacksCB, XtPointer(warning));
 #else // NOT IF_MOTIF
-	    warning->signal_unmap().connect(sigc::bind(PTR_FUN(UnmanageThisCB), popdown));
+	    warning->signal_unmap().connect(sigc::bind(PTR_FUN(UnmanageThisCB2), popdown));
 #endif // IF_MOTIF
 
 #ifdef IF_MOTIF
 	    XtAddCallback(popdown, XmNokCallback,
-			  UnmanageThisCB, XtPointer(warning));
+			  UnmanageThisCB1, XtPointer(warning));
 	    XtAddCallback(popdown, XmNcancelCallback,
-			  UnmanageThisCB, XtPointer(warning));
+			  UnmanageThisCB1, XtPointer(warning));
 	    XtAddCallback(warning, XmNdestroyCallback,
 			  RemoveCallbacksCB, XtPointer(popdown));
 #else // NOT IF_MOTIF
-	    popdown->signal_unmap().connect(sigc::bind(PTR_FUN(UnmanageThisCB), warning));
+	    popdown->signal_unmap().connect(sigc::bind(PTR_FUN(UnmanageThisCB2), warning));
 #endif // IF_MOTIF
 	}
     }
@@ -1944,7 +1944,7 @@ void gdbOpenFileCB(CB_ARG_LIST_1(w))
     static Widget dialog = 
 	create_file_dialog(w, "DDD: Open Program", PTR_FUN(openFileDone));
 #endif // IF_MOTIF
-    manage_and_raise(dialog);
+    manage_and_raise1(dialog);
 }
 
 void gdbOpenRecentCB(CB_ARG_LIST_12(w, client_data))
@@ -1978,7 +1978,7 @@ void gdbOpenCoreCB(CB_ARG_LIST_1(w))
     static Widget dialog = 
 	create_file_dialog(w, "core_files", PTR_FUN(openCoreDone));
 #endif // IF_MOTIF
-    manage_and_raise(dialog);
+    manage_and_raise1(dialog);
     warn_if_no_program(dialog);
 }
 
@@ -1994,7 +1994,7 @@ void gdbOpenSourceCB(CB_ARG_LIST_1(w))
     static Widget dialog = 
 	create_file_dialog(w, "source_files", PTR_FUN(openSourceDone));
 #endif // IF_MOTIF
-    manage_and_raise(dialog);
+    manage_and_raise1(dialog);
 
     open_source_msg();
 
@@ -2048,12 +2048,12 @@ void gdbOpenProcessCB(CB_ARG_LIST_1(w))
 	XtAddCallback(dialog, XmNapplyCallback, 
 		      gdbUpdateProcessesCB, XtPointer(processes));
 	XtAddCallback(dialog, XmNcancelCallback, 
-		      UnmanageThisCB, XtPointer(dialog));
+		      UnmanageThisCB1, XtPointer(dialog));
 	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, 0);
     }
 
     update_processes(processes, false);
-    manage_and_raise(dialog);
+    manage_and_raise1(dialog);
     warn_if_no_program(dialog);
 #else // NOT IF_MOTIF
     std::cerr << "gdbOpenProcessCB not supported\n";
@@ -2098,12 +2098,12 @@ void gdbOpenClassCB(CB_ARG_LIST_1(w))
 	XtAddCallback(dialog, XmNapplyCallback, 
 		      gdbUpdateClassesCB, XtPointer(classes));
 	XtAddCallback(dialog, XmNcancelCallback, 
-		      UnmanageThisCB, XtPointer(dialog));
+		      UnmanageThisCB1, XtPointer(dialog));
 	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, 0);
     }
 
     update_classes(classes);
-    manage_and_raise(dialog);
+    manage_and_raise1(dialog);
 #else // NOT IF_MOTIF
     std::cerr << "Open class not supported\n";
 #endif // IF_MOTIF
@@ -2274,7 +2274,7 @@ void gdbLookupSourceCB(CB_ARG_LIST_1(w))
 		      lookupSourceDone, XtPointer(source_list));
 	XtAddCallback(dialog, XmNapplyCallback, FilterSourcesCB, 0);
 	XtAddCallback(dialog, XmNcancelCallback, 
-		      UnmanageThisCB, XtPointer(dialog));
+		      UnmanageThisCB1, XtPointer(dialog));
 	XtAddCallback(dialog, XmNunmapCallback, ClearStatusCB, 0);
 	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, 0);
 #else // NOT IF_MOTIF
@@ -2283,8 +2283,8 @@ void gdbLookupSourceCB(CB_ARG_LIST_1(w))
 	button->signal_clicked().connect(sigc::bind(PTR_FUN(lookupSourceDone),
 						     source_list));
 	button = dialog->add_button(XMST("Cancel"), 0);
-	button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB),
-						     dialog));
+	button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB2),
+						    dialog));
 	dialog->signal_unmap().connect(PTR_FUN(ClearStatusCB));
 #endif // IF_MOTIF
 
@@ -2315,6 +2315,6 @@ void gdbLookupSourceCB(CB_ARG_LIST_1(w))
     update_sources(source_list, source_filter);
 
     open_source_msg();
-    manage_and_raise(dialog);
+    manage_and_raise1(dialog);
     warn_if_no_program(dialog);
 }

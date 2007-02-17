@@ -31,19 +31,28 @@
 
 #include <GtkX/Container.h>
 #include <GtkX/ListView.h>
+#include <GtkX/ScrolledWindow.h>
+#include <GtkX/Box.h>
+#include <GtkX/Button.h>
 
 namespace GtkX {
 
-    class SelectionDialog: public Gtk::Dialog, public GtkX::Container {
-	GtkX::ListView *listview_;
+    class SelectionDialog: public Gtk::Dialog, public Container {
+	ScrolledWindow *sw_;
+	ListView *listview_;
+	HBox *buttons_;
     public:
-	SelectionDialog(Gtk::Window &parent, const GtkX::String &name,
-			const std::vector<GtkX::String> &headers);
-	Gtk::Widget *gtk_widget(void);
+	SelectionDialog(Gtk::Window &parent, const String &name,
+			const std::vector<String> &headers);
+	Gtk::Widget *internal(void);
 	Gtk::Container *gtk_container(void);
 	~SelectionDialog(void);
-	GtkX::ListView *list(void);
+	ListView *list(void);
 	std::string get_selected(void);
+	void pack_start(Gtk::Widget &child,
+			PackOptions options = PACK_EXPAND_WIDGET,
+			int padding = 0);
+	Button *add_button(const String &name);
     };
 
 }

@@ -97,24 +97,27 @@ int max_value_doc_length = 128;
 // Button callbacks
 //-----------------------------------------------------------------------------
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
+
 static void YnButtonCB(Widget dialog, 
 		       XtPointer client_data, 
 		       XtPointer call_data)
-#else // NOT IF_MOTIF
-static void YnButtonCB(Widget dialog, char *client_data)
-#endif // IF_MOTIF
 {
     _gdb_out(string(STATIC_CAST(char *,client_data)) + '\n');
-#ifdef IF_MOTIF
-    gdbCommandCB(CB_ARGS_123(dialog, client_data, call_data));
-#else // NOT IF_MOTIF
-    gdbCommandCB(CB_ARGS_12(dialog, client_data));
-#endif // IF_MOTIF
+    gdbCommandCB1(dialog, client_data, call_data);
     gdb_keyboard_command = true;
 }
 
+#else
 
+static void YnButtonCB(Widget dialog, char *client_data)
+{
+    _gdb_out(string(STATIC_CAST(char *,client_data)) + '\n');
+    gdbCommandCB2(dialog, client_data);
+    gdb_keyboard_command = true;
+}
+
+#endif
 
 //-----------------------------------------------------------------------------
 // Version stuff
@@ -977,7 +980,7 @@ static void VerifyButtonWorkProc(XtPointer client_data, XtIntervalId *id)
 	{
 	    string cmd;
 
-	    if (callbacks[j].callback == gdbCommandCB)
+	    if (callbacks[j].callback == gdbCommandCB1)
 	    {
 		cmd = (String)(callbacks[j].closure);
 		cmd = cmd.through(rxidentifier);
@@ -1216,11 +1219,11 @@ void set_buttons(BOX_P buttons, const _XtString _button_list, bool manage)
     int number_of_buttons = 0;
     for (i = 0; i < lines; i++)
     {
-#ifdef IF_MOTIF
-	XtCallbackProc callback = gdbCommandCB;
-#else // NOT IF_MOTIF
-	GTK_SLOT_WP callback = PTR_FUN(gdbCommandCB);
-#endif // IF_MOTIF
+#if defined(IF_XM)
+	XtCallbackProc callback = gdbCommandCB1;
+#else
+	GTK_SLOT_WP callback = PTR_FUN(gdbCommandCB12);
+#endif
 
 	string name = commands[i];
 	strip_space(name);
@@ -1634,7 +1637,7 @@ static void create_buttons_dialog(Widget parent)
 #ifdef IF_MOTIF
     XtAddCallback(buttons_dialog, XmNokCallback,     SetTextCB, 0);
     XtAddCallback(buttons_dialog, XmNokCallback,     
-		  UnmanageThisCB, buttons_dialog);
+		  UnmanageThisCB1, buttons_dialog);
     XtAddCallback(buttons_dialog, XmNapplyCallback,  SetTextCB, 0);
     XtAddCallback(buttons_dialog, XmNcancelCallback, ResetTextCB, 0);
 
@@ -1786,7 +1789,7 @@ void dddEditButtonsCB(CB_ARG_LIST_1(w))
     XtVaSetValues(XtParent(buttons_dialog), XmNtitle, 
 		  DDD_NAME ": Button Editor", XtPointer(0));
 
-    manage_and_raise(buttons_dialog);
+    manage_and_raise1(buttons_dialog);
 #else // NOT IF_MOTIF
 #ifdef NAG_ME
 #warning Buttons dialog?
@@ -1812,7 +1815,7 @@ void dddEditShortcutsCB(CB_ALIST_1(Widget w))
     XtVaSetValues(XtParent(buttons_dialog), XmNtitle, 
 		  DDD_NAME ": Shortcut Editor", XtPointer(0));
 
-    manage_and_raise(buttons_dialog);
+    manage_and_raise1(buttons_dialog);
 #else // NOT IF_MOTIF
 #ifdef NAG_ME
 #warning Buttons dialog?

@@ -120,17 +120,17 @@ Widget createTopLevelSelectionDialog(Widget parent, const _XtString name,
 // HIGHLIGHT_TITLE: Whether the first line should be highlighted
 // NOTIFY:          Whether callbacks should be invoked
 //
-void setLabelList (TREEVIEW_P  selectionList,
+void setLabelList (TREEVIEW_P selectionList,
 		   const string  label_list[],
 		   const bool selected[],
 		   int     list_length,
 		   bool    highlight_title,
 		   bool    notify)
 {
+#if defined(IF_MOTIF)
     if (selectionList == 0)
 	return;
 
-#ifdef IF_MOTIF
     XmStringTable xmlabel_list = 
 	makeXmStringTable(label_list, list_length, highlight_title);
 
@@ -155,14 +155,28 @@ void setLabelList (TREEVIEW_P  selectionList,
 		   XtPointer(0));
 
     freeXmStringTable(xmlabel_list, list_length);
-#else // NOT IF_MOTIF
-    Glib::RefPtr<Gtk::TreeModel> model = selectionList->get_model();
+#else
     static int errcnt = 0;
-    if (complain && !errcnt++ == 0) std::cerr << "setLabelList not supported YET\n";
-    // The problem is we cannot use insert(), append() on an arbitrary
-    // Gtk::TreeModel.  We need to have the derived ListStore.
-#endif // IF_MOTIF
+    if (complain && errcnt++ == 0) std::cerr << "setLabelList not implemented\n";
+#endif
 }
+
+#if !defined(IF_XM)
+void setLabelList (ListView_P selectionList,
+		   const string  label_list[],
+		   const bool selected[],
+		   int     list_length,
+		   bool    highlight_title,
+		   bool    notify)
+{
+    if (selectionList == 0)
+	return;
+
+    selectionList->clear();
+    for (int i = 0; i < list_length; i++) 
+	selectionList->append(label_list[i].chars());
+}
+#endif
 
 // Replace all elements in SELECTIONLIST with the corresponding
 // entries in LABEL_LIST (i.e. with the same leading number).

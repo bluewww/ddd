@@ -31,14 +31,50 @@
 
 using namespace Xmmm;
 
-ListView::ListView(Xmmm::Container &parent, const Xmmm::String &name)
+#define LIST_CHARSET XmStringCharSet("tt")
+
+void
+ListView::init_signals(void)
 {
-    list_ = XmCreateList(parent.xt_container(), (char *)name.c(), NULL, 0);
+    XtAddCallback(list_, XmNsingleSelectionCallback, 
+		  (XtCallbackProc)ListView::selection_changed_callback,
+		  XtPointer(this));
+    XtAddCallback(list_, XmNmultipleSelectionCallback, 
+		  (XtCallbackProc)ListView::selection_changed_callback,
+		  XtPointer(this));
+    XtAddCallback(list_, XmNextendedSelectionCallback, 
+		  (XtCallbackProc)ListView::selection_changed_callback,
+		  XtPointer(this));
+    XtAddCallback(list_, XmNbrowseSelectionCallback, 
+		  (XtCallbackProc)ListView::selection_changed_callback,
+		  XtPointer(this));
 }
 
-ListView::ListView(::Widget parent, const Xmmm::String &name)
+void
+ListView::init(::Widget parent, const String &name,
+	       const std::vector<String> &headers)
 {
-    list_ = XmCreateList(parent, (char *)name.c(), NULL, 0);
+    Arg args[10];
+    int nargs;
+    nargs = 0;
+    XtSetArg(args[nargs], XmNvisibleItemCount, 12); nargs++;
+    XtSetArg(args[nargs], XmNselectionPolicy, XmBROWSE_SELECT); nargs++;
+    XtSetArg(args[nargs], XmNlistSizePolicy, XmCONSTANT); nargs++;
+    XtSetArg(args[nargs], XmNscrollBarDisplayPolicy, XmAS_NEEDED); nargs++;
+    list_ = XmCreateList(parent, (char *)name.c(), args, nargs);
+    init_signals();
+}
+
+ListView::ListView(Container &parent, const String &name,
+		   const std::vector<String> &headers)
+{
+    init(parent.xt_container(), name, headers);
+}
+
+ListView::ListView(::Widget parent, const String &name,
+		   const std::vector<String> &headers)
+{
+    init(parent, name, headers);
 }
 
 ListView::~ListView(void)
@@ -46,8 +82,90 @@ ListView::~ListView(void)
     if (list_) XtDestroyWidget(list_);
 }
 
-::Widget ListView::xt(void)
+::Widget ListView::internal(void)
 {
     return list_;
+}
+
+std::string
+ListView::get_selected(void)
+{
+    XmStringTable mitems;
+    int n;
+    XtVaGetValues(list_,
+		  XmNselectedItems, &mitems,
+		  XmNselectedItemCount, &n,
+		  XtPointer(0));
+    if (n <= 0) return std::string("");
+    ::String s;
+    XmStringGetLtoR(mitems[0], LIST_CHARSET, &s);
+    std::string result(s);
+    XtFree(s);
+    return result;
+}
+
+void
+ListView::clear(void)
+{
+    XtVaSetValues(list_,
+		  XmNitems, NULL,
+		  XmNitemCount, 0,
+		  XtPointer(0));
+}
+
+void
+ListView::append(const String &item)
+{
+    XmStringTable mitems;
+    int n;
+    XtVaGetValues(list_,
+		  XmNitems, &mitems,
+		  XmNitemCount, &n,
+		  XtPointer(0));
+    XmStringTable mitems2 = XmStringTable(XtMalloc((n+1)*sizeof(XmString)));
+    for (int i = 0; i < n; i++) {
+	mitems2[i] = XmStringCopy(mitems[i]);
+    }
+    mitems2[n] = XmStringCreateLtoR((char *)item.c(), LIST_CHARSET);
+    XtVaSetValues(list_,
+		  XmNitems, mitems2,
+		  XmNitemCount, n+1,
+		  XtPointer(0));
+}
+
+void
+ListView::selection_changed_callback(::Widget widget, XtPointer data)
+{
+    ((ListView *)data)->signal_selection_changed_();
+}
+
+sigc::signal<void> &
+ListView::signal_selection_changed(void)
+{
+    return signal_selection_changed_;
+}
+
+int
+ListView::get_selected_pos(void)
+{
+    int *pos;
+    int n;
+    XtVaGetValues(list_,
+		  XmNselectedPositionCount, &n,
+		  XmNselectedPositions, &pos,
+		  XtPointer(0));
+    if (n <= 0) return -1;
+    return pos[0];
+}    int *pos;
+
+
+int
+ListView::count(void) const
+{
+    int n;
+    XtVaGetValues(list_,
+		  XmNitemCount, &n,
+		  XtPointer(0));
+    return n;
 }
 

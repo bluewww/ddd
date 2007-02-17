@@ -2187,3 +2187,8 @@ diststuff: $(EXTRA_DIST)
 
 # `make progstuff' creates all files required for building DDD.
 progstuff: $(PROG_STUFF)
+
+
+
+.C.I:
+	$(CXXCOMPILE) -E -C -o $@ $<

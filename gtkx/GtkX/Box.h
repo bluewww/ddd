@@ -35,16 +35,22 @@
 
 namespace GtkX {
 
-    class VBox: public Gtk::VBox, public GtkX::Container {
+    class VBox: public Gtk::VBox, public Container {
     public:
-	VBox(Gtk::Container &parent, const GtkX::String &name);
-	Gtk::Widget *gtk_widget(void);
+	VBox(Gtk::Container &parent, const String &name);
+	Gtk::Widget *internal(void);
+	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
+	void show(void) {Widget::show();}
+	void hide(void) {Widget::hide();}
     };
 
-    class HBox: public Gtk::HBox, public GtkX::Container {
+    class HBox: public Gtk::HBox, public Container {
     public:
-	HBox(Gtk::Container &parent, const GtkX::String &name);
-	Gtk::Widget *gtk_widget(void);
+	HBox(Gtk::Container &parent, const String &name);
+	Gtk::Widget *internal(void);
+	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
+	void show(void) {Widget::show();}
+	void hide(void) {Widget::hide();}
     };
 
 }

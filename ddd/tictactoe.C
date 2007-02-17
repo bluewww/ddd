@@ -549,12 +549,12 @@ void TicTacToeCB(Widget, XtPointer, XtPointer)
 
 	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, XtPointer(0));
 	XtAddCallback(dialog, XmNokCallback, ResetTicTacToeCB, XtPointer(0));
-	XtAddCallback(dialog, XmNcancelCallback, UnmanageThisCB, 
+	XtAddCallback(dialog, XmNcancelCallback, UnmanageThisCB1, 
 		      XtPointer(dialog));
 
 	create_tictactoe(dialog);
     }
 
     ResetTicTacToeCB(0, 0, 0);
-    manage_and_raise(dialog);
+    manage_and_raise1(dialog);
 }

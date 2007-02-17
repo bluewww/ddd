@@ -205,14 +205,15 @@ void raise_shell(Widget w)
     }
 }
 
-void manage_and_raise(Widget w)
+#if defined(IF_MOTIF)
+
+void manage_and_raise1(Widget w)
 {
     if (w != 0)
     {
 	// If top-level shell is withdrawn or iconic, realize dialog as icon
 	bool iconic = false;
 	Widget shell = find_shell(w);
-#ifdef IF_MOTIF
 	if (shell != 0)
 	{
 	    XWindowAttributes attr;
@@ -224,11 +225,6 @@ void manage_and_raise(Widget w)
 	    if (iconic)
 		XtVaSetValues(w, XmNinitialState, IconicState, XtPointer(0));
 	}
-#else // NOT IF_MOTIF
-#ifdef NAG_ME
-#warning Check for iconic?
-#endif
-#endif // IF_MOTIF
 
 	XtManageChild(w);
 
@@ -240,19 +236,18 @@ void manage_and_raise(Widget w)
 	{
 	    if (!XtIsRealized(shell))
 		XtRealizeWidget(shell);
-#ifdef IF_MOTIF
 	    XtPopup(shell, XtGrabNone);
-#else // NOT IF_MOTIF
-	    shell->show();
-#endif // IF_MOTIF
 	}
 
 	raise_shell(w);
     }
 }
 
+#endif
+
 #if !defined(IF_XM)
-void manage_and_raise1(GUI::Widget *w)
+
+void manage_and_raise(GUI::Widget *w)
 {
 #ifdef NAG_ME
 #warning Raise not implemented.
@@ -260,6 +255,20 @@ void manage_and_raise1(GUI::Widget *w)
     if (w != 0)
 	w->show();
 }
+
+void manage_and_raise2(Widget w)
+{
+#ifdef NAG_ME
+#warning Raise not implemented.
+#endif
+#ifdef IF_XMMM
+    manage_and_raise1(w);
+#else
+    if (w != 0)
+	w->show();
+#endif
+}
+
 #endif
 
 #ifndef IF_MOTIF

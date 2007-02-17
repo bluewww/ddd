@@ -62,6 +62,7 @@
 #include <GUI/WidgetPtr.h>
 #include <GUI/SelectionDialog.h>
 #include <GUI/RadioButton.h>
+#include <GUI/Button.h>
 #include <GUI/ListView.h>
 #endif
 
@@ -166,18 +167,22 @@ class SourceView {
 
     static void CheckModificationCB        (Widget, XtPointer, XtPointer);
 
-    static void StackDialogPoppedDownCB    (CB_ALIST_NULL);
+#if defined(IF_XM)
+    static void StackDialogPoppedDownCB    (Widget, XtPointer, XtPointer);
+#else
+    static void StackDialogPoppedDownCB    (void);
+#endif
     static void CodeDialogPoppedDownCB     (CB_ALIST_NULL);
     static void RegisterDialogPoppedDownCB (CB_ALIST_NULL);
     static void ThreadDialogPoppedDownCB   (CB_ALIST_NULL);
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     static void SelectFrameCB    (Widget, XtPointer, XtPointer);
     static void SelectRegisterCB (Widget, XtPointer, XtPointer);
-#else // NOT IF_MOTIF
-    static void SelectFrameCB    (TREEVIEW_P);
-    static void SelectRegisterCB (GUI::SelectionDialog *);
-#endif // IF_MOTIF
+#else
+    static void SelectFrameCB    (GUI::ListView *);
+    static void SelectRegisterCB (GUI::ListView *);
+#endif
     static void SelectThreadCB   (CB_ALIST_1(Widget));
     static void ThreadCommandCB  (CB_ALIST_12(Widget, XtP(const char *)));
 
@@ -331,10 +336,17 @@ class SourceView {
     static DIALOG_P edit_breakpoints_dialog_w; // Dialog for editing breakpoints
     static TREEVIEW_P breakpoint_list_w;       // The breakpoint list
 
-    static DIALOG_P stack_dialog_w;          // Dialog for viewing the stack
-    static TREEVIEW_P frame_list_w;          // The frame list
-    static BUTTON_P up_w;                    // The `Up' button
-    static BUTTON_P down_w;                  // The `Down' button
+#if defined(IF_XM)
+    static Widget stack_dialog_w;            // Dialog for viewing the stack
+    static Widget frame_list_w;              // The frame list
+    static Widget up_w;                      // The `Up' button
+    static Widget down_w;                    // The `Down' button
+#else
+    static GUI::WidgetPtr<GUI::SelectionDialog> stack_dialog_w;       // Dialog for viewing the stack
+    static GUI::WidgetPtr<GUI::ListView>  frame_list_w;               // The frame list
+    static GUI::WidgetPtr<GUI::Button> up_w;                          // The `Up' button
+    static GUI::WidgetPtr<GUI::Button> down_w;                        // The `Down' button
+#endif
     static bool stack_dialog_popped_up;	     // True if the stack is visible
 
 #if defined(IF_XM)

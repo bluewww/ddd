@@ -45,12 +45,15 @@ RadioBox::create_box(GtkX::Orientation orientation)
     Gtk::VBox::pack_start(*box_, Gtk::PACK_SHRINK);
 }
 
-RadioBox::RadioBox(GtkX::Container &parent, const GtkX::String &name,
-		   GtkX::Orientation orientation)
+RadioBox::RadioBox(GtkX::Container &parent,
+		   const GtkX::String &name,
+		   GtkX::Orientation orientation,
+		   PackOptions options,
+		   int padding)
 {
     create_box(orientation);
     set_name(name.s());
-    parent.gtk_container()->add(*this);
+    parent.add_child(*this);
 }
 
 RadioBox::~RadioBox(void)
@@ -59,7 +62,7 @@ RadioBox::~RadioBox(void)
 }
 
 Gtk::Widget *
-RadioBox::gtk_widget(void)
+RadioBox::internal(void)
 {
     return this;
 }
@@ -71,9 +74,9 @@ RadioBox::gtk_container(void)
 }
 
 void
-RadioBox::add_child(GtkX::Widget &child)
+RadioBox::add_child(GtkX::Widget &child, PackOptions options, int padding)
 {
-    add(*child.gtk_widget());
+    add(*child.internal());
 }
 
 void

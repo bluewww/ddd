@@ -6,12 +6,22 @@
 
 namespace GtkX {
 
+    // Compatibility with Gtkmm:
+    enum PackOptions
+    {
+	PACK_SHRINK,
+	PACK_EXPAND_PADDING,
+	PACK_EXPAND_WIDGET
+    };
+
     class Container: public GtkX::Widget {
     public:
 	Container(void);
 	~Container(void);
 	virtual Gtk::Container *gtk_container(void);
-	virtual void add_child(GtkX::Widget &child);
+	virtual void add_child(GtkX::Widget &child,
+			       PackOptions options=PACK_SHRINK,
+			       int padding=0);
     };
 
 }

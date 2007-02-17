@@ -317,7 +317,7 @@ void gdbExamineCB(CB_ALIST_1(Widget w))
 	XtAddCallback(dialog, XmNapplyCallback, 
 		      DisplayExaminedCB, XtPointer(0));
 	XtAddCallback(dialog, XmNcancelCallback, 
-		      UnmanageThisCB, XtPointer(dialog));
+		      UnmanageThisCB1, XtPointer(dialog));
 	XtAddCallback(dialog, XmNhelpCallback,
 		      ImmediateHelpCB, XtPointer(0));
 #else // NOT IF_MOTIF
@@ -327,7 +327,7 @@ void gdbExamineCB(CB_ALIST_1(Widget w))
     button = dialog->add_button(XMST("Apply"), 0);
     button->signal_clicked().connect(sigc::bind(PTR_FUN(DisplayExaminedCB), dialog));
     button = dialog->add_button(XMST("Cancel"), 0);
-    button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB), dialog));
+    button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB2), dialog));
 #endif // IF_MOTIF
     }
 
@@ -341,5 +341,5 @@ void gdbExamineCB(CB_ALIST_1(Widget w))
 #endif // IF_MOTIF
     }
 
-    manage_and_raise(dialog);
+    manage_and_raise1(dialog);
 }

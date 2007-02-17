@@ -23,7 +23,7 @@ namespace GtkX {
 	Widget(void);
 	~Widget(void);
 	// *Instantiable* subclasses will have an associated GTK(mm) widget:
-	virtual Gtk::Widget *gtk_widget(void) = 0;
+	virtual Gtk::Widget *internal(void) = 0;
 	void show(void);
 	void hide(void);
     };

@@ -24,28 +24,29 @@
 // the constructor, unlike the Gtk ones.  Motif (Xt) widgets cannot be
 // reparented.  Therefore we need a constructor with extra arguments.
 
-#include <Xmmm/RadioBox.h>
+#include <Xmmm/ScrolledWindow.h>
 
 using namespace Xmmm;
 
-RadioBox::RadioBox(::Widget parent, const Xmmm::String &name,
-		   Xmmm::Orientation orientation)
+ScrolledWindow::ScrolledWindow(::Widget parent, const Xmmm::String &name,
+			       std::vector<Arg> &args)
 {
-    box_ = XmCreateRadioBox(parent, (char *)name.c(), NULL, 0);
+    sw_ = XmCreateScrolledWindow(parent, (char *)name.c(), &args[0], args.size());
 }
 
-RadioBox::RadioBox(Xmmm::Container &parent, const Xmmm::String &name, Xmmm::Orientation orientation)
+ScrolledWindow::ScrolledWindow(Xmmm::Container &parent, const Xmmm::String &name,
+			       std::vector<Arg> &args)
 {
-    box_ = XmCreateRadioBox(parent.xt_container(), (char *)name.c(), NULL, 0);
+    sw_ = XmCreateScrolledWindow(parent.xt_container(), (char *)name.c(), &args[0], args.size());
 }
 
-RadioBox::~RadioBox(void)
+ScrolledWindow::~ScrolledWindow(void)
 {
-    XtDestroyWidget(box_);
+    XtDestroyWidget(sw_);
 }
 
-::Widget RadioBox::internal(void)
+::Widget ScrolledWindow::internal(void)
 {
-    return box_;
+    return sw_;
 }
 

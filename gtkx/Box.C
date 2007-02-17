@@ -44,7 +44,7 @@ VBox::VBox(Gtk::Container &parent, const GtkX::String &name)
 }
 
 Gtk::Widget *
-VBox::gtk_widget(void)
+VBox::internal(void)
 {
     return this;
 }
@@ -60,7 +60,7 @@ HBox::HBox(Gtk::Container &parent, const GtkX::String &name)
 }
 
 Gtk::Widget *
-HBox::gtk_widget(void)
+HBox::internal(void)
 {
     return this;
 }

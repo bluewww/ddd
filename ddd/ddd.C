@@ -1039,7 +1039,7 @@ DECL_WR(WR_gdbMakeAgainCB, CB_ARG_HIDE_0(PTR_FUN(gdbMakeAgainCB)));
     { NM("attach", "Attach to Process..."), MMPush,			\
       BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_gdbOpenProcessCB)), 0, 0, 0, 0 }, \
     { NM("detach", "Detach Process"), MMPush,				\
-      BIND_1(PTR_FUN(gdbCommandCB), XtPointer("detach")), 0, 0, 0, 0 },	\
+      BIND_1(PTR_FUN(gdbCommandCB12), XtPointer("detach")), 0, 0, 0, 0 },	\
     MMSep,								\
     { NM("print", "Print Graph..."), MMPush,				\
       BIND_0(PTR_FUN(PrintGraphCB)), 0, 0, 0, 0 },			\
@@ -1079,35 +1079,35 @@ struct ProgramItems {
 {									\
     { NM("run", "Run..."), MMPush, BIND_0(PTR_FUN(gdbRunCB)), 0, 0, 0, 0 },	\
     { NM("run_again", "Run Again"), MMPush,				\
-      BIND_1(PTR_FUN(gdbCommandCB), "run"), 0, 0, 0, 0 },		\
+      BIND_1(PTR_FUN(gdbCommandCB12), "run"), 0, 0, 0, 0 },		\
     MMSep,								\
     { NM("separateExecWindow", "Run in Execution Window"), MMCheckItem,	\
       BIND_0(PTR_FUN(dddToggleSeparateExecWindowCB)), 0, (Widget *)&(w), 0, 0 }, \
     MMSep,								\
     { NM("step", "Step"), MMPush,					\
-      BIND_1(PTR_FUN(gdbCommandCB), "step"), 0, 0, 0, 0 },		\
+      BIND_1(PTR_FUN(gdbCommandCB12), "step"), 0, 0, 0, 0 },		\
     { NM("stepi", "Step Instruction"), MMPush,				\
-      BIND_1(PTR_FUN(gdbCommandCB), "stepi"), 0, 0, 0, 0 },		\
+      BIND_1(PTR_FUN(gdbCommandCB12), "stepi"), 0, 0, 0, 0 },		\
     { NM("next", "Next"), MMPush,					\
-      BIND_1(PTR_FUN(gdbCommandCB), "next"), 0, 0, 0, 0 },		\
+      BIND_1(PTR_FUN(gdbCommandCB12), "next"), 0, 0, 0, 0 },		\
     { NM("nexti", "Next Instruction"), MMPush,				\
-      BIND_1(PTR_FUN(gdbCommandCB), "nexti"), 0, 0, 0, 0},		\
+      BIND_1(PTR_FUN(gdbCommandCB12), "nexti"), 0, 0, 0, 0},		\
     { NM("until", "Until"), MMPush,					\
-      BIND_1(PTR_FUN(gdbCommandCB), "until"), 0, 0, 0, 0},		\
+      BIND_1(PTR_FUN(gdbCommandCB12), "until"), 0, 0, 0, 0},		\
     { NM("finish", "Finish"), MMPush,					\
-      BIND_1(PTR_FUN(gdbCommandCB), "finish"), 0, 0, 0, 0},		\
+      BIND_1(PTR_FUN(gdbCommandCB12), "finish"), 0, 0, 0, 0},		\
     MMSep,								\
     { NM("cont", "Continue"), MMPush,					\
-      BIND_1(PTR_FUN(gdbCommandCB), "cont"), 0, 0, 0, 0},		\
+      BIND_1(PTR_FUN(gdbCommandCB12), "cont"), 0, 0, 0, 0},		\
     { NM("signal0", "Continue Without Signal"), MMPush,			\
-      BIND_1(PTR_FUN(gdbCommandCB), "signal 0"), 0, 0, 0, 0},		\
+      BIND_1(PTR_FUN(gdbCommandCB12), "signal 0"), 0, 0, 0, 0},		\
     MMSep,								\
     { NM("kill", "Kill"), MMPush,					\
-      BIND_1(PTR_FUN(gdbCommandCB), "kill"), 0, 0, 0, 0},		\
+      BIND_1(PTR_FUN(gdbCommandCB12), "kill"), 0, 0, 0, 0},		\
     { NM("break", "Interrupt"), MMPush,					\
-      BIND_1(PTR_FUN(gdbCommandCB), "\003"), 0, 0, 0, 0},		\
+      BIND_1(PTR_FUN(gdbCommandCB12), "\003"), 0, 0, 0, 0},		\
     { NM("quit", "Abort"), MMPush,					\
-      BIND_1(PTR_FUN(gdbCommandCB), "\034"), 0, 0, 0, 0},		\
+      BIND_1(PTR_FUN(gdbCommandCB12), "\034"), 0, 0, 0, 0},		\
     MMEnd								\
 }
 
@@ -1294,9 +1294,9 @@ static MMDesc stack_menu[] =
       0, &signals_w, 0, 0 },
     MMSep,
     { NM("up", "Up"),                   MMPush,
-      BIND_1( PTR_FUN(gdbCommandCB), XtPointer("up") ), 0, 0, 0, 0},
+      BIND_1( PTR_FUN(gdbCommandCB12), XtPointer("up") ), 0, 0, 0, 0},
     { NM("down", "Down"),               MMPush,
-      BIND_1( PTR_FUN(gdbCommandCB), XtPointer("down") ), 0, 0, 0, 0},
+      BIND_1( PTR_FUN(gdbCommandCB12), XtPointer("down") ), 0, 0, 0, 0},
     MMEnd
 };
 
@@ -4173,7 +4173,7 @@ static void ddd_check_version()
 #endif
 #endif // IF_MOTIF
 
-	manage_and_raise(warning);
+	manage_and_raise1(warning);
     }
 
     if (app_data.dddinit_version == 0 ||
@@ -4816,7 +4816,7 @@ static bool lock_ddd(Widget parent, LockInfo& info)
     continue_despite_lock = false;
 
 #ifdef IF_MOTIF
-    manage_and_raise(lock_dialog);
+    manage_and_raise1(lock_dialog);
 
     while (!continue_despite_lock)
 	XtAppProcessEvent(XtWidgetToApplicationContext(lock_dialog), XtIMAll);
@@ -6367,7 +6367,7 @@ static int add_panel(NOTEBOOK_P parent,
 #endif // IF_MOTIF
 #ifdef IF_XMMM
     GUI::VBox *form_xo = new GUI::VBox(parent, name);
-    CONTAINER_P form = form_xo->xt();
+    CONTAINER_P form = form_xo->internal();
 #elif IF_MOTIF
 
     // Add two rows
@@ -6462,7 +6462,7 @@ static void OfferRestartCB(Widget dialog
 	    button->signal_clicked().connect(sigc::bind(PTR_FUN(DDDRestartCB), restart_dialog));
 #endif // IF_MOTIF
 	}
-	manage_and_raise(restart_dialog);
+	manage_and_raise1(restart_dialog);
     }
 }
 
@@ -6599,7 +6599,7 @@ static void make_preferences(Widget parent)
 // Popup Preference Panel
 static void dddPopupPreferencesCB (CB_ALIST_NULL)
 {
-    manage_and_raise(preferences_dialog);
+    manage_and_raise1(preferences_dialog);
     check_options_file();
 }
 
@@ -8927,7 +8927,7 @@ static void vsl_echo(const string& msg)
 
     }
 
-    manage_and_raise(dialog);
+    manage_and_raise1(dialog);
 
     set_status_mstring(rm("VSL: ") + tt(msg));
 }

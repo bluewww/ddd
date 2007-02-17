@@ -73,6 +73,14 @@ void setLabelList (TREEVIEW_P  selectionList,
 		   int     list_length,
 		   bool    highlight_title,
 		   bool    notify);
+#if !defined(IF_XM)
+void setLabelList (ListView_P  selectionList,
+		   const string  label_list[],
+		   const bool selected[],
+		   int     list_length,
+		   bool    highlight_title,
+		   bool    notify);
+#endif
 
 // Replace all elements in SELECTIONLIST with the corresponding
 // entries in LABEL_LIST (i.e. with the same leading number).

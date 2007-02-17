@@ -505,17 +505,20 @@ BOX_P SourceView::code_form_w                = 0;
 SCROLLEDTEXT_P SourceView::code_text_w       = 0;
 DIALOG_P SourceView::edit_breakpoints_dialog_w = 0;
 TREEVIEW_P SourceView::breakpoint_list_w     = 0;
-DIALOG_P SourceView::stack_dialog_w          = 0;
-TREEVIEW_P SourceView::frame_list_w          = 0;
-BUTTON_P SourceView::up_w                    = 0;
-BUTTON_P SourceView::down_w                  = 0;
-
 #if defined(IF_XM)
+Widget SourceView::stack_dialog_w            = 0;
+Widget SourceView::frame_list_w              = 0;
+Widget SourceView::up_w                      = 0;
+Widget SourceView::down_w                    = 0;
 Widget SourceView::register_dialog_w         = 0;
 Widget SourceView::register_list_w           = 0;
 Widget SourceView::int_registers_w           = 0;
 Widget SourceView::all_registers_w           = 0;
 #else
+GUI::WidgetPtr<GUI::SelectionDialog> SourceView::stack_dialog_w    = 0;
+GUI::WidgetPtr<GUI::ListView> SourceView::frame_list_w             = 0;
+GUI::WidgetPtr<GUI::Button> SourceView::up_w                       = 0;
+GUI::WidgetPtr<GUI::Button> SourceView::down_w                     = 0;
 GUI::WidgetPtr<GUI::SelectionDialog> SourceView::register_dialog_w = 0;
 GUI::WidgetPtr<GUI::ListView> SourceView::register_list_w          = 0;
 GUI::WidgetPtr<GUI::RadioButton> SourceView::int_registers_w       = 0;
@@ -3784,7 +3787,7 @@ void SourceView::create_shells()
 #ifdef IF_MOTIF
 	XtAddCallback(edit_breakpoints_dialog_w,
 		      XmNokCallback,
-		      UnmanageThisCB,
+		      UnmanageThisCB1,
 		      edit_breakpoints_dialog_w);
 	XtAddCallback(edit_breakpoints_dialog_w,
 		      XmNhelpCallback,
@@ -3793,54 +3796,58 @@ void SourceView::create_shells()
 #else // NOT IF_MOTIF
 	BUTTON_P button;
 	button = edit_breakpoints_dialog_w->add_button(XMST("OK"), 0);
-	button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB), edit_breakpoints_dialog_w));
+	button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB2), edit_breakpoints_dialog_w));
 #endif // IF_MOTIF
     }
 
     // Create stack view
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     arg = 0;
     XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
     stack_dialog_w =
 	verify(createTopLevelSelectionDialog(parent, 
 					     "stack_dialog", args, arg));
-#else // NOT IF_MOTIF
-    stack_dialog_w = new Gtk::Dialog(XMST("stack_dialog"), *parent);
-#endif // IF_MOTIF
+#else
+    std::vector<GUI::String> stack_headers;
+    stack_headers.push_back("Breakpoint");
+#if defined(IF_XMMM)
+    stack_dialog_w = 
+	new GUI::SelectionDialog(parent, "stack_dialog", stack_headers);
+#else
+    stack_dialog_w = 
+	new GUI::SelectionDialog(*parent, "stack_dialog", stack_headers);
+#endif
+#endif
     Delay::register_shell(stack_dialog_w);
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     XtUnmanageChild(XmSelectionBoxGetChild(stack_dialog_w, 
 					   XmDIALOG_TEXT));
     XtUnmanageChild(XmSelectionBoxGetChild(stack_dialog_w, 
 					   XmDIALOG_SELECTION_LABEL));
 #endif // IF_MOTIF
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     up_w   = XmSelectionBoxGetChild(stack_dialog_w, XmDIALOG_OK_BUTTON);
     down_w = XmSelectionBoxGetChild(stack_dialog_w, XmDIALOG_APPLY_BUTTON);
-#else // NOT IF_MOTIF
-    up_w = stack_dialog_w->add_button(XMST("Up"), 0);
-    down_w = stack_dialog_w->add_button(XMST("Up"), 0);
-    BUTTON_P cancel_w = stack_dialog_w->add_button(XMST("Cancel"), 0);
-#endif // IF_MOTIF
+#else
+    up_w = stack_dialog_w->add_button("Up");
+    down_w = stack_dialog_w->add_button("Down");
+    GUI::WidgetPtr<GUI::Button> cancel_w = stack_dialog_w->add_button("Cancel");
+#endif
 
     set_sensitive(up_w,   False);
     set_sensitive(down_w, False);
     refresh_buttons();
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     arg = 0;
     frame_list_w = XmSelectionBoxGetChild(stack_dialog_w, XmDIALOG_LIST);
-#else // NOT IF_MOTIF
-    Glib::RefPtr<Gtk::ListStore> frame_list_store = Gtk::ListStore::create(simple_list_columns);
-    frame_list_w = 
-	new Gtk::TreeView(frame_list_store);
+#else
+    frame_list_w = stack_dialog_w->list();
+#endif
 
-    frame_list_w->append_column("Breakpoint", simple_list_columns.value);
-#endif // IF_MOTIF
-
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     XtVaSetValues(frame_list_w,
 		  XmNselectionPolicy, XmSINGLE_SELECT,
 		  XtPointer(0));
@@ -3853,17 +3860,18 @@ void SourceView::create_shells()
 		  XmNextendedSelectionCallback, SelectFrameCB, 0);
     XtAddCallback(frame_list_w,
 		  XmNbrowseSelectionCallback, SelectFrameCB, 0);
-#else // NOT IF_MOTIF
-    frame_list_w->get_selection()->signal_changed().connect(sigc::bind(PTR_FUN(SelectFrameCB), frame_list_w));
-#endif // IF_MOTIF
+#else
+    frame_list_w->signal_selection_changed().connect(sigc::bind(sigc::ptr_fun(SelectFrameCB),
+								frame_list_w));
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     XtAddCallback(stack_dialog_w,
-		  XmNokCallback, gdbCommandCB, XtPointer("up"));
+		  XmNokCallback, gdbCommandCB1, XtPointer("up"));
     XtAddCallback(stack_dialog_w,
-		  XmNapplyCallback, gdbCommandCB, XtPointer("down"));
+		  XmNapplyCallback, gdbCommandCB1, XtPointer("down"));
     XtAddCallback(stack_dialog_w,
-		  XmNcancelCallback, UnmanageThisCB, stack_dialog_w);
+		  XmNcancelCallback, UnmanageThisCB1, stack_dialog_w);
     XtAddCallback(stack_dialog_w,
 		  XmNcancelCallback, StackDialogPoppedDownCB, 0);
     XtAddCallback(stack_dialog_w,
@@ -3871,12 +3879,12 @@ void SourceView::create_shells()
     Widget cancel_w = XmSelectionBoxGetChild(stack_dialog_w, 
 					     XmDIALOG_CANCEL_BUTTON);
     XtVaSetValues(stack_dialog_w, XmNdefaultButton, cancel_w, XtPointer(0));
-#else // NOT IF_MOTIF
-    up_w->signal_activate().connect(sigc::bind(PTR_FUN(gdbCommandCB), stack_dialog_w, "up"));
-    down_w->signal_activate().connect(sigc::bind(PTR_FUN(gdbCommandCB), stack_dialog_w, "down"));
-    cancel_w->signal_activate().connect(sigc::bind(PTR_FUN(UnmanageThisCB), stack_dialog_w));
-    cancel_w->signal_activate().connect(PTR_FUN(StackDialogPoppedDownCB));
-#endif // IF_MOTIF
+#else
+    up_w->signal_activate().connect(sigc::bind(sigc::ptr_fun(gdbCommandCB), stack_dialog_w, "up"));
+    down_w->signal_activate().connect(sigc::bind(sigc::ptr_fun(gdbCommandCB), stack_dialog_w, "down"));
+    cancel_w->signal_activate().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), stack_dialog_w));
+    cancel_w->signal_activate().connect(sigc::ptr_fun(StackDialogPoppedDownCB));
+#endif
 
 
     // Create register view
@@ -3887,16 +3895,18 @@ void SourceView::create_shells()
 	verify(createTopLevelSelectionDialog(parent, 
 					     "register_dialog", args, arg));
     Delay::register_shell(register_dialog_w);
-#elif defined(IF_XMMM)
+#else
+    std::vector<GUI::String> register_headers;
+    register_headers.push_back("One");
+    register_headers.push_back("Two");
+    register_headers.push_back("Three");
+#if defined(IF_XMMM)
     register_dialog_w = 
-	new GUI::SelectionDialog(parent, "register_dialog");
-#else // Gtk
-    std::vector<GtkX::String> headers;
-    headers.push_back("One");
-    headers.push_back("Two");
-    headers.push_back("Three");
+	new GUI::SelectionDialog(parent, "register_dialog", register_headers);
+#else
     register_dialog_w = 
-	new GUI::SelectionDialog(*parent, "register_dialog", headers);
+	new GUI::SelectionDialog(*parent, "register_dialog", register_headers);
+#endif
 #endif
 
 #if defined(IF_XM)
@@ -3963,7 +3973,7 @@ void SourceView::create_shells()
     register_list_w = register_dialog_w->list();
 #endif
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     XtVaSetValues(register_list_w,
 		  XmNselectionPolicy, XmSINGLE_SELECT,
 		  XtPointer(0));
@@ -3976,26 +3986,23 @@ void SourceView::create_shells()
 		  XmNextendedSelectionCallback, SelectRegisterCB, 0);
     XtAddCallback(register_list_w,
 		  XmNbrowseSelectionCallback, SelectRegisterCB, 0);
-#else // NOT IF_MOTIF
-#ifdef NAG_ME
-#warning Probably should have some custom widget as child of dialog.
-#warning For now pass the whole dialog.
+#else
+    register_list_w->signal_selection_changed().connect(sigc::bind(sigc::ptr_fun(SelectRegisterCB),
+								   register_list_w));
 #endif
-    register_list_w->get_selection()->signal_changed().connect(sigc::bind(PTR_FUN(SelectRegisterCB), register_dialog_w));
-#endif // IF_MOTIF
 
 #ifdef IF_MOTIF
     XtAddCallback(register_dialog_w,
-		  XmNokCallback, UnmanageThisCB, register_dialog_w);
+		  XmNokCallback, UnmanageThisCB1, register_dialog_w);
     XtAddCallback(register_dialog_w,
 		  XmNokCallback, RegisterDialogPoppedDownCB, 0);
     XtAddCallback(register_dialog_w,
 		  XmNhelpCallback, ImmediateHelpCB, 0);
 #else // NOT IF_MOTIF
     BUTTON_P button;
-    button = register_dialog_w->add_button(XMST("OK"), 0);
+    button = register_dialog_w->add_button("OK");
     button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB), register_dialog_w));
-    button = register_dialog_w->add_button(XMST("Cancel"), 0);
+    button = register_dialog_w->add_button("Cancel");
     button->signal_clicked().connect(PTR_FUN(RegisterDialogPoppedDownCB));
 #endif // IF_MOTIF
 
@@ -4057,7 +4064,7 @@ void SourceView::create_shells()
 
 #ifdef IF_MOTIF
     XtAddCallback(thread_dialog_w,
-		  XmNcancelCallback, UnmanageThisCB, thread_dialog_w);
+		  XmNcancelCallback, UnmanageThisCB1, thread_dialog_w);
     XtAddCallback(thread_dialog_w,
 		  XmNcancelCallback, ThreadDialogPoppedDownCB, 0);
     XtAddCallback(thread_dialog_w,
@@ -4068,7 +4075,7 @@ void SourceView::create_shells()
 		  XmNhelpCallback, ImmediateHelpCB, 0);
 #else // NOT IF_MOTIF
     button = thread_dialog_w->add_button(XMST("OK"), 0);
-    button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB), thread_dialog_w));
+    button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB2), thread_dialog_w));
     button = thread_dialog_w->add_button(XMST("Cancel"), 0);
     button->signal_clicked().connect(PTR_FUN(ThreadDialogPoppedDownCB));
     button = thread_dialog_w->add_button(XMST("Suspend"), 0);
@@ -6293,7 +6300,7 @@ void SourceView::NewBreakpointCB(CB_ALIST_1(Widget w))
 #endif // IF_MOTIF
     }
 
-    manage_and_raise(dialog);
+    manage_and_raise1(dialog);
 }
 
 WatchMode SourceView::selected_watch_mode = WATCH_CHANGE;
@@ -6453,7 +6460,7 @@ void SourceView::NewWatchpointCB(CB_ALIST_1(Widget w))
 
     }
 
-    manage_and_raise(dialog);
+    manage_and_raise1(dialog);
 }
 
 
@@ -7072,24 +7079,24 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, Widget /* origin */)
     XtAddCallback(info->dialog, XmNokCallback,
 		  ApplyBreakpointPropertiesCB, XtPointer(info));
     XtAddCallback(info->dialog, XmNokCallback,
-		  UnmanageThisCB, XtPointer(info->dialog));
+		  UnmanageThisCB1, XtPointer(info->dialog));
 
     XtAddCallback(info->dialog, XmNapplyCallback,
 		  ApplyBreakpointPropertiesCB, XtPointer(info));
 
     XtAddCallback(info->dialog, XmNcancelCallback,
-		  UnmanageThisCB, XtPointer(info->dialog));
+		  UnmanageThisCB1, XtPointer(info->dialog));
 
     XtAddCallback(info->dialog, XmNhelpCallback,    
 		  ImmediateHelpCB, XtPointer(0));
 #else // NOT IF_MOTIF
     button = info->dialog->add_button(XMST("OK"), 0);
     button->signal_clicked().connect(sigc::bind(PTR_FUN(ApplyBreakpointPropertiesCB), button, info));
-    button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB), info->dialog));
+    button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB2), info->dialog));
     button = info->dialog->add_button(XMST("Apply"), 0);
     button->signal_clicked().connect(sigc::bind(PTR_FUN(ApplyBreakpointPropertiesCB), button, info));
     button = info->dialog->add_button(XMST("Cancel"), 0);
-    button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB), info->dialog));
+    button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB2), info->dialog));
 #endif // IF_MOTIF
 
 #ifdef IF_MOTIF
@@ -7107,7 +7114,7 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, Widget /* origin */)
 
     tie_combo_box_to_history(info->condition, cond_filter);
 
-    manage_and_raise(info->dialog);
+    manage_and_raise1(info->dialog);
     info->spin_locked = false;
 }
 
@@ -7867,7 +7874,7 @@ void SourceView::UpdateBreakpointButtonsCB(CB_ALIST_NULL)
 
 void SourceView::EditBreakpointsCB(CB_ARG_LIST_NULL)
 {
-    manage_and_raise(edit_breakpoints_dialog_w);
+    manage_and_raise1(edit_breakpoints_dialog_w);
 }
 
 
@@ -7876,19 +7883,23 @@ void SourceView::EditBreakpointsCB(CB_ARG_LIST_NULL)
 // Stack frame selection
 //----------------------------------------------------------------------------
 
-void SourceView::StackDialogPoppedDownCB (CB_ALIST_NULL)
+#if defined(IF_XM)
+void SourceView::StackDialogPoppedDownCB (Widget, XtPointer, XtPointer)
+#else
+void SourceView::StackDialogPoppedDownCB (void)
+#endif
 {
     stack_dialog_popped_up = false;
     refresh_buttons();
 }
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
-#else // NOT IF_MOTIF
-void SourceView::SelectFrameCB (TREEVIEW_P w)
-#endif // IF_MOTIF
+#else
+void SourceView::SelectFrameCB (GUI::ListView *w)
+#endif
 {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     XmListCallbackStruct *cbs = (XmListCallbackStruct *)call_data;
 
     int count = 0;
@@ -7896,12 +7907,11 @@ void SourceView::SelectFrameCB (TREEVIEW_P w)
 		  XmNitemCount, &count,
 		  XtPointer(0));
     int item_position = cbs->item_position;
-#else // NOT IF_MOTIF
-    int count = w->get_model()->children().size();
-    Gtk::TreeSelection::ListHandle_Path paths = w->get_selection()->get_selected_rows();
-    int item_position = (*paths.begin())[0];
+#else
+    int item_position = w->get_selected_pos();
+    int count = w->count();
     std::cerr << "Check ListHandle_Path pos=" << item_position << "\n";
-#endif // IF_MOTIF
+#endif
 
     set_sensitive(up_w,   item_position > 1);
     set_sensitive(down_w, item_position < count);
@@ -7967,7 +7977,11 @@ void SourceView::refresh_stack_frames()
 void SourceView::ViewStackFramesCB(CB_ARG_LIST_NULL)
 {
     refresh_stack_frames();
+#if defined(IF_XM)
+    manage_and_raise1(stack_dialog_w);
+#else
     manage_and_raise(stack_dialog_w);
+#endif
     stack_dialog_popped_up = true;
     refresh_buttons();
 }
@@ -8399,9 +8413,9 @@ void SourceView::ViewRegistersCB(CB_ARG_LIST_NULL)
 {
     refresh_registers();
 #if defined(IF_XM)
-    manage_and_raise(register_dialog_w);
-#else
     manage_and_raise1(register_dialog_w);
+#else
+    manage_and_raise(register_dialog_w);
 #endif
     register_dialog_popped_up = true;
 }
@@ -8411,13 +8425,13 @@ void SourceView::RegisterDialogPoppedDownCB (CB_ALIST_NULL)
     register_dialog_popped_up = false;
 }
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 void SourceView::SelectRegisterCB (Widget, XtPointer, XtPointer call_data)
-#else // NOT IF_MOTIF
-void SourceView::SelectRegisterCB (GUI::SelectionDialog *w)
-#endif // IF_MOTIF
+#else
+void SourceView::SelectRegisterCB (GUI::ListView *w)
+#endif
 {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     XmListCallbackStruct *cbs = (XmListCallbackStruct *)call_data;
 
     // Get the selected line
@@ -8425,9 +8439,9 @@ void SourceView::SelectRegisterCB (GUI::SelectionDialog *w)
     XmStringGetLtoR(cbs->item, LIST_CHARSET, &_item);
     string item(_item);
     XtFree(_item);
-#else // NOT IF_MOTIF
+#else
     string item = w->get_selected().c_str();
-#endif // IF_MOTIF
+#endif
 
     if (!item.empty() && item[item.length() - 1] != '.')
     {
@@ -8624,7 +8638,7 @@ void SourceView::refresh_threads(bool all_threadgroups)
 void SourceView::ViewThreadsCB(CB_ARG_LIST_NULL)
 {
     refresh_threads(true);
-    manage_and_raise(thread_dialog_w);
+    manage_and_raise1(thread_dialog_w);
     thread_dialog_popped_up = true;
 }
 

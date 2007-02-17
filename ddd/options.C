@@ -2257,7 +2257,7 @@ TIMEOUT_RETURN_TYPE CheckOptionsFileCB(TM_ALIST_NULL)
 	}
 
 	if (!XtIsManaged(dialog))
-	    manage_and_raise(dialog);
+	    manage_and_raise1(dialog);
     }
 
 #ifdef IF_MOTIF    
@@ -3925,7 +3925,7 @@ void DDDSaveOptionsCB(CB_ALIST_12(Widget w, XtP(unsigned long) client_data))
 	button->signal_clicked().connect(sigc::bind(PTR_FUN(DoSaveOptionsCB), flags));
 #endif // IF_MOTIF
 
-	manage_and_raise(dialog);
+	manage_and_raise1(dialog);
     }
     else if (saving_options_kills_program(flags))
     {
@@ -3952,7 +3952,7 @@ void DDDSaveOptionsCB(CB_ALIST_12(Widget w, XtP(unsigned long) client_data))
 	button->signal_clicked().connect(sigc::bind(PTR_FUN(DoSaveOptionsCB), (flags | MAY_KILL)));
 #endif // IF_MOTIF
 
-	manage_and_raise(dialog);
+	manage_and_raise1(dialog);
     }
     else if (saving_options_excludes_data(flags))
     {
@@ -3979,7 +3979,7 @@ void DDDSaveOptionsCB(CB_ALIST_12(Widget w, XtP(unsigned long) client_data))
 	button->signal_clicked().connect(sigc::bind(PTR_FUN(DoSaveOptionsCB), flags));
 #endif // IF_MOTIF
 
-	manage_and_raise(dialog);
+	manage_and_raise1(dialog);
     }
     else
     {

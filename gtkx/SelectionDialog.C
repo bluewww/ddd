@@ -39,21 +39,26 @@ SelectionDialog::SelectionDialog(Gtk::Window &parent,
 {
     set_name(name.s());
 
-    listview_ = new GtkX::ListView(*this, name+String("_list"), headers);
+    sw_ = new GtkX::ScrolledWindow(*this, name+String("_sw"), GtkX::PACK_EXPAND_WIDGET);
+    sw_->set_size_request(-1, 100);
+    sw_->show();
 
-    listview_->set_size_request(-1, 100);
-
-    get_vbox()->pack_start(*listview_, Gtk::PACK_SHRINK);
+    listview_ = new GtkX::ListView(*sw_, name+String("_list"), headers);
     listview_->show();
+
+    buttons_ = new GtkX::HBox(*this, name+String("_buttons"));
+    buttons_->show();
 }
 
 SelectionDialog::~SelectionDialog(void)
 {
     delete listview_;
+    delete sw_;
+    delete buttons_;
 }
 
 Gtk::Widget *
-SelectionDialog::gtk_widget(void)
+SelectionDialog::internal(void)
 {
     return this;
 }
@@ -76,5 +81,17 @@ std::string
 SelectionDialog::get_selected(void)
 {
     return listview_->get_selected();
+}
+
+void
+SelectionDialog::pack_start(Gtk::Widget &child, PackOptions options, int padding)
+{
+    get_vbox()->pack_start(child, (Gtk::PackOptions)(int)options, (guint)padding);
+}
+
+Button *
+SelectionDialog::add_button(const String &name)
+{
+    return new Button(*buttons_, name);
 }
 

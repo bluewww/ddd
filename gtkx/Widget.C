@@ -44,7 +44,7 @@ Widget::~Widget(void)
 
 #if 0
 Gtk::Widget *
-Widget::gtk_widget(void)
+Widget::internal(void)
 {
     return NULL;
 }
@@ -53,12 +53,12 @@ Widget::gtk_widget(void)
 void
 Widget::show(void)
 {
-    gtk_widget()->show();
+    internal()->show();
 }
 
 void
 Widget::hide(void)
 {
-    gtk_widget()->hide();
+    internal()->hide();
 }
 

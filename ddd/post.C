@@ -88,11 +88,11 @@ void YnCB(Widget dialog, XtPointer client_data, XtPointer call_data)
 void YnCB(CB_ALIST_12(Widget dialog, XtP(const char *) client_data))
 #endif // IF_MOTIF
 {
-#ifdef IF_MOTIF
-    gdbCommandCB(dialog, client_data, call_data);
-#else // NOT IF_MOTIF
-    gdbCommandCB(CB_ARGS_12(dialog, client_data));
-#endif // IF_MOTIF
+#if defined(IF_XM)
+    gdbCommandCB1(dialog, client_data, call_data);
+#else
+    gdbCommandCB2(dialog, (const char *)client_data);
+#endif
 
     unpost_gdb_yn();
 }
@@ -155,7 +155,7 @@ Widget post_gdb_yn(string question, Widget w)
 #endif // IF_MOTIF
     }
 
-    manage_and_raise(yn_dialog);
+    manage_and_raise1(yn_dialog);
     return yn_dialog;
 }
 
@@ -199,11 +199,11 @@ Widget post_gdb_busy(Widget w)
 #else // NOT IF_MOTIF
 	Gtk::Button *button;
 	button = busy_dialog->add_button(XMST("OK"), 0);
-	button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB), busy_dialog));
+	button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB2), busy_dialog));
 #endif // IF_MOTIF
     }
 
-    manage_and_raise(busy_dialog);
+    manage_and_raise1(busy_dialog);
     return busy_dialog;
 }
 
@@ -340,7 +340,7 @@ Widget post_gdb_died(string reason, int state, Widget w)
     }
 
     Delay::register_shell(dialog);
-    manage_and_raise(dialog);
+    manage_and_raise1(dialog);
     return dialog;
 }
 
@@ -440,7 +440,7 @@ Widget post_gdb_message(string text, bool prompt, Widget w)
 #else // NOT IF_MOTIF
 	Gtk::Button *button;
 	button = gdb_message_dialog->add_button(XMST("OK"), 0);
-	button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB), gdb_message_dialog));
+	button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB2), gdb_message_dialog));
 #endif // IF_MOTIF
     }
     else
@@ -452,7 +452,7 @@ Widget post_gdb_message(string text, bool prompt, Widget w)
 #endif // IF_MOTIF
     }
 
-    manage_and_raise(gdb_message_dialog);
+    manage_and_raise1(gdb_message_dialog);
     return gdb_message_dialog;
 }
 
@@ -509,10 +509,10 @@ DIALOG_P post_error(string text, const _XtString name, Widget w)
 #else // NOT IF_MOTIF
     Gtk::Button *button;
     button = ddd_error->add_button(XMST("OK"), 0);
-    button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB), ddd_error));
+    button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB2), ddd_error));
 #endif // IF_MOTIF
 
-    manage_and_raise(ddd_error);
+    manage_and_raise1(ddd_error);
     return ddd_error;
 }
 
@@ -573,9 +573,9 @@ DIALOG_P post_warning(string text, const _XtString name, Widget w)
 #else // NOT IF_MOTIF
     Gtk::Button *button;
     button = ddd_warning->add_button(XMST("OK"), 0);
-    button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB), ddd_warning));
+    button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB2), ddd_warning));
 #endif // IF_MOTIF
 
-    manage_and_raise(ddd_warning);
+    manage_and_raise1(ddd_warning);
     return ddd_warning;
 }

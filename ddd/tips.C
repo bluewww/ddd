@@ -196,7 +196,7 @@ void TipOfTheDayCB(Widget w, XtPointer, XtPointer)
 	XtManageChild(set_startup_tips_w);
 #endif
 
-	XtAddCallback(tip_dialog, XmNokCallback, UnmanageThisCB, 
+	XtAddCallback(tip_dialog, XmNokCallback, UnmanageThisCB1, 
 		      XtPointer(tip_dialog));
 	XtAddCallback(tip_dialog, XmNcancelCallback, PrevTipCB, 0);
 	XtAddCallback(tip_dialog, XmNhelpCallback,   NextTipCB, 0);
@@ -207,5 +207,5 @@ void TipOfTheDayCB(Widget w, XtPointer, XtPointer)
     if (!ok)
 	return;
 
-    manage_and_raise(tip_dialog);
+    manage_and_raise1(tip_dialog);
 }

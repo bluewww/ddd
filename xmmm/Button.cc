@@ -1,4 +1,4 @@
-// High-level GUI wrapper for Motif.
+// High-level GUI wrapper for Xmmm.
 
 // Copyright (C) 2007 Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
@@ -24,28 +24,51 @@
 // the constructor, unlike the Gtk ones.  Motif (Xt) widgets cannot be
 // reparented.  Therefore we need a constructor with extra arguments.
 
-#include <Xmmm/RadioBox.h>
+#include <Xm/PushB.h>
+
+#include <Xmmm/Button.h>
 
 using namespace Xmmm;
 
-RadioBox::RadioBox(::Widget parent, const Xmmm::String &name,
-		   Xmmm::Orientation orientation)
+void
+Button::init_signals(void)
 {
-    box_ = XmCreateRadioBox(parent, (char *)name.c(), NULL, 0);
+    XtAddCallback(button_, XmNactivateCallback, 
+		  (XtCallbackProc)Button::activate_callback,
+		  XtPointer(this));
 }
 
-RadioBox::RadioBox(Xmmm::Container &parent, const Xmmm::String &name, Xmmm::Orientation orientation)
+Button::Button(::Widget parent, const Xmmm::String &name)
 {
-    box_ = XmCreateRadioBox(parent.xt_container(), (char *)name.c(), NULL, 0);
+    button_ = XmCreatePushButton(parent, (char *)name.c(), NULL, 0);
+    init_signals();
 }
 
-RadioBox::~RadioBox(void)
+Button::Button(Xmmm::Container &parent, const Xmmm::String &name)
 {
-    XtDestroyWidget(box_);
+    button_ = XmCreatePushButton(parent.xt_container(), (char *)name.c(), NULL, 0);
+    init_signals();
 }
 
-::Widget RadioBox::internal(void)
+Button::~Button(void)
 {
-    return box_;
+    XtDestroyWidget(button_);
+}
+
+::Widget Button::internal(void)
+{
+    return button_;
+}
+
+sigc::signal<void> &
+Button::signal_activate(void)
+{
+    return signal_activate_;
+}
+
+void
+Button::activate_callback(::Widget widget, XtPointer data)
+{
+    ((Button *)data)->signal_activate_();
 }
 

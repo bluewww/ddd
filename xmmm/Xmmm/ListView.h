@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-// High-level GUI wrapper for Gtkmm.
+// High-level GUI wrapper for Xm.
 
 // Copyright (C) 2007 Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
@@ -29,18 +29,35 @@
 #ifndef XMMM_LISTVIEW_H
 #define XMMM_LISTVIEW_H
 
+#include <vector>
+#include <sigc++/signal.h>
 #include <Xmmm/Container.h>
 #include <Xm/List.h>
 
 namespace Xmmm {
 
     class ListView: public Widget {
+    private:
 	::Widget list_;
+    protected:
+	sigc::signal<void> signal_selection_changed_;
+	static void selection_changed_callback(::Widget widget, XtPointer data);
     public:
-	ListView(Xmmm::Container &parent, const Xmmm::String &name);
-	ListView(::Widget parent, const Xmmm::String &name); // TEMPORARY
+	void init_signals(void);
+	void init(::Widget parent, const String &name,
+		  const std::vector<String> &headers);
+	ListView(Container &parent, const String &name,
+		 const std::vector<String> &headers);
+	ListView(::Widget parent, const String &name,
+		 const std::vector<String> &headers); // TEMPORARY
 	~ListView(void);
-	::Widget xt(void); // TEMPORARY
+	::Widget internal(void); // TEMPORARY
+	std::string get_selected(void);
+	void clear(void);
+	void append(const String &item);
+	int get_selected_pos(void);
+	int count(void) const;
+	sigc::signal<void> &signal_selection_changed(void);
     };
 
 }

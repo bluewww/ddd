@@ -32,19 +32,19 @@ void
 RadioButton::init_signals(void)
 {
     XtAddCallback(button_, XmNvalueChangedCallback, 
-		  (XtCallbackProc)RadioButton::signal_toggled_callback,
+		  (XtCallbackProc)RadioButton::toggled_callback,
 		  XtPointer(this));
 }
 
-RadioButton::RadioButton(::Widget parent, const char *name)
+RadioButton::RadioButton(::Widget parent, const Xmmm::String &name)
 {
-    button_ = XmCreateToggleButton(parent, (char *)name, NULL, 0);
+    button_ = XmCreateToggleButton(parent, (char *)name.c(), NULL, 0);
     init_signals();
 }
 
-RadioButton::RadioButton(Xmmm::Widget &parent, const char *name)
+RadioButton::RadioButton(Xmmm::Container &parent, const Xmmm::String &name)
 {
-    button_ = XmCreateToggleButton(parent.xt_container(), (char *)name, NULL, 0);
+    button_ = XmCreateToggleButton(parent.xt_container(), (char *)name.c(), NULL, 0);
     init_signals();
 }
 
@@ -53,7 +53,7 @@ RadioButton::~RadioButton(void)
     XtDestroyWidget(button_);
 }
 
-::Widget RadioButton::xt(void)
+::Widget RadioButton::internal(void)
 {
     return button_;
 }
@@ -79,7 +79,7 @@ RadioButton::signal_toggled(void)
 }
 
 void
-RadioButton::signal_toggled_callback(::Widget widget, XtPointer data)
+RadioButton::toggled_callback(::Widget widget, XtPointer data)
 {
     ((RadioButton *)data)->signal_toggled_();
 }

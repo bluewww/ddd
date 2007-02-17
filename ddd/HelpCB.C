@@ -607,7 +607,7 @@ static void _MStringHelpCB(Widget widget,
     set_sensitive(help_button, !help_on_help);
 
     // Popup help_dialog
-    manage_and_raise(help_dialog);
+    manage_and_raise1(help_dialog);
 }
 
 
@@ -1417,7 +1417,7 @@ void ManualStringHelpCB(Widget widget, const MString& title,
     // Enable Text Window
     Delay::register_shell(XtParent(text_dialog));
     InstallButtonTips(XtParent(text_dialog));
-    manage_and_raise(text_dialog);
+    manage_and_raise1(text_dialog);
 #else // NOT IF_MOTIF
     std::cerr << "ManualStringHelpCB: not implemented\n";
 #endif // IF_MOTIF
@@ -1548,7 +1548,7 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
     Delay::register_shell(XtParent(text_dialog));
     InstallButtonTips(XtParent(text_dialog));
     XtPopup(XtParent(text_dialog), XtGrabNone);
-    manage_and_raise(text_dialog);
+    manage_and_raise1(text_dialog);
 }
 
 

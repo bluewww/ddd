@@ -383,7 +383,7 @@ static void post_fatal(const string& title, const string& cause,
     label->set_text(mtext.xmstring());
 #endif // IF_MOTIF
 
-    manage_and_raise(fatal_dialog);
+    manage_and_raise1(fatal_dialog);
 
     // Wait until dialog is mapped and synchronize, such that DDD will
     // exit if we get another signal or X error during that time.
@@ -1161,17 +1161,17 @@ static void DDDDoneCB(CB_ALIST_12(Widget w, XtP(long) client_data))
     Delay::register_shell(quit_dialog);
 #ifdef IF_MOTIF
     XtAddCallback(quit_dialog, XmNokCallback,   DDDDoneAnywayCB, client_data);
-    XtAddCallback(quit_dialog, XmNcancelCallback, UnmanageThisCB, quit_dialog);
+    XtAddCallback(quit_dialog, XmNcancelCallback, UnmanageThisCB1, quit_dialog);
     XtAddCallback(quit_dialog, XmNhelpCallback, ImmediateHelpCB, 0);
 #else // NOT IF_MOTIF
     Gtk::Button *button;
     button = quit_dialog->add_button(XMST("OK"), 0);
     button->signal_clicked().connect(sigc::bind(PTR_FUN(DDDDoneAnywayCB), button, client_data));
     button = quit_dialog->add_button(XMST("Cancel"), 0);
-    button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB), quit_dialog));
+    button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB2), quit_dialog));
 #endif // IF_MOTIF
 
-    manage_and_raise(quit_dialog);
+    manage_and_raise1(quit_dialog);
 }
 
 // Exit immediately if DDD is not ready
@@ -1250,7 +1250,7 @@ void DDDRestartCB(CB_ARG_LIST_1(w))
 	button->signal_clicked().connect(sigc::bind(PTR_FUN(_DDDRestartCB), button, (flags | MAY_KILL)));
 #endif // IF_MOTIF
     
-	manage_and_raise(dialog);
+	manage_and_raise1(dialog);
     }
     else
 	_DDDRestartCB(CB_ARGS_12(w, flags));

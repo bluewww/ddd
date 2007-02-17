@@ -1,6 +1,12 @@
+#include <iostream>
+
 #include <Xm/Protocols.h>
+#include <X11/IntrinsicP.h>
+#include <X11/ShellP.h>
 
 #include <Xmmm/Widget.h>
+
+using namespace Xmmm;
 
 Xmmm::String::String(const std::string &s0)
 {
@@ -37,23 +43,21 @@ Xmmm::String::c(void) const
 Xmmm::String
 Xmmm::String::operator+(const Xmmm::String &str) const
 {
-    return Xmmm::String(s()+str.s());
+    return String(s()+str.s());
 }
 
 // ***************************************************************************
 
 Boolean
-WM_set_close_callback(Widget shell,
-		      void (*callback)(Widget, XtPointer, XtPointer),
+WM_set_close_callback(::Widget shell,
+		      void (*callback)(::Widget, XtPointer, XtPointer),
 		      XtPointer client_data)
 {
-    extern Atom XmInternAtom(Display *, char *, Boolean) ;
-
     Display *display  = (Display *) 0 ;
     Atom     property = (Atom) 0 ;
     Atom     protocol = (Atom) 0 ;
 
-    if (shell == (Widget) 0) {
+    if (shell == (::Widget) 0) {
 	return False ;
     }
 
@@ -106,31 +110,68 @@ Xmmm::Widget::~Widget(void)
 {
 }
 
-::Widget Xmmm::Widget::xt(void)
+::Widget Xmmm::Widget::internal(void)
 {
     return NULL;
 }
 
 ::Widget Xmmm::Widget::xt_container(void)
 {
-    return xt();
+    return internal();
 }
 
 void
 Xmmm::Widget::show(void)
 {
-    ::Widget w = xt();
+    ::Widget w = internal();
     if (XtIsShell(w)) {
+	ShellWidget sw = (ShellWidget)w;
+	XtWidgetProc resize;
 	XtPopup(w, XtGrabNone);
+	// FIXME: Fudge
+	if (sw->core.width < 2 && sw->core.height < 2
+	    && sw->composite.num_children > 0) {
+	    XtWidgetGeometry preferred;
+	    XtWidgetGeometry geom;
+	    int x, y, w, h, bw;
+	    // Get current preferred values for shell and override
+	    // width and height with values for child.
+	    XtQueryGeometry((::Widget)sw, NULL, &geom);
+	    x = (geom.request_mode&CWX)?geom.x:sw->core.x;
+	    y = (geom.request_mode&CWY)?geom.y:sw->core.y;
+	    w = (geom.request_mode&CWWidth)?geom.width:sw->core.width;
+	    h = (geom.request_mode&CWHeight)?geom.height:sw->core.height;
+	    bw = (geom.request_mode&CWBorderWidth)?geom.border_width:sw->core.border_width;
+	    XtQueryGeometry(sw->composite.children[0], NULL, &preferred);
+	    std::cerr << "w=" << preferred.width << " h=" << preferred.height
+		      << "\n";
+	    if (preferred.request_mode & CWHeight)
+		h = preferred.height;
+	    if (preferred.request_mode & CWWidth)
+		w = preferred.width;
+	    XtConfigureWidget((::Widget)sw, x, y, w, h, bw);
+	    resize = XtClass(sw)->core_class.resize;
+	    if (resize)
+		(*resize)((::Widget)sw);
+	}
     }
     else {
-	XtManageChild(xt());
+	XtManageChild(w);
     }
 }
 
 void
 Xmmm::Widget::hide(void)
 {
-    XtUnmanageChild(xt());
+    ::Widget w = internal();
+    if (XtIsShell(w)) {
+	XtPopdown(w);
+    }
+    else {
+	XtUnmanageChild(internal());
+    }
 }
+
+std::vector<Arg> Xmmm::NO_ARGS;
+
 

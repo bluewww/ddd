@@ -1,23 +1,23 @@
 // -*- C++ -*-
 
-// High-level GUI wrapper for Gtkmm.
+// High-level GUI wrapper for Xm.
 
 // Copyright (C) 2007 Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
-// This file is part of GtkX.
+// This file is part of Xmmm.
 // 
-// GtkX is free software; you can redistribute it and/or
+// Xmmm is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public
 // License as published by the Free Software Foundation; either
 // version 2 of the License, or (at your option) any later version.
 // 
-// GtkX is distributed in the hope that it will be useful,
+// Xmmm is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // See the GNU General Public License for more details.
 // 
 // You should have received a copy of the GNU General Public
-// License along with GtkX -- see the file COPYING.
+// License along with Xmmm -- see the file COPYING.
 // If not, write to the Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
@@ -31,20 +31,27 @@
 
 #include <Xmmm/Container.h>
 #include <Xmmm/Box.h>
+#include <Xmmm/Box1.h>
+#include <Xmmm/ScrolledWindow.h>
 #include <Xmmm/ListView.h>
+#include <Xmmm/Button.h>
 
 namespace Xmmm {
 
     class SelectionDialog: public Container {
 	::Widget dlg_;
 	VBox *box_;
+	Box1 *box1_;
+	ScrolledWindow *sw_;
 	ListView *list_;
     public:
-	SelectionDialog(::Widget parent, const Xmmm::String &name); // TEMPORARY
+	SelectionDialog(::Widget parent, const Xmmm::String &name,
+			const std::vector<String> &headers); // TEMPORARY
 	~SelectionDialog(void);
-	::Widget xt(void);
+	::Widget internal(void);
 	::Widget xt_container(void);
 	ListView *list(void) const;
+	Button *add_button(const String &name);
     };
 
 }

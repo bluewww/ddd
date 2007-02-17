@@ -141,7 +141,7 @@ bool ProgressMeter::process(int remaining_length)
 	XtVaSetValues(XtParent(dialog), XmNtitle, title.chars(), XtPointer(0));
 	XtAddCallback(dialog, XmNcancelCallback, CancelCB, 
 		      XtPointer(&aborted));
-	manage_and_raise(dialog);
+	manage_and_raise1(dialog);
 	wait_until_mapped(dialog);
     }
 

@@ -2948,7 +2948,7 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
     XtUnmanageChild(XmSelectionBoxGetChild(panel, XmDIALOG_SELECTION_LABEL));
 
     XtAddCallback(panel, XmNhelpCallback, ImmediateHelpCB, 0);
-    XtAddCallback(panel, XmNcancelCallback, UnmanageThisCB, XtPointer(panel));
+    XtAddCallback(panel, XmNcancelCallback, UnmanageThisCB1, XtPointer(panel));
 #else // NOT IF_MOTIF
     BUTTON_P button, reset_button, apply_button;
 #endif // IF_MOTIF
@@ -3428,7 +3428,7 @@ void dddPopupSettingsCB (CB_ARG_LIST_NULL)
     if (settings == 0)
 	return;
 
-    manage_and_raise(settings);
+    manage_and_raise1(settings);
 }
 
 // Popup editor for debugger infos
@@ -3438,7 +3438,7 @@ void dddPopupInfosCB (CB_ARG_LIST_NULL)
     if (infos == 0)
 	return;
 
-    manage_and_raise(infos);
+    manage_and_raise1(infos);
 }
 
 // Popup editor for debugger infos
@@ -3448,7 +3448,7 @@ void dddPopupSignalsCB (CB_ARG_LIST_NULL)
     if (signals == 0)
 	return;
 
-    manage_and_raise(signals);
+    manage_and_raise1(signals);
 }
 
 // Popup editor for display themes
@@ -3458,7 +3458,7 @@ void dddPopupThemesCB (CB_ARG_LIST_NULL)
     if (themes == 0)
 	return;
 
-    manage_and_raise(themes);
+    manage_and_raise1(themes);
 }
 
 // True iff settings might have changed
@@ -4377,7 +4377,7 @@ void dddDefineCommandCB(CB_ARG_LIST_1(w))
 	MMadjustPanel(panel_menu);
 
 #ifdef IF_MOTIF
-	XtAddCallback(dialog, XmNokCallback, UnmanageThisCB, 
+	XtAddCallback(dialog, XmNokCallback, UnmanageThisCB1, 
 		      XtPointer(dialog));
 	XtAddCallback(dialog, XmNokCallback, DoneEditCommandDefinitionCB, 
 		      XtPointer(0));
@@ -4386,7 +4386,7 @@ void dddDefineCommandCB(CB_ARG_LIST_1(w))
 		      ApplyCB, XtPointer(0));
 	XtAddCallback(dialog, XmNcancelCallback, 
 		      EndCommandDefinitionCB, XtPointer(0));
-	XtAddCallback(dialog, XmNcancelCallback, UnmanageThisCB, 
+	XtAddCallback(dialog, XmNcancelCallback, UnmanageThisCB1, 
 		      XtPointer(dialog));
 
 	XtAddCallback(dialog, XmNhelpCallback,
@@ -4397,7 +4397,7 @@ void dddDefineCommandCB(CB_ARG_LIST_1(w))
 	button->signal_clicked().connect(sigc::bind(PTR_FUN(ApplyCB), dialog));
 	button = apply_w = dialog->add_button(XMST("Cancel"), 0);
 	button->signal_clicked().connect(sigc::bind(PTR_FUN(EndCommandDefinitionCB), dialog));
-	button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB), dialog));
+	button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB2), dialog));
 #endif // IF_MOTIF
 
 	set_need_load_defines(true);
@@ -4406,5 +4406,5 @@ void dddDefineCommandCB(CB_ARG_LIST_1(w))
 
     UpdateDefinePanelCB();
     refresh_combo_box();
-    manage_and_raise(dialog);
+    manage_and_raise1(dialog);
 }

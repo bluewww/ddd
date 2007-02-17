@@ -24,28 +24,27 @@
 // the constructor, unlike the Gtk ones.  Motif (Xt) widgets cannot be
 // reparented.  Therefore we need a constructor with extra arguments.
 
-#include <Xmmm/RadioBox.h>
+#include <Xmmm/Box1.h>
 
 using namespace Xmmm;
 
-RadioBox::RadioBox(::Widget parent, const Xmmm::String &name,
-		   Xmmm::Orientation orientation)
+Box1::Box1(Xmmm::Widget parent, const Xmmm::String &name)
 {
-    box_ = XmCreateRadioBox(parent, (char *)name.c(), NULL, 0);
+    b2_ = XmmmCreateBox2(parent.xt_container(), (char *)name.c(), NULL, 0);
 }
 
-RadioBox::RadioBox(Xmmm::Container &parent, const Xmmm::String &name, Xmmm::Orientation orientation)
+Box1::Box1(::Widget parent, const Xmmm::String &name)
 {
-    box_ = XmCreateRadioBox(parent.xt_container(), (char *)name.c(), NULL, 0);
+    b2_ = XmmmCreateBox2(parent, (char *)name.c(), NULL, 0);
 }
 
-RadioBox::~RadioBox(void)
+Box1::~Box1(void)
 {
-    XtDestroyWidget(box_);
+    XtDestroyWidget(b2_);
 }
 
-::Widget RadioBox::internal(void)
+::Widget Box1::internal(void)
 {
-    return box_;
+    return b2_;
 }
 

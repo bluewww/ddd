@@ -1,4 +1,4 @@
-// -*- C++ -*-
+ // -*- C++ -*-
 
 // High-level GUI wrapper for Gtkmm.
 
@@ -38,11 +38,14 @@
 namespace GtkX {
 
     template <class T>
-    class Widget1s: public GtkX::Widget, public T {
+    class Widget1s: public Widget, public T {
     public:
-	Widget1s(GtkX::Container &parent, const GtkX::String &name);
+	Widget1s(Container &parent, const String &name);
 	~Widget1s(void);
-	Gtk::Widget *gtk_widget(void);
+	Gtk::Widget *internal(void);
+	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
+	void show(void) {Widget::show();}
+	void hide(void) {Widget::hide();}
     };
 
 }

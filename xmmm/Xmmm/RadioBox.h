@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-// High-level GUI wrapper for Gtkmm.
+// High-level GUI wrapper for Xm.
 
 // Copyright (C) 2007 Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
@@ -43,10 +43,10 @@ namespace Xmmm {
     class RadioBox: public Container {
 	::Widget box_;
     public:
-	RadioBox(Xmmm::Widget &parent, const char *name, Xmmm::Orientation orientation);
-	RadioBox(::Widget parent, const char *name, Xmmm::Orientation orientation); // TEMPORARY
+	RadioBox(Xmmm::Container &parent, const Xmmm::String &name, Xmmm::Orientation orientation);
+	RadioBox(::Widget parent, const Xmmm::String &name, Xmmm::Orientation orientation); // TEMPORARY
 	~RadioBox(void);
-	::Widget xt(void); // TEMPORARY
+	::Widget internal(void); // TEMPORARY
     };
 
 }

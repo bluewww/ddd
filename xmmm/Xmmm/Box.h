@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-// High-level GUI wrapper for Gtkmm.
+// High-level GUI wrapper for Xm.
 
 // Copyright (C) 2007 Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
@@ -40,7 +40,7 @@ namespace Xmmm {
 	VBox(Xmmm::Widget parent, const Xmmm::String &name);
 	VBox(::Widget parent, const Xmmm::String &name); // TEMPORARY
 	~VBox(void);
-	::Widget xt(void); // TEMPORARY
+	::Widget internal(void); // TEMPORARY
 	operator ::Widget(void); // TEMPORARY
     };
 
@@ -50,7 +50,7 @@ namespace Xmmm {
 	HBox(Xmmm::Widget parent, const Xmmm::String &name);
 	HBox(::Widget parent, const Xmmm::String &name); // TEMPORARY
 	~HBox(void);
-	::Widget xt(void); // TEMPORARY
+	::Widget internal(void); // TEMPORARY
     };
 
 }

@@ -907,30 +907,43 @@ void gdbChangeCB(SCROLLEDTEXT_P w)
 // Callbacks
 //-----------------------------------------------------------------------------
 
-#ifdef IF_MOTIF
-void gdbCommandCB(CB_ALIST_123(Widget w, XtPointer client_data, XtPointer call_data))
-#else // NOT IF_MOTIF
-void gdbCommandCB(CB_ALIST_12(Widget w, const char *client_data))
-#endif // IF_MOTIF
+#if defined(IF_MOTIF)
+
+void gdbCommandCB1(Widget w, XtPointer client_data, XtPointer call_data)
 {
     clear_isearch();
-#ifdef IF_MOTIF
+
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
     if (cbs->event == 0)
 	return;
-#endif // IF_MOTIF
 
     gdb_button_command((String)client_data, w);
 
-#ifdef IF_MOTIF
     gdb_keyboard_command = from_keyboard(cbs->event);
-#else // NOT IF_MOTIF
+}
+
+#endif
+
+#if !defined(IF_XM)
+
+void gdbCommandCB2(Widget w, const char *client_data)
+{
+    clear_isearch();
+
+    gdb_button_command((String)client_data, w);
+
 #ifdef NAG_ME
 #warning FIXME: Make sure gdbCommandCB is never invoked by a key event.
 #endif
     gdb_keyboard_command = false;
-#endif // IF_MOTIF
 }
+
+void gdbCommandCB(GUI::Widget *w, const char *client_data)
+{
+    gdbCommandCB2(w->internal(), client_data);
+}
+
+#endif
 
 void gdb_button_command(const string& command, Widget origin)
 {
