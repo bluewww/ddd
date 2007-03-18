@@ -129,6 +129,7 @@ Xmmm::Widget::show(void)
 	XtWidgetProc resize;
 	XtPopup(w, XtGrabNone);
 	// FIXME: Fudge
+#if 0
 	if (sw->core.width < 2 && sw->core.height < 2
 	    && sw->composite.num_children > 0) {
 	    XtWidgetGeometry preferred;
@@ -143,7 +144,7 @@ Xmmm::Widget::show(void)
 	    h = (geom.request_mode&CWHeight)?geom.height:sw->core.height;
 	    bw = (geom.request_mode&CWBorderWidth)?geom.border_width:sw->core.border_width;
 	    XtQueryGeometry(sw->composite.children[0], NULL, &preferred);
-	    std::cerr << "w=" << preferred.width << " h=" << preferred.height
+	    std::cerr << "Popup shell w=" << preferred.width << " h=" << preferred.height
 		      << "\n";
 	    if (preferred.request_mode & CWHeight)
 		h = preferred.height;
@@ -154,6 +155,7 @@ Xmmm::Widget::show(void)
 	    if (resize)
 		(*resize)((::Widget)sw);
 	}
+#endif
     }
     else {
 	XtManageChild(w);

@@ -302,13 +302,11 @@ char ddd_rcsid[] =
 #include "wm.h"
 #include "xconfig.h"
 
-#ifdef IF_XMMM
+#if !defined(IF_XM)
 #include <GUI/Box.h>
-#endif // IF_XMMM
-
-#ifndef IF_MOTIF
-#include <GUI/Box.h>
-#endif // IF_MOTIF
+#include <GUI/Dialog.h>
+#include <GUI/Notebook.h>
+#endif
 
 // Standard stuff
 #include <stdlib.h>
@@ -3207,7 +3205,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     while (original_argv[original_argc] != 0)
 	original_argc++;
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     arg = 0;
     XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
     XtSetArg(args[arg], XmNargc,           original_argc); arg++;
@@ -3227,12 +3225,11 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 					      applicationShellWidgetClass,
 					      toplevel, args, arg));
     AddDeleteWindowCallback(command_shell, DDDCloseCB);
-#else // NOT IF_MOTIF
-    command_shell = new Gtk::Window();
-    command_shell->set_name(XMST("command_shell"));
-    command_shell->set_title(XMST("command_shell"));
-    AddDeleteWindowCallback(command_shell, BIND_1(PTR_FUN(DDDCloseCB), command_shell));
-#endif // IF_MOTIF
+#else
+    command_shell = new GUI::Window(toplevel, "command_shell",
+				    original_argc, original_argv);
+    command_shell->signal_delete_event().connect(sigc::bind<0>(sigc::ptr_fun(CloseCB), command_shell));
+#endif
 
 
 #ifdef IF_MOTIF
@@ -4118,20 +4115,20 @@ void process_pending_events()
 
 static bool pending_interaction()
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XEvent event;
     const long mask = KeyPressMask | ButtonMotionMask | ButtonPressMask;
-    Bool pending = XCheckMaskEvent(XtDisplay(command_shell), mask, &event);
+    Bool pending = XCheckMaskEvent(XtDisplay((Widget)command_shell), mask, &event);
     if (pending)
-	XPutBackEvent(XtDisplay(command_shell), &event);
+	XPutBackEvent(XtDisplay((Widget)command_shell), &event);
     return pending;
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Implement pending_interation?
 #endif
 
     return false;
-#endif // IF_MOTIF
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -4998,20 +4995,19 @@ static void set_toggle(Widget w, unsigned char new_state, bool notify = false)
 
 #else // NOT IF_MOTIF
 
-static void set_toggle(Widget w, bool new_state, Widget ignore=NULL)
+static void set_toggle(Widget w, bool new_state, bool notify = false)
 {
-#ifdef NAG_ME
-#warning set_toggle is sometimes called with a base Widget *
-#endif
-#ifdef NAG_ME
-#warning set_toggle: "notify" is ignored
-#endif
-
     if (w == 0)
 	return;
 
-    if (w == ignore)
-	return;
+    if (!notify) {
+	g_signal_handlers_block_matched(w->gobj(), G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)gdbOpenToolWindowCB, 0);
+	g_signal_handlers_block_matched(w->gobj(), G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)gdbOpenExecWindowCB, 0);
+	g_signal_handlers_block_matched(w->gobj(), G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)gdbOpenCommandWindowCB, 0);
+	g_signal_handlers_block_matched(w->gobj(), G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)gdbOpenSourceWindowCB, 0);
+	g_signal_handlers_block_matched(w->gobj(), G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)gdbOpenDataWindowCB, 0);
+	g_signal_handlers_block_matched(w->gobj(), G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)gdbToggleCodeWindowCB, 0);
+    }
 
     Gtk::ToggleButton *tb = dynamic_cast<Gtk::ToggleButton *>(w);
     if (tb) {
@@ -5027,21 +5023,24 @@ static void set_toggle(Widget w, bool new_state, Widget ignore=NULL)
 	    cmi->set_active(new_state);
 	}
     }
+
+    if (!notify) {
+	g_signal_handlers_unblock_matched(w->gobj(), G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)gdbOpenToolWindowCB, 0);
+	g_signal_handlers_unblock_matched(w->gobj(), G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)gdbOpenExecWindowCB, 0);
+	g_signal_handlers_unblock_matched(w->gobj(), G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)gdbOpenCommandWindowCB, 0);
+	g_signal_handlers_unblock_matched(w->gobj(), G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)gdbOpenSourceWindowCB, 0);
+	g_signal_handlers_unblock_matched(w->gobj(), G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)gdbOpenDataWindowCB, 0);
+	g_signal_handlers_unblock_matched(w->gobj(), G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)gdbToggleCodeWindowCB, 0);
+    }
+
 }
 
 #endif // IF_MOTIF
 
-#ifdef IF_MOTIF
 inline void notify_set_toggle(Widget w, Boolean new_state)
 {
     set_toggle(w, new_state, true);
 }
-#else // NOT IF_MOTIF
-inline void notify_set_toggle(Widget w, Boolean new_state)
-{
-    set_toggle(w, new_state, NULL);
-}
-#endif // IF_MOTIF
 
 #ifdef IF_MOTIF
 static void set_string(Widget w, const _XtString value)
@@ -5571,9 +5570,14 @@ static Dimension     initial_grid_height;
 static LayoutMode    initial_layout_mode;
 static unsigned char initial_focus_policy;
 
-static DIALOG_P preferences_dialog;
-static BUTTON_P reset_preferences_w;
-#ifndef IF_MOTIF
+#if defined(IF_XM)
+static Widget preferences_dialog;
+static Widget reset_preferences_w;
+#else
+static GUI::WidgetPtr<GUI::Dialog> preferences_dialog = NULL;
+static GUI::WidgetPtr<GUI::Button> reset_preferences_w = NULL;
+#endif
+#if !defined(IF_MOTIF)
 static sigc::connection reset_preferences_connection;
 #endif // IF_MOTIF
 static Widget current_panel;
@@ -6261,11 +6265,7 @@ void update_reset_preferences()
 	check_options_file();
 }
 
-#ifdef IF_MOTIF
-#ifdef NAG_ME
-#warning ChangePanelCB: This stuff can be replaced by a Gtk::Notebook.
-#endif
-#endif // IF_MOTIF
+#if defined(IF_XM)
 static void ChangePanelCB(TOGGLEBUTTON_P w, XtPointer client_data, XtPointer call_data)
 {
     Widget panel = (Widget)client_data;
@@ -6281,14 +6281,14 @@ static void ChangePanelCB(TOGGLEBUTTON_P w, XtPointer client_data, XtPointer cal
     {
 	// Manage this child
 	XtManageChild(panel);
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	XtAddCallback(preferences_dialog, XmNhelpCallback,
 		      HelpOnThisCB, XtPointer(panel));
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning HelpCB?
 #endif
-#endif // IF_MOTIF
+#endif
 
 #ifdef IF_MOTIF
 	XtAddCallback(reset_preferences_w, XmNactivateCallback,
@@ -6329,14 +6329,14 @@ static void ChangePanelCB(TOGGLEBUTTON_P w, XtPointer client_data, XtPointer cal
 	    if (child != panel)
 	    {
 		XtUnmanageChild(child);
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 		XtRemoveCallback(preferences_dialog, XmNhelpCallback,
 				 HelpOnThisCB, XtPointer(child));
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning HelpCB?
 #endif
-#endif // IF_MOTIF
+#endif
 #ifdef IF_MOTIF
 		XtRemoveCallback(reset_preferences_w, XmNactivateCallback,
 				 ResetPreferencesCB, XtPointer(child));
@@ -6347,28 +6347,43 @@ static void ChangePanelCB(TOGGLEBUTTON_P w, XtPointer client_data, XtPointer cal
 	}
     }
 }
+#endif
 
+#ifdef __GNUC__
+#warning DEBUGGING SPEW
+#endif
 #ifdef IF_MOTIF
+void
+print_window_size(Widget w)
+{
+    Window root;
+    int x, y;
+    unsigned int wd, ht, bwd, dp;
+    XGetGeometry(XtDisplay(w), XtWindow(w), &root, &x, &y,
+		 &wd, &ht, &bwd, &dp);
+    std::cerr << "wd = " << wd << " ht = " << ht << "\n";
+}
+#endif
+
+#if defined(IF_XM)
 static TOGGLEBUTTON_P add_panel(BOX_P parent,
 				BOX_P buttons, 
 				const _XtString name, MMDesc items[],
 				Dimension& max_width, Dimension& max_height,
 				bool set = false)
-#else // NOT IF_MOTIF
-static int add_panel(NOTEBOOK_P parent,
-		     const _XtString name, Glib::ustring label,
+#else
+static int add_panel(GUI::Notebook *parent,
+		     const _XtString name, GUI::String label,
 		     MMDesc items[],
 		     bool set = false)
-#endif // IF_MOTIF
+#endif
 {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     Arg args[10];
     int arg;
-#endif // IF_MOTIF
-#ifdef IF_XMMM
-    GUI::VBox *form_xo = new GUI::VBox(parent, name);
-    CONTAINER_P form = form_xo->internal();
-#elif IF_MOTIF
+#endif
+
+#if defined(IF_XM)
 
     // Add two rows
     arg = 0;
@@ -6376,11 +6391,13 @@ static int add_panel(NOTEBOOK_P parent,
     XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
     XtSetArg(args[arg], XmNborderWidth,  0); arg++;
     Widget form = verify(XmCreateRowColumn(parent, XMST(name), args, arg));
-#else // NOT IF_MOTIF
-    int pageno = parent->get_n_pages();
-    Gtk::Box *form = new GUI::HBox(*parent, name);
-#endif // IF_MOTIF
     XtManageChild(form);
+#else
+    int pageno = parent->get_n_pages();
+    GUI::WidgetPtr<GUI::HBox> form = new GUI::HBox(*parent, name);
+    // Do not show() the form here; this is under the control of the
+    // Notebook widget.
+#endif
 
     // Add panel
     Widget panel = MMcreatePanel(form, "panel", items);
@@ -6391,7 +6408,7 @@ static int add_panel(NOTEBOOK_P parent,
     register_menu_shell(items);
 
     // Fetch panel geometry
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     XtWidgetGeometry size;
     size.request_mode = CWHeight | CWWidth;
     XtQueryGeometry(form, (XtWidgetGeometry *)0, &size);
@@ -6413,7 +6430,7 @@ static int add_panel(NOTEBOOK_P parent,
 		  XtPointer(form));
 #endif // IF_MOTIF
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     XmToggleButtonSetState(button, Boolean(set), False);
 
     if (set)
@@ -6424,18 +6441,18 @@ static int add_panel(NOTEBOOK_P parent,
     }
 #endif
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     return button;
 #else
     return pageno;
 #endif
 }
 
-static void OfferRestartCB(Widget dialog
-#ifdef IF_MOTIF
-			   , XtPointer, XtPointer
-#endif // IF_MOTIF
-			   )
+#if defined(IF_XM)
+static void OfferRestartCB(Widget dialog, XtPointer, XtPointer)
+#else
+static void OfferRestartCB(GUI::WidgetPtr<GUI::Dialog> &dialog)
+#endif
 {
     if (startup_preferences_changed() || font_preferences_changed())
     {
@@ -6469,39 +6486,41 @@ static void OfferRestartCB(Widget dialog
 // Create preferences dialog
 static void make_preferences(Widget parent)
 {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     Arg args[10];
     int arg;
+#endif
 
+#if defined(IF_XM)
     arg = 0;
     preferences_dialog = 
 	verify(XmCreatePromptDialog(parent, 
 				    XMST("preferences"), args, arg));
-#else // NOT IF_MOTIF
+#else
     preferences_dialog = 
-	new Gtk::Dialog(XMST("preferences"), *find_shell(parent));
-#endif // IF_MOTIF
+	new GUI::Dialog(find_shell(parent), "preferences");
+#endif
     Delay::register_shell(preferences_dialog);
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     XtVaSetValues(preferences_dialog, XmNdefaultButton, Widget(0), 
 		  XtNIL);
     XtAddCallback(preferences_dialog, XmNunmapCallback, OfferRestartCB,
 		  XtNIL);
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning No default button
 #endif
-    preferences_dialog->signal_unmap().connect(sigc::bind(PTR_FUN(OfferRestartCB),
+    preferences_dialog->signal_unmap().connect(sigc::bind(sigc::ptr_fun(OfferRestartCB),
 							  preferences_dialog));
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     if (lesstif_version <= 79)
 	XtUnmanageChild(XmSelectionBoxGetChild(preferences_dialog,
 					       XmDIALOG_APPLY_BUTTON));
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     // Remove old prompt
     Widget text = XmSelectionBoxGetChild(preferences_dialog, XmDIALOG_TEXT);
     XtUnmanageChild(text);
@@ -6513,11 +6532,11 @@ static void make_preferences(Widget parent)
     reset_preferences_w = 
         XmSelectionBoxGetChild(preferences_dialog, XmDIALOG_CANCEL_BUTTON);
     XtRemoveAllCallbacks(reset_preferences_w, XmNactivateCallback);
-#else // NOT IF_MOTIF
-    reset_preferences_w = preferences_dialog->add_button(XMST("Reset"), 0);
-#endif // IF_MOTIF
+#else
+    reset_preferences_w = preferences_dialog->add_button("Reset");
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     arg = 0;
     XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
     XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
@@ -6526,9 +6545,11 @@ static void make_preferences(Widget parent)
 	verify(XmCreateRowColumn(preferences_dialog, XMST("box"), 
 				 args, arg));
     XtManageChild(box);
-#endif // IF_MOTIF
+#elif defined(IF_XMMM)
+    Widget box = preferences_dialog->xt_container();
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     arg = 0;
     Widget buttons =
 	verify(XmCreateRadioBox(box, XMST("buttons"), args, arg));
@@ -6543,16 +6564,15 @@ static void make_preferences(Widget parent)
     Widget change =
 	verify(XmCreateRowColumn(frame, XMST("change"), args, arg));
     XtManageChild(change);
-#else // NOT IF_MOTIF
-    Gtk::Notebook *change = new Gtk::Notebook();
-    preferences_dialog->get_vbox()->pack_start(*change, Gtk::PACK_SHRINK);
+#else
+    GUI::WidgetPtr<GUI::Notebook> change = new GUI::Notebook(*preferences_dialog, "change");
     change->show();
-#endif // IF_MOTIF
+#endif
 
     Dimension max_width  = 0;
     Dimension max_height = 0;
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     TOGGLEBUTTON_P general_button =
 	add_panel(change, buttons, "general", general_preferences_menu, 
 	      max_width, max_height, false);
@@ -6566,7 +6586,7 @@ static void make_preferences(Widget parent)
 	      max_width, max_height, false);
     add_panel(change, buttons, "helpers", helpers_preferences_menu, 
 	      max_width, max_height, false);
-#else // NOT IF_MOTIF
+#else
     int general_button =
 	add_panel(change, "general", "General", general_preferences_menu, 
 		  false);
@@ -6580,26 +6600,30 @@ static void make_preferences(Widget parent)
 	      false);
 #endif
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     XtVaSetValues(change,
 		  XmNwidth, max_width,
 		  XmNheight, max_height,
 		  XmNresizeWidth, False,
 		  XmNresizeHeight, False,
 		  XtNIL);
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     XmToggleButtonSetState(general_button, True, True);
-#else // NOT IF_MOTIF
+#else
     change->set_current_page(general_button);
-#endif // IF_MOTIF
+#endif
 }
 
 // Popup Preference Panel
 static void dddPopupPreferencesCB (CB_ALIST_NULL)
 {
+#if defined(IF_XM)
     manage_and_raise1(preferences_dialog);
+#else
+    manage_and_raise(preferences_dialog);
+#endif
     check_options_file();
 }
 

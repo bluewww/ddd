@@ -1,3 +1,5 @@
+// -*- C++ -*-
+
 // High-level GUI wrapper for Gtkmm.
 
 // Copyright (C) 2007 Peter Wainwright <prw@ceiriog.eclipse.co.uk>
@@ -26,27 +28,21 @@
 // A brief look at QT indicates that this will be required there as
 // well.
 
-#ifndef GTKX_BOX_H
-#define GTKX_BOX_H
+#ifndef GTKX_NOTEBOOK_H
+#define GTKX_NOTEBOOK_H
 
-#include <gtkmm/container.h>
-#include <gtkmm/box.h>
+#include <gtkmm/notebook.h>
+
 #include <GtkX/Container.h>
 
 namespace GtkX {
 
-    class VBox: public Gtk::VBox, public Container {
+    // FIXME: Tried to derive from Gtk::Bin, but as Bin is an
+    // "abstract" base class we would need to implement more method.
+    class Notebook: public Gtk::Notebook, public Container {
     public:
-	VBox(GtkX::Container &parent, const String &name);
-	Gtk::Widget *internal(void);
-	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
-	void show(void) {Widget::show();}
-	void hide(void) {Widget::hide();}
-    };
-
-    class HBox: public Gtk::HBox, public Container {
-    public:
-	HBox(GtkX::Container &parent, const String &name);
+	Notebook(GtkX::Container &parent, const String &name);
+	~Notebook(void);
 	Gtk::Widget *internal(void);
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
 	void show(void) {Widget::show();}
@@ -55,4 +51,4 @@ namespace GtkX {
 
 }
 
-#endif // GTKX_BOX_H
+#endif // GTKX_NOTEBOOK_H

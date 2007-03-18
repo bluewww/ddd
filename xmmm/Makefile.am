@@ -6,7 +6,7 @@ AM_CPPFLAGS = $(SIGC_CFLAGS)
 
 libXmmm_la_LIBADD = $(SIGC_LIBS)
 
-libXmmm_la_SOURCES = Widget.cc Container.cc Box.cc RadioBox.cc \
-	SelectionDialog.cc RadioButton.cc ListView.cc \
-	ScrolledWindow.cc Button.cc BulletinBoard.cc \
-	Box2.c Box1.cc
+libXmmm_la_SOURCES = Box1.cc Box2.c Box.cc BulletinBoard.cc Button.cc \
+Container.cc Dialog.cc ListView.cc Notebook.cc Notebook2.c RadioBox.cc \
+RadioButton.cc ScrolledWindow.cc SelectionDialog.cc Widget.cc Window.cc
+

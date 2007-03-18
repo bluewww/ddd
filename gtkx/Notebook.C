@@ -23,36 +23,25 @@
 // Unfortunately Motif widgets require parent and name arguments to
 // the constructor, unlike the Gtk ones.  Motif (Xt) widgets cannot be
 // reparented.  Therefore we need a constructor with extra arguments.
-// A brief look at QT indicates that this will be required there as
-// well.
 
-#ifndef GTKX_BOX_H
-#define GTKX_BOX_H
+#include <GtkX/Notebook.h>
 
-#include <gtkmm/container.h>
-#include <gtkmm/box.h>
-#include <GtkX/Container.h>
+using namespace GtkX;
 
-namespace GtkX {
-
-    class VBox: public Gtk::VBox, public Container {
-    public:
-	VBox(GtkX::Container &parent, const String &name);
-	Gtk::Widget *internal(void);
-	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
-	void show(void) {Widget::show();}
-	void hide(void) {Widget::hide();}
-    };
-
-    class HBox: public Gtk::HBox, public Container {
-    public:
-	HBox(GtkX::Container &parent, const String &name);
-	Gtk::Widget *internal(void);
-	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
-	void show(void) {Widget::show();}
-	void hide(void) {Widget::hide();}
-    };
-
+Notebook::Notebook(GtkX::Container &parent,
+		   const GtkX::String &name)
+{
+    set_name(name.s());
+    parent.add_child(*this);
 }
 
-#endif // GTKX_BOX_H
+Notebook::~Notebook(void)
+{
+}
+
+Gtk::Widget *
+Notebook::internal(void)
+{
+    return this;
+}
+

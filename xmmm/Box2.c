@@ -59,10 +59,20 @@ static void constraint_initialize(Widget request, Widget neww,
 				  ArgList args, Cardinal *num_args);
 static Boolean constraint_set_values(Widget current, Widget request, Widget neww,
 				     ArgList args, Cardinal *num_args);
+static void PreferredSize(Widget widget, XtWidgetGeometry *geom);
 
-static XtGeometryResult _XmmmB2AdjustSize(Widget b2, Widget instig, XtWidgetGeometry *instig_request);
-static void _XmmmB2PreferredSize(Widget b2, XtWidgetGeometry *b2g);
-static void _XmmmB2SetKidGeo(XmB2KidGeometry kg, Widget instigator);
+typedef struct _KidGeom {
+    Widget w;
+    int pack_options;
+    XtWidgetGeometry box;
+} KidGeom;
+
+extern void
+XmmmBox2PreferredSizeAfterResize(Widget widget, XtWidgetGeometry *preferred,
+				 Widget instig, XtWidgetGeometry *instig_request,
+				 int *n_exp, KidGeom **);
+static void AdaptToSize(Widget rc, Widget instig, XtWidgetGeometry *pref, KidGeom *boxes);
+
 
 
 #define MGR_NumChildren(m) \
@@ -220,7 +230,6 @@ static void
 initialize(Widget request, Widget new_w,
 	   ArgList args, Cardinal *num_args)
 {
-    B2_Boxes(new_w) = NULL;	/* no initial children */
 
 #if 0
     if (XtWidth(new_w) == 0)
@@ -256,10 +265,6 @@ initialize(Widget request, Widget new_w,
 static void
 destroy(Widget w)
 {
-    if (B2_Boxes(w))
-    {
-	XtFree((char *)B2_Boxes(w));
-    }
 }
 
 static Boolean
@@ -291,6 +296,13 @@ realize(Widget w, XtValueMask *value_mask, XSetWindowAttributes *attributes)
 static void
 resize(Widget w)
 {
+    int n_exp;
+    XtWidgetGeometry preferred;
+    KidGeom *boxes;
+    fprintf(stderr, "resize %p(%s)\n", w, XtName(w));
+    XmmmBox2PreferredSizeAfterResize(w, &preferred, NULL, NULL, &n_exp, &boxes);
+
+#if 0
     _XmmmB2AdjustSize(w, NULL, NULL);
 
     if (XtIsRealized(w))
@@ -303,6 +315,9 @@ resize(Widget w)
 		       0, 0, XtWidth(w), XtHeight(w),
 		       MGR_ShadowThickness(w), XmSHADOW_OUT);
     }
+#else
+    AdaptToSize(w, NULL, &preferred, boxes);
+#endif
 
     B2_OldWidth(w) = XtWidth(w);
     B2_OldHeight(w) = XtHeight(w);
@@ -326,23 +341,23 @@ query_geometry(Widget w,
 	       XtWidgetGeometry *request,
 	       XtWidgetGeometry *reply)
 {
-    XtWidgetGeometry b2g;
+    XtWidgetGeometry geom;
     XtGeometryResult result;
 
     Dimension width, height;
 
-    fprintf(stderr, "query_geometry: %p(%s)\n", w, XtName(w));
+    fprintf(stderr, "Box2: query_geometry: %p(%s)\n", w, XtName(w));
 
-    b2g = *request;
-    _XmmmB2PreferredSize(w, &b2g);
+    geom = *request;
+    PreferredSize(w, &geom);
 
 #if 1
     /* test36 test38 test39 */
-    b2g.width = b2g.width < 16 ? 16 : b2g.width;
-    b2g.height = b2g.height < 16 ? 16 : b2g.height;
+    geom.width = geom.width < 16 ? 16 : geom.width;
+    geom.height = geom.height < 16 ? 16 : geom.height;
 
-    width = (request->request_mode & CWWidth) ? (request->width < 16 ? 16 : request->width) : b2g.width;
-    height = (request->request_mode & CWHeight) ? (request->height < 16 ? 16 : request->height) : b2g.height;
+    width = (request->request_mode & CWWidth) ? (request->width < 16 ? 16 : request->width) : geom.width;
+    height = (request->request_mode & CWHeight) ? (request->height < 16 ? 16 : request->height) : geom.height;
 #endif
 
     reply->width = width;
@@ -361,7 +376,59 @@ query_geometry(Widget w,
     return result;
 }
 
-/* This is called in response to a geometry request from the child w. */
+static void
+AdaptToSize(Widget rc, Widget instig, XtWidgetGeometry *pref, KidGeom *boxes)
+{
+    /* We kept the preferred child sizes around in a cache, boxes */
+    /* The requested size was pref, this contains the total height and
+       maximum width requested by the kids */
+    /* We may have been resized to a larger size */
+    /* Distribute extra among the expanding kids */
+    int i;
+    int n_exp = 0;
+    int tot_w = XtWidth(rc);
+    int tot_h = XtHeight(rc);
+    int curr_y = 0;
+    int h_extra;
+    int x, y, w, h, bw, dy;
+    for (i = 0; boxes[i].w; i++) {
+	if (boxes[i].pack_options > 0) n_exp++;
+    }
+    if (n_exp > 0)
+	h_extra = (tot_h - pref->height)/n_exp;
+    for (i = 0; boxes[i].w; i++) {
+	Widget child = boxes[i].w;
+	bw = child->core.border_width;
+	x = 0;
+	y = curr_y;
+	w = tot_w;
+	if (boxes[i].pack_options == 2) {
+	    h = dy = boxes[i].box.height + h_extra; /* EXPAND_WIDGET */
+	}
+	else if (boxes[i].pack_options == 1) {
+	    h = boxes[i].box.height; /* EXPAND_PADDING */
+	    dy = h + h_extra;
+	    y += h_extra/2; /* EXPAND_PADDING */
+	}
+	else {
+	    h = dy = boxes[i].box.height;
+	}
+	if (child == instig) {
+	    child->core.x = x;
+	    child->core.y = y;
+	    child->core.width = w;
+	    child->core.height = h;
+	    child->core.border_width = bw;
+	}
+	else {
+	    XtConfigureWidget(child, x, y, w, h, bw);
+	}
+	curr_y += dy;
+    }
+    
+}
+
+/* This is called in response to a geometry request from the child instig. */
 
 /*
  * Every time we return XtGeometryYes, we have a situation where a
@@ -372,29 +439,60 @@ query_geometry(Widget w,
  * Partially applied 25/8/1996 (Danny).
  */
 static XtGeometryResult
-geometry_manager(Widget w,
+geometry_manager(Widget instig,
 		 XtWidgetGeometry *request,
 		 XtWidgetGeometry *reply)
 {
-    Widget rc = XtParent(w);
+    Widget rc = XtParent(instig);
     XtWidgetGeometry wants;
     int ask, got;
+    int n_exp;
+    XtWidgetGeometry preferred;
+    XtWidgetGeometry up_request, up_reply;
+    XtGeometryResult result;
+    KidGeom *boxes;
 
     wants = *request;
     *reply = wants;
 
-    fprintf(stderr, "geometry_manager: %p(%s) > %p(%s)\n",
-	    rc, XtName(rc), w, XtName(w));
+    fprintf(stderr, "Box2: geometry_manager: %p(%s) > %p(%s)\n",
+	    rc, XtName(rc), instig, XtName(instig));
 
-    if (wants.request_mode && (CWX | CWY))
+    if (wants.request_mode & (CWX | CWY))
     {
 	return XtGeometryNo;
     }
 
+    /* See if we can resize */
+    XmmmBox2PreferredSizeAfterResize(rc, &preferred, instig, request, &n_exp, &boxes);
+    fprintf(stderr, "Box2: geometry_manager: request (%d, %d), preferred (%d, %d)\n",
+	    request->width, request->height, preferred.width, preferred.height);
+
+    if (preferred.height != XtHeight(rc) || preferred.width != XtWidth(rc)) {
+	up_request.request_mode = 0;
+	if (preferred.height != XtHeight(rc)) {
+	    up_request.request_mode |= CWHeight;
+	    up_request.height = preferred.height;
+	}
+	if (preferred.width != XtWidth(rc)) {
+	    up_request.request_mode |= CWWidth;
+	    up_request.width = preferred.width;
+	}
+	if (request->request_mode & XtCWQueryOnly)
+	    up_request.request_mode |= XtCWQueryOnly;
+	result = XtMakeGeometryRequest(rc, &up_request, &up_reply);
+    }
+    else {
+	result = XtGeometryYes;
+	goto finished;
+    }
+
+#if 0
     /* Try to do it */
-    if (_XmmmB2AdjustSize(rc, w, reply) == XtGeometryNo)
+    if (_XmmmB2AdjustSize(rc, instig, reply) == XtGeometryNo)
     {
-	return XtGeometryNo;
+	result = XtGeometryNo;
+	goto finished;
     }
 
     /* Now check what we actually got */
@@ -445,26 +543,38 @@ geometry_manager(Widget w,
     /* are we ok with everything they want. */
     if (ask == got && ask != 0)
     {
-	_XmmmB2SetKidGeo(B2_Boxes(rc), w);
-	return XtGeometryYes;
+	fprintf(stderr, "What should we do for _XmmmB2SetKidGeo?\n");
+	result = XtGeometryYes;
     }
-    /* no, but we can always compromise. LayoutNone is mostly handled if
-     * we got No when we made the geometry request. Otherwise the layout
-     * routine computed a compromise, which is typically the size they
-     * are before they made this request. */
     else
     {
+	/* no, but we can always compromise. LayoutNone is mostly
+	 * handled if we got No when we made the geometry
+	 * request. Otherwise the layout routine computed a
+	 * compromise, which is typically the size they are before
+	 * they made this request. */
 	reply->request_mode &= ~(CWX | CWY);
-
-	return XtGeometryAlmost;
+	result = XtGeometryAlmost;
     }
+#else
+    if (result == XtGeometryYes) {
+	/* Our size has changed. */
+	AdaptToSize(rc, instig, &preferred, boxes);
+    }
+    else if (result == XtGeometryAlmost) {
+	fprintf(stderr, "?QUE? (XtGeometryAlmost)\n");
+    }
+#endif
+finished:
+    XtFree((char *)boxes);
+    return result;
 }
 
 static void
 change_managed(Widget w)
 {
 
-    fprintf(stderr, "change_managed: %p(%s)\n", w, XtName(w));
+    fprintf(stderr, "Box2: change_managed: %p(%s)\n", w, XtName(w));
 
     _XmmmB2AdjustSize(w, NULL, NULL);
 
@@ -519,10 +629,6 @@ static void
 constraint_initialize(Widget request, Widget new_w,
 		      ArgList args, Cardinal *num_args)
 {
-    XmmmBox2Constraints c = (XmmmBox2Constraints)new_w->core.constraints;
-    fprintf(stderr,
-	    "constraint_initialize: %p(%s) > %p(%s)\n",
-	    XtParent(new_w), XtName(XtParent(new_w)), new_w, XtName(new_w));
 }
 
 
@@ -530,9 +636,6 @@ static Boolean
 constraint_set_values(Widget current, Widget request, Widget new_w,
 		      ArgList args, Cardinal *num_args)
 {
-    fprintf(stderr,
-	    "constraint_set_values: %p(%s) > %p(%s)\n",
-	    XtParent(new_w), XtName(XtParent(new_w)), new_w, XtName(new_w));
 }
 
 Widget
@@ -545,12 +648,92 @@ XmmmCreateBox2(Widget parent, char *name,
 
 /* Geometry management subroutines */
 
-XtGeometryResult
-_XmmmB2AdjustSize(Widget b2, Widget instig, XtWidgetGeometry *instig_request)
+/* FIXME: What happens if we resize (instig == 0) after a child has
+   requested expansion? Presumably that child will request the
+   same size again through XtQueryGeometry? */
+
+/* Preferred size after resizing instig to instig_request */
+/* Optionally returns number of expanding widgets and preferred
+   geometry of children */
+void
+XmmmBox2PreferredSizeAfterResize(Widget widget, XtWidgetGeometry *preferred,
+				 Widget instig, XtWidgetGeometry *instig_request,
+				 int *n_exp, KidGeom **boxes)
 {
-    XmmmBox2Widget box = (XmmmBox2Widget)b2;
+    XmmmBox2Widget box = (XmmmBox2Widget)widget;
+    int max_w, tot_h;
+    int i;
+    int w, h;
+    int wdef, hdef; /* defaults */
+    XtWidgetGeometry child_geom, *geom;
+    int n_expanding = 0;
+    int count = 0;
+    max_w = 0;
+    tot_h = 0;
+    if (boxes)
+	*boxes = (KidGeom *)XtCalloc(box->composite.num_children+1,
+				     sizeof(KidGeom));
+    for (i = 0; i < box->composite.num_children; i++) {
+	Widget child = box->composite.children[i];
+	if (XtIsManaged(child)) {
+	    XmmmBox2Constraints chc = (XmmmBox2Constraints)child->core.constraints;
+	    if (child == instig) {
+		geom = instig_request;
+	    }
+	    else {
+		geom = &child_geom;
+		XtQueryGeometry(child, NULL, geom);
+	    }
+	    if (chc->box_2.pack_options > 0) {
+		n_expanding++;
+		/* FIXME: These defaults are never used?  Most
+		   children seem to pass (CWWidth|CWHeight) back from
+		   XtQueryGeometry. */
+		if (instig) {
+		    /* Do not allow the instigator to steal our height */
+		    hdef = XtHeight(child);
+		    wdef = XtWidth(child);
+		}
+		else {
+		    hdef = MINIMUM_HEIGHT;
+		    wdef = MINIMUM_WIDTH;
+		}
+	    }
+	    else {
+		hdef = XtHeight(child);
+		wdef = XtWidth(child);
+	    }
+	    if ((geom->request_mode&(CWWidth|CWHeight)) != (CWWidth|CWHeight)) {
+		fprintf(stderr, "Using some defaults\n");
+	    }
+	    w = (geom->request_mode&CWWidth)?geom->width:wdef;
+	    h = (geom->request_mode&CWHeight)?geom->height:hdef;
+	    if (boxes) {
+		(*boxes)[count].w = child;
+		(*boxes)[count].pack_options = chc->box_2.pack_options;
+		(*boxes)[count].box.width = w;
+		(*boxes)[count].box.height = h;
+		count++;
+	    }
+	    max_w = MAX(max_w, w);
+	    tot_h += h;
+	}
+    }
+    preferred->request_mode = (CWWidth|CWHeight);
+    preferred->width = max_w;
+    preferred->height = tot_h;
+    if (n_exp)
+	*n_exp = n_expanding;
+}
+
+/* FIXME: External */
+XtGeometryResult
+_XmmmB2AdjustSize(Widget widget, Widget instig, XtWidgetGeometry *instig_request)
+{
+    XmmmBox2Widget box = (XmmmBox2Widget)widget;
     XtWidgetGeometry *geom;
     XtWidgetGeometry child_geom;
+    XtWidgetGeometry preferred;
     int i;
     int max_w;
     int tot_h;
@@ -567,33 +750,14 @@ _XmmmB2AdjustSize(Widget b2, Widget instig, XtWidgetGeometry *instig_request)
      * minimum size. */
     /* First compute desired total height, and count widgets which
      * have the "expand_" constraints set. */
-    fprintf(stderr, "_XmmmB2AdjustSize: %p(%s)\n", b2, XtName(b2));
-    max_w = 0;
-    tot_h = 0;
-    for (i = 0; i < box->composite.num_children; i++) {
-	Widget child = box->composite.children[i];
-	if (XtIsManaged(child)) {
-	    XmmmBox2Constraints chc = (XmmmBox2Constraints)child->core.constraints;
-	    if (child == instig) {
-		geom = instig_request;
-	    }
-	    else {
-		geom = &child_geom;
-		XtQueryGeometry(child, NULL, geom);
-	    }
-	    w = (geom->request_mode&CWWidth)?geom->width:child->core.width;
-	    h = (geom->request_mode&CWHeight)?geom->height:child->core.height;
-	    if (chc->box_2.pack_options > 0) {
-		n_exp++;
-		h = MINIMUM_HEIGHT;
-		w = MINIMUM_WIDTH;
-	    }
-	    max_w = MAX(max_w, w);
-	    tot_h += h;
-	}
-    }
+    fprintf(stderr, "_XmmmB2AdjustSize: %p(%s)\n", widget, XtName(widget));
+    XmmmBox2PreferredSizeAfterResize(widget, &preferred, instig, instig_request, &n_exp, NULL);
+    /* FIXME the mask is unused; we know this returns width and height */
+    /* If instig is set, we are being called from geometry_manager. */
+    max_w = preferred.width;
+    tot_h = preferred.height;
     if (n_exp > 0) {
-	h_extra = (box->core.height - tot_h)/n_exp;
+	h_extra = (XtHeight(box) - tot_h)/n_exp;
     }
     if (h_extra < 0) {
 	h_extra = 0;
@@ -613,8 +777,8 @@ _XmmmB2AdjustSize(Widget b2, Widget instig, XtWidgetGeometry *instig_request)
 	    }
 	    x = (geom->request_mode&CWX)?geom->x:child->core.x;
 	    y = (geom->request_mode&CWY)?geom->y:child->core.y;
-	    w = (geom->request_mode&CWWidth)?geom->width:child->core.width;
-	    h = (geom->request_mode&CWHeight)?geom->height:child->core.height;
+	    w = (geom->request_mode&CWWidth)?geom->width:XtWidth(child);
+	    h = (geom->request_mode&CWHeight)?geom->height:XtHeight(child);
 	    bw = (geom->request_mode&CWBorderWidth)?geom->border_width:child->core.border_width;
 	    /* x, y, w, h, bw: geometry values either from instigator,
 	       OR from preferred geometry of child, OR from current
@@ -626,7 +790,7 @@ _XmmmB2AdjustSize(Widget b2, Widget instig, XtWidgetGeometry *instig_request)
 	    if (chc->box_2.pack_options == 2) {
 		h = MINIMUM_HEIGHT + h_extra; /* EXPAND_WIDGET */
 		conf_h = h;
-		conf_w = box->core.width;
+		conf_w = XtWidth(box);
 	    }
 	    else if (chc->box_2.pack_options == 1) {
 		h = MINIMUM_HEIGHT + h_extra; /* EXPAND_WIDGET */
@@ -642,43 +806,12 @@ _XmmmB2AdjustSize(Widget b2, Widget instig, XtWidgetGeometry *instig_request)
 	    curr_y += h;
 	}
     }
-    return XtGeometryNo;
+    return XtGeometryYes;
 }
 
-void
-_XmmmB2PreferredSize(Widget b2, XtWidgetGeometry *b2g)
+static void
+PreferredSize(Widget widget, XtWidgetGeometry *preferred)
 {
-    int max_w, tot_h;
-    int i;
-    int w, h;
-    XmmmBox2Widget box = (XmmmBox2Widget)b2;
-    fprintf(stderr, "_XmmmB2PreferredSize %p %p\n", b2, b2g);
-    max_w = 0;
-    tot_h = 0;
-    for (i = 0; i < box->composite.num_children; i++) {
-	Widget child = box->composite.children[i];
-	if (XtIsManaged(child)) {
-	    XtWidgetGeometry child_geom;
-	    XmmmBox2Constraints chc = (XmmmBox2Constraints)child->core.constraints;
-	    XtQueryGeometry(child, NULL, &child_geom);
-	    w = (child_geom.request_mode&CWWidth)?child_geom.width:child->core.width;
-	    h = (child_geom.request_mode&CWHeight)?child_geom.height:child->core.height;
-	    if (chc->box_2.pack_options > 0) {
-		h = MINIMUM_HEIGHT;
-		w = MINIMUM_WIDTH;
-	    }
-	    max_w = MAX(max_w, w);
-	    tot_h += h;
-	}
-    }
-    b2g->request_mode = (CWWidth|CWHeight);
-    b2g->width = max_w;
-    b2g->height = tot_h;
-}
-
-void
-_XmmmB2SetKidGeo(XmB2KidGeometry kg, Widget instigator)
-{
-    fprintf(stderr, "_XmmmB2SetKidGeo %p %p\n", kg, instigator);
+    XmmmBox2PreferredSizeAfterResize(widget, preferred, NULL, NULL, NULL, NULL);
 }
 

@@ -29,18 +29,28 @@
 #ifndef _DDD_windows_h
 #define _DDD_windows_h
 
-#ifdef IF_MOTIF
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
+#if defined(IF_MOTIF)
 #include <X11/Intrinsic.h>
+#endif
 
-#endif // IF_MOTIF
+#if !defined(IF_XM)
+#include <GUI/Window.h>
+#endif
 
 #include "gtk_wrapper.h"
 
 #include "bool.h"
 
 // Shells (only used if separate windows are used)
-extern WINDOW_P command_shell;
+#if defined(IF_XM)
+extern Widget command_shell;
+#else
+extern GUI::WidgetPtr<GUI::Window> command_shell;
+#endif
 extern WINDOW_P data_disp_shell;
 extern WINDOW_P source_view_shell;
 
@@ -90,6 +100,11 @@ extern bool have_tool_window();
 
 // Close current window
 extern void DDDCloseCB              (CB_ARG_LIST_1());
+
+#if !defined(IF_XM)
+extern bool CloseCB                 (GUI::Widget*, XEvent*);
+#endif
+
 
 // Register this event handler with all shells
 extern void StructureNotifyEH(Widget, XtPointer, XEvent *, Boolean *);

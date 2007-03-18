@@ -101,7 +101,7 @@ SelectionDialog::~SelectionDialog(void)
 {
     if (box_) delete box_;
     if (box1_) delete box1_;
-    if (list_) delete list_;
+    delete list_;
     XtDestroyWidget(dlg_);
 }
 

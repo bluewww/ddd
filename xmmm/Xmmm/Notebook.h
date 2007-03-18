@@ -26,35 +26,26 @@
 // the constructor, unlike the Gtk ones.  Motif (Xt) widgets cannot be
 // reparented.  Therefore we need a constructor with extra arguments.
 
-#ifndef XMMM_BOX_H
-#define XMMM_BOX_H
+#ifndef XMMM_NOTEBOOK_H
+#define XMMM_NOTEBOOK_H
 
 #include <Xmmm/Container.h>
-#include <Xm/RowColumn.h>
+#include <Xmmm/Notebook2.h>
 
 namespace Xmmm {
 
-    class VBox: public Container {
-	::Widget rc_;
+    class Notebook: public Container {
+	::Widget nb_;
     public:
-	void init(::Widget parent, const Xmmm::String &name);
-	VBox(Xmmm::Widget &parent, const Xmmm::String &name);
-	VBox(::Widget parent, const Xmmm::String &name); // TEMPORARY
-	~VBox(void);
+	Notebook(Xmmm::Container &parent, const Xmmm::String &name);
+	Notebook(::Widget parent, const Xmmm::String &name); // TEMPORARY
+	~Notebook(void);
+	int get_n_pages(void) const;
+	void set_current_page(int);
 	::Widget internal(void); // TEMPORARY
-	operator ::Widget(void); // TEMPORARY
-    };
-
-    class HBox: public Container {
-	::Widget rc_;
-    public:
-	void init(::Widget parent, const Xmmm::String &name);
-	HBox(Xmmm::Widget &parent, const Xmmm::String &name);
-	HBox(::Widget parent, const Xmmm::String &name); // TEMPORARY
-	~HBox(void);
-	::Widget internal(void); // TEMPORARY
+	::Widget xt_container(void);
     };
 
 }
 
-#endif // XMMM_BOX_H
+#endif // XMMM_NOTEBOOK_H

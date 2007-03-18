@@ -1,6 +1,4 @@
-// -*- C++ -*-
-
-// High-level GUI wrapper for Xm.
+// High-level GUI wrapper for Motif.
 
 // Copyright (C) 2007 Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
@@ -26,35 +24,52 @@
 // the constructor, unlike the Gtk ones.  Motif (Xt) widgets cannot be
 // reparented.  Therefore we need a constructor with extra arguments.
 
-#ifndef XMMM_BOX_H
-#define XMMM_BOX_H
+#include <iostream>
 
-#include <Xmmm/Container.h>
-#include <Xm/RowColumn.h>
+#include <Xmmm/Notebook.h>
+#include <Xmmm/Notebook2.h>
+#include <Xmmm/Notebook2P.h>
 
-namespace Xmmm {
+using namespace Xmmm;
 
-    class VBox: public Container {
-	::Widget rc_;
-    public:
-	void init(::Widget parent, const Xmmm::String &name);
-	VBox(Xmmm::Widget &parent, const Xmmm::String &name);
-	VBox(::Widget parent, const Xmmm::String &name); // TEMPORARY
-	~VBox(void);
-	::Widget internal(void); // TEMPORARY
-	operator ::Widget(void); // TEMPORARY
-    };
-
-    class HBox: public Container {
-	::Widget rc_;
-    public:
-	void init(::Widget parent, const Xmmm::String &name);
-	HBox(Xmmm::Widget &parent, const Xmmm::String &name);
-	HBox(::Widget parent, const Xmmm::String &name); // TEMPORARY
-	~HBox(void);
-	::Widget internal(void); // TEMPORARY
-    };
-
+Notebook::Notebook(::Widget parent, const Xmmm::String &name)
+{
+    nb_ = XmmmCreateNotebook(parent, (char *)name.c(), NULL, 0);
 }
 
-#endif // XMMM_BOX_H
+Notebook::Notebook(Xmmm::Container &parent, const Xmmm::String &name)
+{
+    nb_ = XmmmCreateNotebook(parent.xt_container(), (char *)name.c(), NULL, 0);
+}
+
+Notebook::~Notebook(void)
+{
+    XtDestroyWidget(nb_);
+}
+
+::Widget
+Notebook::internal(void)
+{
+    return nb_;
+}
+
+::Widget
+Notebook::xt_container(void)
+{
+    return ((XmmmNotebookWidget)nb_)->notebook2.change;
+}
+
+int
+Notebook::get_n_pages(void) const
+{
+    XmmmNotebookWidget nbw = (XmmmNotebookWidget)nb_;
+    CompositeWidget change = (CompositeWidget)nbw->notebook2.change;
+    return change->composite.num_children;
+}
+
+void
+Notebook::set_current_page(int n)
+{
+    std::cerr << "SET CURRENT PAGE " << n << "\n";
+}
+

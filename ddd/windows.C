@@ -33,7 +33,9 @@ char windows_rcsid[] =
 #define LOG_EVENTS   1
 #define LOG_MOVES    0
 
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif
 
 #include "windows.h"
 
@@ -85,7 +87,11 @@ char windows_rcsid[] =
 //-----------------------------------------------------------------------------
 
 // Shells (only used if separate windows are used)
-WINDOW_P command_shell;
+#if defined(IF_XM)
+Widget command_shell;
+#else
+GUI::WidgetPtr<GUI::Window> command_shell = NULL;
+#endif
 WINDOW_P data_disp_shell;
 WINDOW_P source_view_shell;
 
@@ -941,6 +947,16 @@ void DDDCloseCB(CB_ARG_LIST_1(w))
 	popdown_shell(shell);
 }
 
+#if !defined(IF_XM)
+#ifdef NAG_ME
+#warning Temporary fudge
+#endif
+// Generic close callback
+bool CloseCB(GUI::Widget *w, XEvent *ev)
+{
+    DDDCloseCB(CB_ARGS_1(w->internal()));
+}
+#endif
 
 
 // Specific close and open callbacks

@@ -477,7 +477,9 @@ dnl
 AC_SUBST(gddd)
 AC_SUBST(GDDD)
 dnl Create symbolic links to GUI headers
+rm -f xmmm/GUI
 ${LN_S} Xmmm xmmm/GUI
+rm -f gtkx/GUI
 ${LN_S} GtkX gtkx/GUI
 AC_ARG_WITH([gtk],AS_HELP_STRING([--with-gtk],[Use GTK interface (experimental)]),[with_gtk="${withval}"],[with_gtk=no])
 AC_ARG_WITH([xmmm],AS_HELP_STRING([--with-xmmm],[Use new Motif interface (experimental)]),[with_xmmm="${withval}"],[with_xmmm=no])

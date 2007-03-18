@@ -30,24 +30,10 @@
 extern "C" {
 #endif
 
-/* geometry information for children of the Box2.  Used to
-   simplify the layout routines */
-typedef struct _XmB2KidGeometryRec
-{
-    Widget kid;
-    XtWidgetGeometry box;
-    Dimension margin_top;
-    Dimension margin_bottom;
-    Dimension baseline;
-} XmB2KidGeometryRec, *XmB2KidGeometry;
-
-
-/* Define the rowcolumn instance part */
+/* Define the box2 instance part */
 typedef struct {
 
     Dimension spacing;
-
-    XmB2KidGeometry boxes;
 
     XtCallbackList entry_callback;
     XtCallbackList map_callback;
@@ -129,6 +115,8 @@ extern XmmmBox2ClassRec xmmmBox2ClassRec;
 
 #define B2_Boxes(m) \
     (((XmmmBox2Widget)(m))->box_2.boxes)
+
+    XtGeometryResult _XmmmB2AdjustSize(Widget, Widget, XtWidgetGeometry *);
 
 #ifdef __cplusplus
 }

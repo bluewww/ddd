@@ -26,35 +26,37 @@
 // the constructor, unlike the Gtk ones.  Motif (Xt) widgets cannot be
 // reparented.  Therefore we need a constructor with extra arguments.
 
-#ifndef XMMM_BOX_H
-#define XMMM_BOX_H
+#ifndef XMMM_DIALOG_H
+#define XMMM_DIALOG_H
+
+#include <sigc++/signal.h>
 
 #include <Xmmm/Container.h>
-#include <Xm/RowColumn.h>
+#include <Xmmm/Box1.h>
+#include <Xmmm/Button.h>
 
 namespace Xmmm {
 
-    class VBox: public Container {
-	::Widget rc_;
+    class Dialog: public Container {
+	::Widget dlg_;
+	Box1 *box1_;
+	void init_signals(void);
+    protected:
+	sigc::signal<bool,XEvent*> signal_delete_;
+	static void delete_callback(::Widget widget, XtPointer data);
+	sigc::signal<void> signal_unmap_;
+	static void unmap_callback(::Widget widget, XtPointer data);
     public:
-	void init(::Widget parent, const Xmmm::String &name);
-	VBox(Xmmm::Widget &parent, const Xmmm::String &name);
-	VBox(::Widget parent, const Xmmm::String &name); // TEMPORARY
-	~VBox(void);
-	::Widget internal(void); // TEMPORARY
-	operator ::Widget(void); // TEMPORARY
-    };
-
-    class HBox: public Container {
-	::Widget rc_;
-    public:
-	void init(::Widget parent, const Xmmm::String &name);
-	HBox(Xmmm::Widget &parent, const Xmmm::String &name);
-	HBox(::Widget parent, const Xmmm::String &name); // TEMPORARY
-	~HBox(void);
-	::Widget internal(void); // TEMPORARY
+	Dialog(::Widget parent, const Xmmm::String &name); // TEMPORARY
+	Dialog(Xmmm::Widget parent, const Xmmm::String &name);
+	~Dialog(void);
+	::Widget internal(void);
+	::Widget xt_container(void);
+	sigc::signal<bool,XEvent*> &signal_delete_event(void);
+	sigc::signal<void> &signal_unmap(void);
+	Button *add_button(const Xmmm::String& button_text);
     };
 
 }
 
-#endif // XMMM_BOX_H
+#endif // XMMM_DIALOG_H

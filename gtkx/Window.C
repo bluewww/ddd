@@ -23,36 +23,57 @@
 // Unfortunately Motif widgets require parent and name arguments to
 // the constructor, unlike the Gtk ones.  Motif (Xt) widgets cannot be
 // reparented.  Therefore we need a constructor with extra arguments.
-// A brief look at QT indicates that this will be required there as
-// well.
 
-#ifndef GTKX_BOX_H
-#define GTKX_BOX_H
+#include <GtkX/Window.h>
 
-#include <gtkmm/container.h>
-#include <gtkmm/box.h>
-#include <GtkX/Container.h>
+using namespace GtkX;
 
-namespace GtkX {
-
-    class VBox: public Gtk::VBox, public Container {
-    public:
-	VBox(GtkX::Container &parent, const String &name);
-	Gtk::Widget *internal(void);
-	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
-	void show(void) {Widget::show();}
-	void hide(void) {Widget::hide();}
-    };
-
-    class HBox: public Gtk::HBox, public Container {
-    public:
-	HBox(GtkX::Container &parent, const String &name);
-	Gtk::Widget *internal(void);
-	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
-	void show(void) {Widget::show();}
-	void hide(void) {Widget::hide();}
-    };
-
+void
+GtkX::Window::init_signals(void)
+{
+    Gtk::Widget::signal_delete_event().connect(sigc::mem_fun(*this, &GtkX::Window::delete_callback));
 }
 
-#endif // GTKX_BOX_H
+Window::Window(Gtk::Window *parent, const String &name,
+	       int argc, char **argv)
+{
+    set_name(name.s());
+    set_title(name.s());
+}
+
+Window::Window(const String &name)
+{
+    set_name(name.s());
+    set_title(name.s());
+}
+
+Window::~Window(void)
+{
+}
+
+Gtk::Widget *
+Window::internal(void)
+{
+    return this;
+}
+
+Gtk::Container *
+Window::gtk_container(void)
+{
+    return this;
+}
+
+sigc::signal<bool, GdkEvent *> &
+GtkX::Window::signal_delete_event(void)
+{
+    return signal_delete_;
+}
+
+bool
+GtkX::Window::delete_callback(GdkEventAny *data)
+{
+    // FIXME:
+    // Slight differences between Gtkmm signature and our unified interface.
+    signal_delete_((GdkEvent *)data);
+}
+
