@@ -19,8 +19,8 @@
  * If not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
-#ifndef XMMM_NOTEBOOK3P_H
-#define XMMM_NOTEBOOK3P_H
+#ifndef XMMM_XMMMNOTEBOOKP_H
+#define XMMM_XMMMNOTEBOOKP_H
 
 #include <Xm/ManagerP.h>
 
@@ -28,7 +28,7 @@
 extern "C" {
 #endif
 
-/* Define the Notebook3 instance part */
+/* Define the XmmmNotebook instance part */
 typedef struct {
     int current_pageno;
     WidgetList  buttons;
@@ -37,54 +37,54 @@ typedef struct {
     WidgetList  pages;
     Cardinal    num_pages;
     Cardinal    max_pages;
-} XmmmNotebook3Part;
+} XmmmNotebookPart;
 
 /* Define the full instance record */
-typedef struct _XmmmNotebook3Rec {
+typedef struct _XmmmNotebookRec {
     CorePart core;
     CompositePart composite;
     ConstraintPart constraint;
     XmManagerPart manager;
-    XmmmNotebook3Part notebook3;
-} XmmmNotebook3Rec;
+    XmmmNotebookPart notebook;
+} XmmmNotebookRec;
 
 /* Define class part structure */
 typedef struct {
     int mumble;
-} XmmmNotebook3ClassPart;
+} XmmmNotebookClassPart;
 
 /* Define the full class record */
-typedef struct _XmmmNotebook3ClassRec {
+typedef struct _XmmmNotebookClassRec {
     CoreClassPart core_class;
     CompositeClassPart composite_class;
     ConstraintClassPart constraint_class;
     XmManagerClassPart manager_class;
-    XmmmNotebook3ClassPart notebook3_class;
-} XmmmNotebook3ClassRec;
+    XmmmNotebookClassPart notebook_class;
+} XmmmNotebookClassRec;
 
 /* Define the Constraint Resources */
-typedef struct XmmmNotebook3ConstraintPart {
+typedef struct XmmmNotebookConstraintPart {
     Cardinal pack_options;
-} XmmmNotebook3ConstraintPart;
+} XmmmNotebookConstraintPart;
 
-typedef struct XmmmNotebook3ConstraintRec {
+typedef struct XmmmNotebookConstraintRec {
     XmManagerConstraintPart manager;
-    XmmmNotebook3ConstraintPart notebook3;
-} XmmmNotebook3ConstraintRec, *XmmmNotebook3Constraints;
+    XmmmNotebookConstraintPart notebook;
+} XmmmNotebookConstraintRec, *XmmmNotebookConstraints;
 
-extern XmmmNotebook3ClassRec xmmmNotebook3ClassRec;
+extern XmmmNotebookClassRec xmmmNotebookClassRec;
 
 /*
  * easy access macros
  */
 #define NB_Buttons(n) \
-    (((XmmmNotebook3Widget)(n))->notebook3.buttons)
+    (((XmmmNotebookWidget)(n))->notebook.buttons)
 
 #define NB_Change(n) \
-    (((XmmmNotebook3Widget)(n))->notebook3.change)
+    (((XmmmNotebookWidget)(n))->notebook.change)
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* XMMM_NOTEBOOK3P_H */
+#endif /* XMMM_XMMMNOTEBOOKP_H */

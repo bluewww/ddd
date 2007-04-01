@@ -24,8 +24,8 @@ static const char rcsid[] = "$Header:$";
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <Xmmm/Notebook3.h>
-#include <Xmmm/Notebook3P.h>
+#include <Xmmm/XmmmNotebook.h>
+#include <Xmmm/XmmmNotebookP.h>
 
 #undef MAX
 #define MAX(x,y) ((x)>(y)?(x):(y))
@@ -69,15 +69,15 @@ typedef struct _KidGeom {
 } KidGeom;
 
 extern void
-XmmmNotebook3PreferredSizeAfterResize(Widget widget, XtWidgetGeometry *preferred,
-				      Widget instig, XtWidgetGeometry *instig_request,
-				      KidGeom **, int *button_ht);
+XmmmNotebookPreferredSizeAfterResize(Widget widget, XtWidgetGeometry *preferred,
+				     Widget instig, XtWidgetGeometry *instig_request,
+				     KidGeom **, int *button_ht);
 static void AdaptToSize(Widget rc, Widget instig, XtWidgetGeometry *pref,
 			KidGeom *boxes, int button_ht);
 
 
-/* Resources for the Notebook3 class */
-#define Offset(field) XtOffsetOf(XmmmNotebook3Rec, notebook3.field)
+/* Resources for the XmmmNotebook class */
+#define Offset(field) XtOffsetOf(XmmmNotebookRec, notebook.field)
 static XtResource resources[] =
 {
     {
@@ -90,8 +90,8 @@ static XtResource resources[] =
 
 #if 0
 
-#define Offset(field) XtOffsetOf(XmmmNotebook3ConstraintRec, box_2.field)
-static XtResource notebook3ConstraintResources[] =
+#define Offset(field) XtOffsetOf(XmmmNotebookConstraintRec, box_2.field)
+static XtResource notebookConstraintResources[] =
 {
     {
 	"pack_options", "Pack_Options", XmRCardinal,
@@ -103,13 +103,13 @@ static XtResource notebook3ConstraintResources[] =
 
 #endif
 
-XmmmNotebook3ClassRec xmmmNotebook3ClassRec =
+XmmmNotebookClassRec xmmmNotebookClassRec =
 {
     /* Core class part */
     {
 	/* superclass            */ (WidgetClass) & xmManagerClassRec,
-	/* class_name            */ "XmmmNotebook3",
-	/* widget_size           */ sizeof(XmmmNotebook3Rec),
+	/* class_name            */ "XmmmNotebook",
+	/* widget_size           */ sizeof(XmmmNotebookRec),
 	/* class_initialize      */ class_initialize,
 	/* class_part_initialize */ class_part_initialize,
 	/* class_inited          */ False,
@@ -171,14 +171,14 @@ XmmmNotebook3ClassRec xmmmNotebook3ClassRec =
 	/* parent_process         */ XmInheritParentProcess,
 	/* extension              */ NULL
     },
-    /* XmmmNotebook3 Area part */
+    /* XmmmNotebook Area part */
     {
 	/* mumble */ 0
     },
 };
 
 
-WidgetClass xmmmNotebook3WidgetClass = (WidgetClass)&xmmmNotebook3ClassRec;
+WidgetClass xmmmNotebookWidgetClass = (WidgetClass)&xmmmNotebookClassRec;
 
 
 static XtTranslations menubar_trans;
@@ -200,14 +200,14 @@ static void
 initialize(Widget request, Widget new_w,
 	   ArgList args, Cardinal *num_args)
 {
-    XmmmNotebook3Widget nb = (XmmmNotebook3Widget)new_w;
-    nb->notebook3.num_buttons = 0;
-    nb->notebook3.max_buttons = 0;
-    nb->notebook3.buttons = NULL;
-    nb->notebook3.pages = NULL;
-    nb->notebook3.num_pages = 0;
-    nb->notebook3.max_pages = 0;
-    nb->notebook3.current_pageno = 0;
+    XmmmNotebookWidget nb = (XmmmNotebookWidget)new_w;
+    nb->notebook.num_buttons = 0;
+    nb->notebook.max_buttons = 0;
+    nb->notebook.buttons = NULL;
+    nb->notebook.pages = NULL;
+    nb->notebook.num_pages = 0;
+    nb->notebook.max_pages = 0;
+    nb->notebook.current_pageno = 0;
 }
 
 static void
@@ -243,7 +243,7 @@ resize(Widget w)
     KidGeom *boxes;
     int button_ht;
     fprintf(stderr, "resize %p(%s)\n", w, XtName(w));
-    XmmmNotebook3PreferredSizeAfterResize(w, &preferred, NULL, NULL,
+    XmmmNotebookPreferredSizeAfterResize(w, &preferred, NULL, NULL,
 					  &boxes, &button_ht);
 
     AdaptToSize(w, NULL, &preferred, boxes, button_ht);
@@ -252,7 +252,7 @@ resize(Widget w)
 static void
 expose(Widget w, XEvent *event, Region region)
 {
-    XmmmNotebook3Widget nb = (XmmmNotebook3Widget)w;
+    XmmmNotebookWidget nb = (XmmmNotebookWidget)w;
     _XmDrawShadows(XtDisplay(w), XtWindow(w),
 		   nb->manager.top_shadow_GC,
 		   nb->manager.bottom_shadow_GC,
@@ -274,7 +274,7 @@ query_geometry(Widget w,
 
     Dimension width, height;
 
-    fprintf(stderr, "Notebook3: query_geometry: %p(%s)\n", w, XtName(w));
+    fprintf(stderr, "XmmmNotebook: query_geometry: %p(%s)\n", w, XtName(w));
 
     geom = *request;
     PreferredSize(w, &geom);
@@ -365,7 +365,7 @@ geometry_manager(Widget instig,
 
     *reply = *request;
 
-    fprintf(stderr, "Notebook3: geometry_manager: %p(%s) > %p(%s)\n",
+    fprintf(stderr, "XmmmNotebook: geometry_manager: %p(%s) > %p(%s)\n",
 	    rc, XtName(rc), instig, XtName(instig));
 
     if (request->request_mode & (CWX | CWY))
@@ -374,9 +374,9 @@ geometry_manager(Widget instig,
     }
 
     /* See if we can resize */
-    XmmmNotebook3PreferredSizeAfterResize(rc, &preferred, instig, request, &boxes,
+    XmmmNotebookPreferredSizeAfterResize(rc, &preferred, instig, request, &boxes,
 					  &button_ht);
-    fprintf(stderr, "Notebook3: geometry_manager: request (%d, %d), preferred (%d, %d)\n",
+    fprintf(stderr, "XmmmNotebook: geometry_manager: request (%d, %d), preferred (%d, %d)\n",
 	    request->width, request->height, preferred.width, preferred.height);
 
     if (preferred.height != XtHeight(rc) || preferred.width != XtWidth(rc)) {
@@ -438,9 +438,9 @@ change_managed(Widget w)
     KidGeom *boxes;
     int button_ht;
 
-    fprintf(stderr, "Notebook3: change_managed: %p(%s)\n", w, XtName(w));
+    fprintf(stderr, "XmmmNotebook: change_managed: %p(%s)\n", w, XtName(w));
 
-    XmmmNotebook3PreferredSizeAfterResize(w, &preferred, NULL, NULL, &boxes,
+    XmmmNotebookPreferredSizeAfterResize(w, &preferred, NULL, NULL, &boxes,
 					  &button_ht);
     try_to_resize(w, &preferred, False);
     AdaptToSize(w, NULL, &preferred, boxes, button_ht);
@@ -450,8 +450,8 @@ change_managed(Widget w)
 static void
 insert_child(Widget w)
 {
-    XmmmNotebook3Widget nb = (XmmmNotebook3Widget)XtParent(w);
-    XmmmNotebook3Part *nbp = &nb->notebook3;
+    XmmmNotebookWidget nb = (XmmmNotebookWidget)XtParent(w);
+    XmmmNotebookPart *nbp = &nb->notebook;
     xmManagerClassRec.composite_class.insert_child(w);
     if (XmIsToggleButton(w)) {
 	/* This is a control */
@@ -503,10 +503,10 @@ constraint_set_values(Widget current, Widget request, Widget new_w,
 }
 
 Widget
-XmmmCreateNotebook3(Widget parent, char *name,
-	       Arg *arglist, Cardinal argcount)
+XmmmCreateNotebook(Widget parent, char *name,
+		   Arg *arglist, Cardinal argcount)
 {
-    return XtCreateWidget(name, xmmmNotebook3WidgetClass, parent,
+    return XtCreateWidget(name, xmmmNotebookWidgetClass, parent,
 			  arglist, argcount);
 }
 
@@ -520,12 +520,12 @@ XmmmCreateNotebook3(Widget parent, char *name,
 /* Optionally returns number of expanding widgets and preferred
    geometry of children */
 void
-XmmmNotebook3PreferredSizeAfterResize(Widget widget, XtWidgetGeometry *preferred,
-				      Widget instig, XtWidgetGeometry *instig_request,
-				      KidGeom **boxes, int *button_ht)
+XmmmNotebookPreferredSizeAfterResize(Widget widget, XtWidgetGeometry *preferred,
+				     Widget instig, XtWidgetGeometry *instig_request,
+				     KidGeom **boxes, int *button_ht)
 {
-    XmmmNotebook3Widget nb = (XmmmNotebook3Widget)widget;
-    XmmmNotebook3Part *nbp = &nb->notebook3;
+    XmmmNotebookWidget nb = (XmmmNotebookWidget)widget;
+    XmmmNotebookPart *nbp = &nb->notebook;
     int tot_w1, max_h1, max_w2, max_h2;
     int i;
     int w, h;
@@ -564,7 +564,7 @@ XmmmNotebook3PreferredSizeAfterResize(Widget widget, XtWidgetGeometry *preferred
     max_h2 = 0;
     for (i = 0; i < nbp->num_pages; i++) {
 	Widget child = nbp->pages[i];
-	XmmmNotebook3Constraints chc = (XmmmNotebook3Constraints)child->core.constraints;
+	XmmmNotebookConstraints chc = (XmmmNotebookConstraints)child->core.constraints;
 	if (child == instig) {
 	    geom = instig_request;
 	}
@@ -594,13 +594,13 @@ XmmmNotebook3PreferredSizeAfterResize(Widget widget, XtWidgetGeometry *preferred
 static void
 PreferredSize(Widget widget, XtWidgetGeometry *preferred)
 {
-    XmmmNotebook3PreferredSizeAfterResize(widget, preferred, NULL, NULL, NULL, NULL);
+    XmmmNotebookPreferredSizeAfterResize(widget, preferred, NULL, NULL, NULL, NULL);
 }
 
-Cardinal XmmmNotebook3NumPages(Widget w)
+Cardinal XmmmNotebookNumPages(Widget w)
 {
-    XmmmNotebook3Widget nb = (XmmmNotebook3Widget)w;
-    return nb->notebook3.num_buttons;
+    XmmmNotebookWidget nb = (XmmmNotebookWidget)w;
+    return nb->notebook.num_buttons;
 }
 
 static void
@@ -611,8 +611,8 @@ ChangePanelCB(Widget w, XtPointer client_data, XtPointer call_data)
     XmToggleButtonCallbackStruct *cbs = 
 	(XmToggleButtonCallbackStruct *)call_data;
     Boolean set = cbs->set;
-    XmmmNotebook3Widget nb = (XmmmNotebook3Widget)XtParent(w);
-    XmmmNotebook3Part *nbp = &nb->notebook3;
+    XmmmNotebookWidget nb = (XmmmNotebookWidget)XtParent(w);
+    XmmmNotebookPart *nbp = &nb->notebook;
 
     if (set)
     {
@@ -636,11 +636,11 @@ ChangePanelCB(Widget w, XtPointer client_data, XtPointer call_data)
 }
 
 Widget
-XmmmNotebook3InsertPage(Widget w, char *name, Arg *arglist, Cardinal argcount)
+XmmmNotebookInsertPage(Widget w, char *name, Arg *arglist, Cardinal argcount)
 {
     /* FIXME: At present page is always a RowColumn */
-    XmmmNotebook3Widget nb = (XmmmNotebook3Widget)w;
-    int npages = nb->notebook3.num_buttons;
+    XmmmNotebookWidget nb = (XmmmNotebookWidget)w;
+    int npages = nb->notebook.num_buttons;
     Widget child = XmCreateRowColumn(w, name, arglist, argcount);
     Widget button;
     Arg args[10];

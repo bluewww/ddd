@@ -27,19 +27,19 @@
 #include <iostream>
 
 #include <Xmmm/Notebook.h>
-#include <Xmmm/Notebook3.h>
-#include <Xmmm/Notebook3P.h>
+#include <Xmmm/XmmmNotebook.h>
+#include <Xmmm/XmmmNotebookP.h>
 
 using namespace Xmmm;
 
 Notebook::Notebook(::Widget parent, const Xmmm::String &name)
 {
-    nb_ = XmmmCreateNotebook3(parent, (char *)name.c(), NULL, 0);
+    nb_ = XmmmCreateNotebook(parent, (char *)name.c(), NULL, 0);
 }
 
 Notebook::Notebook(Xmmm::Container &parent, const Xmmm::String &name)
 {
-    nb_ = XmmmCreateNotebook3(parent.xt_container(), (char *)name.c(), NULL, 0);
+    nb_ = XmmmCreateNotebook(parent.xt_container(), (char *)name.c(), NULL, 0);
 }
 
 Notebook::~Notebook(void)
@@ -56,26 +56,18 @@ Notebook::internal(void)
 ::Widget
 Notebook::xt_container(void)
 {
-    // return ((XmmmNotebookWidget)nb_)->notebook2.change;
     return internal();
 }
 
 int
 Notebook::get_n_pages(void) const
 {
-#if 0
-    XmmmNotebook2Widget nbw = (XmmmNotebook2Widget)nb_;
-    CompositeWidget change = (CompositeWidget)nbw->notebook2.change;
-    return change->composite.num_children;
-#else
-    XmmmNotebook3Widget nbw = (XmmmNotebook3Widget)nb_;
-    return nbw->composite.num_children;
-#endif
+    return XmmmNotebookNumPages(nb_);
 }
 
 void
 Notebook::set_current_page(int n)
 {
-    std::cerr << "SET CURRENT PAGE " << n << "\n";
+    std::cerr << "SET CURRENT PAGE " << n << "? - not implemented\n";
 }
 

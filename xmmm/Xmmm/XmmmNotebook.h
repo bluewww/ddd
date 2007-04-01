@@ -19,8 +19,8 @@
  * If not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
-#ifndef XMMM_NOTEBOOK3_H
-#define XMMM_NOTEBOOK3_H
+#ifndef XMMM_XMMMNOTEBOOK_H
+#define XMMM_XMMMNOTEBOOK_H
 
 #include <Xm/Xm.h>
 
@@ -28,19 +28,19 @@
 extern "C" {
 #endif
 
-extern WidgetClass xmmmNotebook3WidgetClass;
+extern WidgetClass xmmmNotebookWidgetClass;
 
-typedef struct _XmmmNotebook3Rec *XmmmNotebook3Widget;
-typedef struct _XmmmNotebook3ClassRec *XmmmNotebook3WidgetClass;
+typedef struct _XmmmNotebookRec *XmmmNotebookWidget;
+typedef struct _XmmmNotebookClassRec *XmmmNotebookWidgetClass;
 
-#define XmmmIsNotebook3(w) XtIsSubclass((w), xmmmNotebook3WidgetClass)
+#define XmmmIsNotebook(w) XtIsSubclass((w), xmmmNotebookWidgetClass)
 
-extern Widget XmmmCreateNotebook3(Widget parent, char *name, Arg *arglist, Cardinal argcount);
-extern Widget XmmmNotebook3InsertPage(Widget w, char *name, Arg *arglist, Cardinal argcount);
-extern Cardinal XmmmNotebook3NumPages(Widget w);
+extern Widget XmmmCreateNotebook(Widget parent, char *name, Arg *arglist, Cardinal argcount);
+extern Widget XmmmNotebookInsertPage(Widget w, char *name, Arg *arglist, Cardinal argcount);
+extern Cardinal XmmmNotebookNumPages(Widget w);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* XMMM_NOTEBOOK3_H */
+#endif /* XMMM_XMMMNOTEBOOK_H */
