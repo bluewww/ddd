@@ -59,8 +59,8 @@ typedef struct _XmmmNotebookClassRec {
     CoreClassPart core_class;
     CompositeClassPart composite_class;
     ConstraintClassPart constraint_class;
-    XmManagerClassPart box2_class;
-    XmmmBox2ClassPart manager_class;
+    XmManagerClassPart manager_class;
+    XmmmBox2ClassPart box2_class;
     XmmmNotebookClassPart notebook2_class;
 } XmmmNotebookClassRec;
 

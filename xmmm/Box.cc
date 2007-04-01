@@ -1,5 +1,6 @@
 #include <Xmmm/Box.h>
 #include <Xmmm/Notebook.h>
+#include <Xmmm/Notebook3.h>
 
 using namespace Xmmm;
 
@@ -15,7 +16,7 @@ VBox::VBox(Xmmm::Widget &parent, const Xmmm::String &name)
 {
     Xmmm::Notebook *nb = dynamic_cast<Xmmm::Notebook *>(&parent);
     if (nb) {
-	rc_ = XmmmNotebookInsertPage(parent.internal(), (char *)name.c(), NULL, 0);
+	rc_ = XmmmNotebook3InsertPage(parent.internal(), (char *)name.c(), NULL, 0);
     }
     else {
 	init(parent.xt_container(), name);
@@ -53,7 +54,7 @@ HBox::HBox(Xmmm::Widget &parent, const Xmmm::String &name)
     if (nb) {
 	Arg args[1];
 	XtSetArg(args[0], XmNorientation,  XmHORIZONTAL);
-	rc_ = XmmmNotebookInsertPage(parent.internal(), (char *)name.c(), args, 1);
+	rc_ = XmmmNotebook3InsertPage(parent.internal(), (char *)name.c(), args, 1);
     }
     else {
 	init(parent.xt_container(), name);

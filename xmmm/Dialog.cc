@@ -69,7 +69,10 @@ Dialog::Dialog(::Widget parent, const Xmmm::String &name)
     // FIXME: Allow override.
     nargs = 0;
     XtSetArg(args[nargs], XtNallowShellResize, True); nargs++;
-    dlg_ = XmCreateDialogShell(parent, (char *)name.c(), args, nargs);
+     // Standard Motif maps/unmaps the child to popup the shell.
+    // We want to take control instead.
+    XtSetArg(args[nargs], XmNmappedWhenManaged, False); nargs++;
+   dlg_ = XmCreateDialogShell(parent, (char *)name.c(), args, nargs);
     WM_set_close_callback(dlg_, close_shell, NULL);
 
     box1_ = new Box1(dlg_, name+Xmmm::String("_vbox"));

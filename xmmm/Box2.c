@@ -299,25 +299,10 @@ resize(Widget w)
     int n_exp;
     XtWidgetGeometry preferred;
     KidGeom *boxes;
-    fprintf(stderr, "resize %p(%s)\n", w, XtName(w));
+    fprintf(stderr, "Box2: resize %p(%s)\n", w, XtName(w));
+
     XmmmBox2PreferredSizeAfterResize(w, &preferred, NULL, NULL, &n_exp, &boxes);
-
-#if 0
-    _XmmmB2AdjustSize(w, NULL, NULL);
-
-    if (XtIsRealized(w))
-    {
-	_XmClearShadowType(w, B2_OldWidth(w), B2_OldHeight(w),
-			   B2_OldShadowThickness(w), 0);
-	
-	_XmDrawShadows(XtDisplay(w), XtWindow(w),
-		       MGR_TopShadowGC(w), MGR_BottomShadowGC(w),
-		       0, 0, XtWidth(w), XtHeight(w),
-		       MGR_ShadowThickness(w), XmSHADOW_OUT);
-    }
-#else
     AdaptToSize(w, NULL, &preferred, boxes);
-#endif
 
     B2_OldWidth(w) = XtWidth(w);
     B2_OldHeight(w) = XtHeight(w);
@@ -428,23 +413,12 @@ AdaptToSize(Widget rc, Widget instig, XtWidgetGeometry *pref, KidGeom *boxes)
     
 }
 
-/* This is called in response to a geometry request from the child instig. */
-
-/*
- * Every time we return XtGeometryYes, we have a situation where a
- *  child widget is granted permission to change its geometry. We'll have to
- *  assume that it does this, and change our "boxes".
- * An alternative would be to indicate in boxes that its contents is invalid,
- *  and have the next user of boxes look up the new geometry info.
- * Partially applied 25/8/1996 (Danny).
- */
 static XtGeometryResult
 geometry_manager(Widget instig,
 		 XtWidgetGeometry *request,
 		 XtWidgetGeometry *reply)
 {
     Widget rc = XtParent(instig);
-    XtWidgetGeometry wants;
     int ask, got;
     int n_exp;
     XtWidgetGeometry preferred;
@@ -452,13 +426,12 @@ geometry_manager(Widget instig,
     XtGeometryResult result;
     KidGeom *boxes;
 
-    wants = *request;
-    *reply = wants;
+    *reply = *request;
 
     fprintf(stderr, "Box2: geometry_manager: %p(%s) > %p(%s)\n",
 	    rc, XtName(rc), instig, XtName(instig));
 
-    if (wants.request_mode & (CWX | CWY))
+    if (request->request_mode & (CWX | CWY))
     {
 	return XtGeometryNo;
     }
@@ -487,84 +460,13 @@ geometry_manager(Widget instig,
 	goto finished;
     }
 
-#if 0
-    /* Try to do it */
-    if (_XmmmB2AdjustSize(rc, instig, reply) == XtGeometryNo)
-    {
-	result = XtGeometryNo;
-	goto finished;
-    }
-
-    /* Now check what we actually got */
-    reply->request_mode &= wants.request_mode;
-
-    ask = got = 0;
-
-    if ((wants.request_mode & CWWidth) == CWWidth)
-    {
-	ask++;
-
-	if (reply->width == wants.width)
-	{
-	    got++;
-	}
-	else 
-	{
-	    reply->request_mode &= ~CWWidth;
-	}
-    }
-    if ((wants.request_mode & CWHeight) == CWHeight)
-    {
-	ask++;
-
-	if (reply->height == wants.height)
-	{
-	    got++;
-    	}
-	else 
-	{
-	    reply->request_mode &= ~CWHeight;
-	}
-    }
-    if ((wants.request_mode & CWBorderWidth) == CWBorderWidth)
-    {
-	ask++;
-
-	if (reply->border_width == wants.border_width)
-	{
-	    got++;
-	}
-	else 
-	{
-	    reply->request_mode &= ~CWBorderWidth;
-	}
-    }
-
-    /* are we ok with everything they want. */
-    if (ask == got && ask != 0)
-    {
-	fprintf(stderr, "What should we do for _XmmmB2SetKidGeo?\n");
-	result = XtGeometryYes;
-    }
-    else
-    {
-	/* no, but we can always compromise. LayoutNone is mostly
-	 * handled if we got No when we made the geometry
-	 * request. Otherwise the layout routine computed a
-	 * compromise, which is typically the size they are before
-	 * they made this request. */
-	reply->request_mode &= ~(CWX | CWY);
-	result = XtGeometryAlmost;
-    }
-#else
     if (result == XtGeometryYes) {
 	/* Our size has changed. */
 	AdaptToSize(rc, instig, &preferred, boxes);
     }
     else if (result == XtGeometryAlmost) {
-	fprintf(stderr, "?QUE? (XtGeometryAlmost)\n");
+	fprintf(stderr, "Cannot yet handle result (XtGeometryAlmost)\n");
     }
-#endif
 finished:
     XtFree((char *)boxes);
     return result;

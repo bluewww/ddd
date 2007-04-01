@@ -30,7 +30,6 @@
 #define XMMM_NOTEBOOK_H
 
 #include <Xmmm/Container.h>
-#include <Xmmm/Notebook2.h>
 
 namespace Xmmm {
 
