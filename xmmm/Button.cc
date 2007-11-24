@@ -42,12 +42,14 @@ Button::Button(::Widget parent, const Xmmm::String &name)
 {
     button_ = XmCreatePushButton(parent, (char *)name.c(), NULL, 0);
     init_signals();
+    postinit();
 }
 
 Button::Button(Xmmm::Container &parent, const Xmmm::String &name)
 {
     button_ = XmCreatePushButton(parent.xt_container(), (char *)name.c(), NULL, 0);
     init_signals();
+    postinit();
 }
 
 Button::~Button(void)
@@ -61,14 +63,14 @@ Button::~Button(void)
 }
 
 sigc::signal<void> &
-Button::signal_activate(void)
+Button::signal_clicked(void)
 {
-    return signal_activate_;
+    return signal_clicked_;
 }
 
 void
 Button::activate_callback(::Widget widget, XtPointer data)
 {
-    ((Button *)data)->signal_activate_();
+    ((Button *)data)->signal_clicked_();
 }
 

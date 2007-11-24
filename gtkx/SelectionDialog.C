@@ -48,6 +48,7 @@ SelectionDialog::SelectionDialog(Gtk::Window &parent,
 
     buttons_ = new GtkX::HBox(*this, name+String("_buttons"));
     buttons_->show();
+    postinit();
 }
 
 SelectionDialog::~SelectionDialog(void)

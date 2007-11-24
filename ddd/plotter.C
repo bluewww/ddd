@@ -149,69 +149,69 @@ private:
 
 static MMDesc file_menu[] = 
 {
-    { "command", MMPush, { PlotCommandCB, 0 }, 0, 0, 0, 0 },
+    MENTRY("command", "command", MMPush, BIND_0(PTR_FUN(PlotCommandCB)), 0, 0),
     MMSep,
-    { "replot",  MMPush, { ReplotCB, 0 }, 0, 0, 0, 0 },
-    { "print",   MMPush, { SelectAndPrintPlotCB, 0 }, 0, 0, 0, 0 },
-    { "export",  MMPush, { ExportPlotCB, 0 }, 0, 0, 0, 0 },
+    MENTRY("replot", "replot",   MMPush, BIND_0(PTR_FUN(ReplotCB)), 0, 0),
+    MENTRY("print", "print",     MMPush, BIND_0(PTR_FUN(SelectAndPrintPlotCB)), 0, 0),
+    MENTRY("export", "export",   MMPush, BIND_0(PTR_FUN(ExportPlotCB)), 0, 0),
     MMSep,
-    { "close",   MMPush, { CancelPlotCB, 0 }, 0, 0, 0, 0 },
-    { "exit",    MMPush, { DDDExitCB, XtPointer(EXIT_SUCCESS) }, 0, 0, 0, 0},
+    MENTRY("close", "close",     MMPush, BIND_0(PTR_FUN(CancelPlotCB)), 0, 0),
+    MENTRY("exit", "exit",       MMPush, BIND_1(PTR_FUN(DDDExitCB), EXIT_SUCCESS), 0, 0),
     MMEnd
 };
 
 static MMDesc view_menu[] = 
 {
-    { "border",    MMToggle, { ToggleOptionCB, 0 }, 0, 0, 0, 0 },
-    { "time",      MMToggle, { ToggleOptionCB, 0 }, 0, 0, 0, 0 },
+    MENTRY("border", "border",       MMToggle, BIND_0(PTR_FUN(ToggleOptionCB)), 0, 0),
+    MENTRY("time", "time",           MMToggle, BIND_0(PTR_FUN(ToggleOptionCB)), 0, 0),
     MMSep,
-    { "grid",      MMToggle, { ToggleOptionCB, 0 }, 0, 0, 0, 0 },
-    { "xzeroaxis", MMToggle, { ToggleOptionCB, 0 }, 0, 0, 0, 0 },
-    { "yzeroaxis", MMToggle, { ToggleOptionCB, 0 }, 0, 0, 0, 0 },
+    MENTRY("grid", "grid",           MMToggle, BIND_0(PTR_FUN(ToggleOptionCB)), 0, 0),
+    MENTRY("xzeroaxis", "xzeroaxis", MMToggle, BIND_0(PTR_FUN(ToggleOptionCB)), 0, 0),
+    MENTRY("yzeroaxis", "yzeroaxis", MMToggle, BIND_0(PTR_FUN(ToggleOptionCB)), 0, 0),
     MMEnd
 };
 
 static MMDesc contour_menu[] = 
 {
-    { "base",      MMToggle, { SetContourCB, 0 }, 0, 0, 0, 0 },
-    { "surface",   MMToggle, { SetContourCB, 0 }, 0, 0, 0, 0 },
+    MENTRY("base", "base",           MMToggle, BIND_0(PTR_FUN(SetContourCB)), 0, 0),
+    MENTRY("surface", "surface",     MMToggle, BIND_0(PTR_FUN(SetContourCB)), 0, 0),
     MMEnd
 };
 
 static MMDesc scale_menu[] = 
 {
-    { "logscale",  MMToggle, { ToggleLogscaleCB, 0 }, 0, 0, 0, 0 },
+    MENTRY("logscale", "logscale",   MMToggle, BIND_0(PTR_FUN(ToggleLogscaleCB)), 0, 0),
     MMSep,
-    { "xtics",     MMToggle, { ToggleOptionCB, 0 }, 0, 0, 0, 0 },
-    { "ytics",     MMToggle, { ToggleOptionCB, 0 }, 0, 0, 0, 0 },
-    { "ztics",     MMToggle, { ToggleOptionCB, 0 }, 0, 0, 0, 0 },
+    MENTRY("xtics", "xtics",         MMToggle, BIND_0(PTR_FUN(ToggleOptionCB)), 0, 0),
+    MENTRY("ytics", "ytics",         MMToggle, BIND_0(PTR_FUN(ToggleOptionCB)), 0, 0),
+    MENTRY("ztics", "ztics",         MMToggle, BIND_0(PTR_FUN(ToggleOptionCB)), 0, 0),
     MMEnd
 };
 
 static MMDesc plot_menu[] = 
 {
-    { "points",         MMToggle, { SetStyleCB, 0 }, 0, 0, 0, 0 },
-    { "lines",          MMToggle, { SetStyleCB, 0 }, 0, 0, 0, 0 },
-    { "lines3d",        MMToggle, { SetStyleCB, 0 }, 0, 0, 0, 0 },
-    { "linespoints",    MMToggle, { SetStyleCB, 0 }, 0, 0, 0, 0 },
-    { "linespoints3d",  MMToggle | MMUnmanaged, 
-                                  { SetStyleCB, 0 }, 0, 0, 0, 0 },
-    { "impulses",       MMToggle, { SetStyleCB, 0 }, 0, 0, 0, 0 },
-    { "dots",           MMToggle, { SetStyleCB, 0 }, 0, 0, 0, 0 },
-    { "steps2d",        MMToggle, { SetStyleCB, 0 }, 0, 0, 0, 0 },
-    { "boxes2d",        MMToggle, { SetStyleCB, 0 }, 0, 0, 0, 0 },
+    MENTRY("points", "points",              MMToggle, BIND_0(PTR_FUN(SetStyleCB)), 0, 0),
+    MENTRY("lines", "lines",                MMToggle, BIND_0(PTR_FUN(SetStyleCB)), 0, 0),
+    MENTRY("lines3d", "lines3d",            MMToggle, BIND_0(PTR_FUN(SetStyleCB)), 0, 0),
+    MENTRY("linespoints", "linespoints",    MMToggle, BIND_0(PTR_FUN(SetStyleCB)), 0, 0),
+    MENTRY("linespoints3d", "linespoints3d",  MMToggle | MMUnmanaged, 
+	   BIND_0(PTR_FUN(SetStyleCB)), 0, 0),
+    MENTRY("impulses", "impulses",          MMToggle, BIND_0(PTR_FUN(SetStyleCB)), 0, 0),
+    MENTRY("dots", "dots",                  MMToggle, BIND_0(PTR_FUN(SetStyleCB)), 0, 0),
+    MENTRY("steps2d", "steps2d",            MMToggle, BIND_0(PTR_FUN(SetStyleCB)), 0, 0),
+    MENTRY("boxes2d", "boxes2d",            MMToggle, BIND_0(PTR_FUN(SetStyleCB)), 0, 0),
     MMEnd
 };
 
 static MMDesc menubar[] = 
 {
-    { "file",     MMMenu,          MMNoCB, file_menu,        0, 0, 0 },
-    { "edit",     MMMenu,          MMNoCB, simple_edit_menu, 0, 0, 0 },
-    { "plotView", MMMenu,          MMNoCB, view_menu,        0, 0, 0 },
-    { "plot",     MMRadioMenu,     MMNoCB, plot_menu,        0, 0, 0 },
-    { "scale",    MMMenu,          MMNoCB, scale_menu,       0, 0, 0 },
-    { "contour",  MMMenu,          MMNoCB, contour_menu,     0, 0, 0 },
-    { "help",     MMMenu | MMHelp, MMNoCB, simple_help_menu, 0, 0, 0 },
+    MENTRY("file", "file",         MMMenu,          MMNoCB, file_menu,        0),
+    MENTRY("edit", "edit",         MMMenu,          MMNoCB, simple_edit_menu, 0),
+    MENTRY("plotView", "plotView", MMMenu,          MMNoCB, view_menu,        0),
+    MENTRY("plot", "plot",         MMRadioMenu,     MMNoCB, plot_menu,        0),
+    MENTRY("scale", "scale",       MMMenu,          MMNoCB, scale_menu,       0),
+    MENTRY("contour", "contour",   MMMenu,          MMNoCB, contour_menu,     0),
+    MENTRY("help", "help",         MMMenu | MMHelp, MMNoCB, simple_help_menu, 0),
     MMEnd
 };
 
@@ -309,7 +309,7 @@ static void configure_options(PlotWindowInfo *plot, MMDesc *menu,
 	if ((menu[i].type & MMTypeMask) != MMToggle)
 	    continue;
 
-	string name = menu[i].name;
+	string name = (const char *)menu[i].name;
 
 	const string s1 = "*" + name;
 	Widget w = XtNameToWidget(plot->shell, s1.chars());
@@ -352,7 +352,7 @@ static void configure_plot(PlotWindowInfo *plot)
 	if ((plot_menu[i].type & MMTypeMask) != MMToggle)
 	    continue;
 
-	string name = plot_menu[i].name;
+	string name = (const char *)plot_menu[i].name;
 
 	const string s1 = "*" + name;
 	Widget w = XtNameToWidget(plot->shell, s1.chars());
@@ -444,7 +444,7 @@ static void configure_plot(PlotWindowInfo *plot)
 	if ((plot_menu[i].type & MMTypeMask) != MMToggle)
 	    continue;
 
-	string name = plot_menu[i].name;
+	string name = (const char *)plot_menu[i].name;
 
 	const string s1 = "*" + name;
 	Widget w = XtNameToWidget(plot->shell, s1.chars());

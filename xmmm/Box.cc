@@ -12,18 +12,16 @@ void
 VBox::init(::Widget parent, const Xmmm::String &name)
 {
     rc_ = XmCreateRowColumn(parent, (char *)name.c(), NULL, 0);
+    postinit();
 }
 
 VBox::VBox(Xmmm::Widget &parent, const Xmmm::String &name)
 {
+    init(parent.xt_container(), name);
     Xmmm::Notebook *nb = dynamic_cast<Xmmm::Notebook *>(&parent);
     if (nb) {
-	// FIXME
 	std::cerr << "VBox constructor calls XmmmNotebookInsertPage\n";
-	rc_ = XmmmNotebookInsertPage(parent.internal(), (char *)name.c(), NULL, 0);
-    }
-    else {
-	init(parent.xt_container(), name);
+	XmmmNotebookInsertChild(parent.xt_container(), (char *)name.c(), rc_);
     }
 }
 
@@ -50,20 +48,16 @@ HBox::init(::Widget parent, const Xmmm::String &name)
     Arg args[1];
     XtSetArg(args[0], XmNorientation,  XmHORIZONTAL);
     rc_ = XmCreateRowColumn(parent, (char *)name.c(), args, 1);
+    postinit();
 }
 
 HBox::HBox(Xmmm::Widget &parent, const Xmmm::String &name)
 {
+    init(parent.xt_container(), name);
     Xmmm::Notebook *nb = dynamic_cast<Xmmm::Notebook *>(&parent);
     if (nb) {
-	Arg args[1];
-	XtSetArg(args[0], XmNorientation,  XmHORIZONTAL);
-	// FIXME
 	std::cerr << "HBox constructor calls XmmmNotebookInsertPage\n";
-	rc_ = XmmmNotebookInsertPage(parent.internal(), (char *)name.c(), args, 1);
-    }
-    else {
-	init(parent.xt_container(), name);
+	XmmmNotebookInsertChild(parent.xt_container(), (char *)name.c(), rc_);
     }
 }
 

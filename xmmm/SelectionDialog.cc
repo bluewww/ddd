@@ -95,6 +95,7 @@ SelectionDialog::SelectionDialog(::Widget parent, const Xmmm::String &name,
     // geometry management for the Box1 widget.
     list_->show();
     sw_->show();
+    postinit();
 }
 
 SelectionDialog::~SelectionDialog(void)

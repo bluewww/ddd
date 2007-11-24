@@ -31,11 +31,13 @@ using namespace Xmmm;
 Box1::Box1(Xmmm::Widget parent, const Xmmm::String &name)
 {
     b2_ = XmmmCreateBox2(parent.xt_container(), (char *)name.c(), NULL, 0);
+    postinit();
 }
 
 Box1::Box1(::Widget parent, const Xmmm::String &name)
 {
     b2_ = XmmmCreateBox2(parent, (char *)name.c(), NULL, 0);
+    postinit();
 }
 
 Box1::~Box1(void)

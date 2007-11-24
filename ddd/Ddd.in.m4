@@ -991,7 +991,7 @@ Ddd*FontSize:          120
 
 
 ! A little less highlighting.
-Ddd*highlightThickness: 1
+! Ddd*highlightThickness: 1
 
 
 ! Window sizes.

@@ -321,7 +321,11 @@ CONTAINER_P create_toolbar(CONTAINER_P parent, const string& /* name */,
     }
 
     // Create buttons
-    MMaddItems(toolbar, items1);
+    MMaddItems(toolbar,
+#if !defined(IF_XM)
+	       NULL,
+#endif
+	       items1);
     MMaddCallbacks(items1);
 #ifdef IF_MOTIF
     MMaddHelpCallback(items1, ImmediateHelpCB);
@@ -340,7 +344,11 @@ CONTAINER_P create_toolbar(CONTAINER_P parent, const string& /* name */,
 
     if (items2 != 0)
     {
-	MMaddItems(toolbar, items2);
+	MMaddItems(toolbar,
+#if !defined(IF_XM)
+		   NULL,
+#endif
+		   items2);
 	MMaddCallbacks(items2);
 #ifdef IF_MOTIF
 	MMaddHelpCallback(items2, ImmediateHelpCB);

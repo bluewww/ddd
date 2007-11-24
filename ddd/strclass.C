@@ -1674,3 +1674,17 @@ bool constSubString::OK() const
 	S.error("constsubString invariant failure");
     return true;
 }
+
+#if !defined(IF_XM)
+
+string::string(GUI::String const &s)
+  : rep(&_nilstrRep)
+#if STRING_CHECK_CONSUME
+    , consume(false) 
+#endif
+{
+    *this = string(s.c());
+}
+
+
+#endif

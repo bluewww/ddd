@@ -24,6 +24,7 @@
 // the constructor, unlike the Gtk ones.  Motif (Xt) widgets cannot be
 // reparented.  Therefore we need a constructor with extra arguments.
 
+#include <iostream>
 #include <GtkX/Notebook.h>
 
 using namespace GtkX;
@@ -33,6 +34,7 @@ Notebook::Notebook(GtkX::Container &parent,
 {
     set_name(name.s());
     parent.add_child(*this);
+    postinit();
 }
 
 Notebook::~Notebook(void)
@@ -43,5 +45,25 @@ Gtk::Widget *
 Notebook::internal(void)
 {
     return this;
+}
+
+int
+Notebook::append_page(GtkX::Widget &child, const String &tab_label, bool use_mnemonic)
+{
+    Gtk::Notebook::append_page(*child.internal(), tab_label.s(), use_mnemonic);
+}
+
+GtkX::Widget *
+Notebook::get_current_child(void)
+{
+    Gtk::Notebook_Helpers::PageList::iterator iter = get_current();
+    Gtk::Widget *child = iter->get_child();
+    if (!child) return NULL;
+    GtkX::Widget *super = (GtkX::Widget *)child->get_data(gtkx_super_quark);
+    if (super) {
+	std::cerr << "super=" << super->get_name().s() << "\n";
+	return super;
+    }
+    return NULL;
 }
 

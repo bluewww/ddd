@@ -52,7 +52,11 @@ char examine_rcsid[] =
 #ifdef IF_MOTIF
 #include <Xm/SelectioB.h>
 #include <Xm/TextF.h>
-#endif // IF_MOTIF
+#endif
+
+#ifndef IF_XM
+#include <GUI/Dialog.h>
+#endif
 
 
 static SPINBUTTON_P repeat_w;	// Repeat count
@@ -83,35 +87,35 @@ static Widget wide_char_w;
 static Widget wide_string_w;
 
 static MMDesc format_menu[] = { 
-    { NM("o", "o"), MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, &octal_w, 0, 0 },
-    { NM("x", "x"), MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, 0, 0, 0},
-    { NM("d", "d"), MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, 0, 0, 0},
-    { NM("u", "u"), MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, &unsigned_char_w, 0, 0 },
-    { NM("t", "t"), MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, &binary_w, 0, 0 },
-    { NM("f", "f"), MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, 0, 0, 0},
-    { NM("a", "a"), MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, &address_format_w, 0, 0 },
-    { NM("i", "i"), MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, 0, 0, 0},
-    { NM("c", "c"), MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, 0, 0, 0},
-    { NM("C", "C"), MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, &wide_char_w, 0, 0 },
-    { NM("s", "s"), MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, 0, 0, 0},
-    { NM("W", "W"), MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, &wide_string_w, 0, 0 },
+    MENTRY("o", "o", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, &octal_w),
+    MENTRY("x", "x", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, 0),
+    MENTRY("d", "d", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, 0),
+    MENTRY("u", "u", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, &unsigned_char_w),
+    MENTRY("t", "t", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, &binary_w),
+    MENTRY("f", "f", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, 0),
+    MENTRY("a", "a", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, &address_format_w),
+    MENTRY("i", "i", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, 0),
+    MENTRY("c", "c", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, 0),
+    MENTRY("C", "C", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, &wide_char_w),
+    MENTRY("s", "s", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, 0),
+    MENTRY("W", "W", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, &wide_string_w),
     MMEnd
 };
 
 static MMDesc size_menu[] = { 
-    { NM("b", "b"), MMPush, BIND_0(PTR_FUN(SetSizeCB)), 0, &byte_w, 0, 0 },
-    { NM("h", "h"), MMPush, BIND_0(PTR_FUN(SetSizeCB)), 0, 0, 0, 0},
-    { NM("w", "w"), MMPush, BIND_0(PTR_FUN(SetSizeCB)), 0, 0, 0, 0},
-    { NM("g", "g"), MMPush, BIND_0(PTR_FUN(SetSizeCB)), 0, 0, 0, 0},
-    { NM("G", "G"), MMPush, BIND_0(PTR_FUN(SetSizeCB)), 0, &long_w, 0, 0 },
+    MENTRY("b", "b", MMPush, BIND_0(PTR_FUN(SetSizeCB)), 0, &byte_w),
+    MENTRY("h", "h", MMPush, BIND_0(PTR_FUN(SetSizeCB)), 0, 0),
+    MENTRY("w", "w", MMPush, BIND_0(PTR_FUN(SetSizeCB)), 0, 0),
+    MENTRY("g", "g", MMPush, BIND_0(PTR_FUN(SetSizeCB)), 0, 0),
+    MENTRY("G", "G", MMPush, BIND_0(PTR_FUN(SetSizeCB)), 0, &long_w),
     MMEnd
 };
 
 static MMDesc examine_menu[] = { 
-    { NM("examine", "examine"), MMSpinBox,    MMNoCB, 0, (Widget *)&repeat_w, 0, 0 },
-    { NM("format", "format"),   MMOptionMenu, MMNoCB, format_menu, 0, 0, 0 },
-    { NM("size", "size"),       MMOptionMenu, MMNoCB, size_menu, 0, 0, 0 },
-    { NM("address", "address"), MMComboBox,   MMNoCB, 0, (Widget *)&address_w, 0, 0 },
+    MENTRY("examine", "examine", MMSpinBox,    MMNoCB, 0, (Widget *)&repeat_w),
+    MENTRY("format", "format",   MMOptionMenu, MMNoCB, format_menu, 0),
+    MENTRY("size", "size",       MMOptionMenu, MMNoCB, size_menu, 0),
+    MENTRY("address", "address", MMComboBox,   MMNoCB, 0, (Widget *)&address_w),
     MMEnd
 };
 
@@ -245,19 +249,23 @@ static void PrintExaminedCB(CB_ALIST_1(Widget w))
 
 void gdbExamineCB(CB_ALIST_1(Widget w))
 {
+#ifdef IF_XM
     static DIALOG_P dialog = 0;
+#else
+    static GUI::Dialog *dialog = 0;
+#endif
     if (dialog == 0)
     {
-#ifdef IF_MOTIF
+#ifdef IF_XM
 	Arg args[10];
 	Cardinal arg = 0;
 	XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
 	dialog = verify(XmCreatePromptDialog(find_shell(w),
 					     XMST("examine_dialog"),
 					     args, arg));
-#else // NOT IF_MOTIF
-	dialog = new Gtk::Dialog(XMST("examine_dialog"), *find_shell(w));
-#endif // IF_MOTIF
+#else
+	dialog = new GUI::Dialog(find_shell(w), "examine_dialog");
+#endif
 	Delay::register_shell(dialog);
 
 #ifdef IF_MOTIF
@@ -272,7 +280,7 @@ void gdbExamineCB(CB_ALIST_1(Widget w))
 #endif
 #endif // IF_MOTIF
 
-#ifdef IF_MOTIF
+#ifdef IF_XM
 	arg = 0;
 	XtSetArg(args[arg], XmNorientation, XmHORIZONTAL); arg++;
 	XtSetArg(args[arg], XmNborderWidth,  0); arg++;
@@ -282,9 +290,9 @@ void gdbExamineCB(CB_ALIST_1(Widget w))
 	XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
 	Widget panel = MMcreateButtonPanel(dialog, "panel", examine_menu, 
 					   args, arg);
-#else // NOT IF_MOTIF
-	Widget panel = MMcreateButtonPanel(dialog, "panel", examine_menu);
-#endif // IF_MOTIF
+#else
+	GUI::Container *panel = MMcreateButtonPanel(dialog, "panel", examine_menu);
+#endif
 
 	(void) panel;
 	MMaddCallbacks(examine_menu);
@@ -303,15 +311,15 @@ void gdbExamineCB(CB_ALIST_1(Widget w))
 			 (XEvent *)0, (String *)0, 0);
 	XtCallActionProc(byte_w, "ArmAndActivate", 
 			 (XEvent *)0, (String *)0, 0);
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning ArmAndActivate action undefined
 #endif
-#endif // IF_MOTIF
+#endif
 
 	tie_combo_box_to_history(address_w, arg_history_filter);
 
-#ifdef IF_MOTIF
+#ifdef IF_XM
 	XtAddCallback(dialog, XmNokCallback,
 		      PrintExaminedCB, XtPointer(0));
 	XtAddCallback(dialog, XmNapplyCallback, 
@@ -320,15 +328,15 @@ void gdbExamineCB(CB_ALIST_1(Widget w))
 		      UnmanageThisCB1, XtPointer(dialog));
 	XtAddCallback(dialog, XmNhelpCallback,
 		      ImmediateHelpCB, XtPointer(0));
-#else // NOT IF_MOTIF
+#else
     Gtk::Button *button;
-    button = dialog->add_button(XMST("OK"), 0);
+    button = dialog->add_button("OK");
     button->signal_clicked().connect(sigc::bind(PTR_FUN(PrintExaminedCB), dialog));
-    button = dialog->add_button(XMST("Apply"), 0);
+    button = dialog->add_button("Apply");
     button->signal_clicked().connect(sigc::bind(PTR_FUN(DisplayExaminedCB), dialog));
-    button = dialog->add_button(XMST("Cancel"), 0);
+    button = dialog->add_button("Cancel");
     button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB2), dialog));
-#endif // IF_MOTIF
+#endif
     }
 
     string arg = source_arg->get_string();

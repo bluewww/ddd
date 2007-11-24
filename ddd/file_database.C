@@ -1,5 +1,7 @@
 #include <iostream>
 
+#include "config.h"
+
 #include "gtk_wrapper.h"
 
 typedef __gnu_cxx::hash_map<const char *, XrmValue *> db_type;

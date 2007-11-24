@@ -45,8 +45,10 @@ namespace GtkX {
 	~Notebook(void);
 	Gtk::Widget *internal(void);
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
-	void show(void) {Widget::show();}
-	void hide(void) {Widget::hide();}
+#include <GtkX/redirect.h>
+	// Note: we must ensure all children are GtkX widgets.
+	GtkX::Widget *get_current_child(void);
+	int append_page(GtkX::Widget &child, const String &tab_label, bool use_mnemonic=false);
     };
 
 }

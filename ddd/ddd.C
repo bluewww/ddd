@@ -152,7 +152,11 @@ char ddd_rcsid[] =
 #include <Xm/DialogS.h>
 #include <Xm/Form.h>
 #include <Xm/TextF.h>
+#ifdef IF_XM
 #include <Xm/ToggleB.h>
+#else
+#include <Xmmm/RadioButton.h>
+#endif
 #include <Xm/PushB.h>
 #include <Xm/ArrowB.h>
 #include <Xm/MwmUtil.h>
@@ -958,17 +962,18 @@ static XtActionsRec actions [] = {
 // Menus
 //-----------------------------------------------------------------------------
 
+
 #define RECENT_MENU \
 { \
-    { NM("r1", "r1"), MMPush, BIND_1( PTR_FUN(gdbOpenRecentCB), XtPointer(1) ), 0, 0, 0, 0 }, \
-    { NM("r2", "r2"), MMPush, BIND_1( PTR_FUN(gdbOpenRecentCB), XtPointer(2) ), 0, 0, 0, 0 }, \
-    { NM("r3", "r3"), MMPush, BIND_1( PTR_FUN(gdbOpenRecentCB), XtPointer(3) ), 0, 0, 0, 0 }, \
-    { NM("r4", "r4"), MMPush, BIND_1( PTR_FUN(gdbOpenRecentCB), XtPointer(4) ), 0, 0, 0, 0 }, \
-    { NM("r5", "r5"), MMPush, BIND_1( PTR_FUN(gdbOpenRecentCB), XtPointer(5) ), 0, 0, 0, 0 }, \
-    { NM("r6", "r6"), MMPush, BIND_1( PTR_FUN(gdbOpenRecentCB), XtPointer(6) ), 0, 0, 0, 0 }, \
-    { NM("r7", "r7"), MMPush, BIND_1( PTR_FUN(gdbOpenRecentCB), XtPointer(7) ), 0, 0, 0, 0 }, \
-    { NM("r8", "r8"), MMPush, BIND_1( PTR_FUN(gdbOpenRecentCB), XtPointer(8) ), 0, 0, 0, 0 }, \
-    { NM("r9", "r9"), MMPush, BIND_1( PTR_FUN(gdbOpenRecentCB), XtPointer(9) ), 0, 0, 0, 0 }, \
+    MENTRY("r1", "r1", MMPush, BIND_1( PTR_FUN(gdbOpenRecentCB), XtPointer(1) ), 0, 0), \
+    MENTRY("r2", "r2", MMPush, BIND_1( PTR_FUN(gdbOpenRecentCB), XtPointer(2) ), 0, 0), \
+    MENTRY("r3", "r3", MMPush, BIND_1( PTR_FUN(gdbOpenRecentCB), XtPointer(3) ), 0, 0), \
+    MENTRY("r4", "r4", MMPush, BIND_1( PTR_FUN(gdbOpenRecentCB), XtPointer(4) ), 0, 0), \
+    MENTRY("r5", "r5", MMPush, BIND_1( PTR_FUN(gdbOpenRecentCB), XtPointer(5) ), 0, 0), \
+    MENTRY("r6", "r6", MMPush, BIND_1( PTR_FUN(gdbOpenRecentCB), XtPointer(6) ), 0, 0), \
+    MENTRY("r7", "r7", MMPush, BIND_1( PTR_FUN(gdbOpenRecentCB), XtPointer(7) ), 0, 0), \
+    MENTRY("r8", "r8", MMPush, BIND_1( PTR_FUN(gdbOpenRecentCB), XtPointer(8) ), 0, 0), \
+    MENTRY("r9", "r9", MMPush, BIND_1( PTR_FUN(gdbOpenRecentCB), XtPointer(9) ), 0, 0), \
     MMEnd					\
 }
 
@@ -1019,43 +1024,43 @@ DECL_WR(WR_gdbMakeAgainCB, CB_ARG_HIDE_0(PTR_FUN(gdbMakeAgainCB)));
 
 #define FILE_MENU(recent_menu)						\
 {									\
-    { NM("open_class", "Open Class..."), MMPush | MMUnmanaged,		\
-      BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_gdbOpenClassCB)), 0, 0, 0, 0 }, \
-    { NM("open_file", "Open Program..."), MMPush,			\
-      BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_gdbOpenFileCB)), 0, 0, 0, 0 }, \
-    { NM("recent", "Open Recent"), MMMenu, MMNoCB, recent_menu, 0, 0, 0 }, \
-    { NM("open_core", "Open Core Dump..."), MMPush,			\
-      BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_gdbOpenCoreCB)), 0, 0, 0, 0}, \
-    { NM("open_source", "Open Source..."), MMPush, 			\
-      BIND_0(PTR_FUN(gdbLookupSourceCB)), 0, 0, 0, 0 }, 		\
+    MENTRY("open_class", "Open Class...", MMPush | MMUnmanaged,		\
+	   BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_gdbOpenClassCB)), 0, 0), \
+    MENTRY("open_file", "Open Program...", MMPush,			\
+	   BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_gdbOpenFileCB)), 0, 0), \
+    MENTRY("recent", "Open Recent", MMMenu, MMNoCB, recent_menu, 0),	\
+    MENTRY("open_core", "Open Core Dump...", MMPush,			\
+	   BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_gdbOpenCoreCB)), 0, 0), \
+    MENTRY("open_source", "Open Source...", MMPush, 			\
+	   BIND_0(PTR_FUN(gdbLookupSourceCB)), 0, 0),	 		\
     MMSep,								\
-    { NM("open_session", "Open Session..."),  MMPush,			\
-      BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_OpenSessionCB)), 0, 0, 0, 0 }, \
-    { NM("save_session", "Save Session As..."), MMPush,		\
-      BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_SaveSessionAsCB)), 0, 0, 0, 0 },	\
+    MENTRY("open_session", "Open Session...", MMPush,			\
+	   BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_OpenSessionCB)), 0, 0), \
+    MENTRY("save_session", "Save Session As...", MMPush,		\
+	   BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_SaveSessionAsCB)), 0, 0), \
     MMSep,								\
-    { NM("attach", "Attach to Process..."), MMPush,			\
-      BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_gdbOpenProcessCB)), 0, 0, 0, 0 }, \
-    { NM("detach", "Detach Process"), MMPush,				\
-      BIND_1(PTR_FUN(gdbCommandCB12), XtPointer("detach")), 0, 0, 0, 0 },	\
+    MENTRY("attach", "Attach to Process...", MMPush,			\
+	   BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_gdbOpenProcessCB)), 0, 0), \
+    MENTRY("detach", "Detach Process", MMPush,				\
+	   BIND_1(PTR_FUN(gdbCommandCB12), XtPointer("detach")), 0, 0),	\
     MMSep,								\
-    { NM("print", "Print Graph..."), MMPush,				\
-      BIND_0(PTR_FUN(PrintGraphCB)), 0, 0, 0, 0 },			\
-    { NM("printAgain", "Print Again"), MMPush | MMUnmanaged,		\
-      BIND_1(PTR_FUN(PrintAgainCB), 1), 0, 0, 0, 0 },			\
-    { NM("separator", ""), MMSeparator | MMUnmanaged, MMNoCB, 0, 0, 0, 0 }, \
-    { NM("cd", "Change Directory..."), MMPush,				\
-      BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_gdbChangeDirectoryCB)), 0, 0, 0, 0 }, \
+    MENTRY("print", "Print Graph...", MMPush,				\
+	   BIND_0(PTR_FUN(PrintGraphCB)), 0, 0),			\
+    MENTRY("printAgain", "Print Again", MMPush | MMUnmanaged,		\
+	   BIND_1(PTR_FUN(PrintAgainCB), 1), 0, 0),			\
+    MENTRY("separator", "", MMSeparator | MMUnmanaged, MMNoCB, 0, 0),	\
+    MENTRY("cd", "Change Directory...", MMPush,				\
+	   BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_gdbChangeDirectoryCB)), 0, 0), \
     MMSep,								\
-    { NM("make", "Make..."), MMPush,					\
-      BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_gdbMakeCB)), 0, 0, 0, 0 }, \
-    { NM("makeAgain", "Make Again"), MMPush | MMUnmanaged,		\
-      BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_gdbMakeAgainCB)), 0, 0, 0, 0 }, \
+    MENTRY("make", "Make...", MMPush,					\
+	   BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_gdbMakeCB)), 0, 0),	\
+    MENTRY("makeAgain", "Make Again", MMPush | MMUnmanaged,		\
+	   BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_gdbMakeAgainCB)), 0, 0), \
     MMSep,								\
-    { NM("close", "Close"), MMPush, BIND_0(PTR_FUN(DDDCloseCB)), 0, 0, 0, 0 }, \
-    { NM("restart", "Restart"), MMPush, BIND_0(PTR_FUN(DDDRestartCB)), 0, 0, 0, 0 }, \
-    { NM("exit", "Exit"), MMPush,					\
-      BIND_1(PTR_FUN(DDDExitCB), EXIT_SUCCESS), 0, 0, 0, 0 },		\
+    MENTRY("close", "Close", MMPush, BIND_0(PTR_FUN(DDDCloseCB)), 0, 0), \
+    MENTRY("restart", "Restart", MMPush, BIND_0(PTR_FUN(DDDRestartCB)), 0, 0), \
+    MENTRY("exit", "Exit", MMPush,					\
+	   BIND_1(PTR_FUN(DDDExitCB), EXIT_SUCCESS), 0, 0),		\
     MMEnd								\
 }
 
@@ -1075,49 +1080,49 @@ struct ProgramItems {
 
 #define PROGRAM_MENU(w)							\
 {									\
-    { NM("run", "Run..."), MMPush, BIND_0(PTR_FUN(gdbRunCB)), 0, 0, 0, 0 },	\
-    { NM("run_again", "Run Again"), MMPush,				\
-      BIND_1(PTR_FUN(gdbCommandCB12), "run"), 0, 0, 0, 0 },		\
+    MENTRY("run", "Run...", MMPush, BIND_0(PTR_FUN(gdbRunCB)), 0, 0),	\
+    MENTRY("run_again", "Run Again", MMPush,				\
+	   BIND_1(PTR_FUN(gdbCommandCB12), "run"), 0, 0),		\
     MMSep,								\
-    { NM("separateExecWindow", "Run in Execution Window"), MMCheckItem,	\
-      BIND_0(PTR_FUN(dddToggleSeparateExecWindowCB)), 0, (Widget *)&(w), 0, 0 }, \
+    MENTRYX("separateExecWindow", "Run in Execution Window", MMCheckItem, \
+	    BIND_0(PTR_FUN(dddToggleSeparateExecWindowCB)), 0, &w),	\
     MMSep,								\
-    { NM("step", "Step"), MMPush,					\
-      BIND_1(PTR_FUN(gdbCommandCB12), "step"), 0, 0, 0, 0 },		\
-    { NM("stepi", "Step Instruction"), MMPush,				\
-      BIND_1(PTR_FUN(gdbCommandCB12), "stepi"), 0, 0, 0, 0 },		\
-    { NM("next", "Next"), MMPush,					\
-      BIND_1(PTR_FUN(gdbCommandCB12), "next"), 0, 0, 0, 0 },		\
-    { NM("nexti", "Next Instruction"), MMPush,				\
-      BIND_1(PTR_FUN(gdbCommandCB12), "nexti"), 0, 0, 0, 0},		\
-    { NM("until", "Until"), MMPush,					\
-      BIND_1(PTR_FUN(gdbCommandCB12), "until"), 0, 0, 0, 0},		\
-    { NM("finish", "Finish"), MMPush,					\
-      BIND_1(PTR_FUN(gdbCommandCB12), "finish"), 0, 0, 0, 0},		\
+    MENTRY("step", "Step", MMPush,					\
+	   BIND_1(PTR_FUN(gdbCommandCB12), "step"), 0, 0),		\
+    MENTRY("stepi", "Step Instruction", MMPush,				\
+	   BIND_1(PTR_FUN(gdbCommandCB12), "stepi"), 0, 0),		\
+    MENTRY("next", "Next", MMPush,					\
+	   BIND_1(PTR_FUN(gdbCommandCB12), "next"), 0, 0),		\
+    MENTRY("nexti", "Next Instruction", MMPush,				\
+	   BIND_1(PTR_FUN(gdbCommandCB12), "nexti"), 0, 0),		\
+    MENTRY("until", "Until", MMPush,					\
+	   BIND_1(PTR_FUN(gdbCommandCB12), "until"), 0, 0),		\
+    MENTRY("finish", "Finish", MMPush,					\
+	   BIND_1(PTR_FUN(gdbCommandCB12), "finish"), 0, 0),		\
     MMSep,								\
-    { NM("cont", "Continue"), MMPush,					\
-      BIND_1(PTR_FUN(gdbCommandCB12), "cont"), 0, 0, 0, 0},		\
-    { NM("signal0", "Continue Without Signal"), MMPush,			\
-      BIND_1(PTR_FUN(gdbCommandCB12), "signal 0"), 0, 0, 0, 0},		\
+    MENTRY("cont", "Continue", MMPush,					\
+	   BIND_1(PTR_FUN(gdbCommandCB12), "cont"), 0, 0),		\
+    MENTRY("signal0", "Continue Without Signal", MMPush,		\
+	   BIND_1(PTR_FUN(gdbCommandCB12), "signal 0"), 0, 0),		\
     MMSep,								\
-    { NM("kill", "Kill"), MMPush,					\
-      BIND_1(PTR_FUN(gdbCommandCB12), "kill"), 0, 0, 0, 0},		\
-    { NM("break", "Interrupt"), MMPush,					\
-      BIND_1(PTR_FUN(gdbCommandCB12), "\003"), 0, 0, 0, 0},		\
-    { NM("quit", "Abort"), MMPush,					\
-      BIND_1(PTR_FUN(gdbCommandCB12), "\034"), 0, 0, 0, 0},		\
+    MENTRY("kill", "Kill", MMPush,					\
+	   BIND_1(PTR_FUN(gdbCommandCB12), "kill"), 0, 0),		\
+    MENTRY("break", "Interrupt", MMPush,				\
+	   BIND_1(PTR_FUN(gdbCommandCB12), "\003"), 0, 0),		\
+    MENTRY("quit", "Abort", MMPush,					\
+	   BIND_1(PTR_FUN(gdbCommandCB12), "\034"), 0, 0),		\
     MMEnd								\
 }
 
-#ifdef IF_MOTIF
+#ifdef IF_XM
 static Widget command_separate_exec_window_w;
 static Widget source_separate_exec_window_w;
 static Widget data_separate_exec_window_w;
-#else // NOT IF_MOTIF
-static Gtk::ToggleButton *command_separate_exec_window_w;
-static Gtk::ToggleButton *source_separate_exec_window_w;
-static Gtk::ToggleButton *data_separate_exec_window_w;
-#endif // IF_MOTIF
+#else
+static GUI::WidgetPtr<GUI::RadioButton> command_separate_exec_window_w;
+static GUI::WidgetPtr<GUI::RadioButton> source_separate_exec_window_w;
+static GUI::WidgetPtr<GUI::RadioButton> data_separate_exec_window_w;
+#endif
 
 static MMDesc command_program_menu[]
     = PROGRAM_MENU(command_separate_exec_window_w);
@@ -1128,19 +1133,19 @@ static MMDesc data_program_menu[]
 
 #define VIEW_MENU(x)							\
 {									\
-    { NM("tool", "Command Tool..."), MMPush,				\
-      HIDE_0( PTR_FUN(gdbOpenToolWindowCB) ), 0, 0, 0, 0},		\
-    { NM("exec", "Execution Window..."), MMPush,			\
-      HIDE_0( PTR_FUN(gdbOpenExecWindowCB) ), 0, 0, 0, 0},		\
+    MENTRY("tool", "Command Tool...", MMPush,				\
+	   HIDE_0( PTR_FUN(gdbOpenToolWindowCB) ), 0, 0),		\
+    MENTRY("exec", "Execution Window...", MMPush,			\
+	   HIDE_0( PTR_FUN(gdbOpenExecWindowCB) ), 0, 0),		\
     MMSep,								\
-    { NM("console", "@GDB@ Console"), MMPush,				\
-      HIDE_0( PTR_FUN(gdbOpenCommandWindowCB) ), 0, 0, 0, 0},		\
-    { NM("source", "Source Window"), MMPush,				\
-      HIDE_0( PTR_FUN(gdbOpenSourceWindowCB) ), 0, 0, 0, 0},		\
-    { NM("data", "Data Window"),					\
-      MMPush,   HIDE_0( PTR_FUN(gdbOpenDataWindowCB) ), 0, 0, 0, 0},	\
-    { NM("code", "Machine Code Window"), MMCheckItem | x,		\
-        BIND_0( PTR_FUN(gdbToggleCodeWindowCB) ), 0, 0, 0, 0},		\
+    MENTRY("console", "@GDB@ Console", MMPush,				\
+	   HIDE_0( PTR_FUN(gdbOpenCommandWindowCB) ), 0, 0),		\
+    MENTRY("source", "Source Window", MMPush,				\
+	   HIDE_0( PTR_FUN(gdbOpenSourceWindowCB) ), 0, 0),		\
+    MENTRY("data", "Data Window",					\
+	   MMPush, HIDE_0( PTR_FUN(gdbOpenDataWindowCB) ), 0, 0),	\
+    MENTRY("code", "Machine Code Window", MMCheckItem | x,		\
+	   BIND_0( PTR_FUN(gdbToggleCodeWindowCB) ), 0, 0),		\
     MMEnd								\
 }
 
@@ -1148,22 +1153,22 @@ static MMDesc command_view_menu[] = VIEW_MENU(MMUnmanaged);
 static MMDesc source_view_menu[]  = VIEW_MENU(0);
 static MMDesc data_view_menu[]    = VIEW_MENU(MMUnmanaged);
 
-static MMDesc views_menu[] = 
-{
-    { NM("tool", "Command Tool..."), MMPush,
-      HIDE_0( PTR_FUN(gdbOpenToolWindowCB) ), 0, 0, 0, 0},
-    { NM("exec", "Execution Window..."), MMPush,
-      HIDE_0( PTR_FUN(gdbOpenExecWindowCB) ), 0, 0, 0, 0},
-    MMSep,
-    { NM("console", "@GDB@ Console"), MMCheckItem,
-      BIND_0( PTR_FUN(gdbToggleCommandWindowCB) ), 0, 0, 0, 0},
-    { NM("source", "Source Window"), MMCheckItem,
-      BIND_0( PTR_FUN(gdbToggleSourceWindowCB) ), 0, 0, 0, 0},
-    { NM("data", "Data Window"), MMCheckItem,
-      BIND_0( PTR_FUN(gdbToggleDataWindowCB) ), 0, 0, 0, 0},
-    { NM("code", "Machine Code Window"), MMCheckItem,
-      BIND_0( PTR_FUN(gdbToggleCodeWindowCB) ), 0, 0, 0, 0},
-    MMEnd
+static MMDesc views_menu[] =					\
+{								\
+    MENTRY("tool", "Command Tool...", MMPush,			\
+	   HIDE_0( PTR_FUN(gdbOpenToolWindowCB) ), 0, 0),	\
+    MENTRY("exec", "Execution Window...", MMPush,		\
+	   HIDE_0( PTR_FUN(gdbOpenExecWindowCB) ), 0, 0),	\
+    MMSep,							\
+    MENTRY("console", "@GDB@ Console", MMCheckItem,		\
+	   BIND_0( PTR_FUN(gdbToggleCommandWindowCB) ), 0, 0),	\
+    MENTRY("source", "Source Window", MMCheckItem,		\
+	   BIND_0( PTR_FUN(gdbToggleSourceWindowCB) ), 0, 0),	\
+    MENTRY("data", "Data Window", MMCheckItem,			\
+	   BIND_0( PTR_FUN(gdbToggleDataWindowCB) ), 0, 0),	\
+    MENTRY("code", "Machine Code Window", MMCheckItem,		\
+	   BIND_0( PTR_FUN(gdbToggleCodeWindowCB) ), 0, 0),	\
+    MMEnd							\
 };
 
 struct EditItems {
@@ -1180,32 +1185,32 @@ DECL_WR(WR_dddPopupSettingsCB, CB_ARG_HIDE_0(PTR_FUN(dddPopupSettingsCB)));
 
 #define EDIT_MENU(win, w)						\
 {									\
-    { NM("undo", "Undo"),                  MMPush,			\
-      HIDE_0( PTR_FUN(gdbUndoCB) ), 0, 0, 0, 0},			\
-    { NM("redo", "Redo"),                  MMPush,			\
-      HIDE_0( PTR_FUN(gdbRedoCB) ), 0, 0, 0, 0},			\
+    MENTRY("undo", "Undo", MMPush,					\
+	   HIDE_0( PTR_FUN(gdbUndoCB) ), 0, 0),				\
+    MENTRY("redo", "Redo", MMPush,					\
+	   HIDE_0( PTR_FUN(gdbRedoCB) ), 0, 0),				\
     MMSep,								\
-    { NM("cut", "Cut"),                    MMPush,			\
-      BIND_1(PTR_FUN(gdbCutSelectionCB),    win), 0, 0, 0, 0},		\
-    { NM("copy", "Copy"),                  MMPush,			\
-      BIND_1(PTR_FUN(gdbCopySelectionCB),   win), 0, 0, 0, 0},		\
-    { NM("paste", "Paste"),                MMPush,			\
-      BIND_1(PTR_FUN(gdbPasteClipboardCB),  win), 0, 0, 0, 0},		\
-    { NM("clearAll", "Clear"),             MMPush,			\
-      HIDE_0( PTR_FUN(gdbClearAllCB) ), 0, 0, 0, 0},			\
-    { NM("delete", "Delete"),              MMPush,			\
-      BIND_1( PTR_FUN(gdbDeleteSelectionCB), win), 0, 0, 0, 0},		\
+    MENTRY("cut", "Cut", MMPush,					\
+	   BIND_1(PTR_FUN(gdbCutSelectionCB), win), 0, 0),		\
+    MENTRY("copy", "Copy", MMPush,					\
+	   BIND_1(PTR_FUN(gdbCopySelectionCB), win), 0, 0),		\
+    MENTRY("paste", "Paste", MMPush,					\
+	   BIND_1(PTR_FUN(gdbPasteClipboardCB), win), 0, 0),		\
+    MENTRY("clearAll", "Clear", MMPush,					\
+	   HIDE_0( PTR_FUN(gdbClearAllCB) ), 0, 0),			\
+    MENTRY("delete", "Delete", MMPush,					\
+	   BIND_1( PTR_FUN(gdbDeleteSelectionCB), win), 0, 0),		\
     MMSep,								\
-    { NM("selectAll", "Select All"),       MMPush,			\
-      BIND_1( PTR_FUN(gdbSelectAllCB),       win), 0, 0, 0, 0},		\
+    MENTRY("selectAll", "Select All", MMPush,				\
+	   BIND_1( PTR_FUN(gdbSelectAllCB), win), 0, 0),		\
     MMSep,								\
-    { NM("preferences", "Preferences..."), MMPush,			\
-      HIDE_0( PTR_FUN(dddPopupPreferencesCB) ), 0, 0, 0, 0},		\
-    { NM("settings", "Settings..."),       MMPush,			\
-      BIND_1( PTR_FUN(WhenReady), XtPointer(&WR_dddPopupSettingsCB) ), 0, 0, 0, 0}, \
+    MENTRY("preferences", "Preferences...", MMPush,			\
+	   HIDE_0( PTR_FUN(dddPopupPreferencesCB) ), 0, 0),		\
+    MENTRY("settings", "Settings...", MMPush,				\
+	   BIND_1( PTR_FUN(WhenReady), XtPointer(&WR_dddPopupSettingsCB) ), 0, 0), \
     MMSep,								\
-    { NM("saveOptions", "Save Options"),   MMCheckItem,			\
-      BIND_0( PTR_FUN(dddToggleSaveOptionsOnExitCB) ), 0, (Widget *)&(w), 0, 0}, \
+    MENTRY("saveOptions", "Save Options", MMCheckItem,			\
+	   BIND_0( PTR_FUN(dddToggleSaveOptionsOnExitCB) ), 0, &(w)),	\
     MMEnd								\
 }
 
@@ -1234,36 +1239,36 @@ DECL_WR(WR_gdbApplyCB, PTR_FUN(gdbApplyCB));
 
 static MMDesc command_menu[] =
 {
-    { NM("history", "Command History..."),  MMPush,
-      BIND_0( PTR_FUN(gdbHistoryCB) ), 0, 0, 0, 0},
+    MENTRY("history", "Command History...", MMPush,
+	   BIND_0( PTR_FUN(gdbHistoryCB) ), 0, 0),
     MMSep,
-    { NM("prev", "Previous"),               MMPush,
-      BIND_0( PTR_FUN(gdbPrevCB) ), 0, 0, 0, 0},
-    { NM("next", "Next"),                   MMPush,
-      BIND_0( PTR_FUN(gdbNextCB) ), 0, 0, 0, 0},
+    MENTRY("prev", "Previous", MMPush,
+	   BIND_0( PTR_FUN(gdbPrevCB) ), 0, 0),
+    MENTRY("next", "Next", MMPush,
+	   BIND_0( PTR_FUN(gdbNextCB) ), 0, 0),
     MMSep,
-    { NM("isearch_prev", "Find Backward"),  MMPush,
-      BIND_0( PTR_FUN(gdbISearchPrevCB) ), 0, 0, 0, 0},
-    { NM("isearch_next", "Find Forward"),   MMPush,
-      BIND_0( PTR_FUN(gdbISearchNextCB) ), 0, 0, 0, 0},
-    { NM("isearch_exit", "Quit Search"),    MMPush,
-      BIND_0( PTR_FUN(gdbISearchExitCB) ), 0, 0, 0, 0},
+    MENTRY("isearch_prev", "Find Backward", MMPush,
+	   BIND_0( PTR_FUN(gdbISearchPrevCB) ), 0, 0),
+    MENTRY("isearch_next", "Find Forward", MMPush,
+	   BIND_0( PTR_FUN(gdbISearchNextCB) ), 0, 0),
+    MENTRY("isearch_exit", "Quit Search", MMPush,
+	   BIND_0( PTR_FUN(gdbISearchExitCB) ), 0, 0),
     MMSep,
-    { NM("complete", "Complete"),           MMPush,
-      BIND_1( PTR_FUN(WhenReady), XtPointer(&WR_gdbCompleteCB) ), 
-      0, &complete_w, 0, 0 },
-    { NM("apply", "Apply"),                 MMPush,
-      BIND_1( PTR_FUN(WhenReady), XtPointer(&WR_gdbApplyCB) ), 0, 0, 0, 0},
+    MENTRY("complete", "Complete", MMPush,
+	   BIND_1( PTR_FUN(WhenReady), XtPointer(&WR_gdbCompleteCB) ), 
+	   0, &complete_w),
+    MENTRY("apply", "Apply", MMPush,
+	   BIND_1( PTR_FUN(WhenReady), XtPointer(&WR_gdbApplyCB) ), 0, 0),
     MMSep,
-    { NM("clear_line", "Clear Line"),       MMPush,
-      HIDE_0( PTR_FUN(gdbClearCB) ), 0, 0, 0, 0},
-    { NM("clear_window", "Clear Window"),   MMPush,
-      HIDE_0( PTR_FUN(gdbClearWindowCB) ), 0, 0, 0, 0},
+    MENTRY("clear_line", "Clear Line", MMPush,
+	   HIDE_0( PTR_FUN(gdbClearCB) ), 0, 0),
+    MENTRY("clear_window", "Clear Window", MMPush,
+	   HIDE_0( PTR_FUN(gdbClearWindowCB) ), 0, 0),
     MMSep,
-    { NM("define", "Define Command..."),    MMPush,
-      BIND_0( PTR_FUN(dddDefineCommandCB) ), 0, &define_w, 0, 0 },
-    { NM("buttons", "Edit Buttons..."),     MMPush,
-      BIND_0( PTR_FUN(dddEditButtonsCB) ), 0, 0, 0, 0},
+    MENTRY("define", "Define Command...", MMPush,
+	   BIND_0( PTR_FUN(dddDefineCommandCB) ), 0, &define_w),
+    MENTRY("buttons", "Edit Buttons...", MMPush,
+	   BIND_0( PTR_FUN(dddEditButtonsCB) ), 0, 0),
     MMEnd
 };
 
@@ -1278,23 +1283,23 @@ DECL_WR(WR_ViewThreadsCB, CB_ARG_HIDE_0(PTR_FUN( SourceView::ViewThreadsCB )));
 DECL_WR(WR_dddPopupSignalsCB, CB_ARG_HIDE_0(PTR_FUN(dddPopupSignalsCB)));
 static MMDesc stack_menu[] =
 {
-    { NM("stack", "Backtrace..."),      MMPush,
-      BIND_1( PTR_FUN(WhenReady), XtPointer(&WR_ViewStackFramesCB) ),
-      0, &stack_w, 0, 0 },
-    { NM("registers", "Registers..."),  MMPush,
-      BIND_1( PTR_FUN(WhenReady), XtPointer(&WR_ViewRegistersCB) ),
-      0, &registers_w, 0, 0 },
-    { NM("threads", "Threads..."),      MMPush,
-      BIND_1( PTR_FUN(WhenReady), XtPointer(&WR_ViewThreadsCB) ),
-      0, &threads_w, 0, 0 },
-    { NM("signals", "Signals..."),      MMPush,
-      BIND_1( PTR_FUN(WhenReady), XtPointer(&WR_dddPopupSignalsCB) ),
-      0, &signals_w, 0, 0 },
+    MENTRY("stack", "Backtrace...", MMPush,
+	   BIND_1( PTR_FUN(WhenReady), XtPointer(&WR_ViewStackFramesCB) ),
+	   0, &stack_w),
+    MENTRY("registers", "Registers...", MMPush,
+	   BIND_1( PTR_FUN(WhenReady), XtPointer(&WR_ViewRegistersCB) ),
+	   0, &registers_w),
+    MENTRY("threads", "Threads...", MMPush,
+	   BIND_1( PTR_FUN(WhenReady), XtPointer(&WR_ViewThreadsCB) ),
+	   0, &threads_w),
+    MENTRY("signals", "Signals...", MMPush,
+	   BIND_1( PTR_FUN(WhenReady), XtPointer(&WR_dddPopupSignalsCB) ),
+	   0, &signals_w),
     MMSep,
-    { NM("up", "Up"),                   MMPush,
-      BIND_1( PTR_FUN(gdbCommandCB12), XtPointer("up") ), 0, 0, 0, 0},
-    { NM("down", "Down"),               MMPush,
-      BIND_1( PTR_FUN(gdbCommandCB12), XtPointer("down") ), 0, 0, 0, 0},
+    MENTRY("up", "Up", MMPush,
+	   BIND_1( PTR_FUN(gdbCommandCB12), XtPointer("up") ), 0, 0),
+    MENTRY("down", "Down", MMPush,
+	   BIND_1( PTR_FUN(gdbCommandCB12), XtPointer("down") ), 0, 0),
     MMEnd
 };
 
@@ -1322,36 +1327,36 @@ static Gtk::ToggleButton *line_numbers1_w;
 
 static MMDesc source_menu[] =
 {
-    { NM("breakpoints", "Breakpoints..."), MMPush,
-      HIDE_0(PTR_FUN(SourceView::EditBreakpointsCB)), 0, 0, 0, 0},
+    MENTRY("breakpoints", "Breakpoints...", MMPush,
+	   HIDE_0(PTR_FUN(SourceView::EditBreakpointsCB)), 0, 0),
     MMSep,
-    { NM("lookup", "Lookup"),                                    MMPush,
-      HIDE_0(PTR_FUN(gdbLookupCB)), 0, (Widget *)&lookup_w, 0, 0 },
-    { NM("findForward", "@charset Find@small>> @charset()@rm"),  MMPush,
-      BIND_1(PTR_FUN(gdbFindCB), SourceView::forward),
-      0, (Widget *)&find_forward_w, 0, 0 },
-    { NM("findBackward", "@charset Find@small<< @charset()@rm"), MMPush,
-      BIND_1(PTR_FUN(gdbFindCB), SourceView::backward),
-      0, (Widget *)&find_backward_w, 0, 0 },
+    MENTRY("lookup", "Lookup", MMPush,
+	   HIDE_0(PTR_FUN(gdbLookupCB)), 0, (Widget *)&lookup_w),
+    MENTRY("findForward", "@charset Find@small>> @charset()@rm", MMPush,
+	   BIND_1(PTR_FUN(gdbFindCB), SourceView::forward),
+	   0, (Widget *)&find_forward_w),
+    MENTRY("findBackward", "@charset Find@small<< @charset()@rm", MMPush,
+	   BIND_1(PTR_FUN(gdbFindCB), SourceView::backward),
+	   0, (Widget *)&find_backward_w),
     MMSep,
-    { NM("findWordsOnly", "Find Words Only"),                    MMCheckItem,
-      BIND_0(PTR_FUN(sourceToggleFindWordsOnlyCB)), 
-      0, (Widget *)&find_words_only_w, 0, 0 },
-    { NM("findCaseSensitive", "Find Case Sensitive"),            MMCheckItem,
-      BIND_0(PTR_FUN(sourceToggleFindCaseSensitiveCB)), 
-      0, (Widget *)&find_case_sensitive_w, 0, 0 },
+    MENTRY("findWordsOnly", "Find Words Only", MMCheckItem,
+	   BIND_0(PTR_FUN(sourceToggleFindWordsOnlyCB)), 
+	   0, (Widget *)&find_words_only_w),
+    MENTRY("findCaseSensitive", "Find Case Sensitive", MMCheckItem,
+	   BIND_0(PTR_FUN(sourceToggleFindCaseSensitiveCB)), 
+	   0, (Widget *)&find_case_sensitive_w),
     MMSep,
-    { NM("lineNumbers", "Display Line Numbers"),                 MMCheckItem,
-      BIND_0(PTR_FUN(sourceToggleDisplayLineNumbersCB)),
-      0, (Widget *)&line_numbers1_w, 0, 0 },
-    { NM("disassemble", "Display Machine Code"),                 MMCheckItem,
-      BIND_0(PTR_FUN(gdbToggleCodeWindowCB)),
-      0, (Widget *)&disassemble_w, 0, 0 },
+    MENTRY("lineNumbers", "Display Line Numbers", MMCheckItem,
+	   BIND_0(PTR_FUN(sourceToggleDisplayLineNumbersCB)),
+	   0, (Widget *)&line_numbers1_w),
+    MENTRY("disassemble", "Display Machine Code", MMCheckItem,
+	   BIND_0(PTR_FUN(gdbToggleCodeWindowCB)),
+	   0, (Widget *)&disassemble_w),
     MMSep,
-    { NM("edit", "Edit Source..."),                              MMPush,  
-      BIND_0(PTR_FUN(gdbEditSourceCB)), 0, (Widget *)&edit_source_w, 0, 0 },
-    { NM("reload", "Reload Source"),                             MMPush,  
-      HIDE_0(PTR_FUN(gdbReloadSourceCB)), 0, (Widget *)&reload_source_w, 0, 0},
+    MENTRY("edit", "Edit Source...", MMPush, 
+	   BIND_0(PTR_FUN(gdbEditSourceCB)), 0, (Widget *)&edit_source_w),
+    MENTRY("reload", "Reload Source", MMPush, 
+	   HIDE_0(PTR_FUN(gdbReloadSourceCB)), 0, (Widget *)&reload_source_w),
     MMEnd
 };
 
@@ -1370,12 +1375,12 @@ static Gtk::ToggleButton *button_docs_w;
 
 static MMDesc button_menu [] = 
 {
-    { NM("tips", "as Popup Tips"),       MMToggle,
-      BIND_0( PTR_FUN(dddToggleButtonTipsCB) ),
-      0, (Widget *)&button_tips_w, 0,0},
-    { NM("docs", "in the Status Line"),  MMToggle,
-      BIND_0( PTR_FUN(dddToggleButtonDocsCB) ),
-      0, (Widget *)&button_docs_w, 0,0},
+    MENTRY("tips", "as Popup Tips", MMToggle,
+	   BIND_0( PTR_FUN(dddToggleButtonTipsCB) ),
+	   0, (Widget *)&button_tips_w),
+    MENTRY("docs", "in the Status Line", MMToggle,
+	   BIND_0( PTR_FUN(dddToggleButtonDocsCB) ),
+	   0, (Widget *)&button_docs_w),
     MMEnd
 };
 
@@ -1389,12 +1394,12 @@ static Gtk::ToggleButton *value_docs_w;
 
 static MMDesc value_menu [] = 
 {
-    { NM("tips", "as Popup Tips"),       MMToggle,
-      BIND_0( PTR_FUN(dddToggleValueTipsCB) ),
-      0, (Widget *)&value_tips_w, 0, 0 },
-    { NM("docs", "in the Status Line"),  MMToggle,
-      BIND_0( PTR_FUN(dddToggleValueDocsCB) ),
-      0, (Widget *)&value_docs_w, 0, 0 },
+    MENTRY("tips", "as Popup Tips", MMToggle,
+	   BIND_0( PTR_FUN(dddToggleValueTipsCB) ),
+	   0, (Widget *)&value_tips_w),
+    MENTRY("docs", "in the Status Line", MMToggle,
+	   BIND_0( PTR_FUN(dddToggleValueDocsCB) ),
+	   0, (Widget *)&value_docs_w),
     MMEnd
 };
 
@@ -1408,12 +1413,12 @@ static Gtk::ToggleButton *set_console_completion_w;
 
 static MMDesc completion_menu [] = 
 {
-    { NM("inAllWindows", "in All Windows"),  MMRadio, 
-      BIND_1(PTR_FUN(dddSetGlobalTabCompletionCB), True), 
-      0, (Widget *)&set_global_completion_w, 0, 0 },
-    { NM("inConsole", "in Console Only"),    MMRadio,
-      BIND_1(PTR_FUN(dddSetGlobalTabCompletionCB), False),
-      0, (Widget *)&set_console_completion_w, 0, 0 },
+    MENTRY("inAllWindows", "in All Windows", MMRadio, 
+	   BIND_1(PTR_FUN(dddSetGlobalTabCompletionCB), True), 
+	   0, (Widget *)&set_global_completion_w),
+    MENTRY("inConsole", "in Console Only", MMRadio,
+	   BIND_1(PTR_FUN(dddSetGlobalTabCompletionCB), False),
+	   0, (Widget *)&set_console_completion_w),
     MMEnd
 };
 
@@ -1425,13 +1430,13 @@ static Gtk::Entry *max_undo_size_w;
 
 static MMDesc undo_menu [] =
 {
-    { NM("size", "Undo Buffer Size"),    MMTextField | MMUnmanagedLabel,
-      BIND_0(PTR_FUN(dddSetUndoBufferSizeCB)), 
-      0, (Widget *)&max_undo_size_w, 0, 0 },
-    { NM("kbytes", "kBytes"),            MMLabel,
-      MMNoCB, 0, 0, 0, 0 },
-    { NM("clear", "Clear Undo Buffer"),  MMPush,
-      HIDE_0(PTR_FUN(dddClearUndoBufferCB)), 0, 0, 0, 0 },
+    MENTRY("size", "Undo Buffer Size", MMTextField | MMUnmanagedLabel,
+	   BIND_0(PTR_FUN(dddSetUndoBufferSizeCB)), 
+	   0, (Widget *)&max_undo_size_w),
+    MENTRY("kbytes", "kBytes", MMLabel,
+	   MMNoCB, 0, 0),
+    MENTRY("clear", "Clear Undo Buffer", MMPush,
+	   HIDE_0(PTR_FUN(dddClearUndoBufferCB)), 0, 0),
     MMEnd
 };
 
@@ -1451,29 +1456,29 @@ static Gtk::ToggleButton *check_grabs_w;
 
 static MMDesc general_preferences_menu[] = 
 {
-    { NM("buttonHints", "Automatic Display of Button Hints"),     MMButtonPanel,
-      MMNoCB, button_menu, 0, 0, 0 },
-    { NM("valueHints", "Automatic Display of Variable Values"),   MMButtonPanel,
-      MMNoCB, value_menu, 0, 0, 0 },
-    { NM("tabCompletion", "TAB Key Completes"),                   MMRadioPanel,
-      MMNoCB, completion_menu, 0, 0, 0 },
-    { NM("groupIconify", "Iconify all Windows at Once"),          MMToggle,
-      BIND_0( PTR_FUN(dddToggleGroupIconifyCB) ),
-      0, (Widget *)&group_iconify_w, 0, 0 },
-    { NM("uniconifyWhenReady", "Uniconify When Ready"),           MMToggle,
-      BIND_0( PTR_FUN(dddToggleUniconifyWhenReadyCB) ),
-      0, (Widget *)&uniconify_when_ready_w, 0, 0 },
-    { NM("suppressWarnings", "Suppress X Warnings"),              MMToggle,
-      BIND_0( PTR_FUN(dddToggleSuppressWarningsCB) ),
-      0, (Widget *)&suppress_warnings_w, 0, 0 },
-    { NM("warnIfLocked", "Warn if Multiple DDD Instances are Running"), MMToggle,
-      BIND_0( PTR_FUN(dddToggleWarnIfLockedCB) ), 
-      0, (Widget *)&warn_if_locked_w, 0, 0 },
-    { NM("checkGrabs", "Continue Automatically when Mouse Pointer is Frozen"), MMToggle,
-      BIND_0( PTR_FUN(dddToggleCheckGrabsCB) ),
-      0, (Widget *)&check_grabs_w, 0, 0 },
-    { NM("undoSize", "Undo Buffer Size"),                         MMPanel,
-      MMNoCB, undo_menu, 0, 0, 0 },
+    MENTRY("buttonHints", "Automatic Display of Button Hints", MMButtonPanel,
+	   MMNoCB, button_menu, 0),
+    MENTRY("valueHints", "Automatic Display of Variable Values", MMButtonPanel,
+	   MMNoCB, value_menu, 0),
+    MENTRY("tabCompletion", "TAB Key Completes", MMRadioPanel,
+	   MMNoCB, completion_menu, 0),
+    MENTRY("groupIconify", "Iconify all Windows at Once", MMToggle,
+	   BIND_0( PTR_FUN(dddToggleGroupIconifyCB) ),
+	   0, (Widget *)&group_iconify_w),
+    MENTRY("uniconifyWhenReady", "Uniconify When Ready", MMToggle,
+	   BIND_0( PTR_FUN(dddToggleUniconifyWhenReadyCB) ),
+	   0, (Widget *)&uniconify_when_ready_w),
+    MENTRY("suppressWarnings", "Suppress X Warnings", MMToggle,
+	   BIND_0( PTR_FUN(dddToggleSuppressWarningsCB) ),
+	   0, (Widget *)&suppress_warnings_w),
+    MENTRY("warnIfLocked", "Warn if Multiple DDD Instances are Running", MMToggle,
+	   BIND_0( PTR_FUN(dddToggleWarnIfLockedCB) ), 
+	   0, (Widget *)&warn_if_locked_w),
+    MENTRY("checkGrabs", "Continue Automatically when Mouse Pointer is Frozen", MMToggle,
+	   BIND_0( PTR_FUN(dddToggleCheckGrabsCB) ),
+	   0, (Widget *)&check_grabs_w),
+    MENTRY("undoSize", "Undo Buffer Size", MMPanel,
+	   MMNoCB, undo_menu, 0),
     MMEnd
 };
 
@@ -1490,12 +1495,12 @@ static Gtk::ToggleButton *set_display_text_w;
 
 static MMDesc glyph_menu[] =
 {
-    { NM("asGlyphs", "as Glyphs"),         MMRadio,
-      HIDE_0_BIND_1(PTR_FUN(sourceSetDisplayGlyphsCB), XtPointer(True)),
-      0, (Widget *)&set_display_glyphs_w, 0, 0 },
-    { NM("asText", "as Text Characters"),  MMRadio,
-      HIDE_0_BIND_1(PTR_FUN(sourceSetDisplayGlyphsCB), XtPointer(False)),
-      0, (Widget *)&set_display_text_w, 0, 0 },
+    MENTRY("asGlyphs", "as Glyphs", MMRadio,
+	   HIDE_0_BIND_1(PTR_FUN(sourceSetDisplayGlyphsCB), XtPointer(True)),
+	   0, (Widget *)&set_display_glyphs_w),
+    MENTRY("asText", "as Text Characters", MMRadio,
+	   HIDE_0_BIND_1(PTR_FUN(sourceSetDisplayGlyphsCB), XtPointer(False)),
+	   0, (Widget *)&set_display_text_w),
     MMEnd
 };
 
@@ -1509,12 +1514,12 @@ static Gtk::ToggleButton *set_tool_buttons_in_command_tool_w;
 
 static MMDesc tool_buttons_menu [] = 
 {
-    { NM("commandTool", "Command Tool"),    MMRadio,
-      BIND_1( PTR_FUN(dddSetToolBarCB), XtPointer(False) ),
-      0, (Widget *)&set_tool_buttons_in_command_tool_w, 0, 0 },
-    { NM("sourceWindow", "Source Window"),  MMRadio,
-      BIND_1( PTR_FUN(dddSetToolBarCB), XtPointer(True) ),
-      0, (Widget *)&set_tool_buttons_in_toolbar_w, 0, 0 },
+    MENTRY("commandTool", "Command Tool", MMRadio,
+	   BIND_1( PTR_FUN(dddSetToolBarCB), XtPointer(False) ),
+	   0, (Widget *)&set_tool_buttons_in_command_tool_w),
+    MENTRY("sourceWindow", "Source Window", MMRadio,
+	   BIND_1( PTR_FUN(dddSetToolBarCB), XtPointer(True) ),
+	   0, (Widget *)&set_tool_buttons_in_toolbar_w),
     MMEnd
 };
 
@@ -1528,12 +1533,12 @@ static Gtk::ToggleButton *set_refer_base_w;
 
 static MMDesc refer_menu[] =
 {
-    { NM("byPath", "by Path Name"),  MMRadio,
-      HIDE_0_BIND_1(PTR_FUN(sourceSetUseSourcePathCB), XtPointer(True)),
-      0, (Widget *)&set_refer_path_w, 0, 0 },
-    { NM("byBase", "by Base Name"),  MMRadio,
-      HIDE_0_BIND_1(PTR_FUN(sourceSetUseSourcePathCB), XtPointer(False)),
-      0, (Widget *)&set_refer_base_w, 0, 0 },
+    MENTRY("byPath", "by Path Name", MMRadio,
+	   HIDE_0_BIND_1(PTR_FUN(sourceSetUseSourcePathCB), XtPointer(True)),
+	   0, (Widget *)&set_refer_path_w),
+    MENTRY("byBase", "by Base Name", MMRadio,
+	   HIDE_0_BIND_1(PTR_FUN(sourceSetUseSourcePathCB), XtPointer(False)),
+	   0, (Widget *)&set_refer_base_w),
     MMEnd
 };
 
@@ -1547,12 +1552,12 @@ static Gtk::ToggleButton *case_sensitive_w;
 
 static MMDesc find_preferences_menu[] =
 {
-    { NM("wordsOnly", "Words Only"),          MMToggle,
-      BIND_0( PTR_FUN(sourceToggleFindWordsOnlyCB) ), 
-      0, (Widget *)&words_only_w, 0, 0 },
-    { NM("caseSensitive", "Case Sensitive"),  MMToggle,
-      BIND_0( PTR_FUN(sourceToggleFindCaseSensitiveCB) ), 
-      0, (Widget *)&case_sensitive_w, 0, 0 },
+    MENTRY("wordsOnly", "Words Only", MMToggle,
+	   BIND_0( PTR_FUN(sourceToggleFindWordsOnlyCB) ), 
+	   0, (Widget *)&words_only_w),
+    MENTRY("caseSensitive", "Case Sensitive", MMToggle,
+	   BIND_0( PTR_FUN(sourceToggleFindCaseSensitiveCB) ), 
+	   0, (Widget *)&case_sensitive_w),
     MMEnd
 };
 
@@ -1566,12 +1571,12 @@ static Gtk::ToggleButton *cache_machine_code_w;
 
 static MMDesc cache_menu[] =
 {
-    { NM("cacheSource", "Soruce Files"),  MMToggle,
-      BIND_0( PTR_FUN(sourceToggleCacheSourceFilesCB) ), 
-      0, (Widget *)&cache_source_files_w, 0, 0 },
-    { NM("cacheCode", "Machine Code"),    MMToggle,
-      BIND_0( PTR_FUN(sourceToggleCacheMachineCodeCB) ), 
-      0, (Widget *)&cache_machine_code_w, 0, 0 },
+    MENTRY("cacheSource", "Soruce Files", MMToggle,
+	   BIND_0( PTR_FUN(sourceToggleCacheSourceFilesCB) ), 
+	   0, (Widget *)&cache_source_files_w),
+    MENTRY("cacheCode", "Machine Code", MMToggle,
+	   BIND_0( PTR_FUN(sourceToggleCacheMachineCodeCB) ), 
+	   0, (Widget *)&cache_machine_code_w),
     MMEnd
 };
 
@@ -1587,15 +1592,15 @@ static Gtk::Scale *code_indent_w;
 
 static MMDesc scales_menu[] = 
 {
-    { NM("tabWidth", "Tab Width"),                   MMScale, 
-      BIND_0( PTR_FUN(sourceSetTabWidthCB) ),
-      0, (Widget *)&tab_width_w, 0, 0 },
-    { NM("sourceIndent", "Source Indentation"),      MMScale, 
-      BIND_0( PTR_FUN(sourceSetSourceIndentCB) ),
-      0, (Widget *)&source_indent_w, 0, 0 },
-    { NM("codeIndent", "Machine Code Indentation"),  MMScale, 
-      BIND_0( PTR_FUN(sourceSetCodeIndentCB) ),
-      0, (Widget *)&code_indent_w, 0, 0 },
+    MENTRY("tabWidth", "Tab Width", MMScale, 
+	   BIND_0( PTR_FUN(sourceSetTabWidthCB) ),
+	   0, (Widget *)&tab_width_w),
+    MENTRY("sourceIndent", "Source Indentation", MMScale, 
+	   BIND_0( PTR_FUN(sourceSetSourceIndentCB) ),
+	   0, (Widget *)&source_indent_w),
+    MENTRY("codeIndent", "Machine Code Indentation", MMScale, 
+	   BIND_0( PTR_FUN(sourceSetCodeIndentCB) ),
+	   0, (Widget *)&code_indent_w),
     MMEnd
 };
 
@@ -1610,21 +1615,21 @@ static Widget refer_sources_w;
 
 static MMDesc source_preferences_menu[] = 
 {
-    { NM("showExecPos", "Show Position and Breakpoints"),  MMRadioPanel,
-      MMNoCB, glyph_menu, 0, 0, 0 },
-    { NM("toolButtons", "Tool Buttons Location"),          MMRadioPanel,
-      MMNoCB, tool_buttons_menu, 0, 0, 0 },
-    { NM("referSources", "Refer to Program Sources"),      MMRadioPanel,
-      MMNoCB, refer_menu, &refer_sources_w, 0,0},
-    { NM("find", "Find"),                                  MMButtonPanel,
-      MMNoCB, find_preferences_menu, 0, 0, 0 },
-    { NM("cache", "Cache"),                                MMButtonPanel,
-      MMNoCB, cache_menu, 0, 0, 0 },
-    { NM("lineNumbers", "Display Source Line Numbers"),    MMToggle,
-      BIND_0(PTR_FUN(sourceToggleDisplayLineNumbersCB)), 0, 
-      (Widget *)&line_numbers2_w, 0, 0 },
-    { NM("scales", "scales"),                              MMPanel | MMUnmanagedLabel, 
-      MMNoCB, scales_menu, 0, 0, 0 },
+    MENTRY("showExecPos", "Show Position and Breakpoints", MMRadioPanel,
+	   MMNoCB, glyph_menu, 0),
+    MENTRY("toolButtons", "Tool Buttons Location", MMRadioPanel,
+	   MMNoCB, tool_buttons_menu, 0),
+    MENTRY("referSources", "Refer to Program Sources", MMRadioPanel,
+	   MMNoCB, refer_menu, &refer_sources_w),
+    MENTRY("find", "Find", MMButtonPanel,
+	   MMNoCB, find_preferences_menu, 0),
+    MENTRY("cache", "Cache", MMButtonPanel,
+	   MMNoCB, cache_menu, 0),
+    MENTRY("lineNumbers", "Display Source Line Numbers", MMToggle,
+	   BIND_0(PTR_FUN(sourceToggleDisplayLineNumbersCB)), 0, 
+	   (Widget *)&line_numbers2_w),
+    MENTRY("scales", "scales", MMPanel | MMUnmanagedLabel, 
+	   MMNoCB, scales_menu, 0),
     MMEnd
 };
 
@@ -1643,15 +1648,15 @@ static Gtk::ToggleButton *graph_show_dependent_titles_w;
 
 static MMDesc show_menu[] = 
 {
-    { NM("hints", "Edge Hints"),                              MMToggle,
-      BIND_0( PTR_FUN(graphToggleShowHintsCB) ),
-      0, (Widget *)&graph_show_hints_w, 0, 0 },
-    { NM("annotations", "Edge Annotations"),                  MMToggle,
-      BIND_0( PTR_FUN(graphToggleShowAnnotationsCB) ),
-      0, (Widget *)&graph_show_annotations_w, 0, 0 },
-    { NM("dependentTitles", "Titles of Dependent Displays"),  MMToggle,
-      BIND_0( PTR_FUN(graphToggleShowDependentTitlesCB) ),
-      0, (Widget *)&graph_show_dependent_titles_w, 0, 0 },
+    MENTRY("hints", "Edge Hints", MMToggle,
+	   BIND_0( PTR_FUN(graphToggleShowHintsCB) ),
+	   0, (Widget *)&graph_show_hints_w),
+    MENTRY("annotations", "Edge Annotations", MMToggle,
+	   BIND_0( PTR_FUN(graphToggleShowAnnotationsCB) ),
+	   0, (Widget *)&graph_show_annotations_w),
+    MENTRY("dependentTitles", "Titles of Dependent Displays", MMToggle,
+	   BIND_0( PTR_FUN(graphToggleShowDependentTitlesCB) ),
+	   0, (Widget *)&graph_show_dependent_titles_w),
     MMEnd
 };
 
@@ -1665,12 +1670,12 @@ static Gtk::ToggleButton *graph_auto_layout_w;
 
 static MMDesc layout_menu[] =
 {
-    { NM("compact", "Compact"),   MMToggle,
-      BIND_0(PTR_FUN(graphToggleCompactLayoutCB)),
-      0, (Widget *)&graph_compact_layout_w, 0, 0 },
-    { NM("auto", "Automatic"),    MMToggle,
-      BIND_0(PTR_FUN(graphToggleAutoLayoutCB)),
-      0, (Widget *)&graph_auto_layout_w, 0, 0 },
+    MENTRY("compact", "Compact", MMToggle,
+	   BIND_0(PTR_FUN(graphToggleCompactLayoutCB)),
+	   0, (Widget *)&graph_compact_layout_w),
+    MENTRY("auto", "Automatic", MMToggle,
+	   BIND_0(PTR_FUN(graphToggleAutoLayoutCB)),
+	   0, (Widget *)&graph_auto_layout_w),
     MMEnd
 };
 
@@ -1684,12 +1689,12 @@ static Gtk::ToggleButton *graph_left_to_right_w;
 
 static MMDesc direction_menu[] =
 {
-    { NM("topToBottom", "Top to bottom"),    MMRadio,
-      BIND_1(PTR_FUN(graphSetDisplayPlacementCB), XmVERTICAL),
-      0, (Widget *)&graph_top_to_bottom_w, 0, 0 },
-    { NM("leftToRight", "Left to right"),    MMRadio,
-      BIND_1(PTR_FUN(graphSetDisplayPlacementCB), XmHORIZONTAL),
-      0, (Widget *)&graph_left_to_right_w, 0, 0 },
+    MENTRY("topToBottom", "Top to bottom", MMRadio,
+	   BIND_1(PTR_FUN(graphSetDisplayPlacementCB), XmVERTICAL),
+	   0, (Widget *)&graph_top_to_bottom_w),
+    MENTRY("leftToRight", "Left to right", MMRadio,
+	   BIND_1(PTR_FUN(graphSetDisplayPlacementCB), XmHORIZONTAL),
+	   0, (Widget *)&graph_left_to_right_w),
     MMEnd
 };
 
@@ -1701,11 +1706,11 @@ static Gtk::ToggleButton *graph_cluster_displays_w;
 
 static MMDesc placement_menu[] =
 {
-    { NM("direction", ""),                MMRadioPanel | MMUnmanagedLabel,
-      MMNoCB, direction_menu, 0, 0, 0 },
-    { NM("clusterDisplays", "Clustered"), MMToggle,
-      BIND_0( PTR_FUN(graphToggleClusterDisplaysCB) ),
-      0, (Widget *)&graph_cluster_displays_w, 0, 0 },
+    MENTRY("direction", "", MMRadioPanel | MMUnmanagedLabel,
+	   MMNoCB, direction_menu, 0),
+    MENTRY("clusterDisplays", "Clustered", MMToggle,
+	   BIND_0( PTR_FUN(graphToggleClusterDisplaysCB) ),
+	   0, (Widget *)&graph_cluster_displays_w),
     MMEnd
 };
 
@@ -1717,11 +1722,11 @@ static Gtk::ToggleButton *graph_snap_to_grid_w;
 
 static MMDesc themes_menu[] = 
 {
-    { NM("snapToGrid", "Auto-Align Displays on Nearest Grid Point"),    MMToggle,
-      BIND_0( PTR_FUN(graphToggleSnapToGridCB) ),
-      0, (Widget *)&graph_snap_to_grid_w, 0, 0 },
-    { NM("themes", "Themes..."),                                        MMPush,
-      HIDE_0( PTR_FUN(dddPopupThemesCB) ), 0, 0, 0, 0 },
+    MENTRY("snapToGrid", "Auto-Align Displays on Nearest Grid Point", MMToggle,
+	   BIND_0( PTR_FUN(graphToggleSnapToGridCB) ),
+	   0, (Widget *)&graph_snap_to_grid_w),
+    MENTRY("themes", "Themes...", MMPush,
+	   HIDE_0( PTR_FUN(dddPopupThemesCB) ), 0, 0),
     MMEnd
 };
 
@@ -1733,9 +1738,9 @@ static Gtk::Scale *graph_grid_size_w;
 
 static MMDesc grid_menu[] =
 {
-    { NM("gridSize", "Grid Size"),      MMScale,
-      BIND_0( PTR_FUN(graphSetGridSizeCB) ),
-      0, (Widget *)&graph_grid_size_w, 0, 0 },
+    MENTRY("gridSize", "Grid Size", MMScale,
+	   BIND_0( PTR_FUN(graphSetGridSizeCB) ),
+	   0, (Widget *)&graph_grid_size_w),
     MMEnd
 };
 
@@ -1751,25 +1756,25 @@ static Gtk::ToggleButton *graph_auto_close_w;
 
 static MMDesc data_preferences_menu[] = 
 {
-    { NM("show", "Show"),                     MMPanel,
-      MMNoCB, show_menu, 0, 0, 0 },
-    { NM("placement", "Placement"),                                    MMPanel,
-      MMNoCB, placement_menu, 0, 0, 0 },
-    { NM("layout", "Layout"),                                          MMPanel,
-      MMNoCB, layout_menu, 0, 0, 0 },
-    { NM("detectAliases", "Detect Aliases"),                           MMToggle,
-      BIND_0( PTR_FUN(graphToggleDetectAliasesCB) ),
-      0, (Widget *)&graph_detect_aliases_w, 0, 0 },
-    { NM("align2dArrays", "Display Two-Dimensional Arrays as Tables"), MMToggle,
-      BIND_0( PTR_FUN(graphToggleAlign2dArraysCB) ),
-      0, (Widget *)&graph_align_2d_arrays_w, 0, 0 },
-    { NM("autoClose", "Close Data Window when Deleting last Display"), MMToggle,
-      BIND_0( PTR_FUN(graphToggleAutoCloseCB) ),
-      0, (Widget *)&graph_auto_close_w, 0, 0 },
-    { NM("themes", ""),                                                MMPanel | MMUnmanagedLabel, 
-      MMNoCB, themes_menu, 0, 0, 0 },
-    { NM("grid", ""),                                                  MMPanel | MMUnmanagedLabel,
-      MMNoCB, grid_menu, 0, 0, 0 },
+    MENTRY("show", "Show", MMPanel,
+	   MMNoCB, show_menu, 0),
+    MENTRY("placement", "Placement", MMPanel,
+	   MMNoCB, placement_menu, 0),
+    MENTRY("layout", "Layout", MMPanel,
+	   MMNoCB, layout_menu, 0),
+    MENTRY("detectAliases", "Detect Aliases", MMToggle,
+	   BIND_0( PTR_FUN(graphToggleDetectAliasesCB) ),
+	   0, (Widget *)&graph_detect_aliases_w),
+    MENTRY("align2dArrays", "Display Two-Dimensional Arrays as Tables", MMToggle,
+	   BIND_0( PTR_FUN(graphToggleAlign2dArraysCB) ),
+	   0, (Widget *)&graph_align_2d_arrays_w),
+    MENTRY("autoClose", "Close Data Window when Deleting last Display", MMToggle,
+	   BIND_0( PTR_FUN(graphToggleAutoCloseCB) ),
+	   0, (Widget *)&graph_auto_close_w),
+    MENTRY("themes", "", MMPanel | MMUnmanagedLabel, 
+	   MMNoCB, themes_menu, 0),
+    MENTRY("grid", "", MMPanel | MMUnmanagedLabel,
+	   MMNoCB, grid_menu, 0),
     MMEnd
 };
 
@@ -1786,12 +1791,12 @@ static Gtk::ToggleButton *set_attached_windows_w;
 
 static MMDesc window_mode_menu [] = 
 {
-    { NM("attached", "Stacked Windows"),   MMRadio,
-      BIND_1( PTR_FUN(dddSetSeparateWindowsCB), XtPointer(1) ),
-      0, (Widget *)&set_attached_windows_w, 0, 0 },
-    { NM("separate", "Separate Windows"),  MMRadio,
-      BIND_1( PTR_FUN(dddSetSeparateWindowsCB), XtPointer(0) ),
-      0, (Widget *)&set_separate_windows_w, 0, 0 },
+    MENTRY("attached", "Stacked Windows", MMRadio,
+	   BIND_1( PTR_FUN(dddSetSeparateWindowsCB), XtPointer(1) ),
+	   0, (Widget *)&set_attached_windows_w),
+    MENTRY("separate", "Separate Windows", MMRadio,
+	   BIND_1( PTR_FUN(dddSetSeparateWindowsCB), XtPointer(0) ),
+	   0, (Widget *)&set_separate_windows_w),
     MMEnd
 };
 
@@ -1811,21 +1816,21 @@ static Gtk::ToggleButton *set_toolbars_at_bottom_w;
 
 static MMDesc button_appearance_menu [] = 
 {
-    { NM("images", "Images"),      MMToggle,
-      BIND_0( PTR_FUN(dddToggleButtonImagesCB) ),
-      0, (Widget *)&set_button_images_w, 0, 0 },
-    { NM("captions", "Captions"),  MMToggle,
-      BIND_0( PTR_FUN(dddToggleButtonCaptionsCB) ),
-      0, (Widget *)&set_button_captions_w, 0, 0 },
-    { NM("flat", "Flat"),          MMToggle,
-      BIND_0( PTR_FUN(dddToggleFlatButtonsCB) ),
-      0, (Widget *)&set_flat_buttons_w, 0, 0 },
-    { NM("color", "Color"),        MMToggle,
-      BIND_0( PTR_FUN(dddToggleColorButtonsCB) ),
-      0, (Widget *)&set_color_buttons_w, 0, 0 },
-    { NM("bottom", "Bottom"),      MMToggle,
-      BIND_0( PTR_FUN(dddToggleToolbarsAtBottomCB) ),
-      0, (Widget *)&set_toolbars_at_bottom_w, 0, 0 },
+    MENTRY("images", "Images", MMToggle,
+	   BIND_0( PTR_FUN(dddToggleButtonImagesCB) ),
+	   0, (Widget *)&set_button_images_w),
+    MENTRY("captions", "Captions", MMToggle,
+	   BIND_0( PTR_FUN(dddToggleButtonCaptionsCB) ),
+	   0, (Widget *)&set_button_captions_w),
+    MENTRY("flat", "Flat", MMToggle,
+	   BIND_0( PTR_FUN(dddToggleFlatButtonsCB) ),
+	   0, (Widget *)&set_flat_buttons_w),
+    MENTRY("color", "Color", MMToggle,
+	   BIND_0( PTR_FUN(dddToggleColorButtonsCB) ),
+	   0, (Widget *)&set_color_buttons_w),
+    MENTRY("bottom", "Bottom", MMToggle,
+	   BIND_0( PTR_FUN(dddToggleToolbarsAtBottomCB) ),
+	   0, (Widget *)&set_toolbars_at_bottom_w),
     MMEnd
 };
 
@@ -1839,12 +1844,12 @@ static Gtk::ToggleButton *set_focus_explicit_w;
 
 static MMDesc keyboard_focus_menu [] = 
 {
-    { NM("pointer", "Point to Type"),   MMRadio,
-      BIND_1( PTR_FUN(dddSetKeyboardFocusPolicyCB), XtPointer(XmPOINTER) ),
-      0, (Widget *)&set_focus_pointer_w, 0, 0 },
-    { NM("explicit", "Click to Type"),  MMRadio,
-      BIND_1( PTR_FUN(dddSetKeyboardFocusPolicyCB), XtPointer(XmEXPLICIT) ),
-      0, (Widget *)&set_focus_explicit_w, 0, 0 },
+    MENTRY("pointer", "Point to Type", MMRadio,
+	   BIND_1( PTR_FUN(dddSetKeyboardFocusPolicyCB), XtPointer(XmPOINTER) ),
+	   0, (Widget *)&set_focus_pointer_w),
+    MENTRY("explicit", "Click to Type", MMRadio,
+	   BIND_1( PTR_FUN(dddSetKeyboardFocusPolicyCB), XtPointer(XmEXPLICIT) ),
+	   0, (Widget *)&set_focus_explicit_w),
     MMEnd
 };
 
@@ -1858,12 +1863,12 @@ static Gtk::ToggleButton *set_scrolling_scrollbars_w;
 
 static MMDesc data_scrolling_menu [] = 
 {
-    { NM("panner", "Panner"),          MMRadio,
-      BIND_1( PTR_FUN(dddSetPannerCB), XtPointer(true) ),
-      0, (Widget *)&set_scrolling_panner_w, 0, 0 },
-    { NM("scrollbars", "Scrollbars"),  MMRadio,
-      BIND_1( PTR_FUN(dddSetPannerCB), XtPointer(false) ),
-      0, (Widget *)&set_scrolling_scrollbars_w, 0, 0 },
+    MENTRY("panner", "Panner", MMRadio,
+	   BIND_1( PTR_FUN(dddSetPannerCB), XtPointer(true) ),
+	   0, (Widget *)&set_scrolling_panner_w),
+    MENTRY("scrollbars", "Scrollbars", MMRadio,
+	   BIND_1( PTR_FUN(dddSetPannerCB), XtPointer(false) ),
+	   0, (Widget *)&set_scrolling_scrollbars_w),
     MMEnd
 };
 
@@ -1889,22 +1894,22 @@ static Gtk::ToggleButton *set_debugger_xdb_w;
 
 static MMDesc debugger_menu [] = 
 {
-    { NM("bash", "Bash"), MMRadio, BIND_1( PTR_FUN(dddSetDebuggerCB), BASH ),
-      0, (Widget *)&set_debugger_bash_w, 0, 0 },
-    { NM("dbg", "DBG"), MMRadio, BIND_1( PTR_FUN(dddSetDebuggerCB), DBG ),
-      0, (Widget *)&set_debugger_dbg_w, 0, 0 },
-    { NM("dbx", "DBX"), MMRadio, BIND_1( PTR_FUN(dddSetDebuggerCB), DBX ),
-      0, (Widget *)&set_debugger_dbx_w, 0, 0 },
-    { NM("gdb", "GDB"), MMRadio, BIND_1( PTR_FUN(dddSetDebuggerCB), GDB ),
-      0, (Widget *)&set_debugger_gdb_w, 0, 0 },
-    { NM("jdb", "JDB"), MMRadio, BIND_1( PTR_FUN(dddSetDebuggerCB), JDB ),
-      0, (Widget *)&set_debugger_jdb_w, 0, 0 },
-    { NM("perl", "Perl"), MMRadio, BIND_1( PTR_FUN(dddSetDebuggerCB), PERL ),
-      0, (Widget *)&set_debugger_perl_w, 0, 0 },
-    { NM("pydb", "PYDB"), MMRadio, BIND_1( PTR_FUN(dddSetDebuggerCB), PYDB ),
-      0, (Widget *)&set_debugger_pydb_w, 0, 0 },
-    { NM("xdb", "XDB"), MMRadio, BIND_1( PTR_FUN(dddSetDebuggerCB), XDB ),
-      0, (Widget *)&set_debugger_xdb_w, 0, 0 },
+    MENTRY("bash", "Bash", MMRadio, BIND_1( PTR_FUN(dddSetDebuggerCB), BASH ),
+	   0, (Widget *)&set_debugger_bash_w),
+    MENTRY("dbg", "DBG", MMRadio, BIND_1( PTR_FUN(dddSetDebuggerCB), DBG ),
+	   0, (Widget *)&set_debugger_dbg_w),
+    MENTRY("dbx", "DBX", MMRadio, BIND_1( PTR_FUN(dddSetDebuggerCB), DBX ),
+	   0, (Widget *)&set_debugger_dbx_w),
+    MENTRY("gdb", "GDB", MMRadio, BIND_1( PTR_FUN(dddSetDebuggerCB), GDB ),
+	   0, (Widget *)&set_debugger_gdb_w),
+    MENTRY("jdb", "JDB", MMRadio, BIND_1( PTR_FUN(dddSetDebuggerCB), JDB ),
+	   0, (Widget *)&set_debugger_jdb_w),
+    MENTRY("perl", "Perl", MMRadio, BIND_1( PTR_FUN(dddSetDebuggerCB), PERL ),
+	   0, (Widget *)&set_debugger_perl_w),
+    MENTRY("pydb", "PYDB", MMRadio, BIND_1( PTR_FUN(dddSetDebuggerCB), PYDB ),
+	   0, (Widget *)&set_debugger_pydb_w),
+    MENTRY("xdb", "XDB", MMRadio, BIND_1( PTR_FUN(dddSetDebuggerCB), XDB ),
+	   0, (Widget *)&set_debugger_xdb_w),
     MMEnd
 };
 
@@ -1917,8 +1922,8 @@ static Gtk::ToggleButton *auto_debugger_w;
 
 static MMDesc auto_debugger_menu [] =
 {
-    { NM("automatic", "Determine Automatically from Arguments"), MMToggle,
-      BIND_0( PTR_FUN(dddToggleAutoDebuggerCB) ), 0, (Widget *)&auto_debugger_w, 0, 0 },
+    MENTRY("automatic", "Determine Automatically from Arguments", MMToggle,
+	   BIND_0( PTR_FUN(dddToggleAutoDebuggerCB) ), 0, (Widget *)&auto_debugger_w),
     MMEnd
 };
 
@@ -1932,11 +1937,11 @@ static Gtk::ToggleButton *splash_screen_w;
 
 static MMDesc startup_menu [] =
 {
-    { NM("splashScreen", "DDD Splash Screen"), MMToggle,
-      BIND_0( PTR_FUN(SetSplashScreenCB) ), 0, (Widget *)&splash_screen_w, 0, 0 },
+    MENTRY("splashScreen", "DDD Splash Screen", MMToggle,
+	   BIND_0( PTR_FUN(SetSplashScreenCB) ), 0, (Widget *)&splash_screen_w),
 #ifdef IF_MOTIF
-    { NM("startupTips", "Tip of the Day"),     MMToggle,
-      BIND_0( PTR_FUN(SetStartupTipsCB) ), 0, (Widget *)&startup_tips_w, 0, 0 },
+    MENTRY("startupTips", "Tip of the Day", MMToggle,
+	   BIND_0( PTR_FUN(SetStartupTipsCB) ), 0, (Widget *)&startup_tips_w),
 #endif // IF_MOTIF
     MMEnd
 };
@@ -1951,12 +1956,12 @@ static Gtk::ToggleButton *cut_copy_paste_motif_w;
 
 static MMDesc cut_copy_paste_menu [] =
 {
-    { NM("kde", "Copy"),         MMRadio,
-      BIND_1( PTR_FUN(dddSetCutCopyPasteBindingsCB), KDEBindings ), 
-      0, (Widget *)&cut_copy_paste_kde_w, 0, 0 },
-    { NM("motif", "Interrupt"),  MMRadio,
-      BIND_1( PTR_FUN(dddSetCutCopyPasteBindingsCB), MotifBindings ),
-      0, (Widget *)&cut_copy_paste_motif_w, 0, 0 },
+    MENTRY("kde", "Copy", MMRadio,
+	   BIND_1( PTR_FUN(dddSetCutCopyPasteBindingsCB), KDEBindings ), 
+	   0, (Widget *)&cut_copy_paste_kde_w),
+    MENTRY("motif", "Interrupt", MMRadio,
+	   BIND_1( PTR_FUN(dddSetCutCopyPasteBindingsCB), MotifBindings ),
+	   0, (Widget *)&cut_copy_paste_motif_w),
     MMEnd
 };
 
@@ -1970,37 +1975,37 @@ static Gtk::ToggleButton *select_all_motif_w;
 
 static MMDesc select_all_menu [] =
 {
-    { NM("kde", "Select All"),           MMRadio,
-      BIND_1( PTR_FUN(dddSetSelectAllBindingsCB), KDEBindings ), 
-      0, (Widget *)&select_all_kde_w, 0, 0 },
-    { NM("motif", "Beginning of Line"),  MMRadio,
-      BIND_1( PTR_FUN(dddSetSelectAllBindingsCB), MotifBindings ),
-      0, (Widget *)&select_all_motif_w, 0, 0 },
+    MENTRY("kde", "Select All", MMRadio,
+	   BIND_1( PTR_FUN(dddSetSelectAllBindingsCB), KDEBindings ), 
+	   0, (Widget *)&select_all_kde_w),
+    MENTRY("motif", "Beginning of Line", MMRadio,
+	   BIND_1( PTR_FUN(dddSetSelectAllBindingsCB), MotifBindings ),
+	   0, (Widget *)&select_all_motif_w),
     MMEnd
 };
 
 static MMDesc startup_preferences_menu [] =
 {
-    { NM("windows", "Window Layout"),          MMRadioPanel,
-      MMNoCB, window_mode_menu, 0, 0, 0 },
-    { NM("cutCopyPaste", "Ctrl+C is"),         MMRadioPanel,
-      MMNoCB, cut_copy_paste_menu, 0, 0, 0 },
-    { NM("selectAll", "Ctrl+A is"),            MMRadioPanel,
-      MMNoCB, select_all_menu, 0, 0, 0 },
-    { NM("buttons", "Tool Bar Appearance"),    MMButtonPanel,
-      MMNoCB, button_appearance_menu, 0, 0, 0 },
+    MENTRY("windows", "Window Layout", MMRadioPanel,
+	   MMNoCB, window_mode_menu, 0),
+    MENTRY("cutCopyPaste", "Ctrl+C is", MMRadioPanel,
+	   MMNoCB, cut_copy_paste_menu, 0),
+    MENTRY("selectAll", "Ctrl+A is", MMRadioPanel,
+	   MMNoCB, select_all_menu, 0),
+    MENTRY("buttons", "Tool Bar Appearance", MMButtonPanel,
+	   MMNoCB, button_appearance_menu, 0),
 #ifdef IF_MOTIF
-    { NM("keyboardFocus", "Keyboard Focus"),   MMRadioPanel,
-      MMNoCB, keyboard_focus_menu, 0, 0, 0 },
+    MENTRY("keyboardFocus", "Keyboard Focus", MMRadioPanel,
+	   MMNoCB, keyboard_focus_menu, 0),
 #endif // IF_MOTIF
-    { NM("dataScrolling", "Data Scrolling"),   MMRadioPanel,
-      MMNoCB, data_scrolling_menu, 0, 0, 0 },
-    { NM("autoDebugger", "Debugger Type"),     MMButtonPanel,
-      MMNoCB, auto_debugger_menu, 0, 0, 0 },
-    { NM("debugger", ""),                      MMRadioPanel,
-      MMNoCB, debugger_menu, 0, 0, 0 },
-    { NM("startupWindows", "Startup Windows"), MMButtonPanel,
-      MMNoCB, startup_menu, 0, 0, 0 },
+    MENTRY("dataScrolling", "Data Scrolling", MMRadioPanel,
+	   MMNoCB, data_scrolling_menu, 0),
+    MENTRY("autoDebugger", "Debugger Type", MMButtonPanel,
+	   MMNoCB, auto_debugger_menu, 0),
+    MENTRY("debugger", "", MMRadioPanel,
+	   MMNoCB, debugger_menu, 0),
+    MENTRY("startupWindows", "Startup Windows", MMButtonPanel,
+	   MMNoCB, startup_menu, 0),
     MMEnd
 };
 
@@ -2013,17 +2018,17 @@ static Gtk::Entry *font_sizes[5];
 #endif // IF_MOTIF
 
 #ifdef IF_MOTIF
-#define FONT_MENU(font)							\
-{									\
-    { NM("name", ""),                    MMTextField | MMUnmanagedLabel, \
-      BIND_1( PTR_FUN(SetFontNameCB), font ), 0,			\
-    (Widget *)&font_names[int(font)], 0, 0 },				\
-    { NM("size", "Size"),                MMTextField,			\
-      BIND_1( PTR_FUN(SetFontSizeCB), font ), 0,			\
-    (Widget *)&font_sizes[int(font)], 0, 0 },				\
-    { NM("browse", "Browse..."),         MMPush,			\
-      BIND_1( PTR_FUN(BrowseFontCB), font ), 0, 0, 0, 0 },		\
-    MMEnd								\
+#define FONT_MENU(font)						\
+{								\
+    MENTRY("name", "", MMTextField | MMUnmanagedLabel,		\
+	   BIND_1( PTR_FUN(SetFontNameCB), font ), 0,		\
+    (Widget *)&font_names[int(font)]),				\
+    MENTRY("size", "Size", MMTextField,				\
+	   BIND_1( PTR_FUN(SetFontSizeCB), font ), 0,		\
+    (Widget *)&font_sizes[int(font)]),				\
+    MENTRY("browse", "Browse...", MMPush,			\
+	   BIND_1( PTR_FUN(BrowseFontCB), font ), 0, 0),	\
+    MMEnd							\
 }
 
 static MMDesc default_font_menu        [] = FONT_MENU(DefaultDDDFont);
@@ -2035,14 +2040,14 @@ static MMDesc data_font_menu           [] = FONT_MENU(DataDDDFont);
 #ifdef IF_MOTIF
 static MMDesc font_preferences_menu [] =
 {
-    { NM("default", "Default Font"),          MMPanel,
-      MMNoCB, default_font_menu, 0, 0, 0 },
-    { NM("variableWidth", "Variable Width"),  MMPanel,
-      MMNoCB, variable_width_font_menu, 0, 0, 0 },
-    { NM("fixedWidth", "Fixed Width"),        MMPanel,
-      MMNoCB, fixed_width_font_menu, 0, 0, 0 },
-    { NM("data", "Data"),                     MMPanel,
-      MMNoCB, data_font_menu, 0, 0, 0 },
+    MENTRY("default", "Default Font", MMPanel,
+	   MMNoCB, default_font_menu, 0),
+    MENTRY("variableWidth", "Variable Width", MMPanel,
+	   MMNoCB, variable_width_font_menu, 0),
+    MENTRY("fixedWidth", "Fixed Width", MMPanel,
+	   MMNoCB, fixed_width_font_menu, 0),
+    MENTRY("data", "Data", MMPanel,
+	   MMNoCB, data_font_menu, 0),
     MMEnd
 };
 #endif // IF_MOTIF
@@ -2057,12 +2062,12 @@ static Gtk::ToggleButton *builtin_plot_window_w;
 
 static MMDesc plot_window_menu [] =
 {
-    { NM("extern", "External"), MMRadio,
-      HIDE_0_BIND_1(PTR_FUN(dddSetBuiltinPlotWindowCB), false),
-      0, (Widget *)&extern_plot_window_w, 0, 0},
-    { NM("builtin", "Builtin"), MMRadio,
-      HIDE_0_BIND_1(PTR_FUN(dddSetBuiltinPlotWindowCB), true),
-      0, (Widget *)&builtin_plot_window_w, 0, 0},
+    MENTRY("extern", "External", MMRadio,
+	   HIDE_0_BIND_1(PTR_FUN(dddSetBuiltinPlotWindowCB), false),
+	   0, (Widget *)&extern_plot_window_w),
+    MENTRY("builtin", "Builtin", MMRadio,
+	   HIDE_0_BIND_1(PTR_FUN(dddSetBuiltinPlotWindowCB), true),
+	   0, (Widget *)&builtin_plot_window_w),
     MMEnd
 };
 
@@ -2086,29 +2091,29 @@ static Gtk::Entry *plot_command_w;
 
 static MMDesc helpers_preferences_menu [] =
 {
-    { NM("edit", "Edit Sources"),        MMTextField,
-      BIND_0( PTR_FUN(dddSetEditCommandCB) ), 
-      0, (Widget *)&edit_command_w, 0, 0},
-    { NM("get_core", "Get Core File"),   MMTextField,
-      BIND_0( PTR_FUN(dddSetGetCoreCommandCB) ), 
-      0, (Widget *)&get_core_command_w, 0, 0},
-    { NM("ps", "List Processes"),        MMTextField,
-      BIND_0( PTR_FUN(dddSetPSCommandCB) ),
-      0, (Widget *)&ps_command_w, 0, 0},
-    { NM("term", "Execution Window"),    MMTextField,
-      BIND_0( PTR_FUN(dddSetTermCommandCB) ),
-      0, (Widget *)&term_command_w, 0, 0},
-    { NM("uncompress", "Uncompress"),    MMTextField,
-      BIND_0( PTR_FUN(dddSetUncompressCommandCB) ),
-      0, (Widget *)&uncompress_command_w, 0, 0},
-    { NM("www", "Web Browser"),          MMTextField,
-      BIND_0( PTR_FUN(dddSetWWWCommandCB) ),
-      0, (Widget *)&www_command_w, 0, 0},
-    { NM("plot", "Plot"),                MMTextField,
-      BIND_0( PTR_FUN(dddSetPlotCommandCB) ), 
-      0, (Widget *)&plot_command_w, 0, 0},
-    { NM("plot_window", "Plot Window"),  MMRadioPanel,
-      MMNoCB, plot_window_menu, 0, 0, 0 },
+    MENTRY("edit", "Edit Sources", MMTextField,
+	   BIND_0( PTR_FUN(dddSetEditCommandCB) ), 
+	   0, (Widget *)&edit_command_w),
+    MENTRY("get_core", "Get Core File", MMTextField,
+	   BIND_0( PTR_FUN(dddSetGetCoreCommandCB) ), 
+	   0, (Widget *)&get_core_command_w),
+    MENTRY("ps", "List Processes", MMTextField,
+	   BIND_0( PTR_FUN(dddSetPSCommandCB) ),
+	   0, (Widget *)&ps_command_w),
+    MENTRY("term", "Execution Window", MMTextField,
+	   BIND_0( PTR_FUN(dddSetTermCommandCB) ),
+	   0, (Widget *)&term_command_w),
+    MENTRY("uncompress", "Uncompress", MMTextField,
+	   BIND_0( PTR_FUN(dddSetUncompressCommandCB) ),
+	   0, (Widget *)&uncompress_command_w),
+    MENTRY("www", "Web Browser", MMTextField,
+	   BIND_0( PTR_FUN(dddSetWWWCommandCB) ),
+	   0, (Widget *)&www_command_w),
+    MENTRY("plot", "Plot", MMTextField,
+	   BIND_0( PTR_FUN(dddSetPlotCommandCB) ), 
+	   0, (Widget *)&plot_command_w),
+    MENTRY("plot_window", "Plot Window", MMRadioPanel,
+	   MMNoCB, plot_window_menu, 0),
     MMEnd
 };
 
@@ -2128,44 +2133,44 @@ static Widget edit_watchpoints_w = 0;
 DECL_WR(WR_dddPopupInfosCB, CB_ARG_HIDE_0(PTR_FUN(dddPopupInfosCB)));
 static MMDesc data_menu[] = 
 {
-    { NM("displays", "Displays..."),                MMPush,
-      HIDE_0(PTR_FUN(DataDisp::EditDisplaysCB)), 0, 0, 0, 0},
-    { NM("themes", "Themes..."),                    MMPush,
-      HIDE_0(PTR_FUN(dddPopupThemesCB)), 0, 0, 0, 0},
-    { NM("watchpoints", "Watchpoints..."),          MMPush,
-      HIDE_0(PTR_FUN(SourceView::EditBreakpointsCB)), 
-      0, &edit_watchpoints_w, 0, 0 },
-    { NM("examine", "Memory..."),                   MMPush,
-      BIND_0(PTR_FUN(gdbExamineCB)), 0, &examine_w, 0, 0},
+    MENTRY("displays", "Displays...", MMPush,
+	   HIDE_0(PTR_FUN(DataDisp::EditDisplaysCB)), 0, 0),
+    MENTRY("themes", "Themes...", MMPush,
+	   HIDE_0(PTR_FUN(dddPopupThemesCB)), 0, 0),
+    MENTRY("watchpoints", "Watchpoints...", MMPush,
+	   HIDE_0(PTR_FUN(SourceView::EditBreakpointsCB)), 
+	   0, &edit_watchpoints_w),
+    MENTRY("examine", "Memory...", MMPush,
+	   BIND_0(PTR_FUN(gdbExamineCB)), 0, &examine_w),
     MMSep,
-    { NM("print", "Print ()"),                      MMPush,  
-      BIND_1(PTR_FUN(gdbPrintCB), XtPointer(False)), 0, &print_w, 0, 0 },
-    { NM("display", "Display ()"),                  MMPush,
-      BIND_0(PTR_FUN(gdbDisplayCB)), 0, &display_w, 0, 0 },
+    MENTRY("print", "Print ()", MMPush, 
+	   BIND_1(PTR_FUN(gdbPrintCB), XtPointer(False)), 0, &print_w),
+    MENTRY("display", "Display ()", MMPush,
+	   BIND_0(PTR_FUN(gdbDisplayCB)), 0, &display_w),
     MMSep,
-    { NM("detectAliases", "Detect Aliases"),        MMCheckItem,
-      BIND_0(PTR_FUN(graphToggleDetectAliasesCB)),
-      0, (Widget *)&detect_aliases_w, 0, 0 },
+    MENTRY("detectAliases", "Detect Aliases", MMCheckItem,
+	   BIND_0(PTR_FUN(graphToggleDetectAliasesCB)),
+	   0, (Widget *)&detect_aliases_w),
     MMSep,
-    { NM("info locals", "Display Local Variables"), MMCheckItem,
-      BIND_0(PTR_FUN(graphToggleLocalsCB)), 
-      0, (Widget *)&locals_w, 0, 0 },
-    { NM("info args", "Display Arguments"),         MMCheckItem,
-      BIND_0(PTR_FUN(graphToggleArgsCB)), 
-      0, (Widget *)&args_w, 0, 0 },
-    { NM("infos", "Status Displays..."),            MMPush,
-      BIND_1(PTR_FUN(WhenReady), &WR_dddPopupInfosCB), 
-      0, &infos_w, 0, 0 },
+    MENTRY("info locals", "Display Local Variables", MMCheckItem,
+	   BIND_0(PTR_FUN(graphToggleLocalsCB)), 
+	   0, (Widget *)&locals_w),
+    MENTRY("info args", "Display Arguments", MMCheckItem,
+	   BIND_0(PTR_FUN(graphToggleArgsCB)), 
+	   0, (Widget *)&args_w),
+    MENTRY("infos", "Status Displays...", MMPush,
+	   BIND_1(PTR_FUN(WhenReady), &WR_dddPopupInfosCB), 
+	   0, &infos_w),
     MMSep,
-    { NM("align", "Align on Grid"),                 MMPush,
-      HIDE_0(PTR_FUN(graphAlignCB)), 0, &align_w, 0, 0 },
-    { NM("rotate", "Rotate Graph"),                 MMPush,
-      HIDE_0(PTR_FUN(graphRotateCB)), 0, 0, 0, 0},
-    { NM("layout", "Layout Graph"),                 MMPush,
-      HIDE_0(PTR_FUN(graphLayoutCB)), 0, 0, 0, 0},
+    MENTRY("align", "Align on Grid", MMPush,
+	   HIDE_0(PTR_FUN(graphAlignCB)), 0, &align_w),
+    MENTRY("rotate", "Rotate Graph", MMPush,
+	   HIDE_0(PTR_FUN(graphRotateCB)), 0, 0),
+    MENTRY("layout", "Layout Graph", MMPush,
+	   HIDE_0(PTR_FUN(graphLayoutCB)), 0, 0),
     MMSep,
-    { NM("refresh", "Refresh"),                     MMPush,
-      BIND_0(PTR_FUN(DataDisp::refreshCB)), 0, 0, 0, 0},
+    MENTRY("refresh", "Refresh", MMPush,
+	   BIND_0(PTR_FUN(DataDisp::refreshCB)), 0, 0),
     MMEnd
 };
 
@@ -2184,12 +2189,12 @@ static Gtk::ToggleButton *crash_nothing_w   = 0;
 
 static MMDesc crash_menu[] = 
 {
-    { NM("debug", "Debug DDD"),     MMCheckItem,
-      HIDE_0_BIND_1(PTR_FUN(dddSetCrashCB), 2), 0, (Widget *)&crash_debug_w, 0, 0 },
-    { NM("dumpCore", "Dump Core Now"), MMCheckItem,
-      HIDE_0_BIND_1(PTR_FUN(dddSetCrashCB), 1), 0, (Widget *)&crash_dump_core_w, 0, 0 },
-    { NM("nothing", "Do Nothing"),     MMCheckItem,
-      HIDE_0_BIND_1(PTR_FUN(dddSetCrashCB), 0), 0, (Widget *)&crash_nothing_w, 0, 0 },
+    MENTRY("debug", "Debug DDD", MMCheckItem,
+	   HIDE_0_BIND_1(PTR_FUN(dddSetCrashCB), 2), 0, (Widget *)&crash_debug_w),
+    MENTRY("dumpCore", "Dump Core Now", MMCheckItem,
+	   HIDE_0_BIND_1(PTR_FUN(dddSetCrashCB), 1), 0, (Widget *)&crash_dump_core_w),
+    MENTRY("nothing", "Do Nothing", MMCheckItem,
+	   HIDE_0_BIND_1(PTR_FUN(dddSetCrashCB), 0), 0, (Widget *)&crash_nothing_w),
     MMEnd
 };
 
@@ -2199,22 +2204,22 @@ static Widget valgrindLeakCheck_w = 0;
 
 static MMDesc maintenance_menu[] = 
 {
-    { NM("debug", "Debug DDD..."),                   MMPush,
-      HIDE_0_BIND_1(PTR_FUN(DDDDebugCB), 0), 0, &debug_ddd_w, 0, 0 },
-    { NM("dumpCore", "Dump Core Now"),               MMPush,
-      HIDE_0(PTR_FUN(DDDDumpCoreCB)), 0, &dump_core_w, 0, 0 },
-//  { NM("tictactoe", "Tic Tac Toe..."),             MMPush,
-//    HIDE_0(PTR_FUN(TicTacToeCB)), 0, 0, 0, 0 },
+    MENTRY("debug", "Debug DDD...", MMPush,
+	   HIDE_0_BIND_1(PTR_FUN(DDDDebugCB), 0), 0, &debug_ddd_w),
+    MENTRY("dumpCore", "Dump Core Now", MMPush,
+	   HIDE_0(PTR_FUN(DDDDumpCoreCB)), 0, &dump_core_w),
+//  MENTRY("tictactoe", "Tic Tac Toe...", MMPush,
+//    HIDE_0(PTR_FUN(TicTacToeCB)), 0, 0),
     MMSep,
-    { NM("crash", "When DDD Crashes"),               MMRadioMenu,
-      MMNoCB, crash_menu, 0, 0, 0},
+    MENTRY("crash", "When DDD Crashes", MMRadioMenu,
+	   MMNoCB, crash_menu, 0),
     MMSep,
-    { NM("valgrindLeak", "Do Valgrind Leak Check"),  MMPush | MMUnmanaged,
-      HIDE_0(PTR_FUN(dddValgrindLeakCheckCB)),
-      0, &valgrindLeakCheck_w, 0, 0 },
+    MENTRY("valgrindLeak", "Do Valgrind Leak Check", MMPush | MMUnmanaged,
+	   HIDE_0(PTR_FUN(dddValgrindLeakCheckCB)),
+	   0, &valgrindLeakCheck_w),
     MMSep,
-    { NM("remove", "Remove Menu"),                   MMPush,
-      HIDE_0(PTR_FUN(dddClearMaintenanceCB)), 0, 0, 0, 0 },
+    MENTRY("remove", "Remove Menu", MMPush,
+	   HIDE_0(PTR_FUN(dddClearMaintenanceCB)), 0, 0),
     MMEnd
 };
 
@@ -2223,24 +2228,24 @@ static Widget maintenance_w = 0;
 // Menu Bar for DDD command window
 static MMDesc command_menubar[] = 
 {
-    { NM("file", "File"),               MMMenu,
-      HIDE_0_BIND_1(PTR_FUN(gdbUpdateFileCB), command_file_menu), 
-      command_file_menu, 0, 0, 0 },
-    { NM("edit", "Edit"),               MMMenu,
-      BIND_1(PTR_FUN(gdbUpdateEditCB), GDBWindow),
-      command_edit_menu, 0, 0, 0 },
-    { NM("view", "View"),               MMMenu,
-      HIDE_0_BIND_1(PTR_FUN(gdbUpdateViewCB), command_view_menu), 
-      command_view_menu, 0, 0, 0 },
-    { NM("program", "Program"),         MMMenu,
-      MMNoCB, command_program_menu, 0, 0, 0 },
-    { NM("commands", "Commands"),       MMMenu,
-      MMNoCB, command_menu, 0, 0, 0  },
-    { NM("maintenance", "Maintenance"), MMMenu | MMUnmanaged, MMNoCB, maintenance_menu, 
-      &maintenance_w, 0, 0  },
+    MENTRY("file", "File", MMMenu,
+	   HIDE_0_BIND_1(PTR_FUN(gdbUpdateFileCB), command_file_menu), 
+	   command_file_menu, 0),
+    MENTRY("edit", "Edit", MMMenu,
+	   BIND_1(PTR_FUN(gdbUpdateEditCB), GDBWindow),
+	   command_edit_menu, 0),
+    MENTRY("view", "View", MMMenu,
+	   HIDE_0_BIND_1(PTR_FUN(gdbUpdateViewCB), command_view_menu), 
+	   command_view_menu, 0),
+    MENTRY("program", "Program", MMMenu,
+	   MMNoCB, command_program_menu, 0),
+    MENTRY("commands", "Commands", MMMenu,
+	   MMNoCB, command_menu, 0),
+    MENTRY("maintenance", "Maintenance", MMMenu | MMUnmanaged, MMNoCB, maintenance_menu, 
+	   &maintenance_w),
 #ifdef IF_MOTIF
-    { NM("help", "Help"),               MMMenu | MMHelp,
-      MMNoCB, simple_help_menu, 0, 0, 0  },
+    MENTRY("help", "Help", MMMenu | MMHelp,
+	   MMNoCB, simple_help_menu, 0),
 #endif // IF_MOTIF
     MMEnd
 };
@@ -2248,24 +2253,24 @@ static MMDesc command_menubar[] =
 // Menu Bar for DDD source view
 static MMDesc source_menubar[] = 
 {
-    { NM("file", "File"),       MMMenu,
-      HIDE_0_BIND_1(PTR_FUN(gdbUpdateFileCB), source_file_menu), 
-      source_file_menu, 0, 0, 0  },
-    { NM("edit", "Edit"),       MMMenu,
-      BIND_1(PTR_FUN(gdbUpdateEditCB), SourceWindow),
-      source_edit_menu, 0, 0, 0  },
-    { NM("view", "View"),       MMMenu,
-      HIDE_0_BIND_1(PTR_FUN(gdbUpdateViewCB), source_view_menu),
-      source_view_menu, 0, 0, 0  },
-    { NM("program", "Program"), MMMenu,
-      MMNoCB, source_program_menu, 0, 0, 0  },
-    { NM("stack", "Status"),    MMMenu,
-      MMNoCB, stack_menu, 0, 0, 0  },
-    { NM("source", "Source"),   MMMenu,
-      MMNoCB, source_menu, 0, 0, 0  },
+    MENTRY("file", "File", MMMenu,
+	   HIDE_0_BIND_1(PTR_FUN(gdbUpdateFileCB), source_file_menu), 
+	   source_file_menu, 0),
+    MENTRY("edit", "Edit", MMMenu,
+	   BIND_1(PTR_FUN(gdbUpdateEditCB), SourceWindow),
+	   source_edit_menu, 0),
+    MENTRY("view", "View", MMMenu,
+	   HIDE_0_BIND_1(PTR_FUN(gdbUpdateViewCB), source_view_menu),
+	   source_view_menu, 0),
+    MENTRY("program", "Program", MMMenu,
+	   MMNoCB, source_program_menu, 0),
+    MENTRY("stack", "Status", MMMenu,
+	   MMNoCB, stack_menu, 0),
+    MENTRY("source", "Source", MMMenu,
+	   MMNoCB, source_menu, 0),
 #ifdef IF_MOTIF
-    { NM("help", "Help"),       MMMenu | MMHelp,
-      MMNoCB, simple_help_menu, 0, 0, 0  },
+    MENTRY("help", "Help", MMMenu | MMHelp,
+	   MMNoCB, simple_help_menu, 0),
 #endif // IF_MOTIF
     MMEnd
 };
@@ -2273,22 +2278,22 @@ static MMDesc source_menubar[] =
 // Menu Bar for DDD data window
 static MMDesc data_menubar[] = 
 {
-    { NM("file", "File"),       MMMenu,
-      HIDE_0_BIND_1(PTR_FUN(gdbUpdateFileCB), data_file_menu), 
-      data_file_menu, 0, 0, 0  },
-    { NM("edit", "Edit"),       MMMenu,
-      BIND_1(PTR_FUN(gdbUpdateEditCB), DataWindow),
-      data_edit_menu, 0, 0, 0  },
-    { NM("view", "View"),       MMMenu,
-      HIDE_0_BIND_1(PTR_FUN(gdbUpdateViewCB), data_view_menu), 
-      data_view_menu, 0, 0, 0  },
-    { NM("program", "Program"), MMMenu,
-      MMNoCB, data_program_menu, 0, 0, 0  },
-    { NM("data", "Data"),       MMMenu,
-      MMNoCB, data_menu, 0, 0, 0  },
+    MENTRY("file", "File", MMMenu,
+	   HIDE_0_BIND_1(PTR_FUN(gdbUpdateFileCB), data_file_menu), 
+	   data_file_menu, 0),
+    MENTRY("edit", "Edit", MMMenu,
+	   BIND_1(PTR_FUN(gdbUpdateEditCB), DataWindow),
+	   data_edit_menu, 0),
+    MENTRY("view", "View", MMMenu,
+	   HIDE_0_BIND_1(PTR_FUN(gdbUpdateViewCB), data_view_menu), 
+	   data_view_menu, 0),
+    MENTRY("program", "Program", MMMenu,
+	   MMNoCB, data_program_menu, 0),
+    MENTRY("data", "Data", MMMenu,
+	   MMNoCB, data_menu, 0),
 #ifdef IF_MOTIF
-    { NM("help", "Help"),       MMMenu | MMHelp,
-      MMNoCB, simple_help_menu, 0, 0, 0  },
+    MENTRY("help", "Help", MMMenu | MMHelp,
+	   MMNoCB, simple_help_menu, 0),
 #endif // IF_MOTIF
     MMEnd
 };
@@ -2296,30 +2301,30 @@ static MMDesc data_menubar[] =
 // Menu Bar for common DDD data/command window
 static MMDesc common_menubar[] = 
 {
-    { NM("file", "File"),               MMMenu,
-      HIDE_0_BIND_1(PTR_FUN(gdbUpdateFileCB), command_file_menu), 
-      command_file_menu, 0, 0, 0  },
-    { NM("edit", "Edit"),               MMMenu,
-      BIND_1(PTR_FUN(gdbUpdateEditCB), CommonWindow),
-      command_edit_menu, 0, 0, 0  },
-    { NM("views", "Views"),             MMMenu,
-      HIDE_0_BIND_1(PTR_FUN(gdbUpdateViewsCB), views_menu), 
-      views_menu, 0, 0, 0  },
-    { NM("program", "Program"),         MMMenu,
-      MMNoCB, command_program_menu, 0, 0, 0  },
-    { NM("commands", "Commands"),       MMMenu,
-      MMNoCB, command_menu, 0, 0, 0  },
-    { NM("stack", "Status"),            MMMenu,
-      MMNoCB, stack_menu, 0, 0, 0  },
-    { NM("source", "Source"),           MMMenu,
-      MMNoCB, source_menu, 0, 0, 0  },
-    { NM("data", "Data"),               MMMenu,
-      MMNoCB, data_menu, 0, 0, 0  },
-    { NM("maintenance", "Maintenance"), MMMenu | MMUnmanaged,
-      MMNoCB, maintenance_menu, &maintenance_w, 0, 0  },
+    MENTRY("file", "File", MMMenu,
+	   HIDE_0_BIND_1(PTR_FUN(gdbUpdateFileCB), command_file_menu), 
+	   command_file_menu, 0),
+    MENTRY("edit", "Edit", MMMenu,
+	   BIND_1(PTR_FUN(gdbUpdateEditCB), CommonWindow),
+	   command_edit_menu, 0),
+    MENTRY("views", "Views", MMMenu,
+	   HIDE_0_BIND_1(PTR_FUN(gdbUpdateViewsCB), views_menu), 
+	   views_menu, 0),
+    MENTRY("program", "Program", MMMenu,
+	   MMNoCB, command_program_menu, 0),
+    MENTRY("commands", "Commands", MMMenu,
+	   MMNoCB, command_menu, 0),
+    MENTRY("stack", "Status", MMMenu,
+	   MMNoCB, stack_menu, 0),
+    MENTRY("source", "Source", MMMenu,
+	   MMNoCB, source_menu, 0),
+    MENTRY("data", "Data", MMMenu,
+	   MMNoCB, data_menu, 0),
+    MENTRY("maintenance", "Maintenance", MMMenu | MMUnmanaged,
+	   MMNoCB, maintenance_menu, &maintenance_w),
 #ifdef IF_MOTIF
-    { NM("help", "Help"),               MMMenu | MMHelp,
-      MMNoCB, simple_help_menu, 0, 0, 0  },
+    MENTRY("help", "Help", MMMenu | MMHelp,
+	   MMNoCB, simple_help_menu, 0),
 #endif // IF_MOTIF
     MMEnd
 };
@@ -2335,14 +2340,14 @@ static Widget print_examine_w = 0;
 
 static MMDesc print_menu[] =
 {
-    { NM("printRef", "Print *()"),      MMPush,
-      BIND_1(PTR_FUN(gdbPrintRefCB), false), 0, &print_ref_w, 0, 0 },
-    { NM("dump", "Dump ()"),            MMPush, 
-      BIND_1(PTR_FUN(gdbPrintCB), true), 0, &print_dump_w, 0, 0 },
-    { NM("whatis", "Whatis ()"),        MMPush, 
-      BIND_0(PTR_FUN(gdbWhatisCB)), 0, &print_whatis_w, 0, 0 },
-    { NM("examine", "Examine ()..."),   MMPush, 
-      BIND_0(PTR_FUN(gdbExamineCB)), 0, &print_examine_w, 0, 0 },
+    MENTRY("printRef", "Print *()", MMPush,
+	   BIND_1(PTR_FUN(gdbPrintRefCB), false), 0, &print_ref_w),
+    MENTRY("dump", "Dump ()", MMPush, 
+	   BIND_1(PTR_FUN(gdbPrintCB), true), 0, &print_dump_w),
+    MENTRY("whatis", "Whatis ()", MMPush, 
+	   BIND_0(PTR_FUN(gdbWhatisCB)), 0, &print_whatis_w),
+    MENTRY("examine", "Examine ()...", MMPush, 
+	   BIND_0(PTR_FUN(gdbExamineCB)), 0, &print_examine_w),
     MMEnd
 };
 
@@ -2354,8 +2359,8 @@ static Widget disp_ref_w     = 0;
 
 static MMDesc display_menu[] =
 {
-    { NM("dispRef", "Display *()"),        MMPush,
-      BIND_0(PTR_FUN(gdbDispRefCB)), 0, &disp_ref_w, 0, 0 },
+    MENTRY("dispRef", "Display *()", MMPush,
+	   BIND_0(PTR_FUN(gdbDispRefCB)), 0, &disp_ref_w),
     MMEnd
 };
 
@@ -2365,25 +2370,25 @@ struct WatchItems {
 
 static MMDesc watch_menu[] =
 {
-    { NM("watchProperties", "Watchpoint Properties..."),  MMPush, 
-      HIDE_0(PTR_FUN(gdbEditWatchpointPropertiesCB)), 0, 0, 0, 0},
-    { NM("enableWatch", "Enable Watchpoint at ()"),       MMPush, 
-      BIND_0(PTR_FUN(gdbToggleEnableWatchpointCB)), 0, 0, 0, 0},
+    MENTRY("watchProperties", "Watchpoint Properties...", MMPush, 
+	   HIDE_0(PTR_FUN(gdbEditWatchpointPropertiesCB)), 0, 0),
+    MENTRY("enableWatch", "Enable Watchpoint at ()", MMPush, 
+	   BIND_0(PTR_FUN(gdbToggleEnableWatchpointCB)), 0, 0),
     MMSep,
-    { NM("cwatch", "Set Watchpoint on ()"),               MMPush, 
-      BIND_1(PTR_FUN(gdbWatchCB), WATCH_CHANGE), 0, 0, 0, 0 },
-    { NM("rwatch", "Set Read Watchpoint on ()"),          MMPush, 
-      BIND_1(PTR_FUN(gdbWatchCB), WATCH_READ), 0, 0, 0, 0 },
-    { NM("awatch", "Set Access Watchpoint on ()"),        MMPush, 
-      BIND_1(PTR_FUN(gdbWatchCB), WATCH_ACCESS), 0, 0, 0, 0 },
+    MENTRY("cwatch", "Set Watchpoint on ()", MMPush, 
+	   BIND_1(PTR_FUN(gdbWatchCB), WATCH_CHANGE), 0, 0),
+    MENTRY("rwatch", "Set Read Watchpoint on ()", MMPush, 
+	   BIND_1(PTR_FUN(gdbWatchCB), WATCH_READ), 0, 0),
+    MENTRY("awatch", "Set Access Watchpoint on ()", MMPush, 
+	   BIND_1(PTR_FUN(gdbWatchCB), WATCH_ACCESS), 0, 0),
 
     // It would be nice to have an `unwatch' command here, for
     // recording commands.  Unfortunately, GDB needs a watchpoint
     // number for deleting watchpoints.
 #if 0	
     MMSep,
-    { NM("unwatch", "Unwatch ()"),                        MMPush,
-      BIND_0( PTR_FUN(gdbUnwatchCB) ), 0, 0, 0, 0},
+    MENTRY("unwatch", "Unwatch ()", MMPush,
+	   BIND_0( PTR_FUN(gdbUnwatchCB) ), 0, 0),
 #endif
     MMEnd
 };
@@ -2395,22 +2400,22 @@ struct BreakItems {
 
 static MMDesc break_menu[] = 
 {
-    { NM("tempBreakAt", "Set Temporary Breakpoint at ()"),     MMPush,
-      BIND_0(PTR_FUN(gdbTempBreakAtCB)), 0, 0, 0, 0},
-    { NM("regexBreakAt", "Set Breakpoints at Regexp ()"),      MMPush,
-      BIND_0(PTR_FUN(gdbRegexBreakAtCB)), 0, 0, 0, 0},
-    { NM("breakProperties", "Breakpoint Properties..."),       MMPush, 
-      HIDE_0(PTR_FUN(gdbEditBreakpointPropertiesCB)), 0, 0, 0, 0},
-    { NM("enableBreak", "Enable Breakpoint at ()"),            MMPush, 
-      BIND_0(PTR_FUN(gdbToggleEnableBreakpointCB)), 0, 0, 0, 0},
+    MENTRY("tempBreakAt", "Set Temporary Breakpoint at ()", MMPush,
+	   BIND_0(PTR_FUN(gdbTempBreakAtCB)), 0, 0),
+    MENTRY("regexBreakAt", "Set Breakpoints at Regexp ()", MMPush,
+	   BIND_0(PTR_FUN(gdbRegexBreakAtCB)), 0, 0),
+    MENTRY("breakProperties", "Breakpoint Properties...", MMPush, 
+	   HIDE_0(PTR_FUN(gdbEditBreakpointPropertiesCB)), 0, 0),
+    MENTRY("enableBreak", "Enable Breakpoint at ()", MMPush, 
+	   BIND_0(PTR_FUN(gdbToggleEnableBreakpointCB)), 0, 0),
     MMSep,
-    { NM("contUntil", "Continue Until ()"),                    MMPush,
-      BIND_0(PTR_FUN(gdbContUntilCB)), 0, 0, 0, 0},
-    { NM("setPC", "Set Execution Position to ()"),             MMPush,
-      BIND_0(PTR_FUN(gdbSetPCCB)), 0, 0, 0, 0},
+    MENTRY("contUntil", "Continue Until ()", MMPush,
+	   BIND_0(PTR_FUN(gdbContUntilCB)), 0, 0),
+    MENTRY("setPC", "Set Execution Position to ()", MMPush,
+	   BIND_0(PTR_FUN(gdbSetPCCB)), 0, 0),
     MMSep,
-    { NM("clearAt2", "Clear Breakpoint at ()"),                MMPush,
-      BIND_0(PTR_FUN(gdbClearAtCB)), 0, 0, 0, 0},
+    MENTRY("clearAt2", "Clear Breakpoint at ()", MMPush,
+	   BIND_0(PTR_FUN(gdbClearAtCB)), 0, 0),
     MMEnd
 };
 
@@ -2420,10 +2425,10 @@ struct FindItems {
 
 static MMDesc find_menu[] = 
 {
-    { NM("findForward", "@charset Find@small>> @charset()@rm"),  MMPush, 
-      BIND_1(PTR_FUN(gdbFindCB), SourceView::forward), 0, 0, 0, 0},
-    { NM("findBackward", "@charset Find@small<< @charset()@rm"), MMPush, 
-      BIND_1(PTR_FUN(gdbFindCB), SourceView::backward), 0, 0, 0, 0},
+    MENTRY("findForward", "@charset Find@small>> @charset()@rm", MMPush, 
+	   BIND_1(PTR_FUN(gdbFindCB), SourceView::forward), 0, 0),
+    MENTRY("findBackward", "@charset Find@small<< @charset()@rm", MMPush, 
+	   BIND_1(PTR_FUN(gdbFindCB), SourceView::backward), 0, 0),
     MMEnd
 };
 
@@ -2433,16 +2438,16 @@ struct ArgItems {
 
 static MMDesc arg_cmd_area[] = 
 {
-    { IM("lookup", LOOKUP_ICON),      MMPush,
-     HIDE_0(PTR_FUN(gdbLookupCB)), 0, 0, 0, 0},
-    { IM("find", FIND_FORWARD_ICON),  MMPush | MMInsensitive, 
-     BIND_0(PTR_FUN(gdbFindAgainCB)), find_menu, 0, 0, 0 },
-    { IM("breakAt", BREAK_AT_ICON),   MMPush,  BIND_0(PTR_FUN(gdbToggleBreakCB)), break_menu, 0, 0, 0 },
-    { IM("watch", WATCH_ICON),        MMPush,  
-     BIND_1(PTR_FUN(gdbToggleWatchCB), WATCH_CHANGE), watch_menu, 0, 0, 0 },
-    { IM("print", PRINT_ICON),        MMPush,  
-     BIND_1(PTR_FUN(gdbPrintCB), false), print_menu, 0, 0, 0 },
-    { IM("display", DISPLAY_ICON),    MMPush,  BIND_0(PTR_FUN(gdbDisplayCB)), display_menu, 0, 0, 0 },
+    IMENTRY("lookup", LOOKUP_ICON, MMPush,
+	    HIDE_0(PTR_FUN(gdbLookupCB)), 0, 0),
+    IMENTRY("find", FIND_FORWARD_ICON, MMPush | MMInsensitive, 
+	    BIND_0(PTR_FUN(gdbFindAgainCB)), find_menu, 0),
+    IMENTRY("breakAt", BREAK_AT_ICON, MMPush, BIND_0(PTR_FUN(gdbToggleBreakCB)), break_menu, 0),
+    IMENTRY("watch", WATCH_ICON, MMPush, 
+	    BIND_1(PTR_FUN(gdbToggleWatchCB), WATCH_CHANGE), watch_menu, 0),
+    IMENTRY("print", PRINT_ICON, MMPush, 
+	    BIND_1(PTR_FUN(gdbPrintCB), false), print_menu, 0),
+    IMENTRY("display", DISPLAY_ICON, MMPush, BIND_0(PTR_FUN(gdbDisplayCB)), display_menu, 0),
     MMEnd
 };
 
@@ -3551,8 +3556,8 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     XtAddCallback(arg_label, XmNactivateCallback, 
 		  ClearTextFieldCB, source_arg->text());
 #else // NOT IF_MOTIF
-    arg_label->signal_activate().connect(sigc::bind(PTR_FUN(ClearTextFieldCB),
-						    source_arg->text()));
+    arg_label->signal_clicked().connect(sigc::bind(PTR_FUN(ClearTextFieldCB),
+						   source_arg->text()));
 #endif // IF_MOTIF
 
     if (DataDisp::graph_cmd_w == arg_cmd_w)
@@ -3562,7 +3567,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	XtAddCallback(arg_label, XmNactivateCallback, 
 		      DataDisp::SelectionLostCB, XtNIL);
 #else // NOT IF_MOTIF
-	arg_label->signal_activate().connect(PTR_FUN(DataDisp::SelectionLostCB));
+	arg_label->signal_clicked().connect(PTR_FUN(DataDisp::SelectionLostCB));
 #endif // IF_MOTIF
     }
 
@@ -4969,7 +4974,8 @@ static void PostHelpOnItem(Widget item)
 // Option handling
 //-----------------------------------------------------------------------------
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
+
 static void set_toggle(Widget w, unsigned char new_state, bool notify = false)
 {
     if (w == 0)
@@ -4993,7 +4999,33 @@ static void set_toggle(Widget w, unsigned char new_state, bool notify = false)
     }
 }
 
-#else // NOT IF_MOTIF
+#endif
+
+#if defined(IF_MOTIF) && !defined(IF_XM)
+
+static void set_toggle(GUI::WidgetPtr<GUI::RadioButton> &wxx, unsigned char new_state, bool notify = false)
+{
+    if (!wxx)
+	return;
+
+    Widget w = wxx->internal();
+
+    unsigned char old_state;
+
+    XtVaGetValues(w, XmNset, &old_state, XtNIL);
+
+    if (old_state != new_state)
+    {
+	if (notify)
+	    XmToggleButtonSetState(w, new_state, True);
+	else
+	    XtVaSetValues(w, XmNset, new_state, XtNIL);
+    }
+}
+
+#endif
+
+#if !defined(IF_MOTIF)
 
 static void set_toggle(Widget w, bool new_state, bool notify = false)
 {
@@ -5035,7 +5067,7 @@ static void set_toggle(Widget w, bool new_state, bool notify = false)
 
 }
 
-#endif // IF_MOTIF
+#endif
 
 inline void notify_set_toggle(Widget w, Boolean new_state)
 {
@@ -5577,9 +5609,9 @@ static Widget reset_preferences_w;
 static GUI::WidgetPtr<GUI::Dialog> preferences_dialog = NULL;
 static GUI::WidgetPtr<GUI::Button> reset_preferences_w = NULL;
 #endif
-#if !defined(IF_MOTIF)
+#if !defined(IF_XM)
 static sigc::connection reset_preferences_connection;
-#endif // IF_MOTIF
+#endif
 static Widget current_panel;
 
 void save_option_state()
@@ -6217,7 +6249,7 @@ static bool helpers_preferences_changed()
     return false;
 }
 
-
+#ifdef IF_XM
 static void ResetPreferencesCB(CB_ARG_LIST_2(client_data))
 {
     Widget panel = (Widget)client_data;
@@ -6236,6 +6268,31 @@ static void ResetPreferencesCB(CB_ARG_LIST_2(client_data))
     else if (panel_name == "helpers")
 	ResetHelpersPreferencesCB(CB_ARGS_NULL);
 }
+#else
+static void ResetPreferencesCB(GUI::Notebook *nb)
+{
+    std::cerr << "RESET PREFERENCES " << nb << "\n";
+    GUI::Widget *panel = nb->get_current_child();
+    if (!panel) {
+	std::cerr << "Notebook child is not a GUI widget!\n";
+	return;
+    }
+    GUI::String panel_name = panel->get_name();
+    // FIXME: At present, name == label.
+    if (panel_name == GUI::String("General"))
+	ResetGeneralPreferencesCB(CB_ARGS_NULL);
+    else if (panel_name == GUI::String("Source"))
+	ResetSourcePreferencesCB(CB_ARGS_NULL);
+    else if (panel_name == GUI::String("Data"))
+	ResetDataPreferencesCB(CB_ARGS_NULL);
+    else if (panel_name == GUI::String("Startup"))
+	ResetStartupPreferencesCB(CB_ARGS_NULL);
+    else if (panel_name == GUI::String("Fonts"))
+	ResetFontPreferencesCB(CB_ARGS_NULL);
+    else if (panel_name == GUI::String("Helpers"))
+	ResetHelpersPreferencesCB(CB_ARGS_NULL);
+}
+#endif
 
 void update_reset_preferences()
 {
@@ -6290,14 +6347,14 @@ static void ChangePanelCB(TOGGLEBUTTON_P w, XtPointer client_data, XtPointer cal
 #endif
 #endif
 
-#ifdef IF_MOTIF
+#ifdef IF_XM
 	XtAddCallback(reset_preferences_w, XmNactivateCallback,
 		      ResetPreferencesCB, XtPointer(panel));
-#else // NOT IF_MOTIF
+#else
 	reset_preferences_connection =
-	    reset_preferences_w->signal_activate().connect(sigc::bind(PTR_FUN(ResetPreferencesCB),
-								      panel));
-#endif // IF_MOTIF
+	    reset_preferences_w->signal_clicked().connect(sigc::bind(PTR_FUN(ResetPreferencesCB),
+								     panel));
+#endif
 	current_panel = panel;
 
 	update_reset_preferences();
@@ -6394,13 +6451,17 @@ static int add_panel(GUI::Notebook *parent,
     XtManageChild(form);
 #else
     int pageno = parent->get_n_pages();
-    GUI::WidgetPtr<GUI::HBox> form = new GUI::HBox(*parent, name);
+    GUI::WidgetPtr<GUI::HBox> form = new GUI::HBox(*parent, label);
     // Do not show() the form here; this is under the control of the
     // Notebook widget.
 #endif
 
     // Add panel
+#ifdef IF_XM
     Widget panel = MMcreatePanel(form, "panel", items);
+#else
+    GUI::Widget *panel = MMcreatePanel(form, "panel", items);
+#endif
     MMadjustPanel(items);
     MMaddCallbacks(items);
     MMaddHelpCallback(items, PTR_FUN(ImmediateHelpCB));
@@ -6534,6 +6595,7 @@ static void make_preferences(Widget parent)
     XtRemoveAllCallbacks(reset_preferences_w, XmNactivateCallback);
 #else
     reset_preferences_w = preferences_dialog->add_button("Reset");
+    reset_preferences_w->show();
 #endif
 
 #if defined(IF_XM)
@@ -6567,6 +6629,7 @@ static void make_preferences(Widget parent)
 #else
     GUI::WidgetPtr<GUI::Notebook> change = new GUI::Notebook(*preferences_dialog, "change");
     change->show();
+    reset_preferences_w->signal_clicked().connect(sigc::bind(sigc::ptr_fun(ResetPreferencesCB), change));
 #endif
 
     Dimension max_width  = 0;

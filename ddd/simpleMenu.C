@@ -316,34 +316,34 @@ static void RemoveCB(Widget w, XtPointer client_data, XtPointer call_data)
 // Edit menu
 MMDesc simple_edit_menu[] =
 {
-    { "cut",       MMPush,  { CutCB, 0       }, 0, 0, 0, 0},
-    { "copy",      MMPush,  { CopyCB, 0      }, 0, 0, 0, 0},
-    { "paste",     MMPush,  { PasteCB, 0     }, 0, 0, 0, 0},
-    { "clearAll",  MMPush,  { ClearAllCB, 0  }, 0, 0, 0, 0},
-    { "delete",    MMPush,  { RemoveCB, 0    }, 0, 0, 0, 0},
+    MENTRY("cut", "cut", MMPush, BIND_0(PTR_FUN(CutCB)), 0, 0),
+    MENTRY("copy", "copy", MMPush, BIND_0(PTR_FUN(CopyCB)), 0, 0),
+    MENTRY("paste", "paste", MMPush, BIND_0(PTR_FUN(PasteCB)), 0, 0),
+    MENTRY("clearAll", "clearAll", MMPush, BIND_0(PTR_FUN(ClearAllCB)), 0, 0),
+    MENTRY("delete", "delete", MMPush, BIND_0(PTR_FUN(RemoveCB)), 0, 0),
     MMSep,
-    { "selectAll", MMPush,  { SelectAllCB, 0 }, 0, 0, 0, 0},
+    MENTRY("selectAll", "selectAll", MMPush, BIND_0(PTR_FUN(SelectAllCB)), 0, 0),
     MMEnd
 };
 
 // Help menu
 MMDesc simple_help_menu[] = 
 {
-    {"onHelp",      MMPush, { HelpOnHelpCB, 0}, 0, 0, 0, 0},
+    MENTRY("onHelp", "onHelp", MMPush, BIND_0(PTR_FUN(HelpOnHelpCB)), 0, 0),
     MMSep,
-    {"onItem",      MMPush, { HelpOnItemCB, 0}, 0, 0, 0, 0},
-    {"onWindow",    MMPush, { HelpOnWindowCB, 0}, 0, 0, 0, 0},
+    MENTRY("onItem", "onItem", MMPush, BIND_0(PTR_FUN(HelpOnItemCB)), 0, 0),
+    MENTRY("onWindow", "onWindow", MMPush, BIND_0(PTR_FUN(HelpOnWindowCB)), 0, 0),
     MMSep,
-    {"whatNext",    MMPush, { WhatNextCB, 0}, 0, 0, 0, 0},
-    {"tipOfTheDay", MMPush, { TipOfTheDayCB, 0}, 0, 0, 0, 0},
+    MENTRY("whatNext", "whatNext", MMPush, BIND_0(PTR_FUN(WhatNextCB)), 0, 0),
+    MENTRY("tipOfTheDay", "tipOfTheDay", MMPush, BIND_0(PTR_FUN(TipOfTheDayCB)), 0, 0),
     MMSep,
-    {"dddManual",   MMPush, { DDDManualCB, 0}, 0, 0, 0, 0},
-    {"news",        MMPush, { DDDNewsCB, 0}, 0, 0, 0, 0},
-    {"gdbManual",   MMPush, { GDBManualCB, 0}, 0, 0, 0, 0},
+    MENTRY("dddManual", "dddManual", MMPush, BIND_0(PTR_FUN(DDDManualCB)), 0, 0),
+    MENTRY("news", "news", MMPush, BIND_0(PTR_FUN(DDDNewsCB)), 0, 0),
+    MENTRY("gdbManual", "gdbManual", MMPush, BIND_0(PTR_FUN(GDBManualCB)), 0, 0),
     MMSep,
-    {"license",     MMPush, { DDDLicenseCB, 0}, 0, 0, 0, 0},
-    {"www",         MMPush, { DDDWWWPageCB, 0}, 0, 0, 0, 0},
+    MENTRY("license", "license", MMPush, BIND_0(PTR_FUN(DDDLicenseCB)), 0, 0),
+    MENTRY("www", "www", MMPush, BIND_0(PTR_FUN(DDDWWWPageCB)), 0, 0),
     MMSep,
-    {"onVersion",   MMPush, { HelpOnVersionCB, 0}, 0, 0, 0, 0},
+    MENTRY("onVersion", "onVersion", MMPush, BIND_0(PTR_FUN(HelpOnVersionCB)), 0, 0),
     MMEnd
 };

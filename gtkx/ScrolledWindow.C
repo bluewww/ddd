@@ -34,6 +34,7 @@ ScrolledWindow::ScrolledWindow(GtkX::Container &parent, const String &name,
 {
     set_name(name.s());
     parent.add_child(*this, options, padding);
+    postinit();
 }
 
 ScrolledWindow::~ScrolledWindow(void)

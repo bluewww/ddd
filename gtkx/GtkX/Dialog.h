@@ -34,13 +34,19 @@
 namespace GtkX {
 
     class Dialog: public Gtk::Dialog, public Container {
-	HBox *buttons_;
+	GtkX::VBox *vbox_;
+	// Note that we do NOT use the Gtk::Dialog's button area.
+	// This is because we want to create the buttons ourself as
+	// GtkX widgets.
+	GtkX::HBox *buttons_;
     public:
 	Dialog(Gtk::Window *parent, const String &name);
 	Gtk::Widget *internal(void);
 	Gtk::Container *gtk_container(void);
 	~Dialog(void);
 	Button *add_button(const String &name);
+	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
+#include <GtkX/redirect.h>
     };
 
 }

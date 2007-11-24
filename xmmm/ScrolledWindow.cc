@@ -32,12 +32,14 @@ ScrolledWindow::ScrolledWindow(::Widget parent, const Xmmm::String &name,
 			       std::vector<Arg> &args)
 {
     sw_ = XmCreateScrolledWindow(parent, (char *)name.c(), &args[0], args.size());
+    postinit();
 }
 
 ScrolledWindow::ScrolledWindow(Xmmm::Container &parent, const Xmmm::String &name,
 			       std::vector<Arg> &args)
 {
     sw_ = XmCreateScrolledWindow(parent.xt_container(), (char *)name.c(), &args[0], args.size());
+    postinit();
 }
 
 ScrolledWindow::~ScrolledWindow(void)

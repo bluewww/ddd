@@ -24,14 +24,17 @@
 // the constructor, unlike the Gtk ones.  Motif (Xt) widgets cannot be
 // reparented.  Therefore we need a constructor with extra arguments.
 
+// ***************************************************************************
+
+// Primitive widget creation using constructors with no arguments.
+
 #include <GtkX/Widget.h>
-#include <GtkX/Widget1s.h>
+#include <GtkX/Widget0.h>
 
 using namespace GtkX;
 
 template <class T>
-Widget1s<T>::Widget1s(GtkX::Container &parent, const GtkX::String &name):
-    T(name.s())
+Widget0<T>::Widget0(GtkX::Container &parent, const GtkX::String &name)
 {
     T::set_name(name.s());
     // We cannot use this:
@@ -47,8 +50,7 @@ Widget1s<T>::Widget1s(GtkX::Container &parent, const GtkX::String &name):
 
 // TEMPORARY
 template <class T>
-Widget1s<T>::Widget1s(Gtk::Container *parent, const GtkX::String &name):
-    T(name.s())
+Widget0<T>::Widget0(Gtk::Container *parent, const GtkX::String &name)
 {
     T::set_name(name.s());
     parent->add(*internal());
@@ -57,8 +59,7 @@ Widget1s<T>::Widget1s(Gtk::Container *parent, const GtkX::String &name):
 
 // TEMPORARY
 template <class T>
-Widget1s<T>::Widget1s(Gtk::Container *parent):
-    T("Noname")
+Widget0<T>::Widget0(Gtk::Container *parent)
 {
     T::set_name("Noname");
     parent->add(*internal());
@@ -66,27 +67,31 @@ Widget1s<T>::Widget1s(Gtk::Container *parent):
 }
 
 template <class T>
-Widget1s<T>::~Widget1s(void)
+Widget0<T>::~Widget0(void)
 {
 }
 
 template <class T>
 Gtk::Widget *
-Widget1s<T>::internal(void)
+Widget0<T>::internal(void)
 {
     return this;
 }
 
-#include <gtkmm/radiobutton.h>
-#include <gtkmm/button.h>
-#include <gtkmm/menuitem.h>
-#include <gtkmm/checkmenuitem.h>
-#include <gtkmm/checkbutton.h>
-#include <gtkmm/label.h>
+#include <gtkmm/optionmenu.h>
+#include <gtkmm/scale.h>
+#include <gtkmm/combobox.h>
+#include <gtkmm/entry.h>
+#include <gtkmm/menubar.h>
+#include <gtkmm/separatormenuitem.h>
+#include <gtkmm/spinbutton.h>
+#include <gtkmm/comboboxentrytext.h>
 
-template class Widget1s<Gtk::RadioButton>;
-template class Widget1s<Gtk::Button>;
-template class Widget1s<Gtk::MenuItem>;
-template class Widget1s<Gtk::CheckMenuItem>;
-template class Widget1s<Gtk::CheckButton>;
-template class Widget1s<Gtk::Label>;
+template class Widget0<Gtk::OptionMenu>;
+template class Widget0<Gtk::HScale>;
+template class Widget0<Gtk::ComboBox>;
+template class Widget0<Gtk::Entry>;
+template class Widget0<Gtk::MenuBar>;
+template class Widget0<Gtk::SeparatorMenuItem>;
+template class Widget0<Gtk::SpinButton>;
+template class Widget0<Gtk::ComboBoxEntryText>;

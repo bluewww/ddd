@@ -28,6 +28,7 @@ BulletinBoard::BulletinBoard(Xmmm::Widget parent, const Xmmm::String &name,
 {
     bb_ = XmCreateBulletinBoard(parent.xt_container(), (char *)name.c(),
 				&args[0], args.size());
+    postinit();
 }
 
 BulletinBoard::BulletinBoard(::Widget parent, const Xmmm::String &name,
@@ -35,6 +36,7 @@ BulletinBoard::BulletinBoard(::Widget parent, const Xmmm::String &name,
 {
     bb_ = XmCreateBulletinBoard(parent, (char *)name.c(),
 				&args[0], args.size());
+    postinit();
 }
 
 BulletinBoard::~BulletinBoard(void)

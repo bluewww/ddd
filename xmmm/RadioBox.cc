@@ -32,11 +32,13 @@ RadioBox::RadioBox(::Widget parent, const Xmmm::String &name,
 		   Xmmm::Orientation orientation)
 {
     box_ = XmCreateRadioBox(parent, (char *)name.c(), NULL, 0);
+    postinit();
 }
 
 RadioBox::RadioBox(Xmmm::Container &parent, const Xmmm::String &name, Xmmm::Orientation orientation)
 {
     box_ = XmCreateRadioBox(parent.xt_container(), (char *)name.c(), NULL, 0);
+    postinit();
 }
 
 RadioBox::~RadioBox(void)

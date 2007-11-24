@@ -44,8 +44,7 @@ namespace GtkX {
 	~ScrolledWindow(void);
 	Gtk::Widget *internal(void);
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
-	void show(void) {Widget::show();}
-	void hide(void) {Widget::hide();}
+#include <GtkX/redirect.h>
     };
 
 }

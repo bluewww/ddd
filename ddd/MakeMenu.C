@@ -43,7 +43,7 @@ char MakeMenu_rcsid[] =
 #include "wm.h"
 
 #include <stdlib.h>
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 #include <Xm/Xm.h>
 #include <Xm/RowColumn.h>
 #include <Xm/CascadeB.h>
@@ -60,7 +60,7 @@ char MakeMenu_rcsid[] =
 #include <X11/Xutil.h>
 
 #include "LessTifH.h"
-#else // NOT IF_MOTIF
+#else
 #include "gtk_wrapper.h"
 #include <gtkmm/optionmenu.h>
 #include <gtkmm/box.h>
@@ -69,16 +69,33 @@ char MakeMenu_rcsid[] =
 #include <gtkmm/comboboxentrytext.h>
 #include <gtkmm/menubar.h>
 #include <gtkmm/image.h>
-#endif // IF_MOTIF
+#endif
+
+#if !defined(IF_XM)
+#include <GUI/Button.h>
+#include <GUI/SpinButton.h>
+#include <GUI/MenuItem.h>
+#include <GUI/CheckMenuItem.h>
+#include <GUI/CheckButton.h>
+#include <GUI/RadioButton.h>
+#include <GUI/Label.h>
+#include <GUI/OptionMenu.h>
+#include <GUI/Box.h>
+#include <GUI/Scale.h>
+#include <GUI/Entry.h>
+#include <GUI/ComboBox.h>
+#include <GUI/SeparatorMenuItem.h>
+#include <GUI/MenuBar.h>
+#endif
 
 #include "bool.h"
 #include "verify.h"
 #include "findParent.h"
 #include "frame.h"
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 #include "ComboBox.h"
 #include "SpinBox.h"
-#endif // IF_MOTIF
+#endif
 #include "AutoRaise.h"
 
 #ifndef LOG_FLATTENING
@@ -89,7 +106,7 @@ char MakeMenu_rcsid[] =
 #define LOG_PUSH_MENUS 0
 #endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 // Pushmenu callbacks
 static void ArmPushMenuCB(Widget, XtPointer, XtPointer);
 static void RedrawPushMenuCB(Widget, XtPointer, XtPointer);
@@ -109,11 +126,11 @@ static const char *lesstif_pushMenuTranslations =
     "None<Btn3Down>:	popup-push-menu()\n"
 ;
 
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning No PushMenu handling
 #endif
-#endif // IF_MOTIF
+#endif
 
 struct PushMenuInfo {
     Widget widget;		// The PushButton
@@ -123,9 +140,9 @@ struct PushMenuInfo {
 
     PushMenuInfo(Widget w, Widget s, bool f)
 	: widget(w), subMenu(s), flat(f)
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	, timer(0)
-#endif // IF_MOTIF
+#endif
     {}
 
 private:
@@ -133,7 +150,7 @@ private:
     PushMenuInfo& operator= (const PushMenuInfo&);
 };
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 //-----------------------------------------------------------------------
 // Flat buttons
 //-----------------------------------------------------------------------
@@ -283,47 +300,68 @@ static void ReflattenButtonCB(Widget /* shell */, XtPointer client_data,
     XtAddCallback(w, XmNdisarmCallback, FlattenCB, XtPointer(True));
     flatten_button(w);
 }
-#else // NOT IF_MOTIF
+#else
 
 #ifdef NAG_ME
 #warning Button flattening?
 #endif
 
-#endif // IF_MOTIF
+#endif
 
-#ifndef IF_MOTIF
+#if !defined(IF_MOTIF)
 
 #include <gtkmm/eventbox.h>
 
 static void
-pack_item(Gtk::Container *container, Gtk::Widget *widget)
+pack_item(GUI::Container *container, GUI::Widget *widget)
 {
-    Gtk::Box *cont_box = dynamic_cast<Gtk::Box *>(container);
+    std::cerr << "PACK_ITEM NOT SUPPORTED FOR Gtk\n";
+#if 0
+    GUI::Box *cont_box = dynamic_cast<GUI::Box *>(container);
 
-    Gtk::Label *label = dynamic_cast<Gtk::Label *>(widget);
+    GUI::Label *label = dynamic_cast<GUI::Label *>(widget);
+#ifdef __GNUC__
+#warning Why use the EventBox?
+#endif
     if (label) {
-	Gtk::EventBox *box = new Gtk::EventBox();
-	box->modify_bg(Gtk::STATE_NORMAL, Gdk::Color("antique white"));
+	GUI::EventBox *box = new GUI::EventBox();
+	box->modify_bg(GUI::STATE_NORMAL, Gdk::Color("antique white"));
 	box->add(*widget);
 	box->show();
 	widget = box;
     }
 
     if (cont_box)
-	cont_box->pack_start(*widget, Gtk::PACK_SHRINK);
+	cont_box->pack_start(*widget, GUI::PACK_SHRINK);
     else
 	container->add(*widget);
+#endif
 }
-#endif // IF_MOTIF
+
+#endif
+
+#if defined(IF_XMMM)
+
+static void
+pack_item(GUI::Container *container, GUI::Widget *widget)
+{
+    std::cerr << "PACK_ITEM NOT SUPPORTED FOR XMMM\n";
+}
+
+#endif
 
 //-----------------------------------------------------------------------
 // Add items
 //-----------------------------------------------------------------------
 
 // Add items to shell.  If IGNORE_SEPS is set, all separators are ignored.
-void MMaddItems(CONTAINER_P shell, MMDesc items[], bool ignore_seps)
+void MMaddItems(CONTAINER_P shell,
+#if !defined(IF_XM)
+		GUI::Container *xshell,
+#endif
+		MMDesc items[], bool ignore_seps)
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     static bool actions_added = false;
 		
     if (!actions_added)
@@ -332,47 +370,66 @@ void MMaddItems(CONTAINER_P shell, MMDesc items[], bool ignore_seps)
 			actions, XtNumber(actions));
 	actions_added = true;
     }
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning No analogue for "actions[]"?
 #endif
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     Arg args[10];
     int arg;
 
     Widget container = shell;
-#else // NOT IF_MOTIF
+#if !defined(IF_XM)
+    bool menushell = false;
+    bool image = false;
+#endif
+#else
     Gtk::MenuShell *menushell = dynamic_cast<Gtk::MenuShell *>(shell);
     Gtk::Container *container = dynamic_cast<Gtk::Container *>(shell);
-    assert(container);
     Gtk::RadioButtonGroup group;
-#endif // IF_MOTIF
+#endif
 
     static const string textName  = "text";
     static const string labelName = "label";
     // Create lots of buttons...
-    for (MMDesc *item = items; item != 0 && item->name != 0; item++)
+    for (MMDesc *item = items; item && item->name; item++)
     {
+#if defined(IF_XM)
 	const char * const name = item->name;
-#ifndef IF_MOTIF
-	Glib::ustring label_string = item->label_string;
+#else
+	cpString name = item->name;
+#if !defined(IF_MOTIF)
+	cpString label_string = item->label_string;
 	XIMAGE_P *image = item->image;
-#endif // IF_MOTIF
+#else
+	cpString label_string = item->name;
+	XIMAGE_P *image = item->image;
+#endif
+#endif
 	MMType flags            = item->type;
 	MMType type             = flags & MMTypeMask;
 	Widget& widget          = item->widget;
 	Widget *widgetptr       = item->widgetptr;
 	MMDesc *subitems        = item->items;
 	LABEL_P& label          = item->label;
+#if !defined(IF_XM)
+	GUI::Widget *&xwidget = item->xwidget;
+	GUI::Widget **xwidgetptr = item->xwidgetptr;
+	GUI::Label *&xlabel = item->xlabel;
+#endif
 
 	if (flags & MMIgnore)
 	    continue;		// Don't create
 
 	const string subMenuName = string(name) + "Menu";
 	MENU_P subMenu = NULL;
+#if defined(IF_XM)
 	BOX_P box = NULL;
+#else
+	GUI::Container *box = NULL;
+#endif
 	BOX_P panel   = 0;
 	bool flat = false;
 	label = 0;
@@ -388,7 +445,7 @@ void MMaddItems(CONTAINER_P shell, MMDesc items[], bool ignore_seps)
 
 	case MMPush:
 	{
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 	    // Create a PushButton
 	    arg = 0;
 	    if (flat)
@@ -441,15 +498,19 @@ void MMaddItems(CONTAINER_P shell, MMDesc items[], bool ignore_seps)
 		if (info != 0)
 		    info->widget = widget;
 	    }
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning MMPush might be a MenuItem or a Button.  Check shell.
 #endif
-	    if (menushell)
-		widget = new Gtk::MenuItem(label_string);
+	    if (menushell) {
+#if !defined(IF_MOTIF)
+		xwidget = new GUI::MenuItem(container, label_string);
+#endif
+	    }
 	    else {
 		if (image) {
-		    BUTTON_P button = new Gtk::Button();
+#if !defined(IF_MOTIF)
+		    BUTTON_P button = new GUI::Button(container);
 		    widget = button;
 		    XIMAGE_P p1 = image[0];
 		    XIMAGE_P p2 = image[1];
@@ -461,22 +522,23 @@ void MMaddItems(CONTAINER_P shell, MMDesc items[], bool ignore_seps)
 			button->add(*im);
 			im->show();
 		    }
+#endif
 		}
 		else {
-		    widget = new Gtk::Button(label_string);
+		    xwidget = new GUI::Button(container, label_string);
 		}
 	    }
-	    pack_item(container, widget);
+	    // pack_item(container, widget);
 
 	    if (subitems != 0)
 	    {
 		subMenu = MMcreatePushMenu(shell, subMenuName.chars(), subitems);
 		PushMenuInfo *info = new PushMenuInfo(0, subMenu, flat);
 		info->widget = widget;
-		widget->property_user_data() = info;
+		xwidget->internal()->property_user_data() = info;
 	    }
 
-#endif // IF_MOTIF
+#endif
 	    break;
 	}
 
@@ -485,59 +547,55 @@ void MMaddItems(CONTAINER_P shell, MMDesc items[], bool ignore_seps)
 	    // Create a ToggleButton
 	    assert(subitems == 0);
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	    arg = 0;
 	    widget = verify(XmCreateToggleButton(shell, XMST(name), args, arg));
-#else // NOT IF_MOTIF
+#else
 	    if (menushell) {
 		std::cerr << "*** ERROR: CREATE MMToggle IN MENU ***\n";
-		widget = new Gtk::CheckMenuItem(label_string);
+		xwidget = new GUI::CheckMenuItem(container, label_string);
 	    }
 	    else
-		widget = new Gtk::CheckButton(label_string);
-	    pack_item(container, widget);
-#endif // IF_MOTIF
+		xwidget = new GUI::CheckButton(container, label_string);
+#endif
 	    break;
 	}
 
-#ifndef IF_MOTIF
+#if !defined(IF_MOTIF)
 	case MMCheckItem:
 	{
 	    // Create a CheckItem
 	    assert(subitems == 0);
 
-	    widget = new Gtk::CheckMenuItem(label_string);
-	    pack_item(container, widget);
+	    xwidget = new GUI::CheckMenuItem(container, label_string);
 	    break;
 	}
 #endif
 
-#ifndef IF_MOTIF
+#if !defined(IF_MOTIF)
 	case MMRadio:
 	{
 	    // Create a ToggleButton in a radio group
 	    assert(subitems == 0);
-
-	    widget = new Gtk::RadioButton(group, label_string);
-	    pack_item(container, widget);
+	    // FIXME: Each container has its own group?
+	    xwidget = new GUI::RadioButton(container, /* group, */ label_string);
 	    break;
 	}
-#endif // IF_MOTIF
+#endif
 
 	case MMLabel:
 	{
 	    // Create a Label
 	    assert(subitems == 0);
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	    arg = 0;
 	    widget = verify(XmCreateLabel(shell, XMST(name), args, arg));
-#else // NOT IF_MOTIF
-	    widget = label = new Gtk::Label(label_string);
+#else
+	    widget = label = new GUI::Label(container, label_string);
 	    widget->modify_fg(Gtk::STATE_NORMAL, Gdk::Color("red"));
 	    label->set_alignment(Gtk::ALIGN_LEFT);
-	    pack_item(container, widget);
-#endif // IF_MOTIF
+#endif
 	    break;
 	}
 
@@ -546,17 +604,16 @@ void MMaddItems(CONTAINER_P shell, MMDesc items[], bool ignore_seps)
 	    // Create an arrow
 	    assert(subitems == 0);
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	    arg = 0;
 	    widget = verify(XmCreateArrowButton(shell, XMST(name), args, arg));
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning What is an ArrowButton?
 #endif
-	    widget = new Gtk::Button(label_string);
-	    widget->set_name(XMST(name));
-	    pack_item(container, widget);
-#endif // IF_MOTIF
+	    xwidget = new GUI::Button(container, label_string);
+	    xwidget->set_name(name);
+#endif
 	    break;
 	}
 
@@ -566,7 +623,7 @@ void MMaddItems(CONTAINER_P shell, MMDesc items[], bool ignore_seps)
 	    assert(subitems != 0);
 
 	    subMenu = MMcreatePulldownMenu(container, subMenuName.chars(), subitems);
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	    arg = 0;
 	    XtSetArg(args[arg], XmNsubMenuId, subMenu); arg++;
 	    widget = verify(XmCreateCascadeButton(shell, XMST(name), args, arg));
@@ -607,18 +664,17 @@ void MMaddItems(CONTAINER_P shell, MMDesc items[], bool ignore_seps)
 				  XtPointer(0));
 		}
 	    }
-#else // NOT IF_MOTIF
+#else
 	    if (menushell) {
-		Gtk::MenuItem *mi;
-		widget = mi = new Gtk::MenuItem(label_string);
+		GUI::MenuItem *mi;
+		xwidget = mi = new GUI::MenuItem(container, label_string);
 		mi->set_submenu(*subMenu);
 	    }
 	    else {
 		std::cerr << "Cannot attach menu to non-menushell\n";
-		widget = new Gtk::Button(label_string);
+		xwidget = new GUI::Button(container, label_string);
 	    }
-	    pack_item(container, widget);
-#endif // IF_MOTIF
+#endif
 	    break;
 	}
 
@@ -629,22 +685,21 @@ void MMaddItems(CONTAINER_P shell, MMDesc items[], bool ignore_seps)
 
 	    subMenu = MMcreateRadioPulldownMenu(container, subMenuName.chars(), subitems);
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	    arg = 0;
 	    XtSetArg(args[arg], XmNsubMenuId, subMenu); arg++;
 	    widget = verify(XmCreateCascadeButton(shell, XMST(name), args, arg));
-#else // NOT IF_MOTIF
+#else
 	    if (menushell) {
-		Gtk::MenuItem *mi;
-		widget = mi = new Gtk::MenuItem(label_string);
+		GUI::MenuItem *mi;
+		widget = mi = new GUI::MenuItem(container, label_string);
 		mi->set_submenu(*subMenu);
 	    }
 	    else {
 		std::cerr << "Cannot attach menu to non-menushell\n";
-		widget = new Gtk::Button(label_string);
+		xwidget = new GUI::Button(container, label_string);
 	    }
-	    pack_item(container, widget);
-#endif // IF_MOTIF
+#endif
 	    break;
 	}
 
@@ -655,20 +710,19 @@ void MMaddItems(CONTAINER_P shell, MMDesc items[], bool ignore_seps)
 
 	    subMenu = MMcreatePulldownMenu(container, subMenuName.chars(), subitems);
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 	    arg = 0;
 	    XtSetArg(args[arg], XmNsubMenuId, subMenu); arg++;
 	    widget = verify(XmCreateOptionMenu(shell, XMST(name), args, arg));
-#else // NOT IF_MOTIF
-	    Gtk::OptionMenu *om;
-	    widget = om = new Gtk::OptionMenu();
-	    widget->set_name(XMST(name));
+#else
+	    GUI::OptionMenu *om;
+	    xwidget = om = new GUI::OptionMenu(container);
+	    xwidget->set_name(name);
 #ifdef NAG_ME
 #warning OptionMenu is deprecated.
 #endif
-	    pack_item(container, widget);
 	    om->set_menu(*subMenu);
-#endif // IF_MOTIF
+#endif
 	    break;
 	}
 
@@ -683,7 +737,7 @@ void MMaddItems(CONTAINER_P shell, MMDesc items[], bool ignore_seps)
 	    bool have_label = 
 		(name[0] != '\0' && (flags & MMUnmanagedLabel) == 0);
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 	    arg = 0;
 	    XtSetArg(args[arg], XmNorientation, XmHORIZONTAL); arg++;
 	    XtSetArg(args[arg], XmNborderWidth,     0); arg++;
@@ -697,24 +751,20 @@ void MMaddItems(CONTAINER_P shell, MMDesc items[], bool ignore_seps)
 
 	    arg = 0;
 	    label = verify(XmCreateLabel(widget, XMST(name), args, arg));
-#else // NOT IF_MOTIF
-	    widget = box = new Gtk::HBox();
-	    widget->set_name(XMST(panelName.chars()));
-	    pack_item(container, widget);
+#else
+	    xwidget = box = new GUI::HBox(*xshell, panelName.chars());
 
-	    label = new Gtk::Label(label_string);
-	    label->modify_fg(Gtk::STATE_NORMAL, Gdk::Color("dark green"));
-	    label->set_alignment(Gtk::ALIGN_LEFT);
-	    pack_item(box, label);
-#endif // IF_MOTIF
+	    xlabel = new GUI::Label(*box, label_string);
+	    xlabel->set_alignment(Gtk::ALIGN_LEFT);
+#endif
 	    if (have_label)
 		XtManageChild(label);
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 	    Widget (*create_panel)(Widget, const _XtString, MMDesc[], ArgList, Cardinal) = 0;
-#else // NOT IF_MOTIF
-	    BOX_P (*create_panel)(CONTAINER_P, NAME_T , MMDesc[]) = 0;
-#endif // IF_MOTIF
+#else
+	    GUI::Container *(*create_panel)(GUI::Container *, cpString, MMDesc[]) = 0;
+#endif
 
 	    switch (type)
 	    {
@@ -735,7 +785,7 @@ void MMaddItems(CONTAINER_P shell, MMDesc items[], bool ignore_seps)
 		abort();
 	    }
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	    arg = 0;
 	    XtSetArg(args[arg], XmNorientation, 
 		     (flags & MMVertical) ? XmVERTICAL : XmHORIZONTAL); arg++;
@@ -749,15 +799,15 @@ void MMaddItems(CONTAINER_P shell, MMDesc items[], bool ignore_seps)
 		XtSetArg(args[arg], XmNmarginHeight,    0); arg++;
 		XtSetArg(args[arg], XmNshadowThickness, 0); arg++;
 	    }
-#endif // IF_MOTIF
+#endif
 
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	    subMenu = create_panel(widget, subMenuName.chars(), subitems, args, arg);
 	    XtManageChild(subMenu);
-#else // NOT IF_MOTIF
+#else
 	    box = create_panel(box, subMenuName.chars(), subitems);
-#endif // IF_MOTIF
+#endif
 
 	    break;
 	}
@@ -767,14 +817,12 @@ void MMaddItems(CONTAINER_P shell, MMDesc items[], bool ignore_seps)
 	    // Create a scale
 	    assert(subitems == 0);
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 	    arg = 0;
 	    widget = verify(XmCreateScale(shell, XMST(name), args, arg));
-#else // NOT IF_MOTIF
-	    widget = new Gtk::HScale();
-	    widget->set_name(XMST(name));
-	    pack_item(container, widget);
-#endif // IF_MOTIF
+#else
+	    xwidget = new GUI::HScale(*xshell, name);
+#endif
 	    break;
 	}
 
@@ -786,7 +834,7 @@ void MMaddItems(CONTAINER_P shell, MMDesc items[], bool ignore_seps)
 	    // Create a label with an associated text field
 	    assert(subitems == 0);
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 	    arg = 0;
 	    XtSetArg(args[arg], XmNorientation,     XmHORIZONTAL); arg++;
 	    XtSetArg(args[arg], XmNborderWidth,     0); arg++;
@@ -797,57 +845,48 @@ void MMaddItems(CONTAINER_P shell, MMDesc items[], bool ignore_seps)
 	    XtSetArg(args[arg], XmNshadowThickness, 0); arg++;
 
 	    panel = verify(XmCreateRowColumn(shell, XMST(name), args, arg));
-#else // NOT IF_MOTIF
-	    panel = new Gtk::HBox();
-	    panel->set_name(XMST(name));
-	    pack_item(container, panel);
-#endif // IF_MOTIF
+#else
+	    panel = new GUI::HBox(*xshell, name);
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	    arg = 0;
 	    label = verify(XmCreateLabel(panel, XMST(labelName.chars()), args, arg));
-#else // NOT IF_MOTIF
-	    label = new Gtk::Label(label_string);
-	    label->modify_fg(Gtk::STATE_NORMAL, Gdk::Color("blue"));
-	    label->set_alignment(Gtk::ALIGN_LEFT);
-	    pack_item(panel, label);
-#endif // IF_MOTIF
+#else
+	    xlabel = new GUI::Label(panel, label_string);
+	    xlabel->set_alignment(Gtk::ALIGN_LEFT);
+#endif
 	    if (name[0] != '\0' && (flags & MMUnmanagedLabel) == 0)
 		XtManageChild(label);
 
 	    switch (type)
 	    {
 	    case MMSpinBox:
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 		arg = 0;
 		widget = CreateSpinBox(panel, textName.chars(), args, arg);
-#else // NOT IF_MOTIF
-		widget = new Gtk::SpinButton();
-		pack_item(panel, widget);
-#endif // IF_MOTIF
+#else
+		xwidget = new GUI::SpinButton(panel, name);
+#endif
 		break;
 
 	    case MMComboBox:
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 		arg = 0;
 		widget = CreateComboBox(panel, textName.chars(), args, arg);
-#else // NOT IF_MOTIF
-		widget = new Gtk::ComboBoxEntryText();
-		widget->set_name(XMST(textName.chars()));
-		pack_item(panel, widget);
-#endif // IF_MOTIF
+#else
+		xwidget = new GUI::ComboBoxEntryText(*xshell, GUI::String(textName.chars()));
+#endif
 		break;
 
 	    case MMTextField:
 	    case MMEnterField:
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 		arg = 0;
 		widget = verify(XmCreateTextField(panel, XMST(textName.chars()), args, arg));
-#else // NOT IF_MOTIF
-		widget = new Gtk::Entry();
-		widget->set_name(XMST(textName.chars()));
-		pack_item(panel, widget);
-#endif // IF_MOTIF
+#else
+		xwidget = new GUI::Entry(panel, GUI::String(textName.chars()));
+#endif
 		XtManageChild(widget);
 		break;
 	    }
@@ -861,14 +900,12 @@ void MMaddItems(CONTAINER_P shell, MMDesc items[], bool ignore_seps)
 
 	    if (ignore_seps)
 		continue;
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 	    arg = 0;
 	    widget = verify(XmCreateSeparator(shell, XMST(name), args, arg));
-#else // NOT IF_MOTIF
-	    widget = new Gtk::SeparatorMenuItem();
-	    widget->set_name(XMST(name));
-	    pack_item(container, widget);
-#endif // IF_MOTIF
+#else
+	    xwidget = new GUI::SeparatorMenuItem(container, name);
+#endif
 	    break;
 	}
 
@@ -880,29 +917,66 @@ void MMaddItems(CONTAINER_P shell, MMDesc items[], bool ignore_seps)
 
 	if (flags & MMHelp)
 	{
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	    arg = 0;
 	    XtSetArg(args[arg], XmNmenuHelpWidget, item->widget); arg++;
 	    XtSetValues(shell, args, arg);
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Set menu?
 #endif
-#endif // IF_MOTIF
+#endif
 	}
 
 	Widget panel_widget = panel?panel:widget;
 
-	if (flags & MMInsensitive)
-	    set_sensitive(panel_widget, false);
+	if (panel_widget) {
+	    // Non-OO widget
+	    if (flags & MMInsensitive)
+		set_sensitive(panel_widget, false);
 
-	if (!(flags & MMUnmanaged))
-	    XtManageChild(panel_widget);
+	    if (!(flags & MMUnmanaged))
+		XtManageChild(panel_widget);
 
-	if (widgetptr != 0)
-	    *widgetptr = widget;
+	    if (widgetptr != 0)
+		*widgetptr = widget;
+	}
+#if !defined(IF_XM)
+	if (xwidget) {
+	    // OO widget
+	    if (flags & MMInsensitive)
+		xwidget->set_sensitive(false);
+
+	    if (!(flags & MMUnmanaged))
+		xwidget->show();
+
+	    if (xwidgetptr != 0)
+		*xwidgetptr = xwidget;
+	    widget = xwidget->internal();
+	    if (widgetptr != 0)
+		*widgetptr = widget;
+	}
+#endif
     }
 }
+
+#if !defined(IF_XM)
+void MMaddItems(GUI::Container *shell, MMDesc items[], bool ignore_seps)
+{
+#if defined(IF_XMMM)
+    std::cerr << "Error: MMaddItems not implemented.\n";
+    exit(1);
+#else
+    Gtk::Widget *w = shell->internal();
+    Gtk::Container *cont = dynamic_cast<Gtk::Container *>(w);
+    if (!cont) {
+	std::cerr << "Error: MMaddItems to non-Container.\n";
+	exit(1);
+    }
+    MMaddItems(cont, NULL, items, ignore_seps);
+#endif    
+}
+#endif
 
 
 //-----------------------------------------------------------------------
@@ -911,33 +985,37 @@ void MMaddItems(CONTAINER_P shell, MMDesc items[], bool ignore_seps)
 
 // Create pulldown menu from items
 MENU_P MMcreatePulldownMenu(CONTAINER_P parent, NAME_T name, MMDesc items[]
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 			    , ArgList args, Cardinal arg
-#endif // IF_MOTIF
+#endif
 			    )
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     Widget menu = verify(XmCreatePulldownMenu(parent, XMST(name), args, arg));
-#else // NOT IF_MOTIF
+#else
     MENU_P menu = new Gtk::Menu();
     menu->set_name(name);
-#endif // IF_MOTIF
-    MMaddItems(menu, items);
-#ifdef IF_MOTIF
+#endif
+    MMaddItems(menu,
+#if !defined(IF_XM)
+	       NULL,
+#endif
+	       items);
+#if defined(IF_MOTIF)
     auto_raise(XtParent(menu));
-#endif // IF_MOTIF
+#endif
 
     return menu;
 }
 
 // Create radio pulldown menu from items
 MENU_P MMcreateRadioPulldownMenu(CONTAINER_P parent, NAME_T name, MMDesc items[]
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 				 , ArgList _args, Cardinal _arg
-#endif // IF_MOTIF
+#endif
 				 )
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     ArgList args = new Arg[_arg + 10];
     Cardinal arg = 0;
 
@@ -951,33 +1029,37 @@ MENU_P MMcreateRadioPulldownMenu(CONTAINER_P parent, NAME_T name, MMDesc items[]
     Widget w = MMcreatePulldownMenu(parent, name, items, args, arg);
 
     delete[] args;
-#else // NOT IF_MOTIF
+#else
     MENU_P w = MMcreatePulldownMenu(parent, name, items);
-#endif // IF_MOTIF
+#endif
     return w;
 }
 
 // Create popup menu from items
 MENU_P MMcreatePopupMenu(Widget parent, NAME_T name, MMDesc items[]
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 			 , ArgList args, Cardinal arg
-#endif // IF_MOTIF
+#endif
 			 )
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     Widget menu = verify(XmCreatePopupMenu(parent, XMST(name), args, arg));
-#else // NOT IF_MOTIF
+#else
     MENU_P menu = new Gtk::Menu();
     menu->set_name(name);
 #ifdef NAG_ME
 #warning How do we specify the "parent" of a popup menu?
 #endif
     // pack_item(parent, menu);
-#endif // IF_MOTIF
-    MMaddItems(menu, items);
-#ifdef IF_MOTIF
+#endif
+    MMaddItems(menu,
+#if !defined(IF_XM)
+	       NULL,
+#endif
+	       items);
+#if defined(IF_MOTIF)
     auto_raise(XtParent(menu));
-#endif // IF_MOTIF
+#endif
 
     return menu;
 }
@@ -996,19 +1078,21 @@ T get_arg_value(ArgList args, Cardinal arg, String name)
 
 // Create menu bar from items
 MENUBAR_P MMcreateMenuBar(CONTAINER_P parent, NAME_T name, MMDesc items[]
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 			  , ArgList args, Cardinal arg
-#endif // IF_MOTIF
+#endif
 			  )
 {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     Widget bar = verify(XmCreateMenuBar(parent, XMST(name), args, arg));
-#else // NOT IF_MOTIF
-    MENUBAR_P bar = new Gtk::MenuBar();
-    bar->set_name(name);
-    pack_item(parent, bar);
-#endif // IF_MOTIF
-    MMaddItems(bar, items);
+#else
+    GUI::MenuBar *bar = new GUI::MenuBar(parent, name);
+#endif
+    MMaddItems(bar,
+#if !defined(IF_XM)
+	       NULL,
+#endif
+	       items);
     XtManageChild(bar);
 
     return bar;
@@ -1016,43 +1100,49 @@ MENUBAR_P MMcreateMenuBar(CONTAINER_P parent, NAME_T name, MMDesc items[]
 
 // Create work area from items
 CONTAINER_P MMcreateWorkArea(DIALOG_P parent, NAME_T name, MMDesc items[]
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 			     , ArgList args, Cardinal arg
-#endif // IF_MOTIF
+#endif
 			     )
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     Widget bar = verify(XmCreateWorkArea(parent, XMST(name), args, arg));
-#else // NOT IF_MOTIF
+#else
     BOX_P bar = new Gtk::HBox();
     bar->set_name(XMST(name));
     parent->get_vbox()->pack_start(*bar, Gtk::PACK_SHRINK);
-#endif // IF_MOTIF
-    MMaddItems(bar, items, true);
+#endif
+    MMaddItems(bar,
+#if !defined(IF_XM)
+	       NULL,
+#endif
+	       items, true);
     XtManageChild(bar);
 
     return bar;
 }
 
+#if defined(IF_XM)
 // Create panel from items
 BOX_P MMcreatePanel(CONTAINER_P parent, NAME_T name, MMDesc items[]
-#ifdef IF_MOTIF
 		    , ArgList args, Cardinal arg
-#endif // IF_MOTIF
 		    )
 {
-#ifdef IF_MOTIF
     BOX_P panel = verify(XmCreateWorkArea(parent, XMST(name), args, arg));
-#else // NOT IF_MOTIF
-    BOX_P panel = new Gtk::VBox();
-    pack_item(parent, panel);
-    panel->set_name(name);
-#endif // IF_MOTIF
     MMaddItems(panel, items);
     XtManageChild(panel);
 
     return panel;
 }
+#else
+GUI::Container *MMcreatePanel(GUI::Container *parent, cpString name, MMDesc items[])
+{
+    GUI::Container *panel = new GUI::VBox(*parent, name);
+    MMaddItems(panel, items);
+    panel->show();
+    return panel;
+}
+#endif
 
 void MMadjustPanel(const MMDesc items[], Dimension space)
 {
@@ -1064,12 +1154,12 @@ void MMadjustPanel(const MMDesc items[], Dimension space)
 	if (item->label == 0)
 	    continue;
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	XtWidgetGeometry size;
 	size.request_mode = CWWidth;
 	XtQueryGeometry(item->label, (XtWidgetGeometry *)0, &size);
 	Dimension size_width = size.width;
-#else // NOT IF_MOTIF
+#else
 #ifdef GTKMM_DISABLE_DEPRECATED
 	Gtk::Requisition req = item->label->size_request();
 #else
@@ -1077,7 +1167,7 @@ void MMadjustPanel(const MMDesc items[], Dimension space)
 	item->label->size_request(req);
 #endif
 	Dimension size_width = req.width;
-#endif // IF_MOTIF
+#endif
 	max_label_width = max(max_label_width, size_width);
     }
 
@@ -1089,25 +1179,23 @@ void MMadjustPanel(const MMDesc items[], Dimension space)
 	if (item->label == 0)
 	    continue;
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	XtVaSetValues(item->label,
 		      XmNrecomputeSize, False,
 		      XmNwidth, max_label_width,
 		      XtPointer(0));
-#else // NOT IF_MOTIF
+#else
 	item->label->set_size_request(max_label_width);
-#endif // IF_MOTIF
+#endif
     }
 }
 
+#if defined(IF_XM)
 // Create radio panel from items
-BOX_P MMcreateRadioPanel(CONTAINER_P parent, NAME_T name, MMDesc items[]
-#ifdef IF_MOTIF
-			 , ArgList _args, Cardinal _arg
-#endif // IF_MOTIF
+BOX_P MMcreateRadioPanel(CONTAINER_P parent, NAME_T name, MMDesc items[],
+			 ArgList _args, Cardinal _arg
 			 )
 {
-#ifdef IF_MOTIF
     ArgList args = new Arg[_arg + 10];
     Cardinal arg = 0;
 
@@ -1119,59 +1207,59 @@ BOX_P MMcreateRadioPanel(CONTAINER_P parent, NAME_T name, MMDesc items[]
 	args[arg++] = _args[i];
 
     Widget panel = verify(XmCreateRowColumn(parent, XMST(name), args, arg));
-#else // NOT IF_MOTIF
+
+    MMaddItems(panel, items);
+    XtManageChild(panel);
+
+    delete[] args;
+    return panel;
+}
+#else
+// Create radio panel from items
+GUI::Container *MMcreateRadioPanel(GUI::Container *parent, cpString name, MMDesc items[])
+{
 #ifdef NAG_ME
 #warning Extra args?
 #endif
-    BOX_P panel = new Gtk::HBox();
-    pack_item(parent, panel);
-#endif // IF_MOTIF
+    GUI::Container *panel = new GUI::HBox(*parent, name);
 
     MMaddItems(panel, items);
-    XtManageChild(panel);
+    panel->show();
 
-#ifdef IF_MOTIF
-    delete[] args;
-#endif // IF_MOTIF
     return panel;
 }
+#endif
 
+#if defined(IF_XM)
 // Create button panel from items
-BOX_P MMcreateButtonPanel(CONTAINER_P parent, NAME_T name, MMDesc items[]
-#ifdef IF_MOTIF
-			  , ArgList args, Cardinal arg
-#endif // IF_MOTIF
-			  )
+BOX_P MMcreateButtonPanel(CONTAINER_P parent, NAME_T name, MMDesc items[],
+			  ArgList args, Cardinal arg)
 {
-#ifdef IF_MOTIF
     Widget panel = verify(XmCreateRowColumn(parent, XMST(name), args, arg));
-#else // NOT IF_MOTIF
-    BOX_P panel = new Gtk::HBox();
-    pack_item(parent, panel);
-#endif // IF_MOTIF
     MMaddItems(panel, items);
     XtManageChild(panel);
 
     return panel;
 }
-
-#ifndef IF_MOTIF
+#else
 // Create button panel from items
-BOX_P MMcreateVButtonPanel(CONTAINER_P parent, NAME_T name, MMDesc items[]
-#ifdef IF_MOTIF
-			   , ArgList args, Cardinal arg
-#endif // IF_MOTIF
-			   )
+GUI::Container *MMcreateButtonPanel(GUI::Container *parent, cpString name, MMDesc items[])
 {
-#ifdef IF_MOTIF
-    Widget panel = verify(XmCreateRowColumn(parent, XMST(name), args, arg));
-#else // NOT IF_MOTIF
-    BOX_P panel = new Gtk::VBox();
-    panel->set_name(XMST(name));
-    pack_item(parent, panel);
-#endif // IF_MOTIF
+    GUI::Container *panel = new GUI::HBox(*parent, name);
     MMaddItems(panel, items);
-    XtManageChild(panel);
+    panel->show();
+
+    return panel;
+}
+#endif
+
+#if !defined(IF_XM)
+// Create button panel from items
+GUI::Container *MMcreateVButtonPanel(GUI::Container *parent, cpString name, MMDesc items[])
+{
+    GUI::Container *panel = new GUI::VBox(*parent, name);
+    MMaddItems(panel, items);
+    panel->show();
 
     return panel;
 }
@@ -1208,10 +1296,10 @@ static void addCallback(const MMDesc *item, XtPointer default_closure)
     Widget widget           = item->widget;
     XtCallbackRec callback  = item->callback;
 
-#ifdef IF_MOTIF    
+#if defined(IF_MOTIF)    
     if (callback.closure == 0)
 	callback.closure = default_closure;
-#endif // IF_MOTIF
+#endif
 
     bool flat = false;
 
@@ -1225,7 +1313,7 @@ static void addCallback(const MMDesc *item, XtPointer default_closure)
 
     case MMPush:
     {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	void *userData = 0;
 	XtVaGetValues(widget, XmNuserData, &userData, XtPointer(0));
 
@@ -1252,35 +1340,35 @@ static void addCallback(const MMDesc *item, XtPointer default_closure)
 		XtAugmentTranslations(widget, lesstif_translations);
 	    }
 	}
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning We do not handle "Push Menus" yet
 #endif
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	if (flat)
 	{
 	    ReflattenButtonCB(widget, XtPointer(widget));
 	}
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning We do not flatten buttons
 #endif
-#endif // IF_MOTIF
+#endif
 
 	// FALL THROUGH
     }
 
     case MMArrow:
     {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	if (callback.callback)
 	    XtAddCallback(widget, 
 			  XmNactivateCallback,
 			  callback.callback, 
 			  callback.closure);
-#else // NOT IF_MOTIF
+#else
 	if (callback) {
 	    Gtk::Button *button = dynamic_cast<Gtk::Button *>(widget);
 	    if (button)
@@ -1289,13 +1377,13 @@ static void addCallback(const MMDesc *item, XtPointer default_closure)
 	    if (mi)
 		mi->signal_activate().connect(sigc::bind(callback, widget));
 	}
-#endif // IF_MOTIF
+#endif
 	else
 	    set_sensitive(widget, false);
 	break;
     }
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     case MMToggle:
       // case MMCheckItem:
     case MMScale:
@@ -1309,7 +1397,7 @@ static void addCallback(const MMDesc *item, XtPointer default_closure)
 	    set_sensitive(widget, false);
 	break;
     }
-#else // NOT IF_MOTIF
+#else
     case MMToggle:
     case MMCheckItem:
     case MMRadio:
@@ -1339,11 +1427,11 @@ static void addCallback(const MMDesc *item, XtPointer default_closure)
 	    set_sensitive(widget, false);
 	break;
     }
-#endif // IF_MOTIF
+#endif
 
     case MMComboBox:
     {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	if (callback.callback != 0)
 	{
 	    Widget list = ComboBoxList(widget);
@@ -1357,7 +1445,7 @@ static void addCallback(const MMDesc *item, XtPointer default_closure)
 	    XtAddCallback(list, XmNextendedSelectionCallback,
 			  callback.callback, callback.closure);
 	}
-#else // NOT IF_MOTIF
+#else
 	if (callback)
 	{
 	    Gtk::ComboBoxEntryText *combo = dynamic_cast<Gtk::ComboBoxEntryText *>(widget);
@@ -1368,12 +1456,12 @@ static void addCallback(const MMDesc *item, XtPointer default_closure)
 		std::cerr << "Combo box callbacks?\n";
 	    }
 	}
-#endif // IF_MOTIF
+#endif
 
 	// FALL THROUGH
     }
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     case MMSpinBox:
     case MMTextField:
     {
@@ -1387,7 +1475,7 @@ static void addCallback(const MMDesc *item, XtPointer default_closure)
 	    break;
 	// FALL THROUGH
     }
-#else // NOT IF_MOTIF
+#else
     case MMTextField:
     {
 	if (callback) {
@@ -1407,24 +1495,24 @@ static void addCallback(const MMDesc *item, XtPointer default_closure)
 	// FALL THROUGH
 	// A SpinButton is also an Entry, and invokes a callback on activation.
     }
-#endif // IF_MOTIF
+#endif
 
     case MMEnterField:
     {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	if (callback.callback != 0) {
 	    XtAddCallback(widget,
 			  XmNactivateCallback,
 			  callback.callback, 
 			  callback.closure);
 	}
-#else // NOT IF_MOTIF
+#else
 	if (callback) {
 	    Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(widget);
 	    if (entry)
 		entry->signal_activate().connect(sigc::bind(callback, widget));
 	}
-#endif // IF_MOTIF
+#endif
 	break;
     }
 
@@ -1432,7 +1520,7 @@ static void addCallback(const MMDesc *item, XtPointer default_closure)
     case MMRadioMenu:
     case MMOptionMenu:
     {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	Widget subMenu = 0;
 	XtVaGetValues(widget, XmNsubMenuId, &subMenu, XtPointer(0));
 
@@ -1457,7 +1545,7 @@ static void addCallback(const MMDesc *item, XtPointer default_closure)
 			  callback.closure);
 #endif
 	}
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning FIXME: Add callbacks to update menus.
 #endif
@@ -1475,7 +1563,7 @@ static void addCallback(const MMDesc *item, XtPointer default_closure)
 		subMenu->signal_unmap().connect(sigc::bind(callback, widget));
 	    }
 	}
-#endif // IF_MOTIF
+#endif
 	break;
     }
 
@@ -1484,16 +1572,16 @@ static void addCallback(const MMDesc *item, XtPointer default_closure)
     case MMPanel:
     case MMRadioPanel:
     case MMButtonPanel:
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	assert(callback.callback == 0);
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Check for empty callback?
 #endif
 	// We may have "bound" the NULL function pointer.
 	// In this case !callback does not work.
 	// assert(!callback);
-#endif // IF_MOTIF
+#endif
 	break;
 
     default:
@@ -1508,7 +1596,7 @@ void MMaddCallbacks(const MMDesc items[], XtPointer default_closure, int depth)
     MMonItems(items, addCallback, default_closure, depth);
 }
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 // Add help callback
 struct addHelpCallback_t {
   XtCallbackProc proc;
@@ -1521,18 +1609,18 @@ static void addHelpCallback(const MMDesc *item, XtPointer closure)
 
     XtAddCallback(widget, XmNhelpCallback, proc, XtPointer(0));
 }
-#endif // IF_MOTIF
+#endif
 
 void MMaddHelpCallback(const MMDesc items[], XtCallbackProc proc, int depth)
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     addHelpCallback_t proc_ = { proc };
     MMonItems(items, addHelpCallback, XtPointer(&proc_), depth);
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning No help callbacks yet
 #endif
-#endif // IF_MOTIF
+#endif
 }
 
 
@@ -1543,12 +1631,12 @@ void MMaddHelpCallback(const MMDesc items[], XtCallbackProc proc, int depth)
 
 // Create pushmenu from items
 MENU_P MMcreatePushMenu(CONTAINER_P parent, NAME_T name, MMDesc items[]
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 			, ArgList _args, Cardinal _arg
-#endif // IF_MOTIF
+#endif
 			)
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     ArgList args = new Arg[_arg + 10];
     Cardinal arg = 0;
 
@@ -1569,19 +1657,23 @@ MENU_P MMcreatePushMenu(CONTAINER_P parent, NAME_T name, MMDesc items[]
     // once torn off.  So, we explicitly disable them.
     XtSetArg(args[arg], XmNtearOffModel, XmTEAR_OFF_DISABLED); arg++;
 #endif
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF    
+#if defined(IF_MOTIF)    
     for (Cardinal i = 0; i < _arg; i++)
 	args[arg++] = _args[i];
 
     Widget menu = verify(XmCreatePopupMenu(parent, XMST(name), args, arg));
-#else // NOT IF_MOTIF
+#else
     MENU_P menu = new Gtk::Menu();
     menu->set_name(XMST(name));
-#endif // IF_MOTIF
+#endif
 
-    MMaddItems(menu, items);
+    MMaddItems(menu,
+#if !defined(IF_XM)
+	       NULL,
+#endif
+	       items);
     auto_raise(XtParent(menu));
 
     // LessTif places a passive grab on the parent, such that the
@@ -1590,15 +1682,15 @@ MENU_P MMcreatePushMenu(CONTAINER_P parent, NAME_T name, MMDesc items[]
     // grab on button 3, such that the pointer is grabbed as soon as
     // button 3 is pressed.  In Motif 1.1, it even remains grabbed!
     // This breaks any X session, so we cancel it.
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XtUngrabButton(parent, AnyButton, AnyModifier);
 
     delete[] args;
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Do we need the ungrab?
 #endif
-#endif // IF_MOTIF
+#endif
     return menu;
 }
 
@@ -1607,7 +1699,7 @@ MENU_P MMcreatePushMenu(CONTAINER_P parent, NAME_T name, MMDesc items[]
 
 static XEvent last_push_menu_event; // Just save it
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 // Remove time out again
 static void CancelPopupPushMenuCB(Widget w, XtPointer client_data, 
 				  XtPointer call_data)
@@ -1626,11 +1718,11 @@ static void CancelPopupPushMenuCB(Widget w, XtPointer client_data,
 	std::clog << "canceling (reason " << cbs->reason << ")\n";
 #endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	XtRemoveTimeOut(info->timer);
-#else // NOT IF_MOTIF
+#else
 	info->timer.disconnect();
-#endif // IF_MOTIF
+#endif
 	info->timer = NO_TIMER;
     }
 
@@ -1678,13 +1770,13 @@ static void PopupPushMenuCB(XtPointer client_data, XtIntervalId *id)
     }
 #endif
 }
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning PUSH MENUS NOT IMPLEMENTED FOR NOW
 #endif
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 static void ReflattenButtonEH(Widget shell, XtPointer client_data, 
 			      XEvent *event, Boolean *)
 {
@@ -1698,13 +1790,13 @@ static void ReflattenButtonEH(Widget shell, XtPointer client_data,
 	break;
     }
 }
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning FLATTEN NOT IMPLEMENTED
 #endif
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 static void PopupPushMenuAct(Widget w, XEvent *event, String *, Cardinal *)
 {
     if (!XmIsPushButton(w))
@@ -1852,39 +1944,39 @@ static void RedrawPushMenuCB(Widget w, XtPointer, XtPointer)
 {
     XtCallActionProc(w, "decorate-push-menu", 0, 0, 0);
 }
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning PUSH MENU NOT IMPLEMENTED
 #endif
-#endif // IF_MOTIF
+#endif
 
 
 void set_sensitive(Widget w, bool state)
 {
     if (w != 0)
     {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	XtSetSensitive(w, state?True:False);
-#else // NOT IF_MOTIF
+#else
 	w->set_sensitive(state);
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	if (!state && w == active_button)
 	{
 	    // We won't get the LeaveWindow event, since W is now
 	    // insensitive.  Flatten button explicitly.
 	    flatten_button(w);
 	}
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Flattening not implemented
 #endif
-#endif // IF_MOTIF
+#endif
     }
 }
 
-#ifndef IF_MOTIF
+#if !defined(IF_MOTIF)
 #ifdef NAG_ME
 #warning Can we not just test for a NULL callback and not connect anything?
 #endif
@@ -1892,5 +1984,5 @@ void
 dummy_callback(Widget)
 {
 }
-#endif // IF_MOTIF
+#endif
 

@@ -40,14 +40,14 @@ namespace Xmmm {
 	::Widget button_;
 	void init_signals(void);
     protected:
-	sigc::signal<void> signal_activate_;
+	sigc::signal<void> signal_clicked_;
 	static void activate_callback(::Widget widget, XtPointer data);
     public:
 	Button(Xmmm::Container &parent, const Xmmm::String &name);
 	Button(::Widget parent, const Xmmm::String &name); // TEMPORARY
 	~Button(void);
 	::Widget internal(void); // TEMPORARY
-	sigc::signal<void> &signal_activate(void);
+	sigc::signal<void> &signal_clicked(void);
     };
 
 }

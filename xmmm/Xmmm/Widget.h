@@ -21,17 +21,27 @@ namespace Xmmm {
 	std::string &s(void);
 	const std::string &s(void) const;
 	const char *c(void) const;
+	char *c(void);
+	operator const char *(void) const {return c();}
 	String operator+(const String &str) const;
+	bool operator==(const String &str) const;
+	operator bool(void) const;
     };
 
     class Widget {
+	void *user_data;
     public:
 	Widget(void);
 	~Widget(void);
+	void postinit(void);
 	virtual ::Widget internal(void);
 	virtual ::Widget xt_container(void);
 	void show(void);
 	void hide(void);
+	String get_name(void);
+	static Widget *lookup(::Widget w);
+	void *&property_user_data(void) {return user_data;}
+	void set_sensitive(bool);
     };
 
     extern std::vector<Arg> NO_ARGS;
@@ -43,6 +53,5 @@ extern "C" {
 			  void (*callback)(Widget, XtPointer, XtPointer),
 			  XtPointer client_data);
 }
-
 
 #endif // XMMM_WIDGET_H

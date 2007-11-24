@@ -77,7 +77,12 @@ char print_rcsid[] =
 #include <Xm/TextF.h>
 #include <Xm/PushB.h>
 #include <Xm/FileSB.h>
-#endif // IF_MOTIF
+#endif
+
+#ifndef IF_XM
+#include <GUI/Widget.h>
+#include <GUI/Dialog.h>
+#endif
 
 #ifndef R_OK
 /* 3b2 doesn't define these according to jthomas@nmsu.edu. */
@@ -264,7 +269,11 @@ static PostScriptPrintGC print_postscript_gc;
 static FigPrintGC        print_xfig_gc;
 static PrintType       print_type = PRINT_POSTSCRIPT;
 
+#ifdef IF_XM
 static DIALOG_P        print_dialog = 0;
+#else
+static GUI::Dialog    *print_dialog = 0;
+#endif
 static ENTRY_P         print_command_field   = 0;
 static ENTRY_P         print_file_name_field = 0;
 static Widget 	       print_file_name_box   = 0;
@@ -909,7 +918,7 @@ static void PrintCB(Widget parent, bool displays)
 	return;
     }
 
-#ifdef IF_MOTIF
+#ifdef IF_XM
     Arg args[10];
     Cardinal arg = 0;
     XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
@@ -917,18 +926,18 @@ static void PrintCB(Widget parent, bool displays)
 	verify(XmCreatePromptDialog(find_shell(parent),
 				    XMST("print"), 
 				    args, arg));
-#else // NOT IF_MOTIF
-    print_dialog = new Gtk::Dialog(XMST("print"), *find_shell(parent));
-#endif // IF_MOTIF
+#else
+    print_dialog = new GUI::Dialog(find_shell(parent), "print");
+#endif
     Delay::register_shell(print_dialog);
 
 #ifdef IF_MOTIF
     if (lesstif_version <= 79)
 	XtUnmanageChild(XmSelectionBoxGetChild(print_dialog,
 					       XmDIALOG_APPLY_BUTTON));
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#ifdef IF_XM
     XtAddCallback(print_dialog, XmNokCallback,
  		  PrintAgainCB, XtPointer(1));
     XtAddCallback(print_dialog, XmNapplyCallback,
@@ -937,11 +946,11 @@ static void PrintCB(Widget parent, bool displays)
 		  UnmanageThisCB1, XtPointer(print_dialog));
     XtAddCallback(print_dialog, XmNhelpCallback,
 		  ImmediateHelpCB, XtPointer(0));
-#else // NOT IF_MOTIF
+#else
     Gtk::Button *button;
-    button = print_dialog->add_button(XMST("OK"), 0);
+    button = print_dialog->add_button("OK");
     button->signal_clicked().connect(sigc::bind(PTR_FUN(PrintAgainCB), button, 1));
-#endif // IF_MOTIF
+#endif
 
 #ifdef IF_MOTIF
     // Remove old prompt
@@ -955,12 +964,12 @@ static void PrintCB(Widget parent, bool displays)
     static TOGGLEBUTTON_P print_to_file_w;
     static MMDesc print_to_menu[] = 
     {
-	{NM("printer", "printer"), MMToggle, 
+	MENTRY("printer", "printer", MMToggle, 
 	 BIND_1(PTR_FUN(SetPrintTargetCB), TARGET_PRINTER), 
-	 0, (Widget *)&print_to_printer_w, 0, 0},
-	{NM("file", "file"),       MMToggle, 
+	 0, (Widget *)&print_to_printer_w),
+	MENTRY("file", "file", MMToggle, 
 	 BIND_1(PTR_FUN(SetPrintTargetCB), TARGET_FILE), 
-	 0, (Widget *)&print_to_file_w, 0, 0 },
+	 0, (Widget *)&print_to_file_w),
 	MMEnd
     };
 
@@ -968,39 +977,39 @@ static void PrintCB(Widget parent, bool displays)
     static Widget fig_w;
     static MMDesc type2_menu[] = 
     {
-	{NM("postscript", "postscript"), MMToggle, 
+	MENTRY("postscript", "postscript", MMToggle, 
 	 BIND_1(PTR_FUN(SetPrintTypeCB), PRINT_POSTSCRIPT), 
-	 0, (Widget *)&postscript_w, 0, 0 },
-	{NM("xfig", "xfig"),             MMToggle,
-	 BIND_1(PTR_FUN(SetPrintTypeCB), PRINT_FIG), 0, &fig_w, 0, 0},
+	 0, (Widget *)&postscript_w),
+	MENTRY("xfig", "xfig", MMToggle,
+	 BIND_1(PTR_FUN(SetPrintTypeCB), PRINT_FIG), 0, &fig_w),
 	MMEnd
     };
 
     static TOGGLEBUTTON_P print_color_w;
     static MMDesc type_menu[] = 
     {
-	{NM("type2", "type2"),    MMRadioPanel | MMUnmanagedLabel, 
-	 MMNoCB, type2_menu, 0, 0, 0 },
-	{NM("color", "color"),    MMToggle, BIND_0(PTR_FUN(SetGCColorCB)), 
-	 0, (Widget *)&print_color_w, 0, 0 },
+	MENTRY("type2", "type2", MMRadioPanel | MMUnmanagedLabel, 
+	 MMNoCB, type2_menu, 0),
+	MENTRY("color", "color", MMToggle, BIND_0(PTR_FUN(SetGCColorCB)), 
+	 0, (Widget *)&print_color_w),
 	MMEnd
     };
 
     static MMDesc what2_menu[] = 
     {
-	{NM("displays", "displays"), MMToggle, BIND_1(PTR_FUN(SetPrintDisplaysCB), true), 
-	 0, (Widget *)&print_displays_w, 0, 0 },
-	{NM("plots", "plots"),       MMToggle, BIND_1(PTR_FUN(SetPrintDisplaysCB), false), 
-	 0, (Widget *)&print_plots_w, 0, 0 },
+	MENTRY("displays", "displays", MMToggle, BIND_1(PTR_FUN(SetPrintDisplaysCB), true), 
+	 0, (Widget *)&print_displays_w),
+	MENTRY("plots", "plots", MMToggle, BIND_1(PTR_FUN(SetPrintDisplaysCB), false), 
+	 0, (Widget *)&print_plots_w),
 	MMEnd
     };
 
     static MMDesc what_menu[] = 
     {
-	{NM("what2", "what2"),       MMRadioPanel | MMUnmanagedLabel, 
-	 MMNoCB, what2_menu, 0, 0, 0 },
-	{NM("selected", "selected"), MMToggle, BIND_0(PTR_FUN(SetPrintSelectedNodesCB)), 
-	 0, (Widget *)&print_selected_w, 0, 0 },
+	MENTRY("what2", "what2", MMRadioPanel | MMUnmanagedLabel, 
+	 MMNoCB, what2_menu, 0),
+	MENTRY("selected", "selected", MMToggle, BIND_0(PTR_FUN(SetPrintSelectedNodesCB)), 
+	 0, (Widget *)&print_selected_w),
 	MMEnd
     };
 
@@ -1008,55 +1017,59 @@ static void PrintCB(Widget parent, bool displays)
     static TOGGLEBUTTON_P print_landscape_w;
     static MMDesc orientation_menu[] = 
     {
-	{NM("portrait", "portrait"),   MMToggle, 
+	MENTRY("portrait", "portrait", MMToggle, 
 	 BIND_1(PTR_FUN(SetGCOrientation), PostScriptPrintGC::PORTRAIT), 
-	 0, (Widget *)&print_portrait_w, 0, 0},
-	{NM("landscape", "landscape"), MMToggle,
+	 0, (Widget *)&print_portrait_w),
+	MENTRY("landscape", "landscape", MMToggle,
 	 BIND_1(PTR_FUN(SetGCOrientation), PostScriptPrintGC::LANDSCAPE),
-	 0, (Widget *)&print_landscape_w, 0, 0},
+	 0, (Widget *)&print_landscape_w),
 	MMEnd
     };
 
     static MMDesc paper_menu[] = 
     {
-	{NM("a4", "a4"),               MMToggle, 
-	 BIND_0(PTR_FUN(SetGCA4)),        0, (Widget *)&a4_paper_size, 0, 0},
-	{NM("a3", "a3"),               MMToggle, 
-	 BIND_0(PTR_FUN(SetGCA3)),        0, (Widget *)&a3_paper_size, 0, 0},
-	{NM("letter", "letter"),       MMToggle, 
-	 BIND_0(PTR_FUN(SetGCLetter)),    0, (Widget *)&letter_paper_size, 0, 0},
-	{NM("legal", "legal"),         MMToggle, 
-	 BIND_0(PTR_FUN(SetGCLegal)),     0, (Widget *)&legal_paper_size, 0, 0},
-	{NM("executive", "executive"), MMToggle, 
-	 BIND_0(PTR_FUN(SetGCExecutive)), 0, (Widget *)&executive_paper_size, 0, 0},
-	{NM("custom", "custom"),       MMToggle, 
-	 BIND_0(PTR_FUN(SetGCCustom)),    0, (Widget *)&custom_paper_size, 0, 0},
+	MENTRY("a4", "a4", MMToggle, 
+	 BIND_0(PTR_FUN(SetGCA4)), 0, (Widget *)&a4_paper_size),
+	MENTRY("a3", "a3", MMToggle, 
+	 BIND_0(PTR_FUN(SetGCA3)), 0, (Widget *)&a3_paper_size),
+	MENTRY("letter", "letter", MMToggle, 
+	 BIND_0(PTR_FUN(SetGCLetter)), 0, (Widget *)&letter_paper_size),
+	MENTRY("legal", "legal", MMToggle, 
+	 BIND_0(PTR_FUN(SetGCLegal)), 0, (Widget *)&legal_paper_size),
+	MENTRY("executive", "executive", MMToggle, 
+	 BIND_0(PTR_FUN(SetGCExecutive)), 0, (Widget *)&executive_paper_size),
+	MENTRY("custom", "custom", MMToggle, 
+	 BIND_0(PTR_FUN(SetGCCustom)), 0, (Widget *)&custom_paper_size),
 	MMEnd
     };
 
     static MMDesc name_menu[] = 
     {
-	{NM("name", "name"), 	  MMTextField | MMUnmanagedLabel, MMNoCB, 
-	 0, (Widget *)&print_file_name_field, 0, 0},
-	{NM("browse", "browse"),  MMPush, BIND_0(PTR_FUN(BrowseNameCB)), 0, 0, 0, 0 },
+	MENTRY("name", "name", MMTextField | MMUnmanagedLabel, MMNoCB, 
+	 0, (Widget *)&print_file_name_field),
+	MENTRY("browse", "browse", MMPush, BIND_0(PTR_FUN(BrowseNameCB)), 0, 0),
 	MMEnd
     };
 
     static MMDesc menu[] =
     {
-	{NM("to", "to"),            MMRadioPanel, MMNoCB, print_to_menu, 0, 0, 0 },
-	{NM("command", "command"),  MMTextField,  MMNoCB, 0, (Widget *)&print_command_field, 0, 0 },
-	{NM("name", "name"), 	    MMPanel,      MMNoCB, name_menu, 
-	 (Widget *)&print_file_name_box, 0, 0},
+	MENTRY("to", "to", MMRadioPanel, MMNoCB, print_to_menu, 0),
+	MENTRY("command", "command", MMTextField, MMNoCB, 0, (Widget *)&print_command_field),
+	MENTRY("name", "name", MMPanel, MMNoCB, name_menu, 
+	 (Widget *)&print_file_name_box),
 	MMSep,
-	{NM("type", "type"), 	    MMPanel,      MMNoCB, type_menu, 0, 0, 0 },
-	{NM("what", "what"),        MMPanel,      MMNoCB, what_menu, 0, 0, 0 },
-	{NM("orientation", "orientation"), MMRadioPanel, MMNoCB, orientation_menu, 0, 0, 0 },
-	{NM("size", "size"),        MMRadioPanel, MMNoCB, paper_menu, 0, 0, 0 },
+	MENTRY("type", "type", MMPanel, MMNoCB, type_menu, 0),
+	MENTRY("what", "what", MMPanel, MMNoCB, what_menu, 0),
+	MENTRY("orientation", "orientation", MMRadioPanel, MMNoCB, orientation_menu, 0),
+	MENTRY("size", "size", MMRadioPanel, MMNoCB, paper_menu, 0),
 	MMEnd
     };
 
+#ifdef IF_XM
     Widget panel = MMcreatePanel(print_dialog, "options", menu);
+#else
+    GUI::Widget *panel = MMcreatePanel(print_dialog, "options", menu);
+#endif
     (void) panel;		// Use it
     MMadjustPanel(menu);
 

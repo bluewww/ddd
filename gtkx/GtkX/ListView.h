@@ -60,8 +60,7 @@ namespace GtkX {
 	int count(void) const;
 	sigc::signal<void> &signal_selection_changed(void);
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
-	void show(void) {Widget::show();}
-	void hide(void) {Widget::hide();}
+#include <GtkX/redirect.h>
     };
 
 }

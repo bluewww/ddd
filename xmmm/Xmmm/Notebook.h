@@ -41,6 +41,8 @@ namespace Xmmm {
 	~Notebook(void);
 	int get_n_pages(void) const;
 	void set_current_page(int);
+	// Note: we must ensure all children are GtkX widgets.
+	Xmmm::Widget *get_current_child(void);
 	::Widget internal(void); // TEMPORARY
 	::Widget xt_container(void);
     };

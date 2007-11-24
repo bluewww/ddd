@@ -1,5 +1,7 @@
 #include <iostream>
 
+#include <ext/hash_map>
+
 #include <Xm/Protocols.h>
 #include <X11/IntrinsicP.h>
 #include <X11/ShellP.h>
@@ -8,6 +10,9 @@
 
 using namespace Xmmm;
 
+std::vector<Arg> Xmmm::NO_ARGS;
+
+
 Xmmm::String::String(const std::string &s0)
 {
     s_ = s0;
@@ -15,7 +20,11 @@ Xmmm::String::String(const std::string &s0)
 
 Xmmm::String::String(const char *s0)
 {
-    s_ = std::string(s0);
+    if (s0)
+	s_ = std::string(s0);
+    else
+	s_ = std::string("");
+
 }
 
 Xmmm::String::~String(void)
@@ -44,6 +53,17 @@ Xmmm::String
 Xmmm::String::operator+(const Xmmm::String &str) const
 {
     return String(s()+str.s());
+}
+
+bool
+Xmmm::String::operator==(const Xmmm::String &str) const
+{
+    return (s() == str.s());
+}
+
+Xmmm::String::operator bool(void) const
+{
+    return (s_.length() > 0);
 }
 
 // ***************************************************************************
@@ -174,6 +194,50 @@ Xmmm::Widget::hide(void)
     }
 }
 
-std::vector<Arg> Xmmm::NO_ARGS;
+Xmmm::String
+Xmmm::Widget::get_name(void)
+{
+    return String(XtName(internal()));
+}
 
+struct Widget_Hash {
+    size_t operator()( ::Widget const &w) const {
+	return (size_t)w;
+    }
+};
 
+typedef __gnu_cxx::hash_map< ::Widget, Xmmm::Widget *, Widget_Hash> WrapperMap;
+WrapperMap wrapper_map;
+
+void
+Xmmm::Widget::postinit(void)
+{
+    ::Widget w = internal();
+    wrapper_map.insert(std::pair< ::Widget, Xmmm::Widget *>(w, this));
+}
+
+Xmmm::Widget *
+Xmmm::Widget::lookup(::Widget w)
+{
+    WrapperMap::iterator iter = wrapper_map.find(w);
+    if (iter != wrapper_map.end()) {
+	return (*iter).second;
+    }
+    return NULL;
+}
+
+void
+Xmmm::Widget::set_sensitive(bool state)
+{
+    XtSetSensitive(internal(), state?True:False);
+
+    // Move flattening code from MakeMenu.C
+#if 0
+    if (!state && w == active_button)
+    {
+	// We won't get the LeaveWindow event, since W is now
+	// insensitive.  Flatten button explicitly.
+	flatten_button(w);
+    }
+#endif
+}

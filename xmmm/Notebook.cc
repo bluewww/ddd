@@ -35,11 +35,13 @@ using namespace Xmmm;
 Notebook::Notebook(::Widget parent, const Xmmm::String &name)
 {
     nb_ = XmmmCreateNotebook(parent, (char *)name.c(), NULL, 0);
+    postinit();
 }
 
 Notebook::Notebook(Xmmm::Container &parent, const Xmmm::String &name)
 {
     nb_ = XmmmCreateNotebook(parent.xt_container(), (char *)name.c(), NULL, 0);
+    postinit();
 }
 
 Notebook::~Notebook(void)
@@ -69,5 +71,21 @@ void
 Notebook::set_current_page(int n)
 {
     std::cerr << "SET CURRENT PAGE " << n << "? - not implemented\n";
+}
+
+Xmmm::Widget *
+Notebook::get_current_child(void)
+{
+    std::cerr << "GET CURRENT CHILD - not fully implemented?\n";
+    ::Widget w = XmmmNotebookCurrentPage(nb_);
+    if (w) {
+	std::cerr << "UNderlying widget: " << w << "\n";
+	Xmmm::Widget *wpp = Xmmm::Widget::lookup(w);
+	if (wpp) {
+	    std::cerr << "Widget wrapper: " << w << "\n";
+	    return wpp;
+	}
+    }
+    return NULL;
 }
 

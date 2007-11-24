@@ -458,7 +458,7 @@ insert_child(Widget w)
 	if (nbp->num_buttons == nbp->max_buttons) {
 	    nbp->max_buttons += 10;
 	    nbp->buttons = (WidgetList)realloc(nbp->buttons,
-					       nbp->max_buttons);
+					       nbp->max_buttons*sizeof(nbp->buttons[0]));
 	}
 	nbp->buttons[nbp->num_buttons++] = w;
     }
@@ -467,7 +467,7 @@ insert_child(Widget w)
 	if (nbp->num_pages == nbp->max_pages) {
 	    nbp->max_pages += 10;
 	    nbp->pages = (WidgetList)realloc(nbp->pages,
-					     nbp->max_pages);
+					     nbp->max_pages*sizeof(nbp->pages[0]));
 	}
 	nbp->pages[nbp->num_pages++] = w;
     }
@@ -614,6 +614,8 @@ ChangePanelCB(Widget w, XtPointer client_data, XtPointer call_data)
     XmmmNotebookWidget nb = (XmmmNotebookWidget)XtParent(w);
     XmmmNotebookPart *nbp = &nb->notebook;
 
+    nbp->current_pageno = pageno;
+
     if (set)
     {
 	// Manage this pages
@@ -635,13 +637,12 @@ ChangePanelCB(Widget w, XtPointer client_data, XtPointer call_data)
     }
 }
 
-Widget
-XmmmNotebookInsertPage(Widget w, char *name, Arg *arglist, Cardinal argcount)
+/* child must already be a child of w */
+void
+XmmmNotebookInsertChild(Widget w, char *name, Widget child)
 {
-    /* FIXME: At present page is always a RowColumn */
     XmmmNotebookWidget nb = (XmmmNotebookWidget)w;
     int npages = nb->notebook.num_buttons;
-    Widget child = XmCreateRowColumn(w, name, arglist, argcount);
     Widget button;
     Arg args[10];
     int nargs;
@@ -654,5 +655,25 @@ XmmmNotebookInsertPage(Widget w, char *name, Arg *arglist, Cardinal argcount)
 	XtManageChild(child);
 	XtVaSetValues(button, XmNset, True, 0);
     }
+}
+
+Widget
+XmmmNotebookInsertPage(Widget w, char *name, Arg *arglist, Cardinal argcount)
+{
+    Widget child = XmCreateRowColumn(w, name, arglist, argcount);
+    XmmmNotebookInsertChild(w, name, child);
     return child;
 }
+
+Widget XmmmNotebookCurrentPage(Widget w)
+{
+    XmmmNotebookWidget nb = (XmmmNotebookWidget)w;
+    XmmmNotebookPart *nbp = &nb->notebook;
+    int npages = nbp->num_buttons;
+    int pageno = nbp->current_pageno;
+    if (pageno >= 0 && pageno < npages)
+	return nbp->pages[pageno];
+    else
+	return NULL;
+}
+

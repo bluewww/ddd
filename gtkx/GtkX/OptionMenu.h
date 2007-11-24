@@ -1,4 +1,4 @@
- // -*- C++ -*-
+// -*- C++ -*-
 
 // High-level GUI wrapper for Gtkmm.
 
@@ -28,27 +28,16 @@
 // A brief look at QT indicates that this will be required there as
 // well.
 
-#ifndef GTKX_WIDGET1S_H
-#define GTKX_WIDGET1S_H
+#ifndef GTKX_OPTIONMENU_H
+#define GTKX_OPTIONMENU_H
 
-#include <GtkX/Container.h>
-
-// Template for a widget taking a single string constructor argument.
+#include <GtkX/Widget0.h>
+#include <gtkmm/optionmenu.h>
 
 namespace GtkX {
 
-    template <class T>
-    class Widget1s: public Widget, public T {
-    public:
-	Widget1s(Container &parent, const String &name);
-	Widget1s(Gtk::Container *parent, const String &name);
-	Widget1s(Gtk::Container *parent);
-	~Widget1s(void);
-	Gtk::Widget *internal(void);
-	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
-#include <GtkX/redirect.h>
-    };
+    typedef Widget0<Gtk::OptionMenu> OptionMenu;
 
 }
 
-#endif // GTKX_WIDGET1S_H
+#endif // GTKX_OPTIONMENU_H

@@ -35,6 +35,10 @@ namespace Xmmm {
     class WidgetPtr {
 	T *p_;
     public:
+	WidgetPtr(void)
+	    {
+		p_ = NULL;
+	    }
 	WidgetPtr(T *p)
 	    {
 		p_ = p;

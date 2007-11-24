@@ -3,7 +3,20 @@
 
 #include <gtkmm/widget.h>
 
+// ***** VERY IMPORTANT NOTE ****
+// All GtkX classes EXCEPT the leaves are pure interface classes,
+// that is, they contain no data.
+// This avoids problems with multiple inheritance.
+
 namespace GtkX {
+
+    extern Glib::Quark gtkx_super_quark;
+
+    template <class T>
+    class PropertyProxy: public Glib::PropertyProxy<T> {
+    public:
+	PropertyProxy &operator=(T);
+    };
 
     // This class is used to simplify constructors which can take a
     // unicode or old-fashioned C string.
@@ -14,18 +27,27 @@ namespace GtkX {
 	String(const char *s0);
 	~String(void);
 	Glib::ustring &s(void);
+	gunichar operator[](int i) const;
+	const char *c(void) const; // FIXME - don't expose raw char*
 	const Glib::ustring &s(void) const;
 	String operator+(const String &str) const;
+	bool operator==(const String &s) const;
+	operator bool(void) const;
     };
 
     class Widget {
     public:
 	Widget(void);
 	~Widget(void);
+	void postinit(void);
 	// *Instantiable* subclasses will have an associated GTK(mm) widget:
 	virtual Gtk::Widget *internal(void) = 0;
 	void show(void);
 	void hide(void);
+	String get_name(void);
+	void set_name(const String &s);
+	void set_sensitive(bool b);
+	PropertyProxy<void *> property_user_data(void);
     };
 
 }

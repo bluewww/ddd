@@ -39,12 +39,14 @@ Window::Window(Gtk::Window *parent, const String &name,
 {
     set_name(name.s());
     set_title(name.s());
+    postinit();
 }
 
 Window::Window(const String &name)
 {
     set_name(name.s());
     set_title(name.s());
+    postinit();
 }
 
 Window::~Window(void)

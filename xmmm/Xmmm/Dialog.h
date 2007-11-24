@@ -32,14 +32,16 @@
 #include <sigc++/signal.h>
 
 #include <Xmmm/Container.h>
-#include <Xmmm/Box1.h>
+#include <Xmmm/Box.h>
 #include <Xmmm/Button.h>
 
 namespace Xmmm {
 
     class Dialog: public Container {
 	::Widget dlg_;
-	Box1 *box1_;
+	VBox *box0_;
+	VBox *box1_;
+	HBox *box2_;
 	void init_signals(void);
     protected:
 	sigc::signal<bool,XEvent*> signal_delete_;

@@ -415,6 +415,10 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "casts.h"
 #include "attribute.h"
 
+#ifndef IF_XM
+#include <GUI/Widget.h>
+#endif
+
 #ifndef STRING_CHECK_CONSUME
 #define STRING_CHECK_CONSUME 0
 #endif
@@ -579,6 +583,9 @@ public:
     string(const char* t, int len);
     string(char c);
     string(std::ostringstream& os); // should be const
+#ifndef IF_XM
+    explicit string(GUI::String const &s);
+#endif
 
     ~string();
 

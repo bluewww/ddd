@@ -36,8 +36,10 @@ typedef struct _XmmmNotebookClassRec *XmmmNotebookWidgetClass;
 #define XmmmIsNotebook(w) XtIsSubclass((w), xmmmNotebookWidgetClass)
 
 extern Widget XmmmCreateNotebook(Widget parent, char *name, Arg *arglist, Cardinal argcount);
+extern void XmmmNotebookInsertChild(Widget w, char *name, Widget child);
 extern Widget XmmmNotebookInsertPage(Widget w, char *name, Arg *arglist, Cardinal argcount);
 extern Cardinal XmmmNotebookNumPages(Widget w);
+extern Widget XmmmNotebookCurrentPage(Widget w);
 
 #ifdef __cplusplus
 }

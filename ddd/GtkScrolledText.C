@@ -1,5 +1,7 @@
 #include <iostream>
 
+#include "config.h"
+
 #include "GtkScrolledText.h"
 
 #include "SourceView.h"

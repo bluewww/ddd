@@ -28,8 +28,8 @@
 // A brief look at QT indicates that this will be required there as
 // well.
 
-#ifndef GTKX_WIDGET1S_H
-#define GTKX_WIDGET1S_H
+#ifndef GTKX_WIDGET0_H
+#define GTKX_WIDGET0_H
 
 #include <GtkX/Container.h>
 
@@ -38,12 +38,12 @@
 namespace GtkX {
 
     template <class T>
-    class Widget1s: public Widget, public T {
+    class Widget0: public Widget, public T {
     public:
-	Widget1s(Container &parent, const String &name);
-	Widget1s(Gtk::Container *parent, const String &name);
-	Widget1s(Gtk::Container *parent);
-	~Widget1s(void);
+	Widget0(Container &parent, const String &name);
+	Widget0(Gtk::Container *parent, const String &name);
+	Widget0(Gtk::Container *parent);
+	~Widget0(void);
 	Gtk::Widget *internal(void);
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
 #include <GtkX/redirect.h>
@@ -51,4 +51,4 @@ namespace GtkX {
 
 }
 
-#endif // GTKX_WIDGET1S_H
+#endif // GTKX_WIDGET0_H

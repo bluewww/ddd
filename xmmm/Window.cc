@@ -79,6 +79,7 @@ Xmmm::Window::Window(::Widget parent, const Xmmm::String &name,
 			      parent, args, nargs);
 
     init_signals();
+    postinit();
 }
 
 Xmmm::Window::~Window(void)

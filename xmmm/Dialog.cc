@@ -72,13 +72,18 @@ Dialog::Dialog(::Widget parent, const Xmmm::String &name)
      // Standard Motif maps/unmaps the child to popup the shell.
     // We want to take control instead.
     XtSetArg(args[nargs], XmNmappedWhenManaged, False); nargs++;
-   dlg_ = XmCreateDialogShell(parent, (char *)name.c(), args, nargs);
+    dlg_ = XmCreateDialogShell(parent, (char *)name.c(), args, nargs);
     WM_set_close_callback(dlg_, close_shell, NULL);
 
-    box1_ = new Box1(dlg_, name+Xmmm::String("_vbox"));
+    box0_ = new VBox(dlg_, name+Xmmm::String("_x"));
+    box0_->show();
+    box1_ = new VBox(*box0_, name+Xmmm::String("_vbox"));
     box1_->show();
+    box2_ = new HBox(*box0_, name+Xmmm::String("_hbox"));
+    box2_->show();
 
     init_signals();
+    postinit();
 }
 
 Dialog::~Dialog(void)
@@ -124,6 +129,6 @@ Dialog::unmap_callback(::Widget widget, XtPointer data)
 Button *
 Dialog::add_button(const Xmmm::String& button_text)
 {
-    return new Button(*this, button_text);
+    return new Button(*box2_, button_text);
 }
 

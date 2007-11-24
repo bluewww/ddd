@@ -176,14 +176,14 @@ XtActionsRec DataDisp::actions [] = {
 struct GraphItms { enum Itms {SelectAll, Refresh, NewArg, New}; };
 MMDesc DataDisp::graph_popup[] =
 {
-    {NM("selectAll", "Select All"), MMPush,               
-     BIND_0(PTR_FUN(DataDisp::selectAllCB)), 0, 0, 0, 0},
-    {NM("refresh", "Refresh"),      MMPush,               
-     BIND_0(PTR_FUN(DataDisp::refreshCB)), 0, 0, 0, 0},
-    {NM("new_arg", "new_arg"),      MMPush | MMUnmanaged, 
-     BIND_1(PTR_FUN(DataDisp::popup_new_argCB), (BoxPoint *)0), 0, 0, 0, 0},
-    {NM("new", "New Display..."),   MMPush,               
-     BIND_1(PTR_FUN(DataDisp::popup_newCB), (BoxPoint *)0), 0, 0, 0, 0},
+    MENTRY("selectAll", "Select All", MMPush, 
+     BIND_0(PTR_FUN(DataDisp::selectAllCB)), 0, 0),
+    MENTRY("refresh", "Refresh", MMPush, 
+     BIND_0(PTR_FUN(DataDisp::refreshCB)), 0, 0),
+    MENTRY("new_arg", "new_arg", MMPush | MMUnmanaged, 
+     BIND_1(PTR_FUN(DataDisp::popup_new_argCB), (BoxPoint *)0), 0, 0),
+    MENTRY("new", "New Display...", MMPush, 
+     BIND_1(PTR_FUN(DataDisp::popup_newCB), (BoxPoint *)0), 0, 0),
     MMEnd
 };
 
@@ -191,51 +191,51 @@ MMDesc DataDisp::graph_popup[] =
 const int DataDisp::shortcut_items = 20;
 
 #define SHORTCUT_MENU						\
-    {NM("s1", "s1"),  MMPush | MMUnmanaged,			\
-     BIND_1(PTR_FUN(DataDisp::shortcutCB), 1  ), 0, 0, 0, 0 },	\
-    {NM("s2", "s2"),  MMPush | MMUnmanaged,			\
-     BIND_1(PTR_FUN(DataDisp::shortcutCB), 2  ), 0, 0, 0, 0 },	\
-    {NM("s3", "s3"),  MMPush | MMUnmanaged,			\
-     BIND_1(PTR_FUN(DataDisp::shortcutCB), 3  ), 0, 0, 0, 0 },	\
-    {NM("s4", "s4"),  MMPush | MMUnmanaged,			\
-     BIND_1(PTR_FUN(DataDisp::shortcutCB), 4  ), 0, 0, 0, 0 },	\
-    {NM("s5", "s5"),  MMPush | MMUnmanaged,			\
-     BIND_1(PTR_FUN(DataDisp::shortcutCB), 5  ), 0, 0, 0, 0 },	\
-    {NM("s6", "s6"),  MMPush | MMUnmanaged,			\
-     BIND_1(PTR_FUN(DataDisp::shortcutCB), 6  ), 0, 0, 0, 0 },	\
-    {NM("s7", "s7"),  MMPush | MMUnmanaged,			\
-     BIND_1(PTR_FUN(DataDisp::shortcutCB), 7  ), 0, 0, 0, 0 },	\
-    {NM("s8", "s8"),  MMPush | MMUnmanaged,			\
-     BIND_1(PTR_FUN(DataDisp::shortcutCB), 8  ), 0, 0, 0, 0 },	\
-    {NM("s9", "s9"),  MMPush | MMUnmanaged,			\
-     BIND_1(PTR_FUN(DataDisp::shortcutCB), 9  ), 0, 0, 0, 0 },	\
-    {NM("s10", "s10"), MMPush | MMUnmanaged,			\
-     BIND_1(PTR_FUN(DataDisp::shortcutCB), 10 ), 0, 0, 0, 0 },	\
-    {NM("s11", "s11"), MMPush | MMUnmanaged,			\
-     BIND_1(PTR_FUN(DataDisp::shortcutCB), 11 ), 0, 0, 0, 0 },	\
-    {NM("s12", "s12"), MMPush | MMUnmanaged,			\
-     BIND_1(PTR_FUN(DataDisp::shortcutCB), 12 ), 0, 0, 0, 0 },	\
-    {NM("s13", "s13"), MMPush | MMUnmanaged,			\
-     BIND_1(PTR_FUN(DataDisp::shortcutCB), 13 ), 0, 0, 0, 0 },	\
-    {NM("s14", "s14"), MMPush | MMUnmanaged,			\
-     BIND_1(PTR_FUN(DataDisp::shortcutCB), 14 ), 0, 0, 0, 0 },	\
-    {NM("s15", "s15"), MMPush | MMUnmanaged,			\
-     BIND_1(PTR_FUN(DataDisp::shortcutCB), 15 ), 0, 0, 0, 0 },	\
-    {NM("s16", "s16"), MMPush | MMUnmanaged,			\
-     BIND_1(PTR_FUN(DataDisp::shortcutCB), 16 ), 0, 0, 0, 0 },	\
-    {NM("s17", "s17"), MMPush | MMUnmanaged,			\
-     BIND_1(PTR_FUN(DataDisp::shortcutCB), 17 ), 0, 0, 0, 0 },	\
-    {NM("s18", "s18"), MMPush | MMUnmanaged,			\
-     BIND_1(PTR_FUN(DataDisp::shortcutCB), 18 ), 0, 0, 0, 0 },	\
-    {NM("s19", "s19"), MMPush | MMUnmanaged,			\
-     BIND_1(PTR_FUN(DataDisp::shortcutCB), 19 ), 0, 0, 0, 0 },	\
-    {NM("s20", "s20"), MMPush | MMUnmanaged,			\
-     BIND_1(PTR_FUN(DataDisp::shortcutCB), 20 ), 0, 0, 0, 0 },	\
-    {NM("other", "Other..."),     MMPush,			\
-     BIND_0(PTR_FUN(DataDisp::dependentCB)), 0, 0, 0, 0},	\
+    MENTRY("s1", "s1", MMPush | MMUnmanaged,			\
+     BIND_1(PTR_FUN(DataDisp::shortcutCB), 1  ), 0, 0),	\
+    MENTRY("s2", "s2", MMPush | MMUnmanaged,			\
+     BIND_1(PTR_FUN(DataDisp::shortcutCB), 2  ), 0, 0),	\
+    MENTRY("s3", "s3", MMPush | MMUnmanaged,			\
+     BIND_1(PTR_FUN(DataDisp::shortcutCB), 3  ), 0, 0),	\
+    MENTRY("s4", "s4", MMPush | MMUnmanaged,			\
+     BIND_1(PTR_FUN(DataDisp::shortcutCB), 4  ), 0, 0),	\
+    MENTRY("s5", "s5", MMPush | MMUnmanaged,			\
+     BIND_1(PTR_FUN(DataDisp::shortcutCB), 5  ), 0, 0),	\
+    MENTRY("s6", "s6", MMPush | MMUnmanaged,			\
+     BIND_1(PTR_FUN(DataDisp::shortcutCB), 6  ), 0, 0),	\
+    MENTRY("s7", "s7", MMPush | MMUnmanaged,			\
+     BIND_1(PTR_FUN(DataDisp::shortcutCB), 7  ), 0, 0),	\
+    MENTRY("s8", "s8", MMPush | MMUnmanaged,			\
+     BIND_1(PTR_FUN(DataDisp::shortcutCB), 8  ), 0, 0),	\
+    MENTRY("s9", "s9", MMPush | MMUnmanaged,			\
+     BIND_1(PTR_FUN(DataDisp::shortcutCB), 9  ), 0, 0),	\
+    MENTRY("s10", "s10", MMPush | MMUnmanaged,			\
+     BIND_1(PTR_FUN(DataDisp::shortcutCB), 10 ), 0, 0),	\
+    MENTRY("s11", "s11", MMPush | MMUnmanaged,			\
+     BIND_1(PTR_FUN(DataDisp::shortcutCB), 11 ), 0, 0),	\
+    MENTRY("s12", "s12", MMPush | MMUnmanaged,			\
+     BIND_1(PTR_FUN(DataDisp::shortcutCB), 12 ), 0, 0),	\
+    MENTRY("s13", "s13", MMPush | MMUnmanaged,			\
+     BIND_1(PTR_FUN(DataDisp::shortcutCB), 13 ), 0, 0),	\
+    MENTRY("s14", "s14", MMPush | MMUnmanaged,			\
+     BIND_1(PTR_FUN(DataDisp::shortcutCB), 14 ), 0, 0),	\
+    MENTRY("s15", "s15", MMPush | MMUnmanaged,			\
+     BIND_1(PTR_FUN(DataDisp::shortcutCB), 15 ), 0, 0),	\
+    MENTRY("s16", "s16", MMPush | MMUnmanaged,			\
+     BIND_1(PTR_FUN(DataDisp::shortcutCB), 16 ), 0, 0),	\
+    MENTRY("s17", "s17", MMPush | MMUnmanaged,			\
+     BIND_1(PTR_FUN(DataDisp::shortcutCB), 17 ), 0, 0),	\
+    MENTRY("s18", "s18", MMPush | MMUnmanaged,			\
+     BIND_1(PTR_FUN(DataDisp::shortcutCB), 18 ), 0, 0),	\
+    MENTRY("s19", "s19", MMPush | MMUnmanaged,			\
+     BIND_1(PTR_FUN(DataDisp::shortcutCB), 19 ), 0, 0),	\
+    MENTRY("s20", "s20", MMPush | MMUnmanaged,			\
+     BIND_1(PTR_FUN(DataDisp::shortcutCB), 20 ), 0, 0),	\
+    MENTRY("other", "Other...", MMPush,			\
+     BIND_0(PTR_FUN(DataDisp::dependentCB)), 0, 0),	\
     MMSep,							\
-    {NM("edit", "Edit Menu..."),  MMPush,			\
-     BIND_0(PTR_FUN(dddEditShortcutsCB)), 0, 0, 0, 0}
+    MENTRY("edit", "Edit Menu...", MMPush,			\
+     BIND_0(PTR_FUN(dddEditShortcutsCB)), 0, 0)
 
 
 // The menu used in the `New Display' button.
@@ -252,10 +252,10 @@ MMDesc DataDisp::shortcut_menu[]   =
 {
     SHORTCUT_MENU,
     MMSep,
-    {NIM("new2", "Display ()", DISPLAY_ICON),            MMPush,
-     BIND_1(PTR_FUN(DataDisp::displayArgCB), false), 0, 0, 0, 0 },
-    {NIM("dereference2", "Display *()", DISPREF_ICON),   MMPush,
-     BIND_0(PTR_FUN(DataDisp::dereferenceArgCB)), 0, 0, 0, 0 },
+    NIMENTRY("new2", "Display ()", DISPLAY_ICON, MMPush,
+     BIND_1(PTR_FUN(DataDisp::displayArgCB), false), 0, 0),
+    NIMENTRY("dereference2", "Display *()", DISPREF_ICON, MMPush,
+     BIND_0(PTR_FUN(DataDisp::dereferenceArgCB)), 0, 0),
     MMEnd
 };
 
@@ -269,8 +269,8 @@ struct RotateItms { enum Itms {RotateAll}; };
 
 MMDesc DataDisp::rotate_menu[] =
 {
-    {NM("rotateAll", "Rotate All ()"),     MMPush | MMInsensitive, 
-     BIND_1(PTR_FUN(DataDisp::rotateCB), true), 0, 0, 0, 0},
+    MENTRY("rotateAll", "Rotate All ()", MMPush | MMInsensitive, 
+     BIND_1(PTR_FUN(DataDisp::rotateCB), true), 0, 0),
     MMEnd
 };
 
@@ -279,49 +279,49 @@ const int DataDisp::theme_items = 20;
 
 MMDesc DataDisp::theme_menu[] =
 {
-    {NM("t1", "t1"),  MMCheckItem | MMUnmanaged,  
-     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 1  ), 0, 0, 0, 0 },  
-    {NM("t2", "t2"),  MMCheckItem | MMUnmanaged,  
-     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 2  ), 0, 0, 0, 0 },  
-    {NM("t3", "t3"),  MMCheckItem | MMUnmanaged,  
-     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 3  ), 0, 0, 0, 0 },  
-    {NM("t4", "t4"),  MMCheckItem | MMUnmanaged,  
-     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 4  ), 0, 0, 0, 0 },  
-    {NM("t5", "t5"),  MMCheckItem | MMUnmanaged,  
-     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 5  ), 0, 0, 0, 0 },  
-    {NM("t6", "t6"),  MMCheckItem | MMUnmanaged,  
-     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 6  ), 0, 0, 0, 0 },  
-    {NM("t7", "t7"),  MMCheckItem | MMUnmanaged,  
-     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 7  ), 0, 0, 0, 0 },  
-    {NM("t8", "t8"),  MMCheckItem | MMUnmanaged,  
-     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 8  ), 0, 0, 0, 0 },  
-    {NM("t9", "t9"),  MMCheckItem | MMUnmanaged,  
-     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 9  ), 0, 0, 0, 0 },  
-    {NM("t10", "t10"), MMCheckItem | MMUnmanaged,  
-     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 10 ), 0, 0, 0, 0 },  
-    {NM("t11", "t11"), MMCheckItem | MMUnmanaged,  
-     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 11 ), 0, 0, 0, 0 },  
-    {NM("t12", "t12"), MMCheckItem | MMUnmanaged,  
-     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 12 ), 0, 0, 0, 0 },  
-    {NM("t13", "t13"), MMCheckItem | MMUnmanaged,  
-     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 13 ), 0, 0, 0, 0 },  
-    {NM("t14", "t14"), MMCheckItem | MMUnmanaged,  
-     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 14 ), 0, 0, 0, 0 },  
-    {NM("t15", "t15"), MMCheckItem | MMUnmanaged,  
-     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 15 ), 0, 0, 0, 0 },  
-    {NM("t16", "t16"), MMCheckItem | MMUnmanaged,  
-     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 16 ), 0, 0, 0, 0 },  
-    {NM("t17", "t17"), MMCheckItem | MMUnmanaged,  
-     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 17 ), 0, 0, 0, 0 },  
-    {NM("t18", "t18"), MMCheckItem | MMUnmanaged,  
-     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 18 ), 0, 0, 0, 0 },  
-    {NM("t19", "t19"), MMCheckItem | MMUnmanaged,  
-     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 19 ), 0, 0, 0, 0 },  
-    {NM("t20", "t20"), MMCheckItem | MMUnmanaged,  
-     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 20 ), 0, 0, 0, 0 },  
+    MENTRY("t1", "t1", MMCheckItem | MMUnmanaged, 
+     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 1  ), 0, 0), 
+    MENTRY("t2", "t2", MMCheckItem | MMUnmanaged, 
+     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 2  ), 0, 0), 
+    MENTRY("t3", "t3", MMCheckItem | MMUnmanaged, 
+     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 3  ), 0, 0), 
+    MENTRY("t4", "t4", MMCheckItem | MMUnmanaged, 
+     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 4  ), 0, 0), 
+    MENTRY("t5", "t5", MMCheckItem | MMUnmanaged, 
+     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 5  ), 0, 0), 
+    MENTRY("t6", "t6", MMCheckItem | MMUnmanaged, 
+     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 6  ), 0, 0), 
+    MENTRY("t7", "t7", MMCheckItem | MMUnmanaged, 
+     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 7  ), 0, 0), 
+    MENTRY("t8", "t8", MMCheckItem | MMUnmanaged, 
+     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 8  ), 0, 0), 
+    MENTRY("t9", "t9", MMCheckItem | MMUnmanaged, 
+     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 9  ), 0, 0), 
+    MENTRY("t10", "t10", MMCheckItem | MMUnmanaged, 
+     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 10 ), 0, 0), 
+    MENTRY("t11", "t11", MMCheckItem | MMUnmanaged, 
+     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 11 ), 0, 0), 
+    MENTRY("t12", "t12", MMCheckItem | MMUnmanaged, 
+     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 12 ), 0, 0), 
+    MENTRY("t13", "t13", MMCheckItem | MMUnmanaged, 
+     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 13 ), 0, 0), 
+    MENTRY("t14", "t14", MMCheckItem | MMUnmanaged, 
+     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 14 ), 0, 0), 
+    MENTRY("t15", "t15", MMCheckItem | MMUnmanaged, 
+     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 15 ), 0, 0), 
+    MENTRY("t16", "t16", MMCheckItem | MMUnmanaged, 
+     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 16 ), 0, 0), 
+    MENTRY("t17", "t17", MMCheckItem | MMUnmanaged, 
+     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 17 ), 0, 0), 
+    MENTRY("t18", "t18", MMCheckItem | MMUnmanaged, 
+     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 18 ), 0, 0), 
+    MENTRY("t19", "t19", MMCheckItem | MMUnmanaged, 
+     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 19 ), 0, 0), 
+    MENTRY("t20", "t20", MMCheckItem | MMUnmanaged, 
+     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 20 ), 0, 0), 
     MMSep, 
-    {NM("edit", "Edit Themes..."),  MMPush,
-     HIDE_0(PTR_FUN(dddPopupThemesCB)), 0, 0, 0, 0},
+    MENTRY("edit", "Edit Themes...", MMPush,
+     HIDE_0(PTR_FUN(dddPopupThemesCB)), 0, 0),
     MMEnd
 };
 
@@ -331,22 +331,22 @@ struct NodeItms { enum Itms {Dereference, New, Theme, Sep1,
 
 MMDesc DataDisp::node_popup[] =
 {
-    {NM("dereference", "Display *"),   MMPush,
-     BIND_0(PTR_FUN(DataDisp::dereferenceCB)), 0, 0, 0, 0},
-    {NM("new", "New Display"),         MMMenu,
-     MMNoCB, DataDisp::shortcut_popup2, 0, 0, 0},
-    {NM("theme", "Theme"),             MMMenu,
-     MMNoCB, DataDisp::theme_menu, 0, 0, 0},
+    MENTRY("dereference", "Display *", MMPush,
+     BIND_0(PTR_FUN(DataDisp::dereferenceCB)), 0, 0),
+    MENTRY("new", "New Display", MMMenu,
+     MMNoCB, DataDisp::shortcut_popup2, 0),
+    MENTRY("theme", "Theme", MMMenu,
+     MMNoCB, DataDisp::theme_menu, 0),
     MMSep,
-    {NM("detail", "Show Detail"),      MMPush,   
-     BIND_1(PTR_FUN(DataDisp::toggleDetailCB), -1), 0, 0, 0, 0},
-    {NM("rotate", "Rotate"),           MMPush,   
-     BIND_1(PTR_FUN(DataDisp::rotateCB), false), 0, 0, 0, 0},
-    {NM("set", "Set Value..."),        MMPush,
-     BIND_0(PTR_FUN(DataDisp::setCB)), 0, 0, 0, 0},
+    MENTRY("detail", "Show Detail", MMPush, 
+     BIND_1(PTR_FUN(DataDisp::toggleDetailCB), -1), 0, 0),
+    MENTRY("rotate", "Rotate", MMPush, 
+     BIND_1(PTR_FUN(DataDisp::rotateCB), false), 0, 0),
+    MENTRY("set", "Set Value...", MMPush,
+     BIND_0(PTR_FUN(DataDisp::setCB)), 0, 0),
     MMSep,
-    {NM("delete", "Undisplay"),        MMPush,   
-     BIND_0(PTR_FUN(DataDisp::deleteCB)), 0, 0, 0, 0},
+    MENTRY("delete", "Undisplay", MMPush, 
+     BIND_0(PTR_FUN(DataDisp::deleteCB)), 0, 0),
     MMEnd
 };
 
@@ -355,9 +355,9 @@ struct DeleteItms { enum Itms {Cluster}; };
 
 MMDesc DataDisp::delete_menu[] =
 {
-    {NM("cluster", "Cluster"),     MMPush,
+    MENTRY("cluster", "Cluster", MMPush,
      HIDE_0(PTR_FUN(DataDisp::toggleClusterSelectedCB)), 
-     0, 0, 0, 0},
+     0, 0),
     MMEnd
 };
 
@@ -365,9 +365,9 @@ struct PlotItms { enum Itms { History }; };
 
 MMDesc DataDisp::plot_menu[] =
 {
-    {NM("history", "Plot history of ()"),     MMPush,
+    MENTRY("history", "Plot history of ()", MMPush,
      BIND_0(PTR_FUN(DataDisp::plotHistoryCB)), 
-     0, 0, 0, 0},
+     0, 0),
     MMEnd
 };
 
@@ -377,24 +377,24 @@ struct CmdItms { enum Itms {New, Dereference, Plot,
 
 MMDesc DataDisp::graph_cmd_area[] =
 {
-    {IM("new", DISPLAY_ICON),           MMPush,                 
+    IMENTRY("new", DISPLAY_ICON, MMPush, 
      BIND_1(PTR_FUN(DataDisp::displayArgCB), true), 
-     DataDisp::shortcut_menu, 0, 0, 0 },
-    {IM("dereference", DISPREF_ICON),   MMPush | MMInsensitive | MMUnmanaged, 
-     BIND_0(PTR_FUN(DataDisp::dereferenceArgCB)), 0, 0, 0, 0},
-    {IM("plot", PLOT_ICON),             MMPush | MMInsensitive,
+     DataDisp::shortcut_menu, 0),
+    IMENTRY("dereference", DISPREF_ICON, MMPush | MMInsensitive | MMUnmanaged, 
+     BIND_0(PTR_FUN(DataDisp::dereferenceArgCB)), 0, 0),
+    IMENTRY("plot", PLOT_ICON, MMPush | MMInsensitive,
      BIND_0(PTR_FUN(DataDisp::plotArgCB)), 
-     DataDisp::plot_menu, 0, 0, 0},
-    {IM("detail", SHOW_ICON),           MMPush | MMInsensitive, 
+     DataDisp::plot_menu, 0),
+    IMENTRY("detail", SHOW_ICON, MMPush | MMInsensitive, 
      BIND_1(PTR_FUN(DataDisp::toggleDetailCB), -1), 
-     DataDisp::detail_menu, 0, 0, 0 },
-    {IM("rotate", ROTATE_ICON),         MMPush | MMInsensitive, 
-     BIND_1(PTR_FUN(DataDisp::rotateCB), false), DataDisp::rotate_menu, 0, 0, 0 },
-    {IM("set", SET_ICON),               MMPush | MMInsensitive, 
-     BIND_0(PTR_FUN(DataDisp::setCB)), 0, 0, 0, 0 },
-    {IM("delete", UNDISPLAY_ICON),      MMPush | MMInsensitive, 
+     DataDisp::detail_menu, 0),
+    IMENTRY("rotate", ROTATE_ICON, MMPush | MMInsensitive, 
+     BIND_1(PTR_FUN(DataDisp::rotateCB), false), DataDisp::rotate_menu, 0),
+    IMENTRY("set", SET_ICON, MMPush | MMInsensitive, 
+     BIND_0(PTR_FUN(DataDisp::setCB)), 0, 0),
+    IMENTRY("delete", UNDISPLAY_ICON, MMPush | MMInsensitive, 
      BIND_0(PTR_FUN(DataDisp::deleteArgCB)),
-     DataDisp::delete_menu, 0, 0, 0 },
+     DataDisp::delete_menu, 0),
     MMEnd
 };
 
@@ -404,14 +404,14 @@ struct DetailItms { enum Itms { ShowMore, ShowJust,
 
 MMDesc DataDisp::detail_menu[] =
 {
-    {NM("show_more", "Show More ()"),      MMPush, 
-     BIND_1(PTR_FUN(DataDisp::showMoreDetailCB), 1), 0, 0, 0, 0},
-    {NM("show_just", "Show Just ()"),      MMPush, 
-     BIND_1(PTR_FUN(DataDisp::showDetailCB), 1), 0, 0, 0, 0},
-    {NM("show_detail", "Show All ()"),  MMPush, 
-     BIND_1(PTR_FUN(DataDisp::showDetailCB), -1), 0, 0, 0, 0},
-    {NM("hide_detail", "Hide ()"),  MMPush, 
-     BIND_0(PTR_FUN(DataDisp::hideDetailCB)), 0, 0, 0, 0},
+    MENTRY("show_more", "Show More ()", MMPush, 
+     BIND_1(PTR_FUN(DataDisp::showMoreDetailCB), 1), 0, 0),
+    MENTRY("show_just", "Show Just ()", MMPush, 
+     BIND_1(PTR_FUN(DataDisp::showDetailCB), 1), 0, 0),
+    MENTRY("show_detail", "Show All ()", MMPush, 
+     BIND_1(PTR_FUN(DataDisp::showDetailCB), -1), 0, 0),
+    MENTRY("hide_detail", "Hide ()", MMPush, 
+     BIND_0(PTR_FUN(DataDisp::hideDetailCB)), 0, 0),
     MMEnd
 };
 
@@ -421,22 +421,22 @@ struct DisplayItms { enum Itms {New, Dereference,
 
 MMDesc DataDisp::display_area[] =
 {
-    {NM("new", "New..."),                  MMPush,
-     BIND_0(PTR_FUN(DataDisp::dependentCB)), 0, 0, 0, 0},
-    {NM("dereference", "Display *"),       MMPush,
-     BIND_0(PTR_FUN(DataDisp::dereferenceCB)), 0, 0, 0, 0},
-    {NM("show_detail", "Show All ()"),     MMPush,   
-     BIND_1(PTR_FUN(DataDisp::showDetailCB), -1), 0, 0, 0, 0},
-    {NM("hide_detail", "Hide ()"),         MMPush,   
-     BIND_0(PTR_FUN(DataDisp::hideDetailCB)), 0, 0, 0, 0},
-    {NM("set", "Set ()"),                  MMPush,
-     BIND_0(PTR_FUN(DataDisp::setCB)), 0, 0, 0, 0},
-    {NM("cluster", "Cluster ()"),          MMPush,
-     HIDE_0(PTR_FUN(DataDisp::clusterSelectedCB)), 0, 0, 0, 0},
-    {NM("uncluster", "Uncluster"),         MMPush,
-     HIDE_0(PTR_FUN(DataDisp::unclusterSelectedCB)), 0, 0, 0, 0},
-    {NM("delete", "Undisplay"),            MMPush | MMHelp, 
-     BIND_0(PTR_FUN(DataDisp::deleteCB)), 0, 0, 0, 0},
+    MENTRY("new", "New...", MMPush,
+     BIND_0(PTR_FUN(DataDisp::dependentCB)), 0, 0),
+    MENTRY("dereference", "Display *", MMPush,
+     BIND_0(PTR_FUN(DataDisp::dereferenceCB)), 0, 0),
+    MENTRY("show_detail", "Show All ()", MMPush, 
+     BIND_1(PTR_FUN(DataDisp::showDetailCB), -1), 0, 0),
+    MENTRY("hide_detail", "Hide ()", MMPush, 
+     BIND_0(PTR_FUN(DataDisp::hideDetailCB)), 0, 0),
+    MENTRY("set", "Set ()", MMPush,
+     BIND_0(PTR_FUN(DataDisp::setCB)), 0, 0),
+    MENTRY("cluster", "Cluster ()", MMPush,
+     HIDE_0(PTR_FUN(DataDisp::clusterSelectedCB)), 0, 0),
+    MENTRY("uncluster", "Uncluster", MMPush,
+     HIDE_0(PTR_FUN(DataDisp::unclusterSelectedCB)), 0, 0),
+    MENTRY("delete", "Undisplay", MMPush | MMHelp, 
+     BIND_0(PTR_FUN(DataDisp::deleteCB)), 0, 0),
     MMEnd
 };
 
@@ -791,8 +791,8 @@ void DataDisp::applyThemeCB (CB_ALIST_12(Widget w, XtP(const char *) client_data
 	XtAddCallback(apply, XmNactivateCallback, DestroyShellCB, 0);
 #else // NOT IF_MOTIF
 	BUTTON_P apply = dialog->add_button(XMST("apply"), 0);
-	apply->signal_activate().connect(sigc::bind(PTR_FUN(applyThemeOnThisCB), client_data));
-	apply->signal_activate().connect(sigc::bind(PTR_FUN(DestroyShellCB), dialog));
+	apply->signal_clicked().connect(sigc::bind(PTR_FUN(applyThemeOnThisCB), client_data));
+	apply->signal_clicked().connect(sigc::bind(PTR_FUN(DestroyShellCB), dialog));
 #endif // IF_MOTIF
     }
 
@@ -7446,8 +7446,8 @@ DataDisp::DataDisp(CONTAINER_P parent, Widget& data_buttons_w)
 	XtAddCallback(arg_label, XmNactivateCallback, 
 		      ClearTextFieldCB, graph_arg->text());
 #else // NOT IF_MOTIF
-	arg_label->signal_activate().connect(PTR_FUN(SelectionLostCB));
-	arg_label->signal_activate().connect(sigc::bind(PTR_FUN(ClearTextFieldCB), graph_arg->text()));
+	arg_label->signal_clicked().connect(PTR_FUN(SelectionLostCB));
+	arg_label->signal_clicked().connect(sigc::bind(PTR_FUN(ClearTextFieldCB), graph_arg->text()));
 #endif // IF_MOTIF
     }
 

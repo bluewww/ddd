@@ -33,12 +33,17 @@ Dialog::Dialog(Gtk::Window *parent, const String &name):
 {
     set_name(name.s());
     set_title(name.s());
+    GtkX::VBox *box = new GtkX::VBox(*this, name+String("_vbox"));
+    box->show();
     buttons_ = new GtkX::HBox(*this, name+String("_buttons"));
     buttons_->show();
+    vbox_ = box;
+    postinit();
 }
 
 Dialog::~Dialog(void)
 {
+    delete vbox_;
     delete buttons_;
 }
 
@@ -51,7 +56,7 @@ Dialog::internal(void)
 Gtk::Container *
 Dialog::gtk_container(void)
 {
-    return get_vbox();
+    return vbox_?vbox_:get_vbox();
 }
 
 Button *

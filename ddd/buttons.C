@@ -1873,7 +1873,7 @@ static void nop(CB_ALIST_1(Widget)) {}
 
 static MMDesc desc[] = 
 {
-    { NM("", ""), MMFlatPush, BIND_0(PTR_FUN(nop)), 0, 0, 0, 0 },
+    MENTRY("", "", MMFlatPush, BIND_0(PTR_FUN(nop)), 0, 0),
     MMEnd
 };
 
@@ -1881,7 +1881,11 @@ static MMDesc desc[] =
 BUTTON_P create_flat_button(CONTAINER_P parent, const string& name)
 {
     desc[0].name = name.chars();
-    MMaddItems(parent, desc);
+    MMaddItems(parent,
+#if !defined(IF_XM)
+	       NULL,
+#endif
+	       desc);
     MMaddCallbacks(desc);
     return (BUTTON_P)desc[0].widget;
 }

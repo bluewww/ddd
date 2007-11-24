@@ -148,10 +148,6 @@ typedef XtCallbackProc GTK_PROC_;
 #define XtCastShell(w) (w)
 #define XmCastDialogShell(w) (w)
 
-#define NM(a,b) a
-#define IM(a,b) a
-#define NIM(a,b,c) a
-
 typedef Pixel ImageColor;
 
 typedef Widget Glyph_T;
@@ -868,10 +864,6 @@ extern XrmDatabase get_file_database(const char *f);
 
 // End Databases
 
-#define NM(a,b) a, b, NULL
-#define IM(a,b) a, Glib::ustring(), b
-#define NIM(a,b,c) a, b, c
-
 class GtkGlyphMark;
 typedef GtkGlyphMark *Glyph_T;
 
@@ -897,9 +889,15 @@ public:
 
 #endif // IF_MOTIF
 
+// pString: "portable" string type.
+// cpString: constant pString.
+
 #if defined(IF_XM)
 
 #define ListView_P Widget
+
+typedef char *pString;
+typedef const char *cpString;
 
 #else
 
@@ -907,6 +905,9 @@ public:
 #include <GUI/ListView.h>
 
 #define ListView_P GUI::WidgetPtr<GUI::ListView>
+
+typedef GUI::String pString;
+typedef GUI::String cpString;
 
 #endif
 

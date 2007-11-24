@@ -54,6 +54,7 @@ RadioBox::RadioBox(GtkX::Container &parent,
     create_box(orientation);
     set_name(name.s());
     parent.add_child(*this);
+    postinit();
 }
 
 RadioBox::~RadioBox(void)

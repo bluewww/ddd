@@ -24,7 +24,7 @@
 // the constructor, unlike the Gtk ones.  Motif (Xt) widgets cannot be
 // reparented.  Therefore we need a constructor with extra arguments.
 
-#include <gtkmm/notebook.h>
+#include <GtkX/Notebook.h>
 #include <GtkX/Box.h>
 
 using namespace GtkX;
@@ -36,11 +36,12 @@ using namespace GtkX;
 VBox::VBox(GtkX::Container &parent, const GtkX::String &name)
 {
     set_name(name.s());
-    Gtk::Notebook *nb = dynamic_cast<Gtk::Notebook *>(&parent);
+    GtkX::Notebook *nb = dynamic_cast<GtkX::Notebook *>(&parent);
     if (nb)
-	nb->append_page(*this, name.s());
+	nb->append_page(*this, name);
     else
 	parent.add_child(*this);
+    postinit();
 }
 
 Gtk::Widget *
@@ -52,14 +53,15 @@ VBox::internal(void)
 HBox::HBox(GtkX::Container &parent, const GtkX::String &name)
 {
     set_name(name.s());
-    Gtk::Notebook *nb = dynamic_cast<Gtk::Notebook *>(&parent);
+    GtkX::Notebook *nb = dynamic_cast<GtkX::Notebook *>(&parent);
     if (nb) {
-	nb->append_page(*this, name.s());
+	nb->append_page(*this, name);
 	// FIXME?
 	show();
     }
     else
 	parent.add_child(*this);
+    postinit();
 }
 
 Gtk::Widget *

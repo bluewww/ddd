@@ -69,12 +69,14 @@ ListView::ListView(Container &parent, const String &name,
 		   const std::vector<String> &headers)
 {
     init(parent.xt_container(), name, headers);
+    postinit();
 }
 
 ListView::ListView(::Widget parent, const String &name,
 		   const std::vector<String> &headers)
 {
     init(parent, name, headers);
+    postinit();
 }
 
 ListView::~ListView(void)
