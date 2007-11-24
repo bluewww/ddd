@@ -503,15 +503,12 @@ void MMaddItems(CONTAINER_P shell,
 #warning MMPush might be a MenuItem or a Button.  Check shell.
 #endif
 	    if (menushell) {
-#if !defined(IF_MOTIF)
 		xwidget = new GUI::MenuItem(container, label_string);
-#endif
 	    }
 	    else {
 		if (image) {
-#if !defined(IF_MOTIF)
-		    BUTTON_P button = new GUI::Button(container);
-		    widget = button;
+		    GUI::Button *button = new GUI::Button(container);
+		    xwidget = button;
 		    XIMAGE_P p1 = image[0];
 		    XIMAGE_P p2 = image[1];
 		    XIMAGE_P p3 = image[2];
@@ -519,10 +516,14 @@ void MMaddItems(CONTAINER_P shell,
 		    if (p1)
 		    {
 			Gtk::Image *im = new Gtk::Image(p1);
-			button->add(*im);
+#ifdef NAG_ME
+#warning This needs to be abstracted.
+#endif
+			Gtk::Button *b = (Gtk::Button *)button->internal();
+			b->set_image(*im);
+			b->set_label("");
 			im->show();
 		    }
-#endif
 		}
 		else {
 		    xwidget = new GUI::Button(container, label_string);
@@ -751,14 +752,16 @@ void MMaddItems(CONTAINER_P shell,
 
 	    arg = 0;
 	    label = verify(XmCreateLabel(widget, XMST(name), args, arg));
+	    if (have_label)
+		XtManageChild(label);
 #else
 	    xwidget = box = new GUI::HBox(*xshell, panelName.chars());
 
 	    xlabel = new GUI::Label(*box, label_string);
 	    xlabel->set_alignment(Gtk::ALIGN_LEFT);
-#endif
 	    if (have_label)
-		XtManageChild(label);
+		xlabel->show();
+#endif
 
 #if defined(IF_XM)
 	    Widget (*create_panel)(Widget, const _XtString, MMDesc[], ArgList, Cardinal) = 0;
@@ -852,12 +855,14 @@ void MMaddItems(CONTAINER_P shell,
 #if defined(IF_MOTIF)
 	    arg = 0;
 	    label = verify(XmCreateLabel(panel, XMST(labelName.chars()), args, arg));
+	    if (name[0] != '\0' && (flags & MMUnmanagedLabel) == 0)
+		XtManageChild(label);
 #else
 	    xlabel = new GUI::Label(panel, label_string);
 	    xlabel->set_alignment(Gtk::ALIGN_LEFT);
-#endif
 	    if (name[0] != '\0' && (flags & MMUnmanagedLabel) == 0)
-		XtManageChild(label);
+		xlabel->show();
+#endif
 
 	    switch (type)
 	    {
@@ -881,13 +886,14 @@ void MMaddItems(CONTAINER_P shell,
 
 	    case MMTextField:
 	    case MMEnterField:
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 		arg = 0;
 		widget = verify(XmCreateTextField(panel, XMST(textName.chars()), args, arg));
+		XtManageChild(widget);
 #else
 		xwidget = new GUI::Entry(panel, GUI::String(textName.chars()));
+		xwidget->show();
 #endif
-		XtManageChild(widget);
 		break;
 	    }
 	    break;
@@ -973,7 +979,7 @@ void MMaddItems(GUI::Container *shell, MMDesc items[], bool ignore_seps)
 	std::cerr << "Error: MMaddItems to non-Container.\n";
 	exit(1);
     }
-    MMaddItems(cont, NULL, items, ignore_seps);
+    MMaddItems(cont, shell, items, ignore_seps);
 #endif    
 }
 #endif
