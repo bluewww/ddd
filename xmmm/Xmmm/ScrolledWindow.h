@@ -37,9 +37,9 @@ namespace Xmmm {
     class ScrolledWindow: public Container {
 	::Widget sw_;
     public:
-	ScrolledWindow(Xmmm::Container &parent, const Xmmm::String &name,
+	ScrolledWindow(Xmmm::Container &parent, const Xmmm::String &name="",
 		       std::vector<Arg> &args=NO_ARGS);
-	ScrolledWindow(::Widget parent, const Xmmm::String &name,
+	ScrolledWindow(::Widget parent, const Xmmm::String &name="",
 		       std::vector<Arg> &args=NO_ARGS); // TEMPORARY
 	~ScrolledWindow(void);
 	::Widget internal(void); // TEMPORARY

@@ -52,7 +52,7 @@ namespace GtkX {
 	void pack_start(Gtk::Widget &child,
 			PackOptions options = PACK_EXPAND_WIDGET,
 			int padding = 0);
-	Button *add_button(const String &name);
+	Button *add_button(const String &name="");
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
 #include <GtkX/redirect.h>
     };

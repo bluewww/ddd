@@ -31,12 +31,12 @@
 #ifndef GTKX_BUTTON_H
 #define GTKX_BUTTON_H
 
-#include <GtkX/Widget1s.h>
+#include <GtkX/Widget2s.h>
 #include <gtkmm/button.h>
 
 namespace GtkX {
 
-    typedef Widget1s<Gtk::Button> Button;
+    typedef Widget2s<Gtk::Button> Button;
 
 }
 

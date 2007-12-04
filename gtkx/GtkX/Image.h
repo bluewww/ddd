@@ -21,23 +21,17 @@
 // If not, write to the Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-// High level object-oriented wrapper must support Gtk and Motif.
-// Unfortunately Motif widgets require parent and name arguments to
-// the constructor, unlike the Gtk ones.  Motif (Xt) widgets cannot be
-// reparented.  Therefore we need a constructor with extra arguments.
-// A brief look at QT indicates that this will be required there as
-// well.
+#ifndef GTKX_IMAGE_H
+#define GTKX_IMAGE_H
 
-#ifndef GTKX_MENUITEM_H
-#define GTKX_MENUITEM_H
-
-#include <GtkX/Widget2s.h>
-#include <gtkmm/menuitem.h>
+#include <gdkmm/pixbuf.h>
 
 namespace GtkX {
 
-    typedef Widget2s<Gtk::MenuItem> MenuItem;
+    typedef Glib::RefPtr<Gdk::Pixbuf> ImageP;
+
+    typedef Glib::RefPtr<Gdk::Pixbuf> ImageHandle;
 
 }
 
-#endif // GTKX_MENUITEM_H
+#endif // GTKX_IMAGE_H

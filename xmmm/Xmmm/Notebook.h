@@ -36,8 +36,8 @@ namespace Xmmm {
     class Notebook: public Container {
 	::Widget nb_;
     public:
-	Notebook(Xmmm::Container &parent, const Xmmm::String &name);
-	Notebook(::Widget parent, const Xmmm::String &name); // TEMPORARY
+	Notebook(Xmmm::Container &parent, const Xmmm::String &name="");
+	Notebook(::Widget parent, const Xmmm::String &name=""); // TEMPORARY
 	~Notebook(void);
 	int get_n_pages(void) const;
 	void set_current_page(int);

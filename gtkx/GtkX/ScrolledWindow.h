@@ -39,7 +39,7 @@ namespace GtkX {
 
     class ScrolledWindow: public Gtk::ScrolledWindow, public Container {
     public:
-	ScrolledWindow(GtkX::Container &parent, const String &name,
+	ScrolledWindow(GtkX::Container &parent, const String &name="",
 		       PackOptions options=PACK_SHRINK, int padding=0);
 	~ScrolledWindow(void);
 	Gtk::Widget *internal(void);

@@ -80,6 +80,7 @@ char MakeMenu_rcsid[] =
 #include <GUI/RadioButton.h>
 #include <GUI/Label.h>
 #include <GUI/OptionMenu.h>
+#include <GUI/Menu.h>
 #include <GUI/Box.h>
 #include <GUI/Scale.h>
 #include <GUI/Entry.h>
@@ -400,12 +401,9 @@ void MMaddItems(CONTAINER_P shell,
 	const char * const name = item->name;
 #else
 	cpString name = item->name;
-#if !defined(IF_MOTIF)
+#if !defined(IF_XM)
 	cpString label_string = item->label_string;
-	XIMAGE_P *image = item->image;
-#else
-	cpString label_string = item->name;
-	XIMAGE_P *image = item->image;
+	GUI::ImageHandle *image = item->image;
 #endif
 #endif
 	MMType flags            = item->type;
@@ -425,6 +423,9 @@ void MMaddItems(CONTAINER_P shell,
 
 	const string subMenuName = string(name) + "Menu";
 	MENU_P subMenu = NULL;
+#if !defined(IF_XM)
+	GUI::Menu *xsubMenu = NULL;
+#endif
 #if defined(IF_XM)
 	BOX_P box = NULL;
 #else
@@ -503,16 +504,17 @@ void MMaddItems(CONTAINER_P shell,
 #warning MMPush might be a MenuItem or a Button.  Check shell.
 #endif
 	    if (menushell) {
-		xwidget = new GUI::MenuItem(container, label_string);
+		xwidget = new GUI::MenuItem(container, name, label_string);
 	    }
 	    else {
 		if (image) {
-		    GUI::Button *button = new GUI::Button(container);
+		    GUI::Button *button = new GUI::Button(container, name);
 		    xwidget = button;
-		    XIMAGE_P p1 = image[0];
-		    XIMAGE_P p2 = image[1];
-		    XIMAGE_P p3 = image[2];
-		    XIMAGE_P p4 = image[3];
+#if !defined(IF_XMMM)
+		    GUI::ImageHandle p1 = image[0];
+		    GUI::ImageHandle p2 = image[1];
+		    GUI::ImageHandle p3 = image[2];
+		    GUI::ImageHandle p4 = image[3];
 		    if (p1)
 		    {
 			Gtk::Image *im = new Gtk::Image(p1);
@@ -524,9 +526,10 @@ void MMaddItems(CONTAINER_P shell,
 			b->set_label("");
 			im->show();
 		    }
+#endif
 		}
 		else {
-		    xwidget = new GUI::Button(container, label_string);
+		    xwidget = new GUI::Button(container, name, label_string);
 		}
 	    }
 	    // pack_item(container, widget);
@@ -536,7 +539,7 @@ void MMaddItems(CONTAINER_P shell,
 		subMenu = MMcreatePushMenu(shell, subMenuName.chars(), subitems);
 		PushMenuInfo *info = new PushMenuInfo(0, subMenu, flat);
 		info->widget = widget;
-		xwidget->internal()->property_user_data() = info;
+		xwidget->property_user_data() = info;
 	    }
 
 #endif
@@ -554,10 +557,10 @@ void MMaddItems(CONTAINER_P shell,
 #else
 	    if (menushell) {
 		std::cerr << "*** ERROR: CREATE MMToggle IN MENU ***\n";
-		xwidget = new GUI::CheckMenuItem(container, label_string);
+		xwidget = new GUI::CheckMenuItem(container, name, label_string);
 	    }
 	    else
-		xwidget = new GUI::CheckButton(container, label_string);
+		xwidget = new GUI::CheckButton(container, name, label_string);
 #endif
 	    break;
 	}
@@ -568,7 +571,7 @@ void MMaddItems(CONTAINER_P shell,
 	    // Create a CheckItem
 	    assert(subitems == 0);
 
-	    xwidget = new GUI::CheckMenuItem(container, label_string);
+	    xwidget = new GUI::CheckMenuItem(container, name, label_string);
 	    break;
 	}
 #endif
@@ -579,7 +582,7 @@ void MMaddItems(CONTAINER_P shell,
 	    // Create a ToggleButton in a radio group
 	    assert(subitems == 0);
 	    // FIXME: Each container has its own group?
-	    xwidget = new GUI::RadioButton(container, /* group, */ label_string);
+	    xwidget = new GUI::RadioButton(container, name, /* group, */ label_string);
 	    break;
 	}
 #endif
@@ -612,7 +615,7 @@ void MMaddItems(CONTAINER_P shell,
 #ifdef NAG_ME
 #warning What is an ArrowButton?
 #endif
-	    xwidget = new GUI::Button(container, label_string);
+	    xwidget = new GUI::Button(container, name, label_string);
 	    xwidget->set_name(name);
 #endif
 	    break;
@@ -623,7 +626,13 @@ void MMaddItems(CONTAINER_P shell,
 	    // Create a CascadeButton and a new PulldownMenu
 	    assert(subitems != 0);
 
+#if defined(IF_XM)
 	    subMenu = MMcreatePulldownMenu(container, subMenuName.chars(), subitems);
+#else
+	    xsubMenu = MMcreatePulldownMenu(*xshell, subMenuName.chars(), subitems);
+	    subMenu = (MENU_P)xsubMenu->internal();
+#endif
+
 #if defined(IF_MOTIF)
 	    arg = 0;
 	    XtSetArg(args[arg], XmNsubMenuId, subMenu); arg++;
@@ -668,12 +677,12 @@ void MMaddItems(CONTAINER_P shell,
 #else
 	    if (menushell) {
 		GUI::MenuItem *mi;
-		xwidget = mi = new GUI::MenuItem(container, label_string);
+		xwidget = mi = new GUI::MenuItem(container, name, label_string);
 		mi->set_submenu(*subMenu);
 	    }
 	    else {
 		std::cerr << "Cannot attach menu to non-menushell\n";
-		xwidget = new GUI::Button(container, label_string);
+		xwidget = new GUI::Button(container, name, label_string);
 	    }
 #endif
 	    break;
@@ -684,7 +693,12 @@ void MMaddItems(CONTAINER_P shell,
 	    // Create a CascadeButton and a new PulldownMenu
 	    assert(subitems != 0);
 
+#if defined(IF_XM)
 	    subMenu = MMcreateRadioPulldownMenu(container, subMenuName.chars(), subitems);
+#else
+	    xsubMenu = MMcreateRadioPulldownMenu(*xshell, subMenuName.chars(), subitems);
+	    subMenu = (MENU_P)xsubMenu->internal();
+#endif
 
 #if defined(IF_MOTIF)
 	    arg = 0;
@@ -693,12 +707,12 @@ void MMaddItems(CONTAINER_P shell,
 #else
 	    if (menushell) {
 		GUI::MenuItem *mi;
-		widget = mi = new GUI::MenuItem(container, label_string);
+		widget = mi = new GUI::MenuItem(container, name, label_string);
 		mi->set_submenu(*subMenu);
 	    }
 	    else {
 		std::cerr << "Cannot attach menu to non-menushell\n";
-		xwidget = new GUI::Button(container, label_string);
+		xwidget = new GUI::Button(container, name, label_string);
 	    }
 #endif
 	    break;
@@ -709,7 +723,12 @@ void MMaddItems(CONTAINER_P shell,
 	    // Create an option menu
 	    assert(subitems != 0);
 
+#if defined(IF_XM)
 	    subMenu = MMcreatePulldownMenu(container, subMenuName.chars(), subitems);
+#else
+	    xsubMenu = MMcreatePulldownMenu(*xshell, subMenuName.chars(), subitems);
+	    subMenu = (MENU_P)xsubMenu->internal();
+#endif
 
 #if defined(IF_XM)
 	    arg = 0;
@@ -722,7 +741,7 @@ void MMaddItems(CONTAINER_P shell,
 #ifdef NAG_ME
 #warning OptionMenu is deprecated.
 #endif
-	    om->set_menu(*subMenu);
+	    om->set_menu(*xsubMenu);
 #endif
 	    break;
 	}
@@ -989,39 +1008,38 @@ void MMaddItems(GUI::Container *shell, MMDesc items[], bool ignore_seps)
 // Custom menu creation
 //-----------------------------------------------------------------------
 
+#if defined(XM)
+
 // Create pulldown menu from items
-MENU_P MMcreatePulldownMenu(CONTAINER_P parent, NAME_T name, MMDesc items[]
-#if defined(IF_MOTIF)
-			    , ArgList args, Cardinal arg
-#endif
-			    )
+Widget MMcreatePulldownMenu(Widget parent, const char *name, MMDesc items[],
+			    ArgList args, Cardinal arg)
 {
-#if defined(IF_MOTIF)
     Widget menu = verify(XmCreatePulldownMenu(parent, XMST(name), args, arg));
-#else
-    MENU_P menu = new Gtk::Menu();
-    menu->set_name(name);
-#endif
-    MMaddItems(menu,
-#if !defined(IF_XM)
-	       NULL,
-#endif
-	       items);
-#if defined(IF_MOTIF)
+    MMaddItems(menu, items);
     auto_raise(XtParent(menu));
-#endif
 
     return menu;
 }
 
-// Create radio pulldown menu from items
-MENU_P MMcreateRadioPulldownMenu(CONTAINER_P parent, NAME_T name, MMDesc items[]
-#if defined(IF_MOTIF)
-				 , ArgList _args, Cardinal _arg
-#endif
-				 )
+#else
+
+// Create pulldown menu from items
+GUI::Menu *MMcreatePulldownMenu(GUI::Container &parent, cpString name, MMDesc items[])
 {
-#if defined(IF_MOTIF)
+    GUI::Menu *menu = new GUI::Menu(parent, name);
+    MMaddItems(menu, items);
+
+    return menu;
+}
+
+#endif
+
+#if defined(IF_XM)
+
+// Create radio pulldown menu from items
+Widget MMcreateRadioPulldownMenu(Widget parent, const char *name, MMDesc items[],
+				 ArgList _args, Cardinal _arg)
+{
     ArgList args = new Arg[_arg + 10];
     Cardinal arg = 0;
 
@@ -1035,40 +1053,58 @@ MENU_P MMcreateRadioPulldownMenu(CONTAINER_P parent, NAME_T name, MMDesc items[]
     Widget w = MMcreatePulldownMenu(parent, name, items, args, arg);
 
     delete[] args;
-#else
-    MENU_P w = MMcreatePulldownMenu(parent, name, items);
-#endif
     return w;
 }
 
-// Create popup menu from items
-MENU_P MMcreatePopupMenu(Widget parent, NAME_T name, MMDesc items[]
-#if defined(IF_MOTIF)
-			 , ArgList args, Cardinal arg
-#endif
-			 )
-{
-#if defined(IF_MOTIF)
-    Widget menu = verify(XmCreatePopupMenu(parent, XMST(name), args, arg));
 #else
-    MENU_P menu = new Gtk::Menu();
-    menu->set_name(name);
-#ifdef NAG_ME
-#warning How do we specify the "parent" of a popup menu?
+
+// Create radio pulldown menu from items
+GUI::Menu *MMcreateRadioPulldownMenu(GUI::Container &parent, cpString name, MMDesc items[])
+{
+    GUI::Menu *w = MMcreatePulldownMenu(parent, name, items);
+    // FIXME: Set options isHomogeneous, entryClass, radioBehaviour
+    return w;
+}
+
 #endif
-    // pack_item(parent, menu);
-#endif
-    MMaddItems(menu,
-#if !defined(IF_XM)
-	       NULL,
-#endif
-	       items);
-#if defined(IF_MOTIF)
+
+#if defined(IF_XM)
+
+// Create popup menu from items
+Widget MMcreatePopupMenu(Widget parent, const char *name, MMDesc items[],
+			 ArgList args, Cardinal arg)
+{
+    Widget menu = verify(XmCreatePopupMenu(parent, XMST(name), args, arg));
+    MMaddItems(menu, items);
     auto_raise(XtParent(menu));
-#endif
 
     return menu;
 }
+
+#else
+
+// Create popup menu from items
+GUI::Menu *MMcreatePopupMenu(GUI::Container &parent, cpString name, MMDesc items[])
+{
+    GUI::Menu *menu = new GUI::Menu(parent, name);
+    MMaddItems(menu, items);
+    // FIXME auto_raise(XtParent(menu));
+
+    return menu;
+}
+
+// Create popup menu from items
+GUI::Menu *MMcreatePopupMenu(Widget parent, cpString name, MMDesc items[])
+{
+    // FIXME: No parent.
+    GUI::Menu *menu = new GUI::Menu(NULL, name);
+    MMaddItems(menu, items);
+    // FIXME auto_raise(XtParent(menu));
+
+    return menu;
+}
+
+#endif
 
 #if 0
 template <class T>
@@ -1094,11 +1130,7 @@ MENUBAR_P MMcreateMenuBar(CONTAINER_P parent, NAME_T name, MMDesc items[]
 #else
     GUI::MenuBar *bar = new GUI::MenuBar(parent, name);
 #endif
-    MMaddItems(bar,
-#if !defined(IF_XM)
-	       NULL,
-#endif
-	       items);
+    MMaddItems(bar, items);
     XtManageChild(bar);
 
     return bar;

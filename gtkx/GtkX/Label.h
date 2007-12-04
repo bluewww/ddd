@@ -31,12 +31,12 @@
 #ifndef GTKX_LABEL_H
 #define GTKX_LABEL_H
 
-#include <GtkX/Widget1s.h>
+#include <GtkX/Widget2s.h>
 #include <gtkmm/label.h>
 
 namespace GtkX {
 
-    typedef Widget1s<Gtk::Label> Label;
+    typedef Widget2s<Gtk::Label> Label;
 
 }
 

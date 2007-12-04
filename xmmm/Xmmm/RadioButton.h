@@ -43,8 +43,10 @@ namespace Xmmm {
 	sigc::signal<void> signal_toggled_;
 	static void toggled_callback(::Widget widget, XtPointer data);
     public:
-	RadioButton(Xmmm::Container &parent, const Xmmm::String &name);
-	RadioButton(::Widget parent, const Xmmm::String &name); // TEMPORARY
+	RadioButton(Xmmm::Container &parent, const Xmmm::String &name="",
+		    const Xmmm::String &label="");
+	RadioButton(::Widget parent, const Xmmm::String &name="",
+		    const Xmmm::String &label=""); // TEMPORARY
 	~RadioButton(void);
 	::Widget internal(void); // TEMPORARY
 	void set_active(bool);

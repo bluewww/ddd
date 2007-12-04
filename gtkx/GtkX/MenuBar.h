@@ -1,4 +1,4 @@
-// -*- C++ -*-
+ // -*- C++ -*-
 
 // High-level GUI wrapper for Gtkmm.
 
@@ -31,12 +31,20 @@
 #ifndef GTKX_MENUBAR_H
 #define GTKX_MENUBAR_H
 
-#include <GtkX/Widget0.h>
+#include <GtkX/Container.h>
 #include <gtkmm/menubar.h>
 
 namespace GtkX {
 
-    typedef Widget0<Gtk::MenuBar> MenuBar;
+    class MenuBar: public GtkX::Container, public Gtk::MenuBar {
+    public:
+	MenuBar(GtkX::Container &parent, const String &name="");
+	MenuBar(Gtk::Container *parent, const String &name="");
+	~MenuBar(void);
+	Gtk::Widget *internal(void);
+	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
+#include <GtkX/redirect.h>
+    };
 
 }
 

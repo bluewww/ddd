@@ -38,14 +38,19 @@ Button::init_signals(void)
 		  XtPointer(this));
 }
 
-Button::Button(::Widget parent, const Xmmm::String &name)
+Button::Button(::Widget parent, const Xmmm::String &name,
+	       const Xmmm::String &label)
 {
+#ifdef NAG_ME
+#warning set label
+#endif
     button_ = XmCreatePushButton(parent, (char *)name.c(), NULL, 0);
     init_signals();
     postinit();
 }
 
-Button::Button(Xmmm::Container &parent, const Xmmm::String &name)
+Button::Button(Xmmm::Container &parent, const Xmmm::String &name,
+	       const Xmmm::String &label)
 {
     button_ = XmCreatePushButton(parent.xt_container(), (char *)name.c(), NULL, 0);
     init_signals();

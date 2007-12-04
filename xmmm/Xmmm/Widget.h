@@ -25,6 +25,7 @@ namespace Xmmm {
 	operator const char *(void) const {return c();}
 	String operator+(const String &str) const;
 	bool operator==(const String &str) const;
+	bool operator!=(const String &str) const;
 	operator bool(void) const;
     };
 
@@ -39,6 +40,7 @@ namespace Xmmm {
 	void show(void);
 	void hide(void);
 	String get_name(void);
+	void set_name(const String &name);
 	static Widget *lookup(::Widget w);
 	void *&property_user_data(void) {return user_data;}
 	void set_sensitive(bool);
@@ -46,6 +48,8 @@ namespace Xmmm {
 
     extern std::vector<Arg> NO_ARGS;
 }
+
+std::ostream &operator<<(std::ostream &f, const Xmmm::String &s);
 
 extern "C" {
     Boolean

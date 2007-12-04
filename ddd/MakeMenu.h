@@ -41,20 +41,12 @@
 #include <GUI/Container.h>
 #include <GUI/Label.h>
 #include <GUI/Box.h>
+#include <GUI/Image.h>
+#include <GUI/Menu.h>
 #endif
 
 #include "bool.h"
 #include "StringA.h"
-
-#if defined(IF_XM)
-#define NM(a,b) a
-#define IM(a,b) a
-#define NIM(a,b,c) a
-#else
-#define NM(a,b) a, b, NULL
-#define IM(a,b) a, "", b
-#define NIM(a,b,c) a, b, c
-#endif
 
 // Main types
 typedef int MMType;
@@ -111,7 +103,7 @@ struct MMDesc {
 #else
     GUI::String name;	     // Widget name
     GUI::String label_string;
-    XIMAGE_P *image;
+    GUI::ImageHandle *image;
 #endif
     MMType type;	     // Widget type
     XtCallbackRec callback;  // Associated callback
@@ -145,51 +137,49 @@ typedef void (*MMItemProc)(const MMDesc items[], XtPointer closure);
 
 
 // Creators
-MENU_P       MMcreatePulldownMenu        (CONTAINER_P parent, NAME_T name, MMDesc items[]
-#if defined(IF_MOTIF)
-					  , ArgList args = 0, Cardinal arg = 0
-#endif
-					  );
-MENU_P       MMcreateRadioPulldownMenu   (CONTAINER_P parent, NAME_T name, MMDesc items[]
-#if defined(IF_MOTIF)
-					  , ArgList args = 0, Cardinal arg = 0
-#endif
-					  );
-MENU_P       MMcreatePopupMenu           (Widget parent, NAME_T name, MMDesc items[]
-#if defined(IF_MOTIF)
-					  , ArgList args = 0, Cardinal arg = 0
-#endif
-					  );
-MENUBAR_P    MMcreateMenuBar             (CONTAINER_P parent, NAME_T name, MMDesc items[]
-#if defined(IF_MOTIF)
-					  , ArgList args = 0, Cardinal arg = 0
-#endif
-					  );
-CONTAINER_P  MMcreateWorkArea            (DIALOG_P parent, NAME_T name, MMDesc items[]
-#if defined(IF_MOTIF)
-					  , ArgList args = 0, Cardinal arg = 0
-#endif
-					  );
 #if defined(IF_XM)
-BOX_P        MMcreatePanel               (CONTAINER_P parent, NAME_T name, MMDesc items[],
-					  ArgList args = 0, Cardinal arg = 0);
-BOX_P        MMcreateRadioPanel          (CONTAINER_P parent, NAME_T name, MMDesc items[],
-					  ArgList args = 0, Cardinal arg = 0);
-BOX_P        MMcreateButtonPanel         (CONTAINER_P parent, NAME_T name, MMDesc items[],
-					  ArgList args = 0, Cardinal arg = 0);
-//BOX_P        MMcreateVButtonPanel        (CONTAINER_P parent, NAME_T name, MMDesc items[],
-//					  ArgList args = 0, Cardinal arg = 0);
+MENU_P         MMcreatePulldownMenu       (Widget parent, const char *name, MMDesc items[],
+					   ArgList args = 0, Cardinal arg = 0);
+MENU_P         MMcreateRadioPulldownMenu  (Widget parent, const char *name, MMDesc items[],
+					   ArgList args = 0, Cardinal arg = 0);
+MENU_P         MMcreatePopupMenu          (Widget parent, const char *name, MMDesc items[],
+					   ArgList args = 0, Cardinal arg = 0);
+#else
+GUI::Menu     *MMcreatePulldownMenu       (GUI::Container &parent, cpString name, MMDesc items[]);
+GUI::Menu     *MMcreateRadioPulldownMenu  (GUI::Container &parent, cpString name, MMDesc items[]);
+GUI::Menu     *MMcreatePopupMenu          (GUI::Container &parent, cpString name, MMDesc items[]);
+GUI::Menu     *MMcreatePopupMenu          (Widget parent, cpString name, MMDesc items[]);
+#endif
+MENUBAR_P      MMcreateMenuBar            (CONTAINER_P parent, NAME_T name, MMDesc items[]
+#if defined(IF_MOTIF)
+					   , ArgList args = 0, Cardinal arg = 0
+#endif
+					   );
+CONTAINER_P    MMcreateWorkArea           (DIALOG_P parent, NAME_T name, MMDesc items[]
+#if defined(IF_MOTIF)
+					   , ArgList args = 0, Cardinal arg = 0
+#endif
+					   );
+#if defined(IF_XM)
+BOX_P          MMcreatePanel              (Widget parent, const char *name, MMDesc items[],
+					   ArgList args = 0, Cardinal arg = 0);
+BOX_P          MMcreateRadioPanel         (Widget parent, const char *name, MMDesc items[],
+					   ArgList args = 0, Cardinal arg = 0);
+BOX_P          MMcreateButtonPanel        (Widget parent, const char *name, MMDesc items[],
+					   ArgList args = 0, Cardinal arg = 0);
+//BOX_P        MMcreateVButtonPanel       (Widget parent, const char *name, MMDesc items[],
+//					   ArgList args = 0, Cardinal arg = 0);
 #else
 GUI::Container *MMcreatePanel(GUI::Container *parent, cpString name, MMDesc items[]);
 GUI::Container *MMcreateRadioPanel(GUI::Container *parent, cpString name, MMDesc items[]);
 GUI::Container *MMcreateButtonPanel(GUI::Container *parent, cpString name, MMDesc items[]);
 GUI::Container *MMcreateVButtonPanel(CONTAINER_P parent, NAME_T name, MMDesc items[]);
 #endif
-MENU_P       MMcreatePushMenu            (CONTAINER_P parent, NAME_T name, MMDesc items[]
+MENU_P       MMcreatePushMenu             (CONTAINER_P parent, NAME_T name, MMDesc items[]
 #if defined(IF_MOTIF)
-					  , ArgList args = 0, Cardinal arg = 0
+					   , ArgList args = 0, Cardinal arg = 0
 #endif
-					  );
+					   );
 
 // Align panel items along their labels
 void MMadjustPanel(const MMDesc items[], Dimension space = 15);
@@ -253,26 +243,26 @@ inline void manage_child(Widget w, bool state)
 }
 
 #if defined(IF_XM)
-#define MENTRY(n,s,t,c,sub,w) { NM(n,s), t, c, sub, (Widget *)w, 0, 0}
-#define IMENTRY(n,i,t,c,sub,w) { IM(n,i), t, c, sub, (Widget *)w, 0, 0}
-#define NIMENTRY(n,s,i,t,c,sub,w) { NIM(n,s,i), t, c, sub, (Widget *)w, 0, 0}
-#define MENTRYX(n,s,t,c,sub,w) { NM(n,s), t, c, sub, (Widget *)w, 0, 0}
-#define IMENTRYX(n,i,t,c,sub,w) { IM(n,i), t, c, sub, (Widget *)w, 0, 0}
-#define NIMENTRYX(n,s,i,t,c,sub,w) { NIM(n,s,i), t, c, sub, (Widget *)w, 0, 0}
+#define MENTRY(n,s,t,c,sub,w) { n, t, c, sub, (Widget *)w, 0, 0}
+#define IMENTRY(n,i,t,c,sub,w) { n, t, c, sub, (Widget *)w, 0, 0}
+#define NIMENTRY(n,s,i,t,c,sub,w) { n, t, c, sub, (Widget *)w, 0, 0}
+#define MENTRYX(n,s,t,c,sub,w) { n, t, c, sub, (Widget *)w, 0, 0}
+#define IMENTRYX(n,i,t,c,sub,w) { n, t, c, sub, (Widget *)w, 0, 0}
+#define NIMENTRYX(n,s,i,t,c,sub,w) { n, t, c, sub, (Widget *)w, 0, 0}
 #elif defined(IF_XMMM)
-#define MENTRY(n,s,t,c,sub,w) { NM(n,s), t, c, sub, w, 0, 0, 0, 0}
-#define IMENTRY(n,i,t,c,sub,w) { IM(n,i), t, c, sub, w, 0, 0, 0, 0}
-#define NIMENTRY(n,s,i,t,c,sub,w) { NIM(n,s,i), t, c, sub, w, 0, 0, 0, 0}
-#define MENTRYX(n,s,t,c,sub,w) { NM(n,s), t, c, sub, 0, 0, 0, (Xmmm::Widget **)w, 0}
-#define IMENTRYX(n,i,t,c,sub,w) { IM(n,i), t, c, sub, 0, 0, 0, (Xmmm::Widget **)w, 0}
-#define NIMENTRYX(n,s,i,t,c,sub,w) { NIM(n,s,i), t, c, sub, 0, 0, 0, (Xmmm::Widget **)w, 0}
+#define MENTRY(n,s,t,c,sub,w) { n, s, NULL, t, c, sub, w, 0, 0, 0, 0}
+#define IMENTRY(n,i,t,c,sub,w) { n, "", i, t, c, sub, w, 0, 0, 0, 0}
+#define NIMENTRY(n,s,i,t,c,sub,w) { n, s, i, t, c, sub, w, 0, 0, 0, 0}
+#define MENTRYX(n,s,t,c,sub,w) { n, s, NULL, t, c, sub, 0, 0, 0, (Xmmm::Widget **)w, 0}
+#define IMENTRYX(n,i,t,c,sub,w) { n, "", i, t, c, sub, 0, 0, 0, (Xmmm::Widget **)w, 0}
+#define NIMENTRYX(n,s,i,t,c,sub,w) { n, s, i, t, c, sub, 0, 0, 0, (Xmmm::Widget **)w, 0}
 #else
-#define MENTRY(n,s,t,c,sub,w) { NM(n,s), t, c, sub, (Widget *)w, 0, 0, 0}
-#define IMENTRY(n,i,t,c,sub,w) { IM(n,i), t, c, sub, (Widget *)w, 0, 0, 0}
-#define NIMENTRY(n,s,i,t,c,sub,w) { NIM(n,s,i), t, c, sub, (Widget *)w, 0, 0, 0}
-#define MENTRYX(n,s,t,c,sub,w) { NM(n,s), t, c, sub, 0, 0, 0, (GUI::Widget **)w, 0, 0}
-#define IMENTRYX(n,i,t,c,sub,w) { IM(n,i), t, c, sub, 0, 0, 0, (GUI::Widget **)w, 0, 0}
-#define NIMENTRYX(n,s,i,t,c,sub,w) { NIM(n,s,i), t, c, sub, 0, 0, 0, (GUI::Widget **)w, 0, 0}
+#define MENTRY(n,s,t,c,sub,w) { n, s, NULL, t, c, sub, (Widget *)w, 0, 0, 0}
+#define IMENTRY(n,i,t,c,sub,w) { n, "", i, t, c, sub, (Widget *)w, 0, 0, 0}
+#define NIMENTRY(n,s,i,t,c,sub,w) { n, s, i, t, c, sub, (Widget *)w, 0, 0, 0}
+#define MENTRYX(n,s,t,c,sub,w) { n, s, NULL, t, c, sub, 0, 0, 0, (GUI::Widget **)w, 0, 0}
+#define IMENTRYX(n,i,t,c,sub,w) { n, "", i, t, c, sub, 0, 0, 0, (GUI::Widget **)w, 0, 0}
+#define NIMENTRYX(n,s,i,t,c,sub,w) { n, s, i, t, c, sub, 0, 0, 0, (GUI::Widget **)w, 0, 0}
 #endif
 
 

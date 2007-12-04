@@ -61,6 +61,12 @@ Xmmm::String::operator==(const Xmmm::String &str) const
     return (s() == str.s());
 }
 
+bool
+Xmmm::String::operator!=(const Xmmm::String &str) const
+{
+    return (s() != str.s());
+}
+
 Xmmm::String::operator bool(void) const
 {
     return (s_.length() > 0);
@@ -200,6 +206,16 @@ Xmmm::Widget::get_name(void)
     return String(XtName(internal()));
 }
 
+void
+Xmmm::Widget::set_name(const String &name)
+{
+    Xmmm::String old_name = String(XtName(internal()));
+    if (name != old_name) {
+	std::cerr << "WARNING: Cannot change widget name from "
+		  << old_name << " to " << name << "\n";
+    }
+}
+
 struct Widget_Hash {
     size_t operator()( ::Widget const &w) const {
 	return (size_t)w;
@@ -241,3 +257,10 @@ Xmmm::Widget::set_sensitive(bool state)
     }
 #endif
 }
+
+std::ostream &operator<<(std::ostream &f, const Xmmm::String &s)
+{
+    return (f << s.s());
+}
+
+

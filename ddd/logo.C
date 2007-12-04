@@ -745,11 +745,11 @@ static void install_icon(Widget w,
 }
 
 static void install_button_icon(Widget w,
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 				const _XtString name,
-#else // NOT IF_MOTIF
-				XIMAGE_P *name,
-#endif // IF_MOTIF
+#else
+				GUI::ImageHandle *name,
+#endif
 				const char **xpm_data, 
 				const char **xpm_xx_data,
 				const unsigned char *xbm_data,
@@ -1049,11 +1049,11 @@ void install_icons(Widget shell,
 // Set pixmap and label
 //-----------------------------------------------------------------------
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 void set_label(Widget w, const MString& new_label, const char *image)
-#else // NOT IF_MOTIF
-void set_label(Widget w, const MString& new_label, XIMAGE_P *image)
-#endif // IF_MOTIF
+#else
+void set_label(Widget w, const MString& new_label, GUI::ImageHandle *image)
+#endif
 {
     if (w == 0)
 	return;
@@ -1124,20 +1124,6 @@ void set_label(Widget w, const MString& new_label, XIMAGE_P *image)
     XmStringFree(old_label);
 #else // NOT IF_MOTIF
     Gtk::Bin *bin = dynamic_cast<Gtk::Bin *>(w);
-#if 0
-    if (bin && bin->get_child()) {
-	Gtk::Label *label = dynamic_cast<Gtk::Label *>(bin->get_child());
-	if (label) {
-	    label->set_text(new_label.xmstring());
-	}
-	else {
-	    std::cerr << "Cannot set label for non-label item\n";
-	}
-    }
-    else {
-	std::cerr << "Cannot set label for item\n";
-    }
-#else
     if (bin) {
 	Gtk::Widget *child = bin->get_child();
 	Gtk::Image *old_img = child?dynamic_cast<Gtk::Image *>(child):NULL;
@@ -1168,7 +1154,6 @@ void set_label(Widget w, const MString& new_label, XIMAGE_P *image)
     else {
 	std::cerr << "ERROR: Set label on something not a Gtk::Bin\n";
     }
-#endif
 #endif // IF_MOTIF
 }
 

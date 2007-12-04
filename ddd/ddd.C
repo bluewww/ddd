@@ -5447,11 +5447,11 @@ static void real_update_options(bool noupd)
 
     // Set `find' label
     Widget find_label_ref = 0;
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     const char *icon = 0;
-#else // NOT IF_MOTIF
-    XIMAGE_P *icon = 0;
-#endif // IF_MOTIF
+#else
+    GUI::ImageHandle *icon = 0;
+#endif
     switch (current_find_direction())
     {
     case SourceView::forward:
@@ -5465,13 +5465,13 @@ static void real_update_options(bool noupd)
 	break;
     }
     XmString label;
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XtVaGetValues(find_label_ref, XmNlabelString, &label, XtNIL);
     MString new_label(label, true);
     XmStringFree(label);
-#else // NOT IF_MOTIF
+#else
     MString new_label = get_label(find_label_ref);
-#endif // IF_MOTIF
+#endif
 
     set_label(arg_cmd_area[ArgItems::Find].widget, new_label, icon);
 
@@ -6459,13 +6459,14 @@ static int add_panel(GUI::Notebook *parent,
     // Add panel
 #ifdef IF_XM
     Widget panel = MMcreatePanel(form, "panel", items);
+    XtManageChild(panel);
 #else
     GUI::Widget *panel = MMcreatePanel(form, "panel", items);
+    panel->show();
 #endif
     MMadjustPanel(items);
     MMaddCallbacks(items);
     MMaddHelpCallback(items, PTR_FUN(ImmediateHelpCB));
-    XtManageChild(panel);
     register_menu_shell(items);
 
     // Fetch panel geometry

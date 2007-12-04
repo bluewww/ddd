@@ -57,15 +57,6 @@ Widget0<T>::Widget0(Gtk::Container *parent, const GtkX::String &name)
     postinit();
 }
 
-// TEMPORARY
-template <class T>
-Widget0<T>::Widget0(Gtk::Container *parent)
-{
-    T::set_name("Noname");
-    parent->add(*internal());
-    postinit();
-}
-
 template <class T>
 Widget0<T>::~Widget0(void)
 {
@@ -82,7 +73,6 @@ Widget0<T>::internal(void)
 #include <gtkmm/scale.h>
 #include <gtkmm/combobox.h>
 #include <gtkmm/entry.h>
-#include <gtkmm/menubar.h>
 #include <gtkmm/separatormenuitem.h>
 #include <gtkmm/spinbutton.h>
 #include <gtkmm/comboboxentrytext.h>
@@ -91,7 +81,6 @@ template class Widget0<Gtk::OptionMenu>;
 template class Widget0<Gtk::HScale>;
 template class Widget0<Gtk::ComboBox>;
 template class Widget0<Gtk::Entry>;
-template class Widget0<Gtk::MenuBar>;
 template class Widget0<Gtk::SeparatorMenuItem>;
 template class Widget0<Gtk::SpinButton>;
 template class Widget0<Gtk::ComboBoxEntryText>;

@@ -40,9 +40,8 @@ namespace GtkX {
     template <class T>
     class Widget0: public Widget, public T {
     public:
-	Widget0(Container &parent, const String &name);
-	Widget0(Gtk::Container *parent, const String &name);
-	Widget0(Gtk::Container *parent);
+	Widget0(Container &parent, const String &name="");
+	Widget0(Gtk::Container *parent, const String &name="");
 	~Widget0(void);
 	Gtk::Widget *internal(void);
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.

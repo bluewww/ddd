@@ -43,8 +43,10 @@ namespace Xmmm {
     class RadioBox: public Container {
 	::Widget box_;
     public:
-	RadioBox(Xmmm::Container &parent, const Xmmm::String &name, Xmmm::Orientation orientation);
-	RadioBox(::Widget parent, const Xmmm::String &name, Xmmm::Orientation orientation); // TEMPORARY
+	RadioBox(Xmmm::Container &parent, const Xmmm::String &name="",
+		 Xmmm::Orientation orientation=ORIENTATION_HORIZONTAL);
+	RadioBox(::Widget parent, const Xmmm::String &name="",
+		 Xmmm::Orientation orientation=ORIENTATION_HORIZONTAL); // TEMPORARY
 	~RadioBox(void);
 	::Widget internal(void); // TEMPORARY
     };

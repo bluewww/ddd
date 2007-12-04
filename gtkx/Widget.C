@@ -111,3 +111,10 @@ Widget::postinit(void)
     internal()->set_data(gtkx_super_quark, this);
 }
 
+PropertyProxy<void *>
+Widget::property_user_data(void)
+{
+    // N.B. This must be consistent with Gtk.
+    return PropertyProxy<void *>(this, "user-data");
+}
+

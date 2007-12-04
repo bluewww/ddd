@@ -31,12 +31,12 @@
 #ifndef GTKX_RADIOBUTTON_H
 #define GTKX_RADIOBUTTON_H
 
-#include <GtkX/Widget1s.h>
+#include <GtkX/Widget2s.h>
 #include <gtkmm/radiobutton.h>
 
 namespace GtkX {
 
-    typedef Widget1s<Gtk::RadioButton> RadioButton;
+    typedef Widget2s<Gtk::RadioButton> RadioButton;
 
 }
 

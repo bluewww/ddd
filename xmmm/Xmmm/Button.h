@@ -43,8 +43,10 @@ namespace Xmmm {
 	sigc::signal<void> signal_clicked_;
 	static void activate_callback(::Widget widget, XtPointer data);
     public:
-	Button(Xmmm::Container &parent, const Xmmm::String &name);
-	Button(::Widget parent, const Xmmm::String &name); // TEMPORARY
+	Button(Xmmm::Container &parent, const Xmmm::String &name="",
+	       const Xmmm::String &label="");
+	Button(::Widget parent, const Xmmm::String &name="",
+	       const Xmmm::String &label=""); // TEMPORARY
 	~Button(void);
 	::Widget internal(void); // TEMPORARY
 	sigc::signal<void> &signal_clicked(void);

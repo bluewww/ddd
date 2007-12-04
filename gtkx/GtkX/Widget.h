@@ -1,3 +1,5 @@
+// -*- C++ -*-
+
 #ifndef GTKX_WIDGET_H
 #define GTKX_WIDGET_H
 
@@ -12,9 +14,14 @@ namespace GtkX {
 
     extern Glib::Quark gtkx_super_quark;
 
+    class Widget;
+
     template <class T>
     class PropertyProxy: public Glib::PropertyProxy<T> {
+	Widget *w;
+	const char *name;
     public:
+	PropertyProxy(Widget *w0, const char *name0);
 	PropertyProxy &operator=(T);
     };
 
@@ -49,6 +56,19 @@ namespace GtkX {
 	void set_sensitive(bool b);
 	PropertyProxy<void *> property_user_data(void);
     };
+
+    template <class T>
+    PropertyProxy<T>::PropertyProxy(Widget *w0, const char *name0):
+	Glib::PropertyProxy<T>(w0->internal(), name0)
+    {
+    }
+
+    template <class T>
+    PropertyProxy<T> &PropertyProxy<T>::operator=(T t)
+    {
+	Glib::PropertyProxy<T>::operator=(t);
+	return *this;
+    }
 
 }
 

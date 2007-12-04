@@ -36,9 +36,9 @@ namespace GtkX {
 	sigc::signal<bool, GdkEvent *> signal_delete_;
 	bool delete_callback(GdkEventAny *data);
     public:
-	Window(Gtk::Window *parent, const String &name,
+	Window(Gtk::Window *parent, const String &name="",
 	       int argc=0, char **argv=NULL); // TEMPORARY
-	Window(const String &name);
+	Window(const String &name="");
 	Gtk::Widget *internal(void);
 	Gtk::Container *gtk_container(void);
 	~Window(void);

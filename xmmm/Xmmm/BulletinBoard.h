@@ -37,9 +37,9 @@ namespace Xmmm {
     class BulletinBoard: public Container {
 	::Widget bb_;
     public:
-	BulletinBoard(Xmmm::Widget parent, const Xmmm::String &name,
+	BulletinBoard(Xmmm::Widget parent, const Xmmm::String &name="",
 		      std::vector<Arg> &args=NO_ARGS);
-	BulletinBoard(::Widget parent, const Xmmm::String &name,
+	BulletinBoard(::Widget parent, const Xmmm::String &name="",
 		      std::vector<Arg> &args=NO_ARGS); // TEMPORARY
 	~BulletinBoard(void);
 	::Widget internal(void); // TEMPORARY

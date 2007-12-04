@@ -29,13 +29,14 @@
 #ifndef _DDD_logo_h
 #define _DDD_logo_h
 
-#ifdef IF_MOTIF
-
+#if defined(IF_MOTIF)
 #include <X11/Intrinsic.h>
+#else
+#endif
 
-#else // NOT IF_MOTIF
-
-#endif // IF_MOTIF
+#if !defined(IF_XM)
+#include <GUI/Image.h>
+#endif
 
 #include "strclass.h"
 #include "version.h"
@@ -65,20 +66,20 @@ inline void install_icons(Widget shell,
 }
 
 // Set label of W to NEW_LABEL (and its pixmap to IMAGE_NAME, if given)
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 extern void set_label(Widget w, const MString& new_label, 
 		      const char *image_name = 0);
-#else // NOT IF_MOTIF
+#else
 extern void set_label(Widget w, const MString& new_label, 
-		      XIMAGE_P *image_name = 0);
-#endif // IF_MOTIF
+		      GUI::ImageHandle *image_name = 0);
+#endif
 
-#ifndef IF_MOTIF
+#if !defined(IF_MOTIF)
 extern MString get_label(Widget w);
-#endif // IF_MOTIF
+#endif
 
 // Icon names
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 #define DDD_ICON           ddd_NAME
 #define BREAK_AT_ICON      "break_at"
 #define CLEAR_AT_ICON      "clear_at"
@@ -106,35 +107,35 @@ extern MString get_label(Widget w);
 #define UNDISPLAY_ICON     "undisplay"
 #define UNWATCH_ICON       "unwatch"
 #define WATCH_ICON         "watch"
-#else // NOT IF_MOTIF
-extern XIMAGE_P DDD_ICON[1];
-extern XIMAGE_P BREAK_AT_ICON[4];
-extern XIMAGE_P CLEAR_AT_ICON[4];
-extern XIMAGE_P CLUSTER_ICON[4];
-extern XIMAGE_P DELETE_ICON[4];
-extern XIMAGE_P DISABLE_ICON[4];
-extern XIMAGE_P DISPREF_ICON[4];
-extern XIMAGE_P DISPLAY_ICON[4];
-extern XIMAGE_P ENABLE_ICON[4];
-extern XIMAGE_P FIND_BACKWARD_ICON[4];
-extern XIMAGE_P FIND_FORWARD_ICON[4];
-extern XIMAGE_P HIDE_ICON[4];
-extern XIMAGE_P LOOKUP_ICON[4];
-extern XIMAGE_P MAKETEMP_ICON[4];
-extern XIMAGE_P NEW_BREAK_ICON[4];
-extern XIMAGE_P NEW_DISPLAY_ICON[4];
-extern XIMAGE_P NEW_WATCH_ICON[4];
-extern XIMAGE_P PLOT_ICON[4];
-extern XIMAGE_P PRINT_ICON[4];
-extern XIMAGE_P PROPERTIES_ICON[4];
-extern XIMAGE_P ROTATE_ICON[4];
-extern XIMAGE_P SET_ICON[4];
-extern XIMAGE_P SHOW_ICON[4];
-extern XIMAGE_P UNCLUSTER_ICON[4];
-extern XIMAGE_P UNDISPLAY_ICON[4];
-extern XIMAGE_P UNWATCH_ICON[4];
-extern XIMAGE_P WATCH_ICON[4];
-#endif // IF_MOTIF
+#else
+extern GUI::ImageHandle DDD_ICON[1];
+extern GUI::ImageHandle BREAK_AT_ICON[4];
+extern GUI::ImageHandle CLEAR_AT_ICON[4];
+extern GUI::ImageHandle CLUSTER_ICON[4];
+extern GUI::ImageHandle DELETE_ICON[4];
+extern GUI::ImageHandle DISABLE_ICON[4];
+extern GUI::ImageHandle DISPREF_ICON[4];
+extern GUI::ImageHandle DISPLAY_ICON[4];
+extern GUI::ImageHandle ENABLE_ICON[4];
+extern GUI::ImageHandle FIND_BACKWARD_ICON[4];
+extern GUI::ImageHandle FIND_FORWARD_ICON[4];
+extern GUI::ImageHandle HIDE_ICON[4];
+extern GUI::ImageHandle LOOKUP_ICON[4];
+extern GUI::ImageHandle MAKETEMP_ICON[4];
+extern GUI::ImageHandle NEW_BREAK_ICON[4];
+extern GUI::ImageHandle NEW_DISPLAY_ICON[4];
+extern GUI::ImageHandle NEW_WATCH_ICON[4];
+extern GUI::ImageHandle PLOT_ICON[4];
+extern GUI::ImageHandle PRINT_ICON[4];
+extern GUI::ImageHandle PROPERTIES_ICON[4];
+extern GUI::ImageHandle ROTATE_ICON[4];
+extern GUI::ImageHandle SET_ICON[4];
+extern GUI::ImageHandle SHOW_ICON[4];
+extern GUI::ImageHandle UNCLUSTER_ICON[4];
+extern GUI::ImageHandle UNDISPLAY_ICON[4];
+extern GUI::ImageHandle UNWATCH_ICON[4];
+extern GUI::ImageHandle WATCH_ICON[4];
+#endif
 
 #endif // _DDD_logo_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

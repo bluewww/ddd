@@ -1,4 +1,4 @@
-// -*- C++ -*-
+ // -*- C++ -*-
 
 // High-level GUI wrapper for Gtkmm.
 
@@ -28,49 +28,28 @@
 // A brief look at QT indicates that this will be required there as
 // well.
 
-#ifndef GTKX_RADIOBOX_H
-#define GTKX_RADIOBOX_H
-
-#include <gtkmm/container.h>
-#include <gtkmm/box.h>
-#include <gtkmm/radiobuttongroup.h>
+#ifndef GTKX_WIDGET2S_H
+#define GTKX_WIDGET2S_H
 
 #include <GtkX/Container.h>
 
+// Template for a widget taking two string constructor arguments.
+
 namespace GtkX {
 
-    enum Orientation
-    {
-	ORIENTATION_HORIZONTAL,
-	ORIENTATION_VERTICAL
-    };
-
-
-    // FIXME: Tried to derive from Gtk::Bin, but as Bin is an
-    // "abstract" base class we would need to implement more method.
-    class RadioBox: public Gtk::VBox, public Container {
-	Gtk::Box *box_;
-	Gtk::RadioButtonGroup group_;
+    template <class T>
+    class Widget2s: public Widget, public T {
     public:
-	void create_box(Orientation orientation=ORIENTATION_VERTICAL);
-	RadioBox(GtkX::Container &parent, const String &name="",
-		 Orientation orientation=ORIENTATION_VERTICAL,
-		 PackOptions options=PACK_SHRINK,
-		 int padding=0);
-	~RadioBox(void);
+	Widget2s(Container &parent, const String &name="",
+		 const String &label="");
+	Widget2s(Gtk::Container *parent, const String &name="",
+		 const String &label="");
+	~Widget2s(void);
 	Gtk::Widget *internal(void);
-	Gtk::Container *gtk_container(void);
-	void add_child(GtkX::Widget &child,
-		       PackOptions options=PACK_SHRINK,
-		       int padding=0);
-	void on_add(Gtk::Widget *child);
-	void pack_start(Gtk::Widget &child,
-			PackOptions options=PACK_SHRINK,
-			int padding=0);
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
 #include <GtkX/redirect.h>
     };
 
 }
 
-#endif // GTKX_RADIOBOX_H
+#endif // GTKX_WIDGET2S_H

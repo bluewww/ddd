@@ -31,12 +31,12 @@
 #ifndef GTKX_CHECKMENUITEM_H
 #define GTKX_CHECKMENUITEM_H
 
-#include <GtkX/Widget1s.h>
+#include <GtkX/Widget2s.h>
 #include <gtkmm/checkmenuitem.h>
 
 namespace GtkX {
 
-    typedef Widget1s<Gtk::CheckMenuItem> CheckMenuItem;
+    typedef Widget2s<Gtk::CheckMenuItem> CheckMenuItem;
 
 }
 

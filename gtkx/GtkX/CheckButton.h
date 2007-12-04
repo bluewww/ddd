@@ -31,12 +31,12 @@
 #ifndef GTKX_CHECKBUTTON_H
 #define GTKX_CHECKBUTTON_H
 
-#include <GtkX/Widget1s.h>
+#include <GtkX/Widget2s.h>
 #include <gtkmm/checkbutton.h>
 
 namespace GtkX {
 
-    typedef Widget1s<Gtk::CheckButton> CheckButton;
+    typedef Widget2s<Gtk::CheckButton> CheckButton;
 
 }
 

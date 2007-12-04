@@ -1,5 +1,3 @@
-// -*- C++ -*-
-
 // High-level GUI wrapper for Gtkmm.
 
 // Copyright (C) 2007 Peter Wainwright <prw@ceiriog.eclipse.co.uk>
@@ -25,19 +23,43 @@
 // Unfortunately Motif widgets require parent and name arguments to
 // the constructor, unlike the Gtk ones.  Motif (Xt) widgets cannot be
 // reparented.  Therefore we need a constructor with extra arguments.
-// A brief look at QT indicates that this will be required there as
-// well.
 
-#ifndef GTKX_MENUITEM_H
-#define GTKX_MENUITEM_H
+// ***************************************************************************
 
-#include <GtkX/Widget2s.h>
-#include <gtkmm/menuitem.h>
+#include <GtkX/MenuBar.h>
 
-namespace GtkX {
+using namespace GtkX;
 
-    typedef Widget2s<Gtk::MenuItem> MenuItem;
-
+MenuBar::MenuBar(GtkX::Container &parent, const GtkX::String &name)
+{
+    set_name(name.s());
+    // We cannot use this:
+    // parent.gtk_container()->add(*this);
+    // If we always had parent.gtk_container() == &parent we could just
+    // override the on_add() method to do what we want.  However,
+    // sometimes parent.gtk_container() is a standard Gtk widget.
+    // In such a case (e.g. RadioBox) we need to override add_child()
+    // instead.
+    parent.add_child(*this);
+    postinit();
 }
 
-#endif // GTKX_MENUITEM_H
+// TEMPORARY
+MenuBar::MenuBar(Gtk::Container *parent, const GtkX::String &name)
+{
+    set_name(name.s());
+    parent->add(*internal());
+    postinit();
+}
+
+MenuBar::~MenuBar(void)
+{
+}
+
+Gtk::Widget *
+MenuBar::internal(void)
+{
+    return this;
+}
+
+

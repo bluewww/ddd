@@ -37,9 +37,9 @@ namespace Xmmm {
     class VBox: public Container {
 	::Widget rc_;
     public:
-	void init(::Widget parent, const Xmmm::String &name);
-	VBox(Xmmm::Widget &parent, const Xmmm::String &name);
-	VBox(::Widget parent, const Xmmm::String &name); // TEMPORARY
+	void init(::Widget parent, const Xmmm::String &name="");
+	VBox(Xmmm::Widget &parent, const Xmmm::String &name="");
+	VBox(::Widget parent, const Xmmm::String &name=""); // TEMPORARY
 	~VBox(void);
 	::Widget internal(void); // TEMPORARY
 	operator ::Widget(void); // TEMPORARY
@@ -48,9 +48,9 @@ namespace Xmmm {
     class HBox: public Container {
 	::Widget rc_;
     public:
-	void init(::Widget parent, const Xmmm::String &name);
-	HBox(Xmmm::Widget &parent, const Xmmm::String &name);
-	HBox(::Widget parent, const Xmmm::String &name); // TEMPORARY
+	void init(::Widget parent, const Xmmm::String &name="");
+	HBox(Xmmm::Widget &parent, const Xmmm::String &name="");
+	HBox(::Widget parent, const Xmmm::String &name=""); // TEMPORARY
 	~HBox(void);
 	::Widget internal(void); // TEMPORARY
     };

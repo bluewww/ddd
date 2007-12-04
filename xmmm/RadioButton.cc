@@ -36,14 +36,16 @@ RadioButton::init_signals(void)
 		  XtPointer(this));
 }
 
-RadioButton::RadioButton(::Widget parent, const Xmmm::String &name)
+RadioButton::RadioButton(::Widget parent, const Xmmm::String &name,
+			 const Xmmm::String &label)
 {
     button_ = XmCreateToggleButton(parent, (char *)name.c(), NULL, 0);
     init_signals();
     postinit();
 }
 
-RadioButton::RadioButton(Xmmm::Container &parent, const Xmmm::String &name)
+RadioButton::RadioButton(Xmmm::Container &parent, const Xmmm::String &name,
+			 const Xmmm::String &label)
 {
     button_ = XmCreateToggleButton(parent.xt_container(), (char *)name.c(), NULL, 0);
     init_signals();

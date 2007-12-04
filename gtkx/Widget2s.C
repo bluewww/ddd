@@ -25,13 +25,22 @@
 // reparented.  Therefore we need a constructor with extra arguments.
 
 #include <GtkX/Widget.h>
-#include <GtkX/Widget1s.h>
+#include <GtkX/Widget2s.h>
 
 using namespace GtkX;
 
+static const GtkX::String mklabel(const GtkX::String &name,
+				  const GtkX::String &label)
+{
+    if (label.s().length() > 0)
+	return label;
+    return name;
+}
+
 template <class T>
-Widget1s<T>::Widget1s(GtkX::Container &parent, const GtkX::String &name):
-    T(name.s())
+Widget2s<T>::Widget2s(GtkX::Container &parent, const GtkX::String &name,
+		      const GtkX::String &label):
+    T(label.s())
 {
     T::set_name(name.s());
     // We cannot use this:
@@ -47,8 +56,9 @@ Widget1s<T>::Widget1s(GtkX::Container &parent, const GtkX::String &name):
 
 // TEMPORARY
 template <class T>
-Widget1s<T>::Widget1s(Gtk::Container *parent, const GtkX::String &name):
-    T(name.s())
+Widget2s<T>::Widget2s(Gtk::Container *parent, const GtkX::String &name,
+		      const GtkX::String &label):
+    T(label.s())
 {
     T::set_name(name.s());
     parent->add(*internal());
@@ -56,13 +66,13 @@ Widget1s<T>::Widget1s(Gtk::Container *parent, const GtkX::String &name):
 }
 
 template <class T>
-Widget1s<T>::~Widget1s(void)
+Widget2s<T>::~Widget2s(void)
 {
 }
 
 template <class T>
 Gtk::Widget *
-Widget1s<T>::internal(void)
+Widget2s<T>::internal(void)
 {
     return this;
 }
@@ -74,9 +84,9 @@ Widget1s<T>::internal(void)
 #include <gtkmm/checkbutton.h>
 #include <gtkmm/label.h>
 
-template class Widget1s<Gtk::RadioButton>;
-template class Widget1s<Gtk::Button>;
-template class Widget1s<Gtk::MenuItem>;
-template class Widget1s<Gtk::CheckMenuItem>;
-template class Widget1s<Gtk::CheckButton>;
-template class Widget1s<Gtk::Label>;
+template class Widget2s<Gtk::RadioButton>;
+template class Widget2s<Gtk::Button>;
+template class Widget2s<Gtk::MenuItem>;
+template class Widget2s<Gtk::CheckMenuItem>;
+template class Widget2s<Gtk::CheckButton>;
+template class Widget2s<Gtk::Label>;
