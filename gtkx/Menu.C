@@ -32,7 +32,7 @@
 
 using namespace GtkX;
 
-Menu::Menu(GtkX::Container &parent, const GtkX::String &name)
+Menu::Menu(GtkX::Widget &parent, const GtkX::String &name)
 {
     set_name(name.s());
     // parent.add_child(*this);
@@ -40,7 +40,7 @@ Menu::Menu(GtkX::Container &parent, const GtkX::String &name)
 }
 
 // TEMPORARY
-Menu::Menu(Gtk::Container *parent, const GtkX::String &name)
+Menu::Menu(Gtk::Widget *parent, const GtkX::String &name)
 {
     set_name(name.s());
     // parent->add(*internal());

@@ -3570,7 +3570,7 @@ static void InstallBitmapAsImage(unsigned char *bits, int width, int height,
 #if defined(IF_MOTIF)
 				 const char *name
 #else
-				 XIMAGE_P *name
+				 XIMAGE_P &name
 #endif
 				 )
 {
@@ -3909,6 +3909,7 @@ void SourceView::create_shells()
     register_dialog_w = 
 	new GUI::SelectionDialog(*parent, "register_dialog", register_headers);
 #endif
+    Delay::register_shell1(register_dialog_w);
 #endif
 
 #if defined(IF_XM)
@@ -6385,7 +6386,7 @@ void SourceView::NewWatchpointCB(CB_ALIST_1(Widget w))
 	Delay::register_shell(dialog);
 #else
 	dialog = new GUI::Dialog(find_shell(w), GUI::String("new_watchpoint_dialog"));
-#warning register_shell not implemented
+	Delay::register_shell1(dialog);
 #endif
 
 #if defined(IF_MOTIF)

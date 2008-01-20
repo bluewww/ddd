@@ -1203,7 +1203,14 @@ static void _DDDRestartCB(CB_ALIST_12(Widget w, XtP(long) client_data))
     set_session(RESTART_SESSION);
 
     unsigned long flags = (unsigned long)client_data;
-    DDDSaveOptionsCB(CB_ARGS_12(w, flags));
+#if defined(IF_XM)
+    DDDSaveOptionsCB(w, flags, NULL);
+#else
+#ifdef NAG_ME
+#warning Pass parent pointer for dialog constructor
+#endif
+    DDDSaveOptionsCB(NULL, flags);
+#endif
 
     set_restart_session(app_data.session);
     register_environ();

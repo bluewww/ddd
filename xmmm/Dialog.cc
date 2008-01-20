@@ -61,7 +61,8 @@ Dialog::init_signals(void)
 		  XtPointer(0));
 }
 
-Dialog::Dialog(::Widget parent, const Xmmm::String &name)
+void
+Dialog::init(::Widget parent, const Xmmm::String &name)
 {
     Arg args[10];
     int nargs;
@@ -84,6 +85,16 @@ Dialog::Dialog(::Widget parent, const Xmmm::String &name)
 
     init_signals();
     postinit();
+}
+
+Dialog::Dialog(::Widget parent, const Xmmm::String &name)
+{
+    init(parent, name);
+}
+
+Dialog::Dialog(Xmmm::Widget &parent, const Xmmm::String &name)
+{
+    init(parent.internal(), name);
 }
 
 Dialog::~Dialog(void)

@@ -427,11 +427,12 @@ void MMaddItems(CONTAINER_P shell,
 	GUI::Menu *xsubMenu = NULL;
 #endif
 #if defined(IF_XM)
-	BOX_P box = NULL;
+	Widget box = NULL;
+	Widget panel = 0;
 #else
 	GUI::Container *box = NULL;
+	GUI::Container *panel = 0;
 #endif
-	BOX_P panel   = 0;
 	bool flat = false;
 	label = 0;
 	widget = 0;
@@ -777,7 +778,6 @@ void MMaddItems(CONTAINER_P shell,
 	    xwidget = box = new GUI::HBox(*xshell, panelName.chars());
 
 	    xlabel = new GUI::Label(*box, label_string);
-	    xlabel->set_alignment(Gtk::ALIGN_LEFT);
 	    if (have_label)
 		xlabel->show();
 #endif
@@ -824,7 +824,7 @@ void MMaddItems(CONTAINER_P shell,
 #endif
 
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	    subMenu = create_panel(widget, subMenuName.chars(), subitems, args, arg);
 	    XtManageChild(subMenu);
 #else
@@ -871,14 +871,13 @@ void MMaddItems(CONTAINER_P shell,
 	    panel = new GUI::HBox(*xshell, name);
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	    arg = 0;
 	    label = verify(XmCreateLabel(panel, XMST(labelName.chars()), args, arg));
 	    if (name[0] != '\0' && (flags & MMUnmanagedLabel) == 0)
 		XtManageChild(label);
 #else
-	    xlabel = new GUI::Label(panel, label_string);
-	    xlabel->set_alignment(Gtk::ALIGN_LEFT);
+	    xlabel = new GUI::Label(*panel, name, label_string);
 	    if (name[0] != '\0' && (flags & MMUnmanagedLabel) == 0)
 		xlabel->show();
 #endif
@@ -890,12 +889,12 @@ void MMaddItems(CONTAINER_P shell,
 		arg = 0;
 		widget = CreateSpinBox(panel, textName.chars(), args, arg);
 #else
-		xwidget = new GUI::SpinButton(panel, name);
+		xwidget = new GUI::SpinButton(*panel, name);
 #endif
 		break;
 
 	    case MMComboBox:
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 		arg = 0;
 		widget = CreateComboBox(panel, textName.chars(), args, arg);
 #else
@@ -910,7 +909,7 @@ void MMaddItems(CONTAINER_P shell,
 		widget = verify(XmCreateTextField(panel, XMST(textName.chars()), args, arg));
 		XtManageChild(widget);
 #else
-		xwidget = new GUI::Entry(panel, GUI::String(textName.chars()));
+		xwidget = new GUI::Entry(*panel, GUI::String(textName.chars()));
 		xwidget->show();
 #endif
 		break;
@@ -953,6 +952,7 @@ void MMaddItems(CONTAINER_P shell,
 #endif
 	}
 
+#if defined(IF_XM)
 	Widget panel_widget = panel?panel:widget;
 
 	if (panel_widget) {
@@ -966,7 +966,7 @@ void MMaddItems(CONTAINER_P shell,
 	    if (widgetptr != 0)
 		*widgetptr = widget;
 	}
-#if !defined(IF_XM)
+#else
 	if (xwidget) {
 	    // OO widget
 	    if (flags & MMInsensitive)
@@ -1024,9 +1024,9 @@ Widget MMcreatePulldownMenu(Widget parent, const char *name, MMDesc items[],
 #else
 
 // Create pulldown menu from items
-GUI::Menu *MMcreatePulldownMenu(GUI::Container &parent, cpString name, MMDesc items[])
+GUI::PulldownMenu *MMcreatePulldownMenu(GUI::Container &parent, cpString name, MMDesc items[])
 {
-    GUI::Menu *menu = new GUI::Menu(parent, name);
+    GUI::PulldownMenu *menu = new GUI::PulldownMenu(parent, name);
     MMaddItems(menu, items);
 
     return menu;
@@ -1059,9 +1059,9 @@ Widget MMcreateRadioPulldownMenu(Widget parent, const char *name, MMDesc items[]
 #else
 
 // Create radio pulldown menu from items
-GUI::Menu *MMcreateRadioPulldownMenu(GUI::Container &parent, cpString name, MMDesc items[])
+GUI::PulldownMenu *MMcreateRadioPulldownMenu(GUI::Container &parent, cpString name, MMDesc items[])
 {
-    GUI::Menu *w = MMcreatePulldownMenu(parent, name, items);
+    GUI::PulldownMenu *w = MMcreatePulldownMenu(parent, name, items);
     // FIXME: Set options isHomogeneous, entryClass, radioBehaviour
     return w;
 }
@@ -1084,9 +1084,9 @@ Widget MMcreatePopupMenu(Widget parent, const char *name, MMDesc items[],
 #else
 
 // Create popup menu from items
-GUI::Menu *MMcreatePopupMenu(GUI::Container &parent, cpString name, MMDesc items[])
+GUI::PopupMenu *MMcreatePopupMenu(GUI::Widget &parent, cpString name, MMDesc items[])
 {
-    GUI::Menu *menu = new GUI::Menu(parent, name);
+    GUI::PopupMenu *menu = new GUI::PopupMenu(parent, name);
     MMaddItems(menu, items);
     // FIXME auto_raise(XtParent(menu));
 
@@ -1094,10 +1094,10 @@ GUI::Menu *MMcreatePopupMenu(GUI::Container &parent, cpString name, MMDesc items
 }
 
 // Create popup menu from items
-GUI::Menu *MMcreatePopupMenu(Widget parent, cpString name, MMDesc items[])
+GUI::PopupMenu *MMcreatePopupMenu(Widget parent, cpString name, MMDesc items[])
 {
     // FIXME: No parent.
-    GUI::Menu *menu = new GUI::Menu(NULL, name);
+    GUI::PopupMenu *menu = new GUI::PopupMenu(NULL, name);
     MMaddItems(menu, items);
     // FIXME auto_raise(XtParent(menu));
 
@@ -1118,23 +1118,42 @@ T get_arg_value(ArgList args, Cardinal arg, String name)
 }
 #endif
 
-// Create menu bar from items
-MENUBAR_P MMcreateMenuBar(CONTAINER_P parent, NAME_T name, MMDesc items[]
-#if defined(IF_MOTIF)
-			  , ArgList args, Cardinal arg
-#endif
-			  )
-{
 #if defined(IF_XM)
+
+// Create menu bar from items
+Widget MMcreateMenuBar(Widget parent, const char *name, MMDesc items[],
+		       ArgList args, Cardinal arg)
+{
     Widget bar = verify(XmCreateMenuBar(parent, XMST(name), args, arg));
-#else
-    GUI::MenuBar *bar = new GUI::MenuBar(parent, name);
-#endif
     MMaddItems(bar, items);
     XtManageChild(bar);
 
     return bar;
 }
+
+#else
+
+// Create menu bar from items
+GUI::WidgetPtr<GUI::MenuBar> MMcreateMenuBar(GUI::Container *parent, cpString name, MMDesc items[])
+{
+    GUI::MenuBar *bar = new GUI::MenuBar(*parent, name);
+    MMaddItems(bar, items);
+    bar->show();
+
+    return bar;
+}
+
+// Create menu bar from items (TEMPORARY)
+GUI::WidgetPtr<GUI::MenuBar> MMcreateMenuBar(CONTAINER_P parent, cpString name, MMDesc items[])
+{
+    GUI::MenuBar *bar = new GUI::MenuBar(parent, name);
+    MMaddItems(bar, items);
+    bar->show();
+
+    return bar;
+}
+
+#endif
 
 // Create work area from items
 CONTAINER_P MMcreateWorkArea(DIALOG_P parent, NAME_T name, MMDesc items[]
@@ -1187,7 +1206,7 @@ void MMadjustPanel(const MMDesc items[], Dimension space)
     // Align panel labels
     Dimension max_label_width = 0;
     const MMDesc *item;
-    for (item = items; item != 0 && item->name != 0; item++)
+    for (item = items; item != 0 && item->name; item++)
     {
 	if (item->label == 0)
 	    continue;
@@ -1212,7 +1231,7 @@ void MMadjustPanel(const MMDesc items[], Dimension space)
     // Leave some extra space
     max_label_width += space;
 
-    for (item = items; item != 0 && item->name != 0; item++)
+    for (item = items; item != 0 && item->name; item++)
     {
 	if (item->label == 0)
 	    continue;
@@ -1309,7 +1328,7 @@ void MMonItems(const MMDesc items[], MMItemProc proc, XtPointer closure, int dep
     if (depth == 0)
 	return;
 
-    for (const MMDesc *item = items; item != 0 && item->name != 0; item++)
+    for (const MMDesc *item = items; item != 0 && item->name; item++)
     {
 	if (item->type & MMIgnore)
 	    continue;
@@ -2024,3 +2043,9 @@ dummy_callback(Widget)
 }
 #endif
 
+#if !defined(IF_XM)
+void
+dummy_xcallback(GUI::Widget *)
+{
+}
+#endif

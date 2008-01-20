@@ -34,28 +34,28 @@ char DestroyCB_rcsid[] =
 #include "DestroyCB.h"
 #include "TimeOut.h"
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 #include <Xm/DialogS.h>
 #include <Xm/Xm.h>
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 static void CancelTimer(Widget, XtPointer client_data, XtPointer)
 {
     XtIntervalId id = XtIntervalId(client_data);
     XtRemoveTimeOut(id);
 }
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 static void DestroyCB(XtPointer client_data, XtIntervalId *id)
-#else // NOT IF_MOTIF
+#else
 static bool DestroyCB(Widget w)
-#endif // IF_MOTIF
+#endif
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     Widget w = Widget(client_data);
-#endif // IF_MOTIF
+#endif
 
     if (w != 0)
     {
@@ -69,26 +69,55 @@ static bool DestroyCB(Widget w)
     }
 }
 
+#if defined(IF_MOTIF)
+
 // Destroy WIDGET as soon as we are idle
 void DestroyWhenIdle(Widget widget)
 {
-#ifdef IF_MOTIF
     XtIntervalId id = 
 	XtAppAddTimeOut(XtWidgetToApplicationContext(widget), 0, DestroyCB, 
 			XtPointer(widget));
 
     // Should WIDGET be destroyed beforehand, cancel the timer
     XtAddCallback(widget, XmNdestroyCallback, CancelTimer, XtPointer(id));
-#else // NOT IF_MOTIF
+}
+
+#endif
+
+#if defined(IF_XMMM)
+
+// Destroy WIDGET as soon as we are idle
+void DestroyWhenIdle1(GUI::Widget *widget)
+{
     XtIntervalId id = 
-	Glib::signal_idle().connect(sigc::bind(PTR_FUN(DestroyCB), widget));
+	XtAppAddTimeOut(XtWidgetToApplicationContext(widget->internal()), 0, DestroyCB, 
+			XtPointer(widget->internal()));
 
     // Should WIDGET be destroyed beforehand, cancel the timer
-#ifdef NAG_ME
-#warning Destroy signal?
-#endif
-#endif // IF_MOTIF
+    XtAddCallback(widget->internal(), XmNdestroyCallback, CancelTimer, XtPointer(id));
 }
+
+#elif !defined(IF_MOTIF)
+
+// Destroy WIDGET as soon as we are idle
+void DestroyWhenIdle(Gtk::Widget *widget)
+{
+    XtIntervalId id = 
+	Glib::signal_idle().connect(sigc::bind(sigc::ptr_fun(DestroyCB), widget));
+
+    // Should WIDGET be destroyed beforehand, cancel the timer
+}
+
+// Destroy WIDGET as soon as we are idle
+void DestroyWhenIdle1(GUI::Widget *widget)
+{
+    XtIntervalId id = 
+	Glib::signal_idle().connect(sigc::bind(sigc::ptr_fun(DestroyCB), widget->internal()));
+
+    // Should WIDGET be destroyed beforehand, cancel the timer
+}
+
+#endif
 
 
 // Callbacks

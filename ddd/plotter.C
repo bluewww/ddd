@@ -304,7 +304,7 @@ static void GetPlotSettingsCB(XtPointer client_data, XtIntervalId *id)
 static void configure_options(PlotWindowInfo *plot, MMDesc *menu, 
 			      const string& settings)
 {
-    for (int i = 0; menu[i].name != 0; i++)
+    for (int i = 0; menu[i].name; i++)
     {
 	if ((menu[i].type & MMTypeMask) != MMToggle)
 	    continue;
@@ -347,7 +347,7 @@ static void configure_plot(PlotWindowInfo *plot)
 
     // Set up plot menu
     int i;
-    for (i = 0; plot_menu[i].name != 0; i++)
+    for (i = 0; plot_menu[i].name; i++)
     {
 	if ((plot_menu[i].type & MMTypeMask) != MMToggle)
 	    continue;
@@ -439,7 +439,7 @@ static void configure_plot(PlotWindowInfo *plot)
     configure_options(plot, scale_menu,   plot->settings);
 
     // Get style
-    for (i = 0; plot_menu[i].name != 0; i++)
+    for (i = 0; plot_menu[i].name; i++)
     {
 	if ((plot_menu[i].type & MMTypeMask) != MMToggle)
 	    continue;

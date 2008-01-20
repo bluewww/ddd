@@ -31,12 +31,22 @@
 
 #if defined(IF_XM)
 #include <X11/Intrinsic.h>
+#else
+#include <GUI/Widget.h>
 #endif
 
 #include "gtk_wrapper.h"
 
 // Destroy WIDGET as soon as we are idle
+#if defined(IF_XM)
 extern void DestroyWhenIdle(Widget widget);
+#elif defined(IF_XMMM)
+extern void DestroyWhenIdle(Widget widget);
+extern void DestroyWhenIdle1(GUI::Widget *widget);
+#else
+extern void DestroyWhenIdle(Gtk::Widget *widget);
+extern void DestroyWhenIdle1(GUI::Widget *widget);
+#endif
 
 // Destroy the surrounding shell
 extern void DestroyShellCB(CB_ARG_LIST_1());

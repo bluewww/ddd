@@ -35,17 +35,27 @@
 namespace Xmmm {
 
     class Scale: public Widget {
-    private:
+    protected:
 	::Widget scale_;
 	void init_signals(void);
     protected:
 	sigc::signal<void> signal_clicked_;
 	static void activate_callback(::Widget widget, XtPointer data);
     public:
-	Scale(Xmmm::Container &parent, const Xmmm::String &name="");
-	Scale(::Widget parent, const Xmmm::String &name=""); // TEMPORARY
 	~Scale(void);
 	::Widget internal(void); // TEMPORARY
+    };
+
+    class HScale: public Scale {
+    public:
+	HScale(Xmmm::Container &parent, const Xmmm::String &name="");
+	HScale(::Widget parent, const Xmmm::String &name=""); // TEMPORARY
+    };
+
+    class VScale: public Scale {
+    public:
+	VScale(Xmmm::Container &parent, const Xmmm::String &name="");
+	VScale(::Widget parent, const Xmmm::String &name=""); // TEMPORARY
     };
 
 }

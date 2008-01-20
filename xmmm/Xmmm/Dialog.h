@@ -49,8 +49,9 @@ namespace Xmmm {
 	sigc::signal<void> signal_unmap_;
 	static void unmap_callback(::Widget widget, XtPointer data);
     public:
+	void init(::Widget parent, const Xmmm::String &name=""); // TEMPORARY
 	Dialog(::Widget parent, const Xmmm::String &name=""); // TEMPORARY
-	Dialog(Xmmm::Widget parent, const Xmmm::String &name="");
+	Dialog(Xmmm::Widget &parent, const Xmmm::String &name="");
 	~Dialog(void);
 	::Widget internal(void);
 	::Widget xt_container(void);

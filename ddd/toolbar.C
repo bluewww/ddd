@@ -75,7 +75,7 @@ static Dimension preferred_height(Widget w)
 #ifdef IF_MOTIF
 static void set_label_type(MMDesc items[], unsigned char label_type)
 {
-    for (MMDesc *item = items; item != 0 && item->name != 0; item++)
+    for (MMDesc *item = items; item != 0 && item->name; item++)
     {
 	Widget w = item->widget;
 	if (w != 0 && XmIsLabel(w))
@@ -144,7 +144,7 @@ static void set_label_type(MMDesc items[], unsigned char label_type)
 static void flatten_buttons(MMDesc items[])
 {
     // Replace all `MMPush' by `MMFlatPush'
-    for (MMDesc *item = items; item != 0 && item->name != 0; item++)
+    for (MMDesc *item = items; item != 0 && item->name; item++)
     {
 	if ((item->type & MMTypeMask) == MMPush)
 	    item->type = (MMFlatPush | (item->type & ~MMTypeMask));
@@ -226,7 +226,7 @@ static void ResetLabelEH(Widget w, XtPointer, XEvent *, Boolean *)
 #ifdef IF_MOTIF
 static void center_buttons(const MMDesc items[], Dimension offset)
 {
-    for (const MMDesc *item = items; item != 0 && item->name != 0; item++)
+    for (const MMDesc *item = items; item != 0 && item->name; item++)
     {
 	Widget w = item->widget;
 	if (w == 0)

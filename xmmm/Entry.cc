@@ -59,3 +59,15 @@ Entry::~Entry(void)
     return entry_;
 }
 
+sigc::signal<void> &
+Entry::signal_activate(void)
+{
+    return signal_activate_;
+}
+
+Xmmm::String
+Entry::get_text(void)
+{
+    return XmTextFieldGetString(entry_);
+}
+

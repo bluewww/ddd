@@ -79,7 +79,7 @@ extern int ptrace(int request, int pid, int addr, int data);
 #include "windows.h"
 #include "wm.h"
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 #include <Xm/Xm.h>
 #include <Xm/Text.h>
 #include <Xm/TextF.h>
@@ -89,10 +89,14 @@ extern int ptrace(int request, int pid, int addr, int data);
 #include <Xm/BulletinB.h>
 #include <Xm/MessageB.h>
 #include <Xm/PanedW.h>
-#else // NOT IF_MOTIF
+#endif
+#if !defined(IF_MOTIF)
 #include <libxml/tree.h>
 #include <gtkmm/paned.h>
-#endif // IF_MOTIF
+#endif
+#if !defined(IF_XM)
+#include <GUI/Dialog.h>
+#endif
 
 #include <stdio.h>
 #include <fstream>
@@ -3885,14 +3889,27 @@ bool save_options(unsigned long flags)
 // Callbacks
 // ---------------------------------------------------------------------------
 
-static void DoSaveOptionsCB(CB_ALIST_2(XtP(unsigned long) client_data))
+#if defined(IF_XM)
+
+static void DoSaveOptionsCB(Widget, XtPointer client_data, XtPointer)
 {
     unsigned long flags = (unsigned long)client_data;
     save_options(flags);
 }
 
+#else
+
+static void DoSaveOptionsCB(unsigned long flags)
+{
+    save_options(flags);
+}
+
+#endif
+
+#if defined(IF_XM)
+
 // Save options
-void DDDSaveOptionsCB(CB_ALIST_12(Widget w, XtP(unsigned long) client_data))
+void DDDSaveOptionsCB(Widget w, XtPointer client_data, XtPointer)
 {
     unsigned long flags = (unsigned long)client_data;
     if ((flags & SAVE_SESSION) && app_data.session == DEFAULT_SESSION)
@@ -3907,23 +3924,14 @@ void DDDSaveOptionsCB(CB_ALIST_12(Widget w, XtP(unsigned long) client_data))
 	if (dialog)
 	    DestroyWhenIdle(dialog);
 
-#ifdef IF_MOTIF
 	dialog = verify(XmCreateQuestionDialog(
 			    find_shell(w), 
 			    XMST("overwrite_options_dialog"),
 			    0, 0));
-#else // NOT IF_MOTIF
-	dialog = new Gtk::Dialog(XMST("overwrite_options_dialog"), *find_shell(w));
-#endif // IF_MOTIF
 	Delay::register_shell(dialog);
-#ifdef IF_MOTIF
 	XtAddCallback(dialog, XmNokCallback, DoSaveOptionsCB, 
 		      XtPointer(flags));
 	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, 0);
-#else // NOT IF_MOTIF
-	Gtk::Button *button = dialog->add_button(XMST("OK"), 0);
-	button->signal_clicked().connect(sigc::bind(PTR_FUN(DoSaveOptionsCB), flags));
-#endif // IF_MOTIF
 
 	manage_and_raise1(dialog);
     }
@@ -3934,23 +3942,14 @@ void DDDSaveOptionsCB(CB_ALIST_12(Widget w, XtP(unsigned long) client_data))
 	if (dialog)
 	    DestroyWhenIdle(dialog);
 
-#ifdef IF_MOTIF
 	dialog = verify(XmCreateQuestionDialog(
 			    find_shell(w), 
 			    XMST("kill_to_save_dialog"),
 			    0, 0));
-#else // NOT IF_MOTIF
-	dialog = new Gtk::Dialog(XMST("kill_to_save_dialog"), *find_shell(w));
-#endif // IF_MOTIF
 	Delay::register_shell(dialog);
-#ifdef IF_MOTIF
 	XtAddCallback(dialog, XmNokCallback, DoSaveOptionsCB, 
 		      XtPointer(flags | MAY_KILL));
 	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, 0);
-#else // NOT IF_MOTIF
-	Gtk::Button *button = dialog->add_button(XMST("OK"), 0);
-	button->signal_clicked().connect(sigc::bind(PTR_FUN(DoSaveOptionsCB), (flags | MAY_KILL)));
-#endif // IF_MOTIF
 
 	manage_and_raise1(dialog);
     }
@@ -3961,23 +3960,14 @@ void DDDSaveOptionsCB(CB_ALIST_12(Widget w, XtP(unsigned long) client_data))
 	if (dialog)
 	    DestroyWhenIdle(dialog);
 
-#ifdef IF_MOTIF
 	dialog = verify(XmCreateQuestionDialog(
 			    find_shell(w), 
 			    XMST("data_not_saved_dialog"),
 			    0, 0));
-#else // NOT IF_MOTIF
-	dialog = new Gtk::Dialog(XMST("data_not_saved_dialog"), *find_shell(w));
-#endif // IF_MOTIF
 	Delay::register_shell(dialog);
-#ifdef IF_MOTIF
 	XtAddCallback(dialog, XmNokCallback, DoSaveOptionsCB, 
 		      XtPointer(flags));
 	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, 0);
-#else // NOT IF_MOTIF
-	Gtk::Button *button = dialog->add_button(XMST("OK"), 0);
-	button->signal_clicked().connect(sigc::bind(PTR_FUN(DoSaveOptionsCB), flags));
-#endif // IF_MOTIF
 
 	manage_and_raise1(dialog);
     }
@@ -3986,3 +3976,63 @@ void DDDSaveOptionsCB(CB_ALIST_12(Widget w, XtP(unsigned long) client_data))
 	DoSaveOptionsCB(CB_ARGS_2(client_data));
     }
 }
+
+#else
+
+// Save options
+void DDDSaveOptionsCB(GUI::Widget *w, unsigned long flags)
+{
+    if ((flags & SAVE_SESSION) && app_data.session == DEFAULT_SESSION)
+    {
+	// No current session; cannot save
+	return;
+    }
+    else if (options_file_has_changed(ACCESS))
+    {
+	// Options file has changed since last access; request confirmation
+	static GUI::Dialog *dialog = 0;
+	if (dialog)
+	    DestroyWhenIdle1(dialog);
+
+	dialog = new GUI::Dialog(*w, "overwrite_options_dialog");
+	Delay::register_shell1(dialog);
+	GUI::Button *button = dialog->add_button("OK");
+	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(DoSaveOptionsCB), flags));
+
+	manage_and_raise1(dialog);
+    }
+    else if (saving_options_kills_program(flags))
+    {
+	// Saving session would kill program; request confirmation
+	static GUI::Dialog *dialog = 0;
+	if (dialog)
+	    DestroyWhenIdle1(dialog);
+
+	dialog = new GUI::Dialog(*w, "kill_to_save_dialog");
+	Delay::register_shell1(dialog);
+	GUI::Button *button = dialog->add_button("OK");
+	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(DoSaveOptionsCB), (flags | MAY_KILL)));
+
+	manage_and_raise1(dialog);
+    }
+    else if (saving_options_excludes_data(flags))
+    {
+	// Saving session results in data loss; request confirmation
+	static GUI::Dialog *dialog = 0;
+	if (dialog)
+	    DestroyWhenIdle1(dialog);
+
+	dialog = new GUI::Dialog(*w, "data_not_saved_dialog");
+	Delay::register_shell1(dialog);
+	GUI::Button *button = dialog->add_button("OK");
+	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(DoSaveOptionsCB), flags));
+
+	manage_and_raise1(dialog);
+    }
+    else
+    {
+	DoSaveOptionsCB(flags);
+    }
+}
+
+#endif

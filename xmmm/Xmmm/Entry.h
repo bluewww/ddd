@@ -39,13 +39,15 @@ namespace Xmmm {
 	::Widget entry_;
 	void init_signals(void);
     protected:
-	sigc::signal<void> signal_clicked_;
+	sigc::signal<void> signal_activate_;
 	static void activate_callback(::Widget widget, XtPointer data);
     public:
 	Entry(Xmmm::Container &parent, const Xmmm::String &name="");
 	Entry(::Widget parent, const Xmmm::String &name=""); // TEMPORARY
 	~Entry(void);
 	::Widget internal(void); // TEMPORARY
+	sigc::signal<void> &signal_activate(void);
+	Xmmm::String get_text(void);
     };
 
 }

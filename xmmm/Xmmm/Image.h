@@ -29,12 +29,14 @@
 #ifndef XMMM_IMAGE_H
 #define XMMM_IMAGE_H
 
+#include <X11/Xlib.h>
+
 namespace Xmmm {
 
     typedef XImage *ImageP;
 
     // Images "installed" by InstallImage
-    typedef char *ImageHandle;
+    typedef const char *ImageHandle;
 
 }
 

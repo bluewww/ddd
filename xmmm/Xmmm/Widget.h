@@ -21,7 +21,7 @@ namespace Xmmm {
 	std::string &s(void);
 	const std::string &s(void) const;
 	const char *c(void) const;
-	char *c(void);
+	const char *c_str(void) const;
 	operator const char *(void) const {return c();}
 	String operator+(const String &str) const;
 	bool operator==(const String &str) const;

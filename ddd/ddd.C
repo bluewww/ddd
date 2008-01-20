@@ -1046,8 +1046,8 @@ DECL_WR(WR_gdbMakeAgainCB, CB_ARG_HIDE_0(PTR_FUN(gdbMakeAgainCB)));
     MMSep,								\
     MENTRY("print", "Print Graph...", MMPush,				\
 	   BIND_0(PTR_FUN(PrintGraphCB)), 0, 0),			\
-    MENTRY("printAgain", "Print Again", MMPush | MMUnmanaged,		\
-	   BIND_1(PTR_FUN(PrintAgainCB), 1), 0, 0),			\
+    MENTRYX("printAgain", "Print Again", MMPush | MMUnmanaged,		\
+	    MMNoCB, sigc::bind(sigc::ptr_fun(PrintAgainCB1), 1L), 0, 0), \
     MENTRY("separator", "", MMSeparator | MMUnmanaged, MMNoCB, 0, 0),	\
     MENTRY("cd", "Change Directory...", MMPush,				\
 	   BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_gdbChangeDirectoryCB)), 0, 0), \
@@ -1085,7 +1085,7 @@ struct ProgramItems {
 	   BIND_1(PTR_FUN(gdbCommandCB12), "run"), 0, 0),		\
     MMSep,								\
     MENTRYX("separateExecWindow", "Run in Execution Window", MMCheckItem, \
-	    BIND_0(PTR_FUN(dddToggleSeparateExecWindowCB)), 0, &w),	\
+	    BIND_0(PTR_FUN(dddToggleSeparateExecWindowCB)), MDUMMY, 0, &w), \
     MMSep,								\
     MENTRY("step", "Step", MMPush,					\
 	   BIND_1(PTR_FUN(gdbCommandCB12), "step"), 0, 0),		\
@@ -3262,7 +3262,11 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     if (app_data.separate_data_window && app_data.separate_source_window)
 	menubar = command_menubar;
 
+#if defined(IF_XM)
     Widget menubar_w = MMcreateMenuBar(main_window, "menubar", menubar);
+#else
+    GUI::WidgetPtr<GUI::MenuBar> menubar_w = MMcreateMenuBar(main_window, "menubar", menubar);
+#endif
     MMaddCallbacks(menubar);
     MMaddHelpCallback(menubar, PTR_FUN(ImmediateHelpCB));
     verify_buttons(menubar);
@@ -3338,7 +3342,11 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 
     // Data window
     CONTAINER_P data_disp_parent = paned_work_w;
+#if defined(IF_XM)
     Widget data_menubar_w = 0;
+#else
+    GUI::WidgetPtr<GUI::MenuBar> data_menubar_w = 0;
+#endif
     CONTAINER_P data_main_window_w = 0;
     if (app_data.separate_data_window)
     {
@@ -3374,9 +3382,15 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 #endif // IF_MOTIF
 
 	// Add menu bar
+#if defined(IF_XM)
 	data_menubar_w = 
 	    MMcreateMenuBar (data_main_window_w, 
 			     "menubar", data_menubar);
+#else
+	data_menubar_w = 
+	    MMcreateMenuBar (data_main_window_w, 
+			     "menubar", data_menubar);
+#endif
 	MMaddCallbacks(data_menubar);
 	MMaddHelpCallback(menubar, PTR_FUN(ImmediateHelpCB));
 	verify_buttons(data_menubar);
@@ -3405,7 +3419,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     // Create data display
     data_disp = new DataDisp(data_disp_parent, data_buttons_w);
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     if (app_data.separate_data_window)
     {
 	// More values for main window
@@ -3414,11 +3428,11 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 		       XmNworkWindow, data_disp_parent,
 		       XtNIL);
     }
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Set values for data window?
 #endif
-#endif // IF_MOTIF
+#endif
 
     if (data_buttons_w == 0)
 	data_buttons_w = make_buttons(data_disp_parent, "data_buttons", 
@@ -3427,7 +3441,11 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     // Source window
     CONTAINER_P source_view_parent = paned_work_w;
     CONTAINER_P source_vbox = main_vbox;
+#if defined(IF_XM)
     Widget source_menubar_w = 0;
+#else
+    GUI::WidgetPtr<GUI::MenuBar> source_menubar_w = 0;
+#endif
     CONTAINER_P source_main_window_w = 0;
     if (app_data.separate_source_window)
     {
@@ -3462,8 +3480,13 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 #endif // IF_MOTIF
 
 	// Add menu bar
+#if defined(IF_XM)
 	source_menubar_w = 
 	    MMcreateMenuBar (source_main_window_w, "menubar", source_menubar);
+#else
+	source_menubar_w = 
+	    MMcreateMenuBar (source_main_window_w, "menubar", source_menubar);
+#endif
 	MMaddCallbacks(source_menubar);
 	MMaddHelpCallback(menubar, PTR_FUN(ImmediateHelpCB));
 	verify_buttons(source_menubar);
@@ -3533,7 +3556,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     source_view->cache_glyph_images = app_data.cache_glyph_images;
 #endif // IF_MOTIF
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     if (app_data.separate_source_window)
     {
 	// More values for main window
@@ -3542,7 +3565,11 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 		       XmNworkWindow, source_view_parent,
 		       XtNIL);
     }
-#endif // IF_MOTIF
+#else
+#ifdef NAG_ME
+#warning Set values for main window?
+#endif
+#endif
 
     // Source toolbar
     if (arg_cmd_w == 0)
@@ -3696,17 +3723,17 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     // Paned Window is done
     XtManageChild (paned_work_w);
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     // More values for main window
     XtVaSetValues (main_window,
 		   XmNmenuBar,    menubar_w,
 		   XmNworkWindow, paned_work_w,
 		   XtNIL);
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Setup areas for main window
 #endif
-#endif // IF_MOTIF
+#endif
 
 
     // All main widgets (except shells) are created at this point.
@@ -3809,7 +3836,11 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 
     // Realize all top-level widgets
     XtRealizeWidget(command_shell);
+#if defined(IF_XM)
     Delay::register_shell(command_shell);
+#else
+    Delay::register_shell1(command_shell);
+#endif
 
     if (data_disp_shell)
     {

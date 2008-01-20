@@ -537,6 +537,38 @@ XIMAGE_P WATCH_ICON[4];
 
 #endif // IF_MOTIF
 
+#if defined(IF_XMMM)
+
+GUI::ImageHandle DDD_ICON[1] = {ddd_NAME};
+GUI::ImageHandle BREAK_AT_ICON[4] = {"break_at", "break_at-xx", "break_at-arm", "break_at-hi"};
+GUI::ImageHandle CLEAR_AT_ICON[4] = {"clear_at", "clear_at-xx", "clear_at-arm", "clear_at-hi"};
+GUI::ImageHandle CLUSTER_ICON[4] = {"cluster", "cluster-xx", "cluster-arm", "cluster-hi"};
+GUI::ImageHandle DELETE_ICON[4] = {"delete", "delete-xx", "delete-arm", "delete-hi"};
+GUI::ImageHandle DISABLE_ICON[4] = {"disable", "disable-xx", "disable-arm", "disable-hi"};
+GUI::ImageHandle DISPREF_ICON[4] = {"dispref", "dispref-xx", "dispref-arm", "dispref-hi"};
+GUI::ImageHandle DISPLAY_ICON[4] = {"display", "display-xx", "display-arm", "display-hi"};
+GUI::ImageHandle ENABLE_ICON[4] = {"enable", "enable-xx", "enable-arm", "enable-hi"};
+GUI::ImageHandle FIND_BACKWARD_ICON[4] = {"find_backward", "find_backward-xx", "find_backward-arm", "find_backward-hi"};
+GUI::ImageHandle FIND_FORWARD_ICON[4] = {"find_forward", "find_forward-xx", "find_forward-arm", "find_forward-hi"};
+GUI::ImageHandle HIDE_ICON[4] = {"hide", "hide-xx", "hide-arm", "hide-hi"};
+GUI::ImageHandle LOOKUP_ICON[4] = {"lookup", "lookup-xx", "lookup-arm", "lookup-hi"};
+GUI::ImageHandle MAKETEMP_ICON[4] = {"maketemp", "maketemp-xx", "maketemp-arm", "maketemp-hi"};
+GUI::ImageHandle NEW_BREAK_ICON[4] = {"new_break", "new_break-xx", "new_break-arm", "new_break-hi"};
+GUI::ImageHandle NEW_DISPLAY_ICON[4] = {"new_display", "new_display-xx", "new_display-arm", "new_display-hi"};
+GUI::ImageHandle NEW_WATCH_ICON[4] = {"new_watch", "new_watch-xx", "new_watch-arm", "new_watch-hi"};
+GUI::ImageHandle PLOT_ICON[4] = {"plot", "plot-xx", "plot-arm", "plot-hi"};
+GUI::ImageHandle PRINT_ICON[4] = {"print", "print-xx", "print-arm", "print-hi"};
+GUI::ImageHandle PROPERTIES_ICON[4] = {"properties", "properties-xx", "properties-arm", "properties-hi"};
+GUI::ImageHandle ROTATE_ICON[4] = {"rotate", "rotate-xx", "rotate-arm", "rotate-hi"};
+GUI::ImageHandle SET_ICON[4] = {"set", "set-xx", "set-arm", "set-hi"};
+GUI::ImageHandle SHOW_ICON[4] = {"show", "show-xx", "show-arm", "show-hi"};
+GUI::ImageHandle UNCLUSTER_ICON[4] = {"uncluster", "uncluster-xx", "uncluster-arm", "uncluster-hi"};
+GUI::ImageHandle UNDISPLAY_ICON[4] = {"undisplay", "undisplay-xx", "undisplay-arm", "undisplay-hi"};
+GUI::ImageHandle UNWATCH_ICON[4] = {"unwatch", "unwatch-xx", "unwatch-arm", "unwatch-hi"};
+GUI::ImageHandle WATCH_ICON[4] = {"watch", "watch-xx", "watch-arm", "watch-hi"};
+
+#endif
+
 #ifdef IF_MOTIF
 
 static char get_sign(string& g)
@@ -634,11 +666,11 @@ static XImage *get_button_subimage(XImage *image, const _XtString name)
 #endif
 
 static void install_icon(Widget w,
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 			 const _XtString name,
-#else // NOT IF_MOTIF
-			 XIMAGE_P *name,
-#endif // IF_MOTIF
+#else
+			 GUI::ImageHandle &name,
+#endif
 			 const char **xpm_data, 
 			 const unsigned char *xbm_data,
 			 int width, int height,
@@ -762,56 +794,64 @@ static void install_button_icon(Widget w,
 				const XWindowAttributes& win_attr
 				)
 {
+#if defined(IF_XM)
     install_icon(w, name,
 		 xpm_data,
 		 xbm_data,
 		 width, height,
 		 color_key, background, win_attr, true);
+#else
+    install_icon(w, name[0],
+		 xpm_data,
+		 xbm_data,
+		 width, height,
+		 color_key, background, win_attr, true);
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     string insensitive_name = string(name) + "-xx";
     install_icon(w, insensitive_name.chars(),
 		 xpm_xx_data,
 		 xbm_xx_data, 
 		 width, height,
 		 color_key, background, win_attr, true);
-#else // NOT IF_MOTIF
-    install_icon(w, name+1,
+#else
+    install_icon(w, name[1],
 		 xpm_xx_data,
 		 xbm_xx_data, 
 		 width, height,
 		 color_key, background, win_attr, true);
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     string armed_name = string(name) + "-arm";
     install_icon(w, armed_name.chars(),
 		 xpm_data,
 		 xbm_data,
 		 width, height,
 		 active_color_key, arm_background, win_attr, true);
-#else // NOT IF_MOTIF
-    install_icon(w, name+2,
+#else
+    install_icon(w, name[2],
 		 xpm_data,
 		 xbm_data,
 		 width, height,
 		 active_color_key, arm_background, win_attr, true);
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     string highlight_name = string(name) + "-hi";
     install_icon(w, highlight_name.chars(),
 		 xpm_data,
 		 xbm_data,
 		 width, height,
 		 active_color_key, background, win_attr, true);
-#else // NOT IF_MOTIF
-    install_icon(w, name+3,
+#else
+    install_icon(w, name[3],
 		 xpm_data,
 		 xbm_data,
 		 width, height,
 		 active_color_key, background, win_attr, true);
-#endif // IF_MOTIF
+#endif
 }
 
 // Install toolbar icons in Motif cache.  COLOR_KEY indicates the XPM
@@ -853,12 +893,21 @@ void install_icons(Widget shell,
     ImageColor arm_background = shell->get_style()->get_bg(Gtk::STATE_PRELIGHT);
 #endif // IF_MOTIF
 
+#if defined(IF_XM)
     // DDD icon (always in color)
     install_icon(shell, DDD_ICON, 
 		 ddd_xpm,
 		 ddd_bits,
 		 ddd_width, ddd_height,
 		 "best", background, win_attr);
+#else
+    // DDD icon (always in color)
+    install_icon(shell, DDD_ICON[0], 
+		 ddd_xpm,
+		 ddd_bits,
+		 ddd_width, ddd_height,
+		 "best", background, win_attr);
+#endif
 
     // Toolbar icons
     install_button_icon(shell, BREAK_AT_ICON, 
@@ -1084,10 +1133,17 @@ void set_label(Widget w, const MString& new_label, GUI::ImageHandle *image)
 			  XmNhighlightThickness, &highlight_thickness,
 			  XtPointer(0));
 
+#if defined(IF_XM)
 	    string s1 = image;
 	    string s2 = s1 + "-xx";
 	    string s3 = s1 + "-arm";
 	    string s4 = s1 + "-hi";
+#else
+	    string s1 = image[0];
+	    string s2 = image[1];
+	    string s3 = image[2];
+	    string s4 = image[3];
+#endif
 
 	    Pixmap p1 = XmGetPixmap(XtScreen(w), XMST(s1.chars()), foreground, background);
 	    Pixmap p2 = XmGetPixmap(XtScreen(w), XMST(s2.chars()), foreground, background);

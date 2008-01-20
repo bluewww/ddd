@@ -35,20 +35,6 @@ Scale::init_signals(void)
 {
 }
 
-Scale::Scale(::Widget parent, const Xmmm::String &name)
-{
-    scale_ = XmCreateScale(parent, (char *)name.c(), NULL, 0);
-    init_signals();
-    postinit();
-}
-
-Scale::Scale(Xmmm::Container &parent, const Xmmm::String &name)
-{
-    scale_ = XmCreateScale(parent.xt_container(), (char *)name.c(), NULL, 0);
-    init_signals();
-    postinit();
-}
-
 Scale::~Scale(void)
 {
     XtDestroyWidget(scale_);
@@ -57,5 +43,45 @@ Scale::~Scale(void)
 ::Widget Scale::internal(void)
 {
     return scale_;
+}
+
+
+
+HScale::HScale(::Widget parent, const Xmmm::String &name)
+{
+    Arg args[1];
+    XtSetArg(args[0], XmNorientation, XmHORIZONTAL);
+    scale_ = XmCreateScale(parent, (char *)name.c(), args, 1);
+    init_signals();
+    postinit();
+}
+
+HScale::HScale(Xmmm::Container &parent, const Xmmm::String &name)
+{
+    Arg args[1];
+    XtSetArg(args[0], XmNorientation, XmHORIZONTAL);
+    scale_ = XmCreateScale(parent.xt_container(), (char *)name.c(), args, 1);
+    init_signals();
+    postinit();
+}
+
+
+
+VScale::VScale(::Widget parent, const Xmmm::String &name)
+{
+    Arg args[1];
+    XtSetArg(args[0], XmNorientation, XmVERTICAL);
+    scale_ = XmCreateScale(parent, (char *)name.c(), args, 1);
+    init_signals();
+    postinit();
+}
+
+VScale::VScale(Xmmm::Container &parent, const Xmmm::String &name)
+{
+    Arg args[1];
+    XtSetArg(args[0], XmNorientation, XmVERTICAL);
+    scale_ = XmCreateScale(parent.xt_container(), (char *)name.c(), args, 1);
+    init_signals();
+    postinit();
 }
 

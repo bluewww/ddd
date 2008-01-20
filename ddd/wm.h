@@ -54,16 +54,11 @@ extern void wm_set_name(DISPLAY_P display, Window shell,
 void wait_until_mapped(Widget w, Widget shell = 0);
 void raise_shell(Widget w);
 
-#if defined(IF_MOTIF)
-void manage_and_raise1(Widget w); // FIXME compat
-#endif
-
-#if !defined(IF_XM)
+#if defined(IF_XM)
+void manage_and_raise(Widget w);
+#else
 void manage_and_raise(GUI::Widget *w);
-void manage_and_raise2(Widget w); // FIXME compat
-#if !defined(IF_XMMM)
-#define manage_and_raise1 manage_and_raise2
-#endif
+void manage_and_raise1(Widget w); // FIXME compat
 #endif
 
 #endif // _DDD_wm_h

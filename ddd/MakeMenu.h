@@ -43,6 +43,7 @@
 #include <GUI/Box.h>
 #include <GUI/Image.h>
 #include <GUI/Menu.h>
+#include <GUI/MenuBar.h>
 #endif
 
 #include "bool.h"
@@ -112,6 +113,7 @@ struct MMDesc {
     Widget widget;	     // The resulting widget
     LABEL_P label;	     // The resulting label
 #if !defined(IF_XM)
+    sigc::slot<void, GUI::Widget *> xcallback;
     GUI::Widget **xwidgetptr;
     GUI::Widget *xwidget;
     GUI::Label *xlabel;	     // The resulting label
@@ -138,23 +140,24 @@ typedef void (*MMItemProc)(const MMDesc items[], XtPointer closure);
 
 // Creators
 #if defined(IF_XM)
-MENU_P         MMcreatePulldownMenu       (Widget parent, const char *name, MMDesc items[],
+Widget         MMcreatePulldownMenu       (Widget parent, const char *name, MMDesc items[],
 					   ArgList args = 0, Cardinal arg = 0);
-MENU_P         MMcreateRadioPulldownMenu  (Widget parent, const char *name, MMDesc items[],
+Widget         MMcreateRadioPulldownMenu  (Widget parent, const char *name, MMDesc items[],
 					   ArgList args = 0, Cardinal arg = 0);
-MENU_P         MMcreatePopupMenu          (Widget parent, const char *name, MMDesc items[],
+Widget         MMcreatePopupMenu          (Widget parent, const char *name, MMDesc items[],
+					   ArgList args = 0, Cardinal arg = 0);
+Widget         MMcreateMenuBar            (Widget parent, const char *name, MMDesc items[],
 					   ArgList args = 0, Cardinal arg = 0);
 #else
-GUI::Menu     *MMcreatePulldownMenu       (GUI::Container &parent, cpString name, MMDesc items[]);
-GUI::Menu     *MMcreateRadioPulldownMenu  (GUI::Container &parent, cpString name, MMDesc items[]);
-GUI::Menu     *MMcreatePopupMenu          (GUI::Container &parent, cpString name, MMDesc items[]);
-GUI::Menu     *MMcreatePopupMenu          (Widget parent, cpString name, MMDesc items[]);
+GUI::PulldownMenu  *MMcreatePulldownMenu       (GUI::Container &parent, cpString name, MMDesc items[]);
+GUI::PulldownMenu  *MMcreateRadioPulldownMenu  (GUI::Container &parent, cpString name, MMDesc items[]);
+GUI::PopupMenu     *MMcreatePopupMenu          (GUI::Widget &parent, cpString name, MMDesc items[]);
+GUI::WidgetPtr<GUI::MenuBar> MMcreateMenuBar   (GUI::Container &parent, cpString name, MMDesc items[]);
+// TEMPORARY
+GUI::PopupMenu     *MMcreatePopupMenu          (Widget parent, cpString name, MMDesc items[]);
+GUI::WidgetPtr<GUI::MenuBar> MMcreateMenuBar   (CONTAINER_P parent, cpString name, MMDesc items[]);
 #endif
-MENUBAR_P      MMcreateMenuBar            (CONTAINER_P parent, NAME_T name, MMDesc items[]
-#if defined(IF_MOTIF)
-					   , ArgList args = 0, Cardinal arg = 0
-#endif
-					   );
+
 CONTAINER_P    MMcreateWorkArea           (DIALOG_P parent, NAME_T name, MMDesc items[]
 #if defined(IF_MOTIF)
 					   , ArgList args = 0, Cardinal arg = 0
@@ -242,27 +245,32 @@ inline void manage_child(Widget w, bool state)
     }
 }
 
+#if !defined(IF_XM)
+extern void dummy_xcallback(GUI::Widget *);
+#define MDUMMY sigc::ptr_fun(dummy_xcallback)
+#endif
+
 #if defined(IF_XM)
 #define MENTRY(n,s,t,c,sub,w) { n, t, c, sub, (Widget *)w, 0, 0}
 #define IMENTRY(n,i,t,c,sub,w) { n, t, c, sub, (Widget *)w, 0, 0}
 #define NIMENTRY(n,s,i,t,c,sub,w) { n, t, c, sub, (Widget *)w, 0, 0}
-#define MENTRYX(n,s,t,c,sub,w) { n, t, c, sub, (Widget *)w, 0, 0}
-#define IMENTRYX(n,i,t,c,sub,w) { n, t, c, sub, (Widget *)w, 0, 0}
-#define NIMENTRYX(n,s,i,t,c,sub,w) { n, t, c, sub, (Widget *)w, 0, 0}
+#define MENTRYX(n,s,t,c,cx,sub,w) { n, t, c, sub, (Widget *)w, 0, 0}
+#define IMENTRYX(n,i,t,c,cx,sub,w) { n, t, c, sub, (Widget *)w, 0, 0}
+#define NIMENTRYX(n,s,i,t,c,cx,sub,w) { n, t, c, sub, (Widget *)w, 0, 0}
 #elif defined(IF_XMMM)
-#define MENTRY(n,s,t,c,sub,w) { n, s, NULL, t, c, sub, w, 0, 0, 0, 0}
-#define IMENTRY(n,i,t,c,sub,w) { n, "", i, t, c, sub, w, 0, 0, 0, 0}
-#define NIMENTRY(n,s,i,t,c,sub,w) { n, s, i, t, c, sub, w, 0, 0, 0, 0}
-#define MENTRYX(n,s,t,c,sub,w) { n, s, NULL, t, c, sub, 0, 0, 0, (Xmmm::Widget **)w, 0}
-#define IMENTRYX(n,i,t,c,sub,w) { n, "", i, t, c, sub, 0, 0, 0, (Xmmm::Widget **)w, 0}
-#define NIMENTRYX(n,s,i,t,c,sub,w) { n, s, i, t, c, sub, 0, 0, 0, (Xmmm::Widget **)w, 0}
+#define MENTRY(n,s,t,c,sub,w) { n, s, NULL, t, c, sub, w, 0, 0, MDUMMY, 0, 0}
+#define IMENTRY(n,i,t,c,sub,w) { n, "", i, t, c, sub, w, 0, 0, MDUMMY, 0, 0}
+#define NIMENTRY(n,s,i,t,c,sub,w) { n, s, i, t, c, sub, w, 0, 0, MDUMMY, 0, 0}
+#define MENTRYX(n,s,t,c,cx,sub,w) { n, s, NULL, t, c, sub, 0, 0, 0, cx, (Xmmm::Widget **)w, 0}
+#define IMENTRYX(n,i,t,c,cx,sub,w) { n, "", i, t, c, sub, 0, 0, 0, cx, (Xmmm::Widget **)w, 0}
+#define NIMENTRYX(n,s,i,t,c,cx,sub,w) { n, s, i, t, c, sub, 0, 0, 0, cx, (Xmmm::Widget **)w, 0}
 #else
-#define MENTRY(n,s,t,c,sub,w) { n, s, NULL, t, c, sub, (Widget *)w, 0, 0, 0}
-#define IMENTRY(n,i,t,c,sub,w) { n, "", i, t, c, sub, (Widget *)w, 0, 0, 0}
-#define NIMENTRY(n,s,i,t,c,sub,w) { n, s, i, t, c, sub, (Widget *)w, 0, 0, 0}
-#define MENTRYX(n,s,t,c,sub,w) { n, s, NULL, t, c, sub, 0, 0, 0, (GUI::Widget **)w, 0, 0}
-#define IMENTRYX(n,i,t,c,sub,w) { n, "", i, t, c, sub, 0, 0, 0, (GUI::Widget **)w, 0, 0}
-#define NIMENTRYX(n,s,i,t,c,sub,w) { n, s, i, t, c, sub, 0, 0, 0, (GUI::Widget **)w, 0, 0}
+#define MENTRY(n,s,t,c,sub,w) { n, s, NULL, t, c, sub, (Widget *)w, 0, 0, MDUMMY, 0}
+#define IMENTRY(n,i,t,c,sub,w) { n, "", i, t, c, sub, (Widget *)w, 0, 0, MDUMMY, 0}
+#define NIMENTRY(n,s,i,t,c,sub,w) { n, s, i, t, c, sub, (Widget *)w, 0, 0, MDUMMY, 0}
+#define MENTRYX(n,s,t,c,cx,sub,w) { n, s, NULL, t, c, sub, 0, 0, 0, cx, (GUI::Widget **)w, 0, 0}
+#define IMENTRYX(n,i,t,c,cx,sub,w) { n, "", i, t, c, sub, 0, 0, 0, cx, (GUI::Widget **)w, 0, 0}
+#define NIMENTRYX(n,s,i,t,c,cx,sub,w) { n, s, i, t, c, sub, 0, 0, 0, cx, (GUI::Widget **)w, 0, 0}
 #endif
 
 

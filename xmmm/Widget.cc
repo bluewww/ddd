@@ -49,6 +49,12 @@ Xmmm::String::c(void) const
     return s_.c_str();
 }
 
+const char *
+Xmmm::String::c_str(void) const
+{
+    return s_.c_str();
+}
+
 Xmmm::String
 Xmmm::String::operator+(const Xmmm::String &str) const
 {

@@ -33,9 +33,9 @@
 #include "strclass.h"
 #include "bool.h"
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 #include <X11/Intrinsic.h>
-#endif // IF_MOTIF
+#endif
 
 #if !defined(IF_XM)
 #include <GUI/RadioButton.h>
@@ -94,15 +94,15 @@ extern void sourceSetAllRegistersCB         (GUI::RadioButton *);
 #endif
 extern void sourceSetDisplayGlyphsCB        (CB_ARG_LIST_2());
 extern void sourceSetUseSourcePathCB        (CB_ARG_LIST_2());
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 extern void sourceSetTabWidthCB             (CB_ARG_LIST_3());
 extern void sourceSetSourceIndentCB 	    (CB_ARG_LIST_3());
 extern void sourceSetCodeIndentCB 	    (CB_ARG_LIST_3());
-#else // NOT IF_MOTIF
+#else
 extern void sourceSetTabWidthCB             (RANGE_P);
 extern void sourceSetSourceIndentCB 	    (RANGE_P);
 extern void sourceSetCodeIndentCB 	    (RANGE_P);
-#endif // IF_MOTIF
+#endif
 
 extern void graphToggleDetectAliasesCB      (CB_ARG_LIST_TOGGLE(,));
 extern void graphToggleAlign2dArraysCB      (CB_ARG_LIST_TOGGLE(,));
@@ -115,15 +115,15 @@ extern void graphToggleAutoCloseCB          (CB_ARG_LIST_TOGGLE(,));
 extern void graphToggleShowAnnotationsCB    (CB_ARG_LIST_TOGGLE(,));
 extern void graphToggleShowDependentTitlesCB(CB_ARG_LIST_TOGGLE(,));
 extern void graphToggleClusterDisplaysCB    (CB_ARG_LIST_TOGGLE(,));
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 extern void graphSetGridSizeCB              (CB_ARG_LIST_3());
 extern void graphSetDisplayPlacementCB      (CB_ARG_LIST_23(,));
-#else // NOT IF_MOTIF
+#else
 extern void graphSetGridSizeCB              (RANGE_P);
 extern void graphSetDisplayPlacementCB      (TOGGLEBUTTON_P w, XmOrientation);
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 extern void dddToggleGroupIconifyCB         (CB_ARG_LIST_3());
 extern void dddToggleUniconifyWhenReadyCB   (CB_ARG_LIST_3());
 extern void dddToggleSeparateExecWindowCB   (CB_ARG_LIST_3());
@@ -132,7 +132,7 @@ extern void dddToggleSaveHistoryOnExitCB    (CB_ARG_LIST_3());
 extern void dddToggleSuppressWarningsCB     (CB_ARG_LIST_3());
 extern void dddToggleWarnIfLockedCB         (CB_ARG_LIST_3());
 extern void dddToggleSaveOptionsOnExitCB    (CB_ARG_LIST_3());
-#else // NOT IF_MOTIF
+#else
 extern void dddToggleGroupIconifyCB         (Widget);
 extern void dddToggleUniconifyWhenReadyCB   (Widget);
 extern void dddToggleSeparateExecWindowCB   (Widget);
@@ -141,25 +141,25 @@ extern void dddToggleSaveHistoryOnExitCB    (Widget);
 extern void dddToggleSuppressWarningsCB     (Widget);
 extern void dddToggleWarnIfLockedCB         (Widget);
 extern void dddToggleSaveOptionsOnExitCB    (Widget);
-#endif // IF_MOTIF
+#endif
 
 extern void dddToggleButtonTipsCB           (CB_ARG_LIST_TOGGLE(,));
 extern void dddToggleValueTipsCB            (CB_ARG_LIST_TOGGLE(,));
 extern void dddToggleButtonDocsCB           (CB_ARG_LIST_TOGGLE(,));
 extern void dddToggleValueDocsCB            (CB_ARG_LIST_TOGGLE(,));
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 extern void dddToggleButtonCaptionsCB       (CB_ARG_LIST_13(,));
 extern void dddToggleButtonImagesCB         (CB_ARG_LIST_13(,));
 extern void dddToggleFlatButtonsCB          (CB_ARG_LIST_13(,));
 extern void dddToggleColorButtonsCB         (CB_ARG_LIST_13(,));
 extern void dddToggleToolbarsAtBottomCB     (CB_ARG_LIST_13(,));
-#else // NOT IF_MOTIF
+#else
 extern void dddToggleButtonCaptionsCB       (TOGGLEBUTTON_P);
 extern void dddToggleButtonImagesCB         (TOGGLEBUTTON_P);
 extern void dddToggleFlatButtonsCB          (TOGGLEBUTTON_P);
 extern void dddToggleColorButtonsCB         (TOGGLEBUTTON_P);
 extern void dddToggleToolbarsAtBottomCB     (TOGGLEBUTTON_P);
-#endif // IF_MOTIF
+#endif
 
 extern void dddSetCrashCB                   (CB_ALIST_2(XtP(long)));
 extern void dddClearMaintenanceCB           (CB_ALIST_NULL);
@@ -170,17 +170,17 @@ extern void dddSetStatusAtBottomCB          (Widget, XtPointer, XtPointer);
 extern void dddSetToolBarCB                 (CB_ARG_LIST_12(,));
 extern void dddSetKeyboardFocusPolicyCB     (CB_ARG_LIST_12(,));
 extern void dddSetPannerCB                  (CB_ARG_LIST_12(,));
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 extern void dddSetDebuggerCB                (CB_ARG_LIST_123(,,));
 extern void dddToggleAutoDebuggerCB         (CB_ARG_LIST_13(,));
 extern void dddSetCutCopyPasteBindingsCB    (CB_ARG_LIST_23(,));
 extern void dddSetSelectAllBindingsCB       (CB_ARG_LIST_23(,));
-#else // NOT IF_MOTIF
+#else
 extern void dddSetDebuggerCB                (TOGGLEBUTTON_P, DebuggerType);
 extern void dddToggleAutoDebuggerCB         (TOGGLEBUTTON_P);
 extern void dddSetCutCopyPasteBindingsCB    (TOGGLEBUTTON_P, BindingStyle);
 extern void dddSetSelectAllBindingsCB       (TOGGLEBUTTON_P, BindingStyle);
-#endif // IF_MOTIF
+#endif
 
 extern void dddSetUndoBufferSizeCB          (CB_ALIST_1(ENTRY_P));
 extern void dddClearUndoBufferCB            (CB_ARG_LIST_NULL);
@@ -194,7 +194,11 @@ extern void dddSetUncompressCommandCB       (CB_ALIST_1(ENTRY_P));
 extern void dddSetWWWCommandCB              (CB_ALIST_1(ENTRY_P));
 extern void dddSetBuiltinPlotWindowCB       (CB_ALIST_2(XtP(long)));
 
-extern void DDDSaveOptionsCB                (CB_ALIST_12(Widget, XtP(unsigned long)));
+#if defined(IF_XM)
+extern void DDDSaveOptionsCB                (Widget, XtPointer, XtPointer);
+#else
+extern void DDDSaveOptionsCB                (GUI::Widget *, unsigned long);
+#endif
 extern void DDDSaveOptionsAsCB              (Widget, XtPointer, XtPointer);
 
 #endif // _DDD_options_h

@@ -53,8 +53,9 @@ Xmmm::Window::init_signals(void)
 			  XtPointer(this));
 }
 
-Xmmm::Window::Window(::Widget parent, const Xmmm::String &name,
-		     int argc, char **argv)
+void
+Xmmm::Window::init(::Widget parent, const Xmmm::String &name,
+		   int argc, char **argv)
 {
     Arg args[10];
     int nargs;
@@ -80,6 +81,18 @@ Xmmm::Window::Window(::Widget parent, const Xmmm::String &name,
 
     init_signals();
     postinit();
+}
+
+Xmmm::Window::Window(::Widget parent, const Xmmm::String &name,
+		     int argc, char **argv)
+{
+    init(parent, name, argc, argv);
+}
+
+Xmmm::Window::Window(Xmmm::Widget &parent, const Xmmm::String &name,
+		     int argc, char **argv)
+{
+    init(parent.internal(), name, argc, argv);
 }
 
 Xmmm::Window::~Window(void)

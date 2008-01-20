@@ -41,6 +41,18 @@ Dialog::Dialog(Gtk::Window *parent, const String &name):
     postinit();
 }
 
+Dialog::Dialog(GtkX::Widget &parent, const String &name)
+{
+    set_name(name.s());
+    set_title(name.s());
+    GtkX::VBox *box = new GtkX::VBox(*this, name+String("_vbox"));
+    box->show();
+    buttons_ = new GtkX::HBox(*this, name+String("_buttons"));
+    buttons_->show();
+    vbox_ = box;
+    postinit();
+}
+
 Dialog::~Dialog(void)
 {
     delete vbox_;

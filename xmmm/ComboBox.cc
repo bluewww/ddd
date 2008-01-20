@@ -31,30 +31,30 @@
 using namespace Xmmm;
 
 void
-ComboBox::init_signals(void)
+ComboBoxEntryText::init_signals(void)
 {
 }
 
-ComboBox::ComboBox(::Widget parent, const Xmmm::String &name)
+ComboBoxEntryText::ComboBoxEntryText(::Widget parent, const Xmmm::String &name)
 {
     combobox_ = XmCreateComboBox(parent, (char *)name.c(), NULL, 0);
     init_signals();
     postinit();
 }
 
-ComboBox::ComboBox(Xmmm::Container &parent, const Xmmm::String &name)
+ComboBoxEntryText::ComboBoxEntryText(Xmmm::Container &parent, const Xmmm::String &name)
 {
     combobox_ = XmCreateComboBox(parent.xt_container(), (char *)name.c(), NULL, 0);
     init_signals();
     postinit();
 }
 
-ComboBox::~ComboBox(void)
+ComboBoxEntryText::~ComboBoxEntryText(void)
 {
     XtDestroyWidget(combobox_);
 }
 
-::Widget ComboBox::internal(void)
+::Widget ComboBoxEntryText::internal(void)
 {
     return combobox_;
 }

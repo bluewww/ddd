@@ -37,7 +37,7 @@ namespace Xmmm {
     class Box1: public Container {
 	::Widget b2_;
     public:
-	Box1(Xmmm::Widget parent, const Xmmm::String &name="");
+	Box1(Xmmm::Widget &parent, const Xmmm::String &name="");
 	Box1(::Widget parent, const Xmmm::String &name=""); // TEMPORARY
 	~Box1(void);
 	::Widget internal(void); // TEMPORARY

@@ -40,13 +40,17 @@ namespace GtkX {
 
     class Menu: public GtkX::Container, public Gtk::Menu {
     public:
-	Menu(GtkX::Container &parent, const String &name="");
-	Menu(Gtk::Container *parent, const String &name="");
+	Menu(GtkX::Widget &parent, const String &name="");
+	Menu(Gtk::Widget *parent, const String &name="");
 	~Menu(void);
 	Gtk::Widget *internal(void);
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
 #include <GtkX/redirect.h>
     };
+
+    // These are distinct for Motif, identical for Gtk.
+    typedef Menu PopupMenu;
+    typedef Menu PulldownMenu;
 
 }
 

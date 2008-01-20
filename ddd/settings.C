@@ -4424,5 +4424,5 @@ void dddDefineCommandCB(CB_ARG_LIST_1(w))
 
     UpdateDefinePanelCB();
     refresh_combo_box();
-    manage_and_raise1(dialog);
+    manage_and_raise(dialog);
 }

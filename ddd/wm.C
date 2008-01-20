@@ -205,9 +205,9 @@ void raise_shell(Widget w)
     }
 }
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 
-void manage_and_raise1(Widget w)
+void manage_and_raise(Widget w)
 {
     if (w != 0)
     {
@@ -243,9 +243,7 @@ void manage_and_raise1(Widget w)
     }
 }
 
-#endif
-
-#if !defined(IF_XM)
+#else
 
 void manage_and_raise(GUI::Widget *w)
 {
@@ -256,17 +254,18 @@ void manage_and_raise(GUI::Widget *w)
 	w->show();
 }
 
-void manage_and_raise2(Widget w)
+void manage_and_raise1(Widget w)
 {
 #ifdef NAG_ME
 #warning Raise not implemented.
 #endif
-#ifdef IF_XMMM
-    manage_and_raise1(w);
+    if (w != 0) {
+#if defined(IF_XMMM)
+	XtManageChild(w);
 #else
-    if (w != 0)
 	w->show();
 #endif
+    }
 }
 
 #endif

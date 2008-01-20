@@ -23,7 +23,7 @@
 
 using namespace Xmmm;
 
-BulletinBoard::BulletinBoard(Xmmm::Widget parent, const Xmmm::String &name,
+BulletinBoard::BulletinBoard(Xmmm::Widget &parent, const Xmmm::String &name,
 			     std::vector<Arg> &args)
 {
     bb_ = XmCreateBulletinBoard(parent.xt_container(), (char *)name.c(),

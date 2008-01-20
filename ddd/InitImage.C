@@ -243,9 +243,9 @@ Boolean InstallImage(XIMAGE_P image, const char *image_name)
 #else // NOT IF_MOTIF
 
 // Just store it in a variable!
-Boolean InstallImage(XIMAGE_P image, XIMAGE_P *image_name)
+Boolean InstallImage(XIMAGE_P image, XIMAGE_P &image_name)
 {
-    *image_name = image;
+    image_name = image;
 }
 
 #endif // IF_MOTIF
@@ -254,7 +254,7 @@ Boolean InstallImage(XIMAGE_P image, XIMAGE_P *image_name)
 #ifdef IF_MOTIF
 Boolean InstallBitmap(unsigned char *bits, int width, int height, const char *name)
 #else // NOT IF_MOTIF
-Boolean InstallBitmap(unsigned char *bits, int width, int height, XIMAGE_P *name)
+Boolean InstallBitmap(unsigned char *bits, int width, int height, XIMAGE_P &name)
 #endif // IF_MOTIF
 {
     XIMAGE_P image = CreateImageFromBitmapData(bits, width, height);

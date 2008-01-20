@@ -91,7 +91,15 @@ private:
 public:
     Delay(Widget w = 0);
     virtual ~Delay();
+#if defined(IF_XM)
     static void register_shell(Widget w);
+#elif defined(IF_XMMM)
+    static void register_shell(Widget w);
+    static void register_shell1(GUI::Widget *w);
+#else
+    static void register_shell(Gtk::Widget *w);
+    static void register_shell1(GUI::Widget *w);
+#endif
     static const WidgetArray& shells() { return _shells; }
 
     static void (*shell_registered)(Widget w);

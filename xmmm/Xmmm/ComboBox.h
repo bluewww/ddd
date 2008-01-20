@@ -34,7 +34,7 @@
 
 namespace Xmmm {
 
-    class ComboBox: public Widget {
+    class ComboBoxEntryText: public Widget {
     private:
 	::Widget combobox_;
 	void init_signals(void);
@@ -42,9 +42,9 @@ namespace Xmmm {
 	sigc::signal<void> signal_clicked_;
 	static void activate_callback(::Widget widget, XtPointer data);
     public:
-	ComboBox(Xmmm::Container &parent, const Xmmm::String &name="");
-	ComboBox(::Widget parent, const Xmmm::String &name=""); // TEMPORARY
-	~ComboBox(void);
+	ComboBoxEntryText(Xmmm::Container &parent, const Xmmm::String &name="");
+	ComboBoxEntryText(::Widget parent, const Xmmm::String &name=""); // TEMPORARY
+	~ComboBoxEntryText(void);
 	::Widget internal(void); // TEMPORARY
     };
 

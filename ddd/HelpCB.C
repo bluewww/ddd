@@ -1196,7 +1196,11 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 	MMEnd
     };
 
+#if defined(IF_XM)
     MMaddItems(menubar, more_menubar);
+#else
+    MMaddItems(menubar, NULL, more_menubar);
+#endif
     MMaddCallbacks(more_menubar);
     XtVaSetValues(view_index, XmNset, True, XtPointer(0));
 
@@ -1506,7 +1510,11 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
 	MMEnd
     };
 
+#if defined(IF_XM)
     MMaddItems(menubar, more_menubar);
+#else
+    MMaddItems(menubar, NULL, more_menubar);
+#endif
     MMaddCallbacks(more_menubar);
 
     int columns = max_width(text);

@@ -346,6 +346,14 @@ void Delay::register_shell(Widget widget)
     assert(delays.size() == _shells.size());
 }
 
+#if !defined(IF_XM)
+void
+Delay::register_shell1(GUI::Widget *w)
+{
+    Delay::register_shell(w->internal());
+}
+#endif
+
 Delay::~Delay()
 {
     assert(delays.size() == _shells.size());

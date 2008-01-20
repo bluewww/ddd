@@ -700,7 +700,11 @@ void calc_position(int &x, int &y, bool &push_in)
 
 void popupAct(Widget, XEvent *event, String*, Cardinal*)
 {
-    static MENU_P gdb_popup_w = 0;
+#if defined(IF_XM)
+    static Widget gdb_popup_w = 0;
+#else
+    static GUI::WidgetPtr<GUI::PopupMenu> gdb_popup_w = 0;
+#endif
 
     if (gdb_popup_w == 0)
     {

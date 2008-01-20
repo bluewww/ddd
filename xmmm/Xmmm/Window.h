@@ -42,9 +42,11 @@ namespace Xmmm {
 	sigc::signal<bool,XEvent*> signal_delete_;
 	static void delete_callback(::Widget widget, XtPointer data);
     public:
+	void init(::Widget parent, const Xmmm::String &name="",
+		  int argc=0, char **argv=NULL); // TEMPORARY
 	Window(::Widget parent, const Xmmm::String &name="",
 	       int argc=0, char **argv=NULL); // TEMPORARY
-	Window(Xmmm::Widget parent, const Xmmm::String &name="",
+	Window(Xmmm::Widget &parent, const Xmmm::String &name="",
 	       int argc=0, char **argv=NULL);
 	~Window(void);
 	::Widget internal(void);

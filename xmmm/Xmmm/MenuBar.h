@@ -34,7 +34,7 @@
 
 namespace Xmmm {
 
-    class MenuBar: public Widget {
+    class MenuBar: public Container {
     private:
 	::Widget menubar_;
 	void init_signals(void);
