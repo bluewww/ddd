@@ -31,12 +31,21 @@
 #ifndef GTKX_COMBOBOX_H
 #define GTKX_COMBOBOX_H
 
-#include <GtkX/Widget0.h>
+#include <GtkX/Container.h>
 #include <gtkmm/comboboxentrytext.h>
 
 namespace GtkX {
 
-    typedef Widget0<Gtk::ComboBoxEntryText> ComboBoxEntryText;
+    class ComboBoxEntryText: public Widget, public Gtk::ComboBoxEntryText {
+    public:
+	ComboBoxEntryText(GtkX::Container &parent, const String &name="");
+	ComboBoxEntryText(Gtk::Container *parent, const String &name="");
+	~ComboBoxEntryText(void);
+	Gtk::Widget *internal(void);
+	String get_text(void);
+	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
+#include <GtkX/redirect.h>
+    };
 
 }
 

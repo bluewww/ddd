@@ -15,6 +15,7 @@ namespace GtkX {
     extern Glib::Quark gtkx_super_quark;
 
     class Widget;
+    class Container;
 
     template <class T>
     class PropertyProxy: public Glib::PropertyProxy<T> {
@@ -36,6 +37,7 @@ namespace GtkX {
 	Glib::ustring &s(void);
 	gunichar operator[](int i) const;
 	const char *c(void) const; // FIXME - don't expose raw char*
+	const char *c_str(void) const; // FIXME - don't expose raw char*
 	const Glib::ustring &s(void) const;
 	String operator+(const String &str) const;
 	bool operator==(const String &s) const;
@@ -49,6 +51,7 @@ namespace GtkX {
 	void postinit(void);
 	// *Instantiable* subclasses will have an associated GTK(mm) widget:
 	virtual Gtk::Widget *internal(void) = 0;
+	Container *get_parent(void);
 	void show(void);
 	void hide(void);
 	String get_name(void);

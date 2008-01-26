@@ -556,5 +556,5 @@ void TicTacToeCB(Widget, XtPointer, XtPointer)
     }
 
     ResetTicTacToeCB(0, 0, 0);
-    manage_and_raise1(dialog);
+    manage_and_raise(dialog);
 }

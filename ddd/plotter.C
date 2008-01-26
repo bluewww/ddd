@@ -759,7 +759,7 @@ static void PlotterNotFoundHP(Agent *plotter, void *client_data, void *)
     XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, XtPointer(0));
 
     Delay::register_shell(dialog);
-    manage_and_raise1(dialog);
+    manage_and_raise(dialog);
 }
 
 
@@ -993,7 +993,7 @@ PlotAgent *new_plotter(const string& name, DispValue *source)
 	base = cmd.before(' ');
     MString msg = rm("Starting ") + tt(base) + rm("...");
     XtVaSetValues(dialog, XmNmessageString, msg.xmstring(), XtPointer(0));
-    manage_and_raise1(dialog);
+    manage_and_raise(dialog);
     wait_until_mapped(dialog);
 
     // Invoke plot process
@@ -1176,7 +1176,7 @@ static void PlotCommandCB(Widget, XtPointer client_data, XtPointer)
 	set_sensitive(apply, false);
     }
 
-    manage_and_raise1(plot->command_dialog);
+    manage_and_raise(plot->command_dialog);
 }
 
 
@@ -1247,7 +1247,7 @@ static void DoExportCB(Widget w, XtPointer client_data, XtPointer call_data)
 			      + quote(target) + "?");
 	XtVaSetValues (confirm_overwrite_dialog, XmNmessageString, 
 		       question.xmstring(), XtPointer(0));
-	manage_and_raise1(confirm_overwrite_dialog);
+	manage_and_raise(confirm_overwrite_dialog);
 
 	XtAppContext app_context = XtWidgetToApplicationContext(plot->shell);
 	while (!yes && !no)
@@ -1305,7 +1305,7 @@ static void ExportPlotCB(Widget w, XtPointer client_data, XtPointer call_data)
 	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, XtPointer(0));
     }
 
-    manage_and_raise1(plot->export_dialog);
+    manage_and_raise(plot->export_dialog);
 }
 
 

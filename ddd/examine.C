@@ -239,12 +239,12 @@ static string examine_command()
 
 #if defined(IF_XM)
 
-static void DisplayExaminedCB(Widget w)
+static void DisplayExaminedCB(Widget w, XtPointer, XtPointer)
 {
     gdb_command("graph display `" + examine_command() + "`", w);
 }
 
-static void PrintExaminedCB(Widget w)
+static void PrintExaminedCB(Widget w, XtPointer, XtPointer)
 {
     gdb_command(examine_command(), w);
 }
@@ -367,5 +367,9 @@ void gdbExamineCB(CB_ALIST_1(Widget w))
 #endif
     }
 
+#if defined(IF_XM)
     manage_and_raise(dialog);
+#else
+    manage_and_raise1(dialog);
+#endif
 }

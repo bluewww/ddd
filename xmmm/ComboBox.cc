@@ -25,6 +25,7 @@
 // reparented.  Therefore we need a constructor with extra arguments.
 
 #include <Xm/ComboBox.h>
+#include <Xm/Text.h>
 
 #include <Xmmm/ComboBox.h>
 
@@ -57,5 +58,19 @@ ComboBoxEntryText::~ComboBoxEntryText(void)
 ::Widget ComboBoxEntryText::internal(void)
 {
     return combobox_;
+}
+
+Xmmm::String
+ComboBoxEntryText::get_text(void)
+{
+    ::Widget text;
+    XtVaGetValues(combobox_, XmNtextField, &text, XtPointer(0));
+    if (!text) {
+	return Xmmm::String("");
+    }
+    ::String content = XmTextGetString(text);
+    Xmmm::String retval(content);
+    XtFree(content);
+    return retval;
 }
 

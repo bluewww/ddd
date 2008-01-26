@@ -459,7 +459,7 @@ void gdbHistoryCB(CB_ARG_LIST_1(w))
 #ifdef IF_MOTIF
     if (gdb_history_w)
     {
-	manage_and_raise1(gdb_history_w);
+	manage_and_raise(gdb_history_w);
 	return;
     }
 
@@ -516,7 +516,7 @@ void gdbHistoryCB(CB_ARG_LIST_1(w))
     XmListSelectPos(gdb_commands_w, 0, False);
     XmListSetBottomPos(gdb_commands_w, 0);
 
-    manage_and_raise1(gdb_history_w);
+    manage_and_raise(gdb_history_w);
 #else // NOT IF_MOTIF
     std::cerr << "History callback not implemented\n";
 #endif // IF_MOTIF

@@ -245,20 +245,14 @@ void manage_and_raise(Widget w)
 
 #else
 
-void manage_and_raise(GUI::Widget *w)
+void manage_and_raise1(GUI::Widget *w)
 {
-#ifdef NAG_ME
-#warning Raise not implemented.
-#endif
     if (w != 0)
 	w->show();
 }
 
-void manage_and_raise1(Widget w)
+void manage_and_raise(Widget w)
 {
-#ifdef NAG_ME
-#warning Raise not implemented.
-#endif
     if (w != 0) {
 #if defined(IF_XMMM)
 	XtManageChild(w);

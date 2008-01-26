@@ -216,7 +216,7 @@ extern void dummy_callback(Widget);
 #define MMNoCB PTR_FUN(dummy_callback)
 #endif
 
-#if defined(XM)
+#if defined(IF_XM)
 #define MMEnd  { 0, MMPush, MMNoCB, 0, 0, 0, 0 }
 #define MMSep  { "separator", MMSeparator, MMNoCB, 0, 0, 0, 0 }
 #else
@@ -268,9 +268,9 @@ extern void dummy_xcallback(GUI::Widget *);
 #define MENTRY(n,s,t,c,sub,w) { n, s, NULL, t, c, sub, (Widget *)w, 0, 0, MDUMMY, 0}
 #define IMENTRY(n,i,t,c,sub,w) { n, "", i, t, c, sub, (Widget *)w, 0, 0, MDUMMY, 0}
 #define NIMENTRY(n,s,i,t,c,sub,w) { n, s, i, t, c, sub, (Widget *)w, 0, 0, MDUMMY, 0}
-#define MENTRYX(n,s,t,c,cx,sub,w) { n, s, NULL, t, c, sub, 0, 0, 0, cx, (GUI::Widget **)w, 0, 0}
-#define IMENTRYX(n,i,t,c,cx,sub,w) { n, "", i, t, c, sub, 0, 0, 0, cx, (GUI::Widget **)w, 0, 0}
-#define NIMENTRYX(n,s,i,t,c,cx,sub,w) { n, s, i, t, c, sub, 0, 0, 0, cx, (GUI::Widget **)w, 0, 0}
+#define MENTRYX(n,s,t,c,cx,sub,w) { n, s, NULL, t, MMNoCB, sub, 0, 0, 0, cx, (GUI::Widget **)w, 0, 0}
+#define IMENTRYX(n,i,t,c,cx,sub,w) { n, "", i, t, MMNoCB, sub, 0, 0, 0, cx, (GUI::Widget **)w, 0, 0}
+#define NIMENTRYX(n,s,i,t,c,cx,sub,w) { n, s, i, t, MMNoCB, sub, 0, 0, 0, cx, (GUI::Widget **)w, 0, 0}
 #endif
 
 

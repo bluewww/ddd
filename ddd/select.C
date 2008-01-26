@@ -176,7 +176,7 @@ static void select_from_gdb(const string& question, string& reply)
     delete[] choices;
     delete[] selected;
 
-    manage_and_raise1(gdb_selection_dialog);
+    manage_and_raise(gdb_selection_dialog);
 
     selection_reply = "";
     while (selection_reply.empty() 

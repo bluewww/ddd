@@ -42,13 +42,21 @@ namespace GtkX {
 	ListView *listview_;
 	HBox *buttons_;
     public:
+	void init(Gtk::Window &parent, const String &name,
+		  const std::vector<String> &headers);
 	SelectionDialog(Gtk::Window &parent, const String &name,
+			const std::vector<String> &headers);
+	SelectionDialog(GtkX::Shell &parent, const String &name,
 			const std::vector<String> &headers);
 	Gtk::Widget *internal(void);
 	Gtk::Container *gtk_container(void);
 	~SelectionDialog(void);
 	ListView *list(void);
-	std::string get_selected(void);
+	std::string get_selected(void); // DEPRECATED
+	// FIXME: SelectionDialog can be List+Entry.
+	// Entry can be entered by hand, not necessarily from list.
+	std::string get_text(void);
+	void set_text(const std::string &s);
 	void pack_start(Gtk::Widget &child,
 			PackOptions options = PACK_EXPAND_WIDGET,
 			int padding = 0);

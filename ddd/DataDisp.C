@@ -811,7 +811,7 @@ void DataDisp::applyThemeCB (CB_ALIST_12(Widget w, XtP(const char *) client_data
     button->signal_clicked().connect(sigc::bind(PTR_FUN(DestroyShellCB), dialog));
 #endif // IF_MOTIF
 
-    manage_and_raise1(dialog);
+    manage_and_raise(dialog);
 }
 
 // Unapply the theme in CLIENT_DATA from the selected item.
@@ -2076,7 +2076,7 @@ void DataDisp::new_displayCD (Widget w, const BoxPoint &box_point)
     entry->set_text(XMST(info.display_expression.chars()));
 #endif // IF_MOTIF
 
-    manage_and_raise1(new_display_dialog);
+    manage_and_raise(new_display_dialog);
 }
 
 // Create a new display
@@ -2121,7 +2121,7 @@ void DataDisp::dependentCB(CB_ALIST_1(Widget w))
     Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(info.text->get_child());
     entry->set_text(XMST(info.display_expression.chars()));
 #endif // IF_MOTIF
-    manage_and_raise1(dependent_display_dialog);
+    manage_and_raise(dependent_display_dialog);
 }
 
 void DataDisp::displayArgCB(CB_ALIST_12(Widget w, XtP(bool) client_data))
@@ -6222,7 +6222,7 @@ TIMEOUT_RETURN_TYPE DataDisp::RefreshDisplayListCB(TM_ALIST_1(XtP(bool) client_d
 
 void DataDisp::EditDisplaysCB(CB_ALIST_NULL)
 {
-    manage_and_raise1(edit_displays_dialog_w);
+    manage_and_raise(edit_displays_dialog_w);
 }
 
 
@@ -6391,7 +6391,7 @@ void DataDisp::setCB(CB_ALIST_1(Widget w))
     button = info->dialog->add_button(XMST("Cancel"), 0);
     button->signal_clicked().connect(sigc::bind(PTR_FUN(DestroyThisCB), info->dialog));
 #endif // IF_MOTIF
-    manage_and_raise1(info->dialog);
+    manage_and_raise(info->dialog);
 }
 
 void DataDisp::SetDone(const string& complete_answer, void *qu_data)

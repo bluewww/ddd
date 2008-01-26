@@ -398,7 +398,7 @@ void PrintAgainCB(Widget w, XtPointer client_data, XtPointer call_data)
 				  + quote(f) + "?");
 	    XtVaSetValues (confirm_overwrite_dialog, XmNmessageString, 
 			   question.xmstring(), XtPointer(0));
-	    manage_and_raise1(confirm_overwrite_dialog);
+	    manage_and_raise(confirm_overwrite_dialog);
 	}
 
 	break;
@@ -855,7 +855,11 @@ static void SetGCCustom(CB_ALIST_1(TOGGLEBUTTON_P w))
     if (!XmToggleButtonGetState(w))
 	return;
 
+#if defined(IF_XM)
     manage_and_raise(paper_size_dialog);
+#else
+    manage_and_raise1(paper_size_dialog);
+#endif
 }
 
 static void SetGCOrientation(CB_ALIST_12(TOGGLEBUTTON_P w, XtP(long) client_data))
@@ -957,7 +961,7 @@ static void BrowseNameCB(CB_ALIST_1(Widget w))
 #endif // IF_MOTIF
     }
 
-    manage_and_raise1(dialog);
+    manage_and_raise(dialog);
 }
 
 static void PrintCB(Widget parent, bool displays)
@@ -975,7 +979,11 @@ static void PrintCB(Widget parent, bool displays)
 	XmToggleButtonSetState(print_displays_w, displays, True);
 	XmToggleButtonSetState(print_selected_w, 
 			       data_disp->have_selection(), True);
+#if defined(IF_XM)
 	manage_and_raise(print_dialog);
+#else
+	manage_and_raise1(print_dialog);
+#endif
 	return;
     }
 
@@ -1294,7 +1302,11 @@ static void PrintCB(Widget parent, bool displays)
     XmTextFieldSetString(print_command_field, XMST(command.chars()));
 
     // Gofer it!
+#if defined(IF_XM)
     manage_and_raise(print_dialog);
+#else
+    manage_and_raise1(print_dialog);
+#endif
 }
 
 void PrintGraphCB(CB_ARG_LIST_1(w))

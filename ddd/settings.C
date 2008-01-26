@@ -3427,13 +3427,13 @@ void update_themes()
 
 
 // Popup editor for debugger settings
-void dddPopupSettingsCB (CB_ARG_LIST_NULL)
+void dddPopupSettingsCB (CB_ALIST_1(Widget))
 {
     Widget settings = create_settings(gdb->type());
     if (settings == 0)
 	return;
 
-    manage_and_raise1(settings);
+    manage_and_raise(settings);
 }
 
 // Popup editor for debugger infos
@@ -3443,17 +3443,17 @@ void dddPopupInfosCB (CB_ARG_LIST_NULL)
     if (infos == 0)
 	return;
 
-    manage_and_raise1(infos);
+    manage_and_raise(infos);
 }
 
 // Popup editor for debugger infos
-void dddPopupSignalsCB (CB_ARG_LIST_NULL)
+void dddPopupSignalsCB (CB_ALIST_1(Widget w))
 {
     Widget signals = create_signals(gdb->type());
     if (signals == 0)
 	return;
 
-    manage_and_raise1(signals);
+    manage_and_raise(signals);
 }
 
 // Popup editor for display themes
@@ -3463,7 +3463,7 @@ void dddPopupThemesCB (CB_ARG_LIST_NULL)
     if (themes == 0)
 	return;
 
-    manage_and_raise1(themes);
+    manage_and_raise(themes);
 }
 
 // True iff settings might have changed
@@ -4424,5 +4424,9 @@ void dddDefineCommandCB(CB_ARG_LIST_1(w))
 
     UpdateDefinePanelCB();
     refresh_combo_box();
+#if defined(IF_XM)
     manage_and_raise(dialog);
+#else
+    manage_and_raise1(dialog);
+#endif
 }

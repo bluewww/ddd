@@ -33,6 +33,10 @@
 #include "GDBAgent.h"
 #include "question.h"		// NO_GDB_ANSWER
 
+#if !defined(IF_XM)
+#include <GUI/Widget.h>
+#endif
+
 // Priorities.  The higher the priority, the earlier the command
 // will be executed.
 #define COMMAND_PRIORITY_WORK  -2  // Work procedures
@@ -240,6 +244,9 @@ extern void syncCommandQueue();
 
 // Return a shell widget according to last command origin
 extern WINDOW_P find_shell(Widget w = 0);
+#if !defined(IF_XM)
+extern GUI::WidgetPtr<GUI::Shell> find_shell1(GUI::Widget *w = NULL);
+#endif
 
 // Process next element from command queue
 extern TIMEOUT_RETURN_TYPE processCommandQueue(TIMEOUT_ARG_LIST(p = 0, id = 0));

@@ -30,7 +30,7 @@
 
 namespace GtkX {
 
-    class Window: public Gtk::Window, public Container {
+    class Window: public Gtk::Window, public Shell {
 	void init_signals(void);
     protected:
 	sigc::signal<bool, GdkEvent *> signal_delete_;

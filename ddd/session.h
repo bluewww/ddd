@@ -160,8 +160,13 @@ extern void SaveSmSessionCB(Widget, XtPointer, XtPointer);
 extern void ShutdownSmSessionCB(Widget, XtPointer, XtPointer);
 
 // Session editor
-extern void OpenSessionCB(CB_ARG_LIST_1(w));
-extern void SaveSessionAsCB(CB_ARG_LIST_1(w));
+#if defined(IF_XM)
+extern void SaveSessionAsCB(Widget, XtPointer, XtPointer);
+extern void OpenSessionCB(Widget, XtPointer, XtPointer);
+#else
+extern void SaveSessionAsCB(GUI::Widget *);
+extern void OpenSessionCB(GUI::Widget *);
+#endif
 
 // Restart inferior debugger
 extern void RestartDebuggerCB(CB_ALIST_NULL);

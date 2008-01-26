@@ -1944,7 +1944,7 @@ void gdbOpenFileCB(CB_ARG_LIST_1(w))
     static Widget dialog = 
 	create_file_dialog(w, "DDD: Open Program", PTR_FUN(openFileDone));
 #endif // IF_MOTIF
-    manage_and_raise1(dialog);
+    manage_and_raise(dialog);
 }
 
 void gdbOpenRecentCB(CB_ARG_LIST_12(w, client_data))
@@ -1978,7 +1978,7 @@ void gdbOpenCoreCB(CB_ARG_LIST_1(w))
     static Widget dialog = 
 	create_file_dialog(w, "core_files", PTR_FUN(openCoreDone));
 #endif // IF_MOTIF
-    manage_and_raise1(dialog);
+    manage_and_raise(dialog);
     warn_if_no_program(dialog);
 }
 
@@ -1994,7 +1994,7 @@ void gdbOpenSourceCB(CB_ARG_LIST_1(w))
     static Widget dialog = 
 	create_file_dialog(w, "source_files", PTR_FUN(openSourceDone));
 #endif // IF_MOTIF
-    manage_and_raise1(dialog);
+    manage_and_raise(dialog);
 
     open_source_msg();
 
@@ -2053,7 +2053,7 @@ void gdbOpenProcessCB(CB_ARG_LIST_1(w))
     }
 
     update_processes(processes, false);
-    manage_and_raise1(dialog);
+    manage_and_raise(dialog);
     warn_if_no_program(dialog);
 #else // NOT IF_MOTIF
     std::cerr << "gdbOpenProcessCB not supported\n";
@@ -2103,7 +2103,7 @@ void gdbOpenClassCB(CB_ARG_LIST_1(w))
     }
 
     update_classes(classes);
-    manage_and_raise1(dialog);
+    manage_and_raise(dialog);
 #else // NOT IF_MOTIF
     std::cerr << "Open class not supported\n";
 #endif // IF_MOTIF
@@ -2315,6 +2315,6 @@ void gdbLookupSourceCB(CB_ARG_LIST_1(w))
     update_sources(source_list, source_filter);
 
     open_source_msg();
-    manage_and_raise1(dialog);
+    manage_and_raise(dialog);
     warn_if_no_program(dialog);
 }

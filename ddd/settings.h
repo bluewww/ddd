@@ -48,7 +48,7 @@
 // Debugger settings
 
 // Popup editor for debugger settings
-extern void dddPopupSettingsCB(CB_ARG_LIST_NULL);
+extern void dddPopupSettingsCB(CB_ALIST_1(Widget));
 
 // Process `show' output
 extern void process_show(const string& command, string value, bool init = false);
@@ -91,7 +91,7 @@ extern void register_info_button(Widget w);
 // Signal Handling
 
 // Popup editor for signal handling
-extern void dddPopupSignalsCB(CB_ARG_LIST_NULL);
+extern void dddPopupSignalsCB(CB_ALIST_1(Widget));
 
 // Process `handle' output
 extern void process_handle(string line, bool init = false);

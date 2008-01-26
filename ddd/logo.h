@@ -29,6 +29,10 @@
 #ifndef _DDD_logo_h
 #define _DDD_logo_h
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #if defined(IF_MOTIF)
 #include <X11/Intrinsic.h>
 #else

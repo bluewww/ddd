@@ -262,7 +262,7 @@ static bool CheckUngrabCB(int *client_data)
 #else // NOT IF_MOTIF
     dialog_label->set_text(msg.xmstring());
 #endif // IF_MOTIF
-    manage_and_raise1(dialog);
+    manage_and_raise(dialog);
 
 #ifdef IF_MOTIF    
     if (count > 0)

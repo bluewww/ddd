@@ -1008,7 +1008,7 @@ void MMaddItems(GUI::Container *shell, MMDesc items[], bool ignore_seps)
 // Custom menu creation
 //-----------------------------------------------------------------------
 
-#if defined(XM)
+#if defined(IF_XM)
 
 // Create pulldown menu from items
 Widget MMcreatePulldownMenu(Widget parent, const char *name, MMDesc items[],

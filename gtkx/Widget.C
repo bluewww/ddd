@@ -1,4 +1,5 @@
 #include <GtkX/Widget.h>
+#include <gtkmm/container.h>
 
 using namespace GtkX;
 
@@ -59,6 +60,12 @@ String::c(void) const
   return s().c_str();
 }
 
+const char *
+String::c_str(void) const
+{
+  return s().c_str();
+}
+
 Widget::Widget(void)
 {
 }
@@ -74,6 +81,20 @@ Widget::internal(void)
     return NULL;
 }
 #endif
+
+Container *
+Widget::get_parent(void)
+{
+    Gtk::Container *par = internal()->get_parent();
+    // Composite widget?
+    while (par && !par->get_data(gtkx_super_quark)) {
+	par = par->get_parent();
+    }
+    if (!par) {
+	return NULL;
+    }
+    return (GtkX::Container *)par->get_data(gtkx_super_quark);
+}
 
 void
 Widget::show(void)

@@ -25,17 +25,20 @@
 // reparented.  Therefore we need a constructor with extra arguments.
 
 #include <cassert>
+#include <iostream>
 
 #include <gtkmm/treemodel.h>
 
 #include <GtkX/SelectionDialog.h>
 
+#include <cassert>
+
 using namespace GtkX;
 
-SelectionDialog::SelectionDialog(Gtk::Window &parent,
-				 const String &name,
-				 const std::vector<String> &headers):
-    Dialog(name.s(), parent)
+void
+SelectionDialog::init(Gtk::Window &parent,
+		      const String &name,
+		      const std::vector<String> &headers)
 {
     set_name(name.s());
 
@@ -49,6 +52,30 @@ SelectionDialog::SelectionDialog(Gtk::Window &parent,
     buttons_ = new GtkX::HBox(*this, name+String("_buttons"));
     buttons_->show();
     postinit();
+}
+
+SelectionDialog::SelectionDialog(Gtk::Window &parent,
+				 const String &name,
+				 const std::vector<String> &headers):
+    Dialog(name.s(), parent)
+{
+    init(parent, name, headers);
+}
+
+static Gtk::Window &
+check_shell(GtkX::Shell &parent)
+{
+    Gtk::Widget *w = parent.internal();
+    Gtk::Window *win = dynamic_cast<Gtk::Window *>(w);
+    assert(win);
+    return *win;
+}
+
+SelectionDialog::SelectionDialog(GtkX::Shell &parent, const String &name,
+				 const std::vector<String> &headers):
+    Dialog(name.s(), check_shell(parent))
+{
+    init(check_shell(parent), name, headers);
 }
 
 SelectionDialog::~SelectionDialog(void)
@@ -82,6 +109,19 @@ std::string
 SelectionDialog::get_selected(void)
 {
     return listview_->get_selected();
+}
+
+std::string
+SelectionDialog::get_text(void)
+{
+    std::cerr << "SelectionDialog::get_text\n";
+    return std::string("ERROR");
+}
+
+void
+SelectionDialog::set_text(const std::string &s)
+{
+    std::cerr << "SelectionDialog::set_text\n";
 }
 
 void

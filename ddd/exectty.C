@@ -185,7 +185,7 @@ static void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
 #else // NOT IF_MOTIF
     label->set_text(msg.xmstring());
 #endif // IF_MOTIF
-    manage_and_raise1(dialog);
+    manage_and_raise(dialog);
     wait_until_mapped(dialog);
 
     StatusDelay delay("Starting execution window");

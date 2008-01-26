@@ -6303,7 +6303,7 @@ void SourceView::NewBreakpointCB(CB_ALIST_1(Widget w))
 #endif
     }
 
-    manage_and_raise1(dialog);
+    manage_and_raise(dialog);
 }
 
 WatchMode SourceView::selected_watch_mode = WATCH_CHANGE;
@@ -6467,7 +6467,11 @@ void SourceView::NewWatchpointCB(CB_ALIST_1(Widget w))
 
     }
 
+#if defined(IF_XM)
+    manage_and_raise(dialog);
+#else
     manage_and_raise1(dialog);
+#endif
 }
 
 
@@ -7127,7 +7131,11 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, Widget /* origin */)
 
     tie_combo_box_to_history(info->condition, cond_filter);
 
+#if defined(IF_XM)
+    manage_and_raise(info->dialog);
+#else
     manage_and_raise1(info->dialog);
+#endif
     info->spin_locked = false;
 }
 
@@ -7885,9 +7893,9 @@ void SourceView::UpdateBreakpointButtonsCB(CB_ALIST_NULL)
     set_sensitive(bp_area[BPButtons::Delete].widget, selected > 0);
 }
 
-void SourceView::EditBreakpointsCB(CB_ARG_LIST_NULL)
+void SourceView::EditBreakpointsCB(CB_ALIST_1(Widget))
 {
-    manage_and_raise1(edit_breakpoints_dialog_w);
+    manage_and_raise(edit_breakpoints_dialog_w);
 }
 
 
@@ -7987,14 +7995,10 @@ void SourceView::refresh_stack_frames()
     }
 }
 
-void SourceView::ViewStackFramesCB(CB_ARG_LIST_NULL)
+void SourceView::ViewStackFramesCB(CB_ALIST_1(Widget))
 {
     refresh_stack_frames();
-#if defined(IF_XM)
-    manage_and_raise1(stack_dialog_w);
-#else
     manage_and_raise(stack_dialog_w);
-#endif
     stack_dialog_popped_up = true;
     refresh_buttons();
 }
@@ -8422,14 +8426,10 @@ string SourceView::refresh_registers_command()
     return gdb->regs_command(all_registers);
 }
 
-void SourceView::ViewRegistersCB(CB_ARG_LIST_NULL)
+void SourceView::ViewRegistersCB(CB_ALIST_1(Widget))
 {
     refresh_registers();
-#if defined(IF_XM)
-    manage_and_raise1(register_dialog_w);
-#else
     manage_and_raise(register_dialog_w);
-#endif
     register_dialog_popped_up = true;
 }
 
@@ -8648,10 +8648,10 @@ void SourceView::refresh_threads(bool all_threadgroups)
     }
 }
 
-void SourceView::ViewThreadsCB(CB_ARG_LIST_NULL)
+void SourceView::ViewThreadsCB(CB_ALIST_1(Widget))
 {
     refresh_threads(true);
-    manage_and_raise1(thread_dialog_w);
+    manage_and_raise(thread_dialog_w);
     thread_dialog_popped_up = true;
 }
 

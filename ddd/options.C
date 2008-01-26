@@ -2261,7 +2261,7 @@ TIMEOUT_RETURN_TYPE CheckOptionsFileCB(TM_ALIST_NULL)
 	}
 
 	if (!XtIsManaged(dialog))
-	    manage_and_raise1(dialog);
+	    manage_and_raise(dialog);
     }
 
 #ifdef IF_MOTIF    
@@ -3933,7 +3933,7 @@ void DDDSaveOptionsCB(Widget w, XtPointer client_data, XtPointer)
 		      XtPointer(flags));
 	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, 0);
 
-	manage_and_raise1(dialog);
+	manage_and_raise(dialog);
     }
     else if (saving_options_kills_program(flags))
     {
@@ -3951,7 +3951,7 @@ void DDDSaveOptionsCB(Widget w, XtPointer client_data, XtPointer)
 		      XtPointer(flags | MAY_KILL));
 	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, 0);
 
-	manage_and_raise1(dialog);
+	manage_and_raise(dialog);
     }
     else if (saving_options_excludes_data(flags))
     {
@@ -3969,7 +3969,7 @@ void DDDSaveOptionsCB(Widget w, XtPointer client_data, XtPointer)
 		      XtPointer(flags));
 	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, 0);
 
-	manage_and_raise1(dialog);
+	manage_and_raise(dialog);
     }
     else
     {

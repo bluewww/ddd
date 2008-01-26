@@ -207,5 +207,5 @@ void TipOfTheDayCB(Widget w, XtPointer, XtPointer)
     if (!ok)
 	return;
 
-    manage_and_raise1(tip_dialog);
+    manage_and_raise(tip_dialog);
 }

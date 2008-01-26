@@ -40,12 +40,25 @@
 #include "strclass.h"
 #include "bool.h"
 
-void gdbRunCB(CB_ARG_LIST_1(w));
+#if defined(IF_MOTIF)
+void gdbRunCB(Widget, XtPointer, XtPointer);
+#endif
+#if !defined(IF_XM)
+void gdbRunCB1(GUI::Widget *);
+#endif
 
-void gdbMakeCB(CB_ARG_LIST_1(w));
-void gdbMakeAgainCB(CB_ARG_LIST_NULL);
+#if defined(IF_XM)
+void gdbMakeCB(Widget, XtPointer, XtPointer);
+#else
+void gdbMakeCB(GUI::Widget *);
+#endif
+void gdbMakeAgainCB(CB_ALIST_1(Widget));
 
-void gdbChangeDirectoryCB(CB_ARG_LIST_1(w));
+#if defined(IF_XM)
+void gdbChangeDirectoryCB(Widget, XtPointer, XtPointer);
+#else
+void gdbChangeDirectoryCB(GUI::Widget *);
+#endif
 
 void add_to_arguments(const string& line);
 void update_arguments();

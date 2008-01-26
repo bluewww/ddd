@@ -793,10 +793,10 @@ public:
     static string file_of_cursor();
 
     // Callbacks for menu bar
-    static void EditBreakpointsCB(CB_ARG_LIST_NULL);
-    static void ViewStackFramesCB(CB_ARG_LIST_NULL);
-    static void ViewRegistersCB(CB_ARG_LIST_NULL);
-    static void ViewThreadsCB(CB_ARG_LIST_NULL);
+    static void EditBreakpointsCB(CB_ALIST_1(Widget));
+    static void ViewStackFramesCB(CB_ALIST_1(Widget));
+    static void ViewRegistersCB(CB_ALIST_1(Widget));
+    static void ViewThreadsCB(CB_ALIST_1(Widget));
 
     // Refreshing dialogs
     static void refresh_stack_frames();

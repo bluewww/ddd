@@ -383,7 +383,7 @@ static void post_fatal(const string& title, const string& cause,
     label->set_text(mtext.xmstring());
 #endif // IF_MOTIF
 
-    manage_and_raise1(fatal_dialog);
+    manage_and_raise(fatal_dialog);
 
     // Wait until dialog is mapped and synchronize, such that DDD will
     // exit if we get another signal or X error during that time.
@@ -1171,7 +1171,7 @@ static void DDDDoneCB(CB_ALIST_12(Widget w, XtP(long) client_data))
     button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB2), quit_dialog));
 #endif // IF_MOTIF
 
-    manage_and_raise1(quit_dialog);
+    manage_and_raise(quit_dialog);
 }
 
 // Exit immediately if DDD is not ready
@@ -1194,7 +1194,11 @@ void DDDExitCB(CB_ALIST_12(Widget w, XtP(long) client_data))
 
 
 // Restart unconditionally
-static void _DDDRestartCB(CB_ALIST_12(Widget w, XtP(long) client_data))
+#if defined(IF_MOTIF)
+static void _DDDRestartCB(Widget w, XtPointer client_data, XtPointer call_data)
+#else
+static void _DDDRestartCB(Widget w, long client_data)
+#endif
 {
     static string initial_session;
     initial_session = app_data.session;
@@ -1204,7 +1208,7 @@ static void _DDDRestartCB(CB_ALIST_12(Widget w, XtP(long) client_data))
 
     unsigned long flags = (unsigned long)client_data;
 #if defined(IF_XM)
-    DDDSaveOptionsCB(w, flags, NULL);
+    DDDSaveOptionsCB(w, XtPointer(flags), call_data);
 #else
 #ifdef NAG_ME
 #warning Pass parent pointer for dialog constructor
@@ -1257,7 +1261,7 @@ void DDDRestartCB(CB_ARG_LIST_1(w))
 	button->signal_clicked().connect(sigc::bind(PTR_FUN(_DDDRestartCB), button, (flags | MAY_KILL)));
 #endif // IF_MOTIF
     
-	manage_and_raise1(dialog);
+	manage_and_raise(dialog);
     }
     else
 	_DDDRestartCB(CB_ARGS_12(w, flags));

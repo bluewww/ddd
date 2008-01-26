@@ -1340,7 +1340,7 @@ void set_buttons(BOX_P buttons, const _XtString _button_list, bool manage)
 	else if (name == "Apply")
 	    callback = CB_ARG_HIDE_1(PTR_FUN(gdbApplyCB));
 	else if (name == "Make")
-	    callback = CB_ARG_HIDE_01(PTR_FUN(gdbMakeAgainCB));
+	    callback = CB_ARG_HIDE_1(PTR_FUN(gdbMakeAgainCB));
 	else if (name == "Undo" || name == "Back")
 	{
 	    callback = CB_ARG_HIDE_01(PTR_FUN(gdbUndoCB));
@@ -1789,7 +1789,7 @@ void dddEditButtonsCB(CB_ARG_LIST_1(w))
     XtVaSetValues(XtParent(buttons_dialog), XmNtitle, 
 		  DDD_NAME ": Button Editor", XtPointer(0));
 
-    manage_and_raise1(buttons_dialog);
+    manage_and_raise(buttons_dialog);
 #else // NOT IF_MOTIF
 #ifdef NAG_ME
 #warning Buttons dialog?
@@ -1815,7 +1815,7 @@ void dddEditShortcutsCB(CB_ALIST_1(Widget w))
     XtVaSetValues(XtParent(buttons_dialog), XmNtitle, 
 		  DDD_NAME ": Shortcut Editor", XtPointer(0));
 
-    manage_and_raise1(buttons_dialog);
+    manage_and_raise(buttons_dialog);
 #else // NOT IF_MOTIF
 #ifdef NAG_ME
 #warning Buttons dialog?

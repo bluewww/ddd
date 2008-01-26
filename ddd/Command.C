@@ -908,3 +908,13 @@ WINDOW_P find_shell(Widget w)
 
     return parent;
 }
+
+#if !defined(IF_XM)
+
+GUI::WidgetPtr<GUI::Shell> find_shell1(GUI::Widget *w)
+{
+    std::cerr << "WARNING: find_shell1 is a stub.";
+    return GUI::WidgetPtr<GUI::Shell>(0);
+}
+
+#endif

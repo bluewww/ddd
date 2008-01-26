@@ -56,9 +56,12 @@ void raise_shell(Widget w);
 
 #if defined(IF_XM)
 void manage_and_raise(Widget w);
+#elif defined(IF_XMMM)
+void manage_and_raise(Widget w);
+void manage_and_raise1(GUI::Widget *w);
 #else
-void manage_and_raise(GUI::Widget *w);
-void manage_and_raise1(Widget w); // FIXME compat
+void manage_and_raise(Gtk::Widget *w);
+void manage_and_raise1(GUI::Widget *w);
 #endif
 
 #endif // _DDD_wm_h

@@ -155,7 +155,7 @@ Widget post_gdb_yn(string question, Widget w)
 #endif // IF_MOTIF
     }
 
-    manage_and_raise1(yn_dialog);
+    manage_and_raise(yn_dialog);
     return yn_dialog;
 }
 
@@ -203,7 +203,7 @@ Widget post_gdb_busy(Widget w)
 #endif // IF_MOTIF
     }
 
-    manage_and_raise1(busy_dialog);
+    manage_and_raise(busy_dialog);
     return busy_dialog;
 }
 
@@ -340,7 +340,7 @@ Widget post_gdb_died(string reason, int state, Widget w)
     }
 
     Delay::register_shell(dialog);
-    manage_and_raise1(dialog);
+    manage_and_raise(dialog);
     return dialog;
 }
 
@@ -452,7 +452,7 @@ Widget post_gdb_message(string text, bool prompt, Widget w)
 #endif // IF_MOTIF
     }
 
-    manage_and_raise1(gdb_message_dialog);
+    manage_and_raise(gdb_message_dialog);
     return gdb_message_dialog;
 }
 
@@ -512,7 +512,7 @@ DIALOG_P post_error(string text, const _XtString name, Widget w)
     button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB2), ddd_error));
 #endif // IF_MOTIF
 
-    manage_and_raise1(ddd_error);
+    manage_and_raise(ddd_error);
     return ddd_error;
 }
 
@@ -576,6 +576,6 @@ DIALOG_P post_warning(string text, const _XtString name, Widget w)
     button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB2), ddd_warning));
 #endif // IF_MOTIF
 
-    manage_and_raise1(ddd_warning);
+    manage_and_raise(ddd_warning);
     return ddd_warning;
 }

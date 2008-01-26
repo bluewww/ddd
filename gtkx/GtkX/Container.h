@@ -24,6 +24,8 @@ namespace GtkX {
 			       int padding=0);
     };
 
+    class Shell: public Container {
+    };
 }
 
 #endif // GTKX_CONTAINER_H

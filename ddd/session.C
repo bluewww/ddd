@@ -34,11 +34,11 @@ char session_rcsid[] =
 
 #include "session.h"
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 #if XtSpecificationRelease >= 6
 #include <X11/SM/SM.h>
 #endif
-#endif // IF_MOTIF
+#endif
 
 #include <sys/types.h>
 #include <stdlib.h>		// putenv(), getenv(), getuid()
@@ -87,7 +87,7 @@ char session_rcsid[] =
 #include "windows.h"
 #include "wm.h"
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 #include <Xm/Xm.h>
 #include <Xm/List.h>
 #include <Xm/MessageB.h>
@@ -498,6 +498,51 @@ static void update_delete(Widget dialog)
     set_sensitive(delete_w, sensitive);
 }
 
+#endif
+
+#if !defined(IF_XM)
+
+// Update state of `delete' button
+static void update_delete1(GUI::Widget *dialog)
+{
+#ifdef NAG_ME
+#warning Implement update_delete1
+#endif
+#if 0
+    Widget sessions = XmSelectionBoxGetChild(dialog, XmDIALOG_LIST);
+
+    // Check for `Delete' button
+    XmStringTable selected_items;
+    int selected_items_count = 0;
+    XtVaGetValues(sessions,
+		  XmNselectedItemCount, &selected_items_count,
+		  XmNselectedItems, &selected_items,
+		  XtPointer(0));
+
+    bool sensitive = false;
+    for (int i = 0; i < selected_items_count; i++)
+    {
+	String _item;
+	XmStringGetLtoR(selected_items[i], LIST_CHARSET, &_item);
+	string item(_item);
+	XtFree(_item);
+
+	if (item != NO_SESSION)
+	{
+	    sensitive = true;
+	    break;
+	}
+    }
+
+    Widget delete_w = XmSelectionBoxGetChild(dialog, XmDIALOG_APPLY_BUTTON);
+    set_sensitive(delete_w, sensitive);
+#endif
+}
+
+#endif
+
+#if defined(IF_MOTIF)
+
 // Update list of sessions
 static void update_sessions(Widget dialog)
 {
@@ -523,6 +568,41 @@ static void update_sessions(Widget dialog)
 
     update_delete(dialog);
 }
+
+#endif
+
+#if !defined(IF_XM)
+
+// Update list of sessions
+static void update_sessions1(GUI::Widget *dialog)
+{
+    StringArray session_list;
+    session_list += NO_SESSION;
+    get_sessions(session_list);
+	
+    bool *selected = new bool[session_list.size()];
+    int i;
+    for (i = 0; i < session_list.size(); i++)
+    {
+	selected[i] = (session_list[i] == app_data.session
+		       || (session_list[i] == NO_SESSION 
+			   && app_data.session == DEFAULT_SESSION));
+    }
+
+#ifdef NAG_ME
+#warning Implement setLabelList for GUI::Widget
+#endif
+#if 0
+    setLabelList(sessions, session_list.values(),
+		 selected, session_list.size(), false, false);
+#endif
+
+    delete[] selected;
+
+    update_delete1(dialog);
+}
+
+#endif
 
 #if 0
 // Update list of sessions
@@ -566,7 +646,7 @@ static void SelectSessionCB(Widget sessions,
 #else
 
 // Set argument from selected list item
-static void SelectSessionCB(GUI::SelectionDialog &sessions)
+static void SelectSessionCB(GUI::SelectionDialog *sessions)
 {
     std::cerr << "SelectSessionCB not implemented!\n";
 #if 0
@@ -638,29 +718,31 @@ static Widget create_session_panel(Widget parent, const _XtString name,
 
 #else
 
+typedef void (*SessionCBType)(GUI::ListView *w);
+
 // Create custom session dialog
-static GUI::SelectionDialog *create_session_panel(Widget parent, const _XtString name,
-						  XtCallbackProc ok,
-						  XtCallbackProc apply)
+static GUI::SelectionDialog *create_session_panel(GUI::Widget *parent, const char *name,
+						  SessionCBType ok,
+						  SessionCBType apply)
 {
     std::vector<GUI::String> session_headers;
     session_headers.push_back("Session");
-    GUI::SelectionDialog *dialog = new GUI::SelectionDialog(find_shell(parent),
-							    name, session_headers);
+    GUI::SelectionDialog *dialog = new GUI::SelectionDialog(*find_shell1(parent),
+							    GUI::String(name), session_headers);
 
     Delay::register_shell1(dialog);
 
     GUI::ListView *sessions = dialog->list();
 
     sessions->signal_selection_changed().connect(sigc::bind(sigc::ptr_fun(SelectSessionCB),
-							    *dialog));
+							    dialog));
 
     GUI::Button *ok_w = dialog->add_button("Ok");
     GUI::Button *apply_w = dialog->add_button("Apply");
     GUI::Button *cancel_w = dialog->add_button("Cancel");
 
-    ok_w->signal_clicked().connect(sigc::bind(sigc::ptr_fun(ok), *sessions));
-    apply_w->signal_clicked().connect(sigc::bind(sigc::ptr_fun(apply), *sessions));
+    ok_w->signal_clicked().connect(sigc::bind(sigc::ptr_fun(ok), sessions));
+    apply_w->signal_clicked().connect(sigc::bind(sigc::ptr_fun(apply), sessions));
     cancel_w->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), dialog));
 
     return dialog;
@@ -717,6 +799,8 @@ void delete_session(const string& session, bool silent)
     }
 }
 
+#if defined(IF_MOTIF)
+
 // Remove selected sessions
 static void DeleteSessionsCB(Widget dialog, XtPointer client_data, XtPointer)
 {
@@ -744,14 +828,45 @@ static void DeleteSessionsCB(Widget dialog, XtPointer client_data, XtPointer)
 
     update_sessions(dialog);
 }
-#else
 
+#endif
+
+#if !defined(IF_XM)
+
+// Remove selected sessions
+static void DeleteSessionsCB1(GUI::ListView *dialog)
+{
 #ifdef NAG_ME
-#warning Sessions not implemented
+#warning DeleteSessionsCB1: Need iterator for multiple selections
 #endif
+#if 0
+    Widget sessions = Widget(client_data);
+
+    XmStringTable selected_items;
+    int selected_items_count = 0;
+
+    assert(XmIsList(sessions));
+
+    XtVaGetValues(sessions,
+		  XmNselectedItemCount, &selected_items_count,
+		  XmNselectedItems,     &selected_items,
+		  XtPointer(0));
+
+    for (int i = 0; i < selected_items_count; i++)
+    {
+	String _item;
+	XmStringGetLtoR(selected_items[i], LIST_CHARSET, &_item);
+	string item(_item);
+	XtFree(_item);
+
+	delete_session(item);
+    }
+
+    update_sessions(dialog);
+#endif
+}
 
 #endif
-
 
 // ---------------------------------------------------------------------------
 // Session save
@@ -1026,18 +1141,19 @@ void SaveSessionAsCB(Widget w, XtPointer client_data, XtPointer call_data)
     XtVaSetValues(dialog, XmNtextString, text.xmstring(), XtPointer(0));
 
     update_sessions(dialog);
-    manage_and_raise1(dialog);
+    manage_and_raise(dialog);
 }
 
 #else
 
 // Save current session from a list of choices
-void SaveSessionAsCB(Widget w)
+void SaveSessionAsCB(GUI::Widget *w)
 {
-#ifdef IF_MOTIF
     static GUI::WidgetPtr<GUI::SelectionDialog> dialog = 
 	create_session_panel(w, "sessions_to_save",
-			     SaveSessionCB, DeleteSessionsCB);
+			     SaveSessionCB1, DeleteSessionsCB1);
+
+#if defined(IF_XMMM)
 
     if (dump_core_w == 0)
     {
@@ -1085,9 +1201,16 @@ void SaveSessionAsCB(Widget w)
     MString text(name);
     XtVaSetValues(dialog, XmNtextString, text.xmstring(), XtPointer(0));
 
-    update_sessions(dialog);
-    manage_and_raise1(dialog);
+#else
+
+#ifdef NAG_ME
+#warning What does this stuff do?
 #endif
+
+#endif
+
+    update_sessions1(dialog);
+    manage_and_raise1(dialog);
 }
 
 #endif
@@ -1100,7 +1223,7 @@ void SaveSessionAsCB(Widget w)
 // Get a string resource from DB named NAME with class CLS
 static string get_resource(XrmDatabase db, string name, string cls)
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     static string prefix = DDD_CLASS_NAME ".";
     name.prepend(prefix);
     cls.prepend(prefix);
@@ -1113,7 +1236,7 @@ static string get_resource(XrmDatabase db, string name, string cls)
 	return string((char *)value.addr, value.size - 1);
 
     return "";		// Not found
-#else // NOT IF_MOTIF
+#else
 #if 0
     __gnu_cxx::hash_map<const char *, XrmValue *>::iterator entry = db->find(name.chars());
     if (entry != db->end()) {
@@ -1129,7 +1252,7 @@ static string get_resource(XrmDatabase db, string name, string cls)
     std::cerr << "ERROR: CANNOT GET RESOURCE\n";
     return string("");
 #endif
-#endif // IF_MOTIF
+#endif
 }
 
 static Boolean done_if_idle(XtP(Delay *) data)
@@ -1148,12 +1271,12 @@ static Boolean done_if_idle(XtP(Delay *) data)
 
 static void done(const string&, void *data)
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XtAppAddWorkProc(XtWidgetToApplicationContext(command_shell),
 		     done_if_idle, data);
-#else // NOT IF_MOTIF
+#else
     Glib::signal_idle().connect(sigc::bind(PTR_FUN(done_if_idle), data));
-#endif // IF_MOTIF
+#endif
 }
 
 // Open the session given in SESSION
@@ -1395,7 +1518,8 @@ void RestartDebuggerCB(CB_ALIST_NULL)
 }
 
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
+
 // OK pressed in `open session'
 static void OpenThisSessionCB(Widget w, XtPointer client_data, 
 			      XtPointer call_data)
@@ -1409,13 +1533,32 @@ static void OpenThisSessionCB(Widget w, XtPointer client_data,
 	set_temporary_session(app_data.session, false);
     }
 }
-#endif // IF_MOTIF
+
+#endif
+
+#if !(IF_XM)
+
+// OK pressed in `open session'
+static void OpenThisSessionCB1(GUI::ListView *w)
+{
+    SetSessionCB1(w);
+    if (app_data.session != DEFAULT_SESSION)
+    {
+	open_session(app_data.session);
+
+	// Mark as `non-temporary'
+	set_temporary_session(app_data.session, false);
+    }
+}
+
+#endif
+
+#if defined(IF_XM)
 
 // Load session from a list of choices
-void OpenSessionCB(CB_ARG_LIST_1(w))
+void OpenSessionCB(Widget w, XtPointer, XtPointer)
 {
-#ifdef IF_MOTIF
-    static GUI::WidgetPtr<GUI::Widget> dialog = 
+    static Widget dialog = 
 	create_session_panel(w, "sessions_to_open",
 			     OpenThisSessionCB, DeleteSessionsCB);
 
@@ -1427,11 +1570,30 @@ void OpenSessionCB(CB_ARG_LIST_1(w))
     }
 
     update_sessions(dialog);
-    manage_and_raise1(dialog);
-#else // NOT IF_MOTIF
-    std::cerr << "OpenSessionCB not implemented\n";
-#endif // IF_MOTIF
+    manage_and_raise(dialog);
 }
+
+#else
+
+// Load session from a list of choices
+void OpenSessionCB(GUI::Widget *w)
+{
+    static GUI::WidgetPtr<GUI::SelectionDialog> dialog = 
+	create_session_panel(w, "sessions_to_open",
+			     OpenThisSessionCB1, DeleteSessionsCB1);
+
+    // Suggest reloading current session
+    if (app_data.session != DEFAULT_SESSION)
+    {
+	MString text(app_data.session);
+	dialog->set_text(text.xmstring());
+    }
+
+    update_sessions1(dialog);
+    manage_and_raise1(dialog);
+}
+
+#endif
 
 // Name of restart session
 string restart_session()
@@ -1667,7 +1829,7 @@ static void ask(const string& text, const _XtString name, XtCheckpointToken toke
     XtAddCallback(dialog, XmNcancelCallback, no, XtPointer(token));
     XtAddCallback(dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
 
-    manage_and_raise1(dialog);
+    manage_and_raise(dialog);
 }
 
 #else // XtSpecificationRelease < 6
