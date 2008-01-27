@@ -1357,6 +1357,10 @@ static void addCallback(const MMDesc *item, XtPointer default_closure)
     if (callback.closure == 0)
 	callback.closure = default_closure;
 #endif
+#if !defined(IF_XM)
+    GUI::Widget *xwidget     = item->xwidget;
+    const sigc::slot<void, GUI::Widget *> &xcallback = item->xcallback;
+#endif
 
     bool flat = false;
 
@@ -1397,7 +1401,9 @@ static void addCallback(const MMDesc *item, XtPointer default_closure)
 		XtAugmentTranslations(widget, lesstif_translations);
 	    }
 	}
-#else
+#endif
+
+#if !defined(IF_XM)
 #ifdef NAG_ME
 #warning We do not handle "Push Menus" yet
 #endif
@@ -1425,6 +1431,8 @@ static void addCallback(const MMDesc *item, XtPointer default_closure)
 			  XmNactivateCallback,
 			  callback.callback, 
 			  callback.closure);
+	else
+	    set_sensitive(widget, false);
 #else
 	if (callback) {
 	    Gtk::Button *button = dynamic_cast<Gtk::Button *>(widget);
@@ -1434,9 +1442,21 @@ static void addCallback(const MMDesc *item, XtPointer default_closure)
 	    if (mi)
 		mi->signal_activate().connect(sigc::bind(callback, widget));
 	}
-#endif
 	else
 	    set_sensitive(widget, false);
+#endif
+#if !defined(IF_XM)
+	if (xcallback) {
+	    GUI::Button *button = dynamic_cast<GUI::Button *>(xwidget);
+	    if (button)
+		button->signal_clicked().connect(sigc::bind(xcallback, xwidget));
+	    GUI::MenuItem *mi = dynamic_cast<GUI::MenuItem *>(xwidget);
+	    if (mi)
+		mi->signal_activate().connect(sigc::bind(xcallback, xwidget));
+	}
+	else
+	    xwidget->set_sensitive(false);
+#endif
 	break;
     }
 

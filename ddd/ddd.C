@@ -7583,39 +7583,94 @@ static void DoneCB(const string& /* answer */, void *qu_data)
     delete info;
 }
 
+#if defined(IF_XM)
+
 // Execute command in (XtCallbackProc)CLIENT_DATA as soon as GDB gets ready
-static void WhenReady(Widget w, XtPointer client_data
-#if defined(IF_MOTIF)
-		      , XtPointer call_data
-#endif
-		      )
+static void WhenReady(Widget w, XtPointer client_data)
 {
-#if defined(IF_MOTIF)
+    XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
+    if (cbs == 0)
+	return;	    // This happens with old LessTif versions
+
+    XtCallbackProc proc = STATIC_CAST(WhenReadyProc_t*,client_data)->proc;
+    XtPointer user_client_data = 0; // No way to pass extra values here
+
+    if (can_do_gdb_command())
+    {
+	// GDB is ready: do command now
+	proc(w, user_client_data, call_data);
+	return;
+    }
+
+    // Execute command as soon as GDB gets ready
+    XmString label = 0;
+    XtVaGetValues(w, XmNlabelString, &label, XtNIL);
+    MString _action(label, true);
+    XmStringFree(label);
+    string action = _action.str();
+    if (action.contains("...", -1))
+	action = action.before("...");
+
+    MString msg = rm(action + ": waiting until " + gdb->title() 
+		     + " gets ready...");
+    WhenReadyInfo *info = new WhenReadyInfo(msg, proc, user_client_data, *cbs);
+
+    // We don't want to lock the status, hence we use an ordinary
+    // `set_status' call instead of the StatusMsg class.
+    set_status_mstring(msg);
+
+    Command c(gdb->nop_command(XtName(w)));
+    c.origin   = w;
+    c.callback = DoneCB;
+    c.data     = (void *)info;
+    c.verbose  = false;
+    c.prompt   = false;
+    c.check    = false;
+    c.priority = COMMAND_PRIORITY_USER;
+
+    gdb_command(c);
+}
+
+#else
+
+// Execute command in (XtCallbackProc)CLIENT_DATA as soon as GDB gets ready
+#if defined(IF_XMMM)
+static void WhenReady(Widget w, XtPointer client_data, XtPointer call_data)
+#else
+static void WhenReady(Gtk::Widget *w, void *client_data)
+#endif
+{
+#if defined(IF_XMMM)
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
     if (cbs == 0)
 	return;	    // This happens with old LessTif versions
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XMMM)
     XtCallbackProc proc = STATIC_CAST(WhenReadyProc_t*,client_data)->proc;
 #else
-    GTK_SLOT_W proc = *STATIC_CAST(GTK_SLOT_W*,client_data);
+    typedef sigc::slot<void, Gtk::Widget *> slot_gtk_w;
+    typedef sigc::slot<void, GtkX::Widget *> slot_gtkx_w;
+    WhenReadyProc_t &wrp = *reinterpret_cast<WhenReadyProc_t *>(client_data);
+    slot_gtk_w &proc = wrp.legacy;
+    slot_gtkx_w &proc2 = wrp.ready;
 #endif
     XtPointer user_client_data = 0; // No way to pass extra values here
 
     if (can_do_gdb_command())
     {
 	// GDB is ready: do command now
-#if defined(IF_MOTIF)
+#if defined(IF_XMMM)
 	proc(w, user_client_data, call_data);
 #else
 	proc(w);
+	proc2(NULL);
 #endif
 	return;
     }
 
     // Execute command as soon as GDB gets ready
-#if defined(IF_MOTIF)
+#if defined(IF_XMMM)
     XmString label = 0;
     XtVaGetValues(w, XmNlabelString, &label, XtNIL);
     MString _action(label, true);
@@ -7629,7 +7684,7 @@ static void WhenReady(Widget w, XtPointer client_data
 
     MString msg = rm(action + ": waiting until " + gdb->title() 
 		     + " gets ready...");
-#if defined(IF_MOTIF)
+#if defined(IF_XMMM)
     WhenReadyInfo *info = new WhenReadyInfo(msg, proc, user_client_data, *cbs);
 #else
     WhenReadyInfo *info = new WhenReadyInfo(msg, proc);
@@ -7650,6 +7705,8 @@ static void WhenReady(Widget w, XtPointer client_data
 
     gdb_command(c);
 }
+
+#endif
 
 
 //-----------------------------------------------------------------------------
