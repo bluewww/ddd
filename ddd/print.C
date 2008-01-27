@@ -1039,10 +1039,10 @@ static void PrintCB(Widget parent, bool displays)
     static TOGGLEBUTTON_P print_to_file_w;
     static MMDesc print_to_menu[] = 
     {
-	MENTRY("printer", "printer", MMToggle, 
+	MENTRYL("printer", "printer", MMToggle, 
 	 BIND_1(PTR_FUN(SetPrintTargetCB), TARGET_PRINTER), 
 	 0, (Widget *)&print_to_printer_w),
-	MENTRY("file", "file", MMToggle, 
+	MENTRYL("file", "file", MMToggle, 
 	 BIND_1(PTR_FUN(SetPrintTargetCB), TARGET_FILE), 
 	 0, (Widget *)&print_to_file_w),
 	MMEnd
@@ -1052,10 +1052,10 @@ static void PrintCB(Widget parent, bool displays)
     static Widget fig_w;
     static MMDesc type2_menu[] = 
     {
-	MENTRY("postscript", "postscript", MMToggle, 
+	MENTRYL("postscript", "postscript", MMToggle, 
 	 BIND_1(PTR_FUN(SetPrintTypeCB), PRINT_POSTSCRIPT), 
 	 0, (Widget *)&postscript_w),
-	MENTRY("xfig", "xfig", MMToggle,
+	MENTRYL("xfig", "xfig", MMToggle,
 	 BIND_1(PTR_FUN(SetPrintTypeCB), PRINT_FIG), 0, &fig_w),
 	MMEnd
     };
@@ -1063,27 +1063,27 @@ static void PrintCB(Widget parent, bool displays)
     static TOGGLEBUTTON_P print_color_w;
     static MMDesc type_menu[] = 
     {
-	MENTRY("type2", "type2", MMRadioPanel | MMUnmanagedLabel, 
+	MENTRYL("type2", "type2", MMRadioPanel | MMUnmanagedLabel, 
 	 MMNoCB, type2_menu, 0),
-	MENTRY("color", "color", MMToggle, BIND_0(PTR_FUN(SetGCColorCB)), 
+	MENTRYL("color", "color", MMToggle, BIND_0(PTR_FUN(SetGCColorCB)), 
 	 0, (Widget *)&print_color_w),
 	MMEnd
     };
 
     static MMDesc what2_menu[] = 
     {
-	MENTRY("displays", "displays", MMToggle, BIND_1(PTR_FUN(SetPrintDisplaysCB), true), 
+	MENTRYL("displays", "displays", MMToggle, BIND_1(PTR_FUN(SetPrintDisplaysCB), true), 
 	 0, (Widget *)&print_displays_w),
-	MENTRY("plots", "plots", MMToggle, BIND_1(PTR_FUN(SetPrintDisplaysCB), false), 
+	MENTRYL("plots", "plots", MMToggle, BIND_1(PTR_FUN(SetPrintDisplaysCB), false), 
 	 0, (Widget *)&print_plots_w),
 	MMEnd
     };
 
     static MMDesc what_menu[] = 
     {
-	MENTRY("what2", "what2", MMRadioPanel | MMUnmanagedLabel, 
+	MENTRYL("what2", "what2", MMRadioPanel | MMUnmanagedLabel, 
 	 MMNoCB, what2_menu, 0),
-	MENTRY("selected", "selected", MMToggle, BIND_0(PTR_FUN(SetPrintSelectedNodesCB)), 
+	MENTRYL("selected", "selected", MMToggle, BIND_0(PTR_FUN(SetPrintSelectedNodesCB)), 
 	 0, (Widget *)&print_selected_w),
 	MMEnd
     };
@@ -1092,10 +1092,10 @@ static void PrintCB(Widget parent, bool displays)
     static TOGGLEBUTTON_P print_landscape_w;
     static MMDesc orientation_menu[] = 
     {
-	MENTRY("portrait", "portrait", MMToggle, 
+	MENTRYL("portrait", "portrait", MMToggle, 
 	 BIND_1(PTR_FUN(SetGCOrientation), PostScriptPrintGC::PORTRAIT), 
 	 0, (Widget *)&print_portrait_w),
-	MENTRY("landscape", "landscape", MMToggle,
+	MENTRYL("landscape", "landscape", MMToggle,
 	 BIND_1(PTR_FUN(SetGCOrientation), PostScriptPrintGC::LANDSCAPE),
 	 0, (Widget *)&print_landscape_w),
 	MMEnd
@@ -1103,40 +1103,40 @@ static void PrintCB(Widget parent, bool displays)
 
     static MMDesc paper_menu[] = 
     {
-	MENTRY("a4", "a4", MMToggle, 
+	MENTRYL("a4", "a4", MMToggle, 
 	 BIND_0(PTR_FUN(SetGCA4)), 0, (Widget *)&a4_paper_size),
-	MENTRY("a3", "a3", MMToggle, 
+	MENTRYL("a3", "a3", MMToggle, 
 	 BIND_0(PTR_FUN(SetGCA3)), 0, (Widget *)&a3_paper_size),
-	MENTRY("letter", "letter", MMToggle, 
+	MENTRYL("letter", "letter", MMToggle, 
 	 BIND_0(PTR_FUN(SetGCLetter)), 0, (Widget *)&letter_paper_size),
-	MENTRY("legal", "legal", MMToggle, 
+	MENTRYL("legal", "legal", MMToggle, 
 	 BIND_0(PTR_FUN(SetGCLegal)), 0, (Widget *)&legal_paper_size),
-	MENTRY("executive", "executive", MMToggle, 
+	MENTRYL("executive", "executive", MMToggle, 
 	 BIND_0(PTR_FUN(SetGCExecutive)), 0, (Widget *)&executive_paper_size),
-	MENTRY("custom", "custom", MMToggle, 
+	MENTRYL("custom", "custom", MMToggle, 
 	 BIND_0(PTR_FUN(SetGCCustom)), 0, (Widget *)&custom_paper_size),
 	MMEnd
     };
 
     static MMDesc name_menu[] = 
     {
-	MENTRY("name", "name", MMTextField | MMUnmanagedLabel, MMNoCB, 
+	MENTRYL("name", "name", MMTextField | MMUnmanagedLabel, MMNoCB, 
 	 0, (Widget *)&print_file_name_field),
-	MENTRY("browse", "browse", MMPush, BIND_0(PTR_FUN(BrowseNameCB)), 0, 0),
+	MENTRYL("browse", "browse", MMPush, BIND_0(PTR_FUN(BrowseNameCB)), 0, 0),
 	MMEnd
     };
 
     static MMDesc menu[] =
     {
-	MENTRY("to", "to", MMRadioPanel, MMNoCB, print_to_menu, 0),
-	MENTRY("command", "command", MMTextField, MMNoCB, 0, (Widget *)&print_command_field),
-	MENTRY("name", "name", MMPanel, MMNoCB, name_menu, 
+	MENTRYL("to", "to", MMRadioPanel, MMNoCB, print_to_menu, 0),
+	MENTRYL("command", "command", MMTextField, MMNoCB, 0, (Widget *)&print_command_field),
+	MENTRYL("name", "name", MMPanel, MMNoCB, name_menu, 
 	 (Widget *)&print_file_name_box),
 	MMSep,
-	MENTRY("type", "type", MMPanel, MMNoCB, type_menu, 0),
-	MENTRY("what", "what", MMPanel, MMNoCB, what_menu, 0),
-	MENTRY("orientation", "orientation", MMRadioPanel, MMNoCB, orientation_menu, 0),
-	MENTRY("size", "size", MMRadioPanel, MMNoCB, paper_menu, 0),
+	MENTRYL("type", "type", MMPanel, MMNoCB, type_menu, 0),
+	MENTRYL("what", "what", MMPanel, MMNoCB, what_menu, 0),
+	MENTRYL("orientation", "orientation", MMRadioPanel, MMNoCB, orientation_menu, 0),
+	MENTRYL("size", "size", MMRadioPanel, MMNoCB, paper_menu, 0),
 	MMEnd
     };
 

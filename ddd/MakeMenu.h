@@ -250,27 +250,39 @@ extern void dummy_xcallback(GUI::Widget *);
 #define MDUMMY sigc::ptr_fun(dummy_xcallback)
 #endif
 
+// Macros for menu entries.
+
+// MENTRYL: Entry with a label
+// MENTRYI: Entry with an icon
+// MENTRYLI: Entry with a label and an icon
+
+// Note that in old-style Motif (IF_XM), the label and icon are
+// deduced from the Widget name by reference to the resource database.
+// In this case the label (s) and image (i) arguments are unused.
+
+// XENTRY*: New-style callbacks using abstract GUI::Widget classes.
+
 #if defined(IF_XM)
-#define MENTRY(n,s,t,c,sub,w) { n, t, c, sub, (Widget *)w, 0, 0}
-#define IMENTRY(n,i,t,c,sub,w) { n, t, c, sub, (Widget *)w, 0, 0}
-#define NIMENTRY(n,s,i,t,c,sub,w) { n, t, c, sub, (Widget *)w, 0, 0}
-#define MENTRYX(n,s,t,c,cx,sub,w) { n, t, c, sub, (Widget *)w, 0, 0}
-#define IMENTRYX(n,i,t,c,cx,sub,w) { n, t, c, sub, (Widget *)w, 0, 0}
-#define NIMENTRYX(n,s,i,t,c,cx,sub,w) { n, t, c, sub, (Widget *)w, 0, 0}
+#define MENTRYL(n,s,t,c,sub,w) { n, t, c, sub, (Widget *)w, 0, 0}
+#define MENTRYI(n,i,t,c,sub,w) { n, t, c, sub, (Widget *)w, 0, 0}
+#define MENTRYLI(n,s,i,t,c,sub,w) { n, t, c, sub, (Widget *)w, 0, 0}
+#define XENTRYL(n,s,t,c,cx,sub,w) { n, t, c, sub, (Widget *)w, 0, 0}
+#define XENTRYI(n,i,t,c,cx,sub,w) { n, t, c, sub, (Widget *)w, 0, 0}
+#define XENTRYLI(n,s,i,t,c,cx,sub,w) { n, t, c, sub, (Widget *)w, 0, 0}
 #elif defined(IF_XMMM)
-#define MENTRY(n,s,t,c,sub,w) { n, s, NULL, t, c, sub, w, 0, 0, MDUMMY, 0, 0}
-#define IMENTRY(n,i,t,c,sub,w) { n, "", i, t, c, sub, w, 0, 0, MDUMMY, 0, 0}
-#define NIMENTRY(n,s,i,t,c,sub,w) { n, s, i, t, c, sub, w, 0, 0, MDUMMY, 0, 0}
-#define MENTRYX(n,s,t,c,cx,sub,w) { n, s, NULL, t, c, sub, 0, 0, 0, cx, (Xmmm::Widget **)w, 0}
-#define IMENTRYX(n,i,t,c,cx,sub,w) { n, "", i, t, c, sub, 0, 0, 0, cx, (Xmmm::Widget **)w, 0}
-#define NIMENTRYX(n,s,i,t,c,cx,sub,w) { n, s, i, t, c, sub, 0, 0, 0, cx, (Xmmm::Widget **)w, 0}
+#define MENTRYL(n,s,t,c,sub,w) { n, s, NULL, t, c, sub, w, 0, 0, MDUMMY, 0, 0}
+#define MENTRYI(n,i,t,c,sub,w) { n, "", i, t, c, sub, w, 0, 0, MDUMMY, 0, 0}
+#define MENTRYLI(n,s,i,t,c,sub,w) { n, s, i, t, c, sub, w, 0, 0, MDUMMY, 0, 0}
+#define XENTRYL(n,s,t,c,cx,sub,w) { n, s, NULL, t, c, sub, 0, 0, 0, cx, (Xmmm::Widget **)w, 0}
+#define XENTRYI(n,i,t,c,cx,sub,w) { n, "", i, t, c, sub, 0, 0, 0, cx, (Xmmm::Widget **)w, 0}
+#define XENTRYLI(n,s,i,t,c,cx,sub,w) { n, s, i, t, c, sub, 0, 0, 0, cx, (Xmmm::Widget **)w, 0}
 #else
-#define MENTRY(n,s,t,c,sub,w) { n, s, NULL, t, c, sub, (Widget *)w, 0, 0, MDUMMY, 0}
-#define IMENTRY(n,i,t,c,sub,w) { n, "", i, t, c, sub, (Widget *)w, 0, 0, MDUMMY, 0}
-#define NIMENTRY(n,s,i,t,c,sub,w) { n, s, i, t, c, sub, (Widget *)w, 0, 0, MDUMMY, 0}
-#define MENTRYX(n,s,t,c,cx,sub,w) { n, s, NULL, t, MMNoCB, sub, 0, 0, 0, cx, (GUI::Widget **)w, 0, 0}
-#define IMENTRYX(n,i,t,c,cx,sub,w) { n, "", i, t, MMNoCB, sub, 0, 0, 0, cx, (GUI::Widget **)w, 0, 0}
-#define NIMENTRYX(n,s,i,t,c,cx,sub,w) { n, s, i, t, MMNoCB, sub, 0, 0, 0, cx, (GUI::Widget **)w, 0, 0}
+#define MENTRYL(n,s,t,c,sub,w) { n, s, NULL, t, c, sub, (Widget *)w, 0, 0, MDUMMY, 0}
+#define MENTRYI(n,i,t,c,sub,w) { n, "", i, t, c, sub, (Widget *)w, 0, 0, MDUMMY, 0}
+#define MENTRYLI(n,s,i,t,c,sub,w) { n, s, i, t, c, sub, (Widget *)w, 0, 0, MDUMMY, 0}
+#define XENTRYL(n,s,t,c,cx,sub,w) { n, s, NULL, t, MMNoCB, sub, 0, 0, 0, cx, (GUI::Widget **)w, 0, 0}
+#define XENTRYI(n,i,t,c,cx,sub,w) { n, "", i, t, MMNoCB, sub, 0, 0, 0, cx, (GUI::Widget **)w, 0, 0}
+#define XENTRYLI(n,s,i,t,c,cx,sub,w) { n, s, i, t, MMNoCB, sub, 0, 0, 0, cx, (GUI::Widget **)w, 0, 0}
 #endif
 
 

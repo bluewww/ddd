@@ -1020,20 +1020,20 @@ static void SetGCoreMethodCB(CB_ALIST_2(XtP(unsigned long) client_data))
 
 static MMDesc gcore_methods[] =
 {
-    MENTRY("kill", "kill",     MMPush, 
+    MENTRYL("kill", "kill",     MMPush, 
       HIDE_0_BIND_1(PTR_FUN(SetGCoreMethodCB), 0), 0, &may_kill_w),
-    MENTRY("gcore", "gcore",   MMPush, 
+    MENTRYL("gcore", "gcore",   MMPush, 
       HIDE_0_BIND_1(PTR_FUN(SetGCoreMethodCB), MAY_GCORE), 0, &may_gcore_w),
-    MENTRY("ptrace", "ptrace", MMPush, 
+    MENTRYL("ptrace", "ptrace", MMPush, 
       HIDE_0_BIND_1(PTR_FUN(SetGCoreMethodCB), MAY_PTRACE), 0, &may_ptrace_w),
     MMEnd
 };
 
 static MMDesc gcore_items[] =
 {
-    MENTRY("dump", "dump",       MMToggle, 
+    MENTRYL("dump", "dump",       MMToggle, 
       HIDE_0(PTR_FUN(SetGCoreSensitivityCB)), 0, (Widget *)&dump_core_w),
-    MENTRY("method", "method",   MMOptionMenu, 
+    MENTRYL("method", "method",   MMOptionMenu, 
       HIDE_0(PTR_FUN(SetGCoreSensitivityCB)), gcore_methods, &gcore_methods_w),
     MMEnd
 };

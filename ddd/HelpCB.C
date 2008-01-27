@@ -867,16 +867,16 @@ static Widget create_text_dialog(Widget parent, const _XtString name,
 
     MMDesc file_menu[] = 
     {
-	MENTRY("close", "close", MMPush, BIND_1(PTR_FUN(CloseCB), shell), 0, 0),
-	MENTRY("exit", "exit",   MMPush, BIND_1(PTR_FUN(DDDExitCB), EXIT_SUCCESS), 0, 0),
+	MENTRYL("close", "close", MMPush, BIND_1(PTR_FUN(CloseCB), shell), 0, 0),
+	MENTRYL("exit", "exit",   MMPush, BIND_1(PTR_FUN(DDDExitCB), EXIT_SUCCESS), 0, 0),
 	MMEnd
     };
 
     MMDesc menubar[] = 
     {
-	MENTRY("file", "file",     MMMenu, MMNoCB, file_menu, 0),
-	MENTRY("edit", "edit",     MMMenu, MMNoCB, simple_edit_menu, 0),
-	MENTRY("help", "help",     MMMenu | MMHelp, MMNoCB, simple_help_menu, 0),
+	MENTRYL("file", "file",     MMMenu, MMNoCB, file_menu, 0),
+	MENTRYL("edit", "edit",     MMMenu, MMNoCB, simple_edit_menu, 0),
+	MENTRYL("help", "help",     MMMenu | MMHelp, MMNoCB, simple_help_menu, 0),
 	MMEnd
     };
 
@@ -1151,9 +1151,9 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 
     MMDesc items [] = 
     {
-	MENTRY("findBackward", "findBackward", MMPush, 
+	MENTRYL("findBackward", "findBackward", MMPush, 
 	       BIND_1(PTR_FUN(FindBackwardCB), fi), 0, 0),
-	MENTRY("findForward", "findForward",   MMPush, 
+	MENTRYL("findForward", "findForward",   MMPush, 
 	       BIND_1(PTR_FUN(FindForwardCB), fi), 0, 0),
 	MMEnd
     };
@@ -1177,12 +1177,12 @@ void ManualStringHelpCB(Widget widget, const MString& title,
     Widget view_index;
     MMDesc manual_menu[] = 
     {
-	MENTRY("findForward", "findForward",   MMPush, 
+	MENTRYL("findForward", "findForward",   MMPush, 
 	       BIND_1(PTR_FUN(FindForwardCB), fi), 0, 0),
-	MENTRY("findBackward", "findBackward", MMPush, 
+	MENTRYL("findBackward", "findBackward", MMPush, 
 	       BIND_1(PTR_FUN(FindBackwardCB), fi), 0, 0),
 	MMSep,
-	MENTRY("viewIndex", "viewIndex",       MMToggle,
+	MENTRYL("viewIndex", "viewIndex",       MMToggle,
 	       BIND_1(PTR_FUN(ToggleIndexCB), XtParent(help_index)), 
 	       0, &view_index),
 	MMEnd
@@ -1192,7 +1192,7 @@ void ManualStringHelpCB(Widget widget, const MString& title,
     {
 	// This is called `source' such that we can re-use the Find
 	// specs from the DDD `Source' meny
-	MENTRY("source", "source", MMMenu, MMNoCB, manual_menu, 0),
+	MENTRYL("source", "source", MMMenu, MMNoCB, manual_menu, 0),
 	MMEnd
     };
 
@@ -1477,9 +1477,9 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
 
     MMDesc items [] = 
     {
-	MENTRY("findBackward", "findBackward", MMPush, 
+	MENTRYL("findBackward", "findBackward", MMPush, 
 	       BIND_1(PTR_FUN(FindBackwardCB), fi), 0, 0),
-	MENTRY("findForward", "findForward",   MMPush, 
+	MENTRYL("findForward", "findForward",   MMPush, 
 	       BIND_1(PTR_FUN(FindForwardCB), fi), 0, 0),
 	MMEnd
     };
@@ -1495,9 +1495,9 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
 
     MMDesc manual_menu[] = 
     {
-	MENTRY("findForward", "findForward",   MMPush, 
+	MENTRYL("findForward", "findForward",   MMPush, 
 	       BIND_1(PTR_FUN(FindForwardCB), fi), 0, 0),
-	MENTRY("findBackward", "findBackward", MMPush,
+	MENTRYL("findBackward", "findBackward", MMPush,
 	       BIND_1(PTR_FUN(FindBackwardCB), fi), 0, 0),
 	MMEnd
     };
@@ -1506,7 +1506,7 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
     {
 	// This is called `source' such that we can re-use the Find
 	// specs from the DDD `Source' meny
-	MENTRY("source", "source", MMMenu, MMNoCB, manual_menu, 0),
+	MENTRYL("source", "source", MMMenu, MMNoCB, manual_menu, 0),
 	MMEnd
     };
 

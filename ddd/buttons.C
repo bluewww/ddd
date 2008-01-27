@@ -1873,7 +1873,7 @@ static void nop(CB_ALIST_1(Widget)) {}
 
 static MMDesc desc[] = 
 {
-    MENTRY("", "", MMFlatPush, BIND_0(PTR_FUN(nop)), 0, 0),
+    MENTRYL("", "", MMFlatPush, BIND_0(PTR_FUN(nop)), 0, 0),
     MMEnd
 };
 

@@ -339,15 +339,15 @@ struct LineItms { enum Itms {SetBP, SetTempBP, Sep1, TempNContBP,
 			     Sep2, SetPC}; };
 MMDesc SourceView::line_popup[] = 
 {
-    MENTRY("set", "set", MMPush,
+    MENTRYL("set", "set", MMPush,
      BIND_1(PTR_FUN(SourceView::line_popup_setCB), (string *)0), 0, 0),
-    MENTRY("set_temp", "set_temp", MMPush, 
+    MENTRYL("set_temp", "set_temp", MMPush, 
      BIND_1(PTR_FUN(SourceView::line_popup_set_tempCB), (string *)0), 0, 0),
     MMSep,
-    MENTRY("temp_n_cont", "temp_n_cont", MMPush, 
+    MENTRYL("temp_n_cont", "temp_n_cont", MMPush, 
      BIND_1(PTR_FUN(SourceView::line_popup_temp_n_contCB), (string *)0), 0, 0),
     MMSep,
-    MENTRY("set_pc", "set_pc", MMPush,
+    MENTRYL("set_pc", "set_pc", MMPush,
      BIND_1(PTR_FUN(SourceView::line_popup_set_pcCB), (string *)0), 0, 0),
     MMEnd
 };
@@ -355,14 +355,14 @@ MMDesc SourceView::line_popup[] =
 struct BPItms { enum Itms {Properties, Disable, Delete, Sep, SetPC}; };
 MMDesc SourceView::bp_popup[] =
 {
-    MENTRY("properties", "properties", MMPush, 
+    MENTRYL("properties", "properties", MMPush, 
      HIDE_0_BIND_1(PTR_FUN(SourceView::EditBreakpointPropertiesCB), (int *)0), 0, 0),
-    MENTRY("disable", "disable", MMPush,
+    MENTRYL("disable", "disable", MMPush,
      BIND_1(PTR_FUN(SourceView::bp_popup_disableCB), (int *)0), 0, 0),
-    MENTRY("delete", "delete", MMPush,
+    MENTRYL("delete", "delete", MMPush,
      BIND_1(PTR_FUN(SourceView::bp_popup_deleteCB), (int *)0), 0, 0),
     MMSep,
-    MENTRY("set_pc", "set_pc", MMPush,
+    MENTRYL("set_pc", "set_pc", MMPush,
      BIND_1(PTR_FUN(SourceView::bp_popup_set_pcCB), (int *)0), 0, 0),
     MMEnd
 };
@@ -371,21 +371,21 @@ struct BPButtons { enum Itms {Properties, Lookup, NewBP, NewWP, Print,
 			      Enable, Disable, Delete}; };
 MMDesc SourceView::bp_area[] =
 {
-    MENTRY("properties", "properties", MMPush, 
+    MENTRYL("properties", "properties", MMPush, 
      HIDE_0_BIND_1(PTR_FUN(SourceView::EditBreakpointPropertiesCB), (int *)0), 0, 0),
-    MENTRY("lookup", "lookup", MMPush, 
+    MENTRYL("lookup", "lookup", MMPush, 
      HIDE_0_BIND_1(PTR_FUN(SourceView::LookupBreakpointCB), (BreakpointPropertiesInfo *)0), 0, 0),
-    MENTRY("new_bp", "new_bp", MMPush,
+    MENTRYL("new_bp", "new_bp", MMPush,
      BIND_0(PTR_FUN(SourceView::NewBreakpointCB)), 0, 0),
-    MENTRY("new_wp", "new_wp", MMPush,
+    MENTRYL("new_wp", "new_wp", MMPush,
      BIND_0(PTR_FUN(SourceView::NewWatchpointCB)), 0, 0),
-    MENTRY("print", "print", MMPush, 
+    MENTRYL("print", "print", MMPush, 
      BIND_1(PTR_FUN(SourceView::PrintWatchpointCB), (BreakpointPropertiesInfo *)0), 0, 0),
-    MENTRY("enable", "enable", MMPush, 
+    MENTRYL("enable", "enable", MMPush, 
      HIDE_0_BIND_1(PTR_FUN(SourceView::BreakpointCmdCB), "enable"), 0, 0),
-    MENTRY("disable", "disable", MMPush, 
+    MENTRYL("disable", "disable", MMPush, 
      HIDE_0_BIND_1(PTR_FUN(SourceView::BreakpointCmdCB), "disable"), 0, 0),
-    MENTRY("delete", "delete", MMPush | MMHelp, 
+    MENTRYL("delete", "delete", MMPush | MMHelp, 
      HIDE_0_BIND_1(PTR_FUN(SourceView::BreakpointCmdCB), "delete"), 0, 0),
     MMEnd
 };
@@ -432,28 +432,28 @@ static string callback_word;
 // callback closure.  Therefore we use a global callback_word.
 MMDesc SourceView::text_popup[] =
 {
-    MENTRY("print", "print", MMPush,
+    MENTRYL("print", "print", MMPush,
      BIND_1(PTR_FUN(SourceView::text_popup_printCB), (string *)&callback_word), 0, 0),
-    MENTRY("disp", "disp", MMPush,
+    MENTRYL("disp", "disp", MMPush,
      BIND_1(PTR_FUN(SourceView::text_popup_dispCB), (string *)&callback_word), 0, 0),
-    MENTRY("watch", "watch", MMPush | MMUnmanaged, 
+    MENTRYL("watch", "watch", MMPush | MMUnmanaged, 
      BIND_1(PTR_FUN(SourceView::text_popup_watchCB), (string *)&callback_word), 0, 0),
     MMSep,
-    MENTRY("printRef", "printRef", MMPush, 
+    MENTRYL("printRef", "printRef", MMPush, 
      BIND_1(PTR_FUN(SourceView::text_popup_print_refCB), (string *)&callback_word), 0, 0),
-    MENTRY("dispRef", "dispRef", MMPush, 
+    MENTRYL("dispRef", "dispRef", MMPush, 
      BIND_1(PTR_FUN(SourceView::text_popup_disp_refCB), (string *)&callback_word), 0, 0),
-    MENTRY("watchRef", "watchRef", MMPush | MMUnmanaged, 
+    MENTRYL("watchRef", "watchRef", MMPush | MMUnmanaged, 
      BIND_1(PTR_FUN(SourceView::text_popup_watch_refCB), (string *)&callback_word), 0, 0),
     MMSep,
-    MENTRY("whatis", "whatis", MMPush,
+    MENTRYL("whatis", "whatis", MMPush,
      BIND_1(PTR_FUN(SourceView::text_popup_whatisCB), (string *)&callback_word), 0, 0),
     MMSep,
-    MENTRY("lookup", "lookup", MMPush,
+    MENTRYL("lookup", "lookup", MMPush,
      HIDE_0_BIND_1(PTR_FUN(SourceView::text_popup_lookupCB), (string *)&callback_word), 0, 0),
-    MENTRY("breakAt", "breakAt", MMPush,
+    MENTRYL("breakAt", "breakAt", MMPush,
      BIND_1(PTR_FUN(SourceView::text_popup_breakCB), (string *)&callback_word), 0, 0),
-    MENTRY("clearAt", "clearAt", MMPush,
+    MENTRYL("clearAt", "clearAt", MMPush,
      BIND_1(PTR_FUN(SourceView::text_popup_clearCB), (string *)&callback_word), 0, 0),
     MMEnd
 };
@@ -6357,13 +6357,13 @@ void SourceView::NewWatchpointCB(CB_ALIST_1(Widget w))
 
 	static MMDesc wp_modes[] =
 	{
-	    MENTRY("cwatch", "cwatch", MMPush,
+	    MENTRYL("cwatch", "cwatch", MMPush,
 	      HIDE_0_BIND_1(PTR_FUN(SetWatchModeCB), WATCH_CHANGE), 
 	      0, &cwatch_w),
-	    MENTRY("rwatch", "rwatch", MMPush,
+	    MENTRYL("rwatch", "rwatch", MMPush,
 	      HIDE_0_BIND_1(PTR_FUN(SetWatchModeCB), WATCH_READ), 
 	      0, &rwatch_w),
-	    MENTRY("awatch", "awatch", MMPush,
+	    MENTRYL("awatch", "awatch", MMPush,
 	      HIDE_0_BIND_1(PTR_FUN(SetWatchModeCB), WATCH_ACCESS),
 	      0, &awatch_w),
 	    MMEnd
@@ -6371,9 +6371,9 @@ void SourceView::NewWatchpointCB(CB_ALIST_1(Widget w))
 
 	static MMDesc wp_menu[] = 
 	{
-	    MENTRY("set", "set", MMLabel, MMNoCB, 0, 0),
-	    MENTRY("method", "method", MMOptionMenu, MMNoCB, wp_modes, 0),
-	    MENTRY("on", "on", MMLabel, MMNoCB, 0, 0),
+	    MENTRYL("set", "set", MMLabel, MMNoCB, 0, 0),
+	    MENTRYL("method", "method", MMOptionMenu, MMNoCB, wp_modes, 0),
+	    MENTRYL("on", "on", MMLabel, MMNoCB, 0, 0),
 	    MMEnd
 	};
 
@@ -6983,13 +6983,13 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, Widget /* origin */)
 
     MMDesc commands_menu[] =
     {
-	MENTRY("record", "record", MMPush,
+	MENTRYL("record", "record", MMPush,
 	  BIND_1(PTR_FUN(RecordBreakpointCommandsCB), info), 
 	  0, &info->record),
-	MENTRY("end", "end", MMPush | MMInsensitive,
+	MENTRYL("end", "end", MMPush | MMInsensitive,
 	  BIND_0(PTR_FUN(EndBreakpointCommandsCB)), 
 	  0, &info->end),
-	MENTRY("edit", "edit", MMPush | MMInsensitive,
+	MENTRYL("edit", "edit", MMPush | MMInsensitive,
 	  BIND_1(PTR_FUN(EditBreakpointCommandsCB), info), 
 	  0, &info->edit),
 	MMEnd
@@ -6997,17 +6997,17 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, Widget /* origin */)
 
     MMDesc enabled_menu[] = 
     {
-	MENTRY("lookup", "lookup", MMPush,
+	MENTRYL("lookup", "lookup", MMPush,
 	  HIDE_0_BIND_1(PTR_FUN(LookupBreakpointCB), info), 0, &info->lookup),
-	MENTRY("print", "print", MMPush,
+	MENTRYL("print", "print", MMPush,
 	  BIND_1(PTR_FUN(PrintWatchpointCB), info), 0, &info->print),
-	MENTRY("enable", "enable", MMPush,
+	MENTRYL("enable", "enable", MMPush,
 	  BIND_1(PTR_FUN(EnableBreakpointsCB), info), 0, &info->enable),
-	MENTRY("disable", "disable", MMPush,
+	MENTRYL("disable", "disable", MMPush,
 	  HIDE_0_BIND_1(PTR_FUN(DisableBreakpointsCB), info), 0, &info->disable),
-	MENTRY("temporary", "temporary", MMPush,
+	MENTRYL("temporary", "temporary", MMPush,
 	  HIDE_0_BIND_1(PTR_FUN(MakeBreakpointsTempCB), info), 0, &info->temp),
-	MENTRY("delete", "delete", MMPush | MMHelp,
+	MENTRYL("delete", "delete", MMPush | MMHelp,
 	  BIND_1(PTR_FUN(DeleteBreakpointsCB), info), 0, &info->del),
 	MMEnd
     };
@@ -7023,15 +7023,15 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, Widget /* origin */)
 
     MMDesc panel_menu[] = 
     {
-	MENTRY("title", "title", MMButtonPanel,
+	MENTRYL("title", "title", MMButtonPanel,
 	  MMNoCB, enabled_menu, 0),
-	MENTRY("condition", "condition", MMComboBox,
+	MENTRYL("condition", "condition", MMComboBox,
 	  BIND_1(PTR_FUN(SetBreakpointConditionCB), info), 
 	  0, (Widget *)&info->condition),
-	MENTRY("ignore", "ignore", MMSpinBox,
+	MENTRYL("ignore", "ignore", MMSpinBox,
 	  BIND_1(PTR_FUN(SetBreakpointIgnoreCountCB), info), 
 	  0, (Widget *)&info->ignore),
-	MENTRY("commands", "commands", MMButtonPanel,
+	MENTRYL("commands", "commands", MMButtonPanel,
 	  MMNoCB, commands_menu, 0),
 	MMEnd
     };

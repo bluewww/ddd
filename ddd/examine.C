@@ -87,35 +87,35 @@ static Widget wide_char_w;
 static Widget wide_string_w;
 
 static MMDesc format_menu[] = { 
-    MENTRY("o", "o", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, &octal_w),
-    MENTRY("x", "x", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, 0),
-    MENTRY("d", "d", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, 0),
-    MENTRY("u", "u", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, &unsigned_char_w),
-    MENTRY("t", "t", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, &binary_w),
-    MENTRY("f", "f", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, 0),
-    MENTRY("a", "a", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, &address_format_w),
-    MENTRY("i", "i", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, 0),
-    MENTRY("c", "c", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, 0),
-    MENTRY("C", "C", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, &wide_char_w),
-    MENTRY("s", "s", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, 0),
-    MENTRY("W", "W", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, &wide_string_w),
+    MENTRYL("o", "o", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, &octal_w),
+    MENTRYL("x", "x", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, 0),
+    MENTRYL("d", "d", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, 0),
+    MENTRYL("u", "u", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, &unsigned_char_w),
+    MENTRYL("t", "t", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, &binary_w),
+    MENTRYL("f", "f", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, 0),
+    MENTRYL("a", "a", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, &address_format_w),
+    MENTRYL("i", "i", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, 0),
+    MENTRYL("c", "c", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, 0),
+    MENTRYL("C", "C", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, &wide_char_w),
+    MENTRYL("s", "s", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, 0),
+    MENTRYL("W", "W", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, &wide_string_w),
     MMEnd
 };
 
 static MMDesc size_menu[] = { 
-    MENTRY("b", "b", MMPush, BIND_0(PTR_FUN(SetSizeCB)), 0, &byte_w),
-    MENTRY("h", "h", MMPush, BIND_0(PTR_FUN(SetSizeCB)), 0, 0),
-    MENTRY("w", "w", MMPush, BIND_0(PTR_FUN(SetSizeCB)), 0, 0),
-    MENTRY("g", "g", MMPush, BIND_0(PTR_FUN(SetSizeCB)), 0, 0),
-    MENTRY("G", "G", MMPush, BIND_0(PTR_FUN(SetSizeCB)), 0, &long_w),
+    MENTRYL("b", "b", MMPush, BIND_0(PTR_FUN(SetSizeCB)), 0, &byte_w),
+    MENTRYL("h", "h", MMPush, BIND_0(PTR_FUN(SetSizeCB)), 0, 0),
+    MENTRYL("w", "w", MMPush, BIND_0(PTR_FUN(SetSizeCB)), 0, 0),
+    MENTRYL("g", "g", MMPush, BIND_0(PTR_FUN(SetSizeCB)), 0, 0),
+    MENTRYL("G", "G", MMPush, BIND_0(PTR_FUN(SetSizeCB)), 0, &long_w),
     MMEnd
 };
 
 static MMDesc examine_menu[] = { 
-    MENTRY("examine", "examine", MMSpinBox,    MMNoCB, 0, (Widget *)&repeat_w),
-    MENTRY("format", "format",   MMOptionMenu, MMNoCB, format_menu, 0),
-    MENTRY("size", "size",       MMOptionMenu, MMNoCB, size_menu, 0),
-    MENTRY("address", "address", MMComboBox,   MMNoCB, 0, (Widget *)&address_w),
+    MENTRYL("examine", "examine", MMSpinBox,    MMNoCB, 0, (Widget *)&repeat_w),
+    MENTRYL("format", "format",   MMOptionMenu, MMNoCB, format_menu, 0),
+    MENTRYL("size", "size",       MMOptionMenu, MMNoCB, size_menu, 0),
+    MENTRYL("address", "address", MMComboBox,   MMNoCB, 0, (Widget *)&address_w),
     MMEnd
 };
 

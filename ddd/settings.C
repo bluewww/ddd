@@ -3977,11 +3977,11 @@ static void ToggleButtonCB(TOGGLEBUTTON_P w, ButtonTarget client_data)
 
 static MMDesc button_menu[] =
 {
-    MENTRY("console", "console", MMToggle, 
+    MENTRYL("console", "console", MMToggle, 
 	   BIND_1(PTR_FUN(ToggleButtonCB), ConsoleTarget), 0, 0),
-    MENTRY("source", "source", MMToggle, 
+    MENTRYL("source", "source", MMToggle, 
 	   BIND_1(PTR_FUN(ToggleButtonCB), SourceTarget), 0, 0),
-    MENTRY("data", "data", MMToggle, 
+    MENTRYL("data", "data", MMToggle, 
 	   BIND_1(PTR_FUN(ToggleButtonCB), DataTarget), 0, 0),
     MMEnd
 };
@@ -4283,28 +4283,28 @@ static void ToggleArgCB(CB_ARG_LIST_NULL)
 
 static MMDesc commands_menu[] =
 {
-    MENTRY("record", "record", MMPush, 
+    MENTRYL("record", "record", MMPush, 
 	   BIND_0(PTR_FUN(RecordCommandDefinitionCB)), 0, (Widget *)&record_w),
-    MENTRY("end", "end", MMPush | MMInsensitive, 
+    MENTRYL("end", "end", MMPush | MMInsensitive, 
 	   BIND_0(PTR_FUN(EndCommandDefinitionCB)), 0, (Widget *)&end_w),
-    MENTRY("edit", "edit", MMPush, 
+    MENTRYL("edit", "edit", MMPush, 
 	   BIND_0(PTR_FUN(ToggleEditCommandDefinitionCB)), 0, (Widget *)&edit_w),
     MMEnd
 };
 
 static MMDesc name_menu[] =
 {
-    MENTRY("name", "name", MMComboBox | MMUnmanagedLabel, 
+    MENTRYL("name", "name", MMComboBox | MMUnmanagedLabel, 
 	   BIND_0(PTR_FUN(UpdateDefinePanelCB)), 0, (Widget *)&name_w),
-    MENTRY("arg", "arg", MMToggle, HIDE_0(PTR_FUN(ToggleArgCB)), 0, (Widget *)&arg_w),
+    MENTRYL("arg", "arg", MMToggle, HIDE_0(PTR_FUN(ToggleArgCB)), 0, (Widget *)&arg_w),
     MMEnd
 };
 
 static MMDesc panel_menu[] = 
 {
-    MENTRY("name", "name", MMButtonPanel, MMNoCB, name_menu, 0),
-    MENTRY("commands", "commands", MMButtonPanel, MMNoCB, commands_menu, 0),
-    MENTRY("button", "button", MMButtonPanel, MMNoCB, button_menu, 0),
+    MENTRYL("name", "name", MMButtonPanel, MMNoCB, name_menu, 0),
+    MENTRYL("commands", "commands", MMButtonPanel, MMNoCB, commands_menu, 0),
+    MENTRYL("button", "button", MMButtonPanel, MMNoCB, button_menu, 0),
     MMEnd
 };
 

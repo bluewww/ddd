@@ -149,69 +149,69 @@ private:
 
 static MMDesc file_menu[] = 
 {
-    MENTRY("command", "command", MMPush, BIND_0(PTR_FUN(PlotCommandCB)), 0, 0),
+    MENTRYL("command", "command", MMPush, BIND_0(PTR_FUN(PlotCommandCB)), 0, 0),
     MMSep,
-    MENTRY("replot", "replot",   MMPush, BIND_0(PTR_FUN(ReplotCB)), 0, 0),
-    MENTRY("print", "print",     MMPush, BIND_0(PTR_FUN(SelectAndPrintPlotCB)), 0, 0),
-    MENTRY("export", "export",   MMPush, BIND_0(PTR_FUN(ExportPlotCB)), 0, 0),
+    MENTRYL("replot", "replot",   MMPush, BIND_0(PTR_FUN(ReplotCB)), 0, 0),
+    MENTRYL("print", "print",     MMPush, BIND_0(PTR_FUN(SelectAndPrintPlotCB)), 0, 0),
+    MENTRYL("export", "export",   MMPush, BIND_0(PTR_FUN(ExportPlotCB)), 0, 0),
     MMSep,
-    MENTRY("close", "close",     MMPush, BIND_0(PTR_FUN(CancelPlotCB)), 0, 0),
-    MENTRY("exit", "exit",       MMPush, BIND_1(PTR_FUN(DDDExitCB), EXIT_SUCCESS), 0, 0),
+    MENTRYL("close", "close",     MMPush, BIND_0(PTR_FUN(CancelPlotCB)), 0, 0),
+    MENTRYL("exit", "exit",       MMPush, BIND_1(PTR_FUN(DDDExitCB), EXIT_SUCCESS), 0, 0),
     MMEnd
 };
 
 static MMDesc view_menu[] = 
 {
-    MENTRY("border", "border",       MMToggle, BIND_0(PTR_FUN(ToggleOptionCB)), 0, 0),
-    MENTRY("time", "time",           MMToggle, BIND_0(PTR_FUN(ToggleOptionCB)), 0, 0),
+    MENTRYL("border", "border",       MMToggle, BIND_0(PTR_FUN(ToggleOptionCB)), 0, 0),
+    MENTRYL("time", "time",           MMToggle, BIND_0(PTR_FUN(ToggleOptionCB)), 0, 0),
     MMSep,
-    MENTRY("grid", "grid",           MMToggle, BIND_0(PTR_FUN(ToggleOptionCB)), 0, 0),
-    MENTRY("xzeroaxis", "xzeroaxis", MMToggle, BIND_0(PTR_FUN(ToggleOptionCB)), 0, 0),
-    MENTRY("yzeroaxis", "yzeroaxis", MMToggle, BIND_0(PTR_FUN(ToggleOptionCB)), 0, 0),
+    MENTRYL("grid", "grid",           MMToggle, BIND_0(PTR_FUN(ToggleOptionCB)), 0, 0),
+    MENTRYL("xzeroaxis", "xzeroaxis", MMToggle, BIND_0(PTR_FUN(ToggleOptionCB)), 0, 0),
+    MENTRYL("yzeroaxis", "yzeroaxis", MMToggle, BIND_0(PTR_FUN(ToggleOptionCB)), 0, 0),
     MMEnd
 };
 
 static MMDesc contour_menu[] = 
 {
-    MENTRY("base", "base",           MMToggle, BIND_0(PTR_FUN(SetContourCB)), 0, 0),
-    MENTRY("surface", "surface",     MMToggle, BIND_0(PTR_FUN(SetContourCB)), 0, 0),
+    MENTRYL("base", "base",           MMToggle, BIND_0(PTR_FUN(SetContourCB)), 0, 0),
+    MENTRYL("surface", "surface",     MMToggle, BIND_0(PTR_FUN(SetContourCB)), 0, 0),
     MMEnd
 };
 
 static MMDesc scale_menu[] = 
 {
-    MENTRY("logscale", "logscale",   MMToggle, BIND_0(PTR_FUN(ToggleLogscaleCB)), 0, 0),
+    MENTRYL("logscale", "logscale",   MMToggle, BIND_0(PTR_FUN(ToggleLogscaleCB)), 0, 0),
     MMSep,
-    MENTRY("xtics", "xtics",         MMToggle, BIND_0(PTR_FUN(ToggleOptionCB)), 0, 0),
-    MENTRY("ytics", "ytics",         MMToggle, BIND_0(PTR_FUN(ToggleOptionCB)), 0, 0),
-    MENTRY("ztics", "ztics",         MMToggle, BIND_0(PTR_FUN(ToggleOptionCB)), 0, 0),
+    MENTRYL("xtics", "xtics",         MMToggle, BIND_0(PTR_FUN(ToggleOptionCB)), 0, 0),
+    MENTRYL("ytics", "ytics",         MMToggle, BIND_0(PTR_FUN(ToggleOptionCB)), 0, 0),
+    MENTRYL("ztics", "ztics",         MMToggle, BIND_0(PTR_FUN(ToggleOptionCB)), 0, 0),
     MMEnd
 };
 
 static MMDesc plot_menu[] = 
 {
-    MENTRY("points", "points",              MMToggle, BIND_0(PTR_FUN(SetStyleCB)), 0, 0),
-    MENTRY("lines", "lines",                MMToggle, BIND_0(PTR_FUN(SetStyleCB)), 0, 0),
-    MENTRY("lines3d", "lines3d",            MMToggle, BIND_0(PTR_FUN(SetStyleCB)), 0, 0),
-    MENTRY("linespoints", "linespoints",    MMToggle, BIND_0(PTR_FUN(SetStyleCB)), 0, 0),
-    MENTRY("linespoints3d", "linespoints3d",  MMToggle | MMUnmanaged, 
+    MENTRYL("points", "points",              MMToggle, BIND_0(PTR_FUN(SetStyleCB)), 0, 0),
+    MENTRYL("lines", "lines",                MMToggle, BIND_0(PTR_FUN(SetStyleCB)), 0, 0),
+    MENTRYL("lines3d", "lines3d",            MMToggle, BIND_0(PTR_FUN(SetStyleCB)), 0, 0),
+    MENTRYL("linespoints", "linespoints",    MMToggle, BIND_0(PTR_FUN(SetStyleCB)), 0, 0),
+    MENTRYL("linespoints3d", "linespoints3d",  MMToggle | MMUnmanaged, 
 	   BIND_0(PTR_FUN(SetStyleCB)), 0, 0),
-    MENTRY("impulses", "impulses",          MMToggle, BIND_0(PTR_FUN(SetStyleCB)), 0, 0),
-    MENTRY("dots", "dots",                  MMToggle, BIND_0(PTR_FUN(SetStyleCB)), 0, 0),
-    MENTRY("steps2d", "steps2d",            MMToggle, BIND_0(PTR_FUN(SetStyleCB)), 0, 0),
-    MENTRY("boxes2d", "boxes2d",            MMToggle, BIND_0(PTR_FUN(SetStyleCB)), 0, 0),
+    MENTRYL("impulses", "impulses",          MMToggle, BIND_0(PTR_FUN(SetStyleCB)), 0, 0),
+    MENTRYL("dots", "dots",                  MMToggle, BIND_0(PTR_FUN(SetStyleCB)), 0, 0),
+    MENTRYL("steps2d", "steps2d",            MMToggle, BIND_0(PTR_FUN(SetStyleCB)), 0, 0),
+    MENTRYL("boxes2d", "boxes2d",            MMToggle, BIND_0(PTR_FUN(SetStyleCB)), 0, 0),
     MMEnd
 };
 
 static MMDesc menubar[] = 
 {
-    MENTRY("file", "file",         MMMenu,          MMNoCB, file_menu,        0),
-    MENTRY("edit", "edit",         MMMenu,          MMNoCB, simple_edit_menu, 0),
-    MENTRY("plotView", "plotView", MMMenu,          MMNoCB, view_menu,        0),
-    MENTRY("plot", "plot",         MMRadioMenu,     MMNoCB, plot_menu,        0),
-    MENTRY("scale", "scale",       MMMenu,          MMNoCB, scale_menu,       0),
-    MENTRY("contour", "contour",   MMMenu,          MMNoCB, contour_menu,     0),
-    MENTRY("help", "help",         MMMenu | MMHelp, MMNoCB, simple_help_menu, 0),
+    MENTRYL("file", "file",         MMMenu,          MMNoCB, file_menu,        0),
+    MENTRYL("edit", "edit",         MMMenu,          MMNoCB, simple_edit_menu, 0),
+    MENTRYL("plotView", "plotView", MMMenu,          MMNoCB, view_menu,        0),
+    MENTRYL("plot", "plot",         MMRadioMenu,     MMNoCB, plot_menu,        0),
+    MENTRYL("scale", "scale",       MMMenu,          MMNoCB, scale_menu,       0),
+    MENTRYL("contour", "contour",   MMMenu,          MMNoCB, contour_menu,     0),
+    MENTRYL("help", "help",         MMMenu | MMHelp, MMNoCB, simple_help_menu, 0),
     MMEnd
 };
 

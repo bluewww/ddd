@@ -683,9 +683,9 @@ void delete_or_controlAct(Widget, XEvent *e,
 
 static MMDesc gdb_popup[] =
 {
-    MENTRY("clear_line", "clear_line", MMPush,
+    MENTRYL("clear_line", "clear_line", MMPush,
 	   HIDE_0(PTR_FUN(gdbClearCB)), 0, 0),
-    MENTRY("clear_window", "clear_window", MMPush,
+    MENTRYL("clear_window", "clear_window", MMPush,
 	   HIDE_0(PTR_FUN(gdbClearWindowCB)), 0, 0),
     MMEnd
 };
