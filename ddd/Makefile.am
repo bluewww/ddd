@@ -1031,7 +1031,7 @@ bug.$(OBJEXT):	$(srcdir)/bug.C
 
 # This jewel makes an `emboss' effect in two steps:
 # 1. Create a displaced mask in FILE-mask.pbm, using `pnmcut' and `pnmpaste'
-# 2. Add the mask to FILE.xbm, using `pnmarith'.
+# 2. Add the mask to FILE.xbm, using `pamarith'.
 .xbm.xpmxx:
 	@$(ECHO) "Creating $@"
 	@-base=`$(ECHO) $@ | $(SED) 's,.*/,,' | $(SED) 's/[.]x[bp]m.*//'`; \
@@ -1045,7 +1045,7 @@ bug.$(OBJEXT):	$(srcdir)/bug.C
 	$(SED) 's/#00*/grey50/' | \
 	$(SED) 's/#FF*/grey/' | \
 	$(XPMTOPPM) > $${base}-button.ppm; \
-	$(PNMARITH) -add $${base}-button.ppm $${base}-mask.pbm | \
+	$(PAMARITH) -add $${base}-button.ppm $${base}-mask.pbm | \
 	$(PPMTOXPM) | \
 	$(SED) 's/c #BE[BE]*/c none   g none   m none  s Background/' | \
 	$(SED) 's/c #7F[7F]*/c grey50 g grey50 m black/' | \
@@ -1397,7 +1397,7 @@ IMAGE_WIDTH = 800
 PBMTOXBM   = pbmtoxbm
 PGMENHANCE = pgmenhance
 PGMTOPBM   = pgmtopbm
-PNMARITH   = pnmarith
+PAMARITH   = pamarith
 PNMCUT     = pnmcut
 PNMDEPTH   = pnmdepth
 PNMGAMMA   = pnmgamma
