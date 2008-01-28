@@ -33,7 +33,7 @@ char ddd_strings_rcsid[] =
 #pragma implementation
 #endif
 
-#include "strings.h"
+#include "ddd_strings.h"
 
 String ddd_fallback_resources[] = {
 #include "Ddd.ad.h"
