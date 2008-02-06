@@ -314,6 +314,11 @@ char ddd_rcsid[] =
 #include <GUI/Notebook.h>
 #endif
 
+#if !defined(IF_MOTIF)
+#include <gtk/gtkcheckmenuitem.h>
+#include <gtk/gtktogglebutton.h>
+#endif
+
 // Standard stuff
 #include <stdlib.h>
 #include <iostream>
@@ -375,6 +380,9 @@ static void ddd_xt_warning(String message);
 static void WhenReady            (Widget, XtPointer, XtPointer);
 #else
 static void WhenReady            (Widget, XtPointer);
+#endif
+#if !defined(IF_XM)
+static void WhenReady1           (GUI::Widget *w, void *client_data);
 #endif
 
 // Cut and Paste
@@ -1008,11 +1016,38 @@ struct WhenReadyProc_t {
 
 // Auxiliary struct used by WhenReady. A pointer to function can not
 // be passed directly in a XtPointer.
+//struct WhenReadyProc_t {
+//    XtCallbackProc proc;
+//};
 struct WhenReadyProc_t {
-  XtCallbackProc proc;
+    XtCallbackProc legacy;
+    sigc::slot<void, GUI::Widget *> ready;
+    WhenReadyProc_t(XtCallbackProc legacy0,
+		    sigc::slot<void, GUI::Widget *> ready0) {
+	legacy = legacy0;
+	ready = ready0;
+    }
 };
-#define DECL_WR(NAME, PROC)			\
-    static WhenReadyProc_t NAME = { PROC }
+
+static void
+dummy_function_1(Widget, XtPointer, XtPointer)
+{
+}
+
+static void
+dummy_function_2(GUI::Widget *)
+{
+}
+
+//#define DECL_WR(NAME, PROC)			\
+//    static WhenReadyProc_t NAME = { PROC }
+
+#define DECL_WR(NAME, PROC)						\
+    static WhenReadyProc_t NAME (PROC, \
+				 sigc::slot<void, GUI::Widget *>(sigc::ptr_fun(dummy_function_2)))
+#define DECL_WR2(NAME, PROC)						\
+    static WhenReadyProc_t NAME (dummy_function_1, \
+				 sigc::slot<void, GUI::Widget *>(PROC))
 
 #else
 
@@ -1039,7 +1074,7 @@ dummy_function_2(GUI::Widget *)
 }
 
 #define DECL_WR(NAME, PROC)						\
-    static WhenReadyProc_t NAME (sigc::slot<void, Widget>(PROC),	\
+    static WhenReadyProc_t NAME (sigc::slot<void, Widget>(sigc::ptr_fun(PROC)), \
 				 sigc::slot<void, GUI::Widget *>(sigc::ptr_fun(dummy_function_2)))
 #define DECL_WR2(NAME, PROC)						\
     static WhenReadyProc_t NAME (sigc::slot<void, Widget>(sigc::ptr_fun(dummy_function_1)), \
@@ -1061,15 +1096,15 @@ DECL_WR(gdbMakeAgainCB);
 
 #else
 
-DECL_WR(WR_gdbOpenClassCB, sigc::ptr_fun(gdbOpenClassCB));
-DECL_WR(WR_gdbOpenFileCB, sigc::ptr_fun(gdbOpenFileCB));
-DECL_WR(WR_gdbOpenCoreCB, sigc::ptr_fun(gdbOpenCoreCB));
+DECL_WR(WR_gdbOpenClassCB, gdbOpenClassCB);
+DECL_WR(WR_gdbOpenFileCB, gdbOpenFileCB);
+DECL_WR(WR_gdbOpenCoreCB, gdbOpenCoreCB);
 DECL_WR2(WR_OpenSessionCB, sigc::ptr_fun(OpenSessionCB));
 DECL_WR2(WR_SaveSessionAsCB, sigc::ptr_fun(SaveSessionAsCB));
-DECL_WR(WR_gdbOpenProcessCB, sigc::ptr_fun(gdbOpenProcessCB));
+DECL_WR(WR_gdbOpenProcessCB, gdbOpenProcessCB);
 DECL_WR2(WR_gdbChangeDirectoryCB, sigc::ptr_fun(gdbChangeDirectoryCB));
 DECL_WR2(WR_gdbMakeCB, sigc::ptr_fun(gdbMakeCB));
-DECL_WR(WR_gdbMakeAgainCB, sigc::ptr_fun(gdbMakeAgainCB));
+DECL_WR(WR_gdbMakeAgainCB, gdbMakeAgainCB);
 
 #endif
 
@@ -1100,8 +1135,10 @@ DECL_WR(WR_gdbMakeAgainCB, sigc::ptr_fun(gdbMakeAgainCB));
     XENTRYL("printAgain", "Print Again", MMPush | MMUnmanaged,		\
 	    MMNoCB, sigc::bind(sigc::ptr_fun(PrintAgainCB1), 1L), 0, 0), \
     MENTRYL("separator", "", MMSeparator | MMUnmanaged, MMNoCB, 0, 0),	\
-    MENTRYL("cd", "Change Directory...", MMPush,				\
-	   BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_gdbChangeDirectoryCB)), 0, 0), \
+    XENTRYL("cd", "Change Directory...", MMPush,			\
+	    BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_gdbChangeDirectoryCB)), \
+	    sigc::bind(sigc::ptr_fun(WhenReady1), &WR_gdbChangeDirectoryCB), \
+	    0, 0),							\
     MMSep,								\
     MENTRYL("make", "Make...", MMPush,					\
 	   BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_gdbMakeCB)), 0, 0),	\
@@ -1131,7 +1168,7 @@ struct ProgramItems {
 
 #define PROGRAM_MENU(w)							\
 {									\
-    XENTRYL("run", "Run...", MMPush, BIND_0(PTR_FUN(gdbRunCB)),		\
+    GENTRYL("run", "Run...", MMPush, BIND_0(PTR_FUN(gdbRunCB)),		\
 	    sigc::ptr_fun(gdbRunCB1), 0, 0),				\
     MENTRYL("run_again", "Run Again", MMPush,				\
 	   BIND_1(PTR_FUN(gdbCommandCB12), "run"), 0, 0),		\
@@ -1241,7 +1278,7 @@ DECL_WR(dddPopupSettingsCB);
 
 #else
 
-DECL_WR(WR_dddPopupSettingsCB, sigc::ptr_fun(dddPopupSettingsCB));
+DECL_WR(WR_dddPopupSettingsCB, dddPopupSettingsCB);
 
 #endif
 
@@ -1303,8 +1340,8 @@ DECL_WR(gdbApplyCB);
 
 #else
 
-DECL_WR(WR_gdbCompleteCB, sigc::ptr_fun(gdbCompleteCB));
-DECL_WR(WR_gdbApplyCB, sigc::ptr_fun(gdbApplyCB));
+DECL_WR(WR_gdbCompleteCB, gdbCompleteCB);
+DECL_WR(WR_gdbApplyCB, gdbApplyCB);
 
 #endif
 
@@ -1357,10 +1394,10 @@ DECL_WR(dddPopupSignalsCB);
 
 #else
 
-DECL_WR(WR_ViewStackFramesCB, sigc::ptr_fun(SourceView::ViewStackFramesCB));
-DECL_WR(WR_ViewRegistersCB, sigc::ptr_fun(SourceView::ViewRegistersCB));
-DECL_WR(WR_ViewThreadsCB, sigc::ptr_fun(SourceView::ViewThreadsCB));
-DECL_WR(WR_dddPopupSignalsCB, sigc::ptr_fun(dddPopupSignalsCB));
+DECL_WR(WR_ViewStackFramesCB, SourceView::ViewStackFramesCB);
+DECL_WR(WR_ViewRegistersCB, SourceView::ViewRegistersCB);
+DECL_WR(WR_ViewThreadsCB, SourceView::ViewThreadsCB);
+DECL_WR(WR_dddPopupSignalsCB, dddPopupSignalsCB);
 
 #endif
 
@@ -2219,7 +2256,7 @@ DECL_WR(dddPopupInfosCB);
 
 #else
 
-DECL_WR(WR_dddPopupInfosCB, CB_ARG_HIDE_0(PTR_FUN(dddPopupInfosCB)));
+DECL_WR(WR_dddPopupInfosCB, dddPopupInfosCB);
 
 #endif
 
@@ -2613,6 +2650,13 @@ static MString version_warnings;
 //-----------------------------------------------------------------------------
 // DDD main program
 //-----------------------------------------------------------------------------
+
+#if !defined(IF_MOTIF)
+typedef sigc::slot<void, Gtk::Widget *> slot_gtk_w;
+#endif
+#if !defined(IF_XM)
+typedef sigc::slot<void, GUI::Widget *> slot_gui_w;
+#endif
 
 typedef enum {
   DDD_EXIT_FAILURE, DDD_EXIT_SUCCESS, DDD_CONTINUE
@@ -3356,11 +3400,13 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 
 #if defined(IF_XM)
     Widget menubar_w = MMcreateMenuBar(main_window, "menubar", menubar);
+    MMaddCallbacks(menubar);
+    MMaddHelpCallback(menubar, ImmediateHelpCB);
 #else
     GUI::WidgetPtr<GUI::MenuBar> menubar_w = MMcreateMenuBar(main_window, "menubar", menubar);
-#endif
     MMaddCallbacks(menubar);
-    MMaddHelpCallback(menubar, PTR_FUN(ImmediateHelpCB));
+    MMaddHelpCallback(menubar, sigc::ptr_fun(ImmediateHelpCB1));
+#endif
     verify_buttons(menubar);
     register_menu_shell(menubar);
 
@@ -3478,13 +3524,15 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	data_menubar_w = 
 	    MMcreateMenuBar (data_main_window_w, 
 			     "menubar", data_menubar);
+	MMaddCallbacks(data_menubar);
+	MMaddHelpCallback(menubar, ImmediateHelpCB);
 #else
 	data_menubar_w = 
 	    MMcreateMenuBar (data_main_window_w, 
 			     "menubar", data_menubar);
-#endif
 	MMaddCallbacks(data_menubar);
-	MMaddHelpCallback(menubar, PTR_FUN(ImmediateHelpCB));
+	MMaddHelpCallback(menubar, sigc::ptr_fun(ImmediateHelpCB1));
+#endif
 	verify_buttons(data_menubar);
 	register_menu_shell(data_menubar);
 
@@ -3575,12 +3623,14 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 #if defined(IF_XM)
 	source_menubar_w = 
 	    MMcreateMenuBar (source_main_window_w, "menubar", source_menubar);
+	MMaddCallbacks(source_menubar);
+	MMaddHelpCallback(menubar, ImmediateHelpCB);
 #else
 	source_menubar_w = 
 	    MMcreateMenuBar (source_main_window_w, "menubar", source_menubar);
-#endif
 	MMaddCallbacks(source_menubar);
-	MMaddHelpCallback(menubar, PTR_FUN(ImmediateHelpCB));
+	MMaddHelpCallback(menubar, sigc::ptr_fun(ImmediateHelpCB1));
+#endif
 	verify_buttons(source_menubar);
 	register_menu_shell(source_menubar);
 
@@ -5156,37 +5206,33 @@ static void set_toggle(Widget w, bool new_state, bool notify = false)
     if (w == 0)
 	return;
 
-    if (!notify) {
-	g_signal_handlers_block_matched(w->gobj(), G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)gdbOpenToolWindowCB, 0);
-	g_signal_handlers_block_matched(w->gobj(), G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)gdbOpenExecWindowCB, 0);
-	g_signal_handlers_block_matched(w->gobj(), G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)gdbOpenCommandWindowCB, 0);
-	g_signal_handlers_block_matched(w->gobj(), G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)gdbOpenSourceWindowCB, 0);
-	g_signal_handlers_block_matched(w->gobj(), G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)gdbOpenDataWindowCB, 0);
-	g_signal_handlers_block_matched(w->gobj(), G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)gdbToggleCodeWindowCB, 0);
-    }
-
     Gtk::ToggleButton *tb = dynamic_cast<Gtk::ToggleButton *>(w);
     if (tb) {
 	if (tb->get_active() != new_state)
 	{
-	    tb->set_active(new_state);
+	    if (notify) {
+		tb->set_active(new_state);
+	    }
+	    else {
+		GtkToggleButton *tb_obj = tb->gobj();
+		tb_obj->active = !tb_obj->active;
+		gtk_widget_queue_draw (GTK_WIDGET (tb_obj));
+	    }
 	}
     }
     Gtk::CheckMenuItem *cmi = dynamic_cast<Gtk::CheckMenuItem *>(w);
     if (cmi) {
 	if (cmi->get_active() != new_state)
 	{
-	    cmi->set_active(new_state);
+	    if (notify) {
+		cmi->set_active(new_state);
+	    }
+	    else {
+		GtkCheckMenuItem *cmi_obj = cmi->gobj();
+		cmi_obj->active = !cmi_obj->active;
+		gtk_widget_queue_draw (GTK_WIDGET (cmi_obj));
+	    }
 	}
-    }
-
-    if (!notify) {
-	g_signal_handlers_unblock_matched(w->gobj(), G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)gdbOpenToolWindowCB, 0);
-	g_signal_handlers_unblock_matched(w->gobj(), G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)gdbOpenExecWindowCB, 0);
-	g_signal_handlers_unblock_matched(w->gobj(), G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)gdbOpenCommandWindowCB, 0);
-	g_signal_handlers_unblock_matched(w->gobj(), G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)gdbOpenSourceWindowCB, 0);
-	g_signal_handlers_unblock_matched(w->gobj(), G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)gdbOpenDataWindowCB, 0);
-	g_signal_handlers_unblock_matched(w->gobj(), G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)gdbToggleCodeWindowCB, 0);
     }
 
 }
@@ -6590,7 +6636,11 @@ static int add_panel(GUI::Notebook *parent,
 #endif
     MMadjustPanel(items);
     MMaddCallbacks(items);
-    MMaddHelpCallback(items, PTR_FUN(ImmediateHelpCB));
+#if defined(IF_XM)
+    MMaddHelpCallback(items, ImmediateHelpCB);
+#else
+    MMaddHelpCallback(items, sigc::ptr_fun(ImmediateHelpCB1));
+#endif
     register_menu_shell(items);
 
     // Fetch panel geometry
@@ -6719,7 +6769,7 @@ static void make_preferences(Widget parent)
         XmSelectionBoxGetChild(preferences_dialog, XmDIALOG_CANCEL_BUTTON);
     XtRemoveAllCallbacks(reset_preferences_w, XmNactivateCallback);
 #else
-    reset_preferences_w = preferences_dialog->add_button("Reset");
+    reset_preferences_w = preferences_dialog->add_button("reset", "Reset");
     reset_preferences_w->show();
 #endif
 
@@ -7567,6 +7617,25 @@ private:
     WhenReadyInfo& operator= (const WhenReadyInfo&);
 };
 
+#if !defined(IF_XM)
+
+struct WhenReadyInfo1 {
+    MString message;
+    slot_gui_w proc;
+    XEvent event;
+
+    WhenReadyInfo1(const MString &msg, slot_gui_w p)
+	: message(msg),
+	  proc(p)
+    {
+    }
+private:
+    WhenReadyInfo1(const WhenReadyInfo1&);
+    WhenReadyInfo1& operator= (const WhenReadyInfo1&);
+};
+
+#endif
+
 static void DoneCB(const string& /* answer */, void *qu_data)
 {
     WhenReadyInfo *info = (WhenReadyInfo *)qu_data;
@@ -7575,18 +7644,30 @@ static void DoneCB(const string& /* answer */, void *qu_data)
 #if defined(IF_MOTIF)
     (*info->proc)(gdb_w, info->client_data, XtPointer(&info->cbs));
 #else
-#ifdef NAG_ME
-#warning We cannot pass the callback structure: maybe do not need it?
-#endif
     (info->proc)(gdb_w);
 #endif
     delete info;
 }
 
+#if !defined(IF_XM)
+
+static void DoneCB1(const string& /* answer */, void *qu_data)
+{
+    WhenReadyInfo1 *info = (WhenReadyInfo1 *)qu_data;
+    set_status_mstring(info->message + rm("done."));
+
+    std::cerr << "Passing null pointer, this may crash...\n";
+    (info->proc)(NULL);
+    // (info->proc)(gdb_w);
+    delete info;
+}
+
+#endif
+
 #if defined(IF_XM)
 
 // Execute command in (XtCallbackProc)CLIENT_DATA as soon as GDB gets ready
-static void WhenReady(Widget w, XtPointer client_data)
+static void WhenReady(Widget w, XtPointer client_data, XtPointer call_data)
 {
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
     if (cbs == 0)
@@ -7647,13 +7728,11 @@ static void WhenReady(Gtk::Widget *w, void *client_data)
 #endif
 
 #if defined(IF_XMMM)
-    XtCallbackProc proc = STATIC_CAST(WhenReadyProc_t*,client_data)->proc;
+    XtCallbackProc proc = STATIC_CAST(WhenReadyProc_t*,client_data)->legacy;
 #else
-    typedef sigc::slot<void, Gtk::Widget *> slot_gtk_w;
-    typedef sigc::slot<void, GtkX::Widget *> slot_gtkx_w;
     WhenReadyProc_t &wrp = *reinterpret_cast<WhenReadyProc_t *>(client_data);
     slot_gtk_w &proc = wrp.legacy;
-    slot_gtkx_w &proc2 = wrp.ready;
+    slot_gui_w &proc2 = wrp.ready;
 #endif
     XtPointer user_client_data = 0; // No way to pass extra values here
 
@@ -7708,6 +7787,54 @@ static void WhenReady(Gtk::Widget *w, void *client_data)
 
 #endif
 
+#if !defined(IF_XM)
+
+// Execute command in (XtCallbackProc)CLIENT_DATA as soon as GDB gets ready
+static void WhenReady1(GUI::Widget *w, void *client_data)
+{
+    WhenReadyProc_t &wrp = *reinterpret_cast<WhenReadyProc_t *>(client_data);
+#if defined(IF_XMMM)
+    XtCallbackProc &proc = wrp.legacy;
+    sigc::slot<void, GUI::Widget *> &proc2 = wrp.ready;
+#else
+    sigc::slot<void, Gtk::Widget *> &proc = wrp.legacy;
+    sigc::slot<void, GUI::Widget *> &proc2 = wrp.ready;
+#endif
+
+    if (can_do_gdb_command())
+    {
+	// GDB is ready: do command now
+	proc2(w);
+	return;
+    }
+
+    // Execute command as soon as GDB gets ready
+    MString _action = get_label(w);
+    string action = _action.str();
+    if (action.contains("...", -1))
+	action = action.before("...");
+
+    MString msg = rm(action + ": waiting until " + gdb->title() 
+		     + " gets ready...");
+    WhenReadyInfo1 *info = new WhenReadyInfo1(msg, proc2);
+
+    // We don't want to lock the status, hence we use an ordinary
+    // `set_status' call instead of the StatusMsg class.
+    set_status_mstring(msg);
+
+    Command c(gdb->nop_command(XtName(w)));
+    c.origin   = w->internal();
+    c.callback = DoneCB1;
+    c.data     = (void *)info;
+    c.verbose  = false;
+    c.prompt   = false;
+    c.check    = false;
+    c.priority = COMMAND_PRIORITY_USER;
+
+    gdb_command(c);
+}
+
+#endif
 
 //-----------------------------------------------------------------------------
 // I/O warnings
@@ -7752,7 +7879,7 @@ static void gdb_echo_detectedHP(Agent *, void *, void *call_data)
 	    set_status(gdb->title() + " is running in echo mode.");
 
 	    // Attempt to disable echo mode explicitly via stty command.
-	    gdb_command(gdb->shell_command("stty -echo -onlcr"), 0, 0, 0, 
+	    gdb_command(gdb->shell_command("stty -echo -onlcr"), Widget(0), 0, 0, 
 			false, false, COMMAND_PRIORITY_AGAIN);
 	}
 	else

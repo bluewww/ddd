@@ -47,13 +47,17 @@
 
 // Motif includes
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 
 #include <Xm/Xm.h>
 
-#else // NOT IF_MOTIF
+#endif
 
-#endif // IF_MOTIF
+#if !defined(IF_XM)
+
+#include <GUI/Menu.h>
+
+#endif
 
 // DDD includes
 #include "ArgField.h"
@@ -231,16 +235,16 @@ class DataDisp {
     static void select_node(DispNode *dn, int src = 0);
 
     // Setting values
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     static void setDCB (Widget, XtPointer, XtPointer);
-#else // NOT IF_MOTIF
+#else
     static void setDCB (SetInfo *, int);
-#endif // IF_MOTIF
-#ifdef IF_MOTIF
+#endif
+#if defined(IF_MOTIF)
     static void DeleteSetInfoCB(Widget, XtPointer client_data, XtPointer);
-#else // NOT IF_MOTIF
+#else
     static void *DeleteSetInfoCB(void *);
-#endif // IF_MOTIF
+#endif
     static void SetDone(const string& answer, void *qu_data);
 
     // Builtin user displays
@@ -522,19 +526,25 @@ private:
     static bool cluster_displays;
     static bool arg_needs_update;
 
-    static MENU_P graph_popup_w;
-    static MENU_P node_popup_w;
-    static MENU_P shortcut_popup_w;
+#if defined(IF_XM)
+    static Widget graph_popup_w;
+    static Widget node_popup_w;
+    static Widget shortcut_popup_w;
+#else
+    static GUI::PopupMenu *graph_popup_w;
+    static GUI::PopupMenu *node_popup_w;
+    static GUI::PopupMenu *shortcut_popup_w;
+#endif
 
     static DIALOG_P edit_displays_dialog_w;
     static TREEVIEW_P display_list_w;
 
     // Origin handling
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     static void ClearOriginCB(Widget, XtPointer, XtPointer);
-#else // NOT IF_MOTIF
+#else
     static void *ClearOriginCB(void *);
-#endif // IF_MOTIF
+#endif
     static void set_last_origin(Widget origin);
 
     // Alias checking
@@ -589,9 +599,9 @@ private:
 public:
     static GRAPH_EDIT_P graph_edit;
     static CONTAINER_P graph_cmd_w;
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     static SCROLLEDTEXT_P graph_selection_w;
-#endif // IF_MOTIF
+#endif
     static ArgField *graph_arg;
     static bool bump_displays;
 

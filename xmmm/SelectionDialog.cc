@@ -40,8 +40,9 @@ close_shell(::Widget w, XtPointer client_data, XtPointer call_data)
     XtPopdown(w);
 }
 
-SelectionDialog::SelectionDialog(::Widget parent, const Xmmm::String &name,
-				 const std::vector<String> &headers)
+void
+SelectionDialog::init(::Widget parent, const String &name,
+		      const std::vector<String> &headers)
 {
     Arg args[10];
     int nargs;
@@ -69,10 +70,10 @@ SelectionDialog::SelectionDialog(::Widget parent, const Xmmm::String &name,
     dlg_ = XmCreateDialogShell(parent, (char *)name.c(), args, nargs);
     WM_set_close_callback(dlg_, close_shell, NULL);
 #if 0
-    box_ = new VBox(dlg_, name+Xmmm::String("_vbox"));
+    box_ = new VBox(dlg_, name+String("_vbox"));
     box_->show();
 #else
-    box1_ = new Box1(dlg_, name+Xmmm::String("_vbox"));
+    box1_ = new Box1(dlg_, name+String("_vbox"));
     box1_->show();
 #endif
     vargs.resize(6);
@@ -87,8 +88,8 @@ SelectionDialog::SelectionDialog(::Widget parent, const Xmmm::String &name,
     XtSetArg(vargs[3], XmNscrollBarDisplayPolicy, XmSTATIC);
     XtSetArg(vargs[4], XmNshadowThickness, 0);
     XtSetArg(vargs[5], "pack_options", 2);
-    sw_ = new ScrolledWindow(*box1_, name+Xmmm::String("_sw"), vargs);
-    list_ = new ListView(*sw_, name+Xmmm::String("_list"), headers);
+    sw_ = new ScrolledWindow(*box1_, name+String("_sw"), vargs);
+    list_ = new ListView(*sw_, name+String("_list"), headers);
     // FIXME: If the ScrolledWindow is realized before the list is
     // managed, it will resize the list (so that the visibleItemCount
     // resource is ignored).  This will not matter when we have proper
@@ -96,6 +97,18 @@ SelectionDialog::SelectionDialog(::Widget parent, const Xmmm::String &name,
     list_->show();
     sw_->show();
     postinit();
+}
+
+SelectionDialog::SelectionDialog(::Widget parent, const String &name,
+				 const std::vector<String> &headers)
+{
+    init(parent, name, headers);
+}
+
+SelectionDialog::SelectionDialog(Shell &parent, const String &name,
+				 const std::vector<String> &headers)
+{
+    init(parent.internal(), name, headers);
 }
 
 SelectionDialog::~SelectionDialog(void)
@@ -123,8 +136,8 @@ SelectionDialog::list(void) const
 }
 
 Button *
-SelectionDialog::add_button(const String &name)
+SelectionDialog::add_button(const String &name, const String &label)
 {
-    return new Button(*this, name);
+    return new Button(*this, name, label);
 }
 

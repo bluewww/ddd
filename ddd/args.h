@@ -40,7 +40,7 @@
 #include "strclass.h"
 #include "bool.h"
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 void gdbRunCB(Widget, XtPointer, XtPointer);
 #endif
 #if !defined(IF_XM)

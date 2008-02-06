@@ -33,6 +33,13 @@ using namespace GtkX;
 #warning Remove this special case notebook stuff?
 #endif
 
+VBox::VBox(Gtk::Container *parent, const GtkX::String &name)
+{
+    set_name(name.s());
+    parent->add(*this);
+    postinit();
+}
+
 VBox::VBox(GtkX::Container &parent, const GtkX::String &name)
 {
     set_name(name.s());
@@ -48,6 +55,13 @@ Gtk::Widget *
 VBox::internal(void)
 {
     return this;
+}
+
+HBox::HBox(Gtk::Container *parent, const GtkX::String &name)
+{
+    set_name(name.s());
+    parent->add(*this);
+    postinit();
 }
 
 HBox::HBox(GtkX::Container &parent, const GtkX::String &name)

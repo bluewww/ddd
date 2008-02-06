@@ -2,6 +2,7 @@
 #define GTKX_CONTAINER_H
 
 #include <gtkmm/container.h>
+#include <gtkmm/radiobuttongroup.h>
 #include <GtkX/Widget.h>
 
 namespace GtkX {
@@ -14,7 +15,10 @@ namespace GtkX {
 	PACK_EXPAND_WIDGET
     };
 
+    class RadioButton;
+
     class Container: public GtkX::Widget {
+	Gtk::RadioButtonGroup grp;
     public:
 	Container(void);
 	~Container(void);
@@ -22,6 +26,7 @@ namespace GtkX {
 	virtual void add_child(GtkX::Widget &child,
 			       PackOptions options=PACK_SHRINK,
 			       int padding=0);
+	friend class GtkX::RadioButton;
     };
 
     class Shell: public Container {

@@ -538,7 +538,7 @@ void start_gdb(bool config)
 	if (is_graph_cmd(command))
 	{
 	    // To be handled later by DDD - enqueue in command queue
-	    Command c(command, 0, process_batch);
+	    Command c(command, Widget(0), process_batch);
 	    c.priority = COMMAND_PRIORITY_INIT;
 	    gdb_command(c);
 	}

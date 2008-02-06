@@ -35,7 +35,7 @@
 
 namespace Xmmm {
 
-    class Window: public Container {
+    class Window: public Shell {
 	::Widget win_;
 	void init_signals(void);
     protected:

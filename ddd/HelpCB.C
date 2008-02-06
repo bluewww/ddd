@@ -35,17 +35,17 @@ char HelpCB_rcsid[] =
 #include "config.h"
 
 #include "Agent.h"
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 #include "ComboBox.h"
-#endif // IF_MOTIF
+#endif
 #include "DestroyCB.h"
 #include "HelpCB.h"
 #include "MakeMenu.h"
 #include "SmartC.h"
 #include "TimeOut.h"
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 #include "TextSetS.h"
-#endif // IF_MOTIF
+#endif
 #include "ddd.h"		// process_pending_events()
 #include "findParent.h"
 #include "isid.h"
@@ -60,7 +60,7 @@ char HelpCB_rcsid[] =
 #include <limits.h>
 #include <ctype.h>
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 #include <Xm/Xm.h>
 #include <Xm/CascadeB.h>
 #include <Xm/MainW.h>
@@ -81,7 +81,7 @@ char HelpCB_rcsid[] =
 #include <X11/StringDefs.h>
 #include <X11/IntrinsicP.h>	// LessTif hacks
 #include <X11/Shell.h>
-#endif // IF_MOTIF
+#endif
 
 // Misc DDD includes
 #include "LessTifH.h"
@@ -129,7 +129,7 @@ struct doc_resource_values {
     XmString documentationString;
 };
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 static XtResource help_subresources[] = {
     {
 	XTRESSTR(XtNhelpString),
@@ -197,7 +197,7 @@ static XtResource doc_subresources[] = {
 	XtPointer(0)
     }
 };
-#endif // IF_MOTIF
+#endif
 
 //-----------------------------------------------------------------------
 // Data
@@ -228,7 +228,7 @@ static bool isNone(const MString& s)
     return s.isEmpty() && s.lineCount() > 1;
 }
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 static MString get_help_string(Widget widget)
 {
     // Get text
@@ -390,7 +390,7 @@ static bool call_tracking_help(XtPointer call_data, bool key_only = false)
 
 static void nop1(Widget) {}
 void (*PostHelpOnItemHook)(Widget) = nop1;
-#endif // IF_MOTIF
+#endif
 
 //-----------------------------------------------------------------------
 // Functions
@@ -398,7 +398,7 @@ void (*PostHelpOnItemHook)(Widget) = nop1;
 
 void HelpOnHelpCB(Widget widget, XtPointer client_data, XtPointer call_data)
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     if (help_dialog == 0)
     {
 	// Make sure help dialog is created
@@ -410,14 +410,15 @@ void HelpOnHelpCB(Widget widget, XtPointer client_data, XtPointer call_data)
     _MStringHelpCB(widget, XtPointer(text.xmstring()), call_data, true);
 
     PostHelpOnItemHook(help_dialog);
-#else // NOT IF_MOTIF
+#else
     std::cerr << "HelpOnHelpCB not implemented\n";
-#endif // IF_MOTIF
+#endif
 }
 
-void ImmediateHelpCB(CB_ARG_LIST_123(widget, client_data, call_data))
+#if defined(IF_MOTIF)
+
+void ImmediateHelpCB(Widget widget, XtPointer client_data, XtPointer call_data))
 {
-#ifdef IF_MOTIF
     if (widget == 0)
 	return;
 
@@ -433,12 +434,28 @@ void ImmediateHelpCB(CB_ARG_LIST_123(widget, client_data, call_data))
     MString text = get_help_string(widget);
     MStringHelpCB(widget, XtPointer(text.xmstring()), call_data);
     PostHelpOnItemHook(widget);
-#else // NOT IF_MOTIF
-    std::cerr << "ImmediateHelpCB not implemented\n";
-#endif // IF_MOTIF
 }
 
-#ifdef IF_MOTIF
+#endif
+
+#if !defined(IF_XM)
+
+extern void ImmediateHelpCB1(GUI::Widget *w)
+{
+#if defined(IF_XMMM)
+    ImmediateHelpCB(w->internal(), XtPointer(0), XtPointer(0));
+#else
+#ifdef NAG_ME
+#warning Implement ImmediateHelpCB1
+#endif
+    std::cerr << "ImmediateHelpCB1 not implemented\n";
+#endif
+}
+
+#endif
+
+
+#if defined(IF_MOTIF)
 void HelpOnThisCB(Widget widget, XtPointer client_data, XtPointer call_data)
 {
     if (widget == 0)
@@ -828,24 +845,24 @@ static bool has_header(char *text, unsigned pos)
 
     return false;
 }
-#endif // IF_MOTIF
+#endif
 
 // Note: assumes `man' or `info' format.
 void ManualStringHelpCB(Widget widget, XtPointer client_data, 
 			XtPointer)
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     static MString null(0, true);
     string text(STATIC_CAST(char *,client_data));
 
     ManualStringHelpCB(widget, null, text);
-#else // NOT IF_MOTIF
+#else
     std::cerr << "ManualStringHelpCB: not implemented\n";
-#endif // IF_MOTIF
+#endif
 }
 
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 // Close action from menu
 static void CloseCB(Widget w, XtPointer, XtPointer)
 {
@@ -886,7 +903,11 @@ static Widget create_text_dialog(Widget parent, const _XtString name,
     menubar[1].items = 0;
 
     MMaddCallbacks(menubar);
+#if defined(IF_XM)
     MMaddHelpCallback(menubar, ImmediateHelpCB);
+#else
+    MMaddHelpCallback(menubar, sigc::ptr_fun(ImmediateHelpCB1));
+#endif
 
     menubar[1].items = simple_edit_menu;
 
@@ -938,13 +959,13 @@ static void ToggleIndexCB(Widget w, XtPointer client_data, XtPointer)
     else
 	XtUnmanageChild(child);
 }
-#endif // IF_MOTIF
+#endif
 
 // Return manual
 void ManualStringHelpCB(Widget widget, const MString& title,
 			const string& unformatted_text)
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     // Delay delay;
 
     // Build manual dialog
@@ -1422,12 +1443,12 @@ void ManualStringHelpCB(Widget widget, const MString& title,
     Delay::register_shell(XtParent(text_dialog));
     InstallButtonTips(XtParent(text_dialog));
     manage_and_raise(text_dialog);
-#else // NOT IF_MOTIF
+#else
     std::cerr << "ManualStringHelpCB: not implemented\n";
-#endif // IF_MOTIF
+#endif
 }
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
 {
     // Delay delay;
@@ -2565,14 +2586,14 @@ static void UnInstallButtonTipsTimeOut(XtPointer client_data,
 		     CancelTimer, XtPointer(*timer));
     InstallButtonTipsNow(w, false);
 }
-#endif // IF_MOTIF
+#endif
 
 // (Un)install tips for W and all its descendants.
 // We do this as soon as we are back in the event loop, since we
 // assume all children have been created until then.
 void InstallButtonTips(Widget w, bool install)
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XtIntervalId timer;
 
     if (install)
@@ -2584,14 +2605,28 @@ void InstallButtonTips(Widget w, bool install)
 
     // Should W be destroyed beforehand, cancel installation.
     XtAddCallback(w, XmNdestroyCallback, CancelTimer, XtPointer(timer));
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning No button tips
 #endif
-#endif // IF_MOTIF
+#endif
 }
 
-#ifdef IF_MOTIF
+#if !defined(IF_XM)
+
+void InstallButtonTips1(GUI::Widget *w, bool install)
+{
+#if defined(IF_XMMM)
+    InstallButtonTips(w->internal(), install);
+#else
+    std::cerr << "Cannot install button tips for Gtk?\n";
+#endif
+}
+
+#endif
+
+
+#if defined(IF_MOTIF)
 // Enable or disable button tips
 void EnableButtonTips(bool enable)
 {
@@ -2641,4 +2676,4 @@ void EnableTextDocs(bool enable)
 {
     text_docs_enabled = enable;
 }
-#endif // IF_MOTIF
+#endif

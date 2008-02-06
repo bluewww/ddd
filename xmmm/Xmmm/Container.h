@@ -49,6 +49,9 @@ namespace Xmmm {
 	~Container(void);
     };
 
+    class Shell: public Container {
+    };
+
 }
 
 #endif // XMMM_CONTAINER_H

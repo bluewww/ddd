@@ -29,12 +29,18 @@
 #ifndef _DDD_HelpCB_h
 #define _DDD_HelpCB_h
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 
 #include <X11/Intrinsic.h>
 #include <Xm/Text.h>
 
-#endif // IF_MOTIF
+#endif
+
+#if !defined(IF_XM)
+
+#include <GUI/Widget.h>
+
+#endif
 
 #include "gtk_wrapper.h"
 
@@ -90,7 +96,12 @@ extern void HelpOnHelpCB(Widget widget, XtPointer client_data,
 
 // Call help for associated widget.
 // May be used as help callback for any primitive widget.
-extern void ImmediateHelpCB(CB_ARG_LIST_123(widget, client_data, call_data));
+#if defined(IF_MOTIF)
+extern void ImmediateHelpCB(Widget, XtPointer, XtPointer);
+#endif
+#if !defined(IF_XM)
+extern void ImmediateHelpCB1(GUI::Widget *);
+#endif
 
 // Call help for widget given in "Widget w = (Widget)client_data".
 extern void HelpOnThisCB(Widget widget, XtPointer client_data, 
@@ -120,6 +131,12 @@ extern void ManualStringHelpCB(Widget widget, const MString& title,
 
 // (Un)install button tips on W.
 extern void InstallButtonTips(Widget w, bool install = true);
+
+#if !defined(IF_XM)
+
+extern void InstallButtonTips1(GUI::Widget *w, bool install = true);
+
+#endif
 
 // (Un)install text tips on W.
 extern void InstallTextTips(Widget w, bool install = true);

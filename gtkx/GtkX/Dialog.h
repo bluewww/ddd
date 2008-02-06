@@ -45,7 +45,7 @@ namespace GtkX {
 	Gtk::Widget *internal(void);
 	Gtk::Container *gtk_container(void);
 	~Dialog(void);
-	Button *add_button(const String &name="");
+	Button *add_button(const String &name="", const String &label="");
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
 #include <GtkX/redirect.h>
     };

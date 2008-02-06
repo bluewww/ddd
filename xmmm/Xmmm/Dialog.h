@@ -57,7 +57,8 @@ namespace Xmmm {
 	::Widget xt_container(void);
 	sigc::signal<bool,XEvent*> &signal_delete_event(void);
 	sigc::signal<void> &signal_unmap(void);
-	Button *add_button(const Xmmm::String& button_text);
+	Button *add_button(const Xmmm::String &name="",
+			   const Xmmm::String &label="");
     };
 
 }

@@ -33,9 +33,11 @@ Dialog::Dialog(Gtk::Window *parent, const String &name):
 {
     set_name(name.s());
     set_title(name.s());
-    GtkX::VBox *box = new GtkX::VBox(*this, name+String("_vbox"));
+    // GtkX::VBox *box = new GtkX::VBox(*this, name+String("_vbox"));
+    GtkX::VBox *box = new GtkX::VBox(get_vbox(), name+String("_vbox"));
     box->show();
-    buttons_ = new GtkX::HBox(*this, name+String("_buttons"));
+    // buttons_ = new GtkX::HBox(*this, name+String("_buttons"));
+    buttons_ = new GtkX::HBox(get_vbox(), name+String("_buttons"));
     buttons_->show();
     vbox_ = box;
     postinit();
@@ -45,9 +47,11 @@ Dialog::Dialog(GtkX::Widget &parent, const String &name)
 {
     set_name(name.s());
     set_title(name.s());
-    GtkX::VBox *box = new GtkX::VBox(*this, name+String("_vbox"));
+    // GtkX::VBox *box = new GtkX::VBox(*this, name+String("_vbox"));
+    GtkX::VBox *box = new GtkX::VBox(get_vbox(), name+String("_vbox"));
     box->show();
-    buttons_ = new GtkX::HBox(*this, name+String("_buttons"));
+    // buttons_ = new GtkX::HBox(*this, name+String("_buttons"));
+    buttons_ = new GtkX::HBox(get_vbox(), name+String("_buttons"));
     buttons_->show();
     vbox_ = box;
     postinit();
@@ -72,8 +76,8 @@ Dialog::gtk_container(void)
 }
 
 Button *
-Dialog::add_button(const String &name)
+Dialog::add_button(const String &name, const String &label)
 {
-    return new Button(*buttons_, name);
+    return new Button(*buttons_, name, label);
 }
 

@@ -131,8 +131,8 @@ SelectionDialog::pack_start(Gtk::Widget &child, PackOptions options, int padding
 }
 
 Button *
-SelectionDialog::add_button(const String &name)
+SelectionDialog::add_button(const String &name, const String &label)
 {
-    return new Button(*buttons_, name);
+    return new Button(*buttons_, name, label);
 }
 

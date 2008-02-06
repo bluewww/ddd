@@ -705,12 +705,15 @@ void popupAct(Widget, XEvent *event, String*, Cardinal*)
 #else
     static GUI::WidgetPtr<GUI::PopupMenu> gdb_popup_w = 0;
 #endif
-
     if (gdb_popup_w == 0)
     {
 	gdb_popup_w = MMcreatePopupMenu(gdb_w, "gdb_popup", gdb_popup);
 	MMaddCallbacks(gdb_popup);
-	MMaddHelpCallback(gdb_popup, PTR_FUN(ImmediateHelpCB));
+#if defined(IF_XM)
+	MMaddHelpCallback(gdb_popup, ImmediateHelpCB);
+#else
+	MMaddHelpCallback(gdb_popup, sigc::ptr_fun(ImmediateHelpCB1));
+#endif
 	InstallButtonTips(gdb_popup_w);
     }
 

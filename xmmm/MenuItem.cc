@@ -65,14 +65,14 @@ MenuItem::~MenuItem(void)
 }
 
 sigc::signal<void> &
-MenuItem::signal_clicked(void)
+MenuItem::signal_activate(void)
 {
-    return signal_clicked_;
+    return signal_activate_;
 }
 
 void
 MenuItem::activate_callback(::Widget widget, XtPointer data)
 {
-    ((MenuItem *)data)->signal_clicked_();
+    ((MenuItem *)data)->signal_activate_();
 }
 

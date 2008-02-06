@@ -45,13 +45,20 @@ namespace Xmmm {
 	ScrolledWindow *sw_;
 	ListView *list_;
     public:
+	void init(::Widget parent, const Xmmm::String &name,
+		  const std::vector<String> &headers);
 	SelectionDialog(::Widget parent, const Xmmm::String &name,
 			const std::vector<String> &headers); // TEMPORARY
+	SelectionDialog(Shell &parent, const Xmmm::String &name,
+			const std::vector<String> &headers);
 	~SelectionDialog(void);
 	::Widget internal(void);
 	::Widget xt_container(void);
 	ListView *list(void) const;
-	Button *add_button(const String &name);
+	Button *add_button(const String &name="", const String &label="");
+	std::string get_text(void);
+	void set_text(const std::string &s);
+	void set_text(const XmString s);
     };
 
 }

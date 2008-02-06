@@ -815,7 +815,11 @@ static PlotWindowInfo *new_decoration(const string& name)
 	MMaddCallbacks(scale_menu,   XtPointer(plot));
 	MMaddCallbacks(contour_menu, XtPointer(plot));
 	MMaddCallbacks(simple_help_menu);
+#if defined(IF_XM)
 	MMaddHelpCallback(menubar, ImmediateHelpCB);
+#else
+	MMaddHelpCallback(menubar, sigc::ptr_fun(ImmediateHelpCB1));
+#endif
 
 	arg = 0;
 	XtSetArg(args[arg], XmNscrollingPolicy, XmAPPLICATION_DEFINED); arg++;

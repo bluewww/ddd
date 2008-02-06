@@ -505,6 +505,7 @@ static void update_delete(Widget dialog)
 // Update state of `delete' button
 static void update_delete1(GUI::Widget *dialog)
 {
+    std::cerr << "Implement update_delete1!\n";
 #ifdef NAG_ME
 #warning Implement update_delete1
 #endif
@@ -737,9 +738,9 @@ static GUI::SelectionDialog *create_session_panel(GUI::Widget *parent, const cha
     sessions->signal_selection_changed().connect(sigc::bind(sigc::ptr_fun(SelectSessionCB),
 							    dialog));
 
-    GUI::Button *ok_w = dialog->add_button("Ok");
-    GUI::Button *apply_w = dialog->add_button("Apply");
-    GUI::Button *cancel_w = dialog->add_button("Cancel");
+    GUI::Button *ok_w = dialog->add_button("ok", "Ok");
+    GUI::Button *apply_w = dialog->add_button("apply", "Apply");
+    GUI::Button *cancel_w = dialog->add_button("cancel", "Cancel");
 
     ok_w->signal_clicked().connect(sigc::bind(sigc::ptr_fun(ok), sessions));
     apply_w->signal_clicked().connect(sigc::bind(sigc::ptr_fun(apply), sessions));
@@ -959,13 +960,7 @@ static void SetSessionCB(Widget dialog, XtPointer, XtPointer)
 static void SetSessionCB1(GUI::ListView *dialog)
 {
     set_session(get_chosen_session1(dialog));
-#if defined(IF_MOTIF)
-    update_sessions(dialog);
-#else
-#ifdef NAG_ME
-#warning Sessions not implemented
-#endif
-#endif
+    update_sessions1(dialog);
 
     if (app_data.session == DEFAULT_SESSION)
     {
@@ -1039,7 +1034,7 @@ static MMDesc gcore_items[] =
 };
 
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 
 // OK pressed in `save session'
 static void SaveSessionCB(Widget w, XtPointer client_data, XtPointer call_data)
@@ -1168,7 +1163,11 @@ void SaveSessionAsCB(GUI::Widget *w)
 		      XmNmarginHeight, 0,
 		      XtPointer(0));
 	MMaddCallbacks(gcore_items);
+#if defined(IF_XM)
 	MMaddHelpCallback(gcore_items, ImmediateHelpCB);
+#else
+	MMaddHelpCallback(gcore_items, sigc::ptr_fun(ImmediateHelpCB1));
+#endif
 
 	// Initialize: use `kill debuggee' as default item
 	XtCallActionProc(may_kill_w, "ArmAndActivate", 

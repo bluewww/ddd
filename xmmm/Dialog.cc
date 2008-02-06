@@ -138,8 +138,8 @@ Dialog::unmap_callback(::Widget widget, XtPointer data)
 }
 
 Button *
-Dialog::add_button(const Xmmm::String& button_text)
+Dialog::add_button(const Xmmm::String &name, const Xmmm::String &label)
 {
-    return new Button(*box2_, button_text);
+    return new Button(*box2_, name, label);
 }
 

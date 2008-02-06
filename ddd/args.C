@@ -338,7 +338,7 @@ static void gdbRunDCB(void)
 	else
 	    c = cmd;
 	cmd = cmd.after('\n');
-	gdb_command(c, run_dialog);
+	gdb_command(c, (GUI::Widget *)run_dialog);
     }
 }
 
@@ -357,7 +357,7 @@ static void SelectRunArgsCB(CB_ARG_LIST_3(call_data))
 }
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 
 // Create `Run' dialog
 void gdbRunCB(Widget w, XtPointer, XtPointer)
@@ -657,7 +657,11 @@ void gdbChangeDirectoryCB(GUI::Widget *w)
 {
     if (cd_dialog == 0)
     {
-	cd_dialog = new GUI::Dialog(find_shell(w->internal()), "cd_dialog");
+	WINDOW_P sh = find_shell(w->internal());
+	GUI::String str = GUI::String("cd_dialog");
+	std::cerr << "OK, Window " << sh << "\n" << std::flush;
+	cd_dialog = new GUI::Dialog(sh, str);
+	// cd_dialog = new GUI::Dialog(find_shell(w->internal()), "cd_dialog");
 
 	GUI::Button *button = cd_dialog->add_button("Change");
 	button->signal_clicked().connect(sigc::ptr_fun(gdbChangeDirectoryDCB));

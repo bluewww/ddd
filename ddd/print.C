@@ -1018,7 +1018,7 @@ static void PrintCB(Widget parent, bool displays)
 		  ImmediateHelpCB, XtPointer(0));
 #else
     GUI::Button *button;
-    button = print_dialog->add_button("OK");
+    button = print_dialog->add_button("ok", "OK");
     button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(PrintAgainCB1),
 						button, 1L));
 #endif
@@ -1265,9 +1265,9 @@ static void PrintCB(Widget parent, bool displays)
     GUI::Entry *entry;
     entry = new GUI::Entry(*paper_size_dialog, "entry");
     entry->show();
-    GUI::Button *ok_button = paper_size_dialog->add_button("OK");
+    GUI::Button *ok_button = paper_size_dialog->add_button("ok", "OK");
     ok_button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(SetPaperSizeCB), paper_size_dialog));
-    button = paper_size_dialog->add_button("Cancel");
+    button = paper_size_dialog->add_button("cancel", "Cancel");
     button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(ResetPaperSizeCB), paper_size_dialog));
 #endif
 

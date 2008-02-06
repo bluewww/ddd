@@ -3437,7 +3437,7 @@ void dddPopupSettingsCB (CB_ALIST_1(Widget))
 }
 
 // Popup editor for debugger infos
-void dddPopupInfosCB (CB_ARG_LIST_NULL)
+void dddPopupInfosCB (CB_ALIST_1(Widget w))
 {
     Widget infos = create_infos(gdb->type());
     if (infos == 0)
@@ -3873,13 +3873,26 @@ bool is_defined_cmd(const string& command)
 
 // Data
 
-static ENTRY_P name_w;			// Name of defined command
+#if defined(IF_MOTIF)
+static Widget name_w;			// Name of defined command
+#else
+static Gtk::ComboBoxEntryText *name_w;	// Name of defined command
+#endif
 static TOGGLEBUTTON_P arg_w;		// `()' toggle
 static BUTTON_P record_w;		// `Record' button
-static BUTTON_P end_w;			// `End' button
-static BUTTON_P edit_w;			// `Edit>>' button
+#if defined(IF_XM)
+static Widget end_w;			// `End' button
+static Widget edit_w;			// `Edit>>' button
+#else
+static GUI::WidgetPtr<GUI::Button> end_w;	// `End' button
+static GUI::WidgetPtr<GUI::Button> edit_w;	// `Edit>>' button
+#endif
 static SCROLLEDTEXT_P editor_w;		// Command definition editor
-static BUTTON_P apply_w;		// `Apply' button
+#if defined(IF_XM)
+static Widget apply_w;			// `Apply' button
+#else
+static GUI::WidgetPtr<GUI::Button> apply_w;	// `Apply' button
+#endif
 
 static string current_name()
 {
@@ -3888,7 +3901,7 @@ static string current_name()
     string name(name_s);
     XtFree(name_s);
 #else
-    string name(name_w->get_text().c_str());
+    string name(name_w->get_entry()->get_text().c_str());
 #endif
     strip_space(name);
     return name;
@@ -4109,19 +4122,47 @@ void update_define_later(const string& command)
     UpdateDefinePanelCB();
 }
 
-static void RecordCommandDefinitionCB(CB_ARG_LIST_1(w))
+#if defined(IF_XM)
+
+static void RecordCommandDefinitionCB(Widget w, XtPointer, XtPointer)
 {
     string name = current_name();
     gdb_command("define " + name, w);
 }
 
-static void EndCommandDefinitionCB(CB_ARG_LIST_1(w))
+#else
+
+static void RecordCommandDefinitionCB(GUI::Widget *w)
+{
+    string name = current_name();
+    gdb_command("define " + name, w);
+}
+
+#endif
+
+#if defined(IF_XM)
+
+static void EndCommandDefinitionCB(Widget w, XtPointer, XtPointer)
 {
     if (gdb->recording())
 	gdb_command("end", w);
 }
 
-static void DoneEditCommandDefinitionCB(CB_ARG_LIST_1(w))
+#else
+
+static void EndCommandDefinitionCB(GUI::Widget *w)
+{
+    if (gdb->recording())
+	gdb_command("end", w);
+}
+
+#endif
+
+#if defined(IF_XM)
+static void DoneEditCommandDefinitionCB(Widget w, XtPointer, XtPointer)
+#else
+static void DoneEditCommandDefinitionCB(GUI::Widget *w)
+#endif
 {
     if (!XtIsManaged(XtParent(editor_w)))
 	return;
@@ -4171,7 +4212,7 @@ static void DoneEditCommandDefinitionCB(CB_ARG_LIST_1(w))
     }
 }
 
-static void EditCommandDefinitionCB(CB_ALIST_NULL)
+static void EditCommandDefinitionCB(void)
 {
     if (XtIsManaged(XtParent(editor_w)))
 	return;
@@ -4197,7 +4238,9 @@ static void EditCommandDefinitionCB(CB_ALIST_NULL)
     set_label(edit_w, label);
 }
 
-static void ToggleEditCommandDefinitionCB(CB_ARG_LIST_1(w))
+#if defined(IF_XM)
+
+static void ToggleEditCommandDefinitionCB(Widget w, XtPointer, XtPointer)
 {
     if (XtIsManaged(XtParent(editor_w)))
 	DoneEditCommandDefinitionCB(CB_ARGS_1(w));
@@ -4205,8 +4248,23 @@ static void ToggleEditCommandDefinitionCB(CB_ARG_LIST_1(w))
 	EditCommandDefinitionCB(CB_ARGS_NULL);
 }
 
+#else
+
+static void ToggleEditCommandDefinitionCB(GUI::Widget *w)
+{
+    if (XtIsManaged(XtParent(editor_w)))
+	DoneEditCommandDefinitionCB(w);
+    else
+	EditCommandDefinitionCB();
+}
+
+#endif
+
+
+#if defined(IF_XM)
+
 // Apply the given command
-static void ApplyCB(CB_ARG_LIST_1(w))
+static void ApplyCB(Widget w, XtPointer, XtPointer)
 {
     if (gdb->recording())
 	EndCommandDefinitionCB(CB_ARGS_1(w));
@@ -4222,6 +4280,28 @@ static void ApplyCB(CB_ARG_LIST_1(w))
 	gdb_command(cmd, w);
     }
 }
+
+#else
+
+// Apply the given command
+static void ApplyCB(GUI::Widget *w)
+{
+    if (gdb->recording())
+	EndCommandDefinitionCB(w);
+
+    DoneEditCommandDefinitionCB(w);
+
+    string cmd = current_name();
+    if (!cmd.empty())
+    {
+	if (XmToggleButtonGetState(arg_w))
+	    cmd += " " + source_arg->get_string();
+
+	gdb_command(cmd, w);
+    }
+}
+
+#endif
 
 // Force argument to `()'
 static void ForceArg0HP(void *, void *, void *)
@@ -4283,12 +4363,18 @@ static void ToggleArgCB(CB_ARG_LIST_NULL)
 
 static MMDesc commands_menu[] =
 {
-    MENTRYL("record", "record", MMPush, 
-	   BIND_0(PTR_FUN(RecordCommandDefinitionCB)), 0, (Widget *)&record_w),
-    MENTRYL("end", "end", MMPush | MMInsensitive, 
-	   BIND_0(PTR_FUN(EndCommandDefinitionCB)), 0, (Widget *)&end_w),
-    MENTRYL("edit", "edit", MMPush, 
-	   BIND_0(PTR_FUN(ToggleEditCommandDefinitionCB)), 0, (Widget *)&edit_w),
+    GENTRYL("record", "record", MMPush, 
+	    BIND_0(PTR_FUN(RecordCommandDefinitionCB)),
+	    sigc::ptr_fun(RecordCommandDefinitionCB),
+	    0, &record_w),
+    GENTRYL("end", "end", MMPush | MMInsensitive, 
+	    BIND_0(PTR_FUN(EndCommandDefinitionCB)),
+	    sigc::ptr_fun(EndCommandDefinitionCB),
+	    0, &end_w),
+    GENTRYL("edit", "edit", MMPush, 
+	    BIND_0(PTR_FUN(ToggleEditCommandDefinitionCB)),
+	    sigc::ptr_fun(ToggleEditCommandDefinitionCB),
+	    0, &edit_w),
     MMEnd
 };
 
@@ -4331,7 +4417,7 @@ void dddDefineCommandCB(CB_ARG_LIST_1(w))
 	dialog = new GUI::Dialog(find_shell(w), "define_command");
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	// Remove old prompt
 	Widget text = XmSelectionBoxGetChild(dialog, XmDIALOG_TEXT);
 	XtUnmanageChild(text);
@@ -4344,6 +4430,8 @@ void dddDefineCommandCB(CB_ARG_LIST_1(w))
 	XtManageChild(apply_w);
 
 	XtUnmanageChild(XmSelectionBoxGetChild(dialog, XmDIALOG_OK_BUTTON));
+#elif defined(IF_XMMM)
+	std::cerr << "Unmanage children (1)?\n";
 #endif
 
 #if defined(IF_XM)
@@ -4366,19 +4454,23 @@ void dddDefineCommandCB(CB_ARG_LIST_1(w))
 	GUI::Widget *panel = MMcreatePanel(form, "panel", panel_menu);
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	XtVaSetValues(panel,
 		      XmNmarginWidth,    0,
 		      XmNmarginHeight,   0,
 		      XtPointer(0));
+#elif defined(IF_XMMM)
+	std::cerr << "Set margin (1)?\n";
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	arg = 0;
 	XtSetArg(args[arg], XmNeditMode, XmMULTI_LINE_EDIT); arg++;
         editor_w = XmCreateScrolledText(form, XMST("text"), args, arg);
 	XtUnmanageChild(XtParent(editor_w));
 	XtManageChild(editor_w);
+#elif defined(IF_XMMM)
+	std::cerr << "Define command: need scrolled text here!\n";
 #else
         editor_w = new GtkScrolledText();
 	form->pack_start(*editor_w, Gtk::PACK_SHRINK);
@@ -4394,7 +4486,7 @@ void dddDefineCommandCB(CB_ARG_LIST_1(w))
 
 	MMadjustPanel(panel_menu);
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	XtAddCallback(dialog, XmNokCallback, UnmanageThisCB1, 
 		      XtPointer(dialog));
 	XtAddCallback(dialog, XmNokCallback, DoneEditCommandDefinitionCB, 
@@ -4410,12 +4502,12 @@ void dddDefineCommandCB(CB_ARG_LIST_1(w))
 	XtAddCallback(dialog, XmNhelpCallback,
 		      ImmediateHelpCB, XtPointer(0));
 #else
-	BUTTON_P button;
-	button = apply_w = dialog->add_button(GUI::String("Apply"));
-	button->signal_clicked().connect(sigc::bind(PTR_FUN(ApplyCB), dialog));
-	button = apply_w = dialog->add_button(GUI::String("Cancel"));
-	button->signal_clicked().connect(sigc::bind(PTR_FUN(EndCommandDefinitionCB), dialog));
-	button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB2), dialog));
+	GUI::Button *button;
+	button = apply_w = dialog->add_button("apply", "Apply");
+	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(ApplyCB), dialog));
+	button = dialog->add_button("cancel", "Cancel");
+	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(EndCommandDefinitionCB), dialog));
+	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), dialog));
 #endif
 
 	set_need_load_defines(true);

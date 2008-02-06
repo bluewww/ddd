@@ -40,7 +40,7 @@ namespace Xmmm {
 	::Widget menuitem_;
 	void init_signals(void);
     protected:
-	sigc::signal<void> signal_clicked_;
+	sigc::signal<void> signal_activate_;
 	static void activate_callback(::Widget widget, XtPointer data);
     public:
 	MenuItem(Xmmm::Container &parent, const Xmmm::String &name="",
@@ -49,7 +49,7 @@ namespace Xmmm {
 		 const Xmmm::String &label=""); // TEMPORARY
 	~MenuItem(void);
 	::Widget internal(void); // TEMPORARY
-	sigc::signal<void> &signal_clicked(void);
+	sigc::signal<void> &signal_activate(void);
     };
 
 }

@@ -64,9 +64,9 @@ char DataDisp_rcsid[] =
 #include "AliasGE.h"
 #include "AppData.h"		// Constructors
 #include "ArgField.h"
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 #include "ComboBox.h"
-#endif // IF_MOTIF
+#endif
 #include "Command.h"
 #include "CompositeB.h"
 #include "DestroyCB.h"
@@ -81,21 +81,21 @@ char DataDisp_rcsid[] =
 #include "MString.h"
 #include "MakeMenu.h"
 #include "Map.h"
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 #include "PannedGE.h"
-#endif // IF_MOTIF
+#endif
 #include "PosBuffer.h"
 #include "ProgressM.h"
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 #include "ScrolledGE.h"
-#endif // IF_MOTIF
+#endif
 #include "SmartC.h"
 #include "StringBox.h"		// StringBox::fontTable
 #include "StringMap.h"
 #include "TagBox.h"
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 #include "TextSetS.h"
-#endif // IF_MOTIF
+#endif
 #include "TimeOut.h"
 #include "UndoBuffer.h"
 #include "VSEFlags.h"
@@ -107,9 +107,9 @@ char DataDisp_rcsid[] =
 #include "charsets.h"
 #include "cmdtty.h"
 #include "comm-manag.h"
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 #include "converters.h"
-#endif // IF_MOTIF
+#endif
 #include "cook.h"
 #include "ddd.h"
 #include "deref.h"
@@ -133,7 +133,7 @@ char DataDisp_rcsid[] =
 #include "wm.h"
 
 // Motif includes
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 #include <Xm/List.h>
 #include <Xm/MessageB.h>
 #include <Xm/ToggleB.h>
@@ -143,9 +143,9 @@ char DataDisp_rcsid[] =
 #include <Xm/Label.h>
 #include <Xm/PushB.h>
 #include <X11/StringDefs.h>
-#else // NOT IF_MOTIF
+#else
 #include <gtkmm/liststore.h>
-#endif // IF_MOTIF
+#endif
 
 // System includes
 #include <iostream>
@@ -446,14 +446,20 @@ Widget       DataDisp::graph_form_w           = 0;
 Widget       DataDisp::last_origin            = 0;
 ArgField    *DataDisp::graph_arg              = 0;
 CONTAINER_P  DataDisp::graph_cmd_w            = 0;
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 ENTRY_P      DataDisp::graph_selection_w      = 0;
-#endif // IF_MOTIF
+#endif
 DIALOG_P     DataDisp::edit_displays_dialog_w = 0;
 TREEVIEW_P   DataDisp::display_list_w         = 0;
-MENU_P       DataDisp::graph_popup_w          = 0;
-MENU_P       DataDisp::node_popup_w           = 0;
-MENU_P       DataDisp::shortcut_popup_w       = 0;
+#if defined(IF_XM)
+Widget       DataDisp::graph_popup_w          = 0;
+Widget       DataDisp::node_popup_w           = 0;
+Widget       DataDisp::shortcut_popup_w       = 0;
+#else
+GUI::PopupMenu *DataDisp::graph_popup_w          = 0;
+GUI::PopupMenu *DataDisp::node_popup_w           = 0;
+GUI::PopupMenu *DataDisp::shortcut_popup_w       = 0;
+#endif
 
 bool DataDisp::detect_aliases   = false;
 bool DataDisp::cluster_displays = false;
@@ -470,7 +476,7 @@ XtIntervalId DataDisp::refresh_graph_edit_timer = NO_TIMER;
 StringArray DataDisp::shortcut_exprs;
 StringArray DataDisp::shortcut_labels;
 
-#ifndef IF_MOTIF
+#if !defined(IF_MOTIF)
 
 #include <gtkmm/treemodelcolumn.h>
 
@@ -504,7 +510,7 @@ display_list_columns_p(void)
 
 #define display_list_columns (*display_list_columns_p())
 
-#endif // IF_MOTIF
+#endif
 
 //----------------------------------------------------------------------------
 // Helpers
@@ -551,7 +557,7 @@ static void sort(IntArray& a, bool (*le)(int, int) = default_le)
 // Origin
 //-----------------------------------------------------------------------------
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 void DataDisp::ClearOriginCB(Widget w, XtPointer, XtPointer)
 {
     if (last_origin == w)
@@ -559,7 +565,7 @@ void DataDisp::ClearOriginCB(Widget w, XtPointer, XtPointer)
 	last_origin = 0;
     }
 }
-#else // NOT IF_MOTIF
+#else
 void *DataDisp::ClearOriginCB(void *w)
 {
     if (last_origin == (Widget)w)
@@ -567,28 +573,28 @@ void *DataDisp::ClearOriginCB(void *w)
         last_origin = 0;
     }
 }
-#endif // IF_MOTIF
+#endif
 
 void DataDisp::set_last_origin(Widget w)
 {
     if (last_origin != 0)
     {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	XtRemoveCallback(last_origin, XtNdestroyCallback, ClearOriginCB, 0);
-#else // NOT IF_MOTIF
+#else
 	last_origin->remove_destroy_notify_callback(&last_origin);
-#endif // IF_MOTIF
+#endif
     }
 
     last_origin = find_shell(w);
 
     if (last_origin != 0)
     {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	XtAddCallback(last_origin, XtNdestroyCallback, ClearOriginCB, 0);
-#else // NOT IF_MOTIF
+#else
 	last_origin->add_destroy_notify_callback(&last_origin, ClearOriginCB);
-#endif // IF_MOTIF
+#endif
     }
 }
 
@@ -747,13 +753,13 @@ void DataDisp::applyThemeCB (CB_ALIST_12(Widget w, XtP(const char *) client_data
     else if (doc.empty())
 	doc = theme;
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     defineConversionMacro("THEME", theme.chars());
     defineConversionMacro("THEME_DOC", doc.chars());
     defineConversionMacro("PATTERN", p.chars());
     const string s1 = dv->full_name();
     defineConversionMacro("EXPR", s1.chars());
-#endif // IF_MOTIF
+#endif
 
     bool select = 
 	(pattern(dv->full_name(), true) != pattern(dv->full_name(), false));
@@ -767,7 +773,7 @@ void DataDisp::applyThemeCB (CB_ALIST_12(Widget w, XtP(const char *) client_data
 
     string name = 
 	(select ? "select_apply_theme_dialog" : "confirm_apply_theme_dialog");
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     Arg args[10];
     Cardinal arg = 0;
 
@@ -775,41 +781,41 @@ void DataDisp::applyThemeCB (CB_ALIST_12(Widget w, XtP(const char *) client_data
     XtSetArg(args[arg], XmNautoUnmanage,   False);     arg++;
     Widget dialog = 
 	verify(XmCreateQuestionDialog(find_shell(w), XMST(name.chars()), args, arg));
-#else // NOT IF_MOTIF
+#else
     DIALOG_P dialog = 
 	new Gtk::Dialog(XMST(name.chars()), *find_shell(w));
-#endif // IF_MOTIF
+#endif
 
     if (select)
     {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	arg = 0;
 	Widget apply = XmCreatePushButton(dialog, XMST("apply"), args, arg);
 	XtManageChild(apply);
 	XtAddCallback(apply, XmNactivateCallback, 
 		      applyThemeOnThisCB, client_data);
 	XtAddCallback(apply, XmNactivateCallback, DestroyShellCB, 0);
-#else // NOT IF_MOTIF
+#else
 	BUTTON_P apply = dialog->add_button(XMST("apply"), 0);
 	apply->signal_clicked().connect(sigc::bind(PTR_FUN(applyThemeOnThisCB), client_data));
 	apply->signal_clicked().connect(sigc::bind(PTR_FUN(DestroyShellCB), dialog));
-#endif // IF_MOTIF
+#endif
     }
 
     Delay::register_shell(dialog);
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XtAddCallback(dialog, XmNokCallback,      applyThemeOnAllCB, client_data);
     XtAddCallback(dialog, XmNokCallback,      DestroyShellCB, 0);
     XtAddCallback(dialog, XmNcancelCallback,  DestroyShellCB, 0);
     XtAddCallback(dialog, XmNhelpCallback,    ImmediateHelpCB, 0);
-#else // NOT IF_MOTIF
+#else
     BUTTON_P button;
     button = dialog->add_button(XMST("OK"), 0);
     button->signal_clicked().connect(sigc::bind(PTR_FUN(applyThemeOnAllCB), client_data));
     button->signal_clicked().connect(sigc::bind(PTR_FUN(DestroyShellCB), dialog));
     button = dialog->add_button(XMST("Cancel"), 0);
     button->signal_clicked().connect(sigc::bind(PTR_FUN(DestroyShellCB), dialog));
-#endif // IF_MOTIF
+#endif
 
     manage_and_raise(dialog);
 }
@@ -872,15 +878,15 @@ void DataDisp::unapplyThemeCB (CB_ALIST_12(Widget w, XtP(const char *) client_da
 void DataDisp::toggleThemeCB(CB_ALIST_12(TOGGLEBUTTON_P button, XtP(int) num))
 {
     String theme;
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XtVaGetValues(button, XmNuserData, &theme, XtPointer(0));
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Using user data in this way is evil in an OO program.
 #warning We should have a class ThemeButton: public Gtk::Button
 #endif
     theme = (String)(void *)button->property_user_data();
-#endif // IF_MOTIF
+#endif
 
     if (XmToggleButtonGetState(button))
     {
@@ -1459,15 +1465,15 @@ void DataDisp::selectAllCB(CB_ALIST_1(Widget w))
     // StatusDelay d("Selecting all displays");
 
     set_last_origin(w);
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XtCallActionProc(graph_edit, 
 		     "select-all", (XEvent *)0, (String *)0, 0);
-#else // NOT IF_MOTIF
+#else
     std::cerr << "XtCallActionProc (graph_edit, \"select-all\") not supported.\n";
 #ifdef NAG_ME
 #warning XtCallActionProc (graph_edit, "select-all") not supported.
 #endif
-#endif // IF_MOTIF
+#endif
     refresh_graph_edit();
 }
 
@@ -1476,15 +1482,15 @@ void DataDisp::unselectAllCB(CB_ALIST_1(Widget w))
     // StatusDelay d("Unselecting all displays");
 
     set_last_origin(w);
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XtCallActionProc(graph_edit, 
 		     "unselect-all", (XEvent *)0, (String *)0, 0);
-#else // NOT IF_MOTIF
+#else
     std::cerr << "XtCallActionProc (graph_edit, \"unselect-all\") not supported.\n";
 #ifdef NAG_ME
 #warning XtCallActionProc (graph_edit, "unselect-all") not supported.
 #endif
-#endif // IF_MOTIF
+#endif
     refresh_graph_edit();
 }
 
@@ -1759,15 +1765,15 @@ void DataDisp::DoubleClickCB(CB_ALIST_13(GRAPH_EDIT_P w, XtP(GraphEditPreSelecti
 	return;
 
     XEvent *ev = info->event;
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     bool control = (ev != 0 && 
 		    (ev->type == ButtonPress || ev->type == ButtonRelease) &&
 		    (ev->xbutton.state & ControlMask) != 0);
-#else // NOT IF_MOTIF
+#else
     bool control = (ev != 0 && 
 		    (ev->type == ButtonPress || ev->type == ButtonRelease) &&
 		    (ev->button.state & ControlMask) != 0);
-#endif // IF_MOTIF
+#endif
 
     // Do the right thing
     if (disp_node_arg->disabled())
@@ -1913,14 +1919,14 @@ void DataDisp::new_displayDCB (CB_ALIST_12(Widget dialog, XtP(NewDisplayInfo *) 
 
     NewDisplayInfo *info = (NewDisplayInfo *)client_data;
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     char *inp = XmTextFieldGetString(info->text);
     string expr(inp);
     XtFree(inp);
-#else // NOT IF_MOTIF
+#else
     Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(info->text->get_child());
     string expr(entry->get_text().c_str());
-#endif // IF_MOTIF
+#endif
 
     strip_leading_space(expr);
     strip_trailing_space(expr);
@@ -1944,18 +1950,18 @@ void DataDisp::new_displayDCB (CB_ALIST_12(Widget dialog, XtP(NewDisplayInfo *) 
 Widget DataDisp::create_display_dialog(Widget parent, const _XtString name,
 				       NewDisplayInfo& info)
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     Arg args[10];
     int arg = 0;
 
     Widget dialog = verify(XmCreatePromptDialog(find_shell(parent),
 						XMST(name), args, arg));
-#else // NOT IF_MOTIF
+#else
     DIALOG_P dialog = new Gtk::Dialog(XMST(name), *find_shell(parent));
-#endif // IF_MOTIF
+#endif
     Delay::register_shell(dialog);
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     if (lesstif_version <= 79)
 	XtUnmanageChild(XmSelectionBoxGetChild(dialog, XmDIALOG_APPLY_BUTTON));
     XtUnmanageChild(XmSelectionBoxGetChild(dialog, XmDIALOG_TEXT));
@@ -1963,14 +1969,14 @@ Widget DataDisp::create_display_dialog(Widget parent, const _XtString name,
 
     XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, 0);
     XtAddCallback(dialog, XmNokCallback, new_displayDCB, XtPointer(&info));
-#else // NOT IF_MOTIF
+#else
     BUTTON_P button;
     button = dialog->add_button(XMST("OK"), 0);
     button->signal_clicked().connect(sigc::bind(PTR_FUN(new_displayDCB),
 						 dialog, &info));
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     arg = 0;
     XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
     XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
@@ -1978,36 +1984,36 @@ Widget DataDisp::create_display_dialog(Widget parent, const _XtString name,
     XtSetArg(args[arg], XmNadjustMargin, False); arg++;
     Widget box = verify(XmCreateRowColumn(dialog, XMST("box"), args, arg));
     XtManageChild(box);
-#else // NOT IF_MOTIF
+#else
     BOX_P box = new Gtk::VBox();
     dialog->get_vbox()->pack_start(*box, Gtk::PACK_SHRINK);
     box->show();
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     arg = 0;
     XtSetArg(args[arg], XmNalignment, XmALIGNMENT_BEGINNING); arg++;
     Widget label = verify(XmCreateLabel(box, XMST("label"), args, arg));
     XtManageChild(label);
-#else // NOT IF_MOTIF
+#else
     LABEL_P label = new Gtk::Label(XMST("label"));
     box->pack_start(*label, Gtk::PACK_SHRINK);
     label->show();
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     arg = 0;
     info.text = verify(CreateComboBox(box, "text", args, arg));
     XtManageChild(info.text);
-#else // NOT IF_MOTIF
+#else
     info.text = new Gtk::ComboBoxEntryText();
     box->pack_start(*info.text, Gtk::PACK_SHRINK);
     box->show();
-#endif // IF_MOTIF
+#endif
 
     tie_combo_box_to_history(info.text, display_history_filter);
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     arg = 0;
     XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
     XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
@@ -2016,40 +2022,40 @@ Widget DataDisp::create_display_dialog(Widget parent, const _XtString name,
     XtSetArg(args[arg], XmNorientation, XmHORIZONTAL); arg++;
     Widget box2 = verify(XmCreateRowColumn(box, XMST("box2"), args, arg));
     XtManageChild(box2);
-#else // NOT IF_MOTIF
+#else
     BOX_P box2 = new Gtk::HBox();
     box->pack_start(*box2, Gtk::PACK_SHRINK);
     box2->show();
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     arg = 0;
     XtSetArg(args[arg], XmNalignment, XmALIGNMENT_BEGINNING); arg++;
     info.shortcut = verify(
 	XmCreateToggleButton(box2, XMST("shortcut"), args, arg));
     XtManageChild(info.shortcut);
-#else // NOT IF_MOTIF
+#else
     info.shortcut = new Gtk::ToggleButton(XMST("shortcut"));
     box2->pack_start(*info.shortcut, Gtk::PACK_SHRINK);
     info.shortcut->show();
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     Widget display = verify(XmCreateLabel(box2, XMST("display"), args, arg));
     XtManageChild(display);
-#else // NOT IF_MOTIF
+#else
     LABEL_P display = new Gtk::Label(XMST("display"));
     box2->pack_start(*display, Gtk::PACK_SHRINK);
     display->show();
-#endif // IF_MOTIF
-#ifdef IF_MOTIF
+#endif
+#if defined(IF_MOTIF)
     Widget menu = verify(XmCreateLabel(box2, XMST("menu"), args, arg));
     XtManageChild(menu);
-#else // NOT IF_MOTIF
+#else
     LABEL_P menu = new Gtk::Label(XMST("menu"));
     box2->pack_start(*menu, Gtk::PACK_SHRINK);
     menu->show();
-#endif // IF_MOTIF
+#endif
 
     return dialog;
 }
@@ -2069,12 +2075,12 @@ void DataDisp::new_displayCD (Widget w, const BoxPoint &box_point)
 
     *(info.point_ptr) = box_point;
     info.display_expression = source_arg->get_string();
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XmTextSetString(info.text, XMST(info.display_expression.chars()));
-#else // NOT IF_MOTIF
+#else
     Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(info.text->get_child());
     entry->set_text(XMST(info.display_expression.chars()));
-#endif // IF_MOTIF
+#endif
 
     manage_and_raise(new_display_dialog);
 }
@@ -2115,12 +2121,12 @@ void DataDisp::dependentCB(CB_ALIST_1(Widget w))
     XmToggleButtonSetState(info.shortcut, True, False);
 
     info.display_expression = disp_value_arg->full_name();
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XmTextSetString(info.text, XMST(info.display_expression.chars()));
-#else // NOT IF_MOTIF
+#else
     Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(info.text->get_child());
     entry->set_text(XMST(info.display_expression.chars()));
-#endif // IF_MOTIF
+#endif
     manage_and_raise(dependent_display_dialog);
 }
 
@@ -2213,28 +2219,28 @@ void DataDisp::refresh_graph_edit(bool silent)
     // Save current graph editor state
     static GraphEditLayoutState state;
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XtVaGetValues(graph_edit,
 		  XtNautoLayout, &state.autoLayout,
 		  XtNsnapToGrid, &state.snapToGrid,
 		  XtPointer(0));
-#else // NOT IF_MOTIF
+#else
     state.autoLayout = graph_edit->get_auto_layout();
     state.snapToGrid = graph_edit->get_snap_to_grid();
-#endif // IF_MOTIF
+#endif
 
     if (refresh_graph_edit_timer == 0)
     {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	refresh_graph_edit_timer = 
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(graph_edit),
 			    0, RefreshGraphEditCB, XtPointer(&state));
-#else // NOT IF_MOTIF
+#else
 	refresh_graph_edit_timer = 
 	    Glib::signal_idle().connect(sigc::bind_return(sigc::bind(PTR_FUN(RefreshGraphEditCB),
 								     &state),
 							  false));
-#endif // IF_MOTIF
+#endif
     }
 
     refresh_builtin_user_displays();
@@ -2248,21 +2254,21 @@ TIMEOUT_RETURN_TYPE DataDisp::RefreshGraphEditCB(TM_ALIST_1(XtP(GraphEditLayoutS
 
     static GraphEditLayoutState state;
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XtVaGetValues(graph_edit,
 		  XtNautoLayout, &state.autoLayout,
 		  XtNsnapToGrid, &state.snapToGrid,
 		  XtPointer(0));
-#else // NOT IF_MOTIF
+#else
     state.autoLayout = graph_edit->get_auto_layout();
     state.snapToGrid = graph_edit->get_snap_to_grid();
-#endif // IF_MOTIF
+#endif
 
     const GraphEditLayoutState& old_state = *((GraphEditLayoutState *) client_data);
 
     static Graph *dummy = new Graph;
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XtVaSetValues(graph_edit,
 		  XtNautoLayout, old_state.autoLayout,
 		  XtNsnapToGrid, old_state.snapToGrid,
@@ -2271,24 +2277,24 @@ TIMEOUT_RETURN_TYPE DataDisp::RefreshGraphEditCB(TM_ALIST_1(XtP(GraphEditLayoutS
     XtVaSetValues(graph_edit,
 		  XtNgraph, (Graph *)disp_graph,
 		  XtPointer(0));
-#else // NOT IF_MOTIF
+#else
     graph_edit->set_auto_layout(old_state.autoLayout);
     graph_edit->set_snap_to_grid(old_state.snapToGrid);
     graph_edit->set_graph(disp_graph);
     graph_edit->set_auto_layout(state.autoLayout);
     graph_edit->set_snap_to_grid(state.snapToGrid);
-#endif // IF_MOTIF
+#endif
 }
 
 // ***************************************************************************
 //
 inline int DataDisp::getDispNrAtPoint (const BoxPoint& point)
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     GraphNode* gn = graphEditGetNodeAtPoint (graph_edit, point);
-#else // NOT IF_MOTIF
+#else
     GraphNode* gn = graph_edit->graphEditGetNodeAtPoint(point);
-#endif // IF_MOTIF
+#endif
     if (gn == 0)
 	return 0;
 
@@ -2333,11 +2339,11 @@ void DataDisp::SelectionLostCB(CB_ALIST_NULL)
 	{
 	    gn->selected() = false;
 	    changed = true;
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	    graphEditRedrawNode(graph_edit, gn);
-#else // NOT IF_MOTIF
+#else
 	    graph_edit->graphEditRedrawNode(gn);
-#endif // IF_MOTIF
+#endif
 	}
     }
 
@@ -2390,23 +2396,23 @@ void DataDisp::call_selection_proc(Widget w,
 {
     // Let multi-clicks pass right through
     Time t = time(event);
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     if (Time(t - last_select_time) > Time(XtGetMultiClickTime(XtDisplay(w))))
 	set_args(point(event), mode);
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning multi-click time hardwired.
 #endif
     if (Time(t - last_select_time) > Time(200))
 	set_args(point(event), mode);
-#endif // IF_MOTIF
+#endif
     last_select_time = t;
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XtCallActionProc(w, name, event, args, num_args);
-#else // NOT IF_MOTIF
+#else
     std::cerr << "XtCallActionProc " << name << "\n";
-#endif // IF_MOTIF
+#endif
 }
 
 void DataDisp::graph_selectAct (Widget, XEvent* event, String* args, 
@@ -2451,6 +2457,8 @@ void DataDisp::graph_toggle_or_moveAct (Widget, XEvent* event, String* args,
 			ToggleSelection);
 }
 
+#if defined(IF_XM)
+
 void DataDisp::graph_popupAct (Widget, XEvent* event, String *args, 
 			       Cardinal *num_args)
 {
@@ -2475,15 +2483,11 @@ void DataDisp::graph_popupAct (Widget, XEvent* event, String *args,
     if (num_args != 0 && *num_args > 0)
 	arg = downcase(args[0]);
 
-    MENU_P popup = 0;
+    Widget popup = 0;
     if (arg == "graph" || selected_node() == 0)
 	popup = graph_popup_w;
     else if (arg == "shortcut" 
-#ifdef IF_MOTIF
 	     || (arg.empty() && event->xbutton.state & ShiftMask)
-#else // NOT IF_MOTIF
-	     || (arg.empty() && event->button.state & ShiftMask)
-#endif // IF_MOTIF
 	)
 	popup = shortcut_popup_w;
     else if (arg == "node" || arg.empty())
@@ -2493,14 +2497,66 @@ void DataDisp::graph_popupAct (Widget, XEvent* event, String *args,
 
     if (popup != 0)
     {
-#ifdef IF_MOTIF
 	XmMenuPosition(popup, &event->xbutton);
 	XtManageChild(popup);
-#else // NOT IF_MOTIF
-	popup->popup(0, 0);
-#endif // IF_MOTIF
     }
 }
+
+#else
+
+void DataDisp::graph_popupAct (Widget, XEvent* event, String *args, 
+			       Cardinal *num_args)
+{
+    static BoxPoint* p = 0;
+    if (p == 0)
+    {
+	p = new BoxPoint;
+
+	MMaddCallbacks(graph_popup,     XtPointer(p));
+	MMaddCallbacks(node_popup,      XtPointer(p));
+	MMaddCallbacks(shortcut_popup1, XtPointer(p));
+
+#if defined(IF_XM)
+	MMaddHelpCallback(graph_popup,     ImmediateHelpCB);
+	MMaddHelpCallback(node_popup,      ImmediateHelpCB);
+	MMaddHelpCallback(shortcut_popup1, ImmediateHelpCB);
+#else
+	MMaddHelpCallback(graph_popup,     sigc::ptr_fun(ImmediateHelpCB1));
+	MMaddHelpCallback(node_popup,      sigc::ptr_fun(ImmediateHelpCB1));
+	MMaddHelpCallback(shortcut_popup1, sigc::ptr_fun(ImmediateHelpCB1));
+#endif
+    }
+    *p = point(event);
+
+    set_args(*p, SetSelection);
+
+    string arg = "";
+    if (num_args != 0 && *num_args > 0)
+	arg = downcase(args[0]);
+
+    GUI::PopupMenu *popup = 0;
+    if (arg == "graph" || selected_node() == 0)
+	popup = graph_popup_w;
+    else if (arg == "shortcut" 
+#if defined(IF_XMMM)
+	     || (arg.empty() && event->xbutton.state & ShiftMask)
+#else
+	     || (arg.empty() && event->button.state & ShiftMask)
+#endif
+	)
+	popup = shortcut_popup_w;
+    else if (arg == "node" || arg.empty())
+	popup = node_popup_w;
+    else
+	std::cerr << "graph-popup: bad argument " << quote(arg) << "\n";
+
+    if (popup != 0)
+    {
+	popup->show();
+    }
+}
+
+#endif
 
 void DataDisp::set_args(const BoxPoint& p, SelectionMode mode)
 {
@@ -2529,11 +2585,11 @@ void DataDisp::set_args(const BoxPoint& p, SelectionMode mode)
 		// so toggle the entire node.
 		disp_node->selected() = false;
 		disp_node->select(0);
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 		graphEditRedrawNode(graph_edit, disp_node);
-#else // NOT IF_MOTIF
+#else
 		graph_edit->graphEditRedrawNode(disp_node);
-#endif // IF_MOTIF
+#endif
 		break;
 	    }
 	    // FALL THROUGH
@@ -2542,11 +2598,11 @@ void DataDisp::set_args(const BoxPoint& p, SelectionMode mode)
 	    if (disp_value != disp_node->selected_value())
 	    {
 		disp_node->select(disp_value);
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 		graphEditRedrawNode(graph_edit, disp_node);
-#else // NOT IF_MOTIF
+#else
 		graph_edit->graphEditRedrawNode(disp_node);
-#endif // IF_MOTIF
+#endif
 	    }
 	    break;
 	}
@@ -2576,11 +2632,11 @@ void DataDisp::set_args(const BoxPoint& p, SelectionMode mode)
 		dn->select(0);
 
 		if (redraw) {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 		    graphEditRedrawNode(graph_edit, dn);
-#else // NOT IF_MOTIF
+#else
 		    graph_edit->graphEditRedrawNode(dn);
-#endif // IF_MOTIF
+#endif
 		}
 	    }
 	}
@@ -2602,15 +2658,15 @@ void DataDisp::set_args(const BoxPoint& p, SelectionMode mode)
 #warning Do we really need a reference here?
 #endif
 	TOGGLEBUTTON_P button = static_cast<TOGGLEBUTTON_P>(theme_menu[i].widget);
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	XtVaSetValues(button, XmNuserData, theme.chars(), XtPointer(0));
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Using user data in this way is evil in an OO program.
 #warning We should have a class ThemeButton: public Gtk::Button
 #endif
 	button->property_user_data() = (void *)theme.chars();
-#endif // IF_MOTIF
+#endif
 	bool set = false;
 	for (int j = 0; j < current_themes.size(); j++)
 	    if (theme == current_themes[j])
@@ -2758,14 +2814,14 @@ void DataDisp::refresh_args(bool update_arg)
 
     if (refresh_args_timer == NO_TIMER)
     {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	refresh_args_timer = 
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(graph_edit),
 			    0, RefreshArgsCB, XtPointer(graph_edit));
-#else // NOT IF_MOTIF
+#else
 	refresh_args_timer = 
 	    Glib::signal_idle().connect(PTR_FUN(RefreshArgsCB));
-#endif // IF_MOTIF
+#endif
     }
 
     // Synchronize node selection with cluster: if cluster is
@@ -2816,11 +2872,11 @@ void DataDisp::refresh_args(bool update_arg)
 
 	if (dn->selected() != old_selected || dn->highlight() != old_highlight)
 	{
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	    graphEditRedrawNode(graph_edit, dn);
-#else // NOT IF_MOTIF
+#else
 	    graph_edit->graphEditRedrawNode(dn);
-#endif // IF_MOTIF
+#endif
 	}
     }
 }
@@ -2843,11 +2899,11 @@ TIMEOUT_RETURN_TYPE DataDisp::RefreshArgsCB(TM_ALIST_NULL)
 
 	    dn->select(0);
 	    if (redraw) {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 		graphEditRedrawNode(graph_edit, dn);
-#else // NOT IF_MOTIF
+#else
 		graph_edit->graphEditRedrawNode(dn);
-#endif // IF_MOTIF
+#endif
 	    }
 	}
     }
@@ -3124,41 +3180,41 @@ TIMEOUT_RETURN_TYPE DataDisp::RefreshArgsCB(TM_ALIST_NULL)
     // LOSE_SELECTION, we make sure the associated callbacks return
     // immediately.
     lose_selection = false;
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XmTextSetString(graph_selection_w, XMST(cmd.chars()));
-#else // NOT IF_MOTIF
+#else
     static int errcnt = 0;
     if (complain && !errcnt++ == 0) std::cerr << "Set text in graph_selection_w not implemented\n";
     // graph_selection_w->set_text(XMST(cmd.chars()));
-#endif // IF_MOTIF
+#endif
     lose_selection = true;
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     Time tm = XtLastTimestampProcessed(XtDisplay(graph_selection_w));
-#endif // IF_MOTIF
+#endif
 
     if (cmd.empty())
     {
 	// Nothing selected - clear selection explicitly
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	XmTextClearSelection(graph_selection_w, tm);
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning XmTextClearSelection not implemented.
 #endif
-#endif // IF_MOTIF
+#endif
     }
     else
     {
 	// Own the selection
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	TextSetSelection(graph_selection_w, 
 			 0, XmTextGetLastPosition(graph_selection_w), tm);
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning TextSetSelection not implemented.
 #endif
-#endif // IF_MOTIF
+#endif
     }
     return MAYBE_FALSE;
 }
@@ -3308,11 +3364,11 @@ void DataDisp::get_node_state(std::ostream& os, DispNode *dn, bool include_posit
 		BoxPoint offset = 
 		    (dn->box()->size() - empty_cluster.box()->size()) / 2;
 
-#ifdef IF_MOTIF		    
+#if defined(IF_MOTIF)		    
 		pos = graphEditFinalPosition(graph_edit, pos - offset);
-#else // NOT IF_MOTIF
+#else
 		pos = graph_edit->final_position(pos - offset);
-#endif // IF_MOTIF
+#endif
 	    }
 
 	    os << " at " << pos;
@@ -3501,11 +3557,11 @@ void DataDisp::UpdateGraphEditorSelectionCB(CB_ALIST_NULL)
 	if (select != dn->selected())
 	{
 	    dn->selected() = select;
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	    graphEditRedrawNode(graph_edit, dn);
-#else // NOT IF_MOTIF
+#else
 	    graph_edit->graphEditRedrawNode(dn);
-#endif // IF_MOTIF
+#endif
 	}
 
 	if (dn->hidden())
@@ -3520,11 +3576,11 @@ void DataDisp::UpdateGraphEditorSelectionCB(CB_ALIST_NULL)
 		    if (node->selected() != dn->selected())
 		    {
 			node->selected() = dn->selected();
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 			graphEditRedrawNode(graph_edit, node);
-#else // NOT IF_MOTIF
+#else
 			graph_edit->graphEditRedrawNode(node);
-#endif // IF_MOTIF
+#endif
 		    }
 		}
 	    }
@@ -3538,11 +3594,11 @@ void DataDisp::UpdateGraphEditorSelectionCB(CB_ALIST_NULL)
 	if (is_cluster(dn) && dn->selected_value() != 0)
 	{
 	    dn->select();
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	    graphEditRedrawNode(graph_edit, dn);
-#else // NOT IF_MOTIF
+#else
 	    graph_edit->graphEditRedrawNode(dn);
-#endif // IF_MOTIF
+#endif
 	}
     }
 
@@ -3601,11 +3657,11 @@ void DataDisp::UpdateGraphEditorSelectionCB(CB_ALIST_NULL)
 	    }
 	}
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	graphEditRedrawNode(graph_edit, cluster);
-#else // NOT IF_MOTIF
+#else
 	graph_edit->graphEditRedrawNode(cluster);
-#endif // IF_MOTIF
+#endif
     }
 
     refresh_args(true);
@@ -3631,11 +3687,11 @@ void DataDisp::UpdateDisplayEditorSelectionCB(CB_ALIST_NULL)
 	if (node->selected() != dn->selected())
 	{
 	    dn->selected() = node->selected();
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	    graphEditRedrawNode(graph_edit, dn);
-#else // NOT IF_MOTIF
+#else
 	    graph_edit->graphEditRedrawNode(dn);
-#endif // IF_MOTIF
+#endif
 	}
     }
 
@@ -3812,16 +3868,16 @@ void DataDisp::new_displaySQ (const string& display_expression,
 
 	// As soon as the VSL library will be completely read, we
 	// shall enter the main DDD event loop and get called again.
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	XtAppAddTimeOut(XtWidgetToApplicationContext(graph_edit),
 			100, again_new_displaySQ, 
 			new NewDisplayInfo(info));
-#else // NOT IF_MOTIF
+#else
 	Glib::signal_timeout().connect(sigc::bind_return(sigc::bind(PTR_FUN(again_new_displaySQ),
 								    new NewDisplayInfo(info)),
 							 false),
 				       100);
-#endif // IF_MOTIF
+#endif
 	return;
     }
     delete reading_delay;
@@ -4161,11 +4217,11 @@ void DataDisp::refresh_builtin_user_displays()
 	}
 
 	dn->refresh();
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	graphEditRedrawNode(graph_edit, dn);
-#else // NOT IF_MOTIF
+#else
 	graph_edit->graphEditRedrawNode(dn);
-#endif // IF_MOTIF
+#endif
     }
 
     delete s;
@@ -5985,15 +6041,15 @@ void DataDisp::refresh_display_list(bool silent)
 
     // We refresh the list as soon as we return from the callback
     // (LessTif is sensitive about this)
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XtAppAddTimeOut(XtWidgetToApplicationContext(display_list_w),
 		    0, RefreshDisplayListCB,
 		    (silent ? XtPointer(1):XtPointer(0)) );
-#else // NOT IF_MOTIF
+#else
     Glib::signal_idle().connect(sigc::bind_return(sigc::bind(PTR_FUN(RefreshDisplayListCB),
 							     (silent?1:0)),
 						  false));
-#endif // IF_MOTIF
+#endif
 }
 
 
@@ -6245,11 +6301,11 @@ private:
     SetInfo& operator=(const SetInfo&);
 };
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 void DataDisp::DeleteSetInfoCB(Widget, XtPointer client_data, XtPointer)
-#else // NOT IF_MOTIF
+#else
 void *DataDisp::DeleteSetInfoCB(void *client_data)
-#endif // IF_MOTIF
+#endif
 {
     SetInfo *info = (SetInfo *)client_data;
     info->dialog = 0;
@@ -6300,7 +6356,7 @@ void DataDisp::setCB(CB_ALIST_1(Widget w))
     info->name = name;
     info->running = false;
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     Arg args[10];
     int arg = 0;
 
@@ -6309,14 +6365,14 @@ void DataDisp::setCB(CB_ALIST_1(Widget w))
     info->dialog = 
 	verify(XmCreatePromptDialog(find_shell(w), 
 				    XMST("set_dialog"), args, arg));
-#else // NOT IF_MOTIF
+#else
     info->dialog = 
 	new Gtk::Dialog(XMST("set_dialog"), *find_shell(w));
-#endif // IF_MOTIF
+#endif
 
     Delay::register_shell(info->dialog);
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XtAddCallback(info->dialog, XmNdestroyCallback, 
 		  DeleteSetInfoCB, XtPointer(info));
 
@@ -6327,11 +6383,11 @@ void DataDisp::setCB(CB_ALIST_1(Widget w))
 					   XmDIALOG_TEXT));
     XtUnmanageChild(XmSelectionBoxGetChild(info->dialog, 
 					   XmDIALOG_SELECTION_LABEL));
-#else // NOT IF_MOTIF
+#else
     info->dialog->add_destroy_notify_callback(info, DeleteSetInfoCB);
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     arg = 0;
     XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
     XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
@@ -6340,39 +6396,39 @@ void DataDisp::setCB(CB_ALIST_1(Widget w))
     Widget box = verify(XmCreateRowColumn(info->dialog, 
 					  XMST("box"), args, arg));
     XtManageChild(box);
-#else // NOT IF_MOTIF
+#else
     BOX_P box = new Gtk::HBox();
     info->dialog->get_vbox()->pack_start(*box, Gtk::PACK_SHRINK);
     box->show();
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     arg = 0;
     MString prompt = MString("Set value of ") + tt(name);
     XtSetArg(args[arg], XmNalignment, XmALIGNMENT_BEGINNING); arg++;
     XtSetArg(args[arg], XmNlabelString, prompt.xmstring());   arg++;
     Widget label = verify(XmCreateLabel(box, XMST("label"), args, arg));
     XtManageChild(label);
-#else // NOT IF_MOTIF
+#else
     LABEL_P label = new Gtk::Label(XMST("label"));
     box->pack_start(*label, Gtk::PACK_SHRINK);
     label->show();
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     arg = 0;
     XtSetArg(args[arg], XmNvalue, value.chars()); arg++;
     info->text = verify(CreateComboBox(box, "text", args, arg));
     XtManageChild(info->text);
-#else // NOT IF_MOTIF
+#else
     info->text = new Gtk::ComboBoxEntryText();
     box->pack_start(*info->text, Gtk::PACK_SHRINK);
     info->text->show();
-#endif // IF_MOTIF
+#endif
 
     tie_combo_box_to_history(info->text, set_history_filter);
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XtAddCallback(info->dialog, XmNokCallback,     setDCB, XtPointer(info));
     XtAddCallback(info->dialog, XmNapplyCallback,  setDCB, XtPointer(info));
     XtAddCallback(info->dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
@@ -6382,7 +6438,7 @@ void DataDisp::setCB(CB_ALIST_1(Widget w))
 
     Widget apply = XmSelectionBoxGetChild(info->dialog, XmDIALOG_APPLY_BUTTON);
     XtManageChild(apply);
-#else // NOT IF_MOTIF
+#else
     BUTTON_P button;
     button = info->dialog->add_button(XMST("OK"), 0);
     button->signal_clicked().connect(sigc::bind(PTR_FUN(setDCB), info, 0));
@@ -6390,7 +6446,7 @@ void DataDisp::setCB(CB_ALIST_1(Widget w))
     button->signal_clicked().connect(sigc::bind(PTR_FUN(setDCB), info, 1));
     button = info->dialog->add_button(XMST("Cancel"), 0);
     button->signal_clicked().connect(sigc::bind(PTR_FUN(DestroyThisCB), info->dialog));
-#endif // IF_MOTIF
+#endif
     manage_and_raise(info->dialog);
 }
 
@@ -6412,47 +6468,47 @@ void DataDisp::SetDone(const string& complete_answer, void *qu_data)
 	return;			// Bad value - keep dialog open
 
     // All done - pop down dialog
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XtDestroyWidget(info->dialog);
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Delete widget OK?
 #endif
     delete info->dialog;
-#endif // IF_MOTIF
+#endif
 }
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 void DataDisp::setDCB(Widget, XtPointer client_data, XtPointer call_data)
-#else // NOT IF_MOTIF
+#else
 void DataDisp::setDCB(SetInfo *client_data, int apply)
-#endif // IF_MOTIF
+#endif
 {
     SetInfo *info = (SetInfo *)client_data;
 
     if (info->running)
 	return;			// Already running with a value
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XmSelectionBoxCallbackStruct *cbs = 
 	(XmSelectionBoxCallbackStruct *)call_data;
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     String value_s = XmTextFieldGetString(info->text);
     string value(value_s);
     XtFree(value_s);
-#else // NOT IF_MOTIF
+#else
     Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(info->text->get_child());
     string value(entry->get_text().c_str());
-#endif // IF_MOTIF
+#endif
 
     Command c(gdb->assign_command(info->name, value), last_origin);
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     if (cbs->reason != XmCR_APPLY)
-#else // NOT IF_MOTIF
+#else
     if (!apply)
-#endif // IF_MOTIF
+#endif
     {
 	// We've pressed OK => destroy widget as soon as command completes.
 
@@ -6778,11 +6834,11 @@ void DataDisp::refresh_addr(DispNode *dn)
 {
     if (refresh_addr_timer != NO_TIMER)
     {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	XtRemoveTimeOut(refresh_addr_timer);
-#else // NOT IF_MOTIF
+#else
 	refresh_addr_timer.disconnect();
-#endif // IF_MOTIF
+#endif
 	refresh_addr_timer = NO_TIMER;
 	dn = 0;
     }
@@ -6828,43 +6884,43 @@ TIMEOUT_RETURN_TYPE DataDisp::RefreshAddr(DispNode *dn, bool in_cb)
 
     if (!ok)
     {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	// Commands not sent - try again in 50 ms
 	refresh_addr_timer = 
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(graph_edit),
 			    50, RefreshAddrCB, dn);
-#else // NOT IF_MOTIF
+#else
 	if (!in_cb) {
 	    refresh_addr_timer = 
 		Glib::signal_timeout().connect(sigc::bind(PTR_FUN(RefreshAddrCB), dn), 50);
 	}
 	return true;
-#endif // IF_MOTIF
+#endif
     }
     else {
-#ifndef IF_MOTIF
+#if !defined(IF_MOTIF)
 	refresh_addr_timer = NO_TIMER;
-#endif // IF_MOTIF
+#endif
     }
 
     if (sent)
     {
 	// At least one command sent - disable redisplay until we have
 	// processed all addresses
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	graphEditEnableRedisplay(graph_edit, False);
-#else // NOT IF_MOTIF
+#else
 	graph_edit->enable_redisplay(false);
-#endif // IF_MOTIF
+#endif
     }
     return MAYBE_FALSE;
 }
 
 TIMEOUT_RETURN_TYPE DataDisp::RefreshAddrCB(TM_ALIST_1(XtP(DispNode *) client_data))
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     refresh_addr_timer = NO_TIMER;
-#endif // IF_MOTIF
+#endif
 
     DispNode *dn = (DispNode *)client_data;
 
@@ -6915,11 +6971,11 @@ void DataDisp::process_addr (StringArray& answers)
     }
 
     // Re-enable redisplay
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     graphEditEnableRedisplay(graph_edit, True);
-#else // NOT IF_MOTIF
+#else
     graph_edit->enable_redisplay(true);
-#endif // IF_MOTIF
+#endif
 
     if (changed)
 	refresh_display_list(suppressed);
@@ -7168,11 +7224,11 @@ void DataDisp::PreLayoutCB(CB_ALIST_1(GRAPH_EDIT_P w))
     if (detect_aliases)
     {
 	// Don't redisplay while or after layouting
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	graphEditEnableRedisplay(w, False);
-#else // NOT IF_MOTIF
+#else
 	w->enable_redisplay(false);
-#endif // IF_MOTIF
+#endif
     }
 }
 
@@ -7192,11 +7248,11 @@ void DataDisp::PostLayoutCB(CB_ALIST_1(GRAPH_EDIT_P w))
 	check_aliases();
 
 	// Okay - we can redisplay now
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	graphEditEnableRedisplay(w, True);
-#else // NOT IF_MOTIF
+#else
 	w->enable_redisplay(true);
-#endif // IF_MOTIF
+#endif
 	refresh_graph_edit();
     }
 }
@@ -7255,11 +7311,11 @@ bool DataDisp::bump(RegionGraphNode *node, const BoxSize& newSize)
     if (dn != 0 && (!dn->active() || dn->clustered()))
 	return true;		// Clustered or inactive
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     const GraphGC& gc = graphEditGetGraphGC(graph_edit);
-#else // NOT IF_MOTIF
+#else
     const GraphGC& gc = graph_edit->get_graph_GC();
-#endif // IF_MOTIF
+#endif
     BoxRegion oldRegion = node->region(gc);
 
     // Do the resize, but don't get called recursively
@@ -7345,13 +7401,13 @@ DataDisp::DataDisp(CONTAINER_P parent, Widget& data_buttons_w)
 {
     XtAppContext app_context = XtWidgetToApplicationContext(parent);
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     registerOwnConverters();
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Converters not implemented.
 #endif
-#endif // IF_MOTIF
+#endif
 
     // Init globals
     StringBox::fontTable      = new FontTable (XtDisplay(parent));
@@ -7389,7 +7445,7 @@ DataDisp::DataDisp(CONTAINER_P parent, Widget& data_buttons_w)
 	    make_buttons(parent, "data_buttons", app_data.data_buttons);
 
     // Create graph editor
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     Arg args[10];
     int arg = 0;
     XtSetArg (args[arg], ARGSTR(XtNgraph), (Graph *)disp_graph); arg++;
@@ -7405,31 +7461,31 @@ DataDisp::DataDisp(CONTAINER_P parent, Widget& data_buttons_w)
 	graph_edit = createScrolledGraphEdit(parent, "graph_edit", args, arg);
 	graph_form_w = scrollerOfGraphEdit(graph_edit);
     }
-#else // NOT IF_MOTIF
+#else
     graph_edit = new GtkGraphEdit();
     graph_form_w = graph_edit;
-#endif // IF_MOTIF
+#endif
 
     set_last_origin(graph_edit);
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     // Add actions
     XtAppAddActions (app_context, actions, XtNumber (actions));
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Actions not implemented.
 #endif
-#endif // IF_MOTIF
+#endif
     XtManageChild (graph_edit);
 
     // Create buttons
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     registerOwnConverters();
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Converters not implemented.
 #endif
-#endif // IF_MOTIF
+#endif
 
     if (graph_cmd_w == 0)
     {
@@ -7440,71 +7496,71 @@ DataDisp::DataDisp(CONTAINER_P parent, Widget& data_buttons_w)
 
     if (arg_label != 0)
     {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	XtAddCallback(arg_label, XmNactivateCallback,
 		      SelectionLostCB, XtPointer(0));
 	XtAddCallback(arg_label, XmNactivateCallback, 
 		      ClearTextFieldCB, graph_arg->text());
-#else // NOT IF_MOTIF
+#else
 	arg_label->signal_clicked().connect(PTR_FUN(SelectionLostCB));
 	arg_label->signal_clicked().connect(sigc::bind(PTR_FUN(ClearTextFieldCB), graph_arg->text()));
-#endif // IF_MOTIF
+#endif
     }
 
     // Create (unmanaged) selection widget
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     graph_selection_w =
 	verify(XmCreateText(graph_cmd_w, XMST("graph_selection"), 
 			    ArgList(0), 0));
     XtAddCallback(graph_selection_w, XmNlosePrimaryCallback, 
 		  SelectionLostCB, XtPointer(0));
-#else // NOT IF_MOTIF
+#else
     static int errcnt = 0;
     if (complain && !errcnt++) std::cerr << "Create graph_selection_w: not implemented\n";
     // graph_selection_w = new GtkScrolledText();
 #ifdef NAG_ME
 #warning Unmanaged graph selection widget callbacks not implemented.
 #endif
-#endif // IF_MOTIF
+#endif
 }
 
 void DataDisp::create_shells()
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     Arg args[10];
     Cardinal arg = 0;
-#endif // IF_MOTIF
+#endif
 
     // Create menus
     graph_popup_w = 
 	MMcreatePopupMenu(graph_edit, "graph_popup", graph_popup);
-    InstallButtonTips(graph_popup_w);
+    InstallButtonTips1(graph_popup_w);
 
     node_popup_w = 
 	MMcreatePopupMenu(graph_edit, "node_popup", node_popup);
-    InstallButtonTips(node_popup_w);
+    InstallButtonTips1(node_popup_w);
 
     shortcut_popup_w = 
 	MMcreatePopupMenu(graph_edit, "shortcut_popup", shortcut_popup1);
-    InstallButtonTips(shortcut_popup_w);
+    InstallButtonTips1(shortcut_popup_w);
 
     disp_graph->callHandlers();
 
     // Create display editor
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     arg = 0;
     XtSetArg(args[arg], XmNvisibleItemCount, 0); arg++;
     edit_displays_dialog_w =
 	verify(createTopLevelSelectionDialog(find_shell(graph_edit), 
 					     "edit_displays_dialog", 
 					     args, arg));
-#else // NOT IF_MOTIF
+#else
     edit_displays_dialog_w =
 	new Gtk::Dialog(XMST("edit_displays_dialog"), *find_shell(graph_edit));
-#endif // IF_MOTIF
+#endif
     Delay::register_shell(edit_displays_dialog_w);
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XtUnmanageChild(XmSelectionBoxGetChild(edit_displays_dialog_w,
 					   XmDIALOG_TEXT));
     XtUnmanageChild(XmSelectionBoxGetChild(edit_displays_dialog_w,
@@ -7518,7 +7574,7 @@ void DataDisp::create_shells()
 
     display_list_w = 
 	XmSelectionBoxGetChild(edit_displays_dialog_w, XmDIALOG_LIST);
-#else // NOT IF_MOTIF
+#else
     Glib::RefPtr<Gtk::ListStore> display_list_store = Gtk::ListStore::create(display_list_columns);
     display_list_w = 
 	new Gtk::TreeView(display_list_store);
@@ -7529,11 +7585,11 @@ void DataDisp::create_shells()
     display_list_w->append_column("Scope", display_list_columns.scope);
     display_list_w->append_column("Address", display_list_columns.address);
 
-#endif // IF_MOTIF
+#endif
 
     if (app_data.flat_dialog_buttons)
     {
-	for (MMDesc *item = display_area; item != 0 && item->name != 0; item++)
+	for (MMDesc *item = display_area; item != 0 && item->name; item++)
 	{
 	    if ((item->type & MMTypeMask) == MMPush)
 		item->type = (MMFlatPush | (item->type & ~MMTypeMask));
@@ -7542,7 +7598,7 @@ void DataDisp::create_shells()
 
     Widget buttons = verify(MMcreateWorkArea(edit_displays_dialog_w, 
 					     "buttons", display_area));
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XtVaSetValues(buttons,
 		  XmNmarginWidth,     0, 
 		  XmNmarginHeight,    0, 
@@ -7550,14 +7606,18 @@ void DataDisp::create_shells()
 		  XmNshadowThickness, 0, 
 		  XmNspacing,         0,
 		  XtPointer(0));
-#endif // IF_MOTIF
+#endif
 
     MMaddCallbacks (display_area);
-    MMaddHelpCallback(display_area, PTR_FUN(ImmediateHelpCB));
+#if defined(IF_XM)
+    MMaddHelpCallback(display_area, ImmediateHelpCB);
+#else
+    MMaddHelpCallback(display_area, sigc::ptr_fun(ImmediateHelpCB1));
+#endif
     register_menu_shell(display_area);
 
     // Add widget callbacks
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XtAddCallback(graph_edit, XtNpreSelectionCallback,
 		  DoubleClickCB, XtPointer(this));
     XtAddCallback(graph_edit, XtNselectionChangedCallback,
@@ -7568,17 +7628,17 @@ void DataDisp::create_shells()
 		  PreLayoutCB, XtPointer(this));
     XtAddCallback(graph_edit, XtNpostLayoutCallback,
 		  PostLayoutCB, XtPointer(this));
-#else // NOT IF_MOTIF
+#else
     graph_edit->signal_pre_selection().connect(sigc::bind<0>(PTR_FUN(&DataDisp::DoubleClickCB), graph_edit));
     graph_edit->signal_selection_changed().connect(sigc::hide(PTR_FUN(&DataDisp::UpdateDisplayEditorSelectionCB)));
     graph_edit->signal_compare_nodes().connect(PTR_FUN(&DataDisp::CompareNodesCB));
     graph_edit->signal_pre_layout().connect(sigc::hide(sigc::bind<0>(PTR_FUN(&DataDisp::PreLayoutCB), graph_edit)));
     graph_edit->signal_post_layout().connect(sigc::hide(sigc::bind<0>(PTR_FUN(&DataDisp::PostLayoutCB), graph_edit)));
-#endif // IF_MOTIF
+#endif
 
     if (display_list_w != 0)
     {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	XtAddCallback(display_list_w,
 		      XmNsingleSelectionCallback,
 		      UpdateGraphEditorSelectionCB,
@@ -7595,14 +7655,14 @@ void DataDisp::create_shells()
 		      XmNbrowseSelectionCallback,
 		      UpdateGraphEditorSelectionCB,
 		      0);
-#else // NOT IF_MOTIF
+#else
 	display_list_w->get_selection()->signal_changed().connect(PTR_FUN(UpdateGraphEditorSelectionCB));
-#endif // IF_MOTIF
+#endif
     }
 
     if (edit_displays_dialog_w != 0)
     {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	XtAddCallback(edit_displays_dialog_w,
 		      XmNokCallback,
 		      UnmanageThisCB1,
@@ -7611,11 +7671,11 @@ void DataDisp::create_shells()
 		      XmNhelpCallback,
 		      ImmediateHelpCB,
 		      0);
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning edit_displays_dialog_w OK button callback.
 #endif
-#endif // IF_MOTIF
+#endif
     }
 
     // Add graph callbacks

@@ -208,7 +208,7 @@ string gdb_question(const string& command, int timeout, bool verbatim)
 
     // Send question to GDB
     GDBReply *reply = new GDBReply;
-    gdb_command(command, 0, gdb_reply, (void *)reply);
+    gdb_command(command, Widget(0), gdb_reply, (void *)reply);
 
     // GDB received question - set timeout
     wait_for_gdb_reply(reply, timeout);

@@ -178,6 +178,7 @@ char SourceView_rcsid[] =
 #include <GUI/SelectionDialog.h>
 #include <GUI/RadioButton.h>
 #include <GUI/Dialog.h>
+#include <GUI/Menu.h>
 #endif
 
 // System stuff
@@ -3730,7 +3731,7 @@ void SourceView::create_shells()
 
     if (app_data.flat_dialog_buttons)
     {
-	for (MMDesc *item = bp_area; item != 0 && item->name != 0; item++)
+	for (MMDesc *item = bp_area; item != 0 && item->name; item++)
 	{
 	    if ((item->type & MMTypeMask) == MMPush)
 		item->type = (MMFlatPush | (item->type & ~MMTypeMask));
@@ -3833,9 +3834,10 @@ void SourceView::create_shells()
     up_w   = XmSelectionBoxGetChild(stack_dialog_w, XmDIALOG_OK_BUTTON);
     down_w = XmSelectionBoxGetChild(stack_dialog_w, XmDIALOG_APPLY_BUTTON);
 #else
-    up_w = stack_dialog_w->add_button("Up");
-    down_w = stack_dialog_w->add_button("Down");
-    GUI::WidgetPtr<GUI::Button> cancel_w = stack_dialog_w->add_button("Cancel");
+    up_w = stack_dialog_w->add_button("up", "Up");
+    down_w = stack_dialog_w->add_button("down", "Down");
+    GUI::WidgetPtr<GUI::Button> cancel_w =
+	stack_dialog_w->add_button("cancel", "Cancel");
 #endif
 
     set_sensitive(up_w,   False);
@@ -3940,7 +3942,7 @@ void SourceView::create_shells()
     XtManageChild(int_registers_w);
 #else
     int_registers_w =
-	new GUI::RadioButton(*box, "int_registers");
+	new GUI::RadioButton(*box, "int_registers", "Integer registers");
     int_registers_w->set_active(!all_registers);
     int_registers_w->show();
 #endif
@@ -3954,7 +3956,7 @@ void SourceView::create_shells()
     XtManageChild(all_registers_w);
 #else // NOT IF_XM
     all_registers_w =
-	new GUI::RadioButton(*box, "all_registers");
+	new GUI::RadioButton(*box, "all_registers", "All registers");
     all_registers_w->set_active(all_registers);
     all_registers_w->show();
 #endif // IF_XM
@@ -4003,9 +4005,9 @@ void SourceView::create_shells()
 		  XmNhelpCallback, ImmediateHelpCB, 0);
 #else
     BUTTON_P button;
-    button = register_dialog_w->add_button("OK");
+    button = register_dialog_w->add_button("ok", "OK");
     button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB), register_dialog_w));
-    button = register_dialog_w->add_button("Cancel");
+    button = register_dialog_w->add_button("cancel", "Cancel");
     button->signal_clicked().connect(PTR_FUN(RegisterDialogPoppedDownCB));
 #endif
 
@@ -5770,6 +5772,203 @@ void SourceView::translate_glyph_pos(Glyph_T glyph, Widget text, int& x, int& y)
 }
 #endif
 
+#if defined(IF_XM)
+
+// Popup button3 source menu
+void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
+{
+    if (e->type != ButtonPress && e->type != ButtonRelease)
+	return;
+
+    SCROLLEDTEXT_P text_w;
+    if (is_source_widget(w))
+	text_w = source_text_w;
+    else if (is_code_widget(w))
+	text_w = code_text_w;
+    else
+	return;
+
+    XButtonEvent* event = &e->xbutton;
+
+    int x = (int)event->x;
+    int y = (int)event->y;
+
+    if (w != source_text_w && w != code_text_w)
+    {
+	// Called from a glyph: translate glyph position to text position
+	translate_glyph_pos(w, text_w, x, y);
+    }
+
+    // Get the position
+    XmTextPosition pos = XmTextXYToPos(text_w, x, y);
+
+    // Move the insertion cursor to this position, but don't disturb the
+    // selection
+    XmTextPosition left, right;
+    Boolean have_selection = XmTextGetSelectionPosition(text_w, &left, &right);
+    if (have_selection && pos >= left && pos <= right)
+    {
+	// Do not scroll here.  Do not use SetInsertionPosition().
+	XmTextSetInsertionPosition(text_w, pos);
+	TextSetSelection(text_w, left, right, time(e));
+    }
+    else
+    {
+	// Do not scroll here.  Do not use SetInsertionPosition().
+	XmTextClearSelection(text_w, time(e));
+	XmTextSetInsertionPosition(text_w, pos);
+    }
+
+    int line_nr;
+    bool in_text;
+    static int bp_nr;
+    static string address;
+    bool pos_found = get_line_of_pos(w, pos, line_nr, address, in_text, bp_nr);
+
+    bool right_of_text = 
+	pos < XmTextPosition(current_text(w).length()) 
+	&& current_text(w)[pos] == '\n';
+
+    if (pos_found && bp_nr != 0)
+    {
+	// Clicked on breakpoint: create breakpoint menu
+	static Widget bp_popup_w      = 0;
+	static Widget bp_popup_parent = 0;
+
+	if (lesstif_version <= 84 && w != bp_popup_parent)
+	{
+	    // LessTif 0.84 and earlier wants this menu re-created
+	    // every time the parent has changed.  Otherwise, it gets
+	    // insensitive.
+	    if (bp_popup_w != 0)
+		XtDestroyWidget(bp_popup_w);
+	    bp_popup_w = 0;
+	}
+
+	if (bp_popup_w == 0)
+	{
+	    bp_popup_parent = w;
+	    bp_popup_w = MMcreatePopupMenu(w, "bp_popup", bp_popup);
+	    MMaddCallbacks (bp_popup, XtPointer(&bp_nr));
+	    MMaddHelpCallback(bp_popup, ImmediateHelpCB);
+	    InstallButtonTips(bp_popup_w);
+	}
+
+	// Grey out unsupported functions
+	set_sensitive(bp_popup[BPItms::Disable].widget, gdb->can_disable());
+	set_sensitive(bp_popup[BPItms::SetPC].widget,
+		       gdb->has_jump_command() || gdb->has_assign_command());
+
+	MString label(bp_map.get(bp_nr)->enabled() ? 
+		      "Disable Breakpoint" : "Enable Breakpoint");
+	XtVaSetValues(bp_popup[BPItms::Disable].widget,
+		      XmNlabelString, label.xmstring(),
+		      XtPointer(0));
+
+	XmMenuPosition(bp_popup_w, event);
+	XtManageChild(bp_popup_w);
+    }
+    else if (pos_found 
+	     && (line_nr > 0 || !address.empty()) 
+	     && (!in_text || right_of_text))
+    {
+	// Create popup menu for selected line
+	static Widget line_popup_w = 0;
+	if (line_popup_w == 0)
+	{
+	    line_popup_w = MMcreatePopupMenu (w, "line_popup", line_popup);
+	    MMaddCallbacks(line_popup, XtPointer(&address));
+	    MMaddHelpCallback(line_popup, PTR_FUN(ImmediateHelpCB));
+	    InstallButtonTips(line_popup_w);
+
+	    set_sensitive(line_popup[LineItms::SetTempBP].widget, 
+			   gdb->has_temporary_breakpoints());
+	    set_sensitive(line_popup[LineItms::SetPC].widget,
+			   gdb->has_jump_command() || 
+			   gdb->has_assign_command());
+	}
+
+	if (is_source_widget(w))
+	    address = current_source_name() + ":" + itostring(line_nr);
+	else
+	    address = string('*') + address;
+	XmMenuPosition (line_popup_w, event);
+	XtManageChild (line_popup_w);
+    }
+    else
+    {
+	// Determine surrounding token (or selection) and create popup
+
+	XmTextPosition startpos = 0;
+	XmTextPosition endpos   = 0;
+
+	if (pos_found)
+	    callback_word = get_word_at_pos(text_w, pos, startpos, endpos);
+
+	// Popup specific word menu
+	string current_arg = callback_word;
+	shorten(current_arg, max_popup_expr_length);
+	string current_ref_arg = deref(current_arg);
+
+	if (lesstif_version <= 82)
+	{
+	    set_text_popup_resource(TextItms::Print,    current_arg);
+	    set_text_popup_resource(TextItms::Disp,     current_arg);
+	    set_text_popup_resource(TextItms::Watch,    current_arg);
+	    set_text_popup_resource(TextItms::PrintRef, current_ref_arg);
+	    set_text_popup_resource(TextItms::DispRef,  current_ref_arg);
+	    set_text_popup_resource(TextItms::WatchRef, current_ref_arg);
+	    set_text_popup_resource(TextItms::Whatis,   current_arg);
+	    set_text_popup_resource(TextItms::Lookup,   current_arg);
+	    set_text_popup_resource(TextItms::Break,    current_arg);
+	    set_text_popup_resource(TextItms::Clear,    current_arg);
+	}
+
+	MENU_P text_popup_w = 
+	    MMcreatePopupMenu(text_w, "text_popup", text_popup);
+	MMaddCallbacks(text_popup, XtPointer(&callback_word));
+	MMaddHelpCallback(text_popup, PTR_FUN(ImmediateHelpCB));
+	InstallButtonTips(text_popup_w);
+
+	// The popup menu is destroyed immediately after having popped down.
+	Widget shell = XtParent(text_popup_w);
+	XtAddCallback(shell, XtNpopdownCallback, DestroyThisCB, shell);
+
+	bool has_arg = (callback_word.length() > 0);
+	bool has_watch = has_arg && gdb->has_watch_command();
+	set_text_popup_label(TextItms::Print,    current_arg, has_arg);
+	set_text_popup_label(TextItms::Disp,     current_arg, has_arg);
+	set_text_popup_label(TextItms::Watch,    current_arg, has_watch);
+	set_text_popup_label(TextItms::PrintRef, current_ref_arg, has_arg);
+	set_text_popup_label(TextItms::DispRef,  current_ref_arg, has_arg);
+	set_text_popup_label(TextItms::WatchRef, current_ref_arg, has_watch);
+	set_text_popup_label(TextItms::Whatis,   current_arg, has_arg);
+	set_text_popup_label(TextItms::Lookup,   current_arg, has_arg);
+	set_text_popup_label(TextItms::Break,    current_arg, has_arg);
+	set_text_popup_label(TextItms::Clear,    current_arg, has_arg);
+
+	if (current_arg != current_ref_arg)
+	{
+	    XtManageChild(text_popup[TextItms::Sep1].widget);
+	    XtManageChild(text_popup[TextItms::PrintRef].widget);
+	    XtManageChild(text_popup[TextItms::DispRef].widget);
+	    // XtManageChild(text_popup[TextItms::WatchRef].widget);
+	}
+	else
+	{
+	    XtUnmanageChild(text_popup[TextItms::Sep1].widget);
+	    XtUnmanageChild(text_popup[TextItms::PrintRef].widget);
+	    XtUnmanageChild(text_popup[TextItms::DispRef].widget);
+	    XtUnmanageChild(text_popup[TextItms::WatchRef].widget);
+	}
+
+	XmMenuPosition (text_popup_w, event);
+	XtManageChild (text_popup_w);
+    }
+}
+
+#else
+
 // Popup button3 source menu
 void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 {
@@ -5855,10 +6054,14 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
     if (pos_found && bp_nr != 0)
     {
 	// Clicked on breakpoint: create breakpoint menu
+#if defined(IF_XM)
 	static Widget bp_popup_w      = 0;
+#else
+	static GUI::PopupMenu *bp_popup_w      = 0;
+#endif
 	static Widget bp_popup_parent = 0;
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	if (lesstif_version <= 84 && w != bp_popup_parent)
 	{
 	    // LessTif 0.84 and earlier wants this menu re-created
@@ -5875,9 +6078,12 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	    bp_popup_parent = w;
 	    bp_popup_w = MMcreatePopupMenu(w, "bp_popup", bp_popup);
 	    MMaddCallbacks (bp_popup, XtPointer(&bp_nr));
-#if defined(IF_MOTIF)
-	    MMaddHelpCallback(bp_popup, PTR_FUN(ImmediateHelpCB));
+#if defined(IF_XM)
+	    MMaddHelpCallback(bp_popup, ImmediateHelpCB);
 	    InstallButtonTips(bp_popup_w);
+#else
+	    MMaddHelpCallback(bp_popup, sigc::ptr_fun(ImmediateHelpCB1));
+	    InstallButtonTips1(bp_popup_w);
 #endif
 	}
 
@@ -6018,6 +6224,8 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 #endif
     }
 }
+
+#endif
 
 
 void SourceView::doubleClickAct(Widget w, XEvent *e, String *params, 
@@ -6461,7 +6669,7 @@ void SourceView::NewWatchpointCB(CB_ALIST_1(Widget w))
 		      XtPointer(text));
 #else
 	BUTTON_P button;
-	button = dialog->add_button(GUI::String("OK"));
+	button = dialog->add_button("ok", "OK");
 	button->signal_clicked().connect(sigc::bind(PTR_FUN(NewWatchpointDCB), button, text));
 #endif
 
@@ -6967,7 +7175,7 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, Widget /* origin */)
 
     XtUnmanageChild(XmSelectionBoxGetChild(info->dialog, XmDIALOG_OK_BUTTON));
 #else
-    GUI::Button *button = info->dialog->add_button(GUI::String("Apply"));
+    GUI::Button *button = info->dialog->add_button("apply", "Apply");
 #endif
 
 #if defined(IF_MOTIF)
@@ -7107,12 +7315,12 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, Widget /* origin */)
     XtAddCallback(info->dialog, XmNhelpCallback,    
 		  ImmediateHelpCB, XtPointer(0));
 #else
-    button = info->dialog->add_button(GUI::String("OK"));
+    button = info->dialog->add_button("ok", "OK");
     button->signal_clicked().connect(sigc::bind(PTR_FUN(ApplyBreakpointPropertiesCB), button, info));
     button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB2), info->dialog));
-    button = info->dialog->add_button(GUI::String("Apply"));
+    button = info->dialog->add_button("apply", "Apply");
     button->signal_clicked().connect(sigc::bind(PTR_FUN(ApplyBreakpointPropertiesCB), button, info));
-    button = info->dialog->add_button(GUI::String("Cancel"));
+    button = info->dialog->add_button("cancel", "Cancel");
     button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB2), info->dialog));
 #endif
 
@@ -11069,7 +11277,7 @@ void SourceView::show_pc(const string& pc, XmHighlightMode mode,
 	RefreshDisassembleInfo *info = 
 	    new RefreshDisassembleInfo(pc, mode, msg);
 
-	gdb_command(gdb->disassemble_command(start, end), 0,
+	gdb_command(gdb->disassemble_command(start, end), Widget(0),
 		    refresh_codeOQC, (void *)info);
 	return;
     }

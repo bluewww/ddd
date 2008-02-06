@@ -1,4 +1,4 @@
-// -*- C++ -*-
+ // -*- C++ -*-
 
 // High-level GUI wrapper for Gtkmm.
 
@@ -31,12 +31,22 @@
 #ifndef GTKX_RADIOBUTTON_H
 #define GTKX_RADIOBUTTON_H
 
-#include <GtkX/Widget2s.h>
+#include <GtkX/Container.h>
 #include <gtkmm/radiobutton.h>
 
 namespace GtkX {
 
-    typedef Widget2s<Gtk::RadioButton> RadioButton;
+    class RadioButton: public Widget, public Gtk::RadioButton {
+    public:
+	RadioButton(GtkX::Container &parent, const String &name="",
+		    const String &label="");
+	RadioButton(Gtk::Container *parent, const String &name="",
+		    const String &label="");
+	~RadioButton(void);
+	Gtk::Widget *internal(void);
+	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
+#include <GtkX/redirect.h>
+    };
 
 }
 

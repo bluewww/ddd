@@ -33,13 +33,13 @@ char logo_rcsid[] =
 #include "logo.h"
 #include "config.h"
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 
 #include "Xpm.h"
 
-#else // NOT IF_MOTIF
+#else
 
-#endif // IF_MOTIF
+#endif
 
 #include "assert.h"
 #include "string-fun.h"
@@ -72,7 +72,7 @@ static const char **ddd_xpm = 0;
 
 #include <iostream>
 #include <string.h>
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 #include <X11/Xlib.h>
 #include <X11/StringDefs.h>
 #include <Xm/Xm.h>
@@ -82,12 +82,12 @@ static const char **ddd_xpm = 0;
 #ifdef XtIsRealized
 #undef XtIsRealized
 #endif
-#else // NOT IF_MOTIF
+#else
 #include <gtkmm/image.h>
-#endif // IF_MOTIF
+#endif
 
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 
 //-----------------------------------------------------------------------------
 // DDD logo
@@ -322,7 +322,7 @@ Pixmap dddsplash(Widget w, const string& color_key,
 }
 
 
-#endif // IF_MOTIF
+#endif
 
 //-----------------------------------------------------------------------
 // Toolbar icons
@@ -505,7 +505,7 @@ static const char **unwatch_xx_xpm     = 0;
 static const char **watch_xx_xpm       = 0;
 #endif // !XpmVersion
 
-#ifndef IF_MOTIF
+#if !defined(IF_MOTIF)
 
 XIMAGE_P DDD_ICON[1];
 XIMAGE_P BREAK_AT_ICON[4];
@@ -535,7 +535,7 @@ XIMAGE_P UNDISPLAY_ICON[4];
 XIMAGE_P UNWATCH_ICON[4];
 XIMAGE_P WATCH_ICON[4];
 
-#endif // IF_MOTIF
+#endif
 
 #if defined(IF_XMMM)
 
@@ -569,7 +569,7 @@ GUI::ImageHandle WATCH_ICON[4] = {"watch", "watch-xx", "watch-arm", "watch-hi"};
 
 #endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 
 static char get_sign(string& g)
 {
@@ -739,15 +739,15 @@ static void install_icon(Widget w,
     (void) win_attr;
 #endif // !defined(XpmVersion)
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     // Install the bitmap version
     XIMAGE_P image = CreateImageFromBitmapData((unsigned char *)xbm_data, 
 					      width, height);
-#else // NOT IF_MOTIF
+#else
     XIMAGE_P image = Gdk::Pixbuf::create_from_xpm_data(xpm_data);
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     if (is_button)
     {
 	XImage *subimage = get_button_subimage(image, name);
@@ -759,21 +759,21 @@ static void install_icon(Widget w,
 	    image = subimage;
 	}
     }
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Subimage - not used
 #endif
-#endif // IF_MOTIF
+#endif
 
     Boolean ok = InstallImage(image, name);
     if (ok)
 	return;
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     std::cerr << "Could not install " << quote(name) << " bitmap\n";
     if (image != 0)
 	XDestroyImage(image);
-#endif // IF_MOTIF
+#endif
 }
 
 static void install_button_icon(Widget w,
@@ -868,7 +868,7 @@ void install_icons(Widget shell,
 
     // Determine attributes
     XWindowAttributes win_attr;
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XGetWindowAttributes(XtDisplay(shell), 
 			 RootWindowOfScreen(XtScreen(shell)),
 			 &win_attr);
@@ -887,11 +887,11 @@ void install_icons(Widget shell,
 	arm_background = background;
     else
 	arm_background = select;
-#else // NOT IF_MOTIF
+#else
     shell->ensure_style();
     ImageColor background = shell->get_style()->get_bg(Gtk::STATE_NORMAL);
     ImageColor arm_background = shell->get_style()->get_bg(Gtk::STATE_PRELIGHT);
-#endif // IF_MOTIF
+#endif
 
 #if defined(IF_XM)
     // DDD icon (always in color)
@@ -1107,7 +1107,7 @@ void set_label(Widget w, const MString& new_label, GUI::ImageHandle *image)
     if (w == 0)
 	return;
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     assert(XtIsSubclass(w, xmLabelWidgetClass));
 
     XmString old_label = 0;
@@ -1178,7 +1178,7 @@ void set_label(Widget w, const MString& new_label, GUI::ImageHandle *image)
 	XtSetValues(w, args, arg);
     }
     XmStringFree(old_label);
-#else // NOT IF_MOTIF
+#else
     Gtk::Bin *bin = dynamic_cast<Gtk::Bin *>(w);
     if (bin) {
 	Gtk::Widget *child = bin->get_child();
@@ -1210,10 +1210,10 @@ void set_label(Widget w, const MString& new_label, GUI::ImageHandle *image)
     else {
 	std::cerr << "ERROR: Set label on something not a Gtk::Bin\n";
     }
-#endif // IF_MOTIF
+#endif
 }
 
-#ifndef IF_MOTIF
+#if !defined(IF_MOTIF)
 MString
 get_label(Widget w)
 {
@@ -1232,4 +1232,30 @@ get_label(Widget w)
     }
     return MString();
 }
-#endif // IF_MOTIF
+#endif
+
+#if !defined(IF_XM)
+
+#if defined(IF_XMMM)
+
+MString
+get_label(GUI::Widget *w)
+{
+    XmString label = 0;
+    XtVaGetValues(w->internal(), XmNlabelString, &label, XtNIL);
+    MString lab(label, true);
+    XmStringFree(label);
+    return lab;
+}
+
+#else
+
+MString
+get_label(GUI::Widget *w)
+{
+    return get_label(w->internal());
+}
+
+#endif
+
+#endif

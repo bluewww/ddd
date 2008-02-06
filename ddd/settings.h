@@ -79,7 +79,7 @@ extern string show_command(const string& cmd, DebuggerType type);
 // User Status Displays
 
 // Popup editor for debugger infos
-extern void dddPopupInfosCB(CB_ARG_LIST_NULL);
+extern void dddPopupInfosCB(CB_ALIST_1(Widget));
 
 // Update debugger infos
 extern void update_infos();

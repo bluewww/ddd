@@ -81,6 +81,9 @@ extern void set_label(Widget w, const MString& new_label,
 #if !defined(IF_MOTIF)
 extern MString get_label(Widget w);
 #endif
+#if !defined(IF_XM)
+extern MString get_label(GUI::Widget *w);
+#endif
 
 // Icon names
 #if defined(IF_XM)

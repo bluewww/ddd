@@ -314,7 +314,11 @@ void gdbExamineCB(CB_ALIST_1(Widget w))
 
 	(void) panel;
 	MMaddCallbacks(examine_menu);
-	MMaddHelpCallback(examine_menu, PTR_FUN(ImmediateHelpCB));
+#if defined(IF_XM)
+	MMaddHelpCallback(examine_menu, ImmediateHelpCB);
+#else
+	MMaddHelpCallback(examine_menu, sigc::ptr_fun(ImmediateHelpCB1));
+#endif
 
 	manage_child(unsigned_char_w,  gdb->type() == GDB);
 	manage_child(binary_w,         gdb->type() == GDB);
@@ -348,11 +352,11 @@ void gdbExamineCB(CB_ALIST_1(Widget w))
 		      ImmediateHelpCB, XtPointer(0));
 #else
     GUI::Button *button;
-    button = dialog->add_button("OK");
+    button = dialog->add_button("ok", "OK");
     button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(PrintExaminedCB), dialog));
-    button = dialog->add_button("Apply");
+    button = dialog->add_button("apply", "Apply");
     button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(DisplayExaminedCB), dialog));
-    button = dialog->add_button("Cancel");
+    button = dialog->add_button("cancel", "Cancel");
     button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), dialog));
 #endif
     }

@@ -191,7 +191,12 @@ void MMadjustPanel(const MMDesc items[], Dimension space = 15);
 void MMaddCallbacks(const MMDesc items[],
 		    XtPointer default_closure = 0,
 		    int depth = -1);
+
+#if defined(IF_XM)
 void MMaddHelpCallback(const MMDesc items[], XtCallbackProc proc, int depth = -1);
+#else
+void MMaddHelpCallback(const MMDesc items[], sigc::slot<void, GUI::Widget *> proc, int depth = -1);
+#endif
 
 // Apply PROC on all ITEMS
 void MMonItems(const MMDesc items[], MMItemProc proc, XtPointer closure = 0,
@@ -269,6 +274,9 @@ extern void dummy_xcallback(GUI::Widget *);
 #define XENTRYL(n,s,t,c,cx,sub,w) { n, t, c, sub, (Widget *)w, 0, 0}
 #define XENTRYI(n,i,t,c,cx,sub,w) { n, t, c, sub, (Widget *)w, 0, 0}
 #define XENTRYLI(n,s,i,t,c,cx,sub,w) { n, t, c, sub, (Widget *)w, 0, 0}
+#define GENTRYL(n,s,t,c,cx,sub,w) { n, t, c, sub, (Widget *)w, 0, 0}
+#define GENTRYI(n,i,t,c,cx,sub,w) { n, t, c, sub, (Widget *)w, 0, 0}
+#define GENTRYLI(n,s,i,t,c,cx,sub,w) { n, t, c, sub, (Widget *)w, 0, 0}
 #elif defined(IF_XMMM)
 #define MENTRYL(n,s,t,c,sub,w) { n, s, NULL, t, c, sub, w, 0, 0, MDUMMY, 0, 0}
 #define MENTRYI(n,i,t,c,sub,w) { n, "", i, t, c, sub, w, 0, 0, MDUMMY, 0, 0}
@@ -276,6 +284,9 @@ extern void dummy_xcallback(GUI::Widget *);
 #define XENTRYL(n,s,t,c,cx,sub,w) { n, s, NULL, t, c, sub, 0, 0, 0, cx, (Xmmm::Widget **)w, 0}
 #define XENTRYI(n,i,t,c,cx,sub,w) { n, "", i, t, c, sub, 0, 0, 0, cx, (Xmmm::Widget **)w, 0}
 #define XENTRYLI(n,s,i,t,c,cx,sub,w) { n, s, i, t, c, sub, 0, 0, 0, cx, (Xmmm::Widget **)w, 0}
+#define GENTRYL(n,s,t,c,cx,sub,w) { n, s, NULL, t, MMNoCB, sub, 0, 0, 0, cx, (Xmmm::Widget **)w, 0}
+#define GENTRYI(n,i,t,c,cx,sub,w) { n, "", i, t, MMNoCB, sub, 0, 0, 0, cx, (Xmmm::Widget **)w, 0}
+#define GENTRYLI(n,s,i,t,c,cx,sub,w) { n, s, i, t, MMNoCB, sub, 0, 0, 0, cx, (Xmmm::Widget **)w, 0}
 #else
 #define MENTRYL(n,s,t,c,sub,w) { n, s, NULL, t, c, sub, (Widget *)w, 0, 0, MDUMMY, 0}
 #define MENTRYI(n,i,t,c,sub,w) { n, "", i, t, c, sub, (Widget *)w, 0, 0, MDUMMY, 0}
@@ -283,6 +294,9 @@ extern void dummy_xcallback(GUI::Widget *);
 #define XENTRYL(n,s,t,c,cx,sub,w) { n, s, NULL, t, MMNoCB, sub, 0, 0, 0, cx, (GUI::Widget **)w, 0, 0}
 #define XENTRYI(n,i,t,c,cx,sub,w) { n, "", i, t, MMNoCB, sub, 0, 0, 0, cx, (GUI::Widget **)w, 0, 0}
 #define XENTRYLI(n,s,i,t,c,cx,sub,w) { n, s, i, t, MMNoCB, sub, 0, 0, 0, cx, (GUI::Widget **)w, 0, 0}
+#define GENTRYL(n,s,t,c,cx,sub,w) { n, s, NULL, t, MMNoCB, sub, 0, 0, 0, cx, (GUI::Widget **)w, 0, 0}
+#define GENTRYI(n,i,t,c,cx,sub,w) { n, "", i, t, MMNoCB, sub, 0, 0, 0, cx, (GUI::Widget **)w, 0, 0}
+#define GENTRYLI(n,s,i,t,c,cx,sub,w) { n, s, i, t, MMNoCB, sub, 0, 0, 0, cx, (GUI::Widget **)w, 0, 0}
 #endif
 
 

@@ -78,6 +78,7 @@ char MakeMenu_rcsid[] =
 #include <GUI/CheckMenuItem.h>
 #include <GUI/CheckButton.h>
 #include <GUI/RadioButton.h>
+#include <GUI/RadioBox.h>
 #include <GUI/Label.h>
 #include <GUI/OptionMenu.h>
 #include <GUI/Menu.h>
@@ -1248,6 +1249,7 @@ void MMadjustPanel(const MMDesc items[], Dimension space)
 }
 
 #if defined(IF_XM)
+
 // Create radio panel from items
 BOX_P MMcreateRadioPanel(CONTAINER_P parent, NAME_T name, MMDesc items[],
 			 ArgList _args, Cardinal _arg
@@ -1271,20 +1273,23 @@ BOX_P MMcreateRadioPanel(CONTAINER_P parent, NAME_T name, MMDesc items[],
     delete[] args;
     return panel;
 }
+
 #else
+
 // Create radio panel from items
 GUI::Container *MMcreateRadioPanel(GUI::Container *parent, cpString name, MMDesc items[])
 {
 #ifdef NAG_ME
 #warning Extra args?
 #endif
-    GUI::Container *panel = new GUI::HBox(*parent, name);
+    GUI::Container *panel = new GUI::RadioBox(*parent, name, GUI::ORIENTATION_HORIZONTAL);
 
     MMaddItems(panel, items);
     panel->show();
 
     return panel;
 }
+
 #endif
 
 #if defined(IF_XM)
@@ -1553,24 +1558,26 @@ static void addCallback(const MMDesc *item, XtPointer default_closure)
 	// FALL THROUGH
     }
 #else
+    case MMSpinBox:
     case MMTextField:
     {
 	if (callback) {
 	    Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(widget);
 	    if (entry)
 		entry->signal_changed().connect(sigc::bind(callback, widget));
-	}
-	break;
-    }
-    case MMSpinBox:
-    {
-	if (callback) {
+#if 0
+	    // A SpinButton is an Entry!
 	    Gtk::SpinButton *spin = dynamic_cast<Gtk::SpinButton *>(widget);
 	    if (spin)
 		spin->signal_value_changed().connect(sigc::bind(callback, widget));
+#endif
+	    Gtk::ComboBox *combo = dynamic_cast<Gtk::ComboBox *>(widget);
+	    if (combo)
+		combo->signal_changed().connect(sigc::bind(callback, widget));
 	}
+	if (type == MMTextField)
+	    break;
 	// FALL THROUGH
-	// A SpinButton is also an Entry, and invokes a callback on activation.
     }
 #endif
 
@@ -1688,18 +1695,25 @@ static void addHelpCallback(const MMDesc *item, XtPointer closure)
 }
 #endif
 
+#if defined(IF_XM)
+
 void MMaddHelpCallback(const MMDesc items[], XtCallbackProc proc, int depth)
 {
-#if defined(IF_MOTIF)
     addHelpCallback_t proc_ = { proc };
     MMonItems(items, addHelpCallback, XtPointer(&proc_), depth);
+}
+
 #else
+
+void MMaddHelpCallback(const MMDesc items[], sigc::slot<void, GUI::Widget *> proc, int depth)
+{
 #ifdef NAG_ME
 #warning No help callbacks yet
 #endif
-#endif
+    std::cerr << "Implement MMaddHelpCallback!\n";
 }
 
+#endif
 
 
 //-----------------------------------------------------------------------
