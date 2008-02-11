@@ -7532,6 +7532,19 @@ void DataDisp::create_shells()
 #endif
 
     // Create menus
+#if defined(IF_XM)
+    graph_popup_w = 
+	MMcreatePopupMenu(graph_edit, "graph_popup", graph_popup);
+    InstallButtonTips(graph_popup_w);
+
+    node_popup_w = 
+	MMcreatePopupMenu(graph_edit, "node_popup", node_popup);
+    InstallButtonTips(node_popup_w);
+
+    shortcut_popup_w = 
+	MMcreatePopupMenu(graph_edit, "shortcut_popup", shortcut_popup1);
+    InstallButtonTips(shortcut_popup_w);
+#else
     graph_popup_w = 
 	MMcreatePopupMenu(graph_edit, "graph_popup", graph_popup);
     InstallButtonTips1(graph_popup_w);
@@ -7543,6 +7556,7 @@ void DataDisp::create_shells()
     shortcut_popup_w = 
 	MMcreatePopupMenu(graph_edit, "shortcut_popup", shortcut_popup1);
     InstallButtonTips1(shortcut_popup_w);
+#endif
 
     disp_graph->callHandlers();
 

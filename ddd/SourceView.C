@@ -179,6 +179,8 @@ char SourceView_rcsid[] =
 #include <GUI/RadioButton.h>
 #include <GUI/Dialog.h>
 #include <GUI/Menu.h>
+#include <GUI/ComboBox.h>
+#include <GUI/ScrolledText.h>
 #endif
 
 // System stuff
@@ -4247,7 +4249,7 @@ void SourceView::create_text(CONTAINER_P parent, const char *base, bool editable
     const string text_name = string(base) + "_text_w";
     text = verify(XmCreateScrolledText(form, XMST(text_name.chars()), args, arg));
 #else
-    text = new GtkScrolledText();
+    text = new GUI::ScrolledText();
     text->set_editable(false);
     form->add(*text);
 #endif
@@ -4354,7 +4356,7 @@ void SourceView::show_execution_position (const string& position_,
 				    XmHIGHLIGHT_NORMAL);
 #else
 		source_text_w->set_highlight(last_start_highlight, last_end_highlight,
-					     XmHIGHLIGHT_NORMAL);
+					     GUI::HIGHLIGHT_NORMAL);
 #endif
 	    }
 
@@ -4473,7 +4475,7 @@ void SourceView::_show_execution_position(const string& file, int line,
 				XmHIGHLIGHT_NORMAL);
 #else
 	    source_text_w->set_highlight(last_start_highlight, last_end_highlight,
-					 XmHIGHLIGHT_NORMAL);
+					 GUI::HIGHLIGHT_NORMAL);
 #endif
 	}
 
@@ -4483,7 +4485,7 @@ void SourceView::_show_execution_position(const string& file, int line,
 			    XmHIGHLIGHT_SELECTED);
 #else
 	source_text_w->set_highlight(pos, pos_line_end,
-				     XmHIGHLIGHT_SELECTED);
+				     GUI::HIGHLIGHT_SELECTED);
 #endif
     }
 
@@ -4882,7 +4884,11 @@ void SourceView::lookup(string s, bool silent)
 	if (!last_execution_pc.empty())
 	{
 	    // Show last PC
+#if defined(IF_XM)
 	    show_pc(last_execution_pc, XmHIGHLIGHT_SELECTED);
+#else
+	    show_pc(last_execution_pc, GUI::HIGHLIGHT_SELECTED);
+#endif
 	}
 	else
 	{
@@ -5181,9 +5187,15 @@ void SourceView::goto_entry(const string& file_name, int line,
     if (!address.empty())
     {
 	// Lookup address
+#if defined(IF_XM)
 	show_pc(address, 
 		(exec_pos || address == last_execution_pc) ? 
 		XmHIGHLIGHT_SELECTED : XmHIGHLIGHT_NORMAL);
+#else
+	show_pc(address, 
+		(exec_pos || address == last_execution_pc) ? 
+		GUI::HIGHLIGHT_SELECTED : GUI::HIGHLIGHT_NORMAL);
+#endif
     }
 }
 
@@ -5873,7 +5885,11 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	     && (!in_text || right_of_text))
     {
 	// Create popup menu for selected line
+#if defined(IF_XM)
 	static Widget line_popup_w = 0;
+#else
+	static GUI::PopupMenu *line_popup_w = 0;
+#endif
 	if (line_popup_w == 0)
 	{
 	    line_popup_w = MMcreatePopupMenu (w, "line_popup", line_popup);
@@ -6105,22 +6121,34 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	mi->add_label(label.xmstring());
 #endif
 
+#if defined(IF_XM)
 	XmMenuPosition(bp_popup_w, event);
 	XtManageChild(bp_popup_w);
+#else
+	bp_popup_w->menu_position(event);
+	bp_popup_w->show();
+#endif
     }
     else if (pos_found 
 	     && (line_nr > 0 || !address.empty()) 
 	     && (!in_text || right_of_text))
     {
 	// Create popup menu for selected line
+#if defined(IF_XM)
 	static Widget line_popup_w = 0;
+#else
+	static GUI::PopupMenu *line_popup_w = 0;
+#endif
 	if (line_popup_w == 0)
 	{
 	    line_popup_w = MMcreatePopupMenu (w, "line_popup", line_popup);
 	    MMaddCallbacks(line_popup, XtPointer(&address));
-#if defined(IF_MOTIF)
-	    MMaddHelpCallback(line_popup, PTR_FUN(ImmediateHelpCB));
+#if defined(IF_XM)
+	    MMaddHelpCallback(line_popup, ImmediateHelpCB);
 	    InstallButtonTips(line_popup_w);
+#else
+	    MMaddHelpCallback(line_popup, sigc::ptr_fun(ImmediateHelpCB1));
+	    InstallButtonTips1(line_popup_w);
 #endif
 
 	    set_sensitive(line_popup[LineItms::SetTempBP].widget, 
@@ -6134,8 +6162,13 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	    address = current_source_name() + ":" + itostring(line_nr);
 	else
 	    address = string('*') + address;
+#if defined(IF_XM)
 	XmMenuPosition (line_popup_w, event);
 	XtManageChild (line_popup_w);
+#else
+	line_popup_w->menu_position(event);
+	line_popup_w->show();
+#endif
     }
     else
     {
@@ -6172,20 +6205,28 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 #endif
 #endif
 
-	MENU_P text_popup_w = 
+#if defined(IF_XM)
+	Widget text_popup_w;
+#else
+	GUI::PopupMenu *text_popup_w;
+#endif
+	text_popup_w = 
 	    MMcreatePopupMenu(text_w, "text_popup", text_popup);
 	MMaddCallbacks(text_popup, XtPointer(&callback_word));
-#if defined(IF_MOTIF)
-	MMaddHelpCallback(text_popup, PTR_FUN(ImmediateHelpCB));
+#if defined(IF_XM)
+	MMaddHelpCallback(text_popup, ImmediateHelpCB);
 	InstallButtonTips(text_popup_w);
+#else
+	MMaddHelpCallback(text_popup, sigc::ptr_fun(ImmediateHelpCB1));
+	InstallButtonTips1(text_popup_w);
 #endif
 
 	// The popup menu is destroyed immediately after having popped down.
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	Widget shell = XtParent(text_popup_w);
 	XtAddCallback(shell, XtNpopdownCallback, DestroyThisCB, shell);
 #else
-	text_popup_w->signal_unmap().connect(sigc::bind(PTR_FUN(DestroyThisCB), text_popup_w));
+	text_popup_w->signal_unmap().connect(sigc::bind(sigc::ptr_fun(DestroyThisCB1), text_popup_w));
 #endif
 
 	bool has_arg = (callback_word.length() > 0);
@@ -6216,10 +6257,11 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	    XtUnmanageChild(text_popup[TextItms::WatchRef].widget);
 	}
 
+#if defined(IF_XM)
 	XmMenuPosition (text_popup_w, event);
-#if defined(IF_MOTIF)
 	XtManageChild (text_popup_w);
 #else
+	text_popup_w->menu_position(event);
 	text_popup_w->popup(0, 0);
 #endif
     }
@@ -6597,7 +6639,7 @@ void SourceView::NewWatchpointCB(CB_ALIST_1(Widget w))
 	Delay::register_shell1(dialog);
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	if (lesstif_version <= 79)
 	    XtUnmanageChild(XmSelectionBoxGetChild(dialog,
 						   XmDIALOG_APPLY_BUTTON));
@@ -6653,24 +6695,24 @@ void SourceView::NewWatchpointCB(CB_ALIST_1(Widget w))
 #endif
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	arg = 0;
 	Widget text = CreateComboBox(box, "text", args, arg);
 #else
-	COMBOBOXENTRYTEXT_P text = new Gtk::ComboBoxEntryText();
-	box->pack_start(*text, Gtk::PACK_SHRINK);
+	GUI::ComboBoxEntryText *text = new GUI::ComboBoxEntryText(*box, "text");
 #endif
-	tie_combo_box_to_history(text, watch_history_filter);
 
 #if defined(IF_XM)
+	tie_combo_box_to_history(text, watch_history_filter);
 	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, 
 		      XtPointer(0));
 	XtAddCallback(dialog, XmNokCallback, NewWatchpointDCB, 
 		      XtPointer(text));
 #else
-	BUTTON_P button;
+	tie_combo_box_to_history(text->internal(), watch_history_filter);
+	GUI::Button *button;
 	button = dialog->add_button("ok", "OK");
-	button->signal_clicked().connect(sigc::bind(PTR_FUN(NewWatchpointDCB), button, text));
+	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(NewWatchpointDCB), button, text));
 #endif
 
     }
@@ -6875,7 +6917,11 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
     if (info->nrs.size() == 0)
     {
 	// No breakpoint left -- destroy dialog shell
+#if defined(IF_XM)
 	XtUnmanageChild(info->dialog);
+#else
+	info->dialog->hide();
+#endif
 	return;
     }
 
@@ -6915,7 +6961,7 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
     set_label(info->title, label);
 
     MString title = string(DDD_NAME) + ": Properties: " + label;
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     XtVaSetValues(info->dialog, XmNdialogTitle,
 		  title.xmstring(), XtPointer(0));
 #else
@@ -7178,16 +7224,17 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, Widget /* origin */)
     GUI::Button *button = info->dialog->add_button("apply", "Apply");
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     // Remove old prompt
     Widget text = XmSelectionBoxGetChild(info->dialog, XmDIALOG_TEXT);
     XtUnmanageChild(text);
     Widget old_label = 
 	XmSelectionBoxGetChild(info->dialog, XmDIALOG_SELECTION_LABEL);
     XtUnmanageChild(old_label);
-#endif
-
     Delay::register_shell(info->dialog);
+#else
+    Delay::register_shell1(info->dialog);
+#endif
 
     MMDesc commands_menu[] =
     {
@@ -7222,7 +7269,7 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, Widget /* origin */)
 
     if (app_data.flat_dialog_buttons)
     {
-	for (MMDesc *item = enabled_menu; item != 0 && item->name != 0; item++)
+	for (MMDesc *item = enabled_menu; item != 0 && item->name; item++)
 	{
 	    if ((item->type & MMTypeMask) == MMPush)
 		item->type = (MMFlatPush | (item->type & ~MMTypeMask));
@@ -7260,7 +7307,7 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, Widget /* origin */)
     GUI::Widget *panel = MMcreatePanel(form, "panel", panel_menu);
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     XtVaSetValues(panel,
 		  XmNmarginWidth,    0,
 		  XmNmarginHeight,   0,
@@ -7285,7 +7332,7 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, Widget /* origin */)
     XtUnmanageChild(XtParent(info->editor));
     XtManageChild(info->editor);
 #else
-    info->editor = new GtkScrolledText();
+    info->editor = new GUI::ScrolledText();
     form->pack_start(*info->editor, Gtk::PACK_SHRINK);
     info->editor->show();
 #endif
@@ -9781,11 +9828,11 @@ Widget SourceView::map_stop_at(Widget glyph, XmTextPosition pos,
 
 // Map stop sign GLYPH at position POS.  Get widget from STOPS[COUNT];
 // store location in POSITIONS.  Return mapped widget (0 if none)
-GtkGlyphMark *SourceView::map_stop_at(GtkScrolledText *w, XmTextPosition pos,
-				      Glib::RefPtr<Gdk::Pixbuf> stop,
-				      TextPositionArray& positions)
+GUI::GlyphMark *SourceView::map_stop_at(GUI::ScrolledText *w, XmTextPosition pos,
+					Glib::RefPtr<Gdk::Pixbuf> stop,
+					TextPositionArray& positions)
 {
-    GtkMarkedTextView &view = w->view();
+    GUI::MarkedTextView &view = w->view();
 
     int x, y;
     view.pos_to_xy(pos, x, y);
@@ -9793,7 +9840,7 @@ GtkGlyphMark *SourceView::map_stop_at(GtkScrolledText *w, XmTextPosition pos,
 	if (pos == positions[i])
 	    x += multiple_stop_x_offset;
 
-    GtkGlyphMark *glyph = view.map_glyph(stop, x + stop_x_offset, y);
+    GUI::GlyphMark *glyph = view.map_glyph(stop, x + stop_x_offset, y);
     positions += pos;
     return glyph;
 }
@@ -9872,9 +9919,9 @@ Widget SourceView::map_arrow_at(Widget glyph, XmTextPosition pos)
 #else
 
 // Map arrow in GLYPH at POS.  Return mapped arrow widget (0 if none)
-GtkGlyphMark *SourceView::map_arrow_at(GtkScrolledText *w, XmTextPosition pos)
+GUI::GlyphMark *SourceView::map_arrow_at(GUI::ScrolledText *w, XmTextPosition pos)
 {
-    GtkMarkedTextView &view = w->view();
+    GUI::MarkedTextView &view = w->view();
 
     view.unmap_glyph(signal_arrow);
     view.unmap_glyph(plain_arrow);
@@ -10288,7 +10335,7 @@ void SourceView::update_glyphs_now()
 	{
 	    TextPositionArray positions;
 	    
-	    GtkMarkedTextView *view;
+	    GUI::MarkedTextView *view;
 	    if (k == 0)
 		view = &source_text_w->view();
 	    if (k == 1)
@@ -11004,7 +11051,7 @@ void SourceView::set_code(const string& code,
     XmTextSetHighlight (code_text_w, 0, code.length(), XmHIGHLIGHT_NORMAL);
 #else
     code_text_w->set_text(XMST(code.chars()));
-    code_text_w->set_highlight(0, code.length(), XmHIGHLIGHT_NORMAL);
+    code_text_w->set_highlight(0, code.length(), GUI::HIGHLIGHT_NORMAL);
 #endif
     
     current_code       = code;
@@ -11210,12 +11257,22 @@ bool SourceView::function_is_larger_than(string pc, int max_size)
 // If MODE is given, highlight PC line.
 // STOPPED indicates that the program just stopped.
 // SIGNALED indicates that the program just received a signal.
+#if defined(IF_XM)
 void SourceView::show_pc(const string& pc, XmHighlightMode mode,
 			 bool stopped, bool signaled)
+#else
+void SourceView::show_pc(const string& pc, GUI::HighlightMode mode,
+			 bool stopped, bool signaled)
+#endif
 {
     last_shown_pc = pc;
+#if defined(IF_XM)
     if (mode == XmHIGHLIGHT_SELECTED)
 	last_execution_pc = pc;
+#else
+    if (mode == GUI::HIGHLIGHT_SELECTED)
+	last_execution_pc = pc;
+#endif
 
     if (stopped)
     {
@@ -11223,10 +11280,17 @@ void SourceView::show_pc(const string& pc, XmHighlightMode mode,
 	signal_received = signaled;
     }
 
+#if defined(IF_XM)
     if (mode == XmHIGHLIGHT_SELECTED)
 	undo_buffer.add_address(pc, stopped);
     else
 	undo_buffer.remove_address();
+#else
+    if (mode == GUI::HIGHLIGHT_SELECTED)
+	undo_buffer.add_address(pc, stopped);
+    else
+	undo_buffer.remove_address();
+#endif
     undo_buffer.add_state();
 
     if (!disassemble)
@@ -11302,14 +11366,18 @@ void SourceView::show_pc(const string& pc, XmHighlightMode mode,
 #else
 	code_text_w->set_highlight(last_start_highlight_pc, 
 				   last_end_highlight_pc,
-				   XmHIGHLIGHT_NORMAL);
+				   GUI::HIGHLIGHT_NORMAL);
 #endif
 	last_start_highlight_pc = 0;
 	last_end_highlight_pc   = 0;
     }
 
     // Mark current line
+#if defined(IF_XM)
     if (mode == XmHIGHLIGHT_SELECTED)
+#else
+    if (mode == GUI::HIGHLIGHT_SELECTED)
+#endif
     {
 	if (!display_glyphs)
 	{
@@ -11350,7 +11418,7 @@ void SourceView::show_pc(const string& pc, XmHighlightMode mode,
 				    XmHIGHLIGHT_SELECTED);
 #else
 		code_text_w->set_highlight(pos, pos_line_end,
-					   XmHIGHLIGHT_SELECTED);
+					   GUI::HIGHLIGHT_SELECTED);
 #endif
 
 		last_start_highlight_pc = pos;
@@ -11361,8 +11429,13 @@ void SourceView::show_pc(const string& pc, XmHighlightMode mode,
 	}
     }
 
+#if defined(IF_XM)
     if (mode == XmHIGHLIGHT_SELECTED)
 	update_glyphs(code_text_w);
+#else
+    if (mode == GUI::HIGHLIGHT_SELECTED)
+	update_glyphs(code_text_w);
+#endif
 }
 
 void SourceView::set_disassemble(bool set)
@@ -11379,12 +11452,21 @@ void SourceView::set_disassemble(bool set)
 	{
 	    manage_paned_child(code_form_w);
 
+#if defined(IF_XM)
 	    if (!last_execution_pc.empty())
 		show_pc(last_execution_pc, XmHIGHLIGHT_SELECTED);
 	    else if (!last_shown_pc.empty())
 		show_pc(last_shown_pc);
 	    else
 		lookup(line_of_cursor());
+#else
+	    if (!last_execution_pc.empty())
+		show_pc(last_execution_pc, GUI::HIGHLIGHT_SELECTED);
+	    else if (!last_shown_pc.empty())
+		show_pc(last_shown_pc);
+	    else
+		lookup(line_of_cursor());
+#endif
 	}
     }
 }

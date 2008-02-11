@@ -59,13 +59,13 @@ static bool DestroyCB(Widget w)
 
     if (w != 0)
     {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	XtRemoveCallback(w, XmNdestroyCallback, CancelTimer, XtPointer(*id));
 	XtDestroyWidget(w);
-#else // NOT IF_MOTIF
+#else
 	delete w;
 	return false;
-#endif // IF_MOTIF
+#endif
     }
 }
 
@@ -130,27 +130,47 @@ void DestroyShellCB(CB_ARG_LIST_1(widget))
     while (w != 0 && !XtIsShell(XtParent(w)))
 	w = XtParent(w);
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     DestroyThisCB(widget, XtPointer(w), XtPointer(0));
-#else // NOT IF_MOTIF
+#else
+#ifdef NAG_ME
+#warning Implement DestroyThisCB.
+#endif
     DestroyThisCB(w);
-#endif // IF_MOTIF
+#endif
 }
 
 // Destroy specific widget
-void DestroyThisCB(
-#ifdef IF_MOTIF
-    Widget, XtPointer client_data, XtPointer
-#else // NOT IF_MOTIF
-    Widget w
-#endif // IF_MOTIF
-    )
+
+#if defined(IF_MOTIF)
+
+void DestroyThisCB(Widget, XtPointer client_data, XtPointer)
 {
-#ifdef IF_MOTIF
     Widget w = Widget(client_data);
-#endif // IF_MOTIF
     DestroyWhenIdle(w);
 }
+
+#else
+
+void DestroyThisCB(Gtk::Widget *w)
+{
+    DestroyWhenIdle(w);
+}
+
+#endif
+
+#if !defined(IF_XM)
+
+extern void DestroyThisCB1(GUI::Widget *w)
+{
+#if defined(IF_XMMM)
+    DestroyThisCB(Widget(0), w->internal(), XtPointer(0));
+#else
+    DestroyThisCB(w->internal());
+#endif
+}
+
+#endif
 
 // Unmanage the ancestor shell
 void UnmanageShellCB(CB_ARG_LIST_1(widget))

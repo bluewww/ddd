@@ -3887,10 +3887,11 @@ static Widget edit_w;			// `Edit>>' button
 static GUI::WidgetPtr<GUI::Button> end_w;	// `End' button
 static GUI::WidgetPtr<GUI::Button> edit_w;	// `Edit>>' button
 #endif
-static SCROLLEDTEXT_P editor_w;		// Command definition editor
 #if defined(IF_XM)
+static Widget editor_w;		// Command definition editor
 static Widget apply_w;			// `Apply' button
 #else
+static GUI::ScrolledText *editor_w;		// Command definition editor
 static GUI::WidgetPtr<GUI::Button> apply_w;	// `Apply' button
 #endif
 
@@ -4076,7 +4077,11 @@ void UpdateDefinePanelCB(CB_ARG_LIST_1(w))
 
     set_sensitive(name_w, !gdb->recording());
     set_sensitive(XtParent(name_w), !gdb->recording());
+#if defined(IF_XM)
     set_sensitive(editor_w, !gdb->recording());
+#else
+    editor_w->set_sensitive(!gdb->recording());
+#endif
 
     set_arg();
 
@@ -4159,10 +4164,8 @@ static void EndCommandDefinitionCB(GUI::Widget *w)
 #endif
 
 #if defined(IF_XM)
+
 static void DoneEditCommandDefinitionCB(Widget w, XtPointer, XtPointer)
-#else
-static void DoneEditCommandDefinitionCB(GUI::Widget *w)
-#endif
 {
     if (!XtIsManaged(XtParent(editor_w)))
 	return;
@@ -4176,13 +4179,9 @@ static void DoneEditCommandDefinitionCB(GUI::Widget *w)
     MString label = "Edit " + MString(">>", CHARSET_SMALL);
     set_label(edit_w, label);
 
-#if defined(IF_MOTIF)
     String _commands = XmTextGetString(editor_w);
     string cmd = _commands;
     XtFree(_commands);
-#else
-    string cmd(editor_w->get_text().c_str());
-#endif
 
     if (!cmd.contains('\n', -1))
 	cmd += '\n';
@@ -4212,6 +4211,56 @@ static void DoneEditCommandDefinitionCB(GUI::Widget *w)
     }
 }
 
+#else
+
+static void DoneEditCommandDefinitionCB(GUI::Widget *w)
+{
+    if (!editor_w->is_mapped())
+	return;
+
+    string name = current_name();
+
+    editor_w->hide();
+    set_sensitive(name_w, true);
+    set_sensitive(XtParent(name_w), true);
+
+    MString label = "Edit " + MString(">>", CHARSET_SMALL);
+    set_label(edit_w, label);
+
+    string cmd(editor_w->get_text().c_str());
+
+    if (!cmd.contains('\n', -1))
+	cmd += '\n';
+
+    if ((!cmd.empty() && !defs.has(name)) || cmd != defs[name])
+    {
+	StringArray commands;
+	while (!cmd.empty())
+	{
+	    string c = cmd.before('\n');
+	    if (!c.empty())
+		commands += c;
+	    cmd = cmd.after('\n');
+	}
+
+	// This might require confirmation.  Don't change anything.
+	set_sensitive(edit_w,   false);
+	set_sensitive(record_w, false);
+	set_sensitive(end_w,    false);
+
+	gdb_command("define " + name, w);
+	for (int j = 0; j < commands.size(); j++)
+	    gdb_command(commands[j], w);
+	gdb_command("end", w);
+
+	update_define_later(name);
+    }
+}
+
+#endif
+
+#if defined(IF_XM)
+
 static void EditCommandDefinitionCB(void)
 {
     if (XtIsManaged(XtParent(editor_w)))
@@ -4227,16 +4276,38 @@ static void EditCommandDefinitionCB(void)
     if (defs.has(name))
 	def = defs[name];
 
-#if defined(IF_MOTIF)
     XmTextSetString(editor_w, XMST(def.chars()));
-#else
-    editor_w->set_text(XMST(def.chars()));
-#endif
 
     XtManageChild(XtParent(editor_w));
     MString label = "Edit " + MString("<<", CHARSET_SMALL);
     set_label(edit_w, label);
 }
+
+#else
+
+static void EditCommandDefinitionCB(void)
+{
+    if (editor_w->is_mapped())
+	return;
+
+    string name = current_name();
+
+    // update_define(name);
+    set_sensitive(name_w, false);
+    set_sensitive(XtParent(name_w), false);
+
+    string def = "";
+    if (defs.has(name))
+	def = defs[name];
+
+    editor_w->set_text(XMST(def.chars()));
+
+    editor_w->show();
+    MString label = "Edit " + MString("<<", CHARSET_SMALL);
+    set_label(edit_w, label);
+}
+
+#endif
 
 #if defined(IF_XM)
 
@@ -4245,14 +4316,14 @@ static void ToggleEditCommandDefinitionCB(Widget w, XtPointer, XtPointer)
     if (XtIsManaged(XtParent(editor_w)))
 	DoneEditCommandDefinitionCB(CB_ARGS_1(w));
     else
-	EditCommandDefinitionCB(CB_ARGS_NULL);
+	EditCommandDefinitionCB();
 }
 
 #else
 
 static void ToggleEditCommandDefinitionCB(GUI::Widget *w)
 {
-    if (XtIsManaged(XtParent(editor_w)))
+    if (editor_w->is_mapped())
 	DoneEditCommandDefinitionCB(w);
     else
 	EditCommandDefinitionCB();
@@ -4472,7 +4543,7 @@ void dddDefineCommandCB(CB_ARG_LIST_1(w))
 #elif defined(IF_XMMM)
 	std::cerr << "Define command: need scrolled text here!\n";
 #else
-        editor_w = new GtkScrolledText();
+        editor_w = new GUI::ScrolledText();
 	form->pack_start(*editor_w, Gtk::PACK_SHRINK);
 	editor_w->show();
 #endif

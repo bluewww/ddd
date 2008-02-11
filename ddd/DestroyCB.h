@@ -52,11 +52,14 @@ extern void DestroyWhenIdle1(GUI::Widget *widget);
 extern void DestroyShellCB(CB_ARG_LIST_1());
 
 // Destroy specific widget
-#ifdef IF_MOTIF
-extern void DestroyThisCB(Widget, XtPointer client_data, XtPointer);
-#else // NOT IF_MOTIF
-extern void DestroyThisCB(Widget);
-#endif // IF_MOTIF
+#if defined(IF_MOTIF)
+extern void DestroyThisCB(Widget, XtPointer, XtPointer);
+#else
+extern void DestroyThisCB(Gtk::Widget *);
+#endif
+#if !defined(IF_XM)
+extern void DestroyThisCB1(GUI::Widget *);
+#endif
 
 // Unmanage the surrounding shell
 extern void UnmanageShellCB(CB_ARG_LIST_1());

@@ -50,11 +50,11 @@ char complete_rcsid[] =
 
 #include <ctype.h>
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 #include <Xm/Xm.h>
 #include <Xm/Text.h>
 #include <Xm/TextF.h>
-#endif // IF_MOTIF
+#endif
 
 #if WITH_READLINE
 extern "C" {
@@ -107,21 +107,21 @@ static void set_completion(const CompletionInfo& info, const string& completion)
     {
 	private_gdb_output = true;
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	XmTextReplace(gdb_w, promptPosition,
 		      XmTextGetLastPosition(gdb_w), 
 		      XMST(completion.chars()));
-#else // NOT IF_MOTIF
+#else
 	gdb_w->replace(promptPosition,
 		       gdb_w->get_last_position(),
 		       XMST(completion.chars()));
-#endif // IF_MOTIF
+#endif
 
 	private_gdb_output = false;
     }
     else
     {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	if (XmIsTextField(info.widget))
 	{
 	    XmTextFieldSetString(info.widget, XMST(completion.chars()));
@@ -130,7 +130,7 @@ static void set_completion(const CompletionInfo& info, const string& completion)
 	{
 	    XmTextSetString(info.widget, XMST(completion.chars()));
 	}
-#else // NOT IF_MOTIF
+#else
 	Gtk::Entry *entry;
 	if (entry = dynamic_cast<Gtk::Entry *>(info.widget))
 	{
@@ -139,7 +139,7 @@ static void set_completion(const CompletionInfo& info, const string& completion)
 	else {
 	    std::cerr << "WIDGET TYPE NOT RECOGNIZED\n";
 	}
-#endif // IF_MOTIF
+#endif
     }
 }
 
@@ -163,7 +163,7 @@ static string complete_single_completion(string completion)
 // All completions are done
 static void completion_done(const CompletionInfo& info)
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     if (XmIsTextField(info.widget))
     {
 	XmTextPosition last_pos = 
@@ -180,9 +180,9 @@ static void completion_done(const CompletionInfo& info)
 	XmTextShowPosition(info.widget, last_pos);
 	XmTextSetEditable(info.widget, True);
     }
-#else // NOT IF_MOTIF
+#else
     std::cerr << "Completion done!!!\n";
-#endif // IF_MOTIF
+#endif
 
     XmTextSetEditable(gdb_w, True);
 }
@@ -313,19 +313,19 @@ static void complete(Widget w, XEvent *e, const string& input, string cmd)
 	    info.cmd = info.input;
     }
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     if (XmIsTextField(w))
 	XmTextFieldSetEditable(w, False);
     else if (XmIsText(w))
 	XmTextSetEditable(w, False);
-#else // NOT IF_MOTIF
-    ENTRY_P entry = dynamic_cast<Gtk::Entry *>(w);
+#else
+    Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(w);
     if (entry)
 	entry->set_editable(false);
-    SCROLLEDTEXT_P stp = dynamic_cast<GtkScrolledText *>(w);
+    GUI::ScrolledText *stp = dynamic_cast<GUI::ScrolledText *>(w);
     if (stp)
 	stp->set_editable(false);
-#endif // IF_MOTIF
+#endif
     XmTextSetEditable(gdb_w, False);
     
     gdb_command(complete_cmd, gdb_w, complete_reply, (void *)&info);
@@ -355,13 +355,13 @@ static void complete_reply(const string& complete_answer, void *qu_data)
     if (completions_size == 0 || completions[0].empty())
     {
 	// No completion (sigh)
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	XtCallActionProc(gdb_w, "beep", info.event, 0, 0);
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning NO ACTIONS
 #endif
-#endif // IF_MOTIF
+#endif
     }
     else if (completions[0].index("Undefined command:") == 0)
     {
@@ -415,12 +415,12 @@ static void complete_reply(const string& complete_answer, void *qu_data)
 		gdb_out(insertion);
 		gdb_out(gdb->prompt());
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 		XmTextSetInsertionPosition(gdb_w, 
 					   XmTextGetLastPosition(gdb_w));
-#else // NOT IF_MOTIF
+#else
 		gdb_w->set_insertion_position(gdb_w->get_last_position());
-#endif // IF_MOTIF
+#endif
 	    }
 	}
 	else
@@ -438,22 +438,22 @@ static void complete_reply(const string& complete_answer, void *qu_data)
 static void tabAct(Widget w, XEvent *e, String* args, Cardinal* num_args)
 
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     if (XmIsText(w))
 	XtCallActionProc(w, "process-tab", e, args, *num_args);
     else if (XmIsPrimitive(w))
 	XtCallActionProc(w, "PrimitiveNextTabGroup", e, args, *num_args);
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning NO ACTIONS!!!
 #endif
-#endif // IF_MOTIF
+#endif
 }
 
 // Complete current GDB command
 void complete_commandAct(Widget w, XEvent *e, String* args, Cardinal* num_args)
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     if ((gdb->type() != GDB && gdb->type() != PERL)
 	|| w != gdb_w
 	|| !can_do_gdb_command()
@@ -490,11 +490,11 @@ void complete_commandAct(Widget w, XEvent *e, String* args, Cardinal* num_args)
     }
 
     complete(w, e, input, input);
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning NO ACTIONS!!!
 #endif
-#endif // IF_MOTIF
+#endif
 }
 
 
@@ -520,19 +520,19 @@ static void _complete_argAct(Widget w,
     strip_space(base);
 
     String _input = 0;
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     if (XmIsTextField(w))
 	_input = XmTextFieldGetString(w);
     else if (XmIsText(w))
 	_input = XmTextGetString(w);
-#else // NOT IF_MOTIF
-    SCROLLEDTEXT_P stp = dynamic_cast<GtkScrolledText *>(w);
+#else
+    GUI::ScrolledText *stp = dynamic_cast<GUI::ScrolledText *>(w);
     if (stp)
 	_input = strdup(stp->get_text().c_str());
-    ENTRY_P entry = dynamic_cast<Gtk::Entry *>(w);
+    Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(w);
     if (entry)
 	_input = strdup(entry->get_text().c_str());
-#endif // IF_MOTIF
+#endif
 
     if (_input == 0)
 	return;

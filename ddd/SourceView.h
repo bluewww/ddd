@@ -47,16 +47,16 @@
 #ifndef _DDD_SourceView_h
 #define _DDD_SourceView_h
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 
 // Motif includes
 #include <Xm/Xm.h>
 
-#else // NOT IF_MOTIF
+#else
 
 #include <gdkmm/pixbuf.h>
 
-#endif // IF_MOTIF
+#endif
 
 #if !defined(IF_XM)
 #include <GUI/WidgetPtr.h>
@@ -64,6 +64,7 @@
 #include <GUI/RadioButton.h>
 #include <GUI/Button.h>
 #include <GUI/ListView.h>
+#include <GUI/ScrolledText.h>
 #endif
 
 #include "gtk_wrapper.h"
@@ -96,11 +97,11 @@ class SourceView {
     //-----------------------------------------------------------------------
     // Callbacks
     //-----------------------------------------------------------------------
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     static void set_source_argCB         (Widget, XtPointer, XtPointer);
-#else // NOT IF_MOTIF
+#else
     static void set_source_argCB         (CB_ALIST_12(SCROLLEDTEXT_P text_w, XtP(bool) client_data));
-#endif // IF_MOTIF
+#endif
 
     static void line_popup_setCB         (CB_ALIST_12(Widget, XtP(const string *)));
     static void line_popup_set_tempCB    (CB_ALIST_12(Widget, XtP(const string *)));
@@ -135,13 +136,13 @@ class SourceView {
 
     static void EditBreakpointPropertiesCB (CB_ALIST_2(XtP(int *)));
     static void ApplyBreakpointPropertiesCB(CB_ALIST_12(Widget, XtP(BreakpointPropertiesInfo *)));
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     static void SetBreakpointIgnoreCountCB (Widget, XtPointer, XtPointer);
     static void SetBreakpointConditionCB   (Widget, XtPointer, XtPointer);
-#else // NOT IF_MOTIF
+#else
     static void SetBreakpointIgnoreCountCB (Widget, BreakpointPropertiesInfo *);
     static void SetBreakpointConditionCB   (COMBOBOXENTRYTEXT_P, BreakpointPropertiesInfo *);
-#endif // IF_MOTIF
+#endif
     static void EnableBreakpointsCB        (CB_ALIST_12(Widget, XtP(BreakpointPropertiesInfo *)));
     static void DisableBreakpointsCB       (CB_ALIST_2(XtP(BreakpointPropertiesInfo *)));
     static void MakeBreakpointsTempCB      (CB_ALIST_2(XtP(BreakpointPropertiesInfo *)));
@@ -152,11 +153,11 @@ class SourceView {
     static void EditBreakpointCommandsCB   (CB_ALIST_12(Widget,
 							XtP(BreakpointPropertiesInfo *)));
     static TIMEOUT_RETURN_TYPE SetBreakpointIgnoreCountNowCB(TM_ALIST_1(XtP(BreakpointPropertiesInfo *)));
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     static void DeleteInfoCB               (Widget, XtPointer, XtPointer);
-#else // NOT IF_MOTIF
+#else
     static void *DeleteInfoCB              (void *);
-#endif // IF_MOTIF
+#endif
     static void RefreshBreakpointsHP       (Agent *, void *, void *);
     static void RecordingHP                (Agent *, void *, void *);
 
@@ -186,12 +187,12 @@ class SourceView {
     static void SelectThreadCB   (CB_ALIST_1(Widget));
     static void ThreadCommandCB  (CB_ALIST_12(Widget, XtP(const char *)));
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     static void SetWatchModeCB(Widget, XtPointer, XtPointer);
     static void ActivateGlyphCB(Widget, XtPointer, XtPointer);
-#else // NOT IF_MOTIF
+#else
     static void SetWatchModeCB(int);
-#endif // IF_MOTIF
+#endif
 
     // Set shell title
     static void update_title();
@@ -284,13 +285,13 @@ class SourceView {
     static void srcpopupAct       (Widget, XEvent*, String*, Cardinal*);
     static void startSelectWordAct(SCROLLEDTEXT_P, XEvent*, String*, Cardinal*);
     static void endSelectWordAct  (SCROLLEDTEXT_P, XEvent*, String*, Cardinal*);
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     static void updateGlyphsAct   (Widget, XEvent*, String*, Cardinal*);
     static void dragGlyphAct      (Widget, XEvent*, String*, Cardinal*);
     static void followGlyphAct    (Widget, XEvent*, String*, Cardinal*);
     static void dropGlyphAct      (Widget, XEvent*, String*, Cardinal*);
     static void deleteGlyphAct    (Widget, XEvent*, String*, Cardinal*);
-#endif // IF_MOTIF
+#endif
     static void doubleClickAct    (Widget, XEvent*, String*, Cardinal*);
     static void setArgAct         (Widget, XEvent*, String*, Cardinal*);
 
@@ -543,13 +544,13 @@ class SourceView {
     //-----------------------------------------------------------------------
 
     // Create a pixmap from BITS suitable for the widget W
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     static Pixmap pixmap(Widget w, unsigned char *bits, int width, int height);
-#else // NOT IF_MOTIF
+#else
     static Glib::RefPtr<Gdk::Pixbuf> pixmap(unsigned char *bits, int width, int height);
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     // Create glyph in FORM_W named NAME from given BITS
     static Widget create_glyph(CONTAINER_P form_w, const _XtString name, 
 			       unsigned char *bits, int width, int height);
@@ -576,7 +577,7 @@ class SourceView {
 
     // The breakpoint being dragged, or 0 if execution position
     static int current_drag_breakpoint;
-#endif // IF_MOTIF
+#endif
 
 public:
     // Horizontal arrow offset (pixels)
@@ -589,7 +590,7 @@ public:
     static Position multiple_stop_x_offset;
 
 private:
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     // Glyph locations: X[0] is source, X[1] is code
     static Widget plain_arrows[2];
     static Widget grey_arrows[2];
@@ -605,7 +606,7 @@ private:
     static Widget drag_stops[2];
     static Widget drag_conds[2];
     static Widget drag_temps[2];
-#else // NOT IF_MOTIF
+#else
     static Glib::RefPtr<Gdk::Pixbuf> plain_arrow;
     static Glib::RefPtr<Gdk::Pixbuf> grey_arrow;
     static Glib::RefPtr<Gdk::Pixbuf> past_arrow;
@@ -620,15 +621,15 @@ private:
     static Glib::RefPtr<Gdk::Pixbuf> drag_stop;
     static Glib::RefPtr<Gdk::Pixbuf> drag_cond;
     static Glib::RefPtr<Gdk::Pixbuf> drag_temp;
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     // Return position POS of glyph GLYPH in X/Y.  Return true iff displayed.
     static bool glyph_pos_to_xy(Widget glyph, XmTextPosition pos,
 				Position& x, Position& y);
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     // Map stop sign in W at position POS.  Get widget from STOPS[COUNT];
     // store location in POSITIONS.  Return mapped widget (0 if none)
     static Widget map_stop_at(Widget w, XmTextPosition pos,
@@ -637,13 +638,13 @@ private:
     // Map arrow/drag arrow/drag stop in W at POS.  If ORIGIN is
     // given, use colors from ORIGIN.
     static Widget map_arrow_at     (Widget w, XmTextPosition pos);
-#else // NOT IF_MOTIF
-    static GtkGlyphMark *map_stop_at(GtkScrolledText *w, XmTextPosition pos,
-				     Glib::RefPtr<Gdk::Pixbuf> stop,
-				     TextPositionArray& positions);
-    static GtkGlyphMark *map_arrow_at(GtkScrolledText *w, XmTextPosition pos);
-#endif // IF_MOTIF
-#ifdef IF_MOTIF
+#else
+    static GUI::GlyphMark *map_stop_at(GUI::ScrolledText *w, XmTextPosition pos,
+				       Glib::RefPtr<Gdk::Pixbuf> stop,
+				       TextPositionArray& positions);
+    static GUI::GlyphMark *map_arrow_at(GUI::ScrolledText *w, XmTextPosition pos);
+#endif
+#if defined(IF_MOTIF)
     static Widget map_drag_arrow_at(Widget w, XmTextPosition pos,
 				    Widget origin = 0);
     static inline void unmap_drag_arrow(Widget w)
@@ -661,7 +662,7 @@ private:
     // Helping background procedures
     static TIMEOUT_RETURN_TYPE UpdateGlyphsWorkProc(TM_ALIST_1(XtP(XtIntervalId *)));
     static WP_RETURN_TYPE CreateGlyphsWorkProc(WP_ALIST_NULL);
-#endif // IF_MOTIF
+#endif
 
     // True if code/source glyphs need to be updated
     static bool update_code_glyphs;
@@ -670,7 +671,7 @@ private:
     // Update all glyphs now (without delay).
     static void update_glyphs_now();
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     // Return all glyphs that would change
     static const WidgetArray& glyphs_to_be_updated();
 
@@ -678,9 +679,9 @@ private:
     static bool change_glyphs;
     static WidgetArray changed_glyphs;
 
-#else // NOT IF_MOTIF
+#else
     static void CreateGlyphsNow(void);
-#endif // IF_MOTIF
+#endif
 
     // Callback when state has been reset
     static void reset_done(const string& answer, void *data);
@@ -719,10 +720,17 @@ public:
     // If MODE is given, highlight PC line.
     // STOPPED indicates that the program just stopped.
     // SIGNALED indicates that the program just received a signal.
+#if defined(IF_XM)
     static void show_pc (const string& pc, 
 			 XmHighlightMode mode = XmHIGHLIGHT_NORMAL,
 			 bool stopped  = false,
 			 bool signaled = false);
+#else
+    static void show_pc (const string& pc, 
+			 GUI::HighlightMode mode = GUI::HIGHLIGHT_NORMAL,
+			 bool stopped  = false,
+			 bool signaled = false);
+#endif
 
     // Handle breakpoint information
     static void process_info_bp         (string& info_output,
@@ -819,10 +827,10 @@ public:
     static bool cache_source_files;
     static bool cache_machine_code;
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     // Set whether glyphs are to be displayed
     static void set_display_glyphs(bool value);
-#endif // IF_MOTIF
+#endif
 
     // Set whether line numbers are to be displayed
     static void set_display_line_numbers(bool value);
@@ -839,13 +847,13 @@ public:
     // Set the indentation
     static void set_indent(int source_indent, int code_indent);
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     // Set the max number of glyphs
     static void set_max_glyphs(int max_glyphs);
 
     // Whether to cache glyph images
     static bool cache_glyph_images;
-#endif // IF_MOTIF
+#endif
 
     // Maximum length of expr in source popup
     static int max_popup_expr_length;
@@ -968,10 +976,10 @@ public:
     // Get the line at POSITION
     static string get_line(string position);
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     // Get a help string for GLYPH; return 0 if none
     static MString help_on_glyph(Widget glyph, bool detailed);
-#endif // IF_MOTIF
+#endif
     static MString help_on_pos(Widget w, XmTextPosition pos, 
 			       XmTextPosition& ref, bool detailed);
 
@@ -1038,9 +1046,9 @@ public:
     // Set or unset showing earlier state
     static void showing_earlier_state(bool set);
 
-#ifndef IF_MOTIF
+#if !defined(IF_MOTIF)
     bool clicked_cb(GdkEventButton *ev);
-#endif // IF_MOTIF
+#endif
 };
 
 inline void SourceView::create_bp(const string& a, Widget w)

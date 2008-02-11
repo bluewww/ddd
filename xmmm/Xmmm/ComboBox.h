@@ -40,7 +40,7 @@ namespace Xmmm {
 	void init_signals(void);
     protected:
 	sigc::signal<void> signal_clicked_;
-	static void activate_callback(::Widget widget, XtPointer data);
+	static void clicked_callback(::Widget widget, XtPointer data);
     public:
 	ComboBoxEntryText(Xmmm::Container &parent, const Xmmm::String &name="");
 	ComboBoxEntryText(::Widget parent, const Xmmm::String &name=""); // TEMPORARY

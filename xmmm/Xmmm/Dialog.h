@@ -59,6 +59,7 @@ namespace Xmmm {
 	sigc::signal<void> &signal_unmap(void);
 	Button *add_button(const Xmmm::String &name="",
 			   const Xmmm::String &label="");
+	void set_title(const XmString s);
     };
 
 }

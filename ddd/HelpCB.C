@@ -417,7 +417,7 @@ void HelpOnHelpCB(Widget widget, XtPointer client_data, XtPointer call_data)
 
 #if defined(IF_MOTIF)
 
-void ImmediateHelpCB(Widget widget, XtPointer client_data, XtPointer call_data))
+void ImmediateHelpCB(Widget widget, XtPointer client_data, XtPointer call_data)
 {
     if (widget == 0)
 	return;

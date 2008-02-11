@@ -83,6 +83,12 @@ char comm_manager_rcsid[] =
 #include <ctype.h>
 #include <fstream>
 
+#if !defined(IF_XM)
+
+#include <GUI/ScrolledText.h>
+
+#endif
+
 
 //-----------------------------------------------------------------------------
 // Data
@@ -2310,12 +2316,21 @@ static void command_completed(void *data)
     if (check && pos_buffer && pos_buffer->pc_found())
     {
 	const string pc = pos_buffer->get_pc();
+#if defined(IF_XM)
 	if (cmd_data->new_exec_pos || cmd_data->new_frame_pos)
 	    source_view->show_pc(pc, XmHIGHLIGHT_SELECTED,
 				 cmd_data->new_exec_pos,
 				 pos_buffer->signaled_found());
 	else
 	    source_view->show_pc(pc, XmHIGHLIGHT_NORMAL);
+#else
+	if (cmd_data->new_exec_pos || cmd_data->new_frame_pos)
+	    source_view->show_pc(pc, GUI::HIGHLIGHT_SELECTED,
+				 cmd_data->new_exec_pos,
+				 pos_buffer->signaled_found());
+	else
+	    source_view->show_pc(pc, GUI::HIGHLIGHT_NORMAL);
+#endif
     }
 
     if (verbose)
@@ -3259,9 +3274,15 @@ static void extra_completed (StringArray& answers,
 		if (pb.pos_found())
 		    source_view->show_execution_position(pb.get_position(), 
 							 true);
+#if defined(IF_XM)
 		if (pb.pc_found())
 		    source_view->show_pc(pb.get_pc(), 
 					 XmHIGHLIGHT_SELECTED, true);
+#else
+		if (pb.pc_found())
+		    source_view->show_pc(pb.get_pc(), 
+					 GUI::HIGHLIGHT_SELECTED, true);
+#endif
 	    }
 	    source_view->process_frame(answer);
 	}

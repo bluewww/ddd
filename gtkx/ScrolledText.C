@@ -1,18 +1,18 @@
 #include <iostream>
 
-#include "config.h"
+#include <GtkX/ScrolledText.h>
 
-#include "GtkScrolledText.h"
+// #include "SourceView.h"
 
-#include "SourceView.h"
+using namespace GtkX;
 
-extern GtkScrolledText *gdb_w;
+extern ScrolledText *gdb_w;
 
 bool
-GtkMarkedTextView::on_expose_event(GdkEventExpose *event)
+MarkedTextView::on_expose_event(GdkEventExpose *event)
 {
     Gtk::TextView::on_expose_event(event);
-    std::list<GtkGlyphMark *>::iterator iter;
+    std::list<GlyphMark *>::iterator iter;
     for (iter = marks.begin(); iter != marks.end(); iter++) {
 	Glib::RefPtr<Gdk::Window> win = get_window(Gtk::TEXT_WINDOW_TEXT);
 	Glib::RefPtr<Gtk::Style> style = get_style();
@@ -29,7 +29,7 @@ GtkMarkedTextView::on_expose_event(GdkEventExpose *event)
 }
 
 void
-GtkMarkedTextView::refresh_line(int y, int height)
+MarkedTextView::refresh_line(int y, int height)
 {
     Glib::RefPtr<Gdk::Window> win = get_window(Gtk::TEXT_WINDOW_TEXT);
     if (win) {
@@ -45,16 +45,16 @@ GtkMarkedTextView::refresh_line(int y, int height)
     }
 }
 
-GtkGlyphMark *
-GtkMarkedTextView::map_glyph(Glib::RefPtr<Gdk::Pixbuf> glyph, int x, int y)
+GlyphMark *
+MarkedTextView::map_glyph(Glib::RefPtr<Gdk::Pixbuf> glyph, int x, int y)
 {
-    GtkGlyphMark *new_mark = new GtkGlyphMark(glyph, x, y);
+    GlyphMark *new_mark = new GlyphMark(glyph, x, y);
     marks.push_back(new_mark);
     refresh_line(y, glyph->get_height());
 }
 
 void
-GtkMarkedTextView::pos_to_xy(long pos, int &x, int &y)
+MarkedTextView::pos_to_xy(long pos, int &x, int &y)
 {
     Gtk::TextIter iter;
     iter = get_buffer()->get_iter_at_offset(pos);
@@ -64,8 +64,8 @@ GtkMarkedTextView::pos_to_xy(long pos, int &x, int &y)
     y = (int)location.get_y();
 }
 
-GtkGlyphMark *
-GtkMarkedTextView::map_glyph(Glib::RefPtr<Gdk::Pixbuf> glyph, long pos)
+GlyphMark *
+MarkedTextView::map_glyph(Glib::RefPtr<Gdk::Pixbuf> glyph, long pos)
 {
     int x, y;
     pos_to_xy(pos, x, y);
@@ -73,9 +73,9 @@ GtkMarkedTextView::map_glyph(Glib::RefPtr<Gdk::Pixbuf> glyph, long pos)
 }
 
 void
-GtkMarkedTextView::unmap_glyph(GtkGlyphMark *mark)
+MarkedTextView::unmap_glyph(GlyphMark *mark)
 {
-    std::list<GtkGlyphMark *>::iterator iter;
+    std::list<GlyphMark *>::iterator iter;
     for (iter = marks.begin(); iter != marks.end(); iter++) {
 	if ((*iter) == mark) {
 	    int x = mark->x;
@@ -89,9 +89,9 @@ GtkMarkedTextView::unmap_glyph(GtkGlyphMark *mark)
 }
 
 void
-GtkMarkedTextView::unmap_glyph(Glib::RefPtr<Gdk::Pixbuf> glyph)
+MarkedTextView::unmap_glyph(Glib::RefPtr<Gdk::Pixbuf> glyph)
 {
-    std::list<GtkGlyphMark *>::iterator iter;
+    std::list<GlyphMark *>::iterator iter;
 redo:
     for (iter = marks.begin(); iter != marks.end(); iter++) {
 	if ((*iter)->glyph == glyph) {
@@ -105,7 +105,7 @@ redo:
     }
 }
 
-GtkScrolledText::GtkScrolledText(void)
+ScrolledText::ScrolledText(void)
 {
     tb_ = tv_.get_buffer();
     // tv_.modify_bg(Gtk::STATE_NORMAL, Gdk::Color("green"));
@@ -117,7 +117,7 @@ GtkScrolledText::GtkScrolledText(void)
 }
 
 long
-GtkScrolledText::xy_to_pos(double x, double y)
+ScrolledText::xy_to_pos(double x, double y)
 {
     int ix = (int)x;
     int iy = (int)y;
@@ -129,13 +129,13 @@ GtkScrolledText::xy_to_pos(double x, double y)
 }
 
 Glib::ustring
-GtkScrolledText::get_text(void)
+ScrolledText::get_text(void)
 {
     return tb_->get_text();
 }
 
 Glib::ustring
-GtkScrolledText::get_text(long o1, long o2)
+ScrolledText::get_text(long o1, long o2)
 {
     Gtk::TextIter iter1 = tb_->get_iter_at_offset(o1);
     Gtk::TextIter iter2 = tb_->get_iter_at_offset(o2);
@@ -143,26 +143,26 @@ GtkScrolledText::get_text(long o1, long o2)
 }
 
 void
-GtkScrolledText::set_editable(bool set)
+ScrolledText::set_editable(bool set)
 {
     tv_.set_editable(set);
 }
 
 bool
-GtkScrolledText::get_editable(void) const
+ScrolledText::get_editable(void) const
 {
     return tv_.get_editable();
 }
 
 void
-GtkScrolledText::insert(long pos, const Glib::ustring &repl)
+ScrolledText::insert(long pos, const Glib::ustring &repl)
 {
     Gtk::TextIter iter = tb_->get_iter_at_offset(pos);
     tb_->insert(iter, repl);
 }
 
 void
-GtkScrolledText::replace(long pos1, long pos2, const Glib::ustring &repl)
+ScrolledText::replace(long pos1, long pos2, const Glib::ustring &repl)
 {
     Gtk::TextIter iter1 = tb_->get_iter_at_offset(pos1);
     Gtk::TextIter iter2 = tb_->get_iter_at_offset(pos2);
@@ -172,58 +172,58 @@ GtkScrolledText::replace(long pos1, long pos2, const Glib::ustring &repl)
 }
 
 void
-GtkScrolledText::show_position(long pos)
+ScrolledText::show_position(long pos)
 {
     Gtk::TextIter iter = tb_->get_iter_at_offset(pos);
     tv_.scroll_to(iter);
 }
 
 long
-GtkScrolledText::get_last_position(void)
+ScrolledText::get_last_position(void)
 {
     return tb_->end().get_offset();
 }
 
 void
-GtkScrolledText::set_insertion_position(long pos)
+ScrolledText::set_insertion_position(long pos)
 {
     Gtk::TextIter iter = tb_->get_iter_at_offset(pos);
     tb_->place_cursor(iter);
 }
 
 void
-GtkScrolledText::set_text(const Glib::ustring &repl)
+ScrolledText::set_text(const Glib::ustring &repl)
 {
     tb_->set_text(repl);
 }
 
 Glib::SignalProxy0<void>
-GtkScrolledText::signal_changed(void)
+ScrolledText::signal_changed(void)
 {
     return tb_->signal_changed();
 }
 
-GtkMarkedTextView &
-GtkScrolledText::view(void)
+MarkedTextView &
+ScrolledText::view(void)
 {
     return tv_;
 }
 
 Glib::RefPtr<Gtk::TextBuffer>
-GtkScrolledText::buffer(void)
+ScrolledText::buffer(void)
 {
     return tb_;
 }
 
 void
-GtkScrolledText::set_highlight(long pos1, long pos2, XmHighlightMode mode)
+ScrolledText::set_highlight(long pos1, long pos2, HighlightMode mode)
 {
     static int errcnt = 0;
-    if (complain && !errcnt++) std::cerr << "set_highlight(" << pos1 << "," << pos2 << "," << mode << ")\n";
+    if (!errcnt++) std::cerr << "set_highlight(" << pos1 << "," << pos2 << "," << mode << ")\n";
 }
 
 long
-GtkScrolledText::find_backward(Glib::ustring str, long start)
+ScrolledText::find_backward(Glib::ustring str, long start)
 {
     Gtk::TextIter iter;
     if (start == -1)
@@ -239,7 +239,7 @@ GtkScrolledText::find_backward(Glib::ustring str, long start)
 }
 
 long
-GtkScrolledText::find_backward(gunichar c, long start)
+ScrolledText::find_backward(gunichar c, long start)
 {
     Gtk::TextIter iter;
     if (start == -1)
@@ -254,7 +254,7 @@ GtkScrolledText::find_backward(gunichar c, long start)
 }
 
 long
-GtkScrolledText::find_forward(Glib::ustring str, long start)
+ScrolledText::find_forward(Glib::ustring str, long start)
 {
     Gtk::TextIter iter;
     iter = tb_->get_iter_at_offset(start);
@@ -267,7 +267,7 @@ GtkScrolledText::find_forward(Glib::ustring str, long start)
 }
 
 long
-GtkScrolledText::find_forward(gunichar c, long start)
+ScrolledText::find_forward(gunichar c, long start)
 {
     Gtk::TextIter iter;
     iter = tb_->get_iter_at_offset(start);
@@ -279,7 +279,7 @@ GtkScrolledText::find_forward(gunichar c, long start)
 }
 
 bool
-GtkScrolledText::get_selection_bounds(long &begin, long &end)
+ScrolledText::get_selection_bounds(long &begin, long &end)
 {
     Gtk::TextIter begin_iter, end_iter;
     bool status = tb_->get_selection_bounds(begin_iter, end_iter);
@@ -291,7 +291,7 @@ GtkScrolledText::get_selection_bounds(long &begin, long &end)
 }
 
 bool
-GtkScrolledText::pos_to_xy(long pos, int &x, int &y)
+ScrolledText::pos_to_xy(long pos, int &x, int &y)
 {
     Gtk::TextIter iter;
     iter = tb_->get_iter_at_offset(pos);
@@ -305,7 +305,7 @@ GtkScrolledText::pos_to_xy(long pos, int &x, int &y)
 }
 
 void
-GtkScrolledText::clear_selection(void)
+ScrolledText::clear_selection(void)
 {
     // Glib::RefPtr<Gtk::TextMark> sel = tb_->get_selection_bound();
     // tb_->delete_mark(sel);
@@ -315,25 +315,25 @@ GtkScrolledText::clear_selection(void)
 }
 
 long
-GtkScrolledText::get_insertion_position(void)
+ScrolledText::get_insertion_position(void)
 {
     Glib::RefPtr<Gtk::TextMark> ins = tb_->get_insert();
     Gtk::TextIter iter = tb_->get_iter_at_mark(ins);
     return iter.get_offset();
 }
 
-int GtkScrolledText::get_rows()
+int ScrolledText::get_rows()
 {
     static int errcnt = 0;
-    if (complain && !errcnt++) std::cerr << "GtkScrolledText: ROWS\n";
+    if (!errcnt++) std::cerr << "ScrolledText: ROWS\n";
     return 0;
 }
 
 int
-GtkScrolledText::get_columns()
+ScrolledText::get_columns()
 {
     static int errcnt = 0;
-    if (complain && !errcnt++) std::cerr << "GtkScrolledText: COLUMNS\n";
+    if (!errcnt++) std::cerr << "ScrolledText: COLUMNS\n";
     return 0;
 }
 

@@ -69,7 +69,7 @@ char buttons_rcsid[] =
 #include "windows.h"
 #include "wm.h"
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 #include <Xm/Xm.h>
 #include <Xm/Label.h>
 #include <Xm/Frame.h>
@@ -78,9 +78,9 @@ char buttons_rcsid[] =
 #include <Xm/PushB.h>
 #include <Xm/ToggleB.h>
 #include <Xm/Text.h>
-#else // NOT IF_MOTIF
+#else
 #include "gtk_wrapper.h"
-#endif // IF_MOTIF
+#endif
 #include <ctype.h>
 
 
@@ -304,14 +304,14 @@ static string gdbHelp(string original_command)
 		return NO_GDB_ANSWER; // try again later
 
 	    // We have the help text - configure JDB
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w),
 			    0, ConfigureJDBCB, 0);
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Configure JDB?
 #endif
-#endif // IF_MOTIF
+#endif
 
 	    update_arg_buttons();
 	}
@@ -598,9 +598,9 @@ static XmTextPosition textPosOfEvent(SCROLLEDTEXT_P widget, XEvent *event)
 static MString gdbDefaultValueText(SCROLLEDTEXT_P widget, XEvent *event, 
 				   bool for_documentation)
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     assert (XmIsText(widget));
-#endif // IF_MOTIF
+#endif
 
     XmTextPosition startpos, endpos;
     string expr = 
@@ -633,43 +633,43 @@ static MString gdbDefaultValueText(SCROLLEDTEXT_P widget, XEvent *event,
     // position
     Position x, y;
 
-#ifndef IF_MOTIF
+#if !defined(IF_MOTIF)
     Gtk::TextIter iter = widget->buffer()->get_iter_at_offset(endpos);
     Gdk::Rectangle rect;
     widget->view().get_iter_location(iter, rect);
     int xbuf = rect.get_x();
     int ybuf = rect.get_y();
     widget->view().buffer_to_window_coords(Gtk::TEXT_WINDOW_TEXT, xbuf, ybuf, x, y);
-#endif // IF_MOTIF
-#ifdef IF_MOTIF
+#endif
+#if defined(IF_MOTIF)
     if (XmTextPosToXY(widget, endpos, &x, &y))
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Test for position within textview window?
 #endif
-#endif // IF_MOTIF
+#endif
     {
 	switch (event->type)
 	{
 	case MotionNotify:
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	    event->xmotion.x = x;
 	    event->xmotion.y = y;
-#else // NOT IF_MOTIF
+#else
 	    event->motion.x = x;
 	    event->motion.y = y;
-#endif // IF_MOTIF
+#endif
 	    break;
 
 	case EnterNotify:
 	case LeaveNotify:
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	    event->xcrossing.x = x;
 	    event->xcrossing.y = y;
-#else // NOT IF_MOTIF
+#else
 	    event->crossing.x = x;
 	    event->crossing.y = y;
-#endif // IF_MOTIF
+#endif
 	    break;
 	}
     }
@@ -742,11 +742,11 @@ static MString gdbDefaultValueText(SCROLLEDTEXT_P widget, XEvent *event,
 static MString gdbDefaultButtonText(Widget widget, XEvent *, 
 				    bool for_documentation)
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     MString bp_help = source_view->help_on_glyph(widget, for_documentation);
     if (!bp_help.isNull())
 	return bp_help;
-#endif // IF_MOTIF
+#endif
 
     MString shortcut_help = data_disp->shortcut_help(widget);
     if (!shortcut_help.isNull())
@@ -918,18 +918,18 @@ static MString gdbDefaultButtonText(Widget widget, XEvent *,
 static MString gdbDefaultText(Widget widget, XEvent *event, 
 			      bool for_documentation)
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     if (XmIsText(widget))
 	return gdbDefaultValueText(widget, event, for_documentation);
     else
 	return gdbDefaultButtonText(widget, event, for_documentation);
-#else // NOT IF_MOTIF
-    GtkScrolledText *tv = dynamic_cast<GtkScrolledText *>(widget);
+#else
+    GUI::ScrolledText *tv = dynamic_cast<GUI::ScrolledText *>(widget);
     if (tv)
 	return gdbDefaultValueText(tv, event, for_documentation);
     else
 	return gdbDefaultButtonText(widget, event, for_documentation);
-#endif // IF_MOTIF
+#endif
 }
 
 static MString gdbDefaultTipText(Widget widget, XEvent *event)
@@ -950,7 +950,7 @@ static MString gdbDefaultDocumentationText(Widget widget, XEvent *event)
 // Buttons to be verified
 static WidgetArray buttons_to_be_verified;
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 static void VerifyButtonWorkProc(XtPointer client_data, XtIntervalId *id)
 {
     (void) id;			// Use it
@@ -1031,12 +1031,12 @@ static void DontVerifyButtonCB(Widget w, XtPointer, XtPointer)
 	if (buttons_to_be_verified[i] == w)
 	    buttons_to_be_verified[i] = 0;
 }
-#endif // IF_MOTIF
+#endif
 
 // Make BUTTON insensitive if it is not supported
 void verify_button(Widget button)
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     if (button == 0)
 	return;
     if (!XtIsSubclass(button, xmPushButtonWidgetClass))
@@ -1058,10 +1058,10 @@ void verify_button(Widget button)
 				    0, VerifyButtonWorkProc, 
 				    XtPointer(&verify_id));
     }
-#else // NOT IF_MOTIF
+#else
     static int errcnt = 0;
     if (complain && !errcnt++) std::cerr << "VerifyButton not supported.\n";
-#endif // IF_MOTIF
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -1102,20 +1102,20 @@ static void RemoveFromArrayCB(Widget w, XtPointer client_data, XtPointer)
 static void register_button(WidgetArray& arr, Widget w)
 {
     arr += w;
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XtAddCallback(w, XtNdestroyCallback, RemoveFromArrayCB, XtPointer(&arr));
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning No analogue for XtNdestroyCallback.
 #endif
-#endif // IF_MOTIF
+#endif
 }
 
 // Create a button work area from BUTTON_LIST named NAME
 Widget make_buttons(Widget parent, const char *name, 
 		    const _XtString button_list)
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     Arg args[10];
     int arg = 0;
     XtSetArg(args[arg], XmNorientation, XmHORIZONTAL); arg++;
@@ -1127,13 +1127,13 @@ Widget make_buttons(Widget parent, const char *name,
     XtSetArg(args[arg], XmNhighlightThickness, 0);     arg++;
     XtSetArg(args[arg], XmNshadowThickness, 0);        arg++;
     Widget buttons = verify(XmCreateRowColumn(parent, XMST(name), args, arg));
-#else // NOT IF_MOTIF
+#else
     Gtk::HBox *buttons = new Gtk::HBox();
-#endif // IF_MOTIF
+#endif
 
     set_buttons(buttons, button_list);
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     if (XtIsManaged(buttons))
     {
 	XtWidgetGeometry size;
@@ -1144,11 +1144,11 @@ Widget make_buttons(Widget parent, const char *name,
 		      XmNpaneMinimum, size.height,
 		      XtPointer(0));
     }
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning No size adjustment
 #endif
-#endif // IF_MOTIF
+#endif
 
     return buttons;
 }
@@ -1156,7 +1156,7 @@ Widget make_buttons(Widget parent, const char *name,
 void set_buttons(BOX_P buttons, const _XtString _button_list, bool manage)
 {
     string *sp;
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XtPointer user_data   = 0;
     WidgetList children   = 0;
     Cardinal num_children = 0;
@@ -1176,7 +1176,7 @@ void set_buttons(BOX_P buttons, const _XtString _button_list, bool manage)
 	return;
     }
     delete sp;
-#endif // IF_MOTIF
+#endif
 
     StatusDelay *delay = 0;
     if (gdb_initialized)
@@ -1184,13 +1184,13 @@ void set_buttons(BOX_P buttons, const _XtString _button_list, bool manage)
 
     // Destroy all existing children (= buttons)
     int i;
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     for (i = 0; i < int(num_children); i++)
     {
 	XtUnmanageChild(children[i]);
 	DestroyWhenIdle(children[i]);
     }
-#else // NOT IF_MOTIF
+#else
     Glib::ListHandle<Gtk::Widget*> children = buttons->get_children();
     Glib::ListHandle<Gtk::Widget*>::iterator iter(0), nextiter(0);
     for (iter = children.begin(); iter != children.end(); iter = nextiter) {
@@ -1198,7 +1198,7 @@ void set_buttons(BOX_P buttons, const _XtString _button_list, bool manage)
 	nextiter++;
 	buttons->remove(**iter);
     }
-#endif // IF_MOTIF
+#endif
 
     // Add new buttons
     string button_list = _button_list;
@@ -1231,14 +1231,14 @@ void set_buttons(BOX_P buttons, const _XtString _button_list, bool manage)
 	if (name.empty())
 	    continue;
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 #ifdef NAG_ME
 #warning Do we really need to pass args here?
 #endif
 	MString label(0, true);
-#else // NOT IF_MOTIF
+#else
 	MString label; // Default constructor
-#endif // IF_MOTIF
+#endif
 	if (name.contains(app_data.label_delimiter))
 	{
 	    string label_s = name.after(app_data.label_delimiter);
@@ -1279,7 +1279,7 @@ void set_buttons(BOX_P buttons, const _XtString _button_list, bool manage)
 #endif
 	name.gsub(rxsep, '_');
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 #if 0
 	Widget button = verify(create_flat_button(buttons, name));
 #else
@@ -1289,15 +1289,15 @@ void set_buttons(BOX_P buttons, const _XtString _button_list, bool manage)
 	XtSetArg(args[arg], XmNhighlightThickness, 1); arg++;
 	Widget button = verify(XmCreatePushButton(buttons, XMST(name.chars()), args, arg));
 #endif
-#else // NOT IF_MOTIF
+#else
 	Gtk::Button *button = new Gtk::Button(XMST(name.chars()));
 	button->show();
 	buttons->pack_start(*button, Gtk::PACK_SHRINK);
-#endif // IF_MOTIF
+#endif
 	XtManageChild(button);
 	number_of_buttons++;
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	// A user-specified labelString overrides the given label
 	XmString xmlabel;
 	XtVaGetValues(button, XmNlabelString, &xmlabel, XtPointer(0));
@@ -1311,11 +1311,11 @@ void set_buttons(BOX_P buttons, const _XtString _button_list, bool manage)
 	    XtVaSetValues(button, 
 			  XmNlabelString, label.xmstring(), XtPointer(0));
 	}
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Set button name
 #endif
-#endif // IF_MOTIF
+#endif
 
 	if (name == "Yes")
 	{
@@ -1370,7 +1370,7 @@ void set_buttons(BOX_P buttons, const _XtString _button_list, bool manage)
 	// Be sure to verify whether the button actually exists
 	verify_button(button);
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	// We remove all callbacks to avoid popping down DialogShells
 	XtRemoveAllCallbacks(button, XmNactivateCallback);
 	XtAddCallback(button, XmNactivateCallback, callback,
@@ -1378,13 +1378,13 @@ void set_buttons(BOX_P buttons, const _XtString _button_list, bool manage)
 
 	// Add a help callback
 	XtAddCallback(button, XmNhelpCallback, ImmediateHelpCB, XtPointer(0));
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Dummy "call_data" argument
 #endif
 	button->signal_clicked().connect(sigc::bind(callback, button,
 						     strdup(command.chars())));
-#endif // IF_MOTIF
+#endif
     }
     delete[] commands;
 
@@ -1392,7 +1392,7 @@ void set_buttons(BOX_P buttons, const _XtString _button_list, bool manage)
     {
 	if (number_of_buttons > 0)
 	{
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	    // Manage buttons, giving them their preferred height
 	    XtWidgetGeometry size;
 	    size.request_mode = CWHeight;
@@ -1402,11 +1402,11 @@ void set_buttons(BOX_P buttons, const _XtString _button_list, bool manage)
 			  XmNpaneMinimum, size.height, 
 			  XmNpaneMaximum, size.height,
 			  XtPointer(0));
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Size?
 #endif
-#endif // IF_MOTIF
+#endif
 	    
 	    manage_paned_child(buttons);
 	}
@@ -1417,24 +1417,24 @@ void set_buttons(BOX_P buttons, const _XtString _button_list, bool manage)
 	}
     }
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     sp = new string(_button_list);
     XtVaSetValues(buttons, XmNuserData, XtPointer(sp), XtPointer(0));
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning No button specification
 #endif
-#endif // IF_MOTIF
+#endif
 
     // Register default help command
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     DefaultHelpText           = gdbDefaultHelpText;
     DefaultTipText            = gdbDefaultTipText;
     DefaultDocumentationText  = gdbDefaultDocumentationText;
     TextPosOfEvent            = textPosOfEvent;
 
     DisplayDocumentation      = showDocumentationInStatusLine;
-#endif // IF_MOTIF
+#endif
 
     // Set sensitivity
     refresh_buttons();
@@ -1489,11 +1489,11 @@ static Widget shortcut_label = 0;
 static Widget console_w, shortcut_w;
 
 struct ChangeTextInfo {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     String *str;
-#else // NOT IF_MOTIF
+#else
     char **str;
-#endif // IF_MOTIF
+#endif
     Widget dialog;
     Widget text;
     Widget vfy;
@@ -1502,7 +1502,7 @@ struct ChangeTextInfo {
 
 static ChangeTextInfo *active_info = 0;
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 static void SetTextCB(CB_ARG_LIST_NULL)
 {
     if (active_info == 0)
@@ -1558,13 +1558,13 @@ static void ChangeTextCB(Widget w, XtPointer client_data, XtPointer call_data)
 			 HelpOnThisCB, XtPointer(w));
     }
 }
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning SetTextCB not implemented
 #endif
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 static void SetVerifyButtonsCB(Widget, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *cbs = 
@@ -1572,47 +1572,47 @@ static void SetVerifyButtonsCB(Widget, XtPointer, XtPointer call_data)
 
     app_data.verify_buttons = cbs->set;
 }
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning No verify_buttons
 #endif
-#endif // IF_MOTIF
+#endif
 
 static Widget add_button(const _XtString name, 
 			 Widget dialog, BOX_P buttons, 
 			 Widget text, Widget vfy,
 			 const _XtString& str, bool shortcuts = false)
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     Arg args[10];
     Cardinal arg = 0;
     Widget button = XmCreateToggleButton(buttons, XMST(name), args, arg);
     XtManageChild(button);
-#else // NOT IF_MOTIF
+#else
     Gtk::ToggleButton *button = new Gtk::ToggleButton(XMST(name));
     button->set_name(XMST(name));
     button->show();
     buttons->pack_start(*button, Gtk::PACK_SHRINK);
-#endif // IF_MOTIF
+#endif
 
     ChangeTextInfo *info = new ChangeTextInfo;
     info->dialog    = dialog;
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     info->str       = CONST_CAST(String*,&str);
-#else // NOT IF_MOTIF
+#else
     info->str       = CONST_CAST(char**,&str);
-#endif // IF_MOTIF
+#endif
     info->text      = text;
     info->vfy       = vfy;
     info->shortcuts = shortcuts;
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XtAddCallback(button, XmNvalueChangedCallback, ChangeTextCB, 
 		  XtPointer(info));
 #ifdef NAG_ME
 #warning  ChangeTextCB not implemented
 #endif
-#endif // IF_MOTIF
+#endif
 
     return button;
 }
@@ -1622,7 +1622,7 @@ static void create_buttons_dialog(Widget parent)
     if (buttons_dialog != 0)
 	return;
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     Arg args[10];
     Cardinal arg = 0;
     XtSetArg(args[arg], XmNvisibleItemCount, 0); arg++;
@@ -1630,11 +1630,11 @@ static void create_buttons_dialog(Widget parent)
     buttons_dialog = 
 	verify(XmCreatePromptDialog(find_shell(parent), 
 				    XMST("edit_buttons"), args, arg));
-#else // NOT IF_MOTIF
+#else
     buttons_dialog = new Gtk::Dialog(XMST("edit_buttons"), *find_shell(parent));
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XtAddCallback(buttons_dialog, XmNokCallback,     SetTextCB, 0);
     XtAddCallback(buttons_dialog, XmNokCallback,     
 		  UnmanageThisCB1, buttons_dialog);
@@ -1647,14 +1647,14 @@ static void create_buttons_dialog(Widget parent)
 					   XmDIALOG_SELECTION_LABEL));
     XtUnmanageChild(XmSelectionBoxGetChild(buttons_dialog, 
 					   XmDIALOG_TEXT));
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning "Edit buttons" dialog to be written
 #endif
-#endif // IF_MOTIF
+#endif
     Delay::register_shell(buttons_dialog);
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     arg = 0;
     XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
     XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
@@ -1663,12 +1663,12 @@ static void create_buttons_dialog(Widget parent)
     Widget box = 
 	verify(XmCreateRowColumn(buttons_dialog, XMST("box"), args, arg));
     XtManageChild(box);
-#else // NOT IF_MOTIF
+#else
     Gtk::Box *box = new Gtk::VBox();
     box->show();
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     arg = 0;
     XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
     XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
@@ -1677,12 +1677,12 @@ static void create_buttons_dialog(Widget parent)
     shortcut_label = verify(XmCreateLabel(box, 
 					  XMST("shortcuts"), args, arg));
     XtManageChild(shortcut_label);
-#else // NOT IF_MOTIF
+#else
     shortcut_label = new Gtk::Label(XMST("shortcuts"));
     shortcut_label->show();
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     arg = 0;
     XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
     XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
@@ -1691,24 +1691,24 @@ static void create_buttons_dialog(Widget parent)
     button_box = 
 	verify(XmCreateRadioBox(box, XMST("buttons"), args, arg));
     XtManageChild(button_box);
-#else // NOT IF_MOTIF
+#else
     button_box = new Gtk::HBox();
     box->pack_start(*button_box, Gtk::PACK_SHRINK);
     button_box->show();
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     arg = 0;
     XtSetArg(args[arg], XmNeditMode, XmMULTI_LINE_EDIT); arg++;
     Widget text = verify(XmCreateScrolledText(box, XMST("text"), args, arg));
     XtManageChild(text);
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Text for buttons not implemented
 #endif
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     arg = 0;
     XtSetArg(args[arg], XmNset, app_data.verify_buttons); arg++;
     Widget vfy = verify(XmCreateToggleButton(box, 
@@ -1716,7 +1716,7 @@ static void create_buttons_dialog(Widget parent)
     XtManageChild(vfy);
     XtAddCallback(vfy, XmNvalueChangedCallback, SetVerifyButtonsCB, 0);
     XtAddCallback(vfy, XmNvalueChangedCallback, SetTextCB, 0);
-#else // NOT IF_MOTIF
+#else
     Gtk::ToggleButton *vfy = new Gtk::ToggleButton(XMST("verify"));
     vfy->show();
     box->pack_start(*vfy, Gtk::PACK_SHRINK);
@@ -1724,9 +1724,9 @@ static void create_buttons_dialog(Widget parent)
 #warning SetVerifyButtonsCB not defined
 #endif
     // vfy->signal_toggled().connect(SetVerifyButtonsCB);
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     console_w = 
 	add_button("console", buttons_dialog, button_box, text, vfy,
 		   app_data.console_buttons);
@@ -1736,11 +1736,11 @@ static void create_buttons_dialog(Widget parent)
     Widget data_w = 
 	add_button("data", buttons_dialog, button_box, text, vfy,
 		   app_data.data_buttons);
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Text widget for user-defined buttons not defined
 #endif
-#endif // IF_MOTIF
+#endif
 
     const _XtString *str = 0;
     switch (gdb->type())
@@ -1755,18 +1755,18 @@ static void create_buttons_dialog(Widget parent)
     case XDB:  str = &app_data.xdb_display_shortcuts;  break;
     }
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     shortcut_w = 
 	add_button("shortcuts", buttons_dialog, button_box, text, vfy, 
 		   *str, true);
 
     XmToggleButtonSetState(source_w, True, False);
     (void) data_w;
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning buttons not finished
 #endif
-#endif // IF_MOTIF
+#endif
 }
 
 // We use one single editor for both purposes, since this saves space.
@@ -1778,7 +1778,7 @@ void dddEditButtonsCB(CB_ARG_LIST_1(w))
     XtManageChild(button_box);
     XtManageChild(shortcut_w);
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XmToggleButtonSetState(console_w, True, True);
     ResetTextCB(w, 0, 0);
 
@@ -1790,11 +1790,11 @@ void dddEditButtonsCB(CB_ARG_LIST_1(w))
 		  DDD_NAME ": Button Editor", XtPointer(0));
 
     manage_and_raise(buttons_dialog);
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Buttons dialog?
 #endif
-#endif // IF_MOTIF
+#endif
 }
 
 void dddEditShortcutsCB(CB_ALIST_1(Widget w))
@@ -1805,7 +1805,7 @@ void dddEditShortcutsCB(CB_ALIST_1(Widget w))
     XtManageChild(button_box);
     XtManageChild(shortcut_w);
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XmToggleButtonSetState(shortcut_w, True, True);
     ResetTextCB(w, 0, 0);
 
@@ -1816,11 +1816,11 @@ void dddEditShortcutsCB(CB_ALIST_1(Widget w))
 		  DDD_NAME ": Shortcut Editor", XtPointer(0));
 
     manage_and_raise(buttons_dialog);
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Buttons dialog?
 #endif
-#endif // IF_MOTIF
+#endif
 }
 
 void refresh_button_editor()
@@ -1854,14 +1854,14 @@ void refresh_button_editor()
 
     *str = XtNewString(expr.chars());
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     if (active_info != 0 && active_info->str == CONST_CAST(char**,str))
 	XmTextSetString(active_info->text, XMST(*str));
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning active_info->text not defined
 #endif
-#endif // IF_MOTIF
+#endif
 }
 
 

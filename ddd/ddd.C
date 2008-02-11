@@ -3794,7 +3794,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     gdb_w = verify(XmCreateScrolledText(paned_work_w, 
 					XMST("gdb_w"), args, arg));
 #else
-    gdb_w = new GtkScrolledText();
+    gdb_w = new GUI::ScrolledText();
     gdb_w->set_size_request(400, 200);
     paned_work_w->add(*gdb_w);
 #endif

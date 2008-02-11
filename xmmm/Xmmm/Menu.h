@@ -31,6 +31,7 @@
 
 #include <Xmmm/Container.h>
 #include <Xm/RowColumn.h>
+#include <X11/Xlib.h>
 
 namespace Xmmm {
 
@@ -40,16 +41,22 @@ namespace Xmmm {
 	void init_signals(void);
     protected:
 	sigc::signal<void> signal_clicked_;
-	static void activate_callback(::Widget widget, XtPointer data);
+	static void clicked_callback(::Widget widget, XtPointer data);
+	sigc::signal<void> signal_unmap_;
+	static void unmap_callback(::Widget widget, XtPointer data);
     public:
 	~Menu(void);
 	::Widget internal(void); // TEMPORARY
+	sigc::signal<void> &signal_clicked(void);
+	sigc::signal<void> &signal_unmap(void);
     };
 
     class PopupMenu: public Menu {
     public:
 	PopupMenu(Xmmm::Widget &parent, const Xmmm::String &name="");
 	PopupMenu(::Widget parent, const Xmmm::String &name=""); // TEMPORARY
+	void menu_position(XButtonEvent *e);
+	void popup(int button, int time);
     };
 
     class PulldownMenu: public Menu {

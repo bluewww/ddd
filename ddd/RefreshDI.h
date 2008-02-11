@@ -29,23 +29,33 @@
 #ifndef _DDD_RefreshDisassembleInfo_h
 #define _DDD_RefreshDisassembleInfo_h
 
+#include "config.h"
+
 #include "strclass.h"
 #include "status.h"
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 
 #include <Xm/Text.h>
 
-#else // NOT IF_MOTIF
+#endif
 
-#endif // IF_MOTIF
+#if !defined(IF_XM)
+
+#include <GUI/ScrolledText.h>
+
+#endif
 
 
 // This is used in SourceView.
 
 struct RefreshDisassembleInfo {
     string pc;
+#if defined(IF_XM)
     XmHighlightMode mode;
+#else
+    GUI::HighlightMode mode;
+#endif
     StatusDelay delay;
 
 private:
@@ -54,10 +64,17 @@ private:
     RefreshDisassembleInfo& operator = (const RefreshDisassembleInfo&);
 
 public:
+#if defined(IF_XM)
     RefreshDisassembleInfo(const string& p, XmHighlightMode m,
 			   const string& msg)
         : pc(p), mode(m), delay(msg)
     {}
+#else
+    RefreshDisassembleInfo(const string& p, GUI::HighlightMode m,
+			   const string& msg)
+        : pc(p), mode(m), delay(msg)
+    {}
+#endif
 
     ~RefreshDisassembleInfo()
     {}

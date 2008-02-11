@@ -34,16 +34,16 @@
 
 #include "gtk_wrapper.h"
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 
 #include <X11/Intrinsic.h>
 #include <Xm/Xm.h>
 
-#else // NOT IF_MOTIF
+#else
 
-#include "GtkScrolledText.h"
+#include <GUI/ScrolledText.h>
 
-#endif // IF_MOTIF
+#endif
 
 #include "bool.h"
 

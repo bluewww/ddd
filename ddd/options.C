@@ -2661,7 +2661,7 @@ static void set_xml_paned_widget_size(xmlNode *tree, Widget w, bool height_only 
 {
     const Boolean check_default = False;
 
-    GtkScrolledText *scrolled_text;
+    GUI::ScrolledText *scrolled_text;
     Gtk::Entry *entry;
     xmlNode *subtree = xmlNewChild(tree, NULL, (const xmlChar *)"paned", NULL);
     if (!subtree) {
@@ -2669,7 +2669,7 @@ static void set_xml_paned_widget_size(xmlNode *tree, Widget w, bool height_only 
 	return;
     }
     xmlSetProp(subtree, (const xmlChar *)"name", (const xmlChar *)XtName(w));
-    if (scrolled_text = dynamic_cast<GtkScrolledText *>(w))
+    if (scrolled_text = dynamic_cast<GUI::ScrolledText *>(w))
     {
 	// Store rows and columns
 	short columns = scrolled_text->get_columns();

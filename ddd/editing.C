@@ -55,12 +55,12 @@ char editing_rcsid[] =
 #include "windows.h"
 
 #include <iostream>
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 #include <Xm/Xm.h>
 #include <Xm/Text.h>
 #include <Xm/TextF.h>
 #include <Xm/RowColumn.h>	// XmMenuPosition()
-#endif // IF_MOTIF
+#endif
 
 // ANSI C++ doesn't like the XtIsRealized() macro
 #ifdef XtIsRealized
@@ -77,20 +77,20 @@ bool gdb_input_at_prompt = false;
 
 static void move_to_end_of_line(XtPointer, XtIntervalId *)
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XmTextPosition pos = XmTextGetLastPosition(gdb_w);
     XmTextSetInsertionPosition(gdb_w, pos);
     XmTextShowPosition(gdb_w, pos);
-#else // NOT IF_MOTIF
+#else
     XmTextPosition pos = gdb_w->get_last_position();
     gdb_w->set_insertion_position(pos);
     gdb_w->show_position(pos);
-#endif // IF_MOTIF
+#endif
 }
 
 static XmTextPosition start_of_line()
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     String str = XmTextGetString(gdb_w);
     string s = str;
     XtFree(str);
@@ -102,14 +102,14 @@ static XmTextPosition start_of_line()
 	return XmTextPosition(-1);
 
     return start + 1;
-#else // NOT IF_MOTIF
+#else
     Gtk::TextIter iter = gdb_w->buffer()->end();
     while (iter.backward_char() && (*iter == '(' || *iter == '>')
 	   && iter.backward_char() && (*iter == '\n')) {
       return iter.get_offset()+1;
     }
     return 0;
-#endif // IF_MOTIF
+#endif
 }
 
 
@@ -134,15 +134,15 @@ string current_line()
     if (have_isearch_line)
 	return isearch_line;
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     String str = XmTextGetString(gdb_w);
     string input(str + promptPosition, 
 		 XmTextGetLastPosition(gdb_w) - promptPosition);
     XtFree(str);
-#else // NOT IF_MOTIF
+#else
     Glib::ustring text = gdb_w->get_text(promptPosition, -1);
     string input(text.c_str());
-#endif // IF_MOTIF
+#endif
     return input;
 }
 
@@ -187,28 +187,28 @@ static void show_isearch()
 
     bool old_private_gdb_output = private_gdb_output;
     private_gdb_output = true;
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XmTextReplace(gdb_w, start, XmTextGetLastPosition(gdb_w), XMST(line.chars()));
-#else // NOT IF_MOTIF
+#else
     gdb_w->replace(start, gdb_w->get_last_position(), XMST(line.chars()));
-#endif // IF_MOTIF
+#endif
     promptPosition = start + prompt.length();
 
     XmTextPosition pos = promptPosition;
     int index = input.index(isearch_string);
     if (isearch_state == ISEARCH_NONE || index < 0)
     {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	XmTextSetHighlight(gdb_w, 0, XmTextGetLastPosition(gdb_w),
 			   XmHIGHLIGHT_NORMAL);
-#else // NOT IF_MOTIF
+#else
 	gdb_w->set_highlight(0, gdb_w->get_last_position(),
-			     XmHIGHLIGHT_NORMAL);
-#endif // IF_MOTIF
+			     GUI::HIGHLIGHT_NORMAL);
+#endif
     }
     else
     {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	XmTextSetHighlight(gdb_w,
 			   0,
 			   pos + index,
@@ -221,29 +221,29 @@ static void show_isearch()
 			   pos + index + isearch_string.length(),
 			   XmTextGetLastPosition(gdb_w),
 			   XmHIGHLIGHT_NORMAL);
-#else // NOT IF_MOTIF
+#else
 	gdb_w->set_highlight(0,
 			     pos + index,
-			     XmHIGHLIGHT_NORMAL);
+			     GUI::HIGHLIGHT_NORMAL);
 	gdb_w->set_highlight(pos + index,
 			     pos + index + isearch_string.length(),
-			     XmHIGHLIGHT_SECONDARY_SELECTED);
+			     GUI::HIGHLIGHT_SECONDARY_SELECTED);
 	gdb_w->set_highlight(pos + index + isearch_string.length(),
 			     gdb_w->get_last_position(),
-			     XmHIGHLIGHT_NORMAL);
-#endif // IF_MOTIF
+			     GUI::HIGHLIGHT_NORMAL);
+#endif
     }
 
     if (index >= 0)
 	pos += index;
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XmTextSetInsertionPosition(gdb_w, pos);
     XmTextShowPosition(gdb_w, pos);
-#else // NOT IF_MOTIF
+#else
     gdb_w->set_insertion_position(pos);
     gdb_w->show_position(pos);
-#endif // IF_MOTIF
+#endif
     have_isearch_line = false;
     private_gdb_output = old_private_gdb_output;
 }
@@ -278,11 +278,11 @@ static void isearch_again(ISearchState new_isearch_state, XEvent *event)
 	// Same state - search again
 	int history = search_history(isearch_string, int(isearch_state), true);
 	if (history < 0) {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	    XtCallActionProc(gdb_w, "beep", event, 0, 0);
-#else // NOT IF_MOTIF
+#else
 	    std::cerr << "BEEP!\n";
-#endif // IF_MOTIF
+#endif
 	}
 	else
 	    isearch_done(XtPointer(history), 0);
@@ -348,7 +348,7 @@ void interruptAct(Widget w, XEvent*, String *, Cardinal *)
     }
 }
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 // Handle incremental searches; return true if processed
 static bool do_isearch(Widget, XmTextVerifyCallbackStruct *change)
 {
@@ -420,11 +420,11 @@ static bool do_isearch(Widget, XmTextVerifyCallbackStruct *change)
 
     return processed;
 }
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning do_isearch not implemented
 #endif
-#endif // IF_MOTIF
+#endif
 
 //-----------------------------------------------------------------------------
 // Misc actions
@@ -465,7 +465,7 @@ void commandAct(Widget w, XEvent *ev, String *params, Cardinal *num_params)
     gdb_keyboard_command = from_keyboard(ev);
 }
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 void processAct(Widget w, XEvent *e, String *params, Cardinal *num_params)
 {
     if (app_data.source_editing && w == source_view->source())
@@ -522,13 +522,13 @@ void processAct(Widget w, XEvent *e, String *params, Cardinal *num_params)
 
     running = false;
 }
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning processAct not implemented
 #endif
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 void insert_source_argAct(Widget w, XEvent*, String*, Cardinal*)
 {
     clear_isearch();
@@ -547,13 +547,13 @@ void insert_source_argAct(Widget w, XEvent*, String*, Cardinal*)
 	}
     }
 }
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning insert_source_argAct not implemented
 #endif
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 void insert_graph_argAct (Widget w, XEvent *ev, 
 			  String *args, Cardinal *num_args)
 {
@@ -561,13 +561,13 @@ void insert_graph_argAct (Widget w, XEvent *ev,
     // we insert.
     insert_source_argAct(w, ev, args, num_args);
 }
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning insert_graph_argAct not implemented
 #endif
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 void next_tab_groupAct (Widget w, XEvent*, String*, Cardinal*)
 {
     XmProcessTraversal(w, XmTRAVERSE_NEXT_TAB_GROUP);
@@ -600,17 +600,17 @@ void select_allAct (Widget w, XEvent *e, String *params, Cardinal *num_params)
 	break;
     }
 }
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Actions not implemented
 #endif
-#endif // IF_MOTIF
+#endif
 
 //-----------------------------------------------------------------------------
 // Editing actions
 //-----------------------------------------------------------------------------
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 void beginning_of_lineAct(Widget, XEvent*, String*, Cardinal*)
 {
     clear_isearch();
@@ -637,20 +637,20 @@ void backward_characterAct(Widget, XEvent*, String*, Cardinal*)
     if (pos > promptPosition)
 	XmTextSetInsertionPosition(gdb_w, pos - 1);
 }
-#endif // IF_MOTIF
+#endif
 
 void set_current_line(const string& input)
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XmTextReplace(gdb_w, promptPosition, XmTextGetLastPosition(gdb_w), 
 		  XMST(input.chars()));
-#else // NOT IF_MOTIF
+#else
     gdb_w->replace(promptPosition, gdb_w->get_last_position(), 
 		   XMST(input.chars()));
-#endif // IF_MOTIF
+#endif
 }
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 void set_lineAct(Widget, XEvent*, String* params, Cardinal* num_params)
 {
     clear_isearch();
@@ -671,11 +671,11 @@ void delete_or_controlAct(Widget, XEvent *e,
     else
 	XtCallActionProc(gdb_w, "delete-next-character", e, params, *num_params);
 }
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Actions not implemented
 #endif
-#endif // IF_MOTIF
+#endif
 
 //-----------------------------------------------------------------------------
 // Popup menus
@@ -717,13 +717,13 @@ void popupAct(Widget, XEvent *event, String*, Cardinal*)
 	InstallButtonTips(gdb_popup_w);
     }
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XmMenuPosition(gdb_popup_w, &event->xbutton);
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning XmMenuPosition unimplemented?
 #endif
-#endif // IF_MOTIF
+#endif
     XtManageChild(gdb_popup_w);
 }
 
@@ -731,7 +731,7 @@ void popupAct(Widget, XEvent *event, String*, Cardinal*)
 // Callbacks
 //-----------------------------------------------------------------------------
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 // Veto changes before the current input line
 void gdbModifyCB(Widget gdb_w, XtPointer, XtPointer call_data)
 {
@@ -830,18 +830,18 @@ void gdbMotionCB(Widget, XtPointer, XtPointer call_data)
 	}
     }
 }
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning gdbModifyCB and gdbMotionCB unimplemented!
 #endif
-#endif // IF_MOTIF
+#endif
 
 // Send completed lines to GDB
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 void gdbChangeCB(Widget w, XtPointer, XtPointer)
-#else // NOT IF_MOTIF
+#else
 void gdbChangeCB(SCROLLEDTEXT_P w)
-#endif // IF_MOTIF
+#endif
 {
     if (private_gdb_output)
 	return;
@@ -867,11 +867,11 @@ void gdbChangeCB(SCROLLEDTEXT_P w)
     {
 	// Process entered lines
 	clear_isearch();
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	promptPosition = XmTextGetLastPosition(w);
-#else // NOT IF_MOTIF
+#else
 	promptPosition = w->get_last_position();
-#endif // IF_MOTIF
+#endif
 	for (int i = 0; i < newlines; i++)
 	{
 	    string cmd = lines[i];
@@ -967,92 +967,92 @@ void gdb_button_command(const string& command, Widget origin)
     }
 }
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 void gdbPrevCB  (CB_ARG_LIST_13(w, call_data))
-#else // NOT IF_MOTIF
+#else
 void gdbPrevCB  (CB_ARG_LIST_1(w))
-#endif // IF_MOTIF
+#endif
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
     if (cbs->event == 0)
 	return;
 
     Cardinal zero = 0;
     prev_historyAct(w, cbs->event, 0, &zero);
-#else // NOT IF_MOTIF
+#else
     std::cerr << "gdbPrevCB: not implemented\n";
-#endif // IF_MOTIF
+#endif
 }
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 void gdbNextCB  (CB_ARG_LIST_13(w, call_data))
-#else // NOT IF_MOTIF
+#else
 void gdbNextCB  (CB_ARG_LIST_1(w))
-#endif // IF_MOTIF
+#endif
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
     if (cbs->event == 0)
 	return;
 
     Cardinal zero = 0;
     next_historyAct(w, cbs->event, 0, &zero);
-#endif // IF_MOTIF
+#endif
 }
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 void gdbISearchPrevCB  (CB_ARG_LIST_13(w, call_data))
-#else // NOT IF_MOTIF
+#else
 void gdbISearchPrevCB  (CB_ARG_LIST_1(w))
-#endif // IF_MOTIF
+#endif
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
     if (cbs->event == 0)
 	return;
 
     Cardinal zero = 0;
     isearch_prevAct(w, cbs->event, 0, &zero);
-#else // NOT IF_MOTIF
+#else
     std::cerr << "gdbISearchPrevCB: not implemented\n";
-#endif // IF_MOTIF
+#endif
 }
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 void gdbISearchNextCB  (CB_ARG_LIST_13(w, call_data))
-#else // NOT IF_MOTIF
+#else
 void gdbISearchNextCB  (CB_ARG_LIST_1(w))
-#endif // IF_MOTIF
+#endif
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
     if (cbs->event == 0)
 	return;
 
     Cardinal zero = 0;
     isearch_nextAct(w, cbs->event, 0, &zero);
-#else // NOT IF_MOTIF
+#else
     std::cerr << "gdbISearchNextCB: not implemented\n";
-#endif // IF_MOTIF
+#endif
 }
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 void gdbISearchExitCB  (CB_ARG_LIST_13(w, call_data))
-#else // NOT IF_MOTIF
+#else
 void gdbISearchExitCB  (CB_ARG_LIST_1(w))
-#endif // IF_MOTIF
+#endif
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
     if (cbs->event == 0)
 	return;
 
     Cardinal zero = 0;
     isearch_exitAct(w, cbs->event, 0, &zero);
-#else // NOT IF_MOTIF
+#else
     std::cerr << "gdbISearchExitCB: not implemented\n";
-#endif // IF_MOTIF
+#endif
 }
 
 void gdbClearCB  (CB_ARG_LIST_NULL)
@@ -1069,30 +1069,30 @@ void gdbClearWindowCB(CB_ARG_LIST_NULL)
 
     private_gdb_output = true;
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XmTextReplace(gdb_w, 0, start, XMST(""));
-#else // NOT IF_MOTIF
+#else
     gdb_w->replace(0, start, XMST(""));
-#endif // IF_MOTIF
+#endif
 
     promptPosition  -= start;
     messagePosition -= start;
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XmTextSetInsertionPosition(gdb_w, XmTextGetLastPosition(gdb_w));
-#else // NOT IF_MOTIF
+#else
     gdb_w->set_insertion_position(gdb_w->get_last_position());
-#endif // IF_MOTIF
+#endif
 
     private_gdb_output = false;
 }
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 void gdbCompleteCB  (CB_ARG_LIST_13(w, call_data))
-#else // NOT IF_MOTIF
+#else
 void gdbCompleteCB  (CB_ARG_LIST_1(w))
-#endif // IF_MOTIF
+#endif
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     if (!gdb->isReadyWithPrompt())
     {
 	post_gdb_busy(w);
@@ -1107,21 +1107,21 @@ void gdbCompleteCB  (CB_ARG_LIST_1(w))
     Cardinal zero = 0;
     end_of_lineAct(gdb_w, cbs->event, 0, &zero);
     complete_commandAct(gdb_w, cbs->event, 0, &zero);
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Completion not implemented
 #endif
-#endif // IF_MOTIF
+#endif
 }
 
 // Use this for push buttons
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 void gdbApplyCB(CB_ARG_LIST_13(w, call_data))
-#else // NOT IF_MOTIF
+#else
 void gdbApplyCB(CB_ARG_LIST_1(w))
-#endif // IF_MOTIF
+#endif
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     if (!gdb->isReadyWithPrompt())
     {
 	post_gdb_busy(w);
@@ -1136,21 +1136,21 @@ void gdbApplyCB(CB_ARG_LIST_1(w))
     Cardinal zero = 0;
     end_of_lineAct(gdb_w, cbs->event, 0, &zero);
     XtCallActionProc(gdb_w, "process-return", cbs->event, 0, zero);
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning gdbApplyCB not implemented
 #endif
-#endif // IF_MOTIF
+#endif
 }
 
 // Use this for selection boxes
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 void gdbApplySelectionCB(CB_ARG_LIST_13(w, call_data))
-#else // NOT IF_MOTIF
+#else
 void gdbApplySelectionCB(CB_ARG_LIST_NULL)
-#endif // IF_MOTIF
+#endif
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     if (!gdb->isReadyWithPrompt())
     {
 	post_gdb_busy(w);
@@ -1166,7 +1166,7 @@ void gdbApplySelectionCB(CB_ARG_LIST_NULL)
     Cardinal zero = 0;
     end_of_lineAct(gdb_w, cbs->event, 0, &zero);
     XtCallActionProc(gdb_w, "process-return", cbs->event, 0, zero);
-#else // NOT IF_MOTIF
+#else
     std::cerr << "gdbApplySelectionCB: not implemented\n";
-#endif // IF_MOTIF
+#endif
 }

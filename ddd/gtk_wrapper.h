@@ -778,9 +778,9 @@ typedef Gtk::ScrolledWindow *SCROLLEDWINDOW_P;
 
 // Gtk Scrolled Text
 
-#include "GtkScrolledText.h"
+#include <GUI/ScrolledText.h>
 
-typedef GtkScrolledText *SCROLLEDTEXT_P;
+typedef GUI::ScrolledText *SCROLLEDTEXT_P;
 typedef Gtk::TextView *TEXTVIEW_P;
 
 #define XmTextSetEditable(w, b) (w)->set_editable(b)
