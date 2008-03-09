@@ -10,7 +10,7 @@ dnl
 dnl DDD is free software; you can redistribute it and/or
 dnl modify it under the terms of the GNU General Public
 dnl License as published by the Free Software Foundation; either
-dnl version 2 of the License, or (at your option) any later version.
+dnl version 3 of the License, or (at your option) any later version.
 dnl
 dnl DDD is distributed in the hope that it will be useful,
 dnl but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,8 +19,7 @@ dnl See the GNU General Public License for more details.
 dnl
 dnl You should have received a copy of the GNU General Public
 dnl License along with DDD -- see the file COPYING.
-dnl If not, write to the Free Software Foundation, Inc.,
-dnl 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+dnl If not, see <http://www.gnu.org/licenses/>.
 dnl
 dnl DDD is the data display debugger.
 dnl For details, see the DDD World-Wide-Web page,
@@ -34,8 +33,8 @@ dnl The product version, in the form `MAJOR-NUMBER.MINOR-NUMBER[.PATCHLEVEL]'
 dnl A version in the form `YYYY-MM-DD' is a release-of-the-day, i.e. a
 dnl snapshot of the current development tree.
 dnl
-AC_INIT([ddd],[3.3.12-test2],[ddd@gnu.org])
-NICKNAME="Custard"
+AC_INIT([ddd],[3.3.12-test3],[ddd@gnu.org])
+NICKNAME="Brownies"
 AC_SUBST(NICKNAME)
 DDD_NAMES
 dnl
