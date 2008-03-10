@@ -29,6 +29,10 @@
 #ifndef _DDD_ddd_h
 #define _DDD_ddd_h
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "strclass.h"
 #include <fstream>
 
@@ -39,22 +43,38 @@
 #include <X11/Intrinsic.h>
 #include <Xm/Xm.h>
 
-#else
+#endif
+
+#if !defined(IF_XM)
 
 #include <GUI/ScrolledText.h>
+#include <GUI/Statusbar.h>
 
 #endif
 
 #include "bool.h"
 
+#if defined(IF_XM)
 // Main window widget
-extern CONTAINER_P main_window;
+extern Widget main_window;
 
 // GDB command widget
-extern SCROLLEDTEXT_P gdb_w;
+extern Widget gdb_w;
+#else
+// Main window widget
+extern GUI::Container *main_window;
 
+// GDB command widget
+extern GUI::ScrolledText *gdb_w;
+#endif
+
+#if defined(IF_XM)
 // Status line widget
-extern STATUSBAR_P status_w;
+extern Widget status_w;
+#else
+// Status line widget
+extern GUI::Statusbar *status_w;
+#endif
 
 // Output TEXT in GDB window, unless we've just composed a command
 extern void gdb_out(const string& text);

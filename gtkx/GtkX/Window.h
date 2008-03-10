@@ -38,7 +38,7 @@ namespace GtkX {
     public:
 	Window(Gtk::Window *parent, const String &name="",
 	       int argc=0, char **argv=NULL); // TEMPORARY
-	Window(const String &name="");
+	Window(const String &name="", const String &title="");
 	Gtk::Widget *internal(void);
 	Gtk::Container *gtk_container(void);
 	~Window(void);

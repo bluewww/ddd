@@ -35,10 +35,10 @@ char ArgField_rcsid[] =
 #include "ArgField.h"
 #include <ctype.h>
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 #include <Xm/TextF.h>
 #include <Xm/PushB.h>
-#endif // IF_MOTIF
+#endif
 
 #include "verify.h"
 #include "charsets.h"
@@ -46,17 +46,17 @@ char ArgField_rcsid[] =
 #include "buttons.h"
 #include "string-fun.h"		// strip_space()
 #include "tabs.h"		// tabify()
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 #include "ComboBox.h"
-#endif // IF_MOTIF
+#endif
 
+#if defined(IF_XM)
 
 // Constructor
-ArgField::ArgField (CONTAINER_P parent, const char* name)
+ArgField::ArgField (Widget parent, const char* name)
     : arg_text_field(0), handlers(ArgField_NTypes), is_empty(true), 
       locked(false)
 {
-#ifdef IF_MOTIF
     Arg args[10];
     Cardinal arg = 0;
 
@@ -72,25 +72,31 @@ ArgField::ArgField (CONTAINER_P parent, const char* name)
 		  valueChangedCB, this);
     XtAddCallback(arg_text_field, XmNlosePrimaryCallback,
 		  losePrimaryCB, this);
-#else // NOT IF_MOTIF
-
-    arg_text_field = new Gtk::ComboBoxEntryText();
-    arg_text_field->set_name(name);
-    parent->add(*arg_text_field);
-    arg_text_field->show();
-#endif // IF_MOTIF
 }
+
+#else
+
+// Constructor
+ArgField::ArgField (GUI::Container *parent, const char* name)
+    : arg_text_field(0), handlers(ArgField_NTypes), is_empty(true), 
+      locked(false)
+{
+    arg_text_field = new GUI::ComboBoxEntryText(*parent, name);
+    arg_text_field->show();
+}
+
+#endif
 
 string ArgField::get_string () const
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     String arg = XmTextFieldGetString (arg_text_field);
     string str(arg);
     XtFree (arg);
-#else // NOT IF_MOTIF
+#else
     Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(arg_text_field->get_child());
     string str(entry->get_text().c_str());
-#endif // IF_MOTIF
+#endif
     strip_space(str);
     return str;
 }
@@ -110,22 +116,22 @@ void ArgField::set_string(string s)
     s.gsub('\n', ' ');
 
     // Set it
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     String old_s = XmTextFieldGetString(arg_text_field);
-#else // NOT IF_MOTIF
+#else
     Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(arg_text_field->get_child());
     string old_s(entry->get_text().c_str());
-#endif // IF_MOTIF
+#endif
     if (s != old_s)
     {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	XmTextFieldSetString(arg_text_field, XMST(s.chars()));
-#else // NOT IF_MOTIF
+#else
 	Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(arg_text_field->get_child());
 	entry->set_text(XMST(s.chars()));
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	if (XtIsRealized(arg_text_field)) // LessTif 0.1 crashes otherwise
 	{
 	    XmTextPosition last_pos = 
@@ -134,12 +140,12 @@ void ArgField::set_string(string s)
 	    XmTextFieldShowPosition(arg_text_field, 0);
 	    XmTextFieldShowPosition(arg_text_field, last_pos);
 	}
-#endif // IF_MOTIF
+#endif
     }
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XtFree(old_s);
-#endif // IF_MOTIF
+#endif
 }
 
 void ArgField::valueChangedCB(Widget,
@@ -200,33 +206,52 @@ void ArgField::callHandlers ()
     handlers.call(Empty, this, (void*)is_empty);
 }
 
+#if defined(IF_XM)
+
 Widget ArgField::top() const
 {
-#ifdef IF_MOTIF
     return ComboBoxTop(text());
-#else // NOT IF_MOTIF
+}
+
+#else
+
+GUI::Widget *ArgField::top() const
+{
 #ifdef NAG_ME
 #warning ArgField::top()?
 #endif
     return text();
-#endif // IF_MOTIF
 }
+
+#endif
 
 
 // Clear the text field given in Widget(CLIENT_DATA)
 void ClearTextFieldCB(CB_ALIST_2(XtP(COMBOBOXENTRYTEXT_P) client_data))
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     Widget arg_field = Widget(client_data);
     XmTextFieldSetString(arg_field, XMST(""));
-#else // NOT IF_MOTIF
+#else
     Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(client_data->get_child());
     entry->set_text(XMST(""));
-#endif // IF_MOTIF
+#endif
 }
 
+#if defined(IF_XM)
+
 // Create a `():' label named "arg_label" for ARG_FIELD
-BUTTON_P create_arg_label(CONTAINER_P parent)
+Widget create_arg_label(Widget parent)
 {
     return create_flat_button(parent, "arg_label");
 }
+
+#else
+
+// Create a `():' label named "arg_label" for ARG_FIELD
+GUI::Button *create_arg_label(GUI::Container *parent)
+{
+    return create_flat_button1(parent, "arg_label");
+}
+
+#endif

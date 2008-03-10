@@ -31,24 +31,26 @@ char findParent_rcsid[] =
 
 #include "config.h"
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 #include <Xm/Xm.h>
-#endif // IF_MOTIF
+#endif
 #include <iostream>
 
 #include "findParent.h"
 #include "longName.h"
 #include "bool.h"
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 // ANSI C++ doesn't like the XtIsRealized() macro
 #ifdef XtIsRealized
 #undef XtIsRealized
 #endif
-#endif // IF_MOTIF
+#endif
 
 // Set this to true to allow debugging
 static const bool findParent_debug = false;
+
+#if defined(IF_MOTIF)
 
 // Find a realized Shell
 Widget findShellParent(Widget w)
@@ -59,9 +61,9 @@ Widget findShellParent(Widget w)
     while (w != 0 && (!XtIsWidget(w)
 		      || !XtIsShell(w)
 		      || !XtIsRealized(w)
-		      || XtDisplay(w)
-		      || XtScreen(w)
-		      || XtWindow(w)))
+		      || XtDisplay(w) == None
+		      || XtScreen(w) == None
+		      || XtWindow(w) == None))
 	w = XtParent(w);
 
     if (findParent_debug)
@@ -78,7 +80,7 @@ Widget findShellParent(Widget w)
 
 
 // find a (realized) toplevel Shell
-WINDOW_P findTopLevelShellParent(Widget w)
+Widget findTopLevelShellParent(Widget w)
 {
     if (findParent_debug)
 	std::clog << "findTopLevelShellParent(" << longName(w) << ") = ";
@@ -86,9 +88,9 @@ WINDOW_P findTopLevelShellParent(Widget w)
     while (w != 0 && (!XtIsWidget(w)
 		      || !XtIsTopLevelShell(w)
 		      || !XtIsRealized(w)
-		      || !XtDisplay(w)
-		      || !XtScreen(w)
-		      || !XtWindow(w)))
+		      || XtDisplay(w) == 0
+		      || XtScreen(w) == 0
+		      || XtWindow(w) == 0))
 	w = XtParent(w);
 
     if (findParent_debug)
@@ -100,11 +102,7 @@ WINDOW_P findTopLevelShellParent(Widget w)
 	std::clog << "\n";
     }
 
-#ifdef IF_MOTIF
     return w;
-#else // NOT IF_MOTIF
-    return dynamic_cast<Gtk::Window *>(w);
-#endif // IF_MOTIF
 }
 
 
@@ -139,3 +137,86 @@ Widget findTheTopLevelShell(Widget w)
 
     return found;
 }
+
+#endif
+
+#if !defined(IF_XM)
+
+// Find a realized Shell
+GUI::Shell *findShellParent1(GUI::Widget *w)
+{
+    if (findParent_debug)
+	std::clog << "findShellParent(" << w->get_name() << ") = ";
+
+    while (w != 0 && (!dynamic_cast<GUI::Shell *>(w)
+		      || !w->is_realized()))
+	w = w->get_parent();
+
+    if (findParent_debug)
+    {
+	if (w != 0)
+	    std::clog << w->get_name();
+	else
+	    std::clog << "(none)";
+	std::clog << "\n";
+    }
+
+    return w?dynamic_cast<GUI::Shell *>(w):NULL;
+}
+
+
+// find a (realized) toplevel Shell
+GUI::Shell *findTopLevelShellParent1(GUI::Widget *w)
+{
+    if (findParent_debug)
+	std::clog << "findTopLevelShellParent(" << w->get_name() << ") = ";
+
+#ifdef NAG_ME
+#warning What is the difference between a shell and a top level shell?
+#endif
+    while (w != 0 && (!dynamic_cast<GUI::Shell *>(w)
+		      || !w->is_realized()))
+	w = w->get_parent();
+
+    if (findParent_debug)
+    {
+	if (w != 0)
+	    std::clog << w->get_name();
+	else
+	    std::clog << "(none)";
+	std::clog << "\n";
+    }
+
+    return w?dynamic_cast<GUI::Shell *>(w):NULL;
+}
+
+
+// find highest (realized) toplevel Shell
+GUI::Shell *findTheTopLevelShell1(GUI::Widget *w)
+{
+    if (findParent_debug)
+	std::clog << "findTopLevelShellParent(" << w->get_name() << ") = ";
+
+    GUI::Widget *found = NULL;
+
+    while (w != 0)
+    {
+	if (dynamic_cast<GUI::Shell *>(w)
+	    && w->is_realized())
+	    found = w;
+	w = w->get_parent();
+    }
+
+    if (findParent_debug)
+    {
+	if (found != 0)
+	    std::clog << found->get_name();
+	else
+	    std::clog << "(none)";
+	std::clog << "\n";
+    }
+
+    return w?dynamic_cast<GUI::Shell *>(found):NULL;
+}
+
+#endif

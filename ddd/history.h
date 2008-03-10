@@ -34,13 +34,19 @@
 #include "StringA.h"
 #include "HistoryF.h"
 
-#ifdef IF_MOTIF
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#if defined(IF_MOTIF)
 
 #include <X11/Intrinsic.h>
 
-#else // NOT IF_MOTIF
+#endif
 
-#endif // IF_MOTIF
+#if !defined(IF_XM)
+#include <GUI/Widget.h>
+#endif
 
 
 // History management
@@ -57,8 +63,13 @@ extern string gdb_history_file();
 // Load history from FILE
 extern void load_history(const string& file);
 
+#if defined(IF_XM)
 // Save history into FILE
 extern void save_history(const string& file, Widget origin = 0);
+#else
+// Save history into FILE
+extern void save_history(const string& file, GUI::Widget *origin = 0);
+#endif
 
 // Last command from history
 extern string last_command_from_history();

@@ -45,18 +45,21 @@
 // 
 //-----------------------------------------------------------------------------
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 // Motif includes
 
 #if defined(IF_MOTIF)
-
 #include <Xm/Xm.h>
-
 #endif
 
 #if !defined(IF_XM)
-
+#include <GUI/Container.h>
 #include <GUI/Menu.h>
-
+#include <GUI/Events.h>
+#include <GUI/CheckButton.h>
 #endif
 
 // DDD includes
@@ -109,6 +112,8 @@ class DataDisp {
 
     friend class DataDispCount;
 
+#if defined(IF_XM)
+
     //-----------------------------------------------------------------------
     // Callbacks
     //-----------------------------------------------------------------------
@@ -117,45 +122,98 @@ class DataDisp {
     //-----------------------------------------------------------------------
     // Button callbacks
     //-----------------------------------------------------------------------
-    static void dereferenceCB           (CB_ALIST_1(Widget));
-    static void dereferenceArgCB        (CB_ALIST_1(Widget));
-    static void dereferenceInPlaceCB    (CB_ALIST_1(Widget));
-    static void toggleDetailCB          (CB_ALIST_12(Widget, XtP(int)));
+    static void dereferenceCB           (Widget, XtPointer, XtPointer);
+    static void dereferenceArgCB        (Widget, XtPointer, XtPointer);
+    static void dereferenceInPlaceCB    (Widget, XtPointer, XtPointer);
+    static void toggleDetailCB          (Widget, XtPointer, XtPointer);
     // static void toggleRotateCB          (Widget, XtPointer, XtPointer);
-    static void toggleDisableCB         (CB_ALIST_1(Widget));
-    static void rotateCB                (CB_ALIST_12(Widget, XtP(bool)));
-    static void newCB                   (CB_ALIST_1(Widget));
-    static void enableCB                (CB_ALIST_1(Widget));
-    static void disableCB               (CB_ALIST_1(Widget));
-    static void showDetailCB            (CB_ALIST_12(Widget, XtP(int)));
-    static void showMoreDetailCB        (CB_ALIST_12(Widget, XtP(int)));
-    static void hideDetailCB            (CB_ALIST_1(Widget));
-    static void dependentCB             (CB_ALIST_1(Widget));
-    static void displayArgCB            (CB_ALIST_12(Widget, XtP(bool)));
-    static void plotArgCB               (CB_ALIST_1(Widget));
-    static void plotHistoryCB           (CB_ALIST_1(Widget));
-    static void setCB                   (CB_ALIST_1(Widget));
-    static void shortcutCB              (CB_ALIST_12(Widget, XtP(int)));
-    static void deleteArgCB		(CB_ALIST_1(Widget));
-    static void clusterSelectedCB       (CB_ALIST_NULL);
-    static void unclusterSelectedCB     (CB_ALIST_NULL);
-    static void toggleClusterSelectedCB (CB_ALIST_NULL);
+    static void toggleDisableCB         (Widget, XtPointer, XtPointer);
+    static void rotateCB                (Widget, XtPointer, XtPointer);
+    static void newCB                   (Widget, XtPointer, XtPointer);
+    static void enableCB                (Widget, XtPointer, XtPointer);
+    static void disableCB               (Widget, XtPointer, XtPointer);
+    static void showDetailCB            (Widget, XtPointer, XtPointer);
+    static void showMoreDetailCB        (Widget, XtPointer, XtPointer);
+    static void hideDetailCB            (Widget, XtPointer, XtPointer);
+    static void dependentCB             (Widget, XtPointer, XtPointer);
+    static void displayArgCB            (Widget, XtPointer, XtPointer);
+    static void plotArgCB               (Widget, XtPointer, XtPointer);
+    static void plotHistoryCB           (Widget, XtPointer, XtPointer);
+    static void setCB                   (Widget, XtPointer, XtPointer);
+    static void shortcutCB              (Widget, XtPointer, XtPointer);
+    static void deleteArgCB		(Widget, XtPointer, XtPointer);
+    static void clusterSelectedCB       (Widget, XtPointer, XtPointer);
+    static void unclusterSelectedCB     (Widget, XtPointer, XtPointer);
+    static void toggleClusterSelectedCB (Widget, XtPointer, XtPointer);
 
     //-----------------------------------------------------------------------
     // Popup menu callbacks
     //-----------------------------------------------------------------------
-    static void popup_new_argCB         (CB_ALIST_12(Widget display_dialog, XtP(BoxPoint *) client_data));
-    static void popup_newCB             (CB_ALIST_12(Widget display_dialog, XtP(BoxPoint *) client_data));
-    static void new_displayDCB          (CB_ALIST_12(Widget dialog, XtP(NewDisplayInfo *) client_data));
+    static void popup_new_argCB         (Widget, XtPointer, XtPointer);
+    static void popup_newCB             (Widget, XtPointer, XtPointer);
+    static void new_displayDCB          (Widget, XtPointer, XtPointer);
 
     //-----------------------------------------------------------------------
     // Callbacks of the display editor
     //-----------------------------------------------------------------------
-    static void UpdateGraphEditorSelectionCB   (CB_ALIST_NULL);
-    static void UpdateDisplayEditorSelectionCB (CB_ALIST_NULL);
-    static void PreLayoutCB                    (CB_ALIST_1(GRAPH_EDIT_P));
-    static void PostLayoutCB                   (CB_ALIST_1(GRAPH_EDIT_P));
-    static void DoubleClickCB                  (CB_ALIST_13(GRAPH_EDIT_P, XtP(GraphEditPreSelectionInfo *)));
+    static void UpdateGraphEditorSelectionCB   (Widget, XtPointer, XtPointer);
+    static void UpdateDisplayEditorSelectionCB (Widget, XtPointer, XtPointer);
+    static void PreLayoutCB                    (Widget, XtPointer, XtPointer);
+    static void PostLayoutCB                   (Widget, XtPointer, XtPointer);
+    static void DoubleClickCB                  (Widget, XtPointer, XtPointer);
+
+#else
+
+
+    //-----------------------------------------------------------------------
+    // Callbacks
+    //-----------------------------------------------------------------------
+    static void dispCB                  (Widget, XtPointer, XtPointer);
+
+    //-----------------------------------------------------------------------
+    // Button callbacks
+    //-----------------------------------------------------------------------
+    static void dereferenceCB           (GUI::Widget *);
+    static void dereferenceArgCB        (GUI::Widget *);
+    static void dereferenceInPlaceCB    (GUI::Widget *);
+    static void toggleDetailCB          (GUI::Widget *, int);
+    // static void toggleRotateCB          (Widget, XtPointer, XtPointer);
+    static void toggleDisableCB         (GUI::Widget *);
+    static void rotateCB                (GUI::Widget *, bool);
+    static void newCB                   (GUI::Widget *);
+    static void enableCB                (GUI::Widget *);
+    static void disableCB               (GUI::Widget *);
+    static void showDetailCB            (GUI::Widget *, int);
+    static void showMoreDetailCB        (GUI::Widget *, int);
+    static void hideDetailCB            (GUI::Widget *);
+    static void dependentCB             (GUI::Widget *);
+    static void displayArgCB            (GUI::Widget *, bool);
+    static void plotArgCB               (GUI::Widget *);
+    static void plotHistoryCB           (GUI::Widget *);
+    static void setCB                   (GUI::Widget *);
+    static void shortcutCB              (GUI::Widget *, int);
+    static void deleteArgCB		(GUI::Widget *);
+    static void clusterSelectedCB       (void);
+    static void unclusterSelectedCB     (void);
+    static void toggleClusterSelectedCB (void);
+
+    //-----------------------------------------------------------------------
+    // Popup menu callbacks
+    //-----------------------------------------------------------------------
+    static void popup_new_argCB         (GUI::Widget *display_dialog, BoxPoint *client_data);
+    static void popup_newCB             (GUI::Widget *display_dialog, BoxPoint *client_data);
+    static void new_displayDCB          (GUI::Widget *dialog, NewDisplayInfo *client_data);
+
+    //-----------------------------------------------------------------------
+    // Callbacks of the display editor
+    //-----------------------------------------------------------------------
+    static void UpdateGraphEditorSelectionCB   (void);
+    static void UpdateDisplayEditorSelectionCB (void);
+    static void PreLayoutCB                    (GUIGraphEdit *);
+    static void PostLayoutCB                   (GUIGraphEdit *);
+    static void DoubleClickCB                  (GUIGraphEdit *, GraphEditPreSelectionInfo *);
+
+#endif
 
     //-----------------------------------------------------------------------
     // Graph callbacks
@@ -165,11 +223,19 @@ class DataDisp {
     //-----------------------------------------------------------------------
     // Timers and timer callbacks
     //-----------------------------------------------------------------------
-    static TIMEOUT_RETURN_TYPE RefreshGraphEditCB(TM_ALIST_1(XtP(GraphEditLayoutState *)));
-    static TIMEOUT_RETURN_TYPE RefreshArgsCB (TM_ALIST_NULL);
-    static TIMEOUT_RETURN_TYPE RefreshAddrCB (TM_ALIST_1(XtP(DispNode *)));
+#if defined(IF_XM)
+    static void RefreshGraphEditCB(XtPointer, XtIntervalId *);
+    static void RefreshArgsCB (XtPointer, XtIntervalId *);
+    static void RefreshAddrCB (XtPointer, XtIntervalId *);
 
-    static TIMEOUT_RETURN_TYPE RefreshAddr   (DispNode *, bool=false);
+    static void RefreshAddr   (DispNode *, bool=false);
+#else
+    static bool RefreshGraphEditCB(GraphEditLayoutState *);
+    static bool RefreshArgsCB (void);
+    static bool RefreshAddrCB (DispNode *);
+
+    static bool RefreshAddr   (DispNode *, bool=false);
+#endif
 
     static XtIntervalId refresh_args_timer;
     static XtIntervalId refresh_graph_edit_timer;
@@ -178,12 +244,20 @@ class DataDisp {
     //-----------------------------------------------------------------------
     // Sorting nodes for layout
     //-----------------------------------------------------------------------
-    static void CompareNodesCB (CB_ALIST_3(XtP(GraphEditCompareNodesInfo *)));
+#if defined(IF_XM)
+    static void CompareNodesCB (Widget, XtPointer, XtPointer);
+#else
+    static void CompareNodesCB (GraphEditCompareNodesInfo *);
+#endif
 
     //-----------------------------------------------------------------------
     // Create dialogs
     //-----------------------------------------------------------------------
+#if defined(IF_XM)
     static void new_displayCD (Widget w, const BoxPoint& box_point = BoxPoint());
+#else
+    static void new_displayCD (GUI::Widget *w, const BoxPoint& box_point = BoxPoint());
+#endif
 
     //-----------------------------------------------------------------------
     // Set sensitivity
@@ -224,10 +298,17 @@ class DataDisp {
     static string numbers(IntArray& a);
     static bool all_data_displays(IntArray& numbers);
 
+#if defined(IF_XM)
     static void show(Widget dialog, int depth, int more);
 
     static Widget create_display_dialog(Widget parent, const _XtString name,
 					NewDisplayInfo& info);
+#else
+    static void show(GUI::Widget *dialog, int depth, int more);
+
+    static Widget create_display_dialog(GUI::Widget *parent, const _XtString name,
+					NewDisplayInfo& info);
+#endif
 
     static void rotate_value(DispValue *dv, bool all = false);
     static void rotate_node(DispNode *dn, bool all = false);
@@ -256,6 +337,8 @@ class DataDisp {
     static bool needs_refresh(DispNode *dn);
     static bool selected(DispNode *dn);
 
+#if defined(IF_XM)
+
     //-----------------------------------------------------------------------
     // Actions
     //-----------------------------------------------------------------------
@@ -274,6 +357,30 @@ class DataDisp {
 
     static void call_selection_proc(Widget, const _XtString, XEvent*, String*, Cardinal,
 				    SelectionMode mode);
+
+#else
+
+
+    //-----------------------------------------------------------------------
+    // Actions
+    //-----------------------------------------------------------------------
+    static GUI::ActionRec actions [];
+    static void graph_selectAct         (GUI::Widget*, GUI::Event*, char **, Cardinal*);
+    static void graph_select_or_moveAct (GUI::Widget*, GUI::Event*, char **, Cardinal*);
+    static void graph_extendAct         (GUI::Widget*, GUI::Event*, char **, Cardinal*);
+    static void graph_extend_or_moveAct (GUI::Widget*, GUI::Event*, char **, Cardinal*);
+    static void graph_toggleAct         (GUI::Widget*, GUI::Event*, char **, Cardinal*);
+    static void graph_toggle_or_moveAct (GUI::Widget*, GUI::Event*, char **, Cardinal*);
+    static void graph_popupAct          (GUI::Widget*, GUI::Event*, char **, Cardinal*);
+    static void graph_dereferenceAct    (GUI::Widget*, GUI::Event*, char **, Cardinal*);
+    static void graph_detailAct         (GUI::Widget*, GUI::Event*, char **, Cardinal*);
+    static void graph_rotateAct         (GUI::Widget*, GUI::Event*, char **, Cardinal*);
+    static void graph_dependentAct      (GUI::Widget*, GUI::Event*, char **, Cardinal*);
+
+    static void call_selection_proc(GUI::Widget*, const _XtString, GUI::Event*, char **, Cardinal,
+				    SelectionMode mode);
+
+#endif
 
     //-----------------------------------------------------------------------
     // Menus
@@ -307,6 +414,7 @@ public:
     // Send queries to GDB and process answers
     //-----------------------------------------------------------------------
 
+#if defined(IF_XM)
     // Create a new display for DISPLAY_EXPRESSION.
     // SCOPE is the name of the current function (must match backtrace
     // output) or a scope to be reached; see DEFERRED, below.
@@ -333,6 +441,34 @@ public:
 				  bool verbose = true,
 				  bool prompt = true);
 
+#else
+    // Create a new display for DISPLAY_EXPRESSION.
+    // SCOPE is the name of the current function (must match backtrace
+    // output) or a scope to be reached; see DEFERRED, below.
+    // If POS is set, the new display is created at this position.
+    // If DEPENDS_ON is set, the new display is made dependent on
+    // DEPENDS_ON (a display number or name).
+    // If DEFERRED is set, defer creation until SCOPE is reached.
+    // If CLUSTERED is set, cluster display.
+    // If PLOTTED is set, plot display.
+    // If ORIGIN is set, the last origin is set to ORIGIN.
+    static void new_displaySQ(const string& display_expression,
+			      const string& scope,
+			      BoxPoint *pos = 0,
+			      const string& depends_on = "",
+			      DeferMode deferred = DeferAlways,
+			      bool clustered = false,
+			      bool plotted = false,
+			      GUI::Widget *origin = 0,
+			      bool verbose = true,
+			      bool prompt = true);
+
+    // Refresh displays.  Sends `info display' and `display' to GDB.
+    static void refresh_displaySQ(GUI::Widget *origin = 0, 
+				  bool verbose = true,
+				  bool prompt = true);
+
+#endif
     // Disable displays given in DISPLAY_NRS.  Sends `disable display' to GDB.
     static void disable_displaySQ(IntArray& display_nrs,
 				  bool verbose = true,
@@ -384,6 +520,8 @@ public:
 				    const string& pattern);
     static string toggle_theme_cmd(const string& theme, 
 				   const string& pattern);
+
+#if defined(IF_XM)
 
     // Same, but use the GDB_COMMAND interface for enqueing commands
     static void new_display(const string& display_expression,
@@ -444,6 +582,69 @@ public:
 	gdb_command(toggle_theme_cmd(theme, pattern), origin);
     }
 
+#else
+
+    // Same, but use the GDB_COMMAND interface for enqueing commands
+    static void new_display(const string& display_expression,
+			    BoxPoint *pos = 0,
+			    string depends_on = "",
+			    bool clustered = false,
+			    bool plotted = false,
+			    GUI::Widget *origin = 0)
+    {
+	string c = new_display_cmd(display_expression, pos, 
+				   depends_on, clustered, plotted);
+	gdb_command1(c, origin);
+    }
+
+    static void refresh_display(GUI::Widget *origin = 0)
+    {
+	gdb_command1(refresh_display_cmd(), origin);
+    }
+
+    static void disable_display(IntArray& display_nrs, GUI::Widget *origin = 0)
+    {
+	if (display_nrs.size() > 0)
+	    gdb_command1(disable_display_cmd(display_nrs), origin);
+    }
+
+    static void enable_display(IntArray& display_nrs, GUI::Widget *origin = 0)
+    {
+	if (display_nrs.size() > 0)
+	    gdb_command1(enable_display_cmd(display_nrs), origin);
+    }
+
+    static void delete_display(IntArray& display_nrs, GUI::Widget *origin = 0)
+    {
+	if (display_nrs.size() > 0)
+	    gdb_command1(delete_display_cmd(display_nrs), origin);
+    }
+
+    static void delete_display(const string& name, GUI::Widget *origin = 0)
+    {
+	gdb_command1(delete_display_cmd(name), origin);
+    }
+
+    static void apply_theme(const string& theme, const string& pattern, 
+			    GUI::Widget *origin = 0)
+    {
+	gdb_command1(apply_theme_cmd(theme, pattern), origin);
+    }
+
+    static void unapply_theme(const string& theme, const string& pattern, 
+			      GUI::Widget *origin = 0)
+    {
+	gdb_command1(unapply_theme_cmd(theme, pattern), origin);
+    }
+
+    static void toggle_theme(const string& theme, const string& pattern, 
+			     GUI::Widget *origin = 0)
+    {
+	gdb_command1(toggle_theme_cmd(theme, pattern), origin);
+    }
+
+#endif
+
     // Process 'info display' output in INFO_DISPLAY_ANSWER.  If
     // DEFER_DELETED is set, defer displays that have been deleted.
     static void process_info_display (string& info_display_answer, 
@@ -482,7 +683,11 @@ public:
 
 private:
     // Call me back again
-    static TIMEOUT_RETURN_TYPE again_new_displaySQ (TM_ALIST_1(XtP(NewDisplayInfo *)));
+#if defined(IF_XM)
+    static void again_new_displaySQ (XtPointer, XtIntervalId *);
+#else
+    static bool again_new_displaySQ (NewDisplayInfo *);
+#endif
 
     // Tons of helpers
     static void new_data_displayOQC      (const string& answer, void* data);
@@ -518,7 +723,11 @@ private:
     //-----------------------------------------------------------------------
     static DispGraph *disp_graph;
     static Delay *delay;
+#if defined(IF_XM)
     static Widget last_origin;
+#else
+    static GUI::Widget *last_origin;
+#endif
     static Time last_select_time;
     static int next_ddd_display_number;
     static int next_gdb_display_number;
@@ -540,12 +749,13 @@ private:
     static TREEVIEW_P display_list_w;
 
     // Origin handling
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     static void ClearOriginCB(Widget, XtPointer, XtPointer);
+    static void set_last_origin(Widget origin);
 #else
     static void *ClearOriginCB(void *);
+    static void set_last_origin(GUI::Widget *origin);
 #endif
-    static void set_last_origin(Widget origin);
 
     // Alias checking
     static bool check_aliases();
@@ -563,7 +773,12 @@ private:
     // Unmerge display DISP_NR; return true iff change
     static bool unmerge_display(int disp_nr);
 
+#if defined(IF_XM)
     static Widget graph_form_w;
+#else
+    static GUI::Widget *graph_form_w;
+    // static GUI::Container *graph_form_w;
+#endif
 
     static int alias_display_nr(GraphNode *node);
 
@@ -598,7 +813,11 @@ private:
 
 public:
     static GRAPH_EDIT_P graph_edit;
-    static CONTAINER_P graph_cmd_w;
+#if defined(IF_XM)
+    static Widget graph_cmd_w;
+#else
+    static GUI::Container *graph_cmd_w;
+#endif
 #if defined(IF_MOTIF)
     static SCROLLEDTEXT_P graph_selection_w;
 #endif
@@ -606,7 +825,11 @@ public:
     static bool bump_displays;
 
     // Constructor
-    DataDisp(CONTAINER_P parent, Widget& data_buttons_w);
+#if defined(IF_XM)
+    DataDisp(Widget parent, Widget& data_buttons_w);
+#else
+    DataDisp(GUI::Container *parent, GUI::WidgetPtr<GUI::Container> &data_buttons_w);
+#endif
 
     void create_shells();
 
@@ -614,7 +837,12 @@ public:
     static void get_all_display_numbers(IntArray& numbers);
     static void get_all_clusters(IntArray& numbers);
     static void refresh_graph_edit (bool silent = false);
+#if defined(IF_XM)
     static Widget graph_form() { return graph_form_w; }
+#else
+    // static GUI::Container *graph_form() { return graph_form_w; }
+    static GUI::Widget *graph_form() { return graph_form_w; }
+#endif
 
     // Refresh address of NODE (0: all nodes)
     static void refresh_addr(DispNode *node = 0);
@@ -624,17 +852,35 @@ public:
     static int add_refresh_user_commands(StringArray& cmds);
     static int add_refresh_addr_commands(StringArray& cmds, DispNode *dn = 0);
 
+#if defined(IF_XM)
+
     // Callbacks for menu bar
-    static void EditDisplaysCB(CB_ALIST_NULL);
-    static void refreshCB(CB_ALIST_1(Widget));
-    static void selectAllCB(CB_ALIST_1(Widget));
-    static void unselectAllCB(CB_ALIST_1(Widget));
-    static void deleteCB(CB_ALIST_1(Widget));
-    static void applyThemeCB (CB_ALIST_12(Widget, XtP(const char *)));
-    static void unapplyThemeCB(CB_ALIST_12(Widget, XtP(const char *)));
-    static void toggleThemeCB(CB_ALIST_12(TOGGLEBUTTON_P, XtP(int)));
-    static void applyThemeOnThisCB(CB_ALIST_2(XtP(const char *)));
-    static void applyThemeOnAllCB(CB_ALIST_2(XtP(const char *)));
+    static void EditDisplaysCB(Widget, XtPointer, XtPointer);
+    static void refreshCB(Widget, XtPointer, XtPointer);
+    static void selectAllCB(Widget, XtPointer, XtPointer);
+    static void unselectAllCB(Widget, XtPointer, XtPointer);
+    static void deleteCB(Widget, XtPointer, XtPointer);
+    static void applyThemeCB (Widget, XtPointer, XtPointer);
+    static void unapplyThemeCB(Widget, XtPointer, XtPointer);
+    static void toggleThemeCB(Widget, XtPointer, XtPointer);
+    static void applyThemeOnThisCB(Widget, XtPointer, XtPointer);
+    static void applyThemeOnAllCB(Widget, XtPointer, XtPointer);
+
+#else
+
+    // Callbacks for menu bar
+    static void EditDisplaysCB(void);
+    static void refreshCB(GUI::Widget *);
+    static void selectAllCB(GUI::Widget *);
+    static void unselectAllCB(GUI::Widget *);
+    static void deleteCB(GUI::Widget *);
+    static void applyThemeCB (GUI::Widget *, const char *);
+    static void unapplyThemeCB(GUI::Widget *, const char *);
+    static void toggleThemeCB(GUI::CheckButton *, int);
+    static void applyThemeOnThisCB(const char *);
+    static void applyThemeOnAllCB(const char *);
+
+#endif
 
     // Helpers for user displays
     static bool have_user_display(const string& name);
@@ -671,9 +917,15 @@ public:
     // Return true if a core dump is needed to restore displays
     static bool need_core_to_restore();
 
+#if defined(IF_XM)
     // Return documentation string for shortcut menu item W. 
     // Returns 0 if W is no shortcut menu item.
     static MString shortcut_help(Widget w);
+#else
+    // Return documentation string for shortcut menu item W. 
+    // Returns 0 if W is no shortcut menu item.
+    static MString shortcut_help(GUI::Widget *w);
+#endif
 
     // Select a specific value.  Plotter uses this.
     static void select(DispValue *dv);

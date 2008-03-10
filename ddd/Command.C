@@ -298,7 +298,11 @@ static void _do_gdb_command(const Command& c, bool is_command = true)
 	    bool saved_processing_gdb_commands = processing_gdb_commands;
 	    processing_gdb_commands = false;
 
+#if defined(IF_XM)
 	    handle_running_commands(cmd, c.origin);
+#else
+	    handle_running_commands(cmd, c.xorigin);
+#endif
 
 	    processing_gdb_commands = saved_processing_gdb_commands;
 	}
@@ -355,8 +359,13 @@ static void _do_gdb_command(const Command& c, bool is_command = true)
     }
     else
     {
+#if defined(IF_XM)
 	send_gdb_command(cmd, c.origin, c.callback, c.extra_callback, c.data, 
 			 c.echo, c.verbose, c.prompt, c.check, c.start_undo);
+#else
+	send_gdb_command(cmd, c.xorigin, c.callback, c.extra_callback, c.data, 
+			 c.echo, c.verbose, c.prompt, c.check, c.start_undo);
+#endif
     }
 
 #ifdef IF_MOTIF
@@ -883,6 +892,8 @@ void syncCommandQueue()
     app_data.stop_and_continue = saved_stop_and_continue;
 }
 
+// #if defined(IF_MOTIF)
+
 // Shell finder
 WINDOW_P find_shell(Widget w)
 {
@@ -891,23 +902,24 @@ WINDOW_P find_shell(Widget w)
     if (w == 0)
 	return command_shell;
 
+#if defined(IF_MOTIF)
     WINDOW_P parent = findTopLevelShellParent(w);
     if (parent == 0 || !XtIsRealized(parent))
 	return command_shell;
 
-#ifdef IF_MOTIF
     XWindowAttributes xwa;
     XGetWindowAttributes(XtDisplay(parent), XtWindow(parent), &xwa);
     if (xwa.map_state != IsViewable)
 	return command_shell;
-#else // NOT IF_MOTIF
-#ifdef NAG_ME
-#warning IsViewable attribute?
-#endif
-#endif // IF_MOTIF
 
     return parent;
+#else
+    std::cerr << "find_shell does not work\n";
+    return command_shell;
+#endif
 }
+
+// #endif
 
 #if !defined(IF_XM)
 

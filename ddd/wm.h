@@ -52,7 +52,11 @@ extern void wm_set_name(DISPLAY_P display, Window shell,
 
 // Misc functions
 void wait_until_mapped(Widget w, Widget shell = 0);
+#if defined(IF_XM)
 void raise_shell(Widget w);
+#else
+void raise_shell(GUI::Widget *w);
+#endif
 
 #if defined(IF_XM)
 void manage_and_raise(Widget w);

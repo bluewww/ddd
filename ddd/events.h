@@ -29,6 +29,10 @@
 #ifndef _DDD_events_h
 #define _DDD_events_h
 
+#if HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #ifdef IF_MOTIF
 
 #include <X11/Xlib.h>
@@ -39,11 +43,23 @@
 
 #endif // IF_MOTIF
 
+#if !defined(IF_XM)
+#include <GUI/Events.h>
+#endif
+
 #include "BoxPoint.h"
 #include "BoxSize.h"
 
+#if defined(IF_MOTIF)
 BoxPoint point(XEvent *ev); // Location
 BoxSize size(XEvent *ev);   // Size
 Time time(XEvent *ev);      // Time
+#endif
+
+#if !defined(IF_XM)
+BoxPoint point1(GUI::Event *ev); // Location
+BoxSize size1(GUI::Event *ev);   // Size
+Time time1(GUI::Event *ev);      // Time
+#endif
 
 #endif

@@ -29,15 +29,25 @@
 #ifndef _DDD_examine_h
 #define _DDD_examine_h
 
-#ifdef IF_MOTIF
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
+#if defined(IF_MOTIF)
 #include <X11/Intrinsic.h>
+#endif
 
-#endif // IF_MOTIF
+#if !defined(IF_XM)
+#include <GUI/Widget.h>
+#endif
 
 #include "gtk_wrapper.h"
 
-extern void gdbExamineCB(CB_ALIST_1(Widget));
+#if defined(IF_XM)
+extern void gdbExamineCB(Widget, XtPointer, XtPointer);
+#else
+extern void gdbExamineCB(GUI::Widget *);
+#endif
 
 #endif // _DDD_examine_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

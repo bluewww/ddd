@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include <GtkX/Container.h>
 #include <GtkX/ScrolledText.h>
 
 // #include "SourceView.h"
@@ -7,6 +8,18 @@
 using namespace GtkX;
 
 extern ScrolledText *gdb_w;
+
+void
+GtkX::MarkedTextView::pos_to_rect(long pos, Rectangle &rect)
+{
+    Gtk::TextIter iter = get_buffer()->get_iter_at_offset(pos);
+    Gdk::Rectangle grect;
+    get_iter_location(iter, grect);
+    rect.set_x(grect.get_x());
+    rect.set_y(grect.get_y());
+    rect.set_width(grect.get_width());
+    rect.set_height(grect.get_height());
+}
 
 bool
 MarkedTextView::on_expose_event(GdkEventExpose *event)
@@ -19,8 +32,7 @@ MarkedTextView::on_expose_event(GdkEventExpose *event)
 	Glib::RefPtr<Gdk::GC> gc = style->get_light_gc(Gtk::STATE_NORMAL);
 	Glib::RefPtr<Gdk::Pixbuf> glyph = (*iter)->glyph;
 	int ix, iy;
-	buffer_to_window_coords(Gtk::TEXT_WINDOW_TEXT,
-				(*iter)->x, (*iter)->y,
+	buffer_to_window_coords((*iter)->x, (*iter)->y,
 				ix, iy);
 	win->draw_pixbuf(gc, glyph, 0, 0, ix, iy,
 			 glyph->get_width(), glyph->get_height(),
@@ -35,7 +47,7 @@ MarkedTextView::refresh_line(int y, int height)
     if (win) {
 	Gdk::Rectangle rect;
 	int x1, y1;
-	buffer_to_window_coords(Gtk::TEXT_WINDOW_TEXT, 0, y, x1, y1);
+	buffer_to_window_coords(0, y, x1, y1);
 	std::cerr << "this=" << this << " y=" << y << " y1=" << y1 << "\n";
 	rect.set_x(x1);
 	rect.set_y(y1);
@@ -105,6 +117,13 @@ redo:
     }
 }
 
+void
+MarkedTextView::buffer_to_window_coords(int xin, int yin, int &xout, int &yout)
+{
+    Gtk::TextView::buffer_to_window_coords(Gtk::TEXT_WINDOW_TEXT, xin, yin,
+					   xout, yout);
+}
+
 ScrolledText::ScrolledText(void)
 {
     tb_ = tv_.get_buffer();
@@ -114,6 +133,28 @@ ScrolledText::ScrolledText(void)
     // tv_.modify_base(Gtk::STATE_NORMAL, Gdk::Color("red"));
     add(tv_);
     tv_.show();
+}
+
+ScrolledText::ScrolledText(GtkX::Container &parent, const GtkX::String &name,
+			   const GtkX::String &label)
+{
+    tb_ = tv_.get_buffer();
+    // tv_.modify_bg(Gtk::STATE_NORMAL, Gdk::Color("green"));
+    // tv_.modify_fg(Gtk::STATE_NORMAL, Gdk::Color("red"));
+    // tv_.modify_text(Gtk::STATE_NORMAL, Gdk::Color("blue"));
+    // tv_.modify_base(Gtk::STATE_NORMAL, Gdk::Color("red"));
+    add(tv_);
+    tv_.show();
+    set_name(name.s());
+    parent.add_child(*this);
+    postinit();
+}
+
+
+Gtk::Widget *
+ScrolledText::internal(void)
+{
+    return this;
 }
 
 long
@@ -297,8 +338,7 @@ ScrolledText::pos_to_xy(long pos, int &x, int &y)
     iter = tb_->get_iter_at_offset(pos);
     Gdk::Rectangle location;
     tv_.get_iter_location(iter, location);
-    tv_.buffer_to_window_coords(Gtk::TEXT_WINDOW_TEXT,
-				location.get_x(), location.get_y(),
+    tv_.buffer_to_window_coords(location.get_x(), location.get_y(),
 				x, y);
     std::cerr << "pos_to_xy: what to return?\n";
     return true;

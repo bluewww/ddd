@@ -29,11 +29,17 @@
 #ifndef _DDD_FontTable_h
 #define _DDD_FontTable_h
 
-#ifdef IF_MOTIF
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
+#if defined(IF_MOTIF)
 #include <X11/Xlib.h>
+#endif
 
-#endif // IF_MOTIF
+#if !defined(IF_XM)
+#include <GUI/Widget.h>
+#endif
 
 #include "gtk_wrapper.h"
 
@@ -60,14 +66,23 @@ public:
 
 private:
     FontTableHashEntry table[MAX_FONTS];
-    DISPLAY_P _display;
+#if defined(IF_XM)
+    Display *_display;
+#else
+    GUI::RefPtr<GUI::Display> _display;
+#endif
 
     FontTable(const FontTable&);
     FontTable& operator = (const FontTable&);
 
 public:
-    FontTable(DISPLAY_P display):
+#if defined(IF_XM)
+    FontTable(Display display):
 	_display(display)
+#else
+    FontTable(GUI::RefPtr<GUI::Display> display):
+	_display(display)
+#endif
     {
 	for (unsigned i = 0; i < MAX_FONTS; i++)
 	{
@@ -79,7 +94,7 @@ public:
     {
 	for (unsigned i = 0; i < MAX_FONTS; i++)
 	    if (table[i].font != 0) {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 		XFreeFont(_display, table[i].font);
 #else
 		table[i].font.clear();

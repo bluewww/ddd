@@ -51,10 +51,17 @@ void start_gdb(bool config = true);
 // command in GDB console.  If VERBOSE is set, issue answer in GDB
 // console.  If PROMPT is set, issue prompt.  If CHECK is set, add
 // extra GDB commands to get GDB state.
+#if defined(IF_XM)
 void send_gdb_command(string cmd, Widget origin,
 		      OQCProc callback, OACProc extra_callback, void *data,
 		      bool echo, bool verbose, bool prompt, bool check,
 		      bool undo_source);
+#else
+void send_gdb_command(string cmd, GUI::Widget *origin,
+		      OQCProc callback, OACProc extra_callback, void *data,
+		      bool echo, bool verbose, bool prompt, bool check,
+		      bool undo_source);
+#endif
 
 // Return FALSE if ANSWER is an error message indicating an unknown command
 bool is_known_command(const string& answer);

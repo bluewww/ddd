@@ -5,6 +5,8 @@
 #include <gtkmm/textview.h>
 #include <gtkmm/textbuffer.h>
 
+#include <GtkX/Widget.h>
+
 namespace GtkX {
 
     enum HighlightMode {
@@ -26,12 +28,48 @@ namespace GtkX {
 	}
     };
 
+    class Rectangle {
+      int x_;
+      int y_;
+      int w_;
+      int h_;
+    public:
+      Rectangle(int x0=0, int y0=0, int w0=0, int h0=0) {
+	x_ = x0;
+	y_ = y0;
+	w_ = w0;
+	h_ = h0;
+      }
+      Rectangle(const Rectangle &src) {
+	x_ = src.x_;
+	y_ = src.y_;
+	w_ = src.w_;
+	h_ = src.h_;
+      }
+      Rectangle &operator=(const Rectangle &src) {
+	x_ = src.x_;
+	y_ = src.y_;
+	w_ = src.w_;
+	h_ = src.h_;
+	return *this;
+      }
+      int get_x(void) const {return x_;}
+      void set_x(int x0) {x_ = x0;}
+      int get_y(void) const {return y_;}
+      void set_y(int y0) {y_ = y0;}
+      int get_width(void) const {return w_;}
+      void set_width(int w0) {w_ = w0;}
+      int get_height(void) const {return h_;}
+      void set_height(int h0) {h_ = h0;}
+    };
+
     class MarkedTextView: public Gtk::TextView
     {
 	bool on_expose_event(GdkEventExpose *event);
 	std::list<GlyphMark *> marks;
     public:
 	void pos_to_xy(long pos, int &x, int &y);
+	void pos_to_rect(long pos, Rectangle &rect);
 	GlyphMark *map_glyph(Glib::RefPtr<Gdk::Pixbuf> glyph, int x, int y);
 	GlyphMark *map_glyph(Glib::RefPtr<Gdk::Pixbuf> glyph, long pos);
 	// Unmark a particular glyph:
@@ -39,15 +77,19 @@ namespace GtkX {
 	// Unmark all instances of a glyph:
 	void unmap_glyph(Glib::RefPtr<Gdk::Pixbuf> glyph);
 	void refresh_line(int y, int height);
+	void buffer_to_window_coords(int xin, int yin, int &xout, int &yout);
     };
 
-    class ScrolledText: public Gtk::ScrolledWindow
+    class ScrolledText: public GtkX::Widget, public Gtk::ScrolledWindow
     {
     private:
 	MarkedTextView tv_;
 	Glib::RefPtr<Gtk::TextBuffer> tb_;
     public:
 	ScrolledText(void);
+	ScrolledText(GtkX::Container &parent, const GtkX::String &name="",
+		     const GtkX::String &label="");
+	Gtk::Widget *internal(void);
 	Glib::SignalProxy0<void> signal_changed(void); // From the TextBuffer
 	bool get_editable(void) const;
 	void set_editable(bool);
@@ -73,6 +115,7 @@ namespace GtkX {
 	bool pos_to_xy(long pos, int &x, int &y);
 	int get_rows();
 	int get_columns();
+#include <GtkX/redirect.h>
     };
 
 }

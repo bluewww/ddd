@@ -29,14 +29,22 @@
 #ifndef _DDD_post_h
 #define _DDD_post_h
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "strclass.h"
 #include "bool.h"
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 
 #include <X11/Intrinsic.h>
 
-#endif // IF_MOTIF
+#endif
+
+#if !defined(IF_XM)
+#include <GUI/Dialog.h>
+#endif
 
 #include "gtk_wrapper.h"
 
@@ -47,24 +55,35 @@
 // to ORIGIN.  If ORIGIN is omitted, the widget executing the last
 // command is used.  Each function returns the created, managed, and
 // raised widget, or 0 if no widget was shown.
+#if defined(IF_XM)
 extern Widget post_gdb_busy(Widget origin = 0);
 extern Widget post_gdb_message(string text, bool prompt = true, 
 			       Widget origin = 0);
 extern Widget post_gdb_yn(string text, Widget origin = 0);
 extern Widget post_gdb_died(string reason, int gdb_status, Widget origin = 0);
-extern DIALOG_P post_error(string text, const _XtString name = 0, Widget origin = 0);
-extern DIALOG_P post_warning(string text, const _XtString name = 0, Widget origin = 0);
+extern Widget post_error(string text, const _XtString name = 0, Widget origin = 0);
+extern Widget post_warning(string text, const _XtString name = 0, Widget origin = 0);
+#else
+extern GUI::Dialog *post_gdb_busy(GUI::Widget *origin = 0);
+extern GUI::Dialog *post_gdb_message(string text, bool prompt = true, 
+				     GUI::Widget *origin = 0);
+extern GUI::Dialog *post_gdb_yn(string text, GUI::Widget *origin = 0);
+extern GUI::Dialog *post_gdb_died(string reason, int gdb_status, GUI::Widget *origin = 0);
+extern GUI::Dialog *post_error(string text, const _XtString name = 0, GUI::Widget *origin = 0);
+extern GUI::Dialog *post_warning(string text, const _XtString name = 0, GUI::Widget *origin = 0);
+#endif
 
 // Unpost specific messages
 extern void unpost_gdb_busy();
 extern void unpost_gdb_yn();
 
 // Issue CLIENT_DATA as command and unmanage YN_DIALOG.
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 void YnCB(Widget dialog, XtPointer client_data, XtPointer call_data);
-#else // NOT IF_MOTIF
+#else
 void YnCB(CB_ALIST_12(Widget dialog, XtP(const char *) client_data));
-#endif // IF_MOTIF
+void YnCB1(GUI::Widget *dialog, const char * client_data);
+#endif
 
 #endif // _DDD_post_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

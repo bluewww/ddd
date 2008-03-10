@@ -29,6 +29,10 @@
 #ifndef _DDD_DispGraph_h
 #define _DDD_DispGraph_h
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 //-----------------------------------------------------------------------------
 // The `DispGraph' class keeps all displayed display expressions
 //-----------------------------------------------------------------------------
@@ -119,8 +123,13 @@ public:
     }
 
     // Determine default positions for NEW_NODE
-    BoxPoint default_pos(DispNode *new_node, GRAPH_EDIT_P w, 
+#if defined(IF_XM)
+    BoxPoint default_pos(DispNode *new_node, Widget w, 
 			 int depends_on = 0) const;
+#else
+    BoxPoint default_pos(DispNode *new_node, GUIGraphEdit *w, 
+			 int depends_on = 0) const;
+#endif
 
     // Delete DISP_NR; return false if non-existent
     bool del (int disp_nr);

@@ -43,6 +43,7 @@ namespace GtkX {
 	~ComboBoxEntryText(void);
 	Gtk::Widget *internal(void);
 	String get_text(void);
+	void set_text(const String &);
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
 #include <GtkX/redirect.h>
     };

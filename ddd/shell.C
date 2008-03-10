@@ -63,7 +63,7 @@ string _sh_command(string command, bool force_local,
 {
     // Fetch display settings
     string display;
-    if (command_shell != 0)
+    if (command_shell != (Widget)0)
 	display = XDisplayString(XtDisplay(command_shell));
     else if (getenv("DISPLAY") != 0)
 	display = getenv("DISPLAY");

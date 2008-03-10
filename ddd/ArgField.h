@@ -33,12 +33,22 @@
 // An `ArgField' is a Text field with handler procs.
 //-----------------------------------------------------------------------------
 
-#ifdef IF_MOTIF
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#if defined(IF_MOTIF)
 
 // Motif includes
 #include <X11/Intrinsic.h>
 
-#endif // IF_MOTIF
+#endif
+
+#if !defined(IF_XM)
+#include <GUI/Widget.h>
+#include <GUI/ComboBox.h>
+#include <GUI/Button.h>
+#endif
 
 #include "gtk_wrapper.h"
 
@@ -58,7 +68,11 @@ const unsigned LosePrimary = Changed + 1;
 const unsigned ArgField_NTypes = LosePrimary + 1;
 
 class ArgField {
-    COMBOBOXENTRYTEXT_P   arg_text_field;
+#if defined(IF_XM)
+    Widget                  arg_text_field;
+#else
+    GUI::ComboBoxEntryText *arg_text_field;
+#endif
     HandlerList handlers;
     bool     is_empty;
     bool     locked;
@@ -76,7 +90,11 @@ private:
 
 public:
     // Constructor
-    ArgField(CONTAINER_P parent, const char *name);
+#if defined(IF_XM)
+    ArgField(Widget parent, const char *name);
+#else
+    ArgField(GUI::Container *parent, const char *name);
+#endif
 
     bool empty () const { return is_empty; }
 
@@ -85,8 +103,13 @@ public:
 
     void lock(bool locked = true);
 
-    COMBOBOXENTRYTEXT_P text() const { return arg_text_field; };
+#if defined(IF_XM)
+    Widget text() const { return arg_text_field; };
     Widget top()  const;
+#else
+    GUI::ComboBoxEntryText *text() const { return arg_text_field; };
+    GUI::Widget *top()  const;
+#endif
 
     void addHandler (unsigned    type,
 		     HandlerProc proc,
@@ -99,8 +122,13 @@ public:
     void callHandlers ();
 };
 
+#if defined(IF_XM)
 // Create a `():' label named "arg_label"
-BUTTON_P create_arg_label(CONTAINER_P parent);
+Widget create_arg_label(Widget parent);
+#else
+// Create a `():' label named "arg_label"
+GUI::Button *create_arg_label(GUI::Container *parent);
+#endif
 
 // Clear the text field given in Widget(CLIENT_DATA)
 void ClearTextFieldCB(CB_ALIST_2(XtP(COMBOBOXENTRYTEXT_P)));

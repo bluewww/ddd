@@ -871,9 +871,11 @@ static void SetGCOrientation(CB_ALIST_12(TOGGLEBUTTON_P w, XtP(long) client_data
 	PostScriptPrintGC::Orientation((int)(long)client_data);
 }
 
-static void SetPrintFileNameCB(CB_ALIST_1(FILECHOOSERDIALOG_P w))
+#if defined(IF_XM)
+
+static void SetPrintFileNameCB(Widget w, XtPointer, XtPointer)
 {
-    string target = get_file(CB_ARGS_1(w));
+    string target = get_file(w, XtPointer(0), XtPointer(0));
     if (!target.empty())
     {
 	set_print_file_name(target);
@@ -881,21 +883,33 @@ static void SetPrintFileNameCB(CB_ALIST_1(FILECHOOSERDIALOG_P w))
     }
 }
 
-static void BrowseNameCB(CB_ALIST_1(Widget w))
+#else
+
+static void SetPrintFileNameCB(GUI::FileSelectionDialog *w)
+{
+    string target = get_file(w);
+    if (!target.empty())
+    {
+	set_print_file_name(target);
+	XtUnmanageChild(w);
+    }
+}
+
+#endif
+
+#if defined(IF_XM)
+
+static void BrowseNameCB(Widget w, XtPointer, XtPointer)
 {
     Delay delay;
 
-    static FILECHOOSERDIALOG_P dialog = 0;
+    static Widget dialog = 0;
 
     static MString pattern;
 
-#ifdef IF_MOTIF
     String file = XmTextFieldGetString(print_file_name_field);
     string f = file;
     XtFree(file);
-#else // NOT IF_MOTIF
-    string f(print_file_name_field->get_text().c_str());
-#endif // IF_MOTIF
 
     if (f.contains('.'))
 	pattern = "*" + f.from('.', -1);
@@ -913,56 +927,88 @@ static void BrowseNameCB(CB_ALIST_1(Widget w))
 	}
     }
 
-#ifdef IF_MOTIF
     Arg args[10];
     Cardinal arg = 0;
-#endif // IF_MOTIF
 
     if (dialog == 0)
     {
-#ifdef IF_MOTIF
 	XtSetArg(args[arg], XmNpattern, pattern.xmstring()); arg++;
 	dialog = 
 	    verify(XmCreateFileSelectionDialog(find_shell(w), 
 					       XMST("browse_print"), 
 					       args, arg));
-#else // NOT IF_MOTIF
-	dialog = new Gtk::FileChooserDialog(*find_shell(w), 
-					    XMST("browse_print"),
-					    Gtk::FILE_CHOOSER_ACTION_SAVE);
-#ifdef NAG_ME
-#warning Set file filter.
-#endif
-#endif // IF_MOTIF
 
 	Delay::register_shell(dialog);
-#ifdef IF_MOTIF
 	XtAddCallback(dialog, XmNokCallback, SetPrintFileNameCB, 0);
 	XtAddCallback(dialog, XmNcancelCallback, UnmanageThisCB1, 
 		      XtPointer(dialog));
 	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, XtPointer(0));
-#else // NOT IF_MOTIF
-	Gtk::Button *button;
-	button = dialog->add_button(XMST("OK"), 0);
-	button->signal_clicked().connect(sigc::bind(PTR_FUN(SetPrintFileNameCB), dialog));
-	button = dialog->add_button(XMST("Cancel"), 0);
-	button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB2), dialog));
-#endif // IF_MOTIF
     }
     else
     {
-#ifdef IF_MOTIF
 	XtSetArg(args[arg], XmNpattern, pattern.xmstring()); arg++;
 	XtSetValues(dialog, args, arg);
-#else // NOT IF_MOTIF
-#ifdef NAG_ME
-#warning Set file filters?
-#endif
-#endif // IF_MOTIF
     }
 
     manage_and_raise(dialog);
 }
+
+#else
+
+static void BrowseNameCB(GUI::Widget *w)
+{
+    Delay delay;
+
+    static GUI::FileSelectionDialog *dialog = 0;
+
+    static MString pattern;
+
+    string f(print_file_name_field->get_text().c_str());
+
+    if (f.contains('.'))
+	pattern = "*" + f.from('.', -1);
+    else
+    {
+	switch (print_type)
+	{
+	case PRINT_POSTSCRIPT:
+	    pattern = "*.ps";
+	    break;
+
+	case PRINT_FIG:
+	    pattern = "*.fig";
+	    break;
+	}
+    }
+
+
+    if (dialog == 0)
+    {
+	dialog = new GUI::FileSelectionDialog(*find_shell1(w), 
+					      "browse_print",
+					      GUI::FileActionSave);
+#ifdef NAG_ME
+#warning Set file filter.
+#endif
+
+	Delay::register_shell(dialog);
+	GUI::Button *button;
+	button = dialog->add_button("OK");
+	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(SetPrintFileNameCB), dialog));
+	button = dialog->add_button("Cancel");
+	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB2), dialog));
+    }
+    else
+    {
+#ifdef NAG_ME
+#warning Set file filters?
+#endif
+    }
+
+    manage_and_raise(dialog);
+}
+
+#endif
 
 static void PrintCB(Widget parent, bool displays)
 {
@@ -1122,7 +1168,10 @@ static void PrintCB(Widget parent, bool displays)
     {
 	MENTRYL("name", "name", MMTextField | MMUnmanagedLabel, MMNoCB, 
 	 0, (Widget *)&print_file_name_field),
-	MENTRYL("browse", "browse", MMPush, BIND_0(PTR_FUN(BrowseNameCB)), 0, 0),
+	GENTRYL("browse", "browse", MMPush,
+		BIND_0(PTR_FUN(BrowseNameCB)),
+		sigc::ptr_fun(BrowseNameCB),
+		0, 0),
 	MMEnd
     };
 

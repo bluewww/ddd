@@ -29,6 +29,10 @@
 #ifndef _DDD_buttons_h
 #define _DDD_buttons_h
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "strclass.h"
 
 #ifdef IF_MOTIF
@@ -37,14 +41,29 @@
 
 #endif // IF_MOTIF
 
+#if !defined(IF_XM)
+#include <GUI/Box.h>
+#include <GUI/Container.h>
+#include <GUI/Button.h>
+#endif
+
 #include "gtk_wrapper.h"
 
+#if defined(IF_XM)
 // Create a button row named NAME with buttons as specified in LIST
 Widget make_buttons(Widget parent, const char *name, const _XtString list);
 
 // Assign BUTTONS the buttons specified in LIST.  If MANAGE is set,
 // (un)manage BUTTONS depending on the number of buttons.
-void set_buttons(BOX_P buttons, const _XtString list, bool manage = true);
+void set_buttons(Widget buttons, const _XtString list, bool manage = true);
+#else
+// Create a button row named NAME with buttons as specified in LIST
+GUI::WidgetPtr<GUI::Container> make_buttons(GUI::Container *parent, const char *name, const _XtString list);
+
+// Assign BUTTONS the buttons specified in LIST.  If MANAGE is set,
+// (un)manage BUTTONS depending on the number of buttons.
+void set_buttons(GUI::Box *buttons, const _XtString list, bool manage = true);
+#endif
 
 // Make BUTTON insensitive if it is not supported
 void verify_button(Widget button);
@@ -72,8 +91,14 @@ string gdbValue(const string& expr, string print_command = "");
 // Return changed EXPR that can be used as assignment value
 string assignment_value(const string& expr);
 
+#if defined(IF_MOTIF)
 // Create a flat PushButton named NAME
-BUTTON_P create_flat_button(CONTAINER_P parent, const string& name);
+Widget create_flat_button(Widget parent, const string& name);
+#endif
+#if !defined(IF_XM)
+// Create a flat PushButton named NAME
+GUI::Button *create_flat_button1(GUI::Container *parent, const string& name);
+#endif
 
 // Remove command from help cache.
 void clear_help_cache(const string& command);

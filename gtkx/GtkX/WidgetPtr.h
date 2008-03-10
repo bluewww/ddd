@@ -29,32 +29,33 @@
 #ifndef GTKX_WIDGETPTR_H
 #define GTKX_WIDGETPTR_H
 
+#include <GtkX/Widget.h>
+
 namespace GtkX {
 
     template <class T>
     class WidgetPtr {
 	T *p_;
     public:
-	WidgetPtr(void)
-	    {
-		p_ = NULL;
-	    }
-	WidgetPtr(T *p)
-	    {
-		p_ = p;
-	    }
-	operator T *(void)
-	    {
-		return p_;
-	    };
-	T &operator*(void) const
-	    {
-		return *p_;
-	    }
-	T *operator->() const
-	    {
-		return p_;
-	    }
+	WidgetPtr(void) {
+	    p_ = NULL;
+	}
+	WidgetPtr(T *p) {
+	    p_ = p;
+	}
+	operator T *(void) {
+	    return p_;
+	};
+	T &operator*(void) const {
+	    return *p_;
+	}
+	T *operator->() const {
+	    return p_;
+	}
+	operator Gtk::Widget *(void) {
+	    if (!p_) return (Gtk::Widget *)0;
+	    return p_->internal();
+	}
     };
 
 }

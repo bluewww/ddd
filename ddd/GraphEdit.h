@@ -29,16 +29,22 @@
 #ifndef _DDD_GraphEdit_h
 #define _DDD_GraphEdit_h
 
-#ifdef IF_MOTIF
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
+#if defined(IF_MOTIF)
 #include <X11/Intrinsic.h>
+#else
+#include <gtkmm/drawingarea.h>
+#endif
 
-#else // NOT IF_MOTIF
+#if !defined(IF_XM)
+#include <GUI/Widget.h>
+#include <GUI/Events.h>
+#endif
 
 #include "gtk_wrapper.h"
-#include <gtkmm/drawingarea.h>
-
-#endif // IF_MOTIF
 
 #include "BoxPoint.h"
 
@@ -145,10 +151,10 @@ class GraphNode;
 
 
 // Declare specific GraphEdit class and instance datatypes
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 typedef struct _GraphEditClassRec *GraphEditWidgetClass;
 typedef struct _GraphEditRec      *GraphEditWidget;
-#endif // IF_MOTIF
+#endif
 
 
 // Modes
@@ -209,7 +215,11 @@ struct GraphEditPositionChangedInfo {
 struct GraphEditPreSelectionInfo {
     Graph     *graph;		// Graph this node is in
     GraphNode *node;		// Selected node
+#if defined(IF_XM)
     XEvent    *event;		// Event
+#else
+    GUI::Event *event;		// Event
+#endif
     Boolean   double_click;	// Double-click?
     Boolean   doit;		// Flag: do default action?
 
@@ -291,14 +301,14 @@ struct GraphEditCompareNodesInfo {
 };
 
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 
 // Declare the class constant
 extern WidgetClass graphEditWidgetClass;
 
 typedef Widget GRAPH_EDIT_P;
 
-#else // NOT IF_MOTIF
+#else
 
 #include "GraphGC.h"
 #include <gtkmm/drawingarea.h>
@@ -311,7 +321,7 @@ enum GraphEditState {
     NopState		// something completely different
 };
 
-class GtkGraphEdit: public Gtk::Widget {
+class GUIGraphEdit: public GUI::Widget, public Gtk::Widget {
 private:
 #if 0
     bool show_grid_;
@@ -326,9 +336,12 @@ private:
     Cardinal rotation_;
 #endif
 public:
-    GtkGraphEdit(void);
-    ~GtkGraphEdit(void);
-    bool on_expose_event(GdkEventExpose* event);
+    GUIGraphEdit(void);
+    ~GUIGraphEdit(void);
+#if !defined(IF_XMMM)
+    Gtk::Widget *internal(void);
+#endif
+    bool on_expose_event(GUI::EventExpose *event);
     bool get_show_grid(void);
     void set_show_grid(bool);
     bool get_snap_to_grid(void);
@@ -473,8 +486,13 @@ private:
     // Inform widget that its size has changed
     void graphEditSizeChanged(void);
 
+#if defined(IF_XM)
     // Get node at event
     GraphNode *graphEditGetNodeAtEvent(XEvent *e);
+#else
+    // Get node at event
+    GraphNode *graphEditGetNodeAtEvent(GUI::Event *e);
+#endif
 
     // Redraw all
     void graphEditRedraw(void);
@@ -505,10 +523,10 @@ private:
 		bool isLast);
     Boolean select_graph(GraphNode *root, Boolean set = True);
     Boolean unselect_graph(GraphNode *root);
-    void MoveSelected(XEvent *, string movx, string movy);
+    void MoveSelected(GUI::Event *, string movx, string movy);
 
     // Callbacks
-    void selectionChanged(XEvent *event, Boolean double_click);
+    void selectionChanged(GUI::Event *event, Boolean double_click);
 
     // Actions
     Boolean _SelectAll(void);
@@ -517,22 +535,22 @@ private:
     void UnselectAll(void);
 
     void raise_node(GraphNode *node);
-    void _SelectOrMove(XEvent *event,
+    void _SelectOrMove(GUI::Event *event,
 		       SelectionMode mode, Boolean follow);
+    void SelectOrMove(GUI::Event *event);
+    void ExtendOrMove(GUI::Event *event);
+    void ToggleOrMove(GUI::Event *event);
+    void Select(GUI::Event *event);
+    void Extend(GUI::Event *event);
+    void Toggle(GUI::Event *event);
+    void Follow(GUI::Event *event);
 
-    void SelectOrMove(XEvent *event);
-    void ExtendOrMove(XEvent *event);
-    void ToggleOrMove(XEvent *event);
-    void Select(XEvent *event);
-    void Extend(XEvent *event);
-    void Toggle(XEvent *event);
-    void Follow(XEvent *event);
     void move_selected_nodes(const BoxPoint& offset);
-    void End(XEvent *event);
-    void select_single_node(XEvent *event, GraphNode *selectNode);
-    void SelectFirst(XEvent *event);
-    void SelectNext(XEvent *event);
-    void SelectPrev(XEvent *event);
+    void End(GUI::Event *event);
+    void select_single_node(GUI::Event *event, GraphNode *selectNode);
+    void SelectFirst(GUI::Event *event);
+    void SelectNext(GUI::Event *event);
+    void SelectPrev(GUI::Event *event);
     void _Layout(LayoutMode mode=RegularLayoutMode);
     void DoLayout(LayoutMode mode=RegularLayoutMode);
     void _Normalize(void);
@@ -555,14 +573,15 @@ public:
     sigc::signal<void, GraphEditCompareNodesInfo *> signal_compare_nodes();
     sigc::signal<void, GraphEditLayoutInfo *> signal_pre_layout();
     sigc::signal<void, GraphEditLayoutInfo *> signal_post_layout();
+#include <GtkX/redirect.h>
 };
 
-typedef GtkGraphEdit *GRAPH_EDIT_P;
-typedef GtkGraphEdit *GraphEditWidget;
+typedef GUIGraphEdit *GRAPH_EDIT_P;
+typedef GUIGraphEdit *GraphEditWidget;
 
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 // Declare special access functions
 
 // Inform widget that its size has changed
@@ -594,7 +613,7 @@ extern BoxPoint graphEditFinalPosition(Widget w, const BoxPoint& p);
 
 // Disable or enable display
 extern Boolean graphEditEnableRedisplay(Widget w, Boolean state);
-#endif // IF_MOTIF
+#endif
 
 #endif // _DDD_GraphEdit_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

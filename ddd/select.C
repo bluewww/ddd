@@ -195,7 +195,11 @@ static void select_from_gdb(const string& question, string& reply)
 // Select a file
 static void select_file(const string& /* question */, string& reply)
 {
-    gdbOpenFileCB(CB_ARGS_1(find_shell()));
+#if defined(IF_XM)
+    gdbOpenFileCB(find_shell(), XtPointer(0), XtPointer(0));
+#else
+    gdbOpenFileCB(find_shell1());
+#endif
 
     open_file_reply = "";
     while (open_file_reply.empty() 

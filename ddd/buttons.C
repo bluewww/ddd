@@ -83,6 +83,10 @@ char buttons_rcsid[] =
 #endif
 #include <ctype.h>
 
+#if !defined(IF_XM)
+#include <GUI/Events.h>
+#endif
+
 
 //-----------------------------------------------------------------------------
 // Data
@@ -104,16 +108,18 @@ static void YnButtonCB(Widget dialog,
 		       XtPointer call_data)
 {
     _gdb_out(string(STATIC_CAST(char *,client_data)) + '\n');
-    gdbCommandCB1(dialog, client_data, call_data);
+    gdbCommandCB(dialog, client_data, call_data);
     gdb_keyboard_command = true;
 }
 
-#else
+#endif
 
-static void YnButtonCB(Widget dialog, char *client_data)
+#if !defined(IF_XM)
+
+static void YnButtonCB1(GUI::Widget *dialog, const char *client_data)
 {
-    _gdb_out(string(STATIC_CAST(char *,client_data)) + '\n');
-    gdbCommandCB2(dialog, client_data);
+    _gdb_out(string(client_data) + '\n');
+    gdbCommandCB1(dialog, client_data);
     gdb_keyboard_command = true;
 }
 
@@ -225,6 +231,8 @@ const int help_timeout = 2;	// Timeout for short queries (in s)
 
 static StringStringAssoc help_cache;
 
+#if defined(IF_XM)
+
 static string gdbHelpName(Widget widget)
 {
     string name = XtName(widget);
@@ -233,6 +241,19 @@ static string gdbHelpName(Widget widget)
 
     return name;
 }
+
+#else
+
+static string gdbHelpName(GUI::Widget *widget)
+{
+    string name = widget->get_name().c_str();
+    name.gsub('_', ' ');
+    strip_trailing_space(name);
+
+    return name;
+}
+
+#endif
 
 // Having retrieved the global help text, we can configure JDB
 static void ConfigureJDBCB(XtPointer, XtIntervalId *)
@@ -448,7 +469,11 @@ static string gdbSettingsValue(const string& command)
     return NO_GDB_ANSWER;
 }
 
+#if defined(IF_XM)
 static MString gdbDefaultHelpText(Widget widget)
+#else
+static MString gdbDefaultHelpText(GUI::Widget *widget)
+#endif
 {
     const string name = gdbHelpName(widget);
 
@@ -580,7 +605,9 @@ static void strip_through(string& s, const string& key)
 	s = s.from(int(key_index + key.length()));
 }
 
-static XmTextPosition textPosOfEvent(SCROLLEDTEXT_P widget, XEvent *event)
+#if defined(IF_XM)
+
+static XmTextPosition textPosOfEvent(Widget widget, XEvent *event)
 {
     XmTextPosition startpos, endpos;
     string expr = 
@@ -594,13 +621,31 @@ static XmTextPosition textPosOfEvent(SCROLLEDTEXT_P widget, XEvent *event)
     return startpos;
 }
 
+#else
+
+static XmTextPosition textPosOfEvent(GUI::ScrolledText *widget, GUI::Event *event)
+{
+    XmTextPosition startpos, endpos;
+    string expr = 
+	source_view->get_word_at_event(widget, event, startpos, endpos);
+
+#if 0				// We might point at a text breakpoint
+    if (expr.empty())
+	return XmTextPosition(-1);
+#endif
+
+    return startpos;
+}
+
+#endif
+
+#if defined(IF_XM)
+
 // Get tip string for text widget WIDGET.
-static MString gdbDefaultValueText(SCROLLEDTEXT_P widget, XEvent *event, 
+static MString gdbDefaultValueText(Widget widget, XEvent *event, 
 				   bool for_documentation)
 {
-#if defined(IF_MOTIF)
     assert (XmIsText(widget));
-#endif
 
     XmTextPosition startpos, endpos;
     string expr = 
@@ -633,43 +678,19 @@ static MString gdbDefaultValueText(SCROLLEDTEXT_P widget, XEvent *event,
     // position
     Position x, y;
 
-#if !defined(IF_MOTIF)
-    Gtk::TextIter iter = widget->buffer()->get_iter_at_offset(endpos);
-    Gdk::Rectangle rect;
-    widget->view().get_iter_location(iter, rect);
-    int xbuf = rect.get_x();
-    int ybuf = rect.get_y();
-    widget->view().buffer_to_window_coords(Gtk::TEXT_WINDOW_TEXT, xbuf, ybuf, x, y);
-#endif
-#if defined(IF_MOTIF)
     if (XmTextPosToXY(widget, endpos, &x, &y))
-#else
-#ifdef NAG_ME
-#warning Test for position within textview window?
-#endif
-#endif
     {
 	switch (event->type)
 	{
 	case MotionNotify:
-#if defined(IF_MOTIF)
 	    event->xmotion.x = x;
 	    event->xmotion.y = y;
-#else
-	    event->motion.x = x;
-	    event->motion.y = y;
-#endif
 	    break;
 
 	case EnterNotify:
 	case LeaveNotify:
-#if defined(IF_MOTIF)
 	    event->xcrossing.x = x;
 	    event->xcrossing.y = y;
-#else
-	    event->crossing.x = x;
-	    event->crossing.y = y;
-#endif
 	    break;
 	}
     }
@@ -738,15 +759,150 @@ static MString gdbDefaultValueText(SCROLLEDTEXT_P widget, XEvent *event,
     }
 }
 
+#else
+
+// Get tip string for text widget WIDGET.
+static MString gdbDefaultValueText(GUI::ScrolledText *widget,
+				   GUI::Event *event, 
+				   bool for_documentation)
+{
+    XmTextPosition startpos, endpos;
+    string expr = 
+	source_view->get_word_at_event(widget, event, startpos, endpos);
+
+#if LOG_VALUE_TIPS
+    std::clog << "Pointing at " << quote(expr) << "\n";
+#endif
+
+    // If we're at a breakpoint, return appropriate help
+    MString bp_help = 
+	source_view->help_on_pos(widget, startpos, endpos, for_documentation);
+
+    if (bp_help.xmstring() == 0 && expr.empty())
+	return MString(0, true); // Nothing pointed at
+
+#if RUNTIME_REGEX
+    static regex rxchain("[a-zA-Z0-9_](([.]|->|::)[a-zA-Z0-9_])*");
+#endif
+
+    // Don't invoke the debugger if EXPR is not an identifier.
+    // Otherwise, we might point at `i++' or `f()' and have weird side
+    // effects.
+    MString clear = for_documentation ? rm(" ") : MString(0, true);
+    if (bp_help.xmstring() == 0 && !expr.matches(rxchain) 
+	&& gdb->type() != BASH)
+	return clear;
+
+    // Change EVENT such that the popup tip will remain at the same
+    // position
+    int x, y;
+
+    GUI::Rectangle rect;
+    widget->view().pos_to_rect(endpos, rect);
+    int xbuf = rect.get_x();
+    int ybuf = rect.get_y();
+    widget->view().buffer_to_window_coords(xbuf, ybuf, x, y);
+    // if (XmTextPosToXY(widget, endpos, &x, &y))
+    std::cerr << "HELP: How to get position in textview window?\n";
+#ifdef NAG_ME
+#warning Test for position within textview window?
+#endif
+    x = 0;
+    y = 0;
+    {
+	switch (event->type)
+	{
+	case GUI::MOTION_NOTIFY:
+	    event->motion.x = x;
+	    event->motion.y = y;
+	    break;
+
+	case GUI::ENTER_NOTIFY:
+	case GUI::LEAVE_NOTIFY:
+	    event->crossing.x = x;
+	    event->crossing.y = y;
+	    break;
+	}
+    }
+
+    if (bp_help.xmstring() != 0)
+	return bp_help;
+
+    if (gdb->program_language() == LANGUAGE_PERL)
+    {
+	// In Perl, all variables begin with `$', `@', or `%'.
+	if (!expr.empty() &&  !is_perl_prefix(expr[0]))
+	    return clear;
+    }
+
+    // Get value of ordinary variable
+    string name = fortranize(expr);
+    string tip = gdbValue(name);
+    if (tip == NO_GDB_ANSWER)
+	return MString(0, true);
+
+    if (!is_valid(tip, gdb) && widget == source_view->code())
+    {
+	// Get register value - look up `$pc' when pointing at `pc'
+	name = expr;
+	name.prepend("$");
+	tip = gdbValue(name);
+	if (tip == NO_GDB_ANSWER)
+	    return MString(0, true);
+
+	if (tip.matches(rxint))
+	{
+	    // Show hex value as well.  We don't do a local
+	    // conversion here, but ask GDB instead, since the hex
+	    // format may be language-dependent.
+	    const string hextip = gdbValue("/x " + name);
+	    if (hextip != NO_GDB_ANSWER)
+		tip = hextip + " (" + tip + ")";
+	}
+    }
+
+    if (!is_valid(tip, gdb))
+	return clear;
+
+    if (tip == "void")
+	return clear;		// Empty variable
+
+#if 0
+    if (gdb->program_language() == LANGUAGE_PERL && tip.empty())
+	tip = "undef";
+#endif
+
+    if (for_documentation)
+    {
+	shorten(tip, max_value_doc_length - name.length());
+
+	// The status line also shows the name we're pointing at
+	MString mtip = tt(tip);
+	mtip.prepend(rm(name + " = "));
+	return mtip;
+    }
+    else
+    {
+	// The value tip just shows the value
+	shorten(tip, max_value_tip_length);
+	return tt(tip);
+    }
+}
+
+#endif
+
 // Get tip string for button widget WIDGET.
+#if defined(IF_XM)
 static MString gdbDefaultButtonText(Widget widget, XEvent *, 
 				    bool for_documentation)
+#else
+static MString gdbDefaultButtonText(GUI::Widget *widget, GUI::Event *, 
+				    bool for_documentation)
+#endif
 {
-#if defined(IF_MOTIF)
     MString bp_help = source_view->help_on_glyph(widget, for_documentation);
     if (!bp_help.isNull())
 	return bp_help;
-#endif
 
     MString shortcut_help = data_disp->shortcut_help(widget);
     if (!shortcut_help.isNull())
@@ -914,22 +1070,15 @@ static MString gdbDefaultButtonText(Widget widget, XEvent *,
     return rm(tip);
 }
 
+#if defined(IF_XM)
 
 static MString gdbDefaultText(Widget widget, XEvent *event, 
 			      bool for_documentation)
 {
-#if defined(IF_MOTIF)
     if (XmIsText(widget))
 	return gdbDefaultValueText(widget, event, for_documentation);
     else
 	return gdbDefaultButtonText(widget, event, for_documentation);
-#else
-    GUI::ScrolledText *tv = dynamic_cast<GUI::ScrolledText *>(widget);
-    if (tv)
-	return gdbDefaultValueText(tv, event, for_documentation);
-    else
-	return gdbDefaultButtonText(widget, event, for_documentation);
-#endif
 }
 
 static MString gdbDefaultTipText(Widget widget, XEvent *event)
@@ -941,6 +1090,30 @@ static MString gdbDefaultDocumentationText(Widget widget, XEvent *event)
 {
     return gdbDefaultText(widget, event, true);
 }
+
+#else
+
+static MString gdbDefaultText(GUI::Widget *widget, GUI::Event *event, 
+			      bool for_documentation)
+{
+    GUI::ScrolledText *tv = dynamic_cast<GUI::ScrolledText *>(widget);
+    if (tv)
+	return gdbDefaultValueText(tv, event, for_documentation);
+    else
+	return gdbDefaultButtonText(widget, event, for_documentation);
+}
+
+static MString gdbDefaultTipText(GUI::Widget *widget, GUI::Event *event)
+{
+    return gdbDefaultText(widget, event, false);
+}
+
+static MString gdbDefaultDocumentationText(GUI::Widget *widget, GUI::Event *event)
+{
+    return gdbDefaultText(widget, event, true);
+}
+
+#endif
 
 
 //-----------------------------------------------------------------------------
@@ -980,7 +1153,7 @@ static void VerifyButtonWorkProc(XtPointer client_data, XtIntervalId *id)
 	{
 	    string cmd;
 
-	    if (callbacks[j].callback == gdbCommandCB1)
+	    if (callbacks[j].callback == gdbCommandCB)
 	    {
 		cmd = (String)(callbacks[j].closure);
 		cmd = cmd.through(rxidentifier);
@@ -1111,11 +1284,12 @@ static void register_button(WidgetArray& arr, Widget w)
 #endif
 }
 
+#if defined(IF_XM)
+
 // Create a button work area from BUTTON_LIST named NAME
 Widget make_buttons(Widget parent, const char *name, 
 		    const _XtString button_list)
 {
-#if defined(IF_MOTIF)
     Arg args[10];
     int arg = 0;
     XtSetArg(args[arg], XmNorientation, XmHORIZONTAL); arg++;
@@ -1127,13 +1301,9 @@ Widget make_buttons(Widget parent, const char *name,
     XtSetArg(args[arg], XmNhighlightThickness, 0);     arg++;
     XtSetArg(args[arg], XmNshadowThickness, 0);        arg++;
     Widget buttons = verify(XmCreateRowColumn(parent, XMST(name), args, arg));
-#else
-    Gtk::HBox *buttons = new Gtk::HBox();
-#endif
 
     set_buttons(buttons, button_list);
 
-#if defined(IF_MOTIF)
     if (XtIsManaged(buttons))
     {
 	XtWidgetGeometry size;
@@ -1144,19 +1314,34 @@ Widget make_buttons(Widget parent, const char *name,
 		      XmNpaneMinimum, size.height,
 		      XtPointer(0));
     }
+
+    return buttons;
+}
+
 #else
+
+// Create a button work area from BUTTON_LIST named NAME
+GUI::WidgetPtr<GUI::Container> make_buttons(GUI::Container *parent, const char *name, 
+					    const _XtString button_list)
+{
+    GUI::HBox *buttons = new GUI::HBox(*parent, name);
+
+    set_buttons(buttons, button_list);
+
 #ifdef NAG_ME
 #warning No size adjustment
-#endif
 #endif
 
     return buttons;
 }
 
-void set_buttons(BOX_P buttons, const _XtString _button_list, bool manage)
+#endif
+
+#if defined(IF_XM)
+
+void set_buttons(Widget buttons, const _XtString _button_list, bool manage)
 {
     string *sp;
-#if defined(IF_MOTIF)
     XtPointer user_data   = 0;
     WidgetList children   = 0;
     Cardinal num_children = 0;
@@ -1176,7 +1361,6 @@ void set_buttons(BOX_P buttons, const _XtString _button_list, bool manage)
 	return;
     }
     delete sp;
-#endif
 
     StatusDelay *delay = 0;
     if (gdb_initialized)
@@ -1184,21 +1368,11 @@ void set_buttons(BOX_P buttons, const _XtString _button_list, bool manage)
 
     // Destroy all existing children (= buttons)
     int i;
-#if defined(IF_MOTIF)
     for (i = 0; i < int(num_children); i++)
     {
 	XtUnmanageChild(children[i]);
 	DestroyWhenIdle(children[i]);
     }
-#else
-    Glib::ListHandle<Gtk::Widget*> children = buttons->get_children();
-    Glib::ListHandle<Gtk::Widget*>::iterator iter(0), nextiter(0);
-    for (iter = children.begin(); iter != children.end(); iter = nextiter) {
-	nextiter = iter;
-	nextiter++;
-	buttons->remove(**iter);
-    }
-#endif
 
     // Add new buttons
     string button_list = _button_list;
@@ -1219,11 +1393,7 @@ void set_buttons(BOX_P buttons, const _XtString _button_list, bool manage)
     int number_of_buttons = 0;
     for (i = 0; i < lines; i++)
     {
-#if defined(IF_XM)
-	XtCallbackProc callback = gdbCommandCB1;
-#else
-	GTK_SLOT_WP callback = PTR_FUN(gdbCommandCB12);
-#endif
+	XtCallbackProc callback = gdbCommandCB;
 
 	string name = commands[i];
 	strip_space(name);
@@ -1231,14 +1401,10 @@ void set_buttons(BOX_P buttons, const _XtString _button_list, bool manage)
 	if (name.empty())
 	    continue;
 
-#if defined(IF_MOTIF)
 #ifdef NAG_ME
 #warning Do we really need to pass args here?
 #endif
 	MString label(0, true);
-#else
-	MString label; // Default constructor
-#endif
 	if (name.contains(app_data.label_delimiter))
 	{
 	    string label_s = name.after(app_data.label_delimiter);
@@ -1279,7 +1445,6 @@ void set_buttons(BOX_P buttons, const _XtString _button_list, bool manage)
 #endif
 	name.gsub(rxsep, '_');
 
-#if defined(IF_MOTIF)
 #if 0
 	Widget button = verify(create_flat_button(buttons, name));
 #else
@@ -1289,15 +1454,9 @@ void set_buttons(BOX_P buttons, const _XtString _button_list, bool manage)
 	XtSetArg(args[arg], XmNhighlightThickness, 1); arg++;
 	Widget button = verify(XmCreatePushButton(buttons, XMST(name.chars()), args, arg));
 #endif
-#else
-	Gtk::Button *button = new Gtk::Button(XMST(name.chars()));
-	button->show();
-	buttons->pack_start(*button, Gtk::PACK_SHRINK);
-#endif
 	XtManageChild(button);
 	number_of_buttons++;
 
-#if defined(IF_MOTIF)
 	// A user-specified labelString overrides the given label
 	XmString xmlabel;
 	XtVaGetValues(button, XmNlabelString, &xmlabel, XtPointer(0));
@@ -1311,11 +1470,6 @@ void set_buttons(BOX_P buttons, const _XtString _button_list, bool manage)
 	    XtVaSetValues(button, 
 			  XmNlabelString, label.xmstring(), XtPointer(0));
 	}
-#else
-#ifdef NAG_ME
-#warning Set button name
-#endif
-#endif
 
 	if (name == "Yes")
 	{
@@ -1370,7 +1524,6 @@ void set_buttons(BOX_P buttons, const _XtString _button_list, bool manage)
 	// Be sure to verify whether the button actually exists
 	verify_button(button);
 
-#if defined(IF_MOTIF)
 	// We remove all callbacks to avoid popping down DialogShells
 	XtRemoveAllCallbacks(button, XmNactivateCallback);
 	XtAddCallback(button, XmNactivateCallback, callback,
@@ -1378,13 +1531,6 @@ void set_buttons(BOX_P buttons, const _XtString _button_list, bool manage)
 
 	// Add a help callback
 	XtAddCallback(button, XmNhelpCallback, ImmediateHelpCB, XtPointer(0));
-#else
-#ifdef NAG_ME
-#warning Dummy "call_data" argument
-#endif
-	button->signal_clicked().connect(sigc::bind(callback, button,
-						     strdup(command.chars())));
-#endif
     }
     delete[] commands;
 
@@ -1392,7 +1538,6 @@ void set_buttons(BOX_P buttons, const _XtString _button_list, bool manage)
     {
 	if (number_of_buttons > 0)
 	{
-#if defined(IF_MOTIF)
 	    // Manage buttons, giving them their preferred height
 	    XtWidgetGeometry size;
 	    size.request_mode = CWHeight;
@@ -1402,11 +1547,6 @@ void set_buttons(BOX_P buttons, const _XtString _button_list, bool manage)
 			  XmNpaneMinimum, size.height, 
 			  XmNpaneMaximum, size.height,
 			  XtPointer(0));
-#else
-#ifdef NAG_ME
-#warning Size?
-#endif
-#endif
 	    
 	    manage_paned_child(buttons);
 	}
@@ -1417,24 +1557,16 @@ void set_buttons(BOX_P buttons, const _XtString _button_list, bool manage)
 	}
     }
 
-#if defined(IF_MOTIF)
     sp = new string(_button_list);
     XtVaSetValues(buttons, XmNuserData, XtPointer(sp), XtPointer(0));
-#else
-#ifdef NAG_ME
-#warning No button specification
-#endif
-#endif
 
     // Register default help command
-#if defined(IF_MOTIF)
     DefaultHelpText           = gdbDefaultHelpText;
     DefaultTipText            = gdbDefaultTipText;
     DefaultDocumentationText  = gdbDefaultDocumentationText;
     TextPosOfEvent            = textPosOfEvent;
 
     DisplayDocumentation      = showDocumentationInStatusLine;
-#endif
 
     // Set sensitivity
     refresh_buttons();
@@ -1448,6 +1580,214 @@ void set_buttons(BOX_P buttons, const _XtString _button_list, bool manage)
     delete delay;
 }
 
+#else
+
+void set_buttons(GUI::Box *buttons, const _XtString _button_list, bool manage)
+{
+    string *sp;
+
+#ifdef NAG_ME
+#warning Verify buttons?
+#endif
+
+    StatusDelay *delay = 0;
+    if (gdb_initialized)
+	delay = new StatusDelay("Setting buttons");
+
+    // Destroy all existing children (= buttons)
+    int i;
+    GUI::ChildList children = buttons->get_children();
+    GUI::ChildIterator iter, nextiter;
+    for (iter = children.begin(); iter != children.end(); iter = nextiter) {
+	nextiter = iter;
+	nextiter++;
+	buttons->remove(**iter);
+    }
+
+    // Add new buttons
+    string button_list = _button_list;
+
+    if (button_list.contains(':') && old_button_format())
+    {
+	// DDD 2.1 and earlier used `:' to separate buttons
+	button_list.gsub(':', '\n');
+
+	std::cerr << "Warning: converting " << quote(_button_list) << "\n"
+	     << "to new format " << quote(button_list) << "\n";
+    }
+
+    int lines = button_list.freq('\n') + 1;
+    string *commands = new string[lines];
+    split(button_list, commands, lines, '\n');
+
+    int number_of_buttons = 0;
+    for (i = 0; i < lines; i++)
+    {
+	sigc::slot<void, GUI::Widget *, const char *>
+	    callback = sigc::ptr_fun(gdbCommandCB1);
+
+	string name = commands[i];
+	strip_space(name);
+
+	if (name.empty())
+	    continue;
+
+	MString label; // Default constructor
+	if (name.contains(app_data.label_delimiter))
+	{
+	    string label_s = name.after(app_data.label_delimiter);
+	    name = name.before(app_data.label_delimiter);
+	    strip_space(label_s);
+	    strip_space(name);
+	    label = MString(label_s);
+	}
+
+	string command = name;
+	if (name.contains("..."))
+	{
+	    name = name.before("...");
+	}
+	else if (name.contains('^'))
+	{
+	    command = ctrl(name.from('^'));
+	    name = name.before('^');
+	}
+	else if (!name.empty() && iscntrl(name[name.length() - 1]))
+	{
+	    command = string(name[name.length() - 1]);
+	    name = name.before(-1);
+	}
+
+	if (label.isNull())
+	{
+	    // Create default label from name
+	    string label_s = name;
+	    if (!label_s.empty())
+		label_s[0] = toupper(label_s[0]);
+	    label = MString(label_s);
+	}
+
+	// Make sure the widget name does not contain invalid characters
+#if RUNTIME_REGEX
+	static regex rxsep("[^-_a-zA-Z0-9]");
+#endif
+	name.gsub(rxsep, '_');
+
+	GUI::Button *button = new GUI::Button(*buttons, name.chars());
+	button->show();
+	number_of_buttons++;
+
+#ifdef NAG_ME
+#warning Set button name
+#endif
+
+	if (name == "Yes")
+	{
+	    command = "yes";
+	    XtUnmanageChild(button);
+	    callback = sigc::ptr_fun(YnButtonCB1);
+	}
+	else if (name == "No")
+	{
+	    command = "no";
+	    XtUnmanageChild(button);
+	    callback = sigc::ptr_fun(YnButtonCB1);
+	}
+	else if (name == "Prev")
+	    callback = sigc::hide(sigc::ptr_fun(gdbPrevCB));
+	else if (name == "Next")
+	    callback = sigc::hide(sigc::ptr_fun(gdbNextCB));
+	else if (name == "Clear")
+	    callback = sigc::hide(sigc::hide(sigc::ptr_fun(gdbClearCB)));
+	else if (name == "Complete")
+	    callback = sigc::hide(sigc::ptr_fun(gdbCompleteCB));
+	else if (name == "Apply")
+	    callback = sigc::hide(sigc::ptr_fun(gdbApplyCB));
+	else if (name == "Make")
+	    callback = sigc::hide(sigc::ptr_fun(gdbMakeAgainCB));
+	else if (name == "Undo" || name == "Back")
+	{
+	    callback = sigc::hide(sigc::hide(sigc::ptr_fun(gdbUndoCB)));
+	    register_button(undo_buttons, button);
+	}
+	else if (name == "Redo" || name == "Forward")
+	{
+	    callback = sigc::hide(sigc::hide(sigc::ptr_fun(gdbRedoCB)));
+	    register_button(redo_buttons, button);
+	}
+	else if (name == "Edit")
+	{
+	    callback = sigc::hide(sigc::ptr_fun(gdbEditSourceCB));
+	    register_button(edit_buttons, button);
+	}
+	else if (name == "Reload")
+	{
+	    callback = sigc::hide(sigc::hide(sigc::ptr_fun(gdbReloadSourceCB)));
+	    register_button(edit_buttons, button);
+	}
+
+	if (name == "up")
+	    register_button(up_buttons, button);
+	else if (name == "down")
+	    register_button(down_buttons, button);
+
+	// Be sure to verify whether the button actually exists
+	verify_button(button);
+
+#ifdef NAG_ME
+#warning Dummy "call_data" argument
+#endif
+	button->signal_clicked().connect(sigc::bind(callback, button,
+						     strdup(command.chars())));
+    }
+    delete[] commands;
+
+    if (manage)
+    {
+	if (number_of_buttons > 0)
+	{
+#ifdef NAG_ME
+#warning Buttons pane Size?
+#endif
+	    
+	    manage_paned_child(buttons);
+	}
+	else
+	{
+	    // No buttons at all
+	    unmanage_paned_child(buttons);
+	}
+    }
+
+    // sp = new string(_button_list);
+    // XtVaSetValues(buttons, XmNuserData, XtPointer(sp), XtPointer(0));
+#ifdef NAG_ME
+#warning No button specification
+#endif
+
+    // Register default help command
+    // DefaultHelpText           = gdbDefaultHelpText;
+    // DefaultTipText            = gdbDefaultTipText;
+    // DefaultDocumentationText  = gdbDefaultDocumentationText;
+    // TextPosOfEvent            = textPosOfEvent;
+    // DisplayDocumentation      = showDocumentationInStatusLine;
+#ifdef NAG_ME
+#warning What do we do here?
+#endif
+
+    // Set sensitivity
+    refresh_buttons();
+
+    // Install tips
+    InstallButtonTips1(buttons);
+
+    // Update `define' panel
+    UpdateDefinePanelCB();
+
+    delete delay;
+}
+
+#endif
 
 
 //-----------------------------------------------------------------------------
@@ -1877,8 +2217,10 @@ static MMDesc desc[] =
     MMEnd
 };
 
+#if defined(IF_MOTIF)
+
 // Create a flat PushButton named NAME
-BUTTON_P create_flat_button(CONTAINER_P parent, const string& name)
+Widget create_flat_button(Widget parent, const string& name)
 {
     desc[0].name = name.chars();
     MMaddItems(parent,
@@ -1889,3 +2231,18 @@ BUTTON_P create_flat_button(CONTAINER_P parent, const string& name)
     MMaddCallbacks(desc);
     return (BUTTON_P)desc[0].widget;
 }
+
+#endif
+
+#if !defined(IF_XM)
+
+// Create a flat PushButton named NAME
+GUI::Button *create_flat_button1(GUI::Container *parent, const string& name)
+{
+    desc[0].name = name.chars();
+    MMaddItems(parent, NULL, desc);
+    MMaddCallbacks(desc);
+    return dynamic_cast<GtkX::Button *>(desc[0].xwidget);
+}
+
+#endif

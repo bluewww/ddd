@@ -3826,7 +3826,7 @@ bool save_options(unsigned long flags)
     if (save_geometry)
     {
 	// Widget geometry
-	if (command_shell)
+	if (command_shell != (Widget)0)
 	    set_xml_widget_geometry(root, "command_shell", command_shell);
 	if (source_view_shell)
 	    set_xml_widget_geometry(root, "source_view_shell", source_view_shell);

@@ -275,7 +275,7 @@ COMMAND(const string &)
 #if !defined(IF_XM)
 
 #define COMMAND(TYPE) \
-    inline void gdb_command(TYPE command, GUI::Widget *origin,		\
+    inline void gdb_command1(TYPE command, GUI::Widget *origin,		\
 			OQCProc callback, void *data = 0,		\
 			bool verbose = false, bool check = false,	\
 			int priority = COMMAND_PRIORITY_SYSTEM)		\
@@ -288,7 +288,7 @@ COMMAND(const string &)
 #undef COMMAND
 
 #define COMMAND(TYPE) \
-inline void gdb_command(TYPE command, GUI::Widget *origin) \
+inline void gdb_command1(TYPE command, GUI::Widget *origin) \
 { \
     gdb_command(Command(command, origin)); \
 }

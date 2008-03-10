@@ -338,7 +338,7 @@ static void gdbRunDCB(void)
 	else
 	    c = cmd;
 	cmd = cmd.after('\n');
-	gdb_command(c, (GUI::Widget *)run_dialog);
+	gdb_command1(c, (GUI::Widget *)run_dialog);
     }
 }
 
@@ -401,9 +401,9 @@ void gdbRunCB(Widget w, XtPointer, XtPointer)
 // Create `Run' dialog
 void gdbRunCB1(GUI::Widget *w)
 {
-    if (run_dialog == 0)
+    if (run_dialog == (GUI::Widget *)0)
     {
-	run_dialog = new GUI::Dialog(find_shell(w->internal()), "run_dialog");
+	run_dialog = new GUI::Dialog(*find_shell1(w), "run_dialog");
 
 	Delay::register_shell1(run_dialog);
 	GUI::Button *button = run_dialog->add_button("Run");
@@ -465,10 +465,21 @@ static void gdbMakeDCB(void)
 
 #endif
 
-void gdbMakeAgainCB(CB_ALIST_1(Widget w))
+#if defined(IF_XM)
+
+void gdbMakeAgainCB(Widget w, XtPointer, XtPointer)
 {
     gdb_command(gdb->make_command(last_make_argument));
 }
+
+#else
+
+void gdbMakeAgainCB(GUI::Widget *w)
+{
+    gdb_command(gdb->make_command(last_make_argument));
+}
+
+#endif
 
 #if defined(IF_XM)
 
@@ -519,9 +530,9 @@ void gdbMakeCB(GUI::Widget *w)
     if (!gdb->has_make_command())
 	return;
 
-    if (make_dialog == 0)
+    if (make_dialog == (GUI::Widget *)0)
     {
-	make_dialog = new GUI::Dialog(find_shell(w->internal()), "make_dialog");
+	make_dialog = new GUI::Dialog(*find_shell1(w), "make_dialog");
 
 	Delay::register_shell(make_dialog);
 	GUI::Button *button = make_dialog->add_button("Make");
@@ -655,12 +666,12 @@ void gdbChangeDirectoryCB(Widget w, XtPointer, XtPointer)
 // Create `ChangeDirectory' dialog
 void gdbChangeDirectoryCB(GUI::Widget *w)
 {
-    if (cd_dialog == 0)
+    if (cd_dialog == (GUI::Widget *)0)
     {
-	WINDOW_P sh = find_shell(w->internal());
+	GUI::Shell *sh = find_shell1(w);
 	GUI::String str = GUI::String("cd_dialog");
 	std::cerr << "OK, Window " << sh << "\n" << std::flush;
-	cd_dialog = new GUI::Dialog(sh, str);
+	cd_dialog = new GUI::Dialog(*sh, str);
 	// cd_dialog = new GUI::Dialog(find_shell(w->internal()), "cd_dialog");
 
 	GUI::Button *button = cd_dialog->add_button("Change");

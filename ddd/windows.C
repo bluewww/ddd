@@ -89,15 +89,22 @@ char windows_rcsid[] =
 // Shells (only used if separate windows are used)
 #if defined(IF_XM)
 Widget command_shell;
+Widget data_disp_shell;
+Widget source_view_shell;
 #else
-GUI::WidgetPtr<GUI::Window> command_shell = NULL;
+GUI::Window *command_shell = NULL;
+GUI::Window *data_disp_shell = NULL;
+GUI::Window *source_view_shell = NULL;
 #endif
-WINDOW_P data_disp_shell;
-WINDOW_P source_view_shell;
 
 // Command tool
-WINDOW_P tool_shell;
-BOX_P tool_buttons_w;
+#if defined(IF_XM)
+Widget tool_shell;
+Widget tool_buttons_w;
+#else
+GUI::Window *tool_shell;
+GUI::Box *tool_buttons_w;
+#endif
 
 // Shell state stuff
 enum WindowState { PoppingUp, PoppedUp, PoppedDown, 
@@ -149,6 +156,29 @@ static WindowState& state(Widget w)
     return dummy;
 }
 
+static WindowState& state(GUI::Widget *w)
+{
+    static WindowState command_shell_state     = PoppedDown;
+    static WindowState data_disp_shell_state   = PoppedDown;
+    static WindowState source_view_shell_state = PoppedDown;
+    static WindowState tool_shell_state        = PoppedDown;
+
+    if (w == 0)
+	/* do nothing */;
+    else if (w == command_shell)
+	return command_shell_state;
+    else if (w == data_disp_shell)
+	return data_disp_shell_state;
+    else if (w == source_view_shell)
+	return source_view_shell_state;
+    else if (w == tool_shell)
+	return tool_shell_state;
+
+    static WindowState dummy;
+    dummy = UnknownShell;
+    return dummy;
+}
+
 static bool popped_down(Widget w)
 {
     WindowState st = state(w);
@@ -163,6 +193,18 @@ static void set_state(WindowState& var, WindowState state)
 }
 
 static void set_state(Widget w, WindowState s)
+{
+    WindowState& var = state(w);
+    if (var != UnknownShell)
+    {
+	set_state(var, s);
+#if LOG_EVENTS
+	std::clog << XtName(w) << " is " << state(w) << "\n";
+#endif
+    }
+}
+
+static void set_state(GUI::Widget *w, WindowState s)
 {
     WindowState& var = state(w);
     if (var != UnknownShell)
@@ -441,13 +483,14 @@ bool started_iconified(Widget w)
 #endif // IF_MOTIF
 }
 
+#if defined(IF_XM)
+
 // Popup initial shell
 void initial_popup_shell(Widget w)
 {
     if (w == 0)
 	return;
 
-#ifdef IF_MOTIF
     Boolean iconic = started_iconified(w);
     XtVaSetValues(w, 
 		  XmNiconic, iconic,
@@ -463,25 +506,16 @@ void initial_popup_shell(Widget w)
 		      XmNx, 0,
 		      XmNy, 0,
 		      XtPointer(0));
-#else // NOT IF_MOTIF
-    // FIXME: Is it possible to start a Gnome application iconified
-    // (like the -iconic option in X)?  If not, we need not worry
-    // about the possibility of an Iconic state.
-    set_state(w, PoppingUp);
-#endif // IF_MOTIF
 
     if (w == tool_shell)
     {
 	XtManageChild(tool_buttons_w);
 	if (!XtIsRealized(tool_shell))
 	    XtRealizeWidget(tool_shell);
-#ifdef IF_MOTIF
 	if (!iconic)
 	    RecenterToolShellCB();
-#endif // IF_MOTIF
     }
 
-#ifdef IF_MOTIF
     Widget toplevel = w;
     while (XtParent(toplevel))
 	toplevel = XtParent(toplevel);
@@ -490,10 +524,38 @@ void initial_popup_shell(Widget w)
     if (w != toplevel && XtIsRealized(w)) {
 	XtPopup(w, XtGrabNone);
     }
-#else // NOT IF_MOTIF
-    w->show();
-#endif // IF_MOTIF
 }
+
+#else
+
+// Popup initial shell
+void initial_popup_shell(GUI::Widget *w)
+{
+    if (w == 0)
+	return;
+
+    // FIXME: Is it possible to start a Gnome application iconified
+    // (like the -iconic option in X)?  If not, we need not worry
+    // about the possibility of an Iconic state.
+    set_state(w, PoppingUp);
+
+    if (w == tool_shell)
+    {
+	tool_buttons_w->show();
+	if (!tool_shell->is_realized()) {
+	    std::cerr << "TOOL SHELL NOT REALIZED\n";
+	    // tool_shell->realize();
+	}
+	// if (!iconic)
+	//    RecenterToolShellCB();
+    }
+
+    w->show();
+}
+
+#endif
+
+#if defined(IF_XM)
 
 void popup_shell(Widget w)
 {
@@ -505,35 +567,58 @@ void popup_shell(Widget w)
 	if (!XtIsRealized(tool_shell))
 	{
 	    initial_popup_shell(tool_shell);
-#ifdef IF_MOTIF
 	    RecenterToolShellCB();
-#endif // IF_MOTIF
 	}
 
 	XtManageChild(tool_buttons_w);
     }
 
     if (XtIsRealized(w)) {
-#ifdef IF_MOTIF
 	XtPopup(w, XtGrabNone);
-#else // NOT IF_MOTIF
-	w->show();
-#endif // IF_MOTIF
     }
 
     set_state(w, PoppingUp);
 
     // Uniconify window
-#ifdef IF_MOTIF
     if (XtIsRealized(w))
 	XMapWindow(XtDisplay(w), XtWindow(w));
-#else // NOT IF_MOTIF
+    raise_shell(w);
+}
+
+#else
+
+void popup_shell(GUI::Widget *w)
+{
+    if (w == 0)
+	return;
+
+    if (w == tool_shell)
+    {
+	if (!tool_shell->is_realized())
+	{
+	    initial_popup_shell(tool_shell);
+	    // RecenterToolShellCB();
+	}
+
+	tool_buttons_w->show();
+    }
+
+    if (w->is_realized()) {
+	w->show();
+    }
+
+    set_state(w, PoppingUp);
+
+    // Uniconify window
 #ifdef NAG_ME
 #warning Iconified windows not handled.
 #endif
-#endif // IF_MOTIF
-    raise_shell(w);
+    // raise_shell(w);
 }
+
+#endif
+
+#if defined(IF_XM)
 
 void popdown_shell(Widget w)
 {
@@ -547,6 +632,23 @@ void popdown_shell(Widget w)
 
     XtPopdown(w);
 }
+
+#else
+
+void popdown_shell(GUI::Widget *w)
+{
+    if (w == 0)
+	return;
+
+    set_state(w, PoppedDown);
+
+    if (w == tool_shell)
+	tool_buttons_w->hide();
+
+    w->hide();
+}
+
+#endif
 
 void iconify_shell(Widget w)
 {
@@ -911,12 +1013,14 @@ int running_shells()
 }
 
 
+#if defined(IF_XM)
+
 // Generic close callback
-void DDDCloseCB(CB_ARG_LIST_1(w))
+void DDDCloseCB(Widget w, XtPointer, XtPointer)
 {
     if (running_shells() == 1)
     {
-	DDDExitCB(CB_ARGS_12(w, EXIT_SUCCESS));
+	DDDExitCB(w, XtPointer(EXIT_SUCCESS), XtPointer(0));
 	return;
     }
 
@@ -926,26 +1030,66 @@ void DDDCloseCB(CB_ARG_LIST_1(w))
     {
 	if (data_disp_shell == 0)
 	{
-	    gdbCloseDataWindowCB(CB_ARGS_1(w));
+	    gdbCloseDataWindowCB(w, XtPointer(0), XtPointer(0));
 	}
 
 	if (source_view_shell == 0)
 	{
-	    gdbCloseCodeWindowCB(CB_ARGS_1(w));
-	    gdbCloseSourceWindowCB(CB_ARGS_1(w));
+	    gdbCloseCodeWindowCB(w, XtPointer(0), XtPointer(0));
+	    gdbCloseSourceWindowCB(w, XtPointer(0), XtPointer(0));
 	}
 
-	gdbCloseCommandWindowCB(CB_ARGS_1(w));
+	gdbCloseCommandWindowCB(w, XtPointer(0), XtPointer(0));
     }
     else if (shell == data_disp_shell)
-	gdbCloseDataWindowCB(CB_ARGS_1(w));
+	gdbCloseDataWindowCB(w, XtPointer(0), XtPointer(0));
     else if (shell == source_view_shell)
-	gdbCloseSourceWindowCB(CB_ARGS_1(w));
+	gdbCloseSourceWindowCB(w, XtPointer(0), XtPointer(0));
     else if (shell == tool_shell)
-	gdbCloseToolWindowCB(CB_ARGS_NULL);
+	gdbCloseToolWindowCB(Widget(0), XtPointer(0), XtPointer(0));
     else
 	popdown_shell(shell);
 }
+
+#else
+
+// Generic close callback
+void DDDCloseCB(GUI::Widget *w)
+{
+    if (running_shells() == 1)
+    {
+	DDDExitCB(w->internal(), EXIT_SUCCESS);
+	return;
+    }
+
+    GUI::Shell *shell = findTopLevelShellParent1(w);
+
+    if (shell == command_shell)
+    {
+	if (data_disp_shell == 0)
+	{
+	    gdbCloseDataWindowCB(w);
+	}
+
+	if (source_view_shell == 0)
+	{
+	    gdbCloseCodeWindowCB(w);
+	    gdbCloseSourceWindowCB(w);
+	}
+
+	gdbCloseCommandWindowCB(w);
+    }
+    else if (shell == data_disp_shell)
+	gdbCloseDataWindowCB(w);
+    else if (shell == source_view_shell)
+	gdbCloseSourceWindowCB(w);
+    else if (shell == tool_shell)
+	gdbCloseToolWindowCB();
+    else
+	popdown_shell(shell);
+}
+
+#endif
 
 #if !defined(IF_XM)
 #ifdef NAG_ME
@@ -954,7 +1098,7 @@ void DDDCloseCB(CB_ARG_LIST_1(w))
 // Generic close callback
 bool CloseCB(GUI::Widget *w, XEvent *ev)
 {
-    DDDCloseCB(CB_ARGS_1(w->internal()));
+    DDDCloseCB(w);
 }
 #endif
 
@@ -962,12 +1106,20 @@ bool CloseCB(GUI::Widget *w, XEvent *ev)
 // Specific close and open callbacks
 
 // Debugger console
-void gdbCloseCommandWindowCB(CB_ARG_LIST_1(w))
+#if defined(IF_XM)
+void gdbCloseCommandWindowCB(Widget w, XtPointer, XtPointer)
+#else
+void gdbCloseCommandWindowCB(GUI::Widget *w)
+#endif
 {
     if (!app_data.tty_mode && 
 	!have_data_window() && !have_source_window() && !have_code_window())
     {
-	DDDExitCB(CB_ARGS_12(w, EXIT_SUCCESS));
+#if defined(IF_XM)
+	DDDExitCB(w, EXIT_SUCCESS, XtPointer(0));
+#else
+	DDDExitCB(CB_ARGS_12(w->internal(), EXIT_SUCCESS));
+#endif
 	return;
     }
 
@@ -989,14 +1141,18 @@ void gdbCloseCommandWindowCB(CB_ARG_LIST_1(w))
     update_options();
 }
 
-void gdbOpenCommandWindowCB(CB_ARG_LIST_NULL)
+#if defined(IF_XM)
+void gdbOpenCommandWindowCB(Widget, XtPointer, XtPointer)
+#else
+void gdbOpenCommandWindowCB(void)
+#endif
 {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     // Manage the ScrolledWindow parent:
     manage_paned_child(XtParent(gdb_w));
-#else // NOT IF_MOTIF
+#else
     manage_paned_child(gdb_w);
-#endif // IF_MOTIF
+#endif
 
     if (app_data.separate_source_window)
 	popup_shell(command_shell);
@@ -1018,12 +1174,20 @@ bool have_command_window()
 
 
 // Source window
-void gdbCloseSourceWindowCB(CB_ARG_LIST_1(w))
+#if defined(IF_XM)
+void gdbCloseSourceWindowCB(Widget w, XtPointer, XtPointer)
+#else
+void gdbCloseSourceWindowCB(GUI::Widget *w)
+#endif
 {
     if (!app_data.tty_mode && 
 	!have_command_window() && !have_data_window() && !have_code_window())
     {
-	DDDExitCB(CB_ARGS_12(w, EXIT_SUCCESS));
+#if defined(IF_XM)
+	DDDExitCB(w, EXIT_SUCCESS, XtPointer(0));
+#else
+	DDDExitCB(CB_ARGS_12(w->internal(), EXIT_SUCCESS));
+#endif
 	return;
     }
 
@@ -1053,12 +1217,20 @@ void gdbCloseSourceWindowCB(CB_ARG_LIST_1(w))
     update_options();
 }
 
-void gdbCloseCodeWindowCB(CB_ARG_LIST_1(w))
+#if defined(IF_XM)
+void gdbCloseCodeWindowCB(Widget w, XtPointer, XtPointer)
+#else
+void gdbCloseCodeWindowCB(GUI::Widget *w)
+#endif
 {
     if (!app_data.tty_mode && 
 	!have_command_window() && !have_data_window() && !have_source_window())
     {
-	DDDExitCB(CB_ARGS_12(w, EXIT_SUCCESS));
+#if defined(IF_XM)
+	DDDExitCB(w, EXIT_SUCCESS, XtPointer(0));
+#else
+	DDDExitCB(CB_ARGS_12(w->internal(), EXIT_SUCCESS));
+#endif
 	return;
     }
 
@@ -1073,7 +1245,9 @@ void gdbCloseCodeWindowCB(CB_ARG_LIST_1(w))
     update_options();
 }
 
-void gdbOpenSourceWindowCB(CB_ARG_LIST_NULL)
+#if defined(IF_XM)
+
+void gdbOpenSourceWindowCB(Widget, XtPointer, XtPointer)
 {
     manage_paned_child(source_view->source_form());
     if (source_view_shell != 0 && app_data.disassemble)
@@ -1087,14 +1261,41 @@ void gdbOpenSourceWindowCB(CB_ARG_LIST_NULL)
 	popup_shell(command_shell);
 
     if (!app_data.command_toolbar)
-	gdbOpenToolWindowCB(CB_ARGS_NULL);
+	gdbOpenToolWindowCB(Widget(0), XtPointer(0), XtPointer(0));
 
     app_data.source_window = true;
 
     update_options();
 }
 
-void gdbOpenCodeWindowCB(CB_ARG_LIST_NULL)
+#else
+
+void gdbOpenSourceWindowCB(void)
+{
+    manage_paned_child(source_view->source_form());
+    if (source_view_shell != 0 && app_data.disassemble)
+	manage_paned_child(source_view->code_form());
+    GUI::Widget *arg_cmd_w = source_arg->top()->get_parent();
+    manage_paned_child(arg_cmd_w);
+
+    if (source_view_shell)
+	popup_shell(source_view_shell);
+    else
+	popup_shell(command_shell);
+
+    if (!app_data.command_toolbar)
+	gdbOpenToolWindowCB();
+
+    app_data.source_window = true;
+
+    update_options();
+}
+
+#endif
+
+#if defined(IF_XM)
+
+void gdbOpenCodeWindowCB(Widget, XtPointer, XtPointer)
 {
     manage_paned_child(source_view->code_form());
     Widget arg_cmd_w = XtParent(source_arg->top());
@@ -1106,12 +1307,35 @@ void gdbOpenCodeWindowCB(CB_ARG_LIST_NULL)
 	popup_shell(command_shell);
 
     if (!app_data.command_toolbar)
-	gdbOpenToolWindowCB(CB_ARGS_NULL);
+	gdbOpenToolWindowCB(Widget(0), XtPointer(0), XtPointer(0));
 
     app_data.disassemble = true;
 
     update_options();
 }
+
+#else
+
+void gdbOpenCodeWindowCB(void)
+{
+    manage_paned_child(source_view->code_form());
+    GUI::Widget *arg_cmd_w = source_arg->top()->get_parent();
+    manage_paned_child(arg_cmd_w);
+
+    if (source_view_shell)
+	popup_shell(source_view_shell);
+    else
+	popup_shell(command_shell);
+
+    if (!app_data.command_toolbar)
+	gdbOpenToolWindowCB();
+
+    app_data.disassemble = true;
+
+    update_options();
+}
+
+#endif
 
 bool have_source_window()
 {
@@ -1123,14 +1347,15 @@ bool have_code_window()
     return XtIsManaged(source_view->code_form());
 }
 
+#if defined(IF_XM)
 
 // Data window
-void gdbCloseDataWindowCB(CB_ARG_LIST_1(w))
+void gdbCloseDataWindowCB(Widget w, XtPointer, XtPointer)
 {
     if (!app_data.tty_mode && 
 	!have_source_window() && !have_command_window() && !have_code_window())
     {
-	DDDExitCB(CB_ARGS_12(w, EXIT_SUCCESS));
+	DDDExitCB(w, XtPointer(EXIT_SUCCESS), XtPointer(0));
 	return;
     }
 
@@ -1162,7 +1387,53 @@ void gdbCloseDataWindowCB(CB_ARG_LIST_1(w))
     update_options();
 }
 
-void gdbOpenDataWindowCB(CB_ARG_LIST_NULL)
+#else
+
+// Data window
+void gdbCloseDataWindowCB(GUI::Widget *w)
+{
+    if (!app_data.tty_mode && 
+	!have_source_window() && !have_command_window() && !have_code_window())
+    {
+	DDDExitCB(w->internal(), EXIT_SUCCESS);
+	return;
+    }
+
+    if (data_disp_shell)
+    {
+	popdown_shell(data_disp_shell);
+    }
+    else if (!have_source_window() && 
+	     !have_command_window() && 
+	     !have_code_window())
+    {
+	popdown_shell(command_shell);
+    }
+
+    GUI::Widget *arg_cmd_w = source_arg->top()->get_parent();
+    if (data_disp->graph_cmd_w == arg_cmd_w)
+    {
+	// Don't close the common toolbar
+    }
+    else
+    {
+	unmanage_paned_child(data_disp->graph_cmd_w);
+    }
+
+    unmanage_paned_child(data_disp->graph_form());
+
+    app_data.data_window = false;
+
+    update_options();
+}
+
+#endif
+
+#if defined(IF_XM)
+void gdbOpenDataWindowCB(Widget, XtPointer, XtPointer)
+#else
+void gdbOpenDataWindowCB(void)
+#endif
 {
     manage_paned_child(data_disp->graph_cmd_w);
     manage_paned_child(data_disp->graph_form());
@@ -1184,7 +1455,11 @@ bool have_data_window()
 
 
 // Execution window
-void gdbCloseExecWindowCB(CB_ARG_LIST_NULL)
+#if defined(IF_XM)
+void gdbCloseExecWindowCB(Widget, XtPointer, XtPointer)
+#else
+void gdbCloseExecWindowCB(void)
+#endif
 {
     app_data.separate_exec_window = False;
 
@@ -1192,7 +1467,11 @@ void gdbCloseExecWindowCB(CB_ARG_LIST_NULL)
     update_options();
 }
 
-void gdbOpenExecWindowCB(CB_ARG_LIST_NULL)
+#if defined(IF_XM)
+void gdbOpenExecWindowCB(Widget, XtPointer, XtPointer)
+#else
+void gdbOpenExecWindowCB(void)
+#endif
 {
     app_data.separate_exec_window = True;
 
@@ -1210,7 +1489,11 @@ bool have_exec_window()
 
 
 // Tool window
-void gdbCloseToolWindowCB(CB_ARG_LIST_NULL)
+#if defined(IF_XM)
+void gdbCloseToolWindowCB(Widget, XtPointer, XtPointer)
+#else
+void gdbCloseToolWindowCB(void)
+#endif
 {
     if (tool_shell == 0 || !XtIsRealized(tool_shell))
 	return;
@@ -1219,7 +1502,11 @@ void gdbCloseToolWindowCB(CB_ARG_LIST_NULL)
     update_options();
 }
 
-void gdbOpenToolWindowCB(CB_ARG_LIST_NULL)
+#if defined(IF_XM)
+void gdbOpenToolWindowCB(Widget, XtPointer, XtPointer)
+#else
+void gdbOpenToolWindowCB(void)
+#endif
 {
     if (tool_shell == 0)
 	create_command_tool();
@@ -1253,99 +1540,161 @@ bool have_tool_window()
 // Toggling shells
 //-----------------------------------------------------------------------------
 
-void gdbToggleCommandWindowCB(CB_ARG_LIST_TOGGLE(w, call_data))
+#if defined(IF_XM)
+
+void gdbToggleCommandWindowCB(Widget w, XtPointer, XtPointer call_data)
 {
-#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     bool set = info->set;
-#else // NOT IF_MOTIF
-    bool set = get_active(w);
-#endif // IF_MOTIF
     if (set)
-	gdbOpenCommandWindowCB(CB_ARGS_NULL);
+	gdbOpenCommandWindowCB(w, XtPointer(0), XtPointer(0));
     else
-	gdbCloseCommandWindowCB(CB_ARGS_1(w));
+	gdbCloseCommandWindowCB(w, XtPointer(0), XtPointer(0));
 }
 
-void gdbToggleSourceWindowCB(CB_ARG_LIST_TOGGLE(w, call_data))
+#else
+
+void gdbToggleCommandWindowCB(GUI::Widget *w)
 {
-#ifdef IF_MOTIF
+    bool set = get_active(w->internal());
+    if (set)
+	gdbOpenCommandWindowCB();
+    else
+	gdbCloseCommandWindowCB(w);
+}
+
+#endif
+
+#if defined(IF_XM)
+
+void gdbToggleSourceWindowCB(Widget w, XtPointer, XtPointer call_data)
+{
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     if (info->set)
-#else // NOT IF_MOTIF
-    if (get_active(w))
-#endif // IF_MOTIF
-	gdbOpenSourceWindowCB(CB_ARGS_NULL);
+	gdbOpenSourceWindowCB(w, XtPointer(0), XtPointer(0));
     else
-	gdbCloseSourceWindowCB(CB_ARGS_1(w));
+	gdbCloseSourceWindowCB(w, XtPointer(0), XtPointer(0));
 }
 
-void gdbToggleCodeWindowCB(CB_ARG_LIST_TOGGLE(w, call_data))
+#else
+
+void gdbToggleSourceWindowCB(GUI::Widget *w)
 {
-#ifdef IF_MOTIF
+    if (get_active(w->internal()))
+	gdbOpenSourceWindowCB();
+    else
+	gdbCloseSourceWindowCB(w);
+}
+
+#endif
+
+#if defined(IF_XM)
+
+void gdbToggleCodeWindowCB(Widget w, XtPointer, XtPointer call_data)
+{
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     if (info->set)
-#else // NOT IF_MOTIF
-    if (get_active(w))
-#endif // IF_MOTIF
-	gdbOpenCodeWindowCB(CB_ARGS_NULL);
+	gdbOpenCodeWindowCB(w, XtPointer(0), XtPointer(0));
     else
-	gdbCloseCodeWindowCB(CB_ARGS_1(w));
+	gdbCloseCodeWindowCB(w, XtPointer(0), XtPointer(0));
 
     update_options(NO_UPDATE);
 }
 
-void gdbToggleDataWindowCB(CB_ARG_LIST_TOGGLE(w, call_data))
+#else
+
+void gdbToggleCodeWindowCB(GUI::Widget *w)
 {
-#ifdef IF_MOTIF
+    if (get_active(w->internal()))
+	gdbOpenCodeWindowCB();
+    else
+	gdbCloseCodeWindowCB(w);
+
+    update_options(NO_UPDATE);
+}
+
+#endif
+
+#if defined(IF_XM)
+
+void gdbToggleDataWindowCB(Widget w, XtPointer, XtPointer call_data)
+{
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     if (info->set)
-#else // NOT IF_MOTIF
-    if (get_active(w))
-#endif // IF_MOTIF
-	gdbOpenDataWindowCB(CB_ARGS_NULL);
+	gdbOpenDataWindowCB(w, XtPointer(0), XtPointer(0));
     else
-	gdbCloseDataWindowCB(CB_ARGS_1(w));
+	gdbCloseDataWindowCB(w, XtPointer(0), XtPointer(0));
 }
 
-void gdbToggleExecWindowCB(CB_ARG_LIST_TOGGLE(w, call_data))
+#else
+
+void gdbToggleDataWindowCB(GUI::Widget *w)
 {
-#ifdef IF_MOTIF
+    if (get_active(w->internal()))
+	gdbOpenDataWindowCB();
+    else
+	gdbCloseDataWindowCB(w);
+}
+
+#endif
+
+#if defined(IF_XM)
+
+void gdbToggleExecWindowCB(Widget w, XtPointer, XtPointer call_data)
+{
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     if (info->set)
-#else // NOT IF_MOTIF
-    if (get_active(w))
-#endif // IF_MOTIF
-	gdbOpenExecWindowCB(CB_ARGS_NULL);
+	gdbOpenExecWindowCB(w, XtPointer(0), XtPointer(0));
     else
-	gdbCloseExecWindowCB(CB_ARGS_NULL);
+	gdbCloseExecWindowCB(w, XtPointer(0), XtPointer(0));
 }
 
-void gdbToggleToolWindowCB(CB_ARG_LIST_TOGGLE(w, call_data))
+#else
+
+void gdbToggleExecWindowCB(GUI::Widget *w)
 {
-#ifdef IF_MOTIF
+    if (get_active(w->internal()))
+	gdbOpenExecWindowCB();
+    else
+	gdbCloseExecWindowCB();
+}
+
+#endif
+
+#if defined(IF_XM)
+
+void gdbToggleToolWindowCB(Widget w, XtPointer, XtPointer call_data)
+{
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     if (info->set)
-#else // NOT IF_MOTIF
-    if (get_active(w))
-#endif // IF_MOTIF
-	gdbOpenToolWindowCB(CB_ARGS_NULL);
+	gdbOpenToolWindowCB(w, XtPointer(0), XtPointer(0));
     else
-	gdbCloseToolWindowCB(CB_ARGS_NULL);
+	gdbCloseToolWindowCB(w, XtPointer(0), XtPointer(0));
 }
 
+#else
+
+void gdbToggleToolWindowCB(GUI::Widget *w)
+{
+    if (get_active(w->internal()))
+	gdbOpenToolWindowCB();
+    else
+	gdbCloseToolWindowCB();
+}
+
+#endif
 
 //-----------------------------------------------------------------------------
 // Command tool placement

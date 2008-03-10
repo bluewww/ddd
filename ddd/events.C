@@ -38,6 +38,8 @@ static void invalid_event(const char *func)
     std::cerr << func << ": invalid event\n";
 }
 
+#if defined(IF_MOTIF)
+
 // Event location
 BoxPoint point(XEvent *ev)
 {
@@ -49,12 +51,8 @@ BoxPoint point(XEvent *ev)
 	return BoxPoint();
     }
 
-#ifdef NAG_ME
-#warning Most Gdk events do not have an associated (x,y)
-#endif
     switch (ev->type)
     {
-#ifdef IF_MOTIF
 	case KeyPress:
 	case KeyRelease:
 	    return BoxPoint(ev->xkey.x,
@@ -100,33 +98,6 @@ BoxPoint point(XEvent *ev)
 	case ConfigureRequest:
 	    return BoxPoint(ev->xconfigurerequest.x,
 			    ev->xconfigurerequest.y);
-#else // NOT IF_MOTIF
-
-	case KeyPress:
-	case KeyRelease:
-	    return BoxPoint(0, 0);
-
-	case ButtonPress:
-	case ButtonRelease:
-	    return BoxPoint((BoxCoordinate)ev->button.x,
-			    (BoxCoordinate)ev->button.y);
-
-	case MotionNotify:
-	    return BoxPoint((BoxCoordinate)ev->motion.x,
-			    (BoxCoordinate)ev->motion.y);
-
-	case EnterNotify:
-	case LeaveNotify:
-	    return BoxPoint((BoxCoordinate)ev->crossing.x,
-			    (BoxCoordinate)ev->crossing.y);
-
-	case Expose:
-	    return BoxPoint(0, 0);
-
-	case ConfigureNotify:
-	    return BoxPoint((BoxCoordinate)ev->configure.x,
-			    (BoxCoordinate)ev->configure.y);
-#endif // IF_MOTIF
 
 	default:
 	    invalid_event("point");
@@ -134,6 +105,60 @@ BoxPoint point(XEvent *ev)
     }
 }
 
+#endif
+
+#if !defined(IF_XM)
+
+// Event location
+BoxPoint point1(GUI::Event *ev)
+{
+    if (ev == 0)
+    {
+	// LessTif 0.79 and Motif 1.1 sometimes pass 0 as event;
+	// provide some reasonable default
+	invalid_event("point");
+	return BoxPoint();
+    }
+
+#ifdef NAG_ME
+#warning Most Gdk events do not have an associated (x,y)
+#endif
+    switch (ev->type)
+    {
+    case GUI::KEY_PRESS:
+    case GUI::KEY_RELEASE:
+	return BoxPoint(0, 0);
+
+    case GUI::BUTTON_PRESS:
+    case GUI::BUTTON_RELEASE:
+	return BoxPoint((BoxCoordinate)ev->button.x,
+			(BoxCoordinate)ev->button.y);
+
+    case GUI::MOTION_NOTIFY:
+	return BoxPoint((BoxCoordinate)ev->motion.x,
+			(BoxCoordinate)ev->motion.y);
+
+    case GUI::ENTER_NOTIFY:
+    case GUI::LEAVE_NOTIFY:
+	return BoxPoint((BoxCoordinate)ev->crossing.x,
+			(BoxCoordinate)ev->crossing.y);
+
+    case GUI::EXPOSE:
+	return BoxPoint(0, 0);
+
+    case GUI::CONFIGURE:
+	return BoxPoint((BoxCoordinate)ev->configure.x,
+			(BoxCoordinate)ev->configure.y);
+
+    default:
+	invalid_event("point");
+	return BoxPoint();
+    }
+}
+
+#endif
+
+#if defined(IF_MOTIF)
 
 // Event time
 Time time(XEvent *ev)
@@ -148,7 +173,6 @@ Time time(XEvent *ev)
 
     switch (ev->type)
     {
-#ifdef IF_MOTIF
 	case KeyPress:
 	case KeyRelease:
 	    return ev->xkey.time;
@@ -176,34 +200,6 @@ Time time(XEvent *ev)
 	case SelectionNotify:
 	    return ev->xselection.time;
 
-#else // NOT IF_MOTIF
-	case KeyPress:
-	case KeyRelease:
-	    return ev->key.time;
-
-	case ButtonPress:
-	case ButtonRelease:
-	    return ev->button.time;
-
-	case MotionNotify:
-	    return ev->button.time;
-
-	case EnterNotify:
-	case LeaveNotify:
-	    return ev->crossing.time;
-
-	case PropertyNotify:
-	    return ev->property.time;
-
-	case SelectionClear:
-	    return ev->selection.time;
-
-	case SelectionRequest:
-	    return ev->selection.time;
-
-	case SelectionNotify:
-	    return ev->selection.time;
-#endif // IF_MOTIF
 
 	default:
 	    invalid_event("time");
@@ -211,6 +207,59 @@ Time time(XEvent *ev)
     }
 }
 
+#endif
+
+#if !defined(IF_XM)
+
+// Event time
+Time time1(GUI::Event *ev)
+{
+    if (ev == 0)
+    {
+	// LessTif 0.79 and Motif 1.1 sometimes pass 0 as event;
+	// provide some reasonable default
+	invalid_event("time");
+	return CurrentTime;
+    }
+
+    switch (ev->type)
+    {
+    case GUI::KEY_PRESS:
+    case GUI::KEY_RELEASE:
+	return ev->key.time;
+
+    case GUI::BUTTON_PRESS:
+    case GUI::BUTTON_RELEASE:
+	return ev->button.time;
+
+    case GUI::MOTION_NOTIFY:
+	return ev->button.time;
+
+    case GUI::ENTER_NOTIFY:
+    case GUI::LEAVE_NOTIFY:
+	return ev->crossing.time;
+
+    case GUI::PROPERTY_NOTIFY:
+	return ev->property.time;
+
+    case GUI::SELECTION_CLEAR:
+	return ev->selection.time;
+
+    case GUI::SELECTION_REQUEST:
+	return ev->selection.time;
+
+    case GUI::SELECTION_NOTIFY:
+	return ev->selection.time;
+
+    default:
+	invalid_event("time");
+	return CurrentTime;
+    }
+}
+
+#endif
+
+#if defined(IF_MOTIF)
 
 // Event size
 BoxSize size(XEvent *ev)
@@ -225,7 +274,6 @@ BoxSize size(XEvent *ev)
 
     switch (ev->type)
     {
-#ifdef IF_MOTIF
 	case Expose:
 	    return BoxSize(ev->xexpose.width,
 			   ev->xexpose.height);
@@ -250,21 +298,40 @@ BoxSize size(XEvent *ev)
 	    return BoxSize(ev->xconfigurerequest.width, 
 			   ev->xconfigurerequest.height);
 
-#else // NOT IF_MOTIF
-#ifdef NAG_ME
-#warning Width and height not available for most event types.
-#endif
-	case ConfigureNotify:
-	    return BoxSize(ev->configure.width,
-			   ev->configure.height);
-
-	case ConfigureRequest:
-	    return BoxSize(ev->configure.width, 
-			   ev->configure.height);
-
-#endif // IF_MOTIF
 	default:
 	    invalid_event("size");
 	    return BoxSize(0, 0);
     }
 }
+
+#endif
+
+#if !defined(IF_XM)
+
+// Event size
+BoxSize size1(GUI::Event *ev)
+{
+    if (ev == 0)
+    {
+	// LessTif 0.79 and Motif 1.1 sometimes pass 0 as event;
+	// provide some reasonable default
+	invalid_event("size");
+	return BoxSize(0, 0);
+    }
+
+    switch (ev->type)
+    {
+#ifdef NAG_ME
+#warning Width and height not available for most event types.
+#endif
+    case GUI::CONFIGURE:
+	return BoxSize(ev->configure.width,
+		       ev->configure.height);
+
+    default:
+	invalid_event("size");
+	return BoxSize(0, 0);
+    }
+}
+
+#endif

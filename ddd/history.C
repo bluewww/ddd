@@ -384,7 +384,11 @@ void load_history(const string& file)
 }
 
 // Save history into history file
+#if defined(IF_XM)
 void save_history(const string& file, Widget origin)
+#else
+void save_history(const string& file, GUI::Widget *origin)
+#endif
 {
     if (!file.empty())
     {

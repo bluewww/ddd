@@ -96,6 +96,12 @@ Widget::get_parent(void)
     return (GtkX::Container *)par->get_data(gtkx_super_quark);
 }
 
+RefPtr<Display>
+Widget::get_display(void)
+{
+    return RefPtr<Display>(internal()->get_display());
+}
+
 void
 Widget::show(void)
 {
@@ -106,6 +112,18 @@ void
 Widget::hide(void)
 {
     internal()->hide();
+}
+
+bool
+Widget::is_visible(void)
+{
+    return internal()->is_visible();
+}
+
+bool
+Widget::is_realized(void)
+{
+    return internal()->is_visible();
 }
 
 String
@@ -137,5 +155,21 @@ Widget::property_user_data(void)
 {
     // N.B. This must be consistent with Gtk.
     return PropertyProxy<void *>(this, "user-data");
+}
+
+void
+Widget::add_destroy_notify_callback(void *data, void *(*f)(void *)) {
+    internal()->add_destroy_notify_callback(data, f);
+}
+
+void
+Widget::remove_destroy_notify_callback(void *data) {
+    internal()->remove_destroy_notify_callback(data);
+}
+
+bool
+Widget::translate_coordinates(GtkX::Widget &dest_w, int x1, int y1, int &x2, int &y2)
+{
+    return internal()->translate_coordinates(*dest_w.internal(), x1, y1, x2, y2);
 }
 

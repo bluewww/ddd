@@ -29,6 +29,10 @@
 #ifndef _DDD_HelpCB_h
 #define _DDD_HelpCB_h
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #if defined(IF_MOTIF)
 
 #include <X11/Intrinsic.h>
@@ -122,12 +126,20 @@ extern void StringHelpCB(Widget widget, XtPointer client_data,
 extern void TextHelpCB(Widget widget, XtPointer client_data, 
 		       XtPointer call_data);
 
+#if defined(IF_XM)
 // Call help with a built-in formatted manual page "String s =
 // (String)client_data".
 extern void ManualStringHelpCB(Widget widget, XtPointer client_data, 
 			       XtPointer call_data);
 extern void ManualStringHelpCB(Widget widget, const MString& title,
 			       const string& text);
+#else
+// Call help with a built-in formatted manual page "String s =
+// (String)client_data".
+extern void ManualStringHelpCB(GUI::Widget *widget, char *s);
+extern void ManualStringHelpCB(GUI::Widget *widget, const MString& title,
+			       const string& text);
+#endif
 
 // (Un)install button tips on W.
 extern void InstallButtonTips(Widget w, bool install = true);

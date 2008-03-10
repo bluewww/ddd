@@ -59,13 +59,19 @@ char exectty_rcsid[] =
 #include <signal.h>
 #include <unistd.h>
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 #include <X11/X.h>
 #include <X11/Xlib.h>
 
 #include <Xm/Xm.h>
 #include <Xm/MessageB.h>
-#endif // IF_MOTIF
+#endif
+
+#if !defined(IF_XM)
+#include <GUI/Dialog.h>
+#include <GUI/Button.h>
+#include <GUI/Label.h>
+#endif
 
 extern "C" {
 // The GNU termcap declarations should also work for non-GNU termcap
@@ -130,28 +136,35 @@ static void GotReplyHP(Agent *, void *client_data, void *call_data)
 // Create a separate tty window; return its name in TTYNAME, its
 // process id in PID, its terminal type in TERM, and its window id in
 // WINDOWID.
+#if defined(IF_XM)
 static void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
 				Window& windowid, Widget origin)
+#else
+static void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
+				Window& windowid, GUI::Widget *origin)
+#endif
 {
     // If we're already running, all is done.
     if (pid > 0 && (remote_gdb() || kill(pid, 0) == 0))
 	return;
 
     string term_command = app_data.term_command;
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     term_command.gsub("@FONT@", make_font(app_data, FixedWidthDDDFont));
-#endif // IF_MOTIF
+#endif
 
     static bool canceled;
     canceled = false;
 
-    static DIALOG_P dialog = 0;
-#ifndef IF_MOTIF
-    static Gtk::Label *label = 0;
+#if defined(IF_XM)
+    static Widget dialog = 0;
+#else
+    static GUI::Dialog *dialog = 0;
+    static GUI::Label *label = 0;
 #endif
     if (dialog == 0)
     {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 	Arg args[10];
 	Cardinal arg = 0;
 	XtSetArg(args[arg], XmNdialogStyle, 
@@ -165,26 +178,25 @@ static void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
 					     XmDIALOG_HELP_BUTTON));
 	XtAddCallback(dialog, XmNcancelCallback, CancelTTYCB,
 		      XtPointer(&canceled));
-#else // NOT IF_MOTIF
-	dialog = new Gtk::Dialog(XMST("launch_tty_dialog"), *find_shell(origin));
-	Gtk::Button *button;
-	button = dialog->add_button(XMST("Cancel"), 0);
-	button->signal_clicked().connect(sigc::bind(PTR_FUN(CancelTTYCB), XtPointer(&canceled)));
-	label = new Gtk::Label();
-	dialog->get_vbox()->pack_start(*label, Gtk::PACK_SHRINK);
+#else
+	dialog = new GUI::Dialog(*find_shell1(origin), "launch_tty_dialog");
+	GUI::Button *button;
+	button = dialog->add_button("Cancel");
+	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(CancelTTYCB), &canceled));
+	label = new GUI::Label(*dialog);
 	label->show();
-#endif // IF_MOTIF
+#endif
     }
 
     string base = term_command;
     if (base.contains(' '))
 	base = base.before(' ');
     MString msg = rm("Starting ") + tt(base) + rm("...");
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     XtVaSetValues(dialog, XmNmessageString, msg.xmstring(), XtPointer(0));
-#else // NOT IF_MOTIF
+#else
     label->set_text(msg.xmstring());
-#endif // IF_MOTIF
+#endif
     manage_and_raise(dialog);
     wait_until_mapped(dialog);
 
@@ -250,25 +262,25 @@ static void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
 	tty.start();
 
 	while (!reply.contains('\n') && !canceled && tty.running()) {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 	    XtAppProcessEvent(app_context, XtIMAll);
-#else // NOT IF_MOTIF
+#else
 	    Glib::MainContext::get_default()->iteration(false);
-#endif // IF_MOTIF
+#endif
 	}
 
 	if (reply.length() > 2)
 	{
 	    std::istringstream is(reply.chars());
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 	    is >> ttyname >> pid >> term >> windowid;
-#else // NOT IF_MOTIF
+#else
 	    int win_id;
 	    is >> ttyname >> pid >> term >> win_id;
 #ifdef NAG_ME
 #warning Convert win_id to windowid?
 #endif
-#endif // IF_MOTIF
+#endif
 	}
 
 	tty.terminate();
@@ -293,24 +305,24 @@ static void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
     }
 
     // Set icon and group leader
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     if (windowid)
     {
 	wm_set_icon(XtDisplay(command_shell), windowid,
 		    iconlogo(command_shell), iconmask(command_shell));
     }
-#endif // IF_MOTIF
+#endif
 
     // Be sure to be notified when the TTY window is deleted
     if (windowid)
     {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 	XSelectInput(XtDisplay(gdb_w), windowid, StructureNotifyMask);
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning XSelectInput for StructureNotifyMask
 #endif
-#endif // IF_MOTIF
+#endif
     }
 }
 
@@ -352,8 +364,13 @@ static void get_args(const string& command, string& base, string& args)
 
 
 // Set TERM environment variable, using CMD
+#if defined(IF_XM)
 static int set_term_env(const string& cmd, const string& term_type,
 			Widget origin, bool silent)
+#else
+static int set_term_env(const string& cmd, const string& term_type,
+			GUI::Widget *origin, bool silent)
+#endif
 {
     string reply = gdb_question(cmd);
     if (reply == NO_GDB_ANSWER)
@@ -382,9 +399,15 @@ static bool has_redirection(const string& args, const string& redirection)
 
 // Set debugger TTY to TTY_NAME and terminal type to TERM_TYPE.
 // Use without arguments to silently restore original TTY.
+#if defined(IF_XM)
 static int gdb_set_tty(string tty_name = "",
 		       const string& term_type = "dumb",
 		       Widget origin = 0)
+#else
+static int gdb_set_tty(string tty_name = "",
+		       const string& term_type = "dumb",
+		       GUI::Widget *origin = 0)
+#endif
 {
     bool silent = false;
     if (tty_name.empty())
@@ -580,9 +603,15 @@ static void add_rc_redirection(string& gdb_redirection,
 }
 
 // Redirect COMMAND to TTY_NAME
+#if defined(IF_XM)
 static void redirect_process(string& command,
 			     const string& tty_name,
 			     Widget origin)
+#else
+static void redirect_process(string& command,
+			     const string& tty_name,
+			     GUI::Widget *origin)
+#endif
 {
     // Try `tty' command to perform redirection
     int ret = gdb_set_tty(tty_name, app_data.term_type, origin);
@@ -730,8 +759,13 @@ static void unredirect_reply(const string& answer, void *)
 }
 
 // Restore original redirection
+#if defined(IF_XM)
 static void unredirect_process(string& command,
 			       Widget origin = 0)
+#else
+static void unredirect_process(string& command,
+			       GUI::Widget *origin = 0)
+#endif
 {
     if (!gdb_redirection.empty())
     {
@@ -746,7 +780,11 @@ static void unredirect_process(string& command,
 		static string empty;
 		args.gsub(gdb_redirection, empty);
 		strip_space(args);
+#if defined(IF_XM)
 		gdb_command("set args " + args, origin, unredirect_reply);
+#else
+		gdb_command1("set args " + args, origin, unredirect_reply);
+#endif
 	    }
 	    else if (gdb->type() == PERL)
 	    {
@@ -892,7 +930,11 @@ static void handle_rerun(string& command)
 }
 
 // Create TTY if required
+#if defined(IF_XM)
 void handle_running_commands(string& command, Widget origin)
+#else
+void handle_running_commands(string& command, GUI::Widget *origin)
+#endif
 {
     // Make sure we see control messages such as `Starting program'
     if (is_running_cmd(command))
@@ -936,7 +978,11 @@ void reset_exec_tty()
 }
 
 // Raise execution TTY with command COMMAND.
+#if defined(IF_XM)
 void startup_exec_tty(string& command, Widget origin)
+#else
+void startup_exec_tty(string& command, GUI::Widget *origin)
+#endif
 {
     handle_rerun(command);
 
@@ -1046,7 +1092,7 @@ void exec_tty_running()
     {
 	XEvent event;
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 	if (XCheckTypedWindowEvent(XtDisplay(gdb_w), separate_tty_window,
 				   DestroyNotify, &event))
 	{
@@ -1061,10 +1107,10 @@ void exec_tty_running()
 	    app_data.separate_exec_window = False;
 	    update_options();
 	}
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Check for deletion of tty window?
 #endif
-#endif // IF_MOTIF
+#endif
     }
 }

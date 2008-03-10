@@ -127,9 +127,19 @@ struct LockInfo {
     ~LockInfo() {}
 };
 
+#if defined(IF_XM)
+
 // Lock session.  Return true iff successful.  Otherwise, return
 // false, and return info about the locking process in INFO.
-bool lock_session_dir(DISPLAY_P display, const string& session, LockInfo& info);
+bool lock_session_dir(Display *display, const string& session, LockInfo& info);
+
+#else
+
+// Lock session.  Return true iff successful.  Otherwise, return
+// false, and return info about the locking process in INFO.
+bool lock_session_dir(GUI::RefPtr<GUI::Display> display, const string& session, LockInfo& info);
+
+#endif
 
 // Unlock session.  Return true iff successful.
 bool unlock_session_dir(const string& session);

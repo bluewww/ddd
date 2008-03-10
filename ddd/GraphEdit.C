@@ -37,7 +37,7 @@ char GraphEdit_rcsid[] =
 #include <iostream>
 #include <sstream>
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 #include <Xm/Xm.h>
 #include <Xm/ScrolledW.h>
 #include <X11/Xlib.h>
@@ -45,7 +45,7 @@ char GraphEdit_rcsid[] =
 #include <X11/Intrinsic.h>
 #include <X11/IntrinsicP.h>
 #include <X11/StringDefs.h>
-#endif // IF_MOTIF
+#endif
 
 #include "events.h"
 #include "Graph.h"
@@ -83,18 +83,18 @@ static BoxRegion EVERYWHERE(BoxPoint(0,0), BoxSize(INT_MAX, INT_MAX));
 
 // Compute default foreground
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 static void defaultForeground(Widget w, int, XrmValue *value)
 {
     const GraphEditWidget _w = GraphEditWidget(w);
     value->addr = XPointer(&_w->res_.primitive.foreground);
 }
-#endif // IF_MOTIF
+#endif
 
 
 // Resource list
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 static XtResource resources[] = {
 #define offset(field) XtOffsetOf(_GraphEditRec::Res, graphEdit.field)
     // {name, class, type, size, offset, default_type, default_addr}
@@ -227,16 +227,16 @@ static XtResource resources[] = {
 
 #undef offset
 };
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning No implementation of Xt resources
 #endif
-#endif // IF_MOTIF
+#endif
 
 
 // Action function declarations
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 static void Select      (Widget, XEvent *, String *, Cardinal *);
 static void Extend      (Widget, XEvent *, String *, Cardinal *);
 static void Toggle      (Widget, XEvent *, String *, Cardinal *);
@@ -261,12 +261,12 @@ static void DoLayout    (Widget, XEvent *, String *, Cardinal *);
 static void _Layout     (Widget, XEvent *, String *, Cardinal *);
 static void Normalize   (Widget, XEvent *, String *, Cardinal *);
 static void _Normalize  (Widget, XEvent *, String *, Cardinal *);
-#endif // IF_MOTIF
+#endif
 
 
 // Actions table
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 static XtActionsRec actions[] = {
     { XTARECSTR("select"),         Select },        // select()
     { XTARECSTR("extend"),         Extend },        // extend()
@@ -371,7 +371,7 @@ static const char *extraTranslations =
     "~Meta ~Shift ~Ctrl<Key>Up:           select-prev()\n"
     "~Meta ~Shift ~Ctrl<Key>Down:         select-next()\n"
 ;
-#endif // IF_MOTIF
+#endif
 
 // Method function declarations
 
@@ -379,33 +379,33 @@ static void ClassInitialize();
 
 static void Initialize(Widget request, 
 		       Widget w
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 		       , ArgList args,
 		       Cardinal *num_args
-#endif // IF_MOTIF
+#endif
 		       );
 
 static void Redisplay(Widget w, XEvent *event, Region region);
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 static void Realize(Widget w, 
 		    XtValueMask *value_mask,
 		    XSetWindowAttributes *attributes);
-#endif // IF_MOTIF
+#endif
 
 static Boolean SetValues(Widget old, 
 			 Widget request, 
 			 Widget new_w
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 			 , ArgList args, 
 			 Cardinal *num_args
-#endif // IF_MOTIF
+#endif
 			 );
 
 static void Destroy(Widget w);
 
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 // Class record initialization
 
 GraphEditClassRec graphEditClassRec = {
@@ -465,27 +465,37 @@ GraphEditClassRec graphEditClassRec = {
 };
 
 WidgetClass graphEditWidgetClass = (WidgetClass)&graphEditClassRec;
-#endif // IF_MOTIF
+#endif
 
-#ifndef IF_MOTIF
+#if !defined(IF_MOTIF)
 static const Glib::SignalProxyInfo GraphEdit_signal_compare_nodes_info =
 {
   "compare-nodes",
   (GCallback) &Glib::SignalProxyNormal::slot0_void_callback,
   (GCallback) &Glib::SignalProxyNormal::slot0_void_callback
 };
-#endif // IF_MOTIF
+#endif
 
 // Method function definitions
 
-// Set widget to minimal size
-#ifdef IF_MOTIF
-void graphEditSizeChanged(Widget w)
-#else // NOT IF_MOTIF
-void GtkGraphEdit::graphEditSizeChanged()
-#endif // IF_MOTIF
+#if !defined(IF_XM)
+#if !defined(IF_XMMM)
+Gtk::Widget *
+GUIGraphEdit::internal(void)
 {
-#ifdef IF_MOTIF
+    return this;
+}
+#endif
+#endif
+
+// Set widget to minimal size
+#if defined(IF_MOTIF)
+void graphEditSizeChanged(Widget w)
+#else
+void GUIGraphEdit::graphEditSizeChanged()
+#endif
+{
+#if defined(IF_MOTIF)
     XtCheckSubclass(w, GraphEditWidgetClass, "Bad widget class");
 
     Arg args[10];
@@ -555,13 +565,13 @@ void GtkGraphEdit::graphEditSizeChanged()
 
 	graphEditRedraw(w);
     }
-#else // NOT IF_MOTIF
+#else
     static int errcnt = 0;
     if (complain && !errcnt++) std::cerr << "graphEditSizeChanged not implemented\n";
-#endif // IF_MOTIF
+#endif
 }
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 // Return the graph's Graphic Context
 const GraphGC& graphEditGetGraphGC(Widget w)
 {
@@ -572,9 +582,9 @@ const GraphGC& graphEditGetGraphGC(Widget w)
 
     return graphGC;
 }
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 // Return the graph
 Graph *graphEditGetGraph(Widget w)
 {
@@ -583,10 +593,10 @@ Graph *graphEditGetGraph(Widget w)
     GraphEditWidget _w = GraphEditWidget(w);
     return _w->res_.graphEdit.graph;
 }
-#endif // IF_MOTIF
+#endif
 
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 // Set grid pixmap
 static void setGrid(Widget w, Boolean reset = False)
 {
@@ -637,17 +647,17 @@ static void setGrid(Widget w, Boolean reset = False)
     }
 }
 
-#else // NOT IF_MOTIF
+#else
 
 // Set grid pixmap
-void GtkGraphEdit::setGrid(bool reset)
+void GUIGraphEdit::setGrid(bool reset)
 {
-    const Gdk::Color     background = get_style()->get_bg(Gtk::STATE_NORMAL);
+    const Gdk::Color background = internal()->get_style()->get_bg(Gtk::STATE_NORMAL);
 
     gridWidth  = max(gridWidth,  2);
     gridHeight = max(gridHeight, 2);
 
-    Glib::RefPtr<Gdk::Window> win = get_window();
+    Glib::RefPtr<Gdk::Window> win = internal()->get_window();
     if (reset && gridPixmap)
     {
 	// delete old pixmap
@@ -667,7 +677,7 @@ void GtkGraphEdit::setGrid(bool reset)
 	if (showGrid)
 	    gridData[0] = 0x01;
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	int depth = PlanesOfScreen(XtScreen(w));
 	gridPixmap = 
 	    XCreatePixmapFromBitmapData(XtDisplay(w), 
@@ -679,7 +689,7 @@ void GtkGraphEdit::setGrid(bool reset)
 
  	XSetWindowBackgroundPixmap(XtDisplay(w), XtWindow(w), gridPixmap);
 	XClearArea(XtDisplay(w), XtWindow(w), 0, 0, 0, 0, True);
-#else // NOT IF_MOTIF
+#else
 	int depth = win->get_depth();
 	gridPixmap = Gdk::Pixmap::create_from_data(win,
 						   gridData, 
@@ -688,15 +698,15 @@ void GtkGraphEdit::setGrid(bool reset)
 
 	win->set_back_pixmap(gridPixmap, true);
 	win->clear();
-#endif // IF_MOTIF
+#endif
 
 	delete[] gridData;
     }
 }
-#endif // IF_MOTIF
+#endif
 
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 // Redraw
 static void RedrawCB(XtPointer client_data, XtIntervalId *id)
 {
@@ -773,10 +783,10 @@ static void RedrawCB(XtPointer client_data, XtIntervalId *id)
     }
 }
 
-#else // NOT IF_MOTIF
+#else
 
 // Redraw
-void GtkGraphEdit::RedrawCB(void)
+void GUIGraphEdit::RedrawCB(void)
 {
     redrawTimer.disconnect();
 
@@ -809,11 +819,11 @@ void GtkGraphEdit::RedrawCB(void)
 
     if (redraw_all)
     {
-	get_window()->clear_area(highlight_thickness, highlight_thickness, 
-				 get_width()  - highlight_thickness * 2, 
-				 get_height() - highlight_thickness * 2);
+	internal()->get_window()->clear_area(highlight_thickness, highlight_thickness, 
+					     internal()->get_width()  - highlight_thickness * 2, 
+					     internal()->get_height() - highlight_thickness * 2);
 
-	graph->draw(this, EVERYWHERE, graphGC);
+	graph->draw(this->internal(), EVERYWHERE, graphGC);
     }
 
     for (node = graph->firstVisibleNode(); 
@@ -823,18 +833,18 @@ void GtkGraphEdit::RedrawCB(void)
 	if (!redraw_all && node->redraw())
 	{
 	    BoxRegion r = node->region(graphGC);
-	    get_window()->clear_area(r.origin(X), r.origin(Y),
-				     r.space(X), r.space(Y));
+	    internal()->get_window()->clear_area(r.origin(X), r.origin(Y),
+						 r.space(X), r.space(Y));
 
-	    graph->draw(this, r, graphGC);
+	    graph->draw(this->internal(), r, graphGC);
 	}
 
 	node->redraw() = False;
     }
 }
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 // Launch redrawing procedure
 static void StartRedraw(Widget w)
 {
@@ -849,21 +859,21 @@ static void StartRedraw(Widget w)
 				  0, RedrawCB, XtPointer(w));
 }
 
-#else // NOT IF_MOTIF
+#else
 
 // Launch redrawing procedure
-void GtkGraphEdit::StartRedraw(void)
+void GUIGraphEdit::StartRedraw(void)
 {
     if (redrawTimer)
 	return;			// Redraw pending
 
     // Redraw after we are back in the event loop
-    redrawTimer = Glib::signal_idle().connect(sigc::bind_return(MEM_FUN(*this, &GtkGraphEdit::RedrawCB), false));
+    redrawTimer = Glib::signal_idle().connect(sigc::bind_return(MEM_FUN(*this, &GUIGraphEdit::RedrawCB), false));
 }
 
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 // Redraw entire graph
 void graphEditRedraw(Widget w)
 {
@@ -880,10 +890,10 @@ void graphEditRedraw(Widget w)
     }
 }
 
-#else // NOT IF_MOTIF
+#else
 
 // Redraw entire graph
-void GtkGraphEdit::graphEditRedraw(void)
+void GUIGraphEdit::graphEditRedraw(void)
 {
     for (GraphNode *node = graph->firstVisibleNode(); 
 	 node != 0;
@@ -892,9 +902,9 @@ void GtkGraphEdit::graphEditRedraw(void)
 	graphEditRedrawNode(node);
     }
 }
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 // Redraw a specific region
 void graphEditRedrawNode(Widget w, GraphNode *node)
 {
@@ -906,9 +916,9 @@ void graphEditRedrawNode(Widget w, GraphNode *node)
 	StartRedraw(w);
     }
 }
-#else // NOT IF_MOTIF
+#else
 // Redraw a specific region
-void GtkGraphEdit::graphEditRedrawNode(GraphNode *node)
+void GUIGraphEdit::graphEditRedrawNode(GraphNode *node)
 {
     if (!node->hidden())
     {
@@ -916,9 +926,9 @@ void GtkGraphEdit::graphEditRedrawNode(GraphNode *node)
 	StartRedraw();
     }
 }
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 // Disable redrawing for a while; return old state
 Boolean graphEditEnableRedisplay(Widget w, Boolean state)
 {
@@ -935,9 +945,9 @@ Boolean graphEditEnableRedisplay(Widget w, Boolean state)
 
     return old_state;
 }
-#else // NOT IF_MOTIF
+#else
 // Disable redrawing for a while; return old state
-bool GtkGraphEdit::enable_redisplay(bool state)
+bool GUIGraphEdit::enable_redisplay(bool state)
 {
     Boolean old_state = redisplayEnabled;
     redisplayEnabled = state;
@@ -947,9 +957,9 @@ bool GtkGraphEdit::enable_redisplay(bool state)
 
     return old_state;
 }
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 
 // Converters
 
@@ -1299,13 +1309,13 @@ static Boolean CvtCardinalToString (Display *display, XrmValue *,
 
     done(String, s);
 }
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning We do not do converters
 #endif
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 // Initialize class
 static void ClassInitialize()
 {
@@ -1359,11 +1369,11 @@ static void ClassInitialize()
 		       XtConvertArgList(0), 0, 
 		       XtCacheAll, XtDestructor(0));
 }
-#endif // IF_MOTIF
+#endif
 
 // Initialize widget
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 inline void createCursor(Widget w, Cursor& cursor, unsigned int shape)
 {
     if (cursor == 0)
@@ -1372,9 +1382,9 @@ inline void createCursor(Widget w, Cursor& cursor, unsigned int shape)
 #ifdef NAG_ME
 #warning No cursors yet
 #endif
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 static void setGCs(Widget w)
 {
     const GraphEditWidget _w        = GraphEditWidget(w);
@@ -1454,23 +1464,23 @@ static void setGCs(Widget w)
     outlineGC = XtGetGC(w, GCForeground | GCFunction | 
 			GCLineWidth | GCLineStyle | GCPlaneMask, &gcv);
 }
-#else // NOT IF_MOTIF
-void GtkGraphEdit::setGCs(void)
+#else
+void GUIGraphEdit::setGCs(void)
 {
     Gdk::LineStyle line_style = dashedLines ? Gdk::LINE_ON_OFF_DASH : Gdk::LINE_SOLID;
 
     // set nodeGC
-    nodeGC = Gdk::GC::create(get_window());
+    nodeGC = Gdk::GC::create(internal()->get_window());
     nodeGC->set_foreground(nodeColor);
     nodeGC->set_line_attributes(1, line_style, Gdk::CAP_BUTT, Gdk::JOIN_MITER);
 
     // set edgeGC
-    edgeGC = Gdk::GC::create(get_window());
+    edgeGC = Gdk::GC::create(internal()->get_window());
     edgeGC->set_foreground(edgeColor);
     edgeGC->set_line_attributes(edgeWidth, line_style, Gdk::CAP_BUTT, Gdk::JOIN_MITER);
 
     // set invertGC
-    invertGC = Gdk::GC::create(get_window());
+    invertGC = Gdk::GC::create(internal()->get_window());
     if (selectTile)
     {
 	invertGC->set_foreground(selectColor);
@@ -1488,15 +1498,15 @@ void GtkGraphEdit::setGCs(void)
 	// gcv.plane_mask = selectColor ^ background;
     }
 
-    const Gdk::Color     background = get_style()->get_bg(Gtk::STATE_NORMAL);
+    const Gdk::Color background = internal()->get_style()->get_bg(Gtk::STATE_NORMAL);
 
     // set clearGC
-    clearGC = Gdk::GC::create(get_window());
+    clearGC = Gdk::GC::create(internal()->get_window());
     clearGC->set_foreground(background);
     clearGC->set_function(Gdk::COPY);
 
     // set frameGC
-    frameGC = Gdk::GC::create(get_window());
+    frameGC = Gdk::GC::create(internal()->get_window());
     frameGC->set_foreground(frameColor);
     frameGC->set_function(Gdk::INVERT);
     frameGC->set_line_attributes(1, Gdk::LINE_SOLID, Gdk::CAP_BUTT, Gdk::JOIN_MITER);
@@ -1506,7 +1516,7 @@ void GtkGraphEdit::setGCs(void)
     // gcv.plane_mask = frameColor ^ background;
 
     // set outlineGC
-    outlineGC = Gdk::GC::create(get_window());
+    outlineGC = Gdk::GC::create(internal()->get_window());
     outlineGC->set_foreground(outlineColor);
     outlineGC->set_function(Gdk::INVERT);
     outlineGC->set_line_attributes(1, Gdk::LINE_SOLID, Gdk::CAP_BUTT, Gdk::JOIN_MITER);
@@ -1515,9 +1525,9 @@ void GtkGraphEdit::setGCs(void)
 #endif
     // gcv.plane_mask = outlineColor ^ background;
 }
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 static void setGraphGC(Widget w)
 {
     const GraphEditWidget _w        = GraphEditWidget(w);
@@ -1609,8 +1619,8 @@ static void setGraphGC(Widget w)
 	}
     }
 }
-#else // NOT IF_MOTIF
-void GtkGraphEdit::setGraphGC(void)
+#else
+void GUIGraphEdit::setGraphGC(void)
 {
     // Set graphGC
     graphGC = GraphGC(nodeGC, edgeGC, invertGC, clearGC);
@@ -1629,7 +1639,7 @@ void GtkGraphEdit::setGraphGC(void)
     if (nodePrintColor != 0)
     {
 	Gdk::Color exact_def = Gdk::Color(Glib::ustring(nodePrintColor));
-	bool ok = get_colormap()->alloc_color(exact_def);
+	bool ok = internal()->get_colormap()->alloc_color(exact_def);
 
 	if (ok)
 	{
@@ -1648,7 +1658,7 @@ void GtkGraphEdit::setGraphGC(void)
     if (edgePrintColor != 0)
     {
 	Gdk::Color exact_def = Gdk::Color(Glib::ustring(edgePrintColor));
-	bool ok = get_colormap()->alloc_color(exact_def);
+	bool ok = internal()->get_colormap()->alloc_color(exact_def);
 
 	if (ok)
 	{
@@ -1664,15 +1674,15 @@ void GtkGraphEdit::setGraphGC(void)
 	}
     }
 }
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 static void Initialize(Widget request, Widget w, ArgList, Cardinal *)
-#else // NOT IF_MOTIF
-GtkGraphEdit::GtkGraphEdit(void)
-#endif // IF_MOTIF
+#else
+GUIGraphEdit::GUIGraphEdit(void)
+#endif
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     // read-only
     const GraphEditWidget _w        = GraphEditWidget(w);
 
@@ -1691,7 +1701,7 @@ GtkGraphEdit::GtkGraphEdit(void)
     XtIntervalId& redrawTimer       = _w->graphEditP.redrawTimer;
     Dimension& requestedWidth       = _w->res_.graphEdit.requestedWidth;
     Dimension& requestedHeight      = _w->res_.graphEdit.requestedHeight;
-#else // NOT IF_MOTIF
+#else
     // Set some sensible defaults
     layoutMode = RegularLayoutMode;
     dashedLines = false;
@@ -1717,7 +1727,7 @@ GtkGraphEdit::GtkGraphEdit(void)
     edgePrintColor = strdup("red");
 
     highlight_thickness = 2;
-#endif // IF_MOTIF
+#endif
 
     // init state
     state = NopState;
@@ -1735,25 +1745,25 @@ GtkGraphEdit::GtkGraphEdit(void)
     redrawTimer = NO_TIMER;
 
     // set GCs
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     setGCs(w);
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Due to the eccentricities of Gtk, setGCs cannot
 #warning be called until after this widget is realized.
 #endif
-    signal_realize().connect(sigc::mem_fun(*this, &GtkGraphEdit::setGCs));
-#endif // IF_MOTIF
+    signal_realize().connect(sigc::mem_fun(*this, &GUIGraphEdit::setGCs));
+#endif
 
     // set Graph GC
     setGraphGC(M_ARGS_1(w));
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     // set grid pixmap
     gridPixmap = None;
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     // create cursors if not already set
     createCursor(w, moveCursor,              XC_fleur);
     createCursor(w, selectCursor,            XC_plus);
@@ -1761,59 +1771,59 @@ GtkGraphEdit::GtkGraphEdit(void)
     createCursor(w, selectBottomRightCursor, XC_lr_angle);
     createCursor(w, selectTopLeftCursor,     XC_ul_angle);
     createCursor(w, selectTopRightCursor,    XC_ur_angle);
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning No cursors yet
 #endif
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     // save requested size
     requestedWidth  = request->core.width;
     requestedHeight = request->core.height;
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning No request in constructor
 #endif
     requestedWidth  = 0;
     requestedHeight = 0;
-#endif // IF_MOTIF
+#endif
 
     // set size
     graphEditSizeChanged(M_ARGS_1(w));
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     // Override XmPrimitive translations
     static XtTranslations translations = 
 	XtParseTranslationTable(extraTranslations);
 
     XtOverrideTranslations(w, translations);
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning No translations
 #endif
-#endif // IF_MOTIF
+#endif
 }
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 inline void defineCursor(Widget w, Cursor cursor)
-#else // NOT IF_MOTIF
-void GtkGraphEdit::defineCursor(Cursor cursor)
-#endif // IF_MOTIF
+#else
+void GUIGraphEdit::defineCursor(Cursor cursor)
+#endif
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     if (cursor != 0)
 	XDefineCursor(XtDisplay(w), XtWindow(w), cursor);
     else
 	XUndefineCursor(XtDisplay(w), XtWindow(w));
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Sorry, no cursors yet
 #endif
-#endif // IF_MOTIF
+#endif
 }
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 // Realize widget
 static void Realize(Widget w, 
 		    XtValueMask *value_mask,
@@ -1829,32 +1839,24 @@ static void Realize(Widget w,
     // Setup default cursor
     defineCursor(w, defaultCursor);
 }
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
+
 // Redisplay widget
 static void Redisplay(Widget w, XEvent *event, Region)
-#else // NOT IF_MOTIF
-bool GtkGraphEdit::on_expose_event(GdkEventExpose* event)
-#endif // IF_MOTIF
 {
-#ifdef IF_MOTIF
     const GraphEditWidget _w       = GraphEditWidget(w);
     const Graph* graph             = _w->res_.graphEdit.graph;
     const GraphGC& graphGC         = _w->graphEditP.graphGC;
     const Boolean sizeChanged      = _w->graphEditP.sizeChanged;
     const Boolean redisplayEnabled = _w->graphEditP.redisplayEnabled;
     const Boolean highlight_drawn  = _w->res_.primitive.highlight_drawn;
-#endif // IF_MOTIF
 
     if (!redisplayEnabled)
     {
 	graphEditRedraw(M_ARGS_1(w));
-#ifdef IF_MOTIF
 	return;
-#else // NOT IF_MOTIF
-	return false; // propagate
-#endif // IF_MOTIF
     }
 
     if (sizeChanged)
@@ -1862,24 +1864,44 @@ bool GtkGraphEdit::on_expose_event(GdkEventExpose* event)
 
     setGrid(M_ARGS_1(w));
 
-#ifdef IF_MOTIF
     // Redraw XmPrimitive border
     if (highlight_drawn)
 	graphEditClassRec.primitive_class.border_highlight(w);
-#else // NOT IF_MOTIF
-#ifdef NAG_ME
-#warning Primitive border?
-#endif
-#endif // IF_MOTIF
 
-#ifndef IF_MOTIF
-    Gtk::Widget *w = this;
-#endif
     graph->draw(w, BoxRegion(point((XEvent *)event), size((XEvent *)event)), graphGC);
 }
 
+#else
 
-#ifdef IF_MOTIF
+bool GUIGraphEdit::on_expose_event(GUI::EventExpose *event)
+{
+
+    if (!redisplayEnabled)
+    {
+	graphEditRedraw(M_ARGS_1(w));
+	return false; // propagate
+    }
+
+    if (sizeChanged)
+	graphEditSizeChanged(M_ARGS_1(w));
+
+    setGrid(M_ARGS_1(w));
+
+    // Redraw XmPrimitive border
+    //if (highlight_drawn)
+    //	graphEditClassRec.primitive_class.border_highlight(w);
+#ifdef NAG_ME
+#warning Primitive border?
+#endif
+
+    GUI::Widget *w = this;
+    graph->draw(w->internal(), BoxRegion(point1((GUI::Event *)event),
+					 size1((GUI::Event *)event)), graphGC);
+}
+
+#endif
+
+#if defined(IF_MOTIF)
 // Set widget values
 static Boolean SetValues(Widget old, Widget, Widget new_w, 
 			 ArgList, Cardinal *)
@@ -1960,42 +1982,42 @@ static Boolean SetValues(Widget old, Widget, Widget new_w,
 
     return redisplay;
 }
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning No SetValues
 #endif
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 // Destroy widget
 static void Destroy(Widget)
 {
     // Delete graph?
 }
-#else // NOT IF_MOTIF
-GtkGraphEdit::~GtkGraphEdit(void)
+#else
+GUIGraphEdit::~GUIGraphEdit(void)
 {
 }
-#endif // IF_MOTIF
+#endif
 
 // Action function definitions
 
 // Helping stuff
 
 // Find node at point
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 GraphNode *graphEditGetNodeAtPoint(Widget w, const BoxPoint& p)
-#else // NOT IF_MOTIF
-GraphNode *GtkGraphEdit::graphEditGetNodeAtPoint(const BoxPoint& p)
-#endif // IF_MOTIF
+#else
+GraphNode *GUIGraphEdit::graphEditGetNodeAtPoint(const BoxPoint& p)
+#endif
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XtCheckSubclass(w, GraphEditWidgetClass, "Bad widget class");
 
     const GraphEditWidget _w  = GraphEditWidget(w);
     const Graph* graph        = _w->res_.graphEdit.graph;
     GraphGC& graphGC          = _w->graphEditP.graphGC;
-#endif // IF_MOTIF
+#endif
     GraphNode *found = 0;
 
     // Could it be this is invoked without any graph yet?
@@ -2013,28 +2035,34 @@ GraphNode *GtkGraphEdit::graphEditGetNodeAtPoint(const BoxPoint& p)
     return found;
 }
 
-#ifdef IF_MOTIF    
+#if defined(IF_XM)
+
 GraphNode *graphEditGetNodeAtEvent(Widget w, XEvent *event)
-#else // NOT IF_MOTIF
-GraphNode *GtkGraphEdit::graphEditGetNodeAtEvent(XEvent *event)
-#endif // IF_MOTIF
 {
-    return graphEditGetNodeAtPoint(M_ARGS_2(w, point(event)));
+    return graphEditGetNodeAtPoint(w, point(event));
 }
 
+#else
+
+GraphNode *GUIGraphEdit::graphEditGetNodeAtEvent(GUI::Event *event)
+{
+    return graphEditGetNodeAtPoint(point1(event));
+}
+
+#endif
 
 // Get frame region
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 static BoxRegion frameRegion(Widget w)
-#else // NOT IF_MOTIF
-BoxRegion GtkGraphEdit::frameRegion(void)
-#endif // IF_MOTIF
+#else
+BoxRegion GUIGraphEdit::frameRegion(void)
+#endif
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     const GraphEditWidget _w    = GraphEditWidget(w);
     const BoxPoint& startAction = _w->graphEditP.startAction;
     const BoxPoint& endAction   = _w->graphEditP.endAction;
-#endif // IF_MOTIF
+#endif
 
     BoxPoint origin(min(startAction[X], endAction[X]),
 	min(startAction[Y], endAction[Y]));
@@ -2046,13 +2074,13 @@ BoxRegion GtkGraphEdit::frameRegion(void)
 }
 
 // Get frame cursor
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 static void setRegionCursor(Widget w)
-#else // NOT IF_MOTIF
-void GtkGraphEdit::setRegionCursor(void)
-#endif // IF_MOTIF
+#else
+void GUIGraphEdit::setRegionCursor(void)
+#endif
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     const GraphEditWidget _w    = GraphEditWidget(w);
     const BoxPoint& startAction = _w->graphEditP.startAction;
     const BoxPoint& endAction   = _w->graphEditP.endAction;
@@ -2081,37 +2109,37 @@ void GtkGraphEdit::setRegionCursor(void)
     }
 
     defineCursor(w, cursor);
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning NO CURSORS YET
 #endif
-#endif // IF_MOTIF
+#endif
 }
 
 inline void myXDrawLine(
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     Display *display, 
-#endif // IF_MOTIF
+#endif
     Drawable d, 
     GC gc,
     const BoxPoint& f, const BoxPoint& t)
 {
     if (f != t) {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	XDrawLine(display, d, gc, f[X], f[Y], t[X], t[Y]);
-#else // NOT IF_MOTIF
+#else
 	d->draw_line(gc, f[X], f[Y], t[X], t[Y]);
-#endif // IF_MOTIF
+#endif
     }
 }
     
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 static void redrawSelectFrame(Widget w, const BoxRegion& r)
-#else // NOT IF_MOTIF
-void GtkGraphEdit::redrawSelectFrame(const BoxRegion& r)
-#endif // IF_MOTIF
+#else
+void GUIGraphEdit::redrawSelectFrame(const BoxRegion& r)
+#endif
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     const GraphEditWidget _w = GraphEditWidget(w);
     const GC frameGC = _w->graphEditP.frameGC;
 
@@ -2137,8 +2165,8 @@ void GtkGraphEdit::redrawSelectFrame(const BoxRegion& r)
     myXDrawLine(display, window, frameGC,
 		r.origin() + BoxPoint(r.space(X), 0),
 		r.origin() + BoxPoint(r.space(X), r.space(Y) - 1));
-#else // NOT IF_MOTIF
-    Window window    = get_window();
+#else
+    Window window = internal()->get_window();
 
     // North
     myXDrawLine(window, frameGC, 
@@ -2159,18 +2187,18 @@ void GtkGraphEdit::redrawSelectFrame(const BoxRegion& r)
     myXDrawLine(window, frameGC,
 		r.origin() + BoxPoint(r.space(X), 0),
 		r.origin() + BoxPoint(r.space(X), r.space(Y) - 1));
-#endif // IF_MOTIF
+#endif
 }
 
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 static void drawSelectFrames(Widget w, 
 			     const BoxRegion& r0, 
 			     const BoxRegion& r1)
-#else // NOT IF_MOTIF
-void GtkGraphEdit::drawSelectFrames(const BoxRegion& r0, 
+#else
+void GUIGraphEdit::drawSelectFrames(const BoxRegion& r0, 
 				    const BoxRegion& r1)
-#endif // IF_MOTIF
+#endif
 {
     // Clear old frame (by redrawing it)
     redrawSelectFrame(M_ARGS_2(w, r0));
@@ -2184,11 +2212,11 @@ void GtkGraphEdit::drawSelectFrames(const BoxRegion& r0,
 
 
 // Draw the selection frame
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 inline void drawSelectFrame(Widget w)
-#else // NOT IF_MOTIF
-void GtkGraphEdit::drawSelectFrame(void)
-#endif // IF_MOTIF
+#else
+void GUIGraphEdit::drawSelectFrame(void)
+#endif
 {
     drawSelectFrames(M_ARGS_3(w, frameRegion(M_ARGS_1(w)),
 			      BoxRegion(BoxPoint(0, 0), BoxSize(0, 0))));
@@ -2196,16 +2224,16 @@ void GtkGraphEdit::drawSelectFrame(void)
 
 
 // Redraw selection frame
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 static void redrawSelectFrame(Widget w, const BoxPoint& p)
-#else // NOT IF_MOTIF
-void GtkGraphEdit::redrawSelectFrame(const BoxPoint& p)
-#endif // IF_MOTIF
+#else
+void GUIGraphEdit::redrawSelectFrame(const BoxPoint& p)
+#endif
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     const GraphEditWidget _w = GraphEditWidget(w);
     BoxPoint& endAction      = _w->graphEditP.endAction;
-#endif // IF_MOTIF
+#endif
 
     BoxRegion r0 = frameRegion(M_ARGS_1(w));
     endAction = p;
@@ -2216,19 +2244,19 @@ void GtkGraphEdit::redrawSelectFrame(const BoxPoint& p)
 
 
 // Find min possible offset
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 static void getMinimalOffset(Widget w)
-#else // NOT IF_MOTIF
-void GtkGraphEdit::getMinimalOffset(void)
-#endif // IF_MOTIF
+#else
+void GUIGraphEdit::getMinimalOffset(void)
+#endif
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     const GraphEditWidget _w            = GraphEditWidget(w);
     const Graph* graph                  = _w->res_.graphEdit.graph;
     const Dimension highlight_thickness = _w->res_.primitive.highlight_thickness;
     const GraphGC& graphGC              = _w->graphEditP.graphGC;
     BoxPoint& minimalOffset             = _w->graphEditP.minimalOffset;
-#endif // IF_MOTIF
+#endif
 
     const Dimension min_origin = highlight_thickness + 2;
 
@@ -2256,13 +2284,13 @@ void GtkGraphEdit::getMinimalOffset(void)
 }
 
 // Return current offset
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 static BoxPoint actionOffset(Widget w)
-#else // NOT IF_MOTIF
-BoxPoint GtkGraphEdit::actionOffset(void)
-#endif // IF_MOTIF
+#else
+BoxPoint GUIGraphEdit::actionOffset(void)
+#endif
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     const GraphEditWidget _w      = GraphEditWidget(w);
     const Dimension gridWidth     = _w->res_.graphEdit.gridWidth;
     const Dimension gridHeight    = _w->res_.graphEdit.gridHeight;
@@ -2270,7 +2298,7 @@ BoxPoint GtkGraphEdit::actionOffset(void)
     const BoxPoint& startAction   = _w->graphEditP.startAction;
     const BoxPoint& endAction     = _w->graphEditP.endAction;
     const BoxPoint& minimalOffset = _w->graphEditP.minimalOffset;
-#endif // IF_MOTIF
+#endif
 
     BoxPoint offset = endAction - startAction;
     BoxPoint grid(gridWidth, gridHeight);
@@ -2294,13 +2322,13 @@ BoxPoint GtkGraphEdit::actionOffset(void)
 }
 
 // Draw moving frames and edges for nodes at (endAction - startAction)
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 static void drawOutlines(Widget w, const BoxPoint& offset)
-#else // NOT IF_MOTIF
-void GtkGraphEdit::drawOutlines(const BoxPoint& offset)
-#endif // IF_MOTIF
+#else
+void GUIGraphEdit::drawOutlines(const BoxPoint& offset)
+#endif
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     const GraphEditWidget _w            = GraphEditWidget(w);
     const Graph* graph                  = _w->res_.graphEdit.graph;
     const Boolean rubberArrows          = _w->res_.graphEdit.rubberArrows;
@@ -2308,10 +2336,10 @@ void GtkGraphEdit::drawOutlines(const BoxPoint& offset)
     const Boolean rubberEdges           = _w->res_.graphEdit.rubberEdges;
     const GraphGC& graphGC              = _w->graphEditP.graphGC;
     const GC& outlineGC                 = _w->graphEditP.outlineGC;
-#else // NOT IF_MOTIF
+#else
     const GC& outlineGC                 = this->outlineGC;
     Gtk::Widget *w = this;
-#endif // IF_MOTIF
+#endif
 
     for (GraphNode *node = graph->firstVisibleNode(); node != 0;
 	node = graph->nextVisibleNode(node))
@@ -2320,16 +2348,16 @@ void GtkGraphEdit::drawOutlines(const BoxPoint& offset)
 	{
 	    // this should also handle opaqueMove (FIXME)...
 	    BoxRegion r = node->region(graphGC);
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	    XDrawRectangle(XtDisplay(w), XtWindow(w), outlineGC,
 		r.origin(X) + offset[X], r.origin(Y) + offset[Y],
 		r.space(X), r.space(Y));
-#else // NOT IF_MOTIF
-	    get_window()->draw_rectangle(outlineGC, false,
-					 r.origin(X) + offset[X],
-					 r.origin(Y) + offset[Y],
-					 r.space(X), r.space(Y));
-#endif // IF_MOTIF
+#else
+	    internal()->get_window()->draw_rectangle(outlineGC, false,
+						     r.origin(X) + offset[X],
+						     r.origin(Y) + offset[Y],
+						     r.space(X), r.space(Y));
+#endif
 	}
     }
 
@@ -2351,21 +2379,21 @@ void GtkGraphEdit::drawOutlines(const BoxPoint& offset)
 }
 
 // Move Node to specified position and call callbacks
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 static void moveTo(Widget w, 
 		   GraphNode *node, 
 		   const BoxPoint& newPos,
 		   Boolean isLast)
-#else // NOT IF_MOTIF
-void GtkGraphEdit::moveTo(GraphNode *node, 
+#else
+void GUIGraphEdit::moveTo(GraphNode *node, 
 			  const BoxPoint& newPos,
 			  Boolean isLast)
-#endif // IF_MOTIF
+#endif
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     const GraphEditWidget _w  = GraphEditWidget(w);
     Graph* graph              = _w->res_.graphEdit.graph;
-#endif // IF_MOTIF
+#endif
 
     if (node->pos() != newPos)
     {
@@ -2377,54 +2405,61 @@ void GtkGraphEdit::moveTo(GraphNode *node,
 	info.new_position = newPos;
 	info.is_last      = isLast;
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	XtCallCallbacks(w, XtNpositionChangedCallback, XtPointer(&info));
-#else // NOT IF_MOTIF
+#else
 	signal_position_changed().emit(&info);
-#endif // IF_MOTIF
+#endif
 
 	node->moveTo(newPos);
     }
 }
 
+#if defined(IF_XM)
+
 // Call ``selection changed'' callbacks
-#ifdef IF_MOTIF
 static void selectionChanged(Widget w, XEvent *event, Boolean double_click)
-#else // NOT IF_MOTIF
-void GtkGraphEdit::selectionChanged(XEvent *event, Boolean double_click)
-#endif // IF_MOTIF
 {
-#ifdef IF_MOTIF
     const GraphEditWidget _w  = GraphEditWidget(w);
     Graph* graph              = _w->res_.graphEdit.graph;
-#endif // IF_MOTIF
 
     GraphEditSelectionChangedInfo info;
     info.graph        = graph;
     info.event        = event;
     info.double_click = double_click;
 
-#ifdef IF_MOTIF
     XtCallCallbacks(w, XtNselectionChangedCallback, XtPointer(&info));
-#else // NOT IF_MOTIF
-    signal_selection_changed().emit(&info);
-#endif // IF_MOTIF
 }
 
+#else
+
+// Call ``selection changed'' callbacks
+void GUIGraphEdit::selectionChanged(GUI::Event *event, Boolean double_click)
+{
+
+    GraphEditSelectionChangedInfo info;
+    info.graph        = graph;
+    info.event        = event;
+    info.double_click = double_click;
+
+    signal_selection_changed().emit(&info);
+}
+
+#endif
 
 // Action functions
 
 // Select all nodes
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 static Boolean _SelectAll(Widget w, XEvent *, String *, Cardinal *)
-#else // NOT IF_MOTIF
-Boolean GtkGraphEdit::_SelectAll(void)
-#endif // IF_MOTIF
+#else
+Boolean GUIGraphEdit::_SelectAll(void)
+#endif
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     const GraphEditWidget _w = GraphEditWidget(w);
     const Graph* graph       = _w->res_.graphEdit.graph;
-#endif // IF_MOTIF
+#endif
 
     Boolean changed = False;
     for (GraphNode *node = graph->firstVisibleNode(); node != 0;
@@ -2441,34 +2476,34 @@ Boolean GtkGraphEdit::_SelectAll(void)
     return changed;
 }
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 static void SelectAll(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
-#else // NOT IF_MOTIF
-void GtkGraphEdit::SelectAll(void)
-#endif // IF_MOTIF
+#else
+void GUIGraphEdit::SelectAll(void)
+#endif
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     if (_SelectAll(w, event, params, num_params))
 	selectionChanged(w, event, False);
-#else // NOT IF_MOTIF
+#else
     if (_SelectAll())
 	selectionChanged(NULL, False);
-#endif // IF_MOTIF
+#endif
 }
 
 
 // Unselect all nodes
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 static Boolean _UnselectAll(Widget w, XEvent *, String *, Cardinal *)
-#else // NOT IF_MOTIF
-Boolean GtkGraphEdit::_UnselectAll(void)
-#endif // IF_MOTIF
+#else
+Boolean GUIGraphEdit::_UnselectAll(void)
+#endif
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     const GraphEditWidget _w = GraphEditWidget(w);
     const Graph* graph       = _w->res_.graphEdit.graph;
-#endif // IF_MOTIF
+#endif
 
     Boolean changed = False;
     for (GraphNode *node = graph->firstNode(); node != 0;
@@ -2485,20 +2520,20 @@ Boolean GtkGraphEdit::_UnselectAll(void)
     return changed;
 }
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 static void UnselectAll(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
-#else // NOT IF_MOTIF
-void GtkGraphEdit::UnselectAll(void)
-#endif // IF_MOTIF
+#else
+void GUIGraphEdit::UnselectAll(void)
+#endif
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     if (_UnselectAll(w, event, params, num_params))
 	selectionChanged(w, event, False);
-#else // NOT IF_MOTIF
+#else
     if (_UnselectAll())
 	selectionChanged(NULL, False);
-#endif // IF_MOTIF
+#endif
 }
 
 // Find nodes connected to ROOT
@@ -2520,11 +2555,11 @@ static void find_connected_nodes(GraphNode *root, GraphNodePointerArray& nodes)
 }
 
 // Select an entire subgraph
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 static Boolean select_graph(Widget w, GraphNode *root, Boolean set = True)
-#else // NOT IF_MOTIF
-Boolean GtkGraphEdit::select_graph(GraphNode *root, Boolean set)
-#endif // IF_MOTIF
+#else
+Boolean GUIGraphEdit::select_graph(GraphNode *root, Boolean set)
+#endif
 {
     // Find all connected nodes
     GraphNodePointerArray nodes;
@@ -2546,59 +2581,55 @@ Boolean GtkGraphEdit::select_graph(GraphNode *root, Boolean set)
     return changed;
 }
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 inline Boolean unselect_graph(Widget w, GraphNode *root)
-#else // NOT IF_MOTIF
-Boolean GtkGraphEdit::unselect_graph(GraphNode *root)
-#endif // IF_MOTIF
+#else
+Boolean GUIGraphEdit::unselect_graph(GraphNode *root)
+#endif
 {
     return select_graph(M_ARGS_3(w, root, False));
 }
 
 // Raise node NODE such that it is placed on top of all others
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 void graphEditRaiseNode(Widget w, GraphNode *node)
-#else // NOT IF_MOTIF
-void GtkGraphEdit::graphEditRaiseNode(GraphNode *node)
-#endif // IF_MOTIF
+#else
+void GUIGraphEdit::graphEditRaiseNode(GraphNode *node)
+#endif
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XtCheckSubclass(w, GraphEditWidgetClass, "Bad widget class");
 
     const GraphEditWidget _w = GraphEditWidget(w);
     Graph* graph             = _w->res_.graphEdit.graph;
-#endif // IF_MOTIF
+#endif
 
     // The last node in the list is drawn last (i.e. on top)
     graph->makeNodeLast(node);
 }
 
 // Same, but only if the autoRaise resource is set
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 static void raise_node(Widget w, GraphNode *node)
-#else // NOT IF_MOTIF
-void GtkGraphEdit::raise_node(GraphNode *node)
-#endif // IF_MOTIF
+#else
+void GUIGraphEdit::raise_node(GraphNode *node)
+#endif
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     const GraphEditWidget _w = GraphEditWidget(w);
     Boolean autoRaise        = _w->res_.graphEdit.autoRaise;
-#endif // IF_MOTIF
+#endif
 
     if (autoRaise)
 	graphEditRaiseNode(M_ARGS_2(w, node));
 }
 
+#if defined(IF_XM)
+
 // Begin selecting or moving
-#ifdef IF_MOTIF
 static void _SelectOrMove(Widget w, XEvent *event, String *params,
     Cardinal *num_params, SelectionMode mode, Boolean follow)
-#else // NOT IF_MOTIF
-void GtkGraphEdit::_SelectOrMove(XEvent *event,
-				 SelectionMode mode, Boolean follow)
-#endif // IF_MOTIF
 {
-#ifdef IF_MOTIF
     const GraphEditWidget _w = GraphEditWidget(w);
 
     Graph* graph             = _w->res_.graphEdit.graph;
@@ -2608,31 +2639,152 @@ void GtkGraphEdit::_SelectOrMove(XEvent *event,
     BoxPoint& startAction    = _w->graphEditP.startAction;
     BoxPoint& endAction      = _w->graphEditP.endAction;
     Time& lastSelectTime     = _w->graphEditP.lastSelectTime;
-#endif // IF_MOTIF
 
-#ifdef IF_MOTIF
     // Get the input focus
     XmProcessTraversal(w, XmTRAVERSE_CURRENT);
-#ifdef NAG_ME
-#warning Get the input focus?
-#endif
-#endif // IF_MOTIF
 
     BoxPoint p = point(event);
     startAction = p;
     endAction   = p;
 
     Time t = time(event);
-#ifdef IF_MOTIF
     Boolean double_click = 
 	(Time(t - lastSelectTime) <= Time(XtGetMultiClickTime(XtDisplay(w))));
-#else // NOT IF_MOTIF
+    lastSelectTime = t;
+
+    GraphNode *node = graphEditGetNodeAtPoint(w, p);
+
+    if (mode == SetSelection)
+    {
+	GraphEditPreSelectionInfo info;
+	info.graph        = graph;
+	info.node         = node;
+	info.event        = event;
+	info.doit         = True;
+	info.double_click = double_click;
+
+	XtCallCallbacks(w, XtNpreSelectionCallback, XtPointer(&info));
+
+	if (!info.doit)
+	    return;
+    }
+
+    if (node == 0 || node->hidden())
+    {
+	// On the background
+	switch (mode)
+	{
+	case SetSelection:
+	    if (double_click)
+		SelectAll(w, event, params, num_params);
+	    else
+		UnselectAll(w, event, params, num_params);
+	    break;
+
+	case ExtendSelection:
+	case ToggleSelection:
+	    // Nothing to do on background
+	    break;
+	}
+
+	if (follow)
+	{
+	    // Not on a node: draw a frame
+	    state = SelectState;
+
+	    // start drawing a frame
+	    drawSelectFrame(w);
+	}
+    }
+    else
+    {
+	// On a node
+	Boolean changed = False;
+	switch (mode)
+	{
+	case SetSelection:
+	    if (!node->selected())
+	    {
+		// Create new selection
+		changed = _UnselectAll(w, event, params, num_params);
+	    }
+	    // FALL THROUGH
+
+	case ExtendSelection:
+	    if (double_click)
+	    {
+		// Select all connected nodes
+		changed = select_graph(w, node);
+	    }
+	    else
+	    {
+		// Select single node
+		if (!node->selected())
+		{		
+		    node->selected() = True;
+		    graphEditRedrawNode(w, node);
+		    raise_node(w, node);
+		    changed = True;
+		}
+	    }
+	    break;
+
+	case ToggleSelection:
+	    if (double_click)
+	    {
+		// Toggle all connected modes
+		if (node->selected())
+		    changed = select_graph(w, node);
+		else
+		    changed = unselect_graph(w, node);
+	    }
+	    else
+	    {
+		// Toggle single node
+		node->selected() = !node->selected();
+		graphEditRedrawNode(w, node);
+		raise_node(w, node);
+		changed = True;
+	    }
+	    break;
+	}
+
+	if (changed)
+	    selectionChanged(w, event, double_click);
+
+	if (follow)
+	{
+	    // Wait for movement
+	    state = DeltaState;
+
+	    // Set moving cursor
+	    defineCursor(w, moveCursor);
+	}
+    }
+}
+
+#else
+
+// Begin selecting or moving
+void GUIGraphEdit::_SelectOrMove(GUI::Event *event,
+				 SelectionMode mode, Boolean follow)
+{
+
+    // Get the input focus
+    // XmProcessTraversal(w, XmTRAVERSE_CURRENT);
 #ifdef NAG_ME
-#warning multi-click time hardwired.
+#warning Get the input focus?
 #endif
+
+    BoxPoint p = point1(event);
+    startAction = p;
+    endAction   = p;
+
+    Time t = time1(event);
+    // Boolean double_click = 
+    //	(Time(t - lastSelectTime) <= Time(XtGetMultiClickTime(XtDisplay(w))));
     Boolean double_click = 
 	(Time(t - lastSelectTime) <= Time(200));
-#endif // IF_MOTIF
     lastSelectTime = t;
 
     GraphNode *node = graphEditGetNodeAtPoint(M_ARGS_2(w, p));
@@ -2646,11 +2798,7 @@ void GtkGraphEdit::_SelectOrMove(XEvent *event,
 	info.doit         = True;
 	info.double_click = double_click;
 
-#ifdef IF_MOTIF
-	XtCallCallbacks(w, XtNpreSelectionCallback, XtPointer(&info));
-#else // NOT IF_MOTIF
 	signal_pre_selection().emit(&info);
-#endif // IF_MOTIF
 
 	if (!info.doit)
 	    return;
@@ -2662,17 +2810,10 @@ void GtkGraphEdit::_SelectOrMove(XEvent *event,
 	switch (mode)
 	{
 	case SetSelection:
-#ifdef IF_MOTIF
-	    if (double_click)
-		SelectAll(w, event, params, num_params);
-	    else
-		UnselectAll(w, event, params, num_params);
-#else // NOT IF_MOTIF
 	    if (double_click)
 		SelectAll();
 	    else
 		UnselectAll();
-#endif // IF_MOTIF
 	    break;
 
 	case ExtendSelection:
@@ -2700,11 +2841,7 @@ void GtkGraphEdit::_SelectOrMove(XEvent *event,
 	    if (!node->selected())
 	    {
 		// Create new selection
-#ifdef IF_MOTIF
-		changed = _UnselectAll(w, event, params, num_params);
-#else // NOT IF_MOTIF
 		changed = _UnselectAll();
-#endif // IF_MOTIF
 	    }
 	    // FALL THROUGH
 
@@ -2761,105 +2898,121 @@ void GtkGraphEdit::_SelectOrMove(XEvent *event,
     }
 }
 
-#ifdef IF_MOTIF
+#endif
+
+#if defined(IF_XM)
+
 static void SelectOrMove(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
-#else // NOT IF_MOTIF
-void GtkGraphEdit::SelectOrMove(XEvent *event)
-#endif // IF_MOTIF
 {
-#ifdef IF_MOTIF
     _SelectOrMove(w, event, params, num_params, SetSelection, True);
-#else // NOT IF_MOTIF
-    _SelectOrMove(event, SetSelection, True);
-#endif // IF_MOTIF
 }
 
-#ifdef IF_MOTIF
+#else
+
+void GUIGraphEdit::SelectOrMove(GUI::Event *event)
+{
+    _SelectOrMove(event, SetSelection, True);
+}
+
+#endif
+
+#if defined(IF_XM)
+
 static void ExtendOrMove(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
-#else // NOT IF_MOTIF
-void GtkGraphEdit::ExtendOrMove(XEvent *event)
-#endif // IF_MOTIF
 {
-#ifdef IF_MOTIF
     _SelectOrMove(w, event, params, num_params, ExtendSelection, True);
-#else // NOT IF_MOTIF
-    _SelectOrMove(event, ExtendSelection, True);
-#endif // IF_MOTIF
 }
 
-#ifdef IF_MOTIF
+#else
+
+void GUIGraphEdit::ExtendOrMove(GUI::Event *event)
+{
+    _SelectOrMove(event, ExtendSelection, True);
+}
+
+#endif
+
+#if defined(IF_XM)
+
 static void ToggleOrMove(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
-#else // NOT IF_MOTIF
-void GtkGraphEdit::ToggleOrMove(XEvent *event)
-#endif // IF_MOTIF
 {
-#ifdef IF_MOTIF
     _SelectOrMove(w, event, params, num_params, ToggleSelection, True);
-#else // NOT IF_MOTIF
-    _SelectOrMove(event, ToggleSelection, True);
-#endif // IF_MOTIF
 }
 
-#ifdef IF_MOTIF
+#else
+
+void GUIGraphEdit::ToggleOrMove(GUI::Event *event)
+{
+    _SelectOrMove(event, ToggleSelection, True);
+}
+
+#endif
+
+#if defined(IF_XM)
+
 static void Select(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
-#else // NOT IF_MOTIF
-void GtkGraphEdit::Select(XEvent *event)
-#endif // IF_MOTIF
 {
-#ifdef IF_MOTIF
     _SelectOrMove(w, event, params, num_params, SetSelection, False);
-#else // NOT IF_MOTIF
-    _SelectOrMove(event, SetSelection, False);
-#endif // IF_MOTIF
 }
 
-#ifdef IF_MOTIF
+#else
+
+void GUIGraphEdit::Select(GUI::Event *event)
+{
+    _SelectOrMove(event, SetSelection, False);
+}
+
+#endif
+
+#if defined(IF_XM)
+
 static void Extend(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
-#else // NOT IF_MOTIF
-void GtkGraphEdit::Extend(XEvent *event)
-#endif // IF_MOTIF
 {
-#ifdef IF_MOTIF
     _SelectOrMove(w, event, params, num_params, ExtendSelection, False);
-#else // NOT IF_MOTIF
-    _SelectOrMove(event, ExtendSelection, False);
-#endif // IF_MOTIF
 }
 
-#ifdef IF_MOTIF
+#else
+
+void GUIGraphEdit::Extend(GUI::Event *event)
+{
+    _SelectOrMove(event, ExtendSelection, False);
+}
+
+#endif
+
+#if defined(IF_XM)
+
 static void Toggle(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
-#else // NOT IF_MOTIF
-void GtkGraphEdit::Toggle(XEvent *event)
-#endif // IF_MOTIF
 {
-#ifdef IF_MOTIF
     _SelectOrMove(w, event, params, num_params, ToggleSelection, False);
-#else // NOT IF_MOTIF
-    _SelectOrMove(event, ToggleSelection, False);
-#endif // IF_MOTIF
 }
 
-// Keep on acting...
-#ifdef IF_MOTIF
-static void Follow(Widget w, XEvent *event, String *, Cardinal *)
-#else // NOT IF_MOTIF
-void GtkGraphEdit::Follow(XEvent *event)
-#endif // IF_MOTIF
+#else
+
+void GUIGraphEdit::Toggle(GUI::Event *event)
 {
-#ifdef IF_MOTIF
+    _SelectOrMove(event, ToggleSelection, False);
+}
+
+#endif
+
+#if defined(IF_XM)
+
+// Keep on acting...
+static void Follow(Widget w, XEvent *event, String *, Cardinal *)
+{
     const GraphEditWidget _w    = GraphEditWidget(w);
     const BoxPoint& startAction = _w->graphEditP.startAction;
     BoxPoint& endAction         = _w->graphEditP.endAction;
     GraphEditState& state       = _w->graphEditP.state;
     BoxPoint& lastOffset        = _w->graphEditP.lastOffset;
     const Dimension moveDelta   = _w->res_.graphEdit.moveDelta;
-#endif // IF_MOTIF
 
     BoxPoint p = point(event);
 
@@ -2903,32 +3056,82 @@ void GtkGraphEdit::Follow(XEvent *event)
     }
 }
 
+#else
+
+// Keep on acting...
+void GUIGraphEdit::Follow(GUI::Event *event)
+{
+
+    BoxPoint p = point1(event);
+
+    switch(state)
+    {
+	case SelectState:
+	    // Draw new select frame
+	    redrawSelectFrame(M_ARGS_2(w, p));
+	    break;
+
+	case MoveState:
+	{
+	    // Draw new move frames
+	    endAction = p;
+	    BoxPoint newOffset = actionOffset(M_ARGS_1(w));
+	    if (newOffset != lastOffset)
+	    {
+		drawOutlines(M_ARGS_2(w, lastOffset));
+		drawOutlines(M_ARGS_2(w, lastOffset = newOffset));
+	    }
+	    break;
+	}
+
+	case DeltaState:
+	    // Wait for movement
+	    if (abs(p[X] - startAction[X]) > moveDelta ||
+		abs(p[Y] - startAction[Y]) > moveDelta)
+	    {
+		// start moving
+		endAction = p;
+		getMinimalOffset(M_ARGS_1(w));
+		graphEditSizeChanged(M_ARGS_1(w));
+		drawOutlines(M_ARGS_2(w, lastOffset = actionOffset(M_ARGS_1(w))));
+		state = MoveState;
+	    }
+	    break;
+
+	default:
+	    // Do nothing
+	    break;
+    }
+}
+
+#endif
+
 // Now, all is done.
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 static void move_selected_nodes(Widget w, const BoxPoint& offset)
-#else // NOT IF_MOTIF
-void GtkGraphEdit::move_selected_nodes(const BoxPoint& offset)
-#endif // IF_MOTIF
+#else
+void GUIGraphEdit::move_selected_nodes(const BoxPoint& offset)
+#endif
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     const GraphEditWidget _w   = GraphEditWidget(w);
     const Graph* graph         = _w->res_.graphEdit.graph;
     const GraphGC& graphGC     = _w->graphEditP.graphGC;
-#endif // IF_MOTIF
+#endif
 
     if (offset == BoxPoint(0, 0))
 	return;
 
     // Clear graph area
     BoxRegion r = graph->region(graphGC);
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XClearArea(XtDisplay(w), XtWindow(w), r.origin(X), r.origin(Y),
 	       r.space(X), r.space(Y), False);
-#else // NOT IF_MOTIF
-    get_window()->clear_area(r.origin(X), r.origin(Y),
-			     r.space(X), r.space(Y));
-#endif // IF_MOTIF
+#else
+    internal()->get_window()->clear_area(r.origin(X), r.origin(Y),
+					 r.space(X), r.space(Y));
+#endif
 
     // Move selected nodes
     GraphNode *lastNode = 0;
@@ -2951,13 +3154,10 @@ void GtkGraphEdit::move_selected_nodes(const BoxPoint& offset)
     graphEditRedraw(M_ARGS_1(w));
 }
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
+
 static void End(Widget w, XEvent *event, String *, Cardinal *)
-#else // NOT IF_MOTIF
-void GtkGraphEdit::End(XEvent *event)
-#endif // IF_MOTIF
 {
-#ifdef IF_MOTIF
     const GraphEditWidget _w   = GraphEditWidget(w);
     const Graph* graph         = _w->res_.graphEdit.graph;
     const GraphGC& graphGC     = _w->graphEditP.graphGC;
@@ -2966,7 +3166,6 @@ void GtkGraphEdit::End(XEvent *event)
 
     BoxPoint& endAction        = _w->graphEditP.endAction;
     GraphEditState& state      = _w->graphEditP.state;
-#endif // IF_MOTIF
 
     Boolean changed = False;
 
@@ -2974,10 +3173,10 @@ void GtkGraphEdit::End(XEvent *event)
     {
 	case SelectState:
 	{
-	    drawSelectFrame(M_ARGS_1(w));
+	    drawSelectFrame(w);
 	    endAction = point(event);
 
-	    BoxRegion selected = frameRegion(M_ARGS_1(w));
+	    BoxRegion selected = frameRegion(w);
 	    Boolean have_unselected_nodes = False;
 
 	    // Find all nodes in frame and select them
@@ -2994,7 +3193,7 @@ void GtkGraphEdit::End(XEvent *event)
 		    {
 			have_unselected_nodes = True;
 			node->selected() = True;
-			graphEditRedrawNode(M_ARGS_2(w, node));
+			graphEditRedrawNode(w, node);
 			changed = True;
 		    }
 		}
@@ -3015,7 +3214,7 @@ void GtkGraphEdit::End(XEvent *event)
 			if (!intersection.isEmpty())
 			{
 			    node->selected() = False;
-			    graphEditRedrawNode(M_ARGS_2(w, node));
+			    graphEditRedrawNode(w, node);
 			    changed = True;
 			}
 		    }
@@ -3031,12 +3230,12 @@ void GtkGraphEdit::End(XEvent *event)
 	    // Move all selected nodes to new positions
 		   
 	    // clear graph area
-	    drawOutlines(M_ARGS_2(w, lastOffset));
+	    drawOutlines(w, lastOffset);
 
             // move nodes
 	    endAction = point(event);
-	    BoxPoint offset = actionOffset(M_ARGS_1(w));
-	    move_selected_nodes(M_ARGS_2(w, offset));
+	    BoxPoint offset = actionOffset(w);
+	    move_selected_nodes(w, offset);
 
 	    state = NopState;
 	    break;
@@ -3048,46 +3247,127 @@ void GtkGraphEdit::End(XEvent *event)
     }
 
     if (changed)
-	selectionChanged(M_ARGS_3(w, event, False));
+	selectionChanged(w, event, False);
 
-    defineCursor(M_ARGS_2(w, defaultCursor));
+    defineCursor(w, defaultCursor);
 }
 
+#else
+
+void GUIGraphEdit::End(GUI::Event *event)
+{
+
+    Boolean changed = False;
+
+    switch(state)
+    {
+	case SelectState:
+	{
+	    drawSelectFrame();
+	    endAction = point1(event);
+
+	    BoxRegion selected = frameRegion();
+	    Boolean have_unselected_nodes = False;
+
+	    // Find all nodes in frame and select them
+	    for (GraphNode *node = graph->firstVisibleNode(); node != 0;
+		node = graph->nextVisibleNode(node))
+	    {
+		if (!node->selected())
+		{
+		    // Intersection must be non-empty
+		    BoxRegion intersection = 
+			selected & node->region(graphGC);
+
+		    if (!intersection.isEmpty())
+		    {
+			have_unselected_nodes = True;
+			node->selected() = True;
+			graphEditRedrawNode(node);
+			changed = True;
+		    }
+		}
+	    }
+
+	    if (!have_unselected_nodes)
+	    {
+		// All selected nodes are already selected - unselect them
+		for (GraphNode *node = graph->firstVisibleNode(); node != 0;
+		     node = graph->nextVisibleNode(node))
+		{
+		    if (node->selected())
+		    {
+			// Intersection must be non-empty
+			BoxRegion intersection = 
+			    selected & node->region(graphGC);
+
+			if (!intersection.isEmpty())
+			{
+			    node->selected() = False;
+			    graphEditRedrawNode(node);
+			    changed = True;
+			}
+		    }
+		}
+	    }
+
+	    state = NopState;
+	    break;
+	}
+
+        case MoveState:
+	{
+	    // Move all selected nodes to new positions
+		   
+	    // clear graph area
+	    drawOutlines(lastOffset);
+
+            // move nodes
+	    endAction = point1(event);
+	    BoxPoint offset = actionOffset();
+	    move_selected_nodes(offset);
+
+	    state = NopState;
+	    break;
+	}
+
+	default:
+	    // Do nothing
+	    break;
+    }
+
+    if (changed)
+	selectionChanged(event, False);
+
+    defineCursor(defaultCursor);
+}
+
+#endif
+
+#if defined(IF_XM)
+
 // Key movement action
-#ifdef IF_MOTIF
 static void MoveSelected(Widget w, XEvent *, String *params, 
 			 Cardinal *num_params)
-#else // NOT IF_MOTIF
-void GtkGraphEdit::MoveSelected(XEvent *, string movx, string movy)
-#endif // IF_MOTIF
 {
-#ifdef IF_MOTIF
     const GraphEditWidget _w      = GraphEditWidget(w);
     const Dimension gridWidth     = _w->res_.graphEdit.gridWidth;
     const Dimension gridHeight    = _w->res_.graphEdit.gridHeight;
     const BoxPoint& minimalOffset = _w->graphEditP.minimalOffset;
-#endif // IF_MOTIF
 
     BoxPoint grid(gridWidth, gridHeight);
 
-#ifdef IF_MOTIF
     if (num_params == 0 || *num_params != 2)
     {
 	std::cerr << "move-selected: usage: move-selected(X, Y)\n";
 	return;
     }
-#endif // IF_MOTIF
 
     BoxPoint offset;
 
     string offset_s[2];
-#ifdef IF_MOTIF
     offset_s[X] = params[0];
     offset_s[Y] = params[1];
-#else // NOT IF_MOTIF
-    offset_s[X] = movx;
-    offset_s[Y] = movy;
-#endif // IF_MOTIF
 
     BoxDimension d;
     for (d = X; d <= Y; d++)
@@ -3112,7 +3392,7 @@ void GtkGraphEdit::MoveSelected(XEvent *, string movx, string movy)
 	}
     }
 
-    getMinimalOffset(M_ARGS_1(w));
+    getMinimalOffset(w);
     
     for (d = X; d <= Y; d++)
     {
@@ -3123,26 +3403,76 @@ void GtkGraphEdit::MoveSelected(XEvent *, string movx, string movy)
 
     if (offset != BoxPoint(0, 0))
     {
-	move_selected_nodes(M_ARGS_2(w, offset));
-	graphEditSizeChanged(M_ARGS_1(w));
+	move_selected_nodes(w, offset);
+	graphEditSizeChanged(w);
     }
 }
 
+#else
+
+// Key movement action
+void GUIGraphEdit::MoveSelected(GUI::Event *, string movx, string movy)
+{
+
+    BoxPoint grid(gridWidth, gridHeight);
+
+    BoxPoint offset;
+
+    string offset_s[2];
+    offset_s[X] = movx;
+    offset_s[Y] = movy;
+
+    BoxDimension d;
+    for (d = X; d <= Y; d++)
+    {
+	BoxCoordinate& c = offset[d];
+	string& s = offset_s[d];
+
+	if (s == "+grid" || s == "grid")
+	    c = +grid[d];
+	else if (s == "-grid")
+	    c = -grid[d];
+	else
+	{
+	    char *ptr;
+	    const char *str = s.chars();
+	    c = strtol(str, &ptr, 0);
+	    if (ptr == str)
+	    {
+		std::cerr << "move-selected: illegal argument " << str << "\n";
+		return;
+	    }
+	}
+    }
+
+    getMinimalOffset();
+    
+    for (d = X; d <= Y; d++)
+    {
+	// Offset must not move nodes out of area
+	if (offset[d] < minimalOffset[d])
+	    offset[d] = minimalOffset[d];
+    }
+
+    if (offset != BoxPoint(0, 0))
+    {
+	move_selected_nodes(offset);
+	graphEditSizeChanged();
+    }
+}
+
+#endif
+
+#if defined(IF_XM)
 
 // Select single node
-#ifdef IF_MOTIF
 static void select_single_node(Widget w, XEvent *event, GraphNode *selectNode)
-#else // NOT IF_MOTIF
-void GtkGraphEdit::select_single_node(XEvent *event, GraphNode *selectNode)
-#endif // IF_MOTIF
 {
     if (selectNode == 0)
 	return;
 
-#ifdef IF_MOTIF
     const GraphEditWidget _w   = GraphEditWidget(w);
     const Graph* graph         = _w->res_.graphEdit.graph;
-#endif // IF_MOTIF
 
     Boolean changed = False;
 
@@ -3154,7 +3484,7 @@ void GtkGraphEdit::select_single_node(XEvent *event, GraphNode *selectNode)
 	{
 	    node->selected() = False;
 	    changed = True;
-	    graphEditRedrawNode(M_ARGS_2(w, node));
+	    graphEditRedrawNode(w, node);
 	}
     }
 
@@ -3162,40 +3492,78 @@ void GtkGraphEdit::select_single_node(XEvent *event, GraphNode *selectNode)
     {
 	selectNode->selected() = True;
 	changed = True;
-	raise_node(M_ARGS_2(w, selectNode));
-	graphEditRedrawNode(M_ARGS_2(w, selectNode));
+	raise_node(w, selectNode);
+	graphEditRedrawNode(w, selectNode);
     }
 
     if (changed)
-	selectionChanged(M_ARGS_3(w, event, False));
+	selectionChanged(w, event, False);
 }
+
+#else
+
+// Select single node
+void GUIGraphEdit::select_single_node(GUI::Event *event, GraphNode *selectNode)
+{
+    if (selectNode == 0)
+	return;
+
+    Boolean changed = False;
+
+    for (GraphNode *node = graph->firstVisibleNode(); 
+	 node != 0;
+	 node = graph->nextVisibleNode(node))
+    {
+	if (node != selectNode && node->selected())
+	{
+	    node->selected() = False;
+	    changed = True;
+	    graphEditRedrawNode(node);
+	}
+    }
+
+    if (!selectNode->selected())
+    {
+	selectNode->selected() = True;
+	changed = True;
+	raise_node(selectNode);
+	graphEditRedrawNode(selectNode);
+    }
+
+    if (changed)
+	selectionChanged(event, False);
+}
+
+#endif
+
+#if defined(IF_XM)
 
 // Select first node
-#ifdef IF_MOTIF
 static void SelectFirst(Widget w, XEvent *event, String *, Cardinal *)
-#else // NOT IF_MOTIF
-void GtkGraphEdit::SelectFirst(XEvent *event)
-#endif // IF_MOTIF
 {
-#ifdef IF_MOTIF
     const GraphEditWidget _w   = GraphEditWidget(w);
     const Graph* graph         = _w->res_.graphEdit.graph;
-#endif // IF_MOTIF
 
-    select_single_node(M_ARGS_3(w, event, graph->firstVisibleNode()));
+    select_single_node(w, event, graph->firstVisibleNode());
 }
 
-// Select next node
-#ifdef IF_MOTIF
-static void SelectNext(Widget w, XEvent *event, String *, Cardinal *)
-#else // NOT IF_MOTIF
-void GtkGraphEdit::SelectNext(XEvent *event)
-#endif // IF_MOTIF
+#else
+
+// Select first node
+void GUIGraphEdit::SelectFirst(GUI::Event *event)
 {
-#ifdef IF_MOTIF
+    select_single_node(event, graph->firstVisibleNode());
+}
+
+#endif
+
+#if defined(IF_XM)
+
+// Select next node
+static void SelectNext(Widget w, XEvent *event, String *, Cardinal *)
+{
     const GraphEditWidget _w   = GraphEditWidget(w);
     const Graph* graph         = _w->res_.graphEdit.graph;
-#endif // IF_MOTIF
 
     GraphNode *selectNode = 0;
     for (GraphNode *node = graph->firstVisibleNode(); 
@@ -3212,20 +3580,41 @@ void GtkGraphEdit::SelectNext(XEvent *event)
     if (selectNode == 0)
 	selectNode = graph->firstVisibleNode();
 
-    select_single_node(M_ARGS_3(w, event, selectNode));
+    select_single_node(w, event, selectNode);
 }
 
-// Select previous node
-#ifdef IF_MOTIF
-static void SelectPrev(Widget w, XEvent *event, String *, Cardinal *)
-#else // NOT IF_MOTIF
-void GtkGraphEdit::SelectPrev(XEvent *event)
-#endif // IF_MOTIF
+#else
+
+// Select next node
+void GUIGraphEdit::SelectNext(GUI::Event *event)
 {
-#ifdef IF_MOTIF
+    GraphNode *selectNode = 0;
+    for (GraphNode *node = graph->firstVisibleNode(); 
+	 node != 0;
+	 node = graph->nextVisibleNode(node))
+    {
+	if (node->selected())
+	{
+	    selectNode = graph->nextVisibleNode(node);
+	    break;
+	}
+    }
+
+    if (selectNode == 0)
+	selectNode = graph->firstVisibleNode();
+
+    select_single_node(event, selectNode);
+}
+
+#endif
+
+#if defined(IF_XM)
+
+// Select previous node
+static void SelectPrev(Widget w, XEvent *event, String *, Cardinal *)
+{
     const GraphEditWidget _w = GraphEditWidget(w);
     const Graph* graph       = _w->res_.graphEdit.graph;
-#endif // IF_MOTIF
 
     GraphNode *lastNode = 0;
     GraphNode *selectNode = 0;
@@ -3241,8 +3630,32 @@ void GtkGraphEdit::SelectPrev(XEvent *event)
     if (selectNode == 0)
 	selectNode = lastNode;
 
-    select_single_node(M_ARGS_3(w, event, selectNode));
+    select_single_node(w, event, selectNode);
 }
+
+#else
+
+// Select previous node
+void GUIGraphEdit::SelectPrev(GUI::Event *event)
+{
+    GraphNode *lastNode = 0;
+    GraphNode *selectNode = 0;
+    for (GraphNode *node = graph->firstVisibleNode(); 
+	 node != 0;
+	 node = graph->nextVisibleNode(node))
+    {
+	if (node->selected())
+	    selectNode = lastNode;
+	lastNode = node;
+    }
+
+    if (selectNode == 0)
+	selectNode = lastNode;
+
+    select_single_node(event, selectNode);
+}
+
+#endif
 
 // Return nearest grid position near P
 static BoxPoint NearestGridPosition(const BoxPoint& grid, const BoxPoint& p)
@@ -3258,20 +3671,20 @@ static BoxPoint NearestGridPosition(const BoxPoint& grid, const BoxPoint& p)
 
 
 // Return final position (if snapToGrid is enabled, for example)
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 BoxPoint graphEditFinalPosition(Widget w, const BoxPoint& p)
-#else // NOT IF_MOTIF
-BoxPoint GtkGraphEdit::final_position(const BoxPoint& p)
-#endif // IF_MOTIF
+#else
+BoxPoint GUIGraphEdit::final_position(const BoxPoint& p)
+#endif
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XtCheckSubclass(w, GraphEditWidgetClass, "Bad widget class");
 
     const GraphEditWidget _w   = GraphEditWidget(w);
     const Boolean snapToGrid   = _w->res_.graphEdit.snapToGrid;
     const Dimension gridWidth  = _w->res_.graphEdit.gridWidth;
     const Dimension gridHeight = _w->res_.graphEdit.gridHeight;
-#endif // IF_MOTIF
+#endif
 
     if (snapToGrid)
     {
@@ -3282,7 +3695,7 @@ BoxPoint GtkGraphEdit::final_position(const BoxPoint& p)
 	return p;
 }
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 // Snap nodes to grid
 static void _SnapToGrid(Widget w, XEvent *, String *params, 
 			Cardinal *num_params)
@@ -3317,13 +3730,13 @@ static void SnapToGrid(Widget w, XEvent *event, String *params,
     _SnapToGrid(w, event, params, num_params);
     graphEditRedraw(w);
 }
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning No snap-to-grid
 #endif
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 static int get_new_rotation(Widget w, const _XtString *params, Cardinal *num_params,
 			    const _XtString name, const _XtString default_param, 
 			    const _XtString extra_args = "")
@@ -3417,21 +3830,21 @@ static void Rotate(Widget w, XEvent *event, String *params,
     }
     graphEditRedraw(w);
 }
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning No rotation
 #endif
-#endif // IF_MOTIF
+#endif
 
 
 // Layout nodes
 
 static Graph *layout_graph = 0;
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 static Widget layout_widget = 0;
-#else // NOT IF_MOTIF
-static GtkGraphEdit *layout_widget = 0;
-#endif // IF_MOTIF
+#else
+static GUIGraphEdit *layout_widget = 0;
+#endif
 
 static void LayoutNodeCB(const char *node_name, int x, int y)
 {
@@ -3495,11 +3908,11 @@ static int LayoutCompareCB(const char *name1, const char *name2)
     info.node1 = node1;
     info.node2 = node2;
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XtCallCallbacks(layout_widget, XtNcompareNodesCallback, XtPointer(&info));
-#else // NOT IF_MOTIF
+#else
     layout_widget->signal_compare_nodes().emit(&info);
-#endif // IF_MOTIF
+#endif
 
     return info.result;
 }
@@ -3576,25 +3989,25 @@ static void compact_layouted_graph(Graph *graph)
     remove_all_hints(graph);
 }    
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 static void _Layout(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
-#else // NOT IF_MOTIF
-void GtkGraphEdit::_Layout(LayoutMode mode)
-#endif // IF_MOTIF
+#else
+void GUIGraphEdit::_Layout(LayoutMode mode)
+#endif
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     const GraphEditWidget _w   = GraphEditWidget(w);
     Graph* graph               = _w->res_.graphEdit.graph;
     const GraphGC& graphGC     = _w->graphEditP.graphGC;
     Cardinal& rotation         = _w->res_.graphEdit.rotation;
     LayoutMode mode            = _w->res_.graphEdit.layoutMode;
     Boolean& autoLayout        = _w->res_.graphEdit.autoLayout;
-#endif // IF_MOTIF
+#endif
 
     static const char *graph_name = "graph";
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     if (num_params && *num_params > 0 && params[0][0] != '\0')
     {
 	LayoutMode mode_param;
@@ -3609,9 +4022,9 @@ void GtkGraphEdit::_Layout(LayoutMode mode)
 	if (ok)
 	    mode = mode_param;
     }
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     Cardinal new_num_params = 
 	(num_params && *num_params > 0 ? *num_params - 1 : 0);
     int new_rotation = 
@@ -3619,9 +4032,9 @@ void GtkGraphEdit::_Layout(LayoutMode mode)
 			 "layout", "+0", "MODE, ");
     if (new_rotation < 0)
 	return;
-#else // NOT IF_MOTIF
+#else
     int new_rotation = 0;
-#endif // IF_MOTIF
+#endif
 
     // Don't get called again while setting values from hooks
     Boolean old_autoLayout = autoLayout;
@@ -3632,11 +4045,11 @@ void GtkGraphEdit::_Layout(LayoutMode mode)
     info.graph    = graph;
     info.mode     = mode;
     info.rotation = new_rotation;
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XtCallCallbacks(w, XtNpreLayoutCallback, XtPointer(&info));
-#else // NOT IF_MOTIF
+#else
     signal_pre_layout().emit(&info);
-#endif // IF_MOTIF
+#endif
 
     // Remove all hint nodes
     remove_all_hints(graph);
@@ -3677,11 +4090,11 @@ void GtkGraphEdit::_Layout(LayoutMode mode)
     }
 
     // Layout the graph
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     layout_widget = w;
-#else // NOT IF_MOTIF
+#else
     layout_widget = this;
-#endif // IF_MOTIF
+#endif
     layout_graph  = graph;
     Layout::node_callback    = LayoutNodeCB;
     Layout::hint_callback    = LayoutHintCB;
@@ -3695,7 +4108,7 @@ void GtkGraphEdit::_Layout(LayoutMode mode)
     // Clear the graph...
     Layout::remove_graph(graph_name);
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     // ... and re-rotate it.
     std::ostringstream os;
     os << new_rotation;
@@ -3707,54 +4120,54 @@ void GtkGraphEdit::_Layout(LayoutMode mode)
 
     rotation = 0;
     _Rotate(w, event, CONST_CAST(String*,rotate_params), &rotate_num_params);
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning NO rotations yet
 #endif
-#endif // IF_MOTIF
+#endif
 
     // Layout is done
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XtCallCallbacks(w, XtNpostLayoutCallback, XtPointer(&info));
-#else // NOT IF_MOTIF
+#else
     signal_post_layout().emit(&info);
-#endif // IF_MOTIF
+#endif
 
     autoLayout = old_autoLayout;
 }
 
 // DoLayout() should be named Layout(), but this conflicts with the
 // `Layout' class on some pre-ARM C++ compilers :-(
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 static void DoLayout(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
-#else // NOT IF_MOTIF
-void GtkGraphEdit::DoLayout(LayoutMode mode)
-#endif // IF_MOTIF
+#else
+void GUIGraphEdit::DoLayout(LayoutMode mode)
+#endif
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     _Layout(w, event, params, num_params);
-#else // NOT IF_MOTIF
+#else
     _Layout(mode);
-#endif // IF_MOTIF
+#endif
     graphEditRedraw(M_ARGS_1(w));
 }
 
 
 // Normalize graph
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 static void _Normalize(Widget w, XEvent *, String *, Cardinal *)
-#else // NOT IF_MOTIF
-void GtkGraphEdit::_Normalize()
-#endif // IF_MOTIF
+#else
+void GUIGraphEdit::_Normalize()
+#endif
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     const GraphEditWidget _w   = GraphEditWidget(w);
     const Graph* graph         = _w->res_.graphEdit.graph;
     const GraphGC& graphGC     = _w->graphEditP.graphGC;
     const Dimension gridHeight = _w->res_.graphEdit.gridHeight;
     const Dimension gridWidth  = _w->res_.graphEdit.gridWidth;
-#endif // IF_MOTIF
+#endif
 
     BoxRegion r = graph->region(graphGC);
 
@@ -3773,43 +4186,43 @@ void GtkGraphEdit::_Normalize()
     }
 }
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 static void Normalize(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
-#else // NOT IF_MOTIF
-void GtkGraphEdit::Normalize(void)
-#endif // IF_MOTIF
+#else
+void GUIGraphEdit::Normalize(void)
+#endif
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     _Normalize(w, event, params, num_params);
-#else // NOT IF_MOTIF
+#else
     _Normalize();
-#endif // IF_MOTIF
+#endif
     graphEditRedraw(M_ARGS_1(w));
 }
 
 
 // Show and hide edges
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 static void considerEdges(Widget w, XEvent *, String *params,
 			  Cardinal *num_params, Boolean shallBeHidden)
-#else // NOT IF_MOTIF
-void GtkGraphEdit::considerEdges(ShowHideMode themode, Boolean shallBeHidden)
-#endif // IF_MOTIF
+#else
+void GUIGraphEdit::considerEdges(ShowHideMode themode, Boolean shallBeHidden)
+#endif
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     const GraphEditWidget _w = GraphEditWidget(w);
     const Graph* graph       = _w->res_.graphEdit.graph;
-#endif // IF_MOTIF
+#endif
 
     // get the mode
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     ShowHideMode themode = NopeShowHideMode;
-#endif // IF_MOTIF
+#endif
     Boolean changedSomething = False;
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     string p = "any";
     if (*num_params >= 1)
 	p = params[0];
@@ -3824,7 +4237,7 @@ void GtkGraphEdit::considerEdges(ShowHideMode themode, Boolean shallBeHidden)
 	themode = BothShowHideMode;
     else
 	std::cerr << "show-edges: bad mode " << '`' << p << "'" << "\n";
-#endif // IF_MOTIF
+#endif
 
     for (GraphEdge *edge = graph->firstEdge(); edge != 0;
 	edge = graph->nextEdge(edge))
@@ -3870,212 +4283,212 @@ void GtkGraphEdit::considerEdges(ShowHideMode themode, Boolean shallBeHidden)
 	graphEditRedraw(M_ARGS_1(w));
 }
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 static void ShowEdges(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
-#else // NOT IF_MOTIF
-void GtkGraphEdit::ShowEdges(ShowHideMode how)
-#endif // IF_MOTIF
+#else
+void GUIGraphEdit::ShowEdges(ShowHideMode how)
+#endif
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     considerEdges(w, event, params, num_params, False);
-#else // NOT IF_MOTIF
+#else
     considerEdges(how, False);
-#endif // IF_MOTIF
+#endif
 }
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 static void HideEdges(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
-#else // NOT IF_MOTIF
-void GtkGraphEdit::HideEdges(ShowHideMode how)
-#endif // IF_MOTIF
+#else
+void GUIGraphEdit::HideEdges(ShowHideMode how)
+#endif
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     considerEdges(w, event, params, num_params, True);
-#else // NOT IF_MOTIF
+#else
     considerEdges(how, True);
-#endif // IF_MOTIF
+#endif
 }
 
 // **********************************************************************
 
-#ifndef IF_MOTIF
+#if !defined(IF_MOTIF)
 
-// GtkGraphEdit accessors
+// GUIGraphEdit accessors
 
 Graph *
-GtkGraphEdit::get_graph(void)
+GUIGraphEdit::get_graph(void)
 {
     return graph;
 }
 
 bool
-GtkGraphEdit::get_show_grid(void)
+GUIGraphEdit::get_show_grid(void)
 {
     return showGrid;
 }
 
 void
-GtkGraphEdit::set_show_grid(bool b)
+GUIGraphEdit::set_show_grid(bool b)
 {
     showGrid = b;
 }
 
 bool
-GtkGraphEdit::get_snap_to_grid(void)
+GUIGraphEdit::get_snap_to_grid(void)
 {
     return snapToGrid;
 }
 
 void
-GtkGraphEdit::set_snap_to_grid(bool b)
+GUIGraphEdit::set_snap_to_grid(bool b)
 {
     snapToGrid = b;
 }
 
 bool
-GtkGraphEdit::get_show_hints(void)
+GUIGraphEdit::get_show_hints(void)
 {
     return showHints;
 }
 
 void
-GtkGraphEdit::set_show_hints(bool b)
+GUIGraphEdit::set_show_hints(bool b)
 {
     showHints = b;
 }
 
 bool
-GtkGraphEdit::get_show_annotations(void)
+GUIGraphEdit::get_show_annotations(void)
 {
     return showAnnotations;
 }
 
 void
-GtkGraphEdit::set_show_annotations(bool b)
+GUIGraphEdit::set_show_annotations(bool b)
 {
     showAnnotations = b;
 }
 
 bool
-GtkGraphEdit::get_auto_layout(void)
+GUIGraphEdit::get_auto_layout(void)
 {
     return autoLayout;
 }
 
 void
-GtkGraphEdit::set_auto_layout(bool b)
+GUIGraphEdit::set_auto_layout(bool b)
 {
     autoLayout = b;
 }
 
 LayoutMode
-GtkGraphEdit::get_layout_mode(void)
+GUIGraphEdit::get_layout_mode(void)
 {
     return layoutMode;
 }
 
 void
-GtkGraphEdit::set_layout_mode(LayoutMode lm)
+GUIGraphEdit::set_layout_mode(LayoutMode lm)
 {
     layoutMode = lm;
 }
 
 int
-GtkGraphEdit::get_grid_width(void)
+GUIGraphEdit::get_grid_width(void)
 {
     return gridWidth;
 }
 
 void
-GtkGraphEdit::set_grid_width(int i)
+GUIGraphEdit::set_grid_width(int i)
 {
     gridWidth = i;
 }
 
 int
-GtkGraphEdit::get_grid_height(void)
+GUIGraphEdit::get_grid_height(void)
 {
     return gridHeight;
 }
 
 void
-GtkGraphEdit::set_grid_height(int i)
+GUIGraphEdit::set_grid_height(int i)
 {
     gridHeight = i;
 }
 
 bool
-GtkGraphEdit::get_dashed_lines(void)
+GUIGraphEdit::get_dashed_lines(void)
 {
     return dashedLines;
 }
 
 void
-GtkGraphEdit::set_dashed_lines(bool b)
+GUIGraphEdit::set_dashed_lines(bool b)
 {
     dashedLines = b;
 }
 
 Cardinal
-GtkGraphEdit::get_rotation(void)
+GUIGraphEdit::get_rotation(void)
 {
     return rotation;
 }
 
 void
-GtkGraphEdit::set_rotation(Cardinal c)
+GUIGraphEdit::set_rotation(Cardinal c)
 {
     rotation = c;
 }
 
 sigc::signal<void, GraphEditPositionChangedInfo *>
-GtkGraphEdit::signal_position_changed()
+GUIGraphEdit::signal_position_changed()
 {
     return signal_position_changed_;
 }
 
 sigc::signal<void, GraphEditSelectionChangedInfo *>
-GtkGraphEdit::signal_selection_changed()
+GUIGraphEdit::signal_selection_changed()
 {
     return signal_selection_changed_;
 }
 
 sigc::signal<void, GraphEditPreSelectionInfo *>
-GtkGraphEdit::signal_pre_selection()
+GUIGraphEdit::signal_pre_selection()
 {
     return signal_pre_selection_;
 }
 
 sigc::signal<void, GraphEditCompareNodesInfo *>
-GtkGraphEdit::signal_compare_nodes()
+GUIGraphEdit::signal_compare_nodes()
 {
     return signal_compare_nodes_;
 }
 
 sigc::signal<void, GraphEditLayoutInfo *>
-GtkGraphEdit::signal_pre_layout()
+GUIGraphEdit::signal_pre_layout()
 {
     return signal_pre_layout_;
 }
 
 sigc::signal<void, GraphEditLayoutInfo *>
-GtkGraphEdit::signal_post_layout()
+GUIGraphEdit::signal_post_layout()
 {
     return signal_post_layout_;
 }
 
 const GraphGC&
-GtkGraphEdit::get_graph_GC(void)
+GUIGraphEdit::get_graph_GC(void)
 {
     return graphGC;
 }
 
 void
-GtkGraphEdit::set_graph(Graph *gr)
+GUIGraphEdit::set_graph(Graph *gr)
 {
     graph = gr;
 }
 
-#endif // IF_MOTIF
+#endif

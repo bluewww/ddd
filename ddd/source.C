@@ -154,43 +154,61 @@ bool have_enabled_breakpoint_at_arg()
     return bp != 0 && bp->enabled();
 }
 
-void gdbBreakAtCB(CB_ARG_LIST_1(w))
+#if defined(IF_XM)
+
+void gdbBreakAtCB(Widget w, XtPointer, XtPointer)
 {
     source_view->create_bp(current_arg(true), w);
 }
 
-void gdbTempBreakAtCB(CB_ALIST_1(Widget w))
+void gdbTempBreakAtCB(Widget w, XtPointer, XtPointer)
 {
     source_view->create_temp_bp(current_arg(true), w);
 }
+
+#else
+
+void gdbBreakAtCB(GUI::Widget *w)
+{
+    source_view->create_bp(current_arg(true), w);
+}
+
+void gdbTempBreakAtCB(GUI::Widget *w)
+{
+    source_view->create_temp_bp(current_arg(true), w);
+}
+
+#endif
 
 void gdbRegexBreakAtCB(CB_ALIST_1(Widget w))
 {
     gdb_command("rbreak " + source_arg->get_string(), w);
 }
 
-void gdbClearAtCB(CB_ARG_LIST_1(w))
+#if defined(IF_XM)
+
+void gdbClearAtCB(Widget w, XtPointer, XtPointer)
 {
     source_view->clear_bp(current_arg(true), w);
 }
 
-void gdbToggleBreakCB(CB_ARG_LIST_1(w))
+void gdbToggleBreakCB(Widget w, XtPointer, XtPointer)
 {
     source_view->set_bp(current_arg(true), 
-		       !have_breakpoint_at_arg(), false, "", w);
+			!have_breakpoint_at_arg(), false, "", w);
 }
 
-void gdbContUntilCB(CB_ALIST_1(Widget w))
+void gdbContUntilCB(Widget w, XtPointer, XtPointer)
 {
     source_view->temp_n_cont(current_arg(true), w);
 }
 
-void gdbSetPCCB(CB_ALIST_1(Widget w))
+void gdbSetPCCB(Widget w, XtPointer, XtPointer)
 {
     source_view->move_pc(current_arg(true), w);
 }
 
-void gdbToggleEnableBreakpointCB(CB_ALIST_1(Widget w))
+void gdbToggleEnableBreakpointCB(Widget w, XtPointer, XtPointer)
 {
     BreakPoint *bp = source_view->breakpoint_at(current_arg(true));
     if (bp != 0)
@@ -202,7 +220,7 @@ void gdbToggleEnableBreakpointCB(CB_ALIST_1(Widget w))
     }
 }
 
-void gdbToggleEnableWatchpointCB(CB_ALIST_1(Widget w))
+void gdbToggleEnableWatchpointCB(Widget w, XtPointer, XtPointer)
 {
     BreakPoint *bp = source_view->watchpoint_at(current_arg(true));
     if (bp != 0)
@@ -213,6 +231,55 @@ void gdbToggleEnableWatchpointCB(CB_ALIST_1(Widget w))
 	    source_view->enable_bp(bp->number(), w);
     }
 }
+
+#else
+
+void gdbClearAtCB(GUI::Widget *w)
+{
+    source_view->clear_bp(current_arg(true), w);
+}
+
+void gdbToggleBreakCB(GUI::Widget *w)
+{
+    source_view->set_bp(current_arg(true), 
+			!have_breakpoint_at_arg(), false, "", w);
+}
+
+void gdbContUntilCB(GUI::Widget *w)
+{
+    source_view->temp_n_cont(current_arg(true), w);
+}
+
+void gdbSetPCCB(GUI::Widget *w)
+{
+    source_view->move_pc(current_arg(true), w);
+}
+
+void gdbToggleEnableBreakpointCB(GUI::Widget *w)
+{
+    BreakPoint *bp = source_view->breakpoint_at(current_arg(true));
+    if (bp != 0)
+    {
+	if (bp->enabled())
+	    source_view->disable_bp(bp->number(), w);
+	else
+	    source_view->enable_bp(bp->number(), w);
+    }
+}
+
+void gdbToggleEnableWatchpointCB(GUI::Widget *w)
+{
+    BreakPoint *bp = source_view->watchpoint_at(current_arg(true));
+    if (bp != 0)
+    {
+	if (bp->enabled())
+	    source_view->disable_bp(bp->number(), w);
+	else
+	    source_view->enable_bp(bp->number(), w);
+    }
+}
+
+#endif
 
 void gdbEditBreakpointPropertiesCB(CB_ALIST_NULL)
 {
@@ -401,7 +468,11 @@ static void gdbEditDoneHP(Agent *edit_agent, void *, void *)
     edit_agent->removeHandler(Died,     gdbEditDoneHP);
 }
 
-void gdbEditSourceCB  (CB_ARG_LIST_1(w))
+#if defined(IF_XM)
+void gdbEditSourceCB  (Widget w, XtPointer, XtPointer)
+#else
+void gdbEditSourceCB  (GUI::Widget *w)
+#endif
 {
     string pos = source_view->file_of_cursor();
     string file = pos.before(':');

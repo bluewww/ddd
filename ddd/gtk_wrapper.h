@@ -260,6 +260,7 @@ typedef Gdk::Region *Region;
 typedef GdkEvent XEvent;
 typedef GdkEventButton XButtonEvent;
 
+#if 0
 #define KeyPress GDK_KEY_PRESS
 #define KeyRelease GDK_KEY_RELEASE
 #define ButtonPress GDK_BUTTON_PRESS
@@ -281,6 +282,7 @@ typedef GdkEventButton XButtonEvent;
 #define SelectionClear GDK_SELECTION_CLEAR
 #define SelectionRequest GDK_SELECTION_REQUEST
 #define SelectionNotify GDK_SELECTION_NOTIFY
+#endif
 
 #define ShiftMask GDK_CONTROL_MASK
 #define LockMask GDK_LOCK_MASK

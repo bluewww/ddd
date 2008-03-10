@@ -68,7 +68,7 @@ char file_rcsid[] =
 #include <string.h>		// strerror()
 #include <errno.h>
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 #include <Xm/Xm.h>
 #include <Xm/FileSB.h>
 #include <Xm/List.h>
@@ -79,7 +79,11 @@ char file_rcsid[] =
 #include <Xm/TextF.h>
 #include <Xm/Label.h>
 #include <Xm/PushB.h>
-#endif // IF_MOTIF
+#endif
+
+#if !defined(IF_XM)
+#include <GUI/FileSelectionDialog.h>
+#endif
 
 // ANSI C++ doesn't like the XtIsRealized() macro
 #ifdef XtIsRealized
@@ -105,17 +109,17 @@ string open_file_reply;
 // Opening files
 //-----------------------------------------------------------------------------
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 typedef void (*FileSearchProc)(Widget fs, 
 			       XmFileSelectionBoxCallbackStruct *cbs);
-#endif // IF_MOTIF
+#endif
 
 static WidgetArray file_filters;
 static WidgetArray file_dialogs;
 
 static string current_file_filter = "";
 
-#ifndef IF_MOTIF
+#if !defined(IF_MOTIF)
 
 static SimpleListColumns<string> *
 simple_list_columns_p(void)
@@ -127,9 +131,9 @@ simple_list_columns_p(void)
 }
 
 #define simple_list_columns (*simple_list_columns_p())
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 // Make sure that every change in one filter is reflected in all others
 static void SyncFiltersCB(Widget dialog, XtPointer, XtPointer)
 {
@@ -187,31 +191,27 @@ static void FilterAllCB(Widget dialog, XtPointer client_data,
 	}
     }
 }
-#endif // IF_MOTIF
+#endif
 
 static void ClearStatusCB(CB_ARG_LIST_NULL)
 {
     set_status("");
 }
 
+#if defined(IF_XM)
+
 // Create a file dialog NAME with DO_SEARCH_FILES and DO_SEARCH_DIRS
 // as search procedures for files and directories, respectively, and
 // OK_CALLBACK as the procedure called when a file is selected.
-static Widget file_dialog(WINDOW_P w, const string& name,
-#ifdef IF_MOTIF
+static Widget file_dialog(Widget w, const string& name,
 			  FileSearchProc do_search_files = 0,
 			  FileSearchProc do_search_dirs  = 0,
-			  XtCallbackProc ok_callback     = 0
-#else // NOT IF_MOTIF
-			  sigc::slot<void, Widget> ok_callback
-#endif // IF_MOTIF
-    )
+			  XtCallbackProc ok_callback     = 0)
 {
     Delay delay(w);
 
     string pwd;
 
-#ifdef IF_MOTIF
     Arg args[10];
     int arg = 0;
 
@@ -224,50 +224,26 @@ static Widget file_dialog(WINDOW_P w, const string& name,
     {
 	XtSetArg(args[arg], XmNdirSearchProc, do_search_dirs); arg++;
     }
-#else // NOT IF_MOTIF
-#ifdef NAG_ME
-#warning Search functions in file selection
-#endif
-#endif // IF_MOTIF
 
-#ifdef IF_MOTIF
     if (remote_gdb())
     {
 	static MString xmpwd;
 	xmpwd = source_view->pwd();
 	XtSetArg(args[arg], XmNdirectory, xmpwd.xmstring()); arg++;
     }
-#endif // IF_MOTIF
 
-#ifdef IF_MOTIF
-    FILECHOOSERDIALOG_P dialog = 
+    Widget dialog = 
 	verify(XmCreateFileSelectionDialog(w, XMST(name.chars()), args, arg));
-#else // NOT IF_MOTIF
-    FILECHOOSERDIALOG_P dialog = 
-	new Gtk::FileChooserDialog(*w, XMST(name.chars()));
-    Gtk::Button *button;
-#endif // IF_MOTIF
     Delay::register_shell(dialog);
 
     if (ok_callback != 0) {
-#ifdef IF_MOTIF
 	XtAddCallback(dialog, XmNokCallback,     ok_callback, 0);
-#else // NOT IF_MOTIF
-	button = dialog->add_button(XMST("OK"), 0);
-	button->signal_clicked().connect(sigc::bind(ok_callback, dialog));
-#endif // IF_MOTIF
     }
 
-#ifdef IF_MOTIF
     XtAddCallback(dialog, XmNcancelCallback, UnmanageThisCB1, 
 		  XtPointer(dialog));
     XtAddCallback(dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
-#else // NOT IF_MOTIF
-    button = dialog->add_button(XMST("Cancel"), 0);
-    button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB2), dialog));
-#endif // IF_MOTIF
 
-#ifdef IF_MOTIF
     Widget filter = XmFileSelectionBoxGetChild(dialog, XmDIALOG_FILTER_TEXT);
     file_filters += filter;
     if (!current_file_filter.empty())
@@ -277,37 +253,69 @@ static Widget file_dialog(WINDOW_P w, const string& name,
     Widget filter_button = 
 	XmFileSelectionBoxGetChild(dialog, XmDIALOG_APPLY_BUTTON);
     XtAddCallback(filter_button, XmNactivateCallback, FilterAllCB, 0);
-#else // NOT IF_MOTIF
-#ifdef NAG_ME
-#warning FIXME no filters
-#endif
-#endif // IF_MOTIF
 
-#ifdef IF_MOTIF
     XtAddCallback(dialog, XmNunmapCallback, ClearStatusCB, 0);
-#else // NOT IF_MOTIF
-    dialog->signal_unmap().connect(PTR_FUN(ClearStatusCB));
-#endif // IF_MOTIF
 
     file_dialogs += dialog;
 
     return dialog;
 }
 
+#else
+
+// Create a file dialog NAME with DO_SEARCH_FILES and DO_SEARCH_DIRS
+// as search procedures for files and directories, respectively, and
+// OK_CALLBACK as the procedure called when a file is selected.
+static GUI::Dialog *file_dialog(GUI::Widget *w, const string& name,
+				// FileSearchProc do_search_files = 0,
+				// FileSearchProc do_search_dirs  = 0,
+				sigc::slot<void, GUI::FileSelectionDialog *> ok_callback)
+{
+    Delay delay(w);
+
+    string pwd;
+
+#ifdef NAG_ME
+#warning Search functions in file selection
+#endif
+
+    GUI::FileSelectionDialog *dialog = 
+	new GUI::FileSelectionDialog(*find_shell1(w), name.chars(), GUI::FileActionOpen);
+    Gtk::Button *button;
+    Delay::register_shell(dialog);
+
+    if (ok_callback != 0) {
+	button = dialog->add_button(XMST("OK"), 0);
+	button->signal_clicked().connect(sigc::bind(ok_callback, dialog));
+    }
+
+    button = dialog->add_button(XMST("Cancel"), 0);
+    button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB2), dialog));
+
+#ifdef NAG_ME
+#warning FIXME no filters
+#endif
+
+    dialog->signal_unmap().connect(PTR_FUN(ClearStatusCB));
+
+    file_dialogs += dialog;
+
+    return dialog;
+}
+
+#endif
+
+#if defined(IF_XM)
+
 // Create various file dialogs
 static Widget create_file_dialog(Widget w, const _XtString name,
-#ifdef IF_MOTIF
 				 FileSearchProc searchRemoteFiles       = 0,
 				 FileSearchProc searchRemoteDirectories = 0,
 				 FileSearchProc searchLocalFiles        = 0,
 				 FileSearchProc searchLocalDirectories  = 0,
 				 XtCallbackProc openDone = 0
-#else // NOT IF_MOTIF
-				 sigc::slot<void, Widget> openDone
-#endif // IF_MOTIF
     )
 {
-#ifdef IF_MOTIF
     if (remote_gdb())
 	return file_dialog(find_shell(w), name,
 			   searchRemoteFiles, searchRemoteDirectories, 
@@ -320,10 +328,25 @@ static Widget create_file_dialog(Widget w, const _XtString name,
 	return file_dialog(find_shell(w), name,
 			   0, 0,
 			   openDone);
-#else // NOT IF_MOTIF
-    return file_dialog(find_shell(w), name, openDone);
-#endif // IF_MOTIF
 }
+
+#else
+
+// Create various file dialogs
+static GUI::Dialog *create_file_dialog(GUI::Widget *w, const _XtString name,
+				       //FileSearchProc searchRemoteFiles       = 0,
+				       //FileSearchProc searchRemoteDirectories = 0,
+				       //FileSearchProc searchLocalFiles        = 0,
+				       //FileSearchProc searchLocalDirectories  = 0,
+				       sigc::slot<void, GUI::FileSelectionDialog *> openDone)
+{
+#ifdef NAG_ME
+#warning Original version is much more sophisticated...
+#endif
+    return file_dialog(find_shell1(w), name, openDone);
+}
+
+#endif
 
 // Synchronize file dialogs with current directory
 void process_cd(const string& pwd)
@@ -334,13 +357,13 @@ void process_cd(const string& pwd)
     {
 	if (file_filters[i] != 0)
 	{
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	    XmTextSetString(file_filters[i], XMST(current_file_filter.chars()));
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning File filters?
 #endif
-#endif // IF_MOTIF
+#endif
 	    break;
 	}
     }
@@ -348,7 +371,7 @@ void process_cd(const string& pwd)
 
 static const char *delay_message = "Filtering files";
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 // Search for remote files and directories, using the command CMD
 static void searchRemote(Widget fs,
 			 XmFileSelectionBoxCallbackStruct *cbs,
@@ -479,13 +502,13 @@ static void searchRemoteDirectories(Widget fs,
 {
     searchRemote(fs, cbs, app_data.list_dir_command, true);
 }
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning searchRemote* not supported
 #endif
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 // Search for local files and directories, using the predicate IS_OKAY
 static void searchLocal(Widget fs,
 			XmFileSelectionBoxCallbackStruct *cbs,
@@ -615,22 +638,22 @@ static void searchLocalSourceFiles(Widget fs,
 	searchLocal(fs, cbs, is_source_file);
     }
 }
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning searchLocal* not supported
 #endif
-#endif // IF_MOTIF
+#endif
 
 // Get the file name from the file selection box W
 string get_file(
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 		Widget w, XtPointer, XtPointer call_data
-#else // NOT IF_MOTIF
+#else
 		FILECHOOSERDIALOG_P w
-#endif // IF_MOTIF
+#endif
 		)
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XmFileSelectionBoxCallbackStruct *cbs = 
 	(XmFileSelectionBoxCallbackStruct *)call_data;
 
@@ -640,38 +663,38 @@ string get_file(
 
     string filename = s;
     XtFree(s);
-#else // NOT IF_MOTIF
+#else
     string filename = string(w->get_filename().c_str());
-#endif // IF_MOTIF
+#endif
 
     if (filename.empty() || filename[0] != '/')
     {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	String dir;
 	if (!XmStringGetLtoR(cbs->dir, MSTRING_DEFAULT_CHARSET, &dir))
 	    return NO_GDB_ANSWER;
 
 	filename = string(dir) + "/" + filename;
 	XtFree(dir);
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Relative pathnames?
 #endif
-#endif // IF_MOTIF
+#endif
     }
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     if (is_directory(filename))
     {
 	MString filter(filename);
 	XmFileSelectionDoSearch(w, filter.xmstring());
 	return "";
     }
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Directory selected?
 #endif
-#endif // IF_MOTIF
+#endif
 
     return filename;
 }
@@ -703,20 +726,12 @@ static void open_file(const string& filename)
     }
 }
 
+#if defined(IF_XM)
+
 // OK pressed in `Open File'
-static void openFileDone(
-#ifdef IF_MOTIF
-    Widget w, XtPointer client_data, XtPointer call_data
-#else // NOT IF_MOTIF
-    FILECHOOSERDIALOG_P w
-#endif // IF_MOTIF
-    )
+static void openFileDone(Widget w, XtPointer client_data, XtPointer call_data)
 {
-#ifdef IF_MOTIF
     string filename = get_file(w, client_data, call_data);
-#else // NOT IF_MOTIF
-    string filename = get_file(w);
-#endif // IF_MOTIF
     if (filename.empty())
 	return;
 
@@ -728,21 +743,39 @@ static void openFileDone(
     open_file(filename);
 }
 
+#else
+
+// OK pressed in `Open File'
+static void openFileDone(GUI::FileSelectionDialog *w)
+{
+    string filename = get_file(w);
+    if (filename.empty())
+	return;
+
+    XtUnmanageChild(w);
+
+    if (filename == NO_GDB_ANSWER)
+	return;
+
+    open_file(filename);
+}
+
+#endif
 
 // OK pressed in `Open Core'
 static void openCoreDone(
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     Widget w, XtPointer client_data, XtPointer call_data
-#else // NOT IF_MOTIF
-    FILECHOOSERDIALOG_P w
-#endif // IF_MOTIF
+#else
+    GUI::FileSelectionDialog *w
+#endif
     )
 {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     string corefile = get_file(w, client_data, call_data);
-#else // NOT IF_MOTIF
+#else
     string corefile = get_file(w);
-#endif // IF_MOTIF
+#endif
     if (corefile.empty())
 	return;
 
@@ -777,20 +810,12 @@ static void openCoreDone(
     }
 }
 
+#if defined(IF_XM)
+
 // OK pressed in `Open Source'
-static void openSourceDone(
-#ifdef IF_MOTIF
-    Widget w, XtPointer client_data, XtPointer call_data
-#else // NOT IF_MOTIF
-    FILECHOOSERDIALOG_P w
-#endif // IF_MOTIF
-    )
+static void openSourceDone(Widget w, XtPointer client_data, XtPointer call_data)
 {
-#ifdef IF_MOTIF
     string filename = get_file(w, client_data, call_data);
-#else // NOT IF_MOTIF
-    string filename = get_file(w);
-#endif // IF_MOTIF
     if (filename.empty())
 	return;
 
@@ -805,6 +830,27 @@ static void openSourceDone(
 	source_view->read_file(filename);
 }
 
+#else
+
+// OK pressed in `Open Source'
+static void openSourceDone(GUI::FileSelectionDialog *w)
+{
+    string filename = get_file(w);
+    if (filename.empty())
+	return;
+
+    XtUnmanageChild(w);
+    set_status("");
+
+    // For PYDB, issue a 'file filename' command
+    if (gdb->type() == PYDB)
+	gdb_command(gdb->debug_command(filename));
+
+    if (filename != NO_GDB_ANSWER)
+	source_view->read_file(filename);
+}
+
+#endif
 
 //-----------------------------------------------------------------------------
 // Program Info
@@ -1099,7 +1145,7 @@ static int ps_pid(const string& line)
     return atoi(s);
 }
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 // Fill the pids in DISP_NRS
 static void getPIDs(Widget selectionList, IntArray& disp_nrs)
 {
@@ -1165,11 +1211,11 @@ static void sortProcesses(StringArray& a)
 	}
     } while (h != 1);
 }
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Process selection
 #endif
-#endif // IF_MOTIF
+#endif
 
 inline bool is_separator(char c)
 {
@@ -1208,7 +1254,7 @@ static bool valid_ps_line(const string& line, const string& ps_command)
     return true;
 }
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 // Create list of processes
 static void update_processes(Widget processes, bool keep_selection)
 {
@@ -1451,13 +1497,13 @@ static void openProcessDone(Widget w, XtPointer client_data,
     // Attach to new process
     gdb_command(gdb->attach_command(pid, info.file));
 }
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Process selection
 #endif
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 // When W is to be destroyed, remove all references in Widget(CLIENT_DATA)
 static void RemoveCallbacksCB(Widget w, XtPointer client_data, XtPointer)
 {
@@ -1466,11 +1512,13 @@ static void RemoveCallbacksCB(Widget w, XtPointer client_data, XtPointer)
     XtRemoveCallback(ref, XmNcancelCallback,  UnmanageThisCB1, XtPointer(w));
     XtRemoveCallback(ref, XmNdestroyCallback, RemoveCallbacksCB, XtPointer(w));
 }
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Hopefully we do not need this since we use sigc::trackable
 #endif
-#endif // IF_MOTIF
+#endif
+
+#if defined(IF_XM)
 
 // If we don't have a current executable, issue a warning.
 static void warn_if_no_program(Widget popdown)
@@ -1479,37 +1527,54 @@ static void warn_if_no_program(Widget popdown)
 
     if (info.file.empty())
     {
-	DIALOG_P warning = post_warning("Please open a program first.", 
-					"no_program", popdown);
+	Widget warning = post_warning("Please open a program first.", 
+				      "no_program", popdown);
 
 	if (popdown != 0 && warning != 0)
 	{
 	    // Tie the warning to the dialog - if one is popped down,
 	    // so is the other.
-#ifdef IF_MOTIF
 	    XtAddCallback(warning, XmNokCallback, 
 			  UnmanageThisCB1, XtPointer(popdown));
 	    XtAddCallback(warning, XmNcancelCallback, 
 			  UnmanageThisCB1, XtPointer(popdown));
 	    XtAddCallback(popdown, XmNdestroyCallback,
 			  RemoveCallbacksCB, XtPointer(warning));
-#else // NOT IF_MOTIF
-	    warning->signal_unmap().connect(sigc::bind(PTR_FUN(UnmanageThisCB2), popdown));
-#endif // IF_MOTIF
 
-#ifdef IF_MOTIF
 	    XtAddCallback(popdown, XmNokCallback,
 			  UnmanageThisCB1, XtPointer(warning));
 	    XtAddCallback(popdown, XmNcancelCallback,
 			  UnmanageThisCB1, XtPointer(warning));
 	    XtAddCallback(warning, XmNdestroyCallback,
 			  RemoveCallbacksCB, XtPointer(popdown));
-#else // NOT IF_MOTIF
-	    popdown->signal_unmap().connect(sigc::bind(PTR_FUN(UnmanageThisCB2), warning));
-#endif // IF_MOTIF
 	}
     }
 }
+
+#else
+
+// If we don't have a current executable, issue a warning.
+static void warn_if_no_program(GUI::Widget *popdown)
+{
+    ProgramInfo info;
+
+    if (info.file.empty())
+    {
+	GUI::Dialog *warning = post_warning("Please open a program first.", 
+					    "no_program", popdown);
+
+	if (popdown != 0 && warning != 0)
+	{
+	    // Tie the warning to the dialog - if one is popped down,
+	    // so is the other.
+	    warning->signal_unmap().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), popdown));
+
+	    popdown->signal_unmap().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), warning));
+	}
+    }
+}
+
+#endif
 
 
 
@@ -1523,14 +1588,14 @@ static void get_items(TREEVIEW_P selectionList, StringArray& itemids)
     static const StringArray empty;
     itemids = empty;
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XmStringTable selected_items;
     int selected_items_count = 0;
 
     assert(XmIsList(selectionList));
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XtVaGetValues(selectionList,
 		  XmNselectedItemCount, &selected_items_count,
 		  XmNselectedItems, &selected_items,
@@ -1545,7 +1610,7 @@ static void get_items(TREEVIEW_P selectionList, StringArray& itemids)
 
 	itemids += item;
     }
-#else // NOT IF_MOTIF
+#else
     Glib::RefPtr<Gtk::TreeSelection> sel = selectionList->get_selection();
     Gtk::TreeSelection::ListHandle_Path paths = sel->get_selected_rows();
     Glib::RefPtr<Gtk::TreeModel> model = selectionList->get_model();
@@ -1557,10 +1622,10 @@ static void get_items(TREEVIEW_P selectionList, StringArray& itemids)
 	string item = row[simple_list_columns.value];
 	itemids += item;
     }
-#endif // IF_MOTIF
+#endif
 }
 
-#ifndef IF_MOTIF
+#if !defined(IF_MOTIF)
 // Get the selected item positions
 int list_get_positions(TREEVIEW_P selectionList, int *&positions, int &n_positions)
 {
@@ -1578,19 +1643,19 @@ int list_get_positions(TREEVIEW_P selectionList, int *&positions, int &n_positio
     }
     return n_positions;
 }
-#endif // IF_MOTIF
+#endif
 
 // Get the item from the selection list in CLIENT_DATA
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 static string get_item(Widget, XtPointer client_data, XtPointer)
-#else // NOT IF_MOTIF
+#else
 static string get_item(TREEVIEW_P items)
-#endif // IF_MOTIF
+#endif
 {
     StringArray itemids;
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     Widget items = Widget(client_data);
-#endif // IF_MOTIF
+#endif
     if (items != 0)
 	get_items(items, itemids);
 
@@ -1605,7 +1670,7 @@ static string get_item(TREEVIEW_P items)
 // Classes (JDB only)
 //-----------------------------------------------------------------------------
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 // Select a class
 static void SelectClassCB(Widget w, XtPointer client_data, 
 			  XtPointer call_data)
@@ -1659,11 +1724,11 @@ static void openClassDone(Widget w, XtPointer client_data,
 
     gdb_command(gdb->debug_command(cls));
 }
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning JDB (classes) not supported
 #endif
-#endif // IF_MOTIF
+#endif
 
 //-----------------------------------------------------------------------------
 // Lookup sources and functions (GDB only)
@@ -1674,7 +1739,7 @@ static StringArray all_sources;
 // Select a source; show the full path name in the status line
 static void SelectSourceCB(Widget w, XtPointer, XtPointer call_data)
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XmListCallbackStruct *cbs = (XmListCallbackStruct *)call_data;
     int pos = cbs->item_position;
     ListSetAndSelectPos(w, pos);
@@ -1683,11 +1748,11 @@ static void SelectSourceCB(Widget w, XtPointer, XtPointer call_data)
     if (pos < 0)
 	pos = all_sources.size() - 1;
     set_status(all_sources[pos]);
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Show selected source in status line?
 #endif
-#endif // IF_MOTIF
+#endif
 }
 
 // Get list of sources into SOURCES_LIST
@@ -1804,23 +1869,23 @@ static void update_sources(TREEVIEW_P sources, Widget filter)
     StatusDelay delay("Getting sources");
     get_gdb_sources(all_sources);
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     String pattern_s = XmTextFieldGetString(filter);
     string pattern = pattern_s;
     XtFree(pattern_s);
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Filters not supported.
 #endif
     string pattern = "*";
-#endif // IF_MOTIF
+#endif
 
     strip_space(pattern);
     if (pattern.empty())
 	pattern = "*";
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XmTextFieldSetString(filter, XMST(pattern.chars()));
-#endif // IF_MOTIF
+#endif
 
     StringArray labels;
     uniquify(all_sources, labels);
@@ -1844,27 +1909,27 @@ static void update_sources(TREEVIEW_P sources, Widget filter)
 }
 
 // OK pressed in `Lookup Source'
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 static void lookupSourceDone(Widget w,
 			     XtPointer client_data, 
 			     XtPointer call_data)
-#else // NOT IF_MOTIF
+#else
 static void lookupSourceDone(TREEVIEW_P sources)
-#endif // IF_MOTIF
+#endif
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     Widget sources = Widget(client_data);
     XmSelectionBoxCallbackStruct *cbs = 
 	(XmSelectionBoxCallbackStruct *)call_data;
-#endif // IF_MOTIF
+#endif
 
     set_status("");
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     string source = get_item(w, client_data, call_data);
-#else // NOT IF_MOTIF
+#else
     string source = get_item(sources);
-#endif // IF_MOTIF
+#endif
 
     if (source.contains('/'))
     {
@@ -1872,11 +1937,11 @@ static void lookupSourceDone(TREEVIEW_P sources)
 	int *position_list = 0;
 	int position_count = 0;
 	if (
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	    XmListGetSelectedPos(sources, &position_list, &position_count)
-#else // NOT IF_MOTIF
+#else
 	    list_get_positions(sources, position_list, position_count)
-#endif // IF_MOTIF
+#endif
 	    )
 	{
 	    if (position_count == 1)
@@ -1888,15 +1953,15 @@ static void lookupSourceDone(TREEVIEW_P sources)
 		source = all_sources[pos];
 	    }
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	    XtFree((char *)position_list);
-#else // NOT IF_MOTIF
+#else
 	    free((char *)position_list);
-#endif // IF_MOTIF
+#endif
 	}
     }
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     if (!source.empty())
     {
 	source_view->lookup(source + ":1");
@@ -1910,11 +1975,11 @@ static void lookupSourceDone(TREEVIEW_P sources)
 	    XtUnmanageChild(dialog);
 	}
     }
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Unmanage widget?
 #endif
-#endif // IF_MOTIF
+#endif
 }
 
 static void open_source_msg()
@@ -1928,24 +1993,33 @@ static void open_source_msg()
 //-----------------------------------------------------------------------------
 // Entry Points
 //-----------------------------------------------------------------------------
-void gdbOpenFileCB(CB_ARG_LIST_1(w))
+
+#if defined(IF_XM)
+
+void gdbOpenFileCB(Widget w, XtPointer, XtPointer)
 {
-#ifdef IF_MOTIF
     static Widget dialog = 
 	create_file_dialog(w, "exec_files", 
 			   searchRemoteExecFiles, 
 			   searchRemoteDirectories,
 			   searchLocalExecFiles, 0,
 			   openFileDone);
-#else // NOT IF_MOTIF
+    manage_and_raise(dialog);
+}
+
+#else
+
+void gdbOpenFileCB(GUI::Widget *w)
+{
 #ifdef NAG_ME
 #warning search flags not yet implemented.
 #endif
-    static Widget dialog = 
-	create_file_dialog(w, "DDD: Open Program", PTR_FUN(openFileDone));
-#endif // IF_MOTIF
+    static GUI::Dialog *dialog = 
+	create_file_dialog(w, "DDD: Open Program", sigc::ptr_fun(openFileDone));
     manage_and_raise(dialog);
 }
+
+#endif
 
 void gdbOpenRecentCB(CB_ARG_LIST_12(w, client_data))
 {
@@ -1966,34 +2040,40 @@ void gdbOpenRecentCB(CB_ARG_LIST_12(w, client_data))
     }
 }
 
-void gdbOpenCoreCB(CB_ARG_LIST_1(w))
+#if defined(IF_XM)
+
+void gdbOpenCoreCB(Widget w, XtPointer, XtPointer)
 {
-#ifdef IF_MOTIF
     static Widget dialog = 
 	create_file_dialog(w, "core_files", 
 			   searchRemoteCoreFiles, searchRemoteDirectories,
 			   searchLocalCoreFiles, 0,
 			   openCoreDone);
-#else // NOT IF_MOTIF
-    static Widget dialog = 
-	create_file_dialog(w, "core_files", PTR_FUN(openCoreDone));
-#endif // IF_MOTIF
     manage_and_raise(dialog);
     warn_if_no_program(dialog);
 }
 
-void gdbOpenSourceCB(CB_ARG_LIST_1(w))
+#else
+
+void gdbOpenCoreCB(GUI::Widget *w)
 {
-#ifdef IF_MOTIF
+    static GUI::Dialog *dialog = 
+	create_file_dialog(w, "core_files", sigc::ptr_fun(openCoreDone));
+    manage_and_raise(dialog);
+    warn_if_no_program(dialog);
+}
+
+#endif
+
+#if defined(IF_XM)
+
+void gdbOpenSourceCB(Widget w, XtPointer, XtPointer)
+{
     static Widget dialog = 
 	create_file_dialog(w, "source_files", 
 			   searchRemoteSourceFiles, searchRemoteDirectories,
 			   searchLocalSourceFiles, 0,
 			   openSourceDone);
-#else // NOT IF_MOTIF
-    static Widget dialog = 
-	create_file_dialog(w, "source_files", PTR_FUN(openSourceDone));
-#endif // IF_MOTIF
     manage_and_raise(dialog);
 
     open_source_msg();
@@ -2009,9 +2089,32 @@ void gdbOpenSourceCB(CB_ARG_LIST_1(w))
     }
 }
 
+#else
+
+void gdbOpenSourceCB(GUI::Widget *w)
+{
+    static GUI::Dialog *dialog = 
+	create_file_dialog(w, "source_files", sigc::ptr_fun(openSourceDone));
+    manage_and_raise(dialog);
+
+    open_source_msg();
+
+    if ((gdb->type() != JDB) && (gdb->type() != PYDB))
+    {
+	warn_if_no_program(dialog);
+    }
+    else
+    {
+	// JDB works well without executable
+	// PYDB doesn't use an executable
+    }
+}
+
+#endif
+
 void gdbOpenProcessCB(CB_ARG_LIST_1(w))
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     static Widget dialog = 0;
     static Widget processes = 0;
 
@@ -2055,14 +2158,14 @@ void gdbOpenProcessCB(CB_ARG_LIST_1(w))
     update_processes(processes, false);
     manage_and_raise(dialog);
     warn_if_no_program(dialog);
-#else // NOT IF_MOTIF
+#else
     std::cerr << "gdbOpenProcessCB not supported\n";
-#endif // IF_MOTIF
+#endif
 }
 
 void gdbOpenClassCB(CB_ARG_LIST_1(w))
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     static Widget dialog = 0;
     static Widget classes = 0;
 
@@ -2104,15 +2207,15 @@ void gdbOpenClassCB(CB_ARG_LIST_1(w))
 
     update_classes(classes);
     manage_and_raise(dialog);
-#else // NOT IF_MOTIF
+#else
     std::cerr << "Open class not supported\n";
-#endif // IF_MOTIF
+#endif
 }
 
 static TREEVIEW_P source_list   = 0;
-#ifndef IF_MOTIF
+#if !defined(IF_MOTIF)
 static TREEMODEL_P source_model   = 0;
-#endif // IF_MOTIF
+#endif
 static ENTRY_P source_filter = 0;
 
 void update_sources()
@@ -2134,19 +2237,20 @@ static void LoadSharedLibrariesCB(CB_ARG_LIST_NULL)
     update_sources();
 }
 
-void gdbLookupSourceCB(CB_ARG_LIST_1(w))
+#if defined(IF_XM)
+
+void gdbLookupSourceCB(Widget w, XtPointer, XtPointer)
 {
     if (gdb->type() != GDB)
     {
-	gdbOpenSourceCB(CB_ARGS_1(w));
+	gdbOpenSourceCB(w, XtPointer(0), XtPointer(0));
 	return;
     }
 
-    static DIALOG_P dialog  = 0;
+    static Widget dialog  = 0;
 
     if (dialog == 0)
     {
-#ifdef IF_MOTIF
 	Arg args[10];
 	int arg = 0;
     
@@ -2156,20 +2260,14 @@ void gdbLookupSourceCB(CB_ARG_LIST_1(w))
 #endif
 	dialog = verify(XmCreateSelectionDialog(find_shell(w), 
 						XMST("sources"), args, arg));
-#else // NOT IF_MOTIF
-	dialog = new Gtk::Dialog(XMST("sources"), *find_shell(w));
-#endif // IF_MOTIF
 
 	Delay::register_shell(dialog);
 
-#ifdef IF_MOTIF
 	XtUnmanageChild(XmSelectionBoxGetChild(dialog, 
 					       XmDIALOG_SELECTION_LABEL));
 	XtUnmanageChild(XmSelectionBoxGetChild(dialog, 
 					       XmDIALOG_TEXT));
-#endif // IF_MOTIF
 
-#ifdef IF_MOTIF
 	arg = 0;
 	XtSetArg(args[arg], XmNmarginWidth,     0);     arg++;
 	XtSetArg(args[arg], XmNmarginHeight,    0);     arg++;
@@ -2179,14 +2277,7 @@ void gdbLookupSourceCB(CB_ARG_LIST_1(w))
 	XtSetArg(args[arg], XmNspacing,         0);     arg++;
 	Widget bigbox = XmCreateRowColumn(dialog, XMST("bigbox"), args, arg);
 	XtManageChild(bigbox);
-#else // NOT IF_MOTIF
-	BOX_P bigbox = new Gtk::HBox();
-	bigbox->set_name(XMST("bigbox"));
-	dialog->get_vbox()->pack_start(*bigbox, Gtk::PACK_SHRINK);
-	bigbox->show();
-#endif // IF_MOTIF
 
-#ifdef IF_MOTIF
 	arg = 0;
 	XtSetArg(args[arg], XmNmarginWidth,     0);     arg++;
 	XtSetArg(args[arg], XmNmarginHeight,    0);     arg++;
@@ -2196,65 +2287,29 @@ void gdbLookupSourceCB(CB_ARG_LIST_1(w))
 	XtSetArg(args[arg], XmNspacing,         0);     arg++;
 	Widget box = XmCreateRowColumn(bigbox, XMST("box"), args, arg);
 	XtManageChild(box);
-#else // NOT IF_MOTIF
-	BOX_P box = new Gtk::HBox();
-	bigbox->set_name(XMST("box"));
-	bigbox->pack_start(*box, Gtk::PACK_SHRINK);
-	box->show();
-#endif // IF_MOTIF
 
-#ifdef IF_MOTIF
 	arg = 0;
 	Widget label = XmCreateLabel(box, XMST("label"), args, arg);
 	XtManageChild(label);
-#else // NOT IF_MOTIF
-	LABEL_P label = new Gtk::Label(XMST("label"));
-	box->pack_start(*label, Gtk::PACK_SHRINK);
-	label->show();
-#endif // IF_MOTIF
 
-#ifdef IF_MOTIF
 	arg = 0;
 	source_filter = XmCreateTextField(box, XMST("filter"), args, arg);
 	XtManageChild(source_filter);
-#else // NOT IF_MOTIF
-	source_filter = new Gtk::Entry();
-	source_filter->set_name(XMST("filter"));
-	box->pack_start(*source_filter, Gtk::PACK_EXPAND_WIDGET);
-	source_filter->show();
-#endif // IF_MOTIF
 
-#ifdef IF_MOTIF
 	arg = 0;
 	Widget sharedlibrary = 
 	    XmCreatePushButton(bigbox, XMST("sharedlibrary"), args, arg);
 	XtManageChild(sharedlibrary);
-#else // NOT IF_MOTIF
-	BUTTON_P sharedlibrary = new Gtk::Button(XMST("sharedlibrary"));
-	bigbox->pack_start(*sharedlibrary, Gtk::PACK_SHRINK);
-	sharedlibrary->show();
-#endif // IF_MOTIF
 
-#ifdef IF_MOTIF
 #if XmVersion >= 1002
 	arg = 0;
 	Widget lookup = XmCreatePushButton(dialog, 
 					   XMST("lookup"), args, arg);
 	XtManageChild(lookup);
 #endif
-#else // NOT IF_MOTIF
-	BUTTON_P lookup = dialog->add_button(XMST("lookup"), 0);
-#endif // IF_MOTIF
 
-#ifdef IF_MOTIF
 	source_list = XmSelectionBoxGetChild(dialog, XmDIALOG_LIST);
-#else // NOT IF_MOTIF
-	source_list = new Gtk::TreeView();
-	dialog->get_vbox()->pack_start(*source_list, Gtk::PACK_EXPAND_WIDGET);
-	source_list->show();
-#endif // IF_MOTIF
 
-#ifdef IF_MOTIF
 	XtAddCallback(source_list, XmNsingleSelectionCallback,
 		      SelectSourceCB, XtPointer(source_list));
 	XtAddCallback(source_list, XmNmultipleSelectionCallback,
@@ -2263,13 +2318,7 @@ void gdbLookupSourceCB(CB_ARG_LIST_1(w))
 		      SelectSourceCB, XtPointer(source_list));
 	XtAddCallback(source_list, XmNbrowseSelectionCallback,
 		      SelectSourceCB, XtPointer(source_list));
-#else // NOT IF_MOTIF
-#ifdef NAG_ME
-#warning SelectSourceCB?
-#endif
-#endif // IF_MOTIF
 
-#ifdef IF_MOTIF
 	XtAddCallback(dialog, XmNokCallback, 
 		      lookupSourceDone, XtPointer(source_list));
 	XtAddCallback(dialog, XmNapplyCallback, FilterSourcesCB, 0);
@@ -2277,39 +2326,16 @@ void gdbLookupSourceCB(CB_ARG_LIST_1(w))
 		      UnmanageThisCB1, XtPointer(dialog));
 	XtAddCallback(dialog, XmNunmapCallback, ClearStatusCB, 0);
 	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, 0);
-#else // NOT IF_MOTIF
-	Gtk::Button *button;
-	button = dialog->add_button(XMST("OK"), 0);
-	button->signal_clicked().connect(sigc::bind(PTR_FUN(lookupSourceDone),
-						     source_list));
-	button = dialog->add_button(XMST("Cancel"), 0);
-	button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB2),
-						    dialog));
-	dialog->signal_unmap().connect(PTR_FUN(ClearStatusCB));
-#endif // IF_MOTIF
 
-#ifdef IF_MOTIF
 	XtAddCallback(source_filter, XmNactivateCallback, 
 		      FilterSourcesCB, 0);
 	XtAddCallback(sharedlibrary, XmNactivateCallback, 
 		      LoadSharedLibrariesCB, 0);
-#else // NOT IF_MOTIF
-#ifdef NAG_ME
-#warning No filters.
-#endif
-	source_filter->signal_activate().connect(PTR_FUN(FilterSourcesCB));
-	sharedlibrary->signal_activate().connect(PTR_FUN(LoadSharedLibrariesCB));
-#endif // IF_MOTIF
 
-#ifdef IF_MOTIF
 #if XmVersion >= 1002
 	XtAddCallback(lookup, XmNactivateCallback, 
 		      lookupSourceDone, XtPointer(source_list));
 #endif
-#else // NOT IF_MOTIF
-	lookup->signal_activate().connect(sigc::bind(PTR_FUN(lookupSourceDone),
-						     source_list));
-#endif // IF_MOTIF
     }
 
     update_sources(source_list, source_filter);
@@ -2318,3 +2344,83 @@ void gdbLookupSourceCB(CB_ARG_LIST_1(w))
     manage_and_raise(dialog);
     warn_if_no_program(dialog);
 }
+
+#else
+
+void gdbLookupSourceCB(GUI::Widget *w)
+{
+    if (gdb->type() != GDB)
+    {
+	gdbOpenSourceCB(CB_ARGS_1(w));
+	return;
+    }
+
+    static GUI::Dialog *dialog  = 0;
+
+    if (dialog == 0)
+    {
+	dialog = new GUI::Dialog(*find_shell1(w), "sources");
+
+	Delay::register_shell(dialog);
+
+
+	BOX_P bigbox = new Gtk::HBox();
+	bigbox->set_name(XMST("bigbox"));
+	dialog->get_vbox()->pack_start(*bigbox, Gtk::PACK_SHRINK);
+	bigbox->show();
+
+	BOX_P box = new Gtk::HBox();
+	bigbox->set_name(XMST("box"));
+	bigbox->pack_start(*box, Gtk::PACK_SHRINK);
+	box->show();
+
+	LABEL_P label = new Gtk::Label(XMST("label"));
+	box->pack_start(*label, Gtk::PACK_SHRINK);
+	label->show();
+
+	source_filter = new Gtk::Entry();
+	source_filter->set_name(XMST("filter"));
+	box->pack_start(*source_filter, Gtk::PACK_EXPAND_WIDGET);
+	source_filter->show();
+
+	BUTTON_P sharedlibrary = new Gtk::Button(XMST("sharedlibrary"));
+	bigbox->pack_start(*sharedlibrary, Gtk::PACK_SHRINK);
+	sharedlibrary->show();
+
+	BUTTON_P lookup = dialog->add_button(XMST("lookup"), 0);
+
+	source_list = new Gtk::TreeView();
+	dialog->get_vbox()->pack_start(*source_list, Gtk::PACK_EXPAND_WIDGET);
+	source_list->show();
+
+#ifdef NAG_ME
+#warning SelectSourceCB?
+#endif
+
+	Gtk::Button *button;
+	button = dialog->add_button(XMST("OK"), 0);
+	button->signal_clicked().connect(sigc::bind(PTR_FUN(lookupSourceDone),
+						     source_list));
+	button = dialog->add_button(XMST("Cancel"), 0);
+	button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB2),
+						    dialog));
+	dialog->signal_unmap().connect(PTR_FUN(ClearStatusCB));
+
+#ifdef NAG_ME
+#warning No filters.
+#endif
+	source_filter->signal_activate().connect(PTR_FUN(FilterSourcesCB));
+	sharedlibrary->signal_activate().connect(PTR_FUN(LoadSharedLibrariesCB));
+
+	lookup->signal_activate().connect(sigc::bind(PTR_FUN(lookupSourceDone),
+						     source_list));
+    }
+
+    update_sources(source_list, source_filter);
+
+    open_source_msg();
+    manage_and_raise(dialog);
+    warn_if_no_program(dialog);
+}
+
+#endif

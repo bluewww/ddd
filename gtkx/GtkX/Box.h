@@ -35,7 +35,10 @@
 
 namespace GtkX {
 
-    class VBox: public Gtk::VBox, public Container {
+    class Box: public Container {
+    };
+
+    class VBox: public Gtk::VBox, public Box {
     public:
 	VBox(GtkX::Container &parent, const String &name="");
 	VBox(Gtk::Container *parent, const String &name="");
@@ -44,7 +47,7 @@ namespace GtkX {
 #include <GtkX/redirect.h>
     };
 
-    class HBox: public Gtk::HBox, public Container {
+    class HBox: public Gtk::HBox, public Box {
     public:
 	HBox(GtkX::Container &parent, const String &name="");
 	HBox(Gtk::Container *parent, const String &name="");

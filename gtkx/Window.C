@@ -42,10 +42,10 @@ Window::Window(Gtk::Window *parent, const String &name,
     postinit();
 }
 
-Window::Window(const String &name)
+Window::Window(const String &name, const String &title)
 {
     set_name(name.s());
-    set_title(name.s());
+    set_title(title.s());
     postinit();
 }
 

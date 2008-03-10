@@ -29,17 +29,23 @@
 #ifndef _DDD_show_h
 #define _DDD_show_h
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "ddd.h"
 #include "GDBAgent.h"
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 
 #include <X11/Intrinsic.h>
 #include <X11/Xresource.h>
 
-#else // NOT IF_MOTIF
+#endif
 
-#endif // IF_MOTIF
+#if !defined(IF_XM)
+#include <GUI/Widget.h>
+#endif
 
 #include <iostream>
 
@@ -54,16 +60,29 @@ void DDDWWWPageCB(Widget, XtPointer, XtPointer);
 
 // Manual
 int ddd_man(std::ostream& os);
+#if defined(IF_XM)
 void DDDManualCB(Widget, XtPointer, XtPointer);
 void GDBManualCB(Widget, XtPointer, XtPointer);
+#else
+void DDDManualCB(GUI::Widget *);
+void GDBManualCB(GUI::Widget *);
+#endif
 
 // License
 int ddd_license(std::ostream& os);
+#if defined(IF_XM)
 void DDDLicenseCB(Widget, XtPointer, XtPointer);
+#else
+void DDDLicenseCB(GUI::Widget *);
+#endif
 
 // News
 int ddd_news(std::ostream& os);
+#if defined(IF_XM)
 void DDDNewsCB(Widget, XtPointer, XtPointer);
+#else
+void DDDNewsCB(GUI::Widget *);
+#endif
 
 #endif // _DDD_show_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

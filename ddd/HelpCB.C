@@ -847,20 +847,27 @@ static bool has_header(char *text, unsigned pos)
 }
 #endif
 
+#if defined(IF_XM)
+
 // Note: assumes `man' or `info' format.
 void ManualStringHelpCB(Widget widget, XtPointer client_data, 
 			XtPointer)
 {
-#if defined(IF_MOTIF)
     static MString null(0, true);
     string text(STATIC_CAST(char *,client_data));
 
     ManualStringHelpCB(widget, null, text);
-#else
-    std::cerr << "ManualStringHelpCB: not implemented\n";
-#endif
 }
 
+#else
+
+// Note: assumes `man' or `info' format.
+void ManualStringHelpCB(GUI::Widget *widget, char *s)
+{
+    std::cerr << "ManualStringHelpCB: not implemented\n";
+}
+
+#endif
 
 #if defined(IF_MOTIF)
 // Close action from menu
@@ -962,10 +969,15 @@ static void ToggleIndexCB(Widget w, XtPointer client_data, XtPointer)
 #endif
 
 // Return manual
+#if defined(IF_XM)
 void ManualStringHelpCB(Widget widget, const MString& title,
 			const string& unformatted_text)
+#else
+void ManualStringHelpCB(GUI::Widget *widget, const MString& title,
+			const string& unformatted_text)
+#endif
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     // Delay delay;
 
     // Build manual dialog
@@ -1217,11 +1229,7 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 	MMEnd
     };
 
-#if defined(IF_XM)
     MMaddItems(menubar, more_menubar);
-#else
-    MMaddItems(menubar, NULL, more_menubar);
-#endif
     MMaddCallbacks(more_menubar);
     XtVaSetValues(view_index, XmNset, True, XtPointer(0));
 
@@ -1444,6 +1452,9 @@ void ManualStringHelpCB(Widget widget, const MString& title,
     InstallButtonTips(XtParent(text_dialog));
     manage_and_raise(text_dialog);
 #else
+#ifdef NAG_ME
+#warning ManualStringCB not implemented
+#endif
     std::cerr << "ManualStringHelpCB: not implemented\n";
 #endif
 }

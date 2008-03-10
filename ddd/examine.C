@@ -264,16 +264,13 @@ static void PrintExaminedCB(GUI::Widget *w)
 
 #endif
 
-void gdbExamineCB(CB_ALIST_1(Widget w))
-{
 #if defined(IF_XM)
-    static DIALOG_P dialog = 0;
-#else
-    static GUI::Dialog *dialog = 0;
-#endif
+
+void gdbExamineCB(Widget w, XtPointer, XtPointer)
+{
+    static Widget dialog = 0;
     if (dialog == 0)
     {
-#if defined(IF_XM)
 	Arg args[10];
 	Cardinal arg = 0;
 	XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
@@ -281,24 +278,13 @@ void gdbExamineCB(CB_ALIST_1(Widget w))
 					     XMST("examine_dialog"),
 					     args, arg));
 	Delay::register_shell(dialog);
-#else
-	dialog = new GUI::Dialog(find_shell(w), "examine_dialog");
-	Delay::register_shell1(dialog);
-#endif
 
-#if defined(IF_XM)
 	XtManageChild(XmSelectionBoxGetChild(dialog,
 					     XmDIALOG_APPLY_BUTTON));
 	XtUnmanageChild(XmSelectionBoxGetChild(dialog, 
 					       XmDIALOG_SELECTION_LABEL));
 	XtUnmanageChild(XmSelectionBoxGetChild(dialog, XmDIALOG_TEXT));
-#else
-#ifdef NAG_ME
-#warning Dialog buttons?
-#endif
-#endif
 
-#ifdef IF_XM
 	arg = 0;
 	XtSetArg(args[arg], XmNorientation, XmHORIZONTAL); arg++;
 	XtSetArg(args[arg], XmNborderWidth,  0); arg++;
@@ -308,17 +294,10 @@ void gdbExamineCB(CB_ALIST_1(Widget w))
 	XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
 	Widget panel = MMcreateButtonPanel(dialog, "panel", examine_menu, 
 					   args, arg);
-#else
-	GUI::Container *panel = MMcreateButtonPanel(dialog, "panel", examine_menu);
-#endif
 
 	(void) panel;
 	MMaddCallbacks(examine_menu);
-#if defined(IF_XM)
 	MMaddHelpCallback(examine_menu, ImmediateHelpCB);
-#else
-	MMaddHelpCallback(examine_menu, sigc::ptr_fun(ImmediateHelpCB1));
-#endif
 
 	manage_child(unsigned_char_w,  gdb->type() == GDB);
 	manage_child(binary_w,         gdb->type() == GDB);
@@ -327,21 +306,14 @@ void gdbExamineCB(CB_ALIST_1(Widget w))
 	manage_child(wide_string_w,    gdb->type() == DBX);
 	manage_child(long_w,           gdb->type() == DBX);
 
-#if defined(IF_MOTIF)
 	// Initialize: use `o' and `b' as default menu items
 	XtCallActionProc(octal_w, "ArmAndActivate", 
 			 (XEvent *)0, (String *)0, 0);
 	XtCallActionProc(byte_w, "ArmAndActivate", 
 			 (XEvent *)0, (String *)0, 0);
-#else
-#ifdef NAG_ME
-#warning ArmAndActivate action undefined
-#endif
-#endif
 
 	tie_combo_box_to_history(address_w, arg_history_filter);
 
-#if defined(IF_XM)
 	XtAddCallback(dialog, XmNokCallback,
 		      PrintExaminedCB, XtPointer(0));
 	XtAddCallback(dialog, XmNapplyCallback, 
@@ -350,30 +322,66 @@ void gdbExamineCB(CB_ALIST_1(Widget w))
 		      UnmanageThisCB1, XtPointer(dialog));
 	XtAddCallback(dialog, XmNhelpCallback,
 		      ImmediateHelpCB, XtPointer(0));
-#else
-    GUI::Button *button;
-    button = dialog->add_button("ok", "OK");
-    button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(PrintExaminedCB), dialog));
-    button = dialog->add_button("apply", "Apply");
-    button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(DisplayExaminedCB), dialog));
-    button = dialog->add_button("cancel", "Cancel");
-    button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), dialog));
-#endif
     }
 
     string arg = source_arg->get_string();
     if (!is_file_pos(arg) && !arg.empty()) {
-#if defined(IF_MOTIF)
 	XmTextFieldSetString(address_w, XMST(arg.chars()));
-#else
-	Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(address_w->get_child());
-	entry->set_text(XMST(arg.chars()));
-#endif
     }
 
-#if defined(IF_XM)
     manage_and_raise(dialog);
-#else
-    manage_and_raise1(dialog);
-#endif
 }
+
+#else
+
+void gdbExamineCB(GUI::Widget *w)
+{
+    static GUI::Dialog *dialog = 0;
+    if (dialog == 0)
+    {
+	dialog = new GUI::Dialog(*find_shell1(w), "examine_dialog");
+	Delay::register_shell1(dialog);
+
+#ifdef NAG_ME
+#warning Dialog buttons?
+#endif
+
+	GUI::Container *panel = MMcreateButtonPanel(dialog, "panel", examine_menu);
+
+	(void) panel;
+	MMaddCallbacks(examine_menu);
+	MMaddHelpCallback(examine_menu, sigc::ptr_fun(ImmediateHelpCB1));
+
+	manage_child(unsigned_char_w,  gdb->type() == GDB);
+	manage_child(binary_w,         gdb->type() == GDB);
+	manage_child(address_format_w, gdb->type() == GDB);
+	manage_child(wide_char_w,      gdb->type() == DBX);
+	manage_child(wide_string_w,    gdb->type() == DBX);
+	manage_child(long_w,           gdb->type() == DBX);
+
+#ifdef NAG_ME
+#warning ArmAndActivate action undefined
+#endif
+
+	tie_combo_box_to_history(address_w, arg_history_filter);
+
+	GUI::Button *button;
+	button = dialog->add_button("ok", "OK");
+	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(PrintExaminedCB), dialog));
+	button = dialog->add_button("apply", "Apply");
+	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(DisplayExaminedCB), dialog));
+	button = dialog->add_button("cancel", "Cancel");
+	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), dialog));
+    }
+
+    string arg = source_arg->get_string();
+    if (!is_file_pos(arg) && !arg.empty()) {
+	Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(address_w->get_child());
+	entry->set_text(XMST(arg.chars()));
+    }
+
+    manage_and_raise1(dialog);
+}
+
+#endif
+

@@ -56,7 +56,7 @@ namespace GtkX {
 	    Menu(parent, name) {}
 	PopupMenu(Gtk::Widget *parent, const String &name=""):
 	    Menu(parent, name) {}
-	void menu_position(GdkEventButton *event) {}
+	void menu_position(GtkX::EventButton *event) {}
     };
     class PulldownMenu: public Menu
     {

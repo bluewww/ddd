@@ -49,10 +49,11 @@ void gdbRunCB1(GUI::Widget *);
 
 #if defined(IF_XM)
 void gdbMakeCB(Widget, XtPointer, XtPointer);
+void gdbMakeAgainCB(Widget, XtPointer, XtPointer);
 #else
 void gdbMakeCB(GUI::Widget *);
+void gdbMakeAgainCB(GUI::Widget *);
 #endif
-void gdbMakeAgainCB(CB_ALIST_1(Widget));
 
 #if defined(IF_XM)
 void gdbChangeDirectoryCB(Widget, XtPointer, XtPointer);

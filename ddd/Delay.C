@@ -68,7 +68,12 @@ DEFINE_TYPE_INFO_0(Delay);
 #endif
 #endif
 
+#if defined(IF_XM)
 void (*Delay::shell_registered)(Widget w) = 0;
+#else
+void (*Delay::shell_registered)(Widget w) = 0;
+void (*Delay::shell_registered1)(GUI::Widget *w) = 0;
+#endif
 
 Cursor _Delay::hourglass_cache = 0;
 Cursor _Delay::current_cursor = 0;
@@ -296,6 +301,7 @@ void Delay::DestroyCB(CB_ARG_LIST_1(widget))
 #endif
 	}
 }
+
 
 void Delay::register_shell(Widget widget)
 {

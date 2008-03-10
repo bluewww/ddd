@@ -83,8 +83,13 @@ static void uniq(string *a, int& size)
 
 // Info passed to reply functions
 struct CompletionInfo {
+#if defined(IF_XM)
     Widget widget;		// Widget
     XEvent *event;		// Event 
+#else
+    GUI::Widget *widget;	// Widget
+    GUI::Event *event;		// Event 
+#endif
     string input;		// Current input
     string cmd;			// Current command
     string prefix;		// Current prefix
@@ -218,7 +223,11 @@ static string *completions  = 0;
 static int completions_size = 0;
 
 // Send completion question
+#if defined(IF_XM)
 static void complete(Widget w, XEvent *e, const string& input, string cmd)
+#else
+static void complete(GUI::Widget *w, GUI::Event *e, const string& input, string cmd)
+#endif
 {
     // Issue diagnostic if completion doesn't work right now
     if (!can_do_gdb_command())
@@ -235,7 +244,11 @@ static void complete(Widget w, XEvent *e, const string& input, string cmd)
     info.prefix = "";
 
     // Compare with last completions
+#if defined(IF_XM)
     static Widget last_completion_w     = 0;
+#else
+    static GUI::Widget *last_completion_w     = 0;
+#endif
     static int    last_completion_index = -1;
     static string last_completion       = string(char(-1));
 
@@ -435,20 +448,27 @@ static void complete_reply(const string& complete_answer, void *qu_data)
     completion_done(info);
 }
 
-static void tabAct(Widget w, XEvent *e, String* args, Cardinal* num_args)
+#if defined(IF_XM)
 
+static void tabAct(Widget w, XEvent *e, String* args, Cardinal* num_args)
 {
-#if defined(IF_MOTIF)
     if (XmIsText(w))
 	XtCallActionProc(w, "process-tab", e, args, *num_args);
     else if (XmIsPrimitive(w))
 	XtCallActionProc(w, "PrimitiveNextTabGroup", e, args, *num_args);
+}
+
 #else
+
+static void tabAct(GUI::Widget *w, GUI::Event *e, String* args, Cardinal* num_args)
+{
 #ifdef NAG_ME
 #warning NO ACTIONS!!!
 #endif
-#endif
+    std::cerr << "NO ACTIONS!\n";
 }
+
+#endif
 
 // Complete current GDB command
 void complete_commandAct(Widget w, XEvent *e, String* args, Cardinal* num_args)
@@ -499,11 +519,19 @@ void complete_commandAct(Widget w, XEvent *e, String* args, Cardinal* num_args)
 
 
 // Complete GDB argument
+#if defined(IF_XM)
 static void _complete_argAct(Widget w, 
 			     XEvent *e, 
 			     String* args, 
 			     Cardinal* num_args,
 			     bool tab)
+#else
+static void _complete_argAct(GUI::Widget *w, 
+			     GUI::Event *e, 
+			     String* args, 
+			     Cardinal* num_args,
+			     bool tab)
+#endif
 {
     if ((tab && !app_data.global_tab_completion) 
 	|| (gdb->type() != GDB && gdb->type() != PERL)
@@ -566,6 +594,8 @@ static void _complete_argAct(Widget w,
 	complete(w, e, input, input);
 }
 
+#if defined(IF_XM)
+
 void complete_argAct(Widget w, XEvent *e, String* args, Cardinal* num_args)
 {
     _complete_argAct(w, e, args, num_args, false);
@@ -575,6 +605,20 @@ void complete_tabAct(Widget w, XEvent *e, String* args, Cardinal* num_args)
 {
     _complete_argAct(w, e, args, num_args, true);
 }
+
+#else
+
+void complete_argAct(GUI::Widget *w, GUI::Event *e, String* args, Cardinal* num_args)
+{
+    _complete_argAct(w, e, args, num_args, false);
+}
+
+void complete_tabAct(GUI::Widget *w, GUI::Event *e, String* args, Cardinal* num_args)
+{
+    _complete_argAct(w, e, args, num_args, true);
+}
+
+#endif
 
 
 //-----------------------------------------------------------------------------

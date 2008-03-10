@@ -41,3 +41,10 @@ Container::add_child(Widget &child, PackOptions options, int padding)
 	cont->add(*child.internal());
 }
 
+ChildList
+Container::get_children(void)
+{
+    Gtk::Container *cont = gtk_container();
+    return ChildList(cont->get_children());
+}
+

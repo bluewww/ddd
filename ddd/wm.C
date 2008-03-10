@@ -38,7 +38,7 @@ char wm_rcsid[] =
 #include "string-fun.h"
 #include "findParent.h"
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 #include <Xm/Xm.h>
 #include <Xm/DialogS.h>
 #include <X11/Xutil.h>
@@ -47,7 +47,7 @@ char wm_rcsid[] =
 #ifdef XtIsRealized
 #undef XtIsRealized
 #endif
-#endif // IF_MOTIF
+#endif
 
 //-----------------------------------------------------------------------------
 // Window Manager Functions
@@ -55,7 +55,7 @@ char wm_rcsid[] =
     
 void wm_set_icon(DISPLAY_P display, Window shell, Pixmap icon, Pixmap mask)
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XWMHints *wm_hints = XAllocWMHints();
 
     wm_hints->flags       = IconPixmapHint | IconMaskHint;
@@ -65,16 +65,16 @@ void wm_set_icon(DISPLAY_P display, Window shell, Pixmap icon, Pixmap mask)
     XSetWMHints(display, shell, wm_hints);
 
     XFree((void *)wm_hints);
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning wm_set_icon not implemented
 #endif
-#endif // IF_MOTIF
+#endif
 }
 
 void wm_set_icon(Widget shell, Pixmap icon, Pixmap mask)
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     if (XtIsWMShell(shell))
     {
 	XtVaSetValues(shell,
@@ -86,11 +86,11 @@ void wm_set_icon(Widget shell, Pixmap icon, Pixmap mask)
 #if 0				// This should be done by the shell.
     wm_set_icon(XtDisplay(shell), XtWindow(shell), icon, mask);
 #endif
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning wm_set_icon not implemented
 #endif
-#endif // IF_MOTIF
+#endif
 }
 
 void wm_set_name(DISPLAY_P display, Window shell_window,
@@ -100,20 +100,20 @@ void wm_set_name(DISPLAY_P display, Window shell_window,
     strip_space(icon);
 
     if (!title.empty()) {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	XStoreName(display, shell_window, title.chars());
-#else // NOT IF_MOTIF
+#else
 	shell_window->set_title(XMST(title.chars()));
-#endif // IF_MOTIF
+#endif
     }
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     if (!icon.empty())
 	XSetIconName(display, shell_window, icon.chars());
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Set icon?
 #endif 
-#endif // IF_MOTIF
+#endif
 }
 
 void wm_set_name(Widget shell, string title, string icon)
@@ -121,14 +121,14 @@ void wm_set_name(Widget shell, string title, string icon)
     strip_space(title);
     strip_space(icon);
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XtVaSetValues(shell,
 		  XmNiconName, icon.chars(),
 		  XmNtitle,    title.chars(),
 		  XtPointer(0));
-#else // NOT IF_MOTIF
+#else
     std::cerr << "SET_TITLE\n";
-#endif // IF_MOTIF
+#endif
     
 #if 0				// This should be done by the shell.
     wm_set_name(XtDisplay(shell), XtWindow(shell), title, icon);
@@ -138,7 +138,7 @@ void wm_set_name(Widget shell, string title, string icon)
 // Wait until W is mapped
 void wait_until_mapped(Widget w, Widget shell)
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XSync(XtDisplay(w), False);
     XmUpdateDisplay(w);
 
@@ -164,12 +164,14 @@ void wait_until_mapped(Widget w, Widget shell)
 
     XSync(XtDisplay(w), False);
     XmUpdateDisplay(w);
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning wait_until_mapped not implemented.
 #endif
-#endif // IF_MOTIF
+#endif
 }
+
+#if defined(IF_XM)
 
 void raise_shell(Widget w)
 {
@@ -180,11 +182,7 @@ void raise_shell(Widget w)
     Widget shell = findShellParent(w);
     if (shell != 0 && XtIsRealized(shell))
     {
-#ifdef IF_MOTIF
 	XRaiseWindow(XtDisplay(w), XtWindow(shell));
-#else // NOT IF_MOTIF
-	shell->show();
-#endif // IF_MOTIF
 
 #if 0
 	wait_until_mapped(w);
@@ -195,15 +193,30 @@ void raise_shell(Widget w)
 #endif
 
 	// Try this one
-#ifdef IF_MOTIF
 	XmProcessTraversal(w, XmTRAVERSE_CURRENT);
-#else // NOT IF_MOTIF
+    }
+}
+
+#else
+
+void raise_shell(GUI::Widget *w)
+{
+    if (w == 0 || !w->is_realized())
+	return;
+
+    // Place current shell on top
+    GUI::Widget *shell = findShellParent1(w);
+    if (shell != 0 && shell->is_realized())
+    {
+	shell->show();
+
 #ifdef NAG_ME
 #warning XmProcessTraversal not implemented
 #endif
-#endif // IF_MOTIF
     }
 }
+
+#endif
 
 #if defined(IF_XM)
 
@@ -264,7 +277,7 @@ void manage_and_raise(Widget w)
 
 #endif
 
-#ifndef IF_MOTIF
+#if !defined(IF_MOTIF)
 
 bool
 text_copy_from(Widget w)
@@ -278,4 +291,4 @@ text_cut_from(Widget w)
     std::cerr << "text_cut_from: not implemented\n";
 }
 
-#endif // IF_MOTIF
+#endif

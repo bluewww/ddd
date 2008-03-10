@@ -29,12 +29,20 @@
 #ifndef _DDD_Delay_h
 #define _DDD_Delay_h
 
-#ifdef IF_MOTIF
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#if defined(IF_MOTIF)
 
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
 
-#endif // IF_MOTIF
+#endif
+
+#if !defined(IF_XM)
+#include <GUI/Widget.h>
+#endif
 
 #include "gtk_wrapper.h"
 
@@ -58,11 +66,11 @@ private:
     _Delay& operator = (const _Delay&);
 
 protected:
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     static void DestroyCB(Widget, XtPointer, XtPointer);
-#else // NOT IF_MOTIF
+#else
     void DestroyCB();
-#endif // IF_MOTIF
+#endif
     virtual Cursor hourglass_cursor();
 
 public:
@@ -90,6 +98,9 @@ private:
 
 public:
     Delay(Widget w = 0);
+#if !defined(IF_XM)
+    Delay(GUI::Widget *w);
+#endif
     virtual ~Delay();
 #if defined(IF_XM)
     static void register_shell(Widget w);
@@ -102,7 +113,12 @@ public:
 #endif
     static const WidgetArray& shells() { return _shells; }
 
+#if defined(IF_XM)
     static void (*shell_registered)(Widget w);
+#else
+    static void (*shell_registered)(Widget w);
+    static void (*shell_registered1)(GUI::Widget *w);
+#endif
 };
 
 #endif // _DDD_Delay_h

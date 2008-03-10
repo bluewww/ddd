@@ -430,10 +430,23 @@ static bool do_isearch(Widget, XmTextVerifyCallbackStruct *change)
 // Misc actions
 //-----------------------------------------------------------------------------
 
+#if defined(IF_XM)
+
 static bool from_keyboard(XEvent *ev)
 {
     return ev == 0 || (ev->type != ButtonPress && ev->type != ButtonRelease);
 }
+
+#else
+
+static bool from_keyboard(GUI::Event *ev)
+{
+    return ev == 0 || (ev->type != GUI::BUTTON_PRESS && ev->type != GUI::BUTTON_RELEASE);
+}
+
+#endif
+
+#if defined(IF_XM)
 
 void controlAct(Widget w, XEvent *ev, String *params, Cardinal *num_params)
 {
@@ -464,6 +477,40 @@ void commandAct(Widget w, XEvent *ev, String *params, Cardinal *num_params)
     gdb_button_command(params[0], w);
     gdb_keyboard_command = from_keyboard(ev);
 }
+
+#else
+
+void controlAct(GUI::Widget *w, GUI::Event *ev, String *params, Cardinal *num_params)
+{
+    clear_isearch();
+
+    if (*num_params != 1)
+    {
+	std::cerr << "gdb-control: usage: gdb-control(CONTROL-CHARACTER)\n";
+	return;
+    }
+
+    gdb_keyboard_command = from_keyboard(ev);
+    gdb_command1(ctrl(params[0]), w);
+    gdb_keyboard_command = from_keyboard(ev);
+}
+
+void commandAct(GUI::Widget *w, GUI::Event *ev, String *params, Cardinal *num_params)
+{
+    clear_isearch();
+
+    if (*num_params != 1)
+    {
+	std::cerr << "gdb-command: usage: gdb-command(COMMAND)\n";
+	return;
+    }
+
+    gdb_keyboard_command = from_keyboard(ev);
+    gdb_button_command1(params[0], w);
+    gdb_keyboard_command = from_keyboard(ev);
+}
+
+#endif
 
 #if defined(IF_MOTIF)
 void processAct(Widget w, XEvent *e, String *params, Cardinal *num_params)
@@ -705,7 +752,7 @@ void popupAct(Widget, XEvent *event, String*, Cardinal*)
 #else
     static GUI::WidgetPtr<GUI::PopupMenu> gdb_popup_w = 0;
 #endif
-    if (gdb_popup_w == 0)
+    if (gdb_popup_w == (Widget)0)
     {
 	gdb_popup_w = MMcreatePopupMenu(gdb_w, "gdb_popup", gdb_popup);
 	MMaddCallbacks(gdb_popup);
@@ -916,7 +963,7 @@ void gdbChangeCB(SCROLLEDTEXT_P w)
 
 #if defined(IF_MOTIF)
 
-void gdbCommandCB1(Widget w, XtPointer client_data, XtPointer call_data)
+void gdbCommandCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     clear_isearch();
 
@@ -933,21 +980,16 @@ void gdbCommandCB1(Widget w, XtPointer client_data, XtPointer call_data)
 
 #if !defined(IF_XM)
 
-void gdbCommandCB2(Widget w, const char *client_data)
+void gdbCommandCB1(GUI::Widget *w, const char *client_data)
 {
     clear_isearch();
 
-    gdb_button_command((String)client_data, w);
+    gdb_button_command1(string(client_data), w);
 
 #ifdef NAG_ME
 #warning FIXME: Make sure gdbCommandCB is never invoked by a key event.
 #endif
     gdb_keyboard_command = false;
-}
-
-void gdbCommandCB(GUI::Widget *w, const char *client_data)
-{
-    gdbCommandCB2(w->internal(), client_data);
 }
 
 #endif
@@ -967,93 +1009,110 @@ void gdb_button_command(const string& command, Widget origin)
     }
 }
 
-#if defined(IF_MOTIF)
-void gdbPrevCB  (CB_ARG_LIST_13(w, call_data))
-#else
-void gdbPrevCB  (CB_ARG_LIST_1(w))
-#endif
+#if defined(IF_XM)
+
+void gdbPrevCB  (Widget w, XtPointer, XtPointer call_data)
 {
-#if defined(IF_MOTIF)
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
     if (cbs->event == 0)
 	return;
 
     Cardinal zero = 0;
     prev_historyAct(w, cbs->event, 0, &zero);
-#else
-    std::cerr << "gdbPrevCB: not implemented\n";
-#endif
 }
 
-#if defined(IF_MOTIF)
-void gdbNextCB  (CB_ARG_LIST_13(w, call_data))
 #else
-void gdbNextCB  (CB_ARG_LIST_1(w))
-#endif
+
+void gdbPrevCB  (GUI::Widget *w)
 {
-#if defined(IF_MOTIF)
+    std::cerr << "gdbPrevCB: not implemented\n";
+}
+
+#endif
+
+#if defined(IF_XM)
+
+void gdbNextCB  (Widget w, XtPointer, XtPointer call_data)
+{
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
     if (cbs->event == 0)
 	return;
 
     Cardinal zero = 0;
     next_historyAct(w, cbs->event, 0, &zero);
-#endif
 }
 
-#if defined(IF_MOTIF)
-void gdbISearchPrevCB  (CB_ARG_LIST_13(w, call_data))
 #else
-void gdbISearchPrevCB  (CB_ARG_LIST_1(w))
-#endif
+
+void gdbNextCB  (GUI::Widget *w)
 {
-#if defined(IF_MOTIF)
+    std::cerr << "gdbNextCB: not implemented\n";
+}
+
+#endif
+
+#if defined(IF_XM)
+
+void gdbISearchPrevCB  (Widget w, XtPointer, XtPointer call_data)
+{
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
     if (cbs->event == 0)
 	return;
 
     Cardinal zero = 0;
     isearch_prevAct(w, cbs->event, 0, &zero);
-#else
-    std::cerr << "gdbISearchPrevCB: not implemented\n";
-#endif
 }
 
-#if defined(IF_MOTIF)
-void gdbISearchNextCB  (CB_ARG_LIST_13(w, call_data))
 #else
-void gdbISearchNextCB  (CB_ARG_LIST_1(w))
-#endif
+
+void gdbISearchPrevCB  (GUI::Widget *w)
 {
-#if defined(IF_MOTIF)
+    std::cerr << "gdbISearchPrevCB: not implemented\n";
+}
+
+#endif
+
+#if defined(IF_XM)
+
+void gdbISearchNextCB  (Widget w, XtPointer, XtPointer call_data)
+{
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
     if (cbs->event == 0)
 	return;
 
     Cardinal zero = 0;
     isearch_nextAct(w, cbs->event, 0, &zero);
-#else
-    std::cerr << "gdbISearchNextCB: not implemented\n";
-#endif
 }
 
-#if defined(IF_MOTIF)
-void gdbISearchExitCB  (CB_ARG_LIST_13(w, call_data))
 #else
-void gdbISearchExitCB  (CB_ARG_LIST_1(w))
-#endif
+
+void gdbISearchNextCB  (GUI::Widget *w)
 {
-#if defined(IF_MOTIF)
+    std::cerr << "gdbISearchNextCB: not implemented\n";
+}
+
+#endif
+
+#if defined(IF_XM)
+
+void gdbISearchExitCB  (Widget w, XtPointer, XtPointer call_data)
+{
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
     if (cbs->event == 0)
 	return;
 
     Cardinal zero = 0;
     isearch_exitAct(w, cbs->event, 0, &zero);
-#else
-    std::cerr << "gdbISearchExitCB: not implemented\n";
-#endif
 }
+
+#else
+
+void gdbISearchExitCB  (GUI::Widget *w)
+{
+    std::cerr << "gdbISearchExitCB: not implemented\n";
+}
+
+#endif
 
 void gdbClearCB  (CB_ARG_LIST_NULL)
 {
@@ -1086,13 +1145,10 @@ void gdbClearWindowCB(CB_ARG_LIST_NULL)
     private_gdb_output = false;
 }
 
-#if defined(IF_MOTIF)
-void gdbCompleteCB  (CB_ARG_LIST_13(w, call_data))
-#else
-void gdbCompleteCB  (CB_ARG_LIST_1(w))
-#endif
+#if defined(IF_XM)
+
+void gdbCompleteCB  (XtPointer w, XtPointer, XtPointer call_data)
 {
-#if defined(IF_MOTIF)
     if (!gdb->isReadyWithPrompt())
     {
 	post_gdb_busy(w);
@@ -1107,21 +1163,24 @@ void gdbCompleteCB  (CB_ARG_LIST_1(w))
     Cardinal zero = 0;
     end_of_lineAct(gdb_w, cbs->event, 0, &zero);
     complete_commandAct(gdb_w, cbs->event, 0, &zero);
+}
+
 #else
+
+void gdbCompleteCB  (GUI::Widget *w)
+{
 #ifdef NAG_ME
 #warning Completion not implemented
 #endif
-#endif
 }
 
-// Use this for push buttons
-#if defined(IF_MOTIF)
-void gdbApplyCB(CB_ARG_LIST_13(w, call_data))
-#else
-void gdbApplyCB(CB_ARG_LIST_1(w))
 #endif
+
+#if defined(IF_XM)
+
+// Use this for push buttons
+void gdbApplyCB(Widget w, XtPointer, XtPointer call_data)
 {
-#if defined(IF_MOTIF)
     if (!gdb->isReadyWithPrompt())
     {
 	post_gdb_busy(w);
@@ -1136,12 +1195,19 @@ void gdbApplyCB(CB_ARG_LIST_1(w))
     Cardinal zero = 0;
     end_of_lineAct(gdb_w, cbs->event, 0, &zero);
     XtCallActionProc(gdb_w, "process-return", cbs->event, 0, zero);
+}
+
 #else
+
+// Use this for push buttons
+void gdbApplyCB(GUI::Widget *w)
+{
 #ifdef NAG_ME
 #warning gdbApplyCB not implemented
 #endif
-#endif
 }
+
+#endif
 
 // Use this for selection boxes
 #if defined(IF_MOTIF)

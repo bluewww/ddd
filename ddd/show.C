@@ -571,7 +571,11 @@ int ddd_license(std::ostream& os)
 #endif
 }
 
+#if defined(IF_XM)
 void DDDLicenseCB(Widget w, XtPointer, XtPointer call_data)
+#else
+void DDDLicenseCB(GUI::Widget *w)
+#endif
 {
     StatusMsg msg("Invoking " DDD_NAME " license browser");
 
@@ -580,9 +584,14 @@ void DDDLicenseCB(Widget w, XtPointer, XtPointer call_data)
     string s(license);
     s.prepend("@license@");
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     TextHelpCB(w, XtPointer(s.chars()), call_data);
-#endif // IF_MOTIF
+#else
+#ifdef NAG_ME
+#warning call_data?
+#endif
+    std::cerr << "DDDLicenseCB: call_data?\n";
+#endif
 
     if (ret != 0 || !s.contains("GNU"))
 	post_error("The " DDD_NAME " license could not be uncompressed.", 
@@ -614,7 +623,11 @@ int ddd_news(std::ostream& os)
 #endif
 }
 
+#if defined(IF_XM)
 void DDDNewsCB(Widget w, XtPointer, XtPointer call_data)
+#else
+void DDDNewsCB(GUI::Widget *w)
+#endif
 {
     StatusMsg msg("Invoking " DDD_NAME " news browser");
 
@@ -623,9 +636,11 @@ void DDDNewsCB(Widget w, XtPointer, XtPointer call_data)
     string s(news);
     s.prepend("@news@");
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     TextHelpCB(w, XtPointer(s.chars()), call_data);
-#endif // IF_MOTIF
+#else
+    std::cerr << "DDDNewsCB: call_data?\n";
+#endif
 
     if (ret != 0 || !s.contains(DDD_NAME))
 	post_error("The " DDD_NAME " news could not be uncompressed.", 
@@ -671,7 +686,11 @@ int ddd_man(std::ostream& os)
 #endif
 }
 
+#if defined(IF_XM)
 void DDDManualCB(Widget w, XtPointer, XtPointer)
+#else
+void DDDManualCB(GUI::Widget *w)
+#endif
 {
     StatusMsg msg("Invoking " DDD_NAME " manual browser");
     
@@ -694,7 +713,11 @@ void DDDManualCB(Widget w, XtPointer, XtPointer)
     }
 }
 
+#if defined(IF_XM)
 void GDBManualCB(Widget w, XtPointer, XtPointer)
+#else
+void GDBManualCB(GUI::Widget *w)
+#endif
 {
     StatusMsg msg("Invoking " + gdb->title() + " manual browser");
 

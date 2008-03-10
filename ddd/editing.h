@@ -29,11 +29,20 @@
 #ifndef _DDD_editing_h
 #define _DDD_editing_h
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #ifdef IF_MOTIF
 
 #include <X11/Intrinsic.h>
 
 #endif // IF_MOTIF
+
+#if !defined(IF_XM)
+#include <GUI/Widget.h>
+#include <GUI/Events.h>
+#endif
 
 #include "gtk_wrapper.h"
 
@@ -41,9 +50,17 @@
 #include "strclass.h"
 
 // Actions
+#if defined(IF_XM)
 extern void controlAct            (Widget, XEvent*, String*, Cardinal*);
+#else
+extern void controlAct            (GUI::Widget *, GUI::Event*, String*, Cardinal*);
+#endif
 extern void interruptAct          (Widget, XEvent*, String*, Cardinal*);
+#if defined(IF_XM)
 extern void commandAct            (Widget, XEvent*, String*, Cardinal*);
+#else
+extern void commandAct            (GUI::Widget *, GUI::Event*, String*, Cardinal*);
+#endif
 extern void processAct            (Widget, XEvent*, String*, Cardinal*);
 extern void forward_characterAct  (Widget, XEvent*, String*, Cardinal*);
 extern void backward_characterAct (Widget, XEvent*, String*, Cardinal*);
@@ -72,25 +89,25 @@ extern void gdbChangeCB          (Widget, XtPointer, XtPointer);
 extern void gdbChangeCB          (SCROLLEDTEXT_P);
 #endif // IF_MOTIF
 
-#ifdef IF_MOTIF
-extern void gdbNextCB            (CB_ARG_LIST_13(,));
-extern void gdbPrevCB            (CB_ARG_LIST_13(,));
-extern void gdbISearchNextCB     (CB_ARG_LIST_13(,));
-extern void gdbISearchPrevCB     (CB_ARG_LIST_13(,));
-extern void gdbISearchExitCB     (CB_ARG_LIST_13(,));
-extern void gdbCompleteCB        (CB_ARG_LIST_13(,));
-extern void gdbApplyCB           (CB_ARG_LIST_13(,));
-extern void gdbApplySelectionCB  (CB_ARG_LIST_13(,));
-#else // NOT IF_MOTIF
-extern void gdbNextCB            (CB_ARG_LIST_1());
-extern void gdbPrevCB            (CB_ARG_LIST_1());
-extern void gdbISearchNextCB     (CB_ARG_LIST_1());
-extern void gdbISearchPrevCB     (CB_ARG_LIST_1());
-extern void gdbISearchExitCB     (CB_ARG_LIST_1());
-extern void gdbCompleteCB        (CB_ARG_LIST_1());
-extern void gdbApplyCB           (CB_ARG_LIST_1());
-extern void gdbApplySelectionCB  (CB_ARG_LIST_NULL);
-#endif // IF_MOTIF
+#ifdef IF_XM
+extern void gdbNextCB            (Widget, XtPointer, XtPointer);
+extern void gdbPrevCB            (Widget, XtPointer, XtPointer);
+extern void gdbISearchNextCB     (Widget, XtPointer, XtPointer);
+extern void gdbISearchPrevCB     (Widget, XtPointer, XtPointer);
+extern void gdbISearchExitCB     (Widget, XtPointer, XtPointer);
+extern void gdbCompleteCB        (Widget, XtPointer, XtPointer);
+extern void gdbApplyCB           (Widget, XtPointer, XtPointer);
+extern void gdbApplySelectionCB  (Widget, XtPointer, XtPointer);
+#else
+extern void gdbNextCB            (GUI::Widget *);
+extern void gdbPrevCB            (GUI::Widget *);
+extern void gdbISearchNextCB     (GUI::Widget *);
+extern void gdbISearchPrevCB     (GUI::Widget *);
+extern void gdbISearchExitCB     (GUI::Widget *);
+extern void gdbCompleteCB        (GUI::Widget *);
+extern void gdbApplyCB           (GUI::Widget *);
+extern void gdbApplySelectionCB  (GUI::Widget *);
+#endif
 extern void gdbClearCB           (CB_ARG_LIST_NULL);
 extern void gdbClearWindowCB     (CB_ARG_LIST_NULL);
 
@@ -112,19 +129,19 @@ extern void clear_isearch(bool reset = false, bool show = true);
 
 // Pass the COMMAND given in CLIENT_DATA to gdb_button_command()
 #if defined(IF_MOTIF)
-void gdbCommandCB1(Widget, XtPointer, XtPointer); // FIXME compat
-#define gdbCommandCB12 gdbCommandCB1
-#else
-#define gdbCommandCB12 gdbCommandCB2
+void gdbCommandCB(Widget, XtPointer, XtPointer); // FIXME compat
 #endif
-
 #if !defined(IF_XM)
-void gdbCommandCB(GUI::Widget *, const char *);
-void gdbCommandCB2(Widget, const char *); // FIXME: compat
+void gdbCommandCB1(GUI::Widget *, const char *);
 #endif
 
 // Like gdb_command(), but perform `...' and `()' substitutions
+#if defined(IF_MOTIF)
 void gdb_button_command(const string& command, Widget origin = 0);
+#endif
+#if !defined(IF_XM)
+void gdb_button_command1(const string& command, GUI::Widget *origin = 0);
+#endif
 
 #endif // _DDD_editing_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

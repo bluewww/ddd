@@ -46,6 +46,7 @@ namespace Xmmm {
 	ComboBoxEntryText(::Widget parent, const Xmmm::String &name=""); // TEMPORARY
 	~ComboBoxEntryText(void);
 	Xmmm::String get_text(void);
+	void set_text(const Xmmm::String &);
 	::Widget internal(void); // TEMPORARY
     };
 

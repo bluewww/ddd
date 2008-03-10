@@ -111,7 +111,11 @@ public:
     string      command;	  // The command issued
     string      undo_command;	  // Undoing command, if any
     bool        undo_is_exec;	  // True if undoing command is exec command
+#if defined(IF_XM)
     Widget      origin;		  // Origin of this command
+#else
+    GUI::Widget *origin;	  // Origin of this command
+#endif
     Filtering   filter_disp;      // NoFilter:  do not filter displays.
 				  // TryFilter: do filter if present.
                                   // Filter:    do filter.
@@ -143,40 +147,44 @@ public:
     XtIntervalId display_timer;   // Still waiting for partial display
 
 private:
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     static void clear_origin(Widget w, XtPointer client_data, 
 			     XtPointer call_data);
-#else // NOT IF_MOTIF
+#else
     static void *clear_origin(void *data);
-#endif // IF_MOTIF
+#endif
 
     void add_destroy_callback()
     {
 	if (origin != 0) {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 	    XtAddCallback(origin, XtNdestroyCallback, clear_origin, 
 			  (XtPointer)this);
-#else // NOT IF_MOTIF
+#else
 	    origin->add_destroy_notify_callback(this, clear_origin);
-#endif // IF_MOTIF
+#endif
 	}
     }
 
     void remove_destroy_callback()
     {
 	if (origin != 0) {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 	    XtRemoveCallback(origin, XtNdestroyCallback, clear_origin,
 			     (XtPointer)this);
-#else // NOT IF_MOTIF
+#else
 	    origin->remove_destroy_notify_callback(this);
-#endif // IF_MOTIF
+#endif
 	}
     }
 
 public:
     // Constructor
+#if defined(IF_XM)
     CmdData (Widget orig = 0, Filtering filter = TryFilter)
+#else
+    CmdData (GUI::Widget *orig = 0, Filtering filter = TryFilter)
+#endif
 	: command(""),
 	  undo_command(""),
 	  undo_is_exec(true),
@@ -206,10 +214,10 @@ public:
 	  init_perl(""),
 	  init_bash("")
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 	, position_timer(0),
 	  display_timer(0)
-#endif // IF_MOTIF
+#endif
     {
 	add_destroy_callback();
     }
@@ -221,15 +229,15 @@ public:
 	delete disp_buffer;
 	delete pos_buffer;
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 	if (position_timer != 0)
 	    XtRemoveTimeOut(position_timer);
 	if (display_timer != 0)
 	    XtRemoveTimeOut(display_timer);
-#else // NOT IF_MOTIF
+#else
 	position_timer.disconnect();
 	display_timer.disconnect();
-#endif // IF_MOTIF
+#endif
     }
 
 private:
@@ -237,7 +245,7 @@ private:
     CmdData& operator = (const CmdData&);
 };
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 void CmdData::clear_origin(Widget w, XtPointer client_data, XtPointer)
 {
     (void) w;                        // Use it 
@@ -248,14 +256,14 @@ void CmdData::clear_origin(Widget w, XtPointer client_data, XtPointer)
     cmd_data->origin = 0;
 }
 
-#else // NOT IF_MOTIF
+#else
 void *CmdData::clear_origin(void *client_data)
 {
     // The widget is being destroyed.  Remove all references.
     CmdData *cmd_data = (CmdData *)client_data;
     cmd_data->origin = 0;
 }
-#endif // IF_MOTIF
+#endif
 
 // Data given to extra commands.
 class ExtraData {
@@ -395,8 +403,13 @@ static void extra_completed(StringArray&, const VoidArray&, void *);
 
 // Handle graph command in CMD, with WHERE_ANSWER being the GDB reply
 // to a `where 1' command; return true iff recognized
+#if defined(IF_XM)
 static bool handle_graph_cmd(string& cmd, const string& where_answer,
 			     Widget origin, bool verbose, bool prompt);
+#else
+static bool handle_graph_cmd(string& cmd, const string& where_answer,
+			     GUI::Widget *origin, bool verbose, bool prompt);
+#endif
 
 // Handle output of initialization commands
 static void process_init(const string& answer, void *data = 0);
@@ -903,10 +916,17 @@ static bool command_was_cancelled = false;
 // PROMPT are set, issue command in GDB console.  If VERBOSE is set,
 // issue answer in GDB console.  If PROMPT is set, issue prompt.  If
 // CHECK is set, add extra GDB commands to get GDB state.
+#if defined(IF_XM)
 void send_gdb_command(string cmd, Widget origin,
 		      OQCProc callback, OACProc extra_callback, void *data,
 		      bool echo, bool verbose, bool prompt, bool check,
 		      bool start_undo)
+#else
+void send_gdb_command(string cmd, GUI::Widget *origin,
+		      OQCProc callback, OACProc extra_callback, void *data,
+		      bool echo, bool verbose, bool prompt, bool check,
+		      bool start_undo)
+#endif
 {
     string echoed_cmd = cmd;
 
@@ -1912,19 +1932,19 @@ static void print_partial_answer(const string& answer, CmdData *cmd_data)
 }
 
 static void CancelPartialPositionCB(XtPointer client_data
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 				    , XtIntervalId *id
-#endif // IF_MOTIF
+#endif
     )
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     (void) id;			// Use it
-#endif // IF_MOTIF
+#endif
 
     CmdData *cmd_data = (CmdData *)client_data;
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     assert(cmd_data->position_timer == *id);
-#endif // IF_MOTIF
+#endif
     cmd_data->position_timer = NO_TIMER;
 
     string ans = cmd_data->pos_buffer->answer_ended();
@@ -1932,19 +1952,19 @@ static void CancelPartialPositionCB(XtPointer client_data
 }
 
 static void CancelPartialDisplayCB(XtPointer client_data
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 				   , XtIntervalId *id
-#endif // IF_MOTIF
+#endif
     )
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     (void) id;			// Use it
-#endif // IF_MOTIF
+#endif
 
     CmdData *cmd_data = (CmdData *)client_data;
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     assert(cmd_data->display_timer == *id);
-#endif // IF_MOTIF
+#endif
     cmd_data->display_timer = NO_TIMER;
 
     string ans = cmd_data->disp_buffer->answer_ended();
@@ -1986,11 +2006,11 @@ static void partial_answer_received(const string& answer, void *data)
 	    cmd_data->pos_buffer->partial_pos_found())
 	{
 	    if (cmd_data->position_timer != NO_TIMER) {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 		XtRemoveTimeOut(cmd_data->position_timer);
-#else // NOT IF_MOTIF
+#else
 		cmd_data->position_timer.disconnect();
-#endif // IF_MOTIF
+#endif
 	    }
 	    cmd_data->position_timer = NO_TIMER;
 	}
@@ -2002,15 +2022,15 @@ static void partial_answer_received(const string& answer, void *data)
 	    {
 		assert(cmd_data->position_timer == 0);
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 		cmd_data->position_timer = 
 		    XtAppAddTimeOut(app_con, app_data.position_timeout,
 				    CancelPartialPositionCB, 
 				    XtPointer(cmd_data));
-#else // NOT IF_MOTIF
+#else
 		cmd_data->position_timer = 
 		    Glib::signal_timeout().connect(sigc::bind_return(sigc::bind(PTR_FUN(CancelPartialPositionCB), cmd_data), false), app_data.position_timeout);
-#endif // IF_MOTIF
+#endif
 	    }
 	}
     }
@@ -2024,11 +2044,11 @@ static void partial_answer_received(const string& answer, void *data)
 	    cmd_data->disp_buffer->partial_displays_found())
 	{
 	    if (cmd_data->display_timer != NO_TIMER) {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 		XtRemoveTimeOut(cmd_data->display_timer);
-#else // NOT IF_MOTIF
+#else
 		cmd_data->display_timer.disconnect();
-#endif // IF_MOTIF
+#endif
 	    }
 	    cmd_data->display_timer = NO_TIMER;
 	}
@@ -2040,15 +2060,15 @@ static void partial_answer_received(const string& answer, void *data)
 	    {
 		assert(cmd_data->display_timer == 0);
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 		cmd_data->display_timer = 
 		    XtAppAddTimeOut(app_con, app_data.display_timeout,
 				    CancelPartialDisplayCB,
 				    XtPointer(cmd_data));
-#else // NOT IF_MOTIF
+#else
 		cmd_data->display_timer = 
 		    Glib::signal_timeout().connect(sigc::bind_return(sigc::bind(PTR_FUN(CancelPartialDisplayCB), cmd_data), false), app_data.display_timeout);
-#endif // IF_MOTIF
+#endif
 	    }
 	}
     }
@@ -2086,20 +2106,20 @@ static void command_completed(void *data)
     bool start_undo  = cmd_data->start_undo;
 
     if (cmd_data->position_timer != NO_TIMER) {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 	XtRemoveTimeOut(cmd_data->position_timer);
-#else // NOT IF_MOTIF
+#else
 	cmd_data->position_timer.disconnect();
-#endif // IF_MOTIF
+#endif
     }
     cmd_data->position_timer = NO_TIMER;
 
     if (cmd_data->display_timer != NO_TIMER) {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 	XtRemoveTimeOut(cmd_data->display_timer);
-#else // NOT IF_MOTIF
+#else
 	cmd_data->display_timer.disconnect();
-#endif // IF_MOTIF
+#endif
     }
     cmd_data->display_timer = NO_TIMER;
 
@@ -2458,8 +2478,13 @@ static bool read_displays(string arg, IntArray& numbers, bool verbose)
 
 // Handle graph command in CMD, with WHERE_ANSWER being the GDB reply
 // to a `where 1' command; return true iff recognized
+#if defined(IF_XM)
 static bool handle_graph_cmd(string& cmd, const string& where_answer, 
 			     Widget origin, bool verbose, bool do_prompt)
+#else
+static bool handle_graph_cmd(string& cmd, const string& where_answer, 
+			     GUI::Widget *origin, bool verbose, bool do_prompt)
+#endif
 {
     string scope;
     if (gdb->has_func_command())

@@ -29,7 +29,7 @@ namespace Xmmm {
 	operator bool(void) const;
     };
 
-    class Widget {
+    class Widget: public sigc::trackable {
 	void *user_data;
     public:
 	Widget(void);

@@ -39,6 +39,8 @@
 
 #if !defined(IF_XM)
 #include <GUI/Window.h>
+#include <GUI/MultiPaned.h>
+#include <GUI/Box.h>
 #endif
 
 #include "gtk_wrapper.h"
@@ -48,47 +50,90 @@
 // Shells (only used if separate windows are used)
 #if defined(IF_XM)
 extern Widget command_shell;
+extern Widget data_disp_shell;
+extern Widget source_view_shell;
 #else
-extern GUI::WidgetPtr<GUI::Window> command_shell;
+extern GUI::Window *command_shell;
+extern GUI::Window *data_disp_shell;
+extern GUI::Window *source_view_shell;
 #endif
-extern WINDOW_P data_disp_shell;
-extern WINDOW_P source_view_shell;
 
 // Command tool
-extern WINDOW_P tool_shell;
-extern BOX_P tool_buttons_w;
+#if defined(IF_XM)
+extern Widget tool_shell;
+extern Widget tool_buttons_w;
+#else
+extern GUI::Window *tool_shell;
+extern GUI::Box *tool_buttons_w;
+#endif
 
 // Shell management
+#if defined(IF_XM)
 extern void initial_popup_shell(Widget w);
 extern void popup_shell(Widget w);
 extern void popdown_shell(Widget w);
 extern void iconify_shell(Widget w);
 extern void uniconify_shell(Widget w);
+#else
+extern void initial_popup_shell(GUI::Widget *w);
+extern void popup_shell(GUI::Widget *w);
+extern void popdown_shell(GUI::Widget *w);
+extern void iconify_shell(GUI::Widget *w);
+extern void uniconify_shell(GUI::Widget *w);
+#endif
 extern int running_shells();
 
+#if defined(IF_XM)
 // True if W was started iconified
 extern bool started_iconified(Widget w);
 
-extern void gdbOpenCommandWindowCB  (CB_ARG_LIST_NULL);
-extern void gdbOpenSourceWindowCB   (CB_ARG_LIST_NULL);
-extern void gdbOpenCodeWindowCB     (CB_ARG_LIST_NULL);
-extern void gdbOpenDataWindowCB     (CB_ARG_LIST_NULL);
-extern void gdbOpenExecWindowCB     (CB_ARG_LIST_NULL);
-extern void gdbOpenToolWindowCB     (CB_ARG_LIST_NULL);
+extern void gdbOpenCommandWindowCB  (Widget, XtPointer, XtPointer);
+extern void gdbOpenSourceWindowCB   (Widget, XtPointer, XtPointer);
+extern void gdbOpenCodeWindowCB     (Widget, XtPointer, XtPointer);
+extern void gdbOpenDataWindowCB     (Widget, XtPointer, XtPointer);
+extern void gdbOpenExecWindowCB     (Widget, XtPointer, XtPointer);
+extern void gdbOpenToolWindowCB     (Widget, XtPointer, XtPointer);
+#else
+// True if W was started iconified
+extern bool started_iconified(GUI::Widget *w);
 
-extern void gdbCloseCommandWindowCB (CB_ARG_LIST_1());
-extern void gdbCloseSourceWindowCB  (CB_ARG_LIST_1());
-extern void gdbCloseCodeWindowCB    (CB_ARG_LIST_1());
-extern void gdbCloseDataWindowCB    (CB_ARG_LIST_1());
-extern void gdbCloseExecWindowCB    (CB_ARG_LIST_NULL);
-extern void gdbCloseToolWindowCB    (CB_ARG_LIST_NULL);
+extern void gdbOpenCommandWindowCB  (void);
+extern void gdbOpenSourceWindowCB   (void);
+extern void gdbOpenCodeWindowCB     (void);
+extern void gdbOpenDataWindowCB     (void);
+extern void gdbOpenExecWindowCB     (void);
+extern void gdbOpenToolWindowCB     (void);
+#endif
 
-extern void gdbToggleCommandWindowCB(CB_ARG_LIST_TOGGLE(,));
-extern void gdbToggleSourceWindowCB (CB_ARG_LIST_TOGGLE(,));
-extern void gdbToggleCodeWindowCB   (CB_ARG_LIST_TOGGLE(,));
-extern void gdbToggleDataWindowCB   (CB_ARG_LIST_TOGGLE(,));
-extern void gdbToggleExecWindowCB   (CB_ARG_LIST_TOGGLE(,));
-extern void gdbToggleToolWindowCB   (CB_ARG_LIST_TOGGLE(,));
+#if defined(IF_XM)
+extern void gdbCloseCommandWindowCB (Widget, XtPointer, XtPointer);
+extern void gdbCloseSourceWindowCB  (Widget, XtPointer, XtPointer);
+extern void gdbCloseCodeWindowCB    (Widget, XtPointer, XtPointer);
+extern void gdbCloseDataWindowCB    (Widget, XtPointer, XtPointer);
+extern void gdbCloseExecWindowCB    (Widget, XtPointer, XtPointer);
+extern void gdbCloseToolWindowCB    (Widget, XtPointer, XtPointer);
+
+extern void gdbToggleCommandWindowCB(Widget, XtPointer, XtPointer);
+extern void gdbToggleSourceWindowCB (Widget, XtPointer, XtPointer);
+extern void gdbToggleCodeWindowCB   (Widget, XtPointer, XtPointer);
+extern void gdbToggleDataWindowCB   (Widget, XtPointer, XtPointer);
+extern void gdbToggleExecWindowCB   (Widget, XtPointer, XtPointer);
+extern void gdbToggleToolWindowCB   (Widget, XtPointer, XtPointer);
+#else
+extern void gdbCloseCommandWindowCB (GUI::Widget *);
+extern void gdbCloseSourceWindowCB  (GUI::Widget *);
+extern void gdbCloseCodeWindowCB    (GUI::Widget *);
+extern void gdbCloseDataWindowCB    (GUI::Widget *);
+extern void gdbCloseExecWindowCB    (void);
+extern void gdbCloseToolWindowCB    (void);
+
+extern void gdbToggleCommandWindowCB(GUI::Widget *);
+extern void gdbToggleSourceWindowCB (GUI::Widget *);
+extern void gdbToggleCodeWindowCB   (GUI::Widget *);
+extern void gdbToggleDataWindowCB   (GUI::Widget *);
+extern void gdbToggleExecWindowCB   (GUI::Widget *);
+extern void gdbToggleToolWindowCB   (GUI::Widget *);
+#endif
 
 extern bool have_command_window();
 extern bool have_source_window();
@@ -99,32 +144,56 @@ extern bool have_tool_window();
 
 
 // Close current window
-extern void DDDCloseCB              (CB_ARG_LIST_1());
+#if defined(IF_XM)
+extern void DDDCloseCB              (Widget, XtPointer, XtPointer);
+#else
+extern void DDDCloseCB              (GUI::Widget *);
+#endif
 
 #if !defined(IF_XM)
 extern bool CloseCB                 (GUI::Widget*, XEvent*);
 #endif
 
 
+#if defined(IF_XM)
 // Register this event handler with all shells
 extern void StructureNotifyEH(Widget, XtPointer, XEvent *, Boolean *);
+#endif
 
 // Save current tool shell offset in APP_DATA.
 extern void get_tool_offset();
 
+#if defined(IF_XM)
 // Manage child with minimum size
 extern void manage_paned_child(Widget w);
 extern void unmanage_paned_child(Widget w);
+#else
+// Manage child with minimum size
+extern void manage_paned_child(GUI::Widget *w);
+extern void unmanage_paned_child(GUI::Widget *w);
+#endif
 
 // Promote size of ScrolledWindow child CHILD to TARGET (default: parent)
-extern void set_scrolled_window_size(SCROLLEDWINDOW_P child, Widget target = 0);
+#if defined(IF_XM)
+extern void set_scrolled_window_size(Widget child, Widget target = 0);
+#else
+extern void set_scrolled_window_size(GUI::ScrolledText *child, GUI::Widget *target = 0);
+#endif
 
 // Set the width of PANED to the maximum width of its children
+#if defined(IF_XM)
 extern void get_paned_window_width(Widget paned, Dimension& max_width);
 extern void set_paned_window_size(Widget paned, Dimension width);
 
 // Set main window sizes
 extern void set_main_window_size(Widget w);
+#else
+extern void get_paned_window_width(GUI::MultiPaned *paned, Dimension& max_width);
+extern void set_paned_window_size(GUI::Container *paned, Dimension width);
+
+// Set main window sizes
+extern void set_main_window_size(GUI::Container *w);
+#endif
 
 // Save paned child sizes
 extern void save_preferred_paned_sizes(Widget paned);

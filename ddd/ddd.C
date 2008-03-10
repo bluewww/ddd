@@ -312,6 +312,10 @@ char ddd_rcsid[] =
 #include <GUI/Box.h>
 #include <GUI/Dialog.h>
 #include <GUI/Notebook.h>
+#include <GUI/MultiPaned.h>
+#include <GUI/CheckButton.h>
+#include <GUI/Statusbar.h>
+#include <GUI/Button.h>
 #endif
 
 #if !defined(IF_MOTIF)
@@ -386,12 +390,21 @@ static void WhenReady1           (GUI::Widget *w, void *client_data);
 #endif
 
 // Cut and Paste
-static void gdbCutSelectionCB    (CB_ALIST_12(Widget, XtP(DDDWindow)));
-static void gdbCopySelectionCB   (CB_ALIST_12(Widget, XtP(DDDWindow)));
-static void gdbSelectAllCB       (CB_ALIST_12(Widget, XtP(DDDWindow)));
-static void gdbPasteClipboardCB  (CB_ALIST_12(Widget, XtP(DDDWindow)));
-static void gdbDeleteSelectionCB (CB_ALIST_12(Widget, XtP(DDDWindow)));
-static void gdbClearAllCB        (CB_ALIST_NULL);
+#if defined(IF_XM)
+static void gdbCutSelectionCB    (Widget, XtPointer, XtPointer);
+static void gdbCopySelectionCB   (Widget, XtPointer, XtPointer);
+static void gdbSelectAllCB       (Widget, XtPointer, XtPointer);
+static void gdbPasteClipboardCB  (Widget, XtPointer, XtPointer);
+static void gdbDeleteSelectionCB (Widget, XtPointer, XtPointer);
+static void gdbClearAllCB        (Widget, XtPointer, XtPointer);
+#else
+static void gdbCutSelectionCB    (GUI::Widget *, DDDWindow);
+static void gdbCopySelectionCB   (GUI::Widget *, DDDWindow);
+static void gdbSelectAllCB       (GUI::Widget *, DDDWindow);
+static void gdbPasteClipboardCB  (GUI::Widget *, DDDWindow);
+static void gdbDeleteSelectionCB (GUI::Widget *, DDDWindow);
+static void gdbClearAllCB        (void);
+#endif
 static void gdbUnselectAllCB     (CB_ALIST_NULL);
 
 // Update menus
@@ -401,9 +414,15 @@ static void gdbUpdateViewCB      (CB_ARG_LIST_2());
 static void gdbUpdateViewsCB     (CB_ARG_LIST_2());
 static void gdbUpdateAllMenus();
 
+#if defined(IF_XM)
 // Preferences
 static void make_preferences (Widget parent);
-static void dddPopupPreferencesCB (CB_ALIST_NULL);
+static void dddPopupPreferencesCB (Widget, XtPointer, XtPointer);
+#else
+// Preferences
+static void make_preferences (GUI::Widget *parent);
+static void dddPopupPreferencesCB (void);
+#endif
 
 // Synchronize `():' fields
 static void sync_args(ArgField *a1, ArgField *a2);
@@ -412,7 +431,11 @@ static void sync_args(ArgField *a1, ArgField *a2);
 static bool pending_interaction();
 
 // Create status line
-static void create_status(CONTAINER_P parent);
+#if defined(IF_XM)
+static void create_status(Widget parent);
+#else
+static void create_status(GUI::Container *parent);
+#endif
 
 // Status LED
 static void blink(bool set);
@@ -428,13 +451,13 @@ static void ReportStartHP(Agent *, void *, void *);
 static void ReportDeathHP(Agent *, void *, void *);
 
 // Status history
-#if defined(IF_MOTIF)
-static void PopupStatusHistoryCB(CB_ALIST_NULL);
-static void PopdownStatusHistoryCB(CB_ALIST_NULL);
+#if defined(IF_XM)
+static void PopupStatusHistoryCB(Widget, XtPointer, XtPointer);
+static void PopdownStatusHistoryCB(Widget, XtPointer, XtPointer);
 static void PopdownStatusHistoryEH(Widget, XtPointer, XEvent *, Boolean *);
 #else
-static bool PopupStatusHistoryCB(GdkEventButton *, Widget);
-static bool PopdownStatusHistoryCB(GdkEventButton *);
+static bool PopupStatusHistoryCB(const GUI::EventButton *, GUI::Widget *);
+static bool PopdownStatusHistoryCB(const GUI::EventButton *);
 #endif
 
 // Argument callback
@@ -451,7 +474,12 @@ static void set_shortcut_menu(DataDisp *data_disp);
 static void fix_status_size();
 
 // Setup new shell
+#if defined(IF_XM)
 static void setup_new_shell(Widget w);
+#else
+static void setup_new_shell(Widget w);
+static void setup_new_shell1(GUI::Widget *w);
+#endif
 
 // Setup theme manager
 static void setup_theme_manager();
@@ -478,8 +506,13 @@ static void popdown_splash_screen(XtPointer data = 0, XtIntervalId *id = 0);
 // resources such as window sizes.
 static XrmDatabase GetFileDatabase(const string &filename);
 
+#if defined(IF_XM)
 // Lock `~/.ddd'
 static bool lock_ddd(Widget parent, LockInfo& info);
+#else
+// Lock `~/.ddd'
+static bool lock_ddd(GUI::Widget *parent, LockInfo& info);
+#endif
 
 // Various setups
 static void setup_version_info();
@@ -1097,58 +1130,73 @@ DECL_WR(gdbMakeAgainCB);
 #else
 
 DECL_WR(WR_gdbOpenClassCB, gdbOpenClassCB);
-DECL_WR(WR_gdbOpenFileCB, gdbOpenFileCB);
-DECL_WR(WR_gdbOpenCoreCB, gdbOpenCoreCB);
+DECL_WR2(WR_gdbOpenFileCB, sigc::ptr_fun(gdbOpenFileCB));
+DECL_WR2(WR_gdbOpenCoreCB, sigc::ptr_fun(gdbOpenCoreCB));
 DECL_WR2(WR_OpenSessionCB, sigc::ptr_fun(OpenSessionCB));
 DECL_WR2(WR_SaveSessionAsCB, sigc::ptr_fun(SaveSessionAsCB));
 DECL_WR(WR_gdbOpenProcessCB, gdbOpenProcessCB);
 DECL_WR2(WR_gdbChangeDirectoryCB, sigc::ptr_fun(gdbChangeDirectoryCB));
 DECL_WR2(WR_gdbMakeCB, sigc::ptr_fun(gdbMakeCB));
-DECL_WR(WR_gdbMakeAgainCB, gdbMakeAgainCB);
+DECL_WR2(WR_gdbMakeAgainCB, sigc::ptr_fun(gdbMakeAgainCB));
 
 #endif
 
 #define FILE_MENU(recent_menu)						\
 {									\
     MENTRYL("open_class", "Open Class...", MMPush | MMUnmanaged,		\
-	   BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_gdbOpenClassCB)), 0, 0), \
-    MENTRYL("open_file", "Open Program...", MMPush,			\
-	   BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_gdbOpenFileCB)), 0, 0), \
+	    BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_gdbOpenClassCB)), 0, 0), \
+    GENTRYL("open_file", "Open Program...", MMPush,			\
+	    BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_gdbOpenFileCB)),	\
+	    sigc::bind(sigc::ptr_fun(WhenReady1), &WR_gdbOpenFileCB),	\
+	    0, 0),							\
     MENTRYL("recent", "Open Recent", MMMenu, MMNoCB, recent_menu, 0),	\
-    MENTRYL("open_core", "Open Core Dump...", MMPush,			\
-	   BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_gdbOpenCoreCB)), 0, 0), \
-    MENTRYL("open_source", "Open Source...", MMPush, 			\
-	   BIND_0(PTR_FUN(gdbLookupSourceCB)), 0, 0),	 		\
+    GENTRYL("open_core", "Open Core Dump...", MMPush,			\
+	    BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_gdbOpenCoreCB)),	\
+	    sigc::bind(sigc::ptr_fun(WhenReady1), &WR_gdbOpenCoreCB),	\
+	    0, 0),							\
+    GENTRYL("open_source", "Open Source...", MMPush, 			\
+	    BIND_0(PTR_FUN(gdbLookupSourceCB)),				\
+	    sigc::ptr_fun(gdbLookupSourceCB),				\
+	    0, 0),							\
     MMSep,								\
     MENTRYL("open_session", "Open Session...", MMPush,			\
-	   BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_OpenSessionCB)), 0, 0), \
+	    BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_OpenSessionCB)), 0, 0), \
     MENTRYL("save_session", "Save Session As...", MMPush,		\
-	   BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_SaveSessionAsCB)), 0, 0), \
+	    BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_SaveSessionAsCB)), 0, 0), \
     MMSep,								\
     MENTRYL("attach", "Attach to Process...", MMPush,			\
-	   BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_gdbOpenProcessCB)), 0, 0), \
-    MENTRYL("detach", "Detach Process", MMPush,				\
-	   BIND_1(PTR_FUN(gdbCommandCB12), XtPointer("detach")), 0, 0),	\
+	    BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_gdbOpenProcessCB)), 0, 0), \
+    GENTRYL("detach", "Detach Process", MMPush,				\
+	    BIND_1(PTR_FUN(gdbCommandCB), XtPointer("detach")),		\
+	    sigc::bind(sigc::ptr_fun(gdbCommandCB1), "detach"),		\
+	    0, 0),							\
     MMSep,								\
     MENTRYL("print", "Print Graph...", MMPush,				\
 	   BIND_0(PTR_FUN(PrintGraphCB)), 0, 0),			\
-    XENTRYL("printAgain", "Print Again", MMPush | MMUnmanaged,		\
-	    MMNoCB, sigc::bind(sigc::ptr_fun(PrintAgainCB1), 1L), 0, 0), \
+    GENTRYL("printAgain", "Print Again", MMPush | MMUnmanaged,		\
+	    MMNoCB,							\
+	    sigc::bind(sigc::ptr_fun(PrintAgainCB1), 1L),		\
+	    0, 0),							\
     MENTRYL("separator", "", MMSeparator | MMUnmanaged, MMNoCB, 0, 0),	\
-    XENTRYL("cd", "Change Directory...", MMPush,			\
+    GENTRYL("cd", "Change Directory...", MMPush,			\
 	    BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_gdbChangeDirectoryCB)), \
 	    sigc::bind(sigc::ptr_fun(WhenReady1), &WR_gdbChangeDirectoryCB), \
 	    0, 0),							\
     MMSep,								\
     MENTRYL("make", "Make...", MMPush,					\
 	   BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_gdbMakeCB)), 0, 0),	\
-    MENTRYL("makeAgain", "Make Again", MMPush | MMUnmanaged,		\
-	   BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_gdbMakeAgainCB)), 0, 0), \
+    GENTRYL("makeAgain", "Make Again", MMPush | MMUnmanaged,		\
+	    BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_gdbMakeAgainCB)),	\
+	    sigc::bind(sigc::ptr_fun(WhenReady1), &WR_gdbMakeAgainCB), \
+	    0, 0),							\
     MMSep,								\
-    MENTRYL("close", "Close", MMPush, BIND_0(PTR_FUN(DDDCloseCB)), 0, 0), \
+    GENTRYL("close", "Close", MMPush,					\
+	    BIND_0(PTR_FUN(DDDCloseCB)),				\
+	    sigc::ptr_fun(DDDCloseCB),					\
+	    0, 0),							\
     MENTRYL("restart", "Restart", MMPush, BIND_0(PTR_FUN(DDDRestartCB)), 0, 0), \
     MENTRYL("exit", "Exit", MMPush,					\
-	   BIND_1(PTR_FUN(DDDExitCB), EXIT_SUCCESS), 0, 0),		\
+	    BIND_1(PTR_FUN(DDDExitCB), EXIT_SUCCESS), 0, 0),		\
     MMEnd								\
 }
 
@@ -1170,38 +1218,62 @@ struct ProgramItems {
 {									\
     GENTRYL("run", "Run...", MMPush, BIND_0(PTR_FUN(gdbRunCB)),		\
 	    sigc::ptr_fun(gdbRunCB1), 0, 0),				\
-    MENTRYL("run_again", "Run Again", MMPush,				\
-	   BIND_1(PTR_FUN(gdbCommandCB12), "run"), 0, 0),		\
+    GENTRYL("run_again", "Run Again", MMPush,				\
+	    BIND_1(PTR_FUN(gdbCommandCB), "run"),			\
+	    sigc::bind(sigc::ptr_fun(gdbCommandCB1), "run"),		\
+	    0, 0),							\
     MMSep,								\
     XENTRYL("separateExecWindow", "Run in Execution Window",		\
 	    MMCheckItem,						\
 	    BIND_0(PTR_FUN(dddToggleSeparateExecWindowCB)),		\
 	    MDUMMY, 0, &w),						\
     MMSep,								\
-    MENTRYL("step", "Step", MMPush,					\
-	   BIND_1(PTR_FUN(gdbCommandCB12), "step"), 0, 0),		\
-    MENTRYL("stepi", "Step Instruction", MMPush,				\
-	   BIND_1(PTR_FUN(gdbCommandCB12), "stepi"), 0, 0),		\
-    MENTRYL("next", "Next", MMPush,					\
-	   BIND_1(PTR_FUN(gdbCommandCB12), "next"), 0, 0),		\
-    MENTRYL("nexti", "Next Instruction", MMPush,				\
-	   BIND_1(PTR_FUN(gdbCommandCB12), "nexti"), 0, 0),		\
-    MENTRYL("until", "Until", MMPush,					\
-	   BIND_1(PTR_FUN(gdbCommandCB12), "until"), 0, 0),		\
-    MENTRYL("finish", "Finish", MMPush,					\
-	   BIND_1(PTR_FUN(gdbCommandCB12), "finish"), 0, 0),		\
+    GENTRYL("step", "Step", MMPush,					\
+	    BIND_1(PTR_FUN(gdbCommandCB), "step"),			\
+	    sigc::bind(sigc::ptr_fun(gdbCommandCB1), "step"),		\
+	    0, 0),							\
+    GENTRYL("stepi", "Step Instruction", MMPush,			\
+	    BIND_1(PTR_FUN(gdbCommandCB), "stepi"),			\
+	    sigc::bind(sigc::ptr_fun(gdbCommandCB1), "stepi"),		\
+	    0, 0),							\
+    GENTRYL("next", "Next", MMPush,					\
+	    BIND_1(PTR_FUN(gdbCommandCB), "next"),			\
+	    sigc::bind(sigc::ptr_fun(gdbCommandCB1), "next"),		\
+	    0, 0),							\
+    GENTRYL("nexti", "Next Instruction", MMPush,			\
+	    BIND_1(PTR_FUN(gdbCommandCB), "nexti"),			\
+	    sigc::bind(sigc::ptr_fun(gdbCommandCB1), "nexti"),		\
+	    0, 0),							\
+    GENTRYL("until", "Until", MMPush,					\
+	    BIND_1(PTR_FUN(gdbCommandCB), "until"),			\
+	    sigc::bind(sigc::ptr_fun(gdbCommandCB1), "until"),		\
+	    0, 0),							\
+    GENTRYL("finish", "Finish", MMPush,					\
+	    BIND_1(PTR_FUN(gdbCommandCB), "finish"),			\
+	    sigc::bind(sigc::ptr_fun(gdbCommandCB1), "finish"),		\
+	    0, 0),							\
     MMSep,								\
-    MENTRYL("cont", "Continue", MMPush,					\
-	   BIND_1(PTR_FUN(gdbCommandCB12), "cont"), 0, 0),		\
-    MENTRYL("signal0", "Continue Without Signal", MMPush,		\
-	   BIND_1(PTR_FUN(gdbCommandCB12), "signal 0"), 0, 0),		\
+    GENTRYL("cont", "Continue", MMPush,					\
+	    BIND_1(PTR_FUN(gdbCommandCB), "cont"),			\
+	    sigc::bind(sigc::ptr_fun(gdbCommandCB1), "cont"),		\
+	    0, 0),							\
+    GENTRYL("signal0", "Continue Without Signal", MMPush,		\
+	    BIND_1(PTR_FUN(gdbCommandCB), "signal 0"),			\
+	    sigc::bind(sigc::ptr_fun(gdbCommandCB1), "signal 0"),	\
+	    0, 0),							\
     MMSep,								\
-    MENTRYL("kill", "Kill", MMPush,					\
-	   BIND_1(PTR_FUN(gdbCommandCB12), "kill"), 0, 0),		\
-    MENTRYL("break", "Interrupt", MMPush,				\
-	   BIND_1(PTR_FUN(gdbCommandCB12), "\003"), 0, 0),		\
-    MENTRYL("quit", "Abort", MMPush,					\
-	   BIND_1(PTR_FUN(gdbCommandCB12), "\034"), 0, 0),		\
+    GENTRYL("kill", "Kill", MMPush,					\
+	    BIND_1(PTR_FUN(gdbCommandCB), "kill"),			\
+	    sigc::bind(sigc::ptr_fun(gdbCommandCB1), "kill"),		\
+	    0, 0),							\
+    GENTRYL("break", "Interrupt", MMPush,				\
+	    BIND_1(PTR_FUN(gdbCommandCB), "\003"),			\
+	    sigc::bind(sigc::ptr_fun(gdbCommandCB1), "\003"),		\
+	    0, 0),							\
+    GENTRYL("quit", "Abort", MMPush,					\
+	    BIND_1(PTR_FUN(gdbCommandCB), "\034"),			\
+	    sigc::bind(sigc::ptr_fun(gdbCommandCB1), "\034"),		\
+	    0, 0),							\
     MMEnd								\
 }
 
@@ -1224,19 +1296,31 @@ static MMDesc data_program_menu[]
 
 #define VIEW_MENU(x)							\
 {									\
-    MENTRYL("tool", "Command Tool...", MMPush,				\
-	   HIDE_0( PTR_FUN(gdbOpenToolWindowCB) ), 0, 0),		\
-    MENTRYL("exec", "Execution Window...", MMPush,			\
-	   HIDE_0( PTR_FUN(gdbOpenExecWindowCB) ), 0, 0),		\
+    GENTRYL("tool", "Command Tool...", MMPush,				\
+	    HIDE_0(PTR_FUN(gdbOpenToolWindowCB)),			\
+	    sigc::hide(sigc::ptr_fun(gdbOpenToolWindowCB)),		\
+	    0, 0),							\
+    GENTRYL("exec", "Execution Window...", MMPush,			\
+	    HIDE_0(PTR_FUN(gdbOpenExecWindowCB)),			\
+	    sigc::hide(sigc::ptr_fun(gdbOpenExecWindowCB)),		\
+	    0, 0),							\
     MMSep,								\
-    MENTRYL("console", "@GDB@ Console", MMPush,				\
-	   HIDE_0( PTR_FUN(gdbOpenCommandWindowCB) ), 0, 0),		\
-    MENTRYL("source", "Source Window", MMPush,				\
-	   HIDE_0( PTR_FUN(gdbOpenSourceWindowCB) ), 0, 0),		\
-    MENTRYL("data", "Data Window",					\
-	   MMPush, HIDE_0( PTR_FUN(gdbOpenDataWindowCB) ), 0, 0),	\
-    MENTRYL("code", "Machine Code Window", MMCheckItem | x,		\
-	   BIND_0( PTR_FUN(gdbToggleCodeWindowCB) ), 0, 0),		\
+    GENTRYL("console", "@GDB@ Console", MMPush,				\
+	    HIDE_0(PTR_FUN(gdbOpenCommandWindowCB)),			\
+	    sigc::hide(sigc::ptr_fun(gdbOpenCommandWindowCB)),		\
+	    0, 0),							\
+    GENTRYL("source", "Source Window", MMPush,				\
+	    HIDE_0(PTR_FUN(gdbOpenSourceWindowCB)),			\
+	    sigc::hide(sigc::ptr_fun(gdbOpenSourceWindowCB)),		\
+	    0, 0),							\
+    GENTRYL("data", "Data Window", MMPush, 				\
+	    HIDE_0(PTR_FUN(gdbOpenDataWindowCB)),			\
+	    sigc::hide(sigc::ptr_fun(gdbOpenDataWindowCB)),		\
+	    0, 0),							\
+    GENTRYL("code", "Machine Code Window", MMCheckItem | x,		\
+	    BIND_0(PTR_FUN(gdbToggleCodeWindowCB)),			\
+	    sigc::ptr_fun(gdbToggleCodeWindowCB),			\
+	    0, 0),							\
     MMEnd								\
 }
 
@@ -1246,19 +1330,31 @@ static MMDesc data_view_menu[]    = VIEW_MENU(MMUnmanaged);
 
 static MMDesc views_menu[] =					\
 {								\
-    MENTRYL("tool", "Command Tool...", MMPush,			\
-	   HIDE_0( PTR_FUN(gdbOpenToolWindowCB) ), 0, 0),	\
-    MENTRYL("exec", "Execution Window...", MMPush,		\
-	   HIDE_0( PTR_FUN(gdbOpenExecWindowCB) ), 0, 0),	\
+    GENTRYL("tool", "Command Tool...", MMPush,			\
+	    HIDE_0(PTR_FUN(gdbOpenToolWindowCB)),		\
+	    sigc::hide(sigc::ptr_fun(gdbOpenToolWindowCB)),	\
+	    0, 0),						\
+    GENTRYL("exec", "Execution Window...", MMPush,		\
+	    HIDE_0(PTR_FUN(gdbOpenExecWindowCB)),		\
+	    sigc::hide(sigc::ptr_fun(gdbOpenExecWindowCB)),	\
+	    0, 0),						\
     MMSep,							\
-    MENTRYL("console", "@GDB@ Console", MMCheckItem,		\
-	   BIND_0( PTR_FUN(gdbToggleCommandWindowCB) ), 0, 0),	\
-    MENTRYL("source", "Source Window", MMCheckItem,		\
-	   BIND_0( PTR_FUN(gdbToggleSourceWindowCB) ), 0, 0),	\
-    MENTRYL("data", "Data Window", MMCheckItem,			\
-	   BIND_0( PTR_FUN(gdbToggleDataWindowCB) ), 0, 0),	\
-    MENTRYL("code", "Machine Code Window", MMCheckItem,		\
-	   BIND_0( PTR_FUN(gdbToggleCodeWindowCB) ), 0, 0),	\
+    GENTRYL("console", "@GDB@ Console", MMCheckItem,		\
+	    BIND_0(PTR_FUN(gdbToggleCommandWindowCB)),		\
+	    sigc::ptr_fun(gdbToggleCommandWindowCB),		\
+	    0, 0),						\
+    GENTRYL("source", "Source Window", MMCheckItem,		\
+	    BIND_0(PTR_FUN(gdbToggleSourceWindowCB)),		\
+	    sigc::ptr_fun(gdbToggleSourceWindowCB),		\
+	    0, 0),						\
+    GENTRYL("data", "Data Window", MMCheckItem,			\
+	    BIND_0(PTR_FUN(gdbToggleDataWindowCB)),		\
+	    sigc::ptr_fun(gdbToggleDataWindowCB),		\
+	    0, 0),						\
+    GENTRYL("code", "Machine Code Window", MMCheckItem,		\
+	    BIND_0(PTR_FUN(gdbToggleCodeWindowCB)),		\
+	    sigc::ptr_fun(gdbToggleCodeWindowCB),		\
+	    0, 0),						\
     MMEnd							\
 };
 
@@ -1285,31 +1381,46 @@ DECL_WR(WR_dddPopupSettingsCB, dddPopupSettingsCB);
 #define EDIT_MENU(win, w)						\
 {									\
     MENTRYL("undo", "Undo", MMPush,					\
-	   HIDE_0( PTR_FUN(gdbUndoCB) ), 0, 0),				\
+	    HIDE_0( PTR_FUN(gdbUndoCB) ), 0, 0),			\
     MENTRYL("redo", "Redo", MMPush,					\
-	   HIDE_0( PTR_FUN(gdbRedoCB) ), 0, 0),				\
+	    HIDE_0( PTR_FUN(gdbRedoCB) ), 0, 0),			\
     MMSep,								\
-    MENTRYL("cut", "Cut", MMPush,					\
-	   BIND_1(PTR_FUN(gdbCutSelectionCB), win), 0, 0),		\
-    MENTRYL("copy", "Copy", MMPush,					\
-	   BIND_1(PTR_FUN(gdbCopySelectionCB), win), 0, 0),		\
-    MENTRYL("paste", "Paste", MMPush,					\
-	   BIND_1(PTR_FUN(gdbPasteClipboardCB), win), 0, 0),		\
-    MENTRYL("clearAll", "Clear", MMPush,					\
-	   HIDE_0( PTR_FUN(gdbClearAllCB) ), 0, 0),			\
-    MENTRYL("delete", "Delete", MMPush,					\
-	   BIND_1( PTR_FUN(gdbDeleteSelectionCB), win), 0, 0),		\
+    GENTRYL("cut", "Cut", MMPush,					\
+	    BIND_1(PTR_FUN(gdbCutSelectionCB), win),			\
+	    sigc::bind(sigc::ptr_fun(gdbCutSelectionCB), win),		\
+	    0, 0),							\
+    GENTRYL("copy", "Copy", MMPush,					\
+	    BIND_1(PTR_FUN(gdbCopySelectionCB), win),			\
+	    sigc::bind(sigc::ptr_fun(gdbCopySelectionCB), win),		\
+	    0, 0),							\
+    GENTRYL("paste", "Paste", MMPush,					\
+	    BIND_1(PTR_FUN(gdbPasteClipboardCB), win),			\
+	    sigc::bind(sigc::ptr_fun(gdbPasteClipboardCB), win),	\
+	    0, 0),							\
+    GENTRYL("clearAll", "Clear", MMPush,				\
+	    HIDE_0(PTR_FUN(gdbClearAllCB)),				\
+	    sigc::hide(sigc::ptr_fun(gdbClearAllCB)),			\
+	    0, 0),							\
+    GENTRYL("delete", "Delete", MMPush,					\
+	    BIND_1(PTR_FUN(gdbDeleteSelectionCB), win),			\
+	    sigc::bind(sigc::ptr_fun(gdbDeleteSelectionCB), win),	\
+	    0, 0),							\
     MMSep,								\
-    MENTRYL("selectAll", "Select All", MMPush,				\
-	   BIND_1( PTR_FUN(gdbSelectAllCB), win), 0, 0),		\
+    GENTRYL("selectAll", "Select All", MMPush,				\
+	    BIND_1(PTR_FUN(gdbSelectAllCB), win),			\
+	    sigc::bind(sigc::ptr_fun(gdbSelectAllCB), win),		\
+	    0, 0),							\
     MMSep,								\
     MENTRYL("preferences", "Preferences...", MMPush,			\
-	   HIDE_0( PTR_FUN(dddPopupPreferencesCB) ), 0, 0),		\
+	    HIDE_0(PTR_FUN(dddPopupPreferencesCB)),			\
+	    0, 0),							\
     MENTRYL("settings", "Settings...", MMPush,				\
-	   BIND_1( PTR_FUN(WhenReady), XtPointer(&WR_dddPopupSettingsCB) ), 0, 0), \
+	    BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_dddPopupSettingsCB)), \
+	    0, 0),							\
     MMSep,								\
     MENTRYL("saveOptions", "Save Options", MMCheckItem,			\
-	   BIND_0( PTR_FUN(dddToggleSaveOptionsOnExitCB) ), 0, &(w)),	\
+	    BIND_0(PTR_FUN(dddToggleSaveOptionsOnExitCB)),		\
+	    0, &(w)),							\
     MMEnd								\
 }
 
@@ -1330,7 +1441,11 @@ static MMDesc source_edit_menu[]  = EDIT_MENU(SourceWindow,
 static MMDesc data_edit_menu[]    = EDIT_MENU(DataWindow,
 					      data_save_options_w);
 
+#if defined(IF_XM)
 static Widget complete_w;
+#else
+static GUI::Widget *complete_w;
+#endif
 static Widget define_w;
 
 #if defined(IF_XM)
@@ -1340,43 +1455,57 @@ DECL_WR(gdbApplyCB);
 
 #else
 
-DECL_WR(WR_gdbCompleteCB, gdbCompleteCB);
-DECL_WR(WR_gdbApplyCB, gdbApplyCB);
+DECL_WR2(WR_gdbCompleteCB, sigc::ptr_fun(gdbCompleteCB));
+DECL_WR2(WR_gdbApplyCB, sigc::ptr_fun(gdbApplyCB));
 
 #endif
 
 static MMDesc command_menu[] =
 {
     MENTRYL("history", "Command History...", MMPush,
-	   BIND_0( PTR_FUN(gdbHistoryCB) ), 0, 0),
+	    BIND_0( PTR_FUN(gdbHistoryCB)),
+	    0, 0),
     MMSep,
-    MENTRYL("prev", "Previous", MMPush,
-	   BIND_0( PTR_FUN(gdbPrevCB) ), 0, 0),
-    MENTRYL("next", "Next", MMPush,
-	   BIND_0( PTR_FUN(gdbNextCB) ), 0, 0),
+    GENTRYL("prev", "Previous", MMPush,
+	    BIND_0(PTR_FUN(gdbPrevCB)),
+	    sigc::ptr_fun(gdbPrevCB),
+	    0, 0),
+    GENTRYL("next", "Next", MMPush,
+	    BIND_0(PTR_FUN(gdbNextCB)),
+	    sigc::ptr_fun(gdbNextCB),
+	    0, 0),
     MMSep,
-    MENTRYL("isearch_prev", "Find Backward", MMPush,
-	   BIND_0( PTR_FUN(gdbISearchPrevCB) ), 0, 0),
-    MENTRYL("isearch_next", "Find Forward", MMPush,
-	   BIND_0( PTR_FUN(gdbISearchNextCB) ), 0, 0),
-    MENTRYL("isearch_exit", "Quit Search", MMPush,
-	   BIND_0( PTR_FUN(gdbISearchExitCB) ), 0, 0),
+    GENTRYL("isearch_prev", "Find Backward", MMPush,
+	    BIND_0(PTR_FUN(gdbISearchPrevCB)),
+	    sigc::ptr_fun(gdbISearchPrevCB),
+	    0, 0),
+    GENTRYL("isearch_next", "Find Forward", MMPush,
+	    BIND_0(PTR_FUN(gdbISearchNextCB)),
+	    sigc::ptr_fun(gdbISearchNextCB),
+	    0, 0),
+    GENTRYL("isearch_exit", "Quit Search", MMPush,
+	    BIND_0(PTR_FUN(gdbISearchExitCB)),
+	    sigc::ptr_fun(gdbISearchExitCB),
+	    0, 0),
     MMSep,
-    MENTRYL("complete", "Complete", MMPush,
-	   BIND_1( PTR_FUN(WhenReady), XtPointer(&WR_gdbCompleteCB) ), 
-	   0, &complete_w),
-    MENTRYL("apply", "Apply", MMPush,
-	   BIND_1( PTR_FUN(WhenReady), XtPointer(&WR_gdbApplyCB) ), 0, 0),
+    GENTRYL("complete", "Complete", MMPush,
+	    BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_gdbCompleteCB)), 
+	    sigc::bind(sigc::ptr_fun(WhenReady1), &WR_gdbCompleteCB), 
+	    0, &complete_w),
+    GENTRYL("apply", "Apply", MMPush,
+	    BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_gdbApplyCB)),
+	    sigc::bind(sigc::ptr_fun(WhenReady1), &WR_gdbApplyCB),
+	    0, 0),
     MMSep,
     MENTRYL("clear_line", "Clear Line", MMPush,
-	   HIDE_0( PTR_FUN(gdbClearCB) ), 0, 0),
+	    HIDE_0(PTR_FUN(gdbClearCB)), 0, 0),
     MENTRYL("clear_window", "Clear Window", MMPush,
-	   HIDE_0( PTR_FUN(gdbClearWindowCB) ), 0, 0),
+	    HIDE_0(PTR_FUN(gdbClearWindowCB)), 0, 0),
     MMSep,
     MENTRYL("define", "Define Command...", MMPush,
-	   BIND_0( PTR_FUN(dddDefineCommandCB) ), 0, &define_w),
+	    BIND_0(PTR_FUN(dddDefineCommandCB)), 0, &define_w),
     MENTRYL("buttons", "Edit Buttons...", MMPush,
-	   BIND_0( PTR_FUN(dddEditButtonsCB) ), 0, 0),
+	    BIND_0(PTR_FUN(dddEditButtonsCB)), 0, 0),
     MMEnd
 };
 
@@ -1404,22 +1533,26 @@ DECL_WR(WR_dddPopupSignalsCB, dddPopupSignalsCB);
 static MMDesc stack_menu[] =
 {
     MENTRYL("stack", "Backtrace...", MMPush,
-	   BIND_1( PTR_FUN(WhenReady), XtPointer(&WR_ViewStackFramesCB) ),
+	   BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_ViewStackFramesCB)),
 	   0, &stack_w),
     MENTRYL("registers", "Registers...", MMPush,
-	   BIND_1( PTR_FUN(WhenReady), XtPointer(&WR_ViewRegistersCB) ),
+	   BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_ViewRegistersCB)),
 	   0, &registers_w),
     MENTRYL("threads", "Threads...", MMPush,
-	   BIND_1( PTR_FUN(WhenReady), XtPointer(&WR_ViewThreadsCB) ),
+	   BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_ViewThreadsCB)),
 	   0, &threads_w),
     MENTRYL("signals", "Signals...", MMPush,
-	   BIND_1( PTR_FUN(WhenReady), XtPointer(&WR_dddPopupSignalsCB) ),
+	   BIND_1(PTR_FUN(WhenReady), XtPointer(&WR_dddPopupSignalsCB)),
 	   0, &signals_w),
     MMSep,
-    MENTRYL("up", "Up", MMPush,
-	   BIND_1( PTR_FUN(gdbCommandCB12), XtPointer("up") ), 0, 0),
-    MENTRYL("down", "Down", MMPush,
-	   BIND_1( PTR_FUN(gdbCommandCB12), XtPointer("down") ), 0, 0),
+    GENTRYL("up", "Up", MMPush,
+	    BIND_1(PTR_FUN(gdbCommandCB), XtPointer("up")),
+	    sigc::bind(sigc::ptr_fun(gdbCommandCB1), "up"),
+	    0, 0),
+    GENTRYL("down", "Down", MMPush,
+	    BIND_1(PTR_FUN(gdbCommandCB), XtPointer("down")),
+	    sigc::bind(sigc::ptr_fun(gdbCommandCB1), "down"),
+	    0, 0),
     MMEnd
 };
 
@@ -1440,7 +1573,7 @@ static Widget find_backward_w;
 static Gtk::ToggleButton *find_words_only_w;
 static Gtk::ToggleButton *find_case_sensitive_w;
 static Gtk::ToggleButton *disassemble_w;
-static Widget edit_source_w;
+static GUI::Widget *edit_source_w;
 static Widget reload_source_w;
 static Gtk::ToggleButton *line_numbers1_w;
 #endif
@@ -1448,35 +1581,38 @@ static Gtk::ToggleButton *line_numbers1_w;
 static MMDesc source_menu[] =
 {
     MENTRYL("breakpoints", "Breakpoints...", MMPush,
-	   BIND_0(PTR_FUN(SourceView::EditBreakpointsCB)), 0, 0),
+	    BIND_0(PTR_FUN(SourceView::EditBreakpointsCB)), 0, 0),
     MMSep,
     MENTRYL("lookup", "Lookup", MMPush,
-	   HIDE_0(PTR_FUN(gdbLookupCB)), 0, (Widget *)&lookup_w),
+	    HIDE_0(PTR_FUN(gdbLookupCB)), 0, (Widget *)&lookup_w),
     MENTRYL("findForward", "@charset Find@small>> @charset()@rm", MMPush,
-	   BIND_1(PTR_FUN(gdbFindCB), SourceView::forward),
-	   0, (Widget *)&find_forward_w),
+	    BIND_1(PTR_FUN(gdbFindCB), SourceView::forward),
+	    0, (Widget *)&find_forward_w),
     MENTRYL("findBackward", "@charset Find@small<< @charset()@rm", MMPush,
-	   BIND_1(PTR_FUN(gdbFindCB), SourceView::backward),
-	   0, (Widget *)&find_backward_w),
+	    BIND_1(PTR_FUN(gdbFindCB), SourceView::backward),
+	    0, (Widget *)&find_backward_w),
     MMSep,
     MENTRYL("findWordsOnly", "Find Words Only", MMCheckItem,
-	   BIND_0(PTR_FUN(sourceToggleFindWordsOnlyCB)), 
-	   0, (Widget *)&find_words_only_w),
+	    BIND_0(PTR_FUN(sourceToggleFindWordsOnlyCB)), 
+	    0, (Widget *)&find_words_only_w),
     MENTRYL("findCaseSensitive", "Find Case Sensitive", MMCheckItem,
-	   BIND_0(PTR_FUN(sourceToggleFindCaseSensitiveCB)), 
-	   0, (Widget *)&find_case_sensitive_w),
+	    BIND_0(PTR_FUN(sourceToggleFindCaseSensitiveCB)), 
+	    0, (Widget *)&find_case_sensitive_w),
     MMSep,
     MENTRYL("lineNumbers", "Display Line Numbers", MMCheckItem,
-	   BIND_0(PTR_FUN(sourceToggleDisplayLineNumbersCB)),
-	   0, (Widget *)&line_numbers1_w),
-    MENTRYL("disassemble", "Display Machine Code", MMCheckItem,
-	   BIND_0(PTR_FUN(gdbToggleCodeWindowCB)),
-	   0, (Widget *)&disassemble_w),
+	    BIND_0(PTR_FUN(sourceToggleDisplayLineNumbersCB)),
+	    0, (Widget *)&line_numbers1_w),
+    GENTRYL("disassemble", "Display Machine Code", MMCheckItem,
+	    BIND_0(PTR_FUN(gdbToggleCodeWindowCB)),
+	    sigc::ptr_fun(gdbToggleCodeWindowCB),
+	    0, (Widget *)&disassemble_w),
     MMSep,
-    MENTRYL("edit", "Edit Source...", MMPush, 
-	   BIND_0(PTR_FUN(gdbEditSourceCB)), 0, (Widget *)&edit_source_w),
+    GENTRYL("edit", "Edit Source...", MMPush, 
+	    BIND_0(PTR_FUN(gdbEditSourceCB)),
+	    sigc::ptr_fun(gdbEditSourceCB),
+	    0, &edit_source_w),
     MENTRYL("reload", "Reload Source", MMPush, 
-	   HIDE_0(PTR_FUN(gdbReloadSourceCB)), 0, (Widget *)&reload_source_w),
+	    HIDE_0(PTR_FUN(gdbReloadSourceCB)), 0, (Widget *)&reload_source_w),
     MMEnd
 };
 
@@ -2242,7 +2378,11 @@ static MMDesc helpers_preferences_menu [] =
 
 static Widget print_w            = 0;
 static Widget display_w          = 0;
+#if defined(IF_XM)
 static Widget examine_w          = 0;
+#else
+static GUI::Widget *examine_w    = 0;
+#endif
 static TOGGLEBUTTON_P locals_w   = 0;
 static TOGGLEBUTTON_P args_w     = 0;
 static TOGGLEBUTTON_P detect_aliases_w   = 0;
@@ -2263,43 +2403,54 @@ DECL_WR(WR_dddPopupInfosCB, dddPopupInfosCB);
 static MMDesc data_menu[] = 
 {
     MENTRYL("displays", "Displays...", MMPush,
-	   HIDE_0(PTR_FUN(DataDisp::EditDisplaysCB)), 0, 0),
+	    HIDE_0(PTR_FUN(DataDisp::EditDisplaysCB)),
+	    0, 0),
     MENTRYL("themes", "Themes...", MMPush,
-	   HIDE_0(PTR_FUN(dddPopupThemesCB)), 0, 0),
+	    HIDE_0(PTR_FUN(dddPopupThemesCB)), 
+	    0, 0),
     MENTRYL("watchpoints", "Watchpoints...", MMPush,
 	   BIND_0(PTR_FUN(SourceView::EditBreakpointsCB)), 
 	   0, &edit_watchpoints_w),
-    MENTRYL("examine", "Memory...", MMPush,
-	   BIND_0(PTR_FUN(gdbExamineCB)), 0, &examine_w),
+    GENTRYL("examine", "Memory...", MMPush,
+	    BIND_0(PTR_FUN(gdbExamineCB)),
+	    sigc::ptr_fun(gdbExamineCB),
+	    0, &examine_w),
     MMSep,
     MENTRYL("print", "Print ()", MMPush, 
-	   BIND_1(PTR_FUN(gdbPrintCB), XtPointer(False)), 0, &print_w),
+	    BIND_1(PTR_FUN(gdbPrintCB), XtPointer(False)),
+	    0, &print_w),
     MENTRYL("display", "Display ()", MMPush,
-	   BIND_0(PTR_FUN(gdbDisplayCB)), 0, &display_w),
+	    BIND_0(PTR_FUN(gdbDisplayCB)),
+	    0, &display_w),
     MMSep,
     MENTRYL("detectAliases", "Detect Aliases", MMCheckItem,
-	   BIND_0(PTR_FUN(graphToggleDetectAliasesCB)),
-	   0, (Widget *)&detect_aliases_w),
+	    BIND_0(PTR_FUN(graphToggleDetectAliasesCB)),
+	    0, (Widget *)&detect_aliases_w),
     MMSep,
     MENTRYL("info locals", "Display Local Variables", MMCheckItem,
-	   BIND_0(PTR_FUN(graphToggleLocalsCB)), 
-	   0, (Widget *)&locals_w),
+	    BIND_0(PTR_FUN(graphToggleLocalsCB)), 
+	    0, (Widget *)&locals_w),
     MENTRYL("info args", "Display Arguments", MMCheckItem,
-	   BIND_0(PTR_FUN(graphToggleArgsCB)), 
-	   0, (Widget *)&args_w),
+	    BIND_0(PTR_FUN(graphToggleArgsCB)), 
+	    0, (Widget *)&args_w),
     MENTRYL("infos", "Status Displays...", MMPush,
-	   BIND_1(PTR_FUN(WhenReady), &WR_dddPopupInfosCB), 
-	   0, &infos_w),
+	    BIND_1(PTR_FUN(WhenReady), &WR_dddPopupInfosCB), 
+	    0, &infos_w),
     MMSep,
     MENTRYL("align", "Align on Grid", MMPush,
-	   HIDE_0(PTR_FUN(graphAlignCB)), 0, &align_w),
+	    HIDE_0(PTR_FUN(graphAlignCB)),
+	    0, &align_w),
     MENTRYL("rotate", "Rotate Graph", MMPush,
-	   HIDE_0(PTR_FUN(graphRotateCB)), 0, 0),
+	    HIDE_0(PTR_FUN(graphRotateCB)),
+	    0, 0),
     MENTRYL("layout", "Layout Graph", MMPush,
-	   HIDE_0(PTR_FUN(graphLayoutCB)), 0, 0),
+	    HIDE_0(PTR_FUN(graphLayoutCB)),
+	    0, 0),
     MMSep,
-    MENTRYL("refresh", "Refresh", MMPush,
-	   BIND_0(PTR_FUN(DataDisp::refreshCB)), 0, 0),
+    GENTRYL("refresh", "Refresh", MMPush,
+	    BIND_0(PTR_FUN(DataDisp::refreshCB)),
+	    sigc::ptr_fun(DataDisp::refreshCB),
+	    0, 0),
     MMEnd
 };
 
@@ -2465,18 +2616,24 @@ struct PrintItems {
 static Widget print_ref_w     = 0;
 static Widget print_dump_w    = 0;
 static Widget print_whatis_w  = 0;
+#if defined(IF_XM)
 static Widget print_examine_w = 0;
+#else
+static GUI::Widget *print_examine_w = 0;
+#endif
 
 static MMDesc print_menu[] =
 {
     MENTRYL("printRef", "Print *()", MMPush,
-	   BIND_1(PTR_FUN(gdbPrintRefCB), false), 0, &print_ref_w),
+	    BIND_1(PTR_FUN(gdbPrintRefCB), false), 0, &print_ref_w),
     MENTRYL("dump", "Dump ()", MMPush, 
-	   BIND_1(PTR_FUN(gdbPrintCB), true), 0, &print_dump_w),
+	    BIND_1(PTR_FUN(gdbPrintCB), true), 0, &print_dump_w),
     MENTRYL("whatis", "Whatis ()", MMPush, 
-	   BIND_0(PTR_FUN(gdbWhatisCB)), 0, &print_whatis_w),
-    MENTRYL("examine", "Examine ()...", MMPush, 
-	   BIND_0(PTR_FUN(gdbExamineCB)), 0, &print_examine_w),
+	    BIND_0(PTR_FUN(gdbWhatisCB)), 0, &print_whatis_w),
+    GENTRYL("examine", "Examine ()...", MMPush, 
+	    BIND_0(PTR_FUN(gdbExamineCB)),
+	    sigc::ptr_fun(gdbExamineCB),
+	    0, &print_examine_w),
     MMEnd
 };
 
@@ -2500,16 +2657,18 @@ struct WatchItems {
 static MMDesc watch_menu[] =
 {
     MENTRYL("watchProperties", "Watchpoint Properties...", MMPush, 
-	   HIDE_0(PTR_FUN(gdbEditWatchpointPropertiesCB)), 0, 0),
-    MENTRYL("enableWatch", "Enable Watchpoint at ()", MMPush, 
-	   BIND_0(PTR_FUN(gdbToggleEnableWatchpointCB)), 0, 0),
+	    HIDE_0(PTR_FUN(gdbEditWatchpointPropertiesCB)), 0, 0),
+    GENTRYL("enableWatch", "Enable Watchpoint at ()", MMPush, 
+	    BIND_0(PTR_FUN(gdbToggleEnableWatchpointCB)),
+	    sigc::ptr_fun(gdbToggleEnableWatchpointCB),
+	    0, 0),
     MMSep,
     MENTRYL("cwatch", "Set Watchpoint on ()", MMPush, 
-	   BIND_1(PTR_FUN(gdbWatchCB), WATCH_CHANGE), 0, 0),
+	    BIND_1(PTR_FUN(gdbWatchCB), WATCH_CHANGE), 0, 0),
     MENTRYL("rwatch", "Set Read Watchpoint on ()", MMPush, 
-	   BIND_1(PTR_FUN(gdbWatchCB), WATCH_READ), 0, 0),
+	    BIND_1(PTR_FUN(gdbWatchCB), WATCH_READ), 0, 0),
     MENTRYL("awatch", "Set Access Watchpoint on ()", MMPush, 
-	   BIND_1(PTR_FUN(gdbWatchCB), WATCH_ACCESS), 0, 0),
+	    BIND_1(PTR_FUN(gdbWatchCB), WATCH_ACCESS), 0, 0),
 
     // It would be nice to have an `unwatch' command here, for
     // recording commands.  Unfortunately, GDB needs a watchpoint
@@ -2517,7 +2676,7 @@ static MMDesc watch_menu[] =
 #if 0	
     MMSep,
     MENTRYL("unwatch", "Unwatch ()", MMPush,
-	   BIND_0( PTR_FUN(gdbUnwatchCB) ), 0, 0),
+	    BIND_0( PTR_FUN(gdbUnwatchCB) ), 0, 0),
 #endif
     MMEnd
 };
@@ -2529,22 +2688,32 @@ struct BreakItems {
 
 static MMDesc break_menu[] = 
 {
-    MENTRYL("tempBreakAt", "Set Temporary Breakpoint at ()", MMPush,
-	   BIND_0(PTR_FUN(gdbTempBreakAtCB)), 0, 0),
+    GENTRYL("tempBreakAt", "Set Temporary Breakpoint at ()", MMPush,
+	    BIND_0(PTR_FUN(gdbTempBreakAtCB)),
+	    sigc::ptr_fun(gdbTempBreakAtCB),
+	    0, 0),
     MENTRYL("regexBreakAt", "Set Breakpoints at Regexp ()", MMPush,
-	   BIND_0(PTR_FUN(gdbRegexBreakAtCB)), 0, 0),
+	    BIND_0(PTR_FUN(gdbRegexBreakAtCB)), 0, 0),
     MENTRYL("breakProperties", "Breakpoint Properties...", MMPush, 
-	   HIDE_0(PTR_FUN(gdbEditBreakpointPropertiesCB)), 0, 0),
-    MENTRYL("enableBreak", "Enable Breakpoint at ()", MMPush, 
-	   BIND_0(PTR_FUN(gdbToggleEnableBreakpointCB)), 0, 0),
+	    HIDE_0(PTR_FUN(gdbEditBreakpointPropertiesCB)), 0, 0),
+    GENTRYL("enableBreak", "Enable Breakpoint at ()", MMPush, 
+	    BIND_0(PTR_FUN(gdbToggleEnableBreakpointCB)),
+	    sigc::ptr_fun(gdbToggleEnableBreakpointCB),
+	    0, 0),
     MMSep,
-    MENTRYL("contUntil", "Continue Until ()", MMPush,
-	   BIND_0(PTR_FUN(gdbContUntilCB)), 0, 0),
-    MENTRYL("setPC", "Set Execution Position to ()", MMPush,
-	   BIND_0(PTR_FUN(gdbSetPCCB)), 0, 0),
+    GENTRYL("contUntil", "Continue Until ()", MMPush,
+	    BIND_0(PTR_FUN(gdbContUntilCB)),
+	    sigc::ptr_fun(gdbContUntilCB),
+	    0, 0),
+    GENTRYL("setPC", "Set Execution Position to ()", MMPush,
+	    BIND_0(PTR_FUN(gdbSetPCCB)),
+	    sigc::ptr_fun(gdbSetPCCB),
+	    0, 0),
     MMSep,
-    MENTRYL("clearAt2", "Clear Breakpoint at ()", MMPush,
-	   BIND_0(PTR_FUN(gdbClearAtCB)), 0, 0),
+    GENTRYL("clearAt2", "Clear Breakpoint at ()", MMPush,
+	    BIND_0(PTR_FUN(gdbClearAtCB)),
+	    sigc::ptr_fun(gdbClearAtCB),
+	    0, 0),
     MMEnd
 };
 
@@ -2571,7 +2740,10 @@ static MMDesc arg_cmd_area[] =
 	    HIDE_0(PTR_FUN(gdbLookupCB)), 0, 0),
     MENTRYI("find", FIND_FORWARD_ICON, MMPush | MMInsensitive, 
 	    BIND_0(PTR_FUN(gdbFindAgainCB)), find_menu, 0),
-    MENTRYI("breakAt", BREAK_AT_ICON, MMPush, BIND_0(PTR_FUN(gdbToggleBreakCB)), break_menu, 0),
+    GENTRYI("breakAt", BREAK_AT_ICON, MMPush,
+	    BIND_0(PTR_FUN(gdbToggleBreakCB)),
+	    sigc::ptr_fun(gdbToggleBreakCB),
+	    break_menu, 0),
     MENTRYI("watch", WATCH_ICON, MMPush, 
 	    BIND_1(PTR_FUN(gdbToggleWatchCB), WATCH_CHANGE), watch_menu, 0),
     MENTRYI("print", PRINT_ICON, MMPush, 
@@ -2598,16 +2770,28 @@ SourceView*   source_view;
 ArgField*     source_arg;
 
 // Argument toolbar
-static CONTAINER_P arg_cmd_w;
+#if defined(IF_XM)
+static Widget arg_cmd_w;
+#else
+static GUI::Container *arg_cmd_w;
+#endif
 
 // GDB input/output widget
 SCROLLEDTEXT_P gdb_w;
 
+#if defined(IF_XM)
 // GDB status line
-STATUSBAR_P status_w;
+Widget status_w;
 
 // GDB activity led
-static TOGGLEBUTTON_P led_w;
+static Widget led_w;
+#else
+// GDB status line
+GUI::Statusbar *status_w;
+
+// GDB activity led
+static GUI::CheckButton *led_w;
+#endif
 
 // Last output position
 XmTextPosition promptPosition;
@@ -2618,7 +2802,11 @@ XmTextPosition messagePosition;
 // Buttons
 static Widget console_buttons_w;
 static Widget source_buttons_w;
+#if defined(IF_XM)
 static Widget data_buttons_w;
+#else
+static GUI::WidgetPtr<GUI::Container> data_buttons_w;
+#endif
 static Widget command_toolbar_w;
 
 // Strings to be ignored in GDB output
@@ -2938,7 +3126,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 #ifdef NAG_ME
 #warning Should be some arguments here
 #endif
-    Gtk::Window *toplevel = new Gtk::Window;
+    GUI::Window *toplevel = new GUI::Window("toplevel");
     app_context = toplevel;
 #endif
 
@@ -3336,7 +3524,12 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     set_gdb_history_file(gdb->history_file());
 
     // Setup shell creation
+#if defined(IF_XM)
     Delay::shell_registered = setup_new_shell;
+#else
+    Delay::shell_registered = setup_new_shell;
+    Delay::shell_registered1 = setup_new_shell1;
+#endif
 
     // Create command shell
 
@@ -3412,7 +3605,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 
     // Create Paned Window
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     arg = 0;
     XtSetArg(args[arg], XmNborderWidth,     0); arg++;
     XtSetArg(args[arg], XmNmarginWidth,     0); arg++;
@@ -3422,14 +3615,12 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 				   XMST("paned_work_w"),
 				   args, arg));
     XtManageChild(paned_work_w);
-    CONTAINER_P main_vbox = paned_work_w;
+    Widget main_vbox = paned_work_w;
 #else
     // Note: On Motif it is possible to force a pane to have
     // fixed size.  On Gtk this does not seem possible.  Therefore
     // the toolbar and status bar must go in a VBox.
-    Gtk::Box *main_vbox = new Gtk::VBox();
-    main_vbox->show();
-    main_window->add(*main_vbox);
+    GUI::Box *main_vbox = new GUI::VBox(main_window);
 #endif
 
     // Status line
@@ -3445,7 +3636,11 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     if (!app_data.button_captions && !app_data.button_images)
 	app_data.common_toolbar = false;
 
-    BUTTON_P arg_label = 0;
+#if defined(IF_XM)
+    Widget arg_label = 0;
+#else
+    GUI::Button *arg_label = 0;
+#endif
 
     if (!app_data.separate_source_window &&
 	!app_data.separate_data_window &&
@@ -3466,9 +3661,8 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	}
     }
 
-#ifndef IF_MOTIF
-    Gtk::Container *paned_work_w = new GtkMultiPaned();
-    main_vbox->add(*paned_work_w);
+#ifndef IF_XM
+    GUI::MultiPaned *paned_work_w = new GUI::MultiPaned(*main_vbox);
 #endif
     
     // Install icons if not already done
@@ -3478,17 +3672,23 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 		  app_data.active_button_color_key);
 #endif
 
-    // Data window
-    CONTAINER_P data_disp_parent = paned_work_w;
 #if defined(IF_XM)
+    // Data window
+    Widget data_disp_parent = paned_work_w;
     Widget data_menubar_w = 0;
+    Widget data_main_window_w = 0;
 #else
-    GUI::WidgetPtr<GUI::MenuBar> data_menubar_w = 0;
+    // Data window
+#ifdef NAG_ME
+#warning data_disp_parent may be VBox or MultiPaned?
 #endif
-    CONTAINER_P data_main_window_w = 0;
+    GUI::Container *data_disp_parent = paned_work_w;
+    GUI::WidgetPtr<GUI::MenuBar> data_menubar_w = 0;
+    GUI::Container *data_main_window_w = 0;
+#endif
     if (app_data.separate_data_window)
     {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	arg = 0;
 	XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
 	data_disp_shell =
@@ -3498,14 +3698,12 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 
 	AddDeleteWindowCallback(data_disp_shell, DDDCloseCB);
 #else
-	data_disp_shell = new Gtk::Window();
-	data_disp_shell->set_name(XMST("data_disp_shell"));
-	data_disp_shell->set_title(XMST("data_disp_shell"));
+	data_disp_shell = new GUI::Window("data_disp_shell", "data_disp_shell");
 	AddDeleteWindowCallback(data_disp_shell, BIND_1(PTR_FUN(DDDCloseCB), data_disp_shell));
 #endif
 
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	arg = 0;
 	data_main_window_w = 
 	    XmCreateMainWindow(data_disp_shell, 
@@ -3513,9 +3711,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 			       args, arg);
 	XtManageChild(data_main_window_w);
 #else
-	data_main_window_w = new Gtk::VBox();
-	data_main_window_w->set_name(XMST("data_main_window"));
-	data_disp_shell->add(*data_main_window_w);
+	data_main_window_w = new GUI::VBox(*data_disp_shell, "data_main_window");
 	data_main_window_w->show();
 #endif
 
@@ -3528,7 +3724,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	MMaddHelpCallback(menubar, ImmediateHelpCB);
 #else
 	data_menubar_w = 
-	    MMcreateMenuBar (data_main_window_w, 
+	    MMcreateMenuBar (*data_main_window_w, 
 			     "menubar", data_menubar);
 	MMaddCallbacks(data_menubar);
 	MMaddHelpCallback(menubar, sigc::ptr_fun(ImmediateHelpCB1));
@@ -3536,7 +3732,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	verify_buttons(data_menubar);
 	register_menu_shell(data_menubar);
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	arg = 0;
 	XtSetArg(args[arg], XmNborderWidth,     0); arg++;
 	XtSetArg(args[arg], XmNmarginWidth,     0); arg++;
@@ -3550,9 +3746,8 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	// Note: On Motif it is possible to force a pane to have
 	// fixed size.  On Gtk this does not seem possible.  Therefore
 	// the toolbar and status bar must go in a VBox.
-	data_disp_parent = new Gtk::VBox();
+	data_disp_parent = new GUI::VBox(*data_main_window_w);
 	data_disp_parent->show();
-	data_main_window_w->add(*data_disp_parent);
 #endif
     }
 
@@ -3574,22 +3769,26 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 #endif
 #endif
 
-    if (data_buttons_w == 0)
+    if (data_buttons_w != (Widget)0)
 	data_buttons_w = make_buttons(data_disp_parent, "data_buttons", 
 				      app_data.data_buttons);
 
-    // Source window
-    CONTAINER_P source_view_parent = paned_work_w;
-    CONTAINER_P source_vbox = main_vbox;
 #if defined(IF_XM)
+    // Source window
+    Widget source_view_parent = paned_work_w;
+    Widget source_vbox = main_vbox;
     Widget source_menubar_w = 0;
+    Widget source_main_window_w = 0;
 #else
-    GUI::WidgetPtr<GUI::MenuBar> source_menubar_w = 0;
+    // Source window
+    GUI::MultiPaned *source_view_parent = paned_work_w;
+    GUI::Container *source_vbox = main_vbox;
+    GUI::MenuBar *source_menubar_w = 0;
+    GUI::Container *source_main_window_w = 0;
 #endif
-    CONTAINER_P source_main_window_w = 0;
     if (app_data.separate_source_window)
     {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	arg = 0;
 	XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
 	source_view_shell = 
@@ -3598,14 +3797,12 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 				      toplevel, args, arg));
 	AddDeleteWindowCallback(source_view_shell, DDDCloseCB);
 #else
-	source_view_shell = new Gtk::Window;
-	source_view_shell->set_name(XMST("source_view_shell"));
-	source_view_shell->set_title(XMST("source_view_shell"));
+	source_view_shell = new GUI::Window("source_view_shell", "source_view_shell");
 	AddDeleteWindowCallback(source_view_shell, BIND_1(PTR_FUN(DDDCloseCB), source_view_shell));
 #endif
 
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	arg = 0;
 	source_main_window_w = 
 	    XmCreateMainWindow(source_view_shell,
@@ -3613,9 +3810,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 			       args, arg);
 	XtManageChild(source_main_window_w);
 #else
-	source_main_window_w = new Gtk::VBox();
-	source_main_window_w->set_name(XMST("source_main_window"));
-	source_view_shell->add(*source_main_window_w);
+	source_main_window_w = new GUI::VBox(*source_view_shell, "source_main_window");
 	source_main_window_w->show();
 #endif
 
@@ -3627,7 +3822,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	MMaddHelpCallback(menubar, ImmediateHelpCB);
 #else
 	source_menubar_w = 
-	    MMcreateMenuBar (source_main_window_w, "menubar", source_menubar);
+	    MMcreateMenuBar (*source_main_window_w, "menubar", source_menubar);
 	MMaddCallbacks(source_menubar);
 	MMaddHelpCallback(menubar, sigc::ptr_fun(ImmediateHelpCB1));
 #endif
@@ -3635,7 +3830,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	register_menu_shell(source_menubar);
 
 	// Add source window
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	arg = 0;
 	XtSetArg(args[arg], XmNborderWidth,     0); arg++;
 	XtSetArg(args[arg], XmNmarginWidth,     0); arg++;
@@ -3650,9 +3845,8 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	// Note: On Motif it is possible to force a pane to have
 	// fixed size.  On Gtk this does not seem possible.  Therefore
 	// the toolbar and status bar must go in a VBox.
-	source_vbox = new Gtk::VBox();
+	source_vbox = new GUI::VBox(*source_main_window_w);
 	source_vbox->show();
-	source_main_window_w->add(*source_vbox);
 #endif
 
 	// Status line
@@ -3683,13 +3877,15 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     }
 
 #ifndef IF_MOTIF
-    source_view_parent->modify_bg(Gtk::STATE_NORMAL, Gdk::Color("white"));
+#ifdef NAG_ME
+#warning Debugging - remove
 #endif
-#ifndef IF_MOTIF
+    // source_view_parent->modify_bg(Gtk::STATE_NORMAL, Gdk::Color("white"));
+#endif
+#ifndef IF_XM
     if (app_data.separate_source_window) {
-	source_view_parent = new GtkMultiPaned();
+	source_view_parent = new GUI::MultiPaned(*source_vbox);
 	source_view_parent->show();
-	source_vbox->add(*source_view_parent);
     }
 #endif
     source_view = new SourceView(source_view_parent);
@@ -3789,14 +3985,13 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	console_buttons_w = make_buttons(paned_work_w, "console_buttons", 
 					 app_data.console_buttons);
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     arg = 0;
     gdb_w = verify(XmCreateScrolledText(paned_work_w, 
 					XMST("gdb_w"), args, arg));
 #else
-    gdb_w = new GUI::ScrolledText();
+    gdb_w = new GUI::ScrolledText(*paned_work_w);
     gdb_w->set_size_request(400, 200);
-    paned_work_w->add(*gdb_w);
 #endif
 
 #if defined(IF_MOTIF)
@@ -4273,7 +4468,7 @@ void process_next_event()
 
 void process_pending_events()
 {
-    if (command_shell == 0)
+    if (command_shell == (Widget)0)
 	return;
 
 #if defined(IF_MOTIF)
@@ -4859,6 +5054,8 @@ static void KillLockerCB(CB_ARG_LIST_12(w, client_data))
 }
 #endif
 
+#if defined(IF_XM)
+
 static bool lock_ddd(Widget parent, LockInfo& info)
 {
     bool lock_ok = lock_session_dir(XtDisplay(parent), DEFAULT_SESSION, info);
@@ -4903,9 +5100,6 @@ static bool lock_ddd(Widget parent, LockInfo& info)
 	+ cr()
 	+ rm("To continue despite the other " DDD_NAME " instance, ")
 	+ rm("click on ") + bf("Continue") + rm(".") + cr();
-#ifdef NAG_ME
-#warning XmVersion?
-#endif
 #if XmVersion >= 1002
     if (on_local_host)
 	msg += rm("To kill the other " DDD_NAME " instance and continue, ")
@@ -4915,7 +5109,6 @@ static bool lock_ddd(Widget parent, LockInfo& info)
     msg += rm("To exit this " DDD_NAME " instance, click on ") 
 	+ bf("Exit") + rm(".");
 
-#if defined(IF_MOTIF)
     Arg args[10];
     int arg = 0;
 	
@@ -4938,13 +5131,9 @@ static bool lock_ddd(Widget parent, LockInfo& info)
     Widget lock_dialog =
 	verify(XmCreateQuestionDialog(parent, XMST("lock_dialog"), 
 				      args, arg));
-#else
-    Gtk::Dialog *lock_dialog = new Gtk::Dialog(XMST("lock_dialog"), *find_shell(parent));
-#endif
 
     Delay::register_shell(lock_dialog);
 
-#if defined(IF_MOTIF)
 #if XmVersion >= 1002
     Widget kill = verify(XmCreatePushButton(lock_dialog, XMST("kill"), 
 					    0, 0));
@@ -4960,17 +5149,7 @@ static bool lock_ddd(Widget parent, LockInfo& info)
 		  ContinueDespiteLockCB, XtNIL);
     XtAddCallback(lock_dialog, XmNcancelCallback, ExitCB, 
 		  XtPointer(EXIT_FAILURE));
-#else
-    Gtk::Button *button;
-    button = lock_dialog->add_button(XMST("kill"), 0);
-    button->signal_clicked().connect(sigc::bind(PTR_FUN(KillLockerCB), lock_dialog, XtPointer(&info)));
-    button = lock_dialog->add_button(XMST("continue"), 0);
-    button->signal_clicked().connect(PTR_FUN(ContinueDespiteLockCB));
-    button = lock_dialog->add_button(XMST("cancel"), 0);
-    button->signal_clicked().connect(sigc::bind(PTR_FUN(ExitCB), EXIT_FAILURE));
-#endif
 
-#if defined(IF_MOTIF)
     if (!geometry.empty())
     {
 	Widget shell = lock_dialog;
@@ -4983,28 +5162,90 @@ static bool lock_ddd(Widget parent, LockInfo& info)
 	XtSetArg(args[arg], XmNy, lock_dialog_y); arg++;
 	XtSetValues(shell, args, arg);
     }
-#else
-#ifdef NAG_ME
-#warning No geometry settings yet
-#endif
-#endif
 
     continue_despite_lock = false;
 
-#if defined(IF_MOTIF)
     manage_and_raise(lock_dialog);
 
     while (!continue_despite_lock)
 	XtAppProcessEvent(XtWidgetToApplicationContext(lock_dialog), XtIMAll);
 
     XtDestroyWidget(lock_dialog);
-#else
-    lock_dialog->run();
-#endif
 
     // Try locking once more
     return lock_session_dir(XtDisplay(parent), DEFAULT_SESSION, info);
 }
+
+#else
+
+static bool lock_ddd(GUI::Widget *parent, LockInfo& info)
+{
+    bool lock_ok = lock_session_dir(parent->get_display(), DEFAULT_SESSION, info);
+    if (lock_ok)
+	return true;
+
+    if (!app_data.warn_if_locked)
+	return false;
+
+    bool on_local_host = (info.hostname == fullhostname());
+
+    string lock_file = session_lock_file(DEFAULT_SESSION);
+    
+    MString msg = rm(DDD_NAME " has detected a ") 
+	+ tt(lock_file) + rm(" file.") + cr()
+	+ cr()
+	+ rm("This may indicate that another user is running "
+	     DDD_NAME) + cr()
+	+ rm("using your ")
+	+ tt(session_state_dir() + "/") + rm(" files.") + cr()
+	+ rm(DDD_NAME " appears to be running under process ID ") 
+	+ tt(itostring(info.pid));
+
+    if (!on_local_host)
+	msg += cr() + rm("on host ") + tt(info.hostname);
+
+    msg += rm(".") 
+	+ cr()
+	+ rm("You may continue to use " DDD_NAME ", but your "
+	     "saved " DDD_NAME " state may be") + cr()
+	+ rm("overwritten by the other " DDD_NAME " instance.") + cr()
+	+ cr();
+
+    msg += rm("Otherwise, make sure that you are not running "
+	      "another " DDD_NAME " and ") + cr()
+	+ rm("delete the ") + tt(lock_file) + rm(" file.") + cr()
+	+ cr()
+	+ rm("To continue despite the other " DDD_NAME " instance, ")
+	+ rm("click on ") + bf("Continue") + rm(".") + cr();
+
+    msg += rm("To exit this " DDD_NAME " instance, click on ") 
+	+ bf("Exit") + rm(".");
+
+    GUI::Dialog *lock_dialog = new GUI::Dialog(*find_shell1(parent), "lock_dialog");
+
+    Delay::register_shell(lock_dialog);
+
+    Gtk::Button *button;
+    button = lock_dialog->add_button("kill");
+    button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(KillLockerCB), lock_dialog, XtPointer(&info)));
+    button = lock_dialog->add_button("continue");
+    button->signal_clicked().connect(sigc::ptr_fun(ContinueDespiteLockCB));
+    button = lock_dialog->add_button("cancel");
+    button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(ExitCB), EXIT_FAILURE));
+
+#ifdef NAG_ME
+#warning No geometry settings yet
+#endif
+
+    continue_despite_lock = false;
+
+    lock_dialog->run();
+
+    // Try locking once more
+    return lock_session_dir(parent->get_display(), DEFAULT_SESSION, info);
+}
+
+#endif
 
 
 //-----------------------------------------------------------------------------
@@ -5697,7 +5938,11 @@ static void real_update_options(bool noupd)
     set_toggle(crash_nothing_w, !app_data.dump_core);
 
     // Check for source toolbar
+#if defined(IF_XM)
     Widget arg_cmd_w = XtParent(source_arg->top());
+#else
+    GUI::Widget *arg_cmd_w = source_arg->top()->get_parent();
+#endif
     if (data_disp->graph_cmd_w == arg_cmd_w)
     {
 	// Don't close the common toolbar
@@ -6466,7 +6711,7 @@ static void ResetPreferencesCB(GUI::Notebook *nb)
 
 void update_reset_preferences()
 {
-    if (current_panel != 0 && reset_preferences_w != 0 && option_state_saved)
+    if (current_panel != (Widget)0 && reset_preferences_w != (Widget)0 && option_state_saved)
     {
 	WidgetNameType panel_name = XtName(current_panel);
 
@@ -6576,41 +6821,16 @@ static void ChangePanelCB(TOGGLEBUTTON_P w, XtPointer client_data, XtPointer cal
 }
 #endif
 
-#ifdef __GNUC__
-#warning DEBUGGING SPEW
-#endif
-#if defined(IF_MOTIF)
-void
-print_window_size(Widget w)
-{
-    Window root;
-    int x, y;
-    unsigned int wd, ht, bwd, dp;
-    XGetGeometry(XtDisplay(w), XtWindow(w), &root, &x, &y,
-		 &wd, &ht, &bwd, &dp);
-    std::cerr << "wd = " << wd << " ht = " << ht << "\n";
-}
-#endif
+#if defined(IF_XM)
 
-#if defined(IF_XM)
-static TOGGLEBUTTON_P add_panel(BOX_P parent,
-				BOX_P buttons, 
-				const _XtString name, MMDesc items[],
-				Dimension& max_width, Dimension& max_height,
-				bool set = false)
-#else
-static int add_panel(GUI::Notebook *parent,
-		     const _XtString name, GUI::String label,
-		     MMDesc items[],
-		     bool set = false)
-#endif
+static Widget add_panel(Widget parent,
+			Widget buttons, 
+			const _XtString name, MMDesc items[],
+			Dimension& max_width, Dimension& max_height,
+			bool set = false)
 {
-#if defined(IF_XM)
     Arg args[10];
     int arg;
-#endif
-
-#if defined(IF_XM)
 
     // Add two rows
     arg = 0;
@@ -6619,32 +6839,16 @@ static int add_panel(GUI::Notebook *parent,
     XtSetArg(args[arg], XmNborderWidth,  0); arg++;
     Widget form = verify(XmCreateRowColumn(parent, XMST(name), args, arg));
     XtManageChild(form);
-#else
-    int pageno = parent->get_n_pages();
-    GUI::WidgetPtr<GUI::HBox> form = new GUI::HBox(*parent, label);
-    // Do not show() the form here; this is under the control of the
-    // Notebook widget.
-#endif
 
     // Add panel
-#ifdef IF_XM
     Widget panel = MMcreatePanel(form, "panel", items);
     XtManageChild(panel);
-#else
-    GUI::Widget *panel = MMcreatePanel(form, "panel", items);
-    panel->show();
-#endif
     MMadjustPanel(items);
     MMaddCallbacks(items);
-#if defined(IF_XM)
     MMaddHelpCallback(items, ImmediateHelpCB);
-#else
-    MMaddHelpCallback(items, sigc::ptr_fun(ImmediateHelpCB1));
-#endif
     register_menu_shell(items);
 
     // Fetch panel geometry
-#if defined(IF_XM)
     XtWidgetGeometry size;
     size.request_mode = CWHeight | CWWidth;
     XtQueryGeometry(form, (XtWidgetGeometry *)0, &size);
@@ -6664,9 +6868,7 @@ static int add_panel(GUI::Notebook *parent,
     XtManageChild(button);
     XtAddCallback(button, XmNvalueChangedCallback, ChangePanelCB, 
 		  XtPointer(form));
-#endif
 
-#if defined(IF_XM)
     XmToggleButtonSetState(button, Boolean(set), False);
 
     if (set)
@@ -6675,88 +6877,102 @@ static int add_panel(GUI::Notebook *parent,
 	cbs.set = set;
 	ChangePanelCB(button, XtPointer(form), &cbs);
     }
-#endif
 
-#if defined(IF_XM)
     return button;
-#else
-    return pageno;
-#endif
 }
 
-#if defined(IF_XM)
-static void OfferRestartCB(Widget dialog, XtPointer, XtPointer)
 #else
-static void OfferRestartCB(GUI::WidgetPtr<GUI::Dialog> &dialog)
+
+static int add_panel(GUI::Notebook *parent,
+		     const _XtString name, GUI::String label,
+		     MMDesc items[],
+		     bool set = false)
+{
+    std::cerr << ">> add_panel <<\n";
+    int pageno = parent->get_n_pages();
+    GUI::WidgetPtr<GUI::HBox> form = new GUI::HBox(*parent, label);
+    // Do not show() the form here; this is under the control of the
+    // Notebook widget.
+
+    // Add panel
+    GUI::Widget *panel = MMcreatePanel(form, "panel", items);
+    panel->show();
+    MMadjustPanel(items);
+    MMaddCallbacks(items);
+    MMaddHelpCallback(items, sigc::ptr_fun(ImmediateHelpCB1));
+    register_menu_shell(items);
+
+    return pageno;
+}
+
 #endif
+
+#if defined(IF_XM)
+
+static void OfferRestartCB(Widget dialog, XtPointer, XtPointer)
 {
     if (startup_preferences_changed() || font_preferences_changed())
     {
-	static DIALOG_P restart_dialog = 0;
+	static Widget restart_dialog = 0;
 	if (restart_dialog == 0)
 	{
-#if defined(IF_MOTIF)
 	    restart_dialog = 
 		verify(XmCreateQuestionDialog(find_shell(dialog), 
 					      XMST("restart_dialog"),
 					      0, 0));
-#else
-	    restart_dialog = new Gtk::Dialog(XMST("restart_dialog"), *find_shell(dialog));
-#endif
 	    Delay::register_shell(restart_dialog);
-#if defined(IF_MOTIF)
 	    XtAddCallback(restart_dialog, XmNokCallback,
 			  DDDRestartCB, 0);
 	    XtAddCallback(restart_dialog, XmNhelpCallback,
 			  ImmediateHelpCB, 0);
-#else
-	    Gtk::Button *button;
-	    button = restart_dialog->add_button(XMST("OK"), 0);
-	    button->signal_clicked().connect(sigc::bind(PTR_FUN(DDDRestartCB), restart_dialog));
-#endif
 	}
 	manage_and_raise(restart_dialog);
     }
 }
 
-// Create preferences dialog
-static void make_preferences(Widget parent)
+#else
+
+static void OfferRestartCB(GUI::WidgetPtr<GUI::Dialog> &dialog)
 {
-#if defined(IF_XM)
-    Arg args[10];
-    int arg;
+    if (startup_preferences_changed() || font_preferences_changed())
+    {
+	static GUI::Dialog *restart_dialog = 0;
+	if (restart_dialog == 0)
+	{
+	    restart_dialog = new GUI::Dialog(*find_shell1(dialog), "restart_dialog");
+	    Delay::register_shell(restart_dialog);
+	    Gtk::Button *button;
+	    button = restart_dialog->add_button("OK");
+	    button->signal_clicked().connect(sigc::bind(PTR_FUN(DDDRestartCB), restart_dialog));
+	}
+	manage_and_raise(restart_dialog);
+    }
+}
+
 #endif
 
 #if defined(IF_XM)
+
+// Create preferences dialog
+static void make_preferences(Widget parent)
+{
+    Arg args[10];
+    int arg;
+
     arg = 0;
     preferences_dialog = 
 	verify(XmCreatePromptDialog(parent, 
 				    XMST("preferences"), args, arg));
-#else
-    preferences_dialog = 
-	new GUI::Dialog(find_shell(parent), "preferences");
-#endif
     Delay::register_shell(preferences_dialog);
-#if defined(IF_XM)
     XtVaSetValues(preferences_dialog, XmNdefaultButton, Widget(0), 
 		  XtNIL);
     XtAddCallback(preferences_dialog, XmNunmapCallback, OfferRestartCB,
 		  XtNIL);
-#else
-#ifdef NAG_ME
-#warning No default button
-#endif
-    preferences_dialog->signal_unmap().connect(sigc::bind(sigc::ptr_fun(OfferRestartCB),
-							  preferences_dialog));
-#endif
 
-#if defined(IF_XM)
     if (lesstif_version <= 79)
 	XtUnmanageChild(XmSelectionBoxGetChild(preferences_dialog,
 					       XmDIALOG_APPLY_BUTTON));
-#endif
 
-#if defined(IF_XM)
     // Remove old prompt
     Widget text = XmSelectionBoxGetChild(preferences_dialog, XmDIALOG_TEXT);
     XtUnmanageChild(text);
@@ -6768,12 +6984,7 @@ static void make_preferences(Widget parent)
     reset_preferences_w = 
         XmSelectionBoxGetChild(preferences_dialog, XmDIALOG_CANCEL_BUTTON);
     XtRemoveAllCallbacks(reset_preferences_w, XmNactivateCallback);
-#else
-    reset_preferences_w = preferences_dialog->add_button("reset", "Reset");
-    reset_preferences_w->show();
-#endif
 
-#if defined(IF_XM)
     arg = 0;
     XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
     XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
@@ -6782,11 +6993,7 @@ static void make_preferences(Widget parent)
 	verify(XmCreateRowColumn(preferences_dialog, XMST("box"), 
 				 args, arg));
     XtManageChild(box);
-#elif defined(IF_XMMM)
-    Widget box = preferences_dialog->xt_container();
-#endif
 
-#if defined(IF_XM)
     arg = 0;
     Widget buttons =
 	verify(XmCreateRadioBox(box, XMST("buttons"), args, arg));
@@ -6801,17 +7008,11 @@ static void make_preferences(Widget parent)
     Widget change =
 	verify(XmCreateRowColumn(frame, XMST("change"), args, arg));
     XtManageChild(change);
-#else
-    GUI::WidgetPtr<GUI::Notebook> change = new GUI::Notebook(*preferences_dialog, "change");
-    change->show();
-    reset_preferences_w->signal_clicked().connect(sigc::bind(sigc::ptr_fun(ResetPreferencesCB), change));
-#endif
 
     Dimension max_width  = 0;
     Dimension max_height = 0;
 
-#if defined(IF_XM)
-    TOGGLEBUTTON_P general_button =
+    Widget general_button =
 	add_panel(change, buttons, "general", general_preferences_menu, 
 	      max_width, max_height, false);
     add_panel(change, buttons, "source",  source_preferences_menu, 
@@ -6824,7 +7025,48 @@ static void make_preferences(Widget parent)
 	      max_width, max_height, false);
     add_panel(change, buttons, "helpers", helpers_preferences_menu, 
 	      max_width, max_height, false);
+
+    XtVaSetValues(change,
+		  XmNwidth, max_width,
+		  XmNheight, max_height,
+		  XmNresizeWidth, False,
+		  XmNresizeHeight, False,
+		  XtNIL);
+
+    XmToggleButtonSetState(general_button, True, True);
+}
+
+// Popup Preference Panel
+static void dddPopupPreferencesCB (Widget, XtPointer, XtPointer)
+{
+    manage_and_raise(preferences_dialog);
+    check_options_file();
+}
+
 #else
+
+// Create preferences dialog
+static void make_preferences(GUI::Widget *parent)
+{
+    preferences_dialog = 
+	new GUI::Dialog(*find_shell1(parent), "preferences");
+    Delay::register_shell(preferences_dialog);
+#ifdef NAG_ME
+#warning No default button
+#endif
+    preferences_dialog->signal_unmap().connect(sigc::bind(sigc::ptr_fun(OfferRestartCB),
+							  preferences_dialog));
+
+    reset_preferences_w = preferences_dialog->add_button("reset", "Reset");
+    reset_preferences_w->show();
+
+    GUI::WidgetPtr<GUI::Notebook> change = new GUI::Notebook(*preferences_dialog, "change");
+    change->show();
+    reset_preferences_w->signal_clicked().connect(sigc::bind(sigc::ptr_fun(ResetPreferencesCB), change));
+
+    Dimension max_width  = 0;
+    Dimension max_height = 0;
+
     int general_button =
 	add_panel(change, "general", "General", general_preferences_menu, 
 		  false);
@@ -6836,63 +7078,36 @@ static void make_preferences(Widget parent)
 	      false);
     add_panel(change, "helpers", "Helpers", helpers_preferences_menu, 
 	      false);
-#endif
 
-#if defined(IF_XM)
-    XtVaSetValues(change,
-		  XmNwidth, max_width,
-		  XmNheight, max_height,
-		  XmNresizeWidth, False,
-		  XmNresizeHeight, False,
-		  XtNIL);
-#endif
-
-#if defined(IF_XM)
-    XmToggleButtonSetState(general_button, True, True);
-#else
     change->set_current_page(general_button);
-#endif
 }
 
 // Popup Preference Panel
-static void dddPopupPreferencesCB (CB_ALIST_NULL)
+static void dddPopupPreferencesCB (void)
 {
     manage_and_raise(preferences_dialog);
     check_options_file();
 }
+
+#endif
 
 
 //-----------------------------------------------------------------------------
 // Create status line
 //-----------------------------------------------------------------------------
 
-static void create_status(CONTAINER_P parent)
+#if defined(IF_XM)
+
+static void create_status(Widget parent)
 {
-#if defined(IF_MOTIF)
     Arg args[15];
     int arg = 0;
     XtSetArg(args[arg], XmNresizePolicy, XmRESIZE_ANY); arg++;
     Widget status_form = 
 	verify(XmCreateForm(parent, XMST("status_form"), args, arg));
-#else
-#ifdef NAG_ME
-#warning Note: We can use a Box instead of a Form because all we need
-#warning is pack_start and pack_end.
-#endif
-    BOX_P status_form = new Gtk::HBox();
-    status_form->set_name(XMST("status_form"));
-    Gtk::Box *box = dynamic_cast<Gtk::Box *>(parent);
-    if (box) {
-	box->pack_end(*status_form, Gtk::PACK_SHRINK);
-    }
-    else {
-	parent->add(*status_form);
-    }
-#endif
     XtManageChild(status_form);
 
     // Create LED
-#if defined(IF_MOTIF)
     arg = 0;
     XtSetArg(args[arg], XmNtopAttachment,      XmATTACH_FORM); arg++;
     XtSetArg(args[arg], XmNbottomAttachment,   XmATTACH_FORM); arg++;
@@ -6909,26 +7124,10 @@ static void create_status(CONTAINER_P parent)
 
     led_w = verify(XmCreateToggleButton(status_form, 
 					XMST("led"), args, arg));
-#else
-    led_w = new Gtk::ToggleButton(XMST(""));
-    led_w->set_name(XMST("led"));
-    status_form->pack_start(*led_w);
-#ifdef NAG_ME
-#warning How to fill toggle button with Green color?
-#endif
-#endif
     XtManageChild(led_w);
 
-#if defined(IF_MOTIF)
     XtAddCallback(led_w, XmNvalueChangedCallback, ToggleBlinkCB, XtNIL);
-#else
-#ifdef NAG_ME
-#warning We do not use the call_data here
-#endif
-    led_w->signal_toggled().connect(sigc::bind(PTR_FUN(ToggleBlinkCB), led_w, XtNIL));
-#endif
 
-#if defined(IF_MOTIF)
     Pixel arrow_foreground;
     XtVaGetValues(status_form, XmNbackground, &arrow_foreground, XtNIL);
 
@@ -6944,14 +7143,6 @@ static void create_status(CONTAINER_P parent)
 	     (app_data.status_at_bottom ? XmARROW_UP : XmARROW_DOWN)); arg++;
     Widget arrow_w = 
 	verify(XmCreateArrowButton(status_form, XMST("arrow"), args, arg));
-#else
-#ifdef NAG_ME
-#warning Set arrow as pixmap in button.
-#endif
-    Widget arrow_w = new Gtk::Button();
-    arrow_w->set_name(XMST("arrow"));
-    status_form->pack_start(*arrow_w);
-#endif
 
     XtManageChild(arrow_w);
 
@@ -6961,7 +7152,6 @@ static void create_status(CONTAINER_P parent)
     MString short_msg = rm("Hello, world!");
     MString long_msg = short_msg + rm(replicate(' ', 90));
 
-#if defined(IF_MOTIF)
     arg = 0;
     XtSetArg(args[arg], XmNlabelString,      long_msg.xmstring()); arg++;
     XtSetArg(args[arg], XmNtopAttachment,    XmATTACH_FORM); arg++;
@@ -6975,11 +7165,6 @@ static void create_status(CONTAINER_P parent)
     XtSetArg(args[arg], XmNshadowThickness,  0); arg++;
     status_w = verify(XmCreatePushButton(status_form, 
 					 XMST("status"), args, arg));
-#else
-    status_w = new Gtk::Statusbar();
-    status_w->set_name(XMST("status"));
-    status_form->pack_start(*status_w);
-#endif
     XtManageChild(status_w);
 
     // Initialize status history
@@ -6988,84 +7173,122 @@ static void create_status(CONTAINER_P parent)
     set_status("");
     set_status_mstring(short_msg);
 
-#if defined(IF_MOTIF)
     XtAddCallback(status_w, XmNarmCallback, 
 		  PopupStatusHistoryCB, XtNIL);
     XtAddCallback(status_w, XmNactivateCallback, 
 		  PopdownStatusHistoryCB, XtNIL);
     XtAddCallback(status_w, XmNdisarmCallback, 
 		  PopdownStatusHistoryCB, XtNIL);
-#else
-    status_w->signal_button_press_event().connect(sigc::bind(PTR_FUN(PopupStatusHistoryCB), status_w));
-    status_w->signal_button_release_event().connect(PTR_FUN(PopdownStatusHistoryCB));
-#endif
 
-#if defined(IF_MOTIF)
     XtAddCallback(arrow_w, XmNarmCallback, 
 		  PopupStatusHistoryCB, XtNIL);
     XtAddCallback(arrow_w, XmNactivateCallback, 
 		  PopdownStatusHistoryCB, XtNIL);
     XtAddCallback(arrow_w, XmNdisarmCallback, 
 		  PopdownStatusHistoryCB, XtNIL);
-#else
-    arrow_w->signal_button_press_event().connect(sigc::bind(PTR_FUN(PopupStatusHistoryCB), arrow_w));
-    arrow_w->signal_button_release_event().connect(PTR_FUN(PopdownStatusHistoryCB));
-#endif
 
-#if defined(IF_MOTIF)
     // Using LessTif 0.88, you can release button 1 while outside the
     // status bar; no disarm callback is invoked.  Prevent against this.
     XtAddEventHandler(status_w, ButtonReleaseMask, False,
 		      PopdownStatusHistoryEH, XtNIL);
     XtAddEventHandler(arrow_w, ButtonReleaseMask, False, 
 		      PopdownStatusHistoryEH, XtNIL);
-#endif
 
-#if defined(IF_MOTIF)
     XtWidgetGeometry size;
     size.request_mode = CWHeight;
     XtQueryGeometry(status_w, (XtWidgetGeometry *)0, &size);
 
     Dimension size_height = size.height;
-#else
-#ifdef NAG_ME
-#warning Is height set properly?
-#endif
-    Dimension size_height = status_w->get_height();
-#endif
 
-#if defined(IF_MOTIF)
     if (lesstif_version <= 87)
 	XtVaSetValues(led_w, XmNindicatorSize, size_height - 4, XtNIL);
     else
 	XtVaSetValues(led_w, XmNindicatorSize, size_height - 1, XtNIL);
-#else
-    led_w->set_size_request(-1, size_height-1);
-#endif
 
-#if defined(IF_MOTIF)
     XtVaSetValues(arrow_w,
 		  XmNheight, size_height - 2,
 		  XmNwidth,  size_height - 2,
 		  XtNIL);
-#else
-    arrow_w->set_size_request(size_height-2, size_height-2);
-#endif
 
-#if defined(IF_MOTIF)
     XtVaSetValues(status_form,
 		  XmNpaneMaximum, size_height,
 		  XmNpaneMinimum, size_height,
 		  XtNIL);
+
+    set_toggle(led_w, app_data.blink_while_busy);
+    blink(true);
+}
+
 #else
+
+static void create_status(GUI::Container *parent)
+{
+#ifdef NAG_ME
+#warning Note: We can use a Box instead of a Form because all we need
+#warning is pack_start and pack_end.
+#endif
+    GUI::Box *status_form = new GUI::HBox(*parent, "status_form");
+    status_form->show();
+
+    // Create LED
+    led_w = new GUI::CheckButton(*status_form, "led", "");
+#ifdef NAG_ME
+#warning How to fill toggle button with Green color?
+#endif
+    led_w->show();
+
+#ifdef NAG_ME
+#warning We do not use the call_data here
+#endif
+    led_w->signal_toggled().connect(sigc::bind(PTR_FUN(ToggleBlinkCB), led_w, XtNIL));
+
+#ifdef NAG_ME
+#warning Set arrow as pixmap in button.
+#endif
+    GUI::Button *arrow_w = new GUI::Button(*status_form, "arrow", "_");
+
+    arrow_w->show();
+
+    // Give some `dummy' status message.  Some Motif versions limit
+    // the size of the status window to the length of the very first
+    // message, so we give some huge string at the beginning.
+    MString short_msg = rm("Hello, world!");
+    MString long_msg = short_msg + rm(replicate(' ', 90));
+
+    status_w = new GUI::Statusbar(*status_form, "status");
+    status_w->show();
+
+    // Initialize status history
+    status_history_size = app_data.status_history_size;
+    (void) status_history(parent);
+    set_status("");
+    set_status_mstring(short_msg);
+
+    status_w->signal_button_press_event().connect(sigc::bind(sigc::ptr_fun(PopupStatusHistoryCB), status_w));
+    status_w->signal_button_release_event().connect(sigc::ptr_fun(PopdownStatusHistoryCB));
+
+    arrow_w->signal_button_press_event().connect(sigc::bind(sigc::ptr_fun(PopupStatusHistoryCB), arrow_w));
+    arrow_w->signal_button_release_event().connect(sigc::ptr_fun(PopdownStatusHistoryCB));
+
+
+#ifdef NAG_ME
+#warning Is height set properly?
+#endif
+    Dimension size_height = status_w->get_height();
+
+    led_w->set_size_request(-1, size_height-1);
+
+    arrow_w->set_size_request(size_height-2, size_height-2);
+
 #ifdef NAG_ME
 #warning XmNpaneMaximum analogue?
-#endif
 #endif
 
     set_toggle(led_w, app_data.blink_while_busy);
     blink(true);
 }
+
+#endif
 
 
 //-----------------------------------------------------------------------------
@@ -7228,88 +7451,107 @@ static void ToggleBlinkCB(TOGGLEBUTTON_P w,
 
 const Dimension y_popup_offset = 5;
 
-static MENU_P history_shell = 0;
-static BUTTON_CB_RETURN_TYPE
-PopupStatusHistoryCB(
-#if defined(IF_MOTIF)
-		     Widget w, XtPointer client_data, XtPointer call_data
+#if defined(IF_XM)
+static Widget history_shell = 0;
 #else
-		     GdkEventButton *, Widget w
+static GUI::Menu *history_shell = 0;
 #endif
-		     )
+
+#if defined(IF_XM)
+
+static void
+PopupStatusHistoryCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     history_shell = status_history(w);
 
-#if defined(IF_MOTIF)
     Position shell_x, shell_y;
     XtTranslateCoords(find_shell(status_w), 0, 0, &shell_x, &shell_y);
-#else
-#ifdef NAG_ME
-#warning Coordinates?
-#endif
-#endif
 
-#if defined(IF_MOTIF)
     Position status_x, status_y;
     XtTranslateCoords(status_w, 0, 0, &status_x, &status_y);
-#else
-#ifdef NAG_ME
-#warning Coordinates?
-#endif
-#endif
 
-#if defined(IF_MOTIF)
     XtWidgetGeometry size;
     size.request_mode = CWHeight;
-#endif
     Dimension size_height;
     Position x, y;
     if (app_data.status_at_bottom)
     {
-#if defined(IF_MOTIF)
 	XtQueryGeometry(history_shell, (XtWidgetGeometry *)0, &size);
 
 	x = shell_x;
 	y = status_y - size.height - y_popup_offset;
-#else
-	int size_height = history_shell->get_height();
-#endif
     }
     else
     {
-#if defined(IF_MOTIF)
 	XtQueryGeometry(status_w, (XtWidgetGeometry *)0, &size);
 
 	x = shell_x;
 	y = status_y + size.height + y_popup_offset;
-#else
-	int size_height = status_w->get_height();
-#endif
     }
 
-#if defined(IF_MOTIF)
     XtVaSetValues(history_shell, XmNx, x, XmNy, y, XtNIL);
     XtPopup(history_shell, XtGrabNone);
+}
+
 #else
+
+static bool
+PopupStatusHistoryCB(const GUI::EventButton *, GUI::Widget *w)
+{
+    history_shell = status_history(w);
+
+    //Position shell_x, shell_y;
+    //XtTranslateCoords(find_shell(status_w), 0, 0, &shell_x, &shell_y);
+#ifdef NAG_ME
+#warning Coordinates?
+#endif
+
+    //Position status_x, status_y;
+    //XtTranslateCoords(status_w, 0, 0, &status_x, &status_y);
+#ifdef NAG_ME
+#warning Coordinates?
+#endif
+
+    //XtWidgetGeometry size;
+    //size.request_mode = CWHeight;
+    Dimension size_height;
+    Position x, y;
+    if (app_data.status_at_bottom)
+    {
+	int size_height = history_shell->get_height();
+    }
+    else
+    {
+	int size_height = status_w->get_height();
+    }
+
 #ifdef NAG_ME
 #warning Can we choose the position of the popup menu (SlotPositionCalc?)
 #endif
     history_shell->popup(0, gtk_get_current_event_time());
-#endif
 }
 
-static BUTTON_CB_RETURN_TYPE
-PopdownStatusHistoryCB(
-#if defined(IF_MOTIF)
-		       Widget, XtPointer, XtPointer
-#else
-		       GdkEventButton *
 #endif
-		       )
+
+#if defined(IF_XM)
+
+static void
+PopdownStatusHistoryCB(Widget, XtPointer, XtPointer)
 {
     if (history_shell != 0)
 	XtPopdown(history_shell);
 }
+
+#else
+
+static bool
+PopdownStatusHistoryCB(const GUI::EventButton *)
+{
+    if (history_shell != 0)
+	history_shell->hide();
+}
+
+#endif
 
 #if defined(IF_MOTIF)
 static void PopdownStatusHistoryEH(Widget w, XtPointer client_data, 
@@ -7345,7 +7587,11 @@ void update_arg_buttons()
     set_sensitive(print_w,   can_print);
     set_sensitive(display_w, can_print);
 
+#if defined(IF_XM)
     set_sensitive(edit_source_w,   source_view->have_source());
+#else
+    edit_source_w->set_sensitive(source_view->have_source());
+#endif
     set_sensitive(reload_source_w, source_view->have_source());
 
     bool can_watch = can_print && gdb->has_watch_command();
@@ -7822,7 +8068,7 @@ static void WhenReady1(GUI::Widget *w, void *client_data)
     // `set_status' call instead of the StatusMsg class.
     set_status_mstring(msg);
 
-    Command c(gdb->nop_command(XtName(w)));
+    Command c(gdb->nop_command(w->get_name().c_str()));
     c.origin   = w->internal();
     c.callback = DoneCB1;
     c.data     = (void *)info;
@@ -8223,11 +8469,11 @@ static DDDWindow ddd_window(XtP(DDDWindow) client_data)
 	return DDDWindow(long(client_data));
 }
 
-static void gdbCutSelectionCB(CB_ALIST_12(Widget w, XtP(DDDWindow) client_data))
+#if defined(IF_XM)
+
+static void gdbCutSelectionCB(Widget w, DDDWindow client_data, XtPointer)
 {
-#if defined(IF_MOTIF)
     Time tm = time(XtLastEventProcessed(XtDisplay(w)));
-#endif
 
     DDDWindow win = ddd_window(client_data);
     Boolean success = False;
@@ -8236,57 +8482,36 @@ static void gdbCutSelectionCB(CB_ALIST_12(Widget w, XtP(DDDWindow) client_data))
     {
 	if (data_disp->have_selection())
 	{
-#if defined(IF_MOTIF)
 	    success = XmTextCopy(DataDisp::graph_selection_w, tm);
-#else
-	    std::cerr << "Copy from graph_selection_w not implemented\n";
-	    // success = text_copy_from(DataDisp::graph_selection_w);
-#endif
 	    if (success)
 		DataDisp::deleteCB(CB_ARGS_1(w));
 	}
     }
 
-#if defined(IF_MOTIF)
     // Try destination window
     Widget dest = XmGetDestination(XtDisplay(w));
     if (!success && dest != 0 && XmIsText(dest))
 	success = XmTextCut(dest, tm);
     if (!success && dest != 0 && XmIsTextField(dest))
 	success = XmTextFieldCut(dest, tm);
-#else
-#ifdef NAG_ME
-#warning XmGetDestination?
-#endif
-#endif
 
     // Try debugger console
     if (!success && (win == GDBWindow || win == CommonWindow)) {
-#if defined(IF_MOTIF)
 	success = XmTextCut(gdb_w, tm);
-#else
-	success = text_cut_from(gdb_w);
-#endif
     }
 
     // Try source arg
     if (!success && (win == SourceWindow || win == CommonWindow)) {
-#if defined(IF_MOTIF)
 	success = XmTextFieldCut(source_arg->text(), tm);
-#else
-	success = text_cut_from(source_arg->text());
-#endif
     }
 
     if (success)
-	gdbUnselectAllCB(CB_ARGS_NULL);
+	gdbUnselectAllCB(Widget(0), XtPointer(0), XtPointer(0));
 }
 
-static void gdbCopySelectionCB(CB_ALIST_12(Widget w, XtP(DDDWindow) client_data))
+static void gdbCopySelectionCB(Widget w, DDDWindow client_data)
 {
-#if defined(IF_MOTIF)
     Time tm = time(XtLastEventProcessed(XtDisplay(w)));
-#endif
     
     DDDWindow win = ddd_window(client_data);
     Boolean success = False;
@@ -8295,72 +8520,43 @@ static void gdbCopySelectionCB(CB_ALIST_12(Widget w, XtP(DDDWindow) client_data)
     if (!success && (win == DataWindow || win == CommonWindow))
 	if (data_disp->have_selection())
 	{
-#if defined(IF_MOTIF)
 	    success = XmTextCopy(DataDisp::graph_selection_w, tm);
-#else
-	    std::cerr << "Copy from graph_selection_w not implemented\n";
-	    // success = text_copy_from(DataDisp::graph_selection_w);
-#endif
 	}
 
-#if defined(IF_MOTIF)
     // Try destination window
     Widget dest = XmGetDestination(XtDisplay(w));
     if (!success && dest != 0 && XmIsText(dest))
 	success = XmTextCopy(dest, tm);
     if (!success && dest != 0 && XmIsTextField(dest))
 	success = XmTextFieldCopy(dest, tm);
-#else
-#ifdef NAG_ME
-#warning XmGetDestination?
-#endif
-#endif
 
     // Try debugger console
     if (!success && (win == GDBWindow || win == CommonWindow)) {
-#if defined(IF_MOTIF)
 	success = XmTextCopy(gdb_w, tm);
-#else
-	success = text_copy_from(gdb_w);
-#endif
     }
 
     // Try source arg
     if (!success && (win == SourceWindow || win == CommonWindow)) {
-#if defined(IF_MOTIF)
 	success = XmTextFieldCopy(source_arg->text(), tm);
-#else
-	success = text_copy_from(source_arg->text());
-#endif
     }
 
     // Try source
     if (!success && (win == SourceWindow || win == CommonWindow)) {
-#if defined(IF_MOTIF)
 	success = XmTextCopy(source_view->source(), tm);
-#else
-	success = text_copy_from(source_view->source());
-#endif
     }
 
     // Try code
     if (!success && (win == SourceWindow || win == CommonWindow)) {
-#if defined(IF_MOTIF)
 	success = XmTextCopy(source_view->code(), tm);
-#else
-	success = text_copy_from(source_view->code());
-#endif
     }
 }
 
-static void gdbPasteClipboardCB(CB_ALIST_12(Widget w, XtP(DDDWindow) client_data))
+static void gdbPasteClipboardCB(Widget w, DDDWindow client_data, XtPointer)
 {
-#if defined(IF_MOTIF)
     DDDWindow win = ddd_window(client_data);
 
     // Try destination window
     bool success = false;
-#if defined(IF_MOTIF)
     Widget dest = XmGetDestination(XtDisplay(w));
     if (dest != 0)
     {
@@ -8376,11 +8572,6 @@ static void gdbPasteClipboardCB(CB_ALIST_12(Widget w, XtP(DDDWindow) client_data
 	if (!success && XmIsTextField(dest))
 	    success = XmTextFieldPaste(dest);
     }
-#else
-#ifdef NAG_ME
-#warning Paste: XmGetDestination?
-#endif
-#endif
     if (success)
 	return;
 
@@ -8404,12 +8595,94 @@ static void gdbPasteClipboardCB(CB_ALIST_12(Widget w, XtP(DDDWindow) client_data
 	// Cannot paste into exec window
 	break;
     }
+}
+
 #else
+
+static void gdbCutSelectionCB(GUI::Widget *w, DDDWindow client_data)
+{
+
+    DDDWindow win = ddd_window(client_data);
+    Boolean success = False;
+    // Try data arg
+    if (!success && (win == DataWindow || win == CommonWindow))
+    {
+	if (data_disp->have_selection())
+	{
+	    std::cerr << "Copy from graph_selection_w not implemented\n";
+	    // success = text_copy_from(DataDisp::graph_selection_w);
+	    if (success)
+		DataDisp::deleteCB(CB_ARGS_1(w));
+	}
+    }
+
+#ifdef NAG_ME
+#warning XmGetDestination?
+#endif
+
+    // Try debugger console
+    if (!success && (win == GDBWindow || win == CommonWindow)) {
+	success = text_cut_from(gdb_w);
+    }
+
+    // Try source arg
+    if (!success && (win == SourceWindow || win == CommonWindow)) {
+	success = text_cut_from(source_arg->text());
+    }
+
+    if (success)
+	gdbUnselectAllCB();
+}
+
+static void gdbCopySelectionCB(GUI::Widget *w, DDDWindow client_data)
+{
+    
+    DDDWindow win = ddd_window(client_data);
+    Boolean success = False;
+
+    // Try data arg
+    if (!success && (win == DataWindow || win == CommonWindow))
+	if (data_disp->have_selection())
+	{
+	    std::cerr << "Copy from graph_selection_w not implemented\n";
+	    // success = text_copy_from(DataDisp::graph_selection_w);
+	}
+
+#ifdef NAG_ME
+#warning XmGetDestination?
+#endif
+
+    // Try debugger console
+    if (!success && (win == GDBWindow || win == CommonWindow)) {
+	success = text_copy_from(gdb_w);
+    }
+
+    // Try source arg
+    if (!success && (win == SourceWindow || win == CommonWindow)) {
+	success = text_copy_from(source_arg->text());
+    }
+
+    // Try source
+    if (!success && (win == SourceWindow || win == CommonWindow)) {
+	success = text_copy_from(source_view->source());
+    }
+
+    // Try code
+    if (!success && (win == SourceWindow || win == CommonWindow)) {
+	success = text_copy_from(source_view->code());
+    }
+}
+
+static void gdbPasteClipboardCB(GUI::Widget *w, DDDWindow client_data)
+{
 #ifdef NAG_ME
 #warning Paste not implemented
 #endif
-#endif
+    std::cerr << "Paste not implemented!\n";
 }
+
+#endif
+
 
 static void gdbUnselectAllCB(CB_ALIST_NULL)
 {
@@ -8437,19 +8710,17 @@ static void gdbUnselectAllCB(CB_ALIST_NULL)
 #endif
 }
 
-static void gdbClearAllCB(CB_ALIST_NULL)
+#if defined(IF_XM)
+
+static void gdbClearAllCB(Widget, XtPointer, XtPointer)
 {
-#ifdef NAG_ME
-#warning Call data is only used for timestamp.
-#endif
-    gdbUnselectAllCB(CB_ARGS_NULL);
+    gdbUnselectAllCB(Widget(0), XtPointer(0), XtPointer(0));
     source_arg->set_string("");
-    gdbClearCB(CB_ARGS_NULL);
+    gdbClearCB(Widget(0), XtPointer(0), XtPointer(0));
 }
 
-static void gdbSelectAllCB(CB_ALIST_12(Widget w, XtP(DDDWindow) client_data))
+static void gdbSelectAllCB(Widget w, XtPointer client_data, XtPointer)
 {
-#if defined(IF_MOTIF)
     DDDWindow win = ddd_window(client_data);
 
     Time tm = time(XtLastEventProcessed(XtDisplay(w)));
@@ -8500,17 +8771,36 @@ static void gdbSelectAllCB(CB_ALIST_12(Widget w, XtP(DDDWindow) client_data))
     default:
 	break;
     }
+}
+
 #else
+
+static void gdbClearAllCB(void)
+{
+#ifdef NAG_ME
+#warning Call data is only used for timestamp.
+#endif
+    gdbUnselectAllCB();
+    source_arg->set_string("");
+    gdbClearCB();
+}
+
+static void gdbSelectAllCB(GUI::Widget *w, DDDWindow client_data)
+{
 #ifdef NAG_ME
 #warning gdbSelectAllCB not implemented
 #endif
-#endif
+    std::cerr << "gdbSelectAllCB not implemented\n";
 }
 
+#endif
 
-static void gdbDeleteSelectionCB(CB_ALIST_12(Widget w, XtP(DDDWindow) client_data))
+
+
+#if defined(IF_XM)
+
+static void gdbDeleteSelectionCB(Widget w, XtPointer client_data, XtPointer)
 {
-#if defined(IF_MOTIF)
     DDDWindow win = ddd_window(client_data);
     Boolean success = False;
     Widget dest = XmGetDestination(XtDisplay(w));
@@ -8551,12 +8841,19 @@ static void gdbDeleteSelectionCB(CB_ALIST_12(Widget w, XtP(DDDWindow) client_dat
 
     if (success)
 	gdbUnselectAllCB(CB_ARGS_NULL);
+}
+
 #else
+
+static void gdbDeleteSelectionCB(GUI::Widget *w, DDDWindow client_data)
+{
 #ifdef NAG_ME
 #warning gdbDeleteSelectionCB not implemented
 #endif
-#endif
+    std::cerr << "gdbDeleteSelectionCB not implemented\n";
 }
+
+#endif
 
 // Update cut/copy/paste bindings
 static void set_cut_copy_paste_bindings(MMDesc *menu, BindingStyle style)
@@ -9031,6 +9328,8 @@ static void gdbUpdateAllMenus()
 // Configure new shell
 //-----------------------------------------------------------------------------
 
+#if defined(IF_XM)
+
 static void setup_new_shell(Widget w)
 {
     if (w == 0)
@@ -9042,7 +9341,6 @@ static void setup_new_shell(Widget w)
     if (shell == 0)
 	return;
 
-#if defined(IF_MOTIF)
 #if HAVE_X11_XMU_EDITRES_H
     // Make the shell handle EditRes messages
     XtRemoveEventHandler(shell, EventMask(0), True,
@@ -9052,18 +9350,44 @@ static void setup_new_shell(Widget w)
 		      XtEventHandler(_XEditResCheckMessages),
 		      XtNIL);
 #endif
-#endif
 
     // Use DDD logo as icon of the new shell
-#if defined(IF_MOTIF)
     if (shell != 0 && XtIsRealized(shell))
 	wm_set_icon(shell, iconlogo(w), iconmask(w));
-#else
-#ifdef NAG_ME
-#warning wm_set_icon not implemented
-#endif
-#endif
 }
+
+#else
+
+static void setup_new_shell(Widget w)
+{
+    if (w == 0)
+	return;
+
+#ifdef NAG_ME
+#warning setup_new_shell stuff not implemented
+#endif
+    std::cerr << "setup_new_shell stuff not implemented.\n";
+}
+
+static void setup_new_shell1(GUI::Widget *w)
+{
+    if (w == 0)
+	return;
+
+    GUI::Shell *shell = findShellParent1(w);
+    if (shell == 0 && dynamic_cast<GUI::Shell *>(w))
+	shell = dynamic_cast<GUI::Shell *>(w);
+    if (shell == 0)
+	return;
+
+    // Use DDD logo as icon of the new shell
+#ifdef NAG_ME
+#warning setup_new_shell stuff not implemented
+#endif
+    std::cerr << "setup_new_shell stuff not implemented.\n";
+}
+
+#endif
 
 //-----------------------------------------------------------------------------
 // Misc functions
@@ -9105,7 +9429,11 @@ static void ddd_xt_warning(String message)
 // Splash Screen
 //-----------------------------------------------------------------------------
 
+#if defined(IF_XM)
 static Widget splash_shell  = 0;
+#else
+static GUI::Dialog *splash_shell  = 0;
+#endif
 #if defined(IF_MOTIF)
 static Pixmap splash_pixmap = None;
 #else
@@ -9329,23 +9657,19 @@ static void vsl_echo(const string& msg)
 // Emergency
 //-----------------------------------------------------------------------------
 
+#if defined(IF_MOTIF)
 extern "C" {
-    static Bool is_emergency(DISPLAY_P, XEvent *event, char *)
+    static Bool is_emergency(Display *, XEvent *event, char *)
     {
 	switch (event->type)
 	{
 	case KeyPress:
 	{
-#if defined(IF_MOTIF)
 	    char buffer[1024];
 	    KeySym keysym;
 
 	    int len = XLookupString(&event->xkey, buffer, sizeof buffer, 
 				    &keysym, (XComposeStatus *)0);
-#else
-	    int len = event->key.length;
-	    char *buffer = event->key.string;
-#endif
 	    if (len == 1)
 	    {
 		char c = buffer[0];
@@ -9361,6 +9685,7 @@ extern "C" {
 	return False;
     }
 }
+#endif
 
 bool process_emergencies()
 {
@@ -10057,8 +10382,13 @@ static void setup_options()
 {
     set_sensitive(disassemble_w, gdb->type() == GDB);
     set_sensitive(code_indent_w, gdb->type() == GDB);
+#if defined(IF_XM)
     set_sensitive(examine_w,            gdb->has_examine_command());
     set_sensitive(print_examine_w,      gdb->has_examine_command());
+#else
+    examine_w->set_sensitive(gdb->has_examine_command());
+    print_examine_w->set_sensitive(gdb->has_examine_command());
+#endif
     set_sensitive(cache_machine_code_w, gdb->type() == GDB);
 
     if (gdb->type() == DBG) {
@@ -10121,7 +10451,11 @@ static void setup_options()
     set_sensitive(source_edit_menu[EditItems::Settings].widget, have_settings);
     set_sensitive(data_edit_menu[EditItems::Settings].widget,   have_settings);
 
+#if defined(IF_XM)
     set_sensitive(complete_w,  gdb->type() == GDB);
+#else
+    complete_w->set_sensitive(gdb->type() == GDB);
+#endif
     set_sensitive(define_w,    gdb->type() == GDB);
     set_sensitive(signals_w,   gdb->type() == GDB);
 

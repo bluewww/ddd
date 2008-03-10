@@ -29,6 +29,10 @@
 #ifndef _DDD_exectty_h
 #define _DDD_exectty_h
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "strclass.h"
 #include <stdlib.h>
 
@@ -36,7 +40,11 @@
 
 #include <X11/Intrinsic.h>
 
-#endif // IF_MOTIF
+#endif
+
+#if !defined(IF_XM)
+#include <GUI/Widget.h>
+#endif
 
 #include "gtk_wrapper.h"
 
@@ -45,8 +53,13 @@
 // Raise execution TTY
 extern void startup_exec_tty();
 
+#if defined(IF_XM)
 // Raise execution TTY on COMMAND
 extern void startup_exec_tty(string& command, Widget origin = 0);
+#else
+// Raise execution TTY on COMMAND
+extern void startup_exec_tty(string& command, GUI::Widget *origin = 0);
+#endif
 
 // Kill execution TTY
 extern void kill_exec_tty(bool killed = false);
@@ -63,8 +76,13 @@ extern Window exec_tty_window();
 // Set TTY title
 extern void set_tty_from_gdb(const string& text);
 
+#if defined(IF_XM)
 // Create TTY if required
 extern void handle_running_commands(string& command, Widget origin);
+#else
+// Create TTY if required
+extern void handle_running_commands(string& command, GUI::Widget *origin);
+#endif
 
 // Name of GDB tty
 extern string gdb_tty;

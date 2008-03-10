@@ -169,7 +169,7 @@ void setLabelList (ListView_P selectionList,
 		   bool    highlight_title,
 		   bool    notify)
 {
-    if (selectionList == 0)
+    if (selectionList == (GUI::Widget *)0)
 	return;
 
     selectionList->clear();

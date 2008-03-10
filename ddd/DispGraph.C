@@ -226,11 +226,11 @@ BoxPoint DispGraph::adjust_position (DispNode *new_node,
 				     const BoxPoint& offset,
 				     BoxPoint grid) const
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     const GraphGC& graphGC = graphEditGetGraphGC(w);
-#else // NOT IF_MOTIF
+#else
     const GraphGC& graphGC = w->get_graph_GC();
-#endif // IF_MOTIF
+#endif
 
     // std::clog << "new node       at " << pos << "\n";
 
@@ -275,23 +275,28 @@ BoxPoint DispGraph::adjust_position (DispNode *new_node,
 }
 
 // Return a default position for NEW_NODE
+#if defined(IF_XM)
 BoxPoint DispGraph::default_pos(DispNode *new_node, 
-				GRAPH_EDIT_P w, int depends_on) const
+				Widget w, int depends_on) const
+#else
+BoxPoint DispGraph::default_pos(DispNode *new_node, 
+				GUIGraphEdit *w, int depends_on) const
+#endif
 {
     Dimension grid_height = 16;
     Dimension grid_width  = 16;
     Cardinal rotation     = 0;
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     XtVaGetValues(w,
 		  XtNgridHeight, &grid_height,
 		  XtNgridWidth,  &grid_width,
 		  XtNrotation,   &rotation,
 		  XtPointer(0));
-#else // NOT IF_MOTIF
+#else
     grid_height = w->get_grid_height();
     grid_width = w->get_grid_width();
     rotation = w->get_rotation();
-#endif // IF_MOTIF
+#endif
 
     BoxPoint grid(max(grid_height, 1), max(grid_width, 1));
     BoxPoint delta(grid[X] * 3, grid[Y] * 2);
@@ -308,13 +313,15 @@ BoxPoint DispGraph::default_pos(DispNode *new_node,
 	offset = horizontal ? BoxPoint(grid[X], 0) : BoxPoint(0, grid[Y]);
 
 	// New node: start with the top-level visible position
+#if defined(IF_XM)
 	Position x = 0;
 	Position y = 0;
-#ifdef IF_MOTIF
 	XtVaGetValues(w, XtNx, &x, XtNy, &y, XtPointer(0));
-#else // NOT IF_MOTIF
+#else
+	int x = 0;
+	int y = 0;
 	w->translate_coordinates(*w->get_parent(), 0, 0, x, y);
-#endif // IF_MOTIF
+#endif
 	pos = BoxPoint(max(-x, grid[X]), max(-y, grid[Y] * 2));
 
 	// Add size offset
@@ -322,11 +329,11 @@ BoxPoint DispGraph::default_pos(DispNode *new_node,
 	pos += new_size / 2;
 
 	// Round to nearest grid position
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	pos = graphEditFinalPosition(w, pos);
-#else // NOT IF_MOTIF
+#else
 	pos = w->final_position(pos);
-#endif // IF_MOTIF
+#endif
     }
     else
     {
@@ -960,11 +967,11 @@ void DispGraph::add_direct_alias_edge(GRAPH_EDIT_P, int alias_disp_nr,
 // Check whether P is obscured by any node
 bool DispGraph::is_hidden(GRAPH_EDIT_P w, const BoxPoint& p) const
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     const GraphGC& graphGC = graphEditGetGraphGC(w);
-#else // NOT IF_MOTIF
+#else
     const GraphGC& graphGC = w->get_graph_GC();
-#endif // IF_MOTIF
+#endif
 
     for (GraphNode *n = firstVisibleNode(); n != 0; n = nextVisibleNode(n))
     {
@@ -1002,13 +1009,13 @@ bool DispGraph::hint_positions_ok(GRAPH_EDIT_P w,
 				  const BoxPoint& pos1,
 				  const BoxPoint& pos2) const
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     BoxPoint p1 = graphEditFinalPosition(w, pos1);
     BoxPoint p2 = graphEditFinalPosition(w, pos2);
-#else // NOT IF_MOTIF
+#else
     BoxPoint p1 = w->final_position(pos1);
     BoxPoint p2 = w->final_position(pos2);
-#endif // IF_MOTIF
+#endif
 
     if (p1[X] <= 0 || p2[X] <= 0 || p1[Y] <= 0 || p2[Y] <= 0)
 	return false;		// Bad coordinates
@@ -1037,11 +1044,11 @@ bool DispGraph::hint_positions_ok(GRAPH_EDIT_P w,
     BoxPoint dist = p2 - p1;
     if (dist[X] > 0 || dist[Y] > 0)
     {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	BoxPoint center = graphEditFinalPosition(w, p1 + dist / 2);
-#else // NOT IF_MOTIF
+#else
 	BoxPoint center = w->final_position(p1 + dist / 2);
-#endif // IF_MOTIF
+#endif
 	if (is_hidden(w, center))	// Center obscured by existing node
 	    return false;
     }
@@ -1058,15 +1065,15 @@ void DispGraph::add_routed_alias_edge(GRAPH_EDIT_P w, int alias_disp_nr,
     // Determine hint offsets
     Dimension grid_height = 16;
     Dimension grid_width  = 16;
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XtVaGetValues(w,
 		  XtNgridHeight, &grid_height,
 		  XtNgridWidth,  &grid_width,
 		  XtPointer(0));
-#else // NOT IF_MOTIF
+#else
     grid_height = w->get_grid_height();
     grid_width = w->get_grid_width();
-#endif // IF_MOTIF
+#endif
 
     BoxPoint dist   = to->pos() - from->pos();
     BoxPoint center = from->pos() + dist / 2;

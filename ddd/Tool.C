@@ -29,19 +29,21 @@
 char Tool_rcsid[] = 
     "$Id$";
 
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif
 
 #include "Tool.h"
 
 #include "AppData.h"
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 #include <Xm/Xm.h>
 #include <Xm/AtomMgr.h>
 #include <Xm/Form.h>
 #include <Xm/DialogS.h>
 #include <Xm/MwmUtil.h>
-#endif // IF_MOTIF
+#endif
 
 #include "Delay.h"
 #include "DeleteWCB.h"
@@ -62,6 +64,8 @@ char Tool_rcsid[] =
 // Events to note for window visibility
 const int STRUCTURE_MASK = StructureNotifyMask | VisibilityChangeMask;
 
+#if defined(IF_XM)
+
 void create_command_tool()
 {
     // It is preferable to realize the command tool as a DialogShell,
@@ -79,7 +83,6 @@ void create_command_tool()
     Widget tool_shell_parent = 
 	source_view_shell ? source_view_shell : command_shell;
 
-#ifdef IF_MOTIF
     bool use_transient_tool_shell = true;
     switch (app_data.decorate_tool)
     {
@@ -117,40 +120,22 @@ void create_command_tool()
 					   vendorShellWidgetClass,
 					   tool_shell_parent, args, arg));
     }
-#else // NOT IF_MOTIF
-    tool_shell = new Gtk::Window();
-    tool_shell->set_name(XMST("tool_shell"));
-#endif // IF_MOTIF
 
     AddDeleteWindowCallback(tool_shell, PTR_FUN(gdbCloseToolWindowCB));
 
-#ifdef IF_MOTIF
     arg = 0;
     tool_buttons_w = 
 	verify(XmCreateForm(tool_shell, XMST("tool_buttons"), args, arg));
-#else // NOT IF_MOTIF
-    tool_buttons_w = new Gtk::VBox();
-    tool_buttons_w->set_name(XMST("tool_buttons"));
-    tool_shell->add(*tool_buttons_w);
-    tool_buttons_w->show();
-#endif // IF_MOTIF
     set_buttons(tool_buttons_w, app_data.tool_buttons, false);
 
     Delay::register_shell(tool_shell);
-#ifdef IF_MOTIF
     XtAddEventHandler(tool_shell, STRUCTURE_MASK, False,
 		      StructureNotifyEH, XtPointer(0));
-#else // NOT IF_MOTIF
-#ifdef NAG_ME
-#warning No handler for tool shell geometry
-#endif
-#endif // IF_MOTIF
 
 #if XmVersion >= 1002
 #define FIXED_COMMAND_TOOL 1
 #endif
 
-#ifdef IF_MOTIF
 #if FIXED_COMMAND_TOOL
     // Some FVWM flavors have trouble in finding the `best' window size.
     // Determine `best' size for tool shell.
@@ -183,11 +168,44 @@ void create_command_tool()
 #endif
 
     XtSetValues(tool_shell, args, arg);
-#else // NOT IF_MOTIF
-#ifdef NAG_ME
-#warning Do not configure tool shell geometry
-#endif
-#endif // IF_MOTIF
 
     XtRealizeWidget(tool_shell);
 }
+
+#else
+
+void create_command_tool()
+{
+    // It is preferable to realize the command tool as a DialogShell,
+    // since this will cause it to stay on top of other DDD windows.
+    // Unfortunately, some window managers do not decorate transient
+    // windows such as DialogShells.  In this case, use a TopLevel
+    // shell instead and rely on the DDD auto-raise mechanisms defined
+    // in `windows.C'.
+    //
+    // Nobody ever honors all this work.  -AZ
+
+    if (app_data.tool_buttons == 0 || strlen(app_data.tool_buttons) == 0)
+	return;
+
+    GUI::Widget *tool_shell_parent = 
+	source_view_shell ? source_view_shell : command_shell;
+
+    tool_shell = new GUI::Window("tool_shell");
+
+    AddDeleteWindowCallback(tool_shell, sigc::ptr_fun(gdbCloseToolWindowCB));
+
+    tool_buttons_w = new GUI::VBox(*tool_shell, "tool_buttons");
+    tool_buttons_w->show();
+    set_buttons(tool_buttons_w, app_data.tool_buttons, false);
+
+    Delay::register_shell(tool_shell);
+
+#ifdef NAG_ME
+#warning We do not configure tool shell geometry
+#endif
+
+    // XtRealizeWidget(tool_shell);
+}
+
+#endif

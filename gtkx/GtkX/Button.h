@@ -1,4 +1,4 @@
-// -*- C++ -*-
+ // -*- C++ -*-
 
 // High-level GUI wrapper for Gtkmm.
 
@@ -31,12 +31,24 @@
 #ifndef GTKX_BUTTON_H
 #define GTKX_BUTTON_H
 
-#include <GtkX/Widget2s.h>
+#include <GtkX/Container.h>
 #include <gtkmm/button.h>
+
+// Template for a widget taking two string constructor arguments.
 
 namespace GtkX {
 
-    typedef Widget2s<Gtk::Button> Button;
+    class Button: public Widget, public Gtk::Button {
+    public:
+	Button(GtkX::Container &parent, const String &name="",
+	       const String &label="");
+	Button(Gtk::Container *parent, const String &name="",
+	       const String &label="");
+	~Button(void);
+	Gtk::Widget *internal(void);
+	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
+#include <GtkX/redirect.h>
+    };
 
 }
 
