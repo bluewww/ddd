@@ -1,0 +1,277 @@
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+                    "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd"
+[
+<!-- see http://www.sagehill.net/docbookxsl/MathML.html -->
+<!ENTITY % MATHML.prefixed "INCLUDE">
+<!ENTITY % MATHML.prefix "mml">
+<!ENTITY % equation.content "(alt?, (graphic+|mediaobject+|mml:math))">
+<!ENTITY % inlineequation.content 
+                "(alt?, (graphic+|inlinemediaobject+|mml:math))">
+<!ENTITY % mathml PUBLIC "-//W3C//DTD MathML 2.0//EN"
+        "http://www.w3.org/TR/MathML2/dtd/mathml2.dtd">
+%mathml;
+]>
+<book id="ddd-gtk">
+  <bookinfo>
+    <title>Porting the DDD debugger to GTK.</title>
+    <author>
+      <surname>Wainwright</surname>
+      <firstname>Peter</firstname>
+      <affiliation>
+	<shortaffil>HPA</shortaffil>
+	<orgname>Health Protection Agency</orgname>
+	<address>Chilton, Didcot, Oxfordshire</address>
+      </affiliation>
+    </author>
+  </bookinfo>
+  <preface>
+    <title>Introduction</title>
+    <para><application>DDD</application> is a powerful graphical
+debugger for Linux and other Unix-like systems.  It is in fact a
+graphical wrapper which can work with several underlying command-line
+debuggers, for example <application>GDB</application>. Actions invoked
+through the graphical user interface (GUI) are translated by
+<application>DDD</application> into corresponding textual commands
+which are sent to the underlying debugger.  The output of these
+commands is captured by <application>DDD</application> and presented
+in a graphical fashion.</para>
+    <para>The existing versions of <application>DDD</application> are
+based on the venerable Unix GUI toolkit,
+<application>X/Motif</application>.  Calls to the
+<application>X/Motif</application> libraries are scattered liberally
+throughout the source code. We wish to separate the GUI from the main
+program logic, so that development of <application>DDD</application>
+can proceed without requiring simultaneous updates to
+<varname>N</varname> separate platform-specific implementations.
+</para>
+    <para>In order to do this we will introduce a &ldquo;shim&rdquo;
+or &ldquo;wrapper&rdquo; which will connect
+<application>DDD</application> to the underlying GUI toolkit.  In
+order to implement <application>DDD</application> using another
+toolkit, the only necessary modification is the creation of a new
+wrapper.  Modifications to the <application>DDD</application> core
+logic will automatically affect all implementations.</para>
+    <para>Each wrapper will thus have two interfaces:</para>
+    <itemizedlist>
+      <listitem>
+	<para>The interface to <application>DDD</application>, or
+&ldquo;upper&rdquo; interface.</para>
+      </listitem>
+      <listitem>
+	<para>The interface to the underlying toolkit, or
+&ldquo;lower&rdquo; interface.</para>
+      </listitem>
+    </itemizedlist>
+    <para>The specification of the upper interface will be common to
+all wrappers.  It will have the following properties:</para>
+    <itemizedlist>
+      <listitem>
+	<para>It will be object-oriented.  Widgets will be C++
+objects, they will be created and destroyed by C++ constructors and
+destructors respectively.</para>
+      </listitem>
+      <listitem>
+	<para>Callbacks will be handled using the
+<application>libsigc++</application> typesafe signal framework.  Each
+widget class supports a number of &ldquo;signals&rdquo;&semi; a signal
+is usually triggered by an event in the underlying toolkit, for
+example, a mouse click on a button or menu item.  Callbacks will be
+handled by connecting a signal to a corresponding &ldquo;slot&rdquo;,
+for example a class method or ordinary function.</para>
+      </listitem>
+    </itemizedlist>
+    <para>The lower interface is the API of the underlying GUI
+toolkit, for example <application>Motif</application>,
+<application>gtkmm</application> or <application>Qt</application>.
+The bulk of the wrapper code will do two things:</para>
+    <itemizedlist>
+      <listitem>
+	<para>Intercept calls made by <application>DDD</application>
+to the upper interface and make corresponding calls to the underlying
+toolkit.</para>
+      </listitem>
+      <listitem>
+	<para>Trap the callbacks produced by the underlying toolkit
+and translate them to signal invocations at the upper
+interface.</para>
+      </listitem>
+    </itemizedlist>
+    <para>There is a considerable degree of freedom available in
+choosing the specification of the upper interface.  However, since the
+first new target is <application>gtkmm</application>, it seems
+reasonable that the interface should look much like that of
+<application>gtkmm</application>.  The classes, constructors, methods
+and signals have rather similar names and semantics. Where there are
+substantial differences, these are usually driven by the needs of the
+underlying toolkit. For example, gtk(mm) widgets can be created
+without reference to any &ldquo;parent&rdquo; widget &ndash; a
+separate call (<methodname>Container::add</methodname>) is made
+subsequently to set the parent.  By contrast,
+<application>Motif</application> (and <application>Qt</application>?)
+widgets require a parent widget as an argument to the constructor.
+Therefore, our common upper interface is forced require the
+&ldquo;parent&rdquo; argument.</para>
+    <para>In general, the design of the upper interface should be such
+that it is relatively straighforward to write an implementation using
+the most popular underlying toolkits including
+<application>Motif</application>, <application>gtkmm</application> and
+<application>Qt</application>.  The <application>Qt</application> port
+is presently only a theoretical possibility, but should be borne in
+mind as the interface evolves.</para>
+    <para>At present, two (incomplete) wrappers are provided in the
+<application>gddd</application> branch:</para>
+    <itemizedlist>
+      <listitem>
+	<para><application>GtkX</application>, in the subdirectory
+<filename>gtkx</filename>.</para>
+      </listitem>
+      <listitem>
+	<para><application>Xmmm</application>, in the subdirectory
+<filename>xmmm</filename>.</para>
+      </listitem>
+    </itemizedlist>
+    <para>Each of these wrappers provides a library
+(<filename>libGtkX</filename> or <filename>libXmmm</filename>
+respectively) which implements something like the upper interface
+described in the previous paragraphs.  These implementations are found
+in the C++ namespaces <varname>GtkX</varname> and
+<varname>Xmmm</varname> respectively.  There are (or should be!)
+corresponding widget classes in each namespace.  The source code is
+configured by running <filename>./configure</filename> with the option
+<option>--with-gtk</option> or <option>--with-xmmm</option>, thus
+setting the macro <varname>GUI</varname> to have the value
+<varname>GtkX</varname> or <varname>Xmmm</varname> in
+<filename>config.h</filename>.</para>
+    <para>However, if neither of these options is given, <emphasis>the
+original (Motif) code will be compiled, including direct calls to
+<filename>libXm</filename></emphasis>.  This is available as a
+fallback.  You will find the old code enclosed in a conditional,
+thus:</para>
+    <programlisting>#if defined(IF_XM)
+  &lt;old code&gt;
+#else
+  &lt;new code&gt;
+#endif</programlisting>
+    <para>The old code can be used as a guide when writing the
+abstract GUI calls.  Insofar as this is possible we want to implement
+all the features relevant to <application>DDD</application> through
+the new abstract interface.</para>
+    <section>
+      <title>Example</title>
+      <para>To create a button and assign a callback:</para>
+      <programlisting>void my_callback_function(void)&semi;
+GUI::Button *b = new GUI::Button(*parent, "name", "label")&semi;
+b->signal_clicked().connect(sigc::ptr_fun(my_callback_function))&semi;
+b->show()&semi;
+</programlisting>
+      <para>This looks remarkably like
+<application>gtkmm</application> (save for the additional
+&ldquo;parent&rdquo; argument in the constructor).  But if
+<varname>GUI</varname> expands to <varname>Xmmm</varname> it is
+implemented as Motif!</para>
+    </section>
+  </preface>
+  <chapter id="gui-interface">
+    <title>Abstract GUI interface</title>
+    <para>Here follows a description of the major classes and methods
+within the parallel namespaces <varname>GtkX</varname> and
+<varname>Xmmm</varname>.  Either namespace will be referred to as the
+<varname>GUI</varname> namespace &ndash; The macro
+<varname>GUI</varname> may point to either, depending on which widget
+set was chosen when <filename>./configure</filename> was run.</para>
+    <para>The classes fall into three categories:</para>
+    <itemizedlist>
+      <listitem>
+	<para>Non-widget classes (utililty classes).</para>
+      </listitem>
+      <listitem>
+	<para>Abstract widget classes (contain pure virtual functions,
+cannot be instantiated).</para>
+      </listitem>
+      <listitem>
+	<para>Concrete widget classes &ndash; these generally
+correspond closely to the instantiable classes of the underlying
+widget set.</para>
+      </listitem>
+    </itemizedlist>
+    <para>Each of these categories will be discussed in a subsequent
+section.</para>
+    <section id="utility-classes">
+      <title>Utility classes</title>
+    </section>
+    <section id="abstract-widget-classes">
+      <title>Abstract widget classes</title>
+      <section id="widget">
+	<title><classname>GUI::Widget</classname></title>
+	<para><classname>GUI::Widget</classname> is the parent of all
+widget classes.  It has the following methods:</para>
+	<funcsynopsis>
+	  <funcprototype>
+	    <funcdef>GUI::Container *<function>get_parent</function></funcdef>
+	    <void/>
+	  </funcprototype>
+	  <funcprototype>
+	    <funcdef>GUI::RefPtr&lt;GUI::Display&gt; <function>get_display</function></funcdef>
+	    <void/>
+	  </funcprototype>
+	  <funcprototype>
+	    <funcdef>void <function>show</function></funcdef>
+	    <void/>
+	  </funcprototype>
+	  <funcprototype>
+	    <funcdef>void <function>hide</function></funcdef>
+	    <void/>
+	  </funcprototype>
+	  <funcprototype>
+	    <funcdef>bool <function>is_visible</function></funcdef>
+	    <void/>
+	  </funcprototype>
+	  <funcprototype>
+	    <funcdef>bool <function>is_realized</function></funcdef>
+	    <void/>
+	  </funcprototype>
+	  <funcprototype>
+	    <funcdef>GUI::String <function>get_name</function></funcdef>
+	    <void/>
+	  </funcprototype>
+	  <funcprototype>
+	    <funcdef>void <function>set_name</function></funcdef>
+	    <paramdef>const GUI::String &amp;<parameter>name</parameter></paramdef>
+	  </funcprototype>
+	  <funcprototype>
+	    <funcdef>void <function>set_sensitive</function></funcdef>
+	    <paramdef>bool <parameter>on_off</parameter></paramdef>
+	  </funcprototype>
+	  <funcprototype>
+	    <funcdef>void <function>add_destroy_notify_callback</function></funcdef>
+	    <paramdef>void *<parameter>data</parameter></paramdef>
+	    <paramdef>void *(*<parameter>f</parameter>)(void *)</paramdef>
+	  </funcprototype>
+	  <funcprototype>
+	    <funcdef>void <function>remove_destroy_notify_callback</function></funcdef>
+	    <paramdef>void *<parameter>data</parameter></paramdef>
+	  </funcprototype>
+	  <funcprototype>
+	    <funcdef>bool <function>translate_coordinates</function></funcdef>
+	    <paramdef>GUI::Widget &amp;<parameter>dest_w</parameter></paramdef>
+	    <paramdef>int <parameter>src_x</parameter></paramdef>
+	    <paramdef>int <parameter>src_y</parameter></paramdef>
+	    <paramdef>int &amp;<parameter>dest_x</parameter></paramdef>
+	    <paramdef>int &amp;<parameter>dest_y</parameter></paramdef>
+	  </funcprototype>
+	</funcsynopsis>
+	<para>These methods correspond one-to-one with methods in the
+<application>gtkmm</application> widget set.</para>
+	<para>For the <application>Motif</application> implementation,
+note that <methodname>show</methodname>/<methodname>hide</methodname>
+correspond to <function>XtManageChild</function> and
+<function>XtUnmanageChild</function>.
+<methodname>add_destroy_notify_callback</methodname> and
+<methodname>remove_destroy_notify_callback</methodname> are
+implemented using the <application>Xt</application> callback mechanism
+and the <varname>XtNdestroyCallback</varname> callback.</para>
+      </section>
+    </section>
+  </chapter>
+  </book>
