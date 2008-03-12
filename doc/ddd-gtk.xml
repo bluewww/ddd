@@ -1,17 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
-                    "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd"
-[
-<!-- see http://www.sagehill.net/docbookxsl/MathML.html -->
-<!ENTITY % MATHML.prefixed "INCLUDE">
-<!ENTITY % MATHML.prefix "mml">
-<!ENTITY % equation.content "(alt?, (graphic+|mediaobject+|mml:math))">
-<!ENTITY % inlineequation.content 
-                "(alt?, (graphic+|inlinemediaobject+|mml:math))">
-<!ENTITY % mathml PUBLIC "-//W3C//DTD MathML 2.0//EN"
-        "http://www.w3.org/TR/MathML2/dtd/mathml2.dtd">
-%mathml;
-]>
+                    "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
 <book id="ddd-gtk">
   <bookinfo>
     <title>Porting the DDD debugger to GTK.</title>
