@@ -2223,13 +2223,9 @@ static MMDesc desc[] =
 Widget create_flat_button(Widget parent, const string& name)
 {
     desc[0].name = name.chars();
-    MMaddItems(parent,
-#if !defined(IF_XM)
-	       NULL,
-#endif
-	       desc);
+    MMaddItems(parent, desc);
     MMaddCallbacks(desc);
-    return (BUTTON_P)desc[0].widget;
+    return desc[0].widget;
 }
 
 #endif
@@ -2240,7 +2236,7 @@ Widget create_flat_button(Widget parent, const string& name)
 GUI::Button *create_flat_button1(GUI::Container *parent, const string& name)
 {
     desc[0].name = name.chars();
-    MMaddItems(parent, NULL, desc);
+    MMaddItems(parent, desc);
     MMaddCallbacks(desc);
     return dynamic_cast<GtkX::Button *>(desc[0].xwidget);
 }

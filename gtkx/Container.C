@@ -48,3 +48,11 @@ Container::get_children(void)
     return ChildList(cont->get_children());
 }
 
+void
+Container::remove(Widget &w)
+{
+    // We cannot reassign w to a new parent, therefore
+    // it must be finished with.
+    delete &w;
+}
+

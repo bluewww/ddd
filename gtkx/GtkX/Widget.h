@@ -69,16 +69,17 @@ namespace GtkX {
     class Widget {
     protected:
 	sigc::signal<bool, GtkX::EventButton *> signal_button_press_event_;
-	static bool button_press_event_callback(GdkEventButton *ev);
+	bool button_press_event_callback(GdkEventButton *ev);
 	sigc::signal<bool, GtkX::EventButton *> signal_button_release_event_;
-	static bool button_release_event_callback(GdkEventButton *ev);
+	bool button_release_event_callback(GdkEventButton *ev);
 	sigc::signal<void> signal_map_;
-	static void signal_map_callback(void);
+	void signal_map_callback(void);
 	sigc::signal<void> signal_unmap_;
-	static void signal_unmap_callback(void);
+	void signal_unmap_callback(void);
     public:
 	Widget(void);
 	~Widget(void);
+	void init_signals(void);
 	void postinit(void);
 	// *Instantiable* subclasses will have an associated GTK(mm) widget:
 	virtual Gtk::Widget *internal(void) = 0;

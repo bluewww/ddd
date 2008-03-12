@@ -203,6 +203,16 @@ _Delay::_Delay(Widget w):
 #endif // IF_MOTIF
 }
 
+#if !defined(IF_XM)
+
+_Delay::_Delay(GUI::Widget *w)
+{
+    static int errcnt = 0;
+    if (!errcnt++) std::cerr << "_Delay::_Delay: not implemented\n";
+}
+
+#endif
+
 _Delay::~_Delay()
 {
   // TODO: race condition here
@@ -279,6 +289,17 @@ Delay::Delay(Widget w):
 	}
     }
 }
+
+#if !defined(IF_XM)
+
+Delay::Delay(GUI::Widget *w):
+    _Delay::_Delay(w)
+{
+    static int errcnt = 0;
+    if (!errcnt++) std::cerr << "Delay::Delay: not implemented\n";
+}
+
+#endif
 
 // Make sure the shell is unregistered when destroyed
 void Delay::DestroyCB(CB_ARG_LIST_1(widget))

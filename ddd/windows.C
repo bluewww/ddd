@@ -462,9 +462,10 @@ static void FollowToolShellCB(XtPointer = 0, XtIntervalId *id = 0)
 #endif
 #endif // IF_MOTIF
 
+#if defined(IF_XM)
+
 bool started_iconified(Widget w)
 {
-#ifdef IF_MOTIF
     Widget toplevel = w;
     while (XtParent(toplevel))
 	toplevel = XtParent(toplevel);
@@ -475,13 +476,19 @@ bool started_iconified(Widget w)
     Boolean iconic;
     XtVaGetValues(toplevel, XmNiconic, &iconic, XtPointer(0));
     return iconic;
-#else // NOT IF_MOTIF
+}
+
+#else
+
+bool started_iconified(GUI::Widget *w)
+{
 #ifdef NAG_ME
 #warning started_iconified not implemented
 #endif
     return false;
-#endif // IF_MOTIF
 }
+
+#endif
 
 #if defined(IF_XM)
 
@@ -665,9 +672,10 @@ void iconify_shell(Widget w)
 #endif // IF_MOTIF
 }
 
+#if defined(IF_XM)
+
 void uniconify_shell(Widget w)
 {
-#ifdef IF_MOTIF
     if (w == 0)
 	return;
 
@@ -675,10 +683,16 @@ void uniconify_shell(Widget w)
     {
 	popup_shell(w);
     }
-#else // NOT IF_MOTIF
-    std::cerr << "uniconify_shell not supported.\n";
-#endif // IF_MOTIF
 }
+
+#else
+
+void uniconify_shell(GUI::Widget *w)
+{
+    std::cerr << "uniconify_shell not supported.\n";
+}
+
+#endif
 
 static void popup_tty(Widget shell)
 {
@@ -1957,9 +1971,10 @@ static void paned_changed(Widget /* paned */)
 }
 #endif // IF_MOTIF
 
+#if defined(IF_XM)
+
 void manage_paned_child(Widget w)
 {
-#ifdef IF_MOTIF
     Widget paned = XtParent(w);
 
     if (paned == 0 || !XmIsPanedWindow(paned) || XtIsManaged(w))
@@ -2087,12 +2102,18 @@ void manage_paned_child(Widget w)
     }
 
     paned_changed(w);
-#else // NOT IF_MOTIF
+}
+
+#else
+
+void manage_paned_child(GUI::Widget *w)
+{
     static int errcnt = 0;
     if (complain && !errcnt++ == 0) std::cerr << "manage_paned_child() not implemented\n";
-    GtkMultiPaned::show_child(w);
-#endif // IF_MOTIF
+    // GtkMultiPaned::show_child(w);
 }
+
+#endif
 
 #ifdef IF_MOTIF
 // Return the number of resizable children of PANED
@@ -2128,10 +2149,11 @@ static int resizable_children(Widget paned)
 }
 #endif // IF_MOTIF
 
+#if defined(IF_XM)
+
 // Unmanage W, but be sure the command window doesn't grow.
 void unmanage_paned_child(Widget w)
 {
-#ifdef IF_MOTIF
     Widget paned = XtParent(w);
     if (paned == 0 || !XmIsPanedWindow(paned) || !XtIsManaged(w))
     {
@@ -2174,17 +2196,27 @@ void unmanage_paned_child(Widget w)
     }
 
     paned_changed(w);
-#else // NOT IF_MOTIF
-    GtkMultiPaned::hide_child(w);
-#endif // IF_MOTIF
 }
 
+#else
+
+// Unmanage W, but be sure the command window doesn't grow.
+void unmanage_paned_child(GUI::Widget *w)
+{
+    static int errcnt = 0;
+    if (complain && !errcnt++ == 0) std::cerr << "unmanage_paned_child() not implemented\n";
+    // GtkMultiPaned::hide_child(w);
+}
+
+#endif
+
 // Set the width of PANED to the maximum width of its children
+
+#if defined(IF_XM)
 
 // Fetch the maximum width.  Do this for each paned window.
 void get_paned_window_width(Widget paned, Dimension& max_width)
 {
-#ifdef IF_MOTIF
     if (paned == 0 || !XtIsSubclass(paned, xmPanedWindowWidgetClass))
 	return;
 
@@ -2214,15 +2246,24 @@ void get_paned_window_width(Widget paned, Dimension& max_width)
 
 	max_width = max(size.width, max_width);
     }
-#else // NOT IF_MOTIF
-    max_width = 0;
-#endif // IF_MOTIF
 }
+
+#else
+
+// Fetch the maximum width.  Do this for each paned window.
+void get_paned_window_width(GUI::MultiPaned *paned, int& max_width)
+{
+    std::cerr << "get_paned_window_width: stub\n";
+    max_width = 0;
+}
+
+#endif
+
+#if defined(IF_XM)
 
 // Set the found value.
 void set_paned_window_size(Widget paned, Dimension max_width)
 {
-#ifdef IF_MOTIF
     if (paned == 0 || !XtIsSubclass(paned, xmPanedWindowWidgetClass))
 	return;
 
@@ -2283,17 +2324,27 @@ void set_paned_window_size(Widget paned, Dimension max_width)
 		  XmNwidth, max_width + 2 * margin_width,
 		  XmNheight, total_height + 2 * margin_height,
 		  XtPointer(0));
-#endif // IF_MOTIF
 }
+
+#else
+
+// Set the found value.
+void set_paned_window_size(GUI::Container *paned, int max_width)
+{
+    std::cerr << "set_paned_window_size: stub\n";
+}
+
+#endif
 
 //-----------------------------------------------------------------------------
 // Main Window stuff
 //-----------------------------------------------------------------------------
 
+#if defined(IF_XM)
+
 // Set main window size
 void set_main_window_size(Widget main)
 {
-#ifdef IF_MOTIF
     if (main == 0 || !XtIsSubclass(main, xmMainWindowWidgetClass))
 	return;
 
@@ -2345,17 +2396,27 @@ void set_main_window_size(Widget main)
 		  XmNwidth, max_width, 
 		  XmNheight, total_height, 
 		  XtPointer(0));
-#endif // IF_MOTIF
 }
+
+#else
+
+// Set main window size
+void set_main_window_size(GUI::Container *main)
+{
+    std::cerr << "set_main_window_size::stub\n";
+}
+
+#endif
 
 //-----------------------------------------------------------------------------
 // Scrolled Window stuff
 //-----------------------------------------------------------------------------
 
+#if defined(IF_XM)
+
 // Promote child size to scrolled window
-void set_scrolled_window_size(SCROLLEDWINDOW_P child, Widget target)
+void set_scrolled_window_size(Widget child, Widget target)
 {
-#ifdef IF_MOTIF
     Widget scroll = XtParent(child);
 
     assert(XmIsScrolledWindow(scroll));
@@ -2414,12 +2475,19 @@ void set_scrolled_window_size(SCROLLEDWINDOW_P child, Widget target)
 	margin_height * 2;
 
     XtVaSetValues(target, XmNwidth,  width, XmNheight, height, XtPointer(0));
-#else // NOT IF_MOTIF
+}
+
+#else
+
+// Promote child size to scrolled window
+void set_scrolled_window_size(GUI::ScrolledText *child, GUI::Widget *target)
+{
 #ifdef NAG_ME
 #warning set_scrolled_window_size not implemented.
 #endif
-#endif // IF_MOTIF
 }
+
+#endif
 
 #ifndef IF_MOTIF
 

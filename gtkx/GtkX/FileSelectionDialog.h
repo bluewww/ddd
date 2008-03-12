@@ -44,6 +44,7 @@ namespace GtkX {
 	FileSelectionDialog(GtkX::Shell &parent, const String &name,
 			    FileAction action);
 	Gtk::Widget *internal(void);
+	std::string get_selected(void);
 	~FileSelectionDialog(void);
 #include <GtkX/redirect.h>
     };

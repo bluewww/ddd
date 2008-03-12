@@ -74,7 +74,10 @@ char Command_rcsid[] =
 #endif // IF_MOTIF
 
 // Origin of last command
-static Widget gdb_last_origin;
+static Widget gdb_last_origin = 0;
+#if !defined(IF_XM)
+static GUI::Widget *gdb_last_origin1 = 0;
+#endif
 
 // True if a user command was processed
 static bool had_user_command = false;
@@ -925,8 +928,16 @@ WINDOW_P find_shell(Widget w)
 
 GUI::WidgetPtr<GUI::Shell> find_shell1(GUI::Widget *w)
 {
-    std::cerr << "WARNING: find_shell1 is a stub.";
-    return GUI::WidgetPtr<GUI::Shell>(0);
+    std::cerr << "WARNING: find_shell1 is a stub.\n" << std::flush;
+    if (w == 0)
+	w = gdb_last_origin1;
+    if (w == 0)
+	return command_shell;
+
+    GUI::Shell *parent = findTopLevelShellParent1(w);
+    if (parent == 0 || !parent->is_realized() || !parent->is_visible())
+	return command_shell;
+    return parent;
 }
 
 #endif

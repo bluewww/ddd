@@ -65,6 +65,9 @@ void add_to_arguments(const string& line);
 void update_arguments();
 
 bool add_running_arguments(string& cmd, Widget origin = 0);
+#if !defined(IF_XM)
+bool add_running_arguments1(string& cmd, GUI::Widget *origin = 0);
+#endif
 
 #endif // _DDD_args_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

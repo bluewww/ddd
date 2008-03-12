@@ -336,9 +336,15 @@ void create_session_dir(const string& session)
 // Session locks
 // ---------------------------------------------------------------------------
 
-bool lock_session_dir(DISPLAY_P display,
+#if defined(IF_XM)
+bool lock_session_dir(Display *display,
 		      const string& session, 
 		      LockInfo& info)
+#else
+bool lock_session_dir(GUI::RefPtr<GUI::Display> display,
+		      const string& session, 
+		      LockInfo& info)
+#endif
 {
     info.pid = 0;
     string lock_file = session_lock_file(session);
@@ -387,7 +393,7 @@ bool lock_session_dir(DISPLAY_P display,
 	os << DDD_NAME "-" DDD_VERSION
 	   << " " << fullhostname()
 	   << " " << getpid()
-	   << " " << XDisplayString(display)
+	   << " " << display->get_default_screen()->make_display_name()
 	   << " " << getuid()
 	   << " " << username
 	   << "\n";

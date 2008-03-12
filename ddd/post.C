@@ -112,7 +112,7 @@ void YnCB(CB_ALIST_12(Widget dialog, XtP(const char *) client_data))
 }
 
 // Issue CLIENT_DATA as command and unmanage YN_DIALOG.
-void YnCB(GUI::Widget *dialog, const char *client_data)
+void YnCB1(GUI::Widget *dialog, const char *client_data)
 {
     gdbCommandCB1(dialog, (const char *)client_data);
 
@@ -207,10 +207,14 @@ void unpost_gdb_yn()
 // GDB is busy
 //-----------------------------------------------------------------------------
 
-static DIALOG_P busy_dialog = 0;
-#if !defined(IF_MOTIF)
-static LABEL_P *busy_dialog_label = 0;
+#if defined(IF_XM)
+static Widget busy_dialog = 0;
+#else
+static GUI::Dialog *busy_dialog = 0;
+static GUI::Label *busy_dialog_label = 0;
 #endif
+
+#if defined(IF_XM)
 
 Widget post_gdb_busy(Widget w)
 {
@@ -219,30 +223,42 @@ Widget post_gdb_busy(Widget w)
 
     if (busy_dialog == 0)
     {
-#if defined(IF_MOTIF)
 	busy_dialog = 
 	    verify(XmCreateWorkingDialog(find_shell(w), 
 					 XMST("busy_dialog"), 
 					 ArgList(0), 0));
-#else
-	busy_dialog = new Gtk::Dialog(XMST("busy_dialog"), *find_shell(w));
-#endif
 	Delay::register_shell(busy_dialog);
-#if defined(IF_MOTIF)
 	XtUnmanageChild(XmMessageBoxGetChild(busy_dialog, 
 					     XmDIALOG_CANCEL_BUTTON));
 	XtAddCallback(busy_dialog, XmNhelpCallback, 
 		      ImmediateHelpCB, XtPointer(0));
-#else
-	Gtk::Button *button;
-	button = busy_dialog->add_button(XMST("OK"), 0);
-	button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB2), busy_dialog));
-#endif
     }
 
     manage_and_raise(busy_dialog);
     return busy_dialog;
 }
+
+#else
+
+GUI::Dialog *post_gdb_busy(GUI::Widget *w)
+{
+    if (ddd_is_exiting)
+	return 0;
+
+    if (busy_dialog == 0)
+    {
+	busy_dialog = new GUI::Dialog(*find_shell1(w), "busy_dialog");
+	Delay::register_shell(busy_dialog);
+	GUI::Button *button;
+	button = busy_dialog->add_button("OK");
+	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB2), busy_dialog));
+    }
+
+    manage_and_raise(busy_dialog);
+    return busy_dialog;
+}
+
+#endif
 
 void unpost_gdb_busy()
 {
@@ -254,6 +270,8 @@ void unpost_gdb_busy()
 //-----------------------------------------------------------------------------
 // GDB terminated abnormally
 //-----------------------------------------------------------------------------
+
+#if defined(IF_XM)
 
 Widget post_gdb_died(string reason, int state, Widget w)
 {
@@ -279,17 +297,11 @@ Widget post_gdb_died(string reason, int state, Widget w)
 	return 0;
     }
 
-#if defined(IF_MOTIF)
     Arg args[10];
     int arg;
-#endif
 
-    DIALOG_P dialog = 0;
-    WINDOW_P shell = find_shell(w);
-#if !defined(IF_MOTIF)
-    Gtk::Button *button;
-    Gtk::Label *label;
-#endif
+    Widget dialog = 0;
+    Widget shell = find_shell(w);
     if (gdb_initialized)
     {
 	const _XtString name;
@@ -326,7 +338,6 @@ Widget post_gdb_died(string reason, int state, Widget w)
 	    name = "terminated_dialog";
 	}
 
-#if defined(IF_MOTIF)
 	arg = 0;
 	XtSetArg(args[arg], XmNmessageString, msg.xmstring()); arg++;
 	if (exited)
@@ -340,24 +351,10 @@ Widget post_gdb_died(string reason, int state, Widget w)
 		      RestartDebuggerCB, XtPointer(0));
 	XtAddCallback(dialog, XmNcancelCallback, 
 		      DDDExitCB, XtPointer(exit_state));
-#else
-	dialog = new Gtk::Dialog(XMST(name), *shell);
-#ifdef NAG_ME
-#warning XmCreateWarningDialog vs XmCreateErrorDialog
-#endif
-	label = new Gtk::Label(msg.xmstring());
-	label->show();
-	dialog->get_vbox()->pack_start(*label, Gtk::PACK_SHRINK);
-	button = dialog->add_button(XMST("OK"), 0);
-	button->signal_clicked().connect(PTR_FUN(RestartDebuggerCB));
-	button = dialog->add_button(XMST("Cancel"), 0);
-	button->signal_clicked().connect(sigc::bind(PTR_FUN(DDDExitCB), dialog, exit_state));
-#endif
     }
     else
     {
 	MString msg = rm(gdb->title() + " could not be started.");
-#if defined(IF_MOTIF)
 	arg = 0;
 	XtSetArg(args[arg], XmNmessageString, msg.xmstring()); arg++;
 	dialog = verify(XmCreateErrorDialog(shell, 
@@ -366,20 +363,107 @@ Widget post_gdb_died(string reason, int state, Widget w)
 	XtUnmanageChild(XmMessageBoxGetChild(dialog, XmDIALOG_CANCEL_BUTTON));
 	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, XtPointer(0));
 	XtAddCallback(dialog, XmNokCallback, DDDExitCB, XtPointer(exit_state));
-#else
-	dialog = new Gtk::Dialog(XMST("no_debugger_dialog"), *shell);
-	label = new Gtk::Label(msg.xmstring());
-	label->show();
-	dialog->get_vbox()->pack_start(*label, Gtk::PACK_SHRINK);
-	button = dialog->add_button(XMST("OK"), 0);
-	button->signal_clicked().connect(sigc::bind(PTR_FUN(ExitCB), exit_state));
-#endif
     }
 
     Delay::register_shell(dialog);
     manage_and_raise(dialog);
     return dialog;
 }
+
+#else
+
+GUI::Dialog *post_gdb_died(string reason, int state, GUI::Widget *w)
+{
+    strip_trailing_space(reason);
+
+    int exit_state = EXIT_FAILURE;
+    if (state >= 0 && WIFEXITED(((state))))
+	exit_state = WEXITSTATUS(((state)));
+
+    bool exited = (exit_state == EXIT_SUCCESS || reason.contains("Exit 0"));
+
+    if (gdb_initialized && gdb_is_exiting && exited)
+    {
+	// Exit was expected
+	_DDDExitCB(CB_ARGS_2(EXIT_SUCCESS));
+	return 0;
+    }
+
+    if (ddd_is_exiting)
+    {
+	// GDB would not die
+	std::cerr << reason << "\n";
+	return 0;
+    }
+
+
+    GUI::Dialog *dialog = 0;
+    GUI::Shell *shell = find_shell1(w);
+    GUI::Button *button;
+    GUI::Label *label;
+    if (gdb_initialized)
+    {
+	const _XtString name;
+	MString msg;
+
+	if (gdb->has_exec_files() && exited)
+	{
+	    // In GDB, DBX, and XDB, a sudden exit is probably an error.
+	    msg = rm(gdb->title() + " suddenly exited.");
+	    name = "exited_dialog";
+	}
+	else if (exited)
+	{
+	    // In Perl, PYDB, and JDB, the debugger dies with the program.
+	    _gdb_out("\n" + reason + "\n");
+
+	    msg = rm("The program terminated (" + reason + ")");
+	    name = "done_dialog";
+	}
+	else if (state < 0)
+	{
+	    // In JDB, the debugger may hang after raising an exception
+	    _gdb_out("\n" + reason + "\n");
+
+	    msg = rm(gdb->title() + " raised an internal exception");
+	    name = "exception_dialog";
+	}
+	else
+	{
+	    _gdb_out("\n" + reason + "\n");
+
+	    // Abnormal exits are always errors.
+	    msg = rm(gdb->title() + " terminated abnormally (" + reason + ")");
+	    name = "terminated_dialog";
+	}
+
+	dialog = new GUI::Dialog(*shell, name);
+#ifdef NAG_ME
+#warning XmCreateWarningDialog vs XmCreateErrorDialog
+#endif
+	label = new GUI::Label(*dialog, msg.xmstring());
+	label->show();
+	button = dialog->add_button("OK");
+	button->signal_clicked().connect(sigc::ptr_fun(RestartDebuggerCB));
+	button = dialog->add_button("Cancel");
+	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(DDDExitCB), dialog, exit_state));
+    }
+    else
+    {
+	MString msg = rm(gdb->title() + " could not be started.");
+	dialog = new GUI::Dialog(*shell, "no_debugger_dialog");
+	label = new GUI::Label(*dialog, msg.xmstring());
+	label->show();
+	button = dialog->add_button("OK");
+	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(ExitCB), exit_state));
+    }
+
+    Delay::register_shell(dialog);
+    manage_and_raise(dialog);
+    return dialog;
+}
+
+#endif
 
 
 //-----------------------------------------------------------------------------
@@ -412,6 +496,8 @@ static void GDBOutCB(PostInfo *client_data)
     delete info;
 }
 
+#if defined(IF_XM)
+
 Widget post_gdb_message(string text, bool prompt, Widget w)
 {
     strip_trailing_space(text);
@@ -434,71 +520,100 @@ Widget post_gdb_message(string text, bool prompt, Widget w)
 	// private input state (private_gdb_input or tty_gdb_input
 	// might be set)
 	PostInfo *info = new PostInfo(text, prompt);
-#if defined(IF_MOTIF)
 	XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0,
 			GDBOutCB, XtPointer(info));
-#else
-	Glib::signal_idle().connect(sigc::bind_return(sigc::bind(PTR_FUN(GDBOutCB), info), false));
-#endif
 	return 0;
     }
 
     MString mtext = rm(text);
-#if defined(IF_MOTIF)
     Arg args[10];
     int arg = 0;
 
     XtSetArg(args[arg], XmNmessageString, mtext.xmstring()); arg++;
-#endif
 
-    static DIALOG_P gdb_message_dialog = 0;
-#if !defined(IF_MOTIF)
-    static LABEL_P gdb_message_dialog_label = 0;
-#endif
+    static Widget gdb_message_dialog = 0;
     if (gdb_message_dialog == 0)
     {
-#if defined(IF_MOTIF)
 	gdb_message_dialog = 
 	    verify(XmCreateWarningDialog(find_shell(w),
 					 XMST("gdb_message_dialog"),
 					 args, arg));
-#else
-	gdb_message_dialog = new Gtk::Dialog(XMST("gdb_message_dialog"), *find_shell(w));
-	gdb_message_dialog_label = new Gtk::Label(mtext.xmstring());
-	gdb_message_dialog_label->show();
-	gdb_message_dialog->get_vbox()->pack_start(*gdb_message_dialog_label, Gtk::PACK_SHRINK);
-#endif
 	Delay::register_shell(gdb_message_dialog);
-#if defined(IF_MOTIF)
 	XtUnmanageChild(XmMessageBoxGetChild(gdb_message_dialog, 
 					     XmDIALOG_CANCEL_BUTTON));
 	XtAddCallback(gdb_message_dialog, XmNhelpCallback, 
 		      ImmediateHelpCB, XtPointer(0));
-#else
-	Gtk::Button *button;
-	button = gdb_message_dialog->add_button(XMST("OK"), 0);
-	button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB2), gdb_message_dialog));
-#endif
     }
     else
     {
-#if defined(IF_MOTIF)
 	XtSetValues(gdb_message_dialog, args, arg);
-#else
-	gdb_message_dialog_label->set_text(mtext.xmstring());
-#endif
     }
 
     manage_and_raise(gdb_message_dialog);
     return gdb_message_dialog;
 }
 
+#else
+
+GUI::Dialog *post_gdb_message(string text, bool prompt, GUI::Widget *w)
+{
+    strip_trailing_space(text);
+    if (text == NO_GDB_ANSWER || text.empty())
+	return 0;
+
+    dddlog << "!  " << text << '\n';
+    dddlog.flush();
+
+    if (ddd_is_exiting)
+    {
+	if (!text.empty())
+	    std::cerr << ddd_NAME << ": " << text << "\n";
+	return 0;
+    }
+
+    if (gdb->isReadyWithPrompt())
+    {
+	// We don't output this immediately, because we might be in a
+	// private input state (private_gdb_input or tty_gdb_input
+	// might be set)
+	PostInfo *info = new PostInfo(text, prompt);
+	GUI::signal_idle().connect(sigc::bind_return(sigc::bind(PTR_FUN(GDBOutCB), info), false));
+	return 0;
+    }
+
+    MString mtext = rm(text);
+
+    static GUI::Dialog *gdb_message_dialog = 0;
+    static GUI::Label *gdb_message_dialog_label = 0;
+    if (gdb_message_dialog == 0)
+    {
+	gdb_message_dialog = new GUI::Dialog(*find_shell1(w), "gdb_message_dialog");
+	gdb_message_dialog_label = new GUI::Label(*gdb_message_dialog, mtext.xmstring());
+	gdb_message_dialog_label->show();
+	Delay::register_shell(gdb_message_dialog);
+	GUI::Button *button;
+	button = gdb_message_dialog->add_button("OK");
+	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB2), gdb_message_dialog));
+    }
+    else
+    {
+	gdb_message_dialog_label->set_text(mtext.xmstring());
+    }
+
+    manage_and_raise(gdb_message_dialog);
+    return gdb_message_dialog;
+}
+
+#endif
+
 
 //-----------------------------------------------------------------------------
 // DDD errors
 //-----------------------------------------------------------------------------
 
-DIALOG_P post_error(string text, const _XtString name, Widget w)
+#if defined(IF_XM)
+
+Widget post_error(string text, const _XtString name, Widget w)
 {
     strip_trailing_space(text);
 
@@ -524,7 +639,6 @@ DIALOG_P post_error(string text, const _XtString name, Widget w)
 
     MString mtext = rm(text);
 
-#if defined(IF_MOTIF)
     Arg args[10];
     int arg = 0;
 
@@ -532,33 +646,64 @@ DIALOG_P post_error(string text, const _XtString name, Widget w)
 
     DIALOG_P ddd_error = 
 	verify(XmCreateErrorDialog(find_shell(w), XMST(name), args, arg));
-#else
-    DIALOG_P ddd_error = 
-	new Gtk::Dialog(XMST(name), *find_shell(w));
-    LABEL_P ddd_error_label = new Gtk::Label(mtext.xmstring());
-    ddd_error_label->show();
-    ddd_error->get_vbox()->pack_start(*ddd_error_label, Gtk::PACK_SHRINK);
-#endif
     Delay::register_shell(ddd_error);
-#if defined(IF_MOTIF)
     XtUnmanageChild(XmMessageBoxGetChild(ddd_error, XmDIALOG_CANCEL_BUTTON));
     XtAddCallback(ddd_error, XmNhelpCallback, ImmediateHelpCB, XtPointer(0));
-#else
-    Gtk::Button *button;
-    button = ddd_error->add_button(XMST("OK"), 0);
-    button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB2), ddd_error));
-#endif
 
     manage_and_raise(ddd_error);
     return ddd_error;
 }
 
+#else
+
+GUI::Dialog *post_error(string text, const _XtString name, GUI::Widget *w)
+{
+    strip_trailing_space(text);
+
+    dddlog << "!  " << text << '\n';
+    dddlog.flush();
+
+    if (ddd_is_exiting)
+    {
+	std::cerr << ddd_NAME << ": " << text << "\n";
+	return 0;
+    }
+
+#if 0
+    if (status_w && !text.contains('\n'))
+    {
+	set_status(text);
+	return 0;
+    }
+#endif
+
+    if (name == 0)
+	name = "ddd_error";
+
+    MString mtext = rm(text);
+
+    GUI::Dialog *ddd_error = 
+	new GUI::Dialog(*find_shell1(w), name);
+    GUI::Label *ddd_error_label = new GUI::Label(*ddd_error, mtext.xmstring());
+    ddd_error_label->show();
+    Delay::register_shell(ddd_error);
+    GUI::Button *button;
+    button = ddd_error->add_button("OK");
+    button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB2), ddd_error));
+
+    manage_and_raise(ddd_error);
+    return ddd_error;
+}
+
+#endif
 
 //-----------------------------------------------------------------------------
 // DDD warnings
 //-----------------------------------------------------------------------------
 
-DIALOG_P post_warning(string text, const _XtString name, Widget w)
+#if defined(IF_XM)
+
+Widget post_warning(string text, const _XtString name, Widget w)
 {
     strip_trailing_space(text);
 
@@ -583,36 +728,64 @@ DIALOG_P post_warning(string text, const _XtString name, Widget w)
 	name = "ddd_warning";
 
     MString mtext = rm(text);
-#if defined(IF_MOTIF)
     Arg args[10];
     int arg = 0;
 
     XtSetArg(args[arg], XmNmessageString, mtext.xmstring()); arg++;
-#endif
 
-#if defined(IF_MOTIF)
-    DIALOG_P ddd_warning = 
+    Widget ddd_warning = 
 	verify(XmCreateWarningDialog(find_shell(w), XMST(name), args, arg));
-#else
-#ifdef NAG_ME
-#warning Should these dialogs be destroyed on close?
-#endif
-    DIALOG_P ddd_warning = 
-	new Gtk::Dialog(XMST(name), *find_shell(w));
-    LABEL_P ddd_warning_label = new Gtk::Label(mtext.xmstring());
-    ddd_warning_label->show();
-    ddd_warning->get_vbox()->pack_start(*ddd_warning_label, Gtk::PACK_SHRINK);
-#endif
     Delay::register_shell(ddd_warning);
-#if defined(IF_MOTIF)
     XtUnmanageChild(XmMessageBoxGetChild(ddd_warning, XmDIALOG_CANCEL_BUTTON));
     XtAddCallback(ddd_warning, XmNhelpCallback, ImmediateHelpCB, XtPointer(0));
-#else
-    Gtk::Button *button;
-    button = ddd_warning->add_button(XMST("OK"), 0);
-    button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB2), ddd_warning));
-#endif
 
     manage_and_raise(ddd_warning);
     return ddd_warning;
 }
+
+#else
+
+GUI::Dialog *post_warning(string text, const _XtString name, GUI::Widget *w)
+{
+    strip_trailing_space(text);
+
+    dddlog << "!  " << text << '\n';
+    dddlog.flush();
+
+    if (ddd_is_exiting)
+    {
+	std::cerr << ddd_NAME << ": warning: " << text << "\n";
+	return 0;
+    }
+
+#if 0
+    if (status_w && !text.contains('\n'))
+    {
+	set_status(text);
+	return 0;
+    }
+#endif
+
+    if (name == 0)
+	name = "ddd_warning";
+
+    MString mtext = rm(text);
+
+#ifdef NAG_ME
+#warning Should these dialogs be destroyed on close?
+#endif
+    GUI::Dialog *ddd_warning = 
+	new GUI::Dialog(*find_shell1(w), name);
+    GUI::Label *ddd_warning_label = new GUI::Label(*ddd_warning, mtext.xmstring());
+    ddd_warning_label->show();
+
+    Delay::register_shell(ddd_warning);
+    GUI::Button *button;
+    button = ddd_warning->add_button("OK");
+    button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB2), ddd_warning));
+
+    manage_and_raise(ddd_warning);
+    return ddd_warning;
+}
+
+#endif

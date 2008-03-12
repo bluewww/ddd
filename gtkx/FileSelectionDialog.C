@@ -81,3 +81,9 @@ FileSelectionDialog::internal(void)
     return this;
 }
 
+std::string
+FileSelectionDialog::get_selected(void)
+{
+    return fs_.get_selected();
+}
+

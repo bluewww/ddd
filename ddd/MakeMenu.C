@@ -1135,9 +1135,9 @@ Widget MMcreateMenuBar(Widget parent, const char *name, MMDesc items[],
 #else
 
 // Create menu bar from items
-GUI::WidgetPtr<GUI::MenuBar> MMcreateMenuBar(GUI::Container *parent, cpString name, MMDesc items[])
+GUI::WidgetPtr<GUI::MenuBar> MMcreateMenuBar(GUI::Container &parent, cpString name, MMDesc items[])
 {
-    GUI::MenuBar *bar = new GUI::MenuBar(*parent, name);
+    GUI::MenuBar *bar = new GUI::MenuBar(parent, name);
     MMaddItems(bar, items);
     bar->show();
 

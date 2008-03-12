@@ -70,3 +70,9 @@ ComboBoxEntryText::get_text(void)
     return GtkX::String(get_active_text());
 }
 
+void
+ComboBoxEntryText::set_text(const String &s)
+{
+    set_active_text(s.s());
+}
+

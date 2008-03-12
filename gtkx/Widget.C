@@ -5,6 +5,8 @@ using namespace GtkX;
 
 Glib::Quark GtkX::gtkx_super_quark("gtkx_super");
 
+static sigc::signal<bool> *signal_idle_ptr;
+
 String::String(const Glib::ustring &s0)
 {
     s_ = s0;
@@ -145,8 +147,19 @@ Widget::set_sensitive(bool b)
 }
 
 void
+Widget::init_signals(void)
+{
+    // Must be called from postinit, because internal() must be set.
+    internal()->signal_button_press_event().connect(sigc::mem_fun(*this, &Widget::button_press_event_callback));
+    internal()->signal_button_release_event().connect(sigc::mem_fun(*this, &Widget::button_release_event_callback));
+    internal()->signal_map().connect(sigc::mem_fun(*this, &Widget::signal_map_callback));
+    internal()->signal_unmap().connect(sigc::mem_fun(*this, &Widget::signal_unmap_callback));
+}
+
+void
 Widget::postinit(void)
 {
+    init_signals();
     internal()->set_data(gtkx_super_quark, this);
 }
 
@@ -171,5 +184,75 @@ bool
 Widget::translate_coordinates(GtkX::Widget &dest_w, int x1, int y1, int &x2, int &y2)
 {
     return internal()->translate_coordinates(*dest_w.internal(), x1, y1, x2, y2);
+}
+
+sigc::signal<bool, GtkX::EventButton *> &
+Widget::signal_button_press_event()
+{
+    return signal_button_press_event_;
+}
+
+sigc::signal<bool, GtkX::EventButton *> &
+Widget::signal_button_release_event()
+{
+    return signal_button_release_event_;
+}
+
+sigc::signal<void> &
+Widget::signal_map()
+{
+    return signal_map_;
+}
+
+sigc::signal<void> &
+Widget::signal_unmap()
+{
+    return signal_unmap_;
+}
+
+bool
+Widget::button_press_event_callback(GdkEventButton *ev)
+{
+    GtkX::EventButton evx;
+    translate_event((GdkEvent *)ev, (GtkX::Event *)&evx);
+    signal_button_press_event_(&evx);
+}
+
+bool
+Widget::button_release_event_callback(GdkEventButton *ev)
+{
+    GtkX::EventButton evx;
+    translate_event((GdkEvent *)ev, (GtkX::Event *)&evx);
+    signal_button_release_event_(&evx);
+}
+
+void
+Widget::signal_map_callback(void)
+{
+    signal_map_();
+}
+
+void
+Widget::signal_unmap_callback(void)
+{
+    signal_unmap_();
+}
+
+static bool
+idle_handler(void)
+{
+    if (signal_idle_ptr) {
+	(*signal_idle_ptr)();
+    }
+}
+
+sigc::signal<bool> &
+GtkX::signal_idle()
+{
+    if (!signal_idle_ptr) {
+	signal_idle_ptr = new sigc::signal<bool>;
+	Glib::signal_idle().connect(sigc::ptr_fun(idle_handler));
+    }
+    return *signal_idle_ptr;
 }
 

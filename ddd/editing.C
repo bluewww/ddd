@@ -1009,6 +1009,25 @@ void gdb_button_command(const string& command, Widget origin)
     }
 }
 
+#if !defined(IF_XM)
+
+void gdb_button_command1(const string& command, GUI::Widget *origin)
+{
+    if (command.contains("..."))
+    {
+	set_current_line(command.before("...") + " ");
+    }
+    else
+    {
+	string c = command;
+	c.gsub("()", source_arg->get_string());
+	if (add_running_arguments1(c, origin))
+	    gdb_command1(c, origin);
+    }
+}
+
+#endif
+
 #if defined(IF_XM)
 
 void gdbPrevCB  (Widget w, XtPointer, XtPointer call_data)

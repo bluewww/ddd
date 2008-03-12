@@ -4878,8 +4878,8 @@ void SourceView::create_shells()
 
     if (edit_breakpoints_dialog_w != 0)
     {
-	BUTTON_P button;
-	button = edit_breakpoints_dialog_w->add_button(XMST("OK"), 0);
+	GUI::Button *button;
+	button = edit_breakpoints_dialog_w->add_button("OK");
 	button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB2), edit_breakpoints_dialog_w));
     }
 
@@ -4896,10 +4896,10 @@ void SourceView::create_shells()
     Delay::register_shell(stack_dialog_w);
 
 
-    up_w = stack_dialog_w->add_button("up", "Up");
-    down_w = stack_dialog_w->add_button("down", "Down");
+    up_w = stack_dialog_w->add_button("Up");
+    down_w = stack_dialog_w->add_button("Down");
     GUI::WidgetPtr<GUI::Button> cancel_w =
-	stack_dialog_w->add_button("cancel", "Cancel");
+	stack_dialog_w->add_button("Cancel");
 
     set_sensitive(up_w,   False);
     set_sensitive(down_w, False);

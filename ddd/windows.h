@@ -188,8 +188,8 @@ extern void set_paned_window_size(Widget paned, Dimension width);
 // Set main window sizes
 extern void set_main_window_size(Widget w);
 #else
-extern void get_paned_window_width(GUI::MultiPaned *paned, Dimension& max_width);
-extern void set_paned_window_size(GUI::Container *paned, Dimension width);
+extern void get_paned_window_width(GUI::MultiPaned *paned, int& max_width);
+extern void set_paned_window_size(GUI::Container *paned, int width);
 
 // Set main window sizes
 extern void set_main_window_size(GUI::Container *w);

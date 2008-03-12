@@ -644,16 +644,11 @@ static void searchLocalSourceFiles(Widget fs,
 #endif
 #endif
 
+#if defined(IF_XM)
+
 // Get the file name from the file selection box W
-string get_file(
-#if defined(IF_MOTIF)
-		Widget w, XtPointer, XtPointer call_data
-#else
-		FILECHOOSERDIALOG_P w
-#endif
-		)
+string get_file(Widget w, XtPointer, XtPointer call_data)
 {
-#if defined(IF_MOTIF)
     XmFileSelectionBoxCallbackStruct *cbs = 
 	(XmFileSelectionBoxCallbackStruct *)call_data;
 
@@ -663,41 +658,49 @@ string get_file(
 
     string filename = s;
     XtFree(s);
-#else
-    string filename = string(w->get_filename().c_str());
-#endif
 
     if (filename.empty() || filename[0] != '/')
     {
-#if defined(IF_MOTIF)
 	String dir;
 	if (!XmStringGetLtoR(cbs->dir, MSTRING_DEFAULT_CHARSET, &dir))
 	    return NO_GDB_ANSWER;
 
 	filename = string(dir) + "/" + filename;
 	XtFree(dir);
-#else
-#ifdef NAG_ME
-#warning Relative pathnames?
-#endif
-#endif
     }
 
-#if defined(IF_MOTIF)
     if (is_directory(filename))
     {
 	MString filter(filename);
 	XmFileSelectionDoSearch(w, filter.xmstring());
 	return "";
     }
+
+    return filename;
+}
+
 #else
+
+// Get the file name from the file selection box W
+string get_file(GUI::FileSelectionDialog *w)
+{
+    string filename = string(w->get_selected().c_str());
+
+    if (filename.empty() || filename[0] != '/')
+    {
+#ifdef NAG_ME
+#warning Relative pathnames?
+#endif
+    }
+
 #ifdef NAG_ME
 #warning Directory selected?
-#endif
 #endif
 
     return filename;
 }
+
+#endif
 
 //-----------------------------------------------------------------------------
 // OK pressed

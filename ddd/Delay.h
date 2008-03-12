@@ -66,7 +66,7 @@ private:
     _Delay& operator = (const _Delay&);
 
 protected:
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     static void DestroyCB(Widget, XtPointer, XtPointer);
 #else
     void DestroyCB();
@@ -75,6 +75,9 @@ protected:
 
 public:
     _Delay(Widget w);
+#if !defined(IF_XM)
+    _Delay(GUI::Widget *w);
+#endif
     virtual ~_Delay();
 };
 

@@ -256,9 +256,10 @@ static Widget create_status_history(Widget parent)
 }
 #endif // IF_MOTIF
 
-MENU_P status_history(Widget parent)
+#if defined(IF_XM)
+
+Widget status_history(Widget parent)
 {
-#ifdef IF_MOTIF
     Widget history_shell = create_status_history(parent);
 
     MString history_msg;
@@ -305,12 +306,18 @@ MENU_P status_history(Widget parent)
 		  XtPointer(0));
 
     return history_shell;
-#else // NOT IF_MOTIF
+}
+
+#else
+
+GUI::Menu *status_history(GUI::Widget *parent)
+{
     static int errcnt = 0;
     if (complain && !errcnt++) std::cerr << "No status history: may crash!\n";
     return NULL;
-#endif // IF_MOTIF
 }
+
+#endif
 
 #ifdef IF_MOTIF
 // Return true iff S1 is a prefix of S2
