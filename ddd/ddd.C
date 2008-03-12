@@ -3769,7 +3769,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 #endif
 #endif
 
-    if (data_buttons_w != (Widget)0)
+    if (data_buttons_w == (Widget)0)
 	data_buttons_w = make_buttons(data_disp_parent, "data_buttons", 
 				      app_data.data_buttons);
 

@@ -2110,7 +2110,7 @@ void manage_paned_child(GUI::Widget *w)
 {
     static int errcnt = 0;
     if (complain && !errcnt++ == 0) std::cerr << "manage_paned_child() not implemented\n";
-    // GtkMultiPaned::show_child(w);
+    GUI::MultiPaned::show_child(w);
 }
 
 #endif
@@ -2205,7 +2205,7 @@ void unmanage_paned_child(GUI::Widget *w)
 {
     static int errcnt = 0;
     if (complain && !errcnt++ == 0) std::cerr << "unmanage_paned_child() not implemented\n";
-    // GtkMultiPaned::hide_child(w);
+    GUI::MultiPaned::hide_child(w);
 }
 
 #endif

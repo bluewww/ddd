@@ -22,6 +22,8 @@ namespace GtkX {
 	void debug(void);
 	static void show_child(Gtk::Widget* widget);
 	static void hide_child(Gtk::Widget* widget);
+	static void show_child(GtkX::Widget* widget);
+	static void hide_child(GtkX::Widget* widget);
 #include <GtkX/redirect.h>
     };
 

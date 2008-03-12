@@ -98,6 +98,18 @@ MultiPaned::hide_child(Gtk::Widget *w)
     }
 }
 
+void
+MultiPaned::show_child(GtkX::Widget* widget)
+{
+    MultiPaned::show_child(widget->internal());
+}
+
+void
+MultiPaned::hide_child(GtkX::Widget* widget)
+{
+    MultiPaned::hide_child(widget->internal());
+}
+
 #ifdef NAG_ME
 #warning DEBUGGING CODE
 #endif

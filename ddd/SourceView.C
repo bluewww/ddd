@@ -5194,6 +5194,7 @@ void SourceView::create_text(Widget parent, const char *base,
 
 
     // Give the form the size specified for the text
+    std::cerr << "set_scrolled_window_size(text, form);\n";
     set_scrolled_window_size(text, form);
 
 #ifdef NAG_ME
