@@ -1,3 +1,4 @@
+// -*- C++ -*-
 #ifndef XMMM_WIDGET_H
 #define XMMM_WIDGET_H
 
@@ -27,6 +28,47 @@ namespace Xmmm {
 	bool operator==(const String &str) const;
 	bool operator!=(const String &str) const;
 	operator bool(void) const;
+    };
+
+    template <class T>
+    class RefPtr {
+	T *p;
+    public:
+	RefPtr(void) {
+	    p = NULL;
+	}
+	RefPtr(T *ptr) {
+	    p = ptr;
+	    // if (p) p->ref();
+	}
+	RefPtr(const RefPtr &rp) {
+	    p = rp.p;
+	    // if (p) p->ref();
+	}
+	RefPtr &operator=(const RefPtr &rp) {
+	    // if (rp.p) rp.p->ref();
+	    // if (p) p->unref();
+	    p = rp.p;
+	    return *this;
+	}
+	RefPtr &operator=(T *val) {
+	    // if (val) val->ref();
+	    // if (p) p->unref();
+	    p = val;
+	    return *this;
+	}
+	~RefPtr(void) {
+	    // if (p) p->unref();
+	}
+	operator T *(void) const {
+	    return p;
+	}
+	T &operator*(void) const {
+	    return *p;
+	}
+	T *operator->() const {
+	    return &(operator*());
+	}
     };
 
     class Widget: public sigc::trackable {
