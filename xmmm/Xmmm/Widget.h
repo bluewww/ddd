@@ -9,6 +9,8 @@
 #include <vector>
 #include <sigc++/sigc++.h>
 
+#include <Xmmm/Events.h>
+
 namespace Xmmm {
 
     // This class is used to simplify constructors which can take a
@@ -69,7 +71,15 @@ namespace Xmmm {
 	T *operator->() const {
 	    return &(operator*());
 	}
+	void clear(void) {
+	}
     };
+
+    typedef ::Display Display;
+
+    typedef ::XFontStruct Font;
+
+    template<> void RefPtr<Font>::clear(void);
 
     class Widget: public sigc::trackable {
 	void *user_data;
@@ -89,6 +99,14 @@ namespace Xmmm {
     };
 
     extern std::vector<Arg> NO_ARGS;
+
+    // FIXME: Actions need to be translated to/from Xt.
+    typedef sigc::slot<void, Xmmm::Widget*, Xmmm::Event*, char **, unsigned int*> ActionProc;
+
+    struct ActionRec {
+	String string;
+	ActionProc proc;
+    };
 }
 
 std::ostream &operator<<(std::ostream &f, const Xmmm::String &s);

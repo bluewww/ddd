@@ -85,7 +85,7 @@ WM_set_close_callback(::Widget shell,
 		      void (*callback)(::Widget, XtPointer, XtPointer),
 		      XtPointer client_data)
 {
-    Display *display  = (Display *) 0 ;
+    ::Display *display  = (::Display *) 0 ;
     Atom     property = (Atom) 0 ;
     Atom     protocol = (Atom) 0 ;
 
@@ -93,7 +93,7 @@ WM_set_close_callback(::Widget shell,
 	return False ;
     }
 
-    if ((display = XtDisplay(shell)) == (Display *) 0) {
+    if ((display = XtDisplay(shell)) == (::Display *) 0) {
 	return False ;
     }
 
