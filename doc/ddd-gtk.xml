@@ -261,6 +261,99 @@ correspond to <function>XtManageChild</function> and
 implemented using the <application>Xt</application> callback mechanism
 and the <varname>XtNdestroyCallback</varname> callback.</para>
       </section>
+      <section id="container">
+	<title><classname>GUI::Container</classname></title>
+	<para><classname>GUI::Container</classname> is the parent of
+all container classes.  It has the following methods:</para>
+	<funcsynopsis>
+	  <funcprototype>
+	    <funcdef>ChildList <function>get_children</function></funcdef>
+	    <void/>
+	  </funcprototype>
+	  <funcprototype>
+	    <funcdef>void <function>remove</function></funcdef>
+	    <paramdef>Widget &amp;<parameter>w</parameter></paramdef>
+	  </funcprototype>
+	</funcsynopsis>
+	<para>All widget constructors, other than those for top-level
+windows, require a reference to an existing
+<classname>Container</classname> in the first argument.</para>
+      </section>
+    </section>
+    <section id="concrete-widget-classes">
+      <title>Concrete widget classes</title>
+      <para>The following concrete widget classes are implemented:</para>
+      <itemizedlist>
+	<listitem>
+	  <para><classname>HBox</classname></para>
+	</listitem>
+	<listitem>
+	  <para><classname>VBox</classname></para>
+	</listitem>
+	<listitem>
+	  <para><classname>Button</classname></para>
+	</listitem>
+	<listitem>
+	  <para><classname>ComboBoxEntryText</classname></para>
+	</listitem>
+	<listitem>
+	  <para><classname>RadioButton</classname></para>
+	</listitem>
+	<listitem>
+	  <para><classname>Dialog</classname></para>
+	</listitem>
+	<listitem>
+	  <para><classname>Window</classname></para>
+	</listitem>
+	<listitem>
+	  <para><classname>FileSelectionDialog</classname></para>
+	</listitem>
+	<listitem>
+	  <para><classname>FileSelection</classname></para>
+	</listitem>
+	<listitem>
+	  <para><classname>ListView</classname></para>
+	</listitem>
+	<listitem>
+	  <para><classname>MenuBar</classname></para>
+	</listitem>
+	<listitem>
+	  <para><classname>PopupMenu</classname></para>
+	</listitem>
+	<listitem>
+	  <para><classname>PulldownMenu</classname></para>
+	</listitem>
+	<listitem>
+	  <para><classname>MultiPaned</classname></para>
+	</listitem>
+	<listitem>
+	  <para><classname>Notebook</classname></para>
+	</listitem>
+	<listitem>
+	  <para><classname>RadioBox</classname></para>
+	</listitem>
+	<listitem>
+	  <para><classname>RadioButton</classname></para>
+	</listitem>
+	<listitem>
+	  <para><classname>ScrolledText</classname></para>
+	</listitem>
+	<listitem>
+	  <para><classname>ScrolledWindow</classname></para>
+	</listitem>
+	<listitem>
+	  <para><classname>SelectionDialog</classname></para>
+	</listitem>
+	<listitem>
+	  <para><classname>Toolbar</classname></para>
+	</listitem>
+      </itemizedlist>
+      <para>Most of these correspond more or less directly to a widget
+in the underlying toolkit.  A few are realized as composite widgets.
+For example, the <application>GTK</application>
+<classname>Paned</classname> widget can only have two panes&semi; in
+this case the <classname>MultiPaned</classname> widget is defined as a
+nested structure built of <application>GTK</application> panes.</para>
     </section>
   </chapter>
   </book>
