@@ -1292,7 +1292,7 @@ void DataDisp::toggle_themeSQ(const string& theme, const string& pattern,
 
 #if defined(IF_XM)
 
-void DataDisp::dereferenceCB(Widget w)
+void DataDisp::dereferenceCB(Widget w, XtPointer, XtPointer)
 {
     set_last_origin(w);
 
@@ -3068,7 +3068,7 @@ void DataDisp::deleteArgCB(Widget dialog, XtPointer, XtPointer)
     if (dn != 0 && dv != dn->value())
     {
 	// Suppress selected value
-	applyThemeCB(dialog, app_data.suppress_theme, XtPointer(0));
+	applyThemeCB(dialog, XtPointer(app_data.suppress_theme), XtPointer(0));
 	return;
     }
 
@@ -3278,7 +3278,7 @@ void DataDisp::graph_detailAct (Widget w, XEvent *,
     if (params != 0 && num_params != 0 && *num_params >= 1)
 	depth = atoi(params[0]);
 
-    toggleDetailCB(w, depth, XtPointer(0));
+    toggleDetailCB(w, XtPointer(depth), XtPointer(0));
 }
 
 #else

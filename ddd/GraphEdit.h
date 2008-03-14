@@ -151,7 +151,7 @@ class GraphNode;
 
 
 // Declare specific GraphEdit class and instance datatypes
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 typedef struct _GraphEditClassRec *GraphEditWidgetClass;
 typedef struct _GraphEditRec      *GraphEditWidget;
 #endif
@@ -301,7 +301,7 @@ struct GraphEditCompareNodesInfo {
 };
 
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 
 // Declare the class constant
 extern WidgetClass graphEditWidgetClass;
@@ -311,8 +311,11 @@ typedef Widget GRAPH_EDIT_P;
 #else
 
 #include "GraphGC.h"
+#if defined(IF_XMMM)
+#else
 #include <gtkmm/drawingarea.h>
 #include <gdkmm/color.h>
+#endif
 
 enum GraphEditState {
     SelectState,	// draw select frame
@@ -321,7 +324,12 @@ enum GraphEditState {
     NopState		// something completely different
 };
 
-class GUIGraphEdit: public GUI::Widget, public Gtk::Widget {
+#if defined(IF_XMMM)
+class GUIGraphEdit: public GUI::Widget
+#else
+class GUIGraphEdit: public GUI::Widget, public Gtk::Widget
+#endif
+{
 private:
 #if 0
     bool show_grid_;
@@ -446,6 +454,7 @@ private:
     Cursor selectTopLeftCursor;
     Cursor selectTopRightCursor;
 
+#if !defined(IF_XMMM)
     // Colors
     Gdk::Color nodeColor;		          // Color to use for nodes
     Gdk::Color edgeColor;		          // Color to use for edges
@@ -453,6 +462,7 @@ private:
     Gdk::Color outlineColor;		          // Color to use for outlines
     Gdk::Color gridColor;		          // Color to use for grid
     Gdk::Color selectColor;	                  // Color to use for selected nodes
+#endif
 
     // Printing colors
     String nodePrintColor;	          // Color for printing nodes
@@ -573,7 +583,9 @@ public:
     sigc::signal<void, GraphEditCompareNodesInfo *> signal_compare_nodes();
     sigc::signal<void, GraphEditLayoutInfo *> signal_pre_layout();
     sigc::signal<void, GraphEditLayoutInfo *> signal_post_layout();
+#if !defined(IF_XMMM)
 #include <GtkX/redirect.h>
+#endif
 };
 
 typedef GUIGraphEdit *GRAPH_EDIT_P;

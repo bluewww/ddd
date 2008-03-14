@@ -47,7 +47,7 @@
 #include "gtk_wrapper.h"
 
 #if !defined(IF_XM)
-#include <GUI/Statusbar.h>
+#include <GUI/Button.h>
 #include <GUI/Container.h>
 #include <GUI/Menu.h>
 #endif

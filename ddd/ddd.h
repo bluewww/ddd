@@ -48,7 +48,7 @@
 #if !defined(IF_XM)
 
 #include <GUI/ScrolledText.h>
-#include <GUI/Statusbar.h>
+#include <GUI/Button.h>
 
 #endif
 
@@ -73,7 +73,7 @@ extern GUI::ScrolledText *gdb_w;
 extern Widget status_w;
 #else
 // Status line widget
-extern GUI::Statusbar *status_w;
+extern GUI::Button *status_w;
 #endif
 
 // Output TEXT in GDB window, unless we've just composed a command

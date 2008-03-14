@@ -1166,7 +1166,7 @@ void gdbClearWindowCB(CB_ARG_LIST_NULL)
 
 #if defined(IF_XM)
 
-void gdbCompleteCB  (XtPointer w, XtPointer, XtPointer call_data)
+void gdbCompleteCB  (Widget w, XtPointer, XtPointer call_data)
 {
     if (!gdb->isReadyWithPrompt())
     {

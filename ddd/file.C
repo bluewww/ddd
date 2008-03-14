@@ -285,18 +285,18 @@ static GUI::Dialog *file_dialog(GUI::Widget *w, const string& name,
     Delay::register_shell(dialog);
 
     if (ok_callback != 0) {
-	button = dialog->add_button(XMST("OK"), 0);
+	button = dialog->add_button("OK");
 	button->signal_clicked().connect(sigc::bind(ok_callback, dialog));
     }
 
-    button = dialog->add_button(XMST("Cancel"), 0);
+    button = dialog->add_button("Cancel");
     button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB2), dialog));
 
 #ifdef NAG_ME
 #warning FIXME no filters
 #endif
 
-    dialog->signal_unmap().connect(PTR_FUN(ClearStatusCB));
+    dialog->signal_unmap().connect(sigc::ptr_fun(ClearStatusCB));
 
     file_dialogs += dialog;
 

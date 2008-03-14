@@ -314,7 +314,6 @@ char ddd_rcsid[] =
 #include <GUI/Notebook.h>
 #include <GUI/MultiPaned.h>
 #include <GUI/CheckButton.h>
-#include <GUI/Statusbar.h>
 #include <GUI/Button.h>
 #endif
 
@@ -2787,7 +2786,7 @@ Widget status_w;
 static Widget led_w;
 #else
 // GDB status line
-GUI::Statusbar *status_w;
+GUI::Button *status_w;
 
 // GDB activity led
 static GUI::CheckButton *led_w;
@@ -7255,7 +7254,7 @@ static void create_status(GUI::Container *parent)
     MString short_msg = rm("Hello, world!");
     MString long_msg = short_msg + rm(replicate(' ', 90));
 
-    status_w = new GUI::Statusbar(*status_form, "status");
+    status_w = new GUI::Button(*status_form, "status", "Status");
     status_w->show();
 
     // Initialize status history
@@ -8471,7 +8470,7 @@ static DDDWindow ddd_window(XtP(DDDWindow) client_data)
 
 #if defined(IF_XM)
 
-static void gdbCutSelectionCB(Widget w, DDDWindow client_data, XtPointer)
+static void gdbCutSelectionCB(Widget w, XtPointer client_data, XtPointer)
 {
     Time tm = time(XtLastEventProcessed(XtDisplay(w)));
 
@@ -8509,7 +8508,7 @@ static void gdbCutSelectionCB(Widget w, DDDWindow client_data, XtPointer)
 	gdbUnselectAllCB(Widget(0), XtPointer(0), XtPointer(0));
 }
 
-static void gdbCopySelectionCB(Widget w, DDDWindow client_data)
+static void gdbCopySelectionCB(Widget w, XtPointer client_data, XtPointer)
 {
     Time tm = time(XtLastEventProcessed(XtDisplay(w)));
     
@@ -8551,7 +8550,7 @@ static void gdbCopySelectionCB(Widget w, DDDWindow client_data)
     }
 }
 
-static void gdbPasteClipboardCB(Widget w, DDDWindow client_data, XtPointer)
+static void gdbPasteClipboardCB(Widget w, XtPointer client_data, XtPointer)
 {
     DDDWindow win = ddd_window(client_data);
 

@@ -156,6 +156,8 @@ static WindowState& state(Widget w)
     return dummy;
 }
 
+#if !defined(IF_XM)
+
 static WindowState& state(GUI::Widget *w)
 {
     static WindowState command_shell_state     = PoppedDown;
@@ -178,6 +180,8 @@ static WindowState& state(GUI::Widget *w)
     dummy = UnknownShell;
     return dummy;
 }
+
+#endif
 
 static bool popped_down(Widget w)
 {
@@ -204,6 +208,8 @@ static void set_state(Widget w, WindowState s)
     }
 }
 
+#if !defined(IF_XM)
+
 static void set_state(GUI::Widget *w, WindowState s)
 {
     WindowState& var = state(w);
@@ -215,6 +221,8 @@ static void set_state(GUI::Widget *w, WindowState s)
 #endif
     }
 }
+
+#endif
 
 // Place command tool in upper right edge of REF
 static void recenter_tool_shell(Widget ref = 0);

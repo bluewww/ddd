@@ -604,7 +604,7 @@ void set_status_mstring(const MString& message, bool temporary)
 	XFlush(XtDisplay(status_w));
 	XmUpdateDisplay(status_w);
 #else // NOT IF_MOTIF
-	status_w->push(message.xmstring());
+	status_w->set_label(message.xmstring());
 #endif // IF_MOTIF
     }
 

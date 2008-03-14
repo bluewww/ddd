@@ -66,6 +66,8 @@ namespace GtkX {
 
     typedef Gdk::Display Display;
 
+    typedef Pango::Font Font;
+
     class Widget {
     protected:
 	sigc::signal<bool, GtkX::EventButton *> signal_button_press_event_;

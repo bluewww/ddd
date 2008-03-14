@@ -393,7 +393,11 @@ bool lock_session_dir(GUI::RefPtr<GUI::Display> display,
 	os << DDD_NAME "-" DDD_VERSION
 	   << " " << fullhostname()
 	   << " " << getpid()
+#if defined(IF_XM)
+	   << " " << XDisplayString(display)
+#else
 	   << " " << display->get_default_screen()->make_display_name()
+#endif
 	   << " " << getuid()
 	   << " " << username
 	   << "\n";

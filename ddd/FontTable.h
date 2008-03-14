@@ -33,11 +33,9 @@
 #include "config.h"
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include <X11/Xlib.h>
-#endif
-
-#if !defined(IF_XM)
+#else
 #include <GUI/Widget.h>
 #endif
 
@@ -50,10 +48,18 @@
 #define MAX_FONTS 511 /* Max #Fonts */
 
 struct FontTableHashEntry {
-    FONT_P font;
+#if defined(IF_XM)
+    XFontStruct *font;
+#else
+    GUI::RefPtr<GUI::Font> font;
+#endif
     string name;
 
+#if defined(IF_XM)
     FontTableHashEntry(): font(0), name() {}
+#else
+    FontTableHashEntry(): name() {}
+#endif
 
 private:
     FontTableHashEntry(const FontTableHashEntry&);
@@ -77,7 +83,7 @@ private:
 
 public:
 #if defined(IF_XM)
-    FontTable(Display display):
+    FontTable(Display *display):
 	_display(display)
 #else
     FontTable(GUI::RefPtr<GUI::Display> display):
@@ -101,7 +107,11 @@ public:
 #endif
 	    }
     }
-    FONT_P operator[](const string& name);
+#if defined(IF_XM)
+    XFontStruct *operator[](const string& name);
+#else
+    GUI::RefPtr<GUI::Font> operator[](const string& name);
+#endif
 };
 
 #endif
