@@ -30,12 +30,13 @@
 #define XMMM_RADIOBUTTON_H
 
 #include <sigc++/signal.h>
+#include <Xmmm/Bipolar.h>
 #include <Xmmm/Container.h>
 #include <Xm/ToggleB.h>
 
 namespace Xmmm {
 
-    class RadioButton: public Widget {
+    class RadioButton: public Bipolar {
     private:
 	::Widget button_;
 	void init_signals(void);
@@ -49,8 +50,8 @@ namespace Xmmm {
 		    const Xmmm::String &label=""); // TEMPORARY
 	~RadioButton(void);
 	::Widget internal(void); // TEMPORARY
-	void set_active(bool);
 	bool get_active(void);
+	void set_active(bool new_state, bool notify=false);
 	sigc::signal<void> &signal_toggled(void);
     };
 

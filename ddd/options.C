@@ -1747,16 +1747,13 @@ void dddSetSelectAllBindingsCB (GUI::RadioButton *w, BindingStyle style)
 
 #endif
 
-void dddSetUndoBufferSizeCB(CB_ALIST_1(ENTRY_P w))
+#if defined(IF_XM)
+
+void dddSetUndoBufferSizeCB(Widget w, XtPointer, XtPointer)
 {
-#ifdef IF_MOTIF
     String s = XmTextFieldGetString(w);
     string value = s;
     XtFree(s); s = 0;
-#else // NOT IF_MOTIF
-    string value = string(w->get_text().c_str());
-    char *s;
-#endif // IF_MOTIF
 
     s = CONST_CAST(char*,value.chars());
     long val = strtol(value.chars(), &s, 0);
@@ -1768,6 +1765,26 @@ void dddSetUndoBufferSizeCB(CB_ALIST_1(ENTRY_P w))
 
     update_reset_preferences();
 }
+
+#else
+
+void dddSetUndoBufferSizeCB(GUI::Entry *w)
+{
+    string value = string(w->get_text().c_str());
+    char *s;
+
+    s = CONST_CAST(char*,value.chars());
+    long val = strtol(value.chars(), &s, 0);
+    if (s != value)
+    {
+	app_data.max_undo_size = int(val * 1000);
+	undo_buffer.max_history_size = app_data.max_undo_size;
+    }
+
+    update_reset_preferences();
+}
+
+#endif
 
 void dddClearUndoBufferCB(CB_ARG_LIST_NULL)
 {
@@ -1998,126 +2015,173 @@ void dddToggleToolbarsAtBottomCB(GUI::CheckButton *w)
 // Helpers
 // ---------------------------------------------------------------------------
 
-void dddSetEditCommandCB(CB_ALIST_1(ENTRY_P w))
+#if defined(IF_XM)
+
+void dddSetEditCommandCB(Widget w, XtPointer, XtPointer)
 {
-#ifdef IF_MOTIF
     String s = XmTextFieldGetString(w);
     static string command;
     command = s;
     XtFree(s);
-#else // NOT IF_MOTIF
-    static string command;
-    command = string(w->get_text().c_str());
-#endif // IF_MOTIF
 
     app_data.edit_command = command.chars();
     // set_status("Edit Sources command is " + quote(command));
     update_reset_preferences();
 }
 
-void dddSetPlotCommandCB(CB_ALIST_1(ENTRY_P w))
+void dddSetPlotCommandCB(Widget w, XtPointer, XtPointer)
 {
-#ifdef IF_MOTIF
     String s = XmTextFieldGetString(w);
     static string command;
     command = s;
     XtFree(s);
-#else // NOT IF_MOTIF
-    static string command;
-    command = string(w->get_text().c_str());
-#endif // IF_MOTIF
 
     app_data.plot_command = command.chars();
     // set_status("Edit Sources command is " + quote(command));
     update_reset_preferences();
 }
 
-void dddSetGetCoreCommandCB(CB_ALIST_1(ENTRY_P w))
+void dddSetGetCoreCommandCB(Widget w, XtPointer, XtPointer)
 {
-#ifdef IF_MOTIF
     String s = XmTextFieldGetString(w);
     static string command;
     command = s;
     XtFree(s);
-#else // NOT IF_MOTIF
-    static string command;
-    command = string(w->get_text().c_str());
-#endif // IF_MOTIF
 
     app_data.get_core_command = command.chars();
     // set_status("Get Core command is " + quote(command));
     update_reset_preferences();
 }
 
-void dddSetPSCommandCB(CB_ALIST_1(ENTRY_P w))
+#else
+
+void dddSetEditCommandCB(GUI::Entry *w)
 {
-#ifdef IF_MOTIF
+    static string command;
+    command = string(w->get_text().c_str());
+
+    app_data.edit_command = command.chars();
+    // set_status("Edit Sources command is " + quote(command));
+    update_reset_preferences();
+}
+
+void dddSetPlotCommandCB(GUI::Entry *w)
+{
+    static string command;
+    command = string(w->get_text().c_str());
+
+    app_data.plot_command = command.chars();
+    // set_status("Edit Sources command is " + quote(command));
+    update_reset_preferences();
+}
+
+void dddSetGetCoreCommandCB(GUI::Entry *w)
+{
+    static string command;
+    command = string(w->get_text().c_str());
+
+    app_data.get_core_command = command.chars();
+    // set_status("Get Core command is " + quote(command));
+    update_reset_preferences();
+}
+
+#endif
+
+#if defined(IF_XM)
+
+void dddSetPSCommandCB(Widget w, XtPointer, XtPointer)
+{
     String s = XmTextFieldGetString(w);
     static string command;
     command = s;
     XtFree(s);
-#else // NOT IF_MOTIF
-    static string command;
-    command = string(w->get_text().c_str());
-#endif // IF_MOTIF
 
     app_data.ps_command = command.chars();
     // set_status("List Processes command is " + quote(command));
     update_reset_preferences();
 }
 
-void dddSetTermCommandCB(CB_ALIST_1(ENTRY_P w))
+void dddSetTermCommandCB(Widget w, XtPointer, XtPointer)
 {
-#ifdef IF_MOTIF
     String s = XmTextFieldGetString(w);
     static string command;
     command = s;
     XtFree(s);
-#else // NOT IF_MOTIF
-    static string command;
-    command = string(w->get_text().c_str());
-#endif // IF_MOTIF
 
     app_data.term_command = command.chars();
     // set_status("Execution Window command is " + quote(command));
     update_reset_preferences();
 }
 
-
-void dddSetUncompressCommandCB(CB_ALIST_1(ENTRY_P w))
+void dddSetUncompressCommandCB(Widget w, XtPointer, XtPointer)
 {
-#ifdef IF_MOTIF
     String s = XmTextFieldGetString(w);
     static string command;
     command = s;
     XtFree(s);
-#else // NOT IF_MOTIF
-    static string command;
-    command = string(w->get_text().c_str());
-#endif // IF_MOTIF
 
     app_data.uncompress_command = command.chars();
     // set_status("Uncompress command is " + quote(command));
     update_reset_preferences();
 }
 
-
-void dddSetWWWCommandCB(CB_ALIST_1(ENTRY_P w))
+void dddSetWWWCommandCB(Widget w, XtPointer, XtPointer)
 {
-#ifdef IF_MOTIF
     String s = XmTextFieldGetString(w);
     static string command;
     command = s;
     XtFree(s);
-#else // NOT IF_MOTIF
-    static string command;
-    command = string(w->get_text().c_str());
-#endif // IF_MOTIF
 
     app_data.www_command = command.chars();
     // set_status("Web Browser is " + quote(command));
     update_reset_preferences();
 }
+
+#else
+
+void dddSetPSCommandCB(GUI::Entry *w)
+{
+    static string command;
+    command = string(w->get_text().c_str());
+
+    app_data.ps_command = command.chars();
+    // set_status("List Processes command is " + quote(command));
+    update_reset_preferences();
+}
+
+void dddSetTermCommandCB(GUI::Entry *w)
+{
+    static string command;
+    command = string(w->get_text().c_str());
+
+    app_data.term_command = command.chars();
+    // set_status("Execution Window command is " + quote(command));
+    update_reset_preferences();
+}
+
+void dddSetUncompressCommandCB(GUI::Entry *w)
+{
+    static string command;
+    command = string(w->get_text().c_str());
+
+    app_data.uncompress_command = command.chars();
+    // set_status("Uncompress command is " + quote(command));
+    update_reset_preferences();
+}
+
+void dddSetWWWCommandCB(GUI::Entry *w)
+{
+    static string command;
+    command = string(w->get_text().c_str());
+
+    app_data.www_command = command.chars();
+    // set_status("Web Browser is " + quote(command));
+    update_reset_preferences();
+}
+
+#endif
+
+
 
 
 

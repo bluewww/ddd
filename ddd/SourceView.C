@@ -9588,13 +9588,27 @@ void SourceView::refresh_stack_frames()
     }
 }
 
-void SourceView::ViewStackFramesCB(CB_ALIST_1(Widget))
+#if defined(IF_XM)
+
+void SourceView::ViewStackFramesCB(Widget, XtPointer, XtPointer)
 {
     refresh_stack_frames();
     manage_and_raise(stack_dialog_w);
     stack_dialog_popped_up = true;
     refresh_buttons();
 }
+
+#else
+
+void SourceView::ViewStackFramesCB(GUI::Widget *w)
+{
+    refresh_stack_frames();
+    manage_and_raise(stack_dialog_w);
+    stack_dialog_popped_up = true;
+    refresh_buttons();
+}
+
+#endif
 
 // Remove file paths and argument lists from `where' output
 void SourceView::setup_where_line(string& line)
@@ -10019,12 +10033,25 @@ string SourceView::refresh_registers_command()
     return gdb->regs_command(all_registers);
 }
 
-void SourceView::ViewRegistersCB(CB_ALIST_1(Widget))
+#if defined(IF_XM)
+
+void SourceView::ViewRegistersCB(Widget, XtPointer, XtPointer)
 {
     refresh_registers();
     manage_and_raise(register_dialog_w);
     register_dialog_popped_up = true;
 }
+
+#else
+
+void SourceView::ViewRegistersCB(GUI::Widget *)
+{
+    refresh_registers();
+    manage_and_raise(register_dialog_w);
+    register_dialog_popped_up = true;
+}
+
+#endif
 
 void SourceView::RegisterDialogPoppedDownCB (CB_ALIST_NULL)
 {
@@ -10241,12 +10268,25 @@ void SourceView::refresh_threads(bool all_threadgroups)
     }
 }
 
-void SourceView::ViewThreadsCB(CB_ALIST_1(Widget))
+#if defined(IF_XM)
+
+void SourceView::ViewThreadsCB(Widget, XtPointer, XtPointer)
 {
     refresh_threads(true);
     manage_and_raise(thread_dialog_w);
     thread_dialog_popped_up = true;
 }
+
+#else
+
+void SourceView::ViewThreadsCB(GUI::Widget *)
+{
+    refresh_threads(true);
+    manage_and_raise(thread_dialog_w);
+    thread_dialog_popped_up = true;
+}
+
+#endif
 
 void SourceView::ThreadDialogPoppedDownCB(CB_ALIST_NULL)
 {

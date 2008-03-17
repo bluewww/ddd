@@ -30,12 +30,13 @@
 #define XMMM_CHECKMENUITEM_H
 
 #include <sigc++/signal.h>
+#include <Xmmm/Bipolar.h>
 #include <Xmmm/Container.h>
 #include <Xm/ToggleB.h>
 
 namespace Xmmm {
 
-    class CheckMenuItem: public Widget {
+    class CheckMenuItem: public Bipolar {
     private:
 	::Widget checkmenuitem_;
 	void init_signals(void);
@@ -49,6 +50,8 @@ namespace Xmmm {
 		      const Xmmm::String &label=""); // TEMPORARY
 	~CheckMenuItem(void);
 	::Widget internal(void); // TEMPORARY
+	bool get_active(void);
+	void set_active(bool new_state, bool notify=false);
 	sigc::signal<void> &signal_clicked(void);
     };
 

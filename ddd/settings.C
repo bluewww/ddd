@@ -4302,8 +4302,10 @@ void update_themes()
 
 #endif
 
+#if defined(IF_XM)
+
 // Popup editor for debugger settings
-void dddPopupSettingsCB (CB_ALIST_1(Widget))
+void dddPopupSettingsCB (Widget, XtPointer, XtPointer)
 {
     Widget settings = create_settings(gdb->type());
     if (settings == 0)
@@ -4313,7 +4315,7 @@ void dddPopupSettingsCB (CB_ALIST_1(Widget))
 }
 
 // Popup editor for debugger infos
-void dddPopupInfosCB (CB_ALIST_1(Widget w))
+void dddPopupInfosCB (Widget, XtPointer, XtPointer)
 {
     Widget infos = create_infos(gdb->type());
     if (infos == 0)
@@ -4323,7 +4325,7 @@ void dddPopupInfosCB (CB_ALIST_1(Widget w))
 }
 
 // Popup editor for debugger infos
-void dddPopupSignalsCB (CB_ALIST_1(Widget w))
+void dddPopupSignalsCB (Widget, XtPointer, XtPointer)
 {
     Widget signals = create_signals(gdb->type());
     if (signals == 0)
@@ -4331,6 +4333,40 @@ void dddPopupSignalsCB (CB_ALIST_1(Widget w))
 
     manage_and_raise(signals);
 }
+
+#else
+
+// Popup editor for debugger settings
+void dddPopupSettingsCB (GUI::Widget *)
+{
+    Widget settings = create_settings(gdb->type());
+    if (settings == 0)
+	return;
+
+    manage_and_raise(settings);
+}
+
+// Popup editor for debugger infos
+void dddPopupInfosCB (GUI::Widget *)
+{
+    Widget infos = create_infos(gdb->type());
+    if (infos == 0)
+	return;
+
+    manage_and_raise(infos);
+}
+
+// Popup editor for debugger infos
+void dddPopupSignalsCB (GUI::Widget *)
+{
+    Widget signals = create_signals(gdb->type());
+    if (signals == 0)
+	return;
+
+    manage_and_raise(signals);
+}
+
+#endif
 
 // Popup editor for display themes
 void dddPopupThemesCB (CB_ARG_LIST_NULL)

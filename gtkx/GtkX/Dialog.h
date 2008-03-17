@@ -30,6 +30,7 @@
 #include <GtkX/Container.h>
 #include <GtkX/Box.h>
 #include <GtkX/Button.h>
+#include <GtkX/Label.h>
 
 namespace GtkX {
 
@@ -42,12 +43,29 @@ namespace GtkX {
     public:
 	Dialog(Gtk::Window *parent, const String &name="");
 	Dialog(GtkX::Widget &parent, const String &name="");
+	Dialog(const String &name="");
 	Gtk::Widget *internal(void);
 	Gtk::Container *gtk_container(void);
 	~Dialog(void);
 	Button *add_button(const String &name="", const String &label="");
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
 #include <GtkX/redirect.h>
+    };
+
+    enum MessageType {
+	MESSAGE_INFO,
+	MESSAGE_WARNING,
+	MESSAGE_ERROR
+    };
+
+    class MessageDialog: public Dialog {
+	GtkX::Label *message_;
+    public:
+	MessageDialog(GtkX::Widget &parent, const String &name="",
+		      const String &label="", MessageType type=MESSAGE_INFO);
+	MessageDialog(const String &name="", const String &label="",
+		      MessageType type=MESSAGE_INFO);
+	~MessageDialog(void);
     };
 
 }

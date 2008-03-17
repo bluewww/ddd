@@ -976,9 +976,15 @@ public:
 
     // Callbacks for menu bar
     static void EditBreakpointsCB(CB_ALIST_1(Widget));
-    static void ViewStackFramesCB(CB_ALIST_1(Widget));
-    static void ViewRegistersCB(CB_ALIST_1(Widget));
-    static void ViewThreadsCB(CB_ALIST_1(Widget));
+#if defined(IF_XM)
+    static void ViewStackFramesCB(Widget, XtPointer, XtPointer);
+    static void ViewRegistersCB(Widget, XtPointer, XtPointer);
+    static void ViewThreadsCB(Widget, XtPointer, XtPointer);
+#else
+    static void ViewStackFramesCB(GUI::Widget *);
+    static void ViewRegistersCB(GUI::Widget *);
+    static void ViewThreadsCB(GUI::Widget *);
+#endif
 
     // Refreshing dialogs
     static void refresh_stack_frames();

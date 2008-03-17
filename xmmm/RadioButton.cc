@@ -63,9 +63,12 @@ RadioButton::~RadioButton(void)
 }
 
 void
-RadioButton::set_active(bool on)
+RadioButton::set_active(bool on, bool notify)
 {
-    XtVaSetValues(button_, XmNset, on, 0);
+    if (notify)
+	XmToggleButtonSetState(button_, on, True);
+    else
+	XtVaSetValues(button_, XmNset, on, 0);
 }
 
 bool

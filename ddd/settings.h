@@ -39,6 +39,10 @@
 
 #include "gtk_wrapper.h"
 
+#if !defined(IF_XM)
+#include <GUI/Widget.h>
+#endif
+
 #include "bool.h"
 #include "strclass.h"
 #include "GDBAgent.h"
@@ -47,8 +51,13 @@
 
 // Debugger settings
 
+#if defined(IF_XM)
 // Popup editor for debugger settings
-extern void dddPopupSettingsCB(CB_ALIST_1(Widget));
+extern void dddPopupSettingsCB(Widget, XtPointer, XtPointer);
+#else
+// Popup editor for debugger settings
+extern void dddPopupSettingsCB(GUI::Widget *);
+#endif
 
 // Process `show' output
 extern void process_show(const string& command, string value, bool init = false);
@@ -78,8 +87,13 @@ extern string show_command(const string& cmd, DebuggerType type);
 
 // User Status Displays
 
+#if defined(IF_XM)
 // Popup editor for debugger infos
-extern void dddPopupInfosCB(CB_ALIST_1(Widget));
+extern void dddPopupInfosCB(Widget, XtPointer, XtPointer);
+#else
+// Popup editor for debugger infos
+extern void dddPopupInfosCB(GUI::Widget *);
+#endif
 
 // Update debugger infos
 extern void update_infos();
@@ -95,8 +109,13 @@ extern void register_info_button(GUI::Widget *w);
 
 // Signal Handling
 
+#if defined(IF_XM)
 // Popup editor for signal handling
-extern void dddPopupSignalsCB(CB_ALIST_1(Widget));
+extern void dddPopupSignalsCB(Widget, XtPointer, XtPointer);
+#else
+// Popup editor for signal handling
+extern void dddPopupSignalsCB(GUI::Widget *);
+#endif
 
 // Process `handle' output
 extern void process_handle(string line, bool init = false);

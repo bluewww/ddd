@@ -64,6 +64,23 @@ CheckMenuItem::~CheckMenuItem(void)
     return checkmenuitem_;
 }
 
+void
+CheckMenuItem::set_active(bool on, bool notify)
+{
+    if (notify)
+	XmToggleButtonSetState(checkmenuitem_, on, True);
+    else
+	XtVaSetValues(checkmenuitem_, XmNset, on, 0);
+}
+
+bool
+CheckMenuItem::get_active(void)
+{
+    Boolean on;
+    XtVaGetValues(checkmenuitem_, XmNset, &on, 0);
+    return on;
+}
+
 sigc::signal<void> &
 CheckMenuItem::signal_clicked(void)
 {

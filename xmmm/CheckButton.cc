@@ -64,6 +64,23 @@ CheckButton::~CheckButton(void)
     return checkbutton_;
 }
 
+void
+CheckButton::set_active(bool on, bool notify)
+{
+    if (notify)
+	XmToggleButtonSetState(checkbutton_, on, True);
+    else
+	XtVaSetValues(checkbutton_, XmNset, on, 0);
+}
+
+bool
+CheckButton::get_active(void)
+{
+    Boolean on;
+    XtVaGetValues(checkbutton_, XmNset, &on, 0);
+    return on;
+}
+
 sigc::signal<void> &
 CheckButton::signal_clicked(void)
 {

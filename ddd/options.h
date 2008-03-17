@@ -42,6 +42,7 @@
 #include <GUI/CheckButton.h>
 #include <GUI/CheckMenuItem.h>
 #include <GUI/Scale.h>
+#include <GUI/Entry.h>
 #endif
 
 #include "gtk_wrapper.h"
@@ -204,16 +205,31 @@ extern void dddSetCutCopyPasteBindingsCB    (GUI::RadioButton *, BindingStyle);
 extern void dddSetSelectAllBindingsCB       (GUI::RadioButton *, BindingStyle);
 #endif
 
-extern void dddSetUndoBufferSizeCB          (CB_ALIST_1(ENTRY_P));
-extern void dddClearUndoBufferCB            (CB_ARG_LIST_NULL);
+#if defined(IF_XM)
+extern void dddSetUndoBufferSizeCB          (Widget, XtPointer, XtPointer);
+extern void dddClearUndoBufferCB            (Widget, XtPointer, XtPointer);
+#else
+extern void dddSetUndoBufferSizeCB          (GUI::Entry *);
+extern void dddClearUndoBufferCB            (void);
+#endif
 
-extern void dddSetEditCommandCB             (CB_ALIST_1(ENTRY_P));
-extern void dddSetPlotCommandCB             (CB_ALIST_1(ENTRY_P));
-extern void dddSetGetCoreCommandCB          (CB_ALIST_1(ENTRY_P));
-extern void dddSetPSCommandCB               (CB_ALIST_1(ENTRY_P));
-extern void dddSetTermCommandCB             (CB_ALIST_1(ENTRY_P));
-extern void dddSetUncompressCommandCB       (CB_ALIST_1(ENTRY_P));
-extern void dddSetWWWCommandCB              (CB_ALIST_1(ENTRY_P));
+#if defined(IF_XM)
+extern void dddSetEditCommandCB             (Widget, XtPointer, XtPointer);
+extern void dddSetPlotCommandCB             (Widget, XtPointer, XtPointer);
+extern void dddSetGetCoreCommandCB          (Widget, XtPointer, XtPointer);
+extern void dddSetPSCommandCB               (Widget, XtPointer, XtPointer);
+extern void dddSetTermCommandCB             (Widget, XtPointer, XtPointer);
+extern void dddSetUncompressCommandCB       (Widget, XtPointer, XtPointer);
+extern void dddSetWWWCommandCB              (Widget, XtPointer, XtPointer);
+#else
+extern void dddSetEditCommandCB             (GUI::Entry *);
+extern void dddSetPlotCommandCB             (GUI::Entry *);
+extern void dddSetGetCoreCommandCB          (GUI::Entry *);
+extern void dddSetPSCommandCB               (GUI::Entry *);
+extern void dddSetTermCommandCB             (GUI::Entry *);
+extern void dddSetUncompressCommandCB       (GUI::Entry *);
+extern void dddSetWWWCommandCB              (GUI::Entry *);
+#endif
 extern void dddSetBuiltinPlotWindowCB       (CB_ALIST_2(XtP(long)));
 
 #if defined(IF_XM)
