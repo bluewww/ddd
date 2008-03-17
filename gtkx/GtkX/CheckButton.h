@@ -1,4 +1,4 @@
-// -*- C++ -*-
+ // -*- C++ -*-
 
 // High-level GUI wrapper for Gtkmm.
 
@@ -31,12 +31,24 @@
 #ifndef GTKX_CHECKBUTTON_H
 #define GTKX_CHECKBUTTON_H
 
-#include <GtkX/Widget2s.h>
+#include <GtkX/Bipolar.h>
 #include <gtkmm/checkbutton.h>
+
+// Template for a widget taking two string constructor arguments.
 
 namespace GtkX {
 
-    typedef Widget2s<Gtk::CheckButton> CheckButton;
+    class CheckButton: public Bipolar, public Gtk::CheckButton {
+    public:
+	CheckButton(GtkX::Container &parent, const GtkX::String &name="",
+		    const GtkX::String &label="");
+	~CheckButton(void);
+	Gtk::Widget *internal(void);
+	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
+	bool get_active();
+	void set_active(bool new_state, bool notify=false);
+#include <GtkX/redirect.h>
+    };
 
 }
 

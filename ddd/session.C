@@ -993,13 +993,19 @@ static void SetSessionCB1(GUI::ListView *dialog)
 
 #endif
 
-static TOGGLEBUTTON_P dump_core_w     = 0;
+#if defined(IF_XM)
+static Widget dump_core_w     = 0;
+#else
+static GUI::CheckButton *dump_core_w     = 0;
+#endif
 static Widget may_kill_w      = 0;
 static Widget may_gcore_w     = 0;
 static Widget may_ptrace_w    = 0;
 static Widget gcore_methods_w = 0;
 
-static void SetGCoreSensitivityCB(CB_ALIST_NULL)
+#if defined(IF_XM)
+
+static void SetGCoreSensitivityCB(Widget, XtPointer, XtPointer)
 {
     bool set = 
 	XmToggleButtonGetState(dump_core_w) && XtIsSensitive(dump_core_w);
@@ -1016,6 +1022,27 @@ static void SetGCoreSensitivityCB(CB_ALIST_NULL)
 #endif
 }
 
+#else
+
+static void SetGCoreSensitivityCB(void)
+{
+    bool set = 
+	dump_core_w->get_active() && dump_core_w->is_sensitive();
+
+    gcore_methods_w->set_sensitive(set);
+
+    may_kill_w->set_sensitive(set);
+    may_gcore_w->set_sensitive(set && gdb->type() == GDB &&
+			       !string(app_data.get_core_command).empty());
+#if HAVE_PTRACE_DUMPCORE
+    may_ptrace_w->set_sensitive(set && gdb->type() == GDB);
+#else
+    may_ptrace_w->set_sensitive(false);
+#endif
+}
+
+#endif
+
 static unsigned long gcore_method = 0;
 
 static void SetGCoreMethodCB(CB_ALIST_2(XtP(unsigned long) client_data))
@@ -1026,20 +1053,26 @@ static void SetGCoreMethodCB(CB_ALIST_2(XtP(unsigned long) client_data))
 static MMDesc gcore_methods[] =
 {
     MENTRYL("kill", "kill",     MMPush, 
-      HIDE_0_BIND_1(PTR_FUN(SetGCoreMethodCB), 0), 0, &may_kill_w),
+	    HIDE_0_BIND_1(PTR_FUN(SetGCoreMethodCB), 0),
+	    0, &may_kill_w),
     MENTRYL("gcore", "gcore",   MMPush, 
-      HIDE_0_BIND_1(PTR_FUN(SetGCoreMethodCB), MAY_GCORE), 0, &may_gcore_w),
+	    HIDE_0_BIND_1(PTR_FUN(SetGCoreMethodCB), MAY_GCORE),
+	    0, &may_gcore_w),
     MENTRYL("ptrace", "ptrace", MMPush, 
-      HIDE_0_BIND_1(PTR_FUN(SetGCoreMethodCB), MAY_PTRACE), 0, &may_ptrace_w),
+	    HIDE_0_BIND_1(PTR_FUN(SetGCoreMethodCB), MAY_PTRACE),
+	    0, &may_ptrace_w),
     MMEnd
 };
 
 static MMDesc gcore_items[] =
 {
-    MENTRYL("dump", "dump",       MMToggle, 
-      HIDE_0(PTR_FUN(SetGCoreSensitivityCB)), 0, (Widget *)&dump_core_w),
+    GENTRYL("dump", "dump",       MMToggle, 
+	    BIND(SetGCoreSensitivityCB, 0),
+	    sigc::hide(sigc::ptr_fun(SetGCoreSensitivityCB)),
+	    0, &dump_core_w),
     MENTRYL("method", "method",   MMOptionMenu, 
-      HIDE_0(PTR_FUN(SetGCoreSensitivityCB)), gcore_methods, &gcore_methods_w),
+	    HIDE_0(PTR_FUN(SetGCoreSensitivityCB)),
+	    gcore_methods, &gcore_methods_w),
     MMEnd
 };
 

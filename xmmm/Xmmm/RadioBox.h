@@ -34,12 +34,6 @@
 
 namespace Xmmm {
 
-    enum Orientation
-    {
-	ORIENTATION_HORIZONTAL,
-	ORIENTATION_VERTICAL
-    };
-
     class RadioBox: public Container {
 	::Widget box_;
     public:

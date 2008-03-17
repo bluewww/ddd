@@ -1,4 +1,4 @@
-// $Id$
+// $Id$ -*- C++ -*-
 // Simple interface to motif menus
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
@@ -70,7 +70,7 @@ const MMType MMArrow       = 14; // Create an arrow button
 const MMType MMSpinBox     = 15; // Like MMTextField, but add two spin buttons
 const MMType MMComboBox    = 16; // Create a combo box
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #define MMMenuItem MMPush
 #define MMCheckItem MMToggle
 #define MMRadio MMToggle
@@ -277,6 +277,7 @@ extern void dummy_xcallback(GUI::Widget *);
 #define GENTRYL(n,s,t,c,cx,sub,w) { n, t, c, sub, (Widget *)w, 0, 0}
 #define GENTRYI(n,i,t,c,cx,sub,w) { n, t, c, sub, (Widget *)w, 0, 0}
 #define GENTRYLI(n,s,i,t,c,cx,sub,w) { n, t, c, sub, (Widget *)w, 0, 0}
+#define BIND(f,d) { f, XtPointer(d) }
 #elif defined(IF_XMMM)
 #define MENTRYL(n,s,t,c,sub,w) { n, s, NULL, t, c, sub, w, 0, 0, MDUMMY, 0, 0}
 #define MENTRYI(n,i,t,c,sub,w) { n, "", i, t, c, sub, w, 0, 0, MDUMMY, 0, 0}

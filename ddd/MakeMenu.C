@@ -548,34 +548,36 @@ void MMaddItems(CONTAINER_P shell,
 	    break;
 	}
 
+#if defined(IF_XM)
+
 	case MMToggle:
 	{
 	    // Create a ToggleButton
 	    assert(subitems == 0);
 
-#if defined(IF_MOTIF)
 	    arg = 0;
 	    widget = verify(XmCreateToggleButton(shell, XMST(name), args, arg));
-#else
-	    if (menushell) {
-		std::cerr << "*** ERROR: CREATE MMToggle IN MENU ***\n";
-		xwidget = new GUI::CheckMenuItem(container, name, label_string);
-	    }
-	    else
-		xwidget = new GUI::CheckButton(container, name, label_string);
-#endif
 	    break;
 	}
 
-#if !defined(IF_MOTIF)
+#else
+
+	case MMToggle:
+	{
+	    // Create a ToggleButton
+	    assert(subitems == 0);
+	    xwidget = new GUI::CheckButton(*xshell, name, label_string);
+	    break;
+	}
+
 	case MMCheckItem:
 	{
 	    // Create a CheckItem
 	    assert(subitems == 0);
-
-	    xwidget = new GUI::CheckMenuItem(container, name, label_string);
+	    xwidget = new GUI::CheckMenuItem(*xshell, name, label_string);
 	    break;
 	}
+
 #endif
 
 #if !defined(IF_MOTIF)
@@ -844,7 +846,8 @@ void MMaddItems(CONTAINER_P shell,
 	    arg = 0;
 	    widget = verify(XmCreateScale(shell, XMST(name), args, arg));
 #else
-	    xwidget = new GUI::HScale(*xshell, name);
+	    std::cerr << "FIXME: Hardwired bounds for HScale.\n";
+	    xwidget = new GUI::HScale(*xshell, name, 0, 16);
 #endif
 	    break;
 	}
@@ -1465,7 +1468,7 @@ static void addCallback(const MMDesc *item, XtPointer default_closure)
 	break;
     }
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     case MMToggle:
       // case MMCheckItem:
     case MMScale:
@@ -1500,13 +1503,13 @@ static void addCallback(const MMDesc *item, XtPointer default_closure)
     }
     case MMScale:
     {
-	if (callback) {
-	    Gtk::Scale *scale = dynamic_cast<Gtk::Scale *>(widget);
+	if (xcallback) {
+	    GUI::Scale *scale = dynamic_cast<GUI::Scale *>(xwidget);
 	    if (scale)
-		scale->signal_value_changed().connect(sigc::bind(callback, widget));
+		scale->signal_value_changed().connect(sigc::bind(xcallback, xwidget));
 	}
 	else
-	    set_sensitive(widget, false);
+	    xwidget->set_sensitive(false);
 	break;
     }
 #endif

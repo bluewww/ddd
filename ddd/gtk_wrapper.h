@@ -15,9 +15,6 @@ typedef Display *DISPLAY_P;
 typedef Screen *SCREEN_P;
 
 typedef Widget CONTAINER_P;
-typedef Widget TOGGLEBUTTON_P;
-typedef Widget CHECKMENUITEM_P;
-typedef Widget RADIOBUTTON_P;
 typedef Widget BUTTON_P;
 typedef Widget DIALOG_P;
 typedef Widget NOTEBOOK_P;
@@ -38,8 +35,6 @@ typedef Widget COMBOBOXENTRYTEXT_P;
 typedef Widget SPINBUTTON_P;
 typedef Widget FILECHOOSERDIALOG_P;
 typedef Widget TREEVIEW_P;
-typedef Widget RANGE_P;
-typedef Widget SCALE_P;
 typedef Widget FIXED_P;
 typedef XImage *XIMAGE_P;
 
@@ -660,9 +655,6 @@ typedef Gtk::Notebook *NOTEBOOK_P;
 #include <gtkmm/radiobutton.h>
 #include <gtkmm/checkmenuitem.h>
 
-typedef Gtk::ToggleButton *TOGGLEBUTTON_P;
-typedef Gtk::CheckMenuItem *CHECKMENUITEM_P;
-typedef Gtk::RadioButton *RADIOBUTTON_P;
 typedef Gtk::Button *BUTTON_P;
 
 #define XmToggleButtonGetState(b) (b)->get_active()
@@ -683,13 +675,6 @@ void set_button_label(Gtk::Widget *, const Glib::ustring &);
 typedef Gtk::Fixed *FIXED_P;
 
 // End "Fixed" widget
-
-// Scale widgets
-#include <gtkmm/range.h>
-#include <gtkmm/scale.h>
-
-typedef Gtk::Scale *SCALE_P;
-typedef Gtk::Range *RANGE_P;
 
 // Label widget
 

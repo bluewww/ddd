@@ -1,5 +1,3 @@
- // -*- C++ -*-
-
 // High-level GUI wrapper for Gtkmm.
 
 // Copyright (C) 2007 Peter Wainwright <prw@ceiriog.eclipse.co.uk>
@@ -25,31 +23,60 @@
 // Unfortunately Motif widgets require parent and name arguments to
 // the constructor, unlike the Gtk ones.  Motif (Xt) widgets cannot be
 // reparented.  Therefore we need a constructor with extra arguments.
-// A brief look at QT indicates that this will be required there as
-// well.
 
-#ifndef GTKX_RADIOBUTTON_H
-#define GTKX_RADIOBUTTON_H
+#include <GtkX/CheckMenuItem.h>
+#include <GtkX/Container.h>
 
-#include <GtkX/Bipolar.h>
-#include <gtkmm/radiobutton.h>
+#include <gtk/gtkcheckmenuitem.h>
 
-namespace GtkX {
+using namespace GtkX;
 
-    class RadioButton: public Bipolar, public Gtk::RadioButton {
-    public:
-	RadioButton(GtkX::Container &parent, const String &name="",
-		    const String &label="");
-	RadioButton(Gtk::Container *parent, const String &name="",
-		    const String &label="");
-	~RadioButton(void);
-	Gtk::Widget *internal(void);
-	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
-	bool get_active();
-	void set_active(bool new_state, bool notify=false);
-#include <GtkX/redirect.h>
-    };
-
+static const GtkX::String mklabel(const GtkX::String &name,
+				  const GtkX::String &label)
+{
+    if (label.s().length() > 0)
+	return label;
+    return name;
 }
 
-#endif // GTKX_RADIOBUTTON_H
+CheckMenuItem::CheckMenuItem(GtkX::Container &parent, const GtkX::String &name,
+			     const GtkX::String &label)
+{
+    set_name(name.s());
+    parent.add_child(*this);
+    postinit();
+}
+
+CheckMenuItem::~CheckMenuItem(void)
+{
+}
+
+Gtk::Widget *
+CheckMenuItem::internal(void)
+{
+    return this;
+}
+
+
+bool
+CheckMenuItem::get_active()
+{
+    return Gtk::CheckMenuItem::get_active();
+}
+
+void
+CheckMenuItem::set_active(bool new_state, bool notify)
+{
+    if (Gtk::CheckMenuItem::get_active() != new_state)
+    {
+	if (notify) {
+	    set_active(new_state);
+	}
+	else {
+	    GtkCheckMenuItem *cmi_obj = gobj();
+	    cmi_obj->active = !cmi_obj->active;
+	    gtk_widget_queue_draw(GTK_WIDGET(cmi_obj));
+	}
+    }
+}
+

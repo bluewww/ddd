@@ -34,7 +34,10 @@
 
 namespace Xmmm {
 
-    class VBox: public Container {
+    class Box: public Container {
+    };
+
+    class VBox: public Box {
 	::Widget rc_;
     public:
 	void init(::Widget parent, const Xmmm::String &name="");
@@ -45,7 +48,7 @@ namespace Xmmm {
 	operator ::Widget(void); // TEMPORARY
     };
 
-    class HBox: public Container {
+    class HBox: public Box {
 	::Widget rc_;
     public:
 	void init(::Widget parent, const Xmmm::String &name="");

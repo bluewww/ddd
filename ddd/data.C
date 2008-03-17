@@ -86,9 +86,10 @@ void graphLayoutCB(CB_ALIST_NULL)
 #endif // IF_MOTIF
 }
 
-void graphToggleLocalsCB(CB_ARG_LIST_TOGGLE(w, call_data))
+#if defined(IF_XM)
+
+void graphToggleLocalsCB(Widget w, XtPointer, XtPointer call_data)
 {
-#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *cbs = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
@@ -96,16 +97,24 @@ void graphToggleLocalsCB(CB_ARG_LIST_TOGGLE(w, call_data))
 	data_disp->new_user_display(gdb->info_locals_command());
     else
 	data_disp->delete_user_display(gdb->info_locals_command());
-#else // NOT IF_MOTIF
-#ifdef NAG_ME
-#warning graphToggleLocalsCB not implemented
-#endif
-#endif // IF_MOTIF
 }
 
-void graphToggleArgsCB(CB_ARG_LIST_TOGGLE(w, call_data))
+#else
+
+void graphToggleLocalsCB(GUI::CheckMenuItem *w)
 {
-#ifdef IF_MOTIF
+    if (w->get_active())
+	data_disp->new_user_display(gdb->info_locals_command());
+    else
+	data_disp->delete_user_display(gdb->info_locals_command());
+}
+
+#endif
+
+#if defined(IF_XM)
+
+void graphToggleArgsCB(Widget w, XtPointer, XtPointer call_data)
+{
     XmToggleButtonCallbackStruct *cbs = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
@@ -113,9 +122,16 @@ void graphToggleArgsCB(CB_ARG_LIST_TOGGLE(w, call_data))
 	data_disp->new_user_display(gdb->info_args_command());
     else
 	data_disp->delete_user_display(gdb->info_args_command());
-#else // NOT IF_MOTIF
-#ifdef NAG_ME
-#warning graphToggleArgsCB not implemented
-#endif
-#endif // IF_MOTIF
 }
+
+#else
+
+void graphToggleArgsCB(GUI::CheckMenuItem *w)
+{
+    if (w->get_active())
+	data_disp->new_user_display(gdb->info_args_command());
+    else
+	data_disp->delete_user_display(gdb->info_args_command());
+}
+
+#endif

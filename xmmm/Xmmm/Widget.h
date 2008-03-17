@@ -13,6 +13,12 @@
 
 namespace Xmmm {
 
+    enum Orientation
+    {
+	ORIENTATION_HORIZONTAL,
+	ORIENTATION_VERTICAL
+    };
+
     // This class is used to simplify constructors which can take a
     // C++ or old-fashioned C string.
     class String {

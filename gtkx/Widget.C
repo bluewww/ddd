@@ -170,6 +170,13 @@ Widget::property_user_data(void)
     return PropertyProxy<void *>(this, "user-data");
 }
 
+PropertyProxy_RO<void *>
+Widget::property_user_data(void) const
+{
+    // N.B. This must be consistent with Gtk.
+    return PropertyProxy_RO<void *>(this, "user-data");
+}
+
 void
 Widget::add_destroy_notify_callback(void *data, void *(*f)(void *)) {
     internal()->add_destroy_notify_callback(data, f);

@@ -1,4 +1,4 @@
- // -*- C++ -*-
+// -*- C++ -*-
 
 // High-level GUI wrapper for Gtkmm.
 
@@ -28,28 +28,19 @@
 // A brief look at QT indicates that this will be required there as
 // well.
 
-#ifndef GTKX_RADIOBUTTON_H
-#define GTKX_RADIOBUTTON_H
+#ifndef GTKX_BIPOLAR_H
+#define GTKX_BIPOLAR_H
 
-#include <GtkX/Bipolar.h>
-#include <gtkmm/radiobutton.h>
+#include <GtkX/Widget.h>
 
 namespace GtkX {
 
-    class RadioButton: public Bipolar, public Gtk::RadioButton {
+    class Bipolar: public Widget {
     public:
-	RadioButton(GtkX::Container &parent, const String &name="",
-		    const String &label="");
-	RadioButton(Gtk::Container *parent, const String &name="",
-		    const String &label="");
-	~RadioButton(void);
-	Gtk::Widget *internal(void);
-	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
-	bool get_active();
-	void set_active(bool new_state, bool notify=false);
-#include <GtkX/redirect.h>
+	virtual bool get_active() = 0;
+	virtual void set_active(bool new_state, bool notify=false) = 0;
     };
 
 }
 
-#endif // GTKX_RADIOBUTTON_H
+#endif // GTKX_BIPOLAR_H

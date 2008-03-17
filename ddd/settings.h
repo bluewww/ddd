@@ -29,15 +29,15 @@
 #ifndef _DDD_settings_h
 #define _DDD_settings_h
 
-#ifdef IF_MOTIF
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
+#if defined(IF_MOTIF)
 #include <X11/Intrinsic.h>
-
-#else // NOT IF_MOTIF
+#endif
 
 #include "gtk_wrapper.h"
-
-#endif // IF_MOTIF
 
 #include "bool.h"
 #include "strclass.h"
@@ -84,8 +84,13 @@ extern void dddPopupInfosCB(CB_ALIST_1(Widget));
 // Update debugger infos
 extern void update_infos();
 
+#if defined(IF_XM)
 // Register additional info button
 extern void register_info_button(Widget w);
+#else
+// Register additional info button
+extern void register_info_button(GUI::Widget *w);
+#endif
 
 
 // Signal Handling
@@ -152,11 +157,11 @@ void update_define_later(const string& command);
 extern void dddDefineCommandCB(CB_ALIST_1(Widget w));
 
 // Update define buttons
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 void UpdateDefinePanelCB(Widget w=NULL, XtPointer=NULL, XtPointer=NULL);
-#else // NOT IF_MOTIF
+#else
 void UpdateDefinePanelCB(CB_ALIST_1(Widget w=NULL));
-#endif // IF_MOTIF
+#endif
 
 #endif // _DDD_settings_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

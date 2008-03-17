@@ -429,10 +429,6 @@ COND_DDD_SRC = \
 	plotter.h    \
 	sashes.C     \
 	sashes.h     \
-	simpleMenu.C \
-	simpleMenu.h \
-	tips.C       \
-	tips.h       \
 	xconfig.C    \
 	xconfig.h    \
 	PlotArea.C   \
@@ -617,6 +613,10 @@ DDD_SRC = \
 	UndoBE.h     \
 	WhatNextCB.C \
 	WhatNextCB.h \
+	tips.C       \
+	tips.h       \
+	simpleMenu.C \
+	simpleMenu.h \
 	$(COND_DDD_SRC)
 
 # Automatically generated source files which should not be distributed.

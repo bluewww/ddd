@@ -29,20 +29,35 @@
 #ifndef _DDD_data_h
 #define _DDD_data_h
 
-#ifdef IF_MOTIF
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
+#if defined(IF_MOTIF)
 #include <X11/Intrinsic.h>
+#endif
 
-#endif // IF_MOTIF
+#if !defined(IF_XM)
+#include <GUI/CheckMenuItem.h>
+#endif
 
 #include "gtk_wrapper.h"
 
-extern void graphAlignCB        (CB_ALIST_NULL);
-extern void graphRotateCB       (CB_ALIST_NULL);
-extern void graphLayoutCB       (CB_ALIST_NULL);
+#if defined(IF_XM)
+extern void graphAlignCB        (Widget, XtPointer, XtPointer);
+extern void graphRotateCB       (Widget, XtPointer, XtPointer);
+extern void graphLayoutCB       (Widget, XtPointer, XtPointer);
 
-extern void graphToggleLocalsCB (CB_ARG_LIST_TOGGLE(,));
-extern void graphToggleArgsCB   (CB_ARG_LIST_TOGGLE(,));
+extern void graphToggleLocalsCB (Widget, XtPointer, XtPointer);
+extern void graphToggleArgsCB   (Widget, XtPointer, XtPointer);
+#else
+extern void graphAlignCB        (void);
+extern void graphRotateCB       (void);
+extern void graphLayoutCB       (void);
+
+extern void graphToggleLocalsCB (GUI::CheckMenuItem *);
+extern void graphToggleArgsCB   (GUI::CheckMenuItem *);
+#endif
 
 #endif // _DDD_data_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

@@ -29,15 +29,26 @@
 #ifndef _DDD_print_h
 #define _DDD_print_h
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#if defined(IF_XM)
+#include <X11/Intrinsic.h>
+#else
+#include <GUI/Button.h>
+#endif
+
 #include "ddd.h"
 
-extern void PrintGraphCB (CB_ALIST_1(Widget));
-extern void PrintPlotCB  (CB_ALIST_1(Widget));
-#if defined(IF_MOTIF)
-extern void PrintAgainCB(Widget, XtPointer, XtPointer);
-#endif
-#if !defined(IF_XM)
-extern void PrintAgainCB1(GUI::Widget *w, long client_data);
+#if defined(IF_XM)
+extern void PrintGraphCB (Widget, XtPointer, XtPointer);
+extern void PrintPlotCB  (Widget, XtPointer, XtPointer);
+extern void PrintAgainCB (Widget, XtPointer, XtPointer);
+#else
+extern void PrintGraphCB (GUI::Button *);
+extern void PrintPlotCB  (GUI::Button *);
+extern void PrintAgainCB1(GUI::Button *w, long client_data);
 #endif
 
 #endif // _DDD_print_h

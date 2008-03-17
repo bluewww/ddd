@@ -81,3 +81,15 @@ translate_coordinates(GtkX::Widget &dest_w, int x1, int y1, int &x2, int &y2)
     return GtkX::Widget::translate_coordinates(dest_w, x1, y1, x2, y2);
 }
 
+GtkX::PropertyProxy<void *>
+property_user_data(void)
+{
+    return GtkX::Widget::property_user_data();
+}
+
+GtkX::PropertyProxy_RO<void *>
+property_user_data(void) const
+{
+    return GtkX::Widget::property_user_data();
+}
+

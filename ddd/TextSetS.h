@@ -29,9 +29,17 @@
 #ifndef _DDD_TextSetSelection_h
 #define _DDD_TextSetSelection_h
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#if defined(IF_MOTIF)
 #include <Xm/Xm.h>
 #include <Xm/Text.h>
 #include <Xm/TextF.h>
+#endif
+
+#include "gtk_wrapper.h"
 
 // Some LessTif versions have trouble with multiple selections.
 // Use these wrappers instead.

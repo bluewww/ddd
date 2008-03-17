@@ -56,7 +56,9 @@ char DataDisp_rcsid[] =
 // Data Display Implementation
 //-----------------------------------------------------------------------------
 
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif
 
 #include "DataDisp.h"
 
@@ -368,49 +370,91 @@ const int DataDisp::theme_items = 20;
 
 MMDesc DataDisp::theme_menu[] =
 {
-    MENTRYL("t1", "t1", MMCheckItem | MMUnmanaged, 
-     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 1  ), 0, 0), 
-    MENTRYL("t2", "t2", MMCheckItem | MMUnmanaged, 
-     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 2  ), 0, 0), 
-    MENTRYL("t3", "t3", MMCheckItem | MMUnmanaged, 
-     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 3  ), 0, 0), 
-    MENTRYL("t4", "t4", MMCheckItem | MMUnmanaged, 
-     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 4  ), 0, 0), 
-    MENTRYL("t5", "t5", MMCheckItem | MMUnmanaged, 
-     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 5  ), 0, 0), 
-    MENTRYL("t6", "t6", MMCheckItem | MMUnmanaged, 
-     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 6  ), 0, 0), 
-    MENTRYL("t7", "t7", MMCheckItem | MMUnmanaged, 
-     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 7  ), 0, 0), 
-    MENTRYL("t8", "t8", MMCheckItem | MMUnmanaged, 
-     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 8  ), 0, 0), 
-    MENTRYL("t9", "t9", MMCheckItem | MMUnmanaged, 
-     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 9  ), 0, 0), 
-    MENTRYL("t10", "t10", MMCheckItem | MMUnmanaged, 
-     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 10 ), 0, 0), 
-    MENTRYL("t11", "t11", MMCheckItem | MMUnmanaged, 
-     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 11 ), 0, 0), 
-    MENTRYL("t12", "t12", MMCheckItem | MMUnmanaged, 
-     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 12 ), 0, 0), 
-    MENTRYL("t13", "t13", MMCheckItem | MMUnmanaged, 
-     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 13 ), 0, 0), 
-    MENTRYL("t14", "t14", MMCheckItem | MMUnmanaged, 
-     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 14 ), 0, 0), 
-    MENTRYL("t15", "t15", MMCheckItem | MMUnmanaged, 
-     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 15 ), 0, 0), 
-    MENTRYL("t16", "t16", MMCheckItem | MMUnmanaged, 
-     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 16 ), 0, 0), 
-    MENTRYL("t17", "t17", MMCheckItem | MMUnmanaged, 
-     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 17 ), 0, 0), 
-    MENTRYL("t18", "t18", MMCheckItem | MMUnmanaged, 
-     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 18 ), 0, 0), 
-    MENTRYL("t19", "t19", MMCheckItem | MMUnmanaged, 
-     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 19 ), 0, 0), 
-    MENTRYL("t20", "t20", MMCheckItem | MMUnmanaged, 
-     BIND_1(PTR_FUN(DataDisp::toggleThemeCB), 20 ), 0, 0), 
+    GENTRYL("t1", "t1", MMCheckItem | MMUnmanaged, 
+	    BIND(DataDisp::toggleThemeCB, 1),
+	    sigc::bind(sigc::retype(sigc::ptr_fun(DataDisp::toggleThemeCB)), 1),
+	    0, 0), 
+    GENTRYL("t2", "t2", MMCheckItem | MMUnmanaged, 
+	    BIND(DataDisp::toggleThemeCB, 2),
+	    sigc::bind(sigc::retype(sigc::ptr_fun(DataDisp::toggleThemeCB)), 2),
+	    0, 0), 
+    GENTRYL("t3", "t3", MMCheckItem | MMUnmanaged, 
+	    BIND(DataDisp::toggleThemeCB, 3),
+	    sigc::bind(sigc::retype(sigc::ptr_fun(DataDisp::toggleThemeCB)), 3),
+	    0, 0), 
+    GENTRYL("t4", "t4", MMCheckItem | MMUnmanaged, 
+	    BIND(DataDisp::toggleThemeCB, 4),
+	    sigc::bind(sigc::retype(sigc::ptr_fun(DataDisp::toggleThemeCB)), 4),
+	    0, 0), 
+    GENTRYL("t5", "t5", MMCheckItem | MMUnmanaged, 
+	    BIND(DataDisp::toggleThemeCB, 5),
+	    sigc::bind(sigc::retype(sigc::ptr_fun(DataDisp::toggleThemeCB)), 5),
+	    0, 0), 
+    GENTRYL("t6", "t6", MMCheckItem | MMUnmanaged, 
+	    BIND(DataDisp::toggleThemeCB, 6),
+	    sigc::bind(sigc::retype(sigc::ptr_fun(DataDisp::toggleThemeCB)), 6),
+	    0, 0), 
+    GENTRYL("t7", "t7", MMCheckItem | MMUnmanaged, 
+	    BIND(DataDisp::toggleThemeCB, 7),
+	    sigc::bind(sigc::retype(sigc::ptr_fun(DataDisp::toggleThemeCB)), 7),
+	    0, 0), 
+    GENTRYL("t8", "t8", MMCheckItem | MMUnmanaged, 
+	    BIND(DataDisp::toggleThemeCB, 8),
+	    sigc::bind(sigc::retype(sigc::ptr_fun(DataDisp::toggleThemeCB)), 8),
+	    0, 0), 
+    GENTRYL("t9", "t9", MMCheckItem | MMUnmanaged, 
+	    BIND(DataDisp::toggleThemeCB, 9),
+	    sigc::bind(sigc::retype(sigc::ptr_fun(DataDisp::toggleThemeCB)), 9),
+	    0, 0), 
+    GENTRYL("t10", "t10", MMCheckItem | MMUnmanaged, 
+	    BIND(DataDisp::toggleThemeCB, 10),
+	    sigc::bind(sigc::retype(sigc::ptr_fun(DataDisp::toggleThemeCB)), 10),
+	    0, 0), 
+    GENTRYL("t11", "t11", MMCheckItem | MMUnmanaged, 
+	    BIND(DataDisp::toggleThemeCB, 11),
+	    sigc::bind(sigc::retype(sigc::ptr_fun(DataDisp::toggleThemeCB)), 11),
+	    0, 0), 
+    GENTRYL("t12", "t12", MMCheckItem | MMUnmanaged, 
+	    BIND(DataDisp::toggleThemeCB, 12),
+	    sigc::bind(sigc::retype(sigc::ptr_fun(DataDisp::toggleThemeCB)), 12),
+	    0, 0), 
+    GENTRYL("t13", "t13", MMCheckItem | MMUnmanaged, 
+	    BIND(DataDisp::toggleThemeCB, 13),
+	    sigc::bind(sigc::retype(sigc::ptr_fun(DataDisp::toggleThemeCB)), 13),
+	    0, 0), 
+    GENTRYL("t14", "t14", MMCheckItem | MMUnmanaged, 
+	    BIND(DataDisp::toggleThemeCB, 14),
+	    sigc::bind(sigc::retype(sigc::ptr_fun(DataDisp::toggleThemeCB)), 14),
+	    0, 0), 
+    GENTRYL("t15", "t15", MMCheckItem | MMUnmanaged, 
+	    BIND(DataDisp::toggleThemeCB, 15),
+	    sigc::bind(sigc::retype(sigc::ptr_fun(DataDisp::toggleThemeCB)), 15),
+	    0, 0), 
+    GENTRYL("t16", "t16", MMCheckItem | MMUnmanaged, 
+	    BIND(DataDisp::toggleThemeCB, 16),
+	    sigc::bind(sigc::retype(sigc::ptr_fun(DataDisp::toggleThemeCB)), 16),
+	    0, 0), 
+    GENTRYL("t17", "t17", MMCheckItem | MMUnmanaged, 
+	    BIND(DataDisp::toggleThemeCB, 17),
+	    sigc::bind(sigc::retype(sigc::ptr_fun(DataDisp::toggleThemeCB)), 17),
+	    0, 0), 
+    GENTRYL("t18", "t18", MMCheckItem | MMUnmanaged, 
+	    BIND(DataDisp::toggleThemeCB, 18),
+	    sigc::bind(sigc::retype(sigc::ptr_fun(DataDisp::toggleThemeCB)), 18),
+	    0, 0), 
+    GENTRYL("t19", "t19", MMCheckItem | MMUnmanaged, 
+	    BIND(DataDisp::toggleThemeCB, 19),
+	    sigc::bind(sigc::retype(sigc::ptr_fun(DataDisp::toggleThemeCB)), 19),
+	    0, 0), 
+    GENTRYL("t20", "t20", MMCheckItem | MMUnmanaged, 
+	    BIND(DataDisp::toggleThemeCB, 20),
+	    sigc::bind(sigc::retype(sigc::ptr_fun(DataDisp::toggleThemeCB)), 20),
+	    0, 0), 
     MMSep, 
-    MENTRYL("edit", "Edit Themes...", MMPush,
-     HIDE_0(PTR_FUN(dddPopupThemesCB)), 0, 0),
+    GENTRYL("edit", "Edit Themes...", MMPush,
+	    BIND(dddPopupThemesCB, 0),
+	    sigc::hide(sigc::ptr_fun(dddPopupThemesCB)),
+	    0, 0),
     MMEnd
 };
 
@@ -3557,6 +3601,127 @@ void DataDisp::graph_popupAct (GUI::Widget *, GUI::Event* event, String *args,
 
 #endif
 
+#if defined(IF_XM)
+
+void DataDisp::set_args(const BoxPoint& p, SelectionMode mode)
+{
+    DispNode*  disp_node   = 0;
+    DispValue* disp_value  = 0;
+
+    bool was_selected = false;
+
+    int disp_nr = getDispNrAtPoint(p);
+    if (disp_nr)
+    {
+	disp_node = disp_graph->get (disp_nr);
+	disp_value = (DispValue *)disp_node->box()->data(p);
+
+	was_selected = selected(disp_node) && disp_value == 0;
+
+	switch (mode)
+	{
+	case ExtendSelection:
+	case ToggleSelection:
+	    if (disp_node == selected_node()
+		&& disp_node->selected_value() != 0
+		&& disp_value != disp_node->selected_value())
+	    {
+		// Add another value in this node.  We can't do this,
+		// so toggle the entire node.
+		disp_node->selected() = false;
+		disp_node->select(0);
+		graphEditRedrawNode(graph_edit, disp_node);
+		break;
+	    }
+	    // FALL THROUGH
+
+	case SetSelection:
+	    if (disp_value != disp_node->selected_value())
+	    {
+		disp_node->select(disp_value);
+		graphEditRedrawNode(graph_edit, disp_node);
+	    }
+	    break;
+	}
+    }
+
+    if (mode == SetSelection)
+    {
+	// Clear other highlights and selections
+	MapRef ref;
+	for (DispNode* dn = disp_graph->first(ref); 
+	     dn != 0;
+	     dn = disp_graph->next(ref))
+	{
+	    if (dn != disp_node)
+	    {
+		bool redraw = false;
+
+		if (!was_selected)
+		{
+		    if (!redraw)
+			redraw = dn->selected();
+		    dn->selected() = false;
+		}
+
+		if (!redraw)
+		    redraw = (dn->highlight() != 0);
+		dn->select(0);
+
+		if (redraw) {
+		    graphEditRedrawNode(graph_edit, dn);
+		}
+	    }
+	}
+    }
+
+    // Themes.
+    static StringArray all_themes;
+    all_themes = DispBox::theme_manager.themes();
+    StringArray current_themes;
+    DispValue *dv = selected_value();
+    if (dv != 0)
+	current_themes = DispBox::theme_manager.themes(dv->full_name());
+
+    int i;
+    for (i = 0; i < all_themes.size() && theme_menu[i].widget != 0; i++)
+    {
+	const string& theme = all_themes[i];
+	Widget button = static_cast<Widget>(theme_menu[i].widget);
+	XtVaSetValues(button, XmNuserData, theme.chars(), XtPointer(0));
+	bool set = false;
+	for (int j = 0; j < current_themes.size(); j++)
+	    if (theme == current_themes[j])
+	    {
+		set = true;
+		break;
+	    }
+
+	XmToggleButtonSetState(button, set, False);
+
+	string doc = vsldoc(theme, DispBox::vsllib_path);
+	if (doc.contains("."))
+	    doc = doc.before(".");
+	else if (doc.empty())
+	    doc = theme;
+	set_label(button, doc);
+
+	manage_child(button, true);
+    }
+
+    for (; theme_menu[i].widget != 0; i++)
+    {
+	Widget& button = theme_menu[i].widget;
+	if (XmIsToggleButton(button))
+	    manage_child(button, false);
+    }
+
+    refresh_args(true);
+    refresh_display_list();
+}
+
+#else
+
 void DataDisp::set_args(const BoxPoint& p, SelectionMode mode)
 {
     DispNode*  disp_node   = 0;
@@ -3656,14 +3821,14 @@ void DataDisp::set_args(const BoxPoint& p, SelectionMode mode)
 #ifdef NAG_ME
 #warning Do we really need a reference here?
 #endif
-	TOGGLEBUTTON_P button = static_cast<TOGGLEBUTTON_P>(theme_menu[i].widget);
+#if defined(IF_XM)
+	Widget &button = theme_menu[i].widget;
+#else
+	GUI::CheckButton *button = static_cast<GUI::CheckButton *>(theme_menu[i].widget);
+#endif
 #if defined(IF_MOTIF)
 	XtVaSetValues(button, XmNuserData, theme.chars(), XtPointer(0));
 #else
-#ifdef NAG_ME
-#warning Using user data in this way is evil in an OO program.
-#warning We should have a class ThemeButton: public Gtk::Button
-#endif
 	button->property_user_data() = (void *)theme.chars();
 #endif
 	bool set = false;
@@ -3696,6 +3861,8 @@ void DataDisp::set_args(const BoxPoint& p, SelectionMode mode)
     refresh_args(true);
     refresh_display_list();
 }
+
+#endif
 
 DispNode *DataDisp::selected_node()
 {

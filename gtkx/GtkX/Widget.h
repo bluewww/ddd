@@ -14,6 +14,12 @@
 
 namespace GtkX {
 
+    enum Orientation
+    {
+	ORIENTATION_HORIZONTAL,
+	ORIENTATION_VERTICAL
+    };
+
     extern Glib::Quark gtkx_super_quark;
 
     class Widget;
@@ -26,6 +32,14 @@ namespace GtkX {
     public:
 	PropertyProxy(Widget *w0, const char *name0);
 	PropertyProxy &operator=(T);
+    };
+
+    template <class T>
+    class PropertyProxy_RO: public Glib::PropertyProxy_ReadOnly<T> {
+	const Widget *w;
+	const char *name;
+    public:
+	PropertyProxy_RO(const Widget *w0, const char *name0);
     };
 
     // This class is used to simplify constructors which can take a
@@ -98,6 +112,7 @@ namespace GtkX {
 	void remove_destroy_notify_callback(void *data);
 	bool translate_coordinates(GtkX::Widget &, int, int, int &, int &);
 	PropertyProxy<void *> property_user_data(void);
+	PropertyProxy_RO<void *> property_user_data(void) const;
 	sigc::signal<bool, GtkX::EventButton *> &signal_button_press_event();
 	sigc::signal<bool, GtkX::EventButton *> &signal_button_release_event();
 	sigc::signal<void> &signal_map();
@@ -115,6 +130,12 @@ namespace GtkX {
     {
 	Glib::PropertyProxy<T>::operator=(t);
 	return *this;
+    }
+
+    template <class T>
+    PropertyProxy_RO<T>::PropertyProxy_RO(const Widget *w0, const char *name0):
+	Glib::PropertyProxy_ReadOnly<T>(const_cast<Widget *>(w0)->internal(), name0)
+    {
     }
 
     sigc::signal<bool> &signal_idle();

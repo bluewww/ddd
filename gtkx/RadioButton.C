@@ -24,8 +24,9 @@
 // the constructor, unlike the Gtk ones.  Motif (Xt) widgets cannot be
 // reparented.  Therefore we need a constructor with extra arguments.
 
-#include <GtkX/Widget.h>
 #include <GtkX/RadioButton.h>
+#include <GtkX/Container.h>
+#include <gtk/gtkradiobutton.h>
 
 using namespace GtkX;
 
@@ -76,5 +77,27 @@ Gtk::Widget *
 RadioButton::internal(void)
 {
     return this;
+}
+
+bool
+RadioButton::get_active()
+{
+    return Gtk::RadioButton::get_active();
+}
+
+void
+RadioButton::set_active(bool new_state, bool notify)
+{
+    if (Gtk::RadioButton::get_active() != new_state)
+    {
+	if (notify) {
+	    set_active(new_state);
+	}
+	else {
+	    GtkRadioButton *rb_obj = gobj();
+	    rb_obj->check_button.toggle_button.active = !rb_obj->check_button.toggle_button.active;
+	    gtk_widget_queue_draw(GTK_WIDGET(rb_obj));
+	}
+    }
 }
 

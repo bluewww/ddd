@@ -31,12 +31,23 @@
 #ifndef GTKX_CHECKMENUITEM_H
 #define GTKX_CHECKMENUITEM_H
 
-#include <GtkX/Widget2s.h>
+#include <GtkX/Widget.h>
+#include <GtkX/Bipolar.h>
 #include <gtkmm/checkmenuitem.h>
 
 namespace GtkX {
 
-    typedef Widget2s<Gtk::CheckMenuItem> CheckMenuItem;
+    class CheckMenuItem: public Bipolar, public Gtk::CheckMenuItem {
+    public:
+	CheckMenuItem(GtkX::Container &parent, const String &name="",
+		      const String &label="");
+	~CheckMenuItem(void);
+	Gtk::Widget *internal(void);
+	bool get_active();
+	void set_active(bool new_state, bool notify=false);
+	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
+#include <GtkX/redirect.h>
+    };
 
 }
 

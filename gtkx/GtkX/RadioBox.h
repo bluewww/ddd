@@ -39,13 +39,6 @@
 
 namespace GtkX {
 
-    enum Orientation
-    {
-	ORIENTATION_HORIZONTAL,
-	ORIENTATION_VERTICAL
-    };
-
-
     // FIXME: Tried to derive from Gtk::Bin, but as Bin is an
     // "abstract" base class we would need to implement more method.
     class RadioBox: public Gtk::VBox, public Container {

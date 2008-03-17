@@ -31,13 +31,49 @@
 #ifndef GTKX_SCALE_H
 #define GTKX_SCALE_H
 
-#include <GtkX/Widget0.h>
+#include <GtkX/Container.h>
 #include <gtkmm/scale.h>
 
 namespace GtkX {
 
-    typedef Widget0<Gtk::HScale> HScale;
-    typedef Widget0<Gtk::VScale> VScale;
+    class Scale: public Widget {
+    protected:
+	sigc::signal<void> signal_value_changed_;
+	void value_changed_callback(void);
+    public:
+	void init_signals(void);
+	void set_value(double);
+	double get_value(void) const;
+	sigc::signal<void> signal_value_changed(void);
+    };
+
+    class HScale: public Scale, public Gtk::HScale {
+    public:
+	HScale(Container &parent, const String &name="");
+	HScale(Container &parent, const String &name,
+	       double min, double max, double step=1.0);
+	~HScale(void);
+	Gtk::Widget *internal(void);
+	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
+#include <GtkX/redirect.h>
+	void set_value(double x);
+	double get_value(void) const;
+	sigc::signal<void> signal_value_changed(void);
+    };
+
+    class VScale: public Scale, public Gtk::VScale {
+    public:
+	VScale(Container &parent, const String &name="");
+	VScale(Container &parent, const String &name,
+	       double min, double max, double step=1.0);
+	~VScale(void);
+	Gtk::Widget *internal(void);
+	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
+#include <GtkX/redirect.h>
+	void set_value(double x);
+	double get_value(void) const;
+	sigc::signal<void> signal_value_changed(void);
+    };
 
 }
 

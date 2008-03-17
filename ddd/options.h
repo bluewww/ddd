@@ -39,6 +39,9 @@
 
 #if !defined(IF_XM)
 #include <GUI/RadioButton.h>
+#include <GUI/CheckButton.h>
+#include <GUI/CheckMenuItem.h>
+#include <GUI/Scale.h>
 #endif
 
 #include "gtk_wrapper.h"
@@ -80,85 +83,104 @@ bool get_restart_commands(string& restart, unsigned long flags);
 void check_options_file();
 
 // Lots and lots of callbacks
-extern void sourceToggleFindWordsOnlyCB     (CB_ARG_LIST_TOGGLE(,));
-extern void sourceToggleFindCaseSensitiveCB (CB_ARG_LIST_TOGGLE(,));
-extern void sourceToggleCacheSourceFilesCB  (CB_ARG_LIST_TOGGLE(,));
-extern void sourceToggleCacheMachineCodeCB  (CB_ARG_LIST_TOGGLE(,));
-extern void sourceToggleDisplayLineNumbersCB(CB_ARG_LIST_TOGGLE(,));
 #if defined(IF_XM)
-extern void sourceSetIntRegistersCB         (CB_ARG_LIST_TOGGLE(,));
-extern void sourceSetAllRegistersCB         (CB_ARG_LIST_TOGGLE(,));
+extern void sourceToggleFindWordsOnlyCB     (Widget, XtPointer, XtPointer);
+extern void sourceToggleFindCaseSensitiveCB (Widget, XtPointer, XtPointer);
+extern void sourceToggleCacheSourceFilesCB  (Widget, XtPointer, XtPointer);
+extern void sourceToggleCacheMachineCodeCB  (Widget, XtPointer, XtPointer);
+extern void sourceToggleDisplayLineNumbersCB(Widget, XtPointer, XtPointer);
+#else
+extern void sourceToggleFindWordsOnlyCB     (GUI::CheckButton *);
+extern void sourceToggleFindCaseSensitiveCB (GUI::CheckButton *);
+extern void sourceToggleCacheSourceFilesCB  (GUI::CheckButton *);
+extern void sourceToggleCacheMachineCodeCB  (GUI::CheckButton *);
+extern void sourceToggleDisplayLineNumbersCB(GUI::CheckButton *);
+#endif
+#if defined(IF_XM)
+extern void sourceSetIntRegistersCB         (Widget, XtPointer, XtPointer);
+extern void sourceSetAllRegistersCB         (Widget, XtPointer, XtPointer);
+extern void sourceSetDisplayGlyphsCB        (Widget, XtPointer, XtPointer);
+extern void sourceSetUseSourcePathCB        (Widget, XtPointer, XtPointer);
+extern void sourceSetTabWidthCB             (Widget, XtPointer, XtPointer);
+extern void sourceSetSourceIndentCB 	    (Widget, XtPointer, XtPointer);
+extern void sourceSetCodeIndentCB 	    (Widget, XtPointer, XtPointer);
 #else
 extern void sourceSetIntRegistersCB         (GUI::RadioButton *);
 extern void sourceSetAllRegistersCB         (GUI::RadioButton *);
-#endif
-extern void sourceSetDisplayGlyphsCB        (CB_ARG_LIST_2());
-extern void sourceSetUseSourcePathCB        (CB_ARG_LIST_2());
-#if defined(IF_MOTIF)
-extern void sourceSetTabWidthCB             (CB_ARG_LIST_3());
-extern void sourceSetSourceIndentCB 	    (CB_ARG_LIST_3());
-extern void sourceSetCodeIndentCB 	    (CB_ARG_LIST_3());
-#else
-extern void sourceSetTabWidthCB             (RANGE_P);
-extern void sourceSetSourceIndentCB 	    (RANGE_P);
-extern void sourceSetCodeIndentCB 	    (RANGE_P);
+extern void sourceSetDisplayGlyphsCB        (bool);
+extern void sourceSetUseSourcePathCB        (bool);
+extern void sourceSetTabWidthCB             (GUI::Scale *);
+extern void sourceSetSourceIndentCB 	    (GUI::Scale *);
+extern void sourceSetCodeIndentCB 	    (GUI::Scale *);
 #endif
 
-extern void graphToggleDetectAliasesCB      (CB_ARG_LIST_TOGGLE(,));
-extern void graphToggleAlign2dArraysCB      (CB_ARG_LIST_TOGGLE(,));
-extern void graphToggleShowGridCB           (CB_ARG_LIST_TOGGLE(,));
-extern void graphToggleShowHintsCB          (CB_ARG_LIST_TOGGLE(,));
-extern void graphToggleSnapToGridCB         (CB_ARG_LIST_TOGGLE(,));
-extern void graphToggleCompactLayoutCB      (CB_ARG_LIST_TOGGLE(,));
-extern void graphToggleAutoLayoutCB         (CB_ARG_LIST_TOGGLE(,));
-extern void graphToggleAutoCloseCB          (CB_ARG_LIST_TOGGLE(,));
-extern void graphToggleShowAnnotationsCB    (CB_ARG_LIST_TOGGLE(,));
-extern void graphToggleShowDependentTitlesCB(CB_ARG_LIST_TOGGLE(,));
-extern void graphToggleClusterDisplaysCB    (CB_ARG_LIST_TOGGLE(,));
-#if defined(IF_MOTIF)
-extern void graphSetGridSizeCB              (CB_ARG_LIST_3());
-extern void graphSetDisplayPlacementCB      (CB_ARG_LIST_23(,));
+#if defined(IF_XM)
+extern void graphToggleDetectAliasesCB      (Widget, XtPointer, XtPointer);
+extern void graphToggleAlign2dArraysCB      (Widget, XtPointer, XtPointer);
+extern void graphToggleShowGridCB           (Widget, XtPointer, XtPointer);
+extern void graphToggleShowHintsCB          (Widget, XtPointer, XtPointer);
+extern void graphToggleSnapToGridCB         (Widget, XtPointer, XtPointer);
+extern void graphToggleCompactLayoutCB      (Widget, XtPointer, XtPointer);
+extern void graphToggleAutoLayoutCB         (Widget, XtPointer, XtPointer);
+extern void graphToggleAutoCloseCB          (Widget, XtPointer, XtPointer);
+extern void graphToggleShowAnnotationsCB    (Widget, XtPointer, XtPointer);
+extern void graphToggleShowDependentTitlesCB(Widget, XtPointer, XtPointer);
+extern void graphToggleClusterDisplaysCB    (Widget, XtPointer, XtPointer);
+extern void graphSetGridSizeCB              (Widget, XtPointer, XtPointer);
+extern void graphSetDisplayPlacementCB      (Widget, XtPointer, XtPointer);
 #else
-extern void graphSetGridSizeCB              (RANGE_P);
-extern void graphSetDisplayPlacementCB      (TOGGLEBUTTON_P w, XmOrientation);
+extern void graphToggleDetectAliasesCB      (GUI::Bipolar *);
+extern void graphToggleAlign2dArraysCB      (GUI::CheckButton *);
+extern void graphToggleShowGridCB           (GUI::CheckButton *);
+extern void graphToggleShowHintsCB          (GUI::CheckButton *);
+extern void graphToggleSnapToGridCB         (GUI::CheckButton *);
+extern void graphToggleCompactLayoutCB      (GUI::CheckButton *);
+extern void graphToggleAutoLayoutCB         (GUI::CheckButton *);
+extern void graphToggleAutoCloseCB          (GUI::CheckButton *);
+extern void graphToggleShowAnnotationsCB    (GUI::CheckButton *);
+extern void graphToggleShowDependentTitlesCB(GUI::CheckButton *);
+extern void graphToggleClusterDisplaysCB    (GUI::CheckButton *);
+extern void graphSetGridSizeCB              (GUI::Scale *);
+extern void graphSetDisplayPlacementCB      (GUI::RadioButton *w, GUI::Orientation);
 #endif
 
-#if defined(IF_MOTIF)
-extern void dddToggleGroupIconifyCB         (CB_ARG_LIST_3());
-extern void dddToggleUniconifyWhenReadyCB   (CB_ARG_LIST_3());
-extern void dddToggleSeparateExecWindowCB   (CB_ARG_LIST_3());
-extern void dddToggleCheckGrabsCB           (CB_ARG_LIST_3());
-extern void dddToggleSaveHistoryOnExitCB    (CB_ARG_LIST_3());
-extern void dddToggleSuppressWarningsCB     (CB_ARG_LIST_3());
-extern void dddToggleWarnIfLockedCB         (CB_ARG_LIST_3());
-extern void dddToggleSaveOptionsOnExitCB    (CB_ARG_LIST_3());
+#if defined(IF_XM)
+extern void dddToggleGroupIconifyCB         (Widget, XtPointer, XtPointer);
+extern void dddToggleUniconifyWhenReadyCB   (Widget, XtPointer, XtPointer);
+extern void dddToggleSeparateExecWindowCB   (Widget, XtPointer, XtPointer);
+extern void dddToggleCheckGrabsCB           (Widget, XtPointer, XtPointer);
+extern void dddToggleSaveHistoryOnExitCB    (Widget, XtPointer, XtPointer);
+extern void dddToggleSuppressWarningsCB     (Widget, XtPointer, XtPointer);
+extern void dddToggleWarnIfLockedCB         (Widget, XtPointer, XtPointer);
+extern void dddToggleSaveOptionsOnExitCB    (Widget, XtPointer, XtPointer);
 #else
-extern void dddToggleGroupIconifyCB         (Widget);
-extern void dddToggleUniconifyWhenReadyCB   (Widget);
-extern void dddToggleSeparateExecWindowCB   (Widget);
-extern void dddToggleCheckGrabsCB           (Widget);
-extern void dddToggleSaveHistoryOnExitCB    (Widget);
-extern void dddToggleSuppressWarningsCB     (Widget);
-extern void dddToggleWarnIfLockedCB         (Widget);
-extern void dddToggleSaveOptionsOnExitCB    (Widget);
+extern void dddToggleGroupIconifyCB         (GUI::CheckButton *);
+extern void dddToggleUniconifyWhenReadyCB   (GUI::CheckButton *);
+extern void dddToggleSeparateExecWindowCB   (GUI::CheckMenuItem *);
+extern void dddToggleCheckGrabsCB           (GUI::CheckButton *);
+extern void dddToggleSaveHistoryOnExitCB    (GUI::CheckButton *);
+extern void dddToggleSuppressWarningsCB     (GUI::CheckButton *);
+extern void dddToggleWarnIfLockedCB         (GUI::CheckButton *);
+extern void dddToggleSaveOptionsOnExitCB    (GUI::CheckMenuItem *);
 #endif
+
 
 extern void dddToggleButtonTipsCB           (CB_ARG_LIST_TOGGLE(,));
 extern void dddToggleValueTipsCB            (CB_ARG_LIST_TOGGLE(,));
 extern void dddToggleButtonDocsCB           (CB_ARG_LIST_TOGGLE(,));
 extern void dddToggleValueDocsCB            (CB_ARG_LIST_TOGGLE(,));
-#if defined(IF_MOTIF)
-extern void dddToggleButtonCaptionsCB       (CB_ARG_LIST_13(,));
-extern void dddToggleButtonImagesCB         (CB_ARG_LIST_13(,));
-extern void dddToggleFlatButtonsCB          (CB_ARG_LIST_13(,));
-extern void dddToggleColorButtonsCB         (CB_ARG_LIST_13(,));
-extern void dddToggleToolbarsAtBottomCB     (CB_ARG_LIST_13(,));
+#if defined(IF_XM)
+extern void dddToggleButtonCaptionsCB       (Widget, XtPointer, XtPointer);
+extern void dddToggleButtonImagesCB         (Widget, XtPointer, XtPointer);
+extern void dddToggleFlatButtonsCB          (Widget, XtPointer, XtPointer);
+extern void dddToggleColorButtonsCB         (Widget, XtPointer, XtPointer);
+extern void dddToggleToolbarsAtBottomCB     (Widget, XtPointer, XtPointer);
 #else
-extern void dddToggleButtonCaptionsCB       (TOGGLEBUTTON_P);
-extern void dddToggleButtonImagesCB         (TOGGLEBUTTON_P);
-extern void dddToggleFlatButtonsCB          (TOGGLEBUTTON_P);
-extern void dddToggleColorButtonsCB         (TOGGLEBUTTON_P);
-extern void dddToggleToolbarsAtBottomCB     (TOGGLEBUTTON_P);
+extern void dddToggleButtonCaptionsCB       (GUI::CheckButton *);
+extern void dddToggleButtonImagesCB         (GUI::CheckButton *);
+extern void dddToggleFlatButtonsCB          (GUI::CheckButton *);
+extern void dddToggleColorButtonsCB         (GUI::CheckButton *);
+extern void dddToggleToolbarsAtBottomCB     (GUI::CheckButton *);
 #endif
 
 extern void dddSetCrashCB                   (CB_ALIST_2(XtP(long)));
@@ -170,16 +192,16 @@ extern void dddSetStatusAtBottomCB          (Widget, XtPointer, XtPointer);
 extern void dddSetToolBarCB                 (CB_ARG_LIST_12(,));
 extern void dddSetKeyboardFocusPolicyCB     (CB_ARG_LIST_12(,));
 extern void dddSetPannerCB                  (CB_ARG_LIST_12(,));
-#if defined(IF_MOTIF)
-extern void dddSetDebuggerCB                (CB_ARG_LIST_123(,,));
-extern void dddToggleAutoDebuggerCB         (CB_ARG_LIST_13(,));
-extern void dddSetCutCopyPasteBindingsCB    (CB_ARG_LIST_23(,));
-extern void dddSetSelectAllBindingsCB       (CB_ARG_LIST_23(,));
+#if defined(IF_XM)
+extern void dddSetDebuggerCB                (Widget, XtPointer, XtPointer);
+extern void dddToggleAutoDebuggerCB         (Widget, XtPointer, XtPointer);
+extern void dddSetCutCopyPasteBindingsCB    (Widget, XtPointer, XtPointer);
+extern void dddSetSelectAllBindingsCB       (Widget, XtPointer, XtPointer);
 #else
-extern void dddSetDebuggerCB                (TOGGLEBUTTON_P, DebuggerType);
-extern void dddToggleAutoDebuggerCB         (TOGGLEBUTTON_P);
-extern void dddSetCutCopyPasteBindingsCB    (TOGGLEBUTTON_P, BindingStyle);
-extern void dddSetSelectAllBindingsCB       (TOGGLEBUTTON_P, BindingStyle);
+extern void dddSetDebuggerCB                (GUI::RadioButton *, DebuggerType);
+extern void dddToggleAutoDebuggerCB         (GUI::CheckButton *);
+extern void dddSetCutCopyPasteBindingsCB    (GUI::RadioButton *, BindingStyle);
+extern void dddSetSelectAllBindingsCB       (GUI::RadioButton *, BindingStyle);
 #endif
 
 extern void dddSetUndoBufferSizeCB          (CB_ALIST_1(ENTRY_P));

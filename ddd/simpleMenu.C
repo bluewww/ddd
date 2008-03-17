@@ -29,7 +29,9 @@
 char simpleMenu_rcsid[] = 
     "$Id$";
 
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif
 
 #include "simpleMenu.h"
 
@@ -44,15 +46,19 @@ char simpleMenu_rcsid[] =
 #include "tips.h"
 #include "show.h"
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 #include <Xm/Text.h>
 #include <Xm/TextF.h>
-#endif // IF_MOTIF
+#endif
+
+#include "gtk_wrapper.h"
 
 
 //-----------------------------------------------------------------------------
 // Basic functions
 //-----------------------------------------------------------------------------
+
+#if defined(IF_XM)
 
 static bool same_shell(Widget w1, Widget w2)
 {
@@ -131,6 +137,95 @@ static void clear(Widget w, Widget dest)
 	XmTextFieldSetString(dest, XMST(""));
 }
 
+#else
+
+static bool same_shell(GUI::Widget *w1, GUI::Widget *w2)
+{
+    if (w1 == 0 || w2 == 0)
+	return false;
+
+    GUI::Shell *shell_1 = findTopLevelShellParent1(w1);
+    GUI::Shell *shell_2 = findTopLevelShellParent1(w2);
+
+    return shell_1 == shell_2;
+}
+
+static Boolean cut(GUI::Widget *w, GUI::Widget *dest, Time tm)
+{
+    if (!same_shell(w, dest))
+	return False;
+
+    Boolean success = False;
+
+    std::cerr << "cut() not implemented yet\n";
+//    if (XmIsText(dest))
+//	success = XmTextCut(dest, tm);
+//    else if (XmIsTextField(dest))
+//	success = XmTextFieldCut(dest, tm);
+
+    return success;
+}
+
+static Boolean copy(GUI::Widget *w, GUI::Widget *dest, Time tm)
+{
+    if (!same_shell(w, dest))
+	return False;
+
+    Boolean success = False;
+
+    std::cerr << "copy() not implemented yet\n";
+//    if (XmIsText(dest))
+//	success = XmTextCopy(dest, tm);
+//    else if (XmIsTextField(dest))
+//	success = XmTextFieldCopy(dest, tm);
+
+    return success;
+}
+
+static Boolean paste(GUI::Widget *w, GUI::Widget *dest)
+{
+    if (!same_shell(w, dest))
+	return False;
+
+    std::cerr << "paste() not implemented yet\n";
+
+//    Boolean editable = False;
+//    XtVaGetValues(dest, XmNeditable, &editable, XtPointer(0));
+//    if (!editable)
+//	return False;
+
+    Boolean success = False;
+
+//    if (XmIsText(dest))
+//	success = XmTextPaste(dest);
+//    else if (XmIsTextField(dest))
+//	success = XmTextFieldPaste(dest);
+
+    return success;
+}
+
+static void clear(GUI::Widget *w, GUI::Widget *dest)
+{
+    if (!same_shell(w, dest))
+	return;
+
+    Boolean editable = False;
+
+    std::cerr << "clear() not implemented yet\n";
+//    XtVaGetValues(dest, XmNeditable, &editable, XtPointer(0));
+//    if (!editable)
+//	return;
+
+//    if (XmIsText(dest))
+//	XmTextSetString(dest, XMST(""));
+//    else if (XmIsTextField(dest))
+//	XmTextFieldSetString(dest, XMST(""));
+}
+
+#endif
+
+
+#if defined(IF_XM)
 
 static Boolean select(Widget w, Widget dest, Time tm)
 {
@@ -184,10 +279,70 @@ static Boolean remove(Widget w, Widget dest)
     return success;
 }
 
+#else
+
+static Boolean select(GUI::Widget *w, GUI::Widget *dest, Time tm)
+{
+    if (!same_shell(w, dest))
+	return False;
+
+    Boolean success = False;
+
+    std::cerr << "select() not implemented yet\n";
+//    if (!success && XmIsText(dest))
+//    {
+//	TextSetSelection(dest, 0, XmTextGetLastPosition(dest), tm);
+//	success = True;
+//    }
+//    else if (!success && XmIsTextField(dest))
+//    {
+//	TextFieldSetSelection(dest, 0, 
+//			      XmTextFieldGetLastPosition(dest), tm);
+//	success = True;
+//    }
+
+    return success;
+}
+
+static void unselect(GUI::Widget *w, GUI::Widget *dest, Time tm)
+{
+    if (!same_shell(w, dest))
+	return;
+
+    std::cerr << "unselect() not implemented yet\n";
+//    if (XmIsText(dest))
+//	XmTextClearSelection(dest, tm);
+//    else if (XmIsTextField(dest))
+//	XmTextFieldClearSelection(dest, tm);
+}
+
+static Boolean remove(GUI::Widget *w, GUI::Widget *dest)
+{
+    if (!same_shell(w, dest))
+	return False;
+
+    std::cerr << "remove() not implemented yet\n";
+//    Boolean editable = False;
+//    XtVaGetValues(dest, XmNeditable, &editable, XtPointer(0));
+//    if (!editable)
+//	return False;
+
+    Boolean success = False;
+//    if (XmIsText(dest))
+//	success = XmTextRemove(dest);
+//    else if (XmIsTextField(dest))
+//	success = XmTextFieldRemove(dest);
+
+    return success;
+}
+
+#endif
 
 //-----------------------------------------------------------------------------
 // Callbacks
 //-----------------------------------------------------------------------------
+
+#if defined(IF_XM)
 
 static void UnselectAllCB(Widget w, XtPointer client_data,
 			  XtPointer call_data)
@@ -205,6 +360,29 @@ static void UnselectAllCB(Widget w, XtPointer client_data,
     if (win != dest)
 	unselect(w, win, tm);
 }
+
+#else
+
+static void UnselectAllCB(GUI::Widget *w)
+{
+    std::cerr << "UnselectAllCB not implemented yet\n";
+//    XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
+//    Time tm = time(cbs->event);
+
+//    Widget dest = XmGetDestination(XtDisplay(w));
+//    Widget win = Widget(client_data);
+
+//    // Do destination window
+//    unselect(w, dest, tm);
+
+//    // Do given window
+//    if (win != dest)
+//	unselect(w, win, tm);
+}
+
+#endif
+
+#if defined(IF_XM)
 
 static void CutCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
@@ -260,6 +438,69 @@ static void PasteCB(Widget w, XtPointer client_data, XtPointer)
 	success = paste(w, win);
 }
 
+#else
+
+static void CutCB(GUI::Widget *w)
+{
+    std::cerr << "CutCB not implemented yet\n";
+//    XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
+//    Time tm = time(cbs->event);
+
+//    Boolean success = False;
+//    Widget dest = XmGetDestination(XtDisplay(w));
+//    Widget win  = Widget(client_data);
+
+//    // Try destination window
+//    if (!success)
+//	success = cut(w, dest, tm);
+
+//    // Try given window
+//    if (!success && win != dest)
+//	success = cut(w, win, tm);
+
+//    if (success)
+//	UnselectAllCB(w, client_data, call_data);
+}
+
+static void CopyCB(GUI::Widget *w)
+{
+    std::cerr << "CopyCB not implemented yet\n";
+//    XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
+//    Time tm = time(cbs->event);
+    
+//    Boolean success = False;
+//    Widget dest = XmGetDestination(XtDisplay(w));
+//    Widget win = Widget(client_data);
+
+//    // Try destination window
+//    if (!success)
+//	success = copy(w, dest, tm);
+
+//    // Try given window
+//    if (!success && win != dest)
+//	success = copy(w, win, tm);
+}
+
+static void PasteCB(GUI::Widget *w)
+{
+    std::cerr << "PasteCB not implemented yet\n";
+//    Boolean success = False;
+//    Widget dest = XmGetDestination(XtDisplay(w));
+//    Widget win = Widget(client_data);
+
+//    // Try destination window
+//    if (!success)
+//	success = paste(w, dest);
+
+//    // Try given window
+//    if (!success && win != dest)
+//	success = paste(w, win);
+}
+
+#endif
+
+#if defined(IF_XM)
+
 static void ClearAllCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     UnselectAllCB(w, client_data, call_data);
@@ -309,6 +550,62 @@ static void RemoveCB(Widget w, XtPointer client_data, XtPointer call_data)
 }
 
 
+#else
+
+static void ClearAllCB(GUI::Widget *w)
+{
+    std::cerr << "ClearAllCB not implemented yet\n";
+//    UnselectAllCB(w, client_data, call_data);
+
+//    Widget dest = XmGetDestination(XtDisplay(w));
+//    Widget win  = Widget(client_data);
+
+//    // Clear destination window
+//    clear(w, dest);
+
+//    // Clear given window
+//    if (win != dest)
+//	clear(w, win);
+}
+
+static void SelectAllCB(GUI::Widget *w)
+{
+    std::cerr << "SelectAllCB not implemented yet\n";
+//    XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
+//    Time tm = time(cbs->event);
+
+//    Boolean success = false;
+//    Widget dest = XmGetDestination(XtDisplay(w));
+//    Widget win  = (Widget)client_data;
+
+//    if (!success)
+//	success = select(w, dest, tm);
+//    if (!success && win != dest)
+//	success = select(w, win, tm);
+}
+
+static void RemoveCB(GUI::Widget *w)
+{
+    std::cerr << "RemoveCB not implemented yet\n";
+//    Boolean success = False;
+//    Widget dest = XmGetDestination(XtDisplay(w));
+//    Widget win  = (Widget)client_data;
+
+//    // Try destination window
+//    if (!success)
+//	success = remove(w, dest);
+
+//    // Try given window
+//    if (!success && win != dest)
+//	success = remove(w, win);
+
+//    if (success)
+//	UnselectAllCB(w, client_data, call_data);
+}
+
+
+#endif
+
 //-----------------------------------------------------------------------------
 // Menus
 //-----------------------------------------------------------------------------
@@ -316,34 +613,76 @@ static void RemoveCB(Widget w, XtPointer client_data, XtPointer call_data)
 // Edit menu
 MMDesc simple_edit_menu[] =
 {
-    MENTRYL("cut", "cut", MMPush, BIND_0(PTR_FUN(CutCB)), 0, 0),
-    MENTRYL("copy", "copy", MMPush, BIND_0(PTR_FUN(CopyCB)), 0, 0),
-    MENTRYL("paste", "paste", MMPush, BIND_0(PTR_FUN(PasteCB)), 0, 0),
-    MENTRYL("clearAll", "clearAll", MMPush, BIND_0(PTR_FUN(ClearAllCB)), 0, 0),
-    MENTRYL("delete", "delete", MMPush, BIND_0(PTR_FUN(RemoveCB)), 0, 0),
+    GENTRYL("cut", "cut", MMPush,
+	    BIND(CutCB, 0),
+	    sigc::ptr_fun(CutCB),
+	    0, 0),
+    GENTRYL("copy", "copy", MMPush,
+	    BIND(CopyCB, 0),
+	    sigc::ptr_fun(CopyCB),
+	    0, 0),
+    GENTRYL("paste", "paste", MMPush,
+	    BIND(PasteCB, 0),
+	    sigc::ptr_fun(PasteCB),
+	    0, 0),
+    GENTRYL("clearAll", "clearAll", MMPush,
+	    BIND(ClearAllCB, 0),
+	    sigc::ptr_fun(ClearAllCB),
+	    0, 0),
+    GENTRYL("delete", "delete", MMPush,
+	    BIND(RemoveCB, 0),
+	    sigc::ptr_fun(RemoveCB),
+	    0, 0),
     MMSep,
-    MENTRYL("selectAll", "selectAll", MMPush, BIND_0(PTR_FUN(SelectAllCB)), 0, 0),
+    GENTRYL("selectAll", "selectAll", MMPush,
+	    BIND(SelectAllCB, 0),
+	    sigc::ptr_fun(SelectAllCB),
+	    0, 0),
     MMEnd
 };
 
 // Help menu
 MMDesc simple_help_menu[] = 
 {
-    MENTRYL("onHelp", "onHelp", MMPush, BIND_0(PTR_FUN(HelpOnHelpCB)), 0, 0),
+#if defined(IF_MOTIF)
+    MENTRYL("onHelp", "onHelp", MMPush,
+	    BIND_0(PTR_FUN(HelpOnHelpCB)),
+	    0, 0),
     MMSep,
-    MENTRYL("onItem", "onItem", MMPush, BIND_0(PTR_FUN(HelpOnItemCB)), 0, 0),
-    MENTRYL("onWindow", "onWindow", MMPush, BIND_0(PTR_FUN(HelpOnWindowCB)), 0, 0),
+    MENTRYL("onItem", "onItem", MMPush,
+	    BIND_0(PTR_FUN(HelpOnItemCB)),
+	    0, 0),
+    MENTRYL("onWindow", "onWindow", MMPush,
+	    BIND_0(PTR_FUN(HelpOnWindowCB)),
+	    0, 0),
     MMSep,
-    MENTRYL("whatNext", "whatNext", MMPush, BIND_0(PTR_FUN(WhatNextCB)), 0, 0),
-    MENTRYL("tipOfTheDay", "tipOfTheDay", MMPush, BIND_0(PTR_FUN(TipOfTheDayCB)), 0, 0),
+    MENTRYL("whatNext", "whatNext", MMPush,
+	    BIND_0(PTR_FUN(WhatNextCB)),
+	    0, 0),
+    MENTRYL("tipOfTheDay", "tipOfTheDay", MMPush,
+	    BIND_0(PTR_FUN(TipOfTheDayCB)),
+	    0, 0),
     MMSep,
-    MENTRYL("dddManual", "dddManual", MMPush, BIND_0(PTR_FUN(DDDManualCB)), 0, 0),
-    MENTRYL("news", "news", MMPush, BIND_0(PTR_FUN(DDDNewsCB)), 0, 0),
-    MENTRYL("gdbManual", "gdbManual", MMPush, BIND_0(PTR_FUN(GDBManualCB)), 0, 0),
+    MENTRYL("dddManual", "dddManual", MMPush,
+	    BIND_0(PTR_FUN(DDDManualCB)),
+	    0, 0),
+    MENTRYL("news", "news", MMPush,
+	    BIND_0(PTR_FUN(DDDNewsCB)),
+	    0, 0),
+    MENTRYL("gdbManual", "gdbManual", MMPush,
+	    BIND_0(PTR_FUN(GDBManualCB)),
+	    0, 0),
     MMSep,
-    MENTRYL("license", "license", MMPush, BIND_0(PTR_FUN(DDDLicenseCB)), 0, 0),
-    MENTRYL("www", "www", MMPush, BIND_0(PTR_FUN(DDDWWWPageCB)), 0, 0),
+    MENTRYL("license", "license", MMPush,
+	    BIND_0(PTR_FUN(DDDLicenseCB)),
+	    0, 0),
+    MENTRYL("www", "www", MMPush,
+	    BIND_0(PTR_FUN(DDDWWWPageCB)),
+	    0, 0),
     MMSep,
-    MENTRYL("onVersion", "onVersion", MMPush, BIND_0(PTR_FUN(HelpOnVersionCB)), 0, 0),
+    MENTRYL("onVersion", "onVersion", MMPush,
+	    BIND_0(PTR_FUN(HelpOnVersionCB)),
+	    0, 0),
+#endif
     MMEnd
 };

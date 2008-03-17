@@ -144,16 +144,14 @@ static bool options_file_has_changed(ChangeMode mode, bool reset = false);
 // Source Options
 //-----------------------------------------------------------------------------
 
-void sourceToggleFindWordsOnlyCB (CB_ARG_LIST_TOGGLE(w, call_data))
+#if defined(IF_XM)
+
+void sourceToggleFindWordsOnlyCB (Widget w, XtPointer, XtPointer call_data)
 {
-#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.find_words_only = info->set;
-#else // NOT IF_MOTIF
-    app_data.find_words_only = get_active(w);
-#endif // IF_MOTIF
 
     if (app_data.find_words_only)
 	set_status("Finding only complete words.");
@@ -163,16 +161,12 @@ void sourceToggleFindWordsOnlyCB (CB_ARG_LIST_TOGGLE(w, call_data))
     update_options(NO_UPDATE);
 }
 
-void sourceToggleFindCaseSensitiveCB (CB_ARG_LIST_TOGGLE(w, call_data))
+void sourceToggleFindCaseSensitiveCB (Widget w, XtPointer, XtPointer call_data)
 {
-#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.find_case_sensitive = info->set;
-#else // NOT IF_MOTIF
-    app_data.find_case_sensitive = get_active(w);
-#endif // IF_MOTIF
 
     if (app_data.find_case_sensitive)
 	set_status("Case-sensitive search enabled.");
@@ -182,16 +176,12 @@ void sourceToggleFindCaseSensitiveCB (CB_ARG_LIST_TOGGLE(w, call_data))
     update_options(NO_UPDATE);
 }
 
-void sourceToggleCacheSourceFilesCB (CB_ARG_LIST_TOGGLE(w, call_data))
+void sourceToggleCacheSourceFilesCB (Widget w, XtPointer, XtPointer call_data)
 {
-#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.cache_source_files = info->set;
-#else // NOT IF_MOTIF
-    app_data.cache_source_files = get_active(w);
-#endif // IF_MOTIF
 
     if (app_data.cache_source_files)
 	set_status("Caching source texts.");
@@ -202,16 +192,12 @@ void sourceToggleCacheSourceFilesCB (CB_ARG_LIST_TOGGLE(w, call_data))
     update_options(NO_UPDATE);
 }
 
-void sourceToggleCacheMachineCodeCB (CB_ARG_LIST_TOGGLE(w, call_data))
+void sourceToggleCacheMachineCodeCB (Widget w, XtPointer, XtPointer call_data)
 {
-#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.cache_machine_code = info->set;
-#else // NOT IF_MOTIF
-    app_data.cache_machine_code = get_active(w);
-#endif // IF_MOTIF
 
     update_options(NO_UPDATE);
 
@@ -222,16 +208,12 @@ void sourceToggleCacheMachineCodeCB (CB_ARG_LIST_TOGGLE(w, call_data))
 		   "Machine code cache has been cleared.");
 }
 
-void sourceToggleDisplayLineNumbersCB (CB_ARG_LIST_TOGGLE(w, call_data))
+void sourceToggleDisplayLineNumbersCB (Widget w, XtPointer, XtPointer call_data)
 {
-#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.display_line_numbers = info->set;
-#else // NOT IF_MOTIF
-    app_data.display_line_numbers = get_active(w);
-#endif // IF_MOTIF
 
     update_options(NO_UPDATE);
 
@@ -243,7 +225,77 @@ void sourceToggleDisplayLineNumbersCB (CB_ARG_LIST_TOGGLE(w, call_data))
 #endif
 }
 
-void sourceSetUseSourcePathCB (CB_ARG_LIST_2(client_data))
+#else
+
+void sourceToggleFindWordsOnlyCB (GUI::CheckButton *w)
+{
+    app_data.find_words_only = w->get_active();
+
+    if (app_data.find_words_only)
+	set_status("Finding only complete words.");
+    else
+	set_status("Finding arbitrary occurrences.");
+
+    update_options(NO_UPDATE);
+}
+
+void sourceToggleFindCaseSensitiveCB (GUI::CheckButton *w)
+{
+    app_data.find_case_sensitive = w->get_active();
+
+    if (app_data.find_case_sensitive)
+	set_status("Case-sensitive search enabled.");
+    else
+	set_status("Case-sensitive search disabled.");
+
+    update_options(NO_UPDATE);
+}
+
+void sourceToggleCacheSourceFilesCB (GUI::CheckButton *w)
+{
+    app_data.cache_source_files = w->get_active();
+
+    if (app_data.cache_source_files)
+	set_status("Caching source texts.");
+    else
+	set_status("Not caching source texts.  "
+		   "Source text cache has been cleared.");
+
+    update_options(NO_UPDATE);
+}
+
+void sourceToggleCacheMachineCodeCB (GUI::CheckButton *w)
+{
+    app_data.cache_machine_code = w->get_active();
+
+    update_options(NO_UPDATE);
+
+    if (app_data.cache_machine_code)
+	set_status("Caching machine code.");
+    else
+	set_status("Not caching machine code.  "
+		   "Machine code cache has been cleared.");
+}
+
+void sourceToggleDisplayLineNumbersCB (GUI::CheckButton *w)
+{
+    app_data.display_line_numbers = w->get_active();
+
+    update_options(NO_UPDATE);
+
+#if 0
+    if (app_data.display_line_numbers)
+	set_status("Displaying line numbers.");
+    else
+	set_status("Not displaying line numbers.");
+#endif
+}
+
+#endif
+
+#if defined(IF_XM)
+
+void sourceSetUseSourcePathCB (Widget, XtPointer client_data, XtPointer)
 {
     Boolean state = (int)(long)client_data;
 
@@ -260,7 +312,28 @@ void sourceSetUseSourcePathCB (CB_ARG_LIST_2(client_data))
     update_options(NO_UPDATE);
 }
 
-void sourceSetDisplayGlyphsCB (CB_ARG_LIST_2(client_data))
+#else
+
+void sourceSetUseSourcePathCB (bool state)
+{
+    app_data.use_source_path = state;
+    string referring_to_sources_using =
+	"Referring to sources using ";
+
+    if (state)
+	set_status(referring_to_sources_using + "full source file paths.");
+    else
+	set_status(referring_to_sources_using + "source file base names.");
+
+    source_arg->set_string(source_view->line_of_cursor());
+    update_options(NO_UPDATE);
+}
+
+#endif
+
+#if defined(IF_XM)
+
+void sourceSetDisplayGlyphsCB (Widget, XtPointer client_data, XtPointer)
 {
     Boolean state = (int)(long)client_data;
 
@@ -274,6 +347,23 @@ void sourceSetDisplayGlyphsCB (CB_ARG_LIST_2(client_data))
     else
 	set_status(displaying + "as text characters.");
 }
+
+#else
+
+void sourceSetDisplayGlyphsCB (bool state)
+{
+    app_data.display_glyphs = state;
+
+    update_options(NO_UPDATE);
+
+    string displaying =	"Displaying breakpoints and positions ";
+    if (state)
+	set_status(displaying + "as glyphs.");
+    else
+	set_status(displaying + "as text characters.");
+}
+
+#endif
 
 #if defined(IF_XM)
 void sourceSetAllRegistersCB (Widget w, XtPointer, XtPointer call_data)
@@ -319,76 +409,82 @@ void sourceSetIntRegistersCB (GUI::RadioButton *w)
     update_options(NO_UPDATE);
 }
 
-#ifdef IF_MOTIF
-void sourceSetTabWidthCB (CB_ARG_LIST_3(call_data))
-#else // NOT IF_MOTIF
-void sourceSetTabWidthCB (RANGE_P w)
-#endif // IF_MOTIF
+#if defined(IF_XM)
+
+void sourceSetTabWidthCB (Widget, XtPointer, XtPointer call_data)
 {
-#ifdef IF_MOTIF
     XmScaleCallbackStruct *info = (XmScaleCallbackStruct *)call_data;
 
     app_data.tab_width = info->value;
-#else // NOT IF_MOTIF
-    app_data.tab_width = (Cardinal)w->get_value();
-#endif // IF_MOTIF
     update_options();
 
     set_status("Tab width set to " + itostring(app_data.tab_width) + ".");
 }
 
-#ifdef IF_MOTIF
-void sourceSetSourceIndentCB (CB_ARG_LIST_3(call_data))
-#else // NOT IF_MOTIF
-void sourceSetSourceIndentCB (RANGE_P w)
-#endif // IF_MOTIF
+void sourceSetSourceIndentCB (Widget, XtPointer, XtPointer call_data)
 {
-#ifdef IF_MOTIF
     XmScaleCallbackStruct *info = (XmScaleCallbackStruct *)call_data;
 
     app_data.indent_source = info->value;
-#else // NOT IF_MOTIF
-    app_data.indent_source = (Cardinal)w->get_value();
-#endif // IF_MOTIF
     update_options();
 
     set_status("Source indentation set to " + 
 	       itostring(app_data.indent_source) + ".");
 }
 
-#ifdef IF_MOTIF
-void sourceSetCodeIndentCB (CB_ARG_LIST_3(call_data))
-#else // NOT IF_MOTIF
-void sourceSetCodeIndentCB (RANGE_P w)
-#endif // IF_MOTIF
+void sourceSetCodeIndentCB (Widget, XtPointer, XtPointer call_data)
 {
-#ifdef IF_MOTIF
     XmScaleCallbackStruct *info = (XmScaleCallbackStruct *)call_data;
 
     app_data.indent_code = info->value;
-#else // NOT IF_MOTIF
-    app_data.indent_code = (Cardinal)w->get_value();
-#endif // IF_MOTIF
     update_options();
 
     set_status("Code indentation set to " + 
 	       itostring(app_data.indent_code) + ".");
 }
 
+#else
+
+void sourceSetTabWidthCB (GUI::Scale *w)
+{
+    app_data.tab_width = (Cardinal)w->get_value();
+    update_options();
+
+    set_status("Tab width set to " + itostring(app_data.tab_width) + ".");
+}
+
+void sourceSetSourceIndentCB (GUI::Scale *w)
+{
+    app_data.indent_source = (Cardinal)w->get_value();
+    update_options();
+
+    set_status("Source indentation set to " + 
+	       itostring(app_data.indent_source) + ".");
+}
+
+void sourceSetCodeIndentCB (GUI::Scale *w)
+{
+    app_data.indent_code = (Cardinal)w->get_value();
+    update_options();
+
+    set_status("Code indentation set to " + 
+	       itostring(app_data.indent_code) + ".");
+}
+
+#endif
+
 //-----------------------------------------------------------------------------
 // Graph Options
 //-----------------------------------------------------------------------------
 
-void graphToggleDetectAliasesCB(CB_ARG_LIST_TOGGLE(w, call_data))
+#if defined(IF_XM)
+
+void graphToggleDetectAliasesCB(Widget w, XtPointer, XtPointer call_data)
 {
-#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.detect_aliases = info->set;
-#else // NOT IF_MOTIF
-    app_data.detect_aliases = get_active(w);
-#endif // IF_MOTIF
     const string alias_detection = "Alias detection ";
 
     if (app_data.detect_aliases)
@@ -399,16 +495,31 @@ void graphToggleDetectAliasesCB(CB_ARG_LIST_TOGGLE(w, call_data))
     update_options(NO_UPDATE);
 }
 
-void graphToggleAlign2dArraysCB(CB_ARG_LIST_TOGGLE(w, call_data))
+#else
+
+void graphToggleDetectAliasesCB(GUI::Bipolar *w)
 {
-#ifdef IF_MOTIF
+    app_data.detect_aliases = w->get_active();
+    const string alias_detection = "Alias detection ";
+
+    if (app_data.detect_aliases)
+	set_status(alias_detection + "enabled.");
+    else
+	set_status(alias_detection + "disabled.");
+
+    update_options(NO_UPDATE);
+}
+
+#endif
+
+#if defined(IF_XM)
+
+void graphToggleAlign2dArraysCB(Widget w, XtPointer, XtPointer call_data)
+{
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.align_2d_arrays = info->set;
-#else // NOT IF_MOTIF
-    app_data.align_2d_arrays = get_active(w);
-#endif // IF_MOTIF
     string displaying_arrays_as = 
 	"Two-dimensional arrays will be displayed as ";
 
@@ -420,9 +531,28 @@ void graphToggleAlign2dArraysCB(CB_ARG_LIST_TOGGLE(w, call_data))
     update_options(NO_UPDATE);
 }
 
-void graphToggleShowHintsCB(CB_ARG_LIST_TOGGLE(w, call_data))
+#else
+
+void graphToggleAlign2dArraysCB(GUI::CheckButton *w)
 {
-#ifdef IF_MOTIF
+    app_data.align_2d_arrays = get_active(w);
+    string displaying_arrays_as = 
+	"Two-dimensional arrays will be displayed as ";
+
+    if (app_data.align_2d_arrays)
+	set_status(displaying_arrays_as + "tables.");
+    else
+	set_status(displaying_arrays_as + "nested one-dimensional arrays.");
+
+    update_options(NO_UPDATE);
+}
+
+#endif
+
+#if defined(IF_XM)
+
+void graphToggleShowHintsCB(Widget w, XtPointer, XtPointer call_data)
+{
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
@@ -435,20 +565,29 @@ void graphToggleShowHintsCB(CB_ARG_LIST_TOGGLE(w, call_data))
 	set_status("Hints on.");
     else
 	set_status("Hints off.");
-#else // NOT IF_MOTIF
+
+    update_options(NO_UPDATE);
+}
+
+#else
+
+void graphToggleShowHintsCB(GUI::CheckButton *w)
+{
     data_disp->graph_edit->set_show_hints(get_active(w));
     if (data_disp->graph_edit->get_show_hints())
 	set_status("Hints on.");
     else
 	set_status("Hints off.");
-#endif // IF_MOTIF
 
     update_options(NO_UPDATE);
 }
 
-void graphToggleShowAnnotationsCB(CB_ARG_LIST_TOGGLE(w, call_data))
+#endif
+
+#if defined(IF_XM)
+
+void graphToggleShowAnnotationsCB(Widget w, XtPointer, XtPointer call_data)
 {
-#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
@@ -461,29 +600,37 @@ void graphToggleShowAnnotationsCB(CB_ARG_LIST_TOGGLE(w, call_data))
 	set_status("Annotations on.");
     else
 	set_status("Annotations off.");
-#else // NOT IF_MOTIF
-    data_disp->graph_edit->set_show_annotations(get_active(w));
-    if (data_disp->graph_edit->get_show_annotations())
-	set_status("Annotations on.");
-    else
-	set_status("Annotations off.");
-#endif // IF_MOTIF
 
     data_disp->refresh_titles();
 
     update_options(NO_UPDATE);
 }
 
-void graphToggleShowDependentTitlesCB(CB_ARG_LIST_TOGGLE(w, call_data))
+#else
+
+void graphToggleShowAnnotationsCB(GUI::CheckButton *w)
 {
-#ifdef IF_MOTIF
+    data_disp->graph_edit->set_show_annotations(get_active(w));
+    if (data_disp->graph_edit->get_show_annotations())
+	set_status("Annotations on.");
+    else
+	set_status("Annotations off.");
+
+    data_disp->refresh_titles();
+
+    update_options(NO_UPDATE);
+}
+
+#endif
+
+#if defined(IF_XM)
+
+void graphToggleShowDependentTitlesCB(Widget w, XtPointer, XtPointer call_data)
+{
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.show_dependent_display_titles = info->set;
-#else // NOT IF_MOTIF
-    app_data.show_dependent_display_titles = get_active(w);
-#endif // IF_MOTIF
     if (app_data.show_dependent_display_titles)
 	set_status("Dependent titles on.");
     else
@@ -494,16 +641,31 @@ void graphToggleShowDependentTitlesCB(CB_ARG_LIST_TOGGLE(w, call_data))
     update_options(NO_UPDATE);
 }
 
-void graphToggleClusterDisplaysCB(CB_ARG_LIST_TOGGLE(w, call_data))
+#else
+
+void graphToggleShowDependentTitlesCB(GUI::CheckButton *w)
 {
-#ifdef IF_MOTIF
+    app_data.show_dependent_display_titles = get_active(w);
+    if (app_data.show_dependent_display_titles)
+	set_status("Dependent titles on.");
+    else
+	set_status("Dependent titles off.");
+
+    data_disp->refresh_titles();
+
+    update_options(NO_UPDATE);
+}
+
+#endif
+
+#if defined(IF_XM)
+
+void graphToggleClusterDisplaysCB(Widget w, XtPointer, XtPointer call_data)
+{
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.cluster_displays = info->set;
-#else // NOT IF_MOTIF
-    app_data.cluster_displays = get_active(w);
-#endif // IF_MOTIF
 
     if (app_data.cluster_displays)
 	set_status("Display clustering enabled.");
@@ -513,9 +675,26 @@ void graphToggleClusterDisplaysCB(CB_ARG_LIST_TOGGLE(w, call_data))
     update_options(NO_UPDATE);
 }
 
-void graphToggleSnapToGridCB(CB_ARG_LIST_TOGGLE(w, call_data))
+#else
+
+void graphToggleClusterDisplaysCB(GUI::CheckButton *w)
 {
-#ifdef IF_MOTIF
+    app_data.cluster_displays = get_active(w);
+
+    if (app_data.cluster_displays)
+	set_status("Display clustering enabled.");
+    else
+	set_status("Display clustering disabled.");
+
+    update_options(NO_UPDATE);
+}
+
+#endif
+
+#if defined(IF_XM)
+
+void graphToggleSnapToGridCB(Widget w, XtPointer, XtPointer call_data)
+{
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
@@ -528,20 +707,29 @@ void graphToggleSnapToGridCB(CB_ARG_LIST_TOGGLE(w, call_data))
 	set_status("Snap to grid on.");
     else
 	set_status("Snap to grid off.");
-#else // NOT IF_MOTIF
+
+    update_options(NO_UPDATE);
+}
+
+#else
+
+void graphToggleSnapToGridCB(GUI::CheckButton *w)
+{
     data_disp->graph_edit->set_snap_to_grid(get_active(w));
     if (data_disp->graph_edit->get_snap_to_grid())
 	set_status("Snap to grid on.");
     else
 	set_status("Snap to grid off.");
-#endif // IF_MOTIF
 
     update_options(NO_UPDATE);
 }
 
-void graphToggleCompactLayoutCB(CB_ARG_LIST_TOGGLE(w, call_data))
+#endif
+
+#if defined(IF_XM)
+
+void graphToggleCompactLayoutCB(Widget w, XtPointer, XtPointer call_data)
 {
-#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
@@ -558,20 +746,29 @@ void graphToggleCompactLayoutCB(CB_ARG_LIST_TOGGLE(w, call_data))
 	set_status("Compact layout enabled.");
     else
 	set_status("Regular layout enabled.");
-#else // NOT IF_MOTIF
+
+    update_options(NO_UPDATE);
+}
+
+#else
+
+void graphToggleCompactLayoutCB(GUI::CheckButton *w)
+{
     data_disp->graph_edit->set_layout_mode(get_active(w)?CompactLayoutMode:RegularLayoutMode);
     if (data_disp->graph_edit->get_layout_mode() == CompactLayoutMode)
 	set_status("Compact layout enabled.");
     else
 	set_status("Regular layout enabled.");
-#endif // IF_MOTIF
 
     update_options(NO_UPDATE);
 }
 
-void graphToggleAutoLayoutCB(CB_ARG_LIST_TOGGLE(w, call_data))
+#endif
+
+#if defined(IF_XM)
+
+void graphToggleAutoLayoutCB(Widget w, XtPointer, XtPointer call_data)
 {
-#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
@@ -584,27 +781,33 @@ void graphToggleAutoLayoutCB(CB_ARG_LIST_TOGGLE(w, call_data))
 	set_status("Automatic layout on.");
     else
 	set_status("Automatic layout off.");
-#else // NOT IF_MOTIF
+
+    update_options(NO_UPDATE);
+}
+
+#else
+
+void graphToggleAutoLayoutCB(GUI::CheckButton *w)
+{
     data_disp->graph_edit->set_auto_layout(get_active(w));
     if (data_disp->graph_edit->get_auto_layout())
 	set_status("Automatic layout on.");
     else
 	set_status("Automatic layout off.");
-#endif // IF_MOTIF
 
     update_options(NO_UPDATE);
 }
 
-void graphToggleAutoCloseCB(CB_ARG_LIST_TOGGLE(w, call_data))
+#endif
+
+#if defined(IF_XM)
+
+void graphToggleAutoCloseCB(Widget w, XtPointer, XtPointer call_data)
 {
-#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.auto_close_data_window = info->set;
-#else // NOT IF_MOTIF
-    app_data.auto_close_data_window = get_active(w);
-#endif // IF_MOTIF
 
     if (app_data.auto_close_data_window)
 	set_status("Automatic closing on.");
@@ -614,65 +817,83 @@ void graphToggleAutoCloseCB(CB_ARG_LIST_TOGGLE(w, call_data))
     update_options(NO_UPDATE);
 }
 
-#ifdef IF_MOTIF
-void graphSetGridSizeCB (CB_ARG_LIST_3(call_data))
-#else // NOT IF_MOTIF
-void graphSetGridSizeCB (RANGE_P w)
-#endif // IF_MOTIF
+#else
+
+void graphToggleAutoCloseCB(GUI::CheckButton *w)
 {
-#ifdef IF_MOTIF
+    app_data.auto_close_data_window = w->get_active();
+
+    if (app_data.auto_close_data_window)
+	set_status("Automatic closing on.");
+    else
+	set_status("Automatic closing off.");
+
+    update_options(NO_UPDATE);
+}
+
+#endif
+
+#if defined(IF_XM)
+
+void graphSetGridSizeCB (Widget, XtPointer, XtPointer call_data)
+{
     XmScaleCallbackStruct *info = (XmScaleCallbackStruct *)call_data;
 
     Arg args[10];
     Cardinal arg = 0;
 
     Cardinal value = info->value;
-#else // NOT IF_MOTIF
-    Cardinal value = (Cardinal)w->get_value();
-#endif // IF_MOTIF
 
     if (value >= 2)
     {
-#ifdef IF_MOTIF
 	XtSetArg(args[arg], ARGSTR(XtNgridWidth),  value); arg++;
 	XtSetArg(args[arg], ARGSTR(XtNgridHeight), value); arg++;
 	XtSetArg(args[arg], ARGSTR(XtNshowGrid),   True); arg++;
 	XtSetValues(data_disp->graph_edit, args, arg);
-#else // NOT IF_MOTIF
-	data_disp->graph_edit->set_grid_width(value);
-	data_disp->graph_edit->set_grid_height(value);
-	data_disp->graph_edit->set_show_grid(true);
-#endif // IF_MOTIF
 	set_status("Grid size set to " + itostring(value) + ".");
     }
     else
     {
-#ifdef IF_MOTIF
 	XtSetArg(args[arg], ARGSTR(XtNshowGrid), False); arg++;
 	XtSetValues(data_disp->graph_edit, args, arg);
-#else // NOT IF_MOTIF
-	data_disp->graph_edit->set_show_grid(false);
-#endif // IF_MOTIF
 	set_status("Grid off.");
     }
 
     update_options();
 }
 
-#ifdef IF_MOTIF
-void graphSetDisplayPlacementCB(CB_ARG_LIST_23(client_data, call_data))
-#else // NOT IF_MOTIF
-void graphSetDisplayPlacementCB(TOGGLEBUTTON_P w, XmOrientation client_data)
-#endif // IF_MOTIF
+#else
+
+void graphSetGridSizeCB (GUI::Scale *w)
 {
-#ifdef IF_MOTIF
+    Cardinal value = (Cardinal)w->get_value();
+
+    if (value >= 2)
+    {
+	data_disp->graph_edit->set_grid_width(value);
+	data_disp->graph_edit->set_grid_height(value);
+	data_disp->graph_edit->set_show_grid(true);
+	set_status("Grid size set to " + itostring(value) + ".");
+    }
+    else
+    {
+	data_disp->graph_edit->set_show_grid(false);
+	set_status("Grid off.");
+    }
+
+    update_options();
+}
+
+#endif
+
+#if defined(IF_XM)
+
+void graphSetDisplayPlacementCB(Widget, XtPointer client_data, XtPointer call_data)
+{
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     if (info->set)
-#else // NOT IF_MOTIF
-    if (w->get_active())
-#endif // IF_MOTIF
     {
 	unsigned char orientation = (unsigned char)(int)(long)client_data;
 	app_data.display_placement = orientation;
@@ -694,21 +915,45 @@ void graphSetDisplayPlacementCB(TOGGLEBUTTON_P w, XmOrientation client_data)
     }
 }
 
+#else
+
+void graphSetDisplayPlacementCB(GUI::RadioButton *w, GUI::Orientation orientation)
+{
+    if (w->get_active())
+    {
+	app_data.display_placement = orientation;
+
+	switch (app_data.display_placement)
+	{
+	case GUI::ORIENTATION_VERTICAL:
+	    set_status("New displays will be placed "
+		       "below the downmost display.");
+	    break;
+	    
+	case GUI::ORIENTATION_HORIZONTAL:
+	    set_status("New displays will be placed on the "
+		       "right of the rightmost display.");
+	    break;
+	}
+
+	update_options(NO_UPDATE);
+    }
+}
+
+#endif
 
 //-----------------------------------------------------------------------------
 // General Options
 //-----------------------------------------------------------------------------
 
-void dddToggleGroupIconifyCB (CB_ARG_LIST_TOGGLE(w, call_data))
+#if defined(IF_XM)
+
+void dddToggleGroupIconifyCB (Widget w, XtPointer, XtPointer call_data)
 {
-#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.group_iconify = info->set;
-#else // NOT IF_MOTIF
-    app_data.group_iconify = get_active(w);
-#endif // IF_MOTIF
     string ddd_windows_are_iconified = 
 	DDD_NAME " windows are iconified ";
 
@@ -720,16 +965,32 @@ void dddToggleGroupIconifyCB (CB_ARG_LIST_TOGGLE(w, call_data))
     update_options(NO_UPDATE);
 }
 
-void dddToggleUniconifyWhenReadyCB (CB_ARG_LIST_TOGGLE(w, call_data))
+#else
+
+void dddToggleGroupIconifyCB (GUI::CheckButton *w)
 {
-#ifdef IF_MOTIF
+    app_data.group_iconify = get_active(w);
+    string ddd_windows_are_iconified = 
+	DDD_NAME " windows are iconified ";
+
+    if (app_data.group_iconify)
+	set_status(ddd_windows_are_iconified + "as a group.");
+    else
+	set_status(ddd_windows_are_iconified + "separately.");
+
+    update_options(NO_UPDATE);
+}
+
+#endif
+
+#if defined(IF_XM)
+
+void dddToggleUniconifyWhenReadyCB (Widget w, XtPointer, XtPointer call_data)
+{
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.uniconify_when_ready = info->set;
-#else // NOT IF_MOTIF
-    app_data.uniconify_when_ready = get_active(w);
-#endif // IF_MOTIF
 
     if (app_data.uniconify_when_ready)
 	set_status(DDD_NAME " windows will be uniconified automatically "
@@ -739,6 +1000,23 @@ void dddToggleUniconifyWhenReadyCB (CB_ARG_LIST_TOGGLE(w, call_data))
 
     update_options(NO_UPDATE);
 }
+
+#else
+
+void dddToggleUniconifyWhenReadyCB (GUI::CheckButton *w)
+{
+    app_data.uniconify_when_ready = get_active(w);
+
+    if (app_data.uniconify_when_ready)
+	set_status(DDD_NAME " windows will be uniconified automatically "
+		   "whenever " DDD_NAME " becomes ready.");
+    else
+	set_status(DDD_NAME " windows always remain iconified.");
+
+    update_options(NO_UPDATE);
+}
+
+#endif
 
 void dddSetGlobalTabCompletionCB(CB_ALIST_12(Widget w, XtP(long) client_data))
 {
@@ -754,16 +1032,14 @@ void dddSetGlobalTabCompletionCB(CB_ALIST_12(Widget w, XtP(long) client_data))
     update_options(NO_UPDATE);
 }
 
-void dddToggleSeparateExecWindowCB (CB_ARG_LIST_TOGGLE(w, call_data))
+#if defined(IF_XM)
+
+void dddToggleSeparateExecWindowCB (Widget w, XtPointer, XtPointer call_data)
 {
-#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.separate_exec_window = info->set;
-#else // NOT IF_MOTIF
-    app_data.separate_exec_window = get_active(w);
-#endif // IF_MOTIF
     string debugged_program_will_be_executed_in =
 	"Debugged program will be executed in ";
 
@@ -777,16 +1053,34 @@ void dddToggleSeparateExecWindowCB (CB_ARG_LIST_TOGGLE(w, call_data))
     update_options(NO_UPDATE);
 }
 
-void dddToggleCheckGrabsCB (CB_ARG_LIST_TOGGLE(w, call_data))
+#else
+
+void dddToggleSeparateExecWindowCB (GUI::CheckMenuItem *w)
 {
-#ifdef IF_MOTIF
+    app_data.separate_exec_window = get_active(w);
+    string debugged_program_will_be_executed_in =
+	"Debugged program will be executed in ";
+
+    if (app_data.separate_exec_window)
+	set_status(debugged_program_will_be_executed_in 
+		   + "a separate execution window.");
+    else
+	set_status(debugged_program_will_be_executed_in 
+		   + "the " DDD_NAME " debugger console.");
+
+    update_options(NO_UPDATE);
+}
+
+#endif
+
+#if defined(IF_XM)
+
+void dddToggleCheckGrabsCB (Widget w, XtPointer, XtPointer call_data)
+{
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.check_grabs = info->set;
-#else // NOT IF_MOTIF
-    app_data.check_grabs = get_active(w);
-#endif // IF_MOTIF
 
     if (app_data.check_grabs)
 	set_status("Checking for grabs.");
@@ -795,6 +1089,22 @@ void dddToggleCheckGrabsCB (CB_ARG_LIST_TOGGLE(w, call_data))
 
     update_options(NO_UPDATE);
 }
+
+#else
+
+void dddToggleCheckGrabsCB (GUI::CheckButton *w)
+{
+    app_data.check_grabs = get_active(w);
+
+    if (app_data.check_grabs)
+	set_status("Checking for grabs.");
+    else
+	set_status("Not checking for grabs.");
+
+    update_options(NO_UPDATE);
+}
+
+#endif
 
 void dddToggleSaveHistoryOnExitCB (CB_ARG_LIST_TOGGLE(w, call_data))
 {
@@ -815,16 +1125,14 @@ void dddToggleSaveHistoryOnExitCB (CB_ARG_LIST_TOGGLE(w, call_data))
     update_options(NO_UPDATE);
 }
 
-void dddToggleSuppressWarningsCB (CB_ARG_LIST_TOGGLE(w, call_data))
+#if defined(IF_XM)
+
+void dddToggleSuppressWarningsCB (Widget w, XtPointer, XtPointer call_data)
 {
-#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.suppress_warnings = info->set;
-#else // NOT IF_MOTIF
-    app_data.suppress_warnings = get_active(w);
-#endif // IF_MOTIF
 
     if (app_data.suppress_warnings)
 	set_status("X Warnings are suppressed.");
@@ -834,16 +1142,30 @@ void dddToggleSuppressWarningsCB (CB_ARG_LIST_TOGGLE(w, call_data))
     update_options(NO_UPDATE);
 }
 
-void dddToggleWarnIfLockedCB (CB_ARG_LIST_TOGGLE(w, call_data))
+#else
+
+void dddToggleSuppressWarningsCB (GUI::CheckButton *w)
 {
-#ifdef IF_MOTIF
+    app_data.suppress_warnings = get_active(w);
+
+    if (app_data.suppress_warnings)
+	set_status("X Warnings are suppressed.");
+    else
+	set_status("X Warnings are not suppressed.");
+
+    update_options(NO_UPDATE);
+}
+
+#endif
+
+#if defined(IF_XM)
+
+void dddToggleWarnIfLockedCB (Widget w, XtPointer, XtPointer call_data)
+{
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.warn_if_locked = info->set;
-#else // NOT IF_MOTIF
-    app_data.warn_if_locked = get_active(w);
-#endif // IF_MOTIF
 
     if (app_data.warn_if_locked)
 	set_status(DDD_NAME " will warn you "
@@ -854,6 +1176,24 @@ void dddToggleWarnIfLockedCB (CB_ARG_LIST_TOGGLE(w, call_data))
 
     update_options(NO_UPDATE);
 }
+
+#else
+
+void dddToggleWarnIfLockedCB (GUI::CheckButton *w)
+{
+    app_data.warn_if_locked = get_active(w);
+
+    if (app_data.warn_if_locked)
+	set_status(DDD_NAME " will warn you "
+		   "when multiple " DDD_NAME " instances are running.");
+    else
+	set_status(DDD_NAME " will not warn you "
+		   "when multiple " DDD_NAME " instances are running.");
+
+    update_options(NO_UPDATE);
+}
+
+#endif
 
 #ifdef IF_MOTIF
 void dddSetBuiltinPlotWindowCB (CB_ARG_LIST_2(client_data))
@@ -967,16 +1307,14 @@ void dddToggleValueDocsCB (CB_ARG_LIST_TOGGLE(w, call_data))
     update_options(NO_UPDATE);
 }
 
-void dddToggleSaveOptionsOnExitCB (CB_ARG_LIST_TOGGLE(w, call_data))
+#if defined(IF_XM)
+
+void dddToggleSaveOptionsOnExitCB (Widget w, XtPointer, XtPointer call_data)
 {
-#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.save_options_on_exit = info->set;
-#else // NOT IF_MOTIF
-    app_data.save_options_on_exit = get_active(w);
-#endif // IF_MOTIF
 
     if (app_data.save_options_on_exit)
 	set_status("Current options will be saved when exiting DDD.");
@@ -986,6 +1324,21 @@ void dddToggleSaveOptionsOnExitCB (CB_ARG_LIST_TOGGLE(w, call_data))
     update_options(NO_UPDATE);
 }
 
+#else
+
+void dddToggleSaveOptionsOnExitCB (GUI::CheckMenuItem *w)
+{
+    app_data.save_options_on_exit = w->get_active();
+
+    if (app_data.save_options_on_exit)
+	set_status("Current options will be saved when exiting DDD.");
+    else
+	set_status("Current options will not be saved when exiting DDD.");
+
+    update_options(NO_UPDATE);
+}
+
+#endif
 
 //-----------------------------------------------------------------------------
 // Maintenance
@@ -1222,13 +1575,10 @@ static void report_debugger_type()
     }
 }
 
-#ifdef IF_MOTIF
-void dddSetDebuggerCB (CB_ARG_LIST_123(w, client_data, call_data))
-#else // NOT IF_MOTIF
-void dddSetDebuggerCB (TOGGLEBUTTON_P w, DebuggerType type)
-#endif // IF_MOTIF
+#if defined(IF_XM)
+
+void dddSetDebuggerCB (Widget w, XtPointer client_data, XtPointer call_data)
 {
-#ifdef IF_MOTIF
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
@@ -1236,10 +1586,6 @@ void dddSetDebuggerCB (TOGGLEBUTTON_P w, DebuggerType type)
 	return;
 
     DebuggerType type = DebuggerType((int)(long)client_data);
-#else // NOT IF_MOTIF
-    if (!w->get_active())
-	return;
-#endif // IF_MOTIF
     app_data.debugger = default_debugger(type);
     app_data.auto_debugger = false;
 
@@ -1249,20 +1595,14 @@ void dddSetDebuggerCB (TOGGLEBUTTON_P w, DebuggerType type)
     post_startup_warning(w);
 }
 
-#ifdef IF_MOTIF
-void dddToggleAutoDebuggerCB(CB_ARG_LIST_13(w, call_data))
-#else // NOT IF_MOTIF
-void dddToggleAutoDebuggerCB(TOGGLEBUTTON_P w)
-#endif // IF_MOTIF
-{
-#ifdef IF_MOTIF
-    XmToggleButtonCallbackStruct *info = 
-	(XmToggleButtonCallbackStruct *)call_data;
+#else
 
-    app_data.auto_debugger = info->set;
-#else // NOT IF_MOTIF
-    app_data.auto_debugger = w->get_active();
-#endif // IF_MOTIF
+void dddSetDebuggerCB (GUI::RadioButton *w, DebuggerType type)
+{
+    if (!w->get_active())
+	return;
+    app_data.debugger = default_debugger(type);
+    app_data.auto_debugger = false;
 
     report_debugger_type();
 
@@ -1270,13 +1610,41 @@ void dddToggleAutoDebuggerCB(TOGGLEBUTTON_P w)
     post_startup_warning(w);
 }
 
-#ifdef IF_MOTIF
-void dddSetCutCopyPasteBindingsCB (CB_ARG_LIST_23(client_data, call_data))
-#else // NOT IF_MOTIF
-void dddSetCutCopyPasteBindingsCB (TOGGLEBUTTON_P w, BindingStyle style)
-#endif // IF_MOTIF
+#endif
+
+#if defined(IF_XM)
+
+void dddToggleAutoDebuggerCB(Widget w, XtPointer, XtPointer call_data)
 {
-#ifdef IF_MOTIF
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    app_data.auto_debugger = info->set;
+
+    report_debugger_type();
+
+    update_options(NO_UPDATE);
+    post_startup_warning(w);
+}
+
+#else
+
+void dddToggleAutoDebuggerCB(GUI::CheckButton *w)
+{
+    app_data.auto_debugger = w->get_active();
+
+    report_debugger_type();
+
+    update_options(NO_UPDATE);
+    post_startup_warning(w);
+}
+
+#endif
+
+#if defined(IF_XM)
+
+void dddSetCutCopyPasteBindingsCB (Widget, XtPointer client_data, XtPointer call_data)
+{
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
@@ -1284,10 +1652,6 @@ void dddSetCutCopyPasteBindingsCB (TOGGLEBUTTON_P w, BindingStyle style)
 	return;
 
     BindingStyle style = BindingStyle((int)(long)client_data);
-#else // NOT IF_MOTIF
-    if (!w->get_active())
-	return;
-#endif // IF_MOTIF
     app_data.cut_copy_paste_bindings = style;
 
     switch (style)
@@ -1305,13 +1669,35 @@ void dddSetCutCopyPasteBindingsCB (TOGGLEBUTTON_P w, BindingStyle style)
     update_options(NO_UPDATE);
 }
 
-#ifdef IF_MOTIF
-void dddSetSelectAllBindingsCB (CB_ARG_LIST_23(client_data, call_data))
-#else // NOT IF_MOTIF
-void dddSetSelectAllBindingsCB (TOGGLEBUTTON_P w, BindingStyle style)
-#endif // IF_MOTIF
+#else
+
+void dddSetCutCopyPasteBindingsCB (GUI::RadioButton *w, BindingStyle style)
 {
-#ifdef IF_MOTIF
+    if (!w->get_active())
+	return;
+    app_data.cut_copy_paste_bindings = style;
+
+    switch (style)
+    {
+    case KDEBindings:
+	set_status(next_ddd_will_start_with + 
+		   "KDE-style Cut/Copy/Paste bindings.");
+	break;
+    case MotifBindings:
+	set_status(next_ddd_will_start_with + 
+		   "Motif-style Cut/Copy/Paste bindings.");
+	break;
+    }
+
+    update_options(NO_UPDATE);
+}
+
+#endif
+
+#if defined(IF_XM)
+
+void dddSetSelectAllBindingsCB (Widget, XtPointer client_data, XtPointer call_data)
+{
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
@@ -1319,10 +1705,6 @@ void dddSetSelectAllBindingsCB (TOGGLEBUTTON_P w, BindingStyle style)
 	return;
 
     BindingStyle style = BindingStyle((int)(long)client_data);
-#else // NOT IF_MOTIF
-    if (!w->get_active())
-	return;
-#endif // IF_MOTIF
     app_data.select_all_bindings = style;
 
     switch (style)
@@ -1339,6 +1721,31 @@ void dddSetSelectAllBindingsCB (TOGGLEBUTTON_P w, BindingStyle style)
 
     update_options(NO_UPDATE);
 }
+
+#else
+
+void dddSetSelectAllBindingsCB (GUI::RadioButton *w, BindingStyle style)
+{
+    if (!w->get_active())
+	return;
+    app_data.select_all_bindings = style;
+
+    switch (style)
+    {
+    case KDEBindings:
+	set_status(next_ddd_will_start_with + 
+		   "KDE-style Select All bindings.");
+	break;
+    case MotifBindings:
+	set_status(next_ddd_will_start_with + 
+		   "Motif-style Select All bindings.");
+	break;
+    }
+
+    update_options(NO_UPDATE);
+}
+
+#endif
 
 void dddSetUndoBufferSizeCB(CB_ALIST_1(ENTRY_P w))
 {
@@ -1368,21 +1775,21 @@ void dddClearUndoBufferCB(CB_ARG_LIST_NULL)
     undo_buffer.clear();
 }
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 static void toggle_button_appearance(Widget w, Boolean& data, 
 				     XtPointer call_data)
-#else // NOT IF_MOTIF
-static void toggle_button_appearance(TOGGLEBUTTON_P w, Boolean& data)
-#endif // IF_MOTIF
+#else
+static void toggle_button_appearance(GUI::CheckButton *w, Boolean& data)
+#endif
 {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     data = info->set;
-#else // NOT IF_MOTIF
+#else
     data = w->get_active();
-#endif // IF_MOTIF
+#endif
     
     string msg = next_ddd_will_start_with;
     if (app_data.button_images && app_data.button_captions)
@@ -1406,45 +1813,45 @@ static void toggle_button_appearance(TOGGLEBUTTON_P w, Boolean& data)
     post_startup_warning(w);
 }
 
-#ifdef IF_MOTIF
-void dddToggleButtonCaptionsCB(CB_ARG_LIST_13(w, call_data))
-#else // NOT IF_MOTIF
-void dddToggleButtonCaptionsCB(TOGGLEBUTTON_P w)
-#endif // IF_MOTIF
+#if defined(IF_XM)
+
+void dddToggleButtonCaptionsCB(Widget w, XtPointer, XtPointer call_data)
 {
-    toggle_button_appearance(w, app_data.button_captions
-#ifdef IF_MOTIF
-			     , call_data
-#endif // IF_MOTIF
-	);
+    toggle_button_appearance(w, app_data.button_captions, call_data);
 }
 
-#ifdef IF_MOTIF
-void dddToggleButtonImagesCB(CB_ARG_LIST_13(w, call_data))
-#else // NOT IF_MOTIF
-void dddToggleButtonImagesCB(TOGGLEBUTTON_P w)
-#endif // IF_MOTIF
+#else
+
+void dddToggleButtonCaptionsCB(GUI::CheckButton *w)
 {
-    toggle_button_appearance(w, app_data.button_images
-#ifdef IF_MOTIF
-			     , call_data
-#endif // IF_MOTIF
-	);
+    toggle_button_appearance(w, app_data.button_captions);
 }
 
-#ifdef IF_MOTIF
-void dddToggleFlatButtonsCB(CB_ARG_LIST_13(w, call_data))
-#else // NOT IF_MOTIF
-void dddToggleFlatButtonsCB(TOGGLEBUTTON_P w)
-#endif // IF_MOTIF
+#endif
+
+#if defined(IF_XM)
+
+void dddToggleButtonImagesCB(Widget w, XtPointer, XtPointer call_data)
 {
-#ifdef IF_MOTIF
+    toggle_button_appearance(w, app_data.button_images, call_data);
+}
+
+#else
+
+void dddToggleButtonImagesCB(GUI::CheckButton *w)
+{
+    toggle_button_appearance(w, app_data.button_images);
+}
+
+#endif
+
+#if defined(IF_XM)
+
+void dddToggleFlatButtonsCB(Widget w, XtPointer, XtPointer call_data)
+{
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
     bool data = info->set;
-#else // NOT IF_MOTIF
-    bool data = w->get_active();
-#endif // IF_MOTIF
 
     app_data.flat_toolbar_buttons = data;
     app_data.flat_dialog_buttons  = data;
@@ -1458,19 +1865,33 @@ void dddToggleFlatButtonsCB(TOGGLEBUTTON_P w)
     post_startup_warning(w);
 }
 
-#ifdef IF_MOTIF
-void dddToggleColorButtonsCB(CB_ARG_LIST_13(w, call_data))
-#else // NOT IF_MOTIF
-void dddToggleColorButtonsCB(TOGGLEBUTTON_P w)
-#endif // IF_MOTIF
+#else
+
+void dddToggleFlatButtonsCB(GUI::CheckButton *w)
 {
-#ifdef IF_MOTIF
+    bool data = w->get_active();
+
+    app_data.flat_toolbar_buttons = data;
+    app_data.flat_dialog_buttons  = data;
+
+    if (data)
+	set_status(next_ddd_will_start_with + "flat buttons.");
+    else
+	set_status(next_ddd_will_start_with + "raised buttons.");
+
+    update_options(NO_UPDATE);
+    post_startup_warning(w);
+}
+
+#endif
+
+#if defined(IF_XM)
+
+void dddToggleColorButtonsCB(Widget w, XtPointer, XtPointer call_data)
+{
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
     int data = info->set;
-#else // NOT IF_MOTIF
-    int data = w->get_active();
-#endif // IF_MOTIF
 
 #if XmVersion >= 2000
     switch (data)
@@ -1511,20 +1932,41 @@ void dddToggleColorButtonsCB(TOGGLEBUTTON_P w)
     post_startup_warning(w);
 }
 
-#ifdef IF_MOTIF
-void dddToggleToolbarsAtBottomCB(CB_ARG_LIST_13(w, call_data))
-#else // NOT IF_MOTIF
-void dddToggleToolbarsAtBottomCB(TOGGLEBUTTON_P w)
-#endif // IF_MOTIF
+#else
+
+void dddToggleColorButtonsCB(GUI::CheckButton *w)
 {
-#ifdef IF_MOTIF
+    int data = w->get_active();
+
+    if (data)
+	app_data.button_color_key = "c";
+    else
+	app_data.button_color_key = "g";
+
+    string button_color_key        = app_data.button_color_key;
+    string active_button_color_key = app_data.active_button_color_key;
+
+    if (button_color_key == 'c' && active_button_color_key == 'c')
+	set_status(next_ddd_will_start_with + "color buttons.");
+    else if (button_color_key == active_button_color_key)
+	set_status(next_ddd_will_start_with + "grey buttons.");
+    else			// indeterminate
+	set_status(next_ddd_will_start_with + "grey/color buttons.");
+
+    update_options(NO_UPDATE);
+    post_startup_warning(w);
+}
+
+#endif
+
+#if defined(IF_XM)
+
+void dddToggleToolbarsAtBottomCB(Widget w, XtPointer, XtPointer call_data)
+{
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.toolbars_at_bottom = info->set;
-#else // NOT IF_MOTIF
-    app_data.toolbars_at_bottom = w->get_active();
-#endif // IF_MOTIF
 
     if (app_data.toolbars_at_bottom)
 	set_status(next_ddd_will_start_with + "toolbars at bottom.");
@@ -1535,6 +1977,22 @@ void dddToggleToolbarsAtBottomCB(TOGGLEBUTTON_P w)
     post_startup_warning(w);
 }
 
+#else
+
+void dddToggleToolbarsAtBottomCB(GUI::CheckButton *w)
+{
+    app_data.toolbars_at_bottom = w->get_active();
+
+    if (app_data.toolbars_at_bottom)
+	set_status(next_ddd_will_start_with + "toolbars at bottom.");
+    else
+	set_status(next_ddd_will_start_with + "toolbars at top.");
+
+    update_options(NO_UPDATE);
+    post_startup_warning(w);
+}
+
+#endif
 
 // ---------------------------------------------------------------------------
 // Helpers
