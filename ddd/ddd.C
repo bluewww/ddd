@@ -168,14 +168,6 @@ char ddd_rcsid[] =
 #include <Xm/RepType.h>		// XmRepTypeInstallTearOffModelConverter()
 #endif
 
-#if HAVE_X11_XMU_EDITRES_H
-#include <X11/Xmu/Editres.h>
-#endif
-
-#if HAVE_ATHENA
-#include <X11/Xaw/XawInit.h>
-#endif
-
 #include <X11/IntrinsicP.h>	// LessTif hacks
 #include "Sash.h"
 #include "LessTifH.h"
@@ -201,6 +193,15 @@ char ddd_rcsid[] =
 #include "GtkMultiPaned.h"
 #endif
 #endif
+
+#if HAVE_X11_XMU_EDITRES_H
+#include <X11/Xmu/Editres.h>
+#endif
+
+#if HAVE_ATHENA
+#include <X11/Xaw/XawInit.h>
+#endif
+
 
 // Lots of DDD stuff
 #include "AgentM.h"
@@ -316,6 +317,7 @@ char ddd_rcsid[] =
 #include <GUI/CheckMenuItem.h>
 #include <GUI/Button.h>
 #include <GUI/Entry.h>
+#include <GUI/Main.h>
 #endif
 
 #if !defined(IF_XM)
@@ -481,8 +483,7 @@ static void fix_status_size();
 #if defined(IF_XM)
 static void setup_new_shell(Widget w);
 #else
-static void setup_new_shell(Widget w);
-static void setup_new_shell1(GUI::Widget *w);
+static void setup_new_shell(GUI::Widget *w);
 #endif
 
 // Setup theme manager
@@ -506,9 +507,14 @@ static void SetSplashScreenCB(GUI::CheckButton *);
 static void popup_splash_screen(Widget parent, const string& color_key);
 static void popdown_splash_screen(XtPointer data = 0, XtIntervalId *id = 0);
 
+#if defined(IF_XM)
 // Read in database from FILENAME.  Upon version mismatch, ignore some
 // resources such as window sizes.
 static XrmDatabase GetFileDatabase(const string &filename);
+#else
+// Read in database from FILENAME.
+static xmlDoc *GetFileDatabase(const string &filename);
+#endif
 
 #if defined(IF_XM)
 // Lock `~/.ddd'
@@ -530,9 +536,15 @@ static void setup_motif_version_warnings();
 static void setup_auto_command_prefix();
 static void setup_core_limit();
 static void setup_options();
+#if defined(IF_XM)
 static void setup_cut_copy_paste_bindings(XrmDatabase db);
 static void setup_select_all_bindings(XrmDatabase db);
 static void setup_show(XrmDatabase db, const char *app_name, const char *gdb_name);
+#else
+static void setup_cut_copy_paste_bindings(xmlDoc *db);
+static void setup_select_all_bindings(xmlDoc *db);
+static void setup_show(xmlDoc *db, const char *app_name, const char *gdb_name);
+#endif
 
 // Help hooks
 static void PreHelpOnContext(Widget w, XtPointer, XtPointer);
@@ -1210,9 +1222,14 @@ DECL_WR2(WR_gdbMakeAgainCB, sigc::ptr_fun(gdbMakeAgainCB));
 	    BIND(DDDCloseCB, 0),					\
 	    sigc::ptr_fun(DDDCloseCB),					\
 	    0, 0),							\
-    MENTRYL("restart", "Restart", MMPush, BIND_0(PTR_FUN(DDDRestartCB)), 0, 0), \
-    MENTRYL("exit", "Exit", MMPush,					\
-	    BIND_1(PTR_FUN(DDDExitCB), EXIT_SUCCESS), 0, 0),		\
+    GENTRYL("restart", "Restart", MMPush,				\
+	    BIND(DDDRestartCB, 0),					\
+	    sigc::ptr_fun(DDDRestartCB),				\
+	    0, 0),							\
+    GENTRYL("exit", "Exit", MMPush,					\
+	    BIND(DDDExitCB, EXIT_SUCCESS),				\
+	    sigc::bind(sigc::ptr_fun(DDDExitCB), EXIT_SUCCESS),		\
+	    0, 0),							\
     MMEnd								\
 }
 
@@ -1529,8 +1546,10 @@ static MMDesc command_menu[] =
     MMSep,
     MENTRYL("define", "Define Command...", MMPush,
 	    BIND_0(PTR_FUN(dddDefineCommandCB)), 0, &define_w),
-    MENTRYL("buttons", "Edit Buttons...", MMPush,
-	    BIND_0(PTR_FUN(dddEditButtonsCB)), 0, 0),
+    GENTRYL("buttons", "Edit Buttons...", MMPush,
+	    BIND(dddEditButtonsCB, 0),
+	    sigc::ptr_fun(dddEditButtonsCB),
+	    0, 0),
     MMEnd
 };
 
@@ -2815,8 +2834,10 @@ static MMDesc break_menu[] =
 	    BIND(gdbTempBreakAtCB, 0),
 	    sigc::ptr_fun(gdbTempBreakAtCB),
 	    0, 0),
-    MENTRYL("regexBreakAt", "Set Breakpoints at Regexp ()", MMPush,
-	    BIND_0(PTR_FUN(gdbRegexBreakAtCB)), 0, 0),
+    GENTRYL("regexBreakAt", "Set Breakpoints at Regexp ()", MMPush,
+	    BIND(gdbRegexBreakAtCB, 0),
+	    sigc::ptr_fun(gdbRegexBreakAtCB),
+	    0, 0),
     MENTRYL("breakProperties", "Breakpoint Properties...", MMPush, 
 	    HIDE_0(PTR_FUN(gdbEditBreakpointPropertiesCB)), 0, 0),
     GENTRYL("enableBreak", "Enable Breakpoint at ()", MMPush, 
@@ -3055,27 +3076,35 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     // Set up a `~/.ddd/' directory hierarchy
     create_session_dir(DEFAULT_SESSION, messages);
 
+#if defined(IF_XM)
     // Read ~/.ddd/init resources
     XrmDatabase dddinit = 
 	GetFileDatabase(session_state_file(DEFAULT_SESSION));
     if (dddinit == 0) {
-#if defined(IF_XM)
 	dddinit = XrmGetStringDatabase("");
-#else
-	dddinit = get_string_database("");
-#endif
     }
 
     // Read ~/.ddd/tips resources
     XrmDatabase dddtips =
 	GetFileDatabase(session_tips_file());
     if (dddtips != 0) {
-#if defined(IF_XM)
 	XrmMergeDatabases(dddtips, &dddinit);
-#else
-	merge_databases(dddtips, dddinit);
-#endif
     }
+#else
+    // Read ~/.ddd/init resources
+    xmlDoc *dddinit = 
+	GetFileDatabase(session_state_file(DEFAULT_SESSION));
+    if (dddinit == 0) {
+	dddinit = get_string_database("");
+    }
+
+    // Read ~/.ddd/tips resources
+    xmlDoc *dddtips =
+	GetFileDatabase(session_tips_file());
+    if (dddtips != 0) {
+	merge_databases(dddtips, dddinit);
+    }
+#endif
 
 #if defined(IF_XM)
     // Let command-line arguments override ~/.ddd/init
@@ -3094,12 +3123,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     {
 	// Determine session
 	char *session_rtype = 0;
-#if defined(IF_XM)
 	XrmValue session_value;
-#else
-	Glib::Value<std::string> session_value;
-	session_value.init(Glib::Value<std::string>::value_type());
-#endif
 
 	string Nsession   = string(DDD_CLASS_NAME ".") + XtNsession;
 	string CSessionID = string(DDD_CLASS_NAME ".") + XtCSessionID;
@@ -3108,7 +3132,6 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 #endif
 
 	// Try resource or option
-#if defined(IF_XM)
 	if (
 #if XtSpecificationRelease >= 6
 	    XrmGetResource(dddinit, NsessionID.chars(), CSessionID.chars(),
@@ -3124,14 +3147,6 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 		session_id = id.chars();
 	    }
 	}
-#else
-	if (
-	    get_resource(dddinit, Nsession.chars(), CSessionID.chars(),
-			 session_value))
-	{
-	  session_id = session_value.get().c_str();
-	}
-#endif
 
 	if (session_id == 0)
 	{
@@ -3147,37 +3162,68 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 			j++;
 			
 		    session_id = basename(argv[i]);
-#if defined(IF_XM)
 		    session_value.addr = CONST_CAST(char*,session_id);
 		    session_value.size = strlen(session_id) + 1;
 		    XrmPutResource(&dddinit, Nsession.chars(), XtRString, 
 				   &session_value);
-#else
-		    session_value.set(CONST_CAST(char*,session_id));
-		    put_resource(dddinit, Nsession.chars(), XtRString, 
-				 session_value);
-#endif
 		}
 	    }
 	}
     }
 #else
-#ifdef NAG_ME
-#warning BUGGER THIS: Glib::Value is totally undocumented cruft.
-#endif
+    if (session_id == 0)
+    {
+	// Determine session
+	char *session_rtype = 0;
+	// Glib::Value<std::string> session_value;
+	// session_value.init(Glib::Value<std::string>::value_type());
+	DDDValueBase session_value;
+
+	string Nsession   = string(DDD_CLASS_NAME ".") + XtNsession;
+	string CSessionID = string(DDD_CLASS_NAME ".") + XtCSessionID;
+#if XtSpecificationRelease >= 6
+	string NsessionID = string(DDD_CLASS_NAME ".") + XtNsessionID;
 #endif
 
+	// Try resource or option
+	if (
+	    get_resource(dddinit, Nsession.chars(), CSessionID.chars(),
+			 session_value))
+	{
+	  session_id = session_value.get().c_str();
+	}
+
+	if (session_id == 0)
+	{
+	    // Try `=FILE' hack: if the last or second-to-last arg is
+	    // `=FILE', replace it by FILE and use FILE as session id.
+	    for (int i = argc - 1; i >= 1 && i >= argc - 2; i--)
+	    {
+		if (argv[i][0] == '=')
+		{
+		    // Delete '='
+		    int j = 0;
+		    while ((argv[i][j] = argv[i][j + 1]))
+			j++;
+			
+		    session_id = basename(argv[i]);
+		    session_value.set(CONST_CAST(char*,session_id));
+		    put_resource(dddinit, Nsession.chars(), "String", 
+				 session_value);
+		}
+	    }
+	}
+    }
+#endif
+
+#if defined(IF_XM)
     if (!restart_session().empty())
     {
 	// A session is given in $DDD_SESSION: override everything.
 	XrmDatabase session_db = 
 	    GetFileDatabase(session_state_file(restart_session()));
 	if (session_db != 0) {
-#if defined(IF_XM)
 	    XrmMergeDatabases(session_db, &dddinit);
-#else
-	    merge_databases(session_db, dddinit);
-#endif
 	}
     }
     else if (session_id != 0)
@@ -3187,22 +3233,37 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	XrmDatabase session_db = 
 	    GetFileDatabase(session_state_file(session_id));
 	if (session_db != 0) {
-#if defined(IF_XM)
 	    XrmMergeDatabases(session_db, &dddinit);
-#else
-	    merge_databases(session_db, dddinit);
-#endif
 	}
     }
+#else
+    if (!restart_session().empty())
+    {
+	// A session is given in $DDD_SESSION: override everything.
+	xmlDoc *session_db = 
+	    GetFileDatabase(session_state_file(restart_session()));
+	if (session_db != 0) {
+	    merge_databases(session_db, dddinit);
+	}
+    }
+    else if (session_id != 0)
+    {
+	// Merge in session resources; these override `~/.ddd/init' as
+	// well as the command-line options.
+	xmlDoc *session_db = 
+	    GetFileDatabase(session_state_file(session_id));
+	if (session_db != 0) {
+	    merge_databases(session_db, dddinit);
+	}
+    }
+#endif
 
-#if defined(IF_XM)
+#if defined(IF_MOTIF)
 #if HAVE_ATHENA
     // Initialize Xaw widget set, registering the Xaw Converters.
     // This is done before installing our own converters.
     XawInitializeWidgetSet();
 #endif
-#else
-    Gtk::Main *gtk_main_loop = new Gtk::Main(argc, argv);
 #endif
 
 #if defined(IF_XM)
@@ -3217,10 +3278,10 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 
     // From this point on, we'll be running under X.
 
+#if defined(IF_XM)
     // Open X connection and create top-level application shell
     XtAppContext app_context;
 
-#if defined(IF_XM)
     arg = 0;
     XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
 
@@ -3248,16 +3309,13 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 			&argc, argv, (String *)ddd_fallback_resources,
 			args, arg);
 #endif
-#else
-#ifdef NAG_ME
-#warning Should be some arguments here
-#endif
-    GUI::Window *toplevel = new GUI::Window("toplevel");
-    app_context = toplevel;
-#endif
-
-#if defined(IF_XM)
     ddd_install_xt_error(app_context);
+#else
+    // GUI::Window *toplevel = new GUI::Window("toplevel");
+    GUI::Window *toplevel;
+    GUI::Main *app_context = new GUI::Main(toplevel, DDD_CLASS_NAME, session_id,
+					   ddd_fallback_resources, argc, argv);
+
 #endif
 
     // Check Motif version.  We can do this only now after the first
@@ -3601,8 +3659,13 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 		 << lock_info.pid;
 	if (lock_info.hostname != fullhostname())
 	    messages << ", host " << cook(lock_info.hostname);
+#if defined(IF_XM)
 	if (lock_info.display != XDisplayString(XtDisplay(toplevel)))
 	    messages << ", display " << cook(lock_info.display);
+#else
+	if (lock_info.display != toplevel->get_display()->display_string())
+	    messages << ", display " << cook(lock_info.display);
+#endif
 	messages << ")\n";
     }
 
@@ -3651,12 +3714,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     set_gdb_history_file(gdb->history_file());
 
     // Setup shell creation
-#if defined(IF_XM)
     Delay::shell_registered = setup_new_shell;
-#else
-    Delay::shell_registered = setup_new_shell;
-    Delay::shell_registered1 = setup_new_shell1;
-#endif
 
     // Create command shell
 
@@ -3687,8 +3745,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 					      toplevel, args, arg));
     AddDeleteWindowCallback(command_shell, DDDCloseCB);
 #else
-    command_shell = new GUI::Window(toplevel, "command_shell",
-				    original_argc, original_argv);
+    command_shell = new GUI::Window(*app_context, "command_shell", "command_shell");
     command_shell->signal_delete_event().connect(sigc::bind<0>(sigc::ptr_fun(CloseCB), command_shell));
 #endif
 
@@ -3704,7 +3761,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 					    args, arg);
     XtManageChild(main_window);
 #else
-    CONTAINER_P main_window = new GUI::VBox(*command_shell, "main_window");
+    GUI::Container *main_window = new GUI::VBox(*command_shell, "main_window");
     main_window->show();
 #endif
 
@@ -3723,7 +3780,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     MMaddCallbacks(menubar);
     MMaddHelpCallback(menubar, ImmediateHelpCB);
 #else
-    GUI::WidgetPtr<GUI::MenuBar> menubar_w = MMcreateMenuBar(main_window, "menubar", menubar);
+    GUI::MenuBar *menubar_w = MMcreateMenuBar(*main_window, "menubar", menubar);
     MMaddCallbacks(menubar);
     MMaddHelpCallback(menubar, sigc::ptr_fun(ImmediateHelpCB1));
 #endif
@@ -3747,7 +3804,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     // Note: On Motif it is possible to force a pane to have
     // fixed size.  On Gtk this does not seem possible.  Therefore
     // the toolbar and status bar must go in a VBox.
-    GUI::Box *main_vbox = new GUI::VBox(main_window);
+    GUI::Box *main_vbox = new GUI::VBox(*main_window);
 #endif
 
     // Status line
@@ -3825,7 +3882,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 
 	AddDeleteWindowCallback(data_disp_shell, DDDCloseCB);
 #else
-	data_disp_shell = new GUI::Window("data_disp_shell", "data_disp_shell");
+	data_disp_shell = new GUI::Window(*app_context, "data_disp_shell", "data_disp_shell");
 	AddDeleteWindowCallback(data_disp_shell, BIND_1(PTR_FUN(DDDCloseCB), data_disp_shell));
 #endif
 
@@ -4300,11 +4357,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 
     // Realize all top-level widgets
     XtRealizeWidget(command_shell);
-#if defined(IF_XM)
     Delay::register_shell(command_shell);
-#else
-    Delay::register_shell1(command_shell);
-#endif
 
     if (data_disp_shell)
     {
@@ -4707,6 +4760,8 @@ static void ddd_check_version()
 #endif
 }
 
+#if defined(IF_XM)
+
 // Read in database from FILENAME.  Upon version mismatch, ignore some
 // resources such as window sizes.
 XrmDatabase GetFileDatabase(const string& filename)
@@ -4720,7 +4775,6 @@ XrmDatabase GetFileDatabase(const string& filename)
     std::clog << "Copying " << filename.chars() << " to " << tmpfile << "\n";
 #endif
 
-#if defined(IF_XM)
     // Resources to ignore upon copying
     static const char * const do_not_copy[] = 
     { 
@@ -4729,11 +4783,6 @@ XrmDatabase GetFileDatabase(const string& filename)
 	XtNtoolRightOffset, XtNtoolTopOffset, // Command tool offset
 	XtNshowHints,		              // Show edge hints
     };
-#else
-#ifdef NAG_ME
-#warning Resource database not defined
-#endif
-#endif
 
     bool version_mismatch = false;
     while (is)
@@ -4766,7 +4815,6 @@ XrmDatabase GetFileDatabase(const string& filename)
 		line.gsub(XtNdisplayShortcuts ":", XtNgdbDisplayShortcuts ":");
 	    }
 
-#if defined(IF_XM)
 	    for (int i = 0; copy && i < int(XtNumber(do_not_copy)); i++)
 	    {
 		string res(".");
@@ -4781,7 +4829,6 @@ XrmDatabase GetFileDatabase(const string& filename)
 		    copy = false;
 		}
 	    }
-#endif
 	}
 
 	if (copy)
@@ -4808,7 +4855,19 @@ XrmDatabase GetFileDatabase(const string& filename)
     return db;
 }
 
+#else
 
+// Read in database from FILENAME.  Upon version mismatch, ignore some
+// resources such as window sizes.
+xmlDoc *GetFileDatabase(const string& filename)
+{
+#ifdef NAG_ME
+#warning No version check here!
+#endif
+    return get_file_database(filename.chars());
+}
+
+#endif
 
 //-----------------------------------------------------------------------------
 // Install DDD log
@@ -5131,10 +5190,8 @@ static void ContinueDespiteLockCB(CB_ALIST_NULL)
 }
 
 #if defined(IF_XM)
-static void TryLock(XtPointer client_data, XtIntervalId *)
-#else
-static bool TryLock(XtPointer client_data)
-#endif
+
+static void TryToLock(XtPointer client_data, XtIntervalId *)
 {
     Widget w = (Widget)client_data;
 
@@ -5147,19 +5204,35 @@ static bool TryLock(XtPointer client_data)
 	return MAYBE_FALSE;
     }
 
-#if defined(IF_XM)
     XtAppAddTimeOut(XtWidgetToApplicationContext(w), 500, 
-		    PTR_FUN(TryLock), client_data);
-#else
-    static sigc::connection trylock_conn;
-    if (!trylock_conn)
-      trylock_conn = Glib::signal_timeout().connect(sigc::bind(PTR_FUN(TryLock), client_data), 500);
-    return true;
-#endif
+		    TryToLock, client_data);
 }
 
+#else
+
+static bool TryToLock(GUI::Widget *w)
+{
+    LockInfo info;
+    bool lock_ok = lock_session_dir(w->get_display(), DEFAULT_SESSION, info);
+
+    if (lock_ok)
+    {
+	continue_despite_lock = true;
+	return MAYBE_FALSE;
+    }
+
+    static sigc::connection trylock_conn;
+    if (!trylock_conn)
+      trylock_conn = Glib::signal_timeout().connect(sigc::bind(sigc::ptr_fun(TryToLock), w), 500);
+    return true;
+}
+
+#endif
+
+#if defined(IF_XM)
+
 #if XmVersion >= 1002
-static void KillLockerCB(CB_ARG_LIST_12(w, client_data))
+static void KillLockerCB(Widget w, XtPointer client_data, XtPointer)
 {
     static int attempts_to_kill = 0;
 
@@ -5170,13 +5243,26 @@ static void KillLockerCB(CB_ARG_LIST_12(w, client_data))
     if (attempts_to_kill++ == 0)
     {
 	// Try locking again until successful
-#if defined(IF_XM)
-	TryLock(XtPointer(w), 0);
-#else
-	TryLock(XtPointer(w));
-#endif
+	TryToLock(XtPointer(w), 0);
     }
 }
+#endif
+
+#else
+
+static void KillLockerCB(GUI::Widget *w, LockInfo *info)
+{
+    static int attempts_to_kill = 0;
+
+    kill(info->pid, SIGHUP);
+
+    if (attempts_to_kill++ == 0)
+    {
+	// Try locking again until successful
+	TryToLock(w);
+    }
+}
+
 #endif
 
 #if defined(IF_XM)
@@ -5352,7 +5438,7 @@ static bool lock_ddd(GUI::Widget *parent, LockInfo& info)
 
     Gtk::Button *button;
     button = lock_dialog->add_button("kill");
-    button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(KillLockerCB), lock_dialog, XtPointer(&info)));
+    button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(KillLockerCB), lock_dialog, &info));
     button = lock_dialog->add_button("continue");
     button->signal_clicked().connect(sigc::ptr_fun(ContinueDespiteLockCB));
     button = lock_dialog->add_button("cancel");
@@ -5488,6 +5574,8 @@ static void ActivateCB(Widget, XtPointer client_data, XtPointer call_data)
 
 static StatusMsg *context_help_msg = 0;
 
+#if defined(IF_XM)
+
 static void PreHelpOnContext(Widget w, XtPointer, XtPointer)
 {
     delete context_help_msg;
@@ -5496,6 +5584,19 @@ static void PreHelpOnContext(Widget w, XtPointer, XtPointer)
 
     XFlush(XtDisplay(w));
 }
+
+#else
+
+static void PreHelpOnContext(GUI::Widget *w)
+{
+    delete context_help_msg;
+    context_help_msg = 
+	new StatusMsg("Please click on the item you want information for");
+
+    w->get_display()->flush();
+}
+
+#endif
 
 static void PostHelpOnItem(Widget item)
 {
@@ -7459,6 +7560,8 @@ BlinkCB(
     else
 	XtVaSetValues(led_w, XmNselectColor, led_background_color, 
 		      XtNIL);
+
+    XFlush(XtDisplay(led_w));
 #else
     bool set = *set_p;
     *set_p = !set;
@@ -7466,9 +7569,9 @@ BlinkCB(
 	led_w->get_style()->set_bg(Gtk::STATE_SELECTED, led_select_color);
     else
 	led_w->get_style()->set_bg(Gtk::STATE_SELECTED, led_background_color);
-#endif
 
-    XFlush(XtDisplay(led_w));
+    led_w->get_display()->flush();
+#endif
     XmUpdateDisplay(led_w);
 
     if ((blinker_active || set) && app_data.busy_blink_rate > 0)
@@ -9026,6 +9129,8 @@ static void set_cut_copy_paste_bindings(MMDesc *menu, BindingStyle style)
 #endif
 }
 
+#if defined(IF_XM)
+
 static void setup_cut_copy_paste_bindings(XrmDatabase db)
 {
     // Stupid OSF/Motif won't change the accelerators once created.
@@ -9054,19 +9159,19 @@ static void setup_cut_copy_paste_bindings(XrmDatabase db)
 	break;
     }
 
-#if defined(IF_XM)
     XrmDatabase bindings = XrmGetStringDatabase(resources);
-#else
-    XrmDatabase bindings = get_string_database(resources);
-#endif
     assert(bindings != 0);
-#if defined(IF_XM)
     XrmMergeDatabases(bindings, &db);
-#else
-    merge_databases(bindings, db);
-#endif
 }
 
+#else
+
+static void setup_cut_copy_paste_bindings(xmlDoc *db)
+{
+    std::cerr << "setup_cut_copy_paste_bindings: not implemented\n";
+}
+
+#endif
 
 // Update select all bindings
 static void set_select_all_bindings(MMDesc *menu, BindingStyle style)
@@ -9110,6 +9215,8 @@ static void set_select_all_bindings(MMDesc *menu, BindingStyle style)
     }
 }
 
+#if defined(IF_XM)
+
 static void setup_select_all_bindings(XrmDatabase db)
 {
     // Stupid OSF/Motif won't change the accelerators once created.
@@ -9128,17 +9235,19 @@ static void setup_select_all_bindings(XrmDatabase db)
 	break;
     }
 
-#if defined(IF_XM)
     XrmDatabase bindings = XrmGetStringDatabase(resources);
     assert(bindings != 0);
     XrmMergeDatabases(bindings, &db);
-#else
-    XrmDatabase bindings = get_string_database(resources);
-    assert(bindings != 0);
-    merge_databases(bindings, db);
-#endif
 }
 
+#else
+
+static void setup_select_all_bindings(xmlDoc *db)
+{
+    std::cerr << "setup_select_all_bindings: not implemented\n";
+}
+
+#endif
 
 //-----------------------------------------------------------------------------
 // Update menu entries
@@ -9495,7 +9604,7 @@ static void setup_new_shell(Widget w)
     std::cerr << "setup_new_shell stuff not implemented.\n";
 }
 
-static void setup_new_shell1(GUI::Widget *w)
+static void setup_new_shell(GUI::Widget *w)
 {
     if (w == 0)
 	return;
@@ -9564,7 +9673,7 @@ static GUI::Dialog *splash_shell  = 0;
 static Pixmap splash_pixmap = None;
 #else
 // Cannot initialize Glib::RefPtr.
-static Pixmap splash_pixmap;
+static GUI::RefPtr<GUI::Pixmap> splash_pixmap;
 #endif
 static _Delay *splash_delay = 0;
 
@@ -9917,6 +10026,8 @@ static void check_log(const string& logname, DebuggerType& type)
 // `Show' options
 //-----------------------------------------------------------------------------
 
+#if defined(IF_XM)
+
 // Return true iff resource is defined and set
 static string resource_value(XrmDatabase db, const string& app_name, const char *res_name)
 {
@@ -9924,36 +10035,39 @@ static string resource_value(XrmDatabase db, const string& app_name, const char 
     string str_class = string(DDD_CLASS_NAME) + "." + res_name;
 
     char *type;
-#if defined(IF_XM)
-#if defined(IF_XM)
     XrmValue xrmvalue;
-#else
-    Glib::Value<std::string> xrmvalue;
-    xrmvalue.init(Glib::Value<std::string>::value_type());
-#endif
-#if defined(IF_XM)
     Bool success = XrmGetResource(db, str_name.chars(), str_class.chars(), &type, &xrmvalue);
-#else
-    Bool success = get_resource(db, str_name.chars(), str_class.chars(), xrmvalue);
-#endif
     if (!success)
 	return "";		// Resource not found
 
-#if defined(IF_XM)
     const char *str = (const char *)xrmvalue.addr;
     int len   = xrmvalue.size - 1; // includes the final `\0'
+    return string(str, len);
+}
+
 #else
+
+// Return true iff resource is defined and set
+static string resource_value(xmlDoc *db, const string& app_name, const char *res_name)
+{
+    string str_name  = app_name + "." + res_name;
+    string str_class = string(DDD_CLASS_NAME) + "." + res_name;
+
+    char *type;
+    std::cerr << "resource_value not implemented\n";
+    // Glib::Value<std::string> xrmvalue;
+    // xrmvalue.init(Glib::Value<std::string>::value_type());
+    DDDValueBase xrmvalue;
+    Bool success = get_resource(db, str_name.chars(), str_class.chars(), xrmvalue);
+    if (!success)
+	return "";		// Resource not found
+
     const char *str = xrmvalue.get().c_str();
     int len = strlen(str);
-#endif
     return string(str, len);
-#else
-#ifdef NAG_ME
-#warning BUGGER THIS: Glib::Value is totally undocumented cruft.
-#endif
-    return string();
-#endif
 }
+
+#endif
 
 static bool is_set(string value)
 {
@@ -9967,6 +10081,8 @@ static bool is_set(string value)
     // Illegal value
     return false;
 }
+
+#if defined(IF_XM)
 
 inline bool have_set_resource(XrmDatabase db, const char *app_name, const char *res_name)
 {
@@ -10021,6 +10137,62 @@ static void setup_show(XrmDatabase db, const char *app_name, const char *gdb_nam
 	exit(EXIT_SUCCESS);
 }
 
+#else
+
+inline bool have_set_resource(xmlDoc *db, const char *app_name, const char *res_name)
+{
+    return is_set(resource_value(db, app_name, res_name));
+}
+
+static void setup_show(xmlDoc *db, const char *app_name, const char *gdb_name)
+{
+    // Check for `--version', `--help', `--news', etc.  This may be
+    // invoked before we have connected to an X display, so check
+    // APP_DATA as well as the resource database (initialized from the
+    // command line).
+
+    bool cont = true;
+    if (app_data.show_version || 
+	have_set_resource(db, app_name, XtNshowVersion))
+    {
+	show_version(std::cout);
+	cont = false;
+    }
+    if (app_data.show_invocation ||
+	have_set_resource(db, app_name, XtNshowInvocation))
+    {
+	show_invocation(gdb_name, std::cout);
+	cont = false;
+    }
+    if (app_data.show_configuration ||
+	have_set_resource(db, app_name, XtNshowConfiguration))
+    {
+	show_configuration(std::cout);
+	cont = false;
+    }
+    if (app_data.show_news ||
+	have_set_resource(db, app_name, XtNshowNews))
+    {
+	show(ddd_news);
+	cont = false;
+    }
+    if (app_data.show_license ||
+	have_set_resource(db, app_name, XtNshowLicense))
+    {
+	show(ddd_license);
+	cont = false;
+    }
+    if (app_data.show_manual ||
+	have_set_resource(db, app_name, XtNshowManual))
+    {
+	show(ddd_man);
+	cont = false;
+    }
+    if (!cont)
+	exit(EXIT_SUCCESS);
+}
+
+#endif
 
 //-----------------------------------------------------------------------------
 // Various setups

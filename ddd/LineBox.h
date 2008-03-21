@@ -29,6 +29,10 @@
 #ifndef _DDD_LineBox_h
 #define _DDD_LineBox_h
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "PrimitiveB.h"
 
 // LineBox
@@ -51,6 +55,7 @@ protected:
 	    _linethickness == ((const LineBox *)&b)->_linethickness;  // dirty trick
     }
 
+#if defined(IF_XM)
     // Draw this box
     virtual void _draw(Widget w, 
 		       const BoxRegion& region, 
@@ -64,6 +69,21 @@ protected:
 			const BoxRegion& exposed,
 			GC gc, 
 			bool context_selected) const = 0;
+#else
+    // Draw this box
+    virtual void _draw(GUI::Widget *w, 
+		       const BoxRegion& region, 
+		       const BoxRegion& exposed,
+		       GUI::RefPtr<GUI::GC> gc, 
+		       bool context_selected) const;
+
+    // Called by _draw() after line thickness is set in GC
+    virtual void __draw(GUI::Widget *w, 
+			const BoxRegion& region, 
+			const BoxRegion& exposed,
+			GUI::RefPtr<GUI::GC> gc, 
+			bool context_selected) const = 0;
+#endif
 
 public:
     LineBox(BoxCoordinate linethickness = 1, const char *t = "LineBox"):

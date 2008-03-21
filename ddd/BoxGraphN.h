@@ -29,6 +29,10 @@
 #ifndef _DDD_BoxGraphNode_h
 #define _DDD_BoxGraphNode_h
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "RegionGN.h"
 #include "Box.h"
 #include "MarkBox.h"
@@ -44,10 +48,17 @@ private:
     BoxGraphNode& operator = (const BoxGraphNode&);
 
 protected:
+#if defined(IF_XM)
     // Draw
     virtual void forceDraw(Widget w, 
 			   const BoxRegion& exposed, 
 			   const GraphGC& gc) const;
+#else
+    // Draw
+    virtual void forceDraw(GUI::Widget *w, 
+			   const BoxRegion& exposed, 
+			   const GraphGC& gc) const;
+#endif
 
     // MARK is a MarkBox in SRC.  Find equivalent box in DUP.
     MarkBox *find_mark(Box *dup, Box *src, Box *mark);

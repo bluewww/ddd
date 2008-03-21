@@ -29,6 +29,10 @@
 #ifndef _DDD_DiagBox_h
 #define _DDD_DiagBox_h
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "PrimitiveB.h"
 
 // DiagBox
@@ -43,10 +47,17 @@ protected:
 
     void dump(std::ostream& s) const;
 
+#if defined(IF_XM)
     virtual void _draw(Widget w, 
 		       const BoxRegion& region, 
 		       const BoxRegion& exposed,
 		       GC gc, bool context_selected) const;
+#else
+    virtual void _draw(GUI::Widget *w, 
+		       const BoxRegion& region, 
+		       const BoxRegion& exposed,
+		       GUI::RefPtr<GUI::GC> gc, bool context_selected) const;
+#endif
 
 public:
     DiagBox(const char *t = "DiagBox"):

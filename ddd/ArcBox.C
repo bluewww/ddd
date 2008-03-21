@@ -32,12 +32,12 @@ char ArcBox_rcsid[] =
 #include "ArcBox.h"
 #include "printBox.h"
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
-#else // NOT IF_MOTIF
+#else
 #include "gtk_wrapper.h"
-#endif // IF_MOTIF
+#endif
 
 // Some systems define these values in <values.h> and re-define them 
 // DIFFERENTLY in <math.h>.  Prefer the <math.h> definitions.
@@ -51,10 +51,19 @@ DEFINE_TYPE_INFO_1(ArcBox, LineBox)
 // ArcBox
 
 // Draw
+#if defined(IF_XM)
 void ArcBox::__draw(Widget w, 
 		    const BoxRegion& r, 
-		    const BoxRegion& , GC gc, 
+		    const BoxRegion& ,
+		    GC gc, 
 		    bool) const
+#else
+void ArcBox::__draw(GUI::Widget *w, 
+		    const BoxRegion& r, 
+		    const BoxRegion& ,
+		    GUI::RefPtr<GUI::GC> gc, 
+		    bool) const
+#endif
 {
     BoxSize space   = r.space();
     BoxPoint origin = r.origin();
@@ -114,14 +123,14 @@ void ArcBox::__draw(Widget w,
     }
 
     if (space[X] > 0 && space[Y] > 0 && _length > 0) {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 	XDrawArc(XtDisplay(w), XtWindow(w), gc, origin[X], origin[Y],
 		 space[X], space[Y], _start * 64, _length * 64);
-#else // NOT IF_MOTIF
+#else
 	w->get_window()->draw_arc(gc, false, origin[X], origin[Y],
 				  space[X], space[Y],
 				  _start * 64, _length * 64);
-#endif // IF_MOTIF
+#endif
     }
 }
 

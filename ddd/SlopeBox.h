@@ -29,6 +29,10 @@
 #ifndef _DDD_SlopeBox_h
 #define _DDD_SlopeBox_h
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "LineBox.h"
 #include "Widget.h"
 
@@ -60,11 +64,19 @@ public:
     DECLARE_TYPE_INFO
 
 protected:
+#if defined(IF_XM)
     virtual void __draw(Widget w, 
 			const BoxRegion& region, 
 			const BoxRegion& exposed,
 			GC gc, 
 			bool context_selected) const;
+#else
+    virtual void __draw(GUI::Widget *w, 
+			const BoxRegion& region, 
+			const BoxRegion& exposed,
+			GUI::RefPtr<GUI::GC> gc, 
+			bool context_selected) const;
+#endif
 
     RiseBox(const RiseBox& box):
 	SlopeBox(box)
@@ -94,11 +106,19 @@ public:
     DECLARE_TYPE_INFO
 
 protected:
+#if defined(IF_XM)
     virtual void __draw(Widget w, 
 			const BoxRegion& region, 
 			const BoxRegion& exposed,
 			GC gc, 
 			bool context_selected) const;
+#else
+    virtual void __draw(GUI::Widget *w, 
+			const BoxRegion& region, 
+			const BoxRegion& exposed,
+			GUI::RefPtr<GUI::GC> gc, 
+			bool context_selected) const;
+#endif
 
     FallBox(const FallBox& box):
 	SlopeBox(box)

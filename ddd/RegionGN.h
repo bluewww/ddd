@@ -30,6 +30,10 @@
 #ifndef _DDD_RegionGraphNode_h
 #define _DDD_RegionGraphNode_h
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "PosGraphN.h"
 #include "BoxRegion.h"
 
@@ -41,10 +45,17 @@ private:
     BoxRegion _region;		// The region occupied by this node
 
 protected:		
+#if defined(IF_XM)
     // Draw region
     virtual void forceDraw(Widget w, 
 			   const BoxRegion& exposed, 
 			   const GraphGC& gc) const = 0;
+#else
+    // Draw region
+    virtual void forceDraw(GUI::Widget *w, 
+			   const BoxRegion& exposed, 
+			   const GraphGC& gc) const = 0;
+#endif
 
     // Center around position
     void center();
@@ -92,10 +103,17 @@ public:
     // Compute position for ORIGIN
     virtual BoxPoint originToPos(const BoxPoint& origin, const GraphGC&) const;
 
+#if defined(IF_XM)
     // Draw
     virtual void draw(Widget w,
 		      const BoxRegion& exposed,
 		      const GraphGC& gc) const;
+#else
+    // Draw
+    virtual void draw(GUI::Widget *w,
+		      const BoxRegion& exposed,
+		      const GraphGC& gc) const;
+#endif
 
     // Print
     virtual void _print(std::ostream& os, const GraphGC& gc) const;

@@ -29,6 +29,10 @@
 char ArcGraphEdge_rcsid[] = 
     "$Id$";
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "ArcGraphE.h"
 #include "HintGraphN.h"
 #include "misc.h"
@@ -39,11 +43,13 @@ char ArcGraphEdge_rcsid[] =
 #include "pi.h"
 #include "hypot.h"
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
-#endif // IF_MOTIF
+#else
+#include <GUI/Widget.h>
+#endif
 
 DEFINE_TYPE_INFO_1(ArcGraphEdge, LineGraphEdge);
 
@@ -84,12 +90,21 @@ bool ArcGraphEdge::center(const BoxPoint& p1, const BoxPoint& p2,
     return true;
 }
 
+#if defined(IF_XM)
 void ArcGraphEdge::drawLine(Widget w, 
 			    const BoxRegion& exposed, 
 			    const GraphGC& gc) const
 {
     makeLine(w, exposed, std::cout, gc);
 }
+#else
+void ArcGraphEdge::drawLine(GUI::Widget *w, 
+			    const BoxRegion& exposed, 
+			    const GraphGC& gc) const
+{
+    makeLine(w, exposed, std::cout, gc);
+}
+#endif
 
 void ArcGraphEdge::_print(std::ostream& os,
 			  const GraphGC& gc) const
@@ -97,10 +112,17 @@ void ArcGraphEdge::_print(std::ostream& os,
     makeLine(0, BoxRegion(), os, gc);
 }
 
+#if defined(IF_XM)
 void ArcGraphEdge::makeLine(Widget w,
 			    const BoxRegion& exposed,
 			    std::ostream& os,
 			    const GraphGC& gc) const
+#else
+void ArcGraphEdge::makeLine(GUI::Widget *w,
+			    const BoxRegion& exposed,
+			    std::ostream& os,
+			    const GraphGC& gc) const
+#endif
 {
     HintGraphNode   *arc_hint = 0;
     RegionGraphNode *arc_from = 0;
@@ -256,15 +278,15 @@ void ArcGraphEdge::makeLine(Widget w,
 
     if (w != 0)
     {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 	XDrawArc(XtDisplay(w), XtWindow(w), gc.edgeGC,
 		 int(cx - radius), int(cy - radius),
 		 unsigned(radius) * 2, unsigned(radius) * 2, angle, path);
-#else // NOT IF_MOTIF
+#else
 	w->get_window()->draw_arc(gc.edgeGC, false, int(cx - radius), int(cy - radius),
 				  unsigned(radius) * 2, unsigned(radius) * 2,
 				  angle, path);
-#endif // IF_MOTIF
+#endif
     }
     else if (gc.printGC->isPostScript())
     {

@@ -36,9 +36,15 @@ public:
     DECLARE_TYPE_INFO
 
 protected:
+#if defined(IF_XM)
     virtual void forceDraw(Widget w, 
 			   const BoxRegion& exposed,
 			   const GraphGC& gc) const;
+#else
+    virtual void forceDraw(GUI::Widget *w, 
+			   const BoxRegion& exposed,
+			   const GraphGC& gc) const;
+#endif
 
     // Copy Constructor
     HintGraphNode(const HintGraphNode &node):

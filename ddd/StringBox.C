@@ -104,6 +104,8 @@ Box *StringBox::resize()
     return this;
 }
 
+#if defined(IF_XM)
+
 // Draw
 void StringBox::_draw(Widget w, 
 		      const BoxRegion& r, 
@@ -113,24 +115,39 @@ void StringBox::_draw(Widget w,
 {
     BoxPoint origin = r.origin();
 
-#ifdef IF_MOTIF
     if (_font != 0)
 	XSetFont(XtDisplay(w), gc, _font->fid);
 
     XDrawString(XtDisplay(w), XtWindow(w), gc, origin[X], origin[Y] + _ascent,
 		_string.chars(), _string.length());
-#else // NOT IF_MOTIF
+}
+
+#else
+
+// Draw
+void StringBox::_draw(GUI::Widget *w, 
+		      const BoxRegion& r, 
+		      const BoxRegion&, 
+		      GUI::RefPtr<GUI::GC> gc,
+		      bool) const
+{
+    BoxPoint origin = r.origin();
+
 #ifdef NAG_ME
 #warning FIXME Different pango context to that used in resize().
 #endif
-    Glib::RefPtr<Pango::Context> context = w->get_pango_context();
+    std::cerr << "String layout not implemented yet\n";
+#if 0
+    Gtk::Widget *ww = w->internal();
+    Glib::RefPtr<Pango::Context> context = ww->get_pango_context();
     context->set_font_description(_font->describe());
     Glib::RefPtr<Pango::Layout> pl = Pango::Layout::create(context);
     pl->set_text(Glib::ustring(_string.chars()));
-    w->get_window()->draw_layout(gc, origin[X], origin[Y] + _ascent, pl);
-#endif // IF_MOTIF
+    ww->get_window()->draw_layout(gc, origin[X], origin[Y] + _ascent, pl);
+#endif
 }
 
+#endif
 
 void StringBox::dump(std::ostream& s) const
 {

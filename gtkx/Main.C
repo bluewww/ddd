@@ -1,5 +1,3 @@
-// -*- C++ -*-
-
 // High-level GUI wrapper for Gtkmm.
 
 // Copyright (C) 2007 Peter Wainwright <prw@ceiriog.eclipse.co.uk>
@@ -21,32 +19,51 @@
 // If not, write to the Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-#ifndef GTKX_WINDOW_H
-#define GTKX_WINDOW_H
-
-#include <gtkmm/window.h>
-
-#include <GtkX/Container.h>
+#include <gtkmm/main.h>
 #include <GtkX/Main.h>
+#include <GtkX/Window.h>
 
-namespace GtkX {
+using namespace GtkX;
 
-    class Window: public Gtk::Window, public Shell {
-	void init_signals(void);
-    protected:
-	sigc::signal<bool, GdkEvent *> signal_delete_;
-	bool delete_callback(GdkEventAny *data);
-    public:
-	Window(Main &main, const String &name="", const String &title="");
-	Window(const String &name="", const String &title="");
-	Gtk::Widget *internal(void);
-	Gtk::Container *gtk_container(void);
-	~Window(void);
-	sigc::signal<bool, GdkEvent *> &signal_delete_event(void);
-	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
-#include <GtkX/redirect.h>
-    };
+Main::Main(GtkX::Window *&toplevel, const char *classname, const char *sessid,
+	   const char *const *fallback_rsc, int argc, char **argv)
+{
+    argc_ = argc;
+    argv_ = (char **)calloc((argc+1), sizeof(char *));
+    int i;
+    for (i = 0; i < argc; i++) {
+	argv_[i] = strdup(argv[i]);
+    }
+    argv_[argc] = NULL;
 
+    // Note: the cast on ddd_fallback_resources is safe.
+    main_ = new Gtk::Main(argc, argv);
+    toplevel_ = toplevel = new Window(*this, "main", "main");
 }
 
-#endif // GTKX_WINDOW_H
+Main::~Main(void)
+{
+    delete main_;
+    int i;
+    for (i = 0; i < argc_; i++) {
+	free(argv_[i]);
+    }
+    free(argv_);
+}
+
+GtkX::Window *
+Main::get_toplevel(void) const
+{
+    return toplevel_;
+}
+
+int
+Main::get_argc(void) const
+{
+}
+
+char *
+Main::get_argv(int i) const
+{
+}
+

@@ -100,6 +100,7 @@ char session_rcsid[] =
 
 #if !defined(IF_XM)
 #include <GUI/SelectionDialog.h>
+#include "resources.h"
 #endif
 
 extern "C" {
@@ -741,7 +742,7 @@ static GUI::SelectionDialog *create_session_panel(GUI::Widget *parent, const cha
     GUI::SelectionDialog *dialog = new GUI::SelectionDialog(*find_shell1(parent),
 							    GUI::String(name), session_headers);
 
-    Delay::register_shell1(dialog);
+    Delay::register_shell(dialog);
 
     GUI::ListView *sessions = dialog->list();
 
@@ -1262,10 +1263,11 @@ void SaveSessionAsCB(GUI::Widget *w)
 // Session open
 // ---------------------------------------------------------------------------
 
+#if defined(IF_XM)
+
 // Get a string resource from DB named NAME with class CLS
 static string get_resource(XrmDatabase db, string name, string cls)
 {
-#if defined(IF_MOTIF)
     static string prefix = DDD_CLASS_NAME ".";
     name.prepend(prefix);
     cls.prepend(prefix);
@@ -1278,7 +1280,13 @@ static string get_resource(XrmDatabase db, string name, string cls)
 	return string((char *)value.addr, value.size - 1);
 
     return "";		// Not found
+}
+
 #else
+
+// Get a string resource from DB named NAME with class CLS
+static string get_resource(xmlDoc *db, string name, string cls)
+{
 #if 0
     __gnu_cxx::hash_map<const char *, XrmValue *>::iterator entry = db->find(name.chars());
     if (entry != db->end()) {
@@ -1291,11 +1299,12 @@ static string get_resource(XrmDatabase db, string name, string cls)
 	}
     }
 #else
-    std::cerr << "ERROR: CANNOT GET RESOURCE\n";
+    std::cerr << "ERROR: get_resource not implemented\n";
     return string("");
 #endif
-#endif
 }
+
+#endif
 
 static Boolean done_if_idle(XtP(Delay *) data)
 {
@@ -1326,7 +1335,11 @@ static void open_session(const string& session)
 {
     // Fetch init file for this session
     string dbfile = session_state_file(session);
+#if defined(IF_XM)
     XrmDatabase db = XrmGetFileDatabase(dbfile.chars());
+#else
+    xmlDoc *db = get_file_database(dbfile.chars());
+#endif
     if (db == 0)
     {
 	post_error("Cannot open session.", "open_session_error");

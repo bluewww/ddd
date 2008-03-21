@@ -1995,7 +1995,11 @@ static void partial_answer_received(const string& answer, void *data)
     CmdData *cmd_data = (CmdData *) data;
     current_cmd_data = cmd_data;
 
+#if defined(IF_XM)
     XtAppContext app_con = XtWidgetToApplicationContext(gdb_w);
+#else
+    GUI::Main *app_con = gdb_w->get_main();
+#endif
 
     if (cmd_data->pos_buffer)
     {

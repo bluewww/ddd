@@ -11,9 +11,6 @@ typedef int DimType;
 class string;
 typedef string WidgetNameType;
 
-typedef Display *DISPLAY_P;
-typedef Screen *SCREEN_P;
-
 typedef Widget CONTAINER_P;
 typedef Widget BUTTON_P;
 typedef Widget DIALOG_P;
@@ -44,10 +41,9 @@ typedef const char *NAME_T;
 #define NO_TIMER 0
 #define NO_DISPLAY 0
 #define NO_SCREEN 0
-#define NO_GC 0
+
 #define NO_WINDOW 0
-typedef XFontStruct *FONT_P;
-#define NO_FONT 0
+
 #define XtNIL (XtPointer)0
 #define DEFAULT_FONT_NAME "fixed"
 
@@ -207,19 +203,9 @@ typedef Gtk::ComboBoxEntryText *COMBOBOXENTRYTEXT_P;
 #include <gdkmm/cursor.h>
 #include <gdkmm/region.h>
 
-typedef Glib::RefPtr<Gdk::Display> DISPLAY_P;
-typedef Glib::RefPtr<Gdk::Screen> SCREEN_P;
-
-#define NO_DISPLAY DISPLAY_P()
-#define NO_SCREEN SCREEN_P()
-
 #define XFlush(d) ((d)->flush())
 
-typedef Glib::RefPtr<Gdk::GC> GC;
 
-#define NO_GC GC()
-
-typedef Gdk::Cursor *Cursor;
 
 typedef unsigned long Pixel;
 typedef Gdk::Color XColor;
@@ -233,15 +219,7 @@ typedef error_struct XWindowAttributes;
 
 typedef Glib::RefPtr<Gdk::Colormap> Colormap;
 
-typedef Glib::RefPtr<Gdk::Pixmap> Pixmap;
 typedef Glib::RefPtr<Gdk::Pixbuf> XIMAGE_P;
-
-typedef Glib::RefPtr<Gdk::Window> Window;
-typedef Glib::RefPtr<Gdk::Drawable> Drawable;
-
-#define NO_WINDOW Window()
-
-#define RootWindowOfScreen(screen) (screen)->get_root_window()
 
 typedef Gdk::Region *Region;
 
@@ -312,9 +290,6 @@ typedef guint KeySym;
 typedef Gtk::Widget *Widget;
 typedef long XmTextPosition;
 
-typedef Glib::RefPtr<Pango::Font> FONT_P;
-#define NO_FONT FONT_P()
-
 #define DEFAULT_FONT_NAME "Monospace 12"
 
 typedef bool Boolean;
@@ -371,9 +346,6 @@ extern void XtSetArg(Arg &, const String &, long);
 typedef int Position;
 
 // Application context
-
-typedef Gtk::Window *XtAppContext;    // The top-level window
-#define XtWidgetToApplicationContext(w) 0
 
 // End application context
 
@@ -574,10 +546,6 @@ extern void XtRealizeWidget(Widget w);
 #define XtName(w) (w)->get_name().c_str()
 #define XtIsSensitive(w) (w)->is_sensitive()
 
-extern Glib::RefPtr<Gdk::Window> XtWindow(Widget w);
-extern Glib::RefPtr<Gdk::Display> XtDisplay(Widget w);
-extern Glib::RefPtr<Gdk::Screen> XtScreen(Widget w);
-
 extern bool XtIsWidget(Widget w);
 
 #define XtIsManaged(w) (w)->is_visible()
@@ -776,16 +744,7 @@ typedef Gtk::TextView *TEXTVIEW_P;
 
 #define XtSetLanguageProc(a, b, c)
 
-// Databases
-
-typedef Glib::ValueBase XrmValue;
-
 #if 0
-typedef  __gnu_cxx::hash_map<const char *, XrmValue *> *XrmDatabase;
-#else
-typedef xmlDoc *XrmDatabase;
-#endif
-
 typedef struct _XtResource {
     String	resource_name;	/* Resource name			    */
     String	resource_class;	/* Resource class			    */
@@ -795,61 +754,10 @@ typedef struct _XtResource {
     String	default_type;	/* representation type of specified default */
     XtPointer	default_addr;	/* Address of default resource		    */
 } XtResource, *XtResourceList;
+#endif
 
-extern XrmDatabase get_string_database(const char *s);
-void merge_databases(XrmDatabase source_db, XrmDatabase target_db);
-bool get_resource(XrmDatabase database, const char *str_name, const char *str_class,
-		  XrmValue &value_return);
-bool put_resource(XrmDatabase database, const char *str_name, const char *str_class,
-		  XrmValue &value);
 Gtk::Window *find_toplevel(Gtk::Widget *w);
-#define XrmGetFileDatabase(f) get_file_database(f)
-extern XrmDatabase get_file_database(const char *f);
 
-#define XtRBitmap "Bitmap"
-#define XtRBool "Bool"
-#define XtRBoolean "Boolean"
-#define XtRCallback "Callback"
-#define XtRCallProc "CallProc"
-#define XtRCardinal "Cardinal"
-#define XtRColor "Color"
-#define XtRColormap "Colormap"
-#define XtRCursor "Cursor"
-#define XtRDimension "Dimension"
-#define XtRDisplay "Display"
-#define XtREditMode "EditMode"
-#define XtREnum "Enum"
-#define XtRFile "File"
-#define XtRFloat "Float"
-#define XtRFont "Font"
-#define XtRFontStruct "FontStruct"
-#define XtRFunction "Function"
-#define XtRGeometry "Geometry"
-#define XtRImmediate "Immediate"
-#define XtRInitialState "InitialState"
-#define XtRInt "Int"
-#define XtRJustify "Justify"
-#define XtRLongBoolean "Bool"
-#define XtRObject "Object"
-#define XtROrientation "Orientation"
-#define XtRPixel "Pixel"
-#define XtRPixmap "Pixmap"
-#define XtRPointer "Pointer"
-#define XtRPosition "Position"
-#define XtRScreen "Screen"
-#define XtRShort "Short"
-#define XtRString "String"
-#define XtRStringArray "StringArray"
-#define XtRStringTable "StringTable"
-#define XtRUnsignedChar "UnsignedChar"
-#define XtRTranslationTable "TranslationTable"
-#define XtRVisual "Visual"
-#define XtRWidget "Widget"
-#define XtRWidgetClass "WidgetClass"
-#define XtRWidgetList "WidgetList"
-#define XtRWindow "Window"
-
-// End Databases
 
 class GtkGlyphMark;
 typedef GtkGlyphMark *Glyph_T;

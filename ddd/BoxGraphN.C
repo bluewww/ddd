@@ -37,6 +37,8 @@ char BoxGraphNode_rcsid[] =
 
 DEFINE_TYPE_INFO_1(BoxGraphNode, RegionGraphNode)
 
+#if defined(IF_XM)
+
 // Draw a BoxGraphNode
 void BoxGraphNode::forceDraw(Widget w, 
 			     const BoxRegion& /* exposed */,
@@ -60,15 +62,9 @@ void BoxGraphNode::forceDraw(Widget w,
 
 	if (r <= exposed)
 	{
-#ifdef IF_MOTIF
 	    XFillRectangle(XtDisplay(w), XtWindow(w), gc.clearGC,
 			   r.origin(X), r.origin(Y),
 			   r.space(X), r.space(Y));
-#else // NOT IF_MOTIF
-	    w->get_window()->draw_rectangle(gc.clearGC, true,
-					    r.origin(X), r.origin(Y),
-					    r.space(X), r.space(Y));
-#endif // IF_MOTIF
 	    highlight()->draw(w, r, r, gc.nodeGC, false);
 	}
 	ColorBox::use_color = use_color;
@@ -85,6 +81,53 @@ void BoxGraphNode::forceDraw(Widget w,
 	box()->draw(w, region(gc), exposed, gc.nodeGC, false);
     }
 }
+
+#else
+
+// Draw a BoxGraphNode
+void BoxGraphNode::forceDraw(GUI::Widget *w, 
+			     const BoxRegion& /* exposed */,
+			     const GraphGC& gc) const
+{
+    assert(box() != 0);
+    // assert(box()->OK());
+
+    // We do not check for exposures here --
+    // boxes are usually small and partial display
+    // doesn't work well with scrolling
+    static BoxRegion exposed(BoxPoint(0, 0), BoxSize(INT_MAX, INT_MAX));
+
+    if (selected() && highlight())
+    {
+	box()->draw(w, region(gc), exposed, gc.nodeGC, false);
+
+	bool use_color = ColorBox::use_color;
+	ColorBox::use_color = false;
+	BoxRegion r = highlightRegion(gc);
+
+	if (r <= exposed)
+	{
+	    w->get_window()->draw_rectangle(gc.clearGC, true,
+					    r.origin(X), r.origin(Y),
+					    r.space(X), r.space(Y));
+	    highlight()->draw(w, r, r, gc.nodeGC, false);
+	}
+	ColorBox::use_color = use_color;
+    }
+    else if (selected())
+    {
+	bool use_color = ColorBox::use_color;
+	ColorBox::use_color = false;
+	box()->draw(w, region(gc), exposed, gc.nodeGC, false);
+	ColorBox::use_color = use_color;
+    }
+    else
+    {
+	box()->draw(w, region(gc), exposed, gc.nodeGC, false);
+    }
+}
+
+#endif
 
 
 // mark the following objects as one XFIG compound object

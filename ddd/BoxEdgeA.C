@@ -43,13 +43,21 @@ BoxRegion BoxEdgeAnnotation::region(const BoxPoint& p, const GraphGC& gc) const
     return BoxRegion(origin, size(gc));
 }
 
+#if defined(IF_XM)
 void BoxEdgeAnnotation::_draw(Widget w, const BoxPoint& p,
 			      const BoxRegion& exposed, 
 			      const GraphGC& gc) const
 {
     box()->draw(w, region(p, gc), exposed, gc.edgeGC);
 }
-
+#else
+void BoxEdgeAnnotation::_draw(GUI::Widget *w, const BoxPoint& p,
+			      const BoxRegion& exposed, 
+			      const GraphGC& gc) const
+{
+    box()->draw(w, region(p, gc), exposed, gc.edgeGC);
+}
+#endif
 
 // Print
 void BoxEdgeAnnotation::_print(std::ostream& os, const BoxPoint& p,

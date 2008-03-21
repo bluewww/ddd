@@ -26,30 +26,30 @@
 // the constructor, unlike the Gtk ones.  Motif (Xt) widgets cannot be
 // reparented.  Therefore we need a constructor with extra arguments.
 
-#ifndef XMMM_WINDOW_H
-#define XMMM_WINDOW_H
+#ifndef XMMM_MAIN_H
+#define XMMM_MAIN_H
 
-#include <sigc++/signal.h>
-
-#include <Xmmm/Container.h>
-#include <Xmmm/Main.h>
+#include <X11/Intrinsic.h>
 
 namespace Xmmm {
 
-    class Window: public Shell {
-	::Widget win_;
-	void init_signals(void);
-    protected:
-	sigc::signal<bool,XEvent*> signal_delete_;
-	static void delete_callback(::Widget widget, XtPointer data);
+    class Window;
+
+    class Main {
+	XtAppContext appctx_;
+	Xmmm::Window *toplevel_;
+	int argc_;
+	char **argv_;
     public:
-	Window(Xmmm::Main &main, const Xmmm::String &name="", const Xmmm::String &title="");
-	Window(::Widget w);
-	~Window(void);
-	::Widget internal(void);
-	sigc::signal<bool,XEvent*> &signal_delete_event(void);
+	Main(Xmmm::Window *&toplevel, const char *classname, const char *sessid,
+	     const char *const *fallback_rsc, int argc, char **argv);
+	~Main(void);
+	Xmmm::Window *get_toplevel(void) const;
+	int get_argc(void) const;
+	char *get_argv(int i) const;
     };
+
 
 }
 
-#endif // XMMM_WINDOW_H
+#endif // XMMM_MAIN_H

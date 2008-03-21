@@ -52,10 +52,11 @@ char wm_rcsid[] =
 //-----------------------------------------------------------------------------
 // Window Manager Functions
 //-----------------------------------------------------------------------------
+
+#if defined(IF_XM)
     
-void wm_set_icon(DISPLAY_P display, Window shell, Pixmap icon, Pixmap mask)
+void wm_set_icon(Display *display, Window shell, Pixmap icon, Pixmap mask)
 {
-#if defined(IF_MOTIF)
     XWMHints *wm_hints = XAllocWMHints();
 
     wm_hints->flags       = IconPixmapHint | IconMaskHint;
@@ -65,16 +66,24 @@ void wm_set_icon(DISPLAY_P display, Window shell, Pixmap icon, Pixmap mask)
     XSetWMHints(display, shell, wm_hints);
 
     XFree((void *)wm_hints);
+}
+
 #else
+
+void wm_set_icon(GUI::RefPtr<GUI::Display> display, GUI::RefPtr<GUI::XWindow> shell,
+		 GUI::RefPtr<GUI::Pixmap> icon, GUI::RefPtr<GUI::Pixmap> mask)
+{
 #ifdef NAG_ME
 #warning wm_set_icon not implemented
 #endif
-#endif
 }
+
+#endif
+
+#if defined(IF_XM)
 
 void wm_set_icon(Widget shell, Pixmap icon, Pixmap mask)
 {
-#if defined(IF_MOTIF)
     if (XtIsWMShell(shell))
     {
 	XtVaSetValues(shell,
@@ -86,35 +95,51 @@ void wm_set_icon(Widget shell, Pixmap icon, Pixmap mask)
 #if 0				// This should be done by the shell.
     wm_set_icon(XtDisplay(shell), XtWindow(shell), icon, mask);
 #endif
+}
+
 #else
+
+void wm_set_icon(GUI::Widget *shell, GUI::RefPtr<GUI::Pixmap> icon, GUI::RefPtr<GUI::Pixmap> mask)
+{
 #ifdef NAG_ME
 #warning wm_set_icon not implemented
 #endif
-#endif
 }
 
-void wm_set_name(DISPLAY_P display, Window shell_window,
+#endif
+
+#if defined(IF_XM)
+
+void wm_set_name(Display *display, Window shell_window,
 		 string title, string icon)
 {
     strip_space(title);
     strip_space(icon);
 
     if (!title.empty()) {
-#if defined(IF_MOTIF)
 	XStoreName(display, shell_window, title.chars());
-#else
-	shell_window->set_title(XMST(title.chars()));
-#endif
     }
-#if defined(IF_MOTIF)
     if (!icon.empty())
 	XSetIconName(display, shell_window, icon.chars());
+}
+
 #else
+
+void wm_set_name(GUI::RefPtr<GUI::Display> display, GUI::RefPtr<GUI::XWindow> shell_window,
+		 string title, string icon)
+{
+    strip_space(title);
+    strip_space(icon);
+
+    if (!title.empty()) {
+	shell_window->set_title(title.chars());
+    }
 #ifdef NAG_ME
 #warning Set icon?
 #endif 
-#endif
 }
+
+#endif
 
 void wm_set_name(Widget shell, string title, string icon)
 {

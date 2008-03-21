@@ -130,7 +130,7 @@ GUI::RefPtr<GUI::Font> FontTable::operator[](const string& name)
 #warning CHANGE TO USE PANGO FONT NAMES
 #endif
 	Pango::FontDescription pfd(Glib::ustring(name.chars()));
-	table[i].font = context->load_font(pfd);
+	table[i].font = new GUI::Font(context->load_font(pfd));
 
 	if (table[i].font == 0)
 	{
@@ -140,7 +140,7 @@ GUI::RefPtr<GUI::Font> FontTable::operator[](const string& name)
 	    Pango::FontDescription pfd = context->get_font_description();
 	    if (pfd.gobj())
 	    {
-		FONT_P font = context->load_font(pfd);
+		GUI::RefPtr<GUI::Font> font = new GUI::Font(context->load_font(pfd));
 		if (font != 0)
 		{
 		    std::cerr << ", using default font instead\n";
@@ -153,7 +153,7 @@ GUI::RefPtr<GUI::Font> FontTable::operator[](const string& name)
 	{
 	    // Try "fixed" font
 	    Pango::FontDescription pfd(Glib::ustring("Fixed"));
-	    GUI::RefPtr<GUI::Font> font = context->load_font(pfd);
+	    GUI::RefPtr<GUI::Font> font = new GUI::Font(context->load_font(pfd));
 	    if (font != 0)
 	    {
 		std::cerr << ", using font \"fixed\" instead\n";

@@ -29,6 +29,10 @@
 #ifndef _DDD_wm_h
 #define _DDD_wm_h
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #if defined(IF_MOTIF)
 #include <X11/Intrinsic.h>
 #endif
@@ -41,14 +45,25 @@
 
 #include "strclass.h"
 
-// Window manager
+#if defined(IF_XM)
 extern void wm_set_icon(Widget shell, Pixmap icon, Pixmap mask);
-extern void wm_set_icon(DISPLAY_P display, Window shell,
+extern void wm_set_icon(Display *display, Window shell,
 			Pixmap icon, Pixmap mask);
+#else
+// Window manager
+extern void wm_set_icon(GUI::Widget *shell, GUI::RefPtr<GUI::Pixmap> icon, GUI::RefPtr<GUI::Pixmap> mask);
+extern void wm_set_icon(GUI::RefPtr<GUI::Display> display, GUI::RefPtr<GUI::XWindow> shell,
+			GUI::RefPtr<GUI::Pixmap> icon, GUI::RefPtr<GUI::Pixmap> mask);
+#endif
 
 extern void wm_set_name(Widget shell, string title = "", string icon = "");
-extern void wm_set_name(DISPLAY_P display, Window shell,
+#if defined(IF_XM)
+extern void wm_set_name(Display *display, Window shell,
 			string title = "", string icon = "");
+#else
+extern void wm_set_name(GUI::RefPtr<GUI::Display> display, GUI::RefPtr<GUI::XWindow> shell,
+			string title = "", string icon = "");
+#endif
 
 // Misc functions
 void wait_until_mapped(Widget w, Widget shell = 0);

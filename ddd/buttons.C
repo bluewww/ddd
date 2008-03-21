@@ -69,7 +69,7 @@ char buttons_rcsid[] =
 #include "windows.h"
 #include "wm.h"
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include <Xm/Xm.h>
 #include <Xm/Label.h>
 #include <Xm/Frame.h>
@@ -101,7 +101,7 @@ int max_value_doc_length = 128;
 // Button callbacks
 //-----------------------------------------------------------------------------
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 
 static void YnButtonCB(Widget dialog, 
 		       XtPointer client_data, 
@@ -325,7 +325,7 @@ static string gdbHelp(string original_command)
 		return NO_GDB_ANSWER; // try again later
 
 	    // We have the help text - configure JDB
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w),
 			    0, ConfigureJDBCB, 0);
 #else
@@ -1123,7 +1123,7 @@ static MString gdbDefaultDocumentationText(GUI::Widget *widget, GUI::Event *even
 // Buttons to be verified
 static WidgetArray buttons_to_be_verified;
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 static void VerifyButtonWorkProc(XtPointer client_data, XtIntervalId *id)
 {
     (void) id;			// Use it
@@ -1209,7 +1209,7 @@ static void DontVerifyButtonCB(Widget w, XtPointer, XtPointer)
 // Make BUTTON insensitive if it is not supported
 void verify_button(Widget button)
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     if (button == 0)
 	return;
     if (!XtIsSubclass(button, xmPushButtonWidgetClass))
@@ -1250,6 +1250,7 @@ static WidgetArray edit_buttons;
 void refresh_buttons()
 {
     int i;
+#if defined(IF_XM)
     for (i = 0; i < up_buttons.size(); i++)
 	set_sensitive(up_buttons[i], source_view->can_go_up());
     for (i = 0; i < down_buttons.size(); i++)
@@ -1262,9 +1263,25 @@ void refresh_buttons()
 		      undo_buffer.redo_action() != NO_GDB_ANSWER);
     for (i = 0; i < edit_buttons.size(); i++)
 	set_sensitive(edit_buttons[i], source_view->have_source());
+#else
+    for (i = 0; i < up_buttons.size(); i++)
+	up_buttons[i]->set_sensitive(source_view->can_go_up());
+    for (i = 0; i < down_buttons.size(); i++)
+	down_buttons[i]->set_sensitive(source_view->can_go_down());
+    for (i = 0; i < undo_buttons.size(); i++)
+	undo_buttons[i]->set_sensitive(
+		      undo_buffer.undo_action() != NO_GDB_ANSWER);
+    for (i = 0; i < redo_buttons.size(); i++)
+	redo_buttons[i]->set_sensitive(
+		      undo_buffer.redo_action() != NO_GDB_ANSWER);
+    for (i = 0; i < edit_buttons.size(); i++)
+	edit_buttons[i]->set_sensitive(source_view->have_source());
+#endif
 
     update_edit_menus();
 }
+
+#if defined(IF_XM)
 
 static void RemoveFromArrayCB(Widget w, XtPointer client_data, XtPointer)
 {
@@ -1275,14 +1292,29 @@ static void RemoveFromArrayCB(Widget w, XtPointer client_data, XtPointer)
 static void register_button(WidgetArray& arr, Widget w)
 {
     arr += w;
-#if defined(IF_MOTIF)
     XtAddCallback(w, XtNdestroyCallback, RemoveFromArrayCB, XtPointer(&arr));
+}
+
 #else
+
+static void RemoveFromArrayCB(GUI::Widget *w, WidgetArray *client_data)
+{
+    WidgetArray& arr = *client_data;
+    arr -= w;
+}
+
+static void register_button(WidgetArray& arr, GUI::Widget *w)
+{
+    arr += w;
 #ifdef NAG_ME
 #warning No analogue for XtNdestroyCallback.
 #endif
-#endif
+    std::cerr << "Destroy notify?\n";
+    // w->add_destroy_notify_callback();
 }
+
+#endif
+
 
 #if defined(IF_XM)
 
@@ -1823,13 +1855,20 @@ static string normalize(string s)
     return ret;
 }
 
+#if defined(IF_XM)
 static Widget buttons_dialog = 0;
 static Widget button_box     = 0;
 static Widget shortcut_label = 0;
 static Widget console_w, shortcut_w;
+#else
+static GUI::Dialog *buttons_dialog = 0;
+static GUI::Box *button_box     = 0;
+static GUI::Label *shortcut_label = 0;
+static GUI::Button *console_w, *shortcut_w;
+#endif
 
 struct ChangeTextInfo {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     String *str;
 #else
     char **str;
@@ -1842,7 +1881,7 @@ struct ChangeTextInfo {
 
 static ChangeTextInfo *active_info = 0;
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 static void SetTextCB(CB_ARG_LIST_NULL)
 {
     if (active_info == 0)
@@ -1904,7 +1943,7 @@ static void ChangeTextCB(Widget w, XtPointer client_data, XtPointer call_data)
 #endif
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 static void SetVerifyButtonsCB(Widget, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *cbs = 
@@ -1923,7 +1962,7 @@ static Widget add_button(const _XtString name,
 			 Widget text, Widget vfy,
 			 const _XtString& str, bool shortcuts = false)
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     Arg args[10];
     Cardinal arg = 0;
     Widget button = XmCreateToggleButton(buttons, XMST(name), args, arg);
@@ -1937,7 +1976,7 @@ static Widget add_button(const _XtString name,
 
     ChangeTextInfo *info = new ChangeTextInfo;
     info->dialog    = dialog;
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     info->str       = CONST_CAST(String*,&str);
 #else
     info->str       = CONST_CAST(char**,&str);
@@ -1946,7 +1985,7 @@ static Widget add_button(const _XtString name,
     info->vfy       = vfy;
     info->shortcuts = shortcuts;
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     XtAddCallback(button, XmNvalueChangedCallback, ChangeTextCB, 
 		  XtPointer(info));
 #ifdef NAG_ME
@@ -1957,12 +1996,13 @@ static Widget add_button(const _XtString name,
     return button;
 }
 
+#if defined(IF_XM)
+
 static void create_buttons_dialog(Widget parent)
 {
     if (buttons_dialog != 0)
 	return;
 
-#if defined(IF_MOTIF)
     Arg args[10];
     Cardinal arg = 0;
     XtSetArg(args[arg], XmNvisibleItemCount, 0); arg++;
@@ -1970,11 +2010,7 @@ static void create_buttons_dialog(Widget parent)
     buttons_dialog = 
 	verify(XmCreatePromptDialog(find_shell(parent), 
 				    XMST("edit_buttons"), args, arg));
-#else
-    buttons_dialog = new Gtk::Dialog(XMST("edit_buttons"), *find_shell(parent));
-#endif
 
-#if defined(IF_MOTIF)
     XtAddCallback(buttons_dialog, XmNokCallback,     SetTextCB, 0);
     XtAddCallback(buttons_dialog, XmNokCallback,     
 		  UnmanageThisCB1, buttons_dialog);
@@ -1987,14 +2023,8 @@ static void create_buttons_dialog(Widget parent)
 					   XmDIALOG_SELECTION_LABEL));
     XtUnmanageChild(XmSelectionBoxGetChild(buttons_dialog, 
 					   XmDIALOG_TEXT));
-#else
-#ifdef NAG_ME
-#warning "Edit buttons" dialog to be written
-#endif
-#endif
     Delay::register_shell(buttons_dialog);
 
-#if defined(IF_MOTIF)
     arg = 0;
     XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
     XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
@@ -2003,12 +2033,7 @@ static void create_buttons_dialog(Widget parent)
     Widget box = 
 	verify(XmCreateRowColumn(buttons_dialog, XMST("box"), args, arg));
     XtManageChild(box);
-#else
-    Gtk::Box *box = new Gtk::VBox();
-    box->show();
-#endif
 
-#if defined(IF_MOTIF)
     arg = 0;
     XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
     XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
@@ -2017,12 +2042,7 @@ static void create_buttons_dialog(Widget parent)
     shortcut_label = verify(XmCreateLabel(box, 
 					  XMST("shortcuts"), args, arg));
     XtManageChild(shortcut_label);
-#else
-    shortcut_label = new Gtk::Label(XMST("shortcuts"));
-    shortcut_label->show();
-#endif
 
-#if defined(IF_MOTIF)
     arg = 0;
     XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
     XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
@@ -2031,24 +2051,12 @@ static void create_buttons_dialog(Widget parent)
     button_box = 
 	verify(XmCreateRadioBox(box, XMST("buttons"), args, arg));
     XtManageChild(button_box);
-#else
-    button_box = new Gtk::HBox();
-    box->pack_start(*button_box, Gtk::PACK_SHRINK);
-    button_box->show();
-#endif
 
-#if defined(IF_MOTIF)
     arg = 0;
     XtSetArg(args[arg], XmNeditMode, XmMULTI_LINE_EDIT); arg++;
     Widget text = verify(XmCreateScrolledText(box, XMST("text"), args, arg));
     XtManageChild(text);
-#else
-#ifdef NAG_ME
-#warning Text for buttons not implemented
-#endif
-#endif
 
-#if defined(IF_MOTIF)
     arg = 0;
     XtSetArg(args[arg], XmNset, app_data.verify_buttons); arg++;
     Widget vfy = verify(XmCreateToggleButton(box, 
@@ -2056,17 +2064,7 @@ static void create_buttons_dialog(Widget parent)
     XtManageChild(vfy);
     XtAddCallback(vfy, XmNvalueChangedCallback, SetVerifyButtonsCB, 0);
     XtAddCallback(vfy, XmNvalueChangedCallback, SetTextCB, 0);
-#else
-    Gtk::ToggleButton *vfy = new Gtk::ToggleButton(XMST("verify"));
-    vfy->show();
-    box->pack_start(*vfy, Gtk::PACK_SHRINK);
-#ifdef NAG_ME
-#warning SetVerifyButtonsCB not defined
-#endif
-    // vfy->signal_toggled().connect(SetVerifyButtonsCB);
-#endif
 
-#if defined(IF_MOTIF)
     console_w = 
 	add_button("console", buttons_dialog, button_box, text, vfy,
 		   app_data.console_buttons);
@@ -2076,10 +2074,62 @@ static void create_buttons_dialog(Widget parent)
     Widget data_w = 
 	add_button("data", buttons_dialog, button_box, text, vfy,
 		   app_data.data_buttons);
+
+    const _XtString *str = 0;
+    switch (gdb->type())
+    {
+    case BASH: str = &app_data.bash_display_shortcuts; break;
+    case DBG:  str = &app_data.dbg_display_shortcuts;  break;
+    case DBX:  str = &app_data.dbx_display_shortcuts;  break;
+    case GDB:  str = &app_data.gdb_display_shortcuts;  break;
+    case JDB:  str = &app_data.jdb_display_shortcuts;  break;
+    case PERL: str = &app_data.perl_display_shortcuts; break;
+    case PYDB: str = &app_data.pydb_display_shortcuts; break;
+    case XDB:  str = &app_data.xdb_display_shortcuts;  break;
+    }
+
+    shortcut_w = 
+	add_button("shortcuts", buttons_dialog, button_box, text, vfy, 
+		   *str, true);
+
+    XmToggleButtonSetState(source_w, True, False);
+    (void) data_w;
+}
+
 #else
+
+static void create_buttons_dialog(GUI::Widget *parent)
+{
+    if (buttons_dialog != 0)
+	return;
+
+    buttons_dialog = new GUI::Dialog(*find_shell1(parent), "edit_buttons");
+
+#ifdef NAG_ME
+#warning "Edit buttons" dialog to be written
+#endif
+
+    Delay::register_shell(buttons_dialog);
+
+    shortcut_label = new GUI::Label(*buttons_dialog, "shortcuts");
+    shortcut_label->show();
+
+    button_box = new GUI::HBox(*buttons_dialog);
+    button_box->show();
+
+#ifdef NAG_ME
+#warning Text for buttons not implemented
+#endif
+
+    GUI::CheckButton *vfy = new GUI::CheckButton(*buttons_dialog, "verify");
+    vfy->show();
+#ifdef NAG_ME
+#warning SetVerifyButtonsCB not defined
+#endif
+    // vfy->signal_toggled().connect(SetVerifyButtonsCB);
+
 #ifdef NAG_ME
 #warning Text widget for user-defined buttons not defined
-#endif
 #endif
 
     const _XtString *str = 0;
@@ -2095,22 +2145,17 @@ static void create_buttons_dialog(Widget parent)
     case XDB:  str = &app_data.xdb_display_shortcuts;  break;
     }
 
-#if defined(IF_MOTIF)
-    shortcut_w = 
-	add_button("shortcuts", buttons_dialog, button_box, text, vfy, 
-		   *str, true);
-
-    XmToggleButtonSetState(source_w, True, False);
-    (void) data_w;
-#else
 #ifdef NAG_ME
 #warning buttons not finished
 #endif
-#endif
 }
 
+#endif
+
+#if defined(IF_XM)
+
 // We use one single editor for both purposes, since this saves space.
-void dddEditButtonsCB(CB_ARG_LIST_1(w))
+void dddEditButtonsCB(Widget w, XtPointer, XtPointer)
 {
     create_buttons_dialog(w);
     XtUnmanageChild(buttons_dialog);
@@ -2118,7 +2163,6 @@ void dddEditButtonsCB(CB_ARG_LIST_1(w))
     XtManageChild(button_box);
     XtManageChild(shortcut_w);
 
-#if defined(IF_MOTIF)
     XmToggleButtonSetState(console_w, True, True);
     ResetTextCB(w, 0, 0);
 
@@ -2130,14 +2174,29 @@ void dddEditButtonsCB(CB_ARG_LIST_1(w))
 		  DDD_NAME ": Button Editor", XtPointer(0));
 
     manage_and_raise(buttons_dialog);
+}
+
 #else
+
+// We use one single editor for both purposes, since this saves space.
+void dddEditButtonsCB(GUI::Widget *w)
+{
+    create_buttons_dialog(w);
+    buttons_dialog->hide();
+
+    button_box->show();
+    shortcut_w->show();
+
 #ifdef NAG_ME
 #warning Buttons dialog?
 #endif
-#endif
 }
 
-void dddEditShortcutsCB(CB_ALIST_1(Widget w))
+#endif
+
+#if defined(IF_XM)
+
+void dddEditShortcutsCB(Widget w, XtPointer, XtPointer)
 {
     create_buttons_dialog(w);
     XtUnmanageChild(buttons_dialog);
@@ -2145,7 +2204,6 @@ void dddEditShortcutsCB(CB_ALIST_1(Widget w))
     XtManageChild(button_box);
     XtManageChild(shortcut_w);
 
-#if defined(IF_MOTIF)
     XmToggleButtonSetState(shortcut_w, True, True);
     ResetTextCB(w, 0, 0);
 
@@ -2156,12 +2214,24 @@ void dddEditShortcutsCB(CB_ALIST_1(Widget w))
 		  DDD_NAME ": Shortcut Editor", XtPointer(0));
 
     manage_and_raise(buttons_dialog);
+}
+
 #else
+
+void dddEditShortcutsCB(GUI::Widget *w)
+{
+    create_buttons_dialog(w);
+    buttons_dialog->hide();
+
+    button_box->show();
+    shortcut_w->show();
+
 #ifdef NAG_ME
 #warning Buttons dialog?
 #endif
-#endif
 }
+
+#endif
 
 void refresh_button_editor()
 {
@@ -2194,7 +2264,7 @@ void refresh_button_editor()
 
     *str = XtNewString(expr.chars());
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     if (active_info != 0 && active_info->str == CONST_CAST(char**,str))
 	XmTextSetString(active_info->text, XMST(*str));
 #else
@@ -2217,7 +2287,7 @@ static MMDesc desc[] =
     MMEnd
 };
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 
 // Create a flat PushButton named NAME
 Widget create_flat_button(Widget parent, const string& name)

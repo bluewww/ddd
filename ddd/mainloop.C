@@ -66,14 +66,14 @@ void ddd_main_loop()
 	}
 
 	// Bring X in a consistent state
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	XUngrabPointer(XtDisplay(gdb_w), CurrentTime);
 	XUngrabKeyboard(XtDisplay(gdb_w), CurrentTime);
 	XUngrabServer(XtDisplay(gdb_w));
-#else // NOT IF_MOTIF
+#else
 	gdb_w->get_display()->pointer_ungrab(CurrentTime);
 	gdb_w->get_display()->keyboard_ungrab(CurrentTime);
-#endif // IF_MOTIF
+#endif
 
 	// Enable maintenance menu
 	if (!app_data.maintenance)
@@ -100,11 +100,11 @@ void ddd_main_loop()
 
     // Set `main_loop_entered' to true as soon 
     // as DDD becomes idle again.
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     XtAppAddWorkProc(XtWidgetToApplicationContext(gdb_w), ddd_setup_done, 0);
-#else // NOT IF_MOTIF
+#else
     Glib::signal_idle().connect(sigc::bind(PTR_FUN(ddd_setup_done), XtPointer(0)));
-#endif // IF_MOTIF
+#endif
 
     // Main Loop
     for (;;)

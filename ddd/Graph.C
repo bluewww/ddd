@@ -32,11 +32,13 @@ char Graph_rcsid[] =
 #include "Graph.h"
 #include "assert.h"
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
-#endif // IF_MOTIF
+#else
+#include <GUI/Widget.h>
+#endif
 
 DEFINE_TYPE_INFO_0(Graph)
 
@@ -390,13 +392,14 @@ GraphNode *Graph::getNode(GraphNode *org_node, const Graph& org_graph) const
      return dup_node;
 }
 
+#if defined(IF_XM)
+
 // Draw
 void Graph::draw(Widget w, const BoxRegion& exposed, const GraphGC& _gc) const
 {
     GraphGC gc(_gc);
 
     // get default gcs
-#ifdef IF_MOTIF
     if (gc.nodeGC   == 0)
 	gc.nodeGC   = DefaultGCOfScreen(XtScreen(w));
     if (gc.edgeGC   == 0)
@@ -405,16 +408,6 @@ void Graph::draw(Widget w, const BoxRegion& exposed, const GraphGC& _gc) const
 	gc.invertGC = DefaultGCOfScreen(XtScreen(w));
     if (gc.clearGC  == 0)
 	gc.clearGC  = DefaultGCOfScreen(XtScreen(w));
-#else // NOT IF_MOTIF
-    if (gc.nodeGC   == 0)
-      gc.nodeGC = w->get_style()->get_black_gc();
-    if (gc.edgeGC   == 0)
-      gc.edgeGC = w->get_style()->get_black_gc();
-    if (gc.invertGC   == 0)
-      gc.invertGC = w->get_style()->get_black_gc();
-    if (gc.clearGC   == 0)
-      gc.clearGC = w->get_style()->get_white_gc();
-#endif // IF_MOTIF
 
     // draw all edges
     for (GraphEdge *edge = firstVisibleEdge(); edge != 0; 
@@ -431,6 +424,41 @@ void Graph::draw(Widget w, const BoxRegion& exposed, const GraphGC& _gc) const
 	    node->redraw() = false;
     }
 }
+
+#else
+
+// Draw
+void Graph::draw(GUI::Widget *w, const BoxRegion& exposed, const GraphGC& _gc) const
+{
+    GraphGC gc(_gc);
+
+    // get default gcs
+    if (gc.nodeGC   == 0)
+	gc.nodeGC = w->get_black_gc();
+    if (gc.edgeGC   == 0)
+	gc.edgeGC = w->get_black_gc();
+    if (gc.invertGC   == 0)
+	gc.invertGC = w->get_black_gc();
+    if (gc.clearGC   == 0)
+	gc.clearGC = w->get_white_gc();
+
+    // draw all edges
+    for (GraphEdge *edge = firstVisibleEdge(); edge != 0; 
+	 edge = nextVisibleEdge(edge))
+	edge->draw(w, exposed, gc);
+
+    // draw all nodes
+    for (GraphNode *node = firstVisibleNode(); node != 0; 
+	 node = nextVisibleNode(node))
+    {
+	if (node->redraw() || !gc.redraw)
+	    node->draw(w, exposed, gc);
+	if (gc.redraw)
+	    node->redraw() = false;
+    }
+}
+
+#endif
 
 
 // Print

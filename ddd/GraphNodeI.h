@@ -29,6 +29,10 @@
 #ifndef _DDD_GraphNodeI_h
 #define _DDD_GraphNodeI_h
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "UniqueId.h"
 #include "Box.h"
 #include "bool.h"
@@ -143,6 +147,8 @@ public:
 	return origin;
     }
 
+#if defined(IF_XM)
+
     // Draw
     virtual void draw(Widget, 
 		      const BoxRegion&, 
@@ -162,6 +168,30 @@ public:
 	draw(w, BoxRegion(BoxPoint(0, 0), BoxSize(INT_MAX, INT_MAX)),
 	    GraphGC());
     }
+
+#else
+
+    // Draw
+    virtual void draw(GUI::Widget *, 
+		      const BoxRegion&, 
+		      const GraphGC&) const
+    {
+	// Default: do nothing
+    }
+
+    // Custom drawing functions
+    void draw(GUI::Widget *w, const BoxRegion& exposed) const
+    {
+	draw(w, exposed, GraphGC());
+    }
+
+    void draw(GUI::Widget *w) const
+    {
+	draw(w, BoxRegion(BoxPoint(0, 0), BoxSize(INT_MAX, INT_MAX)),
+	    GraphGC());
+    }
+
+#endif
 
     // Printing
     virtual void _print(std::ostream&, const GraphGC&) const

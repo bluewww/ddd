@@ -46,6 +46,8 @@ DEFINE_TYPE_INFO_1(SquareBox, SpaceBox)
 
 // RuleBox
 
+#if defined(IF_XM)
+
 // Draw RuleBox
 void RuleBox::_draw(Widget w, 
 		    const BoxRegion& r, 
@@ -62,37 +64,59 @@ void RuleBox::_draw(Widget w,
     if (width[Y] == 1)
     {
 	// Horizontal line
-#ifdef IF_MOTIF
 	XDrawLine(XtDisplay(w), XtWindow(w), gc,
 		  origin[X], origin[Y], origin[X] + width[X], origin[Y]);
-#else // NOT IF_MOTIF
-	w->get_window()->draw_line(gc, origin[X], origin[Y],
-				   origin[X] + width[X], origin[Y]);
-#endif // IF_MOTIF
     }
     else if (width[X] == 1)
     {
 	// Vertical line
-#ifdef IF_MOTIF
 	XDrawLine(XtDisplay(w), XtWindow(w), gc,
 		  origin[X], origin[Y], origin[X], origin[Y] + width[Y]);
-#else // NOT IF_MOTIF
-	w->get_window()->draw_line(gc, origin[X], origin[Y],
-				   origin[X], origin[Y] + width[Y]);
-#endif // IF_MOTIF
     }
     else
     {
 	// Rectangle
-#ifdef IF_MOTIF
 	XFillRectangle(XtDisplay(w), XtWindow(w), gc, origin[X], origin[Y],
 		       width[X], width[Y]);
-#else // NOT IF_MOTIF
-	w->get_window()->draw_rectangle(gc, true, origin[X], origin[Y],
-					width[X], width[Y]);
-#endif // IF_MOTIF
     }
 }
+
+#else
+
+// Draw RuleBox
+void RuleBox::_draw(GUI::Widget *w, 
+		    const BoxRegion& r, 
+		    const BoxRegion&, 
+		    GUI::RefPtr<GUI::GC> gc,
+		    bool) const
+{
+    BoxSize space   = r.space();
+    BoxPoint origin = r.origin();
+
+    BoxPoint width(extend(X) ? space[X] : size(X),
+		   extend(Y) ? space[Y] : size(Y));
+
+    if (width[Y] == 1)
+    {
+	// Horizontal line
+	w->get_window()->draw_line(gc, origin[X], origin[Y],
+				   origin[X] + width[X], origin[Y]);
+    }
+    else if (width[X] == 1)
+    {
+	// Vertical line
+	w->get_window()->draw_line(gc, origin[X], origin[Y],
+				   origin[X], origin[Y] + width[Y]);
+    }
+    else
+    {
+	// Rectangle
+	w->get_window()->draw_rectangle(gc, true, origin[X], origin[Y],
+					width[X], width[Y]);
+    }
+}
+
+#endif
 
 void RuleBox::dump(std::ostream& s) const
 {

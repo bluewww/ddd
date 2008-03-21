@@ -130,17 +130,19 @@ enum SettingsType { SETTINGS, INFOS, SIGNALS, THEMES };
 // Data
 //-----------------------------------------------------------------------
 
-static Widget            settings_panel = 0;
 #if defined(IF_XM)
+static Widget            settings_panel = 0;
 static Widget            settings_form  = 0;
 static Widget            reset_settings_button = 0;
 static Widget            apply_settings_button = 0;
+static VarArray<Widget>       settings_entries;
 #else
+static GUI::Dialog      *settings_panel = 0;
 static GUI::Container   *settings_form  = 0;
 static GUI::Button      *reset_settings_button = 0;
 static GUI::Button      *apply_settings_button = 0;
+static VarArray<GUI::Entry *>       settings_entries;
 #endif
-static VarArray<ENTRY_P>       settings_entries;
 static EntryTypeArray    settings_entry_types;
 static WidgetStringAssoc settings_values;
 static WidgetStringAssoc settings_initial_values;
@@ -210,7 +212,7 @@ static Widget command_to_widget(Widget ref, string command)
 #else
 
 // Find widget for command COMMAND
-static Widget command_to_widget(GUI::Widget *ref, string command)
+static GUI::Widget *command_to_widget(GUI::Widget *ref, string command)
 {
     std::cerr << "command_to_widget not implemented!\n";
     return NULL;
@@ -231,7 +233,11 @@ static void gdb_set_command(const string& set_command, string value)
 	// Hence, first reset `dir' to some initial value.
 
 	string confirm_value = "on";
+#if defined(IF_XM)
 	Widget confirm_w = command_to_widget(settings_form, "set confirm");
+#else
+	GUI::Widget *confirm_w = command_to_widget(settings_form, "set confirm");
+#endif
 	if (confirm_w)
 	    confirm_value = settings_values[confirm_w];
 
@@ -424,6 +430,8 @@ static void SendSignalCB(GUI::Widget *client_data)
 
 #endif
 
+#if defined(IF_XM)
+
 static string handle_command(Widget w, bool set)
 {
     string sig    = string(XtName(w)).before('-');
@@ -438,6 +446,25 @@ static string handle_command(Widget w, bool set)
 
     return "handle " + sig + " " + action;
 }
+
+#else
+
+static string handle_command(GUI::Widget *w, bool set)
+{
+    string sig    = string(w->get_name()).before('-');
+    string action = string(w->get_name()).after('-');
+    if (!set)
+	action.prepend("no");
+
+    if (action == "nopass")
+	action = "ignore";
+    else if (action == "noignore")
+	action = "pass";
+
+    return "handle " + sig + " " + action;
+}
+
+#endif
 
 #if defined(IF_XM)
 
@@ -538,6 +565,8 @@ static void HelpOnSignalCB(Widget w, XtPointer client_data,
 #endif
 
 
+#if defined(IF_XM)
+
 // Update state of `reset' button
 static void update_reset_settings_button()
 {
@@ -548,18 +577,14 @@ static void update_reset_settings_button()
 
     for (int i = 0; i < settings_entries.size(); i++)
     {
-	ENTRY_P entry = settings_entries[i];
+	Widget entry = settings_entries[i];
 
 	string value = settings_values[entry];
 	if (settings_entry_types[i] == TextFieldEntry)
 	{
-#if defined(IF_MOTIF)
 	    String value_s = XmTextFieldGetString(entry);
 	    value = value_s;
 	    XtFree(value_s);
-#else
-	    value = string(entry->get_text().c_str());
-#endif
 
 	    if (value != settings_values[entry])
 	    {
@@ -578,6 +603,46 @@ static void update_reset_settings_button()
     set_sensitive(reset_settings_button, false);
 }
 
+#else
+
+// Update state of `reset' button
+static void update_reset_settings_button()
+{
+    if (reset_settings_button == 0)
+	return;
+
+    check_options_file();
+
+    for (int i = 0; i < settings_entries.size(); i++)
+    {
+	GUI::Entry *entry = settings_entries[i];
+
+	string value = settings_values[entry];
+	if (settings_entry_types[i] == TextFieldEntry)
+	{
+	    value = string(entry->get_text().c_str());
+
+	    if (value != settings_values[entry])
+	    {
+		set_sensitive(reset_settings_button, true);
+		return;
+	    }
+	}
+
+	if (value != settings_initial_values[entry])
+	{
+	    set_sensitive(reset_settings_button, true);
+	    return;
+	}
+    }
+
+    set_sensitive(reset_settings_button, false);
+}
+
+#endif
+
+#if defined(IF_XM)
+
 static void update_apply_settings_button()
 {
     if (apply_settings_button == 0)
@@ -588,15 +653,11 @@ static void update_apply_settings_button()
 	if (settings_entry_types[i] != TextFieldEntry)
 	    continue;
 
-	ENTRY_P entry = settings_entries[i];
+	Widget entry = settings_entries[i];
 
-#if defined(IF_MOTIF)
 	String value_s = XmTextFieldGetString(entry);
 	string value(value_s);
 	XtFree(value_s);
-#else
-	string value(entry->get_text().c_str());
-#endif
 
 	if (value != settings_values[entry])
 	{
@@ -608,6 +669,34 @@ static void update_apply_settings_button()
     set_sensitive(apply_settings_button, false);
 }
 
+#else
+
+static void update_apply_settings_button()
+{
+    if (apply_settings_button == 0)
+	return;
+
+    for (int i = 0; i < settings_entries.size(); i++)
+    {
+	if (settings_entry_types[i] != TextFieldEntry)
+	    continue;
+
+	GUI::Entry *entry = settings_entries[i];
+
+	string value(entry->get_text().c_str());
+
+	if (value != settings_values[entry])
+	{
+	    set_sensitive(apply_settings_button, true);
+	    return;
+	}
+    }
+
+    set_sensitive(apply_settings_button, false);
+}
+
+#endif
+
 static void update_reset_signals_button()
 {
     if (reset_signals_button == 0)
@@ -617,7 +706,11 @@ static void update_reset_signals_button()
 
     for (int i = 0; i < signals_entries.size(); i++)
     {
+#if defined(IF_XM)
 	Widget entry = signals_entries[i];
+#else
+	GUI::Widget *entry = signals_entries[i];
+#endif
 	if (signals_initial_values[entry] != signals_values[entry])
 	{
 	    set_sensitive(reset_signals_button, true);
@@ -1010,7 +1103,11 @@ void save_settings_state()
 
     for (int i = 0; i < settings_entries.size(); i++)
     {
+#if defined(IF_XM)
 	Widget entry = settings_entries[i];
+#else
+	GUI::Widget *entry = settings_entries[i];
+#endif
 	settings_initial_values[entry] = settings_values[entry];
     }
 
@@ -1026,7 +1123,11 @@ void save_signals_state()
 
     for (int i = 0; i < signals_entries.size(); i++)
     {
+#if defined(IF_XM)
 	Widget entry = signals_entries[i];
+#else
+	GUI::Widget *entry = signals_entries[i];
+#endif
 	signals_initial_values[entry] = signals_values[entry];
     }
 
@@ -3155,7 +3256,11 @@ static void add_button(GUI::Container *form, int& row, Dimension& max_width,
 	process_show(show_command, value, true);
 
 	// Register entry
-	settings_entries     += (ENTRY_P)entry;
+#if defined(IF_XM)
+	settings_entries     += entry;
+#else
+	settings_entries     += dynamic_cast<GUI::Entry *>(entry);
+#endif
 	settings_entry_types += e_type;
     }
     else
@@ -3329,8 +3434,10 @@ void update_settings()
     }
 }
 
+#if defined(IF_XM)
+
 // Reset settings
-static void ResetSettingsCB(CB_ALIST_NULL)
+static void ResetSettingsCB(Widget, XtPointer, XtPointer)
 {
     CommandGroup cg;
 
@@ -3341,24 +3448,14 @@ static void ResetSettingsCB(CB_ALIST_NULL)
 	string value = settings_values[entry];
 	if (settings_entry_types[i] == TextFieldEntry)
 	{
-#if defined(IF_MOTIF)
 	    String value_s = XmTextFieldGetString(entry);
 	    value = value_s;
 	    XtFree(value_s);
-#else
-	    ENTRY_P entry_w = dynamic_cast<Gtk::Entry *>(entry);
-	    assert(entry_w);
-	    value = string(entry_w->get_text().c_str());
-#endif
 
 	    if (value != settings_values[entry])
 	    {
 		value = settings_values[entry];
-#if defined(IF_MOTIF)
 		XmTextFieldSetString(entry, XMST(value.chars()));
-#else
-		entry_w->set_text(XMST(value.chars()));
-#endif
 	    }
 	}
 
@@ -3367,8 +3464,42 @@ static void ResetSettingsCB(CB_ALIST_NULL)
     }
 }
 
+#else
+
+// Reset settings
+static void ResetSettingsCB(void)
+{
+    CommandGroup cg;
+
+    for (int i = 0; i < settings_entries.size(); i++)
+    {
+	GUI::Widget *entry = settings_entries[i];
+
+	string value = settings_values[entry];
+	if (settings_entry_types[i] == TextFieldEntry)
+	{
+	    GUI::Entry *entry_w = dynamic_cast<GUI::Entry *>(entry);
+	    assert(entry_w);
+	    value = string(entry_w->get_text().c_str());
+
+	    if (value != settings_values[entry])
+	    {
+		value = settings_values[entry];
+		entry_w->set_text(value.chars());
+	    }
+	}
+
+	if (value != settings_initial_values[entry])
+	    gdb_set_command(entry->get_name().c_str(), settings_initial_values[entry]);
+    }
+}
+
+#endif
+
+#if defined(IF_XM)
+
 // Reset signals
-static void ResetSignalsCB(CB_ALIST_NULL)
+static void ResetSignalsCB(Widget, XtPointer, XtPointer)
 {
     CommandGroup cg;
 
@@ -3387,8 +3518,34 @@ static void ResetSignalsCB(CB_ALIST_NULL)
     gdb_command(command);
 }
 
+#else
+
+// Reset signals
+static void ResetSignalsCB(void)
+{
+    CommandGroup cg;
+
+    string command = "";
+
+    for (int i = 0; i < signals_entries.size(); i++)
+    {
+	GUI::Widget *entry = signals_entries[i];
+	if (signals_initial_values[entry] != signals_values[entry])
+	{
+	    bool set = (signals_initial_values[entry] == "yes");
+	    command += handle_command(entry, set) + "\n";
+	}
+    }
+
+    gdb_command(command);
+}
+
+#endif
+
+#if defined(IF_XM)
+
 // Apply settings
-static void ApplySettingsCB(CB_ALIST_NULL)
+static void ApplySettingsCB(Widget, XtPointer, XtPointer)
 {
     CommandGroup cg;
 
@@ -3399,20 +3556,39 @@ static void ApplySettingsCB(CB_ALIST_NULL)
 
 	Widget entry = settings_entries[i];
 
-#if defined(IF_MOTIF)
 	String value_s = XmTextFieldGetString(entry);
 	string value(value_s);
 	XtFree(value_s);
-#else
-	ENTRY_P entry_w = dynamic_cast<Gtk::Entry *>(entry);
-	assert(entry_w);
-	string value(entry_w->get_text().c_str());
-#endif
 
 	if (value != settings_values[entry])
 	    gdb_set_command(XtName(entry), value);
     }
 }
+
+#else
+
+// Apply settings
+static void ApplySettingsCB(void)
+{
+    CommandGroup cg;
+
+    for (int i = 0; i < settings_entries.size(); i++)
+    {
+	if (settings_entry_types[i] != TextFieldEntry)
+	    continue;
+
+	GUI::Widget *entry = settings_entries[i];
+
+	GUI::Entry *entry_w = dynamic_cast<GUI::Entry *>(entry);
+	assert(entry_w);
+	string value(entry_w->get_text().c_str());
+
+	if (value != settings_values[entry])
+	    gdb_set_command(entry->get_name().c_str(), value);
+    }
+}
+
+#endif
 
 #if defined(IF_XM)
 
@@ -3900,7 +4076,7 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
 #else
 
 // Create settings or infos editor
-static Widget create_panel(DebuggerType type, SettingsType stype)
+static GUI::Dialog *create_panel(DebuggerType type, SettingsType stype)
 {
     string title_msg;
     string dialog_name;
@@ -4102,6 +4278,8 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
 #endif
 
 
+#if defined(IF_XM)
+
 // Create settings editor
 static Widget create_settings(DebuggerType type)
 {
@@ -4127,6 +4305,36 @@ static Widget create_settings(DebuggerType type)
 
     return settings_panel;
 }
+
+#else
+
+// Create settings editor
+static GUI::Dialog *create_settings(DebuggerType type)
+{
+    check_options_file();
+
+    if (settings_panel == 0 && can_do_gdb_command() && gdb->type() == type)
+    {
+	// We place a delay here such that we show only one delay for
+	// both getting the settings and the command definitions.
+	StatusDelay delay("Retrieving " + gdb->title() + " Settings");
+
+	settings_panel = create_panel(type, SETTINGS);
+
+	// Get the command definitions, too.  These must be included
+	// in saving GDB state.
+	(void) get_defines(type);
+    }
+    else if (settings_panel != 0 && need_reload_settings)
+    {
+	reload_all_settings();
+	need_reload_settings = false;
+    }
+
+    return settings_panel;
+}
+
+#endif
 
 // Create infos editor
 static Widget create_infos(DebuggerType type)
@@ -4339,7 +4547,7 @@ void dddPopupSignalsCB (Widget, XtPointer, XtPointer)
 // Popup editor for debugger settings
 void dddPopupSettingsCB (GUI::Widget *)
 {
-    Widget settings = create_settings(gdb->type());
+    GUI::Dialog *settings = create_settings(gdb->type());
     if (settings == 0)
 	return;
 
@@ -4573,6 +4781,8 @@ static void get_setting(std::ostream& os, DebuggerType type,
     
 }
 
+#if defined(IF_XM)
+
 // Fetch GDB settings string
 string get_settings(DebuggerType type, unsigned long flags)
 {
@@ -4591,6 +4801,31 @@ string get_settings(DebuggerType type, unsigned long flags)
 
     return string(command);
 }
+
+#else
+
+// Fetch GDB settings string
+string get_settings(DebuggerType type, unsigned long flags)
+{
+    GUI::Widget *settings = create_settings(type);
+    if (settings == 0)
+	return "";
+
+    std::ostringstream command;
+    for (int i = 0; i < settings_entries.size(); i++)
+    {
+	GUI::Widget *entry = settings_entries[i];
+	string value = settings_values[entry];
+
+	get_setting(command, type, XtName(entry), value, flags);
+    }
+
+    return string(command);
+}
+
+#endif
+
+#if defined(IF_XM)
 
 // Fetch GDB signal handling string
 string get_signals(DebuggerType type, unsigned long /* flags */)
@@ -4611,6 +4846,28 @@ string get_signals(DebuggerType type, unsigned long /* flags */)
     return commands;
 }
 
+#else
+
+// Fetch GDB signal handling string
+string get_signals(DebuggerType type, unsigned long /* flags */)
+{
+    if (type != GDB)
+	return "";		// Not supported yet
+
+    create_signals(type);
+    string commands = "";
+
+    for (int i = 0; i < signals_entries.size(); i++)
+    {
+	GUI::Widget *entry = signals_entries[i];
+	bool set = (signals_values[entry] == "yes");
+	commands += handle_command(entry, set) + "\n";
+    }
+
+    return commands;
+}
+
+#endif
 
 //-----------------------------------------------------------------------
 // Trace Command Definitions
@@ -4731,7 +4988,11 @@ string get_defines(DebuggerType type, unsigned long /* flags */)
     string confirm_value = "on";
     if (settings_form != 0)
     {
+#if defined(IF_XM)
 	Widget confirm_w = command_to_widget(settings_form, "set confirm");
+#else
+	GUI::Widget *confirm_w = command_to_widget(settings_form, "set confirm");
+#endif
 	if (confirm_w != 0)
 	    confirm_value = settings_values[confirm_w];
     }

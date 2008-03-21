@@ -92,7 +92,11 @@ public:
     {
 	for (unsigned i = 0; i < MAX_FONTS; i++)
 	{
-	    table[i].font = NO_FONT;
+#if defined(IF_XM)
+	    table[i].font = 0;
+#else
+	    table[i].font.clear();
+#endif
 	    table[i].name = "";
 	}
     }

@@ -29,6 +29,10 @@
 #ifndef _DDD_ListBox_h
 #define _DDD_ListBox_h
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 // A ListBox is a list of boxes.
 
 
@@ -92,6 +96,7 @@ protected:
 	relast();
     }
 
+#if defined(IF_XM)
     virtual void _draw(Widget, 
 		       const BoxRegion&, 
 		       const BoxRegion&,
@@ -101,6 +106,17 @@ protected:
 	assert(0);  // A ListBox cannot be drawn
 	::abort();
     }
+#else
+    virtual void _draw(GUI::Widget *, 
+		       const BoxRegion&, 
+		       const BoxRegion&,
+		       GUI::RefPtr<GUI::GC>, 
+		       bool) const
+    {
+	assert(0);  // A ListBox cannot be drawn
+	::abort();
+    }
+#endif
 
     void dump(std::ostream& s) const;
 

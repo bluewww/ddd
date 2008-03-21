@@ -4532,14 +4532,14 @@ SourceView::SourceView(Widget parent)
 
 SourceView::SourceView(GUI::Container *parent)
 {
-    XtAppContext app_context = XtWidgetToApplicationContext(parent);
+    GUI::Main *app_context = parent->get_main();
 
     // Find application shell
     toplevel_w = parent;
     while (toplevel_w != 0 && !dynamic_cast<GUI::Shell *>(toplevel_w))
 	toplevel_w = toplevel_w->get_parent();
 #ifdef NAG_ME
-#warning WRONG: toplevel_w is not necessary application shell!
+#warning WRONG? toplevel_w is not necessary application shell?
 #endif
     std::cerr << "WRONG: toplevel_w is not necessary application shell!\n";
 
@@ -4928,7 +4928,7 @@ void SourceView::create_shells()
     register_dialog_w = 
 	new GUI::SelectionDialog(*parent, "register_dialog", register_headers);
 #endif
-    Delay::register_shell1(register_dialog_w);
+    Delay::register_shell(register_dialog_w);
 
 
     GUI::WidgetPtr<GUI::RadioBox> box = new GUI::RadioBox(*register_dialog_w, "box", GUI::ORIENTATION_HORIZONTAL);
@@ -7621,11 +7621,10 @@ void SourceView::NewWatchpointCB(CB_ALIST_1(Widget w))
 	dialog = verify(XmCreatePromptDialog(find_shell(w),
 					     XMST("new_watchpoint_dialog"),
 					     args, arg));
-	Delay::register_shell(dialog);
 #else
 	dialog = new GUI::Dialog(find_shell(w), GUI::String("new_watchpoint_dialog"));
-	Delay::register_shell1(dialog);
 #endif
+	Delay::register_shell(dialog);
 
 #if defined(IF_XM)
 	if (lesstif_version <= 79)
@@ -8405,7 +8404,7 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, GUI::Widget * /* origin */)
 
     GUI::Button *button = info->dialog->add_button("apply", "Apply");
 
-    Delay::register_shell1(info->dialog);
+    Delay::register_shell(info->dialog);
 
     MMDesc commands_menu[] =
     {

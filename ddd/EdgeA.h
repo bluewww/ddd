@@ -29,13 +29,22 @@
 #ifndef _DDD_EdgeAnnotation_h
 #define _DDD_EdgeAnnotation_h
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "Box.h"
 #include "GraphGC.h"
 
 class EdgeAnnotation {
 protected:
+#if defined(IF_XM)
     virtual void _draw(Widget w, const BoxPoint& p,
 		       const BoxRegion& exposed, const GraphGC& gc) const = 0;
+#else
+    virtual void _draw(GUI::Widget *w, const BoxPoint& p,
+		       const BoxRegion& exposed, const GraphGC& gc) const = 0;
+#endif
 
 protected:
     // Constructor.  Only for derived classes.
@@ -49,6 +58,8 @@ public:
 
     virtual ~EdgeAnnotation() {}
 
+#if defined(IF_XM)
+
     // Draw annotation centered around P
     virtual void draw(Widget w, const BoxPoint& p,
 		      const BoxRegion& exposed,
@@ -61,6 +72,23 @@ public:
     {
 	draw(w, p, exposed, GraphGC());
     }
+
+#else
+
+    // Draw annotation centered around P
+    virtual void draw(GUI::Widget *w, const BoxPoint& p,
+		      const BoxRegion& exposed,
+		      const GraphGC& gc) const;
+
+    // Custom function
+    void draw(GUI::Widget *w, const BoxPoint& p,
+	      const BoxRegion& exposed = 
+	      BoxRegion(BoxPoint(0,0), BoxSize(INT_MAX, INT_MAX))) const
+    {
+	draw(w, p, exposed, GraphGC());
+    }
+
+#endif
 
     // Print
     virtual void _print(std::ostream& os, const BoxPoint& p, 

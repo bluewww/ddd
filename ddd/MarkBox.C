@@ -37,11 +37,19 @@ char MarkBox_rcsid[] =
 DEFINE_TYPE_INFO_1(MarkBox, TransparentHatBox)
 
 // Draw
+#if defined(IF_XM)
 void MarkBox::_draw(Widget w, 
 		    const BoxRegion& r, 
 		    const BoxRegion& exposed,
 		    GC gc, 
 		    bool context_selected) const
+#else
+void MarkBox::_draw(GUI::Widget *w, 
+		    const BoxRegion& r, 
+		    const BoxRegion& exposed,
+		    GUI::RefPtr<GUI::GC> gc, 
+		    bool context_selected) const
+#endif
 {
     BoxRegion sonRegion = r;
 

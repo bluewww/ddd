@@ -436,7 +436,7 @@ private:
     Dimension requestedHeight;	// Requested height (in pixels)
 
     // Pixmaps
-    Pixmap selectTile;		// Tile to apply when node is selected
+    GUI::RefPtr<GUI::Pixmap> selectTile;	// Tile to apply when node is selected
 
     // Modes
     EdgeAttachMode edgeAttachMode;	 // How to attach edges on nodes
@@ -446,23 +446,21 @@ private:
     bool dashedLines;			 // Whether dashed lines are to be used
 
     // Cursors
-    Cursor defaultCursor;	         // Standard cursor to use
-    Cursor moveCursor;			 // Cursor to use when moving
-    Cursor selectCursor;	         // Cursors to use when selecting
-    Cursor selectBottomLeftCursor;
-    Cursor selectBottomRightCursor;
-    Cursor selectTopLeftCursor;
-    Cursor selectTopRightCursor;
+    GUI::Cursor *defaultCursor;	         // Standard cursor to use
+    GUI::Cursor *moveCursor;		 // Cursor to use when moving
+    GUI::Cursor *selectCursor;	         // Cursors to use when selecting
+    GUI::Cursor *selectBottomLeftCursor;
+    GUI::Cursor *selectBottomRightCursor;
+    GUI::Cursor *selectTopLeftCursor;
+    GUI::Cursor *selectTopRightCursor;
 
-#if !defined(IF_XMMM)
     // Colors
-    Gdk::Color nodeColor;		          // Color to use for nodes
-    Gdk::Color edgeColor;		          // Color to use for edges
-    Gdk::Color frameColor;		          // Color to use for frame
-    Gdk::Color outlineColor;		          // Color to use for outlines
-    Gdk::Color gridColor;		          // Color to use for grid
-    Gdk::Color selectColor;	                  // Color to use for selected nodes
-#endif
+    GUI::Color nodeColor;		          // Color to use for nodes
+    GUI::Color edgeColor;		          // Color to use for edges
+    GUI::Color frameColor;		          // Color to use for frame
+    GUI::Color outlineColor;		          // Color to use for outlines
+    GUI::Color gridColor;		          // Color to use for grid
+    GUI::Color selectColor;	                  // Color to use for selected nodes
 
     // Printing colors
     String nodePrintColor;	          // Color for printing nodes
@@ -479,16 +477,16 @@ private:
     Time lastSelectTime;	// Last selection time (for multi-clicks)
     XtIntervalId redrawTimer;	// Timer used for redrawing
 
-    GC nodeGC;			// Graphic context for nodes
-    GC edgeGC;			// Graphic context for edges
-    GC invertGC;		// Graphic context for inverting
-    GC clearGC;			// Graphic context for clearing
-    GC frameGC;			// Graphic context for frame
-    GC outlineGC;		// Graphic context for outlines
+    GUI::RefPtr<GUI::GC> nodeGC;	// Graphic context for nodes
+    GUI::RefPtr<GUI::GC> edgeGC;	// Graphic context for edges
+    GUI::RefPtr<GUI::GC> invertGC;	// Graphic context for inverting
+    GUI::RefPtr<GUI::GC> clearGC;	// Graphic context for clearing
+    GUI::RefPtr<GUI::GC> frameGC;	// Graphic context for frame
+    GUI::RefPtr<GUI::GC> outlineGC;	// Graphic context for outlines
 
     GraphGC graphGC;		// Graph graphic context
 
-    Pixmap gridPixmap;		// Grid pixmap
+    GUI::RefPtr<GUI::Pixmap> gridPixmap;	// Grid pixmap
 
     bool sizeChanged;		// Flag: size changed in SetValues
     bool redisplayEnabled;	// Flag: redisplay is enabled
@@ -496,13 +494,8 @@ private:
     // Inform widget that its size has changed
     void graphEditSizeChanged(void);
 
-#if defined(IF_XM)
-    // Get node at event
-    GraphNode *graphEditGetNodeAtEvent(XEvent *e);
-#else
     // Get node at event
     GraphNode *graphEditGetNodeAtEvent(GUI::Event *e);
-#endif
 
     // Redraw all
     void graphEditRedraw(void);
@@ -511,7 +504,7 @@ private:
     void graphEditRaiseNode(GraphNode *node);
 
     // PRIVATE methods (were STATIC functions)
-    void defineCursor(Cursor cursor);
+    void defineCursor(GUI::Cursor *cursor);
 
     void setGrid(bool reset = false);
     void RedrawCB(void);

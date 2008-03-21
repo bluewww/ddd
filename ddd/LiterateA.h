@@ -53,6 +53,10 @@
     Use a more elaborate subclass to dispatch data in appropriate units.
 */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "assert.h"
 #include <stdio.h>
 #include <string.h>
@@ -140,6 +144,9 @@ protected:
     }
 
 public:
+
+#if defined(IF_XM)
+
     // Constructor for Agent users
     LiterateAgent(XtAppContext app_context, const string& pth,
 		  unsigned nTypes = LiterateAgent_NTypes):
@@ -162,6 +169,33 @@ public:
 	AsyncAgent(app_context, dummy, nTypes), activeIO(false),
 	_block_tty_input(default_block_tty_input())
     {}
+
+#else
+
+    // Constructor for Agent users
+    LiterateAgent(GUI::Main *app_context, const string& pth,
+		  unsigned nTypes = LiterateAgent_NTypes):
+	AsyncAgent(app_context, pth, nTypes), activeIO(false),
+	_block_tty_input(default_block_tty_input())
+    {}
+
+    // Constructor for Agent writers
+    LiterateAgent(GUI::Main *app_context, FILE *in = stdin,
+		  FILE *out = stdout, FILE *err = 0, 
+		  unsigned nTypes = LiterateAgent_NTypes):
+	AsyncAgent(app_context, in, out, err, nTypes), activeIO(false),
+	// When reading from stdin, always block TTY input.
+	_block_tty_input(in == stdin || default_block_tty_input())
+    {}
+
+    // "Dummy" Constructor without any communication
+    LiterateAgent(GUI::Main *app_context, bool dummy,
+		  unsigned nTypes = LiterateAgent_NTypes):
+	AsyncAgent(app_context, dummy, nTypes), activeIO(false),
+	_block_tty_input(default_block_tty_input())
+    {}
+
+#endif
 
     // Duplicator
     LiterateAgent(const LiterateAgent& lit)

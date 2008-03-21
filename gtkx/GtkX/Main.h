@@ -21,32 +21,30 @@
 // If not, write to the Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-#ifndef GTKX_WINDOW_H
-#define GTKX_WINDOW_H
+#ifndef GTKX_MAIN_H
+#define GTKX_MAIN_H
 
-#include <gtkmm/window.h>
-
-#include <GtkX/Container.h>
-#include <GtkX/Main.h>
+#include <gtkmm/main.h>
 
 namespace GtkX {
 
-    class Window: public Gtk::Window, public Shell {
-	void init_signals(void);
-    protected:
-	sigc::signal<bool, GdkEvent *> signal_delete_;
-	bool delete_callback(GdkEventAny *data);
+    class Window;
+
+    class Main {
+	Gtk::Main *main_;
+	GtkX::Window *toplevel_;
+	int argc_;
+	char **argv_;
     public:
-	Window(Main &main, const String &name="", const String &title="");
-	Window(const String &name="", const String &title="");
-	Gtk::Widget *internal(void);
-	Gtk::Container *gtk_container(void);
-	~Window(void);
-	sigc::signal<bool, GdkEvent *> &signal_delete_event(void);
-	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
-#include <GtkX/redirect.h>
+	Main(GtkX::Window *&toplevel, const char *classname, const char *sessid,
+	     const char *const *fallback_rsc, int argc, char **argv);
+	~Main(void);
+	GtkX::Window *get_toplevel(void) const;
+	int get_argc(void) const;
+	char *get_argv(int i) const;
     };
+
 
 }
 
-#endif // GTKX_WINDOW_H
+#endif // GTKX_MAIN_H

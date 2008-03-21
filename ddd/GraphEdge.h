@@ -29,6 +29,10 @@
 #ifndef _DDD_GraphEdge_h
 #define _DDD_GraphEdge_h
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "UniqueId.h"
 #include "Box.h"
 #include "bool.h"
@@ -70,10 +74,17 @@ private:
     GraphEdge& operator = (const GraphEdge&);
 
 protected:
+#if defined(IF_XM)
     // Graphics
     virtual void _draw(Widget w, 
 		       const BoxRegion& exposed, 
 		       const GraphGC& gc) const = 0;
+#else
+    // Graphics
+    virtual void _draw(GUI::Widget *w, 
+		       const BoxRegion& exposed, 
+		       const GraphGC& gc) const = 0;
+#endif
     
     // Enqueue in node lists
     void enqueue();
@@ -121,6 +132,7 @@ public:
     bool& hidden()           { return _hidden; }
     bool hidden() const      { return _hidden; }
 
+#if defined(IF_XM)
     // Graphics
     void draw(Widget w, const BoxRegion& exposed = BoxRegion(BoxPoint(0, 0),
 	BoxSize(INT_MAX, INT_MAX)), const GraphGC& gc = GraphGC()) const
@@ -128,6 +140,15 @@ public:
 	if (!_hidden)
 	    _draw(w, exposed, gc);
     }
+#else
+    // Graphics
+    void draw(GUI::Widget *w, const BoxRegion& exposed = BoxRegion(BoxPoint(0, 0),
+	BoxSize(INT_MAX, INT_MAX)), const GraphGC& gc = GraphGC()) const
+    {
+	if (!_hidden)
+	    _draw(w, exposed, gc);
+    }
+#endif
 
     // Printing
     virtual void _print(std::ostream& os, const GraphGC& gc) const;

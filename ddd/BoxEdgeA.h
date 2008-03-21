@@ -29,6 +29,10 @@
 #ifndef _DDD_BoxEdgeAnnotation_h
 #define _DDD_BoxEdgeAnnotation_h
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "EdgeA.h"
 #include "Box.h"
 #include "assert.h"
@@ -41,8 +45,13 @@ private:
     Box *_box;			// The box to use
 
 protected:
+#if defined(IF_XM)
     virtual void _draw(Widget w, const BoxPoint& p,
 		       const BoxRegion& exposed, const GraphGC& gc) const;
+#else
+    virtual void _draw(GUI::Widget *w, const BoxPoint& p,
+		       const BoxRegion& exposed, const GraphGC& gc) const;
+#endif
 
     BoxEdgeAnnotation(const BoxEdgeAnnotation &src)
 	: EdgeAnnotation(src), _box(0)

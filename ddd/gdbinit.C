@@ -53,10 +53,17 @@ static void InvokeGDBFromShellHP(Agent *source, void *client_data,
 // Create new GDB interface
 //-----------------------------------------------------------------------------
 
+#if defined(IF_XM)
 GDBAgent *new_gdb(DebuggerType type,
 		  const AppData& app_data,
 		  XtAppContext app_context,
 		  int argc, char *argv[])
+#else
+GDBAgent *new_gdb(DebuggerType type,
+		  const AppData& app_data,
+		  GUI::Main *app_context,
+		  int argc, char *argv[])
+#endif
 {
     // Build call
     static string gdb_call = app_data.debugger_command;

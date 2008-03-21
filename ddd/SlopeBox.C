@@ -44,6 +44,8 @@ DEFINE_TYPE_INFO_1(RiseBox, SlopeBox)
 
 // FallBox
 
+#if defined(IF_XM)
+
 // Draw
 void FallBox::__draw(Widget w, 
 		     const BoxRegion& r, 
@@ -54,14 +56,27 @@ void FallBox::__draw(Widget w,
     BoxSize space   = r.space();
     BoxPoint origin = r.origin();
 
-#ifdef IF_MOTIF
     XDrawLine(XtDisplay(w), XtWindow(w), gc, origin[X], origin[Y],
 	origin[X] + space[X], origin[Y] + space[Y]);
-#else // NOT IF_MOTIF
+}
+
+#else
+
+// Draw
+void FallBox::__draw(GUI::Widget *w, 
+		     const BoxRegion& r, 
+		     const BoxRegion&, 
+		     GUI::RefPtr<GUI::GC> gc,
+		     bool) const
+{
+    BoxSize space   = r.space();
+    BoxPoint origin = r.origin();
+
     w->get_window()->draw_line(gc, origin[X], origin[Y],
 			       origin[X] + space[X], origin[Y] + space[Y]);
-#endif // IF_MOTIF
 }
+
+#endif
 
 // Print
 void FallBox::_print(std::ostream& os, 
@@ -97,6 +112,8 @@ void FallBox::dump(std::ostream& s) const
 
 // RiseBox
 
+#if defined(IF_XM)
+
 // Draw
 void RiseBox::__draw(Widget w, 
 		     const BoxRegion& r, 
@@ -107,14 +124,27 @@ void RiseBox::__draw(Widget w,
     BoxSize space   = r.space();
     BoxPoint origin = r.origin();
 
-#ifdef IF_MOTIF
     XDrawLine(XtDisplay(w), XtWindow(w), gc, origin[X], origin[Y] + space[Y],
 	origin[X] + space[X], origin[Y]);
-#else // NOT IF_MOTIF
+}
+
+#else
+
+// Draw
+void RiseBox::__draw(GUI::Widget *w, 
+		     const BoxRegion& r, 
+		     const BoxRegion&, 
+		     GUI::RefPtr<GUI::GC> gc,
+		     bool) const
+{
+    BoxSize space   = r.space();
+    BoxPoint origin = r.origin();
+
     w->get_window()->draw_line(gc, origin[X], origin[Y] + space[Y],
 			       origin[X] + space[X], origin[Y]);
-#endif // IF_MOTIF
 }
+
+#endif
 
 // Print
 void RiseBox::_print(std::ostream& os, 

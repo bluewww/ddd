@@ -340,7 +340,7 @@ void gdbExamineCB(GUI::Widget *w)
     if (dialog == 0)
     {
 	dialog = new GUI::Dialog(*find_shell1(w), "examine_dialog");
-	Delay::register_shell1(dialog);
+	Delay::register_shell(dialog);
 
 #ifdef NAG_ME
 #warning Dialog buttons?

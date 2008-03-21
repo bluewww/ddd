@@ -29,18 +29,28 @@
 #ifndef _DDD_select_h
 #define _DDD_select_h
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "Agent.h"
 
-#ifdef IF_MOTIF
-
+#if defined(IF_MOTIF)
 #include <X11/Intrinsic.h>
-
-#endif // IF_MOTIF
+#else
+#include <GUI/Dialog.h>
+#include <GUI/ListView.h>
+#endif
 
 #include "gtk_wrapper.h"
 
+#if defined(IF_XM)
 // Selection
-extern DIALOG_P gdb_selection_dialog;
+extern Widget gdb_selection_dialog;
+#else
+// Selection
+extern GUI::Dialog *gdb_selection_dialog;
+#endif
 
 // Select from GDB choice
 void gdb_selectHP(Agent *agent, void *client_data, void *call_data);

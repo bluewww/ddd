@@ -29,6 +29,10 @@
 #ifndef _DDD_ArcGraphEdge_h
 #define _DDD_ArcGraphEdge_h
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "LineGraphE.h"
 
 class ArcGraphEdge: public LineGraphEdge {
@@ -41,21 +45,36 @@ protected:
 	: LineGraphEdge(edge)
     {}
 
+#if defined(IF_XM)
     // Draw line (or arc).
     void drawLine(Widget w,
 		  const BoxRegion& exposed,
 		  const GraphGC& gc) const;
+#else
+    // Draw line (or arc).
+    void drawLine(GUI::Widget *w,
+		  const BoxRegion& exposed,
+		  const GraphGC& gc) const;
+#endif
 
     // Compute the center of the arc enclosing P1, P2, and P3.
     // Return false iff P1, P2, and P3 form a line (i.e. there is no arc)
     static bool center(const BoxPoint& p1, const BoxPoint& p2, 
 		       const BoxPoint& p3, double& x, double& y);
 
+#if defined(IF_XM)
     // Joint function for drawing and printing
-    void makeLine(Widget w,
+    void makeLine(Widget *w,
 		  const BoxRegion& exposed,
 		  std::ostream& os,
 		  const GraphGC& gc) const;
+#else
+    // Joint function for drawing and printing
+    void makeLine(GUI::Widget *w,
+		  const BoxRegion& exposed,
+		  std::ostream& os,
+		  const GraphGC& gc) const;
+#endif
 
 public:
     // Constructor

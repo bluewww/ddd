@@ -29,6 +29,14 @@
 #ifndef _DDD_ReadLineAgent_h
 #define _DDD_ReadLineAgent_h
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#if !defined(IF_XM)
+#include <GUI/Widget.h>
+#endif
+
 #include "LiterateA.h"
 
 class ReadLineAgent: public LiterateAgent {
@@ -50,6 +58,7 @@ public:
     // Prompt with PROMPT_STRING
     virtual void prompt(const string& prompt_string);
 
+#if defined(IF_XM)
     // The only constructor available: reading from stdin
     ReadLineAgent(XtAppContext app_context, FILE *in = stdin,
 		  FILE *out = stdout, FILE *err = 0,
@@ -58,6 +67,16 @@ public:
     {
 	assert(in == stdin);
     }
+#else
+    // The only constructor available: reading from stdin
+    ReadLineAgent(GUI::Main *app_context, FILE *in = stdin,
+		  FILE *out = stdout, FILE *err = 0,
+		  unsigned nTypes = LiterateAgent_NTypes)
+	: LiterateAgent(app_context, in, out, err, nTypes)
+    {
+	assert(in == stdin);
+    }
+#endif
 
     // Duplicator
     ReadLineAgent(const ReadLineAgent& agent)

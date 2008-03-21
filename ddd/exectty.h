@@ -70,8 +70,13 @@ extern void reset_exec_tty();
 // TTY pid (0: not initialized, -1: failed)
 extern pid_t exec_tty_pid();
 
+#if defined(IF_XM)
 // TTY window
 extern Window exec_tty_window();
+#else
+// TTY window
+extern GUI::RefPtr<GUI::XWindow> exec_tty_window();
+#endif
 
 // Set TTY title
 extern void set_tty_from_gdb(const string& text);

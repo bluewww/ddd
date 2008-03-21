@@ -66,7 +66,7 @@ char DataDisp_rcsid[] =
 #include "AliasGE.h"
 #include "AppData.h"		// Constructors
 #include "ArgField.h"
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include "ComboBox.h"
 #endif
 #include "Command.h"
@@ -83,19 +83,19 @@ char DataDisp_rcsid[] =
 #include "MString.h"
 #include "MakeMenu.h"
 #include "Map.h"
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include "PannedGE.h"
 #endif
 #include "PosBuffer.h"
 #include "ProgressM.h"
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include "ScrolledGE.h"
 #endif
 #include "SmartC.h"
 #include "StringBox.h"		// StringBox::fontTable
 #include "StringMap.h"
 #include "TagBox.h"
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include "TextSetS.h"
 #endif
 #include "TimeOut.h"
@@ -109,7 +109,7 @@ char DataDisp_rcsid[] =
 #include "charsets.h"
 #include "cmdtty.h"
 #include "comm-manag.h"
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include "converters.h"
 #endif
 #include "cook.h"
@@ -135,7 +135,7 @@ char DataDisp_rcsid[] =
 #include "wm.h"
 
 // Motif includes
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include <Xm/List.h>
 #include <Xm/MessageB.h>
 #include <Xm/ToggleB.h>
@@ -318,8 +318,9 @@ const int DataDisp::shortcut_items = 20;
 	    sigc::ptr_fun(DataDisp::dependentCB),			\
 	    0, 0),							\
     MMSep,								\
-    MENTRYL("edit", "Edit Menu...", MMPush,				\
-	    BIND_0(PTR_FUN(dddEditShortcutsCB)),			\
+    GENTRYL("edit", "Edit Menu...", MMPush,				\
+	    BIND(dddEditShortcutsCB, 0),				\
+	    sigc::ptr_fun(dddEditShortcutsCB),				\
 	    0, 0)
 
 
@@ -631,16 +632,18 @@ GUI::Widget *DataDisp::last_origin            = 0;
 ArgField    *DataDisp::graph_arg              = 0;
 GUI::Container *DataDisp::graph_cmd_w            = 0;
 #endif
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 ENTRY_P      DataDisp::graph_selection_w      = 0;
 #endif
-DIALOG_P     DataDisp::edit_displays_dialog_w = 0;
-TREEVIEW_P   DataDisp::display_list_w         = 0;
 #if defined(IF_XM)
+Widget       DataDisp::edit_displays_dialog_w = 0;
+Widget       DataDisp::display_list_w         = 0;
 Widget       DataDisp::graph_popup_w          = 0;
 Widget       DataDisp::node_popup_w           = 0;
 Widget       DataDisp::shortcut_popup_w       = 0;
 #else
+GUI::Dialog *DataDisp::edit_displays_dialog_w = 0;
+GUI::ListView *DataDisp::display_list_w         = 0;
 GUI::PopupMenu *DataDisp::graph_popup_w          = 0;
 GUI::PopupMenu *DataDisp::node_popup_w           = 0;
 GUI::PopupMenu *DataDisp::shortcut_popup_w       = 0;
@@ -660,42 +663,6 @@ XtIntervalId DataDisp::refresh_graph_edit_timer = NO_TIMER;
 // Array of shortcut expressions and their labels
 StringArray DataDisp::shortcut_exprs;
 StringArray DataDisp::shortcut_labels;
-
-#if !defined(IF_MOTIF)
-
-#include <gtkmm/treemodelcolumn.h>
-
-// Models for the ListStore for Displays
-class DisplayListColumns: public Gtk::TreeModel::ColumnRecord
-{
-public:
-  Gtk::TreeModelColumn<int> num;
-  Gtk::TreeModelColumn<const char *> expression;
-  Gtk::TreeModelColumn<bool> state;
-  Gtk::TreeModelColumn<const char *> scope;
-  Gtk::TreeModelColumn<void *> address;
-  DisplayListColumns()
-  {
-    add(num);
-    add(expression);
-    add(state);
-    add(scope);
-    add(address);
-  }
-};
-
-static DisplayListColumns *
-display_list_columns_p(void)
-{
-    static DisplayListColumns *dlc = NULL;
-    if (!dlc)
-	dlc = new DisplayListColumns;
-    return dlc;
-}
-
-#define display_list_columns (*display_list_columns_p())
-
-#endif
 
 //----------------------------------------------------------------------------
 // Helpers
@@ -3158,7 +3125,7 @@ void DataDisp::refresh_graph_edit(bool silent)
     // Save current graph editor state
     static GraphEditLayoutState state;
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     XtVaGetValues(graph_edit,
 		  XtNautoLayout, &state.autoLayout,
 		  XtNsnapToGrid, &state.snapToGrid,
@@ -3170,7 +3137,7 @@ void DataDisp::refresh_graph_edit(bool silent)
 
     if (refresh_graph_edit_timer == 0)
     {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	refresh_graph_edit_timer = 
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(graph_edit),
 			    0, RefreshGraphEditCB, XtPointer(&state));
@@ -3193,7 +3160,7 @@ TIMEOUT_RETURN_TYPE DataDisp::RefreshGraphEditCB(TM_ALIST_1(XtP(GraphEditLayoutS
 
     static GraphEditLayoutState state;
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     XtVaGetValues(graph_edit,
 		  XtNautoLayout, &state.autoLayout,
 		  XtNsnapToGrid, &state.snapToGrid,
@@ -3207,7 +3174,7 @@ TIMEOUT_RETURN_TYPE DataDisp::RefreshGraphEditCB(TM_ALIST_1(XtP(GraphEditLayoutS
 
     static Graph *dummy = new Graph;
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     XtVaSetValues(graph_edit,
 		  XtNautoLayout, old_state.autoLayout,
 		  XtNsnapToGrid, old_state.snapToGrid,
@@ -3229,7 +3196,7 @@ TIMEOUT_RETURN_TYPE DataDisp::RefreshGraphEditCB(TM_ALIST_1(XtP(GraphEditLayoutS
 //
 inline int DataDisp::getDispNrAtPoint (const BoxPoint& point)
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     GraphNode* gn = graphEditGetNodeAtPoint (graph_edit, point);
 #else
     GraphNode* gn = graph_edit->graphEditGetNodeAtPoint(point);
@@ -3278,7 +3245,7 @@ void DataDisp::SelectionLostCB(CB_ALIST_NULL)
 	{
 	    gn->selected() = false;
 	    changed = true;
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	    graphEditRedrawNode(graph_edit, gn);
 #else
 	    graph_edit->graphEditRedrawNode(gn);
@@ -3749,7 +3716,7 @@ void DataDisp::set_args(const BoxPoint& p, SelectionMode mode)
 		// so toggle the entire node.
 		disp_node->selected() = false;
 		disp_node->select(0);
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 		graphEditRedrawNode(graph_edit, disp_node);
 #else
 		graph_edit->graphEditRedrawNode(disp_node);
@@ -3762,7 +3729,7 @@ void DataDisp::set_args(const BoxPoint& p, SelectionMode mode)
 	    if (disp_value != disp_node->selected_value())
 	    {
 		disp_node->select(disp_value);
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 		graphEditRedrawNode(graph_edit, disp_node);
 #else
 		graph_edit->graphEditRedrawNode(disp_node);
@@ -3796,7 +3763,7 @@ void DataDisp::set_args(const BoxPoint& p, SelectionMode mode)
 		dn->select(0);
 
 		if (redraw) {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 		    graphEditRedrawNode(graph_edit, dn);
 #else
 		    graph_edit->graphEditRedrawNode(dn);
@@ -3826,7 +3793,7 @@ void DataDisp::set_args(const BoxPoint& p, SelectionMode mode)
 #else
 	GUI::CheckButton *button = static_cast<GUI::CheckButton *>(theme_menu[i].widget);
 #endif
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	XtVaSetValues(button, XmNuserData, theme.chars(), XtPointer(0));
 #else
 	button->property_user_data() = (void *)theme.chars();
@@ -3980,7 +3947,7 @@ void DataDisp::refresh_args(bool update_arg)
 
     if (refresh_args_timer == NO_TIMER)
     {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	refresh_args_timer = 
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(graph_edit),
 			    0, RefreshArgsCB, XtPointer(graph_edit));
@@ -4038,7 +4005,7 @@ void DataDisp::refresh_args(bool update_arg)
 
 	if (dn->selected() != old_selected || dn->highlight() != old_highlight)
 	{
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	    graphEditRedrawNode(graph_edit, dn);
 #else
 	    graph_edit->graphEditRedrawNode(dn);
@@ -4065,7 +4032,7 @@ TIMEOUT_RETURN_TYPE DataDisp::RefreshArgsCB(TM_ALIST_NULL)
 
 	    dn->select(0);
 	    if (redraw) {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 		graphEditRedrawNode(graph_edit, dn);
 #else
 		graph_edit->graphEditRedrawNode(dn);
@@ -4346,7 +4313,7 @@ TIMEOUT_RETURN_TYPE DataDisp::RefreshArgsCB(TM_ALIST_NULL)
     // LOSE_SELECTION, we make sure the associated callbacks return
     // immediately.
     lose_selection = false;
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     XmTextSetString(graph_selection_w, XMST(cmd.chars()));
 #else
     static int errcnt = 0;
@@ -4355,14 +4322,14 @@ TIMEOUT_RETURN_TYPE DataDisp::RefreshArgsCB(TM_ALIST_NULL)
 #endif
     lose_selection = true;
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     Time tm = XtLastTimestampProcessed(XtDisplay(graph_selection_w));
 #endif
 
     if (cmd.empty())
     {
 	// Nothing selected - clear selection explicitly
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	XmTextClearSelection(graph_selection_w, tm);
 #else
 #ifdef NAG_ME
@@ -4373,7 +4340,7 @@ TIMEOUT_RETURN_TYPE DataDisp::RefreshArgsCB(TM_ALIST_NULL)
     else
     {
 	// Own the selection
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	TextSetSelection(graph_selection_w, 
 			 0, XmTextGetLastPosition(graph_selection_w), tm);
 #else
@@ -4530,7 +4497,7 @@ void DataDisp::get_node_state(std::ostream& os, DispNode *dn, bool include_posit
 		BoxPoint offset = 
 		    (dn->box()->size() - empty_cluster.box()->size()) / 2;
 
-#if defined(IF_MOTIF)		    
+#if defined(IF_XM)		    
 		pos = graphEditFinalPosition(graph_edit, pos - offset);
 #else
 		pos = graph_edit->final_position(pos - offset);
@@ -4723,7 +4690,7 @@ void DataDisp::UpdateGraphEditorSelectionCB(CB_ALIST_NULL)
 	if (select != dn->selected())
 	{
 	    dn->selected() = select;
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	    graphEditRedrawNode(graph_edit, dn);
 #else
 	    graph_edit->graphEditRedrawNode(dn);
@@ -4742,7 +4709,7 @@ void DataDisp::UpdateGraphEditorSelectionCB(CB_ALIST_NULL)
 		    if (node->selected() != dn->selected())
 		    {
 			node->selected() = dn->selected();
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 			graphEditRedrawNode(graph_edit, node);
 #else
 			graph_edit->graphEditRedrawNode(node);
@@ -4760,7 +4727,7 @@ void DataDisp::UpdateGraphEditorSelectionCB(CB_ALIST_NULL)
 	if (is_cluster(dn) && dn->selected_value() != 0)
 	{
 	    dn->select();
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	    graphEditRedrawNode(graph_edit, dn);
 #else
 	    graph_edit->graphEditRedrawNode(dn);
@@ -4823,7 +4790,7 @@ void DataDisp::UpdateGraphEditorSelectionCB(CB_ALIST_NULL)
 	    }
 	}
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	graphEditRedrawNode(graph_edit, cluster);
 #else
 	graph_edit->graphEditRedrawNode(cluster);
@@ -4853,7 +4820,7 @@ void DataDisp::UpdateDisplayEditorSelectionCB(CB_ALIST_NULL)
 	if (node->selected() != dn->selected())
 	{
 	    dn->selected() = node->selected();
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	    graphEditRedrawNode(graph_edit, dn);
 #else
 	    graph_edit->graphEditRedrawNode(dn);
@@ -5051,7 +5018,7 @@ void DataDisp::new_displaySQ (const string& display_expression,
 
 	// As soon as the VSL library will be completely read, we
 	// shall enter the main DDD event loop and get called again.
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	XtAppAddTimeOut(XtWidgetToApplicationContext(graph_edit),
 			100, again_new_displaySQ, 
 			new NewDisplayInfo(info));
@@ -5207,7 +5174,7 @@ void DataDisp::new_displaySQ (const string& display_expression,
 
 	// As soon as the VSL library will be completely read, we
 	// shall enter the main DDD event loop and get called again.
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	XtAppAddTimeOut(XtWidgetToApplicationContext(graph_edit),
 			100, again_new_displaySQ, 
 			new NewDisplayInfo(info));
@@ -5558,7 +5525,7 @@ void DataDisp::refresh_builtin_user_displays()
 	}
 
 	dn->refresh();
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	graphEditRedrawNode(graph_edit, dn);
 #else
 	graph_edit->graphEditRedrawNode(dn);
@@ -7410,7 +7377,7 @@ void DataDisp::refresh_display_list(bool silent)
 
     // We refresh the list as soon as we return from the callback
     // (LessTif is sensitive about this)
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     XtAppAddTimeOut(XtWidgetToApplicationContext(display_list_w),
 		    0, RefreshDisplayListCB,
 		    (silent ? XtPointer(1):XtPointer(0)) );
@@ -7675,7 +7642,7 @@ private:
     SetInfo& operator=(const SetInfo&);
 };
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 void DataDisp::DeleteSetInfoCB(Widget, XtPointer client_data, XtPointer)
 #else
 void *DataDisp::DeleteSetInfoCB(void *client_data)
@@ -7874,7 +7841,7 @@ void DataDisp::SetDone(const string& complete_answer, void *qu_data)
 	return;			// Bad value - keep dialog open
 
     // All done - pop down dialog
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     XtDestroyWidget(info->dialog);
 #else
 #ifdef NAG_ME
@@ -7884,7 +7851,7 @@ void DataDisp::SetDone(const string& complete_answer, void *qu_data)
 #endif
 }
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 void DataDisp::setDCB(Widget, XtPointer client_data, XtPointer call_data)
 #else
 void DataDisp::setDCB(SetInfo *client_data, int apply)
@@ -7895,12 +7862,12 @@ void DataDisp::setDCB(SetInfo *client_data, int apply)
     if (info->running)
 	return;			// Already running with a value
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     XmSelectionBoxCallbackStruct *cbs = 
 	(XmSelectionBoxCallbackStruct *)call_data;
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     String value_s = XmTextFieldGetString(info->text);
     string value(value_s);
     XtFree(value_s);
@@ -7910,7 +7877,7 @@ void DataDisp::setDCB(SetInfo *client_data, int apply)
 #endif
 
     Command c(gdb->assign_command(info->name, value), last_origin);
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     if (cbs->reason != XmCR_APPLY)
 #else
     if (!apply)
@@ -8244,7 +8211,7 @@ void DataDisp::refresh_addr(DispNode *dn)
 {
     if (refresh_addr_timer != NO_TIMER)
     {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	XtRemoveTimeOut(refresh_addr_timer);
 #else
 	refresh_addr_timer.disconnect();
@@ -8373,7 +8340,7 @@ bool DataDisp::RefreshAddr(DispNode *dn, bool in_cb)
 
 TIMEOUT_RETURN_TYPE DataDisp::RefreshAddrCB(TM_ALIST_1(XtP(DispNode *) client_data))
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     refresh_addr_timer = NO_TIMER;
 #endif
 
@@ -8426,7 +8393,7 @@ void DataDisp::process_addr (StringArray& answers)
     }
 
     // Re-enable redisplay
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     graphEditEnableRedisplay(graph_edit, True);
 #else
     graph_edit->enable_redisplay(true);
@@ -8679,7 +8646,7 @@ void DataDisp::PreLayoutCB(CB_ALIST_1(GRAPH_EDIT_P w))
     if (detect_aliases)
     {
 	// Don't redisplay while or after layouting
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	graphEditEnableRedisplay(w, False);
 #else
 	w->enable_redisplay(false);
@@ -8703,7 +8670,7 @@ void DataDisp::PostLayoutCB(CB_ALIST_1(GRAPH_EDIT_P w))
 	check_aliases();
 
 	// Okay - we can redisplay now
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	graphEditEnableRedisplay(w, True);
 #else
 	w->enable_redisplay(true);
@@ -8766,7 +8733,7 @@ bool DataDisp::bump(RegionGraphNode *node, const BoxSize& newSize)
     if (dn != 0 && (!dn->active() || dn->clustered()))
 	return true;		// Clustered or inactive
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     const GraphGC& gc = graphEditGetGraphGC(graph_edit);
 #else
     const GraphGC& gc = graph_edit->get_graph_GC();
@@ -8948,7 +8915,7 @@ DataDisp::DataDisp(Widget parent, Widget& data_buttons_w)
 
 DataDisp::DataDisp(GUI::Container *parent, GUI::WidgetPtr<GUI::Container> &data_buttons_w)
 {
-    XtAppContext app_context = XtWidgetToApplicationContext(parent);
+    GUI::Main *app_context = parent->get_main();
 
 #ifdef NAG_ME
 #warning Converters not implemented.
@@ -8990,7 +8957,7 @@ DataDisp::DataDisp(GUI::Container *parent, GUI::WidgetPtr<GUI::Container> &data_
 	    make_buttons(parent, "data_buttons", app_data.data_buttons);
 
     // Create graph editor
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     Arg args[10];
     int arg = 0;
     XtSetArg (args[arg], ARGSTR(XtNgraph), (Graph *)disp_graph); arg++;
@@ -9013,7 +8980,7 @@ DataDisp::DataDisp(GUI::Container *parent, GUI::WidgetPtr<GUI::Container> &data_
 
     set_last_origin(graph_edit);
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     // Add actions
     XtAppAddActions (app_context, actions, XtNumber (actions));
 #else
@@ -9024,7 +8991,7 @@ DataDisp::DataDisp(GUI::Container *parent, GUI::WidgetPtr<GUI::Container> &data_
     XtManageChild (graph_edit);
 
     // Create buttons
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     registerOwnConverters();
 #else
 #ifdef NAG_ME
@@ -9041,7 +9008,7 @@ DataDisp::DataDisp(GUI::Container *parent, GUI::WidgetPtr<GUI::Container> &data_
 
     if (arg_label != 0)
     {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	XtAddCallback(arg_label, XmNactivateCallback,
 		      SelectionLostCB, XtPointer(0));
 	XtAddCallback(arg_label, XmNactivateCallback, 
@@ -9053,7 +9020,7 @@ DataDisp::DataDisp(GUI::Container *parent, GUI::WidgetPtr<GUI::Container> &data_
     }
 
     // Create (unmanaged) selection widget
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     graph_selection_w =
 	verify(XmCreateText(graph_cmd_w, XMST("graph_selection"), 
 			    ArgList(0), 0));
@@ -9071,15 +9038,14 @@ DataDisp::DataDisp(GUI::Container *parent, GUI::WidgetPtr<GUI::Container> &data_
 
 #endif
 
+#if defined(IF_XM)
+
 void DataDisp::create_shells()
 {
-#if defined(IF_MOTIF)
     Arg args[10];
     Cardinal arg = 0;
-#endif
 
     // Create menus
-#if defined(IF_XM)
     graph_popup_w = 
 	MMcreatePopupMenu(graph_edit, "graph_popup", graph_popup);
     InstallButtonTips(graph_popup_w);
@@ -9091,37 +9057,18 @@ void DataDisp::create_shells()
     shortcut_popup_w = 
 	MMcreatePopupMenu(graph_edit, "shortcut_popup", shortcut_popup1);
     InstallButtonTips(shortcut_popup_w);
-#else
-    graph_popup_w = 
-	MMcreatePopupMenu(graph_edit, "graph_popup", graph_popup);
-    InstallButtonTips1(graph_popup_w);
-
-    node_popup_w = 
-	MMcreatePopupMenu(graph_edit, "node_popup", node_popup);
-    InstallButtonTips1(node_popup_w);
-
-    shortcut_popup_w = 
-	MMcreatePopupMenu(graph_edit, "shortcut_popup", shortcut_popup1);
-    InstallButtonTips1(shortcut_popup_w);
-#endif
 
     disp_graph->callHandlers();
 
     // Create display editor
-#if defined(IF_MOTIF)
     arg = 0;
     XtSetArg(args[arg], XmNvisibleItemCount, 0); arg++;
     edit_displays_dialog_w =
 	verify(createTopLevelSelectionDialog(find_shell(graph_edit), 
 					     "edit_displays_dialog", 
 					     args, arg));
-#else
-    edit_displays_dialog_w =
-	new Gtk::Dialog(XMST("edit_displays_dialog"), *find_shell(graph_edit));
-#endif
     Delay::register_shell(edit_displays_dialog_w);
 
-#if defined(IF_MOTIF)
     XtUnmanageChild(XmSelectionBoxGetChild(edit_displays_dialog_w,
 					   XmDIALOG_TEXT));
     XtUnmanageChild(XmSelectionBoxGetChild(edit_displays_dialog_w,
@@ -9135,18 +9082,6 @@ void DataDisp::create_shells()
 
     display_list_w = 
 	XmSelectionBoxGetChild(edit_displays_dialog_w, XmDIALOG_LIST);
-#else
-    Glib::RefPtr<Gtk::ListStore> display_list_store = Gtk::ListStore::create(display_list_columns);
-    display_list_w = 
-	new Gtk::TreeView(display_list_store);
-
-    display_list_w->append_column("Num", display_list_columns.num);
-    display_list_w->append_column("Expression", display_list_columns.expression);
-    display_list_w->append_column("State", display_list_columns.state);
-    display_list_w->append_column("Scope", display_list_columns.scope);
-    display_list_w->append_column("Address", display_list_columns.address);
-
-#endif
 
     if (app_data.flat_dialog_buttons)
     {
@@ -9159,7 +9094,6 @@ void DataDisp::create_shells()
 
     Widget buttons = verify(MMcreateWorkArea(edit_displays_dialog_w, 
 					     "buttons", display_area));
-#if defined(IF_MOTIF)
     XtVaSetValues(buttons,
 		  XmNmarginWidth,     0, 
 		  XmNmarginHeight,    0, 
@@ -9167,18 +9101,12 @@ void DataDisp::create_shells()
 		  XmNshadowThickness, 0, 
 		  XmNspacing,         0,
 		  XtPointer(0));
-#endif
 
     MMaddCallbacks (display_area);
-#if defined(IF_XM)
     MMaddHelpCallback(display_area, ImmediateHelpCB);
-#else
-    MMaddHelpCallback(display_area, sigc::ptr_fun(ImmediateHelpCB1));
-#endif
     register_menu_shell(display_area);
 
     // Add widget callbacks
-#if defined(IF_MOTIF)
     XtAddCallback(graph_edit, XtNpreSelectionCallback,
 		  DoubleClickCB, XtPointer(this));
     XtAddCallback(graph_edit, XtNselectionChangedCallback,
@@ -9189,17 +9117,9 @@ void DataDisp::create_shells()
 		  PreLayoutCB, XtPointer(this));
     XtAddCallback(graph_edit, XtNpostLayoutCallback,
 		  PostLayoutCB, XtPointer(this));
-#else
-    graph_edit->signal_pre_selection().connect(sigc::bind<0>(PTR_FUN(&DataDisp::DoubleClickCB), graph_edit));
-    graph_edit->signal_selection_changed().connect(sigc::hide(PTR_FUN(&DataDisp::UpdateDisplayEditorSelectionCB)));
-    graph_edit->signal_compare_nodes().connect(PTR_FUN(&DataDisp::CompareNodesCB));
-    graph_edit->signal_pre_layout().connect(sigc::hide(sigc::bind<0>(PTR_FUN(&DataDisp::PreLayoutCB), graph_edit)));
-    graph_edit->signal_post_layout().connect(sigc::hide(sigc::bind<0>(PTR_FUN(&DataDisp::PostLayoutCB), graph_edit)));
-#endif
 
     if (display_list_w != 0)
     {
-#if defined(IF_MOTIF)
 	XtAddCallback(display_list_w,
 		      XmNsingleSelectionCallback,
 		      UpdateGraphEditorSelectionCB,
@@ -9216,14 +9136,10 @@ void DataDisp::create_shells()
 		      XmNbrowseSelectionCallback,
 		      UpdateGraphEditorSelectionCB,
 		      0);
-#else
-	display_list_w->get_selection()->signal_changed().connect(PTR_FUN(UpdateGraphEditorSelectionCB));
-#endif
     }
 
     if (edit_displays_dialog_w != 0)
     {
-#if defined(IF_MOTIF)
 	XtAddCallback(edit_displays_dialog_w,
 		      XmNokCallback,
 		      UnmanageThisCB1,
@@ -9232,10 +9148,81 @@ void DataDisp::create_shells()
 		      XmNhelpCallback,
 		      ImmediateHelpCB,
 		      0);
+    }
+
+    // Add graph callbacks
+    RegionGraphNode::ResizeCB = bump;
+
+    // Reset argument field and display editor buttons
+    set_args();
+}
+
 #else
+
+void DataDisp::create_shells()
+{
+
+    // Create menus
+    graph_popup_w = 
+	MMcreatePopupMenu(graph_edit, "graph_popup", graph_popup);
+    InstallButtonTips1(graph_popup_w);
+
+    node_popup_w = 
+	MMcreatePopupMenu(graph_edit, "node_popup", node_popup);
+    InstallButtonTips1(node_popup_w);
+
+    shortcut_popup_w = 
+	MMcreatePopupMenu(graph_edit, "shortcut_popup", shortcut_popup1);
+    InstallButtonTips1(shortcut_popup_w);
+
+    disp_graph->callHandlers();
+
+    // Create display editor
+    edit_displays_dialog_w =
+	new GUI::Dialog(*find_shell1(graph_edit), "edit_displays_dialog");
+    Delay::register_shell(edit_displays_dialog_w);
+
+    std::vector<GUI::String> headers;
+    headers.push_back(GUI::String("Num"));
+    headers.push_back(GUI::String("Expression"));
+    headers.push_back(GUI::String("State"));
+    headers.push_back(GUI::String("Scope"));
+    headers.push_back(GUI::String("Address"));
+    display_list_w = 
+	new GUI::ListView(*edit_displays_dialog_w, "list", headers);
+
+    if (app_data.flat_dialog_buttons)
+    {
+	for (MMDesc *item = display_area; item != 0 && item->name; item++)
+	{
+	    if ((item->type & MMTypeMask) == MMPush)
+		item->type = (MMFlatPush | (item->type & ~MMTypeMask));
+	}
+    }
+
+    Widget buttons = verify(MMcreateWorkArea(edit_displays_dialog_w, 
+					     "buttons", display_area));
+
+    MMaddCallbacks (display_area);
+    MMaddHelpCallback(display_area, sigc::ptr_fun(ImmediateHelpCB1));
+    register_menu_shell(display_area);
+
+    // Add widget callbacks
+    graph_edit->signal_pre_selection().connect(sigc::bind<0>(PTR_FUN(&DataDisp::DoubleClickCB), graph_edit));
+    graph_edit->signal_selection_changed().connect(sigc::hide(PTR_FUN(&DataDisp::UpdateDisplayEditorSelectionCB)));
+    graph_edit->signal_compare_nodes().connect(PTR_FUN(&DataDisp::CompareNodesCB));
+    graph_edit->signal_pre_layout().connect(sigc::hide(sigc::bind<0>(PTR_FUN(&DataDisp::PreLayoutCB), graph_edit)));
+    graph_edit->signal_post_layout().connect(sigc::hide(sigc::bind<0>(PTR_FUN(&DataDisp::PostLayoutCB), graph_edit)));
+
+    if (display_list_w != 0)
+    {
+	display_list_w->get_selection()->signal_changed().connect(PTR_FUN(UpdateGraphEditorSelectionCB));
+    }
+
+    if (edit_displays_dialog_w != 0)
+    {
 #ifdef NAG_ME
 #warning edit_displays_dialog_w OK button callback.
-#endif
 #endif
     }
 
@@ -9245,3 +9232,6 @@ void DataDisp::create_shells()
     // Reset argument field and display editor buttons
     set_args();
 }
+
+#endif
+

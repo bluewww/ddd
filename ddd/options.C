@@ -32,7 +32,9 @@ char options_rcsid[] =
 
 #include "options.h"
 
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif
 
 #if HAVE_PTRACE
 extern "C" {
@@ -65,9 +67,9 @@ extern int ptrace(int request, int pid, int addr, int data);
 #include "filetype.h"
 #include "frame.h"
 #include "gdbinit.h"
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 #include "plotter.h"
-#endif // IF_MOTIF
+#endif
 #include "post.h"
 #include "resources.h"
 #include "session.h"
@@ -79,7 +81,7 @@ extern int ptrace(int request, int pid, int addr, int data);
 #include "windows.h"
 #include "wm.h"
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include <Xm/Xm.h>
 #include <Xm/Text.h>
 #include <Xm/TextF.h>
@@ -90,7 +92,7 @@ extern int ptrace(int request, int pid, int addr, int data);
 #include <Xm/MessageB.h>
 #include <Xm/PanedW.h>
 #endif
-#if !defined(IF_MOTIF)
+#if !defined(IF_XM)
 #include <libxml/tree.h>
 #include <gtkmm/paned.h>
 #endif
@@ -1108,14 +1110,14 @@ void dddToggleCheckGrabsCB (GUI::CheckButton *w)
 
 void dddToggleSaveHistoryOnExitCB (CB_ARG_LIST_TOGGLE(w, call_data))
 {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.save_history_on_exit = info->set;
-#else // NOT IF_MOTIF
+#else
     app_data.save_history_on_exit = get_active(w);
-#endif // IF_MOTIF
+#endif
 
     if (app_data.save_history_on_exit)
 	set_status("History will be saved when " DDD_NAME " exits.");
@@ -1195,11 +1197,11 @@ void dddToggleWarnIfLockedCB (GUI::CheckButton *w)
 
 #endif
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 void dddSetBuiltinPlotWindowCB (CB_ARG_LIST_2(client_data))
-#else // NOT IF_MOTIF
+#else
 void dddSetBuiltinPlotWindowCB (long client_data)
-#endif // IF_MOTIF
+#endif
 {
     if ((int)(long)client_data)
 	app_data.plot_term_type = "xlib";
@@ -1222,25 +1224,25 @@ void dddSetBuiltinPlotWindowCB (long client_data)
 	set_status("Next plot will be done in an unknown place.");
     }
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     clear_plot_window_cache();
-#else // NOT IF_MOTIF
+#else
     static int errcnt = 0;
     if (complain && !errcnt++) std::cerr << "clear_plot_window_cache()?\n";
-#endif // IF_MOTIF
+#endif
     update_options(NO_UPDATE);
 }
 
 void dddToggleButtonTipsCB (CB_ARG_LIST_TOGGLE(w, call_data))
 {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.button_tips = info->set;
-#else // NOT IF_MOTIF
+#else
     app_data.button_tips = get_active(w);
-#endif // IF_MOTIF
+#endif
 
     if (app_data.button_tips)
 	set_status("Button tips enabled.");
@@ -1252,14 +1254,14 @@ void dddToggleButtonTipsCB (CB_ARG_LIST_TOGGLE(w, call_data))
 
 void dddToggleValueTipsCB (CB_ARG_LIST_TOGGLE(w, call_data))
 {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.value_tips = info->set;
-#else // NOT IF_MOTIF
+#else
     app_data.value_tips = get_active(w);
-#endif // IF_MOTIF
+#endif
 
     if (app_data.value_tips)
 	set_status("Value tips enabled.");
@@ -1271,14 +1273,14 @@ void dddToggleValueTipsCB (CB_ARG_LIST_TOGGLE(w, call_data))
 
 void dddToggleButtonDocsCB (CB_ARG_LIST_TOGGLE(w, call_data))
 {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.button_docs = info->set;
-#else // NOT IF_MOTIF
+#else
     app_data.button_docs = get_active(w);
-#endif // IF_MOTIF
+#endif
 
     if (app_data.button_docs)
 	set_status("Button docs enabled.");
@@ -1290,14 +1292,14 @@ void dddToggleButtonDocsCB (CB_ARG_LIST_TOGGLE(w, call_data))
 
 void dddToggleValueDocsCB (CB_ARG_LIST_TOGGLE(w, call_data))
 {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.value_docs = info->set;
-#else // NOT IF_MOTIF
+#else
     app_data.value_docs = get_active(w);
-#endif // IF_MOTIF
+#endif
 
     if (app_data.value_docs)
 	set_status("Value docs enabled.");
@@ -1471,7 +1473,7 @@ void dddSetToolBarCB (CB_ARG_LIST_12(w, client_data))
 
 void dddSetKeyboardFocusPolicyCB (CB_ARG_LIST_12(w, client_data))
 {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     unsigned char policy = (unsigned char)(int)(long)client_data;
 
     if (policy != XmEXPLICIT && policy != XmPOINTER)
@@ -1535,9 +1537,9 @@ void dddSetKeyboardFocusPolicyCB (CB_ARG_LIST_12(w, client_data))
     }
 
     update_options(NO_UPDATE);
-#else // NOT IF_MOTIF
+#else
     std::cerr << "Keyboard focus policy not implemented\n";
-#endif // IF_MOTIF
+#endif
 }
 
 void dddSetPannerCB (CB_ARG_LIST_12(w, client_data))
@@ -2617,17 +2619,17 @@ static Boolean done_if_idle(XtPointer data)
 
 static void done(const string&, void *data)
 {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     XtAppAddWorkProc(XtWidgetToApplicationContext(command_shell),
 		     done_if_idle, data);
-#else // NOT IF_MOTIF
+#else
     Glib::signal_idle().connect(sigc::bind(PTR_FUN(done_if_idle), data));
-#endif // IF_MOTIF
+#endif
 }
 
 static void reload_options()
 {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     static string session;
     session = app_data.session;
 
@@ -2725,11 +2727,11 @@ static void reload_options()
     c.prompt   = false;
     c.check    = true;
     gdb_command(c);
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning reload_options not implemented.
 #endif
-#endif // IF_MOTIF
+#endif
 }
 
 static void ReloadOptionsCB(CB_ALIST_NULL)
@@ -2743,50 +2745,43 @@ static void DontReloadOptionsCB(CB_ALIST_NULL)
     options_file_has_changed(ACKNOWLEDGE, true);
 }
 
+#if defined(IF_XM)
 // Pending timer
-static XtIntervalId check_options_idle = NO_TIMER;
-static XtIntervalId check_options_timer = NO_TIMER;
+static XtIntervalId check_options_idle = 0;
+static XtIntervalId check_options_timer = 0;
+#else
+// Pending timer
+static sigc::connection check_options_idle;
+static sigc::connection check_options_timer;
+#endif
 
-TIMEOUT_RETURN_TYPE CheckOptionsFileCB(TM_ALIST_NULL)
+#if defined(IF_XM)
+
+static void CheckOptionsFileCB(XtPointer, XtIntervalId *)
 {
-#ifdef IF_MOTIF
-    check_options_timer = NO_TIMER;
-#endif // IF_MOTIF
+    check_options_timer = 0;
 
     if (options_file_has_changed(ACKNOWLEDGE))
     {
 	// Options file has changed since last acknowledgement -- offer reload
-	static DIALOG_P dialog = 0;
+	static Widget dialog = 0;
 
 	if (dialog == 0)
 	{
-#ifdef IF_MOTIF
 	    dialog = verify(XmCreateQuestionDialog(
 				find_shell(),
 				XMST("reload_options_dialog"),
 				0, 0));
-#else // NOT IF_MOTIF
-	    dialog = new Gtk::Dialog(XMST("reload_options_dialog"), *find_shell());
-#endif // IF_MOTIF
 	    Delay::register_shell(dialog);
-#ifdef IF_MOTIF
 	    XtAddCallback(dialog, XmNokCallback,     ReloadOptionsCB, 0);
 	    XtAddCallback(dialog, XmNcancelCallback, DontReloadOptionsCB, 0);
 	    XtAddCallback(dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
-#else // NOT IF_MOTIF
-	    Gtk::Button *button;
-	    button = dialog->add_button(XMST("OK"), 0);
-	    button->signal_clicked().connect(PTR_FUN(ReloadOptionsCB));
-	    button = dialog->add_button(XMST("Cancel"), 0);
-	    button->signal_clicked().connect(PTR_FUN(DontReloadOptionsCB));
-#endif // IF_MOTIF
 	}
 
 	if (!XtIsManaged(dialog))
 	    manage_and_raise(dialog);
     }
 
-#ifdef IF_MOTIF    
     if (app_data.check_options > 0)
     {
 	// Try again later
@@ -2795,33 +2790,58 @@ TIMEOUT_RETURN_TYPE CheckOptionsFileCB(TM_ALIST_NULL)
 			    app_data.check_options * 1000,
 			    CheckOptionsFileCB, NULL);
     }
-#else // NOT IF_MOTIF
+}
+
+#else
+
+static bool CheckOptionsFileCB(void)
+{
+    if (options_file_has_changed(ACKNOWLEDGE))
+    {
+	// Options file has changed since last acknowledgement -- offer reload
+	static GUI::Dialog *dialog = 0;
+
+	if (dialog == 0)
+	{
+	    dialog = new GUI::Dialog(*find_shell1(), "reload_options_dialog");
+	    Delay::register_shell(dialog);
+	    GUI::Button *button;
+	    button = dialog->add_button("OK");
+	    button->signal_clicked().connect(sigc::ptr_fun(ReloadOptionsCB));
+	    button = dialog->add_button("Cancel");
+	    button->signal_clicked().connect(sigc::ptr_fun(DontReloadOptionsCB));
+	}
+
+	if (!dialog->is_visible())
+	    manage_and_raise(dialog);
+    }
+
     if (app_data.check_options > 0) {
 	// First entry is on idle callback.  Subsequent entries are on timer.
-	if (check_options_idle != NO_TIMER) {
+	if (check_options_idle.connected()) {
 	    check_options_idle.disconnect();
-	    check_options_idle = NO_TIMER;
-	    if (check_options_timer != NO_TIMER)
+	    if (check_options_timer.connected())
 		check_options_timer.disconnect();
 	    check_options_timer = 
-		Glib::signal_timeout().connect(PTR_FUN(CheckOptionsFileCB),
-					       app_data.check_options * 1000);
+		GUI::signal_timeout().connect(sigc::ptr_fun(CheckOptionsFileCB),
+					      app_data.check_options * 1000);
 	}
 	return true;
     }
-#endif // IF_MOTIF
 }
+
+#endif
 
 void check_options_file()
 {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     if (check_options_timer != 0)
 	XtRemoveTimeOut(check_options_timer);
 
     check_options_timer = 
 	XtAppAddTimeOut(XtWidgetToApplicationContext(find_shell()), 0,
 			CheckOptionsFileCB, XtPointer(0));
-#else // NOT IF_MOTIF
+#else
     if (check_options_timer != NO_TIMER) {
 	check_options_timer.disconnect();
 	check_options_timer = NO_TIMER;
@@ -2833,7 +2853,7 @@ void check_options_file()
 
     check_options_idle = 
 	Glib::signal_idle().connect(PTR_FUN(CheckOptionsFileCB));
-#endif // IF_MOTIF
+#endif
 }
 
 
@@ -2841,11 +2861,11 @@ void check_options_file()
 // Write state
 //-----------------------------------------------------------------------------
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 
 static bool is_fallback_value(const string& resource, string val)
 {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     static XrmDatabase default_db = app_defaults(XtDisplay(find_shell()));
 
     static String app_name  = 0;
@@ -2884,18 +2904,18 @@ static bool is_fallback_value(const string& resource, string val)
 #endif
 
     return val == default_val;
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning is_fallback_value() not implemented.
 #endif
     return false;
-#endif // IF_MOTIF
+#endif
 }
 
 static string app_value(const string& resource, const string& value, 
 			Boolean check_default)
 {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     static String app_name  = 0;
     static String app_class = 0;
 
@@ -2918,12 +2938,12 @@ static string app_value(const string& resource, const string& value,
 	s.gsub('\n', "\n" + prefix);
 
     return s;
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning app_value() not implemented.
 #endif
     return string("UNKNOWN");
-#endif // IF_MOTIF
+#endif
 }
 
 inline const _XtString bool_value(Boolean value)
@@ -2992,7 +3012,7 @@ static string string_app_value(const string& name, const _XtString v,
 static string widget_value(Widget w, const _XtString name,
 			   Boolean check_default = False)
 {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     String value = 0;
     XtVaGetValues(w, 
 		  XtVaTypedArg, name, XtRString, &value, sizeof(value),
@@ -3000,12 +3020,12 @@ static string widget_value(Widget w, const _XtString name,
 
     return string_app_value(string(XtName(w)) + "." + name, value, 
 			    check_default);
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning 
 #endif
     return string("UNKNOWN");
-#endif // IF_MOTIF
+#endif
 }
 
 static string orientation_app_value(const string& name, unsigned char v,
@@ -3114,7 +3134,7 @@ static string widget_geometry(Widget w, bool include_size = false)
 			    check_default);
 }
 
-#else // NOT IF_MOTIF
+#else
 
 static void
 set_xml_prop(xmlNodePtr tree, const char *name, const char *value, bool is_default=false)
@@ -3268,7 +3288,7 @@ static void set_xml_widget_geometry(xmlNode *tree, const char *name, Widget w,
     set_xml_prop(subtree, "geometry", geo.chars(), check_default);
 }
 
-#endif // IF_MOTIF
+#endif
 
 bool saving_options_kills_program(unsigned long flags)
 {
@@ -3427,7 +3447,7 @@ bool get_restart_commands(string& restart, unsigned long flags)
     return ok;
 }
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 
 bool save_options(unsigned long flags)
 {
@@ -4008,7 +4028,7 @@ bool save_options(unsigned long flags)
     return ok;
 }
 
-#else // NOT IF_MOTIF
+#else
 
 // The main structural difference between this and the Motif version
 // is that the options are distinguished by Name only, the Class is
@@ -4405,7 +4425,7 @@ bool save_options(unsigned long flags)
     return ok;
 }
 
-#endif // IF_MOTIF
+#endif
 
 // ---------------------------------------------------------------------------
 // Callbacks
@@ -4517,7 +4537,7 @@ void DDDSaveOptionsCB(GUI::Widget *w, unsigned long flags)
 	    DestroyWhenIdle1(dialog);
 
 	dialog = new GUI::Dialog(*w, "overwrite_options_dialog");
-	Delay::register_shell1(dialog);
+	Delay::register_shell(dialog);
 	GUI::Button *button = dialog->add_button("ok", "OK");
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(DoSaveOptionsCB), flags));
 
@@ -4531,7 +4551,7 @@ void DDDSaveOptionsCB(GUI::Widget *w, unsigned long flags)
 	    DestroyWhenIdle1(dialog);
 
 	dialog = new GUI::Dialog(*w, "kill_to_save_dialog");
-	Delay::register_shell1(dialog);
+	Delay::register_shell(dialog);
 	GUI::Button *button = dialog->add_button("ok", "OK");
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(DoSaveOptionsCB), (flags | MAY_KILL)));
 
@@ -4545,7 +4565,7 @@ void DDDSaveOptionsCB(GUI::Widget *w, unsigned long flags)
 	    DestroyWhenIdle1(dialog);
 
 	dialog = new GUI::Dialog(*w, "data_not_saved_dialog");
-	Delay::register_shell1(dialog);
+	Delay::register_shell(dialog);
 	GUI::Button *button = dialog->add_button("ok", "OK");
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(DoSaveOptionsCB), flags));
 

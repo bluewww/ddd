@@ -1080,7 +1080,7 @@ void DDDCloseCB(GUI::Widget *w)
 {
     if (running_shells() == 1)
     {
-	DDDExitCB(w->internal(), EXIT_SUCCESS);
+	DDDExitCB(w, EXIT_SUCCESS);
 	return;
     }
 
@@ -1140,7 +1140,7 @@ void gdbCloseCommandWindowCB(GUI::Widget *w)
 #if defined(IF_XM)
 	DDDExitCB(w, EXIT_SUCCESS, XtPointer(0));
 #else
-	DDDExitCB(CB_ARGS_12(w->internal(), EXIT_SUCCESS));
+	DDDExitCB(w, EXIT_SUCCESS);
 #endif
 	return;
     }
@@ -1208,7 +1208,7 @@ void gdbCloseSourceWindowCB(GUI::Widget *w)
 #if defined(IF_XM)
 	DDDExitCB(w, EXIT_SUCCESS, XtPointer(0));
 #else
-	DDDExitCB(CB_ARGS_12(w->internal(), EXIT_SUCCESS));
+	DDDExitCB(w, EXIT_SUCCESS);
 #endif
 	return;
     }
@@ -1251,7 +1251,7 @@ void gdbCloseCodeWindowCB(GUI::Widget *w)
 #if defined(IF_XM)
 	DDDExitCB(w, EXIT_SUCCESS, XtPointer(0));
 #else
-	DDDExitCB(CB_ARGS_12(w->internal(), EXIT_SUCCESS));
+	DDDExitCB(w, EXIT_SUCCESS);
 #endif
 	return;
     }
@@ -1417,7 +1417,7 @@ void gdbCloseDataWindowCB(GUI::Widget *w)
     if (!app_data.tty_mode && 
 	!have_source_window() && !have_command_window() && !have_code_window())
     {
-	DDDExitCB(w->internal(), EXIT_SUCCESS);
+	DDDExitCB(w, EXIT_SUCCESS);
 	return;
     }
 

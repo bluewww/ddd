@@ -40,18 +40,61 @@ char resources_rcsid[] =
 #include "resolveP.h"
 #include "tabs.h"
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 #include <Xm/Xm.h>
-#endif // IF_MOTIF
+#endif
 
 #include "gtk_wrapper.h"
 
-#ifndef IF_MOTIF
+#if !defined(IF_XM)
 
 #define XtOffset(p_type,field) \
 	((Cardinal) (((char *) (&(((p_type)256)->field))) - ((char *)256)))
 
 #define XtOffsetOf(s_type,field) XtOffset(s_type*,field)
+
+#define XtRBitmap "Bitmap"
+#define XtRBool "Bool"
+#define XtRBoolean "Boolean"
+#define XtRCallback "Callback"
+#define XtRCallProc "CallProc"
+#define XtRCardinal "Cardinal"
+#define XtRColor "Color"
+#define XtRColormap "Colormap"
+#define XtRCursor "Cursor"
+#define XtRDimension "Dimension"
+#define XtRDisplay "Display"
+#define XtREditMode "EditMode"
+#define XtREnum "Enum"
+#define XtRFile "File"
+#define XtRFloat "Float"
+#define XtRFont "Font"
+#define XtRFontStruct "FontStruct"
+#define XtRFunction "Function"
+#define XtRGeometry "Geometry"
+#define XtRImmediate "Immediate"
+#define XtRInitialState "InitialState"
+#define XtRInt "Int"
+#define XtRJustify "Justify"
+#define XtRLongBoolean "Bool"
+#define XtRObject "Object"
+#define XtROrientation "Orientation"
+#define XtRPixel "Pixel"
+#define XtRPixmap "Pixmap"
+#define XtRPointer "Pointer"
+#define XtRPosition "Position"
+#define XtRScreen "Screen"
+#define XtRShort "Short"
+#define XtRString "String"
+#define XtRStringArray "StringArray"
+#define XtRStringTable "StringTable"
+#define XtRUnsignedChar "UnsignedChar"
+#define XtRTranslationTable "TranslationTable"
+#define XtRVisual "Visual"
+#define XtRWidget "Widget"
+#define XtRWidgetClass "WidgetClass"
+#define XtRWidgetList "WidgetList"
+#define XtRWindow "Window"
 
 // DUMMY
 #define XtCOrientation ""
@@ -62,9 +105,11 @@ char resources_rcsid[] =
 #define XmRPosition XtRPosition
 #define XmRString XtRString
 
+typedef DDDResource XtResource;
+
 #define XmCBlinkRate ""
 
-#endif // IF_MOTIF
+#endif
 
 // Application resource definitions
 XtResource ddd_resources[] = {
@@ -2323,7 +2368,7 @@ static void CopyArg(XtPointer src, XtPointer dest, Cardinal size)
 // This constructor is invoked before program start
 AppDataInitializer::AppDataInitializer()
 {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     // Copy resources to appropriate fields in APP_DATA
     for (int i = 0; i < int(ddd_resources_size); i++)
     {
@@ -2334,11 +2379,11 @@ AppDataInitializer::AppDataInitializer()
 
 	CopyArg(src, dest, size);
     }
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning AppDataInitializer: NOT IMPLEMENTED
 #endif
-#endif // IF_MOTIF
+#endif
 }
 
 // Fallback resources
@@ -2354,7 +2399,7 @@ const _XtString const ddd_fallback_resources[] = {
 };
 
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 // Return a database of default settings
 XrmDatabase app_defaults(Display *display)
 {
@@ -2405,15 +2450,50 @@ XrmDatabase app_defaults(Display *display)
 
     return db;
 }
-#endif // IF_MOTIF
+#endif
 
 
 
-#ifndef IF_MOTIF
+#if !defined(IF_XM)
 
-void get_application_resources(XrmDatabase db,
+xmlDoc *
+get_file_database(const char *f)
+{
+    return xmlParseFile(f);
+}
+
+bool
+get_resource(xmlDoc *database, const char *str_name, const char *str_class,
+	     DDDValueBase &value_return)
+{
+    std::cerr << "get_resource not implemented\n";
+    return false;
+}
+
+bool
+put_resource(xmlDoc *database, const char *str_name, const char *str_class,
+	     DDDValueBase &value)
+{
+    std::cerr << "put_resource not implemented\n";
+    return false;
+}
+
+void
+merge_databases(xmlDoc *source_db, xmlDoc *target_db)
+{
+    std::cerr << "CANNOT MERGE DATABASES\n";
+}
+
+xmlDoc *
+get_string_database(const char *s)
+{
+    std::cerr << "STRING TO DATABASE NOT IMPLEMENTED\n";
+    return NULL;
+}
+
+void get_application_resources(xmlDoc *db,
 			       void *app_data,
-			       XtResource *resources,
+			       DDDResource *resources,
 			       int resources_size)
 {
     int i, j;
@@ -2465,4 +2545,17 @@ void get_application_resources(XrmDatabase db,
 
 }
 
-#endif // IF_MOTIF
+GUI::String
+DDDValueBase::get(void) const
+{
+    std::cerr << "DDDValueBase::get not implemented\n";
+    return "";
+}
+
+void
+DDDValueBase::set(const GUI::String &)
+{
+    std::cerr << "DDDValueBase::set not implemented\n";
+}
+
+#endif

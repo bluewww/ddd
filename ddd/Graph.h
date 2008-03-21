@@ -29,6 +29,10 @@
 #ifndef _DDD_Graph_h
 #define _DDD_Graph_h
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "assert.h"
 #include "GraphGC.h"
 #include "GraphNode.h"
@@ -169,6 +173,7 @@ public:
     void makeEdgeFirst(GraphEdge *edge);
     void makeEdgeLast(GraphEdge *edge);
 
+#if defined(IF_XM)
     // Drawing
     void draw(Widget w, const BoxRegion& exposed, const GraphGC& gc) const;
     void draw(Widget w, const BoxRegion& exposed) const
@@ -179,6 +184,18 @@ public:
     {
 	draw(w, BoxRegion(BoxPoint(0, 0), BoxSize(INT_MAX, INT_MAX)));
     }
+#else
+    // Drawing
+    void draw(GUI::Widget *w, const BoxRegion& exposed, const GraphGC& gc) const;
+    void draw(GUI::Widget *w, const BoxRegion& exposed) const
+    {
+	draw(w, exposed, GraphGC());
+    }
+    void draw(GUI::Widget *w) const
+    {
+	draw(w, BoxRegion(BoxPoint(0, 0), BoxSize(INT_MAX, INT_MAX)));
+    }
+#endif
 
     // Printing
     void _print(std::ostream& os, const GraphGC& gc) const;

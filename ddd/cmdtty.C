@@ -196,7 +196,11 @@ void init_command_tty()
 {
     assert(command_tty == 0);
 
+#if defined(IF_XM)
     command_tty = new ReadLineAgent(XtWidgetToApplicationContext(gdb_w));
+#else
+    command_tty = new ReadLineAgent(gdb_w->get_main());
+#endif
     command_tty->addHandler(Input, tty_command);
     command_tty->addHandler(InputEOF, tty_eof);
     command_tty->start();

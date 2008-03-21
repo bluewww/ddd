@@ -29,11 +29,18 @@
 #ifndef _DDD_StringBox_h
 #define _DDD_StringBox_h
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "strclass.h"
 #include "Box.h"
 #include "PrimitiveB.h"
 #include "FontTable.h"
 
+#if !defined(IF_XM)
+#include <GUI/Widget.h>
+#endif
 
 // StringBox
 
@@ -44,7 +51,11 @@ public:
 private:
     string _string;
     string _fontname;
-    FONT_P _font;
+#if defined(IF_XM)
+    XFontStruct *_font;
+#else
+    GUI::RefPtr<GUI::Font> _font;
+#endif
     BoxCoordinate _ascent;
 
     StringBox& operator = (const StringBox&);
@@ -52,11 +63,19 @@ private:
     void newFont();
 
 protected:
+#if defined(IF_XM)
     virtual void _draw(Widget w, 
 		       const BoxRegion& region, 
 		       const BoxRegion& exposed,
 		       GC gc, 
 		       bool context_selected) const;
+#else
+    virtual void _draw(GUI::Widget *w, 
+		       const BoxRegion& region, 
+		       const BoxRegion& exposed,
+		       GUI::RefPtr<GUI::GC> gc, 
+		       bool context_selected) const;
+#endif
 
     StringBox(const StringBox& box):
 	PrimitiveBox(box), _string(box._string), _fontname(box._fontname),
@@ -92,17 +111,28 @@ public:
 	newFont();
     }
 
-    StringBox(const string& s, FONT_P fnt,
-	const char *t = "StringBox"):
+#if defined(IF_XM)
+    StringBox(const string& s, XFontStruct *fnt,
+	      const char *t = "StringBox"):
 	PrimitiveBox(BoxSize(0,0), BoxExtend(0, 0), t),
 	_string(s), _fontname("?"), _font(fnt), _ascent(0)
     {
 	resize();
     }
+#else
+    StringBox(const string& s, GUI::RefPtr<GUI::Font> fnt,
+	      const char *t = "StringBox"):
+	PrimitiveBox(BoxSize(0,0), BoxExtend(0, 0), t),
+	_string(s), _fontname("?"), _font(fnt), _ascent(0)
+    {
+	resize();
+    }
+#endif
 
     Box *dup() const { return new StringBox(*this); }
 
-    void _newFont(FONT_P newfont)
+#if defined(IF_XM)
+    void _newFont(XFontStruct *newfont)
     {
 	// If this is a new font, resize
 	if (newfont != _font)
@@ -111,6 +141,17 @@ public:
 	    resize();
 	}
     }
+#else
+    void _newFont(GUI::RefPtr<GUI::Font> newfont)
+    {
+	// If this is a new font, resize
+	if (newfont != _font)
+	{
+	    _font = newfont;
+	    resize();
+	}
+    }
+#endif
 
     // Assign a new font
     void newFont(const string& fontname);
@@ -120,7 +161,11 @@ public:
 		const PrintGC& gc) const;
 
     // Resources
-    const FONT_P font() const { return _font; }
+#if defined(IF_XM)
+    const XFontStruct *font() const { return _font; }
+#else
+    const GUI::RefPtr<GUI::Font> font() const { return _font; }
+#endif
     const string& fontName() const  { return _fontname; }
     const char *fontName_c() const { return _fontname.chars(); }
     virtual string str() const { return _string; }

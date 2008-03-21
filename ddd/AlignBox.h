@@ -29,6 +29,10 @@
 #ifndef _DDD_AlignBox_h
 #define _DDD_AlignBox_h
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 
 // An AlignBox is a container for an alignment of boxes.
 
@@ -84,6 +88,7 @@ protected:
 	    addSize(b);     // later child: add size
     }
 
+#if defined(IF_XM)
     // Draw it
     void drawAlign(Widget w, 
 		   const BoxRegion& r, 
@@ -91,6 +96,15 @@ protected:
 		   GC gc, 
 		   bool context_selected, 
 		   BoxDimension dimen) const;
+#else
+    // Draw it
+    void drawAlign(GUI::Widget *w, 
+		   const BoxRegion& r, 
+		   const BoxRegion& exposed,
+		   GUI::RefPtr<GUI::GC> gc, 
+		   bool context_selected, 
+		   BoxDimension dimen) const;
+#endif
 
 public:
     AlignBox(unsigned initialSize = 2, 
@@ -121,6 +135,7 @@ protected:
 
     void dump(std::ostream& s) const { dumpComposite(s, " & "); }
 
+#if defined(IF_XM)
     virtual void _draw(Widget w, 
 		       const BoxRegion& r, 
 		       const BoxRegion& exposed,
@@ -128,6 +143,15 @@ protected:
     { 
 	drawAlign(w, r, exposed, gc, context_selected, X); 
     }
+#else
+    virtual void _draw(GUI::Widget *w, 
+		       const BoxRegion& r, 
+		       const BoxRegion& exposed,
+		       GUI::RefPtr<GUI::GC> gc, bool context_selected) const
+    { 
+	drawAlign(w, r, exposed, gc, context_selected, X); 
+    }
+#endif
 
 public:
     HAlignBox(unsigned initialSize = 2, const char *t = "HAlignBox"):
@@ -158,6 +182,7 @@ public:
     DECLARE_TYPE_INFO
 
 private:
+#if defined(IF_XM)
     void _draw(Widget w, 
 	       const BoxRegion& r, 
 	       const BoxRegion& exposed,
@@ -166,6 +191,16 @@ private:
     { 
 	drawAlign(w, r, exposed, gc, context_selected, Y); 
     }
+#else
+    void _draw(GUI::Widget *w, 
+	       const BoxRegion& r, 
+	       const BoxRegion& exposed,
+	       GUI::RefPtr<GUI::GC> gc, 
+	       bool context_selected) const
+    { 
+	drawAlign(w, r, exposed, gc, context_selected, Y); 
+    }
+#endif
 
 protected:
     VAlignBox(const VAlignBox& box):
@@ -203,11 +238,19 @@ public:
     DECLARE_TYPE_INFO
 
 private:
+#if defined(IF_XM)
     void _draw(Widget w, 
 	       const BoxRegion& region, 
 	       const BoxRegion& exposed,
 	       GC gc, 
 	       bool context_selected) const;
+#else
+    void _draw(GUI::Widget *w, 
+	       const BoxRegion& region, 
+	       const BoxRegion& exposed,
+	       GUI::RefPtr<GUI::GC> gc, 
+	       bool context_selected) const;
+#endif
 
 protected:
     UAlignBox(const UAlignBox& box):
@@ -245,11 +288,19 @@ public:
     DECLARE_TYPE_INFO
 
 private:
+#if defined(IF_XM)
     void _draw(Widget w, 
 	       const BoxRegion& region, 
 	       const BoxRegion& exposed,
 	       GC gc, 
 	       bool context_selected) const;
+#else
+    void _draw(GUI::Widget *w, 
+	       const BoxRegion& region, 
+	       const BoxRegion& exposed,
+	       GUI::RefPtr<GUI::GC> gc, 
+	       bool context_selected) const;
+#endif
 
 protected:
     TAlignBox(const TAlignBox& box):

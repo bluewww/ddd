@@ -15,6 +15,11 @@ GtkX::RefPtr<GtkX::Display> get_display(void)
     return GtkX::Widget::get_display();
 }
 
+GtkX::RefPtr<GtkX::XWindow> get_window(void)
+{
+    return GtkX::Widget::get_window();
+}
+
 void show(void)
 {
     GtkX::Widget::show();

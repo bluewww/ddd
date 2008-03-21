@@ -29,6 +29,10 @@
 #ifndef _DDD_HatBox_h
 #define _DDD_HatBox_h
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 // A HatBox envelops a child (like a hat) to change specific
 // properties such as size or extent.
 
@@ -45,10 +49,19 @@ public:
 protected:
     Box *_box;
 
+#if defined(IF_XM)
     virtual void _draw(Widget w, 
 		       const BoxRegion& region, 
-		       const BoxRegion& exposed, GC gc,
+		       const BoxRegion& exposed,
+		       GC gc,
 		       bool context_selected) const;
+#else
+    virtual void _draw(GUI::Widget *w, 
+		       const BoxRegion& region, 
+		       const BoxRegion& exposed,
+		       GUI::RefPtr<GUI::GC> gc,
+		       bool context_selected) const;
+#endif
 
     HatBox(const HatBox& box):
 	Box(box), _box(box._box->link())

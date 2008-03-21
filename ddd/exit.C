@@ -153,7 +153,11 @@ bool ddd_is_shutting_down = false;
 // True if DDD has crashed and needs restarting
 bool ddd_has_crashed = false;
 
-static void DDDDoneAnywayCB(CB_ALIST_12(Widget w, XtP(long) client_data));
+#if defined(IF_XM)
+static void DDDDoneAnywayCB(Widget w, XtPointer client_data, XtPointer);
+#else
+static void DDDDoneAnywayCB(GUI::Widget *w, long flags);
+#endif
 
 //-----------------------------------------------------------------------------
 // General clean-up actions before exiting DDD
@@ -297,24 +301,22 @@ void ddd_install_fatal(const char * /* program_name */)
 #endif
 }
 
+#if defined(IF_XM)
+
 // Post a dialog containing TITLE and CAUSE
 static void post_fatal(const string& title, const string& cause,
 		       const string& cls, bool core_dumped = false)
 {
     (void) core_dumped;		// Use it
 
-    static DIALOG_P fatal_dialog = 0;
+    static Widget fatal_dialog = 0;
 
 #if DEBUG_BUTTON
-    static BUTTON_P debug = 0;
-#endif
-#ifndef IF_MOTIF
-    static Gtk::Label *label = 0;
+    static Widget debug = 0;
 #endif
 
     if (fatal_dialog == 0)
     {
-#ifdef IF_MOTIF
 	fatal_dialog = verify(XmCreateErrorDialog (find_shell(),
 						   XMST("fatal_dialog"), 
 						   0, 0));
@@ -335,25 +337,7 @@ static void post_fatal(const string& title, const string& cause,
 	debug = verify(XmCreatePushButton(fatal_dialog, "debug", 0, 0));
 	XtAddCallback(debug, XmNactivateCallback, DDDDebugCB, XtPointer(True));
 #endif
-
 #endif
-#else // NOT IF_MOTIF
-	fatal_dialog = new Gtk::Dialog(XMST("fatal_dialog"), *find_shell());
-	Delay::register_shell(fatal_dialog);
-
-	Gtk::Button *button;
-	button = fatal_dialog->add_button(XMST("Restart"), 0);
-	button->signal_clicked().connect(sigc::bind(PTR_FUN(DDDRestartCB), button));
-	button = fatal_dialog->add_button(XMST("Exit"), 0);
-	button->signal_clicked().connect(sigc::bind(PTR_FUN(DDDExitCB), button, EXIT_FAILURE));
-#if DEBUG_BUTTON
-	debug = fatal_dialog->add_button(XMST("Debug"), 0);
-	debug->signal_activate().connect(sigc::bind(PTR_FUN(DDDDebugCB), EXIT_FAILURE));
-#endif
-	label = new Gtk::Label();
-	fatal_dialog->get_vbox()->pack_start(*label, Gtk::PACK_SHRINK);
-	label->show();
-#endif // IF_MOTIF
     }
 
 #if DEBUG_BUTTON
@@ -363,39 +347,83 @@ static void post_fatal(const string& title, const string& cause,
 	XtUnmanageChild(debug);
 #endif
 
-#ifdef IF_MOTIF
     defineConversionMacro("CLASS", cls.chars());
     defineConversionMacro("TITLE", title.chars());
     defineConversionMacro("CAUSE", cause.chars());
-#else // NOT IF_MOTIF
-#ifdef NAG_ME
-#warning No conversions
-#endif
-#endif // IF_MOTIF
 
     string msg = cls + ": " + title;
     MString mtext = rm(msg);
-#ifdef IF_MOTIF
     XtVaSetValues (fatal_dialog,
 		   XmNmessageString, mtext.xmstring(),
 		   XtPointer(0));
-#else // NOT IF_MOTIF
-    label->set_text(mtext.xmstring());
-#endif // IF_MOTIF
 
     manage_and_raise(fatal_dialog);
 
     // Wait until dialog is mapped and synchronize, such that DDD will
     // exit if we get another signal or X error during that time.
     wait_until_mapped(fatal_dialog);
-#ifdef IF_MOTIF
     XSync(XtDisplay(fatal_dialog), False);
-#else // NOT IF_MOTIF
+}
+
+#else
+
+// Post a dialog containing TITLE and CAUSE
+static void post_fatal(const string& title, const string& cause,
+		       const string& cls, bool core_dumped = false)
+{
+    (void) core_dumped;		// Use it
+
+    static GUI::Dialog *fatal_dialog = 0;
+
+#if DEBUG_BUTTON
+    static GUI::Button *debug = 0;
+#endif
+    static GUI::Label *label = 0;
+
+    if (fatal_dialog == 0)
+    {
+	fatal_dialog = new GUI::Dialog(*find_shell1(), "fatal_dialog");
+	Delay::register_shell(fatal_dialog);
+
+	GUI::Button *button;
+	button = fatal_dialog->add_button("Restart");
+	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(DDDRestartCB), button));
+	button = fatal_dialog->add_button("Exit");
+	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(DDDExitCB), button, EXIT_FAILURE));
+#if DEBUG_BUTTON
+	debug = fatal_dialog->add_button("Debug");
+	debug->signal_activate().connect(sigc::bind(sigc::ptr_fun(DDDDebugCB), EXIT_FAILURE));
+#endif
+	label = new GUI::Label(*fatal_dialog);
+	label->show();
+    }
+
+#if DEBUG_BUTTON
+    if (core_dumped)
+	(debug->show();
+    else
+	debug->hide();
+#endif
+
+#ifdef NAG_ME
+#warning No conversions
+#endif
+
+    string msg = cls + ": " + title;
+    MString mtext = rm(msg);
+    label->set_text(mtext.xmstring());
+
+    manage_and_raise(fatal_dialog);
+
+    // Wait until dialog is mapped and synchronize, such that DDD will
+    // exit if we get another signal or X error during that time.
+    wait_until_mapped(fatal_dialog);
 #ifdef NAG_ME
 #warning XSync?
 #endif
-#endif // IF_MOTIF
 }
+
+#endif
 
 // Show the user that a signal has been raised
 void ddd_show_signal(int sig)
@@ -1113,9 +1141,11 @@ static void DDDQuitCanceledCB(const string&, void *)
     gdb_is_exiting = false;
 }
 
+#if defined(IF_XM)
+
 // Exit/Restart after confirmation, depending on the setting of
 // DDD_IS_RESTARTING
-static void DDDDoneCB(CB_ALIST_12(Widget w, XtP(long) client_data))
+static void DDDDoneCB(Widget w, XtPointer client_data, XtPointer)
 {
     gdb_is_exiting = true;
 
@@ -1134,10 +1164,8 @@ static void DDDDoneCB(CB_ALIST_12(Widget w, XtP(long) client_data))
     }
 
     // Debugger is still running; request confirmation
-#ifdef IF_MOTIF
     Arg args[10];
     int arg;
-#endif // IF_MOTIF
 
     static DIALOG_P quit_dialog = 0;
     if (quit_dialog)
@@ -1146,59 +1174,112 @@ static void DDDDoneCB(CB_ALIST_12(Widget w, XtP(long) client_data))
     MString msg = rm(gdb->title() + " is still busy.  "
 		     + (ddd_is_restarting ? "Restart" : "Exit")
 		     + " anyway (and kill it)?");
-#ifdef IF_MOTIF
     arg = 0;
     XtSetArg(args[arg], XmNmessageString, msg.xmstring()); arg++;
     XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
     quit_dialog = verify(XmCreateQuestionDialog(find_shell(w),
 						XMST("quit_dialog"), 
 						args, arg));
-#else // NOT IF_MOTIF
-    quit_dialog = new Gtk::Dialog(XMST("quit_dialog"), *find_shell(w));
-    Gtk::Label *label = new Gtk::Label(msg.xmstring());
-    quit_dialog->get_vbox()->pack_start(*label, Gtk::PACK_SHRINK);
-#endif // IF_MOTIF
     Delay::register_shell(quit_dialog);
-#ifdef IF_MOTIF
     XtAddCallback(quit_dialog, XmNokCallback,   DDDDoneAnywayCB, client_data);
     XtAddCallback(quit_dialog, XmNcancelCallback, UnmanageThisCB1, quit_dialog);
     XtAddCallback(quit_dialog, XmNhelpCallback, ImmediateHelpCB, 0);
-#else // NOT IF_MOTIF
-    Gtk::Button *button;
-    button = quit_dialog->add_button(XMST("OK"), 0);
-    button->signal_clicked().connect(sigc::bind(PTR_FUN(DDDDoneAnywayCB), button, client_data));
-    button = quit_dialog->add_button(XMST("Cancel"), 0);
-    button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB2), quit_dialog));
-#endif // IF_MOTIF
 
     manage_and_raise(quit_dialog);
 }
 
+#else
+
+// Exit/Restart after confirmation, depending on the setting of
+// DDD_IS_RESTARTING
+static void DDDDoneCB(GUI::Widget *w, long status)
+{
+    gdb_is_exiting = true;
+
+    if (gdb == 0 || !gdb->running())
+    {
+	_DDDExitCB(status);
+	return;
+    }
+
+    if (can_do_gdb_command())
+    {
+	Command c("quit", w);	// This works for all inferior debuggers
+	c.callback = DDDQuitCanceledCB;
+	gdb_command(c);
+	return;
+    }
+
+    // Debugger is still running; request confirmation
+
+    static GUI::Dialog *quit_dialog = 0;
+    if (quit_dialog)
+	DestroyWhenIdle(quit_dialog);
+
+    GUI::String msg = GUI::String(gdb->title().chars())
+	+ GUI::String(" is still busy.  ")
+	+ GUI::String(ddd_is_restarting ? "Restart" : "Exit")
+	+ GUI::String(" anyway (and kill it)?");
+    quit_dialog = new GUI::Dialog(*find_shell1(w), "quit_dialog");
+    GUI::Label *label = new GUI::Label(*quit_dialog, msg);
+    Delay::register_shell(quit_dialog);
+    GUI::Button *button;
+    button = quit_dialog->add_button("OK");
+    button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(DDDDoneAnywayCB), button, status));
+    button = quit_dialog->add_button("Cancel");
+    button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB2), quit_dialog));
+
+    manage_and_raise(quit_dialog);
+}
+
+#endif
+
+#if defined(IF_XM)
+
 // Exit immediately if DDD is not ready
-static void DDDDoneAnywayCB(CB_ALIST_12(Widget w, XtP(long) client_data))
+static void DDDDoneAnywayCB(Widget w, XtPointer client_data, XtPointer)
 {
     // If GDB has gotten ready in between, use controlled exit.
     if (gdb && gdb->isReadyWithPrompt())
-	DDDDoneCB(CB_ARGS_12(w, client_data));
+	DDDDoneCB(w, client_data, XtPointer(0));
     else
-	_DDDExitCB(CB_ARGS_2(client_data));
+	_DDDExitCB(Widget(0), client_data, XtPointer(0));
 }
 
 // Exit after confirmation
-void DDDExitCB(CB_ALIST_12(Widget w, XtP(long) client_data))
+void DDDExitCB(Widget w, XtPointer client_data, XtPointer)
 {
     ddd_is_restarting    = false;
     ddd_is_shutting_down = false;
-    DDDDoneCB(CB_ARGS_12(w, client_data));
+    DDDDoneCB(w, client_data, XtPointer(0));
 }
 
+#else
+
+// Exit immediately if DDD is not ready
+static void DDDDoneAnywayCB(GUI::Widget *w, long status)
+{
+    // If GDB has gotten ready in between, use controlled exit.
+    if (gdb && gdb->isReadyWithPrompt())
+	DDDDoneCB(w, status);
+    else
+	_DDDExitCB(status);
+}
+
+// Exit after confirmation
+void DDDExitCB(GUI::Widget *w, long status)
+{
+    ddd_is_restarting    = false;
+    ddd_is_shutting_down = false;
+    DDDDoneCB(w, status);
+}
+
+#endif
+
+#if defined(IF_XM)
 
 // Restart unconditionally
-#if defined(IF_MOTIF)
 static void _DDDRestartCB(Widget w, XtPointer client_data, XtPointer call_data)
-#else
-static void _DDDRestartCB(Widget w, long client_data)
-#endif
 {
     static string initial_session;
     initial_session = app_data.session;
@@ -1207,26 +1288,46 @@ static void _DDDRestartCB(Widget w, long client_data)
     set_session(RESTART_SESSION);
 
     unsigned long flags = (unsigned long)client_data;
-#if defined(IF_XM)
     DDDSaveOptionsCB(w, XtPointer(flags), call_data);
-#else
-#ifdef NAG_ME
-#warning Pass parent pointer for dialog constructor
-#endif
-    DDDSaveOptionsCB(NULL, flags);
-#endif
 
     set_restart_session(app_data.session);
     register_environ();
 
     ddd_is_restarting    = true;
     ddd_is_shutting_down = false;
-    DDDDoneCB(CB_ARGS_12(w, client_data));
+    DDDDoneCB(w, client_data, XtPointer(0));
 }
 
+#else
+
+// Restart unconditionally
+static void _DDDRestartCB(GUI::Widget *w, unsigned long flags)
+{
+    static string initial_session;
+    initial_session = app_data.session;
+    app_data.initial_session = initial_session.chars();
+
+    set_session(RESTART_SESSION);
+
+#ifdef NAG_ME
+#warning Pass parent pointer for dialog constructor
+#endif
+    DDDSaveOptionsCB(NULL, flags);
+
+    set_restart_session(app_data.session);
+    register_environ();
+
+    ddd_is_restarting    = true;
+    ddd_is_shutting_down = false;
+    DDDDoneCB(w, flags);
+}
+
+#endif
+
+#if defined(IF_XM)
 
 // Restart after confirmation
-void DDDRestartCB(CB_ARG_LIST_1(w))
+void DDDRestartCB(Widget w, XtPointer, XtPointer)
 {
     unsigned long flags = 
 	SAVE_SESSION | SAVE_GEOMETRY | DONT_RELOAD_CORE | DONT_COPY_CORE;
@@ -1236,36 +1337,56 @@ void DDDRestartCB(CB_ARG_LIST_1(w))
     if (saving_options_kills_program(flags))
     {
 	// Saving session would kill program; request confirmation
-	static DIALOG_P dialog = 0;
+	static Widget dialog = 0;
 	if (dialog)
 	    DestroyWhenIdle(dialog);
 
-#ifdef IF_MOTIF
 	dialog = verify(
 	    XmCreateQuestionDialog(find_shell(w),
 				   XMST("confirm_restart_dialog"),
 				   0, 0));
-#else // NOT IF_MOTIF
-	dialog = new Gtk::Dialog(XMST("confirm_restart_dialog"), *find_shell(w));
-#endif // IF_MOTIF
 	Delay::register_shell(dialog);
-#ifdef IF_MOTIF
 	XtAddCallback(dialog, XmNokCallback, _DDDRestartCB,
 		      XtPointer(flags | MAY_KILL));
 	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, 0);
-#else // NOT IF_MOTIF
-	Gtk::Label *label = new Gtk::Label("Restart?");
-	dialog->get_vbox()->pack_start(*label, Gtk::PACK_SHRINK);
-	Gtk::Button *button;
-	button = dialog->add_button(XMST("OK"), 0);
-	button->signal_clicked().connect(sigc::bind(PTR_FUN(_DDDRestartCB), button, (flags | MAY_KILL)));
-#endif // IF_MOTIF
     
 	manage_and_raise(dialog);
     }
     else
 	_DDDRestartCB(CB_ARGS_12(w, flags));
 }
+
+#else
+
+// Restart after confirmation
+void DDDRestartCB(GUI::Widget *w)
+{
+    unsigned long flags = 
+	SAVE_SESSION | SAVE_GEOMETRY | DONT_RELOAD_CORE | DONT_COPY_CORE;
+    if (gdb->running())
+	flags |= SAVE_CORE;
+
+    if (saving_options_kills_program(flags))
+    {
+	// Saving session would kill program; request confirmation
+	static GUI::Dialog *dialog = 0;
+	if (dialog)
+	    DestroyWhenIdle(dialog);
+
+	dialog = new GUI::Dialog(*find_shell1(w), "confirm_restart_dialog");
+	Delay::register_shell(dialog);
+	GUI::Label *label = new GUI::Label(*dialog, "Restart?");
+	GUI::Button *button;
+	button = dialog->add_button("OK");
+	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(_DDDRestartCB), button, (flags | MAY_KILL)));
+    
+	manage_and_raise(dialog);
+    }
+    else
+	_DDDRestartCB(w, flags);
+}
+
+#endif
 
 static void debug_ddd(bool core_dumped)
 {

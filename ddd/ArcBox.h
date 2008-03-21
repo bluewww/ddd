@@ -48,11 +48,19 @@ private:
     BoxDegrees _start;     // Start of arc
     BoxDegrees _length;    // Length of arc
 
+#if defined(IF_XM)
     void __draw(Widget w, 
 		const BoxRegion& region, 
 		const BoxRegion& exposed,
 		GC gc, 
 		bool context_selected) const;
+#else
+    void __draw(GUI::Widget *w, 
+		const BoxRegion& region, 
+		const BoxRegion& exposed,
+		GUI::RefPtr<GUI::GC> gc, 
+		bool context_selected) const;
+#endif
 
     void _printPS(std::ostream& os, 
 		  const BoxRegion& region, 

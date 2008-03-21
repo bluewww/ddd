@@ -29,18 +29,24 @@
 #ifndef _DDD_WidgetStringAssoc_h
 #define _DDD_WidgetStringAssoc_h
 
-#ifdef IF_MOTIF
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
+#if defined(IF_MOTIF)
 #include <X11/Intrinsic.h>
-
-#else // NOT IF_MOTIF
-
-#endif // IF_MOTIF
+#else
+#include <GUI/Widget.h>
+#endif
 
 #include "Assoc.h"
 #include "strclass.h"
 
+#if defined(IF_XM)
 typedef Assoc<Widget, string> WidgetStringAssoc;
+#else
+typedef Assoc<GUI::Widget *, string> WidgetStringAssoc;
+#endif
 
 #endif // _DDD_WidgetStringAssoc_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

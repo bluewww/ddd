@@ -35,11 +35,11 @@
 
 #include "strclass.h"
 
-#ifdef IF_MOTIF
-
+#if defined(IF_XM)
 #include <X11/Intrinsic.h>
-
-#endif // IF_MOTIF
+#else
+#include <GUI/Widget.h>
+#endif
 
 #if !defined(IF_XM)
 #include <GUI/Box.h>
@@ -78,9 +78,15 @@ extern int max_value_doc_length;
 // Clear value cache after some change in the program state
 extern void clear_value_cache();
 
+#if defined(IF_XM)
 // Invoke button and shortcut editors
-void dddEditButtonsCB  (CB_ALIST_1(Widget));
-void dddEditShortcutsCB(CB_ALIST_1(Widget));
+void dddEditButtonsCB  (Widget, XtPointer, XtPointer);
+void dddEditShortcutsCB(Widget, XtPointer, XtPointer);
+#else
+// Invoke button and shortcut editors
+void dddEditButtonsCB  (GUI::Widget *parent);
+void dddEditShortcutsCB(GUI::Widget *parent);
+#endif
 
 // Refresh button editor after external change
 void refresh_button_editor();
@@ -91,7 +97,7 @@ string gdbValue(const string& expr, string print_command = "");
 // Return changed EXPR that can be used as assignment value
 string assignment_value(const string& expr);
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // Create a flat PushButton named NAME
 Widget create_flat_button(Widget parent, const string& name);
 #endif

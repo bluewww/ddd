@@ -166,6 +166,11 @@ void gdbTempBreakAtCB(Widget w, XtPointer, XtPointer)
     source_view->create_temp_bp(current_arg(true), w);
 }
 
+void gdbRegexBreakAtCB(Widget w, XtPointer, XtPointer)
+{
+    gdb_command("rbreak " + source_arg->get_string(), w);
+}
+
 #else
 
 void gdbBreakAtCB(GUI::Widget *w)
@@ -178,12 +183,12 @@ void gdbTempBreakAtCB(GUI::Widget *w)
     source_view->create_temp_bp(current_arg(true), w);
 }
 
-#endif
-
-void gdbRegexBreakAtCB(CB_ALIST_1(Widget w))
+void gdbRegexBreakAtCB(GUI::Widget *w)
 {
-    gdb_command("rbreak " + source_arg->get_string(), w);
+    gdb_command1("rbreak " + source_arg->get_string(), w);
 }
+
+#endif
 
 #if defined(IF_XM)
 
@@ -492,8 +497,13 @@ void gdbEditSourceCB  (GUI::Widget *w)
     cmd = sh_command(cmd);
 
     // Invoke an editor in the background
+#if defined(IF_XM)
     LiterateAgent *edit_agent = 
 	new LiterateAgent(XtWidgetToApplicationContext(w), cmd);
+#else
+    LiterateAgent *edit_agent = 
+	new LiterateAgent(w->get_main(), cmd);
+#endif
 
     output_buffer = "";
 

@@ -66,11 +66,19 @@ struct GraphGC {
     // Drawing stuff
     bool           redraw;	     // Redraw only marked nodes?
 
+#if defined(IF_XM)
     GC             nodeGC;           // X Graphics context for nodes
     GC             hintGC;           // X Graphics context for hints
     GC             edgeGC;           // X Graphics context for edges
     GC             invertGC;         // X Graphics context for inverting
     GC             clearGC;          // X Graphics context for clearing
+#else
+    GUI::RefPtr<GUI::GC>    nodeGC;           // X Graphics context for nodes
+    GUI::RefPtr<GUI::GC>    hintGC;           // X Graphics context for hints
+    GUI::RefPtr<GUI::GC>    edgeGC;           // X Graphics context for edges
+    GUI::RefPtr<GUI::GC>    invertGC;         // X Graphics context for inverting
+    GUI::RefPtr<GUI::GC>    clearGC;          // X Graphics context for clearing
+#endif
 
     BoxPoint       offsetIfSelected; // Offset to apply if nodes are selected
     EdgeAttachMode edgeAttachMode;   // Where to attach edges
@@ -99,8 +107,9 @@ struct GraphGC {
 
     static PostScriptPrintGC defaultPrintGC;
 
+#if defined(IF_XM)
     // Default Constructor
-    explicit GraphGC(GC n = NO_GC, GC e = NO_GC, GC i = NO_GC, GC c = NO_GC):
+    explicit GraphGC(GC n = 0, GC e = 0, GC i = 0, GC c = 0):
 	redraw(false),
         nodeGC(n),
         hintGC(n),
@@ -127,6 +136,39 @@ struct GraphGC {
 	node_green(0),
 	node_blue(0)
     {}
+#else
+    // Default Constructor
+    explicit GraphGC(GUI::RefPtr<GUI::GC> n = GUI::RefPtr<GUI::GC>(),
+		     GUI::RefPtr<GUI::GC> e = GUI::RefPtr<GUI::GC>(),
+		     GUI::RefPtr<GUI::GC> i = GUI::RefPtr<GUI::GC>(),
+		     GUI::RefPtr<GUI::GC> c = GUI::RefPtr<GUI::GC>()):
+	redraw(false),
+        nodeGC(n),
+        hintGC(n),
+        edgeGC(e),
+        invertGC(i),
+        clearGC(c),
+        offsetIfSelected(0,0),
+	edgeAttachMode(Straight),
+        drawArrowHeads(true),
+        drawHints(false),
+        drawAnnotations(true),
+        hintSize(8),
+        arrowAngle(30),
+        arrowLength(10),
+	selfEdgeDiameter(32),
+	selfEdgePosition(NorthEast),
+	selfEdgeDirection(Counterclockwise),
+	printGC(&defaultPrintGC),
+	printSelectedNodesOnly(false),
+	edge_red(0),
+	edge_green(0),
+	edge_blue(0),
+	node_red(0),
+	node_green(0),
+	node_blue(0)
+    {}
+#endif
 
     // Copy Constructor
     GraphGC(const GraphGC& g):

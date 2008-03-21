@@ -53,21 +53,27 @@ Xmmm::Window::init_signals(void)
 			  XtPointer(this));
 }
 
-void
-Xmmm::Window::init(::Widget parent, const Xmmm::String &name,
-		   int argc, char **argv)
+
+Xmmm::Window::Window(::Widget w)
+{
+    win_ = w;
+}
+
+Xmmm::Window::Window(Xmmm::Main &main, const Xmmm::String &name, const Xmmm::String &title)
 {
     Arg args[10];
     int nargs;
 
     nargs = 0;
     XtSetArg(args[nargs], XmNdeleteResponse, XmDO_NOTHING); nargs++;
-    XtSetArg(args[nargs], XmNargc,           argc); nargs++;
-    XtSetArg(args[nargs], XmNargv,           argv); nargs++;
+    std::cerr << "GET ARGC AND ARGV\n";
+    //XtSetArg(args[nargs], XmNargc,           argc); nargs++;
+    //XtSetArg(args[nargs], XmNargv,           argv); nargs++;
 
     // Forward toplevel geometry (as given by `-geometry') to command shell
     ::String toplevel_geometry = 0;
-    XtVaGetValues(parent, XmNgeometry, &toplevel_geometry, NULL);
+    Xmmm::Window *top = main.get_toplevel();
+    XtVaGetValues(top->internal(), XmNgeometry, &toplevel_geometry, NULL);
     if (toplevel_geometry != 0)
     {
 	XtSetArg(args[nargs], XmNgeometry, toplevel_geometry); nargs++;
@@ -77,22 +83,10 @@ Xmmm::Window::init(::Widget parent, const Xmmm::String &name,
     // The toplevel window is never realized.
     win_ = XtCreatePopupShell(name.c(),
 			      applicationShellWidgetClass,
-			      parent, args, nargs);
+			      top->internal(), args, nargs);
 
     init_signals();
     postinit();
-}
-
-Xmmm::Window::Window(::Widget parent, const Xmmm::String &name,
-		     int argc, char **argv)
-{
-    init(parent, name, argc, argv);
-}
-
-Xmmm::Window::Window(Xmmm::Widget &parent, const Xmmm::String &name,
-		     int argc, char **argv)
-{
-    init(parent.internal(), name, argc, argv);
 }
 
 Xmmm::Window::~Window(void)

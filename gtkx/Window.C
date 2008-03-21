@@ -34,15 +34,7 @@ GtkX::Window::init_signals(void)
     Gtk::Widget::signal_delete_event().connect(sigc::mem_fun(*this, &GtkX::Window::delete_callback));
 }
 
-Window::Window(Gtk::Window *parent, const String &name,
-	       int argc, char **argv)
-{
-    set_name(name.s());
-    set_title(name.s());
-    postinit();
-}
-
-Window::Window(const String &name, const String &title)
+Window::Window(Main &main, const String &name, const String &title)
 {
     set_name(name.s());
     set_title(title.s());

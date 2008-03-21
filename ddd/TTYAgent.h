@@ -29,6 +29,10 @@
 #ifndef _DDD_TTYAgent_h
 #define _DDD_TTYAgent_h
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "LiterateA.h"
 #include <unistd.h>
 #include <stdlib.h>
@@ -64,6 +68,9 @@ protected:
     virtual bool tty_ok(const char *tty);
 
 public:
+
+#if defined(IF_XM)
+
     // Constructors
     TTYAgent(XtAppContext app_context, const string& pth,
 	     unsigned nTypes = TTYAgent_NTypes):
@@ -89,6 +96,36 @@ public:
 	master(-1), slave(-1),
 	push(false)
     {}
+
+#else
+
+    // Constructors
+    TTYAgent(GUI::Main *app_context, const string& pth,
+	     unsigned nTypes = TTYAgent_NTypes):
+        LiterateAgent(app_context, pth, nTypes),
+	_master_tty(), _slave_tty(),
+	master(-1), slave(-1),
+	push(false)
+    {}
+
+    TTYAgent(GUI::Main *app_context, FILE *in = stdin,
+	     FILE *out = stdout, FILE *err = 0, 
+	     unsigned nTypes = TTYAgent_NTypes):
+        LiterateAgent(app_context, in, out, err, nTypes),
+	_master_tty(), _slave_tty(),
+	master(-1), slave(-1),
+	push(false)
+    {}
+
+    TTYAgent(GUI::Main *app_context, bool dummy,
+	     unsigned nTypes = TTYAgent_NTypes):
+        LiterateAgent(app_context, dummy, nTypes),
+	_master_tty(), _slave_tty(),
+	master(-1), slave(-1),
+	push(false)
+    {}
+
+#endif
 
     // Duplicator
     TTYAgent (const TTYAgent& tty)

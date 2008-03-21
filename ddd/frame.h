@@ -29,12 +29,26 @@
 #ifndef _DDD_frame_h
 #define _DDD_frame_h
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "gtk_wrapper.h"
 
+#if defined(IF_XM)
 // Find the WM frame surrounding WINDOW
-Window frame(DISPLAY_P display, Window window);
+Window frame(Display display, Window window);
 
 inline Window frame(Widget w) { return frame(XtDisplay(w), XtWindow(w)); }
+#else
+// Find the WM frame surrounding WINDOW
+GUI::RefPtr<GUI::XWindow> frame(GUI::RefPtr<GUI::Display> display, GUI::RefPtr<GUI::XWindow> window);
+
+inline GUI::RefPtr<GUI::XWindow> frame(GUI::Widget *w)
+{
+    return frame(w->get_display(), w->get_window());
+}
+#endif
 
 #endif // _DDD_frame_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

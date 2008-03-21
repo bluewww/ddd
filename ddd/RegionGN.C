@@ -61,6 +61,8 @@ BoxPoint RegionGraphNode::originToPos(const BoxPoint& origin,
 }
 
 
+#if defined(IF_XM)
+
 // Draw a RegionGraphNode
 void RegionGraphNode::draw(Widget w, 
 			   const BoxRegion& exposed, 
@@ -72,7 +74,6 @@ void RegionGraphNode::draw(Widget w,
     if (!(r <= exposed) || r.space(X) == 0 || r.space(Y) == 0)
 	return;
 
-#ifdef IF_MOTIF
     Display *display = XtDisplay(w);
     Window window = XtWindow(w);
 
@@ -80,11 +81,6 @@ void RegionGraphNode::draw(Widget w,
     XFillRectangle(display, window, gc.clearGC,
 		   r.origin(X), r.origin(Y),
 		   r.space(X), r.space(Y));
-#else // NOT IF_MOTIF
-    w->get_window()->draw_rectangle(gc.clearGC, true,
-				    r.origin(X), r.origin(Y),
-				    r.space(X), r.space(Y));
-#endif // IF_MOTIF
 
     // draw contents
     forceDraw(w, exposed, gc);
@@ -94,17 +90,44 @@ void RegionGraphNode::draw(Widget w,
     {
 	const BoxRegion& h = highlightRegion(gc);
 
-#ifdef IF_MOTIF
 	XFillRectangle(display, window, gc.invertGC,
 		       h.origin(X), h.origin(Y),
 		       h.space(X), h.space(Y));
-#else // NOT IF_MOTIF
+    }
+}
+
+#else
+
+// Draw a RegionGraphNode
+void RegionGraphNode::draw(GUI::Widget *w, 
+			   const BoxRegion& exposed, 
+			   const GraphGC& gc) const
+{
+    const BoxRegion& r = region(gc);
+
+    // if not exposed or invisible, return
+    if (!(r <= exposed) || r.space(X) == 0 || r.space(Y) == 0)
+	return;
+
+    w->get_window()->draw_rectangle(gc.clearGC, true,
+				    r.origin(X), r.origin(Y),
+				    r.space(X), r.space(Y));
+
+    // draw contents
+    forceDraw(w, exposed, gc);
+
+    // if selected, invert area
+    if (selected())
+    {
+	const BoxRegion& h = highlightRegion(gc);
+
 	w->get_window()->draw_rectangle(gc.invertGC, true,
 					h.origin(X), h.origin(Y),
 					h.space(X), h.space(Y));
-#endif // IF_MOTIF
     }
 }
+
+#endif
 
 
 

@@ -60,6 +60,8 @@
 #include <GUI/Menu.h>
 #include <GUI/Events.h>
 #include <GUI/CheckButton.h>
+#include <GUI/Dialog.h>
+#include <GUI/ListView.h>
 #endif
 
 // DDD includes
@@ -739,14 +741,17 @@ private:
     static Widget graph_popup_w;
     static Widget node_popup_w;
     static Widget shortcut_popup_w;
+
+    static Widget edit_displays_dialog_w;
+    static Widget display_list_w;
 #else
     static GUI::PopupMenu *graph_popup_w;
     static GUI::PopupMenu *node_popup_w;
     static GUI::PopupMenu *shortcut_popup_w;
-#endif
 
-    static DIALOG_P edit_displays_dialog_w;
-    static TREEVIEW_P display_list_w;
+    static GUI::Dialog *edit_displays_dialog_w;
+    static GUI::ListView *display_list_w;
+#endif
 
     // Origin handling
 #if defined(IF_XM)

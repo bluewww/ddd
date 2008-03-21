@@ -83,7 +83,7 @@ static BoxRegion EVERYWHERE(BoxPoint(0,0), BoxSize(INT_MAX, INT_MAX));
 
 // Compute default foreground
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 static void defaultForeground(Widget w, int, XrmValue *value)
 {
     const GraphEditWidget _w = GraphEditWidget(w);
@@ -94,7 +94,7 @@ static void defaultForeground(Widget w, int, XrmValue *value)
 
 // Resource list
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 static XtResource resources[] = {
 #define offset(field) XtOffsetOf(_GraphEditRec::Res, graphEdit.field)
     // {name, class, type, size, offset, default_type, default_addr}
@@ -236,7 +236,7 @@ static XtResource resources[] = {
 
 // Action function declarations
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 static void Select      (Widget, XEvent *, String *, Cardinal *);
 static void Extend      (Widget, XEvent *, String *, Cardinal *);
 static void Toggle      (Widget, XEvent *, String *, Cardinal *);
@@ -266,7 +266,7 @@ static void _Normalize  (Widget, XEvent *, String *, Cardinal *);
 
 // Actions table
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 static XtActionsRec actions[] = {
     { XTARECSTR("select"),         Select },        // select()
     { XTARECSTR("extend"),         Extend },        // extend()
@@ -379,7 +379,7 @@ static void ClassInitialize();
 
 static void Initialize(Widget request, 
 		       Widget w
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 		       , ArgList args,
 		       Cardinal *num_args
 #endif
@@ -387,7 +387,7 @@ static void Initialize(Widget request,
 
 static void Redisplay(Widget w, XEvent *event, Region region);
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 static void Realize(Widget w, 
 		    XtValueMask *value_mask,
 		    XSetWindowAttributes *attributes);
@@ -396,7 +396,7 @@ static void Realize(Widget w,
 static Boolean SetValues(Widget old, 
 			 Widget request, 
 			 Widget new_w
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 			 , ArgList args, 
 			 Cardinal *num_args
 #endif
@@ -405,7 +405,7 @@ static Boolean SetValues(Widget old,
 static void Destroy(Widget w);
 
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // Class record initialization
 
 GraphEditClassRec graphEditClassRec = {
@@ -467,7 +467,7 @@ GraphEditClassRec graphEditClassRec = {
 WidgetClass graphEditWidgetClass = (WidgetClass)&graphEditClassRec;
 #endif
 
-#if !defined(IF_MOTIF)
+#if !defined(IF_XM)
 static const Glib::SignalProxyInfo GraphEdit_signal_compare_nodes_info =
 {
   "compare-nodes",
@@ -489,13 +489,13 @@ GUIGraphEdit::internal(void)
 #endif
 
 // Set widget to minimal size
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 void graphEditSizeChanged(Widget w)
 #else
 void GUIGraphEdit::graphEditSizeChanged()
 #endif
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     XtCheckSubclass(w, GraphEditWidgetClass, "Bad widget class");
 
     Arg args[10];
@@ -571,7 +571,7 @@ void GUIGraphEdit::graphEditSizeChanged()
 #endif
 }
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // Return the graph's Graphic Context
 const GraphGC& graphEditGetGraphGC(Widget w)
 {
@@ -584,7 +584,7 @@ const GraphGC& graphEditGetGraphGC(Widget w)
 }
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // Return the graph
 Graph *graphEditGetGraph(Widget w)
 {
@@ -596,7 +596,8 @@ Graph *graphEditGetGraph(Widget w)
 #endif
 
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
+
 // Set grid pixmap
 static void setGrid(Widget w, Boolean reset = False)
 {
@@ -652,16 +653,16 @@ static void setGrid(Widget w, Boolean reset = False)
 // Set grid pixmap
 void GUIGraphEdit::setGrid(bool reset)
 {
-    const Gdk::Color background = internal()->get_style()->get_bg(Gtk::STATE_NORMAL);
+    const GUI::Color background = get_bg();
 
     gridWidth  = max(gridWidth,  2);
     gridHeight = max(gridHeight, 2);
 
-    Glib::RefPtr<Gdk::Window> win = internal()->get_window();
+    GUI::RefPtr<GUI::XWindow> win = get_window();
     if (reset && gridPixmap)
     {
 	// delete old pixmap
-	win->set_back_pixmap(Pixmap(), true);
+	win->set_back_pixmap(GUI::RefPtr<GUI::Pixmap>(), true);
 	win->clear();
 
 	gridPixmap.clear();
@@ -677,36 +678,23 @@ void GUIGraphEdit::setGrid(bool reset)
 	if (showGrid)
 	    gridData[0] = 0x01;
 
-#if defined(IF_MOTIF)
-	int depth = PlanesOfScreen(XtScreen(w));
-	gridPixmap = 
-	    XCreatePixmapFromBitmapData(XtDisplay(w), 
-					XtWindow(w),
-					gridData, 
-					gridWidth, gridHeight,
-					gridColor, background,
-					depth);
-
- 	XSetWindowBackgroundPixmap(XtDisplay(w), XtWindow(w), gridPixmap);
-	XClearArea(XtDisplay(w), XtWindow(w), 0, 0, 0, 0, True);
-#else
 	int depth = win->get_depth();
-	gridPixmap = Gdk::Pixmap::create_from_data(win,
+	gridPixmap = GUI::Pixmap::create_from_data(win,
 						   gridData, 
 						   gridWidth, gridHeight, depth,
 						   gridColor, background);
 
 	win->set_back_pixmap(gridPixmap, true);
 	win->clear();
-#endif
 
 	delete[] gridData;
     }
 }
+
 #endif
 
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // Redraw
 static void RedrawCB(XtPointer client_data, XtIntervalId *id)
 {
@@ -823,7 +811,7 @@ void GUIGraphEdit::RedrawCB(void)
 					     internal()->get_width()  - highlight_thickness * 2, 
 					     internal()->get_height() - highlight_thickness * 2);
 
-	graph->draw(this->internal(), EVERYWHERE, graphGC);
+	graph->draw(this, EVERYWHERE, graphGC);
     }
 
     for (node = graph->firstVisibleNode(); 
@@ -836,7 +824,7 @@ void GUIGraphEdit::RedrawCB(void)
 	    internal()->get_window()->clear_area(r.origin(X), r.origin(Y),
 						 r.space(X), r.space(Y));
 
-	    graph->draw(this->internal(), r, graphGC);
+	    graph->draw(this, r, graphGC);
 	}
 
 	node->redraw() = False;
@@ -844,7 +832,7 @@ void GUIGraphEdit::RedrawCB(void)
 }
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // Launch redrawing procedure
 static void StartRedraw(Widget w)
 {
@@ -873,7 +861,7 @@ void GUIGraphEdit::StartRedraw(void)
 
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // Redraw entire graph
 void graphEditRedraw(Widget w)
 {
@@ -904,7 +892,7 @@ void GUIGraphEdit::graphEditRedraw(void)
 }
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // Redraw a specific region
 void graphEditRedrawNode(Widget w, GraphNode *node)
 {
@@ -928,7 +916,7 @@ void GUIGraphEdit::graphEditRedrawNode(GraphNode *node)
 }
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // Disable redrawing for a while; return old state
 Boolean graphEditEnableRedisplay(Widget w, Boolean state)
 {
@@ -959,7 +947,7 @@ bool GUIGraphEdit::enable_redisplay(bool state)
 }
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 
 // Converters
 
@@ -1315,7 +1303,7 @@ static Boolean CvtCardinalToString (Display *display, XrmValue *,
 #endif
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // Initialize class
 static void ClassInitialize()
 {
@@ -1373,7 +1361,7 @@ static void ClassInitialize()
 
 // Initialize widget
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 inline void createCursor(Widget w, Cursor& cursor, unsigned int shape)
 {
     if (cursor == 0)
@@ -1384,7 +1372,7 @@ inline void createCursor(Widget w, Cursor& cursor, unsigned int shape)
 #endif
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 static void setGCs(Widget w)
 {
     const GraphEditWidget _w        = GraphEditWidget(w);
@@ -1467,59 +1455,59 @@ static void setGCs(Widget w)
 #else
 void GUIGraphEdit::setGCs(void)
 {
-    Gdk::LineStyle line_style = dashedLines ? Gdk::LINE_ON_OFF_DASH : Gdk::LINE_SOLID;
+    GUI::LineStyle line_style = dashedLines ? GUI::LINE_ON_OFF_DASH : GUI::LINE_SOLID;
 
     // set nodeGC
-    nodeGC = Gdk::GC::create(internal()->get_window());
+    nodeGC = new GUI::GC(get_window());
     nodeGC->set_foreground(nodeColor);
-    nodeGC->set_line_attributes(1, line_style, Gdk::CAP_BUTT, Gdk::JOIN_MITER);
+    nodeGC->set_line_attributes(1, line_style, GUI::CAP_BUTT, GUI::JOIN_MITER);
 
     // set edgeGC
-    edgeGC = Gdk::GC::create(internal()->get_window());
+    edgeGC = new GUI::GC(get_window());
     edgeGC->set_foreground(edgeColor);
-    edgeGC->set_line_attributes(edgeWidth, line_style, Gdk::CAP_BUTT, Gdk::JOIN_MITER);
+    edgeGC->set_line_attributes(edgeWidth, line_style, GUI::CAP_BUTT, GUI::JOIN_MITER);
 
     // set invertGC
-    invertGC = Gdk::GC::create(internal()->get_window());
+    invertGC = new GUI::GC(get_window());
     if (selectTile)
     {
 	invertGC->set_foreground(selectColor);
-	invertGC->set_fill(Gdk::STIPPLED);
+	invertGC->set_fill(GUI::STIPPLED);
 	invertGC->set_stipple(selectTile);
-	invertGC->set_function(Gdk::COPY);
+	invertGC->set_function(GUI::COPY);
     }
     else
     {
 	invertGC->set_foreground(selectColor);
-	invertGC->set_function(Gdk::INVERT);
+	invertGC->set_function(GUI::INVERT);
 #ifdef NAG_ME
 #warning How to set plane mask?
 #endif
 	// gcv.plane_mask = selectColor ^ background;
     }
 
-    const Gdk::Color background = internal()->get_style()->get_bg(Gtk::STATE_NORMAL);
+    const GUI::Color background = get_bg();
 
     // set clearGC
-    clearGC = Gdk::GC::create(internal()->get_window());
+    clearGC = new GUI::GC(get_window());
     clearGC->set_foreground(background);
-    clearGC->set_function(Gdk::COPY);
+    clearGC->set_function(GUI::COPY);
 
     // set frameGC
-    frameGC = Gdk::GC::create(internal()->get_window());
+    frameGC = new GUI::GC(get_window());
     frameGC->set_foreground(frameColor);
-    frameGC->set_function(Gdk::INVERT);
-    frameGC->set_line_attributes(1, Gdk::LINE_SOLID, Gdk::CAP_BUTT, Gdk::JOIN_MITER);
+    frameGC->set_function(GUI::INVERT);
+    frameGC->set_line_attributes(1, GUI::LINE_SOLID, GUI::CAP_BUTT, GUI::JOIN_MITER);
 #ifdef NAG_ME
 #warning How to set plane mask?
 #endif
     // gcv.plane_mask = frameColor ^ background;
 
     // set outlineGC
-    outlineGC = Gdk::GC::create(internal()->get_window());
+    outlineGC = new GUI::GC(get_window());
     outlineGC->set_foreground(outlineColor);
-    outlineGC->set_function(Gdk::INVERT);
-    outlineGC->set_line_attributes(1, Gdk::LINE_SOLID, Gdk::CAP_BUTT, Gdk::JOIN_MITER);
+    outlineGC->set_function(GUI::INVERT);
+    outlineGC->set_line_attributes(1, GUI::LINE_SOLID, GUI::CAP_BUTT, GUI::JOIN_MITER);
 #ifdef NAG_ME
 #warning How to set plane mask?
 #endif
@@ -1527,7 +1515,7 @@ void GUIGraphEdit::setGCs(void)
 }
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 static void setGraphGC(Widget w)
 {
     const GraphEditWidget _w        = GraphEditWidget(w);
@@ -1638,51 +1626,29 @@ void GUIGraphEdit::setGraphGC(void)
 
     if (nodePrintColor != 0)
     {
-	Gdk::Color exact_def = Gdk::Color(Glib::ustring(nodePrintColor));
-	bool ok = internal()->get_colormap()->alloc_color(exact_def);
-
-	if (ok)
-	{
-	    graphGC.node_red   = exact_def.get_red();
-	    graphGC.node_green = exact_def.get_green();
-	    graphGC.node_blue  = exact_def.get_blue();
-	}
-	else
-	{
-	    Cardinal one = 1;
-
-	    std::cerr << "Bad color " << nodePrintColor << "\n";
-	}
+	GUI::Color exact_def = GUI::Color(Glib::ustring(nodePrintColor));
+	graphGC.node_red   = (unsigned short)(USHRT_MAX*exact_def.r);
+	graphGC.node_green = (unsigned short)(USHRT_MAX*exact_def.g);
+	graphGC.node_blue  = (unsigned short)(USHRT_MAX*exact_def.b);
     }
 
     if (edgePrintColor != 0)
     {
-	Gdk::Color exact_def = Gdk::Color(Glib::ustring(edgePrintColor));
-	bool ok = internal()->get_colormap()->alloc_color(exact_def);
-
-	if (ok)
-	{
-	    graphGC.edge_red   = exact_def.get_red();
-	    graphGC.edge_green = exact_def.get_green();
-	    graphGC.edge_blue  = exact_def.get_blue();
-	}
-	else
-	{
-	    Cardinal one = 1;
-
-	    std::cerr << "Bad color " << edgePrintColor << "\n";
-	}
+	GUI::Color exact_def = GUI::Color(Glib::ustring(edgePrintColor));
+	graphGC.edge_red   = (unsigned short)(USHRT_MAX*exact_def.r);
+	graphGC.edge_green = (unsigned short)(USHRT_MAX*exact_def.g);
+	graphGC.edge_blue  = (unsigned short)(USHRT_MAX*exact_def.b);
     }
 }
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 static void Initialize(Widget request, Widget w, ArgList, Cardinal *)
 #else
 GUIGraphEdit::GUIGraphEdit(void)
 #endif
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     // read-only
     const GraphEditWidget _w        = GraphEditWidget(w);
 
@@ -1745,7 +1711,7 @@ GUIGraphEdit::GUIGraphEdit(void)
     redrawTimer = NO_TIMER;
 
     // set GCs
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     setGCs(w);
 #else
 #ifdef NAG_ME
@@ -1758,12 +1724,12 @@ GUIGraphEdit::GUIGraphEdit(void)
     // set Graph GC
     setGraphGC(M_ARGS_1(w));
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     // set grid pixmap
     gridPixmap = None;
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     // create cursors if not already set
     createCursor(w, moveCursor,              XC_fleur);
     createCursor(w, selectCursor,            XC_plus);
@@ -1777,7 +1743,7 @@ GUIGraphEdit::GUIGraphEdit(void)
 #endif
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     // save requested size
     requestedWidth  = request->core.width;
     requestedHeight = request->core.height;
@@ -1792,7 +1758,7 @@ GUIGraphEdit::GUIGraphEdit(void)
     // set size
     graphEditSizeChanged(M_ARGS_1(w));
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     // Override XmPrimitive translations
     static XtTranslations translations = 
 	XtParseTranslationTable(extraTranslations);
@@ -1805,13 +1771,13 @@ GUIGraphEdit::GUIGraphEdit(void)
 #endif
 }
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 inline void defineCursor(Widget w, Cursor cursor)
 #else
-void GUIGraphEdit::defineCursor(Cursor cursor)
+void GUIGraphEdit::defineCursor(GUI::Cursor *cursor)
 #endif
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     if (cursor != 0)
 	XDefineCursor(XtDisplay(w), XtWindow(w), cursor);
     else
@@ -1823,7 +1789,7 @@ void GUIGraphEdit::defineCursor(Cursor cursor)
 #endif
 }
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // Realize widget
 static void Realize(Widget w, 
 		    XtValueMask *value_mask,
@@ -1894,14 +1860,13 @@ bool GUIGraphEdit::on_expose_event(GUI::EventExpose *event)
 #warning Primitive border?
 #endif
 
-    GUI::Widget *w = this;
-    graph->draw(w->internal(), BoxRegion(point1((GUI::Event *)event),
-					 size1((GUI::Event *)event)), graphGC);
+    graph->draw(this, BoxRegion(point1((GUI::Event *)event),
+				size1((GUI::Event *)event)), graphGC);
 }
 
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // Set widget values
 static Boolean SetValues(Widget old, Widget, Widget new_w, 
 			 ArgList, Cardinal *)
@@ -1988,7 +1953,7 @@ static Boolean SetValues(Widget old, Widget, Widget new_w,
 #endif
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // Destroy widget
 static void Destroy(Widget)
 {
@@ -2005,13 +1970,13 @@ GUIGraphEdit::~GUIGraphEdit(void)
 // Helping stuff
 
 // Find node at point
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 GraphNode *graphEditGetNodeAtPoint(Widget w, const BoxPoint& p)
 #else
 GraphNode *GUIGraphEdit::graphEditGetNodeAtPoint(const BoxPoint& p)
 #endif
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     XtCheckSubclass(w, GraphEditWidgetClass, "Bad widget class");
 
     const GraphEditWidget _w  = GraphEditWidget(w);
@@ -2052,13 +2017,13 @@ GraphNode *GUIGraphEdit::graphEditGetNodeAtEvent(GUI::Event *event)
 #endif
 
 // Get frame region
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 static BoxRegion frameRegion(Widget w)
 #else
 BoxRegion GUIGraphEdit::frameRegion(void)
 #endif
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     const GraphEditWidget _w    = GraphEditWidget(w);
     const BoxPoint& startAction = _w->graphEditP.startAction;
     const BoxPoint& endAction   = _w->graphEditP.endAction;
@@ -2074,13 +2039,13 @@ BoxRegion GUIGraphEdit::frameRegion(void)
 }
 
 // Get frame cursor
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 static void setRegionCursor(Widget w)
 #else
 void GUIGraphEdit::setRegionCursor(void)
 #endif
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     const GraphEditWidget _w    = GraphEditWidget(w);
     const BoxPoint& startAction = _w->graphEditP.startAction;
     const BoxPoint& endAction   = _w->graphEditP.endAction;
@@ -2116,30 +2081,40 @@ void GUIGraphEdit::setRegionCursor(void)
 #endif
 }
 
+#if defined(IF_XM)
+
 inline void myXDrawLine(
-#if defined(IF_MOTIF)
     Display *display, 
-#endif
     Drawable d, 
     GC gc,
     const BoxPoint& f, const BoxPoint& t)
 {
     if (f != t) {
-#if defined(IF_MOTIF)
 	XDrawLine(display, d, gc, f[X], f[Y], t[X], t[Y]);
-#else
-	d->draw_line(gc, f[X], f[Y], t[X], t[Y]);
-#endif
     }
 }
+
+#else
+
+inline void myXDrawLine(
+    GUI::RefPtr<GUI::Drawable> d, 
+    GUI::RefPtr<GUI::GC> gc,
+    const BoxPoint& f, const BoxPoint& t)
+{
+    if (f != t) {
+	d->draw_line(gc, f[X], f[Y], t[X], t[Y]);
+    }
+}
+
+#endif
     
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 static void redrawSelectFrame(Widget w, const BoxRegion& r)
 #else
 void GUIGraphEdit::redrawSelectFrame(const BoxRegion& r)
 #endif
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     const GraphEditWidget _w = GraphEditWidget(w);
     const GC frameGC = _w->graphEditP.frameGC;
 
@@ -2166,7 +2141,7 @@ void GUIGraphEdit::redrawSelectFrame(const BoxRegion& r)
 		r.origin() + BoxPoint(r.space(X), 0),
 		r.origin() + BoxPoint(r.space(X), r.space(Y) - 1));
 #else
-    Window window = internal()->get_window();
+    GUI::RefPtr<GUI::XWindow> window = get_window();
 
     // North
     myXDrawLine(window, frameGC, 
@@ -2191,7 +2166,7 @@ void GUIGraphEdit::redrawSelectFrame(const BoxRegion& r)
 }
 
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 static void drawSelectFrames(Widget w, 
 			     const BoxRegion& r0, 
 			     const BoxRegion& r1)
@@ -2212,7 +2187,7 @@ void GUIGraphEdit::drawSelectFrames(const BoxRegion& r0,
 
 
 // Draw the selection frame
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 inline void drawSelectFrame(Widget w)
 #else
 void GUIGraphEdit::drawSelectFrame(void)
@@ -2224,13 +2199,13 @@ void GUIGraphEdit::drawSelectFrame(void)
 
 
 // Redraw selection frame
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 static void redrawSelectFrame(Widget w, const BoxPoint& p)
 #else
 void GUIGraphEdit::redrawSelectFrame(const BoxPoint& p)
 #endif
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     const GraphEditWidget _w = GraphEditWidget(w);
     BoxPoint& endAction      = _w->graphEditP.endAction;
 #endif
@@ -2244,13 +2219,13 @@ void GUIGraphEdit::redrawSelectFrame(const BoxPoint& p)
 
 
 // Find min possible offset
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 static void getMinimalOffset(Widget w)
 #else
 void GUIGraphEdit::getMinimalOffset(void)
 #endif
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     const GraphEditWidget _w            = GraphEditWidget(w);
     const Graph* graph                  = _w->res_.graphEdit.graph;
     const Dimension highlight_thickness = _w->res_.primitive.highlight_thickness;
@@ -2284,13 +2259,13 @@ void GUIGraphEdit::getMinimalOffset(void)
 }
 
 // Return current offset
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 static BoxPoint actionOffset(Widget w)
 #else
 BoxPoint GUIGraphEdit::actionOffset(void)
 #endif
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     const GraphEditWidget _w      = GraphEditWidget(w);
     const Dimension gridWidth     = _w->res_.graphEdit.gridWidth;
     const Dimension gridHeight    = _w->res_.graphEdit.gridHeight;
@@ -2322,13 +2297,13 @@ BoxPoint GUIGraphEdit::actionOffset(void)
 }
 
 // Draw moving frames and edges for nodes at (endAction - startAction)
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 static void drawOutlines(Widget w, const BoxPoint& offset)
 #else
 void GUIGraphEdit::drawOutlines(const BoxPoint& offset)
 #endif
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     const GraphEditWidget _w            = GraphEditWidget(w);
     const Graph* graph                  = _w->res_.graphEdit.graph;
     const Boolean rubberArrows          = _w->res_.graphEdit.rubberArrows;
@@ -2337,8 +2312,8 @@ void GUIGraphEdit::drawOutlines(const BoxPoint& offset)
     const GraphGC& graphGC              = _w->graphEditP.graphGC;
     const GC& outlineGC                 = _w->graphEditP.outlineGC;
 #else
-    const GC& outlineGC                 = this->outlineGC;
-    Gtk::Widget *w = this;
+    GUI::RefPtr<GUI::GC> outlineGC      = this->outlineGC;
+    GUI::Widget *w = this;
 #endif
 
     for (GraphNode *node = graph->firstVisibleNode(); node != 0;
@@ -2348,15 +2323,15 @@ void GUIGraphEdit::drawOutlines(const BoxPoint& offset)
 	{
 	    // this should also handle opaqueMove (FIXME)...
 	    BoxRegion r = node->region(graphGC);
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	    XDrawRectangle(XtDisplay(w), XtWindow(w), outlineGC,
 		r.origin(X) + offset[X], r.origin(Y) + offset[Y],
 		r.space(X), r.space(Y));
 #else
-	    internal()->get_window()->draw_rectangle(outlineGC, false,
-						     r.origin(X) + offset[X],
-						     r.origin(Y) + offset[Y],
-						     r.space(X), r.space(Y));
+	    get_window()->draw_rectangle(outlineGC, false,
+					 r.origin(X) + offset[X],
+					 r.origin(Y) + offset[Y],
+					 r.space(X), r.space(Y));
 #endif
 	}
     }
@@ -2379,7 +2354,7 @@ void GUIGraphEdit::drawOutlines(const BoxPoint& offset)
 }
 
 // Move Node to specified position and call callbacks
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 static void moveTo(Widget w, 
 		   GraphNode *node, 
 		   const BoxPoint& newPos,
@@ -2390,7 +2365,7 @@ void GUIGraphEdit::moveTo(GraphNode *node,
 			  Boolean isLast)
 #endif
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     const GraphEditWidget _w  = GraphEditWidget(w);
     Graph* graph              = _w->res_.graphEdit.graph;
 #endif
@@ -2405,7 +2380,7 @@ void GUIGraphEdit::moveTo(GraphNode *node,
 	info.new_position = newPos;
 	info.is_last      = isLast;
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	XtCallCallbacks(w, XtNpositionChangedCallback, XtPointer(&info));
 #else
 	signal_position_changed().emit(&info);
@@ -2450,13 +2425,13 @@ void GUIGraphEdit::selectionChanged(GUI::Event *event, Boolean double_click)
 // Action functions
 
 // Select all nodes
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 static Boolean _SelectAll(Widget w, XEvent *, String *, Cardinal *)
 #else
 Boolean GUIGraphEdit::_SelectAll(void)
 #endif
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     const GraphEditWidget _w = GraphEditWidget(w);
     const Graph* graph       = _w->res_.graphEdit.graph;
 #endif
@@ -2476,14 +2451,14 @@ Boolean GUIGraphEdit::_SelectAll(void)
     return changed;
 }
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 static void SelectAll(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
 #else
 void GUIGraphEdit::SelectAll(void)
 #endif
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     if (_SelectAll(w, event, params, num_params))
 	selectionChanged(w, event, False);
 #else
@@ -2494,13 +2469,13 @@ void GUIGraphEdit::SelectAll(void)
 
 
 // Unselect all nodes
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 static Boolean _UnselectAll(Widget w, XEvent *, String *, Cardinal *)
 #else
 Boolean GUIGraphEdit::_UnselectAll(void)
 #endif
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     const GraphEditWidget _w = GraphEditWidget(w);
     const Graph* graph       = _w->res_.graphEdit.graph;
 #endif
@@ -2520,14 +2495,14 @@ Boolean GUIGraphEdit::_UnselectAll(void)
     return changed;
 }
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 static void UnselectAll(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
 #else
 void GUIGraphEdit::UnselectAll(void)
 #endif
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     if (_UnselectAll(w, event, params, num_params))
 	selectionChanged(w, event, False);
 #else
@@ -2555,7 +2530,7 @@ static void find_connected_nodes(GraphNode *root, GraphNodePointerArray& nodes)
 }
 
 // Select an entire subgraph
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 static Boolean select_graph(Widget w, GraphNode *root, Boolean set = True)
 #else
 Boolean GUIGraphEdit::select_graph(GraphNode *root, Boolean set)
@@ -2581,7 +2556,7 @@ Boolean GUIGraphEdit::select_graph(GraphNode *root, Boolean set)
     return changed;
 }
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 inline Boolean unselect_graph(Widget w, GraphNode *root)
 #else
 Boolean GUIGraphEdit::unselect_graph(GraphNode *root)
@@ -2591,13 +2566,13 @@ Boolean GUIGraphEdit::unselect_graph(GraphNode *root)
 }
 
 // Raise node NODE such that it is placed on top of all others
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 void graphEditRaiseNode(Widget w, GraphNode *node)
 #else
 void GUIGraphEdit::graphEditRaiseNode(GraphNode *node)
 #endif
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     XtCheckSubclass(w, GraphEditWidgetClass, "Bad widget class");
 
     const GraphEditWidget _w = GraphEditWidget(w);
@@ -2609,13 +2584,13 @@ void GUIGraphEdit::graphEditRaiseNode(GraphNode *node)
 }
 
 // Same, but only if the autoRaise resource is set
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 static void raise_node(Widget w, GraphNode *node)
 #else
 void GUIGraphEdit::raise_node(GraphNode *node)
 #endif
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     const GraphEditWidget _w = GraphEditWidget(w);
     Boolean autoRaise        = _w->res_.graphEdit.autoRaise;
 #endif
@@ -3108,13 +3083,13 @@ void GUIGraphEdit::Follow(GUI::Event *event)
 
 // Now, all is done.
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 static void move_selected_nodes(Widget w, const BoxPoint& offset)
 #else
 void GUIGraphEdit::move_selected_nodes(const BoxPoint& offset)
 #endif
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     const GraphEditWidget _w   = GraphEditWidget(w);
     const Graph* graph         = _w->res_.graphEdit.graph;
     const GraphGC& graphGC     = _w->graphEditP.graphGC;
@@ -3125,7 +3100,7 @@ void GUIGraphEdit::move_selected_nodes(const BoxPoint& offset)
 
     // Clear graph area
     BoxRegion r = graph->region(graphGC);
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     XClearArea(XtDisplay(w), XtWindow(w), r.origin(X), r.origin(Y),
 	       r.space(X), r.space(Y), False);
 #else
@@ -3671,13 +3646,13 @@ static BoxPoint NearestGridPosition(const BoxPoint& grid, const BoxPoint& p)
 
 
 // Return final position (if snapToGrid is enabled, for example)
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 BoxPoint graphEditFinalPosition(Widget w, const BoxPoint& p)
 #else
 BoxPoint GUIGraphEdit::final_position(const BoxPoint& p)
 #endif
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     XtCheckSubclass(w, GraphEditWidgetClass, "Bad widget class");
 
     const GraphEditWidget _w   = GraphEditWidget(w);
@@ -3695,7 +3670,7 @@ BoxPoint GUIGraphEdit::final_position(const BoxPoint& p)
 	return p;
 }
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // Snap nodes to grid
 static void _SnapToGrid(Widget w, XEvent *, String *params, 
 			Cardinal *num_params)
@@ -3736,7 +3711,7 @@ static void SnapToGrid(Widget w, XEvent *event, String *params,
 #endif
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 static int get_new_rotation(Widget w, const _XtString *params, Cardinal *num_params,
 			    const _XtString name, const _XtString default_param, 
 			    const _XtString extra_args = "")
@@ -3840,7 +3815,7 @@ static void Rotate(Widget w, XEvent *event, String *params,
 // Layout nodes
 
 static Graph *layout_graph = 0;
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 static Widget layout_widget = 0;
 #else
 static GUIGraphEdit *layout_widget = 0;
@@ -3908,7 +3883,7 @@ static int LayoutCompareCB(const char *name1, const char *name2)
     info.node1 = node1;
     info.node2 = node2;
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     XtCallCallbacks(layout_widget, XtNcompareNodesCallback, XtPointer(&info));
 #else
     layout_widget->signal_compare_nodes().emit(&info);
@@ -3989,14 +3964,14 @@ static void compact_layouted_graph(Graph *graph)
     remove_all_hints(graph);
 }    
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 static void _Layout(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
 #else
 void GUIGraphEdit::_Layout(LayoutMode mode)
 #endif
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     const GraphEditWidget _w   = GraphEditWidget(w);
     Graph* graph               = _w->res_.graphEdit.graph;
     const GraphGC& graphGC     = _w->graphEditP.graphGC;
@@ -4007,7 +3982,7 @@ void GUIGraphEdit::_Layout(LayoutMode mode)
 
     static const char *graph_name = "graph";
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     if (num_params && *num_params > 0 && params[0][0] != '\0')
     {
 	LayoutMode mode_param;
@@ -4024,7 +3999,7 @@ void GUIGraphEdit::_Layout(LayoutMode mode)
     }
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     Cardinal new_num_params = 
 	(num_params && *num_params > 0 ? *num_params - 1 : 0);
     int new_rotation = 
@@ -4045,7 +4020,7 @@ void GUIGraphEdit::_Layout(LayoutMode mode)
     info.graph    = graph;
     info.mode     = mode;
     info.rotation = new_rotation;
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     XtCallCallbacks(w, XtNpreLayoutCallback, XtPointer(&info));
 #else
     signal_pre_layout().emit(&info);
@@ -4090,7 +4065,7 @@ void GUIGraphEdit::_Layout(LayoutMode mode)
     }
 
     // Layout the graph
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     layout_widget = w;
 #else
     layout_widget = this;
@@ -4108,7 +4083,7 @@ void GUIGraphEdit::_Layout(LayoutMode mode)
     // Clear the graph...
     Layout::remove_graph(graph_name);
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     // ... and re-rotate it.
     std::ostringstream os;
     os << new_rotation;
@@ -4127,7 +4102,7 @@ void GUIGraphEdit::_Layout(LayoutMode mode)
 #endif
 
     // Layout is done
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     XtCallCallbacks(w, XtNpostLayoutCallback, XtPointer(&info));
 #else
     signal_post_layout().emit(&info);
@@ -4138,14 +4113,14 @@ void GUIGraphEdit::_Layout(LayoutMode mode)
 
 // DoLayout() should be named Layout(), but this conflicts with the
 // `Layout' class on some pre-ARM C++ compilers :-(
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 static void DoLayout(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
 #else
 void GUIGraphEdit::DoLayout(LayoutMode mode)
 #endif
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     _Layout(w, event, params, num_params);
 #else
     _Layout(mode);
@@ -4155,13 +4130,13 @@ void GUIGraphEdit::DoLayout(LayoutMode mode)
 
 
 // Normalize graph
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 static void _Normalize(Widget w, XEvent *, String *, Cardinal *)
 #else
 void GUIGraphEdit::_Normalize()
 #endif
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     const GraphEditWidget _w   = GraphEditWidget(w);
     const Graph* graph         = _w->res_.graphEdit.graph;
     const GraphGC& graphGC     = _w->graphEditP.graphGC;
@@ -4186,14 +4161,14 @@ void GUIGraphEdit::_Normalize()
     }
 }
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 static void Normalize(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
 #else
 void GUIGraphEdit::Normalize(void)
 #endif
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     _Normalize(w, event, params, num_params);
 #else
     _Normalize();
@@ -4204,25 +4179,25 @@ void GUIGraphEdit::Normalize(void)
 
 // Show and hide edges
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 static void considerEdges(Widget w, XEvent *, String *params,
 			  Cardinal *num_params, Boolean shallBeHidden)
 #else
 void GUIGraphEdit::considerEdges(ShowHideMode themode, Boolean shallBeHidden)
 #endif
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     const GraphEditWidget _w = GraphEditWidget(w);
     const Graph* graph       = _w->res_.graphEdit.graph;
 #endif
 
     // get the mode
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     ShowHideMode themode = NopeShowHideMode;
 #endif
     Boolean changedSomething = False;
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     string p = "any";
     if (*num_params >= 1)
 	p = params[0];
@@ -4283,28 +4258,28 @@ void GUIGraphEdit::considerEdges(ShowHideMode themode, Boolean shallBeHidden)
 	graphEditRedraw(M_ARGS_1(w));
 }
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 static void ShowEdges(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
 #else
 void GUIGraphEdit::ShowEdges(ShowHideMode how)
 #endif
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     considerEdges(w, event, params, num_params, False);
 #else
     considerEdges(how, False);
 #endif
 }
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 static void HideEdges(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
 #else
 void GUIGraphEdit::HideEdges(ShowHideMode how)
 #endif
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     considerEdges(w, event, params, num_params, True);
 #else
     considerEdges(how, True);
@@ -4313,7 +4288,7 @@ void GUIGraphEdit::HideEdges(ShowHideMode how)
 
 // **********************************************************************
 
-#if !defined(IF_MOTIF)
+#if !defined(IF_XM)
 
 // GUIGraphEdit accessors
 

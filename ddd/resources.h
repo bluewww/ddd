@@ -29,37 +29,74 @@
 #ifndef _DDD_resources_h
 #define _DDD_resources_h
 
-#ifdef IF_MOTIF
-
+#if defined(IF_XM)
 #include <X11/Intrinsic.h>
-
-#endif // IF_MOTIF
+#else
+#include <libxml/tree.h>
+#endif
 
 #include "gtk_wrapper.h"
 
 // DDD resource definitions
+#if defined(IF_XM)
 extern XtResource ddd_resources[];
+#else
+struct DDDResource;
+extern DDDResource ddd_resources[];
+// For String type
+#include <GUI/Widget.h>
+#endif
 extern const int ddd_resources_size;
 
-#ifdef IF_MOTIF
-
+#if defined(IF_MOTIF)
 // Resources to use if `Ddd' app-defaults are not found
 extern const _XtString const ddd_fallback_resources[];
-
-#else // NOT IF_MOTIF
-
-#ifdef NAG_ME
-#warning Resource database not fully implemented.
+#else
+extern const char *const ddd_fallback_resources[];
 #endif
-extern void get_application_resources(XrmDatabase db,
-				      void *app_data,
-				      XtResource *resources,
-				      int resources_size);
 
-#endif // IF_MOTIF
+#if defined(IF_XM)
 
 // Default resources
-extern XrmDatabase app_defaults(DISPLAY_P display);
+extern xmlDoc *app_defaults(Display *display);
+
+#else
+
+// Emulate Xt resource database.
+struct DDDResource {
+    char 	*resource_name;	/* Resource name			    */
+    char	*resource_class;	/* Resource class			    */
+    char	*resource_type;	/* Representation type desired		    */
+    unsigned int	resource_size;	/* Size in bytes of representation	    */
+    unsigned int	resource_offset;/* Offset from base to put resource value   */
+    char	*default_type;	/* representation type of specified default */
+    void	*default_addr;	/* Address of default resource		    */
+};
+
+#ifdef NAG_ME
+#warning we need to define a generic value type
+#endif
+struct DDDValueBase {
+    int foo;
+public:
+    GUI::String get(void) const;
+    void set(const GUI::String &);
+};
+
+extern xmlDoc *get_string_database(const char *s);
+extern void merge_databases(xmlDoc *source_db, xmlDoc *target_db);
+extern bool get_resource(xmlDoc *database, const char *str_name, const char *str_class,
+			 DDDValueBase &value_return);
+extern bool put_resource(xmlDoc *database, const char *str_name, const char *str_class,
+			 DDDValueBase &value);
+extern xmlDoc *get_file_database(const char *f);
+
+extern void get_application_resources(xmlDoc *db,
+				      void *app_data,
+				      DDDResource *resources,
+				      int resources_size);
+
+#endif
 
 #endif // _DDD_resources_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

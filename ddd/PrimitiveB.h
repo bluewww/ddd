@@ -29,6 +29,10 @@
 #ifndef _DDD_PrimitiveBox_h
 #define _DDD_PrimitiveBox_h
 
+#ifdef HAVE_CONFIG_H
+#include <GUI/Widget.h>
+#endif
+
 #include "Box.h"
 
 // PrimitiveBox
@@ -57,11 +61,19 @@ public:
     DECLARE_TYPE_INFO
 
 protected:
+#if defined(IF_XM)
     virtual void _draw(Widget w, 
 		       const BoxRegion& region, 
 		       const BoxRegion& exposed,
 		       GC gc, 
 		       bool context_selected) const;
+#else
+    virtual void _draw(GUI::Widget *w, 
+		       const BoxRegion& region, 
+		       const BoxRegion& exposed,
+		       GUI::RefPtr<GUI::GC> gc, 
+		       bool context_selected) const;
+#endif
 
     RuleBox(const RuleBox& box):
 	PrimitiveBox(box)
@@ -89,6 +101,7 @@ public:
     DECLARE_TYPE_INFO
 
 protected:
+#if defined(IF_XM)
     virtual void _draw(Widget, 
 		       const BoxRegion&, 
 		       const BoxRegion&,
@@ -97,6 +110,16 @@ protected:
     {
 	// do nothing
     }
+#else
+    virtual void _draw(GUI::Widget *, 
+		       const BoxRegion&, 
+		       const BoxRegion&,
+		       GUI::RefPtr<GUI::GC>, 
+		       bool) const
+    {
+	// do nothing
+    }
+#endif
 
     EmptyBox(const EmptyBox& box):
 	PrimitiveBox(box)

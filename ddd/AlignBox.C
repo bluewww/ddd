@@ -41,12 +41,21 @@ DEFINE_TYPE_INFO_1(VAlignBox, AlignBox)
 
 
 // Draw alignment (horizontal or vertical)
+#if defined(IF_XM)
 void AlignBox::drawAlign(Widget w, 
 			 const BoxRegion& r, 
 			 const BoxRegion& exposed, 
 			 GC gc,
 			 bool context_selected, 
 			 BoxDimension dimen) const
+#else
+void AlignBox::drawAlign(GUI::Widget *w, 
+			 const BoxRegion& r, 
+			 const BoxRegion& exposed, 
+			 GUI::RefPtr<GUI::GC> gc,
+			 bool context_selected, 
+			 BoxDimension dimen) const
+#endif
 {
     BoxSize space   = r.space();
     BoxPoint origin = r.origin();
@@ -241,11 +250,19 @@ void UAlignBox::addSize(Box *b)
 }
 
 // Draw
+#if defined(IF_XM)
 void UAlignBox::_draw(Widget w, 
 		      const BoxRegion& r, 
 		      const BoxRegion& exposed, 
 		      GC gc,
 		      bool context_selected) const
+#else
+void UAlignBox::_draw(GUI::Widget *w, 
+		      const BoxRegion& r, 
+		      const BoxRegion& exposed, 
+		      GUI::RefPtr<GUI::GC> gc,
+		      bool context_selected) const
+#endif
 {
     // Draw all children at the same place
     for (int i = 0; i < nchildren(); i++)
@@ -293,11 +310,19 @@ void TAlignBox::addSize(Box *b)
 }
 
 // Draw
+#if defined(IF_XM)
 void TAlignBox::_draw(Widget w, 
 		      const BoxRegion& r, 
 		      const BoxRegion& exposed, 
 		      GC gc,
 		      bool context_selected) const
+#else
+void TAlignBox::_draw(GUI::Widget *w, 
+		      const BoxRegion& r, 
+		      const BoxRegion& exposed, 
+		      GUI::RefPtr<GUI::GC> gc,
+		      bool context_selected) const
+#endif
 {
     BoxSize space   = r.space();
     BoxPoint origin = r.origin();

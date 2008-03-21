@@ -109,6 +109,8 @@ const TagBox *TagBox::findTag(const BoxPoint& p) const
 }
 
 
+#if defined(IF_XM)
+
 // Draw TagBox
 void TagBox::_draw(Widget w, 
 		   const BoxRegion& r, 
@@ -126,7 +128,6 @@ void TagBox::_draw(Widget w,
 
 	BoxRegion clipRegion = exposed & r;    // Schnittmenge
 
-#ifdef IF_MOTIF
 	XGCValues gcvalues;
 	XGetGCValues(XtDisplay(w), gc, GCFunction, &gcvalues);
 	XSetFunction(XtDisplay(w), gc, GXinvert);
@@ -136,21 +137,40 @@ void TagBox::_draw(Widget w,
 	    clipRegion.space(X), clipRegion.space(Y));
 
 	XSetFunction(XtDisplay(w), gc, gcvalues.function);
-#else // NOT IF_MOTIF
-#ifdef NAG_ME
-#warning BASTARDs in gtkmm failed to wrap an essential function
-#endif
-	GdkGCValues gcvalues;
-	gdk_gc_get_values(gc->gobj(), &gcvalues);
-	gc->set_function(Gdk::INVERT);
+    }
+}
+
+#else
+
+// Draw TagBox
+void TagBox::_draw(GUI::Widget *w, 
+		   const BoxRegion& r, 
+		   const BoxRegion& exposed,
+		   GUI::RefPtr<GUI::GC> gc, 
+		   bool context_selected) const
+{
+    // Draw child
+    bool nodeSelected = __selected();
+    MarkBox::_draw(w, r, exposed, gc, nodeSelected);
+
+    if (context_selected != nodeSelected)
+    {
+	// Invert the BoxRegion just drawn
+
+	BoxRegion clipRegion = exposed & r;    // Schnittmenge
+
+	GUI::GCValues gcvalues;
+	gc->get_values(gcvalues);
+	gc->set_function(GUI::INVERT);
 
 	w->get_window()->draw_rectangle(gc, true,
 					clipRegion.origin(X), clipRegion.origin(Y),
 					clipRegion.space(X), clipRegion.space(Y));
-	gdk_gc_set_values(gc->gobj(), &gcvalues, GDK_GC_FUNCTION);
-#endif // IF_MOTIF
+	gc->set_values(gcvalues, GUI::GC_FUNCTION);
     }
 }
+
+#endif
 
 
 // Dump TagBox

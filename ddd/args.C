@@ -405,7 +405,7 @@ void gdbRunCB1(GUI::Widget *w)
     {
 	run_dialog = new GUI::Dialog(*find_shell1(w), "run_dialog");
 
-	Delay::register_shell1(run_dialog);
+	Delay::register_shell(run_dialog);
 	GUI::Button *button = run_dialog->add_button("Run");
 	button->signal_clicked().connect(sigc::ptr_fun(gdbRunDCB));
 

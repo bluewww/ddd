@@ -29,6 +29,10 @@
 #ifndef _DDD_PlotAgent_h
 #define _DDD_PlotAgent_h
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "LiterateA.h"
 #include "assert.h"
 #include "StringA.h"
@@ -81,6 +85,8 @@ public:
     static string plot_2d_settings;
     static string plot_3d_settings;
 
+#if defined(IF_XM)
+
     // Constructor for Agent users
     PlotAgent(XtAppContext app_context, const string& pth,
 	      unsigned nTypes = PlotAgent_NTypes)
@@ -97,6 +103,27 @@ public:
     {
 	reset();
     }
+
+#else
+
+    // Constructor for Agent users
+    PlotAgent(GUI::Main *app_context, const string& pth,
+	      unsigned nTypes = PlotAgent_NTypes)
+	: LiterateAgent(app_context, pth, nTypes),
+	  files(), titles(), values(), dims(),
+	  plot_os(), ndim(0), 
+	  x_min(0.0), x_max(0.0),
+	  y_min(0.0), y_max(0.0),
+	  v_min(0.0), v_max(0.0),
+	  init_commands(""),
+	  need_reset(false),
+	  last_ndim(0),
+	  getting_plot_data(false)
+    {
+	reset();
+    }
+
+#endif
 
     // Start and initialize
     void start_with(const string& init);

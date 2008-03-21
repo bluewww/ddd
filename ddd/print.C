@@ -243,8 +243,13 @@ static int print_to_printer(string command, PrintGC& gc,
 
     command += " " + tmpfile;
 
+#if defined(IF_XM)
     LiterateAgent *print_agent = 
 	new LiterateAgent(XtWidgetToApplicationContext(gdb_w), command);
+#else
+    LiterateAgent *print_agent = 
+	new LiterateAgent(gdb_w->get_main(), command);
+#endif
 
     output_buffer = "";
 
@@ -1412,7 +1417,7 @@ static void PrintCB(GUI::Button *parent, bool displays)
     }
 
     print_dialog = new GUI::Dialog(find_shell(parent), "print");
-    Delay::register_shell1(print_dialog);
+    Delay::register_shell(print_dialog);
 
     GUI::Button *button;
     button = print_dialog->add_button("ok", "OK");
@@ -1587,7 +1592,7 @@ static void PrintCB(GUI::Button *parent, bool displays)
     // Create size dialog
     paper_size_dialog = 
 	new GUI::Dialog(find_shell(parent), "paper_size_dialog");
-    Delay::register_shell1(paper_size_dialog);
+    Delay::register_shell(paper_size_dialog);
 
     GUI::Entry *entry;
     entry = new GUI::Entry(*paper_size_dialog, "entry");

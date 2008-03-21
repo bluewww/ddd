@@ -102,8 +102,13 @@ static pid_t separate_tty_pid   = 0;
 // TTY terminal type
 static string separate_tty_term  = "dumb";
 
+#if defined(IF_XM)
 // TTY window
-static Window separate_tty_window = NO_WINDOW;
+static Window separate_tty_window = 0;
+#else
+// TTY window
+static GUI::RefPtr<GUI::XWindow> separate_tty_window;
+#endif
 
 // GDB command redirection
 static string gdb_redirection = "";
@@ -118,7 +123,11 @@ string gdb_tty = "";
 static bool show_starting_line_in_tty    = false;
 
 pid_t exec_tty_pid()     { return separate_tty_pid; }
+#if defined(IF_XM)
 Window exec_tty_window() { return separate_tty_window; }
+#else
+GUI::RefPtr<GUI::XWindow> exec_tty_window() { return separate_tty_window; }
+#endif
 
 static void CancelTTYCB(CB_ARG_LIST_2(client_data))
 {
@@ -133,38 +142,27 @@ static void GotReplyHP(Agent *, void *client_data, void *call_data)
     reply += string(d->data, d->length);
 }
 
+#if defined(IF_XM)
+
 // Create a separate tty window; return its name in TTYNAME, its
 // process id in PID, its terminal type in TERM, and its window id in
 // WINDOWID.
-#if defined(IF_XM)
 static void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
 				Window& windowid, Widget origin)
-#else
-static void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
-				Window& windowid, GUI::Widget *origin)
-#endif
 {
     // If we're already running, all is done.
     if (pid > 0 && (remote_gdb() || kill(pid, 0) == 0))
 	return;
 
     string term_command = app_data.term_command;
-#if defined(IF_XM)
     term_command.gsub("@FONT@", make_font(app_data, FixedWidthDDDFont));
-#endif
 
     static bool canceled;
     canceled = false;
 
-#if defined(IF_XM)
     static Widget dialog = 0;
-#else
-    static GUI::Dialog *dialog = 0;
-    static GUI::Label *label = 0;
-#endif
     if (dialog == 0)
     {
-#if defined(IF_XM)
 	Arg args[10];
 	Cardinal arg = 0;
 	XtSetArg(args[arg], XmNdialogStyle, 
@@ -178,25 +176,13 @@ static void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
 					     XmDIALOG_HELP_BUTTON));
 	XtAddCallback(dialog, XmNcancelCallback, CancelTTYCB,
 		      XtPointer(&canceled));
-#else
-	dialog = new GUI::Dialog(*find_shell1(origin), "launch_tty_dialog");
-	GUI::Button *button;
-	button = dialog->add_button("Cancel");
-	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(CancelTTYCB), &canceled));
-	label = new GUI::Label(*dialog);
-	label->show();
-#endif
     }
 
     string base = term_command;
     if (base.contains(' '))
 	base = base.before(' ');
     MString msg = rm("Starting ") + tt(base) + rm("...");
-#if defined(IF_XM)
     XtVaSetValues(dialog, XmNmessageString, msg.xmstring(), XtPointer(0));
-#else
-    label->set_text(msg.xmstring());
-#endif
     manage_and_raise(dialog);
     wait_until_mapped(dialog);
 
@@ -262,24 +248,159 @@ static void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
 	tty.start();
 
 	while (!reply.contains('\n') && !canceled && tty.running()) {
-#if defined(IF_XM)
 	    XtAppProcessEvent(app_context, XtIMAll);
-#else
-	    Glib::MainContext::get_default()->iteration(false);
-#endif
 	}
 
 	if (reply.length() > 2)
 	{
 	    std::istringstream is(reply.chars());
-#if defined(IF_XM)
 	    is >> ttyname >> pid >> term >> windowid;
+	}
+
+	tty.terminate();
+    }
+
+    // Sanity check
+    if (ttyname.empty() || ttyname[0] != '/')
+	pid = -1;
+
+    // Waiting is over
+    XtUnmanageChild(dialog);
+
+    if (pid < 0)
+    {
+	if (!canceled)
+	{
+	    post_error("The execution window could not be started.", 
+		       "tty_exec_error", origin);
+	}
+
+	delay.outcome = (canceled ? "canceled" : "failed");
+    }
+
+    // Set icon and group leader
+    if (windowid)
+    {
+	wm_set_icon(XtDisplay(command_shell), windowid,
+		    iconlogo(command_shell), iconmask(command_shell));
+    }
+
+    // Be sure to be notified when the TTY window is deleted
+    if (windowid)
+    {
+	XSelectInput(XtDisplay(gdb_w), windowid, StructureNotifyMask);
+    }
+}
+
 #else
+
+// Create a separate tty window; return its name in TTYNAME, its
+// process id in PID, its terminal type in TERM, and its window id in
+// WINDOWID.
+static void launch_separate_tty(string &ttyname, pid_t &pid, string &term,
+				GUI::RefPtr<GUI::XWindow> &windowid, GUI::Widget *origin)
+{
+    // If we're already running, all is done.
+    if (pid > 0 && (remote_gdb() || kill(pid, 0) == 0))
+	return;
+
+    string term_command = app_data.term_command;
+
+    static bool canceled;
+    canceled = false;
+
+    static GUI::Dialog *dialog = 0;
+    static GUI::Label *label = 0;
+    if (dialog == 0)
+    {
+	dialog = new GUI::Dialog(*find_shell1(origin), "launch_tty_dialog");
+	GUI::Button *button;
+	button = dialog->add_button("Cancel");
+	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(CancelTTYCB), &canceled));
+	label = new GUI::Label(*dialog);
+	label->show();
+    }
+
+    string base = term_command;
+    if (base.contains(' '))
+	base = base.before(' ');
+    MString msg = rm("Starting ") + tt(base) + rm("...");
+    label->set_text(msg.xmstring());
+    manage_and_raise(dialog);
+    wait_until_mapped(dialog);
+
+    StatusDelay delay("Starting execution window");
+
+    // Fill in defaults
+    ttyname = "";
+    pid     = -1;
+
+    string command = 
+	
+	// Set up a temporary file in TMP.
+	"tmp=${TMPDIR-/tmp}/ddd$$; export tmp; "
+
+	// Be sure to remove it when exiting...
+	"trap \"rm -f $tmp\" 0; "
+
+	// ... or being interrupted.
+	"trap 'exit 1' 1 2 15; "
+
+	// Now execute the xterm command
+	+ term_command +
+
+	// which saves TTY, PID, TERM, and WINDOWID in TMP and goes to
+	// sleep forever.  Signal 2 (SIGINT) is blocked for two
+	// reasons: first, we don't want ^C to kill the tty window;
+	// second, later invocations will send us SIGINT to find out
+	// whether we're still alive.
+	" '"
+	"echo `tty` $$ $TERM $WINDOWID >$tmp; "
+	"trap \"\" 2; "
+	"while true; do sleep 3600; done"
+	"' "
+
+	// The whole thing is redirected and in the background such
+	// that rsh won't wait for us.
+	">/dev/null </dev/null 2>&1 & "
+
+	// The main file waits for TMP to be created...
+	"while test ! -s $tmp; do sleep 1; done; "
+
+	// ...and sends TMP's contents to stdout, where DDD is waiting.
+	"cat $tmp";
+
+    if (pid > 0 && remote_gdb())
+    {
+	// We're already running.  Don't start a new tty
+	// if the old one is still running.
+	std::ostringstream os;
+	os << "kill -2 " << pid << " 2>/dev/null"
+	   << " || ( " << command << " )";
+	command = string(os);
+    }
+
+    command = sh_command(command);
+
+    {
+	GUI::Main *app_context = dialog->get_main();
+	LiterateAgent tty(app_context, command);
+
+	string reply = "";
+	tty.addHandler(Input, GotReplyHP, (void *)&reply);
+	tty.start();
+
+	while (!reply.contains('\n') && !canceled && tty.running()) {
+	    Glib::MainContext::get_default()->iteration(false);
+	}
+
+	if (reply.length() > 2)
+	{
+	    std::istringstream is(reply.chars());
 	    int win_id;
 	    is >> ttyname >> pid >> term >> win_id;
 #ifdef NAG_ME
 #warning Convert win_id to windowid?
-#endif
 #endif
 	}
 
@@ -305,26 +426,17 @@ static void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
     }
 
     // Set icon and group leader
-#if defined(IF_XM)
-    if (windowid)
-    {
-	wm_set_icon(XtDisplay(command_shell), windowid,
-		    iconlogo(command_shell), iconmask(command_shell));
-    }
-#endif
 
     // Be sure to be notified when the TTY window is deleted
     if (windowid)
     {
-#if defined(IF_XM)
-	XSelectInput(XtDisplay(gdb_w), windowid, StructureNotifyMask);
-#else
 #ifdef NAG_ME
 #warning XSelectInput for StructureNotifyMask
 #endif
-#endif
     }
 }
+
+#endif
 
 static void get_args(const string& command, string& base, string& args)
 {
@@ -865,6 +977,8 @@ static void initialize_tty(const string& tty_name, const string& tty_term)
     }
 }
 
+#if defined(IF_XM)
+
 // Set the title of TTY_WINDOW to MESSAGE
 static void set_tty_title(string message, Window tty_window)
 {
@@ -896,6 +1010,42 @@ static void set_tty_title(string message, Window tty_window)
 	wm_set_name(XtDisplay(command_shell), tty_window,
 		    title, icon);
 }
+
+#else
+
+// Set the title of TTY_WINDOW to MESSAGE
+static void set_tty_title(string message, GUI::RefPtr<GUI::XWindow> tty_window)
+{
+    string init = "";
+
+    string title = DDD_NAME ": Execution Window";
+    string icon  = title;
+
+    message = message.after(": ");
+    static string empty;
+    if (!gdb_out_ignore.empty())
+	message.gsub(gdb_out_ignore, empty);
+
+    string program = message;
+    if (program.contains(' '))
+	program = program.before(' ');
+
+    if (!program.empty())
+    {
+	string program_base = program;
+	if (program_base.contains('/'))
+	    program_base = program_base.after('/', -1);
+
+	title = DDD_NAME ": " + message;
+	icon  = DDD_NAME ": " + program_base;
+    }
+
+    if (tty_window)
+	wm_set_name(command_shell->get_display(), tty_window,
+		    title, icon);
+}
+
+#endif
 
 // Handle rerun
 static void handle_rerun(string& command)
@@ -1080,7 +1230,11 @@ void kill_exec_tty(bool killed)
     }
 
     separate_tty_pid    = 0;
-    separate_tty_window = NO_WINDOW;
+#if defined(IF_XM)
+    separate_tty_window = 0;
+#else
+    separate_tty_window.clear();
+#endif
 
     set_buffer_gdb_output();
 }

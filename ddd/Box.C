@@ -32,13 +32,13 @@ char Box_rcsid[] =
 #include <string.h>
 
 #include "assert.h"
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
-#else // NOT IF_MOTIF
+#else
 #include "gtk_wrapper.h"
-#endif // IF_MOTIF
+#endif
 
 #include "Box.h"
 #include "TagBox.h"
@@ -50,11 +50,19 @@ DEFINE_TYPE_INFO_0(Box)
 // Draw
 
 // Draw Box
+#if defined(IF_XM)
 void Box::draw(Widget w, 
 	       const BoxRegion& r, 
 	       const BoxRegion& exposed, 
 	       GC gc, 
 	       bool context_selected) const
+#else
+void Box::draw(GUI::Widget *w, 
+	       const BoxRegion& r, 
+	       const BoxRegion& exposed, 
+	       GUI::RefPtr<GUI::GC> gc, 
+	       bool context_selected) const
+#endif
 {
     // Draw only if exposed
     if (!(r <= exposed))
@@ -67,13 +75,15 @@ void Box::draw(Widget w,
     assert(!(size() > r.space()));
 
     // Use default GC if needed
-    if (gc == NO_GC) {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
+    if (gc == 0) {
 	gc = DefaultGCOfScreen(XtScreen(w));
-#else // NOT IF_MOTIF
-	gc = w->get_style()->get_black_gc();
-#endif // IF_MOTIF
     }
+#else
+    if (!gc) {
+	gc = w->get_black_gc();
+    }
+#endif
 
     // Go and draw
     _draw(w, r, exposed, gc, context_selected);

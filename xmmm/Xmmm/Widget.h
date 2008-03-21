@@ -47,26 +47,26 @@ namespace Xmmm {
 	}
 	RefPtr(T *ptr) {
 	    p = ptr;
-	    // if (p) p->ref();
+	    if (p) p->ref();
 	}
 	RefPtr(const RefPtr &rp) {
 	    p = rp.p;
-	    // if (p) p->ref();
+	    if (p) p->ref();
 	}
 	RefPtr &operator=(const RefPtr &rp) {
-	    // if (rp.p) rp.p->ref();
-	    // if (p) p->unref();
+	    if (rp.p) rp.p->ref();
+	    if (p) p->unref();
 	    p = rp.p;
 	    return *this;
 	}
 	RefPtr &operator=(T *val) {
-	    // if (val) val->ref();
-	    // if (p) p->unref();
+	    if (val) val->ref();
+	    if (p) p->unref();
 	    p = val;
 	    return *this;
 	}
 	~RefPtr(void) {
-	    // if (p) p->unref();
+	    if (p) p->unref();
 	}
 	operator T *(void) const {
 	    return p;
@@ -81,9 +81,24 @@ namespace Xmmm {
 	}
     };
 
-    typedef ::Display Display;
+    class Display {
+	int nrefs_;
+	::Display *disp_;
+    public:
+	int ref(void) {return nrefs_++;}
+	int unref(void) {if (!--nrefs_) delete this;}
+	const char *display_string(void) const;
+    };
 
-    typedef ::XFontStruct Font;
+    class Font {
+	int nrefs_;
+	XFontStruct *font_;
+    public:
+	int ref(void) {return nrefs_++;}
+	int unref(void) {if (!--nrefs_) delete this;}
+	Font(XFontStruct *f0) {font_ = f0;}
+	~Font(void) { /* XFreeFont(disp_, font_); */ }
+    };
 
     template<> void RefPtr<Font>::clear(void);
 
@@ -99,6 +114,7 @@ namespace Xmmm {
 	void hide(void);
 	String get_name(void);
 	void set_name(const String &name);
+	RefPtr<Display> get_display(void);
 	static Widget *lookup(::Widget w);
 	void *&property_user_data(void) {return user_data;}
 	void set_sensitive(bool);

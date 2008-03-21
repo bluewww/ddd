@@ -30,15 +30,19 @@
 #ifndef _DDD_exit_h
 #define _DDD_exit_h
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #ifdef IF_MOTIF
-
 #include <X11/Intrinsic.h>
+#endif
 
-#else // NOT IF_MOTIF
+#if !defined(IF_XM)
+#include <GUI/Main.h>
+#endif
 
 #include "gtk_wrapper.h"
-
-#endif // IF_MOTIF
 
 #include <iostream>
 
@@ -53,17 +57,33 @@ extern void ddd_install_fatal(const char *program_name = 0);
 extern void ddd_install_signal();
 extern void ddd_install_x_fatal();
 extern void ddd_install_x_error();
+#if defined(IF_XM)
 extern void ddd_install_xt_error(XtAppContext app_context);
+#else
+extern void ddd_install_xt_error(GUI::Main *app_context);
+#endif
 
 // Callbacks
-extern void _DDDExitCB   (CB_ALIST_2(XtP(long)));           // GDB exited normally
-extern void DDDExitCB    (CB_ALIST_12(Widget, XtP(long)));  // Exit DDD
-extern void DDDRestartCB (CB_ALIST_1(Widget));                 // Restart DDD
-extern void DDDDebugCB   (CB_ALIST_2(XtP(long)));           // Debug DDD
-extern void DDDDumpCoreCB(CB_ALIST_NULL);                      // Dump Core
+#if defined(IF_XM)
+extern void _DDDExitCB   (Widget, XtPointer, XtPointer);    // GDB exited normally
+extern void DDDExitCB    (Widget, XtPointer, XtPointer);    // Exit DDD
+extern void DDDRestartCB (Widget, XtPointer, XtPointer);    // Restart DDD
+extern void DDDDebugCB   (Widget, XtPointer, XtPointer);    // Debug DDD
+extern void DDDDumpCoreCB(Widget, XtPointer, XtPointer);    // Dump Core
+#else
+extern void _DDDExitCB   (long status);                     // GDB exited normally
+extern void DDDExitCB    (GUI::Widget *, long status);      // Exit DDD
+extern void DDDRestartCB (GUI::Widget *);                   // Restart DDD
+extern void DDDDebugCB   (long status);                     // Debug DDD
+extern void DDDDumpCoreCB(void);                            // Dump Core
+#endif
 
 // Valgrind
-extern void dddValgrindLeakCheckCB(CB_ALIST_NULL);
+#if defined(IF_XM)
+extern void dddValgrindLeakCheckCB(Widget, XtPointer, XtPointer);
+#else
+extern void dddValgrindLeakCheckCB(void);
+#endif
 extern bool ValgrindLeakBuiltin();
 extern bool RunningOnValgrind();
 

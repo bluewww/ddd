@@ -44,16 +44,23 @@ char select_rcsid[] =
 #include "verify.h"
 #include "wm.h"
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 #include <Xm/List.h>
 #include <Xm/SelectioB.h>
 #include <Xm/Text.h>
-#endif // IF_MOTIF
+#endif
 
-DIALOG_P gdb_selection_dialog = 0;
-static TREEVIEW_P gdb_selection_list_w = 0;
+#if defined(IF_XM)
+Widget gdb_selection_dialog = 0;
+static Widget gdb_selection_list_w = 0;
+#else
+GUI::Dialog *gdb_selection_dialog = 0;
+static GUI::ListView *gdb_selection_list_w = 0;
+#endif
 
-static void SelectCB(CB_ALIST_2(XtP(string *) client_data))
+#if defined(IF_XM)
+
+static void SelectCB(Widget, XtPointer client_data, XtPointer)
 {
     string& reply = *((string *)client_data);
 
@@ -63,12 +70,33 @@ static void SelectCB(CB_ALIST_2(XtP(string *) client_data))
 	reply = itostring(numbers[0]) + "\n";
 }
 
-static void CancelCB(CB_ALIST_2(XtP(string *) client_data))
+static void CancelCB(Widget, XtPointer client_data, XtPointer)
 {
     string& reply = *((string *)client_data);
     reply = "\003";
 }
 
+#else
+
+static void SelectCB(string *client_data)
+{
+    string& reply = *((string *)client_data);
+
+    IntArray numbers;
+    getItemNumbers(gdb_selection_list_w, numbers);
+    if (numbers.size() > 0)
+	reply = itostring(numbers[0]) + "\n";
+}
+
+static void CancelCB(string *client_data)
+{
+    string& reply = *((string *)client_data);
+    reply = "\003";
+}
+
+#endif
+
+#if defined(IF_XM)
 
 // Answer GDB question
 static void select_from_gdb(const string& question, string& reply)
@@ -115,7 +143,6 @@ static void select_from_gdb(const string& question, string& reply)
 
     if (gdb_selection_dialog == 0)
     {
-#ifdef IF_MOTIF
 	Arg args[10];
 	Cardinal arg = 0;
 	XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
@@ -124,51 +151,27 @@ static void select_from_gdb(const string& question, string& reply)
 	    verify(XmCreateSelectionDialog(find_shell(gdb_w),
 					   XMST("gdb_selection_dialog"),
 					   args, arg));
-#else // NOT IF_MOTIF
-	gdb_selection_dialog = 
-	    new Gtk::Dialog(XMST("gdb_selection_dialog"), *find_shell(gdb_w));
-#endif // IF_MOTIF
 	Delay::register_shell(gdb_selection_dialog);
 
-#ifdef IF_MOTIF
 	XtUnmanageChild(XmSelectionBoxGetChild(gdb_selection_dialog,
 					       XmDIALOG_TEXT));
 	XtUnmanageChild(XmSelectionBoxGetChild(gdb_selection_dialog, 
 					       XmDIALOG_SELECTION_LABEL));
 	XtUnmanageChild(XmSelectionBoxGetChild(gdb_selection_dialog, 
 					       XmDIALOG_APPLY_BUTTON));
-#endif // IF_MOTIF
 
-#ifdef IF_MOTIF
 	gdb_selection_list_w = XmSelectionBoxGetChild(gdb_selection_dialog, 
 						      XmDIALOG_LIST);
-#else // NOT IF_MOTIF
-	gdb_selection_list_w = new Gtk::TreeView();
-	gdb_selection_dialog->get_vbox()->pack_start(*gdb_selection_list_w, Gtk::PACK_EXPAND_WIDGET);
-	gdb_selection_list_w->show();
-#endif // IF_MOTIF
-#ifdef IF_MOTIF
 	XtVaSetValues(gdb_selection_list_w,
 		      XmNselectionPolicy, XmSINGLE_SELECT,
 		      XtPointer(0));
-#else // NOT IF_MOTIF
-	gdb_selection_list_w->get_selection()->set_mode(Gtk::SELECTION_SINGLE);
-#endif // IF_MOTIF
 
-#ifdef IF_MOTIF
 	XtAddCallback(gdb_selection_dialog,
 		      XmNokCallback, SelectCB, &selection_reply);
 	XtAddCallback(gdb_selection_dialog,
 		      XmNcancelCallback, CancelCB, &selection_reply);
 	XtAddCallback(gdb_selection_dialog,
 		      XmNhelpCallback, ImmediateHelpCB, 0);
-#else // NOT IF_MOTIF
-	Gtk::Button *button;
-	button = gdb_selection_dialog->add_button(XMST("OK"), 0);
-	button->signal_clicked().connect(sigc::bind(PTR_FUN(SelectCB), &selection_reply));
-	button = gdb_selection_dialog->add_button(XMST("Cancel"), 0);
-	button->signal_clicked().connect(sigc::bind(PTR_FUN(CancelCB), &selection_reply));
-#endif // IF_MOTIF
     }
 
     setLabelList(gdb_selection_list_w, choices, selected, count, false, false);
@@ -181,16 +184,97 @@ static void select_from_gdb(const string& question, string& reply)
     selection_reply = "";
     while (selection_reply.empty() 
 	   && gdb->running() && !gdb->isReadyWithPrompt()) {
-#ifdef IF_MOTIF
 	XtAppProcessEvent(XtWidgetToApplicationContext(gdb_w), XtIMAll);
-#else // NOT IF_MOTIF
-	Glib::MainContext::get_default()->iteration(false);
-#endif // IF_MOTIF
     }
 
     // Found a reply - return
     reply = selection_reply;
 }
+
+#else
+
+// Answer GDB question
+static void select_from_gdb(const string& question, string& reply)
+{
+    int count       = question.freq('\n') + 1;
+    string *choices = new string[count];
+    bool *selected  = new bool[count];
+
+    split(question, choices, count, '\n');
+
+    // Highlight choice #1 by default
+    for (int i = 0; i < count; i++)
+    {
+	if (!has_nr(choices[i]))
+	{
+	    // Choice has no number (prompt) - remove it
+	    for (int j = i; j < count - 1; j++)
+		choices[j] = choices[j + 1];
+	    count--;
+	    i--;
+	}
+	else
+	{
+	    selected[i] = (get_positive_nr(choices[i]) == 1);
+	}
+    }
+
+    if (count < 2)
+    {
+	// Nothing to choose from
+	if (count == 1)
+	{
+	    // Take the first choice.
+	    reply = itostring(atoi(choices[0].chars())) + "\n";
+	}
+	
+	delete[] choices;
+	delete[] selected;
+	return;
+    }
+
+    // Popup selection dialog
+    static string selection_reply;
+
+    if (gdb_selection_dialog == 0)
+    {
+	gdb_selection_dialog = 
+	    new GUI::Dialog(*find_shell1(gdb_w), "gdb_selection_dialog");
+	Delay::register_shell(gdb_selection_dialog);
+
+
+	std::vector<GUI::String> headers;
+	headers.push_back(GUI::String("Selection"));
+	gdb_selection_list_w = new GUI::ListView(*gdb_selection_dialog, "gdb_selection_list",
+						 headers);
+	gdb_selection_list_w->show();
+	gdb_selection_list_w->get_selection()->set_mode(Gtk::SELECTION_SINGLE);
+
+	Gtk::Button *button;
+	button = gdb_selection_dialog->add_button(XMST("OK"), 0);
+	button->signal_clicked().connect(sigc::bind(PTR_FUN(SelectCB), &selection_reply));
+	button = gdb_selection_dialog->add_button(XMST("Cancel"), 0);
+	button->signal_clicked().connect(sigc::bind(PTR_FUN(CancelCB), &selection_reply));
+    }
+
+    setLabelList(gdb_selection_list_w, choices, selected, count, false, false);
+
+    delete[] choices;
+    delete[] selected;
+
+    manage_and_raise(gdb_selection_dialog);
+
+    selection_reply = "";
+    while (selection_reply.empty() 
+	   && gdb->running() && !gdb->isReadyWithPrompt()) {
+	Glib::MainContext::get_default()->iteration(false);
+    }
+
+    // Found a reply - return
+    reply = selection_reply;
+}
+
+#endif
 
 // Select a file
 static void select_file(const string& /* question */, string& reply)
@@ -204,11 +288,11 @@ static void select_file(const string& /* question */, string& reply)
     open_file_reply = "";
     while (open_file_reply.empty() 
 	   && gdb->running() && !gdb->isReadyWithPrompt()) {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 	XtAppProcessEvent(XtWidgetToApplicationContext(gdb_w), XtIMAll);
-#else // NOT IF_MOTIF
+#else
 	Glib::MainContext::get_default()->iteration(false);
-#endif // IF_MOTIF
+#endif
     }
 
     // Found a reply - return
@@ -229,14 +313,14 @@ void gdb_selectHP(Agent *, void *, void *call_data)
 #endif
 
     // Fetch previous output lines, in case this is a multi-line message.
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     String s = XmTextGetString(gdb_w);
     string prompt(s);
     XtFree(s);
     prompt = prompt.from(int(messagePosition)) + info->question;
-#else // NOT IF_MOTIF
+#else
     string prompt = string(gdb_w->get_text(messagePosition, -1).c_str()) + info->question;
-#endif // IF_MOTIF
+#endif
 
     // Issue prompt right now
     _gdb_out(info->question);

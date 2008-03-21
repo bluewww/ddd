@@ -41,6 +41,10 @@
 #ifndef _DDD_GDBAgent_h
 #define _DDD_GDBAgent_h
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "TTYAgent.h"
 #include "HandlerL.h"
 #include "strclass.h"
@@ -222,11 +226,24 @@ protected:
     static void munch_perl_scalar(string& value);
 
 public:
+
+#if defined(IF_XM)
+
     // Constructor
     GDBAgent (XtAppContext app_context,
 	      const string& gdb_call,
 	      DebuggerType type,
 	      unsigned nTypes = GDBAgent_NTypes);
+
+#else
+
+    // Constructor
+    GDBAgent (GUI::Main *app_context,
+	      const string& gdb_call,
+	      DebuggerType type,
+	      unsigned nTypes = GDBAgent_NTypes);
+
+#endif
 
     // Duplicator
     GDBAgent (const GDBAgent& gdb);

@@ -29,6 +29,10 @@
 #ifndef _DDD_TagBox_h
 #define _DDD_TagBox_h
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "strclass.h"
 #include "bool.h"
 #include "Box.h"
@@ -51,12 +55,21 @@ private:
     TagBox& operator = (const TagBox&);
 
 protected:
+#if defined(IF_XM)
     // Draw
     virtual void _draw(Widget w, 
 		       const BoxRegion& region, 
 		       const BoxRegion& exposed, 
 		       GC gc,
 		       bool context_selected) const;
+#else
+    // Draw
+    virtual void _draw(GUI::Widget *w, 
+		       const BoxRegion& region, 
+		       const BoxRegion& exposed, 
+		       GUI::RefPtr<GUI::GC> gc,
+		       bool context_selected) const;
+#endif
 
     // Copy
     TagBox(const TagBox& tagbox):

@@ -68,6 +68,11 @@ String::c_str(void) const
   return s().c_str();
 }
 
+Display::Display(Glib::RefPtr<Gdk::Display> d0)
+{
+    disp_ = d0;
+}
+
 Widget::Widget(void)
 {
 }
@@ -101,7 +106,8 @@ Widget::get_parent(void)
 RefPtr<Display>
 Widget::get_display(void)
 {
-    return RefPtr<Display>(internal()->get_display());
+    Glib::RefPtr<Gdk::Display> d0 = internal()->get_display();
+    return RefPtr<Display>(new Display(d0));
 }
 
 void
@@ -262,4 +268,20 @@ GtkX::signal_idle()
     }
     return *signal_idle_ptr;
 }
+
+static Gdk::Color make_color(const Color &rgb)
+{
+    Gdk::Color c;
+    c.set_rgb_p(rgb.r, rgb.g, rgb.b);
+    return c;
+}
+
+Cursor::Cursor(const RefPtr<Pixmap> &source, const RefPtr<Pixmap> &mask,
+	       const Color &fg, const Color &bg,
+	       int x, int y):
+    Gdk::Cursor(source->gdk_pixmap(), mask->gdk_pixmap(),
+		make_color(fg), make_color(bg), x, y)
+{
+}
+
 

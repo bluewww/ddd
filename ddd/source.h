@@ -59,14 +59,12 @@ extern void gdbLookupCB       (CB_ALIST_NULL);
 
 #if defined(IF_XM)
 extern void gdbTempBreakAtCB  (Widget, XtPointer, XtPointer);
-#else
-extern void gdbTempBreakAtCB  (GUI::Widget *);
-#endif
-extern void gdbRegexBreakAtCB (CB_ALIST_1(Widget));
-#if defined(IF_XM)
+extern void gdbRegexBreakAtCB (Widget, XtPointer, XtPointer);
 extern void gdbContUntilCB    (Widget, XtPointer, XtPointer);
 extern void gdbSetPCCB        (Widget, XtPointer, XtPointer);
 #else
+extern void gdbTempBreakAtCB  (GUI::Widget *);
+extern void gdbRegexBreakAtCB (GUI::Widget *);
 extern void gdbContUntilCB    (GUI::Widget *);
 extern void gdbSetPCCB        (GUI::Widget *);
 #endif

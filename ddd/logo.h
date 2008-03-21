@@ -48,6 +48,7 @@
 
 // DDD logos
 
+#if defined(IF_XM)
 // Return a pixmap suitable for icons on the root window
 extern Pixmap iconlogo(Widget shell);
 extern Pixmap iconmask(Widget shell);
@@ -56,7 +57,18 @@ extern Pixmap iconmask(Widget shell);
 extern Pixmap dddsplash(Widget shell, 
 			const string& color_key,
 			Dimension& width, Dimension& height);
+#else
+// Return a pixmap suitable for icons on the root window
+extern GUI::RefPtr<GUI::Pixmap> iconlogo(GUI::Widget *shell);
+extern GUI::RefPtr<GUI::Pixmap> iconmask(GUI::Widget *shell);
 
+// Return the DDD splash screen.  COLOR_KEY indicates the XPM visual type.
+extern GUI::RefPtr<GUI::Pixmap> dddsplash(GUI::Widget *shell, 
+					  const string& color_key,
+					  Dimension& width, Dimension& height);
+#endif
+
+#if defined(IF_XM)
 // Install toolbar icons in Motif cache.  COLOR_KEY indicates the XPM
 // visual type for inactive buttons.  ACTIVE_COLOR_KEY is the XPM visual
 // type for active buttons (entered or armed).
@@ -68,6 +80,19 @@ inline void install_icons(Widget shell,
 {
     install_icons(shell, color_key, color_key);
 }
+#else
+// Install toolbar icons in Motif cache.  COLOR_KEY indicates the XPM
+// visual type for inactive buttons.  ACTIVE_COLOR_KEY is the XPM visual
+// type for active buttons (entered or armed).
+extern void install_icons(GUI::Widget *shell, 
+			  const string& color_key,
+			  const string& active_color_key);
+inline void install_icons(GUI::Widget *shell, 
+			  const string& color_key = 'c')
+{
+    install_icons(shell, color_key, color_key);
+}
+#endif
 
 // Set label of W to NEW_LABEL (and its pixmap to IMAGE_NAME, if given)
 #if defined(IF_XM)

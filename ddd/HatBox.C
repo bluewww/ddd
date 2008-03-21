@@ -37,10 +37,17 @@ DEFINE_TYPE_INFO_1(HatBox, Box)
 // HatBox
 
 // Draw
+#if defined(IF_XM)
 void HatBox::_draw(Widget w, 
 		   const BoxRegion& r, 
 		   const BoxRegion& exposed, GC gc,
 		   bool context_selected) const
+#else
+void HatBox::_draw(GUI::Widget *w, 
+		   const BoxRegion& r, 
+		   const BoxRegion& exposed, GUI::RefPtr<GUI::GC> gc,
+		   bool context_selected) const
+#endif
 {
     BoxRegion childRegion = r;
 

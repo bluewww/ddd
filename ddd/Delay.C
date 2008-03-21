@@ -40,12 +40,12 @@ char Delay_rcsid[] =
 #include <X11/cursorfont.h>
 #include <X11/StringDefs.h>
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 // ANSI C++ doesn't like the XtIsRealized() macro
 #ifdef XtIsRealized
 #undef XtIsRealized
 #endif
-#endif // IF_MOTIF
+#endif
 
 DEFINE_TYPE_INFO_0(_Delay);
 DEFINE_TYPE_INFO_0(Delay);
@@ -70,23 +70,27 @@ DEFINE_TYPE_INFO_0(Delay);
 
 #if defined(IF_XM)
 void (*Delay::shell_registered)(Widget w) = 0;
-#else
-void (*Delay::shell_registered)(Widget w) = 0;
-void (*Delay::shell_registered1)(GUI::Widget *w) = 0;
-#endif
 
 Cursor _Delay::hourglass_cache = 0;
 Cursor _Delay::current_cursor = 0;
+#else
+void (*Delay::shell_registered)(GUI::Widget *w) = 0;
+
+GUI::Cursor *_Delay::hourglass_cache = 0;
+GUI::Cursor *_Delay::current_cursor = 0;
+#endif
+
+#if defined(IF_XM)
 
 Cursor _Delay::hourglass_cursor()
 {
     if (hourglass_cache != 0)
 	return hourglass_cache;
 
-    DISPLAY_P display = XtDisplay(widget);
+    Display *display = XtDisplay(widget);
 
 #if SMALL_HOURGLASS_CURSOR || LARGE_HORGLASS_CURSOR
-    SCREEN_P screen = XtScreen(widget);
+    Screen *screen = XtScreen(widget);
     Window rootWindow = RootWindowOfScreen(screen);
 
     unsigned char *cursor_bits      = time16_bits;
@@ -112,7 +116,6 @@ Cursor _Delay::hourglass_cursor()
     }
 #endif
 
-#ifdef IF_MOTIF
     Pixmap cursor_pixmap = 
 	XCreateBitmapFromData(display, rootWindow, (char *)cursor_bits,
 			      cursor_width, cursor_height);
@@ -130,22 +133,6 @@ Cursor _Delay::hourglass_cursor()
 	XCreatePixmapCursor(display, cursor_pixmap, cursor_mask_pixmap,
 			    cursor_colors, cursor_colors + 1, 
 			    cursor_x_hot, cursor_y_hot);
-#else // NOT IF_MOTIF
-    Pixmap cursor_pixmap = 
-	Gdk::Bitmap::create((char *)cursor_bits, cursor_width, cursor_height);
-    Pixmap cursor_mask_pixmap = 
-	Gdk::Bitmap::create((char *)cursor_mask_bits, cursor_width, cursor_height);
-#ifdef NAG_ME
-#warning BlackPixelOfScreen, etc.?
-#endif
-    Gdk::Color bg;
-    bg.set_rgb_p(0.0, 0.0, 0.0);
-    Gdk::Color fg;
-    fg.set_rgb_p(1.0, 1.0, 1.0);
-    hourglass_cache = 
-	new Gdk::Cursor(cursor_pixmap, cursor_mask_pixmap, fg, bg,
-			cursor_x_hot, cursor_y_hot);
-#endif // IF_MOTIF
     
 #else // Watch cursor
     hourglass_cache = 
@@ -154,6 +141,66 @@ Cursor _Delay::hourglass_cursor()
 
     return hourglass_cache;
 }
+
+#else
+
+GUI::Cursor *_Delay::hourglass_cursor()
+{
+    if (hourglass_cache != 0)
+	return hourglass_cache;
+
+    GUI::RefPtr<GUI::Display> display = widget->get_display();
+
+#if SMALL_HOURGLASS_CURSOR || LARGE_HORGLASS_CURSOR
+    GUI::RefPtr<GUI::Screen> screen = widget->get_screen();
+    GUI::RefPtr<GUI::XWindow> rootWindow = screen->get_root_window();
+
+    unsigned char *cursor_bits      = time16_bits;
+    unsigned char *cursor_mask_bits = time16m_bits;
+    unsigned int cursor_width       = time16_width;
+    unsigned int cursor_height      = time16_height;
+    unsigned int cursor_x_hot       = time16_x_hot;
+    unsigned int cursor_y_hot       = time16_y_hot;
+
+#if LARGE_HOURGLASS_CURSOR
+    // Fetch cursor shape
+    unsigned int width, height;
+    XQueryBestCursor(display, rootWindow, 32, 32, &width, &height);
+    Boolean largeCursors = (width >= 32 && height >= 32);
+    if (largeCursors)
+    {
+	cursor_bits      = time32_bits;
+	cursor_mask_bits = time32m_bits;
+	cursor_width     = time32_width;
+	cursor_height    = time32_height;
+	cursor_x_hot     = time32_x_hot;
+	cursor_y_hot     = time32_y_hot;
+    }
+#endif
+
+    GUI::RefPtr<GUI::Pixmap> cursor_pixmap = 
+	GUI::Pixmap::create_bitmap_from_data((char *)cursor_bits, cursor_width, cursor_height);
+    GUI::RefPtr<GUI::Pixmap> cursor_mask_pixmap = 
+	GUI::Pixmap::create_bitmap_from_data((char *)cursor_mask_bits, cursor_width, cursor_height);
+#ifdef NAG_ME
+#warning BlackPixelOfScreen, etc.?
+#endif
+    GUI::Color bg(0.0, 0.0, 0.0);
+    GUI::Color fg(1.0, 1.0, 1.0);
+    hourglass_cache = 
+	new GUI::Cursor(cursor_pixmap, cursor_mask_pixmap, fg, bg,
+			cursor_x_hot, cursor_y_hot);
+    
+#else // Watch cursor
+    std::cerr << "Watch cursor: unimplemented.\n";
+#endif
+
+    return hourglass_cache;
+}
+
+#endif
+
+#if defined(IF_XM)
 
 _Delay::_Delay(Widget w):
     widget(w), old_cursor(0)
@@ -165,53 +212,67 @@ _Delay::_Delay(Widget w):
     std::clog << "Setting " << XtName(widget) << " delay cursor\n";
 #endif
 
-    DISPLAY_P display = XtDisplay(widget);
+    Display *display = XtDisplay(widget);
 
     if (current_cursor == 0)
     {
 	// XC_left_ptr is the default cursor in OSF/Motif.
 	// (How do we determine the current cursor? - FIXME)
-#ifdef IF_MOTIF
 	current_cursor = XCreateFontCursor(display, XC_left_ptr);
-#else // NOT IF_MOTIF
-#ifdef NAG_ME
-#warning Leak?
-#endif
-	current_cursor = new Gdk::Cursor(Gdk::LEFT_PTR);
-#endif // IF_MOTIF
     }
 
     old_cursor = current_cursor;
 
     if (XtIsRealized(widget))
     {
-#ifdef IF_MOTIF
 	XDefineCursor(display, XtWindow(widget), hourglass_cursor());
-#else // NOT IF_MOTIF
-	widget->get_window()->set_cursor(*hourglass_cursor());
-#endif // IF_MOTIF
 	XFlush(display);
     }
 
-#ifdef IF_MOTIF
     XtAddCallback(widget, XtNdestroyCallback, _Delay::DestroyCB, this);
-#else // NOT IF_MOTIF
+}
+
+#else
+
+_Delay::_Delay(GUI::Widget *w):
+    widget(w), old_cursor(0)
+{
+    if (widget == 0)
+	return;
+
+#if LOG_DELAY
+    std::clog << "Setting " << widget->get_name() << " delay cursor\n";
+#endif
+
+    GUI::RefPtr<GUI::Display> display = widget->get_display();
+
+    static int errcnt = 0;
+    if (!errcnt++) std::cerr << "_Delay::_Delay: not implemented\n";
+
+    if (current_cursor == 0)
+    {
+	// XC_left_ptr is the default cursor in OSF/Motif.
+	// (How do we determine the current cursor? - FIXME)
+	// current_cursor = new Gdk::Cursor(Gdk::LEFT_PTR);
+    }
+
+    old_cursor = current_cursor;
+
+    if (widget->is_realized())
+    {
+	// widget->get_window()->set_cursor(*hourglass_cursor());
+	display->flush();
+    }
+
 #ifdef NAG_ME
 #warning There is no signal_destroy()?
 #endif
     // widget->signal_destroy().connect(MEM_FUN(*this, &_Delay::DestroyCB));
-#endif // IF_MOTIF
-}
-
-#if !defined(IF_XM)
-
-_Delay::_Delay(GUI::Widget *w)
-{
-    static int errcnt = 0;
-    if (!errcnt++) std::cerr << "_Delay::_Delay: not implemented\n";
 }
 
 #endif
+
+#if defined(IF_XM)
 
 _Delay::~_Delay()
 {
@@ -227,41 +288,63 @@ _Delay::~_Delay()
 
     if (XtIsRealized(widget))
     {
-#ifdef IF_MOTIF
 	XDefineCursor(XtDisplay(widget), XtWindow(widget), old_cursor);
-#else // NOT IF_MOTIF
-	widget->get_window()->set_cursor(*old_cursor);
-#endif // IF_MOTIF
 	XFlush(XtDisplay(widget));
     }
 
     current_cursor = old_cursor;
-#ifdef IF_MOTIF
     XtRemoveCallback(widget, XtNdestroyCallback, _Delay::DestroyCB, this);
-#else // NOT IF_MOTIF
-#ifdef NAG_ME
-#warning No signal_destroy()?
-#endif
-#endif // IF_MOTIF
 }
 
-// Make sure we do not attempt to delete a delay on a destroyed widget
-#ifdef IF_MOTIF
-void _Delay::DestroyCB(Widget, XtPointer client_data, XtPointer)
-#else // NOT IF_MOTIF
-void _Delay::DestroyCB()
-#endif // IF_MOTIF
+#else
+
+_Delay::~_Delay()
 {
-#ifdef IF_MOTIF
+  // TODO: race condition here
+  // Need to flush the events, put a lock, do the test below, delete
+  // the call back and release the lock.
+    if (widget == 0 || old_cursor == 0)
+	return;
+
+#if LOG_DELAY
+    std::clog << "Removing " << widget->get_name() << " delay cursor\n";
+#endif
+
+    static int errcnt = 0;
+    if (!errcnt++) std::cerr << "_Delay::_Delay: not implemented\n";
+
+    if (widget->is_realized())
+    {
+	// widget->get_window()->set_cursor(*old_cursor);
+	widget->get_display()->flush();
+    }
+
+    current_cursor = old_cursor;
+
+#ifdef NAG_ME
+#warning There is no signal_destroy()?
+#endif
+}
+
+#endif
+
+// Make sure we do not attempt to delete a delay on a destroyed widget
+#if defined(IF_XM)
+void _Delay::DestroyCB(Widget, XtPointer client_data, XtPointer)
+#else
+void _Delay::DestroyCB()
+#endif
+{
+#if defined(IF_XM)
     _Delay *delay = (_Delay *)client_data;
     assert(ptr_cast(_Delay, delay));
 
     delay->widget     = 0;
     delay->old_cursor = 0;
-#else // NOT IF_MOTIF
+#else
     widget     = 0;
     old_cursor = 0;
-#endif // IF_MOTIF
+#endif
 }
 
 
@@ -269,7 +352,11 @@ int Delay::delay_count = 0;
 WidgetArray Delay::_shells;
 DelayArray Delay::delays;
 
+#if defined(IF_XM)
 Delay::Delay(Widget w):
+#else
+Delay::Delay(GUI::Widget *w):
+#endif
     _Delay(w)
 {
     assert(delays.size() == _shells.size());
@@ -290,19 +377,12 @@ Delay::Delay(Widget w):
     }
 }
 
-#if !defined(IF_XM)
-
-Delay::Delay(GUI::Widget *w):
-    _Delay::_Delay(w)
-{
-    static int errcnt = 0;
-    if (!errcnt++) std::cerr << "Delay::Delay: not implemented\n";
-}
-
-#endif
-
 // Make sure the shell is unregistered when destroyed
-void Delay::DestroyCB(CB_ARG_LIST_1(widget))
+#if defined(IF_XM)
+void Delay::DestroyCB(Widget widget, XtPointer, XtPointer)
+#else
+void Delay::DestroyCB(GUI::Widget *widget)
+#endif
 {
     assert(delays.size() == _shells.size());
 
@@ -323,8 +403,11 @@ void Delay::DestroyCB(CB_ARG_LIST_1(widget))
 	}
 }
 
-
+#if defined(IF_XM)
 void Delay::register_shell(Widget widget)
+#else
+void Delay::register_shell(GUI::Widget *widget)
+#endif
 {
     assert(delays.size() == _shells.size());
 
@@ -338,14 +421,14 @@ void Delay::register_shell(Widget widget)
     for (i = 0; i < _shells.size() && _shells[i] != 0; i++)
 	;
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     XtAddCallback(widget, XtNdestroyCallback, DestroyCB, XtPointer(0));
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning No signal_destroy()?
 #endif
     // widget->signal_destroy().connect(sigc::bind(PTR_FUN(Delay::DestroyCB), widget));
-#endif // IF_MOTIF
+#endif
 
     _Delay *new_delay = 0;
     if (delay_count)
@@ -353,7 +436,11 @@ void Delay::register_shell(Widget widget)
 
     if (i == _shells.size())
     {
+#if defined(IF_XM)
 	_shells += Widget(0);
+#else
+	_shells += (GUI::Widget *)0;
+#endif
 	delays  += (_Delay *)0;
     }
 
@@ -372,14 +459,6 @@ void Delay::register_shell(Widget widget)
 
     assert(delays.size() == _shells.size());
 }
-
-#if !defined(IF_XM)
-void
-Delay::register_shell1(GUI::Widget *w)
-{
-    Delay::register_shell(w->internal());
-}
-#endif
 
 Delay::~Delay()
 {

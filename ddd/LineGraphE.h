@@ -29,6 +29,10 @@
 #ifndef _DDD_LineGraphEdge_h
 #define _DDD_LineGraphEdge_h
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "GraphEdge.h"
 #include "Box.h"
 #include "EdgeA.h"
@@ -51,12 +55,12 @@ protected:
 			 BoxPoint& p1, BoxPoint& p2, 
 			 const GraphGC& gc);
 
+#if defined(IF_XM)
     // Draw.
     virtual void _draw(Widget w, 
 		       const BoxRegion& exposed, 
 		       const GraphGC& gc) const;
 
-    // Draw line.
     virtual void drawLine(Widget w,
 			  const BoxRegion& exposed,
 			  const GraphGC& gc) const;
@@ -72,7 +76,30 @@ protected:
 			       const GraphGC& gc,
 			       const BoxPoint& pos,
 			       double alpha) const;
+#else
+    // Draw.
+    virtual void _draw(GUI::Widget *w, 
+		       const BoxRegion& exposed, 
+		       const GraphGC& gc) const;
 
+    virtual void drawLine(GUI::Widget *w,
+			  const BoxRegion& exposed,
+			  const GraphGC& gc) const;
+
+    // Draw self edge.
+    virtual void drawSelf(GUI::Widget *w,
+			  const BoxRegion& exposed,
+			  const GraphGC& gc) const;
+
+    // Draw arrow head at POS.
+    virtual void drawArrowHead(GUI::Widget *w,
+			       const BoxRegion& exposed,
+			       const GraphGC& gc,
+			       const BoxPoint& pos,
+			       double alpha) const;
+#endif
+
+    // Draw line.
     // Print self edge.
     virtual void printSelf(std::ostream& os, const GraphGC &gc) const;
 

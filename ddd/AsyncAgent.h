@@ -1,4 +1,4 @@
-// $Id$
+// $Id$ -*- C++ -*-
 // Asynchron Agent Interface
 
 // Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
@@ -50,14 +50,19 @@
     Asynchronus communication is implemented using XtAppAddInput(3).
 */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include "assert.h"
 
-#ifdef IF_MOTIF
-
+#if defined(IF_MOTIF)
 #include <X11/Intrinsic.h>
+#endif
 
-#endif // IF_MOTIF
+#if !defined(IF_XM)
+#include <GUI/Main.h>
+#endif
 
 #include "gtk_wrapper.h"
 
@@ -128,7 +133,11 @@ public:
 
 private:
 
+#if defined(IF_XM)
     XtAppContext _appContext;		// the application context
+#else
+    GUI::Main *_appContext;
+#endif
 
     AsyncAgentHandler _handlers[AsyncAgent_NHandlers]; // handlers
     XtInputId _ids[AsyncAgent_NHandlers];	       // their ids
@@ -137,11 +146,11 @@ private:
 
     // dispatch event
     void dispatch(
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	int *fid, XtInputId *inputId
-#else // NOT IF_MOTIF
+#else
 	int type
-#endif // IF_MOTIF
+#endif
 	);
 
     // used in childStatusChange()
@@ -171,12 +180,12 @@ private:
 #endif
 
     // X Event Handlers
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     static void somethingHappened(XtPointer client_data, int *fid,
 				  XtInputId *inputId);
-#else // NOT IF_MOTIF
+#else
     bool somethingHappened(Glib::IOCondition cond, int type);
-#endif // IF_MOTIF
+#endif
     static void childStatusChange(Agent *agent, void *client_data,
 				  void *call_data);
     static Boolean callTheHandlers(XtPointer client_data);
@@ -231,54 +240,100 @@ private:
     AsyncAgent& operator = (const AsyncAgent&);
 
 public:
+#if defined(IF_XM)
     // Resources
     XtAppContext appContext() const { return _appContext; }
+#else
+    // Resources
+    GUI::Main *appContext() const { return _appContext; }
+#endif
+
+#if defined(IF_XM)
 
     // Constructors
     AsyncAgent(XtAppContext app_context, const string& pth, 
 	       unsigned nTypes = AsyncAgent_NTypes):
 	Agent(pth, nTypes), _appContext(app_context), workProcs(0), 
 	new_status(0), status_change_pending(false), 
-#ifdef IF_MOTIF
 	signal_id(0),
-#endif // IF_MOTIF
 	killing_asynchronously(false)
     {
 	initHandlers();
 	addDeathOfChildHandler();
     }
 
+#else
+
+    // Constructors
+    AsyncAgent(GUI::Main *app_context, const string& pth, 
+	       unsigned nTypes = AsyncAgent_NTypes):
+	Agent(pth, nTypes), _appContext(app_context), workProcs(0), 
+	new_status(0), status_change_pending(false), 
+	killing_asynchronously(false)
+    {
+	initHandlers();
+	addDeathOfChildHandler();
+    }
+
+#endif
+
+#if defined(IF_XM)
+
     AsyncAgent(XtAppContext app_context, FILE *in = stdin, FILE *out = stdout,
 	FILE *err = 0, unsigned nTypes = AsyncAgent_NTypes):
 	Agent(in, out, err, nTypes), _appContext(app_context), workProcs(0),
 	new_status(0), status_change_pending(false),
-#ifdef IF_MOTIF
 	signal_id(0),
-#endif // IF_MOTIF
 	killing_asynchronously(false)
     {
 	initHandlers();
     }
+
+#else
+
+    AsyncAgent(GUI::Main *app_context, FILE *in = stdin, FILE *out = stdout,
+	FILE *err = 0, unsigned nTypes = AsyncAgent_NTypes):
+	Agent(in, out, err, nTypes), _appContext(app_context), workProcs(0),
+	new_status(0), status_change_pending(false),
+	killing_asynchronously(false)
+    {
+	initHandlers();
+    }
+
+#endif
+
+#if defined(IF_XM)
 
     AsyncAgent(XtAppContext app_context, bool dummy,
 	unsigned nTypes = AsyncAgent_NTypes):
 	Agent(dummy, nTypes), _appContext(app_context), workProcs(0),
 	new_status(0), status_change_pending(false),
-#ifdef IF_MOTIF
 	signal_id(0),
-#endif // IF_MOTIF
 	killing_asynchronously(false)
     {
 	initHandlers();
     }
 
+#else
+
+    AsyncAgent(GUI::Main *app_context, bool dummy,
+	unsigned nTypes = AsyncAgent_NTypes):
+	Agent(dummy, nTypes), _appContext(app_context), workProcs(0),
+	new_status(0), status_change_pending(false),
+	killing_asynchronously(false)
+    {
+	initHandlers();
+    }
+
+#endif
+
     // Duplicator
     AsyncAgent(const AsyncAgent& c):
 	Agent(c), _appContext(c.appContext()), workProcs(0), 
 	new_status(0), status_change_pending(false),
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	signal_id(0),
-#endif // IF_MOTIF
+#endif
 	killing_asynchronously(false)
     {
 	initHandlers();

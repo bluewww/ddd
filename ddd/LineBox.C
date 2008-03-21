@@ -40,6 +40,8 @@ DEFINE_TYPE_INFO_1(LineBox, PrimitiveBox)
 
 // LineBox
 
+#if defined(IF_XM)
+
 // Draw
 void LineBox::_draw(Widget w, 
 		    const BoxRegion& r, 
@@ -47,7 +49,6 @@ void LineBox::_draw(Widget w,
 		    GC gc,
 		    bool context_selected) const
 {
-#ifdef IF_MOTIF
     XGCValues gcvalues;
 
     // Set width and cap style; project beyond end point up to 1/2
@@ -55,10 +56,6 @@ void LineBox::_draw(Widget w,
     gcvalues.line_width = _linethickness;
     gcvalues.cap_style = CapProjecting;
     XChangeGC(XtDisplay(w), gc, GCLineWidth | GCCapStyle, &gcvalues);
-#else // NOT IF_MOTIF
-    gc->set_line_attributes(_linethickness, Gdk::LINE_SOLID,
-			    Gdk::CAP_PROJECTING, Gdk::JOIN_MITER);
-#endif // IF_MOTIF
 
     // Keep an empty frame of 1/2 line thickness around R (X may cross
     // R's boundaries otherwise)
@@ -73,3 +70,31 @@ void LineBox::_draw(Widget w,
     // Attention: We leave LINE_WIDTH and CAP_STYLE changed!
     // (Works within Box::draw(), but the used GC may be changed)
 }
+
+#else
+
+// Draw
+void LineBox::_draw(GUI::Widget *w, 
+		    const BoxRegion& r, 
+		    const BoxRegion& exposed, 
+		    GUI::RefPtr<GUI::GC> gc,
+		    bool context_selected) const
+{
+    gc->set_line_attributes(_linethickness, GUI::LINE_SOLID,
+			    GUI::CAP_PROJECTING, GUI::JOIN_MITER);
+
+    // Keep an empty frame of 1/2 line thickness around R (X may cross
+    // R's boundaries otherwise)
+    BoxPoint origin = r.origin();
+    BoxSize space   = r.space();
+    origin += _linethickness / 2;
+    space  -= _linethickness;
+
+    // Draw children
+    __draw(w, BoxRegion(origin, space), exposed, gc, context_selected);
+
+    // Attention: We leave LINE_WIDTH and CAP_STYLE changed!
+    // (Works within Box::draw(), but the used GC may be changed)
+}
+
+#endif

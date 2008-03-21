@@ -191,9 +191,15 @@ void LineGraphEdge::findLine(const BoxPoint& c1, const BoxPoint& c2,
 
 // Draw
 
+#if defined(IF_XM)
 void LineGraphEdge::_draw(Widget w, 
 			  const BoxRegion& exposed, 
 			  const GraphGC& gc) const
+#else
+void LineGraphEdge::_draw(GUI::Widget *w, 
+			  const BoxRegion& exposed, 
+			  const GraphGC& gc) const
+#endif
 {
     if (from() == to())
 	drawSelf(w, exposed, gc);
@@ -201,9 +207,15 @@ void LineGraphEdge::_draw(Widget w,
 	drawLine(w, exposed, gc);
 }
 
+#if defined(IF_XM)
 void LineGraphEdge::drawLine(Widget w, 
 			     const BoxRegion& exposed, 
 			     const GraphGC& gc) const
+#else
+void LineGraphEdge::drawLine(GUI::Widget *w, 
+			     const BoxRegion& exposed, 
+			     const GraphGC& gc) const
+#endif
 {
     // Get node starting points
     BoxPoint pos1     = from()->pos();
@@ -256,6 +268,7 @@ void LineGraphEdge::drawLine(Widget w,
     drawArrowHead(w, exposed, gc, l2, alpha);
 }
 
+#if defined(IF_XM)
 
 // Draw arrow head at POS
 void LineGraphEdge::drawArrowHead(Widget w,
@@ -271,7 +284,6 @@ void LineGraphEdge::drawArrowHead(Widget w,
     const int length    = gc.arrowLength;		// Length
 
     // Get coordinates
-#ifdef IF_MOTIF
     XPoint points[3];
     points[0].x = pos[X];
     points[0].y = pos[Y];
@@ -279,15 +291,6 @@ void LineGraphEdge::drawArrowHead(Widget w,
     points[1].y = short(pos[Y] + length * sin(alpha + offset / 2));
     points[2].x = short(pos[X] + length * cos(alpha - offset / 2));
     points[2].y = short(pos[Y] + length * sin(alpha - offset / 2));
-#else // NOT IF_MOTIF
-    Gdk::Point points[3] = {
-	Gdk::Point(pos[X], pos[Y]),
-	Gdk::Point((int)(pos[X] + length * cos(alpha + offset / 2)),
-		   (int)(pos[Y] + length * sin(alpha + offset / 2))),
-	Gdk::Point((int)(pos[X] + length * cos(alpha - offset / 2)),
-		   (int)(pos[Y] + length * sin(alpha - offset / 2)))
-    };
-#endif // IF_MOTIF
 
 #if 0
 	std::clog << "\nangle = " << (alpha / (PI * 2.0)) * 360.0  << "\n";
@@ -296,13 +299,43 @@ void LineGraphEdge::drawArrowHead(Widget w,
 		      << BoxPoint(points[i].x, points[i].y) << "\n";
 #endif
 
-#ifdef IF_MOTIF
     XFillPolygon(XtDisplay(w), XtWindow(w), gc.edgeGC, points,
 		 XtNumber(points), Convex, CoordModeOrigin);
-#else // NOT IF_MOTIF
-    w->get_window()->draw_polygon(gc.edgeGC, true, points);
-#endif // IF_MOTIF
 }
+
+#else
+
+// Draw arrow head at POS
+void LineGraphEdge::drawArrowHead(GUI::Widget *w,
+				  const BoxRegion& /* exposed */,
+				  const GraphGC& gc,
+				  const BoxPoint& pos,
+				  double alpha) const
+{
+    if (!gc.drawArrowHeads || to()->isHint())
+	return;
+
+    const double offset = gc.arrowAngle * PI / 180;	// Angle
+    const int length    = gc.arrowLength;		// Length
+
+    std::vector<GUI::Point> points;
+    points.push_back(GUI::Point(pos[X], pos[Y]));
+    points.push_back(GUI::Point((int)(pos[X] + length * cos(alpha + offset / 2)),
+				(int)(pos[Y] + length * sin(alpha + offset / 2))));
+    points.push_back(GUI::Point((int)(pos[X] + length * cos(alpha - offset / 2)),
+				(int)(pos[Y] + length * sin(alpha - offset / 2))));
+
+#if 0
+	std::clog << "\nangle = " << (alpha / (PI * 2.0)) * 360.0  << "\n";
+	for (int i = 0; i < 3; i++)
+	    std::clog << "points[" << i << "] = "
+		      << BoxPoint(points[i].x, points[i].y) << "\n";
+#endif
+
+    w->get_window()->draw_polygon(gc.edgeGC, true, points);
+}
+
+#endif
 
 
 // Region occupied by edge
@@ -342,6 +375,7 @@ BoxRegion LineGraphEdge::region(const GraphGC& gc) const
     return r;
 }
 
+#if defined(IF_XM)
 
 // Draw self edge
 void LineGraphEdge::drawSelf(Widget w,
@@ -357,15 +391,9 @@ void LineGraphEdge::drawSelf(Widget w,
 
     LineGraphEdgeSelfInfo info(region, gc);
 
-#ifdef IF_MOTIF
     XDrawArc(XtDisplay(w), XtWindow(w), gc.edgeGC, info.arc_pos[X],
 	     info.arc_pos[Y], info.diameter, info.diameter,
 	     info.arc_start * 64, info.arc_extend * 64);
-#else // NOT IF_MOTIF
-    w->get_window()->draw_arc(gc.edgeGC, false, info.arc_pos[X],
-			      info.arc_pos[Y], info.diameter, info.diameter,
-			      info.arc_start * 64, info.arc_extend * 64);
-#endif // IF_MOTIF
 
     if (annotation() != 0)
     {
@@ -376,6 +404,38 @@ void LineGraphEdge::drawSelf(Widget w,
     // Find arrow angle
     drawArrowHead(w, exposed, gc, info.arrow_pos, info.arrow_alpha);
 }
+
+#else
+
+// Draw self edge
+void LineGraphEdge::drawSelf(GUI::Widget *w,
+			     const BoxRegion& exposed,
+			     const GraphGC& gc) const
+{
+    assert(from() == to());
+
+    // Get region
+    BoxRegion region = from()->region(gc);
+    if (from()->selected())
+	region.origin() += gc.offsetIfSelected;
+
+    LineGraphEdgeSelfInfo info(region, gc);
+
+    w->get_window()->draw_arc(gc.edgeGC, false, info.arc_pos[X],
+			      info.arc_pos[Y], info.diameter, info.diameter,
+			      info.arc_start * 64, info.arc_extend * 64);
+
+    if (annotation() != 0)
+    {
+	// Draw annotation
+	annotation()->draw(w, info.anno_pos, exposed, gc);
+    }
+
+    // Find arrow angle
+    drawArrowHead(w, exposed, gc, info.arrow_pos, info.arrow_alpha);
+}
+
+#endif
 
 void LineGraphEdge::printSelf(std::ostream& os, const GraphGC &gc) const
 {

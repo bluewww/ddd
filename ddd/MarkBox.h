@@ -29,6 +29,10 @@
 #ifndef _DDD_MarkBox_h
 #define _DDD_MarkBox_h
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "strclass.h"
 #include "bool.h"
 #include "mutable.h"
@@ -44,12 +48,21 @@ public:
 protected:
     mutable BoxRegion _region;          // Region of last draw
 
+#if defined(IF_XM)
     // Draw
     virtual void _draw(Widget w, 
 		       const BoxRegion& region, 
 		       const BoxRegion& exposed, 
 		       GC gc,
 		       bool context_selected) const;
+#else
+    // Draw
+    virtual void _draw(GUI::Widget *w, 
+		       const BoxRegion& region, 
+		       const BoxRegion& exposed, 
+		       GUI::RefPtr<GUI::GC> gc,
+		       bool context_selected) const;
+#endif
 
     // Copy Constructor
     MarkBox(const MarkBox& box):

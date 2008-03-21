@@ -29,14 +29,16 @@
 #ifndef _DDD_fonts_h
 #define _DDD_fonts_h
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "strclass.h"
 #include "AppData.h"
 
-#ifdef IF_MOTIF
-
+#if defined(IF_MOTIF)
 #include <X11/Intrinsic.h>
-
-#endif // IF_MOTIF
+#endif
 
 #include "gtk_wrapper.h"
 
@@ -47,8 +49,13 @@ enum DDDFont { DefaultDDDFont       = 0,
 	       SymbolDDDFont        = 3,
                DataDDDFont          = 4 };
 
+#if defined(IF_XM)
 // Setup font specs.  DB is the resource database in use.
 extern void setup_fonts(AppData& app_data, XrmDatabase db = 0);
+#else
+// Setup font specs.  DB is the resource database in use.
+extern void setup_fonts(AppData& app_data, xmlDoc *db = 0);
+#endif
 
 // Return font name from BASE, overriding with parts from OVERRIDE.
 // Override contains "-SPEC-SPEC-..."; each non-empty SPEC overrides

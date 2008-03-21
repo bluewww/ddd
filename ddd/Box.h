@@ -94,12 +94,19 @@ protected:
     // Equality
     virtual bool matches(const Box& b, const Box *callbackArg = 0) const;
 
+#if defined(IF_XM)
     // Draw box
     virtual void _draw(Widget w, 
 		       const BoxRegion& region, 
 		       const BoxRegion& exposed, 
 		       GC gc, bool context_selected) const = 0;
-
+#else
+    // Draw box
+    virtual void _draw(GUI::Widget *w, 
+		       const BoxRegion& region, 
+		       const BoxRegion& exposed, 
+		       GUI::RefPtr<GUI::GC> gc, bool context_selected) const = 0;
+#endif
 public:
     // Save box to stream
     virtual void dump(std::ostream& s) const = 0;
@@ -170,13 +177,23 @@ public:
     // Propagate new font
     virtual void newFont(const string&) { resize(); }
 
+#if defined(IF_XM)
     // Draw
     void draw(Widget w, 
 	      const BoxRegion& region, 
 	      const BoxRegion& exposed = BoxRegion(BoxPoint(0,0),
 						   BoxSize(INT_MAX, INT_MAX)), 
-	      GC gc = NO_GC, 
+	      GC gc = 0, 
 	      bool context_selected = false) const;
+#else
+    // Draw
+    void draw(GUI::Widget *w, 
+	      const BoxRegion& region, 
+	      const BoxRegion& exposed = BoxRegion(BoxPoint(0,0),
+						   BoxSize(INT_MAX, INT_MAX)), 
+	      GUI::RefPtr<GUI::GC> gc = GUI::RefPtr<GUI::GC>(), 
+	      bool context_selected = false) const;
+#endif
 
     // Print box; Header/trailer must be pre-/postfixed
     virtual void _print(std::ostream& os, 

@@ -29,22 +29,36 @@
 #ifndef _DDD_gdbinit_h
 #define _DDD_gdbinit_h
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "GDBAgent.h"
 #include "AppData.h"
 
-#ifdef IF_MOTIF
-
+#if defined(IF_MOTIF)
 #include <X11/Intrinsic.h>
-
-#endif // IF_MOTIF
+#endif
 
 #include "gtk_wrapper.h"
 
+#if !defined(IF_XM)
+#include <GUI/Main.h>
+#endif
+
+#if defined(IF_XM)
 // Create new GDB process
 extern GDBAgent *new_gdb(DebuggerType type,
 			 const AppData& app_data,
 			 XtAppContext app_context,
 			 int argc, char *argv[]);
+#else
+// Create new GDB process
+extern GDBAgent *new_gdb(DebuggerType type,
+			 const AppData& app_data,
+			 GUI::Main *app_context,
+			 int argc, char *argv[]);
+#endif
 
 struct DebuggerInfo {
     // Guess an appropriate debugger TYPE from ARGC/ARGV.

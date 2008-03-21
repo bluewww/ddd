@@ -179,11 +179,19 @@ DEFINE_TYPE_INFO_1(GDBAgent, TTYAgent);
 //-----------------------------------------------------------------------------
 
 // Constructor
+#if defined(IF_XM)
 GDBAgent::GDBAgent (XtAppContext app_context,
 		    const string& gdb_call,
 		    DebuggerType tp,
 		    unsigned int nTypes)
     : TTYAgent (app_context, gdb_call, nTypes),
+#else
+GDBAgent::GDBAgent (GUI::Main *app_context,
+		    const string& gdb_call,
+		    DebuggerType tp,
+		    unsigned int nTypes)
+    : TTYAgent (app_context, gdb_call, nTypes),
+#endif
       state(BusyOnInitialCmds),
       _type(tp),
       _user_data(0),
