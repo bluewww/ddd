@@ -48,3 +48,9 @@ Toolbar::internal(void)
     return this;
 }
 
+const Gtk::Widget *
+Toolbar::internal(void) const
+{
+    return this;
+}
+

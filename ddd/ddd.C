@@ -1693,12 +1693,14 @@ static GUI::CheckButton *button_docs_w;
 
 static MMDesc button_menu [] = 
 {
-    MENTRYL("tips", "as Popup Tips", MMToggle,
-	    BIND_0( PTR_FUN(dddToggleButtonTipsCB) ),
-	    0, (Widget *)&button_tips_w),
-    MENTRYL("docs", "in the Status Line", MMToggle,
-	    BIND_0( PTR_FUN(dddToggleButtonDocsCB) ),
-	    0, (Widget *)&button_docs_w),
+    GENTRYL("tips", "as Popup Tips", MMToggle,
+	    BIND(dddToggleButtonTipsCB, 0),
+	    sigc::retype(sigc::ptr_fun(dddToggleButtonTipsCB)),
+	    0, &button_tips_w),
+    GENTRYL("docs", "in the Status Line", MMToggle,
+	    BIND(dddToggleButtonDocsCB, 0),
+	    sigc::retype(sigc::ptr_fun(dddToggleButtonDocsCB)),
+	    0, &button_docs_w),
     MMEnd
 };
 
@@ -1712,12 +1714,14 @@ static GUI::CheckButton *value_docs_w;
 
 static MMDesc value_menu [] = 
 {
-    MENTRYL("tips", "as Popup Tips", MMToggle,
-	    BIND_0( PTR_FUN(dddToggleValueTipsCB) ),
-	    0, (Widget *)&value_tips_w),
-    MENTRYL("docs", "in the Status Line", MMToggle,
-	    BIND_0( PTR_FUN(dddToggleValueDocsCB) ),
-	    0, (Widget *)&value_docs_w),
+    GENTRYL("tips", "as Popup Tips", MMToggle,
+	    BIND(dddToggleValueTipsCB, 0),
+	    sigc::retype(sigc::ptr_fun(dddToggleValueTipsCB)),
+	    0, &value_tips_w),
+    GENTRYL("docs", "in the Status Line", MMToggle,
+	    BIND(dddToggleValueDocsCB, 0),
+	    sigc::retype(sigc::ptr_fun(dddToggleValueDocsCB)),
+	    0, &value_docs_w),
     MMEnd
 };
 
@@ -1731,12 +1735,14 @@ static GUI::RadioButton *set_console_completion_w;
 
 static MMDesc completion_menu [] = 
 {
-    MENTRYL("inAllWindows", "in All Windows", MMRadio, 
-	    BIND_1(PTR_FUN(dddSetGlobalTabCompletionCB), True), 
-	    0, (Widget *)&set_global_completion_w),
-    MENTRYL("inConsole", "in Console Only", MMRadio,
-	    BIND_1(PTR_FUN(dddSetGlobalTabCompletionCB), False),
-	    0, (Widget *)&set_console_completion_w),
+    GENTRYL("inAllWindows", "in All Windows", MMRadio, 
+	    BIND(dddSetGlobalTabCompletionCB, True), 
+	    sigc::bind(sigc::retype(sigc::ptr_fun(dddSetGlobalTabCompletionCB)), True), 
+	    0, &set_global_completion_w),
+    GENTRYL("inConsole", "in Console Only", MMRadio,
+	    BIND(dddSetGlobalTabCompletionCB, False),
+	    sigc::bind(sigc::retype(sigc::ptr_fun(dddSetGlobalTabCompletionCB)), False),
+	    0, &set_console_completion_w),
     MMEnd
 };
 
@@ -1842,12 +1848,14 @@ static GUI::RadioButton *set_tool_buttons_in_command_tool_w;
 
 static MMDesc tool_buttons_menu [] = 
 {
-    MENTRYL("commandTool", "Command Tool", MMRadio,
-	    BIND_1( PTR_FUN(dddSetToolBarCB), XtPointer(False) ),
-	    0, (Widget *)&set_tool_buttons_in_command_tool_w),
-    MENTRYL("sourceWindow", "Source Window", MMRadio,
-	    BIND_1( PTR_FUN(dddSetToolBarCB), XtPointer(True) ),
-	    0, (Widget *)&set_tool_buttons_in_toolbar_w),
+    GENTRYL("commandTool", "Command Tool", MMRadio,
+	    BIND(dddSetToolBarCB, False),
+	    sigc::bind(sigc::retype(sigc::ptr_fun(dddSetToolBarCB)), false),
+	    0, &set_tool_buttons_in_command_tool_w),
+    GENTRYL("sourceWindow", "Source Window", MMRadio,
+	    BIND(dddSetToolBarCB, True),
+	    sigc::bind(sigc::retype(sigc::ptr_fun(dddSetToolBarCB)), true),
+	    0, &set_tool_buttons_in_toolbar_w),
     MMEnd
 };
 
@@ -2141,12 +2149,14 @@ static GUI::RadioButton *set_attached_windows_w;
 
 static MMDesc window_mode_menu [] = 
 {
-    MENTRYL("attached", "Stacked Windows", MMRadio,
-	    BIND_1( PTR_FUN(dddSetSeparateWindowsCB), XtPointer(1) ),
-	    0, (Widget *)&set_attached_windows_w),
-    MENTRYL("separate", "Separate Windows", MMRadio,
-	    BIND_1( PTR_FUN(dddSetSeparateWindowsCB), XtPointer(0) ),
-	    0, (Widget *)&set_separate_windows_w),
+    GENTRYL("attached", "Stacked Windows", MMRadio,
+	    BIND(dddSetSeparateWindowsCB, 1),
+	    sigc::bind(sigc::retype(sigc::ptr_fun(dddSetSeparateWindowsCB)), 1),
+	    0, &set_attached_windows_w),
+    GENTRYL("separate", "Separate Windows", MMRadio,
+	    BIND(dddSetSeparateWindowsCB, 0),
+	    sigc::bind(sigc::retype(sigc::ptr_fun(dddSetSeparateWindowsCB)), 0),
+	    0, &set_separate_windows_w),
     MMEnd
 };
 
@@ -2218,12 +2228,14 @@ static GUI::RadioButton *set_scrolling_scrollbars_w;
 
 static MMDesc data_scrolling_menu [] = 
 {
-    MENTRYL("panner", "Panner", MMRadio,
-	    BIND_1( PTR_FUN(dddSetPannerCB), XtPointer(true) ),
-	    0, (Widget *)&set_scrolling_panner_w),
-    MENTRYL("scrollbars", "Scrollbars", MMRadio,
-	    BIND_1( PTR_FUN(dddSetPannerCB), XtPointer(false) ),
-	    0, (Widget *)&set_scrolling_scrollbars_w),
+    GENTRYL("panner", "Panner", MMRadio,
+	    BIND(dddSetPannerCB, true),
+	    sigc::bind(sigc::retype(sigc::ptr_fun(dddSetPannerCB)), true),
+	    0, &set_scrolling_panner_w),
+    GENTRYL("scrollbars", "Scrollbars", MMRadio,
+	    BIND(dddSetPannerCB, false),
+	    sigc::bind(sigc::retype(sigc::ptr_fun(dddSetPannerCB)), false),
+	    0, &set_scrolling_scrollbars_w),
     MMEnd
 };
 
@@ -2441,12 +2453,14 @@ static GUI::RadioButton *builtin_plot_window_w;
 
 static MMDesc plot_window_menu [] =
 {
-    MENTRYL("extern", "External", MMRadio,
-	    HIDE_0_BIND_1(PTR_FUN(dddSetBuiltinPlotWindowCB), false),
-	    0, (Widget *)&extern_plot_window_w),
-    MENTRYL("builtin", "Builtin", MMRadio,
-	    HIDE_0_BIND_1(PTR_FUN(dddSetBuiltinPlotWindowCB), true),
-	    0, (Widget *)&builtin_plot_window_w),
+    GENTRYL("extern", "External", MMRadio,
+	    BIND(dddSetBuiltinPlotWindowCB, false),
+	    sigc::bind(sigc::retype(sigc::ptr_fun(dddSetBuiltinPlotWindowCB)), false),
+	    0, &extern_plot_window_w),
+    GENTRYL("builtin", "Builtin", MMRadio,
+	    BIND(dddSetBuiltinPlotWindowCB, true),
+	    sigc::bind(sigc::retype(sigc::ptr_fun(dddSetBuiltinPlotWindowCB)), true),
+	    0, &builtin_plot_window_w),
     MMEnd
 };
 
@@ -3663,7 +3677,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	if (lock_info.display != XDisplayString(XtDisplay(toplevel)))
 	    messages << ", display " << cook(lock_info.display);
 #else
-	if (lock_info.display != toplevel->get_display()->display_string())
+	if (lock_info.display != toplevel->get_display()->get_name())
 	    messages << ", display " << cook(lock_info.display);
 #endif
 	messages << ")\n";

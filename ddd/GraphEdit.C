@@ -485,6 +485,12 @@ GUIGraphEdit::internal(void)
 {
     return this;
 }
+
+const Gtk::Widget *
+GUIGraphEdit::internal(void) const
+{
+    return this;
+}
 #endif
 #endif
 

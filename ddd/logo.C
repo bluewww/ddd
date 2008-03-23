@@ -665,17 +665,23 @@ static XImage *get_button_subimage(XImage *image, const _XtString name)
 
 #endif
 
-static void install_icon(Widget w,
+static void install_icon(
 #if defined(IF_XM)
+			 Widget w,
 			 const _XtString name,
 #else
+			 GUI::Widget *w,
 			 GUI::ImageHandle &name,
 #endif
 			 const char **xpm_data, 
 			 const unsigned char *xbm_data,
 			 int width, int height,
 			 const string& color_key,
+#if defined(IF_XM)
 			 ImageColor background,
+#else
+			 GUI::Color background,
+#endif
 			 const XWindowAttributes& win_attr,
 			 bool is_button = false)
 {
@@ -776,10 +782,12 @@ static void install_icon(Widget w,
 #endif
 }
 
-static void install_button_icon(Widget w,
+static void install_button_icon(
 #if defined(IF_XM)
+				Widget w,
 				const _XtString name,
 #else
+				GUI::Widget *w,
 				GUI::ImageHandle *name,
 #endif
 				const char **xpm_data, 
@@ -789,8 +797,13 @@ static void install_button_icon(Widget w,
 				int width, int height, 
 				const string& color_key,
 				const string& active_color_key,
+#if defined(IF_XM)
 				ImageColor background,
 				ImageColor arm_background,
+#else
+				GUI::Color background,
+				GUI::Color arm_background,
+#endif
 				const XWindowAttributes& win_attr
 				)
 {
@@ -854,12 +867,19 @@ static void install_button_icon(Widget w,
 #endif
 }
 
+
 // Install toolbar icons in Motif cache.  COLOR_KEY indicates the XPM
 // visual type for inactive buttons.  ACTIVE_COLOR_KEY is the XPM visual
 // type for active buttons (entered or armed).
+#if defined(IF_XM)
 void install_icons(Widget shell, 
 		   const string& color_key,
 		   const string& active_color_key)
+#else
+void install_icons(GUI::Widget *shell, 
+		   const string& color_key,
+		   const string& active_color_key)
+#endif
 {
     static bool installed = false;
     if (installed)
@@ -888,9 +908,8 @@ void install_icons(Widget shell,
     else
 	arm_background = select;
 #else
-    shell->ensure_style();
-    ImageColor background = shell->get_style()->get_bg(Gtk::STATE_NORMAL);
-    ImageColor arm_background = shell->get_style()->get_bg(Gtk::STATE_PRELIGHT);
+    GUI::Color background = shell->get_bg(Gtk::STATE_NORMAL);
+    GUI::Color arm_background = shell->get_bg(Gtk::STATE_PRELIGHT);
 #endif
 
 #if defined(IF_XM)

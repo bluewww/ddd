@@ -31,19 +31,20 @@
 #ifndef GTKX_MENU_H
 #define GTKX_MENU_H
 
-#include <GtkX/Container.h>
+#include <GtkX/MenuShell.h>
 #include <gtkmm/menu.h>
 
 // Template for a widget taking a single string constructor argument.
 
 namespace GtkX {
 
-    class Menu: public GtkX::Container, public Gtk::Menu {
+    class Menu: public GtkX::MenuShell, public Gtk::Menu {
     public:
 	Menu(GtkX::Widget &parent, const String &name="");
 	Menu(Gtk::Widget *parent, const String &name="");
 	~Menu(void);
 	Gtk::Widget *internal(void);
+	const Gtk::Widget *internal(void) const;
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
 #include <GtkX/redirect.h>
     };

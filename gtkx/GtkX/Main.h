@@ -44,7 +44,7 @@ namespace GtkX {
 	char *get_argv(int i) const;
     };
 
-
+    extern Main *default_main_loop;
 }
 
 #endif // GTKX_MAIN_H

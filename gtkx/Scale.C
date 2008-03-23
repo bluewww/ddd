@@ -89,6 +89,12 @@ VScale::internal(void)
     return this;
 }
 
+const Gtk::Widget *
+VScale::internal(void) const
+{
+    return this;
+}
+
 void
 VScale::set_value(double x)
 {
@@ -125,6 +131,12 @@ HScale::~HScale()
 
 Gtk::Widget *
 HScale::internal(void)
+{
+    return this;
+}
+
+const Gtk::Widget *
+HScale::internal(void) const
 {
     return this;
 }

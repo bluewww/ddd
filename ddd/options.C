@@ -1020,7 +1020,9 @@ void dddToggleUniconifyWhenReadyCB (GUI::CheckButton *w)
 
 #endif
 
-void dddSetGlobalTabCompletionCB(CB_ALIST_12(Widget w, XtP(long) client_data))
+#if defined(IF_XM)
+
+void dddSetGlobalTabCompletionCB(Widget w, XtPointer client_data, XtPointer)
 {
     Boolean state = (int)(long)client_data;
 
@@ -1033,6 +1035,24 @@ void dddSetGlobalTabCompletionCB(CB_ALIST_12(Widget w, XtP(long) client_data))
 
     update_options(NO_UPDATE);
 }
+
+#else
+
+void dddSetGlobalTabCompletionCB(GUI::RadioButton *w, int state)
+{
+    if (!w->get_active()) return;
+
+    app_data.global_tab_completion = state;
+
+    if (state)
+	set_status("TAB key completes in all " DDD_NAME " windows.");
+    else
+	set_status("TAB key completes in " DDD_NAME " debugger console only.");
+
+    update_options(NO_UPDATE);
+}
+
+#endif
 
 #if defined(IF_XM)
 
@@ -1198,12 +1218,41 @@ void dddToggleWarnIfLockedCB (GUI::CheckButton *w)
 #endif
 
 #if defined(IF_XM)
-void dddSetBuiltinPlotWindowCB (CB_ARG_LIST_2(client_data))
-#else
-void dddSetBuiltinPlotWindowCB (long client_data)
-#endif
+
+void dddSetBuiltinPlotWindowCB (Widget, XtPointer client_data, XtPoiner)
 {
     if ((int)(long)client_data)
+	app_data.plot_term_type = "xlib";
+    else
+	app_data.plot_term_type = "x11";
+
+    string plot_term_type = downcase(app_data.plot_term_type);
+
+    if (plot_term_type.contains("xlib", 0))
+    {
+	set_status("Next plot will be done in builtin " DDD_NAME " window.");
+    }
+    else if (plot_term_type.contains("x11", 0))
+    {
+	set_status("Next plot will be done in external " + 
+		   cook(app_data.plot_window_class) + " window.");
+    }
+    else
+    {
+	set_status("Next plot will be done in an unknown place.");
+    }
+
+    clear_plot_window_cache();
+    update_options(NO_UPDATE);
+}
+
+#else
+
+void dddSetBuiltinPlotWindowCB (GUI::RadioButton *w, bool state)
+{
+    if (!w->get_active()) return;
+
+    if (state)
 	app_data.plot_term_type = "xlib";
     else
 	app_data.plot_term_type = "x11";
@@ -1233,16 +1282,16 @@ void dddSetBuiltinPlotWindowCB (long client_data)
     update_options(NO_UPDATE);
 }
 
-void dddToggleButtonTipsCB (CB_ARG_LIST_TOGGLE(w, call_data))
-{
+#endif
+
 #if defined(IF_XM)
+
+void dddToggleButtonTipsCB (Widget w, XtPointer, XtPointer call_data)
+{
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.button_tips = info->set;
-#else
-    app_data.button_tips = get_active(w);
-#endif
 
     if (app_data.button_tips)
 	set_status("Button tips enabled.");
@@ -1252,16 +1301,30 @@ void dddToggleButtonTipsCB (CB_ARG_LIST_TOGGLE(w, call_data))
     update_options(NO_UPDATE);
 }
 
-void dddToggleValueTipsCB (CB_ARG_LIST_TOGGLE(w, call_data))
+#else
+
+void dddToggleButtonTipsCB (GUI::CheckButton *w)
 {
+    app_data.button_tips = w->get_active();
+
+    if (app_data.button_tips)
+	set_status("Button tips enabled.");
+    else
+	set_status("Button tips disabled.");
+
+    update_options(NO_UPDATE);
+}
+
+#endif
+
 #if defined(IF_XM)
+
+void dddToggleValueTipsCB (Widget w, XtPointer, XtPointer call_data)
+{
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.value_tips = info->set;
-#else
-    app_data.value_tips = get_active(w);
-#endif
 
     if (app_data.value_tips)
 	set_status("Value tips enabled.");
@@ -1271,16 +1334,30 @@ void dddToggleValueTipsCB (CB_ARG_LIST_TOGGLE(w, call_data))
     update_options(NO_UPDATE);
 }
 
-void dddToggleButtonDocsCB (CB_ARG_LIST_TOGGLE(w, call_data))
+#else
+
+void dddToggleValueTipsCB (GUI::CheckButton *w)
 {
+    app_data.value_tips = w->get_active();
+
+    if (app_data.value_tips)
+	set_status("Value tips enabled.");
+    else
+	set_status("Value tips disabled.");
+
+    update_options(NO_UPDATE);
+}
+
+#endif
+
 #if defined(IF_XM)
+
+void dddToggleButtonDocsCB (Widget w, XtPointer, XtPointer call_data)
+{
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.button_docs = info->set;
-#else
-    app_data.button_docs = get_active(w);
-#endif
 
     if (app_data.button_docs)
 	set_status("Button docs enabled.");
@@ -1290,16 +1367,30 @@ void dddToggleButtonDocsCB (CB_ARG_LIST_TOGGLE(w, call_data))
     update_options(NO_UPDATE);
 }
 
-void dddToggleValueDocsCB (CB_ARG_LIST_TOGGLE(w, call_data))
+#else
+
+void dddToggleButtonDocsCB (GUI::CheckButton *w)
 {
+    app_data.button_docs = w->get_active();
+
+    if (app_data.button_docs)
+	set_status("Button docs enabled.");
+    else
+	set_status("Button docs disabled.");
+
+    update_options(NO_UPDATE);
+}
+
+#endif
+
 #if defined(IF_XM)
+
+void dddToggleValueDocsCB (Widget w, XtPointer, XtPointer call_data)
+{
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.value_docs = info->set;
-#else
-    app_data.value_docs = get_active(w);
-#endif
 
     if (app_data.value_docs)
 	set_status("Value docs enabled.");
@@ -1308,6 +1399,22 @@ void dddToggleValueDocsCB (CB_ARG_LIST_TOGGLE(w, call_data))
 
     update_options(NO_UPDATE);
 }
+
+#else
+
+void dddToggleValueDocsCB (GUI::CheckButton *w)
+{
+    app_data.value_docs = w->get_active();
+
+    if (app_data.value_docs)
+	set_status("Value docs enabled.");
+    else
+	set_status("Value docs disabled.");
+
+    update_options(NO_UPDATE);
+}
+
+#endif
 
 #if defined(IF_XM)
 
@@ -1405,7 +1512,9 @@ static void post_startup_warning(Widget w)
 static string next_ddd_will_start_with = 
     "Next " DDD_NAME " invocation will start-up with ";
 
-void dddSetSeparateWindowsCB (CB_ARG_LIST_12(w, client_data))
+#if defined(IF_XM)
+
+void dddSetSeparateWindowsCB (Widget w, XtPointer client_data, XtPointer)
 {
     int state = (int)(long)client_data;
     switch (state)
@@ -1440,6 +1549,44 @@ void dddSetSeparateWindowsCB (CB_ARG_LIST_12(w, client_data))
     post_startup_warning(w);
 }
 
+#else
+
+void dddSetSeparateWindowsCB (GUI::RadioButton *w, int state)
+{
+    switch (state)
+    {
+    case 0:
+	app_data.separate_data_window   = True;
+	app_data.separate_source_window = True;
+	app_data.common_toolbar         = False;
+	break;
+
+    case 1:
+	app_data.separate_data_window   = False;
+	app_data.separate_source_window = False;
+	app_data.common_toolbar         = True;
+	break;
+
+    case 2:
+	app_data.separate_data_window   = False;
+	app_data.separate_source_window = False;
+	app_data.common_toolbar         = False;
+	break;
+    }
+
+    if (app_data.separate_data_window || app_data.separate_source_window)
+	set_status(next_ddd_will_start_with + "separate windows.");
+    else if (app_data.common_toolbar)
+	set_status(next_ddd_will_start_with + "one window, one toolbar.");
+    else
+	set_status(next_ddd_will_start_with + "one window, two toolbars.");
+
+    update_options(NO_UPDATE);
+    post_startup_warning(w);
+}
+
+#endif
+
 void dddSetStatusAtBottomCB (Widget w, XtPointer client_data, XtPointer)
 {
     Boolean state = (int)(long)client_data;
@@ -1455,7 +1602,9 @@ void dddSetStatusAtBottomCB (Widget w, XtPointer client_data, XtPointer)
     post_startup_warning(w);
 }
 
-void dddSetToolBarCB (CB_ARG_LIST_12(w, client_data))
+#if defined(IF_XM)
+
+void dddSetToolBarCB (Widget w, XtPointer client_data, XtPointer)
 {
     Boolean state = (int)(long)client_data;
 
@@ -1470,6 +1619,26 @@ void dddSetToolBarCB (CB_ARG_LIST_12(w, client_data))
     update_options(NO_UPDATE);
     post_startup_warning(w);
 }
+
+#else
+
+void dddSetToolBarCB (GUI::RadioButton *w, bool state)
+{
+    if (!w->get_active()) return;
+
+    app_data.command_toolbar = state;
+    const string tool_buttons_are_located_in = "Tool buttons are located in ";
+
+    if (state)
+	set_status(tool_buttons_are_located_in + "command toolbar.");
+    else
+	set_status(tool_buttons_are_located_in + "command tool.");
+
+    update_options(NO_UPDATE);
+    post_startup_warning(w);
+}
+
+#endif
 
 void dddSetKeyboardFocusPolicyCB (CB_ARG_LIST_12(w, client_data))
 {
@@ -1542,7 +1711,9 @@ void dddSetKeyboardFocusPolicyCB (CB_ARG_LIST_12(w, client_data))
 #endif
 }
 
-void dddSetPannerCB (CB_ARG_LIST_12(w, client_data))
+#if defined(IF_XM)
+
+void dddSetPannerCB (Widget w, XtPointer client_data, XtPointer)
 {
     Boolean state = (int)(long)client_data;
     app_data.panned_graph_editor = state;
@@ -1555,6 +1726,23 @@ void dddSetPannerCB (CB_ARG_LIST_12(w, client_data))
     update_options(NO_UPDATE);
     post_startup_warning(w);
 }
+
+#else
+
+void dddSetPannerCB (GUI::RadioButton *w, bool state)
+{
+    app_data.panned_graph_editor = state;
+
+    if (state)
+	set_status(next_ddd_will_start_with + "a panned graph editor.");
+    else
+	set_status(next_ddd_will_start_with + "a scrolled graph editor.");
+
+    update_options(NO_UPDATE);
+    post_startup_warning(w);
+}
+
+#endif
 
 static void report_debugger_type()
 {

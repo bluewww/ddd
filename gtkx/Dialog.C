@@ -85,6 +85,12 @@ Dialog::internal(void)
     return this;
 }
 
+const Gtk::Widget *
+Dialog::internal(void) const
+{
+    return this;
+}
+
 Gtk::Container *
 Dialog::gtk_container(void)
 {

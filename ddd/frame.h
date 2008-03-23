@@ -37,7 +37,7 @@
 
 #if defined(IF_XM)
 // Find the WM frame surrounding WINDOW
-Window frame(Display display, Window window);
+Window frame(Display *display, Window window);
 
 inline Window frame(Widget w) { return frame(XtDisplay(w), XtWindow(w)); }
 #else

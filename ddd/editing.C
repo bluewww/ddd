@@ -745,34 +745,43 @@ void calc_position(int &x, int &y, bool &push_in)
     push_in = false;
 }
 
+#if defined(IF_XM)
+
 void popupAct(Widget, XEvent *event, String*, Cardinal*)
 {
-#if defined(IF_XM)
     static Widget gdb_popup_w = 0;
-#else
-    static GUI::WidgetPtr<GUI::PopupMenu> gdb_popup_w = 0;
-#endif
     if (gdb_popup_w == (Widget)0)
     {
 	gdb_popup_w = MMcreatePopupMenu(gdb_w, "gdb_popup", gdb_popup);
 	MMaddCallbacks(gdb_popup);
-#if defined(IF_XM)
 	MMaddHelpCallback(gdb_popup, ImmediateHelpCB);
-#else
-	MMaddHelpCallback(gdb_popup, sigc::ptr_fun(ImmediateHelpCB1));
-#endif
 	InstallButtonTips(gdb_popup_w);
     }
 
-#if defined(IF_MOTIF)
     XmMenuPosition(gdb_popup_w, &event->xbutton);
+    XtManageChild(gdb_popup_w);
+}
+
 #else
+
+void popupAct(Widget, XEvent *event, String*, Cardinal*)
+{
+    static GUI::PopupMenu *gdb_popup_w = 0;
+    if (!gdb_popup_w)
+    {
+	gdb_popup_w = MMcreatePopupMenu(*gdb_w, "gdb_popup", gdb_popup);
+	MMaddCallbacks(gdb_popup);
+	MMaddHelpCallback(gdb_popup, sigc::ptr_fun(ImmediateHelpCB1));
+	InstallButtonTips(gdb_popup_w);
+    }
+
 #ifdef NAG_ME
 #warning XmMenuPosition unimplemented?
 #endif
-#endif
-    XtManageChild(gdb_popup_w);
+    gdb_popup_w->show();
 }
+
+#endif
 
 //-----------------------------------------------------------------------------
 // Callbacks

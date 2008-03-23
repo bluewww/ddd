@@ -52,6 +52,7 @@ namespace GtkX {
 		 int padding=0);
 	~RadioBox(void);
 	Gtk::Widget *internal(void);
+	const Gtk::Widget *internal(void) const;
 	Gtk::Container *gtk_container(void);
 	void add_child(GtkX::Widget &child,
 		       PackOptions options=PACK_SHRINK,

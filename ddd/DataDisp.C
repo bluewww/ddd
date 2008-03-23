@@ -469,10 +469,14 @@ MMDesc DataDisp::node_popup[] =
 	    BIND_0(PTR_FUN(DataDisp::dereferenceCB)),
 	    sigc::ptr_fun(DataDisp::dereferenceCB),
 	    0, 0),
-    MENTRYL("new", "New Display", MMMenu,
-	    MMNoCB, DataDisp::shortcut_popup2, 0),
-    MENTRYL("theme", "Theme", MMMenu,
-	    MMNoCB, DataDisp::theme_menu, 0),
+    GENTRYL("new", "New Display", MMMenu,
+	    MMNoCB,
+	    MDUMMY,
+	    DataDisp::shortcut_popup2, 0),
+    GENTRYL("theme", "Theme", MMMenu,
+	    MMNoCB,
+	    MDUMMY,
+	    DataDisp::theme_menu, 0),
     MMSep,
     GENTRYL("detail", "Show Detail", MMPush, 
 	    BIND_1(PTR_FUN(DataDisp::toggleDetailCB), -1),
@@ -620,30 +624,26 @@ MMDesc DataDisp::display_area[] =
 };
 
 DispGraph    *DataDisp::disp_graph             = 0;
-GRAPH_EDIT_P DataDisp::graph_edit             = 0;
 #if defined(IF_XM)
+Widget       DataDisp::graph_edit             = 0;
 Widget       DataDisp::graph_form_w           = 0;
 Widget       DataDisp::last_origin            = 0;
 ArgField    *DataDisp::graph_arg              = 0;
 Widget       DataDisp::graph_cmd_w            = 0;
-#else
-GUI::Widget *DataDisp::graph_form_w           = 0;
-GUI::Widget *DataDisp::last_origin            = 0;
-ArgField    *DataDisp::graph_arg              = 0;
-GUI::Container *DataDisp::graph_cmd_w            = 0;
-#endif
-#if defined(IF_XM)
-ENTRY_P      DataDisp::graph_selection_w      = 0;
-#endif
-#if defined(IF_XM)
+Widget       DataDisp::graph_selection_w      = 0;
 Widget       DataDisp::edit_displays_dialog_w = 0;
 Widget       DataDisp::display_list_w         = 0;
 Widget       DataDisp::graph_popup_w          = 0;
 Widget       DataDisp::node_popup_w           = 0;
 Widget       DataDisp::shortcut_popup_w       = 0;
 #else
-GUI::Dialog *DataDisp::edit_displays_dialog_w = 0;
-GUI::ListView *DataDisp::display_list_w         = 0;
+GUIGraphEdit   *DataDisp::graph_edit             = 0;
+GUI::Widget    *DataDisp::graph_form_w           = 0;
+GUI::Widget    *DataDisp::last_origin            = 0;
+ArgField       *DataDisp::graph_arg              = 0;
+GUI::Container *DataDisp::graph_cmd_w            = 0;
+GUI::Dialog    *DataDisp::edit_displays_dialog_w = 0;
+GUI::ListView  *DataDisp::display_list_w         = 0;
 GUI::PopupMenu *DataDisp::graph_popup_w          = 0;
 GUI::PopupMenu *DataDisp::node_popup_w           = 0;
 GUI::PopupMenu *DataDisp::shortcut_popup_w       = 0;
@@ -9164,15 +9164,15 @@ void DataDisp::create_shells()
 
     // Create menus
     graph_popup_w = 
-	MMcreatePopupMenu(graph_edit, "graph_popup", graph_popup);
+	MMcreatePopupMenu(*graph_edit, "graph_popup", graph_popup);
     InstallButtonTips1(graph_popup_w);
 
     node_popup_w = 
-	MMcreatePopupMenu(graph_edit, "node_popup", node_popup);
+	MMcreatePopupMenu(*graph_edit, "node_popup", node_popup);
     InstallButtonTips1(node_popup_w);
 
     shortcut_popup_w = 
-	MMcreatePopupMenu(graph_edit, "shortcut_popup", shortcut_popup1);
+	MMcreatePopupMenu(*graph_edit, "shortcut_popup", shortcut_popup1);
     InstallButtonTips1(shortcut_popup_w);
 
     disp_graph->callHandlers();
@@ -9200,8 +9200,8 @@ void DataDisp::create_shells()
 	}
     }
 
-    Widget buttons = verify(MMcreateWorkArea(edit_displays_dialog_w, 
-					     "buttons", display_area));
+    GUI::Container *buttons = MMcreateWorkArea(edit_displays_dialog_w, 
+					       "buttons", display_area);
 
     MMaddCallbacks (display_area);
     MMaddHelpCallback(display_area, sigc::ptr_fun(ImmediateHelpCB1));

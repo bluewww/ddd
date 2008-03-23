@@ -157,6 +157,12 @@ ScrolledText::internal(void)
     return this;
 }
 
+const Gtk::Widget *
+ScrolledText::internal(void) const
+{
+    return this;
+}
+
 long
 ScrolledText::xy_to_pos(double x, double y)
 {

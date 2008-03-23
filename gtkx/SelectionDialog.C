@@ -91,6 +91,12 @@ SelectionDialog::internal(void)
     return this;
 }
 
+const Gtk::Widget *
+SelectionDialog::internal(void) const
+{
+    return this;
+}
+
 // In the case of Dialogs, we almost always want to add to the VBox
 // returned by get_vbox().
 Gtk::Container *

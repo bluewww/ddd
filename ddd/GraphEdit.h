@@ -348,6 +348,7 @@ public:
     ~GUIGraphEdit(void);
 #if !defined(IF_XMMM)
     Gtk::Widget *internal(void);
+    const Gtk::Widget *internal(void) const;
 #endif
     bool on_expose_event(GUI::EventExpose *event);
     bool get_show_grid(void);

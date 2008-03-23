@@ -40,6 +40,7 @@ namespace GtkX {
 	Statusbar(GtkX::Container &parent, const String &name="");
 	Statusbar(Gtk::Container *parent, const String &name="");
 	Gtk::Widget *internal(void);
+	const Gtk::Widget *internal(void) const;
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
 #include <GtkX/redirect.h>
     };

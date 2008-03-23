@@ -62,4 +62,10 @@ MenuBar::internal(void)
     return this;
 }
 
+const Gtk::Widget *
+MenuBar::internal(void) const
+{
+    return this;
+}
+
 

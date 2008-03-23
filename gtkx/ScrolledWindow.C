@@ -47,3 +47,9 @@ ScrolledWindow::internal(void)
     return this;
 }
 
+const Gtk::Widget *
+ScrolledWindow::internal(void) const
+{
+    return this;
+}
+

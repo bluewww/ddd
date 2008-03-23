@@ -43,6 +43,7 @@ namespace GtkX {
 	VBox(GtkX::Container &parent, const String &name="");
 	VBox(Gtk::Container *parent, const String &name="");
 	Gtk::Widget *internal(void);
+	const Gtk::Widget *internal(void) const;
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
 #include <GtkX/redirect.h>
     };
@@ -52,6 +53,7 @@ namespace GtkX {
 	HBox(GtkX::Container &parent, const String &name="");
 	HBox(Gtk::Container *parent, const String &name="");
 	Gtk::Widget *internal(void);
+	const Gtk::Widget *internal(void) const;
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
 #include <GtkX/redirect.h>
     };

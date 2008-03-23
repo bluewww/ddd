@@ -67,6 +67,13 @@ Widget1s<T>::internal(void)
     return this;
 }
 
+template <class T>
+const Gtk::Widget *
+Widget1s<T>::internal(void) const
+{
+    return this;
+}
+
 #include <gtkmm/radiobutton.h>
 #include <gtkmm/button.h>
 #include <gtkmm/menuitem.h>

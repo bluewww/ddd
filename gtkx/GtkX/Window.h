@@ -40,6 +40,7 @@ namespace GtkX {
 	Window(Main &main, const String &name="", const String &title="");
 	Window(const String &name="", const String &title="");
 	Gtk::Widget *internal(void);
+	const Gtk::Widget *internal(void) const;
 	Gtk::Container *gtk_container(void);
 	~Window(void);
 	sigc::signal<bool, GdkEvent *> &signal_delete_event(void);

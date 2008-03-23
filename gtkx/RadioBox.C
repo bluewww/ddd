@@ -68,6 +68,12 @@ RadioBox::internal(void)
     return this;
 }
 
+const Gtk::Widget *
+RadioBox::internal(void) const
+{
+    return this;
+}
+
 Gtk::Container *
 RadioBox::gtk_container(void)
 {

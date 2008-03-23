@@ -43,6 +43,7 @@ namespace GtkX {
 		      const String &label="");
 	~CheckMenuItem(void);
 	Gtk::Widget *internal(void);
+	const Gtk::Widget *internal(void) const;
 	bool get_active();
 	void set_active(bool new_state, bool notify=false);
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.

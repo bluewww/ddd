@@ -41,12 +41,25 @@ Window::Window(Main &main, const String &name, const String &title)
     postinit();
 }
 
+Window::Window(const String &name, const String &title)
+{
+    set_name(name.s());
+    set_title(title.s());
+    postinit();
+}
+
 Window::~Window(void)
 {
 }
 
 Gtk::Widget *
 Window::internal(void)
+{
+    return this;
+}
+
+const Gtk::Widget *
+Window::internal(void) const
 {
     return this;
 }

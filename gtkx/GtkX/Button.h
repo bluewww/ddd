@@ -46,6 +46,7 @@ namespace GtkX {
 	       const String &label="");
 	~Button(void);
 	Gtk::Widget *internal(void);
+	const Gtk::Widget *internal(void) const;
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
 #include <GtkX/redirect.h>
     };

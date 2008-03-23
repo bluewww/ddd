@@ -64,6 +64,12 @@ ComboBoxEntryText::internal(void)
     return this;
 }
 
+const Gtk::Widget *
+ComboBoxEntryText::internal(void) const
+{
+    return this;
+}
+
 GtkX::String
 ComboBoxEntryText::get_text(void)
 {

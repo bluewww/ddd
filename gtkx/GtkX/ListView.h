@@ -52,6 +52,7 @@ namespace GtkX {
 		 PackOptions options=PACK_SHRINK,
 		 int padding=0);
 	Gtk::Widget *internal(void);
+	const Gtk::Widget *internal(void) const;
 	~ListView(void);
 	std::string get_selected(void);
 	void clear(void);

@@ -357,9 +357,11 @@ pack_item(GUI::Container *container, GUI::Widget *widget)
 //-----------------------------------------------------------------------
 
 // Add items to shell.  If IGNORE_SEPS is set, all separators are ignored.
-void MMaddItems(CONTAINER_P shell,
-#if !defined(IF_XM)
-		GUI::Container *xshell,
+void MMaddItems(
+#if defined(IF_XM)
+                Widget shell,
+#else
+		GUI::Container *shell,
 #endif
 		MMDesc items[], bool ignore_seps)
 {
@@ -388,9 +390,8 @@ void MMaddItems(CONTAINER_P shell,
     bool image = false;
 #endif
 #else
-    Gtk::MenuShell *menushell = dynamic_cast<Gtk::MenuShell *>(shell);
-    Gtk::Container *container = dynamic_cast<Gtk::Container *>(shell);
-    Gtk::RadioButtonGroup group;
+    GUI::MenuShell *menushell = dynamic_cast<GUI::MenuShell *>(shell);
+    GUI::Container *container = dynamic_cast<GUI::Container *>(shell);
 #endif
 
     static const string textName  = "text";
@@ -506,11 +507,11 @@ void MMaddItems(CONTAINER_P shell,
 #warning MMPush might be a MenuItem or a Button.  Check shell.
 #endif
 	    if (menushell) {
-		xwidget = new GUI::MenuItem(container, name, label_string);
+		xwidget = new GUI::MenuItem(*container, name, label_string);
 	    }
 	    else {
 		if (image) {
-		    GUI::Button *button = new GUI::Button(container, name);
+		    GUI::Button *button = new GUI::Button(*container, name);
 		    xwidget = button;
 #if !defined(IF_XMMM)
 		    GUI::ImageHandle p1 = image[0];
@@ -531,7 +532,7 @@ void MMaddItems(CONTAINER_P shell,
 #endif
 		}
 		else {
-		    xwidget = new GUI::Button(container, name, label_string);
+		    xwidget = new GUI::Button(*container, name, label_string);
 		}
 	    }
 	    // pack_item(container, widget);
@@ -566,7 +567,7 @@ void MMaddItems(CONTAINER_P shell,
 	{
 	    // Create a ToggleButton
 	    assert(subitems == 0);
-	    xwidget = new GUI::CheckButton(*xshell, name, label_string);
+	    xwidget = new GUI::CheckButton(*shell, name, label_string);
 	    break;
 	}
 
@@ -574,7 +575,7 @@ void MMaddItems(CONTAINER_P shell,
 	{
 	    // Create a CheckItem
 	    assert(subitems == 0);
-	    xwidget = new GUI::CheckMenuItem(*xshell, name, label_string);
+	    xwidget = new GUI::CheckMenuItem(*shell, name, label_string);
 	    break;
 	}
 
@@ -585,8 +586,7 @@ void MMaddItems(CONTAINER_P shell,
 	{
 	    // Create a ToggleButton in a radio group
 	    assert(subitems == 0);
-	    // FIXME: Each container has its own group?
-	    xwidget = new GUI::RadioButton(container, name, /* group, */ label_string);
+	    xwidget = new GUI::RadioButton(*container, name, label_string);
 	    break;
 	}
 #endif
@@ -600,7 +600,7 @@ void MMaddItems(CONTAINER_P shell,
 	    arg = 0;
 	    widget = verify(XmCreateLabel(shell, XMST(name), args, arg));
 #else
-	    widget = label = new GUI::Label(container, label_string);
+	    widget = label = new GUI::Label(*container, label_string);
 	    widget->modify_fg(Gtk::STATE_NORMAL, Gdk::Color("red"));
 	    label->set_alignment(Gtk::ALIGN_LEFT);
 #endif
@@ -619,7 +619,7 @@ void MMaddItems(CONTAINER_P shell,
 #ifdef NAG_ME
 #warning What is an ArrowButton?
 #endif
-	    xwidget = new GUI::Button(container, name, label_string);
+	    xwidget = new GUI::Button(*container, name, label_string);
 	    xwidget->set_name(name);
 #endif
 	    break;
@@ -633,7 +633,7 @@ void MMaddItems(CONTAINER_P shell,
 #if defined(IF_XM)
 	    subMenu = MMcreatePulldownMenu(container, subMenuName.chars(), subitems);
 #else
-	    xsubMenu = MMcreatePulldownMenu(*xshell, subMenuName.chars(), subitems);
+	    xsubMenu = MMcreatePulldownMenu(*shell, subMenuName.chars(), subitems);
 	    subMenu = (MENU_P)xsubMenu->internal();
 #endif
 
@@ -681,12 +681,12 @@ void MMaddItems(CONTAINER_P shell,
 #else
 	    if (menushell) {
 		GUI::MenuItem *mi;
-		xwidget = mi = new GUI::MenuItem(container, name, label_string);
+		xwidget = mi = new GUI::MenuItem(*container, name, label_string);
 		mi->set_submenu(*subMenu);
 	    }
 	    else {
 		std::cerr << "Cannot attach menu to non-menushell\n";
-		xwidget = new GUI::Button(container, name, label_string);
+		xwidget = new GUI::Button(*container, name, label_string);
 	    }
 #endif
 	    break;
@@ -700,7 +700,7 @@ void MMaddItems(CONTAINER_P shell,
 #if defined(IF_XM)
 	    subMenu = MMcreateRadioPulldownMenu(container, subMenuName.chars(), subitems);
 #else
-	    xsubMenu = MMcreateRadioPulldownMenu(*xshell, subMenuName.chars(), subitems);
+	    xsubMenu = MMcreateRadioPulldownMenu(*shell, subMenuName.chars(), subitems);
 	    subMenu = (MENU_P)xsubMenu->internal();
 #endif
 
@@ -711,12 +711,12 @@ void MMaddItems(CONTAINER_P shell,
 #else
 	    if (menushell) {
 		GUI::MenuItem *mi;
-		widget = mi = new GUI::MenuItem(container, name, label_string);
+		widget = mi = new GUI::MenuItem(*container, name, label_string);
 		mi->set_submenu(*subMenu);
 	    }
 	    else {
 		std::cerr << "Cannot attach menu to non-menushell\n";
-		xwidget = new GUI::Button(container, name, label_string);
+		xwidget = new GUI::Button(*container, name, label_string);
 	    }
 #endif
 	    break;
@@ -730,7 +730,7 @@ void MMaddItems(CONTAINER_P shell,
 #if defined(IF_XM)
 	    subMenu = MMcreatePulldownMenu(container, subMenuName.chars(), subitems);
 #else
-	    xsubMenu = MMcreatePulldownMenu(*xshell, subMenuName.chars(), subitems);
+	    xsubMenu = MMcreatePulldownMenu(*shell, subMenuName.chars(), subitems);
 	    subMenu = (MENU_P)xsubMenu->internal();
 #endif
 
@@ -740,7 +740,7 @@ void MMaddItems(CONTAINER_P shell,
 	    widget = verify(XmCreateOptionMenu(shell, XMST(name), args, arg));
 #else
 	    GUI::OptionMenu *om;
-	    xwidget = om = new GUI::OptionMenu(container);
+	    xwidget = om = new GUI::OptionMenu(*container);
 	    xwidget->set_name(name);
 #ifdef NAG_ME
 #warning OptionMenu is deprecated.
@@ -778,7 +778,7 @@ void MMaddItems(CONTAINER_P shell,
 	    if (have_label)
 		XtManageChild(label);
 #else
-	    xwidget = box = new GUI::HBox(*xshell, panelName.chars());
+	    xwidget = box = new GUI::HBox(*shell, panelName.chars());
 
 	    xlabel = new GUI::Label(*box, label_string);
 	    if (have_label)
@@ -847,7 +847,7 @@ void MMaddItems(CONTAINER_P shell,
 	    widget = verify(XmCreateScale(shell, XMST(name), args, arg));
 #else
 	    std::cerr << "FIXME: Hardwired bounds for HScale.\n";
-	    xwidget = new GUI::HScale(*xshell, name, 0, 16);
+	    xwidget = new GUI::HScale(*shell, name, 0, 16);
 #endif
 	    break;
 	}
@@ -872,7 +872,7 @@ void MMaddItems(CONTAINER_P shell,
 
 	    panel = verify(XmCreateRowColumn(shell, XMST(name), args, arg));
 #else
-	    panel = new GUI::HBox(*xshell, name);
+	    panel = new GUI::HBox(*shell, name);
 #endif
 
 #if defined(IF_XM)
@@ -902,7 +902,7 @@ void MMaddItems(CONTAINER_P shell,
 		arg = 0;
 		widget = CreateComboBox(panel, textName.chars(), args, arg);
 #else
-		xwidget = new GUI::ComboBoxEntryText(*xshell, GUI::String(textName.chars()));
+		xwidget = new GUI::ComboBoxEntryText(*shell, GUI::String(textName.chars()));
 #endif
 		break;
 
@@ -932,7 +932,7 @@ void MMaddItems(CONTAINER_P shell,
 	    arg = 0;
 	    widget = verify(XmCreateSeparator(shell, XMST(name), args, arg));
 #else
-	    xwidget = new GUI::SeparatorMenuItem(container, name);
+	    xwidget = new GUI::SeparatorMenuItem(*container, name);
 #endif
 	    break;
 	}
@@ -988,24 +988,6 @@ void MMaddItems(CONTAINER_P shell,
 #endif
     }
 }
-
-#if !defined(IF_XM)
-void MMaddItems(GUI::Container *shell, MMDesc items[], bool ignore_seps)
-{
-#if defined(IF_XMMM)
-    std::cerr << "Error: MMaddItems not implemented.\n";
-    exit(1);
-#else
-    Gtk::Widget *w = shell->internal();
-    Gtk::Container *cont = dynamic_cast<Gtk::Container *>(w);
-    if (!cont) {
-	std::cerr << "Error: MMaddItems to non-Container.\n";
-	exit(1);
-    }
-    MMaddItems(cont, shell, items, ignore_seps);
-#endif    
-}
-#endif
 
 
 //-----------------------------------------------------------------------
@@ -1159,29 +1141,32 @@ GUI::WidgetPtr<GUI::MenuBar> MMcreateMenuBar(CONTAINER_P parent, cpString name, 
 
 #endif
 
+#if defined(IF_XM)
+
 // Create work area from items
-CONTAINER_P MMcreateWorkArea(DIALOG_P parent, NAME_T name, MMDesc items[]
-#if defined(IF_MOTIF)
-			     , ArgList args, Cardinal arg
-#endif
-			     )
+Widget MMcreateWorkArea(Widget parent, const char *name, MMDesc items[],
+			ArgList args, Cardinal arg)
 {
-#if defined(IF_MOTIF)
     Widget bar = verify(XmCreateWorkArea(parent, XMST(name), args, arg));
-#else
-    BOX_P bar = new Gtk::HBox();
-    bar->set_name(XMST(name));
-    parent->get_vbox()->pack_start(*bar, Gtk::PACK_SHRINK);
-#endif
-    MMaddItems(bar,
-#if !defined(IF_XM)
-	       NULL,
-#endif
-	       items, true);
+    MMaddItems(bar, items, true);
     XtManageChild(bar);
 
     return bar;
 }
+
+#else
+
+// Create work area from items
+GUI::Container *MMcreateWorkArea(GUI::Dialog *parent, GUI::String name, MMDesc items[])
+{
+    GUI::HBox *bar = new GUI::HBox(parent, name);
+    MMaddItems(bar, items, true);
+    bar->show();
+
+    return bar;
+}
+
+#endif
 
 #if defined(IF_XM)
 // Create panel from items
@@ -1487,6 +1472,14 @@ static void addCallback(const MMDesc *item, XtPointer default_closure)
     case MMCheckItem:
     case MMRadio:
     {
+	if (xcallback) {
+	    GUI::RadioButton *radio = dynamic_cast<GUI::RadioButton *>(xwidget);
+	    if (radio)
+		radio->signal_toggled().connect(sigc::bind(xcallback, xwidget));
+	}
+	else
+	    xwidget->set_sensitive(false);
+#if 0
 	if (callback) {
 	    Gtk::ToggleButton *button = dynamic_cast<Gtk::ToggleButton *>(widget);
 	    Gtk::CheckMenuItem *mi = dynamic_cast<Gtk::CheckMenuItem *>(widget);
@@ -1499,6 +1492,7 @@ static void addCallback(const MMDesc *item, XtPointer default_closure)
 	}
 	else
 	    set_sensitive(widget, false);
+#endif
 	break;
     }
     case MMScale:
@@ -1724,11 +1718,12 @@ void MMaddHelpCallback(const MMDesc items[], sigc::slot<void, GUI::Widget *> pro
 //-----------------------------------------------------------------------
 
 // Create pushmenu from items
-MENU_P MMcreatePushMenu(CONTAINER_P parent, NAME_T name, MMDesc items[]
-#if defined(IF_MOTIF)
-			, ArgList _args, Cardinal _arg
+#if defined(IF_XM)
+Widget MMcreatePushMenu(Widget parent, const char *name, MMDesc items[],
+			ArgList _args, Cardinal _arg)
+#else
+GUI::Menu *MMcreatePushMenu(GUI::Container *parent, GUI::String name, MMDesc items[])
 #endif
-			)
 {
 #if defined(IF_MOTIF)
     ArgList args = new Arg[_arg + 10];
@@ -1759,15 +1754,10 @@ MENU_P MMcreatePushMenu(CONTAINER_P parent, NAME_T name, MMDesc items[]
 
     Widget menu = verify(XmCreatePopupMenu(parent, XMST(name), args, arg));
 #else
-    MENU_P menu = new Gtk::Menu();
-    menu->set_name(XMST(name));
+    GUI::PopupMenu *menu = new GUI::PopupMenu(*parent, name);
 #endif
 
-    MMaddItems(menu,
-#if !defined(IF_XM)
-	       NULL,
-#endif
-	       items);
+    MMaddItems(menu, items);
     auto_raise(XtParent(menu));
 
     // LessTif places a passive grab on the parent, such that the
@@ -2077,6 +2067,7 @@ void set_sensitive(Widget w, bool state)
 void
 dummy_callback(Widget)
 {
+    std::cerr << "DUMMY CALLBACK\n";
 }
 #endif
 
@@ -2084,5 +2075,6 @@ dummy_callback(Widget)
 void
 dummy_xcallback(GUI::Widget *)
 {
+    std::cerr << "DUMMY XCALLBACK\n";
 }
 #endif

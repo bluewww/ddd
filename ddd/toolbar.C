@@ -427,7 +427,7 @@ GUI::Container *create_toolbar(GUI::Container *parent, const string& /* name */,
     }
 
     // Create buttons
-    MMaddItems(toolbar, NULL, items1);
+    MMaddItems(toolbar, items1);
     MMaddCallbacks(items1);
     MMaddHelpCallback(items1, sigc::ptr_fun(ImmediateHelpCB1));
     // set_label_type(items1, label_type);
@@ -437,7 +437,7 @@ GUI::Container *create_toolbar(GUI::Container *parent, const string& /* name */,
 
     if (items2 != 0)
     {
-	MMaddItems(toolbar, NULL, items2);
+	MMaddItems(toolbar, items2);
 	MMaddCallbacks(items2);
 	MMaddHelpCallback(items2, sigc::ptr_fun(ImmediateHelpCB1));
 	// set_label_type(items2, label_type);

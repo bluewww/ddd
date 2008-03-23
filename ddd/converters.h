@@ -29,16 +29,10 @@
 #ifndef _DDD_converters_h
 #define _DDD_converters_h
 
-#ifdef IF_MOTIF
-
 #include <X11/Intrinsic.h>
 
-#else // NOT IF_MOTIF
-
-#endif // IF_MOTIF
-
 // Convert String to OnOff
-Boolean CvtStringToOnOff(DISPLAY_P display, 
+Boolean CvtStringToOnOff(Display *display, 
 			 XrmValue *args, Cardinal *num_args, 
 			 XrmValue *fromVal, XrmValue *toVal,
 			 XtPointer *converter_data);

@@ -49,6 +49,7 @@ namespace GtkX {
 	SelectionDialog(GtkX::Shell &parent, const String &name,
 			const std::vector<String> &headers);
 	Gtk::Widget *internal(void);
+	const Gtk::Widget *internal(void) const;
 	Gtk::Container *gtk_container(void);
 	~SelectionDialog(void);
 	ListView *list(void);

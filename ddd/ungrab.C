@@ -146,13 +146,8 @@ static bool mouse_pointer_grabbed()
     // Warning! Debugging this function may cause your pointer to freeze!
     GUI::RefPtr<GUI::Screen> screen = grab_display->get_default_screen();
     GUI::RefPtr<GUI::XWindow> root_window = screen->get_root_window();
-    GUI::Cursor *temp_cursor;
-    // FIXME: Define temp_cursor?
-    GUI::RefPtr<GUI::XWindow> confine;
     GUI::GrabStatus grab_result =
-	root_window->pointer_grab(true, GUI::EventMask(0),
-				  confine,
-				  *temp_cursor, GDK_CURRENT_TIME);
+	root_window->pointer_grab(true, GUI::EventMask(0), GDK_CURRENT_TIME);
 
     if (grab_result == GUI::GRAB_ALREADY_GRABBED || grab_result == GUI::GRAB_FROZEN)
 	return true;

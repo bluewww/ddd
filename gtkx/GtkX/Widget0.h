@@ -44,6 +44,7 @@ namespace GtkX {
 	Widget0(Gtk::Container *parent, const String &name="");
 	~Widget0(void);
 	Gtk::Widget *internal(void);
+	const Gtk::Widget *internal(void) const;
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
 #include <GtkX/redirect.h>
     };

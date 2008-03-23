@@ -25,6 +25,8 @@
 
 using namespace GtkX;
 
+Main *GtkX::default_main_loop = NULL;
+
 Main::Main(GtkX::Window *&toplevel, const char *classname, const char *sessid,
 	   const char *const *fallback_rsc, int argc, char **argv)
 {
@@ -39,6 +41,7 @@ Main::Main(GtkX::Window *&toplevel, const char *classname, const char *sessid,
     // Note: the cast on ddd_fallback_resources is safe.
     main_ = new Gtk::Main(argc, argv);
     toplevel_ = toplevel = new Window(*this, "main", "main");
+    default_main_loop = this;
 }
 
 Main::~Main(void)

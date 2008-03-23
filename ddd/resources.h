@@ -56,10 +56,8 @@ extern const char *const ddd_fallback_resources[];
 #endif
 
 #if defined(IF_XM)
-
 // Default resources
-extern xmlDoc *app_defaults(Display *display);
-
+extern XrmDatabase app_defaults(Display *display);
 #else
 
 // Emulate Xt resource database.

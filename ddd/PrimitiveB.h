@@ -29,10 +29,6 @@
 #ifndef _DDD_PrimitiveBox_h
 #define _DDD_PrimitiveBox_h
 
-#ifdef HAVE_CONFIG_H
-#include <GUI/Widget.h>
-#endif
-
 #include "Box.h"
 
 // PrimitiveBox

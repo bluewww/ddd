@@ -44,6 +44,7 @@
 #include <GUI/Image.h>
 #include <GUI/Menu.h>
 #include <GUI/MenuBar.h>
+#include <GUI/Dialog.h>
 #endif
 
 #include "bool.h"
@@ -153,36 +154,34 @@ GUI::PulldownMenu  *MMcreatePulldownMenu       (GUI::Container &parent, cpString
 GUI::PulldownMenu  *MMcreateRadioPulldownMenu  (GUI::Container &parent, cpString name, MMDesc items[]);
 GUI::PopupMenu     *MMcreatePopupMenu          (GUI::Widget &parent, cpString name, MMDesc items[]);
 GUI::WidgetPtr<GUI::MenuBar> MMcreateMenuBar   (GUI::Container &parent, cpString name, MMDesc items[]);
+#if 0
 // TEMPORARY
 GUI::PopupMenu     *MMcreatePopupMenu          (Widget parent, cpString name, MMDesc items[]);
 GUI::WidgetPtr<GUI::MenuBar> MMcreateMenuBar   (CONTAINER_P parent, cpString name, MMDesc items[]);
 #endif
-
-CONTAINER_P    MMcreateWorkArea           (DIALOG_P parent, NAME_T name, MMDesc items[]
-#if defined(IF_MOTIF)
-					   , ArgList args = 0, Cardinal arg = 0
 #endif
-					   );
+
 #if defined(IF_XM)
-BOX_P          MMcreatePanel              (Widget parent, const char *name, MMDesc items[],
+Widget         MMcreateWorkArea           (Widget parent, const char *name, MMDesc items[],
 					   ArgList args = 0, Cardinal arg = 0);
-BOX_P          MMcreateRadioPanel         (Widget parent, const char *name, MMDesc items[],
+Widget         MMcreatePanel              (Widget parent, const char *name, MMDesc items[],
 					   ArgList args = 0, Cardinal arg = 0);
-BOX_P          MMcreateButtonPanel        (Widget parent, const char *name, MMDesc items[],
+Widget         MMcreateRadioPanel         (Widget parent, const char *name, MMDesc items[],
+					   ArgList args = 0, Cardinal arg = 0);
+Widget         MMcreateButtonPanel        (Widget parent, const char *name, MMDesc items[],
 					   ArgList args = 0, Cardinal arg = 0);
 //BOX_P        MMcreateVButtonPanel       (Widget parent, const char *name, MMDesc items[],
 //					   ArgList args = 0, Cardinal arg = 0);
+Widget         MMcreatePushMenu           (Widget parent, const char *name, MMDesc items[],
+					   ArgList args = 0, Cardinal arg = 0);
 #else
+GUI::Container *MMcreateWorkArea(GUI::Dialog *parent, GUI::String name, MMDesc items[]);
 GUI::Container *MMcreatePanel(GUI::Container *parent, cpString name, MMDesc items[]);
 GUI::Container *MMcreateRadioPanel(GUI::Container *parent, cpString name, MMDesc items[]);
 GUI::Container *MMcreateButtonPanel(GUI::Container *parent, cpString name, MMDesc items[]);
-GUI::Container *MMcreateVButtonPanel(CONTAINER_P parent, NAME_T name, MMDesc items[]);
+GUI::Container *MMcreateVButtonPanel(GUI::Container *parent, GUI::String name, MMDesc items[]);
+GUI::Menu      *MMcreatePushMenu(GUI::Container *parent, GUI::String name, MMDesc items[]);
 #endif
-MENU_P       MMcreatePushMenu             (CONTAINER_P parent, NAME_T name, MMDesc items[]
-#if defined(IF_MOTIF)
-					   , ArgList args = 0, Cardinal arg = 0
-#endif
-					   );
 
 // Align panel items along their labels
 void MMadjustPanel(const MMDesc items[], Dimension space = 15);
@@ -203,13 +202,9 @@ void MMonItems(const MMDesc items[], MMItemProc proc, XtPointer closure = 0,
 	       int depth = -1);
 
 // Add ITEMS to SHELL.  If IGNORE_SEPS is set, all separators are ignored.
-void MMaddItems(CONTAINER_P shell,
-#if !defined(IF_XM)
-		GUI::Container *xshell,
-#endif
-		MMDesc items[], bool ignore_seps = false);
-
-#if !defined(IF_XM)
+#if defined(IF_XM)
+void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps = false);
+#else
 void MMaddItems(GUI::Container *shell, MMDesc items[], bool ignore_seps = false);
 #endif
 

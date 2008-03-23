@@ -4,6 +4,7 @@
 #define GTKX_EVENTS_H
 
 #include <gdk/gdkevents.h>
+#include <gdkmm/window.h>
 
 namespace GtkX {
 
@@ -388,6 +389,7 @@ namespace GtkX {
     };
 
     int translate_event(GdkEvent *in, Event *out);
+    int translate_event_mask(EventMask &in, Gdk::EventMask &out);
 
 }
 

@@ -23,6 +23,12 @@ MultiPaned::internal(void)
     return this;
 }
 
+const Gtk::Widget *
+MultiPaned::internal(void) const
+{
+    return this;
+}
+
 void
 MultiPaned::on_add(Gtk::Widget* widget)
 {

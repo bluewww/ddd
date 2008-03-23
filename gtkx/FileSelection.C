@@ -69,6 +69,12 @@ FileSelection::internal(void)
     return this;
 }
 
+const Gtk::Widget *
+FileSelection::internal(void) const
+{
+    return this;
+}
+
 std::string
 FileSelection::get_selected(void)
 {

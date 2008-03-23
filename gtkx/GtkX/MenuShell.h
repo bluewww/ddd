@@ -1,3 +1,5 @@
+// -*- C++ -*-
+
 // High-level GUI wrapper for Gtkmm.
 
 // Copyright (C) 2007 Peter Wainwright <prw@ceiriog.eclipse.co.uk>
@@ -23,34 +25,19 @@
 // Unfortunately Motif widgets require parent and name arguments to
 // the constructor, unlike the Gtk ones.  Motif (Xt) widgets cannot be
 // reparented.  Therefore we need a constructor with extra arguments.
+// A brief look at QT indicates that this will be required there as
+// well.
 
-#include <GtkX/Statusbar.h>
+#ifndef GTKX_MENUSHELL_H
+#define GTKX_MENUSHELL_H
 
-using namespace GtkX;
+#include <GtkX/Container.h>
 
-Statusbar::Statusbar(Gtk::Container *parent, const GtkX::String &name)
-{
-    set_name(name.s());
-    parent->add(*this);
-    postinit();
+namespace GtkX {
+
+    class MenuShell: public Container {
+    };
+
 }
 
-Statusbar::Statusbar(GtkX::Container &parent, const GtkX::String &name)
-{
-    set_name(name.s());
-    parent.add_child(*this);
-    postinit();
-}
-
-Gtk::Widget *
-Statusbar::internal(void)
-{
-    return this;
-}
-
-const Gtk::Widget *
-Statusbar::internal(void) const
-{
-    return this;
-}
-
+#endif // GTKX_MENUSHELL_H

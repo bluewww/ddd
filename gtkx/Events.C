@@ -218,4 +218,31 @@ int GtkX::translate_event(GdkEvent *in, Event *out)
     }
 }
 
+int
+GtkX::translate_event_mask(EventMask &in, Gdk::EventMask &out)
+{
+    out = Gdk::EventMask(0);
+    if (in&EXPOSURE_MASK) {out|=Gdk::EXPOSURE_MASK;}
+    if (in&POINTER_MOTION_MASK) {out|=Gdk::POINTER_MOTION_MASK;}
+    if (in&POINTER_MOTION_HINT_MASK) {out|=Gdk::POINTER_MOTION_HINT_MASK;}
+    if (in&BUTTON_MOTION_MASK) {out|=Gdk::BUTTON_MOTION_MASK;}
+    if (in&BUTTON1_MOTION_MASK) {out|=Gdk::BUTTON1_MOTION_MASK;}
+    if (in&BUTTON2_MOTION_MASK) {out|=Gdk::BUTTON2_MOTION_MASK;}
+    if (in&BUTTON3_MOTION_MASK) {out|=Gdk::BUTTON3_MOTION_MASK;}
+    if (in&BUTTON_PRESS_MASK) {out|=Gdk::BUTTON_PRESS_MASK;}
+    if (in&BUTTON_RELEASE_MASK) {out|=Gdk::BUTTON_RELEASE_MASK;}
+    if (in&KEY_PRESS_MASK) {out|=Gdk::KEY_PRESS_MASK;}
+    if (in&ENTER_NOTIFY_MASK) {out|=Gdk::ENTER_NOTIFY_MASK;}
+    if (in&LEAVE_NOTIFY_MASK) {out|=Gdk::LEAVE_NOTIFY_MASK;}
+    if (in&FOCUS_CHANGE_MASK) {out|=Gdk::FOCUS_CHANGE_MASK;}
+    if (in&STRUCTURE_MASK) {out|=Gdk::STRUCTURE_MASK;}
+    if (in&PROPERTY_CHANGE_MASK) {out|=Gdk::PROPERTY_CHANGE_MASK;}
+    if (in&VISIBILITY_NOTIFY_MASK) {out|=Gdk::VISIBILITY_NOTIFY_MASK;}
+    if (in&PROXIMITY_IN_MASK) {out|=Gdk::PROXIMITY_IN_MASK;}
+    if (in&PROXIMITY_OUT_MASK) {out|=Gdk::PROXIMITY_OUT_MASK;}
+    if (in&SUBSTRUCTURE_MASK) {out|=Gdk::SUBSTRUCTURE_MASK;}
+    if (in&SCROLL_MASK) {out|=Gdk::SCROLL_MASK;}
+}
+
+
 

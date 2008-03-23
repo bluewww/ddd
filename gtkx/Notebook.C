@@ -47,6 +47,12 @@ Notebook::internal(void)
     return this;
 }
 
+const Gtk::Widget *
+Notebook::internal(void) const
+{
+    return this;
+}
+
 int
 Notebook::append_page(GtkX::Widget &child, const String &tab_label, bool use_mnemonic)
 {

@@ -4865,8 +4865,8 @@ void SourceView::create_shells()
 	}
     }
 
-    Widget buttons = verify(MMcreateWorkArea(edit_breakpoints_dialog_w, 
-					     "buttons", bp_area));
+    GUI::Container *buttons = MMcreateWorkArea(edit_breakpoints_dialog_w, 
+					       "buttons", bp_area);
 
     MMaddCallbacks(bp_area);
     MMaddHelpCallback(bp_area, sigc::ptr_fun(ImmediateHelpCB1));
@@ -7056,7 +7056,7 @@ void SourceView::srcpopupAct (GUI::Widget *w, GUI::Event* e, String *, unsigned 
 
 	GUI::PopupMenu *text_popup_w;
 	text_popup_w = 
-	    MMcreatePopupMenu(text_w, "text_popup", text_popup);
+	    MMcreatePopupMenu(*text_w, "text_popup", text_popup);
 	MMaddCallbacks(text_popup, XtPointer(&callback_word));
 	MMaddHelpCallback(text_popup, sigc::ptr_fun(ImmediateHelpCB1));
 	InstallButtonTips1(text_popup_w);

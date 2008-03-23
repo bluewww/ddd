@@ -17,6 +17,7 @@ namespace GtkX {
 	MultiPaned(GtkX::Container &parent, const GtkX::String &name="",
 		   const GtkX::String &label="");
 	Gtk::Widget *internal(void);
+	const Gtk::Widget *internal(void) const;
 	void on_add(Gtk::Widget* widget);
 	bool on_expose_event(GdkEventExpose* event);
 	void debug(void);

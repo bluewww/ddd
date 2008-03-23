@@ -57,6 +57,12 @@ CheckMenuItem::internal(void)
     return this;
 }
 
+const Gtk::Widget *
+CheckMenuItem::internal(void) const
+{
+    return this;
+}
+
 
 bool
 CheckMenuItem::get_active()

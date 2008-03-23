@@ -69,6 +69,13 @@ Widget0<T>::internal(void)
     return this;
 }
 
+template <class T>
+const Gtk::Widget *
+Widget0<T>::internal(void) const
+{
+    return this;
+}
+
 #include <gtkmm/optionmenu.h>
 #include <gtkmm/scale.h>
 #include <gtkmm/combobox.h>

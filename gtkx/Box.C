@@ -57,6 +57,12 @@ VBox::internal(void)
     return this;
 }
 
+const Gtk::Widget *
+VBox::internal(void) const
+{
+    return this;
+}
+
 HBox::HBox(Gtk::Container *parent, const GtkX::String &name)
 {
     set_name(name.s());
@@ -80,6 +86,12 @@ HBox::HBox(GtkX::Container &parent, const GtkX::String &name)
 
 Gtk::Widget *
 HBox::internal(void)
+{
+    return this;
+}
+
+const Gtk::Widget *
+HBox::internal(void) const
 {
     return this;
 }

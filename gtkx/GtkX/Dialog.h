@@ -45,6 +45,7 @@ namespace GtkX {
 	Dialog(GtkX::Widget &parent, const String &name="");
 	Dialog(const String &name="");
 	Gtk::Widget *internal(void);
+	const Gtk::Widget *internal(void) const;
 	Gtk::Container *gtk_container(void);
 	~Dialog(void);
 	Button *add_button(const String &name="", const String &label="");

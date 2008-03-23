@@ -125,16 +125,19 @@ namespace GtkX {
 	Glib::RefPtr<Gdk::Display> disp_;
     public:
 	Display(Glib::RefPtr<Gdk::Display> d0);
+	static RefPtr<Display> wrap(Glib::RefPtr<Gdk::Display> d0);
+	static RefPtr<const Display> wrap(Glib::RefPtr<const Gdk::Display> d0);
+	Glib::RefPtr<Gdk::Display> internal(void);
+	Glib::RefPtr<const Gdk::Display> internal(void) const;
 	int ref(void) {return nrefs_++;}
 	int unref(void) {if (!--nrefs_) delete this;}
-	const char *display_string(void) const;
+	String get_name(void) const;
 	void flush(void);
 	static RefPtr<Display> open(const String& display_name);
 	void close(void);
 	void pointer_ungrab(unsigned int);
 	void keyboard_ungrab(unsigned int);
 	RefPtr<Screen> get_default_screen(void);
-	String get_name(void) const;
     };
 
     class XWindow;
@@ -144,6 +147,10 @@ namespace GtkX {
 	Glib::RefPtr<Gdk::Screen> screen_;
     public:
 	Screen(Glib::RefPtr<Gdk::Screen> s0);
+	static RefPtr<Screen> wrap(Glib::RefPtr<Gdk::Screen> s0);
+	static RefPtr<const Screen> wrap(Glib::RefPtr<const Gdk::Screen> s0);
+	Glib::RefPtr<Gdk::Screen> internal(void);
+	Glib::RefPtr<const Gdk::Screen> internal(void) const;
 	int ref(void) {return nrefs_++;}
 	int unref(void) {if (!--nrefs_) delete this;}
 	RefPtr<XWindow> get_root_window(void);
@@ -153,7 +160,7 @@ namespace GtkX {
     class FontDescription: public Pango::FontDescription {
     public:
 	FontDescription(void);
-	~FontDescription(void);
+	FontDescription(const Pango::FontDescription &);
     };
 
     class Font {
@@ -161,6 +168,10 @@ namespace GtkX {
 	Glib::RefPtr<Pango::Font> font_;
     public:
 	Font(Glib::RefPtr<Pango::Font> f0);
+	static RefPtr<Font> wrap(Glib::RefPtr<Pango::Font> f0);
+	static RefPtr<const Font> wrap(Glib::RefPtr<const Pango::Font> f0);
+	Glib::RefPtr<Pango::Font> internal(void);
+	Glib::RefPtr<const Pango::Font> internal(void) const;
 	int ref(void) {return nrefs_++;}
 	int unref(void) {if (!--nrefs_) delete this;}
 	FontDescription describe(void) const;
@@ -274,6 +285,10 @@ namespace GtkX {
 	Glib::RefPtr<Gdk::GC> gc_;
     public:
 	GC(Glib::RefPtr<Gdk::GC> g0);
+	static RefPtr<GC> wrap(Glib::RefPtr<Gdk::GC> g0);
+	static RefPtr<const GC> wrap(Glib::RefPtr<const Gdk::GC> g0);
+	Glib::RefPtr<Gdk::GC> internal(void);
+	Glib::RefPtr<const Gdk::GC> internal(void) const;
 	GC(const RefPtr<Drawable> &d);
 	int ref(void) {return nrefs_++;}
 	int unref(void) {if (!--nrefs_) delete this;}
@@ -283,7 +298,6 @@ namespace GtkX {
 	Color get_background(void) const;
 	void set_values(const GCValues &values, GCValuesMask mask);
 	void get_values(GCValues &values);
-	void get_background(GCValues &values) const;
 	void set_line_attributes(int line_width, LineStyle line_style, CapStyle cap_style, JoinStyle join_style);
 	void set_fill(Fill fill);
 	void set_stipple(const RefPtr<Pixmap> &stipple);
@@ -303,7 +317,8 @@ namespace GtkX {
     class Drawable {
 	int nrefs_;
     public:
-	virtual ~Drawable(void);
+	virtual Glib::RefPtr<Gdk::Drawable> internal(void) = 0;
+	virtual Glib::RefPtr<const Gdk::Drawable> internal(void) const = 0;
 	int ref(void) {return nrefs_++;}
 	int unref(void) {if (!--nrefs_) delete this;}
 	int get_depth(void) const;
@@ -322,6 +337,11 @@ namespace GtkX {
 	Glib::RefPtr<Gdk::Pixmap> pixmap_;
     public:
 	Pixmap(Glib::RefPtr<Gdk::Pixmap> p0);
+	static RefPtr<Pixmap> wrap(Glib::RefPtr<Gdk::Pixmap> p0);
+	Glib::RefPtr<Gdk::Drawable> internal(void);
+	Glib::RefPtr<const Gdk::Drawable> internal(void) const;
+	Glib::RefPtr<Gdk::Pixmap> internal_pixmap(void);
+	Glib::RefPtr<const Gdk::Pixmap> internal_pixmap(void) const;
 	static RefPtr<Pixmap> create_bitmap_from_data(const char *bits, int width, int height);
 	static RefPtr<Pixmap> create_from_data(RefPtr<Drawable> drawable,
                                                const char *data, int width, int height,
@@ -336,12 +356,20 @@ namespace GtkX {
 	Glib::RefPtr<Gdk::Window> win_;
     public:
 	XWindow(Glib::RefPtr<Gdk::Window> w0);
+	static RefPtr<XWindow> wrap(Glib::RefPtr<Gdk::Window> w0);
+	static RefPtr<const XWindow> wrap(Glib::RefPtr<const Gdk::Window> w0);
+	Glib::RefPtr<Gdk::Drawable> internal(void);
+	Glib::RefPtr<const Gdk::Drawable> internal(void) const;
+	Glib::RefPtr<Gdk::Window> internal_window(void);
+	Glib::RefPtr<const Gdk::Window> internal_window(void) const;
 	void set_back_pixmap(const RefPtr<Pixmap> &pixmap, bool parent_relative);
 	void clear(void);
 	void clear_area(int x, int y, int w, int h);
 	GrabStatus pointer_grab(bool owner_events, EventMask event_mask,
 				RefPtr<XWindow>& confine_to,
 				Cursor &cursor, unsigned int time_);
+	GrabStatus pointer_grab(bool owner_events, EventMask event_mask,
+				unsigned int time_);
 	void set_title(const String &);
     };
 
@@ -369,6 +397,7 @@ namespace GtkX {
 	void postinit(void);
 	// *Instantiable* subclasses will have an associated GTK(mm) widget:
 	virtual Gtk::Widget *internal(void) = 0;
+	virtual const Gtk::Widget *internal(void) const = 0;
 	Container *get_parent(void);
 	RefPtr<Display> get_display(void);
 	RefPtr<Screen> get_screen(void);
@@ -386,8 +415,11 @@ namespace GtkX {
 	bool translate_coordinates(GtkX::Widget &, int, int, int &, int &);
 	Color get_bg(void) const;
 	Color get_fg(void) const;
-	RefPtr<GC> get_black_gc() const;
-	RefPtr<GC> get_white_gc() const;
+	Color get_bg(Gtk::StateType) const;
+	Color get_fg(Gtk::StateType) const;
+	// FIXME: should be const...
+	RefPtr<GC> get_black_gc();
+	RefPtr<GC> get_white_gc();
 	PropertyProxy<void *> property_user_data(void);
 	PropertyProxy_RO<void *> property_user_data(void) const;
 	sigc::signal<bool, GtkX::EventButton *> &signal_button_press_event();
@@ -415,11 +447,13 @@ namespace GtkX {
     {
     }
 
-    class SignalTimeout: public Glib::SignalTimeout {
+    class SignalTimeout {
     private:
+	int foo;
 	// no copy assignment
 	SignalTimeout &operator=(const SignalTimeout&);
     public:
+	SignalTimeout(void);
 	sigc::connection connect(const sigc::slot<bool>& slot, unsigned int interval);
     };
 

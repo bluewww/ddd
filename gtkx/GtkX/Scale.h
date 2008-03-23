@@ -54,6 +54,7 @@ namespace GtkX {
 	       double min, double max, double step=1.0);
 	~HScale(void);
 	Gtk::Widget *internal(void);
+	const Gtk::Widget *internal(void) const;
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
 #include <GtkX/redirect.h>
 	void set_value(double x);
@@ -68,6 +69,7 @@ namespace GtkX {
 	       double min, double max, double step=1.0);
 	~VScale(void);
 	Gtk::Widget *internal(void);
+	const Gtk::Widget *internal(void) const;
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
 #include <GtkX/redirect.h>
 	void set_value(double x);

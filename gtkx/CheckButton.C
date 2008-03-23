@@ -58,6 +58,12 @@ CheckButton::internal(void)
     return this;
 }
 
+const Gtk::Widget *
+CheckButton::internal(void) const
+{
+    return this;
+}
+
 
 bool
 CheckButton::get_active()

@@ -90,6 +90,7 @@ namespace GtkX {
 	ScrolledText(GtkX::Container &parent, const GtkX::String &name="",
 		     const GtkX::String &label="");
 	Gtk::Widget *internal(void);
+	const Gtk::Widget *internal(void) const;
 	Glib::SignalProxy0<void> signal_changed(void); // From the TextBuffer
 	bool get_editable(void) const;
 	void set_editable(bool);

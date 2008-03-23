@@ -42,6 +42,7 @@ namespace GtkX {
 	ComboBoxEntryText(Gtk::Container *parent, const String &name="");
 	~ComboBoxEntryText(void);
 	Gtk::Widget *internal(void);
+	const Gtk::Widget *internal(void) const;
 	String get_text(void);
 	void set_text(const String &);
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.

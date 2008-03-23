@@ -31,17 +31,18 @@
 #ifndef GTKX_MENUBAR_H
 #define GTKX_MENUBAR_H
 
-#include <GtkX/Container.h>
+#include <GtkX/MenuShell.h>
 #include <gtkmm/menubar.h>
 
 namespace GtkX {
 
-    class MenuBar: public GtkX::Container, public Gtk::MenuBar {
+    class MenuBar: public GtkX::MenuShell, public Gtk::MenuBar {
     public:
 	MenuBar(GtkX::Container &parent, const String &name="");
 	MenuBar(Gtk::Container *parent, const String &name="");
 	~MenuBar(void);
 	Gtk::Widget *internal(void);
+	const Gtk::Widget *internal(void) const;
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
 #include <GtkX/redirect.h>
     };

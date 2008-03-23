@@ -73,3 +73,9 @@ Button::internal(void)
     return this;
 }
 
+const Gtk::Widget *
+Button::internal(void) const
+{
+    return this;
+}
+

@@ -39,12 +39,20 @@ public:
   Gtk::TreeModelColumn<Glib::ustring> c2;
   Gtk::TreeModelColumn<Glib::ustring> c3;
   Gtk::TreeModelColumn<Glib::ustring> c4;
+  Gtk::TreeModelColumn<Glib::ustring> c5;
+  Gtk::TreeModelColumn<Glib::ustring> c6;
+  Gtk::TreeModelColumn<Glib::ustring> c7;
+  Gtk::TreeModelColumn<Glib::ustring> c8;
   ModelColumns()
   {
     add(c1);
     add(c2);
     add(c3);
     add(c4);
+    add(c5);
+    add(c6);
+    add(c7);
+    add(c8);
   }
 };
 
@@ -68,8 +76,9 @@ ListView::ListView(GtkX::Container &parent,
     set_size_request(-1, 100);
 
     static Gtk::TreeModelColumn<Glib::ustring> *cols[]
-	= {&model.c1, &model.c2, &model.c3, &model.c4};
-    assert(headers.size() <= 4);
+	= {&model.c1, &model.c2, &model.c3, &model.c4,
+	   &model.c5, &model.c6, &model.c7, &model.c8};
+    assert(headers.size() <= 8);
     for (int i = 0; i < headers.size(); i++) {
 	append_column(headers[i].s(), *cols[i]);
     }
@@ -78,6 +87,10 @@ ListView::ListView(GtkX::Container &parent,
     row[model.c2] = "test 2";
     row[model.c3] = "test 3";
     row[model.c4] = "test 4";
+    row[model.c4] = "test 5";
+    row[model.c4] = "test 6";
+    row[model.c4] = "test 7";
+    row[model.c4] = "test 8";
 
     init_signals();
     parent.add_child(*this);
@@ -89,6 +102,12 @@ ListView::~ListView(void)
 
 Gtk::Widget *
 ListView::internal(void)
+{
+    return this;
+}
+
+const Gtk::Widget *
+ListView::internal(void) const
 {
     return this;
 }

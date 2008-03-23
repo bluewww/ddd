@@ -49,6 +49,7 @@ namespace GtkX {
 		      const GtkX::String &name,
 		      FileAction action);
 	Gtk::Widget *internal(void);
+	const Gtk::Widget *internal(void) const;
 	~FileSelection(void);
 	std::string get_selected(void);
 	void clear(void);

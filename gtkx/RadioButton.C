@@ -79,6 +79,12 @@ RadioButton::internal(void)
     return this;
 }
 
+const Gtk::Widget *
+RadioButton::internal(void) const
+{
+    return this;
+}
+
 bool
 RadioButton::get_active()
 {
