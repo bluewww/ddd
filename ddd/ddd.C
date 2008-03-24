@@ -315,6 +315,7 @@ char ddd_rcsid[] =
 #include <GUI/MultiPaned.h>
 #include <GUI/CheckButton.h>
 #include <GUI/CheckMenuItem.h>
+#include <GUI/MenuItem.h>
 #include <GUI/Button.h>
 #include <GUI/Entry.h>
 #include <GUI/Main.h>
@@ -387,7 +388,7 @@ static void ddd_xt_warning(String message);
 #if defined(IF_XM)
 static void WhenReady            (Widget, XtPointer, XtPointer);
 #else
-static void WhenReady            (Widget, XtPointer);
+// static void WhenReady            (Widget, XtPointer);
 #endif
 #if !defined(IF_XM)
 static void WhenReady1           (GUI::Widget *w, void *client_data);
@@ -411,12 +412,21 @@ static void gdbClearAllCB        (void);
 #endif
 static void gdbUnselectAllCB     (CB_ALIST_NULL);
 
+#if defined(IF_XM)
 // Update menus
-static void gdbUpdateEditCB      (CB_ALIST_12(Widget, XtP(DDDWindow)));
-static void gdbUpdateFileCB      (CB_ARG_LIST_2());
-static void gdbUpdateViewCB      (CB_ARG_LIST_2());
-static void gdbUpdateViewsCB     (CB_ARG_LIST_2());
+static void gdbUpdateEditCB      (Widget, XtPointer, XtPointer);
+static void gdbUpdateFileCB      (Widget, XtPointer, XtPointer);
+static void gdbUpdateViewCB      (Widget, XtPointer, XtPointer);
+static void gdbUpdateViewsCB     (Widget, XtPointer, XtPointer);
 static void gdbUpdateAllMenus();
+#else
+// Update menus
+static void gdbUpdateEditCB      (GUI::Widget *, DDDWindow);
+static void gdbUpdateFileCB      (MMDesc *);
+static void gdbUpdateViewCB      (MMDesc *);
+static void gdbUpdateViewsCB     (MMDesc *);
+static void gdbUpdateAllMenus();
+#endif
 
 #if defined(IF_XM)
 // Preferences
@@ -489,8 +499,13 @@ static void setup_new_shell(GUI::Widget *w);
 // Setup theme manager
 static void setup_theme_manager();
 
+#if defined(IF_XM)
 // Set `Settings' title
 static void set_settings_title(Widget w);
+#else
+// Set `Settings' title
+static void set_settings_title(GUI::Widget *w);
+#endif
 
 // Set Cut/Copy/Paste bindings for MENU to STYLE
 static void set_cut_copy_paste_bindings(MMDesc *menu, BindingStyle style);
@@ -1022,18 +1037,45 @@ static XtActionsRec actions [] = {
 //-----------------------------------------------------------------------------
 
 
-#define RECENT_MENU \
-{ \
-    MENTRYL("r1", "r1", MMPush, BIND_1( PTR_FUN(gdbOpenRecentCB), XtPointer(1) ), 0, 0), \
-    MENTRYL("r2", "r2", MMPush, BIND_1( PTR_FUN(gdbOpenRecentCB), XtPointer(2) ), 0, 0), \
-    MENTRYL("r3", "r3", MMPush, BIND_1( PTR_FUN(gdbOpenRecentCB), XtPointer(3) ), 0, 0), \
-    MENTRYL("r4", "r4", MMPush, BIND_1( PTR_FUN(gdbOpenRecentCB), XtPointer(4) ), 0, 0), \
-    MENTRYL("r5", "r5", MMPush, BIND_1( PTR_FUN(gdbOpenRecentCB), XtPointer(5) ), 0, 0), \
-    MENTRYL("r6", "r6", MMPush, BIND_1( PTR_FUN(gdbOpenRecentCB), XtPointer(6) ), 0, 0), \
-    MENTRYL("r7", "r7", MMPush, BIND_1( PTR_FUN(gdbOpenRecentCB), XtPointer(7) ), 0, 0), \
-    MENTRYL("r8", "r8", MMPush, BIND_1( PTR_FUN(gdbOpenRecentCB), XtPointer(8) ), 0, 0), \
-    MENTRYL("r9", "r9", MMPush, BIND_1( PTR_FUN(gdbOpenRecentCB), XtPointer(9) ), 0, 0), \
-    MMEnd					\
+#define RECENT_MENU							\
+{									\
+    GENTRYL("r1", "r1", MMPush,						\
+	    BIND(gdbOpenRecentCB, 1),					\
+	    sigc::hide(sigc::bind(sigc::ptr_fun(gdbOpenRecentCB), 1)),	\
+	    0, 0),							\
+    GENTRYL("r2", "r2", MMPush,						\
+	    BIND(gdbOpenRecentCB, 2),					\
+	    sigc::hide(sigc::bind(sigc::ptr_fun(gdbOpenRecentCB), 2)),	\
+	    0, 0),							\
+    GENTRYL("r3", "r3", MMPush,						\
+	    BIND(gdbOpenRecentCB, 3),					\
+	    sigc::hide(sigc::bind(sigc::ptr_fun(gdbOpenRecentCB), 3)),	\
+	    0, 0),							\
+    GENTRYL("r4", "r4", MMPush,						\
+	    BIND(gdbOpenRecentCB, 4),					\
+	    sigc::hide(sigc::bind(sigc::ptr_fun(gdbOpenRecentCB), 4)),	\
+	    0, 0),							\
+    GENTRYL("r5", "r5", MMPush,						\
+	    BIND(gdbOpenRecentCB, 5),					\
+	    sigc::hide(sigc::bind(sigc::ptr_fun(gdbOpenRecentCB), 5)),	\
+	    0, 0),							\
+    GENTRYL("r6", "r6", MMPush,						\
+	    BIND(gdbOpenRecentCB, 6),					\
+	    sigc::hide(sigc::bind(sigc::ptr_fun(gdbOpenRecentCB), 6)),	\
+	    0, 0),							\
+    GENTRYL("r7", "r7", MMPush,						\
+	    BIND(gdbOpenRecentCB, 7),					\
+	    sigc::hide(sigc::bind(sigc::ptr_fun(gdbOpenRecentCB), 7)),	\
+	    0, 0),							\
+    GENTRYL("r8", "r8", MMPush,						\
+	    BIND(gdbOpenRecentCB, 8),					\
+	    sigc::hide(sigc::bind(sigc::ptr_fun(gdbOpenRecentCB), 8)),	\
+	    0, 0),							\
+    GENTRYL("r9", "r9", MMPush,						\
+	    BIND(gdbOpenRecentCB, 9),					\
+	    sigc::hide(sigc::bind(sigc::ptr_fun(gdbOpenRecentCB), 9)),	\
+	    0, 0),							\
+    MMEnd								\
 }
 
 static MMDesc command_recent_menu[] = RECENT_MENU;
@@ -1167,7 +1209,10 @@ DECL_WR2(WR_gdbMakeAgainCB, sigc::ptr_fun(gdbMakeAgainCB));
 	    BIND(WhenReady, &WR_gdbOpenFileCB),				\
 	    sigc::bind(sigc::ptr_fun(WhenReady1), &WR_gdbOpenFileCB),	\
 	    0, 0),							\
-    MENTRYL("recent", "Open Recent", MMMenu, MMNoCB, recent_menu, 0),	\
+    GENTRYL("recent", "Open Recent", MMMenu,				\
+	    MMNoCB,							\
+	    MDUMMY,							\
+	    recent_menu, 0),						\
     GENTRYL("open_core", "Open Core Dump...", MMPush,			\
 	    BIND(WhenReady, &WR_gdbOpenCoreCB),				\
 	    sigc::bind(sigc::ptr_fun(WhenReady1), &WR_gdbOpenCoreCB),	\
@@ -1203,7 +1248,10 @@ DECL_WR2(WR_gdbMakeAgainCB, sigc::ptr_fun(gdbMakeAgainCB));
 	    BIND(PrintAgainCB, 1L),					\
 	    sigc::bind(sigc::retype(sigc::ptr_fun(PrintAgainCB1)), 1L),	\
 	    0, 0),							\
-    MENTRYL("separator", "", MMSeparator | MMUnmanaged, MMNoCB, 0, 0),	\
+    GENTRYL("separator", "", MMSeparator | MMUnmanaged, 		\
+	    MMNoCB,							\
+	    MDUMMY,							\
+	    0, 0),							\
     GENTRYL("cd", "Change Directory...", MMPush,			\
 	    BIND(WhenReady, &WR_gdbChangeDirectoryCB),			\
 	    sigc::bind(sigc::ptr_fun(WhenReady1), &WR_gdbChangeDirectoryCB), \
@@ -1417,11 +1465,13 @@ DECL_WR2(WR_dddPopupSettingsCB, sigc::ptr_fun(dddPopupSettingsCB));
 
 #define EDIT_MENU(win, w)						\
 {									\
-    MENTRYL("undo", "Undo", MMPush,					\
-	    HIDE_0(PTR_FUN(gdbUndoCB)),					\
+    GENTRYL("undo", "Undo", MMPush,					\
+	    BIND(gdbUndoCB, 0),						\
+	    sigc::hide(sigc::ptr_fun(gdbUndoCB)),			\
 	    0, 0),							\
-    MENTRYL("redo", "Redo", MMPush,					\
-	    HIDE_0(PTR_FUN(gdbRedoCB)),					\
+    GENTRYL("redo", "Redo", MMPush,					\
+	    BIND(gdbRedoCB, 0),						\
+	    sigc::hide(sigc::ptr_fun(gdbRedoCB)),			\
 	    0, 0),							\
     MMSep,								\
     GENTRYL("cut", "Cut", MMPush,					\
@@ -1485,10 +1535,11 @@ static MMDesc data_edit_menu[]    = EDIT_MENU(DataWindow,
 
 #if defined(IF_XM)
 static Widget complete_w;
-#else
-static GUI::Widget *complete_w;
-#endif
 static Widget define_w;
+#else
+static GUI::Button *complete_w;
+static GUI::Button *define_w;
+#endif
 
 #if defined(IF_XM)
 
@@ -1504,8 +1555,9 @@ DECL_WR2(WR_gdbApplyCB, sigc::ptr_fun(gdbApplyCB));
 
 static MMDesc command_menu[] =
 {
-    MENTRYL("history", "Command History...", MMPush,
-	    BIND_0( PTR_FUN(gdbHistoryCB)),
+    GENTRYL("history", "Command History...", MMPush,
+	    BIND(gdbHistoryCB, 0),
+	    sigc::ptr_fun(gdbHistoryCB),
 	    0, 0),
     MMSep,
     GENTRYL("prev", "Previous", MMPush,
@@ -1539,13 +1591,19 @@ static MMDesc command_menu[] =
 	    sigc::bind(sigc::ptr_fun(WhenReady1), &WR_gdbApplyCB),
 	    0, 0),
     MMSep,
-    MENTRYL("clear_line", "Clear Line", MMPush,
-	    HIDE_0(PTR_FUN(gdbClearCB)), 0, 0),
-    MENTRYL("clear_window", "Clear Window", MMPush,
-	    HIDE_0(PTR_FUN(gdbClearWindowCB)), 0, 0),
+    GENTRYL("clear_line", "Clear Line", MMPush,
+	    BIND(gdbClearCB, 0), 
+	    sigc::hide(sigc::ptr_fun(gdbClearCB)), 
+	    0, 0),
+    GENTRYL("clear_window", "Clear Window", MMPush,
+	    BIND(gdbClearWindowCB, 0), 
+	    sigc::hide(sigc::ptr_fun(gdbClearWindowCB)), 
+	    0, 0),
     MMSep,
-    MENTRYL("define", "Define Command...", MMPush,
-	    BIND_0(PTR_FUN(dddDefineCommandCB)), 0, &define_w),
+    GENTRYL("define", "Define Command...", MMPush,
+	    BIND(dddDefineCommandCB, 0),
+	    sigc::ptr_fun(dddDefineCommandCB),
+	    0, &define_w),
     GENTRYL("buttons", "Edit Buttons...", MMPush,
 	    BIND(dddEditButtonsCB, 0),
 	    sigc::ptr_fun(dddEditButtonsCB),
@@ -1626,14 +1684,14 @@ static Widget edit_source_w;
 static Widget reload_source_w;
 static Widget line_numbers1_w;
 #else
-static Widget lookup_w;
-static Widget find_forward_w;
-static Widget find_backward_w;
+static GUI::Widget *lookup_w;
+static GUI::Widget *find_forward_w;
+static GUI::Widget *find_backward_w;
 static GUI::CheckButton *find_words_only_w;
 static GUI::CheckButton *find_case_sensitive_w;
 static GUI::CheckButton *disassemble_w;
 static GUI::Widget *edit_source_w;
-static Widget reload_source_w;
+static GUI::Widget *reload_source_w;
 static GUI::CheckButton *line_numbers1_w;
 #endif
 
@@ -1953,7 +2011,7 @@ static Widget line_numbers2_w;
 static Widget refer_sources_w;
 #else
 static GUI::CheckButton *line_numbers2_w;
-static Widget refer_sources_w;
+static GUI::Widget *refer_sources_w;
 
 #endif
 
@@ -1963,8 +2021,10 @@ static MMDesc source_preferences_menu[] =
 	    MMNoCB, glyph_menu, 0),
     MENTRYL("toolButtons", "Tool Buttons Location", MMRadioPanel,
 	    MMNoCB, tool_buttons_menu, 0),
-    MENTRYL("referSources", "Refer to Program Sources", MMRadioPanel,
-	    MMNoCB, refer_menu, &refer_sources_w),
+    GENTRYL("referSources", "Refer to Program Sources", MMRadioPanel,
+	    MMNoCB,
+	    MDUMMY,
+	    refer_menu, &refer_sources_w),
     MENTRYL("find", "Find", MMButtonPanel,
 	    MMNoCB, find_preferences_menu, 0),
     MENTRYL("cache", "Cache", MMButtonPanel,
@@ -2520,22 +2580,25 @@ static MMDesc helpers_preferences_menu [] =
 
 // Data
 
-static Widget print_w            = 0;
-static Widget display_w          = 0;
 #if defined(IF_XM)
 static Widget examine_w          = 0;
 static Widget locals_w           = 0;
 static Widget args_w             = 0;
 static Widget detect_aliases_w   = 0;
+static Widget infos_w            = 0;
+static Widget align_w            = 0;
+static Widget edit_watchpoints_w = 0;
 #else
+static GUI::Widget *print_w            = 0;
+static GUI::Widget *display_w          = 0;
 static GUI::Widget *examine_w                 = 0;
 static GUI::CheckMenuItem *locals_w           = 0;
 static GUI::CheckMenuItem *args_w             = 0;
 static GUI::CheckMenuItem *detect_aliases_w   = 0;
+static GUI::Widget *infos_w            = 0;
+static GUI::Widget *align_w            = 0;
+static GUI::Widget *edit_watchpoints_w = 0;
 #endif
-static Widget infos_w            = 0;
-static Widget align_w            = 0;
-static Widget edit_watchpoints_w = 0;
 
 #if defined(IF_XM)
 
@@ -2564,11 +2627,13 @@ static MMDesc data_menu[] =
 	    sigc::ptr_fun(gdbExamineCB),
 	    0, &examine_w),
     MMSep,
-    MENTRYL("print", "Print ()", MMPush, 
-	    BIND_1(PTR_FUN(gdbPrintCB), XtPointer(False)),
+    GENTRYL("print", "Print ()", MMPush, 
+	    BIND(gdbPrintCB, False),
+	    sigc::bind(sigc::ptr_fun(gdbPrintCB), false),
 	    0, &print_w),
-    MENTRYL("display", "Display ()", MMPush,
-	    BIND_0(PTR_FUN(gdbDisplayCB)),
+    GENTRYL("display", "Display ()", MMPush,
+	    BIND(gdbDisplayCB, 0),
+	    sigc::ptr_fun(gdbDisplayCB),
 	    0, &display_w),
     MMSep,
     GENTRYL("detectAliases", "Detect Aliases", MMCheckItem,
@@ -2638,7 +2703,11 @@ static MMDesc crash_menu[] =
 
 static Widget debug_ddd_w       = 0;
 static Widget dump_core_w       = 0;
+#if defined(IF_XM)
 static Widget valgrindLeakCheck_w = 0;
+#else
+static GUI::Widget *valgrindLeakCheck_w = 0;
+#endif
 
 static MMDesc maintenance_menu[] = 
 {
@@ -2661,26 +2730,35 @@ static MMDesc maintenance_menu[] =
     MMEnd
 };
 
+#if defined(IF_XM)
 static Widget maintenance_w = 0;
+#else
+static GUI::Widget *maintenance_w = 0;
+#endif
 
 // Menu Bar for DDD command window
 static MMDesc command_menubar[] = 
 {
-    MENTRYL("file", "File", MMMenu,
-	    HIDE_0_BIND_1(PTR_FUN(gdbUpdateFileCB), command_file_menu), 
+    GENTRYL("file", "File", MMMenu,
+	    BIND(gdbUpdateFileCB, command_file_menu), 
+	    sigc::hide(sigc::bind(sigc::ptr_fun(gdbUpdateFileCB), command_file_menu)), 
 	    command_file_menu, 0),
-    MENTRYL("edit", "Edit", MMMenu,
-	    BIND_1(PTR_FUN(gdbUpdateEditCB), GDBWindow),
+    GENTRYL("edit", "Edit", MMMenu,
+	    BIND(gdbUpdateEditCB, GDBWindow),
+	    sigc::bind(sigc::ptr_fun(gdbUpdateEditCB), GDBWindow),
 	    command_edit_menu, 0),
-    MENTRYL("view", "View", MMMenu,
-	    HIDE_0_BIND_1(PTR_FUN(gdbUpdateViewCB), command_view_menu), 
+    GENTRYL("view", "View", MMMenu,
+	    BIND(gdbUpdateViewCB, command_view_menu), 
+	    sigc::hide(sigc::bind(sigc::ptr_fun(gdbUpdateViewCB), command_view_menu)), 
 	    command_view_menu, 0),
     MENTRYL("program", "Program", MMMenu,
 	    MMNoCB, command_program_menu, 0),
     MENTRYL("commands", "Commands", MMMenu,
 	    MMNoCB, command_menu, 0),
-    MENTRYL("maintenance", "Maintenance", MMMenu | MMUnmanaged, MMNoCB, maintenance_menu, 
-	    &maintenance_w),
+    GENTRYL("maintenance", "Maintenance", MMMenu | MMUnmanaged,
+	    MMNoCB,
+	    MDUMMY,
+	    maintenance_menu, &maintenance_w),
 #if defined(IF_XM)
     MENTRYL("help", "Help", MMMenu | MMHelp,
 	    MMNoCB, simple_help_menu, 0),
@@ -2691,14 +2769,17 @@ static MMDesc command_menubar[] =
 // Menu Bar for DDD source view
 static MMDesc source_menubar[] = 
 {
-    MENTRYL("file", "File", MMMenu,
-	    HIDE_0_BIND_1(PTR_FUN(gdbUpdateFileCB), source_file_menu), 
+    GENTRYL("file", "File", MMMenu,
+	    BIND(gdbUpdateFileCB, source_file_menu), 
+	    sigc::hide(sigc::bind(sigc::ptr_fun(gdbUpdateFileCB), source_file_menu)), 
 	    source_file_menu, 0),
-    MENTRYL("edit", "Edit", MMMenu,
-	    BIND_1(PTR_FUN(gdbUpdateEditCB), SourceWindow),
+    GENTRYL("edit", "Edit", MMMenu,
+	    BIND(gdbUpdateEditCB, SourceWindow),
+	    sigc::bind(sigc::ptr_fun(gdbUpdateEditCB), SourceWindow),
 	    source_edit_menu, 0),
-    MENTRYL("view", "View", MMMenu,
-	    HIDE_0_BIND_1(PTR_FUN(gdbUpdateViewCB), source_view_menu),
+    GENTRYL("view", "View", MMMenu,
+	    BIND(gdbUpdateViewCB, source_view_menu),
+	    sigc::hide(sigc::bind(sigc::ptr_fun(gdbUpdateViewCB), source_view_menu)),
 	    source_view_menu, 0),
     MENTRYL("program", "Program", MMMenu,
 	    MMNoCB, source_program_menu, 0),
@@ -2716,14 +2797,17 @@ static MMDesc source_menubar[] =
 // Menu Bar for DDD data window
 static MMDesc data_menubar[] = 
 {
-    MENTRYL("file", "File", MMMenu,
-	    HIDE_0_BIND_1(PTR_FUN(gdbUpdateFileCB), data_file_menu), 
+    GENTRYL("file", "File", MMMenu,
+	    BIND(gdbUpdateFileCB, data_file_menu), 
+	    sigc::hide(sigc::bind(sigc::ptr_fun(gdbUpdateFileCB), data_file_menu)), 
 	    data_file_menu, 0),
-    MENTRYL("edit", "Edit", MMMenu,
-	    BIND_1(PTR_FUN(gdbUpdateEditCB), DataWindow),
+    GENTRYL("edit", "Edit", MMMenu,
+	    BIND(gdbUpdateEditCB, DataWindow),
+	    sigc::bind(sigc::ptr_fun(gdbUpdateEditCB), DataWindow),
 	    data_edit_menu, 0),
-    MENTRYL("view", "View", MMMenu,
-	    HIDE_0_BIND_1(PTR_FUN(gdbUpdateViewCB), data_view_menu), 
+    GENTRYL("view", "View", MMMenu,
+	    BIND(gdbUpdateViewCB, data_view_menu), 
+	    sigc::hide(sigc::bind(sigc::ptr_fun(gdbUpdateViewCB), data_view_menu)), 
 	    data_view_menu, 0),
     MENTRYL("program", "Program", MMMenu,
 	    MMNoCB, data_program_menu, 0),
@@ -2739,14 +2823,17 @@ static MMDesc data_menubar[] =
 // Menu Bar for common DDD data/command window
 static MMDesc common_menubar[] = 
 {
-    MENTRYL("file", "File", MMMenu,
-	    HIDE_0_BIND_1(PTR_FUN(gdbUpdateFileCB), command_file_menu), 
+    GENTRYL("file", "File", MMMenu,
+	    BIND(gdbUpdateFileCB, command_file_menu), 
+	    sigc::hide(sigc::bind(sigc::ptr_fun(gdbUpdateFileCB), command_file_menu)), 
 	    command_file_menu, 0),
-    MENTRYL("edit", "Edit", MMMenu,
-	    BIND_1(PTR_FUN(gdbUpdateEditCB), CommonWindow),
+    GENTRYL("edit", "Edit", MMMenu,
+	    BIND(gdbUpdateEditCB, CommonWindow),
+	    sigc::bind(sigc::ptr_fun(gdbUpdateEditCB), CommonWindow),
 	    command_edit_menu, 0),
-    MENTRYL("views", "Views", MMMenu,
-	    HIDE_0_BIND_1(PTR_FUN(gdbUpdateViewsCB), views_menu), 
+    GENTRYL("views", "Views", MMMenu,
+	    BIND(gdbUpdateViewsCB, views_menu), 
+	    sigc::hide(sigc::bind(sigc::ptr_fun(gdbUpdateViewsCB), views_menu)), 
 	    views_menu, 0),
     MENTRYL("program", "Program", MMMenu,
 	    MMNoCB, command_program_menu, 0),
@@ -2769,12 +2856,15 @@ struct PrintItems {
     enum ArgCmd { PrintRef, Dump, Whatis, Examine };
 };
 
+#if defined(IF_XM)
 static Widget print_ref_w     = 0;
 static Widget print_dump_w    = 0;
 static Widget print_whatis_w  = 0;
-#if defined(IF_XM)
 static Widget print_examine_w = 0;
 #else
+static GUI::Widget *print_ref_w     = 0;
+static GUI::Widget *print_dump_w    = 0;
+static GUI::Widget *print_whatis_w  = 0;
 static GUI::Widget *print_examine_w = 0;
 #endif
 
@@ -2797,7 +2887,11 @@ struct DispItems {
     enum ArgCmd { DispRef };
 };
 
+#if defined(IF_XM)
 static Widget disp_ref_w     = 0;
+#else
+static GUI::Widget *disp_ref_w     = 0;
+#endif
 
 static MMDesc display_menu[] =
 {
@@ -5758,17 +5852,11 @@ static void set_scale(GUI::Scale *w, int val)
 
 #endif
 
-// Reflect state in option menus
 #if defined(IF_XM)
+
+// Reflect state in option menus
 void update_options(bool noupd)
-#else
-static void real_update_options(bool noupd)
-#endif
 {
-#if !defined(IF_XM)
-    if (noupd)
-	return;
-#endif
     set_toggle(find_words_only_w, app_data.find_words_only);
     set_toggle(words_only_w, app_data.find_words_only);
 
@@ -5826,7 +5914,6 @@ static void real_update_options(bool noupd)
     LayoutMode layout_mode;
     Dimension grid_width, grid_height;
 
-#if defined(IF_XM)
     XtVaGetValues(data_disp->graph_edit, 
  		  XtNshowGrid,   &show_grid,
  		  XtNsnapToGrid, &snap_to_grid,
@@ -5837,16 +5924,6 @@ static void real_update_options(bool noupd)
 		  XtNgridWidth,  &grid_width,
 		  XtNgridHeight, &grid_height,
 		  XtNIL);
-#else
-    show_grid = data_disp->graph_edit->get_show_grid();
-    snap_to_grid = data_disp->graph_edit->get_snap_to_grid();
-    show_hints = data_disp->graph_edit->get_show_hints();
-    show_annotations = data_disp->graph_edit->get_show_annotations();
-    auto_layout = data_disp->graph_edit->get_auto_layout();
-    layout_mode = data_disp->graph_edit->get_layout_mode();
-    grid_width = data_disp->graph_edit->get_grid_width();
-    grid_height = data_disp->graph_edit->get_grid_height();
-#endif
 
     set_toggle(detect_aliases_w, app_data.detect_aliases);
     set_toggle(graph_detect_aliases_w, app_data.detect_aliases);
@@ -5858,24 +5935,16 @@ static void real_update_options(bool noupd)
 	if (!show_grid && XtIsSensitive(graph_snap_to_grid_w))
 	{
 	    // Grid has been disabled - disable `snap to grid' as well
-#if defined(IF_XM)
 	    XtVaSetValues(data_disp->graph_edit, XtNsnapToGrid, False, 
 			  XtNIL);
-#else
-	    data_disp->graph_edit->set_snap_to_grid(false);
-#endif
 	}
 	else if (show_grid && !XtIsSensitive(graph_snap_to_grid_w))
 	{
 	    // Grid has been re-enabled - restore `snap to grid' setting
-#if defined(IF_XM)
 	    XtVaSetValues(data_disp->graph_edit, 
 			  XtNsnapToGrid, 
 			  XmToggleButtonGetState(graph_snap_to_grid_w), 
 			  XtNIL);
-#else
-	    data_disp->graph_edit->set_snap_to_grid(graph_snap_to_grid_w->get_active());
-#endif
 	}
 	else
 	{
@@ -5903,26 +5972,16 @@ static void real_update_options(bool noupd)
 	       app_data.show_dependent_display_titles);
 
     if (graph_grid_size_w != 0) {
-#if defined(IF_XM)
 	XtVaSetValues(graph_grid_size_w, XmNvalue, show_grid ? grid_width : 0, 
 		      XtNIL);
-#else
-	graph_grid_size_w->set_value(show_grid ? grid_width : 0);
-#endif
     }
 
 
-#if defined(IF_XM)
     unsigned char policy = '\0';
     XtVaGetValues(command_shell, XmNkeyboardFocusPolicy, &policy, 
 		  XtNIL);
     set_toggle(set_focus_pointer_w,        policy == XmPOINTER);
     set_toggle(set_focus_explicit_w,       policy == XmEXPLICIT);
-#else
-#ifdef NAG_ME
-#warning Focus policy not implemented
-#endif
-#endif
 
     set_toggle(set_scrolling_panner_w,     app_data.panned_graph_editor);
     set_toggle(set_scrolling_scrollbars_w, !app_data.panned_graph_editor);
@@ -5936,10 +5995,7 @@ static void real_update_options(bool noupd)
 
     string button_color_key        = app_data.button_color_key;
     string active_button_color_key = app_data.active_button_color_key;
-#if XmVersion < 2000 || !defined(IF_MOTIF)
-#ifdef NAG_ME
-#warning XmINDETERMINATE has no analogue?
-#endif
+#if XmVersion < 2000
     set_toggle(set_color_buttons_w, button_color_key == 'c');
 #else
     if (button_color_key == 'c' && active_button_color_key == 'c')
@@ -5978,14 +6034,8 @@ static void real_update_options(bool noupd)
     set_toggle(auto_debugger_w, app_data.auto_debugger);
 
     set_toggle(splash_screen_w, app_data.splash_screen);
-#if defined(IF_XM)
     set_toggle(startup_tips_w,  app_data.startup_tips);
     set_toggle(set_startup_tips_w, app_data.startup_tips);
-#else
-#ifdef NAG_ME
-#warning Tips not supported
-#endif
-#endif
 
     if (app_data.cache_source_files != source_view->cache_source_files)
     {
@@ -6002,9 +6052,7 @@ static void real_update_options(bool noupd)
     }
 
     source_view->set_display_line_numbers(app_data.display_line_numbers);
-#if defined(IF_XM)
     source_view->set_display_glyphs(app_data.display_glyphs);
-#endif
     source_view->set_disassemble(gdb->type() == GDB && app_data.disassemble);
     source_view->set_all_registers(app_data.all_registers);
     source_view->set_tab_width(app_data.tab_width);
@@ -6031,19 +6079,11 @@ static void real_update_options(bool noupd)
     switch (app_data.display_placement)
     {
     case XmVERTICAL:
-#if defined(IF_XM)
 	XtVaSetValues(data_disp->graph_edit, XtNrotation, 0, XtNIL);
-#else
-	data_disp->graph_edit->set_rotation(0);
-#endif
 	break;
 	    
     case XmHORIZONTAL:
-#if defined(IF_XM)
 	XtVaSetValues(data_disp->graph_edit, XtNrotation, 90, XtNIL);
-#else
-	data_disp->graph_edit->set_rotation(90);
-#endif
 	break;
     }
 
@@ -6062,12 +6102,10 @@ static void real_update_options(bool noupd)
 	    gdbOpenToolWindowCB(CB_ARGS_NULL);
     }
 
-#if defined(IF_XM)
     EnableButtonTips(app_data.button_tips);
     EnableButtonDocs(app_data.button_docs);
     EnableTextTips(app_data.value_tips);
     EnableTextDocs(app_data.value_docs);
-#endif
 
     set_string(edit_command_w,       app_data.edit_command);
     set_string(plot_command_w,       app_data.plot_command);
@@ -6079,11 +6117,7 @@ static void real_update_options(bool noupd)
 
     // Set `find' label
     Widget find_label_ref = 0;
-#if defined(IF_XM)
     const char *icon = 0;
-#else
-    GUI::ImageHandle *icon = 0;
-#endif
     switch (current_find_direction())
     {
     case SourceView::forward:
@@ -6097,17 +6131,12 @@ static void real_update_options(bool noupd)
 	break;
     }
     XmString label;
-#if defined(IF_XM)
     XtVaGetValues(find_label_ref, XmNlabelString, &label, XtNIL);
     MString new_label(label, true);
     XmStringFree(label);
-#else
-    MString new_label = get_label(find_label_ref);
-#endif
 
     set_label(arg_cmd_area[ArgItems::Find].widget, new_label, icon);
 
-#if defined(IF_XM)
     // Font stuff
     if (font_names[DefaultDDDFont] != 0)
     {
@@ -6126,7 +6155,6 @@ static void real_update_options(bool noupd)
 	set_string_int(font_sizes[DataDDDFont], 
 		       app_data.data_font_size);
     }
-#endif
 
     // Key Bindings
     BindingStyle cut_copy_paste_style = app_data.cut_copy_paste_bindings;
@@ -6159,27 +6187,18 @@ static void real_update_options(bool noupd)
     set_toggle(crash_nothing_w, !app_data.dump_core);
 
     // Check for source toolbar
-#if defined(IF_XM)
     Widget arg_cmd_w = XtParent(source_arg->top());
-#else
-    GUI::Widget *arg_cmd_w = source_arg->top()->get_parent();
-#endif
     if (data_disp->graph_cmd_w == arg_cmd_w)
     {
 	// Don't close the common toolbar
     }
     else
     {
-#if defined(IF_XM)
 	if (XtIsManaged(source_view->source_form()) ||
 	    XtIsManaged(source_view->code_form()))
 	    manage_paned_child(arg_cmd_w);
 	else
 	    unmanage_paned_child(arg_cmd_w);
-#else
-	static int errcnt = 0;
-	if (complain && !errcnt++) std::cerr << "Paned children?\n";
-#endif
     }
 
     // Setup undo buffer size
@@ -6192,6 +6211,335 @@ static void real_update_options(bool noupd)
     fix_status_size();
 }
 
+#else
+
+// Reflect state in option menus
+static void real_update_options(bool noupd)
+{
+    if (noupd)
+	return;
+    set_toggle(find_words_only_w, app_data.find_words_only);
+    set_toggle(words_only_w, app_data.find_words_only);
+
+    set_toggle(find_case_sensitive_w, app_data.find_case_sensitive);
+    set_toggle(case_sensitive_w, app_data.find_case_sensitive);
+
+    set_toggle(disassemble_w, app_data.disassemble);
+
+    bool separate_exec_window = 
+	app_data.separate_exec_window && gdb->has_redirection();
+    set_toggle(command_separate_exec_window_w, separate_exec_window);
+    set_toggle(source_separate_exec_window_w,  separate_exec_window);
+    set_toggle(data_separate_exec_window_w,    separate_exec_window);
+
+    set_toggle(command_save_options_w,   app_data.save_options_on_exit);
+    set_toggle(source_save_options_w,    app_data.save_options_on_exit);
+    set_toggle(data_save_options_w,      app_data.save_options_on_exit);
+
+    set_toggle(button_tips_w,            app_data.button_tips); 
+    set_toggle(value_tips_w,             app_data.value_tips); 
+    set_toggle(button_docs_w,            app_data.button_docs); 
+    set_toggle(value_docs_w,             app_data.value_docs); 
+    set_toggle(set_global_completion_w,  app_data.global_tab_completion);
+    set_toggle(set_console_completion_w, !app_data.global_tab_completion);
+    set_toggle(group_iconify_w,          app_data.group_iconify);
+    set_toggle(uniconify_when_ready_w,   app_data.uniconify_when_ready);
+    set_toggle(check_grabs_w,   	 app_data.check_grabs);
+    set_toggle(suppress_warnings_w,      app_data.suppress_warnings);
+    set_toggle(warn_if_locked_w,         app_data.warn_if_locked);
+
+    set_toggle(builtin_plot_window_w,
+	       string(app_data.plot_term_type) == "xlib");
+    set_toggle(extern_plot_window_w,
+	       string(app_data.plot_term_type) == "x11");
+
+    set_toggle(cache_source_files_w,     app_data.cache_source_files);
+    set_toggle(cache_machine_code_w,     app_data.cache_machine_code);
+    set_toggle(set_display_glyphs_w,     app_data.display_glyphs);
+    set_toggle(set_display_text_w,       !app_data.display_glyphs);
+    set_toggle(set_refer_path_w,         app_data.use_source_path);
+    set_toggle(set_refer_base_w,         !app_data.use_source_path);
+    set_toggle(line_numbers1_w,          app_data.display_line_numbers);
+    set_toggle(line_numbers2_w,          app_data.display_line_numbers);
+
+    if (tab_width_w != 0)
+    {
+	set_scale(tab_width_w, app_data.tab_width);
+	set_scale(source_indent_w, app_data.indent_source);
+	set_scale(code_indent_w,   app_data.indent_code);
+    }
+
+    set_toggle(led_w, app_data.blink_while_busy);
+
+    Boolean show_grid, snap_to_grid, show_hints, auto_layout, show_annotations;
+    LayoutMode layout_mode;
+    Dimension grid_width, grid_height;
+
+    show_grid = data_disp->graph_edit->get_show_grid();
+    snap_to_grid = data_disp->graph_edit->get_snap_to_grid();
+    show_hints = data_disp->graph_edit->get_show_hints();
+    show_annotations = data_disp->graph_edit->get_show_annotations();
+    auto_layout = data_disp->graph_edit->get_auto_layout();
+    layout_mode = data_disp->graph_edit->get_layout_mode();
+    grid_width = data_disp->graph_edit->get_grid_width();
+    grid_height = data_disp->graph_edit->get_grid_height();
+
+    set_toggle(detect_aliases_w, app_data.detect_aliases);
+    set_toggle(graph_detect_aliases_w, app_data.detect_aliases);
+    set_toggle(graph_cluster_displays_w, app_data.cluster_displays);
+    set_toggle(graph_align_2d_arrays_w, app_data.align_2d_arrays);
+
+    if (graph_snap_to_grid_w != 0)
+    {
+	if (!show_grid && XtIsSensitive(graph_snap_to_grid_w))
+	{
+	    // Grid has been disabled - disable `snap to grid' as well
+	    data_disp->graph_edit->set_snap_to_grid(false);
+	}
+	else if (show_grid && !XtIsSensitive(graph_snap_to_grid_w))
+	{
+	    // Grid has been re-enabled - restore `snap to grid' setting
+	    data_disp->graph_edit->set_snap_to_grid(graph_snap_to_grid_w->get_active());
+	}
+	else
+	{
+	    set_toggle(graph_snap_to_grid_w, snap_to_grid);
+	}
+    }
+
+    set_sensitive(graph_snap_to_grid_w, show_grid);
+    set_sensitive(align_w, show_grid);
+
+    set_sensitive(graph_left_to_right_w, !app_data.cluster_displays);
+    set_sensitive(graph_top_to_bottom_w, !app_data.cluster_displays);
+
+    set_toggle(graph_left_to_right_w, 
+	       app_data.display_placement == XmHORIZONTAL);
+    set_toggle(graph_top_to_bottom_w,
+	       app_data.display_placement == XmVERTICAL);
+
+    set_toggle(graph_show_hints_w, show_hints);
+    set_toggle(graph_show_annotations_w, show_annotations);
+    set_toggle(graph_auto_layout_w, auto_layout);
+    set_toggle(graph_compact_layout_w, layout_mode == CompactLayoutMode);
+    set_toggle(graph_auto_close_w, app_data.auto_close_data_window);
+    set_toggle(graph_show_dependent_titles_w,
+	       app_data.show_dependent_display_titles);
+
+    if (graph_grid_size_w != 0) {
+	graph_grid_size_w->set_value(show_grid ? grid_width : 0);
+    }
+
+
+#ifdef NAG_ME
+#warning Focus policy not implemented
+#endif
+
+    set_toggle(set_scrolling_panner_w,     app_data.panned_graph_editor);
+    set_toggle(set_scrolling_scrollbars_w, !app_data.panned_graph_editor);
+
+    set_toggle(set_button_images_w,        app_data.button_images);
+    set_toggle(set_button_captions_w,      app_data.button_captions);
+
+    set_toggle(set_flat_buttons_w,         app_data.flat_toolbar_buttons);
+    set_sensitive(set_flat_buttons_w,
+		  app_data.button_images || app_data.button_captions);
+
+    string button_color_key        = app_data.button_color_key;
+    string active_button_color_key = app_data.active_button_color_key;
+    set_toggle(set_color_buttons_w, button_color_key == 'c');
+    set_sensitive(set_color_buttons_w, app_data.button_images);
+
+    Boolean separate = 
+	app_data.separate_data_window || app_data.separate_source_window;
+
+    set_toggle(set_toolbars_at_bottom_w, app_data.toolbars_at_bottom);
+    set_sensitive(set_toolbars_at_bottom_w, separate ||
+		  !app_data.button_images && !app_data.button_captions);
+
+    set_toggle(set_tool_buttons_in_toolbar_w,      app_data.command_toolbar);
+    set_toggle(set_tool_buttons_in_command_tool_w, !app_data.command_toolbar);
+
+    set_toggle(set_separate_windows_w, separate);
+    set_toggle(set_attached_windows_w, !separate);
+
+    DebuggerType debugger_type = DebuggerType(-1);
+    get_debugger_type(app_data.debugger, debugger_type);
+
+    set_toggle(set_debugger_bash_w, debugger_type == BASH);
+    set_toggle(set_debugger_dbg_w,  debugger_type == DBG);
+    set_toggle(set_debugger_dbx_w,  debugger_type == DBX);
+    set_toggle(set_debugger_gdb_w,  debugger_type == GDB);
+    set_toggle(set_debugger_jdb_w,  debugger_type == JDB);
+    set_toggle(set_debugger_perl_w, debugger_type == PERL);
+    set_toggle(set_debugger_pydb_w, debugger_type == PYDB);
+    set_toggle(set_debugger_xdb_w,  debugger_type == XDB);
+    set_toggle(auto_debugger_w, app_data.auto_debugger);
+
+    set_toggle(splash_screen_w, app_data.splash_screen);
+#ifdef NAG_ME
+#warning Tips not supported
+#endif
+
+    if (app_data.cache_source_files != source_view->cache_source_files)
+    {
+	source_view->cache_source_files = app_data.cache_source_files;
+	if (!app_data.cache_source_files)
+	    source_view->clear_file_cache();
+    }
+
+    if (app_data.cache_machine_code != source_view->cache_machine_code)
+    {
+	source_view->cache_machine_code = app_data.cache_machine_code;
+	if (!app_data.cache_machine_code)
+	    source_view->clear_code_cache();
+    }
+
+    source_view->set_display_line_numbers(app_data.display_line_numbers);
+#ifdef NAG_ME
+#warning set_display_glyphs?
+#endif
+    // source_view->set_display_glyphs(app_data.display_glyphs);
+    source_view->set_disassemble(gdb->type() == GDB && app_data.disassemble);
+    source_view->set_all_registers(app_data.all_registers);
+    source_view->set_tab_width(app_data.tab_width);
+    source_view->set_indent(app_data.indent_source, app_data.indent_code);
+
+    source_view->line_indent_amount   = app_data.line_number_width;
+    source_view->script_indent_amount = app_data.indent_script;
+    source_view->lines_above_cursor   = app_data.lines_above_cursor;
+    source_view->lines_below_cursor   = app_data.lines_below_cursor;
+
+    source_view->max_breakpoint_number = app_data.max_breakpoint_number;
+    data_disp->max_display_number      = app_data.max_display_number;
+
+    data_disp->set_detect_aliases(app_data.detect_aliases);
+    data_disp->set_cluster_displays(app_data.cluster_displays);
+
+    if (DispBox::align_2d_arrays != app_data.align_2d_arrays)
+    {
+	DispBox::align_2d_arrays = app_data.align_2d_arrays;
+	// data_disp->refresh_display();
+    }
+
+    // Synchronize layout direction with placement
+    switch (app_data.display_placement)
+    {
+    case XmVERTICAL:
+	data_disp->graph_edit->set_rotation(0);
+	break;
+	    
+    case XmHORIZONTAL:
+	data_disp->graph_edit->set_rotation(90);
+	break;
+    }
+
+    if (app_data.command_toolbar && 
+	command_toolbar_w != 0 && !XtIsManaged(command_toolbar_w))
+    {
+	if (app_data.source_window)
+	    XtManageChild(command_toolbar_w);
+	gdbCloseToolWindowCB(CB_ARGS_NULL);
+    }
+    else if (!app_data.command_toolbar && 
+	     command_toolbar_w != 0 && XtIsManaged(command_toolbar_w))
+    {
+	XtUnmanageChild(command_toolbar_w);
+	if (app_data.source_window)
+	    gdbOpenToolWindowCB(CB_ARGS_NULL);
+    }
+
+#if 0
+    EnableButtonTips(app_data.button_tips);
+    EnableButtonDocs(app_data.button_docs);
+    EnableTextTips(app_data.value_tips);
+    EnableTextDocs(app_data.value_docs);
+#endif
+#ifdef NAG_ME
+#warning Button tips and docs.
+#endif
+
+    set_string(edit_command_w,       app_data.edit_command);
+    set_string(plot_command_w,       app_data.plot_command);
+    set_string(get_core_command_w,   app_data.get_core_command);
+    set_string(ps_command_w,         app_data.ps_command);
+    set_string(term_command_w,       app_data.term_command);
+    set_string(uncompress_command_w, app_data.uncompress_command);
+    set_string(www_command_w,        app_data.www_command);
+
+    // Set `find' label
+    GUI::Widget *find_label_ref = 0;
+    GUI::ImageHandle *icon = 0;
+    switch (current_find_direction())
+    {
+    case SourceView::forward:
+	find_label_ref = find_menu[FindItems::FindForward].widget;
+	icon = FIND_FORWARD_ICON;
+	break;
+	
+    case SourceView::backward:
+	find_label_ref = find_menu[FindItems::FindBackward].widget;
+	icon = FIND_BACKWARD_ICON;
+	break;
+    }
+    GUI::String new_label = get_label(find_label_ref);
+
+    set_label(arg_cmd_area[ArgItems::Find].widget, new_label, icon);
+
+    // Key Bindings
+    BindingStyle cut_copy_paste_style = app_data.cut_copy_paste_bindings;
+    set_toggle(cut_copy_paste_kde_w,   cut_copy_paste_style == KDEBindings);
+    set_toggle(cut_copy_paste_motif_w, cut_copy_paste_style == MotifBindings);
+
+    set_cut_copy_paste_bindings(command_edit_menu, cut_copy_paste_style);
+    set_cut_copy_paste_bindings(source_edit_menu,  cut_copy_paste_style);
+    set_cut_copy_paste_bindings(data_edit_menu,    cut_copy_paste_style);
+
+    BindingStyle select_all_style = app_data.select_all_bindings;
+    set_toggle(select_all_kde_w,   select_all_style == KDEBindings);
+    set_toggle(select_all_motif_w, select_all_style == MotifBindings);
+
+    set_select_all_bindings(command_edit_menu, select_all_style);
+    set_select_all_bindings(source_edit_menu,  select_all_style);
+    set_select_all_bindings(data_edit_menu,    select_all_style);
+
+    // Maintenance
+    manage_child(maintenance_w, app_data.maintenance);
+    const bool ValgrindLeak = ValgrindLeakBuiltin();
+    manage_child(valgrindLeakCheck_w, ValgrindLeak);
+    if (ValgrindLeak)
+	set_sensitive(valgrindLeakCheck_w, RunningOnValgrind());
+
+    set_toggle(crash_debug_w,
+	       app_data.dump_core && app_data.debug_core_dumps);
+    set_toggle(crash_dump_core_w, 
+	       app_data.dump_core && !app_data.debug_core_dumps);
+    set_toggle(crash_nothing_w, !app_data.dump_core);
+
+    // Check for source toolbar
+    GUI::Widget *arg_cmd_w = source_arg->top()->get_parent();
+    if (data_disp->graph_cmd_w == arg_cmd_w)
+    {
+	// Don't close the common toolbar
+    }
+    else
+    {
+	static int errcnt = 0;
+	if (complain && !errcnt++) std::cerr << "Paned children?\n";
+    }
+
+    // Setup undo buffer size
+    UndoBuffer::max_history_depth = app_data.max_undo_depth;
+    UndoBuffer::max_history_size  = app_data.max_undo_size;
+
+    set_string_int(max_undo_size_w, app_data.max_undo_size / 1000);
+
+    update_reset_preferences();
+    fix_status_size();
+}
+
+#endif
+
 #if !defined(IF_XM)
 void update_options(bool noupd)
 {
@@ -6202,24 +6550,32 @@ void update_options(bool noupd)
 }
 #endif
 
+#if defined(IF_XM)
 
 static void set_settings_title(Widget w)
 {
     if (w != 0)
     {
 	MString settings_title(gdb->title() + " Settings...");
-#if defined(IF_XM)
 	XtVaSetValues(w, XmNlabelString, settings_title.xmstring(), 
 		      XtNIL);
-#else
-	Gtk::MenuItem *mi = dynamic_cast<Gtk::MenuItem *>(w);
-	mi->remove();
-	mi->add_label(settings_title.xmstring());
-#endif
     }
 }
 
+#else
 
+static void set_settings_title(GUI::Widget *w)
+{
+    if (w != 0)
+    {
+	MString settings_title(gdb->title() + " Settings...");
+	GUI::MenuItem *mi = dynamic_cast<GUI::MenuItem *>(w);
+	mi->remove();
+	mi->add_label(settings_title.xmstring());
+    }
+}
+
+#endif
 
 //-----------------------------------------------------------------------------
 // Preferences
@@ -7801,6 +8157,8 @@ static void PopdownStatusHistoryEH(Widget w, XtPointer client_data,
 // Helpers
 //-----------------------------------------------------------------------------
 
+#if defined(IF_XM)
+
 void update_arg_buttons()
 {
     string arg = source_arg->get_string();
@@ -7818,11 +8176,7 @@ void update_arg_buttons()
     set_sensitive(print_w,   can_print);
     set_sensitive(display_w, can_print);
 
-#if defined(IF_XM)
     set_sensitive(edit_source_w,   source_view->have_source());
-#else
-    edit_source_w->set_sensitive(source_view->have_source());
-#endif
     set_sensitive(reload_source_w, source_view->have_source());
 
     bool can_watch = can_print && gdb->has_watch_command();
@@ -7905,22 +8259,14 @@ void update_arg_buttons()
     string deref_arg = deref(arg, "()");
 
     MString print_ref_label("Print " + deref_arg);
-#if defined(IF_XM)
     XtVaSetValues(print_menu[PrintItems::PrintRef].widget,
 		  XmNlabelString, print_ref_label.xmstring(),
 		  XtNIL);
-#else
-    set_label(print_menu[PrintItems::PrintRef].widget, print_ref_label);
-#endif
 
     MString disp_ref_label("Display " + deref_arg);
-#if defined(IF_XM)
     XtVaSetValues(display_menu[DispItems::DispRef].widget,
 		  XmNlabelString, disp_ref_label.xmstring(),
 		  XtNIL);
-#else
-    set_label(display_menu[DispItems::DispRef].widget, disp_ref_label);
-#endif
 
     bool can_dereference = !gdb->dereferenced_expr("").empty();
     manage_child(print_ref_w, can_dereference);
@@ -7936,6 +8282,122 @@ void update_arg_buttons()
     set_sensitive(infos_w,     (gdb->type() == GDB || gdb->type() == PYDB) &&
 		                !undoing);
 }
+
+#else
+
+void update_arg_buttons()
+{
+    string arg = source_arg->get_string();
+
+    bool can_find = (!arg.empty()) && !is_file_pos(arg) && 
+	source_view->have_source();
+    set_sensitive(arg_cmd_area[ArgItems::Find].widget, can_find);
+    set_sensitive(find_forward_w, can_find);
+    set_sensitive(find_backward_w, can_find);
+
+    bool undoing = undo_buffer.showing_earlier_state();
+    bool can_print = (!arg.empty()) && !is_file_pos(arg) && !undoing;
+    set_sensitive(arg_cmd_area[ArgItems::Print].widget, can_print);
+    set_sensitive(arg_cmd_area[ArgItems::Display].widget, can_print);
+    set_sensitive(print_w, can_print);
+    set_sensitive(display_w, can_print);
+
+    set_sensitive(edit_source_w, source_view->have_source());
+    set_sensitive(reload_source_w, source_view->have_source());
+
+    bool can_watch = can_print && gdb->has_watch_command();
+    set_sensitive(arg_cmd_area[ArgItems::Watch].widget, can_watch);
+
+    bool have_watch = have_watchpoint_at_arg();
+
+    manage_child(watch_menu[WatchItems::Properties].widget, have_watch);
+    manage_child(watch_menu[WatchItems::Enable].widget,     have_watch);
+    manage_child(watch_menu[WatchItems::Sep].widget,        have_watch);
+
+    set_sensitive(watch_menu[WatchItems::CWatch].widget, can_watch && 
+		  (gdb->has_watch_command() & WATCH_CHANGE) == WATCH_CHANGE);
+    set_sensitive(watch_menu[WatchItems::RWatch].widget, can_watch &&
+		  (gdb->has_watch_command() & WATCH_READ) == WATCH_READ);
+    set_sensitive(watch_menu[WatchItems::AWatch].widget, can_watch &&
+		  (gdb->has_watch_command() & WATCH_ACCESS) == WATCH_ACCESS);
+    if (have_watch)
+    {
+	set_label(arg_cmd_area[ArgItems::Watch].widget, 
+		  "Unwatch ()", UNWATCH_ICON);
+    }
+    else
+    {
+	set_label(arg_cmd_area[ArgItems::Watch].widget, 
+		  "Watch ()", WATCH_ICON);
+    }
+
+    bool watch_enabled = have_enabled_watchpoint_at_arg();
+    if (watch_enabled)
+	set_label(watch_menu[WatchItems::Enable].widget, 
+		  "Disable Watchpoint on ()");
+    else
+	set_label(watch_menu[WatchItems::Enable].widget, 
+		  "Enable Watchpoint at ()");
+
+
+    bool have_break = have_breakpoint_at_arg();
+
+    manage_child(break_menu[BreakItems::TempBreak].widget,   !have_break);
+    manage_child(break_menu[BreakItems::RegexBreak].widget,  !have_break);
+    manage_child(break_menu[BreakItems::ContUntil].widget,   !have_break);
+    manage_child(break_menu[BreakItems::Sep2].widget,        !have_break);
+    manage_child(break_menu[BreakItems::ClearAt2].widget,    !have_break);
+
+    manage_child(break_menu[BreakItems::Properties].widget,  have_break);
+    manage_child(break_menu[BreakItems::Enable].widget,      have_break);
+
+    if (have_break)
+    {
+	set_label(arg_cmd_area[ArgItems::Break].widget, 
+		  "Clear at ()", CLEAR_AT_ICON);
+    }
+    else
+    {
+	set_label(arg_cmd_area[ArgItems::Break].widget, 
+		  "Break at ()", BREAK_AT_ICON);
+    }
+
+    bool break_enabled = have_enabled_breakpoint_at_arg();
+    if (break_enabled)
+	set_label(break_menu[BreakItems::Enable].widget, 
+		  "Disable Breakpoint at ()");
+    else
+	set_label(break_menu[BreakItems::Enable].widget, 
+		  "Enable Breakpoint at ()");
+
+    set_sensitive(break_menu[BreakItems::ClearAt2].widget, gdb->recording() || have_breakpoint_at_arg());
+    set_sensitive(break_menu[BreakItems::Enable].widget, gdb->can_enable());
+    set_sensitive(break_menu[BreakItems::SetPC].widget, gdb->has_jump_command() || gdb->has_assign_command());
+    set_sensitive(break_menu[BreakItems::RegexBreak].widget, gdb->type() == GDB);
+
+    GUI::String deref_arg = deref(arg, "()").chars();
+
+    GUI::String print_ref_label("Print " + deref_arg);
+    set_label(print_menu[PrintItems::PrintRef].widget, print_ref_label);
+
+    GUI::String disp_ref_label("Display " + deref_arg);
+    set_label(display_menu[DispItems::DispRef].widget, disp_ref_label);
+
+    bool can_dereference = !gdb->dereferenced_expr("").empty();
+    manage_child(print_ref_w, can_dereference);
+    manage_child(disp_ref_w,  can_dereference);
+
+    set_sensitive(stack_w, !undoing);
+    set_sensitive(registers_w, gdb->has_regs_command() && !undoing);
+    set_sensitive(threads_w, (gdb->type() == GDB
+			      || gdb->type() == JDB
+			      || (gdb->type() == DBX && gdb->isSunDBX()))
+		  && !undoing);
+    set_sensitive(infos_w, (gdb->type() == GDB || gdb->type() == PYDB) &&
+		  !undoing);
+}
+
+#endif
 
 // Arg changed - re-label buttons
 static void source_argHP(void *, void *, void *)
@@ -8191,6 +8653,7 @@ static void WhenReady(Widget w, XtPointer client_data, XtPointer call_data)
 
 #else
 
+#if 0
 // Execute command in (XtCallbackProc)CLIENT_DATA as soon as GDB gets ready
 #if defined(IF_XMMM)
 static void WhenReady(Widget w, XtPointer client_data, XtPointer call_data)
@@ -8231,10 +8694,11 @@ static void WhenReady(Gtk::Widget *w, void *client_data)
     XtVaGetValues(w, XmNlabelString, &label, XtNIL);
     MString _action(label, true);
     XmStringFree(label);
-#else
-    MString _action = get_label(w);
-#endif
     string action = _action.str();
+#else
+    GUI::String _action = get_label(w);
+    string action = _action.str();
+#endif
     if (action.contains("...", -1))
 	action = action.before("...");
 
@@ -8264,6 +8728,8 @@ static void WhenReady(Gtk::Widget *w, void *client_data)
 
 #endif
 
+#endif
+
 #if !defined(IF_XM)
 
 // Execute command in (XtCallbackProc)CLIENT_DATA as soon as GDB gets ready
@@ -8286,8 +8752,8 @@ static void WhenReady1(GUI::Widget *w, void *client_data)
     }
 
     // Execute command as soon as GDB gets ready
-    MString _action = get_label(w);
-    string action = _action.str();
+    GUI::String _action = get_label(w);
+    string action = _action.c_str();
     if (action.contains("...", -1))
 	action = action.before("...");
 
@@ -9348,7 +9814,9 @@ static void count_mapped_menus(
     // std::clog << _mapped_menus << " mapped menus\n";
 }
 
-static void gdbUpdateEditCB(CB_ALIST_12(Widget w, XtP(DDDWindow) client_data))
+#if defined(IF_XM)
+
+static void gdbUpdateEditCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     DDDWindow win = ddd_window(client_data);
 
@@ -9375,10 +9843,7 @@ static void gdbUpdateEditCB(CB_ALIST_12(Widget w, XtP(DDDWindow) client_data))
 
     if (menu == 0 || menu[0].widget == 0)
 	return;
-#ifdef NAG_ME
-#warning count_mapped_menus arg
-#endif
-    count_mapped_menus(CB_ARGS_3(0));
+    count_mapped_menus(w, client_data, call_data);
 
     // Reset undo/redo actions
     string undo_action = undo_buffer.undo_action();
@@ -9408,23 +9873,9 @@ static void gdbUpdateEditCB(CB_ALIST_12(Widget w, XtP(DDDWindow) client_data))
 	set_sensitive(menu[EditItems::Redo].widget, true);
     }
 
-#if defined(IF_XM)
     // Check if we have something to cut
     XmTextPosition start, end;
     bool can_cut = false;
-#if defined(IF_XM)
-    Widget dest  = XmGetDestination(XtDisplay(w));
-
-    // Try destination window
-    if (!can_cut && dest != 0 && XmIsText(dest))
-	can_cut = XmTextGetSelectionPosition(dest, &start, &end);
-    if (!can_cut && dest != 0 && XmIsTextField(dest))
-	can_cut = XmTextFieldGetSelectionPosition(dest, &start, &end);
-#else
-#ifdef NAG_ME
-#warning XmGetDestination?
-#endif
-#endif
 
     // Try debugger console
     if (!can_cut && (win == GDBWindow || win == CommonWindow))
@@ -9458,27 +9909,84 @@ static void gdbUpdateEditCB(CB_ALIST_12(Widget w, XtP(DDDWindow) client_data))
     set_sensitive(menu[EditItems::Copy].widget,   can_copy);
     set_sensitive(menu[EditItems::Paste].widget,  can_paste);
     set_sensitive(menu[EditItems::Delete].widget, can_cut);
+}
+
 #else
+
+static void gdbUpdateEditCB(GUI::Widget *w, DDDWindow client_data)
+{
+    DDDWindow win = ddd_window(client_data);
+
+    // Fetch menu
+    MMDesc *menu = 0;
+    switch (win)
+    {
+    case GDBWindow:
+    case CommonWindow:
+	menu = command_edit_menu;
+	break;
+
+    case SourceWindow:
+	menu = source_edit_menu;
+	break;
+
+    case DataWindow:
+	menu = data_edit_menu;
+	break;
+
+    default:
+	break;
+    }
+
+    if (menu == 0 || menu[0].widget == 0)
+	return;
+
+    // Reset undo/redo actions
+    string undo_action = undo_buffer.undo_action();
+    string redo_action = undo_buffer.redo_action();
+
+    if (undo_action == NO_GDB_ANSWER)
+    {
+	set_label(menu[EditItems::Undo].widget, "Undo");
+	set_sensitive(menu[EditItems::Undo].widget, false);
+    }
+    else
+    {
+	GUI::String label = GUI::String("Undo ") + GUI::String(undo_action.chars());
+	set_label(menu[EditItems::Undo].widget, label);
+	set_sensitive(menu[EditItems::Undo].widget, true);
+    }
+
+    if (redo_action == NO_GDB_ANSWER)
+    {
+	set_label(menu[EditItems::Redo].widget, "Redo");
+	set_sensitive(menu[EditItems::Redo].widget, false);
+    }
+    else
+    {
+	GUI::String label = GUI::String("Redo ") + GUI::String(redo_action.chars());
+	set_label(menu[EditItems::Redo].widget, label);
+	set_sensitive(menu[EditItems::Redo].widget, true);
+    }
 #ifdef NAG_ME
-#warning Fix sensitivity of cut/copy/paste menu items
-#endif
+#warning Fix sensitivity of cut/copy/paste
 #endif
 }
 
-static void gdbUpdateFileCB(CB_ARG_LIST_2(client_data))
+#endif
+
+#if defined(IF_XM)
+
+static void gdbUpdateFileCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     MMDesc *file_menu = (MMDesc *)client_data;
     if (file_menu == 0 || file_menu[0].widget == 0)
 	return;
 
-    count_mapped_menus(CB_ARGS_3(NULL));
+    count_mapped_menus(w, client_data, call_data);
 
     // Check whether we can print something
-#if defined(IF_XM)
     Graph *graph = graphEditGetGraph(data_disp->graph_edit);
-#else
-    Graph *graph = data_disp->graph_edit->get_graph();
-#endif
     if (!graph)
 	std::cerr << "ERROR: get_graph() returned NULL\n";
     else
@@ -9501,43 +10009,98 @@ static void gdbUpdateFileCB(CB_ARG_LIST_2(client_data))
 #endif
 }
 
-static void gdbUpdateViewCB(CB_ARG_LIST_2(client_data))
+#else
+
+static void gdbUpdateFileCB(MMDesc *file_menu)
+{
+    if (file_menu == 0 || file_menu[0].widget == 0)
+	return;
+
+    // Check whether we can print something
+    Graph *graph = data_disp->graph_edit->get_graph();
+    if (!graph)
+	std::cerr << "ERROR: get_graph() returned NULL\n";
+    else
+    {
+	bool can_print = (graph->firstNode() != 0);
+	set_sensitive(file_menu[FileItems::Print].widget, can_print);
+	set_sensitive(file_menu[FileItems::PrintAgain].widget, can_print);
+    }
+
+
+    // Check whether we can close something
+    bool can_close = (running_shells() > 1);
+    set_sensitive(file_menu[FileItems::Close].widget, can_close);
+
+#if 0
+    // If we have only one window, remove the `Close' item
+    Boolean one_window = 
+	!app_data.separate_source_window && !app_data.separate_data_window;
+    manage_child(file_menu[FileItems::Close].widget, !one_window);
+#endif
+}
+
+#endif
+
+#if defined(IF_XM)
+
+static void gdbUpdateViewCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     MMDesc *view_menu = (MMDesc *)client_data;
     if (view_menu == 0 || view_menu[0].widget == 0)
 	return;
 
-    count_mapped_menus(CB_ARGS_3(NULL));
+    count_mapped_menus(w, client_data, call_data);
 
-#if defined(IF_XM)
     set_sensitive(view_menu[CodeWindow].widget, gdb->type() == GDB);
     set_sensitive(view_menu[ExecWindow].widget, gdb->has_redirection());
     set_toggle(view_menu[CodeWindow].widget, app_data.disassemble);
-#else
-    view_menu[CodeWindow].xwidget->set_sensitive(gdb->type() == GDB);
-    view_menu[ExecWindow].xwidget->set_sensitive(gdb->has_redirection());
-    set_toggle(view_menu[CodeWindow].xwidget, app_data.disassemble);
-#endif
 }
 
-static void gdbUpdateViewsCB(CB_ARG_LIST_2(client_data))
+#else
+
+static void gdbUpdateViewCB(MMDesc *view_menu)
 {
-    gdbUpdateViewCB(CB_ARGS_2(client_data));
+    if (view_menu == 0 || view_menu[0].widget == 0)
+	return;
+
+    set_sensitive(view_menu[CodeWindow].widget, gdb->type() == GDB);
+    set_sensitive(view_menu[ExecWindow].widget, gdb->has_redirection());
+    set_toggle(view_menu[CodeWindow].widget, app_data.disassemble);
+}
+
+#endif
+
+#if defined(IF_XM)
+
+static void gdbUpdateViewsCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    gdbUpdateViewCB(w, client_data, call_data);
 
     MMDesc *view_menu = (MMDesc *)client_data;
     if (view_menu == 0 || view_menu[0].widget == 0)
 	return;
 
-#if defined(IF_XM)
     set_toggle(view_menu[DataWindow].widget,   have_data_window());
     set_toggle(view_menu[SourceWindow].widget, have_source_window());
     set_toggle(view_menu[GDBWindow].widget,    have_command_window());
-#else
-    set_toggle(view_menu[DataWindow].xwidget,   have_data_window());
-    set_toggle(view_menu[SourceWindow].xwidget, have_source_window());
-    set_toggle(view_menu[GDBWindow].xwidget,    have_command_window());
-#endif
 }
+
+#else
+
+static void gdbUpdateViewsCB(MMDesc *view_menu)
+{
+    gdbUpdateViewCB(view_menu);
+
+    if (view_menu == 0 || view_menu[0].widget == 0)
+	return;
+
+    set_toggle(view_menu[DataWindow].widget,   have_data_window());
+    set_toggle(view_menu[SourceWindow].widget, have_source_window());
+    set_toggle(view_menu[GDBWindow].widget,    have_command_window());
+}
+
+#endif
 
 void update_edit_menus()
 {
@@ -9551,6 +10114,8 @@ void update_edit_menus()
     gdbUpdateEditCB(CB_ARGS_12(gdb_w, DataWindow));
 }
 
+#if defined(IF_XM)
+
 // In case we have tear-off menus, all these menus must be updated at
 // all times.
 static void gdbUpdateAllMenus()
@@ -9562,16 +10127,40 @@ static void gdbUpdateAllMenus()
 
     XtPointer call_data = 0;
 
-    gdbUpdateFileCB(CB_ARGS_2(XtPointer(command_file_menu)));
-    gdbUpdateFileCB(CB_ARGS_2(XtPointer(source_file_menu)));
-    gdbUpdateFileCB(CB_ARGS_2(XtPointer(data_file_menu)));
+    gdbUpdateFileCB(gdb_w, XtPointer(command_file_menu), call_data);
+    gdbUpdateFileCB(gdb_w, XtPointer(source_file_menu),  call_data);
+    gdbUpdateFileCB(gdb_w, XtPointer(data_file_menu),    call_data);
 
-    gdbUpdateViewsCB(CB_ARGS_2(XtPointer(views_menu)));
+    gdbUpdateViewsCB(gdb_w, XtPointer(views_menu),       call_data);
 
-    gdbUpdateViewCB(CB_ARGS_2(XtPointer(command_view_menu)));
-    gdbUpdateViewCB(CB_ARGS_2(XtPointer(source_view_menu)));
-    gdbUpdateViewCB(CB_ARGS_2(XtPointer(data_view_menu)));
+    gdbUpdateViewCB(gdb_w, XtPointer(command_view_menu), call_data);
+    gdbUpdateViewCB(gdb_w, XtPointer(source_view_menu),  call_data);
+    gdbUpdateViewCB(gdb_w, XtPointer(data_view_menu),    call_data);
 }
+
+#else
+
+// In case we have tear-off menus, all these menus must be updated at
+// all times.
+static void gdbUpdateAllMenus()
+{
+    if (mapped_menus() == 0)
+	return;			// No mapped menu
+
+    update_edit_menus();
+
+    gdbUpdateFileCB(command_file_menu);
+    gdbUpdateFileCB(source_file_menu);
+    gdbUpdateFileCB(data_file_menu);
+
+    gdbUpdateViewsCB(views_menu);
+
+    gdbUpdateViewCB(command_view_menu);
+    gdbUpdateViewCB(source_view_menu);
+    gdbUpdateViewCB(data_view_menu);
+}
+
+#endif
 
 //-----------------------------------------------------------------------------
 // Configure new shell
@@ -10712,19 +11301,15 @@ static void setup_auto_command_prefix()
     app_data.auto_command_prefix = prefix.chars();
 }
 
+#if defined(IF_XM)
+
 // All options that remain fixed for a session go here.
 static void setup_options()
 {
     set_sensitive(disassemble_w, gdb->type() == GDB);
-#if defined(IF_XM)
     set_sensitive(code_indent_w, gdb->type() == GDB);
     set_sensitive(examine_w,            gdb->has_examine_command());
     set_sensitive(print_examine_w,      gdb->has_examine_command());
-#else
-    code_indent_w->set_sensitive(gdb->type() == GDB);
-    examine_w->set_sensitive(gdb->has_examine_command());
-    print_examine_w->set_sensitive(gdb->has_examine_command());
-#endif
     set_sensitive(cache_machine_code_w, gdb->type() == GDB);
 
     if (gdb->type() == DBG) {
@@ -10787,11 +11372,7 @@ static void setup_options()
     set_sensitive(source_edit_menu[EditItems::Settings].widget, have_settings);
     set_sensitive(data_edit_menu[EditItems::Settings].widget,   have_settings);
 
-#if defined(IF_XM)
     set_sensitive(complete_w,  gdb->type() == GDB);
-#else
-    complete_w->set_sensitive(gdb->type() == GDB);
-#endif
     set_sensitive(define_w,    gdb->type() == GDB);
     set_sensitive(signals_w,   gdb->type() == GDB);
 
@@ -10808,6 +11389,97 @@ static void setup_options()
     // (gdb->print_command("", true) != gdb->print_command("", false));
     manage_child(print_dump_w, can_dump);
 }
+
+#else
+
+// All options that remain fixed for a session go here.
+static void setup_options()
+{
+    set_sensitive(disassemble_w, gdb->type() == GDB);
+    set_sensitive(code_indent_w, gdb->type() == GDB);
+    set_sensitive(examine_w, gdb->has_examine_command());
+    set_sensitive(print_examine_w, gdb->has_examine_command());
+    set_sensitive(cache_machine_code_w, gdb->type() == GDB);
+
+    if (gdb->type() == DBG) {
+	app_data.use_source_path = true;
+	set_toggle(set_refer_base_w, false);
+	set_toggle(set_refer_path_w, true);
+    };
+
+    set_sensitive(set_refer_base_w, gdb->type() != GDB && gdb->type() != DBG);
+    set_sensitive(set_refer_path_w, gdb->type() != GDB && gdb->type() != DBG);
+    set_sensitive(refer_sources_w,  gdb->type() != GDB && gdb->type() != DBG);
+    
+    set_sensitive(edit_watchpoints_w, gdb->has_watch_command() != 0);
+
+    set_sensitive(command_separate_exec_window_w, gdb->has_redirection());
+    set_sensitive(source_separate_exec_window_w,  gdb->has_redirection());
+    set_sensitive(data_separate_exec_window_w,    gdb->has_redirection());
+
+    bool have_core = gdb->has_core_files();
+    set_sensitive(command_file_menu[FileItems::OpenCore].widget, have_core);
+    set_sensitive(source_file_menu[FileItems::OpenCore].widget, have_core);
+    set_sensitive(data_file_menu[FileItems::OpenCore].widget, have_core);
+
+    bool have_exec = gdb->has_exec_files() || gdb->type() == PERL || gdb->type() == DBG;
+    manage_child(command_file_menu[FileItems::OpenFile].widget,     have_exec);
+    manage_child(source_file_menu[FileItems::OpenFile].widget,      have_exec);
+    manage_child(data_file_menu[FileItems::OpenFile].widget,        have_exec);
+
+    bool have_classes = gdb->has_classes();
+    manage_child(command_file_menu[FileItems::OpenClass].widget, have_classes);
+    manage_child(source_file_menu[FileItems::OpenClass].widget,  have_classes);
+    manage_child(data_file_menu[FileItems::OpenClass].widget,    have_classes);
+
+    bool have_attach = gdb->has_processes();
+    set_sensitive(command_file_menu[FileItems::Attach].widget, have_attach);
+    set_sensitive(source_file_menu[FileItems::Attach].widget, have_attach);
+    set_sensitive(data_file_menu[FileItems::Attach].widget, have_attach);
+
+    bool have_detach = gdb->has_processes();
+    set_sensitive(command_file_menu[FileItems::Detach].widget, have_detach);
+    set_sensitive(source_file_menu[FileItems::Detach].widget, have_detach);
+    set_sensitive(data_file_menu[FileItems::Detach].widget, have_detach);
+
+    bool have_make = gdb->has_make_command() || gdb->has_shell_command();
+    set_sensitive(command_file_menu[FileItems::Make].widget, have_make);
+    set_sensitive(source_file_menu[FileItems::Make].widget, have_make);
+    set_sensitive(data_file_menu[FileItems::Make].widget, have_make);
+
+    set_sensitive(command_file_menu[FileItems::MakeAgain].widget, have_make);
+    set_sensitive(source_file_menu[FileItems::MakeAgain].widget, have_make);
+    set_sensitive(data_file_menu[FileItems::MakeAgain].widget, have_make);
+
+    bool have_cd = gdb->has_cd_command();
+    set_sensitive(command_file_menu[FileItems::CD].widget, have_cd);
+    set_sensitive(source_file_menu[FileItems::CD].widget, have_cd);
+    set_sensitive(data_file_menu[FileItems::CD].widget, have_cd);
+
+    bool have_settings = (gdb->type() != XDB && gdb->type() != PYDB);
+    set_sensitive(command_edit_menu[EditItems::Settings].widget, have_settings);
+    set_sensitive(source_edit_menu[EditItems::Settings].widget, have_settings);
+    set_sensitive(data_edit_menu[EditItems::Settings].widget, have_settings);
+
+    set_sensitive(complete_w, gdb->type() == GDB);
+    set_sensitive(define_w,    gdb->type() == GDB);
+    set_sensitive(signals_w,   gdb->type() == GDB);
+
+    set_sensitive(set_debugger_bash_w, have_cmd("bash"));
+    set_sensitive(set_debugger_dbg_w,  have_cmd("dbg"));
+    set_sensitive(set_debugger_dbx_w,  have_cmd("dbx") || have_cmd("ladebug"));
+    set_sensitive(set_debugger_gdb_w,  have_cmd("gdb"));
+    set_sensitive(set_debugger_jdb_w,  have_cmd("jdb"));
+    set_sensitive(set_debugger_perl_w, have_cmd("perl"));
+    set_sensitive(set_debugger_pydb_w, have_cmd("pydb"));
+    set_sensitive(set_debugger_xdb_w,  have_cmd("xdb"));
+
+    bool can_dump = (gdb->type() == JDB);
+    // (gdb->print_command("", true) != gdb->print_command("", false));
+    manage_child(print_dump_w, can_dump);
+}
+
+#endif
 
 static void setup_theme_manager()
 {

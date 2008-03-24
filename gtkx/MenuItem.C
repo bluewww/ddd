@@ -24,58 +24,57 @@
 // the constructor, unlike the Gtk ones.  Motif (Xt) widgets cannot be
 // reparented.  Therefore we need a constructor with extra arguments.
 
-#include <GtkX/CheckButton.h>
-#include <GtkX/Container.h>
-
-#include <gtk/gtkcheckbutton.h>
+#include <GtkX/MenuItem.h>
+#include <gtkmm/menuitem.h>
 
 using namespace GtkX;
 
-CheckButton::CheckButton(GtkX::Container &parent, const GtkX::String &name,
-			 const GtkX::String &label):
-    Gtk::CheckButton(mklabel(name, label).s())
+MenuItem::MenuItem(GtkX::Container &parent, const GtkX::String &name,
+		   const GtkX::String &label):
+    Gtk::MenuItem(label.s())
 {
     set_name(name.s());
+    // We cannot use this:
+    // parent.gtk_container()->add(*this);
+    // If we always had parent.gtk_container() == &parent we could just
+    // override the on_add() method to do what we want.  However,
+    // sometimes parent.gtk_container() is a standard Gtk widget.
+    // In such a case (e.g. RadioBox) we need to override add_child()
+    // instead.
     parent.add_child(*this);
     postinit();
 }
 
-CheckButton::~CheckButton(void)
+// TEMPORARY
+MenuItem::MenuItem(Gtk::Container *parent, const GtkX::String &name,
+		   const GtkX::String &label):
+    Gtk::MenuItem(label.s())
+{
+    set_name(name.s());
+    parent->add(*internal());
+    postinit();
+}
+
+MenuItem::~MenuItem(void)
 {
 }
 
 Gtk::Widget *
-CheckButton::internal(void)
+MenuItem::internal(void)
 {
     return this;
 }
 
 const Gtk::Widget *
-CheckButton::internal(void) const
+MenuItem::internal(void) const
 {
     return this;
 }
 
-
-bool
-CheckButton::get_active()
-{
-    return Gtk::CheckButton::get_active();
-}
-
 void
-CheckButton::set_active(bool new_state, bool notify)
+MenuItem::set_label(const String &label)
 {
-    if (Gtk::CheckButton::get_active() != new_state)
-    {
-	if (notify) {
-	    set_active(new_state);
-	}
-	else {
-	    GtkCheckButton *cb_obj = gobj();
-	    cb_obj->toggle_button.active = !cb_obj->toggle_button.active;
-	    gtk_widget_queue_draw(GTK_WIDGET(cb_obj));
-	}
-    }
+    remove();
+    add_label(label.c_str());
 }
 

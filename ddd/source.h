@@ -62,15 +62,18 @@ extern void gdbTempBreakAtCB  (Widget, XtPointer, XtPointer);
 extern void gdbRegexBreakAtCB (Widget, XtPointer, XtPointer);
 extern void gdbContUntilCB    (Widget, XtPointer, XtPointer);
 extern void gdbSetPCCB        (Widget, XtPointer, XtPointer);
+
+extern void gdbPrintCB        (Widget, XtPointer, XtPointer);
+extern void gdbDisplayCB      (Widget, XtPointer, XtPointer);
 #else
 extern void gdbTempBreakAtCB  (GUI::Widget *);
 extern void gdbRegexBreakAtCB (GUI::Widget *);
 extern void gdbContUntilCB    (GUI::Widget *);
 extern void gdbSetPCCB        (GUI::Widget *);
-#endif
 
-extern void gdbPrintCB        (CB_ALIST_12(Widget, XtP(bool)));
-extern void gdbDisplayCB      (CB_ALIST_1(Widget));
+extern void gdbPrintCB        (GUI::Widget *, bool);
+extern void gdbDisplayCB      (GUI::Widget *);
+#endif
 extern void gdbWatchCB        (CB_ALIST_12(Widget, XtP(long)));
 extern void gdbUnwatchCB      (CB_ALIST_NULL);
 extern void gdbToggleWatchCB  (CB_ALIST_12(Widget, XtP(long)));
@@ -88,8 +91,13 @@ extern void gdbEditSourceCB   (GUI::Widget *);
 #endif
 extern void gdbReloadSourceCB (CB_ALIST_NULL);
 
-extern void gdbUndoCB         (CB_ALIST_NULL);
-extern void gdbRedoCB         (CB_ALIST_NULL);
+#if defined(IF_XM)
+extern void gdbUndoCB         (Widget, XtPointer, XtPointer);
+extern void gdbRedoCB         (Widget, XtPointer, XtPointer);
+#else
+extern void gdbUndoCB         (void);
+extern void gdbRedoCB         (void);
+#endif
 
 extern bool have_breakpoint_at_arg();
 extern bool have_enabled_breakpoint_at_arg();

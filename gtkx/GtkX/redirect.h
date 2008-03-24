@@ -98,3 +98,9 @@ property_user_data(void) const
     return GtkX::Widget::property_user_data();
 }
 
+GtkX::Requisition
+size_request(void) const
+{
+    return GtkX::Widget::size_request();
+}
+

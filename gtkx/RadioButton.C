@@ -30,14 +30,6 @@
 
 using namespace GtkX;
 
-static const GtkX::String mklabel(const GtkX::String &name,
-				  const GtkX::String &label)
-{
-    if (label.s().length() > 0)
-	return label;
-    return name;
-}
-
 RadioButton::RadioButton(GtkX::Container &parent, const GtkX::String &name,
 			 const GtkX::String &label):
     Gtk::RadioButton(label.s())

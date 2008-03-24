@@ -27,6 +27,12 @@ namespace GtkX {
 
     extern Glib::Quark gtkx_super_quark;
 
+    struct Requisition
+    {
+	int width;
+	int height;
+    };
+
     class Widget;
     class Container;
 
@@ -65,6 +71,9 @@ namespace GtkX {
 	bool operator==(const String &s) const;
 	operator bool(void) const;
     };
+
+    const GtkX::String mklabel(const GtkX::String &name,
+			       const GtkX::String &label);
 
     template <class T>
     class RefPtr {
@@ -194,6 +203,15 @@ namespace GtkX {
 	    b = b0;
 	}
 	Color(const String &s);
+    };
+
+    enum StateType
+    {
+	STATE_NORMAL,
+	STATE_ACTIVE,
+	STATE_PRELIGHT,
+	STATE_SELECTED,
+	STATE_INSENSITIVE
     };
 
     enum LineStyle
@@ -413,10 +431,15 @@ namespace GtkX {
 	void add_destroy_notify_callback(void *data, void *(*f)(void *));
 	void remove_destroy_notify_callback(void *data);
 	bool translate_coordinates(GtkX::Widget &, int, int, int &, int &);
+	Requisition size_request(void) const;
 	Color get_bg(void) const;
 	Color get_fg(void) const;
-	Color get_bg(Gtk::StateType) const;
-	Color get_fg(Gtk::StateType) const;
+	Color get_bg(StateType) const;
+	Color get_fg(StateType) const;
+	void set_bg(const Color &);
+	void set_fg(const Color &);
+	void set_bg(StateType, const Color &);
+	void set_fg(StateType, const Color &);
 	// FIXME: should be const...
 	RefPtr<GC> get_black_gc();
 	RefPtr<GC> get_white_gc();

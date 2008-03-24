@@ -195,7 +195,11 @@ class SourceView {
     static void RefreshBreakpointsHP       (Agent *, void *, void *);
     static void RecordingHP                (Agent *, void *, void *);
 
-    static void UpdateBreakpointButtonsCB (CB_ALIST_NULL);
+#if defined(IF_XM)
+    static void UpdateBreakpointButtonsCB (Widget, XtPointer, XtPointer);
+#else
+    static void UpdateBreakpointButtonsCB (void);
+#endif
 
     static void CheckScrollCB(CB_ALIST_NULL);
     static TIMEOUT_RETURN_TYPE CheckScrollWorkProc(TM_ALIST_1(XtP(XtIntervalId *)));

@@ -458,9 +458,10 @@ static void HistoryDestroyedCB(Widget, XtPointer client_data, XtPointer)
 }
 #endif // IF_MOTIF
 
-void gdbHistoryCB(CB_ARG_LIST_1(w))
+#if defined(IF_XM)
+
+void gdbHistoryCB(Widget w, XtPointer, XtPointer)
 {
-#ifdef IF_MOTIF
     if (gdb_history_w)
     {
 	manage_and_raise(gdb_history_w);
@@ -521,10 +522,16 @@ void gdbHistoryCB(CB_ARG_LIST_1(w))
     XmListSetBottomPos(gdb_commands_w, 0);
 
     manage_and_raise(gdb_history_w);
-#else // NOT IF_MOTIF
-    std::cerr << "History callback not implemented\n";
-#endif // IF_MOTIF
 }
+
+#else
+
+void gdbHistoryCB(GUI::Widget *w)
+{
+    std::cerr << "History callback not implemented\n";
+}
+
+#endif
 
 // Return last command
 string last_command_from_history()
@@ -737,6 +744,8 @@ void get_recent(StringArray& arr)
 // Menus to be updated
 static VoidArray menus;
 
+#if defined(IF_XM)
+
 static void update_recent_menu(const MMDesc *items)
 {
     StringArray recent_files;
@@ -784,6 +793,59 @@ static void update_recent_menu(const MMDesc *items)
     for (; items[i].widget != 0; i++)
 	XtUnmanageChild(items[i].widget);
 }
+
+#else
+
+static void update_recent_menu(const MMDesc *items)
+{
+    StringArray recent_files;
+    {
+	StringArray r;
+	get_recent(r);
+	for (int i = 0; i < r.size() && items[i].widget != 0; i++)
+	    recent_files += r[i];
+    }
+
+    // Uniquify labels
+    char sep = '/';
+    if (gdb->type() == JDB)
+	sep = '.';
+
+    StringArray labels;
+    uniquify(recent_files, labels, sep);
+
+    // Set labels
+    int i;
+    for (i = 0; i < labels.size(); i++)
+    {
+	GUI::String label(itostring(i + 1).chars());
+	label += " ";
+	label += GUI::String(labels[i].chars());
+
+	GUI::Widget *w = items[i].widget;
+	set_label(w, label);
+
+	const string& file = recent_files[i];
+
+	bool sens = true;
+	if (!remote_gdb())
+	{
+	    if (gdb->has_exec_files() && !is_debuggee_file(file))
+		sens = false;	// File not accessible
+	    else if (!gdb->has_classes() && !is_regular_file(file))
+		sens = false;	// File not accessible
+	}
+
+	set_sensitive(w, sens);
+	w->show();
+    }
+
+    // Unmanage remaining items
+    for (; items[i].widget != 0; i++)
+	items[i].widget->hide();
+}
+
+#endif
 
 static void update_recent_menus()
 {

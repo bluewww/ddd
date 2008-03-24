@@ -65,8 +65,13 @@ GUI::WidgetPtr<GUI::Container> make_buttons(GUI::Container *parent, const char *
 void set_buttons(GUI::Box *buttons, const _XtString list, bool manage = true);
 #endif
 
+#if defined(IF_XM)
 // Make BUTTON insensitive if it is not supported
 void verify_button(Widget button);
+#else
+// Make BUTTON insensitive if it is not supported
+void verify_button(GUI::Widget *button);
+#endif
 
 // Refresh button sensitivity
 void refresh_buttons();

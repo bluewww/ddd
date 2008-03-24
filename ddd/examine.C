@@ -64,18 +64,41 @@ static COMBOBOXENTRYTEXT_P address_w;	// Starting address
 
 static string the_format = "";	// The format
 
-static void SetFormatCB(CB_ALIST_1(Widget w))
+#if defined(IF_XM)
+
+static void SetFormatCB(Widget w, XtPointer, XtPointer)
 {
     the_format = XtName(w);
 }
 
+#else
+
+static void SetFormatCB(GUI::Widget *w)
+{
+    the_format = w->get_name().c_str();
+}
+
+#endif
+
 static string the_size   = "";	// The size
 
-static void SetSizeCB(CB_ALIST_1(Widget w))
+#if defined(IF_XM)
+
+static void SetSizeCB(Widget w, XtPointer, XtPointer)
 {
     the_size = XtName(w);
 }
 
+#else
+
+static void SetSizeCB(GUI::Widget *w)
+{
+    the_size = w->get_name().c_str();
+}
+
+#endif
+
+#if defined(IF_XM)
 static Widget octal_w;		// Initial items
 static Widget byte_w;
 static Widget long_w;
@@ -85,29 +108,91 @@ static Widget binary_w;
 static Widget address_format_w;
 static Widget wide_char_w;
 static Widget wide_string_w;
+#else
+static GUI::Widget *octal_w;		// Initial items
+static GUI::Widget *byte_w;
+static GUI::Widget *long_w;
+
+static GUI::Widget *unsigned_char_w;
+static GUI::Widget *binary_w;
+static GUI::Widget *address_format_w;
+static GUI::Widget *wide_char_w;
+static GUI::Widget *wide_string_w;
+#endif
 
 static MMDesc format_menu[] = { 
-    MENTRYL("o", "o", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, &octal_w),
-    MENTRYL("x", "x", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, 0),
-    MENTRYL("d", "d", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, 0),
-    MENTRYL("u", "u", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, &unsigned_char_w),
-    MENTRYL("t", "t", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, &binary_w),
-    MENTRYL("f", "f", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, 0),
-    MENTRYL("a", "a", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, &address_format_w),
-    MENTRYL("i", "i", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, 0),
-    MENTRYL("c", "c", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, 0),
-    MENTRYL("C", "C", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, &wide_char_w),
-    MENTRYL("s", "s", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, 0),
-    MENTRYL("W", "W", MMPush, BIND_0(PTR_FUN(SetFormatCB)), 0, &wide_string_w),
+    GENTRYL("o", "o", MMPush,
+	    BIND(SetFormatCB, 0),
+	    sigc::ptr_fun(SetFormatCB),
+	    0, &octal_w),
+    GENTRYL("x", "x", MMPush,
+	    BIND(SetFormatCB, 0),
+	    sigc::ptr_fun(SetFormatCB),
+	    0, 0),
+    GENTRYL("d", "d", MMPush,
+	    BIND(SetFormatCB, 0),
+	    sigc::ptr_fun(SetFormatCB),
+	    0, 0),
+    GENTRYL("u", "u", MMPush,
+	    BIND(SetFormatCB, 0),
+	    sigc::ptr_fun(SetFormatCB),
+	    0, &unsigned_char_w),
+    GENTRYL("t", "t", MMPush,
+	    BIND(SetFormatCB, 0),
+	    sigc::ptr_fun(SetFormatCB),
+	    0, &binary_w),
+    GENTRYL("f", "f", MMPush,
+	    BIND(SetFormatCB, 0),
+	    sigc::ptr_fun(SetFormatCB),
+	    0, 0),
+    GENTRYL("a", "a", MMPush,
+	    BIND(SetFormatCB, 0),
+	    sigc::ptr_fun(SetFormatCB),
+	    0, &address_format_w),
+    GENTRYL("i", "i", MMPush,
+	    BIND(SetFormatCB, 0),
+	    sigc::ptr_fun(SetFormatCB),
+	    0, 0),
+    GENTRYL("c", "c", MMPush,
+	    BIND(SetFormatCB, 0),
+	    sigc::ptr_fun(SetFormatCB),
+	    0, 0),
+    GENTRYL("C", "C", MMPush,
+	    BIND(SetFormatCB, 0),
+	    sigc::ptr_fun(SetFormatCB),
+	    0, &wide_char_w),
+    GENTRYL("s", "s", MMPush,
+	    BIND(SetFormatCB, 0),
+	    sigc::ptr_fun(SetFormatCB),
+	    0, 0),
+    GENTRYL("W", "W", MMPush,
+	    BIND(SetFormatCB, 0),
+	    sigc::ptr_fun(SetFormatCB),
+	    0, &wide_string_w),
     MMEnd
 };
 
 static MMDesc size_menu[] = { 
-    MENTRYL("b", "b", MMPush, BIND_0(PTR_FUN(SetSizeCB)), 0, &byte_w),
-    MENTRYL("h", "h", MMPush, BIND_0(PTR_FUN(SetSizeCB)), 0, 0),
-    MENTRYL("w", "w", MMPush, BIND_0(PTR_FUN(SetSizeCB)), 0, 0),
-    MENTRYL("g", "g", MMPush, BIND_0(PTR_FUN(SetSizeCB)), 0, 0),
-    MENTRYL("G", "G", MMPush, BIND_0(PTR_FUN(SetSizeCB)), 0, &long_w),
+    GENTRYL("b", "b", MMPush,
+	    BIND(SetSizeCB, 0),
+	    sigc::ptr_fun(SetSizeCB),
+	    0, &byte_w),
+    GENTRYL("h", "h", MMPush,
+	    BIND(SetSizeCB, 0),
+	    sigc::ptr_fun(SetSizeCB),
+	    0, 0),
+    GENTRYL("w", "w", MMPush,
+	    BIND(SetSizeCB, 0),
+	    sigc::ptr_fun(SetSizeCB),
+	    0, 0),
+    GENTRYL("g", "g", MMPush,
+	    BIND(SetSizeCB, 0),
+	    sigc::ptr_fun(SetSizeCB),
+	    0, 0),
+    GENTRYL("G", "G", MMPush,
+	    BIND(SetSizeCB, 0),
+	    sigc::ptr_fun(SetSizeCB),
+	    0, &long_w),
     MMEnd
 };
 

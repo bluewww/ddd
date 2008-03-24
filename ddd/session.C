@@ -996,13 +996,17 @@ static void SetSessionCB1(GUI::ListView *dialog)
 
 #if defined(IF_XM)
 static Widget dump_core_w     = 0;
-#else
-static GUI::CheckButton *dump_core_w     = 0;
-#endif
 static Widget may_kill_w      = 0;
 static Widget may_gcore_w     = 0;
 static Widget may_ptrace_w    = 0;
 static Widget gcore_methods_w = 0;
+#else
+static GUI::CheckButton *dump_core_w     = 0;
+static GUI::Widget *may_kill_w      = 0;
+static GUI::Widget *may_gcore_w     = 0;
+static GUI::Widget *may_ptrace_w    = 0;
+static GUI::Widget *gcore_methods_w = 0;
+#endif
 
 #if defined(IF_XM)
 
@@ -1030,15 +1034,15 @@ static void SetGCoreSensitivityCB(void)
     bool set = 
 	dump_core_w->get_active() && dump_core_w->is_sensitive();
 
-    gcore_methods_w->set_sensitive(set);
+    set_sensitive(gcore_methods_w, set);
 
-    may_kill_w->set_sensitive(set);
-    may_gcore_w->set_sensitive(set && gdb->type() == GDB &&
-			       !string(app_data.get_core_command).empty());
+    set_sensitive(may_kill_w, set);
+    set_sensitive(may_gcore_w, set && gdb->type() == GDB &&
+		  !string(app_data.get_core_command).empty());
 #if HAVE_PTRACE_DUMPCORE
-    may_ptrace_w->set_sensitive(set && gdb->type() == GDB);
+    set_sensitive(may_ptrace_w, set && gdb->type() == GDB);
 #else
-    may_ptrace_w->set_sensitive(false);
+    set_sensitive(may_ptrace_w, false);
 #endif
 }
 
@@ -1053,14 +1057,17 @@ static void SetGCoreMethodCB(CB_ALIST_2(XtP(unsigned long) client_data))
 
 static MMDesc gcore_methods[] =
 {
-    MENTRYL("kill", "kill",     MMPush, 
-	    HIDE_0_BIND_1(PTR_FUN(SetGCoreMethodCB), 0),
+    GENTRYL("kill", "kill",     MMPush, 
+	    BIND(SetGCoreMethodCB, 0),
+	    sigc::hide(sigc::bind(sigc::ptr_fun(SetGCoreMethodCB), 0)),
 	    0, &may_kill_w),
-    MENTRYL("gcore", "gcore",   MMPush, 
-	    HIDE_0_BIND_1(PTR_FUN(SetGCoreMethodCB), MAY_GCORE),
+    GENTRYL("gcore", "gcore",   MMPush, 
+	    BIND(SetGCoreMethodCB, MAY_GCORE),
+	    sigc::hide(sigc::bind(sigc::ptr_fun(SetGCoreMethodCB), MAY_GCORE)),
 	    0, &may_gcore_w),
-    MENTRYL("ptrace", "ptrace", MMPush, 
-	    HIDE_0_BIND_1(PTR_FUN(SetGCoreMethodCB), MAY_PTRACE),
+    GENTRYL("ptrace", "ptrace", MMPush, 
+	    BIND(SetGCoreMethodCB, MAY_PTRACE),
+	    sigc::hide(sigc::bind(sigc::ptr_fun(SetGCoreMethodCB), MAY_PTRACE)),
 	    0, &may_ptrace_w),
     MMEnd
 };
@@ -1071,8 +1078,9 @@ static MMDesc gcore_items[] =
 	    BIND(SetGCoreSensitivityCB, 0),
 	    sigc::hide(sigc::ptr_fun(SetGCoreSensitivityCB)),
 	    0, &dump_core_w),
-    MENTRYL("method", "method",   MMOptionMenu, 
-	    HIDE_0(PTR_FUN(SetGCoreSensitivityCB)),
+    GENTRYL("method", "method",   MMOptionMenu, 
+	    BIND(SetGCoreSensitivityCB, 0),
+	    sigc::hide(sigc::ptr_fun(SetGCoreSensitivityCB)),
 	    gcore_methods, &gcore_methods_w),
     MMEnd
 };

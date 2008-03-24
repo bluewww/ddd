@@ -1206,10 +1206,11 @@ static void DontVerifyButtonCB(Widget w, XtPointer, XtPointer)
 }
 #endif
 
+#if defined(IF_XM)
+
 // Make BUTTON insensitive if it is not supported
 void verify_button(Widget button)
 {
-#if defined(IF_XM)
     if (button == 0)
 	return;
     if (!XtIsSubclass(button, xmPushButtonWidgetClass))
@@ -1231,12 +1232,18 @@ void verify_button(Widget button)
 				    0, VerifyButtonWorkProc, 
 				    XtPointer(&verify_id));
     }
-#else
-    static int errcnt = 0;
-    if (complain && !errcnt++) std::cerr << "VerifyButton not supported.\n";
-#endif
 }
 
+#else
+
+// Make BUTTON insensitive if it is not supported
+void verify_button(GUI::Widget *button)
+{
+    static int errcnt = 0;
+    if (complain && !errcnt++) std::cerr << "VerifyButton not supported.\n";
+}
+
+#endif
 //-----------------------------------------------------------------------------
 // Button Creation
 //-----------------------------------------------------------------------------
@@ -1265,17 +1272,16 @@ void refresh_buttons()
 	set_sensitive(edit_buttons[i], source_view->have_source());
 #else
     for (i = 0; i < up_buttons.size(); i++)
-	up_buttons[i]->set_sensitive(source_view->can_go_up());
+	set_sensitive(up_buttons[i], source_view->can_go_up());
     for (i = 0; i < down_buttons.size(); i++)
-	down_buttons[i]->set_sensitive(source_view->can_go_down());
+	set_sensitive(down_buttons[i], source_view->can_go_down());
     for (i = 0; i < undo_buttons.size(); i++)
-	undo_buttons[i]->set_sensitive(
+	set_sensitive(undo_buttons[i],
 		      undo_buffer.undo_action() != NO_GDB_ANSWER);
     for (i = 0; i < redo_buttons.size(); i++)
-	redo_buttons[i]->set_sensitive(
-		      undo_buffer.redo_action() != NO_GDB_ANSWER);
+	set_sensitive(redo_buttons[i], undo_buffer.redo_action() != NO_GDB_ANSWER);
     for (i = 0; i < edit_buttons.size(); i++)
-	edit_buttons[i]->set_sensitive(source_view->have_source());
+	set_sensitive(edit_buttons[i], source_view->have_source());
 #endif
 
     update_edit_menus();
@@ -2298,9 +2304,7 @@ Widget create_flat_button(Widget parent, const string& name)
     return desc[0].widget;
 }
 
-#endif
-
-#if !defined(IF_XM)
+#else
 
 // Create a flat PushButton named NAME
 GUI::Button *create_flat_button1(GUI::Container *parent, const string& name)
@@ -2308,7 +2312,7 @@ GUI::Button *create_flat_button1(GUI::Container *parent, const string& name)
     desc[0].name = name.chars();
     MMaddItems(parent, desc);
     MMaddCallbacks(desc);
-    return dynamic_cast<GtkX::Button *>(desc[0].xwidget);
+    return dynamic_cast<GtkX::Button *>(desc[0].widget);
 }
 
 #endif

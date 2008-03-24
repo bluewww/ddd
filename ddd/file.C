@@ -2024,7 +2024,9 @@ void gdbOpenFileCB(GUI::Widget *w)
 
 #endif
 
-void gdbOpenRecentCB(CB_ARG_LIST_12(w, client_data))
+#if defined(IF_XM)
+
+void gdbOpenRecentCB(Widget w, XtPointer client_data, XtPointer)
 {
     int index = ((int)(long)client_data) - 1;
 
@@ -2042,6 +2044,27 @@ void gdbOpenRecentCB(CB_ARG_LIST_12(w, client_data))
 	    source_view->read_file(file);
     }
 }
+
+#else
+
+void gdbOpenRecentCB(int index)
+{
+    StringArray recent_files;
+    get_recent(recent_files);
+
+    if (index >= 0 && index < recent_files.size())
+    {
+	string file = recent_files[index];
+	open_file(file);
+	// This is a kludge as I don't [yet] understand how to force the
+	// reading of the source file automatically, as is done when an
+	// compiled executable is opened.
+	if (gdb->type() == PYDB)
+	    source_view->read_file(file);
+    }
+}
+
+#endif
 
 #if defined(IF_XM)
 

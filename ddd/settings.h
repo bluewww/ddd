@@ -172,8 +172,13 @@ extern bool is_defined_cmd(const string& command);
 // Update definition of COMMAND at next GDB prompt
 void update_define_later(const string& command);
 
+#if defined(IF_XM)
 // Define command
-extern void dddDefineCommandCB(CB_ALIST_1(Widget w));
+extern void dddDefineCommandCB(Widget w, XtPointer, XtPointer);
+#else
+// Define command
+extern void dddDefineCommandCB(GUI::Widget *w);
+#endif
 
 // Update define buttons
 #if defined(IF_MOTIF)

@@ -945,7 +945,7 @@ static void CheckPaperSizeCB(GUI::Entry *text, GUI::Button *ok_button)
     int hsize, vsize;
     get_paper_size(size, hsize, vsize);
 
-    ok_button->set_sensitive(hsize >= 0 && vsize >= 0);
+    set_sensitive(ok_button, hsize >= 0 && vsize >= 0);
 }
 
 #endif

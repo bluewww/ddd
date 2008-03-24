@@ -143,9 +143,9 @@ thus:</para>
   &lt;new code&gt;
 #endif</programlisting>
     <para>The old code can be used as a guide when writing the
-abstract GUI calls.  Insofar as this is possible we want to implement
-all the features relevant to <application>DDD</application> through
-the new abstract interface.</para>
+cross-platform GUI calls.  Insofar as this is possible we want to
+implement all the features relevant to <application>DDD</application>
+through the new cross-platform interface.</para>
     <section>
       <title>Example</title>
       <para>To create a button and assign a callback:</para>
@@ -162,7 +162,7 @@ implemented as Motif!</para>
     </section>
   </preface>
   <chapter id="gui-interface">
-    <title>Abstract GUI interface</title>
+    <title>Cross-platform GUI interface</title>
     <para>Here follows a description of the major classes and methods
 within the parallel namespaces <varname>GtkX</varname> and
 <varname>Xmmm</varname>.  Either namespace will be referred to as the
@@ -185,7 +185,10 @@ widget set.</para>
       </listitem>
     </itemizedlist>
     <para>Each of these categories will be discussed in a subsequent
-section.</para>
+section.  The final section outlines how the
+<application>DDD</application> interface is built using the routines
+in <filename>MakeMenu.C</filename> and how these are used with the
+cross-platform GUI.</para>
     <section id="utility-classes">
       <title>Utility classes</title>
     </section>
@@ -354,6 +357,141 @@ For example, the <application>GTK</application>
 <classname>Paned</classname> widget can only have two panes&semi; in
 this case the <classname>MultiPaned</classname> widget is defined as a
 nested structure built of <application>GTK</application> panes.</para>
+    </section>
+    <section id="makemenu">
+      <title>The DDD Menu Builder</title>
+      <para>Although individual widgets can be created directly using
+the constructors for the above classes, most of the
+<application>DDD</application> interface is built using the routines
+in <filename>MakeMenu.C</filename>.  Routines such as
+<function>MMaddItems</function> may be used to populate a menu by
+parsing an array of <classname>MMDesc</classname> structures.  Each
+<classname>MMDesc</classname> structure describes one widget.  It
+should be constructed using one of the <function>GENTRY</function>
+macros variants:</para>
+      <programlisting>GENTRYL(name, label, type, callback1, callback2, submenu, widget_ptr)
+GENTRYI(name, icon, type, callback1, callback2, submenu, widget_ptr)
+GENTRYLI(name, label, icon, type, callback1, callback2, submenu,
+         widget_ptr)
+</programlisting>
+      <para>where:</para>
+      <itemizedlist>
+	<listitem>
+	  <para><varname>name</varname> is the name of the widget</para>
+	</listitem>
+	<listitem>
+	  <para><varname>label</varname> is the text to be drawn on
+the widget (unused for some widgets)</para>
+	</listitem>
+	<listitem>
+	  <para><varname>icon</varname> is the icon to be drawn on the
+widget (can be used in addition or in place of the label on
+buttons)</para>
+	</listitem>
+	<listitem>
+	  <para><varname>type</varname> is the type of the widget, for
+example <varname>MMPush</varname> or <varname>MMMenu</varname></para>
+	</listitem>
+	<listitem>
+	  <para><varname>callback1</varname> is the callback and
+associated data used by the old Motif version</para>
+	</listitem>
+	<listitem>
+	  <para><varname>callback2</varname> is the callback and
+associated data used by the new cross-platform version</para>
+	</listitem>
+	<listitem>
+	  <para><varname>submenu</varname> is a pointer to another
+array of <classname>MMDesc</classname> structures, describing the
+submenu if any</para>
+	</listitem>
+	<listitem>
+	  <para><varname>widget_ptr</varname> is a pointer to a
+location where the new widget will be stored.  This may be 0 unless we
+need to refer to the widget elsewhere.</para>
+	</listitem>
+      </itemizedlist>
+      <para>The available widget types are these:</para>
+      <itemizedlist>
+	<listitem>
+	  <para><varname>MMPush</varname> Create PushButton
+(default)</para>
+	</listitem>
+	<listitem>
+	  <para><varname>MMToggle</varname> Create ToggleButton</para>
+	</listitem>
+	<listitem>
+	  <para><varname>MMMenu</varname> Create CascadeButton with
+menu</para>
+	</listitem>
+	<listitem>
+	  <para><varname>MMSeparator</varname> Create Separator</para>
+	</listitem>
+	<listitem>
+	  <para><varname>MMLabel</varname> Create Label</para>
+	</listitem>
+	<listitem>
+	  <para><varname>MMRadioMenu</varname> Create CascadeButton
+with RadioBox menu</para>
+	</listitem>
+	<listitem>
+	  <para><varname>MMOptionMenu</varname> Create an option
+menu</para>
+	</listitem>
+	<listitem>
+	  <para><varname>MMPanel</varname> Create a panel</para>
+	</listitem>
+	<listitem>
+	  <para><varname>MMRadioPanel</varname> Create a panel with
+RadioBox menu</para>
+	</listitem>
+	<listitem>
+	  <para><varname>MMButtonPanel</varname> Like MMRadioPanel,
+but no radio behavior</para>
+	</listitem>
+	<listitem>
+	  <para><varname>MMScale</varname> Create a scale</para>
+	</listitem>
+	<listitem>
+	  <para><varname>MMTextField</varname> Create a text
+field</para>
+	</listitem>
+	<listitem>
+	  <para><varname>MMEnterField</varname> Like MMTextField, but
+use Enter to activate</para>
+	</listitem>
+	<listitem>
+	  <para><varname>MMFlatPush</varname> Create
+&lsquo;flat&rsquo; PushButton without shadows</para>
+	</listitem>
+	<listitem>
+	  <para><varname>MMArrow</varname> Create an arrow
+button</para>
+	</listitem>
+	<listitem>
+	  <para><varname>MMSpinBox</varname> Like MMTextField, but add
+two spin buttons</para>
+	</listitem>
+	<listitem>
+	  <para><varname>MMComboBox</varname> Create a combo
+box</para>
+	</listitem>
+	<listitem>
+	  <para><varname>MMMenuItem</varname> Create a MenuItem
+(same as MMPush for Motif)</para>
+	</listitem>
+	<listitem>
+	  <para><varname>MMCheckItem</varname> Create a CheckMenuItem
+(same as MMToggle for Motif)</para>
+	</listitem>
+	<listitem>
+	  <para><varname>MMRadio</varname> Create a RadioButton (same
+as MMToggle for Motif)</para>
+	</listitem>
+      </itemizedlist>
+      <para>The implementation of these types in the underlying
+toolkit will be seen upon examination of the source code
+<filename>MakeMenu.C</filename>.</para>
     </section>
   </chapter>
   </book>

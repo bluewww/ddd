@@ -99,15 +99,12 @@ inline void install_icons(GUI::Widget *shell,
 extern void set_label(Widget w, const MString& new_label, 
 		      const char *image_name = 0);
 #else
-extern void set_label(Widget w, const MString& new_label, 
+extern void set_label(GUI::Widget *w, const GUI::String& new_label, 
 		      GUI::ImageHandle *image_name = 0);
 #endif
 
-#if !defined(IF_MOTIF)
-extern MString get_label(Widget w);
-#endif
 #if !defined(IF_XM)
-extern MString get_label(GUI::Widget *w);
+extern GUI::String get_label(GUI::Widget *w);
 #endif
 
 // Icon names

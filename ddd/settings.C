@@ -151,10 +151,11 @@ static bool              need_reload_settings = false;
 static Widget            signals_panel = 0;
 #if defined(IF_XM)
 static Widget            signals_form  = 0;
+static Widget            reset_signals_button = 0;
 #else
 static GUI::Container   *signals_form  = 0;
+static GUI::Widget      *reset_signals_button = 0;
 #endif
-static Widget            reset_signals_button = 0;
 static WidgetArray       signals_entries;
 static WidgetStringAssoc signals_values;
 static WidgetStringAssoc signals_initial_values;
@@ -166,15 +167,18 @@ static Widget            reset_themes_button = 0;
 static Widget            apply_themes_button = 0;
 static VarArray<Widget>  themes_entries;
 static VarArray<Widget>  themes_labels;
+
+static Widget            infos_panel        = 0;
+static Widget            reset_infos_button = 0;
 #else
 static GUI::Button      *reset_themes_button = 0;
 static GUI::Button      *apply_themes_button = 0;
 static VarArray<GUI::Entry *>       themes_entries;
 static VarArray<GUI::CheckButton *> themes_labels;
-#endif
 
-static Widget            infos_panel        = 0;
-static Widget            reset_infos_button = 0;
+static GUI::Widget      *infos_panel        = 0;
+static GUI::Widget      *reset_infos_button = 0;
+#endif
 #if defined(IF_XM)
 static VarArray<Widget>       infos_entries;
 #else
@@ -3248,8 +3252,8 @@ static void add_button(GUI::Container *form, int& row, Dimension& max_width,
 
 	if (insensitive)
 	{
-	    entry->set_sensitive(false);
-	    label->set_sensitive(false);
+	    set_sensitive(entry, false);
+	    set_sensitive(label, false);
 	}
 
 	// Initialize button
@@ -4336,6 +4340,8 @@ static GUI::Dialog *create_settings(DebuggerType type)
 
 #endif
 
+#if defined(IF_XM)
+
 // Create infos editor
 static Widget create_infos(DebuggerType type)
 {
@@ -4346,6 +4352,21 @@ static Widget create_infos(DebuggerType type)
 
     return infos_panel;
 }
+
+#else
+
+// Create infos editor
+static GUI::Widget *create_infos(DebuggerType type)
+{
+    check_options_file();
+
+    if (infos_panel == 0 && can_do_gdb_command() && gdb->type() == type)
+	infos_panel = create_panel(type, INFOS);
+
+    return infos_panel;
+}
+
+#endif
 
 // Reload all signals
 static void reload_all_signals()
@@ -4557,11 +4578,11 @@ void dddPopupSettingsCB (GUI::Widget *)
 // Popup editor for debugger infos
 void dddPopupInfosCB (GUI::Widget *)
 {
-    Widget infos = create_infos(gdb->type());
+    GUI::Widget *infos = create_infos(gdb->type());
     if (infos == 0)
 	return;
 
-    manage_and_raise(infos);
+    manage_and_raise1(infos);
 }
 
 // Popup editor for debugger infos
@@ -5046,26 +5067,20 @@ bool is_defined_cmd(const string& command)
 
 // Data
 
-#if defined(IF_MOTIF)
-static Widget name_w;			// Name of defined command
-#else
-static Gtk::ComboBoxEntryText *name_w;	// Name of defined command
-#endif
 #if defined(IF_XM)
+static Widget name_w;			// Name of defined command
 static Widget arg_w;			// `()' toggle
-static BUTTON_P record_w;		// `Record' button
+static Widget record_w;			// `Record' button
 static Widget end_w;			// `End' button
 static Widget edit_w;			// `Edit>>' button
-#else
-static GUI::CheckButton *arg_w;		// `()' toggle
-static BUTTON_P record_w;		// `Record' button
-static GUI::WidgetPtr<GUI::Button> end_w;	// `End' button
-static GUI::WidgetPtr<GUI::Button> edit_w;	// `Edit>>' button
-#endif
-#if defined(IF_XM)
 static Widget editor_w;		// Command definition editor
 static Widget apply_w;			// `Apply' button
 #else
+static GUI::ComboBoxEntryText *name_w;	// Name of defined command
+static GUI::CheckButton *arg_w;		// `()' toggle
+static GUI::Button *record_w;		// `Record' button
+static GUI::WidgetPtr<GUI::Button> end_w;	// `End' button
+static GUI::WidgetPtr<GUI::Button> edit_w;	// `Edit>>' button
 static GUI::ScrolledText *editor_w;		// Command definition editor
 static GUI::WidgetPtr<GUI::Button> apply_w;	// `Apply' button
 #endif
@@ -5230,7 +5245,7 @@ static void refresh_toggle(ButtonTarget t)
 
 static void refresh_toggle(ButtonTarget t)
 {
-    Widget& w = button_menu[t].widget;
+    GUI::Widget *w = button_menu[t].widget;
     string s = string("\n") + target_string(t);
     string name = current_name();
 
@@ -5302,7 +5317,7 @@ void UpdateDefinePanelCB(CB_ARG_LIST_1(w))
 #if defined(IF_XM)
     set_sensitive(editor_w, !gdb->recording());
 #else
-    editor_w->set_sensitive(!gdb->recording());
+    set_sensitive(editor_w, !gdb->recording());
 #endif
 
     set_arg();
@@ -5446,7 +5461,7 @@ static void DoneEditCommandDefinitionCB(GUI::Widget *w)
     set_sensitive(name_w, true);
     set_sensitive(XtParent(name_w), true);
 
-    MString label = "Edit " + MString(">>", CHARSET_SMALL);
+    GUI::String label = GUI::String("Edit ") + GUI::String(">>");
     set_label(edit_w, label);
 
     string cmd(editor_w->get_text().c_str());
@@ -5525,7 +5540,7 @@ static void EditCommandDefinitionCB(void)
     editor_w->set_text(XMST(def.chars()));
 
     editor_w->show();
-    MString label = "Edit " + MString("<<", CHARSET_SMALL);
+    GUI::String label = GUI::String("Edit ") + GUI::String("<<");
     set_label(edit_w, label);
 }
 
@@ -5687,30 +5702,22 @@ static MMDesc panel_menu[] =
     MMEnd
 };
 
+#if defined(IF_XM)
 
 // Define command
-void dddDefineCommandCB(CB_ARG_LIST_1(w))
+void dddDefineCommandCB(Widget w, XtPointer, XtPointer)
 {
-#if defined(IF_XM)
-    static DIALOG_P dialog = 0;
-#else
-    static GUI::Dialog *dialog = 0;
-#endif
+    static Widget dialog = 0;
 
     if (dialog == 0)
     {
-#if defined(IF_XM)
 	Arg args[10];
 	int arg = 0;
 	XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
 	dialog = verify(XmCreatePromptDialog(find_shell(w),
 					     XMST("define_command"),
 					     args, arg));
-#else
-	dialog = new GUI::Dialog(find_shell(w), "define_command");
-#endif
 
-#if defined(IF_XM)
 	// Remove old prompt
 	Widget text = XmSelectionBoxGetChild(dialog, XmDIALOG_TEXT);
 	XtUnmanageChild(text);
@@ -5723,63 +5730,32 @@ void dddDefineCommandCB(CB_ARG_LIST_1(w))
 	XtManageChild(apply_w);
 
 	XtUnmanageChild(XmSelectionBoxGetChild(dialog, XmDIALOG_OK_BUTTON));
-#elif defined(IF_XMMM)
-	std::cerr << "Unmanage children (1)?\n";
-#endif
 
-#if defined(IF_XM)
 	Delay::register_shell(dialog);
-#endif
 
-#if defined(IF_XM)
 	arg = 0;
 	XtSetArg(args[arg], XmNorientation, XmHORIZONTAL); arg++;
 	Widget form = XmCreateRowColumn(dialog, XMST("form"), args, arg);
 	XtManageChild(form);
-#else
-	GUI::HBox *form = new GUI::HBox(*dialog, "Form");
-	form->show();
-#endif
 
-#if defined(IF_XM)
 	Widget panel = MMcreatePanel(form, "panel", panel_menu);
-#else
-	GUI::Widget *panel = MMcreatePanel(form, "panel", panel_menu);
-#endif
 
-#if defined(IF_XM)
 	XtVaSetValues(panel,
 		      XmNmarginWidth,    0,
 		      XmNmarginHeight,   0,
 		      XtPointer(0));
-#elif defined(IF_XMMM)
-	std::cerr << "Set margin (1)?\n";
-#endif
 
-#if defined(IF_XM)
 	arg = 0;
 	XtSetArg(args[arg], XmNeditMode, XmMULTI_LINE_EDIT); arg++;
         editor_w = XmCreateScrolledText(form, XMST("text"), args, arg);
 	XtUnmanageChild(XtParent(editor_w));
 	XtManageChild(editor_w);
-#elif defined(IF_XMMM)
-	std::cerr << "Define command: need scrolled text here!\n";
-#else
-        editor_w = new GUI::ScrolledText();
-	form->pack_start(*editor_w, Gtk::PACK_SHRINK);
-	editor_w->show();
-#endif
 
 	MMaddCallbacks(panel_menu);
-#if defined(IF_XM)
 	InstallButtonTips(panel);
-#else
-	InstallButtonTips(panel->internal());
-#endif
 
 	MMadjustPanel(panel_menu);
 
-#if defined(IF_XM)
 	XtAddCallback(dialog, XmNokCallback, UnmanageThisCB1, 
 		      XtPointer(dialog));
 	XtAddCallback(dialog, XmNokCallback, DoneEditCommandDefinitionCB, 
@@ -5794,14 +5770,6 @@ void dddDefineCommandCB(CB_ARG_LIST_1(w))
 
 	XtAddCallback(dialog, XmNhelpCallback,
 		      ImmediateHelpCB, XtPointer(0));
-#else
-	GUI::Button *button;
-	button = apply_w = dialog->add_button("apply", "Apply");
-	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(ApplyCB), dialog));
-	button = dialog->add_button("cancel", "Cancel");
-	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(EndCommandDefinitionCB), dialog));
-	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), dialog));
-#endif
 
 	set_need_load_defines(true);
 	update_defines();
@@ -5809,9 +5777,52 @@ void dddDefineCommandCB(CB_ARG_LIST_1(w))
 
     UpdateDefinePanelCB();
     refresh_combo_box();
-#if defined(IF_XM)
     manage_and_raise(dialog);
-#else
-    manage_and_raise1(dialog);
-#endif
 }
+
+#else
+
+// Define command
+void dddDefineCommandCB(GUI::Widget *w)
+{
+    static GUI::Dialog *dialog = 0;
+
+    if (dialog == 0)
+    {
+	dialog = new GUI::Dialog(*find_shell1(w), "define_command");
+
+
+	Delay::register_shell(dialog);
+
+	GUI::HBox *form = new GUI::HBox(*dialog, "Form");
+	form->show();
+
+	GUI::Widget *panel = MMcreatePanel(form, "panel", panel_menu);
+
+
+        editor_w = new GUI::ScrolledText();
+	form->pack_start(*editor_w, Gtk::PACK_SHRINK);
+	editor_w->show();
+
+	MMaddCallbacks(panel_menu);
+	InstallButtonTips(panel->internal());
+
+	MMadjustPanel(panel_menu);
+
+	GUI::Button *button;
+	button = apply_w = dialog->add_button("apply", "Apply");
+	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(ApplyCB), dialog));
+	button = dialog->add_button("cancel", "Cancel");
+	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(EndCommandDefinitionCB), dialog));
+	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), dialog));
+
+	set_need_load_defines(true);
+	update_defines();
+    }
+
+    UpdateDefinePanelCB();
+    refresh_combo_box();
+    manage_and_raise1(dialog);
+}
+
+#endif

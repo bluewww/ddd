@@ -98,6 +98,8 @@ extern void gdbISearchExitCB     (Widget, XtPointer, XtPointer);
 extern void gdbCompleteCB        (Widget, XtPointer, XtPointer);
 extern void gdbApplyCB           (Widget, XtPointer, XtPointer);
 extern void gdbApplySelectionCB  (Widget, XtPointer, XtPointer);
+extern void gdbClearCB           (Widget, XtPointer, XtPointer);
+extern void gdbClearWindowCB     (Widget, XtPointer, XtPointer);
 #else
 extern void gdbNextCB            (GUI::Widget *);
 extern void gdbPrevCB            (GUI::Widget *);
@@ -107,9 +109,9 @@ extern void gdbISearchExitCB     (GUI::Widget *);
 extern void gdbCompleteCB        (GUI::Widget *);
 extern void gdbApplyCB           (GUI::Widget *);
 extern void gdbApplySelectionCB  (GUI::Widget *);
+extern void gdbClearCB           (void);
+extern void gdbClearWindowCB     (void);
 #endif
-extern void gdbClearCB           (CB_ARG_LIST_NULL);
-extern void gdbClearWindowCB     (CB_ARG_LIST_NULL);
 
 // Return current GDB command line.
 extern string current_line();

@@ -29,14 +29,6 @@
 
 using namespace GtkX;
 
-static const GtkX::String mklabel(const GtkX::String &name,
-				  const GtkX::String &label)
-{
-    if (label.s().length() > 0)
-	return label;
-    return name;
-}
-
 Button::Button(GtkX::Container &parent, const GtkX::String &name,
 	       const GtkX::String &label):
     Gtk::Button(label.s())

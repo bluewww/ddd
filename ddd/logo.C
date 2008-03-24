@@ -908,8 +908,8 @@ void install_icons(GUI::Widget *shell,
     else
 	arm_background = select;
 #else
-    GUI::Color background = shell->get_bg(Gtk::STATE_NORMAL);
-    GUI::Color arm_background = shell->get_bg(Gtk::STATE_PRELIGHT);
+    GUI::Color background = shell->get_bg(GUI::STATE_NORMAL);
+    GUI::Color arm_background = shell->get_bg(GUI::STATE_PRELIGHT);
 #endif
 
 #if defined(IF_XM)
@@ -1120,7 +1120,7 @@ void install_icons(GUI::Widget *shell,
 #if defined(IF_XM)
 void set_label(Widget w, const MString& new_label, const char *image)
 #else
-void set_label(Widget w, const MString& new_label, GUI::ImageHandle *image)
+void set_label(GUI::Widget *w, const GUI::String& new_label, GUI::ImageHandle *image)
 #endif
 {
     if (w == 0)
@@ -1221,7 +1221,7 @@ void set_label(Widget w, const MString& new_label, GUI::ImageHandle *image)
 	}
 	else if (!old_img) {
 	    bin->remove();
-	    Gtk::Label *label = new Gtk::Label(new_label.xmstring());
+	    Gtk::Label *label = new Gtk::Label(new_label.c_str());
 	    bin->add(*label);
 	    label->show();
 	}
@@ -1233,23 +1233,23 @@ void set_label(Widget w, const MString& new_label, GUI::ImageHandle *image)
 }
 
 #if !defined(IF_MOTIF)
-MString
-get_label(Widget w)
+GUI::String
+get_label(Gtk::Widget *w)
 {
     Glib::ustring str;
     Gtk::Button *button = dynamic_cast<Gtk::Button *>(w);
     if (button)
-	return MString(button->get_label(), true);
+	return button->get_label();
     Gtk::MenuItem *menuitem = dynamic_cast<Gtk::MenuItem *>(w);
     if (menuitem) {
 	Gtk::Widget *child = menuitem->get_child();
 	if (child) {
 	    Gtk::Label *label = dynamic_cast<Gtk::Label *>(child);
 	    if (label)
-		return MString(label->get_text(), true);
+		return label->get_text();
 	}
     }
-    return MString();
+    return "";
 }
 #endif
 
@@ -1269,7 +1269,7 @@ get_label(GUI::Widget *w)
 
 #else
 
-MString
+GUI::String
 get_label(GUI::Widget *w)
 {
     return get_label(w->internal());

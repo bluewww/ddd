@@ -2246,6 +2246,8 @@ void DataDisp::shortcutCB(GUI::Widget *w, int client_data)
 
 #endif
 
+#if defined(IF_XM)
+
 // Set shortcut menu to expressions EXPRS
 void DataDisp::set_shortcut_menu(const StringArray& exprs,
 				 const StringArray& labels)
@@ -2298,6 +2300,62 @@ void DataDisp::set_shortcut_menu(const StringArray& exprs,
     refresh_args();
 }
 
+#else
+
+// Set shortcut menu to expressions EXPRS
+void DataDisp::set_shortcut_menu(const StringArray& exprs,
+				 const StringArray& labels)
+{
+    shortcut_labels = labels;
+    shortcut_exprs  = exprs;
+
+    while (shortcut_labels.size() < exprs.size())
+	shortcut_labels += "";
+
+#if 0
+    if (exprs.size() > shortcut_items)
+    {
+	post_warning("Shortcut menu capacity exceeded.",
+		     "too_many_shortcuts_warning", last_origin);
+    }
+#endif
+
+    for (int i = 0; i < shortcut_items; i++)
+    {
+	GUI::Widget *popup1_item = shortcut_popup1[i].widget;
+	GUI::Widget *popup2_item = shortcut_popup2[i].widget;
+	GUI::Widget *menu_item   = shortcut_menu  [i].widget;
+
+	if (i < exprs.size())
+	{
+	    string& expr  = shortcut_exprs[i];
+	    string& label = shortcut_labels[i];
+
+	    if (label.empty())
+		label = "Display " + expr;
+
+	    set_label(popup1_item, GUI::String(label.chars()));
+	    set_label(popup2_item, GUI::String(label.chars()));
+	    set_label(menu_item,   GUI::String(label.chars()));
+
+	    popup1_item->show();
+	    popup2_item->show();
+	    menu_item->show();
+	}
+	else
+	{
+	    // Unmanage widgets
+	    popup1_item->hide();
+	    popup2_item->hide();
+	    menu_item->hide();
+	}
+    }
+
+    refresh_args();
+}
+
+#endif
+
 // Add one expr to shortcut menus
 void DataDisp::add_shortcut_expr(const string& expr)
 {
@@ -2326,15 +2384,9 @@ MString DataDisp::shortcut_help(GUI::Widget *w)
 {
     for (int i = 0; i < shortcut_items; i++)
     {
-#if defined(IF_XM)
 	if (w == shortcut_menu  [i].widget ||
 	    w == shortcut_popup1[i].widget ||
 	    w == shortcut_popup2[i].widget)
-#else
-	if (w == shortcut_menu  [i].xwidget ||
-	    w == shortcut_popup1[i].xwidget ||
-	    w == shortcut_popup2[i].xwidget)
-#endif
 	{
 	    MString ret = rm("Display ");
 	    string expr = shortcut_exprs[i];
@@ -3220,8 +3272,12 @@ void DataDisp::no_displaysHP (void*, void* , void* call_data)
 {
     bool empty = bool(call_data);
 
+#if defined(IF_XM)
     set_sensitive (graph_popup[GraphItms::Refresh].widget,
 		   (!empty && can_do_gdb_command()));
+#else
+    set_sensitive(graph_popup[GraphItms::Refresh].widget, (!empty && can_do_gdb_command()));
+#endif
 }
 
 
@@ -3716,11 +3772,7 @@ void DataDisp::set_args(const BoxPoint& p, SelectionMode mode)
 		// so toggle the entire node.
 		disp_node->selected() = false;
 		disp_node->select(0);
-#if defined(IF_XM)
-		graphEditRedrawNode(graph_edit, disp_node);
-#else
 		graph_edit->graphEditRedrawNode(disp_node);
-#endif
 		break;
 	    }
 	    // FALL THROUGH
@@ -3729,11 +3781,7 @@ void DataDisp::set_args(const BoxPoint& p, SelectionMode mode)
 	    if (disp_value != disp_node->selected_value())
 	    {
 		disp_node->select(disp_value);
-#if defined(IF_XM)
-		graphEditRedrawNode(graph_edit, disp_node);
-#else
 		graph_edit->graphEditRedrawNode(disp_node);
-#endif
 	    }
 	    break;
 	}
@@ -3763,11 +3811,7 @@ void DataDisp::set_args(const BoxPoint& p, SelectionMode mode)
 		dn->select(0);
 
 		if (redraw) {
-#if defined(IF_XM)
-		    graphEditRedrawNode(graph_edit, dn);
-#else
 		    graph_edit->graphEditRedrawNode(dn);
-#endif
 		}
 	    }
 	}
@@ -3788,16 +3832,8 @@ void DataDisp::set_args(const BoxPoint& p, SelectionMode mode)
 #ifdef NAG_ME
 #warning Do we really need a reference here?
 #endif
-#if defined(IF_XM)
-	Widget &button = theme_menu[i].widget;
-#else
 	GUI::CheckButton *button = static_cast<GUI::CheckButton *>(theme_menu[i].widget);
-#endif
-#if defined(IF_XM)
-	XtVaSetValues(button, XmNuserData, theme.chars(), XtPointer(0));
-#else
 	button->property_user_data() = (void *)theme.chars();
-#endif
 	bool set = false;
 	for (int j = 0; j < current_themes.size(); j++)
 	    if (theme == current_themes[j])
@@ -3806,23 +3842,26 @@ void DataDisp::set_args(const BoxPoint& p, SelectionMode mode)
 		break;
 	    }
 
-	XmToggleButtonSetState(button, set, False);
+	button->set_active(set);
 
 	string doc = vsldoc(theme, DispBox::vsllib_path);
 	if (doc.contains("."))
 	    doc = doc.before(".");
 	else if (doc.empty())
 	    doc = theme;
-	set_label(button, doc);
+	set_label(button, GUI::String(doc.chars()));
 
 	manage_child(button, true);
     }
 
     for (; theme_menu[i].widget != 0; i++)
     {
-	Widget& button = theme_menu[i].widget;
-	if (XmIsToggleButton(button))
+	GUI::Widget *button = theme_menu[i].widget;
+	std::cerr << "What to do with Toggle button?\n";
+#if 0
+	if (dynamic_cast<GUI::ToggleButton *>(button))
 	    manage_child(button, false);
+#endif
     }
 
     refresh_args(true);
@@ -4014,7 +4053,9 @@ void DataDisp::refresh_args(bool update_arg)
     }
 }
 
-TIMEOUT_RETURN_TYPE DataDisp::RefreshArgsCB(TM_ALIST_NULL)
+#if defined(IF_XM)
+
+void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *)
 {
     refresh_args_timer = NO_TIMER;
 
@@ -4032,11 +4073,7 @@ TIMEOUT_RETURN_TYPE DataDisp::RefreshArgsCB(TM_ALIST_NULL)
 
 	    dn->select(0);
 	    if (redraw) {
-#if defined(IF_XM)
 		graphEditRedrawNode(graph_edit, dn);
-#else
-		graph_edit->graphEditRedrawNode(dn);
-#endif
 	    }
 	}
     }
@@ -4313,44 +4350,326 @@ TIMEOUT_RETURN_TYPE DataDisp::RefreshArgsCB(TM_ALIST_NULL)
     // LOSE_SELECTION, we make sure the associated callbacks return
     // immediately.
     lose_selection = false;
-#if defined(IF_XM)
     XmTextSetString(graph_selection_w, XMST(cmd.chars()));
-#else
-    static int errcnt = 0;
-    if (complain && !errcnt++ == 0) std::cerr << "Set text in graph_selection_w not implemented\n";
-    // graph_selection_w->set_text(XMST(cmd.chars()));
-#endif
     lose_selection = true;
 
-#if defined(IF_XM)
     Time tm = XtLastTimestampProcessed(XtDisplay(graph_selection_w));
-#endif
 
     if (cmd.empty())
     {
 	// Nothing selected - clear selection explicitly
-#if defined(IF_XM)
 	XmTextClearSelection(graph_selection_w, tm);
-#else
-#ifdef NAG_ME
-#warning XmTextClearSelection not implemented.
-#endif
-#endif
     }
     else
     {
 	// Own the selection
-#if defined(IF_XM)
 	TextSetSelection(graph_selection_w, 
 			 0, XmTextGetLastPosition(graph_selection_w), tm);
+    }
+}
+
 #else
+
+bool DataDisp::RefreshArgsCB(void)
+{
+    refresh_args_timer = NO_TIMER;
+
+    DataDispCount count(disp_graph);
+
+    if (count.selected > 1)
+    {
+	// Clear all local highlights
+	MapRef ref;
+	for (DispNode* dn = disp_graph->first(ref); 
+	     dn != 0;
+	     dn = disp_graph->next(ref))
+	{
+	    bool redraw = (dn->highlight() != 0);
+
+	    dn->select(0);
+	    if (redraw) {
+		graph_edit->graphEditRedrawNode(dn);
+	    }
+	}
+    }
+
+    DispNode *disp_node_arg   = selected_node();
+    DispValue *disp_value_arg = selected_value();
+
+    // New ()
+    set_sensitive(graph_popup[GraphItms::NewArg].widget, !source_arg->empty());
+
+    // Refresh (), Select All ()
+    set_sensitive(graph_popup[GraphItms::Refresh].widget, count.all > 0);
+    set_sensitive(graph_popup[GraphItms::SelectAll].widget, count.visible > 0);
+
+    bool dereference_ok = false;
+    bool rotate_ok      = false;
+    bool rotate_plot_ok = false;
+
+    if (disp_node_arg != 0 && disp_value_arg != 0)
+    {
+	// We have selected a single node
+	switch (disp_value_arg->type())
+	{
+	case Simple:
+	    rotate_plot_ok = disp_value_arg->has_plot_orientation();
+	    break;
+
+	case Text:
+	case Reference:
+	    break;
+
+	case Pointer:
+	    dereference_ok = true;
+	    break;
+
+	case Sequence:
+	    break;
+
+	case Array:
+	case List:
+	case Struct:
+	    rotate_ok = disp_value_arg->expanded();
+	    break;
+
+	case UnknownType:
+	    assert(0);
+	    abort();
+	}
+    }
+
+    // Earlier state
+    bool undoing = undo_buffer.showing_earlier_state();
+
+    // Argument
+    bool arg_ok  = false;
+    bool plot_ok = false;
+    string arg;
+    if (disp_node_arg != 0)
+    {
+	if (disp_value_arg != 0)
+	{
+	    arg = disp_value_arg->full_name();
+	    arg_ok = true;
+	    plot_ok = disp_value_arg->can_plot();
+	}
+    }
+    else
+    {
+	// No node selected
+	arg = source_arg->get_string();
+	arg_ok = (!arg.empty()) && !is_file_pos(arg);
+	plot_ok = arg_ok && !undoing;
+    }
+
+    // New
+#if 0
+    if (count.selected_titles > 0)
+    {
+	set_label(graph_cmd_area[CmdItms::New].widget,
+		  "Undisplay ()", UNDISPLAY_ICON);
+    }
+    else
+#endif
+    if (dereference_ok)
+    {
+	string label("Display " + deref(arg, "()"));
+	set_label(graph_cmd_area[CmdItms::New].widget, label.chars(), DISPREF_ICON);
+    }
+    else
+    {
+	set_label(graph_cmd_area[CmdItms::New].widget,
+		  "Display ()", DISPLAY_ICON);
+    }
+
+    bool recording = gdb->recording() && emptyCommandQueue();
+    bool record_ok = recording && arg_ok;
+
+    set_sensitive(shortcut_menu[ShortcutItms::New2].widget, arg_ok && !undoing);
+    set_sensitive(graph_cmd_area[CmdItms::New].widget, arg_ok && !undoing);
+    set_sensitive(display_area[DisplayItms::New].widget, !undoing);
+
+    // Dereference
+    set_sensitive(node_popup[NodeItms::Dereference].widget, dereference_ok && !undoing);
+    set_sensitive(shortcut_menu[ShortcutItms::Dereference2].widget, (record_ok || dereference_ok || (count.selected == 0 && arg_ok)) && !undoing);
+    set_sensitive(graph_cmd_area[CmdItms::Dereference].widget, (dereference_ok || (count.selected == 0 && arg_ok)) && !undoing);
+    set_sensitive(display_area[DisplayItms::Dereference].widget, dereference_ok && !undoing);
+
+    bool can_dereference = !gdb->dereferenced_expr("").empty();
+    manage_child(shortcut_menu[ShortcutItms::Dereference2].widget,
+		 can_dereference);
+
+    // Plot
+    bool arg_is_displayed = (display_number(source_arg->get_string()) != 0);
+    bool can_delete_arg = (count.selected == 0 && arg_is_displayed || 
+			   record_ok || 
+			   count.selected > 0);
+    set_sensitive(graph_cmd_area[CmdItms::Plot].widget, plot_ok);
+    set_sensitive(plot_menu[PlotItms::History].widget, can_delete_arg);
+
+    // Rotate
+    set_sensitive(node_popup[NodeItms::Rotate].widget, rotate_ok || rotate_plot_ok);
+    set_sensitive(graph_cmd_area[CmdItms::Rotate].widget, rotate_ok || rotate_plot_ok);
+    set_sensitive(rotate_menu[RotateItms::RotateAll].widget, rotate_ok);
+
+    // Show/Hide Detail
+    if (recording)
+    {
+	// Recording
+	set_label(node_popup[NodeItms::Detail].widget, "Show All");
+	set_label(graph_cmd_area[CmdItms::Detail].widget, 
+		  "Show ()", SHOW_ICON);
+	set_sensitive(node_popup[NodeItms::Detail].widget, record_ok);
+	set_sensitive(graph_cmd_area[CmdItms::Detail].widget, record_ok);
+    }
+    else if (count.selected_expanded > 0 && count.selected_collapsed == 0)
+    {
+	// Only expanded displays selected
+	set_label(node_popup[NodeItms::Detail].widget, "Hide All");
+	set_label(graph_cmd_area[CmdItms::Detail].widget, 
+		  "Hide ()", HIDE_ICON);
+	set_sensitive(node_popup[NodeItms::Detail].widget, true);
+	set_sensitive(graph_cmd_area[CmdItms::Detail].widget, true);
+    }
+    else if (count.selected_collapsed > 0)
+    {
+	// Some collapsed displays selected
+	set_label(node_popup[NodeItms::Detail].widget, "Show All");
+	set_label(graph_cmd_area[CmdItms::Detail].widget, 
+		  "Show ()", SHOW_ICON);
+	set_sensitive(node_popup[NodeItms::Detail].widget, true);
+	set_sensitive(graph_cmd_area[CmdItms::Detail].widget, true);
+    }
+    else
+    {
+	// Expanded as well as collapsed displays selected
+	set_sensitive(node_popup[NodeItms::Detail].widget, false);
+	set_sensitive(graph_cmd_area[CmdItms::Detail].widget, false);
+    }
+
+    set_sensitive(display_area[DisplayItms::ShowDetail].widget, record_ok || count.selected_collapsed > 0);
+    set_sensitive(display_area[DisplayItms::HideDetail].widget, record_ok || count.selected_expanded > 0);
+
+    set_sensitive(detail_menu[DetailItms::ShowMore].widget, record_ok || count.selected_collapsed > 0);
+    set_sensitive(detail_menu[DetailItms::ShowJust].widget, record_ok || count.selected > 0);
+    set_sensitive(detail_menu[DetailItms::ShowDetail].widget, record_ok || count.selected_collapsed > 0);
+    set_sensitive(detail_menu[DetailItms::HideDetail].widget, record_ok || count.selected_expanded > 0);
+
+    // Delete
+    set_sensitive(graph_cmd_area[CmdItms::Delete].widget, can_delete_arg);
+    set_sensitive(display_area[DisplayItms::Delete].widget, count.selected > 0);
+
+    // Set
+    bool can_set = gdb->has_assign_command() && !undoing;
+    bool set_node_ok = 
+	disp_node_arg != 0 && 
+	(!disp_node_arg->is_user_command() || 
+	 disp_value_arg != 0 && disp_value_arg != disp_node_arg->value());
+    bool set_arg_ok = (disp_node_arg == 0 && arg_ok && !is_user_command(arg));
+
+    set_sensitive(graph_cmd_area[CmdItms::Set].widget, can_set && (set_arg_ok || set_node_ok));
+    set_sensitive(display_area[DisplayItms::Set].widget, can_set && (set_arg_ok || set_node_ok));
+    set_sensitive(node_popup[NodeItms::Set].widget, can_set && set_node_ok);
+
+    // Cluster
+    if (count.selected_unclustered > 0 || count.selected_clustered == 0)
+    {
+	set_label(delete_menu[DeleteItms::Cluster].widget, "Cluster ()");
+	set_sensitive(delete_menu[DeleteItms::Cluster].widget, count.selected_unclustered > 0);
+    }
+    else
+    {
+	set_label(delete_menu[DeleteItms::Cluster].widget, "Uncluster ()");
+	set_sensitive(delete_menu[DeleteItms::Cluster].widget, true);
+    }
+
+    set_sensitive(display_area[DisplayItms::Cluster].widget, count.selected_unclustered > 0);
+    set_sensitive(display_area[DisplayItms::Uncluster].widget, count.selected_clustered > 0);
+
+    // Shortcut menu
+    int i;
+    for (i = 0; i < shortcut_items && i < shortcut_exprs.size(); i++)
+    {
+	const string& expr = shortcut_exprs[i];
+	bool sens = false;
+	if (!expr.contains("()"))
+	    sens = true;	// Argument not needed
+	else if (arg_ok)
+	    sens = true;	// We have an argument
+	else if (count.selected == 0)
+	    sens = false;	// Nothing selected
+	else if (disp_value_arg != 0)
+	    sens = true;	// Exactly one value selected
+ 	else if (disp_node_arg != 0)
+	    sens = true;	// Exactly one expression selected
+
+	if (undoing)
+	    sens = false;
+
+	set_sensitive(shortcut_popup1[i].widget, sens);
+	set_sensitive(shortcut_popup2[i].widget, sens);
+	set_sensitive(shortcut_menu  [i].widget, sens);
+    }
+
+    // Argument field
+    if (arg_needs_update)
+    {
+	if (count.selected > 0)
+	{
+	    string arg;
+	    if (disp_value_arg)
+	    {
+		arg = disp_value_arg->full_name();
+		source_arg->set_string(arg);
+	    }
+	    else if (disp_node_arg)
+	    {
+		arg = disp_node_arg->name();
+		source_arg->set_string(arg);
+	    }
+	}
+	arg_needs_update = false;
+    }
+
+    // Set selection.
+    // If the entire graph is selected, include position info, too.
+    bool include_position = (count.selected >= count.visible);
+    std::ostringstream os;
+    get_selection(os, include_position);
+    const string cmd(os);
+
+    // Setting the string causes the selection to be lost.  By setting
+    // LOSE_SELECTION, we make sure the associated callbacks return
+    // immediately.
+    lose_selection = false;
+    static int errcnt = 0;
+    if (complain && !errcnt++ == 0) std::cerr << "Set text in graph_selection_w not implemented\n";
+    // graph_selection_w->set_text(XMST(cmd.chars()));
+    lose_selection = true;
+
+    // Time tm = XtLastTimestampProcessed(XtDisplay(graph_selection_w));
+
+    if (cmd.empty())
+    {
+	// Nothing selected - clear selection explicitly
+#ifdef NAG_ME
+#warning XmTextClearSelection not implemented.
+#endif
+	std::cerr << "XmTextClearSelection not implemented.\n";
+    }
+    else
+    {
+	// Own the selection
 #ifdef NAG_ME
 #warning TextSetSelection not implemented.
-#endif
+	std::cerr << "TextSetSelection not implemented.\n";
 #endif
     }
-    return MAYBE_FALSE;
+    return false;
 }
+
+#endif
 
 
 // The maximum display number when saving states
@@ -7957,10 +8276,10 @@ void DataDisp::language_changedHP(Agent *, void *, void *)
 
     string label("Display " + deref(arg, "()"));
 
-    set_label(shortcut_menu[ShortcutItms::Dereference2].widget, label);
-    set_label(node_popup[NodeItms::Dereference].widget, label);
-    set_label(display_area[DisplayItms::Dereference].widget, label);
-    set_label(graph_cmd_area[CmdItms::Dereference].widget, label);
+    set_label(shortcut_menu[ShortcutItms::Dereference2].widget, label.chars());
+    set_label(node_popup[NodeItms::Dereference].widget, label.chars());
+    set_label(display_area[DisplayItms::Dereference].widget, label.chars());
+    set_label(graph_cmd_area[CmdItms::Dereference].widget, label.chars());
 }
 
 

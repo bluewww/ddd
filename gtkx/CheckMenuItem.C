@@ -31,16 +31,9 @@
 
 using namespace GtkX;
 
-static const GtkX::String mklabel(const GtkX::String &name,
-				  const GtkX::String &label)
-{
-    if (label.s().length() > 0)
-	return label;
-    return name;
-}
-
 CheckMenuItem::CheckMenuItem(GtkX::Container &parent, const GtkX::String &name,
-			     const GtkX::String &label)
+			     const GtkX::String &label):
+    Gtk::CheckMenuItem(mklabel(name, label).s())
 {
     set_name(name.s());
     parent.add_child(*this);

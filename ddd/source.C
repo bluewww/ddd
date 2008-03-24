@@ -77,22 +77,39 @@ void gdbLookupCB(CB_ARG_LIST_NULL)
     source_view->lookup(current_arg(true));
 }
 
-void gdbUndoCB(CB_ARG_LIST_NULL)
+#if defined(IF_XM)
+
+void gdbUndoCB(Widget, XtPointer, XtPointer)
 {
     undo_buffer.undo();
 }
 
-void gdbRedoCB(CB_ARG_LIST_NULL)
+void gdbRedoCB(Widget, XtPointer, XtPointer)
 {
     undo_buffer.redo();
 }
 
+#else
+
+void gdbUndoCB(void)
+{
+    undo_buffer.undo();
+}
+
+void gdbRedoCB(void)
+{
+    undo_buffer.redo();
+}
+
+#endif
 
 //-----------------------------------------------------------------------------
 // Printing
 //-----------------------------------------------------------------------------
 
-void gdbPrintCB(CB_ALIST_12(Widget w, XtP(bool) client_data))
+#if defined(IF_XM)
+
+void gdbPrintCB(Widget w, XtPointer client_data, XtPointer)
 {
     const bool internal = (bool)(long)client_data;
 
@@ -101,6 +118,18 @@ void gdbPrintCB(CB_ALIST_12(Widget w, XtP(bool) client_data))
     if (!arg.empty() && !arg.matches(rxwhite))
 	gdb_command(gdb->print_command(arg, internal), w);
 }
+
+#else
+
+void gdbPrintCB(GUI::Widget *w, bool internal)
+{
+    const string arg = current_arg();
+
+    if (!arg.empty() && !arg.matches(rxwhite))
+	gdb_command1(gdb->print_command(arg, internal), w);
+}
+
+#endif
 
 void gdbPrintRefCB(CB_ALIST_12(Widget w, XtP(bool) client_data))
 {
@@ -112,13 +141,27 @@ void gdbPrintRefCB(CB_ALIST_12(Widget w, XtP(bool) client_data))
 	gdb_command(gdb->print_command(deref(arg), internal), w);
 }
 
-void gdbDisplayCB(CB_ALIST_1(Widget w))
+#if defined(IF_XM)
+
+void gdbDisplayCB(Widget w, XtPointer, XtPointer)
 {
     string arg = current_arg();
 
     if (!arg.empty() && !arg.matches(rxwhite))
 	gdb_command("graph display " + arg, w);
 }
+
+#else
+
+void gdbDisplayCB(GUI::Widget *w)
+{
+    string arg = current_arg();
+
+    if (!arg.empty() && !arg.matches(rxwhite))
+	gdb_command1("graph display " + arg, w);
+}
+
+#endif
 
 void gdbDispRefCB(CB_ALIST_1(Widget w))
 {

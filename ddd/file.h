@@ -53,7 +53,11 @@
 #include "StringA.h"
 
 // Open file, process, core, source ...
-extern void gdbOpenRecentCB   (CB_ARG_LIST_12(w, client_data));
+#if defined(IF_XM)
+extern void gdbOpenRecentCB   (Widget, XtPointer, XtPointer);
+#else
+extern void gdbOpenRecentCB   (int index);
+#endif
 extern void gdbOpenProcessCB  (CB_ARG_LIST_1(w));
 extern void gdbOpenClassCB    (CB_ARG_LIST_1(w));
 

@@ -87,8 +87,13 @@ extern int search_history(const string& text, int direction,
 // Set history position to POS; -1 means last position.
 extern void goto_history(int pos = -1);
 
+#if defined(IF_XM)
 // Invoke history dialog
-extern void gdbHistoryCB(CB_ARG_LIST_1());
+extern void gdbHistoryCB(Widget, XtPointer, XtPointer);
+#else
+// Invoke history dialog
+extern void gdbHistoryCB(GUI::Widget *);
+#endif
 
 // Tie a ComboBox to global history
 extern void tie_combo_box_to_history(Widget text, HistoryFilter filter);

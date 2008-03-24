@@ -79,6 +79,14 @@ String::c_str(void) const
   return s().c_str();
 }
 
+const GtkX::String GtkX::mklabel(const GtkX::String &name,
+				 const GtkX::String &label)
+{
+    if (label.s().length() > 0)
+	return label;
+    return name;
+}
+
 struct Display_Hash {
     size_t operator()(GdkDisplay *d) const {
 	return (size_t)d;
@@ -352,35 +360,109 @@ Widget::postinit(void)
     internal()->set_data(gtkx_super_quark, this);
 }
 
+Requisition
+Widget::size_request(void) const
+{
+    Gtk::Requisition greq = internal()->size_request();
+    Requisition req = {greq.width, greq.height};
+    return req;
+}
+
+static Gtk::StateType
+translate_state_type(const StateType &in)
+{
+    switch(in) {
+    case STATE_NORMAL: return Gtk::STATE_NORMAL;
+    case STATE_ACTIVE: return Gtk::STATE_ACTIVE;
+    case STATE_PRELIGHT: return Gtk::STATE_PRELIGHT;
+    case STATE_SELECTED: return Gtk::STATE_SELECTED;
+    case STATE_INSENSITIVE: return Gtk::STATE_INSENSITIVE;
+    default: std::cerr << "Unknown state type\n"; return Gtk::STATE_NORMAL;
+    }
+}
+
+static void
+translate_color(const Color &c, GdkColor &gc)
+{
+    gc.red = (unsigned short)(USHRT_MAX*c.r);
+    gc.green = (unsigned short)(USHRT_MAX*c.g);
+    gc.blue = (unsigned short)(USHRT_MAX*c.b);
+}
+
+static void
+translate_color(const Color &c, Gdk::Color &gc)
+{
+    gc.set_red((unsigned short)(USHRT_MAX*c.r));
+    gc.set_green((unsigned short)(USHRT_MAX*c.g));
+    gc.set_blue((unsigned short)(USHRT_MAX*c.b));
+}
+
+static void
+translate_color(const GdkColor &gc, Color &c)
+{
+    c.r = (double)gc.red/(double)USHRT_MAX;
+    c.g = (double)gc.green/(double)USHRT_MAX;
+    c.b = (double)gc.blue/(double)USHRT_MAX;
+}
+
 Color
 Widget::get_bg(void) const
 {
-    return get_bg(Gtk::STATE_NORMAL);
+    return get_bg(STATE_NORMAL);
 }
 
 Color
 Widget::get_fg(void) const
 {
-    return get_fg(Gtk::STATE_NORMAL);
+    return get_fg(STATE_NORMAL);
 }
 
 Color
-Widget::get_bg(Gtk::StateType state) const
+Widget::get_bg(StateType state) const
 {
-    Gdk::Color gc = internal()->get_style()->get_bg(state);
+    Gdk::Color gc = internal()->get_style()->get_bg(translate_state_type(state));
     return Color((double)gc.get_red()/(double)USHRT_MAX,
 		 (double)gc.get_green()/(double)USHRT_MAX,
 		 (double)gc.get_blue()/(double)USHRT_MAX);
 }
 
 Color
-Widget::get_fg(Gtk::StateType state) const
+Widget::get_fg(StateType state) const
 {
-    Gdk::Color gc = internal()->get_style()->get_fg(state);
+    Gdk::Color gc = internal()->get_style()->get_fg(translate_state_type(state));
     return Color((double)gc.get_red()/(double)USHRT_MAX,
 		 (double)gc.get_green()/(double)USHRT_MAX,
 		 (double)gc.get_blue()/(double)USHRT_MAX);
 }
+
+void
+Widget::set_bg(const Color &c)
+{
+    set_bg(STATE_NORMAL, c);
+}
+
+void
+Widget::set_fg(const Color &c)
+{
+    set_fg(STATE_NORMAL, c);
+}
+
+void
+Widget::set_bg(StateType state, const Color &c)
+{
+    Gdk::Color gc;
+    translate_color(c, gc);
+    internal()->modify_bg(translate_state_type(state), gc);
+}
+
+void
+Widget::set_fg(StateType state, const Color &c)
+{
+    Gdk::Color gc;
+    translate_color(c, gc);
+    internal()->modify_fg(translate_state_type(state), gc);
+}
+
 
 Main *
 Widget::get_main(void) const
@@ -692,22 +774,6 @@ GC::internal(void) const
 GC::GC(const RefPtr<Drawable> &d)
 {
     gc_ = Gdk::GC::create(d->internal());
-}
-
-static void
-translate_color(const Color &c, GdkColor &gc)
-{
-    gc.red = (unsigned short)(USHRT_MAX*c.r);
-    gc.green = (unsigned short)(USHRT_MAX*c.g);
-    gc.blue = (unsigned short)(USHRT_MAX*c.b);
-}
-
-static void
-translate_color(const GdkColor &gc, Color &c)
-{
-    c.r = (double)gc.red/(double)USHRT_MAX;
-    c.g = (double)gc.green/(double)USHRT_MAX;
-    c.b = (double)gc.blue/(double)USHRT_MAX;
 }
 
 void

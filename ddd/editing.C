@@ -1142,13 +1142,15 @@ void gdbISearchExitCB  (GUI::Widget *w)
 
 #endif
 
-void gdbClearCB  (CB_ARG_LIST_NULL)
+#if defined(IF_XM)
+
+void gdbClearCB  (Widget, XtPointer, XtPointer)
 {
     set_current_line("");
 }
 
 // Remove any text up to the last GDB prompt
-void gdbClearWindowCB(CB_ARG_LIST_NULL)
+void gdbClearWindowCB(Widget, XtPointer, XtPointer)
 {
     XmTextPosition start = start_of_line();
     if (start == XmTextPosition(-1))
@@ -1156,22 +1158,41 @@ void gdbClearWindowCB(CB_ARG_LIST_NULL)
 
     private_gdb_output = true;
 
-#if defined(IF_MOTIF)
     XmTextReplace(gdb_w, 0, start, XMST(""));
-#else
-    gdb_w->replace(0, start, XMST(""));
-#endif
 
     promptPosition  -= start;
     messagePosition -= start;
-#if defined(IF_MOTIF)
     XmTextSetInsertionPosition(gdb_w, XmTextGetLastPosition(gdb_w));
-#else
-    gdb_w->set_insertion_position(gdb_w->get_last_position());
-#endif
 
     private_gdb_output = false;
 }
+
+#else
+
+void gdbClearCB  (void)
+{
+    set_current_line("");
+}
+
+// Remove any text up to the last GDB prompt
+void gdbClearWindowCB(void)
+{
+    long start = start_of_line();
+    if (start == -1)
+	return;
+
+    private_gdb_output = true;
+
+    gdb_w->replace(0, start, "");
+
+    promptPosition  -= start;
+    messagePosition -= start;
+    gdb_w->set_insertion_position(gdb_w->get_last_position());
+
+    private_gdb_output = false;
+}
+
+#endif
 
 #if defined(IF_XM)
 

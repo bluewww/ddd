@@ -108,16 +108,20 @@ struct MMDesc {
     GUI::ImageHandle *image;
 #endif
     MMType type;	     // Widget type
+#if defined(IF_XM)
     XtCallbackRec callback;  // Associated callback
+#else
+    sigc::slot<void, GUI::Widget *> callback;
+#endif
     MMDesc *items;	     // Submenus (0 if none)
+#if defined(IF_XM)
     Widget *widgetptr;       // Where to store the resulting widget (0 if not)
     Widget widget;	     // The resulting widget
-    LABEL_P label;	     // The resulting label
-#if !defined(IF_XM)
-    sigc::slot<void, GUI::Widget *> xcallback;
-    GUI::Widget **xwidgetptr;
-    GUI::Widget *xwidget;
-    GUI::Label *xlabel;	     // The resulting label
+    Widget label;	     // The resulting label
+#else
+    GUI::Widget **widgetptr;
+    GUI::Widget *widget;
+    GUI::Label *label;	     // The resulting label
 #endif
 };
 
@@ -220,8 +224,8 @@ extern void dummy_callback(Widget);
 #define MMEnd  { 0, MMPush, MMNoCB, 0, 0, 0, 0 }
 #define MMSep  { "separator", MMSeparator, MMNoCB, 0, 0, 0, 0 }
 #else
-#define MMEnd  { "", "", NULL, MMPush, MMNoCB, 0, 0, 0, 0 }
-#define MMSep  { "separator", "", NULL, MMSeparator, MMNoCB, 0, 0, 0, 0 }
+#define MMEnd GENTRYL("", "", MMPush, MMNoCB, MDUMMY, 0, 0)
+#define MMSep GENTRYL("separator", "", MMSeparator, MMNoCB, MDUMMY, 0, 0)
 #endif
 
 // New resources
@@ -230,8 +234,15 @@ extern void dummy_callback(Widget);
 
 // Helpers
 
+#if defined(IF_XM)
 // Set sensitivity of W to STATE
 extern void set_sensitive(Widget w, bool state);
+#else
+// Set sensitivity of W to STATE
+extern void set_sensitive(GUI::Widget *w, bool state);
+#endif
+
+#if defined(IF_XM)
 
 // Manage W iff STATE
 inline void manage_child(Widget w, bool state)
@@ -244,6 +255,22 @@ inline void manage_child(Widget w, bool state)
 	    XtUnmanageChild(w);
     }
 }
+
+#else
+
+// Manage W iff STATE
+inline void manage_child(GUI::Widget *w, bool state)
+{
+    if (w)
+    {
+	if (state)
+	    w->show();
+	else
+	    w->hide();
+    }
+}
+
+#endif
 
 #if !defined(IF_XM)
 extern void dummy_xcallback(GUI::Widget *);
@@ -284,15 +311,17 @@ extern void dummy_xcallback(GUI::Widget *);
 #define GENTRYI(n,i,t,c,cx,sub,w) { n, "", i, t, MMNoCB, sub, 0, 0, 0, cx, (Xmmm::Widget **)w, 0}
 #define GENTRYLI(n,s,i,t,c,cx,sub,w) { n, s, i, t, MMNoCB, sub, 0, 0, 0, cx, (Xmmm::Widget **)w, 0}
 #else
-#define MENTRYL(n,s,t,c,sub,w) { n, s, NULL, t, c, sub, (Widget *)w, 0, 0, MDUMMY, 0}
-#define MENTRYI(n,i,t,c,sub,w) { n, "", i, t, c, sub, (Widget *)w, 0, 0, MDUMMY, 0}
-#define MENTRYLI(n,s,i,t,c,sub,w) { n, s, i, t, c, sub, (Widget *)w, 0, 0, MDUMMY, 0}
+#define MENTRYL(n,s,t,c,sub,w) { n, s, NULL, t, MDUMMY, sub, 0, 0, 0}
+#define MENTRYI(n,i,t,c,sub,w) { n, "", i, t, MDUMMY, sub, 0, 0, 0}
+#define MENTRYLI(n,s,i,t,c,sub,w) { n, s, i, t, MDUMMY, sub, 0, 0, 0}
+#if 0
 #define XENTRYL(n,s,t,c,cx,sub,w) { n, s, NULL, t, MMNoCB, sub, 0, 0, 0, cx, (GUI::Widget **)w, 0, 0}
 #define XENTRYI(n,i,t,c,cx,sub,w) { n, "", i, t, MMNoCB, sub, 0, 0, 0, cx, (GUI::Widget **)w, 0, 0}
 #define XENTRYLI(n,s,i,t,c,cx,sub,w) { n, s, i, t, MMNoCB, sub, 0, 0, 0, cx, (GUI::Widget **)w, 0, 0}
-#define GENTRYL(n,s,t,c,cx,sub,w) { n, s, NULL, t, MMNoCB, sub, 0, 0, 0, cx, (GUI::Widget **)w, 0, 0}
-#define GENTRYI(n,i,t,c,cx,sub,w) { n, "", i, t, MMNoCB, sub, 0, 0, 0, cx, (GUI::Widget **)w, 0, 0}
-#define GENTRYLI(n,s,i,t,c,cx,sub,w) { n, s, i, t, MMNoCB, sub, 0, 0, 0, cx, (GUI::Widget **)w, 0, 0}
+#endif
+#define GENTRYL(n,s,t,c,cx,sub,w) { n, s, NULL, t, cx, sub, (GUI::Widget **)w, 0, 0}
+#define GENTRYI(n,i,t,c,cx,sub,w) { n, "", i, t, cx, sub, (GUI::Widget **)w, 0, 0}
+#define GENTRYLI(n,s,i,t,c,cx,sub,w) { n, s, i, t, cx, sub, (GUI::Widget **)w, 0, 0}
 #endif
 
 
