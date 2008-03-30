@@ -9,11 +9,11 @@ MultiPaned::MultiPaned(void)
 {
 }
 
-MultiPaned::MultiPaned(GtkX::Container &parent, const GtkX::String &name,
-		       const GtkX::String &label)
+MultiPaned::MultiPaned(GtkX::Container &parent, PackOptions po,
+		       const GtkX::String &name, const GtkX::String &label)
 {
     set_name(name.s());
-    parent.add_child(*this);
+    parent.add_child(*this, po, 0);
     postinit();
 }
 

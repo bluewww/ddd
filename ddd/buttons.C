@@ -1362,7 +1362,7 @@ Widget make_buttons(Widget parent, const char *name,
 GUI::WidgetPtr<GUI::Container> make_buttons(GUI::Container *parent, const char *name, 
 					    const _XtString button_list)
 {
-    GUI::HBox *buttons = new GUI::HBox(*parent, name);
+    GUI::HBox *buttons = new GUI::HBox(*parent, GUI::PACK_SHRINK, name);
 
     set_buttons(buttons, button_list);
 
@@ -1711,7 +1711,7 @@ void set_buttons(GUI::Box *buttons, const _XtString _button_list, bool manage)
 #endif
 	name.gsub(rxsep, '_');
 
-	GUI::Button *button = new GUI::Button(*buttons, name.chars());
+	GUI::Button *button = new GUI::Button(*buttons, GUI::PACK_SHRINK, name.chars());
 	button->show();
 	number_of_buttons++;
 
@@ -2117,7 +2117,7 @@ static void create_buttons_dialog(GUI::Widget *parent)
 
     Delay::register_shell(buttons_dialog);
 
-    shortcut_label = new GUI::Label(*buttons_dialog, "shortcuts");
+    shortcut_label = new GUI::Label(*buttons_dialog, GUI::PACK_SHRINK, "shortcuts");
     shortcut_label->show();
 
     button_box = new GUI::HBox(*buttons_dialog);
@@ -2127,7 +2127,7 @@ static void create_buttons_dialog(GUI::Widget *parent)
 #warning Text for buttons not implemented
 #endif
 
-    GUI::CheckButton *vfy = new GUI::CheckButton(*buttons_dialog, "verify");
+    GUI::CheckButton *vfy = new GUI::CheckButton(*buttons_dialog, GUI::PACK_SHRINK, "verify");
     vfy->show();
 #ifdef NAG_ME
 #warning SetVerifyButtonsCB not defined

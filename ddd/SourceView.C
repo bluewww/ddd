@@ -4933,17 +4933,19 @@ void SourceView::create_shells()
     Delay::register_shell(register_dialog_w);
 
 
-    GUI::WidgetPtr<GUI::RadioBox> box = new GUI::RadioBox(*register_dialog_w, "box", GUI::ORIENTATION_HORIZONTAL);
+    GUI::WidgetPtr<GUI::RadioBox> box = new GUI::RadioBox(*register_dialog_w,
+							  GUI::PACK_SHRINK,
+							  "box", GUI::ORIENTATION_HORIZONTAL);
     XtManageChild(box);
 
     int_registers_w =
-	new GUI::RadioButton(*box, "int_registers", "Integer registers");
+	new GUI::RadioButton(*box, GUI::PACK_SHRINK, "int_registers", "Integer registers");
     int_registers_w->set_active(!all_registers);
     int_registers_w->show();
     
 
     all_registers_w =
-	new GUI::RadioButton(*box, "all_registers", "All registers");
+	new GUI::RadioButton(*box, GUI::PACK_SHRINK, "all_registers", "All registers");
     all_registers_w->set_active(all_registers);
     all_registers_w->show();
 
@@ -5170,7 +5172,8 @@ void SourceView::create_text(Widget parent, const char *base, bool editable,
 
 // Create source or code window
 // FIXME Temporary
-void SourceView::create_text(Widget parent, const char *base,
+// Create source or code window
+void SourceView::create_text(GUI::Container *parent, const char *base,
 			     bool editable,
 			     GUI::Container *&form,
 			     GUI::ScrolledText *&text)
@@ -5184,7 +5187,7 @@ void SourceView::create_text(Widget parent, const char *base,
     // directly on a TextView subclass.
     // form = new GtkForm();
     // FIXME: Assume parent is container?
-    GUI::HBox *hbox = new GUI::HBox(static_cast<Gtk::Container *>(parent));
+    GUI::HBox *hbox = new GUI::HBox(*parent);
     form = hbox;
     // FIXME: testing
     hbox->modify_bg(Gtk::STATE_NORMAL, Gdk::Color("red"));
@@ -5206,15 +5209,6 @@ void SourceView::create_text(Widget parent, const char *base,
 #ifdef NAG_ME
 #warning Scrollbar setup?
 #endif
-}
-
-// Create source or code window
-void SourceView::create_text(GUI::Container *parent, const char *base,
-			     bool editable,
-			     GUI::Container *&form,
-			     GUI::ScrolledText *&text)
-{
-    create_text(parent->internal(), base, editable, form, text);
 }
 
 #endif
@@ -7537,7 +7531,7 @@ void SourceView::NewBreakpointCB(GUI::Widget *w)
 	GUI::VBox *box = new GUI::VBox(*dialog);
 	box->show();
 
-	Widget label = new GUI::Label(*box, "Set Breakpoint at");
+	Widget label = new GUI::Label(*box, GUI::PACK_SHRINK, "Set Breakpoint at");
 	label->show();
 
 	GUI::ComboBoxEntryText *text = new GUI::ComboBoxEntryText(*box);
@@ -7718,7 +7712,7 @@ void SourceView::NewWatchpointCB(CB_ALIST_1(Widget w))
 	Delay::register_shell(dialog);
 
 
-	GUI::VBox *box = new GUI::VBox(*dialog, GUI::String("Box"));
+	GUI::VBox *box = new GUI::VBox(*dialog, GUI::PACK_SHRINK, GUI::String("Box"));
 	box->show();
 
 	GUI::Widget *panel = MMcreateButtonPanel(box, "panel", wp_menu);
@@ -7736,7 +7730,7 @@ void SourceView::NewWatchpointCB(CB_ALIST_1(Widget w))
 #warning XtCallActionProc not supported
 #endif
 
-	GUI::ComboBoxEntryText *text = new GUI::ComboBoxEntryText(*box, "text");
+	GUI::ComboBoxEntryText *text = new GUI::ComboBoxEntryText(*box, GUI::PACK_SHRINK, "text");
 
 	tie_combo_box_to_history(text->internal(), watch_history_filter);
 	GUI::Button *button;
@@ -8655,7 +8649,7 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, GUI::Widget * /* origin */)
 	MMEnd
     };
 
-    GUI::HBox *form = new GUI::HBox(*info->dialog, GUI::String("Form"));
+    GUI::HBox *form = new GUI::HBox(*info->dialog, GUI::PACK_SHRINK, GUI::String("Form"));
     form->show();
 
     GUI::Widget *panel = MMcreatePanel(form, "panel", panel_menu);

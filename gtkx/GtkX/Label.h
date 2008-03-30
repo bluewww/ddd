@@ -31,12 +31,25 @@
 #ifndef GTKX_LABEL_H
 #define GTKX_LABEL_H
 
-#include <GtkX/Widget2s.h>
+#include <GtkX/Container.h>
 #include <gtkmm/label.h>
+
+// Template for a widget taking two string constructor arguments.
 
 namespace GtkX {
 
-    typedef Widget2s<Gtk::Label> Label;
+    class Label: public Widget, public Gtk::Label {
+    public:
+	Label(Container &parent, PackOptions po=PACK_SHRINK,
+	      const String &name="", const String &label="");
+	Label(Gtk::Container *parent, const String &name="",
+		 const String &label="");
+	~Label(void);
+	Gtk::Widget *internal(void);
+	const Gtk::Widget *internal(void) const;
+	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
+#include <GtkX/redirect.h>
+    };
 
 }
 

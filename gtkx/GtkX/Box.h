@@ -1,3 +1,4 @@
+// -*- C++ -*-
 // High-level GUI wrapper for Gtkmm.
 
 // Copyright (C) 2007 Peter Wainwright <prw@ceiriog.eclipse.co.uk>
@@ -38,25 +39,31 @@ namespace GtkX {
     class Box: public Container {
     };
 
+    class Dialog;
+
     class VBox: public Gtk::VBox, public Box {
     public:
-	VBox(GtkX::Container &parent, const String &name="");
-	VBox(Gtk::Container *parent, const String &name="");
+	VBox(GtkX::Container &parent, PackOptions po=PACK_SHRINK, const String &name="");
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
 #include <GtkX/redirect.h>
+    private:
+	VBox(Gtk::Container *parent, const String &name="");
+	friend class Dialog;
     };
 
     class HBox: public Gtk::HBox, public Box {
     public:
-	HBox(GtkX::Container &parent, const String &name="");
-	HBox(Gtk::Container *parent, const String &name="");
+	HBox(GtkX::Container &parent, PackOptions po=PACK_SHRINK, const String &name="");
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
 #include <GtkX/redirect.h>
-    };
+    private:
+  	HBox(Gtk::Container *parent, const String &name="");
+	friend class Dialog;
+  };
 
 }
 

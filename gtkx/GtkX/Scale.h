@@ -49,8 +49,10 @@ namespace GtkX {
 
     class HScale: public Scale, public Gtk::HScale {
     public:
-	HScale(Container &parent, const String &name="");
-	HScale(Container &parent, const String &name,
+	HScale(Container &parent, PackOptions po=PACK_SHRINK,
+	       const String &name="");
+	HScale(Container &parent, PackOptions po,
+	       const String &name,
 	       double min, double max, double step=1.0);
 	~HScale(void);
 	Gtk::Widget *internal(void);
@@ -64,8 +66,10 @@ namespace GtkX {
 
     class VScale: public Scale, public Gtk::VScale {
     public:
-	VScale(Container &parent, const String &name="");
-	VScale(Container &parent, const String &name,
+	VScale(Container &parent, PackOptions po=PACK_SHRINK,
+	       const String &name="");
+	VScale(Container &parent, PackOptions po,
+	       const String &name,
 	       double min, double max, double step=1.0);
 	~VScale(void);
 	Gtk::Widget *internal(void);

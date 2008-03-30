@@ -81,7 +81,7 @@ ArgField::ArgField (GUI::Container *parent, const char* name)
     : arg_text_field(0), handlers(ArgField_NTypes), is_empty(true), 
       locked(false)
 {
-    arg_text_field = new GUI::ComboBoxEntryText(*parent, name);
+    arg_text_field = new GUI::ComboBoxEntryText(*parent, GUI::PACK_SHRINK, name);
     arg_text_field->show();
 }
 

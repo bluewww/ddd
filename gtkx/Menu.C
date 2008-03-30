@@ -35,7 +35,7 @@ using namespace GtkX;
 Menu::Menu(GtkX::Widget &parent, const GtkX::String &name)
 {
     set_name(name.s());
-    // parent.add_child(*this);
+    // parent.add_child(*this, po, 0);
     postinit();
 }
 

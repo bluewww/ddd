@@ -30,8 +30,8 @@
 
 using namespace GtkX;
 
-RadioButton::RadioButton(GtkX::Container &parent, const GtkX::String &name,
-			 const GtkX::String &label):
+RadioButton::RadioButton(GtkX::Container &parent, PackOptions po,
+			 const GtkX::String &name, const GtkX::String &label):
     Gtk::RadioButton(label.s())
 {
     Gtk::RadioButton::set_name(name.s());
@@ -42,7 +42,7 @@ RadioButton::RadioButton(GtkX::Container &parent, const GtkX::String &name,
     // sometimes parent.gtk_container() is a standard Gtk widget.
     // In such a case (e.g. RadioBox) we need to override add_child()
     // instead.
-    parent.add_child(*this);
+    parent.add_child(*this, po, 0);
     postinit();
     // FIXME: Radio behaviour already supported for children of a RadioBox.
     // Changing the group here causes a crash (invalidates a node in the

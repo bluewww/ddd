@@ -810,11 +810,11 @@ void MMaddItems(GUI::Container *shell, MMDesc items[], bool ignore_seps)
 #warning MMPush might be a MenuItem or a Button.  Check shell.
 #endif
 	    if (menushell) {
-		widget = new GUI::MenuItem(*container, name, label_string);
+		widget = new GUI::MenuItem(*container, GUI::PACK_SHRINK, name, label_string);
 	    }
 	    else {
 		if (image) {
-		    GUI::Button *button = new GUI::Button(*container, name);
+		    GUI::Button *button = new GUI::Button(*container, GUI::PACK_SHRINK, name);
 		    widget = button;
 #if !defined(IF_XMMM)
 		    GUI::ImageHandle p1 = image[0];
@@ -835,7 +835,7 @@ void MMaddItems(GUI::Container *shell, MMDesc items[], bool ignore_seps)
 #endif
 		}
 		else {
-		    widget = new GUI::Button(*container, name, label_string);
+		    widget = new GUI::Button(*container, GUI::PACK_SHRINK, name, label_string);
 		}
 	    }
 	    // pack_item(container, widget);
@@ -855,7 +855,7 @@ void MMaddItems(GUI::Container *shell, MMDesc items[], bool ignore_seps)
 	{
 	    // Create a ToggleButton
 	    assert(subitems == 0);
-	    widget = new GUI::CheckButton(*shell, name, label_string);
+	    widget = new GUI::CheckButton(*shell, GUI::PACK_SHRINK, name, label_string);
 	    break;
 	}
 
@@ -863,7 +863,7 @@ void MMaddItems(GUI::Container *shell, MMDesc items[], bool ignore_seps)
 	{
 	    // Create a CheckItem
 	    assert(subitems == 0);
-	    widget = new GUI::CheckMenuItem(*shell, name, label_string);
+	    widget = new GUI::CheckMenuItem(*shell, GUI::PACK_SHRINK, name, label_string);
 	    break;
 	}
 
@@ -871,7 +871,7 @@ void MMaddItems(GUI::Container *shell, MMDesc items[], bool ignore_seps)
 	{
 	    // Create a ToggleButton in a radio group
 	    assert(subitems == 0);
-	    widget = new GUI::RadioButton(*container, name, label_string);
+	    widget = new GUI::RadioButton(*container, GUI::PACK_SHRINK, name, label_string);
 	    break;
 	}
 
@@ -880,7 +880,7 @@ void MMaddItems(GUI::Container *shell, MMDesc items[], bool ignore_seps)
 	    // Create a Label
 	    assert(subitems == 0);
 
-	    widget = label = new GUI::Label(*container, label_string);
+	    widget = label = new GUI::Label(*container, GUI::PACK_SHRINK, label_string);
 	    widget->set_fg(GUI::STATE_NORMAL, GUI::Color("red"));
 	    label->set_alignment(Gtk::ALIGN_LEFT);
 	    break;
@@ -894,7 +894,7 @@ void MMaddItems(GUI::Container *shell, MMDesc items[], bool ignore_seps)
 #ifdef NAG_ME
 #warning What is an ArrowButton?
 #endif
-	    widget = new GUI::Button(*container, name, label_string);
+	    widget = new GUI::Button(*container, GUI::PACK_SHRINK, name, label_string);
 	    widget->set_name(name);
 	    break;
 	}
@@ -908,12 +908,12 @@ void MMaddItems(GUI::Container *shell, MMDesc items[], bool ignore_seps)
 
 	    if (menushell) {
 		GUI::MenuItem *mi;
-		widget = mi = new GUI::MenuItem(*container, name, label_string);
+		widget = mi = new GUI::MenuItem(*container, GUI::PACK_SHRINK, name, label_string);
 		mi->set_submenu(*subMenu);
 	    }
 	    else {
 		std::cerr << "Cannot attach menu to non-menushell\n";
-		widget = new GUI::Button(*container, name, label_string);
+		widget = new GUI::Button(*container, GUI::PACK_SHRINK, name, label_string);
 	    }
 	    break;
 	}
@@ -927,12 +927,12 @@ void MMaddItems(GUI::Container *shell, MMDesc items[], bool ignore_seps)
 
 	    if (menushell) {
 		GUI::MenuItem *mi;
-		widget = mi = new GUI::MenuItem(*container, name, label_string);
+		widget = mi = new GUI::MenuItem(*container, GUI::PACK_SHRINK, name, label_string);
 		mi->set_submenu(*subMenu);
 	    }
 	    else {
 		std::cerr << "Cannot attach menu to non-menushell\n";
-		widget = new GUI::Button(*container, name, label_string);
+		widget = new GUI::Button(*container, GUI::PACK_SHRINK, name, label_string);
 	    }
 	    break;
 	}
@@ -965,9 +965,9 @@ void MMaddItems(GUI::Container *shell, MMDesc items[], bool ignore_seps)
 	    bool have_label = 
 		(name[0] != '\0' && (flags & MMUnmanagedLabel) == 0);
 
-	    widget = box = new GUI::HBox(*shell, panelName.chars());
+	    widget = box = new GUI::HBox(*shell, GUI::PACK_SHRINK, panelName.chars());
 
-	    label = new GUI::Label(*box, label_string);
+	    label = new GUI::Label(*box, GUI::PACK_SHRINK, label_string);
 	    if (have_label)
 		label->show();
 
@@ -1004,7 +1004,7 @@ void MMaddItems(GUI::Container *shell, MMDesc items[], bool ignore_seps)
 	    assert(subitems == 0);
 
 	    std::cerr << "FIXME: Hardwired bounds for HScale.\n";
-	    widget = new GUI::HScale(*shell, name, 0, 16);
+	    widget = new GUI::HScale(*shell, GUI::PACK_SHRINK, name, 0, 16);
 	    break;
 	}
 
@@ -1016,9 +1016,9 @@ void MMaddItems(GUI::Container *shell, MMDesc items[], bool ignore_seps)
 	    // Create a label with an associated text field
 	    assert(subitems == 0);
 
-	    panel = new GUI::HBox(*shell, name);
+	    panel = new GUI::HBox(*shell, GUI::PACK_SHRINK, name);
 
-	    label = new GUI::Label(*panel, name, label_string);
+	    label = new GUI::Label(*panel, GUI::PACK_SHRINK, name, label_string);
 	    if (name[0] != '\0' && (flags & MMUnmanagedLabel) == 0)
 		label->show();
 
@@ -1029,7 +1029,7 @@ void MMaddItems(GUI::Container *shell, MMDesc items[], bool ignore_seps)
 		break;
 
 	    case MMComboBox:
-		widget = new GUI::ComboBoxEntryText(*shell, GUI::String(textName.chars()));
+		widget = new GUI::ComboBoxEntryText(*shell, GUI::PACK_SHRINK, textName.chars());
 		break;
 
 	    case MMTextField:
@@ -1214,17 +1214,7 @@ Widget MMcreateMenuBar(Widget parent, const char *name, MMDesc items[],
 // Create menu bar from items
 GUI::WidgetPtr<GUI::MenuBar> MMcreateMenuBar(GUI::Container &parent, cpString name, MMDesc items[])
 {
-    GUI::MenuBar *bar = new GUI::MenuBar(parent, name);
-    MMaddItems(bar, items);
-    bar->show();
-
-    return bar;
-}
-
-// Create menu bar from items (TEMPORARY)
-GUI::WidgetPtr<GUI::MenuBar> MMcreateMenuBar(CONTAINER_P parent, cpString name, MMDesc items[])
-{
-    GUI::MenuBar *bar = new GUI::MenuBar(parent, name);
+    GUI::MenuBar *bar = new GUI::MenuBar(parent, GUI::PACK_SHRINK, name);
     MMaddItems(bar, items);
     bar->show();
 
@@ -1251,7 +1241,7 @@ Widget MMcreateWorkArea(Widget parent, const char *name, MMDesc items[],
 // Create work area from items
 GUI::Container *MMcreateWorkArea(GUI::Dialog *parent, GUI::String name, MMDesc items[])
 {
-    GUI::HBox *bar = new GUI::HBox(parent, name);
+    GUI::HBox *bar = new GUI::HBox(*parent, GUI::PACK_SHRINK, name);
     MMaddItems(bar, items, true);
     bar->show();
 
@@ -1275,7 +1265,7 @@ BOX_P MMcreatePanel(CONTAINER_P parent, NAME_T name, MMDesc items[]
 #else
 GUI::Container *MMcreatePanel(GUI::Container *parent, cpString name, MMDesc items[])
 {
-    GUI::Container *panel = new GUI::VBox(*parent, name);
+    GUI::Container *panel = new GUI::VBox(*parent, GUI::PACK_SHRINK, name);
     MMaddItems(panel, items);
     panel->show();
     return panel;
@@ -1357,7 +1347,8 @@ GUI::Container *MMcreateRadioPanel(GUI::Container *parent, cpString name, MMDesc
 #ifdef NAG_ME
 #warning Extra args?
 #endif
-    GUI::Container *panel = new GUI::RadioBox(*parent, name, GUI::ORIENTATION_HORIZONTAL);
+    GUI::Container *panel = new GUI::RadioBox(*parent, GUI::PACK_SHRINK,
+					      name, GUI::ORIENTATION_HORIZONTAL);
 
     MMaddItems(panel, items);
     panel->show();
@@ -1382,7 +1373,7 @@ BOX_P MMcreateButtonPanel(CONTAINER_P parent, NAME_T name, MMDesc items[],
 // Create button panel from items
 GUI::Container *MMcreateButtonPanel(GUI::Container *parent, cpString name, MMDesc items[])
 {
-    GUI::Container *panel = new GUI::HBox(*parent, name);
+    GUI::Container *panel = new GUI::HBox(*parent, GUI::PACK_SHRINK, name);
     MMaddItems(panel, items);
     panel->show();
 
@@ -1394,7 +1385,7 @@ GUI::Container *MMcreateButtonPanel(GUI::Container *parent, cpString name, MMDes
 // Create button panel from items
 GUI::Container *MMcreateVButtonPanel(GUI::Container *parent, cpString name, MMDesc items[])
 {
-    GUI::Container *panel = new GUI::VBox(*parent, name);
+    GUI::Container *panel = new GUI::VBox(*parent, GUI::PACK_SHRINK, name);
     MMaddItems(panel, items);
     panel->show();
 

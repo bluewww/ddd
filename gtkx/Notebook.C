@@ -29,11 +29,11 @@
 
 using namespace GtkX;
 
-Notebook::Notebook(GtkX::Container &parent,
+Notebook::Notebook(GtkX::Container &parent, PackOptions po,
 		   const GtkX::String &name)
 {
     set_name(name.s());
-    parent.add_child(*this);
+    parent.add_child(*this, po, 0);
     postinit();
 }
 

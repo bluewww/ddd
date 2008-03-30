@@ -45,15 +45,13 @@ RadioBox::create_box(GtkX::Orientation orientation)
     Gtk::VBox::pack_start(*box_, Gtk::PACK_SHRINK);
 }
 
-RadioBox::RadioBox(GtkX::Container &parent,
+RadioBox::RadioBox(GtkX::Container &parent, PackOptions po,
 		   const GtkX::String &name,
-		   GtkX::Orientation orientation,
-		   PackOptions options,
-		   int padding)
+		   GtkX::Orientation orientation)
 {
     create_box(orientation);
     set_name(name.s());
-    parent.add_child(*this);
+    parent.add_child(*this, po, 0);
     postinit();
 }
 

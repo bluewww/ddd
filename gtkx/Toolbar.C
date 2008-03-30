@@ -35,10 +35,11 @@ Toolbar::Toolbar(Gtk::Container *parent, const GtkX::String &name)
     postinit();
 }
 
-Toolbar::Toolbar(GtkX::Container &parent, const GtkX::String &name)
+Toolbar::Toolbar(GtkX::Container &parent, PackOptions po,
+		 const GtkX::String &name)
 {
     set_name(name.s());
-    parent.add_child(*this);
+    parent.add_child(*this, po, 0);
     postinit();
 }
 

@@ -245,10 +245,6 @@ class SourceView {
 			    Widget& form, Widget& text);
 #else
     // Create text or code widget
-    static void create_text(Widget parent, /* FIXME Temporary */
-			    const char *base, bool editable,
-			    GUI::Container *&form,
-			    GUI::ScrolledText *&text);
     static void create_text(GUI::Container *parent,
 			    const char *base, bool editable,
 			    GUI::Container *&form,

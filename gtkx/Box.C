@@ -40,14 +40,15 @@ VBox::VBox(Gtk::Container *parent, const GtkX::String &name)
     postinit();
 }
 
-VBox::VBox(GtkX::Container &parent, const GtkX::String &name)
+VBox::VBox(GtkX::Container &parent, GtkX::PackOptions po,
+	   const GtkX::String &name)
 {
     set_name(name.s());
     GtkX::Notebook *nb = dynamic_cast<GtkX::Notebook *>(&parent);
     if (nb)
 	nb->append_page(*this, name);
     else
-	parent.add_child(*this);
+	parent.add_child(*this, po, 0);
     postinit();
 }
 
@@ -70,7 +71,8 @@ HBox::HBox(Gtk::Container *parent, const GtkX::String &name)
     postinit();
 }
 
-HBox::HBox(GtkX::Container &parent, const GtkX::String &name)
+HBox::HBox(GtkX::Container &parent, GtkX::PackOptions po,
+	   const GtkX::String &name)
 {
     set_name(name.s());
     GtkX::Notebook *nb = dynamic_cast<GtkX::Notebook *>(&parent);
@@ -80,7 +82,7 @@ HBox::HBox(GtkX::Container &parent, const GtkX::String &name)
 	show();
     }
     else
-	parent.add_child(*this);
+	parent.add_child(*this, po, 0);
     postinit();
 }
 

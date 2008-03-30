@@ -35,10 +35,11 @@ Statusbar::Statusbar(Gtk::Container *parent, const GtkX::String &name)
     postinit();
 }
 
-Statusbar::Statusbar(GtkX::Container &parent, const GtkX::String &name)
+Statusbar::Statusbar(GtkX::Container &parent, PackOptions po,
+		     const GtkX::String &name)
 {
     set_name(name.s());
-    parent.add_child(*this);
+    parent.add_child(*this, po, 0);
     postinit();
 }
 

@@ -63,11 +63,9 @@ ListView::init_signals(void)
 {
 }
 
-ListView::ListView(GtkX::Container &parent,
+ListView::ListView(GtkX::Container &parent, PackOptions po,
 		   const String &name,
-		   const std::vector<String> &headers,
-		   PackOptions options,
-		   int padding)
+		   const std::vector<String> &headers)
 {
     set_name(name.s());
     store_ = Gtk::ListStore::create(model);
@@ -93,7 +91,7 @@ ListView::ListView(GtkX::Container &parent,
     row[model.c4] = "test 8";
 
     init_signals();
-    parent.add_child(*this);
+    parent.add_child(*this, po, 0);
 }
 
 ListView::~ListView(void)

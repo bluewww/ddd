@@ -399,7 +399,7 @@ GUI::Container *create_toolbar(GUI::Container *parent, const string& /* name */,
     // Create toolbar
     const string toolbar_name = "toolbar";
 
-    GUI::Toolbar *toolbar = new GUI::Toolbar(*parent, toolbar_name.chars());
+    GUI::Toolbar *toolbar = new GUI::Toolbar(*parent, GUI::PACK_SHRINK, toolbar_name.chars());
 
     // Create `():'
     label = create_arg_label(toolbar);

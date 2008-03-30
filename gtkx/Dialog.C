@@ -100,21 +100,21 @@ Dialog::gtk_container(void)
 Button *
 Dialog::add_button(const String &name, const String &label)
 {
-    return new Button(*buttons_, name, label);
+    return new Button(*buttons_, PACK_SHRINK, name, label);
 }
 
 MessageDialog::MessageDialog(GtkX::Widget &parent, const String &name,
 			     const String &label, MessageType type):
     Dialog(parent, name)
 {
-    message_ = new GtkX::Label(*this, name+String("-label"));
+    message_ = new GtkX::Label(*this, PACK_SHRINK, name+String("-label"));
 }
 
 MessageDialog::MessageDialog(const String &name, const String &label,
 			     MessageType type):
     Dialog(name)
 {
-    message_ = new GtkX::Label(*this, name+String("-label"));
+    message_ = new GtkX::Label(*this, PACK_SHRINK, name+String("-label"));
 }
 
 MessageDialog::~MessageDialog(void)

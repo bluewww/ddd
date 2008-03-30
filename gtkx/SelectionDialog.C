@@ -42,14 +42,15 @@ SelectionDialog::init(Gtk::Window &parent,
 {
     set_name(name.s());
 
-    sw_ = new GtkX::ScrolledWindow(*this, name+String("_sw"), GtkX::PACK_EXPAND_WIDGET);
+    sw_ = new GtkX::ScrolledWindow(*this, PACK_SHRINK, name+String("_sw"));
     sw_->set_size_request(-1, 100);
     sw_->show();
 
-    listview_ = new GtkX::ListView(*sw_, name+String("_list"), headers);
+    listview_ = new GtkX::ListView(*sw_, PACK_SHRINK, name+String("_list"),
+				   headers);
     listview_->show();
 
-    buttons_ = new GtkX::HBox(*this, name+String("_buttons"));
+    buttons_ = new GtkX::HBox(*this, PACK_SHRINK, name+String("_buttons"));
     buttons_->show();
     postinit();
 }
@@ -139,6 +140,6 @@ SelectionDialog::pack_start(Gtk::Widget &child, PackOptions options, int padding
 Button *
 SelectionDialog::add_button(const String &name, const String &label)
 {
-    return new Button(*buttons_, name, label);
+    return new Button(*buttons_, PACK_SHRINK, name, label);
 }
 

@@ -29,11 +29,11 @@
 
 using namespace GtkX;
 
-ScrolledWindow::ScrolledWindow(GtkX::Container &parent, const String &name,
-			       PackOptions options, int padding)
+ScrolledWindow::ScrolledWindow(GtkX::Container &parent, PackOptions po,
+			       const String &name)
 {
     set_name(name.s());
-    parent.add_child(*this, options, padding);
+    parent.add_child(*this, po, 0);
     postinit();
 }
 

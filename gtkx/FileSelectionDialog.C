@@ -41,15 +41,16 @@ FileSelectionDialog::init(Gtk::Window &parent,
 			  FileAction action)
 {
     set_name(name.s());
-    add(fs_);
     postinit();
+    fs_ = new FileSelection(*this, PACK_EXPAND_WIDGET,
+			    name+String("_fs"), action);
+    fs_->show();
 }
 
 FileSelectionDialog::FileSelectionDialog(Gtk::Window &parent,
 					 const String &name,
 					 FileAction action):
-    Dialog(&parent, name),
-    fs_(*this, name+String("_fs"), action)
+    Dialog(&parent, name)
 {
     init(parent, name, action);
 }
@@ -65,14 +66,14 @@ check_shell(GtkX::Shell &parent)
 
 FileSelectionDialog::FileSelectionDialog(GtkX::Shell &parent, const String &name,
 					 FileAction action):
-    Dialog(&check_shell(parent), name.s()),
-    fs_(*this, name+String("_fs"), action)
+    Dialog(&check_shell(parent), name.s())
 {
     init(check_shell(parent), name, action);
 }
 
 FileSelectionDialog::~FileSelectionDialog(void)
 {
+    delete fs_;
 }
 
 Gtk::Widget *
@@ -90,6 +91,6 @@ FileSelectionDialog::internal(void) const
 std::string
 FileSelectionDialog::get_selected(void)
 {
-    return fs_.get_selected();
+    return fs_->get_selected();
 }
 

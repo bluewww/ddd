@@ -31,7 +31,7 @@
 #ifndef GTKX_CHECKMENUITEM_H
 #define GTKX_CHECKMENUITEM_H
 
-#include <GtkX/Widget.h>
+#include <GtkX/Container.h>
 #include <GtkX/Bipolar.h>
 #include <gtkmm/checkmenuitem.h>
 
@@ -39,7 +39,7 @@ namespace GtkX {
 
     class CheckMenuItem: public Bipolar, public Gtk::CheckMenuItem {
     public:
-	CheckMenuItem(GtkX::Container &parent, const String &name="",
+	CheckMenuItem(GtkX::Container &parent, PackOptions po=PACK_SHRINK, const String &name="",
 		      const String &label="");
 	~CheckMenuItem(void);
 	Gtk::Widget *internal(void);

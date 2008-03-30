@@ -1221,7 +1221,7 @@ static void DDDDoneCB(GUI::Widget *w, long status)
 	+ GUI::String(ddd_is_restarting ? "Restart" : "Exit")
 	+ GUI::String(" anyway (and kill it)?");
     quit_dialog = new GUI::Dialog(*find_shell1(w), "quit_dialog");
-    GUI::Label *label = new GUI::Label(*quit_dialog, msg);
+    GUI::Label *label = new GUI::Label(*quit_dialog, GUI::PACK_SHRINK, msg);
     Delay::register_shell(quit_dialog);
     GUI::Button *button;
     button = quit_dialog->add_button("OK");
@@ -1375,7 +1375,7 @@ void DDDRestartCB(GUI::Widget *w)
 
 	dialog = new GUI::Dialog(*find_shell1(w), "confirm_restart_dialog");
 	Delay::register_shell(dialog);
-	GUI::Label *label = new GUI::Label(*dialog, "Restart?");
+	GUI::Label *label = new GUI::Label(*dialog, GUI::PACK_SHRINK, "Restart?");
 	GUI::Button *button;
 	button = dialog->add_button("OK");
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(_DDDRestartCB), button, (flags | MAY_KILL)));

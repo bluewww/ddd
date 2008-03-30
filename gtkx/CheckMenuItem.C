@@ -31,12 +31,12 @@
 
 using namespace GtkX;
 
-CheckMenuItem::CheckMenuItem(GtkX::Container &parent, const GtkX::String &name,
-			     const GtkX::String &label):
+CheckMenuItem::CheckMenuItem(GtkX::Container &parent, PackOptions po,
+			     const GtkX::String &name, const GtkX::String &label):
     Gtk::CheckMenuItem(mklabel(name, label).s())
 {
     set_name(name.s());
-    parent.add_child(*this);
+    parent.add_child(*this, po, 0);
     postinit();
 }
 

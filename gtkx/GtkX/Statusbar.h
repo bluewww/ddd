@@ -1,3 +1,4 @@
+// -*- C++ -*-
 // High-level GUI wrapper for Gtkmm.
 
 // Copyright (C) 2007 Peter Wainwright <prw@ceiriog.eclipse.co.uk>
@@ -37,12 +38,14 @@ namespace GtkX {
 
     class Statusbar: public Gtk::Statusbar, public Container {
     public:
-	Statusbar(GtkX::Container &parent, const String &name="");
-	Statusbar(Gtk::Container *parent, const String &name="");
+	Statusbar(GtkX::Container &parent, PackOptions po=PACK_SHRINK,
+		  const String &name="");
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
 #include <GtkX/redirect.h>
+    private:
+	Statusbar(Gtk::Container *parent, const String &name="");
     };
 
 }

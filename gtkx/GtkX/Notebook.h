@@ -41,7 +41,8 @@ namespace GtkX {
     // "abstract" base class we would need to implement more method.
     class Notebook: public Gtk::Notebook, public Container {
     public:
-	Notebook(GtkX::Container &parent, const String &name="");
+	Notebook(GtkX::Container &parent, PackOptions po=PACK_SHRINK,
+		 const String &name="");
 	~Notebook(void);
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;

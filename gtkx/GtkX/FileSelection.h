@@ -45,9 +45,8 @@ namespace GtkX {
 	static void selection_changed_callback(FileSelection *lv);
     public:
 	void init_signals(void);
-	FileSelection(GtkX::Container &parent,
-		      const GtkX::String &name,
-		      FileAction action);
+	FileSelection(GtkX::Container &parent, PackOptions po=PACK_SHRINK,
+		      const GtkX::String &name="", FileAction action=FileActionOpen);
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;
 	~FileSelection(void);

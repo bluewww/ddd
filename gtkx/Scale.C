@@ -61,20 +61,22 @@ Scale::get_value(void) const
     return sc->get_value();
 }
 
-VScale::VScale(GtkX::Container &parent, const GtkX::String &name)
+VScale::VScale(GtkX::Container &parent, PackOptions po,
+	       const GtkX::String &name)
 {
     set_name(name.s());
-    parent.add_child(*this);
+    parent.add_child(*this, po, 0);
     init_signals();
     postinit();
 }
 
-VScale::VScale(GtkX::Container &parent, const GtkX::String &name,
+VScale::VScale(GtkX::Container &parent, PackOptions po,
+	       const GtkX::String &name,
 	       double min, double max, double step):
     Gtk::VScale(min, max, step)
 {
     set_name(name.s());
-    parent.add_child(*this);
+    parent.add_child(*this, po, 0);
     init_signals();
     postinit();
 }
@@ -107,20 +109,22 @@ VScale::get_value(void) const
     return Scale::get_value();
 }
 
-HScale::HScale(GtkX::Container &parent, const GtkX::String &name)
+HScale::HScale(GtkX::Container &parent, PackOptions po,
+	       const GtkX::String &name)
 {
     set_name(name.s());
-    parent.add_child(*this);
+    parent.add_child(*this, po, 0);
     init_signals();
     postinit();
 }
 
-HScale::HScale(GtkX::Container &parent, const GtkX::String &name,
+HScale::HScale(GtkX::Container &parent, PackOptions po,
+	       const GtkX::String &name,
 	       double min, double max, double step):
     Gtk::HScale(min, max, step)
 {
     set_name(name.s());
-    parent.add_child(*this);
+    parent.add_child(*this, po, 0);
     init_signals();
     postinit();
 }

@@ -2821,10 +2821,10 @@ Widget DataDisp::create_display_dialog(GUI::Widget *parent, const _XtString name
     GUI::Box *box = new GUI::VBox(*box);
     box->show();
 
-    GUI::Label *label = new GUI::Label(*box, "label");
+    GUI::Label *label = new GUI::Label(*box, GUI::PACK_SHRINK, "label");
     label->show();
 
-    info.text = new GUI::ComboBoxEntryText(*box, "text");
+    info.text = new GUI::ComboBoxEntryText(*box, GUI::PACK_SHRINK, "text");
     info.text->show();
 
     tie_combo_box_to_history(info.text, display_history_filter);
@@ -2832,13 +2832,13 @@ Widget DataDisp::create_display_dialog(GUI::Widget *parent, const _XtString name
     GUI::Box *box2 = new GUI::HBox(*box2);
     box2->show();
 
-    info.shortcut = new GUI::CheckButton(*box2, "shortcut");
+    info.shortcut = new GUI::CheckButton(*box2, GUI::PACK_SHRINK, "shortcut");
     info.shortcut->show();
 
-    GUI::Label *display = new GUI::Label(*box2, "display");
+    GUI::Label *display = new GUI::Label(*box2, GUI::PACK_SHRINK, "display");
     display->show();
 
-    GUI::Label *menu = new GUI::Label(*box2, "menu");
+    GUI::Label *menu = new GUI::Label(*box2, GUI::PACK_SHRINK, "menu");
     menu->show();
 
     return dialog;
@@ -8122,7 +8122,7 @@ void DataDisp::setCB(GUI::Widget *w)
     GUI::Box *box = new GUI::HBox(*info->dialog);
     box->show();
 
-    GUI::Label *label = new GUI::Label(*box, "label");
+    GUI::Label *label = new GUI::Label(*box, GUI::PACK_SHRINK, "label");
     label->show();
 
     info->text = new GUI::ComboBoxEntryText(*box);
@@ -9508,7 +9508,7 @@ void DataDisp::create_shells()
     headers.push_back(GUI::String("Scope"));
     headers.push_back(GUI::String("Address"));
     display_list_w = 
-	new GUI::ListView(*edit_displays_dialog_w, "list", headers);
+	new GUI::ListView(*edit_displays_dialog_w, GUI::PACK_SHRINK, "list", headers);
 
     if (app_data.flat_dialog_buttons)
     {

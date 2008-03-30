@@ -29,8 +29,8 @@
 
 using namespace GtkX;
 
-Button::Button(GtkX::Container &parent, const GtkX::String &name,
-	       const GtkX::String &label):
+Button::Button(GtkX::Container &parent, PackOptions po,
+	       const GtkX::String &name, const GtkX::String &label):
     Gtk::Button(label.s())
 {
     set_name(name.s());
@@ -41,7 +41,7 @@ Button::Button(GtkX::Container &parent, const GtkX::String &name,
     // sometimes parent.gtk_container() is a standard Gtk widget.
     // In such a case (e.g. RadioBox) we need to override add_child()
     // instead.
-    parent.add_child(*this);
+    parent.add_child(*this, po, 0);
     postinit();
 }
 

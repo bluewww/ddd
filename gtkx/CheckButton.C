@@ -31,12 +31,12 @@
 
 using namespace GtkX;
 
-CheckButton::CheckButton(GtkX::Container &parent, const GtkX::String &name,
-			 const GtkX::String &label):
+CheckButton::CheckButton(GtkX::Container &parent, PackOptions po,
+			 const GtkX::String &name, const GtkX::String &label):
     Gtk::CheckButton(mklabel(name, label).s())
 {
     set_name(name.s());
-    parent.add_child(*this);
+    parent.add_child(*this, po, 0);
     postinit();
 }
 

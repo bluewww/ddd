@@ -5,7 +5,7 @@
 #include <gtkmm/textview.h>
 #include <gtkmm/textbuffer.h>
 
-#include <GtkX/Widget.h>
+#include <GtkX/Container.h>
 
 namespace GtkX {
 
@@ -87,8 +87,8 @@ namespace GtkX {
 	Glib::RefPtr<Gtk::TextBuffer> tb_;
     public:
 	ScrolledText(void);
-	ScrolledText(GtkX::Container &parent, const GtkX::String &name="",
-		     const GtkX::String &label="");
+	ScrolledText(GtkX::Container &parent, PackOptions po=PACK_SHRINK,
+		     const GtkX::String &name="", const GtkX::String &label="");
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;
 	Glib::SignalProxy0<void> signal_changed(void); // From the TextBuffer

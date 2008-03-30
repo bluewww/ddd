@@ -38,10 +38,10 @@ namespace GtkX {
 
     class MenuItem: public Widget, public Gtk::MenuItem {
     public:
-	MenuItem(GtkX::Container &parent, const String &name="",
-		 const String &label="");
-	MenuItem(Gtk::Container *parent, const String &name="",
-		 const String &label="");
+	MenuItem(GtkX::Container &parent, PackOptions po=PACK_SHRINK,
+		 const String &name="", const String &label="");
+	MenuItem(Gtk::Container *parent,
+		 const String &name="", const String &label="");
 	~MenuItem(void);
 	void set_label(const String &label);
 	Gtk::Widget *internal(void);

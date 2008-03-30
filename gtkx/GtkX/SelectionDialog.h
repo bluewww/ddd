@@ -44,8 +44,6 @@ namespace GtkX {
     public:
 	void init(Gtk::Window &parent, const String &name,
 		  const std::vector<String> &headers);
-	SelectionDialog(Gtk::Window &parent, const String &name,
-			const std::vector<String> &headers);
 	SelectionDialog(GtkX::Shell &parent, const String &name,
 			const std::vector<String> &headers);
 	Gtk::Widget *internal(void);
@@ -64,6 +62,9 @@ namespace GtkX {
 	Button *add_button(const String &name="", const String &label="");
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
 #include <GtkX/redirect.h>
+    private:
+	SelectionDialog(Gtk::Window &parent, const String &name,
+			const std::vector<String> &headers);
     };
 
 }

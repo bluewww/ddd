@@ -245,8 +245,8 @@ static void select_from_gdb(const string& question, string& reply)
 
 	std::vector<GUI::String> headers;
 	headers.push_back(GUI::String("Selection"));
-	gdb_selection_list_w = new GUI::ListView(*gdb_selection_dialog, "gdb_selection_list",
-						 headers);
+	gdb_selection_list_w = new GUI::ListView(*gdb_selection_dialog, GUI::PACK_SHRINK, 
+						 "gdb_selection_list", headers);
 	gdb_selection_list_w->show();
 	gdb_selection_list_w->get_selection()->set_mode(Gtk::SELECTION_SINGLE);
 

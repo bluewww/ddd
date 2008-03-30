@@ -170,7 +170,7 @@ GUI::Dialog *post_gdb_yn(string question, GUI::Widget *w)
     if (yn_dialog == 0)
     {
 	yn_dialog = new GUI::Dialog(*find_shell1(w), "yn_dialog");
-	yn_dialog_label = new GUI::Label(*yn_dialog, question.chars());
+	yn_dialog_label = new GUI::Label(*yn_dialog, GUI::PACK_SHRINK, question.chars());
 	yn_dialog->get_vbox()->pack_start(*yn_dialog_label, Gtk::PACK_SHRINK);
 	Delay::register_shell(yn_dialog);
 	Gtk::Button *button;
@@ -441,7 +441,7 @@ GUI::Dialog *post_gdb_died(string reason, int state, GUI::Widget *w)
 #ifdef NAG_ME
 #warning XmCreateWarningDialog vs XmCreateErrorDialog
 #endif
-	label = new GUI::Label(*dialog, msg.xmstring());
+	label = new GUI::Label(*dialog, GUI::PACK_SHRINK, msg.xmstring());
 	label->show();
 	button = dialog->add_button("OK");
 	button->signal_clicked().connect(sigc::ptr_fun(RestartDebuggerCB));
@@ -452,7 +452,7 @@ GUI::Dialog *post_gdb_died(string reason, int state, GUI::Widget *w)
     {
 	MString msg = rm(gdb->title() + " could not be started.");
 	dialog = new GUI::Dialog(*shell, "no_debugger_dialog");
-	label = new GUI::Label(*dialog, msg.xmstring());
+	label = new GUI::Label(*dialog, GUI::PACK_SHRINK, msg.xmstring());
 	label->show();
 	button = dialog->add_button("OK");
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(ExitCB), exit_state));
@@ -588,7 +588,7 @@ GUI::Dialog *post_gdb_message(string text, bool prompt, GUI::Widget *w)
     if (gdb_message_dialog == 0)
     {
 	gdb_message_dialog = new GUI::Dialog(*find_shell1(w), "gdb_message_dialog");
-	gdb_message_dialog_label = new GUI::Label(*gdb_message_dialog, mtext.xmstring());
+	gdb_message_dialog_label = new GUI::Label(*gdb_message_dialog, GUI::PACK_SHRINK, mtext.xmstring());
 	gdb_message_dialog_label->show();
 	Delay::register_shell(gdb_message_dialog);
 	GUI::Button *button;
@@ -684,7 +684,7 @@ GUI::Dialog *post_error(string text, const _XtString name, GUI::Widget *w)
 
     GUI::Dialog *ddd_error = 
 	new GUI::Dialog(*find_shell1(w), name);
-    GUI::Label *ddd_error_label = new GUI::Label(*ddd_error, mtext.xmstring());
+    GUI::Label *ddd_error_label = new GUI::Label(*ddd_error, GUI::PACK_SHRINK, mtext.xmstring());
     ddd_error_label->show();
     Delay::register_shell(ddd_error);
     GUI::Button *button;
@@ -776,7 +776,7 @@ GUI::Dialog *post_warning(string text, const _XtString name, GUI::Widget *w)
 #endif
     GUI::Dialog *ddd_warning = 
 	new GUI::Dialog(*find_shell1(w), name);
-    GUI::Label *ddd_warning_label = new GUI::Label(*ddd_warning, mtext.xmstring());
+    GUI::Label *ddd_warning_label = new GUI::Label(*ddd_warning, GUI::PACK_SHRINK, mtext.xmstring());
     ddd_warning_label->show();
 
     Delay::register_shell(ddd_warning);

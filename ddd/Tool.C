@@ -195,7 +195,7 @@ void create_command_tool()
 
     AddDeleteWindowCallback(tool_shell, sigc::ptr_fun(gdbCloseToolWindowCB));
 
-    tool_buttons_w = new GUI::VBox(*tool_shell, "tool_buttons");
+    tool_buttons_w = new GUI::VBox(*tool_shell, GUI::PACK_SHRINK, "tool_buttons");
     tool_buttons_w->show();
     set_buttons(tool_buttons_w, app_data.tool_buttons, false);
 

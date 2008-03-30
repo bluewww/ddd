@@ -1953,7 +1953,8 @@ static GUI::CheckButton *create_signal_button(GUI::Widget *label,
 
     GUI::CheckButton *button;
     string fullname = string(XtName(label)) + "-" + name;
-    button = new GUI::CheckButton(*label->get_parent(), fullname.chars(), lbl.xmstring());
+    button = new GUI::CheckButton(*label->get_parent(), GUI::PACK_SHRINK, 
+				  fullname.chars(), lbl.xmstring());
     button->show();
     button->signal_toggled().connect(sigc::bind(sigc::retype(sigc::ptr_fun(SignalCB)), label));
 
@@ -1968,7 +1969,8 @@ static GUI::Button *create_signal_button_send(GUI::Widget *label,
     MString lbl(capitalize(name));
 
     GUI::Button *button;
-    button = new GUI::Button(*label->get_parent(), name.chars(), lbl.xmstring());
+    button = new GUI::Button(*label->get_parent(), GUI::PACK_SHRINK, 
+			     name.chars(), lbl.xmstring());
     button->show();
     button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(SendSignalCB), label));
 
@@ -3105,11 +3107,11 @@ static void add_button(GUI::Container *form, int& row, Dimension& max_width,
     if (callback == 0)
     {
 	if (is_set) {
-	    label = new GUI::Label(*form, base.chars(), labelString.xmstring());
+	    label = new GUI::Label(*form, GUI::PACK_SHRINK, base.chars(), labelString.xmstring());
 	}
 	else {
 	    const string s1 = string("the") + base;
-	    label = new GUI::Label(*form, base.chars(), s1.chars());
+	    label = new GUI::Label(*form, GUI::PACK_SHRINK, base.chars(), s1.chars());
 	}
 
 	label->show();
@@ -3117,7 +3119,8 @@ static void add_button(GUI::Container *form, int& row, Dimension& max_width,
     else
     {
 	GUI::CheckButton *button = 
-	    new GUI::CheckButton(*form, set_command.chars(), labelString.xmstring());
+	    new GUI::CheckButton(*form, GUI::PACK_SHRINK, 
+				 set_command.chars(), labelString.xmstring());
 	entry = label = button;
 	label->set_name(XMST(set_command.chars()));
 	label->show();
@@ -4142,18 +4145,18 @@ static GUI::Dialog *create_panel(DebuggerType type, SettingsType stype)
     }
 
     // Add a rowcolumn widget
-    GUI::Box *column = new GUI::VBox(*panel, "column");
+    GUI::Box *column = new GUI::VBox(*panel, GUI::PACK_SHRINK, "column");
     column->show();
 
     // Add a label
-    GUI::Label *title = new GUI::Label(*column, "title");
+    GUI::Label *title = new GUI::Label(*column, GUI::PACK_SHRINK, "title");
     title->show();
 
     // Add a scrolled window.
     GUI::ScrolledWindow *scroll = new GUI::ScrolledWindow(*column);
 
     // Add a form.
-    GUI::Box *form = new GUI::HBox(*form, "form");
+    GUI::Box *form = new GUI::HBox(*form, GUI::PACK_SHRINK, "form");
 
     switch (stype)
     {
@@ -5794,7 +5797,7 @@ void dddDefineCommandCB(GUI::Widget *w)
 
 	Delay::register_shell(dialog);
 
-	GUI::HBox *form = new GUI::HBox(*dialog, "Form");
+	GUI::HBox *form = new GUI::HBox(*dialog, GUI::PACK_SHRINK, "Form");
 	form->show();
 
 	GUI::Widget *panel = MMcreatePanel(form, "panel", panel_menu);

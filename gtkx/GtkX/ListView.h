@@ -46,11 +46,9 @@ namespace GtkX {
 	static void selection_changed_callback(ListView *lv);
     public:
 	void init_signals(void);
-	ListView(GtkX::Container &parent,
+	ListView(GtkX::Container &parent, PackOptions po,
 		 const GtkX::String &name,
-		 const std::vector<GtkX::String> &headers,
-		 PackOptions options=PACK_SHRINK,
-		 int padding=0);
+		 const std::vector<GtkX::String> &headers);
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;
 	~ListView(void);

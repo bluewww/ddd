@@ -32,6 +32,7 @@
 #define GTKX_CHECKBUTTON_H
 
 #include <GtkX/Bipolar.h>
+#include <GtkX/Container.h>
 #include <gtkmm/checkbutton.h>
 
 // Template for a widget taking two string constructor arguments.
@@ -40,7 +41,7 @@ namespace GtkX {
 
     class CheckButton: public Bipolar, public Gtk::CheckButton {
     public:
-	CheckButton(GtkX::Container &parent, const GtkX::String &name="",
+	CheckButton(GtkX::Container &parent, PackOptions po=PACK_SHRINK, const GtkX::String &name="",
 		    const GtkX::String &label="");
 	~CheckButton(void);
 	Gtk::Widget *internal(void);

@@ -14,8 +14,8 @@ namespace GtkX {
 	std::list<Gtk::VPaned *> xchild_;
     public:
 	MultiPaned(void);
-	MultiPaned(GtkX::Container &parent, const GtkX::String &name="",
-		   const GtkX::String &label="");
+	MultiPaned(GtkX::Container &parent, PackOptions po=PACK_SHRINK, 
+		   const GtkX::String &name="", const GtkX::String &label="");
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;
 	void on_add(Gtk::Widget* widget);

@@ -40,15 +40,16 @@ namespace GtkX {
 
     class Button: public Widget, public Gtk::Button {
     public:
-	Button(GtkX::Container &parent, const String &name="",
-	       const String &label="");
-	Button(Gtk::Container *parent, const String &name="",
+	Button(GtkX::Container &parent, PackOptions po=PACK_SHRINK, const String &name="",
 	       const String &label="");
 	~Button(void);
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
 #include <GtkX/redirect.h>
+    private:
+	Button(Gtk::Container *parent, const String &name="",
+	       const String &label="");
     };
 
 }

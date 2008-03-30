@@ -135,8 +135,8 @@ ScrolledText::ScrolledText(void)
     tv_.show();
 }
 
-ScrolledText::ScrolledText(GtkX::Container &parent, const GtkX::String &name,
-			   const GtkX::String &label)
+ScrolledText::ScrolledText(GtkX::Container &parent, PackOptions po,
+			   const GtkX::String &name, const GtkX::String &label)
 {
     tb_ = tv_.get_buffer();
     // tv_.modify_bg(Gtk::STATE_NORMAL, Gdk::Color("green"));
@@ -146,7 +146,7 @@ ScrolledText::ScrolledText(GtkX::Container &parent, const GtkX::String &name,
     add(tv_);
     tv_.show();
     set_name(name.s());
-    parent.add_child(*this);
+    parent.add_child(*this, po, 0);
     postinit();
 }
 

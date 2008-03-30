@@ -32,7 +32,9 @@
 
 using namespace GtkX;
 
-ComboBoxEntryText::ComboBoxEntryText(GtkX::Container &parent, const GtkX::String &name)
+ComboBoxEntryText::ComboBoxEntryText(GtkX::Container &parent,
+				     PackOptions po,
+				     const GtkX::String &name)
 {
     Gtk::ComboBoxEntryText::set_name(name.s());
     // We cannot use this:
@@ -42,7 +44,7 @@ ComboBoxEntryText::ComboBoxEntryText(GtkX::Container &parent, const GtkX::String
     // sometimes parent.gtk_container() is a standard Gtk widget.
     // In such a case (e.g. RadioBox) we need to override add_child()
     // instead.
-    parent.add_child(*this);
+    parent.add_child(*this, po, 0);
     postinit();
 }
 

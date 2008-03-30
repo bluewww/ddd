@@ -46,10 +46,9 @@ namespace GtkX {
 	Gtk::RadioButtonGroup group_;
     public:
 	void create_box(Orientation orientation=ORIENTATION_VERTICAL);
-	RadioBox(GtkX::Container &parent, const String &name="",
-		 Orientation orientation=ORIENTATION_VERTICAL,
-		 PackOptions options=PACK_SHRINK,
-		 int padding=0);
+	RadioBox(GtkX::Container &parent, PackOptions po=PACK_SHRINK,
+		 const String &name="",
+		 Orientation orientation=ORIENTATION_VERTICAL);
 	~RadioBox(void);
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;

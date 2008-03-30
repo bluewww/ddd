@@ -152,7 +152,7 @@ char ddd_rcsid[] =
 #include <Xm/DialogS.h>
 #include <Xm/Form.h>
 #include <Xm/TextF.h>
-#ifdef IF_XM
+#if defined(IF_XM)
 #include <Xm/ToggleB.h>
 #else
 #include <Xmmm/RadioButton.h>
@@ -1359,7 +1359,7 @@ struct ProgramItems {
     MMEnd								\
 }
 
-#ifdef IF_XM
+#if defined(IF_XM)
 static Widget command_separate_exec_window_w;
 static Widget source_separate_exec_window_w;
 static Widget data_separate_exec_window_w;
@@ -3869,7 +3869,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 					    args, arg);
     XtManageChild(main_window);
 #else
-    GUI::Container *main_window = new GUI::VBox(*command_shell, "main_window");
+    GUI::Container *main_window = new GUI::VBox(*command_shell, GUI::PACK_SHRINK, "main_window");
     main_window->show();
 #endif
 
@@ -3953,8 +3953,8 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	}
     }
 
-#ifndef IF_XM
-    GUI::MultiPaned *paned_work_w = new GUI::MultiPaned(*main_vbox);
+#if !defined(IF_XM)
+    GUI::MultiPaned *paned_work_w = new GUI::MultiPaned(*main_vbox, GUI::PACK_EXPAND_WIDGET);
 #endif
     
     // Install icons if not already done
@@ -4003,7 +4003,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 			       args, arg);
 	XtManageChild(data_main_window_w);
 #else
-	data_main_window_w = new GUI::VBox(*data_disp_shell, "data_main_window");
+	data_main_window_w = new GUI::VBox(*data_disp_shell, GUI::PACK_SHRINK, "data_main_window");
 	data_main_window_w->show();
 #endif
 
@@ -4102,7 +4102,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 			       args, arg);
 	XtManageChild(source_main_window_w);
 #else
-	source_main_window_w = new GUI::VBox(*source_view_shell, "source_main_window");
+	source_main_window_w = new GUI::VBox(*source_view_shell, GUI::PACK_SHRINK, "source_main_window");
 	source_main_window_w->show();
 #endif
 
@@ -4172,11 +4172,9 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 #ifdef NAG_ME
 #warning Debugging - remove
 #endif
-    // source_view_parent->modify_bg(Gtk::STATE_NORMAL, Gdk::Color("white"));
-#endif
-#ifndef IF_XM
+    source_view_parent->set_bg(GUI::STATE_NORMAL, GUI::Color("white"));
     if (app_data.separate_source_window) {
-	source_view_parent = new GUI::MultiPaned(*source_vbox);
+	source_view_parent = new GUI::MultiPaned(*source_vbox, GUI::PACK_EXPAND_WIDGET);
 	source_view_parent->show();
     }
 #endif
@@ -7241,7 +7239,7 @@ static bool helpers_preferences_changed()
     return false;
 }
 
-#ifdef IF_XM
+#if defined(IF_XM)
 static void ResetPreferencesCB(CB_ARG_LIST_2(client_data))
 {
     Widget panel = (Widget)client_data;
@@ -7469,7 +7467,7 @@ static int add_panel(GUI::Notebook *parent,
 {
     std::cerr << ">> add_panel <<\n";
     int pageno = parent->get_n_pages();
-    GUI::WidgetPtr<GUI::HBox> form = new GUI::HBox(*parent, label);
+    GUI::WidgetPtr<GUI::HBox> form = new GUI::HBox(*parent, GUI::PACK_SHRINK, name);
     // Do not show() the form here; this is under the control of the
     // Notebook widget.
 
@@ -7639,7 +7637,7 @@ static void make_preferences(GUI::Widget *parent)
     reset_preferences_w = preferences_dialog->add_button("reset", "Reset");
     reset_preferences_w->show();
 
-    GUI::WidgetPtr<GUI::Notebook> change = new GUI::Notebook(*preferences_dialog, "change");
+    GUI::WidgetPtr<GUI::Notebook> change = new GUI::Notebook(*preferences_dialog, GUI::PACK_SHRINK, "change");
     change->show();
     reset_preferences_w->signal_clicked().connect(sigc::bind(sigc::ptr_fun(ResetPreferencesCB), change));
 
@@ -7806,11 +7804,11 @@ static void create_status(GUI::Container *parent)
 #warning Note: We can use a Box instead of a Form because all we need
 #warning is pack_start and pack_end.
 #endif
-    GUI::Box *status_form = new GUI::HBox(*parent, "status_form");
+    GUI::Box *status_form = new GUI::HBox(*parent, GUI::PACK_SHRINK, "status_form");
     status_form->show();
 
     // Create LED
-    led_w = new GUI::CheckButton(*status_form, "led", "");
+    led_w = new GUI::CheckButton(*status_form, GUI::PACK_SHRINK, "led", "");
 #ifdef NAG_ME
 #warning How to fill toggle button with Green color?
 #endif
@@ -7821,7 +7819,7 @@ static void create_status(GUI::Container *parent)
 #ifdef NAG_ME
 #warning Set arrow as pixmap in button.
 #endif
-    GUI::Button *arrow_w = new GUI::Button(*status_form, "arrow", "_");
+    GUI::Button *arrow_w = new GUI::Button(*status_form, GUI::PACK_SHRINK, "arrow", "_");
 
     arrow_w->show();
 
@@ -7831,7 +7829,7 @@ static void create_status(GUI::Container *parent)
     MString short_msg = rm("Hello, world!");
     MString long_msg = short_msg + rm(replicate(' ', 90));
 
-    status_w = new GUI::Button(*status_form, "status", "Status");
+    status_w = new GUI::Button(*status_form, GUI::PACK_SHRINK, "status", "Status");
     status_w->show();
 
     // Initialize status history
