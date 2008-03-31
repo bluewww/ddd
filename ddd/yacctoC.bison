@@ -91,3 +91,13 @@ s!free *(\([^)]*\))!delete [] \1!g
 
 # malloc.h -> stdlib.h
 s!<malloc\.h>!<stdlib.h>!
+
+# Fix a warning on g++-4.1.2 (and probably other versions too).
+# This jump to the next statement will probably be eliminated
+# by peephole optimisation.
+/^yyerrlab1:$/ i\
+  goto yyerrlab1; /* fix a g++-4.1.2 warning: unused label */
+
+# bison-1.875 generates code the doesn't compile.  Fix it.
+/Suppress GCC warning that yyerrlab1 is unused when no action/,/#endif/d
+
