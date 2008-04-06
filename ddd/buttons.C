@@ -1620,7 +1620,7 @@ void set_buttons(Widget buttons, const _XtString _button_list, bool manage)
 
 #else
 
-void set_buttons(GUI::Box *buttons, const _XtString _button_list, bool manage)
+void set_buttons(GUI::Box *buttons, const char *_button_list, bool manage)
 {
     string *sp;
 
@@ -1670,14 +1670,14 @@ void set_buttons(GUI::Box *buttons, const _XtString _button_list, bool manage)
 	if (name.empty())
 	    continue;
 
-	MString label; // Default constructor
+	string label; // Default constructor
 	if (name.contains(app_data.label_delimiter))
 	{
 	    string label_s = name.after(app_data.label_delimiter);
 	    name = name.before(app_data.label_delimiter);
 	    strip_space(label_s);
 	    strip_space(name);
-	    label = MString(label_s);
+	    label = label_s;
 	}
 
 	string command = name;
@@ -1696,13 +1696,13 @@ void set_buttons(GUI::Box *buttons, const _XtString _button_list, bool manage)
 	    name = name.before(-1);
 	}
 
-	if (label.isNull())
+	if (label.empty())
 	{
 	    // Create default label from name
 	    string label_s = name;
 	    if (!label_s.empty())
 		label_s[0] = toupper(label_s[0]);
-	    label = MString(label_s);
+	    label = label_s;
 	}
 
 	// Make sure the widget name does not contain invalid characters
@@ -1711,7 +1711,7 @@ void set_buttons(GUI::Box *buttons, const _XtString _button_list, bool manage)
 #endif
 	name.gsub(rxsep, '_');
 
-	GUI::Button *button = new GUI::Button(*buttons, GUI::PACK_SHRINK, name.chars());
+	GUI::Button *button = new GUI::Button(*buttons, GUI::PACK_SHRINK, name.chars(), label.chars());
 	button->show();
 	number_of_buttons++;
 

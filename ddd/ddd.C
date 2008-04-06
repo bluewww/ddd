@@ -3912,7 +3912,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     // Note: On Motif it is possible to force a pane to have
     // fixed size.  On Gtk this does not seem possible.  Therefore
     // the toolbar and status bar must go in a VBox.
-    GUI::Box *main_vbox = new GUI::VBox(*main_window);
+    GUI::Box *main_vbox = new GUI::VBox(*main_window, GUI::PACK_EXPAND_WIDGET);
 #endif
 
     // Status line

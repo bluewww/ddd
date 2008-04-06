@@ -5187,13 +5187,13 @@ void SourceView::create_text(GUI::Container *parent, const char *base,
     // directly on a TextView subclass.
     // form = new GtkForm();
     // FIXME: Assume parent is container?
-    GUI::HBox *hbox = new GUI::HBox(*parent);
+    GUI::HBox *hbox = new GUI::HBox(*parent, GUI::PACK_EXPAND_WIDGET);
     form = hbox;
     // FIXME: testing
     hbox->modify_bg(Gtk::STATE_NORMAL, Gdk::Color("red"));
     form->show();
 
-    text = new GUI::ScrolledText(*form);
+    text = new GUI::ScrolledText(*form, GUI::PACK_EXPAND_WIDGET);
     text->set_editable(false);
     text->show();
 
@@ -12131,13 +12131,24 @@ void SourceView::set_display_line_numbers(bool set)
     }
 }
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
+
 // Return help on a glyph
 MString SourceView::help_on_glyph(Widget glyph, bool detailed)
 {
     XmTextPosition dummy;
     return help_on_pos(glyph, 0, dummy, detailed);
 }
+
+#else
+
+// Return help on a glyph
+MString SourceView::help_on_glyph(GUI::Widget *glyph, bool detailed)
+{
+    XmTextPosition dummy;
+    return help_on_pos(glyph, 0, dummy, detailed);
+}
+
 #endif
 
 #if defined(IF_XM)

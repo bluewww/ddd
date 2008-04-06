@@ -31,7 +31,7 @@ using namespace GtkX;
 
 Button::Button(GtkX::Container &parent, PackOptions po,
 	       const GtkX::String &name, const GtkX::String &label):
-    Gtk::Button(label.s())
+    Gtk::Button(mklabel(name, label).s())
 {
     set_name(name.s());
     // We cannot use this:
