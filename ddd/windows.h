@@ -150,11 +150,6 @@ extern void DDDCloseCB              (Widget, XtPointer, XtPointer);
 extern void DDDCloseCB              (GUI::Widget *);
 #endif
 
-#if !defined(IF_XM)
-extern bool CloseCB                 (GUI::Widget*, XEvent*);
-#endif
-
-
 #if defined(IF_XM)
 // Register this event handler with all shells
 extern void StructureNotifyEH(Widget, XtPointer, XEvent *, Boolean *);

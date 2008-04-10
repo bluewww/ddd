@@ -180,9 +180,12 @@ Widget         MMcreatePushMenu           (Widget parent, const char *name, MMDe
 					   ArgList args = 0, Cardinal arg = 0);
 #else
 GUI::Container *MMcreateWorkArea(GUI::Dialog *parent, GUI::String name, MMDesc items[]);
-GUI::Container *MMcreatePanel(GUI::Container *parent, cpString name, MMDesc items[]);
-GUI::Container *MMcreateRadioPanel(GUI::Container *parent, cpString name, MMDesc items[]);
-GUI::Container *MMcreateButtonPanel(GUI::Container *parent, cpString name, MMDesc items[]);
+GUI::Container *MMcreatePanel(GUI::Container *parent, cpString name, MMDesc items[],
+			      GUI::Orientation=GUI::ORIENTATION_VERTICAL);
+GUI::Container *MMcreateRadioPanel(GUI::Container *parent, cpString name, MMDesc items[],
+				   GUI::Orientation=GUI::ORIENTATION_VERTICAL);
+GUI::Container *MMcreateButtonPanel(GUI::Container *parent, cpString name, MMDesc items[],
+				    GUI::Orientation=GUI::ORIENTATION_VERTICAL);
 GUI::Container *MMcreateVButtonPanel(GUI::Container *parent, GUI::String name, MMDesc items[]);
 GUI::Menu      *MMcreatePushMenu(GUI::Container *parent, GUI::String name, MMDesc items[]);
 #endif
@@ -290,34 +293,29 @@ extern void dummy_xcallback(GUI::Widget *);
 // XENTRY*: New-style callbacks using abstract GUI::Widget classes.
 
 #if defined(IF_XM)
-#define MENTRYL(n,s,t,c,sub,w) { n, t, c, sub, (Widget *)w, 0, 0}
-#define MENTRYI(n,i,t,c,sub,w) { n, t, c, sub, (Widget *)w, 0, 0}
-#define MENTRYLI(n,s,i,t,c,sub,w) { n, t, c, sub, (Widget *)w, 0, 0}
-#define XENTRYL(n,s,t,c,cx,sub,w) { n, t, c, sub, (Widget *)w, 0, 0}
-#define XENTRYI(n,i,t,c,cx,sub,w) { n, t, c, sub, (Widget *)w, 0, 0}
-#define XENTRYLI(n,s,i,t,c,cx,sub,w) { n, t, c, sub, (Widget *)w, 0, 0}
-#define GENTRYL(n,s,t,c,cx,sub,w) { n, t, c, sub, (Widget *)w, 0, 0}
-#define GENTRYI(n,i,t,c,cx,sub,w) { n, t, c, sub, (Widget *)w, 0, 0}
-#define GENTRYLI(n,s,i,t,c,cx,sub,w) { n, t, c, sub, (Widget *)w, 0, 0}
+#if 1
+#define MENTRYL(n,s,t,c,sub,w) { n, t, c, sub, w, 0, 0}
+#define MENTRYI(n,i,t,c,sub,w) { n, t, c, sub, w, 0, 0}
+#define MENTRYLI(n,s,i,t,c,sub,w) { n, t, c, sub, w, 0, 0}
+#endif
+#define GENTRYL(n,s,t,c,cx,sub,w) { n, t, c, sub, w, 0, 0}
+#define GENTRYI(n,i,t,c,cx,sub,w) { n, t, c, sub, w, 0, 0}
+#define GENTRYLI(n,s,i,t,c,cx,sub,w) { n, t, c, sub, w, 0, 0}
 #define BIND(f,d) { f, XtPointer(d) }
 #elif defined(IF_XMMM)
+#if 0
 #define MENTRYL(n,s,t,c,sub,w) { n, s, NULL, t, c, sub, w, 0, 0, MDUMMY, 0, 0}
 #define MENTRYI(n,i,t,c,sub,w) { n, "", i, t, c, sub, w, 0, 0, MDUMMY, 0, 0}
 #define MENTRYLI(n,s,i,t,c,sub,w) { n, s, i, t, c, sub, w, 0, 0, MDUMMY, 0, 0}
-#define XENTRYL(n,s,t,c,cx,sub,w) { n, s, NULL, t, c, sub, 0, 0, 0, cx, (Xmmm::Widget **)w, 0}
-#define XENTRYI(n,i,t,c,cx,sub,w) { n, "", i, t, c, sub, 0, 0, 0, cx, (Xmmm::Widget **)w, 0}
-#define XENTRYLI(n,s,i,t,c,cx,sub,w) { n, s, i, t, c, sub, 0, 0, 0, cx, (Xmmm::Widget **)w, 0}
+#endif
 #define GENTRYL(n,s,t,c,cx,sub,w) { n, s, NULL, t, MMNoCB, sub, 0, 0, 0, cx, (Xmmm::Widget **)w, 0}
 #define GENTRYI(n,i,t,c,cx,sub,w) { n, "", i, t, MMNoCB, sub, 0, 0, 0, cx, (Xmmm::Widget **)w, 0}
 #define GENTRYLI(n,s,i,t,c,cx,sub,w) { n, s, i, t, MMNoCB, sub, 0, 0, 0, cx, (Xmmm::Widget **)w, 0}
 #else
+#if 1
 #define MENTRYL(n,s,t,c,sub,w) { n, s, NULL, t, MDUMMY, sub, 0, 0, 0}
 #define MENTRYI(n,i,t,c,sub,w) { n, "", i, t, MDUMMY, sub, 0, 0, 0}
 #define MENTRYLI(n,s,i,t,c,sub,w) { n, s, i, t, MDUMMY, sub, 0, 0, 0}
-#if 0
-#define XENTRYL(n,s,t,c,cx,sub,w) { n, s, NULL, t, MMNoCB, sub, 0, 0, 0, cx, (GUI::Widget **)w, 0, 0}
-#define XENTRYI(n,i,t,c,cx,sub,w) { n, "", i, t, MMNoCB, sub, 0, 0, 0, cx, (GUI::Widget **)w, 0, 0}
-#define XENTRYLI(n,s,i,t,c,cx,sub,w) { n, s, i, t, MMNoCB, sub, 0, 0, 0, cx, (GUI::Widget **)w, 0, 0}
 #endif
 #define GENTRYL(n,s,t,c,cx,sub,w) { n, s, NULL, t, cx, sub, (GUI::Widget **)w, 0, 0}
 #define GENTRYI(n,i,t,c,cx,sub,w) { n, "", i, t, cx, sub, (GUI::Widget **)w, 0, 0}

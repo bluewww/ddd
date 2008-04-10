@@ -82,15 +82,16 @@ static void move_to_end_of_line(XtPointer, XtIntervalId *)
     XmTextSetInsertionPosition(gdb_w, pos);
     XmTextShowPosition(gdb_w, pos);
 #else
-    XmTextPosition pos = gdb_w->get_last_position();
+    long pos = gdb_w->get_last_position();
     gdb_w->set_insertion_position(pos);
     gdb_w->show_position(pos);
 #endif
 }
 
+#if defined(IF_MOTIF)
+
 static XmTextPosition start_of_line()
 {
-#if defined(IF_MOTIF)
     String str = XmTextGetString(gdb_w);
     string s = str;
     XtFree(str);
@@ -102,16 +103,21 @@ static XmTextPosition start_of_line()
 	return XmTextPosition(-1);
 
     return start + 1;
+}
+
 #else
+
+static long start_of_line()
+{
     Gtk::TextIter iter = gdb_w->buffer()->end();
     while (iter.backward_char() && (*iter == '(' || *iter == '>')
 	   && iter.backward_char() && (*iter == '\n')) {
       return iter.get_offset()+1;
     }
     return 0;
-#endif
 }
 
+#endif
 
 //-----------------------------------------------------------------------------
 // Incremental search
@@ -157,6 +163,8 @@ static void set_isearch_motion_ok(XtPointer client_data, XtIntervalId *)
     isearch_motion_ok = bool((long)client_data);
 }
 
+#if defined(IF_XM)
+
 // Show prompt according to current mode
 static void show_isearch()
 {
@@ -187,28 +195,18 @@ static void show_isearch()
 
     bool old_private_gdb_output = private_gdb_output;
     private_gdb_output = true;
-#if defined(IF_MOTIF)
     XmTextReplace(gdb_w, start, XmTextGetLastPosition(gdb_w), XMST(line.chars()));
-#else
-    gdb_w->replace(start, gdb_w->get_last_position(), XMST(line.chars()));
-#endif
     promptPosition = start + prompt.length();
 
     XmTextPosition pos = promptPosition;
     int index = input.index(isearch_string);
     if (isearch_state == ISEARCH_NONE || index < 0)
     {
-#if defined(IF_MOTIF)
 	XmTextSetHighlight(gdb_w, 0, XmTextGetLastPosition(gdb_w),
 			   XmHIGHLIGHT_NORMAL);
-#else
-	gdb_w->set_highlight(0, gdb_w->get_last_position(),
-			     GUI::HIGHLIGHT_NORMAL);
-#endif
     }
     else
     {
-#if defined(IF_MOTIF)
 	XmTextSetHighlight(gdb_w,
 			   0,
 			   pos + index,
@@ -221,7 +219,61 @@ static void show_isearch()
 			   pos + index + isearch_string.length(),
 			   XmTextGetLastPosition(gdb_w),
 			   XmHIGHLIGHT_NORMAL);
+    }
+
+    if (index >= 0)
+	pos += index;
+
+    XmTextSetInsertionPosition(gdb_w, pos);
+    XmTextShowPosition(gdb_w, pos);
+    have_isearch_line = false;
+    private_gdb_output = old_private_gdb_output;
+}
+
 #else
+
+// Show prompt according to current mode
+static void show_isearch()
+{
+    long start = start_of_line();
+    if (start == -1)
+	return;
+
+    string prompt;
+    switch (isearch_state)
+    {
+    case ISEARCH_NONE:
+	prompt = gdb->prompt();
+	break;
+
+    case ISEARCH_NEXT:
+	prompt = isearch_prompt;
+	break;
+
+    case ISEARCH_PREV:
+	prompt = reverse_isearch_prompt;
+	break;
+    }
+
+    if (isearch_state != ISEARCH_NONE)
+	prompt += "`" + cook(isearch_string) + "': ";
+    string input = current_line();
+    string line  = prompt + input;
+
+    bool old_private_gdb_output = private_gdb_output;
+    private_gdb_output = true;
+    gdb_w->replace(start, gdb_w->get_last_position(), XMST(line.chars()));
+    promptPosition = start + prompt.length();
+
+    long pos = promptPosition;
+    int index = input.index(isearch_string);
+    if (isearch_state == ISEARCH_NONE || index < 0)
+    {
+	gdb_w->set_highlight(0, gdb_w->get_last_position(),
+			     GUI::HIGHLIGHT_NORMAL);
+    }
+    else
+    {
 	gdb_w->set_highlight(0,
 			     pos + index,
 			     GUI::HIGHLIGHT_NORMAL);
@@ -231,22 +283,18 @@ static void show_isearch()
 	gdb_w->set_highlight(pos + index + isearch_string.length(),
 			     gdb_w->get_last_position(),
 			     GUI::HIGHLIGHT_NORMAL);
-#endif
     }
 
     if (index >= 0)
 	pos += index;
 
-#if defined(IF_MOTIF)
-    XmTextSetInsertionPosition(gdb_w, pos);
-    XmTextShowPosition(gdb_w, pos);
-#else
     gdb_w->set_insertion_position(pos);
     gdb_w->show_position(pos);
-#endif
     have_isearch_line = false;
     private_gdb_output = old_private_gdb_output;
 }
+
+#endif
 
 // When i-search is done, show history position given in client_data
 static void isearch_done(XtPointer client_data, XtIntervalId *)
@@ -730,10 +778,14 @@ void delete_or_controlAct(Widget, XEvent *e,
 
 static MMDesc gdb_popup[] =
 {
-    MENTRYL("clear_line", "clear_line", MMPush,
-	   HIDE_0(PTR_FUN(gdbClearCB)), 0, 0),
-    MENTRYL("clear_window", "clear_window", MMPush,
-	   HIDE_0(PTR_FUN(gdbClearWindowCB)), 0, 0),
+    GENTRYL("clear_line", "clear_line", MMPush,
+	    BIND(gdbClearCB, 0),
+	    sigc::hide(sigc::ptr_fun(gdbClearCB)),
+	    0, 0),
+    GENTRYL("clear_window", "clear_window", MMPush,
+	    BIND(gdbClearWindowCB, 0),
+	    sigc::hide(sigc::ptr_fun(gdbClearWindowCB)),
+	    0, 0),
     MMEnd
 };
 

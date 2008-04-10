@@ -47,7 +47,7 @@ char status_rcsid[] =
 #include "verify.h"
 
 #include <ctype.h>
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 #include <Xm/Xm.h>
 #include <Xm/Text.h>
 #include <Xm/SelectioB.h>
@@ -58,7 +58,7 @@ char status_rcsid[] =
 
 #include <X11/IntrinsicP.h>	// LessTif hacks
 #include "LessTifH.h"
-#endif // IF_MOTIF
+#endif
 
 //-----------------------------------------------------------------------------
 // Data
@@ -121,7 +121,7 @@ void set_buttons_from_gdb(Widget buttons, string& text)
 	// FIXME: Handle JDB
 	char prompt_start = (gdb->type() == XDB ? '>' : '(');
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	// Fetch previous output lines, in case this is a multi-line message.
 	String s = XmTextGetString(gdb_w);
 	string prompt(s);
@@ -137,8 +137,8 @@ void set_buttons_from_gdb(Widget buttons, string& text)
 	promptPosition = pos;
 
 	prompt = prompt.from(pos);
-#else // NOT IF_MOTIF
-	XmTextPosition pos = gdb_w->find_backward(prompt_start);
+#else
+	long pos = gdb_w->find_backward(prompt_start);
 	if (pos >= 0)
 	    pos = gdb_w->find_backward('\n', pos) + 1;
 	if (pos == 0)
@@ -146,7 +146,7 @@ void set_buttons_from_gdb(Widget buttons, string& text)
 	string prompt = string(gdb_w->get_text(pos, -1).c_str());
 
 	gdb_w->replace(pos, -1, XMST(""));
-#endif // IF_MOTIF
+#endif
 	if (text.contains('('))
 	    prompt += text.before('(', -1); // Don't repeat `(y or n)'
 	else
@@ -166,7 +166,7 @@ void set_buttons_from_gdb(Widget buttons, string& text)
 
     last_yn = yn;
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     if (XtIsComposite(buttons))
     {
 	set_sensitive(buttons, false);
@@ -196,12 +196,12 @@ void set_buttons_from_gdb(Widget buttons, string& text)
 
 	set_sensitive(buttons, true);
     }
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning How did we get here?
 #endif
     std::cerr << "How did we get here?\n";
-#endif // IF_MOTIF
+#endif
 }
 
 
@@ -216,7 +216,7 @@ static int current_history = 0;
 static Widget history_label = 0;
 static Widget history_row   = 0;
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 static Widget create_status_history(Widget parent)
 {
     static Widget history_shell = 0;
@@ -254,7 +254,7 @@ static Widget create_status_history(Widget parent)
 
     return history_shell;
 }
-#endif // IF_MOTIF
+#endif
 
 #if defined(IF_XM)
 
@@ -319,7 +319,7 @@ GUI::Menu *status_history(GUI::Widget *parent)
 
 #endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 // Return true iff S1 is a prefix of S2
 static bool is_prefix(const MString& m1, const MString& m2)
 {
@@ -487,11 +487,11 @@ static void add_to_status_history(const MString& message)
     history[current_history] = message;
     current_history = (current_history + 1) % status_history_size;
 }
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Status history not supported.
 #endif
-#endif // IF_MOTIF
+#endif
 
 //-----------------------------------------------------------------------------
 // Status recognition
@@ -506,13 +506,13 @@ void set_status_from_gdb(const string& text)
 	return;
 
     // Fetch line before prompt in GDB window
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     String s = XmTextGetString(gdb_w);
     string message = s + messagePosition;
     XtFree(s);
-#else // NOT IF_MOTIF
+#else
     string message(gdb_w->get_text(messagePosition, -1).c_str());
-#endif // IF_MOTIF
+#endif
 
     if (message.empty() && text.contains('\n'))
 	message = text;
@@ -532,11 +532,11 @@ void set_status_from_gdb(const string& text)
 
     if (show_next_line_in_status)
     {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	messagePosition = XmTextGetLastPosition(gdb_w) + text.length();
-#else // NOT IF_MOTIF
+#else
 	messagePosition = gdb_w->get_last_position() + text.length();
-#endif // IF_MOTIF
+#endif
 	show_next_line_in_status = false;
 	message.gsub('\n', ' ');
     }
@@ -584,28 +584,28 @@ void set_status_mstring(const MString& message, bool temporary)
     if (status_w == 0)
 	return;
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     if (!temporary)
 	add_to_status_history(message);
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Status history not implemented
 #endif
-#endif // IF_MOTIF
+#endif
 
     if (!status_locked)
     {
 	current_status_text = message;
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	XtVaSetValues(status_w,
 		      XmNlabelString, message.xmstring(),
 		      XtPointer(0));
 	XFlush(XtDisplay(status_w));
 	XmUpdateDisplay(status_w);
-#else // NOT IF_MOTIF
+#else
 	status_w->set_label(message.xmstring());
-#endif // IF_MOTIF
+#endif
     }
 
     if (log_status && !temporary)

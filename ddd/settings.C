@@ -4600,8 +4600,10 @@ void dddPopupSignalsCB (GUI::Widget *)
 
 #endif
 
+#if defined(IF_XM)
+
 // Popup editor for display themes
-void dddPopupThemesCB (CB_ARG_LIST_NULL)
+void dddPopupThemesCB (Widget, XtPointer, XtPointer)
 {
     Widget themes = create_themes(gdb->type());
     if (themes == 0)
@@ -4609,6 +4611,20 @@ void dddPopupThemesCB (CB_ARG_LIST_NULL)
 
     manage_and_raise(themes);
 }
+
+#else
+
+// Popup editor for display themes
+void dddPopupThemesCB (void)
+{
+    Widget themes = create_themes(gdb->type());
+    if (themes == 0)
+	return;
+
+    manage_and_raise(themes);
+}
+
+#endif
 
 // True iff settings might have changed
 bool need_settings()

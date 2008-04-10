@@ -397,27 +397,34 @@ MMDesc SourceView::bp_area[] =
 	    HIDE_0_BIND_1(PTR_FUN(SourceView::EditBreakpointPropertiesCB), (int *)0),
 	    sigc::hide(sigc::bind(sigc::ptr_fun(SourceView::EditBreakpointPropertiesCB), (int *)0)),
 	    0, 0),
-    MENTRYL("lookup", "lookup", MMPush, 
-	    HIDE_0_BIND_1(PTR_FUN(SourceView::LookupBreakpointCB), (BreakpointPropertiesInfo *)0),
+    GENTRYL("lookup", "lookup", MMPush, 
+	    BIND(SourceView::LookupBreakpointCB, 0),
+	    sigc::hide(sigc::bind(sigc::ptr_fun(SourceView::LookupBreakpointCB),
+				  (BreakpointPropertiesInfo *)0)),
 	    0, 0),
     GENTRYL("new_bp", "new_bp", MMPush,
 	    BIND_0(PTR_FUN(SourceView::NewBreakpointCB)),
 	    sigc::ptr_fun(SourceView::NewBreakpointCB),
 	    0, 0),
-    MENTRYL("new_wp", "new_wp", MMPush,
-	    BIND_0(PTR_FUN(SourceView::NewWatchpointCB)),
+    GENTRYL("new_wp", "new_wp", MMPush,
+	    BIND(SourceView::NewWatchpointCB, 0),
+	    sigc::ptr_fun(SourceView::NewWatchpointCB),
 	    0, 0),
-    MENTRYL("print", "print", MMPush, 
-	    BIND_1(PTR_FUN(SourceView::PrintWatchpointCB), (BreakpointPropertiesInfo *)0),
+    GENTRYL("print", "print", MMPush, 
+	    BIND(SourceView::PrintWatchpointCB, 0),
+	    sigc::bind(sigc::ptr_fun(SourceView::PrintWatchpointCB), (BreakpointPropertiesInfo *)0),
 	    0, 0),
-    MENTRYL("enable", "enable", MMPush, 
-	    HIDE_0_BIND_1(PTR_FUN(SourceView::BreakpointCmdCB), "enable"),
+    GENTRYL("enable", "enable", MMPush, 
+	    BIND(SourceView::BreakpointCmdCB, "enable"),
+	    sigc::hide(sigc::bind(sigc::ptr_fun(SourceView::BreakpointCmdCB), "enable")),
 	    0, 0),
-    MENTRYL("disable", "disable", MMPush, 
-	    HIDE_0_BIND_1(PTR_FUN(SourceView::BreakpointCmdCB), "disable"),
+    GENTRYL("disable", "disable", MMPush, 
+	    BIND(SourceView::BreakpointCmdCB, "disable"),
+	    sigc::hide(sigc::bind(sigc::ptr_fun(SourceView::BreakpointCmdCB), "disable")),
 	    0, 0),
-    MENTRYL("delete", "delete", MMPush | MMHelp, 
-	    HIDE_0_BIND_1(PTR_FUN(SourceView::BreakpointCmdCB), "delete"),
+    GENTRYL("delete", "delete", MMPush | MMHelp, 
+	    BIND(SourceView::BreakpointCmdCB, "delete"),
+	    sigc::hide(sigc::bind(sigc::ptr_fun(SourceView::BreakpointCmdCB), "delete")),
 	    0, 0),
     MMEnd
 };
@@ -464,32 +471,40 @@ static string callback_word;
 // callback closure.  Therefore we use a global callback_word.
 MMDesc SourceView::text_popup[] =
 {
-    MENTRYL("print", "print", MMPush,
-	    BIND_1(PTR_FUN(SourceView::text_popup_printCB), (string *)&callback_word),
+    GENTRYL("print", "print", MMPush,
+	    BIND(SourceView::text_popup_printCB, &callback_word),
+	    sigc::bind(sigc::ptr_fun(SourceView::text_popup_printCB), &callback_word),
 	    0, 0),
-    MENTRYL("disp", "disp", MMPush,
-	    BIND_1(PTR_FUN(SourceView::text_popup_dispCB), (string *)&callback_word),
+    GENTRYL("disp", "disp", MMPush,
+	    BIND(SourceView::text_popup_dispCB, &callback_word),
+	    sigc::bind(sigc::ptr_fun(SourceView::text_popup_dispCB), &callback_word),
 	    0, 0),
-    MENTRYL("watch", "watch", MMPush | MMUnmanaged, 
-	    BIND_1(PTR_FUN(SourceView::text_popup_watchCB), (string *)&callback_word),
-	    0, 0),
-    MMSep,
-    MENTRYL("printRef", "printRef", MMPush, 
-	    BIND_1(PTR_FUN(SourceView::text_popup_print_refCB), (string *)&callback_word),
-	    0, 0),
-    MENTRYL("dispRef", "dispRef", MMPush, 
-	    BIND_1(PTR_FUN(SourceView::text_popup_disp_refCB), (string *)&callback_word),
-	    0, 0),
-    MENTRYL("watchRef", "watchRef", MMPush | MMUnmanaged, 
-	    BIND_1(PTR_FUN(SourceView::text_popup_watch_refCB), (string *)&callback_word),
+    GENTRYL("watch", "watch", MMPush | MMUnmanaged, 
+	    BIND(SourceView::text_popup_watchCB, &callback_word),
+	    sigc::bind(sigc::ptr_fun(SourceView::text_popup_watchCB), &callback_word),
 	    0, 0),
     MMSep,
-    MENTRYL("whatis", "whatis", MMPush,
-	    BIND_1(PTR_FUN(SourceView::text_popup_whatisCB), (string *)&callback_word),
+    GENTRYL("printRef", "printRef", MMPush, 
+	    BIND(SourceView::text_popup_print_refCB, &callback_word),
+	    sigc::bind(sigc::ptr_fun(SourceView::text_popup_print_refCB), &callback_word),
+	    0, 0),
+    GENTRYL("dispRef", "dispRef", MMPush, 
+	    BIND(SourceView::text_popup_disp_refCB, &callback_word),
+	    sigc::bind(sigc::ptr_fun(SourceView::text_popup_disp_refCB), &callback_word),
+	    0, 0),
+    GENTRYL("watchRef", "watchRef", MMPush | MMUnmanaged, 
+	    BIND(SourceView::text_popup_watch_refCB, &callback_word),
+	    sigc::bind(sigc::ptr_fun(SourceView::text_popup_watch_refCB), &callback_word),
 	    0, 0),
     MMSep,
-    MENTRYL("lookup", "lookup", MMPush,
-	    HIDE_0_BIND_1(PTR_FUN(SourceView::text_popup_lookupCB), (string *)&callback_word),
+    GENTRYL("whatis", "whatis", MMPush,
+	    BIND(SourceView::text_popup_whatisCB, &callback_word),
+	    sigc::bind(sigc::ptr_fun(SourceView::text_popup_whatisCB), &callback_word),
+	    0, 0),
+    MMSep,
+    GENTRYL("lookup", "lookup", MMPush,
+	    BIND(SourceView::text_popup_lookupCB, &callback_word),
+	    sigc::hide(sigc::bind(sigc::ptr_fun(SourceView::text_popup_lookupCB), &callback_word)),
 	    0, 0),
     GENTRYL("breakAt", "breakAt", MMPush,
 	    BIND_1(PTR_FUN(SourceView::text_popup_breakCB), (string *)&callback_word),
@@ -633,6 +648,8 @@ string SourceView::current_code_end;
 string SourceView::current_pwd        = cwd();
 string SourceView::current_class_path = NO_GDB_ANSWER;
 
+#if defined(IF_XM)
+
 XmTextPosition SourceView::last_top                = 0;
 XmTextPosition SourceView::last_pos                = 0;
 XmTextPosition SourceView::last_start_highlight    = 0;
@@ -642,6 +659,20 @@ XmTextPosition SourceView::last_top_pc             = 0;
 XmTextPosition SourceView::last_pos_pc             = 0;
 XmTextPosition SourceView::last_start_highlight_pc = 0;
 XmTextPosition SourceView::last_end_highlight_pc   = 0;
+
+#else
+
+long SourceView::last_top                = 0;
+long SourceView::last_pos                = 0;
+long SourceView::last_start_highlight    = 0;
+long SourceView::last_end_highlight      = 0;
+
+long SourceView::last_top_pc             = 0;
+long SourceView::last_pos_pc             = 0;
+long SourceView::last_start_highlight_pc = 0;
+long SourceView::last_end_highlight_pc   = 0;
+
+#endif
 
 string SourceView::last_execution_file = "";
 int    SourceView::last_execution_line = 0;
@@ -665,6 +696,8 @@ int SourceView::max_breakpoint_number_seen = 0;
 // Selection stuff
 //-----------------------------------------------------------------------
 
+#if defined(IF_XM)
+
 static XmTextPosition selection_startpos;
 static XmTextPosition selection_endpos;
 static Time           selection_time;
@@ -672,6 +705,13 @@ static Time           selection_time;
 static XEvent         selection_event;
 #endif
 
+#else
+
+static long selection_startpos;
+static long selection_endpos;
+static Time           selection_time;
+
+#endif
 
 //-----------------------------------------------------------------------
 // Helping functions.
@@ -2340,7 +2380,9 @@ void SourceView::text_popup_clearCB (GUI::Widget *w, const string *word_ptr)
 
 // ***************************************************************************
 //
-void SourceView::text_popup_printCB (CB_ALIST_12(Widget w, XtP(const string *) client_data))
+#if defined(IF_XM)
+
+void SourceView::text_popup_printCB (Widget w, XtPointer client_data, XtPointer)
 {
     const string* word_ptr = (const string*)client_data;
     assert(word_ptr->length() > 0);
@@ -2348,7 +2390,7 @@ void SourceView::text_popup_printCB (CB_ALIST_12(Widget w, XtP(const string *) c
     gdb_command(gdb->print_command(fortranize(*word_ptr), false), w);
 }
 
-void SourceView::text_popup_print_refCB (CB_ALIST_12(Widget w, XtP(const string *) client_data))
+void SourceView::text_popup_print_refCB (Widget w, XtPointer client_data, XtPointer)
 {
     const string* word_ptr = (const string*)client_data;
     assert(word_ptr->length() > 0);
@@ -2356,10 +2398,31 @@ void SourceView::text_popup_print_refCB (CB_ALIST_12(Widget w, XtP(const string 
     gdb_command(gdb->print_command(deref(fortranize(*word_ptr)), false), w);
 }
 
+#else
+
+void SourceView::text_popup_printCB (GUI::Widget *w, const string *word_ptr)
+{
+    assert(word_ptr->length() > 0);
+
+    gdb_command1(gdb->print_command(fortranize(*word_ptr), false), w);
+}
+
+void SourceView::text_popup_print_refCB (GUI::Widget *w, const string *word_ptr)
+{
+    assert(word_ptr->length() > 0);
+
+    gdb_command1(gdb->print_command(deref(fortranize(*word_ptr)), false), w);
+}
+
+#endif
+
 
 // ***************************************************************************
 //
-void SourceView::text_popup_watchCB (CB_ALIST_12(Widget w, XtP(const string *) client_data))
+
+#if defined(IF_XM)
+
+void SourceView::text_popup_watchCB (Widget w, XtPointer client_data, XtPointer)
 {
     const string* word_ptr = (const string*)client_data;
     assert(word_ptr->length() > 0);
@@ -2367,7 +2430,7 @@ void SourceView::text_popup_watchCB (CB_ALIST_12(Widget w, XtP(const string *) c
     gdb_command(gdb->watch_command(fortranize(*word_ptr)), w);
 }
 
-void SourceView::text_popup_watch_refCB (CB_ALIST_12(Widget w, XtP(const string *) client_data))
+void SourceView::text_popup_watch_refCB (Widget w, XtPointer client_data, XtPointer)
 {
     const string* word_ptr = (const string*)client_data;
     assert(word_ptr->length() > 0);
@@ -2375,10 +2438,30 @@ void SourceView::text_popup_watch_refCB (CB_ALIST_12(Widget w, XtP(const string 
     gdb_command(gdb->watch_command(deref(fortranize(*word_ptr))), w);
 }
 
+#else
+
+void SourceView::text_popup_watchCB (GUI::Widget *w, const string *word_ptr)
+{
+    assert(word_ptr->length() > 0);
+
+    gdb_command1(gdb->watch_command(fortranize(*word_ptr)), w);
+}
+
+void SourceView::text_popup_watch_refCB (GUI::Widget *w, const string *word_ptr)
+{
+    assert(word_ptr->length() > 0);
+
+    gdb_command1(gdb->watch_command(deref(fortranize(*word_ptr))), w);
+}
+
+#endif
+
 
 // ***************************************************************************
 //
-void SourceView::text_popup_dispCB (CB_ALIST_12(Widget w, XtP(const string *) client_data))
+#if defined(IF_XM)
+
+void SourceView::text_popup_dispCB (Widget w, XtPointer client_data, XtPointer)
 {
     const string* word_ptr = (const string*)client_data;
     assert(word_ptr->length() > 0);
@@ -2386,7 +2469,7 @@ void SourceView::text_popup_dispCB (CB_ALIST_12(Widget w, XtP(const string *) cl
     gdb_command("graph display " + fortranize(*word_ptr), w);
 }
 
-void SourceView::text_popup_disp_refCB (CB_ALIST_12(Widget w, XtP(const string *) client_data))
+void SourceView::text_popup_disp_refCB (Widget w, XtPointer client_data, XtPointer)
 {
     const string* word_ptr = (const string*)client_data;
     assert(word_ptr->length() > 0);
@@ -2394,9 +2477,30 @@ void SourceView::text_popup_disp_refCB (CB_ALIST_12(Widget w, XtP(const string *
     gdb_command("graph display " + deref(fortranize(*word_ptr)), w);
 }
 
+#else
+
+void SourceView::text_popup_dispCB (GUI::Widget *w, const string *word_ptr)
+{
+    assert(word_ptr->length() > 0);
+
+    gdb_command1("graph display " + fortranize(*word_ptr), w);
+}
+
+void SourceView::text_popup_disp_refCB (GUI::Widget *w, const string *word_ptr)
+{
+    assert(word_ptr->length() > 0);
+
+    gdb_command1("graph display " + deref(fortranize(*word_ptr)), w);
+}
+
+#endif
+
 // ***************************************************************************
 //
-void SourceView::text_popup_whatisCB (CB_ALIST_12(Widget w, XtP(const string *) client_data))
+
+#if defined(IF_XM)
+
+void SourceView::text_popup_whatisCB (Widget w, XtPointer client_data, XtPointer)
 {
     const string* word_ptr = (const string*)client_data;
     assert(word_ptr->length() > 0);
@@ -2404,14 +2508,36 @@ void SourceView::text_popup_whatisCB (CB_ALIST_12(Widget w, XtP(const string *) 
     gdb_command(gdb->whatis_command(fortranize(*word_ptr)), w);
 }
 
+#else
+
+void SourceView::text_popup_whatisCB (GUI::Widget *w, const string *word_ptr)
+{
+    assert(word_ptr->length() > 0);
+
+    gdb_command1(gdb->whatis_command(fortranize(*word_ptr)), w);
+}
+
+#endif
+
 // ***************************************************************************
 //
-void SourceView::text_popup_lookupCB (CB_ALIST_2(XtP(const string *) client_data))
+
+#if defined(IF_XM)
+
+void SourceView::text_popup_lookupCB (Widget, XtPointer client_data, XtPointer)
 {
     const string* word_ptr = (const string*)client_data;
     lookup(fortranize(*word_ptr, true));
 }
 
+#else
+
+void SourceView::text_popup_lookupCB (const string *word_ptr)
+{
+    lookup(fortranize(*word_ptr, true));
+}
+
+#endif
 
 // ***************************************************************************
 //
@@ -2825,10 +2951,11 @@ BreakPoint *SourceView::watchpoint_at(const string& expr)
 
 // ***************************************************************************
 
+#if defined(IF_XM)
+
 // Show position POS in TEXT_W, scrolling nicely
-void SourceView::ShowPosition(SCROLLEDTEXT_P text_w, XmTextPosition pos, bool fromTop)
+void SourceView::ShowPosition(Widget text_w, XmTextPosition pos, bool fromTop)
 {
-#if defined(IF_MOTIF)
     const string& text = current_text(text_w);
     if (text.length() == 0)
 	return;			// No position to show
@@ -2869,7 +2996,13 @@ void SourceView::ShowPosition(SCROLLEDTEXT_P text_w, XmTextPosition pos, bool fr
     }
 
     XmTextShowPosition(text_w, pos);	// just to make sure
+}
+
 #else
+
+// Show position POS in TEXT_W, scrolling nicely
+void SourceView::ShowPosition(GUI::ScrolledText *text_w, long pos, bool fromTop)
+{
     Gtk::TextIter iter = text_w->buffer()->get_iter_at_offset(pos);
     // scroll_to(iter) fails.  This is ugly as hell, and I consider
     // this to be a serious bug in Gtk.  See comments on
@@ -2877,8 +3010,9 @@ void SourceView::ShowPosition(SCROLLEDTEXT_P text_w, XmTextPosition pos, bool fr
     Glib::RefPtr<Gtk::TextMark> mark = text_w->buffer()->create_mark(iter);
     // text_w->view().scroll_to(iter);
     text_w->view().scroll_to(mark, 0.0);
-#endif
 }
+
+#endif
 
 void SourceView::SetInsertionPosition(SCROLLEDTEXT_P text_w, 
 				      XmTextPosition pos, bool fromTop)
@@ -7549,7 +7683,8 @@ void SourceView::NewBreakpointCB(GUI::Widget *w)
 
 WatchMode SourceView::selected_watch_mode = WATCH_CHANGE;
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
+
 void SourceView::SetWatchModeCB(Widget, XtPointer client_data, 
 				XtPointer call_data)
 {
@@ -7559,11 +7694,14 @@ void SourceView::SetWatchModeCB(Widget, XtPointer client_data,
     if (info->set)
 	selected_watch_mode = WatchMode((int)(long)client_data);
 }
+
 #else
+
 void SourceView::SetWatchModeCB(int i)
 {
     selected_watch_mode = WatchMode(i);
 }
+
 #endif
 
 void SourceView::NewWatchpointDCB(CB_ALIST_12(Widget w, XtP(COMBOBOXENTRYTEXT_P) client_data))
@@ -7587,7 +7725,7 @@ void SourceView::NewWatchpointDCB(CB_ALIST_12(Widget w, XtP(COMBOBOXENTRYTEXT_P)
 
 #if defined(IF_XM)
 
-void SourceView::NewWatchpointCB(CB_ALIST_1(Widget w))
+void SourceView::NewWatchpointCB(Widget w, XtPointer, XtPointer)
 {
     static Widget dialog = 0;
     if (dialog == 0)
@@ -7596,23 +7734,26 @@ void SourceView::NewWatchpointCB(CB_ALIST_1(Widget w))
 
 	static MMDesc wp_modes[] =
 	{
-	    MENTRYL("cwatch", "cwatch", MMPush,
-	      HIDE_0_BIND_1(PTR_FUN(SetWatchModeCB), WATCH_CHANGE), 
-	      0, &cwatch_w),
-	    MENTRYL("rwatch", "rwatch", MMPush,
-	      HIDE_0_BIND_1(PTR_FUN(SetWatchModeCB), WATCH_READ), 
-	      0, &rwatch_w),
-	    MENTRYL("awatch", "awatch", MMPush,
-	      HIDE_0_BIND_1(PTR_FUN(SetWatchModeCB), WATCH_ACCESS),
-	      0, &awatch_w),
+	    GENTRYL("cwatch", "cwatch", MMPush,
+		    BIND(SetWatchModeCB, WATCH_CHANGE), 
+		    sigc::hide(sigc::bind(sigc::ptr_fun(SetWatchModeCB), WATCH_CHANGE)), 
+		    0, &cwatch_w),
+	    GENTRYL("rwatch", "rwatch", MMPush,
+		    BIND(SetWatchModeCB, WATCH_READ), 
+		    sigc::hide(sigc::bind(sigc::ptr_fun(SetWatchModeCB), WATCH_READ)), 
+		    0, &rwatch_w),
+	    GENTRYL("awatch", "awatch", MMPush,
+		    BIND(SetWatchModeCB, WATCH_ACCESS),
+		    sigc::hide(sigc::bind(sigc::ptr_fun(SetWatchModeCB), WATCH_ACCESS)),
+		    0, &awatch_w),
 	    MMEnd
 	};
 
 	static MMDesc wp_menu[] = 
 	{
-	    MENTRYL("set", "set", MMLabel, MMNoCB, 0, 0),
-	    MENTRYL("method", "method", MMOptionMenu, MMNoCB, wp_modes, 0),
-	    MENTRYL("on", "on", MMLabel, MMNoCB, 0, 0),
+	    GENTRYL("set", "set", MMLabel, MMNoCB, MDUMMY, 0, 0),
+	    GENTRYL("method", "method", MMOptionMenu, MMNoCB, MDUMMY, wp_modes, 0),
+	    GENTRYL("on", "on", MMLabel, MMNoCB, MDUMMY, 0, 0),
 	    MMEnd
 	};
 
@@ -7676,7 +7817,7 @@ void SourceView::NewWatchpointCB(CB_ALIST_1(Widget w))
 
 #else
 
-void SourceView::NewWatchpointCB(CB_ALIST_1(Widget w))
+void SourceView::NewWatchpointCB(GUI::Widget *w)
 {
     static GUI::Dialog *dialog = 0;
     if (dialog == 0)
@@ -7702,13 +7843,13 @@ void SourceView::NewWatchpointCB(CB_ALIST_1(Widget w))
 
 	static MMDesc wp_menu[] = 
 	{
-	    MENTRYL("set", "set", MMLabel, MMNoCB, 0, 0),
-	    MENTRYL("method", "method", MMOptionMenu, MMNoCB, wp_modes, 0),
-	    MENTRYL("on", "on", MMLabel, MMNoCB, 0, 0),
+	    GENTRYL("set", "set", MMLabel, MMNoCB, MDUMMY, 0, 0),
+	    GENTRYL("method", "method", MMOptionMenu, MMNoCB, MDUMMY, wp_modes, 0),
+	    GENTRYL("on", "on", MMLabel, MMNoCB, MDUMMY, 0, 0),
 	    MMEnd
 	};
 
-	dialog = new GUI::Dialog(find_shell(w), GUI::String("new_watchpoint_dialog"));
+	dialog = new GUI::Dialog(*find_shell1(w), GUI::String("new_watchpoint_dialog"));
 	Delay::register_shell(dialog);
 
 
@@ -8444,32 +8585,47 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, Widget /* origin */)
 
     MMDesc commands_menu[] =
     {
-	MENTRYL("record", "record", MMPush,
-	  BIND_1(PTR_FUN(RecordBreakpointCommandsCB), info), 
-	  0, &info->record),
-	MENTRYL("end", "end", MMPush | MMInsensitive,
-	  BIND_0(PTR_FUN(EndBreakpointCommandsCB)), 
-	  0, &info->end),
-	MENTRYL("edit", "edit", MMPush | MMInsensitive,
-	  BIND_1(PTR_FUN(EditBreakpointCommandsCB), info), 
-	  0, &info->edit),
+	GENTRYL("record", "record", MMPush,
+		BIND(RecordBreakpointCommandsCB, info), 
+		sigc::bind(sigc::ptr_fun(RecordBreakpointCommandsCB), info), 
+		0, &info->record),
+	GENTRYL("end", "end", MMPush | MMInsensitive,
+		BIND(EndBreakpointCommandsCB, 0), 
+		sigc::ptr_fun(EndBreakpointCommandsCB), 
+		0, &info->end),
+	GENTRYL("edit", "edit", MMPush | MMInsensitive,
+		BIND(EditBreakpointCommandsCB, info), 
+		sigc::bind(sigc::ptr_fun(EditBreakpointCommandsCB), info), 
+		0, &info->edit),
 	MMEnd
     };
 
     MMDesc enabled_menu[] = 
     {
-	MENTRYL("lookup", "lookup", MMPush,
-	  HIDE_0_BIND_1(PTR_FUN(LookupBreakpointCB), info), 0, &info->lookup),
-	MENTRYL("print", "print", MMPush,
-	  BIND_1(PTR_FUN(PrintWatchpointCB), info), 0, &info->print),
-	MENTRYL("enable", "enable", MMPush,
-	  BIND_1(PTR_FUN(EnableBreakpointsCB), info), 0, &info->enable),
-	MENTRYL("disable", "disable", MMPush,
-	  HIDE_0_BIND_1(PTR_FUN(DisableBreakpointsCB), info), 0, &info->disable),
-	MENTRYL("temporary", "temporary", MMPush,
-	  HIDE_0_BIND_1(PTR_FUN(MakeBreakpointsTempCB), info), 0, &info->temp),
-	MENTRYL("delete", "delete", MMPush | MMHelp,
-	  BIND_1(PTR_FUN(DeleteBreakpointsCB), info), 0, &info->del),
+	GENTRYL("lookup", "lookup", MMPush,
+		BIND(LookupBreakpointCB, info),
+		sigc::hide(sigc::bind(sigc::ptr_fun(LookupBreakpointCB), info)),
+		0, &info->lookup),
+	GENTRYL("print", "print", MMPush,
+		BIND(PrintWatchpointCB, info),
+		sigc::bind(sigc::ptr_fun(PrintWatchpointCB), info),
+		0, &info->print),
+	GENTRYL("enable", "enable", MMPush,
+		BIND(EnableBreakpointsCB, info),
+		sigc::bind(sigc::ptr_fun(EnableBreakpointsCB), info),
+		0, &info->enable),
+	GENTRYL("disable", "disable", MMPush,
+		BIND(DisableBreakpointsCB, info),
+		sigc::hide(sigc::bind(sigc::ptr_fun(DisableBreakpointsCB), info)),
+		0, &info->disable),
+	GENTRYL("temporary", "temporary", MMPush,
+		BIND(MakeBreakpointsTempCB, info),
+		sigc::hide(sigc::bind(sigc::ptr_fun(MakeBreakpointsTempCB), info)),
+		0, &info->temp),
+	GENTRYL("delete", "delete", MMPush | MMHelp,
+		BIND(DeleteBreakpointsCB, info),
+		sigc::bind(sigc::ptr_fun(DeleteBreakpointsCB), info),
+		0, &info->del),
 	MMEnd
     };
 
@@ -8484,16 +8640,18 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, Widget /* origin */)
 
     MMDesc panel_menu[] = 
     {
-	MENTRYL("title", "title", MMButtonPanel,
-	  MMNoCB, enabled_menu, 0),
-	MENTRYL("condition", "condition", MMComboBox,
-	  BIND_1(PTR_FUN(SetBreakpointConditionCB), info), 
-	  0, (Widget *)&info->condition),
-	MENTRYL("ignore", "ignore", MMSpinBox,
-	  BIND_1(PTR_FUN(SetBreakpointIgnoreCountCB), info), 
-	  0, (Widget *)&info->ignore),
-	MENTRYL("commands", "commands", MMButtonPanel,
-	  MMNoCB, commands_menu, 0),
+	GENTRYL("title", "title", MMButtonPanel,
+		MMNoCB, MDUMMY, enabled_menu, 0),
+	GENTRYL("condition", "condition", MMComboBox,
+		BIND(SetBreakpointConditionCB, info), 
+		sigc::bind(sigc::ptr_fun(SetBreakpointConditionCB), info), 
+		0, &info->condition),
+	GENTRYL("ignore", "ignore", MMSpinBox,
+		BIND(SetBreakpointIgnoreCountCB, info), 
+		sigc::bind(sigc::ptr_fun(SetBreakpointIgnoreCountCB), info), 
+		0, &info->ignore),
+	GENTRYL("commands", "commands", MMButtonPanel,
+		MMNoCB, MDUMMY, commands_menu, 0),
 	MMEnd
     };
 
@@ -8583,8 +8741,9 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, GUI::Widget * /* origin */)
 
     MMDesc commands_menu[] =
     {
-	MENTRYL("record", "record", MMPush,
-		BIND_1(PTR_FUN(RecordBreakpointCommandsCB), info), 
+	GENTRYL("record", "record", MMPush,
+		BIND(RecordBreakpointCommandsCB, info), 
+		sigc::bind(sigc::ptr_fun(RecordBreakpointCommandsCB), info), 
 		0, &info->record),
 	GENTRYL("end", "end", MMPush | MMInsensitive,
 		BIND_0(PTR_FUN(EndBreakpointCommandsCB)), 
@@ -8599,21 +8758,25 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, GUI::Widget * /* origin */)
 
     MMDesc enabled_menu[] = 
     {
-	MENTRYL("lookup", "lookup", MMPush,
-		HIDE_0_BIND_1(PTR_FUN(LookupBreakpointCB), info),
+	GENTRYL("lookup", "lookup", MMPush,
+		BIND(LookupBreakpointCB, info),
+		sigc::hide(sigc::bind(sigc::ptr_fun(LookupBreakpointCB), info)),
 		0, &info->lookup),
-	MENTRYL("print", "print", MMPush,
-		BIND_1(PTR_FUN(PrintWatchpointCB), info),
+	GENTRYL("print", "print", MMPush,
+		BIND(PrintWatchpointCB, info),
+		sigc::bind(sigc::ptr_fun(PrintWatchpointCB), info),
 		0, &info->print),
 	GENTRYL("enable", "enable", MMPush,
 		BIND_1(PTR_FUN(EnableBreakpointsCB), info),
 		sigc::bind(sigc::ptr_fun(EnableBreakpointsCB), info),
 		0, &info->enable),
-	MENTRYL("disable", "disable", MMPush,
-		HIDE_0_BIND_1(PTR_FUN(DisableBreakpointsCB), info),
+	GENTRYL("disable", "disable", MMPush,
+		BIND(DisableBreakpointsCB, info),
+		sigc::hide(sigc::bind(sigc::ptr_fun(DisableBreakpointsCB), info)),
 		0, &info->disable),
-	MENTRYL("temporary", "temporary", MMPush,
-		HIDE_0_BIND_1(PTR_FUN(MakeBreakpointsTempCB), info),
+	GENTRYL("temporary", "temporary", MMPush,
+		BIND(MakeBreakpointsTempCB, info),
+		sigc::hide(sigc::bind(sigc::ptr_fun(MakeBreakpointsTempCB), info)),
 		0, &info->temp),
 	GENTRYL("delete", "delete", MMPush | MMHelp,
 		BIND_1(PTR_FUN(DeleteBreakpointsCB), info),
@@ -8633,19 +8796,18 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, GUI::Widget * /* origin */)
 
     MMDesc panel_menu[] = 
     {
-	MENTRYL("title", "title", MMButtonPanel,
-		MMNoCB,
-		enabled_menu, 0),
+	GENTRYL("title", "title", MMButtonPanel,
+		MMNoCB, MDUMMY, enabled_menu, 0),
 	GENTRYL("condition", "condition", MMComboBox,
-		BIND_1(PTR_FUN(SetBreakpointConditionCB), info), 
+		BIND(SetBreakpointConditionCB, info), 
 		sigc::bind(sigc::ptr_fun(SetBreakpointConditionCB), info), 
 		0, (Widget *)&info->condition),
 	GENTRYL("ignore", "ignore", MMSpinBox,
-		BIND_1(PTR_FUN(SetBreakpointIgnoreCountCB), info), 
+		BIND(SetBreakpointIgnoreCountCB, info), 
 		sigc::bind(sigc::ptr_fun(SetBreakpointIgnoreCountCB), info), 
 		0, (Widget *)&info->ignore),
-	MENTRYL("commands", "commands", MMButtonPanel,
-		MMNoCB, commands_menu, 0),
+	GENTRYL("commands", "commands", MMButtonPanel,
+		MMNoCB, MDUMMY, commands_menu, 0),
 	MMEnd
     };
 
@@ -8862,16 +9024,16 @@ TIMEOUT_RETURN_TYPE SourceView::SetBreakpointIgnoreCountNowCB(TM_ALIST_1(XtP(Bre
 }
 
 
+#if defined(IF_XM)
+
 // Make breakpoint temporary
-void SourceView::MakeBreakpointsTempCB(CB_ALIST_2(XtP(BreakpointPropertiesInfo *) client_data))
+void SourceView::MakeBreakpointsTempCB(Widget, XtPointer client_data, XtPointer)
 {
     BreakpointPropertiesInfo *info = 
 	(BreakpointPropertiesInfo *)client_data;
 
     gdb_command("enable delete " + numbers(info->nrs));
 }
-
-#if defined(IF_XM)
 
 // Delete Breakpoint
 void SourceView::DeleteBreakpointsCB(Widget w, XtPointer client_data, XtPointer)
@@ -8891,7 +9053,22 @@ void SourceView::EnableBreakpointsCB(Widget w, XtPointer client_data, XtPointer)
     enable_bps(info->nrs, w);
 }
 
+// Disable Breakpoints
+void SourceView::DisableBreakpointsCB(Widget, XtPointer client_data, XtPointer)
+{
+    BreakpointPropertiesInfo *info = 
+	(BreakpointPropertiesInfo *)client_data;
+
+    disable_bps(info->nrs);
+}
+
 #else
+
+// Make breakpoint temporary
+void SourceView::MakeBreakpointsTempCB(BreakpointPropertiesInfo *info)
+{
+    gdb_command("enable delete " + numbers(info->nrs));
+}
 
 // Delete Breakpoint
 void SourceView::DeleteBreakpointsCB(GUI::Widget *w, BreakpointPropertiesInfo *info)
@@ -8905,21 +9082,18 @@ void SourceView::EnableBreakpointsCB(GUI::Widget *w, BreakpointPropertiesInfo *i
     enable_bps(info->nrs, w);
 }
 
-#endif
-
 // Disable Breakpoints
-void SourceView::DisableBreakpointsCB(CB_ALIST_2(XtP(BreakpointPropertiesInfo *) client_data))
+void SourceView::DisableBreakpointsCB(BreakpointPropertiesInfo *info)
 {
-    BreakpointPropertiesInfo *info = 
-	(BreakpointPropertiesInfo *)client_data;
-
     disable_bps(info->nrs);
 }
 
+#endif
+
+#if defined(IF_XM)
+
 // Record breakpoint commands
-void SourceView::RecordBreakpointCommandsCB(
-    CB_ALIST_12(Widget w,
-		XtP(BreakpointPropertiesInfo *)client_data))
+void SourceView::RecordBreakpointCommandsCB(Widget w, XtPointer client_data, XtPointer)
 {
     BreakpointPropertiesInfo *info = 
 	(BreakpointPropertiesInfo *)client_data;
@@ -8928,6 +9102,18 @@ void SourceView::RecordBreakpointCommandsCB(
     gdb->addHandler(Recording, RecordingHP, (void *)info);
     gdb_command("commands " + itostring(info->nrs[0]), w);
 }
+
+#else
+
+// Record breakpoint commands
+void SourceView::RecordBreakpointCommandsCB(GUI::Widget *w, BreakpointPropertiesInfo *info)
+{
+    gdb->removeHandler(Recording, RecordingHP, (void *)info);
+    gdb->addHandler(Recording, RecordingHP, (void *)info);
+    gdb_command1("commands " + itostring(info->nrs[0]), w);
+}
+
+#endif
 
 #if defined(IF_XM)
 
@@ -9352,7 +9538,9 @@ void SourceView::edit_breakpoint_properties(int bp_nr)
 // Breakpoint commands
 //----------------------------------------------------------------------------
 
-void SourceView::BreakpointCmdCB(CB_ALIST_2(XtP(const char *) client_data))
+#if defined(IF_XM)
+
+void SourceView::BreakpointCmdCB(Widget, XtPointer client_data, XtPointer)
 {
     if (breakpoint_list_w == 0)
 	return;
@@ -9373,7 +9561,34 @@ void SourceView::BreakpointCmdCB(CB_ALIST_2(XtP(const char *) client_data))
 	disable_bps(nrs);
 }
 
-void SourceView::LookupBreakpointCB(CB_ALIST_2(XtP(BreakpointPropertiesInfo *) client_data))
+#else
+
+void SourceView::BreakpointCmdCB(const char * client_data)
+{
+    if (breakpoint_list_w == 0)
+	return;
+
+    IntArray nrs;
+    getBreakpointNumbers(nrs);
+
+    if (nrs.size() == 0)
+        return;
+
+    const string cmd = client_data;
+
+    if (cmd == "delete")
+        delete_bps(nrs);
+    else if (cmd == "enable")
+	enable_bps(nrs);
+    else if (cmd == "disable")
+	disable_bps(nrs);
+}
+
+#endif
+
+#if defined(IF_XM)
+
+void SourceView::LookupBreakpointCB(Widget, XtPointer client_data, XtPointer)
 {
     if (breakpoint_list_w == 0)
 	return;
@@ -9411,7 +9626,49 @@ void SourceView::LookupBreakpointCB(CB_ALIST_2(XtP(BreakpointPropertiesInfo *) c
     }
 }
 
-void SourceView::PrintWatchpointCB(CB_ALIST_12(Widget w, XtP(BreakpointPropertiesInfo *) client_data))
+#else
+
+void SourceView::LookupBreakpointCB(BreakpointPropertiesInfo *info)
+{
+    if (breakpoint_list_w == 0)
+	return;
+
+    IntArray breakpoint_nrs;
+
+    if (!info)
+    {
+	getBreakpointNumbers(breakpoint_nrs);
+    }
+    else
+    {
+	breakpoint_nrs = info->nrs;
+    }
+    if (breakpoint_nrs.size() == 0)
+	return;
+
+    BreakPoint *bp = bp_map.get(breakpoint_nrs[0]);
+    if (bp == 0)
+	return;
+
+    switch (bp->type())
+    {
+    case BREAKPOINT:
+    case TRACEPOINT:
+    case ACTIONPOINT:
+	lookup("#" + itostring(breakpoint_nrs[0]));
+	break;
+
+    case WATCHPOINT:
+	lookup(bp->expr());
+	break;
+    }
+}
+
+#endif
+
+#if defined(IF_XM)
+
+void SourceView::PrintWatchpointCB(Widget w, XtPointer client_data, XtPointer)
 {
     if (breakpoint_list_w == 0)
 	return;
@@ -9448,6 +9705,46 @@ void SourceView::PrintWatchpointCB(CB_ALIST_12(Widget w, XtP(BreakpointPropertie
 	break;
     }
 }
+
+#else
+
+void SourceView::PrintWatchpointCB(GUI::Widget *w, BreakpointPropertiesInfo *info)
+{
+    if (breakpoint_list_w == 0)
+	return;
+
+    IntArray breakpoint_nrs;
+
+    if (!info)
+    {
+	getBreakpointNumbers(breakpoint_nrs);
+    }
+    else
+    {
+	breakpoint_nrs = info->nrs;
+    }
+    if (breakpoint_nrs.size() < 1)
+	return;
+
+    BreakPoint *bp = bp_map.get(breakpoint_nrs[0]);
+    if (bp == 0)
+	return;
+
+    switch (bp->type())
+    {
+    case BREAKPOINT:
+    case TRACEPOINT:
+    case ACTIONPOINT:
+	// How should we print a breakpoint?  (FIXME)
+	break;
+
+    case WATCHPOINT:
+	gdb_command1(gdb->print_command(bp->expr(), false), w);
+	break;
+    }
+}
+
+#endif
 
 
 // Return breakpoint of BP_INFO; 0 if new; -1 if none
@@ -9733,12 +10030,21 @@ void SourceView::UpdateBreakpointButtonsCB(void)
 
 #endif
 
-void SourceView::EditBreakpointsCB(CB_ALIST_1(Widget))
+#if defined(IF_XM)
+
+void SourceView::EditBreakpointsCB(Widget, XtPointer, XtPointer)
 {
     manage_and_raise(edit_breakpoints_dialog_w);
 }
 
+#else
 
+void SourceView::EditBreakpointsCB(GUI::Widget *)
+{
+    manage_and_raise(edit_breakpoints_dialog_w);
+}
+
+#endif
 
 //-----------------------------------------------------------------------------
 // Stack frame selection

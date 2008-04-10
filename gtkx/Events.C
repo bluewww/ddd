@@ -6,8 +6,10 @@ using namespace GtkX;
 
 unsigned int keystate(unsigned int in)
 {
-    std::cerr << "KEYSTATE " << in << "\n";
-    return in;
+    GdkModifierType gin = GdkModifierType(in);
+    ModifierType out;
+    translate_mod_mask(gin, out);
+    return out;
 }
 
 unsigned int keyval(unsigned int in)
@@ -242,7 +244,31 @@ GtkX::translate_event_mask(EventMask &in, Gdk::EventMask &out)
     if (in&PROXIMITY_OUT_MASK) {out|=Gdk::PROXIMITY_OUT_MASK;}
     if (in&SUBSTRUCTURE_MASK) {out|=Gdk::SUBSTRUCTURE_MASK;}
     if (in&SCROLL_MASK) {out|=Gdk::SCROLL_MASK;}
+    return 1;
 }
 
-
+int
+GtkX::translate_mod_mask(GdkModifierType &in, ModifierType &out)
+{
+    unsigned long out1 = 0;
+    if (in&GDK_SHIFT_MASK) {out1|=SHIFT_MASK;}
+    if (in&GDK_LOCK_MASK) {out1|=LOCK_MASK;}
+    if (in&GDK_CONTROL_MASK) {out1|=CONTROL_MASK;}
+    if (in&GDK_MOD1_MASK) {out1|=MOD1_MASK;}
+    if (in&GDK_MOD2_MASK) {out1|=MOD2_MASK;}
+    if (in&GDK_MOD3_MASK) {out1|=MOD3_MASK;}
+    if (in&GDK_MOD4_MASK) {out1|=MOD4_MASK;}
+    if (in&GDK_MOD5_MASK) {out1|=MOD5_MASK;}
+    if (in&GDK_BUTTON1_MASK) {out1|=BUTTON1_MASK;}
+    if (in&GDK_BUTTON2_MASK) {out1|=BUTTON2_MASK;}
+    if (in&GDK_BUTTON3_MASK) {out1|=BUTTON3_MASK;}
+    if (in&GDK_BUTTON4_MASK) {out1|=BUTTON4_MASK;}
+    if (in&GDK_BUTTON5_MASK) {out1|=BUTTON5_MASK;}
+    if (in&GDK_SUPER_MASK) {out1|=SUPER_MASK;}
+    if (in&GDK_HYPER_MASK) {out1|=HYPER_MASK;}
+    if (in&GDK_META_MASK) {out1|=META_MASK;}
+    if (in&GDK_RELEASE_MASK) {out1|=RELEASE_MASK;}
+    out = ModifierType(out1);
+    return 1;
+}
 

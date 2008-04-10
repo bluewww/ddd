@@ -147,8 +147,11 @@ void get_themes(StringArray& themes);
 extern void update_themes();
 
 // Popup themes editor
-extern void dddPopupThemesCB(CB_ARG_LIST_NULL);
-
+#if defined(IF_XM)
+extern void dddPopupThemesCB(Widget, XtPointer, XtPointer);
+#else
+extern void dddPopupThemesCB(void);
+#endif
 
 // Command Definitions
 

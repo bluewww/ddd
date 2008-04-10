@@ -149,6 +149,30 @@ namespace GtkX {
 	OWNER_CHANGE_CLOSE
     } OwnerChange;
 
+    enum ModifierType {
+	SHIFT_MASK	= 1 << 0,
+	LOCK_MASK	= 1 << 1,
+	CONTROL_MASK	= 1 << 2,
+	MOD1_MASK	= 1 << 3,
+	MOD2_MASK	= 1 << 4,
+	MOD3_MASK	= 1 << 5,
+	MOD4_MASK	= 1 << 6,
+	MOD5_MASK	= 1 << 7,
+	BUTTON1_MASK	= 1 << 8,
+	BUTTON2_MASK	= 1 << 9,
+	BUTTON3_MASK	= 1 << 10,
+	BUTTON4_MASK	= 1 << 11,
+	BUTTON5_MASK	= 1 << 12,
+	/* The next few modifiers are used by XKB, so we skip to the end.
+	 * Bits 15 - 25 are currently unused. Bit 29 is used internally.
+	 */
+	SUPER_MASK	= 1 << 26,
+	HYPER_MASK	= 1 << 27,
+	META_MASK	= 1 << 28,
+	RELEASE_MASK	= 1 << 30,
+	MODIFIER_MASK	= 0x5c001fff
+    };
+
     struct EventAny
     {
 	EventType type;
@@ -390,6 +414,7 @@ namespace GtkX {
 
     int translate_event(GdkEvent *in, Event *out);
     int translate_event_mask(EventMask &in, Gdk::EventMask &out);
+    int translate_mod_mask(GdkModifierType &in, ModifierType &out);
 
 }
 

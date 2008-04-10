@@ -103,11 +103,23 @@ extern void update_edit_menus();
 // Save current option state
 extern void save_option_state();
 
+#if defined(IF_XM)
+
 // Last output position
 extern XmTextPosition promptPosition;
 
 // Last message position
 extern XmTextPosition messagePosition;
+
+#else
+
+// Last output position
+extern long promptPosition;
+
+// Last message position
+extern long messagePosition;
+
+#endif
 
 // True if output is running
 extern bool private_gdb_output;

@@ -1219,7 +1219,7 @@ void dddToggleWarnIfLockedCB (GUI::CheckButton *w)
 
 #if defined(IF_XM)
 
-void dddSetBuiltinPlotWindowCB (Widget, XtPointer client_data, XtPoiner)
+void dddSetBuiltinPlotWindowCB (Widget, XtPointer client_data, XtPointer)
 {
     if ((int)(long)client_data)
 	app_data.plot_term_type = "xlib";
@@ -1453,7 +1453,9 @@ void dddToggleSaveOptionsOnExitCB (GUI::CheckMenuItem *w)
 // Maintenance
 //-----------------------------------------------------------------------------
 
-void dddSetCrashCB(CB_ALIST_2(XtP(long) client_data))
+#if defined(IF_XM)
+
+void dddSetCrashCB(Widget, XtPointer client_data, XtPointer)
 {
     int state = (int)(long)client_data;
     string msg = "When " DDD_NAME " crashes, ";
@@ -1483,11 +1485,50 @@ void dddSetCrashCB(CB_ALIST_2(XtP(long) client_data))
     update_options();
 }
 
-void dddClearMaintenanceCB(CB_ALIST_NULL)
+void dddClearMaintenanceCB(Widget, XtPointer, XtPointer)
 {
     app_data.maintenance = False;
     update_options();
 }
+
+#else
+
+void dddSetCrashCB(int state)
+{
+    string msg = "When " DDD_NAME " crashes, ";
+
+    switch (state)
+    {
+    case 0:
+	app_data.dump_core        = False;
+	app_data.debug_core_dumps = False;
+	msg += "do nothing.";
+	break;
+
+    case 1:
+	app_data.dump_core        = True;
+	app_data.debug_core_dumps = False;
+	msg += "dump core.";
+	break;
+
+    case 2:
+	app_data.dump_core        = True;
+	app_data.debug_core_dumps = True;
+	msg += "dump core and invoke a debugger.";
+	break;
+    }
+
+    set_status(msg);
+    update_options();
+}
+
+void dddClearMaintenanceCB(void)
+{
+    app_data.maintenance = False;
+    update_options();
+}
+
+#endif
 
 
 //-----------------------------------------------------------------------------
@@ -1640,9 +1681,10 @@ void dddSetToolBarCB (GUI::RadioButton *w, bool state)
 
 #endif
 
-void dddSetKeyboardFocusPolicyCB (CB_ARG_LIST_12(w, client_data))
-{
 #if defined(IF_XM)
+
+void dddSetKeyboardFocusPolicyCB (Widget w, XtPointer client_data, XtPointer)
+{
     unsigned char policy = (unsigned char)(int)(long)client_data;
 
     if (policy != XmEXPLICIT && policy != XmPOINTER)
@@ -1706,10 +1748,16 @@ void dddSetKeyboardFocusPolicyCB (CB_ARG_LIST_12(w, client_data))
     }
 
     update_options(NO_UPDATE);
-#else
-    std::cerr << "Keyboard focus policy not implemented\n";
-#endif
 }
+
+#else
+
+void dddSetKeyboardFocusPolicyCB (GUI::Widget *w, unsigned char policy)
+{
+    std::cerr << "Keyboard focus policy not implemented\n";
+}
+
+#endif
 
 #if defined(IF_XM)
 

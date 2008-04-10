@@ -72,10 +72,21 @@ static string current_arg(bool globals_first = false)
 // Moving
 //-----------------------------------------------------------------------------
 
-void gdbLookupCB(CB_ARG_LIST_NULL)
+#if defined(IF_XM)
+
+void gdbLookupCB(Widget, XtPointer, XtPointer)
 {
     source_view->lookup(current_arg(true));
 }
+
+#else
+
+void gdbLookupCB(void)
+{
+    source_view->lookup(current_arg(true));
+}
+
+#endif
 
 #if defined(IF_XM)
 
@@ -131,7 +142,9 @@ void gdbPrintCB(GUI::Widget *w, bool internal)
 
 #endif
 
-void gdbPrintRefCB(CB_ALIST_12(Widget w, XtP(bool) client_data))
+#if defined(IF_XM)
+
+void gdbPrintRefCB(Widget w, XtPointer client_data, XtPointer)
 {
     const bool internal = (bool)(long)client_data;
 
@@ -141,6 +154,18 @@ void gdbPrintRefCB(CB_ALIST_12(Widget w, XtP(bool) client_data))
 	gdb_command(gdb->print_command(deref(arg), internal), w);
 }
 
+#else
+
+void gdbPrintRefCB(GUI::Widget *w, bool internal)
+{
+    const string arg = current_arg();
+
+    if (!arg.empty() && !arg.matches(rxwhite))
+	gdb_command1(gdb->print_command(deref(arg), internal), w);
+}
+
+#endif
+
 #if defined(IF_XM)
 
 void gdbDisplayCB(Widget w, XtPointer, XtPointer)
@@ -149,6 +174,14 @@ void gdbDisplayCB(Widget w, XtPointer, XtPointer)
 
     if (!arg.empty() && !arg.matches(rxwhite))
 	gdb_command("graph display " + arg, w);
+}
+
+void gdbDispRefCB(Widget w, XtPointer, XtPointer)
+{
+    string arg = current_arg();
+
+    if (!arg.empty() && !arg.matches(rxwhite))
+	gdb_command("graph display " + deref(arg), w);
 }
 
 #else
@@ -161,17 +194,19 @@ void gdbDisplayCB(GUI::Widget *w)
 	gdb_command1("graph display " + arg, w);
 }
 
-#endif
-
-void gdbDispRefCB(CB_ALIST_1(Widget w))
+void gdbDispRefCB(GUI::Widget *w)
 {
     string arg = current_arg();
 
     if (!arg.empty() && !arg.matches(rxwhite))
-	gdb_command("graph display " + deref(arg), w);
+	gdb_command1("graph display " + deref(arg), w);
 }
 
-void gdbWhatisCB(CB_ALIST_1(Widget w))
+#endif
+
+#if defined(IF_XM)
+
+void gdbWhatisCB(Widget w, XtPointer, XtPointer)
 {
     string arg = current_arg();
 
@@ -179,6 +214,17 @@ void gdbWhatisCB(CB_ALIST_1(Widget w))
 	gdb_command(gdb->whatis_command(arg), w);
 }
 
+#else
+
+void gdbWhatisCB(GUI::Widget *w)
+{
+    string arg = current_arg();
+
+    if (!arg.empty() && !arg.matches(rxwhite))
+	gdb_command1(gdb->whatis_command(arg), w);
+}
+
+#endif
 
 
 
@@ -329,20 +375,39 @@ void gdbToggleEnableWatchpointCB(GUI::Widget *w)
 
 #endif
 
-void gdbEditBreakpointPropertiesCB(CB_ALIST_NULL)
+#if defined(IF_XM)
+
+void gdbEditBreakpointPropertiesCB(Widget, XtPointer, XtPointer)
 {
     BreakPoint *bp = source_view->breakpoint_at(current_arg(true));
     if (bp != 0)
 	source_view->edit_breakpoint_properties(bp->number());
 }
 
-void gdbEditWatchpointPropertiesCB(CB_ALIST_NULL)
+void gdbEditWatchpointPropertiesCB(Widget, XtPointer, XtPointer)
 {
     BreakPoint *bp = source_view->watchpoint_at(current_arg(true));
     if (bp != 0)
 	source_view->edit_breakpoint_properties(bp->number());
 }
 
+#else
+
+void gdbEditBreakpointPropertiesCB(void)
+{
+    BreakPoint *bp = source_view->breakpoint_at(current_arg(true));
+    if (bp != 0)
+	source_view->edit_breakpoint_properties(bp->number());
+}
+
+void gdbEditWatchpointPropertiesCB(void)
+{
+    BreakPoint *bp = source_view->watchpoint_at(current_arg(true));
+    if (bp != 0)
+	source_view->edit_breakpoint_properties(bp->number());
+}
+
+#endif
 
 
 //-----------------------------------------------------------------------------
@@ -366,7 +431,9 @@ bool have_enabled_watchpoint_at_arg()
     return bp != 0 && bp->enabled();
 }
 
-void gdbWatchCB(CB_ALIST_12(Widget w, XtP(long) client_data))
+#if defined(IF_XM)
+
+void gdbWatchCB(Widget w, XtPointer client_data, XtPointer)
 {
     const string arg = current_arg();
 
@@ -382,6 +449,19 @@ void gdbWatchCB(CB_ALIST_12(Widget w, XtP(long) client_data))
 	gdb_command(gdb->watch_command(arg, 
 				       WatchMode((int)(long)client_data)), w);
 }
+
+#else
+
+void gdbWatchCB(GUI::Widget *w, int mode)
+{
+    const string arg = current_arg();
+
+    if (!arg.empty() && !arg.matches(rxwhite))
+	gdb_command1(gdb->watch_command(arg, 
+					WatchMode(mode)), w);
+}
+
+#endif
 
 void gdbWatchRefCB(Widget w, XtPointer, XtPointer)
 {
@@ -413,15 +493,29 @@ void gdbUnwatchCB(CB_ALIST_NULL)
     }
 }
 
-void gdbToggleWatchCB(CB_ALIST_12(Widget w, XtP(long) client_data))
+#if defined(IF_XM)
+
+void gdbToggleWatchCB(Widget w, XtPointer client_data, XtPointer)
 {
     BreakPoint *bp = source_view->watchpoint_at(current_arg());
     if (bp == 0)
-	gdbWatchCB(CB_ARGS_12(w, client_data));
+	gdbWatchCB(w, client_data, XtPointer(0));
     else
-	gdbUnwatchCB(CB_ARGS_NULL);
+	gdbUnwatchCB(w, client_data, XtPointer(0));
 }
 
+#else
+
+void gdbToggleWatchCB(GUI::Widget *w, int mode)
+{
+    BreakPoint *bp = source_view->watchpoint_at(current_arg());
+    if (bp == 0)
+	gdbWatchCB(w, mode);
+    else
+	gdbUnwatchCB();
+}
+
+#endif
 
 //-----------------------------------------------------------------------------
 // Searching
@@ -429,7 +523,9 @@ void gdbToggleWatchCB(CB_ALIST_12(Widget w, XtP(long) client_data))
 
 static SourceView::SearchDirection last_find_direction = SourceView::forward;
 
-void gdbFindCB(CB_ALIST_12(Widget w, XtP(SourceView::SearchDirection) client_data))
+#if defined(IF_XM)
+
+void gdbFindCB(Widget w, XtPointer client_data, XtPointer)
 {
     SourceView::SearchDirection direction = 
 	(SourceView::SearchDirection) (long) client_data;
@@ -444,11 +540,7 @@ void gdbFindCB(CB_ALIST_12(Widget w, XtP(SourceView::SearchDirection) client_dat
     }
 
     // Forget the exact timestamp; use the last processed.
-#ifdef IF_MOTIF
     Time tm = XtLastTimestampProcessed(XtDisplay(w));
-#else // NOT IF_MOTIF
-    Time tm = 0;
-#endif // IF_MOTIF
 
     string key = source_arg->get_string();
     source_view->find(key, direction, 
@@ -459,10 +551,46 @@ void gdbFindCB(CB_ALIST_12(Widget w, XtP(SourceView::SearchDirection) client_dat
 }
 
 
-void gdbFindAgainCB(CB_ALIST_1(Widget w))
+void gdbFindAgainCB(Widget w, XtPointer, XtPointer)
 {
     gdbFindCB(CB_ARGS_12(w, current_find_direction()));
 }
+
+#else
+
+void gdbFindCB(GUI::Widget *w, SourceView::SearchDirection direction)
+{
+    assert(direction == SourceView::forward || 
+	   direction == SourceView::backward);
+
+    if (direction != last_find_direction)
+    {
+	last_find_direction = direction;
+	update_options();
+    }
+
+    // Forget the exact timestamp; use the last processed.
+    // Time tm = XtLastTimestampProcessed(XtDisplay(w));
+#ifdef NAG_ME
+#warning XtLastTimestampProcessed?
+#endif
+    Time tm = 0;
+
+    string key = source_arg->get_string();
+    source_view->find(key, direction, 
+		      app_data.find_words_only,
+		      app_data.find_case_sensitive,
+		      tm);
+    source_arg->set_string(key);
+}
+
+
+void gdbFindAgainCB(GUI::Widget *w)
+{
+    gdbFindCB(w, current_find_direction());
+}
+
+#endif
 
 SourceView::SearchDirection current_find_direction()
 {
@@ -500,17 +628,19 @@ static void gdbEditDoneHP(Agent *edit_agent, void *, void *)
 {
     // Editor has terminated: reload current source file
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0, 
 		    gdbDeleteEditAgent, 
 		    XtPointer(edit_agent));
-#else // NOT IF_MOTIF
-    Glib::signal_idle().connect(sigc::bind_return(sigc::bind(PTR_FUN(gdbDeleteEditAgent),
-							     edit_agent),
-						  false));
-#endif // IF_MOTIF
 
-    gdbReloadSourceCB(CB_ARGS_NULL);
+    gdbReloadSourceCB(Widget(0), XtPointer(0), XtPointer(0));
+#else
+    GUI::signal_idle().connect(sigc::bind_return(sigc::bind(sigc::ptr_fun(gdbDeleteEditAgent),
+							    edit_agent),
+						 false));
+
+    gdbReloadSourceCB();
+#endif
 
     edit_agent->removeHandler(InputEOF, gdbEditDoneHP);
     edit_agent->removeHandler(Died,     gdbEditDoneHP);
@@ -558,7 +688,18 @@ void gdbEditSourceCB  (GUI::Widget *w)
     edit_agent->start();
 }
 
-void gdbReloadSourceCB(CB_ARG_LIST_NULL)
+#if defined(IF_XM)
+
+void gdbReloadSourceCB(Widget, XtPointer, XtPointer)
 {
     source_view->reload();
 }
+
+#else
+
+void gdbReloadSourceCB(void)
+{
+    source_view->reload();
+}
+
+#endif

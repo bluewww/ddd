@@ -48,7 +48,7 @@ Button::Button(GtkX::Container &parent, PackOptions po,
 // TEMPORARY
 Button::Button(Gtk::Container *parent, const GtkX::String &name,
 	       const GtkX::String &label):
-    Gtk::Button(label.s())
+    Gtk::Button(mklabel(name, label).s())
 {
     set_name(name.s());
     parent->add(*internal());
@@ -69,5 +69,11 @@ const Gtk::Widget *
 Button::internal(void) const
 {
     return this;
+}
+
+void
+Button::set_alignment(float xalign, float yalign)
+{
+    Gtk::Button::set_alignment(xalign, yalign);
 }
 

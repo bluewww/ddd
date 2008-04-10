@@ -1,5 +1,3 @@
- // -*- C++ -*-
-
 // High-level GUI wrapper for Gtkmm.
 
 // Copyright (C) 2007 Peter Wainwright <prw@ceiriog.eclipse.co.uk>
@@ -25,34 +23,47 @@
 // Unfortunately Motif widgets require parent and name arguments to
 // the constructor, unlike the Gtk ones.  Motif (Xt) widgets cannot be
 // reparented.  Therefore we need a constructor with extra arguments.
-// A brief look at QT indicates that this will be required there as
-// well.
 
-#ifndef GTKX_BUTTON_H
-#define GTKX_BUTTON_H
+#include <GtkX/Label.h>
 
-#include <GtkX/Container.h>
-#include <gtkmm/button.h>
+using namespace GtkX;
 
-// Template for a widget taking two string constructor arguments.
-
-namespace GtkX {
-
-    class Button: public Widget, public Gtk::Button {
-    public:
-	Button(GtkX::Container &parent, PackOptions po=PACK_SHRINK, const String &name="",
-	       const String &label="");
-	~Button(void);
-	Gtk::Widget *internal(void);
-	const Gtk::Widget *internal(void) const;
-	void set_alignment(float xalign, float yalign);
-	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
-#include <GtkX/redirect.h>
-    private:
-	Button(Gtk::Container *parent, const String &name="",
-	       const String &label="");
-    };
-
+Label::Label(Container &parent, PackOptions po,
+	     const String &name,
+	     const String &label):
+    Gtk::Label(mklabel(name, label).s())
+{
+    set_name(name.s());
+    // We cannot use this:
+    // parent.gtk_container()->add(*this);
+    // If we always had parent.gtk_container() == &parent we could just
+    // override the on_add() method to do what we want.  However,
+    // sometimes parent.gtk_container() is a standard Gtk widget.
+    // In such a case (e.g. RadioBox) we need to override add_child()
+    // instead.
+    parent.add_child(*this, po, 0);
+    postinit();
 }
 
-#endif // GTKX_BUTTON_H
+Label::~Label(void)
+{
+}
+
+Gtk::Widget *
+Label::internal(void)
+{
+    return this;
+}
+
+const Gtk::Widget *
+Label::internal(void) const
+{
+    return this;
+}
+
+void
+Label::set_alignment(float xalign, float yalign)
+{
+    Gtk::Label::set_alignment(xalign, yalign);
+}
+

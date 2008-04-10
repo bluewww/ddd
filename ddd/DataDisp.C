@@ -503,9 +503,10 @@ struct DeleteItms { enum Itms {Cluster}; };
 
 MMDesc DataDisp::delete_menu[] =
 {
-    MENTRYL("cluster", "Cluster", MMPush,
-     HIDE_0(PTR_FUN(DataDisp::toggleClusterSelectedCB)), 
-     0, 0),
+    GENTRYL("cluster", "Cluster", MMPush,
+	    BIND(DataDisp::toggleClusterSelectedCB, 0), 
+	    sigc::hide(sigc::ptr_fun(DataDisp::toggleClusterSelectedCB)), 
+	    0, 0),
     MMEnd
 };
 
@@ -8363,22 +8364,44 @@ void DataDisp::set_cluster_displays(bool value)
     }
 }
 
-void DataDisp::toggleClusterSelectedCB(CB_ALIST_NULL)
+#if defined(IF_XM)
+
+void DataDisp::toggleClusterSelectedCB(Widget, XtPointer, XtPointer)
 {
     DataDispCount count(disp_graph);
 
     if (count.selected_unclustered > 0)
     {
-	clusterSelectedCB(CB_ARGS_NULL);
+	clusterSelectedCB(Widget(0), XtPointer(0), XtPointer(0));
     }
     else
     {
-	unclusterSelectedCB(CB_ARGS_NULL);
+	unclusterSelectedCB(Widget(0), XtPointer(0), XtPointer(0));
     }
 }
 
+#else
+
+void DataDisp::toggleClusterSelectedCB(void)
+{
+    DataDispCount count(disp_graph);
+
+    if (count.selected_unclustered > 0)
+    {
+	clusterSelectedCB();
+    }
+    else
+    {
+	unclusterSelectedCB();
+    }
+}
+
+#endif
+
+#if defined(IF_XM)
+
 // Uncluster selected nodes (and clusters)
-void DataDisp::unclusterSelectedCB(CB_ALIST_NULL)
+void DataDisp::unclusterSelectedCB(Widget, XtPointer, XtPointer)
 {
     // Uncluster selected nodes
     MapRef ref;
@@ -8418,8 +8441,55 @@ void DataDisp::unclusterSelectedCB(CB_ALIST_NULL)
     refresh_graph_edit();
 }
 
+#else
+
+// Uncluster selected nodes (and clusters)
+void DataDisp::unclusterSelectedCB(void)
+{
+    // Uncluster selected nodes
+    MapRef ref;
+    for (DispNode* dn = disp_graph->first(ref); 
+	 dn != 0;
+	 dn = disp_graph->next(ref))
+    {
+	if (selected(dn) && dn->clustered())
+	{
+	    // Force cluster to be redisplayed
+	    DispNode *cluster = disp_graph->get(dn->clustered());
+	    if (cluster != 0)
+		cluster->set_last_refresh();
+
+	    // Uncluster display
+	    disp_graph->uncluster(dn);
+	}
+    }
+
+    // Delete selected clusters
+    IntArray all_clusters;
+    get_all_clusters(all_clusters);
+
+    IntArray killme;
+    for (int i = 0; i < all_clusters.size(); i++)
+    {
+	DispNode *cluster = disp_graph->get(all_clusters[i]);
+	if (cluster != 0 && selected(cluster))
+	{
+	    // Delete cluster
+	    killme += all_clusters[i];
+	}
+    }
+
+    delete_display(killme);
+    refresh_args();
+    refresh_graph_edit();
+}
+
+#endif
+
+#if defined(IF_XM)
+
 // Cluster selected nodes into a new cluster
-void DataDisp::clusterSelectedCB(CB_ALIST_NULL)
+void DataDisp::clusterSelectedCB(Widget, XtPointer, XtPointer)
 {
     int target_cluster = 0;
     IntArray all_clusters;
@@ -8454,6 +8524,47 @@ void DataDisp::clusterSelectedCB(CB_ALIST_NULL)
 
     refresh_graph_edit();
 }
+
+#else
+
+// Cluster selected nodes into a new cluster
+void DataDisp::clusterSelectedCB(void)
+{
+    int target_cluster = 0;
+    IntArray all_clusters;
+    get_all_clusters(all_clusters);
+
+    // If we have a selected cluster, choose this one as a target
+    for (int i = 0; i < all_clusters.size(); i++)
+    {
+	DispNode *cluster = disp_graph->get(all_clusters[i]);
+	if (cluster != 0 && selected(cluster))
+	{
+	    target_cluster = all_clusters[i];
+	    break;
+	}
+    }
+
+    if (target_cluster == 0)
+    {
+	// No target cluster selected - make a new one
+	target_cluster = new_cluster();
+    }
+
+    // Cluster all selected displays into the current one
+    MapRef ref;
+    for (DispNode* dn = disp_graph->first(ref); 
+	 dn != 0;
+	 dn = disp_graph->next(ref))
+    {
+	if (!dn->is_user_command() && selected(dn))
+	    disp_graph->cluster(dn, target_cluster);
+    }
+
+    refresh_graph_edit();
+}
+
+#endif
 
 
 //----------------------------------------------------------------------------

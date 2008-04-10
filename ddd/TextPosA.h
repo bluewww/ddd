@@ -29,19 +29,32 @@
 #ifndef _DDD_TextPosArray_h
 #define _DDD_TextPosArray_h
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "VarArray.h"
 #include "DynArray.h"
 
-#ifdef IF_MOTIF
-
+#if defined(IF_MOTIF)
 #include <Xm/Xm.h>
+#endif
 
-#else // NOT IF_MOTIF
+#if !defined(IF_XM)
+#include <GUI/Widget.h>
+#endif
 
-#endif // IF_MOTIF
+#if defined(IF_XM)
 
 typedef VarArray<XmTextPosition> VarTextPositionArray;
 typedef DynArray<XmTextPosition> DynTextPositionArray;
+
+#else
+
+typedef VarArray<long> VarTextPositionArray;
+typedef DynArray<long> DynTextPositionArray;
+
+#endif
 
 typedef VarTextPositionArray TextPositionArray;
 

@@ -120,20 +120,30 @@ class SourceView {
     static void bp_popup_deleteCB        (Widget, XtPointer, XtPointer);
     static void bp_popup_disableCB       (Widget, XtPointer, XtPointer);
     static void bp_popup_set_pcCB        (Widget, XtPointer, XtPointer);
+
+    static void text_popup_printCB       (Widget, XtPointer, XtPointer);
+    static void text_popup_dispCB        (Widget, XtPointer, XtPointer);
+    static void text_popup_watchCB       (Widget, XtPointer, XtPointer);
+    static void text_popup_print_refCB   (Widget, XtPointer, XtPointer);
+    static void text_popup_disp_refCB    (Widget, XtPointer, XtPointer);
+    static void text_popup_watch_refCB   (Widget, XtPointer, XtPointer);
+    static void text_popup_whatisCB      (Widget, XtPointer, XtPointer);
+    static void text_popup_lookupCB      (Widget, XtPointer, XtPointer);
 #else
     static void bp_popup_deleteCB        (GUI::Widget *, int *);
     static void bp_popup_disableCB       (GUI::Widget *, int *);
     static void bp_popup_set_pcCB        (GUI::Widget *, int *);
+
+    static void text_popup_printCB       (GUI::Widget *, const string *);
+    static void text_popup_dispCB        (GUI::Widget *, const string *);
+    static void text_popup_watchCB       (GUI::Widget *, const string *);
+    static void text_popup_print_refCB   (GUI::Widget *, const string *);
+    static void text_popup_disp_refCB    (GUI::Widget *, const string *);
+    static void text_popup_watch_refCB   (GUI::Widget *, const string *);
+    static void text_popup_whatisCB      (GUI::Widget *, const string *);
+    static void text_popup_lookupCB      (const string *);
 #endif
 
-    static void text_popup_printCB       (CB_ALIST_12(Widget, XtP(const string *)));
-    static void text_popup_dispCB        (CB_ALIST_12(Widget, XtP(const string *)));
-    static void text_popup_watchCB       (CB_ALIST_12(Widget, XtP(const string *)));
-    static void text_popup_print_refCB   (CB_ALIST_12(Widget, XtP(const string *)));
-    static void text_popup_disp_refCB    (CB_ALIST_12(Widget, XtP(const string *)));
-    static void text_popup_watch_refCB   (CB_ALIST_12(Widget, XtP(const string *)));
-    static void text_popup_whatisCB      (CB_ALIST_12(Widget, XtP(const string *)));
-    static void text_popup_lookupCB      (CB_ALIST_2(XtP(const string *)));
 #if defined(IF_XM)
     static void text_popup_breakCB       (Widget, XtPointer, XtPointer);
     static void text_popup_clearCB       (Widget, XtPointer, XtPointer);
@@ -151,11 +161,21 @@ class SourceView {
 #endif
 
     static void NewWatchpointDCB         (CB_ALIST_12(Widget, XtP(COMBOBOXENTRYTEXT_P)));
-    static void NewWatchpointCB          (CB_ALIST_1(Widget));
+#if defined(IF_XM)
+    static void NewWatchpointCB          (Widget, XtPointer, XtPointer);
+    static void LookupBreakpointCB       (Widget, XtPointer, XtPointer);
+#else
+    static void NewWatchpointCB          (GUI::Widget *);
+    static void LookupBreakpointCB       (BreakpointPropertiesInfo *);
+#endif
 
-    static void LookupBreakpointCB       (CB_ALIST_2(XtP(BreakpointPropertiesInfo *)));
-    static void PrintWatchpointCB        (CB_ALIST_12(Widget, XtP(BreakpointPropertiesInfo *)));
-    static void BreakpointCmdCB          (CB_ALIST_2(XtP(const char *)));
+#if defined(IF_XM)
+    static void PrintWatchpointCB        (Widget, XtPointer, XtPointer);
+    static void BreakpointCmdCB          (Widget, XtPointer, XtPointer);
+#else
+    static void PrintWatchpointCB        (GUI::Widget *, BreakpointPropertiesInfo *);
+    static void BreakpointCmdCB          (const char *);
+#endif
 
 #if defined(IF_XM)
     static void EditBreakpointPropertiesCB (Widget, XtPointer, XtPointer);
@@ -163,26 +183,22 @@ class SourceView {
     static void SetBreakpointIgnoreCountCB (Widget, XtPointer, XtPointer);
     static void SetBreakpointConditionCB   (Widget, XtPointer, XtPointer);
     static void EnableBreakpointsCB        (Widget, XtPointer, XtPointer);
+    static void DisableBreakpointsCB       (Widget, XtPointer, XtPointer);
+    static void MakeBreakpointsTempCB      (Widget, XtPointer, XtPointer);
+    static void DeleteBreakpointsCB        (Widget, XtPointer, XtPointer);
+    static void RecordBreakpointCommandsCB (Widget, XtPointer, XtPointer);
+    static void EndBreakpointCommandsCB    (Widget, XtPointer, XtPointer);
+    static void EditBreakpointCommandsCB   (Widget, XtPointer, XtPointer);
 #else
     static void EditBreakpointPropertiesCB (int *);
     static void ApplyBreakpointPropertiesCB(GUI::Widget *, BreakpointPropertiesInfo *);
     static void SetBreakpointIgnoreCountCB (GUI::Widget *, BreakpointPropertiesInfo *);
     static void SetBreakpointConditionCB   (GUI::Widget *, BreakpointPropertiesInfo *);
     static void EnableBreakpointsCB        (GUI::Widget *, BreakpointPropertiesInfo *);
-#endif
-    static void DisableBreakpointsCB       (CB_ALIST_2(XtP(BreakpointPropertiesInfo *)));
-    static void MakeBreakpointsTempCB      (CB_ALIST_2(XtP(BreakpointPropertiesInfo *)));
-#if defined(IF_XM)
-    static void DeleteBreakpointsCB        (Widget, XtPointer, XtPointer);
-#else
+    static void DisableBreakpointsCB       (BreakpointPropertiesInfo *);
+    static void MakeBreakpointsTempCB      (BreakpointPropertiesInfo *);
     static void DeleteBreakpointsCB        (GUI::Widget *, BreakpointPropertiesInfo *);
-#endif
-    static void RecordBreakpointCommandsCB (CB_ALIST_12(Widget,
-							XtP(BreakpointPropertiesInfo *)));
-#if defined(IF_XM)
-    static void EndBreakpointCommandsCB    (Widget, XtPointer, XtPointer);
-    static void EditBreakpointCommandsCB   (Widget, XtPointer, XtPointer);
-#else
+    static void RecordBreakpointCommandsCB (GUI::Widget *, BreakpointPropertiesInfo *);
     static void EndBreakpointCommandsCB    (GUI::Widget *);
     static void EditBreakpointCommandsCB   (GUI::Widget *, BreakpointPropertiesInfo *);
 #endif
@@ -225,7 +241,7 @@ class SourceView {
     static void SelectThreadCB   (CB_ALIST_1(Widget));
     static void ThreadCommandCB  (CB_ALIST_12(Widget, XtP(const char *)));
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     static void SetWatchModeCB(Widget, XtPointer, XtPointer);
     static void ActivateGlyphCB(Widget, XtPointer, XtPointer);
 #else
@@ -365,7 +381,7 @@ class SourceView {
     // BP_NR is the number of the breakpoint at POS (none: 0).  Return
     // false iff failure.
     static bool get_line_of_pos (GUI::Widget *w,
-				 XmTextPosition pos,
+				 long pos,
 				 int& line_nr,
 				 string& address,
 				 bool& in_text,
@@ -374,9 +390,9 @@ class SourceView {
     // Find word around POS.  STARTPOS is the first character, ENDPOS
     // is the last character in the word.
     static void find_word_bounds (GUI::Widget *w,
-				  const XmTextPosition pos,
-				  XmTextPosition& startpos,
-				  XmTextPosition& endpos);
+				  const long pos,
+				  long& startpos,
+				  long& endpos);
 #endif
 
     //-----------------------------------------------------------------------
@@ -530,7 +546,11 @@ class SourceView {
     static IntIntArrayAssoc bps_in_line;
     static TextPositionArray _pos_of_line;
     static StringArray bp_addresses;
+#if defined(IF_XM)
     static XmTextPosition pos_of_line(int line);
+#else
+    static long pos_of_line(int line);
+#endif
 
     // True iff breakpoint BP is in current file (at LINE, if given)
     static bool bp_matches(BreakPoint *bp, int line = 0);
@@ -600,6 +620,7 @@ class SourceView {
     // The current JDB threadgroup.
     static string current_threadgroup;
 
+#if defined(IF_XM)
     // Some positions in source text.
     static XmTextPosition last_top;
     static XmTextPosition last_pos;
@@ -611,6 +632,19 @@ class SourceView {
     static XmTextPosition last_pos_pc;
     static XmTextPosition last_start_highlight_pc;
     static XmTextPosition last_end_highlight_pc;
+#else
+    // Some positions in source text.
+    static long last_top;
+    static long last_pos;
+    static long last_start_highlight;
+    static long last_end_highlight;
+
+    // Some positions in assembler code.
+    static long last_top_pc;
+    static long last_pos_pc;
+    static long last_start_highlight_pc;
+    static long last_end_highlight_pc;
+#endif
 
     static string last_execution_file;
     static int    last_execution_line;
@@ -641,41 +675,55 @@ class SourceView {
 			    bool force_reload = false,
 			    bool silent = false);
 
+#if defined(IF_XM)
+
     // Set insertion position to POS.
-    static void SetInsertionPosition(SCROLLEDTEXT_P w, XmTextPosition pos, 
+    static void SetInsertionPosition(Widget w, XmTextPosition pos, 
 				     bool fromTop = false);
 
     // Make position POS visible.
-    static void ShowPosition(SCROLLEDTEXT_P w, XmTextPosition pos, 
+    static void ShowPosition(Widget w, XmTextPosition pos, 
 			     bool fromTop = false);
 
-#if defined(IF_XM)
     static bool is_source_widget(Widget w);
     static bool is_code_widget(Widget w);
     static string& current_text(Widget w);
+
+    // Return current breakpoint indent amount.  If POS is given, add
+    // the whitespace from POS.
+    static int indent_amount(Widget w, int pos = -1);
+
 #else
+
+    // Set insertion position to POS.
+    static void SetInsertionPosition(GUI::ScrolledText *w, long pos, 
+				     bool fromTop = false);
+
+    // Make position POS visible.
+    static void ShowPosition(GUI::ScrolledText *w, long pos, 
+			     bool fromTop = false);
+
     static bool is_source_widget(GUI::Widget *w);
     static bool is_code_widget(GUI::Widget *w);
     static bool is_source_widget(GUI::GlyphMark *w);
     static bool is_code_widget(GUI::GlyphMark *w);
     static string& current_text(GUI::Widget *w);
-#endif
 
-#if defined(IF_XM)
-    // Return current breakpoint indent amount.  If POS is given, add
-    // the whitespace from POS.
-    static int indent_amount(Widget w, int pos = -1);
-#else
     // Return current breakpoint indent amount.  If POS is given, add
     // the whitespace from POS.
     static int indent_amount(GUI::Widget *w, int pos = -1);
+
 #endif
 
     // Format `where' and `thread' lines
     static void setup_where_line(string& line);
 
     // Assembler code display routines.
+#if defined(IF_XM)
     static XmTextPosition find_pc(const string& pc);
+#else
+    static long find_pc(const string& pc);
+#endif
     static void refresh_codeOQC(const string& answer, void *data);
     static void set_code(const string& code,
 			 const string& start,
@@ -808,10 +856,10 @@ private:
     // given, use colors from ORIGIN.
     static Widget map_arrow_at     (Widget w, XmTextPosition pos);
 #else
-    static GUI::GlyphMark *map_stop_at(GUI::ScrolledText *w, XmTextPosition pos,
+    static GUI::GlyphMark *map_stop_at(GUI::ScrolledText *w, long pos,
 				       Glib::RefPtr<Gdk::Pixbuf> stop,
 				       TextPositionArray& positions);
-    static GUI::GlyphMark *map_arrow_at(GUI::ScrolledText *w, XmTextPosition pos);
+    static GUI::GlyphMark *map_arrow_at(GUI::ScrolledText *w, long pos);
 #endif
 #if defined(IF_MOTIF)
     static Widget map_drag_arrow_at(Widget w, XmTextPosition pos,
@@ -975,12 +1023,13 @@ public:
     static string file_of_cursor();
 
     // Callbacks for menu bar
-    static void EditBreakpointsCB(CB_ALIST_1(Widget));
 #if defined(IF_XM)
+    static void EditBreakpointsCB(Widget, XtPointer, XtPointer);
     static void ViewStackFramesCB(Widget, XtPointer, XtPointer);
     static void ViewRegistersCB(Widget, XtPointer, XtPointer);
     static void ViewThreadsCB(Widget, XtPointer, XtPointer);
 #else
+    static void EditBreakpointsCB(GUI::Widget *);
     static void ViewStackFramesCB(GUI::Widget *);
     static void ViewRegistersCB(GUI::Widget *);
     static void ViewThreadsCB(GUI::Widget *);
@@ -1246,7 +1295,7 @@ public:
 #else
     // Get a help string for GLYPH; return 0 if none
     static MString help_on_glyph(GUI::Widget *glyph, bool detailed);
-    static MString help_on_pos(GUI::Widget *w, XmTextPosition pos, 
+    static MString help_on_pos(GUI::Widget *w, long pos, 
 			       long &ref, bool detailed);
 #endif
 

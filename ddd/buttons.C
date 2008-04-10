@@ -623,15 +623,15 @@ static XmTextPosition textPosOfEvent(Widget widget, XEvent *event)
 
 #else
 
-static XmTextPosition textPosOfEvent(GUI::ScrolledText *widget, GUI::Event *event)
+static long textPosOfEvent(GUI::ScrolledText *widget, GUI::Event *event)
 {
-    XmTextPosition startpos, endpos;
+    long startpos, endpos;
     string expr = 
 	source_view->get_word_at_event(widget, event, startpos, endpos);
 
 #if 0				// We might point at a text breakpoint
     if (expr.empty())
-	return XmTextPosition(-1);
+	return -1;
 #endif
 
     return startpos;
@@ -766,7 +766,7 @@ static MString gdbDefaultValueText(GUI::ScrolledText *widget,
 				   GUI::Event *event, 
 				   bool for_documentation)
 {
-    XmTextPosition startpos, endpos;
+    long startpos, endpos;
     string expr = 
 	source_view->get_word_at_event(widget, event, startpos, endpos);
 
@@ -2285,11 +2285,18 @@ void refresh_button_editor()
 // Flat Buttons
 //-----------------------------------------------------------------------------
 
-static void nop(CB_ALIST_1(Widget)) {}
+#if defined(IF_XM)
+static void nop(Widget, XtPointer, XtPointer) {}
+#else
+static void nop(GUI::Widget *) {}
+#endif
 
 static MMDesc desc[] = 
 {
-    MENTRYL("", "", MMFlatPush, BIND_0(PTR_FUN(nop)), 0, 0),
+    GENTRYL("", "", MMFlatPush,
+	    BIND(nop, 0),
+	    sigc::ptr_fun(nop),
+	    0, 0),
     MMEnd
 };
 

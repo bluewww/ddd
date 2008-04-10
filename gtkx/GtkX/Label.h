@@ -47,6 +47,7 @@ namespace GtkX {
 	~Label(void);
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;
+	void set_alignment(float xalign, float yalign);
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
 #include <GtkX/redirect.h>
     };

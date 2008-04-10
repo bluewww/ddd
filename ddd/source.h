@@ -50,14 +50,16 @@
 extern void gdbBreakAtCB      (Widget, XtPointer, XtPointer);
 extern void gdbClearAtCB      (Widget, XtPointer, XtPointer);
 extern void gdbToggleBreakCB  (Widget, XtPointer, XtPointer);
+extern void gdbLookupCB       (Widget, XtPointer, XtPointer);
 #else
 extern void gdbBreakAtCB      (GUI::Widget *);
 extern void gdbClearAtCB      (GUI::Widget *);
 extern void gdbToggleBreakCB  (GUI::Widget *);
+extern void gdbLookupCB       (void);
 #endif
-extern void gdbLookupCB       (CB_ALIST_NULL);
 
 #if defined(IF_XM)
+
 extern void gdbTempBreakAtCB  (Widget, XtPointer, XtPointer);
 extern void gdbRegexBreakAtCB (Widget, XtPointer, XtPointer);
 extern void gdbContUntilCB    (Widget, XtPointer, XtPointer);
@@ -65,7 +67,10 @@ extern void gdbSetPCCB        (Widget, XtPointer, XtPointer);
 
 extern void gdbPrintCB        (Widget, XtPointer, XtPointer);
 extern void gdbDisplayCB      (Widget, XtPointer, XtPointer);
+extern void gdbWatchCB        (Widget, XtPointer, XtPointer);
+
 #else
+
 extern void gdbTempBreakAtCB  (GUI::Widget *);
 extern void gdbRegexBreakAtCB (GUI::Widget *);
 extern void gdbContUntilCB    (GUI::Widget *);
@@ -73,23 +78,41 @@ extern void gdbSetPCCB        (GUI::Widget *);
 
 extern void gdbPrintCB        (GUI::Widget *, bool);
 extern void gdbDisplayCB      (GUI::Widget *);
+extern void gdbWatchCB        (GUI::Widget *, int);
+
 #endif
-extern void gdbWatchCB        (CB_ALIST_12(Widget, XtP(long)));
+
 extern void gdbUnwatchCB      (CB_ALIST_NULL);
-extern void gdbToggleWatchCB  (CB_ALIST_12(Widget, XtP(long)));
-
-extern void gdbPrintRefCB     (CB_ALIST_12(Widget, XtP(bool)));
-extern void gdbDispRefCB      (CB_ALIST_1(Widget));
-extern void gdbWatchRefCB     (Widget, XtPointer, XtPointer);
-
-extern void gdbWhatisCB       (CB_ALIST_1(Widget));
 
 #if defined(IF_XM)
-extern void gdbEditSourceCB   (Widget, XtPointer, XtPointer);
+
+extern void gdbToggleWatchCB  (Widget, XtPointer, XtPointer);
+
+extern void gdbPrintRefCB     (Widget, XtPointer, XtPointer);
+extern void gdbDispRefCB      (Widget, XtPointer, XtPointer);
+
 #else
-extern void gdbEditSourceCB   (GUI::Widget *);
+
+extern void gdbToggleWatchCB  (GUI::Widget *, int);
+
+extern void gdbPrintRefCB     (GUI::Widget *, bool);
+extern void gdbDispRefCB      (GUI::Widget *);
+
 #endif
-extern void gdbReloadSourceCB (CB_ALIST_NULL);
+
+extern void gdbWatchRefCB     (Widget, XtPointer, XtPointer);
+
+#if defined(IF_XM)
+extern void gdbWhatisCB       (Widget, XtPointer, XtPointer);
+
+extern void gdbEditSourceCB   (Widget, XtPointer, XtPointer);
+extern void gdbReloadSourceCB (Widget, XtPointer, XtPointer);
+#else
+extern void gdbWhatisCB       (GUI::Widget *);
+
+extern void gdbEditSourceCB   (GUI::Widget *);
+extern void gdbReloadSourceCB (void);
+#endif
 
 #if defined(IF_XM)
 extern void gdbUndoCB         (Widget, XtPointer, XtPointer);
@@ -106,19 +129,28 @@ extern bool have_watchpoint_at_arg();
 extern bool have_watchpoint_at_ref_arg();
 extern bool have_enabled_watchpoint_at_arg();
 
-extern void gdbEditBreakpointPropertiesCB (CB_ALIST_NULL);
-extern void gdbEditWatchpointPropertiesCB (CB_ALIST_NULL);
 
 #if defined(IF_XM)
+
+extern void gdbEditBreakpointPropertiesCB (Widget, XtPointer, XtPointer);
+extern void gdbEditWatchpointPropertiesCB (Widget, XtPointer, XtPointer);
+
 extern void gdbToggleEnableBreakpointCB (Widget, XtPointer, XtPointer);
 extern void gdbToggleEnableWatchpointCB (Widget, XtPointer, XtPointer);
+extern void gdbFindCB         (Widget, XtPointer, XtPointer);
+extern void gdbFindAgainCB    (Widget, XtPointer, XtPointer);
+
 #else
+
+extern void gdbEditBreakpointPropertiesCB (void);
+extern void gdbEditWatchpointPropertiesCB (void);
+
 extern void gdbToggleEnableBreakpointCB (GUI::Widget *);
 extern void gdbToggleEnableWatchpointCB (GUI::Widget *);
-#endif
+extern void gdbFindCB         (GUI::Widget *, SourceView::SearchDirection);
+extern void gdbFindAgainCB    (GUI::Widget *);
 
-extern void gdbFindCB         (CB_ALIST_12(Widget, XtP(SourceView::SearchDirection)));
-extern void gdbFindAgainCB    (CB_ALIST_1(Widget));
+#endif
 
 extern SourceView::SearchDirection current_find_direction();
 

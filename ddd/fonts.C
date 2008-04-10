@@ -39,9 +39,9 @@ char fonts_rcsid[] =
 #include "StringSA.h"
 #include "TextSetS.h"
 #include "assert.h"
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 #include "converters.h"
-#endif // IF_MOTIF
+#endif
 #include "cook.h"
 #include "ddd.h"
 #include "events.h"
@@ -54,12 +54,12 @@ char fonts_rcsid[] =
 
 #include <stdlib.h>		// atoi()
 #include <ctype.h>
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 #include <Xm/TextF.h>
 #include <Xm/Text.h>
 #include <Xm/PushB.h>
 #include <X11/Xatom.h>		// XA_...
-#endif // IF_MOTIF
+#endif
 
 
 //-----------------------------------------------------------------------------
@@ -664,11 +664,11 @@ void SetFontNameCB(CB_ALIST_12(Widget w, XtP(DDDFont) client_data))
     update_reset_preferences();
 }
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 void SetFontSizeCB(CB_ARG_LIST_12(w, client_data))
-#else // NOT IF_MOTIF
+#else
 void SetFontSizeCB(ENTRY_P w, DDDFont font)
-#endif // IF_MOTIF
+#endif
 {
     DDDFont font = (DDDFont) (long) client_data;
     String s = XmTextFieldGetString(w);
@@ -813,13 +813,10 @@ static void SelectionLostCB(Widget w, XtPointer client_data, XtPointer)
 			XtLastTimestampProcessed(XtDisplay(w)));
 }
 
+#if defined(IF_XM)
 
 // Browse fonts
-#ifdef IF_MOTIF
-void BrowseFontCB(CB_ARG_LIST_12(w, client_data))
-#else // NOT IF_MOTIF
-void BrowseFontCB(BUTTON_P w, DDDFont font)
-#endif // IF_MOTIF
+void BrowseFontCB(Widget w, XtPointer client_data, XtPointer)
 {
     Time tm = CurrentTime;
 #if 0
@@ -867,3 +864,50 @@ void BrowseFontCB(BUTTON_P w, DDDFont font)
 				  FontSelectionErrorHP, (void *)info);
     font_select_agent->start();
 }
+
+#else
+
+// Browse fonts
+void BrowseFontCB(GUI::Button *w, DDDFont font)
+{
+    Time tm = CurrentTime;
+
+    StatusDelay delay("Invoking " + font_type(font) + " selector");
+
+    string cmd = app_data.font_select_command;
+    cmd.gsub("@FONT@", make_font(app_data, DefaultDDDFont));
+    string type = font_type(font);
+    type[0] = toupper(type[0]);
+    cmd.gsub("@TYPE@", type);
+    cmd = sh_command(cmd, true);
+
+    // Create a TextField to fetch the selection
+    FontSelectInfo *info = new FontSelectInfo;
+    info->text = XmCreateText(XtParent(w), XMST("text"), 0, 0);
+    info->font = font;
+
+    XtRealizeWidget(info->text);
+
+    const string text = "dummy";
+    XmTextSetString(info->text, XMST(text.chars()));
+    TextSetSelection(info->text, 0, text.length(), tm);
+    XtAddCallback(info->text, XmNlosePrimaryCallback, 
+		  SelectionLostCB, XtPointer(info));
+
+    // Invoke a font selector
+    LiterateAgent *font_select_agent = 
+	new LiterateAgent(XtWidgetToApplicationContext(w), cmd);
+
+    output_buffer = "";
+
+    font_select_agent->removeAllHandlers(Died);
+    font_select_agent->addHandler(Died,
+				  DeleteAgentHP, (void *)info);
+    font_select_agent->addHandler(Input,
+				  FontSelectionDoneHP, (void *)info);
+    font_select_agent->addHandler(Error,
+				  FontSelectionErrorHP, (void *)info);
+    font_select_agent->start();
+}
+
+#endif

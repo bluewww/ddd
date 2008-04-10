@@ -165,70 +165,58 @@ extern void dddToggleSaveOptionsOnExitCB    (GUI::CheckMenuItem *);
 
 
 #if defined(IF_XM)
+
 extern void dddToggleButtonTipsCB           (Widget, XtPointer, XtPointer);
 extern void dddToggleValueTipsCB            (Widget, XtPointer, XtPointer);
 extern void dddToggleButtonDocsCB           (Widget, XtPointer, XtPointer);
 extern void dddToggleValueDocsCB            (Widget, XtPointer, XtPointer);
-#else
-extern void dddToggleButtonTipsCB           (GUI::CheckButton *);
-extern void dddToggleValueTipsCB            (GUI::CheckButton *);
-extern void dddToggleButtonDocsCB           (GUI::CheckButton *);
-extern void dddToggleValueDocsCB            (GUI::CheckButton *);
-#endif
-#if defined(IF_XM)
+
 extern void dddToggleButtonCaptionsCB       (Widget, XtPointer, XtPointer);
 extern void dddToggleButtonImagesCB         (Widget, XtPointer, XtPointer);
 extern void dddToggleFlatButtonsCB          (Widget, XtPointer, XtPointer);
 extern void dddToggleColorButtonsCB         (Widget, XtPointer, XtPointer);
 extern void dddToggleToolbarsAtBottomCB     (Widget, XtPointer, XtPointer);
+
+extern void dddSetCrashCB                   (Widget, XtPointer, XtPointer);
+extern void dddClearMaintenanceCB           (Widget, XtPointer, XtPointer);
+
+extern void dddSetGlobalTabCompletionCB     (Widget, XtPointer, XtPointer);
+extern void dddSetSeparateWindowsCB         (Widget, XtPointer, XtPointer);
+
 #else
+
+extern void dddToggleButtonTipsCB           (GUI::CheckButton *);
+extern void dddToggleValueTipsCB            (GUI::CheckButton *);
+extern void dddToggleButtonDocsCB           (GUI::CheckButton *);
+extern void dddToggleValueDocsCB            (GUI::CheckButton *);
+
 extern void dddToggleButtonCaptionsCB       (GUI::CheckButton *);
 extern void dddToggleButtonImagesCB         (GUI::CheckButton *);
 extern void dddToggleFlatButtonsCB          (GUI::CheckButton *);
 extern void dddToggleColorButtonsCB         (GUI::CheckButton *);
 extern void dddToggleToolbarsAtBottomCB     (GUI::CheckButton *);
-#endif
 
-extern void dddSetCrashCB                   (CB_ALIST_2(XtP(long)));
-extern void dddClearMaintenanceCB           (CB_ALIST_NULL);
+extern void dddSetCrashCB                   (int);
+extern void dddClearMaintenanceCB           (void);
 
-#if defined(IF_XM)
-extern void dddSetGlobalTabCompletionCB     (Widget, XtPointer, XtPointer);
-extern void dddSetSeparateWindowsCB         (Widget, XtPointer, XtPointer);
-#else
 extern void dddSetGlobalTabCompletionCB     (GUI::RadioButton *, int);
 extern void dddSetSeparateWindowsCB         (GUI::RadioButton *, int);
+
 #endif
+
 extern void dddSetStatusAtBottomCB          (Widget, XtPointer, XtPointer);
 #if defined(IF_XM)
 extern void dddSetToolBarCB                 (Widget, XtPointer, XtPointer);
-#else
-extern void dddSetToolBarCB                 (GUI::RadioButton *, bool);
-#endif
-extern void dddSetKeyboardFocusPolicyCB     (CB_ARG_LIST_12(,));
-#if defined(IF_XM)
+extern void dddSetKeyboardFocusPolicyCB     (Widget, XtPointer, XtPointer);
 extern void dddSetPannerCB                  (Widget, XtPointer, XtPointer);
 extern void dddSetDebuggerCB                (Widget, XtPointer, XtPointer);
 extern void dddToggleAutoDebuggerCB         (Widget, XtPointer, XtPointer);
 extern void dddSetCutCopyPasteBindingsCB    (Widget, XtPointer, XtPointer);
 extern void dddSetSelectAllBindingsCB       (Widget, XtPointer, XtPointer);
-#else
-extern void dddSetPannerCB                  (GUI::RadioButton *, bool);
-extern void dddSetDebuggerCB                (GUI::RadioButton *, DebuggerType);
-extern void dddToggleAutoDebuggerCB         (GUI::CheckButton *);
-extern void dddSetCutCopyPasteBindingsCB    (GUI::RadioButton *, BindingStyle);
-extern void dddSetSelectAllBindingsCB       (GUI::RadioButton *, BindingStyle);
-#endif
 
-#if defined(IF_XM)
 extern void dddSetUndoBufferSizeCB          (Widget, XtPointer, XtPointer);
 extern void dddClearUndoBufferCB            (Widget, XtPointer, XtPointer);
-#else
-extern void dddSetUndoBufferSizeCB          (GUI::Entry *);
-extern void dddClearUndoBufferCB            (void);
-#endif
 
-#if defined(IF_XM)
 extern void dddSetEditCommandCB             (Widget, XtPointer, XtPointer);
 extern void dddSetPlotCommandCB             (Widget, XtPointer, XtPointer);
 extern void dddSetGetCoreCommandCB          (Widget, XtPointer, XtPointer);
@@ -237,7 +225,20 @@ extern void dddSetTermCommandCB             (Widget, XtPointer, XtPointer);
 extern void dddSetUncompressCommandCB       (Widget, XtPointer, XtPointer);
 extern void dddSetWWWCommandCB              (Widget, XtPointer, XtPointer);
 extern void dddSetBuiltinPlotWindowCB       (Widget, XtPointer, XtPointer);
+
+extern void DDDSaveOptionsCB                (Widget, XtPointer, XtPointer);
 #else
+extern void dddSetToolBarCB                 (GUI::RadioButton *, bool);
+extern void dddSetKeyboardFocusPolicyCB     (GUI::Widget *, unsigned char);
+extern void dddSetPannerCB                  (GUI::RadioButton *, bool);
+extern void dddSetDebuggerCB                (GUI::RadioButton *, DebuggerType);
+extern void dddToggleAutoDebuggerCB         (GUI::CheckButton *);
+extern void dddSetCutCopyPasteBindingsCB    (GUI::RadioButton *, BindingStyle);
+extern void dddSetSelectAllBindingsCB       (GUI::RadioButton *, BindingStyle);
+
+extern void dddSetUndoBufferSizeCB          (GUI::Entry *);
+extern void dddClearUndoBufferCB            (void);
+
 extern void dddSetEditCommandCB             (GUI::Entry *);
 extern void dddSetPlotCommandCB             (GUI::Entry *);
 extern void dddSetGetCoreCommandCB          (GUI::Entry *);
@@ -246,13 +247,10 @@ extern void dddSetTermCommandCB             (GUI::Entry *);
 extern void dddSetUncompressCommandCB       (GUI::Entry *);
 extern void dddSetWWWCommandCB              (GUI::Entry *);
 extern void dddSetBuiltinPlotWindowCB       (GUI::RadioButton *, bool);
-#endif
 
-#if defined(IF_XM)
-extern void DDDSaveOptionsCB                (Widget, XtPointer, XtPointer);
-#else
 extern void DDDSaveOptionsCB                (GUI::Widget *, unsigned long);
 #endif
+
 extern void DDDSaveOptionsAsCB              (Widget, XtPointer, XtPointer);
 
 #endif // _DDD_options_h

@@ -32,7 +32,7 @@ using namespace GtkX;
 
 RadioButton::RadioButton(GtkX::Container &parent, PackOptions po,
 			 const GtkX::String &name, const GtkX::String &label):
-    Gtk::RadioButton(label.s())
+    Gtk::RadioButton(mklabel(name, label).s())
 {
     Gtk::RadioButton::set_name(name.s());
     // We cannot use this:
@@ -53,7 +53,7 @@ RadioButton::RadioButton(GtkX::Container &parent, PackOptions po,
 // TEMPORARY
 RadioButton::RadioButton(Gtk::Container *parent, const GtkX::String &name,
 			 const GtkX::String &label):
-    Gtk::RadioButton(label.s())
+    Gtk::RadioButton(mklabel(name, label).s())
 {
     Gtk::RadioButton::set_name(name.s());
     parent->add(*internal());

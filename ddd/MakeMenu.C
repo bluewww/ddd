@@ -880,9 +880,9 @@ void MMaddItems(GUI::Container *shell, MMDesc items[], bool ignore_seps)
 	    // Create a Label
 	    assert(subitems == 0);
 
-	    widget = label = new GUI::Label(*container, GUI::PACK_SHRINK, label_string);
+	    widget = label = new GUI::Label(*container, GUI::PACK_SHRINK, name, label_string);
 	    widget->set_fg(GUI::STATE_NORMAL, GUI::Color("red"));
-	    label->set_alignment(Gtk::ALIGN_LEFT);
+	    label->set_alignment(0.0, 0.5);
 	    break;
 	}
 
@@ -967,11 +967,12 @@ void MMaddItems(GUI::Container *shell, MMDesc items[], bool ignore_seps)
 
 	    widget = box = new GUI::HBox(*shell, GUI::PACK_SHRINK, panelName.chars());
 
-	    label = new GUI::Label(*box, GUI::PACK_SHRINK, label_string);
+	    label = new GUI::Label(*box, GUI::PACK_SHRINK, name, label_string);
+	    label->set_alignment(0.0, 0.5);
 	    if (have_label)
 		label->show();
 
-	    GUI::Container *(*create_panel)(GUI::Container *, cpString, MMDesc[]) = 0;
+	    GUI::Container *(*create_panel)(GUI::Container *, cpString, MMDesc[], GUI::Orientation) = 0;
 
 	    switch (type)
 	    {
@@ -993,7 +994,10 @@ void MMaddItems(GUI::Container *shell, MMDesc items[], bool ignore_seps)
 	    }
 
 
-	    box = create_panel(box, subMenuName.chars(), subitems);
+	    GUI::Orientation orient = (flags & MMVertical) ? GUI::ORIENTATION_VERTICAL : GUI::ORIENTATION_HORIZONTAL;
+
+
+	    box = create_panel(box, subMenuName.chars(), subitems, orient);
 
 	    break;
 	}
@@ -1251,10 +1255,10 @@ GUI::Container *MMcreateWorkArea(GUI::Dialog *parent, GUI::String name, MMDesc i
 #endif
 
 #if defined(IF_XM)
+
 // Create panel from items
-BOX_P MMcreatePanel(CONTAINER_P parent, NAME_T name, MMDesc items[]
-		    , ArgList args, Cardinal arg
-		    )
+Widget MMcreatePanel(Widget parent, const _XtString name, MMDesc items[],
+		     ArgList args, Cardinal arg)
 {
     BOX_P panel = verify(XmCreateWorkArea(parent, XMST(name), args, arg));
     MMaddItems(panel, items);
@@ -1262,14 +1266,24 @@ BOX_P MMcreatePanel(CONTAINER_P parent, NAME_T name, MMDesc items[]
 
     return panel;
 }
+
 #else
-GUI::Container *MMcreatePanel(GUI::Container *parent, cpString name, MMDesc items[])
+
+GUI::Container *MMcreatePanel(GUI::Container *parent, cpString name, MMDesc items[],
+			      GUI::Orientation orient)
 {
-    GUI::Container *panel = new GUI::VBox(*parent, GUI::PACK_SHRINK, name);
+    GUI::Container *panel;
+    if (orient == GUI::ORIENTATION_VERTICAL) {
+	panel = new GUI::VBox(*parent, GUI::PACK_SHRINK, name);
+    }
+    else {
+	panel = new GUI::HBox(*parent, GUI::PACK_SHRINK, name);
+    }
     MMaddItems(panel, items);
     panel->show();
     return panel;
 }
+
 #endif
 
 void MMadjustPanel(const MMDesc items[], Dimension space)
@@ -1316,9 +1330,8 @@ void MMadjustPanel(const MMDesc items[], Dimension space)
 #if defined(IF_XM)
 
 // Create radio panel from items
-BOX_P MMcreateRadioPanel(CONTAINER_P parent, NAME_T name, MMDesc items[],
-			 ArgList _args, Cardinal _arg
-			 )
+Widget MMcreateRadioPanel(Widget parent, const _XtString name, MMDesc items[],
+			  ArgList _args, Cardinal _arg)
 {
     ArgList args = new Arg[_arg + 10];
     Cardinal arg = 0;
@@ -1342,13 +1355,11 @@ BOX_P MMcreateRadioPanel(CONTAINER_P parent, NAME_T name, MMDesc items[],
 #else
 
 // Create radio panel from items
-GUI::Container *MMcreateRadioPanel(GUI::Container *parent, cpString name, MMDesc items[])
+GUI::Container *MMcreateRadioPanel(GUI::Container *parent, cpString name, MMDesc items[],
+				   GUI::Orientation orient)
 {
-#ifdef NAG_ME
-#warning Extra args?
-#endif
-    GUI::Container *panel = new GUI::RadioBox(*parent, GUI::PACK_SHRINK,
-					      name, GUI::ORIENTATION_HORIZONTAL);
+    GUI::Container *panel = new GUI::RadioBox(*parent, GUI::PACK_SHRINK, name,
+					      orient);
 
     MMaddItems(panel, items);
     panel->show();
@@ -1359,9 +1370,10 @@ GUI::Container *MMcreateRadioPanel(GUI::Container *parent, cpString name, MMDesc
 #endif
 
 #if defined(IF_XM)
+
 // Create button panel from items
-BOX_P MMcreateButtonPanel(CONTAINER_P parent, NAME_T name, MMDesc items[],
-			  ArgList args, Cardinal arg)
+Widget MMcreateButtonPanel(Widget parent, const _XtString name, MMDesc items[],
+			   ArgList args, Cardinal arg)
 {
     Widget panel = verify(XmCreateRowColumn(parent, XMST(name), args, arg));
     MMaddItems(panel, items);
@@ -1369,16 +1381,26 @@ BOX_P MMcreateButtonPanel(CONTAINER_P parent, NAME_T name, MMDesc items[],
 
     return panel;
 }
+
 #else
+
 // Create button panel from items
-GUI::Container *MMcreateButtonPanel(GUI::Container *parent, cpString name, MMDesc items[])
+GUI::Container *MMcreateButtonPanel(GUI::Container *parent, cpString name, MMDesc items[],
+				    GUI::Orientation orient)
 {
-    GUI::Container *panel = new GUI::HBox(*parent, GUI::PACK_SHRINK, name);
+    GUI::Container *panel;
+    if (orient == GUI::ORIENTATION_VERTICAL) {
+	panel = new GUI::VBox(*parent, GUI::PACK_SHRINK, name);
+    }
+    else {
+	panel = new GUI::HBox(*parent, GUI::PACK_SHRINK, name);
+    }
     MMaddItems(panel, items);
     panel->show();
 
     return panel;
 }
+
 #endif
 
 #if !defined(IF_XM)

@@ -81,7 +81,7 @@ XFontStruct *FontTable::operator[](const string& name)
 	    if (XGetGCValues(_display, default_gc, GCFont, &gc_values))
 	    {
 		const Font& font_id = gc_values.font;
-		FONT_P font = XQueryFont(_display, font_id);
+		XFontStruct *font = XQueryFont(_display, font_id);
 		if (font != 0)
 		{
 		    std::cerr << ", using default font instead\n";
@@ -93,7 +93,7 @@ XFontStruct *FontTable::operator[](const string& name)
 	if (table[i].font == 0)
 	{
 	    // Try "fixed" font
-	    FONT_P font = XLoadQueryFont(_display, "fixed");
+	    XFontStruct *font = XLoadQueryFont(_display, "fixed");
 	    if (font != 0)
 	    {
 		std::cerr << ", using font \"fixed\" instead\n";

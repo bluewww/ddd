@@ -1697,17 +1697,23 @@ static GUI::CheckButton *line_numbers1_w;
 
 static MMDesc source_menu[] =
 {
-    MENTRYL("breakpoints", "Breakpoints...", MMPush,
-	    BIND_0(PTR_FUN(SourceView::EditBreakpointsCB)), 0, 0),
+    GENTRYL("breakpoints", "Breakpoints...", MMPush,
+	    BIND(SourceView::EditBreakpointsCB, 0),
+	    sigc::ptr_fun(SourceView::EditBreakpointsCB),
+	    0, 0),
     MMSep,
-    MENTRYL("lookup", "Lookup", MMPush,
-	    HIDE_0(PTR_FUN(gdbLookupCB)), 0, (Widget *)&lookup_w),
-    MENTRYL("findForward", "@charset Find@small>> @charset()@rm", MMPush,
-	    BIND_1(PTR_FUN(gdbFindCB), SourceView::forward),
-	    0, (Widget *)&find_forward_w),
-    MENTRYL("findBackward", "@charset Find@small<< @charset()@rm", MMPush,
-	    BIND_1(PTR_FUN(gdbFindCB), SourceView::backward),
-	    0, (Widget *)&find_backward_w),
+    GENTRYL("lookup", "Lookup", MMPush,
+	    BIND(gdbLookupCB, 0),
+	    sigc::hide(sigc::ptr_fun(gdbLookupCB)),
+	    0, &lookup_w),
+    GENTRYL("findForward", "@charset Find@small>> @charset()@rm", MMPush,
+	    BIND(gdbFindCB, SourceView::forward),
+	    sigc::bind(sigc::ptr_fun(gdbFindCB), SourceView::forward),
+	    0, &find_forward_w),
+    GENTRYL("findBackward", "@charset Find@small<< @charset()@rm", MMPush,
+	    BIND(gdbFindCB, SourceView::backward),
+	    sigc::bind(sigc::ptr_fun(gdbFindCB), SourceView::backward),
+	    0, &find_backward_w),
     MMSep,
     GENTRYL("findWordsOnly", "Find Words Only", MMCheckItem,
 	    BIND(sourceToggleFindWordsOnlyCB, 0), 
@@ -1731,8 +1737,10 @@ static MMDesc source_menu[] =
 	    BIND(gdbEditSourceCB, 0),
 	    sigc::ptr_fun(gdbEditSourceCB),
 	    0, &edit_source_w),
-    MENTRYL("reload", "Reload Source", MMPush, 
-	    HIDE_0(PTR_FUN(gdbReloadSourceCB)), 0, (Widget *)&reload_source_w),
+    GENTRYL("reload", "Reload Source", MMPush, 
+	    BIND(gdbReloadSourceCB, 0),
+	    sigc::hide(sigc::ptr_fun(gdbReloadSourceCB)),
+	    0, &reload_source_w),
     MMEnd
 };
 
@@ -1816,8 +1824,8 @@ static MMDesc undo_menu [] =
 	    BIND(dddSetUndoBufferSizeCB, 0), 
 	    sigc::retype(sigc::ptr_fun(dddSetUndoBufferSizeCB)),
 	    0, &max_undo_size_w),
-    MENTRYL("kbytes", "kBytes", MMLabel,
-	    MMNoCB, 0, 0),
+    GENTRYL("kbytes", "kBytes", MMLabel,
+	    MMNoCB, MDUMMY, 0, 0),
     GENTRYL("clear", "Clear Undo Buffer", MMPush,
 	    BIND(dddClearUndoBufferCB, 0),
 	    sigc::hide(sigc::ptr_fun(dddClearUndoBufferCB)),
@@ -1841,12 +1849,12 @@ static GUI::CheckButton *check_grabs_w;
 
 static MMDesc general_preferences_menu[] = 
 {
-    MENTRYL("buttonHints", "Automatic Display of Button Hints", MMButtonPanel,
-	    MMNoCB, button_menu, 0),
-    MENTRYL("valueHints", "Automatic Display of Variable Values", MMButtonPanel,
-	    MMNoCB, value_menu, 0),
-    MENTRYL("tabCompletion", "TAB Key Completes", MMRadioPanel,
-	    MMNoCB, completion_menu, 0),
+    GENTRYL("buttonHints", "Automatic Display of Button Hints", MMButtonPanel,
+	    MMNoCB, MDUMMY, button_menu, 0),
+    GENTRYL("valueHints", "Automatic Display of Variable Values", MMButtonPanel,
+	    MMNoCB, MDUMMY, value_menu, 0),
+    GENTRYL("tabCompletion", "TAB Key Completes", MMRadioPanel,
+	    MMNoCB, MDUMMY, completion_menu, 0),
     GENTRYL("groupIconify", "Iconify all Windows at Once", MMToggle,
 	    BIND(dddToggleGroupIconifyCB, 0),
 	    sigc::retype(sigc::ptr_fun(dddToggleGroupIconifyCB)),
@@ -1867,8 +1875,8 @@ static MMDesc general_preferences_menu[] =
 	    BIND(dddToggleCheckGrabsCB, 0),
 	    sigc::retype(sigc::ptr_fun(dddToggleCheckGrabsCB)),
 	    0, &check_grabs_w),
-    MENTRYL("undoSize", "Undo Buffer Size", MMPanel,
-	    MMNoCB, undo_menu, 0),
+    GENTRYL("undoSize", "Undo Buffer Size", MMPanel,
+	    MMNoCB, MDUMMY, undo_menu, 0),
     MMEnd
 };
 
@@ -2017,24 +2025,22 @@ static GUI::Widget *refer_sources_w;
 
 static MMDesc source_preferences_menu[] = 
 {
-    MENTRYL("showExecPos", "Show Position and Breakpoints", MMRadioPanel,
-	    MMNoCB, glyph_menu, 0),
-    MENTRYL("toolButtons", "Tool Buttons Location", MMRadioPanel,
-	    MMNoCB, tool_buttons_menu, 0),
+    GENTRYL("showExecPos", "Show Position and Breakpoints", MMRadioPanel,
+	    MMNoCB, MDUMMY, glyph_menu, 0),
+    GENTRYL("toolButtons", "Tool Buttons Location", MMRadioPanel,
+	    MMNoCB, MDUMMY, tool_buttons_menu, 0),
     GENTRYL("referSources", "Refer to Program Sources", MMRadioPanel,
-	    MMNoCB,
-	    MDUMMY,
-	    refer_menu, &refer_sources_w),
-    MENTRYL("find", "Find", MMButtonPanel,
-	    MMNoCB, find_preferences_menu, 0),
-    MENTRYL("cache", "Cache", MMButtonPanel,
-	    MMNoCB, cache_menu, 0),
+	    MMNoCB, MDUMMY, refer_menu, &refer_sources_w),
+    GENTRYL("find", "Find", MMButtonPanel,
+	    MMNoCB, MDUMMY, find_preferences_menu, 0),
+    GENTRYL("cache", "Cache", MMButtonPanel,
+	    MMNoCB, MDUMMY, cache_menu, 0),
     GENTRYL("lineNumbers", "Display Source Line Numbers", MMToggle,
 	    BIND(sourceToggleDisplayLineNumbersCB, 0),
 	    sigc::retype(sigc::ptr_fun(sourceToggleDisplayLineNumbersCB)),
 	    0, &line_numbers2_w),
-    MENTRYL("scales", "scales", MMPanel | MMUnmanagedLabel, 
-	    MMNoCB, scales_menu, 0),
+    GENTRYL("scales", "scales", MMPanel | MMUnmanagedLabel, 
+	    MMNoCB, MDUMMY, scales_menu, 0),
     MMEnd
 };
 
@@ -2118,8 +2124,8 @@ static GUI::CheckButton *graph_cluster_displays_w;
 
 static MMDesc placement_menu[] =
 {
-    MENTRYL("direction", "", MMRadioPanel | MMUnmanagedLabel,
-	    MMNoCB, direction_menu, 0),
+    GENTRYL("direction", "", MMRadioPanel | MMUnmanagedLabel,
+	    MMNoCB, MDUMMY, direction_menu, 0),
     GENTRYL("clusterDisplays", "Clustered", MMToggle,
 	    BIND(graphToggleClusterDisplaysCB, 0),
 	    sigc::retype(sigc::ptr_fun(graphToggleClusterDisplaysCB)),
@@ -2139,8 +2145,10 @@ static MMDesc themes_menu[] =
 	    BIND(graphToggleSnapToGridCB, 0),
 	    sigc::retype(sigc::ptr_fun(graphToggleSnapToGridCB)),
 	    0, &graph_snap_to_grid_w),
-    MENTRYL("themes", "Themes...", MMPush,
-	    HIDE_0( PTR_FUN(dddPopupThemesCB) ), 0, 0),
+    GENTRYL("themes", "Themes...", MMPush,
+	    BIND(dddPopupThemesCB, 0),
+	    sigc::hide(sigc::ptr_fun(dddPopupThemesCB)),
+	    0, 0),
     MMEnd
 };
 
@@ -2171,12 +2179,12 @@ static GUI::CheckButton *graph_auto_close_w;
 
 static MMDesc data_preferences_menu[] = 
 {
-    MENTRYL("show", "Show", MMPanel,
-	    MMNoCB, show_menu, 0),
-    MENTRYL("placement", "Placement", MMPanel,
-	    MMNoCB, placement_menu, 0),
-    MENTRYL("layout", "Layout", MMPanel,
-	    MMNoCB, layout_menu, 0),
+    GENTRYL("show", "Show", MMPanel,
+	    MMNoCB, MDUMMY, show_menu, 0),
+    GENTRYL("placement", "Placement", MMPanel,
+	    MMNoCB, MDUMMY, placement_menu, 0),
+    GENTRYL("layout", "Layout", MMPanel,
+	    MMNoCB, MDUMMY, layout_menu, 0),
     GENTRYL("detectAliases", "Detect Aliases", MMToggle,
 	    BIND(graphToggleDetectAliasesCB, 0),
 	    sigc::retype(sigc::ptr_fun(graphToggleDetectAliasesCB)),
@@ -2189,10 +2197,10 @@ static MMDesc data_preferences_menu[] =
 	    BIND(graphToggleAutoCloseCB, 0),
 	    sigc::retype(sigc::ptr_fun(graphToggleAutoCloseCB)),
 	    0, &graph_auto_close_w),
-    MENTRYL("themes", "", MMPanel | MMUnmanagedLabel, 
-	    MMNoCB, themes_menu, 0),
-    MENTRYL("grid", "", MMPanel | MMUnmanagedLabel,
-	    MMNoCB, grid_menu, 0),
+    GENTRYL("themes", "", MMPanel | MMUnmanagedLabel, 
+	    MMNoCB, MDUMMY, themes_menu, 0),
+    GENTRYL("grid", "", MMPanel | MMUnmanagedLabel,
+	    MMNoCB, MDUMMY, grid_menu, 0),
     MMEnd
 };
 
@@ -2269,12 +2277,14 @@ static GUI::RadioButton *set_focus_explicit_w;
 
 static MMDesc keyboard_focus_menu [] = 
 {
-    MENTRYL("pointer", "Point to Type", MMRadio,
-	    BIND_1( PTR_FUN(dddSetKeyboardFocusPolicyCB), XtPointer(XmPOINTER) ),
-	    0, (Widget *)&set_focus_pointer_w),
-    MENTRYL("explicit", "Click to Type", MMRadio,
-	    BIND_1( PTR_FUN(dddSetKeyboardFocusPolicyCB), XtPointer(XmEXPLICIT) ),
-	    0, (Widget *)&set_focus_explicit_w),
+    GENTRYL("pointer", "Point to Type", MMRadio,
+	    BIND(dddSetKeyboardFocusPolicyCB, XmPOINTER),
+	    sigc::bind(sigc::ptr_fun(dddSetKeyboardFocusPolicyCB), 1),
+	    0, &set_focus_pointer_w),
+    GENTRYL("explicit", "Click to Type", MMRadio,
+	    BIND(dddSetKeyboardFocusPolicyCB, XmEXPLICIT),
+	    sigc::bind(sigc::ptr_fun(dddSetKeyboardFocusPolicyCB), 0),
+	    0, &set_focus_explicit_w),
     MMEnd
 };
 
@@ -2437,24 +2447,24 @@ static MMDesc select_all_menu [] =
 
 static MMDesc startup_preferences_menu [] =
 {
-    MENTRYL("windows", "Window Layout", MMRadioPanel,
-	    MMNoCB, window_mode_menu, 0),
-    MENTRYL("cutCopyPaste", "Ctrl+C is", MMRadioPanel,
-	    MMNoCB, cut_copy_paste_menu, 0),
-    MENTRYL("selectAll", "Ctrl+A is", MMRadioPanel,
-	    MMNoCB, select_all_menu, 0),
-    MENTRYL("buttons", "Tool Bar Appearance", MMButtonPanel,
-	    MMNoCB, button_appearance_menu, 0),
-    MENTRYL("keyboardFocus", "Keyboard Focus", MMRadioPanel,
-	    MMNoCB, keyboard_focus_menu, 0),
-    MENTRYL("dataScrolling", "Data Scrolling", MMRadioPanel,
-	    MMNoCB, data_scrolling_menu, 0),
-    MENTRYL("autoDebugger", "Debugger Type", MMButtonPanel,
-	    MMNoCB, auto_debugger_menu, 0),
-    MENTRYL("debugger", "", MMRadioPanel,
-	    MMNoCB, debugger_menu, 0),
-    MENTRYL("startupWindows", "Startup Windows", MMButtonPanel,
-	    MMNoCB, startup_menu, 0),
+    GENTRYL("windows", "Window Layout", MMRadioPanel,
+	    MMNoCB, MDUMMY, window_mode_menu, 0),
+    GENTRYL("cutCopyPaste", "Ctrl+C is", MMRadioPanel,
+	    MMNoCB, MDUMMY, cut_copy_paste_menu, 0),
+    GENTRYL("selectAll", "Ctrl+A is", MMRadioPanel,
+	    MMNoCB, MDUMMY, select_all_menu, 0),
+    GENTRYL("buttons", "Tool Bar Appearance", MMButtonPanel,
+	    MMNoCB, MDUMMY, button_appearance_menu, 0),
+    GENTRYL("keyboardFocus", "Keyboard Focus", MMRadioPanel,
+	    MMNoCB, MDUMMY, keyboard_focus_menu, 0),
+    GENTRYL("dataScrolling", "Data Scrolling", MMRadioPanel,
+	    MMNoCB, MDUMMY, data_scrolling_menu, 0),
+    GENTRYL("autoDebugger", "Debugger Type", MMButtonPanel,
+	    MMNoCB, MDUMMY, auto_debugger_menu, 0),
+    GENTRYL("debugger", "", MMRadioPanel,
+	    MMNoCB, MDUMMY, debugger_menu, 0),
+    GENTRYL("startupWindows", "Startup Windows", MMButtonPanel,
+	    MMNoCB, MDUMMY, startup_menu, 0),
     MMEnd
 };
 
@@ -2477,8 +2487,10 @@ static GUI::Entry *font_sizes[5];
 	    BIND(SetFontSizeCB, font),				\
 	    sigc::bind(sigc::ptr_fun(SetFontSizeCB), font ),	\
 	    0, &font_sizes[int(font)]),				\
-    MENTRYL("browse", "Browse...", MMPush,			\
-	    BIND_1( PTR_FUN(BrowseFontCB), font ), 0, 0),	\
+    GENTRYL("browse", "Browse...", MMPush,			\
+	    BIND(BrowseFontCB, font),				\
+	    sigc::bind(sigc::ptr_fun(BrowseFontCB), font),	\
+	    0, 0),						\
     MMEnd							\
 }
 
@@ -2491,14 +2503,14 @@ static MMDesc data_font_menu           [] = FONT_MENU(DataDDDFont);
 #if defined(IF_XM)
 static MMDesc font_preferences_menu [] =
 {
-    MENTRYL("default", "Default Font", MMPanel,
-	    MMNoCB, default_font_menu, 0),
-    MENTRYL("variableWidth", "Variable Width", MMPanel,
-	    MMNoCB, variable_width_font_menu, 0),
-    MENTRYL("fixedWidth", "Fixed Width", MMPanel,
-	    MMNoCB, fixed_width_font_menu, 0),
-    MENTRYL("data", "Data", MMPanel,
-	    MMNoCB, data_font_menu, 0),
+    GENTRYL("default", "Default Font", MMPanel,
+	    MMNoCB, MDUMMY, default_font_menu, 0),
+    GENTRYL("variableWidth", "Variable Width", MMPanel,
+	    MMNoCB, MDUMMY, variable_width_font_menu, 0),
+    GENTRYL("fixedWidth", "Fixed Width", MMPanel,
+	    MMNoCB, MDUMMY, fixed_width_font_menu, 0),
+    GENTRYL("data", "Data", MMPanel,
+	    MMNoCB, MDUMMY, data_font_menu, 0),
     MMEnd
 };
 #endif
@@ -2572,8 +2584,8 @@ static MMDesc helpers_preferences_menu [] =
 	    BIND(dddSetPlotCommandCB, 0), 
 	    sigc::retype(sigc::ptr_fun(dddSetPlotCommandCB)), 
 	    0, &plot_command_w),
-    MENTRYL("plot_window", "Plot Window", MMRadioPanel,
-	    MMNoCB, plot_window_menu, 0),
+    GENTRYL("plot_window", "Plot Window", MMRadioPanel,
+	    MMNoCB, MDUMMY, plot_window_menu, 0),
     MMEnd
 };
 
@@ -2581,6 +2593,8 @@ static MMDesc helpers_preferences_menu [] =
 // Data
 
 #if defined(IF_XM)
+static Widget print_w            = 0;
+static Widget display_w          = 0;
 static Widget examine_w          = 0;
 static Widget locals_w           = 0;
 static Widget args_w             = 0;
@@ -2616,11 +2630,13 @@ static MMDesc data_menu[] =
 	    BIND(DataDisp::EditDisplaysCB, 0),
 	    sigc::hide(sigc::ptr_fun(DataDisp::EditDisplaysCB)),
 	    0, 0),
-    MENTRYL("themes", "Themes...", MMPush,
-	    HIDE_0(PTR_FUN(dddPopupThemesCB)), 
+    GENTRYL("themes", "Themes...", MMPush,
+	    BIND(dddPopupThemesCB, 0), 
+	    sigc::hide(sigc::ptr_fun(dddPopupThemesCB)), 
 	    0, 0),
-    MENTRYL("watchpoints", "Watchpoints...", MMPush,
-	    BIND_0(PTR_FUN(SourceView::EditBreakpointsCB)), 
+    GENTRYL("watchpoints", "Watchpoints...", MMPush,
+	    BIND(SourceView::EditBreakpointsCB, 0), 
+	    sigc::ptr_fun(SourceView::EditBreakpointsCB), 
 	    0, &edit_watchpoints_w),
     GENTRYL("examine", "Memory...", MMPush,
 	    BIND(gdbExamineCB, 0),
@@ -2689,15 +2705,18 @@ static GUI::RadioButton *crash_nothing_w   = 0;
 
 static MMDesc crash_menu[] = 
 {
-    MENTRYL("debug", "Debug DDD", MMRadio,
-	    HIDE_0_BIND_1(PTR_FUN(dddSetCrashCB), 2),
-	    0, (Widget *)&crash_debug_w),
-    MENTRYL("dumpCore", "Dump Core Now", MMRadio,
-	    HIDE_0_BIND_1(PTR_FUN(dddSetCrashCB), 1),
-	    0, (Widget *)&crash_dump_core_w),
-    MENTRYL("nothing", "Do Nothing", MMRadio,
-	    HIDE_0_BIND_1(PTR_FUN(dddSetCrashCB), 0),
-	    0, (Widget *)&crash_nothing_w),
+    GENTRYL("debug", "Debug DDD", MMRadio,
+	    BIND(dddSetCrashCB, 2),
+	    sigc::hide(sigc::bind(sigc::ptr_fun(dddSetCrashCB), 2)),
+	    0, &crash_debug_w),
+    GENTRYL("dumpCore", "Dump Core Now", MMRadio,
+	    BIND(dddSetCrashCB, 1),
+	    sigc::hide(sigc::bind(sigc::ptr_fun(dddSetCrashCB), 1)),
+	    0, &crash_dump_core_w),
+    GENTRYL("nothing", "Do Nothing", MMRadio,
+	    BIND(dddSetCrashCB, 0),
+	    sigc::hide(sigc::bind(sigc::ptr_fun(dddSetCrashCB), 0)),
+	    0, &crash_nothing_w),
     MMEnd
 };
 
@@ -2711,22 +2730,31 @@ static GUI::Widget *valgrindLeakCheck_w = 0;
 
 static MMDesc maintenance_menu[] = 
 {
-    MENTRYL("debug", "Debug DDD...", MMPush,
-	    HIDE_0_BIND_1(PTR_FUN(DDDDebugCB), 0), 0, &debug_ddd_w),
-    MENTRYL("dumpCore", "Dump Core Now", MMPush,
-	    HIDE_0(PTR_FUN(DDDDumpCoreCB)), 0, &dump_core_w),
-//  MENTRYL("tictactoe", "Tic Tac Toe...", MMPush,
-//    HIDE_0(PTR_FUN(TicTacToeCB)), 0, 0),
+    GENTRYL("debug", "Debug DDD...", MMPush,
+	    BIND(DDDDebugCB, 0),
+	    sigc::hide(sigc::bind(sigc::ptr_fun(DDDDebugCB), 0)),
+	    0, &debug_ddd_w),
+    GENTRYL("dumpCore", "Dump Core Now", MMPush,
+	    BIND(DDDDumpCoreCB, 0),
+	    sigc::hide(sigc::ptr_fun(DDDDumpCoreCB)),
+	    0, &dump_core_w),
+    //GENTRYL("tictactoe", "Tic Tac Toe...", MMPush,
+    //	    BIND(TicTacToeCB, 0),
+    //	    sigc::hide(sigc::ptr_fun(TicTacToeCB)),
+    //	    0, 0),
     MMSep,
-    MENTRYL("crash", "When DDD Crashes", MMRadioMenu,
-	    MMNoCB, crash_menu, 0),
+    GENTRYL("crash", "When DDD Crashes", MMRadioMenu,
+	    MMNoCB, MDUMMY, crash_menu, 0),
     MMSep,
-    MENTRYL("valgrindLeak", "Do Valgrind Leak Check", MMPush | MMUnmanaged,
-	    HIDE_0(PTR_FUN(dddValgrindLeakCheckCB)),
+    GENTRYL("valgrindLeak", "Do Valgrind Leak Check", MMPush | MMUnmanaged,
+	    BIND(dddValgrindLeakCheckCB, 0),
+	    sigc::hide(sigc::ptr_fun(dddValgrindLeakCheckCB)),
 	    0, &valgrindLeakCheck_w),
     MMSep,
-    MENTRYL("remove", "Remove Menu", MMPush,
-	    HIDE_0(PTR_FUN(dddClearMaintenanceCB)), 0, 0),
+    GENTRYL("remove", "Remove Menu", MMPush,
+	    BIND(dddClearMaintenanceCB, 0),
+	    sigc::hide(sigc::ptr_fun(dddClearMaintenanceCB)),
+	    0, 0),
     MMEnd
 };
 
@@ -2751,17 +2779,15 @@ static MMDesc command_menubar[] =
 	    BIND(gdbUpdateViewCB, command_view_menu), 
 	    sigc::hide(sigc::bind(sigc::ptr_fun(gdbUpdateViewCB), command_view_menu)), 
 	    command_view_menu, 0),
-    MENTRYL("program", "Program", MMMenu,
-	    MMNoCB, command_program_menu, 0),
-    MENTRYL("commands", "Commands", MMMenu,
-	    MMNoCB, command_menu, 0),
+    GENTRYL("program", "Program", MMMenu,
+	    MMNoCB, MDUMMY, command_program_menu, 0),
+    GENTRYL("commands", "Commands", MMMenu,
+	    MMNoCB, MDUMMY, command_menu, 0),
     GENTRYL("maintenance", "Maintenance", MMMenu | MMUnmanaged,
-	    MMNoCB,
-	    MDUMMY,
-	    maintenance_menu, &maintenance_w),
+	    MMNoCB, MDUMMY, maintenance_menu, &maintenance_w),
 #if defined(IF_XM)
-    MENTRYL("help", "Help", MMMenu | MMHelp,
-	    MMNoCB, simple_help_menu, 0),
+    GENTRYL("help", "Help", MMMenu | MMHelp,
+	    MMNoCB, MDUMMY, simple_help_menu, 0),
 #endif
     MMEnd
 };
@@ -2781,15 +2807,15 @@ static MMDesc source_menubar[] =
 	    BIND(gdbUpdateViewCB, source_view_menu),
 	    sigc::hide(sigc::bind(sigc::ptr_fun(gdbUpdateViewCB), source_view_menu)),
 	    source_view_menu, 0),
-    MENTRYL("program", "Program", MMMenu,
-	    MMNoCB, source_program_menu, 0),
-    MENTRYL("stack", "Status", MMMenu,
-	    MMNoCB, stack_menu, 0),
-    MENTRYL("source", "Source", MMMenu,
-	    MMNoCB, source_menu, 0),
+    GENTRYL("program", "Program", MMMenu,
+	    MMNoCB, MDUMMY, source_program_menu, 0),
+    GENTRYL("stack", "Status", MMMenu,
+	    MMNoCB, MDUMMY, stack_menu, 0),
+    GENTRYL("source", "Source", MMMenu,
+	    MMNoCB, MDUMMY, source_menu, 0),
 #if defined(IF_XM)
-    MENTRYL("help", "Help", MMMenu | MMHelp,
-	    MMNoCB, simple_help_menu, 0),
+    GENTRYL("help", "Help", MMMenu | MMHelp,
+	    MMNoCB, MDUMMY, simple_help_menu, 0),
 #endif
     MMEnd
 };
@@ -2809,13 +2835,13 @@ static MMDesc data_menubar[] =
 	    BIND(gdbUpdateViewCB, data_view_menu), 
 	    sigc::hide(sigc::bind(sigc::ptr_fun(gdbUpdateViewCB), data_view_menu)), 
 	    data_view_menu, 0),
-    MENTRYL("program", "Program", MMMenu,
-	    MMNoCB, data_program_menu, 0),
-    MENTRYL("data", "Data", MMMenu,
-	    MMNoCB, data_menu, 0),
+    GENTRYL("program", "Program", MMMenu,
+	    MMNoCB, MDUMMY, data_program_menu, 0),
+    GENTRYL("data", "Data", MMMenu,
+	    MMNoCB, MDUMMY, data_menu, 0),
 #if defined(IF_XM)
-    MENTRYL("help", "Help", MMMenu | MMHelp,
-	    MMNoCB, simple_help_menu, 0),
+    GENTRYL("help", "Help", MMMenu | MMHelp,
+	    MMNoCB, MDUMMY, simple_help_menu, 0),
 #endif
     MMEnd
 };
@@ -2835,20 +2861,20 @@ static MMDesc common_menubar[] =
 	    BIND(gdbUpdateViewsCB, views_menu), 
 	    sigc::hide(sigc::bind(sigc::ptr_fun(gdbUpdateViewsCB), views_menu)), 
 	    views_menu, 0),
-    MENTRYL("program", "Program", MMMenu,
-	    MMNoCB, command_program_menu, 0),
-    MENTRYL("commands", "Commands", MMMenu,
-	    MMNoCB, command_menu, 0),
-    MENTRYL("stack", "Status", MMMenu,
-	    MMNoCB, stack_menu, 0),
-    MENTRYL("source", "Source", MMMenu,
-	    MMNoCB, source_menu, 0),
-    MENTRYL("data", "Data", MMMenu,
-	    MMNoCB, data_menu, 0),
-    MENTRYL("maintenance", "Maintenance", MMMenu | MMUnmanaged,
-	    MMNoCB, maintenance_menu, &maintenance_w),
-    MENTRYL("help", "Help", MMMenu | MMHelp,
-	    MMNoCB, simple_help_menu, 0),
+    GENTRYL("program", "Program", MMMenu,
+	    MMNoCB, MDUMMY, command_program_menu, 0),
+    GENTRYL("commands", "Commands", MMMenu,
+	    MMNoCB, MDUMMY, command_menu, 0),
+    GENTRYL("stack", "Status", MMMenu,
+	    MMNoCB, MDUMMY, stack_menu, 0),
+    GENTRYL("source", "Source", MMMenu,
+	    MMNoCB, MDUMMY, source_menu, 0),
+    GENTRYL("data", "Data", MMMenu,
+	    MMNoCB, MDUMMY, data_menu, 0),
+    GENTRYL("maintenance", "Maintenance", MMMenu | MMUnmanaged,
+	    MMNoCB, MDUMMY, maintenance_menu, &maintenance_w),
+    GENTRYL("help", "Help", MMMenu | MMHelp,
+	    MMNoCB, MDUMMY, simple_help_menu, 0),
     MMEnd
 };
 
@@ -2870,12 +2896,18 @@ static GUI::Widget *print_examine_w = 0;
 
 static MMDesc print_menu[] =
 {
-    MENTRYL("printRef", "Print *()", MMPush,
-	    BIND_1(PTR_FUN(gdbPrintRefCB), false), 0, &print_ref_w),
-    MENTRYL("dump", "Dump ()", MMPush, 
-	    BIND_1(PTR_FUN(gdbPrintCB), true), 0, &print_dump_w),
-    MENTRYL("whatis", "Whatis ()", MMPush, 
-	    BIND_0(PTR_FUN(gdbWhatisCB)), 0, &print_whatis_w),
+    GENTRYL("printRef", "Print *()", MMPush,
+	    BIND(gdbPrintRefCB, false),
+	    sigc::bind(sigc::ptr_fun(gdbPrintRefCB), false),
+	    0, &print_ref_w),
+    GENTRYL("dump", "Dump ()", MMPush, 
+	    BIND(gdbPrintCB, true),
+	    sigc::bind(sigc::ptr_fun(gdbPrintCB), true),
+	    0, &print_dump_w),
+    GENTRYL("whatis", "Whatis ()", MMPush, 
+	    BIND(gdbWhatisCB, 0),
+	    sigc::ptr_fun(gdbWhatisCB),
+	    0, &print_whatis_w),
     GENTRYL("examine", "Examine ()...", MMPush, 
 	    BIND(gdbExamineCB, 0),
 	    sigc::ptr_fun(gdbExamineCB),
@@ -2895,8 +2927,10 @@ static GUI::Widget *disp_ref_w     = 0;
 
 static MMDesc display_menu[] =
 {
-    MENTRYL("dispRef", "Display *()", MMPush,
-	    BIND_0(PTR_FUN(gdbDispRefCB)), 0, &disp_ref_w),
+    GENTRYL("dispRef", "Display *()", MMPush,
+	    BIND(gdbDispRefCB, 0),
+	    sigc::ptr_fun(gdbDispRefCB),
+	    0, &disp_ref_w),
     MMEnd
 };
 
@@ -2906,27 +2940,37 @@ struct WatchItems {
 
 static MMDesc watch_menu[] =
 {
-    MENTRYL("watchProperties", "Watchpoint Properties...", MMPush, 
-	    HIDE_0(PTR_FUN(gdbEditWatchpointPropertiesCB)), 0, 0),
+    GENTRYL("watchProperties", "Watchpoint Properties...", MMPush, 
+	    BIND(gdbEditWatchpointPropertiesCB, 0),
+	    sigc::hide(sigc::ptr_fun(gdbEditWatchpointPropertiesCB)),
+	    0, 0),
     GENTRYL("enableWatch", "Enable Watchpoint at ()", MMPush, 
 	    BIND(gdbToggleEnableWatchpointCB, 0),
 	    sigc::ptr_fun(gdbToggleEnableWatchpointCB),
 	    0, 0),
     MMSep,
-    MENTRYL("cwatch", "Set Watchpoint on ()", MMPush, 
-	    BIND_1(PTR_FUN(gdbWatchCB), WATCH_CHANGE), 0, 0),
-    MENTRYL("rwatch", "Set Read Watchpoint on ()", MMPush, 
-	    BIND_1(PTR_FUN(gdbWatchCB), WATCH_READ), 0, 0),
-    MENTRYL("awatch", "Set Access Watchpoint on ()", MMPush, 
-	    BIND_1(PTR_FUN(gdbWatchCB), WATCH_ACCESS), 0, 0),
+    GENTRYL("cwatch", "Set Watchpoint on ()", MMPush, 
+	    BIND(gdbWatchCB, WATCH_CHANGE),
+	    sigc::bind(sigc::ptr_fun(gdbWatchCB), WATCH_CHANGE),
+	    0, 0),
+    GENTRYL("rwatch", "Set Read Watchpoint on ()", MMPush, 
+	    BIND(gdbWatchCB, WATCH_READ),
+	    sigc::bind(sigc::ptr_fun(gdbWatchCB), WATCH_READ),
+	    0, 0),
+    GENTRYL("awatch", "Set Access Watchpoint on ()", MMPush, 
+	    BIND(gdbWatchCB, WATCH_ACCESS),
+	    sigc::bind(sigc::ptr_fun(gdbWatchCB), WATCH_ACCESS),
+	    0, 0),
 
     // It would be nice to have an `unwatch' command here, for
     // recording commands.  Unfortunately, GDB needs a watchpoint
     // number for deleting watchpoints.
 #if 0	
     MMSep,
-    MENTRYL("unwatch", "Unwatch ()", MMPush,
-	    BIND_0( PTR_FUN(gdbUnwatchCB) ), 0, 0),
+    GENTRYL("unwatch", "Unwatch ()", MMPush,
+	    BIND(gdbUnwatchCB, 0),
+	    sigc::ptr_fun(gdbUnwatchCB),
+	    0, 0),
 #endif
     MMEnd
 };
@@ -2946,8 +2990,10 @@ static MMDesc break_menu[] =
 	    BIND(gdbRegexBreakAtCB, 0),
 	    sigc::ptr_fun(gdbRegexBreakAtCB),
 	    0, 0),
-    MENTRYL("breakProperties", "Breakpoint Properties...", MMPush, 
-	    HIDE_0(PTR_FUN(gdbEditBreakpointPropertiesCB)), 0, 0),
+    GENTRYL("breakProperties", "Breakpoint Properties...", MMPush, 
+	    BIND(gdbEditBreakpointPropertiesCB, 0),
+	    sigc::hide(sigc::ptr_fun(gdbEditBreakpointPropertiesCB)),
+	    0, 0),
     GENTRYL("enableBreak", "Enable Breakpoint at ()", MMPush, 
 	    BIND(gdbToggleEnableBreakpointCB, 0),
 	    sigc::ptr_fun(gdbToggleEnableBreakpointCB),
@@ -2975,10 +3021,14 @@ struct FindItems {
 
 static MMDesc find_menu[] = 
 {
-    MENTRYL("findForward", "@charset Find@small>> @charset()@rm", MMPush, 
-	    BIND_1(PTR_FUN(gdbFindCB), SourceView::forward), 0, 0),
-    MENTRYL("findBackward", "@charset Find@small<< @charset()@rm", MMPush, 
-	    BIND_1(PTR_FUN(gdbFindCB), SourceView::backward), 0, 0),
+    GENTRYL("findForward", "@charset Find@small>> @charset()@rm", MMPush, 
+	    BIND(gdbFindCB, SourceView::forward),
+	    sigc::bind(sigc::ptr_fun(gdbFindCB), SourceView::forward),
+	    0, 0),
+    GENTRYL("findBackward", "@charset Find@small<< @charset()@rm", MMPush, 
+	    BIND(gdbFindCB, SourceView::backward),
+	    sigc::bind(sigc::ptr_fun(gdbFindCB), SourceView::backward),
+	    0, 0),
     MMEnd
 };
 
@@ -2988,19 +3038,30 @@ struct ArgItems {
 
 static MMDesc arg_cmd_area[] = 
 {
-    MENTRYI("lookup", LOOKUP_ICON, MMPush,
-	    HIDE_0(PTR_FUN(gdbLookupCB)), 0, 0),
-    MENTRYI("find", FIND_FORWARD_ICON, MMPush | MMInsensitive, 
-	    BIND_0(PTR_FUN(gdbFindAgainCB)), find_menu, 0),
+    GENTRYI("lookup", LOOKUP_ICON, MMPush,
+	    BIND(gdbLookupCB, 0),
+	    sigc::hide(sigc::ptr_fun(gdbLookupCB)),
+	    0, 0),
+    GENTRYI("find", FIND_FORWARD_ICON, MMPush | MMInsensitive, 
+	    BIND(gdbFindAgainCB, 0),
+	    sigc::ptr_fun(gdbFindAgainCB),
+	    find_menu, 0),
     GENTRYI("breakAt", BREAK_AT_ICON, MMPush,
 	    BIND(gdbToggleBreakCB, 0),
 	    sigc::ptr_fun(gdbToggleBreakCB),
 	    break_menu, 0),
-    MENTRYI("watch", WATCH_ICON, MMPush, 
-	    BIND_1(PTR_FUN(gdbToggleWatchCB), WATCH_CHANGE), watch_menu, 0),
-    MENTRYI("print", PRINT_ICON, MMPush, 
-	    BIND_1(PTR_FUN(gdbPrintCB), false), print_menu, 0),
-    MENTRYI("display", DISPLAY_ICON, MMPush, BIND_0(PTR_FUN(gdbDisplayCB)), display_menu, 0),
+    GENTRYI("watch", WATCH_ICON, MMPush, 
+	    BIND(gdbToggleWatchCB, WATCH_CHANGE),
+	    sigc::bind(sigc::ptr_fun(gdbToggleWatchCB), WATCH_CHANGE),
+	    watch_menu, 0),
+    GENTRYI("print", PRINT_ICON, MMPush, 
+	    BIND(gdbPrintCB, false),
+	    sigc::bind(sigc::ptr_fun(gdbPrintCB), false),
+	    print_menu, 0),
+    GENTRYI("display", DISPLAY_ICON, MMPush,
+	    BIND(gdbDisplayCB, 0),
+	    sigc::ptr_fun(gdbDisplayCB),
+	    display_menu, 0),
     MMEnd
 };
 
@@ -3048,11 +3109,23 @@ GUI::Button *status_w;
 static GUI::CheckButton *led_w;
 #endif
 
+#if defined(IF_XM)
+
 // Last output position
 XmTextPosition promptPosition;
 
 // Last message position
 XmTextPosition messagePosition;
+
+#else
+
+// Last output position
+long promptPosition;
+
+// Last message position
+long messagePosition;
+
+#endif
 
 // Buttons
 static Widget console_buttons_w;
@@ -3854,7 +3927,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     AddDeleteWindowCallback(command_shell, DDDCloseCB);
 #else
     command_shell = new GUI::Window(*app_context, "command_shell", "command_shell");
-    command_shell->signal_delete_event().connect(sigc::bind<0>(sigc::ptr_fun(CloseCB), command_shell));
+    command_shell->signal_delete_event().connect(sigc::bind_return(sigc::hide(sigc::bind(sigc::ptr_fun(DDDCloseCB), command_shell)), false));
 #endif
 
 
@@ -7472,7 +7545,7 @@ static int add_panel(GUI::Notebook *parent,
     // Notebook widget.
 
     // Add panel
-    GUI::Widget *panel = MMcreatePanel(form, "panel", items);
+    GUI::Widget *panel = MMcreatePanel(form, "panel", items, GUI::ORIENTATION_VERTICAL);
     panel->show();
     MMadjustPanel(items);
     MMaddCallbacks(items);
@@ -7594,7 +7667,7 @@ static void make_preferences(Widget parent)
 	      max_width, max_height, false);
     add_panel(change, buttons, "source",  source_preferences_menu, 
 	      max_width, max_height, false);
-    add_panel(change, buttons, "data",    data_preferences_menu, 
+    add_panel(change, buttons, "data", data_preferences_menu, 
 	      max_width, max_height, false);
     add_panel(change, buttons, "startup", startup_preferences_menu, 
 	      max_width, max_height, false);
@@ -9132,7 +9205,7 @@ void _gdb_out(const string& txt)
     XmTextSetInsertionPosition(gdb_w, lastPos);
     XmTextShowPosition(gdb_w, lastPos);
 #else
-    XmTextPosition lastPos = gdb_w->get_last_position();
+    long lastPos = gdb_w->get_last_position();
     gdb_w->set_insertion_position(lastPos);
     gdb_w->show_position(lastPos);
 #endif

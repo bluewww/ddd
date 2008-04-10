@@ -73,6 +73,8 @@
 #define XtCHelpShowTitle "HelpShowTitle"
 
 
+#if defined(IF_XM)
+
 // Select widget and call help on context.
 // May be used in a menu entry "Help On Context".
 extern void HelpOnContextCB(Widget widget, XtPointer client_data, 
@@ -93,6 +95,26 @@ extern void HelpOnWindowCB(Widget widget, XtPointer client_data,
 extern void HelpOnVersionCB(Widget widget, XtPointer client_data, 
 			    XtPointer call_data);
 
+#else
+
+// Select widget and call help on context.
+// May be used in a menu entry "Help On Context".
+extern void HelpOnContextCB(GUI::Widget *widget, GUI::Event *event);
+
+// Call help on context on the widget that got the help key.
+// May be used in a menu entry "Help On Item".
+extern void HelpOnItemCB(GUI::Widget *widget, GUI::Event *event);
+
+// Call help on current shell window.
+// May be used in a menu entry "Help On Window".
+extern void HelpOnWindowCB(GUI::Widget *widget, GUI::Event *event);
+
+// Call help on the top-level window.
+// May be used in a menu entry "Help On Version".
+extern void HelpOnVersionCB(GUI::Widget *widget, GUI::Event *event);
+
+#endif
+
 // Call help on help.
 // May be used in a menu entry "Help On Help".
 extern void HelpOnHelpCB(Widget widget, XtPointer client_data, 
@@ -111,6 +133,8 @@ extern void ImmediateHelpCB1(GUI::Widget *);
 extern void HelpOnThisCB(Widget widget, XtPointer client_data, 
 			 XtPointer call_data);
 
+#if defined(IF_XM)
+
 // Call help with "XmString s = (XmString)client_data" as text.
 // May be used for unchanged text display.
 extern void MStringHelpCB(Widget widget, XtPointer client_data, 
@@ -120,6 +144,18 @@ extern void MStringHelpCB(Widget widget, XtPointer client_data,
 // May be used for unchanged text display.
 extern void StringHelpCB(Widget widget, XtPointer client_data, 
 			 XtPointer call_data);
+
+#else
+
+// Call help with text.
+// May be used for unchanged text display.
+extern void MStringHelpCB(GUI::Widget *widget, const GUI::String &text);
+
+// Call help with GUI::String(s) as text.
+// May be used for unchanged text display.
+extern void StringHelpCB(GUI::Widget *widget, const char *s);
+
+#endif
 
 // Call help with "String s = (String)client_data" as text.
 // May be used for unchanged text display.
@@ -168,6 +204,8 @@ extern void EnableTextDocs(bool enable = true);
 
 // Data
 
+#if defined(IF_XM)
+
 // Create a help text if the `help' resource is empty
 extern MString (*DefaultHelpText)(Widget widget);
 
@@ -179,10 +217,29 @@ extern MString (*DefaultTipText)(Widget widget, XEvent *event);
 extern MString (*DefaultDocumentationText)(Widget widget, XEvent *event);
 
 // Return a text position associated with this event
-extern XmTextPosition (*TextPosOfEvent)(SCROLLEDTEXT_P widget, XEvent *event);
+extern XmTextPosition (*TextPosOfEvent)(Widget widget, XEvent *event);
+
+#else
+
+// Create a help text if the `help' resource is empty
+extern GUI::String (*DefaultHelpText)(GUI::Widget *widget);
+
+// Create a help text if the `tipString' resource is empty
+extern GUI::String (*DefaultTipText)(GUI::Widget *widget, GUI::Event *event);
+
+// Create a help text for the documentation if the `documentationString'
+// resource is empty
+extern GUI::String (*DefaultDocumentationText)(GUI::Widget *widget, GUI::Event *event);
+
+// Return a text position associated with this event
+extern long (*TextPosOfEvent)(GUI::ScrolledText *widget, XEvent *event);
+
+#endif
 
 // Hook for displaying documentation
 extern void (*DisplayDocumentation)(const MString& doc);
+
+#if defined(IF_XM)
 
 // Hook before help on context
 extern void (*PreHelpOnContextHook)(Widget w, XtPointer client_data, 
@@ -193,6 +250,19 @@ extern void (*PostHelpOnItemHook)(Widget item);
 
 // Additional text to display at ``help on version''
 extern MString helpOnVersionExtraText;
+
+#else
+
+// Hook before help on context
+extern void (*PreHelpOnContextHook)(GUI::Widget *, GUI::Event *);
+
+// Hook after help on item
+extern void (*PostHelpOnItemHook)(GUI::Widget *item);
+
+// Additional text to display at ``help on version''
+extern GUI::String helpOnVersionExtraText;
+
+#endif
 
 // Delay times (in ms)
 extern int help_button_tip_delay; // delay before raising button tip

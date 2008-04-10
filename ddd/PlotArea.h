@@ -29,13 +29,19 @@
 #ifndef _DDD_PlotArea_h
 #define _DDD_PlotArea_h
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "strclass.h"
 
-#ifdef IF_MOTIF
-
+#if defined(IF_MOTIF)
 #include <X11/Intrinsic.h>
+#endif
 
-#endif // IF_MOTIF
+#if !defined(IF_XM)
+#include <GUI/Widget.h>
+#endif
 
 #include "gtk_wrapper.h"
 
@@ -50,14 +56,22 @@ class PlotArea;
 
 class PlotArea {
     Widget area;		// Widget to draw upon
-    DISPLAY_P dpy;		// ... its display
+#if defined(IF_XM)
+    Display *dpy;		// ... its display
+#else
+    GUI::RefPtr<GUI::Display> dpy;		// ... its display
+#endif
     Window win;			// ... its window
 
     int cx, cy;			// Current position
     int px, py;			// Current point size
     double xscale, yscale;	// Current scaling
     GC gc;			// Current graphics context
-    FONT_P font;		// Font to use
+#if defined(IF_XM)
+    XFontStruct *font;		// Font to use
+#else
+    GUI::RefPtr<GUI::Font> font;		// Font to use
+#endif
     int vchar;			// Its height
     Pixel colors[Ncolors];	// Colors to use
     char dashes[Ndashes][5];	// Dashes to use

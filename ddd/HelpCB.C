@@ -99,6 +99,11 @@ char HelpCB_rcsid[] =
 #include "mydialogs.h"
 #include "ArgField.h"
 
+#if !defined(IF_XM)
+#include <GUI/Bipolar.h>
+#include <GUI/Dialog.h>
+#endif
+
 
 //-----------------------------------------------------------------------
 // Resources
@@ -203,6 +208,8 @@ static XtResource doc_subresources[] = {
 // Data
 //-----------------------------------------------------------------------
 
+#if defined(IF_XM)
+
 static Widget help_dialog = 0;
 static Widget help_shell  = 0;
 
@@ -216,6 +223,22 @@ static void _MStringHelpCB(Widget widget,
 
 MString helpOnVersionExtraText;
 
+#else
+
+static GUI::Dialog *help_dialog = 0;
+static GUI::Widget *help_shell  = 0;
+
+static GUI::String NoHelpText(GUI::Widget *widget);
+static GUI::String NoTipText(GUI::Widget *widget, GUI::Event *event);
+static GUI::String NoDocumentationText(GUI::Widget *widget, GUI::Event *event);
+static void _MStringHelpCB(GUI::Widget *widget, 
+			   const GUI::String &text,
+			   bool help_on_help = false);
+
+GUI::String helpOnVersionExtraText("");
+
+#endif
+
 
 //-----------------------------------------------------------------------
 // Helpers
@@ -228,7 +251,8 @@ static bool isNone(const MString& s)
     return s.isEmpty() && s.lineCount() > 1;
 }
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
+
 static MString get_help_string(Widget widget)
 {
     // Get text
@@ -250,6 +274,18 @@ static MString get_help_string(Widget widget)
     return text;
 }
 
+#else
+
+static GUI::String get_help_string(GUI::Widget *widget)
+{
+    // Get text
+    return GUI::String("No help for ") + widget->get_name();
+}
+
+#endif
+
+#if defined(IF_XM)
+
 static MString get_help_on_version_string(Widget widget)
 {
     // Get text
@@ -269,6 +305,18 @@ static MString get_help_on_version_string(Widget widget)
 
     return text;
 }
+
+#else
+
+static GUI::String get_help_on_version_string(GUI::Widget *widget)
+{
+    // Get text
+    return GUI::String("No help on version for ") + widget->get_name();
+}
+
+#endif
+
+#if defined(IF_XM)
 
 static MString _get_tip_string(Widget widget, XEvent *event)
 {
@@ -299,6 +347,17 @@ static MString _get_tip_string(Widget widget, XEvent *event)
     return text;
 }
 
+#else
+
+static GUI::String _get_tip_string(GUI::Widget *widget, GUI::Event *event)
+{
+    return GUI::String("No tip for ") + widget->get_name();
+}
+
+#endif
+
+#if defined(IF_XM)
+
 static MString prepend_label_name(Widget widget, XEvent *event, 
 				  MString (*get_string)(Widget, XEvent *))
 {
@@ -325,11 +384,35 @@ static MString prepend_label_name(Widget widget, XEvent *event,
     return text;
 }
 
+#else
+
+static GUI::String prepend_label_name(GUI::Widget *widget, GUI::Event *event, 
+				      GUI::String (*get_string)(GUI::Widget *, GUI::Event *))
+{
+    GUI::String text = get_string(widget, event);
+
+    return text;
+}
+
+#endif
+
+#if defined(IF_XM)
+
 inline MString get_tip_string(Widget widget, XEvent *event)
 {
     return prepend_label_name(widget, event, _get_tip_string);
 }
 
+#else
+
+inline GUI::String get_tip_string(GUI::Widget *widget, GUI::Event *event)
+{
+    return prepend_label_name(widget, event, _get_tip_string);
+}
+
+#endif
+
+#if defined(IF_XM)
 
 static MString _get_documentation_string(Widget widget, XEvent *event)
 {
@@ -363,11 +446,42 @@ static MString _get_documentation_string(Widget widget, XEvent *event)
     return text;
 }
 
+#else
+
+static GUI::String _get_documentation_string(GUI::Widget *widget, GUI::Event *event)
+{
+    if (dynamic_cast<GUI::ScrolledText *>(widget))
+    {
+	if (DefaultDocumentationText != 0)
+	    return DefaultDocumentationText(widget, event);
+	return NoDocumentationText(widget, event);
+    }
+
+    // Get text
+
+    GUI::String text = GUI::String("No documentation for ") + widget->get_name();
+    return text;
+}
+
+#endif
+
+#if defined(IF_XM)
+
 inline MString get_documentation_string(Widget widget, XEvent *event)
 {
     return prepend_label_name(widget, event, _get_documentation_string);
 }
 
+#else
+
+inline GUI::String get_documentation_string(GUI::Widget *widget, GUI::Event *event)
+{
+    return prepend_label_name(widget, event, _get_documentation_string);
+}
+
+#endif
+
+#if defined(IF_XM)
 
 static bool call_tracking_help(XtPointer call_data, bool key_only = false)
 {
@@ -388,8 +502,30 @@ static bool call_tracking_help(XtPointer call_data, bool key_only = false)
     return true;
 }
 
+#else
+
+static bool call_tracking_help(GUI::Event *event, bool key_only = false)
+{
+    if (!event)
+	return key_only;
+
+    if (event->type != GUI::KEY_PRESS && event->type != GUI::KEY_RELEASE)
+	return key_only;
+
+    if ((event->key.state & ShiftMask) == 0)
+	return false;
+
+    return true;
+}
+
+#endif
+
+#if defined(IF_XM)
 static void nop1(Widget) {}
 void (*PostHelpOnItemHook)(Widget) = nop1;
+#else
+static void nop1(GUI::Widget *) {}
+void (*PostHelpOnItemHook)(GUI::Widget *) = nop1;
 #endif
 
 //-----------------------------------------------------------------------
@@ -454,8 +590,8 @@ extern void ImmediateHelpCB1(GUI::Widget *w)
 
 #endif
 
+#if defined(IF_XM)
 
-#if defined(IF_MOTIF)
 void HelpOnThisCB(Widget widget, XtPointer client_data, XtPointer call_data)
 {
     if (widget == 0)
@@ -477,6 +613,28 @@ void HelpOnThisCB(Widget widget, XtPointer client_data, XtPointer call_data)
     PostHelpOnItemHook(w);
 }
 
+#else
+
+void HelpOnThisCB(GUI::Widget *widget, GUI::Event *event)
+{
+    if (call_tracking_help(event))
+    {
+	HelpOnContextCB(widget, event);
+	return;
+    }
+
+    Delay delay;
+
+    // Get help on this widget
+    GUI::String text = get_help_string(widget);
+    MStringHelpCB(widget, text);
+    PostHelpOnItemHook(widget);
+}
+
+#endif
+
+#if defined(IF_XM)
+
 void HelpOnWindowCB(Widget widget, XtPointer client_data, XtPointer call_data)
 {
     if (call_tracking_help(call_data))
@@ -494,6 +652,30 @@ void HelpOnWindowCB(Widget widget, XtPointer client_data, XtPointer call_data)
     MStringHelpCB(widget, XtPointer(text.xmstring()), call_data);
     PostHelpOnItemHook(shell);
 }
+
+#else
+
+void HelpOnWindowCB(GUI::Widget *widget, GUI::Event *event)
+{
+    if (call_tracking_help(event))
+    {
+	HelpOnContextCB(widget, event);
+	return;
+    }
+
+    Delay delay;
+
+    // Get help on the shell window
+    GUI::Widget *shell = findTopLevelShellParent1(widget);
+
+    GUI::String text = get_help_string(shell);
+    MStringHelpCB(widget, text);
+    PostHelpOnItemHook(shell);
+}
+
+#endif
+
+#if defined(IF_XM)
 
 void HelpOnVersionCB(Widget widget, XtPointer client_data, XtPointer call_data)
 {
@@ -516,6 +698,33 @@ void HelpOnVersionCB(Widget widget, XtPointer client_data, XtPointer call_data)
     // PostHelpOnItemHook(shell);
 }
 
+#else
+
+void HelpOnVersionCB(GUI::Widget *widget, GUI::Event *event)
+{
+    if (call_tracking_help(event))
+    {
+	HelpOnContextCB(widget, event);
+	return;
+    }
+
+    Delay delay;
+
+    // Get a shell window
+    GUI::Widget *shell = findTopLevelShellParent1(widget);
+
+    GUI::String text = get_help_on_version_string(shell);
+    text += helpOnVersionExtraText;
+
+    _MStringHelpCB(widget, text, false);
+
+    // PostHelpOnItemHook(shell);
+}
+
+#endif
+
+#if defined(IF_XM)
+
 static void HelpDestroyCB(Widget, XtPointer client_data, XtPointer)
 {
     Widget old_dialog = Widget(client_data);
@@ -526,6 +735,21 @@ static void HelpDestroyCB(Widget, XtPointer client_data, XtPointer)
     }
 }
 
+#else
+
+static bool HelpDestroyCB(GUI::Widget *old_dialog)
+{
+    if (old_dialog == help_dialog)
+    {
+	help_dialog = 0;
+	help_shell  = 0;
+    }
+    return false;
+}
+
+#endif
+
+#if defined(IF_XM)
 
 // Default help, tip, and documentation strings
 static MString NoHelpText(Widget widget)
@@ -547,18 +771,66 @@ static MString NoDocumentationText(Widget, XEvent *)
     return MString(0, true);	// Empty string
 }
 
+#else
+
+// Default help, tip, and documentation strings
+static GUI::String NoHelpText(GUI::Widget *widget)
+{
+    GUI::String text = "No help available for \"";
+    text += widget->get_name();
+    text += "\"";
+
+    return text;
+}
+
+static GUI::String NoTipText(GUI::Widget *, GUI::Event *)
+{
+    return GUI::String("");	// Empty string
+}
+
+static GUI::String NoDocumentationText(GUI::Widget *, GUI::Event *)
+{
+    return GUI::String("");	// Empty string
+}
+
+#endif
+
+#if defined(IF_XM)
+
 static XmTextPosition NoTextPosOfEvent(Widget, XEvent *)
 {
     return XmTextPosition(-1);
 }
+
+#else
+
+static long NoTextPosOfEvent(GUI::ScrolledText *, XEvent *)
+{
+    return -1;
+}
+
+#endif
+
+#if defined(IF_XM)
 
 MString (*DefaultHelpText)(Widget)                    = NoHelpText;
 MString (*DefaultTipText)(Widget, XEvent *)           = NoTipText;
 MString (*DefaultDocumentationText)(Widget, XEvent *) = NoDocumentationText;
 XmTextPosition (*TextPosOfEvent)(Widget, XEvent *)    = NoTextPosOfEvent;
 
+#else
+
+GUI::String (*DefaultHelpText)(GUI::Widget *)                    = NoHelpText;
+GUI::String (*DefaultTipText)(GUI::Widget *, GUI::Event *)           = NoTipText;
+GUI::String (*DefaultDocumentationText)(GUI::Widget *, GUI::Event *) = NoDocumentationText;
+long (*TextPosOfEvent)(GUI::ScrolledText *, XEvent *)    = NoTextPosOfEvent;
+
+#endif
+
 
 void (*DisplayDocumentation)(const MString&) = 0;
+
+#if defined(IF_XM)
 
 void StringHelpCB(Widget widget, XtPointer client_data, XtPointer call_data)
 {
@@ -627,6 +899,65 @@ static void _MStringHelpCB(Widget widget,
     manage_and_raise(help_dialog);
 }
 
+#else
+
+void StringHelpCB(GUI::Widget *widget, const char *s)
+{
+    GUI::String text(s);
+
+    MStringHelpCB(widget, text);
+}
+
+void MStringHelpCB(GUI::Widget *widget, const GUI::String &text)
+{
+    _MStringHelpCB(widget, text);
+}
+
+static void _MStringHelpCB(GUI::Widget *widget, 
+			   const GUI::String &text,
+			   bool help_on_help)
+{
+    GUI::Widget *shell = findTopLevelShellParent1(widget);
+    if (shell == 0)
+	shell = widget;
+
+    if (help_dialog && (shell != help_shell))
+    {
+	DestroyWhenIdle1(help_dialog);
+	help_dialog = 0;
+    }
+
+    help_shell  = shell;
+
+    if (help_dialog == 0)
+    {
+	// Build help_dialog
+	help_dialog = new GUI::Dialog(*shell, "help");
+
+	Delay::register_shell(help_dialog);
+
+#if defined(NAG_ME)
+#warning Register help callback (HelpOnHelpCB)
+#endif
+	help_dialog->signal_delete_event().connect(sigc::hide(sigc::bind(sigc::ptr_fun(HelpDestroyCB), help_dialog)));
+
+    }
+    else
+    {
+	// Setup text for existing dialog
+	GUI::Label *label = new GUI::Label(*help_dialog, GUI::PACK_SHRINK,
+					   "help_text", text);
+    }
+
+    // If this is a recursive call, disable the help button
+
+    // Popup help_dialog
+    manage_and_raise1(help_dialog);
+}
+
+#endif
+
+#if defined(IF_XM)
 
 static void HelpIndexCB(Widget widget, XtPointer client_data, 
 			XtPointer call_data)
@@ -650,6 +981,16 @@ static void HelpIndexCB(Widget widget, XtPointer client_data,
     XmTextShowPosition(help_man, pos);
 }
 
+#else
+
+static void HelpIndexCB(const GUI::String &contents)
+{
+    std::cerr << "HelpIndexCB called (" << contents.c_str() << ")\n";
+}
+
+#endif
+
+#if defined(IF_XM)
 
 // Activate the button given in CLIENT_DATA
 static void ActivateCB(Widget, XtPointer client_data, 
@@ -661,12 +1002,35 @@ static void ActivateCB(Widget, XtPointer client_data,
     XtCallActionProc(button, "ArmAndActivate", cbs->event, (String *)0, 0);
 }
 
+#else
+
+// Activate the button given in CLIENT_DATA
+static void ActivateCB(GUI::Button *b)
+{
+    b->activate();
+}
+
+#endif
+
+#if defined(IF_XM)
+
 struct FindInfo {
     Widget key;			// The text field holding the search key 
     Widget text;		// The text to be searched
 };
 
+#else
+
+struct FindInfo {
+    GUI::Widget *key;		// The text field holding the search key 
+    GUI::Widget *text;		// The text to be searched
+};
+
+#endif
+
 static bool lock_update_arg = false;
+
+#if defined(IF_XM)
 
 static void FindCB(Widget w, XtPointer client_data, XtPointer call_data,
 		   bool forward)
@@ -750,6 +1114,16 @@ static void FindCB(Widget w, XtPointer client_data, XtPointer call_data,
     }
 }
 
+#else
+
+static void FindCB(FindInfo *fi, bool forward)
+{
+    std::cerr << "FindCB\n";
+}
+
+#endif
+
+#if defined(IF_XM)
 
 // Find the next occurrence of the string contained in the widget 
 // given in CLIENT_DATA
@@ -765,6 +1139,26 @@ static void FindBackwardCB(Widget w, XtPointer client_data,
 {
     FindCB(w, client_data, call_data, false);
 }
+
+#else
+
+// Find the next occurrence of the string contained in the widget 
+// given in CLIENT_DATA
+static void FindForwardCB(FindInfo *fi)
+{
+    FindCB(fi, true);
+}
+
+// Find the previous occurrence of the string contained in the widget 
+// given in CLIENT_DATA
+static void FindBackwardCB(FindInfo *fi)
+{
+    FindCB(fi, false);
+}
+
+#endif
+
+#if defined(IF_XM)
 
 // Highlight current section after cursor motion
 static void HighlightSectionCB(Widget, XtPointer client_data, 
@@ -787,6 +1181,18 @@ static void HighlightSectionCB(Widget, XtPointer client_data,
 
     ListSetAndSelectPos(list, pos);
 }
+
+#else
+
+// Highlight current section after cursor motion
+static void HighlightSectionCB(GUI::ScrolledText *text, GUI::ListView *list)
+{
+    std::cerr << "HighlightSectionCB.\n";
+}
+
+#endif
+
+#if defined(IF_XM)
 
 static void SetSelectionCB(Widget w, XtPointer client_data, 
 			   XtPointer call_data)
@@ -831,6 +1237,15 @@ static void SetSelectionCB(Widget w, XtPointer client_data,
     }
 }
 
+#else
+
+static void SetSelectionCB(GUI::ScrolledText *text, GUI::ComboBoxEntryText *arg)
+{
+    std::cerr << "SetSelectionCB.\n";
+}
+
+#endif
+
 // Return true iff TEXT contains a manual header line at pos
 static bool has_header(char *text, unsigned pos)
 {
@@ -845,7 +1260,6 @@ static bool has_header(char *text, unsigned pos)
 
     return false;
 }
-#endif
 
 #if defined(IF_XM)
 
@@ -869,13 +1283,27 @@ void ManualStringHelpCB(GUI::Widget *widget, char *s)
 
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
+
 // Close action from menu
 static void CloseCB(Widget w, XtPointer, XtPointer)
 {
     Widget shell = findTopLevelShellParent(w);
     DestroyWhenIdle(shell);
 }
+
+#else
+
+// Close action from menu
+static void CloseCB(GUI::Widget *w)
+{
+    GUI::Shell *shell = findTopLevelShellParent1(w);
+    DestroyWhenIdle1(shell);
+}
+
+#endif
+
+#if defined(IF_XM)
 
 // Create an empty dialog within a top-level-shell
 // FIXME: This should be part of core DDD!
@@ -891,16 +1319,25 @@ static Widget create_text_dialog(Widget parent, const _XtString name,
 
     MMDesc file_menu[] = 
     {
-	MENTRYL("close", "close", MMPush, BIND_1(PTR_FUN(CloseCB), shell), 0, 0),
-	MENTRYL("exit", "exit",   MMPush, BIND_1(PTR_FUN(DDDExitCB), EXIT_SUCCESS), 0, 0),
+	GENTRYL("close", "close", MMPush,
+		BIND(CloseCB, shell),
+		sigc::ptr_fun(CloseCB),
+		0, 0),
+	GENTRYL("exit", "exit", MMPush,
+		BIND(DDDExitCB, EXIT_SUCCESS),
+		sigc::bind(sigc::ptr_fun(DDDExitCB), EXIT_SUCCESS),
+		0, 0),
 	MMEnd
     };
 
     MMDesc menubar[] = 
     {
-	MENTRYL("file", "file",     MMMenu, MMNoCB, file_menu, 0),
-	MENTRYL("edit", "edit",     MMMenu, MMNoCB, simple_edit_menu, 0),
-	MENTRYL("help", "help",     MMMenu | MMHelp, MMNoCB, simple_help_menu, 0),
+	GENTRYL("file", "file", MMMenu,
+		MMNoCB, MDUMMY, file_menu, 0),
+	GENTRYL("edit", "edit", MMMenu,
+		MMNoCB, MDUMMY, simple_edit_menu, 0),
+	GENTRYL("help", "help", MMMenu | MMHelp,
+		MMNoCB, MDUMMY, simple_help_menu, 0),
 	MMEnd
     };
 
@@ -910,11 +1347,7 @@ static Widget create_text_dialog(Widget parent, const _XtString name,
     menubar[1].items = 0;
 
     MMaddCallbacks(menubar);
-#if defined(IF_XM)
     MMaddHelpCallback(menubar, ImmediateHelpCB);
-#else
-    MMaddHelpCallback(menubar, sigc::ptr_fun(ImmediateHelpCB1));
-#endif
 
     menubar[1].items = simple_edit_menu;
 
@@ -924,11 +1357,72 @@ static Widget create_text_dialog(Widget parent, const _XtString name,
     return w;
 }
 
+#else
+
+// Create an empty dialog within a top-level-shell
+// FIXME: This should be part of core DDD!
+static GUI::Dialog *create_text_dialog(GUI::Widget *parent, const char *name, 
+				       GUI::MenuBar *&bar)
+{
+    GUI::Dialog *shell = new GUI::Dialog(*parent, name);
+
+    MMDesc file_menu[] = 
+    {
+	GENTRYL("close", "close", MMPush,
+		BIND(CloseCB, shell),
+		sigc::ptr_fun(CloseCB),
+		0, 0),
+	GENTRYL("exit", "exit", MMPush,
+		BIND(DDDExitCB, EXIT_SUCCESS),
+		sigc::bind(sigc::ptr_fun(DDDExitCB), EXIT_SUCCESS),
+		0, 0),
+	MMEnd
+    };
+
+    MMDesc menubar[] = 
+    {
+	GENTRYL("file", "file", MMMenu,
+		MMNoCB, MDUMMY, file_menu, 0),
+	GENTRYL("edit", "edit", MMMenu,
+		MMNoCB, MDUMMY, simple_edit_menu, 0),
+	GENTRYL("help", "help", MMMenu | MMHelp,
+		MMNoCB, MDUMMY, simple_help_menu, 0),
+	MMEnd
+    };
+
+    bar = MMcreateMenuBar(*shell, "menubar", menubar);
+
+    // Don't add a callback to `Edit' menu
+    menubar[1].items = 0;
+
+    MMaddCallbacks(menubar);
+    MMaddHelpCallback(menubar, sigc::ptr_fun(ImmediateHelpCB1));
+
+    menubar[1].items = simple_edit_menu;
+
+    Delay::register_shell(shell);
+    InstallButtonTips(shell);
+
+    return shell;
+}
+
+#endif
+
+#if defined(IF_XM)
+
 static void DeleteFindInfoCB(Widget, XtPointer client_data, XtPointer)
 {
     FindInfo *fi = (FindInfo *)client_data;
     delete fi;
 }
+
+#else
+
+#ifdef NAG_ME
+#warning DeleteFindInfoCB
+#endif
+
+#endif
 
 static int max_width(const char *text)
 {
@@ -957,6 +1451,9 @@ static int max_width(const char *text)
     return max_width;
 }
 
+
+#if defined(IF_XM)
+
 static void ToggleIndexCB(Widget w, XtPointer client_data, XtPointer)
 {
     Widget child = Widget(client_data);
@@ -966,6 +1463,17 @@ static void ToggleIndexCB(Widget w, XtPointer client_data, XtPointer)
     else
 	XtUnmanageChild(child);
 }
+
+#else
+
+static void ToggleIndexCB(GUI::Bipolar *w, GUI::Widget *child)
+{
+    if (w->get_active())
+	manage_paned_child(child);
+    else
+	unmanage_paned_child(child);
+}
+
 #endif
 
 // Return manual
@@ -1185,9 +1693,9 @@ void ManualStringHelpCB(GUI::Widget *widget, const MString& title,
     MMDesc items [] = 
     {
 	MENTRYL("findBackward", "findBackward", MMPush, 
-	       BIND_1(PTR_FUN(FindBackwardCB), fi), 0, 0),
+		BIND_1(PTR_FUN(FindBackwardCB), fi), 0, 0),
 	MENTRYL("findForward", "findForward",   MMPush, 
-	       BIND_1(PTR_FUN(FindForwardCB), fi), 0, 0),
+		BIND_1(PTR_FUN(FindForwardCB), fi), 0, 0),
 	MMEnd
     };
 
@@ -1690,10 +2198,24 @@ TrackingEvent(Widget widget, Cursor cursor,
     }
 }
 
+#endif
+
+#if defined(IF_XM)
+
 // Hook before help on context
 static void nop2(Widget, XtPointer, XtPointer) {}
 void (*PreHelpOnContextHook)(Widget w, XtPointer client_data, 
 			     XtPointer call_data) = nop2;
+
+#else
+
+// Hook before help on context
+static void nop2(GUI::Widget *, GUI::Event *) {}
+void (*PreHelpOnContextHook)(GUI::Widget *, GUI::Event *) = nop2;
+
+#endif
+
+#if defined(IF_XM)
 
 void HelpOnContextCB(Widget widget, XtPointer client_data, XtPointer call_data)
 {
@@ -1734,6 +2256,34 @@ void HelpOnContextCB(Widget widget, XtPointer client_data, XtPointer call_data)
 		     XtLastTimestampProcessed(XtDisplay(widget)));
 }
 
+#else
+
+void HelpOnContextCB(GUI::Widget *widget, GUI::Event *event)
+{
+    GUI::Widget *item = 0;
+    GUI::Shell *toplevel = findTopLevelShellParent1(widget);
+
+    if (toplevel == 0)
+    {
+	HelpOnWindowCB(widget, event);
+	return;
+    }
+	   
+    PreHelpOnContextHook(widget, event);
+
+    std::cerr << "Should set \"?\" cursor here\n";
+    std::cerr << "XmTrackingEvent?\n";
+
+    if (item != 0)
+	ImmediateHelpCB1(item);
+    else
+	ImmediateHelpCB1(toplevel);
+
+}
+
+#endif
+
+#if defined(IF_MOTIF)
 
 // Return the child widget (or gadget) EX/EY is in, starting with WIDGET.
 static Widget GetWidgetAt(Widget w, int ex, int ey)
@@ -1793,6 +2343,8 @@ static Widget GetWidgetAt(XKeyEvent *e)
     return GetWidgetAt(XtWindowToWidget(e->display, e->window), e->x, e->y);
 }
 
+#if defined(IF_XM)
+
 void HelpOnItemCB(Widget widget, XtPointer client_data, XtPointer call_data)
 {
     Widget toplevel = findTheTopLevelShell(widget);
@@ -1814,6 +2366,30 @@ void HelpOnItemCB(Widget widget, XtPointer client_data, XtPointer call_data)
     ImmediateHelpCB(item, client_data, 0);
 }
 
+#else
+
+void HelpOnItemCB(GUI::Widget *widget, GUI::Event *event)
+{
+    Widget toplevel = findTheTopLevelShell(widget);
+
+    if (call_tracking_help(call_data, true) || toplevel == 0)
+    {
+	HelpOnContextCB(widget, client_data, call_data);
+	return;
+    }
+
+    Delay delay;		// Finding the widget may take time
+
+    XmAnyCallbackStruct *cbs = (XmAnyCallbackStruct *)call_data;
+
+    Widget item = GetWidgetAt(&cbs->event->xkey);
+    if (item == 0)
+	item = toplevel;
+
+    ImmediateHelpCB(item, client_data, 0);
+}
+
+#endif
 
 //-----------------------------------------------------------------------------
 // Button tips

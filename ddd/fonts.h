@@ -66,8 +66,13 @@ extern string make_font(const AppData& ad, DDDFont base,
 // Set a new font resource
 extern void set_font(DDDFont n, const string& name);
 
+#if defined(IF_XM)
 // Browse fonts
-extern void BrowseFontCB(CB_ALIST_12(BUTTON_P w, XtP(DDDFont)));
+extern void BrowseFontCB(Widget, XtPointer, XtPointer);
+#else
+// Browse fonts
+extern void BrowseFontCB(GUI::Button *, DDDFont);
+#endif
 
 // Set font name and size
 extern void SetFontNameCB(CB_ALIST_12(ENTRY_P, XtP(DDDFont)));

@@ -64,7 +64,7 @@ protected:
 
 #if defined(IF_XM)
     // Joint function for drawing and printing
-    void makeLine(Widget *w,
+    void makeLine(Widget w,
 		  const BoxRegion& exposed,
 		  std::ostream& os,
 		  const GraphGC& gc) const;

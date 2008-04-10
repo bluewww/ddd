@@ -197,10 +197,14 @@ static MMDesc size_menu[] = {
 };
 
 static MMDesc examine_menu[] = { 
-    MENTRYL("examine", "examine", MMSpinBox,    MMNoCB, 0, (Widget *)&repeat_w),
-    MENTRYL("format", "format",   MMOptionMenu, MMNoCB, format_menu, 0),
-    MENTRYL("size", "size",       MMOptionMenu, MMNoCB, size_menu, 0),
-    MENTRYL("address", "address", MMComboBox,   MMNoCB, 0, (Widget *)&address_w),
+    GENTRYL("examine", "examine", MMSpinBox,
+	    MMNoCB, MDUMMY, 0, &repeat_w),
+    GENTRYL("format", "format", MMOptionMenu,
+	    MMNoCB, MDUMMY, format_menu, 0),
+    GENTRYL("size", "size", MMOptionMenu,
+	    MMNoCB, MDUMMY, size_menu, 0),
+    GENTRYL("address", "address", MMComboBox,
+	    MMNoCB, MDUMMY, 0, &address_w),
     MMEnd
 };
 

@@ -1113,17 +1113,6 @@ void DDDCloseCB(GUI::Widget *w)
 
 #endif
 
-#if !defined(IF_XM)
-#ifdef NAG_ME
-#warning Temporary fudge
-#endif
-// Generic close callback
-bool CloseCB(GUI::Widget *w, XEvent *ev)
-{
-    DDDCloseCB(w);
-}
-#endif
-
 
 // Specific close and open callbacks
 
