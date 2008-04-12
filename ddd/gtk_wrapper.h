@@ -79,54 +79,12 @@ typedef XtCallbackProc GTK_PROC_;
 #define TM_ALIST_NULL XtPointer, XtIntervalId *
 #define TM_ALIST_1(p) p, XtIntervalId *
 
-// A generic XtCallbackProc has 3 args: widget, client_data and
-// call_data.  The CB_ARG_LIST macros document which of these are
-// actually used by the callback.  In the GTK version, the unused
-// arguments are not declared at all.
 
-#define CB_ARG_LIST_NULL Widget, XtPointer, XtPointer
-#define CB_ARG_LIST_1(w) Widget w, XtPointer, XtPointer
-#define CB_ARG_LIST_2(client) Widget, XtPointer client, XtPointer
-#define CB_ARG_LIST_3(call) Widget, XtPointer, XtPointer call
-#define CB_ARG_LIST_12(w, client) Widget w, XtPointer client, XtPointer
-#define CB_ARG_LIST_13(w, call) Widget w, XtPointer, XtPointer call
-#define CB_ARG_LIST_23(client, call) Widget, XtPointer client, XtPointer call
-#define CB_ARG_LIST_123(w, client, call) Widget w, XtPointer client, XtPointer call
-#define CB_ALIST_NULL Widget, XtPointer, XtPointer
-#define CB_ALIST_1(w) w, XtPointer, XtPointer
-#define CB_ALIST_2(client) Widget, client, XtPointer
-#define CB_ALIST_3(call) Widget, XtPointer, call
-#define CB_ALIST_12(w, client) w, client, XtPointer
-#define CB_ALIST_13(w, call) w, XtPointer, call
-#define CB_ALIST_23(client, call) Widget, client, call
-#define CB_ALIST_123(w, client, call) w, client, call
-#define XtP(t) XtPointer
-#define CB_ARGS_NULL NULL, NULL, NULL
-#define CB_ARGS_1(w)  (Widget)w, XtNIL, XtNIL
-#define CB_ARGS_2(client)  (Widget)0, (XtPointer)client, XtNIL
-#define CB_ARGS_3(call)  (Widget)0, XtNIL, (XtPointer)call
-#define CB_ARGS_12(w, client)  (Widget)w, (XtPointer)client, XtNIL
-#define CB_ARGS_13(w, call)  (Widget)w, XtNIL, (XtPointer)call
-#define CB_ARGS_23(client, call)  (Widget)0, (XtPointer)client, (XtPointer)call
-#define CB_ARGS_123(w, client, call)  (Widget)w, (XtPointer)client, (XtPointer)call
-#define CB_ARG_PASS_NULL(f) f
-#define CB_ARG_PASS_1(f) f
-#define CB_ARG_PASS_2(f) f
-#define CB_ARG_PASS_3(f) f
-#define CB_ARG_PASS_12(f) f
-#define CB_ARG_PASS_13(f) f
-#define CB_ARG_HIDE_0(f) f
-#define CB_ARG_HIDE_01(f) f
-#define CB_ARG_HIDE_1(f) f
-#define CB_ARG_HIDE_2(f) f
 #define BIND_1(f, c) { f, (void *)c }
 #define BIND_0(f) { f, XtNIL }
 #define HIDE_0(f) { f, XtNIL }
 #define HIDE_1(f) { f, XtNIL }
 #define HIDE_0_BIND_1(f, c) { f, (void *)c }
-
-#define CB_ARG_LIST_TOGGLE(w, call_data) CB_ARG_LIST_13(w, call_data)
-#define CB_ARG_LIST_TOGGLE_X(w, client_data, call_data) CB_ARG_LIST_123(w, client_data, call_data)
 
 #define M_ARGS_1(w) w
 #define M_ARGS_2(w, a) w, a
@@ -233,30 +191,6 @@ typedef Gdk::Region *Region;
 typedef GdkEvent XEvent;
 typedef GdkEventButton XButtonEvent;
 
-#if 0
-#define KeyPress GDK_KEY_PRESS
-#define KeyRelease GDK_KEY_RELEASE
-#define ButtonPress GDK_BUTTON_PRESS
-#define ButtonRelease GDK_BUTTON_RELEASE
-#define MotionNotify GDK_MOTION_NOTIFY
-#define EnterNotify GDK_ENTER_NOTIFY
-#define LeaveNotify GDK_LEAVE_NOTIFY
-#define Expose GDK_EXPOSE
-#ifdef NAG_ME
-#warning FIXME Some X events have no GDK counterpart
-#endif
-#define GraphicsExpose GDK_NOTHING
-#define CreateNotify GDK_NOTHING
-#define ReparentNotify GDK_NOTHING
-#define ConfigureNotify GDK_CONFIGURE
-#define GravityNotify GDK_NOTHING
-#define ConfigureRequest GDK_NOTHING
-#define PropertyNotify GDK_PROPERTY_NOTIFY
-#define SelectionClear GDK_SELECTION_CLEAR
-#define SelectionRequest GDK_SELECTION_REQUEST
-#define SelectionNotify GDK_SELECTION_NOTIFY
-#endif
-
 #define ShiftMask GDK_CONTROL_MASK
 #define LockMask GDK_LOCK_MASK
 #define ControlMask GDK_CONTROL_MASK
@@ -331,17 +265,6 @@ typedef void *XtPointer;
 #warning Perhaps we should use a gconfmm Value?
 #endif
 typedef Glib::ValueBase XtArgVal;
-
-#if 0
-typedef struct {
-    String	name;
-    XtArgVal	value;
-} Arg, *ArgList;
-
-#define XmNorientation String("orientation")
-
-extern void XtSetArg(Arg &, const String &, long);
-#endif
 
 typedef int Position;
 
@@ -433,51 +356,6 @@ struct XtActionsRec {
   XtActionProc proc;
 };
 
-// Standard argument lists corresponding to XtCallbacks.
-#define CB_ARG_LIST_NULL
-#define CB_ARG_LIST_1(w) Widget w
-#define CB_ARG_LIST_2(client) XtPointer client
-#define CB_ARG_LIST_3(call) XtPointer call
-#define CB_ARG_LIST_12(w, client) Widget w, XtPointer client
-#define CB_ARG_LIST_13(w, call) Widget w, XtPointer call
-#define CB_ARG_LIST_23(client, call) XtPointer client, XtPointer call
-#define CB_ARG_LIST_123(w, client, call) Widget w, XtPointer client, XtPointer call
-// The CB_ALIST_* macros are used to specify callback argument
-// lists. Motif CB arguments have a standard format: (Widget,
-// XtPointer, XtPointer) but not all slots are used. These macros
-// specify only those slots which are actually used. The Motif
-// variants fill in dummy arguments in the other slots.
-#define CB_ALIST_NULL
-#define CB_ALIST_1(w) w
-#define CB_ALIST_2(client) client
-#define CB_ALIST_3(call) call
-#define CB_ALIST_12(w, client) w, client
-#define CB_ALIST_13(w, call) w, call
-#define CB_ALIST_23(client, call) client, call
-#define CB_ALIST_123(w, client, call) w, client, call
-// This indicates a data type for use in a callback argument list.
-// In Motif these are all replaced by XtPointer.
-#define XtP(t) t
-// Retype a functor
-#define CB_ARGS_NULL
-#define CB_ARGS_1(w) w
-#define CB_ARGS_2(client) client
-#define CB_ARGS_3(call) call
-#define CB_ARGS_12(w, client) w, client
-#define CB_ARGS_13(w, call) w, call
-#define CB_ARGS_23(client, call) client, call
-#define CB_ARGS_123(w, client, call) w, client, call
-// These work on the assumption the f has 3 args (w,client_data,call_data).
-#define CB_ARG_PASS_NULL(f) sigc::hide(sigc::hide(sigc::hide(f)))
-#define CB_ARG_PASS_1(f) sigc::hide(sigc::hide(f))
-#define CB_ARG_PASS_2(f) sigc::hide(sigc::hide<0>(f))
-#define CB_ARG_PASS_3(f) sigc::hide<0>(sigc::hide<0>(f))
-#define CB_ARG_PASS_12(f) sigc::hide(f)
-#define CB_ARG_PASS_13(f) sigc::hide<1>(f)
-#define CB_ARG_HIDE_0(f) sigc::hide<0>(f)
-#define CB_ARG_HIDE_01(f) sigc::hide<0>(sigc::hide<0>(f))
-#define CB_ARG_HIDE_1(f) sigc::hide<1>(f)
-#define CB_ARG_HIDE_2(f) sigc::hide<2>(f)
 // This is used to create a callback functor from a functor with
 // one Widget argument and one client data argument.
 #define BIND_1(f, c) sigc::bind(f, c)

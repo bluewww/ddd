@@ -123,15 +123,22 @@ public:
 };
 
 #if defined(IF_XM)
+
 // Create a `():' label named "arg_label"
 Widget create_arg_label(Widget parent);
-#else
-// Create a `():' label named "arg_label"
-GUI::Button *create_arg_label(GUI::Container *parent);
-#endif
 
 // Clear the text field given in Widget(CLIENT_DATA)
-void ClearTextFieldCB(CB_ALIST_2(XtP(COMBOBOXENTRYTEXT_P)));
+void ClearTextFieldCB(Widget, XtPointer, XtPointer);
+
+#else
+
+// Create a `():' label named "arg_label"
+GUI::Button *create_arg_label(GUI::Container *parent);
+
+// Clear the text field given in Widget(CLIENT_DATA)
+void ClearTextFieldCB(GUI::ComboBoxEntryText *);
+
+#endif
 
 #endif // _DDD_ArgField_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

@@ -47,11 +47,23 @@
 #define EXIT_FAILURE 1
 #endif
 
+#if defined(IF_XM)
+
 // Exit program
-extern void ExitCB(CB_ALIST_2(XtP(long) status));
+extern void ExitCB(Widget, XtPointer, XtPointer);
 
 // Restart program
-extern void RestartCB(CB_ALIST_NULL);
+extern void RestartCB(Widget, XtPointer, XtPointer);
+
+#else
+
+// Exit program
+extern void ExitCB(int status);
+
+// Restart program
+extern void RestartCB(void);
+
+#endif
 
 // Save argv
 extern void register_argv(const char * const argv[]);

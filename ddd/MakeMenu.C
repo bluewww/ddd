@@ -1038,7 +1038,7 @@ void MMaddItems(GUI::Container *shell, MMDesc items[], bool ignore_seps)
 
 	    case MMTextField:
 	    case MMEnterField:
-		widget = new GUI::Entry(*panel, GUI::String(textName.chars()));
+		widget = new GUI::Entry(*panel, GUI::PACK_SHRINK, GUI::String(textName.chars()));
 		widget->show();
 		break;
 	    }

@@ -41,50 +41,74 @@ char graph_rcsid[] =
 // Other Graph Functions
 //-----------------------------------------------------------------------------
 
-void graphAlignCB(CB_ALIST_NULL)
+#if defined(IF_XM)
+
+void graphAlignCB(Widget, XtPointer, XtPointer)
 {
     StatusDelay delay("Aligning displays");
 
-#ifdef IF_MOTIF
     XtCallActionProc(data_disp->graph_edit, 
 		     "snap-to-grid", (XEvent *)0, (String *)0, 0);
-#else // NOT IF_MOTIF
-#ifdef NAG_ME
-#warning graphAlignCB not implemented
-#endif
-#endif // IF_MOTIF
 }
 
-void graphRotateCB(CB_ALIST_NULL)
+#else
+
+void graphAlignCB(void)
+{
+    StatusDelay delay("Aligning displays");
+
+    std::cerr << "graphAlignCB not implemented yet\n";
+}
+
+#endif
+
+#if defined(IF_XM)
+
+void graphRotateCB(Widget, XtPointer, XtPointer)
 {
     StatusDelay delay("Rotating graph");
 
     const _XtString params[1];
     params[0] = "+90";
 
-#ifdef IF_MOTIF
     XtCallActionProc(data_disp->graph_edit,
 		     "rotate", (XEvent *)0, (char**)params, 1);
-#else // NOT IF_MOTIF
-#ifdef NAG_ME
-#warning graphRotateCB not implemented
-#endif
-#endif // IF_MOTIF
 }
 
-void graphLayoutCB(CB_ALIST_NULL)
+#else
+
+void graphRotateCB(void)
+{
+    StatusDelay delay("Rotating graph");
+
+    const _XtString params[1];
+    params[0] = "+90";
+
+    std::cerr << "graphRotateCB not implemented yet\n";
+}
+
+#endif
+
+#if defined(IF_XM)
+
+void graphLayoutCB(Widget, XtPointer, XtPointer)
 {
     StatusDelay delay("Layouting graph");
 
-#ifdef IF_MOTIF
     XtCallActionProc(data_disp->graph_edit, 
 		     "layout", (XEvent *)0, (String *)0, 0);
-#else // NOT IF_MOTIF
-#ifdef NAG_ME
-#warning graphLayoutCB not implemeneted
-#endif
-#endif // IF_MOTIF
 }
+
+#else
+
+void graphLayoutCB(void)
+{
+    StatusDelay delay("Layouting graph");
+
+    std::cerr << "graphLayoutCB not implemented yet\n";
+}
+
+#endif
 
 #if defined(IF_XM)
 

@@ -103,16 +103,7 @@ void YnCB(Widget dialog, XtPointer client_data, XtPointer call_data)
 #else
 
 // Issue CLIENT_DATA as command and unmanage YN_DIALOG.
-void YnCB(CB_ALIST_12(Widget dialog, XtP(const char *) client_data))
-{
-    // gdbCommandCB(dialog, (const char *)client_data);
-    std::cerr << "HELP: YnCB not implemented\n";
-
-    unpost_gdb_yn();
-}
-
-// Issue CLIENT_DATA as command and unmanage YN_DIALOG.
-void YnCB1(GUI::Widget *dialog, const char *client_data)
+void YnCB(GUI::Widget *dialog, const char *client_data)
 {
     gdbCommandCB1(dialog, (const char *)client_data);
 
@@ -173,15 +164,15 @@ GUI::Dialog *post_gdb_yn(string question, GUI::Widget *w)
 	yn_dialog_label = new GUI::Label(*yn_dialog, GUI::PACK_SHRINK, question.chars());
 	yn_dialog->get_vbox()->pack_start(*yn_dialog_label, Gtk::PACK_SHRINK);
 	Delay::register_shell(yn_dialog);
-	Gtk::Button *button;
+	GUI::Button *button;
 	button = yn_dialog->add_button("OK");
-	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(YnCB1), yn_dialog, "yes"));
+	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(YnCB), yn_dialog, "yes"));
 	button = yn_dialog->add_button("Cancel");
-	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(YnCB1), yn_dialog, "no"));
+	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(YnCB), yn_dialog, "no"));
 #ifdef NAG_ME
 #warning What is the return value?
 #endif
-	yn_dialog->signal_delete_event().connect(sigc::bind_return(sigc::hide<0>(sigc::bind(sigc::ptr_fun(YnCB1),
+	yn_dialog->signal_delete_event().connect(sigc::bind_return(sigc::hide<0>(sigc::bind(sigc::ptr_fun(YnCB),
 											    yn_dialog, "no")),
 								   false));
     }
@@ -251,7 +242,7 @@ GUI::Dialog *post_gdb_busy(GUI::Widget *w)
 	Delay::register_shell(busy_dialog);
 	GUI::Button *button;
 	button = busy_dialog->add_button("OK");
-	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB2), busy_dialog));
+	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), busy_dialog));
     }
 
     manage_and_raise(busy_dialog);
@@ -286,7 +277,7 @@ Widget post_gdb_died(string reason, int state, Widget w)
     if (gdb_initialized && gdb_is_exiting && exited)
     {
 	// Exit was expected
-	_DDDExitCB(CB_ARGS_2(EXIT_SUCCESS));
+	_DDDExitCB(find_shell(w), XtPointer(EXIT_SUCCESS), 0);
 	return 0;
     }
 
@@ -385,7 +376,11 @@ GUI::Dialog *post_gdb_died(string reason, int state, GUI::Widget *w)
     if (gdb_initialized && gdb_is_exiting && exited)
     {
 	// Exit was expected
-	_DDDExitCB(CB_ARGS_2(EXIT_SUCCESS));
+#if defined(IF_XM)
+	_DDDExitCB(find_shell(w), XtPointer(EXIT_SUCCESS), 0);
+#else
+	_DDDExitCB(EXIT_SUCCESS);
+#endif
 	return 0;
     }
 
@@ -593,7 +588,7 @@ GUI::Dialog *post_gdb_message(string text, bool prompt, GUI::Widget *w)
 	Delay::register_shell(gdb_message_dialog);
 	GUI::Button *button;
 	button = gdb_message_dialog->add_button("OK");
-	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB2), gdb_message_dialog));
+	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), gdb_message_dialog));
     }
     else
     {
@@ -689,7 +684,7 @@ GUI::Dialog *post_error(string text, const _XtString name, GUI::Widget *w)
     Delay::register_shell(ddd_error);
     GUI::Button *button;
     button = ddd_error->add_button("OK");
-    button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB2), ddd_error));
+    button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), ddd_error));
 
     manage_and_raise(ddd_error);
     return ddd_error;
@@ -782,7 +777,7 @@ GUI::Dialog *post_warning(string text, const _XtString name, GUI::Widget *w)
     Delay::register_shell(ddd_warning);
     GUI::Button *button;
     button = ddd_warning->add_button("OK");
-    button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB2), ddd_warning));
+    button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), ddd_warning));
 
     manage_and_raise(ddd_warning);
     return ddd_warning;

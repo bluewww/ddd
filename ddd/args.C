@@ -346,7 +346,7 @@ static void gdbRunDCB(void)
 
 #if defined(IF_MOTIF)
 // Set program arguments from list
-static void SelectRunArgsCB(CB_ARG_LIST_3(call_data))
+static void SelectRunArgsCB(Widget, XtPointer, XtPointer call_data)
 {
     XmListCallbackStruct *cbs = (XmListCallbackStruct *)call_data;
     int pos = cbs->item_position - 1;
@@ -706,14 +706,28 @@ void gdbChangeDirectoryCB(GUI::Widget *w)
 // `run' arguments
 //-----------------------------------------------------------------------------
 
-static void RestartAndRunCB(CB_ALIST_12(Widget w, 
-					XtPointer client_data))
+#if defined(IF_XM)
+
+static void RestartAndRunCB(Widget w,
+			    XtPointer client_data, XtPointer call_data)
 {
-    RestartDebuggerCB(CB_ARGS_NULL);
+    RestartDebuggerCB(w, client_data, call_data);
 
     const string& cmd = *((const string *)client_data);
     gdb_command(cmd, w);
 }
+
+#else
+
+static void RestartAndRunCB(GUI::Widget *w, const string *client_data)
+{
+    RestartDebuggerCB();
+
+    const string& cmd = *client_data;
+    gdb_command1(cmd, w);
+}
+
+#endif
 
 bool add_running_arguments(string& cmd, Widget origin)
 {

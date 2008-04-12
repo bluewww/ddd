@@ -74,7 +74,7 @@ extern void DDDDumpCoreCB(Widget, XtPointer, XtPointer);    // Dump Core
 extern void _DDDExitCB   (long status);                     // GDB exited normally
 extern void DDDExitCB    (GUI::Widget *, long status);      // Exit DDD
 extern void DDDRestartCB (GUI::Widget *);                   // Restart DDD
-extern void DDDDebugCB   (long status);                     // Debug DDD
+extern void DDDDebugCB   (bool);                            // Debug DDD
 extern void DDDDumpCoreCB(void);                            // Dump Core
 #endif
 

@@ -60,8 +60,13 @@ void ddd_main_loop()
 	if (sig < 0)
 	{
 	    // We had a core dump
+#if defined(IF_XM)
 	    if (app_data.debug_core_dumps)
-		DDDDebugCB(CB_ARGS_2(true));
+		DDDDebugCB(gdb_w, XtPointer(True), 0);
+#else
+	    if (app_data.debug_core_dumps)
+		DDDDebugCB(true);
+#endif
 	    report_core(dddlog);
 	}
 

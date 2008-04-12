@@ -184,10 +184,10 @@ extern void dddDefineCommandCB(GUI::Widget *w);
 #endif
 
 // Update define buttons
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 void UpdateDefinePanelCB(Widget w=NULL, XtPointer=NULL, XtPointer=NULL);
 #else
-void UpdateDefinePanelCB(CB_ALIST_1(Widget w=NULL));
+void UpdateDefinePanelCB(GUI::Widget *w=NULL);
 #endif
 
 #endif // _DDD_settings_h

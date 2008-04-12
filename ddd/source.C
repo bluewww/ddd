@@ -471,7 +471,9 @@ void gdbWatchRefCB(Widget w, XtPointer, XtPointer)
 	gdb_command(gdb->watch_command(deref(arg)), w);
 }
 
-void gdbUnwatchCB(CB_ALIST_NULL)
+#if defined(IF_XM)
+
+void gdbUnwatchCB(Widget, XtPointer, XtPointer)
 {
     if (gdb->type() == JDB)
     {
@@ -492,6 +494,32 @@ void gdbUnwatchCB(CB_ALIST_NULL)
 	source_view->delete_bp(wp->number());
     }
 }
+
+#else
+
+void gdbUnwatchCB(void)
+{
+    if (gdb->type() == JDB)
+    {
+	// JDB 1.2 has an `unwatch' command
+	string arg = current_arg();
+	if (!arg.empty() && !arg.matches(rxwhite))
+	{
+	    gdb_command("unwatch all " + arg);
+	    gdb_command("unwatch access " + arg);
+	}
+    }
+    else
+    {
+	// All other debuggers handle watchpoints like breakpoints
+	BreakPoint *wp = source_view->watchpoint_at(current_arg());
+	if (wp == 0)
+	    return;
+	source_view->delete_bp(wp->number());
+    }
+}
+
+#endif
 
 #if defined(IF_XM)
 
@@ -551,9 +579,9 @@ void gdbFindCB(Widget w, XtPointer client_data, XtPointer)
 }
 
 
-void gdbFindAgainCB(Widget w, XtPointer, XtPointer)
+void gdbFindAgainCB(Widget w, XtPointer, XtPointer call_data)
 {
-    gdbFindCB(CB_ARGS_12(w, current_find_direction()));
+    gdbFindCB(w, XtPointer(current_find_direction()), call_data);
 }
 
 #else
@@ -602,12 +630,24 @@ SourceView::SearchDirection current_find_direction()
 // Editor invocation
 //-----------------------------------------------------------------------------
 
-static void gdbDeleteEditAgent(TM_ALIST_1(XtP(Agent *) client_data))
+#if defined(IF_XM)
+
+static void gdbDeleteEditAgent(XtPointer client_data, XtIntervalId *)
 {
     // Delete agent after use
     Agent *edit_agent = (Agent *)client_data;
     delete edit_agent;
 }
+
+#else
+
+static void gdbDeleteEditAgent(Agent *edit_agent)
+{
+    // Delete agent after use
+    delete edit_agent;
+}
+
+#endif
 
 static string output_buffer;
 

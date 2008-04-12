@@ -1186,7 +1186,7 @@ bool have_command_window()
 
 // Source window
 #if defined(IF_XM)
-void gdbCloseSourceWindowCB(Widget w, XtPointer, XtPointer)
+void gdbCloseSourceWindowCB(Widget w, XtPointer client_data, XtPointer call_data)
 #else
 void gdbCloseSourceWindowCB(GUI::Widget *w)
 #endif
@@ -1220,8 +1220,13 @@ void gdbCloseSourceWindowCB(GUI::Widget *w)
     if (source_view_shell != 0)
 	unmanage_paned_child(source_view->code_form());
 
+#if defined(IF_XM)
     if (!XtIsManaged(source_view->code_form()))
-	gdbCloseToolWindowCB(CB_ARGS_NULL);
+	gdbCloseToolWindowCB(w, client_data, call_data);
+#else
+    if (!XtIsManaged(source_view->code_form()))
+	gdbCloseToolWindowCB();
+#endif
 
     app_data.source_window = false;
 
@@ -1229,19 +1234,13 @@ void gdbCloseSourceWindowCB(GUI::Widget *w)
 }
 
 #if defined(IF_XM)
-void gdbCloseCodeWindowCB(Widget w, XtPointer, XtPointer)
-#else
-void gdbCloseCodeWindowCB(GUI::Widget *w)
-#endif
+
+void gdbCloseCodeWindowCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     if (!app_data.tty_mode && 
 	!have_command_window() && !have_data_window() && !have_source_window())
     {
-#if defined(IF_XM)
 	DDDExitCB(w, EXIT_SUCCESS, XtPointer(0));
-#else
-	DDDExitCB(w, EXIT_SUCCESS);
-#endif
 	return;
     }
 
@@ -1249,12 +1248,36 @@ void gdbCloseCodeWindowCB(GUI::Widget *w)
     unmanage_paned_child(source_view->code_form());
 
     if (!XtIsManaged(source_view->source_form()))
-	gdbCloseToolWindowCB(CB_ARGS_NULL);
+	gdbCloseToolWindowCB(w, client_data, call_data);
 
     app_data.disassemble = false;
 
     update_options();
 }
+
+#else
+
+void gdbCloseCodeWindowCB(GUI::Widget *w)
+{
+    if (!app_data.tty_mode && 
+	!have_command_window() && !have_data_window() && !have_source_window())
+    {
+	DDDExitCB(w, EXIT_SUCCESS);
+	return;
+    }
+
+    // Unmanage code
+    unmanage_paned_child(source_view->code_form());
+
+    if (!source_view->source_form()->is_visible())
+	gdbCloseToolWindowCB();
+
+    app_data.disassemble = false;
+
+    update_options();
+}
+
+#endif
 
 #if defined(IF_XM)
 

@@ -68,6 +68,7 @@ extern void gdbSetPCCB        (Widget, XtPointer, XtPointer);
 extern void gdbPrintCB        (Widget, XtPointer, XtPointer);
 extern void gdbDisplayCB      (Widget, XtPointer, XtPointer);
 extern void gdbWatchCB        (Widget, XtPointer, XtPointer);
+extern void gdbUnwatchCB      (Widget, XtPointer, XtPointer);
 
 #else
 
@@ -79,10 +80,9 @@ extern void gdbSetPCCB        (GUI::Widget *);
 extern void gdbPrintCB        (GUI::Widget *, bool);
 extern void gdbDisplayCB      (GUI::Widget *);
 extern void gdbWatchCB        (GUI::Widget *, int);
+extern void gdbUnwatchCB      (void);
 
 #endif
-
-extern void gdbUnwatchCB      (CB_ALIST_NULL);
 
 #if defined(IF_XM)
 

@@ -1310,14 +1310,11 @@ void gdbApplyCB(GUI::Widget *w)
 
 #endif
 
+#if defined(IF_XM)
+
 // Use this for selection boxes
-#if defined(IF_MOTIF)
-void gdbApplySelectionCB(CB_ARG_LIST_13(w, call_data))
-#else
-void gdbApplySelectionCB(CB_ARG_LIST_NULL)
-#endif
+void gdbApplySelectionCB(Widget w, XtPointer, XtPointer call_data)
 {
-#if defined(IF_MOTIF)
     if (!gdb->isReadyWithPrompt())
     {
 	post_gdb_busy(w);
@@ -1333,7 +1330,14 @@ void gdbApplySelectionCB(CB_ARG_LIST_NULL)
     Cardinal zero = 0;
     end_of_lineAct(gdb_w, cbs->event, 0, &zero);
     XtCallActionProc(gdb_w, "process-return", cbs->event, 0, zero);
-#else
-    std::cerr << "gdbApplySelectionCB: not implemented\n";
-#endif
 }
+
+#else
+
+// Use this for selection boxes
+void gdbApplySelectionCB(void)
+{
+    std::cerr << "gdbApplySelectionCB: not implemented\n";
+}
+
+#endif

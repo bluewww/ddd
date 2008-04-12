@@ -47,11 +47,23 @@ extern "C" char **environ;
 
 // Callbacks
 
+#if defined(IF_XM)
+
 // Leave program
-void ExitCB(CB_ALIST_2(XtP(long) status))
+void ExitCB(Widget, XtPointer status, XtPointer)
 {
     exit((int)(long)status);
 }
+
+#else
+
+// Leave program
+void ExitCB(int status)
+{
+    exit(status);
+}
+
+#endif
 
 static char **_saved_argv    = 0;
 static char **_saved_environ = 0;
@@ -60,8 +72,10 @@ static char **_saved_environ = 0;
 char **saved_argv()    { return _saved_argv; }
 char **saved_environ() { return _saved_environ; }
 
+#if defined(IF_XM)
+
 // Restart program
-void RestartCB(CB_ALIST_NULL)
+void RestartCB(Widget, XtPointer, XtPointer)
 {
     environ = saved_environ();
     execvp(saved_argv()[0], saved_argv());
@@ -70,6 +84,21 @@ void RestartCB(CB_ALIST_NULL)
     perror(saved_argv()[0]);
     exit(EXIT_FAILURE);
 }
+
+#else
+
+// Restart program
+void RestartCB(void)
+{
+    environ = saved_environ();
+    execvp(saved_argv()[0], saved_argv());
+
+    // Could not restart - just exit
+    perror(saved_argv()[0]);
+    exit(EXIT_FAILURE);
+}
+
+#endif
 
 // Save argv
 void register_argv(const char * const argv[])

@@ -3192,7 +3192,7 @@ static void add_button(GUI::Container *form, int& row, Dimension& max_width,
     case TextFieldEntry:
     {
 	// Some other value
-	entry = entry_w = new GUI::Entry(*form, set_command.chars());
+	entry = entry_w = new GUI::Entry(*form, GUI::PACK_SHRINK, set_command.chars());
 	entry->show();
 
 	if (e_type == TextFieldEntry) {
@@ -3805,7 +3805,7 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
     XtUnmanageChild(XmSelectionBoxGetChild(panel, XmDIALOG_SELECTION_LABEL));
 
     XtAddCallback(panel, XmNhelpCallback, ImmediateHelpCB, 0);
-    XtAddCallback(panel, XmNcancelCallback, UnmanageThisCB1, XtPointer(panel));
+    XtAddCallback(panel, XmNcancelCallback, UnmanageThisCB, XtPointer(panel));
 
     switch (stype)
     {
@@ -5318,8 +5318,10 @@ static void refresh_combo_box()
 
 // Editing stuff
 
+#if defined(IF_XM)
+
 // Text field has changed -- update buttons
-void UpdateDefinePanelCB(CB_ARG_LIST_1(w))
+void UpdateDefinePanelCB(Widget w, XtPointer, XtPointer)
 {
     if (name_w == 0)
 	return;			// Not yet created
@@ -5333,11 +5335,7 @@ void UpdateDefinePanelCB(CB_ARG_LIST_1(w))
 
     set_sensitive(name_w, !gdb->recording());
     set_sensitive(XtParent(name_w), !gdb->recording());
-#if defined(IF_XM)
     set_sensitive(editor_w, !gdb->recording());
-#else
-    set_sensitive(editor_w, !gdb->recording());
-#endif
 
     set_arg();
 
@@ -5346,6 +5344,35 @@ void UpdateDefinePanelCB(CB_ARG_LIST_1(w))
 
     refresh_toggles();
 }
+
+#else
+
+// Text field has changed -- update buttons
+void UpdateDefinePanelCB(GUI::Widget *w)
+{
+    if (name_w == 0)
+	return;			// Not yet created
+
+    string name = current_name();
+
+    set_sensitive(record_w, !gdb->recording() && !name.empty());
+    set_sensitive(apply_w,  !gdb->recording() && defs.has(name));
+    set_sensitive(end_w,    gdb->recording());
+    set_sensitive(edit_w,   !gdb->recording() && !name.empty());
+
+    set_sensitive(name_w, !gdb->recording());
+    set_sensitive(name_w->get_parent(), !gdb->recording());
+    set_sensitive(editor_w, !gdb->recording());
+
+    set_arg();
+
+    if (w != 0 && !gdb->recording() && defs.has(name))
+      arg_w->set_active(is_arg_command(name), False);
+
+    refresh_toggles();
+}
+
+#endif
 
 static void update_defineHP(Agent *, void *client_data, void *call_data)
 {
@@ -5517,7 +5544,7 @@ static void DoneEditCommandDefinitionCB(GUI::Widget *w)
 
 #if defined(IF_XM)
 
-static void EditCommandDefinitionCB(void)
+static void EditCommandDefinitionCB(Widget, XtPointer, XtPointer)
 {
     if (XtIsManaged(XtParent(editor_w)))
 	return;
@@ -5567,12 +5594,13 @@ static void EditCommandDefinitionCB(void)
 
 #if defined(IF_XM)
 
-static void ToggleEditCommandDefinitionCB(Widget w, XtPointer, XtPointer)
+static void ToggleEditCommandDefinitionCB(Widget w, XtPointer client_data,
+					  XtPointer call_data)
 {
     if (XtIsManaged(XtParent(editor_w)))
-	DoneEditCommandDefinitionCB(CB_ARGS_1(w));
+	DoneEditCommandDefinitionCB(w, client_data, call_data);
     else
-	EditCommandDefinitionCB();
+	EditCommandDefinitionCB(w, client_data, call_data);
 }
 
 #else
@@ -5591,12 +5619,12 @@ static void ToggleEditCommandDefinitionCB(GUI::Widget *w)
 #if defined(IF_XM)
 
 // Apply the given command
-static void ApplyCB(Widget w, XtPointer, XtPointer)
+static void ApplyCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     if (gdb->recording())
-	EndCommandDefinitionCB(CB_ARGS_1(w));
+	EndCommandDefinitionCB(w, client_data, call_data);
 
-    DoneEditCommandDefinitionCB(CB_ARGS_1(w));
+    DoneEditCommandDefinitionCB(w, client_data, call_data);
 
     string cmd = current_name();
     if (!cmd.empty())
@@ -5683,10 +5711,21 @@ static void set_arg()
     }
 }
 
-static void ToggleArgCB(CB_ARG_LIST_NULL)
+#if defined(IF_XM)
+
+static void ToggleArgCB(Widget, XtPointer, XtPointer)
 {
     set_arg();
 }
+
+#else
+
+static void ToggleArgCB(void)
+{
+    set_arg();
+}
+
+#endif
 
 static MMDesc commands_menu[] =
 {
@@ -5775,7 +5814,7 @@ void dddDefineCommandCB(Widget w, XtPointer, XtPointer)
 
 	MMadjustPanel(panel_menu);
 
-	XtAddCallback(dialog, XmNokCallback, UnmanageThisCB1, 
+	XtAddCallback(dialog, XmNokCallback, UnmanageThisCB, 
 		      XtPointer(dialog));
 	XtAddCallback(dialog, XmNokCallback, DoneEditCommandDefinitionCB, 
 		      XtPointer(0));
@@ -5784,7 +5823,7 @@ void dddDefineCommandCB(Widget w, XtPointer, XtPointer)
 		      ApplyCB, XtPointer(0));
 	XtAddCallback(dialog, XmNcancelCallback, 
 		      EndCommandDefinitionCB, XtPointer(0));
-	XtAddCallback(dialog, XmNcancelCallback, UnmanageThisCB1, 
+	XtAddCallback(dialog, XmNcancelCallback, UnmanageThisCB, 
 		      XtPointer(dialog));
 
 	XtAddCallback(dialog, XmNhelpCallback,

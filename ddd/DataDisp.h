@@ -276,7 +276,12 @@ class DataDisp {
 			 SelectionMode mode = SetSelection);
 
     static void refresh_display_list(bool silent = false);
-    static TIMEOUT_RETURN_TYPE RefreshDisplayListCB(TM_ALIST_1(XtP(bool)));
+
+#if defined(IF_XM)
+    static void RefreshDisplayListCB(XtPointer, XtIntervalId *);
+#else
+    static bool RefreshDisplayListCB(bool);
+#endif
 
     static DispValue *selected_value();
     static DispNode  *selected_node();
@@ -938,8 +943,13 @@ public:
     // Reset all
     static void reset();
 
+#if defined(IF_XM)
     // True if the selection was lost
-    static void SelectionLostCB(CB_ALIST_NULL);
+    static void SelectionLostCB(Widget = 0, XtPointer = 0, XtPointer = 0);
+#else
+    // True if the selection was lost
+    static void SelectionLostCB(void);
+#endif
 
     // Get number(s) of display NAME
     static int display_number(const string& name, bool verbose = false);

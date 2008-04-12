@@ -722,7 +722,7 @@ static Widget create_session_panel(Widget parent, const _XtString name,
     XtAddCallback(dialog, XmNapplyCallback, 
 		  apply, XtPointer(sessions));
     XtAddCallback(dialog, XmNcancelCallback, 
-		  UnmanageThisCB1, XtPointer(dialog));
+		  UnmanageThisCB, XtPointer(dialog));
     XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, 0);
 
     return dialog;
@@ -1010,7 +1010,7 @@ static GUI::Widget *gcore_methods_w = 0;
 
 #if defined(IF_XM)
 
-static void SetGCoreSensitivityCB(Widget, XtPointer, XtPointer)
+static void SetGCoreSensitivityCB(Widget = 0, XtPointer = 0, XtPointer = 0)
 {
     bool set = 
 	XmToggleButtonGetState(dump_core_w) && XtIsSensitive(dump_core_w);
@@ -1050,10 +1050,21 @@ static void SetGCoreSensitivityCB(void)
 
 static unsigned long gcore_method = 0;
 
-static void SetGCoreMethodCB(CB_ALIST_2(XtP(unsigned long) client_data))
+#if defined(IF_XM)
+
+static void SetGCoreMethodCB(Widget, XtPointer client_data, XtPointer)
 {
     gcore_method = (unsigned long)client_data;
 }
+
+#else
+
+static void SetGCoreMethodCB(unsigned long client_data)
+{
+    gcore_method = client_data;
+}
+
+#endif
 
 static MMDesc gcore_methods[] =
 {
@@ -1166,7 +1177,7 @@ void SaveSessionAsCB(Widget w, XtPointer client_data, XtPointer call_data)
 	info.running || (info.core != NO_GDB_ANSWER && !info.core.empty());
     XmToggleButtonSetState(dump_core_w, have_data, True);
     set_sensitive(dump_core_w, info.running);
-    SetGCoreSensitivityCB(CB_ARGS_NULL);
+    SetGCoreSensitivityCB();
 
     string name = "";
     if (app_data.session == DEFAULT_SESSION)
@@ -1314,7 +1325,9 @@ static string get_resource(xmlDoc *db, string name, string cls)
 
 #endif
 
-static Boolean done_if_idle(XtP(Delay *) data)
+#if defined(IF_XM)
+
+static Boolean done_if_idle(XtPointer data)
 {
     if (emptyCommandQueue() && can_do_gdb_command())
     {
@@ -1327,6 +1340,24 @@ static Boolean done_if_idle(XtP(Delay *) data)
 
     return False;		// Get called again
 }
+
+#else
+
+static bool done_if_idle(Delay *data)
+{
+    if (emptyCommandQueue() && can_do_gdb_command())
+    {
+	update_settings();	// Refresh settings and signals
+	update_signals();
+
+	delete data;
+	return true;		// Remove from the list of work procs
+    }
+
+    return false;		// Get called again
+}
+
+#endif
 
 static void done(const string&, void *data)
 {
@@ -1389,7 +1420,11 @@ static void open_session(const string& session)
     }
 
     // Clear debugger console
-    gdbClearWindowCB(CB_ARGS_NULL);
+#if defined(IF_XM)
+    gdbClearWindowCB(0, 0, 0);
+#else
+    gdbClearWindowCB();
+#endif
 
     // Load session-specific command history
     load_history(session_history_file(session));
@@ -1519,7 +1554,11 @@ static void open_session(const string& session)
 }
 
 // Restart GDB only.
-void RestartDebuggerCB(CB_ALIST_NULL)
+#if defined(IF_XM)
+void RestartDebuggerCB(Widget, XtPointer, XtPointer)
+#else
+void RestartDebuggerCB(void)
+#endif
 {
     static string restart_commands;
     static string settings;

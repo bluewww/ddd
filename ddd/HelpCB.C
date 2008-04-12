@@ -923,7 +923,7 @@ static void _MStringHelpCB(GUI::Widget *widget,
 
     if (help_dialog && (shell != help_shell))
     {
-	DestroyWhenIdle1(help_dialog);
+	DestroyWhenIdle(help_dialog);
 	help_dialog = 0;
     }
 
@@ -1298,7 +1298,7 @@ static void CloseCB(Widget w, XtPointer, XtPointer)
 static void CloseCB(GUI::Widget *w)
 {
     GUI::Shell *shell = findTopLevelShellParent1(w);
-    DestroyWhenIdle1(shell);
+    DestroyWhenIdle(shell);
 }
 
 #endif

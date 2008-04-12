@@ -83,6 +83,7 @@ char file_rcsid[] =
 
 #if !defined(IF_XM)
 #include <GUI/FileSelectionDialog.h>
+#include <GUI/Entry.h>
 #endif
 
 // ANSI C++ doesn't like the XtIsRealized() macro
@@ -193,10 +194,21 @@ static void FilterAllCB(Widget dialog, XtPointer client_data,
 }
 #endif
 
-static void ClearStatusCB(CB_ARG_LIST_NULL)
+#if defined(IF_XM)
+
+static void ClearStatusCB(Widget, XtPointer, XtPointer)
 {
     set_status("");
 }
+
+#else
+
+static void ClearStatusCB(void)
+{
+    set_status("");
+}
+
+#endif
 
 #if defined(IF_XM)
 
@@ -240,7 +252,7 @@ static Widget file_dialog(Widget w, const string& name,
 	XtAddCallback(dialog, XmNokCallback,     ok_callback, 0);
     }
 
-    XtAddCallback(dialog, XmNcancelCallback, UnmanageThisCB1, 
+    XtAddCallback(dialog, XmNcancelCallback, UnmanageThisCB, 
 		  XtPointer(dialog));
     XtAddCallback(dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
 
@@ -281,7 +293,7 @@ static GUI::Dialog *file_dialog(GUI::Widget *w, const string& name,
 
     GUI::FileSelectionDialog *dialog = 
 	new GUI::FileSelectionDialog(*find_shell1(w), name.chars(), GUI::FileActionOpen);
-    Gtk::Button *button;
+    GUI::Button *button;
     Delay::register_shell(dialog);
 
     if (ok_callback != 0) {
@@ -290,7 +302,7 @@ static GUI::Dialog *file_dialog(GUI::Widget *w, const string& name,
     }
 
     button = dialog->add_button("Cancel");
-    button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB2), dialog));
+    button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), dialog));
 
 #ifdef NAG_ME
 #warning FIXME no filters
@@ -1511,8 +1523,8 @@ static void openProcessDone(Widget w, XtPointer client_data,
 static void RemoveCallbacksCB(Widget w, XtPointer client_data, XtPointer)
 {
     Widget ref = Widget(client_data);
-    XtRemoveCallback(ref, XmNokCallback,      UnmanageThisCB1, XtPointer(w));
-    XtRemoveCallback(ref, XmNcancelCallback,  UnmanageThisCB1, XtPointer(w));
+    XtRemoveCallback(ref, XmNokCallback,      UnmanageThisCB, XtPointer(w));
+    XtRemoveCallback(ref, XmNcancelCallback,  UnmanageThisCB, XtPointer(w));
     XtRemoveCallback(ref, XmNdestroyCallback, RemoveCallbacksCB, XtPointer(w));
 }
 #else
@@ -1538,16 +1550,16 @@ static void warn_if_no_program(Widget popdown)
 	    // Tie the warning to the dialog - if one is popped down,
 	    // so is the other.
 	    XtAddCallback(warning, XmNokCallback, 
-			  UnmanageThisCB1, XtPointer(popdown));
+			  UnmanageThisCB, XtPointer(popdown));
 	    XtAddCallback(warning, XmNcancelCallback, 
-			  UnmanageThisCB1, XtPointer(popdown));
+			  UnmanageThisCB, XtPointer(popdown));
 	    XtAddCallback(popdown, XmNdestroyCallback,
 			  RemoveCallbacksCB, XtPointer(warning));
 
 	    XtAddCallback(popdown, XmNokCallback,
-			  UnmanageThisCB1, XtPointer(warning));
+			  UnmanageThisCB, XtPointer(warning));
 	    XtAddCallback(popdown, XmNcancelCallback,
-			  UnmanageThisCB1, XtPointer(warning));
+			  UnmanageThisCB, XtPointer(warning));
 	    XtAddCallback(warning, XmNdestroyCallback,
 			  RemoveCallbacksCB, XtPointer(popdown));
 	}
@@ -2138,9 +2150,10 @@ void gdbOpenSourceCB(GUI::Widget *w)
 
 #endif
 
-void gdbOpenProcessCB(CB_ARG_LIST_1(w))
+#if defined(IF_XM)
+
+void gdbOpenProcessCB(Widget w, XtPointer, XtPointer)
 {
-#if defined(IF_MOTIF)
     static Widget dialog = 0;
     static Widget processes = 0;
 
@@ -2177,21 +2190,28 @@ void gdbOpenProcessCB(CB_ARG_LIST_1(w))
 	XtAddCallback(dialog, XmNapplyCallback, 
 		      gdbUpdateProcessesCB, XtPointer(processes));
 	XtAddCallback(dialog, XmNcancelCallback, 
-		      UnmanageThisCB1, XtPointer(dialog));
+		      UnmanageThisCB, XtPointer(dialog));
 	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, 0);
     }
 
     update_processes(processes, false);
     manage_and_raise(dialog);
     warn_if_no_program(dialog);
-#else
-    std::cerr << "gdbOpenProcessCB not supported\n";
-#endif
 }
 
-void gdbOpenClassCB(CB_ARG_LIST_1(w))
+#else
+
+void gdbOpenProcessCB(GUI::Widget *w)
 {
-#if defined(IF_MOTIF)
+    std::cerr << "gdbOpenProcessCB not supported yet\n";
+}
+
+#endif
+
+#if defined(IF_XM)
+
+void gdbOpenClassCB(Widget w, XtPointer, XtPointer)
+{
     static Widget dialog = 0;
     static Widget classes = 0;
 
@@ -2227,22 +2247,33 @@ void gdbOpenClassCB(CB_ARG_LIST_1(w))
 	XtAddCallback(dialog, XmNapplyCallback, 
 		      gdbUpdateClassesCB, XtPointer(classes));
 	XtAddCallback(dialog, XmNcancelCallback, 
-		      UnmanageThisCB1, XtPointer(dialog));
+		      UnmanageThisCB, XtPointer(dialog));
 	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, 0);
     }
 
     update_classes(classes);
     manage_and_raise(dialog);
-#else
-    std::cerr << "Open class not supported\n";
-#endif
 }
+
+#else
+
+void gdbOpenClassCB(GUI::Widget *)
+{
+    std::cerr << "Open class not supported yet\n";
+}
+
+#endif
 
 static TREEVIEW_P source_list   = 0;
 #if !defined(IF_MOTIF)
 static TREEMODEL_P source_model   = 0;
 #endif
-static ENTRY_P source_filter = 0;
+
+#if defined(IF_XM)
+static Widget source_filter = 0;
+#else
+static GUI::Entry *source_filter = 0;
+#endif
 
 void update_sources()
 {
@@ -2250,18 +2281,43 @@ void update_sources()
 	update_sources(source_list, source_filter);
 }
 
-static void FilterSourcesCB(CB_ARG_LIST_NULL)
+#if defined(IF_XM)
+
+static void FilterSourcesCB(Widget, XtPointer, XtPointer)
 {
     update_sources();
 }
 
-static void LoadSharedLibrariesCB(CB_ARG_LIST_NULL)
+#else
+
+static void FilterSourcesCB(void)
+{
+    update_sources();
+}
+
+#endif
+
+#if defined(IF_XM)
+
+static void LoadSharedLibrariesCB(Widget, XtPointer, XtPointer)
 {
     StatusDelay delay("Loading shared object library symbols");
     
     gdb_question("sharedlibrary");
     update_sources();
 }
+
+#else
+
+static void LoadSharedLibrariesCB(void)
+{
+    StatusDelay delay("Loading shared object library symbols");
+    
+    gdb_question("sharedlibrary");
+    update_sources();
+}
+
+#endif
 
 #if defined(IF_XM)
 
@@ -2349,7 +2405,7 @@ void gdbLookupSourceCB(Widget w, XtPointer, XtPointer)
 		      lookupSourceDone, XtPointer(source_list));
 	XtAddCallback(dialog, XmNapplyCallback, FilterSourcesCB, 0);
 	XtAddCallback(dialog, XmNcancelCallback, 
-		      UnmanageThisCB1, XtPointer(dialog));
+		      UnmanageThisCB, XtPointer(dialog));
 	XtAddCallback(dialog, XmNunmapCallback, ClearStatusCB, 0);
 	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, 0);
 
@@ -2377,7 +2433,7 @@ void gdbLookupSourceCB(GUI::Widget *w)
 {
     if (gdb->type() != GDB)
     {
-	gdbOpenSourceCB(CB_ARGS_1(w));
+	gdbOpenSourceCB(w);
 	return;
     }
 
@@ -2390,30 +2446,22 @@ void gdbLookupSourceCB(GUI::Widget *w)
 	Delay::register_shell(dialog);
 
 
-	BOX_P bigbox = new Gtk::HBox();
-	bigbox->set_name(XMST("bigbox"));
-	dialog->get_vbox()->pack_start(*bigbox, Gtk::PACK_SHRINK);
+	GUI::Box *bigbox = new GUI::HBox(*dialog, GUI::PACK_SHRINK, "bigbox");
 	bigbox->show();
 
-	BOX_P box = new Gtk::HBox();
-	bigbox->set_name(XMST("box"));
-	bigbox->pack_start(*box, Gtk::PACK_SHRINK);
+	GUI::Box *box = new GUI::HBox(*bigbox, GUI::PACK_SHRINK, "box");
 	box->show();
 
-	LABEL_P label = new Gtk::Label(XMST("label"));
-	box->pack_start(*label, Gtk::PACK_SHRINK);
+	GUI::Label *label = new GUI::Label(*box, GUI::PACK_SHRINK, "label");
 	label->show();
 
-	source_filter = new Gtk::Entry();
-	source_filter->set_name(XMST("filter"));
-	box->pack_start(*source_filter, Gtk::PACK_EXPAND_WIDGET);
+	source_filter = new GUI::Entry(*box, GUI::PACK_EXPAND_WIDGET, "filter");
 	source_filter->show();
 
-	BUTTON_P sharedlibrary = new Gtk::Button(XMST("sharedlibrary"));
-	bigbox->pack_start(*sharedlibrary, Gtk::PACK_SHRINK);
+	GUI::Button *sharedlibrary = new GUI::Button(*bigbox, GUI::PACK_SHRINK, "sharedlibrary");
 	sharedlibrary->show();
 
-	BUTTON_P lookup = dialog->add_button(XMST("lookup"), 0);
+	GUI::Button *lookup = dialog->add_button("lookup");
 
 	source_list = new Gtk::TreeView();
 	dialog->get_vbox()->pack_start(*source_list, Gtk::PACK_EXPAND_WIDGET);
@@ -2425,12 +2473,12 @@ void gdbLookupSourceCB(GUI::Widget *w)
 
 	Gtk::Button *button;
 	button = dialog->add_button(XMST("OK"), 0);
-	button->signal_clicked().connect(sigc::bind(PTR_FUN(lookupSourceDone),
-						     source_list));
+	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(lookupSourceDone),
+						    source_list));
 	button = dialog->add_button(XMST("Cancel"), 0);
-	button->signal_clicked().connect(sigc::bind(PTR_FUN(UnmanageThisCB2),
+	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB),
 						    dialog));
-	dialog->signal_unmap().connect(PTR_FUN(ClearStatusCB));
+	dialog->signal_unmap().connect(sigc::ptr_fun(ClearStatusCB));
 
 #ifdef NAG_ME
 #warning No filters.

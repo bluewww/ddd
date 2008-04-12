@@ -484,6 +484,7 @@ namespace GtkX {
     SignalTimeout &signal_timeout();
 
     typedef sigc::slot<void, GtkX::Widget*, GtkX::Event*, char **, unsigned int*> ActionProc;
+    typedef sigc::connection connection;
 
     struct ActionRec {
 	String string;

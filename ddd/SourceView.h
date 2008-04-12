@@ -145,39 +145,37 @@ class SourceView {
 #endif
 
 #if defined(IF_XM)
+
     static void text_popup_breakCB       (Widget, XtPointer, XtPointer);
     static void text_popup_clearCB       (Widget, XtPointer, XtPointer);
 
     static void NewBreakpointDCB         (Widget, XtPointer, XtPointer);
 
     static void NewBreakpointCB          (Widget, XtPointer, XtPointer);
+    static void NewWatchpointDCB         (Widget, XtPointer, XtPointer);
+    static void NewWatchpointCB          (Widget, XtPointer, XtPointer);
+    static void LookupBreakpointCB       (Widget, XtPointer, XtPointer);
+    static void PrintWatchpointCB        (Widget, XtPointer, XtPointer);
+    static void BreakpointCmdCB          (Widget, XtPointer, XtPointer);
+
 #else
+
     static void text_popup_breakCB       (GUI::Widget *, const string *);
     static void text_popup_clearCB       (GUI::Widget *, const string *);
 
     static void NewBreakpointDCB         (GUI::Widget *, GUI::ComboBoxEntryText *);
 
     static void NewBreakpointCB          (GUI::Widget *);
-#endif
-
-    static void NewWatchpointDCB         (CB_ALIST_12(Widget, XtP(COMBOBOXENTRYTEXT_P)));
-#if defined(IF_XM)
-    static void NewWatchpointCB          (Widget, XtPointer, XtPointer);
-    static void LookupBreakpointCB       (Widget, XtPointer, XtPointer);
-#else
+    static void NewWatchpointDCB         (GUI::Widget *, GUI::ComboBoxEntryText *);
     static void NewWatchpointCB          (GUI::Widget *);
     static void LookupBreakpointCB       (BreakpointPropertiesInfo *);
-#endif
-
-#if defined(IF_XM)
-    static void PrintWatchpointCB        (Widget, XtPointer, XtPointer);
-    static void BreakpointCmdCB          (Widget, XtPointer, XtPointer);
-#else
     static void PrintWatchpointCB        (GUI::Widget *, BreakpointPropertiesInfo *);
     static void BreakpointCmdCB          (const char *);
+
 #endif
 
 #if defined(IF_XM)
+
     static void EditBreakpointPropertiesCB (Widget, XtPointer, XtPointer);
     static void ApplyBreakpointPropertiesCB(Widget, XtPointer, XtPointer);
     static void SetBreakpointIgnoreCountCB (Widget, XtPointer, XtPointer);
@@ -189,7 +187,11 @@ class SourceView {
     static void RecordBreakpointCommandsCB (Widget, XtPointer, XtPointer);
     static void EndBreakpointCommandsCB    (Widget, XtPointer, XtPointer);
     static void EditBreakpointCommandsCB   (Widget, XtPointer, XtPointer);
+    static void SetBreakpointIgnoreCountNowCB(XtPointer, XtIntervalId *);
+    static void DeleteInfoCB               (Widget, XtPointer, XtPointer);
+
 #else
+
     static void EditBreakpointPropertiesCB (int *);
     static void ApplyBreakpointPropertiesCB(GUI::Widget *, BreakpointPropertiesInfo *);
     static void SetBreakpointIgnoreCountCB (GUI::Widget *, BreakpointPropertiesInfo *);
@@ -201,51 +203,64 @@ class SourceView {
     static void RecordBreakpointCommandsCB (GUI::Widget *, BreakpointPropertiesInfo *);
     static void EndBreakpointCommandsCB    (GUI::Widget *);
     static void EditBreakpointCommandsCB   (GUI::Widget *, BreakpointPropertiesInfo *);
-#endif
-    static TIMEOUT_RETURN_TYPE SetBreakpointIgnoreCountNowCB(TM_ALIST_1(XtP(BreakpointPropertiesInfo *)));
-#if defined(IF_XM)
-    static void DeleteInfoCB               (Widget, XtPointer, XtPointer);
-#else
+    static bool SetBreakpointIgnoreCountNowCB(BreakpointPropertiesInfo *);
     static void *DeleteInfoCB              (void *);
+
 #endif
+
     static void RefreshBreakpointsHP       (Agent *, void *, void *);
     static void RecordingHP                (Agent *, void *, void *);
 
 #if defined(IF_XM)
+
     static void UpdateBreakpointButtonsCB (Widget, XtPointer, XtPointer);
+    static void CheckScrollCB(Widget, XtPointer, XtPointer);
+    static void CheckScrollWorkProc(XtPointer, XtIntervalId *);
+
 #else
+
     static void UpdateBreakpointButtonsCB (void);
+    static void CheckScrollCB(void);
+    static bool CheckScrollWorkProc(GUI::connection *);
+
 #endif
 
-    static void CheckScrollCB(CB_ALIST_NULL);
-    static TIMEOUT_RETURN_TYPE CheckScrollWorkProc(TM_ALIST_1(XtP(XtIntervalId *)));
 
     static void CheckModificationCB        (Widget, XtPointer, XtPointer);
 
 #if defined(IF_XM)
-    static void StackDialogPoppedDownCB    (Widget, XtPointer, XtPointer);
-#else
-    static void StackDialogPoppedDownCB    (void);
-#endif
-    static void CodeDialogPoppedDownCB     (CB_ALIST_NULL);
-    static void RegisterDialogPoppedDownCB (CB_ALIST_NULL);
-    static void ThreadDialogPoppedDownCB   (CB_ALIST_NULL);
 
-#if defined(IF_XM)
+    static void StackDialogPoppedDownCB    (Widget, XtPointer, XtPointer);
+    static void CodeDialogPoppedDownCB     (Widget, XtPointer, XtPointer);
+    static void RegisterDialogPoppedDownCB (Widget, XtPointer, XtPointer);
+    static void ThreadDialogPoppedDownCB   (Widget, XtPointer, XtPointer);
     static void SelectFrameCB    (Widget, XtPointer, XtPointer);
     static void SelectRegisterCB (Widget, XtPointer, XtPointer);
+    static void SelectThreadCB   (Widget, XtPointer, XtPointer);
+    static void ThreadCommandCB  (Widget, XtPointer, XtPointer);
+
 #else
+
+    static void StackDialogPoppedDownCB    (void);
+    static void CodeDialogPoppedDownCB     (void);
+    static void RegisterDialogPoppedDownCB (void);
+    static void ThreadDialogPoppedDownCB   (void);
     static void SelectFrameCB    (GUI::ListView *);
     static void SelectRegisterCB (GUI::ListView *);
+    static void SelectThreadCB   (GUI::Widget *);
+    static void ThreadCommandCB  (GUI::Widget *, const char *);
+
 #endif
-    static void SelectThreadCB   (CB_ALIST_1(Widget));
-    static void ThreadCommandCB  (CB_ALIST_12(Widget, XtP(const char *)));
 
 #if defined(IF_XM)
+
     static void SetWatchModeCB(Widget, XtPointer, XtPointer);
     static void ActivateGlyphCB(Widget, XtPointer, XtPointer);
+
 #else
+
     static void SetWatchModeCB(int);
+
 #endif
 
     // Set shell title
@@ -273,7 +288,11 @@ class SourceView {
     static void refresh_code_bp_disp(bool reset = false);
 
     // Clear breakpoint helpers
-    static TIMEOUT_RETURN_TYPE clearBP(TM_ALIST_1(XtP(int) client_data));
+#if defined(IF_XM)
+    static void clearBP(XtPointer, XtIntervalId *);
+#else
+    static bool clearBP(int);
+#endif
     static void clearJumpBP(const string& answer, void *client_data);
 
     // Move/Copy breakpoint NR to ADDRESS; return true if changed
@@ -518,10 +537,11 @@ class SourceView {
 
 #if defined(IF_XM)
     static Widget thread_dialog_w;            // Dialog for threads
+    static Widget thread_list_w;              // Thread list inside
 #else
     static GUI::Dialog *thread_dialog_w;      // Dialog for threads
+    static GUI::ListView *thread_list_w;      // Thread list inside
 #endif
-    static TREEVIEW_P thread_list_w;          // Thread list inside
     static bool thread_dialog_popped_up;      // True if threads are visible
 
     static bool display_glyphs;	              // Display glyphs?
@@ -877,8 +897,8 @@ private:
     static void copy_colors(Widget w, Widget origin);
 
     // Helping background procedures
-    static TIMEOUT_RETURN_TYPE UpdateGlyphsWorkProc(TM_ALIST_1(XtP(XtIntervalId *)));
-    static WP_RETURN_TYPE CreateGlyphsWorkProc(WP_ALIST_NULL);
+    static void UpdateGlyphsWorkProc(XtPointer, XtIntervalId *);
+    static Boolean CreateGlyphsWorkProc(XtPointer);
 #endif
 
     // True if code/source glyphs need to be updated

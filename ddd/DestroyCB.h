@@ -39,39 +39,48 @@
 
 // Destroy WIDGET as soon as we are idle
 #if defined(IF_XM)
+
 extern void DestroyWhenIdle(Widget widget);
-#elif defined(IF_XMMM)
-extern void DestroyWhenIdle(Widget widget);
-extern void DestroyWhenIdle1(GUI::Widget *widget);
-#else
-extern void DestroyWhenIdle(Gtk::Widget *widget);
-extern void DestroyWhenIdle1(GUI::Widget *widget);
-#endif
 
 // Destroy the surrounding shell
-extern void DestroyShellCB(CB_ARG_LIST_1());
+extern void DestroyShellCB(Widget, XtPointer, XtPointer);
+
+#else
+
+extern void DestroyWhenIdle(GUI::Widget *widget);
+
+// Destroy the surrounding shell
+extern void DestroyShellCB(GUI::Widget *);
+
+#endif
+
+#if defined(IF_XM)
 
 // Destroy specific widget
-#if defined(IF_MOTIF)
 extern void DestroyThisCB(Widget, XtPointer, XtPointer);
-#else
-extern void DestroyThisCB(Gtk::Widget *);
-#endif
-#if !defined(IF_XM)
-extern void DestroyThisCB1(GUI::Widget *);
-#endif
 
 // Unmanage the surrounding shell
-extern void UnmanageShellCB(CB_ARG_LIST_1());
+extern void UnmanageShellCB(Widget, XtPointer, XtPointer);
 
-// Unmanage specific widget
-#if defined(IF_MOTIF)
-extern void UnmanageThisCB1(Widget, XtPointer client_data, XtPointer); // FIXME compat
+#else
+
+// Destroy specific widget
+extern void DestroyThisCB(GUI::Widget *);
+
+// Unmanage the surrounding shell
+extern void UnmanageShellCB(GUI::Widget *);
+
 #endif
 
-#if !defined(IF_XM)
+// Unmanage specific widget
+#if defined(IF_XM)
+
+extern void UnmanageThisCB(Widget, XtPointer client_data, XtPointer);
+
+#else
+
 extern void UnmanageThisCB(GUI::Widget *);
-extern void UnmanageThisCB2(Widget); // FIXME compat
+
 #endif
 
 #endif

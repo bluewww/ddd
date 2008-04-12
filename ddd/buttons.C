@@ -1522,35 +1522,35 @@ void set_buttons(Widget buttons, const _XtString _button_list, bool manage)
 	    callback = PTR_FUN(YnButtonCB);
 	}
 	else if (name == "Prev")
-	    callback = CB_ARG_HIDE_1(PTR_FUN(gdbPrevCB));
+	    callback = gdbPrevCB;
 	else if (name == "Next")
-	    callback = CB_ARG_HIDE_1(PTR_FUN(gdbNextCB));
+	    callback = gdbNextCB;
 	else if (name == "Clear")
-	    callback = CB_ARG_HIDE_01(PTR_FUN(gdbClearCB));
+	    callback = gdbClearCB;
 	else if (name == "Complete")
-	    callback = CB_ARG_HIDE_1(PTR_FUN(gdbCompleteCB));
+	    callback = gdbCompleteCB;
 	else if (name == "Apply")
-	    callback = CB_ARG_HIDE_1(PTR_FUN(gdbApplyCB));
+	    callback = gdbApplyCB;
 	else if (name == "Make")
-	    callback = CB_ARG_HIDE_1(PTR_FUN(gdbMakeAgainCB));
+	    callback = gdbMakeAgainCB;
 	else if (name == "Undo" || name == "Back")
 	{
-	    callback = CB_ARG_HIDE_01(PTR_FUN(gdbUndoCB));
+	    callback = gdbUndoCB;
 	    register_button(undo_buttons, button);
 	}
 	else if (name == "Redo" || name == "Forward")
 	{
-	    callback = CB_ARG_HIDE_01(PTR_FUN(gdbRedoCB));
+	    callback = gdbRedoCB;
 	    register_button(redo_buttons, button);
 	}
 	else if (name == "Edit")
 	{
-	    callback = CB_ARG_HIDE_1(PTR_FUN(gdbEditSourceCB));
+	    callback = gdbEditSourceCB;
 	    register_button(edit_buttons, button);
 	}
 	else if (name == "Reload")
 	{
-	    callback = CB_ARG_HIDE_01(PTR_FUN(gdbReloadSourceCB));
+	    callback = gdbReloadSourceCB;
 	    register_button(edit_buttons, button);
 	}
 
@@ -1888,7 +1888,7 @@ struct ChangeTextInfo {
 static ChangeTextInfo *active_info = 0;
 
 #if defined(IF_XM)
-static void SetTextCB(CB_ARG_LIST_NULL)
+static void SetTextCB(Widget, XtPointer, XtPointer)
 {
     if (active_info == 0)
 	return;
@@ -2019,7 +2019,7 @@ static void create_buttons_dialog(Widget parent)
 
     XtAddCallback(buttons_dialog, XmNokCallback,     SetTextCB, 0);
     XtAddCallback(buttons_dialog, XmNokCallback,     
-		  UnmanageThisCB1, buttons_dialog);
+		  UnmanageThisCB, buttons_dialog);
     XtAddCallback(buttons_dialog, XmNapplyCallback,  SetTextCB, 0);
     XtAddCallback(buttons_dialog, XmNcancelCallback, ResetTextCB, 0);
 

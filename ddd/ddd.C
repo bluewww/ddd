@@ -402,6 +402,7 @@ static void gdbSelectAllCB       (Widget, XtPointer, XtPointer);
 static void gdbPasteClipboardCB  (Widget, XtPointer, XtPointer);
 static void gdbDeleteSelectionCB (Widget, XtPointer, XtPointer);
 static void gdbClearAllCB        (Widget, XtPointer, XtPointer);
+static void gdbUnselectAllCB     (Widget, XtPointer, XtPointer);
 #else
 static void gdbCutSelectionCB    (GUI::Widget *, DDDWindow);
 static void gdbCopySelectionCB   (GUI::Widget *, DDDWindow);
@@ -409,8 +410,8 @@ static void gdbSelectAllCB       (GUI::Widget *, DDDWindow);
 static void gdbPasteClipboardCB  (GUI::Widget *, DDDWindow);
 static void gdbDeleteSelectionCB (GUI::Widget *, DDDWindow);
 static void gdbClearAllCB        (void);
+static void gdbUnselectAllCB     (void);
 #endif
-static void gdbUnselectAllCB     (CB_ALIST_NULL);
 
 #if defined(IF_XM)
 // Update menus
@@ -1187,12 +1188,12 @@ DECL_WR(gdbMakeAgainCB);
 
 #else
 
-DECL_WR(WR_gdbOpenClassCB, gdbOpenClassCB);
+DECL_WR2(WR_gdbOpenClassCB, sigc::ptr_fun(gdbOpenClassCB));
 DECL_WR2(WR_gdbOpenFileCB, sigc::ptr_fun(gdbOpenFileCB));
 DECL_WR2(WR_gdbOpenCoreCB, sigc::ptr_fun(gdbOpenCoreCB));
 DECL_WR2(WR_OpenSessionCB, sigc::ptr_fun(OpenSessionCB));
 DECL_WR2(WR_SaveSessionAsCB, sigc::ptr_fun(SaveSessionAsCB));
-DECL_WR(WR_gdbOpenProcessCB, gdbOpenProcessCB);
+DECL_WR2(WR_gdbOpenProcessCB, sigc::ptr_fun(gdbOpenProcessCB));
 DECL_WR2(WR_gdbChangeDirectoryCB, sigc::ptr_fun(gdbChangeDirectoryCB));
 DECL_WR2(WR_gdbMakeCB, sigc::ptr_fun(gdbMakeCB));
 DECL_WR2(WR_gdbMakeAgainCB, sigc::ptr_fun(gdbMakeAgainCB));
@@ -4489,28 +4490,30 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     if (app_data.annotate)
 	app_data.tty_mode = True;
 
+#if defined(IF_XM)
+
     // Close windows explicitly requested
     if (!app_data.separate_data_window && 
 	!app_data.data_window && !app_data.annotate)
     {
 	// We don't want the data window.
-	gdbCloseDataWindowCB(CB_ARGS_1(gdb_w));
+	gdbCloseDataWindowCB(gdb_w, 0, 0);
     }
 
     if (!app_data.separate_source_window && 
 	(!app_data.source_window || app_data.annotate))
     {
 	// We don't need the source window, since we're invoked by Emacs.
-	gdbCloseSourceWindowCB(CB_ARGS_1(gdb_w));
+	gdbCloseSourceWindowCB(gdb_w, 0, 0);
 
 	if (!app_data.disassemble)
-	    gdbCloseToolWindowCB(CB_ARGS_NULL);
+	    gdbCloseToolWindowCB(gdb_w, 0, 0);
     }
 
     if (!app_data.disassemble)
     {
 	// We don't disassemble.
-	gdbCloseCodeWindowCB(CB_ARGS_1(gdb_w));
+	gdbCloseCodeWindowCB(gdb_w, 0, 0);
     }
 
     if ((!app_data.separate_source_window && have_source_window() || 
@@ -4518,8 +4521,44 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	(!app_data.debugger_console || app_data.tty_mode))
     {
 	// We don't need the debugger console, since we have a TTY.
-	gdbCloseCommandWindowCB(CB_ARGS_1(gdb_w));
+	gdbCloseCommandWindowCB(gdb_w, 0, 0);
     }
+
+#else
+
+    // Close windows explicitly requested
+    if (!app_data.separate_data_window && 
+	!app_data.data_window && !app_data.annotate)
+    {
+	// We don't want the data window.
+	gdbCloseDataWindowCB(gdb_w);
+    }
+
+    if (!app_data.separate_source_window && 
+	(!app_data.source_window || app_data.annotate))
+    {
+	// We don't need the source window, since we're invoked by Emacs.
+	gdbCloseSourceWindowCB(gdb_w);
+
+	if (!app_data.disassemble)
+	    gdbCloseToolWindowCB();
+    }
+
+    if (!app_data.disassemble)
+    {
+	// We don't disassemble.
+	gdbCloseCodeWindowCB(gdb_w);
+    }
+
+    if ((!app_data.separate_source_window && have_source_window() || 
+	 !app_data.separate_data_window && have_data_window()) &&
+	(!app_data.debugger_console || app_data.tty_mode))
+    {
+	// We don't need the debugger console, since we have a TTY.
+	gdbCloseCommandWindowCB(gdb_w);
+    }
+
+#endif
 
     if (data_disp_shell != 0)
     {
@@ -5363,10 +5402,21 @@ static bool continue_despite_lock = false;
 static int lock_dialog_x = -1;
 static int lock_dialog_y = -1;
 
-static void ContinueDespiteLockCB(CB_ALIST_NULL)
+#if defined(IF_XM)
+
+static void ContinueDespiteLockCB(Widget, XtPointer, XtPointer)
 {
     continue_despite_lock = true;
 }
+
+#else
+
+static void ContinueDespiteLockCB(void)
+{
+    continue_despite_lock = true;
+}
+
+#endif
 
 #if defined(IF_XM)
 
@@ -5695,14 +5745,26 @@ Boolean ddd_setup_done(XtPointer)
 	    app_data.annotate && running_shells() == 1)
 	{
 	    // We have no shell (yet).  Be sure to popup at least one shell.
+
+#if defined(IF_XM)
 	    if (app_data.annotate)
-		gdbOpenDataWindowCB(CB_ARGS_NULL);
+		gdbOpenDataWindowCB(gdb_w, 0, 0);
 	    else if (app_data.source_window)
-		gdbOpenSourceWindowCB(CB_ARGS_NULL);
+		gdbOpenSourceWindowCB(gdb_w, 0, 0);
 	    else if (app_data.data_window)
-		gdbOpenDataWindowCB(CB_ARGS_NULL);
+		gdbOpenDataWindowCB(gdb_w, 0, 0);
 	    else
-		gdbOpenCommandWindowCB(CB_ARGS_NULL);
+		gdbOpenCommandWindowCB(gdb_w, 0, 0);
+#else
+	    if (app_data.annotate)
+		gdbOpenDataWindowCB();
+	    else if (app_data.source_window)
+		gdbOpenSourceWindowCB();
+	    else if (app_data.data_window)
+		gdbOpenDataWindowCB();
+	    else
+		gdbOpenCommandWindowCB();
+#endif
 	}
 
 	main_loop_entered = true;
@@ -6163,14 +6225,14 @@ void update_options(bool noupd)
     {
 	if (app_data.source_window)
 	    XtManageChild(command_toolbar_w);
-	gdbCloseToolWindowCB(CB_ARGS_NULL);
+	gdbCloseToolWindowCB(command_shell, 0, 0);
     }
     else if (!app_data.command_toolbar && 
 	     command_toolbar_w != 0 && XtIsManaged(command_toolbar_w))
     {
 	XtUnmanageChild(command_toolbar_w);
 	if (app_data.source_window)
-	    gdbOpenToolWindowCB(CB_ARGS_NULL);
+	    gdbOpenToolWindowCB(command_shell, 0, 0);
     }
 
     EnableButtonTips(app_data.button_tips);
@@ -6505,20 +6567,37 @@ static void real_update_options(bool noupd)
 	break;
     }
 
+#if defined(IF_XM)
     if (app_data.command_toolbar && 
 	command_toolbar_w != 0 && !XtIsManaged(command_toolbar_w))
     {
 	if (app_data.source_window)
 	    XtManageChild(command_toolbar_w);
-	gdbCloseToolWindowCB(CB_ARGS_NULL);
+	gdbCloseToolWindowCB(command_shell, 0, 0);
     }
     else if (!app_data.command_toolbar && 
 	     command_toolbar_w != 0 && XtIsManaged(command_toolbar_w))
     {
 	XtUnmanageChild(command_toolbar_w);
 	if (app_data.source_window)
-	    gdbOpenToolWindowCB(CB_ARGS_NULL);
+	    gdbOpenToolWindowCB(command_shell, 0, 0);
     }
+#else
+    if (app_data.command_toolbar && 
+	command_toolbar_w != 0 && !XtIsManaged(command_toolbar_w))
+    {
+	if (app_data.source_window)
+	    XtManageChild(command_toolbar_w);
+	gdbCloseToolWindowCB();
+    }
+    else if (!app_data.command_toolbar && 
+	     command_toolbar_w != 0 && XtIsManaged(command_toolbar_w))
+    {
+	XtUnmanageChild(command_toolbar_w);
+	if (app_data.source_window)
+	    gdbOpenToolWindowCB();
+    }
+#endif
 
 #if 0
     EnableButtonTips(app_data.button_tips);
@@ -6751,7 +6830,11 @@ void save_option_state()
     update_reset_preferences();
 }
 
-static void ResetGeneralPreferencesCB(CB_ALIST_NULL)
+#if defined(IF_XM)
+static void ResetGeneralPreferencesCB(Widget, XtPointer, XtPointer)
+#else
+static void ResetGeneralPreferencesCB(void)
+#endif
 {
     notify_set_toggle(button_tips_w, initial_app_data.button_tips);
     notify_set_toggle(button_docs_w, initial_app_data.button_docs);
@@ -6813,7 +6896,11 @@ static bool general_preferences_changed()
     return false;
 }
 
-static void ResetSourcePreferencesCB(CB_ALIST_NULL)
+#if defined(IF_XM)
+static void ResetSourcePreferencesCB(Widget, XtPointer, XtPointer)
+#else
+static void ResetSourcePreferencesCB(void)
+#endif
 {
     notify_set_toggle(set_display_glyphs_w, initial_app_data.display_glyphs);
     notify_set_toggle(set_display_glyphs_w, !initial_app_data.display_glyphs);
@@ -6894,7 +6981,9 @@ static bool source_preferences_changed()
     return false;
 }
 
-static void ResetDataPreferencesCB(CB_ALIST_NULL)
+#if defined(IF_XM)
+
+static void ResetDataPreferencesCB(Widget, XtPointer, XtPointer)
 {
     notify_set_toggle(detect_aliases_w, initial_app_data.detect_aliases);
     notify_set_toggle(graph_detect_aliases_w, initial_app_data.detect_aliases);
@@ -6914,28 +7003,18 @@ static void ResetDataPreferencesCB(CB_ALIST_NULL)
 
     Boolean show_hints, show_annotations;
 
-#if defined(IF_XM)
     XtVaGetValues(data_disp->graph_edit, 
 		  XtNshowHints,       &show_hints,
 		  XtNshowAnnotations, &show_annotations,
 		  XtNIL);
-#else
-    show_hints = data_disp->graph_edit->get_show_hints();
-    show_annotations = data_disp->graph_edit->get_show_annotations();
-#endif
 
     if (show_hints  != initial_show_hints ||
 	show_annotations != initial_show_annotations)
     {
-#if defined(IF_XM)
 	XtVaSetValues(data_disp->graph_edit,
 		      XtNshowHints,       initial_show_hints,
 		      XtNshowAnnotations, initial_show_annotations,
 		      XtNIL);
-#else
-	data_disp->graph_edit->set_show_hints(initial_show_hints);
-	data_disp->graph_edit->set_show_annotations(initial_show_annotations);
-#endif
 		      
 	update_options();
     }
@@ -6947,37 +7026,84 @@ static void ResetDataPreferencesCB(CB_ALIST_NULL)
 
     Dimension grid_width, grid_height;
     Boolean show_grid;
-#if defined(IF_XM)
     XtVaGetValues(data_disp->graph_edit, 
 		  XtNgridWidth,  &grid_width,
 		  XtNgridHeight, &grid_height,
 		  XtNshowGrid,   &show_grid,
 		  XtNIL);
-#else
-    grid_width = data_disp->graph_edit->get_grid_width();
-    grid_height = data_disp->graph_edit->get_grid_height();
-    show_grid = data_disp->graph_edit->get_show_grid();
-#endif
 
     if (grid_width  != initial_grid_width || 
 	grid_height != initial_grid_height ||
 	show_grid   != initial_show_grid)
     {
-#if defined(IF_XM)
 	XtVaSetValues(data_disp->graph_edit,
 		      XtNgridWidth,  initial_grid_width,
 		      XtNgridHeight, initial_grid_height,
 		      XtNshowGrid,   initial_show_grid,
 		      XtNIL);
-#else
-	data_disp->graph_edit->set_grid_width(initial_grid_width);
-	data_disp->graph_edit->set_grid_height(initial_grid_height);
-	data_disp->graph_edit->set_show_grid(initial_show_grid);
-#endif
 		      
 	update_options();
     }
 }
+
+#else
+
+static void ResetDataPreferencesCB(void)
+{
+    notify_set_toggle(detect_aliases_w, initial_app_data.detect_aliases);
+    notify_set_toggle(graph_detect_aliases_w, initial_app_data.detect_aliases);
+    notify_set_toggle(graph_left_to_right_w,
+		      initial_app_data.display_placement == XmHORIZONTAL);
+    notify_set_toggle(graph_top_to_bottom_w,
+		      initial_app_data.display_placement == XmVERTICAL);
+    notify_set_toggle(graph_cluster_displays_w, 
+		      initial_app_data.cluster_displays);
+    notify_set_toggle(graph_align_2d_arrays_w, 
+		      initial_app_data.align_2d_arrays);
+    notify_set_toggle(graph_show_hints_w, initial_show_hints);
+    notify_set_toggle(graph_show_dependent_titles_w, 
+		      initial_app_data.show_dependent_display_titles);
+    notify_set_toggle(graph_auto_close_w,
+		      initial_app_data.auto_close_data_window);
+
+    Boolean show_hints, show_annotations;
+
+    show_hints = data_disp->graph_edit->get_show_hints();
+    show_annotations = data_disp->graph_edit->get_show_annotations();
+
+    if (show_hints  != initial_show_hints ||
+	show_annotations != initial_show_annotations)
+    {
+	data_disp->graph_edit->set_show_hints(initial_show_hints);
+	data_disp->graph_edit->set_show_annotations(initial_show_annotations);
+		      
+	update_options();
+    }
+
+    notify_set_toggle(graph_compact_layout_w, 
+	       initial_layout_mode == CompactLayoutMode);
+    notify_set_toggle(graph_auto_layout_w, initial_auto_layout);
+    notify_set_toggle(graph_snap_to_grid_w, initial_snap_to_grid);
+
+    Dimension grid_width, grid_height;
+    Boolean show_grid;
+    grid_width = data_disp->graph_edit->get_grid_width();
+    grid_height = data_disp->graph_edit->get_grid_height();
+    show_grid = data_disp->graph_edit->get_show_grid();
+
+    if (grid_width  != initial_grid_width || 
+	grid_height != initial_grid_height ||
+	show_grid   != initial_show_grid)
+    {
+	data_disp->graph_edit->set_grid_width(initial_grid_width);
+	data_disp->graph_edit->set_grid_height(initial_grid_height);
+	data_disp->graph_edit->set_show_grid(initial_show_grid);
+		      
+	update_options();
+    }
+}
+
+#endif
 
 static bool data_preferences_changed()
 {
@@ -7060,7 +7186,11 @@ static bool data_preferences_changed()
     return false;
 }
 
-static void ResetStartupPreferencesCB(CB_ALIST_NULL)
+#if defined(IF_XM)
+static void ResetStartupPreferencesCB(Widget, XtPointer, XtPointer)
+#else
+static void ResetStartupPreferencesCB(void)
+#endif
 {
     Boolean separate = initial_app_data.separate_data_window 
 	|| initial_app_data.separate_source_window;
@@ -7075,7 +7205,7 @@ static void ResetStartupPreferencesCB(CB_ALIST_NULL)
 
     string button_color_key        = initial_app_data.button_color_key;
     string active_button_color_key = initial_app_data.active_button_color_key;
-#if XmVersion < 2000 || !defined(IF_MOTIF)
+#if XmVersion < 2000 || !defined(IF_XM)
 #ifdef NAG_ME
 #warning  XmINDETERMINATE has no analogue?
 #endif
@@ -7205,18 +7335,14 @@ static bool startup_preferences_changed()
     return false;
 }
 
-static void ResetFontPreferencesCB(CB_ALIST_NULL)
-{
 #if defined(IF_XM)
+
+static void ResetFontPreferencesCB(Widget, XtPointer, XtPointer)
+{
     set_font(DefaultDDDFont,       initial_app_data.default_font);
     set_font(VariableWidthDDDFont, initial_app_data.variable_width_font);
     set_font(FixedWidthDDDFont,    initial_app_data.fixed_width_font);
     set_font(DataDDDFont,          initial_app_data.data_font);
-#else
-#ifdef NAG_ME
-#warning Font configuration
-#endif
-#endif
 
     app_data.default_font_size = 
 	initial_app_data.default_font_size;
@@ -7230,6 +7356,25 @@ static void ResetFontPreferencesCB(CB_ALIST_NULL)
     update_options();
 }
 
+#else
+
+static void ResetFontPreferencesCB(void)
+{
+    std::cerr << "Font configuration: not implemented yet\n";
+
+    app_data.default_font_size = 
+	initial_app_data.default_font_size;
+    app_data.variable_width_font_size = 
+	initial_app_data.variable_width_font_size;
+    app_data.fixed_width_font_size = 
+	initial_app_data.fixed_width_font_size;
+    app_data.data_font_size = 
+	initial_app_data.data_font_size;
+
+    update_options();
+}
+
+#endif
 
 static bool font_preferences_changed()
 {
@@ -7266,7 +7411,11 @@ static bool font_preferences_changed()
     return false;
 }
 
-static void ResetHelpersPreferencesCB(CB_ALIST_NULL)
+#if defined(IF_XM)
+static void ResetHelpersPreferencesCB(Widget, XtPointer, XtPointer)
+#else
+static void ResetHelpersPreferencesCB(void)
+#endif
 {
     set_string(edit_command_w,       initial_app_data.edit_command);
     set_string(get_core_command_w,   initial_app_data.get_core_command);
@@ -7313,48 +7462,53 @@ static bool helpers_preferences_changed()
 }
 
 #if defined(IF_XM)
-static void ResetPreferencesCB(CB_ARG_LIST_2(client_data))
+
+static void ResetPreferencesCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     Widget panel = (Widget)client_data;
     WidgetNameType panel_name = XtName(panel);
 
     if (panel_name == "general")
-	ResetGeneralPreferencesCB(CB_ARGS_NULL);
+	ResetGeneralPreferencesCB(w, client_data, call_data);
     else if (panel_name == "source")
-	ResetSourcePreferencesCB(CB_ARGS_NULL);
+	ResetSourcePreferencesCB(w, client_data, call_data);
     else if (panel_name == "data")
-	ResetDataPreferencesCB(CB_ARGS_NULL);
+	ResetDataPreferencesCB(w, client_data, call_data);
     else if (panel_name == "startup")
-	ResetStartupPreferencesCB(CB_ARGS_NULL);
+	ResetStartupPreferencesCB(w, client_data, call_data);
     else if (panel_name == "fonts")
-	ResetFontPreferencesCB(CB_ARGS_NULL);
+	ResetFontPreferencesCB(w, client_data, call_data);
     else if (panel_name == "helpers")
-	ResetHelpersPreferencesCB(CB_ARGS_NULL);
+	ResetHelpersPreferencesCB(w, client_data, call_data);
 }
+
 #else
+
 static void ResetPreferencesCB(GUI::Notebook *nb)
 {
-    std::cerr << "RESET PREFERENCES " << nb << "\n";
+    std::cerr << "*** Resetting preferences... " << nb << " ***\n";
     GUI::Widget *panel = nb->get_current_child();
     if (!panel) {
 	std::cerr << "Notebook child is not a GUI widget!\n";
 	return;
     }
     GUI::String panel_name = panel->get_name();
-    // FIXME: At present, name == label.
     if (panel_name == GUI::String("General"))
-	ResetGeneralPreferencesCB(CB_ARGS_NULL);
+	ResetGeneralPreferencesCB();
     else if (panel_name == GUI::String("Source"))
-	ResetSourcePreferencesCB(CB_ARGS_NULL);
+	ResetSourcePreferencesCB();
     else if (panel_name == GUI::String("Data"))
-	ResetDataPreferencesCB(CB_ARGS_NULL);
+	ResetDataPreferencesCB();
     else if (panel_name == GUI::String("Startup"))
-	ResetStartupPreferencesCB(CB_ARGS_NULL);
+	ResetStartupPreferencesCB();
     else if (panel_name == GUI::String("Fonts"))
-	ResetFontPreferencesCB(CB_ARGS_NULL);
+	ResetFontPreferencesCB();
     else if (panel_name == GUI::String("Helpers"))
-	ResetHelpersPreferencesCB(CB_ARGS_NULL);
+	ResetHelpersPreferencesCB();
+    else
+	std::cerr << "\007Error: panel_name not recognized\n";
 }
+
 #endif
 
 void update_reset_preferences()
@@ -9229,7 +9383,9 @@ void gdb_out(const string& text)
 // Cut/Copy/Paste
 //-----------------------------------------------------------------------------
 
-static DDDWindow ddd_window(XtP(DDDWindow) client_data)
+#if defined(IF_XM)
+
+static DDDWindow ddd_window(XtPointer client_data)
 {
     if (source_view_shell == 0 && data_disp_shell == 0)
 	return CommonWindow;
@@ -9237,14 +9393,30 @@ static DDDWindow ddd_window(XtP(DDDWindow) client_data)
 	return DDDWindow(long(client_data));
 }
 
+#else
+
+static DDDWindow ddd_window(DDDWindow win)
+{
+    if (source_view_shell == 0 && data_disp_shell == 0)
+	return CommonWindow;
+    else
+	return win;
+}
+
+#endif
+
 #if defined(IF_XM)
 
-static void gdbCutSelectionCB(Widget w, XtPointer client_data, XtPointer)
+static void gdbCutSelectionCB(Widget w, XtPointer client_data, 
+			      XtPointer call_data)
 {
-    Time tm = time(XtLastEventProcessed(XtDisplay(w)));
+    XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
+    Time tm = time(cbs->event);
 
     DDDWindow win = ddd_window(client_data);
     Boolean success = False;
+    Widget dest = XmGetDestination(XtDisplay(w));
+
     // Try data arg
     if (!success && (win == DataWindow || win == CommonWindow))
     {
@@ -9252,37 +9424,37 @@ static void gdbCutSelectionCB(Widget w, XtPointer client_data, XtPointer)
 	{
 	    success = XmTextCopy(DataDisp::graph_selection_w, tm);
 	    if (success)
-		DataDisp::deleteCB(CB_ARGS_1(w));
+		DataDisp::deleteCB(w, client_data, call_data);
 	}
     }
 
     // Try destination window
-    Widget dest = XmGetDestination(XtDisplay(w));
     if (!success && dest != 0 && XmIsText(dest))
 	success = XmTextCut(dest, tm);
     if (!success && dest != 0 && XmIsTextField(dest))
 	success = XmTextFieldCut(dest, tm);
 
     // Try debugger console
-    if (!success && (win == GDBWindow || win == CommonWindow)) {
+    if (!success && (win == GDBWindow || win == CommonWindow))
 	success = XmTextCut(gdb_w, tm);
-    }
 
     // Try source arg
-    if (!success && (win == SourceWindow || win == CommonWindow)) {
+    if (!success && (win == SourceWindow || win == CommonWindow))
 	success = XmTextFieldCut(source_arg->text(), tm);
-    }
 
     if (success)
-	gdbUnselectAllCB(Widget(0), XtPointer(0), XtPointer(0));
+	gdbUnselectAllCB(w, client_data, call_data);
 }
 
-static void gdbCopySelectionCB(Widget w, XtPointer client_data, XtPointer)
+static void gdbCopySelectionCB(Widget w, XtPointer client_data, 
+			       XtPointer call_data)
 {
-    Time tm = time(XtLastEventProcessed(XtDisplay(w)));
+    XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
+    Time tm = time(cbs->event);
     
     DDDWindow win = ddd_window(client_data);
     Boolean success = False;
+    Widget dest = XmGetDestination(XtDisplay(w));
 
     // Try data arg
     if (!success && (win == DataWindow || win == CommonWindow))
@@ -9292,31 +9464,26 @@ static void gdbCopySelectionCB(Widget w, XtPointer client_data, XtPointer)
 	}
 
     // Try destination window
-    Widget dest = XmGetDestination(XtDisplay(w));
     if (!success && dest != 0 && XmIsText(dest))
 	success = XmTextCopy(dest, tm);
     if (!success && dest != 0 && XmIsTextField(dest))
 	success = XmTextFieldCopy(dest, tm);
 
     // Try debugger console
-    if (!success && (win == GDBWindow || win == CommonWindow)) {
+    if (!success && (win == GDBWindow || win == CommonWindow))
 	success = XmTextCopy(gdb_w, tm);
-    }
 
     // Try source arg
-    if (!success && (win == SourceWindow || win == CommonWindow)) {
+    if (!success && (win == SourceWindow || win == CommonWindow))
 	success = XmTextFieldCopy(source_arg->text(), tm);
-    }
 
     // Try source
-    if (!success && (win == SourceWindow || win == CommonWindow)) {
+    if (!success && (win == SourceWindow || win == CommonWindow))
 	success = XmTextCopy(source_view->source(), tm);
-    }
 
     // Try code
-    if (!success && (win == SourceWindow || win == CommonWindow)) {
+    if (!success && (win == SourceWindow || win == CommonWindow))
 	success = XmTextCopy(source_view->code(), tm);
-    }
 }
 
 static void gdbPasteClipboardCB(Widget w, XtPointer client_data, XtPointer)
@@ -9380,7 +9547,7 @@ static void gdbCutSelectionCB(GUI::Widget *w, DDDWindow client_data)
 	    std::cerr << "Copy from graph_selection_w not implemented\n";
 	    // success = text_copy_from(DataDisp::graph_selection_w);
 	    if (success)
-		DataDisp::deleteCB(CB_ARGS_1(w));
+		DataDisp::deleteCB(w);
 	}
     }
 
@@ -9452,13 +9619,13 @@ static void gdbPasteClipboardCB(GUI::Widget *w, DDDWindow client_data)
 #endif
 
 
-static void gdbUnselectAllCB(CB_ALIST_NULL)
-{
 #if defined(IF_XM)
-#ifdef NAG_ME
-#warning FIXME: No timestamp.
-#endif
-    Time tm = Time(0);
+
+static void gdbUnselectAllCB(Widget w, XtPointer client_data,
+			     XtPointer call_data)
+{
+    XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
+    Time tm = time(cbs->event);
 
     XmTextClearSelection(gdb_w, tm);
     XmTextFieldClearSelection(source_arg->text(), tm);
@@ -9470,13 +9637,17 @@ static void gdbUnselectAllCB(CB_ALIST_NULL)
     if (data_disp->graph_selection_w != 0)
 	XmTextClearSelection(data_disp->graph_selection_w, tm);
 
-    DataDisp::unselectAllCB(CB_ARGS_NULL);
-#else
-#ifdef NAG_ME
-#warning gdbUnselectAllCB not implemented
-#endif
-#endif
+    DataDisp::unselectAllCB(w, client_data, call_data);
 }
+
+#else
+
+static void gdbUnselectAllCB(void)
+{
+    std::cerr << "gdbUnselectAllCB not implemented yet\n";
+}
+
+#endif
 
 #if defined(IF_XM)
 
@@ -9487,7 +9658,7 @@ static void gdbClearAllCB(Widget, XtPointer, XtPointer)
     gdbClearCB(Widget(0), XtPointer(0), XtPointer(0));
 }
 
-static void gdbSelectAllCB(Widget w, XtPointer client_data, XtPointer)
+static void gdbSelectAllCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     DDDWindow win = ddd_window(client_data);
 
@@ -9499,7 +9670,7 @@ static void gdbSelectAllCB(Widget w, XtPointer client_data, XtPointer)
     {
 	if (!success && dest == DataDisp::graph_selection_w)
 	{
-	    DataDisp::selectAllCB(CB_ARGS_NULL);
+	    DataDisp::selectAllCB(w, client_data, call_data);
 	    success = true;
 	}
 	if (!success && XmIsText(dest))
@@ -9528,7 +9699,7 @@ static void gdbSelectAllCB(Widget w, XtPointer client_data, XtPointer)
     }
 
     case DataWindow:
-	DataDisp::selectAllCB(CB_ARGS_NULL);
+	DataDisp::selectAllCB(w, client_data, call_data);
 	break;
 
     case GDBWindow:
@@ -9567,7 +9738,8 @@ static void gdbSelectAllCB(GUI::Widget *w, DDDWindow client_data)
 
 #if defined(IF_XM)
 
-static void gdbDeleteSelectionCB(Widget w, XtPointer client_data, XtPointer)
+static void gdbDeleteSelectionCB(Widget w, XtPointer client_data,
+				 XtPointer call_data)
 {
     DDDWindow win = ddd_window(client_data);
     Boolean success = False;
@@ -9578,7 +9750,7 @@ static void gdbDeleteSelectionCB(Widget w, XtPointer client_data, XtPointer)
     {
 	if (data_disp->have_selection())
 	{
-	    DataDisp::deleteCB(CB_ARGS_NULL);
+	    DataDisp::deleteCB(w, client_data, call_data);
 	    success = true;
 	}
     }
@@ -9602,13 +9774,13 @@ static void gdbDeleteSelectionCB(Widget w, XtPointer client_data, XtPointer)
     {
 	if (data_disp->have_selection())
 	{
-	    DataDisp::deleteCB(CB_ARGS_NULL);
+	    DataDisp::deleteCB(w, client_data, call_data);
 	    success = true;
 	}
     }
 
     if (success)
-	gdbUnselectAllCB(CB_ARGS_NULL);
+	gdbUnselectAllCB(w, client_data, call_data);
 }
 
 #else
@@ -10178,11 +10350,17 @@ void update_edit_menus()
     if (gdb_w == 0)
 	return;
 
+#if defined(IF_XM)
     XtPointer call_data = 0;
 
-    gdbUpdateEditCB(CB_ARGS_12(gdb_w, GDBWindow));
-    gdbUpdateEditCB(CB_ARGS_12(gdb_w, SourceWindow));
-    gdbUpdateEditCB(CB_ARGS_12(gdb_w, DataWindow));
+    gdbUpdateEditCB(gdb_w, XtPointer(GDBWindow),    call_data);
+    gdbUpdateEditCB(gdb_w, XtPointer(SourceWindow), call_data);
+    gdbUpdateEditCB(gdb_w, XtPointer(DataWindow),   call_data);
+#else
+    gdbUpdateEditCB(gdb_w, GDBWindow);
+    gdbUpdateEditCB(gdb_w, SourceWindow);
+    gdbUpdateEditCB(gdb_w, DataWindow);
+#endif
 }
 
 #if defined(IF_XM)

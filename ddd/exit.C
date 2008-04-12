@@ -79,9 +79,9 @@ char exit_rcsid[] =
 #include "charsets.h"
 #include "Command.h"
 #include "cmdtty.h"
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 #include "converters.h"
-#endif // IF_MOTIF
+#endif
 #include "ddd.h"
 #include "exectty.h"
 #include "findParent.h"
@@ -114,12 +114,12 @@ char exit_rcsid[] =
 #include <stdlib.h>
 #include <stdio.h>
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 #include <Xm/Xm.h>
 #include <Xm/MessageB.h>
 #include <Xm/PushB.h>
 #include <Xm/Text.h>
-#endif // IF_MOTIF
+#endif
 
 #if HAVE_RAISE
 #if !HAVE_RAISE_DECL
@@ -176,23 +176,23 @@ void ddd_cleanup()
         save_options(SAVE_DEFAULT);
     }
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     if (!ddd_is_restarting)
     {
         // Delete restart session, if any
         delete_session(restart_session(), true);
         set_restart_session();
     }
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     if (!ddd_is_shutting_down)
     {
       // If current session is temporary, delete it
       if (is_temporary_session(app_data.session))
 	  delete_session(app_data.session);
     }
-#endif // IF_MOTIF
+#endif
 
     kill_exec_tty();
     kill_command_tty();
@@ -660,7 +660,9 @@ static bool ddd_dump_core(int sig...)
     return false;
 }
 
-void DDDDumpCoreCB(CB_ALIST_NULL)
+#if defined(IF_XM)
+
+void DDDDumpCoreCB(Widget, XtPointer, XtPointer)
 {
     StatusDelay delay("Dumping core");
 
@@ -678,11 +680,33 @@ void DDDDumpCoreCB(CB_ALIST_NULL)
 	delay.outcome = "failed";
 }
 
+#else
+
+void DDDDumpCoreCB(void)
+{
+    StatusDelay delay("Dumping core");
+
+#if defined(SIGABRT)
+    if (ddd_dump_core(SIGABRT))
+	exit(EXIT_FAILURE);
+#elif defined(SIGIOT)
+    if (ddd_dump_core(SIGIOT))
+	exit(EXIT_FAILURE);
+#else
+    abort();
+#endif
+
+    if (!is_core_file("core"))
+	delay.outcome = "failed";
+}
+
+#endif
+
 //-----------------------------------------------------------------------------
 // X I/O error
 //-----------------------------------------------------------------------------
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 extern "C" {
     static int (*old_x_fatal_handler)(Display *display) = 0;
 }
@@ -714,9 +738,9 @@ void ddd_install_x_fatal()
 #ifdef NAG_ME
 #warning X Error handlers?
 #endif
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 //-----------------------------------------------------------------------------
 // Xt and Motif errors
 //-----------------------------------------------------------------------------
@@ -780,13 +804,13 @@ void ddd_install_xt_error(XtAppContext app_context)
     (void) XtAppSetErrorHandler(app_context, ddd_xt_error);
     xt_error_app_context = app_context;
 }
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Xt/Motif errors?
 #endif
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 //-----------------------------------------------------------------------------
 // Other X errors
 //-----------------------------------------------------------------------------
@@ -983,11 +1007,11 @@ void ddd_install_x_error()
 {
     old_x_error_handler = XSetErrorHandler(ddd_x_error);
 }
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Other error handlers
 #endif
-#endif // IF_MOTIF
+#endif
 
 
 //-----------------------------------------------------------------------------
@@ -1013,15 +1037,15 @@ void gdb_eofHP(Agent *agent, void *, void *)
 
 static XtIntervalId post_exception_timer = NO_TIMER;
 static void PostExceptionCB(
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 			    XtPointer, XtIntervalId *id
-#endif // IF_MOTIF
+#endif
 			    )
 {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     assert (*id == post_exception_timer);
     (void) id;			// Use it
-#endif // IF_MOTIF
+#endif
     post_exception_timer = NO_TIMER;
 
     post_gdb_died(gdb->title() + ": internal exception", -1);
@@ -1053,30 +1077,31 @@ void gdb_exceptionHP(Agent *agent, void *, void *call_data)
 #endif
 
 	// Wait 5 seconds before offering a restart
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	post_exception_timer = 
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 5000,
 			    PostExceptionCB, 0);
-#else // NOT IF_MOTIF
+#else
 	post_exception_timer = 
 	    Glib::signal_timeout().connect(sigc::bind_return(PTR_FUN(PostExceptionCB), false), 5000);
-#endif // IF_MOTIF
+#endif
     }
     else
     {
 	// Left exception state (i.e. prompt appeared)
 
 	if (post_exception_timer) {
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 	    XtRemoveTimeOut(post_exception_timer);
-#else // NOT IF_MOTIF
+#else
 	    post_exception_timer.disconnect();
-#endif // IF_MOTIF
+#endif
 	}
 	post_exception_timer = NO_TIMER;
     }
 }
 
+#if defined(IF_XM)
 
 // GDB died
 void gdb_diedHP(Agent *gdb, void *, void *call_data)
@@ -1094,46 +1119,84 @@ void gdb_diedHP(Agent *gdb, void *, void *call_data)
 	if (!tty_running())
 	{
 	    // Forward diagnostics from debugger console to stderr
-#ifdef IF_MOTIF
 	    String s = XmTextGetString(gdb_w);
 	    string message = s + messagePosition;
 	    XtFree(s);
-#else // NOT IF_MOTIF
-	    Glib::ustring ustr = gdb_w->get_text(messagePosition, -1);
-	    string message(ustr.c_str());
-#endif // IF_MOTIF
 	    std::cerr << message;
 	}
 
-	_DDDExitCB(CB_ARGS_2(EXIT_FAILURE));
+	_DDDExitCB(gdb_w, XtPointer(EXIT_FAILURE), XtPointer(0));
+    }
+
+    // Don't care about any exceptions seen before the exit
+    if (post_exception_timer)
+	XtRemoveTimeOut(post_exception_timer);
+    post_exception_timer = 0;
+}
+
+#else
+
+// GDB died
+void gdb_diedHP(Agent *gdb, void *, void *call_data)
+{
+    if (running_shells() > 0)
+    {
+        const char *reason = STATIC_CAST(char *,call_data);
+	post_gdb_died(reason, gdb->lastStatus());
+    }
+    else
+    {
+	// No shell open (yet).  If we get here, this is usually
+	// because we could not invoke the inferior debugger.
+	
+	if (!tty_running())
+	{
+	    // Forward diagnostics from debugger console to stderr
+	    Glib::ustring ustr = gdb_w->get_text(messagePosition, -1);
+	    string message(ustr.c_str());
+	    std::cerr << message;
+	}
+
+	_DDDExitCB(EXIT_FAILURE);
     }
 
     // Don't care about any exceptions seen before the exit
     if (post_exception_timer) {
-#ifdef IF_MOTIF
-	XtRemoveTimeOut(post_exception_timer);
-#else // NOT IF_MOTIF
 	post_exception_timer.disconnect();
-#endif // IF_MOTIF
     }
-    post_exception_timer = NO_TIMER;
 }
 
+#endif
 
 //-----------------------------------------------------------------------------
 // Controlled exiting
 //-----------------------------------------------------------------------------
 
+#if defined(IF_XM)
+
 // Exit callback
-void _DDDExitCB(CB_ALIST_2(XtP(long) status))
+void _DDDExitCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    ddd_cleanup();
+
+    XtCallbackProc closure = ddd_is_restarting ? RestartCB : ExitCB;
+    closure(w, client_data, call_data);
+}
+
+#else
+
+// Exit callback
+void _DDDExitCB(long status)
 {
     ddd_cleanup();
 
     if (ddd_is_restarting)
-	RestartCB(CB_ARGS_NULL);
+	RestartCB();
     else
-	ExitCB(CB_ARGS_2(status));
+	ExitCB(status);
 }
+
+#endif
 
 // `quit' has been canceled
 static void DDDQuitCanceledCB(const string&, void *)
@@ -1145,13 +1208,13 @@ static void DDDQuitCanceledCB(const string&, void *)
 
 // Exit/Restart after confirmation, depending on the setting of
 // DDD_IS_RESTARTING
-static void DDDDoneCB(Widget w, XtPointer client_data, XtPointer)
+static void DDDDoneCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     gdb_is_exiting = true;
 
     if (gdb == 0 || !gdb->running())
     {
-	_DDDExitCB(CB_ARGS_2(client_data));
+	_DDDExitCB(w, client_data, call_data);
 	return;
     }
 
@@ -1182,7 +1245,7 @@ static void DDDDoneCB(Widget w, XtPointer client_data, XtPointer)
 						args, arg));
     Delay::register_shell(quit_dialog);
     XtAddCallback(quit_dialog, XmNokCallback,   DDDDoneAnywayCB, client_data);
-    XtAddCallback(quit_dialog, XmNcancelCallback, UnmanageThisCB1, quit_dialog);
+    XtAddCallback(quit_dialog, XmNcancelCallback, UnmanageThisCB, quit_dialog);
     XtAddCallback(quit_dialog, XmNhelpCallback, ImmediateHelpCB, 0);
 
     manage_and_raise(quit_dialog);
@@ -1227,7 +1290,7 @@ static void DDDDoneCB(GUI::Widget *w, long status)
     button = quit_dialog->add_button("OK");
     button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(DDDDoneAnywayCB), button, status));
     button = quit_dialog->add_button("Cancel");
-    button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB2), quit_dialog));
+    button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), quit_dialog));
 
     manage_and_raise(quit_dialog);
 }
@@ -1327,7 +1390,7 @@ static void _DDDRestartCB(GUI::Widget *w, unsigned long flags)
 #if defined(IF_XM)
 
 // Restart after confirmation
-void DDDRestartCB(Widget w, XtPointer, XtPointer)
+void DDDRestartCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     unsigned long flags = 
 	SAVE_SESSION | SAVE_GEOMETRY | DONT_RELOAD_CORE | DONT_COPY_CORE;
@@ -1353,7 +1416,7 @@ void DDDRestartCB(Widget w, XtPointer, XtPointer)
 	manage_and_raise(dialog);
     }
     else
-	_DDDRestartCB(CB_ARGS_12(w, flags));
+	_DDDRestartCB(w, client_data, call_data);
 }
 
 #else
@@ -1394,9 +1457,9 @@ static void debug_ddd(bool core_dumped)
 
     string term_command = app_data.term_command;
     term_command.gsub("Execution", "Debug");
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
     term_command.gsub("@FONT@", make_font(app_data, FixedWidthDDDFont));
-#endif // IF_MOTIF
+#endif
 
     string gdb_command = string("gdb ") + saved_argv()[0] + " ";
 
@@ -1445,12 +1508,24 @@ void report_core(std::ostream& log)
     unlink(tmpfile.chars());
 }
 
+#if defined(IF_XM)
+
 // Debug DDD
-void DDDDebugCB(CB_ALIST_2(XtP(long) client_data))
+void DDDDebugCB(Widget, XtPointer client_data, XtPointer)
 {
     bool core_dumped = (int)(long)client_data;
     debug_ddd(core_dumped);
 }
+
+#else
+
+// Debug DDD
+void DDDDebugCB(bool core_dumped)
+{
+    debug_ddd(core_dumped);
+}
+
+#endif
 
 #if defined(WITH_VALGRIND)
 # include <valgrind/memcheck.h>
@@ -1475,7 +1550,18 @@ bool RunningOnValgrind()
   return RUNNING_ON_VALGRIND;
 }
 
-void dddValgrindLeakCheckCB(CB_ALIST_NULL)
+#if defined(IF_XM)
+
+void dddValgrindLeakCheckCB(Widget, XtPointer, XtPointer)
 {
   VALGRIND_DO_LEAK_CHECK
 }
+
+#else
+
+void dddValgrindLeakCheckCB(void)
+{
+  VALGRIND_DO_LEAK_CHECK
+}
+
+#endif

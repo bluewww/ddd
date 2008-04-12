@@ -40,6 +40,10 @@
 #include <X11/Intrinsic.h>
 #endif
 
+#if !defined(IF_XM)
+#include <GUI/Entry.h>
+#endif
+
 #include "gtk_wrapper.h"
 
 // Font types
@@ -67,16 +71,24 @@ extern string make_font(const AppData& ad, DDDFont base,
 extern void set_font(DDDFont n, const string& name);
 
 #if defined(IF_XM)
+
 // Browse fonts
 extern void BrowseFontCB(Widget, XtPointer, XtPointer);
-#else
-// Browse fonts
-extern void BrowseFontCB(GUI::Button *, DDDFont);
-#endif
 
 // Set font name and size
-extern void SetFontNameCB(CB_ALIST_12(ENTRY_P, XtP(DDDFont)));
-extern void SetFontSizeCB(CB_ALIST_12(ENTRY_P, XtP(DDDFont)));
+extern void SetFontNameCB(Widget, XtPointer, XtPointer);
+extern void SetFontSizeCB(Widget, XtPointer, XtPointer);
+
+#else
+
+// Browse fonts
+extern void BrowseFontCB(GUI::Button *, DDDFont);
+
+// Set font name and size
+extern void SetFontNameCB(GUI::Entry *, DDDFont);
+extern void SetFontSizeCB(GUI::Entry *, DDDFont);
+
+#endif
 
 #endif // _DDD_fonts_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

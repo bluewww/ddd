@@ -99,7 +99,11 @@ private:
 struct AsyncAgentWorkProc {
     DECLARE_TYPE_INFO
 
+#if defined(IF_XM)
     XtWorkProcId proc_id; 	        // id of running background proc
+#else
+    GUI::connection proc_id; 	        // id of running background proc
+#endif
     AsyncAgentWorkProcInfo *info;	// info
     AsyncAgentWorkProc *next;		// next one
 
@@ -180,22 +184,31 @@ private:
 #endif
 
     // X Event Handlers
-#if defined(IF_MOTIF)
-    static void somethingHappened(XtPointer client_data, int *fid,
-				  XtInputId *inputId);
-#else
-    bool somethingHappened(Glib::IOCondition cond, int type);
-#endif
     static void childStatusChange(Agent *agent, void *client_data,
 				  void *call_data);
+
+#if defined(IF_XM)
+    static void somethingHappened(XtPointer client_data, int *fid,
+				  XtInputId *inputId);
     static Boolean callTheHandlers(XtPointer client_data);
-    static TIMEOUT_RETURN_TYPE callTheHandlersIfIdle(TM_ALIST_1(XtP(AsyncAgentWorkProcInfo *)));
+    static void callTheHandlersIfIdle(XtPointer, XtIntervalId *);
 
     // Helping functions
-    
-    static TIMEOUT_RETURN_TYPE terminateProcess(TM_ALIST_1(XtP(pid_t)));
-    static TIMEOUT_RETURN_TYPE hangupProcess(TM_ALIST_1(XtP(pid_t)));
-    static TIMEOUT_RETURN_TYPE killProcess(TM_ALIST_1(XtP(pid_t)));
+
+    static void terminateProcess(XtPointer, XtIntervalId *);
+    static void hangupProcess(XtPointer, XtIntervalId *);
+    static void killProcess(XtPointer, XtIntervalId *);
+#else
+    bool somethingHappened(Glib::IOCondition cond, int type);
+    static Boolean callTheHandlers(AsyncAgentWorkProcInfo *info);
+    static bool callTheHandlersIfIdle(AsyncAgentWorkProcInfo *info);
+
+    // Helping functions
+
+    static bool terminateProcess(pid_t);
+    static bool hangupProcess(pid_t);
+    static bool killProcess(pid_t);
+#endif
 
 protected:
     // Set handler

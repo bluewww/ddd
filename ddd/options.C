@@ -1128,16 +1128,14 @@ void dddToggleCheckGrabsCB (GUI::CheckButton *w)
 
 #endif
 
-void dddToggleSaveHistoryOnExitCB (CB_ARG_LIST_TOGGLE(w, call_data))
-{
 #if defined(IF_XM)
+
+void dddToggleSaveHistoryOnExitCB (Widget, XtPointer, XtPointer call_data)
+{
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.save_history_on_exit = info->set;
-#else
-    app_data.save_history_on_exit = get_active(w);
-#endif
 
     if (app_data.save_history_on_exit)
 	set_status("History will be saved when " DDD_NAME " exits.");
@@ -1146,6 +1144,22 @@ void dddToggleSaveHistoryOnExitCB (CB_ARG_LIST_TOGGLE(w, call_data))
 
     update_options(NO_UPDATE);
 }
+
+#else
+
+void dddToggleSaveHistoryOnExitCB (GUI::CheckButton *w)
+{
+    app_data.save_history_on_exit = w->get_active();
+
+    if (app_data.save_history_on_exit)
+	set_status("History will be saved when " DDD_NAME " exits.");
+    else
+	set_status("History will not be saved.");
+
+    update_options(NO_UPDATE);
+}
+
+#endif
 
 #if defined(IF_XM)
 
@@ -2024,27 +2038,33 @@ void dddSetUndoBufferSizeCB(GUI::Entry *w)
 
 #endif
 
-void dddClearUndoBufferCB(CB_ARG_LIST_NULL)
+#if defined(IF_XM)
+
+void dddClearUndoBufferCB(Widget, XtPointer, XtPointer)
 {
     StatusDelay delay("Clearing undo buffer");
     undo_buffer.clear();
 }
 
+#else
+
+void dddClearUndoBufferCB(void)
+{
+    StatusDelay delay("Clearing undo buffer");
+    undo_buffer.clear();
+}
+
+#endif
+
 #if defined(IF_XM)
+
 static void toggle_button_appearance(Widget w, Boolean& data, 
 				     XtPointer call_data)
-#else
-static void toggle_button_appearance(GUI::CheckButton *w, Boolean& data)
-#endif
 {
-#if defined(IF_XM)
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     data = info->set;
-#else
-    data = w->get_active();
-#endif
     
     string msg = next_ddd_will_start_with;
     if (app_data.button_images && app_data.button_captions)
@@ -2067,6 +2087,36 @@ static void toggle_button_appearance(GUI::CheckButton *w, Boolean& data)
     update_options(NO_UPDATE);
     post_startup_warning(w);
 }
+
+#else
+
+static void toggle_button_appearance(GUI::CheckButton *w, Boolean& data)
+{
+    data = w->get_active();
+    
+    string msg = next_ddd_will_start_with;
+    if (app_data.button_images && app_data.button_captions)
+    {
+	msg += " captioned images";
+    }
+    else if (app_data.button_images && !app_data.button_captions)
+    {
+	msg += " images only";
+    }
+    else if (!app_data.button_images && app_data.button_captions)
+    {
+	msg += " captions only";
+    }
+    else if (!app_data.button_images && !app_data.button_captions)
+    {
+	msg += " ordinary labels";
+    }
+
+    update_options(NO_UPDATE);
+    post_startup_warning(w);
+}
+
+#endif
 
 #if defined(IF_XM)
 
@@ -2970,16 +3020,33 @@ static void reload_options()
 #endif
 }
 
-static void ReloadOptionsCB(CB_ALIST_NULL)
+#if defined(IF_XM)
+
+static void ReloadOptionsCB(Widget, XtPointer, XtPointer)
 {
     reload_options();
 }
 
-static void DontReloadOptionsCB(CB_ALIST_NULL)
+static void DontReloadOptionsCB(Widget, XtPointer, XtPointer)
 {
     // Acknowledge change
     options_file_has_changed(ACKNOWLEDGE, true);
 }
+
+#else
+
+static void ReloadOptionsCB(void)
+{
+    reload_options();
+}
+
+static void DontReloadOptionsCB(void)
+{
+    // Acknowledge change
+    options_file_has_changed(ACKNOWLEDGE, true);
+}
+
+#endif
 
 #if defined(IF_XM)
 // Pending timer
@@ -4687,7 +4754,7 @@ static void DoSaveOptionsCB(unsigned long flags)
 #if defined(IF_XM)
 
 // Save options
-void DDDSaveOptionsCB(Widget w, XtPointer client_data, XtPointer)
+void DDDSaveOptionsCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     unsigned long flags = (unsigned long)client_data;
     if ((flags & SAVE_SESSION) && app_data.session == DEFAULT_SESSION)
@@ -4751,7 +4818,7 @@ void DDDSaveOptionsCB(Widget w, XtPointer client_data, XtPointer)
     }
     else
     {
-	DoSaveOptionsCB(CB_ARGS_2(client_data));
+	DoSaveOptionsCB(w, client_data, call_data);
     }
 }
 
@@ -4770,7 +4837,7 @@ void DDDSaveOptionsCB(GUI::Widget *w, unsigned long flags)
 	// Options file has changed since last access; request confirmation
 	static GUI::Dialog *dialog = 0;
 	if (dialog)
-	    DestroyWhenIdle1(dialog);
+	    DestroyWhenIdle(dialog);
 
 	dialog = new GUI::Dialog(*w, "overwrite_options_dialog");
 	Delay::register_shell(dialog);
@@ -4784,7 +4851,7 @@ void DDDSaveOptionsCB(GUI::Widget *w, unsigned long flags)
 	// Saving session would kill program; request confirmation
 	static GUI::Dialog *dialog = 0;
 	if (dialog)
-	    DestroyWhenIdle1(dialog);
+	    DestroyWhenIdle(dialog);
 
 	dialog = new GUI::Dialog(*w, "kill_to_save_dialog");
 	Delay::register_shell(dialog);
@@ -4798,7 +4865,7 @@ void DDDSaveOptionsCB(GUI::Widget *w, unsigned long flags)
 	// Saving session results in data loss; request confirmation
 	static GUI::Dialog *dialog = 0;
 	if (dialog)
-	    DestroyWhenIdle1(dialog);
+	    DestroyWhenIdle(dialog);
 
 	dialog = new GUI::Dialog(*w, "data_not_saved_dialog");
 	Delay::register_shell(dialog);

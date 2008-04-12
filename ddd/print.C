@@ -278,15 +278,15 @@ static PrintType       print_type = PRINT_POSTSCRIPT;
 
 #if defined(IF_XM)
 static Widget          print_dialog = 0;
-#else
-static GUI::Dialog    *print_dialog = 0;
-#endif
-static ENTRY_P         print_command_field   = 0;
-static ENTRY_P         print_file_name_field = 0;
+static Widget          print_command_field   = 0;
+static Widget          print_file_name_field = 0;
 static Widget 	       print_file_name_box   = 0;
-#if defined(IF_XM)
 static Widget          paper_size_dialog = 0;
 #else
+static GUI::Dialog    *print_dialog = 0;
+static GUI::Entry     *print_command_field   = 0;
+static GUI::Entry     *print_file_name_field = 0;
+static GUI::Box       *print_file_name_box   = 0;
 static GUI::Dialog    *paper_size_dialog = 0;
 #endif
 
@@ -465,9 +465,10 @@ static void set_print_file_name(const string& name)
 #endif
 }
 
-static void SetPrintTypeCB(CB_ALIST_12(Widget w, XtP(long) client_data))
+#if defined(IF_XM)
+
+static void SetPrintTypeCB(Widget w, XtPointer client_data, XtPointer)
 {
-#if defined(IF_MOTIF)
     if (!XmToggleButtonGetState(w))
 	return;
 
@@ -486,40 +487,67 @@ static void SetPrintTypeCB(CB_ALIST_12(Widget w, XtP(long) client_data))
 
 	set_print_file_name(file_name);
     }
-#else
-    std::cerr << "SetPrintTypeCB not implemented\n";
-#endif
 }
 
-static void SetSensitiveCB(CB_ALIST_12(Widget w, XtP(Widget) client_data))
+#else
+
+static void SetPrintTypeCB(GUI::Widget *w, PrintType client_data)
 {
-#if defined(IF_MOTIF)
+    std::cerr << "SetPrintTypeCB not implemented\n";
+}
+
+#endif
+
+#if defined(IF_XM)
+
+static void SetSensitiveCB(Widget w, XtPointer client_data, XtPointer)
+{
     if (XmToggleButtonGetState(w))
 	set_sensitive(Widget(client_data), true);
-#else
-    std::cerr << "SetSensitive not implemented\n";
-#endif
 }
 
-static void TakeFocusCB(CB_ALIST_12(Widget w, XtP(Widget) client_data))
+#else
+
+static void SetSensitiveCB(GUI::Widget *w, GUI::Widget *client_data)
 {
-#if defined(IF_MOTIF)
+    std::cerr << "SetSensitive not implemented\n";
+}
+
+#endif
+
+#if defined(IF_XM)
+
+static void TakeFocusCB(Widget w, XtPointer client_data, XtPointer)
+{
     if (XmToggleButtonGetState(w))
 	XmProcessTraversal(Widget(client_data), XmTRAVERSE_CURRENT);
-#else
-    std::cerr << "TakeFocusCB not implemented\n";
-#endif
 }
 
-static void UnsetSensitiveCB(CB_ALIST_12(Widget w, XtP(Widget) client_data))
+#else
+
+static void TakeFocusCB(GUI::Widget *w, GUI::Widget *client_data)
 {
-#if defined(IF_MOTIF)
+    std::cerr << "TakeFocusCB not implemented\n";
+}
+
+#endif
+
+#if defined(IF_XM)
+
+static void UnsetSensitiveCB(Widget w, XtPointer client_data, XtPointer)
+{
     if (XmToggleButtonGetState(w))
 	set_sensitive(Widget(client_data), false);
-#else
-    std::cerr << "UnsetSensitiveCB not implemented\n";
-#endif
 }
+
+#else
+
+static void UnsetSensitiveCB(GUI::Widget *w, GUI::Widget *client_data)
+{
+    std::cerr << "UnsetSensitiveCB not implemented\n";
+}
+
+#endif
 
 #if defined(IF_XM)
 
@@ -886,7 +914,7 @@ static bool set_paper_size(const string& s)
 
 #if defined(IF_XM)
 
-static void SetPaperSizeCB(CB_ALIST_13(Widget w, XtP(XmFileSelectionBoxCallbackStruct *) call_data))
+static void SetPaperSizeCB(Widget w, XtPointer, XtPointer call_data)
 {
     XmFileSelectionBoxCallbackStruct *cbs =
 	(XmFileSelectionBoxCallbackStruct *)call_data;
@@ -1077,7 +1105,7 @@ static void BrowseNameCB(Widget w, XtPointer, XtPointer)
 
 	Delay::register_shell(dialog);
 	XtAddCallback(dialog, XmNokCallback, SetPrintFileNameCB, 0);
-	XtAddCallback(dialog, XmNcancelCallback, UnmanageThisCB1, 
+	XtAddCallback(dialog, XmNcancelCallback, UnmanageThisCB, 
 		      XtPointer(dialog));
 	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, XtPointer(0));
     }
@@ -1133,7 +1161,7 @@ static void BrowseNameCB(GUI::Widget *w)
 	button = dialog->add_button("OK");
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(SetPrintFileNameCB), dialog));
 	button = dialog->add_button("Cancel");
-	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB2), dialog));
+	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), dialog));
     }
     else
     {
@@ -1186,7 +1214,7 @@ static void PrintCB(Widget parent, bool displays)
     XtAddCallback(print_dialog, XmNapplyCallback,
 		  PrintAgainCB, XtPointer(0));
     XtAddCallback(print_dialog, XmNcancelCallback, 
-		  UnmanageThisCB1, XtPointer(print_dialog));
+		  UnmanageThisCB, XtPointer(print_dialog));
     XtAddCallback(print_dialog, XmNhelpCallback,
 		  ImmediateHelpCB, XtPointer(0));
 
@@ -1213,8 +1241,9 @@ static void PrintCB(Widget parent, bool displays)
     static Widget fig_w;
     static MMDesc type2_menu[] = 
     {
-	MENTRYL("postscript", "postscript", MMToggle, 
-		BIND_1(PTR_FUN(SetPrintTypeCB), PRINT_POSTSCRIPT), 
+	GENTRYL("postscript", "postscript", MMToggle, 
+		BIND(SetPrintTypeCB, PRINT_POSTSCRIPT), 
+		sigc::bind(sigc::ptr_fun(SetPrintTypeCB), PRINT_POSTSCRIPT), 
 		0, (Widget *)&postscript_w),
 	MENTRYL("xfig", "xfig", MMToggle,
 		BIND_1(PTR_FUN(SetPrintTypeCB), PRINT_FIG), 0, &fig_w),
@@ -1430,24 +1459,29 @@ static void PrintCB(GUI::Button *parent, bool displays)
     static GUI::CheckButton *print_to_file_w;
     static MMDesc print_to_menu[] = 
 	{
-	    MENTRYL("printer", "printer", MMToggle, 
-		    BIND_1(PTR_FUN(SetPrintTargetCB), TARGET_PRINTER), 
-		    0, (Widget *)&print_to_printer_w),
-	    MENTRYL("file", "file", MMToggle, 
-		    BIND_1(PTR_FUN(SetPrintTargetCB), TARGET_FILE), 
-		    0, (Widget *)&print_to_file_w),
+	    GENTRYL("printer", "printer", MMToggle, 
+		    BIND(SetPrintTargetCB, TARGET_PRINTER), 
+		    sigc::bind(sigc::retype(sigc::ptr_fun(SetPrintTargetCB)), TARGET_PRINTER), 
+		    0, &print_to_printer_w),
+	    GENTRYL("file", "file", MMToggle, 
+		    BIND(SetPrintTargetCB, TARGET_FILE), 
+		    sigc::bind(sigc::retype(sigc::ptr_fun(SetPrintTargetCB)), TARGET_FILE), 
+		    0, &print_to_file_w),
 	    MMEnd
 	};
 
     static GUI::CheckButton *postscript_w;
-    static Widget fig_w;
+    static GUI::Widget *fig_w;
     static MMDesc type2_menu[] = 
 	{
-	    MENTRYL("postscript", "postscript", MMToggle, 
-		    BIND_1(PTR_FUN(SetPrintTypeCB), PRINT_POSTSCRIPT), 
-		    0, (Widget *)&postscript_w),
-	    MENTRYL("xfig", "xfig", MMToggle,
-		    BIND_1(PTR_FUN(SetPrintTypeCB), PRINT_FIG), 0, &fig_w),
+	    GENTRYL("postscript", "postscript", MMToggle, 
+		    BIND(SetPrintTypeCB, PRINT_POSTSCRIPT), 
+		    sigc::bind(sigc::ptr_fun(SetPrintTypeCB), PRINT_POSTSCRIPT), 
+		    0, &postscript_w),
+	    GENTRYL("xfig", "xfig", MMToggle,
+		    BIND(SetPrintTypeCB, PRINT_FIG),
+		    sigc::bind(sigc::ptr_fun(SetPrintTypeCB), PRINT_FIG),
+		    0, &fig_w),
 	    MMEnd
 	};
 
@@ -1525,7 +1559,7 @@ static void PrintCB(GUI::Button *parent, bool displays)
 	    MENTRYL("to", "to", MMRadioPanel, MMNoCB, print_to_menu, 0),
 	    MENTRYL("command", "command", MMTextField, MMNoCB, 0, (Widget *)&print_command_field),
 	    MENTRYL("name", "name", MMPanel, MMNoCB, name_menu, 
-		    (Widget *)&print_file_name_box),
+		    &print_file_name_box),
 	    MMSep,
 	    MENTRYL("type", "type", MMPanel, MMNoCB, type_menu, 0),
 	    MENTRYL("what", "what", MMPanel, MMNoCB, what_menu, 0),
@@ -1541,51 +1575,51 @@ static void PrintCB(GUI::Button *parent, bool displays)
     // Add callbacks
     MMaddCallbacks(menu);
 
-    print_to_printer_w->signal_toggled().connect(sigc::bind(PTR_FUN(SetSensitiveCB),
+    print_to_printer_w->signal_toggled().connect(sigc::bind(sigc::retype(sigc::ptr_fun(SetSensitiveCB)),
 							    print_to_printer_w,
 							    print_command_field));
-    print_to_printer_w->signal_toggled().connect(sigc::bind(PTR_FUN(SetSensitiveCB),
+    print_to_printer_w->signal_toggled().connect(sigc::bind(sigc::retype(sigc::ptr_fun(SetSensitiveCB)),
 							    print_to_printer_w,
 							    menu[1].label));
 
-    print_to_printer_w->signal_toggled().connect(sigc::bind(PTR_FUN(UnsetSensitiveCB),
+    print_to_printer_w->signal_toggled().connect(sigc::bind(sigc::retype(sigc::ptr_fun(UnsetSensitiveCB)),
 							    print_to_printer_w,
 							    print_file_name_box));
-    print_to_printer_w->signal_toggled().connect(sigc::bind(PTR_FUN(UnsetSensitiveCB),
+    print_to_printer_w->signal_toggled().connect(sigc::bind(sigc::retype(sigc::ptr_fun(UnsetSensitiveCB)),
 							    print_to_printer_w,
 							    menu[2].label));
-    print_to_printer_w->signal_toggled().connect(sigc::bind(PTR_FUN(UnsetSensitiveCB),
+    print_to_printer_w->signal_toggled().connect(sigc::bind(sigc::retype(sigc::ptr_fun(UnsetSensitiveCB)),
 							    print_to_printer_w,
 							    postscript_w));
-    print_to_printer_w->signal_toggled().connect(sigc::bind(PTR_FUN(UnsetSensitiveCB),
+    print_to_printer_w->signal_toggled().connect(sigc::bind(sigc::retype(sigc::ptr_fun(UnsetSensitiveCB)),
 							    print_to_printer_w,
 							    fig_w));
 
-    print_to_printer_w->signal_toggled().connect(sigc::bind(PTR_FUN(TakeFocusCB),
+    print_to_printer_w->signal_toggled().connect(sigc::bind(sigc::retype(sigc::ptr_fun(TakeFocusCB)),
 							    print_to_printer_w,
 							    print_command_field));
 
-    print_to_file_w->signal_toggled().connect(sigc::bind(PTR_FUN(UnsetSensitiveCB),
+    print_to_file_w->signal_toggled().connect(sigc::bind(sigc::retype(sigc::ptr_fun(UnsetSensitiveCB)),
 							 print_to_file_w,
 							 print_command_field));
-    print_to_file_w->signal_toggled().connect(sigc::bind(PTR_FUN(UnsetSensitiveCB),
+    print_to_file_w->signal_toggled().connect(sigc::bind(sigc::retype(sigc::ptr_fun(UnsetSensitiveCB)),
 							 print_to_file_w,
 							 menu[1].label));
 
-    print_to_file_w->signal_toggled().connect(sigc::bind(PTR_FUN(SetSensitiveCB),
+    print_to_file_w->signal_toggled().connect(sigc::bind(sigc::ptr_fun(SetSensitiveCB),
 							 print_to_file_w,
 							 print_file_name_box));
-    print_to_file_w->signal_toggled().connect(sigc::bind(PTR_FUN(SetSensitiveCB),
+    print_to_file_w->signal_toggled().connect(sigc::bind(sigc::ptr_fun(SetSensitiveCB),
 							 print_to_file_w,
 							 menu[2].label));
-    print_to_file_w->signal_toggled().connect(sigc::bind(PTR_FUN(SetSensitiveCB),
+    print_to_file_w->signal_toggled().connect(sigc::bind(sigc::ptr_fun(SetSensitiveCB),
 							 print_to_file_w,
 							 postscript_w));
-    print_to_file_w->signal_toggled().connect(sigc::bind(PTR_FUN(SetSensitiveCB),
+    print_to_file_w->signal_toggled().connect(sigc::bind(sigc::ptr_fun(SetSensitiveCB),
 							 print_to_file_w,
 							 fig_w));
 
-    print_to_file_w->signal_toggled().connect(sigc::bind(PTR_FUN(TakeFocusCB),
+    print_to_file_w->signal_toggled().connect(sigc::bind(sigc::ptr_fun(TakeFocusCB),
 							 print_to_file_w,
 							 print_file_name_field));
 
@@ -1595,11 +1629,11 @@ static void PrintCB(GUI::Button *parent, bool displays)
     Delay::register_shell(paper_size_dialog);
 
     GUI::Entry *entry;
-    entry = new GUI::Entry(*paper_size_dialog, "entry");
+    entry = new GUI::Entry(*paper_size_dialog, GUI::PACK_SHRINK, "entry");
     entry->show();
-    GUI::Button *ok_button = paper_size_dialog->add_button("ok", "OK");
+    GUI::Button *ok_button = paper_size_dialog->add_button("OK");
     ok_button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(SetPaperSizeCB), paper_size_dialog));
-    button = paper_size_dialog->add_button("cancel", "Cancel");
+    button = paper_size_dialog->add_button("Cancel");
     button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(ResetPaperSizeCB), paper_size_dialog));
 
     entry->signal_activate().connect(sigc::bind(sigc::ptr_fun(CheckPaperSizeCB), entry, ok_button));

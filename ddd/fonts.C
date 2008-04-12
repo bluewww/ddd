@@ -654,7 +654,9 @@ static void set_font_size(DDDFont font, int size)
     }
 }
 
-void SetFontNameCB(CB_ALIST_12(Widget w, XtP(DDDFont) client_data))
+#if defined(IF_XM)
+
+void SetFontNameCB(Widget w, XtPointer client_data, XtPointer)
 {
     DDDFont font = (DDDFont) (long) client_data;
     String s = XmTextFieldGetString(w);
@@ -664,11 +666,21 @@ void SetFontNameCB(CB_ALIST_12(Widget w, XtP(DDDFont) client_data))
     update_reset_preferences();
 }
 
-#if defined(IF_MOTIF)
-void SetFontSizeCB(CB_ARG_LIST_12(w, client_data))
 #else
-void SetFontSizeCB(ENTRY_P w, DDDFont font)
+
+void SetFontNameCB(GUI::Entry *w, DDDFont font)
+{
+    GUI::String s = w->get_text();
+    set_font(font, s);
+
+    update_reset_preferences();
+}
+
 #endif
+
+#if defined(IF_XM)
+
+void SetFontSizeCB(Widget w, XtPointer client_data, XtPointer)
 {
     DDDFont font = (DDDFont) (long) client_data;
     String s = XmTextFieldGetString(w);
@@ -678,6 +690,17 @@ void SetFontSizeCB(ENTRY_P w, DDDFont font)
     update_reset_preferences();
 }
 
+#else
+
+void SetFontSizeCB(GUI::Entry *w, DDDFont font)
+{
+    GUI::String s = w->get_text();
+    set_font_size(font, atoi(s));
+
+    update_reset_preferences();
+}
+
+#endif
 
 
 //-----------------------------------------------------------------------------

@@ -225,18 +225,24 @@ GUI::Widget *ArgField::top() const
 
 #endif
 
+#if defined(IF_XM)
 
 // Clear the text field given in Widget(CLIENT_DATA)
-void ClearTextFieldCB(CB_ALIST_2(XtP(COMBOBOXENTRYTEXT_P) client_data))
+void ClearTextFieldCB(Widget, XtPointer client_data, XtPointer)
 {
-#if defined(IF_MOTIF)
     Widget arg_field = Widget(client_data);
     XmTextFieldSetString(arg_field, XMST(""));
-#else
-    Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(client_data->get_child());
-    entry->set_text(XMST(""));
-#endif
 }
+
+#else
+
+// Clear the text field given in Widget(CLIENT_DATA)
+void ClearTextFieldCB(GUI::ComboBoxEntryText *entry)
+{
+    entry->set_text("");
+}
+
+#endif
 
 #if defined(IF_XM)
 

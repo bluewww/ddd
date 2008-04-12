@@ -29,7 +29,11 @@
 char DestroyCB_rcsid[] = 
     "$Id$";
 
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif
+
+#include <iostream>
 
 #include "DestroyCB.h"
 #include "TimeOut.h"
@@ -47,29 +51,34 @@ static void CancelTimer(Widget, XtPointer client_data, XtPointer)
 }
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
+
 static void DestroyCB(XtPointer client_data, XtIntervalId *id)
-#else
-static bool DestroyCB(Widget w)
-#endif
 {
-#if defined(IF_MOTIF)
     Widget w = Widget(client_data);
-#endif
 
     if (w != 0)
     {
-#if defined(IF_MOTIF)
 	XtRemoveCallback(w, XmNdestroyCallback, CancelTimer, XtPointer(*id));
 	XtDestroyWidget(w);
-#else
-	delete w;
-	return false;
-#endif
     }
 }
 
-#if defined(IF_MOTIF)
+#else
+
+static bool DestroyCB(GUI::Widget *w)
+{
+
+    if (w != 0)
+    {
+	delete w;
+	return false;
+    }
+}
+
+#endif
+
+#if defined(IF_XM)
 
 // Destroy WIDGET as soon as we are idle
 void DestroyWhenIdle(Widget widget)
@@ -82,37 +91,12 @@ void DestroyWhenIdle(Widget widget)
     XtAddCallback(widget, XmNdestroyCallback, CancelTimer, XtPointer(id));
 }
 
-#endif
-
-#if defined(IF_XMMM)
+#else
 
 // Destroy WIDGET as soon as we are idle
-void DestroyWhenIdle1(GUI::Widget *widget)
+void DestroyWhenIdle(GUI::Widget *widget)
 {
-    XtIntervalId id = 
-	XtAppAddTimeOut(XtWidgetToApplicationContext(widget->internal()), 0, DestroyCB, 
-			XtPointer(widget->internal()));
-
-    // Should WIDGET be destroyed beforehand, cancel the timer
-    XtAddCallback(widget->internal(), XmNdestroyCallback, CancelTimer, XtPointer(id));
-}
-
-#elif !defined(IF_MOTIF)
-
-// Destroy WIDGET as soon as we are idle
-void DestroyWhenIdle(Gtk::Widget *widget)
-{
-    XtIntervalId id = 
-	Glib::signal_idle().connect(sigc::bind(sigc::ptr_fun(DestroyCB), widget));
-
-    // Should WIDGET be destroyed beforehand, cancel the timer
-}
-
-// Destroy WIDGET as soon as we are idle
-void DestroyWhenIdle1(GUI::Widget *widget)
-{
-    XtIntervalId id = 
-	Glib::signal_idle().connect(sigc::bind(sigc::ptr_fun(DestroyCB), widget->internal()));
+    GUI::signal_idle().connect(sigc::bind(sigc::ptr_fun(DestroyCB), widget));
 
     // Should WIDGET be destroyed beforehand, cancel the timer
 }
@@ -122,23 +106,28 @@ void DestroyWhenIdle1(GUI::Widget *widget)
 
 // Callbacks
 
+#if defined(IF_XM)
+
 // Destroy the ancestor shell
-void DestroyShellCB(CB_ARG_LIST_1(widget))
+void DestroyShellCB(Widget widget, XtPointer, XtPointer)
 {
     Widget w = widget;
 
     while (w != 0 && !XtIsShell(XtParent(w)))
 	w = XtParent(w);
 
-#if defined(IF_MOTIF)
     DestroyThisCB(widget, XtPointer(w), XtPointer(0));
-#else
-#ifdef NAG_ME
-#warning Implement DestroyThisCB.
-#endif
-    DestroyThisCB(w);
-#endif
 }
+
+#else
+
+// Destroy the ancestor shell
+void DestroyShellCB(GUI::Widget *widget)
+{
+    std::cerr << "DestroyShellCB?\n";
+}
+
+#endif
 
 // Destroy specific widget
 
@@ -152,45 +141,40 @@ void DestroyThisCB(Widget, XtPointer client_data, XtPointer)
 
 #else
 
-void DestroyThisCB(Gtk::Widget *w)
+void DestroyThisCB(GUI::Widget *w)
 {
     DestroyWhenIdle(w);
 }
 
 #endif
 
-#if !defined(IF_XM)
-
-extern void DestroyThisCB1(GUI::Widget *w)
-{
-#if defined(IF_XMMM)
-    DestroyThisCB(Widget(0), w->internal(), XtPointer(0));
-#else
-    DestroyThisCB(w->internal());
-#endif
-}
-
-#endif
+#if defined(IF_XM)
 
 // Unmanage the ancestor shell
-void UnmanageShellCB(CB_ARG_LIST_1(widget))
+void UnmanageShellCB(Widget widget, XtPointer, XtPointer call_data)
 {
     Widget w = widget;
 
     while (w != 0 && !XtIsShell(XtParent(w)))
 	w = XtParent(w);
 
-#if defined(IF_XM)
-    UnmanageThisCB1(widget, XtPointer(w), XtPointer(0));
-#else
-    UnmanageThisCB2(widget);
-#endif
+    UnmanageThisCB(widget, XtPointer(w), call_data);
 }
 
-// Unmanage specific widget
-#if defined(IF_MOTIF)
+#else
 
-void UnmanageThisCB1(Widget, XtPointer client_data, XtPointer)
+// Unmanage the ancestor shell
+void UnmanageShellCB(GUI::Widget *widget)
+{
+    std::cerr << "UnmanageShellCB?\n";
+}
+
+#endif
+
+// Unmanage specific widget
+#if defined(IF_XM)
+
+void UnmanageThisCB(Widget, XtPointer client_data, XtPointer)
 {
     Widget w = Widget(client_data);
 
@@ -204,22 +188,11 @@ void UnmanageThisCB1(Widget, XtPointer client_data, XtPointer)
     XtUnmanageChild(w);
 }
 
-#endif
-
-#if !defined(IF_XM)
+#else
 
 void UnmanageThisCB(GUI::Widget *w)
 {
     w->hide();
-}
-
-void UnmanageThisCB2(Widget w)
-{
-#if defined(IF_XMMM)
-    UnmanageThisCB1(w, NULL, NULL);
-#else
-    w->hide();
-#endif
 }
 
 #endif

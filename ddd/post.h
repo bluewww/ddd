@@ -81,8 +81,7 @@ extern void unpost_gdb_yn();
 #if defined(IF_XM)
 void YnCB(Widget dialog, XtPointer client_data, XtPointer call_data);
 #else
-void YnCB(CB_ALIST_12(Widget dialog, XtP(const char *) client_data));
-void YnCB1(GUI::Widget *dialog, const char * client_data);
+void YnCB(GUI::Widget *dialog, const char * client_data);
 #endif
 
 #endif // _DDD_post_h

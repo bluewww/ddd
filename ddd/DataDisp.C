@@ -898,7 +898,8 @@ string DataDisp::pattern(const string& expr, bool shorten)
 #if defined(IF_XM)
 
 // Apply the theme in CLIENT_DATA to the selected item.
-void DataDisp::applyThemeCB (Widget w, XtPointer client_data, XtPointer)
+void DataDisp::applyThemeCB (Widget w, XtPointer client_data,
+			     XtPointer call_data)
 {
     set_last_origin(w);
 
@@ -936,7 +937,7 @@ void DataDisp::applyThemeCB (Widget w, XtPointer client_data, XtPointer)
     if (!select && theme != app_data.suppress_theme)
     {
 	// Don't ask for confirmation -- just apply.  We can undo anyway.
-	applyThemeOnThisCB(CB_ARGS_2(client_data));
+	applyThemeOnThisCB(w, client_data, call_data);
 	return;
     }
 
@@ -1197,9 +1198,10 @@ void DataDisp::toggleThemeCB(GUI::CheckButton *button, int num)
 
 #endif
 
+#if defined(IF_XM)
 
 // Apply the theme in CLIENT_DATA to the selected item.
-void DataDisp::applyThemeOnAllCB(CB_ALIST_2(XtP(const char *) client_data))
+void DataDisp::applyThemeOnAllCB(Widget, XtPointer client_data, XtPointer)
 {
     string pattern = selected_pattern();
     if (pattern.empty())
@@ -1209,12 +1211,40 @@ void DataDisp::applyThemeOnAllCB(CB_ALIST_2(XtP(const char *) client_data))
     apply_theme(theme, pattern);
 }
 
+#else
+
 // Apply the theme in CLIENT_DATA to the selected item.
-void DataDisp::applyThemeOnThisCB(CB_ALIST_2(XtP(const char *) client_data))
+void DataDisp::applyThemeOnAllCB(const char *client_data)
+{
+    string pattern = selected_pattern();
+    if (pattern.empty())
+	return;
+
+    string theme = String(client_data);
+    apply_theme(theme, pattern);
+}
+
+#endif
+
+#if defined(IF_XM)
+
+// Apply the theme in CLIENT_DATA to the selected item.
+void DataDisp::applyThemeOnThisCB(Widget, XtPointer client_data, XtPointer)
 {
     string theme = String(client_data);
     apply_theme(theme, quote(source_arg->get_string()));
 }
+
+#else
+
+// Apply the theme in CLIENT_DATA to the selected item.
+void DataDisp::applyThemeOnThisCB(const char *client_data)
+{
+    string theme = String(client_data);
+    apply_theme(theme, quote(source_arg->get_string()));
+}
+
+#endif
 
 string DataDisp::apply_theme_cmd(const string& theme, const string& pattern)
 {
@@ -1920,7 +1950,7 @@ void DataDisp::select_with_all_ancestors(GraphNode *node)
 
 // Upon deletion, select the ancestor and all siblings
 #if defined(IF_XM)
-void DataDisp::deleteCB (Widget dialog, XtPointer, XtPointer)
+void DataDisp::deleteCB (Widget dialog, XtPointer, XtPointer call_data)
 #else
 void DataDisp::deleteCB (GUI::Widget *dialog)
 #endif
@@ -1933,7 +1963,11 @@ void DataDisp::deleteCB (GUI::Widget *dialog)
     if (dn != 0 && dv != dn->value())
     {
 	// Display part to be suppressed
-	applyThemeCB(CB_ARGS_12(dialog, app_data.suppress_theme));
+#if defined(IF_XM)
+	applyThemeCB(dialog, XtPointer(app_data.suppress_theme), call_data);
+#else
+	applyThemeCB(dialog, app_data.suppress_theme);
+#endif
 	return;
     }
 
@@ -2487,7 +2521,9 @@ DataDispCount::DataDispCount(DispGraph *disp_graph)
 // Double click callback
 //-----------------------------------------------------------------------------
 
-void DataDisp::DoubleClickCB(CB_ALIST_13(GRAPH_EDIT_P w, XtP(GraphEditPreSelectionInfo *) call_data))
+#if defined(IF_XM)
+
+void DataDisp::DoubleClickCB(Widget w, XtPointer, XtPointer call_data)
 {
     GraphEditPreSelectionInfo *info = (GraphEditPreSelectionInfo *)call_data;
 
@@ -2503,22 +2539,15 @@ void DataDisp::DoubleClickCB(CB_ALIST_13(GRAPH_EDIT_P w, XtP(GraphEditPreSelecti
     if (disp_node_arg == 0)
 	return;
 
-#if defined(IF_XM)
     XEvent *ev = info->event;
     bool control = (ev != 0 && 
 		    (ev->type == ButtonPress || ev->type == ButtonRelease) &&
 		    (ev->xbutton.state & ControlMask) != 0);
-#else
-    GUI::Event *ev = info->event;
-    bool control = (ev != 0 && 
-		    (ev->type == GUI::BUTTON_PRESS || ev->type == GUI::BUTTON_RELEASE) &&
-		    (ev->button.state & ControlMask) != 0);
-#endif
 
     // Do the right thing
     if (disp_node_arg->disabled())
     {
-	showMoreDetailCB(CB_ARGS_12(w, 1)); // Show 1 level more
+	showMoreDetailCB(w, XtPointer(1), 0); // Show 1 level more
     }
     else
     {
@@ -2532,25 +2561,87 @@ void DataDisp::DoubleClickCB(CB_ALIST_13(GRAPH_EDIT_P w, XtP(GraphEditPreSelecti
 	{
 	    // Dereference
 	    if (control)
-		dereferenceInPlaceCB(CB_ARGS_1(w));
+		dereferenceInPlaceCB(w, XtPointer(true), 0);
 	    else
-		dereferenceCB(CB_ARGS_1(w));
+		dereferenceCB(w, 0, 0);
 	}
 	else if (count.selected_collapsed > 0)
 	{
 	    // Show 1 level more
-	    showMoreDetailCB(CB_ARGS_12(w, 1));
+	    showMoreDetailCB(w, XtPointer(1), 0);
 	}
 	else
 	{
 	    // Hide all
-	    hideDetailCB(CB_ARGS_1(w));
+	    hideDetailCB(w, XtPointer(-1), 0);
 	}
     }
 
     // Don't do the default action
     info->doit = False;
 }
+
+#else
+
+void DataDisp::DoubleClickCB(GUIGraphEdit *w, GraphEditPreSelectionInfo *call_data)
+{
+    GraphEditPreSelectionInfo *info = (GraphEditPreSelectionInfo *)call_data;
+
+    if (!info->double_click)
+	return;			// Single click
+
+    if (info->node == 0)
+	return;			// Double-click on background
+
+    DispNode *disp_node_arg = ptr_cast(DispNode, info->node);
+    if (disp_node_arg == 0)
+	disp_node_arg = selected_node();
+    if (disp_node_arg == 0)
+	return;
+
+    GUI::Event *ev = info->event;
+    bool control = (ev != 0 && 
+		    (ev->type == GUI::BUTTON_PRESS || ev->type == GUI::BUTTON_RELEASE) &&
+		    (ev->button.state & ControlMask) != 0);
+
+    // Do the right thing
+    if (disp_node_arg->disabled())
+    {
+	showMoreDetailCB(w, 1); // Show 1 level more
+    }
+    else
+    {
+	DispValue *disp_value_arg = disp_node_arg->selected_value();
+	if (disp_value_arg == 0)
+	    return;			// No selected value within node
+
+	DataDispCount count(disp_graph);
+	
+	if (disp_value_arg->type() == Pointer && !disp_value_arg->collapsed())
+	{
+	    // Dereference
+	    if (control)
+		dereferenceInPlaceCB(w);
+	    else
+		dereferenceCB(w);
+	}
+	else if (count.selected_collapsed > 0)
+	{
+	    // Show 1 level more
+	    showMoreDetailCB(w, 1);
+	}
+	else
+	{
+	    // Hide all
+	    hideDetailCB(w);
+	}
+    }
+
+    // Don't do the default action
+    info->doit = False;
+}
+
+#endif
 
 
 //-----------------------------------------------------------------------------
@@ -3207,27 +3298,23 @@ void DataDisp::refresh_graph_edit(bool silent)
     refresh_display_list(silent);
 }
 
-TIMEOUT_RETURN_TYPE DataDisp::RefreshGraphEditCB(TM_ALIST_1(XtP(GraphEditLayoutState *)client_data))
+#if defined(IF_XM)
+
+void DataDisp::RefreshGraphEditCB(XtPointer client_data, XtIntervalId *)
 {
-    refresh_graph_edit_timer = NO_TIMER;
+    refresh_graph_edit_timer = 0;
 
     static GraphEditLayoutState state;
 
-#if defined(IF_XM)
     XtVaGetValues(graph_edit,
 		  XtNautoLayout, &state.autoLayout,
 		  XtNsnapToGrid, &state.snapToGrid,
 		  XtPointer(0));
-#else
-    state.autoLayout = graph_edit->get_auto_layout();
-    state.snapToGrid = graph_edit->get_snap_to_grid();
-#endif
 
     const GraphEditLayoutState& old_state = *((GraphEditLayoutState *) client_data);
 
     static Graph *dummy = new Graph;
 
-#if defined(IF_XM)
     XtVaSetValues(graph_edit,
 		  XtNautoLayout, old_state.autoLayout,
 		  XtNsnapToGrid, old_state.snapToGrid,
@@ -3236,14 +3323,31 @@ TIMEOUT_RETURN_TYPE DataDisp::RefreshGraphEditCB(TM_ALIST_1(XtP(GraphEditLayoutS
     XtVaSetValues(graph_edit,
 		  XtNgraph, (Graph *)disp_graph,
 		  XtPointer(0));
+}
+
 #else
+
+bool DataDisp::RefreshGraphEditCB(GraphEditLayoutState *client_data)
+{
+    // refresh_graph_edit_timer = GUI::connection();
+
+    static GraphEditLayoutState state;
+
+    state.autoLayout = graph_edit->get_auto_layout();
+    state.snapToGrid = graph_edit->get_snap_to_grid();
+
+    const GraphEditLayoutState& old_state = *((GraphEditLayoutState *) client_data);
+
+    static Graph *dummy = new Graph;
+
     graph_edit->set_auto_layout(old_state.autoLayout);
     graph_edit->set_snap_to_grid(old_state.snapToGrid);
     graph_edit->set_graph(disp_graph);
     graph_edit->set_auto_layout(state.autoLayout);
     graph_edit->set_snap_to_grid(state.snapToGrid);
-#endif
 }
+
+#endif
 
 // ***************************************************************************
 //
@@ -3288,7 +3392,9 @@ void DataDisp::no_displaysHP (void*, void* , void* call_data)
 
 bool DataDisp::lose_selection = true;
 
-void DataDisp::SelectionLostCB(CB_ALIST_NULL)
+#if defined(IF_XM)
+
+void DataDisp::SelectionLostCB(Widget, XtPointer, XtPointer)
 {
     if (!lose_selection)
 	return;
@@ -3302,11 +3408,7 @@ void DataDisp::SelectionLostCB(CB_ALIST_NULL)
 	{
 	    gn->selected() = false;
 	    changed = true;
-#if defined(IF_XM)
 	    graphEditRedrawNode(graph_edit, gn);
-#else
-	    graph_edit->graphEditRedrawNode(gn);
-#endif
 	}
     }
 
@@ -3316,6 +3418,35 @@ void DataDisp::SelectionLostCB(CB_ALIST_NULL)
 	refresh_display_list();
     }
 }
+
+#else
+
+void DataDisp::SelectionLostCB(void)
+{
+    if (!lose_selection)
+	return;
+
+    // Selection lost - clear all highlights
+    bool changed = false;
+    for (GraphNode *gn = disp_graph->firstNode();
+	 gn != 0; gn = disp_graph->nextNode(gn))
+    {
+	if (gn->selected())
+	{
+	    gn->selected() = false;
+	    changed = true;
+	    graph_edit->graphEditRedrawNode(gn);
+	}
+    }
+
+    if (changed)
+    {
+	refresh_args();
+	refresh_display_list();
+    }
+}
+
+#endif
 
 //-----------------------------------------------------------------------------
 // Action procs
@@ -4972,7 +5103,11 @@ int DataDisp::alias_display_nr(GraphNode *node)
 }
 
 // Update graph editor selection after a change in the display editor
-void DataDisp::UpdateGraphEditorSelectionCB(CB_ALIST_NULL)
+#if defined(IF_XM)
+void DataDisp::UpdateGraphEditorSelectionCB(Widget, XtPointer, XtPointer)
+#else
+void DataDisp::UpdateGraphEditorSelectionCB(void)
+#endif
 {
     IntArray display_nrs;
     getItemNumbers(display_list_w, display_nrs);
@@ -5121,8 +5256,10 @@ void DataDisp::UpdateGraphEditorSelectionCB(CB_ALIST_NULL)
     refresh_display_list();
 }
 
+#if defined(IF_XM)
+
 // Update display editor selection after a change in the graph editor
-void DataDisp::UpdateDisplayEditorSelectionCB(CB_ALIST_NULL)
+void DataDisp::UpdateDisplayEditorSelectionCB(Widget, XtPointer, XtPointer)
 {
     // Synchronize alias nodes with hint nodes
     for (GraphNode *node = disp_graph->firstNode();
@@ -5140,11 +5277,7 @@ void DataDisp::UpdateDisplayEditorSelectionCB(CB_ALIST_NULL)
 	if (node->selected() != dn->selected())
 	{
 	    dn->selected() = node->selected();
-#if defined(IF_XM)
 	    graphEditRedrawNode(graph_edit, dn);
-#else
-	    graph_edit->graphEditRedrawNode(dn);
-#endif
 	}
     }
 
@@ -5152,14 +5285,50 @@ void DataDisp::UpdateDisplayEditorSelectionCB(CB_ALIST_NULL)
     refresh_display_list();
 }
 
+#else
+
+// Update display editor selection after a change in the graph editor
+void DataDisp::UpdateDisplayEditorSelectionCB(void)
+{
+    // Synchronize alias nodes with hint nodes
+    for (GraphNode *node = disp_graph->firstNode();
+	 node != 0;
+	 node = disp_graph->nextNode(node))
+    {
+	int nr = alias_display_nr(node);
+	if (nr < 0)
+	    continue;
+
+	DispNode *dn = disp_graph->get(nr);
+	if (dn == 0)
+	    continue;
+
+	if (node->selected() != dn->selected())
+	{
+	    dn->selected() = node->selected();
+	    graph_edit->graphEditRedrawNode(dn);
+	}
+    }
+
+    refresh_args(true);
+    refresh_display_list();
+}
+
+#endif
 
 //-----------------------------------------------------------------------
 // Sorting nodes for layout
 //-----------------------------------------------------------------------
 
-void DataDisp::CompareNodesCB(CB_ALIST_3(XtP(GraphEditCompareNodesInfo *) call_data))
+#if defined(IF_XM)
+void DataDisp::CompareNodesCB(Widget, XtPointer, XtPointer call_data)
+#else
+void DataDisp::CompareNodesCB(GraphEditCompareNodesInfo *info)
+#endif
 {
+#if defined(IF_XM)
     GraphEditCompareNodesInfo *info = (GraphEditCompareNodesInfo *)call_data;
+#endif
 
     BoxGraphNode *node1 = ptr_cast(BoxGraphNode, info->node1);
     BoxGraphNode *node2 = ptr_cast(BoxGraphNode, info->node2);
@@ -5862,10 +6031,12 @@ void DataDisp::refresh_builtin_user_displays()
 // Open and close data window
 //-----------------------------------------------------------------------------
 
+#if defined(IF_XM)
+
 void DataDisp::open_data_window()
 {
     // Make sure graph is visible
-    gdbOpenDataWindowCB(CB_ARGS_NULL);
+    gdbOpenDataWindowCB(graph_edit, 0, 0);
 }
 
 void DataDisp::close_data_window()
@@ -5876,9 +6047,31 @@ void DataDisp::close_data_window()
     }
     else
     {
-	gdbCloseDataWindowCB(CB_ARGS_1(graph_edit));
+	gdbCloseDataWindowCB(graph_edit, 0, 0);
     }
 }
+
+#else
+
+void DataDisp::open_data_window()
+{
+    // Make sure graph is visible
+    gdbOpenDataWindowCB();
+}
+
+void DataDisp::close_data_window()
+{
+    if (app_data.separate_data_window)
+    {
+	// Don't close a separate data window.
+    }
+    else
+    {
+	gdbCloseDataWindowCB(graph_edit);
+    }
+}
+
+#endif
 
 //-----------------------------------------------------------------------------
 // Create new data and user nodes
@@ -7709,9 +7902,15 @@ void DataDisp::refresh_display_list(bool silent)
 }
 
 
-TIMEOUT_RETURN_TYPE DataDisp::RefreshDisplayListCB(TM_ALIST_1(XtP(bool) client_data))
+#if defined(IF_XM)
+void DataDisp::RefreshDisplayListCB(XtPointer client_data, XtIntervalId *)
+#else
+bool DataDisp::RefreshDisplayListCB(bool silent)
+#endif
 {
+#if defined(IF_XM)
     const bool silent = client_data?true:false;
+#endif
     const int number_of_displays = disp_graph->count_all();
 
     StringArray nums;
@@ -7931,12 +8130,21 @@ TIMEOUT_RETURN_TYPE DataDisp::RefreshDisplayListCB(TM_ALIST_1(XtP(bool) client_d
     delete[] selected_list;
 }
 
+#if defined(IF_XM)
 
-void DataDisp::EditDisplaysCB(CB_ALIST_NULL)
+void DataDisp::EditDisplaysCB(Widget, XtPointer, XtPointer)
 {
     manage_and_raise(edit_displays_dialog_w);
 }
 
+#else
+
+void DataDisp::EditDisplaysCB(void)
+{
+    manage_and_raise(edit_displays_dialog_w);
+}
+
+#endif
 
 //----------------------------------------------------------------------------
 // Value Editor
@@ -8768,17 +8976,30 @@ bool DataDisp::RefreshAddr(DispNode *dn, bool in_cb)
 
 #endif
 
-TIMEOUT_RETURN_TYPE DataDisp::RefreshAddrCB(TM_ALIST_1(XtP(DispNode *) client_data))
-{
 #if defined(IF_XM)
-    refresh_addr_timer = NO_TIMER;
-#endif
+
+void DataDisp::RefreshAddrCB(XtPointer client_data, XtIntervalId *id)
+{
+    if (id != 0)
+    {
+	assert (*id == refresh_addr_timer);
+	refresh_addr_timer = 0;
+    }
 
     DispNode *dn = (DispNode *)client_data;
 
     return RefreshAddr(dn, true);
 
 }
+
+#else
+
+bool DataDisp::RefreshAddrCB(DispNode *dn)
+{
+    return RefreshAddr(dn, true);
+}
+
+#endif
 
 // Handle output of addr commands
 void DataDisp::process_addr (StringArray& answers)
@@ -9071,21 +9292,34 @@ bool DataDisp::unmerge_display(int disp_nr)
     return disp_graph->unalias(disp_nr);
 }
 
-void DataDisp::PreLayoutCB(CB_ALIST_1(GRAPH_EDIT_P w))
+#if defined(IF_XM)
+
+void DataDisp::PreLayoutCB(Widget w, XtPointer, XtPointer)
 {
     if (detect_aliases)
     {
 	// Don't redisplay while or after layouting
-#if defined(IF_XM)
 	graphEditEnableRedisplay(w, False);
-#else
-	w->enable_redisplay(false);
-#endif
     }
 }
 
+#else
+
+void DataDisp::PreLayoutCB(GUIGraphEdit *w)
+{
+    if (detect_aliases)
+    {
+	// Don't redisplay while or after layouting
+	w->enable_redisplay(false);
+    }
+}
+
+#endif
+
+#if defined(IF_XM)
+
 // Re-enable aliases after layouting
-void DataDisp::PostLayoutCB(CB_ALIST_1(GRAPH_EDIT_P w))
+void DataDisp::PostLayoutCB(Widget w, XtPointer, XtPointer)
 {
     if (detect_aliases)
     {
@@ -9100,14 +9334,35 @@ void DataDisp::PostLayoutCB(CB_ALIST_1(GRAPH_EDIT_P w))
 	check_aliases();
 
 	// Okay - we can redisplay now
-#if defined(IF_XM)
 	graphEditEnableRedisplay(w, True);
-#else
-	w->enable_redisplay(true);
-#endif
 	refresh_graph_edit();
     }
 }
+
+#else
+
+// Re-enable aliases after layouting
+void DataDisp::PostLayoutCB(GUIGraphEdit *w)
+{
+    if (detect_aliases)
+    {
+	// Unmerge and re-merge all displays
+	MapRef ref;
+	for (int k = disp_graph->first_nr(ref); 
+	     k != 0; 
+	     k = disp_graph->next_nr(ref))
+	{
+	    unmerge_display(k);
+	}
+	check_aliases();
+
+	// Okay - we can redisplay now
+	w->enable_redisplay(true);
+	refresh_graph_edit();
+    }
+}
+
+#endif
 
 // True iff we have some selection
 bool DataDisp::have_selection()
@@ -9240,7 +9495,11 @@ void DataDisp::set_theme_manager(const ThemeManager& t)
 	dn->reset();
     }
 
-    unselectAllCB(CB_ARGS_1(graph_edit));
+#if defined(IF_XM)
+    unselectAllCB(graph_edit, 0, 0);
+#else
+    unselectAllCB(graph_edit);
+#endif
 }
 
 
@@ -9572,7 +9831,7 @@ void DataDisp::create_shells()
     {
 	XtAddCallback(edit_displays_dialog_w,
 		      XmNokCallback,
-		      UnmanageThisCB1,
+		      UnmanageThisCB,
 		      edit_displays_dialog_w);
 	XtAddCallback(edit_displays_dialog_w,
 		      XmNhelpCallback,

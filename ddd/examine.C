@@ -408,7 +408,7 @@ void gdbExamineCB(Widget w, XtPointer, XtPointer)
 	XtAddCallback(dialog, XmNapplyCallback, 
 		      DisplayExaminedCB, XtPointer(0));
 	XtAddCallback(dialog, XmNcancelCallback, 
-		      UnmanageThisCB1, XtPointer(dialog));
+		      UnmanageThisCB, XtPointer(dialog));
 	XtAddCallback(dialog, XmNhelpCallback,
 		      ImmediateHelpCB, XtPointer(0));
     }

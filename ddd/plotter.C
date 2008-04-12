@@ -1304,7 +1304,7 @@ static void ExportPlotCB(Widget w, XtPointer client_data, XtPointer call_data)
 
 	Delay::register_shell(dialog);
 	XtAddCallback(dialog, XmNokCallback, DoExportCB, client_data);
-	XtAddCallback(dialog, XmNcancelCallback, UnmanageThisCB1, 
+	XtAddCallback(dialog, XmNcancelCallback, UnmanageThisCB, 
 		      XtPointer(dialog));
 	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, XtPointer(0));
     }

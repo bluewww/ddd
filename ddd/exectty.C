@@ -123,17 +123,33 @@ string gdb_tty = "";
 static bool show_starting_line_in_tty    = false;
 
 pid_t exec_tty_pid()     { return separate_tty_pid; }
+
 #if defined(IF_XM)
+
 Window exec_tty_window() { return separate_tty_window; }
+
 #else
+
 GUI::RefPtr<GUI::XWindow> exec_tty_window() { return separate_tty_window; }
+
 #endif
 
-static void CancelTTYCB(CB_ARG_LIST_2(client_data))
+#if defined(IF_XM)
+
+static void CancelTTYCB(Widget, XtPointer client_data, XtPointer)
 {
     bool *flag = (bool *)client_data;
     *flag = true;
 }
+
+#else
+
+static void CancelTTYCB(bool *flag)
+{
+    *flag = true;
+}
+
+#endif
 
 static void GotReplyHP(Agent *, void *client_data, void *call_data)
 {
