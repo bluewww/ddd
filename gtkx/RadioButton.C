@@ -50,17 +50,6 @@ RadioButton::RadioButton(GtkX::Container &parent, PackOptions po,
     // set_group(parent.grp);
 }
 
-// TEMPORARY
-RadioButton::RadioButton(Gtk::Container *parent, const GtkX::String &name,
-			 const GtkX::String &label):
-    Gtk::RadioButton(mklabel(name, label).s())
-{
-    Gtk::RadioButton::set_name(name.s());
-    parent->add(*internal());
-    postinit();
-    // FIXME: No group
-}
-
 RadioButton::~RadioButton(void)
 {
 }

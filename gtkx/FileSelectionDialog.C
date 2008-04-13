@@ -44,6 +44,7 @@ FileSelectionDialog::init(Gtk::Window &parent,
     postinit();
     fs_ = new FileSelection(*this, PACK_EXPAND_WIDGET,
 			    name+String("_fs"), action);
+    fs_->set_size_request(600, 400);
     fs_->show();
 }
 

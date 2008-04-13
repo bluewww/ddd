@@ -48,9 +48,6 @@ namespace GtkX {
 	bool get_active(void);
 	void set_active(bool new_state, bool notify=false);
 #include <GtkX/redirect.h>
-    private:
-	RadioButton(Gtk::Container *parent, const String &name="",
-		    const String &label="");
     };
 
 }

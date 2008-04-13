@@ -77,7 +77,7 @@ FileSelection::internal(void) const
 std::string
 FileSelection::get_selected(void)
 {
-    // FIXME: This returns the whole line!
+    return Gtk::FileChooser::get_filename().c_str();
 }
 
 void

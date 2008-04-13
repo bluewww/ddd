@@ -48,14 +48,6 @@ ComboBoxEntryText::ComboBoxEntryText(GtkX::Container &parent,
     postinit();
 }
 
-// TEMPORARY
-ComboBoxEntryText::ComboBoxEntryText(Gtk::Container *parent, const GtkX::String &name)
-{
-    Gtk::ComboBoxEntryText::set_name(name.s());
-    parent->add(*internal());
-    postinit();
-}
-
 ComboBoxEntryText::~ComboBoxEntryText(void)
 {
 }

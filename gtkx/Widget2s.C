@@ -76,6 +76,3 @@ Widget2s<T>::internal(void) const
     return this;
 }
 
-#include <gtkmm/label.h>
-
-template class Widget2s<Gtk::Label>;

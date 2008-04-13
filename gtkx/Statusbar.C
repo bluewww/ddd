@@ -28,13 +28,6 @@
 
 using namespace GtkX;
 
-Statusbar::Statusbar(Gtk::Container *parent, const GtkX::String &name)
-{
-    set_name(name.s());
-    parent->add(*this);
-    postinit();
-}
-
 Statusbar::Statusbar(GtkX::Container &parent, PackOptions po,
 		     const GtkX::String &name)
 {

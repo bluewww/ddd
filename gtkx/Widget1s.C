@@ -74,16 +74,4 @@ Widget1s<T>::internal(void) const
     return this;
 }
 
-#include <gtkmm/radiobutton.h>
-#include <gtkmm/button.h>
-#include <gtkmm/menuitem.h>
-#include <gtkmm/checkmenuitem.h>
-#include <gtkmm/checkbutton.h>
-#include <gtkmm/label.h>
 
-template class Widget1s<Gtk::RadioButton>;
-template class Widget1s<Gtk::Button>;
-template class Widget1s<Gtk::MenuItem>;
-template class Widget1s<Gtk::CheckMenuItem>;
-template class Widget1s<Gtk::CheckButton>;
-template class Widget1s<Gtk::Label>;

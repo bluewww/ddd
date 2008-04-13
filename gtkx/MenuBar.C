@@ -45,14 +45,6 @@ MenuBar::MenuBar(GtkX::Container &parent, PackOptions po,
     postinit();
 }
 
-// TEMPORARY
-MenuBar::MenuBar(Gtk::Container *parent, const GtkX::String &name)
-{
-    set_name(name.s());
-    parent->add(*internal());
-    postinit();
-}
-
 MenuBar::~MenuBar(void)
 {
 }

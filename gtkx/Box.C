@@ -33,10 +33,10 @@ using namespace GtkX;
 #warning Remove this special case notebook stuff?
 #endif
 
-VBox::VBox(Gtk::Container *parent, const GtkX::String &name)
+// Private.  API does not allow construction of unparented widgets.
+VBox::VBox(const GtkX::String &name)
 {
     set_name(name.s());
-    parent->add(*this);
     postinit();
 }
 
@@ -64,10 +64,10 @@ VBox::internal(void) const
     return this;
 }
 
-HBox::HBox(Gtk::Container *parent, const GtkX::String &name)
+// Private.  API does not allow construction of unparented widgets.
+HBox::HBox(const GtkX::String &name)
 {
     set_name(name.s());
-    parent->add(*this);
     postinit();
 }
 

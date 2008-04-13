@@ -45,16 +45,6 @@ MenuItem::MenuItem(GtkX::Container &parent, PackOptions po,
     postinit();
 }
 
-// TEMPORARY
-MenuItem::MenuItem(Gtk::Container *parent, const GtkX::String &name,
-		   const GtkX::String &label):
-    Gtk::MenuItem(mklabel(name, label).s())
-{
-    set_name(name.s());
-    parent->add(*internal());
-    postinit();
-}
-
 MenuItem::~MenuItem(void)
 {
 }

@@ -28,13 +28,6 @@
 
 using namespace GtkX;
 
-Toolbar::Toolbar(Gtk::Container *parent, const GtkX::String &name)
-{
-    set_name(name.s());
-    parent->add(*this);
-    postinit();
-}
-
 Toolbar::Toolbar(GtkX::Container &parent, PackOptions po,
 		 const GtkX::String &name)
 {

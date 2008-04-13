@@ -49,7 +49,7 @@ namespace GtkX {
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
 #include <GtkX/redirect.h>
     private:
-	VBox(Gtk::Container *parent, const String &name="");
+	VBox(const String &name="");
 	friend class Dialog;
     };
 
@@ -61,7 +61,7 @@ namespace GtkX {
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
 #include <GtkX/redirect.h>
     private:
-  	HBox(Gtk::Container *parent, const String &name="");
+  	HBox(const String &name="");
 	friend class Dialog;
   };
 

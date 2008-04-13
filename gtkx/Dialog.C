@@ -34,10 +34,12 @@ Dialog::Dialog(Gtk::Window *parent, const String &name):
     set_name(name.s());
     set_title(name.s());
     // GtkX::VBox *box = new GtkX::VBox(*this, name+String("_vbox"));
-    GtkX::VBox *box = new GtkX::VBox(get_vbox(), name+String("_vbox"));
+    GtkX::VBox *box = new GtkX::VBox(name+String("_vbox"));
+    get_vbox()->pack_start(*box->internal(), Gtk::PACK_EXPAND_WIDGET);
     box->show();
     // buttons_ = new GtkX::HBox(*this, name+String("_buttons"));
-    buttons_ = new GtkX::HBox(get_vbox(), name+String("_buttons"));
+    buttons_ = new GtkX::HBox(name+String("_buttons"));
+    get_vbox()->pack_start(*buttons_->internal(), Gtk::PACK_SHRINK);
     buttons_->show();
     vbox_ = box;
     postinit();
@@ -49,10 +51,12 @@ Dialog::Dialog(GtkX::Widget &parent, const String &name):
     set_name(name.s());
     set_title(name.s());
     // GtkX::VBox *box = new GtkX::VBox(*this, name+String("_vbox"));
-    GtkX::VBox *box = new GtkX::VBox(get_vbox(), name+String("_vbox"));
+    GtkX::VBox *box = new GtkX::VBox(name+String("_vbox"));
+    get_vbox()->pack_start(*box, Gtk::PACK_EXPAND_WIDGET);
     box->show();
     // buttons_ = new GtkX::HBox(*this, name+String("_buttons"));
-    buttons_ = new GtkX::HBox(get_vbox(), name+String("_buttons"));
+    buttons_ = new GtkX::HBox(name+String("_buttons"));
+    get_vbox()->pack_start(*buttons_, Gtk::PACK_SHRINK);
     buttons_->show();
     vbox_ = box;
     postinit();
@@ -64,10 +68,12 @@ Dialog::Dialog(const String &name):
     set_name(name.s());
     set_title(name.s());
     // GtkX::VBox *box = new GtkX::VBox(*this, name+String("_vbox"));
-    GtkX::VBox *box = new GtkX::VBox(get_vbox(), name+String("_vbox"));
+    GtkX::VBox *box = new GtkX::VBox(name+String("_vbox"));
+    get_vbox()->pack_start(*box, Gtk::PACK_EXPAND_WIDGET);
     box->show();
     // buttons_ = new GtkX::HBox(*this, name+String("_buttons"));
-    buttons_ = new GtkX::HBox(get_vbox(), name+String("_buttons"));
+    buttons_ = new GtkX::HBox(name+String("_buttons"));
+    get_vbox()->pack_start(*box, Gtk::PACK_SHRINK);
     buttons_->show();
     vbox_ = box;
     postinit();
@@ -100,7 +106,9 @@ Dialog::gtk_container(void)
 Button *
 Dialog::add_button(const String &name, const String &label)
 {
-    return new Button(*buttons_, PACK_SHRINK, name, label);
+    Button *b = new Button(*buttons_, PACK_SHRINK, name, label);
+    b->show();
+    return b;
 }
 
 MessageDialog::MessageDialog(GtkX::Widget &parent, const String &name,

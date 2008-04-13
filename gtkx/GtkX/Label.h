@@ -42,8 +42,6 @@ namespace GtkX {
     public:
 	Label(Container &parent, PackOptions po=PACK_SHRINK,
 	      const String &name="", const String &label="");
-	Label(Gtk::Container *parent, const String &name="",
-		 const String &label="");
 	~Label(void);
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;

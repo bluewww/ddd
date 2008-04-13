@@ -48,9 +48,6 @@ namespace GtkX {
 	void set_alignment(float xalign, float yalign);
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
 #include <GtkX/redirect.h>
-    private:
-	Button(Gtk::Container *parent, const String &name="",
-	       const String &label="");
     };
 
 }

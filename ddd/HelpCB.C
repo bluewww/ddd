@@ -1692,10 +1692,14 @@ void ManualStringHelpCB(GUI::Widget *widget, const MString& title,
 
     MMDesc items [] = 
     {
-	MENTRYL("findBackward", "findBackward", MMPush, 
-		BIND_1(PTR_FUN(FindBackwardCB), fi), 0, 0),
-	MENTRYL("findForward", "findForward",   MMPush, 
-		BIND_1(PTR_FUN(FindForwardCB), fi), 0, 0),
+	GENTRYL("findBackward", "findBackward", MMPush, 
+		BIND(FindBackwardCB, fi),
+		sigc::hide(sigc::bind(sigc::ptr_fun(FindBackwardCB), fi),
+		0, 0),
+	GENTRYL("findForward", "findForward",   MMPush, 
+		BIND(FindForwardCB, fi),
+		sigc::hide(sigc::bind(sigc::ptr_fun(FindForwardCB), fi),
+		0, 0),
 	MMEnd
     };
 
@@ -1718,14 +1722,19 @@ void ManualStringHelpCB(GUI::Widget *widget, const MString& title,
     Widget view_index;
     MMDesc manual_menu[] = 
     {
-	MENTRYL("findForward", "findForward",   MMPush, 
-	       BIND_1(PTR_FUN(FindForwardCB), fi), 0, 0),
-	MENTRYL("findBackward", "findBackward", MMPush, 
-	       BIND_1(PTR_FUN(FindBackwardCB), fi), 0, 0),
+	GENTRYL("findForward", "findForward",   MMPush, 
+		BIND(FindForwardCB, fi),
+		sigc::hide(sigc::bind(sigc::ptr_fun(FindForwardCB), fi),
+		0, 0),
+	GENTRYL("findBackward", "findBackward", MMPush, 
+		BIND(FindBackwardCB, fi),
+		sigc::hide(sigc::bind(sigc::ptr_fun(FindBackwardCB), fi),
+		0, 0),
 	MMSep,
-	MENTRYL("viewIndex", "viewIndex",       MMToggle,
-	       BIND_1(PTR_FUN(ToggleIndexCB), XtParent(help_index)), 
-	       0, &view_index),
+	GENTRYL("viewIndex", "viewIndex",       MMToggle,
+		BIND(ToggleIndexCB, XtParent(help_index)), 
+		sigc::bind(sigc::ptr_fun(ToggleIndexCB), help_index->get_parent()), 
+		0, &view_index),
 	MMEnd
     };
 
@@ -1733,7 +1742,7 @@ void ManualStringHelpCB(GUI::Widget *widget, const MString& title,
     {
 	// This is called `source' such that we can re-use the Find
 	// specs from the DDD `Source' meny
-	MENTRYL("source", "source", MMMenu, MMNoCB, manual_menu, 0),
+	GENTRYL("source", "source", MMMenu, MMNoCB, MDUMMY, manual_menu, 0),
 	MMEnd
     };
 
@@ -2017,10 +2026,14 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
 
     MMDesc items [] = 
     {
-	MENTRYL("findBackward", "findBackward", MMPush, 
-	       BIND_1(PTR_FUN(FindBackwardCB), fi), 0, 0),
-	MENTRYL("findForward", "findForward",   MMPush, 
-	       BIND_1(PTR_FUN(FindForwardCB), fi), 0, 0),
+	GENTRYL("findBackward", "findBackward", MMPush, 
+		BIND(FindBackwardCB, fi),
+		sigc::hide(sigc::bind(sigc::ptr_fun(FindBackwardCB), fi),
+		0, 0),
+	GENTRYL("findForward", "findForward",   MMPush, 
+		BIND(FindForwardCB, fi),
+		sigc::hide(sigc::bind(sigc::ptr_fun(FindForwardCB), fi),
+		0, 0),
 	MMEnd
     };
 
@@ -2035,10 +2048,14 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
 
     MMDesc manual_menu[] = 
     {
-	MENTRYL("findForward", "findForward",   MMPush, 
-	       BIND_1(PTR_FUN(FindForwardCB), fi), 0, 0),
-	MENTRYL("findBackward", "findBackward", MMPush,
-	       BIND_1(PTR_FUN(FindBackwardCB), fi), 0, 0),
+	GENTRYL("findForward", "findForward",   MMPush, 
+		BIND(FindForwardCB, fi),
+		sigc::hide(sigc::bind(sigc::ptr_fun(FindForwardCB), fi),
+		0, 0),
+	GENTRYL("findBackward", "findBackward", MMPush,
+		BIND(FindBackwardCB, fi),
+		sigc::hide(sigc::bind(sigc::ptr_fun(FindBackwardCB), fi),
+		0, 0),
 	MMEnd
     };
 
@@ -2046,7 +2063,7 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
     {
 	// This is called `source' such that we can re-use the Find
 	// specs from the DDD `Source' meny
-	MENTRYL("source", "source", MMMenu, MMNoCB, manual_menu, 0),
+	GENTRYL("source", "source", MMMenu, MMNoCB, MDUMMY, manual_menu, 0),
 	MMEnd
     };
 

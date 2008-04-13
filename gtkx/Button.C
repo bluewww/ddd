@@ -45,16 +45,6 @@ Button::Button(GtkX::Container &parent, PackOptions po,
     postinit();
 }
 
-// TEMPORARY
-Button::Button(Gtk::Container *parent, const GtkX::String &name,
-	       const GtkX::String &label):
-    Gtk::Button(mklabel(name, label).s())
-{
-    set_name(name.s());
-    parent->add(*internal());
-    postinit();
-}
-
 Button::~Button(void)
 {
 }
