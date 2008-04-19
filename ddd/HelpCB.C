@@ -1694,11 +1694,11 @@ void ManualStringHelpCB(GUI::Widget *widget, const MString& title,
     {
 	GENTRYL("findBackward", "findBackward", MMPush, 
 		BIND(FindBackwardCB, fi),
-		sigc::hide(sigc::bind(sigc::ptr_fun(FindBackwardCB), fi),
+		sigc::hide(sigc::bind(sigc::ptr_fun(FindBackwardCB), fi)),
 		0, 0),
 	GENTRYL("findForward", "findForward",   MMPush, 
 		BIND(FindForwardCB, fi),
-		sigc::hide(sigc::bind(sigc::ptr_fun(FindForwardCB), fi),
+		sigc::hide(sigc::bind(sigc::ptr_fun(FindForwardCB), fi)),
 		0, 0),
 	MMEnd
     };
@@ -1724,11 +1724,11 @@ void ManualStringHelpCB(GUI::Widget *widget, const MString& title,
     {
 	GENTRYL("findForward", "findForward",   MMPush, 
 		BIND(FindForwardCB, fi),
-		sigc::hide(sigc::bind(sigc::ptr_fun(FindForwardCB), fi),
+		sigc::hide(sigc::bind(sigc::ptr_fun(FindForwardCB), fi)),
 		0, 0),
 	GENTRYL("findBackward", "findBackward", MMPush, 
 		BIND(FindBackwardCB, fi),
-		sigc::hide(sigc::bind(sigc::ptr_fun(FindBackwardCB), fi),
+		sigc::hide(sigc::bind(sigc::ptr_fun(FindBackwardCB), fi)),
 		0, 0),
 	MMSep,
 	GENTRYL("viewIndex", "viewIndex",       MMToggle,
@@ -2028,11 +2028,11 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
     {
 	GENTRYL("findBackward", "findBackward", MMPush, 
 		BIND(FindBackwardCB, fi),
-		sigc::hide(sigc::bind(sigc::ptr_fun(FindBackwardCB), fi),
+		sigc::hide(sigc::bind(sigc::ptr_fun(FindBackwardCB), fi)),
 		0, 0),
 	GENTRYL("findForward", "findForward",   MMPush, 
 		BIND(FindForwardCB, fi),
-		sigc::hide(sigc::bind(sigc::ptr_fun(FindForwardCB), fi),
+		sigc::hide(sigc::bind(sigc::ptr_fun(FindForwardCB), fi)),
 		0, 0),
 	MMEnd
     };
@@ -2050,11 +2050,11 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
     {
 	GENTRYL("findForward", "findForward",   MMPush, 
 		BIND(FindForwardCB, fi),
-		sigc::hide(sigc::bind(sigc::ptr_fun(FindForwardCB), fi),
+		sigc::hide(sigc::bind(sigc::ptr_fun(FindForwardCB), fi)),
 		0, 0),
 	GENTRYL("findBackward", "findBackward", MMPush,
 		BIND(FindBackwardCB, fi),
-		sigc::hide(sigc::bind(sigc::ptr_fun(FindBackwardCB), fi),
+		sigc::hide(sigc::bind(sigc::ptr_fun(FindBackwardCB), fi)),
 		0, 0),
 	MMEnd
     };

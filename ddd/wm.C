@@ -160,10 +160,11 @@ void wm_set_name(Widget shell, string title, string icon)
 #endif
 }
 
+#if defined(IF_XM)
+
 // Wait until W is mapped
 void wait_until_mapped(Widget w, Widget shell)
 {
-#if defined(IF_MOTIF)
     XSync(XtDisplay(w), False);
     XmUpdateDisplay(w);
 
@@ -189,12 +190,19 @@ void wait_until_mapped(Widget w, Widget shell)
 
     XSync(XtDisplay(w), False);
     XmUpdateDisplay(w);
+}
+
 #else
+
+// Wait until W is mapped
+void wait_until_mapped(GUI::Widget *w, GUI::Widget *shell)
+{
 #ifdef NAG_ME
 #warning wait_until_mapped not implemented.
 #endif
-#endif
 }
+
+#endif
 
 #if defined(IF_XM)
 

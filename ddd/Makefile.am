@@ -425,12 +425,12 @@ COND_DDD_SRC = \
 	tictactoe.h  \
 	fonts.C      \
 	fonts.h      \
-	plotter.C    \
-	plotter.h    \
 	sashes.C     \
 	sashes.h     \
 	xconfig.C    \
 	xconfig.h    \
+	plotter.C    \
+	plotter.h    \
 	PlotArea.C   \
 	PlotArea.h
 endif

@@ -1228,12 +1228,14 @@ static void PrintCB(Widget parent, bool displays)
     static Widget print_to_file_w;
     static MMDesc print_to_menu[] = 
     {
-	MENTRYL("printer", "printer", MMToggle, 
-		BIND_1(PTR_FUN(SetPrintTargetCB), TARGET_PRINTER), 
-		0, (Widget *)&print_to_printer_w),
-	MENTRYL("file", "file", MMToggle, 
-		BIND_1(PTR_FUN(SetPrintTargetCB), TARGET_FILE), 
-		0, (Widget *)&print_to_file_w),
+	GENTRYL("printer", "printer", MMToggle, 
+		BIND(SetPrintTargetCB, TARGET_PRINTER), 
+		sigc::bind(sigc::retype(sigc::ptr_fun(SetPrintTargetCB)), TARGET_PRINTER), 
+		0, &print_to_printer_w),
+	GENTRYL("file", "file", MMToggle, 
+		BIND(SetPrintTargetCB, TARGET_FILE), 
+		sigc::bind(sigc::retype(sigc::ptr_fun(SetPrintTargetCB)), TARGET_FILE), 
+		0, &print_to_file_w),
 	MMEnd
     };
 
@@ -1244,37 +1246,47 @@ static void PrintCB(Widget parent, bool displays)
 	GENTRYL("postscript", "postscript", MMToggle, 
 		BIND(SetPrintTypeCB, PRINT_POSTSCRIPT), 
 		sigc::bind(sigc::ptr_fun(SetPrintTypeCB), PRINT_POSTSCRIPT), 
-		0, (Widget *)&postscript_w),
-	MENTRYL("xfig", "xfig", MMToggle,
-		BIND_1(PTR_FUN(SetPrintTypeCB), PRINT_FIG), 0, &fig_w),
+		0, &postscript_w),
+	GENTRYL("xfig", "xfig", MMToggle,
+		BIND(SetPrintTypeCB, PRINT_FIG),
+		sigc::bind(sigc::ptr_fun(SetPrintTypeCB), PRINT_FIG),
+		0, &fig_w),
 	MMEnd
     };
 
     static Widget print_color_w;
-    static MMDesc type_menu[] = 
+    static MMDesc type_menu[] =
     {
-	MENTRYL("type2", "type2", MMRadioPanel | MMUnmanagedLabel, 
-		MMNoCB, type2_menu, 0),
-	MENTRYL("color", "color", MMToggle, BIND_0(PTR_FUN(SetGCColorCB)), 
-		0, (Widget *)&print_color_w),
+	GENTRYL("type2", "type2", MMRadioPanel | MMUnmanagedLabel, 
+		MMNoCB, MDUMMY, type2_menu, 0),
+	GENTRYL("color", "color", MMToggle,
+		BIND(SetGCColorCB, 0), 
+		sigc::retype(sigc::ptr_fun(SetGCColorCB)), 
+		0, &print_color_w),
 	MMEnd
     };
 
     static MMDesc what2_menu[] = 
     {
-	MENTRYL("displays", "displays", MMToggle, BIND_1(PTR_FUN(SetPrintDisplaysCB), true), 
-		0, (Widget *)&print_displays_w),
-	MENTRYL("plots", "plots", MMToggle, BIND_1(PTR_FUN(SetPrintDisplaysCB), false), 
-		0, (Widget *)&print_plots_w),
+	GENTRYL("displays", "displays", MMToggle,
+		BIND(SetPrintDisplaysCB, true), 
+		sigc::bind(sigc::retype(sigc::ptr_fun(SetPrintDisplaysCB)), true), 
+		0, &print_displays_w),
+	GENTRYL("plots", "plots", MMToggle,
+		BIND(SetPrintDisplaysCB, false), 
+		sigc::bind(sigc::retype(sigc::ptr_fun(SetPrintDisplaysCB)), false), 
+		0, &print_plots_w),
 	MMEnd
     };
 
     static MMDesc what_menu[] = 
     {
-	MENTRYL("what2", "what2", MMRadioPanel | MMUnmanagedLabel, 
-		MMNoCB, what2_menu, 0),
-	MENTRYL("selected", "selected", MMToggle, BIND_0(PTR_FUN(SetPrintSelectedNodesCB)), 
-		0, (Widget *)&print_selected_w),
+	GENTRYL("what2", "what2", MMRadioPanel | MMUnmanagedLabel, 
+		MMNoCB, MDUMMY, what2_menu, 0),
+	GENTRYL("selected", "selected", MMToggle,
+		BIND(SetPrintSelectedNodesCB, 0), 
+		sigc::retype(sigc::ptr_fun(SetPrintSelectedNodesCB)), 
+		0, &print_selected_w),
 	MMEnd
     };
 
@@ -1282,36 +1294,51 @@ static void PrintCB(Widget parent, bool displays)
     static Widget print_landscape_w;
     static MMDesc orientation_menu[] = 
     {
-	MENTRYL("portrait", "portrait", MMRadio, 
-		BIND_1(PTR_FUN(SetGCOrientation), PostScriptPrintGC::PORTRAIT), 
-		0, (Widget *)&print_portrait_w),
-	MENTRYL("landscape", "landscape", MMRadio,
-		BIND_1(PTR_FUN(SetGCOrientation), PostScriptPrintGC::LANDSCAPE),
-		0, (Widget *)&print_landscape_w),
+	GENTRYL("portrait", "portrait", MMRadio, 
+		BIND(SetGCOrientation, PostScriptPrintGC::PORTRAIT), 
+		sigc::bind(sigc::retype(sigc::ptr_fun(SetGCOrientation)), PostScriptPrintGC::PORTRAIT), 
+		0, &print_portrait_w),
+	GENTRYL("landscape", "landscape", MMRadio,
+		BIND(SetGCOrientation, PostScriptPrintGC::LANDSCAPE),
+		sigc::bind(sigc::retype(sigc::ptr_fun(SetGCOrientation)), PostScriptPrintGC::LANDSCAPE),
+		0, &print_landscape_w),
 	MMEnd
     };
 
     static MMDesc paper_menu[] = 
     {
-	MENTRYL("a4", "a4", MMToggle, 
-		BIND_0(PTR_FUN(SetGCA4)), 0, (Widget *)&a4_paper_size),
-	MENTRYL("a3", "a3", MMToggle, 
-		BIND_0(PTR_FUN(SetGCA3)), 0, (Widget *)&a3_paper_size),
-	MENTRYL("letter", "letter", MMToggle, 
-		BIND_0(PTR_FUN(SetGCLetter)), 0, (Widget *)&letter_paper_size),
-	MENTRYL("legal", "legal", MMToggle, 
-		BIND_0(PTR_FUN(SetGCLegal)), 0, (Widget *)&legal_paper_size),
-	MENTRYL("executive", "executive", MMToggle, 
-		BIND_0(PTR_FUN(SetGCExecutive)), 0, (Widget *)&executive_paper_size),
-	MENTRYL("custom", "custom", MMToggle, 
-		BIND_0(PTR_FUN(SetGCCustom)), 0, (Widget *)&custom_paper_size),
+	GENTRYL("a4", "a4", MMToggle, 
+		BIND(SetGCA4, 0),
+		sigc::retype(sigc::ptr_fun(SetGCA4)),
+		0, &a4_paper_size),
+	GENTRYL("a3", "a3", MMToggle, 
+		BIND(SetGCA3, 0),
+		sigc::retype(sigc::ptr_fun(SetGCA3)),
+		0, &a3_paper_size),
+	GENTRYL("letter", "letter", MMToggle, 
+		BIND(SetGCLetter, 0),
+		sigc::retype(sigc::ptr_fun(SetGCLetter)),
+		0, &letter_paper_size),
+	GENTRYL("legal", "legal", MMToggle, 
+		BIND(SetGCLegal, 0),
+		sigc::retype(sigc::ptr_fun(SetGCLegal)),
+		0, &legal_paper_size),
+	GENTRYL("executive", "executive", MMToggle, 
+		BIND(SetGCExecutive, 0),
+		sigc::retype(sigc::ptr_fun(SetGCExecutive)),
+		0, &executive_paper_size),
+	GENTRYL("custom", "custom", MMToggle, 
+		BIND(SetGCCustom, 0),
+		sigc::retype(sigc::ptr_fun(SetGCCustom)),
+		0, &custom_paper_size),
 	MMEnd
     };
 
     static MMDesc name_menu[] = 
     {
-	MENTRYL("name", "name", MMTextField | MMUnmanagedLabel, MMNoCB, 
-		0, (Widget *)&print_file_name_field),
+	GENTRYL("name", "name", MMTextField | MMUnmanagedLabel,
+		MMNoCB, MDUMMY,
+		0, &print_file_name_field),
 	GENTRYL("browse", "browse", MMPush,
 		BIND_0(PTR_FUN(BrowseNameCB)),
 		sigc::ptr_fun(BrowseNameCB),
@@ -1321,15 +1348,14 @@ static void PrintCB(Widget parent, bool displays)
 
     static MMDesc menu[] =
     {
-	MENTRYL("to", "to", MMRadioPanel, MMNoCB, print_to_menu, 0),
-	MENTRYL("command", "command", MMTextField, MMNoCB, 0, (Widget *)&print_command_field),
-	MENTRYL("name", "name", MMPanel, MMNoCB, name_menu, 
-		(Widget *)&print_file_name_box),
+	GENTRYL("to", "to", MMRadioPanel, MMNoCB, MDUMMY, print_to_menu, 0),
+	GENTRYL("command", "command", MMTextField, MMNoCB, MDUMMY, 0, &print_command_field),
+	GENTRYL("name", "name", MMPanel, MMNoCB, MDUMMY, name_menu, &print_file_name_box),
 	MMSep,
-	MENTRYL("type", "type", MMPanel, MMNoCB, type_menu, 0),
-	MENTRYL("what", "what", MMPanel, MMNoCB, what_menu, 0),
-	MENTRYL("orientation", "orientation", MMRadioPanel, MMNoCB, orientation_menu, 0),
-	MENTRYL("size", "size", MMRadioPanel, MMNoCB, paper_menu, 0),
+	GENTRYL("type", "type", MMPanel, MMNoCB, MDUMMY, type_menu, 0),
+	GENTRYL("what", "what", MMPanel, MMNoCB, MDUMMY, what_menu, 0),
+	GENTRYL("orientation", "orientation", MMRadioPanel, MMNoCB, MDUMMY, orientation_menu, 0),
+	GENTRYL("size", "size", MMRadioPanel, MMNoCB, MDUMMY, paper_menu, 0),
 	MMEnd
     };
 
@@ -1458,115 +1484,137 @@ static void PrintCB(GUI::Button *parent, bool displays)
     static GUI::CheckButton *print_to_printer_w;
     static GUI::CheckButton *print_to_file_w;
     static MMDesc print_to_menu[] = 
-	{
-	    GENTRYL("printer", "printer", MMToggle, 
-		    BIND(SetPrintTargetCB, TARGET_PRINTER), 
-		    sigc::bind(sigc::retype(sigc::ptr_fun(SetPrintTargetCB)), TARGET_PRINTER), 
-		    0, &print_to_printer_w),
-	    GENTRYL("file", "file", MMToggle, 
-		    BIND(SetPrintTargetCB, TARGET_FILE), 
-		    sigc::bind(sigc::retype(sigc::ptr_fun(SetPrintTargetCB)), TARGET_FILE), 
-		    0, &print_to_file_w),
-	    MMEnd
-	};
+    {
+	GENTRYL("printer", "printer", MMToggle, 
+		BIND(SetPrintTargetCB, TARGET_PRINTER), 
+		sigc::bind(sigc::retype(sigc::ptr_fun(SetPrintTargetCB)), TARGET_PRINTER), 
+		0, &print_to_printer_w),
+	GENTRYL("file", "file", MMToggle, 
+		BIND(SetPrintTargetCB, TARGET_FILE), 
+		sigc::bind(sigc::retype(sigc::ptr_fun(SetPrintTargetCB)), TARGET_FILE), 
+		0, &print_to_file_w),
+	MMEnd
+    };
 
     static GUI::CheckButton *postscript_w;
     static GUI::Widget *fig_w;
     static MMDesc type2_menu[] = 
-	{
-	    GENTRYL("postscript", "postscript", MMToggle, 
-		    BIND(SetPrintTypeCB, PRINT_POSTSCRIPT), 
-		    sigc::bind(sigc::ptr_fun(SetPrintTypeCB), PRINT_POSTSCRIPT), 
-		    0, &postscript_w),
-	    GENTRYL("xfig", "xfig", MMToggle,
-		    BIND(SetPrintTypeCB, PRINT_FIG),
-		    sigc::bind(sigc::ptr_fun(SetPrintTypeCB), PRINT_FIG),
-		    0, &fig_w),
-	    MMEnd
-	};
+    {
+	GENTRYL("postscript", "postscript", MMToggle, 
+		BIND(SetPrintTypeCB, PRINT_POSTSCRIPT), 
+		sigc::bind(sigc::ptr_fun(SetPrintTypeCB), PRINT_POSTSCRIPT), 
+		0, &postscript_w),
+	GENTRYL("xfig", "xfig", MMToggle,
+		BIND(SetPrintTypeCB, PRINT_FIG),
+		sigc::bind(sigc::ptr_fun(SetPrintTypeCB), PRINT_FIG),
+		0, &fig_w),
+	MMEnd
+    };
 
     static GUI::CheckButton *print_color_w;
     static MMDesc type_menu[] = 
-	{
-	    MENTRYL("type2", "type2", MMRadioPanel | MMUnmanagedLabel, 
-		    MMNoCB, type2_menu, 0),
-	    MENTRYL("color", "color", MMToggle, BIND_0(PTR_FUN(SetGCColorCB)), 
-		    0, (Widget *)&print_color_w),
-	    MMEnd
-	};
+    {
+	GENTRYL("type2", "type2", MMRadioPanel | MMUnmanagedLabel, 
+		MMNoCB, MDUMMY, type2_menu, 0),
+	GENTRYL("color", "color", MMToggle,
+		BIND(SetGCColorCB, 0), 
+		sigc::retype(sigc::ptr_fun(SetGCColorCB)), 
+		0, &print_color_w),
+	MMEnd
+    };
 
     static MMDesc what2_menu[] = 
-	{
-	    MENTRYL("displays", "displays", MMToggle, BIND_1(PTR_FUN(SetPrintDisplaysCB), true), 
-		    0, (Widget *)&print_displays_w),
-	    MENTRYL("plots", "plots", MMToggle, BIND_1(PTR_FUN(SetPrintDisplaysCB), false), 
-		    0, (Widget *)&print_plots_w),
-	    MMEnd
-	};
+    {
+	GENTRYL("displays", "displays", MMToggle,
+		BIND(SetPrintDisplaysCB, true), 
+		sigc::bind(sigc::retype(sigc::ptr_fun(SetPrintDisplaysCB)), true), 
+		0, &print_displays_w),
+	GENTRYL("plots", "plots", MMToggle,
+		BIND(SetPrintDisplaysCB, false), 
+		sigc::bind(sigc::retype(sigc::ptr_fun(SetPrintDisplaysCB)), false), 
+		0, &print_plots_w),
+	MMEnd
+    };
 
     static MMDesc what_menu[] = 
-	{
-	    MENTRYL("what2", "what2", MMRadioPanel | MMUnmanagedLabel, 
-		    MMNoCB, what2_menu, 0),
-	    MENTRYL("selected", "selected", MMToggle, BIND_0(PTR_FUN(SetPrintSelectedNodesCB)), 
-		    0, (Widget *)&print_selected_w),
-	    MMEnd
-	};
+    {
+	GENTRYL("what2", "what2", MMRadioPanel | MMUnmanagedLabel, 
+		MMNoCB, MDUMMY, what2_menu, 0),
+	GENTRYL("selected", "selected", MMToggle,
+		BIND(SetPrintSelectedNodesCB, 0), 
+		sigc::retype(sigc::ptr_fun(SetPrintSelectedNodesCB)), 
+		0, &print_selected_w),
+	MMEnd
+    };
 
     static GUI::CheckButton *print_portrait_w;
     static GUI::CheckButton *print_landscape_w;
     static MMDesc orientation_menu[] = 
-	{
-	    MENTRYL("portrait", "portrait", MMRadio, 
-		    BIND_1(PTR_FUN(SetGCOrientation), PostScriptPrintGC::PORTRAIT), 
-		    0, (Widget *)&print_portrait_w),
-	    MENTRYL("landscape", "landscape", MMRadio,
-		    BIND_1(PTR_FUN(SetGCOrientation), PostScriptPrintGC::LANDSCAPE),
-		    0, (Widget *)&print_landscape_w),
-	    MMEnd
-	};
+    {
+	GENTRYL("portrait", "portrait", MMRadio, 
+		BIND(SetGCOrientation, PostScriptPrintGC::PORTRAIT), 
+		sigc::bind(sigc::retype(sigc::ptr_fun(SetGCOrientation)), PostScriptPrintGC::PORTRAIT), 
+		0, &print_portrait_w),
+	GENTRYL("landscape", "landscape", MMRadio,
+		BIND(SetGCOrientation, PostScriptPrintGC::LANDSCAPE),
+		sigc::bind(sigc::retype(sigc::ptr_fun(SetGCOrientation)), PostScriptPrintGC::LANDSCAPE),
+		0, &print_landscape_w),
+	MMEnd
+    };
 
     static MMDesc paper_menu[] = 
-	{
-	    MENTRYL("a4", "a4", MMToggle, 
-		    BIND_0(PTR_FUN(SetGCA4)), 0, (Widget *)&a4_paper_size),
-	    MENTRYL("a3", "a3", MMToggle, 
-		    BIND_0(PTR_FUN(SetGCA3)), 0, (Widget *)&a3_paper_size),
-	    MENTRYL("letter", "letter", MMToggle, 
-		    BIND_0(PTR_FUN(SetGCLetter)), 0, (Widget *)&letter_paper_size),
-	    MENTRYL("legal", "legal", MMToggle, 
-		    BIND_0(PTR_FUN(SetGCLegal)), 0, (Widget *)&legal_paper_size),
-	    MENTRYL("executive", "executive", MMToggle, 
-		    BIND_0(PTR_FUN(SetGCExecutive)), 0, (Widget *)&executive_paper_size),
-	    MENTRYL("custom", "custom", MMToggle, 
-		    BIND_0(PTR_FUN(SetGCCustom)), 0, (Widget *)&custom_paper_size),
-	    MMEnd
-	};
+    {
+	GENTRYL("a4", "a4", MMToggle, 
+		BIND(SetGCA4, 0),
+		sigc::retype(sigc::ptr_fun(SetGCA4)),
+		0, &a4_paper_size),
+	GENTRYL("a3", "a3", MMToggle, 
+		BIND(SetGCA3, 0),
+		sigc::retype(sigc::ptr_fun(SetGCA3)),
+		0, &a3_paper_size),
+	GENTRYL("letter", "letter", MMToggle, 
+		BIND(SetGCLetter, 0),
+		sigc::retype(sigc::ptr_fun(SetGCLetter)),
+		0, &letter_paper_size),
+	GENTRYL("legal", "legal", MMToggle, 
+		BIND(SetGCLegal, 0),
+		sigc::retype(sigc::ptr_fun(SetGCLegal)),
+		0, &legal_paper_size),
+	GENTRYL("executive", "executive", MMToggle, 
+		BIND(SetGCExecutive, 0),
+		sigc::retype(sigc::ptr_fun(SetGCExecutive)),
+		0, &executive_paper_size),
+	GENTRYL("custom", "custom", MMToggle, 
+		BIND(SetGCCustom, 0),
+		sigc::retype(sigc::ptr_fun(SetGCCustom)),
+		0, &custom_paper_size),
+	MMEnd
+    };
 
     static MMDesc name_menu[] = 
-	{
-	    MENTRYL("name", "name", MMTextField | MMUnmanagedLabel, MMNoCB, 
-		    0, (Widget *)&print_file_name_field),
-	    GENTRYL("browse", "browse", MMPush,
-		    BIND_0(PTR_FUN(BrowseNameCB)),
-		    sigc::ptr_fun(BrowseNameCB),
-		    0, 0),
-	    MMEnd
-	};
+    {
+	GENTRYL("name", "name", MMTextField | MMUnmanagedLabel,
+		MMNoCB, MDUMMY,
+		0, &print_file_name_field),
+	GENTRYL("browse", "browse", MMPush,
+		BIND_0(PTR_FUN(BrowseNameCB)),
+		sigc::ptr_fun(BrowseNameCB),
+		0, 0),
+	MMEnd
+    };
 
     static MMDesc menu[] =
-	{
-	    MENTRYL("to", "to", MMRadioPanel, MMNoCB, print_to_menu, 0),
-	    MENTRYL("command", "command", MMTextField, MMNoCB, 0, (Widget *)&print_command_field),
-	    MENTRYL("name", "name", MMPanel, MMNoCB, name_menu, 
-		    &print_file_name_box),
-	    MMSep,
-	    MENTRYL("type", "type", MMPanel, MMNoCB, type_menu, 0),
-	    MENTRYL("what", "what", MMPanel, MMNoCB, what_menu, 0),
-	    MENTRYL("orientation", "orientation", MMRadioPanel, MMNoCB, orientation_menu, 0),
-	    MENTRYL("size", "size", MMRadioPanel, MMNoCB, paper_menu, 0),
-	    MMEnd
-	};
+    {
+	GENTRYL("to", "to", MMRadioPanel, MMNoCB, MDUMMY, print_to_menu, 0),
+	GENTRYL("command", "command", MMTextField, MMNoCB, MDUMMY, 0, &print_command_field),
+	GENTRYL("name", "name", MMPanel, MMNoCB, MDUMMY, name_menu, &print_file_name_box),
+	MMSep,
+	GENTRYL("type", "type", MMPanel, MMNoCB, MDUMMY, type_menu, 0),
+	GENTRYL("what", "what", MMPanel, MMNoCB, MDUMMY, what_menu, 0),
+	GENTRYL("orientation", "orientation", MMRadioPanel, MMNoCB, MDUMMY, orientation_menu, 0),
+	GENTRYL("size", "size", MMRadioPanel, MMNoCB, MDUMMY, paper_menu, 0),
+	MMEnd
+    };
 
     GUI::Widget *panel = MMcreatePanel(print_dialog, "options", menu);
     (void) panel;		// Use it

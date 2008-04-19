@@ -58,18 +58,20 @@ class PlotArea {
     Widget area;		// Widget to draw upon
 #if defined(IF_XM)
     Display *dpy;		// ... its display
+    Window win;			// ... its window
 #else
     GUI::RefPtr<GUI::Display> dpy;		// ... its display
+    GUI::RefPtr<GUI::Window> win;		// ... its window
 #endif
-    Window win;			// ... its window
 
     int cx, cy;			// Current position
     int px, py;			// Current point size
     double xscale, yscale;	// Current scaling
-    GC gc;			// Current graphics context
 #if defined(IF_XM)
+    GC gc;			// Current graphics context
     XFontStruct *font;		// Font to use
 #else
+    GUI::RefPtr<GUI::GC> gc;			// Current graphics context
     GUI::RefPtr<GUI::Font> font;		// Font to use
 #endif
     int vchar;			// Its height

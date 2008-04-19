@@ -66,10 +66,11 @@ extern void wm_set_name(GUI::RefPtr<GUI::Display> display, GUI::RefPtr<GUI::XWin
 #endif
 
 // Misc functions
-void wait_until_mapped(Widget w, Widget shell = 0);
 #if defined(IF_XM)
+void wait_until_mapped(Widget w, Widget shell = 0);
 void raise_shell(Widget w);
 #else
+void wait_until_mapped(GUI::Widget *w, GUI::Widget *shell = 0);
 void raise_shell(GUI::Widget *w);
 #endif
 

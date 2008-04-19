@@ -68,7 +68,7 @@ char plotter_rcsid[] =
 #include <stdio.h>
 #include <fstream>
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 #include <Xm/Command.h>
 #include <Xm/MainW.h>
 #include <Xm/MessageB.h>
@@ -81,7 +81,7 @@ char plotter_rcsid[] =
 #include <Xm/Text.h>
 #include <Xm/TextF.h>
 #include <Xm/ToggleB.h>
-#endif // IF_MOTIF
+#endif
 
 static void TraceInputHP (Agent *source, void *, void *call_data);
 static void TraceOutputHP(Agent *source, void *, void *call_data);
@@ -112,6 +112,7 @@ struct PlotWindowInfo {
     string window_name;		// The window name
     PlotAgent *plotter;		// The current Gnuplot instance
     PlotArea *area;		// The area we're drawing in
+#if defined(IF_XM)
     Widget shell;		// The shell we're in
     Widget working_dialog;	// The working dialog
     Widget swallower;		// The Gnuplot window
@@ -120,21 +121,54 @@ struct PlotWindowInfo {
     Widget command;		// Command widget
     Widget command_dialog;      // Command dialog
     Widget export_dialog;       // Export dialog
+#else
+    GUI::Widget *shell;		// The shell we're in
+    GUI::Dialog *working_dialog;	// The working dialog
+    GUI::Widget *swallower;		// The Gnuplot window
+    GUI::Widget *vsb;			// Vertical scroll bar
+    GUI::Widget *hsb;			// Horizontal scroll bar
+    GUI::Widget *command;		// Command widget
+    GUI::Dialog *command_dialog;      // Command dialog
+    GUI::Dialog *export_dialog;       // Export dialog
+#endif
     bool active;		// True if popped up
+#if defined(IF_XM)
     XtIntervalId swallow_timer;	// Wait for Window creation
+#else
+    GUI::connection swallow_timer;	// Wait for Window creation
+#endif
 
     string settings;		 // Plot settings
+#if defined(IF_XM)
     XtIntervalId settings_timer; // Wait for settings
+#else
+    GUI::connection settings_timer; // Wait for settings
+#endif
     string settings_file;	 // File to get settings from
     StatusDelay *settings_delay; // Delay while getting settings
 
     // Constructor - just initialize
     PlotWindowInfo()
-	: source(0), window_name(""),
-	  plotter(0), area(0), shell(0), working_dialog(0), swallower(0),
-	  vsb(0), hsb(0), command(0), command_dialog(0), 
-	  export_dialog(0), active(false), swallow_timer(0), 
-	  settings(""), settings_timer(0), settings_file(""), settings_delay(0)
+	: source(0),
+	  window_name(""),
+	  plotter(0),
+	  area(0),
+	  shell(0),
+	  working_dialog(0),
+	  swallower(0),
+	  vsb(0),
+	  hsb(0),
+	  command(0),
+	  command_dialog(0), 
+	  export_dialog(0),
+	  active(false),
+	  settings(""),
+#if defined(IF_XM)
+	  swallow_timer(0), 
+	  settings_timer(0),
+#endif
+	  settings_file(""),
+	  settings_delay(0)
     {}
 
 private:
@@ -269,6 +303,8 @@ static void slurp_file(const string& filename, string& target)
     target = s;
 }
 
+#if defined(IF_XM)
+
 static void GetPlotSettingsCB(XtPointer client_data, XtIntervalId *id)
 {
     (void) id;			// Use it
@@ -300,6 +336,39 @@ static void GetPlotSettingsCB(XtPointer client_data, XtIntervalId *id)
 			    GetPlotSettingsCB, XtPointer(plot));
     }
 }
+
+#else
+
+static bool GetPlotSettingsCB(PlotWindowInfo *plot)
+{
+    // plot->settings_timer.disconnect();
+
+    // Check for settings file to be created
+    string settings;
+    slurp_file(plot->settings_file, settings);
+
+    if (settings.contains("set zero"))
+    {
+	// Settings are complete
+	unlink(plot->settings_file.chars());
+	plot->settings = settings;
+
+	configure_plot(plot);
+
+	delete plot->settings_delay;
+	plot->settings_delay = 0;
+    }
+    else
+    {
+	// Try again in 500 ms
+	return true;
+    }
+    return false;
+}
+
+#endif
+
+#if defined(IF_XM)
 
 static void configure_options(PlotWindowInfo *plot, MMDesc *menu, 
 			      const string& settings)
@@ -337,6 +406,52 @@ static void configure_options(PlotWindowInfo *plot, MMDesc *menu,
 	XmToggleButtonSetState(w, set, False);
     }
 }
+
+#else
+
+static void configure_options(PlotWindowInfo *plot, MMDesc *menu, 
+			      const string& settings)
+{
+    for (int i = 0; menu[i].name; i++)
+    {
+	if ((menu[i].type & MMTypeMask) != MMToggle)
+	    continue;
+
+	string name = menu[i].name.c_str();
+
+	const string s1 = "*" + name;
+	std::cerr << "XtNameToWidget not implemented (" << s1.chars() << ")\n";
+#if 0
+	Widget w = XtNameToWidget(plot->shell, s1.chars());
+	XtCallbackProc callback = menu[i].callback.callback;
+
+	bool set = false;
+	if (callback == ToggleOptionCB)
+	{
+	    set = settings.contains("\nset " + name + "\n");
+	}
+	else if (callback == SetContourCB)
+	{
+	    if (name == "base")
+		set = settings.contains("\nset contour base\n") ||
+		    settings.contains("\nset contour both\n");
+	    else if (name == "surface")
+		set = settings.contains("\nset contour surface\n") ||
+		    settings.contains("\nset contour both\n");
+	}
+	else if (callback == ToggleLogscaleCB)
+	{
+	    set = settings.contains("\nset logscale ");
+	}
+
+	XmToggleButtonSetState(w, set, False);
+#endif
+    }
+}
+
+#endif
+
+#if defined(IF_XM)
 
 static void configure_plot(PlotWindowInfo *plot)
 {
@@ -471,11 +586,155 @@ static void configure_plot(PlotWindowInfo *plot)
     XtVaSetValues(plot->hsb, XmNvalue, rot_z, XtPointer(0));
 }
 
+#else
+
+static void configure_plot(PlotWindowInfo *plot)
+{
+    if (plot->plotter == 0)
+	return;
+
+    int ndim = plot->plotter->dimensions();
+
+    // Set up plot menu
+    int i;
+    for (i = 0; plot_menu[i].name; i++)
+    {
+	if ((plot_menu[i].type & MMTypeMask) != MMToggle)
+	    continue;
+
+	string name = plot_menu[i].name.c_str();
+
+	std::cerr << "XtNameToWidget not implemented (" << name.chars() << ")\n";
+#if 0
+	const string s1 = "*" + name;
+	Widget w = XtNameToWidget(plot->shell, s1.chars());
+
+	if (name.contains("2d", -1))
+	    XtSetSensitive(w, ndim == 2);
+	else if (name.contains("3d", -1))
+	    XtSetSensitive(w, ndim >= 3);
+	else
+	    XtSetSensitive(w, ndim >= 2);
+#endif
+    }
+
+#if 0
+    // Log scale is available only iff all values are non-negative
+    Widget logscale = XtNameToWidget(plot->shell, "*logscale");
+    XtSetSensitive(logscale, plot->plotter->min_v() >= 0.0);
+
+    // Axes can be toggled in 2d mode only
+    Widget xzeroaxis = XtNameToWidget(plot->shell, "*xzeroaxis");
+    Widget yzeroaxis = XtNameToWidget(plot->shell, "*yzeroaxis");
+    XtSetSensitive(xzeroaxis, ndim <= 2);
+    XtSetSensitive(yzeroaxis, ndim <= 2);
+
+    // Z Tics are available in 3d mode only
+    Widget ztics = XtNameToWidget(plot->shell, "*ztics");
+    XtSetSensitive(ztics, ndim >= 3);
+
+    // Contour drawing is available in 3d mode only
+    Widget base    = XtNameToWidget(plot->shell, "*base");
+    Widget surface = XtNameToWidget(plot->shell, "*surface");
+    XtSetSensitive(base,    ndim >= 3);
+    XtSetSensitive(surface, ndim >= 3);
+
+    // Set scrollbars
+    manage_child(plot->hsb, ndim >= 3);
+    manage_child(plot->vsb, ndim >= 3);
+
+    // Check if we can export something
+    bool have_source = false;
+    bool can_export  = false;
+    const StringArray& sources = plot->plotter->data_files();
+    for (i = 0; i < sources.size(); i++)
+    {
+	if (!sources[i].empty())
+	{
+	    if (have_source)
+		can_export  = false; // Multiple source files
+	    else
+		can_export = have_source = true;
+	}
+    }
+
+    Widget export_w = XtNameToWidget(plot->shell, "*export");
+    set_sensitive(export_w, can_export);
+
+    // The remainder requires settings
+    if (plot->settings.empty())
+    {
+	// No settings yet
+	if (plot->settings_timer == 0)
+	{
+	    plot->settings_delay = 
+		new StatusDelay("Retrieving Plot Settings");
+
+	    // Save settings...
+	    plot->settings_file = tempfile();
+	    string cmd = "save " + quote(plot->settings_file) + "\n";
+	    send(plot, cmd);
+
+	    // ...and try again in 250ms
+	    plot->settings_timer = 
+		XtAppAddTimeOut(XtWidgetToApplicationContext(plot->shell), 250,
+				GetPlotSettingsCB, XtPointer(plot));
+
+	    // Set initial scrollbar defaults
+	    XtVaSetValues(plot->vsb, XmNvalue, 60, XtPointer(0));
+	    XtVaSetValues(plot->hsb, XmNvalue, 30, XtPointer(0));
+	}
+
+	return;
+    }
+
+    configure_options(plot, view_menu,    plot->settings);
+    configure_options(plot, contour_menu, plot->settings);
+    configure_options(plot, scale_menu,   plot->settings);
+
+    // Get style
+    for (i = 0; plot_menu[i].name; i++)
+    {
+	if ((plot_menu[i].type & MMTypeMask) != MMToggle)
+	    continue;
+
+	string name = (const char *)plot_menu[i].name;
+
+	const string s1 = "*" + name;
+	Widget w = XtNameToWidget(plot->shell, s1.chars());
+
+	bool set = plot->settings.contains("\nset data style " + name + "\n");
+	XmToggleButtonSetState(w, set, False);
+    }
+
+    // Get position
+    int rot_x = 60;
+    int rot_z = 30;
+
+    int view_index = plot->settings.index("set view ");
+    if (view_index >= 0)
+    {
+	// `set view <rot_x> {,{<rot_z>}{,{<scale>}{,<scale_z>}}}'
+	string view_setting = plot->settings.after("set view ");
+	rot_x = atoi(view_setting.chars());
+	view_setting = view_setting.after(", ");
+	rot_z = atoi(view_setting.chars());
+    }
+
+    XtVaSetValues(plot->vsb, XmNvalue, rot_x, XtPointer(0));
+    XtVaSetValues(plot->hsb, XmNvalue, rot_z, XtPointer(0));
+#endif
+}
+
+#endif
+
 
 
 //-------------------------------------------------------------------------
 // Decoration stuff
 //-------------------------------------------------------------------------
+
+#if defined(IF_XM)
 
 // Start plot
 static void popup_plot_shell(PlotWindowInfo *plot)
@@ -508,6 +767,43 @@ static void popup_plot_shell(PlotWindowInfo *plot)
     }
 }
 
+#else
+
+// Start plot
+static void popup_plot_shell(PlotWindowInfo *plot)
+{
+    if (!plot->active && plot->plotter != 0)
+    {
+	// We have the plot
+	plot->plotter->removeHandler(Died, PlotterNotFoundHP, 
+				     (void *)plot);
+
+	// Fetch plot settings
+	configure_plot(plot);
+
+	// Command and export dialogs are not needed (yet)
+	if (plot->command_dialog != 0)
+	    plot->command_dialog->hide();
+	if (plot->export_dialog != 0)
+	    plot->export_dialog->hide();
+
+	// Pop down working dialog
+	if (plot->working_dialog != 0)
+	    plot->working_dialog->hide();
+
+	// Pop up shell
+	plot->shell->set_sensitive(true);
+	plot->shell->show();
+	wait_until_mapped(plot->shell);
+
+	plot->active = true;
+    }
+}
+
+#endif
+
+#if defined(IF_XM)
+
 // Swallow WINDOW
 static void swallow(PlotWindowInfo *plot, Window window)
 {
@@ -527,6 +823,18 @@ static void swallow(PlotWindowInfo *plot, Window window)
 
     popup_plot_shell(plot);
 }
+
+#else
+
+// Swallow WINDOW
+static void swallow(PlotWindowInfo *plot, GUI::RefPtr<GUI::Window> window)
+{
+    std::cerr << "swallow not implemented\n";
+}
+
+#endif
+
+#if defined(IF_XM)
 
 // Swallow new GNUPLOT window; search from window created on root.
 static void SwallowCB(Widget swallower, XtPointer client_data, 
@@ -558,6 +866,18 @@ static void SwallowCB(Widget swallower, XtPointer client_data,
     if (window != None)
 	swallow(plot, window);
 }
+
+#else
+
+// Swallow new GNUPLOT window; search from window created on root.
+static void SwallowCB(GUI::Widget *swallower)
+{
+    std::cerr << "SwallowCB not implemented\n";
+}
+
+#endif
+
+#if defined(IF_XM)
 
 // Swallow new GNUPLOT window; search from root window (expensive).
 static void SwallowTimeOutCB(XtPointer client_data, XtIntervalId *id)
@@ -595,6 +915,18 @@ static void SwallowTimeOutCB(XtPointer client_data, XtIntervalId *id)
 	swallow(plot, window);
 }
 
+#else
+
+// Swallow new GNUPLOT window; search from root window (expensive).
+static void SwallowTimeOutCB(PlotWindowInfo *plot)
+{
+    std::cerr << "SwallowTimeOutCB not implemented\n";
+}
+
+#endif
+
+#if defined(IF_XM)
+
 // Swallow again after window has gone.  This happens while printing.
 static void SwallowAgainCB(Widget swallower, XtPointer client_data, XtPointer)
 {
@@ -613,6 +945,16 @@ static void SwallowAgainCB(Widget swallower, XtPointer client_data, XtPointer)
 			SwallowTimeOutCB, XtPointer(plot));
 }
 
+#else
+
+// Swallow again after window has gone.  This happens while printing.
+static void SwallowAgainCB(GUI::Widget *swallower, PlotWindowInfo *plot)
+{
+    std::cerr << "SwallowAgainCB not implemented\n";
+}
+
+#endif
+
 
 // Cancel plot
 static void popdown_plot_shell(PlotWindowInfo *plot)
@@ -622,6 +964,8 @@ static void popdown_plot_shell(PlotWindowInfo *plot)
 	return;
 
     entered = true;
+
+#if defined(IF_XM)
 
     // Manage dialogs
     if (plot->working_dialog != 0)
@@ -658,6 +1002,8 @@ static void popdown_plot_shell(PlotWindowInfo *plot)
 	delete plot->settings_delay;
 	plot->settings_delay = 0;
     }
+
+#endif
 
     plot->settings = "";
 
@@ -1138,6 +1484,8 @@ static void EnableApplyCB(Widget, XtPointer client_data, XtPointer call_data)
     set_sensitive(apply, cbs->length > 0);
 }
 
+#if defined(IF_XM)
+
 static void PlotCommandCB(Widget, XtPointer client_data, XtPointer)
 {
     PlotWindowInfo *plot = (PlotWindowInfo *)client_data;
@@ -1183,6 +1531,47 @@ static void PlotCommandCB(Widget, XtPointer client_data, XtPointer)
     manage_and_raise(plot->command_dialog);
 }
 
+#else
+
+static void PlotCommandCB(PlotWindowInfo *plot)
+{
+    if (plot->command_dialog == 0)
+    {
+	GUI::Widget dialog = new GUI::Dialog(*plot->shell, "plot_command_dialog");
+	Delay::register_shell(dialog);
+	plot->command_dialog = dialog;
+
+	Widget apply = XmSelectionBoxGetChild(dialog, XmDIALOG_APPLY_BUTTON);
+	XtManageChild(apply);
+    
+	XtUnmanageChild(XmSelectionBoxGetChild(dialog, 
+					       XmDIALOG_OK_BUTTON));
+	XtUnmanageChild(XmSelectionBoxGetChild(dialog, 
+					       XmDIALOG_SELECTION_LABEL));
+	XtUnmanageChild(XmSelectionBoxGetChild(dialog, XmDIALOG_TEXT));
+
+	XtAddCallback(dialog, XmNapplyCallback,
+		      ApplyPlotCommandCB, XtPointer(client_data));
+	XtAddCallback(dialog, XmNhelpCallback,
+		      ImmediateHelpCB, XtPointer(client_data));
+
+	arg = 0;
+	Widget command = 
+	    verify(XmCreateCommand(dialog, XMST("plot_command"), args, arg));
+	plot->command = command;
+	XtManageChild(command);
+
+	XtAddCallback(command, XmNcommandEnteredCallback, 
+		      DoPlotCommandCB, XtPointer(client_data));
+	XtAddCallback(command, XmNcommandChangedCallback, 
+		      EnableApplyCB, XtPointer(apply));
+	set_sensitive(apply, false);
+    }
+
+    manage_and_raise(plot->command_dialog);
+}
+
+#endif
 
 //-------------------------------------------------------------------------
 // Export
