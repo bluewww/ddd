@@ -1537,10 +1537,8 @@ void gdbCloseToolWindowCB(void)
 }
 
 #if defined(IF_XM)
+
 void gdbOpenToolWindowCB(Widget, XtPointer, XtPointer)
-#else
-void gdbOpenToolWindowCB(void)
-#endif
 {
     if (tool_shell == 0)
 	create_command_tool();
@@ -1548,21 +1546,36 @@ void gdbOpenToolWindowCB(void)
     if (tool_shell == 0 || !XtIsRealized(tool_shell))
 	return;
 
-#ifdef IF_MOTIF
     XtVaSetValues(tool_shell,
 		  XmNgeometry, last_tool_shell_geometry.chars(),
 		  XtPointer(0));
-#endif // IF_MOTIF
 
     popup_shell(tool_shell);
 
     wait_until_mapped(tool_shell);
-#ifdef IF_MOTIF
     RecenterToolShellCB();
-#endif // IF_MOTIF
 
     update_options();
 }
+
+#else
+
+void gdbOpenToolWindowCB(void)
+{
+    if (tool_shell == 0)
+	create_command_tool();
+
+    if (tool_shell == 0)
+	return;
+
+    popup_shell(tool_shell);
+
+    wait_until_mapped(tool_shell);
+
+    update_options();
+}
+
+#endif
 
 bool have_tool_window()
 {
