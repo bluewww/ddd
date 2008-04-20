@@ -547,7 +547,7 @@ Widget::button_press_event_callback(GdkEventButton *ev)
 {
     GtkX::EventButton evx;
     translate_event((GdkEvent *)ev, (GtkX::Event *)&evx);
-    signal_button_press_event_(&evx);
+    return signal_button_press_event_(&evx);
 }
 
 bool
@@ -555,7 +555,7 @@ Widget::button_release_event_callback(GdkEventButton *ev)
 {
     GtkX::EventButton evx;
     translate_event((GdkEvent *)ev, (GtkX::Event *)&evx);
-    signal_button_release_event_(&evx);
+    return signal_button_release_event_(&evx);
 }
 
 void

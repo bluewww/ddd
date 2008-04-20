@@ -5746,17 +5746,22 @@ static MMDesc commands_menu[] =
 
 static MMDesc name_menu[] =
 {
-    MENTRYL("name", "name", MMComboBox | MMUnmanagedLabel, 
-	   BIND_0(PTR_FUN(UpdateDefinePanelCB)), 0, (Widget *)&name_w),
-    MENTRYL("arg", "arg", MMToggle, HIDE_0(PTR_FUN(ToggleArgCB)), 0, (Widget *)&arg_w),
+    GENTRYL("name", "name", MMComboBox | MMUnmanagedLabel, 
+	    BIND(UpdateDefinePanelCB, 0),
+	    sigc::ptr_fun(UpdateDefinePanelCB),
+	    0, &name_w),
+    GENTRYL("arg", "arg", MMToggle,
+	    BIND(ToggleArgCB, 0),
+	    sigc::hide(sigc::ptr_fun(ToggleArgCB)),
+	    0, &arg_w),
     MMEnd
 };
 
 static MMDesc panel_menu[] = 
 {
-    MENTRYL("name", "name", MMButtonPanel, MMNoCB, name_menu, 0),
-    MENTRYL("commands", "commands", MMButtonPanel, MMNoCB, commands_menu, 0),
-    MENTRYL("button", "button", MMButtonPanel, MMNoCB, button_menu, 0),
+    GENTRYL("name", "name", MMButtonPanel, MMNoCB, MDUMMY, name_menu, 0),
+    GENTRYL("commands", "commands", MMButtonPanel, MMNoCB, MDUMMY, commands_menu, 0),
+    GENTRYL("button", "button", MMButtonPanel, MMNoCB, MDUMMY, button_menu, 0),
     MMEnd
 };
 
