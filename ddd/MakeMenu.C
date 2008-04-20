@@ -1692,30 +1692,38 @@ static void addCallback(const MMDesc *item, XtPointer default_closure)
     }
 
     case MMToggle:
+	if (callback) {
+	    GUI::CheckButton *check = dynamic_cast<GUI::CheckButton *>(widget);
+	    if (check)
+		check->signal_toggled().connect(sigc::bind(callback, widget));
+	    else
+		std::cerr << "Error: MMToggle widget is not CheckButton\n";
+	}
+	else
+	    set_sensitive(widget, false);
+	break;
     case MMCheckItem:
+	if (callback) {
+	    GUI::CheckMenuItem *checkitem = dynamic_cast<GUI::CheckMenuItem *>(widget);
+	    if (checkitem)
+		checkitem->signal_toggled().connect(sigc::bind(callback, widget));
+	    else
+		std::cerr << "Error: MMCheckItem widget is not CheckMenuItem\n";
+	}
+	else
+	    set_sensitive(widget, false);
+	break;
     case MMRadio:
     {
 	if (callback) {
 	    GUI::RadioButton *radio = dynamic_cast<GUI::RadioButton *>(widget);
 	    if (radio)
 		radio->signal_toggled().connect(sigc::bind(callback, widget));
-	}
-	else
-	    set_sensitive(widget, false);
-#if 0
-	if (callback) {
-	    Gtk::ToggleButton *button = dynamic_cast<Gtk::ToggleButton *>(widget);
-	    Gtk::CheckMenuItem *mi = dynamic_cast<Gtk::CheckMenuItem *>(widget);
-	    if (button)
-		button->signal_toggled().connect(sigc::bind(callback, widget));
-	    else if (mi)
-		mi->signal_toggled().connect(sigc::bind(callback, widget));
 	    else
-		std::cerr << "WARNING: Item " << item->name << " has unexpected type\n";
+		std::cerr << "Error: MMRadio widget is not RadioButton\n";
 	}
 	else
 	    set_sensitive(widget, false);
-#endif
 	break;
     }
     case MMScale:
