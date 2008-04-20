@@ -1156,7 +1156,7 @@ void SourceView::set_bp(const string& a, bool set, bool temp,
     if (!set)
     {
 	// Clear bp
-	gdb_command1(clear_command(address), w);
+	gdb_command(clear_command(address), w);
     }
     else
     {
@@ -1168,9 +1168,9 @@ void SourceView::set_bp(const string& a, bool set, bool temp,
 	case PYDB:
 	case DBG:
 	    if (temp)
-		gdb_command1("tbreak " + address, w);
+		gdb_command("tbreak " + address, w);
 	    else
-		gdb_command1("break " + address, w);
+		gdb_command("break " + address, w);
 	    break;
 
 	case DBX:
@@ -1188,12 +1188,12 @@ void SourceView::set_bp(const string& a, bool set, bool temp,
 	    {
 		// Address given
 		address = address.after('*');
-		gdb_command1("stopi at " + address + cond_suffix, w);
+		gdb_command("stopi at " + address + cond_suffix, w);
 
 		if (temp)
 		{
 		    syncCommandQueue();
-		    gdb_command1("when $pc == " + address + " "
+		    gdb_command("when $pc == " + address + " "
 				+ command_list(clear_command(address, true, 
 							     new_bps)),
 				w);
@@ -1206,7 +1206,7 @@ void SourceView::set_bp(const string& a, bool set, bool temp,
 		{
 		    // Line number given
 		    line = address;
-		    gdb_command1("stop at " + address + cond_suffix, w);
+		    gdb_command("stop at " + address + cond_suffix, w);
 		}
 		else if (is_file_pos(address))
 		{
@@ -1216,8 +1216,8 @@ void SourceView::set_bp(const string& a, bool set, bool temp,
 		    string file = address.before(colon_index);
 		    line = address.after(colon_index);
 
-		    gdb_command1("file " + file, w);
-		    gdb_command1("stop at " + line + cond_suffix, w);
+		    gdb_command("file " + file, w);
+		    gdb_command("stop at " + line + cond_suffix, w);
 		}
 		else
 		{
@@ -1229,13 +1229,13 @@ void SourceView::set_bp(const string& a, bool set, bool temp,
 			string file = pos.before(':');
 			line = pos.after(':');
 
-			gdb_command1("file " + file, w);
-			gdb_command1("stop at " + line + cond_suffix, w);
+			gdb_command("file " + file, w);
+			gdb_command("stop at " + line + cond_suffix, w);
 		    }
 		    else
 		    {
 			// Cannot determine function position - try this one
-			gdb_command1("stop in " + address + cond_suffix, w);
+			gdb_command("stop in " + address + cond_suffix, w);
 		    }
 		}
 
@@ -1243,7 +1243,7 @@ void SourceView::set_bp(const string& a, bool set, bool temp,
 		{
 		    syncCommandQueue();
 		    const string clear_cmd = clear_command(line, true, new_bps);
-		    gdb_command1("when at " + line + " " 
+		    gdb_command("when at " + line + " " 
 				+ command_list(clear_cmd), w);
 		}
 	    }
@@ -1273,7 +1273,7 @@ void SourceView::set_bp(const string& a, bool set, bool temp,
 	    if (strlen(cond) != 0 && !gdb->has_condition_command())
 		command += " {if " + string(cond) + " {} {Q;c}}";
 
-	    gdb_command1(command, w);
+	    gdb_command(command, w);
 	    break;
 	}
 
@@ -1285,7 +1285,7 @@ void SourceView::set_bp(const string& a, bool set, bool temp,
 		address = address.after(':');
 
 		if (!file_matches(file, current_file_name))
-		    gdb_command1("f " + file, w);
+		    gdb_command("f " + file, w);
 	    }
 
 	    string command = "b " + address;
@@ -1294,7 +1294,7 @@ void SourceView::set_bp(const string& a, bool set, bool temp,
 		command += cond;
 	    }
 
-	    gdb_command1(command, w);
+	    gdb_command(command, w);
 
 	    if (temp)
 	    {
@@ -1306,7 +1306,7 @@ void SourceView::set_bp(const string& a, bool set, bool temp,
 		add_auto_command_prefix(clear);
 
 		command = "a " + address + " " + del + "; " + clear;
-		gdb_command1(command, w);
+		gdb_command(command, w);
 	    }
 
 	    break;
@@ -1316,7 +1316,7 @@ void SourceView::set_bp(const string& a, bool set, bool temp,
 	if (strlen(cond) != 0 && gdb->has_condition_command())
 	{
 	    // Add condition
-	    gdb_command1(gdb->condition_command(itostring(new_bps), cond), w);
+	    gdb_command(gdb->condition_command(itostring(new_bps), cond), w);
 	}
     }
 }
@@ -1473,13 +1473,13 @@ void SourceView::temp_n_cont(const string& a, GUI::Widget *w)
     case XDB:
 	if (address.contains('*', 0))
 	    address = address.after('*');
-	gdb_command1("c " + address, w);
+	gdb_command("c " + address, w);
 	break;
 
     case PERL:
 	if (is_file_pos(address))
 	    address = address.after(':');
-	gdb_command1("c " + address, w);
+	gdb_command("c " + address, w);
 	break;
     }
 }
@@ -1753,7 +1753,7 @@ bool SourceView::move_pc(const string& a, GUI::Widget *w)
 	}
 	else
 	{
-	    gdb_command1(gdb->assign_command("$pc", address), w);
+	    gdb_command(gdb->assign_command("$pc", address), w);
 	    return true;
 	}
     }
@@ -1801,7 +1801,7 @@ bool SourceView::move_bp(int bp_nr, const string& a, GUI::Widget *w, bool copy)
     string commands(os);
     commands.gsub("@0@", itostring(new_bp_nr));
 
-    gdb_command1(commands, w);
+    gdb_command(commands, w);
 
     if (copy)
     {
@@ -1923,7 +1923,7 @@ void SourceView::_set_bps_cond(const IntArray& _nrs, const string& cond,
 	if (gdb->has_condition_command())
 	{
 	    // Use the `cond' command to assign a condition
-	    gdb_command1(gdb->condition_command(itostring(bp_nr), c), w);
+	    gdb_command(gdb->condition_command(itostring(bp_nr), c), w);
 	}
 	else
 	{
@@ -1943,7 +1943,7 @@ void SourceView::_set_bps_cond(const IntArray& _nrs, const string& cond,
 		commands.gsub("@0@", itostring(new_bp_nr));
 	    }
 
-	    gdb_command1(commands, w);
+	    gdb_command(commands, w);
 
 	    if (gdb->has_numbered_breakpoints())
 	    {
@@ -2129,7 +2129,7 @@ void SourceView::enable_bps(const IntArray& nrs, GUI::Widget *w)
 
     if (gdb->has_enable_command())
     {
-	gdb_command1(gdb->enable_command(all_numbers(nrs)), w);
+	gdb_command(gdb->enable_command(all_numbers(nrs)), w);
     }
     else if (gdb->has_conditions())
     {
@@ -2144,7 +2144,7 @@ void SourceView::disable_bps(const IntArray& nrs, GUI::Widget *w)
 
     if (gdb->has_disable_command())
     {
-	gdb_command1(gdb->disable_command(all_numbers(nrs)), w);
+	gdb_command(gdb->disable_command(all_numbers(nrs)), w);
     }
     else if (gdb->has_conditions())
     {
@@ -2169,7 +2169,7 @@ void SourceView::delete_bps(const IntArray& nrs, GUI::Widget *w)
     }
     else if (gdb->has_delete_command())
     {
-	gdb_command1(gdb->delete_command(all_numbers(nrs)), w);
+	gdb_command(gdb->delete_command(all_numbers(nrs)), w);
     }
     else
     {
@@ -2420,14 +2420,14 @@ void SourceView::text_popup_printCB (GUI::Widget *w, const string *word_ptr)
 {
     assert(word_ptr->length() > 0);
 
-    gdb_command1(gdb->print_command(fortranize(*word_ptr), false), w);
+    gdb_command(gdb->print_command(fortranize(*word_ptr), false), w);
 }
 
 void SourceView::text_popup_print_refCB (GUI::Widget *w, const string *word_ptr)
 {
     assert(word_ptr->length() > 0);
 
-    gdb_command1(gdb->print_command(deref(fortranize(*word_ptr)), false), w);
+    gdb_command(gdb->print_command(deref(fortranize(*word_ptr)), false), w);
 }
 
 #endif
@@ -2460,14 +2460,14 @@ void SourceView::text_popup_watchCB (GUI::Widget *w, const string *word_ptr)
 {
     assert(word_ptr->length() > 0);
 
-    gdb_command1(gdb->watch_command(fortranize(*word_ptr)), w);
+    gdb_command(gdb->watch_command(fortranize(*word_ptr)), w);
 }
 
 void SourceView::text_popup_watch_refCB (GUI::Widget *w, const string *word_ptr)
 {
     assert(word_ptr->length() > 0);
 
-    gdb_command1(gdb->watch_command(deref(fortranize(*word_ptr))), w);
+    gdb_command(gdb->watch_command(deref(fortranize(*word_ptr))), w);
 }
 
 #endif
@@ -2499,14 +2499,14 @@ void SourceView::text_popup_dispCB (GUI::Widget *w, const string *word_ptr)
 {
     assert(word_ptr->length() > 0);
 
-    gdb_command1("graph display " + fortranize(*word_ptr), w);
+    gdb_command("graph display " + fortranize(*word_ptr), w);
 }
 
 void SourceView::text_popup_disp_refCB (GUI::Widget *w, const string *word_ptr)
 {
     assert(word_ptr->length() > 0);
 
-    gdb_command1("graph display " + deref(fortranize(*word_ptr)), w);
+    gdb_command("graph display " + deref(fortranize(*word_ptr)), w);
 }
 
 #endif
@@ -2530,7 +2530,7 @@ void SourceView::text_popup_whatisCB (GUI::Widget *w, const string *word_ptr)
 {
     assert(word_ptr->length() > 0);
 
-    gdb_command1(gdb->whatis_command(fortranize(*word_ptr)), w);
+    gdb_command(gdb->whatis_command(fortranize(*word_ptr)), w);
 }
 
 #endif
@@ -7674,17 +7674,17 @@ void SourceView::doubleClickAct(GUI::Widget *w, GUI::Event *e, String *params,
 	    if (control || current_source.contains('(', p))
 	    {
 		if (*num_params >= 3)
-		    gdb_button_command1(params[2]);
+		    gdb_button_command(params[2]);
 		else
-		    gdb_button_command1("list ()");
+		    gdb_button_command("list ()");
 		return;
 	    }
 	}
 
 	if (*num_params >= 1)
-	    gdb_button_command1(params[0]);
+	    gdb_button_command(params[0]);
 	else
-	    gdb_button_command1("graph display ()");
+	    gdb_button_command("graph display ()");
 	return;
     }
 
@@ -7728,7 +7728,7 @@ void SourceView::doubleClickAct(GUI::Widget *w, GUI::Event *e, String *params,
 	{
 	    // In breakpoint area, and we have no breakpoint: create a new one
 	    if (*num_params >= 2)
-		gdb_button_command1(params[1]);
+		gdb_button_command(params[1]);
 	    else if (control)
 		create_temp_bp(source_arg->get_string(), w);
 	    else
@@ -7847,7 +7847,7 @@ void SourceView::NewBreakpointCB(GUI::Widget *w)
     static GUI::Dialog *dialog = 0;
     if (dialog == 0)
     {
-	dialog = new GUI::Dialog(find_shell(w->internal()), "new_breakpoint_dialog");
+	dialog = new GUI::Dialog(*find_shell1(w), "new_breakpoint_dialog");
 	Delay::register_shell(dialog);
 
 
@@ -7919,7 +7919,7 @@ void SourceView::NewWatchpointDCB(GUI::Widget *w, GUI::ComboBoxEntryText *entry)
     if (input.empty())
 	return;
 
-    gdb_command1(gdb->watch_command(input, selected_watch_mode), w);
+    gdb_command(gdb->watch_command(input, selected_watch_mode), w);
 }
 
 #endif
@@ -8935,7 +8935,7 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, GUI::Widget * /* origin */)
     info->spin_locked = true;
     info->nrs = breakpoint_nrs;
 
-    info->dialog = new GUI::Dialog(find_shell(source_text_w), GUI::String("Properties"));
+    info->dialog = new GUI::Dialog(*find_shell1(source_text_w), GUI::String("Properties"));
 
     GUI::Button *button = info->dialog->add_button("apply", "Apply");
 
@@ -9330,7 +9330,7 @@ void SourceView::RecordBreakpointCommandsCB(GUI::Widget *w, BreakpointProperties
 {
     gdb->removeHandler(Recording, RecordingHP, (void *)info);
     gdb->addHandler(Recording, RecordingHP, (void *)info);
-    gdb_command1("commands " + itostring(info->nrs[0]), w);
+    gdb_command("commands " + itostring(info->nrs[0]), w);
 }
 
 #endif
@@ -9348,7 +9348,7 @@ void SourceView::EndBreakpointCommandsCB(Widget w, XtPointer, XtPointer)
 // End recording breakpoint commands
 void SourceView::EndBreakpointCommandsCB(GUI::Widget *w)
 {
-    gdb_command1("end", w);
+    gdb_command("end", w);
 }
 
 #endif
@@ -9602,10 +9602,10 @@ void SourceView::set_bp_commands(IntArray& nrs, const StringArray& commands,
 	{
 	case GDB:
 	{
-	    gdb_command1("commands " + itostring(nrs[i]), origin);
+	    gdb_command("commands " + itostring(nrs[i]), origin);
 	    for (int j = 0; j < commands.size(); j++)
-		gdb_command1(commands[j], origin);
-	    gdb_command1("end", origin);
+		gdb_command(commands[j], origin);
+	    gdb_command("end", origin);
 	    break;
 	}
 
@@ -9625,7 +9625,7 @@ void SourceView::set_bp_commands(IntArray& nrs, const StringArray& commands,
 	    }
 
 	    cmd += " { " + action + " }";
-	    gdb_command1(cmd, origin);
+	    gdb_command(cmd, origin);
 	    break;
 	}
 
@@ -9635,7 +9635,7 @@ void SourceView::set_bp_commands(IntArray& nrs, const StringArray& commands,
 	    const string cmd = "b " + 
 		bp->file_name() + ":" + itostring(bp->line_nr()) + 
 		" {" + action + "}";
-	    gdb_command1(cmd, origin);
+	    gdb_command(cmd, origin);
 	    delete_bp(bp->number(), origin);
 	    break;
 	}
@@ -9643,9 +9643,9 @@ void SourceView::set_bp_commands(IntArray& nrs, const StringArray& commands,
 	case PERL:
 	{
 	    // Just set an action.
-	    gdb_command1("f " + bp->file_name(), origin);
+	    gdb_command("f " + bp->file_name(), origin);
 	    const string cmd = "a " + itostring(bp->line_nr()) + " " + action;
-	    gdb_command1(cmd, origin);
+	    gdb_command(cmd, origin);
 	    break;
 	}
 
@@ -9963,7 +9963,7 @@ void SourceView::PrintWatchpointCB(GUI::Widget *w, BreakpointPropertiesInfo *inf
 	break;
 
     case WATCHPOINT:
-	gdb_command1(gdb->print_command(bp->expr(), false), w);
+	gdb_command(gdb->print_command(bp->expr(), false), w);
 	break;
     }
 }
@@ -11125,7 +11125,7 @@ void SourceView::ThreadCommandCB(GUI::Widget *w, const char *client_data)
     for (int i = 0; i < threads.size(); i++)
 	command += " " + itostring(threads[i]);
 
-    gdb_command1(command, w);
+    gdb_command(command, w);
 }
 
 #endif
@@ -11198,7 +11198,7 @@ void SourceView::SelectThreadCB(GUI::Widget *w)
     if (threads.size() == 1)
     {
 	// Make single thread the default thread.
-	gdb_command1("thread " + itostring(threads[0]), w);
+	gdb_command("thread " + itostring(threads[0]), w);
     }
     else if (threads.size() == 0 &&
 	     ( gdb->type() == JDB || (gdb->type() == DBX && gdb->isSunDBX()) )
@@ -11224,13 +11224,13 @@ void SourceView::SelectThreadCB(GUI::Widget *w)
 		  if (threadgroup == current_threadgroup)
 		    threadgroup = "system"; // show all threadgroups
 
-		  gdb_command1("threadgroup " + threadgroup, w);
+		  gdb_command("threadgroup " + threadgroup, w);
 	        }
 	    } else
             {
 		string thread = item.after("t@");
 		thread = thread.before(" ");
-		gdb_command1("thread t@" + thread, w);
+		gdb_command("thread t@" + thread, w);
 	    }
 	}
     }
@@ -13675,8 +13675,13 @@ void SourceView::show_pc(const string& pc, GUI::HighlightMode mode,
 	RefreshDisassembleInfo *info = 
 	    new RefreshDisassembleInfo(pc, mode, msg);
 
+#if defined(IF_XM)
 	gdb_command(gdb->disassemble_command(start, end), Widget(0),
 		    refresh_codeOQC, (void *)info);
+#else
+	gdb_command(gdb->disassemble_command(start, end), (GUI::Widget*)(0),
+		    refresh_codeOQC, (void *)info);
+#endif
 	return;
     }
 

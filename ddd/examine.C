@@ -342,12 +342,12 @@ static void PrintExaminedCB(Widget w, XtPointer, XtPointer)
 
 static void DisplayExaminedCB(GUI::Widget *w)
 {
-    gdb_command("graph display `" + examine_command() + "`", w->internal());
+    gdb_command("graph display `" + examine_command() + "`", w);
 }
 
 static void PrintExaminedCB(GUI::Widget *w)
 {
-    gdb_command(examine_command(), w->internal());
+    gdb_command(examine_command(), w);
 }
 
 

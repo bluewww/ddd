@@ -382,6 +382,8 @@ void clear_isearch(bool reset, bool show)
     isearch_motion_ok = false;
 }
 
+#if defined(IF_XM)
+
 void interruptAct(Widget w, XEvent*, String *, Cardinal *)
 {
     if (isearch_state != ISEARCH_NONE)
@@ -395,6 +397,24 @@ void interruptAct(Widget w, XEvent*, String *, Cardinal *)
 	gdb_keyboard_command = true;
     }
 }
+
+#else
+
+void interruptAct(GUI::Widget *w, GUI::Event*, String*, Cardinal*)
+{
+    if (isearch_state != ISEARCH_NONE)
+    {
+	clear_isearch();
+    }
+    else
+    {
+	gdb_keyboard_command = true;
+	gdb_command("\003", w);
+	gdb_keyboard_command = true;
+    }
+}
+
+#endif
 
 #if defined(IF_MOTIF)
 // Handle incremental searches; return true if processed
@@ -539,7 +559,7 @@ void controlAct(GUI::Widget *w, GUI::Event *ev, String *params, Cardinal *num_pa
     }
 
     gdb_keyboard_command = from_keyboard(ev);
-    gdb_command1(ctrl(params[0]), w);
+    gdb_command(ctrl(params[0]), w);
     gdb_keyboard_command = from_keyboard(ev);
 }
 
@@ -554,7 +574,7 @@ void commandAct(GUI::Widget *w, GUI::Event *ev, String *params, Cardinal *num_pa
     }
 
     gdb_keyboard_command = from_keyboard(ev);
-    gdb_button_command1(params[0], w);
+    gdb_button_command(params[0], w);
     gdb_keyboard_command = from_keyboard(ev);
 }
 
@@ -1045,7 +1065,7 @@ void gdbCommandCB1(GUI::Widget *w, const char *client_data)
 {
     clear_isearch();
 
-    gdb_button_command1(string(client_data), w);
+    gdb_button_command(string(client_data), w);
 
 #ifdef NAG_ME
 #warning FIXME: Make sure gdbCommandCB is never invoked by a key event.
@@ -1054,6 +1074,8 @@ void gdbCommandCB1(GUI::Widget *w, const char *client_data)
 }
 
 #endif
+
+#if defined(IF_XM)
 
 void gdb_button_command(const string& command, Widget origin)
 {
@@ -1070,9 +1092,9 @@ void gdb_button_command(const string& command, Widget origin)
     }
 }
 
-#if !defined(IF_XM)
+#else
 
-void gdb_button_command1(const string& command, GUI::Widget *origin)
+void gdb_button_command(const string& command, GUI::Widget *origin)
 {
     if (command.contains("..."))
     {
@@ -1082,8 +1104,8 @@ void gdb_button_command1(const string& command, GUI::Widget *origin)
     {
 	string c = command;
 	c.gsub("()", source_arg->get_string());
-	if (add_running_arguments1(c, origin))
-	    gdb_command1(c, origin);
+	if (add_running_arguments(c, origin))
+	    gdb_command(c, origin);
     }
 }
 

@@ -1471,7 +1471,7 @@ static void PrintCB(GUI::Button *parent, bool displays)
 	return;
     }
 
-    print_dialog = new GUI::Dialog(find_shell(parent), "print");
+    print_dialog = new GUI::Dialog(*find_shell1(parent), "print");
     Delay::register_shell(print_dialog);
 
     GUI::Button *button;
@@ -1673,7 +1673,7 @@ static void PrintCB(GUI::Button *parent, bool displays)
 
     // Create size dialog
     paper_size_dialog = 
-	new GUI::Dialog(find_shell(parent), "paper_size_dialog");
+	new GUI::Dialog(*find_shell1(parent), "paper_size_dialog");
     Delay::register_shell(paper_size_dialog);
 
     GUI::Entry *entry;

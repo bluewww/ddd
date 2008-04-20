@@ -137,7 +137,7 @@ void gdbPrintCB(GUI::Widget *w, bool internal)
     const string arg = current_arg();
 
     if (!arg.empty() && !arg.matches(rxwhite))
-	gdb_command1(gdb->print_command(arg, internal), w);
+	gdb_command(gdb->print_command(arg, internal), w);
 }
 
 #endif
@@ -161,7 +161,7 @@ void gdbPrintRefCB(GUI::Widget *w, bool internal)
     const string arg = current_arg();
 
     if (!arg.empty() && !arg.matches(rxwhite))
-	gdb_command1(gdb->print_command(deref(arg), internal), w);
+	gdb_command(gdb->print_command(deref(arg), internal), w);
 }
 
 #endif
@@ -191,7 +191,7 @@ void gdbDisplayCB(GUI::Widget *w)
     string arg = current_arg();
 
     if (!arg.empty() && !arg.matches(rxwhite))
-	gdb_command1("graph display " + arg, w);
+	gdb_command("graph display " + arg, w);
 }
 
 void gdbDispRefCB(GUI::Widget *w)
@@ -199,7 +199,7 @@ void gdbDispRefCB(GUI::Widget *w)
     string arg = current_arg();
 
     if (!arg.empty() && !arg.matches(rxwhite))
-	gdb_command1("graph display " + deref(arg), w);
+	gdb_command("graph display " + deref(arg), w);
 }
 
 #endif
@@ -221,7 +221,7 @@ void gdbWhatisCB(GUI::Widget *w)
     string arg = current_arg();
 
     if (!arg.empty() && !arg.matches(rxwhite))
-	gdb_command1(gdb->whatis_command(arg), w);
+	gdb_command(gdb->whatis_command(arg), w);
 }
 
 #endif
@@ -274,7 +274,7 @@ void gdbTempBreakAtCB(GUI::Widget *w)
 
 void gdbRegexBreakAtCB(GUI::Widget *w)
 {
-    gdb_command1("rbreak " + source_arg->get_string(), w);
+    gdb_command("rbreak " + source_arg->get_string(), w);
 }
 
 #endif
@@ -457,11 +457,13 @@ void gdbWatchCB(GUI::Widget *w, int mode)
     const string arg = current_arg();
 
     if (!arg.empty() && !arg.matches(rxwhite))
-	gdb_command1(gdb->watch_command(arg, 
-					WatchMode(mode)), w);
+	gdb_command(gdb->watch_command(arg, 
+				       WatchMode(mode)), w);
 }
 
 #endif
+
+#if defined(IF_XM)
 
 void gdbWatchRefCB(Widget w, XtPointer, XtPointer)
 {
@@ -470,6 +472,18 @@ void gdbWatchRefCB(Widget w, XtPointer, XtPointer)
     if (!arg.empty() && !arg.matches(rxwhite))
 	gdb_command(gdb->watch_command(deref(arg)), w);
 }
+
+#else
+
+void gdbWatchRefCB(GUI::Widget *w)
+{
+    string arg = current_arg();
+
+    if (!arg.empty() && !arg.matches(rxwhite))
+	gdb_command(gdb->watch_command(deref(arg)), w);
+}
+
+#endif
 
 #if defined(IF_XM)
 

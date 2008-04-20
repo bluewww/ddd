@@ -338,7 +338,7 @@ static void gdbRunDCB(void)
 	else
 	    c = cmd;
 	cmd = cmd.after('\n');
-	gdb_command1(c, (GUI::Widget *)run_dialog);
+	gdb_command(c, (GUI::Widget *)run_dialog);
     }
 }
 
@@ -724,10 +724,12 @@ static void RestartAndRunCB(GUI::Widget *w, const string *client_data)
     RestartDebuggerCB();
 
     const string& cmd = *client_data;
-    gdb_command1(cmd, w);
+    gdb_command(cmd, w);
 }
 
 #endif
+
+#if defined(IF_XM)
 
 bool add_running_arguments(string& cmd, Widget origin)
 {
@@ -786,10 +788,9 @@ bool add_running_arguments(string& cmd, Widget origin)
     return true;
 }
 
+#else
 
-#if !defined(IF_XM)
-
-bool add_running_arguments1(string& cmd, GUI::Widget *origin)
+bool add_running_arguments(string& cmd, GUI::Widget *origin)
 {
     if (cmd == "run")
 	cmd = gdb->rerun_command();

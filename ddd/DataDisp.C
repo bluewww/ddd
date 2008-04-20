@@ -5711,7 +5711,7 @@ void DataDisp::new_displaySQ (const string& display_expression,
 	}
 	else
 	{
-	    gdb_command1(cmd, last_origin, new_user_displayOQC, 
+	    gdb_command(cmd, last_origin, new_user_displayOQC, 
 			new NewDisplayInfo(info));
 	}
     }
@@ -5743,7 +5743,7 @@ void DataDisp::new_displaySQ (const string& display_expression,
 
 	    if (gdb->display_prints_values())
 	    {
-		gdb_command1(gdb->display_command(expressions[i]),
+		gdb_command(gdb->display_command(expressions[i]),
 			    last_origin, new_data_displayOQC, infop);
 	    }
 	    else
@@ -5752,9 +5752,9 @@ void DataDisp::new_displaySQ (const string& display_expression,
 		// Be sure to specify the correct display number
 		info.cluster_offset = expressions.size() - 1;
 
-		gdb_command1(gdb->display_command(expressions[i]),
+		gdb_command(gdb->display_command(expressions[i]),
 			    last_origin, OQCProc(0), (void *)0);
-		gdb_command1(gdb->print_command(expressions[i], true),
+		gdb_command(gdb->print_command(expressions[i], true),
 			    last_origin, new_data_displayOQC, infop);
 	    }
 
@@ -6151,8 +6151,8 @@ DispNode *DataDisp::new_data_node(const string& given_name,
 	    gdb_command("undisplay " + itostring(dn->disp_nr()), 
 			last_origin, OQCProc(0));
 #else
-	    gdb_command1("undisplay " + itostring(dn->disp_nr()), 
-			 last_origin, OQCProc(0));
+	    gdb_command("undisplay " + itostring(dn->disp_nr()), 
+			last_origin, OQCProc(0));
 #endif
 	}
 
@@ -6279,10 +6279,10 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
 			false, false,
 			COMMAND_PRIORITY_AGAIN);
 #else
-	    gdb_command1(gdb->display_command(), last_origin,
-			 new_data_display_extraOQC, data,
-			 false, false,
-			 COMMAND_PRIORITY_AGAIN);
+	    gdb_command(gdb->display_command(), last_origin,
+			new_data_display_extraOQC, data,
+			false, false,
+			COMMAND_PRIORITY_AGAIN);
 #endif
 	}
 	else
@@ -6487,7 +6487,7 @@ int DataDisp::new_cluster(const string& name, bool plotted)
 #if defined(IF_XM)
     gdb_command("graph " + cmd + " `"  + base + "`", last_origin, 0);
 #else
-    gdb_command1("graph " + cmd + " `"  + base + "`", last_origin, 0);
+    gdb_command("graph " + cmd + " `"  + base + "`", last_origin, 0);
 #endif
     return -next_ddd_display_number;
 }
@@ -6832,7 +6832,7 @@ void DataDisp::disable_displaySQ(IntArray& display_nrs, bool verbose,
 #if defined(IF_XM)
 	gdb_command(cmd, last_origin, disable_displayOQC, (void *)&info);
 #else
-	gdb_command1(cmd, last_origin, disable_displayOQC, (void *)&info);
+	gdb_command(cmd, last_origin, disable_displayOQC, (void *)&info);
 #endif
     }
 
@@ -6917,7 +6917,7 @@ void DataDisp::enable_displaySQ(IntArray& display_nrs, bool verbose,
 #if defined(IF_XM)
 	gdb_command(cmd, last_origin, enable_displayOQC, (void *)&info);
 #else
-	gdb_command1(cmd, last_origin, enable_displayOQC, (void *)&info);
+	gdb_command(cmd, last_origin, enable_displayOQC, (void *)&info);
 #endif
     }
 
@@ -8448,7 +8448,7 @@ void DataDisp::new_user_display(const string& name)
 #if defined(IF_XM)
     gdb_command("graph display `" + name + "`", last_origin);
 #else
-    gdb_command1("graph display `" + name + "`", last_origin);
+    gdb_command("graph display `" + name + "`", last_origin);
 #endif
 }
 

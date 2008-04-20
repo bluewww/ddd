@@ -75,7 +75,7 @@ static void hint_on(const _XtString name)
 	verify(XmCreateInformationDialog(find_shell(), XMST(name), 0, 0));
 #else
     GUI::Dialog *suggestion = 
-	new GUI::Dialog(find_shell(), name);
+	new GUI::Dialog(*find_shell1(), name);
 #endif
 
 #if defined(IF_XM)

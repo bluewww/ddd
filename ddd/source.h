@@ -91,6 +91,8 @@ extern void gdbToggleWatchCB  (Widget, XtPointer, XtPointer);
 extern void gdbPrintRefCB     (Widget, XtPointer, XtPointer);
 extern void gdbDispRefCB      (Widget, XtPointer, XtPointer);
 
+extern void gdbWatchRefCB     (Widget, XtPointer, XtPointer);
+
 #else
 
 extern void gdbToggleWatchCB  (GUI::Widget *, int);
@@ -98,9 +100,9 @@ extern void gdbToggleWatchCB  (GUI::Widget *, int);
 extern void gdbPrintRefCB     (GUI::Widget *, bool);
 extern void gdbDispRefCB      (GUI::Widget *);
 
-#endif
+extern void gdbWatchRefCB     (GUI::Widget *);
 
-extern void gdbWatchRefCB     (Widget, XtPointer, XtPointer);
+#endif
 
 #if defined(IF_XM)
 extern void gdbWhatisCB       (Widget, XtPointer, XtPointer);

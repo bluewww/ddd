@@ -5423,7 +5423,7 @@ static void RecordCommandDefinitionCB(Widget w, XtPointer, XtPointer)
 static void RecordCommandDefinitionCB(GUI::Widget *w)
 {
     string name = current_name();
-    gdb_command1("define " + name, w);
+    gdb_command("define " + name, w);
 }
 
 #endif
@@ -5441,7 +5441,7 @@ static void EndCommandDefinitionCB(Widget w, XtPointer, XtPointer)
 static void EndCommandDefinitionCB(GUI::Widget *w)
 {
     if (gdb->recording())
-	gdb_command1("end", w);
+	gdb_command("end", w);
 }
 
 #endif
@@ -5531,10 +5531,10 @@ static void DoneEditCommandDefinitionCB(GUI::Widget *w)
 	set_sensitive(record_w, false);
 	set_sensitive(end_w,    false);
 
-	gdb_command1("define " + name, w);
+	gdb_command("define " + name, w);
 	for (int j = 0; j < commands.size(); j++)
-	    gdb_command1(commands[j], w);
-	gdb_command1("end", w);
+	    gdb_command(commands[j], w);
+	gdb_command("end", w);
 
 	update_define_later(name);
     }
@@ -5652,7 +5652,7 @@ static void ApplyCB(GUI::Widget *w)
 	if (XmToggleButtonGetState(arg_w))
 	    cmd += " " + source_arg->get_string();
 
-	gdb_command1(cmd, w);
+	gdb_command(cmd, w);
     }
 }
 

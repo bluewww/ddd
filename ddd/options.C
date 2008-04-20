@@ -2526,7 +2526,11 @@ static void get_confirm(const string& complete_answer, void *qu_data)
 static void detach()
 {
     bool confirm = true;
+#if defined(IF_XM)
     gdb_command("show confirm", Widget(0), get_confirm, &confirm);
+#else
+    gdb_command("show confirm", (GUI::Widget*)(0), get_confirm, &confirm);
+#endif
     syncCommandQueue();
 
     if (confirm)

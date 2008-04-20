@@ -64,9 +64,10 @@ void gdbChangeDirectoryCB(GUI::Widget *);
 void add_to_arguments(const string& line);
 void update_arguments();
 
+#if defined(IF_XM)
 bool add_running_arguments(string& cmd, Widget origin = 0);
-#if !defined(IF_XM)
-bool add_running_arguments1(string& cmd, GUI::Widget *origin = 0);
+#else
+bool add_running_arguments(string& cmd, GUI::Widget *origin = 0);
 #endif
 
 #endif // _DDD_args_h

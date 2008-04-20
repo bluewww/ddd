@@ -557,7 +557,11 @@ void start_gdb(bool config)
 	if (is_graph_cmd(command))
 	{
 	    // To be handled later by DDD - enqueue in command queue
+#if defined(IF_XM)
 	    Command c(command, Widget(0), process_batch);
+#else
+	    Command c(command, (GUI::Widget*)(0), process_batch);
+#endif
 	    c.priority = COMMAND_PRIORITY_INIT;
 	    gdb_command(c);
 	}
@@ -821,7 +825,11 @@ void init_session(const string& restart, const string& settings,
     // Process all start-up commands (load file, etc.)
     while (!init_commands.empty())
     {
+#if defined(IF_XM)
 	Command c(init_commands.before('\n'), Widget(0), OQCProc(0));
+#else
+	Command c(init_commands.before('\n'), (GUI::Widget*)(0), OQCProc(0));
+#endif
 	c.priority = COMMAND_PRIORITY_INIT;
 	if (is_file_cmd(c.command, gdb) || is_core_cmd(c.command))
 	{
@@ -846,8 +854,13 @@ void init_session(const string& restart, const string& settings,
     if (info != 0)
     {
 	// Source remaining commands (settings, etc.)
+#if defined(IF_XM)
 	Command c("source " + info->tempfile, Widget(0), 
 		  SourceDoneCB, (void *)info);
+#else
+	Command c("source " + info->tempfile, (GUI::Widget*)(0), 
+		  SourceDoneCB, (void *)info);
+#endif
 	c.priority = COMMAND_PRIORITY_INIT;
 	c.check    = true;
 	gdb_command(c);

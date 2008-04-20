@@ -262,6 +262,8 @@ TIMEOUT_RETURN_TYPE ClearContinuingCB(TIMEOUT_ARG_LIST(,))
     return MAYBE_FALSE;
 }
 
+#if defined(IF_XM)
+
 // Process command C; do it right now.
 static void _do_gdb_command(const Command& c, bool is_command = true)
 {
@@ -284,11 +286,7 @@ static void _do_gdb_command(const Command& c, bool is_command = true)
 
 	if (cmd.length() == 1 && iscntrl(cmd[0]))
 	{
-#ifdef IF_MOTIF
 	    promptPosition = messagePosition = XmTextGetLastPosition(gdb_w);
-#else // NOT IF_MOTIF
-	    promptPosition = messagePosition = gdb_w->get_last_position();
-#endif // IF_MOTIF
 	}
 	else if (cmd.length() > 0 && c.echo)
 	{
@@ -301,11 +299,7 @@ static void _do_gdb_command(const Command& c, bool is_command = true)
 	    bool saved_processing_gdb_commands = processing_gdb_commands;
 	    processing_gdb_commands = false;
 
-#if defined(IF_XM)
 	    handle_running_commands(cmd, c.origin);
-#else
-	    handle_running_commands(cmd, c.xorigin);
-#endif
 
 	    processing_gdb_commands = saved_processing_gdb_commands;
 	}
@@ -320,34 +314,20 @@ static void _do_gdb_command(const Command& c, bool is_command = true)
     if (is_command)
 	current_gdb_command = c;
 
-#ifdef IF_MOTIF
     gdb_keyboard_command = private_gdb_input;
-#else // NOT IF_MOTIF
-#ifdef NAG_ME
-#warning gdb_keyboard_command not used
-#endif
-#endif // IF_MOTIF
 
     if (gdb_last_origin != 0)
     {
-#ifdef IF_MOTIF
 	XtRemoveCallback(gdb_last_origin, XtNdestroyCallback, 
 			 ClearOriginCB, 0);
-#else // NOT IF_MOTIF
-	gdb_last_origin->remove_destroy_notify_callback(gdb_last_origin);
-#endif // IF_MOTIF
     }
 
     gdb_last_origin = find_shell(gdb_keyboard_command ? gdb_w : c.origin);
 
     if (gdb_last_origin != 0)
     {
-#ifdef IF_MOTIF
 	XtAddCallback(gdb_last_origin, XtNdestroyCallback, 
 		      ClearOriginCB, 0);
-#else // NOT IF_MOTIF
-	gdb_last_origin->add_destroy_notify_callback(gdb_last_origin, ClearOriginCB);
-#endif // IF_MOTIF
     }
 
     translate_command(cmd);
@@ -362,23 +342,103 @@ static void _do_gdb_command(const Command& c, bool is_command = true)
     }
     else
     {
-#if defined(IF_XM)
 	send_gdb_command(cmd, c.origin, c.callback, c.extra_callback, c.data, 
 			 c.echo, c.verbose, c.prompt, c.check, c.start_undo);
-#else
-	send_gdb_command(cmd, c.xorigin, c.callback, c.extra_callback, c.data, 
-			 c.echo, c.verbose, c.prompt, c.check, c.start_undo);
-#endif
     }
 
-#ifdef IF_MOTIF
     messagePosition = XmTextGetLastPosition(gdb_w);
-#else // NOT IF_MOTIF
-    messagePosition = gdb_w->get_last_position();
-#endif // IF_MOTIF
 
     processing_gdb_commands = saved_processing_gdb_commands;
 }
+
+#else
+
+// Process command C; do it right now.
+static void _do_gdb_command(const Command& c, bool is_command = true)
+{
+    string cmd = c.command;
+
+    if (is_command)
+	current_gdb_command = c;
+
+#if LOG_COMMAND_QUEUE
+    std::clog << "Command " << c << ": executing\n";
+#endif
+
+    if (gdb->isReadyWithPrompt())
+    {
+	if (c.verbose)
+	{
+	    set_status("");
+	    had_user_command = true;
+	}
+
+	if (cmd.length() == 1 && iscntrl(cmd[0]))
+	{
+	    promptPosition = messagePosition = gdb_w->get_last_position();
+	}
+	else if (cmd.length() > 0 && c.echo)
+	{
+	    add_to_history(cmd);
+	}
+
+	if (!gdb->recording())
+	{
+	    // Allow for recursive calls in `handle_running_commands'
+	    bool saved_processing_gdb_commands = processing_gdb_commands;
+	    processing_gdb_commands = false;
+
+	    handle_running_commands(cmd, c.origin);
+
+	    processing_gdb_commands = saved_processing_gdb_commands;
+	}
+
+	if (cmd.length() == 0 && c.prompt)
+	{
+	    _gdb_out(gdb->prompt());
+	    return;
+	}
+    }
+
+    if (is_command)
+	current_gdb_command = c;
+
+    gdb_keyboard_command = private_gdb_input;
+
+    if (gdb_last_origin != 0)
+    {
+	gdb_last_origin->remove_destroy_notify_callback(gdb_last_origin);
+    }
+
+    gdb_last_origin = find_shell1(gdb_keyboard_command ? gdb_w : c.origin);
+
+    if (gdb_last_origin != 0)
+    {
+	gdb_last_origin->add_destroy_notify_callback(gdb_last_origin, ClearOriginCB);
+    }
+
+    translate_command(cmd);
+
+    // Allow for recursive calls in `send_gdb_command'
+    bool saved_processing_gdb_commands = processing_gdb_commands;
+    processing_gdb_commands = false;
+
+    if (is_internal_command(cmd))
+    {
+	internal_command(cmd, c.callback, c.data, c.echo, c.verbose, c.prompt);
+    }
+    else
+    {
+	send_gdb_command(cmd, c.origin, c.callback, c.extra_callback, c.data, 
+			 c.echo, c.verbose, c.prompt, c.check, c.start_undo);
+    }
+
+    messagePosition = gdb_w->get_last_position();
+
+    processing_gdb_commands = saved_processing_gdb_commands;
+}
+
+#endif
 
 // True if GDB can run a command
 bool can_do_gdb_command()
@@ -895,7 +955,7 @@ void syncCommandQueue()
     app_data.stop_and_continue = saved_stop_and_continue;
 }
 
-// #if defined(IF_MOTIF)
+#if defined(IF_XM)
 
 // Shell finder
 WINDOW_P find_shell(Widget w)
@@ -922,7 +982,7 @@ WINDOW_P find_shell(Widget w)
 #endif
 }
 
-// #endif
+#endif
 
 #if !defined(IF_XM)
 

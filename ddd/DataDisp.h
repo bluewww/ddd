@@ -601,53 +601,53 @@ public:
     {
 	string c = new_display_cmd(display_expression, pos, 
 				   depends_on, clustered, plotted);
-	gdb_command1(c, origin);
+	gdb_command(c, origin);
     }
 
     static void refresh_display(GUI::Widget *origin = 0)
     {
-	gdb_command1(refresh_display_cmd(), origin);
+	gdb_command(refresh_display_cmd(), origin);
     }
 
     static void disable_display(IntArray& display_nrs, GUI::Widget *origin = 0)
     {
 	if (display_nrs.size() > 0)
-	    gdb_command1(disable_display_cmd(display_nrs), origin);
+	    gdb_command(disable_display_cmd(display_nrs), origin);
     }
 
     static void enable_display(IntArray& display_nrs, GUI::Widget *origin = 0)
     {
 	if (display_nrs.size() > 0)
-	    gdb_command1(enable_display_cmd(display_nrs), origin);
+	    gdb_command(enable_display_cmd(display_nrs), origin);
     }
 
     static void delete_display(IntArray& display_nrs, GUI::Widget *origin = 0)
     {
 	if (display_nrs.size() > 0)
-	    gdb_command1(delete_display_cmd(display_nrs), origin);
+	    gdb_command(delete_display_cmd(display_nrs), origin);
     }
 
     static void delete_display(const string& name, GUI::Widget *origin = 0)
     {
-	gdb_command1(delete_display_cmd(name), origin);
+	gdb_command(delete_display_cmd(name), origin);
     }
 
     static void apply_theme(const string& theme, const string& pattern, 
 			    GUI::Widget *origin = 0)
     {
-	gdb_command1(apply_theme_cmd(theme, pattern), origin);
+	gdb_command(apply_theme_cmd(theme, pattern), origin);
     }
 
     static void unapply_theme(const string& theme, const string& pattern, 
 			      GUI::Widget *origin = 0)
     {
-	gdb_command1(unapply_theme_cmd(theme, pattern), origin);
+	gdb_command(unapply_theme_cmd(theme, pattern), origin);
     }
 
     static void toggle_theme(const string& theme, const string& pattern, 
 			     GUI::Widget *origin = 0)
     {
-	gdb_command1(toggle_theme_cmd(theme, pattern), origin);
+	gdb_command(toggle_theme_cmd(theme, pattern), origin);
     }
 
 #endif

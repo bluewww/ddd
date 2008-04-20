@@ -908,11 +908,7 @@ static void unredirect_process(string& command,
 		static string empty;
 		args.gsub(gdb_redirection, empty);
 		strip_space(args);
-#if defined(IF_XM)
 		gdb_command("set args " + args, origin, unredirect_reply);
-#else
-		gdb_command1("set args " + args, origin, unredirect_reply);
-#endif
 	    }
 	    else if (gdb->type() == PERL)
 	    {

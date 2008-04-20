@@ -52,13 +52,11 @@
 // Actions
 #if defined(IF_XM)
 extern void controlAct            (Widget, XEvent*, String*, Cardinal*);
-#else
-extern void controlAct            (GUI::Widget *, GUI::Event*, String*, Cardinal*);
-#endif
 extern void interruptAct          (Widget, XEvent*, String*, Cardinal*);
-#if defined(IF_XM)
 extern void commandAct            (Widget, XEvent*, String*, Cardinal*);
 #else
+extern void controlAct            (GUI::Widget *, GUI::Event*, String*, Cardinal*);
+extern void interruptAct          (GUI::Widget *, GUI::Event*, String*, Cardinal*);
 extern void commandAct            (GUI::Widget *, GUI::Event*, String*, Cardinal*);
 #endif
 extern void processAct            (Widget, XEvent*, String*, Cardinal*);
@@ -138,11 +136,10 @@ void gdbCommandCB1(GUI::Widget *, const char *);
 #endif
 
 // Like gdb_command(), but perform `...' and `()' substitutions
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 void gdb_button_command(const string& command, Widget origin = 0);
-#endif
-#if !defined(IF_XM)
-void gdb_button_command1(const string& command, GUI::Widget *origin = 0);
+#else
+void gdb_button_command(const string& command, GUI::Widget *origin = 0);
 #endif
 
 #endif // _DDD_editing_h
