@@ -322,7 +322,7 @@ Widget::is_visible(void)
 bool
 Widget::is_realized(void)
 {
-    return internal()->is_visible();
+    return internal()->is_realized();
 }
 
 String
