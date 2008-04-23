@@ -4140,8 +4140,10 @@ static GUI::Dialog *create_panel(DebuggerType type, SettingsType stype)
 	break;
     }
 
+    std::cerr << "FIXME: redundant Box created.\n";
+
     // Add a rowcolumn widget
-    GUI::Box *column = new GUI::VBox(*panel, GUI::PACK_SHRINK, "column");
+    GUI::Box *column = new GUI::VBox(*panel, GUI::PACK_EXPAND_WIDGET, "column");
     column->show();
 
     // Add a label
@@ -4149,10 +4151,11 @@ static GUI::Dialog *create_panel(DebuggerType type, SettingsType stype)
     title->show();
 
     // Add a scrolled window.
-    GUI::ScrolledWindow *scroll = new GUI::ScrolledWindow(*column);
+    GUI::ScrolledWindow *scroll =
+	new GUI::ScrolledWindow(*column, GUI::PACK_EXPAND_WIDGET, "scroll");
 
     // Add a form.
-    GUI::Box *form = new GUI::HBox(*form, GUI::PACK_SHRINK, "form");
+    GUI::Box *form = new GUI::VBox(*scroll, GUI::PACK_SHRINK, "form");
 
     switch (stype)
     {
