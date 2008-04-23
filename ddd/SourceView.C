@@ -75,14 +75,14 @@ char SourceView_rcsid[] =
 
 // DDD stuff
 #include "AppData.h"
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include "ComboBox.h"
 #endif
 #include "Command.h"
 #include "DataDisp.h"		// Only for `DataDisp::SelectionLostCB'
 #include "Delay.h"
 #include "DestroyCB.h"
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include "HelpCB.h"
 #endif
 #include "HistoryD.h"
@@ -91,7 +91,7 @@ char SourceView_rcsid[] =
 #include "MakeMenu.h"
 #include "PosBuffer.h"
 #include "RefreshDI.h"
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include "TextSetS.h"
 #endif
 #include "TimeOut.h"
@@ -136,7 +136,7 @@ char SourceView_rcsid[] =
 #include "wm.h"
 
 // Motif stuff
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include <Xm/Xm.h>
 #include <Xm/Form.h>
 #include <Xm/Label.h>
@@ -205,7 +205,7 @@ extern "C" {
 #define S_ISREG(m) (((m) & S_IFMT) == S_IFREG)
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #define PLAIN_ARROW "plain_arrow"
 #define GREY_ARROW "grey_arrow"
 #define PAST_ARROW "past_arrow"
@@ -237,7 +237,7 @@ XIMAGE_P DRAG_COND;
 XIMAGE_P DRAG_TEMP;
 #endif
 
-#if !defined(IF_MOTIF)
+#if !defined(IF_XM)
 
 #include <gtkmm/treemodelcolumn.h>
 #include <gtkmm/liststore.h>
@@ -318,7 +318,7 @@ simple_list_columns_p(void)
 //-----------------------------------------------------------------------
 // Xt stuff
 //-----------------------------------------------------------------------
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 XtActionsRec SourceView::actions [] = {
     {XTARECSTR("source-popup-menu"),        SourceView::srcpopupAct        },
     {XTARECSTR("source-start-select-word"), SourceView::startSelectWordAct },
@@ -523,7 +523,7 @@ MMDesc SourceView::text_popup[] =
 // Glyphs and images
 //-----------------------------------------------------------------------
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include "icons/glyphs/arrow.xbm"
 #include "icons/glyphs/greyarrow.xbm"
 #include "icons/glyphs/pastarrow.xbm"
@@ -1366,7 +1366,7 @@ void SourceView::clearJumpBP(const string& msg, void *data)
 	 i <= max_breakpoint_number_seen; i++)
     {
 	// Delete all recently created breakpoints
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	XtAppAddTimeOut(XtWidgetToApplicationContext(source_text_w),
 			0, clearBP, XtPointer(i));
 #else
@@ -2868,7 +2868,7 @@ void SourceView::set_source_argCB(GUI::ScrolledText *text_w, bool client_data)
     if (text.empty())
 	return;
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     XmTextVerifyCallbackStruct *cbs = (XmTextVerifyCallbackStruct *)call_data;
 #endif
     bool motion = bool((int)(long)client_data);
@@ -2876,7 +2876,7 @@ void SourceView::set_source_argCB(GUI::ScrolledText *text_w, bool client_data)
 	selection_click = false;
 
     XmTextPosition startPos, endPos;
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     Boolean have_selection = 
 	XmTextGetSelectionPosition(text_w, &startPos, &endPos);
 #else
@@ -2884,7 +2884,7 @@ void SourceView::set_source_argCB(GUI::ScrolledText *text_w, bool client_data)
     bool have_selection = text_w->buffer().get_selection_bounds(iter1, iter2);
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     if (have_selection && lesstif_version <= 89)
     {
 	// In LessTif 0.89 and earlier, the unmanaged
@@ -3203,20 +3203,28 @@ void SourceView::ShowPosition(GUI::ScrolledText *text_w, long pos, bool fromTop)
 
 #endif
 
-void SourceView::SetInsertionPosition(SCROLLEDTEXT_P text_w, 
+#if defined(IF_XM)
+
+void SourceView::SetInsertionPosition(Widget text_w, 
 				      XmTextPosition pos, bool fromTop)
 {
     ShowPosition(text_w, pos, fromTop);
-#if defined(IF_MOTIF)
     XmTextSetInsertionPosition(text_w, pos);
+}
+
 #else
+
+void SourceView::SetInsertionPosition(GUI::ScrolledText *text_w, 
+				      XmTextPosition pos, bool fromTop)
+{
+    ShowPosition(text_w, pos, fromTop);
     Glib::RefPtr<Gtk::TextBuffer> buf = text_w->buffer();
     
     Gtk::TextIter iter = buf->get_iter_at_offset(pos);
     buf->place_cursor(iter);
-#endif
 }
 
+#endif
 
 
 //-----------------------------------------------------------------------
@@ -3991,7 +3999,7 @@ void SourceView::read_file (string file_name,
     Delay delay;
 
     // Set source and initial line
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     XmTextSetString(source_text_w, XMST(current_source.chars()));
 #else
     source_text_w->set_text(XMST(current_source.chars()));
@@ -4054,7 +4062,7 @@ void SourceView::read_file (string file_name,
 
     set_status_mstring(msg);
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     XmTextClearSelection(source_text_w, 
 			 XtLastTimestampProcessed(XtDisplay(source_text_w)));
     XmTextSetHighlight(source_text_w,
@@ -4118,7 +4126,7 @@ void SourceView::update_title()
 	DDD_NAME ": " + string(basename(current_file_name.chars()));
     const _XtString icon_s = icon.chars();
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     XtVaSetValues(toplevel_w,
 		  XmNtitle, title_s,
 		  XmNiconName, icon_s,
@@ -4162,7 +4170,7 @@ void SourceView::refresh_source_bp_disp(bool reset)
 	    string s(current_source.at(pos, indent - 1));
 
 	    if (s.length() > 0) {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 		XmTextReplace(source_text_w,
 			      pos_of_line(line_nr),
 			      pos_of_line(line_nr) + s.length(),
@@ -4232,7 +4240,7 @@ void SourceView::refresh_source_bp_disp(bool reset)
 	    assert(int(insert_string.length()) == indent - 1);
 
 	    if (insert_string.length() > 0) {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 		XmTextReplace(source_text_w, pos, 
 			      pos + indent - 1,
 			      XMST(insert_string.chars()));
@@ -4265,7 +4273,7 @@ void SourceView::refresh_code_bp_disp(bool reset)
 	if (indent > 0)
 	{
 	    string spaces = replicate(' ', indent);
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	    XmTextReplace(code_text_w, pos, pos + indent, XMST(spaces.chars()));
 #else
 	    code_text_w->replace(pos, pos + indent, XMST(spaces.chars()));
@@ -4314,7 +4322,7 @@ void SourceView::refresh_code_bp_disp(bool reset)
 	    insert_string += replicate(' ', indent);
 	    insert_string = insert_string.before(indent);
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	    XmTextReplace(code_text_w, pos, pos + indent, 
 			  XMST(insert_string.chars()));
 #else
@@ -4358,7 +4366,11 @@ bool SourceView::get_line_of_pos (GUI::Widget *w,
     in_text = true;
     bp_nr   = 0;
 
-    SCROLLEDTEXT_P text_w;
+#if defined(IF_XM)
+    Widget text_w;
+#else
+    GUI::ScrolledText *text_w;
+#endif
     if (is_source_widget(w))
 	text_w = source_text_w;
     else if (is_code_widget(w))
@@ -4406,7 +4418,7 @@ bool SourceView::get_line_of_pos (GUI::Widget *w,
 
 	while (!found && line_count >= line_nr)
 	{
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	    next_line_pos = (line_count >= line_nr + 1) ?
 		pos_of_line(line_nr + 1) :
 		XmTextGetLastPosition (text_w) + 1;
@@ -4763,7 +4775,7 @@ string SourceView::get_word_at_pos(GUI::ScrolledText *text_w,
 
 // Install the given X bitmap as NAME
 static void InstallBitmapAsImage(unsigned char *bits, int width, int height, 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 				 const char *name
 #else
 				 XIMAGE_P &name
@@ -4771,7 +4783,7 @@ static void InstallBitmapAsImage(unsigned char *bits, int width, int height,
 				 )
 {
     Boolean ok = InstallBitmap(bits, width, height, name);
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     if (!ok)
 	std::cerr << "Could not install " << quote(name) << " bitmap\n";
 #else
@@ -5235,8 +5247,8 @@ void SourceView::create_shells()
     frame_list_w->signal_selection_changed().connect(sigc::bind(sigc::ptr_fun(SelectFrameCB),
 								frame_list_w));
 
-    up_w->signal_clicked().connect(sigc::bind(sigc::ptr_fun(gdbCommandCB1), stack_dialog_w, "up"));
-    down_w->signal_clicked().connect(sigc::bind(sigc::ptr_fun(gdbCommandCB1), stack_dialog_w, "down"));
+    up_w->signal_clicked().connect(sigc::bind(sigc::ptr_fun(gdbCommandCB), stack_dialog_w, "up"));
+    down_w->signal_clicked().connect(sigc::bind(sigc::ptr_fun(gdbCommandCB), stack_dialog_w, "down"));
     cancel_w->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), stack_dialog_w));
     cancel_w->signal_clicked().connect(sigc::ptr_fun(StackDialogPoppedDownCB));
 
@@ -5314,7 +5326,7 @@ void SourceView::create_shells()
 
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // Check for modifications
 void SourceView::CheckModificationCB(Widget, XtPointer client_data, 
 				     XtPointer call_data)
@@ -5331,7 +5343,7 @@ void SourceView::CheckModificationCB(Widget, XtPointer client_data,
 }
 #endif
 
-#if !defined(IF_MOTIF)
+#if !defined(IF_XM)
 
 // Identical to Fixed, except it expands its first child
 class GtkForm: public Gtk::Fixed
@@ -5563,7 +5575,7 @@ void SourceView::show_execution_position (const string& position_,
 	    if (indent > 0)
 	    {
 		static const string no_marker = " ";
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 		XmTextReplace (source_text_w,
 			       last_pos + indent - no_marker.length(),
 			       last_pos + indent,
@@ -5576,7 +5588,7 @@ void SourceView::show_execution_position (const string& position_,
 	    }
 
 	    if (last_start_highlight) {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 		XmTextSetHighlight (source_text_w,
 				    last_start_highlight, last_end_highlight,
 				    XmHIGHLIGHT_NORMAL);
@@ -5621,7 +5633,7 @@ void SourceView::show_execution_position (const string& position_,
 	{
 	    // Remove old marker
 	    static const string no_marker = " ";
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	    XmTextReplace (source_text_w,
 			   last_pos + indent - no_marker.length(),
 			   last_pos + indent,
@@ -5674,7 +5686,7 @@ void SourceView::_show_execution_position(const string& file, int line,
     {
 	// Set new marker
 	static const string marker = ">";
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	XmTextReplace (source_text_w,
 		       pos + indent - marker.length(),
 		       pos + indent,
@@ -5695,7 +5707,7 @@ void SourceView::_show_execution_position(const string& file, int line,
     {
 	if (last_start_highlight)
 	{
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	    XmTextSetHighlight (source_text_w,
 				last_start_highlight, last_end_highlight,
 				XmHIGHLIGHT_NORMAL);
@@ -5705,7 +5717,7 @@ void SourceView::_show_execution_position(const string& file, int line,
 #endif
 	}
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	XmTextSetHighlight (source_text_w,
 			    pos, pos_line_end,
 			    XmHIGHLIGHT_SELECTED);
@@ -6119,7 +6131,7 @@ void SourceView::lookup(string s, bool silent)
 	else
 	{
 	    // Show cursor position
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	    SetInsertionPosition(code_text_w,
 				 XmTextGetInsertionPosition(code_text_w));
 #else
@@ -6140,7 +6152,7 @@ void SourceView::lookup(string s, bool silent)
 	else
 	{
 	    // Show cursor position
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	    SetInsertionPosition(source_text_w,
 				 XmTextGetInsertionPosition(source_text_w));
 #else
@@ -6310,7 +6322,7 @@ void SourceView::add_current_to_history()
     bool pos_found;
 
     // Get position in source code
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     pos = XmTextGetInsertionPosition(source_text_w);
 #else
     pos = source_text_w->get_insertion_position();
@@ -6321,7 +6333,7 @@ void SourceView::add_current_to_history()
 	add_position_to_history(current_source_name(), line_nr, false);
 
     // Get position in machine code
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     pos = XmTextGetInsertionPosition(code_text_w);
 #else
     pos = code_text_w->get_insertion_position();
@@ -6534,7 +6546,7 @@ void SourceView::find(const string& s,
 {
     int matchlen = s.length();
     int pos = -1;
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     XmTextPosition cursor = XmTextGetInsertionPosition(source_text_w);
 #else
     XmTextPosition cursor = source_text_w->get_insertion_position();
@@ -6561,7 +6573,7 @@ void SourceView::find(const string& s,
     XmTextPosition startpos;
     XmTextPosition endpos;
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     if (XmTextGetSelectionPosition(source_text_w, &startpos, &endpos))
 #else
     if (source_text_w->get_selection_bounds(startpos, endpos))
@@ -6645,7 +6657,7 @@ void SourceView::find(const string& s,
     if (pos < 0)
     {
 	// Clear selection
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	XmTextClearSelection(source_text_w, time);
 #else
 	source_text_w->clear_selection();
@@ -6656,7 +6668,7 @@ void SourceView::find(const string& s,
     else
     {
 	// Highlight occurrence
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	TextSetSelection(source_text_w, pos, pos + matchlen, time);
 #else
 	std::cerr << "TextSetSelection not implemented\n";
@@ -6813,7 +6825,7 @@ string SourceView::current_source_name()
 
 string SourceView::line_of_cursor()
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     XmTextPosition pos = XmTextGetInsertionPosition(source_text_w);
 #else
     XmTextPosition pos = source_text_w->get_insertion_position();
@@ -7019,7 +7031,7 @@ void SourceView::set_text_popup_label(int item, const string& arg, bool sens)
 
 void SourceView::set_text_popup_resource(int item, const string& arg)
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     if (lesstif_version <= 82)
     {
 	// Set up resources for yet-to-be-created popup menu
@@ -7039,7 +7051,7 @@ void SourceView::set_text_popup_resource(int item, const string& arg)
 #endif
 }
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // Get relative coordinates of GLYPH in TEXT
 void SourceView::translate_glyph_pos(Glyph_T glyph, Widget text, int& x, int& y)
 {
@@ -7062,7 +7074,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
     if (e->type != ButtonPress && e->type != ButtonRelease)
 	return;
 
-    SCROLLEDTEXT_P text_w;
+    Widget text_w;
     if (is_source_widget(w))
 	text_w = source_text_w;
     else if (is_code_widget(w))
@@ -7206,7 +7218,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	    set_text_popup_resource(TextItms::Clear,    current_arg);
 	}
 
-	MENU_P text_popup_w = 
+	Widget text_popup_w = 
 	    MMcreatePopupMenu(text_w, "text_popup", text_popup);
 	MMaddCallbacks(text_popup, XtPointer(&callback_word));
 	MMaddHelpCallback(text_popup, PTR_FUN(ImmediateHelpCB));
@@ -8081,7 +8093,7 @@ void SourceView::NewWatchpointCB(GUI::Widget *w)
 
     }
 
-    manage_and_raise1(dialog);
+    manage_and_raise(dialog);
 }
 
 #endif
@@ -8139,7 +8151,7 @@ struct BreakpointPropertiesInfo {
 	  dialog(0), title(0), lookup(0), print(0),
 	  enable(0), disable(0), temp(0), del(0),
 	  ignore(0), condition(0), record(0), end(0), edit(0), editor(0),
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	  timer(0),
 #endif
 	  spin_locked(false), ignore_spin_update(0),
@@ -8563,7 +8575,7 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
     {
 	bool lock = info->spin_locked;
 	info->spin_locked = true;
-	SPINBUTTON_P sb = dynamic_cast<SPINBUTTON_P>(info->ignore);
+	GUI::SpinButton *sb = dynamic_cast<GUI::SpinButton *>(info->ignore);
 	assert(sb);
 	sb->set_value(bp->ignore_count());
 	info->spin_locked = lock;
@@ -9047,7 +9059,7 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, GUI::Widget * /* origin */)
 
     tie_combo_box_to_history(info->condition, cond_filter);
 
-    manage_and_raise1(info->dialog);
+    manage_and_raise(info->dialog);
     info->spin_locked = false;
 }
 
@@ -9150,7 +9162,7 @@ void SourceView::ApplyBreakpointPropertiesCB(GUI::Widget *w, BreakpointPropertie
 
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // Set breakpoint ignore count
 void SourceView::SetBreakpointIgnoreCountCB(Widget w,
 					    XtPointer client_data,
@@ -10604,7 +10616,7 @@ void SourceView::process_frame(int frame)
 	// Save state
 	undo_buffer.add_frame(itostring(frame));
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	int count         = 0;
 	int top_item      = 0;
 	int visible_items = 0;
@@ -10656,7 +10668,7 @@ void SourceView::process_frame(int frame)
 // Set frame manually to function FUNC; return TRUE if successful
 bool SourceView::set_frame_func(const string& func)
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     int count = 0;
     XmStringTable items;
 
@@ -10672,7 +10684,7 @@ bool SourceView::set_frame_func(const string& func)
     for (int i = count - 1; i >= 0; i--)
     {
 	String _item;
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	XmStringGetLtoR(items[i], LIST_CHARSET, &_item);
 	string item(_item);
 	XtFree(_item);
@@ -10708,7 +10720,7 @@ void SourceView::set_frame_pos(int arg, int pos)
 	return;
     }
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     int items = 0;
     XtVaGetValues(frame_list_w, XmNitemCount, &items, XtPointer(0));
 #else
@@ -10719,7 +10731,7 @@ void SourceView::set_frame_pos(int arg, int pos)
 	pos = items;
     if (arg != 0)
     {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	int *position_list;
 	int position_count;
 	if (XmListGetSelectedPos(frame_list_w,
@@ -11278,7 +11290,7 @@ string SourceView::get_line(string position)
 //----------------------------------------------------------------------------
 
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // Whether to cache glyph images
 bool SourceView::cache_glyph_images = true;
 #endif
@@ -11289,7 +11301,7 @@ void DestroyOldWidgets(WidgetArray& Array){
   for (int i = 0; i < size; i++)
     {
       if (Array[i] != 0) {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	XtDestroyWidget(Array[i]);
 #else
 	delete Array[i];
@@ -11298,7 +11310,7 @@ void DestroyOldWidgets(WidgetArray& Array){
     }
 }
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // Change number of glyphs
 void SourceView::set_max_glyphs (int nmax)
 {
@@ -11343,7 +11355,7 @@ void SourceView::set_max_glyphs (int nmax)
 
 
 // Glyph has been activated - catch the double click in Motif 1.x
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 void SourceView::ActivateGlyphCB(Widget glyph, XtPointer, XtPointer call_data)
 {
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
@@ -11360,7 +11372,7 @@ void SourceView::ActivateGlyphCB(Widget glyph, XtPointer, XtPointer call_data)
 #endif
 
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // Create a pixmap from BITS suitable for the widget W
 Pixmap SourceView::pixmap(Widget w, unsigned char *bits, int width, int height)
 {
@@ -11393,8 +11405,9 @@ Glib::RefPtr<Gdk::Pixbuf> SourceView::pixmap(unsigned char *bits, int width, int
 
 
 // Create glyph in FORM_W named NAME from given BITS
-#if defined(IF_MOTIF)
-Widget SourceView::create_glyph(CONTAINER_P form_w,
+#if defined(IF_XM)
+
+Widget SourceView::create_glyph(Widget form_w,
 				const _XtString name,
 				unsigned char *bits,
 				int width, int height)
@@ -11452,10 +11465,13 @@ Widget SourceView::create_glyph(CONTAINER_P form_w,
 
     return w;
 }
+
 #endif
 
+#if defined(IF_XM)
+
 // Return height of a single line
-int SourceView::line_height(SCROLLEDTEXT_P text_w)
+int SourceView::line_height(Widget text_w)
 {
     static int source_height = 0;
     static int code_height   = 0;
@@ -11466,7 +11482,6 @@ int SourceView::line_height(SCROLLEDTEXT_P text_w)
 
     bool ok;
 
-#if defined(IF_MOTIF)
     XmTextPosition top = XmTextGetTopCharacter(text_w);
     Position top_x, top_y;
     ok = XmTextPosToXY(text_w, top, &top_x, &top_y);
@@ -11481,12 +11496,6 @@ int SourceView::line_height(SCROLLEDTEXT_P text_w)
 	return 0;
 
     int height = abs(second_y - top_y);
-#else
-    Gtk::TextIter iter;
-    text_w->view().get_iter_at_location(iter, 0, 0);
-    int y, height;
-    text_w->view().get_line_yrange(iter, y, height);
-#endif
 
     if (text_w == source_text_w)
 	source_height = height;
@@ -11496,8 +11505,37 @@ int SourceView::line_height(SCROLLEDTEXT_P text_w)
     return height;
 }
 
+#else
 
-#if defined(IF_MOTIF)
+// Return height of a single line
+int SourceView::line_height(GUI::ScrolledText *text_w)
+{
+    static int source_height = 0;
+    static int code_height   = 0;
+    if (text_w == source_text_w && source_height > 0)
+	return source_height;
+    else if (text_w == code_text_w && code_height > 0)
+	return code_height;
+
+    bool ok;
+
+    Gtk::TextIter iter;
+    text_w->view().get_iter_at_location(iter, 0, 0);
+    int y, height;
+    text_w->view().get_line_yrange(iter, y, height);
+
+    if (text_w == source_text_w)
+	source_height = height;
+    else if (text_w == code_text_w)
+	code_height = height;
+
+    return height;
+}
+
+#endif
+
+
+#if defined(IF_XM)
 // If false, don't change glyphs - just check if they would change
 bool SourceView::change_glyphs = true;
 
@@ -11549,7 +11587,11 @@ void SourceView::map_glyph(Glyph_T& glyph, Position x, Position y)
 
     assert(is_code_widget(glyph) || is_source_widget(glyph));
 
-    SCROLLEDTEXT_P text_w;
+#if defined(IF_XM)
+    Widget text_w;
+#else
+    GUI::ScrolledText *text_w;
+#endif
     if (is_source_widget(glyph))
 	text_w = source_text_w;
     else
@@ -11668,7 +11710,7 @@ void SourceView::update_glyphs(GUI::Widget *glyph)
 
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 
 // Invoked by scrolling keys
 void SourceView::updateGlyphsAct(Widget w, XEvent*, String *, Cardinal *)
@@ -11779,7 +11821,7 @@ Position SourceView::arrow_x_offset = -5;
 Position SourceView::stop_x_offset = +6;
 
 // Additional offset for multiple breakpoints (pixels)
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 Position SourceView::multiple_stop_x_offset = stop_width;
 #else
 #ifdef NAG_ME
@@ -11789,7 +11831,7 @@ Position SourceView::multiple_stop_x_offset = 15;
 #endif
 
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // Glyph locations: x[0] is source, x[1] is code
 Widget SourceView::plain_arrows[2]  = {0, 0};
 Widget SourceView::grey_arrows[2]   = {0, 0};
@@ -11827,9 +11869,10 @@ Glib::RefPtr<Gdk::Pixbuf> SourceView::drag_temp;
 #endif
 
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
+
 // Create glyphs in the background
-WP_RETURN_TYPE SourceView::CreateGlyphsWorkProc(WP_ALIST_NULL)
+Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 {
     int k;
     for (k = 0; k < 2; k++)
@@ -11839,7 +11882,7 @@ WP_RETURN_TYPE SourceView::CreateGlyphsWorkProc(WP_ALIST_NULL)
 	// pleasing results than vice-versa, so place arrow glyph
 	// below sign glyphs.
 
-	CONTAINER_P form_w = k ? code_form_w : source_form_w;
+	Widget form_w = k ? code_form_w : source_form_w;
 
 	if (form_w == 0)
 	    continue;
@@ -11897,7 +11940,7 @@ WP_RETURN_TYPE SourceView::CreateGlyphsWorkProc(WP_ALIST_NULL)
    
     for (k = 0; k < 2; k++)
     {
-	CONTAINER_P form_w = k ? code_form_w : source_form_w;
+	Widget form_w = k ? code_form_w : source_form_w;
 
 	if (form_w == 0)
 	    continue;
@@ -12014,7 +12057,9 @@ WP_RETURN_TYPE SourceView::CreateGlyphsWorkProc(WP_ALIST_NULL)
 
     return IDLE_STOP;		// all done
 }
+
 #else
+
 void SourceView::CreateGlyphsNow(void)
 {
     past_arrow = Gdk::Pixbuf::create_from_inline(-1, pastarrow_bits);
@@ -12032,10 +12077,12 @@ void SourceView::CreateGlyphsNow(void)
     drag_temp = Gdk::Pixbuf::create_from_inline(-1, dragtemp_bits);
     drag_cond = Gdk::Pixbuf::create_from_inline(-1, dragcond_bits);
 }
+
 #endif
 
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
+
 // Return position POS of glyph GLYPH in X/Y.  Return true iff displayed.
 bool SourceView::glyph_pos_to_xy(Widget glyph, XmTextPosition pos,
 				 Position& x, Position& y)
@@ -12045,7 +12092,7 @@ bool SourceView::glyph_pos_to_xy(Widget glyph, XmTextPosition pos,
     if (pos == XmTextPosition(-1))
 	return false;		// Not displayed
 
-    SCROLLEDTEXT_P text_w;
+    Widget text_w;
     if (is_source_widget(glyph))
 	text_w = source_text_w;
     else
@@ -12066,9 +12113,10 @@ bool SourceView::glyph_pos_to_xy(Widget glyph, XmTextPosition pos,
 
     return pos_displayed;
 }
+
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 
 // Map stop sign GLYPH at position POS.  Get widget from STOPS[COUNT];
 // store location in POSITIONS.  Return mapped widget (0 if none)
@@ -12083,7 +12131,7 @@ Widget SourceView::map_stop_at(Widget glyph, XmTextPosition pos,
     {
 	while (stops[count] == 0)
 	{
-	    if (CreateGlyphsWorkProc(WP_ARGS_NULL))
+	    if (CreateGlyphsWorkProc(0))
 		break;
 	}
 
@@ -12144,7 +12192,7 @@ GUI::GlyphMark *SourceView::map_stop_at(GUI::ScrolledText *w, XmTextPosition pos
 
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 
 // Map arrow in GLYPH at POS.  Return mapped arrow widget (0 if none)
 Widget SourceView::map_arrow_at(Widget glyph, XmTextPosition pos)
@@ -12164,7 +12212,7 @@ Widget SourceView::map_arrow_at(Widget glyph, XmTextPosition pos)
     while (signal_arrow == 0 || plain_arrow == 0 || 
 	   grey_arrow == 0 || past_arrow == 0)
     {
-	if (CreateGlyphsWorkProc(WP_ARGS_NULL))
+	if (CreateGlyphsWorkProc(0))
 	    break;
     }
 
@@ -12245,7 +12293,8 @@ GUI::GlyphMark *SourceView::map_arrow_at(GUI::ScrolledText *w, XmTextPosition po
 
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
+
 // Copy glyph foreground and background colors from ORIGIN to GLYPH
 void SourceView::copy_colors(Widget glyph, Widget origin)
 {
@@ -12269,9 +12318,11 @@ void SourceView::copy_colors(Widget glyph, Widget origin)
 	XtVaSetValues(glyph, XmNlabelPixmap, pixmap, XtPointer(0));
     }
 }
+
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
+
 // Map temporary stop sign at position POS.  If ORIGIN is given, use
 // colors from ORIGIN.
 Widget SourceView::map_drag_stop_at(Widget glyph, XmTextPosition pos, 
@@ -12296,7 +12347,7 @@ Widget SourceView::map_drag_stop_at(Widget glyph, XmTextPosition pos,
 	
 	while (drag_stop == 0)
 	{
-	    if (CreateGlyphsWorkProc(WP_ARGS_NULL))
+	    if (CreateGlyphsWorkProc(0))
 		break;
 	}
 
@@ -12307,7 +12358,7 @@ Widget SourceView::map_drag_stop_at(Widget glyph, XmTextPosition pos,
 	    static Position last_x = x + stop_x_offset;
 
 	    Position origin_x = -1;
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
  	    XtVaGetValues(origin, XmNx, &origin_x, XtPointer(0));
 	    if (lesstif_version <= 87)
 		origin_x -= 2;
@@ -12361,9 +12412,11 @@ Widget SourceView::map_drag_stop_at(Widget glyph, XmTextPosition pos,
 	return 0;
     }
 }
+
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
+
 // Map temporary arrow at position POS.  If ORIGIN is given, use
 // colors from ORIGIN.
 Widget SourceView::map_drag_arrow_at(Widget glyph, XmTextPosition pos, 
@@ -12380,7 +12433,7 @@ Widget SourceView::map_drag_arrow_at(Widget glyph, XmTextPosition pos,
 
     while (drag_arrow == 0)
     {
-	if (CreateGlyphsWorkProc(WP_ARGS_NULL))
+	if (CreateGlyphsWorkProc(0))
 	    break;
     }
 
@@ -12393,11 +12446,12 @@ Widget SourceView::map_drag_arrow_at(Widget glyph, XmTextPosition pos,
 
     return drag_arrow;
 }
+
 #endif
 
 
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // Update glyphs after interval
 void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *)
 {
@@ -12438,7 +12492,7 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *)
 #endif
 
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 
 // The function that does the real work
 void SourceView::update_glyphs_now()
@@ -12654,7 +12708,7 @@ void SourceView::update_glyphs_now()
 		    continue;
 
 		Widget& bp_glyph = k ? bp->code_glyph() : bp->source_glyph();
-		SCROLLEDTEXT_P text_w    = k ? code_text_w      : source_text_w;
+		GUI::ScrolledText *text_w = k ? code_text_w : source_text_w;
 		bp_glyph = 0;
 
 		XmTextPosition pos;
@@ -12713,7 +12767,7 @@ void SourceView::update_glyphs_now()
 #endif
 
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // Return all glyphs that would change
 const WidgetArray& SourceView::glyphs_to_be_updated()
 {
@@ -12731,7 +12785,7 @@ const WidgetArray& SourceView::glyphs_to_be_updated()
 #endif
 
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // Change setting of display_glyphs
 void SourceView::set_display_glyphs(bool set)
 {
@@ -12898,11 +12952,12 @@ MString SourceView::help_on_bp(int bp_nr, bool detailed)
 
 // Glyph drag & drop
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
+
 XmTextPosition SourceView::glyph_position(Widget glyph, XEvent *e, 
 					  bool normalize)
 {
-    SCROLLEDTEXT_P text_w;
+    Widget text_w;
     if (is_source_widget(glyph))
 	text_w = source_text_w;
     else if (is_code_widget(glyph))
@@ -12922,7 +12977,7 @@ XmTextPosition SourceView::glyph_position(Widget glyph, XEvent *e,
     if (p[Y] <= 0)
 	pos = 0;		// We may drag outside the text window
     else {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	pos = XmTextXYToPos(text_w, p[X], p[Y]);
 #else
 	pos = text_w->xy_to_pos(p[X], p[Y]);
@@ -12932,7 +12987,7 @@ XmTextPosition SourceView::glyph_position(Widget glyph, XEvent *e,
     // Stay within viewable text +/-1 row, such that we don't scroll too fast
     short rows = 0;
     XmTextPosition current_top = 0;
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     XtVaGetValues(text_w,
 		  XmNrows, &rows,
 		  XmNtopCharacter, &current_top,
@@ -12982,9 +13037,10 @@ XmTextPosition SourceView::glyph_position(Widget glyph, XEvent *e,
 
     return pos;
 }
+
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // Data associated with current drag operation
 // The Glyph being dragged
 Widget SourceView::current_drag_origin     = 0;
@@ -12993,7 +13049,7 @@ Widget SourceView::current_drag_origin     = 0;
 int    SourceView::current_drag_breakpoint = -1;
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 void SourceView::dragGlyphAct(Widget glyph, XEvent *e, String *params, 
 			      Cardinal *num_params)
 {
@@ -13075,13 +13131,14 @@ void SourceView::dragGlyphAct(Widget glyph, XEvent *e, String *params,
 }
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
+
 void SourceView::followGlyphAct(Widget glyph, XEvent *e, String *, Cardinal *)
 {
     if (glyph != current_drag_origin)
 	return;
 
-    SCROLLEDTEXT_P text_w;
+    Widget text_w;
     if (is_source_widget(glyph))
 	text_w = source_text_w;
     else if (is_code_widget(glyph))
@@ -13118,7 +13175,7 @@ void SourceView::dropGlyphAct (Widget glyph, XEvent *e,
     if (glyph != current_drag_origin)
 	return;
 
-    SCROLLEDTEXT_P text_w;
+    Widget text_w;
     if (is_source_widget(glyph))
 	text_w = source_text_w;
     else if (is_code_widget(glyph))
@@ -13229,7 +13286,7 @@ void SourceView::dropGlyphAct (Widget glyph, XEvent *e,
 }
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // Report glyph state (for debugging)
 void SourceView::log_glyph(Widget glyph, int n)
 {
@@ -13311,7 +13368,7 @@ void SourceView::log_glyphs()
 #endif
 
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // Delete glyph (breakpoints)
 void SourceView::deleteGlyphAct(Widget glyph, XEvent *, String *, Cardinal *)
 {
@@ -13380,7 +13437,7 @@ void SourceView::set_code(const string& code,
 			  const string& start,
 			  const string& end)
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     XmTextSetString(code_text_w, XMST(code.chars()));
     XmTextSetHighlight (code_text_w, 0, code.length(), XmHIGHLIGHT_NORMAL);
 #else
@@ -13697,7 +13754,7 @@ void SourceView::show_pc(const string& pc, GUI::HighlightMode mode,
     // Clear old selection
     if (last_start_highlight_pc)
     {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	XmTextSetHighlight (code_text_w,
 			    last_start_highlight_pc, 
 			    last_end_highlight_pc,
@@ -13726,7 +13783,7 @@ void SourceView::show_pc(const string& pc, GUI::HighlightMode mode,
 	    if (last_pos_pc)
 	    {
 		static const string no_marker = " ";
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 		XmTextReplace (code_text_w,
 			       last_pos_pc + indent - no_marker.length(),
 			       last_pos_pc + indent,
@@ -13738,7 +13795,7 @@ void SourceView::show_pc(const string& pc, GUI::HighlightMode mode,
 #endif
 	    }
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	    XmTextReplace (code_text_w,
 			   pos + indent - marker.length(),
 			   pos + indent,
@@ -13751,7 +13808,7 @@ void SourceView::show_pc(const string& pc, GUI::HighlightMode mode,
     
 	    if (pos_line_end)
 	    {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 		XmTextSetHighlight (code_text_w,
 				    pos, pos_line_end,
 				    XmHIGHLIGHT_SELECTED);
@@ -13816,10 +13873,17 @@ void SourceView::set_all_registers(bool set)
     {
 	all_registers = set;
 
+#if defined(IF_XM)
 	if (all_registers_w != (Widget)0)
 	    XmToggleButtonSetState(all_registers_w, (Boolean)set, False);
 	if (int_registers_w != (Widget)0)
 	    XmToggleButtonSetState(int_registers_w, !(Boolean)set, False);
+#else
+	if (all_registers_w != (GUI::Widget*)0)
+	    all_registers_w->set_active(set, false);
+	if (int_registers_w != (GUI::Widget*)0)
+	    int_registers_w->set_active(!set, false);
+#endif
 
 	refresh_registers();
     }
@@ -13851,7 +13915,7 @@ bool SourceView::have_selection()
 {
     XmTextPosition left, right;
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     return (XmTextGetSelectionPosition(source_text_w, &left, &right)
 	    || XmTextGetSelectionPosition(code_text_w, &left, &right)) 
 	&& left != right;

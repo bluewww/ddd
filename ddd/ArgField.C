@@ -89,13 +89,12 @@ ArgField::ArgField (GUI::Container *parent, const char* name)
 
 string ArgField::get_string () const
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     String arg = XmTextFieldGetString (arg_text_field);
     string str(arg);
     XtFree (arg);
 #else
-    Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(arg_text_field->get_child());
-    string str(entry->get_text().c_str());
+    string str(arg_text_field->get_text().c_str());
 #endif
     strip_space(str);
     return str;
@@ -116,22 +115,20 @@ void ArgField::set_string(string s)
     s.gsub('\n', ' ');
 
     // Set it
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     String old_s = XmTextFieldGetString(arg_text_field);
 #else
-    Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(arg_text_field->get_child());
-    string old_s(entry->get_text().c_str());
+    string old_s(arg_text_field->get_text().c_str());
 #endif
     if (s != old_s)
     {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	XmTextFieldSetString(arg_text_field, XMST(s.chars()));
 #else
-	Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(arg_text_field->get_child());
-	entry->set_text(XMST(s.chars()));
+	arg_text_field->set_text(s.chars());
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	if (XtIsRealized(arg_text_field)) // LessTif 0.1 crashes otherwise
 	{
 	    XmTextPosition last_pos = 
@@ -143,7 +140,7 @@ void ArgField::set_string(string s)
 #endif
     }
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     XtFree(old_s);
 #endif
 }

@@ -76,6 +76,7 @@ char MakeMenu_rcsid[] =
 #include <GUI/SpinButton.h>
 #include <GUI/MenuItem.h>
 #include <GUI/CheckMenuItem.h>
+#include <GUI/RadioMenuItem.h>
 #include <GUI/CheckButton.h>
 #include <GUI/RadioButton.h>
 #include <GUI/RadioBox.h>
@@ -867,6 +868,14 @@ void MMaddItems(GUI::Container *shell, MMDesc items[], bool ignore_seps)
 	    break;
 	}
 
+	case MMRadioItem:
+	{
+	    // Create a CheckItem
+	    assert(subitems == 0);
+	    widget = new GUI::RadioMenuItem(*shell, GUI::PACK_SHRINK, name, label_string);
+	    break;
+	}
+
 	case MMRadio:
 	{
 	    // Create a ToggleButton in a radio group
@@ -1260,7 +1269,7 @@ GUI::Container *MMcreateWorkArea(GUI::Dialog *parent, GUI::String name, MMDesc i
 Widget MMcreatePanel(Widget parent, const _XtString name, MMDesc items[],
 		     ArgList args, Cardinal arg)
 {
-    BOX_P panel = verify(XmCreateWorkArea(parent, XMST(name), args, arg));
+    Widget panel = verify(XmCreateWorkArea(parent, XMST(name), args, arg));
     MMaddItems(panel, items);
     XtManageChild(panel);
 
@@ -1511,7 +1520,6 @@ static void addCallback(const MMDesc *item, XtPointer default_closure)
     }
 
     case MMToggle:
-      // case MMCheckItem:
     case MMScale:
     {
 	if (callback.callback != 0)
@@ -1709,6 +1717,17 @@ static void addCallback(const MMDesc *item, XtPointer default_closure)
 		checkitem->signal_toggled().connect(sigc::bind(callback, widget));
 	    else
 		std::cerr << "Error: MMCheckItem widget is not CheckMenuItem\n";
+	}
+	else
+	    set_sensitive(widget, false);
+	break;
+    case MMRadioItem:
+	if (callback) {
+	    GUI::RadioMenuItem *radioitem = dynamic_cast<GUI::RadioMenuItem *>(widget);
+	    if (radioitem)
+		radioitem->signal_toggled().connect(sigc::bind(callback, widget));
+	    else
+		std::cerr << "Error: MMRadioItem widget is not RadioMenuItem\n";
 	}
 	else
 	    set_sensitive(widget, false);

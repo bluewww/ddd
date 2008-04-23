@@ -144,7 +144,11 @@ private:
 #endif
 
     AsyncAgentHandler _handlers[AsyncAgent_NHandlers]; // handlers
+#if defined(IF_XM)
     XtInputId _ids[AsyncAgent_NHandlers];	       // their ids
+#else
+    sigc::connection _ids[AsyncAgent_NHandlers];       // their ids
+#endif
 
     AsyncAgentWorkProc *workProcs;	// working procedures
 
@@ -217,12 +221,21 @@ protected:
     // Clear all handlers
     void clearHandlers();
 
+#if defined(IF_XM)
     // resources
     XtInputId id(unsigned type) const
     {
 	assert(type < AsyncAgent_NHandlers);
 	return _ids[type]; 
     }
+#else
+    // resources
+    sigc::connection id(unsigned type) const
+    {
+	assert(type < AsyncAgent_NHandlers);
+	return _ids[type]; 
+    }
+#endif
 
     AsyncAgentHandler handler(unsigned type) const
     {
@@ -240,15 +253,26 @@ protected:
     virtual void closeChannel(FILE *fp);
 
 private:
+#if defined(IF_XM)
     // remove input
     void removeInput(unsigned type)
     {
 	if (id(type))
 	{
 	    XtRemoveInput(id(type));
-            _ids[type] = NO_WORK;
+            _ids[type] = 0;
         }
     }
+#else
+    // remove input
+    void removeInput(unsigned type)
+    {
+	if (id(type))
+	{
+	    id(type).disconnect();
+        }
+    }
+#endif
 
     AsyncAgent& operator = (const AsyncAgent&);
 

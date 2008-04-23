@@ -1238,7 +1238,7 @@ DECL_WR2(WR_gdbMakeAgainCB, sigc::ptr_fun(gdbMakeAgainCB));
 	    0, 0),							\
     GENTRYL("detach", "Detach Process", MMPush,				\
 	    BIND(gdbCommandCB, "detach"),				\
-	    sigc::bind(sigc::ptr_fun(gdbCommandCB1), "detach"),		\
+	    sigc::bind(sigc::ptr_fun(gdbCommandCB), "detach"),		\
 	    0, 0),							\
     MMSep,								\
     GENTRYL("print", "Print Graph...", MMPush,				\
@@ -1302,7 +1302,7 @@ struct ProgramItems {
 	    sigc::ptr_fun(gdbRunCB1), 0, 0),				\
     GENTRYL("run_again", "Run Again", MMPush,				\
 	    BIND(gdbCommandCB, "run"),					\
-	    sigc::bind(sigc::ptr_fun(gdbCommandCB1), "run"),		\
+	    sigc::bind(sigc::ptr_fun(gdbCommandCB), "run"),		\
 	    0, 0),							\
     MMSep,								\
     GENTRYL("separateExecWindow", "Run in Execution Window",		\
@@ -1313,49 +1313,49 @@ struct ProgramItems {
     MMSep,								\
     GENTRYL("step", "Step", MMPush,					\
 	    BIND(gdbCommandCB, "step"),					\
-	    sigc::bind(sigc::ptr_fun(gdbCommandCB1), "step"),		\
+	    sigc::bind(sigc::ptr_fun(gdbCommandCB), "step"),		\
 	    0, 0),							\
     GENTRYL("stepi", "Step Instruction", MMPush,			\
 	    BIND(gdbCommandCB, "stepi"),				\
-	    sigc::bind(sigc::ptr_fun(gdbCommandCB1), "stepi"),		\
+	    sigc::bind(sigc::ptr_fun(gdbCommandCB), "stepi"),		\
 	    0, 0),							\
     GENTRYL("next", "Next", MMPush,					\
 	    BIND(gdbCommandCB, "next"),					\
-	    sigc::bind(sigc::ptr_fun(gdbCommandCB1), "next"),		\
+	    sigc::bind(sigc::ptr_fun(gdbCommandCB), "next"),		\
 	    0, 0),							\
     GENTRYL("nexti", "Next Instruction", MMPush,			\
 	    BIND(gdbCommandCB, "nexti"),				\
-	    sigc::bind(sigc::ptr_fun(gdbCommandCB1), "nexti"),		\
+	    sigc::bind(sigc::ptr_fun(gdbCommandCB), "nexti"),		\
 	    0, 0),							\
     GENTRYL("until", "Until", MMPush,					\
 	    BIND(gdbCommandCB, "until"),				\
-	    sigc::bind(sigc::ptr_fun(gdbCommandCB1), "until"),		\
+	    sigc::bind(sigc::ptr_fun(gdbCommandCB), "until"),		\
 	    0, 0),							\
     GENTRYL("finish", "Finish", MMPush,					\
 	    BIND(gdbCommandCB, "finish"),				\
-	    sigc::bind(sigc::ptr_fun(gdbCommandCB1), "finish"),		\
+	    sigc::bind(sigc::ptr_fun(gdbCommandCB), "finish"),		\
 	    0, 0),							\
     MMSep,								\
     GENTRYL("cont", "Continue", MMPush,					\
 	    BIND(gdbCommandCB, "cont"),					\
-	    sigc::bind(sigc::ptr_fun(gdbCommandCB1), "cont"),		\
+	    sigc::bind(sigc::ptr_fun(gdbCommandCB), "cont"),		\
 	    0, 0),							\
     GENTRYL("signal0", "Continue Without Signal", MMPush,		\
 	    BIND(gdbCommandCB, "signal 0"),				\
-	    sigc::bind(sigc::ptr_fun(gdbCommandCB1), "signal 0"),	\
+	    sigc::bind(sigc::ptr_fun(gdbCommandCB), "signal 0"),	\
 	    0, 0),							\
     MMSep,								\
     GENTRYL("kill", "Kill", MMPush,					\
 	    BIND(gdbCommandCB, "kill"),					\
-	    sigc::bind(sigc::ptr_fun(gdbCommandCB1), "kill"),		\
+	    sigc::bind(sigc::ptr_fun(gdbCommandCB), "kill"),		\
 	    0, 0),							\
     GENTRYL("break", "Interrupt", MMPush,				\
 	    BIND(gdbCommandCB, "\003"),					\
-	    sigc::bind(sigc::ptr_fun(gdbCommandCB1), "\003"),		\
+	    sigc::bind(sigc::ptr_fun(gdbCommandCB), "\003"),		\
 	    0, 0),							\
     GENTRYL("quit", "Abort", MMPush,					\
 	    BIND(gdbCommandCB, "\034"),					\
-	    sigc::bind(sigc::ptr_fun(gdbCommandCB1), "\034"),		\
+	    sigc::bind(sigc::ptr_fun(gdbCommandCB), "\034"),		\
 	    0, 0),							\
     MMEnd								\
 }
@@ -1665,11 +1665,11 @@ static MMDesc stack_menu[] =
     MMSep,
     GENTRYL("up", "Up", MMPush,
 	    BIND(gdbCommandCB, "up"),
-	    sigc::bind(sigc::ptr_fun(gdbCommandCB1), "up"),
+	    sigc::bind(sigc::ptr_fun(gdbCommandCB), "up"),
 	    0, 0),
     GENTRYL("down", "Down", MMPush,
 	    BIND(gdbCommandCB, "down"),
-	    sigc::bind(sigc::ptr_fun(gdbCommandCB1), "down"),
+	    sigc::bind(sigc::ptr_fun(gdbCommandCB), "down"),
 	    0, 0),
     MMEnd
 };
@@ -2706,17 +2706,17 @@ static GUI::RadioButton *crash_nothing_w   = 0;
 
 static MMDesc crash_menu[] = 
 {
-    GENTRYL("debug", "Debug DDD", MMRadio,
+    GENTRYL("debug", "Debug DDD", MMRadioItem,
 	    BIND(dddSetCrashCB, 2),
-	    sigc::hide(sigc::bind(sigc::ptr_fun(dddSetCrashCB), 2)),
+	    sigc::bind(sigc::retype(sigc::ptr_fun(dddSetCrashCB)), 2),
 	    0, &crash_debug_w),
-    GENTRYL("dumpCore", "Dump Core Now", MMRadio,
+    GENTRYL("dumpCore", "Dump Core Now", MMRadioItem,
 	    BIND(dddSetCrashCB, 1),
-	    sigc::hide(sigc::bind(sigc::ptr_fun(dddSetCrashCB), 1)),
+	    sigc::bind(sigc::retype(sigc::ptr_fun(dddSetCrashCB)), 1),
 	    0, &crash_dump_core_w),
-    GENTRYL("nothing", "Do Nothing", MMRadio,
+    GENTRYL("nothing", "Do Nothing", MMRadioItem,
 	    BIND(dddSetCrashCB, 0),
-	    sigc::hide(sigc::bind(sigc::ptr_fun(dddSetCrashCB), 0)),
+	    sigc::bind(sigc::retype(sigc::ptr_fun(dddSetCrashCB)), 0),
 	    0, &crash_nothing_w),
     MMEnd
 };
@@ -4933,13 +4933,12 @@ static void ddd_check_version()
 	Delay::register_shell(warning);
 	XtUnmanageChild(XmMessageBoxGetChild(warning, XmDIALOG_CANCEL_BUTTON));
 	XtAddCallback(warning, XmNhelpCallback, ImmediateHelpCB, XtNIL);
-	manage_and_raise(warning);
 #else
 	GUI::Widget *warning = new GUI::MessageDialog(*command_shell,
 						      "version_warning",
 						      version_warnings.xmstring());
-	manage_and_raise1(warning);
 #endif
+	manage_and_raise(warning);
 
     }
 
@@ -6754,7 +6753,11 @@ static GUI::WidgetPtr<GUI::Button> reset_preferences_w = NULL;
 #if !defined(IF_XM)
 static sigc::connection reset_preferences_connection;
 #endif
+#if defined(IF_XM)
 static Widget current_panel;
+#else
+static GUI::Widget *current_panel;
+#endif
 
 void save_option_state()
 {
@@ -7466,7 +7469,7 @@ static bool helpers_preferences_changed()
 static void ResetPreferencesCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     Widget panel = (Widget)client_data;
-    WidgetNameType panel_name = XtName(panel);
+    string panel_name = XtName(panel);
 
     if (panel_name == "general")
 	ResetGeneralPreferencesCB(w, client_data, call_data);
@@ -7511,11 +7514,13 @@ static void ResetPreferencesCB(GUI::Notebook *nb)
 
 #endif
 
+#if defined(IF_XM)
+
 void update_reset_preferences()
 {
     if (current_panel != (Widget)0 && reset_preferences_w != (Widget)0 && option_state_saved)
     {
-	WidgetNameType panel_name = XtName(current_panel);
+	string panel_name = XtName(current_panel);
 
 	bool sensitive = false;
 
@@ -7539,6 +7544,40 @@ void update_reset_preferences()
 	check_options_file();
 }
 
+#else
+
+void update_reset_preferences()
+{
+    if (current_panel != (GUI::Widget*)0
+	&& reset_preferences_w != (GUI::Widget*)0
+	&& option_state_saved)
+    {
+	GUI::String panel_name = current_panel->get_name();
+
+	bool sensitive = false;
+
+	if (panel_name == "general")
+	    sensitive = general_preferences_changed();
+	else if (panel_name == "source")
+	    sensitive = source_preferences_changed();
+	else if (panel_name == "data")
+	    sensitive = data_preferences_changed();
+	else if (panel_name == "startup")
+	    sensitive = startup_preferences_changed();
+	else if (panel_name == "fonts")
+	    sensitive = font_preferences_changed();
+	else if (panel_name == "helpers")
+	    sensitive = helpers_preferences_changed();
+
+	set_sensitive(reset_preferences_w, sensitive);
+    }
+
+    if (gdb_initialized)
+	check_options_file();
+}
+
+#endif
+
 #if defined(IF_XM)
 
 static void ChangePanelCB(Widget w, XtPointer client_data, XtPointer call_data)
@@ -7552,10 +7591,8 @@ static void ChangePanelCB(Widget w, XtPointer client_data, XtPointer call_data)
     {
 	// Manage this child
 	XtManageChild(panel);
-#ifdef NAG_ME
-#warning HelpCB?
-#endif
-
+	XtAddCallback(preferences_dialog, XmNhelpCallback,
+		      HelpOnThisCB, XtPointer(panel));
 	XtAddCallback(reset_preferences_w, XmNactivateCallback,
 		      ResetPreferencesCB, XtPointer(panel));
 	current_panel = panel;
@@ -7586,19 +7623,15 @@ static void ChangePanelCB(Widget w, XtPointer client_data, XtPointer call_data)
 
 #else
 
-static void ChangePanelCB(GUI::CheckButton *w, XtPointer client_data, XtPointer call_data)
+static void ChangePanelCB(GUI::CheckButton *w, GUI::Widget *panel)
 {
-    Widget panel = (Widget)client_data;
     bool set = w->get_active();
 
     if (set)
     {
 	// Manage this child
 	XtManageChild(panel);
-#ifdef NAG_ME
-#warning HelpCB?
-#endif
-
+	std::cerr << "ChangePanelCB: set help callback?\n";
 	reset_preferences_connection =
 	    reset_preferences_w->signal_clicked().connect(sigc::bind(PTR_FUN(ResetPreferencesCB),
 								     panel));
@@ -7606,17 +7639,15 @@ static void ChangePanelCB(GUI::CheckButton *w, XtPointer client_data, XtPointer 
 
 	update_reset_preferences();
 
-	WidgetList children = panel->get_parent()->get_children();
+	GUI::ChildList children = panel->get_parent()->get_children();
 
-	for (WidgetListIterator i = children.begin(); i != children.end(); i++)
+	for (GUI::ChildIterator i = children.begin(); i != children.end(); i++)
 	{
-	    Widget child = *i;
+	    GUI::Widget *child = *i;
 	    if (child != panel)
 	    {
-		XtUnmanageChild(child);
-#ifdef NAG_ME
-#warning HelpCB?
-#endif
+		child->hide();
+		std::cerr << "ChangePanelCB: remove help callback?\n";
 		reset_preferences_connection.disconnect();
 	    }
 	}
@@ -7688,13 +7719,13 @@ static Widget add_panel(Widget parent,
 #else
 
 static int add_panel(GUI::Notebook *parent,
-		     const _XtString name, GUI::String label,
+		     const char *name, GUI::String label,
 		     MMDesc items[],
 		     bool set = false)
 {
     std::cerr << ">> add_panel <<\n";
     int pageno = parent->get_n_pages();
-    GUI::WidgetPtr<GUI::HBox> form = new GUI::HBox(*parent, GUI::PACK_SHRINK, name);
+    GUI::WidgetPtr<GUI::HBox> form = new GUI::HBox(*parent, GUI::PACK_SHRINK, name, label);
     // Do not show() the form here; this is under the control of the
     // Notebook widget.
 
@@ -8184,6 +8215,8 @@ BlinkCB(
 #endif
 }
 
+#if defined(IF_XM)
+
 // Enable or disable blinking
 static void blink(bool set)
 {
@@ -8197,22 +8230,52 @@ static void blink(bool set)
 	if (blinker_active)
 	{
 	    // Restart blink timer
-#if defined(IF_XM)
 	    BlinkCB(XtPointer(int(true)), &blink_timer);
-#else
-	    static bool blink_state = false;
-	    blink_timer = Glib::signal_timeout().connect(sigc::bind(PTR_FUN(BlinkCB), &blink_state),
-							 app_data.busy_blink_rate);
-#endif
 	}
     }
 }
+
+#else
+
+// Enable or disable blinking
+static void blink(bool set)
+{
+    blinker_active = set;
+
+    if (!led_w->get_active())
+	return;			// Button is not active
+
+    if (blink_timer == 0)
+    {
+	if (blinker_active)
+	{
+	    // Restart blink timer
+	    static bool blink_state = false;
+	    blink_timer = Glib::signal_timeout().connect(sigc::bind(sigc::ptr_fun(BlinkCB), &blink_state),
+							 app_data.busy_blink_rate);
+	}
+    }
+}
+
+#endif
+
+#if defined(IF_XM)
 
 static void DisableBlinkHP(Agent *, void *, void *)
 {
     // GDB has died -- disable status LED
     XmToggleButtonSetState(led_w, False, False);
 }
+
+#else
+
+static void DisableBlinkHP(Agent *, void *, void *)
+{
+    // GDB has died -- disable status LED
+    led_w->set_active(false);
+}
+
+#endif
 
 #if defined(IF_XM)
 
@@ -8695,7 +8758,11 @@ static void gdb_readyHP(Agent *, void *, void *call_data)
 	if (!gdb_initialized)
 	{
 	    gdb_initialized = true;
+#if defined(IF_XM)
 	    XmTextSetEditable(gdb_w, true);
+#else
+	    gdb_w->set_editable(true);
+#endif
 	}
 
 	// Process next pending command as soon as we return
@@ -10761,7 +10828,7 @@ static void vsl_echo(const string& msg)
 
     }
 
-    manage_and_raise1(dialog);
+    manage_and_raise(dialog);
 
     set_status_mstring(rm("VSL: ") + tt(msg));
 }

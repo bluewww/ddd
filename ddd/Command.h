@@ -371,8 +371,13 @@ extern Widget find_shell(Widget w = 0);
 extern GUI::WidgetPtr<GUI::Shell> find_shell1(GUI::Widget *w = NULL);
 #endif
 
+#if defined(IF_XM)
 // Process next element from command queue
-extern TIMEOUT_RETURN_TYPE processCommandQueue(TIMEOUT_ARG_LIST(p = 0, id = 0));
+extern void processCommandQueue(XtPointer p = 0, XtIntervalId *id = 0);
+#else
+// Process next element from command queue
+extern bool processCommandQueue(void);
+#endif
 
 // True if GDB processed any user command (= we had user interaction)
 extern bool userInteractionSeen();

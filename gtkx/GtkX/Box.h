@@ -43,7 +43,8 @@ namespace GtkX {
 
     class VBox: public Gtk::VBox, public Box {
     public:
-	VBox(GtkX::Container &parent, PackOptions po=PACK_SHRINK, const String &name="");
+	VBox(GtkX::Container &parent, PackOptions po=PACK_SHRINK, const String &name="",
+	    const String &label="");
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
@@ -55,7 +56,8 @@ namespace GtkX {
 
     class HBox: public Gtk::HBox, public Box {
     public:
-	HBox(GtkX::Container &parent, PackOptions po=PACK_SHRINK, const String &name="");
+	HBox(GtkX::Container &parent, PackOptions po=PACK_SHRINK, const String &name="",
+	    const String &label="");
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.

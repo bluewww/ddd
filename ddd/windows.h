@@ -33,13 +33,14 @@
 #include "config.h"
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include <X11/Intrinsic.h>
 #endif
 
 #if !defined(IF_XM)
 #include <GUI/Window.h>
 #include <GUI/MultiPaned.h>
+#include <GUI/ScrolledText.h>
 #include <GUI/Box.h>
 #endif
 
@@ -193,10 +194,10 @@ extern void set_main_window_size(GUI::Container *w);
 // Save paned child sizes
 extern void save_preferred_paned_sizes(Widget paned);
 
-#ifndef IF_MOTIF
+#if !defined(IF_XM)
 // Convenience function to get state of ToggleButton and CheckMenuItem.
 extern bool get_active(Widget w);
-#endif // IF_MOTIF
+#endif
 
 #endif // _DDD_windows_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

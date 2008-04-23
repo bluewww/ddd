@@ -103,9 +103,9 @@ void YnCB(Widget dialog, XtPointer client_data, XtPointer call_data)
 #else
 
 // Issue CLIENT_DATA as command and unmanage YN_DIALOG.
-void YnCB(GUI::Widget *dialog, const char *client_data)
+void YnCB(GUI::Widget *dialog, const char *command)
 {
-    gdbCommandCB1(dialog, (const char *)client_data);
+    gdbCommandCB(dialog, command);
 
     unpost_gdb_yn();
 }
@@ -639,7 +639,7 @@ Widget post_error(string text, const _XtString name, Widget w)
 
     XtSetArg(args[arg], XmNmessageString, mtext.xmstring()); arg++;
 
-    DIALOG_P ddd_error = 
+    Widget ddd_error = 
 	verify(XmCreateErrorDialog(find_shell(w), XMST(name), args, arg));
     Delay::register_shell(ddd_error);
     XtUnmanageChild(XmMessageBoxGetChild(ddd_error, XmDIALOG_CANCEL_BUTTON));

@@ -47,7 +47,7 @@
 #ifndef _DDD_SourceView_h
 #define _DDD_SourceView_h
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 
 // Motif includes
 #include <Xm/Xm.h>
@@ -266,20 +266,27 @@ class SourceView {
     // Set shell title
     static void update_title();
 
-    // Return height of a text line
-    static int line_height(SCROLLEDTEXT_P text_w);
-
 #if defined(IF_XM)
+
+    // Return height of a text line
+    static int line_height(Widget text_w);
+
     // Create text or code widget
     static void create_text(Widget parent,
 			    const char *base, bool editable,
 			    Widget& form, Widget& text);
+
 #else
+
+    // Return height of a text line
+    static int line_height(GUI::ScrolledText *text_w);
+
     // Create text or code widget
     static void create_text(GUI::Container *parent,
 			    const char *base, bool editable,
 			    GUI::Container *&form,
 			    GUI::ScrolledText *&text);
+
 #endif
 
     // Refresh displays
@@ -775,15 +782,15 @@ class SourceView {
     //-----------------------------------------------------------------------
 
     // Create a pixmap from BITS suitable for the widget W
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     static Pixmap pixmap(Widget w, unsigned char *bits, int width, int height);
 #else
     static Glib::RefPtr<Gdk::Pixbuf> pixmap(unsigned char *bits, int width, int height);
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     // Create glyph in FORM_W named NAME from given BITS
-    static Widget create_glyph(CONTAINER_P form_w, const _XtString name, 
+    static Widget create_glyph(Widget form_w, const _XtString name, 
 			       unsigned char *bits, int width, int height);
     // Map glyph W in (X, Y)
     static void map_glyph(Widget& w, Position x, Position y);
@@ -827,7 +834,7 @@ public:
     static Position multiple_stop_x_offset;
 
 private:
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     // Glyph locations: X[0] is source, X[1] is code
     static Widget plain_arrows[2];
     static Widget grey_arrows[2];
@@ -860,13 +867,13 @@ private:
     static Glib::RefPtr<Gdk::Pixbuf> drag_temp;
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     // Return position POS of glyph GLYPH in X/Y.  Return true iff displayed.
     static bool glyph_pos_to_xy(Widget glyph, XmTextPosition pos,
 				Position& x, Position& y);
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     // Map stop sign in W at position POS.  Get widget from STOPS[COUNT];
     // store location in POSITIONS.  Return mapped widget (0 if none)
     static Widget map_stop_at(Widget w, XmTextPosition pos,
@@ -881,7 +888,7 @@ private:
 				       TextPositionArray& positions);
     static GUI::GlyphMark *map_arrow_at(GUI::ScrolledText *w, long pos);
 #endif
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     static Widget map_drag_arrow_at(Widget w, XmTextPosition pos,
 				    Widget origin = 0);
     static inline void unmap_drag_arrow(Widget w)
@@ -908,7 +915,7 @@ private:
     // Update all glyphs now (without delay).
     static void update_glyphs_now();
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     // Return all glyphs that would change
     static const WidgetArray& glyphs_to_be_updated();
 
@@ -1076,7 +1083,7 @@ public:
     static bool cache_source_files;
     static bool cache_machine_code;
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     // Set whether glyphs are to be displayed
     static void set_display_glyphs(bool value);
 #endif
@@ -1096,7 +1103,7 @@ public:
     // Set the indentation
     static void set_indent(int source_indent, int code_indent);
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     // Set the max number of glyphs
     static void set_max_glyphs(int max_glyphs);
 

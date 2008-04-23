@@ -593,7 +593,7 @@ static void SetPrintSelectedNodesCB(GUI::CheckButton *w)
 
 static void SetPrintTargetCB(GUI::CheckButton *w, long client_data)
 {
-    if (!XmToggleButtonGetState(w))
+    if (!w->get_active())
 	return;
 
     print_target = PrintTarget(client_data);
@@ -874,6 +874,8 @@ static void get_paper_size(const string& s, int& hsize, int& vsize)
     vsize = points(s_vsize);
 }
 
+#if defined(IF_XM)
+
 static bool set_paper_size(const string& s)
 {
     int hsize, vsize;
@@ -911,6 +913,48 @@ static bool set_paper_size(const string& s)
 
     return true;
 }
+
+#else
+
+static bool set_paper_size(const string& s)
+{
+    int hsize, vsize;
+    get_paper_size(s, hsize, vsize);
+
+    if (hsize <= 0 || vsize <= 0)
+	return false;		// Error
+
+    PostScriptPrintGC gc;
+
+    print_postscript_gc.hsize = hsize - gc.hoffset * 2;
+    print_postscript_gc.vsize = vsize - gc.voffset * 2;
+
+    if (near(hsize, 594) && near(vsize, 840))
+	a4_paper_size->set_active(true, true);
+    else if (near(hsize, 840) && near(vsize, 1188))
+	a3_paper_size->set_active(true, true);
+    else if (hsize == 72 * 8 + 72 / 2 && vsize == 72 * 11)
+	letter_paper_size->set_active(true, true);
+    else if (hsize == 72 * 8 + 72 / 2 && vsize == 72 * 14)
+	legal_paper_size->set_active(true, true);
+    else if (hsize == 72 * 7 + 72 / 2 && vsize == 72 * 10)
+	executive_paper_size->set_active(true, true);
+    else
+    {
+	a4_paper_size->set_active(false, false);
+	a3_paper_size->set_active(false, false);
+	letter_paper_size->set_active(false, false);
+	legal_paper_size->set_active(false, false);
+	executive_paper_size->set_active(false, false);
+	custom_paper_size->set_active(true, false);
+    }
+
+    set_paper_size_string(s.chars());
+
+    return true;
+}
+
+#endif
 
 #if defined(IF_XM)
 
@@ -1019,10 +1063,10 @@ static void SetGCOrientation(Widget w, XtPointer client_data, XtPointer)
 
 static void SetGCCustom(GUI::CheckButton *w)
 {
-    if (!XmToggleButtonGetState(w))
+    if (!w->get_active())
 	return;
 
-    manage_and_raise1(paper_size_dialog);
+    manage_and_raise(paper_size_dialog);
 }
 
 static void SetGCOrientation(GUI::RadioButton *w, long client_data)
@@ -1463,11 +1507,10 @@ static void PrintCB(GUI::Button *parent, bool displays)
     if (print_dialog != 0)
     {
 	// Dialog already created -- pop it up again
-	XmToggleButtonSetState(print_plots_w, !displays, True);
-	XmToggleButtonSetState(print_displays_w, displays, True);
-	XmToggleButtonSetState(print_selected_w, 
-			       data_disp->have_selection(), True);
-	manage_and_raise1(print_dialog);
+	print_plots_w->set_active(!displays, true);
+	print_displays_w->set_active(displays, true);
+	print_selected_w->set_active(data_disp->have_selection(), true);
+	manage_and_raise(print_dialog);
 	return;
     }
 
@@ -1687,26 +1730,26 @@ static void PrintCB(GUI::Button *parent, bool displays)
     entry->signal_activate().connect(sigc::bind(sigc::ptr_fun(CheckPaperSizeCB), entry, ok_button));
 
     // Set initial state
-    XmToggleButtonSetState(print_to_printer_w, True, True);
-    XmToggleButtonSetState(postscript_w, True, True);
-    XmToggleButtonSetState(print_color_w, False, True);
-    XmToggleButtonSetState(print_selected_w, False, True);
-    XmToggleButtonSetState(print_portrait_w, True, True);
-    XmToggleButtonSetState(print_landscape_w, False, True);
-    XmToggleButtonSetState(print_plots_w, !displays, True);
-    XmToggleButtonSetState(print_displays_w, displays, True);
-    XmToggleButtonSetState(print_selected_w, 
-			   data_disp->have_selection(), True);
+    print_to_printer_w->set_active(true, true);
+    postscript_w->set_active(true, true);
+    print_color_w->set_active(false, true);
+    print_selected_w->set_active(false, true);
+    print_portrait_w->set_active(true, true);
+    print_landscape_w->set_active(false, true);
+    print_plots_w->set_active(!displays, true);
+    print_displays_w->set_active(displays, true);
+    print_selected_w->set_active(
+			   data_disp->have_selection(), true);
 
     bool ok = set_paper_size(app_data.paper_size);
     if (!ok)
-	XmToggleButtonSetState(a4_paper_size, True, True);
+	a4_paper_size->set_active(true, true);
 
     string command = string(app_data.print_command) + " ";
-    XmTextFieldSetString(print_command_field, XMST(command.chars()));
+    print_command_field->set_text(command.chars());
 
     // Gofer it!
-    manage_and_raise1(print_dialog);
+    manage_and_raise(print_dialog);
 }
 
 #endif

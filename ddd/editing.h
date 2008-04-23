@@ -33,15 +33,16 @@
 #include "config.h"
 #endif
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 
 #include <X11/Intrinsic.h>
 
-#endif // IF_MOTIF
+#endif
 
 #if !defined(IF_XM)
 #include <GUI/Widget.h>
 #include <GUI/Events.h>
+#include <GUI/ScrolledText.h>
 #endif
 
 #include "gtk_wrapper.h"
@@ -81,11 +82,11 @@ extern void popupAct              (Widget, XEvent*, String*, Cardinal*);
 // Callbacks
 extern void gdbModifyCB          (Widget, XtPointer, XtPointer);
 extern void gdbMotionCB          (Widget, XtPointer, XtPointer);
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 extern void gdbChangeCB          (Widget, XtPointer, XtPointer);
-#else // NOT IF_MOTIF
-extern void gdbChangeCB          (SCROLLEDTEXT_P);
-#endif // IF_MOTIF
+#else
+extern void gdbChangeCB          (GUI::ScrolledText *);
+#endif
 
 #ifdef IF_XM
 extern void gdbNextCB            (Widget, XtPointer, XtPointer);
@@ -128,11 +129,10 @@ extern bool gdb_debuggee_running;
 extern void clear_isearch(bool reset = false, bool show = true);
 
 // Pass the COMMAND given in CLIENT_DATA to gdb_button_command()
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 void gdbCommandCB(Widget, XtPointer, XtPointer); // FIXME compat
-#endif
-#if !defined(IF_XM)
-void gdbCommandCB1(GUI::Widget *, const char *);
+#else
+void gdbCommandCB(GUI::Widget *, const char *);
 #endif
 
 // Like gdb_command(), but perform `...' and `()' substitutions

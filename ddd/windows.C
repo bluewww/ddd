@@ -57,7 +57,7 @@ char windows_rcsid[] =
 #include "Tool.h"
 #include "XErrorB.h"
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 #include <Xm/Xm.h>
 #include <Xm/DialogS.h>
 #include <Xm/PanedW.h>
@@ -78,9 +78,9 @@ char windows_rcsid[] =
 #ifdef XtIsRealized
 #undef XtIsRealized
 #endif
-#else // NOT IF_MOTIF
+#else
 #include "GtkMultiPaned.h"
-#endif // IF_MOTIF
+#endif
 
 //-----------------------------------------------------------------------------
 // Window management
@@ -256,7 +256,7 @@ static void initialize_offsets()
     }
 }
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 // Return current tool shell position relative to root window
 static BoxPoint tool_shell_pos()
 {
@@ -276,11 +276,11 @@ static BoxPoint tool_shell_pos()
 
     return BoxPoint(root_x, root_y);
 }
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning tool_shell_pos not supported.
 #endif
-#endif // IF_MOTIF
+#endif
 
 static XtIntervalId move_tool_shell_timer = NO_TIMER;
 
@@ -301,7 +301,7 @@ static void VerifyToolShellPositionCB(XtPointer = 0, XtIntervalId *id = 0)
     std::clog << "Tool position expected: " << last_tool_shell_position << "\n";
 #endif
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     BoxPoint diff = tool_shell_pos() - last_tool_shell_position;
     if (diff != BoxPoint(0, 0))
     {
@@ -311,7 +311,7 @@ static void VerifyToolShellPositionCB(XtPointer = 0, XtIntervalId *id = 0)
 #ifdef NAG_ME
 #warning Do not move tool shell
 #endif
-#endif // IF_MOTIF
+#endif
 }
 
 // Move tool shell to POS.  If VERIFY is set, verify and correct 
@@ -327,7 +327,7 @@ static void move_tool_shell(const BoxPoint& pos, bool verify)
     if (tool_shell == 0)
 	return;
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     if (pos != tool_shell_pos())
     {
 #if LOG_MOVES
@@ -362,14 +362,14 @@ static void move_tool_shell(const BoxPoint& pos, bool verify)
 				100, VerifyToolShellPositionCB, XtPointer(0));
 	}
     }
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Do not move tool shell
 #endif
-#endif // IF_MOTIF
+#endif
 }
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 static void RecenterToolShellCB(XtPointer = 0, XtIntervalId *id = 0)
 {
     if (tool_shell == 0)
@@ -417,13 +417,13 @@ static void follow_tool_shell(Widget ref)
     recenter_tool_shell(ref, last_top_offset, last_right_offset);
 }
 
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning RecenterToolShellCB not implemented
 #endif
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 static void FollowToolShellCB(XtPointer = 0, XtIntervalId *id = 0)
 {
     if (tool_shell == 0)
@@ -464,11 +464,11 @@ static void FollowToolShellCB(XtPointer = 0, XtIntervalId *id = 0)
 			    200, FollowToolShellCB, XtPointer(0));
     }
 }
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning FollowToolShellCB not implemented
 #endif
-#endif // IF_MOTIF
+#endif
 
 #if defined(IF_XM)
 
@@ -667,7 +667,7 @@ void popdown_shell(GUI::Widget *w)
 
 void iconify_shell(Widget w)
 {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     if (w == 0 || !XtIsRealized(w))
 	return;
 
@@ -675,9 +675,9 @@ void iconify_shell(Widget w)
 
     XIconifyWindow(XtDisplay(w), XtWindow(w),
 		   XScreenNumberOfScreen(XtScreen(w)));
-#else // NOT IF_MOTIF
+#else
     std::cerr << "iconify_shell not supported.\n";
-#endif // IF_MOTIF
+#endif
 }
 
 #if defined(IF_XM)
@@ -706,7 +706,7 @@ static void popup_tty(Widget shell)
 {
     if (exec_tty_window())
     {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 	XErrorBlocker blocker(XtDisplay(shell));
 
 	// Uniconify window
@@ -714,13 +714,13 @@ static void popup_tty(Widget shell)
 
 	// Place window on top
 	XRaiseWindow(XtDisplay(shell), exec_tty_window());
-#else // NOT IF_MOTIF
+#else
 	std::cerr << "popup_tty called\n";
-#endif // IF_MOTIF
+#endif
     }
 }
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 static void iconify_tty(Widget shell)
 {
     if (exec_tty_window())
@@ -729,9 +729,9 @@ static void iconify_tty(Widget shell)
 		       XScreenNumberOfScreen(XtScreen(shell)));
     }
 }
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 // Shell visibility stuff
 static int& visibility(Widget w)
 {
@@ -1010,7 +1010,7 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 	break;
     }
 }
-#endif // IF_MOTIF
+#endif
 
 
 //-----------------------------------------------------------------------------
@@ -1140,12 +1140,12 @@ void gdbCloseCommandWindowCB(GUI::Widget *w)
 	popdown_shell(command_shell);
     }
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     // Unmanaged the ScrolledWindow parent:
     unmanage_paned_child(XtParent(gdb_w));
-#else // NOT IF_MOTIF
+#else
     unmanage_paned_child(gdb_w);
-#endif // IF_MOTIF
+#endif
 
     app_data.debugger_console = false;
 
@@ -1175,12 +1175,12 @@ void gdbOpenCommandWindowCB(void)
 
 bool have_command_window()
 {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     // Refers to ScrolledWindow parent:
     return XtIsManaged(XtParent(gdb_w));
-#else // NOT IF_MOTIF
+#else
     return XtIsManaged(gdb_w);
-#endif // IF_MOTIF
+#endif
 }
 
 
@@ -1747,7 +1747,7 @@ void gdbToggleToolWindowCB(GUI::Widget *w)
 // Command tool placement
 //-----------------------------------------------------------------------------
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 static void RecenteredToolShellCB(XtPointer, XtIntervalId *id)
 {
     (void) id;			// Use it
@@ -1918,12 +1918,12 @@ static bool get_tool_offset(Widget ref, int& top_offset, int& right_offset)
     right_offset = x;
     return true;
 }
-#endif // IF_MOTIF
+#endif
 
 // Store current offset of command tool in APP_DATA
 void get_tool_offset()
 {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     initialize_offsets();
 
     if (get_tool_offset(0, last_top_offset, last_right_offset))
@@ -1931,17 +1931,17 @@ void get_tool_offset()
 	app_data.tool_top_offset   = last_top_offset;
 	app_data.tool_right_offset = last_right_offset;
     }
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning get_tool_offset not supported.
 #endif
-#endif // IF_MOTIF
+#endif
 }
 
 
 // Manage paned child with minimum size
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 inline bool is_internal_paned_child(Widget w)
 {
     return XmIsSash(w) || XmIsSeparator(w) || XmIsSeparatorGadget(w) 
@@ -2002,7 +2002,7 @@ static void paned_changed(Widget /* paned */)
 	source_view->update_glyphs();
     }
 }
-#endif // IF_MOTIF
+#endif
 
 #if defined(IF_XM)
 
@@ -2148,7 +2148,7 @@ void manage_paned_child(GUI::Widget *w)
 
 #endif
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 // Return the number of resizable children of PANED
 static int resizable_children(Widget paned)
 {
@@ -2180,7 +2180,7 @@ static int resizable_children(Widget paned)
 
     return n;
 }
-#endif // IF_MOTIF
+#endif
 
 #if defined(IF_XM)
 
@@ -2522,7 +2522,7 @@ void set_scrolled_window_size(GUI::ScrolledText *child, GUI::Widget *target)
 
 #endif
 
-#ifndef IF_MOTIF
+#if !defined(IF_XM)
 
 // ****************************************************************************
 
@@ -2563,26 +2563,6 @@ Glib::RefPtr<Gdk::Screen> XtScreen(Widget w)
     return w->get_screen();
 }
 
-bool XtIsShell(Widget w)
-{
-    return (dynamic_cast<Gtk::Window *>(w) != NULL);
-}
-
-bool XtIsTopLevelShell(Widget w)
-{
-    return (dynamic_cast<Gtk::Window *>(w) != NULL);
-}
-
-bool XtIsWMShell(Widget w)
-{
-    return (dynamic_cast<Gtk::Window *>(w) != NULL);
-}
-
-bool XmIsDialogShell(Widget w)
-{
-    return (dynamic_cast<Gtk::Dialog *>(w) != NULL);
-}
-
 bool
 get_active(Widget w)
 {
@@ -2597,4 +2577,4 @@ get_active(Widget w)
     return false;
 }
 
-#endif // IF_MOTIF
+#endif

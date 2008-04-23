@@ -39,6 +39,7 @@
 #include <GUI/RadioButton.h>
 #include <GUI/CheckButton.h>
 #include <GUI/CheckMenuItem.h>
+#include <GUI/RadioMenuItem.h>
 #include <GUI/Scale.h>
 #include <GUI/Entry.h>
 #endif
@@ -196,7 +197,7 @@ extern void dddToggleFlatButtonsCB          (GUI::CheckButton *);
 extern void dddToggleColorButtonsCB         (GUI::CheckButton *);
 extern void dddToggleToolbarsAtBottomCB     (GUI::CheckButton *);
 
-extern void dddSetCrashCB                   (int);
+extern void dddSetCrashCB                   (GUI::RadioMenuItem *, int);
 extern void dddClearMaintenanceCB           (void);
 
 extern void dddSetGlobalTabCompletionCB     (GUI::RadioButton *, int);

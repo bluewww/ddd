@@ -138,7 +138,11 @@ void AsyncAgent::initHandlers()
     for (unsigned type = 0; type < AsyncAgent_NHandlers; type++)
     {
 	_handlers[type] = 0;
-	_ids[type] = NO_SOURCE;
+#if defined(IF_XM)
+	_ids[type] = 0;
+#else
+	_ids[type].disconnect();
+#endif
     }
 
 #if ASYNC_CHILD_STATUS_CHANGE
@@ -172,8 +176,12 @@ AsyncAgentHandler AsyncAgent::setHandler(unsigned type, AsyncAgentHandler h)
     AsyncAgentHandler old_handler = handler(type);
     if (id(type))
     {
+#if defined(IF_XM)
 	XtRemoveInput(id(type));
-	_ids[type] = NO_SOURCE;
+	_ids[type] = 0;
+#else
+	_ids[type].disconnect();
+#endif
     }
 
     // Register new handler
@@ -222,14 +230,14 @@ AsyncAgentHandler AsyncAgent::setHandler(unsigned type, AsyncAgentHandler h)
     if (h && sourcefp) {
 #if defined(IF_MOTIF)
 	_ids[type] = XtAppAddInput(appContext(), fileno(sourcefp), XtPointer(condition),
-	    somethingHappened, (XtPointer)this);
+				   somethingHappened, (XtPointer)this);
 #else
 	const Glib::RefPtr<Glib::IOSource> source
 	    = Glib::IOSource::create(fileno(sourcefp),
 				     Glib::IOCondition(condition)|Glib::IO_HUP|Glib::IO_ERR|Glib::IO_NVAL);
 	source->set_can_recurse(true);
-	const sigc::connection connection =
-	    source->connect(sigc::bind(MEM_FUN(*this, &AsyncAgent::somethingHappened), type));
+	_ids[type] =
+	    source->connect(sigc::bind(sigc::mem_fun(*this, &AsyncAgent::somethingHappened), type));
 	Glib::RefPtr<Glib::MainContext> ctx = Glib::MainContext::get_default();
 	source->attach(ctx);
 #endif

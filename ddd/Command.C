@@ -60,7 +60,7 @@ char Command_rcsid[] =
 #include <ctype.h>
 #include <string.h>
 
-#ifdef IF_MOTIF
+#if defined(IF_MOTIF)
 #include <Xm/Xm.h>
 #include <Xm/Text.h>
 #include <X11/StringDefs.h>
@@ -69,9 +69,9 @@ char Command_rcsid[] =
 #ifdef XtIsRealized
 #undef XtIsRealized
 #endif
-#else // NOT IF_MOTIF
+#else
 #include "gtk_wrapper.h"
-#endif // IF_MOTIF
+#endif
 
 // Origin of last command
 static Widget gdb_last_origin = 0;
@@ -128,20 +128,20 @@ void strip_auto_command_prefix(string& cmd)
 // GDB command management
 //-----------------------------------------------------------------------------
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 static void ClearOriginCB(Widget w, XtPointer, XtPointer)
 {
     if (gdb_last_origin == w)
 	gdb_last_origin = 0;
 }
-#else // NOT IF_MOTIF
+#else
 static void *ClearOriginCB(void *w)
 {
     if (gdb_last_origin == (Widget)w)
 	gdb_last_origin = 0;
     return NULL;
 }
-#endif // IF_MOTIF
+#endif
 
 // Translate frequently used commands
 void translate_command(string& command)
@@ -252,15 +252,27 @@ static Command current_gdb_command("echo");
 // Saved `running' command
 static Command running_gdb_command("run");
 
+#if defined(IF_XM)
 
-TIMEOUT_RETURN_TYPE ClearContinuingCB(TIMEOUT_ARG_LIST(,))
+static void ClearContinuingCB(XtPointer, XtIntervalId *)
 {
     // std::clog << "Continuing...done.\n";
 
-    continuing = NO_TIMER;
+    continuing = 0;
     processCommandQueue();
-    return MAYBE_FALSE;
 }
+
+#else
+
+static bool ClearContinuingCB(void)
+{
+    // std::clog << "Continuing...done.\n";
+
+    processCommandQueue();
+    return false;
+}
+
+#endif
 
 #if defined(IF_XM)
 
@@ -543,21 +555,21 @@ static void do_gdb_command(Command& given_c, bool is_command = true)
 		timeout = app_data.cont_interrupt_delay;
 
 	    if (continuing != NO_TIMER) {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 		XtRemoveTimeOut(continuing);
-#else // NOT IF_MOTIF
+#else
 		continuing.disconnect();
-#endif // IF_MOTIF
+#endif
 	    }
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 	    continuing = 
 		XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 
 				timeout, ClearContinuingCB, XtPointer(0));
-#else // NOT IF_MOTIF
+#else
 	    continuing = 
-		Glib::signal_timeout().connect(PTR_FUN(ClearContinuingCB), timeout);
-#endif // IF_MOTIF
+		GUI::signal_timeout().connect(sigc::ptr_fun(ClearContinuingCB), timeout);
+#endif
 
 	    // std::clog << "Continuing...\n";
 	}
@@ -651,28 +663,28 @@ bool CommandGroup::first_command = true;
 void Command::add_destroy_callback()
 {
     if (origin != 0) {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 	XtAddCallback(origin, XtNdestroyCallback, clear_origin, 
 		      (XtPointer)this);
-#else // NOT IF_MOTIF
+#else
 	origin->add_destroy_notify_callback(this, clear_origin);
-#endif // IF_MOTIF
+#endif
     }
 }
 
 void Command::remove_destroy_callback()
 {
     if (origin != 0) {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 	XtRemoveCallback(origin, XtNdestroyCallback, clear_origin,
 			 (XtPointer)this);
-#else // NOT IF_MOTIF
+#else
 	origin->remove_destroy_notify_callback(this);
-#endif // IF_MOTIF
+#endif
     }
 }
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 void Command::clear_origin(Widget w, XtPointer client_data, XtPointer)
 {
     (void) w;			// Use it
@@ -682,7 +694,7 @@ void Command::clear_origin(Widget w, XtPointer client_data, XtPointer)
     assert(w == command->origin);
     command->origin = 0;
 }
-#else // NOT IF_MOTIF
+#else
 void *Command::clear_origin(void *client_data)
 {
     // The widget is being destroyed.  Remove all references.
@@ -690,7 +702,7 @@ void *Command::clear_origin(void *client_data)
     command->origin = 0;
     return NULL;
 }
-#endif // IF_MOTIF
+#endif
 
 typedef Queue<Command> CommandQueue;
 typedef QueueIter<Command> CommandQueueIter;
@@ -870,27 +882,27 @@ static void gdb_enqueue_command(const Command& c)
     if (process_timeout == NO_TIMER)
     {
 	// Be sure to process the new command queue
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 	process_timeout = 
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 
 			    200, processCommandQueue, XtPointer(0));
-#else // NOT IF_MOTIF
+#else
 	process_timeout = 
-	    Glib::signal_timeout().connect(PTR_FUN(processCommandQueue), 200);
-#endif // IF_MOTIF
+	    Glib::signal_timeout().connect(sigc::ptr_fun(processCommandQueue), 200);
+#endif
     }
 }
 
-TIMEOUT_RETURN_TYPE
-processCommandQueue(TIMEOUT_ARG_LIST(, id))
+#if defined(IF_XM)
+
+void
+processCommandQueue(XtPointer, XtIntervalId *id)
 {
-#ifdef IF_MOTIF
     if (id != 0)
-	process_timeout = NO_TIMER;		// Called by timeout
-#endif // IF_MOTIF
+	process_timeout = 0;		// Called by timeout
 
     if (emptyCommandQueue())
-	return MAYBE_FALSE;
+	return;
 
     if (can_do_gdb_command())
     {
@@ -906,18 +918,42 @@ processCommandQueue(TIMEOUT_ARG_LIST(, id))
 #endif
     }
 
-#ifdef IF_MOTIF
-    if (process_timeout == NO_TIMER)
+    if (process_timeout == 0)
     {
 	// Check again later...
 	process_timeout = 
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 
 			    200, processCommandQueue, XtPointer(0));
     }
-#else // NOT IF_MOTIF
-    return true;
-#endif // IF_MOTIF
 }
+
+#else
+
+bool
+processCommandQueue(void)
+{
+    if (emptyCommandQueue())
+	return false;
+
+    if (can_do_gdb_command())
+    {
+	Command& c = commandQueue.first();
+	Command cmd(c);
+	commandQueue.dequeue(c);
+	do_gdb_command(cmd);
+
+	gdb_keyboard_command = false;
+
+#if LOG_COMMAND_QUEUE
+	std::clog << "Command queue: " << commandQueue << "\n";
+#endif
+    }
+
+    // Check again later...
+    return true;
+}
+
+#endif
 
 // Wait for command queue to drain
 void syncCommandQueue()
@@ -944,12 +980,12 @@ void syncCommandQueue()
 	process_emergencies();
 
 	// Process input from GDB
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 	XtAppProcessEvent(XtWidgetToApplicationContext(command_shell),
 			  XtIMTimer | XtIMAlternateInput);
-#else // NOT IF_MOTIF
+#else
 	Glib::MainContext::get_default()->iteration(false);
-#endif // IF_MOTIF
+#endif
     }
 
     app_data.stop_and_continue = saved_stop_and_continue;
@@ -958,15 +994,14 @@ void syncCommandQueue()
 #if defined(IF_XM)
 
 // Shell finder
-WINDOW_P find_shell(Widget w)
+Widget find_shell(Widget w)
 {
     if (w == 0)
 	w = gdb_last_origin;
     if (w == 0)
 	return command_shell;
 
-#if defined(IF_MOTIF)
-    WINDOW_P parent = findTopLevelShellParent(w);
+    Widget parent = findTopLevelShellParent(w);
     if (parent == 0 || !XtIsRealized(parent))
 	return command_shell;
 
@@ -976,15 +1011,9 @@ WINDOW_P find_shell(Widget w)
 	return command_shell;
 
     return parent;
-#else
-    std::cerr << "find_shell does not work\n";
-    return command_shell;
-#endif
 }
 
-#endif
-
-#if !defined(IF_XM)
+#else
 
 GUI::WidgetPtr<GUI::Shell> find_shell1(GUI::Widget *w)
 {

@@ -33,16 +33,15 @@
 #include "config.h"
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 
 #include <X11/Intrinsic.h>
 #include <Xm/Text.h>
 
-#endif
-
-#if !defined(IF_XM)
+#else
 
 #include <GUI/Widget.h>
+#include <GUI/ScrolledText.h>
 
 #endif
 
@@ -122,10 +121,9 @@ extern void HelpOnHelpCB(Widget widget, XtPointer client_data,
 
 // Call help for associated widget.
 // May be used as help callback for any primitive widget.
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 extern void ImmediateHelpCB(Widget, XtPointer, XtPointer);
-#endif
-#if !defined(IF_XM)
+#else
 extern void ImmediateHelpCB1(GUI::Widget *);
 #endif
 

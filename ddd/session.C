@@ -1131,7 +1131,7 @@ static void SaveSessionCB1(GUI::ListView *w)
     {
 	unsigned long flags = SAVE_SESSION | MAY_INTERACT;
 
-	if (XmToggleButtonGetState(dump_core_w))
+	if (dump_core_w->get_active())
 	    flags |= SAVE_CORE | gcore_method;
 
 	DDDSaveOptionsCB(w, flags);
@@ -1272,7 +1272,7 @@ void SaveSessionAsCB(GUI::Widget *w)
 #endif
 
     update_sessions1(dialog);
-    manage_and_raise1(dialog);
+    manage_and_raise(dialog);
 }
 
 #endif
@@ -1692,7 +1692,7 @@ void OpenSessionCB(GUI::Widget *w)
     }
 
     update_sessions1(dialog);
-    manage_and_raise1(dialog);
+    manage_and_raise(dialog);
 }
 
 #endif

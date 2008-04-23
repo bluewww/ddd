@@ -56,3 +56,9 @@ Container::remove(Widget &w)
     delete &w;
 }
 
+Gtk::RadioButtonGroup &
+Container::button_group(void)
+{
+    return grp;
+}
+

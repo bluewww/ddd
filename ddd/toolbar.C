@@ -77,6 +77,7 @@ static Dimension preferred_height(Widget w)
 #endif
 
 #if defined(IF_MOTIF)
+
 static void set_label_type(MMDesc items[], unsigned char label_type)
 {
     for (MMDesc *item = items; item != 0 && item->name; item++)
@@ -139,10 +140,13 @@ static void set_label_type(MMDesc items[], unsigned char label_type)
 	}
     }
 }
+
 #else
+
 #ifdef NAG_ME
 #warning set_label_type not supported.
 #endif
+
 #endif
 
 static void flatten_buttons(MMDesc items[])

@@ -85,6 +85,7 @@ char buttons_rcsid[] =
 
 #if !defined(IF_XM)
 #include <GUI/Events.h>
+#include <GUI/Notebook.h>
 #endif
 
 
@@ -119,7 +120,7 @@ static void YnButtonCB(Widget dialog,
 static void YnButtonCB1(GUI::Widget *dialog, const char *client_data)
 {
     _gdb_out(string(client_data) + '\n');
-    gdbCommandCB1(dialog, client_data);
+    gdbCommandCB(dialog, client_data);
     gdb_keyboard_command = true;
 }
 
@@ -1662,7 +1663,7 @@ void set_buttons(GUI::Box *buttons, const char *_button_list, bool manage)
     for (i = 0; i < lines; i++)
     {
 	sigc::slot<void, GUI::Widget *, const char *>
-	    callback = sigc::ptr_fun(gdbCommandCB1);
+	    callback = sigc::ptr_fun(gdbCommandCB);
 
 	string name = commands[i];
 	strip_space(name);
@@ -1868,6 +1869,7 @@ static Widget shortcut_label = 0;
 static Widget console_w, shortcut_w;
 #else
 static GUI::Dialog *buttons_dialog = 0;
+static GUI::Dialog *shortcuts_dialog = 0;
 static GUI::Box *button_box     = 0;
 static GUI::Label *shortcut_label = 0;
 static GUI::Button *console_w, *shortcut_w;
@@ -1963,44 +1965,32 @@ static void SetVerifyButtonsCB(Widget, XtPointer, XtPointer call_data)
 #endif
 #endif
 
+#if defined(IF_XM)
+
 static Widget add_button(const _XtString name, 
-			 Widget dialog, BOX_P buttons, 
+			 Widget dialog, Widget buttons, 
 			 Widget text, Widget vfy,
 			 const _XtString& str, bool shortcuts = false)
 {
-#if defined(IF_XM)
     Arg args[10];
     Cardinal arg = 0;
     Widget button = XmCreateToggleButton(buttons, XMST(name), args, arg);
     XtManageChild(button);
-#else
-    Gtk::ToggleButton *button = new Gtk::ToggleButton(XMST(name));
-    button->set_name(XMST(name));
-    button->show();
-    buttons->pack_start(*button, Gtk::PACK_SHRINK);
-#endif
 
     ChangeTextInfo *info = new ChangeTextInfo;
     info->dialog    = dialog;
-#if defined(IF_XM)
     info->str       = CONST_CAST(String*,&str);
-#else
-    info->str       = CONST_CAST(char**,&str);
-#endif
     info->text      = text;
     info->vfy       = vfy;
     info->shortcuts = shortcuts;
 
-#if defined(IF_XM)
     XtAddCallback(button, XmNvalueChangedCallback, ChangeTextCB, 
 		  XtPointer(info));
-#ifdef NAG_ME
-#warning  ChangeTextCB not implemented
-#endif
-#endif
 
     return button;
 }
+
+#endif
 
 #if defined(IF_XM)
 
@@ -2111,34 +2101,51 @@ static void create_buttons_dialog(GUI::Widget *parent)
 
     buttons_dialog = new GUI::Dialog(*find_shell1(parent), "edit_buttons");
 
-#ifdef NAG_ME
-#warning "Edit buttons" dialog to be written
-#endif
-
     Delay::register_shell(buttons_dialog);
 
-    shortcut_label = new GUI::Label(*buttons_dialog, GUI::PACK_SHRINK, "shortcuts");
-    shortcut_label->show();
-
-    button_box = new GUI::HBox(*buttons_dialog);
-    button_box->show();
-
-#ifdef NAG_ME
-#warning Text for buttons not implemented
-#endif
+    GUI::Notebook *change = new GUI::Notebook(*buttons_dialog, GUI::PACK_EXPAND_WIDGET, "change");
+    change->show();
 
     GUI::CheckButton *vfy = new GUI::CheckButton(*buttons_dialog, GUI::PACK_SHRINK, "verify");
     vfy->show();
-#ifdef NAG_ME
-#warning SetVerifyButtonsCB not defined
-#endif
+
+    std::cerr << "SetVerifyButtonsCB not defined\n";
     // vfy->signal_toggled().connect(SetVerifyButtonsCB);
 
-#ifdef NAG_ME
-#warning Text widget for user-defined buttons not defined
-#endif
+    GUI::Container *box;
+    GUI::ScrolledText *text;
+    box = change->append_page("Console");
+    text = new GUI::ScrolledText(*box, GUI::PACK_EXPAND_WIDGET, "console");
+    text->show();
+    box = change->append_page("Source");
+    text = new GUI::ScrolledText(*box, GUI::PACK_EXPAND_WIDGET, "source");
+    text->show();
+    box = change->append_page("Data");
+    text = new GUI::ScrolledText(*box, GUI::PACK_EXPAND_WIDGET, "Data");
+    text->show();
 
-    const _XtString *str = 0;
+    std::cerr << "buttons not finished\n";
+
+
+}
+
+static void create_shortcuts_dialog(GUI::Widget *parent)
+{
+    if (shortcuts_dialog != 0)
+	return;
+
+    shortcuts_dialog = new GUI::Dialog(*find_shell1(parent), "edit_shortcuts");
+
+    Delay::register_shell(shortcuts_dialog);
+
+    shortcut_label = new GUI::Label(*shortcuts_dialog, GUI::PACK_SHRINK, "shortcuts");
+    shortcut_label->show();
+
+    GUI::ScrolledText *text;
+    text = new GUI::ScrolledText(*shortcuts_dialog, GUI::PACK_EXPAND_WIDGET, "shortcuts");
+    text->show();
+
+    const char **str = 0;
     switch (gdb->type())
     {
     case BASH: str = &app_data.bash_display_shortcuts; break;
@@ -2151,9 +2158,11 @@ static void create_buttons_dialog(GUI::Widget *parent)
     case XDB:  str = &app_data.xdb_display_shortcuts;  break;
     }
 
-#ifdef NAG_ME
-#warning buttons not finished
-#endif
+    text->set_text(*str);
+
+
+    std::cerr << "shortcuts not finished\n";
+
 }
 
 #endif
@@ -2188,14 +2197,8 @@ void dddEditButtonsCB(Widget w, XtPointer, XtPointer)
 void dddEditButtonsCB(GUI::Widget *w)
 {
     create_buttons_dialog(w);
-    buttons_dialog->hide();
 
-    button_box->show();
-    shortcut_w->show();
-
-#ifdef NAG_ME
-#warning Buttons dialog?
-#endif
+    manage_and_raise(buttons_dialog);
 }
 
 #endif
@@ -2226,15 +2229,9 @@ void dddEditShortcutsCB(Widget w, XtPointer, XtPointer)
 
 void dddEditShortcutsCB(GUI::Widget *w)
 {
-    create_buttons_dialog(w);
-    buttons_dialog->hide();
+    create_shortcuts_dialog(w);
 
-    button_box->show();
-    shortcut_w->show();
-
-#ifdef NAG_ME
-#warning Buttons dialog?
-#endif
+    manage_and_raise(shortcuts_dialog);
 }
 
 #endif

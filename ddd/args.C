@@ -100,11 +100,13 @@ static string last_make_argument;
 
 #if defined(IF_XM)
 static Widget cd_dialog;
-#else
-static GUI::WidgetPtr<GUI::Dialog> cd_dialog;
-#endif
 static StringArray cd_arguments;
-static COMBOBOXENTRYTEXT_P cd_arguments_w;
+static Widget cd_arguments_w;
+#else
+static GUI::Dialog *cd_dialog;
+static StringArray cd_arguments;
+static GUI::ComboBoxEntryText *cd_arguments_w;
+#endif
 static bool cd_arguments_updated = false;
 static string last_cd_argument;
 
@@ -414,7 +416,7 @@ void gdbRunCB1(GUI::Widget *w)
     }
 
     update_run_arguments();
-    manage_and_raise1(run_dialog);
+    manage_and_raise(run_dialog);
 }
 
 #endif
@@ -544,7 +546,7 @@ void gdbMakeCB(GUI::Widget *w)
     }
 
     update_make_arguments();
-    manage_and_raise1(make_dialog);
+    manage_and_raise(make_dialog);
 }
 
 #endif
@@ -697,7 +699,7 @@ void gdbChangeDirectoryCB(GUI::Widget *w)
     }
 
     update_cd_arguments();
-    manage_and_raise1(cd_dialog);
+    manage_and_raise(cd_dialog);
 }
 
 #endif

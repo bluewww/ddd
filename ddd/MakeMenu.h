@@ -72,13 +72,15 @@ const MMType MMSpinBox     = 15; // Like MMTextField, but add two spin buttons
 const MMType MMComboBox    = 16; // Create a combo box
 
 #if defined(IF_XM)
+#define MMRadio MMToggle
 #define MMMenuItem MMPush
 #define MMCheckItem MMToggle
-#define MMRadio MMToggle
+#define MMRadioItem MMToggle
 #else
-const MMType MMMenuItem    = 17; // Create a MenuItem (same as MMPush for Motif)
-const MMType MMCheckItem   = 18; // Create a CheckMenuItem (same as MMToggle for Motif)
-const MMType MMRadio       = 19; // Create a RadioButton (same as MMToggle for Motif)
+const MMType MMRadio       = 17; // Create a RadioButton (same as MMToggle for Motif)
+const MMType MMMenuItem    = 18; // Create a MenuItem (same as MMPush for Motif)
+const MMType MMCheckItem   = 19; // Create a CheckMenuItem (same as MMToggle for Motif)
+const MMType MMRadioItem   = 20; // Create a RadioMenuItem (same as MMToggle for Motif)
 #endif
 
 const MMType MMTypeMask    = 31; // mask to find type
@@ -145,6 +147,7 @@ typedef void (*MMItemProc)(const MMDesc items[], XtPointer closure);
 
 // Creators
 #if defined(IF_XM)
+
 Widget         MMcreatePulldownMenu       (Widget parent, const char *name, MMDesc items[],
 					   ArgList args = 0, Cardinal arg = 0);
 Widget         MMcreateRadioPulldownMenu  (Widget parent, const char *name, MMDesc items[],
@@ -154,18 +157,16 @@ Widget         MMcreatePopupMenu          (Widget parent, const char *name, MMDe
 Widget         MMcreateMenuBar            (Widget parent, const char *name, MMDesc items[],
 					   ArgList args = 0, Cardinal arg = 0);
 #else
+
 GUI::PulldownMenu  *MMcreatePulldownMenu       (GUI::Container &parent, cpString name, MMDesc items[]);
 GUI::PulldownMenu  *MMcreateRadioPulldownMenu  (GUI::Container &parent, cpString name, MMDesc items[]);
 GUI::PopupMenu     *MMcreatePopupMenu          (GUI::Widget &parent, cpString name, MMDesc items[]);
 GUI::WidgetPtr<GUI::MenuBar> MMcreateMenuBar   (GUI::Container &parent, cpString name, MMDesc items[]);
-#if 0
-// TEMPORARY
-GUI::PopupMenu     *MMcreatePopupMenu          (Widget parent, cpString name, MMDesc items[]);
-GUI::WidgetPtr<GUI::MenuBar> MMcreateMenuBar   (CONTAINER_P parent, cpString name, MMDesc items[]);
-#endif
+
 #endif
 
 #if defined(IF_XM)
+
 Widget         MMcreateWorkArea           (Widget parent, const char *name, MMDesc items[],
 					   ArgList args = 0, Cardinal arg = 0);
 Widget         MMcreatePanel              (Widget parent, const char *name, MMDesc items[],
@@ -174,11 +175,10 @@ Widget         MMcreateRadioPanel         (Widget parent, const char *name, MMDe
 					   ArgList args = 0, Cardinal arg = 0);
 Widget         MMcreateButtonPanel        (Widget parent, const char *name, MMDesc items[],
 					   ArgList args = 0, Cardinal arg = 0);
-//BOX_P        MMcreateVButtonPanel       (Widget parent, const char *name, MMDesc items[],
-//					   ArgList args = 0, Cardinal arg = 0);
 Widget         MMcreatePushMenu           (Widget parent, const char *name, MMDesc items[],
 					   ArgList args = 0, Cardinal arg = 0);
 #else
+
 GUI::Container *MMcreateWorkArea(GUI::Dialog *parent, GUI::String name, MMDesc items[]);
 GUI::Container *MMcreatePanel(GUI::Container *parent, cpString name, MMDesc items[],
 			      GUI::Orientation=GUI::ORIENTATION_VERTICAL);
@@ -188,6 +188,7 @@ GUI::Container *MMcreateButtonPanel(GUI::Container *parent, cpString name, MMDes
 				    GUI::Orientation=GUI::ORIENTATION_VERTICAL);
 GUI::Container *MMcreateVButtonPanel(GUI::Container *parent, GUI::String name, MMDesc items[]);
 GUI::Menu      *MMcreatePushMenu(GUI::Container *parent, GUI::String name, MMDesc items[]);
+
 #endif
 
 // Align panel items along their labels

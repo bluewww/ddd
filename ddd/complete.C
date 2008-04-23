@@ -30,7 +30,9 @@
 char complete_rcsid[] = 
     "$Id$";
 
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif
 
 #include "complete.h"
 
@@ -54,6 +56,10 @@ char complete_rcsid[] =
 #include <Xm/Xm.h>
 #include <Xm/Text.h>
 #include <Xm/TextF.h>
+#endif
+
+#if !defined(IF_XM)
+#include <GUI/Entry.h>
 #endif
 
 #if WITH_READLINE
@@ -136,14 +142,14 @@ static void set_completion(const CompletionInfo& info, const string& completion)
 	    XmTextSetString(info.widget, XMST(completion.chars()));
 	}
 #else
-	Gtk::Entry *entry;
-	if (entry = dynamic_cast<Gtk::Entry *>(info.widget))
-	{
-	    entry->set_text(XMST(completion.chars()));
-	}
-	else {
+	GUI::Entry *entry;
+	GUI::ScrolledText *stp;
+	if (entry = dynamic_cast<GUI::Entry *>(info.widget))
+	    entry->set_text(completion.chars());
+	else if (stp = dynamic_cast<GUI::ScrolledText *>(info.widget))
+	    stp->set_text(completion.chars());
+	else
 	    std::cerr << "WIDGET TYPE NOT RECOGNIZED\n";
-	}
 #endif
     }
 }
@@ -185,11 +191,11 @@ static void completion_done(const CompletionInfo& info)
 	XmTextShowPosition(info.widget, last_pos);
 	XmTextSetEditable(info.widget, True);
     }
-#else
-    std::cerr << "Completion done!!!\n";
-#endif
 
     XmTextSetEditable(gdb_w, True);
+#else
+    std::cerr << "completion_done not implemented yet.\n";
+#endif
 }
 
 void clear_completion_delay()
@@ -331,15 +337,18 @@ static void complete(GUI::Widget *w, GUI::Event *e, const string& input, string 
 	XmTextFieldSetEditable(w, False);
     else if (XmIsText(w))
 	XmTextSetEditable(w, False);
-#else
-    Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(w);
-    if (entry)
-	entry->set_editable(false);
-    GUI::ScrolledText *stp = dynamic_cast<GUI::ScrolledText *>(w);
-    if (stp)
-	stp->set_editable(false);
-#endif
     XmTextSetEditable(gdb_w, False);
+#else
+    GUI::Entry *entry;
+    GUI::ScrolledText *stp;
+    if (entry = dynamic_cast<GUI::Entry *>(w))
+	entry->set_editable(false);
+    else if (stp = dynamic_cast<GUI::ScrolledText *>(w))
+	stp->set_editable(false);
+    else
+	std::cerr << "WIDGET TYPE NOT RECOGNIZED.\n";
+    gdb_w->set_editable(false);
+#endif
     
     gdb_command(complete_cmd, gdb_w, complete_reply, (void *)&info);
 
@@ -554,11 +563,11 @@ static void _complete_argAct(GUI::Widget *w,
     else if (XmIsText(w))
 	_input = XmTextGetString(w);
 #else
-    GUI::ScrolledText *stp = dynamic_cast<GUI::ScrolledText *>(w);
-    if (stp)
+    GUI::ScrolledText *stp;
+    GUI::Entry *entry;
+    if (stp = dynamic_cast<GUI::ScrolledText *>(w))
 	_input = strdup(stp->get_text().c_str());
-    Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(w);
-    if (entry)
+    else if (entry = dynamic_cast<GUI::Entry *>(w))
 	_input = strdup(entry->get_text().c_str());
 #endif
 

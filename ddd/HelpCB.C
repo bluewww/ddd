@@ -35,7 +35,7 @@ char HelpCB_rcsid[] =
 #include "config.h"
 
 #include "Agent.h"
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include "ComboBox.h"
 #endif
 #include "DestroyCB.h"
@@ -43,7 +43,7 @@ char HelpCB_rcsid[] =
 #include "MakeMenu.h"
 #include "SmartC.h"
 #include "TimeOut.h"
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include "TextSetS.h"
 #endif
 #include "ddd.h"		// process_pending_events()
@@ -60,7 +60,7 @@ char HelpCB_rcsid[] =
 #include <limits.h>
 #include <ctype.h>
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include <Xm/Xm.h>
 #include <Xm/CascadeB.h>
 #include <Xm/MainW.h>
@@ -134,7 +134,7 @@ struct doc_resource_values {
     XmString documentationString;
 };
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 static XtResource help_subresources[] = {
     {
 	XTRESSTR(XtNhelpString),
@@ -534,7 +534,7 @@ void (*PostHelpOnItemHook)(GUI::Widget *) = nop1;
 
 void HelpOnHelpCB(Widget widget, XtPointer client_data, XtPointer call_data)
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     if (help_dialog == 0)
     {
 	// Make sure help dialog is created
@@ -551,7 +551,7 @@ void HelpOnHelpCB(Widget widget, XtPointer client_data, XtPointer call_data)
 #endif
 }
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 
 void ImmediateHelpCB(Widget widget, XtPointer client_data, XtPointer call_data)
 {
@@ -572,9 +572,7 @@ void ImmediateHelpCB(Widget widget, XtPointer client_data, XtPointer call_data)
     PostHelpOnItemHook(widget);
 }
 
-#endif
-
-#if !defined(IF_XM)
+#else
 
 extern void ImmediateHelpCB1(GUI::Widget *w)
 {
@@ -952,7 +950,7 @@ static void _MStringHelpCB(GUI::Widget *widget,
     // If this is a recursive call, disable the help button
 
     // Popup help_dialog
-    manage_and_raise1(help_dialog);
+    manage_and_raise(help_dialog);
 }
 
 #endif
@@ -1976,7 +1974,7 @@ void ManualStringHelpCB(GUI::Widget *widget, const MString& title,
 #endif
 }
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
 {
     // Delay delay;
@@ -2300,7 +2298,7 @@ void HelpOnContextCB(GUI::Widget *widget, GUI::Event *event)
 
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 
 // Return the child widget (or gadget) EX/EY is in, starting with WIDGET.
 static Widget GetWidgetAt(Widget w, int ex, int ey)
@@ -3193,7 +3191,7 @@ static void UnInstallButtonTipsTimeOut(XtPointer client_data,
 // assume all children have been created until then.
 void InstallButtonTips(Widget w, bool install)
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     XtIntervalId timer;
 
     if (install)
@@ -3226,7 +3224,7 @@ void InstallButtonTips1(GUI::Widget *w, bool install)
 #endif
 
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // Enable or disable button tips
 void EnableButtonTips(bool enable)
 {

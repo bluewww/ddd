@@ -1230,7 +1230,7 @@ static void DDDDoneCB(Widget w, XtPointer client_data, XtPointer call_data)
     Arg args[10];
     int arg;
 
-    static DIALOG_P quit_dialog = 0;
+    static Widget quit_dialog = 0;
     if (quit_dialog)
 	DestroyWhenIdle(quit_dialog);
 

@@ -51,7 +51,7 @@
 
 // Motif includes
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include <Xm/Xm.h>
 #endif
 
@@ -313,8 +313,8 @@ class DataDisp {
 #else
     static void show(GUI::Widget *dialog, int depth, int more);
 
-    static Widget create_display_dialog(GUI::Widget *parent, const _XtString name,
-					NewDisplayInfo& info);
+    static GUI::Dialog *create_display_dialog(GUI::Widget *parent, const _XtString name,
+					      NewDisplayInfo& info);
 #endif
 
     static void rotate_value(DispValue *dv, bool all = false);
@@ -323,12 +323,12 @@ class DataDisp {
     static void select_node(DispNode *dn, int src = 0);
 
     // Setting values
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     static void setDCB (Widget, XtPointer, XtPointer);
 #else
     static void setDCB (SetInfo *, int);
 #endif
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     static void DeleteSetInfoCB(Widget, XtPointer client_data, XtPointer);
 #else
     static void *DeleteSetInfoCB(void *);
@@ -825,11 +825,9 @@ public:
     static GRAPH_EDIT_P graph_edit;
 #if defined(IF_XM)
     static Widget graph_cmd_w;
+    static Widget graph_selection_w;
 #else
     static GUI::Container *graph_cmd_w;
-#endif
-#if defined(IF_MOTIF)
-    static SCROLLEDTEXT_P graph_selection_w;
 #endif
     static ArgField *graph_arg;
     static bool bump_displays;

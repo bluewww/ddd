@@ -29,11 +29,15 @@
 #ifndef _DDD_complete_h
 #define _DDD_complete_h
 
-#ifdef IF_MOTIF
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#if defined(IF_XM)
 
 #include <X11/Intrinsic.h>
 
-#endif // IF_MOTIF
+#endif
 
 #include "gtk_wrapper.h"
 

@@ -33,11 +33,9 @@
 #include "config.h"
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include <X11/Intrinsic.h>
-#endif
-
-#if !defined(IF_XM)
+#else
 #include <GUI/Widget.h>
 #endif
 

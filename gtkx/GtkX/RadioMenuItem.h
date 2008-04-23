@@ -28,32 +28,28 @@
 // A brief look at QT indicates that this will be required there as
 // well.
 
-#ifndef GTKX_NOTEBOOK_H
-#define GTKX_NOTEBOOK_H
-
-#include <gtkmm/notebook.h>
+#ifndef GTKX_RADIOMENUITEM_H
+#define GTKX_RADIOMENUITEM_H
 
 #include <GtkX/Container.h>
+#include <GtkX/Bipolar.h>
+#include <gtkmm/radiomenuitem.h>
 
 namespace GtkX {
 
-    // FIXME: Tried to derive from Gtk::Bin, but as Bin is an
-    // "abstract" base class we would need to implement more method.
-    class Notebook: public Gtk::Notebook, public Container {
+    class RadioMenuItem: public Bipolar, public Gtk::RadioMenuItem {
     public:
-	Notebook(GtkX::Container &parent, PackOptions po=PACK_SHRINK,
-		 const String &name="");
-	~Notebook(void);
+	RadioMenuItem(GtkX::Container &parent, PackOptions po=PACK_SHRINK, const String &name="",
+		      const String &label="");
+	~RadioMenuItem(void);
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;
+	bool get_active();
+	void set_active(bool new_state, bool notify=false);
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
 #include <GtkX/redirect.h>
-	// Note: we must ensure all children are GtkX widgets.
-	GtkX::Widget *get_current_child(void);
-	int append_page(GtkX::Widget &child, const String &tab_label, bool use_mnemonic=false);
-	GtkX::Container *append_page(const String &tab_label="", bool use_mnemonic=false);
     };
 
 }
 
-#endif // GTKX_NOTEBOOK_H
+#endif // GTKX_RADIOMENUITEM_H

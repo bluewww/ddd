@@ -1174,14 +1174,7 @@ void DataDisp::toggleThemeCB(Widget button, XtPointer num, XtPointer)
 void DataDisp::toggleThemeCB(GUI::CheckButton *button, int num)
 {
     String theme;
-#ifdef NAG_ME
-#warning Using user data in this way is evil in an OO program.
-#warning We should have a class ThemeButton: public Gtk::Button
-#endif
-#ifdef NAG_ME
-#warning Ambiguous method resolution if we do not cast here?
-#endif
-    void *v = ((Gtk::CheckButton *)button)->property_user_data();
+    void *v = button->property_user_data();
     theme = String(v);
 
     if (button->get_active())
@@ -2810,8 +2803,7 @@ void DataDisp::new_displayDCB (GUI::Widget *dialog, NewDisplayInfo *client_data)
 
     NewDisplayInfo *info = (NewDisplayInfo *)client_data;
 
-    Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(info->text->get_child());
-    string expr(entry->get_text().c_str());
+    string expr(info->text->get_text().c_str());
 
     strip_leading_space(expr);
     strip_trailing_space(expr);
@@ -2821,7 +2813,7 @@ void DataDisp::new_displayDCB (GUI::Widget *dialog, NewDisplayInfo *client_data)
 	new_display(expr, info->point_ptr, info->depends_on, info->clustered,
 		    info->plotted, info->origin);
 
-	if (info->shortcut != 0 && XmToggleButtonGetState(info->shortcut))
+	if (info->shortcut != 0 && info->shortcut->get_active())
 	{
 	    // Add expression to shortcut menu
 	    expr.gsub("()", "( )");
@@ -2898,8 +2890,8 @@ Widget DataDisp::create_display_dialog(Widget parent, const _XtString name,
 
 #else
 
-Widget DataDisp::create_display_dialog(GUI::Widget *parent, const _XtString name,
-				       NewDisplayInfo& info)
+GUI::Dialog *DataDisp::create_display_dialog(GUI::Widget *parent, const _XtString name,
+					     NewDisplayInfo& info)
 {
     GUI::Dialog *dialog = new GUI::Dialog(*find_shell1(parent), name);
     Delay::register_shell(dialog);
@@ -2970,7 +2962,7 @@ void DataDisp::new_displayCD (GUI::Widget *w, const BoxPoint &box_point)
 	info.point_ptr = new BoxPoint;
     info.origin = w;
 
-    static Widget new_display_dialog = 
+    static GUI::Dialog *new_display_dialog = 
 	create_display_dialog(w, "new_display_dialog", info);
 
     info.shortcut->set_active(false);
@@ -3065,14 +3057,13 @@ void DataDisp::dependentCB(GUI::Widget *w)
 
     info.origin = w;
 
-    static Widget dependent_display_dialog = 
+    static GUI::Dialog *dependent_display_dialog = 
 	create_display_dialog(w, "dependent_display_dialog", info);
 
-    XmToggleButtonSetState(info.shortcut, True, False);
+    info.shortcut->set_active(true);
 
     info.display_expression = disp_value_arg->full_name();
-    Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(info.text->get_child());
-    entry->set_text(XMST(info.display_expression.chars()));
+    info.text->set_text(info.display_expression.chars());
     manage_and_raise(dependent_display_dialog);
 }
 
@@ -8380,36 +8371,23 @@ void DataDisp::SetDone(const string& complete_answer, void *qu_data)
 }
 
 #if defined(IF_XM)
+
 void DataDisp::setDCB(Widget, XtPointer client_data, XtPointer call_data)
-#else
-void DataDisp::setDCB(SetInfo *client_data, int apply)
-#endif
 {
     SetInfo *info = (SetInfo *)client_data;
 
     if (info->running)
 	return;			// Already running with a value
 
-#if defined(IF_XM)
     XmSelectionBoxCallbackStruct *cbs = 
 	(XmSelectionBoxCallbackStruct *)call_data;
-#endif
 
-#if defined(IF_XM)
     String value_s = XmTextFieldGetString(info->text);
     string value(value_s);
     XtFree(value_s);
-#else
-    Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(info->text->get_child());
-    string value(entry->get_text().c_str());
-#endif
 
     Command c(gdb->assign_command(info->name, value), last_origin);
-#if defined(IF_XM)
     if (cbs->reason != XmCR_APPLY)
-#else
-    if (!apply)
-#endif
     {
 	// We've pressed OK => destroy widget as soon as command completes.
 
@@ -8420,6 +8398,31 @@ void DataDisp::setDCB(SetInfo *client_data, int apply)
     gdb_command(c);
 }
 
+#else
+
+void DataDisp::setDCB(SetInfo *client_data, int apply)
+{
+    SetInfo *info = (SetInfo *)client_data;
+
+    if (info->running)
+	return;			// Already running with a value
+
+
+    string value(info->text->get_text().c_str());
+
+    Command c(gdb->assign_command(info->name, value), last_origin);
+    if (!apply)
+    {
+	// We've pressed OK => destroy widget as soon as command completes.
+
+	info->running = true;
+	c.callback    = SetDone;
+	c.data        = XtPointer(info);
+    }
+    gdb_command(c);
+}
+
+#endif
 
 //----------------------------------------------------------------------------
 // Helpers for user displays
@@ -8844,22 +8847,36 @@ int DataDisp::add_refresh_addr_commands(StringArray& cmds, DispNode *dn)
     return cmds.size() - initial_size;
 }
 
+#if defined(IF_XM)
+
 // Refresh all addresses
 void DataDisp::refresh_addr(DispNode *dn)
 {
     if (refresh_addr_timer != NO_TIMER)
     {
-#if defined(IF_XM)
 	XtRemoveTimeOut(refresh_addr_timer);
-#else
-	refresh_addr_timer.disconnect();
-#endif
-	refresh_addr_timer = NO_TIMER;
+	refresh_addr_timer = 0;
 	dn = 0;
     }
 
     RefreshAddr(dn);
 }
+
+#else
+
+// Refresh all addresses
+void DataDisp::refresh_addr(DispNode *dn)
+{
+    if (refresh_addr_timer)
+    {
+	refresh_addr_timer.disconnect();
+	dn = 0;
+    }
+
+    RefreshAddr(dn);
+}
+
+#endif
 
 #if defined(IF_XM)
 

@@ -291,21 +291,10 @@ void manage_and_raise(Widget w)
 
 #else
 
-void manage_and_raise1(GUI::Widget *w)
+void manage_and_raise(GUI::Widget *w)
 {
     if (w != 0)
 	w->show();
-}
-
-void manage_and_raise(Widget w)
-{
-    if (w != 0) {
-#if defined(IF_XMMM)
-	XtManageChild(w);
-#else
-	w->show();
-#endif
-    }
 }
 
 #endif

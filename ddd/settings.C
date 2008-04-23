@@ -148,11 +148,12 @@ static WidgetStringAssoc settings_values;
 static WidgetStringAssoc settings_initial_values;
 static bool              need_reload_settings = false;
 
-static Widget            signals_panel = 0;
 #if defined(IF_XM)
+static Widget            signals_panel = 0;
 static Widget            signals_form  = 0;
 static Widget            reset_signals_button = 0;
 #else
+static GUI::Container   *signals_panel = 0;
 static GUI::Container   *signals_form  = 0;
 static GUI::Widget      *reset_signals_button = 0;
 #endif
@@ -161,8 +162,8 @@ static WidgetStringAssoc signals_values;
 static WidgetStringAssoc signals_initial_values;
 static bool              need_reload_signals = false;
 
-static Widget            themes_panel = 0;
 #if defined(IF_XM)
+static Widget            themes_panel = 0;
 static Widget            reset_themes_button = 0;
 static Widget            apply_themes_button = 0;
 static VarArray<Widget>  themes_entries;
@@ -171,6 +172,7 @@ static VarArray<Widget>  themes_labels;
 static Widget            infos_panel        = 0;
 static Widget            reset_infos_button = 0;
 #else
+static GUI::Container   *themes_panel = 0;
 static GUI::Button      *reset_themes_button = 0;
 static GUI::Button      *apply_themes_button = 0;
 static VarArray<GUI::Entry *>       themes_entries;
@@ -820,7 +822,7 @@ static void update_themes_buttons()
 
     for (i = 0; i < themes_entries.size(); i++)
     {
-	ENTRY_P entry = themes_entries[i];
+	GUI::Entry *entry = themes_entries[i];
 	string theme = basename(XtName(entry));
 	ThemePattern p;
 
@@ -831,13 +833,7 @@ static void update_themes_buttons()
 	os << p;
 	string current_value = string(os);
 
-#if defined(IF_MOTIF)
-	String value_s = XmTextFieldGetString(entry);
-	string value(value_s);
-	XtFree(value_s);
-#else
 	string value(entry->get_text().c_str());
-#endif
 
 	string old_value;
 
@@ -875,7 +871,7 @@ static void update_themes_buttons()
 		    old_set = false;
 	    }
 
-	    if (XmToggleButtonGetState(button) != old_set)
+	    if (button->get_active() != old_set)
 	    {
 		reset_is_sensitive = True;
 		break;
@@ -1020,7 +1016,7 @@ static void ApplyThemesCB(Widget, XtPointer, XtPointer)
 	Widget button = themes_labels[i];
 	bool active = XmToggleButtonGetState(button);
 
-	ENTRY_P entry  = themes_entries[i];
+	Widget entry  = themes_entries[i];
 	String value_s = XmTextFieldGetString(entry);
 	string value = value_s;
 	XtFree(value_s);
@@ -1043,9 +1039,9 @@ static void ApplyThemesCB(void)
     for (int i = 0; i < themes_entries.size(); i++)
     {
 	GUI::CheckButton *button = themes_labels[i];
-	bool active = XmToggleButtonGetState(button);
+	bool active = button->get_active();
 
-	ENTRY_P entry  = themes_entries[i];
+	GUI::Entry *entry  = themes_entries[i];
 	string value(entry->get_text().c_str());
 
 	t.add(basename(XtName(entry)), ThemePattern(value, active));
@@ -2387,13 +2383,13 @@ static void add_button(Widget form, int& row, Dimension& max_width,
     Widget help = verify(XmCreatePushButton(form, XMST("help"), args, arg));
     XtManageChild(help);
 
-    BUTTON_P send  = 0;
+    Widget send  = 0;
     Widget pass  = 0;
     Widget print = 0;
     Widget stop  = 0;
     if (e_type == SignalEntry)
     {
-	send  = (BUTTON_P)create_signal_button(label, "send",  row, help);
+	send  = (Widget)create_signal_button(label, "send",  row, help);
 	pass  = (Widget)create_signal_button(label, "pass",  row, send);
 	print = (Widget)create_signal_button(label, "print", row, pass);
 	stop  = (Widget)create_signal_button(label, "stop",  row, print);
@@ -2787,7 +2783,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	process_show(show_command, value, true);
 
 	// Register entry
-	settings_entries     += (ENTRY_P)entry;
+	settings_entries     += (Widget)entry;
 	settings_entry_types += e_type;
     }
     else
@@ -4381,6 +4377,8 @@ static void reload_all_signals()
 	process_handle(info, true);
 }
 
+#if defined(IF_XM)
+
 // Create signal editor
 static Widget create_signals(DebuggerType type)
 {
@@ -4398,6 +4396,28 @@ static Widget create_signals(DebuggerType type)
 
     return signals_panel;
 }
+
+#else
+
+// Create signal editor
+static GUI::Widget *create_signals(DebuggerType type)
+{
+    check_options_file();
+
+    if (signals_panel == 0 && can_do_gdb_command() && gdb->type() == type)
+    {
+	signals_panel = create_panel(type, SIGNALS);
+    }
+    else if (signals_panel != 0 && need_reload_signals)
+    {
+	reload_all_signals();
+	need_reload_signals = false;
+    }
+
+    return signals_panel;
+}
+
+#endif
 
 void update_signals()
 {
@@ -4420,7 +4440,7 @@ static Widget create_themes(DebuggerType type)
     }
 
     // Reset variables
-    static const VarArray<ENTRY_P>       	empty_themes;
+    static const VarArray<Widget>       	empty_themes;
     static const VarArray<Widget>               empty_labels;
     themes_panel        = 0;
     reset_themes_button = 0;
@@ -4437,7 +4457,7 @@ static Widget create_themes(DebuggerType type)
 #else
 
 // Create themes editor
-static Widget create_themes(DebuggerType type)
+static GUI::Widget *create_themes(DebuggerType type)
 {
     check_options_file();
 
@@ -4471,7 +4491,7 @@ void update_themes()
 
     for (int i = 0; i < themes_entries.size(); i++)
     {
-	ENTRY_P entry  = themes_entries[i];
+	Widget entry  = themes_entries[i];
 	Widget button = themes_labels[i];
 	string theme = basename(XtName(entry));
 	ThemePattern p;
@@ -4506,7 +4526,7 @@ void update_themes()
 
     for (int i = 0; i < themes_entries.size(); i++)
     {
-	ENTRY_P entry  = themes_entries[i];
+	GUI::Entry *entry  = themes_entries[i];
 	GUI::CheckButton *button = themes_labels[i];
 	string theme = basename(XtName(entry));
 	ThemePattern p;
@@ -4585,13 +4605,13 @@ void dddPopupInfosCB (GUI::Widget *)
     if (infos == 0)
 	return;
 
-    manage_and_raise1(infos);
+    manage_and_raise(infos);
 }
 
 // Popup editor for debugger infos
 void dddPopupSignalsCB (GUI::Widget *)
 {
-    Widget signals = create_signals(gdb->type());
+    GUI::Widget *signals = create_signals(gdb->type());
     if (signals == 0)
 	return;
 
@@ -4617,7 +4637,7 @@ void dddPopupThemesCB (Widget, XtPointer, XtPointer)
 // Popup editor for display themes
 void dddPopupThemesCB (void)
 {
-    Widget themes = create_themes(gdb->type());
+    GUI::Widget *themes = create_themes(gdb->type());
     if (themes == 0)
 	return;
 
@@ -5130,8 +5150,13 @@ static bool is_arg_command(const string& name)
 
 static void add_button(string name, const _XtString& menu)
 {
+#if defined(IF_XM)
     if (XmToggleButtonGetState(arg_w) || is_arg_command(name))
 	name += " ()";
+#else
+    if (arg_w->get_active() || is_arg_command(name))
+	name += " ()";
+#endif
 
     string s = menu;
     if (!s.empty() && !s.contains('\n', -1))
@@ -5649,7 +5674,7 @@ static void ApplyCB(GUI::Widget *w)
     string cmd = current_name();
     if (!cmd.empty())
     {
-	if (XmToggleButtonGetState(arg_w))
+	if (arg_w->get_active())
 	    cmd += " " + source_arg->get_string();
 
 	gdb_command(cmd, w);
@@ -5675,7 +5700,14 @@ static void set_arg()
     static string saved_arg;
     static bool have_saved_arg = false;
 
+#if defined(IF_XM)
     if (gdb->recording() && XmToggleButtonGetState(arg_w))
+#if 0
+    {}
+#endif
+#else
+    if (gdb->recording() && arg_w->get_active())
+#endif
     {
 	if (!have_saved_arg)
 	{
@@ -5885,7 +5917,7 @@ void dddDefineCommandCB(GUI::Widget *w)
 
     UpdateDefinePanelCB();
     refresh_combo_box();
-    manage_and_raise1(dialog);
+    manage_and_raise(dialog);
 }
 
 #endif

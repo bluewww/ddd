@@ -5,39 +5,11 @@
 
 #include <X11/Intrinsic.h>
 
-typedef int DimType;
-
-#define CHARSTR(s) (s)
-class string;
-typedef string WidgetNameType;
-
-typedef Widget CONTAINER_P;
-typedef Widget BUTTON_P;
-typedef Widget DIALOG_P;
-typedef Widget NOTEBOOK_P;
-typedef Widget BOX_P;
-typedef Widget TABLE_P;
-typedef Widget LABEL_P;
-typedef Widget ENTRY_P;
-typedef Widget TOOLBAR_P;
-typedef Widget STATUSBAR_P;
-typedef Widget SCROLLEDWINDOW_P;
-typedef Widget SCROLLEDTEXT_P;
-typedef Widget TEXTVIEW_P;
-typedef Widget WINDOW_P;
-typedef Widget MENUSHELL_P;
-typedef Widget MENU_P;
-typedef Widget MENUBAR_P;
-typedef Widget COMBOBOXENTRYTEXT_P;
-typedef Widget SPINBUTTON_P;
-typedef Widget FILECHOOSERDIALOG_P;
 typedef Widget TREEVIEW_P;
 typedef Widget FIXED_P;
 typedef XImage *XIMAGE_P;
 
 typedef const char *NAME_T;
-#define NO_WORK 0
-#define NO_SOURCE 0
 #define NO_TIMER 0
 #define NO_DISPLAY 0
 #define NO_SCREEN 0
@@ -53,10 +25,6 @@ typedef const char *NAME_T;
 #define NO_UPDATE
 
 // XtWorkProc
-#define WP_RETURN_TYPE Boolean
-#define WP_ALIST_NULL XtPointer
-#define WP_ALIST_1(d) d
-#define WP_ARGS_NULL (XtPointer)0
 #define IDLE_STOP True
 #define IDLE_CONT False
 
@@ -74,10 +42,6 @@ typedef XtCallbackProc GTK_PROC_;
 
 #define WAITREC(f) { f }
 
-#define TIMEOUT_RETURN_TYPE void
-#define TIMEOUT_ARG_LIST(p,id) XtPointer p, XtIntervalId *id
-#define TM_ALIST_NULL XtPointer, XtIntervalId *
-#define TM_ALIST_1(p) p, XtIntervalId *
 
 
 #define BIND_1(f, c) { f, (void *)c }
@@ -107,8 +71,6 @@ typedef Widget Glyph_T;
 
 extern int complain;
 
-typedef double DimType;
-
 #include <glibmm/listhandle.h>
 #include <glibmm/main.h>
 #include <gtkmm/widget.h>
@@ -117,31 +79,7 @@ typedef double DimType;
 
 // Macros
 
-// Force compilation of advanced stuff so we can try to
-// match it.
-#define XmVersion 5000
 
-// End macros
-
-// Dialogs
-
-#include <gtkmm/dialog.h>
-
-typedef Gtk::Dialog *DIALOG_P;
-
-// End dialogs
-
-// Menus
-
-#include <gtkmm/menushell.h>
-#include <gtkmm/menu.h>
-#include <gtkmm/menubar.h>
-#include <gtkmm/comboboxentrytext.h>
-
-typedef Gtk::MenuShell *MENUSHELL_P;
-typedef Gtk::Menu *MENU_P;
-typedef Gtk::MenuBar *MENUBAR_P;
-typedef Gtk::ComboBoxEntryText *COMBOBOXENTRYTEXT_P;
 
 #ifdef NAG_ME
 #warning Usually used for shells, not menus, so:
@@ -245,10 +183,6 @@ typedef Glib::ustring NAME_T;
 
 #define XmStringFree(s)
 
-// Convert Glib::ustring to std::string
-
-#define CHARSTR(s) string(s.c_str())
-
 #define XtNewString(s) strdup(s)
 
 // End strings
@@ -278,8 +212,6 @@ typedef sigc::connection XtInputId;
 typedef sigc::connection XtIntervalId;
 typedef sigc::connection XtWorkProcId;
 #define NO_CONNECTION sigc::connection()
-#define NO_SOURCE sigc::connection()
-#define NO_WORK sigc::connection()
 #define NO_TIMER sigc::connection()
 
 #define MAYBE_FALSE false
@@ -288,10 +220,6 @@ typedef sigc::connection XtWorkProcId;
 #define NO_UPDATE true
 
 // XtWorkProc replaced by idle handler (signal_idle())
-#define WP_RETURN_TYPE bool
-#define WP_ALIST_NULL
-#define WP_ALIST_1(d) d
-#define WP_ARGS_NULL
 #define IDLE_STOP false
 #define IDLE_CONT true
 
@@ -299,10 +227,6 @@ typedef sigc::connection XtWorkProcId;
 #define XtInputReadMask Glib::IO_IN
 #define XtInputExceptMask (Glib::IO_PRI|Glib::IO_ERR)
 
-#define TIMEOUT_RETURN_TYPE bool
-#define TIMEOUT_ARG_LIST(p,id)
-#define TM_ALIST_NULL
-#define TM_ALIST_1(p) p
 
 #define XtRemoveInput(c) (c).disconnect()
 #define XtRemoveWorkProc(c) (c).disconnect()
@@ -433,13 +357,6 @@ extern Boolean XtIsRealized(Widget w);
 
 #define XtSetSensitive(w, s) (w)->set_sensitive(s)
 
-typedef Glib::ustring WidgetNameType;
-
-typedef Glib::ListHandle<Gtk::Widget*> WidgetList;
-typedef Glib::ListHandle<Gtk::Widget*>::iterator WidgetListIterator;
-
-typedef Gtk::Container *CONTAINER_P;
-
 #ifdef NAG_ME
 #warning XmUpdateDisplay?
 #endif
@@ -459,53 +376,16 @@ typedef Gtk::Container *CONTAINER_P;
 
 #include <gtkmm/window.h>
 
-typedef Gtk::Window *WINDOW_P;
-
-extern bool XtIsShell(Widget w);
-extern bool XtIsTopLevelShell(Widget w);
-extern bool XtIsWMShell(Widget w);
-extern bool XmIsDialogShell(Widget w);
-
 #define XtCastShell(w) dynamic_cast<Gtk::Window *>(w)
 #define XmCastDialogShell(w) dynamic_cast<Gtk::Dialog *>(w)
 
 // End windows
-
-// Boxes
-
-#include <gtkmm/box.h>
-
-typedef Gtk::Box *BOX_P;
-
-// End boxes
-
-// Tables
-
-#include <gtkmm/table.h>
-
-typedef Gtk::Table *TABLE_P;
-
-// End tables
-
-// Notebookes
-
-#include <gtkmm/notebook.h>
-
-typedef Gtk::Notebook *NOTEBOOK_P;
-
-// End boxes
 
 // Buttons
 
 #include <gtkmm/togglebutton.h>
 #include <gtkmm/radiobutton.h>
 #include <gtkmm/checkmenuitem.h>
-
-typedef Gtk::Button *BUTTON_P;
-
-#define XmToggleButtonGetState(b) (b)->get_active()
-#define XmToggleButtonSetState(b, s, n) (b)->set_active(s)
-#define XmIsToggleButton(w) (dynamic_cast<Gtk::ToggleButton *>(w) != NULL)
 
 #ifdef NAG_ME
 #warning Convenience function to cast Widget to Button and set label.
@@ -522,16 +402,6 @@ typedef Gtk::Fixed *FIXED_P;
 
 // End "Fixed" widget
 
-// Label widget
-
-#include <gtkmm/label.h>
-
-typedef Gtk::Label *LABEL_P;
-
-#define XmIsLabel(w) (dynamic_cast<Gtk::Label *>(w) != NULL)
-
-// End label widget
-
 // Convenience functions
 
 // Copy text from any widget to default clipboard.
@@ -541,48 +411,6 @@ bool text_copy_from(Widget w);
 bool text_cut_from(Widget w);
 
 // End convenience functions
-
-// Entry widget
-
-#include <gtkmm/entry.h>
-
-typedef Gtk::Entry *ENTRY_P;
-
-#define XmTextFieldSetString(w, s) (w)->set_text(s)
-
-// End entry widget
-
-// Toolbar widget
-
-#include <gtkmm/toolbar.h>
-
-typedef Gtk::Toolbar *TOOLBAR_P;
-
-// End Toolbar widget
-
-// Statusbar widget
-
-#include <gtkmm/statusbar.h>
-
-typedef Gtk::Statusbar *STATUSBAR_P;
-
-// End Statusbar widget
-
-// SpinButton widget
-
-#include <gtkmm/spinbutton.h>
-
-typedef Gtk::SpinButton *SPINBUTTON_P;
-
-// End SpinButton widget
-
-// FileChooserDialog widget
-
-#include <gtkmm/filechooserdialog.h>
-
-typedef Gtk::FileChooserDialog *FILECHOOSERDIALOG_P;
-
-// End FileChooserDialog widget
 
 // TreeView widget
 
@@ -600,25 +428,6 @@ typedef Gtk::TreeModel *TREEMODEL_P;
 extern int list_get_positions(TREEVIEW_P selectionList, int *&positions, int &n_positions);
 
 // End TreeView widget
-
-// ScrolledWindow widget
-
-#include <gtkmm/scrolledwindow.h>
-
-typedef Gtk::ScrolledWindow *SCROLLEDWINDOW_P;
-
-// End ScrolledWindow widget
-
-// Gtk Scrolled Text
-
-#include <GUI/ScrolledText.h>
-
-typedef GUI::ScrolledText *SCROLLEDTEXT_P;
-typedef Gtk::TextView *TEXTVIEW_P;
-
-#define XmTextSetEditable(w, b) (w)->set_editable(b)
-
-// End Gtk Scrolled Text
 
 #define XtSetLanguageProc(a, b, c)
 

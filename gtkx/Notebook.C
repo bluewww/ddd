@@ -26,6 +26,7 @@
 
 #include <iostream>
 #include <GtkX/Notebook.h>
+#include <GtkX/Box.h>
 
 using namespace GtkX;
 
@@ -57,6 +58,14 @@ int
 Notebook::append_page(GtkX::Widget &child, const String &tab_label, bool use_mnemonic)
 {
     Gtk::Notebook::append_page(*child.internal(), tab_label.s(), use_mnemonic);
+}
+
+GtkX::Container *
+Notebook::append_page(const String &tab_label, bool use_mnemonic)
+{
+    HBox *box = new HBox(*this, PACK_EXPAND_WIDGET, get_name()+String("_page"), tab_label);
+    box->show();
+    return box;
 }
 
 GtkX::Widget *

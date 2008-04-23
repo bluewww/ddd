@@ -1507,33 +1507,35 @@ void dddClearMaintenanceCB(Widget, XtPointer, XtPointer)
 
 #else
 
-void dddSetCrashCB(int state)
+void dddSetCrashCB(GUI::RadioMenuItem *w, int state)
 {
-    string msg = "When " DDD_NAME " crashes, ";
+    if (w->get_active()) {
+	string msg = "When " DDD_NAME " crashes, ";
 
-    switch (state)
-    {
-    case 0:
-	app_data.dump_core        = False;
-	app_data.debug_core_dumps = False;
-	msg += "do nothing.";
-	break;
+	switch (state)
+	{
+	case 0:
+	    app_data.dump_core        = False;
+	    app_data.debug_core_dumps = False;
+	    msg += "do nothing.";
+	    break;
 
-    case 1:
-	app_data.dump_core        = True;
-	app_data.debug_core_dumps = False;
-	msg += "dump core.";
-	break;
+	case 1:
+	    app_data.dump_core        = True;
+	    app_data.debug_core_dumps = False;
+	    msg += "dump core.";
+	    break;
 
-    case 2:
-	app_data.dump_core        = True;
-	app_data.debug_core_dumps = True;
-	msg += "dump core and invoke a debugger.";
-	break;
+	case 2:
+	    app_data.dump_core        = True;
+	    app_data.debug_core_dumps = True;
+	    msg += "dump core and invoke a debugger.";
+	    break;
+	}
+
+	set_status(msg);
+	update_options();
     }
-
-    set_status(msg);
-    update_options();
 }
 
 void dddClearMaintenanceCB(void)
@@ -4769,7 +4771,7 @@ void DDDSaveOptionsCB(Widget w, XtPointer client_data, XtPointer call_data)
     else if (options_file_has_changed(ACCESS))
     {
 	// Options file has changed since last access; request confirmation
-	static DIALOG_P dialog = 0;
+	static Widget dialog = 0;
 	if (dialog)
 	    DestroyWhenIdle(dialog);
 
@@ -4787,7 +4789,7 @@ void DDDSaveOptionsCB(Widget w, XtPointer client_data, XtPointer call_data)
     else if (saving_options_kills_program(flags))
     {
 	// Saving session would kill program; request confirmation
-	static DIALOG_P dialog = 0;
+	static Widget dialog = 0;
 	if (dialog)
 	    DestroyWhenIdle(dialog);
 
@@ -4805,7 +4807,7 @@ void DDDSaveOptionsCB(Widget w, XtPointer client_data, XtPointer call_data)
     else if (saving_options_excludes_data(flags))
     {
 	// Saving session results in data loss; request confirmation
-	static DIALOG_P dialog = 0;
+	static Widget dialog = 0;
 	if (dialog)
 	    DestroyWhenIdle(dialog);
 
@@ -4848,7 +4850,7 @@ void DDDSaveOptionsCB(GUI::Widget *w, unsigned long flags)
 	GUI::Button *button = dialog->add_button("ok", "OK");
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(DoSaveOptionsCB), flags));
 
-	manage_and_raise1(dialog);
+	manage_and_raise(dialog);
     }
     else if (saving_options_kills_program(flags))
     {
@@ -4862,7 +4864,7 @@ void DDDSaveOptionsCB(GUI::Widget *w, unsigned long flags)
 	GUI::Button *button = dialog->add_button("ok", "OK");
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(DoSaveOptionsCB), (flags | MAY_KILL)));
 
-	manage_and_raise1(dialog);
+	manage_and_raise(dialog);
     }
     else if (saving_options_excludes_data(flags))
     {
@@ -4876,7 +4878,7 @@ void DDDSaveOptionsCB(GUI::Widget *w, unsigned long flags)
 	GUI::Button *button = dialog->add_button("ok", "OK");
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(DoSaveOptionsCB), flags));
 
-	manage_and_raise1(dialog);
+	manage_and_raise(dialog);
     }
     else
     {

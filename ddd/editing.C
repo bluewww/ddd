@@ -55,7 +55,7 @@ char editing_rcsid[] =
 #include "windows.h"
 
 #include <iostream>
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include <Xm/Xm.h>
 #include <Xm/Text.h>
 #include <Xm/TextF.h>
@@ -77,7 +77,7 @@ bool gdb_input_at_prompt = false;
 
 static void move_to_end_of_line(XtPointer, XtIntervalId *)
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     XmTextPosition pos = XmTextGetLastPosition(gdb_w);
     XmTextSetInsertionPosition(gdb_w, pos);
     XmTextShowPosition(gdb_w, pos);
@@ -88,7 +88,7 @@ static void move_to_end_of_line(XtPointer, XtIntervalId *)
 #endif
 }
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 
 static XmTextPosition start_of_line()
 {
@@ -140,7 +140,7 @@ string current_line()
     if (have_isearch_line)
 	return isearch_line;
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     String str = XmTextGetString(gdb_w);
     string input(str + promptPosition, 
 		 XmTextGetLastPosition(gdb_w) - promptPosition);
@@ -326,7 +326,7 @@ static void isearch_again(ISearchState new_isearch_state, XEvent *event)
 	// Same state - search again
 	int history = search_history(isearch_string, int(isearch_state), true);
 	if (history < 0) {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	    XtCallActionProc(gdb_w, "beep", event, 0, 0);
 #else
 	    std::cerr << "BEEP!\n";
@@ -416,7 +416,7 @@ void interruptAct(GUI::Widget *w, GUI::Event*, String*, Cardinal*)
 
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // Handle incremental searches; return true if processed
 static bool do_isearch(Widget, XmTextVerifyCallbackStruct *change)
 {
@@ -580,7 +580,7 @@ void commandAct(GUI::Widget *w, GUI::Event *ev, String *params, Cardinal *num_pa
 
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 void processAct(Widget w, XEvent *e, String *params, Cardinal *num_params)
 {
     if (app_data.source_editing && w == source_view->source())
@@ -643,7 +643,7 @@ void processAct(Widget w, XEvent *e, String *params, Cardinal *num_params)
 #endif
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 void insert_source_argAct(Widget w, XEvent*, String*, Cardinal*)
 {
     clear_isearch();
@@ -668,7 +668,7 @@ void insert_source_argAct(Widget w, XEvent*, String*, Cardinal*)
 #endif
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 void insert_graph_argAct (Widget w, XEvent *ev, 
 			  String *args, Cardinal *num_args)
 {
@@ -682,7 +682,7 @@ void insert_graph_argAct (Widget w, XEvent *ev,
 #endif
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 void next_tab_groupAct (Widget w, XEvent*, String*, Cardinal*)
 {
     XmProcessTraversal(w, XmTRAVERSE_NEXT_TAB_GROUP);
@@ -725,7 +725,7 @@ void select_allAct (Widget w, XEvent *e, String *params, Cardinal *num_params)
 // Editing actions
 //-----------------------------------------------------------------------------
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 void beginning_of_lineAct(Widget, XEvent*, String*, Cardinal*)
 {
     clear_isearch();
@@ -756,7 +756,7 @@ void backward_characterAct(Widget, XEvent*, String*, Cardinal*)
 
 void set_current_line(const string& input)
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     XmTextReplace(gdb_w, promptPosition, XmTextGetLastPosition(gdb_w), 
 		  XMST(input.chars()));
 #else
@@ -765,7 +765,7 @@ void set_current_line(const string& input)
 #endif
 }
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 void set_lineAct(Widget, XEvent*, String* params, Cardinal* num_params)
 {
     clear_isearch();
@@ -859,7 +859,7 @@ void popupAct(Widget, XEvent *event, String*, Cardinal*)
 // Callbacks
 //-----------------------------------------------------------------------------
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // Veto changes before the current input line
 void gdbModifyCB(Widget gdb_w, XtPointer, XtPointer call_data)
 {
@@ -965,10 +965,10 @@ void gdbMotionCB(Widget, XtPointer, XtPointer call_data)
 #endif
 
 // Send completed lines to GDB
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 void gdbChangeCB(Widget w, XtPointer, XtPointer)
 #else
-void gdbChangeCB(SCROLLEDTEXT_P w)
+void gdbChangeCB(GUI::ScrolledText *w)
 #endif
 {
     if (private_gdb_output)
@@ -995,7 +995,7 @@ void gdbChangeCB(SCROLLEDTEXT_P w)
     {
 	// Process entered lines
 	clear_isearch();
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	promptPosition = XmTextGetLastPosition(w);
 #else
 	promptPosition = w->get_last_position();
@@ -1042,7 +1042,7 @@ void gdbChangeCB(SCROLLEDTEXT_P w)
 // Callbacks
 //-----------------------------------------------------------------------------
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 
 void gdbCommandCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
@@ -1057,19 +1057,16 @@ void gdbCommandCB(Widget w, XtPointer client_data, XtPointer call_data)
     gdb_keyboard_command = from_keyboard(cbs->event);
 }
 
-#endif
+#else
 
-#if !defined(IF_XM)
-
-void gdbCommandCB1(GUI::Widget *w, const char *client_data)
+void gdbCommandCB(GUI::Widget *w, const char *client_data)
 {
     clear_isearch();
 
     gdb_button_command(string(client_data), w);
 
-#ifdef NAG_ME
-#warning FIXME: Make sure gdbCommandCB is never invoked by a key event.
-#endif
+    std::cerr << "Make sure gdbCommandCB is never invoked by a key event.\n";
+
     gdb_keyboard_command = false;
 }
 

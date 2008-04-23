@@ -24,77 +24,63 @@
 // the constructor, unlike the Gtk ones.  Motif (Xt) widgets cannot be
 // reparented.  Therefore we need a constructor with extra arguments.
 
-#include <GtkX/Notebook.h>
-#include <GtkX/Box.h>
+#include <iostream>
+
+#include <GtkX/RadioMenuItem.h>
+#include <GtkX/Container.h>
+
+#include <gtk/gtkradiomenuitem.h>
 
 using namespace GtkX;
 
-#ifdef __GNUC__
-#warning Remove this special case notebook stuff?
+RadioMenuItem::RadioMenuItem(GtkX::Container &parent, PackOptions po,
+			     const GtkX::String &name, const GtkX::String &label):
+    Gtk::RadioMenuItem(parent.button_group(), mklabel(name, label).s())
+{
+    set_name(name.s());
+    parent.add_child(*this, po, 0);
+    postinit();
+}
+
+RadioMenuItem::~RadioMenuItem(void)
+{
+}
+
+Gtk::Widget *
+RadioMenuItem::internal(void)
+{
+    return this;
+}
+
+const Gtk::Widget *
+RadioMenuItem::internal(void) const
+{
+    return this;
+}
+
+
+bool
+RadioMenuItem::get_active()
+{
+    return Gtk::RadioMenuItem::get_active();
+}
+
+void
+RadioMenuItem::set_active(bool new_state, bool notify)
+{
+    if (Gtk::RadioMenuItem::get_active() != new_state)
+    {
+	if (notify) {
+	    set_active(new_state);
+	}
+	else {
+	    std::cerr << "Setting radio menu item active!\n";
+#if 0
+	    GtkRadioMenuItem *rmi_obj = gobj();
+	    rmi_obj->active = !rmi_obj->active;
+	    gtk_widget_queue_draw(GTK_WIDGET(rmi_obj));
 #endif
-
-// Private.  API does not allow construction of unparented widgets.
-VBox::VBox(const GtkX::String &name)
-{
-    set_name(name.s());
-    postinit();
-}
-
-VBox::VBox(GtkX::Container &parent, GtkX::PackOptions po,
-	   const GtkX::String &name, const GtkX::String &label)
-{
-    set_name(name.s());
-    GtkX::Notebook *nb = dynamic_cast<GtkX::Notebook *>(&parent);
-    if (nb)
-	nb->append_page(*this, mklabel(name,label));
-    else
-	parent.add_child(*this, po, 0);
-    postinit();
-}
-
-Gtk::Widget *
-VBox::internal(void)
-{
-    return this;
-}
-
-const Gtk::Widget *
-VBox::internal(void) const
-{
-    return this;
-}
-
-// Private.  API does not allow construction of unparented widgets.
-HBox::HBox(const GtkX::String &name)
-{
-    set_name(name.s());
-    postinit();
-}
-
-HBox::HBox(GtkX::Container &parent, GtkX::PackOptions po,
-	   const GtkX::String &name, const GtkX::String &label)
-{
-    set_name(name.s());
-    GtkX::Notebook *nb = dynamic_cast<GtkX::Notebook *>(&parent);
-    if (nb) {
-	nb->append_page(*this, mklabel(name,label));
-	// FIXME?
-	show();
+	}
     }
-    else
-	parent.add_child(*this, po, 0);
-    postinit();
-}
-
-Gtk::Widget *
-HBox::internal(void)
-{
-    return this;
-}
-
-const Gtk::Widget *
-HBox::internal(void) const
-{
-    return this;
 }
 

@@ -49,18 +49,22 @@ char examine_rcsid[] =
 #include "HistoryD.h"
 #include "MakeMenu.h"
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
+
 #include <Xm/SelectioB.h>
 #include <Xm/TextF.h>
-#endif
 
-#ifndef IF_XM
+#else
+
 #include <GUI/Dialog.h>
+#include <GUI/ComboBox.h>
+#include <GUI/SpinButton.h>
+
 #endif
 
 
-static SPINBUTTON_P repeat_w;	// Repeat count
-static COMBOBOXENTRYTEXT_P address_w;	// Starting address
+static GUI::SpinButton *repeat_w;	// Repeat count
+static GUI::ComboBoxEntryText *address_w;	// Starting address
 
 static string the_format = "";	// The format
 
@@ -281,24 +285,24 @@ static string format(const string& format, const string& size)
 
 static string examine_command()
 {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     String s_repeat = XmTextFieldGetString(repeat_w);
     string repeat(s_repeat);
     XtFree(s_repeat);
-#else // NOT IF_MOTIF
+#else
     const char *s_repeat = repeat_w->get_text().c_str();
     string repeat(s_repeat);
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     String s_address = XmTextFieldGetString(address_w);
     string address(s_address);
     XtFree(s_address);
-#else // NOT IF_MOTIF
+#else
     Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(address_w->get_child());
     const char *s_address = entry->get_text().c_str();
     string address(s_address);
-#endif // IF_MOTIF
+#endif
 
     strip_space(repeat);
     strip_space(address);
@@ -469,7 +473,7 @@ void gdbExamineCB(GUI::Widget *w)
 	entry->set_text(XMST(arg.chars()));
     }
 
-    manage_and_raise1(dialog);
+    manage_and_raise(dialog);
 }
 
 #endif

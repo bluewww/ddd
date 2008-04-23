@@ -75,6 +75,7 @@ namespace GtkX {
     };
 
     class Container: public GtkX::Widget {
+    protected:
 	Gtk::RadioButtonGroup grp;
     public:
 	Container(void);
@@ -86,6 +87,7 @@ namespace GtkX {
 	ChildList get_children(void);
 	void remove(Widget &w);
 	friend class GtkX::RadioButton;
+	Gtk::RadioButtonGroup &button_group(void);
     };
 
     class Shell: public Container {
