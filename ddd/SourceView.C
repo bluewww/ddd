@@ -11536,6 +11536,7 @@ int SourceView::line_height(GUI::ScrolledText *text_w)
 
 
 #if defined(IF_XM)
+
 // If false, don't change glyphs - just check if they would change
 bool SourceView::change_glyphs = true;
 
@@ -11583,15 +11584,11 @@ void SourceView::unmap_glyph(Glyph_T glyph)
 void SourceView::map_glyph(Glyph_T& glyph, Position x, Position y)
 {
     while (glyph == 0)
-	CreateGlyphsWorkProc(WP_ARGS_NULL);
+	CreateGlyphsWorkProc(0);
 
     assert(is_code_widget(glyph) || is_source_widget(glyph));
 
-#if defined(IF_XM)
     Widget text_w;
-#else
-    GUI::ScrolledText *text_w;
-#endif
     if (is_source_widget(glyph))
 	text_w = source_text_w;
     else

@@ -62,9 +62,17 @@ char examine_rcsid[] =
 
 #endif
 
+#if defined(IF_XM)
+
+static Widget repeat_w;	// Repeat count
+static Widget address_w;	// Starting address
+
+#else
 
 static GUI::SpinButton *repeat_w;	// Repeat count
 static GUI::ComboBoxEntryText *address_w;	// Starting address
+
+#endif
 
 static string the_format = "";	// The format
 

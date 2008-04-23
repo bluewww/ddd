@@ -141,7 +141,7 @@ static GUI::Dialog      *settings_panel = 0;
 static GUI::Container   *settings_form  = 0;
 static GUI::Button      *reset_settings_button = 0;
 static GUI::Button      *apply_settings_button = 0;
-static VarArray<GUI::Entry *>       settings_entries;
+static VarArray<GUI::Widget *>       settings_entries;
 #endif
 static EntryTypeArray    settings_entry_types;
 static WidgetStringAssoc settings_values;
@@ -621,12 +621,13 @@ static void update_reset_settings_button()
 
     for (int i = 0; i < settings_entries.size(); i++)
     {
-	GUI::Entry *entry = settings_entries[i];
+	GUI::Widget *entry = settings_entries[i];
 
 	string value = settings_values[entry];
 	if (settings_entry_types[i] == TextFieldEntry)
 	{
-	    value = string(entry->get_text().c_str());
+	    GUI::Entry *entry_entry = dynamic_cast<GUI::Entry *>(entry);
+	    value = string(entry_entry->get_text().c_str());
 
 	    if (value != settings_values[entry])
 	    {
@@ -687,7 +688,7 @@ static void update_apply_settings_button()
 	if (settings_entry_types[i] != TextFieldEntry)
 	    continue;
 
-	GUI::Entry *entry = settings_entries[i];
+	GUI::Entry *entry = dynamic_cast<GUI::Entry *>(settings_entries[i]);
 
 	string value(entry->get_text().c_str());
 
@@ -3259,11 +3260,7 @@ static void add_button(GUI::Container *form, int& row, Dimension& max_width,
 	process_show(show_command, value, true);
 
 	// Register entry
-#if defined(IF_XM)
 	settings_entries     += entry;
-#else
-	settings_entries     += dynamic_cast<GUI::Entry *>(entry);
-#endif
 	settings_entry_types += e_type;
     }
     else
@@ -3419,8 +3416,13 @@ static void reload_all_settings()
 {
     for (int i = 0; i < settings_entries.size(); i++)
     {
+#if defined(IF_XM)
 	Widget entry = settings_entries[i];
 	string cmd = string(XtName(entry)) + " dummy";
+#else
+	GUI::Widget *entry = settings_entries[i];
+	string cmd = string(entry->get_name()) + " dummy";
+#endif
 	string show = show_command(cmd, gdb->type());
 	string value = gdb_question(show);
 	if (value != NO_GDB_ANSWER)
