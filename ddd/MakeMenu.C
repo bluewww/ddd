@@ -956,9 +956,7 @@ void MMaddItems(GUI::Container *shell, MMDesc items[], bool ignore_seps)
 	    GUI::OptionMenu *om;
 	    widget = om = new GUI::OptionMenu(*container);
 	    widget->set_name(name);
-#ifdef NAG_ME
-#warning OptionMenu is deprecated.
-#endif
+	    std::cerr << "Apparently, OptionMenu is deprecated...\n";
 	    om->set_menu(*subMenu);
 	    break;
 	}

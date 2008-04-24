@@ -109,6 +109,9 @@ char settings_rcsid[] =
 #include <GUI/CheckButton.h>
 #include <GUI/Button.h>
 #include <GUI/Entry.h>
+#include <GUI/Menu.h>
+#include <GUI/MenuItem.h>
+#include <GUI/OptionMenu.h>
 #endif
 
 #if !HAVE_PCLOSE_DECL
@@ -278,11 +281,23 @@ static void gdb_set_command(const string& set_command, string value)
     }
 }
 
+#if defined(IF_XM)
+
 // OptionMenu reply
 static void SetOptionCB(Widget w, XtPointer client_data, XtPointer)
 {
     gdb_set_command((const _XtString)client_data, XtName(w));
 }
+
+#else
+
+// OptionMenu reply
+static void SetOptionCB(const char *command, GUI::Widget *w)
+{
+    gdb_set_command(command, w->get_name().c_str());
+}
+
+#endif
 
 #if defined(IF_XM)
 
@@ -3182,6 +3197,160 @@ static void add_button(GUI::Container *form, int& row, Dimension& max_width,
 	// set follow-fork-mode / set disassembly-flavor / 
 	// set scheduler-locking
 	std::cerr << "SchedulerOptionMenuEntry - not supported!\n";
+	GUI::OptionMenu *optionmenu = new GUI::OptionMenu(*form, GUI::PACK_SHRINK, "optionmenu");
+	entry = optionmenu;
+	GUI::Menu *submenu = new GUI::PopupMenu(*form, "submenu");
+	optionmenu->set_menu(*submenu);
+	optionmenu->show();
+
+	string options;
+	char separator = '\n';
+
+	switch (gdb->type())
+	{
+	case GDB:
+	    options = cached_gdb_question("set " + base);
+	    if((base == "architecture")
+	    || (base == "demangle-style")
+	    || (base == "disassembly-flavor")
+	    || (base == "endian")
+	    || (base == "follow-fork-mode")
+	    || (base == "scheduler-locking")
+#if GDB_ABI_OPTIONS
+            || (base == "osabi")
+#endif
+	       )
+	    {
+		// First look for the reponse in the format of GDB-5.x or
+		// newer. Possible options are listed upon `set endian'
+		// (or whatever) and separated by `,'.
+		if (options.contains("Requires an argument. Valid arguments are"))
+		{
+		    strip_leading(options, "Requires an argument. Valid arguments are");
+		    // remove trailing .\n (if any)
+		    if (options.contains(".\n"))
+		    {
+			options = options.before(".\n");
+		    }
+		    separator = ',';
+		}
+                else if (options.contains("Requires an argument. Valid values are"))
+                {
+                    strip_leading(options, "Requires an argument. Valid values are");
+                    // remove trailing .\n (if any)
+                    if (options.contains(".\n"))
+                    {
+                        options = options.before(".\n");
+                    }
+                    separator = ',';
+                }
+		// OK, so it doesn't match GDB-5.x output; go with 4.x format
+		else if (base == "architecture")
+		{
+		    // Possible options are listed upon `info architecture'
+		    // and separated by ` '.
+		    options = cached_gdb_question("info " + base);
+		    options = "auto" + options.from('\n');
+		    separator = ' ';
+		}
+		else if (base == "disassembly-flavor")
+		{
+		    // Hardwired options
+		    options = "intel\natt\n";
+		}
+		else if (base == "endian")
+		{
+		    // Hardwired options
+		    options = "auto\nbig endian\nlittle endian\n";
+		}
+		else if (base == "follow-fork-mode")
+		{
+		    // Hardwired options
+		    options = "parent\nchild\nask\n";
+		}
+		else if (base == "scheduler-locking")
+		{
+		    // Hardwired options
+		    options = "off\non\nstep\n";
+		}
+#if GDB_ABI_OPTIONS
+                else if (base == "cp-abi")
+                {
+                    strip_leading(options, "The available C++ ABIs are:");
+                }
+#endif
+	    }
+	    break;
+
+	case DBX:
+	    options = _get_dbx_help("dbxenv", base);
+	    options = options.after('<');
+	    options = options.before('>');
+
+	    if (options.empty())
+	    {
+		if (base == "follow_fork_mode")
+		    options = "parent|child|both|ask";
+	    }
+	    separator = '|';
+	    break;
+
+	case BASH:
+	case DBG:
+	case JDB:
+	case PERL:
+	case PYDB:
+	case XDB:
+	    return;		// FIXME
+	}
+
+	while (!options.empty())
+	{
+	    string option = options;
+	    if (option.contains(separator))
+		option = option.before(separator);
+	    options = options.after(separator);
+
+	    strip_space(option);
+
+	    string label = option;
+	    if (gdb->type() == GDB && option.contains("  "))
+	    {
+		label = option.after("  ");
+		label = label.after(rxwhite);
+
+		if (option.contains(" auto"))
+		    option = "auto";
+		else
+		    option = option.before(rxwhite);
+	    }
+
+#if GDB_ABI_OPTIONS
+            else if (gdb->type() == GDB && option.contains(" - "))
+            {
+                 label = option.after(" - ");
+                 option = option.before(" - ");
+                 if (option.contains("auto"))
+		    label = "auto";
+            }
+#endif
+
+	    if (option.empty() || option.contains(':', -1))
+		continue;
+
+	    GUI::MenuItem *mi;
+	    if (gdb->type() == GDB) {
+		mi = new GUI::MenuItem(*submenu, GUI::PACK_SHRINK, option.chars(),
+				       label.chars());
+	    }
+	    else {
+		mi = new GUI::MenuItem(*submenu, GUI::PACK_SHRINK, option.chars());
+	    }
+	    mi->signal_activate().connect(sigc::bind(sigc::ptr_fun(SetOptionCB),
+						     set_command_s, mi));
+	    mi->show();
+	}
+
 	break;
     }
 
