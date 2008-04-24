@@ -32,6 +32,7 @@
 #define GTKX_OPTIONMENU_H
 
 #include <GtkX/Container.h>
+#include <GtkX/Menu.h>
 #include <gtkmm/optionmenu.h>
 
 // Template for a widget taking a single string constructor argument.
@@ -40,13 +41,13 @@ namespace GtkX {
 
     class OptionMenu: public Widget, public Gtk::OptionMenu {
     public:
-	OptionMenu(GtkX::Container &parent, const String &name="");
-	OptionMenu(Gtk::Container *parent, const String &name="");
+	OptionMenu(GtkX::Container &parent, PackOptions po=PACK_SHRINK, const String &name="");
 	~OptionMenu(void);
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
 #include <GtkX/redirect.h>
+	void set_menu(GtkX::Menu &menu);
     };
 
 }
