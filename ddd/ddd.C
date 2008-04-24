@@ -5660,7 +5660,7 @@ static bool lock_ddd(GUI::Widget *parent, LockInfo& info)
     msg += rm("To exit this " DDD_NAME " instance, click on ") 
 	+ bf("Exit") + rm(".");
 
-    GUI::Dialog *lock_dialog = new GUI::Dialog(*find_shell1(parent), "lock_dialog");
+    GUI::Dialog *lock_dialog = new GUI::Dialog(*find_shell(parent), "lock_dialog");
 
     Delay::register_shell(lock_dialog);
 
@@ -7774,7 +7774,7 @@ static void OfferRestartCB(GUI::WidgetPtr<GUI::Dialog> &dialog)
 	static GUI::Dialog *restart_dialog = 0;
 	if (restart_dialog == 0)
 	{
-	    restart_dialog = new GUI::Dialog(*find_shell1(dialog), "restart_dialog");
+	    restart_dialog = new GUI::Dialog(*find_shell(dialog), "restart_dialog");
 	    Delay::register_shell(restart_dialog);
 	    Gtk::Button *button;
 	    button = restart_dialog->add_button("OK");
@@ -7884,11 +7884,8 @@ static void dddPopupPreferencesCB (Widget, XtPointer, XtPointer)
 static void make_preferences(GUI::Widget *parent)
 {
     preferences_dialog = 
-	new GUI::Dialog(*find_shell1(parent), "preferences");
+	new GUI::Dialog(*find_shell(parent), "preferences");
     Delay::register_shell(preferences_dialog);
-#ifdef NAG_ME
-#warning No default button
-#endif
     preferences_dialog->signal_unmap().connect(sigc::bind(sigc::ptr_fun(OfferRestartCB),
 							  preferences_dialog));
 
@@ -10533,7 +10530,7 @@ static void setup_new_shell(GUI::Widget *w)
     if (w == 0)
 	return;
 
-    GUI::Shell *shell = findShellParent1(w);
+    GUI::Shell *shell = findShellParent(w);
     if (shell == 0 && dynamic_cast<GUI::Shell *>(w))
 	shell = dynamic_cast<GUI::Shell *>(w);
     if (shell == 0)

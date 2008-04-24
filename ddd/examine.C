@@ -440,7 +440,7 @@ void gdbExamineCB(GUI::Widget *w)
     static GUI::Dialog *dialog = 0;
     if (dialog == 0)
     {
-	dialog = new GUI::Dialog(*find_shell1(w), "examine_dialog");
+	dialog = new GUI::Dialog(*find_shell(w), "examine_dialog");
 	Delay::register_shell(dialog);
 
 #ifdef NAG_ME

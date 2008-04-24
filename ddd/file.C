@@ -292,7 +292,7 @@ static GUI::Dialog *file_dialog(GUI::Widget *w, const string& name,
 #endif
 
     GUI::FileSelectionDialog *dialog = 
-	new GUI::FileSelectionDialog(*find_shell1(w), name.chars(), GUI::FileActionOpen);
+	new GUI::FileSelectionDialog(*find_shell(w), name.chars(), GUI::FileActionOpen);
     GUI::Button *button;
     Delay::register_shell(dialog);
 
@@ -355,7 +355,7 @@ static GUI::Dialog *create_file_dialog(GUI::Widget *w, const _XtString name,
 #ifdef NAG_ME
 #warning Original version is much more sophisticated...
 #endif
-    return file_dialog(find_shell1(w), name, openDone);
+    return file_dialog(find_shell(w), name, openDone);
 }
 
 #endif
@@ -2441,7 +2441,7 @@ void gdbLookupSourceCB(GUI::Widget *w)
 
     if (dialog == 0)
     {
-	dialog = new GUI::Dialog(*find_shell1(w), "sources");
+	dialog = new GUI::Dialog(*find_shell(w), "sources");
 
 	Delay::register_shell(dialog);
 

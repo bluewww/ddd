@@ -739,7 +739,7 @@ static GUI::SelectionDialog *create_session_panel(GUI::Widget *parent, const cha
 {
     std::vector<GUI::String> session_headers;
     session_headers.push_back("Session");
-    GUI::SelectionDialog *dialog = new GUI::SelectionDialog(*find_shell1(parent),
+    GUI::SelectionDialog *dialog = new GUI::SelectionDialog(*find_shell(parent),
 							    GUI::String(name), session_headers);
 
     Delay::register_shell(dialog);

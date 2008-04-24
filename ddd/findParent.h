@@ -33,18 +33,21 @@
 #include "config.h"
 #endif
 
-#if defined(IF_MOTIF)
-#include <X11/Intrinsic.h>
-#endif
+#if defined(IF_XM)
 
-#if !defined(IF_XM)
+#include <X11/Intrinsic.h>
+
+#else
+
 #include <GUI/Widget.h>
 #include <GUI/Container.h>
+
 #endif
 
 #include "gtk_wrapper.h"
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
+
 // find a (realized) Shell
 Widget findShellParent(Widget w);
 
@@ -53,17 +56,18 @@ Widget findTopLevelShellParent(Widget w);
 
 // find highest (realized) toplevel Shell
 Widget findTheTopLevelShell(Widget w);
-#endif
 
-#if !defined(IF_XM)
+#else
+
 // find a (realized) Shell
-GUI::Shell *findShellParent1(GUI::Widget *w);
+GUI::Shell *findShellParent(GUI::Widget *w);
 
 // find a (realized) toplevel Shell
 GUI::Shell *findTopLevelShellParent1(GUI::Widget *w);
 
 // find highest (realized) toplevel Shell
 GUI::Shell *findTheTopLevelShell1(GUI::Widget *w);
+
 #endif
 
 #endif

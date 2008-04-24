@@ -1193,7 +1193,7 @@ static void BrowseNameCB(GUI::Widget *w)
 
     if (dialog == 0)
     {
-	dialog = new GUI::FileSelectionDialog(*find_shell1(w), 
+	dialog = new GUI::FileSelectionDialog(*find_shell(w), 
 					      "browse_print",
 					      GUI::FileActionSave);
 #ifdef NAG_ME
@@ -1514,7 +1514,7 @@ static void PrintCB(GUI::Button *parent, bool displays)
 	return;
     }
 
-    print_dialog = new GUI::Dialog(*find_shell1(parent), "print");
+    print_dialog = new GUI::Dialog(*find_shell(parent), "print");
     Delay::register_shell(print_dialog);
 
     GUI::Button *button;
@@ -1716,7 +1716,7 @@ static void PrintCB(GUI::Button *parent, bool displays)
 
     // Create size dialog
     paper_size_dialog = 
-	new GUI::Dialog(*find_shell1(parent), "paper_size_dialog");
+	new GUI::Dialog(*find_shell(parent), "paper_size_dialog");
     Delay::register_shell(paper_size_dialog);
 
     GUI::Entry *entry;

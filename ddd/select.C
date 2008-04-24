@@ -239,7 +239,7 @@ static void select_from_gdb(const string& question, string& reply)
     if (gdb_selection_dialog == 0)
     {
 	gdb_selection_dialog = 
-	    new GUI::Dialog(*find_shell1(gdb_w), "gdb_selection_dialog");
+	    new GUI::Dialog(*find_shell(gdb_w), "gdb_selection_dialog");
 	Delay::register_shell(gdb_selection_dialog);
 
 
@@ -282,7 +282,7 @@ static void select_file(const string& /* question */, string& reply)
 #if defined(IF_XM)
     gdbOpenFileCB(find_shell(), XtPointer(0), XtPointer(0));
 #else
-    gdbOpenFileCB(find_shell1());
+    gdbOpenFileCB(find_shell());
 #endif
 
     open_file_reply = "";

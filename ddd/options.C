@@ -3112,7 +3112,7 @@ static bool CheckOptionsFileCB(void)
 
 	if (dialog == 0)
 	{
-	    dialog = new GUI::Dialog(*find_shell1(), "reload_options_dialog");
+	    dialog = new GUI::Dialog(*find_shell(), "reload_options_dialog");
 	    Delay::register_shell(dialog);
 	    GUI::Button *button;
 	    button = dialog->add_button("OK");

@@ -5175,7 +5175,7 @@ void SourceView::create_shells()
 {
     // Note that we can the second (transient_for) argument of Gtk::Dialog
     // must be a toplevel Gtk::Window.
-    GUI::Shell *parent = find_shell1(source_form_w);
+    GUI::Shell *parent = find_shell(source_form_w);
 
     // Create breakpoint editor
     edit_breakpoints_dialog_w = new GUI::Dialog(*parent, "edit_breakpoints_dialog");
@@ -7859,7 +7859,7 @@ void SourceView::NewBreakpointCB(GUI::Widget *w)
     static GUI::Dialog *dialog = 0;
     if (dialog == 0)
     {
-	dialog = new GUI::Dialog(*find_shell1(w), "new_breakpoint_dialog");
+	dialog = new GUI::Dialog(*find_shell(w), "new_breakpoint_dialog");
 	Delay::register_shell(dialog);
 
 
@@ -8062,7 +8062,7 @@ void SourceView::NewWatchpointCB(GUI::Widget *w)
 	    MMEnd
 	};
 
-	dialog = new GUI::Dialog(*find_shell1(w), GUI::String("new_watchpoint_dialog"));
+	dialog = new GUI::Dialog(*find_shell(w), GUI::String("new_watchpoint_dialog"));
 	Delay::register_shell(dialog);
 
 
@@ -8947,7 +8947,7 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, GUI::Widget * /* origin */)
     info->spin_locked = true;
     info->nrs = breakpoint_nrs;
 
-    info->dialog = new GUI::Dialog(*find_shell1(source_text_w), GUI::String("Properties"));
+    info->dialog = new GUI::Dialog(*find_shell(source_text_w), GUI::String("Properties"));
 
     GUI::Button *button = info->dialog->add_button("apply", "Apply");
 

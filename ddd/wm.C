@@ -238,7 +238,7 @@ void raise_shell(GUI::Widget *w)
 	return;
 
     // Place current shell on top
-    GUI::Widget *shell = findShellParent1(w);
+    GUI::Widget *shell = findShellParent(w);
     if (shell != 0 && shell->is_realized())
     {
 	shell->show();

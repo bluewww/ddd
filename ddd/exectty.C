@@ -329,7 +329,7 @@ static void launch_separate_tty(string &ttyname, pid_t &pid, string &term,
     static GUI::Label *label = 0;
     if (dialog == 0)
     {
-	dialog = new GUI::Dialog(*find_shell1(origin), "launch_tty_dialog");
+	dialog = new GUI::Dialog(*find_shell(origin), "launch_tty_dialog");
 	GUI::Button *button;
 	button = dialog->add_button("Cancel");
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(CancelTTYCB), &canceled));

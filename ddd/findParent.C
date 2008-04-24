@@ -143,7 +143,7 @@ Widget findTheTopLevelShell(Widget w)
 #if !defined(IF_XM)
 
 // Find a realized Shell
-GUI::Shell *findShellParent1(GUI::Widget *w)
+GUI::Shell *findShellParent(GUI::Widget *w)
 {
     if (findParent_debug)
 	std::clog << "findShellParent(" << w->get_name() << ") = ";
@@ -171,9 +171,6 @@ GUI::Shell *findTopLevelShellParent1(GUI::Widget *w)
     if (findParent_debug)
 	std::clog << "findTopLevelShellParent(" << w->get_name() << ") = ";
 
-#ifdef NAG_ME
-#warning What is the difference between a shell and a top level shell?
-#endif
     while (w != 0 && (!dynamic_cast<GUI::Shell *>(w)
 		      || !w->is_realized()))
 	w = w->get_parent();

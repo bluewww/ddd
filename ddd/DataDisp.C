@@ -758,7 +758,7 @@ void DataDisp::set_last_origin(GUI::Widget *w)
 	last_origin->remove_destroy_notify_callback(&last_origin);
     }
 
-    last_origin = find_shell1(w);
+    last_origin = find_shell(w);
 
     if (last_origin != 0)
     {
@@ -1012,7 +1012,7 @@ void DataDisp::applyThemeCB (GUI::Widget *w, const char *client_data)
     string name = 
 	(select ? "select_apply_theme_dialog" : "confirm_apply_theme_dialog");
     GUI::Dialog *dialog = 
-	new GUI::Dialog(*find_shell1(w), name.chars());
+	new GUI::Dialog(*find_shell(w), name.chars());
 
     if (select)
     {
@@ -2893,7 +2893,7 @@ Widget DataDisp::create_display_dialog(Widget parent, const _XtString name,
 GUI::Dialog *DataDisp::create_display_dialog(GUI::Widget *parent, const _XtString name,
 					     NewDisplayInfo& info)
 {
-    GUI::Dialog *dialog = new GUI::Dialog(*find_shell1(parent), name);
+    GUI::Dialog *dialog = new GUI::Dialog(*find_shell(parent), name);
     Delay::register_shell(dialog);
 
     GUI::Button *button;
@@ -8313,7 +8313,7 @@ void DataDisp::setCB(GUI::Widget *w)
     info->running = false;
 
     info->dialog = 
-	new GUI::Dialog(*find_shell1(w), "set_dialog");
+	new GUI::Dialog(*find_shell(w), "set_dialog");
 
     Delay::register_shell(info->dialog);
 
@@ -9885,7 +9885,7 @@ void DataDisp::create_shells()
 
     // Create display editor
     edit_displays_dialog_w =
-	new GUI::Dialog(*find_shell1(graph_edit), "edit_displays_dialog");
+	new GUI::Dialog(*find_shell(graph_edit), "edit_displays_dialog");
     Delay::register_shell(edit_displays_dialog_w);
 
     std::vector<GUI::String> headers;

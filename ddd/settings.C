@@ -4110,7 +4110,7 @@ static GUI::Dialog *create_panel(DebuggerType type, SettingsType stype)
 
     StatusDelay delay("Retrieving " + title_msg);
 
-    GUI::Dialog *panel = new GUI::Dialog(*find_shell1(), dialog_name.chars());
+    GUI::Dialog *panel = new GUI::Dialog(*find_shell(), dialog_name.chars());
     Delay::register_shell(panel);
 
     GUI::Button *button, *reset_button, *apply_button;
@@ -5889,7 +5889,7 @@ void dddDefineCommandCB(GUI::Widget *w)
 
     if (dialog == 0)
     {
-	dialog = new GUI::Dialog(*find_shell1(w), "define_command");
+	dialog = new GUI::Dialog(*find_shell(w), "define_command");
 
 
 	Delay::register_shell(dialog);

@@ -422,7 +422,7 @@ static void _do_gdb_command(const Command& c, bool is_command = true)
 	gdb_last_origin->remove_destroy_notify_callback(gdb_last_origin);
     }
 
-    gdb_last_origin = find_shell1(gdb_keyboard_command ? gdb_w : c.origin);
+    gdb_last_origin = find_shell(gdb_keyboard_command ? gdb_w : c.origin);
 
     if (gdb_last_origin != 0)
     {
@@ -1015,9 +1015,8 @@ Widget find_shell(Widget w)
 
 #else
 
-GUI::WidgetPtr<GUI::Shell> find_shell1(GUI::Widget *w)
+GUI::WidgetPtr<GUI::Shell> find_shell(GUI::Widget *w)
 {
-    std::cerr << "WARNING: find_shell1 is a stub.\n" << std::flush;
     if (w == 0)
 	w = gdb_last_origin1;
     if (w == 0)

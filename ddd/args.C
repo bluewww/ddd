@@ -405,7 +405,7 @@ void gdbRunCB1(GUI::Widget *w)
 {
     if (run_dialog == (GUI::Widget *)0)
     {
-	run_dialog = new GUI::Dialog(*find_shell1(w), "run_dialog");
+	run_dialog = new GUI::Dialog(*find_shell(w), "run_dialog");
 
 	Delay::register_shell(run_dialog);
 	GUI::Button *button = run_dialog->add_button("Run");
@@ -534,7 +534,7 @@ void gdbMakeCB(GUI::Widget *w)
 
     if (make_dialog == (GUI::Widget *)0)
     {
-	make_dialog = new GUI::Dialog(*find_shell1(w), "make_dialog");
+	make_dialog = new GUI::Dialog(*find_shell(w), "make_dialog");
 
 	Delay::register_shell(make_dialog);
 	GUI::Button *button = make_dialog->add_button("Make");
@@ -670,7 +670,7 @@ void gdbChangeDirectoryCB(GUI::Widget *w)
 {
     if (cd_dialog == (GUI::Widget *)0)
     {
-	GUI::Shell *sh = find_shell1(w);
+	GUI::Shell *sh = find_shell(w);
 	GUI::String str = GUI::String("cd_dialog");
 	std::cerr << "OK, Window " << sh << "\n" << std::flush;
 	cd_dialog = new GUI::Dialog(*sh, str);

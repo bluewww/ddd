@@ -363,12 +363,16 @@ extern void clearCommandQueue();
 // Synchronize with command queue
 extern void syncCommandQueue();
 
-// Return a shell widget according to last command origin
 #if defined(IF_XM)
+
+// Return a shell widget according to last command origin
 extern Widget find_shell(Widget w = 0);
-#endif
-#if !defined(IF_XM)
-extern GUI::WidgetPtr<GUI::Shell> find_shell1(GUI::Widget *w = NULL);
+
+#else
+
+// Return a shell widget according to last command origin
+extern GUI::WidgetPtr<GUI::Shell> find_shell(GUI::Widget *w = NULL);
+
 #endif
 
 #if defined(IF_XM)

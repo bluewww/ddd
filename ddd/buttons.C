@@ -2099,7 +2099,7 @@ static void create_buttons_dialog(GUI::Widget *parent)
     if (buttons_dialog != 0)
 	return;
 
-    buttons_dialog = new GUI::Dialog(*find_shell1(parent), "edit_buttons");
+    buttons_dialog = new GUI::Dialog(*find_shell(parent), "edit_buttons");
 
     Delay::register_shell(buttons_dialog);
 
@@ -2134,7 +2134,7 @@ static void create_shortcuts_dialog(GUI::Widget *parent)
     if (shortcuts_dialog != 0)
 	return;
 
-    shortcuts_dialog = new GUI::Dialog(*find_shell1(parent), "edit_shortcuts");
+    shortcuts_dialog = new GUI::Dialog(*find_shell(parent), "edit_shortcuts");
 
     Delay::register_shell(shortcuts_dialog);
 

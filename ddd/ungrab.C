@@ -289,7 +289,7 @@ static bool CheckUngrabCB(int *client_data)
     static GUI::Label *dialog_label = 0;
     if (dialog == 0)
     {
-	dialog = new GUI::Dialog(*find_shell1(gdb_w), "grab_warning");
+	dialog = new GUI::Dialog(*find_shell(gdb_w), "grab_warning");
 	dialog_label = new GUI::Label(*dialog, GUI::PACK_SHRINK, "dialog_label", "Pointer grab");
 	dialog_label->show();
 	Delay::register_shell(dialog);

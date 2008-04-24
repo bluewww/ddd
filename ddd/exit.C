@@ -382,7 +382,7 @@ static void post_fatal(const string& title, const string& cause,
 
     if (fatal_dialog == 0)
     {
-	fatal_dialog = new GUI::Dialog(*find_shell1(), "fatal_dialog");
+	fatal_dialog = new GUI::Dialog(*find_shell(), "fatal_dialog");
 	Delay::register_shell(fatal_dialog);
 
 	GUI::Button *button;
@@ -1283,7 +1283,7 @@ static void DDDDoneCB(GUI::Widget *w, long status)
 	+ GUI::String(" is still busy.  ")
 	+ GUI::String(ddd_is_restarting ? "Restart" : "Exit")
 	+ GUI::String(" anyway (and kill it)?");
-    quit_dialog = new GUI::Dialog(*find_shell1(w), "quit_dialog");
+    quit_dialog = new GUI::Dialog(*find_shell(w), "quit_dialog");
     GUI::Label *label = new GUI::Label(*quit_dialog, GUI::PACK_SHRINK, msg);
     Delay::register_shell(quit_dialog);
     GUI::Button *button;
@@ -1436,7 +1436,7 @@ void DDDRestartCB(GUI::Widget *w)
 	if (dialog)
 	    DestroyWhenIdle(dialog);
 
-	dialog = new GUI::Dialog(*find_shell1(w), "confirm_restart_dialog");
+	dialog = new GUI::Dialog(*find_shell(w), "confirm_restart_dialog");
 	Delay::register_shell(dialog);
 	GUI::Label *label = new GUI::Label(*dialog, GUI::PACK_SHRINK, "Restart?");
 	GUI::Button *button;

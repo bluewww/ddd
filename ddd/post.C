@@ -160,7 +160,7 @@ GUI::Dialog *post_gdb_yn(string question, GUI::Widget *w)
 
     if (yn_dialog == 0)
     {
-	yn_dialog = new GUI::Dialog(*find_shell1(w), "yn_dialog");
+	yn_dialog = new GUI::Dialog(*find_shell(w), "yn_dialog");
 	yn_dialog_label = new GUI::Label(*yn_dialog, GUI::PACK_SHRINK, question.chars());
 	yn_dialog->get_vbox()->pack_start(*yn_dialog_label, Gtk::PACK_SHRINK);
 	Delay::register_shell(yn_dialog);
@@ -238,7 +238,7 @@ GUI::Dialog *post_gdb_busy(GUI::Widget *w)
 
     if (busy_dialog == 0)
     {
-	busy_dialog = new GUI::Dialog(*find_shell1(w), "busy_dialog");
+	busy_dialog = new GUI::Dialog(*find_shell(w), "busy_dialog");
 	Delay::register_shell(busy_dialog);
 	GUI::Button *button;
 	button = busy_dialog->add_button("OK");
@@ -393,7 +393,7 @@ GUI::Dialog *post_gdb_died(string reason, int state, GUI::Widget *w)
 
 
     GUI::Dialog *dialog = 0;
-    GUI::Shell *shell = find_shell1(w);
+    GUI::Shell *shell = find_shell(w);
     GUI::Button *button;
     GUI::Label *label;
     if (gdb_initialized)
@@ -582,7 +582,7 @@ GUI::Dialog *post_gdb_message(string text, bool prompt, GUI::Widget *w)
     static GUI::Label *gdb_message_dialog_label = 0;
     if (gdb_message_dialog == 0)
     {
-	gdb_message_dialog = new GUI::Dialog(*find_shell1(w), "gdb_message_dialog");
+	gdb_message_dialog = new GUI::Dialog(*find_shell(w), "gdb_message_dialog");
 	gdb_message_dialog_label = new GUI::Label(*gdb_message_dialog, GUI::PACK_SHRINK, mtext.xmstring());
 	gdb_message_dialog_label->show();
 	Delay::register_shell(gdb_message_dialog);
@@ -678,7 +678,7 @@ GUI::Dialog *post_error(string text, const _XtString name, GUI::Widget *w)
     MString mtext = rm(text);
 
     GUI::Dialog *ddd_error = 
-	new GUI::Dialog(*find_shell1(w), name);
+	new GUI::Dialog(*find_shell(w), name);
     GUI::Label *ddd_error_label = new GUI::Label(*ddd_error, GUI::PACK_SHRINK, mtext.xmstring());
     ddd_error_label->show();
     Delay::register_shell(ddd_error);
@@ -770,7 +770,7 @@ GUI::Dialog *post_warning(string text, const _XtString name, GUI::Widget *w)
 #warning Should these dialogs be destroyed on close?
 #endif
     GUI::Dialog *ddd_warning = 
-	new GUI::Dialog(*find_shell1(w), name);
+	new GUI::Dialog(*find_shell(w), name);
     GUI::Label *ddd_warning_label = new GUI::Label(*ddd_warning, GUI::PACK_SHRINK, mtext.xmstring());
     ddd_warning_label->show();
 
