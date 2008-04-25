@@ -3180,7 +3180,30 @@ static void add_button(GUI::Container *form, int& row, Dimension& max_width,
     case CheckOptionMenuEntry:
     {
 	// `set check'
-	std::cerr << "CheckOptionMenuEntry - not supported yet!\n";
+	GUI::OptionMenu *optionmenu = new GUI::OptionMenu(*form, GUI::PACK_SHRINK, "optionmenu");
+	entry = optionmenu;
+	GUI::Menu *submenu = new GUI::PopupMenu(*form, "submenu");
+	optionmenu->set_menu(*submenu);
+	optionmenu->show();
+
+	// Possible options are contained in the help string
+	string options = cached_gdb_question("help " + set_command);
+	options = options.from('(');
+	options = options.before(')');
+
+	while (!options.empty())
+	{
+	    string option = options.after(0);
+	    option = option.through(rxalpha);
+	    options = options.after(rxalpha);
+
+	    GUI::MenuItem *mi;
+	    mi = new GUI::MenuItem(*submenu, GUI::PACK_SHRINK, option.chars());
+	    mi->signal_activate().connect(sigc::bind(sigc::ptr_fun(SetOptionCB),
+						     set_command_s, mi));
+	    mi->show();
+	}
+
 	break;
     }
 
@@ -3196,7 +3219,6 @@ static void add_button(GUI::Container *form, int& row, Dimension& max_width,
 	// set language / set demangle / set architecture / set endian /
 	// set follow-fork-mode / set disassembly-flavor / 
 	// set scheduler-locking
-	std::cerr << "SchedulerOptionMenuEntry - not supported!\n";
 	GUI::OptionMenu *optionmenu = new GUI::OptionMenu(*form, GUI::PACK_SHRINK, "optionmenu");
 	entry = optionmenu;
 	GUI::Menu *submenu = new GUI::PopupMenu(*form, "submenu");
