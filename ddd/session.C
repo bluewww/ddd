@@ -908,7 +908,7 @@ static string get_chosen_session(Widget dialog)
 
 static string get_chosen_session1(GUI::ListView *list)
 {
-    std::string sel = list->get_selected();
+    GUI::String sel = list->get_selected();
 
     string value(sel.c_str());
     if (value == NO_SESSION)

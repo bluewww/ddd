@@ -503,29 +503,22 @@ class SourceView {
 
     static Widget edit_breakpoints_dialog_w; // Dialog for editing breakpoints
     static Widget breakpoint_list_w;       // The breakpoint list
-#else
-    static GUI::Container *code_form_w;      // Form around Machine code and glyphs
-    static GUI::ScrolledText *code_text_w;   // Machine code text
-
-    static GUI::Dialog *edit_breakpoints_dialog_w; // Dialog for editing breakpoints
-#if defined(IF_XMMM)
-    Widget breakpoint_list_w;       // The breakpoint list
-#else
-    static Gtk::TreeView *breakpoint_list_w;       // The breakpoint list
-#endif
-#endif
-
-#if defined(IF_XM)
     static Widget stack_dialog_w;            // Dialog for viewing the stack
     static Widget frame_list_w;              // The frame list
     static Widget up_w;                      // The `Up' button
     static Widget down_w;                    // The `Down' button
 #else
+    static GUI::Container *code_form_w;      // Form around Machine code and glyphs
+    static GUI::ScrolledText *code_text_w;   // Machine code text
+
+    static GUI::Dialog *edit_breakpoints_dialog_w; // Dialog for editing breakpoints
+    static GUI::ListView *breakpoint_list_w;       // The breakpoint list
     static GUI::SelectionDialog *stack_dialog_w;       // Dialog for viewing the stack
     static GUI::ListView *frame_list_w;               // The frame list
     static GUI::Button *up_w;                          // The `Up' button
     static GUI::Button *down_w;                        // The `Down' button
 #endif
+
     static bool stack_dialog_popped_up;	     // True if the stack is visible
 
 #if defined(IF_XM)

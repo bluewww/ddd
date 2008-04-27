@@ -42,13 +42,13 @@ char mydialogs_rcsid[] =
 #include <stdlib.h>
 
 // Motif includes
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 #include <Xm/Xm.h>
 #include <Xm/SelectioB.h>
 #include <Xm/List.h>
 #include <Xm/MwmUtil.h>
 #include <X11/Shell.h>
-#endif // IF_MOTIF
+#endif
 
 // Misc includes
 #include "assert.h"
@@ -61,7 +61,8 @@ char mydialogs_rcsid[] =
 // Own includes
 #include "string-fun.h"
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
+
 // Create a selection box with a top-level shell
 Widget createTopLevelSelectionDialog(Widget parent, const _XtString name,
 				     ArgList args, Cardinal num_args)
@@ -111,7 +112,10 @@ Widget createTopLevelSelectionDialog(Widget parent, const _XtString name,
 
     return box;
 }
-#endif // IF_MOTIF
+
+#endif
+
+#if defined(IF_XM)
 
 // Set the elements of the display selection list
 // LABEL_LIST:      Labels, using the format disp_nr ": " disp_name.
@@ -120,14 +124,13 @@ Widget createTopLevelSelectionDialog(Widget parent, const _XtString name,
 // HIGHLIGHT_TITLE: Whether the first line should be highlighted
 // NOTIFY:          Whether callbacks should be invoked
 //
-void setLabelList (TREEVIEW_P selectionList,
+void setLabelList (Widget selectionList,
 		   const string  label_list[],
 		   const bool selected[],
 		   int     list_length,
 		   bool    highlight_title,
 		   bool    notify)
 {
-#if defined(IF_MOTIF)
     if (selectionList == 0)
 	return;
 
@@ -155,36 +158,35 @@ void setLabelList (TREEVIEW_P selectionList,
 		   XtPointer(0));
 
     freeXmStringTable(xmlabel_list, list_length);
-#else
-    static int errcnt = 0;
-    if (complain && errcnt++ == 0) std::cerr << "setLabelList not implemented\n";
-#endif
 }
 
-#if !defined(IF_XM)
-void setLabelList (ListView_P selectionList,
+#else
+
+void setLabelList (GUI::ListView *selectionList,
 		   const string  label_list[],
 		   const bool selected[],
 		   int     list_length,
 		   bool    highlight_title,
 		   bool    notify)
 {
-    if (selectionList == (GUI::Widget *)0)
+    if (!selectionList)
 	return;
 
     selectionList->clear();
     for (int i = 0; i < list_length; i++) 
 	selectionList->append(label_list[i].chars());
 }
+
 #endif
+
+#if defined(IF_XM)
 
 // Replace all elements in SELECTIONLIST with the corresponding
 // entries in LABEL_LIST (i.e. with the same leading number).
-void updateLabelList (TREEVIEW_P  selectionList,
+void updateLabelList (Widget selectionList,
 		      const string  label_list[],
 		      int     list_length)
 {
-#ifdef IF_MOTIF
     if (selectionList == 0)
 	return;
 
@@ -226,16 +228,26 @@ void updateLabelList (TREEVIEW_P  selectionList,
 	    break;
 	}
     }
-#else // NOT IF_MOTIF
-    std::cerr << "updateLabelList: not implemented\n";
-#endif // IF_MOTIF
 }
 
+#else
+
+// Replace all elements in SELECTIONLIST with the corresponding
+// entries in LABEL_LIST (i.e. with the same leading number).
+void updateLabelList (GUI::ListView *selectionList,
+		      const string  label_list[],
+		      int     list_length)
+{
+    std::cerr << "updateLabelList: not implemented\n";
+}
+
+#endif
+
+#if defined(IF_XM)
 
 // Fill the item numbers in DISP_NRS
-void getItemNumbers(TREEVIEW_P selectionList, IntArray& numbers)
+void getItemNumbers(GUI::ListView *selectionList, IntArray& numbers)
 {
-#ifdef IF_MOTIF
     static const IntArray empty;
     numbers = empty;
 
@@ -262,7 +274,13 @@ void getItemNumbers(TREEVIEW_P selectionList, IntArray& numbers)
 	if (has_nr(item))
 	    numbers += get_nr(item);
     }
-#else // NOT IF_MOTIF
+}
+
+#else
+
+// Fill the item numbers in DISP_NRS
+void getItemNumbers(GUI::ListView *selectionList, IntArray& numbers)
+{
     Glib::RefPtr<Gtk::TreeModel> model = selectionList->get_model();
     Glib::RefPtr<Gtk::TreeSelection> sel = selectionList->get_selection();
     std::list<Gtk::TreeModel::Path> paths = sel->get_selected_rows();
@@ -270,10 +288,12 @@ void getItemNumbers(TREEVIEW_P selectionList, IntArray& numbers)
     for (iter = paths.begin(); iter != paths.end(); iter++) {
 	numbers += (*iter)[0];
     }
-#endif // IF_MOTIF
 }
 
-#ifdef IF_MOTIF
+#endif
+
+#if defined(IF_XM)
+
 // Create an array of XmStrings from the list LABEL_LIST of length
 // LIST_LENGTH.  If HIGHLIGHT_TITLE is set, let the first line be bold.
 XmStringTable makeXmStringTable (const string label_list[],
@@ -297,12 +317,14 @@ XmStringTable makeXmStringTable (const string label_list[],
 
     return xmlist;
 }
-#endif // IF_MOTIF
+
+#endif
+
+#if defined(IF_XM)
 
 // Select POS in LIST and make it visible
-void ListSetAndSelectPos(TREEVIEW_P list, int pos)
+void ListSetAndSelectPos(Widget list, int pos)
 {
-#ifdef IF_MOTIF
     if (list == 0)
 	return;
 
@@ -350,7 +372,37 @@ void ListSetAndSelectPos(TREEVIEW_P list, int pos)
 	XmListSetPos(list, pos - 1);
     else if (pos + 1 >= top_item + visible_items)
 	XmListSetBottomPos(list, pos + 1);
-#else // NOT IF_MOTIF
-    std::cerr << "ListSetAndSelectPos: not implemented\n";
-#endif // IF_MOTIF
 }
+
+#else
+
+// Select POS in LIST and make it visible
+void ListSetAndSelectPos(GUI::ListView *list, int pos)
+{
+    std::cerr << "ListSetAndSelectPos: not implemented\n";
+}
+
+#endif
+
+#if !defined(IF_XM)
+
+// Get the selected item positions
+int list_get_positions(GUI::ListView *selectionList, int *&positions, int &n_positions)
+{
+    Glib::RefPtr<Gtk::TreeSelection> sel = selectionList->get_selection();
+    Gtk::TreeSelection::ListHandle_Path paths = sel->get_selected_rows();
+    Glib::RefPtr<Gtk::TreeModel> model = selectionList->get_model();
+    n_positions = paths.size();
+    positions = (int *)malloc(n_positions*sizeof(int));
+    int count = 0;
+    for (Gtk::TreeSelection::ListHandle_Path::const_iterator iter = paths.begin();
+	 iter != paths.end();
+	 iter++) {
+	Gtk::TreePath path = *iter;
+	positions[count++] = path[0];
+    }
+    return n_positions;
+}
+
+#endif
+

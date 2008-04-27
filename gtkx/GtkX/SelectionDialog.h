@@ -51,11 +51,11 @@ namespace GtkX {
 	Gtk::Container *gtk_container(void);
 	~SelectionDialog(void);
 	ListView *list(void);
-	std::string get_selected(void); // DEPRECATED
+	String get_selected(void); // DEPRECATED
 	// FIXME: SelectionDialog can be List+Entry.
 	// Entry can be entered by hand, not necessarily from list.
-	std::string get_text(void);
-	void set_text(const std::string &s);
+	String get_text(void);
+	void set_text(const String &s);
 	void pack_start(Gtk::Widget &child,
 			PackOptions options = PACK_EXPAND_WIDGET,
 			int padding = 0);

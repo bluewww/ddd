@@ -33,18 +33,14 @@
 #include "config.h"
 #endif
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 
 #include <X11/Intrinsic.h>
 
 #else
 
-#include <gtkmm/filechooser.h>
-
-#endif
-
-#if !defined(IF_XM)
 #include <GUI/FileSelectionDialog.h>
+
 #endif
 
 #include "gtk_wrapper.h"

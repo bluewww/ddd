@@ -106,27 +106,27 @@ SelectionDialog::gtk_container(void)
     return get_vbox();
 }
 
-GtkX::ListView *
+ListView *
 SelectionDialog::list(void)
 {
     return listview_;
 }
 
-std::string
+String
 SelectionDialog::get_selected(void)
 {
     return listview_->get_selected();
 }
 
-std::string
+String
 SelectionDialog::get_text(void)
 {
     std::cerr << "SelectionDialog::get_text\n";
-    return std::string("ERROR");
+    return "ERROR";
 }
 
 void
-SelectionDialog::set_text(const std::string &s)
+SelectionDialog::set_text(const String &s)
 {
     std::cerr << "SelectionDialog::set_text\n";
 }

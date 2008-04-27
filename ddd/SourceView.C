@@ -239,6 +239,8 @@ XIMAGE_P DRAG_TEMP;
 
 #if !defined(IF_XM)
 
+#if 0
+
 #include <gtkmm/treemodelcolumn.h>
 #include <gtkmm/liststore.h>
 
@@ -312,6 +314,8 @@ simple_list_columns_p(void)
 }
 
 #define simple_list_columns (*simple_list_columns_p())
+
+#endif
 
 #endif
 
@@ -589,11 +593,7 @@ Widget SourceView::thread_list_w             = 0;
 GUI::Container *SourceView::code_form_w      = 0;
 GUI::ScrolledText *SourceView::code_text_w   = 0;
 GUI::Dialog *SourceView::edit_breakpoints_dialog_w = 0;
-#if defined(IF_XMMM)
-Widget SourceView::breakpoint_list_w = 0;
-#else
-Gtk::TreeView *SourceView::breakpoint_list_w = 0;
-#endif
+GUI::ListView *SourceView::breakpoint_list_w = 0;
 GUI::SelectionDialog *SourceView::stack_dialog_w    = 0;
 GUI::ListView *SourceView::frame_list_w             = 0;
 GUI::Button *SourceView::up_w                       = 0;
@@ -5181,17 +5181,18 @@ void SourceView::create_shells()
     edit_breakpoints_dialog_w = new GUI::Dialog(*parent, "edit_breakpoints_dialog");
     Delay::register_shell(edit_breakpoints_dialog_w);
 
+    std::vector<GUI::String> bp_headers;
 
-    Glib::RefPtr<Gtk::ListStore> breakpoint_list_store = Gtk::ListStore::create(breakpoint_list_columns);
+    bp_headers.push_back("Num");
+    bp_headers.push_back("Type");
+    bp_headers.push_back("Temp");
+    bp_headers.push_back("Enabled");
+    bp_headers.push_back("Address");
+    bp_headers.push_back("What");
+
     breakpoint_list_w = 
-	new Gtk::TreeView(breakpoint_list_store);
-
-    breakpoint_list_w->append_column("Num", breakpoint_list_columns.num);
-    breakpoint_list_w->append_column("Type", breakpoint_list_columns.type);
-    breakpoint_list_w->append_column("Temp", breakpoint_list_columns.temporary);
-    breakpoint_list_w->append_column("Enabled", breakpoint_list_columns.enabled);
-    breakpoint_list_w->append_column("Address", breakpoint_list_columns.address);
-    breakpoint_list_w->append_column("What", breakpoint_list_columns.what);
+	new GUI::ListView(*edit_breakpoints_dialog_w, GUI::PACK_EXPAND_WIDGET, "breakpoint list",
+			  bp_headers);
 
     if (app_data.flat_dialog_buttons)
     {
@@ -10665,10 +10666,11 @@ void SourceView::process_frame(int frame)
     }
 }
 
+#if defined(IF_XM)
+
 // Set frame manually to function FUNC; return TRUE if successful
 bool SourceView::set_frame_func(const string& func)
 {
-#if defined(IF_XM)
     int count = 0;
     XmStringTable items;
 
@@ -10676,26 +10678,13 @@ bool SourceView::set_frame_func(const string& func)
 		  XmNitemCount, &count,
 		  XmNitems, &items,
 		  XtPointer(0));
-#else
-    Gtk::TreeNodeChildren items = frame_list_w->get_model()->children();
-    int count = items.size();
-#endif
 
     for (int i = count - 1; i >= 0; i--)
     {
 	String _item;
-#if defined(IF_XM)
 	XmStringGetLtoR(items[i], LIST_CHARSET, &_item);
 	string item(_item);
 	XtFree(_item);
-#else
-	Gtk::TreeRow row = items[i];
-	string item = row[simple_list_columns.value];
-#ifdef NAG_ME
-#warning It would be cleaner to parse the gdb output and split this
-#warning into several columns.
-#endif
-#endif
 
 	int func_index  = item.index(func);
 	int paren_index = item.index('(');
@@ -10710,6 +10699,37 @@ bool SourceView::set_frame_func(const string& func)
 
     return false;
 }
+
+#else
+
+// Set frame manually to function FUNC; return TRUE if successful
+bool SourceView::set_frame_func(const string& func)
+{
+    int count = frame_list_w->n_rows();
+
+    for (int i = count - 1; i >= 0; i--)
+    {
+	String _item;
+	string item = frame_list_w->get_at(i).c_str();
+	std::cerr << "set_frame_func: TODO?\n";
+	// It would be cleaner to parse the gdb output and split this
+	// into several columns.
+
+	int func_index  = item.index(func);
+	int paren_index = item.index('(');
+
+	if (func_index >= 0 &&
+	    (func_index < paren_index || paren_index < 0))
+	{
+	    set_frame_pos(0, i + 1);
+	    return true;
+	}
+    }
+
+    return false;
+}
+
+#endif
 
 // Set frame manually: ARG = 0: POS, ARG = +/- N: down/up N levels
 void SourceView::set_frame_pos(int arg, int pos)
@@ -11221,8 +11241,7 @@ void SourceView::SelectThreadCB(GUI::Widget *w)
 
 	if (selected_items_count == 1)
 	{
-	    Gtk::TreeIter iter = thread_list_w->get_selection()->get_selected();
-	    string item = (*iter)[simple_list_columns.value];
+	    string item = thread_list_w->get_selected().c_str();
 
 	    // Output has the form `Group jtest.main:'
 	    if (gdb->type() == JDB)

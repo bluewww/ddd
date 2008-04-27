@@ -52,12 +52,15 @@ namespace GtkX {
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;
 	~ListView(void);
-	std::string get_selected(void);
+	String get_selected(int row=-1, int col=-1);
 	void clear(void);
 	void append(const GtkX::String &item);
 	int get_selected_pos(void);
 	int count(void) const;
 	sigc::signal<void> &signal_selection_changed(void);
+	int n_rows(void) const;
+	int n_selected_rows(void) const;
+	String get_at(int row, int col=-1);
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
 #include <GtkX/redirect.h>
     };

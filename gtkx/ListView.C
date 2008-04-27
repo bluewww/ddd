@@ -25,6 +25,7 @@
 // reparented.  Therefore we need a constructor with extra arguments.
 
 #include <cassert>
+#include <vector>
 
 #include <gtkmm/treemodel.h>
 
@@ -85,10 +86,10 @@ ListView::ListView(GtkX::Container &parent, PackOptions po,
     row[model.c2] = "test 2";
     row[model.c3] = "test 3";
     row[model.c4] = "test 4";
-    row[model.c4] = "test 5";
-    row[model.c4] = "test 6";
-    row[model.c4] = "test 7";
-    row[model.c4] = "test 8";
+    row[model.c5] = "test 5";
+    row[model.c6] = "test 6";
+    row[model.c7] = "test 7";
+    row[model.c8] = "test 8";
 
     init_signals();
     parent.add_child(*this, po, 0);
@@ -110,17 +111,94 @@ ListView::internal(void) const
     return this;
 }
 
-std::string
-ListView::get_selected(void)
+String
+ListView::get_selected(int r, int c)
 {
+#if 0
     // FIXME: This returns the whole line!
     Gtk::TreeIter iter = get_selection()->get_selected();
     Gtk::TreeRow row = *iter;
     Glib::ustring tab("\t");
-    return row[model.c1] + tab
+    Glib::ustring result;
+    result = row[model.c1] + tab
 	+ row[model.c2] + tab
 	+ row[model.c3] + tab
-	+ row[model.c4];
+	+ row[model.c4] + tab
+	+ row[model.c5] + tab
+	+ row[model.c6] + tab
+	+ row[model.c7] + tab
+	+ row[model.c8];
+    return result;
+#else
+    static Gtk::TreeModelColumn<Glib::ustring> *cols[]
+	= {&model.c1, &model.c2, &model.c3, &model.c4,
+	   &model.c5, &model.c6, &model.c7, &model.c8};
+    Glib::ustring result;
+    // Note that the ListHandle_Path returned by get_selected_rows()
+    // is automatically converted to an STL type:
+    std::vector<Gtk::TreePath> paths = get_selection()->get_selected_rows();
+    result = "";
+    if (r < 0) r = 0;
+    if (r > paths.size())
+	return "";
+    Gtk::TreeIter iter = get_model()->get_iter(paths[r]);
+    Gtk::TreeRow row = *iter;
+    Glib::ustring tab("\t");
+    if (c < 0) {
+	result = row[model.c1] + tab
+	    + row[model.c2] + tab
+	    + row[model.c3] + tab
+	    + row[model.c4] + tab
+	    + row[model.c5] + tab
+	    + row[model.c6] + tab
+	    + row[model.c7] + tab
+	    + row[model.c8];
+    }
+    else {
+	result = row.get_value(*cols[c]);
+    }
+    return result;
+#endif
+}
+
+int
+ListView::n_rows(void) const
+{
+    return Gtk::TreeView::get_model()->children().size();
+}
+
+int
+ListView::n_selected_rows(void) const
+{
+    return Gtk::TreeView::get_selection()->count_selected_rows();
+}
+
+String
+ListView::get_at(int r, int c)
+{
+    static Gtk::TreeModelColumn<Glib::ustring> *cols[]
+	= {&model.c1, &model.c2, &model.c3, &model.c4,
+	   &model.c5, &model.c6, &model.c7, &model.c8};
+    Gtk::TreePath p;
+    p.push_back(r);
+    Gtk::TreeIter iter = get_model()->get_iter(p);
+    Gtk::TreeRow row = *iter;
+    Glib::ustring tab("\t");
+    Glib::ustring result;
+    if (c < 0) {
+	result = row[model.c1] + tab
+	    + row[model.c2] + tab
+	    + row[model.c3] + tab
+	    + row[model.c4] + tab
+	    + row[model.c5] + tab
+	    + row[model.c6] + tab
+	    + row[model.c7] + tab
+	    + row[model.c8];
+    }
+    else {
+	result = row.get_value(*cols[c]);
+    }
+    return result;
 }
 
 void
@@ -137,6 +215,10 @@ ListView::append(const GtkX::String &item)
     row[model.c2] = "";
     row[model.c3] = "";
     row[model.c4] = "";
+    row[model.c5] = "";
+    row[model.c6] = "";
+    row[model.c7] = "";
+    row[model.c8] = "";
 }
 
 int

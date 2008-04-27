@@ -30,13 +30,13 @@
 #ifndef _DDD_MString_h
 #define _DDD_MString_h
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 
 // An "MString" is but a C++ wrapper around Motif composite strings.
 
 #include <Xm/Xm.h>
 
-#endif // IF_MOTIF
+#endif
 
 #include "gtk_wrapper.h"
 
@@ -50,7 +50,7 @@
 #define MSTRING_DEFAULT_CHARSET XmSTRING_DEFAULT_CHARSET
 #endif
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 
 class MString {
 private:
@@ -64,12 +64,18 @@ public:
 	assert(OK());
     }
 
+#if defined(IF_XM)
+
     MString(const char *text,
 	    XmStringCharSet charset = MSTRING_DEFAULT_CHARSET):
 	_mstring(text ? XmStringCreateLtoR(XMST(text), charset) : 0)
     {
 	assert(OK());
     }
+
+#endif
+
+#if defined(IF_XM)
 
     MString(const string& text,
 	    XmStringCharSet charset = MSTRING_DEFAULT_CHARSET):
@@ -78,6 +84,10 @@ public:
 	assert(OK());
     }
 
+#endif
+
+#if defined(IF_XM)
+
     // In Motif 1.1, `XmString' is defined as `char *'; hence the
     // DUMMY parameter
     MString(XmString text, bool /* dummy */):
@@ -85,6 +95,8 @@ public:
     {
 	assert(OK());
     }
+
+#endif
 
     // Copy constructor
     MString(const MString& m):
@@ -239,7 +251,7 @@ inline MString operator + (const MString& m1, const MString& m2)
     return ret;
 }
 
-#else // NOT IF_MOTIF
+#else
 
 // Note: Motif Compound String should really be mapped to a
 // Pango GlyphString?
@@ -445,11 +457,12 @@ inline MString operator + (const MString& m1, const MString& m2)
     return ret;
 }
 
-#endif // IF_MOTIF
+#endif
 
 
 inline MString operator + (const MString& m, const char *s)
 {
+    MString s0(s);
     return operator + (m, MString(s));
 }
 

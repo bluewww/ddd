@@ -68,7 +68,8 @@ char file_rcsid[] =
 #include <string.h>		// strerror()
 #include <errno.h>
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
+
 #include <Xm/Xm.h>
 #include <Xm/FileSB.h>
 #include <Xm/List.h>
@@ -79,11 +80,12 @@ char file_rcsid[] =
 #include <Xm/TextF.h>
 #include <Xm/Label.h>
 #include <Xm/PushB.h>
-#endif
 
-#if !defined(IF_XM)
+#else
+
 #include <GUI/FileSelectionDialog.h>
 #include <GUI/Entry.h>
+
 #endif
 
 // ANSI C++ doesn't like the XtIsRealized() macro
@@ -110,7 +112,7 @@ string open_file_reply;
 // Opening files
 //-----------------------------------------------------------------------------
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 typedef void (*FileSearchProc)(Widget fs, 
 			       XmFileSelectionBoxCallbackStruct *cbs);
 #endif
@@ -120,21 +122,9 @@ static WidgetArray file_dialogs;
 
 static string current_file_filter = "";
 
-#if !defined(IF_MOTIF)
 
-static SimpleListColumns<string> *
-simple_list_columns_p(void)
-{
-    static SimpleListColumns<string> *slc = NULL;
-    if (!slc)
-	slc = new SimpleListColumns<string>;
-    return slc;
-}
+#if defined(IF_XM)
 
-#define simple_list_columns (*simple_list_columns_p())
-#endif
-
-#if defined(IF_MOTIF)
 // Make sure that every change in one filter is reflected in all others
 static void SyncFiltersCB(Widget dialog, XtPointer, XtPointer)
 {
@@ -192,6 +182,7 @@ static void FilterAllCB(Widget dialog, XtPointer client_data,
 	}
     }
 }
+
 #endif
 
 #if defined(IF_XM)
@@ -369,7 +360,7 @@ void process_cd(const string& pwd)
     {
 	if (file_filters[i] != 0)
 	{
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	    XmTextSetString(file_filters[i], XMST(current_file_filter.chars()));
 #else
 #ifdef NAG_ME
@@ -383,7 +374,7 @@ void process_cd(const string& pwd)
 
 static const char *delay_message = "Filtering files";
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // Search for remote files and directories, using the command CMD
 static void searchRemote(Widget fs,
 			 XmFileSelectionBoxCallbackStruct *cbs,
@@ -520,7 +511,7 @@ static void searchRemoteDirectories(Widget fs,
 #endif
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // Search for local files and directories, using the predicate IS_OKAY
 static void searchLocal(Widget fs,
 			XmFileSelectionBoxCallbackStruct *cbs,
@@ -1160,7 +1151,7 @@ static int ps_pid(const string& line)
     return atoi(s);
 }
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // Fill the pids in DISP_NRS
 static void getPIDs(Widget selectionList, IntArray& disp_nrs)
 {
@@ -1269,7 +1260,7 @@ static bool valid_ps_line(const string& line, const string& ps_command)
     return true;
 }
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // Create list of processes
 static void update_processes(Widget processes, bool keep_selection)
 {
@@ -1518,7 +1509,7 @@ static void openProcessDone(Widget w, XtPointer client_data,
 #endif
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // When W is to be destroyed, remove all references in Widget(CLIENT_DATA)
 static void RemoveCallbacksCB(Widget w, XtPointer client_data, XtPointer)
 {
@@ -1597,20 +1588,19 @@ static void warn_if_no_program(GUI::Widget *popdown)
 // Helpers for class and source selection
 //-----------------------------------------------------------------------------
 
+#if defined(IF_XM)
+
 // Get the selected item ids
-static void get_items(TREEVIEW_P selectionList, StringArray& itemids)
+static void get_items(Widget selectionList, StringArray& itemids)
 {
     static const StringArray empty;
     itemids = empty;
 
-#if defined(IF_MOTIF)
     XmStringTable selected_items;
     int selected_items_count = 0;
 
     assert(XmIsList(selectionList));
-#endif
 
-#if defined(IF_MOTIF)
     XtVaGetValues(selectionList,
 		  XmNselectedItemCount, &selected_items_count,
 		  XmNselectedItems, &selected_items,
@@ -1625,52 +1615,32 @@ static void get_items(TREEVIEW_P selectionList, StringArray& itemids)
 
 	itemids += item;
     }
-#else
-    Glib::RefPtr<Gtk::TreeSelection> sel = selectionList->get_selection();
-    Gtk::TreeSelection::ListHandle_Path paths = sel->get_selected_rows();
-    Glib::RefPtr<Gtk::TreeModel> model = selectionList->get_model();
-    for (Gtk::TreeSelection::ListHandle_Path::const_iterator iter = paths.begin();
-	 iter != paths.end();
-	 iter++) {
-	Gtk::TreeModel::iterator iter2 = model->get_iter(*iter);
-	Gtk::TreeModel::Row row = *iter2;
-	string item = row[simple_list_columns.value];
-	itemids += item;
-    }
-#endif
 }
 
-#if !defined(IF_MOTIF)
-// Get the selected item positions
-int list_get_positions(TREEVIEW_P selectionList, int *&positions, int &n_positions)
+#else
+
+// Get the selected item ids
+static void get_items(GUI::ListView *selectionList, StringArray& itemids)
 {
-    Glib::RefPtr<Gtk::TreeSelection> sel = selectionList->get_selection();
-    Gtk::TreeSelection::ListHandle_Path paths = sel->get_selected_rows();
-    Glib::RefPtr<Gtk::TreeModel> model = selectionList->get_model();
-    n_positions = paths.size();
-    positions = (int *)malloc(n_positions*sizeof(int));
-    int count = 0;
-    for (Gtk::TreeSelection::ListHandle_Path::const_iterator iter = paths.begin();
-	 iter != paths.end();
-	 iter++) {
-	Gtk::TreePath path = *iter;
-	positions[count++] = path[0];
+    static const StringArray empty;
+    itemids = empty;
+
+    int n = selectionList->n_selected_rows();
+    for (int i = 0; i < n; i++) {
+	GUI::String item = selectionList->get_selected(i);
+	itemids += item.c_str();
     }
-    return n_positions;
 }
+
 #endif
+
+#if defined(IF_XM)
 
 // Get the item from the selection list in CLIENT_DATA
-#if defined(IF_MOTIF)
 static string get_item(Widget, XtPointer client_data, XtPointer)
-#else
-static string get_item(TREEVIEW_P items)
-#endif
 {
     StringArray itemids;
-#if defined(IF_MOTIF)
     Widget items = Widget(client_data);
-#endif
     if (items != 0)
 	get_items(items, itemids);
 
@@ -1680,12 +1650,28 @@ static string get_item(TREEVIEW_P items)
     return "";
 }
 
+#else
+
+// Get the item from the selection list in CLIENT_DATA
+static string get_item(GUI::ListView *items)
+{
+    StringArray itemids;
+    if (items)
+	get_items(items, itemids);
+
+    if (itemids.size() == 1)
+	return itemids[0];
+
+    return "";
+}
+
+#endif
 
 //-----------------------------------------------------------------------------
 // Classes (JDB only)
 //-----------------------------------------------------------------------------
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // Select a class
 static void SelectClassCB(Widget w, XtPointer client_data, 
 			  XtPointer call_data)
@@ -1754,7 +1740,7 @@ static StringArray all_sources;
 // Select a source; show the full path name in the status line
 static void SelectSourceCB(Widget w, XtPointer, XtPointer call_data)
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     XmListCallbackStruct *cbs = (XmListCallbackStruct *)call_data;
     int pos = cbs->item_position;
     ListSetAndSelectPos(w, pos);
@@ -1879,28 +1865,21 @@ static void filter_sources(StringArray& labels, StringArray& sources,
     sources = new_sources;
 }
 
-static void update_sources(TREEVIEW_P sources, Widget filter)
+#if defined(IF_XM)
+
+static void update_sources(Widget sources, Widget filter)
 {
     StatusDelay delay("Getting sources");
     get_gdb_sources(all_sources);
 
-#if defined(IF_MOTIF)
     String pattern_s = XmTextFieldGetString(filter);
     string pattern = pattern_s;
     XtFree(pattern_s);
-#else
-#ifdef NAG_ME
-#warning Filters not supported.
-#endif
-    string pattern = "*";
-#endif
 
     strip_space(pattern);
     if (pattern.empty())
 	pattern = "*";
-#if defined(IF_MOTIF)
     XmTextFieldSetString(filter, XMST(pattern.chars()));
-#endif
 
     StringArray labels;
     uniquify(all_sources, labels);
@@ -1923,28 +1902,57 @@ static void update_sources(TREEVIEW_P sources, Widget filter)
     delete[] selected;
 }
 
+#else
+
+static void update_sources(GUI::ListView *sources, Widget filter)
+{
+    StatusDelay delay("Getting sources");
+    get_gdb_sources(all_sources);
+
+    std::cerr << "update_sources: filters not supported.\n";
+    string pattern = "*";
+
+    strip_space(pattern);
+    if (pattern.empty())
+	pattern = "*";
+
+    StringArray labels;
+    uniquify(all_sources, labels);
+
+    // Sort and remove duplicates
+    sort(labels, all_sources);
+    uniq(labels, all_sources);
+
+    // Filter pattern
+    filter_sources(labels, all_sources, pattern);
+
+    // Now set the selection.
+    bool *selected = new bool[labels.size()];
+    for (int i = 0; i < labels.size(); i++)
+	selected[i] = false;
+
+    setLabelList(sources, labels.values(),
+		 selected, labels.size(), false, false);
+
+    delete[] selected;
+}
+
+#endif
+
+#if defined(IF_XM)
+
 // OK pressed in `Lookup Source'
-#if defined(IF_MOTIF)
 static void lookupSourceDone(Widget w,
 			     XtPointer client_data, 
 			     XtPointer call_data)
-#else
-static void lookupSourceDone(TREEVIEW_P sources)
-#endif
 {
-#if defined(IF_MOTIF)
     Widget sources = Widget(client_data);
     XmSelectionBoxCallbackStruct *cbs = 
 	(XmSelectionBoxCallbackStruct *)call_data;
-#endif
 
     set_status("");
 
-#if defined(IF_MOTIF)
     string source = get_item(w, client_data, call_data);
-#else
-    string source = get_item(sources);
-#endif
 
     if (source.contains('/'))
     {
@@ -1952,11 +1960,7 @@ static void lookupSourceDone(TREEVIEW_P sources)
 	int *position_list = 0;
 	int position_count = 0;
 	if (
-#if defined(IF_MOTIF)
 	    XmListGetSelectedPos(sources, &position_list, &position_count)
-#else
-	    list_get_positions(sources, position_list, position_count)
-#endif
 	    )
 	{
 	    if (position_count == 1)
@@ -1968,15 +1972,10 @@ static void lookupSourceDone(TREEVIEW_P sources)
 		source = all_sources[pos];
 	    }
 
-#if defined(IF_MOTIF)
 	    XtFree((char *)position_list);
-#else
-	    free((char *)position_list);
-#endif
 	}
     }
 
-#if defined(IF_MOTIF)
     if (!source.empty())
     {
 	source_view->lookup(source + ":1");
@@ -1990,12 +1989,42 @@ static void lookupSourceDone(TREEVIEW_P sources)
 	    XtUnmanageChild(dialog);
 	}
     }
-#else
-#ifdef NAG_ME
-#warning Unmanage widget?
-#endif
-#endif
 }
+
+#else
+
+// OK pressed in `Lookup Source'
+static void lookupSourceDone(GUI::ListView *sources)
+{
+
+    set_status("");
+
+    string source = get_item(sources);
+
+    if (source.contains('/'))
+    {
+	// Expand to full path name
+	int *position_list = 0;
+	int position_count = 0;
+	if (list_get_positions(sources, position_list, position_count))
+	{
+	    if (position_count == 1)
+	    {
+		int pos = position_list[0];
+		pos--;
+		if (pos < 0)
+		    pos = all_sources.size() - 1;
+		source = all_sources[pos];
+	    }
+
+	    free((char *)position_list);
+	}
+    }
+
+    std::cerr << "Unmanage this?\n";
+}
+
+#endif
 
 static void open_source_msg()
 {
@@ -2264,14 +2293,11 @@ void gdbOpenClassCB(GUI::Widget *)
 
 #endif
 
-static TREEVIEW_P source_list   = 0;
-#if !defined(IF_MOTIF)
-static TREEMODEL_P source_model   = 0;
-#endif
-
 #if defined(IF_XM)
+static Widget source_list   = 0;
 static Widget source_filter = 0;
 #else
+static GUI::ListView *source_list   = 0;
 static GUI::Entry *source_filter = 0;
 #endif
 
@@ -2463,19 +2489,18 @@ void gdbLookupSourceCB(GUI::Widget *w)
 
 	GUI::Button *lookup = dialog->add_button("lookup");
 
-	source_list = new Gtk::TreeView();
-	dialog->get_vbox()->pack_start(*source_list, Gtk::PACK_EXPAND_WIDGET);
+	std::vector<GUI::String> headers;
+	headers.push_back("Sources");
+	source_list = new GUI::ListView(*dialog, GUI::PACK_EXPAND_WIDGET, "source_list", headers);
 	source_list->show();
 
-#ifdef NAG_ME
-#warning SelectSourceCB?
-#endif
+	std::cerr << "SelectSourceCB not connected.\n";
 
-	Gtk::Button *button;
-	button = dialog->add_button(XMST("OK"), 0);
+	GUI::Button *button;
+	button = dialog->add_button("OK");
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(lookupSourceDone),
 						    source_list));
-	button = dialog->add_button(XMST("Cancel"), 0);
+	button = dialog->add_button("Cancel");
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB),
 						    dialog));
 	dialog->signal_unmap().connect(sigc::ptr_fun(ClearStatusCB));

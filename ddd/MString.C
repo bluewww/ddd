@@ -35,7 +35,7 @@ char MString_rcsid[] =
 
 Boolean MString::OK() const
 {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     if (xmstring() == 0)
 	return True;		// Null pointer
 
@@ -43,7 +43,7 @@ Boolean MString::OK() const
     (void) isEmpty();
     (void) length();
     (void) lineCount();
-#endif // IF_MOTIF
+#endif
 
     return True;
 }
@@ -51,7 +51,7 @@ Boolean MString::OK() const
 // Return all characters in M
 string MString::str() const
 {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     XmString m = xmstring();
     if (m == 0)
 	return "";
@@ -108,7 +108,7 @@ string MString::str() const
     XmStringFreeContext(c);
 
     return s;
-#else // NOT IF_MOTIF
+#else
     return _mstring.c_str();
-#endif // IF_MOTIF
+#endif
 }

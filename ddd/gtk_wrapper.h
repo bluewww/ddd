@@ -5,7 +5,6 @@
 
 #include <X11/Intrinsic.h>
 
-typedef Widget TREEVIEW_P;
 typedef Widget FIXED_P;
 typedef XImage *XIMAGE_P;
 
@@ -412,36 +411,7 @@ bool text_cut_from(Widget w);
 
 // End convenience functions
 
-// TreeView widget
-
-#include <gtkmm/treeview.h>
-#include <gtkmm/treemodel.h>
-
-typedef Gtk::TreeView *TREEVIEW_P;
-typedef Gtk::TreeModel *TREEMODEL_P;
-
-// Get the selected item positions
-#ifdef NAG_ME
-#warning FIXME: Quick&Dirty - For compatibility only.
-#warning Defined in file.C.
-#endif
-extern int list_get_positions(TREEVIEW_P selectionList, int *&positions, int &n_positions);
-
-// End TreeView widget
-
 #define XtSetLanguageProc(a, b, c)
-
-#if 0
-typedef struct _XtResource {
-    String	resource_name;	/* Resource name			    */
-    String	resource_class;	/* Resource class			    */
-    String	resource_type;	/* Representation type desired		    */
-    Cardinal	resource_size;	/* Size in bytes of representation	    */
-    Cardinal	resource_offset;/* Offset from base to put resource value   */
-    String	default_type;	/* representation type of specified default */
-    XtPointer	default_addr;	/* Address of default resource		    */
-} XtResource, *XtResourceList;
-#endif
 
 Gtk::Window *find_toplevel(Gtk::Widget *w);
 
@@ -453,21 +423,6 @@ typedef GtkGlyphMark *Glyph_T;
 
 
 
-// TREE MODEL FOR SIMPLE LIST OF STRINGS
-
-#include <gtkmm/treemodelcolumn.h>
-
-// Models for the ListStore.
-template <class T>
-class SimpleListColumns: public Gtk::TreeModel::ColumnRecord
-{
-public:
-  Gtk::TreeModelColumn<T> value;
-  SimpleListColumns()
-  {
-    add(value);
-  }
-};
 
 #endif // IF_MOTIF
 

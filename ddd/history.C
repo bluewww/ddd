@@ -56,9 +56,9 @@ char history_rcsid[] =
 
 #include "AppData.h"
 #include "Assoc.h"
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 #include "ComboBox.h"
-#endif // IF_MOTIF
+#endif
 #include "Command.h"
 #include "Delay.h"
 #include "DestroyCB.h"
@@ -94,12 +94,19 @@ char history_rcsid[] =
 #include <stdio.h>
 #include <stdlib.h>
 #include <fstream>
-#ifdef IF_MOTIF
+
+#if defined(IF_XM)
+
 #include <Xm/Xm.h>
 #include <Xm/Text.h>
 #include <Xm/List.h>
 #include <Xm/SelectioB.h>
-#endif // IF_MOTIF
+
+#else
+
+#include <GUI/ListView.h>
+
+#endif
 
 #if WITH_READLINE
 // `history.h' has no complete declaration for `add_history',
@@ -121,9 +128,19 @@ extern "C" void add_history(const char *line);
 // Command history
 //-----------------------------------------------------------------------------
 
+#if defined(IF_XM)
+
 // History viewer
 static Widget gdb_history_w  = 0;
-static TREEVIEW_P gdb_commands_w = 0;
+static Widget gdb_commands_w = 0;
+
+#else
+
+// History viewer
+static Widget gdb_history_w  = 0;
+static GUI::ListView *gdb_commands_w = 0;
+
+#endif
 
 // History storage
 static StringArray gdb_history;
@@ -173,26 +190,41 @@ string gdb_history_file()
     return _gdb_history_file;
 }
 
+#if defined(IF_XM)
+
 static void set_line_from_history()
 {
     private_gdb_history = true;
 
     const string& input = gdb_history[gdb_current_history];
-#ifdef IF_MOTIF
     XmTextReplace(gdb_w, promptPosition,
 		  XmTextGetLastPosition(gdb_w), XMST(input.chars()));
     XmTextSetInsertionPosition(gdb_w, XmTextGetLastPosition(gdb_w));
-#else // NOT IF_MOTIF
-    gdb_w->replace(promptPosition,
-		   gdb_w->get_last_position(), XMST(input.chars()));
-    gdb_w->set_insertion_position(gdb_w->get_last_position());
-#endif // IF_MOTIF
 
     if (gdb_history_w)
 	ListSetAndSelectPos(gdb_commands_w, gdb_current_history + 1);
 
     private_gdb_history = false;
 }
+
+#else
+
+static void set_line_from_history()
+{
+    private_gdb_history = true;
+
+    const string& input = gdb_history[gdb_current_history];
+    gdb_w->replace(promptPosition,
+		   gdb_w->get_last_position(), XMST(input.chars()));
+    gdb_w->set_insertion_position(gdb_w->get_last_position());
+
+    if (gdb_history_w)
+	ListSetAndSelectPos(gdb_commands_w, gdb_current_history + 1);
+
+    private_gdb_history = false;
+}
+
+#endif
 
 void set_history_from_line(const string& line,
 			   bool ignore_history_commands)
@@ -204,7 +236,7 @@ void set_history_from_line(const string& line,
 	gdb_history += "";
     gdb_history[gdb_history.size() - 1] = line;
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     if (gdb_history_w)
     {
 	int pos = gdb_history.size();
@@ -213,13 +245,13 @@ void set_history_from_line(const string& line,
 	// save it here
 	int *selected;
 	int selected_count;
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 	if (!XmListGetSelectedPos(gdb_commands_w, &selected, &selected_count))
 	    selected = 0;
-#else // NOT IF_MOTIF
+#else
 	if (!list_get_positions(gdb_commands_w, selected, selected_count))
 	    selected = 0;
-#endif // IF_MOTIF
+#endif
 
 	MString xm_line(line, LIST_CHARSET);
 	XmString xms = xm_line.xmstring();
@@ -233,11 +265,11 @@ void set_history_from_line(const string& line,
 	    XtFree((char *)selected);
 	}
     }
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Forget history widget for now
 #endif
-#endif // IF_MOTIF
+#endif
 }
 
 // Enter LINE in history
@@ -252,7 +284,7 @@ void add_to_history(const string& line)
     {
 	gdb_history += "";
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 	if (gdb_history_w)
 	{
 	    MString xm_line(line, LIST_CHARSET);
@@ -261,27 +293,27 @@ void add_to_history(const string& line)
 	    XmListSelectPos(gdb_commands_w, 0, False);
 	    XmListSetBottomPos(gdb_commands_w, 0);
 	}
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Forget history widget for now
 #endif
-#endif // IF_MOTIF
+#endif
     }
 
     gdb_current_history = gdb_history.size();
     set_history_from_line("");
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     if (gdb_history_w)
     {
 	XmListSelectPos(gdb_commands_w, 0, False);
 	XmListSetBottomPos(gdb_commands_w, 0);
     }
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Forget history widget for now
 #endif
-#endif // IF_MOTIF
+#endif
 
     gdb_new_history = false;
 
@@ -436,7 +468,7 @@ void process_history_size(string answer)
 	gdb_history_size = ret;
 }
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 // History viewer
 static void SelectHistoryCB(Widget, XtPointer, XtPointer call_data)
 {
@@ -456,7 +488,7 @@ static void HistoryDestroyedCB(Widget, XtPointer client_data, XtPointer)
 	gdb_commands_w = 0;
     }
 }
-#endif // IF_MOTIF
+#endif
 
 #if defined(IF_XM)
 
@@ -645,12 +677,12 @@ static void update_combo_box(Widget text, HistoryFilter filter)
 	uniq(entries);
     }
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     ComboBoxSetList(text, entries);
-#else // NOT IF_MOTIF
+#else
     static int errcnt = 0;
     if (complain && !errcnt++) std::cerr << "ComboBoxSetList not supported\n";
-#endif // IF_MOTIF
+#endif
 }
 
 static WidgetHistoryFilterAssoc combo_boxes;
@@ -684,13 +716,13 @@ void tie_combo_box_to_history(Widget text, HistoryFilter filter)
 {
     combo_boxes[text] = filter;
     update_combo_box(text, filter);
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     XtAddCallback(text, XmNdestroyCallback, RemoveComboBoxCB, XtPointer(0));
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Destrou callback needed?
 #endif
-#endif // IF_MOTIF
+#endif
 }
 
 
