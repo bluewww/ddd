@@ -33,22 +33,22 @@
 #include "config.h"
 #endif
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 
 #include <X11/Intrinsic.h>
 
-#endif // IF_MOTIF
+#endif
 
 #include "gtk_wrapper.h"
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 extern void AddDeleteWindowCallback(Widget shell,
 				    XtCallbackProc callback, 
 				    XtPointer closure = 0);
-#else // NOT IF_MOTIF
-extern void AddDeleteWindowCallback(Widget shell,
-				    GTK_SLOT_);
-#endif // IF_MOTIF
+#else
+extern void AddDeleteWindowCallback(GUI::Widget *shell,
+				    sigc::slot<void> callback);
+#endif
 
 #endif // _DDD_DeleteWindowCallBack_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

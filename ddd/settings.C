@@ -947,58 +947,85 @@ void update_infos()
 
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
+
 static void UpdateSettingsButtonsNowCB(XtPointer, XtIntervalId *)
-#else
-static bool UpdateSettingsButtonsNowCB(void)
-#endif
 {
     update_apply_settings_button();
     update_reset_settings_button();
 }
 
-// TextField reply
-#if defined(IF_MOTIF)
-static void UpdateSettingsButtonsCB(Widget w, XtPointer client_data, 
-				    XtPointer)
 #else
-static void UpdateSettingsButtonsCB(void)
-#endif
+
+static bool UpdateSettingsButtonsNowCB(void)
 {
-    // The TextField value has not yet changed.  Call again later.
-#if defined(IF_MOTIF)
-    XtAppAddTimeOut(XtWidgetToApplicationContext(w), 0,
-		    UpdateSettingsButtonsNowCB, client_data);
-#else
-    Glib::signal_idle().connect(sigc::bind_return(PTR_FUN(UpdateSettingsButtonsNowCB), false));
-#endif
+    update_apply_settings_button();
+    update_reset_settings_button();
+    return false;
 }
 
-#if defined(IF_MOTIF)
-static void UpdateThemesButtonsNowCB(XtPointer, XtIntervalId *)
-#else
-static void UpdateThemesButtonsNowCB(void)
 #endif
+
+#if defined(IF_XM)
+
+// TextField reply
+static void UpdateSettingsButtonsCB(Widget w, XtPointer client_data, 
+				    XtPointer)
+{
+    // The TextField value has not yet changed.  Call again later.
+    XtAppAddTimeOut(XtWidgetToApplicationContext(w), 0,
+		    UpdateSettingsButtonsNowCB, client_data);
+}
+
+#else
+
+// TextField reply
+static void UpdateSettingsButtonsCB(void)
+{
+    // The TextField value has not yet changed.  Call again later.
+    GUI::signal_idle().connect(sigc::ptr_fun(UpdateSettingsButtonsNowCB));
+}
+
+#endif
+
+#if defined(IF_XM)
+
+static void UpdateThemesButtonsNowCB(XtPointer, XtIntervalId *)
 {
     update_themes_buttons();
 }
 
+#else
+
+static bool UpdateThemesButtonsNowCB(void)
+{
+    update_themes_buttons();
+    return false;
+}
+
+#endif
+
+#if defined(IF_XM)
+
 // TextField reply
-#if defined(IF_MOTIF)
 static void UpdateThemesButtonsCB(Widget w, XtPointer client_data, 
 				  XtPointer)
-#else
-static void UpdateThemesButtonsCB(void)
-#endif
 {
     // The TextField value has not yet changed.  Call again later.
-#if defined(IF_MOTIF)
     XtAppAddTimeOut(XtWidgetToApplicationContext(w), 0,
 		    UpdateThemesButtonsNowCB, client_data);
-#else
-    Glib::signal_idle().connect(sigc::bind_return(PTR_FUN(UpdateThemesButtonsNowCB), false));
-#endif
 }
+
+#else
+
+// TextField reply
+static void UpdateThemesButtonsCB(void)
+{
+    // The TextField value has not yet changed.  Call again later.
+    GUI::signal_idle().connect(sigc::ptr_fun(UpdateThemesButtonsNowCB));
+}
+
+#endif
 
 #if defined(IF_MOTIF)
 static void HelpOnThemeCB(Widget w, XtPointer client_data, 
@@ -5958,15 +5985,15 @@ static void ToggleArgCB(void)
 static MMDesc commands_menu[] =
 {
     GENTRYL("record", "record", MMPush, 
-	    BIND_0(PTR_FUN(RecordCommandDefinitionCB)),
+	    BIND(RecordCommandDefinitionCB, 0),
 	    sigc::ptr_fun(RecordCommandDefinitionCB),
 	    0, &record_w),
     GENTRYL("end", "end", MMPush | MMInsensitive, 
-	    BIND_0(PTR_FUN(EndCommandDefinitionCB)),
+	    BIND(EndCommandDefinitionCB, 0),
 	    sigc::ptr_fun(EndCommandDefinitionCB),
 	    0, &end_w),
     GENTRYL("edit", "edit", MMPush, 
-	    BIND_0(PTR_FUN(ToggleEditCommandDefinitionCB)),
+	    BIND(ToggleEditCommandDefinitionCB, 0),
 	    sigc::ptr_fun(ToggleEditCommandDefinitionCB),
 	    0, &edit_w),
     MMEnd

@@ -143,8 +143,13 @@ public:
     string      init_perl;	  // Perl restart commands
     string      init_bash;	  // Bash restart commands
 
+#if defined(IF_XM)
     XtIntervalId position_timer;  // Still waiting for partial position
     XtIntervalId display_timer;   // Still waiting for partial display
+#else
+    GUI::connection position_timer;  // Still waiting for partial position
+    GUI::connection display_timer;   // Still waiting for partial display
+#endif
 
 private:
 #if defined(IF_XM)
@@ -245,7 +250,7 @@ private:
     CmdData& operator = (const CmdData&);
 };
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 void CmdData::clear_origin(Widget w, XtPointer client_data, XtPointer)
 {
     (void) w;                        // Use it 
@@ -1944,46 +1949,57 @@ static void print_partial_answer(const string& answer, CmdData *cmd_data)
     }
 }
 
-static void CancelPartialPositionCB(XtPointer client_data
-#if defined(IF_MOTIF)
-				    , XtIntervalId *id
-#endif
-    )
+#if defined(IF_XM)
+
+static void CancelPartialPositionCB(XtPointer client_data, XtIntervalId *id)
 {
-#if defined(IF_MOTIF)
     (void) id;			// Use it
-#endif
 
     CmdData *cmd_data = (CmdData *)client_data;
-#if defined(IF_MOTIF)
     assert(cmd_data->position_timer == *id);
-#endif
-    cmd_data->position_timer = NO_TIMER;
+    cmd_data->position_timer = 0;
 
     string ans = cmd_data->pos_buffer->answer_ended();
     print_partial_answer(ans, cmd_data);
 }
 
-static void CancelPartialDisplayCB(XtPointer client_data
-#if defined(IF_MOTIF)
-				   , XtIntervalId *id
-#endif
-    )
+#else
+
+static bool CancelPartialPositionCB(CmdData *cmd_data)
 {
-#if defined(IF_MOTIF)
-    (void) id;			// Use it
+    string ans = cmd_data->pos_buffer->answer_ended();
+    print_partial_answer(ans, cmd_data);
+    return false;
+}
+
 #endif
 
+#if defined(IF_XM)
+
+static void CancelPartialDisplayCB(XtPointer client_data,
+				   XtIntervalId *id)
+{
+    (void) id;			// Use it
+
     CmdData *cmd_data = (CmdData *)client_data;
-#if defined(IF_MOTIF)
     assert(cmd_data->display_timer == *id);
-#endif
-    cmd_data->display_timer = NO_TIMER;
+    cmd_data->display_timer = 0;
 
     string ans = cmd_data->disp_buffer->answer_ended();
     print_partial_answer(ans, cmd_data);
 }
 
+#else
+
+static bool CancelPartialDisplayCB(CmdData *cmd_data)
+{
+    string ans = cmd_data->disp_buffer->answer_ended();
+    print_partial_answer(ans, cmd_data);
+
+    return false;
+}
+
+#endif
 
 static CmdData *current_cmd_data = 0;
 
@@ -2022,14 +2038,16 @@ static void partial_answer_received(const string& answer, void *data)
 	if (cmd_data->pos_buffer->pos_found() || 
 	    cmd_data->pos_buffer->partial_pos_found())
 	{
-	    if (cmd_data->position_timer != NO_TIMER) {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
+	    if (cmd_data->position_timer != 0) {
 		XtRemoveTimeOut(cmd_data->position_timer);
-#else
-		cmd_data->position_timer.disconnect();
-#endif
 	    }
-	    cmd_data->position_timer = NO_TIMER;
+	    cmd_data->position_timer = 0;
+#else
+	    if (cmd_data->position_timer) {
+		cmd_data->position_timer.disconnect();
+	    }
+#endif
 	}
 
 	if (cmd_data->pos_buffer->partial_pos_found())
@@ -2039,14 +2057,14 @@ static void partial_answer_received(const string& answer, void *data)
 	    {
 		assert(cmd_data->position_timer == 0);
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 		cmd_data->position_timer = 
 		    XtAppAddTimeOut(app_con, app_data.position_timeout,
 				    CancelPartialPositionCB, 
 				    XtPointer(cmd_data));
 #else
 		cmd_data->position_timer = 
-		    Glib::signal_timeout().connect(sigc::bind_return(sigc::bind(PTR_FUN(CancelPartialPositionCB), cmd_data), false), app_data.position_timeout);
+		    Glib::signal_timeout().connect(sigc::bind(sigc::ptr_fun(CancelPartialPositionCB), cmd_data), app_data.position_timeout);
 #endif
 	    }
 	}
@@ -2060,14 +2078,16 @@ static void partial_answer_received(const string& answer, void *data)
 	if (cmd_data->disp_buffer->displays_found() || 
 	    cmd_data->disp_buffer->partial_displays_found())
 	{
-	    if (cmd_data->display_timer != NO_TIMER) {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
+	    if (cmd_data->display_timer != 0) {
 		XtRemoveTimeOut(cmd_data->display_timer);
-#else
-		cmd_data->display_timer.disconnect();
-#endif
 	    }
-	    cmd_data->display_timer = NO_TIMER;
+	    cmd_data->display_timer = 0;
+#else
+	    if (cmd_data->display_timer) {
+		cmd_data->display_timer.disconnect();
+	    }
+#endif
 	}
 
 	if (cmd_data->disp_buffer->partial_displays_found())
@@ -2077,14 +2097,14 @@ static void partial_answer_received(const string& answer, void *data)
 	    {
 		assert(cmd_data->display_timer == 0);
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 		cmd_data->display_timer = 
 		    XtAppAddTimeOut(app_con, app_data.display_timeout,
 				    CancelPartialDisplayCB,
 				    XtPointer(cmd_data));
 #else
 		cmd_data->display_timer = 
-		    Glib::signal_timeout().connect(sigc::bind_return(sigc::bind(PTR_FUN(CancelPartialDisplayCB), cmd_data), false), app_data.display_timeout);
+		    GUI::signal_timeout().connect(sigc::bind(sigc::ptr_fun(CancelPartialDisplayCB), cmd_data), app_data.display_timeout);
 #endif
 	    }
 	}
@@ -2122,23 +2142,25 @@ static void command_completed(void *data)
     bool do_prompt   = cmd_data->user_prompt;
     bool start_undo  = cmd_data->start_undo;
 
-    if (cmd_data->position_timer != NO_TIMER) {
 #if defined(IF_XM)
+    if (cmd_data->position_timer != 0) {
 	XtRemoveTimeOut(cmd_data->position_timer);
-#else
-	cmd_data->position_timer.disconnect();
-#endif
     }
-    cmd_data->position_timer = NO_TIMER;
+    cmd_data->position_timer = 0;
 
-    if (cmd_data->display_timer != NO_TIMER) {
-#if defined(IF_XM)
+    if (cmd_data->display_timer != 0) {
 	XtRemoveTimeOut(cmd_data->display_timer);
-#else
-	cmd_data->display_timer.disconnect();
-#endif
     }
-    cmd_data->display_timer = NO_TIMER;
+    cmd_data->display_timer = 0;
+#else
+    if (cmd_data->position_timer) {
+	cmd_data->position_timer.disconnect();
+    }
+
+    if (cmd_data->display_timer) {
+	cmd_data->display_timer.disconnect();
+    }
+#endif
 
     if (verbose && !cmd_data->recorded && start_undo)
     {

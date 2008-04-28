@@ -158,7 +158,7 @@ struct PushMenuInfo {
     GUI::Widget *widget;	// The PushButton
     GUI::Menu *subMenu;		// Submenu of this PushButton
     bool flat;			// Whether the PushButton is flattened
-    XtIntervalId timer;		// Timer while waiting
+    GUI::connection timer;		// Timer while waiting
 
     PushMenuInfo(GUI::Widget *w, GUI::Menu *s, bool f)
 	: widget(w), subMenu(s), flat(f)
@@ -1961,6 +1961,7 @@ GUI::Menu *MMcreatePushMenu(GUI::Container *parent, GUI::String name, MMDesc ite
 static XEvent last_push_menu_event; // Just save it
 
 #if defined(IF_XM)
+
 // Remove time out again
 static void CancelPopupPushMenuCB(Widget w, XtPointer client_data, 
 				  XtPointer call_data)
@@ -1979,12 +1980,8 @@ static void CancelPopupPushMenuCB(Widget w, XtPointer client_data,
 	std::clog << "canceling (reason " << cbs->reason << ")\n";
 #endif
 
-#if defined(IF_XM)
 	XtRemoveTimeOut(info->timer);
-#else
-	info->timer.disconnect();
-#endif
-	info->timer = NO_TIMER;
+	info->timer = 0;
     }
 
     XtRemoveCallback(w, XmNdisarmCallback,
@@ -2031,10 +2028,13 @@ static void PopupPushMenuCB(XtPointer client_data, XtIntervalId *id)
     }
 #endif
 }
+
 #else
+
 #ifdef NAG_ME
 #warning PUSH MENUS NOT IMPLEMENTED FOR NOW
 #endif
+
 #endif
 
 #if defined(IF_XM)

@@ -5,50 +5,6 @@
 
 #include <X11/Intrinsic.h>
 
-typedef Widget FIXED_P;
-typedef XImage *XIMAGE_P;
-
-typedef const char *NAME_T;
-#define NO_TIMER 0
-#define NO_DISPLAY 0
-#define NO_SCREEN 0
-
-#define NO_WINDOW 0
-
-#define XtNIL (XtPointer)0
-#define DEFAULT_FONT_NAME "fixed"
-
-#define MAYBE_FALSE
-#define MAYBE_TRUE
-
-#define NO_UPDATE
-
-// XtWorkProc
-#define IDLE_STOP True
-#define IDLE_CONT False
-
-typedef XtCallbackProc GTK_SLOT_WP;
-typedef XtCallbackProc GTK_PROC_WP;
-typedef XtCallbackProc GTK_SLOT_P;
-typedef XtCallbackProc GTK_PROC_P;
-typedef XtCallbackProc GTK_SLOT_W;
-typedef XtCallbackProc GTK_PROC_W;
-typedef XtCallbackProc GTK_SLOT_;
-typedef XtCallbackProc GTK_PROC_;
-
-#define USTRING(s) (s)
-#define PTR_FUN(f) (f)
-
-#define WAITREC(f) { f }
-
-
-
-#define BIND_1(f, c) { f, (void *)c }
-#define BIND_0(f) { f, XtNIL }
-#define HIDE_0(f) { f, XtNIL }
-#define HIDE_1(f) { f, XtNIL }
-#define HIDE_0_BIND_1(f, c) { f, (void *)c }
-
 #define M_ARGS_1(w) w
 #define M_ARGS_2(w, a) w, a
 #define M_ARGS_3(w, a, b) w, a, b
@@ -114,8 +70,6 @@ typedef error_struct XWindowAttributes;
 
 typedef Glib::RefPtr<Gdk::Colormap> Colormap;
 
-typedef Glib::RefPtr<Gdk::Pixbuf> XIMAGE_P;
-
 typedef Gdk::Region *Region;
 
 // End gdk
@@ -161,8 +115,6 @@ typedef guint KeySym;
 typedef Gtk::Widget *Widget;
 typedef long XmTextPosition;
 
-#define DEFAULT_FONT_NAME "Monospace 12"
-
 typedef bool Boolean;
 typedef bool Bool;
 
@@ -177,8 +129,6 @@ typedef bool Bool;
 typedef Glib::ustring XmString;
 typedef char *String;
 #define GLIB_NOSTRING (Glib::ustring::size_type)-1
-#define USTRING(s) Glib::ustring(s.chars())
-typedef Glib::ustring NAME_T;
 
 #define XmStringFree(s)
 
@@ -192,7 +142,6 @@ typedef void *XmFontList;             // FIXME: IGNORED
 
 typedef unsigned int Cardinal;
 typedef void *XtPointer;
-#define XtNIL (XtPointer)0
 
 #ifdef NAG_ME
 #warning Perhaps we should use a gconfmm Value?
@@ -208,19 +157,8 @@ typedef int Position;
 // Main loop
 
 typedef sigc::connection XtInputId;
-typedef sigc::connection XtIntervalId;
+
 typedef sigc::connection XtWorkProcId;
-#define NO_CONNECTION sigc::connection()
-#define NO_TIMER sigc::connection()
-
-#define MAYBE_FALSE false
-#define MAYBE_TRUE true
-
-#define NO_UPDATE true
-
-// XtWorkProc replaced by idle handler (signal_idle())
-#define IDLE_STOP false
-#define IDLE_CONT true
 
 #define XtInputWriteMask Glib::IO_OUT
 #define XtInputReadMask Glib::IO_IN
@@ -251,19 +189,7 @@ extern Glib::RefPtr<Pango::Context> pango_context;
 typedef sigc::slot<void, Widget, XtPointer, XtPointer> XtCallbackProc;
 typedef void (*XtCallbackProc1)(Widget, XtPointer, XtPointer);
 
-typedef sigc::slot<void, Widget, XtPointer> GTK_SLOT_WP;
-typedef void (*GTK_PROC_WP)(Widget, XtPointer);
-typedef sigc::slot<void, XtPointer> GTK_SLOT_P;
-typedef void (*GTK_PROC_P)(XtPointer);
-typedef sigc::slot<void, Widget> GTK_SLOT_W;
-typedef void (*GTK_PROC_W)(Widget);
-typedef sigc::slot<void> GTK_SLOT_;
-typedef void (*GTK_PROC_)(void);
-
 typedef sigc::slot<void, void*> XtTimerCallbackProc;
-
-#define PTR_FUN(f) sigc::retype(sigc::ptr_fun(f))
-#define MEM_FUN(o,f) sigc::mem_fun(o,f)
 
 // client_data is bound.
 // call_data is never used by gtkmm.
@@ -278,18 +204,6 @@ struct XtActionsRec {
   String string;
   XtActionProc proc;
 };
-
-// This is used to create a callback functor from a functor with
-// one Widget argument and one client data argument.
-#define BIND_1(f, c) sigc::bind(f, c)
-// This is used to create a callback functor from a functor with
-// exactly one Widget argument.
-#define BIND_0(f) f
-// This is used to create a callback functor from a functor with no
-// arguments.  The Widget argument is ignored.
-#define HIDE_0(f) sigc::hide<0>(f)
-#define HIDE_1(f) sigc::hide<1>(f)
-#define HIDE_0_BIND_1(f, c) sigc::hide<0>(sigc::bind(f, c))
 
 // A simple toggle.  In Motif, the set/unset state is
 // passed in the callback structure.
@@ -392,14 +306,6 @@ extern Boolean XtIsRealized(Widget w);
 void set_button_label(Gtk::Widget *, const Glib::ustring &);
 
 // End Buttons
-
-// "Fixed" widget
-
-#include <gtkmm/fixed.h>
-
-typedef Gtk::Fixed *FIXED_P;
-
-// End "Fixed" widget
 
 // Convenience functions
 

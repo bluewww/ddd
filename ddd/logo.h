@@ -49,6 +49,7 @@
 // DDD logos
 
 #if defined(IF_XM)
+
 // Return a pixmap suitable for icons on the root window
 extern Pixmap iconlogo(Widget shell);
 extern Pixmap iconmask(Widget shell);
@@ -57,7 +58,9 @@ extern Pixmap iconmask(Widget shell);
 extern Pixmap dddsplash(Widget shell, 
 			const string& color_key,
 			Dimension& width, Dimension& height);
+
 #else
+
 // Return a pixmap suitable for icons on the root window
 extern GUI::RefPtr<GUI::Pixmap> iconlogo(GUI::Widget *shell);
 extern GUI::RefPtr<GUI::Pixmap> iconmask(GUI::Widget *shell);
@@ -66,9 +69,11 @@ extern GUI::RefPtr<GUI::Pixmap> iconmask(GUI::Widget *shell);
 extern GUI::RefPtr<GUI::Pixmap> dddsplash(GUI::Widget *shell, 
 					  const string& color_key,
 					  Dimension& width, Dimension& height);
+
 #endif
 
 #if defined(IF_XM)
+
 // Install toolbar icons in Motif cache.  COLOR_KEY indicates the XPM
 // visual type for inactive buttons.  ACTIVE_COLOR_KEY is the XPM visual
 // type for active buttons (entered or armed).
@@ -80,7 +85,9 @@ inline void install_icons(Widget shell,
 {
     install_icons(shell, color_key, color_key);
 }
+
 #else
+
 // Install toolbar icons in Motif cache.  COLOR_KEY indicates the XPM
 // visual type for inactive buttons.  ACTIVE_COLOR_KEY is the XPM visual
 // type for active buttons (entered or armed).
@@ -92,23 +99,27 @@ inline void install_icons(GUI::Widget *shell,
 {
     install_icons(shell, color_key, color_key);
 }
+
 #endif
+
+#if defined(IF_XM)
 
 // Set label of W to NEW_LABEL (and its pixmap to IMAGE_NAME, if given)
-#if defined(IF_XM)
 extern void set_label(Widget w, const MString& new_label, 
 		      const char *image_name = 0);
+
 #else
+
+// Set label of W to NEW_LABEL (and its pixmap to IMAGE_NAME, if given)
 extern void set_label(GUI::Widget *w, const GUI::String& new_label, 
 		      GUI::ImageHandle *image_name = 0);
+extern GUI::String get_label(GUI::Widget *w);
+
 #endif
 
-#if !defined(IF_XM)
-extern GUI::String get_label(GUI::Widget *w);
-#endif
+#if defined(IF_XM)
 
 // Icon names
-#if defined(IF_XM)
 #define DDD_ICON           ddd_NAME
 #define BREAK_AT_ICON      "break_at"
 #define CLEAR_AT_ICON      "clear_at"
@@ -136,7 +147,10 @@ extern GUI::String get_label(GUI::Widget *w);
 #define UNDISPLAY_ICON     "undisplay"
 #define UNWATCH_ICON       "unwatch"
 #define WATCH_ICON         "watch"
+
 #else
+
+// Icon names
 extern GUI::ImageHandle DDD_ICON[1];
 extern GUI::ImageHandle BREAK_AT_ICON[4];
 extern GUI::ImageHandle CLEAR_AT_ICON[4];
@@ -164,6 +178,7 @@ extern GUI::ImageHandle UNCLUSTER_ICON[4];
 extern GUI::ImageHandle UNDISPLAY_ICON[4];
 extern GUI::ImageHandle UNWATCH_ICON[4];
 extern GUI::ImageHandle WATCH_ICON[4];
+
 #endif
 
 #endif // _DDD_logo_h

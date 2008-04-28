@@ -238,7 +238,7 @@ void sourceToggleFindWordsOnlyCB (GUI::CheckButton *w)
     else
 	set_status("Finding arbitrary occurrences.");
 
-    update_options(NO_UPDATE);
+    update_options(true);
 }
 
 void sourceToggleFindCaseSensitiveCB (GUI::CheckButton *w)
@@ -250,7 +250,7 @@ void sourceToggleFindCaseSensitiveCB (GUI::CheckButton *w)
     else
 	set_status("Case-sensitive search disabled.");
 
-    update_options(NO_UPDATE);
+    update_options(true);
 }
 
 void sourceToggleCacheSourceFilesCB (GUI::CheckButton *w)
@@ -263,14 +263,14 @@ void sourceToggleCacheSourceFilesCB (GUI::CheckButton *w)
 	set_status("Not caching source texts.  "
 		   "Source text cache has been cleared.");
 
-    update_options(NO_UPDATE);
+    update_options(true);
 }
 
 void sourceToggleCacheMachineCodeCB (GUI::CheckButton *w)
 {
     app_data.cache_machine_code = w->get_active();
 
-    update_options(NO_UPDATE);
+    update_options(true);
 
     if (app_data.cache_machine_code)
 	set_status("Caching machine code.");
@@ -283,7 +283,7 @@ void sourceToggleDisplayLineNumbersCB (GUI::CheckButton *w)
 {
     app_data.display_line_numbers = w->get_active();
 
-    update_options(NO_UPDATE);
+    update_options(true);
 
 #if 0
     if (app_data.display_line_numbers)
@@ -311,7 +311,7 @@ void sourceSetUseSourcePathCB (Widget, XtPointer client_data, XtPointer)
 	set_status(referring_to_sources_using + "source file base names.");
 
     source_arg->set_string(source_view->line_of_cursor());
-    update_options(NO_UPDATE);
+    update_options();
 }
 
 #else
@@ -328,7 +328,7 @@ void sourceSetUseSourcePathCB (bool state)
 	set_status(referring_to_sources_using + "source file base names.");
 
     source_arg->set_string(source_view->line_of_cursor());
-    update_options(NO_UPDATE);
+    update_options(true);
 }
 
 #endif
@@ -341,7 +341,7 @@ void sourceSetDisplayGlyphsCB (Widget, XtPointer client_data, XtPointer)
 
     app_data.display_glyphs = state;
 
-    update_options(NO_UPDATE);
+    update_options();
 
     string displaying =	"Displaying breakpoints and positions ";
     if (state)
@@ -356,7 +356,7 @@ void sourceSetDisplayGlyphsCB (bool state)
 {
     app_data.display_glyphs = state;
 
-    update_options(NO_UPDATE);
+    update_options(true);
 
     string displaying =	"Displaying breakpoints and positions ";
     if (state)
@@ -368,48 +368,66 @@ void sourceSetDisplayGlyphsCB (bool state)
 #endif
 
 #if defined(IF_XM)
+
 void sourceSetAllRegistersCB (Widget w, XtPointer, XtPointer call_data)
-#else
-void sourceSetAllRegistersCB (GUI::RadioButton *w)
-#endif
 {
-#if defined(IF_XM)
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     if (info->set)
-#else
-    if (w->get_active())
-#endif
     {
 	set_status("Showing all registers.");
 	app_data.all_registers = true;
     }
 
-    update_options(NO_UPDATE);
+    update_options();
 }
 
-#if defined(IF_XM)
-void sourceSetIntRegistersCB (Widget w, XtPointer, XtPointer call_data)
 #else
-void sourceSetIntRegistersCB (GUI::RadioButton *w)
-#endif
+
+void sourceSetAllRegistersCB (GUI::RadioButton *w)
 {
+    if (w->get_active())
+    {
+	set_status("Showing all registers.");
+	app_data.all_registers = true;
+    }
+
+    update_options(true);
+}
+
+#endif
+
 #if defined(IF_XM)
+
+void sourceSetIntRegistersCB (Widget w, XtPointer, XtPointer call_data)
+{
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     if (info->set)
-#else
-    if (w->get_active())
-#endif
     {
 	set_status("Showing integer registers only.");
 	app_data.all_registers = false;
     }
 
-    update_options(NO_UPDATE);
+    update_options();
 }
+
+#else
+
+void sourceSetIntRegistersCB (GUI::RadioButton *w)
+{
+    if (w->get_active())
+    {
+	set_status("Showing integer registers only.");
+	app_data.all_registers = false;
+    }
+
+    update_options(true);
+}
+
+#endif
 
 #if defined(IF_XM)
 
@@ -494,7 +512,7 @@ void graphToggleDetectAliasesCB(Widget w, XtPointer, XtPointer call_data)
     else
 	set_status(alias_detection + "disabled.");
 
-    update_options(NO_UPDATE);
+    update_options();
 }
 
 #else
@@ -509,7 +527,7 @@ void graphToggleDetectAliasesCB(GUI::Bipolar *w)
     else
 	set_status(alias_detection + "disabled.");
 
-    update_options(NO_UPDATE);
+    update_options(true);
 }
 
 #endif
@@ -530,7 +548,7 @@ void graphToggleAlign2dArraysCB(Widget w, XtPointer, XtPointer call_data)
     else
 	set_status(displaying_arrays_as + "nested one-dimensional arrays.");
 
-    update_options(NO_UPDATE);
+    update_options();
 }
 
 #else
@@ -546,7 +564,7 @@ void graphToggleAlign2dArraysCB(GUI::CheckButton *w)
     else
 	set_status(displaying_arrays_as + "nested one-dimensional arrays.");
 
-    update_options(NO_UPDATE);
+    update_options(true);
 }
 
 #endif
@@ -568,7 +586,7 @@ void graphToggleShowHintsCB(Widget w, XtPointer, XtPointer call_data)
     else
 	set_status("Hints off.");
 
-    update_options(NO_UPDATE);
+    update_options();
 }
 
 #else
@@ -581,7 +599,7 @@ void graphToggleShowHintsCB(GUI::CheckButton *w)
     else
 	set_status("Hints off.");
 
-    update_options(NO_UPDATE);
+    update_options(true);
 }
 
 #endif
@@ -605,7 +623,7 @@ void graphToggleShowAnnotationsCB(Widget w, XtPointer, XtPointer call_data)
 
     data_disp->refresh_titles();
 
-    update_options(NO_UPDATE);
+    update_options();
 }
 
 #else
@@ -620,7 +638,7 @@ void graphToggleShowAnnotationsCB(GUI::CheckButton *w)
 
     data_disp->refresh_titles();
 
-    update_options(NO_UPDATE);
+    update_options(true);
 }
 
 #endif
@@ -640,7 +658,7 @@ void graphToggleShowDependentTitlesCB(Widget w, XtPointer, XtPointer call_data)
 
     data_disp->refresh_titles();
 
-    update_options(NO_UPDATE);
+    update_options();
 }
 
 #else
@@ -655,7 +673,7 @@ void graphToggleShowDependentTitlesCB(GUI::CheckButton *w)
 
     data_disp->refresh_titles();
 
-    update_options(NO_UPDATE);
+    update_options(true);
 }
 
 #endif
@@ -674,7 +692,7 @@ void graphToggleClusterDisplaysCB(Widget w, XtPointer, XtPointer call_data)
     else
 	set_status("Display clustering disabled.");
 
-    update_options(NO_UPDATE);
+    update_options();
 }
 
 #else
@@ -688,7 +706,7 @@ void graphToggleClusterDisplaysCB(GUI::CheckButton *w)
     else
 	set_status("Display clustering disabled.");
 
-    update_options(NO_UPDATE);
+    update_options(true);
 }
 
 #endif
@@ -710,7 +728,7 @@ void graphToggleSnapToGridCB(Widget w, XtPointer, XtPointer call_data)
     else
 	set_status("Snap to grid off.");
 
-    update_options(NO_UPDATE);
+    update_options();
 }
 
 #else
@@ -723,7 +741,7 @@ void graphToggleSnapToGridCB(GUI::CheckButton *w)
     else
 	set_status("Snap to grid off.");
 
-    update_options(NO_UPDATE);
+    update_options(true);
 }
 
 #endif
@@ -749,7 +767,7 @@ void graphToggleCompactLayoutCB(Widget w, XtPointer, XtPointer call_data)
     else
 	set_status("Regular layout enabled.");
 
-    update_options(NO_UPDATE);
+    update_options();
 }
 
 #else
@@ -762,7 +780,7 @@ void graphToggleCompactLayoutCB(GUI::CheckButton *w)
     else
 	set_status("Regular layout enabled.");
 
-    update_options(NO_UPDATE);
+    update_options(true);
 }
 
 #endif
@@ -784,7 +802,7 @@ void graphToggleAutoLayoutCB(Widget w, XtPointer, XtPointer call_data)
     else
 	set_status("Automatic layout off.");
 
-    update_options(NO_UPDATE);
+    update_options();
 }
 
 #else
@@ -797,7 +815,7 @@ void graphToggleAutoLayoutCB(GUI::CheckButton *w)
     else
 	set_status("Automatic layout off.");
 
-    update_options(NO_UPDATE);
+    update_options(true);
 }
 
 #endif
@@ -816,7 +834,7 @@ void graphToggleAutoCloseCB(Widget w, XtPointer, XtPointer call_data)
     else
 	set_status("Automatic closing off.");
 
-    update_options(NO_UPDATE);
+    update_options();
 }
 
 #else
@@ -830,7 +848,7 @@ void graphToggleAutoCloseCB(GUI::CheckButton *w)
     else
 	set_status("Automatic closing off.");
 
-    update_options(NO_UPDATE);
+    update_options(true);
 }
 
 #endif
@@ -913,7 +931,7 @@ void graphSetDisplayPlacementCB(Widget, XtPointer client_data, XtPointer call_da
 	    break;
 	}
 
-	update_options(NO_UPDATE);
+	update_options();
     }
 }
 
@@ -938,7 +956,7 @@ void graphSetDisplayPlacementCB(GUI::RadioButton *w, GUI::Orientation orientatio
 	    break;
 	}
 
-	update_options(NO_UPDATE);
+	update_options(true);
     }
 }
 
@@ -964,7 +982,7 @@ void dddToggleGroupIconifyCB (Widget w, XtPointer, XtPointer call_data)
     else
 	set_status(ddd_windows_are_iconified + "separately.");
 
-    update_options(NO_UPDATE);
+    update_options();
 }
 
 #else
@@ -980,7 +998,7 @@ void dddToggleGroupIconifyCB (GUI::CheckButton *w)
     else
 	set_status(ddd_windows_are_iconified + "separately.");
 
-    update_options(NO_UPDATE);
+    update_options(true);
 }
 
 #endif
@@ -1000,7 +1018,7 @@ void dddToggleUniconifyWhenReadyCB (Widget w, XtPointer, XtPointer call_data)
     else
 	set_status(DDD_NAME " windows always remain iconified.");
 
-    update_options(NO_UPDATE);
+    update_options();
 }
 
 #else
@@ -1015,7 +1033,7 @@ void dddToggleUniconifyWhenReadyCB (GUI::CheckButton *w)
     else
 	set_status(DDD_NAME " windows always remain iconified.");
 
-    update_options(NO_UPDATE);
+    update_options(true);
 }
 
 #endif
@@ -1033,7 +1051,7 @@ void dddSetGlobalTabCompletionCB(Widget w, XtPointer client_data, XtPointer)
     else
 	set_status("TAB key completes in " DDD_NAME " debugger console only.");
 
-    update_options(NO_UPDATE);
+    update_options();
 }
 
 #else
@@ -1049,7 +1067,7 @@ void dddSetGlobalTabCompletionCB(GUI::RadioButton *w, int state)
     else
 	set_status("TAB key completes in " DDD_NAME " debugger console only.");
 
-    update_options(NO_UPDATE);
+    update_options(true);
 }
 
 #endif
@@ -1072,7 +1090,7 @@ void dddToggleSeparateExecWindowCB (Widget w, XtPointer, XtPointer call_data)
 	set_status(debugged_program_will_be_executed_in 
 		   + "the " DDD_NAME " debugger console.");
 
-    update_options(NO_UPDATE);
+    update_options();
 }
 
 #else
@@ -1090,7 +1108,7 @@ void dddToggleSeparateExecWindowCB (GUI::CheckMenuItem *w)
 	set_status(debugged_program_will_be_executed_in 
 		   + "the " DDD_NAME " debugger console.");
 
-    update_options(NO_UPDATE);
+    update_options(true);
 }
 
 #endif
@@ -1109,7 +1127,7 @@ void dddToggleCheckGrabsCB (Widget w, XtPointer, XtPointer call_data)
     else
 	set_status("Not checking for grabs.");
 
-    update_options(NO_UPDATE);
+    update_options();
 }
 
 #else
@@ -1123,7 +1141,7 @@ void dddToggleCheckGrabsCB (GUI::CheckButton *w)
     else
 	set_status("Not checking for grabs.");
 
-    update_options(NO_UPDATE);
+    update_options(true);
 }
 
 #endif
@@ -1142,7 +1160,7 @@ void dddToggleSaveHistoryOnExitCB (Widget, XtPointer, XtPointer call_data)
     else
 	set_status("History will not be saved.");
 
-    update_options(NO_UPDATE);
+    update_options();
 }
 
 #else
@@ -1156,7 +1174,7 @@ void dddToggleSaveHistoryOnExitCB (GUI::CheckButton *w)
     else
 	set_status("History will not be saved.");
 
-    update_options(NO_UPDATE);
+    update_options(true);
 }
 
 #endif
@@ -1175,7 +1193,7 @@ void dddToggleSuppressWarningsCB (Widget w, XtPointer, XtPointer call_data)
     else
 	set_status("X Warnings are not suppressed.");
 
-    update_options(NO_UPDATE);
+    update_options();
 }
 
 #else
@@ -1189,7 +1207,7 @@ void dddToggleSuppressWarningsCB (GUI::CheckButton *w)
     else
 	set_status("X Warnings are not suppressed.");
 
-    update_options(NO_UPDATE);
+    update_options(true);
 }
 
 #endif
@@ -1210,7 +1228,7 @@ void dddToggleWarnIfLockedCB (Widget w, XtPointer, XtPointer call_data)
 	set_status(DDD_NAME " will not warn you "
 		   "when multiple " DDD_NAME " instances are running.");
 
-    update_options(NO_UPDATE);
+    update_options();
 }
 
 #else
@@ -1226,7 +1244,7 @@ void dddToggleWarnIfLockedCB (GUI::CheckButton *w)
 	set_status(DDD_NAME " will not warn you "
 		   "when multiple " DDD_NAME " instances are running.");
 
-    update_options(NO_UPDATE);
+    update_options(true);
 }
 
 #endif
@@ -1289,11 +1307,12 @@ void dddSetBuiltinPlotWindowCB (GUI::RadioButton *w, bool state)
 
 #if defined(IF_XM)
     clear_plot_window_cache();
+    update_options();
 #else
     static int errcnt = 0;
     if (complain && !errcnt++) std::cerr << "clear_plot_window_cache()?\n";
+    update_options(true);
 #endif
-    update_options(NO_UPDATE);
 }
 
 #endif
@@ -1312,7 +1331,7 @@ void dddToggleButtonTipsCB (Widget w, XtPointer, XtPointer call_data)
     else
 	set_status("Button tips disabled.");
 
-    update_options(NO_UPDATE);
+    update_options();
 }
 
 #else
@@ -1326,7 +1345,7 @@ void dddToggleButtonTipsCB (GUI::CheckButton *w)
     else
 	set_status("Button tips disabled.");
 
-    update_options(NO_UPDATE);
+    update_options(true);
 }
 
 #endif
@@ -1345,7 +1364,7 @@ void dddToggleValueTipsCB (Widget w, XtPointer, XtPointer call_data)
     else
 	set_status("Value tips disabled.");
 
-    update_options(NO_UPDATE);
+    update_options();
 }
 
 #else
@@ -1359,7 +1378,7 @@ void dddToggleValueTipsCB (GUI::CheckButton *w)
     else
 	set_status("Value tips disabled.");
 
-    update_options(NO_UPDATE);
+    update_options(true);
 }
 
 #endif
@@ -1378,7 +1397,7 @@ void dddToggleButtonDocsCB (Widget w, XtPointer, XtPointer call_data)
     else
 	set_status("Button docs disabled.");
 
-    update_options(NO_UPDATE);
+    update_options();
 }
 
 #else
@@ -1392,7 +1411,7 @@ void dddToggleButtonDocsCB (GUI::CheckButton *w)
     else
 	set_status("Button docs disabled.");
 
-    update_options(NO_UPDATE);
+    update_options(true);
 }
 
 #endif
@@ -1411,7 +1430,7 @@ void dddToggleValueDocsCB (Widget w, XtPointer, XtPointer call_data)
     else
 	set_status("Value docs disabled.");
 
-    update_options(NO_UPDATE);
+    update_options();
 }
 
 #else
@@ -1425,7 +1444,7 @@ void dddToggleValueDocsCB (GUI::CheckButton *w)
     else
 	set_status("Value docs disabled.");
 
-    update_options(NO_UPDATE);
+    update_options(true);
 }
 
 #endif
@@ -1444,7 +1463,7 @@ void dddToggleSaveOptionsOnExitCB (Widget w, XtPointer, XtPointer call_data)
     else
 	set_status("Current options will not be saved when exiting DDD.");
 
-    update_options(NO_UPDATE);
+    update_options();
 }
 
 #else
@@ -1458,7 +1477,7 @@ void dddToggleSaveOptionsOnExitCB (GUI::CheckMenuItem *w)
     else
 	set_status("Current options will not be saved when exiting DDD.");
 
-    update_options(NO_UPDATE);
+    update_options(true);
 }
 
 #endif
@@ -1602,7 +1621,7 @@ void dddSetSeparateWindowsCB (Widget w, XtPointer client_data, XtPointer)
     else
 	set_status(next_ddd_will_start_with + "one window, two toolbars.");
 
-    update_options(NO_UPDATE);
+    update_options();
     post_startup_warning(w);
 }
 
@@ -1638,7 +1657,7 @@ void dddSetSeparateWindowsCB (GUI::RadioButton *w, int state)
     else
 	set_status(next_ddd_will_start_with + "one window, two toolbars.");
 
-    update_options(NO_UPDATE);
+    update_options(true);
     post_startup_warning(w);
 }
 
@@ -1655,7 +1674,11 @@ void dddSetStatusAtBottomCB (Widget w, XtPointer client_data, XtPointer)
     else
 	set_status(next_ddd_will_start_with + "status line at top.");
 
-    update_options(NO_UPDATE);
+#if defined(IF_XM)
+    update_options();
+#else
+    update_options(true);
+#endif
     post_startup_warning(w);
 }
 
@@ -1673,7 +1696,7 @@ void dddSetToolBarCB (Widget w, XtPointer client_data, XtPointer)
     else
 	set_status(tool_buttons_are_located_in + "command tool.");
 
-    update_options(NO_UPDATE);
+    update_options();
     post_startup_warning(w);
 }
 
@@ -1691,7 +1714,7 @@ void dddSetToolBarCB (GUI::RadioButton *w, bool state)
     else
 	set_status(tool_buttons_are_located_in + "command tool.");
 
-    update_options(NO_UPDATE);
+    update_options(true);
     post_startup_warning(w);
 }
 
@@ -1763,7 +1786,7 @@ void dddSetKeyboardFocusPolicyCB (Widget w, XtPointer client_data, XtPointer)
 	XmProcessTraversal(w, XmTRAVERSE_CURRENT);
     }
 
-    update_options(NO_UPDATE);
+    update_options();
 }
 
 #else
@@ -1787,7 +1810,7 @@ void dddSetPannerCB (Widget w, XtPointer client_data, XtPointer)
     else
 	set_status(next_ddd_will_start_with + "a scrolled graph editor.");
 
-    update_options(NO_UPDATE);
+    update_options();
     post_startup_warning(w);
 }
 
@@ -1802,7 +1825,7 @@ void dddSetPannerCB (GUI::RadioButton *w, bool state)
     else
 	set_status(next_ddd_will_start_with + "a scrolled graph editor.");
 
-    update_options(NO_UPDATE);
+    update_options(true);
     post_startup_warning(w);
 }
 
@@ -1845,7 +1868,7 @@ void dddSetDebuggerCB (Widget w, XtPointer client_data, XtPointer call_data)
 
     report_debugger_type();
 
-    update_options(NO_UPDATE);
+    update_options();
     post_startup_warning(w);
 }
 
@@ -1860,7 +1883,7 @@ void dddSetDebuggerCB (GUI::RadioButton *w, DebuggerType type)
 
     report_debugger_type();
 
-    update_options(NO_UPDATE);
+    update_options(true);
     post_startup_warning(w);
 }
 
@@ -1877,7 +1900,7 @@ void dddToggleAutoDebuggerCB(Widget w, XtPointer, XtPointer call_data)
 
     report_debugger_type();
 
-    update_options(NO_UPDATE);
+    update_options();
     post_startup_warning(w);
 }
 
@@ -1889,7 +1912,7 @@ void dddToggleAutoDebuggerCB(GUI::CheckButton *w)
 
     report_debugger_type();
 
-    update_options(NO_UPDATE);
+    update_options(true);
     post_startup_warning(w);
 }
 
@@ -1920,7 +1943,7 @@ void dddSetCutCopyPasteBindingsCB (Widget, XtPointer client_data, XtPointer call
 	break;
     }
 
-    update_options(NO_UPDATE);
+    update_options();
 }
 
 #else
@@ -1943,7 +1966,7 @@ void dddSetCutCopyPasteBindingsCB (GUI::RadioButton *w, BindingStyle style)
 	break;
     }
 
-    update_options(NO_UPDATE);
+    update_options(true);
 }
 
 #endif
@@ -1973,7 +1996,7 @@ void dddSetSelectAllBindingsCB (Widget, XtPointer client_data, XtPointer call_da
 	break;
     }
 
-    update_options(NO_UPDATE);
+    update_options();
 }
 
 #else
@@ -1996,7 +2019,7 @@ void dddSetSelectAllBindingsCB (GUI::RadioButton *w, BindingStyle style)
 	break;
     }
 
-    update_options(NO_UPDATE);
+    update_options(true);
 }
 
 #endif
@@ -2086,7 +2109,7 @@ static void toggle_button_appearance(Widget w, Boolean& data,
 	msg += " ordinary labels";
     }
 
-    update_options(NO_UPDATE);
+    update_options();
     post_startup_warning(w);
 }
 
@@ -2114,7 +2137,7 @@ static void toggle_button_appearance(GUI::CheckButton *w, Boolean& data)
 	msg += " ordinary labels";
     }
 
-    update_options(NO_UPDATE);
+    update_options(true);
     post_startup_warning(w);
 }
 
@@ -2168,7 +2191,7 @@ void dddToggleFlatButtonsCB(Widget w, XtPointer, XtPointer call_data)
     else
 	set_status(next_ddd_will_start_with + "raised buttons.");
 
-    update_options(NO_UPDATE);
+    update_options();
     post_startup_warning(w);
 }
 
@@ -2186,7 +2209,7 @@ void dddToggleFlatButtonsCB(GUI::CheckButton *w)
     else
 	set_status(next_ddd_will_start_with + "raised buttons.");
 
-    update_options(NO_UPDATE);
+    update_options(true);
     post_startup_warning(w);
 }
 
@@ -2235,7 +2258,7 @@ void dddToggleColorButtonsCB(Widget w, XtPointer, XtPointer call_data)
     else			// indeterminate
 	set_status(next_ddd_will_start_with + "grey/color buttons.");
 
-    update_options(NO_UPDATE);
+    update_options();
     post_startup_warning(w);
 }
 
@@ -2260,7 +2283,7 @@ void dddToggleColorButtonsCB(GUI::CheckButton *w)
     else			// indeterminate
 	set_status(next_ddd_will_start_with + "grey/color buttons.");
 
-    update_options(NO_UPDATE);
+    update_options(true);
     post_startup_warning(w);
 }
 
@@ -2280,7 +2303,7 @@ void dddToggleToolbarsAtBottomCB(Widget w, XtPointer, XtPointer call_data)
     else
 	set_status(next_ddd_will_start_with + "toolbars at top.");
 
-    update_options(NO_UPDATE);
+    update_options();
     post_startup_warning(w);
 }
 
@@ -2295,7 +2318,7 @@ void dddToggleToolbarsAtBottomCB(GUI::CheckButton *w)
     else
 	set_status(next_ddd_will_start_with + "toolbars at top.");
 
-    update_options(NO_UPDATE);
+    update_options(true);
     post_startup_warning(w);
 }
 
@@ -2895,6 +2918,8 @@ inline const _XtString str(const _XtString s)
     return s != 0 ? s : "";
 }
 
+#if defined(IF_XM)
+
 static Boolean done_if_idle(XtPointer data)
 {
     if (emptyCommandQueue() && can_do_gdb_command())
@@ -2909,13 +2934,31 @@ static Boolean done_if_idle(XtPointer data)
     return False;		// Get called again
 }
 
+#else
+
+static bool done_if_idle(Delay *data)
+{
+    if (emptyCommandQueue() && can_do_gdb_command())
+    {
+	update_settings();	// Refresh settings and signals
+	update_signals();
+
+	delete data;
+	return false;		// Remove from the list of work procs
+    }
+
+    return true;		// Get called again
+}
+
+#endif
+
 static void done(const string&, void *data)
 {
 #if defined(IF_XM)
     XtAppAddWorkProc(XtWidgetToApplicationContext(command_shell),
 		     done_if_idle, data);
 #else
-    Glib::signal_idle().connect(sigc::bind(PTR_FUN(done_if_idle), data));
+    GUI::signal_idle().connect(sigc::bind(sigc::ptr_fun(done_if_idle), (Delay *)data));
 #endif
 }
 
@@ -3151,17 +3194,15 @@ void check_options_file()
 	XtAppAddTimeOut(XtWidgetToApplicationContext(find_shell()), 0,
 			CheckOptionsFileCB, XtPointer(0));
 #else
-    if (check_options_timer != NO_TIMER) {
+    if (check_options_timer) {
 	check_options_timer.disconnect();
-	check_options_timer = NO_TIMER;
     }
-    if (check_options_idle != NO_TIMER) {
+    if (check_options_idle) {
 	check_options_idle.disconnect();
-	check_options_idle = NO_TIMER;
     }
 
     check_options_idle = 
-	Glib::signal_idle().connect(PTR_FUN(CheckOptionsFileCB));
+	GUI::signal_idle().connect(sigc::ptr_fun(CheckOptionsFileCB));
 #endif
 }
 

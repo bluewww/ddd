@@ -231,17 +231,21 @@ class DataDisp {
     static void RefreshAddrCB (XtPointer, XtIntervalId *);
 
     static void RefreshAddr   (DispNode *, bool=false);
+
+    static XtIntervalId refresh_args_timer;
+    static XtIntervalId refresh_graph_edit_timer;
+    static XtIntervalId refresh_addr_timer;
 #else
     static bool RefreshGraphEditCB(GraphEditLayoutState *);
     static bool RefreshArgsCB (void);
     static bool RefreshAddrCB (DispNode *);
 
     static bool RefreshAddr   (DispNode *, bool=false);
-#endif
 
-    static XtIntervalId refresh_args_timer;
-    static XtIntervalId refresh_graph_edit_timer;
-    static XtIntervalId refresh_addr_timer;
+    static GUI::connection refresh_args_timer;
+    static GUI::connection refresh_graph_edit_timer;
+    static GUI::connection refresh_addr_timer;
+#endif
 
     //-----------------------------------------------------------------------
     // Sorting nodes for layout

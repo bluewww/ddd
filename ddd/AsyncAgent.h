@@ -56,7 +56,7 @@
 
 #include "assert.h"
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include <X11/Intrinsic.h>
 #endif
 
@@ -147,14 +147,14 @@ private:
 #if defined(IF_XM)
     XtInputId _ids[AsyncAgent_NHandlers];	       // their ids
 #else
-    sigc::connection _ids[AsyncAgent_NHandlers];       // their ids
+    GUI::connection _ids[AsyncAgent_NHandlers];       // their ids
 #endif
 
     AsyncAgentWorkProc *workProcs;	// working procedures
 
     // dispatch event
     void dispatch(
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	int *fid, XtInputId *inputId
 #else
 	int type
@@ -165,10 +165,14 @@ private:
     int new_status;
     bool status_change_pending;
 
+#if defined(IF_XM)
 #if ASYNC_CHILD_STATUS_CHANGE
     XtSignalId signal_id;
 #else
     XtIntervalId signal_id;		// Just for padding
+#endif
+#else
+    GUI::connection signal_id;		// Just for padding
 #endif
 
     bool killing_asynchronously;
@@ -230,7 +234,7 @@ protected:
     }
 #else
     // resources
-    sigc::connection id(unsigned type) const
+    GUI::connection id(unsigned type) const
     {
 	assert(type < AsyncAgent_NHandlers);
 	return _ids[type]; 
@@ -368,7 +372,7 @@ public:
     AsyncAgent(const AsyncAgent& c):
 	Agent(c), _appContext(c.appContext()), workProcs(0), 
 	new_status(0), status_change_pending(false),
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	signal_id(0),
 #endif
 	killing_asynchronously(false)

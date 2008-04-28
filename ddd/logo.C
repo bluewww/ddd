@@ -33,7 +33,7 @@ char logo_rcsid[] =
 #include "logo.h"
 #include "config.h"
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 
 #include "Xpm.h"
 
@@ -54,7 +54,7 @@ char logo_rcsid[] =
 #include "icons/dddsplash.xbm"
 
 // X pixmaps
-#if defined(XpmVersion) || !defined(IF_MOTIF)
+#if defined(XpmVersion) || !defined(IF_XM)
 
 // To avoid compilation warnings, make all char *'s constant
 // We cannot do this in the XPM file since this violates XPM format specs
@@ -72,7 +72,7 @@ static const char **ddd_xpm = 0;
 
 #include <iostream>
 #include <string.h>
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include <X11/Xlib.h>
 #include <X11/StringDefs.h>
 #include <Xm/Xm.h>
@@ -87,7 +87,7 @@ static const char **ddd_xpm = 0;
 #endif
 
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 
 //-----------------------------------------------------------------------------
 // DDD logo
@@ -384,7 +384,7 @@ Pixmap dddsplash(Widget w, const string& color_key,
 #include "icons/toolbar/unwatch.xbmxx"
 #include "icons/toolbar/watch.xbmxx"
 
-#if defined(XpmVersion) || !defined(IF_MOTIF)
+#if defined(XpmVersion) || !defined(IF_XM)
 
 // To avoid compilation warnings, make all char *'s constant
 // We cannot do this in the XPM file since this violates XPM format specs
@@ -505,37 +505,7 @@ static const char **unwatch_xx_xpm     = 0;
 static const char **watch_xx_xpm       = 0;
 #endif // !XpmVersion
 
-#if !defined(IF_MOTIF)
-
-XIMAGE_P DDD_ICON[1];
-XIMAGE_P BREAK_AT_ICON[4];
-XIMAGE_P CLEAR_AT_ICON[4];
-XIMAGE_P CLUSTER_ICON[4];
-XIMAGE_P DELETE_ICON[4];
-XIMAGE_P DISABLE_ICON[4];
-XIMAGE_P DISPREF_ICON[4];
-XIMAGE_P DISPLAY_ICON[4];
-XIMAGE_P ENABLE_ICON[4];
-XIMAGE_P FIND_BACKWARD_ICON[4];
-XIMAGE_P FIND_FORWARD_ICON[4];
-XIMAGE_P HIDE_ICON[4];
-XIMAGE_P LOOKUP_ICON[4];
-XIMAGE_P MAKETEMP_ICON[4];
-XIMAGE_P NEW_BREAK_ICON[4];
-XIMAGE_P NEW_DISPLAY_ICON[4];
-XIMAGE_P NEW_WATCH_ICON[4];
-XIMAGE_P PLOT_ICON[4];
-XIMAGE_P PRINT_ICON[4];
-XIMAGE_P PROPERTIES_ICON[4];
-XIMAGE_P ROTATE_ICON[4];
-XIMAGE_P SET_ICON[4];
-XIMAGE_P SHOW_ICON[4];
-XIMAGE_P UNCLUSTER_ICON[4];
-XIMAGE_P UNDISPLAY_ICON[4];
-XIMAGE_P UNWATCH_ICON[4];
-XIMAGE_P WATCH_ICON[4];
-
-#endif
+#if !defined(IF_XM)
 
 #if defined(IF_XMMM)
 
@@ -567,9 +537,41 @@ GUI::ImageHandle UNDISPLAY_ICON[4] = {"undisplay", "undisplay-xx", "undisplay-ar
 GUI::ImageHandle UNWATCH_ICON[4] = {"unwatch", "unwatch-xx", "unwatch-arm", "unwatch-hi"};
 GUI::ImageHandle WATCH_ICON[4] = {"watch", "watch-xx", "watch-arm", "watch-hi"};
 
+#else
+
+GUI::ImageHandle DDD_ICON[1];
+GUI::ImageHandle BREAK_AT_ICON[4];
+GUI::ImageHandle CLEAR_AT_ICON[4];
+GUI::ImageHandle CLUSTER_ICON[4];
+GUI::ImageHandle DELETE_ICON[4];
+GUI::ImageHandle DISABLE_ICON[4];
+GUI::ImageHandle DISPREF_ICON[4];
+GUI::ImageHandle DISPLAY_ICON[4];
+GUI::ImageHandle ENABLE_ICON[4];
+GUI::ImageHandle FIND_BACKWARD_ICON[4];
+GUI::ImageHandle FIND_FORWARD_ICON[4];
+GUI::ImageHandle HIDE_ICON[4];
+GUI::ImageHandle LOOKUP_ICON[4];
+GUI::ImageHandle MAKETEMP_ICON[4];
+GUI::ImageHandle NEW_BREAK_ICON[4];
+GUI::ImageHandle NEW_DISPLAY_ICON[4];
+GUI::ImageHandle NEW_WATCH_ICON[4];
+GUI::ImageHandle PLOT_ICON[4];
+GUI::ImageHandle PRINT_ICON[4];
+GUI::ImageHandle PROPERTIES_ICON[4];
+GUI::ImageHandle ROTATE_ICON[4];
+GUI::ImageHandle SET_ICON[4];
+GUI::ImageHandle SHOW_ICON[4];
+GUI::ImageHandle UNCLUSTER_ICON[4];
+GUI::ImageHandle UNDISPLAY_ICON[4];
+GUI::ImageHandle UNWATCH_ICON[4];
+GUI::ImageHandle WATCH_ICON[4];
+
 #endif
 
-#if defined(IF_MOTIF)
+#endif
+
+#if defined(IF_XM)
 
 static char get_sign(string& g)
 {
@@ -665,23 +667,15 @@ static XImage *get_button_subimage(XImage *image, const _XtString name)
 
 #endif
 
-static void install_icon(
 #if defined(IF_XM)
-			 Widget w,
+
+static void install_icon(Widget w,
 			 const _XtString name,
-#else
-			 GUI::Widget *w,
-			 GUI::ImageHandle &name,
-#endif
 			 const char **xpm_data, 
 			 const unsigned char *xbm_data,
 			 int width, int height,
 			 const string& color_key,
-#if defined(IF_XM)
 			 ImageColor background,
-#else
-			 GUI::Color background,
-#endif
 			 const XWindowAttributes& win_attr,
 			 bool is_button = false)
 {
@@ -745,15 +739,10 @@ static void install_icon(
     (void) win_attr;
 #endif // !defined(XpmVersion)
 
-#if defined(IF_MOTIF)
     // Install the bitmap version
-    XIMAGE_P image = CreateImageFromBitmapData((unsigned char *)xbm_data, 
+    XImage *image = CreateImageFromBitmapData((unsigned char *)xbm_data, 
 					      width, height);
-#else
-    XIMAGE_P image = Gdk::Pixbuf::create_from_xpm_data(xpm_data);
-#endif
 
-#if defined(IF_MOTIF)
     if (is_button)
     {
 	XImage *subimage = get_button_subimage(image, name);
@@ -765,22 +754,42 @@ static void install_icon(
 	    image = subimage;
 	}
     }
-#else
-#ifdef NAG_ME
-#warning Subimage - not used
-#endif
-#endif
 
     Boolean ok = InstallImage(image, name);
     if (ok)
 	return;
 
-#if defined(IF_MOTIF)
     std::cerr << "Could not install " << quote(name) << " bitmap\n";
     if (image != 0)
 	XDestroyImage(image);
-#endif
 }
+
+#else
+
+static void install_icon(GUI::Widget *w,
+			 GUI::ImageHandle &name,
+			 const char **xpm_data, 
+			 const unsigned char *xbm_data,
+			 int width, int height,
+			 const string& color_key,
+			 GUI::Color background,
+			 const XWindowAttributes& win_attr,
+			 bool is_button = false)
+{
+    (void) w;
+    (void) xpm_data;
+    (void) color_key;
+    (void) background;
+    (void) win_attr;
+
+    GUI::ImageHandle image = Gdk::Pixbuf::create_from_xpm_data(xpm_data);
+
+    std::cerr << "install_icon, subimage not used.\n";
+
+    InstallImage(image, name);
+}
+
+#endif
 
 static void install_button_icon(
 #if defined(IF_XM)
@@ -888,7 +897,7 @@ void install_icons(GUI::Widget *shell,
 
     // Determine attributes
     XWindowAttributes win_attr;
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     XGetWindowAttributes(XtDisplay(shell), 
 			 RootWindowOfScreen(XtScreen(shell)),
 			 &win_attr);
@@ -1126,7 +1135,7 @@ void set_label(GUI::Widget *w, const GUI::String& new_label, GUI::ImageHandle *i
     if (w == 0)
 	return;
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     assert(XtIsSubclass(w, xmLabelWidgetClass));
 
     XmString old_label = 0;
@@ -1204,13 +1213,10 @@ void set_label(GUI::Widget *w, const GUI::String& new_label, GUI::ImageHandle *i
 	Gtk::Image *old_img = child?dynamic_cast<Gtk::Image *>(child):NULL;
 	Gtk::Label *old_lab = child?dynamic_cast<Gtk::Label *>(child):NULL;
 	if (image && !old_lab) {
-#ifdef NAG_ME
-#warning HOW TO SET DIFFERENT PIXMAPS FOR STATES
-#endif
-	    XIMAGE_P p1 = image[0];
-	    XIMAGE_P p2 = image[1];
-	    XIMAGE_P p3 = image[2];
-	    XIMAGE_P p4 = image[3];
+	    GUI::ImageHandle p1 = image[0];
+	    GUI::ImageHandle p2 = image[1];
+	    GUI::ImageHandle p3 = image[2];
+	    GUI::ImageHandle p4 = image[3];
 	    if (p1)
 	    {
 		Gtk::Image *img = new Gtk::Image(p1);
@@ -1232,7 +1238,7 @@ void set_label(GUI::Widget *w, const GUI::String& new_label, GUI::ImageHandle *i
 #endif
 }
 
-#if !defined(IF_MOTIF)
+#if !defined(IF_XM)
 GUI::String
 get_label(Gtk::Widget *w)
 {

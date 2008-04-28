@@ -31,9 +31,9 @@ char gdbinit_rcsid[] =
 
 #include "gdbinit.h"
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 #include <X11/Intrinsic.h>
-#endif // IF_MOTIF
+#endif
 #include <iostream>
 #include <fstream>
 #include <ctype.h>
@@ -189,9 +189,9 @@ GDBAgent *new_gdb(DebuggerType type,
 
 // Show call in output window
 static void EchoTextCB(XtPointer client_data
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 		       , XtIntervalId *
-#endif // IF_MOTIF
+#endif
     )
 {
     const string& gdb_call = *((const string *)client_data);
@@ -247,14 +247,14 @@ static void InvokeGDBFromShellHP(Agent *source, void *client_data,
 	    gdb->write(gdb_call.chars(), gdb_call.length());
 
 	    // Echoing should be disabled by now.  Echo call manually...
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 
 			    0, EchoTextCB, (XtPointer)client_data);
-#else // NOT IF_MOTIF
-	    Glib::signal_idle().connect(sigc::bind_return(sigc::bind(PTR_FUN(EchoTextCB),
-								     client_data),
-							  false));
-#endif // IF_MOTIF
+#else
+	    GUI::signal_idle().connect(sigc::bind_return(sigc::bind(sigc::ptr_fun(EchoTextCB),
+								    client_data),
+							 false));
+#endif
 
 	    // ... and don't get called again.
 	    gdb->removeHandler(Input, InvokeGDBFromShellHP, client_data);

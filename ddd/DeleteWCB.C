@@ -33,25 +33,23 @@ char DeleteWindowCallBack_rcsid[] =
 #include "config.h"
 #endif
 
+#include <iostream>
+
 #include "DeleteWCB.h"
 #include "casts.h"
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 #include <Xm/Xm.h>
 #include <Xm/AtomMgr.h>
 #include <Xm/Protocols.h>
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
+
 extern void AddDeleteWindowCallback(Widget shell,
 				    XtCallbackProc callback, 
 				    XtPointer closure)
-#else // NOT IF_MOTIF
-extern void AddDeleteWindowCallback(Widget shell,
-				    GTK_SLOT_ callback)
-#endif // IF_MOTIF
 {
-#ifdef IF_MOTIF
     static Atom WM_DELETE_WINDOW =
 	XmInternAtom(XtDisplay(shell), XMST("WM_DELETE_WINDOW"), False);
 
@@ -63,12 +61,15 @@ extern void AddDeleteWindowCallback(Widget shell,
     
     XmAddProtocolCallback(shell, WM_PROTOCOLS, WM_DELETE_WINDOW, 
 			  callback, closure);
-#else // NOT IF_MOTIF
-#ifdef NAG_ME
-#warning Does this capture all WM delete events?
-#endif
-    // sigc::hide<0> discards the GdkEventAny argument.
-    // sigc::bind_return provides a return value.
-    shell->signal_delete_event().connect(sigc::hide<0>(sigc::bind_return(callback, false)));
-#endif // IF_MOTIF
 }
+
+#else
+
+extern void AddDeleteWindowCallback(GUI::Widget *shell,
+				    sigc::slot<void> callback)
+{
+    std::cerr << "AddDeleteWindowCallback on " << shell->get_name() << "\n";
+    shell->internal()->signal_delete_event().connect(sigc::hide<0>(sigc::bind_return(callback, false)));
+}
+
+#endif

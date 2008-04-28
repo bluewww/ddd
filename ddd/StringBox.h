@@ -42,6 +42,13 @@
 #include <GUI/Widget.h>
 #endif
 
+#if defined(IF_XM)
+#define DEFAULT_FONT_NAME "fixed"
+#else
+#define DEFAULT_FONT_NAME "Monospace 12"
+#endif
+
+
 // StringBox
 
 class StringBox: public PrimitiveBox {

@@ -75,18 +75,25 @@ bool gdb_input_at_prompt = false;
 // Helpers
 //-----------------------------------------------------------------------------
 
+#if defined(IF_XM)
+
 static void move_to_end_of_line(XtPointer, XtIntervalId *)
 {
-#if defined(IF_XM)
     XmTextPosition pos = XmTextGetLastPosition(gdb_w);
     XmTextSetInsertionPosition(gdb_w, pos);
     XmTextShowPosition(gdb_w, pos);
+}
+
 #else
+
+static void move_to_end_of_line(void *, GUI::connection *)
+{
     long pos = gdb_w->get_last_position();
     gdb_w->set_insertion_position(pos);
     gdb_w->show_position(pos);
-#endif
 }
+
+#endif
 
 #if defined(IF_XM)
 
@@ -152,6 +159,8 @@ string current_line()
     return input;
 }
 
+#if defined(IF_XM)
+
 // Helpers
 static void clear_isearch_after_motion(XtPointer, XtIntervalId *)
 {
@@ -162,6 +171,21 @@ static void set_isearch_motion_ok(XtPointer client_data, XtIntervalId *)
 {
     isearch_motion_ok = bool((long)client_data);
 }
+
+#else
+
+// Helpers
+static void clear_isearch_after_motion()
+{
+    clear_isearch(false);
+}
+
+static void set_isearch_motion_ok(bool client_data)
+{
+    isearch_motion_ok = client_data;
+}
+
+#endif
 
 #if defined(IF_XM)
 
@@ -296,6 +320,8 @@ static void show_isearch()
 
 #endif
 
+#if defined(IF_XM)
+
 // When i-search is done, show history position given in client_data
 static void isearch_done(XtPointer client_data, XtIntervalId *)
 {
@@ -313,6 +339,25 @@ static void isearch_done(XtPointer client_data, XtIntervalId *)
     show_isearch();
 }
 
+#else
+
+// When i-search is done, show history position given in client_data
+static void isearch_done(int history)
+{
+    if (history >= 0)
+    {
+	bool old_private_gdb_output = private_gdb_output;
+	private_gdb_output = true;
+	goto_history(history);
+	have_isearch_line = false;
+	private_gdb_output = old_private_gdb_output;
+    }
+
+    show_isearch();
+}
+
+#endif
+
 static void isearch_again(ISearchState new_isearch_state, XEvent *event)
 {
     if (!gdb->isReadyWithPrompt())
@@ -325,15 +370,19 @@ static void isearch_again(ISearchState new_isearch_state, XEvent *event)
     {
 	// Same state - search again
 	int history = search_history(isearch_string, int(isearch_state), true);
-	if (history < 0) {
 #if defined(IF_XM)
+	if (history < 0) {
 	    XtCallActionProc(gdb_w, "beep", event, 0, 0);
-#else
-	    std::cerr << "BEEP!\n";
-#endif
 	}
 	else
 	    isearch_done(XtPointer(history), 0);
+#else
+	if (history < 0) {
+	    std::cerr << "BEEP!\n";
+	}
+	else
+	    isearch_done(history);
+#endif
     }
     else
     {

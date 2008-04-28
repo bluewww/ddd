@@ -68,7 +68,8 @@ char plotter_rcsid[] =
 #include <stdio.h>
 #include <fstream>
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
+
 #include <Xm/Command.h>
 #include <Xm/MainW.h>
 #include <Xm/MessageB.h>
@@ -81,6 +82,11 @@ char plotter_rcsid[] =
 #include <Xm/Text.h>
 #include <Xm/TextF.h>
 #include <Xm/ToggleB.h>
+
+#else
+
+#include <GUI/Entry.h>
+
 #endif
 
 static void TraceInputHP (Agent *source, void *, void *call_data);
@@ -183,69 +189,146 @@ private:
 
 static MMDesc file_menu[] = 
 {
-    MENTRYL("command", "command", MMPush, BIND_0(PTR_FUN(PlotCommandCB)), 0, 0),
+    GENTRYL("command", "command", MMPush,
+	    BIND(PlotCommandCB, 0),
+	    sigc::bind(sigc::ptr_fun(PlotCommandCB), NULL),
+	    0, 0),
     MMSep,
-    MENTRYL("replot", "replot",   MMPush, BIND_0(PTR_FUN(ReplotCB)), 0, 0),
-    MENTRYL("print", "print",     MMPush, BIND_0(PTR_FUN(SelectAndPrintPlotCB)), 0, 0),
-    MENTRYL("export", "export",   MMPush, BIND_0(PTR_FUN(ExportPlotCB)), 0, 0),
+    GENTRYL("replot", "replot",   MMPush,
+	    BIND(ReplotCB, 0),
+	    sigc::bind(sigc::ptr_fun(ReplotCB), NULL),
+	    0, 0),
+    GENTRYL("print", "print",     MMPush,
+	    BIND(SelectAndPrintPlotCB, 0),
+	    sigc::bind(sigc::ptr_fun(SelectAndPrintPlotCB), NULL),
+	    0, 0),
+    GENTRYL("export", "export",   MMPush,
+	    BIND(ExportPlotCB, 0),
+	    sigc::bind(sigc::ptr_fun(ExportPlotCB), NULL),
+	    0, 0),
     MMSep,
-    MENTRYL("close", "close",     MMPush, BIND_0(PTR_FUN(CancelPlotCB)), 0, 0),
-    MENTRYL("exit", "exit",       MMPush, BIND_1(PTR_FUN(DDDExitCB), EXIT_SUCCESS), 0, 0),
+    GENTRYL("close", "close",     MMPush,
+	    BIND(CancelPlotCB, 0),
+	    sigc::bind(sigc::ptr_fun(CancelPlotCB), NULL),
+	    0, 0),
+    GENTRYL("exit", "exit",       MMPush,
+	    BIND(DDDExitCB, EXIT_SUCCESS),
+	    sigc::bind(sigc::ptr_fun(DDDExitCB), EXIT_SUCCESS),
+	    0, 0),
     MMEnd
 };
 
 static MMDesc view_menu[] = 
 {
-    MENTRYL("border", "border",       MMToggle, BIND_0(PTR_FUN(ToggleOptionCB)), 0, 0),
-    MENTRYL("time", "time",           MMToggle, BIND_0(PTR_FUN(ToggleOptionCB)), 0, 0),
+    GENTRYL("border", "border",       MMToggle,
+	    BIND(ToggleOptionCB, 0),
+	    sigc::bind(sigc::ptr_fun(ToggleOptionCB), NULL),
+	    0, 0),
+    GENTRYL("time", "time",           MMToggle,
+	    BIND(ToggleOptionCB, 0),
+	    sigc::bind(sigc::ptr_fun(ToggleOptionCB), NULL),
+	    0, 0),
     MMSep,
-    MENTRYL("grid", "grid",           MMToggle, BIND_0(PTR_FUN(ToggleOptionCB)), 0, 0),
-    MENTRYL("xzeroaxis", "xzeroaxis", MMToggle, BIND_0(PTR_FUN(ToggleOptionCB)), 0, 0),
-    MENTRYL("yzeroaxis", "yzeroaxis", MMToggle, BIND_0(PTR_FUN(ToggleOptionCB)), 0, 0),
+    GENTRYL("grid", "grid",           MMToggle,
+	    BIND(ToggleOptionCB, 0),
+	    sigc::bind(sigc::ptr_fun(ToggleOptionCB), NULL),
+	    0, 0),
+    GENTRYL("xzeroaxis", "xzeroaxis", MMToggle,
+	    BIND(ToggleOptionCB, 0),
+	    sigc::bind(sigc::ptr_fun(ToggleOptionCB), NULL),
+	    0, 0),
+    GENTRYL("yzeroaxis", "yzeroaxis", MMToggle,
+	    BIND(ToggleOptionCB, 0),
+	    sigc::bind(sigc::ptr_fun(ToggleOptionCB), NULL),
+	    0, 0),
     MMEnd
 };
 
 static MMDesc contour_menu[] = 
 {
-    MENTRYL("base", "base",           MMToggle, BIND_0(PTR_FUN(SetContourCB)), 0, 0),
-    MENTRYL("surface", "surface",     MMToggle, BIND_0(PTR_FUN(SetContourCB)), 0, 0),
+    GENTRYL("base", "base",           MMToggle,
+	    BIND(SetContourCB, 0),
+	    sigc::bind(sigc::ptr_fun(SetContourCB), NULL),
+	    0, 0),
+    GENTRYL("surface", "surface",     MMToggle,
+	    BIND(SetContourCB, 0),
+	    sigc::bind(sigc::ptr_fun(SetContourCB), NULL),
+	    0, 0),
     MMEnd
 };
 
 static MMDesc scale_menu[] = 
 {
-    MENTRYL("logscale", "logscale",   MMToggle, BIND_0(PTR_FUN(ToggleLogscaleCB)), 0, 0),
+    GENTRYL("logscale", "logscale",   MMToggle,
+	    BIND(ToggleLogscaleCB, 0),
+	    sigc::bind(sigc::ptr_fun(ToggleLogscaleCB), NULL),
+	    0, 0),
     MMSep,
-    MENTRYL("xtics", "xtics",         MMToggle, BIND_0(PTR_FUN(ToggleOptionCB)), 0, 0),
-    MENTRYL("ytics", "ytics",         MMToggle, BIND_0(PTR_FUN(ToggleOptionCB)), 0, 0),
-    MENTRYL("ztics", "ztics",         MMToggle, BIND_0(PTR_FUN(ToggleOptionCB)), 0, 0),
+    GENTRYL("xtics", "xtics",         MMToggle,
+	    BIND(ToggleOptionCB, 0),
+	    sigc::bind(sigc::ptr_fun(ToggleOptionCB), NULL),
+	    0, 0),
+    GENTRYL("ytics", "ytics",         MMToggle,
+	    BIND(ToggleOptionCB, 0),
+	    sigc::bind(sigc::ptr_fun(ToggleOptionCB), NULL),
+	    0, 0),
+    GENTRYL("ztics", "ztics",         MMToggle,
+	    BIND(ToggleOptionCB, 0),
+	    sigc::bind(sigc::ptr_fun(ToggleOptionCB), NULL),
+	    0, 0),
     MMEnd
 };
 
 static MMDesc plot_menu[] = 
 {
-    MENTRYL("points", "points",              MMToggle, BIND_0(PTR_FUN(SetStyleCB)), 0, 0),
-    MENTRYL("lines", "lines",                MMToggle, BIND_0(PTR_FUN(SetStyleCB)), 0, 0),
-    MENTRYL("lines3d", "lines3d",            MMToggle, BIND_0(PTR_FUN(SetStyleCB)), 0, 0),
-    MENTRYL("linespoints", "linespoints",    MMToggle, BIND_0(PTR_FUN(SetStyleCB)), 0, 0),
-    MENTRYL("linespoints3d", "linespoints3d",  MMToggle | MMUnmanaged, 
-	   BIND_0(PTR_FUN(SetStyleCB)), 0, 0),
-    MENTRYL("impulses", "impulses",          MMToggle, BIND_0(PTR_FUN(SetStyleCB)), 0, 0),
-    MENTRYL("dots", "dots",                  MMToggle, BIND_0(PTR_FUN(SetStyleCB)), 0, 0),
-    MENTRYL("steps2d", "steps2d",            MMToggle, BIND_0(PTR_FUN(SetStyleCB)), 0, 0),
-    MENTRYL("boxes2d", "boxes2d",            MMToggle, BIND_0(PTR_FUN(SetStyleCB)), 0, 0),
+    GENTRYL("points", "points",              MMToggle,
+	    BIND(SetStyleCB, 0),
+	    sigc::bind(sigc::ptr_fun(SetStyleCB), NULL),
+	    0, 0),
+    GENTRYL("lines", "lines",                MMToggle,
+	    BIND(SetStyleCB, 0),
+	    sigc::bind(sigc::ptr_fun(SetStyleCB), NULL),
+	    0, 0),
+    GENTRYL("lines3d", "lines3d",            MMToggle,
+	    BIND(SetStyleCB, 0),
+	    sigc::bind(sigc::ptr_fun(SetStyleCB), NULL),
+	    0, 0),
+    GENTRYL("linespoints", "linespoints",    MMToggle,
+	    BIND(SetStyleCB, 0),
+	    sigc::bind(sigc::ptr_fun(SetStyleCB), NULL),
+	    0, 0),
+    GENTRYL("linespoints3d", "linespoints3d",  MMToggle | MMUnmanaged, 
+	    BIND(SetStyleCB, 0),
+	    sigc::bind(sigc::ptr_fun(SetStyleCB), NULL),
+	    0, 0),
+    GENTRYL("impulses", "impulses",          MMToggle,
+	    BIND(SetStyleCB, 0),
+	    sigc::bind(sigc::ptr_fun(SetStyleCB), NULL),
+	    0, 0),
+    GENTRYL("dots", "dots",                  MMToggle,
+	    BIND(SetStyleCB, 0),
+	    sigc::bind(sigc::ptr_fun(SetStyleCB), NULL),
+	    0, 0),
+    GENTRYL("steps2d", "steps2d",            MMToggle,
+	    BIND(SetStyleCB, 0),
+	    sigc::bind(sigc::ptr_fun(SetStyleCB), NULL),
+	    0, 0),
+    GENTRYL("boxes2d", "boxes2d",            MMToggle,
+	    BIND(SetStyleCB, 0),
+	    sigc::bind(sigc::ptr_fun(SetStyleCB), NULL),
+	    0, 0),
     MMEnd
 };
 
 static MMDesc menubar[] = 
 {
-    MENTRYL("file", "file",         MMMenu,          MMNoCB, file_menu,        0),
-    MENTRYL("edit", "edit",         MMMenu,          MMNoCB, simple_edit_menu, 0),
-    MENTRYL("plotView", "plotView", MMMenu,          MMNoCB, view_menu,        0),
-    MENTRYL("plot", "plot",         MMRadioMenu,     MMNoCB, plot_menu,        0),
-    MENTRYL("scale", "scale",       MMMenu,          MMNoCB, scale_menu,       0),
-    MENTRYL("contour", "contour",   MMMenu,          MMNoCB, contour_menu,     0),
-    MENTRYL("help", "help",         MMMenu | MMHelp, MMNoCB, simple_help_menu, 0),
+    GENTRYL("file", "file",         MMMenu,          MMNoCB, MDUMMY, file_menu,        0),
+    GENTRYL("edit", "edit",         MMMenu,          MMNoCB, MDUMMY, simple_edit_menu, 0),
+    GENTRYL("plotView", "plotView", MMMenu,          MMNoCB, MDUMMY, view_menu,        0),
+    GENTRYL("plot", "plot",         MMRadioMenu,     MMNoCB, MDUMMY, plot_menu,        0),
+    GENTRYL("scale", "scale",       MMMenu,          MMNoCB, MDUMMY, scale_menu,       0),
+    GENTRYL("contour", "contour",   MMMenu,          MMNoCB, MDUMMY, contour_menu,     0),
+    GENTRYL("help", "help",         MMMenu | MMHelp, MMNoCB, MDUMMY, simple_help_menu, 0),
     MMEnd
 };
 
@@ -1012,6 +1095,8 @@ static void popdown_plot_shell(PlotWindowInfo *plot)
     entered = false;
 }
 
+#if defined(IF_XM)
+
 static void CancelPlotCB(Widget, XtPointer client_data, XtPointer)
 {
     static bool entered = false;
@@ -1047,17 +1132,73 @@ static void CancelPlotCB(Widget, XtPointer client_data, XtPointer)
     entered = false;
 }
 
+#else
+
+static void CancelPlotCB(PlotWindowInfo *plot)
+{
+    static bool entered = false;
+    if (entered)
+	return;
+
+    entered = true;
+
+    popdown_plot_shell(plot);
+
+    std::cerr << "Remove all callbacks!\n";
+#if 0
+    if (plot->swallower != 0)
+    {
+	// Don't wait for window to swallow
+	XtRemoveAllCallbacks(plot->swallower, XtNwindowCreatedCallback);
+	XtRemoveAllCallbacks(plot->swallower, XtNwindowGoneCallback);
+    }
+#endif
+
+    if (plot->swallow_timer)
+    {
+	plot->swallow_timer.disconnect();
+    }
+
+    if (plot->plotter != 0)
+    {
+	// Terminate plotter
+	plot->plotter->removeHandler(Died, PlotterNotFoundHP, plot);
+	plot->plotter->terminate();
+	plot->plotter = 0;
+    }
+
+    entered = false;
+}
+
+#endif
+
+#if defined(IF_XM)
+
 static void DeletePlotterCB(XtPointer client_data, XtIntervalId *)
 {
     Agent *plotter = (Agent *)client_data;
     delete plotter;
 }
 
+#else
+
+static bool DeletePlotterCB(Agent *plotter)
+{
+    delete plotter;
+    return false;
+}
+
+#endif
+
 static void DeletePlotterHP(Agent *plotter, void *client_data, void *)
 {
     // Plotter has died - delete memory
+#if defined(IF_XM)
     XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0, 
 		    DeletePlotterCB, XtPointer(plotter));
+#else
+    GUI::signal_idle().connect(sigc::bind(sigc::ptr_fun(DeletePlotterCB), plotter));
+#endif
 
     plotter->removeHandler(Died, DeletePlotterHP, client_data);
 
@@ -1441,6 +1582,8 @@ static void ReplotCB(Widget, XtPointer client_data, XtPointer)
 // Command
 //-------------------------------------------------------------------------
 
+#if defined(IF_XM)
+
 // Selection from Command widget
 static void DoPlotCommandCB(Widget, XtPointer client_data, XtPointer call_data)
 {
@@ -1452,6 +1595,19 @@ static void DoPlotCommandCB(Widget, XtPointer client_data, XtPointer call_data)
 
     send_and_replot(plot, cmd);
 }
+
+#else
+
+// Selection from Command widget
+static void DoPlotCommandCB(GUI::Entry *w, PlotWindowInfo *plot);
+{
+    MString xcmd(w->get_text(), true);
+    string cmd = xcmd.str();
+
+    send_and_replot(plot, cmd);
+}
+
+#endif
 
 // Apply button
 static void ApplyPlotCommandCB(Widget, XtPointer client_data, XtPointer)

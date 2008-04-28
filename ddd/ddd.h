@@ -150,8 +150,17 @@ extern void process_next_event();
 // Process all pending DDD events
 extern void process_pending_events();
 
+#if defined(IF_XM)
+
 // Setup is done
 extern Boolean ddd_setup_done(XtPointer client_data);
+
+#else
+
+// Setup is done
+extern bool ddd_setup_done(void);
+
+#endif
 
 // Register shells of menu ITEMS.
 struct MMDesc;

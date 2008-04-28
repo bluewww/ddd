@@ -2508,10 +2508,10 @@ void gdbLookupSourceCB(GUI::Widget *w)
 #ifdef NAG_ME
 #warning No filters.
 #endif
-	source_filter->signal_activate().connect(PTR_FUN(FilterSourcesCB));
-	sharedlibrary->signal_activate().connect(PTR_FUN(LoadSharedLibrariesCB));
+	source_filter->signal_activate().connect(sigc::ptr_fun(FilterSourcesCB));
+	sharedlibrary->signal_activate().connect(sigc::ptr_fun(LoadSharedLibrariesCB));
 
-	lookup->signal_activate().connect(sigc::bind(PTR_FUN(lookupSourceDone),
+	lookup->signal_activate().connect(sigc::bind(sigc::ptr_fun(lookupSourceDone),
 						     source_list));
     }
 

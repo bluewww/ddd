@@ -701,6 +701,7 @@ void GUIGraphEdit::setGrid(bool reset)
 
 
 #if defined(IF_XM)
+
 // Redraw
 static void RedrawCB(XtPointer client_data, XtIntervalId *id)
 {
@@ -780,15 +781,15 @@ static void RedrawCB(XtPointer client_data, XtIntervalId *id)
 #else
 
 // Redraw
-void GUIGraphEdit::RedrawCB(void)
+bool GUIGraphEdit::RedrawCB(void)
 {
     redrawTimer.disconnect();
 
     if (graph == 0)
-	return;			// No graph to draw
+	return false;			// No graph to draw
 
     if (!redisplayEnabled)
-	return;			// Display disabled
+	return false;			// Display disabled
 
     setGrid();
 
@@ -835,7 +836,9 @@ void GUIGraphEdit::RedrawCB(void)
 
 	node->redraw() = False;
     }
+    return false;
 }
+
 #endif
 
 #if defined(IF_XM)
@@ -862,7 +865,7 @@ void GUIGraphEdit::StartRedraw(void)
 	return;			// Redraw pending
 
     // Redraw after we are back in the event loop
-    redrawTimer = Glib::signal_idle().connect(sigc::bind_return(MEM_FUN(*this, &GUIGraphEdit::RedrawCB), false));
+    redrawTimer = GUI::signal_idle().connect(sigc::mem_fun(*this, &GUIGraphEdit::RedrawCB));
 }
 
 #endif
@@ -1713,17 +1716,14 @@ GUIGraphEdit::GUIGraphEdit(void)
     // init lastSelectTime
     lastSelectTime = 0;
 
-    // init redrawTimer
-    redrawTimer = NO_TIMER;
-
-    // set GCs
 #if defined(IF_XM)
+    // init redrawTimer
+    redrawTimer = 0;
+
     setGCs(w);
 #else
-#ifdef NAG_ME
-#warning Due to the eccentricities of Gtk, setGCs cannot
-#warning be called until after this widget is realized.
-#endif
+    std::cerr << "Deferring call of setGCs until widget realized.\n";
+    // set GCs
     signal_realize().connect(sigc::mem_fun(*this, &GUIGraphEdit::setGCs));
 #endif
 

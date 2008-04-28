@@ -501,11 +501,15 @@ static void setup_new_shell(GUI::Widget *w);
 static void setup_theme_manager();
 
 #if defined(IF_XM)
+
 // Set `Settings' title
 static void set_settings_title(Widget w);
+
 #else
+
 // Set `Settings' title
 static void set_settings_title(GUI::Widget *w);
+
 #endif
 
 // Set Cut/Copy/Paste bindings for MENU to STYLE
@@ -516,20 +520,26 @@ static void set_select_all_bindings(MMDesc *menu, BindingStyle style);
 
 // Popup DDD splash screen upon start-up.
 #if defined(IF_XM)
+
 static void SetSplashScreenCB(Widget, XtPointer, XtPointer);
-#else
-static void SetSplashScreenCB(GUI::CheckButton *);
-#endif
+
 static void popup_splash_screen(Widget parent, const string& color_key);
 static void popdown_splash_screen(XtPointer data = 0, XtIntervalId *id = 0);
 
-#if defined(IF_XM)
 // Read in database from FILENAME.  Upon version mismatch, ignore some
 // resources such as window sizes.
 static XrmDatabase GetFileDatabase(const string &filename);
+
 #else
+
+static void SetSplashScreenCB(GUI::CheckButton *);
+
+static void popup_splash_screen(Widget parent, const string& color_key);
+static void popdown_splash_screen(void *data = 0, GUI::connection *id = 0);
+
 // Read in database from FILENAME.
 static xmlDoc *GetFileDatabase(const string &filename);
+
 #endif
 
 #if defined(IF_XM)
@@ -3481,8 +3491,8 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 			  sessionShellWidgetClass,
 			  args, arg);
 
-    XtAddCallback(toplevel, XtNsaveCallback, SaveSmSessionCB, XtNIL);
-    XtAddCallback(toplevel, XtNdieCallback, ShutdownSmSessionCB, XtNIL);
+    XtAddCallback(toplevel, XtNsaveCallback, SaveSmSessionCB, XtPointer(0));
+    XtAddCallback(toplevel, XtNdieCallback, ShutdownSmSessionCB, XtPointer(0));
 #else
     // Note: the cast on ddd_fallback_resources is safe.
     Widget toplevel =
@@ -3525,7 +3535,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     // Get application resources into APP_DATA
     XtVaGetApplicationResources(toplevel, (XtPointer)&app_data,
 				ddd_resources, ddd_resources_size,
-				XtNIL);
+				XtPointer(0));
 
     // If we have no application defaults so far, or if the
     // application defaults have the wrong version, try to load our own.
@@ -3549,12 +3559,12 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     // Read APP_DATA again
     XtVaGetApplicationResources(toplevel, (XtPointer)&app_data,
 				ddd_resources, ddd_resources_size,
-				XtNIL);
+				XtPointer(0));
 
 #if XtSpecificationRelease >= 6
     // Synchronize SESSION_ID and APP_DATA.session
     if (session_id == 0)
-	XtVaGetValues(toplevel, XtNsessionID, &session_id, XtNIL);
+	XtVaGetValues(toplevel, XtNsessionID, &session_id, XtPointer(0));
     if (session_id != 0)
 	app_data.session = session_id;
 #endif
@@ -3805,7 +3815,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 
 #if defined(IF_XM)
     // Show splash screen
-    XtVaGetValues(toplevel, XmNiconic, &iconic, XtNIL);
+    XtVaGetValues(toplevel, XmNiconic, &iconic, XtPointer(0));
     if (app_data.splash_screen && !iconic && restart_session().empty())
 	popup_splash_screen(toplevel, app_data.splash_screen_color_key);
 #else
@@ -3914,7 +3924,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 
     // Forward toplevel geometry (as given by `-geometry') to command shell
     String toplevel_geometry = 0;
-    XtVaGetValues(toplevel, XmNgeometry, &toplevel_geometry, XtNIL);
+    XtVaGetValues(toplevel, XmNgeometry, &toplevel_geometry, XtPointer(0));
     if (toplevel_geometry != 0)
     {
 	XtSetArg(args[arg], XmNgeometry, toplevel_geometry); arg++;
@@ -4065,7 +4075,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	AddDeleteWindowCallback(data_disp_shell, DDDCloseCB);
 #else
 	data_disp_shell = new GUI::Window(*app_context, "data_disp_shell", "data_disp_shell");
-	AddDeleteWindowCallback(data_disp_shell, BIND_1(PTR_FUN(DDDCloseCB), data_disp_shell));
+	AddDeleteWindowCallback(data_disp_shell, sigc::bind(sigc::ptr_fun(DDDCloseCB), data_disp_shell));
 #endif
 
 
@@ -4127,7 +4137,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	XtVaSetValues (data_main_window_w,
 		       XmNmenuBar,    data_menubar_w,
 		       XmNworkWindow, data_disp_parent,
-		       XtNIL);
+		       XtPointer(0));
     }
 #else
 #ifdef NAG_ME
@@ -4164,7 +4174,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	AddDeleteWindowCallback(source_view_shell, DDDCloseCB);
 #else
 	source_view_shell = new GUI::Window("source_view_shell", "source_view_shell");
-	AddDeleteWindowCallback(source_view_shell, BIND_1(PTR_FUN(DDDCloseCB), source_view_shell));
+	AddDeleteWindowCallback(source_view_shell, sigc::bind(sigc::ptr_fun(DDDCloseCB), source_view_shell));
 #endif
 
 
@@ -4265,7 +4275,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	XtVaSetValues (source_main_window_w,
 		       XmNmenuBar,    source_menubar_w,
 		       XmNworkWindow, source_view_parent,
-		       XtNIL);
+		       XtPointer(0));
     }
 #else
 #ifdef NAG_ME
@@ -4285,7 +4295,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     XtAddCallback(arg_label, XmNactivateCallback, 
 		  ClearTextFieldCB, source_arg->text());
 #else
-    arg_label->signal_clicked().connect(sigc::bind(PTR_FUN(ClearTextFieldCB),
+    arg_label->signal_clicked().connect(sigc::bind(sigc::ptr_fun(ClearTextFieldCB),
 						   source_arg->text()));
 #endif
 
@@ -4294,9 +4304,9 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	// Common toolbar
 #if defined(IF_XM)
 	XtAddCallback(arg_label, XmNactivateCallback, 
-		      DataDisp::SelectionLostCB, XtNIL);
+		      DataDisp::SelectionLostCB, XtPointer(0));
 #else
-	arg_label->signal_clicked().connect(PTR_FUN(DataDisp::SelectionLostCB));
+	arg_label->signal_clicked().connect(sigc::ptr_fun(DataDisp::SelectionLostCB));
 #endif
     }
 
@@ -4305,7 +4315,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 		  ActivateCB, 
 		  XtPointer(arg_cmd_area[ArgItems::Lookup].widget));
 #else
-    //source_arg->text()->signal_changed().connect(sigc::bind(PTR_FUN(ActivateCB),
+    //source_arg->text()->signal_changed().connect(sigc::bind(sigc::ptr_fun(ActivateCB),
     //							    arg_cmd_area[ArgItems::Lookup].widget));
 #ifdef NAG_ME
 #warning How to activate combobox?
@@ -4319,8 +4329,8 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 		      ActivateCB, 
 		      XtPointer(data_disp->graph_cmd_area[0].widget));
 #else
-	// data_disp->graph_arg->text()->signal_changed().connect(sigc::bind(PTR_FUN(ActivateCB),
-	//								  data_disp->graph_cmd_area[0].widget));
+	// data_disp->graph_arg->text()->signal_changed().connect(sigc::bind(sigc::ptr_fun(ActivateCB),
+	//								     data_disp->graph_cmd_area[0].widget));
 #ifdef NAG_ME
 #warning How to activate combobox widget?
 #endif
@@ -4362,11 +4372,11 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     XtAddCallback (gdb_w,
 		   XmNmodifyVerifyCallback,
 		   gdbModifyCB,
-		   XtNIL);
+		   XtPointer(0));
     XtAddCallback (gdb_w,
 		   XmNmotionVerifyCallback,
 		   gdbMotionCB,
-		   XtNIL);
+		   XtPointer(0));
 #else
 #ifdef NAG_ME
 #warning How to verify changes and motion?
@@ -4377,9 +4387,9 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     XtAddCallback (gdb_w,
 		   XmNvalueChangedCallback,
 		   gdbChangeCB,
-		   XtNIL);
+		   XtPointer(0));
 #else
-    gdb_w->signal_changed().connect(sigc::bind(PTR_FUN(gdbChangeCB), gdb_w));
+    gdb_w->signal_changed().connect(sigc::bind(sigc::ptr_fun(gdbChangeCB), gdb_w));
 #endif
     XtManageChild (gdb_w);
 
@@ -4388,7 +4398,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     {
 	// Don't resize the debugger console when resizing the main
 	// window - resize source and/or data windows instead
-	XtVaSetValues(XtParent(gdb_w), XmNskipAdjust, True, XtNIL);
+	XtVaSetValues(XtParent(gdb_w), XmNskipAdjust, True, XtPointer(0));
     }
 #else
 #ifdef NAG_ME
@@ -4402,7 +4412,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 		  XmNspacing,         0,
 		  XmNborderWidth,     0,
 		  XmNshadowThickness, 0,
-		  XtNIL);
+		  XtPointer(0));
 #endif
 
     // Give the ScrolledWindow the size specified for the debugger console
@@ -4429,7 +4439,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     XtVaSetValues (main_window,
 		   XmNmenuBar,    menubar_w,
 		   XmNworkWindow, paned_work_w,
-		   XtNIL);
+		   XtPointer(0));
 #else
 #ifdef NAG_ME
 #warning Setup areas for main window
@@ -4669,7 +4679,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 
 #if defined(IF_XM)
     // Startup shells
-    XtVaGetValues(toplevel, XmNiconic, &iconic, XtNIL);
+    XtVaGetValues(toplevel, XmNiconic, &iconic, XtPointer(0));
 #else
     // FIXME: Can the Gtk app start iconified?
     iconic = false;
@@ -4693,13 +4703,13 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     // Trace positions and visibility of all DDD windows
     if (command_shell)
 	XtAddEventHandler(command_shell, STRUCTURE_MASK, False,
-			  StructureNotifyEH, XtNIL);
+			  StructureNotifyEH, XtPointer(0));
     if (source_view_shell)
 	XtAddEventHandler(source_view_shell, STRUCTURE_MASK, False,
-			  StructureNotifyEH, XtNIL);
+			  StructureNotifyEH, XtPointer(0));
     if (data_disp_shell)
 	XtAddEventHandler(data_disp_shell, STRUCTURE_MASK, False,
-			  StructureNotifyEH, XtNIL);
+			  StructureNotifyEH, XtPointer(0));
 #else
 #ifdef NAG_ME
 #warning No urgent need to track window positions
@@ -4932,7 +4942,7 @@ static void ddd_check_version()
 					 args, arg));
 	Delay::register_shell(warning);
 	XtUnmanageChild(XmMessageBoxGetChild(warning, XmDIALOG_CANCEL_BUTTON));
-	XtAddCallback(warning, XmNhelpCallback, ImmediateHelpCB, XtNIL);
+	XtAddCallback(warning, XmNhelpCallback, ImmediateHelpCB, XtPointer(0));
 #else
 	GUI::Widget *warning = new GUI::MessageDialog(*command_shell,
 						      "version_warning",
@@ -5253,7 +5263,7 @@ static void fix_status_size()
     XtVaGetValues(status_form,
 		  XmNpaneMaximum, &pane_maximum, 
 		  XmNheight, &height,
-		  XtNIL);
+		  XtPointer(0));
 
     if (height <= pane_maximum)
 	return;
@@ -5262,7 +5272,7 @@ static void fix_status_size()
 		  XmNallowResize, True,
 		  XmNheight, pane_maximum,
 		  XmNallowResize, False,
-		  XtNIL);
+		  XtPointer(0));
 
     if (lesstif_version <= 79)
     {
@@ -5277,7 +5287,7 @@ static void fix_status_size()
 	XtVaGetValues(paned, 
 		      XmNchildren, &children,
 		      XmNnumChildren, &num_children,
-		      XtNIL);
+		      XtPointer(0));
 
 	// The sash controlling the status line is the lowest of all
 	Widget sash = 0;
@@ -5292,8 +5302,8 @@ static void fix_status_size()
 
 		if (sash != 0)
 		{
-		    XtVaGetValues(sash,  XmNy, &sash_y, XtNIL);
-		    XtVaGetValues(child, XmNy, &child_y, XtNIL);
+		    XtVaGetValues(sash,  XmNy, &sash_y, XtPointer(0));
+		    XtVaGetValues(child, XmNy, &child_y, XtPointer(0));
 		}
 
 		if (child_y > sash_y)
@@ -5446,7 +5456,7 @@ static bool TryToLock(GUI::Widget *w)
     if (lock_ok)
     {
 	continue_despite_lock = true;
-	return MAYBE_FALSE;
+	return false;
     }
 
     static sigc::connection trylock_conn;
@@ -5583,9 +5593,9 @@ static bool lock_ddd(Widget parent, LockInfo& info)
 #endif
 
     XtAddCallback(lock_dialog, XmNhelpCallback,
-		  ImmediateHelpCB, XtNIL);
+		  ImmediateHelpCB, XtPointer(0));
     XtAddCallback(lock_dialog, XmNokCallback,
-		  ContinueDespiteLockCB, XtNIL);
+		  ContinueDespiteLockCB, XtPointer(0));
     XtAddCallback(lock_dialog, XmNcancelCallback, ExitCB, 
 		  XtPointer(EXIT_FAILURE));
 
@@ -5723,6 +5733,8 @@ static Boolean session_setup_done(
     return False;		// Get called again
 }
 
+#if defined(IF_XM)
+
 Boolean ddd_setup_done(XtPointer)
 {
     // Delete setup delay, if any
@@ -5745,7 +5757,6 @@ Boolean ddd_setup_done(XtPointer)
 	{
 	    // We have no shell (yet).  Be sure to popup at least one shell.
 
-#if defined(IF_XM)
 	    if (app_data.annotate)
 		gdbOpenDataWindowCB(gdb_w, 0, 0);
 	    else if (app_data.source_window)
@@ -5754,16 +5765,6 @@ Boolean ddd_setup_done(XtPointer)
 		gdbOpenDataWindowCB(gdb_w, 0, 0);
 	    else
 		gdbOpenCommandWindowCB(gdb_w, 0, 0);
-#else
-	    if (app_data.annotate)
-		gdbOpenDataWindowCB();
-	    else if (app_data.source_window)
-		gdbOpenSourceWindowCB();
-	    else if (app_data.data_window)
-		gdbOpenDataWindowCB();
-	    else
-		gdbOpenCommandWindowCB();
-#endif
 	}
 
 	main_loop_entered = true;
@@ -5774,18 +5775,67 @@ Boolean ddd_setup_done(XtPointer)
 	if (init_delay != 0 || app_data.initial_session != 0)
 	{
 	    // Restoring session may still take time
-#if defined(IF_XM)
 	    XtAppAddWorkProc(XtWidgetToApplicationContext(command_shell),
 			     session_setup_done, 0);
-#else
-	    Glib::signal_idle().connect(PTR_FUN(session_setup_done));
-#endif
 	}
 	return True;		// Remove from the list of work procs
     }
 
     return False;		// Keep on processing the command queue
 }
+
+#else
+
+bool ddd_setup_done(void)
+{
+    std::cerr << "****************** ddd_setup_done ********************\n";
+    // Delete setup delay, if any
+    delete setup_delay;
+    setup_delay = 0;
+
+    if (emptyCommandQueue() && gdb->isReadyWithPrompt())
+    {
+	// Some WMs have trouble with early decorations.  Just re-decorate.
+	setup_new_shell(command_shell);
+	setup_new_shell(data_disp_shell);
+	setup_new_shell(source_view_shell);
+
+	ddd_check_version();
+	install_button_tips();
+	fix_status_size();
+
+	if (running_shells() == 0 ||
+	    app_data.annotate && running_shells() == 1)
+	{
+	    // We have no shell (yet).  Be sure to popup at least one shell.
+
+	    if (app_data.annotate)
+		gdbOpenDataWindowCB();
+	    else if (app_data.source_window)
+		gdbOpenSourceWindowCB();
+	    else if (app_data.data_window)
+		gdbOpenDataWindowCB();
+	    else
+		gdbOpenCommandWindowCB();
+	}
+
+	main_loop_entered = true;
+
+	DispBox::init_vsllib(process_pending_events);
+	DataDisp::refresh_graph_edit();
+
+	if (init_delay != 0 || app_data.initial_session != 0)
+	{
+	    // Restoring session may still take time
+	    GUI::signal_idle().connect(sigc::ptr_fun(session_setup_done));
+	}
+	return false;		// Remove from the list of work procs
+    }
+
+    return true;		// Keep on processing the command queue
+}
+
+#endif
 
 
 
@@ -5869,14 +5919,14 @@ static void set_toggle(Widget w, unsigned char new_state, bool notify = false)
 #else
     unsigned char old_state;
 #endif
-    XtVaGetValues(w, XmNset, &old_state, XtNIL);
+    XtVaGetValues(w, XmNset, &old_state, XtPointer(0));
 
     if (old_state != new_state)
     {
 	if (notify)
 	    XmToggleButtonSetState(w, new_state, True);
 	else
-	    XtVaSetValues(w, XmNset, new_state, XtNIL);
+	    XtVaSetValues(w, XmNset, new_state, XtPointer(0));
     }
 }
 
@@ -5917,6 +5967,7 @@ inline void notify_set_toggle(GUI::Bipolar *w, Boolean new_state)
 #endif
 
 #if defined(IF_XM)
+
 static void set_string(Widget w, const _XtString value)
 {
     if (w == 0)
@@ -5925,9 +5976,11 @@ static void set_string(Widget w, const _XtString value)
     // Note: XtVaSetValues(w, XmNvalue, value, ...) 
     // doesn't work properly with LessTif 0.89.9
     XmTextFieldSetString(w, XMST(value));
-    XtVaSetValues(w, XmNcursorPosition, 0, XtNIL);
+    XtVaSetValues(w, XmNcursorPosition, 0, XtPointer(0));
 }
+
 #else
+
 static void set_string(GUI::Entry *w, const _XtString value)
 {
     if (w == 0)
@@ -5935,6 +5988,7 @@ static void set_string(GUI::Entry *w, const _XtString value)
 
     w->set_text(XMST(value));
 }
+
 #endif
 
 #if defined(IF_XM)
@@ -5969,7 +6023,7 @@ static void set_scale(Widget w, int val)
 
     assert(XmIsScale(w));
 
-    XtVaSetValues(w, XmNvalue, val, XtNIL);
+    XtVaSetValues(w, XmNvalue, val, XtPointer(0));
 }
 
 #else
@@ -6055,7 +6109,7 @@ void update_options(bool noupd)
 		  XtNlayoutMode, &layout_mode,
 		  XtNgridWidth,  &grid_width,
 		  XtNgridHeight, &grid_height,
-		  XtNIL);
+		  XtPointer(0));
 
     set_toggle(detect_aliases_w, app_data.detect_aliases);
     set_toggle(graph_detect_aliases_w, app_data.detect_aliases);
@@ -6068,7 +6122,7 @@ void update_options(bool noupd)
 	{
 	    // Grid has been disabled - disable `snap to grid' as well
 	    XtVaSetValues(data_disp->graph_edit, XtNsnapToGrid, False, 
-			  XtNIL);
+			  XtPointer(0));
 	}
 	else if (show_grid && !XtIsSensitive(graph_snap_to_grid_w))
 	{
@@ -6076,7 +6130,7 @@ void update_options(bool noupd)
 	    XtVaSetValues(data_disp->graph_edit, 
 			  XtNsnapToGrid, 
 			  XmToggleButtonGetState(graph_snap_to_grid_w), 
-			  XtNIL);
+			  XtPointer(0));
 	}
 	else
 	{
@@ -6105,13 +6159,13 @@ void update_options(bool noupd)
 
     if (graph_grid_size_w != 0) {
 	XtVaSetValues(graph_grid_size_w, XmNvalue, show_grid ? grid_width : 0, 
-		      XtNIL);
+		      XtPointer(0));
     }
 
 
     unsigned char policy = '\0';
     XtVaGetValues(command_shell, XmNkeyboardFocusPolicy, &policy, 
-		  XtNIL);
+		  XtPointer(0));
     set_toggle(set_focus_pointer_w,        policy == XmPOINTER);
     set_toggle(set_focus_explicit_w,       policy == XmEXPLICIT);
 
@@ -6211,11 +6265,11 @@ void update_options(bool noupd)
     switch (app_data.display_placement)
     {
     case XmVERTICAL:
-	XtVaSetValues(data_disp->graph_edit, XtNrotation, 0, XtNIL);
+	XtVaSetValues(data_disp->graph_edit, XtNrotation, 0, XtPointer(0));
 	break;
 	    
     case XmHORIZONTAL:
-	XtVaSetValues(data_disp->graph_edit, XtNrotation, 90, XtNIL);
+	XtVaSetValues(data_disp->graph_edit, XtNrotation, 90, XtPointer(0));
 	break;
     }
 
@@ -6263,7 +6317,7 @@ void update_options(bool noupd)
 	break;
     }
     XmString label;
-    XtVaGetValues(find_label_ref, XmNlabelString, &label, XtNIL);
+    XtVaGetValues(find_label_ref, XmNlabelString, &label, XtPointer(0));
     MString new_label(label, true);
     XmStringFree(label);
 
@@ -6346,10 +6400,10 @@ void update_options(bool noupd)
 #else
 
 // Reflect state in option menus
-static void real_update_options(bool noupd)
+static bool real_update_options(bool noupd)
 {
     if (noupd)
-	return;
+	return false;
     set_toggle(find_words_only_w, app_data.find_words_only);
     set_toggle(words_only_w, app_data.find_words_only);
 
@@ -6685,18 +6739,21 @@ static void real_update_options(bool noupd)
 
     update_reset_preferences();
     fix_status_size();
+    return false;
 }
 
 #endif
 
 #if !defined(IF_XM)
+
 void update_options(bool noupd)
 {
     // Danger: update_options() is sometimes called from a toggle
     // callback.  Potentially this can lead to recursive calls.  So we
     // defer this until the idle loop.
-    Glib::signal_idle().connect(sigc::bind_return(sigc::bind(PTR_FUN(real_update_options), noupd), false));
+    Glib::signal_idle().connect(sigc::bind(sigc::ptr_fun(real_update_options), noupd));
 }
+
 #endif
 
 #if defined(IF_XM)
@@ -6707,7 +6764,7 @@ static void set_settings_title(Widget w)
     {
 	MString settings_title(gdb->title() + " Settings...");
 	XtVaSetValues(w, XmNlabelString, settings_title.xmstring(), 
-		      XtNIL);
+		      XtPointer(0));
     }
 }
 
@@ -6803,7 +6860,7 @@ void save_option_state()
 		  XtNautoLayout,      &initial_auto_layout,
 		  XtNgridWidth,       &initial_grid_width,
 		  XtNgridHeight,      &initial_grid_height,
-		  XtNIL);
+		  XtPointer(0));
 #else
     initial_show_grid = data_disp->graph_edit->get_show_grid();
     initial_show_annotations = data_disp->graph_edit->get_show_annotations();
@@ -6817,7 +6874,7 @@ void save_option_state()
 
 #if defined(IF_XM)
     XtVaGetValues(command_shell,
-		  XmNkeyboardFocusPolicy, &initial_focus_policy, XtNIL);
+		  XmNkeyboardFocusPolicy, &initial_focus_policy, XtPointer(0));
 #else
 #ifdef NAG_ME
 #warning Focus policy not supported
@@ -7009,7 +7066,7 @@ static void ResetDataPreferencesCB(Widget, XtPointer, XtPointer)
     XtVaGetValues(data_disp->graph_edit, 
 		  XtNshowHints,       &show_hints,
 		  XtNshowAnnotations, &show_annotations,
-		  XtNIL);
+		  XtPointer(0));
 
     if (show_hints  != initial_show_hints ||
 	show_annotations != initial_show_annotations)
@@ -7017,7 +7074,7 @@ static void ResetDataPreferencesCB(Widget, XtPointer, XtPointer)
 	XtVaSetValues(data_disp->graph_edit,
 		      XtNshowHints,       initial_show_hints,
 		      XtNshowAnnotations, initial_show_annotations,
-		      XtNIL);
+		      XtPointer(0));
 		      
 	update_options();
     }
@@ -7033,7 +7090,7 @@ static void ResetDataPreferencesCB(Widget, XtPointer, XtPointer)
 		  XtNgridWidth,  &grid_width,
 		  XtNgridHeight, &grid_height,
 		  XtNshowGrid,   &show_grid,
-		  XtNIL);
+		  XtPointer(0));
 
     if (grid_width  != initial_grid_width || 
 	grid_height != initial_grid_height ||
@@ -7043,7 +7100,7 @@ static void ResetDataPreferencesCB(Widget, XtPointer, XtPointer)
 		      XtNgridWidth,  initial_grid_width,
 		      XtNgridHeight, initial_grid_height,
 		      XtNshowGrid,   initial_show_grid,
-		      XtNIL);
+		      XtPointer(0));
 		      
 	update_options();
     }
@@ -7115,7 +7172,7 @@ static bool data_preferences_changed()
     XtVaGetValues(data_disp->graph_edit, 
 		  XtNshowHints,       &show_hints,
 		  XtNshowAnnotations, &show_annotations,
-		  XtNIL);
+		  XtPointer(0));
 #else
     show_hints = data_disp->graph_edit->get_show_hints();
     show_annotations = data_disp->graph_edit->get_show_annotations();
@@ -7158,7 +7215,7 @@ static bool data_preferences_changed()
 		  XtNautoLayout, &auto_layout,
 		  XtNgridWidth,  &grid_width,
 		  XtNgridHeight, &grid_height,
-		  XtNIL);
+		  XtPointer(0));
 #else
     show_grid = data_disp->graph_edit->get_show_grid();
     snap_to_grid = data_disp->graph_edit->get_snap_to_grid();
@@ -7317,7 +7374,7 @@ static bool startup_preferences_changed()
 #if defined(IF_XM)
     unsigned char focus_policy;
     XtVaGetValues(command_shell, XmNkeyboardFocusPolicy, &focus_policy, 
-		  XtNIL);
+		  XtPointer(0));
     if (focus_policy != initial_focus_policy)
 	return true;
 #else
@@ -7605,7 +7662,7 @@ static void ChangePanelCB(Widget w, XtPointer client_data, XtPointer call_data)
 	XtVaGetValues(XtParent(panel), 
 		      XmNchildren, &children,
 		      XmNnumChildren, &num_children,
-		      XtNIL);
+		      XtPointer(0));
 
 	for (Cardinal i = 0; i < num_children; i++) {
 	    Widget child = children[i];
@@ -7633,7 +7690,7 @@ static void ChangePanelCB(GUI::CheckButton *w, GUI::Widget *panel)
 	XtManageChild(panel);
 	std::cerr << "ChangePanelCB: set help callback?\n";
 	reset_preferences_connection =
-	    reset_preferences_w->signal_clicked().connect(sigc::bind(PTR_FUN(ResetPreferencesCB),
+	    reset_preferences_w->signal_clicked().connect(sigc::bind(sigc::retype(sigc::ptr_fun(ResetPreferencesCB)),
 								     panel));
 	current_panel = panel;
 
@@ -7778,7 +7835,7 @@ static void OfferRestartCB(GUI::WidgetPtr<GUI::Dialog> &dialog)
 	    Delay::register_shell(restart_dialog);
 	    Gtk::Button *button;
 	    button = restart_dialog->add_button("OK");
-	    button->signal_clicked().connect(sigc::bind(PTR_FUN(DDDRestartCB), restart_dialog));
+	    button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(DDDRestartCB), restart_dialog));
 	}
 	manage_and_raise(restart_dialog);
     }
@@ -7800,9 +7857,9 @@ static void make_preferences(Widget parent)
 				    XMST("preferences"), args, arg));
     Delay::register_shell(preferences_dialog);
     XtVaSetValues(preferences_dialog, XmNdefaultButton, Widget(0), 
-		  XtNIL);
+		  XtPointer(0));
     XtAddCallback(preferences_dialog, XmNunmapCallback, OfferRestartCB,
-		  XtNIL);
+		  XtPointer(0));
 
     if (lesstif_version <= 79)
 	XtUnmanageChild(XmSelectionBoxGetChild(preferences_dialog,
@@ -7866,7 +7923,7 @@ static void make_preferences(Widget parent)
 		  XmNheight, max_height,
 		  XmNresizeWidth, False,
 		  XmNresizeHeight, False,
-		  XtNIL);
+		  XtPointer(0));
 
     XmToggleButtonSetState(general_button, True, True);
 }
@@ -7958,10 +8015,10 @@ static void create_status(Widget parent)
 					XMST("led"), args, arg));
     XtManageChild(led_w);
 
-    XtAddCallback(led_w, XmNvalueChangedCallback, ToggleBlinkCB, XtNIL);
+    XtAddCallback(led_w, XmNvalueChangedCallback, ToggleBlinkCB, XtPointer(0));
 
     Pixel arrow_foreground;
-    XtVaGetValues(status_form, XmNbackground, &arrow_foreground, XtNIL);
+    XtVaGetValues(status_form, XmNbackground, &arrow_foreground, XtPointer(0));
 
     // Create `Get more status messages' button
     arg = 0;
@@ -8006,25 +8063,25 @@ static void create_status(Widget parent)
     set_status_mstring(short_msg);
 
     XtAddCallback(status_w, XmNarmCallback, 
-		  PopupStatusHistoryCB, XtNIL);
+		  PopupStatusHistoryCB, XtPointer(0));
     XtAddCallback(status_w, XmNactivateCallback, 
-		  PopdownStatusHistoryCB, XtNIL);
+		  PopdownStatusHistoryCB, XtPointer(0));
     XtAddCallback(status_w, XmNdisarmCallback, 
-		  PopdownStatusHistoryCB, XtNIL);
+		  PopdownStatusHistoryCB, XtPointer(0));
 
     XtAddCallback(arrow_w, XmNarmCallback, 
-		  PopupStatusHistoryCB, XtNIL);
+		  PopupStatusHistoryCB, XtPointer(0));
     XtAddCallback(arrow_w, XmNactivateCallback, 
-		  PopdownStatusHistoryCB, XtNIL);
+		  PopdownStatusHistoryCB, XtPointer(0));
     XtAddCallback(arrow_w, XmNdisarmCallback, 
-		  PopdownStatusHistoryCB, XtNIL);
+		  PopdownStatusHistoryCB, XtPointer(0));
 
     // Using LessTif 0.88, you can release button 1 while outside the
     // status bar; no disarm callback is invoked.  Prevent against this.
     XtAddEventHandler(status_w, ButtonReleaseMask, False,
-		      PopdownStatusHistoryEH, XtNIL);
+		      PopdownStatusHistoryEH, XtPointer(0));
     XtAddEventHandler(arrow_w, ButtonReleaseMask, False, 
-		      PopdownStatusHistoryEH, XtNIL);
+		      PopdownStatusHistoryEH, XtPointer(0));
 
     XtWidgetGeometry size;
     size.request_mode = CWHeight;
@@ -8033,19 +8090,19 @@ static void create_status(Widget parent)
     Dimension size_height = size.height;
 
     if (lesstif_version <= 87)
-	XtVaSetValues(led_w, XmNindicatorSize, size_height - 4, XtNIL);
+	XtVaSetValues(led_w, XmNindicatorSize, size_height - 4, XtPointer(0));
     else
-	XtVaSetValues(led_w, XmNindicatorSize, size_height - 1, XtNIL);
+	XtVaSetValues(led_w, XmNindicatorSize, size_height - 1, XtPointer(0));
 
     XtVaSetValues(arrow_w,
 		  XmNheight, size_height - 2,
 		  XmNwidth,  size_height - 2,
-		  XtNIL);
+		  XtPointer(0));
 
     XtVaSetValues(status_form,
 		  XmNpaneMaximum, size_height,
 		  XmNpaneMinimum, size_height,
-		  XtNIL);
+		  XtPointer(0));
 
     set_toggle(led_w, app_data.blink_while_busy);
     blink(true);
@@ -8167,7 +8224,7 @@ BlinkCB(
 	XtVaGetValues(led_w,
 		      XmNbackground, &led_background_color,
 		      XmNselectColor, &led_select_color,
-		      XtNIL);
+		      XtPointer(0));
 #else
 	led_background_color = led_w->get_style()->get_bg(Gtk::STATE_NORMAL);
 	led_select_color = led_w->get_style()->get_bg(Gtk::STATE_SELECTED);
@@ -8179,10 +8236,10 @@ BlinkCB(
     bool set = bool(long(client_data));
     if (set)
 	XtVaSetValues(led_w, XmNselectColor, led_select_color, 
-		      XtNIL);
+		      XtPointer(0));
     else
 	XtVaSetValues(led_w, XmNselectColor, led_background_color, 
-		      XtNIL);
+		      XtPointer(0));
 
     XFlush(XtDisplay(led_w));
 #else
@@ -8361,7 +8418,7 @@ PopupStatusHistoryCB(Widget w, XtPointer client_data, XtPointer call_data)
 	y = status_y + size.height + y_popup_offset;
     }
 
-    XtVaSetValues(history_shell, XmNx, x, XmNy, y, XtNIL);
+    XtVaSetValues(history_shell, XmNx, x, XmNy, y, XtPointer(0));
     XtPopup(history_shell, XtGrabNone);
 }
 
@@ -8546,12 +8603,12 @@ void update_arg_buttons()
     MString print_ref_label("Print " + deref_arg);
     XtVaSetValues(print_menu[PrintItems::PrintRef].widget,
 		  XmNlabelString, print_ref_label.xmstring(),
-		  XtNIL);
+		  XtPointer(0));
 
     MString disp_ref_label("Display " + deref_arg);
     XtVaSetValues(display_menu[DispItems::DispRef].widget,
 		  XmNlabelString, disp_ref_label.xmstring(),
-		  XtNIL);
+		  XtPointer(0));
 
     bool can_dereference = !gdb->dereferenced_expr("").empty();
     manage_child(print_ref_w, can_dereference);
@@ -8766,9 +8823,9 @@ static void gdb_readyHP(Agent *, void *, void *call_data)
 	if (!emptyCommandQueue()) {
 #if defined(IF_XM)
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0, 
-			    PTR_FUN(processCommandQueue), XtNIL);
+			    PTR_FUN(processCommandQueue), XtPointer(0));
 #else
-	    Glib::signal_idle().connect(PTR_FUN(processCommandQueue));
+	    GUI::signal_idle().connect(sigc::ptr_fun(processCommandQueue));
 #endif
 	}
 
@@ -8800,11 +8857,12 @@ static void gdb_readyHP(Agent *, void *, void *call_data)
 
 struct WhenReadyInfo {
     MString message;
-    GTK_SLOT_W proc;
 #if defined(IF_XM)
+    XtCallbackProc proc;
     XtPointer client_data;
     XmPushButtonCallbackStruct cbs;
 #else
+    sigc::slot<void, Widget> proc;
 #ifdef NAG_ME
 #warning WhenReady: callback structure not used?
 #endif
@@ -8834,7 +8892,7 @@ struct WhenReadyInfo {
 	}
     }
 #else
-    WhenReadyInfo(const MString &msg, GTK_SLOT_W p)
+    WhenReadyInfo(const MString &msg, sigc::slot<void, Widget> p)
 	: message(msg),
 	  proc(p)
     {
@@ -8913,7 +8971,7 @@ static void WhenReady(Widget w, XtPointer client_data, XtPointer call_data)
 
     // Execute command as soon as GDB gets ready
     XmString label = 0;
-    XtVaGetValues(w, XmNlabelString, &label, XtNIL);
+    XtVaGetValues(w, XmNlabelString, &label, XtPointer(0));
     MString _action(label, true);
     XmStringFree(label);
     string action = _action.str();
@@ -8980,7 +9038,7 @@ static void WhenReady(Gtk::Widget *w, void *client_data)
     // Execute command as soon as GDB gets ready
 #if defined(IF_XMMM)
     XmString label = 0;
-    XtVaGetValues(w, XmNlabelString, &label, XtNIL);
+    XtVaGetValues(w, XmNlabelString, &label, XtPointer(0));
     MString _action(label, true);
     XmStringFree(label);
     string action = _action.str();
@@ -9343,7 +9401,7 @@ void _gdb_out(const string& txt)
     set_tty_from_gdb(text);
 
     // Output TEXT on TTY
-    tty_out(USTRING(text));
+    tty_out(text);
 
     // Output TEXT in debugger console
     bool line_buffered = app_data.line_buffered_console;
@@ -9883,15 +9941,15 @@ static void set_cut_copy_paste_bindings(MMDesc *menu, BindingStyle style)
 	XtVaSetValues(menu[EditItems::Cut].widget,
 		      XmNaccelerator, "~Shift Ctrl<Key>X",
 		      XmNacceleratorText, cut.xmstring(),
-		      XtNIL);
+		      XtPointer(0));
 	XtVaSetValues(menu[EditItems::Copy].widget,
 		      XmNaccelerator, "~Shift Ctrl<Key>C",
 		      XmNacceleratorText, copy.xmstring(),
-		      XtNIL);
+		      XtPointer(0));
 	XtVaSetValues(menu[EditItems::Paste].widget,
 		      XmNaccelerator, "~Shift Ctrl<Key>V",
 		      XmNacceleratorText, paste.xmstring(),
-		      XtNIL);
+		      XtPointer(0));
 	break;
     }
 
@@ -9904,15 +9962,15 @@ static void set_cut_copy_paste_bindings(MMDesc *menu, BindingStyle style)
 	XtVaSetValues(menu[EditItems::Cut].widget,
 		      XmNaccelerator, "~Ctrl Shift<Key>Delete",
 		      XmNacceleratorText, cut.xmstring(),
-		      XtNIL);
+		      XtPointer(0));
 	XtVaSetValues(menu[EditItems::Copy].widget,
 		      XmNaccelerator, "~Shift Ctrl<Key>Insert",
 		      XmNacceleratorText, copy.xmstring(),
-		      XtNIL);
+		      XtPointer(0));
 	XtVaSetValues(menu[EditItems::Paste].widget,
 		      XmNaccelerator, "~Ctrl Shift<Key>Insert",
 		      XmNacceleratorText, paste.xmstring(),
-		      XtNIL);
+		      XtPointer(0));
 	break;
     }
     }
@@ -9980,7 +10038,7 @@ static void set_select_all_bindings(MMDesc *menu, BindingStyle style)
 #if defined(IF_XM)
 	XtVaSetValues(menu[EditItems::SelectAll].widget,
 		      XmNacceleratorText, select_all.xmstring(),
-		      XtNIL);
+		      XtPointer(0));
 #else
 #ifdef NAG_ME
 #warning Set accelerator?
@@ -9996,7 +10054,7 @@ static void set_select_all_bindings(MMDesc *menu, BindingStyle style)
 #if defined(IF_XM)
 	XtVaSetValues(menu[EditItems::SelectAll].widget,
 		      XmNacceleratorText, select_all.xmstring(),
-		      XtNIL);
+		      XtPointer(0));
 #else
 #ifdef NAG_ME
 #warning Set accelerator?
@@ -10501,10 +10559,10 @@ static void setup_new_shell(Widget w)
     // Make the shell handle EditRes messages
     XtRemoveEventHandler(shell, EventMask(0), True,
 			 XtEventHandler(_XEditResCheckMessages), 
-			 XtNIL);
+			 XtPointer(0));
     XtAddEventHandler(shell, EventMask(0), True,
 		      XtEventHandler(_XEditResCheckMessages),
-		      XtNIL);
+		      XtPointer(0));
 #endif
 
     // Use DDD logo as icon of the new shell
@@ -10586,16 +10644,9 @@ static void ddd_xt_warning(String message)
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
+
 static Widget splash_shell  = 0;
-#else
-static GUI::Dialog *splash_shell  = 0;
-#endif
-#if defined(IF_XM)
 static Pixmap splash_pixmap = None;
-#else
-// Cannot initialize Glib::RefPtr.
-static GUI::RefPtr<GUI::Pixmap> splash_pixmap;
-#endif
 static _Delay *splash_delay = 0;
 
 static void popdown_splash_screen(XtPointer data, XtIntervalId *id)
@@ -10604,23 +10655,15 @@ static void popdown_splash_screen(XtPointer data, XtIntervalId *id)
 
     if (data != 0)
     {
-#if defined(IF_XM)
 	XtIntervalId *timer = (XtIntervalId *)data;
 	assert(*timer == *id);
 	*timer = 0;
-#else
-	std::cerr << "popdown_splash_screen(): timer?\n";
-#endif
     }
     
     if (splash_shell != 0)
     {
 	if (splash_pixmap) {
-#if defined(IF_XM)
 	    XFreePixmap(XtDisplay(splash_shell), splash_pixmap);
-#else
-	    splash_pixmap.clear();
-#endif
 	}
 
 	popdown_shell(splash_shell);
@@ -10631,6 +10674,38 @@ static void popdown_splash_screen(XtPointer data, XtIntervalId *id)
 	splash_delay = 0;
     }
 }
+
+#else
+
+static GUI::Dialog *splash_shell  = 0;
+static GUI::RefPtr<GUI::Pixmap> splash_pixmap;
+static _Delay *splash_delay = 0;
+
+static void popdown_splash_screen(void *data, GUI::connection *id)
+{
+    (void) id;			// use it
+
+    if (data != 0)
+    {
+	std::cerr << "popdown_splash_screen(): timer?\n";
+    }
+    
+    if (splash_shell != 0)
+    {
+	if (splash_pixmap) {
+	    splash_pixmap.clear();
+	}
+
+	popdown_shell(splash_shell);
+	DestroyWhenIdle(splash_shell);
+	splash_shell = 0;
+
+	delete splash_delay;
+	splash_delay = 0;
+    }
+}
+
+#endif
 
 static void popup_splash_screen(Widget parent, const string& color_key)
 {
@@ -10681,12 +10756,12 @@ static void popup_splash_screen(Widget parent, const string& color_key)
 		  XmNbackgroundPixmap, splash_pixmap,
 		  XmNwidth, width,
 		  XmNheight, height,
-		  XtNIL);
+		  XtPointer(0));
 
     int x = (WidthOfScreen(XtScreen(splash_shell)) - width) / 2;
     int y = (HeightOfScreen(XtScreen(splash_shell)) - height) / 2;
 
-    XtVaSetValues(splash_shell, XmNx, x, XmNy, y, XtNIL);
+    XtVaSetValues(splash_shell, XmNx, x, XmNy, y, XtPointer(0));
 
     // Place lock warning on top of startup splash
     lock_dialog_x = x + 20;
@@ -10714,16 +10789,16 @@ static void SetSplashScreenCB(Widget, XtPointer, XtPointer call_data)
 
     app_data.splash_screen = info->set;
 
-    update_options(NO_UPDATE);
+    update_options();
 }
 
 #else
 
 static void SetSplashScreenCB(GUI::CheckButton *w)
 {
-#ifdef NAG_ME
-#warning Implement splash screen?
-#endif
+    app_data.splash_screen = w->get_active();
+
+    update_options();
 }
 
 #endif

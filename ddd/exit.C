@@ -79,7 +79,7 @@ char exit_rcsid[] =
 #include "charsets.h"
 #include "Command.h"
 #include "cmdtty.h"
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include "converters.h"
 #endif
 #include "ddd.h"
@@ -114,7 +114,7 @@ char exit_rcsid[] =
 #include <stdlib.h>
 #include <stdio.h>
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include <Xm/Xm.h>
 #include <Xm/MessageB.h>
 #include <Xm/PushB.h>
@@ -176,7 +176,7 @@ void ddd_cleanup()
         save_options(SAVE_DEFAULT);
     }
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     if (!ddd_is_restarting)
     {
         // Delete restart session, if any
@@ -185,7 +185,7 @@ void ddd_cleanup()
     }
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     if (!ddd_is_shutting_down)
     {
       // If current session is temporary, delete it
@@ -706,7 +706,7 @@ void DDDDumpCoreCB(void)
 // X I/O error
 //-----------------------------------------------------------------------------
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 extern "C" {
     static int (*old_x_fatal_handler)(Display *display) = 0;
 }
@@ -740,7 +740,7 @@ void ddd_install_x_fatal()
 #endif
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 //-----------------------------------------------------------------------------
 // Xt and Motif errors
 //-----------------------------------------------------------------------------
@@ -810,7 +810,7 @@ void ddd_install_xt_error(XtAppContext app_context)
 #endif
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 //-----------------------------------------------------------------------------
 // Other X errors
 //-----------------------------------------------------------------------------
@@ -1034,22 +1034,28 @@ void gdb_eofHP(Agent *agent, void *, void *)
     }
 }
 
+#if defined(IF_XM)
 
-static XtIntervalId post_exception_timer = NO_TIMER;
-static void PostExceptionCB(
-#if defined(IF_MOTIF)
-			    XtPointer, XtIntervalId *id
-#endif
-			    )
+static XtIntervalId post_exception_timer = 0;
+static void PostExceptionCB(XtPointer, XtIntervalId *id)
 {
-#if defined(IF_MOTIF)
     assert (*id == post_exception_timer);
     (void) id;			// Use it
-#endif
-    post_exception_timer = NO_TIMER;
+    post_exception_timer = 0;
 
     post_gdb_died(gdb->title() + ": internal exception", -1);
 }
+
+#else
+
+static GUI::connection post_exception_timer;
+static bool PostExceptionCB()
+{
+    post_gdb_died(gdb->title() + ": internal exception", -1);
+    return false;
+}
+
+#endif
 
 // Internal exception (JDB)
 void gdb_exceptionHP(Agent *agent, void *, void *call_data)
@@ -1077,27 +1083,29 @@ void gdb_exceptionHP(Agent *agent, void *, void *call_data)
 #endif
 
 	// Wait 5 seconds before offering a restart
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	post_exception_timer = 
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 5000,
 			    PostExceptionCB, 0);
 #else
 	post_exception_timer = 
-	    Glib::signal_timeout().connect(sigc::bind_return(PTR_FUN(PostExceptionCB), false), 5000);
+	    Glib::signal_timeout().connect(sigc::ptr_fun(PostExceptionCB), 5000);
 #endif
     }
     else
     {
 	// Left exception state (i.e. prompt appeared)
 
-	if (post_exception_timer) {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
+	if (post_exception_timer != 0) {
 	    XtRemoveTimeOut(post_exception_timer);
-#else
-	    post_exception_timer.disconnect();
-#endif
 	}
-	post_exception_timer = NO_TIMER;
+	post_exception_timer = 0;
+#else
+	if (post_exception_timer) {
+	    post_exception_timer.disconnect();
+	}
+#endif
     }
 }
 
@@ -1457,7 +1465,7 @@ static void debug_ddd(bool core_dumped)
 
     string term_command = app_data.term_command;
     term_command.gsub("Execution", "Debug");
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     term_command.gsub("@FONT@", make_font(app_data, FixedWidthDDDFont));
 #endif
 

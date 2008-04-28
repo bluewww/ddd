@@ -476,7 +476,7 @@ private:
     BoxPoint lastOffset;	// Last offset for moving
 
     Time lastSelectTime;	// Last selection time (for multi-clicks)
-    XtIntervalId redrawTimer;	// Timer used for redrawing
+    GUI::connection redrawTimer;	// Timer used for redrawing
 
     GUI::RefPtr<GUI::GC> nodeGC;	// Graphic context for nodes
     GUI::RefPtr<GUI::GC> edgeGC;	// Graphic context for edges
@@ -508,7 +508,11 @@ private:
     void defineCursor(GUI::Cursor *cursor);
 
     void setGrid(bool reset = false);
+#if defined(IF_XM)
     void RedrawCB(void);
+#else
+    bool RedrawCB(void);
+#endif
     void StartRedraw(void);
     void setGCs(void);
     void setGraphGC(void);

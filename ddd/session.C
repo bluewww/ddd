@@ -1351,10 +1351,10 @@ static bool done_if_idle(Delay *data)
 	update_signals();
 
 	delete data;
-	return true;		// Remove from the list of work procs
+	return false;		// Remove from the list of work procs
     }
 
-    return false;		// Get called again
+    return true;		// Get called again
 }
 
 #endif
@@ -1365,7 +1365,7 @@ static void done(const string&, void *data)
     XtAppAddWorkProc(XtWidgetToApplicationContext(command_shell),
 		     done_if_idle, data);
 #else
-    Glib::signal_idle().connect(sigc::bind(PTR_FUN(done_if_idle), data));
+    GUI::signal_idle().connect(sigc::bind(sigc::ptr_fun(done_if_idle), (Delay *)data));
 #endif
 }
 

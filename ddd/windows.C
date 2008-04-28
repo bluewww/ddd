@@ -257,6 +257,7 @@ static void initialize_offsets()
 }
 
 #if defined(IF_XM)
+
 // Return current tool shell position relative to root window
 static BoxPoint tool_shell_pos()
 {
@@ -276,43 +277,61 @@ static BoxPoint tool_shell_pos()
 
     return BoxPoint(root_x, root_y);
 }
+
 #else
+
 #ifdef NAG_ME
 #warning tool_shell_pos not supported.
 #endif
+
 #endif
 
-static XtIntervalId move_tool_shell_timer = NO_TIMER;
+#if defined(IF_XM)
+static XtIntervalId move_tool_shell_timer = 0;
+#endif
 
 static BoxPoint last_tool_shell_position;
 static BoxPoint tool_shell_move_offset(0, 0);
 
 static void move_tool_shell(const BoxPoint& pos, bool verify = true);
 
+#if defined(IF_XM)
+
 // Verify shell position after movement
 static void VerifyToolShellPositionCB(XtPointer = 0, XtIntervalId *id = 0)
 {
     (void) id;			// Use it
     assert (*id == move_tool_shell_timer);
-    move_tool_shell_timer = NO_TIMER;
+    move_tool_shell_timer = 0;
 
 #if LOG_MOVES
     std::clog << "Tool position found:    " << tool_shell_pos() << "\n";
     std::clog << "Tool position expected: " << last_tool_shell_position << "\n";
 #endif
 
-#if defined(IF_XM)
     BoxPoint diff = tool_shell_pos() - last_tool_shell_position;
     if (diff != BoxPoint(0, 0))
     {
 	tool_shell_move_offset = -diff;
 	move_tool_shell(last_tool_shell_position, false);
     }
-#ifdef NAG_ME
-#warning Do not move tool shell
-#endif
-#endif
 }
+
+#else
+
+// Verify shell position after movement
+static bool VerifyToolShellPositionCB(void)
+{
+#if LOG_MOVES
+    std::clog << "Tool position found:    " << tool_shell_pos() << "\n";
+    std::clog << "Tool position expected: " << last_tool_shell_position << "\n";
+#endif
+
+    std::cerr << "VerifyToolShellPositionCB not implemented.\n";
+    return false;
+}
+
+#endif
 
 // Move tool shell to POS.  If VERIFY is set, verify and correct 
 // any displacement induced by the window manager.
@@ -1651,7 +1670,7 @@ void gdbToggleCodeWindowCB(Widget w, XtPointer, XtPointer call_data)
     else
 	gdbCloseCodeWindowCB(w, XtPointer(0), XtPointer(0));
 
-    update_options(NO_UPDATE);
+    update_options();
 }
 
 #else
@@ -1663,7 +1682,7 @@ void gdbToggleCodeWindowCB(GUI::Widget *w)
     else
 	gdbCloseCodeWindowCB(w);
 
-    update_options(NO_UPDATE);
+    update_options(true);
 }
 
 #endif

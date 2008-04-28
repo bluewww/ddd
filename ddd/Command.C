@@ -240,8 +240,13 @@ static std::ostream& operator<<(std::ostream& os, const Command& c)
 // True while do_gdb_command() is running
 static bool processing_gdb_commands = false;
 
+#if defined(IF_XM)
 // Non-zero in the first 200ms after continuing
-static XtIntervalId continuing = NO_TIMER;
+static XtIntervalId continuing = 0;
+#else
+// Non-zero in the first 200ms after continuing
+static GUI::connection continuing;
+#endif
 
 // True when interrupting running command
 static bool interrupting = false;
@@ -464,7 +469,7 @@ bool can_do_gdb_command()
     if (gdb_prompts_y_or_n())
 	return false;		// GDB prompts
 
-    if (app_data.stop_and_continue && !gdb->recording() && continuing == NO_TIMER)
+    if (app_data.stop_and_continue && !gdb->recording() && !continuing)
     {
 	if (is_cont_cmd(current_gdb_command.command))
 	    return true;	// We can interrupt `run' and `cond'
@@ -554,23 +559,22 @@ static void do_gdb_command(Command& given_c, bool is_command = true)
 	    else
 		timeout = app_data.cont_interrupt_delay;
 
-	    if (continuing != NO_TIMER) {
 #if defined(IF_XM)
+	    if (continuing != 0) {
 		XtRemoveTimeOut(continuing);
-#else
-		continuing.disconnect();
-#endif
 	    }
 
-#if defined(IF_XM)
 	    continuing = 
 		XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 
 				timeout, ClearContinuingCB, XtPointer(0));
 #else
+	    if (continuing) {
+		continuing.disconnect();
+	    }
+
 	    continuing = 
 		GUI::signal_timeout().connect(sigc::ptr_fun(ClearContinuingCB), timeout);
 #endif
-
 	    // std::clog << "Continuing...\n";
 	}
 
@@ -580,7 +584,7 @@ static void do_gdb_command(Command& given_c, bool is_command = true)
 	     !gdb->recording() &&
 	     !gdb_prompts_y_or_n() &&
 	     is_cont_cmd(current_gdb_command.command) &&
-	     continuing == NO_TIMER &&
+	     !continuing &&
 	     !interrupting)
     {
 #if LOG_COMMAND_QUEUE
@@ -828,7 +832,11 @@ void gdb_command(const Command& c0)
     gdb_enqueue_command(c);
 }
 
-static XtIntervalId process_timeout = NO_TIMER;
+#if defined(IF_XM)
+static XtIntervalId process_timeout = 0;
+#else
+static GUI::connection process_timeout;
+#endif
 
 static void gdb_enqueue_command(const Command& c)
 {
@@ -879,18 +887,22 @@ static void gdb_enqueue_command(const Command& c)
     std::clog << "Command queue: " << commandQueue << "\n";
 #endif
 
-    if (process_timeout == NO_TIMER)
+#if defined(IF_XM)
+    if (process_timeout == 0)
     {
 	// Be sure to process the new command queue
-#if defined(IF_XM)
 	process_timeout = 
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 
 			    200, processCommandQueue, XtPointer(0));
+    }
 #else
+    if (!process_timeout)
+    {
+	// Be sure to process the new command queue
 	process_timeout = 
 	    Glib::signal_timeout().connect(sigc::ptr_fun(processCommandQueue), 200);
-#endif
     }
+#endif
 }
 
 #if defined(IF_XM)

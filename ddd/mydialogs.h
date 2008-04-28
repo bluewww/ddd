@@ -33,6 +33,10 @@
 #ifndef _DDD_mydialogs_h
 #define _DDD_mydialogs_h
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #if defined(IF_XM)
 
 // Motif includes

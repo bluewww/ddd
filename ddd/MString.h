@@ -64,18 +64,12 @@ public:
 	assert(OK());
     }
 
-#if defined(IF_XM)
-
     MString(const char *text,
 	    XmStringCharSet charset = MSTRING_DEFAULT_CHARSET):
 	_mstring(text ? XmStringCreateLtoR(XMST(text), charset) : 0)
     {
 	assert(OK());
     }
-
-#endif
-
-#if defined(IF_XM)
 
     MString(const string& text,
 	    XmStringCharSet charset = MSTRING_DEFAULT_CHARSET):
@@ -84,10 +78,6 @@ public:
 	assert(OK());
     }
 
-#endif
-
-#if defined(IF_XM)
-
     // In Motif 1.1, `XmString' is defined as `char *'; hence the
     // DUMMY parameter
     MString(XmString text, bool /* dummy */):
@@ -95,8 +85,6 @@ public:
     {
 	assert(OK());
     }
-
-#endif
 
     // Copy constructor
     MString(const MString& m):
@@ -269,22 +257,20 @@ public:
     }
 
     MString(const char *text,
-	    XmStringCharSet charset = MSTRING_DEFAULT_CHARSET):
+	    const char *charset = MSTRING_DEFAULT_CHARSET):
 	_mstring(text)
     {
 	assert(OK());
     }
 
     MString(const string& text,
-	    XmStringCharSet charset = MSTRING_DEFAULT_CHARSET):
+	    const char *charset = MSTRING_DEFAULT_CHARSET):
 	_mstring(text.chars())
     {
 	assert(OK());
     }
 
-    // In Motif 1.1, `XmString' is defined as `char *'; hence the
-    // DUMMY parameter
-    MString(XmString text, bool /* dummy */):
+    MString(const Glib::ustring &text, bool /* dummy */):
 	_mstring(text)
     {
 	assert(OK());
@@ -462,7 +448,6 @@ inline MString operator + (const MString& m1, const MString& m2)
 
 inline MString operator + (const MString& m, const char *s)
 {
-    MString s0(s);
     return operator + (m, MString(s));
 }
 

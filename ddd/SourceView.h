@@ -778,7 +778,7 @@ class SourceView {
 #if defined(IF_XM)
     static Pixmap pixmap(Widget w, unsigned char *bits, int width, int height);
 #else
-    static Glib::RefPtr<Gdk::Pixbuf> pixmap(unsigned char *bits, int width, int height);
+    static GUI::ImageHandle pixmap(unsigned char *bits, int width, int height);
 #endif
 
 #if defined(IF_XM)

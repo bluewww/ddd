@@ -246,7 +246,7 @@ void updateLabelList (GUI::ListView *selectionList,
 #if defined(IF_XM)
 
 // Fill the item numbers in DISP_NRS
-void getItemNumbers(GUI::ListView *selectionList, IntArray& numbers)
+void getItemNumbers(Widget selectionList, IntArray& numbers)
 {
     static const IntArray empty;
     numbers = empty;

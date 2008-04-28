@@ -34,12 +34,14 @@
 #include "config.h"
 #endif
 
-#ifdef IF_MOTIF
-#include <X11/Intrinsic.h>
-#endif
+#if defined(IF_XM)
 
-#if !defined(IF_XM)
+#include <X11/Intrinsic.h>
+
+#else
+
 #include <GUI/Main.h>
+
 #endif
 
 #include "gtk_wrapper.h"

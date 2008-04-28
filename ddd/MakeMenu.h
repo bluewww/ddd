@@ -313,7 +313,7 @@ extern void dummy_xcallback(GUI::Widget *);
 #define GENTRYI(n,i,t,c,cx,sub,w) { n, "", i, t, MMNoCB, sub, 0, 0, 0, cx, (Xmmm::Widget **)w, 0}
 #define GENTRYLI(n,s,i,t,c,cx,sub,w) { n, s, i, t, MMNoCB, sub, 0, 0, 0, cx, (Xmmm::Widget **)w, 0}
 #else
-#if 1
+#if 0
 #define MENTRYL(n,s,t,c,sub,w) { n, s, NULL, t, MDUMMY, sub, 0, 0, 0}
 #define MENTRYI(n,i,t,c,sub,w) { n, "", i, t, MDUMMY, sub, 0, 0, 0}
 #define MENTRYLI(n,s,i,t,c,sub,w) { n, s, i, t, MDUMMY, sub, 0, 0, 0}

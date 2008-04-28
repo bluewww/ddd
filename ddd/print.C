@@ -66,7 +66,7 @@ char print_rcsid[] =
 #include <errno.h>
 #include <unistd.h>
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include <Xm/Xm.h>
 #include <Xm/ToggleB.h>
 #include <Xm/RowColumn.h>
@@ -117,7 +117,7 @@ static string msg(const string& path, bool displays, bool to_file)
 static int print_to_file(const string& filename, PrintGC& gc, 
 			 bool selectedOnly, bool displays)
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     string path = filename;
     if (!filename.contains('/', 0))
 	path.prepend(cwd() + '/');
@@ -173,19 +173,28 @@ static int print_to_file(const string& filename, PrintGC& gc,
     return 0;
 }
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
+
 static void deletePrintAgent(XtPointer client_data, XtIntervalId *)
-#else
-static bool deletePrintAgent(Agent *client_data)
-#endif
 {
     // Delete agent after use
     Agent *edit_agent = (Agent *)client_data;
     delete edit_agent;
-#if !defined(IF_MOTIF)
-    return false;
-#endif
 }
+
+#else
+
+static bool deletePrintAgent(Agent *client_data)
+{
+    // Delete agent after use
+    Agent *edit_agent = (Agent *)client_data;
+    delete edit_agent;
+    return false;
+}
+
+#endif
+
+#if defined(IF_XM)
 
 static void unlinkPrintFile(XtPointer client_data, XtIntervalId *)
 {
@@ -194,6 +203,18 @@ static void unlinkPrintFile(XtPointer client_data, XtIntervalId *)
     unlink(tempfile->chars());
     delete tempfile;
 }
+
+#else
+
+static bool unlinkPrintFile(string *tempfile)
+{
+    // Delete temp file after use
+    unlink(tempfile->chars());
+    delete tempfile;
+    return false;
+}
+
+#endif
 
 static string output_buffer;
 
@@ -204,13 +225,14 @@ static void printDoneHP(Agent *print_agent, void *client_data, void *)
     print_agent->removeAllHandlers(Died);
 
     // Printing is done: remove temporary file
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0, deletePrintAgent, 
 		    XtPointer(print_agent));
     XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0, unlinkPrintFile, 
 		    XtPointer(client_data));
 #else
-    Glib::signal_idle().connect(sigc::bind(PTR_FUN(deletePrintAgent), print_agent));
+    Glib::signal_idle().connect(sigc::bind(sigc::ptr_fun(deletePrintAgent), print_agent));
+    Glib::signal_idle().connect(sigc::bind(sigc::ptr_fun(deletePrintAgent), print_agent));
 #endif
 
     if (!output_buffer.empty())
@@ -308,7 +330,7 @@ static GUI::CheckButton * custom_paper_size;
 
 // Go and print according to local state
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 
 void PrintAgainCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
@@ -324,7 +346,7 @@ void PrintAgainCB(Widget w, XtPointer client_data, XtPointer call_data)
 
 	if (print_command_field != 0)
 	{
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	    String c = XmTextFieldGetString(print_command_field);
 	    command = c;
 	    XtFree(c);
@@ -364,7 +386,7 @@ void PrintAgainCB(Widget w, XtPointer client_data, XtPointer call_data)
 	}
 	PrintGC& gc = *gc_ptr;
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	String file = XmTextFieldGetString(print_file_name_field);
 	string f = file;
 	XtFree(file);
@@ -452,7 +474,7 @@ static string suffix(PrintType print_type)
 
 static void set_print_file_name(const string& name)
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     XmTextFieldSetString(print_file_name_field, XMST(name.chars()));
 
     XmTextPosition last_pos = 
@@ -603,12 +625,8 @@ static void SetPrintTargetCB(GUI::CheckButton *w, long client_data)
 
 static void set_paper_size_string(const char *s)
 {
-#if defined(IF_MOTIF)
 #if defined(IF_XM)
     Widget text = XmSelectionBoxGetChild(paper_size_dialog, XmDIALOG_TEXT);
-#else
-    Widget text = XmSelectionBoxGetChild(paper_size_dialog->internal(), XmDIALOG_TEXT);
-#endif
     XmTextSetString(text, XMST(s));
 
     static string current_paper_size;
@@ -1384,7 +1402,7 @@ static void PrintCB(Widget parent, bool displays)
 		MMNoCB, MDUMMY,
 		0, &print_file_name_field),
 	GENTRYL("browse", "browse", MMPush,
-		BIND_0(PTR_FUN(BrowseNameCB)),
+		BIND(BrowseNameCB, 0),
 		sigc::ptr_fun(BrowseNameCB),
 		0, 0),
 	MMEnd

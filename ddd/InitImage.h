@@ -29,35 +29,50 @@
 #ifndef _DDD_InitImage_h
 #define _DDD_InitImage_h
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
 
-#endif // IF_MOTIF
+#else
+
+#include <GUI/Image.h>
+
+#endif
 
 #include "gtk_wrapper.h"
 
+#if defined(IF_XM)
+
 // Initialize IMAGE
-extern void InitImage(XIMAGE_P image);
+extern void InitImage(XImage *image);
 
 // Create IMAGE from bitmap source
-extern XIMAGE_P CreateImageFromBitmapData(unsigned char *bits,
-					  int width, int height);
+extern XImage *CreateImageFromBitmapData(unsigned char *bits,
+					 int width, int height);
 
 // Install IMAGE in Motif cache
-#ifdef IF_MOTIF
-Boolean InstallImage(XIMAGE_P image, const char *name);
-#else // NOT IF_MOTIF
-Boolean InstallImage(XIMAGE_P image, XIMAGE_P &pointer);
-#endif // IF_MOTIF
+Boolean InstallImage(XImage *image, const char *name);
 
 // Install bitmap in Motif cache
-#ifdef IF_MOTIF
 Boolean InstallBitmap(unsigned char *bits, int width, int height, const char *name);
-#else // NOT IF_MOTIF
-Boolean InstallBitmap(unsigned char *bits, int width, int height, XIMAGE_P &name);
-#endif // IF_MOTIF
+
+#else
+
+// Initialize IMAGE
+extern void InitImage(GUI::ImageHandle &image);
+
+// Create IMAGE from bitmap source
+extern GUI::ImageHandle CreateImageFromBitmapData(unsigned char *bits,
+						  int width, int height);
+
+// Install IMAGE in Image cache
+Boolean InstallImage(GUI::ImageHandle image, GUI::ImageHandle &pointer);
+
+// Install bitmap in Image cache
+Boolean InstallBitmap(unsigned char *bits, int width, int height, GUI::ImageHandle &name);
+
+#endif
 
 #endif // _DDD_InitImage_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

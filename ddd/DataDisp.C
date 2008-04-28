@@ -211,19 +211,19 @@ struct GraphItms { enum Itms {SelectAll, Refresh, NewArg, New}; };
 MMDesc DataDisp::graph_popup[] =
 {
     GENTRYL("selectAll", "Select All", MMPush, 
-	    BIND_0(PTR_FUN(DataDisp::selectAllCB)),
+	    BIND(DataDisp::selectAllCB, 0),
 	    sigc::ptr_fun(DataDisp::selectAllCB),
 	    0, 0),
     GENTRYL("refresh", "Refresh", MMPush,
-	    BIND_0(PTR_FUN(DataDisp::refreshCB)),
+	    BIND(DataDisp::refreshCB, 0),
 	    sigc::ptr_fun(DataDisp::refreshCB),
 	    0, 0),
     GENTRYL("new_arg", "new_arg", MMPush | MMUnmanaged,
-	    BIND_1(PTR_FUN(DataDisp::popup_new_argCB), (BoxPoint *)0),
+	    BIND(DataDisp::popup_new_argCB, (BoxPoint *)0),
 	    sigc::bind(sigc::ptr_fun(DataDisp::popup_new_argCB), (BoxPoint *)0),
 	    0, 0),
     GENTRYL("new", "New Display...", MMPush,
-	    BIND_1(PTR_FUN(DataDisp::popup_newCB), (BoxPoint *)0),
+	    BIND(DataDisp::popup_newCB, (BoxPoint *)0),
 	    sigc::bind(sigc::ptr_fun(DataDisp::popup_newCB), (BoxPoint *)0),
 	    0, 0),
     MMEnd
@@ -234,87 +234,87 @@ const int DataDisp::shortcut_items = 20;
 
 #define SHORTCUT_MENU							\
     GENTRYL("s1", "s1", MMPush | MMUnmanaged,				\
-	    BIND_1(PTR_FUN(DataDisp::shortcutCB), 1),			\
+	    BIND(DataDisp::shortcutCB, 1),			\
 	    sigc::bind(sigc::ptr_fun(DataDisp::shortcutCB), 1),		\
 	    0, 0),							\
     GENTRYL("s2", "s2", MMPush | MMUnmanaged,				\
-	    BIND_1(PTR_FUN(DataDisp::shortcutCB), 2),			\
+	    BIND(DataDisp::shortcutCB, 2),			\
 	    sigc::bind(sigc::ptr_fun(DataDisp::shortcutCB), 2),		\
 	    0, 0),							\
     GENTRYL("s3", "s3", MMPush | MMUnmanaged,				\
-	    BIND_1(PTR_FUN(DataDisp::shortcutCB), 3),			\
+	    BIND(DataDisp::shortcutCB, 3),			\
 	    sigc::bind(sigc::ptr_fun(DataDisp::shortcutCB), 3),		\
 	    0, 0),							\
     GENTRYL("s4", "s4", MMPush | MMUnmanaged,				\
-	    BIND_1(PTR_FUN(DataDisp::shortcutCB), 4),			\
+	    BIND(DataDisp::shortcutCB, 4),			\
 	    sigc::bind(sigc::ptr_fun(DataDisp::shortcutCB), 4),		\
 	    0, 0),							\
     GENTRYL("s5", "s5", MMPush | MMUnmanaged,				\
-	    BIND_1(PTR_FUN(DataDisp::shortcutCB), 5),			\
+	    BIND(DataDisp::shortcutCB, 5),			\
 	    sigc::bind(sigc::ptr_fun(DataDisp::shortcutCB), 5),		\
 	    0, 0),							\
     GENTRYL("s6", "s6", MMPush | MMUnmanaged,				\
-	    BIND_1(PTR_FUN(DataDisp::shortcutCB), 6),			\
+	    BIND(DataDisp::shortcutCB, 6),			\
 	    sigc::bind(sigc::ptr_fun(DataDisp::shortcutCB), 6),		\
 	    0, 0),							\
     GENTRYL("s7", "s7", MMPush | MMUnmanaged,				\
-	    BIND_1(PTR_FUN(DataDisp::shortcutCB), 7),			\
+	    BIND(DataDisp::shortcutCB, 7),			\
 	    sigc::bind(sigc::ptr_fun(DataDisp::shortcutCB), 7),		\
 	    0, 0),							\
     GENTRYL("s8", "s8", MMPush | MMUnmanaged,				\
-	    BIND_1(PTR_FUN(DataDisp::shortcutCB), 8),			\
+	    BIND(DataDisp::shortcutCB, 8),			\
 	    sigc::bind(sigc::ptr_fun(DataDisp::shortcutCB), 8),		\
 	    0, 0),							\
     GENTRYL("s9", "s9", MMPush | MMUnmanaged,				\
-	    BIND_1(PTR_FUN(DataDisp::shortcutCB), 9),			\
+	    BIND(DataDisp::shortcutCB, 9),			\
 	    sigc::bind(sigc::ptr_fun(DataDisp::shortcutCB), 9),		\
 	    0, 0),							\
     GENTRYL("s10", "s10", MMPush | MMUnmanaged,				\
-	    BIND_1(PTR_FUN(DataDisp::shortcutCB), 10),			\
+	    BIND(DataDisp::shortcutCB, 10),			\
 	    sigc::bind(sigc::ptr_fun(DataDisp::shortcutCB), 10),	\
 	    0, 0),							\
     GENTRYL("s11", "s11", MMPush | MMUnmanaged,				\
-	    BIND_1(PTR_FUN(DataDisp::shortcutCB), 11),			\
+	    BIND(DataDisp::shortcutCB, 11),			\
 	    sigc::bind(sigc::ptr_fun(DataDisp::shortcutCB), 11),	\
 	    0, 0),							\
     GENTRYL("s12", "s12", MMPush | MMUnmanaged,				\
-	    BIND_1(PTR_FUN(DataDisp::shortcutCB), 12),			\
+	    BIND(DataDisp::shortcutCB, 12),			\
 	    sigc::bind(sigc::ptr_fun(DataDisp::shortcutCB), 12),	\
 	    0, 0),							\
     GENTRYL("s13", "s13", MMPush | MMUnmanaged,				\
-	    BIND_1(PTR_FUN(DataDisp::shortcutCB), 13),			\
+	    BIND(DataDisp::shortcutCB, 13),			\
 	    sigc::bind(sigc::ptr_fun(DataDisp::shortcutCB), 13),	\
 	    0, 0),							\
     GENTRYL("s14", "s14", MMPush | MMUnmanaged,				\
-	    BIND_1(PTR_FUN(DataDisp::shortcutCB), 14),			\
+	    BIND(DataDisp::shortcutCB, 14),			\
 	    sigc::bind(sigc::ptr_fun(DataDisp::shortcutCB), 14),	\
 	    0, 0),							\
     GENTRYL("s15", "s15", MMPush | MMUnmanaged,				\
-	    BIND_1(PTR_FUN(DataDisp::shortcutCB), 15),			\
+	    BIND(DataDisp::shortcutCB, 15),			\
 	    sigc::bind(sigc::ptr_fun(DataDisp::shortcutCB), 15),	\
 	    0, 0),							\
     GENTRYL("s16", "s16", MMPush | MMUnmanaged,				\
-	    BIND_1(PTR_FUN(DataDisp::shortcutCB), 16),			\
+	    BIND(DataDisp::shortcutCB, 16),			\
 	    sigc::bind(sigc::ptr_fun(DataDisp::shortcutCB), 16),	\
 	    0, 0),							\
     GENTRYL("s17", "s17", MMPush | MMUnmanaged,				\
-	    BIND_1(PTR_FUN(DataDisp::shortcutCB), 17),			\
+	    BIND(DataDisp::shortcutCB, 17),			\
 	    sigc::bind(sigc::ptr_fun(DataDisp::shortcutCB), 17),	\
 	    0, 0),							\
     GENTRYL("s18", "s18", MMPush | MMUnmanaged,				\
-	    BIND_1(PTR_FUN(DataDisp::shortcutCB), 18),			\
+	    BIND(DataDisp::shortcutCB, 18),			\
 	    sigc::bind(sigc::ptr_fun(DataDisp::shortcutCB), 18),	\
 	    0, 0),							\
     GENTRYL("s19", "s19", MMPush | MMUnmanaged,				\
-	    BIND_1(PTR_FUN(DataDisp::shortcutCB), 19),			\
+	    BIND(DataDisp::shortcutCB, 19),			\
 	    sigc::bind(sigc::ptr_fun(DataDisp::shortcutCB), 19),	\
 	    0, 0),							\
     GENTRYL("s20", "s20", MMPush | MMUnmanaged,				\
-	    BIND_1(PTR_FUN(DataDisp::shortcutCB), 20),			\
+	    BIND(DataDisp::shortcutCB, 20),			\
 	    sigc::bind(sigc::ptr_fun(DataDisp::shortcutCB), 20),	\
 	    0, 0),							\
     GENTRYL("other", "Other...", MMPush,				\
-	    BIND_0(PTR_FUN(DataDisp::dependentCB)),			\
+	    BIND(DataDisp::dependentCB, 0),			\
 	    sigc::ptr_fun(DataDisp::dependentCB),			\
 	    0, 0),							\
     MMSep,								\
@@ -339,11 +339,11 @@ MMDesc DataDisp::shortcut_menu[]   =
     SHORTCUT_MENU,
     MMSep,
     GENTRYLI("new2", "Display ()", DISPLAY_ICON, MMPush,
-	     BIND_1(PTR_FUN(DataDisp::displayArgCB), false),
+	     BIND(DataDisp::displayArgCB, false),
 	     sigc::bind(sigc::ptr_fun(DataDisp::displayArgCB), false),
 	     0, 0),
     GENTRYLI("dereference2", "Display *()", DISPREF_ICON, MMPush,
-	     BIND_0(PTR_FUN(DataDisp::dereferenceArgCB)),
+	     BIND(DataDisp::dereferenceArgCB, 0),
 	     sigc::ptr_fun(DataDisp::dereferenceArgCB),
 	     0, 0),
     MMEnd
@@ -360,7 +360,7 @@ struct RotateItms { enum Itms {RotateAll}; };
 MMDesc DataDisp::rotate_menu[] =
 {
     GENTRYL("rotateAll", "Rotate All ()", MMPush | MMInsensitive, 
-	    BIND_1(PTR_FUN(DataDisp::rotateCB), true),
+	    BIND(DataDisp::rotateCB, true),
 	    sigc::bind(sigc::ptr_fun(DataDisp::rotateCB), true),
 	    0, 0),
     MMEnd
@@ -466,7 +466,7 @@ struct NodeItms { enum Itms {Dereference, New, Theme, Sep1,
 MMDesc DataDisp::node_popup[] =
 {
     GENTRYL("dereference", "Display *", MMPush,
-	    BIND_0(PTR_FUN(DataDisp::dereferenceCB)),
+	    BIND(DataDisp::dereferenceCB, 0),
 	    sigc::ptr_fun(DataDisp::dereferenceCB),
 	    0, 0),
     GENTRYL("new", "New Display", MMMenu,
@@ -479,20 +479,20 @@ MMDesc DataDisp::node_popup[] =
 	    DataDisp::theme_menu, 0),
     MMSep,
     GENTRYL("detail", "Show Detail", MMPush, 
-	    BIND_1(PTR_FUN(DataDisp::toggleDetailCB), -1),
+	    BIND(DataDisp::toggleDetailCB, -1),
 	    sigc::bind(sigc::ptr_fun(DataDisp::toggleDetailCB), -1),
 	    0, 0),
     GENTRYL("rotate", "Rotate", MMPush, 
-	    BIND_1(PTR_FUN(DataDisp::rotateCB), false),
+	    BIND(DataDisp::rotateCB, false),
 	    sigc::bind(sigc::ptr_fun(DataDisp::rotateCB), false),
 	    0, 0),
     GENTRYL("set", "Set Value...", MMPush,
-	    BIND_0(PTR_FUN(DataDisp::setCB)),
+	    BIND(DataDisp::setCB, 0),
 	    sigc::ptr_fun(DataDisp::setCB),
 	    0, 0),
     MMSep,
     GENTRYL("delete", "Undisplay", MMPush, 
-	    BIND_0(PTR_FUN(DataDisp::deleteCB)),
+	    BIND(DataDisp::deleteCB, 0),
 	    sigc::ptr_fun(DataDisp::deleteCB),
 	    0, 0),
     MMEnd
@@ -515,7 +515,7 @@ struct PlotItms { enum Itms { History }; };
 MMDesc DataDisp::plot_menu[] =
 {
     GENTRYL("history", "Plot history of ()", MMPush,
-	    BIND_0(PTR_FUN(DataDisp::plotHistoryCB)), 
+	    BIND(DataDisp::plotHistoryCB, 0), 
 	    sigc::ptr_fun(DataDisp::plotHistoryCB), 
 	    0, 0),
     MMEnd
@@ -528,31 +528,31 @@ struct CmdItms { enum Itms {New, Dereference, Plot,
 MMDesc DataDisp::graph_cmd_area[] =
 {
     GENTRYI("new", DISPLAY_ICON, MMPush, 
-	    BIND_1(PTR_FUN(DataDisp::displayArgCB), true), 
+	    BIND(DataDisp::displayArgCB, true), 
 	    sigc::bind(sigc::ptr_fun(DataDisp::displayArgCB), true), 
 	    DataDisp::shortcut_menu, 0),
     GENTRYI("dereference", DISPREF_ICON, MMPush | MMInsensitive | MMUnmanaged, 
-	    BIND_0(PTR_FUN(DataDisp::dereferenceArgCB)),
+	    BIND(DataDisp::dereferenceArgCB, 0),
 	    (sigc::ptr_fun(DataDisp::dereferenceArgCB)),
 	    0, 0),
     GENTRYI("plot", PLOT_ICON, MMPush | MMInsensitive,
-	    BIND_0(PTR_FUN(DataDisp::plotArgCB)), 
+	    BIND(DataDisp::plotArgCB, 0), 
 	    (sigc::ptr_fun(DataDisp::plotArgCB)), 
 	    DataDisp::plot_menu, 0),
     GENTRYI("detail", SHOW_ICON, MMPush | MMInsensitive, 
-	    BIND_1(PTR_FUN(DataDisp::toggleDetailCB), -1), 
+	    BIND(DataDisp::toggleDetailCB, -1), 
 	    sigc::bind(sigc::ptr_fun(DataDisp::toggleDetailCB), -1), 
 	    DataDisp::detail_menu, 0),
     GENTRYI("rotate", ROTATE_ICON, MMPush | MMInsensitive, 
-	    BIND_1(PTR_FUN(DataDisp::rotateCB), false),
+	    BIND(DataDisp::rotateCB, false),
 	    sigc::bind(sigc::ptr_fun(DataDisp::rotateCB), false),
 	    DataDisp::rotate_menu, 0),
     GENTRYI("set", SET_ICON, MMPush | MMInsensitive, 
-	    BIND_0(PTR_FUN(DataDisp::setCB)),
+	    BIND(DataDisp::setCB, 0),
 	    (sigc::ptr_fun(DataDisp::setCB)),
 	    0, 0),
     GENTRYI("delete", UNDISPLAY_ICON, MMPush | MMInsensitive, 
-	    BIND_0(PTR_FUN(DataDisp::deleteArgCB)),
+	    BIND(DataDisp::deleteArgCB, 0),
 	    (sigc::ptr_fun(DataDisp::deleteArgCB)),
 	    DataDisp::delete_menu, 0),
     MMEnd
@@ -565,19 +565,19 @@ struct DetailItms { enum Itms { ShowMore, ShowJust,
 MMDesc DataDisp::detail_menu[] =
 {
     GENTRYL("show_more", "Show More ()", MMPush, 
-	    BIND_1(PTR_FUN(DataDisp::showMoreDetailCB), 1),
+	    BIND(DataDisp::showMoreDetailCB, 1),
 	    sigc::bind(sigc::ptr_fun(DataDisp::showMoreDetailCB), 1),
 	    0, 0),
     GENTRYL("show_just", "Show Just ()", MMPush, 
-	    BIND_1(PTR_FUN(DataDisp::showDetailCB), 1),
+	    BIND(DataDisp::showDetailCB, 1),
 	    sigc::bind(sigc::ptr_fun(DataDisp::showDetailCB), 1),
 	    0, 0),
     GENTRYL("show_detail", "Show All ()", MMPush, 
-	    BIND_1(PTR_FUN(DataDisp::showDetailCB), -1),
+	    BIND(DataDisp::showDetailCB, -1),
 	    sigc::bind(sigc::ptr_fun(DataDisp::showDetailCB), -1),
 	    0, 0),
     GENTRYL("hide_detail", "Hide ()", MMPush, 
-	    BIND_0(PTR_FUN(DataDisp::hideDetailCB)),
+	    BIND(DataDisp::hideDetailCB, 0),
 	    (sigc::ptr_fun(DataDisp::hideDetailCB)),
 	    0, 0),
     MMEnd
@@ -590,35 +590,35 @@ struct DisplayItms { enum Itms {New, Dereference,
 MMDesc DataDisp::display_area[] =
 {
     GENTRYL("new", "New...", MMPush,
-	    BIND_0(PTR_FUN(DataDisp::dependentCB)),
+	    BIND(DataDisp::dependentCB, 0),
 	    (sigc::ptr_fun(DataDisp::dependentCB)),
 	    0, 0),
     GENTRYL("dereference", "Display *", MMPush,
-	    BIND_0(PTR_FUN(DataDisp::dereferenceCB)),
+	    BIND(DataDisp::dereferenceCB, 0),
 	    (sigc::ptr_fun(DataDisp::dereferenceCB)),
 	    0, 0),
     GENTRYL("show_detail", "Show All ()", MMPush, 
-	    BIND_1(PTR_FUN(DataDisp::showDetailCB), -1),
+	    BIND(DataDisp::showDetailCB, -1),
 	    sigc::bind(sigc::ptr_fun(DataDisp::showDetailCB), -1),
 	    0, 0),
     GENTRYL("hide_detail", "Hide ()", MMPush, 
-	    BIND_0(PTR_FUN(DataDisp::hideDetailCB)),
+	    BIND(DataDisp::hideDetailCB, 0),
 	    (sigc::ptr_fun(DataDisp::hideDetailCB)),
 	    0, 0),
     GENTRYL("set", "Set ()", MMPush,
-	    BIND_0(PTR_FUN(DataDisp::setCB)),
+	    BIND(DataDisp::setCB, 0),
 	    (sigc::ptr_fun(DataDisp::setCB)),
 	    0, 0),
     GENTRYL("cluster", "Cluster ()", MMPush,
-	    HIDE_0(PTR_FUN(DataDisp::clusterSelectedCB)),
+	    BIND(DataDisp::clusterSelectedCB, 0),
 	    sigc::hide(sigc::ptr_fun(DataDisp::clusterSelectedCB)),
 	    0, 0),
     GENTRYL("uncluster", "Uncluster", MMPush,
-	    HIDE_0(PTR_FUN(DataDisp::unclusterSelectedCB)),
+	    BIND(DataDisp::unclusterSelectedCB, 0),
 	    sigc::hide(sigc::ptr_fun(DataDisp::unclusterSelectedCB)),
 	    0, 0),
     GENTRYL("delete", "Undisplay", MMPush | MMHelp, 
-	    BIND_0(PTR_FUN(DataDisp::deleteCB)),
+	    BIND(DataDisp::deleteCB, 0),
 	    (sigc::ptr_fun(DataDisp::deleteCB)),
 	    0, 0),
     MMEnd
@@ -657,9 +657,15 @@ bool DataDisp::arg_needs_update = false;
 int DataDisp::next_ddd_display_number = 1;
 int DataDisp::next_gdb_display_number = 1;
 
-XtIntervalId DataDisp::refresh_args_timer       = NO_TIMER;
-XtIntervalId DataDisp::refresh_addr_timer       = NO_TIMER;
-XtIntervalId DataDisp::refresh_graph_edit_timer = NO_TIMER;
+#if defined(IF_XM)
+XtIntervalId DataDisp::refresh_args_timer       = 0;
+XtIntervalId DataDisp::refresh_addr_timer       = 0;
+XtIntervalId DataDisp::refresh_graph_edit_timer = 0;
+#else
+GUI::connection DataDisp::refresh_args_timer;
+GUI::connection DataDisp::refresh_addr_timer;
+GUI::connection DataDisp::refresh_graph_edit_timer;
+#endif
 
 // Array of shortcut expressions and their labels
 StringArray DataDisp::shortcut_exprs;
@@ -3278,9 +3284,8 @@ void DataDisp::refresh_graph_edit(bool silent)
 			    0, RefreshGraphEditCB, XtPointer(&state));
 #else
 	refresh_graph_edit_timer = 
-	    Glib::signal_idle().connect(sigc::bind_return(sigc::bind(PTR_FUN(RefreshGraphEditCB),
-								     &state),
-							  false));
+	    GUI::signal_idle().connect(sigc::bind(sigc::ptr_fun(RefreshGraphEditCB),
+						  &state));
 #endif
     }
 
@@ -3336,6 +3341,7 @@ bool DataDisp::RefreshGraphEditCB(GraphEditLayoutState *client_data)
     graph_edit->set_graph(disp_graph);
     graph_edit->set_auto_layout(state.autoLayout);
     graph_edit->set_snap_to_grid(state.snapToGrid);
+    return false;
 }
 
 #endif
@@ -3672,9 +3678,9 @@ void DataDisp::graph_popupAct (Widget, XEvent* event, String *args,
 	MMaddCallbacks(node_popup,      XtPointer(p));
 	MMaddCallbacks(shortcut_popup1, XtPointer(p));
 
-	MMaddHelpCallback(graph_popup,     PTR_FUN(ImmediateHelpCB));
-	MMaddHelpCallback(node_popup,      PTR_FUN(ImmediateHelpCB));
-	MMaddHelpCallback(shortcut_popup1, PTR_FUN(ImmediateHelpCB));
+	MMaddHelpCallback(graph_popup,     sigc::ptr_fun(ImmediateHelpCB));
+	MMaddHelpCallback(node_popup,      sigc::ptr_fun(ImmediateHelpCB));
+	MMaddHelpCallback(shortcut_popup1, sigc::ptr_fun(ImmediateHelpCB));
     }
     *p = point(event);
 
@@ -4107,17 +4113,20 @@ void DataDisp::refresh_args(bool update_arg)
     if (update_arg)
 	arg_needs_update = true;
 
-    if (refresh_args_timer == NO_TIMER)
-    {
 #if defined(IF_XM)
+    if (refresh_args_timer == 0)
+    {
 	refresh_args_timer = 
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(graph_edit),
 			    0, RefreshArgsCB, XtPointer(graph_edit));
-#else
-	refresh_args_timer = 
-	    Glib::signal_idle().connect(PTR_FUN(RefreshArgsCB));
-#endif
     }
+#else
+    if (!refresh_args_timer)
+    {
+	refresh_args_timer = 
+	    GUI::signal_idle().connect(sigc::ptr_fun(RefreshArgsCB));
+    }
+#endif
 
     // Synchronize node selection with cluster: if cluster is
     // selected, select all contained nodes, too.
@@ -4180,7 +4189,7 @@ void DataDisp::refresh_args(bool update_arg)
 
 void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *)
 {
-    refresh_args_timer = NO_TIMER;
+    refresh_args_timer = 0;
 
     DataDispCount count(disp_graph);
 
@@ -4495,8 +4504,6 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *)
 
 bool DataDisp::RefreshArgsCB(void)
 {
-    refresh_args_timer = NO_TIMER;
-
     DataDispCount count(disp_graph);
 
     if (count.selected > 1)
@@ -4776,18 +4783,12 @@ bool DataDisp::RefreshArgsCB(void)
     if (cmd.empty())
     {
 	// Nothing selected - clear selection explicitly
-#ifdef NAG_ME
-#warning XmTextClearSelection not implemented.
-#endif
 	std::cerr << "XmTextClearSelection not implemented.\n";
     }
     else
     {
 	// Own the selection
-#ifdef NAG_ME
-#warning TextSetSelection not implemented.
 	std::cerr << "TextSetSelection not implemented.\n";
-#endif
     }
     return false;
 }
@@ -5406,6 +5407,7 @@ bool DataDisp::again_new_displaySQ (NewDisplayInfo *client_data)
 		  info->depends_on, info->deferred, info->clustered,
 		  info->plotted, info->origin, info->verbose, info->prompt);
     delete info;
+    return false;
 }
 
 #endif
@@ -5503,8 +5505,8 @@ void DataDisp::new_displaySQ (const string& display_expression,
 			100, again_new_displaySQ, 
 			new NewDisplayInfo(info));
 #else
-	Glib::signal_timeout().connect(sigc::bind_return(sigc::bind(PTR_FUN(again_new_displaySQ),
-								    new NewDisplayInfo(info)),
+	GUI::signal_timeout().connect(sigc::bind_return(sigc::bind(sigc::ptr_fun(again_new_displaySQ),
+								   new NewDisplayInfo(info)),
 							 false),
 				       100);
 #endif
@@ -5659,7 +5661,7 @@ void DataDisp::new_displaySQ (const string& display_expression,
 			100, again_new_displaySQ, 
 			new NewDisplayInfo(info));
 #else
-	Glib::signal_timeout().connect(sigc::bind_return(sigc::bind(PTR_FUN(again_new_displaySQ),
+	GUI::signal_timeout().connect(sigc::bind_return(sigc::bind(sigc::ptr_fun(again_new_displaySQ),
 								    new NewDisplayInfo(info)),
 							 false),
 				       100);
@@ -7886,7 +7888,7 @@ void DataDisp::refresh_display_list(bool silent)
 		    0, RefreshDisplayListCB,
 		    (silent ? XtPointer(1):XtPointer(0)) );
 #else
-    Glib::signal_idle().connect(sigc::bind_return(sigc::bind(PTR_FUN(RefreshDisplayListCB),
+    GUI::signal_idle().connect(sigc::bind_return(sigc::bind(sigc::ptr_fun(RefreshDisplayListCB),
 							     (silent?1:0)),
 						  false));
 #endif
@@ -8852,7 +8854,7 @@ int DataDisp::add_refresh_addr_commands(StringArray& cmds, DispNode *dn)
 // Refresh all addresses
 void DataDisp::refresh_addr(DispNode *dn)
 {
-    if (refresh_addr_timer != NO_TIMER)
+    if (refresh_addr_timer != 0)
     {
 	XtRemoveTimeOut(refresh_addr_timer);
 	refresh_addr_timer = 0;
@@ -8974,12 +8976,9 @@ bool DataDisp::RefreshAddr(DispNode *dn, bool in_cb)
     {
 	if (!in_cb) {
 	    refresh_addr_timer = 
-		Glib::signal_timeout().connect(sigc::bind(PTR_FUN(RefreshAddrCB), dn), 50);
+		GUI::signal_timeout().connect(sigc::bind(sigc::ptr_fun(RefreshAddrCB), dn), 50);
 	}
 	return true;
-    }
-    else {
-	refresh_addr_timer = NO_TIMER;
     }
 
     if (sent)
@@ -9720,8 +9719,8 @@ DataDisp::DataDisp(GUI::Container *parent, GUI::WidgetPtr<GUI::Container> &data_
 	XtAddCallback(arg_label, XmNactivateCallback, 
 		      ClearTextFieldCB, graph_arg->text());
 #else
-	arg_label->signal_clicked().connect(PTR_FUN(SelectionLostCB));
-	arg_label->signal_clicked().connect(sigc::bind(PTR_FUN(ClearTextFieldCB), graph_arg->text()));
+	arg_label->signal_clicked().connect(sigc::ptr_fun(SelectionLostCB));
+	arg_label->signal_clicked().connect(sigc::bind(sigc::ptr_fun(ClearTextFieldCB), graph_arg->text()));
 #endif
     }
 
@@ -9914,15 +9913,15 @@ void DataDisp::create_shells()
     register_menu_shell(display_area);
 
     // Add widget callbacks
-    graph_edit->signal_pre_selection().connect(sigc::bind<0>(PTR_FUN(&DataDisp::DoubleClickCB), graph_edit));
-    graph_edit->signal_selection_changed().connect(sigc::hide(PTR_FUN(&DataDisp::UpdateDisplayEditorSelectionCB)));
-    graph_edit->signal_compare_nodes().connect(PTR_FUN(&DataDisp::CompareNodesCB));
-    graph_edit->signal_pre_layout().connect(sigc::hide(sigc::bind<0>(PTR_FUN(&DataDisp::PreLayoutCB), graph_edit)));
-    graph_edit->signal_post_layout().connect(sigc::hide(sigc::bind<0>(PTR_FUN(&DataDisp::PostLayoutCB), graph_edit)));
+    graph_edit->signal_pre_selection().connect(sigc::bind<0>(sigc::ptr_fun(&DataDisp::DoubleClickCB), graph_edit));
+    graph_edit->signal_selection_changed().connect(sigc::hide(sigc::ptr_fun(&DataDisp::UpdateDisplayEditorSelectionCB)));
+    graph_edit->signal_compare_nodes().connect(sigc::ptr_fun(&DataDisp::CompareNodesCB));
+    graph_edit->signal_pre_layout().connect(sigc::hide(sigc::bind<0>(sigc::ptr_fun(&DataDisp::PreLayoutCB), graph_edit)));
+    graph_edit->signal_post_layout().connect(sigc::hide(sigc::bind<0>(sigc::ptr_fun(&DataDisp::PostLayoutCB), graph_edit)));
 
     if (display_list_w != 0)
     {
-	display_list_w->get_selection()->signal_changed().connect(PTR_FUN(UpdateGraphEditorSelectionCB));
+	display_list_w->get_selection()->signal_changed().connect(sigc::ptr_fun(UpdateGraphEditorSelectionCB));
     }
 
     if (edit_displays_dialog_w != 0)

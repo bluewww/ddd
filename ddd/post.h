@@ -36,14 +36,14 @@
 #include "strclass.h"
 #include "bool.h"
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 
 #include <X11/Intrinsic.h>
 
-#endif
+#else
 
-#if !defined(IF_XM)
 #include <GUI/Dialog.h>
+
 #endif
 
 #include "gtk_wrapper.h"

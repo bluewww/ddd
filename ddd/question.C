@@ -42,9 +42,9 @@ char question_rcsid[] =
 #include "TimeOut.h"
 #include "disp-read.h"
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 #include <X11/Intrinsic.h>
-#endif // IF_MOTIF
+#endif
 #include <iostream>
 
 #ifndef LOG_GDB_QUESTION
@@ -69,12 +69,10 @@ struct GDBReply {
     {}
 };
 
+#if defined(IF_XM)
+
 // Timeout proc - called from XtAppAddTimeOut()
-#ifdef IF_MOTIF
 static void gdb_reply_timeout(XtPointer client_data, XtIntervalId *)
-#else // NOT IF_MOTIF
-static bool gdb_reply_timeout(GDBReply *client_data)
-#endif // IF_MOTIF
 {
 #if LOG_GDB_QUESTION
     std::clog << "gdb_question: TimeOut\n";
@@ -88,10 +86,29 @@ static bool gdb_reply_timeout(GDBReply *client_data)
     reply->answer   = NO_GDB_ANSWER;
     reply->received = true;
     reply->answered = false;
-#ifndef IF_MOTIF
-    return false;
-#endif // IF_MOTIF
 }
+
+#else
+
+// Timeout proc - called from XtAppAddTimeOut()
+static bool gdb_reply_timeout(GDBReply *client_data)
+{
+#if LOG_GDB_QUESTION
+    std::clog << "gdb_question: TimeOut\n";
+#endif
+
+    assert(gdb_question_running);
+
+    GDBReply *reply = (GDBReply *)client_data;
+    assert(!reply->received);
+
+    reply->answer   = NO_GDB_ANSWER;
+    reply->received = true;
+    reply->answered = false;
+    return false;
+}
+
+#endif
 
 // GDB sent a reply - Called from GDBAgent::send_question()
 static void gdb_reply(const string& complete_answer, void *qu_data)
@@ -133,6 +150,8 @@ void filter_junk(string& answer)
     }
 }
 
+#if defined(IF_XM)
+
 // Wait for GDB reply
 static void wait_for_gdb_reply(GDBReply *reply, int timeout)
 {
@@ -142,27 +161,18 @@ static void wait_for_gdb_reply(GDBReply *reply, int timeout)
     if (timeout == 0)
 	timeout = app_data.question_timeout;
 
-    XtIntervalId timer = NO_TIMER;
+    XtIntervalId timer = 0;
     if (timeout > 0)
     {
-#ifdef IF_MOTIF
 	timer = XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 
 				timeout * 1000,
 				gdb_reply_timeout, (void *)reply);
-#else // NOT IF_MOTIF
-	timer = Glib::signal_timeout().connect(sigc::bind(PTR_FUN(gdb_reply_timeout), reply),
-					       timeout * 1000);
-#endif // IF_MOTIF
     }
 
     // Process all GDB input and timer events
     while (!reply->received && gdb->running()) {
-#ifdef IF_MOTIF
 	XtAppProcessEvent(XtWidgetToApplicationContext(gdb_w), 
 			  XtIMTimer | XtIMAlternateInput);
-#else // NOT IF_MOTIF
-	Glib::MainContext::get_default()->iteration(true);
-#endif // IF_MOTIF
     }
 
     if (reply->answered || !reply->received)
@@ -170,14 +180,45 @@ static void wait_for_gdb_reply(GDBReply *reply, int timeout)
 	// Reply has been answered or will not be answered any more:
 	// Remove timeout
 	if (timeout > 0) {
-#ifdef IF_MOTIF
 	    XtRemoveTimeOut(timer);
-#else // NOT IF_MOTIF
-	    timer.disconnect();
-#endif // IF_MOTIF
 	}
     }
 }
+
+#else
+
+// Wait for GDB reply
+static void wait_for_gdb_reply(GDBReply *reply, int timeout)
+{
+    reply->received = false;
+    reply->answer   = NO_GDB_ANSWER;
+
+    if (timeout == 0)
+	timeout = app_data.question_timeout;
+
+    GUI::connection timer;
+    if (timeout > 0)
+    {
+	timer = GUI::signal_timeout().connect(sigc::bind(sigc::ptr_fun(gdb_reply_timeout), reply),
+					       timeout * 1000);
+    }
+
+    // Process all GDB input and timer events
+    while (!reply->received && gdb->running()) {
+	Glib::MainContext::get_default()->iteration(true);
+    }
+
+    if (reply->answered || !reply->received)
+    {
+	// Reply has been answered or will not be answered any more:
+	// Remove timeout
+	if (timeout > 0) {
+	    timer.disconnect();
+	}
+    }
+}
+
+#endif
 
 // Send COMMAND to GDB; return answer (NO_GDB_ANSWER if none)
 // TIMEOUT is either 0 (= use default timeout), -1 (= no timeout)

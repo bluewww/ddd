@@ -256,12 +256,25 @@ static string gdbHelpName(GUI::Widget *widget)
 
 #endif
 
+#if defined(IF_XM)
+
 // Having retrieved the global help text, we can configure JDB
 static void ConfigureJDBCB(XtPointer, XtIntervalId *)
 {
     const string& all_help = help_cache["<ALL>"];
     configure_jdb(all_help);
 }
+
+#else
+
+// Having retrieved the global help text, we can configure JDB
+static void ConfigureJDBCB(void *, GUI::connection *)
+{
+    const string& all_help = help_cache["<ALL>"];
+    configure_jdb(all_help);
+}
+
+#endif
 
 static string gdbHelp(string original_command)
 {

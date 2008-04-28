@@ -71,7 +71,7 @@ void ddd_main_loop()
 	}
 
 	// Bring X in a consistent state
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	XUngrabPointer(XtDisplay(gdb_w), CurrentTime);
 	XUngrabKeyboard(XtDisplay(gdb_w), CurrentTime);
 	XUngrabServer(XtDisplay(gdb_w));
@@ -105,10 +105,10 @@ void ddd_main_loop()
 
     // Set `main_loop_entered' to true as soon 
     // as DDD becomes idle again.
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     XtAppAddWorkProc(XtWidgetToApplicationContext(gdb_w), ddd_setup_done, 0);
 #else
-    Glib::signal_idle().connect(sigc::bind(PTR_FUN(ddd_setup_done), XtPointer(0)));
+    GUI::signal_idle().connect(sigc::ptr_fun(ddd_setup_done));
 #endif
 
     // Main Loop

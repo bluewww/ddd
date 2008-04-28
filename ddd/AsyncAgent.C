@@ -95,20 +95,20 @@ void AsyncAgent::commit()
 
 
 // data from agent is ready to be read
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 void
 #else
 bool
 #endif
 AsyncAgent::somethingHappened(
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     XtPointer client_data, int *fid, XtInputId *inputId
 #else
     Glib::IOCondition cond, int type
 #endif
     )
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     AsyncAgent *agent = (AsyncAgent *)client_data;
     agent->dispatch(fid, inputId);
 #else
@@ -228,7 +228,7 @@ AsyncAgentHandler AsyncAgent::setHandler(unsigned type, AsyncAgentHandler h)
     _handlers[type] = h;
 
     if (h && sourcefp) {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	_ids[type] = XtAppAddInput(appContext(), fileno(sourcefp), XtPointer(condition),
 				   somethingHappened, (XtPointer)this);
 #else
@@ -249,14 +249,14 @@ AsyncAgentHandler AsyncAgent::setHandler(unsigned type, AsyncAgentHandler h)
 
 // Dispatcher
 void AsyncAgent::dispatch(
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     int *, XtInputId *inputId
 #else
     int type
 #endif
     )
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     // search handler
     unsigned type;
     for (type = 0; type < AsyncAgent_NHandlers && id(type) != *inputId; type++)
@@ -379,29 +379,29 @@ void AsyncAgent::terminate(bool onExit)
 	killing_asynchronously = true;
 
 	if (terminateTimeOut() >= 0) {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	    XtAppAddTimeOut(appContext(), terminateTimeOut() * 1000,
 			    terminateProcess, XtPointer(pid()));
 #else
-	    Glib::signal_timeout().connect(sigc::bind(PTR_FUN(terminateProcess), pid()), terminateTimeOut() * 1000);
+	    Glib::signal_timeout().connect(sigc::bind(sigc::ptr_fun(terminateProcess), pid()), terminateTimeOut() * 1000);
 #endif
 	}
 
 	if (hangupTimeOut() >= 0) {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	    XtAppAddTimeOut(appContext(), hangupTimeOut() * 1000,
 			    hangupProcess, XtPointer(pid()));
 #else
-	    Glib::signal_timeout().connect(sigc::bind(PTR_FUN(hangupProcess), pid()), hangupTimeOut() * 1000);
+	    Glib::signal_timeout().connect(sigc::bind(sigc::ptr_fun(hangupProcess), pid()), hangupTimeOut() * 1000);
 #endif
 	}
 
 	if (killTimeOut() >= 0) {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	    XtAppAddTimeOut(appContext(), killTimeOut() * 1000,
 			    killProcess, XtPointer(pid()));
 #else
-	    Glib::signal_timeout().connect(sigc::bind(PTR_FUN(killProcess), pid()), killTimeOut() * 1000);
+	    Glib::signal_timeout().connect(sigc::bind(sigc::ptr_fun(killProcess), pid()), killTimeOut() * 1000);
 #endif
 	}
 
@@ -476,7 +476,7 @@ Boolean AsyncAgent::callTheHandlers(XtPointer client_data)
 
 Boolean AsyncAgent::callTheHandlers(AsyncAgentWorkProcInfo *info)
 {
-    Glib::signal_timeout().connect(sigc::bind(PTR_FUN(callTheHandlersIfIdle), info), 10);
+    Glib::signal_timeout().connect(sigc::bind(sigc::ptr_fun(callTheHandlersIfIdle), info), 10);
 
     return true;
 }
@@ -490,7 +490,7 @@ void AsyncAgent::callHandlersWhenIdle(int type, void *call_data)
 	new AsyncAgentWorkProcInfo(this, type, call_data);
 
     // Register background work procedure (called when idle)
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     XtWorkProcId workProcId =
 	XtAppAddWorkProc(appContext(), callTheHandlers, info);
 #else
@@ -534,7 +534,7 @@ void AsyncAgent::deleteAllWorkProcs()
 }
 
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // reference XtToolkitInitialize to avoid these stupid
 // "ld.so: Undefined symbol: __XtInherit" messages
 

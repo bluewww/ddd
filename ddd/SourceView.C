@@ -206,6 +206,7 @@ extern "C" {
 #endif
 
 #if defined(IF_XM)
+
 #define PLAIN_ARROW "plain_arrow"
 #define GREY_ARROW "grey_arrow"
 #define PAST_ARROW "past_arrow"
@@ -220,21 +221,24 @@ extern "C" {
 #define DRAG_STOP "drag_stop"
 #define DRAG_COND "drag_cond"
 #define DRAG_TEMP "drag_temp"
+
 #else
-XIMAGE_P PLAIN_ARROW;
-XIMAGE_P GREY_ARROW;
-XIMAGE_P PAST_ARROW;
-XIMAGE_P SIGNAL_ARROW;
-XIMAGE_P DRAG_ARROW;
-XIMAGE_P PLAIN_STOP;
-XIMAGE_P PLAIN_COND;
-XIMAGE_P PLAIN_TEMP;
-XIMAGE_P GREY_STOP;
-XIMAGE_P GREY_COND;
-XIMAGE_P GREY_TEMP;
-XIMAGE_P DRAG_STOP;
-XIMAGE_P DRAG_COND;
-XIMAGE_P DRAG_TEMP;
+
+GUI::ImageHandle PLAIN_ARROW;
+GUI::ImageHandle GREY_ARROW;
+GUI::ImageHandle PAST_ARROW;
+GUI::ImageHandle SIGNAL_ARROW;
+GUI::ImageHandle DRAG_ARROW;
+GUI::ImageHandle PLAIN_STOP;
+GUI::ImageHandle PLAIN_COND;
+GUI::ImageHandle PLAIN_TEMP;
+GUI::ImageHandle GREY_STOP;
+GUI::ImageHandle GREY_COND;
+GUI::ImageHandle GREY_TEMP;
+GUI::ImageHandle DRAG_STOP;
+GUI::ImageHandle DRAG_COND;
+GUI::ImageHandle DRAG_TEMP;
+
 #endif
 
 #if !defined(IF_XM)
@@ -408,7 +412,7 @@ MMDesc SourceView::bp_area[] =
 				  (BreakpointPropertiesInfo *)0)),
 	    0, 0),
     GENTRYL("new_bp", "new_bp", MMPush,
-	    BIND_0(PTR_FUN(SourceView::NewBreakpointCB)),
+	    BIND(SourceView::NewBreakpointCB, 0),
 	    sigc::ptr_fun(SourceView::NewBreakpointCB),
 	    0, 0),
     GENTRYL("new_wp", "new_wp", MMPush,
@@ -1370,7 +1374,7 @@ void SourceView::clearJumpBP(const string& msg, void *data)
 	XtAppAddTimeOut(XtWidgetToApplicationContext(source_text_w),
 			0, clearBP, XtPointer(i));
 #else
-	Glib::signal_idle().connect(sigc::bind_return(sigc::bind(PTR_FUN(clearBP), i), false));
+	GUI::signal_idle().connect(sigc::bind(sigc::ptr_fun(clearBP), i));
 #endif
     }
 }
@@ -4773,24 +4777,29 @@ string SourceView::get_word_at_pos(GUI::ScrolledText *text_w,
 // Constructor
 //----------------------------------------------------------------------------
 
+#if defined(IF_XM)
+
 // Install the given X bitmap as NAME
 static void InstallBitmapAsImage(unsigned char *bits, int width, int height, 
-#if defined(IF_XM)
-				 const char *name
-#else
-				 XIMAGE_P &name
-#endif
-				 )
+				 const char *name)
 {
     Boolean ok = InstallBitmap(bits, width, height, name);
-#if defined(IF_XM)
     if (!ok)
 	std::cerr << "Could not install " << quote(name) << " bitmap\n";
+}
+
 #else
+
+// Install the given X bitmap as NAME
+static void InstallBitmapAsImage(unsigned char *bits, int width, int height, 
+				 GUI::ImageHandle &name)
+{
+    Boolean ok = InstallBitmap(bits, width, height, name);
     if (!ok)
 	std::cerr << "Could not install bitmap\n";
-#endif
 }
+
+#endif
 
 #if !defined(IF_XM)
 
@@ -5211,7 +5220,7 @@ void SourceView::create_shells()
 
     if (breakpoint_list_w != 0)
     {
-	breakpoint_list_w->get_selection()->signal_changed().connect(PTR_FUN(UpdateBreakpointButtonsCB));
+	breakpoint_list_w->get_selection()->signal_changed().connect(sigc::ptr_fun(UpdateBreakpointButtonsCB));
     }
 
     if (edit_breakpoints_dialog_w != 0)
@@ -5342,69 +5351,6 @@ void SourceView::CheckModificationCB(Widget, XtPointer client_data,
 
     // Follow text modifications here... (FIXME)
 }
-#endif
-
-#if !defined(IF_XM)
-
-// Identical to Fixed, except it expands its first child
-class GtkForm: public Gtk::Fixed
-{
-public:
-    GtkForm(void);
-    void on_size_allocate(Gtk::Allocation &allocation);
-    void on_size_request(Gtk::Requisition *requisition);
-};
-
-GtkForm::GtkForm(void):
-    Gtk::Fixed()
-{
-    std::cerr << "*** NEW GTKFORM ***\n";
-}
-
-void
-GtkForm::on_size_allocate(Gtk::Allocation &allocation)
-{
-    // std::cerr << "GtkForm::on_size_allocate\n";
-    // Do the usual stuff inherited from Gtk::Fixed.
-    Gtk::Fixed::on_size_allocate(allocation);
-#if 0
-    Gtk::Allocation child_allocation;
-    if (!has_no_window()) {
-	if (is_realized()) {
-	    get_window()->move_resize(allocation.get_x(),
-				      allocation.get_y(),
-				      allocation.get_width(),
-				      allocation.get_height());
-	}
-    }
-#endif
-    // Now stretch the first child (the ScrolledText widget) to
-    // occupy the whole widget.
-    int border_width = get_border_width();
-
-    Glib::ListHandle<Widget*> kids = get_children();
-    Glib::ListHandle<Widget*>::iterator iter = kids.begin();
-    // The first child (the ScrolledText widget) is allocated.
-    if (iter != kids.end()) {
-	Gtk::Widget *child = *iter;
-	child->size_allocate(allocation);
-    }
-#if 0
-    std::cerr << "nkids=" << kids.size() << "\n";
-    for (iter = kids.begin(); iter != kids.end(); iter++) {
-	std::cerr << "child height = " << (*iter)->get_height() << "\n";
-    }
-#endif
-}
-
-void
-GtkForm::on_size_request(Gtk::Requisition *requisition)
-{
-    // std::cerr << "GtkForm::on_size_request\n";
-    Gtk::Fixed::on_size_request(requisition);
-    return;
-}
-
 #endif
 
 #if defined(IF_XM)
@@ -7173,7 +7119,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	{
 	    line_popup_w = MMcreatePopupMenu (w, "line_popup", line_popup);
 	    MMaddCallbacks(line_popup, XtPointer(&address));
-	    MMaddHelpCallback(line_popup, PTR_FUN(ImmediateHelpCB));
+	    MMaddHelpCallback(line_popup, sigc::ptr_fun(ImmediateHelpCB));
 	    InstallButtonTips(line_popup_w);
 
 	    set_sensitive(line_popup[LineItms::SetTempBP].widget, 
@@ -7222,7 +7168,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	Widget text_popup_w = 
 	    MMcreatePopupMenu(text_w, "text_popup", text_popup);
 	MMaddCallbacks(text_popup, XtPointer(&callback_word));
-	MMaddHelpCallback(text_popup, PTR_FUN(ImmediateHelpCB));
+	MMaddHelpCallback(text_popup, sigc::ptr_fun(ImmediateHelpCB));
 	InstallButtonTips(text_popup_w);
 
 	// The popup menu is destroyed immediately after having popped down.
@@ -8002,7 +7948,7 @@ void SourceView::NewWatchpointCB(Widget w, XtPointer, XtPointer)
 	Widget panel = MMcreateButtonPanel(box, "panel", wp_menu, args, arg);
 	(void) panel;
 	MMaddCallbacks(wp_menu);
-	MMaddHelpCallback(wp_menu, PTR_FUN(ImmediateHelpCB));
+	MMaddHelpCallback(wp_menu, sigc::ptr_fun(ImmediateHelpCB));
 
 	set_sensitive(cwatch_w, (gdb->has_watch_command() & WATCH_CHANGE) 
 		       == WATCH_CHANGE);
@@ -8122,6 +8068,8 @@ struct BreakpointPropertiesInfo {
     Widget end;
     Widget edit;
     Widget editor;
+
+    XtIntervalId timer;		// The spinbox timer
 #else
     GUI::Dialog *dialog;		// The widgets of the properties panel
     GUI::Widget *title;
@@ -8137,9 +8085,9 @@ struct BreakpointPropertiesInfo {
     GUI::Widget *end;
     GUI::Widget *edit;
     GUI::ScrolledText *editor;
-#endif
 
-    XtIntervalId timer;		// The spinbox timer
+    GUI::connection timer;		// The spinbox timer
+#endif
     bool spin_locked;		// If true, don't invoke spinbox callbacks
     int ignore_spin_update;	// If > 0, don't update spinbox from bp info
     bool sync_commands;		// If true, propagate cmd to other breakpoints
@@ -8961,11 +8909,11 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, GUI::Widget * /* origin */)
 		sigc::bind(sigc::ptr_fun(RecordBreakpointCommandsCB), info), 
 		0, &info->record),
 	GENTRYL("end", "end", MMPush | MMInsensitive,
-		BIND_0(PTR_FUN(EndBreakpointCommandsCB)), 
+		BIND(EndBreakpointCommandsCB, 0), 
 		sigc::ptr_fun(EndBreakpointCommandsCB), 
 		0, &info->end),
 	GENTRYL("edit", "edit", MMPush | MMInsensitive,
-		BIND_1(PTR_FUN(EditBreakpointCommandsCB), info), 
+		BIND(EditBreakpointCommandsCB, info), 
 		sigc::bind(sigc::ptr_fun(EditBreakpointCommandsCB), info), 
 		0, &info->edit),
 	MMEnd
@@ -9206,7 +9154,6 @@ void SourceView::SetBreakpointIgnoreCountCB(GUI::Widget *w,
     if (info->timer != 0)
     {
 	info->timer.disconnect();
-	info->timer = NO_TIMER;
     }
 
     info->timer = GUI::signal_timeout().connect(sigc::bind(sigc::ptr_fun(SetBreakpointIgnoreCountNowCB),
@@ -9225,7 +9172,7 @@ void SourceView::SetBreakpointIgnoreCountNowCB(XtPointer client_data, XtInterval
     BreakpointPropertiesInfo *info = 
 	(BreakpointPropertiesInfo *)client_data;
 
-    info->timer = NO_TIMER;
+    info->timer = 0;
 
     String _count = XmTextFieldGetString(info->ignore);
     int count = atoi(_count);
@@ -9243,8 +9190,6 @@ void SourceView::SetBreakpointIgnoreCountNowCB(XtPointer client_data, XtInterval
 bool SourceView::SetBreakpointIgnoreCountNowCB(BreakpointPropertiesInfo *info)
 {
     CommandGroup cg;
-
-    info->timer = NO_TIMER;
 
     int count = (int)info->ignore->get_value();
 
@@ -11414,9 +11359,9 @@ Pixmap SourceView::pixmap(Widget w, unsigned char *bits, int width, int height)
 // Create a pixmap from BITS suitable for the widget W
 Glib::RefPtr<Gdk::Pixbuf> SourceView::pixmap(unsigned char *bits, int width, int height)
 {
-    XIMAGE_P pix = Gdk::Pixbuf::create_from_data(bits,
-						 Gdk::COLORSPACE_RGB,
-						 false, 8, width, height, width);
+    GUI::ImageHandle pix = Gdk::Pixbuf::create_from_data(bits,
+							 Gdk::COLORSPACE_RGB,
+							 false, 8, width, height, width);
     return pix;
 }
 
@@ -11688,9 +11633,9 @@ void SourceView::update_glyphs(Widget glyph)
     else if (is_code_widget(glyph))
 	update_code_glyphs = true;
 
-    static XtWorkProcId update_glyph_id = NO_TIMER;
+    static XtWorkProcId update_glyph_id = 0;
 
-    if (update_glyph_id != NO_TIMER) {
+    if (update_glyph_id != 0) {
 	XtRemoveTimeOut(update_glyph_id);
     }
 
@@ -11910,7 +11855,7 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 			     past_arrow_bits, 
 			     past_arrow_width, 
 			     past_arrow_height);
-	    return IDLE_CONT;
+	    return False;
 	}
 
 	if (plain_arrows[k] == 0)
@@ -11920,7 +11865,7 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 			     arrow_bits, 
 			     arrow_width,
 			     arrow_height);
-	    return IDLE_CONT;
+	    return False;
 	}
 
 	if (grey_arrows[k] == 0)
@@ -11930,7 +11875,7 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 			     grey_arrow_bits, 
 			     grey_arrow_width, 
 			     grey_arrow_height);
-	    return IDLE_CONT;
+	    return False;
 	}
 
 	if (signal_arrows[k] == 0)
@@ -11940,7 +11885,7 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 			     signal_arrow_bits, 
 			     signal_arrow_width,
 			     signal_arrow_height);
-	    return IDLE_CONT;
+	    return False;
 	}
 
 	if (drag_arrows[k] == 0)
@@ -11950,7 +11895,7 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 			     drag_arrow_bits, 
 			     drag_arrow_width,
 			     drag_arrow_height);
-	    return IDLE_CONT;
+	    return False;
 	}
     }
    
@@ -11972,7 +11917,7 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 				 stop_bits, 
 				 stop_width,
 				 stop_height);
-		return IDLE_CONT;
+		return False;
 	    }
 	}
 
@@ -11985,7 +11930,7 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 				 temp_bits, 
 				 temp_width,
 				 temp_height);
-		return IDLE_CONT;
+		return False;
 	    }
 	}
 
@@ -11998,7 +11943,7 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 				 cond_bits, 
 				 cond_width,
 				 cond_height);
-		return IDLE_CONT;
+		return False;
 	    }
 	}
 	for (i = 0; i < grey_stops[k].size() - 1; i++)
@@ -12010,7 +11955,7 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 				 grey_stop_bits, 
 				 grey_stop_width,
 				 grey_stop_height);
-		return IDLE_CONT;
+		return False;
 	    }
 	}
 
@@ -12023,7 +11968,7 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 				 grey_temp_bits, 
 				 grey_temp_width,
 				 grey_temp_height);
-		return IDLE_CONT;
+		return False;
 	    }
 	}
 
@@ -12036,7 +11981,7 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 				 grey_cond_bits, 
 				 grey_cond_width,
 				 grey_cond_height);
-		return IDLE_CONT;
+		return False;
 	    }
 	}
 
@@ -12047,7 +11992,7 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 			     drag_stop_bits, 
 			     drag_stop_width,
 			     drag_stop_height);
-	    return IDLE_CONT;
+	    return False;
 	}
 
 	if (drag_temps[k] == 0)
@@ -12057,7 +12002,7 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 			     drag_temp_bits, 
 			     drag_temp_width,
 			     drag_temp_height);
-	    return IDLE_CONT;
+	    return False;
 	}
 
 	if (drag_conds[k] == 0)
@@ -12067,11 +12012,11 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 			     drag_cond_bits, 
 			     drag_cond_width,
 			     drag_cond_height);
-	    return IDLE_CONT;
+	    return False;
 	}
     }
 
-    return IDLE_STOP;		// all done
+    return True;		// all done
 }
 
 #else

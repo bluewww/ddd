@@ -51,7 +51,7 @@ char post_rcsid[] =
 #include "wm.h"
 #include "editing.h"
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include <Xm/Xm.h>
 #include <Xm/AtomMgr.h>
 #include <Xm/MessageB.h>
@@ -474,11 +474,9 @@ struct PostInfo {
     {}
 };
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
+
 static void GDBOutCB(XtPointer client_data, XtIntervalId *)
-#else
-static void GDBOutCB(PostInfo *client_data)
-#endif
 {
     PostInfo *info = (PostInfo *)client_data;
     if (!info->text.empty())
@@ -490,6 +488,23 @@ static void GDBOutCB(PostInfo *client_data)
 
     delete info;
 }
+
+#else
+
+static bool GDBOutCB(PostInfo *info)
+{
+    if (!info->text.empty())
+    {
+	gdb_out("\r" + info->text + "\n");
+	if (info->prompt)
+	    prompt();
+    }
+
+    delete info;
+    return false;
+}
+
+#endif
 
 #if defined(IF_XM)
 
@@ -572,7 +587,7 @@ GUI::Dialog *post_gdb_message(string text, bool prompt, GUI::Widget *w)
 	// private input state (private_gdb_input or tty_gdb_input
 	// might be set)
 	PostInfo *info = new PostInfo(text, prompt);
-	GUI::signal_idle().connect(sigc::bind_return(sigc::bind(PTR_FUN(GDBOutCB), info), false));
+	GUI::signal_idle().connect(sigc::bind(sigc::ptr_fun(GDBOutCB), info));
 	return 0;
     }
 
