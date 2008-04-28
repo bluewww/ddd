@@ -9,8 +9,6 @@ using namespace GtkX;
 
 Glib::Quark GtkX::gtkx_super_quark("gtkx_super");
 
-static sigc::signal<bool> *signal_idle_ptr;
-
 String::String(const Glib::ustring &s0)
 {
     s_ = s0;
@@ -584,22 +582,22 @@ Widget::get_white_gc()
     return GC::wrap(internal()->get_style()->get_white_gc());
 }
 
-static bool
-idle_handler(void)
+SignalIdle signal_idle_;
+
+SignalIdle::SignalIdle(void)
 {
-    if (signal_idle_ptr) {
-	(*signal_idle_ptr)();
-    }
 }
 
-sigc::signal<bool> &
+sigc::connection
+SignalIdle::connect(const sigc::slot<bool>& slot, int priority)
+{
+    return Glib::signal_idle().connect(slot, priority);
+}
+
+SignalIdle &
 GtkX::signal_idle()
 {
-    if (!signal_idle_ptr) {
-	signal_idle_ptr = new sigc::signal<bool>;
-	Glib::signal_idle().connect(sigc::ptr_fun(idle_handler));
-    }
-    return *signal_idle_ptr;
+    return signal_idle_;
 }
 
 static Gdk::Color make_color(const Color &rgb)

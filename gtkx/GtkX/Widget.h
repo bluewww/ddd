@@ -480,8 +480,28 @@ namespace GtkX {
 	sigc::connection connect(const sigc::slot<bool>& slot, unsigned int interval);
     };
 
-    sigc::signal<bool> &signal_idle();
+    enum
+    {
+	PRIORITY_HIGH = -100,
+	PRIORITY_DEFAULT = 0,
+	PRIORITY_HIGH_IDLE = 100,
+	PRIORITY_DEFAULT_IDLE = 200,
+	PRIORITY_LOW = 300
+    };
+
+    class SignalIdle
+    {
+    private:
+	int foo;
+	// no copy assignment
+	SignalIdle& operator=(const SignalIdle&);
+    public:
+	SignalIdle(void);
+	sigc::connection connect(const sigc::slot<bool> &slot, int priority = PRIORITY_DEFAULT_IDLE);
+    };
+
     SignalTimeout &signal_timeout();
+    SignalIdle &signal_idle();
 
     typedef sigc::slot<void, GtkX::Widget*, GtkX::Event*, char **, unsigned int*> ActionProc;
     typedef sigc::connection connection;
