@@ -111,6 +111,12 @@ Dialog::add_button(const String &name, const String &label)
     return b;
 }
 
+void
+Dialog::set_title(const String &s)
+{
+    Gtk::Dialog::set_title(s.s());
+}
+
 MessageDialog::MessageDialog(GtkX::Widget &parent, const String &name,
 			     const String &label, MessageType type):
     Dialog(parent, name)
@@ -129,5 +135,4 @@ MessageDialog::~MessageDialog(void)
 {
     delete message_;
 }
-
 

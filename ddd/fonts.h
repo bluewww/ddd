@@ -37,11 +37,14 @@
 #include "AppData.h"
 
 #if defined(IF_MOTIF)
-#include <X11/Intrinsic.h>
-#endif
 
-#if !defined(IF_XM)
+#include <X11/Intrinsic.h>
+
+#else
+
 #include <GUI/Entry.h>
+#include <libxml/tree.h>
+
 #endif
 
 #include "gtk_wrapper.h"
@@ -54,11 +57,15 @@ enum DDDFont { DefaultDDDFont       = 0,
                DataDDDFont          = 4 };
 
 #if defined(IF_XM)
+
 // Setup font specs.  DB is the resource database in use.
 extern void setup_fonts(AppData& app_data, XrmDatabase db = 0);
+
 #else
+
 // Setup font specs.  DB is the resource database in use.
 extern void setup_fonts(AppData& app_data, xmlDoc *db = 0);
+
 #endif
 
 // Return font name from BASE, overriding with parts from OVERRIDE.

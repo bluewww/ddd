@@ -313,7 +313,7 @@ Widget status_history(Widget parent)
 GUI::Menu *status_history(GUI::Widget *parent)
 {
     static int errcnt = 0;
-    if (complain && !errcnt++) std::cerr << "No status history: may crash!\n";
+    if (!errcnt++) std::cerr << "No status history: may crash!\n";
     return NULL;
 }
 

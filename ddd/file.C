@@ -336,7 +336,7 @@ static Widget create_file_dialog(Widget w, const _XtString name,
 #else
 
 // Create various file dialogs
-static GUI::Dialog *create_file_dialog(GUI::Widget *w, const _XtString name,
+static GUI::Dialog *create_file_dialog(GUI::Widget *w, const char *name,
 				       //FileSearchProc searchRemoteFiles       = 0,
 				       //FileSearchProc searchRemoteDirectories = 0,
 				       //FileSearchProc searchLocalFiles        = 0,

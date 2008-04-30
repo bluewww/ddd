@@ -58,8 +58,12 @@ namespace GtkX {
     class String {
 	Glib::ustring s_;
     public:
+	typedef std::string::size_type size_type;
+	typedef Glib::ustring::iterator iterator;
+	typedef Glib::ustring::const_iterator const_iterator;
 	String(const Glib::ustring &s0);
 	String(const char *s0);
+	String(void);
 	~String(void);
 	Glib::ustring &s(void);
 	gunichar operator[](int i) const;
@@ -70,6 +74,12 @@ namespace GtkX {
 	String &operator+=(const String &str);
 	bool operator==(const String &s) const;
 	operator bool(void) const;
+	bool empty(void) const;
+	iterator begin(void);
+	iterator end(void);
+	const_iterator begin(void) const;
+	const_iterator end(void) const;
+	size_type find(const String &str, size_type i=0) const;
     };
 
     const GtkX::String mklabel(const GtkX::String &name,
@@ -503,7 +513,7 @@ namespace GtkX {
     SignalTimeout &signal_timeout();
     SignalIdle &signal_idle();
 
-    typedef sigc::slot<void, GtkX::Widget*, GtkX::Event*, char **, unsigned int*> ActionProc;
+    typedef sigc::slot<void, GtkX::Widget*, GtkX::Event*, GtkX::String*, unsigned int*> ActionProc;
     typedef sigc::connection connection;
 
     struct ActionRec {

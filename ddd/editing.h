@@ -52,14 +52,10 @@
 
 // Actions
 #if defined(IF_XM)
+
 extern void controlAct            (Widget, XEvent*, String*, Cardinal*);
 extern void interruptAct          (Widget, XEvent*, String*, Cardinal*);
 extern void commandAct            (Widget, XEvent*, String*, Cardinal*);
-#else
-extern void controlAct            (GUI::Widget *, GUI::Event*, String*, Cardinal*);
-extern void interruptAct          (GUI::Widget *, GUI::Event*, String*, Cardinal*);
-extern void commandAct            (GUI::Widget *, GUI::Event*, String*, Cardinal*);
-#endif
 extern void processAct            (Widget, XEvent*, String*, Cardinal*);
 extern void forward_characterAct  (Widget, XEvent*, String*, Cardinal*);
 extern void backward_characterAct (Widget, XEvent*, String*, Cardinal*);
@@ -77,6 +73,31 @@ extern void isearch_nextAct       (Widget, XEvent*, String*, Cardinal*);
 extern void isearch_prevAct       (Widget, XEvent*, String*, Cardinal*);
 extern void isearch_exitAct       (Widget, XEvent*, String*, Cardinal*);
 extern void popupAct              (Widget, XEvent*, String*, Cardinal*);
+
+#else
+
+extern void controlAct            (GUI::Widget *, GUI::Event*, GUI::String *, unsigned int *);
+extern void interruptAct          (GUI::Widget *, GUI::Event*, GUI::String *, unsigned int *);
+extern void commandAct            (GUI::Widget *, GUI::Event*, GUI::String *, unsigned int *);
+extern void processAct            (GUI::Widget *, GUI::Event *, GUI::String *, unsigned int *);
+extern void forward_characterAct  (GUI::Widget *, GUI::Event *, GUI::String *, unsigned int *);
+extern void backward_characterAct (GUI::Widget *, GUI::Event *, GUI::String *, unsigned int *);
+extern void beginning_of_lineAct  (GUI::Widget *, GUI::Event *, GUI::String *, unsigned int *);
+extern void end_of_lineAct        (GUI::Widget *, GUI::Event *, GUI::String *, unsigned int *);
+extern void set_lineAct           (GUI::Widget *, GUI::Event *, GUI::String *, unsigned int *);
+extern void delete_or_controlAct  (GUI::Widget *, GUI::Event *, GUI::String *, unsigned int *);
+extern void insert_source_argAct  (GUI::Widget *, GUI::Event *, GUI::String *, unsigned int *);
+extern void insert_graph_argAct   (GUI::Widget *, GUI::Event *, GUI::String *, unsigned int *);
+extern void next_tab_groupAct     (GUI::Widget *, GUI::Event *, GUI::String *, unsigned int *);
+extern void prev_tab_groupAct     (GUI::Widget *, GUI::Event *, GUI::String *, unsigned int *);
+extern void get_focusAct          (GUI::Widget *, GUI::Event *, GUI::String *, unsigned int *);
+extern void select_allAct         (GUI::Widget *, GUI::Event *, GUI::String *, unsigned int *);
+extern void isearch_nextAct       (GUI::Widget *, GUI::Event *, GUI::String *, unsigned int *);
+extern void isearch_prevAct       (GUI::Widget *, GUI::Event *, GUI::String *, unsigned int *);
+extern void isearch_exitAct       (GUI::Widget *, GUI::Event *, GUI::String *, unsigned int *);
+extern void popupAct              (GUI::Widget *, GUI::Event *, GUI::String *, unsigned int *);
+
+#endif
 
 
 // Callbacks

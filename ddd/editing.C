@@ -358,6 +358,8 @@ static void isearch_done(int history)
 
 #endif
 
+#if defined(IF_XM)
+
 static void isearch_again(ISearchState new_isearch_state, XEvent *event)
 {
     if (!gdb->isReadyWithPrompt())
@@ -370,19 +372,11 @@ static void isearch_again(ISearchState new_isearch_state, XEvent *event)
     {
 	// Same state - search again
 	int history = search_history(isearch_string, int(isearch_state), true);
-#if defined(IF_XM)
 	if (history < 0) {
 	    XtCallActionProc(gdb_w, "beep", event, 0, 0);
 	}
 	else
 	    isearch_done(XtPointer(history), 0);
-#else
-	if (history < 0) {
-	    std::cerr << "BEEP!\n";
-	}
-	else
-	    isearch_done(history);
-#endif
     }
     else
     {
@@ -390,6 +384,37 @@ static void isearch_again(ISearchState new_isearch_state, XEvent *event)
 	show_isearch();
     }
 }
+
+#else
+
+static void isearch_again(ISearchState new_isearch_state, GUI::Event *event)
+{
+    if (!gdb->isReadyWithPrompt())
+	return;
+
+    if (isearch_state == ISEARCH_NONE)
+    	isearch_string = "";
+
+    if (isearch_state == new_isearch_state)
+    {
+	// Same state - search again
+	int history = search_history(isearch_string, int(isearch_state), true);
+	if (history < 0) {
+	    std::cerr << "BEEP!\n";
+	}
+	else
+	    isearch_done(history);
+    }
+    else
+    {
+	isearch_state = new_isearch_state;
+	show_isearch();
+    }
+}
+
+#endif
+
+#if defined(IF_XM)
 
 // Action: enter reverse i-search
 void isearch_prevAct(Widget, XEvent *event, String *, Cardinal *)
@@ -408,6 +433,28 @@ void isearch_exitAct(Widget, XEvent *, String *, Cardinal *)
 {
     clear_isearch();
 }
+
+#else
+
+// Action: enter reverse i-search
+void isearch_prevAct(GUI::Widget *, GUI::Event *event, GUI::String *, unsigned int *)
+{
+    isearch_again(ISEARCH_PREV, event);
+}
+
+// Action: enter forward i-search
+void isearch_nextAct(GUI::Widget *, GUI::Event *event, GUI::String *, unsigned int *)
+{
+    isearch_again(ISEARCH_NEXT, event);
+}
+
+// Action: exit i-search
+void isearch_exitAct(GUI::Widget *, GUI::Event *, GUI::String *, unsigned int *)
+{
+    clear_isearch();
+}
+
+#endif
 
 // Exit i-search mode and return to normal mode
 void clear_isearch(bool reset, bool show)
@@ -449,7 +496,7 @@ void interruptAct(Widget w, XEvent*, String *, Cardinal *)
 
 #else
 
-void interruptAct(GUI::Widget *w, GUI::Event*, String*, Cardinal*)
+void interruptAct(GUI::Widget *w, GUI::Event*, GUI::String *, unsigned int *)
 {
     if (isearch_state != ISEARCH_NONE)
     {
@@ -597,7 +644,7 @@ void commandAct(Widget w, XEvent *ev, String *params, Cardinal *num_params)
 
 #else
 
-void controlAct(GUI::Widget *w, GUI::Event *ev, String *params, Cardinal *num_params)
+void controlAct(GUI::Widget *w, GUI::Event *ev, GUI::String *params, unsigned int *num_params)
 {
     clear_isearch();
 
@@ -608,11 +655,11 @@ void controlAct(GUI::Widget *w, GUI::Event *ev, String *params, Cardinal *num_pa
     }
 
     gdb_keyboard_command = from_keyboard(ev);
-    gdb_command(ctrl(params[0]), w);
+    gdb_command(ctrl(params[0].c_str()), w);
     gdb_keyboard_command = from_keyboard(ev);
 }
 
-void commandAct(GUI::Widget *w, GUI::Event *ev, String *params, Cardinal *num_params)
+void commandAct(GUI::Widget *w, GUI::Event *ev, GUI::String *params, unsigned int *num_params)
 {
     clear_isearch();
 
@@ -623,7 +670,7 @@ void commandAct(GUI::Widget *w, GUI::Event *ev, String *params, Cardinal *num_pa
     }
 
     gdb_keyboard_command = from_keyboard(ev);
-    gdb_button_command(params[0], w);
+    gdb_button_command(params[0].c_str(), w);
     gdb_keyboard_command = from_keyboard(ev);
 }
 
@@ -885,7 +932,7 @@ void popupAct(Widget, XEvent *event, String*, Cardinal*)
 
 #else
 
-void popupAct(Widget, XEvent *event, String*, Cardinal*)
+void popupAct(GUI::Widget *, GUI::Event *event, GUI::String *, unsigned int *)
 {
     static GUI::PopupMenu *gdb_popup_w = 0;
     if (!gdb_popup_w)

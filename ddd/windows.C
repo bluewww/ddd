@@ -58,6 +58,7 @@ char windows_rcsid[] =
 #include "XErrorB.h"
 
 #if defined(IF_XM)
+
 #include <Xm/Xm.h>
 #include <Xm/DialogS.h>
 #include <Xm/PanedW.h>
@@ -78,8 +79,11 @@ char windows_rcsid[] =
 #ifdef XtIsRealized
 #undef XtIsRealized
 #endif
+
 #else
-#include "GtkMultiPaned.h"
+
+#include <GUI/MultiPaned.h>
+
 #endif
 
 //-----------------------------------------------------------------------------
@@ -133,6 +137,8 @@ static std::ostream& operator << (std::ostream& os, WindowState s)
 }
 #endif
 
+#if defined(IF_XM)
+
 static WindowState& state(Widget w)
 {
     static WindowState command_shell_state     = PoppedDown;
@@ -156,7 +162,7 @@ static WindowState& state(Widget w)
     return dummy;
 }
 
-#if !defined(IF_XM)
+#else
 
 static WindowState& state(GUI::Widget *w)
 {
@@ -183,11 +189,23 @@ static WindowState& state(GUI::Widget *w)
 
 #endif
 
+#if defined(IF_XM)
+
 static bool popped_down(Widget w)
 {
     WindowState st = state(w);
     return st == PoppedDown || st == UnknownShell;
 }
+
+#else
+
+static bool popped_down(GUI::Widget *w)
+{
+    WindowState st = state(w);
+    return st == PoppedDown || st == UnknownShell;
+}
+
+#endif
 
 static void set_state(WindowState& var, WindowState state)
 {
@@ -195,6 +213,8 @@ static void set_state(WindowState& var, WindowState state)
 	return;
     var = state;
 }
+
+#if defined(IF_XM)
 
 static void set_state(Widget w, WindowState s)
 {
@@ -208,7 +228,7 @@ static void set_state(Widget w, WindowState s)
     }
 }
 
-#if !defined(IF_XM)
+#else
 
 static void set_state(GUI::Widget *w, WindowState s)
 {
@@ -1540,13 +1560,10 @@ bool have_exec_window()
     return exec_tty_pid() > 0;
 }
 
+#if defined(IF_XM)
 
 // Tool window
-#if defined(IF_XM)
 void gdbCloseToolWindowCB(Widget, XtPointer, XtPointer)
-#else
-void gdbCloseToolWindowCB(void)
-#endif
 {
     if (tool_shell == 0 || !XtIsRealized(tool_shell))
 	return;
@@ -1554,6 +1571,20 @@ void gdbCloseToolWindowCB(void)
     popdown_shell(tool_shell);
     update_options();
 }
+
+#else
+
+// Tool window
+void gdbCloseToolWindowCB(void)
+{
+    if (tool_shell == 0 || tool_shell->is_realized())
+	return;
+
+    popdown_shell(tool_shell);
+    update_options();
+}
+
+#endif
 
 #if defined(IF_XM)
 
@@ -2161,7 +2192,7 @@ void manage_paned_child(Widget w)
 void manage_paned_child(GUI::Widget *w)
 {
     static int errcnt = 0;
-    if (complain && !errcnt++ == 0) std::cerr << "manage_paned_child() not implemented\n";
+    if (!errcnt++ == 0) std::cerr << "manage_paned_child() not implemented\n";
     GUI::MultiPaned::show_child(w);
 }
 
@@ -2256,7 +2287,7 @@ void unmanage_paned_child(Widget w)
 void unmanage_paned_child(GUI::Widget *w)
 {
     static int errcnt = 0;
-    if (complain && !errcnt++ == 0) std::cerr << "unmanage_paned_child() not implemented\n";
+    if (!errcnt++ == 0) std::cerr << "unmanage_paned_child() not implemented\n";
     GUI::MultiPaned::hide_child(w);
 }
 
@@ -2546,8 +2577,6 @@ void set_scrolled_window_size(GUI::ScrolledText *child, GUI::Widget *target)
 // ****************************************************************************
 
 // GTK Replacements for Xt Widget stuff
-
-int complain = 0;
 
 // It is hardly ever necessary to realize a widget explicitly in Gtk.
 Boolean XtIsRealized(Widget w)

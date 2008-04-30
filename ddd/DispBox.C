@@ -652,6 +652,7 @@ Box *DispBox::_create_value_box(const DispValue *dv, const DispValue *parent)
     case List:
     case Struct:
     {
+#if defined(IF_XM)
 	const _XtString collapsed_value = (dv->type() == List ? 
 				  "collapsed_list_value" :
 				  "collapsed_struct_value");
@@ -670,6 +671,26 @@ Box *DispBox::_create_value_box(const DispValue *dv, const DispValue *parent)
 	const _XtString vertical        = (dv->type() == List ? 
 				  "vertical_unnamed_list" :
 				  "vertical_unnamed_struct");
+#else
+	const char *collapsed_value = (dv->type() == List ? 
+				       "collapsed_list_value" :
+				       "collapsed_struct_value");
+	const char *empty_value     = (dv->type() == List ? 
+				       "empty_list_value" :
+				       "empty_struct_value");
+	const char *member_name     = (dv->type() == List ? 
+				       "list_member_name" :
+				       "struct_member_name");
+	const char *value           = (dv->type() == List ? 
+				       "list_value" :
+				       "struct_value");
+	const char *horizontal      = (dv->type() == List ? 
+				       "horizontal_unnamed_list" :
+				       "horizontal_unnamed_struct");
+	const char *vertical        = (dv->type() == List ? 
+				       "vertical_unnamed_list" :
+				       "vertical_unnamed_struct");
+#endif
 
 	int count = dv->nchildren();
 

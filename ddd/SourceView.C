@@ -169,9 +169,6 @@ char SourceView_rcsid[] =
 #include <gtkmm/main.h>
 #include <gdkmm/displaymanager.h>
 
-#endif
-
-#if !defined(IF_XM)
 #include <GUI/Box.h>
 #include <GUI/WidgetPtr.h>
 #include <GUI/RadioBox.h>
@@ -185,6 +182,7 @@ char SourceView_rcsid[] =
 #include <GUI/ScrolledText.h>
 #include <GUI/SpinButton.h>
 #include <GUI/ListView.h>
+
 #endif
 
 // System stuff
@@ -204,6 +202,8 @@ extern "C" {
 #ifndef S_ISREG
 #define S_ISREG(m) (((m) & S_IFMT) == S_IFREG)
 #endif
+
+#define N_ELEMENTS(x) (sizeof(x)/sizeof(x[0]))
 
 #if defined(IF_XM)
 
@@ -355,21 +355,21 @@ struct LineItms { enum Itms {SetBP, SetTempBP, Sep1, TempNContBP,
 MMDesc SourceView::line_popup[] = 
 {
     GENTRYL("set", "set", MMPush,
-	    BIND_1(PTR_FUN(SourceView::line_popup_setCB), (string *)0),
+	    BIND(SourceView::line_popup_setCB, (string *)0),
 	    sigc::bind(sigc::ptr_fun(SourceView::line_popup_setCB), (string *)0),
 	    0, 0),
     GENTRYL("set_temp", "set_temp", MMPush, 
-	    BIND_1(PTR_FUN(SourceView::line_popup_set_tempCB), (string *)0),
+	    BIND(SourceView::line_popup_set_tempCB, (string *)0),
 	    sigc::bind(sigc::ptr_fun(SourceView::line_popup_set_tempCB), (string *)0),
 	    0, 0),
     MMSep,
     GENTRYL("temp_n_cont", "temp_n_cont", MMPush, 
-	    BIND_1(PTR_FUN(SourceView::line_popup_temp_n_contCB), (string *)0),
+	    BIND(SourceView::line_popup_temp_n_contCB, (string *)0),
 	    sigc::bind(sigc::ptr_fun(SourceView::line_popup_temp_n_contCB), (string *)0),
 	    0, 0),
     MMSep,
     GENTRYL("set_pc", "set_pc", MMPush,
-	    BIND_1(PTR_FUN(SourceView::line_popup_set_pcCB), (string *)0),
+	    BIND(SourceView::line_popup_set_pcCB, (string *)0),
 	    sigc::bind(sigc::ptr_fun(SourceView::line_popup_set_pcCB), (string *)0),
 	    0, 0),
     MMEnd
@@ -379,20 +379,20 @@ struct BPItms { enum Itms {Properties, Disable, Delete, Sep, SetPC}; };
 MMDesc SourceView::bp_popup[] =
 {
     GENTRYL("properties", "properties", MMPush, 
-	    HIDE_0_BIND_1(PTR_FUN(SourceView::EditBreakpointPropertiesCB), (int *)0),
+	    BIND(SourceView::EditBreakpointPropertiesCB, (int *)0),
 	    sigc::hide(sigc::bind(sigc::ptr_fun(SourceView::EditBreakpointPropertiesCB), (int *)0)),
 	    0, 0),
     GENTRYL("disable", "disable", MMPush,
-	    BIND_1(PTR_FUN(SourceView::bp_popup_disableCB), (int *)0),
+	    BIND(SourceView::bp_popup_disableCB, (int *)0),
 	    sigc::bind(sigc::ptr_fun(SourceView::bp_popup_disableCB), (int *)0),
 	    0, 0),
     GENTRYL("delete", "delete", MMPush,
-	    BIND_1(PTR_FUN(SourceView::bp_popup_deleteCB), (int *)0),
+	    BIND(SourceView::bp_popup_deleteCB, (int *)0),
 	    sigc::bind(sigc::ptr_fun(SourceView::bp_popup_deleteCB), (int *)0),
 	    0, 0),
     MMSep,
     GENTRYL("set_pc", "set_pc", MMPush,
-	    BIND_1(PTR_FUN(SourceView::bp_popup_set_pcCB), (int *)0),
+	    BIND(SourceView::bp_popup_set_pcCB, (int *)0),
 	    sigc::bind(sigc::ptr_fun(SourceView::bp_popup_set_pcCB), (int *)0),
 	    0, 0),
     MMEnd
@@ -403,7 +403,7 @@ struct BPButtons { enum Itms {Properties, Lookup, NewBP, NewWP, Print,
 MMDesc SourceView::bp_area[] =
 {
     GENTRYL("properties", "properties", MMPush, 
-	    HIDE_0_BIND_1(PTR_FUN(SourceView::EditBreakpointPropertiesCB), (int *)0),
+	    BIND(SourceView::EditBreakpointPropertiesCB, (int *)0),
 	    sigc::hide(sigc::bind(sigc::ptr_fun(SourceView::EditBreakpointPropertiesCB), (int *)0)),
 	    0, 0),
     GENTRYL("lookup", "lookup", MMPush, 
@@ -457,7 +457,11 @@ struct TextItms {
     };
 };
 
+#if defined(IF_XM)
 static const _XtString const text_cmd_labels[] =
+#else
+static const char *const text_cmd_labels[] =
+#endif
 {
     "Print ", 
     "Display ", 
@@ -473,6 +477,7 @@ static const _XtString const text_cmd_labels[] =
     "Break at ",
     "Clear at "
 };
+
 
 static string callback_word;
 
@@ -516,11 +521,11 @@ MMDesc SourceView::text_popup[] =
 	    sigc::hide(sigc::bind(sigc::ptr_fun(SourceView::text_popup_lookupCB), &callback_word)),
 	    0, 0),
     GENTRYL("breakAt", "breakAt", MMPush,
-	    BIND_1(PTR_FUN(SourceView::text_popup_breakCB), (string *)&callback_word),
+	    BIND(SourceView::text_popup_breakCB, (string *)&callback_word),
 	    sigc::bind(sigc::ptr_fun(SourceView::text_popup_breakCB), (string *)&callback_word),
 	    0, 0),
     GENTRYL("clearAt", "clearAt", MMPush,
-	    BIND_1(PTR_FUN(SourceView::text_popup_clearCB), (string *)&callback_word),
+	    BIND(SourceView::text_popup_clearCB, (string *)&callback_word),
 	    sigc::bind(sigc::ptr_fun(SourceView::text_popup_clearCB), (string *)&callback_word),
 	    0, 0),
     MMEnd
@@ -3219,7 +3224,7 @@ void SourceView::SetInsertionPosition(Widget text_w,
 #else
 
 void SourceView::SetInsertionPosition(GUI::ScrolledText *text_w, 
-				      XmTextPosition pos, bool fromTop)
+				      long pos, bool fromTop)
 {
     ShowPosition(text_w, pos, fromTop);
     Glib::RefPtr<Gtk::TextBuffer> buf = text_w->buffer();
@@ -3266,7 +3271,7 @@ void SourceView::post_file_warning(const string& file_name,
 #else
 
 void SourceView::post_file_error(const string& file_name,
-				 const string& text, const _XtString name,
+				 const string& text, const char *name,
 				 GUI::Widget *origin)
 {
     if (new_bad_file(file_name))
@@ -3274,7 +3279,7 @@ void SourceView::post_file_error(const string& file_name,
 }
 
 void SourceView::post_file_warning(const string& file_name,
-				   const string& text, const _XtString name,
+				   const string& text, const char *name,
 				   GUI::Widget *origin)
 {
     if (new_bad_file(file_name))
@@ -3289,8 +3294,8 @@ void SourceView::post_file_warning(const string& file_name,
 //-----------------------------------------------------------------------
 
 // Read local file from FILE_NAME
-String SourceView::read_local(const string& file_name, long& length,
-			      bool silent)
+char *SourceView::read_local(const string& file_name, long& length,
+			     bool silent)
 {
     StatusDelay delay("Reading file " + quote(file_name));
     length = 0;
@@ -3332,7 +3337,7 @@ String SourceView::read_local(const string& file_name, long& length,
     // Put the contents of the file in the Text widget by allocating
     // enough space for the entire file and reading the file into the
     // allocated space.
-    char* text = (char *)XtMalloc(unsigned(statb.st_size + 1));
+    char* text = (char *)malloc(unsigned(statb.st_size + 1));
     if ((length = read(fd, text, statb.st_size)) != statb.st_size)
     {
 	delay.outcome = "truncated";
@@ -3359,8 +3364,8 @@ String SourceView::read_local(const string& file_name, long& length,
 
 
 // Read (possibly remote) file FILE_NAME; a little slower
-String SourceView::read_remote(const string& file_name, long& length, 
-			       bool silent)
+char *SourceView::read_remote(const string& file_name, long& length, 
+			      bool silent)
 {
     StatusDelay delay("Reading file " + 
 		      quote(file_name) + " from " + gdb_host);
@@ -3378,10 +3383,10 @@ String SourceView::read_remote(const string& file_name, long& length,
 	return 0;
     }
 
-    String text = (char *)XtMalloc(1);
+    char *text = (char *)malloc(1);
 
     do {
-	text = (char *)XtRealloc(text, length + BUFSIZ + 1);
+	text = (char *)realloc(text, length + BUFSIZ + 1);
 	length += fread(text + length, sizeof(char), BUFSIZ, fp);
     } while (!feof(fp));
 
@@ -3400,13 +3405,13 @@ String SourceView::read_remote(const string& file_name, long& length,
 }
 
 // Read class CLASS_NAME
-String SourceView::read_class(const string& class_name, 
-			      string& file_name, SourceOrigin& origin,
-			      long& length, bool silent)
+char *SourceView::read_class(const string& class_name, 
+			     string& file_name, SourceOrigin& origin,
+			     long& length, bool silent)
 {
     StatusDelay delay("Loading class " + quote(class_name));
     
-    String text = 0;
+    char *text = 0;
     length = 0;
 
     file_name = java_class_file(class_name);
@@ -3448,8 +3453,8 @@ String SourceView::read_class(const string& class_name,
 
 // Read file FILE_NAME via the GDB `list' function
 // Really slow, is guaranteed to work for source files.
-String SourceView::read_from_gdb(const string& file_name, long& length, 
-				 bool /* silent */)
+char *SourceView::read_from_gdb(const string& file_name, long& length, 
+				bool /* silent */)
 {
     length = 0;
     if (!can_do_gdb_command())
@@ -3494,7 +3499,7 @@ String SourceView::read_from_gdb(const string& file_name, long& length,
     // GDB listings have the format <NUMBER>\t<LINE>.
     // Copy LINE only; line numbers will be re-added later.
     // Note that tabs may be expanded to spaces due to a PTY interface.
-    String text = (char *)XtMalloc(listing.length());
+    char *text = (char *)malloc(listing.length());
 
     int i = 0;
     length = 0;
@@ -3572,14 +3577,14 @@ String SourceView::read_from_gdb(const string& file_name, long& length,
 
 
 // Read file FILE_NAME and format it
-String SourceView::read_indented(string& file_name, long& length, 
-				 SourceOrigin& origin, bool silent)
+char *SourceView::read_indented(string& file_name, long& length, 
+				SourceOrigin& origin, bool silent)
 {
     length = 0;
     Delay delay;
     long t;
 	
-    String text = 0;
+    char *text = 0;
     origin = ORIGIN_NONE;
     string full_file_name = file_name;
 
@@ -3702,7 +3707,7 @@ String SourceView::read_indented(string& file_name, long& length,
     int indent = indent_amount(source_text_w);
     indented_text_length += (indent + script_indent_amount) * lines;
 
-    String indented_text = (char *)XtMalloc(indented_text_length + 1);
+    char *indented_text = (char *)malloc(indented_text_length + 1);
 
     string line_no_s = replicate(' ', indent);
 
@@ -3775,7 +3780,7 @@ String SourceView::read_indented(string& file_name, long& length,
     }
     *pos_ptr = '\0';
 
-    XtFree(text);
+    free(text);
 
     length = pos_ptr - indented_text;
     return indented_text;
@@ -3804,13 +3809,13 @@ int SourceView::read_current(string& file_name, bool force_reload, bool silent)
     {
 	long length = 0;
 	SourceOrigin orig;
-	String indented_text = read_indented(file_name, length, orig, silent);
+	char *indented_text = read_indented(file_name, length, orig, silent);
 	if (indented_text == 0 || length == 0)
 	    return -1;		// Failure
 
 	current_source = string(indented_text, length);
 	current_origin = orig;
-	XtFree(indented_text);
+	free(indented_text);
 
 	if (current_source.length() > 0)
 	{
@@ -3840,12 +3845,12 @@ int SourceView::read_current(string& file_name, bool force_reload, bool silent)
     // Number of lines
     line_count   = current_source.freq('\n');
     _pos_of_line = TextPositionArray(line_count + 2);
-    _pos_of_line.operator += (XmTextPosition(0));
-    _pos_of_line.operator += (XmTextPosition(0));
+    _pos_of_line.operator += (0);
+    _pos_of_line.operator += (0);
 
     for (int i = 0; i < int(current_source.length()); i++)
 	if (current_source[i] == '\n')
-	    _pos_of_line.operator += (XmTextPosition(i + 1));
+	    _pos_of_line.operator += (i + 1);
 
     assert(_pos_of_line.size() == line_count + 2);
 
@@ -3855,6 +3860,8 @@ int SourceView::read_current(string& file_name, bool force_reload, bool silent)
 	return 0;
 }
 
+#if defined(IF_XM)
+
 // Return position of line LINE
 XmTextPosition SourceView::pos_of_line(int line)
 {
@@ -3863,6 +3870,19 @@ XmTextPosition SourceView::pos_of_line(int line)
     else
 	return _pos_of_line[line];
 }
+
+#else
+
+// Return position of line LINE
+long SourceView::pos_of_line(int line)
+{
+    if (line < 0 || line > line_count || line >= _pos_of_line.size())
+	return 0;
+    else
+	return _pos_of_line[line];
+}
+
+#endif
 
 // Clear the file cache
 void SourceView::clear_file_cache()
@@ -4005,11 +4025,13 @@ void SourceView::read_file (string file_name,
     // Set source and initial line
 #if defined(IF_XM)
     XmTextSetString(source_text_w, XMST(current_source.chars()));
-#else
-    source_text_w->set_text(XMST(current_source.chars()));
-#endif
 
     XmTextPosition initial_pos = 0;
+#else
+    source_text_w->set_text(XMST(current_source.chars()));
+
+    long initial_pos = 0;
+#endif
     if (initial_line > 0 && initial_line <= line_count)
 	initial_pos = pos_of_line(initial_line) + indent_amount(source_text_w);
 
@@ -4118,6 +4140,8 @@ void SourceView::read_file (string file_name,
     }
 }
 
+#if defined(IF_XM)
+
 void SourceView::update_title()
 {
     if (toplevel_w == 0)
@@ -4129,15 +4153,26 @@ void SourceView::update_title()
     string icon   = 
 	DDD_NAME ": " + string(basename(current_file_name.chars()));
     const _XtString icon_s = icon.chars();
-
-#if defined(IF_XM)
-    XtVaSetValues(toplevel_w,
-		  XmNtitle, title_s,
-		  XmNiconName, icon_s,
-		  XtPointer(0));
-#endif
 }
 
+#else
+
+void SourceView::update_title()
+{
+    if (toplevel_w == 0)
+	return;
+
+    string title   = DDD_NAME ": " + current_file_name;
+    const char *title_s = title.chars();
+
+    string icon   = 
+	DDD_NAME ": " + string(basename(current_file_name.chars()));
+    const char *icon_s = icon.chars();
+
+    std::cerr << "Should set title here.\n";
+}
+
+#endif
 
 
 //-----------------------------------------------------------------------
@@ -4214,7 +4249,11 @@ void SourceView::refresh_source_bp_disp(bool reset)
 	if (line_nr < 0 || line_nr > line_count)
 	    continue;
 
+#if defined(IF_XM)
 	XmTextPosition pos = pos_of_line(line_nr);
+#else
+	long pos = pos_of_line(line_nr);
+#endif
 	int indent = indent_amount(source_text_w, pos);
 
 	if (indent > 0)
@@ -4268,9 +4307,15 @@ void SourceView::refresh_code_bp_disp(bool reset)
     for (i = 0; i < bp_addresses.size(); i++)
     {
 	const string& address = bp_addresses[i];
+#if defined(IF_XM)
 	XmTextPosition pos = find_pc(address);
 	if (pos == XmTextPosition(-1))
 	    continue;
+#else
+	long pos = find_pc(address);
+	if (pos == -1)
+	    continue;
+#endif
 
 	// Process all breakpoints at ADDRESS
 	int indent = indent_amount(code_text_w, pos);
@@ -4306,9 +4351,15 @@ void SourceView::refresh_code_bp_disp(bool reset)
     for (i = 0; i < bp_addresses.size(); i++)
     {
 	const string& address = bp_addresses[i];
+#if defined(IF_XM)
 	XmTextPosition pos = find_pc(address);
 	if (pos == XmTextPosition(-1))
 	    continue;
+#else
+	long pos = find_pc(address);
+	if (pos == -1)
+	    continue;
+#endif
 
 	// Process all breakpoints at ADDRESS
 	string insert_string = "";
@@ -4342,26 +4393,19 @@ void SourceView::refresh_code_bp_disp(bool reset)
 // Position management
 //-----------------------------------------------------------------------
 
+#if defined(IF_XM)
+
 // Find the line number at POS
 // LINE_NR becomes the line number at POS
 // IN_TEXT becomes true iff POS is in the source area
 // BP_NR is the number of the breakpoint at POS (none: 0)
 // Return false iff failure
-#if defined(IF_XM)
 bool SourceView::get_line_of_pos (Widget w,
 				  XmTextPosition pos,
 				  int&     line_nr,
 				  string&  address,
 				  bool&    in_text,
 				  int&     bp_nr)
-#else
-bool SourceView::get_line_of_pos (GUI::Widget *w,
-				  XmTextPosition pos,
-				  int&     line_nr,
-				  string&  address,
-				  bool&    in_text,
-				  int&     bp_nr)
-#endif
 {
     bool found = false;
 
@@ -4370,11 +4414,7 @@ bool SourceView::get_line_of_pos (GUI::Widget *w,
     in_text = true;
     bp_nr   = 0;
 
-#if defined(IF_XM)
     Widget text_w;
-#else
-    GUI::ScrolledText *text_w;
-#endif
     if (is_source_widget(w))
 	text_w = source_text_w;
     else if (is_code_widget(w))
@@ -4422,15 +4462,9 @@ bool SourceView::get_line_of_pos (GUI::Widget *w,
 
 	while (!found && line_count >= line_nr)
 	{
-#if defined(IF_XM)
 	    next_line_pos = (line_count >= line_nr + 1) ?
 		pos_of_line(line_nr + 1) :
 		XmTextGetLastPosition (text_w) + 1;
-#else
-	    next_line_pos = (line_count >= line_nr + 1) ?
-		pos_of_line(line_nr + 1) :
-		text_w->get_last_position() + 1;
-#endif
 
 	    bool left_of_first_nonblank = false;
 	    if (pos < next_line_pos)
@@ -4557,20 +4591,216 @@ bool SourceView::get_line_of_pos (GUI::Widget *w,
     return found;
 }
 
+#else
+
+// Find the line number at POS
+// LINE_NR becomes the line number at POS
+// IN_TEXT becomes true iff POS is in the source area
+// BP_NR is the number of the breakpoint at POS (none: 0)
+// Return false iff failure
+bool SourceView::get_line_of_pos (GUI::Widget *w,
+				  long pos,
+				  int&     line_nr,
+				  string&  address,
+				  bool&    in_text,
+				  int&     bp_nr)
+{
+    bool found = false;
+
+    line_nr = 0;
+    address = "";
+    in_text = true;
+    bp_nr   = 0;
+
+    GUI::ScrolledText *text_w;
+    if (is_source_widget(w))
+	text_w = source_text_w;
+    else if (is_code_widget(w))
+	text_w = code_text_w;
+    else
+	return false;
+
+    if (w != text_w)
+    {
+	std::cerr << "HELP: Cannot handle selection of glyphs!\n";
+#if 0
+	// Glyph selected
+
+	MapRef ref;
+	for (BreakPoint *bp = bp_map.first(ref);
+	     bp != 0;
+	     bp = bp_map.next(ref))
+	{
+	    if (w == bp->source_glyph() || w == bp->code_glyph())
+	    {
+		// Breakpoint glyph found
+		line_nr = bp->line_nr();
+		address = bp->address();
+		in_text = false;
+		bp_nr   = bp->number();
+		return true;
+	    }
+	}
+#endif
+    }
+
+    if (pos >= int(current_text(text_w).length()))
+    {
+	// Position is on the right of text
+	in_text = false;
+	line_nr = line_count;
+	return true;
+    }
+
+    if (text_w == source_text_w)
+    {
+	// Search in source code
+	long line_pos = 0;
+	long next_line_pos = 0;
+
+	while (!found && line_count >= line_nr)
+	{
+	    next_line_pos = (line_count >= line_nr + 1) ?
+		pos_of_line(line_nr + 1) :
+		text_w->get_last_position() + 1;
+
+	    bool left_of_first_nonblank = false;
+	    if (pos < next_line_pos)
+	    {
+		// Check if we're left of first non-blank source character
+		int first_nonblank = line_pos + indent_amount(text_w);
+		const string& text = current_text(text_w);
+		while (first_nonblank < next_line_pos
+		       && first_nonblank < int(text.length())
+		       && isspace(text[first_nonblank]))
+		    first_nonblank++;
+		left_of_first_nonblank = (pos < first_nonblank);
+	    }
+
+	    if (pos == line_pos
+		|| left_of_first_nonblank
+		|| pos < (line_pos + indent_amount(text_w) - 1))
+	    {
+		// Position in breakpoint area
+		found = true;
+		in_text = false;
+		line_nr = max(line_nr, 1);
+
+		// Check for breakpoints...
+		VarIntArray& bps = bps_in_line[line_nr];
+		if (bps.size() == 1)
+		{
+		    // Return single breakpoint in this line
+		    bp_nr = bps[0];
+		}
+		else if (bps.size() > 1)
+		{
+		    // Find which breakpoint was selected
+		    long bp_disp_pos = line_pos;
+		    int i;
+		    for (i = 0; i < bps.size(); i++)
+		    {
+			BreakPoint* bp = bp_map.get(bps[i]);
+			assert(bp != NULL);
+
+			bp_disp_pos += 2; // respect '#' and '_';
+			bp_disp_pos += itostring(bp->number()).length();
+			if (pos < bp_disp_pos)
+			{
+			    bp_nr = bps[i];
+			    break; // exit for loop
+			}
+		    }
+		}
+	    }
+	    else if (pos < next_line_pos)
+	    {
+		// Position is in text
+		found   = true;
+		in_text = true;
+	    }
+	    else
+	    {
+		// Position is in one of the following lines
+		line_pos = next_line_pos;
+		line_nr++;
+	    }
+	}
+    }
+    else if (text_w == code_text_w)
+    {
+	// Search in machine code
+	long line_pos = pos;
+	while (line_pos >= 0 && current_code[line_pos] != '\n')
+	    line_pos--;
+	line_pos++;
+
+	if (pos == line_pos || pos - line_pos < indent_amount(text_w))
+	{
+	    // Breakpoint area
+	    in_text = false;
+
+	    // Check if we have a breakpoint around here
+	    int index = address_index(current_code, pos);
+	    if (index >= 0)
+	    {
+		address = current_code.from(index);
+		address = address.through(rxaddress);
+
+		VarIntArray bps;
+
+		MapRef ref;
+		for (BreakPoint *bp = bp_map.first(ref);
+		     bp != 0;
+		     bp = bp_map.next(ref))
+		{
+		    if (compare_address(address, bp->address()) == 0)
+			bps += bp->number();
+		}
+		if (bps.size() == 1)
+		{
+		    // Return single breakpoint in this line
+		    bp_nr = bps[0];
+		}
+		else if (bps.size() > 1)
+		{
+		    // Find which breakpoint was selected
+		    int i;
+		    long bp_disp_pos = line_pos;
+		    for (i = 0; i < bps.size(); i++)
+		    {
+			BreakPoint* bp = bp_map.get(bps[i]);
+			assert(bp != NULL);
+			bp_disp_pos += 2; // respect '#' and '_';
+			bp_disp_pos += itostring(bp->number()).length();
+			if (pos < bp_disp_pos)
+			{
+			    bp_nr = bps[i];
+			    break; // exit for loop
+			}
+		    }
+		}
+	    }
+	}
+
+	found = true;
+    }
+
+    return found;
+}
+
+#endif
+
 // ***************************************************************************
+
+#if defined(IF_XM)
+
 // Find word around POS.  STARTPOS is the first character, ENDPOS + 1
 // is the last character in the word.
-#if defined(IF_XM)
 void SourceView::find_word_bounds (Widget text_w,
 				   const XmTextPosition pos,
 				   XmTextPosition& startpos,
 				   XmTextPosition& endpos)
-#else
-void SourceView::find_word_bounds (GUI::Widget *text_w,
-				   const XmTextPosition pos,
-				   XmTextPosition& startpos,
-				   XmTextPosition& endpos)
-#endif
 {
     startpos = endpos = pos;
 
@@ -4670,6 +4900,115 @@ void SourceView::find_word_bounds (GUI::Widget *text_w,
     }
 }
 
+#else
+
+// Find word around POS.  STARTPOS is the first character, ENDPOS + 1
+// is the last character in the word.
+void SourceView::find_word_bounds (GUI::Widget *text_w,
+				   const long pos,
+				   long& startpos,
+				   long& endpos)
+{
+    startpos = endpos = pos;
+
+    const string& text = current_text(text_w);
+
+    long line_pos = pos;
+    if (line_pos < text.length())
+	while (line_pos > 0 && text[line_pos - 1] != '\n')
+	    line_pos--;
+
+    int offset = pos - line_pos;
+    if (offset == 0 || offset < indent_amount(text_w))
+    {
+	// Do not select words in breakpoint area
+	return;
+    }
+
+    // Find end of word
+    while (endpos < text.length() && isid(text[endpos]))
+	endpos++;
+
+    // Find start of word
+    if (startpos >= text.length())
+	startpos = text.length() - 1;
+
+    while (startpos > 0)
+    {
+	while (startpos > 0 && isid(text[startpos - 1]))
+	    startpos--;
+
+	if (gdb->program_language() == LANGUAGE_PERL &&
+	    startpos > 1 &&
+	    is_perl_prefix(text[startpos - 1]))
+	{
+	    // Include Perl prefix character
+	    startpos -= 1;
+	    break;
+	}
+	else if (gdb->program_language() == LANGUAGE_BASH &&
+		 startpos > 1 &&
+		 is_bash_prefix(text[startpos - 1]))
+	{
+	  // Include $variable rather than variable
+	  startpos -= 1;
+	  break;
+	}
+	else if (gdb->program_language() == LANGUAGE_BASH &&
+		 startpos > 2 && text[startpos -1] == '{' &&
+		 is_bash_prefix(text[startpos - 2])
+		 )
+	{
+	  // Include ${...} rather than ...
+	  int brace_count=1;
+	  int new_endpos=startpos;
+	  for (new_endpos=startpos+1; 
+	       new_endpos < text.length() 
+		 && new_endpos-startpos < 30; 
+	       new_endpos++) 
+	    {
+	      if (text[new_endpos] == '{') brace_count++;
+	      if (text[new_endpos] == '}') {
+		brace_count--;
+		if (brace_count==0) {
+		  startpos -= 2; // Go back over ${
+		  endpos=new_endpos+1;
+		  break;
+		}
+	      }
+	    }
+	  break;
+	}
+	else if (startpos > 2 && 
+	    isid(text[startpos - 2]) &&
+	    text[startpos - 1] == '.')
+	{
+	    // Select A.B as a whole
+	    startpos -= 1;
+	}
+	else if (startpos > 3 && 
+		 isid(text[startpos - 3]) &&
+		 text[startpos - 2] == '-' &&
+		 text[startpos - 1] == '>')
+	{
+	    // Select A->B as a whole
+	    startpos -= 2;
+	}
+	else if (startpos > 3 && 
+		 isid(text[startpos - 3]) &&
+		 text[startpos - 2] == ':' &&
+		 text[startpos - 1] == ':')
+	{
+	    // Select A::B as a whole
+	    startpos -= 2;
+	}
+	else
+	    break;
+    }
+}
+
+#endif
+
 #if defined(IF_XM)
 
 // Get the word at event position
@@ -4757,7 +5096,7 @@ string SourceView::get_word_at_pos(GUI::ScrolledText *text_w,
     }
 
     string word = "";
-    if (startpos < XmTextPosition(text.length())
+    if (startpos < text.length()
 	&& startpos < endpos)
 	word = text.at(int(startpos), int(endpos - startpos));
 
@@ -4861,7 +5200,7 @@ SourceView::SourceView(Widget parent)
 			 DRAG_TEMP);
 
     // Setup actions
-    XtAppAddActions (app_context, actions, XtNumber (actions));
+    XtAppAddActions (app_context, actions, N_ELEMENTS (actions));
 
     // Create source code window
     create_text(parent, "source", app_data.source_editing,
@@ -4897,7 +5236,7 @@ SourceView::SourceView(GUI::Container *parent)
 
     // Setup actions
     std::cerr << "SourceView Add actions...\n";
-    // XtAppAddActions (app_context, actions, XtNumber (actions));
+    // XtAppAddActions (app_context, actions, N_ELEMENTS (actions));
 
     // Create source code window
     create_text(parent, "source", app_data.source_editing,
@@ -5609,6 +5948,7 @@ void SourceView::clear_execution_position()
     undo_buffer.add_state();
 }
 
+#if defined(IF_XM)
 
 void SourceView::_show_execution_position(const string& file, int line, 
 					  bool silent, bool stopped)
@@ -5633,16 +5973,10 @@ void SourceView::_show_execution_position(const string& file, int line,
     {
 	// Set new marker
 	static const string marker = ">";
-#if defined(IF_XM)
 	XmTextReplace (source_text_w,
 		       pos + indent - marker.length(),
 		       pos + indent,
 		       XMST(marker.chars()));
-#else
-	source_text_w->replace(pos + indent - marker.length(),
-			       pos + indent,
-			       XMST(marker.chars()));
-#endif
     }
 
     XmTextPosition pos_line_end = 0;
@@ -5654,24 +5988,14 @@ void SourceView::_show_execution_position(const string& file, int line,
     {
 	if (last_start_highlight)
 	{
-#if defined(IF_XM)
 	    XmTextSetHighlight (source_text_w,
 				last_start_highlight, last_end_highlight,
 				XmHIGHLIGHT_NORMAL);
-#else
-	    source_text_w->set_highlight(last_start_highlight, last_end_highlight,
-					 GUI::HIGHLIGHT_NORMAL);
-#endif
 	}
 
-#if defined(IF_XM)
 	XmTextSetHighlight (source_text_w,
 			    pos, pos_line_end,
 			    XmHIGHLIGHT_SELECTED);
-#else
-	source_text_w->set_highlight(pos, pos_line_end,
-				     GUI::HIGHLIGHT_SELECTED);
-#endif
     }
 
     last_pos             = pos;
@@ -5680,6 +6004,62 @@ void SourceView::_show_execution_position(const string& file, int line,
 
     update_glyphs();
 }
+
+#else
+
+void SourceView::_show_execution_position(const string& file, int line, 
+					  bool silent, bool stopped)
+{
+    last_execution_file = file;
+    last_execution_line = line;
+
+    if (!is_current_file(file))
+	read_file(file, line, silent);
+
+    if (!is_current_file(file) || line < 1 || line > line_count)
+	return;
+
+    add_position_to_history(file, line, stopped);
+
+    long pos = pos_of_line(line);
+    int indent = indent_amount(source_text_w);
+    SetInsertionPosition(source_text_w, pos + indent, false);
+
+    // Mark current line
+    if (!display_glyphs && indent > 0)
+    {
+	// Set new marker
+	static const string marker = ">";
+	source_text_w->replace(pos + indent - marker.length(),
+			       pos + indent,
+			       XMST(marker.chars()));
+    }
+
+    long pos_line_end = 0;
+    if (!current_source.empty())
+	pos_line_end = current_source.index('\n', pos) + 1;
+
+    if (!display_glyphs && 
+	(pos != last_start_highlight || pos_line_end != last_end_highlight))
+    {
+	if (last_start_highlight)
+	{
+	    source_text_w->set_highlight(last_start_highlight, last_end_highlight,
+					 GUI::HIGHLIGHT_NORMAL);
+	}
+
+	source_text_w->set_highlight(pos, pos_line_end,
+				     GUI::HIGHLIGHT_SELECTED);
+    }
+
+    last_pos             = pos;
+    last_start_highlight = pos;
+    last_end_highlight   = pos_line_end;
+
+    update_glyphs();
+}
+
+#endif
 
 
 void SourceView::show_position(string position, bool silent)
@@ -5726,7 +6106,11 @@ void SourceView::show_position(string position, bool silent)
 	{
  	    add_position_to_history(file_name, line, false);
     
+#if defined(IF_XM)
 	    XmTextPosition pos = pos_of_line(line);
+#else
+	    long pos = pos_of_line(line);
+#endif
 	    int indent = indent_amount(source_text_w, pos);
 	    SetInsertionPosition(source_text_w, pos + indent, true);
 		
@@ -6019,9 +6403,9 @@ void SourceView::process_info_line_main(string& info_output)
 
     // Strip 'Line <n> of <file> starts at <address>...' info
     // Strip 'No symbol table is loaded.' info
-    const _XtString strips[] = {"Line ", "No symbol table is loaded."};
+    const char *strips[] = {"Line ", "No symbol table is loaded."};
 
-    for (int i = 0; i < int(XtNumber(strips)); i++)
+    for (int i = 0; i < int(N_ELEMENTS(strips)); i++)
     {
 	int line = info_output.index(strips[i]);
 	if (line >= 0)
@@ -6258,6 +6642,8 @@ void SourceView::lookup(string s, bool silent)
 // Position history
 //-----------------------------------------------------------------------
 
+#if defined(IF_XM)
+
 // Add current position to history
 void SourceView::add_current_to_history()
 {
@@ -6269,27 +6655,48 @@ void SourceView::add_current_to_history()
     bool pos_found;
 
     // Get position in source code
-#if defined(IF_XM)
     pos = XmTextGetInsertionPosition(source_text_w);
-#else
-    pos = source_text_w->get_insertion_position();
-#endif
     pos_found = get_line_of_pos(source_text_w, pos, line_nr, address, 
 				in_text, bp_nr);
     if (pos_found)
 	add_position_to_history(current_source_name(), line_nr, false);
 
     // Get position in machine code
-#if defined(IF_XM)
     pos = XmTextGetInsertionPosition(code_text_w);
-#else
-    pos = code_text_w->get_insertion_position();
-#endif
     pos_found = get_line_of_pos(code_text_w, pos, line_nr, address, 
 				in_text, bp_nr);
     if (pos_found && !address.empty())
 	undo_buffer.add_address(address, false);
 }
+
+#else
+
+// Add current position to history
+void SourceView::add_current_to_history()
+{
+    long pos;
+    int line_nr;
+    bool in_text;
+    int bp_nr;
+    string address;
+    bool pos_found;
+
+    // Get position in source code
+    pos = source_text_w->get_insertion_position();
+    pos_found = get_line_of_pos(source_text_w, pos, line_nr, address, 
+				in_text, bp_nr);
+    if (pos_found)
+	add_position_to_history(current_source_name(), line_nr, false);
+
+    // Get position in machine code
+    pos = code_text_w->get_insertion_position();
+    pos_found = get_line_of_pos(code_text_w, pos, line_nr, address, 
+				in_text, bp_nr);
+    if (pos_found && !address.empty())
+	undo_buffer.add_address(address, false);
+}
+
+#endif
 
 // Add position to history
 void SourceView::add_position_to_history(const string& file_name, int line, 
@@ -6317,6 +6724,8 @@ void SourceView::add_position_to_history(const string& file_name, int line,
     undo_buffer.add_position(source_name, line, stopped);
     undo_buffer.add_state();
 }
+
+#if defined(IF_XM)
 
 // Lookup entry from position history
 void SourceView::goto_entry(const string& file_name, int line, 
@@ -6372,17 +6781,75 @@ void SourceView::goto_entry(const string& file_name, int line,
     if (!address.empty())
     {
 	// Lookup address
-#if defined(IF_XM)
 	show_pc(address, 
 		(exec_pos || address == last_execution_pc) ? 
 		XmHIGHLIGHT_SELECTED : XmHIGHLIGHT_NORMAL);
+    }
+}
+
 #else
+
+// Lookup entry from position history
+void SourceView::goto_entry(const string& file_name, int line, 
+			    const string& address, bool exec_pos)
+{
+#if 0
+    // Show position in status line
+    string msg = "";
+    if (!file_name.empty())
+	msg = "File " + quote(file_name);
+    if (line != 0)
+    {
+	if (msg.empty())
+	    msg = "Line ";
+	else
+	    msg += ", line ";
+	msg += itostring(line);
+    }
+    if (!address.empty())
+    {
+	if (msg.empty())
+	    msg = "Address ";
+	else
+	    msg += ", address ";
+	msg += address;
+    }
+    set_status(msg);
+#endif
+
+    if (!file_name.empty())
+    {
+	// Lookup source
+	if (!is_current_file(file_name))
+	{
+	    read_file(file_name, line);
+	}
+
+	if (is_current_file(file_name) && line > 0 && line <= line_count)
+	{
+	    if (exec_pos)
+	    {
+		_show_execution_position(file_name, line, true, true);
+	    }
+	    else
+	    {
+		long pos = pos_of_line(line);
+		int indent = indent_amount(source_text_w, pos);
+		SetInsertionPosition(source_text_w, pos + indent, true);
+	    }
+	}
+    }
+
+    if (!address.empty())
+    {
+	// Lookup address
 	show_pc(address, 
 		(exec_pos || address == last_execution_pc) ? 
 		GUI::HIGHLIGHT_SELECTED : GUI::HIGHLIGHT_NORMAL);
-#endif
     }
 }
+
+#endif
 
 
 
@@ -6495,10 +6962,11 @@ void SourceView::find(const string& s,
     int pos = -1;
 #if defined(IF_XM)
     XmTextPosition cursor = XmTextGetInsertionPosition(source_text_w);
-#else
-    XmTextPosition cursor = source_text_w->get_insertion_position();
-#endif
     XmTextPosition initial_cursor = cursor;
+#else
+    long cursor = source_text_w->get_insertion_position();
+    long initial_cursor = cursor;
+#endif
     int wraps = 0;
 
     if (!have_source())
@@ -6516,15 +6984,12 @@ void SourceView::find(const string& s,
 	text.downcase();
     }
 
+#if defined(IF_XM)
     // Make sure we don't re-find the currently found word
     XmTextPosition startpos;
     XmTextPosition endpos;
 
-#if defined(IF_XM)
     if (XmTextGetSelectionPosition(source_text_w, &startpos, &endpos))
-#else
-    if (source_text_w->get_selection_bounds(startpos, endpos))
-#endif
     {
 	switch (direction)
 	{
@@ -6539,6 +7004,27 @@ void SourceView::find(const string& s,
 	    break;
 	}
     }
+#else
+    // Make sure we don't re-find the currently found word
+    long startpos;
+    long endpos;
+
+    if (source_text_w->get_selection_bounds(startpos, endpos))
+    {
+	switch (direction)
+	{
+	case forward:
+	    if (cursor == startpos
+		&& cursor < text.length())
+		cursor++;
+	    break;
+	case backward:
+	    if (cursor == endpos && cursor > 0)
+		cursor--;
+	    break;
+	}
+    }
+#endif
 
     // Go and find the word
     for (;;) {
@@ -6775,7 +7261,7 @@ string SourceView::line_of_cursor()
 #if defined(IF_XM)
     XmTextPosition pos = XmTextGetInsertionPosition(source_text_w);
 #else
-    XmTextPosition pos = source_text_w->get_insertion_position();
+    long pos = source_text_w->get_insertion_position();
 #endif
 
     string s = current_source_name();
@@ -6864,7 +7350,7 @@ void SourceView::startSelectWordAct (Widget text_w, XEvent* e,
 #else
 
 void SourceView::startSelectWordAct (GUI::ScrolledText *text_w, GUI::Event* e, 
-				     String *params, unsigned int *num_params)
+				     GUI::String *params, unsigned int *num_params)
 {
     std::cerr << "grab-focus action not implemented\n";
 
@@ -6922,7 +7408,7 @@ void SourceView::endSelectWordAct (Widget text_w, XEvent* e,
 #else
 
 void SourceView::endSelectWordAct (GUI::ScrolledText* text_w, GUI::Event* e, 
-				   String *params, unsigned int *num_params)
+				   GUI::String *params, unsigned int *num_params)
 {
     selection_click = false;
 
@@ -6999,8 +7485,9 @@ void SourceView::set_text_popup_resource(int item, const string& arg)
 }
 
 #if defined(IF_XM)
+
 // Get relative coordinates of GLYPH in TEXT
-void SourceView::translate_glyph_pos(Glyph_T glyph, Widget text, int& x, int& y)
+void SourceView::translate_glyph_pos(Widget glyph, Widget text, int& x, int& y)
 {
     int dest_x, dest_y;
     Window child;
@@ -7011,6 +7498,7 @@ void SourceView::translate_glyph_pos(Glyph_T glyph, Widget text, int& x, int& y)
     x = dest_x;
     y = dest_y;
 }
+
 #endif
 
 #if defined(IF_XM)
@@ -7119,7 +7607,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	{
 	    line_popup_w = MMcreatePopupMenu (w, "line_popup", line_popup);
 	    MMaddCallbacks(line_popup, XtPointer(&address));
-	    MMaddHelpCallback(line_popup, sigc::ptr_fun(ImmediateHelpCB));
+	    MMaddHelpCallback(line_popup, ImmediateHelpCB);
 	    InstallButtonTips(line_popup_w);
 
 	    set_sensitive(line_popup[LineItms::SetTempBP].widget, 
@@ -7168,7 +7656,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	Widget text_popup_w = 
 	    MMcreatePopupMenu(text_w, "text_popup", text_popup);
 	MMaddCallbacks(text_popup, XtPointer(&callback_word));
-	MMaddHelpCallback(text_popup, sigc::ptr_fun(ImmediateHelpCB));
+	MMaddHelpCallback(text_popup, ImmediateHelpCB);
 	InstallButtonTips(text_popup_w);
 
 	// The popup menu is destroyed immediately after having popped down.
@@ -7211,7 +7699,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 #else
 
 // Popup button3 source menu
-void SourceView::srcpopupAct (GUI::Widget *w, GUI::Event* e, String *, unsigned int *)
+void SourceView::srcpopupAct (GUI::Widget *w, GUI::Event* e, GUI::String *, unsigned int *)
 {
     if (e->type != GUI::BUTTON_PRESS && e->type != GUI::BUTTON_RELEASE)
 	return;
@@ -7290,7 +7778,7 @@ void SourceView::srcpopupAct (GUI::Widget *w, GUI::Event* e, String *, unsigned 
 
 	MString label(bp_map.get(bp_nr)->enabled() ? 
 		      "Disable Breakpoint" : "Enable Breakpoint");
-	Gtk::MenuItem *mi = dynamic_cast<Gtk::MenuItem *>(bp_popup[BPItms::Disable].widget);
+	GUI::MenuItem *mi = dynamic_cast<GUI::MenuItem *>(bp_popup[BPItms::Disable].widget);
 	assert(mi);
 	mi->remove();
 	mi->add_label(label.xmstring());
@@ -7327,8 +7815,8 @@ void SourceView::srcpopupAct (GUI::Widget *w, GUI::Event* e, String *, unsigned 
     {
 	// Determine surrounding token (or selection) and create popup
 
-	XmTextPosition startpos = 0;
-	XmTextPosition endpos   = 0;
+	long startpos = 0;
+	long endpos   = 0;
 
 	if (pos_found)
 	    callback_word = get_word_at_pos(text_w, pos, startpos, endpos);
@@ -7540,7 +8028,7 @@ void SourceView::doubleClickAct(Widget w, XEvent *e, String *params,
 
 #else
 
-void SourceView::doubleClickAct(GUI::Widget *w, GUI::Event *e, String *params, 
+void SourceView::doubleClickAct(GUI::Widget *w, GUI::Event *e, GUI::String *params, 
 				unsigned int *num_params)
 {
     if (e->type != GUI::BUTTON_PRESS && e->type != GUI::BUTTON_RELEASE)
@@ -7558,7 +8046,7 @@ void SourceView::doubleClickAct(GUI::Widget *w, GUI::Event *e, String *params,
 
     int x = (int)event->x;
     int y = (int)event->y;
-    bool control = ((event->state & ControlMask) != 0);
+    bool control = ((event->state & GUI::CONTROL_MASK) != 0);
 
     if (w != source_text_w && w != code_text_w)
     {
@@ -7633,7 +8121,7 @@ void SourceView::doubleClickAct(GUI::Widget *w, GUI::Event *e, String *params,
 	    if (control || current_source.contains('(', p))
 	    {
 		if (*num_params >= 3)
-		    gdb_button_command(params[2]);
+		    gdb_button_command(params[2].c_str());
 		else
 		    gdb_button_command("list ()");
 		return;
@@ -7641,7 +8129,7 @@ void SourceView::doubleClickAct(GUI::Widget *w, GUI::Event *e, String *params,
 	}
 
 	if (*num_params >= 1)
-	    gdb_button_command(params[0]);
+	    gdb_button_command(params[0].c_str());
 	else
 	    gdb_button_command("graph display ()");
 	return;
@@ -7687,7 +8175,7 @@ void SourceView::doubleClickAct(GUI::Widget *w, GUI::Event *e, String *params,
 	{
 	    // In breakpoint area, and we have no breakpoint: create a new one
 	    if (*num_params >= 2)
-		gdb_button_command(params[1]);
+		gdb_button_command(params[1].c_str());
 	    else if (control)
 		create_temp_bp(source_arg->get_string(), w);
 	    else
@@ -7711,13 +8199,13 @@ void SourceView::setArgAct(Widget w, XEvent *, String *, Cardinal *)
     if (s != 0)
     {
 	source_arg->set_string(s);
-	XtFree(s);
+	free(s);
     }
 }
 
 #else
 
-void SourceView::setArgAct(GUI::Widget *w, GUI::Event *, String *, unsigned int *)
+void SourceView::setArgAct(GUI::Widget *w, GUI::Event *, GUI::String *, unsigned int *)
 {
     std::cerr << "Implement SourceView::setArgAct\n";
 }
@@ -7735,7 +8223,7 @@ void SourceView::NewBreakpointDCB(Widget w, XtPointer client_data, XtPointer)
     Widget text = Widget(client_data);
     String _input = XmTextFieldGetString(text);
     string input(_input);
-    XtFree(_input);
+    free(_input);
     if (input.empty())
 	return;
 
@@ -7859,7 +8347,7 @@ void SourceView::NewWatchpointDCB(Widget w, XtPointer client_data, XtPointer)
     Widget text = Widget(client_data);
     String _input = XmTextFieldGetString(text);
     string input(_input);
-    XtFree(_input);
+    free(_input);
 
     strip_space(input);
     if (input.empty())
@@ -7948,7 +8436,7 @@ void SourceView::NewWatchpointCB(Widget w, XtPointer, XtPointer)
 	Widget panel = MMcreateButtonPanel(box, "panel", wp_menu, args, arg);
 	(void) panel;
 	MMaddCallbacks(wp_menu);
-	MMaddHelpCallback(wp_menu, sigc::ptr_fun(ImmediateHelpCB));
+	MMaddHelpCallback(wp_menu, ImmediateHelpCB);
 
 	set_sensitive(cwatch_w, (gdb->has_watch_command() & WATCH_CHANGE) 
 		       == WATCH_CHANGE);
@@ -8361,7 +8849,7 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
 
 		XmTextFieldSetString(info->ignore, XMST(ignore.chars()));
 	    }
-	    XtFree(old_ignore);
+	    free(old_ignore);
 	}
 	info->spin_locked = lock;
     }
@@ -8374,7 +8862,7 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
         const string s1 = bp->condition();
 	XmTextFieldSetString(info->condition, XMST(s1.chars()));
     }
-    XtFree(old_condition);
+    free(old_condition);
 
     bool can_enable   = false;
     bool can_disable  = false;
@@ -9045,7 +9533,7 @@ void SourceView::SetBreakpointConditionCB(Widget w,
 
     String cond = XmTextFieldGetString(info->condition);
     set_bps_cond(info->nrs, cond, w);
-    XtFree(cond);
+    free(cond);
 }
 
 #else
@@ -9078,7 +9566,7 @@ void SourceView::ApplyBreakpointPropertiesCB(Widget w,
     // Apply condition
     String cond = XmTextFieldGetString(info->condition);
     set_bps_cond(info->nrs, cond, w);
-    XtFree(cond);
+    free(cond);
 
     if (XtIsManaged(XtParent(info->editor)))
     {
@@ -9176,7 +9664,7 @@ void SourceView::SetBreakpointIgnoreCountNowCB(XtPointer client_data, XtInterval
 
     String _count = XmTextFieldGetString(info->ignore);
     int count = atoi(_count);
-    XtFree(_count);
+    free(_count);
 
     for (int i = 0; i < info->nrs.size(); i++)
     {
@@ -9631,7 +10119,7 @@ void SourceView::EditBreakpointCommandsCB(Widget w, XtPointer client_data, XtPoi
 
 	String _commands = XmTextGetString(info->editor);
 	string cmd = _commands;
-	XtFree(_commands);
+	free(_commands);
 
 	if (!cmd.contains('\n', -1))
 	    cmd += '\n';
@@ -10629,7 +11117,7 @@ bool SourceView::set_frame_func(const string& func)
 	String _item;
 	XmStringGetLtoR(items[i], LIST_CHARSET, &_item);
 	string item(_item);
-	XtFree(_item);
+	free(_item);
 
 	int func_index  = item.index(func);
 	int paren_index = item.index('(');
@@ -10654,7 +11142,6 @@ bool SourceView::set_frame_func(const string& func)
 
     for (int i = count - 1; i >= 0; i--)
     {
-	String _item;
 	string item = frame_list_w->get_at(i).c_str();
 	std::cerr << "set_frame_func: TODO?\n";
 	// It would be cleaner to parse the gdb output and split this
@@ -10704,7 +11191,7 @@ void SourceView::set_frame_pos(int arg, int pos)
 	{
 	    if (position_count == 1)
 		pos = position_list[0] + arg;
-	    XtFree((char *)position_list);
+	    free((char *)position_list);
 	} else
 	    return;
 #else
@@ -10840,7 +11327,7 @@ void SourceView::SelectRegisterCB (GUI::ListView *w)
     String _item;
     XmStringGetLtoR(cbs->item, LIST_CHARSET, &_item);
     string item(_item);
-    XtFree(_item);
+    free(_item);
 #else
     string item = w->get_selected().c_str();
 #endif
@@ -11138,7 +11625,7 @@ void SourceView::SelectThreadCB(Widget w, XtPointer, XtPointer)
 	    String _item;
 	    XmStringGetLtoR(selected_items[0], LIST_CHARSET, &_item);
 	    string item(_item);
-	    XtFree(_item);
+	    free(_item);
 
 	    // Output has the form `Group jtest.main:'
 	    if (gdb->type() == JDB)
@@ -11239,8 +11726,13 @@ string SourceView::get_line(string position)
     if (!is_current_file(file_name))
 	return "";
 
+#if defined(IF_XM)
     XmTextPosition start = pos_of_line(line) + indent_amount(source_text_w);
     XmTextPosition end   = current_source.index('\n', start);
+#else
+    long start = pos_of_line(line) + indent_amount(source_text_w);
+    long end   = current_source.index('\n', start);
+#endif
     if (end < 0)
 	end = current_source.length();
 
@@ -11508,7 +12000,7 @@ bool SourceView::change_glyphs = true;
 WidgetArray SourceView::changed_glyphs;
 
 // Unmap glyph W
-void SourceView::unmap_glyph(Glyph_T glyph)
+void SourceView::unmap_glyph(Widget glyph)
 {
     if (glyph == 0)
 	return;
@@ -11545,7 +12037,7 @@ void SourceView::unmap_glyph(Glyph_T glyph)
 }
 
 // Map glyph GLYPH in (X, Y)
-void SourceView::map_glyph(Glyph_T& glyph, Position x, Position y)
+void SourceView::map_glyph(Widget& glyph, Position x, Position y)
 {
     while (glyph == 0)
 	CreateGlyphsWorkProc(0);
@@ -11753,12 +12245,12 @@ bool SourceView::CheckScrollWorkProc(GUI::connection *timer)
 	timer->disconnect(); // ??
     }
 
-    XmTextPosition old_top = last_top;
+    long old_top = last_top;
     int buf_x, buf_y;
     source_text_w->view().window_to_buffer_coords(Gtk::TEXT_WINDOW_TEXT, 0, 0, buf_x, buf_y);
     last_top = buf_y;
 
-    XmTextPosition old_top_pc = last_top_pc;
+    long old_top_pc = last_top_pc;
     code_text_w->view().window_to_buffer_coords(Gtk::TEXT_WINDOW_TEXT, 0, 0, buf_x, buf_y);
     last_top_pc = buf_y;
 
@@ -12134,7 +12626,7 @@ Widget SourceView::map_stop_at(Widget glyph, XmTextPosition pos,
 
 // Map stop sign GLYPH at position POS.  Get widget from STOPS[COUNT];
 // store location in POSITIONS.  Return mapped widget (0 if none)
-GUI::GlyphMark *SourceView::map_stop_at(GUI::ScrolledText *w, XmTextPosition pos,
+GUI::GlyphMark *SourceView::map_stop_at(GUI::ScrolledText *w, long pos,
 					Glib::RefPtr<Gdk::Pixbuf> stop,
 					TextPositionArray& positions)
 {
@@ -12225,7 +12717,7 @@ Widget SourceView::map_arrow_at(Widget glyph, XmTextPosition pos)
 #else
 
 // Map arrow in GLYPH at POS.  Return mapped arrow widget (0 if none)
-GUI::GlyphMark *SourceView::map_arrow_at(GUI::ScrolledText *w, XmTextPosition pos)
+GUI::GlyphMark *SourceView::map_arrow_at(GUI::ScrolledText *w, long pos)
 {
     GUI::MarkedTextView &view = w->view();
 
@@ -12448,7 +12940,6 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *)
     change_glyphs = true;
     std::cerr << "UPDATING GLYPHS...\n";
     update_glyphs_now();
-    return MAYBE_FALSE;
 }
 #endif
 
@@ -12609,7 +13100,7 @@ void SourceView::update_glyphs_now()
     // FIXME if (update_source_glyphs)
     {
 	// Show current execution position
-	XmTextPosition pos = XmTextPosition(-1);
+	long pos = -1;
 
 	if (display_glyphs &&
 	    (is_current_file(last_execution_file) ||
@@ -12627,7 +13118,7 @@ void SourceView::update_glyphs_now()
     // FIXME if (update_code_glyphs)
     {
 	// Show current PC
-	XmTextPosition pos = XmTextPosition(-1);
+	long pos = -1;
 
 	if (display_glyphs && !last_execution_pc.empty())
 	    pos = find_pc(last_execution_pc);
@@ -12672,7 +13163,7 @@ void SourceView::update_glyphs_now()
 		GUI::ScrolledText *text_w = k ? code_text_w : source_text_w;
 		bp_glyph = 0;
 
-		XmTextPosition pos;
+		long pos;
 		if (k == 0)
 		{
 		    // Find source position
@@ -12786,6 +13277,8 @@ void SourceView::set_display_glyphs(bool set)
 }
 #endif
 
+#if defined(IF_XM)
+
 // Change setting of display_line_numbers
 void SourceView::set_display_line_numbers(bool set)
 {
@@ -12802,6 +13295,26 @@ void SourceView::set_display_line_numbers(bool set)
     }
 }
 
+#else
+
+// Change setting of display_line_numbers
+void SourceView::set_display_line_numbers(bool set)
+{
+    if (display_line_numbers != set)
+    {
+	display_line_numbers = set;
+
+	if (source_text_w->is_realized())
+	{
+	    StatusDelay delay(set ? "Enabling line numbers" : 
+			      "Disabling line numbers");
+	    reload();
+	}
+    }
+}
+
+#endif
+
 #if defined(IF_XM)
 
 // Return help on a glyph
@@ -12816,7 +13329,7 @@ MString SourceView::help_on_glyph(Widget glyph, bool detailed)
 // Return help on a glyph
 MString SourceView::help_on_glyph(GUI::Widget *glyph, bool detailed)
 {
-    XmTextPosition dummy;
+    long dummy;
     return help_on_pos(glyph, 0, dummy, detailed);
 }
 
@@ -12847,7 +13360,7 @@ MString SourceView::help_on_pos(Widget w, XmTextPosition pos,
 #else
 
 // Return help on a breakpoint position
-MString SourceView::help_on_pos(GUI::Widget *w, XmTextPosition pos, 
+MString SourceView::help_on_pos(GUI::Widget *w, long pos, 
 				long &ref, bool detailed)
 {
     if (w == 0)
@@ -13447,6 +13960,8 @@ void SourceView::process_disassemble(const string& disassemble_output)
 				     current_code);
 }
 
+#if defined(IF_XM)
+
 // Search PC in the current code; return beginning of line if found
 XmTextPosition SourceView::find_pc(const string& pc)
 {
@@ -13490,6 +14005,54 @@ XmTextPosition SourceView::find_pc(const string& pc)
     return pos;
 }
 
+#else
+
+// Search PC in the current code; return beginning of line if found
+long SourceView::find_pc(const string& pc)
+{
+    if (compare_address(pc, current_code_start) < 0
+	|| compare_address(pc, current_code_end) > 0)
+	return -1;
+
+    long pos = -1;
+
+    int i = 0;
+    while (i < int(current_code.length()))
+    {
+	int eol = current_code.index('\n', i);
+	if (eol < 0)
+	    break;
+
+	int j = i;
+	while (j < int(current_code.length()) && isspace(current_code[j]))
+	    j++;
+
+	if (j + 2 < int(current_code.length())
+	    && (is_address_start(current_code[j])))
+	{
+	    // Use first word of line as address.  Much faster than
+	    // checking address regexps.
+	    string address = current_code.at(j, eol - j);
+	    int k = 0;
+	    while (k < int(address.length()) && !isspace(address[k]))
+		k++;
+	    address = address.before(k);
+	    if (compare_address(pc, address) == 0)
+	    {
+		pos = i;
+		break;
+	    }
+	}
+
+	i = eol + 1;
+    }
+
+    return pos;
+}
+
+#endif
+
+#if defined(IF_XM)
 
 // Process `disassemble' output
 void SourceView::refresh_codeOQC(const string& answer, void *client_data)
@@ -13510,6 +14073,30 @@ void SourceView::refresh_codeOQC(const string& answer, void *client_data)
 
     delete info;
 }
+
+#else
+
+// Process `disassemble' output
+void SourceView::refresh_codeOQC(const string& answer, void *client_data)
+{
+    RefreshDisassembleInfo *info = (RefreshDisassembleInfo *)client_data;
+
+    if (answer == NO_GDB_ANSWER)
+    {
+	info->delay.outcome = "failed";
+    }
+    else
+    {
+	process_disassemble(answer);
+
+	if (find_pc(info->pc) != -1)
+	    show_pc(info->pc, info->mode);
+    }
+
+    delete info;
+}
+
+#endif
 
 void SourceView::normalize_address(string& addr)
 {
@@ -13604,27 +14191,18 @@ bool SourceView::function_is_larger_than(string pc, int max_size)
     return false;
 }
 
+#if defined(IF_XM)
 
 // Show program counter location PC
 // If MODE is given, highlight PC line.
 // STOPPED indicates that the program just stopped.
 // SIGNALED indicates that the program just received a signal.
-#if defined(IF_XM)
 void SourceView::show_pc(const string& pc, XmHighlightMode mode,
 			 bool stopped, bool signaled)
-#else
-void SourceView::show_pc(const string& pc, GUI::HighlightMode mode,
-			 bool stopped, bool signaled)
-#endif
 {
     last_shown_pc = pc;
-#if defined(IF_XM)
     if (mode == XmHIGHLIGHT_SELECTED)
 	last_execution_pc = pc;
-#else
-    if (mode == GUI::HIGHLIGHT_SELECTED)
-	last_execution_pc = pc;
-#endif
 
     if (stopped)
     {
@@ -13632,17 +14210,10 @@ void SourceView::show_pc(const string& pc, GUI::HighlightMode mode,
 	signal_received = signaled;
     }
 
-#if defined(IF_XM)
     if (mode == XmHIGHLIGHT_SELECTED)
 	undo_buffer.add_address(pc, stopped);
     else
 	undo_buffer.remove_address();
-#else
-    if (mode == GUI::HIGHLIGHT_SELECTED)
-	undo_buffer.add_address(pc, stopped);
-    else
-	undo_buffer.remove_address();
-#endif
     undo_buffer.add_state();
 
     if (!disassemble)
@@ -13693,13 +14264,8 @@ void SourceView::show_pc(const string& pc, GUI::HighlightMode mode,
 	RefreshDisassembleInfo *info = 
 	    new RefreshDisassembleInfo(pc, mode, msg);
 
-#if defined(IF_XM)
 	gdb_command(gdb->disassemble_command(start, end), Widget(0),
 		    refresh_codeOQC, (void *)info);
-#else
-	gdb_command(gdb->disassemble_command(start, end), (GUI::Widget*)(0),
-		    refresh_codeOQC, (void *)info);
-#endif
 	return;
     }
 
@@ -13715,26 +14281,16 @@ void SourceView::show_pc(const string& pc, GUI::HighlightMode mode,
     // Clear old selection
     if (last_start_highlight_pc)
     {
-#if defined(IF_XM)
 	XmTextSetHighlight (code_text_w,
 			    last_start_highlight_pc, 
 			    last_end_highlight_pc,
 			    XmHIGHLIGHT_NORMAL);
-#else
-	code_text_w->set_highlight(last_start_highlight_pc, 
-				   last_end_highlight_pc,
-				   GUI::HIGHLIGHT_NORMAL);
-#endif
 	last_start_highlight_pc = 0;
 	last_end_highlight_pc   = 0;
     }
 
     // Mark current line
-#if defined(IF_XM)
     if (mode == XmHIGHLIGHT_SELECTED)
-#else
-    if (mode == GUI::HIGHLIGHT_SELECTED)
-#endif
     {
 	if (!display_glyphs)
 	{
@@ -13744,39 +14300,22 @@ void SourceView::show_pc(const string& pc, GUI::HighlightMode mode,
 	    if (last_pos_pc)
 	    {
 		static const string no_marker = " ";
-#if defined(IF_XM)
 		XmTextReplace (code_text_w,
 			       last_pos_pc + indent - no_marker.length(),
 			       last_pos_pc + indent,
 			       XMST(no_marker.chars()));
-#else
-		code_text_w->replace(last_pos_pc + indent - no_marker.length(),
-				     last_pos_pc + indent,
-				     XMST(no_marker.chars()));
-#endif
 	    }
 
-#if defined(IF_XM)
 	    XmTextReplace (code_text_w,
 			   pos + indent - marker.length(),
 			   pos + indent,
 			   XMST(marker.chars()));
-#else
-	    code_text_w->replace(pos + indent - marker.length(),
-				 pos + indent,
-				 XMST(marker.chars()));
-#endif
     
 	    if (pos_line_end)
 	    {
-#if defined(IF_XM)
 		XmTextSetHighlight (code_text_w,
 				    pos, pos_line_end,
 				    XmHIGHLIGHT_SELECTED);
-#else
-		code_text_w->set_highlight(pos, pos_line_end,
-					   GUI::HIGHLIGHT_SELECTED);
-#endif
 
 		last_start_highlight_pc = pos;
 		last_end_highlight_pc   = pos_line_end;
@@ -13786,14 +14325,145 @@ void SourceView::show_pc(const string& pc, GUI::HighlightMode mode,
 	}
     }
 
-#if defined(IF_XM)
     if (mode == XmHIGHLIGHT_SELECTED)
 	update_glyphs(code_text_w);
+}
+
 #else
+
+// Show program counter location PC
+// If MODE is given, highlight PC line.
+// STOPPED indicates that the program just stopped.
+// SIGNALED indicates that the program just received a signal.
+void SourceView::show_pc(const string& pc, GUI::HighlightMode mode,
+			 bool stopped, bool signaled)
+{
+    last_shown_pc = pc;
+    if (mode == GUI::HIGHLIGHT_SELECTED)
+	last_execution_pc = pc;
+
+    if (stopped)
+    {
+	at_lowest_frame = true;
+	signal_received = signaled;
+    }
+
+    if (mode == GUI::HIGHLIGHT_SELECTED)
+	undo_buffer.add_address(pc, stopped);
+    else
+	undo_buffer.remove_address();
+    undo_buffer.add_state();
+
+    if (!disassemble)
+	return;
+
+    // std::clog << "Showing PC " << pc << "\n";
+
+    long pos = find_pc(pc);
+
+    // While PC not found, look for code in cache
+    for (int i = 0; 
+	 pos == -1 && i < code_cache.size(); 
+	 i++)
+    {
+	const CodeCacheEntry& cce = code_cache[i];
+	if (compare_address(pc, cce.start) >= 0 
+	    && compare_address(pc, cce.end) <= 0)
+	{
+	    set_code(cce.code, cce.start, cce.end);
+	    pos = find_pc(pc);
+	}
+    }
+
+    if (pos == -1)
+    {
+	// PC not found in current code: disassemble location
+
+	string start = pc;
+	string end   = "";
+	if (app_data.max_disassemble > 0 && 
+	    function_is_larger_than(pc, app_data.max_disassemble))
+	{
+	    // Disassemble only MAX_DISASSEMBLE bytes after PC
+	    unsigned long pc_l = strtoul(pc.chars(), (char **)0, 0);
+	    unsigned long next_l = pc_l + app_data.max_disassemble;
+	    if (next_l < pc_l)
+	    {
+		// Overflow
+		next_l = STATIC_CAST(unsigned long, -1);
+	    }
+	    end = make_address(next_l);
+	}
+
+	string msg = "Disassembling location " + start;
+	if (!end.empty())
+	    msg += " to " + end;
+
+	RefreshDisassembleInfo *info = 
+	    new RefreshDisassembleInfo(pc, mode, msg);
+
+	gdb_command(gdb->disassemble_command(start, end), (GUI::Widget*)(0),
+		    refresh_codeOQC, (void *)info);
+	return;
+    }
+
+    if (pos == -1)
+	return;
+
+    SetInsertionPosition(code_text_w, pos + indent_amount(code_text_w));
+
+    long pos_line_end = 0;
+    if (!current_code.empty())
+	pos_line_end = current_code.index('\n', pos) + 1;
+
+    // Clear old selection
+    if (last_start_highlight_pc)
+    {
+	code_text_w->set_highlight(last_start_highlight_pc, 
+				   last_end_highlight_pc,
+				   GUI::HIGHLIGHT_NORMAL);
+	last_start_highlight_pc = 0;
+	last_end_highlight_pc   = 0;
+    }
+
+    // Mark current line
+    if (mode == GUI::HIGHLIGHT_SELECTED)
+    {
+	if (!display_glyphs)
+	{
+	    // Set new marker
+	    int indent = indent_amount(code_text_w);
+	    static const string marker = ">";
+	    if (last_pos_pc)
+	    {
+		static const string no_marker = " ";
+		code_text_w->replace(last_pos_pc + indent - no_marker.length(),
+				     last_pos_pc + indent,
+				     XMST(no_marker.chars()));
+	    }
+
+	    code_text_w->replace(pos + indent - marker.length(),
+				 pos + indent,
+				 XMST(marker.chars()));
+    
+	    if (pos_line_end)
+	    {
+		code_text_w->set_highlight(pos, pos_line_end,
+					   GUI::HIGHLIGHT_SELECTED);
+
+		last_start_highlight_pc = pos;
+		last_end_highlight_pc   = pos_line_end;
+	    }
+
+	    last_pos_pc = pos;
+	}
+    }
+
     if (mode == GUI::HIGHLIGHT_SELECTED)
 	update_glyphs(code_text_w);
-#endif
 }
+
+#endif
 
 void SourceView::set_disassemble(bool set)
 {
@@ -13870,24 +14540,31 @@ string SourceView::bp_pos(int num)
 	return bp->pos();
 }
 
+#if defined(IF_XM)
 
 // True iff we have some selection
 bool SourceView::have_selection()
 {
     XmTextPosition left, right;
 
-#if defined(IF_XM)
     return (XmTextGetSelectionPosition(source_text_w, &left, &right)
 	    || XmTextGetSelectionPosition(code_text_w, &left, &right)) 
 	&& left != right;
+}
+
 #else
+
+// True iff we have some selection
+bool SourceView::have_selection()
+{
+    long left, right;
+
     return (source_text_w->get_selection_bounds(left, right)
 	    || code_text_w->get_selection_bounds(left, right)) 
 	&& left != right;
-#endif
 }
 
-
+#endif
 
 //----------------------------------------------------------------------------
 // Session stuff

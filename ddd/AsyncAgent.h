@@ -96,14 +96,12 @@ private:
     AsyncAgentWorkProcInfo& operator = (const AsyncAgentWorkProcInfo&);
 };
 
+#if defined(IF_XM)
+
 struct AsyncAgentWorkProc {
     DECLARE_TYPE_INFO
 
-#if defined(IF_XM)
     XtWorkProcId proc_id; 	        // id of running background proc
-#else
-    GUI::connection proc_id; 	        // id of running background proc
-#endif
     AsyncAgentWorkProcInfo *info;	// info
     AsyncAgentWorkProc *next;		// next one
 
@@ -118,6 +116,28 @@ private:
     AsyncAgentWorkProc& operator = (const AsyncAgentWorkProc&);
 };
 
+#else
+
+struct AsyncAgentWorkProc {
+    DECLARE_TYPE_INFO
+
+    GUI::connection proc_id; 	        // id of running background proc
+    AsyncAgentWorkProcInfo *info;	// info
+    AsyncAgentWorkProc *next;		// next one
+
+    // Constructor
+    AsyncAgentWorkProc(GUI::connection i, AsyncAgentWorkProcInfo *inf,
+		       AsyncAgentWorkProc *n):
+	proc_id(i), info(inf), next(n)
+    {}
+
+private:
+    AsyncAgentWorkProc(const AsyncAgentWorkProc&);
+    AsyncAgentWorkProc& operator = (const AsyncAgentWorkProc&);
+};
+
+#endif
+
 // Events
 const unsigned AsyncAgent_NTypes = Agent_NTypes;
 
@@ -131,48 +151,32 @@ const unsigned ErrorException  = 5;	// I/O exception (urgent msg) on error
 
 const unsigned AsyncAgent_NHandlers = 6; // # of handler types
 
+#if defined(IF_XM)
+
 class AsyncAgent: public Agent {
 public:
     DECLARE_TYPE_INFO
 
 private:
 
-#if defined(IF_XM)
     XtAppContext _appContext;		// the application context
-#else
-    GUI::Main *_appContext;
-#endif
 
     AsyncAgentHandler _handlers[AsyncAgent_NHandlers]; // handlers
-#if defined(IF_XM)
     XtInputId _ids[AsyncAgent_NHandlers];	       // their ids
-#else
-    GUI::connection _ids[AsyncAgent_NHandlers];       // their ids
-#endif
 
     AsyncAgentWorkProc *workProcs;	// working procedures
 
     // dispatch event
-    void dispatch(
-#if defined(IF_XM)
-	int *fid, XtInputId *inputId
-#else
-	int type
-#endif
-	);
+    void dispatch(int *fid, XtInputId *inputId);
 
     // used in childStatusChange()
     int new_status;
     bool status_change_pending;
 
-#if defined(IF_XM)
 #if ASYNC_CHILD_STATUS_CHANGE
     XtSignalId signal_id;
 #else
     XtIntervalId signal_id;		// Just for padding
-#endif
-#else
-    GUI::connection signal_id;		// Just for padding
 #endif
 
     bool killing_asynchronously;
@@ -195,7 +199,6 @@ private:
     static void childStatusChange(Agent *agent, void *client_data,
 				  void *call_data);
 
-#if defined(IF_XM)
     static void somethingHappened(XtPointer client_data, int *fid,
 				  XtInputId *inputId);
     static Boolean callTheHandlers(XtPointer client_data);
@@ -206,17 +209,6 @@ private:
     static void terminateProcess(XtPointer, XtIntervalId *);
     static void hangupProcess(XtPointer, XtIntervalId *);
     static void killProcess(XtPointer, XtIntervalId *);
-#else
-    bool somethingHappened(Glib::IOCondition cond, int type);
-    static Boolean callTheHandlers(AsyncAgentWorkProcInfo *info);
-    static bool callTheHandlersIfIdle(AsyncAgentWorkProcInfo *info);
-
-    // Helping functions
-
-    static bool terminateProcess(pid_t);
-    static bool hangupProcess(pid_t);
-    static bool killProcess(pid_t);
-#endif
 
 protected:
     // Set handler
@@ -225,21 +217,12 @@ protected:
     // Clear all handlers
     void clearHandlers();
 
-#if defined(IF_XM)
     // resources
     XtInputId id(unsigned type) const
     {
 	assert(type < AsyncAgent_NHandlers);
 	return _ids[type]; 
     }
-#else
-    // resources
-    GUI::connection id(unsigned type) const
-    {
-	assert(type < AsyncAgent_NHandlers);
-	return _ids[type]; 
-    }
-#endif
 
     AsyncAgentHandler handler(unsigned type) const
     {
@@ -257,7 +240,6 @@ protected:
     virtual void closeChannel(FILE *fp);
 
 private:
-#if defined(IF_XM)
     // remove input
     void removeInput(unsigned type)
     {
@@ -267,29 +249,12 @@ private:
             _ids[type] = 0;
         }
     }
-#else
-    // remove input
-    void removeInput(unsigned type)
-    {
-	if (id(type))
-	{
-	    id(type).disconnect();
-        }
-    }
-#endif
 
     AsyncAgent& operator = (const AsyncAgent&);
 
 public:
-#if defined(IF_XM)
     // Resources
     XtAppContext appContext() const { return _appContext; }
-#else
-    // Resources
-    GUI::Main *appContext() const { return _appContext; }
-#endif
-
-#if defined(IF_XM)
 
     // Constructors
     AsyncAgent(XtAppContext app_context, const string& pth, 
@@ -303,23 +268,6 @@ public:
 	addDeathOfChildHandler();
     }
 
-#else
-
-    // Constructors
-    AsyncAgent(GUI::Main *app_context, const string& pth, 
-	       unsigned nTypes = AsyncAgent_NTypes):
-	Agent(pth, nTypes), _appContext(app_context), workProcs(0), 
-	new_status(0), status_change_pending(false), 
-	killing_asynchronously(false)
-    {
-	initHandlers();
-	addDeathOfChildHandler();
-    }
-
-#endif
-
-#if defined(IF_XM)
-
     AsyncAgent(XtAppContext app_context, FILE *in = stdin, FILE *out = stdout,
 	FILE *err = 0, unsigned nTypes = AsyncAgent_NTypes):
 	Agent(in, out, err, nTypes), _appContext(app_context), workProcs(0),
@@ -329,21 +277,6 @@ public:
     {
 	initHandlers();
     }
-
-#else
-
-    AsyncAgent(GUI::Main *app_context, FILE *in = stdin, FILE *out = stdout,
-	FILE *err = 0, unsigned nTypes = AsyncAgent_NTypes):
-	Agent(in, out, err, nTypes), _appContext(app_context), workProcs(0),
-	new_status(0), status_change_pending(false),
-	killing_asynchronously(false)
-    {
-	initHandlers();
-    }
-
-#endif
-
-#if defined(IF_XM)
 
     AsyncAgent(XtAppContext app_context, bool dummy,
 	unsigned nTypes = AsyncAgent_NTypes):
@@ -355,26 +288,11 @@ public:
 	initHandlers();
     }
 
-#else
-
-    AsyncAgent(GUI::Main *app_context, bool dummy,
-	unsigned nTypes = AsyncAgent_NTypes):
-	Agent(dummy, nTypes), _appContext(app_context), workProcs(0),
-	new_status(0), status_change_pending(false),
-	killing_asynchronously(false)
-    {
-	initHandlers();
-    }
-
-#endif
-
     // Duplicator
     AsyncAgent(const AsyncAgent& c):
 	Agent(c), _appContext(c.appContext()), workProcs(0), 
 	new_status(0), status_change_pending(false),
-#if defined(IF_XM)
 	signal_id(0),
-#endif
 	killing_asynchronously(false)
     {
 	initHandlers();
@@ -398,6 +316,164 @@ public:
     virtual void abort();
     virtual void terminate(bool onExit = false);
 };
+
+#else
+
+class AsyncAgent: public Agent {
+public:
+    DECLARE_TYPE_INFO
+
+private:
+
+    GUI::Main *_appContext;
+
+    AsyncAgentHandler _handlers[AsyncAgent_NHandlers]; // handlers
+    GUI::connection _ids[AsyncAgent_NHandlers];       // their ids
+
+    AsyncAgentWorkProc *workProcs;	// working procedures
+
+    // dispatch event
+    void dispatch(int type);
+
+    // used in childStatusChange()
+    int new_status;
+    bool status_change_pending;
+
+    GUI::connection signal_id;		// Just for padding
+
+    bool killing_asynchronously;
+
+    void initHandlers();
+    void addDeathOfChildHandler();
+
+    // delete remaining work procedure(s)
+    void deleteWorkProc(AsyncAgentWorkProcInfo *info, bool remove = true);
+    void deleteAllWorkProcs();
+
+    // Call when NEW_STATUS has been set
+    void statusChange();
+
+#if ASYNC_CHILD_STATUS_CHANGE
+    static void _childStatusChange(XtPointer client_data, XtSignalId *id);
+#endif
+
+    // X Event Handlers
+    static void childStatusChange(Agent *agent, void *client_data,
+				  void *call_data);
+
+    bool somethingHappened(Glib::IOCondition cond, int type);
+    static Boolean callTheHandlers(AsyncAgentWorkProcInfo *info);
+    static bool callTheHandlersIfIdle(AsyncAgentWorkProcInfo *info);
+
+    // Helping functions
+
+    static bool terminateProcess(pid_t);
+    static bool hangupProcess(pid_t);
+    static bool killProcess(pid_t);
+
+protected:
+    // Set handler
+    AsyncAgentHandler setHandler(unsigned type, AsyncAgentHandler handler = 0);
+
+    // Clear all handlers
+    void clearHandlers();
+
+    // resources
+    GUI::connection id(unsigned type) const
+    {
+	assert(type < AsyncAgent_NHandlers);
+	return _ids[type]; 
+    }
+
+    AsyncAgentHandler handler(unsigned type) const
+    {
+	assert(type < AsyncAgent_NHandlers);
+	return _handlers[type];
+    }
+
+    virtual void waitToTerminate();
+
+    // Delayed event handling
+    virtual void callHandlersWhenIdle(int type, void *call_data = 0);
+    virtual bool isIdle() { return true; }
+
+    // Hook for channel closing
+    virtual void closeChannel(FILE *fp);
+
+private:
+    // remove input
+    void removeInput(unsigned type)
+    {
+	if (id(type))
+	{
+	    id(type).disconnect();
+        }
+    }
+
+    AsyncAgent& operator = (const AsyncAgent&);
+
+public:
+    // Resources
+    GUI::Main *appContext() const { return _appContext; }
+
+    // Constructors
+    AsyncAgent(GUI::Main *app_context, const string& pth, 
+	       unsigned nTypes = AsyncAgent_NTypes):
+	Agent(pth, nTypes), _appContext(app_context), workProcs(0), 
+	new_status(0), status_change_pending(false), 
+	killing_asynchronously(false)
+    {
+	initHandlers();
+	addDeathOfChildHandler();
+    }
+
+    AsyncAgent(GUI::Main *app_context, FILE *in = stdin, FILE *out = stdout,
+	FILE *err = 0, unsigned nTypes = AsyncAgent_NTypes):
+	Agent(in, out, err, nTypes), _appContext(app_context), workProcs(0),
+	new_status(0), status_change_pending(false),
+	killing_asynchronously(false)
+    {
+	initHandlers();
+    }
+
+    AsyncAgent(GUI::Main *app_context, bool dummy,
+	unsigned nTypes = AsyncAgent_NTypes):
+	Agent(dummy, nTypes), _appContext(app_context), workProcs(0),
+	new_status(0), status_change_pending(false),
+	killing_asynchronously(false)
+    {
+	initHandlers();
+    }
+
+    // Duplicator
+    AsyncAgent(const AsyncAgent& c):
+	Agent(c), _appContext(c.appContext()), workProcs(0), 
+	new_status(0), status_change_pending(false),
+	killing_asynchronously(false)
+    {
+	initHandlers();
+    }
+    virtual Agent *dup() const { return new AsyncAgent(*this); }
+
+    // Destructor
+    ~AsyncAgent()
+    {
+	// Make sure the work procedure won't be called
+	deleteAllWorkProcs();
+
+	// Inhibit further Xt selection
+	clearHandlers();
+    }
+
+    // Commit pending status changes
+    virtual void commit();
+
+    // These need special management:
+    virtual void abort();
+    virtual void terminate(bool onExit = false);
+};
+
+#endif
 
 #endif // _DDD_AsyncAgent_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

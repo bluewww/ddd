@@ -160,7 +160,7 @@ void sourceToggleFindWordsOnlyCB (Widget w, XtPointer, XtPointer call_data)
     else
 	set_status("Finding arbitrary occurrences.");
 
-    update_options(NO_UPDATE);
+    update_options();
 }
 
 void sourceToggleFindCaseSensitiveCB (Widget w, XtPointer, XtPointer call_data)
@@ -175,7 +175,7 @@ void sourceToggleFindCaseSensitiveCB (Widget w, XtPointer, XtPointer call_data)
     else
 	set_status("Case-sensitive search disabled.");
 
-    update_options(NO_UPDATE);
+    update_options();
 }
 
 void sourceToggleCacheSourceFilesCB (Widget w, XtPointer, XtPointer call_data)
@@ -191,7 +191,7 @@ void sourceToggleCacheSourceFilesCB (Widget w, XtPointer, XtPointer call_data)
 	set_status("Not caching source texts.  "
 		   "Source text cache has been cleared.");
 
-    update_options(NO_UPDATE);
+    update_options();
 }
 
 void sourceToggleCacheMachineCodeCB (Widget w, XtPointer, XtPointer call_data)
@@ -201,7 +201,7 @@ void sourceToggleCacheMachineCodeCB (Widget w, XtPointer, XtPointer call_data)
 
     app_data.cache_machine_code = info->set;
 
-    update_options(NO_UPDATE);
+    update_options();
 
     if (app_data.cache_machine_code)
 	set_status("Caching machine code.");
@@ -217,7 +217,7 @@ void sourceToggleDisplayLineNumbersCB (Widget w, XtPointer, XtPointer call_data)
 
     app_data.display_line_numbers = info->set;
 
-    update_options(NO_UPDATE);
+    update_options();
 
 #if 0
     if (app_data.display_line_numbers)
@@ -1275,7 +1275,7 @@ void dddSetBuiltinPlotWindowCB (Widget, XtPointer client_data, XtPointer)
     }
 
     clear_plot_window_cache();
-    update_options(NO_UPDATE);
+    update_options();
 }
 
 #else
@@ -1310,7 +1310,7 @@ void dddSetBuiltinPlotWindowCB (GUI::RadioButton *w, bool state)
     update_options();
 #else
     static int errcnt = 0;
-    if (complain && !errcnt++) std::cerr << "clear_plot_window_cache()?\n";
+    if (!errcnt++) std::cerr << "clear_plot_window_cache()?\n";
     update_options(true);
 #endif
 }
@@ -2913,10 +2913,21 @@ static bool options_file_has_changed(ChangeMode mode, bool reset)
     return false;
 }
 
+#if defined(IF_XM)
+
 inline const _XtString str(const _XtString s)
 {
     return s != 0 ? s : "";
 }
+
+#else
+
+inline const char *str(const char *s)
+{
+    return s != 0 ? s : "";
+}
+
+#endif
 
 #if defined(IF_XM)
 

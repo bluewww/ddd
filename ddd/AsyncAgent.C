@@ -168,6 +168,7 @@ void AsyncAgent::addDeathOfChildHandler()
     addHandler(_Died, childStatusChange, XtPointer(this));
 }
 
+#if defined(IF_XM)
 
 // Set Handler
 AsyncAgentHandler AsyncAgent::setHandler(unsigned type, AsyncAgentHandler h)
@@ -176,12 +177,8 @@ AsyncAgentHandler AsyncAgent::setHandler(unsigned type, AsyncAgentHandler h)
     AsyncAgentHandler old_handler = handler(type);
     if (id(type))
     {
-#if defined(IF_XM)
 	XtRemoveInput(id(type));
 	_ids[type] = 0;
-#else
-	_ids[type].disconnect();
-#endif
     }
 
     // Register new handler
@@ -228,10 +225,69 @@ AsyncAgentHandler AsyncAgent::setHandler(unsigned type, AsyncAgentHandler h)
     _handlers[type] = h;
 
     if (h && sourcefp) {
-#if defined(IF_XM)
 	_ids[type] = XtAppAddInput(appContext(), fileno(sourcefp), XtPointer(condition),
 				   somethingHappened, (XtPointer)this);
+    }
+
+    return old_handler;
+}
+
 #else
+
+// Set Handler
+AsyncAgentHandler AsyncAgent::setHandler(unsigned type, AsyncAgentHandler h)
+{
+    // Remove old handler if set
+    AsyncAgentHandler old_handler = handler(type);
+    if (id(type))
+    {
+	_ids[type].disconnect();
+    }
+
+    // Register new handler
+    FILE *sourcefp      = 0;
+    int condition = 0;
+
+    switch(type)
+    {
+	case OutputReady:
+	    sourcefp  = outputfp();
+	    condition = Glib::IO_OUT;
+	    break;
+
+	case InputReady:
+	    sourcefp  = inputfp();
+	    condition = Glib::IO_IN;
+	    break;
+
+	case ErrorReady:
+	    sourcefp  = errorfp();
+	    condition = Glib::IO_IN;
+	    break;
+
+	case OutputException:
+	    sourcefp  = outputfp();
+	    condition = (Glib::IO_PRI|Glib::IO_ERR);
+	    break;
+
+	case InputException:
+	    sourcefp  = inputfp();
+	    condition = (Glib::IO_PRI|Glib::IO_ERR);
+	    break;
+
+	case ErrorException:
+	    sourcefp  = errorfp();
+	    condition = (Glib::IO_PRI|Glib::IO_ERR);
+	    break;
+
+	default:
+	    assert(0);		// illegal type
+	    ::abort();
+    }
+
+    _handlers[type] = h;
+
+    if (h && sourcefp) {
 	const Glib::RefPtr<Glib::IOSource> source
 	    = Glib::IOSource::create(fileno(sourcefp),
 				     Glib::IOCondition(condition)|Glib::IO_HUP|Glib::IO_ERR|Glib::IO_NVAL);
@@ -240,28 +296,22 @@ AsyncAgentHandler AsyncAgent::setHandler(unsigned type, AsyncAgentHandler h)
 	    source->connect(sigc::bind(sigc::mem_fun(*this, &AsyncAgent::somethingHappened), type));
 	Glib::RefPtr<Glib::MainContext> ctx = Glib::MainContext::get_default();
 	source->attach(ctx);
-#endif
     }
 
     return old_handler;
 }
 
+#endif
+
+#if defined(IF_XM)
 
 // Dispatcher
-void AsyncAgent::dispatch(
-#if defined(IF_XM)
-    int *, XtInputId *inputId
-#else
-    int type
-#endif
-    )
+void AsyncAgent::dispatch(int *, XtInputId *inputId)
 {
-#if defined(IF_XM)
     // search handler
     unsigned type;
     for (type = 0; type < AsyncAgent_NHandlers && id(type) != *inputId; type++)
 	;
-#endif
     
     // call it
     if (type < AsyncAgent_NHandlers)
@@ -278,6 +328,20 @@ void AsyncAgent::dispatch(
     }
 #endif
 }
+
+#else
+
+// Dispatcher
+void AsyncAgent::dispatch(int type)
+{
+    // call it
+    if (type < AsyncAgent_NHandlers)
+    {
+	(*(handler(type)))(this);
+    }
+}
+
+#endif
 
 // Abort
 void AsyncAgent::abort()
@@ -438,7 +502,6 @@ void AsyncAgent::callTheHandlersIfIdle(XtPointer client_data, XtIntervalId *)
 	XtAppAddTimeOut(info->agent->appContext(), 10, callTheHandlersIfIdle,
 			XtPointer(info));
     }
-    return MAYBE_FALSE;
 }
 
 #else
@@ -502,6 +565,8 @@ void AsyncAgent::callHandlersWhenIdle(int type, void *call_data)
     workProcs = new AsyncAgentWorkProc(workProcId, info, workProcs);
 }
 
+#if defined(IF_XM)
+
 void AsyncAgent::deleteWorkProc(AsyncAgentWorkProcInfo *info,
 				bool remove)
 {
@@ -526,6 +591,35 @@ void AsyncAgent::deleteWorkProc(AsyncAgentWorkProcInfo *info,
         }
     }
 }
+
+#else
+
+void AsyncAgent::deleteWorkProc(AsyncAgentWorkProcInfo *info,
+				bool remove)
+{
+    AsyncAgentWorkProc *prev = 0;
+    for (AsyncAgentWorkProc *c = workProcs; c != 0; c = c->next)
+    {
+        if (c->info == info)
+        {
+            if (prev == 0)
+                workProcs = c->next;
+            else
+                prev->next = c->next;
+
+            if (remove)
+		c->proc_id.disconnect();
+	    delete c->info;
+	    delete c;
+        }
+        else
+        {
+            prev = c;
+        }
+    }
+}
+
+#endif
 
 void AsyncAgent::deleteAllWorkProcs()
 {

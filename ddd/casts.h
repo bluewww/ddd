@@ -50,8 +50,13 @@ inline char *XMST(const char *s) {return (char *)s;}
 #define XMST(OBJ) Glib::ustring(OBJ)
 #endif
 
+#if defined(IF_XM)
 // first three fields of XtResource are char*.
 #define XTRESSTR(OBJ) CONST_CAST(char *,OBJ)
+#else
+// first three fields of XtResource are char*.
+#define XTRESSTR(OBJ) (OBJ)
+#endif
 
 // first field of XtActionsRec is char*.
 #define XTARECSTR(OBJ) CONST_CAST(char *,OBJ)

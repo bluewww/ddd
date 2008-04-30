@@ -41,10 +41,21 @@
 
 #include "gtk_wrapper.h"
 
+#if defined(IF_XM)
+
 // Actions
 extern void complete_commandAct  (Widget, XEvent*, String*, Cardinal*);
 extern void complete_argAct      (Widget, XEvent*, String*, Cardinal*);
 extern void complete_tabAct      (Widget, XEvent*, String*, Cardinal*);
+
+#else
+
+// Actions
+extern void complete_commandAct  (GUI::Widget *, GUI::Event *, GUI::String *, unsigned int *);
+extern void complete_argAct      (GUI::Widget *, GUI::Event *, GUI::String *, unsigned int *);
+extern void complete_tabAct      (GUI::Widget *, GUI::Event *, GUI::String *, unsigned int *);
+
+#endif
 
 // Completion is done
 extern void clear_completion_delay();

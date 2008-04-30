@@ -44,6 +44,8 @@ namespace GtkX {
 	void set_label(const String &label);
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;
+	void remove(void);
+	void add_label(const String &);
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
 #include <GtkX/redirect.h>
     };

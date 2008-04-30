@@ -74,9 +74,19 @@ extern void save_history(const string& file, GUI::Widget *origin = 0);
 // Last command from history
 extern string last_command_from_history();
 
+#if defined(IF_XM)
+
 // History actions
 extern void prev_historyAct      (Widget, XEvent*, String*, Cardinal*);
 extern void next_historyAct      (Widget, XEvent*, String*, Cardinal*);
+
+#else
+
+// History actions
+extern void prev_historyAct      (GUI::Widget *, GUI::Event *, GUI::String *, unsigned int *);
+extern void next_historyAct      (GUI::Widget *, GUI::Event *, GUI::String *, unsigned int *);
+
+#endif
 
 // Search TEXT in history; return POS iff found, -1 if none
 // DIRECTION = -1 means search backward, DIRECTION = +1 means search forward

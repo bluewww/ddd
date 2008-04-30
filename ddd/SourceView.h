@@ -436,16 +436,16 @@ class SourceView {
     static void doubleClickAct    (Widget, XEvent*, String*, Cardinal*);
     static void setArgAct         (Widget, XEvent*, String*, Cardinal*);
 #else
-    static void srcpopupAct       (GUI::Widget*, GUI::Event*, char **, unsigned int*);
-    static void startSelectWordAct(GUI::ScrolledText*, GUI::Event*, char **, unsigned int*);
-    static void endSelectWordAct  (GUI::ScrolledText*, GUI::Event*, char **, unsigned int*);
-    static void updateGlyphsAct   (GUI::Widget *, GUI::Event *, char **, unsigned int*);
-    static void dragGlyphAct      (GUI::Widget *, GUI::Event *, char **, unsigned int*);
-    static void followGlyphAct    (GUI::Widget *, GUI::Event *, char **, unsigned int*);
-    static void dropGlyphAct      (GUI::Widget *, GUI::Event *, char **, unsigned int*);
-    static void deleteGlyphAct    (GUI::Widget *, GUI::Event *, char **, unsigned int*);
-    static void doubleClickAct    (GUI::Widget*, GUI::Event*, char **, unsigned int*);
-    static void setArgAct         (GUI::Widget*, GUI::Event*, char **, unsigned int*);
+    static void srcpopupAct       (GUI::Widget*, GUI::Event*, GUI::String *, unsigned int*);
+    static void startSelectWordAct(GUI::ScrolledText*, GUI::Event*, GUI::String *, unsigned int*);
+    static void endSelectWordAct  (GUI::ScrolledText*, GUI::Event*, GUI::String *, unsigned int*);
+    static void updateGlyphsAct   (GUI::Widget *, GUI::Event *, GUI::String *, unsigned int*);
+    static void dragGlyphAct      (GUI::Widget *, GUI::Event *, GUI::String *, unsigned int*);
+    static void followGlyphAct    (GUI::Widget *, GUI::Event *, GUI::String *, unsigned int*);
+    static void dropGlyphAct      (GUI::Widget *, GUI::Event *, GUI::String *, unsigned int*);
+    static void deleteGlyphAct    (GUI::Widget *, GUI::Event *, GUI::String *, unsigned int*);
+    static void doubleClickAct    (GUI::Widget*, GUI::Event*, GUI::String *, unsigned int*);
+    static void setArgAct         (GUI::Widget*, GUI::Event*, GUI::String *, unsigned int*);
 #endif
 
     //-----------------------------------------------------------------------
@@ -457,10 +457,12 @@ class SourceView {
     static bool setSelection(GUI::ScrolledText *);
 #endif
 
+#if defined(IF_XM)
     //-----------------------------------------------------------------------
     // Action decls
     //-----------------------------------------------------------------------
     static XtActionsRec actions [];
+#endif
 
     //-----------------------------------------------------------------------
     // Menus
@@ -624,10 +626,10 @@ class SourceView {
 				  Widget origin = 0);
 #else
     static void post_file_error(const string& file_name,
-				const string& text, const _XtString name = 0,
+				const string& text, const char *name = 0,
 				GUI::Widget *origin = 0);
     static void post_file_warning(const string& file_name,
-				  const string& text, const _XtString name = 0,
+				  const string& text, const char *name = 0,
 				  GUI::Widget *origin = 0);
 #endif
 
@@ -678,19 +680,19 @@ class SourceView {
     static bool frame_pos_locked;
 
     // Read source text
-    static String read_local(const string& file_name, long& length,
+    static char *read_local(const string& file_name, long& length,
+			    bool silent);
+    static char *read_remote(const string& file_name, long& length,
 			     bool silent);
-    static String read_remote(const string& file_name, long& length,
-			      bool silent);
-    static String read_class(const string& class_name, 
-			     string& file_name, SourceOrigin& origin,
-			     long& length, bool silent);
-    static String read_from_gdb(const string& source_name, long& length,
-				bool silent);
+    static char *read_class(const string& class_name, 
+			    string& file_name, SourceOrigin& origin,
+			    long& length, bool silent);
+    static char *read_from_gdb(const string& source_name, long& length,
+			       bool silent);
 
-    static String read_indented(string& file_name, long& length,
-				SourceOrigin& origin,
-				bool silent = false);
+    static char *read_indented(string& file_name, long& length,
+			       SourceOrigin& origin,
+			       bool silent = false);
     static int read_current(string& file_name, 
 			    bool force_reload = false,
 			    bool silent = false);

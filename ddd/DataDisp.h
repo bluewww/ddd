@@ -317,7 +317,7 @@ class DataDisp {
 #else
     static void show(GUI::Widget *dialog, int depth, int more);
 
-    static GUI::Dialog *create_display_dialog(GUI::Widget *parent, const _XtString name,
+    static GUI::Dialog *create_display_dialog(GUI::Widget *parent, const char *name,
 					      NewDisplayInfo& info);
 #endif
 
@@ -376,19 +376,19 @@ class DataDisp {
     // Actions
     //-----------------------------------------------------------------------
     static GUI::ActionRec actions [];
-    static void graph_selectAct         (GUI::Widget*, GUI::Event*, char **, Cardinal*);
-    static void graph_select_or_moveAct (GUI::Widget*, GUI::Event*, char **, Cardinal*);
-    static void graph_extendAct         (GUI::Widget*, GUI::Event*, char **, Cardinal*);
-    static void graph_extend_or_moveAct (GUI::Widget*, GUI::Event*, char **, Cardinal*);
-    static void graph_toggleAct         (GUI::Widget*, GUI::Event*, char **, Cardinal*);
-    static void graph_toggle_or_moveAct (GUI::Widget*, GUI::Event*, char **, Cardinal*);
-    static void graph_popupAct          (GUI::Widget*, GUI::Event*, char **, Cardinal*);
-    static void graph_dereferenceAct    (GUI::Widget*, GUI::Event*, char **, Cardinal*);
-    static void graph_detailAct         (GUI::Widget*, GUI::Event*, char **, Cardinal*);
-    static void graph_rotateAct         (GUI::Widget*, GUI::Event*, char **, Cardinal*);
-    static void graph_dependentAct      (GUI::Widget*, GUI::Event*, char **, Cardinal*);
+    static void graph_selectAct         (GUI::Widget*, GUI::Event*, GUI::String *, unsigned int *);
+    static void graph_select_or_moveAct (GUI::Widget*, GUI::Event*, GUI::String *, unsigned int *);
+    static void graph_extendAct         (GUI::Widget*, GUI::Event*, GUI::String *, unsigned int *);
+    static void graph_extend_or_moveAct (GUI::Widget*, GUI::Event*, GUI::String *, unsigned int *);
+    static void graph_toggleAct         (GUI::Widget*, GUI::Event*, GUI::String *, unsigned int *);
+    static void graph_toggle_or_moveAct (GUI::Widget*, GUI::Event*, GUI::String *, unsigned int *);
+    static void graph_popupAct          (GUI::Widget*, GUI::Event*, GUI::String *, unsigned int *);
+    static void graph_dereferenceAct    (GUI::Widget*, GUI::Event*, GUI::String *, unsigned int *);
+    static void graph_detailAct         (GUI::Widget*, GUI::Event*, GUI::String *, unsigned int *);
+    static void graph_rotateAct         (GUI::Widget*, GUI::Event*, GUI::String *, unsigned int *);
+    static void graph_dependentAct      (GUI::Widget*, GUI::Event*, GUI::String *, unsigned int *);
 
-    static void call_selection_proc(GUI::Widget*, const _XtString, GUI::Event*, char **, Cardinal,
+    static void call_selection_proc(GUI::Widget*, const char *, GUI::Event*, GUI::String *, unsigned int,
 				    SelectionMode mode);
 
 #endif

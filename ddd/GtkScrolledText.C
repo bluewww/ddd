@@ -219,7 +219,7 @@ void
 GtkScrolledText::set_highlight(long pos1, long pos2, XmHighlightMode mode)
 {
     static int errcnt = 0;
-    if (complain && !errcnt++) std::cerr << "set_highlight(" << pos1 << "," << pos2 << "," << mode << ")\n";
+    if (!errcnt++) std::cerr << "set_highlight(" << pos1 << "," << pos2 << "," << mode << ")\n";
 }
 
 long
@@ -325,7 +325,7 @@ GtkScrolledText::get_insertion_position(void)
 int GtkScrolledText::get_rows()
 {
     static int errcnt = 0;
-    if (complain && !errcnt++) std::cerr << "GtkScrolledText: ROWS\n";
+    if (!errcnt++) std::cerr << "GtkScrolledText: ROWS\n";
     return 0;
 }
 
@@ -333,7 +333,7 @@ int
 GtkScrolledText::get_columns()
 {
     static int errcnt = 0;
-    if (complain && !errcnt++) std::cerr << "GtkScrolledText: COLUMNS\n";
+    if (!errcnt++) std::cerr << "GtkScrolledText: COLUMNS\n";
     return 0;
 }
 

@@ -61,6 +61,7 @@ char HelpCB_rcsid[] =
 #include <ctype.h>
 
 #if defined(IF_XM)
+
 #include <Xm/Xm.h>
 #include <Xm/CascadeB.h>
 #include <Xm/MainW.h>
@@ -81,7 +82,14 @@ char HelpCB_rcsid[] =
 #include <X11/StringDefs.h>
 #include <X11/IntrinsicP.h>	// LessTif hacks
 #include <X11/Shell.h>
+
+#else
+
+#include <GUI/Bipolar.h>
+#include <GUI/Dialog.h>
+
 #endif
+
 
 // Misc DDD includes
 #include "LessTifH.h"
@@ -99,11 +107,6 @@ char HelpCB_rcsid[] =
 #include "mydialogs.h"
 #include "ArgField.h"
 
-#if !defined(IF_XM)
-#include <GUI/Bipolar.h>
-#include <GUI/Dialog.h>
-#endif
-
 
 //-----------------------------------------------------------------------
 // Resources
@@ -115,6 +118,8 @@ char HelpCB_rcsid[] =
 // tipString           - displayed in small windows when entering buttons
 // documentationString - displayed in the status line
 // helpShowTitle       - if set, include widget name in context-sensitive help
+
+#if defined(IF_XM)
 
 struct help_resource_values {
     XmString helpString;
@@ -134,7 +139,6 @@ struct doc_resource_values {
     XmString documentationString;
 };
 
-#if defined(IF_XM)
 static XtResource help_subresources[] = {
     {
 	XTRESSTR(XtNhelpString),
@@ -202,6 +206,7 @@ static XtResource doc_subresources[] = {
 	XtPointer(0)
     }
 };
+
 #endif
 
 //-----------------------------------------------------------------------
@@ -512,7 +517,7 @@ static bool call_tracking_help(GUI::Event *event, bool key_only = false)
     if (event->type != GUI::KEY_PRESS && event->type != GUI::KEY_RELEASE)
 	return key_only;
 
-    if ((event->key.state & ShiftMask) == 0)
+    if ((event->key.state & GUI::SHIFT_MASK) == 0)
 	return false;
 
     return true;
@@ -802,7 +807,7 @@ static XmTextPosition NoTextPosOfEvent(Widget, XEvent *)
 
 #else
 
-static long NoTextPosOfEvent(GUI::ScrolledText *, XEvent *)
+static long NoTextPosOfEvent(GUI::ScrolledText *, GUI::Event *)
 {
     return -1;
 }
@@ -821,7 +826,7 @@ XmTextPosition (*TextPosOfEvent)(Widget, XEvent *)    = NoTextPosOfEvent;
 GUI::String (*DefaultHelpText)(GUI::Widget *)                    = NoHelpText;
 GUI::String (*DefaultTipText)(GUI::Widget *, GUI::Event *)           = NoTipText;
 GUI::String (*DefaultDocumentationText)(GUI::Widget *, GUI::Event *) = NoDocumentationText;
-long (*TextPosOfEvent)(GUI::ScrolledText *, XEvent *)    = NoTextPosOfEvent;
+long (*TextPosOfEvent)(GUI::ScrolledText *, GUI::Event *)    = NoTextPosOfEvent;
 
 #endif
 

@@ -62,12 +62,12 @@ extern XrmDatabase app_defaults(Display *display);
 
 // Emulate Xt resource database.
 struct DDDResource {
-    char 	*resource_name;	/* Resource name			    */
-    char	*resource_class;	/* Resource class			    */
-    char	*resource_type;	/* Representation type desired		    */
+    const char 	*resource_name;	/* Resource name			    */
+    const char	*resource_class;	/* Resource class			    */
+    const char	*resource_type;	/* Representation type desired		    */
     unsigned int	resource_size;	/* Size in bytes of representation	    */
     unsigned int	resource_offset;/* Offset from base to put resource value   */
-    char	*default_type;	/* representation type of specified default */
+    const char	*default_type;	/* representation type of specified default */
     void	*default_addr;	/* Address of default resource		    */
 };
 

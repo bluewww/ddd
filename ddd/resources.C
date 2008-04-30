@@ -107,9 +107,13 @@ char resources_rcsid[] =
 
 typedef DDDResource XtResource;
 
+typedef char *String;
+
 #define XmCBlinkRate ""
 
 #endif
+
+#define N_ELEMENTS(x) (sizeof(x)/sizeof(x[0]))
 
 // Application resource definitions
 XtResource ddd_resources[] = {
@@ -2294,7 +2298,7 @@ XtResource ddd_resources[] = {
     }
 };
 
-const int ddd_resources_size = XtNumber(ddd_resources);
+const int ddd_resources_size = N_ELEMENTS(ddd_resources);
 
 // Application resources
 AppData app_data;
@@ -2386,6 +2390,8 @@ AppDataInitializer::AppDataInitializer()
 #endif
 }
 
+#if defined(IF_XM)
+
 // Fallback resources
 // The resources should be loaded in read-only memory thanks to "const"
 const _XtString const ddd_fallback_resources[] = {
@@ -2398,8 +2404,24 @@ const _XtString const ddd_fallback_resources[] = {
 
 };
 
+#else
+
+// Fallback resources
+// The resources should be loaded in read-only memory thanks to "const"
+const char *const ddd_fallback_resources[] = {
+#if WITH_BUILTIN_APP_DEFAULTS
+#include "Ddd.ad.h"
+#endif
+
+// Terminating null pointer
+0
+
+};
+
+#endif
 
 #if defined(IF_XM)
+
 // Return a database of default settings
 XrmDatabase app_defaults(Display *display)
 {

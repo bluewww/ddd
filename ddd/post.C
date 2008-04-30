@@ -398,7 +398,7 @@ GUI::Dialog *post_gdb_died(string reason, int state, GUI::Widget *w)
     GUI::Label *label;
     if (gdb_initialized)
     {
-	const _XtString name;
+	const char *name;
 	MString msg;
 
 	if (gdb->has_exec_files() && exited)
@@ -666,7 +666,7 @@ Widget post_error(string text, const _XtString name, Widget w)
 
 #else
 
-GUI::Dialog *post_error(string text, const _XtString name, GUI::Widget *w)
+GUI::Dialog *post_error(string text, const char *name, GUI::Widget *w)
 {
     strip_trailing_space(text);
 
@@ -755,7 +755,7 @@ Widget post_warning(string text, const _XtString name, Widget w)
 
 #else
 
-GUI::Dialog *post_warning(string text, const _XtString name, GUI::Widget *w)
+GUI::Dialog *post_warning(string text, const char *name, GUI::Widget *w)
 {
     strip_trailing_space(text);
 

@@ -230,7 +230,7 @@ extern GUI::String (*DefaultTipText)(GUI::Widget *widget, GUI::Event *event);
 extern GUI::String (*DefaultDocumentationText)(GUI::Widget *widget, GUI::Event *event);
 
 // Return a text position associated with this event
-extern long (*TextPosOfEvent)(GUI::ScrolledText *widget, XEvent *event);
+extern long (*TextPosOfEvent)(GUI::ScrolledText *widget, GUI::Event *event);
 
 #endif
 

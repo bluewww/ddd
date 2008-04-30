@@ -983,7 +983,7 @@ void DataDisp::applyThemeCB (GUI::Widget *w, const char *client_data)
 {
     set_last_origin(w);
 
-    string theme = String(client_data);
+    string theme = client_data;
 
     if (gdb->recording())
     {
@@ -1104,7 +1104,7 @@ void DataDisp::unapplyThemeCB (GUI::Widget *w, const char *client_data)
 {
     set_last_origin(w);
 
-    string theme = String(client_data);
+    string theme = client_data;
 
     if (gdb->recording())
     {
@@ -1179,9 +1179,8 @@ void DataDisp::toggleThemeCB(Widget button, XtPointer num, XtPointer)
 
 void DataDisp::toggleThemeCB(GUI::CheckButton *button, int num)
 {
-    String theme;
     void *v = button->property_user_data();
-    theme = String(v);
+    char *theme = (char *)v;
 
     if (button->get_active())
     {
@@ -1219,7 +1218,7 @@ void DataDisp::applyThemeOnAllCB(const char *client_data)
     if (pattern.empty())
 	return;
 
-    string theme = String(client_data);
+    string theme = client_data;
     apply_theme(theme, pattern);
 }
 
@@ -1239,7 +1238,7 @@ void DataDisp::applyThemeOnThisCB(Widget, XtPointer client_data, XtPointer)
 // Apply the theme in CLIENT_DATA to the selected item.
 void DataDisp::applyThemeOnThisCB(const char *client_data)
 {
-    string theme = String(client_data);
+    string theme = client_data;
     apply_theme(theme, quote(source_arg->get_string()));
 }
 
@@ -2601,7 +2600,7 @@ void DataDisp::DoubleClickCB(GUIGraphEdit *w, GraphEditPreSelectionInfo *call_da
     GUI::Event *ev = info->event;
     bool control = (ev != 0 && 
 		    (ev->type == GUI::BUTTON_PRESS || ev->type == GUI::BUTTON_RELEASE) &&
-		    (ev->button.state & ControlMask) != 0);
+		    (ev->button.state & GUI::CONTROL_MASK) != 0);
 
     // Do the right thing
     if (disp_node_arg->disabled())
@@ -2896,7 +2895,7 @@ Widget DataDisp::create_display_dialog(Widget parent, const _XtString name,
 
 #else
 
-GUI::Dialog *DataDisp::create_display_dialog(GUI::Widget *parent, const _XtString name,
+GUI::Dialog *DataDisp::create_display_dialog(GUI::Widget *parent, const char *name,
 					     NewDisplayInfo& info)
 {
     GUI::Dialog *dialog = new GUI::Dialog(*find_shell(parent), name);
@@ -3458,7 +3457,7 @@ void DataDisp::graph_dereferenceAct (Widget w, XEvent*, String*, Cardinal*)
 
 #else
 
-void DataDisp::graph_dereferenceAct (GUI::Widget *w, GUI::Event*, String*, Cardinal*)
+void DataDisp::graph_dereferenceAct (GUI::Widget *w, GUI::Event*, GUI::String *, unsigned int *)
 {
     dereferenceCB(w);
 }
@@ -3480,11 +3479,11 @@ void DataDisp::graph_detailAct (Widget w, XEvent *,
 #else
 
 void DataDisp::graph_detailAct (GUI::Widget *w, GUI::Event *, 
-				String *params, Cardinal *num_params)
+				GUI::String *params, unsigned int *num_params)
 {
     int depth = -1;
     if (params != 0 && num_params != 0 && *num_params >= 1)
-	depth = atoi(params[0]);
+	depth = atoi(params[0].c_str());
 
     toggleDetailCB(w, depth);
 }
@@ -3505,12 +3504,12 @@ void DataDisp::graph_dependentAct (Widget w, XEvent*, String*, Cardinal*)
 
 #else
 
-void DataDisp::graph_rotateAct (GUI::Widget *w, GUI::Event*, String*, Cardinal*)
+void DataDisp::graph_rotateAct (GUI::Widget *w, GUI::Event*, GUI::String *, unsigned int *)
 {
     rotateCB(w, false);
 }
 
-void DataDisp::graph_dependentAct (GUI::Widget *w, GUI::Event*, String*, Cardinal*)
+void DataDisp::graph_dependentAct (GUI::Widget *w, GUI::Event*, GUI::String *, unsigned int *)
 {
     dependentCB(w);
 }
@@ -3542,10 +3541,10 @@ void DataDisp::call_selection_proc(Widget w,
 
 // The GraphEdit actions with some data display magic prepended
 void DataDisp::call_selection_proc(GUI::Widget *w,
-				   const _XtString name,
+				   const char *name,
 				   GUI::Event* event,
-				   String* args,
-				   Cardinal num_args,
+				   GUI::String *args,
+				   unsigned int num_args,
 				   SelectionMode mode)
 {
     // Let multi-clicks pass right through
@@ -3580,15 +3579,15 @@ void DataDisp::graph_select_or_moveAct (Widget, XEvent* event, String* args,
 
 #else
 
-void DataDisp::graph_selectAct (GUI::Widget *, GUI::Event* event, String* args, 
-				Cardinal* num_args)
+void DataDisp::graph_selectAct (GUI::Widget *, GUI::Event* event, GUI::String *args, 
+				unsigned int *num_args)
 {
     call_selection_proc(graph_edit, "select", event, args, *num_args, 
 			SetSelection);
 }
 
-void DataDisp::graph_select_or_moveAct (GUI::Widget *, GUI::Event* event, String* args, 
-					Cardinal* num_args)
+void DataDisp::graph_select_or_moveAct (GUI::Widget *, GUI::Event* event, GUI::String *args, 
+					unsigned int *num_args)
 {
     call_selection_proc(graph_edit, "select-or-move", event, args, *num_args,
 			SetSelection);
@@ -3614,15 +3613,15 @@ void DataDisp::graph_extend_or_moveAct (Widget, XEvent* event, String* args,
 
 #else
 
-void DataDisp::graph_extendAct (GUI::Widget *, GUI::Event* event, String* args, 
-				Cardinal* num_args)
+void DataDisp::graph_extendAct (GUI::Widget *, GUI::Event* event, GUI::String *args, 
+				unsigned int *num_args)
 {
     call_selection_proc(graph_edit, "extend", event, args, *num_args,
 			ExtendSelection);
 }
 
-void DataDisp::graph_extend_or_moveAct (GUI::Widget *, GUI::Event* event, String* args, 
-					Cardinal* num_args)
+void DataDisp::graph_extend_or_moveAct (GUI::Widget *, GUI::Event* event, GUI::String *args, 
+					unsigned int *num_args)
 {
     call_selection_proc(graph_edit, "extend-or-move", event, args, *num_args,
 			ExtendSelection);
@@ -3648,15 +3647,15 @@ void DataDisp::graph_toggle_or_moveAct (Widget, XEvent* event, String* args,
 
 #else
 
-void DataDisp::graph_toggleAct (GUI::Widget *, GUI::Event* event, String* args, 
-				Cardinal* num_args)
+void DataDisp::graph_toggleAct (GUI::Widget *, GUI::Event* event, GUI::String *args, 
+				unsigned int *num_args)
 {
     call_selection_proc(graph_edit, "toggle", event, args, *num_args,
 			ToggleSelection);
 }
 
-void DataDisp::graph_toggle_or_moveAct (GUI::Widget *, GUI::Event* event, String* args, 
-					Cardinal* num_args)
+void DataDisp::graph_toggle_or_moveAct (GUI::Widget *, GUI::Event* event, GUI::String *args, 
+					unsigned int *num_args)
 {
     call_selection_proc(graph_edit, "toggle-or-move", event, args, *num_args,
 			ToggleSelection);
@@ -3678,9 +3677,9 @@ void DataDisp::graph_popupAct (Widget, XEvent* event, String *args,
 	MMaddCallbacks(node_popup,      XtPointer(p));
 	MMaddCallbacks(shortcut_popup1, XtPointer(p));
 
-	MMaddHelpCallback(graph_popup,     sigc::ptr_fun(ImmediateHelpCB));
-	MMaddHelpCallback(node_popup,      sigc::ptr_fun(ImmediateHelpCB));
-	MMaddHelpCallback(shortcut_popup1, sigc::ptr_fun(ImmediateHelpCB));
+	MMaddHelpCallback(graph_popup,     ImmediateHelpCB);
+	MMaddHelpCallback(node_popup,      ImmediateHelpCB);
+	MMaddHelpCallback(shortcut_popup1, ImmediateHelpCB);
     }
     *p = point(event);
 
@@ -3711,8 +3710,8 @@ void DataDisp::graph_popupAct (Widget, XEvent* event, String *args,
 
 #else
 
-void DataDisp::graph_popupAct (GUI::Widget *, GUI::Event* event, String *args, 
-			       Cardinal *num_args)
+void DataDisp::graph_popupAct (GUI::Widget *, GUI::Event* event, GUI::String *args, 
+			       unsigned int *num_args)
 {
     static BoxPoint* p = 0;
     if (p == 0)
@@ -3733,12 +3732,12 @@ void DataDisp::graph_popupAct (GUI::Widget *, GUI::Event* event, String *args,
 
     string arg = "";
     if (num_args != 0 && *num_args > 0)
-	arg = downcase(args[0]);
+	arg = downcase(args[0].c_str());
 
     GUI::PopupMenu *popup = 0;
     if (arg == "graph" || selected_node() == 0)
 	popup = graph_popup_w;
-    else if (arg == "shortcut" || (arg.empty() && event->button.state & ShiftMask))
+    else if (arg == "shortcut" || (arg.empty() && event->button.state & GUI::SHIFT_MASK))
 	popup = shortcut_popup_w;
     else if (arg == "node" || arg.empty())
 	popup = node_popup_w;
@@ -4774,7 +4773,7 @@ bool DataDisp::RefreshArgsCB(void)
     // immediately.
     lose_selection = false;
     static int errcnt = 0;
-    if (complain && !errcnt++ == 0) std::cerr << "Set text in graph_selection_w not implemented\n";
+    if (!errcnt++ == 0) std::cerr << "Set text in graph_selection_w not implemented\n";
     // graph_selection_w->set_text(XMST(cmd.chars()));
     lose_selection = true;
 
@@ -9733,7 +9732,7 @@ DataDisp::DataDisp(GUI::Container *parent, GUI::WidgetPtr<GUI::Container> &data_
 		  SelectionLostCB, XtPointer(0));
 #else
     static int errcnt = 0;
-    if (complain && !errcnt++) std::cerr << "Create graph_selection_w: not implemented\n";
+    if (!errcnt++) std::cerr << "Create graph_selection_w: not implemented\n";
     // graph_selection_w = new GtkScrolledText();
 #ifdef NAG_ME
 #warning Unmanaged graph selection widget callbacks not implemented.

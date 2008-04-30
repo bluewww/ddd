@@ -68,3 +68,14 @@ MenuItem::set_label(const String &label)
     add_label(label.c_str());
 }
 
+void
+MenuItem::remove(void)
+{
+    Gtk::MenuItem::remove();
+}
+
+void
+MenuItem::add_label(const String &s)
+{
+    Gtk::MenuItem::add_label(s.s());
+}

@@ -1450,7 +1450,11 @@ static void open_session(const string& session)
 
     static string display_shortcuts;
 
+#if defined(IF_XM)
     const _XtString shortcuts = 0;
+#else
+    const char *shortcuts = 0;
+#endif
     switch (gdb->type())
     {
     case BASH: shortcuts = XtNbashDisplayShortcuts; break;

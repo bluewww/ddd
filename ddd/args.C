@@ -265,7 +265,7 @@ static void update_arguments(Widget dialog, Widget arguments_w,
     XmTextSetString(text_w, XMST(last.chars()));
 #else
     static int errcnt = 0;
-    if (complain && !errcnt++) std::cerr << "update_arguments not implemented\n";
+    if (!errcnt++) std::cerr << "update_arguments not implemented\n";
 #endif
 
     updated = true;

@@ -675,7 +675,7 @@ static void install_icon(Widget w,
 			 const unsigned char *xbm_data,
 			 int width, int height,
 			 const string& color_key,
-			 ImageColor background,
+			 Pixel background,
 			 const XWindowAttributes& win_attr,
 			 bool is_button = false)
 {
@@ -773,14 +773,12 @@ static void install_icon(GUI::Widget *w,
 			 int width, int height,
 			 const string& color_key,
 			 GUI::Color background,
-			 const XWindowAttributes& win_attr,
 			 bool is_button = false)
 {
     (void) w;
     (void) xpm_data;
     (void) color_key;
     (void) background;
-    (void) win_attr;
 
     GUI::ImageHandle image = Gdk::Pixbuf::create_from_xpm_data(xpm_data);
 
@@ -791,14 +789,10 @@ static void install_icon(GUI::Widget *w,
 
 #endif
 
-static void install_button_icon(
 #if defined(IF_XM)
-				Widget w,
+
+static void install_button_icon(Widget w,
 				const _XtString name,
-#else
-				GUI::Widget *w,
-				GUI::ImageHandle *name,
-#endif
 				const char **xpm_data, 
 				const char **xpm_xx_data,
 				const unsigned char *xbm_data,
@@ -806,89 +800,87 @@ static void install_button_icon(
 				int width, int height, 
 				const string& color_key,
 				const string& active_color_key,
-#if defined(IF_XM)
-				ImageColor background,
-				ImageColor arm_background,
-#else
-				GUI::Color background,
-				GUI::Color arm_background,
-#endif
-				const XWindowAttributes& win_attr
-				)
+				Pixel background,
+				Pixel arm_background,
+				const XWindowAttributes& win_attr)
 {
-#if defined(IF_XM)
     install_icon(w, name,
 		 xpm_data,
 		 xbm_data,
 		 width, height,
 		 color_key, background, win_attr, true);
-#else
-    install_icon(w, name[0],
-		 xpm_data,
-		 xbm_data,
-		 width, height,
-		 color_key, background, win_attr, true);
-#endif
 
-#if defined(IF_XM)
     string insensitive_name = string(name) + "-xx";
     install_icon(w, insensitive_name.chars(),
 		 xpm_xx_data,
 		 xbm_xx_data, 
 		 width, height,
 		 color_key, background, win_attr, true);
-#else
-    install_icon(w, name[1],
-		 xpm_xx_data,
-		 xbm_xx_data, 
-		 width, height,
-		 color_key, background, win_attr, true);
-#endif
 
-#if defined(IF_XM)
     string armed_name = string(name) + "-arm";
     install_icon(w, armed_name.chars(),
 		 xpm_data,
 		 xbm_data,
 		 width, height,
 		 active_color_key, arm_background, win_attr, true);
-#else
-    install_icon(w, name[2],
-		 xpm_data,
-		 xbm_data,
-		 width, height,
-		 active_color_key, arm_background, win_attr, true);
-#endif
 
-#if defined(IF_XM)
     string highlight_name = string(name) + "-hi";
     install_icon(w, highlight_name.chars(),
 		 xpm_data,
 		 xbm_data,
 		 width, height,
 		 active_color_key, background, win_attr, true);
+}
+
 #else
+
+static void install_button_icon(GUI::Widget *w,
+				GUI::ImageHandle *name,
+				const char **xpm_data, 
+				const char **xpm_xx_data,
+				const unsigned char *xbm_data,
+				const unsigned char *xbm_xx_data,
+				int width, int height, 
+				const string& color_key,
+				const string& active_color_key,
+				GUI::Color background,
+				GUI::Color arm_background)
+{
+    install_icon(w, name[0],
+		 xpm_data,
+		 xbm_data,
+		 width, height,
+		 color_key, background, true);
+
+    install_icon(w, name[1],
+		 xpm_xx_data,
+		 xbm_xx_data, 
+		 width, height,
+		 color_key, background, true);
+
+    install_icon(w, name[2],
+		 xpm_data,
+		 xbm_data,
+		 width, height,
+		 active_color_key, arm_background, true);
+
     install_icon(w, name[3],
 		 xpm_data,
 		 xbm_data,
 		 width, height,
-		 active_color_key, background, win_attr, true);
-#endif
+		 active_color_key, background, true);
 }
 
+#endif
+
+#if defined(IF_XM)
 
 // Install toolbar icons in Motif cache.  COLOR_KEY indicates the XPM
 // visual type for inactive buttons.  ACTIVE_COLOR_KEY is the XPM visual
 // type for active buttons (entered or armed).
-#if defined(IF_XM)
 void install_icons(Widget shell, 
 		   const string& color_key,
 		   const string& active_color_key)
-#else
-void install_icons(GUI::Widget *shell, 
-		   const string& color_key,
-		   const string& active_color_key)
-#endif
 {
     static bool installed = false;
     if (installed)
@@ -897,7 +889,6 @@ void install_icons(GUI::Widget *shell,
 
     // Determine attributes
     XWindowAttributes win_attr;
-#if defined(IF_XM)
     XGetWindowAttributes(XtDisplay(shell), 
 			 RootWindowOfScreen(XtScreen(shell)),
 			 &win_attr);
@@ -916,26 +907,13 @@ void install_icons(GUI::Widget *shell,
 	arm_background = background;
     else
 	arm_background = select;
-#else
-    GUI::Color background = shell->get_bg(GUI::STATE_NORMAL);
-    GUI::Color arm_background = shell->get_bg(GUI::STATE_PRELIGHT);
-#endif
 
-#if defined(IF_XM)
     // DDD icon (always in color)
     install_icon(shell, DDD_ICON, 
 		 ddd_xpm,
 		 ddd_bits,
 		 ddd_width, ddd_height,
 		 "best", background, win_attr);
-#else
-    // DDD icon (always in color)
-    install_icon(shell, DDD_ICON[0], 
-		 ddd_xpm,
-		 ddd_bits,
-		 ddd_width, ddd_height,
-		 "best", background, win_attr);
-#endif
 
     // Toolbar icons
     install_button_icon(shell, BREAK_AT_ICON, 
@@ -1120,6 +1098,217 @@ void install_icons(GUI::Widget *shell,
 			color_key, active_color_key,
 			background, arm_background, win_attr);
 }
+
+#else
+
+// Install toolbar icons in Motif cache.  COLOR_KEY indicates the XPM
+// visual type for inactive buttons.  ACTIVE_COLOR_KEY is the XPM visual
+// type for active buttons (entered or armed).
+void install_icons(GUI::Widget *shell, 
+		   const string& color_key,
+		   const string& active_color_key)
+{
+    static bool installed = false;
+    if (installed)
+	return;
+    installed = true;
+
+    // Determine attributes
+    GUI::Color background = shell->get_bg(GUI::STATE_NORMAL);
+    GUI::Color arm_background = shell->get_bg(GUI::STATE_PRELIGHT);
+
+    // DDD icon (always in color)
+    install_icon(shell, DDD_ICON[0], 
+		 ddd_xpm,
+		 ddd_bits,
+		 ddd_width, ddd_height,
+		 "best", background);
+
+    // Toolbar icons
+    install_button_icon(shell, BREAK_AT_ICON, 
+      		        breakat_xpm, breakat_xx_xpm,
+		        breakat_bits, breakat_xx_bits, 
+		        breakat_width, breakat_height,
+			color_key, active_color_key,
+			background, arm_background);
+
+    install_button_icon(shell, CLEAR_AT_ICON, 
+      		        clearat_xpm, clearat_xx_xpm,
+		        clearat_bits, clearat_xx_bits, 
+		        clearat_width, clearat_height,
+			color_key, active_color_key,
+			background, arm_background);
+
+    install_button_icon(shell, CLUSTER_ICON, 
+      		        cluster_xpm, cluster_xx_xpm,
+		        cluster_bits, cluster_xx_bits, 
+		        cluster_width, cluster_height,
+			color_key, active_color_key,
+			background, arm_background);
+
+    install_button_icon(shell, DELETE_ICON, 
+      		        delete_xpm, delete_xx_xpm,
+		        delete_bits, delete_xx_bits, 
+		        delete_width, delete_height,
+			color_key, active_color_key,
+			background, arm_background);
+
+    install_button_icon(shell, DISPREF_ICON, 
+      		        deref_xpm, deref_xx_xpm,
+		        deref_bits, deref_xx_bits, 
+		        deref_width, deref_height,
+			color_key, active_color_key,
+			background, arm_background);
+
+    install_button_icon(shell, DISABLE_ICON, 
+      		        disable_xpm, disable_xx_xpm,
+		        disable_bits, disable_xx_bits, 
+		        disable_width, disable_height,
+			color_key, active_color_key,
+			background, arm_background);
+
+    install_button_icon(shell, DISPLAY_ICON, 
+      		        display_xpm, display_xx_xpm,
+		        display_bits, display_xx_bits, 
+		        display_width, display_height,
+			color_key, active_color_key,
+			background, arm_background);
+
+    install_button_icon(shell, ENABLE_ICON, 
+      		        enable_xpm, enable_xx_xpm,
+		        enable_bits, enable_xx_bits, 
+		        enable_width, enable_height,
+			color_key, active_color_key,
+			background, arm_background);
+
+    install_button_icon(shell, FIND_BACKWARD_ICON, 
+      		        findbwd_xpm, findbwd_xx_xpm,
+		        findbwd_bits, findbwd_xx_bits, 
+		        findbwd_width, findbwd_height,
+			color_key, active_color_key,
+			background, arm_background);
+
+    install_button_icon(shell, FIND_FORWARD_ICON, 
+      		        findfwd_xpm, findfwd_xx_xpm,
+		        findfwd_bits, findfwd_xx_bits, 
+		        findfwd_width, findfwd_height,
+			color_key, active_color_key,
+			background, arm_background);
+
+    install_button_icon(shell, HIDE_ICON, 
+      		        hide_xpm, hide_xx_xpm,
+		        hide_bits, hide_xx_bits, 
+		        hide_width, hide_height,
+			color_key, active_color_key,
+			background, arm_background);
+
+    install_button_icon(shell, LOOKUP_ICON, 
+      		        lookup_xpm, lookup_xx_xpm,
+		        lookup_bits, lookup_xx_bits, 
+		        lookup_width, lookup_height,
+			color_key, active_color_key,
+			background, arm_background);
+
+    install_button_icon(shell, MAKETEMP_ICON, 
+      		        maketemp_xpm, maketemp_xx_xpm,
+		        maketemp_bits, maketemp_xx_bits, 
+		        maketemp_width, maketemp_height,
+			color_key, active_color_key,
+			background, arm_background);
+
+    install_button_icon(shell, NEW_BREAK_ICON, 
+      		        newbreak_xpm, newbreak_xx_xpm,
+		        newbreak_bits, newbreak_xx_bits, 
+		        newbreak_width, newbreak_height,
+			color_key, active_color_key,
+			background, arm_background);
+
+    install_button_icon(shell, NEW_DISPLAY_ICON, 
+      		        newdisplay_xpm, newdisplay_xx_xpm,
+		        newdisplay_bits, newdisplay_xx_bits, 
+		        newdisplay_width, newdisplay_height,
+			color_key, active_color_key,
+			background, arm_background);
+
+    install_button_icon(shell, NEW_WATCH_ICON, 
+      		        newwatch_xpm, newwatch_xx_xpm,
+		        newwatch_bits, newwatch_xx_bits, 
+		        newwatch_width, newwatch_height,
+			color_key, active_color_key,
+			background, arm_background);
+
+    install_button_icon(shell, PLOT_ICON, 
+      		        plot_xpm, plot_xx_xpm,
+		        plot_bits, plot_xx_bits, 
+		        plot_width, plot_height,
+			color_key, active_color_key,
+			background, arm_background);
+
+    install_button_icon(shell, PRINT_ICON, 
+      		        print_xpm, print_xx_xpm,
+		        print_bits, print_xx_bits, 
+		        print_width, print_height,
+			color_key, active_color_key,
+			background, arm_background);
+
+    install_button_icon(shell, PROPERTIES_ICON, 
+      		        properties_xpm, properties_xx_xpm,
+		        properties_bits, properties_xx_bits, 
+		        properties_width, properties_height,
+			color_key, active_color_key,
+			background, arm_background);
+
+    install_button_icon(shell, ROTATE_ICON, 
+      		        rotate_xpm, rotate_xx_xpm,
+		        rotate_bits, rotate_xx_bits, 
+		        rotate_width, rotate_height,
+			color_key, active_color_key,
+			background, arm_background);
+
+    install_button_icon(shell, SET_ICON, 
+      		        set_xpm, set_xx_xpm,
+		        set_bits, set_xx_bits, 
+		        set_width, set_height,
+			color_key, active_color_key,
+			background, arm_background);
+
+    install_button_icon(shell, SHOW_ICON, 
+      		        show_xpm, show_xx_xpm,
+		        show_bits, show_xx_bits, 
+		        show_width, show_height,
+			color_key, active_color_key,
+			background, arm_background);
+
+    install_button_icon(shell, UNCLUSTER_ICON, 
+      		        uncluster_xpm, uncluster_xx_xpm,
+		        uncluster_bits, uncluster_xx_bits, 
+		        uncluster_width, uncluster_height,
+			color_key, active_color_key,
+			background, arm_background);
+
+    install_button_icon(shell, UNDISPLAY_ICON, 
+      		        undisplay_xpm, undisplay_xx_xpm,
+		        undisplay_bits, undisplay_xx_bits, 
+		        undisplay_width, undisplay_height,
+			color_key, active_color_key,
+			background, arm_background);
+
+    install_button_icon(shell, UNWATCH_ICON, 
+      		        unwatch_xpm, unwatch_xx_xpm,
+		        unwatch_bits, unwatch_xx_bits, 
+		        unwatch_width, unwatch_height,
+			color_key, active_color_key,
+			background, arm_background);
+
+    install_button_icon(shell, WATCH_ICON, 
+      		        watch_xpm, watch_xx_xpm,
+		        watch_bits, watch_xx_bits, 
+		        watch_width, watch_height,
+			color_key, active_color_key,
+			background, arm_background);
+}
+
+#endif
 
 
 //-----------------------------------------------------------------------

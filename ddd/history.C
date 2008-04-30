@@ -580,7 +580,11 @@ string last_command_from_history()
 }
 
 // History actions
+#if defined(IF_XM)
 void prev_historyAct(Widget, XEvent*, String*, Cardinal*)
+#else
+void prev_historyAct(GUI::Widget *, GUI::Event*, GUI::String *, unsigned int *)
+#endif
 {
     if (gdb_current_history == 0)
 	return;
@@ -593,7 +597,11 @@ void prev_historyAct(Widget, XEvent*, String*, Cardinal*)
     set_line_from_history();
 }
 
+#if defined(IF_XM)
 void next_historyAct(Widget, XEvent*, String*, Cardinal*)
+#else
+void next_historyAct(GUI::Widget *, GUI::Event*, GUI::String *, unsigned int *)
+#endif
 {
     if (gdb_current_history >= gdb_history.size() - 1)
 	return;
@@ -681,7 +689,7 @@ static void update_combo_box(Widget text, HistoryFilter filter)
     ComboBoxSetList(text, entries);
 #else
     static int errcnt = 0;
-    if (complain && !errcnt++) std::cerr << "ComboBoxSetList not supported\n";
+    if (!errcnt++) std::cerr << "ComboBoxSetList not supported\n";
 #endif
 }
 

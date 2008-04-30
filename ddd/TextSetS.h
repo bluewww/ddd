@@ -44,6 +44,8 @@
 // Some LessTif versions have trouble with multiple selections.
 // Use these wrappers instead.
 
+#if defined(IF_XM)
+
 void TextSetSelection(Widget widget, 
 		      XmTextPosition first, 
 		      XmTextPosition last,
@@ -52,6 +54,8 @@ void TextFieldSetSelection(Widget widget,
 			   XmTextPosition first, 
 			   XmTextPosition last, 
 			   Time time);
+
+#endif
 
 #endif // _DDD_TextSetSelection_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

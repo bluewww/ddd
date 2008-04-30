@@ -46,6 +46,8 @@ char gdbinit_rcsid[] =
 #include "SourceView.h"
 #include "TimeOut.h"
 
+#define N_ELEMENTS(x) (sizeof(x)/sizeof(x[0]))
+
 static void InvokeGDBFromShellHP(Agent *source, void *client_data, 
 				 void *call_data);
 
@@ -543,7 +545,7 @@ static struct table {
 // Determine debugger type from DEBUGGER_NAME
 bool get_debugger_type(const string& debugger_name, DebuggerType& type)
 {
-    for (int i = 0; i < int(XtNumber(debuggers)); i++)
+    for (int i = 0; i < int(N_ELEMENTS(debuggers)); i++)
 	if (debugger_name.contains(debuggers[i].cmd))
 	{
 	    // Found
@@ -570,11 +572,11 @@ const char *default_debugger(const string& debugger_name, DebuggerType type)
     }
 
     int i;
-    for (i = 0; i < int(XtNumber(debuggers)); i++)
+    for (i = 0; i < int(N_ELEMENTS(debuggers)); i++)
 	if (type == debuggers[i].type && have_cmd(debuggers[i].cmd))
 	    return debuggers[i].cmd;
 
-    for (i = 0; i < int(XtNumber(debuggers)); i++)
+    for (i = 0; i < int(N_ELEMENTS(debuggers)); i++)
 	if (type == debuggers[i].type)
 	    return debuggers[i].cmd;
 

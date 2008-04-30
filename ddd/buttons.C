@@ -792,7 +792,7 @@ static MString gdbDefaultValueText(GUI::ScrolledText *widget,
     MString bp_help = 
 	source_view->help_on_pos(widget, startpos, endpos, for_documentation);
 
-    if (bp_help.xmstring() == 0 && expr.empty())
+    if (bp_help.xmstring().empty() && expr.empty())
 	return MString(0, true); // Nothing pointed at
 
 #if RUNTIME_REGEX
@@ -803,7 +803,7 @@ static MString gdbDefaultValueText(GUI::ScrolledText *widget,
     // Otherwise, we might point at `i++' or `f()' and have weird side
     // effects.
     MString clear = for_documentation ? rm(" ") : MString(0, true);
-    if (bp_help.xmstring() == 0 && !expr.matches(rxchain) 
+    if (bp_help.xmstring().empty() && !expr.matches(rxchain) 
 	&& gdb->type() != BASH)
 	return clear;
 
@@ -1254,7 +1254,7 @@ void verify_button(Widget button)
 void verify_button(GUI::Widget *button)
 {
     static int errcnt = 0;
-    if (complain && !errcnt++) std::cerr << "VerifyButton not supported.\n";
+    if (!errcnt++) std::cerr << "VerifyButton not supported.\n";
 }
 
 #endif
@@ -1374,7 +1374,7 @@ Widget make_buttons(Widget parent, const char *name,
 
 // Create a button work area from BUTTON_LIST named NAME
 GUI::WidgetPtr<GUI::Container> make_buttons(GUI::Container *parent, const char *name, 
-					    const _XtString button_list)
+					    const char *button_list)
 {
     GUI::HBox *buttons = new GUI::HBox(*parent, GUI::PACK_SHRINK, name);
 
@@ -1527,13 +1527,13 @@ void set_buttons(Widget buttons, const _XtString _button_list, bool manage)
 	{
 	    command = "yes";
 	    XtUnmanageChild(button);
-	    callback = PTR_FUN(YnButtonCB);
+	    callback = YnButtonCB;
 	}
 	else if (name == "No")
 	{
 	    command = "no";
 	    XtUnmanageChild(button);
-	    callback = PTR_FUN(YnButtonCB);
+	    callback = YnButtonCB;
 	}
 	else if (name == "Prev")
 	    callback = gdbPrevCB;
@@ -2249,6 +2249,8 @@ void dddEditShortcutsCB(GUI::Widget *w)
 
 #endif
 
+#if defined(IF_XM)
+
 void refresh_button_editor()
 {
     StringArray exprs;
@@ -2280,16 +2282,47 @@ void refresh_button_editor()
 
     *str = XtNewString(expr.chars());
 
-#if defined(IF_XM)
     if (active_info != 0 && active_info->str == CONST_CAST(char**,str))
 	XmTextSetString(active_info->text, XMST(*str));
-#else
-#ifdef NAG_ME
-#warning active_info->text not defined
-#endif
-#endif
 }
 
+#else
+
+void refresh_button_editor()
+{
+    StringArray exprs;
+    StringArray labels;
+
+    data_disp->get_shortcut_menu(exprs, labels);
+    string expr;
+    for (int i = 0; i < exprs.size(); i++)
+    {
+	if (i > 0)
+	    expr += '\n';
+	expr += exprs[i];
+	if (!(labels[i].empty()))
+	    expr += string('\t') + app_data.label_delimiter + ' ' + labels[i];
+    }
+
+    const char **str = 0;
+    switch (gdb->type())
+    {
+    case BASH: str = &app_data.bash_display_shortcuts; break;
+    case DBG:  str = &app_data.dbg_display_shortcuts;  break;
+    case DBX:  str = &app_data.dbx_display_shortcuts;  break;
+    case GDB:  str = &app_data.gdb_display_shortcuts;  break;
+    case JDB:  str = &app_data.jdb_display_shortcuts;  break;
+    case PERL: str = &app_data.perl_display_shortcuts; break;
+    case PYDB: str = &app_data.pydb_display_shortcuts; break;
+    case XDB:  str = &app_data.xdb_display_shortcuts;  break;
+    }
+
+    *str = strdup(expr.chars());
+
+    std::cerr << "active_info->text not defined\n";
+}
+
+#endif
 
 //-----------------------------------------------------------------------------
 // Flat Buttons

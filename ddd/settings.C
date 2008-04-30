@@ -114,6 +114,8 @@ char settings_rcsid[] =
 #include <GUI/OptionMenu.h>
 #endif
 
+#define N_ELEMENTS(x) (sizeof(x)/sizeof(x[0]))
+
 #if !HAVE_PCLOSE_DECL
 extern "C" int pclose(FILE *stream);
 #endif
@@ -426,9 +428,9 @@ static void SetDisplayCB(Widget, XtPointer client_data, XtPointer call_data)
 static void SetDisplayCB(GUI::CheckButton *w, const char *client_data)
 {
     if (w->get_active())
-      data_disp->new_user_display((const _XtString)client_data);
+      data_disp->new_user_display(client_data);
     else
-      data_disp->delete_user_display((const _XtString)client_data);
+      data_disp->delete_user_display(client_data);
 }
 
 #endif
@@ -935,7 +937,7 @@ void update_infos()
 	// Using the widget name like this is naff but
 	// necessary for Motif. Use user data instead.
 	static int errcnt = 0;
-	if (complain && !errcnt++) std::cerr << "Should set toggle button properly\n";
+	if (!errcnt++) std::cerr << "Should set toggle button properly\n";
 	GUI::Bipolar *tb = dynamic_cast<GUI::Bipolar *>(button);
 	if (tb)
 	    tb->set_active(set);
@@ -1813,8 +1815,8 @@ string get_dbx_help(const string& dbxenv, const string& base)
 }
 
 struct DBXTranslation {
-    const _XtString base;
-    const _XtString doc;
+    const char *base;
+    const char *doc;
 };
 
 static DBXTranslation const dbx_translations[] = 
@@ -1858,7 +1860,7 @@ static DBXTranslation const dbx_translations[] =
 static string get_dbx_doc(const string& dbxenv, const string& base)
 {
     // Some specials
-    for (int i = 0; i < int(XtNumber(dbx_translations)); i++)
+    for (int i = 0; i < int(N_ELEMENTS(dbx_translations)); i++)
     {
 	if (base == dbx_translations[i].base)
 	    return dbx_translations[i].doc;
@@ -2066,7 +2068,7 @@ string show_command(const string& cmd, DebuggerType type)
 }
 
 // In Perl, make these options insensitive
-static const _XtString const perl_taboos[] = 
+static const char *const perl_taboos[] = 
 {
     "TTY",
     "noTTY",
@@ -2807,7 +2809,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	// Make entry insensitive if one of Perl taboos
 	if (!insensitive && gdb->type() == PERL)
 	{
-	    for (int i = 0; i < int(XtNumber(perl_taboos)); i++)
+	    for (int i = 0; i < int(N_ELEMENTS(perl_taboos)); i++)
 		if (base == perl_taboos[i])
 		{
 		    insensitive = true;
@@ -3102,7 +3104,7 @@ static void add_button(GUI::Container *form, int& row, Dimension& max_width,
     GUI::Widget *entry = 0;
     GUI::Entry *entry_w = 0;
 
-    String set_command_s = new char[set_command.length() + 1];
+    char *set_command_s = new char[set_command.length() + 1];
     strcpy(set_command_s, set_command.chars());
 
     MString labelString(doc);
@@ -3460,7 +3462,7 @@ static void add_button(GUI::Container *form, int& row, Dimension& max_width,
 	// Make entry insensitive if one of Perl taboos
 	if (!insensitive && gdb->type() == PERL)
 	{
-	    for (int i = 0; i < int(XtNumber(perl_taboos)); i++)
+	    for (int i = 0; i < int(N_ELEMENTS(perl_taboos)); i++)
 		if (base == perl_taboos[i])
 		{
 		    insensitive = true;
@@ -3882,7 +3884,7 @@ static void fix_clip_window_translations(Widget scroll)
 	};
 
 	XtAppAddActions(XtWidgetToApplicationContext(scroll), 
-			clip_actions, XtNumber(clip_actions));
+			clip_actions, N_ELEMENTS(clip_actions));
 	have_clip_actions = true;
     }
 
@@ -5029,7 +5031,7 @@ static void get_setting(std::ostream& os, DebuggerType type,
 
 	string option = base.after(rxwhite);
 	bool taboo = false;
-	for (int i = 0; !taboo && i < int(XtNumber(perl_taboos)); i++)
+	for (int i = 0; !taboo && i < int(N_ELEMENTS(perl_taboos)); i++)
 	    taboo = (option == perl_taboos[i]);
 
 	if (!taboo)
@@ -5371,15 +5373,12 @@ static bool is_arg_command(const string& name)
     return defs.has(name) && defs[name].contains(arg0);
 }
 
+#if defined(IF_XM)
+
 static void add_button(string name, const _XtString& menu)
 {
-#if defined(IF_XM)
     if (XmToggleButtonGetState(arg_w) || is_arg_command(name))
 	name += " ()";
-#else
-    if (arg_w->get_active() || is_arg_command(name))
-	name += " ()";
-#endif
 
     string s = menu;
     if (!s.empty() && !s.contains('\n', -1))
@@ -5387,6 +5386,24 @@ static void add_button(string name, const _XtString& menu)
     s += name + "\n";
     menu = (String)XtNewString(s.chars());
 }
+
+#else
+
+static void add_button(string name, const char *&menu)
+{
+    if (arg_w->get_active() || is_arg_command(name))
+	name += " ()";
+
+    string s = menu;
+    if (!s.empty() && !s.contains('\n', -1))
+	s += '\n';
+    s += name + "\n";
+    menu = strdup(s.chars());
+}
+
+#endif
+
+#if defined(IF_XM)
 
 static void remove_button(const string& name, const _XtString& menu)
 {
@@ -5396,7 +5413,21 @@ static void remove_button(const string& name, const _XtString& menu)
     menu = (String)XtNewString(s.chars() + 1);
 }
 
+#else
+
+static void remove_button(const string& name, const char *&menu)
+{
+    string s = string("\n") + menu;
+    s.gsub("\n" + name + "\n", string("\n"));
+    s.gsub("\n" + name + " ()\n", string("\n"));
+    menu = strdup(s.chars() + 1);
+}
+
+#endif
+
 enum ButtonTarget { ConsoleTarget, SourceTarget, DataTarget };
+
+#if defined(IF_XM)
 
 static const _XtString &target_string(ButtonTarget t)
 {
@@ -5415,6 +5446,28 @@ static const _XtString &target_string(ButtonTarget t)
     static const _XtString null = 0;
     return null;
 }
+
+#else
+
+static const char *&target_string(ButtonTarget t)
+{
+    switch (t)
+    {
+    case ConsoleTarget:
+	return app_data.console_buttons;
+
+    case SourceTarget:
+	return app_data.source_buttons;
+
+    case DataTarget:
+	return app_data.data_buttons;
+    }
+
+    static const char *null = 0;
+    return null;
+}
+
+#endif
 
 #if defined(IF_XM)
 
@@ -5447,7 +5500,7 @@ static void ToggleButtonCB(GUI::CheckButton *w, ButtonTarget client_data)
     string name = current_name();
     ButtonTarget target = (ButtonTarget) (long) client_data;
 
-    const _XtString& str = target_string(target);
+    const char *&str = target_string(target);
 
     if (w->get_active())
     {

@@ -69,8 +69,8 @@ extern GUI::Dialog *post_gdb_message(string text, bool prompt = true,
 				     GUI::Widget *origin = 0);
 extern GUI::Dialog *post_gdb_yn(string text, GUI::Widget *origin = 0);
 extern GUI::Dialog *post_gdb_died(string reason, int gdb_status, GUI::Widget *origin = 0);
-extern GUI::Dialog *post_error(string text, const _XtString name = 0, GUI::Widget *origin = 0);
-extern GUI::Dialog *post_warning(string text, const _XtString name = 0, GUI::Widget *origin = 0);
+extern GUI::Dialog *post_error(string text, const char *name = 0, GUI::Widget *origin = 0);
+extern GUI::Dialog *post_warning(string text, const char *name = 0, GUI::Widget *origin = 0);
 #endif
 
 // Unpost specific messages

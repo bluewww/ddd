@@ -464,8 +464,8 @@ private:
     GUI::Color selectColor;	                  // Color to use for selected nodes
 
     // Printing colors
-    String nodePrintColor;	          // Color for printing nodes
-    String edgePrintColor;	          // Color for printing edges
+    GUI::String nodePrintColor;	          // Color for printing nodes
+    GUI::String edgePrintColor;	          // Color for printing edges
 
     // Private state
     GraphEditState state;	// Current state

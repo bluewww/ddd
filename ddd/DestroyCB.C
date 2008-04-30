@@ -183,7 +183,7 @@ void UnmanageThisCB(Widget, XtPointer client_data, XtPointer)
 	shell = XtParent(shell);
 
     if (shell != 0 && XtIsShell(shell) && !XmIsDialogShell(shell))
-	XtPopdown(XtCastShell(shell));
+	XtPopdown(shell);
 
     XtUnmanageChild(w);
 }

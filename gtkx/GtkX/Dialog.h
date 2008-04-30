@@ -51,6 +51,7 @@ namespace GtkX {
 	Button *add_button(const String &name="", const String &label="");
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
 #include <GtkX/redirect.h>
+	void set_title(const String &);
     };
 
     enum MessageType {

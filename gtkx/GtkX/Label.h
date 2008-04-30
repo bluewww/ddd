@@ -46,6 +46,7 @@ namespace GtkX {
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;
 	void set_alignment(float xalign, float yalign);
+	void set_text(const String &);
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
 #include <GtkX/redirect.h>
     };

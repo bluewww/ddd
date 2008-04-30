@@ -40,6 +40,11 @@ char comm_manager_rcsid[] =
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "comm-manag.h"
 
 #include "AppData.h"
@@ -457,10 +462,21 @@ static void fix_symbols(string& cmd)
 // Initialization
 //-----------------------------------------------------------------------------
 
+#if defined(IF_XM)
+
 inline const _XtString str(const _XtString s)
 {
     return s != 0 ? s : "";
 }
+
+#else
+
+inline const char *str(const char *s)
+{
+    return s != 0 ? s : "";
+}
+
+#endif
 
 static void StartDoneCB(const string& /* answer */, void * /* qu_data */)
 {

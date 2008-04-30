@@ -1256,9 +1256,9 @@ void exec_tty_running()
 {
     if (separate_tty_window)
     {
+#if defined(IF_XM)
 	XEvent event;
 
-#if defined(IF_XM)
 	if (XCheckTypedWindowEvent(XtDisplay(gdb_w), separate_tty_window,
 				   DestroyNotify, &event))
 	{
@@ -1274,9 +1274,7 @@ void exec_tty_running()
 	    update_options();
 	}
 #else
-#ifdef NAG_ME
-#warning Check for deletion of tty window?
-#endif
+	std::cerr << "exec_tty_running?\n";
 #endif
     }
 }

@@ -377,30 +377,53 @@ static const char *extraTranslations =
 
 static void ClassInitialize();
 
-static void Initialize(Widget request, 
-		       Widget w
 #if defined(IF_XM)
-		       , ArgList args,
-		       Cardinal *num_args
+
+static void Initialize(Widget request, 
+		       Widget w,
+		       ArgList args,
+		       Cardinal *num_args);
+
+#else
+
+static void Initialize(Widget request, 
+		       Widget w);
+
 #endif
-		       );
+
+#if defined(IF_XM)
 
 static void Redisplay(Widget w, XEvent *event, Region region);
 
+#else
+
+static void Redisplay(GUI::Widget *w, GUI::Event *event);
+
+#endif
+
 #if defined(IF_XM)
+
 static void Realize(Widget w, 
 		    XtValueMask *value_mask,
 		    XSetWindowAttributes *attributes);
+
 #endif
+
+#if defined(IF_XM)
 
 static Boolean SetValues(Widget old, 
 			 Widget request, 
-			 Widget new_w
-#if defined(IF_XM)
-			 , ArgList args, 
-			 Cardinal *num_args
+			 Widget new_w,
+			 ArgList args, 
+			 Cardinal *num_args);
+
+#else
+
+static Boolean SetValues(Widget old, 
+			 Widget request, 
+			 Widget new_w);
+
 #endif
-			 );
 
 static void Destroy(Widget w);
 
@@ -573,7 +596,7 @@ void GUIGraphEdit::graphEditSizeChanged()
     }
 #else
     static int errcnt = 0;
-    if (complain && !errcnt++) std::cerr << "graphEditSizeChanged not implemented\n";
+    if (!errcnt++) std::cerr << "graphEditSizeChanged not implemented\n";
 #endif
 }
 
@@ -1635,7 +1658,7 @@ void GUIGraphEdit::setGraphGC(void)
 
     if (nodePrintColor != 0)
     {
-	GUI::Color exact_def = GUI::Color(Glib::ustring(nodePrintColor));
+	GUI::Color exact_def = GUI::Color(nodePrintColor);
 	graphGC.node_red   = (unsigned short)(USHRT_MAX*exact_def.r);
 	graphGC.node_green = (unsigned short)(USHRT_MAX*exact_def.g);
 	graphGC.node_blue  = (unsigned short)(USHRT_MAX*exact_def.b);
@@ -1643,7 +1666,7 @@ void GUIGraphEdit::setGraphGC(void)
 
     if (edgePrintColor != 0)
     {
-	GUI::Color exact_def = GUI::Color(Glib::ustring(edgePrintColor));
+	GUI::Color exact_def = GUI::Color(edgePrintColor);
 	graphGC.edge_red   = (unsigned short)(USHRT_MAX*exact_def.r);
 	graphGC.edge_green = (unsigned short)(USHRT_MAX*exact_def.g);
 	graphGC.edge_blue  = (unsigned short)(USHRT_MAX*exact_def.b);
@@ -1717,25 +1740,18 @@ GUIGraphEdit::GUIGraphEdit(void)
     lastSelectTime = 0;
 
 #if defined(IF_XM)
+
     // init redrawTimer
     redrawTimer = 0;
 
     setGCs(w);
-#else
-    std::cerr << "Deferring call of setGCs until widget realized.\n";
-    // set GCs
-    signal_realize().connect(sigc::mem_fun(*this, &GUIGraphEdit::setGCs));
-#endif
 
     // set Graph GC
-    setGraphGC(M_ARGS_1(w));
+    setGraphGC(w);
 
-#if defined(IF_XM)
     // set grid pixmap
     gridPixmap = None;
-#endif
 
-#if defined(IF_XM)
     // create cursors if not already set
     createCursor(w, moveCursor,              XC_fleur);
     createCursor(w, selectCursor,            XC_plus);
@@ -1743,38 +1759,42 @@ GUIGraphEdit::GUIGraphEdit(void)
     createCursor(w, selectBottomRightCursor, XC_lr_angle);
     createCursor(w, selectTopLeftCursor,     XC_ul_angle);
     createCursor(w, selectTopRightCursor,    XC_ur_angle);
-#else
-#ifdef NAG_ME
-#warning No cursors yet
-#endif
-#endif
 
-#if defined(IF_XM)
     // save requested size
     requestedWidth  = request->core.width;
     requestedHeight = request->core.height;
-#else
-#ifdef NAG_ME
-#warning No request in constructor
-#endif
-    requestedWidth  = 0;
-    requestedHeight = 0;
-#endif
 
     // set size
-    graphEditSizeChanged(M_ARGS_1(w));
+    graphEditSizeChanged(w);
 
-#if defined(IF_XM)
     // Override XmPrimitive translations
     static XtTranslations translations = 
 	XtParseTranslationTable(extraTranslations);
 
     XtOverrideTranslations(w, translations);
+
 #else
-#ifdef NAG_ME
-#warning No translations
+
+    std::cerr << "Deferring call of setGCs until widget realized.\n";
+    // set GCs
+    signal_realize().connect(sigc::mem_fun(*this, &GUIGraphEdit::setGCs));
+
+    // set Graph GC
+    setGraphGC();
+
+    std::cerr << "No cursors yet...\n";
+
+    std::cerr << "No request in constructor...\n";
+    requestedWidth  = 0;
+    requestedHeight = 0;
+
+    // set size
+    graphEditSizeChanged();
+
+    std::cerr << "No translations...\n";
+
 #endif
-#endif
+
 }
 
 #if defined(IF_XM)
@@ -1827,14 +1847,14 @@ static void Redisplay(Widget w, XEvent *event, Region)
 
     if (!redisplayEnabled)
     {
-	graphEditRedraw(M_ARGS_1(w));
+	graphEditRedraw(w);
 	return;
     }
 
     if (sizeChanged)
-	graphEditSizeChanged(M_ARGS_1(w));
+	graphEditSizeChanged(w);
 
-    setGrid(M_ARGS_1(w));
+    setGrid(w);
 
     // Redraw XmPrimitive border
     if (highlight_drawn)
@@ -1850,14 +1870,14 @@ bool GUIGraphEdit::on_expose_event(GUI::EventExpose *event)
 
     if (!redisplayEnabled)
     {
-	graphEditRedraw(M_ARGS_1(w));
+	graphEditRedraw();
 	return false; // propagate
     }
 
     if (sizeChanged)
-	graphEditSizeChanged(M_ARGS_1(w));
+	graphEditSizeChanged();
 
-    setGrid(M_ARGS_1(w));
+    setGrid();
 
     // Redraw XmPrimitive border
     //if (highlight_drawn)
@@ -2171,58 +2191,87 @@ void GUIGraphEdit::redrawSelectFrame(const BoxRegion& r)
 #endif
 }
 
-
 #if defined(IF_XM)
+
 static void drawSelectFrames(Widget w, 
 			     const BoxRegion& r0, 
 			     const BoxRegion& r1)
-#else
-void GUIGraphEdit::drawSelectFrames(const BoxRegion& r0, 
-				    const BoxRegion& r1)
-#endif
 {
     // Clear old frame (by redrawing it)
-    redrawSelectFrame(M_ARGS_2(w, r0));
+    redrawSelectFrame(w, r0);
 
     // Draw new frame
-    redrawSelectFrame(M_ARGS_2(w, r1));
+    redrawSelectFrame(w, r1);
 
     // Set appropriate cursor
-    setRegionCursor(M_ARGS_1(w));
+    setRegionCursor(w);
 }
 
+#else
+
+void GUIGraphEdit::drawSelectFrames(const BoxRegion& r0, 
+				    const BoxRegion& r1)
+{
+    // Clear old frame (by redrawing it)
+    redrawSelectFrame(r0);
+
+    // Draw new frame
+    redrawSelectFrame(r1);
+
+    // Set appropriate cursor
+    setRegionCursor();
+}
+
+#endif
+
+#if defined(IF_XM)
 
 // Draw the selection frame
-#if defined(IF_XM)
 inline void drawSelectFrame(Widget w)
-#else
-void GUIGraphEdit::drawSelectFrame(void)
-#endif
 {
-    drawSelectFrames(M_ARGS_3(w, frameRegion(M_ARGS_1(w)),
-			      BoxRegion(BoxPoint(0, 0), BoxSize(0, 0))));
+    drawSelectFrames(w, frameRegion(w),
+		     BoxRegion(BoxPoint(0, 0), BoxSize(0, 0)));
 }
 
+#else
+
+// Draw the selection frame
+void GUIGraphEdit::drawSelectFrame(void)
+{
+    drawSelectFrames(frameRegion(),
+		     BoxRegion(BoxPoint(0, 0), BoxSize(0, 0)));
+}
+
+#endif
+
+#if defined(IF_XM)
 
 // Redraw selection frame
-#if defined(IF_XM)
 static void redrawSelectFrame(Widget w, const BoxPoint& p)
-#else
-void GUIGraphEdit::redrawSelectFrame(const BoxPoint& p)
-#endif
 {
-#if defined(IF_XM)
     const GraphEditWidget _w = GraphEditWidget(w);
     BoxPoint& endAction      = _w->graphEditP.endAction;
-#endif
 
-    BoxRegion r0 = frameRegion(M_ARGS_1(w));
+    BoxRegion r0 = frameRegion(w);
     endAction = p;
-    BoxRegion r1 = frameRegion(M_ARGS_1(w));
+    BoxRegion r1 = frameRegion(w);
 
-    drawSelectFrames(M_ARGS_3(w, r0, r1));
+    drawSelectFrames(w, r0, r1);
 }
 
+#else
+
+// Redraw selection frame
+void GUIGraphEdit::redrawSelectFrame(const BoxPoint& p)
+{
+    BoxRegion r0 = frameRegion();
+    endAction = p;
+    BoxRegion r1 = frameRegion();
+
+    drawSelectFrames(r0, r1);
+}
+
+#endif
 
 // Find min possible offset
 #if defined(IF_XM)
@@ -2430,17 +2479,13 @@ void GUIGraphEdit::selectionChanged(GUI::Event *event, Boolean double_click)
 
 // Action functions
 
+#if defined(IF_XM)
+
 // Select all nodes
-#if defined(IF_XM)
 static Boolean _SelectAll(Widget w, XEvent *, String *, Cardinal *)
-#else
-Boolean GUIGraphEdit::_SelectAll(void)
-#endif
 {
-#if defined(IF_XM)
     const GraphEditWidget _w = GraphEditWidget(w);
     const Graph* graph       = _w->res_.graphEdit.graph;
-#endif
 
     Boolean changed = False;
     for (GraphNode *node = graph->firstVisibleNode(); node != 0;
@@ -2450,12 +2495,34 @@ Boolean GUIGraphEdit::_SelectAll(void)
 	{
 	    changed = True;
 	    node->selected() = True;
-	    graphEditRedrawNode(M_ARGS_2(w, node));
+	    graphEditRedrawNode(w, node);
 	}
     }
 
     return changed;
 }
+
+#else
+
+// Select all nodes
+Boolean GUIGraphEdit::_SelectAll(void)
+{
+    Boolean changed = False;
+    for (GraphNode *node = graph->firstVisibleNode(); node != 0;
+	node = graph->nextVisibleNode(node))
+    {
+	if (!node->selected())
+	{
+	    changed = True;
+	    node->selected() = True;
+	    graphEditRedrawNode(node);
+	}
+    }
+
+    return changed;
+}
+
+#endif
 
 #if defined(IF_XM)
 static void SelectAll(Widget w, XEvent *event, String *params,
@@ -2473,18 +2540,13 @@ void GUIGraphEdit::SelectAll(void)
 #endif
 }
 
+#if defined(IF_XM)
 
 // Unselect all nodes
-#if defined(IF_XM)
 static Boolean _UnselectAll(Widget w, XEvent *, String *, Cardinal *)
-#else
-Boolean GUIGraphEdit::_UnselectAll(void)
-#endif
 {
-#if defined(IF_XM)
     const GraphEditWidget _w = GraphEditWidget(w);
     const Graph* graph       = _w->res_.graphEdit.graph;
-#endif
 
     Boolean changed = False;
     for (GraphNode *node = graph->firstNode(); node != 0;
@@ -2494,12 +2556,34 @@ Boolean GUIGraphEdit::_UnselectAll(void)
 	{
 	    changed = True;
 	    node->selected() = False;
-	    graphEditRedrawNode(M_ARGS_2(w, node));
+	    graphEditRedrawNode(w, node);
 	}
     }
 
     return changed;
 }
+
+#else
+
+// Unselect all nodes
+Boolean GUIGraphEdit::_UnselectAll(void)
+{
+    Boolean changed = False;
+    for (GraphNode *node = graph->firstNode(); node != 0;
+	node = graph->nextNode(node))
+    {
+	if (node->selected())
+	{
+	    changed = True;
+	    node->selected() = False;
+	    graphEditRedrawNode(node);
+	}
+    }
+
+    return changed;
+}
+
+#endif
 
 #if defined(IF_XM)
 static void UnselectAll(Widget w, XEvent *event, String *params,
@@ -2535,12 +2619,10 @@ static void find_connected_nodes(GraphNode *root, GraphNodePointerArray& nodes)
 	find_connected_nodes(edge->from(), nodes);
 }
 
-// Select an entire subgraph
 #if defined(IF_XM)
+
+// Select an entire subgraph
 static Boolean select_graph(Widget w, GraphNode *root, Boolean set = True)
-#else
-Boolean GUIGraphEdit::select_graph(GraphNode *root, Boolean set)
-#endif
 {
     // Find all connected nodes
     GraphNodePointerArray nodes;
@@ -2554,7 +2636,7 @@ Boolean GUIGraphEdit::select_graph(GraphNode *root, Boolean set)
 	if (node->selected() != set)
 	{
 	    node->selected() = set;
-	    graphEditRedrawNode(M_ARGS_2(w, node));
+	    graphEditRedrawNode(w, node);
 	    changed = True;
 	}
     }
@@ -2562,14 +2644,48 @@ Boolean GUIGraphEdit::select_graph(GraphNode *root, Boolean set)
     return changed;
 }
 
-#if defined(IF_XM)
-inline Boolean unselect_graph(Widget w, GraphNode *root)
 #else
-Boolean GUIGraphEdit::unselect_graph(GraphNode *root)
-#endif
+
+// Select an entire subgraph
+Boolean GUIGraphEdit::select_graph(GraphNode *root, Boolean set)
 {
-    return select_graph(M_ARGS_3(w, root, False));
+    // Find all connected nodes
+    GraphNodePointerArray nodes;
+    find_connected_nodes(root, nodes);
+
+    // Select them
+    Boolean changed = False;
+    for (int i = 0; i < nodes.size(); i++)
+    {
+	GraphNode *node = nodes[i];
+	if (node->selected() != set)
+	{
+	    node->selected() = set;
+	    graphEditRedrawNode(node);
+	    changed = True;
+	}
+    }
+
+    return changed;
 }
+
+#endif
+
+#if defined(IF_XM)
+
+inline Boolean unselect_graph(Widget w, GraphNode *root)
+{
+    return select_graph(w, root, False);
+}
+
+#else
+
+Boolean GUIGraphEdit::unselect_graph(GraphNode *root)
+{
+    return select_graph(root, false);
+}
+
+#endif
 
 // Raise node NODE such that it is placed on top of all others
 #if defined(IF_XM)
@@ -2589,21 +2705,28 @@ void GUIGraphEdit::graphEditRaiseNode(GraphNode *node)
     graph->makeNodeLast(node);
 }
 
+#if defined(IF_XM)
+
 // Same, but only if the autoRaise resource is set
-#if defined(IF_XM)
 static void raise_node(Widget w, GraphNode *node)
-#else
-void GUIGraphEdit::raise_node(GraphNode *node)
-#endif
 {
-#if defined(IF_XM)
     const GraphEditWidget _w = GraphEditWidget(w);
     Boolean autoRaise        = _w->res_.graphEdit.autoRaise;
-#endif
 
     if (autoRaise)
-	graphEditRaiseNode(M_ARGS_2(w, node));
+	graphEditRaiseNode(w, node);
 }
+
+#else
+
+// Same, but only if the autoRaise resource is set
+void GUIGraphEdit::raise_node(GraphNode *node)
+{
+    if (autoRaise)
+	graphEditRaiseNode(node);
+}
+
+#endif
 
 #if defined(IF_XM)
 
@@ -2768,7 +2891,11 @@ void GUIGraphEdit::_SelectOrMove(GUI::Event *event,
 	(Time(t - lastSelectTime) <= Time(200));
     lastSelectTime = t;
 
-    GraphNode *node = graphEditGetNodeAtPoint(M_ARGS_2(w, p));
+#if defined(IF_XM)
+    GraphNode *node = graphEditGetNodeAtPoint(w, p);
+#else
+    GraphNode *node = graphEditGetNodeAtPoint(p);
+#endif
 
     if (mode == SetSelection)
     {
@@ -2809,7 +2936,11 @@ void GUIGraphEdit::_SelectOrMove(GUI::Event *event,
 	    state = SelectState;
 
 	    // start drawing a frame
-	    drawSelectFrame(M_ARGS_1(w));
+#if defined(IF_XM)
+	    drawSelectFrame(w);
+#else
+	    drawSelectFrame();
+#endif
 	}
     }
     else
@@ -2826,11 +2957,12 @@ void GUIGraphEdit::_SelectOrMove(GUI::Event *event,
 	    }
 	    // FALL THROUGH
 
+#if defined(IF_XM)
 	case ExtendSelection:
 	    if (double_click)
 	    {
 		// Select all connected nodes
-		changed = select_graph(M_ARGS_2(w, node));
+		changed = select_graph(w, node);
 	    }
 	    else
 	    {
@@ -2838,8 +2970,8 @@ void GUIGraphEdit::_SelectOrMove(GUI::Event *event,
 		if (!node->selected())
 		{		
 		    node->selected() = True;
-		    graphEditRedrawNode(M_ARGS_2(w, node));
-		    raise_node(M_ARGS_2(w, node));
+		    graphEditRedrawNode(w, node);
+		    raise_node(w, node);
 		    changed = True;
 		}
 	    }
@@ -2850,23 +2982,63 @@ void GUIGraphEdit::_SelectOrMove(GUI::Event *event,
 	    {
 		// Toggle all connected modes
 		if (node->selected())
-		    changed = select_graph(M_ARGS_2(w, node));
+		    changed = select_graph(w, node);
 		else
-		    changed = unselect_graph(M_ARGS_2(w, node));
+		    changed = unselect_graph(w, node);
 	    }
 	    else
 	    {
 		// Toggle single node
 		node->selected() = !node->selected();
-		graphEditRedrawNode(M_ARGS_2(w, node));
-		raise_node(M_ARGS_2(w, node));
+		graphEditRedrawNode(w, node);
+		raise_node(w, node);
 		changed = True;
 	    }
 	    break;
+#else
+	case ExtendSelection:
+	    if (double_click)
+	    {
+		// Select all connected nodes
+		changed = select_graph(node);
+	    }
+	    else
+	    {
+		// Select single node
+		if (!node->selected())
+		{		
+		    node->selected() = True;
+		    graphEditRedrawNode(node);
+		    raise_node(node);
+		    changed = True;
+		}
+	    }
+	    break;
+
+	case ToggleSelection:
+	    if (double_click)
+	    {
+		// Toggle all connected modes
+		if (node->selected())
+		    changed = select_graph(node);
+		else
+		    changed = unselect_graph(node);
+	    }
+	    else
+	    {
+		// Toggle single node
+		node->selected() = !node->selected();
+		graphEditRedrawNode(node);
+		raise_node(node);
+		changed = True;
+	    }
+	    break;
+#endif
 	}
 
+#if defined(IF_XM)
 	if (changed)
-	    selectionChanged(M_ARGS_3(w, event, double_click));
+	    selectionChanged(w, event, double_click);
 
 	if (follow)
 	{
@@ -2874,8 +3046,21 @@ void GUIGraphEdit::_SelectOrMove(GUI::Event *event,
 	    state = DeltaState;
 
 	    // Set moving cursor
-	    defineCursor(M_ARGS_2(w, moveCursor));
+	    defineCursor(w, moveCursor);
 	}
+#else
+	if (changed)
+	    selectionChanged(event, double_click);
+
+	if (follow)
+	{
+	    // Wait for movement
+	    state = DeltaState;
+
+	    // Set moving cursor
+	    defineCursor(moveCursor);
+	}
+#endif
     }
 }
 
@@ -3001,18 +3186,18 @@ static void Follow(Widget w, XEvent *event, String *, Cardinal *)
     {
 	case SelectState:
 	    // Draw new select frame
-	    redrawSelectFrame(M_ARGS_2(w, p));
+	    redrawSelectFrame(w, p);
 	    break;
 
 	case MoveState:
 	{
 	    // Draw new move frames
 	    endAction = p;
-	    BoxPoint newOffset = actionOffset(M_ARGS_1(w));
+	    BoxPoint newOffset = actionOffset(w);
 	    if (newOffset != lastOffset)
 	    {
-		drawOutlines(M_ARGS_2(w, lastOffset));
-		drawOutlines(M_ARGS_2(w, lastOffset = newOffset));
+		drawOutlines(w, lastOffset);
+		drawOutlines(w, lastOffset = newOffset);
 	    }
 	    break;
 	}
@@ -3024,9 +3209,9 @@ static void Follow(Widget w, XEvent *event, String *, Cardinal *)
 	    {
 		// start moving
 		endAction = p;
-		getMinimalOffset(M_ARGS_1(w));
-		graphEditSizeChanged(M_ARGS_1(w));
-		drawOutlines(M_ARGS_2(w, lastOffset = actionOffset(M_ARGS_1(w))));
+		getMinimalOffset(w);
+		graphEditSizeChanged(w);
+		drawOutlines(w, lastOffset = actionOffset(w));
 		state = MoveState;
 	    }
 	    break;
@@ -3049,18 +3234,18 @@ void GUIGraphEdit::Follow(GUI::Event *event)
     {
 	case SelectState:
 	    // Draw new select frame
-	    redrawSelectFrame(M_ARGS_2(w, p));
+	    redrawSelectFrame(p);
 	    break;
 
 	case MoveState:
 	{
 	    // Draw new move frames
 	    endAction = p;
-	    BoxPoint newOffset = actionOffset(M_ARGS_1(w));
+	    BoxPoint newOffset = actionOffset();
 	    if (newOffset != lastOffset)
 	    {
-		drawOutlines(M_ARGS_2(w, lastOffset));
-		drawOutlines(M_ARGS_2(w, lastOffset = newOffset));
+		drawOutlines(lastOffset);
+		drawOutlines(lastOffset = newOffset);
 	    }
 	    break;
 	}
@@ -3072,9 +3257,9 @@ void GUIGraphEdit::Follow(GUI::Event *event)
 	    {
 		// start moving
 		endAction = p;
-		getMinimalOffset(M_ARGS_1(w));
-		graphEditSizeChanged(M_ARGS_1(w));
-		drawOutlines(M_ARGS_2(w, lastOffset = actionOffset(M_ARGS_1(w))));
+		getMinimalOffset();
+		graphEditSizeChanged();
+		drawOutlines(lastOffset = actionOffset());
 		state = MoveState;
 	    }
 	    break;
@@ -3090,29 +3275,20 @@ void GUIGraphEdit::Follow(GUI::Event *event)
 // Now, all is done.
 
 #if defined(IF_XM)
+
 static void move_selected_nodes(Widget w, const BoxPoint& offset)
-#else
-void GUIGraphEdit::move_selected_nodes(const BoxPoint& offset)
-#endif
 {
-#if defined(IF_XM)
     const GraphEditWidget _w   = GraphEditWidget(w);
     const Graph* graph         = _w->res_.graphEdit.graph;
     const GraphGC& graphGC     = _w->graphEditP.graphGC;
-#endif
 
     if (offset == BoxPoint(0, 0))
 	return;
 
     // Clear graph area
     BoxRegion r = graph->region(graphGC);
-#if defined(IF_XM)
     XClearArea(XtDisplay(w), XtWindow(w), r.origin(X), r.origin(Y),
 	       r.space(X), r.space(Y), False);
-#else
-    internal()->get_window()->clear_area(r.origin(X), r.origin(Y),
-					 r.space(X), r.space(Y));
-#endif
 
     // Move selected nodes
     GraphNode *lastNode = 0;
@@ -3123,17 +3299,52 @@ void GUIGraphEdit::move_selected_nodes(const BoxPoint& offset)
 	if (node->selected())
 	{
 	    if (lastNode)
-		moveTo(M_ARGS_4(w, lastNode, lastNode->pos() + offset, False));
+		moveTo(w, lastNode, lastNode->pos() + offset, False);
 	    lastNode = node;
 	}
     }
     if (lastNode)
-	moveTo(M_ARGS_4(w, lastNode, lastNode->pos() + offset, True));
+	moveTo(w, lastNode, lastNode->pos() + offset, True);
 
     // resize widget to graph size and redraw graph
-    graphEditSizeChanged(M_ARGS_1(w));
-    graphEditRedraw(M_ARGS_1(w));
+    graphEditSizeChanged(w);
+    graphEditRedraw(w);
 }
+
+#else
+
+void GUIGraphEdit::move_selected_nodes(const BoxPoint& offset)
+{
+    if (offset == BoxPoint(0, 0))
+	return;
+
+    // Clear graph area
+    BoxRegion r = graph->region(graphGC);
+    internal()->get_window()->clear_area(r.origin(X), r.origin(Y),
+					 r.space(X), r.space(Y));
+
+    // Move selected nodes
+    GraphNode *lastNode = 0;
+    for (GraphNode *node = graph->firstVisibleNode(); 
+	 node != 0;
+	 node = graph->nextVisibleNode(node))
+    {
+	if (node->selected())
+	{
+	    if (lastNode)
+		moveTo(lastNode, lastNode->pos() + offset, False);
+	    lastNode = node;
+	}
+    }
+    if (lastNode)
+	moveTo(lastNode, lastNode->pos() + offset, True);
+
+    // resize widget to graph size and redraw graph
+    graphEditSizeChanged();
+    graphEditRedraw();
+}
+
+#endif
 
 #if defined(IF_XM)
 
@@ -4117,38 +4328,39 @@ void GUIGraphEdit::_Layout(LayoutMode mode)
     autoLayout = old_autoLayout;
 }
 
+#if defined(IF_XM)
+
 // DoLayout() should be named Layout(), but this conflicts with the
 // `Layout' class on some pre-ARM C++ compilers :-(
-#if defined(IF_XM)
 static void DoLayout(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
-#else
-void GUIGraphEdit::DoLayout(LayoutMode mode)
-#endif
 {
-#if defined(IF_XM)
     _Layout(w, event, params, num_params);
-#else
-    _Layout(mode);
-#endif
-    graphEditRedraw(M_ARGS_1(w));
+    graphEditRedraw(w);
 }
 
+#else
+
+// DoLayout() should be named Layout(), but this conflicts with the
+// `Layout' class on some pre-ARM C++ compilers :-(
+void GUIGraphEdit::DoLayout(LayoutMode mode)
+{
+    _Layout(mode);
+    graphEditRedraw();
+}
+
+#endif
+
+#if defined(IF_XM)
 
 // Normalize graph
-#if defined(IF_XM)
 static void _Normalize(Widget w, XEvent *, String *, Cardinal *)
-#else
-void GUIGraphEdit::_Normalize()
-#endif
 {
-#if defined(IF_XM)
     const GraphEditWidget _w   = GraphEditWidget(w);
     const Graph* graph         = _w->res_.graphEdit.graph;
     const GraphGC& graphGC     = _w->graphEditP.graphGC;
     const Dimension gridHeight = _w->res_.graphEdit.gridHeight;
     const Dimension gridWidth  = _w->res_.graphEdit.gridWidth;
-#endif
 
     BoxRegion r = graph->region(graphGC);
 
@@ -4162,48 +4374,67 @@ void GUIGraphEdit::_Normalize()
 	if (pos != node->pos())
 	{
             // set new node position
-	    moveTo(M_ARGS_4(w, node, pos, graph->nextVisibleNode(node) == 0));
+	    moveTo(w, node, pos, graph->nextVisibleNode(node) == 0);
 	}
     }
 }
 
-#if defined(IF_XM)
-static void Normalize(Widget w, XEvent *event, String *params,
-    Cardinal *num_params)
 #else
-void GUIGraphEdit::Normalize(void)
-#endif
+
+// Normalize graph
+void GUIGraphEdit::_Normalize()
 {
-#if defined(IF_XM)
-    _Normalize(w, event, params, num_params);
-#else
-    _Normalize();
-#endif
-    graphEditRedraw(M_ARGS_1(w));
+    BoxRegion r = graph->region(graphGC);
+
+    for (GraphNode *node = graph->firstVisibleNode(); 
+	 node != 0;
+	 node = graph->nextVisibleNode(node))
+    {
+	BoxPoint pos = node->pos() - r.origin() 
+	    + BoxPoint(gridHeight, gridWidth);
+
+	if (pos != node->pos())
+	{
+            // set new node position
+	    moveTo(node, pos, graph->nextVisibleNode(node) == 0);
+	}
+    }
 }
 
+#endif
+
+#if defined(IF_XM)
+
+static void Normalize(Widget w, XEvent *event, String *params,
+    Cardinal *num_params)
+{
+    _Normalize(w, event, params, num_params);
+    graphEditRedraw(w);
+}
+
+#else
+
+void GUIGraphEdit::Normalize(void)
+{
+    _Normalize();
+    graphEditRedraw();
+}
+
+#endif
+
+#if defined(IF_XM)
 
 // Show and hide edges
-
-#if defined(IF_XM)
 static void considerEdges(Widget w, XEvent *, String *params,
 			  Cardinal *num_params, Boolean shallBeHidden)
-#else
-void GUIGraphEdit::considerEdges(ShowHideMode themode, Boolean shallBeHidden)
-#endif
 {
-#if defined(IF_XM)
     const GraphEditWidget _w = GraphEditWidget(w);
     const Graph* graph       = _w->res_.graphEdit.graph;
-#endif
 
     // get the mode
-#if defined(IF_XM)
     ShowHideMode themode = NopeShowHideMode;
-#endif
     Boolean changedSomething = False;
 
-#if defined(IF_XM)
     string p = "any";
     if (*num_params >= 1)
 	p = params[0];
@@ -4218,7 +4449,6 @@ void GUIGraphEdit::considerEdges(ShowHideMode themode, Boolean shallBeHidden)
 	themode = BothShowHideMode;
     else
 	std::cerr << "show-edges: bad mode " << '`' << p << "'" << "\n";
-#endif
 
     for (GraphEdge *edge = graph->firstEdge(); edge != 0;
 	edge = graph->nextEdge(edge))
@@ -4261,8 +4491,62 @@ void GUIGraphEdit::considerEdges(ShowHideMode themode, Boolean shallBeHidden)
     }
 
     if (changedSomething)
-	graphEditRedraw(M_ARGS_1(w));
+	graphEditRedraw(w);
 }
+
+#else
+
+// Show and hide edges
+void GUIGraphEdit::considerEdges(ShowHideMode themode, Boolean shallBeHidden)
+{
+    // get the mode
+    Boolean changedSomething = False;
+
+    for (GraphEdge *edge = graph->firstEdge(); edge != 0;
+	edge = graph->nextEdge(edge))
+    {
+	Boolean set = False;
+
+	switch (themode)
+	{
+	    // There should be a better way of coding this, but I don't know...
+
+	    case FromShowHideMode:
+		set = edge->from()->selected();
+		break;
+
+	    case ToShowHideMode:
+		set = edge->to()->selected();
+		break;
+
+	    case AnyShowHideMode:
+		set = edge->to()->selected() || edge->from()->selected();
+		break;
+
+	    case BothShowHideMode:
+		set = edge->to()->selected() && edge->from()->selected();
+		break;
+
+	    case NopeShowHideMode:
+		set = False;
+		break;
+	}
+
+	if (set)
+	{
+	    if (edge->hidden() != shallBeHidden)
+	    {
+		changedSomething = True;
+		edge->hidden() = shallBeHidden;
+	    }
+	}
+    }
+
+    if (changedSomething)
+	graphEditRedraw();
+}
+
+#endif
 
 #if defined(IF_XM)
 static void ShowEdges(Widget w, XEvent *event, String *params,

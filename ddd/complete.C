@@ -52,7 +52,7 @@ char complete_rcsid[] =
 
 #include <ctype.h>
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include <Xm/Xm.h>
 #include <Xm/Text.h>
 #include <Xm/TextF.h>
@@ -118,7 +118,7 @@ static void set_completion(const CompletionInfo& info, const string& completion)
     {
 	private_gdb_output = true;
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	XmTextReplace(gdb_w, promptPosition,
 		      XmTextGetLastPosition(gdb_w), 
 		      XMST(completion.chars()));
@@ -132,7 +132,7 @@ static void set_completion(const CompletionInfo& info, const string& completion)
     }
     else
     {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	if (XmIsTextField(info.widget))
 	{
 	    XmTextFieldSetString(info.widget, XMST(completion.chars()));
@@ -174,7 +174,7 @@ static string complete_single_completion(string completion)
 // All completions are done
 static void completion_done(const CompletionInfo& info)
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     if (XmIsTextField(info.widget))
     {
 	XmTextPosition last_pos = 
@@ -332,7 +332,7 @@ static void complete(GUI::Widget *w, GUI::Event *e, const string& input, string 
 	    info.cmd = info.input;
     }
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     if (XmIsTextField(w))
 	XmTextFieldSetEditable(w, False);
     else if (XmIsText(w))
@@ -377,7 +377,7 @@ static void complete_reply(const string& complete_answer, void *qu_data)
     if (completions_size == 0 || completions[0].empty())
     {
 	// No completion (sigh)
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	XtCallActionProc(gdb_w, "beep", info.event, 0, 0);
 #else
 #ifdef NAG_ME
@@ -437,7 +437,7 @@ static void complete_reply(const string& complete_answer, void *qu_data)
 		gdb_out(insertion);
 		gdb_out(gdb->prompt());
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 		XmTextSetInsertionPosition(gdb_w, 
 					   XmTextGetLastPosition(gdb_w));
 #else
@@ -469,7 +469,7 @@ static void tabAct(Widget w, XEvent *e, String* args, Cardinal* num_args)
 
 #else
 
-static void tabAct(GUI::Widget *w, GUI::Event *e, String* args, Cardinal* num_args)
+static void tabAct(GUI::Widget *w, GUI::Event *e, GUI::String *args, unsigned int *num_args)
 {
 #ifdef NAG_ME
 #warning NO ACTIONS!!!
@@ -479,10 +479,11 @@ static void tabAct(GUI::Widget *w, GUI::Event *e, String* args, Cardinal* num_ar
 
 #endif
 
+#if defined(IF_XM)
+
 // Complete current GDB command
 void complete_commandAct(Widget w, XEvent *e, String* args, Cardinal* num_args)
 {
-#if defined(IF_MOTIF)
     if ((gdb->type() != GDB && gdb->type() != PERL)
 	|| w != gdb_w
 	|| !can_do_gdb_command()
@@ -519,12 +520,17 @@ void complete_commandAct(Widget w, XEvent *e, String* args, Cardinal* num_args)
     }
 
     complete(w, e, input, input);
-#else
-#ifdef NAG_ME
-#warning NO ACTIONS!!!
-#endif
-#endif
 }
+
+#else
+
+// Complete current GDB command
+void complete_commandAct(GUI::Widget *w, GUI::Event *e, GUI::String *args, unsigned int*num_args)
+{
+    std::cerr << "complete_commandAct!\n";
+}
+
+#endif
 
 
 // Complete GDB argument
@@ -537,8 +543,8 @@ static void _complete_argAct(Widget w,
 #else
 static void _complete_argAct(GUI::Widget *w, 
 			     GUI::Event *e, 
-			     String* args, 
-			     Cardinal* num_args,
+			     GUI::String *args, 
+			     unsigned int*num_args,
 			     bool tab)
 #endif
 {
@@ -550,6 +556,7 @@ static void _complete_argAct(GUI::Widget *w,
 	return;
     }
 
+#if defined(IF_XM)
     // The command to use as prefix for completions
     string base = gdb->print_command("");
     if (*num_args >= 1)
@@ -557,25 +564,37 @@ static void _complete_argAct(GUI::Widget *w,
     strip_space(base);
 
     String _input = 0;
-#if defined(IF_MOTIF)
     if (XmIsTextField(w))
 	_input = XmTextFieldGetString(w);
     else if (XmIsText(w))
 	_input = XmTextGetString(w);
-#else
-    GUI::ScrolledText *stp;
-    GUI::Entry *entry;
-    if (stp = dynamic_cast<GUI::ScrolledText *>(w))
-	_input = strdup(stp->get_text().c_str());
-    else if (entry = dynamic_cast<GUI::Entry *>(w))
-	_input = strdup(entry->get_text().c_str());
-#endif
 
     if (_input == 0)
 	return;
 
     string input(_input);
     XtFree(_input);
+#else
+    // The command to use as prefix for completions
+    string base = gdb->print_command("");
+    if (*num_args >= 1)
+	base = args[0].c_str();
+    strip_space(base);
+
+    char *_input = 0;
+    GUI::ScrolledText *stp;
+    GUI::Entry *entry;
+    if (stp = dynamic_cast<GUI::ScrolledText *>(w))
+	_input = strdup(stp->get_text().c_str());
+    else if (entry = dynamic_cast<GUI::Entry *>(w))
+	_input = strdup(entry->get_text().c_str());
+
+    if (_input == 0)
+	return;
+
+    string input(_input);
+    free(_input);
+#endif
 
     if (gdb->has_quotes())
     {
@@ -617,12 +636,12 @@ void complete_tabAct(Widget w, XEvent *e, String* args, Cardinal* num_args)
 
 #else
 
-void complete_argAct(GUI::Widget *w, GUI::Event *e, String* args, Cardinal* num_args)
+void complete_argAct(GUI::Widget *w, GUI::Event *e, GUI::String *args, unsigned int *num_args)
 {
     _complete_argAct(w, e, args, num_args, false);
 }
 
-void complete_tabAct(GUI::Widget *w, GUI::Event *e, String* args, Cardinal* num_args)
+void complete_tabAct(GUI::Widget *w, GUI::Event *e, GUI::String *args, unsigned int *num_args)
 {
     _complete_argAct(w, e, args, num_args, true);
 }

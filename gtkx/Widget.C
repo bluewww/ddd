@@ -9,18 +9,28 @@ using namespace GtkX;
 
 Glib::Quark GtkX::gtkx_super_quark("gtkx_super");
 
-String::String(const Glib::ustring &s0)
+String::String(const Glib::ustring &s0):
+    s_(s0)
 {
-    s_ = s0;
 }
 
-String::String(const char *s0)
+String::String(const char *s0):
+    s_(s0)
 {
-    s_ = Glib::ustring(s0);
+}
+
+String::String(void)
+{
 }
 
 String::~String(void)
 {
+}
+
+bool
+String::empty(void) const
+{
+    return s_.empty();
 }
 
 Glib::ustring &
@@ -38,43 +48,67 @@ String::s(void) const
 String
 String::operator+(const String &str) const
 {
-    return String(s()+str.s());
+    return String(s_+str.s_);
 }
 
 String &
 String::operator+=(const String &str)
 {
-    s() += str.s();
+    s_ += str.s_;
     return *this;
 }
 
 bool
 String::operator==(const String &str) const
 {
-    return s() == str.s();
+    return s_ == str.s_;
 }
 
 gunichar
 String::operator[](int i) const
 {
-    return s()[i];
+    return s_[i];
 }
 
 String::operator bool(void) const
 {
-    return (s().length() > 0);
+    return (s_.length() > 0);
 }
 
 const char *
 String::c(void) const
 {
-  return s().c_str();
+  return s_.c_str();
 }
 
 const char *
 String::c_str(void) const
 {
-  return s().c_str();
+  return s_.c_str();
+}
+
+String::iterator
+String::begin(void)
+{
+    return s_.begin();
+}
+
+String::iterator
+String::end(void)
+{
+    return s_.end();
+}
+
+String::const_iterator
+String::begin(void) const
+{
+    return s_.begin();
+}
+
+String::const_iterator
+String::end(void) const
+{
+    return s_.end();
 }
 
 const GtkX::String GtkX::mklabel(const GtkX::String &name,

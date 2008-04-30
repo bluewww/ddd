@@ -67,3 +67,8 @@ Label::set_alignment(float xalign, float yalign)
     Gtk::Label::set_alignment(xalign, yalign);
 }
 
+void
+Label::set_text(const String &s)
+{
+    Gtk::Label::set_text(s.s());
+}

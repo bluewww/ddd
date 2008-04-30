@@ -40,7 +40,7 @@ bool is_realized(void)
     return GtkX::Widget::is_realized();
 }
 
-void set_name(const String &s)
+void set_name(const GtkX::String &s)
 {
     GtkX::Widget::set_name(s);
 }

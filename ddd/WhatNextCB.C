@@ -66,26 +66,34 @@ char WhatNextCB_rcsid[] =
 #include <GUI/Dialog.h>
 #endif
 
+#if defined(IF_XM)
+
 // Show a suggestion named NAME
 static void hint_on(const _XtString name)
 {
-#if defined(IF_XM)
     // Create some `dummy' widget and create a help text for it
     Widget suggestion = 
 	verify(XmCreateInformationDialog(find_shell(), XMST(name), 0, 0));
-#else
-    GUI::Dialog *suggestion = 
-	new GUI::Dialog(*find_shell(), name);
-#endif
 
-#if defined(IF_XM)
     ImmediateHelpCB(suggestion, XtPointer(0), XtPointer(0));
-#else
-    ImmediateHelpCB1(suggestion);
-#endif
 
     DestroyWhenIdle(suggestion);
 }
+
+#else
+
+// Show a suggestion named NAME
+static void hint_on(const char *name)
+{
+    GUI::Dialog *suggestion = 
+	new GUI::Dialog(*find_shell(), name);
+
+    ImmediateHelpCB1(suggestion);
+
+    DestroyWhenIdle(suggestion);
+}
+
+#endif
 
 static bool no_source_and_no_code()
 {

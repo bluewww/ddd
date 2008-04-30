@@ -44,6 +44,7 @@ namespace GtkX {
 	Gtk::Container *gtk_container(void);
 	~Window(void);
 	sigc::signal<bool, GdkEvent *> &signal_delete_event(void);
+	void set_title(const String &);
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
 #include <GtkX/redirect.h>
     };

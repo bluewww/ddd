@@ -246,12 +246,12 @@ inline MString operator + (const MString& m1, const MString& m2)
 
 class MString {
 private:
-    XmString _mstring;		// Motif internals
+    GUI::String _mstring;		// Motif internals
 
 public:
     // Constructors
     MString():
-	_mstring()
+	_mstring("")
     {
 	assert(OK());
     }
@@ -270,7 +270,7 @@ public:
 	assert(OK());
     }
 
-    MString(const Glib::ustring &text, bool /* dummy */):
+    MString(const GUI::String &text, bool /* dummy */):
 	_mstring(text)
     {
 	assert(OK());
@@ -318,7 +318,7 @@ public:
     {
 	if (_mstring.empty()) return 0;
 	int lc = 1;
-	for (Glib::ustring::const_iterator i = _mstring.begin();
+	for (GUI::String::const_iterator i = _mstring.begin();
 	     i != _mstring.end();
 	     i++) {
 #ifdef NAG_ME
@@ -332,7 +332,7 @@ public:
     void extent(Dimension& x, Dimension& y, XmFontList fontlist) const
     {
 	Glib::RefPtr<Pango::Layout> lo = Pango::Layout::create(pango_context);
-	lo->set_text(_mstring);
+	lo->set_text(_mstring.s());
 	lo->get_pixel_size(x, y);
     }
 
@@ -340,7 +340,7 @@ public:
     {
 	int x, y;
 	Glib::RefPtr<Pango::Layout> lo = Pango::Layout::create(pango_context);
-	lo->set_text(_mstring);
+	lo->set_text(_mstring.s());
 	lo->get_pixel_size(x, y);
 	return y;
     }
@@ -349,7 +349,7 @@ public:
     {
 	int x, y;
 	Glib::RefPtr<Pango::Layout> lo = Pango::Layout::create(pango_context);
-	lo->set_text(_mstring);
+	lo->set_text(_mstring.s());
 	lo->get_pixel_size(x, y);
 	return x;
     }
@@ -418,14 +418,14 @@ public:
     }
 
     // Conversions
-    XmString xmstring() const { return _mstring; }
+    GUI::String xmstring() const { return _mstring; }
 
     // Substrings
     Boolean contains(const MString& m) const
     {
 	assert(OK());
 	assert(m.OK());
-	return (_mstring.find(m._mstring) != GLIB_NOSTRING);
+	return (_mstring.find(m._mstring) >= 0);
     }
 
     // Invariant
@@ -438,7 +438,7 @@ inline MString operator + (const MString& m1, const MString& m2)
     assert(m1.OK());
     assert(m2.OK());
 
-    Glib::ustring tmp = m1.xmstring() + m2.xmstring();
+    GUI::String tmp = m1.xmstring() + m2.xmstring();
     MString ret(tmp, true);
     return ret;
 }

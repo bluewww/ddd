@@ -67,3 +67,21 @@ Button::set_alignment(float xalign, float yalign)
     Gtk::Button::set_alignment(xalign, yalign);
 }
 
+void
+Button::set_label(const String &s)
+{
+    Gtk::Button::set_label(s.s());
+}
+
+void
+Button::remove(void)
+{
+    Gtk::Button::remove();
+}
+
+void
+Button::add_label(const String &s)
+{
+    Gtk::Button::add_label(s.s());
+}
+

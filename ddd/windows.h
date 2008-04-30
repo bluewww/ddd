@@ -195,8 +195,10 @@ extern void set_main_window_size(GUI::Container *w);
 extern void save_preferred_paned_sizes(Widget paned);
 
 #if !defined(IF_XM)
+
 // Convenience function to get state of ToggleButton and CheckMenuItem.
 extern bool get_active(Widget w);
+
 #endif
 
 #endif // _DDD_windows_h

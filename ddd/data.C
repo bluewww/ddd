@@ -81,7 +81,7 @@ void graphRotateCB(void)
 {
     StatusDelay delay("Rotating graph");
 
-    const _XtString params[1];
+    const char *params[1];
     params[0] = "+90";
 
     std::cerr << "graphRotateCB not implemented yet\n";

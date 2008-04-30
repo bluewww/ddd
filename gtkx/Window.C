@@ -84,3 +84,9 @@ GtkX::Window::delete_callback(GdkEventAny *data)
     signal_delete_((GdkEvent *)data);
 }
 
+void
+GtkX::Window::set_title(const String &s)
+{
+    Gtk::Window::set_title(s.s());
+}
+

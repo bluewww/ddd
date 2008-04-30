@@ -1958,9 +1958,9 @@ GUI::Menu *MMcreatePushMenu(GUI::Container *parent, GUI::String name, MMDesc ite
 
 
 
-static XEvent last_push_menu_event; // Just save it
-
 #if defined(IF_XM)
+
+static XEvent last_push_menu_event; // Just save it
 
 // Remove time out again
 static void CancelPopupPushMenuCB(Widget w, XtPointer client_data, 

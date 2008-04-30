@@ -61,10 +61,10 @@ char Tool_rcsid[] =
 // Create Tool Window
 //-----------------------------------------------------------------------------
 
+#if defined(IF_XM)
+
 // Events to note for window visibility
 const int STRUCTURE_MASK = StructureNotifyMask | VisibilityChangeMask;
-
-#if defined(IF_XM)
 
 void create_command_tool()
 {
@@ -121,7 +121,7 @@ void create_command_tool()
 					   tool_shell_parent, args, arg));
     }
 
-    AddDeleteWindowCallback(tool_shell, PTR_FUN(gdbCloseToolWindowCB));
+    AddDeleteWindowCallback(tool_shell, gdbCloseToolWindowCB);
 
     arg = 0;
     tool_buttons_w = 

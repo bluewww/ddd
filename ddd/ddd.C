@@ -585,11 +585,15 @@ static void add_arg_from_selection(Widget toplevel,
 				   int& argc, const char **&argv);
 #endif
 
+#if defined(IF_XM)
+
 #if XmVersion < 2000 || defined(LESSTIF_VERSION)
 static void toggleOverstrikeAct (Widget, XEvent*, String*, Cardinal*)
 {
     // Do nothing.  (Just a dummy.)
 }
+#endif
+
 #endif
 
 static void vsl_echo(const string& msg);
@@ -1006,35 +1010,35 @@ static XrmOptionDescRec options[] = {
 #if defined(IF_XM)
 // Actions
 static XtActionsRec actions [] = {
-    {XTARECSTR("gdb-control"),            PTR_FUN(controlAct)},
-    {XTARECSTR("gdb-interrupt"),          PTR_FUN(interruptAct)},
-    {XTARECSTR("gdb-command"),            PTR_FUN(commandAct)},
-    {XTARECSTR("gdb-process"),            PTR_FUN(processAct)},
-    {XTARECSTR("gdb-delete-or-control"),  PTR_FUN(delete_or_controlAct)},
-    {XTARECSTR("gdb-prev-history"),       PTR_FUN(prev_historyAct)},
-    {XTARECSTR("gdb-previous-history"),   PTR_FUN(prev_historyAct)},
-    {XTARECSTR("gdb-next-history"),       PTR_FUN(next_historyAct)},
-    {XTARECSTR("gdb-beginning-of-line"),  PTR_FUN(beginning_of_lineAct)},
-    {XTARECSTR("gdb-end-of-line"),        PTR_FUN(end_of_lineAct)},
-    {XTARECSTR("gdb-forward-character"),  PTR_FUN(forward_characterAct)},
-    {XTARECSTR("gdb-backward-character"), PTR_FUN(backward_characterAct)},
-    {XTARECSTR("gdb-set-line"),           PTR_FUN(set_lineAct)},
-    {XTARECSTR("gdb-complete-command"),   PTR_FUN(complete_commandAct)},
-    {XTARECSTR("gdb-complete-arg"),       PTR_FUN(complete_argAct)},
-    {XTARECSTR("gdb-complete-tab"),       PTR_FUN(complete_tabAct)},
-    {XTARECSTR("gdb-insert-source-arg"),  PTR_FUN(insert_source_argAct)},
-    {XTARECSTR("gdb-insert-graph-arg"),   PTR_FUN(insert_graph_argAct)},
-    {XTARECSTR("gdb-isearch-prev"),       PTR_FUN(isearch_prevAct)},
-    {XTARECSTR("gdb-isearch-next"),       PTR_FUN(isearch_nextAct)},
-    {XTARECSTR("gdb-isearch-exit"),       PTR_FUN(isearch_exitAct)},
-    {XTARECSTR("gdb-popup-menu"),         PTR_FUN(popupAct)},
-    {XTARECSTR("ddd-next-tab-group"),     PTR_FUN(next_tab_groupAct)},
-    {XTARECSTR("ddd-prev-tab-group"),     PTR_FUN(prev_tab_groupAct)},
-    {XTARECSTR("ddd-previous-tab-group"), PTR_FUN(prev_tab_groupAct)},
-    {XTARECSTR("ddd-get-focus"),          PTR_FUN(get_focusAct)},
-    {XTARECSTR("ddd-select-all"),         PTR_FUN(select_allAct)},
+    {XTARECSTR("gdb-control"),            controlAct},
+    {XTARECSTR("gdb-interrupt"),          interruptAct},
+    {XTARECSTR("gdb-command"),            commandAct},
+    {XTARECSTR("gdb-process"),            processAct},
+    {XTARECSTR("gdb-delete-or-control"),  delete_or_controlAct},
+    {XTARECSTR("gdb-prev-history"),       prev_historyAct},
+    {XTARECSTR("gdb-previous-history"),   prev_historyAct},
+    {XTARECSTR("gdb-next-history"),       next_historyAct},
+    {XTARECSTR("gdb-beginning-of-line"),  beginning_of_lineAct},
+    {XTARECSTR("gdb-end-of-line"),        end_of_lineAct},
+    {XTARECSTR("gdb-forward-character"),  forward_characterAct},
+    {XTARECSTR("gdb-backward-character"), backward_characterAct},
+    {XTARECSTR("gdb-set-line"),           set_lineAct},
+    {XTARECSTR("gdb-complete-command"),   complete_commandAct},
+    {XTARECSTR("gdb-complete-arg"),       complete_argAct},
+    {XTARECSTR("gdb-complete-tab"),       complete_tabAct},
+    {XTARECSTR("gdb-insert-source-arg"),  insert_source_argAct},
+    {XTARECSTR("gdb-insert-graph-arg"),   insert_graph_argAct},
+    {XTARECSTR("gdb-isearch-prev"),       isearch_prevAct},
+    {XTARECSTR("gdb-isearch-next"),       isearch_nextAct},
+    {XTARECSTR("gdb-isearch-exit"),       isearch_exitAct},
+    {XTARECSTR("gdb-popup-menu"),         popupAct},
+    {XTARECSTR("ddd-next-tab-group"),     next_tab_groupAct},
+    {XTARECSTR("ddd-prev-tab-group"),     prev_tab_groupAct},
+    {XTARECSTR("ddd-previous-tab-group"), prev_tab_groupAct},
+    {XTARECSTR("ddd-get-focus"),          get_focusAct},
+    {XTARECSTR("ddd-select-all"),         select_allAct},
 #if XmVersion < 2000 || defined(LESSTIF_VERSION)
-    {XTARECSTR("toggle-overstrike"),      PTR_FUN(toggleOverstrikeAct)},
+    {XTARECSTR("toggle-overstrike"),      toggleOverstrikeAct},
 #endif
 };
 #else
@@ -3167,8 +3171,12 @@ static XtErrorHandler ddd_original_xt_warning_handler;
 static StatusMsg *init_delay = 0;
 static Delay *setup_delay = 0;
 
+#if defined(IF_XM)
+
 // Events to note for window visibility
 const int STRUCTURE_MASK = StructureNotifyMask | VisibilityChangeMask;
+
+#endif
 
 // Message handling
 static MString version_warnings;
@@ -3308,9 +3316,9 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 #endif
 #endif
 
+#if defined(IF_XM)
     const _XtString session_id = 0;
 
-#if defined(IF_XM)
     if (session_id == 0)
     {
 	// Determine session
@@ -3363,6 +3371,8 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	}
     }
 #else
+    const char *session_id = 0;
+
     if (session_id == 0)
     {
 	// Determine session
@@ -5439,7 +5449,7 @@ static void TryToLock(XtPointer client_data, XtIntervalId *)
     if (lock_ok)
     {
 	continue_despite_lock = true;
-	return MAYBE_FALSE;
+	return;
     }
 
     XtAppAddTimeOut(XtWidgetToApplicationContext(w), 500, 
@@ -5701,11 +5711,9 @@ static bool lock_ddd(GUI::Widget *parent, LockInfo& info)
 // Setup
 //-----------------------------------------------------------------------------
 
-static Boolean session_setup_done(
 #if defined(IF_XM)
-				  XtPointer
-#endif
-				  )
+
+static Boolean session_setup_done(XtPointer)
 {
     if (emptyCommandQueue() && gdb->isReadyWithPrompt())
     {
@@ -5732,6 +5740,39 @@ static Boolean session_setup_done(
 
     return False;		// Get called again
 }
+
+#else
+
+static Boolean session_setup_done()
+{
+    if (emptyCommandQueue() && gdb->isReadyWithPrompt())
+    {
+	std::cerr << "session_setup_done().\n";
+	// Delete initialization delay, if any
+	delete init_delay;
+	init_delay = 0;
+
+	// Say hello
+	set_status_mstring(rm("Welcome to " DDD_NAME " " DDD_VERSION 
+			      " \"" DDD_NICKNAME "\""
+			      " (" DDD_HOST ")"));
+
+	if (app_data.initial_session != 0)
+	{
+	    set_session(app_data.initial_session);
+	    app_data.initial_session = 0;
+	}
+
+	// From now on, verify the state file for changes
+	check_options_file();
+
+	return false;		// Remove from the list of work procs
+    }
+
+    return true;		// Get called again
+}
+
+#endif
 
 #if defined(IF_XM)
 
@@ -5788,13 +5829,13 @@ Boolean ddd_setup_done(XtPointer)
 
 bool ddd_setup_done(void)
 {
-    std::cerr << "****************** ddd_setup_done ********************\n";
     // Delete setup delay, if any
     delete setup_delay;
     setup_delay = 0;
 
     if (emptyCommandQueue() && gdb->isReadyWithPrompt())
     {
+	std::cerr << "ddd_setup_done().\n";
 	// Some WMs have trouble with early decorations.  Just re-decorate.
 	setup_new_shell(command_shell);
 	setup_new_shell(data_disp_shell);
@@ -5981,12 +6022,12 @@ static void set_string(Widget w, const _XtString value)
 
 #else
 
-static void set_string(GUI::Entry *w, const _XtString value)
+static void set_string(GUI::Entry *w, const char *value)
 {
     if (w == 0)
 	return;
 
-    w->set_text(XMST(value));
+    w->set_text(value);
 }
 
 #endif
@@ -6728,7 +6769,7 @@ static bool real_update_options(bool noupd)
     else
     {
 	static int errcnt = 0;
-	if (complain && !errcnt++) std::cerr << "Paned children?\n";
+	if (!errcnt++) std::cerr << "Paned children?\n";
     }
 
     // Setup undo buffer size
@@ -6777,7 +6818,7 @@ static void set_settings_title(GUI::Widget *w)
 	MString settings_title(gdb->title() + " Settings...");
 	GUI::MenuItem *mi = dynamic_cast<GUI::MenuItem *>(w);
 	mi->remove();
-	mi->add_label(settings_title.xmstring());
+	mi->add_label(settings_title.xmstring().s());
     }
 }
 
@@ -8258,7 +8299,7 @@ BlinkCB(
     {
 #if defined(IF_XM)
 	blink_timer = XtAppAddTimeOut(XtWidgetToApplicationContext(led_w),
-				      app_data.busy_blink_rate, PTR_FUN(BlinkCB),
+				      app_data.busy_blink_rate, BlinkCB,
 				      XtPointer(int(!set)));
 #else
 	return true;
@@ -8823,7 +8864,7 @@ static void gdb_readyHP(Agent *, void *, void *call_data)
 	if (!emptyCommandQueue()) {
 #if defined(IF_XM)
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0, 
-			    PTR_FUN(processCommandQueue), XtPointer(0));
+			    processCommandQueue, XtPointer(0));
 #else
 	    GUI::signal_idle().connect(sigc::ptr_fun(processCommandQueue));
 #endif
@@ -8857,19 +8898,13 @@ static void gdb_readyHP(Agent *, void *, void *call_data)
 
 struct WhenReadyInfo {
     MString message;
+
 #if defined(IF_XM)
     XtCallbackProc proc;
     XtPointer client_data;
     XmPushButtonCallbackStruct cbs;
-#else
-    sigc::slot<void, Widget> proc;
-#ifdef NAG_ME
-#warning WhenReady: callback structure not used?
-#endif
-#endif
     XEvent event;
 
-#if defined(IF_XM)
     WhenReadyInfo(const MString &msg, XtCallbackProc p, XtPointer cl_data,
 		  const XmPushButtonCallbackStruct& c)
 	: message(msg),
@@ -8892,6 +8927,7 @@ struct WhenReadyInfo {
 	}
     }
 #else
+    sigc::slot<void, Widget> proc;
     WhenReadyInfo(const MString &msg, sigc::slot<void, Widget> p)
 	: message(msg),
 	  proc(p)
@@ -8908,7 +8944,7 @@ private:
 struct WhenReadyInfo1 {
     MString message;
     slot_gui_w proc;
-    XEvent event;
+    GUI::Event *event;
 
     WhenReadyInfo1(const MString &msg, slot_gui_w p)
 	: message(msg),
@@ -10943,18 +10979,18 @@ extern "C" {
 
 bool process_emergencies()
 {
-    XEvent event;
+//    static unsigned int errcnt = 0;
+//    errcnt++;
+//    if (errcnt%80==0) std::cerr << "\n";
+//    std::cerr << "." << std::flush;
 #if defined(IF_XM)
+    XEvent event;
     if (XCheckIfEvent(XtDisplay(gdb_w), &event, is_emergency, 0))
     {
 	// Emergency: process this event immediately
 	XtDispatchEvent(&event);
 	return true;
     }
-#else
-#ifdef NAG_ME
-#warning process_emergencies: scan event queue for high-priority events?
-#endif
 #endif
 
     return false;
