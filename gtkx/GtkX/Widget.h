@@ -25,6 +25,13 @@ namespace GtkX {
 	ORIENTATION_VERTICAL
     };
 
+    enum AttachOptions
+    {
+	EXPAND = 1 << 0,
+	SHRINK = 1 << 1,
+	FILL = 1 << 2
+    };
+
     extern Glib::Quark gtkx_super_quark;
 
     struct Requisition

@@ -64,6 +64,7 @@ char settings_rcsid[] =
 #include <GUI/Menu.h>
 #include <GUI/MenuItem.h>
 #include <GUI/OptionMenu.h>
+#include <GUI/Table.h>
 
 #include <map>
 
@@ -2016,7 +2017,7 @@ static void add_settings(Widget form, int& row, Dimension& max_width,
 			 DebuggerType type, EntryType entry_filter, 
 			 const string& gdb_class = "set");
 #else
-static void add_settings(GUI::Container *form, int& row, Dimension& max_width,
+static void add_settings(GUI::Table *form, int& row, Dimension& max_width,
 			 DebuggerType type, EntryType entry_filter, 
 			 const string& gdb_class = "set");
 #endif
@@ -2932,7 +2933,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 #else
 
 // Add single button
-static void add_button(GUI::Container *form, int& row, Dimension& max_width,
+static void add_button(GUI::Table *form, int& row, Dimension& max_width,
 		       DebuggerType type, EntryType entry_filter,
 		       string line)
 {
@@ -3580,6 +3581,7 @@ static void add_button(GUI::Container *form, int& row, Dimension& max_width,
 	infos_entries += entry;
     }
 
+    form->cr();
     row++;
 }
 
@@ -3606,7 +3608,7 @@ static void add_separator(Widget form, int& row)
 #else
 
 // Add separator
-static void add_separator(GUI::Container *form, int& row)
+static void add_separator(GUI::Table *form, int& row)
 {
 #if !defined(IF_XMMM)
     Gtk::Widget *sep = new Gtk::HSeparator();
@@ -3625,7 +3627,7 @@ static void add_settings(Widget form, int& row, Dimension& max_width,
 			 const string& gdb_class)
 #else
 // Add buttons
-static void add_settings(GUI::Container *form, int& row, Dimension& max_width,
+static void add_settings(GUI::Table *form, int& row, Dimension& max_width,
 			 DebuggerType type, EntryType entry_filter,
 			 const string& gdb_class)
 #endif
@@ -4053,7 +4055,7 @@ void get_themes(StringArray& themes)
 #if defined(IF_XM)
 static void add_themes(Widget form, int& row, Dimension& max_width)
 #else
-static void add_themes(GUI::Container *form, int& row, Dimension& max_width)
+static void add_themes(GUI::Table *form, int& row, Dimension& max_width)
 #endif
 {
     clear_vsldoc_cache();
@@ -4468,7 +4470,7 @@ static GUI::Dialog *create_panel(DebuggerType type, SettingsType stype)
 	new GUI::ScrolledWindow(*column, GUI::PACK_EXPAND_WIDGET, "scroll");
 
     // Add a form.
-    GUI::Box *form = new GUI::VBox(*scroll, GUI::PACK_SHRINK, "form");
+    GUI::Table *form = new GUI::Table(*scroll, GUI::PACK_SHRINK, "form");
 
     switch (stype)
     {
