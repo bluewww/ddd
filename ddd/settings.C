@@ -36,7 +36,8 @@ char settings_rcsid[] =
 
 #include "settings.h"
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
+
 #include <Xm/Xm.h>
 #include <Xm/SelectioB.h>
 #include <Xm/DialogS.h>
@@ -51,16 +52,30 @@ char settings_rcsid[] =
 #include <Xm/LabelG.h>
 #include <Xm/MwmUtil.h>
 #include <Xm/Separator.h>
+
 #else
+
 #include <gtkmm/separator.h>
+#include <GUI/Dialog.h>
+#include <GUI/Box.h>
+#include <GUI/CheckButton.h>
+#include <GUI/Button.h>
+#include <GUI/Entry.h>
+#include <GUI/Menu.h>
+#include <GUI/MenuItem.h>
+#include <GUI/OptionMenu.h>
+
+#include <map>
+
 #endif
+
 #include <ctype.h>
 #include <string.h>
 #include <stdio.h>
 
 #include "AppData.h"
 #include "Assoc.h"
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include "ComboBox.h"
 #endif
 #include "Command.h"
@@ -102,17 +117,6 @@ char settings_rcsid[] =
 #include "vsldoc.h"
 #include "wm.h"
 #include "charsets.h"
-
-#if !defined(IF_XM)
-#include <GUI/Dialog.h>
-#include <GUI/Box.h>
-#include <GUI/CheckButton.h>
-#include <GUI/Button.h>
-#include <GUI/Entry.h>
-#include <GUI/Menu.h>
-#include <GUI/MenuItem.h>
-#include <GUI/OptionMenu.h>
-#endif
 
 #define N_ELEMENTS(x) (sizeof(x)/sizeof(x[0]))
 
@@ -222,10 +226,24 @@ static Widget command_to_widget(Widget ref, string command)
 
 #else
 
+std::map<string, GUI::Widget *> name_to_widget;
+
 // Find widget for command COMMAND
-static GUI::Widget *command_to_widget(GUI::Widget *ref, string command)
+static GUI::Widget *command_to_widget(string command)
 {
-    std::cerr << "command_to_widget not implemented!\n";
+    std::map<string, GUI::Widget *>::iterator found;
+    string orig_command = command;
+    while (!command.empty())
+    {
+	found = name_to_widget.find(command);
+	if (found != name_to_widget.end())
+	    return (*found).second;
+	// Strip last word (command argument)
+	int index = command.index(rxwhite, -1);
+	command   = command.before(index);
+    }
+
+    std::cerr << "Widget for \"" << orig_command.chars() << "\" not found\n";
     return NULL;
 }
 
@@ -247,7 +265,7 @@ static void gdb_set_command(const string& set_command, string value)
 #if defined(IF_XM)
 	Widget confirm_w = command_to_widget(settings_form, "set confirm");
 #else
-	GUI::Widget *confirm_w = command_to_widget(settings_form, "set confirm");
+	GUI::Widget *confirm_w = command_to_widget("set confirm");
 #endif
 	if (confirm_w)
 	    confirm_value = settings_values[confirm_w];
@@ -510,7 +528,7 @@ static void SignalCB(GUI::CheckButton *w)
 
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // Get help on signal - using `info' on `libc'
 static void HelpOnSignalCB(Widget w, XtPointer client_data, 
 			   XtPointer call_data)
@@ -1029,7 +1047,7 @@ static void UpdateThemesButtonsCB(void)
 
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 static void HelpOnThemeCB(Widget w, XtPointer client_data, 
 			  XtPointer call_data)
 {
@@ -1289,7 +1307,7 @@ void process_show(const string& command, string value, bool init)
 	set_command = "set " + set_command.after(rxwhite);
     }
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     Widget button = command_to_widget(settings_form, set_command);
     if (button == 0)
 	button = command_to_widget(settings_form, command);
@@ -1358,9 +1376,78 @@ void process_show(const string& command, string value, bool init)
 	return;
     }
 #else
-#ifdef NAG_ME
-#warning command_to_widget does not work yet, so this is not implemented.
+    GUI::Widget *w = command_to_widget(set_command);
+    if (w == 0)
+	w = command_to_widget(command);
+    if (w == 0)
+	w = command_to_widget(command.after(rxwhite));
+
+    if (w != 0)
+    {
+	if (!init)
+	{
+	    // Save current state in undo buffer
+	    std::ostringstream command;
+	    get_setting(command, gdb->type(), XtName(w), 
+			settings_values[w]);
+	    undo_buffer.add_command(string(command));
+	}
+
+	settings_values[w] = value;
+	if (init)
+	    settings_initial_values[w] = value;
+    }
+
+    if (!init)
+	update_reset_settings_button();
+
+    GUI::OptionMenu *optmenu;
+    GUI::CheckButton *button;
+    GUI::Entry *entry;
+    if (w != 0 && (optmenu = dynamic_cast<GUI::OptionMenu *>(w)))
+    {
+	std::cerr << "Settings OptionMenu not yet handled.\n";
+#if 0
+	Widget menu = 0;
+	XtVaGetValues(w, XmNsubMenuId, &menu, XtPointer(0));
+	if (menu != 0)
+	{
+	    // Option menu
+	    Widget active = XtNameToWidget(menu, value.chars());
+	    if (active != 0)
+	    {
+		XtVaSetValues(w, XmNmenuHistory, active, XtPointer(0));
+		return;
+	    }
+	}
 #endif
+    }
+    else if (w != 0 && (button = dynamic_cast<GUI::CheckButton *>(w)))
+    {
+	bool set = value != "off" && value != "0" && value != "unlimited" 
+	    && value != "false" && value != "insensitive";
+
+	for (int i = 0; i < settings_entries.size(); i++)
+	{
+	    if (settings_entries[i] == w
+		&& settings_entry_types[i] == NoNumToggleButtonEntry)
+	    {
+		set = !set;
+		break;
+	    }
+	}
+
+	button->set_active(set);
+	return;
+    }
+    else if (w != 0 && (entry = dynamic_cast<GUI::Entry *>(w)))
+    {
+	entry->set_text(value.chars());
+	return;
+    }
+    else {
+	std::cerr << "UNKNOWN WIDGET CLASS FOR SETTING " << value.chars() << "\n";
+    }
 #endif
 
 #if 0
@@ -1372,7 +1459,7 @@ void process_show(const string& command, string value, bool init)
 // Process output of `handle' command
 void process_handle(string output, bool init)
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     if (signals_form == 0)
 	return;
 
@@ -1890,7 +1977,7 @@ static string get_dbx_doc(const string& dbxenv, const string& base)
     return dbx_doc;
 }
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 static Dimension preferred_width(Widget w)
 {
     if (w == 0)
@@ -3476,6 +3563,10 @@ static void add_button(GUI::Container *form, int& row, Dimension& max_width,
 	    set_sensitive(label, false);
 	}
 
+	std::cerr << "Created widget for \"" << set_command.chars()
+		  << "\" at " << entry << " (" << entry->get_name().c_str() << ")\n";
+	name_to_widget.insert(std::pair<string, GUI::Widget *>(set_command, entry));
+
 	// Initialize button
 	process_show(show_command, value, true);
 
@@ -3853,7 +3944,7 @@ static string get_help_line(const string& command, DebuggerType /*type*/)
     return reply;
 }
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // ClipWindow translation stuff
 static void ClipDo(Widget w, XEvent *event, 
 		   String *params, Cardinal *num_params)
@@ -5276,7 +5367,7 @@ string get_defines(DebuggerType type, unsigned long /* flags */)
 #if defined(IF_XM)
 	Widget confirm_w = command_to_widget(settings_form, "set confirm");
 #else
-	GUI::Widget *confirm_w = command_to_widget(settings_form, "set confirm");
+	GUI::Widget *confirm_w = command_to_widget("set confirm");
 #endif
 	if (confirm_w != 0)
 	    confirm_value = settings_values[confirm_w];
@@ -5351,7 +5442,7 @@ static GUI::WidgetPtr<GUI::Button> apply_w;	// `Apply' button
 
 static string current_name()
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     String name_s = XmTextFieldGetString(name_w);
     string name(name_s);
     XtFree(name_s);
@@ -5610,7 +5701,7 @@ static void refresh_combo_box()
     for (StringStringAssocIter iter(defs); iter.ok(); ++iter)
 	commands += iter.key();
     smart_sort(commands);
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     ComboBoxSetList(name_w, commands);
 #else
     std::cerr << "SET COMBO BOX LIST\n";

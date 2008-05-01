@@ -33,15 +33,18 @@
 #include "config.h"
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
+
 #include <X11/Intrinsic.h>
+
+#else
+
+#include <GUI/Widget.h>
+
 #endif
 
 #include "gtk_wrapper.h"
 
-#if !defined(IF_XM)
-#include <GUI/Widget.h>
-#endif
 
 #include "bool.h"
 #include "strclass.h"
