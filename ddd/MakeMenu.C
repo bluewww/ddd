@@ -1410,20 +1410,12 @@ GUI::Container *MMcreateButtonPanel(GUI::Container *parent, cpString name, MMDes
 
 #endif
 
-#if !defined(IF_XM)
-// Create button panel from items
-GUI::Container *MMcreateVButtonPanel(GUI::Container *parent, cpString name, MMDesc items[])
-{
-    GUI::Container *panel = new GUI::VBox(*parent, GUI::PACK_SHRINK, name);
-    MMaddItems(panel, items);
-    panel->show();
-
-    return panel;
-}
-#endif
-
 // Perform proc on items
+#if defined(IF_XM)
 void MMonItems(const MMDesc items[], MMItemProc proc, XtPointer closure, int depth)
+#else
+void MMonItems(const MMDesc items[], MMItemProc proc, void *closure, int depth)
+#endif
 {
     if (depth == 0)
 	return;
@@ -1623,7 +1615,7 @@ static void addCallback(const MMDesc *item, XtPointer default_closure)
 #else
 
 // Add callbacks to items
-static void addCallback(const MMDesc *item, XtPointer default_closure)
+static void addCallback(const MMDesc *item, void *default_closure)
 {
     MMType flags            = item->type;
     MMType type             = flags & MMTypeMask;
@@ -1849,12 +1841,24 @@ static void addCallback(const MMDesc *item, XtPointer default_closure)
 
 #endif
 
+#if defined(IF_XM)
+
 void MMaddCallbacks(const MMDesc items[], XtPointer default_closure, int depth)
 {
     MMonItems(items, addCallback, default_closure, depth);
 }
 
+#else
+
+void MMaddCallbacks(const MMDesc items[], void *default_closure, int depth)
+{
+    MMonItems(items, addCallback, default_closure, depth);
+}
+
+#endif
+
 #if defined(IF_XM)
+
 // Add help callback
 struct addHelpCallback_t {
   XtCallbackProc proc;
@@ -1867,6 +1871,7 @@ static void addHelpCallback(const MMDesc *item, XtPointer closure)
 
     XtAddCallback(widget, XmNhelpCallback, proc, XtPointer(0));
 }
+
 #endif
 
 #if defined(IF_XM)

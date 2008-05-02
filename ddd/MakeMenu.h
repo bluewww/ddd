@@ -141,13 +141,13 @@ struct MMDesc {
 */
 
 
+#if defined(IF_XM)
+
 // Procs
 typedef void (*MMItemProc)(const MMDesc items[], XtPointer closure);
 
 
 // Creators
-#if defined(IF_XM)
-
 Widget         MMcreatePulldownMenu       (Widget parent, const char *name, MMDesc items[],
 					   ArgList args = 0, Cardinal arg = 0);
 Widget         MMcreateRadioPulldownMenu  (Widget parent, const char *name, MMDesc items[],
@@ -158,6 +158,11 @@ Widget         MMcreateMenuBar            (Widget parent, const char *name, MMDe
 					   ArgList args = 0, Cardinal arg = 0);
 #else
 
+// Procs
+typedef void (*MMItemProc)(const MMDesc items[], void *closure);
+
+
+// Creators
 GUI::PulldownMenu  *MMcreatePulldownMenu       (GUI::Container &parent, cpString name, MMDesc items[]);
 GUI::PulldownMenu  *MMcreateRadioPulldownMenu  (GUI::Container &parent, cpString name, MMDesc items[]);
 GUI::PopupMenu     *MMcreatePopupMenu          (GUI::Widget &parent, cpString name, MMDesc items[]);
@@ -177,6 +182,20 @@ Widget         MMcreateButtonPanel        (Widget parent, const char *name, MMDe
 					   ArgList args = 0, Cardinal arg = 0);
 Widget         MMcreatePushMenu           (Widget parent, const char *name, MMDesc items[],
 					   ArgList args = 0, Cardinal arg = 0);
+// Align panel items along their labels
+void MMadjustPanel(const MMDesc items[], Dimension space = 15);
+
+// Add callbacks
+void MMaddCallbacks(const MMDesc items[],
+		    XtPointer default_closure = 0,
+		    int depth = -1);
+
+void MMaddHelpCallback(const MMDesc items[], XtCallbackProc proc, int depth = -1);
+
+// Apply PROC on all ITEMS
+void MMonItems(const MMDesc items[], MMItemProc proc, XtPointer closure = 0,
+	       int depth = -1);
+
 #else
 
 GUI::Container *MMcreateWorkArea(GUI::Dialog *parent, GUI::String name, MMDesc items[]);
@@ -186,28 +205,23 @@ GUI::Container *MMcreateRadioPanel(GUI::Container *parent, cpString name, MMDesc
 				   GUI::Orientation=GUI::ORIENTATION_VERTICAL);
 GUI::Container *MMcreateButtonPanel(GUI::Container *parent, cpString name, MMDesc items[],
 				    GUI::Orientation=GUI::ORIENTATION_VERTICAL);
-GUI::Container *MMcreateVButtonPanel(GUI::Container *parent, GUI::String name, MMDesc items[]);
 GUI::Menu      *MMcreatePushMenu(GUI::Container *parent, GUI::String name, MMDesc items[]);
-
-#endif
 
 // Align panel items along their labels
 void MMadjustPanel(const MMDesc items[], Dimension space = 15);
 
 // Add callbacks
 void MMaddCallbacks(const MMDesc items[],
-		    XtPointer default_closure = 0,
+		    void *default_closure = 0,
 		    int depth = -1);
 
-#if defined(IF_XM)
-void MMaddHelpCallback(const MMDesc items[], XtCallbackProc proc, int depth = -1);
-#else
 void MMaddHelpCallback(const MMDesc items[], sigc::slot<void, GUI::Widget *> proc, int depth = -1);
-#endif
 
 // Apply PROC on all ITEMS
-void MMonItems(const MMDesc items[], MMItemProc proc, XtPointer closure = 0,
+void MMonItems(const MMDesc items[], MMItemProc proc, void *closure = 0,
 	       int depth = -1);
+
+#endif
 
 // Add ITEMS to SHELL.  If IGNORE_SEPS is set, all separators are ignored.
 #if defined(IF_XM)

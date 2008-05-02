@@ -3718,9 +3718,9 @@ void DataDisp::graph_popupAct (GUI::Widget *, GUI::Event* event, GUI::String *ar
     {
 	p = new BoxPoint;
 
-	MMaddCallbacks(graph_popup,     XtPointer(p));
-	MMaddCallbacks(node_popup,      XtPointer(p));
-	MMaddCallbacks(shortcut_popup1, XtPointer(p));
+	MMaddCallbacks(graph_popup,     p);
+	MMaddCallbacks(node_popup,      p);
+	MMaddCallbacks(shortcut_popup1, p);
 
 	MMaddHelpCallback(graph_popup,     sigc::ptr_fun(ImmediateHelpCB1));
 	MMaddHelpCallback(node_popup,      sigc::ptr_fun(ImmediateHelpCB1));
@@ -8418,7 +8418,7 @@ void DataDisp::setDCB(SetInfo *client_data, int apply)
 
 	info->running = true;
 	c.callback    = SetDone;
-	c.data        = XtPointer(info);
+	c.data        = info;
     }
     gdb_command(c);
 }

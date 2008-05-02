@@ -537,9 +537,10 @@ void (*PostHelpOnItemHook)(GUI::Widget *) = nop1;
 // Functions
 //-----------------------------------------------------------------------
 
+#if defined(IF_XM)
+
 void HelpOnHelpCB(Widget widget, XtPointer client_data, XtPointer call_data)
 {
-#if defined(IF_XM)
     if (help_dialog == 0)
     {
 	// Make sure help dialog is created
@@ -551,10 +552,16 @@ void HelpOnHelpCB(Widget widget, XtPointer client_data, XtPointer call_data)
     _MStringHelpCB(widget, XtPointer(text.xmstring()), call_data, true);
 
     PostHelpOnItemHook(help_dialog);
-#else
-    std::cerr << "HelpOnHelpCB not implemented\n";
-#endif
 }
+
+#else
+
+void HelpOnHelpCB(GUI::Widget *widget)
+{
+    std::cerr << "HelpOnHelpCB not implemented\n";
+}
+
+#endif
 
 #if defined(IF_XM)
 
@@ -1980,6 +1987,7 @@ void ManualStringHelpCB(GUI::Widget *widget, const MString& title,
 }
 
 #if defined(IF_XM)
+
 void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
 {
     // Delay delay;
@@ -2115,10 +2123,20 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
     manage_and_raise(text_dialog);
 }
 
+#else
+
+void TextHelpCB(GUI::Widget *widget, const char *s)
+{
+    std::cerr << "TextHelpCB: Not implemented yet\n";
+}
+
+#endif
 
 //-----------------------------------------------------------------------------
 // Context-sensitive help
 //-----------------------------------------------------------------------------
+
+#if defined(IF_XM)
 
 // Return the widget related to the mouse event EV
 static Widget EventToWidget(Widget widget, XEvent *ev)

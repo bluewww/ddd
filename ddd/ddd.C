@@ -469,16 +469,23 @@ static void ReportDeathHP(Agent *, void *, void *);
 
 // Status history
 #if defined(IF_XM)
+
 static void PopupStatusHistoryCB(Widget, XtPointer, XtPointer);
 static void PopdownStatusHistoryCB(Widget, XtPointer, XtPointer);
 static void PopdownStatusHistoryEH(Widget, XtPointer, XEvent *, Boolean *);
-#else
-static bool PopupStatusHistoryCB(const GUI::EventButton *, GUI::Widget *);
-static bool PopdownStatusHistoryCB(const GUI::EventButton *);
-#endif
 
 // Argument callback
 static void ActivateCB(Widget, XtPointer client_data, XtPointer call_data);
+
+#else
+
+static bool PopupStatusHistoryCB(const GUI::EventButton *, GUI::Widget *);
+static bool PopdownStatusHistoryCB(const GUI::EventButton *);
+
+// Argument callback
+static void ActivateCB(GUI::Widget *);
+
+#endif
 
 // Verify whether buttons are active
 static void verify_buttons(const MMDesc *items);
@@ -562,19 +569,24 @@ static void setup_motif_version_warnings();
 static void setup_auto_command_prefix();
 static void setup_core_limit();
 static void setup_options();
+
 #if defined(IF_XM)
+
 static void setup_cut_copy_paste_bindings(XrmDatabase db);
 static void setup_select_all_bindings(XrmDatabase db);
 static void setup_show(XrmDatabase db, const char *app_name, const char *gdb_name);
-#else
-static void setup_cut_copy_paste_bindings(xmlDoc *db);
-static void setup_select_all_bindings(xmlDoc *db);
-static void setup_show(xmlDoc *db, const char *app_name, const char *gdb_name);
-#endif
 
 // Help hooks
 static void PreHelpOnContext(Widget w, XtPointer, XtPointer);
 static void PostHelpOnItem(Widget item);
+
+#else
+
+static void setup_cut_copy_paste_bindings(xmlDoc *db);
+static void setup_select_all_bindings(xmlDoc *db);
+static void setup_show(xmlDoc *db, const char *app_name, const char *gdb_name);
+
+#endif
 
 // Log player stuff
 static void check_log(const string& logname, DebuggerType& type);
@@ -3197,6 +3209,8 @@ typedef enum {
   DDD_EXIT_FAILURE, DDD_EXIT_SUCCESS, DDD_CONTINUE
 } ddd_exit_t;
 
+#if defined(IF_XM)
+
 static
 ddd_exit_t pre_main_loop(int argc, char *argv[])
 {
@@ -3257,7 +3271,6 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	return DDD_EXIT_FAILURE;
     }
 
-#if defined(IF_XM)
     // Initialize X toolkit
     Arg args[10];
     int arg = 0;
@@ -3265,18 +3278,12 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     // Install X error handlers
     ddd_install_x_fatal();
     ddd_install_x_error();
-#else
-#ifdef NAG_ME
-#warning Error handlers?
-#endif
-#endif
 
     std::ostringstream messages;
 
     // Set up a `~/.ddd/' directory hierarchy
     create_session_dir(DEFAULT_SESSION, messages);
 
-#if defined(IF_XM)
     // Read ~/.ddd/init resources
     XrmDatabase dddinit = 
 	GetFileDatabase(session_state_file(DEFAULT_SESSION));
@@ -3290,33 +3297,11 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     if (dddtips != 0) {
 	XrmMergeDatabases(dddtips, &dddinit);
     }
-#else
-    // Read ~/.ddd/init resources
-    xmlDoc *dddinit = 
-	GetFileDatabase(session_state_file(DEFAULT_SESSION));
-    if (dddinit == 0) {
-	dddinit = get_string_database("");
-    }
 
-    // Read ~/.ddd/tips resources
-    xmlDoc *dddtips =
-	GetFileDatabase(session_tips_file());
-    if (dddtips != 0) {
-	merge_databases(dddtips, dddinit);
-    }
-#endif
-
-#if defined(IF_XM)
     // Let command-line arguments override ~/.ddd/init
     XrmParseCommand(&dddinit, options, XtNumber(options), 
 		    DDD_CLASS_NAME, &argc, (char**)argv);
-#else
-#ifdef NAG_ME
-#warning Implement XrmParseCommand analogue using popt
-#endif
-#endif
 
-#if defined(IF_XM)
     const _XtString session_id = 0;
 
     if (session_id == 0)
@@ -3370,55 +3355,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	    }
 	}
     }
-#else
-    const char *session_id = 0;
 
-    if (session_id == 0)
-    {
-	// Determine session
-	char *session_rtype = 0;
-	// Glib::Value<std::string> session_value;
-	// session_value.init(Glib::Value<std::string>::value_type());
-	DDDValueBase session_value;
-
-	string Nsession   = string(DDD_CLASS_NAME ".") + XtNsession;
-	string CSessionID = string(DDD_CLASS_NAME ".") + XtCSessionID;
-#if XtSpecificationRelease >= 6
-	string NsessionID = string(DDD_CLASS_NAME ".") + XtNsessionID;
-#endif
-
-	// Try resource or option
-	if (
-	    get_resource(dddinit, Nsession.chars(), CSessionID.chars(),
-			 session_value))
-	{
-	  session_id = session_value.get().c_str();
-	}
-
-	if (session_id == 0)
-	{
-	    // Try `=FILE' hack: if the last or second-to-last arg is
-	    // `=FILE', replace it by FILE and use FILE as session id.
-	    for (int i = argc - 1; i >= 1 && i >= argc - 2; i--)
-	    {
-		if (argv[i][0] == '=')
-		{
-		    // Delete '='
-		    int j = 0;
-		    while ((argv[i][j] = argv[i][j + 1]))
-			j++;
-			
-		    session_id = basename(argv[i]);
-		    session_value.set(CONST_CAST(char*,session_id));
-		    put_resource(dddinit, Nsession.chars(), "String", 
-				 session_value);
-		}
-	    }
-	}
-    }
-#endif
-
-#if defined(IF_XM)
     if (!restart_session().empty())
     {
 	// A session is given in $DDD_SESSION: override everything.
@@ -3438,41 +3375,16 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	    XrmMergeDatabases(session_db, &dddinit);
 	}
     }
-#else
-    if (!restart_session().empty())
-    {
-	// A session is given in $DDD_SESSION: override everything.
-	xmlDoc *session_db = 
-	    GetFileDatabase(session_state_file(restart_session()));
-	if (session_db != 0) {
-	    merge_databases(session_db, dddinit);
-	}
-    }
-    else if (session_id != 0)
-    {
-	// Merge in session resources; these override `~/.ddd/init' as
-	// well as the command-line options.
-	xmlDoc *session_db = 
-	    GetFileDatabase(session_state_file(session_id));
-	if (session_db != 0) {
-	    merge_databases(session_db, dddinit);
-	}
-    }
-#endif
 
-#if defined(IF_MOTIF)
 #if HAVE_ATHENA
     // Initialize Xaw widget set, registering the Xaw Converters.
     // This is done before installing our own converters.
     XawInitializeWidgetSet();
 #endif
-#endif
 
-#if defined(IF_XM)
     // Register own converters.  This must be done here to install the
     // String -> Cardinal converter.
     registerOwnConverters();
-#endif
 
     // Handle `--version', `--help', etc.  We do this here, since we
     // might want to use them even without X access.
@@ -3480,7 +3392,6 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 
     // From this point on, we'll be running under X.
 
-#if defined(IF_XM)
     // Open X connection and create top-level application shell
     XtAppContext app_context;
 
@@ -3512,30 +3423,15 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 			args, arg);
 #endif
     ddd_install_xt_error(app_context);
-#else
-    // GUI::Window *toplevel = new GUI::Window("toplevel");
-    GUI::Window *toplevel;
-    GUI::Main *app_context = new GUI::Main(toplevel, DDD_CLASS_NAME, session_id,
-					   ddd_fallback_resources, argc, argv);
-
-#endif
 
     // Check Motif version.  We can do this only now after the first
     // Motif widget has been created.
     setup_motif_version_warnings();
 
-#if defined(IF_XM)
     // Setup top-level actions; this must be done before reading
     // application defaults.
     XtAppAddActions(app_context, actions, XtNumber(actions));
-#else
-    std::cerr << "Actions not implemented yet\n";
-#ifdef NAG_ME
-#warning Actions not implemented yet.
-#endif
-#endif
 
-#if defined(IF_XM)
     // Register string -> OnOff converter; this must be done before
     // reading application defaults.
     XtSetTypeConverter(XmRString, XtROnOff, CvtStringToOnOff,
@@ -3588,13 +3484,6 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	app_data.session = s.chars();
     }
     session_id = app_data.session;
-#else
-#ifdef NAG_ME
-#warning No resource database: no need for converters yet.
-#endif
-    get_application_resources(dddinit, &app_data,
-			      ddd_resources, ddd_resources_size);
-#endif
 
     // From this point on, APP_DATA is valid.
 
@@ -3610,17 +3499,10 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     }
 #endif
 
-#if defined(IF_XM)
     // Setup label hack
     arg = 0;
     XtCreateWidget("label_hack", xmLabelHackWidgetClass, toplevel, args, arg);
-#else
-#ifdef NAG_ME
-#warning LabelHack not defined - what is it?
-#endif
-#endif
 
-#if defined(IF_XM)
     // Set key bindings
     setup_cut_copy_paste_bindings(XtDatabase(XtDisplay(toplevel)));
     setup_select_all_bindings(XtDatabase(XtDisplay(toplevel)));
@@ -3633,11 +3515,6 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     setup_fonts(app_data, XtDatabase(XtDisplay(toplevel)));
     if (app_data.show_fonts)
 	return DDD_EXIT_SUCCESS;
-#else
-#ifdef NAG_ME
-#warning XtDatabase not defined: is there any equivalent?
-#endif
-#endif
 
     // Create a new auto_command_prefix if needed
     setup_auto_command_prefix();
@@ -3669,17 +3546,12 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	// SGI CC wants this:
 	const char **tmp_argv = (const char**)argv;
 
-#if defined(IF_XM)
 	// No args given - try to get one from current selection
 	add_arg_from_selection(toplevel, argc, tmp_argv);
-#else
-	std::cerr << "SORRY, add_arg_from_selection not supported yet\n";
-#endif
 
 	argv = (char **)tmp_argv;
     }
 
-#if defined(IF_XM)
     // Check the X configuration
     if (app_data.check_configuration)
     {
@@ -3691,13 +3563,10 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 
     // If needed, fix the X configuration silently
     check_x_configuration(toplevel, false);
-#endif
 
-#if defined(IF_XM)
     // Set up warning handler
     ddd_original_xt_warning_handler =
 	XtAppSetWarningHandler(app_context, ddd_xt_warning);
-#endif
 
     // Determine debugger type
     DebuggerType debugger_type = DebuggerType(-1);
@@ -3782,10 +3651,8 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     // Warn for incompatible `Ddd' and `~/.ddd/init' files
     setup_ddd_version_warnings();
 
-#if defined(IF_XM)
     // Global variables: Set LessTif version
     lesstif_version = app_data.lesstif_version;
-#endif
 
     // Global variables: Set maximum lengths
     max_value_tip_length              = app_data.max_value_tip_length;
@@ -3806,49 +3673,31 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     PlotAgent::plot_3d_settings = app_data.plot_3d_settings;
 
     // Global variables: Set delays for button and value tips
-#if defined(IF_XM)
     help_button_tip_delay = app_data.button_tip_delay;
     help_value_tip_delay  = app_data.value_tip_delay;
     help_button_doc_delay = app_data.button_doc_delay;
     help_value_doc_delay  = app_data.value_doc_delay;
     help_clear_doc_delay  = app_data.clear_doc_delay;
     help_clear_tip_delay  = app_data.clear_tip_delay;
-#endif
 
     // Re-register own converters.  Motif may have overridden some of
     // these, so register them again.
-#if defined(IF_XM)
     registerOwnConverters();
-#endif
 
     Boolean iconic;
 
-#if defined(IF_XM)
     // Show splash screen
     XtVaGetValues(toplevel, XmNiconic, &iconic, XtPointer(0));
     if (app_data.splash_screen && !iconic && restart_session().empty())
 	popup_splash_screen(toplevel, app_data.splash_screen_color_key);
-#else
-#ifdef NAG_ME
-#warning Forget the splash screen for now.
-#endif
-#endif
 
     // Re-register own converters.  Motif has overridden some of
     // these, so register them again.
-#if defined(IF_XM)
     registerOwnConverters();
-#endif
 
-#if defined(IF_XM)
     // Install special Motif converters
 #if XmVersion >= 1002
     XmRepTypeInstallTearOffModelConverter();
-#endif
-#else
-#ifdef NAG_ME
-#warning XmRepTypeInstallTearOffModelConverter?
-#endif
 #endif
 
     // Lock `~/.ddd/'.
@@ -3861,13 +3710,8 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 		 << lock_info.pid;
 	if (lock_info.hostname != fullhostname())
 	    messages << ", host " << cook(lock_info.hostname);
-#if defined(IF_XM)
 	if (lock_info.display != XDisplayString(XtDisplay(toplevel)))
 	    messages << ", display " << cook(lock_info.display);
-#else
-	if (lock_info.display != toplevel->get_display()->get_name())
-	    messages << ", display " << cook(lock_info.display);
-#endif
 	messages << ")\n";
     }
 
@@ -3882,17 +3726,11 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 
     // Create GDB interface
     gdb = new_gdb(debugger_type, app_data, app_context, argc, argv);
-#if defined(IF_XM)
     const string s1 = gdb->title();
     defineConversionMacro("GDB",      s1.chars());
     defineConversionMacro("THEHOST",  DDD_HOST);
     defineConversionMacro("ROOT",     DDD_ROOT);
     defineConversionMacro("ALT_ROOT", DDD_ALT_ROOT);
-#else
-#ifdef NAG_ME
-#warning Converters?
-#endif
-#endif
 
     // Set up GDB handlers
     gdb->addHandler(ReadyForQuestion, gdb_readyHP);
@@ -3926,7 +3764,6 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     while (original_argv[original_argc] != 0)
 	original_argc++;
 
-#if defined(IF_XM)
     arg = 0;
     XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
     XtSetArg(args[arg], XmNargc,           original_argc); arg++;
@@ -3946,13 +3783,8 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 					      applicationShellWidgetClass,
 					      toplevel, args, arg));
     AddDeleteWindowCallback(command_shell, DDDCloseCB);
-#else
-    command_shell = new GUI::Window(*app_context, "command_shell", "command_shell");
-    command_shell->signal_delete_event().connect(sigc::bind_return(sigc::hide(sigc::bind(sigc::ptr_fun(DDDCloseCB), command_shell)), false));
-#endif
 
 
-#if defined(IF_XM)
     // From this point on, we have a true top-level window.
 
     // Create main window
@@ -3962,36 +3794,23 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 					    XMST("main_window"),
 					    args, arg);
     XtManageChild(main_window);
-#else
-    GUI::Container *main_window = new GUI::VBox(*command_shell, GUI::PACK_SHRINK, "main_window");
-    main_window->show();
-#endif
 
     // Re-register own converters to override Motif converters.
-#if defined(IF_XM)
     registerOwnConverters();
-#endif
 
     // Create menu bar
     MMDesc *menubar = common_menubar;
     if (app_data.separate_data_window && app_data.separate_source_window)
 	menubar = command_menubar;
 
-#if defined(IF_XM)
     Widget menubar_w = MMcreateMenuBar(main_window, "menubar", menubar);
     MMaddCallbacks(menubar);
     MMaddHelpCallback(menubar, ImmediateHelpCB);
-#else
-    GUI::MenuBar *menubar_w = MMcreateMenuBar(*main_window, "menubar", menubar);
-    MMaddCallbacks(menubar);
-    MMaddHelpCallback(menubar, sigc::ptr_fun(ImmediateHelpCB1));
-#endif
     verify_buttons(menubar);
     register_menu_shell(menubar);
 
     // Create Paned Window
 
-#if defined(IF_XM)
     arg = 0;
     XtSetArg(args[arg], XmNborderWidth,     0); arg++;
     XtSetArg(args[arg], XmNmarginWidth,     0); arg++;
@@ -4002,12 +3821,6 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 				   args, arg));
     XtManageChild(paned_work_w);
     Widget main_vbox = paned_work_w;
-#else
-    // Note: On Motif it is possible to force a pane to have
-    // fixed size.  On Gtk this does not seem possible.  Therefore
-    // the toolbar and status bar must go in a VBox.
-    GUI::Box *main_vbox = new GUI::VBox(*main_window, GUI::PACK_EXPAND_WIDGET);
-#endif
 
     // Status line
     if (!app_data.separate_source_window && !app_data.status_at_bottom)
@@ -4022,11 +3835,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     if (!app_data.button_captions && !app_data.button_images)
 	app_data.common_toolbar = false;
 
-#if defined(IF_XM)
     Widget arg_label = 0;
-#else
-    GUI::Button *arg_label = 0;
-#endif
 
     if (!app_data.separate_source_window &&
 	!app_data.separate_data_window &&
@@ -4047,34 +3856,17 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	}
     }
 
-#if !defined(IF_XM)
-    GUI::MultiPaned *paned_work_w = new GUI::MultiPaned(*main_vbox, GUI::PACK_EXPAND_WIDGET);
-#endif
-    
     // Install icons if not already done
-#if defined(IF_XM)
     install_icons(command_shell, 
 		  app_data.button_color_key,
 		  app_data.active_button_color_key);
-#endif
 
-#if defined(IF_XM)
     // Data window
     Widget data_disp_parent = paned_work_w;
     Widget data_menubar_w = 0;
     Widget data_main_window_w = 0;
-#else
-    // Data window
-#ifdef NAG_ME
-#warning data_disp_parent may be VBox or MultiPaned?
-#endif
-    GUI::Container *data_disp_parent = paned_work_w;
-    GUI::WidgetPtr<GUI::MenuBar> data_menubar_w = 0;
-    GUI::Container *data_main_window_w = 0;
-#endif
     if (app_data.separate_data_window)
     {
-#if defined(IF_XM)
 	arg = 0;
 	XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
 	data_disp_shell =
@@ -4083,42 +3875,24 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 				      toplevel, args, arg));
 
 	AddDeleteWindowCallback(data_disp_shell, DDDCloseCB);
-#else
-	data_disp_shell = new GUI::Window(*app_context, "data_disp_shell", "data_disp_shell");
-	AddDeleteWindowCallback(data_disp_shell, sigc::bind(sigc::ptr_fun(DDDCloseCB), data_disp_shell));
-#endif
 
 
-#if defined(IF_XM)
 	arg = 0;
 	data_main_window_w = 
 	    XmCreateMainWindow(data_disp_shell, 
 			       XMST("data_main_window"),
 			       args, arg);
 	XtManageChild(data_main_window_w);
-#else
-	data_main_window_w = new GUI::VBox(*data_disp_shell, GUI::PACK_SHRINK, "data_main_window");
-	data_main_window_w->show();
-#endif
 
 	// Add menu bar
-#if defined(IF_XM)
 	data_menubar_w = 
 	    MMcreateMenuBar (data_main_window_w, 
 			     "menubar", data_menubar);
 	MMaddCallbacks(data_menubar);
 	MMaddHelpCallback(menubar, ImmediateHelpCB);
-#else
-	data_menubar_w = 
-	    MMcreateMenuBar (*data_main_window_w, 
-			     "menubar", data_menubar);
-	MMaddCallbacks(data_menubar);
-	MMaddHelpCallback(menubar, sigc::ptr_fun(ImmediateHelpCB1));
-#endif
 	verify_buttons(data_menubar);
 	register_menu_shell(data_menubar);
 
-#if defined(IF_XM)
 	arg = 0;
 	XtSetArg(args[arg], XmNborderWidth,     0); arg++;
 	XtSetArg(args[arg], XmNmarginWidth,     0); arg++;
@@ -4128,19 +3902,11 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 				       XMST("data_paned_work_w"),
 				       args, arg));
 	XtManageChild(data_disp_parent);
-#else
-	// Note: On Motif it is possible to force a pane to have
-	// fixed size.  On Gtk this does not seem possible.  Therefore
-	// the toolbar and status bar must go in a VBox.
-	data_disp_parent = new GUI::VBox(*data_main_window_w);
-	data_disp_parent->show();
-#endif
     }
 
     // Create data display
     data_disp = new DataDisp(data_disp_parent, data_buttons_w);
 
-#if defined(IF_XM)
     if (app_data.separate_data_window)
     {
 	// More values for main window
@@ -4149,32 +3915,18 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 		       XmNworkWindow, data_disp_parent,
 		       XtPointer(0));
     }
-#else
-#ifdef NAG_ME
-#warning Set values for data window?
-#endif
-#endif
 
     if (data_buttons_w == (Widget)0)
 	data_buttons_w = make_buttons(data_disp_parent, "data_buttons", 
 				      app_data.data_buttons);
 
-#if defined(IF_XM)
     // Source window
     Widget source_view_parent = paned_work_w;
     Widget source_vbox = main_vbox;
     Widget source_menubar_w = 0;
     Widget source_main_window_w = 0;
-#else
-    // Source window
-    GUI::MultiPaned *source_view_parent = paned_work_w;
-    GUI::Container *source_vbox = main_vbox;
-    GUI::MenuBar *source_menubar_w = 0;
-    GUI::Container *source_main_window_w = 0;
-#endif
     if (app_data.separate_source_window)
     {
-#if defined(IF_XM)
 	arg = 0;
 	XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
 	source_view_shell = 
@@ -4182,41 +3934,24 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 				      topLevelShellWidgetClass,
 				      toplevel, args, arg));
 	AddDeleteWindowCallback(source_view_shell, DDDCloseCB);
-#else
-	source_view_shell = new GUI::Window("source_view_shell", "source_view_shell");
-	AddDeleteWindowCallback(source_view_shell, sigc::bind(sigc::ptr_fun(DDDCloseCB), source_view_shell));
-#endif
 
 
-#if defined(IF_XM)
 	arg = 0;
 	source_main_window_w = 
 	    XmCreateMainWindow(source_view_shell,
 			       XMST("source_main_window"),
 			       args, arg);
 	XtManageChild(source_main_window_w);
-#else
-	source_main_window_w = new GUI::VBox(*source_view_shell, GUI::PACK_SHRINK, "source_main_window");
-	source_main_window_w->show();
-#endif
 
 	// Add menu bar
-#if defined(IF_XM)
 	source_menubar_w = 
 	    MMcreateMenuBar (source_main_window_w, "menubar", source_menubar);
 	MMaddCallbacks(source_menubar);
 	MMaddHelpCallback(menubar, ImmediateHelpCB);
-#else
-	source_menubar_w = 
-	    MMcreateMenuBar (*source_main_window_w, "menubar", source_menubar);
-	MMaddCallbacks(source_menubar);
-	MMaddHelpCallback(menubar, sigc::ptr_fun(ImmediateHelpCB1));
-#endif
 	verify_buttons(source_menubar);
 	register_menu_shell(source_menubar);
 
 	// Add source window
-#if defined(IF_XM)
 	arg = 0;
 	XtSetArg(args[arg], XmNborderWidth,     0); arg++;
 	XtSetArg(args[arg], XmNmarginWidth,     0); arg++;
@@ -4227,13 +3962,6 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 				       args, arg));
 	XtManageChild(source_view_parent);
 	source_vbox = source_view_parent;
-#else
-	// Note: On Motif it is possible to force a pane to have
-	// fixed size.  On Gtk this does not seem possible.  Therefore
-	// the toolbar and status bar must go in a VBox.
-	source_vbox = new GUI::VBox(*source_main_window_w);
-	source_vbox->show();
-#endif
 
 	// Status line
 	if (!app_data.status_at_bottom)
@@ -4262,23 +3990,10 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 					app_data.source_buttons);
     }
 
-#if !defined(IF_XM)
-#ifdef NAG_ME
-#warning Debugging - remove
-#endif
-    source_view_parent->set_bg(GUI::STATE_NORMAL, GUI::Color("white"));
-    if (app_data.separate_source_window) {
-	source_view_parent = new GUI::MultiPaned(*source_vbox, GUI::PACK_EXPAND_WIDGET);
-	source_view_parent->show();
-    }
-#endif
     source_view = new SourceView(source_view_parent);
-#if defined(IF_XM)
     source_view->set_max_glyphs(app_data.max_glyphs);
     source_view->cache_glyph_images = app_data.cache_glyph_images;
-#endif
 
-#if defined(IF_XM)
     if (app_data.separate_source_window)
     {
 	// More values for main window
@@ -4287,64 +4002,31 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 		       XmNworkWindow, source_view_parent,
 		       XtPointer(0));
     }
-#else
-#ifdef NAG_ME
-#warning Set values for main window?
-#endif
-#endif
 
     // Source toolbar
     if (arg_cmd_w == 0)
 	arg_cmd_w = create_toolbar(source_vbox, "source",
 				   arg_cmd_area, 0, arg_label, source_arg,
 				   label_type);
-#ifdef NAG_ME
-#warning In general, it is better to connect() to a class method.
-#endif
-#if defined(IF_XM)
     XtAddCallback(arg_label, XmNactivateCallback, 
 		  ClearTextFieldCB, source_arg->text());
-#else
-    arg_label->signal_clicked().connect(sigc::bind(sigc::ptr_fun(ClearTextFieldCB),
-						   source_arg->text()));
-#endif
 
     if (DataDisp::graph_cmd_w == arg_cmd_w)
     {
 	// Common toolbar
-#if defined(IF_XM)
 	XtAddCallback(arg_label, XmNactivateCallback, 
 		      DataDisp::SelectionLostCB, XtPointer(0));
-#else
-	arg_label->signal_clicked().connect(sigc::ptr_fun(DataDisp::SelectionLostCB));
-#endif
     }
 
-#if defined(IF_XM)
     XtAddCallback(source_arg->text(), XmNactivateCallback, 
 		  ActivateCB, 
 		  XtPointer(arg_cmd_area[ArgItems::Lookup].widget));
-#else
-    //source_arg->text()->signal_changed().connect(sigc::bind(sigc::ptr_fun(ActivateCB),
-    //							    arg_cmd_area[ArgItems::Lookup].widget));
-#ifdef NAG_ME
-#warning How to activate combobox?
-#endif
-#endif
     sync_args(source_arg, data_disp->graph_arg);
 
     if (data_disp->graph_arg != 0) {
-#if defined(IF_XM)
 	XtAddCallback(data_disp->graph_arg->text(), XmNactivateCallback, 
 		      ActivateCB, 
 		      XtPointer(data_disp->graph_cmd_area[0].widget));
-#else
-	// data_disp->graph_arg->text()->signal_changed().connect(sigc::bind(sigc::ptr_fun(ActivateCB),
-	//								     data_disp->graph_cmd_area[0].widget));
-#ifdef NAG_ME
-#warning How to activate combobox widget?
-#endif
-#endif
     }
 
     if (command_toolbar_w == 0)
@@ -4369,16 +4051,10 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	console_buttons_w = make_buttons(paned_work_w, "console_buttons", 
 					 app_data.console_buttons);
 
-#if defined(IF_XM)
     arg = 0;
     gdb_w = verify(XmCreateScrolledText(paned_work_w, 
 					XMST("gdb_w"), args, arg));
-#else
-    gdb_w = new GUI::ScrolledText(*paned_work_w);
-    gdb_w->set_size_request(400, 200);
-#endif
 
-#if defined(IF_XM)
     XtAddCallback (gdb_w,
 		   XmNmodifyVerifyCallback,
 		   gdbModifyCB,
@@ -4387,43 +4063,26 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 		   XmNmotionVerifyCallback,
 		   gdbMotionCB,
 		   XtPointer(0));
-#else
-#ifdef NAG_ME
-#warning How to verify changes and motion?
-#endif
-#endif
 
-#if defined(IF_XM)
     XtAddCallback (gdb_w,
 		   XmNvalueChangedCallback,
 		   gdbChangeCB,
 		   XtPointer(0));
-#else
-    gdb_w->signal_changed().connect(sigc::bind(sigc::ptr_fun(gdbChangeCB), gdb_w));
-#endif
     XtManageChild (gdb_w);
 
-#if defined(IF_XM)
     if (!app_data.separate_source_window || !app_data.separate_data_window)
     {
 	// Don't resize the debugger console when resizing the main
 	// window - resize source and/or data windows instead
 	XtVaSetValues(XtParent(gdb_w), XmNskipAdjust, True, XtPointer(0));
     }
-#else
-#ifdef NAG_ME
-#warning skipAdjust?
-#endif
-#endif
 
-#if defined(IF_XM)
     // Set up the scrolled window
     XtVaSetValues(XtParent(gdb_w),
 		  XmNspacing,         0,
 		  XmNborderWidth,     0,
 		  XmNshadowThickness, 0,
 		  XtPointer(0));
-#endif
 
     // Give the ScrolledWindow the size specified for the debugger console
     set_scrolled_window_size(gdb_w);
@@ -4444,17 +4103,11 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     // Paned Window is done
     XtManageChild (paned_work_w);
 
-#if defined(IF_XM)
     // More values for main window
     XtVaSetValues (main_window,
 		   XmNmenuBar,    menubar_w,
 		   XmNworkWindow, paned_work_w,
 		   XtPointer(0));
-#else
-#ifdef NAG_ME
-#warning Setup areas for main window
-#endif
-#endif
 
 
     // All main widgets (except shells) are created at this point.
@@ -4483,20 +4136,13 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     source_arg->addHandler (Changed, source_argHP);
     source_arg->callHandlers();
 
-#if defined(IF_XM)
     // Setup insertion position
     promptPosition = messagePosition = XmTextGetLastPosition(gdb_w);
     XmTextSetInsertionPosition(gdb_w, messagePosition);
-#else
-    promptPosition = messagePosition = gdb_w->get_last_position();
-    gdb_w->set_insertion_position(messagePosition);
-#endif
 
     // Setup help hooks
-#if defined(IF_XM)
     PreHelpOnContextHook = PreHelpOnContext;
     PostHelpOnItemHook   = PostHelpOnItem;
-#endif
 
     // Setup version info
     setup_version_info();
@@ -4509,8 +4155,6 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     // If we use annotations, we also want tty mode.
     if (app_data.annotate)
 	app_data.tty_mode = True;
-
-#if defined(IF_XM)
 
     // Close windows explicitly requested
     if (!app_data.separate_data_window && 
@@ -4544,41 +4188,6 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	gdbCloseCommandWindowCB(gdb_w, 0, 0);
     }
 
-#else
-
-    // Close windows explicitly requested
-    if (!app_data.separate_data_window && 
-	!app_data.data_window && !app_data.annotate)
-    {
-	// We don't want the data window.
-	gdbCloseDataWindowCB(gdb_w);
-    }
-
-    if (!app_data.separate_source_window && 
-	(!app_data.source_window || app_data.annotate))
-    {
-	// We don't need the source window, since we're invoked by Emacs.
-	gdbCloseSourceWindowCB(gdb_w);
-
-	if (!app_data.disassemble)
-	    gdbCloseToolWindowCB();
-    }
-
-    if (!app_data.disassemble)
-    {
-	// We don't disassemble.
-	gdbCloseCodeWindowCB(gdb_w);
-    }
-
-    if ((!app_data.separate_source_window && have_source_window() || 
-	 !app_data.separate_data_window && have_data_window()) &&
-	(!app_data.debugger_console || app_data.tty_mode))
-    {
-	// We don't need the debugger console, since we have a TTY.
-	gdbCloseCommandWindowCB(gdb_w);
-    }
-
-#endif
 
     if (data_disp_shell != 0)
     {
@@ -4622,10 +4231,8 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 				     + quote(app_data.session));
     }
 
-#if defined(IF_XM)
     // Remove unnecessary sashes
     untraverse_sashes(source_view_parent);
-#endif
 
     // The sash in the source view is kept, as it separates source and
     // assembler code windows.
@@ -4634,7 +4241,6 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
        unmanage_sashes(source_view_parent);
 #endif
 
-#if defined(IF_XM)
     untraverse_sashes(data_disp_parent);
     if (data_disp_shell)
 	unmanage_sashes(data_disp_parent);
@@ -4642,7 +4248,6 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     untraverse_sashes(paned_work_w);
     if (source_view_shell && data_disp_shell)
 	unmanage_sashes(paned_work_w);
-#endif
 
     // Create subshells.  We do this after the main window has been
     // realized, since LessTif won't make the shells transient otherwise.
@@ -4662,18 +4267,12 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 
     // Setup info buttons
 
-#if defined(IF_XM)
     // Our info routines require that the widgets be named after the
     // info command.  Ugly hack.
     const string tmp_1_ = gdb->info_locals_command();
     strcpy(XtName(locals_w), tmp_1_.chars());
     const string tmp_2_ = gdb->info_args_command();
     strcpy(XtName(args_w),   tmp_2_.chars());
-#else
-#ifdef NAG_ME
-#warning Ugly hack for info locals and info args?
-#endif
-#endif
     
     if (gdb->info_locals_command() != gdb->info_args_command())
     {
@@ -4687,13 +4286,8 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     }
     update_infos();
 
-#if defined(IF_XM)
     // Startup shells
     XtVaGetValues(toplevel, XmNiconic, &iconic, XtPointer(0));
-#else
-    // FIXME: Can the Gtk app start iconified?
-    iconic = false;
-#endif
     if (iconic)
     {
 	// Startup command shell iconified; others follow as needed
@@ -4709,7 +4303,6 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	initial_popup_shell(command_shell);
     }
 
-#if defined(IF_XM)
     // Trace positions and visibility of all DDD windows
     if (command_shell)
 	XtAddEventHandler(command_shell, STRUCTURE_MASK, False,
@@ -4720,11 +4313,6 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     if (data_disp_shell)
 	XtAddEventHandler(data_disp_shell, STRUCTURE_MASK, False,
 			  StructureNotifyEH, XtPointer(0));
-#else
-#ifdef NAG_ME
-#warning No urgent need to track window positions
-#endif
-#endif
 
 #if 0
     // Wait for the command shell to be mapped, such that we don't
@@ -4764,6 +4352,860 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     }
     return DDD_CONTINUE;
 }
+
+#else
+
+static
+ddd_exit_t pre_main_loop(int argc, char *argv[])
+{
+  // This function exists so that all destructors are called before
+  // entering the event loop.
+
+#ifdef LC_ALL
+    // Let DDD locales be controlled by the locale-specific
+    // environment variables -- especially $LANG.
+    XtSetLanguageProc(NULL, NULL, NULL);
+    setlocale(LC_ALL, "");
+#endif
+
+    // Save environment for restart.
+    register_argv((const char**)argv);
+    register_environ();
+
+    // This one is required for error messages
+    const char *program_name = (argc > 0 ? argv[0] : ddd_NAME);
+
+    // Install signal handlers
+
+    // On some systems (notably HP-UX), GDB has trouble finding what
+    // function invoked the signal handler.  Hence, if the environment
+    // variable DDD_NO_SIGNAL_HANDLERS is set, we do not install
+    // signal handlers, causing DDD to report signals immediately.
+
+    if (getenv(DDD_NAME "_NO_SIGNAL_HANDLERS") == 0)
+    {
+	ddd_install_signal();	         // Cleanup upon termination
+	ddd_install_fatal(program_name); // Fatal error
+    }
+
+    // Check if we are to run without windows
+    bool no_windows = false;
+
+    // Don't run DDD setuid.  DDD invokes shell commands and even
+    // shell scripts, such that all known problems of setuid shell
+    // scripts apply.
+    if (geteuid() != getuid())
+	no_windows = true;
+
+    // Check for special options:
+    // `--nw'   - no windows (GDB)
+    // `-L'     - no windows (XDB)
+    // `--PLAY' - logplayer mode (DDD)
+    // and options that would otherwise be eaten by Xt
+    StringArray saved_options;
+    string gdb_name = "";
+    setup_options(argc, (const char**)argv, saved_options, gdb_name, no_windows);
+
+    // If we don't want windows, just start GDB.
+    if (no_windows)
+    {
+	argv[0] = CONST_CAST(char*,gdb_name.chars());
+	execvp(gdb_name.chars(), argv);
+	perror(gdb_name.chars());
+	return DDD_EXIT_FAILURE;
+    }
+
+    std::cerr << "Install error handlers?\n";
+
+    std::ostringstream messages;
+
+    // Set up a `~/.ddd/' directory hierarchy
+    create_session_dir(DEFAULT_SESSION, messages);
+
+    // Read ~/.ddd/init resources
+    xmlDoc *dddinit = 
+	GetFileDatabase(session_state_file(DEFAULT_SESSION));
+    if (dddinit == 0) {
+	dddinit = get_string_database("");
+    }
+
+    // Read ~/.ddd/tips resources
+    xmlDoc *dddtips =
+	GetFileDatabase(session_tips_file());
+    if (dddtips != 0) {
+	merge_databases(dddtips, dddinit);
+    }
+
+    std::cerr << "Implement XrmParseCommand analogue using popt?\n";
+
+    const char *session_id = 0;
+
+    if (session_id == 0)
+    {
+	// Determine session
+	char *session_rtype = 0;
+	// Glib::Value<std::string> session_value;
+	// session_value.init(Glib::Value<std::string>::value_type());
+	DDDValueBase session_value;
+
+	string Nsession   = string(DDD_CLASS_NAME ".") + XtNsession;
+	string CSessionID = string(DDD_CLASS_NAME ".") + XtCSessionID;
+#if XtSpecificationRelease >= 6
+	string NsessionID = string(DDD_CLASS_NAME ".") + XtNsessionID;
+#endif
+
+	// Try resource or option
+	if (
+	    get_resource(dddinit, Nsession.chars(), CSessionID.chars(),
+			 session_value))
+	{
+	  session_id = session_value.get().c_str();
+	}
+
+	if (session_id == 0)
+	{
+	    // Try `=FILE' hack: if the last or second-to-last arg is
+	    // `=FILE', replace it by FILE and use FILE as session id.
+	    for (int i = argc - 1; i >= 1 && i >= argc - 2; i--)
+	    {
+		if (argv[i][0] == '=')
+		{
+		    // Delete '='
+		    int j = 0;
+		    while ((argv[i][j] = argv[i][j + 1]))
+			j++;
+			
+		    session_id = basename(argv[i]);
+		    session_value.set(CONST_CAST(char*,session_id));
+		    put_resource(dddinit, Nsession.chars(), "String", 
+				 session_value);
+		}
+	    }
+	}
+    }
+
+    if (!restart_session().empty())
+    {
+	// A session is given in $DDD_SESSION: override everything.
+	xmlDoc *session_db = 
+	    GetFileDatabase(session_state_file(restart_session()));
+	if (session_db != 0) {
+	    merge_databases(session_db, dddinit);
+	}
+    }
+    else if (session_id != 0)
+    {
+	// Merge in session resources; these override `~/.ddd/init' as
+	// well as the command-line options.
+	xmlDoc *session_db = 
+	    GetFileDatabase(session_state_file(session_id));
+	if (session_db != 0) {
+	    merge_databases(session_db, dddinit);
+	}
+    }
+
+    std::cerr << "No converters\n";
+
+    // Handle `--version', `--help', etc.  We do this here, since we
+    // might want to use them even without X access.
+    setup_show(dddinit, basename(argv[0]), gdb_name.chars());
+
+    // From this point on, we'll be running under X.
+
+    // GUI::Window *toplevel = new GUI::Window("toplevel");
+    GUI::Window *toplevel;
+    GUI::Main *app_context = new GUI::Main(toplevel, DDD_CLASS_NAME, session_id,
+					   ddd_fallback_resources, argc, argv);
+
+
+    // Check Motif version.  We can do this only now after the first
+    // Motif widget has been created.
+    setup_motif_version_warnings();
+
+    std::cerr << "Actions not implemented yet\n";
+
+    std::cerr << "No resource database: no need for converters yet.\n";
+    get_application_resources(dddinit, &app_data,
+			      ddd_resources, ddd_resources_size);
+
+    // From this point on, APP_DATA is valid.
+
+#ifdef SIGCHLD
+    if (app_data.poll_child_status)
+    {
+	// In POLL_CHILD_STATUS mode, we ignore SIGCHLD signals and
+	// poll the child process state explicitly, as in DDD 3.0 and
+	// earlier.  Advantage: DDD does not depend on correct
+	// asynchronous signal handling.  Disadvantage: somewhat
+	// slower due to explicit polling.
+	signal(SIGCHLD, SignalProc(SIG_DFL));
+    }
+#endif
+
+    std::cerr << "XtDatabase not defined: is there any equivalent?\n";
+
+    // Create a new auto_command_prefix if needed
+    setup_auto_command_prefix();
+
+    // Forward messages found so far into cerr
+    {
+	string msg(messages);
+	std::cerr << msg;
+    }
+
+    // Set up VSL resources
+    {
+	// SGI CC wants this:
+	const char **tmp_argv = (const char **)argv;
+
+	if (VSEFlags::parse_vsl(argc, tmp_argv))
+	{
+	    // Show VSL usage...
+	    std::cout << VSEFlags::explain(true);
+	    return DDD_EXIT_FAILURE;
+	}
+
+	argv = (char **)tmp_argv;
+    }
+
+    // All remaining args are passed to the inferior debugger.
+    if (argc == 1 && app_data.open_selection)
+    {
+	// SGI CC wants this:
+	const char **tmp_argv = (const char**)argv;
+
+	std::cerr << "SORRY, add_arg_from_selection not supported yet\n";
+
+	argv = (char **)tmp_argv;
+    }
+
+    // Determine debugger type
+    DebuggerType debugger_type = DebuggerType(-1);
+
+    if (debugger_type == DebuggerType(-1) && !gdb_name.empty())
+    {
+	// Use given debugger
+	get_debugger_type(gdb_name, debugger_type);
+    }
+
+    if (debugger_type == DebuggerType(-1) && !app_data.auto_debugger)
+    {
+	// Use debugger from args or app_defaults
+	get_debugger_type(app_data.debugger, debugger_type);
+    }
+
+    if (debugger_type == DebuggerType(-1))
+    {
+	// Guess debugger type from args
+	DebuggerInfo info(argc, argv);
+	debugger_type = info.type;
+
+	if (!app_data.auto_debugger)
+	{
+	    std::cerr << "Unknown debugger type " << quote(app_data.debugger)
+		 << ", using " << quote(default_debugger(app_data.debugger,
+							 debugger_type))
+		 << "instead\n";
+	}
+    }
+
+    if (app_data.debugger_command[0] == '\0')
+    {
+	if (!gdb_name.empty())
+	    app_data.debugger_command = gdb_name.chars();
+	else
+	    app_data.debugger_command = 
+		default_debugger(app_data.debugger, debugger_type);
+    }
+
+    // Set host specification
+    if (app_data.debugger_rhost && app_data.debugger_rhost[0] != '\0')
+	gdb_host = app_data.debugger_rhost;
+    else if (app_data.debugger_host && app_data.debugger_host[0] != '\0')
+	gdb_host = app_data.debugger_host;
+    else
+	gdb_host = "";
+
+    if (gdb_host.contains('@') && string(app_data.debugger_host_login).empty())
+    {
+	static string new_login = gdb_host.before('@');
+	app_data.debugger_host_login = new_login.chars();
+	gdb_host = gdb_host.after('@');
+    }
+
+    if (gdb_host.empty() && !string(app_data.debugger_host_login).empty())
+    {
+	std::cerr << argv[0] << ": --login requires --rhost or --host\n";
+	return DDD_EXIT_FAILURE;
+    }
+
+    // Check for `--play-log'
+    if (app_data.play_log != 0)
+    {
+	// Invoke self with `--PLAY LOGFILE' as inferior
+	app_data.debugger_command = argv[0];
+
+	if (!remote_gdb())
+	{
+	    // Override debugger type from log
+	    check_log(app_data.play_log, debugger_type);
+	}
+
+	// Don't overwrite existing log files
+	app_data.trace = true;
+    }
+
+    // Create a `~/.ddd/log' file for this session; 
+    // log invocation and configuration
+    init_dddlog();
+
+    // Warn for incompatible `Ddd' and `~/.ddd/init' files
+    setup_ddd_version_warnings();
+
+    // Global variables: Set maximum lengths
+    max_value_tip_length              = app_data.max_value_tip_length;
+    max_value_doc_length              = app_data.max_value_doc_length;
+    DispBox::max_display_title_length = app_data.max_display_title_length;
+    SourceView::max_popup_expr_length = app_data.max_popup_expr_length;
+
+    // Global variables: Setup VSL message handler
+    VSLLib::echo = vsl_echo;
+
+    // Global variables: Setup data display
+    DataDisp::bump_displays           = app_data.bump_displays;
+    DispValue::expand_repeated_values = app_data.expand_repeated_values;
+    DispGraph::hide_inactive_displays = app_data.hide_inactive_displays;
+
+    // Global variables: Setup plot settings
+    PlotAgent::plot_2d_settings = app_data.plot_2d_settings;
+    PlotAgent::plot_3d_settings = app_data.plot_3d_settings;
+
+    // Global variables: Set delays for button and value tips
+    //help_button_tip_delay = app_data.button_tip_delay;
+    //help_value_tip_delay  = app_data.value_tip_delay;
+    //help_button_doc_delay = app_data.button_doc_delay;
+    //help_value_doc_delay  = app_data.value_doc_delay;
+    //help_clear_doc_delay  = app_data.clear_doc_delay;
+    //help_clear_tip_delay  = app_data.clear_tip_delay;
+
+    // Re-register own converters.  Motif may have overridden some of
+    // these, so register them again.
+    std::cerr << "No equivalent for converters\n";
+
+    Boolean iconic;
+
+    std::cerr << "Popup splash screen?\n";
+
+    // Lock `~/.ddd/'.
+    LockInfo lock_info;
+    bool lock_ok = lock_ddd(toplevel, lock_info);
+    if (!lock_ok)
+    {
+	// A minimal warning.
+	messages << "Another " DDD_NAME " is running (pid "
+		 << lock_info.pid;
+	if (lock_info.hostname != fullhostname())
+	    messages << ", host " << cook(lock_info.hostname);
+	if (lock_info.display != toplevel->get_display()->get_name())
+	    messages << ", display " << cook(lock_info.display);
+	messages << ")\n";
+    }
+
+    // Put saved options back again
+    int i;
+    for (i = argc + saved_options.size() - 1; i > saved_options.size(); i--)
+	argv[i] = argv[i - saved_options.size()];
+    for (i = saved_options.size() - 1; i >= 0; i--)
+	argv[i + 1] = CONST_CAST(char*,saved_options[i].chars());
+    argc += saved_options.size();
+    argv[argc] = 0;
+
+    // Create GDB interface
+    gdb = new_gdb(debugger_type, app_data, app_context, argc, argv);
+    std::cerr << "Define Converters?\n";
+
+
+    // Set up GDB handlers
+    gdb->addHandler(ReadyForQuestion, gdb_readyHP);
+    gdb->addHandler(InputEOF,         gdb_eofHP);
+    gdb->addHandler(ErrorEOF,         gdb_eofHP);
+    gdb->addHandler(Started,          ReportStartHP);
+    gdb->addHandler(Died,             gdb_diedHP);
+    gdb->addHandler(Died,             DisableBlinkHP);
+    gdb->addHandler(Died,             ReportDeathHP);
+    gdb->addHandler(ExceptionState,   gdb_exceptionHP);
+    gdb->addHandler(LanguageChanged,  DataDisp::language_changedHP);
+    gdb->addHandler(LanguageChanged,  language_changedHP);
+    gdb->addHandler(LanguageChanged,  report_languageHP);
+    gdb->addHandler(ReplyRequired,    gdb_selectHP);
+    gdb->addHandler(Panic,            gdb_panicHP);
+    gdb->addHandler(Strange,          gdb_strangeHP);
+    gdb->addHandler(Recording,        gdb_recordingHP);
+    gdb->addHandler(EchoDetected,     gdb_echo_detectedHP);
+
+    // Set default history file (never read, only overwritten)
+    set_gdb_history_file(gdb->history_file());
+
+    // Setup shell creation
+    Delay::shell_registered = setup_new_shell;
+
+    // Create command shell
+
+    // Use original arguments
+    char **original_argv = saved_argv();
+    int original_argc = 0;
+    while (original_argv[original_argc] != 0)
+	original_argc++;
+
+    command_shell = new GUI::Window(*app_context, "command_shell", "command_shell");
+    command_shell->signal_delete_event().connect(sigc::bind_return(sigc::hide(sigc::bind(sigc::ptr_fun(DDDCloseCB), command_shell)), false));
+
+
+    GUI::Container *main_window = new GUI::VBox(*command_shell, GUI::PACK_SHRINK, "main_window");
+    main_window->show();
+
+    // Create menu bar
+    MMDesc *menubar = common_menubar;
+    if (app_data.separate_data_window && app_data.separate_source_window)
+	menubar = command_menubar;
+
+    GUI::MenuBar *menubar_w = MMcreateMenuBar(*main_window, "menubar", menubar);
+    MMaddCallbacks(menubar);
+    MMaddHelpCallback(menubar, sigc::ptr_fun(ImmediateHelpCB1));
+    verify_buttons(menubar);
+    register_menu_shell(menubar);
+
+    // Create Paned Window
+
+    // Note: On Motif it is possible to force a pane to have
+    // fixed size.  On Gtk this does not seem possible.  Therefore
+    // the toolbar and status bar must go in a VBox.
+    GUI::Box *main_vbox = new GUI::VBox(*main_window, GUI::PACK_EXPAND_WIDGET);
+
+    // Status line
+    if (!app_data.separate_source_window && !app_data.status_at_bottom)
+	create_status(main_vbox);
+
+    // Toolbar label type
+    unsigned char label_type = XmSTRING;
+    if (app_data.button_captions || app_data.button_images)
+	label_type = XmPIXMAP;
+
+    // Common toolbar
+    if (!app_data.button_captions && !app_data.button_images)
+	app_data.common_toolbar = false;
+
+    GUI::Button *arg_label = 0;
+
+    if (!app_data.separate_source_window &&
+	!app_data.separate_data_window &&
+	app_data.common_toolbar)
+    {
+	arg_cmd_area[ArgItems::Display].type |= MMUnmanaged;
+	arg_cmd_w = create_toolbar(main_vbox, "common",
+				   arg_cmd_area, DataDisp::graph_cmd_area,
+				   arg_label, source_arg, XmPIXMAP);
+
+	DataDisp::graph_cmd_w = arg_cmd_w;
+
+	if (command_toolbar_w == 0)
+	{
+	    command_toolbar_w = make_buttons(main_vbox, 
+					     "command_toolbar", 
+					     app_data.tool_buttons);
+	}
+    }
+
+    GUI::MultiPaned *paned_work_w = new GUI::MultiPaned(*main_vbox, GUI::PACK_EXPAND_WIDGET);
+    
+    std::cerr << "Install icons here?\n";
+
+    // Data window
+    GUI::Container *data_disp_parent = paned_work_w;
+    GUI::WidgetPtr<GUI::MenuBar> data_menubar_w = 0;
+    GUI::Container *data_main_window_w = 0;
+    if (app_data.separate_data_window)
+    {
+	data_disp_shell = new GUI::Window(*app_context, "data_disp_shell", "data_disp_shell");
+	AddDeleteWindowCallback(data_disp_shell, sigc::bind(sigc::ptr_fun(DDDCloseCB), data_disp_shell));
+
+
+	data_main_window_w = new GUI::VBox(*data_disp_shell, GUI::PACK_SHRINK, "data_main_window");
+	data_main_window_w->show();
+
+	// Add menu bar
+	data_menubar_w = 
+	    MMcreateMenuBar (*data_main_window_w, 
+			     "menubar", data_menubar);
+	MMaddCallbacks(data_menubar);
+	MMaddHelpCallback(menubar, sigc::ptr_fun(ImmediateHelpCB1));
+	verify_buttons(data_menubar);
+	register_menu_shell(data_menubar);
+
+	// Note: On Motif it is possible to force a pane to have
+	// fixed size.  On Gtk this does not seem possible.  Therefore
+	// the toolbar and status bar must go in a VBox.
+	data_disp_parent = new GUI::VBox(*data_main_window_w);
+	data_disp_parent->show();
+    }
+
+    // Create data display
+    data_disp = new DataDisp(data_disp_parent, data_buttons_w);
+
+    std::cerr << "Set values for data window?\n";
+
+    if (data_buttons_w == (Widget)0)
+	data_buttons_w = make_buttons(data_disp_parent, "data_buttons", 
+				      app_data.data_buttons);
+
+    // Source window
+    GUI::MultiPaned *source_view_parent = paned_work_w;
+    GUI::Container *source_vbox = main_vbox;
+    GUI::MenuBar *source_menubar_w = 0;
+    GUI::Container *source_main_window_w = 0;
+    if (app_data.separate_source_window)
+    {
+	source_view_shell = new GUI::Window("source_view_shell", "source_view_shell");
+	AddDeleteWindowCallback(source_view_shell, sigc::bind(sigc::ptr_fun(DDDCloseCB), source_view_shell));
+
+
+	source_main_window_w = new GUI::VBox(*source_view_shell, GUI::PACK_SHRINK, "source_main_window");
+	source_main_window_w->show();
+
+	// Add menu bar
+	source_menubar_w = 
+	    MMcreateMenuBar (*source_main_window_w, "menubar", source_menubar);
+	MMaddCallbacks(source_menubar);
+	MMaddHelpCallback(menubar, sigc::ptr_fun(ImmediateHelpCB1));
+	verify_buttons(source_menubar);
+	register_menu_shell(source_menubar);
+
+	// Add source window
+	// Note: On Motif it is possible to force a pane to have
+	// fixed size.  On Gtk this does not seem possible.  Therefore
+	// the toolbar and status bar must go in a VBox.
+	source_vbox = new GUI::VBox(*source_main_window_w);
+	source_vbox->show();
+
+	// Status line
+	if (!app_data.status_at_bottom)
+	    create_status(source_vbox);
+    }
+
+    // Add toolbar
+    if (arg_cmd_w == 0 && !app_data.toolbars_at_bottom)
+    {
+	arg_cmd_w = create_toolbar(source_vbox, "source",
+				   arg_cmd_area, 0, arg_label, source_arg,
+				   label_type);
+    }
+
+    if (command_toolbar_w == 0 && !app_data.toolbars_at_bottom)
+    {
+	command_toolbar_w = make_buttons(source_vbox, 
+					 "command_toolbar", 
+					 app_data.tool_buttons);
+    }
+
+    if (source_buttons_w == 0 && !app_data.toolbars_at_bottom)
+    {
+	source_buttons_w = make_buttons(source_vbox, 
+					"source_buttons", 
+					app_data.source_buttons);
+    }
+
+    if (app_data.separate_source_window) {
+	source_view_parent = new GUI::MultiPaned(*source_vbox, GUI::PACK_EXPAND_WIDGET);
+	source_view_parent->show();
+    }
+    source_view = new SourceView(source_view_parent);
+
+    std::cerr << "Set values for main window?\n";
+
+    // Source toolbar
+    if (arg_cmd_w == 0)
+	arg_cmd_w = create_toolbar(source_vbox, "source",
+				   arg_cmd_area, 0, arg_label, source_arg,
+				   label_type);
+    arg_label->signal_clicked().connect(sigc::bind(sigc::ptr_fun(ClearTextFieldCB),
+						   source_arg->text()));
+
+    if (DataDisp::graph_cmd_w == arg_cmd_w)
+    {
+	// Common toolbar
+	arg_label->signal_clicked().connect(sigc::ptr_fun(DataDisp::SelectionLostCB));
+    }
+
+    std::cerr << "More callbacks missing?\n";
+    //source_arg->text()->signal_changed().connect(sigc::bind(sigc::ptr_fun(ActivateCB),
+    //							    arg_cmd_area[ArgItems::Lookup].widget));
+    sync_args(source_arg, data_disp->graph_arg);
+
+    if (data_disp->graph_arg != 0) {
+	// data_disp->graph_arg->text()->signal_changed().connect(sigc::bind(sigc::ptr_fun(ActivateCB),
+	//								     data_disp->graph_cmd_area[0].widget));
+    }
+
+    if (command_toolbar_w == 0)
+    {
+	command_toolbar_w = make_buttons(source_vbox, 
+					 "command_toolbar", 
+					 app_data.tool_buttons);
+    }
+    if (command_toolbar_w != 0)
+	XtUnmanageChild(command_toolbar_w);
+
+    if (source_buttons_w == 0)
+	source_buttons_w = make_buttons(source_vbox, "source_buttons", 
+					app_data.source_buttons);
+
+    // Status line
+    if (app_data.separate_source_window && app_data.status_at_bottom)
+	create_status(source_vbox);
+
+    // Debugger console
+    if (console_buttons_w == 0 && !app_data.toolbars_at_bottom)
+	console_buttons_w = make_buttons(paned_work_w, "console_buttons", 
+					 app_data.console_buttons);
+
+    gdb_w = new GUI::ScrolledText(*paned_work_w);
+    gdb_w->set_size_request(400, 200);
+
+    std::cerr << "How to verify changes and motion?\n";
+
+    gdb_w->signal_changed().connect(sigc::bind(sigc::ptr_fun(gdbChangeCB), gdb_w));
+    XtManageChild (gdb_w);
+
+    std::cerr << "skipAdjust?\n";
+
+    // Give the ScrolledWindow the size specified for the debugger console
+    set_scrolled_window_size(gdb_w);
+
+    if (console_buttons_w == 0)
+	console_buttons_w = make_buttons(paned_work_w, "console_buttons", 
+					 app_data.console_buttons);
+
+    // Status line
+    if (app_data.status_at_bottom && !app_data.separate_source_window)
+	create_status(main_vbox);
+
+    // Paned Window is done
+    XtManageChild (paned_work_w);
+
+    std::cerr << "Setup areas for main window\n";
+
+
+    // All main widgets (except shells) are created at this point.
+
+    // Setup theme manager
+    setup_theme_manager();
+    
+    // Load history for current session
+    load_history(session_history_file(app_data.session));
+
+    // Tie arg fields to history
+    tie_combo_box_to_history(source_arg->text(), arg_history_filter);
+    if (data_disp->graph_arg != 0)
+	tie_combo_box_to_history(data_disp->graph_arg->text(), 
+				 arg_history_filter);
+
+    // Tie `recent files' to history
+    tie_menu_to_recent_files(command_recent_menu);
+    tie_menu_to_recent_files(source_recent_menu);
+    tie_menu_to_recent_files(data_recent_menu);
+
+    // Setup environment.
+    setup_environment();
+
+    // Setup handlers
+    source_arg->addHandler (Changed, source_argHP);
+    source_arg->callHandlers();
+
+    promptPosition = messagePosition = gdb_w->get_last_position();
+    gdb_w->set_insertion_position(messagePosition);
+
+    std::cerr << "Setup help hooks?\n";
+    // Setup help hooks
+    //PreHelpOnContextHook = PreHelpOnContext;
+    //PostHelpOnItemHook   = PostHelpOnItem;
+
+    // Setup version info
+    setup_version_info();
+
+    // Customize `settings' title.
+    set_settings_title(command_edit_menu[EditItems::Settings].widget);
+    set_settings_title(source_edit_menu[EditItems::Settings].widget);
+    set_settings_title(data_edit_menu[EditItems::Settings].widget);
+
+    // If we use annotations, we also want tty mode.
+    if (app_data.annotate)
+	app_data.tty_mode = True;
+
+    // Close windows explicitly requested
+    if (!app_data.separate_data_window && 
+	!app_data.data_window && !app_data.annotate)
+    {
+	// We don't want the data window.
+	gdbCloseDataWindowCB(gdb_w);
+    }
+
+    if (!app_data.separate_source_window && 
+	(!app_data.source_window || app_data.annotate))
+    {
+	// We don't need the source window, since we're invoked by Emacs.
+	gdbCloseSourceWindowCB(gdb_w);
+
+	if (!app_data.disassemble)
+	    gdbCloseToolWindowCB();
+    }
+
+    if (!app_data.disassemble)
+    {
+	// We don't disassemble.
+	gdbCloseCodeWindowCB(gdb_w);
+    }
+
+    if ((!app_data.separate_source_window && have_source_window() || 
+	 !app_data.separate_data_window && have_data_window()) &&
+	(!app_data.debugger_console || app_data.tty_mode))
+    {
+	// We don't need the debugger console, since we have a TTY.
+	gdbCloseCommandWindowCB(gdb_w);
+    }
+
+    if (data_disp_shell != 0)
+    {
+	// Set width of the separate data window
+	Dimension max_width = 0;
+	get_paned_window_width(paned_work_w, max_width);
+	get_paned_window_width(source_view_parent, max_width);
+	set_paned_window_size(data_disp_parent, max_width);
+	set_main_window_size(data_main_window_w);
+    }
+
+    // Popdown the splash screen before it eats up all colors
+    popdown_splash_screen();
+
+    // Realize all top-level widgets
+    XtRealizeWidget(command_shell);
+    Delay::register_shell(command_shell);
+
+    if (data_disp_shell)
+    {
+	XtRealizeWidget(data_disp_shell);
+	Delay::register_shell(data_disp_shell);
+    }
+
+    if (source_view_shell)
+    {
+	XtRealizeWidget(source_view_shell);
+	Delay::register_shell(source_view_shell);
+    }
+
+    // Create initial delay
+    if (app_data.session == DEFAULT_SESSION)
+    {
+	setup_delay = new Delay;
+	init_delay  = new StatusMsg("Starting " + gdb->title());
+	unlock_status();	// We still want to see the messages
+    }
+    else
+    {
+	init_delay = new StatusDelay("Opening session " 
+				     + quote(app_data.session));
+    }
+
+    // Create subshells.  We do this after the main window has been
+    // realized, since LessTif won't make the shells transient otherwise.
+    source_view->create_shells();
+    data_disp->create_shells();
+    set_shortcut_menu(data_disp);
+
+    // Create preference panels
+    make_preferences(paned_work_w);
+
+    // Save option states
+    save_option_state();
+
+    // Setup option states
+    setup_options();
+    update_options();
+
+    // Setup info buttons
+
+    std::cerr << "Do we need ugly hack for info locals and info args?\n";
+    
+    if (gdb->info_locals_command() != gdb->info_args_command())
+    {
+	register_info_button(locals_w);
+	register_info_button(args_w);
+    }
+    else
+    {
+	register_info_button(locals_w);
+	XtUnmanageChild(args_w);
+    }
+    update_infos();
+
+    // FIXME: Can the Gtk app start iconified?
+    iconic = false;
+    if (iconic)
+    {
+	// Startup command shell iconified; others follow as needed
+	initial_popup_shell(command_shell);
+    }
+    else if (!app_data.debugger_console || app_data.tty_mode)
+    {
+	// Debugger console is closed: wait for source to pop up
+    }
+    else
+    {
+	// Popup the command shell only; other shells follow as needed
+	initial_popup_shell(command_shell);
+    }
+
+    std::cerr << "No pressing need to track window positions...\n";
+
+#if 0
+    // Wait for the command shell to be mapped, such that we don't
+    // lose debugger output.  This also decreases system load on
+    // single-processor machines since DDD is idle when the debugger
+    // starts.
+    wait_until_mapped(command_shell);
+#endif
+
+    // Setup TTY interface
+    setup_command_tty();
+
+    // Raise core limit if needed; required for getting session info.
+    // Note: this must be done before starting GDB.
+    setup_core_limit();
+
+    // Start debugger
+    start_gdb();
+    gdb_tty = gdb->slave_tty();
+
+    if (!emptyCommandQueue())
+    {
+	// GDB startup leaves us with pending graph commands.  We
+	// should better initialize the VSL library right now.
+	DispBox::init_vsllib();
+    }
+
+    // Make sure we see all messages accumulated so far
+    {
+	string msg(messages);
+	while (!msg.empty())
+	{
+	    string line = msg.before('\n');
+	    set_status(line);
+	    msg = msg.after('\n');
+	}
+    }
+    return DDD_CONTINUE;
+}
+
+#endif
 
 
 int main(int argc, char *argv[])
@@ -5190,10 +5632,21 @@ void register_menu_shell(const MMDesc *items)
 // Verify buttons
 //-----------------------------------------------------------------------------
 
+#if defined(IF_XM)
+
 static void verify_button(const MMDesc *item, XtPointer)
 {
     verify_button(item->widget);
 }
+
+#else
+
+static void verify_button(const MMDesc *item, void *)
+{
+    verify_button(item->widget);
+}
+
+#endif
 
 static void verify_buttons(const MMDesc *items)
 {
@@ -5884,20 +6337,24 @@ bool ddd_setup_done(void)
 // Activate argument field
 //-----------------------------------------------------------------------------
 
+#if defined(IF_XM)
+
 static void ActivateCB(Widget, XtPointer client_data, XtPointer call_data)
 {
-#if defined(IF_XM)
     XmAnyCallbackStruct *cbs = (XmAnyCallbackStruct *)call_data;
     
     Widget button = Widget(client_data);
     XtCallActionProc(button, "ArmAndActivate", cbs->event, (String *)0, 0);
-#else
-#ifdef NAG_ME
-#warning How do it call ArmAndActivate?
-#endif
-#endif
 }
 
+#else
+
+static void ActivateCB(GUI::Widget *)
+{
+    std::cerr << "How to call ArmAndActivate action?\n";
+}
+
+#endif
 
 //-----------------------------------------------------------------------------
 // Context help
@@ -10876,11 +11333,15 @@ static void ReportDeathHP(Agent *agent, void *, void *call_data)
     }
 }
 
+#if defined(IF_XM)
+
 static void ClearDialogCB(Widget, XtPointer client_data, XtPointer)
 {
     Widget *dialog = (Widget *)client_data;
     *dialog = 0;
 }
+
+#endif
 
 #if defined(IF_XM)
 

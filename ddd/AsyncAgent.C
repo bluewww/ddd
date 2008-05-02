@@ -162,11 +162,23 @@ void AsyncAgent::clearHandlers()
 #endif
 }
 
+#if defined(IF_XM)
+
 // Process "Death of child" signal as soon as possible
 void AsyncAgent::addDeathOfChildHandler()
 {
     addHandler(_Died, childStatusChange, XtPointer(this));
 }
+
+#else
+
+// Process "Death of child" signal as soon as possible
+void AsyncAgent::addDeathOfChildHandler()
+{
+    addHandler(_Died, childStatusChange, this);
+}
+
+#endif
 
 #if defined(IF_XM)
 

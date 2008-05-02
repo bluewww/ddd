@@ -369,8 +369,8 @@ public:
     void set_grid_height(int);
     bool get_dashed_lines(void);
     void set_dashed_lines(bool);
-    Cardinal get_rotation(void);
-    void set_rotation(Cardinal);
+    unsigned int get_rotation(void);
+    void set_rotation(unsigned int);
     Position get_x(void);
     Position get_y(void);
     Graph *get_graph(void);
@@ -419,7 +419,7 @@ private:
     bool autoLayout;		// Layout graph after each change?
 
     // Rotation stuff
-    Cardinal rotation;		// Rotation in degrees (starting with zero)
+    unsigned int rotation;	// Rotation in degrees (starting with zero)
 
     // Sizes
     Dimension hintSize;		// Hint size (in pixels)

@@ -956,6 +956,7 @@ void popupAct(GUI::Widget *, GUI::Event *event, GUI::String *, unsigned int *)
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
+
 // Veto changes before the current input line
 void gdbModifyCB(Widget gdb_w, XtPointer, XtPointer call_data)
 {
@@ -1015,6 +1016,18 @@ void gdbModifyCB(Widget gdb_w, XtPointer, XtPointer call_data)
     }
 }
 
+#else
+
+// Veto changes before the current input line
+void gdbModifyCB(GUI::ScrolledText *gdb_w)
+{
+    std::cerr << "gdbModifyCB not implemented yet\n";
+}
+
+#endif
+
+#if defined(IF_XM)
+
 // Veto key-based cursor movements before current line
 void gdbMotionCB(Widget, XtPointer, XtPointer call_data)
 {
@@ -1054,10 +1067,15 @@ void gdbMotionCB(Widget, XtPointer, XtPointer call_data)
 	}
     }
 }
+
 #else
-#ifdef NAG_ME
-#warning gdbModifyCB and gdbMotionCB unimplemented!
-#endif
+
+// Veto key-based cursor movements before current line
+void gdbMotionCB(GUI::ScrolledText *w)
+{
+    std::cerr << "gdbMotionCB not implemented yet\n";
+}
+
 #endif
 
 // Send completed lines to GDB

@@ -189,16 +189,26 @@ GDBAgent *new_gdb(DebuggerType type,
     return gdb;
 }
 
-// Show call in output window
-static void EchoTextCB(XtPointer client_data
 #if defined(IF_XM)
-		       , XtIntervalId *
-#endif
-    )
+
+// Show call in output window
+static void EchoTextCB(XtPointer client_data,
+		       XtIntervalId *)
 {
     const string& gdb_call = *((const string *)client_data);
     _gdb_out(gdb_call);
 }
+
+#else
+
+// Show call in output window
+static void EchoTextCB(const string *client_data)
+{
+    const string& gdb_call = *client_data;
+    _gdb_out(gdb_call);
+}
+
+#endif
 
 // Invoke GDB upon rlogin
 static void InvokeGDBFromShellHP(Agent *source, void *client_data, 
@@ -252,14 +262,17 @@ static void InvokeGDBFromShellHP(Agent *source, void *client_data,
 #if defined(IF_XM)
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 
 			    0, EchoTextCB, (XtPointer)client_data);
-#else
-	    GUI::signal_idle().connect(sigc::bind_return(sigc::bind(sigc::ptr_fun(EchoTextCB),
-								    client_data),
-							 false));
-#endif
 
 	    // ... and don't get called again.
 	    gdb->removeHandler(Input, InvokeGDBFromShellHP, client_data);
+#else
+	    GUI::signal_idle().connect(sigc::bind_return(sigc::bind(sigc::ptr_fun(EchoTextCB),
+								    (const string *)client_data),
+							 false));
+
+	    // ... and don't get called again.
+	    gdb->removeHandler(Input, InvokeGDBFromShellHP, client_data);
+#endif
 	}
     }
 }

@@ -4696,14 +4696,14 @@ GUIGraphEdit::set_dashed_lines(bool b)
     dashedLines = b;
 }
 
-Cardinal
+unsigned int
 GUIGraphEdit::get_rotation(void)
 {
     return rotation;
 }
 
 void
-GUIGraphEdit::set_rotation(Cardinal c)
+GUIGraphEdit::set_rotation(unsigned int c)
 {
     rotation = c;
 }

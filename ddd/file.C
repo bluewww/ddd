@@ -1737,10 +1737,11 @@ static void openClassDone(Widget w, XtPointer client_data,
 
 static StringArray all_sources;
 
+#if defined(IF_XM)
+
 // Select a source; show the full path name in the status line
 static void SelectSourceCB(Widget w, XtPointer, XtPointer call_data)
 {
-#if defined(IF_XM)
     XmListCallbackStruct *cbs = (XmListCallbackStruct *)call_data;
     int pos = cbs->item_position;
     ListSetAndSelectPos(w, pos);
@@ -1749,12 +1750,17 @@ static void SelectSourceCB(Widget w, XtPointer, XtPointer call_data)
     if (pos < 0)
 	pos = all_sources.size() - 1;
     set_status(all_sources[pos]);
-#else
-#ifdef NAG_ME
-#warning Show selected source in status line?
-#endif
-#endif
 }
+
+#else
+
+// Select a source; show the full path name in the status line
+static void SelectSourceCB(GUI::Widget *)
+{
+    std::cerr << "Show selected source in status line?\n";
+}
+
+#endif
 
 // Get list of sources into SOURCES_LIST
 void get_gdb_sources(StringArray& sources_list)

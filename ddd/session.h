@@ -165,12 +165,12 @@ void set_temporary_session(const string& session, bool temporary);
 // Set name of session to be restarted with
 void set_restart_session(const string& session = "");
 
+// Session editor
+#if defined(IF_XM)
+
 // Callbacks for X11R6 session management
 extern void SaveSmSessionCB(Widget, XtPointer, XtPointer);
 extern void ShutdownSmSessionCB(Widget, XtPointer, XtPointer);
-
-// Session editor
-#if defined(IF_XM)
 
 extern void SaveSessionAsCB(Widget, XtPointer, XtPointer);
 extern void OpenSessionCB(Widget, XtPointer, XtPointer);

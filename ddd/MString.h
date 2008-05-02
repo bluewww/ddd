@@ -44,10 +44,18 @@
 #include "assert.h"
 #include "casts.h"
 
+#if defined(IF_XM)
+
 #ifdef XmFONTLIST_DEFAULT_TAG
 #define MSTRING_DEFAULT_CHARSET XmFONTLIST_DEFAULT_TAG
 #else
 #define MSTRING_DEFAULT_CHARSET XmSTRING_DEFAULT_CHARSET
+#endif
+
+#else
+
+#define MSTRING_DEFAULT_CHARSET "IGNORED"
+
 #endif
 
 #if defined(IF_XM)
@@ -292,7 +300,7 @@ public:
     }
 
     // Resources
-    Dimension baseline(XmFontList fontlist) const
+    Dimension baseline(void *fontlist) const
     {
 #ifdef NAG_ME
 #warning Implement MString::baseline!
@@ -329,14 +337,14 @@ public:
 	return lc;
     }
 
-    void extent(Dimension& x, Dimension& y, XmFontList fontlist) const
+    void extent(Dimension& x, Dimension& y, void *fontlist) const
     {
 	Glib::RefPtr<Pango::Layout> lo = Pango::Layout::create(pango_context);
 	lo->set_text(_mstring.s());
 	lo->get_pixel_size(x, y);
     }
 
-    Dimension height(XmFontList fontlist) const
+    Dimension height(void *fontlist) const
     {
 	int x, y;
 	Glib::RefPtr<Pango::Layout> lo = Pango::Layout::create(pango_context);
@@ -345,7 +353,7 @@ public:
 	return y;
     }
 
-    Dimension width(XmFontList fontlist) const
+    Dimension width(void *fontlist) const
     {
 	int x, y;
 	Glib::RefPtr<Pango::Layout> lo = Pango::Layout::create(pango_context);

@@ -216,19 +216,7 @@ class SourceView {
     static void UpdateBreakpointButtonsCB (Widget, XtPointer, XtPointer);
     static void CheckScrollCB(Widget, XtPointer, XtPointer);
     static void CheckScrollWorkProc(XtPointer, XtIntervalId *);
-
-#else
-
-    static void UpdateBreakpointButtonsCB (void);
-    static void CheckScrollCB(void);
-    static bool CheckScrollWorkProc(GUI::connection *);
-
-#endif
-
-
     static void CheckModificationCB        (Widget, XtPointer, XtPointer);
-
-#if defined(IF_XM)
 
     static void StackDialogPoppedDownCB    (Widget, XtPointer, XtPointer);
     static void CodeDialogPoppedDownCB     (Widget, XtPointer, XtPointer);
@@ -239,7 +227,15 @@ class SourceView {
     static void SelectThreadCB   (Widget, XtPointer, XtPointer);
     static void ThreadCommandCB  (Widget, XtPointer, XtPointer);
 
+    static void SetWatchModeCB(Widget, XtPointer, XtPointer);
+    static void ActivateGlyphCB(Widget, XtPointer, XtPointer);
+
 #else
+
+    static void UpdateBreakpointButtonsCB (void);
+    static void CheckScrollCB(void);
+    static bool CheckScrollWorkProc(GUI::connection *);
+    static void CheckModificationCB(GUI::Widget *, bool editable);
 
     static void StackDialogPoppedDownCB    (void);
     static void CodeDialogPoppedDownCB     (void);
@@ -250,18 +246,11 @@ class SourceView {
     static void SelectThreadCB   (GUI::Widget *);
     static void ThreadCommandCB  (GUI::Widget *, const char *);
 
-#endif
-
-#if defined(IF_XM)
-
-    static void SetWatchModeCB(Widget, XtPointer, XtPointer);
-    static void ActivateGlyphCB(Widget, XtPointer, XtPointer);
-
-#else
-
     static void SetWatchModeCB(int);
 
 #endif
+
+
 
     // Set shell title
     static void update_title();

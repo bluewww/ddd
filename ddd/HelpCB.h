@@ -94,6 +94,34 @@ extern void HelpOnWindowCB(Widget widget, XtPointer client_data,
 extern void HelpOnVersionCB(Widget widget, XtPointer client_data, 
 			    XtPointer call_data);
 
+// Call help on help.
+// May be used in a menu entry "Help On Help".
+extern void HelpOnHelpCB(Widget widget, XtPointer client_data, 
+			 XtPointer call_data);
+
+// Call help for associated widget.
+// May be used as help callback for any primitive widget.
+extern void ImmediateHelpCB(Widget, XtPointer, XtPointer);
+
+// Call help for widget given in "Widget w = (Widget)client_data".
+extern void HelpOnThisCB(Widget widget, XtPointer client_data, 
+			 XtPointer call_data);
+
+// Call help with "XmString s = (XmString)client_data" as text.
+// May be used for unchanged text display.
+extern void MStringHelpCB(Widget widget, XtPointer client_data, 
+			  XtPointer call_data);
+
+// Call help with "String s = (String)client_data" as text.
+// May be used for unchanged text display.
+extern void StringHelpCB(Widget widget, XtPointer client_data, 
+			 XtPointer call_data);
+
+// Call help with "String s = (String)client_data" as text.
+// May be used for unchanged text display.
+extern void TextHelpCB(Widget widget, XtPointer client_data, 
+		       XtPointer call_data);
+
 #else
 
 // Select widget and call help on context.
@@ -112,38 +140,16 @@ extern void HelpOnWindowCB(GUI::Widget *widget, GUI::Event *event);
 // May be used in a menu entry "Help On Version".
 extern void HelpOnVersionCB(GUI::Widget *widget, GUI::Event *event);
 
-#endif
-
 // Call help on help.
 // May be used in a menu entry "Help On Help".
-extern void HelpOnHelpCB(Widget widget, XtPointer client_data, 
-			 XtPointer call_data);
+extern void HelpOnHelpCB(GUI::Widget *widget);
 
 // Call help for associated widget.
 // May be used as help callback for any primitive widget.
-#if defined(IF_XM)
-extern void ImmediateHelpCB(Widget, XtPointer, XtPointer);
-#else
 extern void ImmediateHelpCB1(GUI::Widget *);
-#endif
 
 // Call help for widget given in "Widget w = (Widget)client_data".
-extern void HelpOnThisCB(Widget widget, XtPointer client_data, 
-			 XtPointer call_data);
-
-#if defined(IF_XM)
-
-// Call help with "XmString s = (XmString)client_data" as text.
-// May be used for unchanged text display.
-extern void MStringHelpCB(Widget widget, XtPointer client_data, 
-			  XtPointer call_data);
-
-// Call help with "String s = (String)client_data" as text.
-// May be used for unchanged text display.
-extern void StringHelpCB(Widget widget, XtPointer client_data, 
-			 XtPointer call_data);
-
-#else
+extern void HelpOnThisCB(GUI::Widget *widget, GUI::Event *event);
 
 // Call help with text.
 // May be used for unchanged text display.
@@ -153,12 +159,11 @@ extern void MStringHelpCB(GUI::Widget *widget, const GUI::String &text);
 // May be used for unchanged text display.
 extern void StringHelpCB(GUI::Widget *widget, const char *s);
 
-#endif
-
-// Call help with "String s = (String)client_data" as text.
+// Call help with "String s" as text.
 // May be used for unchanged text display.
-extern void TextHelpCB(Widget widget, XtPointer client_data, 
-		       XtPointer call_data);
+extern void TextHelpCB(GUI::Widget *widget, const char *s);
+
+#endif
 
 #if defined(IF_XM)
 // Call help with a built-in formatted manual page "String s =

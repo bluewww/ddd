@@ -40,10 +40,7 @@ typedef bool Bool;
 #define False false
 #define True true
 
-typedef char *XmStringCharSet;
-#define XmSTRING_DEFAULT_CHARSET "IGNORED"
-typedef void *XmFontList;             // FIXME: IGNORED
-
+#if 1
 typedef unsigned int Cardinal;
 typedef void *XtPointer;
 
@@ -51,6 +48,7 @@ typedef void *XtPointer;
 #warning Perhaps we should use a gconfmm Value?
 #endif
 typedef Glib::ValueBase XtArgVal;
+#endif
 
 typedef int Position;
 
@@ -67,12 +65,6 @@ extern Glib::RefPtr<Pango::Context> pango_context;
 
 // Callbacks, actions, signals, slots
 
-#ifdef NAG_ME
-#warning Should XtCallbackProc be a function type or a slot (functor)?
-#endif
-typedef sigc::slot<void, Widget, XtPointer, XtPointer> XtCallbackProc;
-typedef void (*XtCallbackProc1)(Widget, XtPointer, XtPointer);
-
 typedef sigc::slot<void, void*> XtTimerCallbackProc;
 
 // client_data is bound.
@@ -85,25 +77,9 @@ typedef sigc::slot<void, Widget, XEvent*, String*, Cardinal*> XtActionProc;
 typedef sigc::slot<void, GUI::Widget *, GUI::Event *, GUI::String *, unsigned int *> XtActionProc;
 #endif
 
-#if 0
-struct XtActionsRec {
-  String string;
-  XtActionProc proc;
-};
-#endif
-
-// A simple toggle.  In Motif, the set/unset state is
-// passed in the callback structure.
-// In gtkmm, we read it fron the widget w.
-// Note that the widget may either be a ToggleButton or a CheckMenuItem.
-#define CB_ARG_LIST_TOGGLE(w, call_data) Widget w
-// A toggle with an additional client_data argument.
-#define CB_ARG_LIST_TOGGLE_X(w, client_data, call_data) Widget w, XtPointer client_data
-
-// End callbacks, actions, signals, slots
-
 // enums
 
+#if 1
 enum {
   XmPIXMAP = 1,
   XmSTRING,
@@ -126,6 +102,7 @@ enum {
   XmEXPLICIT,
   XmPOINTER
 };
+#endif
 
 // End enums
 

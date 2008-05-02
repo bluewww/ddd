@@ -170,7 +170,7 @@ class DataDisp {
     //-----------------------------------------------------------------------
     // Callbacks
     //-----------------------------------------------------------------------
-    static void dispCB                  (Widget, XtPointer, XtPointer);
+    static void dispCB                  (GUI::Widget *);
 
     //-----------------------------------------------------------------------
     // Button callbacks
@@ -179,7 +179,7 @@ class DataDisp {
     static void dereferenceArgCB        (GUI::Widget *);
     static void dereferenceInPlaceCB    (GUI::Widget *);
     static void toggleDetailCB          (GUI::Widget *, int);
-    // static void toggleRotateCB          (Widget, XtPointer, XtPointer);
+    // static void toggleRotateCB          (GUI::Widget *);
     static void toggleDisableCB         (GUI::Widget *);
     static void rotateCB                (GUI::Widget *, bool);
     static void newCB                   (GUI::Widget *);

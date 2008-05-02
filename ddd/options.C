@@ -467,7 +467,7 @@ void sourceSetCodeIndentCB (Widget, XtPointer, XtPointer call_data)
 
 void sourceSetTabWidthCB (GUI::Scale *w)
 {
-    app_data.tab_width = (Cardinal)w->get_value();
+    app_data.tab_width = (unsigned int)w->get_value();
     update_options();
 
     set_status("Tab width set to " + itostring(app_data.tab_width) + ".");
@@ -475,7 +475,7 @@ void sourceSetTabWidthCB (GUI::Scale *w)
 
 void sourceSetSourceIndentCB (GUI::Scale *w)
 {
-    app_data.indent_source = (Cardinal)w->get_value();
+    app_data.indent_source = (unsigned int)w->get_value();
     update_options();
 
     set_status("Source indentation set to " + 
@@ -484,7 +484,7 @@ void sourceSetSourceIndentCB (GUI::Scale *w)
 
 void sourceSetCodeIndentCB (GUI::Scale *w)
 {
-    app_data.indent_code = (Cardinal)w->get_value();
+    app_data.indent_code = (unsigned int)w->get_value();
     update_options();
 
     set_status("Code indentation set to " + 
@@ -886,7 +886,7 @@ void graphSetGridSizeCB (Widget, XtPointer, XtPointer call_data)
 
 void graphSetGridSizeCB (GUI::Scale *w)
 {
-    Cardinal value = (Cardinal)w->get_value();
+    unsigned int value = (unsigned int)w->get_value();
 
     if (value >= 2)
     {
@@ -1570,6 +1570,8 @@ void dddClearMaintenanceCB(void)
 // Startup Options
 //-----------------------------------------------------------------------------
 
+#if defined(IF_XM)
+
 static void post_startup_warning(Widget w)
 {
 #if 0
@@ -1584,6 +1586,25 @@ static void post_startup_warning(Widget w)
 #endif
     (void) w;			// Use it
 }
+
+#else
+
+static void post_startup_warning(GUI::Widget *w)
+{
+#if 0
+    static bool posted = false;
+
+    if (!posted)
+	post_warning("This change will only be effective\n"
+		     "after saving options and restarting " DDD_NAME ".",
+		     "startup_warning", w);
+
+    posted = true;
+#endif
+    (void) w;			// Use it
+}
+
+#endif
 
 static string next_ddd_will_start_with = 
     "Next " DDD_NAME " invocation will start-up with ";
@@ -1663,6 +1684,8 @@ void dddSetSeparateWindowsCB (GUI::RadioButton *w, int state)
 
 #endif
 
+#if defined(IF_XM)
+
 void dddSetStatusAtBottomCB (Widget w, XtPointer client_data, XtPointer)
 {
     Boolean state = (int)(long)client_data;
@@ -1674,13 +1697,26 @@ void dddSetStatusAtBottomCB (Widget w, XtPointer client_data, XtPointer)
     else
 	set_status(next_ddd_will_start_with + "status line at top.");
 
-#if defined(IF_XM)
     update_options();
-#else
-    update_options(true);
-#endif
     post_startup_warning(w);
 }
+
+#else
+
+void dddSetStatusAtBottomCB (GUI::Widget *w, bool state)
+{
+    app_data.status_at_bottom = state;
+
+    if (state)
+	set_status(next_ddd_will_start_with + "status line at bottom.");
+    else
+	set_status(next_ddd_will_start_with + "status line at top.");
+
+    update_options(true);
+    post_startup_warning(w);
+}
+
+#endif
 
 #if defined(IF_XM)
 

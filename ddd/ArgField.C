@@ -145,6 +145,8 @@ void ArgField::set_string(string s)
 #endif
 }
 
+#if defined(IF_XM)
+
 void ArgField::valueChangedCB(Widget,
 			      XtPointer client_data,
 			      XtPointer)
@@ -169,12 +171,40 @@ void ArgField::valueChangedCB(Widget,
     }
 }
 
+#else
+
+void ArgField::valueChangedCB(GUI::Widget *,
+			      ArgField *arg_field)
+{
+    arg_field->handlers.call(Changed, arg_field);
+
+    const string s = arg_field->get_string();
+
+    if (s.empty())
+    {
+	if (!arg_field->is_empty)
+	{
+	    arg_field->is_empty = true;
+	    arg_field->handlers.call(Empty, arg_field, (void *)true);
+	}
+    }
+    else if (arg_field->is_empty)
+    {
+	arg_field->is_empty = false;
+	arg_field->handlers.call(Empty, arg_field, (void *)false);
+    }
+}
+
+#endif
+
 void ArgField::lock(bool arg)
 {
     locked = arg;
     XtSetSensitive(top(), !locked);
     XtSetSensitive(text(), !locked);
 }
+
+#if defined(IF_XM)
 
 void ArgField::losePrimaryCB(Widget,
 			     XtPointer client_data,
@@ -183,6 +213,16 @@ void ArgField::losePrimaryCB(Widget,
     ArgField *arg_field = (ArgField *)client_data;
     arg_field->handlers.call(LosePrimary, arg_field, 0);
 }
+
+#else
+
+void ArgField::losePrimaryCB(GUI::Widget *,
+			     ArgField *arg_field)
+{
+    arg_field->handlers.call(LosePrimary, arg_field, 0);
+}
+
+#endif
 
 void ArgField::addHandler (unsigned    type,
 			   HandlerProc proc,

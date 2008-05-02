@@ -36,6 +36,8 @@
 // The default charset (for button labels, etc.)
 #define CHARSET_DEFAULT  MSTRING_DEFAULT_CHARSET
 
+#if defined(IF_XM)
+
 // The fixed-width font used in texts.
 #define CHARSET_TT XmStringCharSet("tt")
 
@@ -80,6 +82,55 @@
 
 // Light font (for the command tool buttons)
 #define CHARSET_LIGHT XmStringCharSet("light")
+
+#else
+
+// The fixed-width font used in texts.
+#define CHARSET_TT "tt"
+
+// The bold variant of TT.
+#define CHARSET_TB "tb"
+
+// The slanted variant of TT.
+#define CHARSET_TS "ts"
+
+// The bold slanted variant of TT.
+#define CHARSET_TBS "tbs"
+
+// Roman text.
+#define CHARSET_RM "rm"
+
+// Slanted text
+#define CHARSET_SL "sl"
+
+// Bold face text
+#define CHARSET_BF "bf"
+
+// Bold slanted text
+#define CHARSET_BS "bs"
+
+// Key caps
+#define CHARSET_KEY "key"
+
+// The fixed-width font used in text fields
+#define CHARSET_TEXT "text"
+
+// Logo
+#define CHARSET_LOGO "logo"
+
+// Large logo
+#define CHARSET_LLOGO "llogo"
+
+// Symbol
+#define CHARSET_SYMBOL "symbol"
+
+// Small font (for `<<' and `>>')
+#define CHARSET_SMALL "small"
+
+// Light font (for the command tool buttons)
+#define CHARSET_LIGHT "light"
+
+#endif
 
 
 // Convenience functions

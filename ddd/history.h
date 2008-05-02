@@ -45,6 +45,7 @@
 #else
 
 #include <GUI/Widget.h>
+#include <GUI/ComboBox.h>
 
 #endif
 
@@ -105,8 +106,13 @@ extern void gdbHistoryCB(Widget, XtPointer, XtPointer);
 extern void gdbHistoryCB(GUI::Widget *);
 #endif
 
+#if defined(IF_XM)
 // Tie a ComboBox to global history
 extern void tie_combo_box_to_history(Widget text, HistoryFilter filter);
+#else
+// Tie a ComboBox to global history
+extern void tie_combo_box_to_history(GUI::ComboBoxEntryText *text, HistoryFilter filter);
+#endif
 
 // Add FILE to recent file history
 extern void add_to_recent(const string& file);

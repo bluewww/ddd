@@ -528,6 +528,8 @@ void show(int (*formatter)(std::ostream& os))
 // WWW Page
 //-----------------------------------------------------------------------------
 
+#if defined(IF_XM)
+
 void DDDWWWPageCB(Widget, XtPointer, XtPointer)
 {
     string url = app_data.www_page;
@@ -541,6 +543,22 @@ void DDDWWWPageCB(Widget, XtPointer, XtPointer)
     system(cmd.chars());
 }
 
+#else
+
+void DDDWWWPageCB(GUI::Widget *)
+{
+    string url = app_data.www_page;
+    string cmd = app_data.www_command;
+
+    StatusDelay delay("Invoking WWW browser for " + quote(url));
+
+    cmd.gsub("@URL@", url);
+    cmd += " &";
+    cmd = sh_command(cmd, true);
+    system(cmd.chars());
+}
+
+#endif
 
 
 //-----------------------------------------------------------------------------

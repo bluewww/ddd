@@ -5676,6 +5676,7 @@ void SourceView::create_shells()
 #endif
 
 #if defined(IF_XM)
+
 // Check for modifications
 void SourceView::CheckModificationCB(Widget, XtPointer client_data, 
 				     XtPointer call_data)
@@ -5690,6 +5691,15 @@ void SourceView::CheckModificationCB(Widget, XtPointer client_data,
 
     // Follow text modifications here... (FIXME)
 }
+
+#else
+
+// Check for modifications
+void SourceView::CheckModificationCB(GUI::Widget *, bool editable)
+{
+    std::cerr << "CheckModificationCB not implemented yet\n";
+}
+
 #endif
 
 #if defined(IF_XM)
@@ -8521,7 +8531,7 @@ void SourceView::NewWatchpointCB(GUI::Widget *w)
 
 	GUI::ComboBoxEntryText *text = new GUI::ComboBoxEntryText(*box, GUI::PACK_SHRINK, "text");
 
-	tie_combo_box_to_history(text->internal(), watch_history_filter);
+	tie_combo_box_to_history(text, watch_history_filter);
 	GUI::Button *button;
 	button = dialog->add_button("ok", "OK");
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(NewWatchpointDCB), button, text));

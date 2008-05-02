@@ -76,7 +76,11 @@ private:
     static ProgressMeter *active; // Currently active object
     static bool _process(int remaining_length);
 
+#if defined(IF_XM)
     static void CancelCB(Widget, XtPointer, XtPointer);
+#else
+    static void CancelCB(GUI::Widget *);
+#endif
 
 private:
     // No copy constructor

@@ -205,8 +205,9 @@ extern void dddSetSeparateWindowsCB         (GUI::RadioButton *, int);
 
 #endif
 
-extern void dddSetStatusAtBottomCB          (Widget, XtPointer, XtPointer);
 #if defined(IF_XM)
+
+extern void dddSetStatusAtBottomCB          (Widget, XtPointer, XtPointer);
 extern void dddSetToolBarCB                 (Widget, XtPointer, XtPointer);
 extern void dddSetKeyboardFocusPolicyCB     (Widget, XtPointer, XtPointer);
 extern void dddSetPannerCB                  (Widget, XtPointer, XtPointer);
@@ -228,7 +229,10 @@ extern void dddSetWWWCommandCB              (Widget, XtPointer, XtPointer);
 extern void dddSetBuiltinPlotWindowCB       (Widget, XtPointer, XtPointer);
 
 extern void DDDSaveOptionsCB                (Widget, XtPointer, XtPointer);
+
 #else
+
+extern void dddSetStatusAtBottomCB          (GUI::Widget *w, bool state);
 extern void dddSetToolBarCB                 (GUI::RadioButton *, bool);
 extern void dddSetKeyboardFocusPolicyCB     (GUI::Widget *, unsigned char);
 extern void dddSetPannerCB                  (GUI::RadioButton *, bool);
@@ -250,9 +254,9 @@ extern void dddSetWWWCommandCB              (GUI::Entry *);
 extern void dddSetBuiltinPlotWindowCB       (GUI::RadioButton *, bool);
 
 extern void DDDSaveOptionsCB                (GUI::Widget *, unsigned long);
+
 #endif
 
-extern void DDDSaveOptionsAsCB              (Widget, XtPointer, XtPointer);
 
 #endif // _DDD_options_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

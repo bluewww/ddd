@@ -67,12 +67,10 @@ const unsigned LosePrimary = Changed + 1;
 
 const unsigned ArgField_NTypes = LosePrimary + 1;
 
-class ArgField {
 #if defined(IF_XM)
+
+class ArgField {
     Widget                  arg_text_field;
-#else
-    GUI::ComboBoxEntryText *arg_text_field;
-#endif
     HandlerList handlers;
     bool     is_empty;
     bool     locked;
@@ -90,11 +88,7 @@ private:
 
 public:
     // Constructor
-#if defined(IF_XM)
     ArgField(Widget parent, const char *name);
-#else
-    ArgField(GUI::Container *parent, const char *name);
-#endif
 
     bool empty () const { return is_empty; }
 
@@ -103,13 +97,8 @@ public:
 
     void lock(bool locked = true);
 
-#if defined(IF_XM)
     Widget text() const { return arg_text_field; };
     Widget top()  const;
-#else
-    GUI::ComboBoxEntryText *text() const { return arg_text_field; };
-    GUI::Widget *top()  const;
-#endif
 
     void addHandler (unsigned    type,
 		     HandlerProc proc,
@@ -121,6 +110,50 @@ public:
 
     void callHandlers ();
 };
+
+#else
+
+class ArgField {
+    GUI::ComboBoxEntryText *arg_text_field;
+    HandlerList handlers;
+    bool     is_empty;
+    bool     locked;
+
+    static void valueChangedCB(GUI::Widget *w,
+			       ArgField *client_data);
+    static void losePrimaryCB(GUI::Widget *w,
+			      ArgField *client_data);
+
+private:
+    ArgField(const ArgField&);
+    ArgField& operator = (const ArgField&);
+
+public:
+    // Constructor
+    ArgField(GUI::Container *parent, const char *name);
+
+    bool empty () const { return is_empty; }
+
+    string get_string () const;
+    void set_string(string s);
+
+    void lock(bool locked = true);
+
+    GUI::ComboBoxEntryText *text() const { return arg_text_field; };
+    GUI::Widget *top()  const;
+
+    void addHandler (unsigned    type,
+		     HandlerProc proc,
+		     void*       client_data = 0);
+
+    void removeHandler (unsigned    type,
+			HandlerProc proc,
+			void        *client_data = 0);
+
+    void callHandlers ();
+};
+
+#endif
 
 #if defined(IF_XM)
 

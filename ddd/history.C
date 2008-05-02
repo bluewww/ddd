@@ -714,25 +714,34 @@ static void update_combo_boxes(const string& new_entry)
     }
 }
 
+#if defined(IF_XM)
+
 static void RemoveComboBoxCB(Widget text, XtPointer, XtPointer)
 {
     combo_boxes.remove(text);
 }
+
+#endif
+
+#if defined(IF_XM)
 
 // Tie a ComboBox to global history
 void tie_combo_box_to_history(Widget text, HistoryFilter filter)
 {
     combo_boxes[text] = filter;
     update_combo_box(text, filter);
-#if defined(IF_XM)
     XtAddCallback(text, XmNdestroyCallback, RemoveComboBoxCB, XtPointer(0));
-#else
-#ifdef NAG_ME
-#warning Destrou callback needed?
-#endif
-#endif
 }
 
+#else
+
+// Tie a ComboBox to global history
+void tie_combo_box_to_history(GUI::ComboBoxEntryText *text, HistoryFilter filter)
+{
+    std::cerr << "tie_combo_box_to_history not implemented yet\n";
+}
+
+#endif
 
 //-----------------------------------------------------------------------------
 // Recent file history

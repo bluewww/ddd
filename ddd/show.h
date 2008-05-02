@@ -55,33 +55,42 @@ void show_version(std::ostream& os);
 void show_configuration(std::ostream& os);
 void show(int (*formatter)(std::ostream& os));
 
+#if defined(IF_XM)
+
 // WWW page
 void DDDWWWPageCB(Widget, XtPointer, XtPointer);
 
 // Manual
 int ddd_man(std::ostream& os);
-#if defined(IF_XM)
 void DDDManualCB(Widget, XtPointer, XtPointer);
 void GDBManualCB(Widget, XtPointer, XtPointer);
-#else
-void DDDManualCB(GUI::Widget *);
-void GDBManualCB(GUI::Widget *);
-#endif
 
 // License
 int ddd_license(std::ostream& os);
-#if defined(IF_XM)
 void DDDLicenseCB(Widget, XtPointer, XtPointer);
-#else
-void DDDLicenseCB(GUI::Widget *);
-#endif
 
 // News
 int ddd_news(std::ostream& os);
-#if defined(IF_XM)
 void DDDNewsCB(Widget, XtPointer, XtPointer);
+
 #else
+
+// WWW page
+void DDDWWWPageCB(GUI::Widget *);
+
+// Manual
+int ddd_man(std::ostream& os);
+void DDDManualCB(GUI::Widget *);
+void GDBManualCB(GUI::Widget *);
+
+// License
+int ddd_license(std::ostream& os);
+void DDDLicenseCB(GUI::Widget *);
+
+// News
+int ddd_news(std::ostream& os);
 void DDDNewsCB(GUI::Widget *);
+
 #endif
 
 #endif // _DDD_show_h

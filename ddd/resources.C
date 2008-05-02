@@ -109,6 +109,9 @@ typedef DDDResource XtResource;
 
 typedef char *String;
 
+typedef unsigned int Cardinal;
+typedef void *XtPointer;
+
 #define XmCBlinkRate ""
 
 #endif
@@ -2328,6 +2331,8 @@ static void copy(char *dest, const char *src, Cardinal size)
     }
 }
 
+#if defined(IF_XM)
+
 // Copy the value at SRC of size SIZE to the value at DEST.
 static void CopyArg(XtPointer src, XtPointer dest, Cardinal size)
 {
@@ -2367,6 +2372,8 @@ static void CopyArg(XtPointer src, XtPointer dest, Cardinal size)
 	copy(STATIC_CAST(char *,dest), STATIC_CAST(char *,p), size);
     }
 }
+
+#endif
 
 
 // This constructor is invoked before program start

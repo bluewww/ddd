@@ -30,7 +30,9 @@
 char session_rcsid[] = 
     "$Id$";
 
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif
 
 #include "session.h"
 
@@ -1738,6 +1740,8 @@ string session_core_file(const string& session)
 // X11R6 Session management
 // ---------------------------------------------------------------------------
 
+#if defined(IF_XM)
+
 #if XtSpecificationRelease >= 6
 
 // Realize X11R6 session management protocols.
@@ -1945,3 +1949,5 @@ void SaveSmSessionCB(Widget, XtPointer, XtPointer) {}
 void ShutdownSmSessionCB(Widget, XtPointer, XtPointer) {}
 
 #endif // XtSpecificationRelease < 6
+
+#endif

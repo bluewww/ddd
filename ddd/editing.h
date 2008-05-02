@@ -101,11 +101,13 @@ extern void popupAct              (GUI::Widget *, GUI::Event *, GUI::String *, u
 
 
 // Callbacks
+#if defined(IF_XM)
 extern void gdbModifyCB          (Widget, XtPointer, XtPointer);
 extern void gdbMotionCB          (Widget, XtPointer, XtPointer);
-#if defined(IF_XM)
 extern void gdbChangeCB          (Widget, XtPointer, XtPointer);
 #else
+extern void gdbModifyCB          (GUI::ScrolledText *);
+extern void gdbMotionCB          (GUI::ScrolledText *);
 extern void gdbChangeCB          (GUI::ScrolledText *);
 #endif
 
