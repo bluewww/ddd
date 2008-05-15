@@ -34,7 +34,7 @@ char WhatNextCB_rcsid[] =
 #include "WhatNextCB.h"
 
 #include "Command.h"
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include "converters.h"
 #endif
 #include "comm-manag.h"
@@ -56,7 +56,7 @@ char WhatNextCB_rcsid[] =
 #include "SourceView.h"
 #include "UndoBuffer.h"
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include <Xm/Xm.h>
 #include <Xm/Text.h>
 #include <Xm/MessageB.h>
@@ -132,7 +132,7 @@ static int passed_to_program(const string& program_state)
 	if (signal_description.empty())
 	    signal_description = signal;
 
-#if defined(IF_MOTIF)	
+#if defined(IF_XM)	
 	defineConversionMacro("SIGNAL", signal.chars());
 	defineConversionMacro("SIGNAL_DESCRIPTION", signal_description.chars());
 #else
@@ -162,7 +162,11 @@ static int passed_to_program(const string& program_state)
 }
 
 // Give a help dependent on current DDD state
+#if defined(IF_XM)
 void WhatNextCB(Widget, XtPointer, XtPointer)
+#else
+void WhatNextCB(GUI::Widget *)
+#endif
 {
     // Special DDD states
     if (ddd_has_crashed)
@@ -254,7 +258,7 @@ void WhatNextCB(Widget, XtPointer, XtPointer)
     }
 
     // Program has stopped and nothing is selected.
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     defineConversionMacro("PROGRAM_STATE", info.state.chars());
 #else
 #ifdef NAG_ME

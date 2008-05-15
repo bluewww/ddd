@@ -40,7 +40,7 @@ typedef bool Bool;
 #define False false
 #define True true
 
-#if 1
+#if 0
 typedef unsigned int Cardinal;
 typedef void *XtPointer;
 

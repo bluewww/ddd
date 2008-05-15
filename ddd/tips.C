@@ -52,7 +52,7 @@ char tips_rcsid[] =
 #include <iostream>
 #include <fstream>
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include <Xm/Xm.h>
 #include <Xm/MessageB.h>
 #include <Xm/PushB.h>
@@ -73,7 +73,7 @@ GUI::CheckButton *set_startup_tips_w;
 
 static MString get_tip_of_the_day(Widget w, int n)
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     struct tip_of_the_day_resource_values {
 	XmString tip;
     };
@@ -100,7 +100,7 @@ static MString get_tip_of_the_day(Widget w, int n)
 
 static string app_value(const string& resource, const string& value)
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     String app_name;
     String app_class;
     XtGetApplicationNameAndClass(XtDisplay(find_shell()), 
@@ -114,6 +114,8 @@ static string app_value(const string& resource, const string& value)
     return string("app_value");
 #endif
 }
+
+#if defined(IF_XM)
 
 static void SaveTipCountCB(Widget, XtPointer = 0, XtPointer = 0)
 {
@@ -135,6 +137,8 @@ static void SaveTipCountCB(Widget, XtPointer = 0, XtPointer = 0)
     }
 }
 
+#endif
+
 inline bool is_tip(const MString& m)
 {
     return !m.isNull() && !m.isEmpty();
@@ -142,7 +146,7 @@ inline bool is_tip(const MString& m)
 
 static bool refresh_tip_dialog(Widget w)
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     MString tip = get_tip_of_the_day(w, app_data.startup_tip_count);
     if (!is_tip(tip))
     {
@@ -170,6 +174,8 @@ static bool refresh_tip_dialog(Widget w)
     return true;
 }
 
+#if defined(IF_XM)
+
 static void PrevTipCB(Widget w, XtPointer, XtPointer)
 {
     app_data.startup_tip_count--;
@@ -181,6 +187,8 @@ static void NextTipCB(Widget w, XtPointer, XtPointer)
     app_data.startup_tip_count++;
     refresh_tip_dialog(w);
 }
+
+#endif
 
 #if defined(IF_XM)
 
@@ -205,9 +213,10 @@ void SetStartupTipsCB(GUI::CheckButton *w)
 
 #endif
 
+#if defined(IF_XM)
+
 void TipOfTheDayCB(Widget w, XtPointer, XtPointer)
 {
-#if defined(IF_MOTIF)
     static Widget tip_dialog = 0;
 
     if (tip_dialog == 0)
@@ -245,5 +254,6 @@ void TipOfTheDayCB(Widget w, XtPointer, XtPointer)
 	return;
 
     manage_and_raise(tip_dialog);
-#endif
 }
+
+#endif

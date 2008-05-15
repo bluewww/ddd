@@ -285,14 +285,15 @@ BoxPoint DispGraph::default_pos(DispNode *new_node,
 {
     Dimension grid_height = 16;
     Dimension grid_width  = 16;
-    Cardinal rotation     = 0;
 #if defined(IF_XM)
+    Cardinal rotation     = 0;
     XtVaGetValues(w,
 		  XtNgridHeight, &grid_height,
 		  XtNgridWidth,  &grid_width,
 		  XtNrotation,   &rotation,
 		  XtPointer(0));
 #else
+    unsigned int rotation     = 0;
     grid_height = w->get_grid_height();
     grid_width = w->get_grid_width();
     rotation = w->get_rotation();

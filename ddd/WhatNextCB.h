@@ -29,20 +29,37 @@
 #ifndef _DDD_WhatNextCB_h
 #define _DDD_WhatNextCB_h
 
-#ifdef IF_MOTIF
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#if defined(IF_XM)
 
 #include <X11/Intrinsic.h>
 
-#endif // IF_MOTIF
+#else
+
+#include <GUI/Widget.h>
+
+#endif
 
 #include "gtk_wrapper.h"
 
 #include "bool.h"
 #include "strclass.h"
 
+#if defined(IF_XM)
+
 // Give a help dependent on current DDD state.
 extern void WhatNextCB(Widget widget, XtPointer client_data,
  		       XtPointer call_data);
+
+#else
+
+// Give a help dependent on current DDD state.
+extern void WhatNextCB(GUI::Widget *);
+
+#endif
 
 #endif // _DDD_WhatNextCB_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

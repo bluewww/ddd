@@ -1474,7 +1474,7 @@ void SourceView::temp_n_cont(const string& a, GUI::Widget *w)
 	// Make sure the temporary breakpoint is deleted after `cont'
 	Command c("cont", w);
 	c.callback = clearJumpBP;
-	c.data     = XtPointer(old_max_breakpoint_number_seen);
+	c.data     = (void *)old_max_breakpoint_number_seen;
 	gdb_command(c);
 	break;
     }
@@ -1737,7 +1737,7 @@ bool SourceView::move_pc(const string& a, GUI::Widget *w)
 	last_jump_address = a;
 	Command c(gdb->jump_command(address), w);
 	c.callback = clearJumpBP;
-	c.data     = XtPointer(old_max_breakpoint_number_seen);
+	c.data     = (void *)old_max_breakpoint_number_seen;
 	gdb_command(c);
 
 	return true;
@@ -7777,7 +7777,7 @@ void SourceView::srcpopupAct (GUI::Widget *w, GUI::Event* e, GUI::String *, unsi
 	{
 	    bp_popup_parent = w;
 	    bp_popup_w = MMcreatePopupMenu(*w, "bp_popup", bp_popup);
-	    MMaddCallbacks (bp_popup, XtPointer(&bp_nr));
+	    MMaddCallbacks (bp_popup, &bp_nr);
 	    MMaddHelpCallback(bp_popup, sigc::ptr_fun(ImmediateHelpCB1));
 	    InstallButtonTips1(bp_popup_w);
 	}
@@ -7805,7 +7805,7 @@ void SourceView::srcpopupAct (GUI::Widget *w, GUI::Event* e, GUI::String *, unsi
 	if (line_popup_w == 0)
 	{
 	    line_popup_w = MMcreatePopupMenu (*w, "line_popup", line_popup);
-	    MMaddCallbacks(line_popup, XtPointer(&address));
+	    MMaddCallbacks(line_popup, &address);
 	    MMaddHelpCallback(line_popup, sigc::ptr_fun(ImmediateHelpCB1));
 	    InstallButtonTips1(line_popup_w);
 
@@ -7840,7 +7840,7 @@ void SourceView::srcpopupAct (GUI::Widget *w, GUI::Event* e, GUI::String *, unsi
 	GUI::PopupMenu *text_popup_w;
 	text_popup_w = 
 	    MMcreatePopupMenu(*text_w, "text_popup", text_popup);
-	MMaddCallbacks(text_popup, XtPointer(&callback_word));
+	MMaddCallbacks(text_popup, &callback_word);
 	MMaddHelpCallback(text_popup, sigc::ptr_fun(ImmediateHelpCB1));
 	InstallButtonTips1(text_popup_w);
 
@@ -8670,7 +8670,7 @@ void *SourceView::DeleteInfoCB(void *client_data)
 	EditBreakpointCommandsCB(source_text_w, info);
 
 	// Update all remaining panels in the next run
-	gdb->addHandler(Recording, RecordingHP, XtPointer(0));
+	gdb->addHandler(Recording, RecordingHP, (void *)0);
     }
 
     delete info;
@@ -9483,7 +9483,7 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, GUI::Widget * /* origin */)
     info->editor->show();
 
     info->title = panel_menu[0].label;
-    MMaddCallbacks(panel_menu, XtPointer(info));
+    MMaddCallbacks(panel_menu, info);
 
     update_properties_panel(info);
     InstallButtonTips1(panel);
