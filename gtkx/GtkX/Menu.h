@@ -47,6 +47,7 @@ namespace GtkX {
 	const Gtk::Widget *internal(void) const;
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
 #include <GtkX/redirect.h>
+	ChildList get_children(void);
     };
 
     // These are distinct for Motif, identical for Gtk.

@@ -48,6 +48,7 @@ namespace GtkX {
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
 #include <GtkX/redirect.h>
 	void set_menu(GtkX::Menu &menu);
+	GtkX::Menu *get_menu(void);
     };
 
 }

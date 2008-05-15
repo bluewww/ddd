@@ -527,6 +527,8 @@ namespace GtkX {
 	String string;
 	ActionProc proc;
     };
+
+    Widget *get_wrapper(Gtk::Widget *);
 }
 
 #endif // GTKX_WIDGET_H

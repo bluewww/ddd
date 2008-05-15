@@ -69,3 +69,13 @@ OptionMenu::set_menu(GtkX::Menu &menu)
     this->Gtk::OptionMenu::set_menu(menu);
 }
 
+GtkX::Menu *
+OptionMenu::get_menu(void)
+{
+    Gtk::Menu *gtk_menu = Gtk::OptionMenu::get_menu();
+    if (!gtk_menu) return NULL;
+    GtkX::Widget *w = get_wrapper(gtk_menu);
+    if (!w) return NULL;
+    return dynamic_cast<GtkX::Menu *>(w);
+}
+

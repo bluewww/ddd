@@ -63,3 +63,9 @@ Menu::internal(void) const
     return this;
 }
 
+ChildList
+Menu::get_children(void)
+{
+    return GtkX::Container::get_children();
+}
+

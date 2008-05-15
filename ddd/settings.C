@@ -1407,21 +1407,20 @@ void process_show(const string& command, string value, bool init)
     GUI::Entry *entry;
     if (w != 0 && (optmenu = dynamic_cast<GUI::OptionMenu *>(w)))
     {
-	std::cerr << "Settings OptionMenu not yet handled.\n";
-#if 0
-	Widget menu = 0;
-	XtVaGetValues(w, XmNsubMenuId, &menu, XtPointer(0));
-	if (menu != 0)
-	{
-	    // Option menu
-	    Widget active = XtNameToWidget(menu, value.chars());
-	    if (active != 0)
-	    {
-		XtVaSetValues(w, XmNmenuHistory, active, XtPointer(0));
-		return;
+	GUI::Menu *menu = optmenu->get_menu();
+	GUI::ChildIterator iter;
+	GUI::ChildList kids = menu->get_children();
+	int pos = 0;
+	for (GUI::ChildIterator iter = kids.begin();
+	     iter != kids.end();
+	     iter++, pos++) {
+	    GUI::Widget *w = *iter;
+	    if (w->get_name() == value.chars()) {
+		std::cerr << "OptionMenu value " << value.chars() << " at " << pos << "\n";
+		optmenu->set_history(pos);
+		break;
 	    }
 	}
-#endif
     }
     else if (w != 0 && (button = dynamic_cast<GUI::CheckButton *>(w)))
     {

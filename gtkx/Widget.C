@@ -333,6 +333,12 @@ Widget::get_parent(void)
     return (GtkX::Container *)par->get_data(gtkx_super_quark);
 }
 
+Widget *
+GtkX::get_wrapper(Gtk::Widget *w)
+{
+    return (GtkX::Widget *)w->get_data(gtkx_super_quark);
+}
+
 void
 Widget::show(void)
 {
