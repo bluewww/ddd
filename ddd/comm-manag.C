@@ -1240,7 +1240,7 @@ void send_gdb_command(string cmd, GUI::Widget *origin,
 	case BASH:
 	    if (!is_reset_cmd)
 	    {
-		// We're restarting Perl.  Make sure the state is preserved.
+		// We're restarting bash.  Make sure the state is preserved.
 		unsigned long flags = DONT_RELOAD_FILE;
 		get_restart_commands(cmd_data->init_bash, flags);
 		cmd_data->init_bash += get_settings(gdb->type());
@@ -1249,6 +1249,7 @@ void send_gdb_command(string cmd, GUI::Widget *origin,
 		cmd_data->new_exec_pos = true;
 	    }
 	    extra_data->refresh_initial_line = false;
+	    extra_data->refresh_data = false;
 	    break;
 
 	case JDB:

@@ -370,14 +370,16 @@ bool is_perl_file(const string& file_name)
     return false;
 }
 
-// A Perl file is a standard source file which ends in '.pl' or `.pm'
+// A Bash file is a standard source file which ends in '.sh' or 
+// has #! bash. But we'll also take #! sh as well.
 bool is_bash_file(const string& file_name)
 {
     if (!is_source_file(file_name))
 	return false;
 
-    if (file_name.contains(".sh", -1) || 
-	has_hashbang(file_name, "bash"))
+    if (file_name.contains(".sh", -1) 
+	|| has_hashbang(file_name, "bash")
+	|| has_hashbang(file_name, "sh"))
 	return true;
 
     return false;
