@@ -70,6 +70,13 @@ Table::set_position(int x0, int y0, int w0, int h0)
 }
 
 void
+Table::set_cell_size(int w0, int h0)
+{
+    w = w0;
+    h = h0;
+}
+
+void
 Table::add_child(GtkX::Widget &child,
 		 PackOptions options,
 		 int padding)

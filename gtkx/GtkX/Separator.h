@@ -28,26 +28,34 @@
 // A brief look at QT indicates that this will be required there as
 // well.
 
-#ifndef GTKX_SEPARATORMENUITEM_H
-#define GTKX_SEPARATORMENUITEM_H
+#ifndef GTKX_SEPARATOR_H
+#define GTKX_SEPARATOR_H
 
 #include <GtkX/Container.h>
-#include <gtkmm/separatormenuitem.h>
+#include <gtkmm/separator.h>
 
 // Template for a widget taking a single string constructor argument.
 
 namespace GtkX {
 
-    class SeparatorMenuItem: public Widget, public Gtk::SeparatorMenuItem {
+    class HSeparator: public Widget, public Gtk::HSeparator {
     public:
-	SeparatorMenuItem(GtkX::Container &parent, const String &name="");
-	~SeparatorMenuItem(void);
+	HSeparator(GtkX::Container &parent, const String &name="");
+	~HSeparator(void);
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;
-	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
+#include <GtkX/redirect.h>
+    };
+
+    class VSeparator: public Widget, public Gtk::VSeparator {
+    public:
+	VSeparator(GtkX::Container &parent, const String &name="");
+	~VSeparator(void);
+	Gtk::Widget *internal(void);
+	const Gtk::Widget *internal(void) const;
 #include <GtkX/redirect.h>
     };
 
 }
 
-#endif // GTKX_SEPARATORMENUITEM_H
+#endif // GTKX_SEPARATOR_H

@@ -46,6 +46,7 @@ namespace GtkX {
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
 #include <GtkX/redirect.h>
 	void set_position(int x0, int y0, int w0=1, int h0=1);
+	void set_cell_size(int w0=1, int h0=1);
 	void cr(int h=1);
 	void add_child(GtkX::Widget &child,
 		       PackOptions options=PACK_SHRINK,

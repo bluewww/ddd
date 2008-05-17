@@ -1,5 +1,3 @@
- // -*- C++ -*-
-
 // High-level GUI wrapper for Gtkmm.
 
 // Copyright (C) 2007 Peter Wainwright <prw@ceiriog.eclipse.co.uk>
@@ -25,29 +23,42 @@
 // Unfortunately Motif widgets require parent and name arguments to
 // the constructor, unlike the Gtk ones.  Motif (Xt) widgets cannot be
 // reparented.  Therefore we need a constructor with extra arguments.
-// A brief look at QT indicates that this will be required there as
-// well.
 
-#ifndef GTKX_SEPARATORMENUITEM_H
-#define GTKX_SEPARATORMENUITEM_H
+// ***************************************************************************
 
-#include <GtkX/Container.h>
-#include <gtkmm/separatormenuitem.h>
+// Primitive widget creation using constructors with no arguments.
 
-// Template for a widget taking a single string constructor argument.
+#include <GtkX/SeparatorMenuItem.h>
 
-namespace GtkX {
+using namespace GtkX;
 
-    class SeparatorMenuItem: public Widget, public Gtk::SeparatorMenuItem {
-    public:
-	SeparatorMenuItem(GtkX::Container &parent, const String &name="");
-	~SeparatorMenuItem(void);
-	Gtk::Widget *internal(void);
-	const Gtk::Widget *internal(void) const;
-	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
-#include <GtkX/redirect.h>
-    };
-
+SeparatorMenuItem::SeparatorMenuItem(GtkX::Container &parent, const GtkX::String &name)
+{
+    set_name(name.s());
+    // We cannot use this:
+    // parent.gtk_container()->add(*this);
+    // If we always had parent.gtk_container() == &parent we could just
+    // override the on_add() method to do what we want.  However,
+    // sometimes parent.gtk_container() is a standard Gtk widget.
+    // In such a case (e.g. RadioBox) we need to override add_child()
+    // instead.
+    parent.add_child(*this);
+    postinit();
 }
 
-#endif // GTKX_SEPARATORMENUITEM_H
+SeparatorMenuItem::~SeparatorMenuItem(void)
+{
+}
+
+Gtk::Widget *
+SeparatorMenuItem::internal(void)
+{
+    return this;
+}
+
+const Gtk::Widget *
+SeparatorMenuItem::internal(void) const
+{
+    return this;
+}
+

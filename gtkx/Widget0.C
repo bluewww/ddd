@@ -77,11 +77,9 @@ Widget0<T>::internal(void) const
 }
 
 #include <gtkmm/scale.h>
-#include <gtkmm/separatormenuitem.h>
 #include <gtkmm/spinbutton.h>
 #include <gtkmm/comboboxentrytext.h>
 
 template class Widget0<Gtk::HScale>;
-template class Widget0<Gtk::SeparatorMenuItem>;
 template class Widget0<Gtk::SpinButton>;
 template class Widget0<Gtk::ComboBoxEntryText>;

@@ -65,6 +65,7 @@ char settings_rcsid[] =
 #include <GUI/MenuItem.h>
 #include <GUI/OptionMenu.h>
 #include <GUI/Table.h>
+#include <GUI/Separator.h>
 
 #include <map>
 
@@ -3609,12 +3610,12 @@ static void add_separator(Widget form, int& row)
 // Add separator
 static void add_separator(GUI::Table *form, int& row)
 {
-#if !defined(IF_XMMM)
-    Gtk::Widget *sep = new Gtk::HSeparator();
-    form->gtk_container()->add(*sep);
+    form->set_cell_size(2, 1);
+    GUI::HSeparator *sep = new GUI::HSeparator(*form);
+    form->set_cell_size(1, 1);
     sep->show();
+    form->cr();
     row++;
-#endif
 }
 
 #endif
