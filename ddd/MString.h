@@ -337,6 +337,12 @@ public:
 	return lc;
     }
 
+#if defined(NAG_ME)
+#warning extent, height, width require PangoContext.
+#endif
+
+#if defined(IF_XM)
+
     void extent(Dimension& x, Dimension& y, void *fontlist) const
     {
 	Glib::RefPtr<Pango::Layout> lo = Pango::Layout::create(pango_context);
@@ -361,6 +367,8 @@ public:
 	lo->get_pixel_size(x, y);
 	return x;
     }
+
+#endif
 
 #ifdef NAG_ME
 #warning Does length() have a meaning for our strings?

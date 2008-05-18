@@ -40,43 +40,6 @@ typedef bool Bool;
 #define False false
 #define True true
 
-#if 0
-typedef unsigned int Cardinal;
-typedef void *XtPointer;
-
-#ifdef NAG_ME
-#warning Perhaps we should use a gconfmm Value?
-#endif
-typedef Glib::ValueBase XtArgVal;
-#endif
-
-typedef int Position;
-
-// Simple typedefs
-typedef int Dimension;
-
-typedef guint32 Time;
-#define CurrentTime 0 /* special time */
-
-// End simple typedefs
-
-// FIXME globals
-extern Glib::RefPtr<Pango::Context> pango_context;
-
-// Callbacks, actions, signals, slots
-
-typedef sigc::slot<void, void*> XtTimerCallbackProc;
-
-// client_data is bound.
-// call_data is never used by gtkmm.
-typedef sigc::slot<void, Widget> XtCallbackRec;
-
-#if defined(IF_XM)
-typedef sigc::slot<void, Widget, XEvent*, String*, Cardinal*> XtActionProc;
-#else
-typedef sigc::slot<void, GUI::Widget *, GUI::Event *, GUI::String *, unsigned int *> XtActionProc;
-#endif
-
 // enums
 
 #if 1

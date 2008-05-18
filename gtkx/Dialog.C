@@ -121,14 +121,18 @@ MessageDialog::MessageDialog(GtkX::Widget &parent, const String &name,
 			     const String &label, MessageType type):
     Dialog(parent, name)
 {
-    message_ = new GtkX::Label(*this, PACK_SHRINK, name+String("-label"));
+    message_ = new GtkX::Label(*this, PACK_SHRINK, name+String("-label"),
+			       label);
+    message_->show();
 }
 
 MessageDialog::MessageDialog(const String &name, const String &label,
 			     MessageType type):
     Dialog(name)
 {
-    message_ = new GtkX::Label(*this, PACK_SHRINK, name+String("-label"));
+    message_ = new GtkX::Label(*this, PACK_SHRINK, name+String("-label"),
+			       label);
+    message_->show();
 }
 
 MessageDialog::~MessageDialog(void)
