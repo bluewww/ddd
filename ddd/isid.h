@@ -44,10 +44,22 @@ inline bool is_perl_prefix(char c)
     return c == '@' || c == '%' || c == '$';
 }
 
-// True if C is a Perl prefix character
-inline bool is_bash_prefix(char c)
+// True if C can be a GNU Make "automatic" variable
+inline bool is_make_automatic(char c)
 {
-    return c == '$';
+  switch(c) {
+  case '@':
+  case '%':
+  case '*':
+  case '+':
+  case '|':
+  case '<':
+  case '^':
+  case '?':
+    return true;
+  default:
+    return false;
+  }
 }
 
 #endif // _DDD_isid_h
