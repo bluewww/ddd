@@ -114,6 +114,9 @@ typedef void *XtPointer;
 
 #define XmCBlinkRate ""
 
+#define XmVERTICAL GUI::ORIENTATION_VERTICAL
+#define XmHORIZONTAL GUI::ORIENTATION_HORIZONTAL
+
 #endif
 
 #define N_ELEMENTS(x) (sizeof(x)/sizeof(x[0]))

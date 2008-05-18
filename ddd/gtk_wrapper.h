@@ -14,25 +14,9 @@
 #include <GUI/Widget.h>
 #include <gtkmm/widget.h>
 
-// Macros
-
-
-
-// End menus
-
-// Gdk
-
-#include <gdkmm/display.h>
-#include <gdkmm/screen.h>
-#include <gdkmm/color.h>
-#include <gdkmm/colormap.h>
-#include <gdkmm/cursor.h>
-#include <gdkmm/region.h>
 
 
 typedef Gtk::Widget *Widget;
-
-// typedef long XmTextPosition;
 
 typedef bool Boolean;
 typedef bool Bool;
@@ -47,12 +31,6 @@ enum {
   XmPIXMAP = 1,
   XmSTRING,
   XmPIXMAP_AND_STRING
-};
-
-enum XmOrientation {
-  XmNO_ORIENTATION,
-  XmVERTICAL,
-  XmHORIZONTAL
 };
 
 enum XmButtonState {

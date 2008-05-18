@@ -53,8 +53,14 @@ class Agent;
 class PlotAgent;
 
 typedef unsigned char DispValueOrientation;
+
+#if defined(IF_XM)
 const unsigned char Vertical   = XmVERTICAL;
 const unsigned char Horizontal = XmHORIZONTAL;
+#else
+const unsigned char Vertical   = GUI::ORIENTATION_VERTICAL;
+const unsigned char Horizontal = GUI::ORIENTATION_HORIZONTAL;
+#endif
 
 class DispValue {
     // General members

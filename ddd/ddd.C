@@ -7005,10 +7005,17 @@ static bool real_update_options(bool noupd)
     set_sensitive(graph_left_to_right_w, !app_data.cluster_displays);
     set_sensitive(graph_top_to_bottom_w, !app_data.cluster_displays);
 
+#if defined(IF_XM)
     set_toggle(graph_left_to_right_w, 
 	       app_data.display_placement == XmHORIZONTAL);
     set_toggle(graph_top_to_bottom_w,
 	       app_data.display_placement == XmVERTICAL);
+#else
+    set_toggle(graph_left_to_right_w, 
+	       app_data.display_placement == GUI::ORIENTATION_HORIZONTAL);
+    set_toggle(graph_top_to_bottom_w,
+	       app_data.display_placement == GUI::ORIENTATION_VERTICAL);
+#endif
 
     set_toggle(graph_show_hints_w, show_hints);
     set_toggle(graph_show_annotations_w, show_annotations);
@@ -7114,6 +7121,7 @@ static bool real_update_options(bool noupd)
 	// data_disp->refresh_display();
     }
 
+#if defined(IF_XM)
     // Synchronize layout direction with placement
     switch (app_data.display_placement)
     {
@@ -7125,6 +7133,19 @@ static bool real_update_options(bool noupd)
 	data_disp->graph_edit->set_rotation(90);
 	break;
     }
+#else
+    // Synchronize layout direction with placement
+    switch (app_data.display_placement)
+    {
+    case GUI::ORIENTATION_VERTICAL:
+	data_disp->graph_edit->set_rotation(0);
+	break;
+	    
+    case GUI::ORIENTATION_HORIZONTAL:
+	data_disp->graph_edit->set_rotation(90);
+	break;
+    }
+#endif
 
 #if defined(IF_XM)
     if (app_data.command_toolbar && 
@@ -7619,9 +7640,9 @@ static void ResetDataPreferencesCB(void)
     notify_set_toggle(detect_aliases_w, initial_app_data.detect_aliases);
     notify_set_toggle(graph_detect_aliases_w, initial_app_data.detect_aliases);
     notify_set_toggle(graph_left_to_right_w,
-		      initial_app_data.display_placement == XmHORIZONTAL);
+		      initial_app_data.display_placement == GUI::ORIENTATION_HORIZONTAL);
     notify_set_toggle(graph_top_to_bottom_w,
-		      initial_app_data.display_placement == XmVERTICAL);
+		      initial_app_data.display_placement == GUI::ORIENTATION_VERTICAL);
     notify_set_toggle(graph_cluster_displays_w, 
 		      initial_app_data.cluster_displays);
     notify_set_toggle(graph_align_2d_arrays_w, 
