@@ -4,6 +4,10 @@
 
 @c Copyright (C) 1999-2001 Universitaet Passau, Germany.
 @c Copyright (C) 2001-2004 Universitaet des Saarlandes, Germany.
+@c
+@c Sections on GNU Make and Bash 
+@c Copyright (C) 2005 Rocky Bernstein <rocky@panix.com>
+@c
 @c Written by Andreas Zeller <zeller@gnu.org>.
 @c 
 @c This file is part of DDD.
@@ -53,7 +57,7 @@
 @set EDITION First
 
 @c !!set DDD manual's revision date
-@set DATE 15 January, 2004
+@set DATE 10 January, 2005
 
 @c Index stuff
 @c Labels
@@ -83,10 +87,10 @@
 @pdfcompresslevel=9
 @pdfinfo{
     /Title (Debugging with DDD)
-    /Author (Andreas Zeller)
+    /Author (Andreas Zeller et. al.)
     /Subject (DDD - the Data Display Debugger)
     /Keywords (Debugging Debugger DDD GNU GDB DBX XDB JDB Ladebug WDB 
-               Python Perl Bash)
+               Python Perl Bash GNU Make)
 }
 @fi
 @end iftex
@@ -301,6 +305,7 @@ Inferior Debugger Options
 * PYDB Options::                
 * Perl Options::                
 * Bash Options::                
+* GNU Make Options::                
 
 Persistent Sessions
 
@@ -672,6 +677,7 @@ Configuration Notes
 * JDB::                         Using @DDD{} with @JDB{}
 * Perl::                        Using @DDD{} with Perl
 * Bash::                        Using @DDD{} with Bash
+* Make::                        Using @DDD{} with GNU Make
 * LessTif::                     Using @DDD{} with LessTif
 
 Using @value{DDD} with GDB
@@ -831,6 +837,14 @@ debugger,} as of Perl 5.003 and later.
 To debug @emph{Bash programs}, you need a version Bash that supports
 extended debugging support. To get this enhanced version see
 @uref{http://bashdb.sourceforge.net}. You will need version
+2.05b-debugger-0.32 or later to work with @DDD{}.
+
+@item
+@cindex GNU Make
+@cindex GNU Make
+To debug @emph{GNU Make Makefiles}, you need a version GNU Make that supports
+extended debugging support. To get this enhanced version see
+@uref{http://bashdb.sourceforge.net/remake}. You will need version
 2.05b-debugger-0.32 or later to work with @DDD{}.
 @end itemize
 
@@ -1114,6 +1128,9 @@ command tool.
 @item March, 2003
 @DDD{} 3.3.3: Better Bash support. Compiles using modern tools thanks
 to Daniel Schepler.
+
+@item Dec, 2005
+@DDD{} 3.3.12: GNU Make support added.
 @end table
 
 
@@ -1638,8 +1655,8 @@ Normally, the inferior debugger is determined by the program to analyze:
 @itemize @bullet
 @item 
 If the program requires a specific interpreter, such as Java, Python,
-Perl or Bash, then you should use a @JDB{}, @PYDB{}, Perl, or Bash
-inferior debugger.
+Perl, Bash, or GNU Make, then you should use a @JDB{}, @PYDB{}, Perl,
+Bash, or GNU Make inferior debugger.
 
 Use
 
@@ -1664,8 +1681,14 @@ Use
 @value{ddd} --interpreter='@emph{path-to-debugger-bash} --debugger' @var{program}
 @end example
 
+@cindex GNU Make, invoking @DDD{} with
+@example
+@value{ddd} --make @var{program}
+@value{ddd} --interpreter='@emph{path-to-debugger-make} --debugger' @var{program}
+@end example
+
 @noindent
-to run @DDD{} with @JDB{}, @PYDB{}, Perl, or Bash as an inferior
+to run @DDD{} with @JDB{}, @PYDB{}, Perl, Bash, or GNU Make as an inferior
 debugger.
 
 @item
@@ -2408,6 +2431,7 @@ work as expected, please lookup the appropriate reference.
 * PYDB Options::                
 * Perl Options::                
 * Bash Options::                
+* GNU Make Options::                
 @end menu
 
 @node GDB Options
@@ -2640,6 +2664,14 @@ If you have the proper bash installed, the option needed to specify
 debugging support is @option{--debugger}. (If your bash doesn't
 understand this option you need to pick up a version of bash that does
 from @uref{http://bashdb.sourceforge.net}.) 
+
+@node GNU Make Options
+@subsubsection GNU Make Options
+
+If you have the proper @code{make} installed (for now it is probably
+called @code{remake}, the option needed to specify debugging support
+is @option{--debugger} and you can pick up a debugger-enabled version
+from @uref{http://bashdb.sourceforge.net/remake}.)
 
 @node Multiple Instances
 @subsection Multiple @value{DDD} Instances
@@ -3259,6 +3291,7 @@ inferior debugger (@pxref{Customizing}).
 * PYDB Initialization::         
 * Perl Initialization::         
 * Bash Initialization::         
+* GNU Make Initialization::         
 * Finding a Place to Start::    
 * Opening the Selection::       
 @end menu
@@ -3418,9 +3451,28 @@ This resource may be used to customize the Bash debugger.
 
 @defvr Resource bash (class Settings)
 This string contains a list of newline-separated commands that are
-also initially sent to the Perl debugger.  By default, it is empty.
+also initially sent to the Bash debugger.  By default, it is empty.
 
 This resource is used by @DDD{} to save and restore Bash
+debugger settings.
+@end defvr
+
+
+@node GNU Make Initialization
+@subsubsection GNU Make Initialization
+
+@defvr Resource makeInitCommands (class InitCommands)
+This string contains a list of newline-separated commands that are
+initially sent to the Bash debugger.  By default, it is empty.
+
+This resource may be used to customize GNU Make debugging.
+@end defvr
+
+@defvr Resource bash (class Settings)
+This string contains a list of newline-separated commands that are
+also initially sent to the GNU Make debugger.  By default, it is empty.
+
+This resource is used by @DDD{} to save and restore GNU Make
 debugger settings.
 @end defvr
 
@@ -3926,6 +3978,7 @@ Execution Window}, for details.
 @lbindex PYDB Console
 @lbindex Perl Console
 @lbindex Bash Console
+@lbindex GNU Make Console
 @kindex Alt+1
 Open the debugger console (@key{Alt+1}).  @xref{Commands}, for details.
 
@@ -12455,6 +12508,7 @@ on standard output.  Default is @samp{off}.  @xref{Options}, for the
 * JDB::                         Using @DDD{} with @JDB{}
 * Perl::                        Using @DDD{} with Perl
 * Bash::                        Using @DDD{} with Bash
+* Make::                        Using @DDD{} with GNU Make
 * LessTif::                     Using @DDD{} with LessTif
 @end menu
 
@@ -12726,6 +12780,28 @@ Pay special attention when the prompt has extra angle brackets (a
 nested shell) or has any parenthesis (is in a subshell). Quitting may
 merely exit out of one of these nested (sub)shells rather than leave
 the program.
+
+@node Make
+@section Using @value{DDD} with GNU Make
+
+GNU Make support is rather new. As a programming language, GNU Make is
+a bit of a stretch for @value{DDD}. There are no record structures or
+hash tables, no pointers. Well, actually this does exist, but the
+records, pointers and hash tables are fixed into the system.  There
+are Makefile variables, ``targets'' (which sometimes refer to files),
+dependencies, and commands. There is sort of an ``scope'' that for
+variables too.
+
+But much of the data display and visualization features of @value{DDD}
+are disabled. However @code{info locals} does work and you can hover
+over a variable and see its value.
+
+As with any scripting or interpreted language like Perl, stepping
+a machine-language instructions (commands Stepi/Nexti) doesn't exist. 
+
+Pay special attention when the prompt has extra angle
+brackets---nested invocation of GNU MAKE. Quitting may merely exit out
+of one of these nested invocations rather than leave the program.
 
 @node LessTif
 @section Using @value{DDD} with LessTif
