@@ -281,6 +281,7 @@ static string format(const string& format, const string& size)
     case BASH:
     case DBG:
     case JDB:
+    case MAKE:
     case PYDB:
     case PERL:
     case XDB:
@@ -329,6 +330,7 @@ static string examine_command()
     case BASH:
     case DBG:
     case JDB:
+    case MAKE:
     case PYDB:
     case PERL:
     case XDB:

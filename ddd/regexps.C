@@ -249,3 +249,5 @@ const regex rxbashprompt                (rx_matcher, (void *)"C9");
 const regex rxbashpos                   (rx_matcher, (void *)"D0");
 const regex rxdbgpos			(rx_matcher, (void *)"D1");
 const regex rxdbgframepos		(rx_matcher, (void *)"D2");
+const regex rxmakeprompt                (rx_matcher, (void *)"D3");
+const regex rxmakepos                   (rx_matcher, (void *)"D4");

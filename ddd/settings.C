@@ -1588,6 +1588,7 @@ static EntryType entry_type(DebuggerType type,
 	break;
 
     case BASH:
+    case MAKE:
 	if (value.contains("on.\n", -1) || value.contains("off.\n", -1))
 	    return OnOffToggleButtonEntry;
 	if ((value.contains("0.\n", -1) || value.contains("1.\n", -1))
@@ -2114,10 +2115,11 @@ string show_command(const string& cmd, DebuggerType type)
     string show = "";
     switch (type)
     {
-    case GDB:
     case BASH:
-    case PYDB:
     case DBG:
+    case GDB:
+    case MAKE:
+    case PYDB:
 	show = "show ";
 	if (cmd.contains("set ", 0))
 	    show += cmd.after("set ");
@@ -2205,9 +2207,10 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	switch (type)
 	{
 	case BASH:
-	case GDB:
-	case PYDB:
 	case DBG:
+	case GDB:
+	case MAKE:
+	case PYDB:
 	{
 	    if (!line.contains(" -- ") && 
 		(entry_filter != SignalEntry || (!line.contains("SIG", 0) &&
@@ -2705,6 +2708,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	case BASH:
 	case DBG:
 	case JDB:
+	case MAKE:
 	case PERL:
 	case PYDB:
 	case XDB:
@@ -3638,6 +3642,7 @@ static void add_settings(GUI::Table *form, int& row, Dimension& max_width,
     {
     case GDB:
     case BASH:
+    case MAKE:
     case PYDB:
     case DBG:
 	if (entry_filter == SignalEntry)
@@ -4999,8 +5004,8 @@ static void get_setting(std::ostream& os, DebuggerType type,
 
     switch (type)
     {
-    case GDB:
     case DBX:
+    case GDB:
 	if (base == "dbxenv disassembler_version" ||
 	    base == "dbxenv rtc_error_log_file_name" ||
 	    base == "dbxenv output_log_file_name")
@@ -5149,9 +5154,10 @@ static void get_setting(std::ostream& os, DebuggerType type,
 	break;
 
     case BASH:
-    case XDB:
-    case PYDB:
     case DBG:
+    case MAKE:
+    case PYDB:
+    case XDB:
 	// Add setting
 	os << base << ' ' << value << '\n';
 	break;

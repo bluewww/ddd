@@ -605,6 +605,10 @@ static void searchLocalExecFiles(Widget fs,
 	searchLocal(fs, cbs, is_debuggee_file);
 	break;
 
+    case MAKE:
+	searchLocal(fs, cbs, is_make_file);
+	break;
+
     case PERL:
 	searchLocal(fs, cbs, is_perl_file);
 	break;
@@ -808,6 +812,7 @@ static void openCoreDone(
 	case BASH:
 	case DBG:
 	case JDB:
+	case MAKE:
 	case PERL:
 	case PYDB:
 	case XDB:
@@ -1068,6 +1073,21 @@ ProgramInfo::ProgramInfo()
 	break;
 
     case BASH:
+	// Use the program we were invoked with
+	file = gdb->program();
+	if (file.matches(rxint))
+	    file = "";		// Invoked with a constant expression
+
+	if (file.empty())
+	{
+	    // Not invoked with a program?  Use the current file, then.
+	    file = source_view->file_of_cursor();
+	    file = file.before(":");
+	}
+	core = "";
+	break;
+
+    case MAKE:
 	// Use the program we were invoked with
 	file = gdb->program();
 	if (file.matches(rxint))

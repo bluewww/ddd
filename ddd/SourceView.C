@@ -977,10 +977,11 @@ void SourceView::set_bp(const string& a, bool set, bool temp,
 	// Set bp
 	switch (gdb->type())
 	{
+	case DBG:
 	case GDB:
 	case BASH:
+	case MAKE:
 	case PYDB:
-	case DBG:
 	    if (temp)
 		gdb_command("tbreak " + address, w);
 	    else
@@ -1406,9 +1407,10 @@ void SourceView::temp_n_cont(const string& a, Widget w)
 	break;
 #endif
     
-    case BASH: // Is this correct? 
+    case BASH: 
     case DBG:  // Is this correct? 
     case DBX:
+    case MAKE: 
     case JDB:
     case PYDB:
     {
@@ -1573,6 +1575,7 @@ bool SourceView::move_pc(const string& a, Widget w)
 	case BASH:
 	case DBG:
 	case JDB:
+	case MAKE:
 	case PERL:
 	case PYDB:
 	    break;		// Never reached
@@ -2304,6 +2307,7 @@ string SourceView::clear_command(string pos, bool clear_next, int first_bp)
 	    break;
 
 	case DBG:
+	case MAKE:
 	case XDB:
 	    break;
 	}
@@ -3468,6 +3472,10 @@ char *SourceView::read_from_gdb(const string& file_name, long& length,
     string command;
     switch (gdb->type())
     {
+    case BASH:
+	command = "list 1 " HUGE_LINE_NUMBER;
+	break;
+
     case DBG: // Is this correct? DBG "list" sommand seems not to do anything
     case GDB:
 	command = "list " + file_name + ":1," HUGE_LINE_NUMBER;
@@ -3482,12 +3490,12 @@ char *SourceView::read_from_gdb(const string& file_name, long& length,
 	command = "l 1-" HUGE_LINE_NUMBER;
 	break;
 
-    case BASH:
-	command = "list 1 " HUGE_LINE_NUMBER;
-	break;
-
     case JDB:
 	command = "list " + file_name;
+	break;
+
+    case MAKE:  // Don't have a "list" function yet.
+        command = "";
 	break;
 
     case XDB:
@@ -6167,6 +6175,7 @@ void SourceView::process_info_bp (string& info_output,
     case DBX:
     case XDB:
     case JDB:
+    case MAKE:
     case PYDB:
     case PERL:
 	break;
@@ -6189,9 +6198,10 @@ void SourceView::process_info_bp (string& info_output,
 	switch(gdb->type())
 	{
 	case BASH:
-	case GDB:
-	case PYDB:
 	case DBG:
+	case GDB:
+	case MAKE:
+	case PYDB:
 	    if (!has_nr(info_output))
 	    {
 		// Skip this line
@@ -6386,6 +6396,7 @@ void SourceView::process_info_line_main(string& info_output)
     case BASH:
     case DBG:
     case GDB:
+    case MAKE:
     case JDB:
     case PERL:
     case PYDB:
@@ -6546,9 +6557,10 @@ void SourceView::lookup(string s, bool silent)
 	    case BASH:
 	    case DBG: 
 	    case DBX:
+	    case MAKE:
 	    case PERL:
-	    case XDB:
 	    case PYDB:
+	    case XDB:
 		show_position(full_path(current_file_name) 
 			      + ":" + itostring(line));
 		break;
@@ -6624,6 +6636,8 @@ void SourceView::lookup(string s, bool silent)
 	    break;
 	}
 
+	case MAKE: break;  // Not implimented yet.
+	  
 	case DBX:
 	case JDB:
 	{
@@ -6726,8 +6740,9 @@ void SourceView::add_position_to_history(const string& file_name, int line,
     case BASH:
     case DBG:
     case DBX:
-    case XDB:
+    case MAKE:
     case PERL:
+    case XDB:
 	break;
     }
 
@@ -6900,6 +6915,7 @@ void SourceView::process_pwd(string& pwd_output)
 	case DBG:
 	case DBX:		// 'PATH'
 	case JDB:
+	case MAKE:
 	case PERL:
 	case XDB:
 	    if (pwd.contains('/', 0) && !pwd.contains(" "))
@@ -7235,6 +7251,7 @@ string SourceView::current_source_name()
     case BASH:
     case DBG:
     case DBX:
+    case MAKE:
     case PERL:
     case PYDB:
     case XDB:
@@ -9133,9 +9150,10 @@ static string cond_filter(const string& cmd)
 	// No conditions in JDB
 	break;
 
-    case BASH:
-    case PERL:
     case DBG:
+    case BASH:
+    case MAKE:
+    case PERL:
     {
 	// FIXME
 	break;
@@ -10771,8 +10789,9 @@ void SourceView::SelectFrameCB (GUI::ListView *w)
     switch (gdb->type())
     {
     case BASH:
-    case GDB:
     case DBG:
+    case GDB:
+    case MAKE:
 	// GDB frame output is caught by our routines.
 	gdb_command(gdb->frame_command(count - item_position));
 	break;
@@ -10994,6 +11013,7 @@ void SourceView::process_frame(string& frame_output)
 	case BASH:
  	case DBG:
 	case GDB:
+	case MAKE:
 	case PYDB:
 	    frame_nr = frame_output.after(0);
 	    break;
@@ -11076,13 +11096,14 @@ void SourceView::process_frame(int frame)
 	int pos = 1;
 	switch (gdb->type())
 	{
-	case GDB:
-	case DBX:
-	case JDB:
-	case PYDB:
 	case BASH:
-	case PERL:
 	case DBG:
+	case DBX:
+	case GDB:
+	case JDB:
+	case MAKE:
+	case PYDB:
+	case PERL:
 	    pos = count - frame;
 	    break;
 
@@ -11466,9 +11487,10 @@ void SourceView::process_threads(string& threads_output)
     case BASH:
     case DBG:
     case DBX:
-    case XDB:
+    case MAKE:
     case PERL:
     case PYDB:
+    case XDB:
     {
         if (gdb->type() == DBX && gdb->isSunDBX())
         {
@@ -11526,9 +11548,10 @@ void SourceView::refresh_threads(bool all_threadgroups)
     }
     case BASH:
     case DBG:
-    case XDB:
+    case MAKE:
     case PERL:
     case PYDB:
+    case XDB:
 	// No threads.
 	break;
     }
@@ -14631,6 +14654,7 @@ bool SourceView::get_state(std::ostream& os)
     case BASH:
     case DBG:
     case DBX:
+    case MAKE:
     case JDB:
     case PERL:
 	break;			// FIXME

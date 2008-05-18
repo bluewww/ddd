@@ -670,6 +670,7 @@ static int gdb_set_tty(string tty_name = "",
     break;
 
     case BASH:
+    case MAKE:
     case DBG:
     case JDB:
     case PYDB:	// for now
@@ -854,6 +855,9 @@ static void redirect_process(string& command,
 
     case BASH:
 	break;			// No redirection in BASH (for now)
+
+    case MAKE:
+	break;			// No redirection in MAKE (for now)
 
     case PYDB:
 	break;			// No redirection in PYDB (for now)

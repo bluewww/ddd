@@ -205,10 +205,12 @@ GDBAgent::GDBAgent (GUI::Main *app_context,
       _has_display_command(tp == DBG || tp == DBX || tp == GDB || tp == PYDB),
       _has_clear_command(tp == BASH || tp == DBG || tp == DBX || tp == GDB || tp == JDB || tp == PERL),
       _has_handler_command(false),
-      _has_pwd_command(tp == BASH || tp == DBG || tp == DBX || tp == GDB || tp == PYDB || tp == PERL),
+      _has_pwd_command(tp == BASH || tp == DBG || tp == DBX || tp == GDB ||
+		       tp == MAKE || tp == PYDB || tp == PERL),
       _has_setenv_command(tp == DBX),
       _has_edit_command(tp == DBX),
-      _has_make_command(tp == GDB || tp == DBX || tp == PERL),
+      _has_make_command(tp == BASH || tp == DBX || tp == GDB || 
+			tp == MAKE || tp == PERL),
       _has_jump_command(tp == GDB || tp == DBX || tp == XDB),
       _has_regs_command(tp == GDB),
       _has_watch_command(0),	// see below
@@ -229,6 +231,7 @@ GDBAgent::GDBAgent (GUI::Main *app_context,
       _program_language((tp == BASH) ? LANGUAGE_BASH : 
 			(tp == DBG)  ? LANGUAGE_PHP  :
 			(tp == JDB)  ? LANGUAGE_JAVA :
+			(tp == MAKE) ? LANGUAGE_MAKE :
 			(tp == PERL) ? LANGUAGE_PERL : 
 			(tp == PYDB) ? LANGUAGE_PYTHON : 
 			LANGUAGE_C),
@@ -351,6 +354,7 @@ X(tDBX,"DBX"),  \
 X(tGDB,"GDB"),  \
 X(tJDB,"JDB"),  \
 X(tLADEBUG,"Ladebug"),  \
+X(tMAKE,"GNU Make"),  \
 X(tPERL,"Perl"),  \
 X(tPYDB,"PYDB"),  \
 X(tWBD,"WDB"),  \
@@ -393,6 +397,9 @@ X(tDEBUGGER,"debugger")
 
     case JDB:
 	return titles[tJDB];
+
+    case MAKE:
+        return titles[tMAKE];
 
     case PERL:
 	return titles[tPERL];
@@ -771,6 +778,31 @@ bool GDBAgent::ends_with_prompt (const string& ans)
 	}
 	return false;
     }
+    case MAKE:
+    {
+	// Any line ending in `makedb<...> ' is a prompt.
+	// Since N does not make sense in DDD, we use `DB<> ' instead.
+
+#if RUNTIME_REGEX
+	static regex rxmakeprompt("makedb<+[(]*[0-9][)]*>+");
+#endif
+
+	int i = answer.length() - 1;
+	if (i < 1 || answer[i] != ' ' || answer[i - 1] != '>')
+	    return false;
+
+	while (i >= 0 && answer[i] != '\n' ) {
+	  if (answer.contains("makedb<", i)) {
+	    string possible_prompt = answer.from(i);
+	    if (possible_prompt.matches(rxmakeprompt)) {
+	      last_prompt = possible_prompt;
+	      return true;
+	    }
+	  }
+	  i--;
+	}
+	return false;
+    }
     case PERL:
     {
 	// Any line ending in `DB<N> ' is a prompt.
@@ -944,6 +976,7 @@ bool GDBAgent::ends_with_secondary_prompt (const string& ans) const
 	return answer == "> " || ends_in(answer, "\n> ");
 	
     case BASH:
+    case MAKE:
         return false; // No secondary prompt
 
     case DBG:
@@ -1080,6 +1113,7 @@ void GDBAgent::cut_off_prompt(string& answer) const
     }
     
     case BASH:
+    case MAKE:
     case JDB:
     {
 	// Check for prompt at the end of the last line
@@ -1779,6 +1813,7 @@ string GDBAgent::print_command(const char *expr, bool internal) const
 	break;
 
     case BASH:
+    case MAKE:
     case PERL:
 	cmd = "x";
 	break;
@@ -1830,6 +1865,7 @@ string GDBAgent::where_command(int count) const
     case DBX:
     case GDB:
     case JDB:
+    case MAKE:
     case PYDB:
 	if (has_where_h_option())
 	    cmd = "where -h";
@@ -1857,6 +1893,7 @@ string GDBAgent::info_locals_command() const
     switch (type())
     {
     case GDB:
+    case MAKE:
     case PYDB:
 	return "info locals";
 
@@ -1924,6 +1961,7 @@ string GDBAgent::pwd_command() const
 	return "!pwd";
 
     case BASH:
+    case MAKE:
 	return "shell pwd";
 
     case PERL:
@@ -1962,6 +2000,7 @@ string GDBAgent::make_command(const string& args) const
 	    return "system 'make " + args + "'";
 
     case BASH:
+    case MAKE:
 	cmd = "shell make";
 	break;
 
@@ -2002,6 +2041,7 @@ string GDBAgent::jump_command(const string& pos) const
     case BASH:
     case DBG:  
     case JDB:
+    case MAKE:
     case PERL:
     case PYDB:
 	return "";		// Not available
@@ -2033,6 +2073,7 @@ string GDBAgent::regs_command(bool all) const
     case BASH:
     case DBG:
     case JDB:
+    case MAKE:
     case PYDB:
     case PERL:
     case XDB:
@@ -2095,6 +2136,7 @@ string GDBAgent::watch_command(const string& expr, WatchMode w) const
 	return "";
 
     case DBG:  // Is this right? 
+    case MAKE:
     case PERL:
     case PYDB:
 	return "";		// Not available
@@ -2118,6 +2160,7 @@ string GDBAgent::kill_command() const
 	return "k";
 
     case JDB:
+    case MAKE:
     case PERL:
     case BASH:
 	return "";		// Not available
@@ -2134,6 +2177,7 @@ string GDBAgent::frame_command() const
     case DBG:
     case DBX:
     case GDB:
+    case MAKE:
 	if (has_frame_command())
 	    return "frame";
 	else
@@ -2164,6 +2208,7 @@ string GDBAgent::frame_command(int num) const
     case DBG:
     case DBX:
     case GDB:
+    case MAKE:
 	return frame_command() + " " + itostring(num);
 
     case XDB:
@@ -2204,6 +2249,7 @@ string GDBAgent::func_command() const
     case DBG:
     case GDB:
     case JDB:
+    case MAKE:
     case PERL:
     case PYDB:
     case XDB:
@@ -2232,6 +2278,9 @@ string GDBAgent::echo_command(const string& text) const
 
     case GDB:
 	return "echo " + cook(text);
+
+    case MAKE:
+	return "examine " + quote(text);
 
     case PERL:
 	// We use `print DB::OUT' instead of `p' since this also works
@@ -2275,6 +2324,7 @@ string GDBAgent::whatis_command(const string& text) const
 	return "";		// Who knows?
 
     case BASH:
+    case MAKE:
 	return "";		// Can't do yet.
     }
 
@@ -2307,6 +2357,7 @@ string GDBAgent::enable_command(string bp) const
 	return "ab" + bp;
 
     case JDB:
+    case MAKE:
     case PERL:
 	return "";		// Not available
     }
@@ -2340,6 +2391,7 @@ string GDBAgent::disable_command(string bp) const
 	return "sb" + bp;
 
     case JDB:
+    case MAKE:
     case PERL:
 	return "";		// Not available
     }
@@ -2359,6 +2411,7 @@ string GDBAgent::delete_command(string bp) const
     case DBG:
     case DBX:
     case GDB:
+    case MAKE:
     case PYDB:
 	return "delete" + bp;
 
@@ -2394,6 +2447,7 @@ string GDBAgent::ignore_command(const string& bp, int count) const
     case BASH:
     case DBG:
     case JDB:
+    case MAKE:
     case PERL:
 	return "";		// Not available
     }
@@ -2412,6 +2466,9 @@ string GDBAgent::condition_command(const string& bp, const char *expr) const
     case BASH:
 	return "condition " + bp + " " + expr;
 
+    case MAKE:
+	return "";		// Not available
+
     case DBX:
     case XDB:
     case JDB:
@@ -2429,6 +2486,7 @@ string GDBAgent::shell_command(const string& cmd) const
     {
     case BASH:
     case GDB:
+    case MAKE:
 	return "shell " + cmd;
 
     case DBX:
@@ -2582,6 +2640,11 @@ string GDBAgent::debug_command(const char *program, string args) const
 
     case BASH:
 	return string("debug ") + program + args;
+
+	// restart/run is not the same a debug. But this is the closes
+	// makedb has for now.
+    case MAKE:
+	return string("run ") + program + args;
     }
 
     return "";			// Never reached
@@ -2606,11 +2669,12 @@ string GDBAgent::signal_command(int sig) const
     case XDB:
 	return "p $signal = " + n + "; C";
 
+    case BASH:
     case DBG:
     case JDB:
-    case PYDB:
+    case MAKE:
     case PERL:
-    case BASH:
+    case PYDB:
 	return "";		// Not available
     }
 
@@ -2652,6 +2716,7 @@ string GDBAgent::run_command(string args) const
     case BASH:
     case DBG:
     case JDB:
+    case MAKE:
     case PYDB:
 	return "run" + args;
 
@@ -2677,6 +2742,7 @@ string GDBAgent::rerun_command() const
     case DBG:
     case GDB:
     case JDB:
+    case MAKE:
     case PYDB:
 	return "run";
 
@@ -2720,6 +2786,7 @@ string GDBAgent::attach_command(int pid, const string& file) const
     case BASH:
     case DBG:
     case JDB:
+    case MAKE:
     case PERL:
     case PYDB:
     case XDB:
@@ -2745,6 +2812,7 @@ string GDBAgent::detach_command(int pid) const
     case BASH:
     case DBG:
     case JDB:
+    case MAKE:
     case PERL:
     case PYDB:
     case XDB:
@@ -2829,6 +2897,7 @@ string GDBAgent::dereferenced_expr(const string& expr) const
 	return prepend_prefix("*", expr);
 
     case LANGUAGE_BASH:
+    case LANGUAGE_MAKE:
     case LANGUAGE_PYTHON:
 	return "";		// No such thing in Python/PYDB and bash
 
@@ -2866,9 +2935,10 @@ string GDBAgent::address_expr(string expr) const
 	return "";		// Not supported in Python
 
     case LANGUAGE_BASH:
+    case LANGUAGE_MAKE:
     case LANGUAGE_PHP:          // Is this right? 
     case LANGUAGE_PERL:
-	return "";		// No such thing in bash/Perl
+	return "";		// No such thing in bash/make/Perl
 
     case LANGUAGE_ADA:
 	return "";		// Not supported in GNAT/Ada
@@ -2920,6 +2990,7 @@ int GDBAgent::default_index_base() const
     case LANGUAGE_BASH:
     case LANGUAGE_C:
     case LANGUAGE_JAVA:
+    case LANGUAGE_MAKE:
     case LANGUAGE_PERL:
     case LANGUAGE_PHP:
     case LANGUAGE_PYTHON:
@@ -2948,6 +3019,7 @@ string GDBAgent::member_separator() const
 	return ": ";
 
     case LANGUAGE_BASH:
+    case LANGUAGE_MAKE:   // Might consider members of archives. Or target stem
         return "";
 
     case LANGUAGE_ADA:
@@ -2996,6 +3068,11 @@ string GDBAgent::assign_command(const string& var, const string& expr) const
 	cmd = "eval ";
 	break;
 
+    case MAKE:
+        // Need to test var.empty()? 
+	cmd = "set variable";
+	break;
+
     case JDB:
 	if (has_debug_command())
 	    return "";		// JDB 1.1: not available
@@ -3012,6 +3089,7 @@ string GDBAgent::assign_command(const string& var, const string& expr) const
     case LANGUAGE_C:
     case LANGUAGE_FORTRAN:
     case LANGUAGE_JAVA:
+    case LANGUAGE_MAKE:
     case LANGUAGE_PERL:
     case LANGUAGE_PHP:
     case LANGUAGE_PYTHON:	// FIXME: vrbl names can conflict with commands
@@ -3054,6 +3132,7 @@ void GDBAgent::normalize_address(string& addr) const
 	case LANGUAGE_C:
 	case LANGUAGE_FORTRAN:
 	case LANGUAGE_JAVA:
+	case LANGUAGE_MAKE:
 	case LANGUAGE_PERL:
 	case LANGUAGE_PHP:
 	case LANGUAGE_PYTHON:
@@ -3110,6 +3189,7 @@ string GDBAgent::history_file() const
     case DBG:
     case DBX:
     case JDB:
+    case MAKE:
     case PERL:
     case PYDB:
 	return "";		// Unknown
