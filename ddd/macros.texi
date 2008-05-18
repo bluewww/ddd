@@ -86,3 +86,7 @@
 @macro TTY {}
 @acronym{TTY}
 @end macro
+
+@macro MAKE {}
+@acronym{GNU Make}
+@end macro
