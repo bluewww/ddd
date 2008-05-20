@@ -9,8 +9,25 @@ using namespace GtkX;
 
 extern ScrolledText *gdb_w;
 
+MarkedTextView::MarkedTextView(void)
+{
+    postinit();
+}
+
+Gtk::Widget *
+MarkedTextView::internal(void)
+{
+    return this;
+}
+
+const Gtk::Widget *
+MarkedTextView::internal(void) const
+{
+    return this;
+}
+
 void
-GtkX::MarkedTextView::pos_to_rect(long pos, Rectangle &rect)
+MarkedTextView::pos_to_rect(long pos, Rectangle &rect)
 {
     Gtk::TextIter iter = get_buffer()->get_iter_at_offset(pos);
     Gdk::Rectangle grect;
@@ -27,7 +44,7 @@ MarkedTextView::on_expose_event(GdkEventExpose *event)
     Gtk::TextView::on_expose_event(event);
     std::list<GlyphMark *>::iterator iter;
     for (iter = marks.begin(); iter != marks.end(); iter++) {
-	Glib::RefPtr<Gdk::Window> win = get_window(Gtk::TEXT_WINDOW_TEXT);
+	Glib::RefPtr<Gdk::Window> win = Gtk::TextView::get_window(Gtk::TEXT_WINDOW_TEXT);
 	Glib::RefPtr<Gtk::Style> style = get_style();
 	Glib::RefPtr<Gdk::GC> gc = style->get_light_gc(Gtk::STATE_NORMAL);
 	Glib::RefPtr<Gdk::Pixbuf> glyph = (*iter)->glyph;
@@ -43,7 +60,7 @@ MarkedTextView::on_expose_event(GdkEventExpose *event)
 void
 MarkedTextView::refresh_line(int y, int height)
 {
-    Glib::RefPtr<Gdk::Window> win = get_window(Gtk::TEXT_WINDOW_TEXT);
+    Glib::RefPtr<Gdk::Window> win = Gtk::TextView::get_window(Gtk::TEXT_WINDOW_TEXT);
     if (win) {
 	Gdk::Rectangle rect;
 	int x1, y1;
@@ -161,6 +178,12 @@ const Gtk::Widget *
 ScrolledText::internal(void) const
 {
     return this;
+}
+
+Gtk::Widget *
+ScrolledText::signals_from(void)
+{
+    return tv_.internal();
 }
 
 long

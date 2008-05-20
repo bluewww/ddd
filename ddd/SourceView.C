@@ -5275,7 +5275,8 @@ static void InstallBitmapAsImage(unsigned char *bits, int width, int height,
 bool
 SourceView::clicked_cb(GUI::EventButton *ev)
 {
-    if (ev->state == 0 && ev->button == 3) {
+    if ((ev->state&(GUI::SHIFT_MASK|GUI::CONTROL_MASK)) == 0
+	&& ev->button == 3) {
 	std::cerr << "Click at " << ev->x << " " << ev->y << "!\n";
 	srcpopupAct(source_text_w, (GUI::Event *)ev, NULL, NULL);
 	return true; // Terminate emission
@@ -5380,7 +5381,7 @@ SourceView::SourceView(GUI::Container *parent)
     // terminates the signal emission.
     // source_text_w->signal_button_press_event().connect(sigc::mem_fun(*this, &SourceView::clicked_cb), false);
 #warning FIXME: How to pass after=false?
-    source_text_w->signal_button_press_event().connect(sigc::mem_fun(*this, &SourceView::clicked_cb));
+    source_text_w->signal_button_press_pre_event().connect(sigc::mem_fun(*this, &SourceView::clicked_cb));
 
     // Create machine code window
     create_text(parent, "code", false, code_form_w, code_text_w);

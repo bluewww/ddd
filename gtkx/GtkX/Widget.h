@@ -425,22 +425,32 @@ namespace GtkX {
 
     class Widget {
     protected:
+	// In GTK, events may be connected after, or optionally
+	// before, the class closure.  For the latter case we provide
+	// the pre_event_callbacks.
 	sigc::signal<bool, GtkX::EventButton *> signal_button_press_event_;
 	bool button_press_event_callback(GdkEventButton *ev);
 	sigc::signal<bool, GtkX::EventButton *> signal_button_release_event_;
 	bool button_release_event_callback(GdkEventButton *ev);
+	sigc::signal<bool, GtkX::EventButton *> signal_button_press_pre_event_;
+	bool button_press_pre_event_callback(GdkEventButton *ev);
+	sigc::signal<bool, GtkX::EventButton *> signal_button_release_pre_event_;
+	bool button_release_pre_event_callback(GdkEventButton *ev);
 	sigc::signal<void> signal_map_;
 	void signal_map_callback(void);
 	sigc::signal<void> signal_unmap_;
 	void signal_unmap_callback(void);
     public:
 	Widget(void);
-	~Widget(void);
+	virtual ~Widget(void);
 	void init_signals(void);
 	void postinit(void);
-	// *Instantiable* subclasses will have an associated GTK(mm) widget:
+	// Instantiable subclasses will have an associated Gtk widget:
 	virtual Gtk::Widget *internal(void) = 0;
 	virtual const Gtk::Widget *internal(void) const = 0;
+	// Widget signals are forwarded from this (may differ from
+	// internal() for a composite widget).
+	virtual Gtk::Widget *signals_from(void);
 	Container *get_parent(void);
 	RefPtr<Display> get_display(void);
 	RefPtr<Screen> get_screen(void);
@@ -472,6 +482,8 @@ namespace GtkX {
 	PropertyProxy_RO<void *> property_user_data(void) const;
 	sigc::signal<bool, GtkX::EventButton *> &signal_button_press_event();
 	sigc::signal<bool, GtkX::EventButton *> &signal_button_release_event();
+	sigc::signal<bool, GtkX::EventButton *> &signal_button_press_pre_event();
+	sigc::signal<bool, GtkX::EventButton *> &signal_button_release_pre_event();
 	sigc::signal<void> &signal_map();
 	sigc::signal<void> &signal_unmap();
     };

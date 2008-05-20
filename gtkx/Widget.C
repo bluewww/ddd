@@ -319,6 +319,13 @@ Widget::~Widget(void)
 {
 }
 
+// Default
+Gtk::Widget *
+Widget::signals_from(void)
+{
+    return internal();
+}
+
 Container *
 Widget::get_parent(void)
 {
@@ -385,10 +392,13 @@ void
 Widget::init_signals(void)
 {
     // Must be called from postinit, because internal() must be set.
-    internal()->signal_button_press_event().connect(sigc::mem_fun(*this, &Widget::button_press_event_callback));
-    internal()->signal_button_release_event().connect(sigc::mem_fun(*this, &Widget::button_release_event_callback));
-    internal()->signal_map().connect(sigc::mem_fun(*this, &Widget::signal_map_callback));
-    internal()->signal_unmap().connect(sigc::mem_fun(*this, &Widget::signal_unmap_callback));
+    Gtk::Widget *from = signals_from();
+    from->signal_button_press_event().connect(sigc::mem_fun(*this, &Widget::button_press_event_callback));
+    from->signal_button_release_event().connect(sigc::mem_fun(*this, &Widget::button_release_event_callback));
+    from->signal_button_press_event().connect(sigc::mem_fun(*this, &Widget::button_press_pre_event_callback), false);
+    from->signal_button_release_event().connect(sigc::mem_fun(*this, &Widget::button_release_pre_event_callback), false);
+    from->signal_map().connect(sigc::mem_fun(*this, &Widget::signal_map_callback));
+    from->signal_unmap().connect(sigc::mem_fun(*this, &Widget::signal_unmap_callback));
 }
 
 void
@@ -568,6 +578,18 @@ Widget::signal_button_release_event()
     return signal_button_release_event_;
 }
 
+sigc::signal<bool, GtkX::EventButton *> &
+Widget::signal_button_press_pre_event()
+{
+    return signal_button_press_pre_event_;
+}
+
+sigc::signal<bool, GtkX::EventButton *> &
+Widget::signal_button_release_pre_event()
+{
+    return signal_button_release_pre_event_;
+}
+
 sigc::signal<void> &
 Widget::signal_map()
 {
@@ -594,6 +616,22 @@ Widget::button_release_event_callback(GdkEventButton *ev)
     GtkX::EventButton evx;
     translate_event((GdkEvent *)ev, (GtkX::Event *)&evx);
     return signal_button_release_event_(&evx);
+}
+
+bool
+Widget::button_press_pre_event_callback(GdkEventButton *ev)
+{
+    GtkX::EventButton evx;
+    translate_event((GdkEvent *)ev, (GtkX::Event *)&evx);
+    return signal_button_press_pre_event_(&evx);
+}
+
+bool
+Widget::button_release_pre_event_callback(GdkEventButton *ev)
+{
+    GtkX::EventButton evx;
+    translate_event((GdkEvent *)ev, (GtkX::Event *)&evx);
+    return signal_button_release_pre_event_(&evx);
 }
 
 void

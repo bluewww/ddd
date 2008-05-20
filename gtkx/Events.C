@@ -4,7 +4,7 @@
 
 using namespace GtkX;
 
-unsigned int keystate(unsigned int in)
+static unsigned int keystate(unsigned int in)
 {
     GdkModifierType gin = GdkModifierType(in);
     ModifierType out;
@@ -12,10 +12,18 @@ unsigned int keystate(unsigned int in)
     return out;
 }
 
-unsigned int keyval(unsigned int in)
+static unsigned int keyval(unsigned int in)
 {
     std::cerr << "KEYVAL " << in << "\n";
     return in;
+}
+
+static unsigned int buttonstate(unsigned int in)
+{
+    GdkModifierType gin = GdkModifierType(in);
+    ModifierType out;
+    translate_mod_mask(gin, out);
+    return out;
 }
 
 int GtkX::translate_event(GdkEvent *in, Event *out)
@@ -49,7 +57,7 @@ int GtkX::translate_event(GdkEvent *in, Event *out)
 	out->button.x = in->button.x;
 	out->button.y = in->button.y;
 	out->button.axes = NULL; /* FIXME */
-	out->button.state = in->button.state;
+	out->button.state = buttonstate(in->button.state);
 	out->button.button = in->button.button;
 	break;
     case GDK_MOTION_NOTIFY:

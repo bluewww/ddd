@@ -63,11 +63,14 @@ namespace GtkX {
       void set_height(int h0) {h_ = h0;}
     };
 
-    class MarkedTextView: public Gtk::TextView
+    class MarkedTextView: public GtkX::Widget, public Gtk::TextView
     {
 	bool on_expose_event(GdkEventExpose *event);
 	std::list<GlyphMark *> marks;
     public:
+	MarkedTextView(void);
+	Gtk::Widget *internal(void);
+	const Gtk::Widget *internal(void) const;
 	void pos_to_xy(long pos, int &x, int &y);
 	void pos_to_rect(long pos, Rectangle &rect);
 	GlyphMark *map_glyph(Glib::RefPtr<Gdk::Pixbuf> glyph, int x, int y);
@@ -78,6 +81,7 @@ namespace GtkX {
 	void unmap_glyph(Glib::RefPtr<Gdk::Pixbuf> glyph);
 	void refresh_line(int y, int height);
 	void buffer_to_window_coords(int xin, int yin, int &xout, int &yout);
+#include <GtkX/redirect.h>
     };
 
     class ScrolledText: public GtkX::Widget, public Gtk::ScrolledWindow
@@ -91,6 +95,7 @@ namespace GtkX {
 		     const GtkX::String &name="", const GtkX::String &label="");
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;
+	Gtk::Widget *signals_from(void);
 	Glib::SignalProxy0<void> signal_changed(void); // From the TextBuffer
 	bool get_editable(void) const;
 	void set_editable(bool);
