@@ -6983,12 +6983,12 @@ static bool real_update_options(bool noupd)
 
     if (graph_snap_to_grid_w != 0)
     {
-	if (!show_grid && XtIsSensitive(graph_snap_to_grid_w))
+	if (!show_grid && graph_snap_to_grid_w->is_sensitive())
 	{
 	    // Grid has been disabled - disable `snap to grid' as well
 	    data_disp->graph_edit->set_snap_to_grid(false);
 	}
-	else if (show_grid && !XtIsSensitive(graph_snap_to_grid_w))
+	else if (show_grid && !graph_snap_to_grid_w->is_sensitive())
 	{
 	    // Grid has been re-enabled - restore `snap to grid' setting
 	    data_disp->graph_edit->set_snap_to_grid(graph_snap_to_grid_w->get_active());
@@ -7164,14 +7164,14 @@ static bool real_update_options(bool noupd)
     }
 #else
     if (app_data.command_toolbar && 
-	command_toolbar_w != 0 && !XtIsManaged(command_toolbar_w))
+	command_toolbar_w != 0 && !command_toolbar_w->is_visible())
     {
 	if (app_data.source_window)
 	    command_toolbar_w->show();
 	gdbCloseToolWindowCB();
     }
     else if (!app_data.command_toolbar && 
-	     command_toolbar_w != 0 && XtIsManaged(command_toolbar_w))
+	     command_toolbar_w != 0 && command_toolbar_w->is_visible())
     {
 	command_toolbar_w->hide();
 	if (app_data.source_window)

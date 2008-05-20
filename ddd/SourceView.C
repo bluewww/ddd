@@ -11109,8 +11109,13 @@ void SourceView::showing_earlier_state(bool set)
 
     if (set)
     {
+#if defined(IF_XM)
 	up_state   = XtIsSensitive(up_w);
 	down_state = XtIsSensitive(down_w);
+#else
+	up_state   = up_w->is_sensitive();
+	down_state = down_w->is_sensitive();
+#endif
 
 	set_sensitive(up_w, False);
 	set_sensitive(down_w, False);
@@ -11375,14 +11380,24 @@ bool SourceView::thread_required()   { return thread_dialog_popped_up; }
 
 bool SourceView::can_go_up()
 {
+#if defined(IF_XM)
     return !gdb->relative_frame_command(1).empty() && 
 	(!where_required() || XtIsSensitive(up_w));
+#else
+    return !gdb->relative_frame_command(1).empty() && 
+	(!where_required() || up_w->is_sensitive());
+#endif
 }
 
 bool SourceView::can_go_down()
 {
+#if defined(IF_XM)
     return !gdb->relative_frame_command(-1).empty() && 
 	(!where_required() || XtIsSensitive(down_w));
+#else
+    return !gdb->relative_frame_command(-1).empty() && 
+	(!where_required() || down_w->is_sensitive());
+#endif
 }
 
 

@@ -3266,7 +3266,6 @@ void check_options_file()
 
 static bool is_fallback_value(const string& resource, string val)
 {
-#if defined(IF_XM)
     static XrmDatabase default_db = app_defaults(XtDisplay(find_shell()));
 
     static String app_name  = 0;
@@ -3305,18 +3304,11 @@ static bool is_fallback_value(const string& resource, string val)
 #endif
 
     return val == default_val;
-#else
-#ifdef NAG_ME
-#warning is_fallback_value() not implemented.
-#endif
-    return false;
-#endif
 }
 
 static string app_value(const string& resource, const string& value, 
 			Boolean check_default)
 {
-#if defined(IF_XM)
     static String app_name  = 0;
     static String app_class = 0;
 
@@ -3339,12 +3331,6 @@ static string app_value(const string& resource, const string& value,
 	s.gsub('\n', "\n" + prefix);
 
     return s;
-#else
-#ifdef NAG_ME
-#warning app_value() not implemented.
-#endif
-    return string("UNKNOWN");
-#endif
 }
 
 inline const _XtString bool_value(Boolean value)
@@ -3413,7 +3399,6 @@ static string string_app_value(const string& name, const _XtString v,
 static string widget_value(Widget w, const _XtString name,
 			   Boolean check_default = False)
 {
-#if defined(IF_XM)
     String value = 0;
     XtVaGetValues(w, 
 		  XtVaTypedArg, name, XtRString, &value, sizeof(value),
@@ -3421,12 +3406,6 @@ static string widget_value(Widget w, const _XtString name,
 
     return string_app_value(string(XtName(w)) + "." + name, value, 
 			    check_default);
-#else
-#ifdef NAG_ME
-#warning 
-#endif
-    return string("UNKNOWN");
-#endif
 }
 
 static string orientation_app_value(const string& name, unsigned char v,
@@ -3611,7 +3590,7 @@ static void set_xml_paned_widget_size(xmlNode *tree, Widget w, bool height_only 
 	std::cerr << "Error: Failed to create XML subtree\n";
 	return;
     }
-    xmlSetProp(subtree, (const xmlChar *)"name", (const xmlChar *)XtName(w));
+    xmlSetProp(subtree, (const xmlChar *)"name", (const xmlChar *)w->get_name().c_str());
     if (scrolled_text = dynamic_cast<GUI::ScrolledText *>(w))
     {
 	// Store rows and columns
@@ -4625,9 +4604,9 @@ bool save_options(unsigned long flags)
     Dimension grid_width, grid_height;
     grid_width = data_disp->graph_edit->get_grid_width();
     grid_height = data_disp->graph_edit->get_grid_height();
-    set_xml_prop(root, (string(XtName(data_disp->graph_edit)) + "." 
+    set_xml_prop(root, (string(data_disp->graph_edit->get_name().c_str()) + "." 
 			+ XtNgridWidth).chars(),  grid_width, true);
-    set_xml_prop(root, (string(XtName(data_disp->graph_edit)) + "." 
+    set_xml_prop(root, (string(data_disp->graph_edit->get_name().c_str()) + "." 
 			+ XtNgridHeight).chars(), grid_height, true);
     set_xml_prop(root, XtNdetectAliases,  app_data.detect_aliases);
     set_xml_prop(root, XtNclusterDisplays,app_data.cluster_displays);

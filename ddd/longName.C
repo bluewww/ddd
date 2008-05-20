@@ -26,9 +26,13 @@
 // `http://www.gnu.org/software/ddd/',
 // or send a mail to the DDD developers <ddd@gnu.org>.
 
-#ifdef IF_MOTIF
+#if defined(HAVE_CONFIG_H)
+#include "config.h"
+#endif
+
+#if defined(IF_XM)
 #include <X11/Intrinsic.h>
-#endif // IF_MOTIF
+#endif
 #include "longName.h"
 
 char longName_rcsid[] = 
@@ -39,7 +43,11 @@ string longName(Widget w)
     if (w == 0)
 	return "<none>";
 
+#if defined(IF_XM)
     string ret = XtName(w);
+#else
+    string ret = w->get_name().c_str();
+#endif
 
     Widget parent = XtParent(w);
     if (parent)

@@ -861,7 +861,7 @@ static void update_themes_buttons()
     for (i = 0; i < themes_entries.size(); i++)
     {
 	GUI::Entry *entry = themes_entries[i];
-	string theme = basename(XtName(entry));
+	string theme = basename(entry->get_name().c_str());
 	ThemePattern p;
 
 	if (DispBox::theme_manager.has_pattern(theme))
@@ -899,7 +899,7 @@ static void update_themes_buttons()
 	for (i = 0; i < themes_labels.size(); i++)
 	{
 	    GUI::CheckButton *button = themes_labels[i];
-	    string theme = basename(XtName(button));
+	    string theme = basename(button->get_name().c_str());
 	    bool old_set = old_tm.has_pattern(theme);
 
 	    if (old_set)
@@ -1109,7 +1109,7 @@ static void ApplyThemesCB(void)
 	GUI::Entry *entry  = themes_entries[i];
 	string value(entry->get_text().c_str());
 
-	t.add(basename(XtName(entry)), ThemePattern(value, active));
+	t.add(basename(entry->get_name().c_str()), ThemePattern(value, active));
     }
 
     data_disp->set_theme_manager(t);
@@ -1391,7 +1391,7 @@ void process_show(const string& command, string value, bool init)
 	{
 	    // Save current state in undo buffer
 	    std::ostringstream command;
-	    get_setting(command, gdb->type(), XtName(w), 
+	    get_setting(command, gdb->type(), w->get_name().c_str(), 
 			settings_values[w]);
 	    undo_buffer.add_command(string(command));
 	}
@@ -2083,7 +2083,7 @@ static GUI::CheckButton *create_signal_button(GUI::Widget *label,
     MString lbl(capitalize(name));
 
     GUI::CheckButton *button;
-    string fullname = string(XtName(label)) + "-" + name;
+    string fullname = string(label->get_name().c_str()) + "-" + name;
     button = new GUI::CheckButton(*label->get_parent(), GUI::PACK_SHRINK, 
 				  fullname.chars(), lbl.xmstring());
     button->show();
@@ -3751,11 +3751,19 @@ static void reload_all_settings()
 
 void update_settings()
 {
+#if defined(IF_XM)
     if (settings_panel != 0 && XtIsManaged(settings_panel))
     {
 	reload_all_settings();
 	need_reload_settings = false;
     }
+#else
+    if (settings_panel != 0 && settings_panel->is_visible())
+    {
+	reload_all_settings();
+	need_reload_settings = false;
+    }
+#endif
 }
 
 #if defined(IF_XM)
@@ -4745,11 +4753,19 @@ static GUI::Widget *create_signals(DebuggerType type)
 
 void update_signals()
 {
+#if defined(IF_XM)
     if (signals_panel != 0 && XtIsManaged(signals_panel))
     {
 	reload_all_signals();
 	need_reload_signals = false;
     }
+#else
+    if (signals_panel != 0 && signals_panel->is_visible())
+    {
+	reload_all_signals();
+	need_reload_signals = false;
+    }
+#endif
 }
 
 #if defined(IF_XM)
@@ -4852,7 +4868,7 @@ void update_themes()
     {
 	GUI::Entry *entry  = themes_entries[i];
 	GUI::CheckButton *button = themes_labels[i];
-	string theme = basename(XtName(entry));
+	string theme = basename(entry->get_name().c_str());
 	ThemePattern p;
 	bool set = false;
 
@@ -5202,7 +5218,7 @@ string get_settings(DebuggerType type, unsigned long flags)
 	GUI::Widget *entry = settings_entries[i];
 	string value = settings_values[entry];
 
-	get_setting(command, type, XtName(entry), value, flags);
+	get_setting(command, type, entry->get_name().c_str(), value, flags);
     }
 
     return string(command);

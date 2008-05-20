@@ -28,13 +28,6 @@ typedef bool Bool;
 
 #include <gtkmm/container.h>
 
-#define XtName(w) (w)->get_name().c_str()
-#define XtIsSensitive(w) (w)->is_sensitive()
-
-extern bool XtIsWidget(Widget w);
-
-#define XtIsManaged(w) (w)->is_visible()
-
 #define XtParent(w) (w)->get_parent()
 
 #define XtSetSensitive(w, s) (w)->set_sensitive(s)

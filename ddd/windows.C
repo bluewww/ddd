@@ -237,7 +237,7 @@ static void set_state(GUI::Widget *w, WindowState s)
     {
 	set_state(var, s);
 #if LOG_EVENTS
-	std::clog << XtName(w) << " is " << state(w) << "\n";
+	std::clog << w->get_name().c_str() << " is " << state(w) << "\n";
 #endif
     }
 }
@@ -1218,7 +1218,7 @@ bool have_command_window()
     // Refers to ScrolledWindow parent:
     return XtIsManaged(XtParent(gdb_w));
 #else
-    return XtIsManaged(gdb_w);
+    return gdb_w->is_visible();
 #endif
 }
 
@@ -1263,7 +1263,7 @@ void gdbCloseSourceWindowCB(GUI::Widget *w)
     if (!XtIsManaged(source_view->code_form()))
 	gdbCloseToolWindowCB(w, client_data, call_data);
 #else
-    if (!XtIsManaged(source_view->code_form()))
+    if (!source_view->code_form()->is_visible())
 	gdbCloseToolWindowCB();
 #endif
 
@@ -1412,12 +1412,20 @@ void gdbOpenCodeWindowCB(void)
 
 bool have_source_window()
 {
+#if defined(IF_XM)
     return XtIsManaged(source_view->source_form());
+#else
+    return source_view->source_form()->is_visible();
+#endif
 }
 
 bool have_code_window()
 {
+#if defined(IF_XM)
     return XtIsManaged(source_view->code_form());
+#else
+    return source_view->code_form()->is_visible();
+#endif
 }
 
 #if defined(IF_XM)
@@ -1523,7 +1531,11 @@ void gdbOpenDataWindowCB(void)
 
 bool have_data_window()
 {
+#if defined(IF_XM)
     return XtIsManaged(data_disp->graph_form());
+#else
+    return data_disp->graph_form()->is_visible();
+#endif
 }
 
 
@@ -2575,24 +2587,6 @@ void set_scrolled_window_size(GUI::ScrolledText *child, GUI::Widget *target)
 #if !defined(IF_XM)
 
 // ****************************************************************************
-
-// GTK Replacements for Xt Widget stuff
-
-// It is hardly ever necessary to realize a widget explicitly in Gtk.
-Boolean XtIsRealized(Widget w)
-{
-    return w->is_realized();
-}
-
-void XtRealizeWidget(Widget w)
-{
-    gtk_widget_realize(w->gobj());
-}
-
-bool XtIsWidget(Widget w)
-{
-    return (dynamic_cast<Gtk::Widget *>(w) != NULL);
-}
 
 // FIXME: Distinguish these types.
 
