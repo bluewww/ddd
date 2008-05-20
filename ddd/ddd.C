@@ -7808,10 +7808,18 @@ static void ResetStartupPreferencesCB(void)
     notify_set_toggle(set_toolbars_at_bottom_w, 
 		      initial_app_data.toolbars_at_bottom);
 
+    std::cerr << "Focus policy?\n";
+#if defined(IF_XM)
     notify_set_toggle(set_focus_pointer_w, 
 		      initial_focus_policy == XmPOINTER);
     notify_set_toggle(set_focus_explicit_w,
 		      initial_focus_policy == XmEXPLICIT);
+#else
+    notify_set_toggle(set_focus_pointer_w, 
+		      initial_focus_policy == 1);
+    notify_set_toggle(set_focus_explicit_w,
+		      initial_focus_policy == 0);
+#endif
 
     notify_set_toggle(set_scrolling_panner_w, 
 	       initial_app_data.panned_graph_editor);

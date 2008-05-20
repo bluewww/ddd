@@ -24,23 +24,6 @@ typedef bool Bool;
 #define False false
 #define True true
 
-// enums
-
-#if 1
-enum XmButtonState {
-  XmUNSET,
-  XmSET,
-  XmINDETERMINATE
-};
-
-enum {
-  XmEXPLICIT,
-  XmPOINTER
-};
-#endif
-
-// End enums
-
 // Widgets
 
 #include <gtkmm/container.h>
