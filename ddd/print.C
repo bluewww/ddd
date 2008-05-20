@@ -1118,7 +1118,7 @@ static void SetPrintFileNameCB(GUI::FileSelectionDialog *w)
     if (!target.empty())
     {
 	set_print_file_name(target);
-	XtUnmanageChild(w);
+	w->hide();
     }
 }
 

@@ -452,7 +452,7 @@ GUI::Container *create_toolbar(GUI::Container *parent, const string& /* name */,
 #warning align_buttons not implemented
 #endif
 
-    XtManageChild(toolbar);
+    toolbar->show();
     register_menu_shell(items1);
 
     if (items2 != 0)

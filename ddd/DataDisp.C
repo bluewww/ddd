@@ -9661,46 +9661,19 @@ DataDisp::DataDisp(GUI::Container *parent, GUI::WidgetPtr<GUI::Container> &data_
 	    make_buttons(parent, "data_buttons", app_data.data_buttons);
 
     // Create graph editor
-#if defined(IF_XM)
-    Arg args[10];
-    int arg = 0;
-    XtSetArg (args[arg], ARGSTR(XtNgraph), (Graph *)disp_graph); arg++;
-
-    if (app_data.panned_graph_editor)
-    {
-	graph_edit = createPannedGraphEdit(parent, 
-					   "graph_edit", args, arg);
-	graph_form_w = pannerOfGraphEdit(graph_edit);
-    }
-    else
-    {
-	graph_edit = createScrolledGraphEdit(parent, "graph_edit", args, arg);
-	graph_form_w = scrollerOfGraphEdit(graph_edit);
-    }
-#else
     graph_edit = new GUIGraphEdit();
     graph_form_w = graph_edit;
-#endif
 
     set_last_origin(graph_edit);
 
-#if defined(IF_XM)
-    // Add actions
-    XtAppAddActions (app_context, actions, XtNumber (actions));
-#else
 #ifdef NAG_ME
 #warning Actions not implemented.
 #endif
-#endif
-    XtManageChild (graph_edit);
+    graph_edit->show();
 
     // Create buttons
-#if defined(IF_XM)
-    registerOwnConverters();
-#else
 #ifdef NAG_ME
 #warning Converters not implemented.
-#endif
 #endif
 
     if (graph_cmd_w == 0)
@@ -9712,31 +9685,16 @@ DataDisp::DataDisp(GUI::Container *parent, GUI::WidgetPtr<GUI::Container> &data_
 
     if (arg_label != 0)
     {
-#if defined(IF_XM)
-	XtAddCallback(arg_label, XmNactivateCallback,
-		      SelectionLostCB, XtPointer(0));
-	XtAddCallback(arg_label, XmNactivateCallback, 
-		      ClearTextFieldCB, graph_arg->text());
-#else
 	arg_label->signal_clicked().connect(sigc::ptr_fun(SelectionLostCB));
 	arg_label->signal_clicked().connect(sigc::bind(sigc::ptr_fun(ClearTextFieldCB), graph_arg->text()));
-#endif
     }
 
     // Create (unmanaged) selection widget
-#if defined(IF_XM)
-    graph_selection_w =
-	verify(XmCreateText(graph_cmd_w, XMST("graph_selection"), 
-			    ArgList(0), 0));
-    XtAddCallback(graph_selection_w, XmNlosePrimaryCallback, 
-		  SelectionLostCB, XtPointer(0));
-#else
     static int errcnt = 0;
     if (!errcnt++) std::cerr << "Create graph_selection_w: not implemented\n";
     // graph_selection_w = new GtkScrolledText();
 #ifdef NAG_ME
 #warning Unmanaged graph selection widget callbacks not implemented.
-#endif
 #endif
 }
 

@@ -1737,13 +1737,13 @@ void set_buttons(GUI::Box *buttons, const char *_button_list, bool manage)
 	if (name == "Yes")
 	{
 	    command = "yes";
-	    XtUnmanageChild(button);
+	    button->hide();
 	    callback = sigc::ptr_fun(YnButtonCB1);
 	}
 	else if (name == "No")
 	{
 	    command = "no";
-	    XtUnmanageChild(button);
+	    button->hide();
 	    callback = sigc::ptr_fun(YnButtonCB1);
 	}
 	else if (name == "Prev")

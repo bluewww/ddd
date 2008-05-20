@@ -4587,10 +4587,10 @@ static GUI::Dialog *create_panel(DebuggerType type, SettingsType stype)
 	break;
     }
 
-    XtManageChild(form);
+    form->show();
 
 
-    XtManageChild(scroll);
+    scroll->show();
 
     // prevent the action area from growing when the window is resized
     Dimension h, w, x, y;

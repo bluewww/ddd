@@ -4058,7 +4058,11 @@ void SourceView::read_file (string file_name,
     bp_addresses = empty_addresses;
     refresh_bp_disp(true);
 
+#if defined(IF_XM)
     XtManageChild(source_text_w);
+#else
+    source_text_w->show();
+#endif
 
     MString msg;
     switch (current_origin)
@@ -5372,7 +5376,7 @@ SourceView::SourceView(GUI::Container *parent)
     // Create source code window
     create_text(parent, "source", app_data.source_editing,
 		source_form_w, source_text_w);
-    XtManageChild(source_form_w);
+    source_form_w->show();
 
     // We just hardcode the callbacks, whereas Motif uses an external
     // translation table.
@@ -5751,7 +5755,7 @@ void SourceView::create_shells()
     GUI::WidgetPtr<GUI::RadioBox> box = new GUI::RadioBox(*register_dialog_w,
 							  GUI::PACK_SHRINK,
 							  "box", GUI::ORIENTATION_HORIZONTAL);
-    XtManageChild(box);
+    box->show();
 
     int_registers_w =
 	new GUI::RadioButton(*box, GUI::PACK_SHRINK, "int_registers", "Integer registers");
@@ -9199,9 +9203,9 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
     }
 
     if (can_print)
-	XtManageChild(info->print);
+	info->print->show();
     else
-	XtUnmanageChild(info->print);
+	info->print->hide();
 
     set_sensitive(info->enable, can_enable);
     set_sensitive(info->disable, can_disable);

@@ -428,7 +428,7 @@ static void launch_separate_tty(string &ttyname, pid_t &pid, string &term,
 	pid = -1;
 
     // Waiting is over
-    XtUnmanageChild(dialog);
+    dialog->hide();
 
     if (pid < 0)
     {

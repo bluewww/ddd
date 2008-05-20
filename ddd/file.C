@@ -762,7 +762,7 @@ static void openFileDone(GUI::FileSelectionDialog *w)
     if (filename.empty())
 	return;
 
-    XtUnmanageChild(w);
+    w->hide();
 
     if (filename == NO_GDB_ANSWER)
 	return;
@@ -791,7 +791,11 @@ static void openCoreDone(
 
     ProgramInfo info;
 
+#if defined(IF_XM)
     XtUnmanageChild(w);
+#else
+    w->hide();
+#endif
 
     if (corefile != NO_GDB_ANSWER)
     {
@@ -850,7 +854,7 @@ static void openSourceDone(GUI::FileSelectionDialog *w)
     if (filename.empty())
 	return;
 
-    XtUnmanageChild(w);
+    w->hide();
     set_status("");
 
     // For PYDB, issue a 'file filename' command

@@ -4959,7 +4959,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 					 app_data.tool_buttons);
     }
     if (command_toolbar_w != 0)
-	XtUnmanageChild(command_toolbar_w);
+	command_toolbar_w->hide();
 
     if (source_buttons_w == 0)
 	source_buttons_w = make_buttons(source_vbox, "source_buttons", 
@@ -4980,7 +4980,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     std::cerr << "How to verify changes and motion?\n";
 
     gdb_w->signal_changed().connect(sigc::bind(sigc::ptr_fun(gdbChangeCB), gdb_w));
-    XtManageChild (gdb_w);
+    gdb_w->show();
 
     std::cerr << "skipAdjust?\n";
 
@@ -4996,7 +4996,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	create_status(main_vbox);
 
     // Paned Window is done
-    XtManageChild (paned_work_w);
+    paned_work_w->show();
 
     std::cerr << "Setup areas for main window\n";
 
@@ -5093,18 +5093,18 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     popdown_splash_screen();
 
     // Realize all top-level widgets
-    XtRealizeWidget(command_shell);
+    // gtk_widget_realize(command_shell->gobj());
     Delay::register_shell(command_shell);
 
     if (data_disp_shell)
     {
-	XtRealizeWidget(data_disp_shell);
+	// gtk_widget_realize(data_disp_shell->gobj());
 	Delay::register_shell(data_disp_shell);
     }
 
     if (source_view_shell)
     {
-	XtRealizeWidget(source_view_shell);
+	// gtk_widget_realize(source_view_shell->gobj());
 	Delay::register_shell(source_view_shell);
     }
 
@@ -5149,7 +5149,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     else
     {
 	register_info_button(locals_w);
-	XtUnmanageChild(args_w);
+	args_w->hide();
     }
     update_infos();
 
@@ -7167,13 +7167,13 @@ static bool real_update_options(bool noupd)
 	command_toolbar_w != 0 && !XtIsManaged(command_toolbar_w))
     {
 	if (app_data.source_window)
-	    XtManageChild(command_toolbar_w);
+	    command_toolbar_w->show();
 	gdbCloseToolWindowCB();
     }
     else if (!app_data.command_toolbar && 
 	     command_toolbar_w != 0 && XtIsManaged(command_toolbar_w))
     {
-	XtUnmanageChild(command_toolbar_w);
+	command_toolbar_w->hide();
 	if (app_data.source_window)
 	    gdbOpenToolWindowCB();
     }
@@ -8222,7 +8222,7 @@ static void ChangePanelCB(GUI::CheckButton *w, GUI::Widget *panel)
     if (set)
     {
 	// Manage this child
-	XtManageChild(panel);
+	panel->show();
 	std::cerr << "ChangePanelCB: set help callback?\n";
 	reset_preferences_connection =
 	    reset_preferences_w->signal_clicked().connect(sigc::bind(sigc::retype(sigc::ptr_fun(ResetPreferencesCB)),
@@ -9371,9 +9371,15 @@ static void gdb_readyHP(Agent *, void *, void *call_data)
 	// Completion is done
 	clear_completion_delay();
 
+#if defined(IF_XM)
 	// Selection is done
 	if (gdb_selection_dialog != 0)
 	    XtUnmanageChild(gdb_selection_dialog);
+#else
+	// Selection is done
+	if (gdb_selection_dialog != 0)
+	    gdb_selection_dialog->hide();
+#endif
 
 	// We don't exit and we don't restart
 	ddd_is_exiting = ddd_is_restarting = false;

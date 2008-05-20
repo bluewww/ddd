@@ -189,8 +189,13 @@ GUI::Dialog *post_gdb_yn(string question, GUI::Widget *w)
 
 void unpost_gdb_yn()
 {
+#if defined(IF_XM)
     if (yn_dialog)
 	XtUnmanageChild(yn_dialog);
+#else
+    if (yn_dialog)
+	yn_dialog->hide();
+#endif
 }
 
 
@@ -253,8 +258,13 @@ GUI::Dialog *post_gdb_busy(GUI::Widget *w)
 
 void unpost_gdb_busy()
 {
+#if defined(IF_XM)
     if (busy_dialog)
 	XtUnmanageChild(busy_dialog);
+#else
+    if (busy_dialog)
+	busy_dialog->hide();
+#endif
 }
 
 
