@@ -1,8 +1,11 @@
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
+#endif
 
 #include "AppData.h"
 
-#ifndef IF_MOTIF
+#if !defined(IF_XM)
+
 AppData::AppData(void)
 {
     // FIXME: This is just a fudge to get a working configuration
@@ -429,8 +432,9 @@ AppData::AppData(void)
   dump_core = true; 
   debug_core_dumps = false; 
   lesstif_version = 1000, 
-  dddinit_version = strdup("3.3.11"); 
-  app_defaults_version = strdup("3.3.11");
+  dddinit_version = strdup(DDD_VERSION); 
+  app_defaults_version = strdup(DDD_VERSION);
 }
-#endif // IF_MOTIF
+
+#endif
 

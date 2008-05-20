@@ -30,13 +30,17 @@
 #ifndef _DDD_AppData_h
 #define _DDD_AppData_h
 
-#ifdef IF_MOTIF
+#if defined(HAVE_CONFIG_H)
+#include "config.h"
+#endif
+
+#if defined(IF_XM)
 
 #include <Xm/Xm.h>
 #include <X11/StringDefs.h>
 #include <X11/Xlib.h>
 
-#endif // IF_MOTIF
+#endif
 
 #include "gtk_wrapper.h"
 
