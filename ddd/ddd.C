@@ -4793,9 +4793,9 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	create_status(main_vbox);
 
     // Toolbar label type
-    unsigned char label_type = XmSTRING;
+    LabelType label_type = LABEL_TYPE_STRING;
     if (app_data.button_captions || app_data.button_images)
-	label_type = XmPIXMAP;
+	label_type = LABEL_TYPE_PIXMAP;
 
     // Common toolbar
     if (!app_data.button_captions && !app_data.button_images)
@@ -4810,7 +4810,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	arg_cmd_area[ArgItems::Display].type |= MMUnmanaged;
 	arg_cmd_w = create_toolbar(main_vbox, "common",
 				   arg_cmd_area, DataDisp::graph_cmd_area,
-				   arg_label, source_arg, XmPIXMAP);
+				   arg_label, source_arg, label_type);
 
 	DataDisp::graph_cmd_w = arg_cmd_w;
 

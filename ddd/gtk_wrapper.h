@@ -27,12 +27,6 @@ typedef bool Bool;
 // enums
 
 #if 1
-enum {
-  XmPIXMAP = 1,
-  XmSTRING,
-  XmPIXMAP_AND_STRING
-};
-
 enum XmButtonState {
   XmUNSET,
   XmSET,

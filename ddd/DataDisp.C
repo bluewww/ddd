@@ -9643,9 +9643,9 @@ DataDisp::DataDisp(GUI::Container *parent, GUI::WidgetPtr<GUI::Container> &data_
     disp_graph->addHandler(DispGraph_Empty, no_displaysHP);
 
     // Create graph toolbar
-    unsigned char label_type = XmSTRING;
+    LabelType label_type = LABEL_TYPE_STRING;
     if (app_data.button_captions || app_data.button_images)
-	label_type = XmPIXMAP;
+	label_type = LABEL_TYPE_PIXMAP;
 
     GUI::Button *arg_label = 0;
     if (graph_cmd_w == 0 && !app_data.toolbars_at_bottom)

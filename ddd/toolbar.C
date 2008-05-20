@@ -396,9 +396,9 @@ Widget create_toolbar(Widget parent, const string& /* name */,
 GUI::Container *create_toolbar(GUI::Container *parent, const string& /* name */,
 			       MMDesc *items1, MMDesc *items2,
 			       GUI::Button *&label, ArgField*& argfield,
-			       unsigned char label_type)
+			       LabelType label_type)
 {
-    assert(label_type == XmPIXMAP || label_type == XmSTRING);
+    assert(label_type == LABEL_TYPE_PIXMAP || label_type == LABEL_TYPE_STRING);
 
     // Create toolbar
     const string toolbar_name = "toolbar";
@@ -423,7 +423,7 @@ GUI::Container *create_toolbar(GUI::Container *parent, const string& /* name */,
 		  app_data.button_color_key,
 		  app_data.active_button_color_key);
 
-    if (label_type == XmPIXMAP && app_data.flat_toolbar_buttons)
+    if (label_type == LABEL_TYPE_PIXMAP && app_data.flat_toolbar_buttons)
     {
 	// Use flat buttons
 	flatten_buttons(items1);

@@ -44,6 +44,16 @@
 #include <GUI/Button.h>
 #endif
 
+#if defined(IF_XM)
+#define LABEL_TYPE_STRING XmSTRING
+#define LABEL_TYPE_PIXMAP XmPIXMAP
+#else
+enum LabelType {
+    LABEL_TYPE_STRING,
+    LABEL_TYPE_PIXMAP
+};
+#endif
+
 // Create a toolbar as child of parent, named `NAME_toolbar', having
 // the buttons ITEMS.  Return LABEL and ARGFIELD.
 #if defined(IF_XM)
@@ -55,7 +65,7 @@ extern Widget create_toolbar(Widget parent, const string& name,
 extern GUI::Container *create_toolbar(GUI::Container *parent, const string& name, 
 				      MMDesc *items1, MMDesc *items2,
 				      GUI::Button *&label, ArgField*& argfield,
-				      unsigned char label_type);
+				      LabelType label_type);
 #endif
 
 
