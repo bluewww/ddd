@@ -481,10 +481,16 @@ rm -f xmmm/GUI
 ${LN_S} Xmmm xmmm/GUI
 rm -f gtkx/GUI
 ${LN_S} GtkX gtkx/GUI
+rm -f qtx/GUI
+${LN_S} QtX qtx/GUI
 AC_ARG_WITH([gtk],AS_HELP_STRING([--with-gtk],[Use GTK interface (experimental)]),[with_gtk="${withval}"],[with_gtk=no])
+AC_ARG_WITH([qt],AS_HELP_STRING([--with-qt],[Use QT interface (experimental)]),[with_qt="${withval}"],[with_qt=no])
 AC_ARG_WITH([xmmm],AS_HELP_STRING([--with-xmmm],[Use new Motif interface (experimental)]),[with_xmmm="${withval}"],[with_xmmm=no])
 AM_CONDITIONAL([WITH_GTK],[test "$with_gtk" = yes])
+AM_CONDITIONAL([WITH_QT],[test "$with_qt" = yes])
 AM_CONDITIONAL([WITH_XMMM],[test "$with_xmmm" = yes])
+AC_SUBST(GUI_LIBS)
+AC_SUBST(GUI_CFLAGS)
 dnl
 dnl PKG_CONFIG must be defined before we enter the conditional section
 PKG_PROG_PKG_CONFIG
@@ -502,10 +508,35 @@ GTKX_LIBS="-L\$(top_builddir)/gtkx -lGtkX"
 GTKX_CFLAGS="-I\$(top_srcdir)/gtkx"
 AC_SUBST(GTKX_LIBS)
 AC_SUBST(GTKX_CFLAGS)
+GUI_CFLAGS='$(GTKX_CFLAGS) $(GTKMM_CFLAGS)'
+GUI_LIBS='$(GTKX_LIBS) $(GTKMM_LIBS)'
 PKG_CHECK_MODULES(LIBXML, [libxml-2.0 >= 2.4.24])
 AC_SUBST(LIBXML_LIBS)
 AC_SUBST(LIBXML_CFLAGS)
 AC_DEFINE([GUI],[GtkX],[GUI flavor])
+dnl
+elif test "$with_qt" = yes; then
+dnl
+dnl Check for QT stuff
+dnl
+gddd=gddd
+GDDD=GDDD
+PKG_CHECK_MODULES(QT, [QtGui])
+AC_SUBST(QT_LIBS)
+AC_SUBST(QT_CFLAGS)
+QTX_LIBS="-L\$(top_builddir)/qtx -lQtX"
+QTX_CFLAGS="-I\$(top_srcdir)/qtx"
+AC_SUBST(QTX_LIBS)
+AC_SUBST(QTX_CFLAGS)
+GUI_CFLAGS='$(QTX_CFLAGS) $(QT_CFLAGS)'
+GUI_LIBS='$(QTX_LIBS) $(QT_LIBS)'
+PKG_CHECK_MODULES(SIGC, [sigc++-2.0])
+AC_SUBST(SIGC_LIBS)
+AC_SUBST(SIGC_CFLAGS)
+PKG_CHECK_MODULES(LIBXML, [libxml-2.0 >= 2.4.24])
+AC_SUBST(LIBXML_LIBS)
+AC_SUBST(LIBXML_CFLAGS)
+AC_DEFINE([GUI],[QtX],[GUI flavor])
 dnl
 else
 dnl
@@ -522,6 +553,9 @@ XMMM_LIBS="-L\$(top_builddir)/xmmm -lXmmm"
 XMMM_CFLAGS="-I\$(top_srcdir)/xmmm"
 AC_SUBST(XMMM_LIBS)
 AC_SUBST(XMMM_CFLAGS)
+GUI_CFLAGS='$(XMMM_CFLAGS)'
+GUI_LIBS='$(XMMM_LIBS)'
+AC_SUBST(GUI_CFLAGS)
 PKG_CHECK_MODULES(SIGC, [sigc++-2.0])
 AC_SUBST(SIGC_LIBS)
 AC_SUBST(SIGC_CFLAGS)
@@ -1159,6 +1193,10 @@ fi
 if test "$with_gtk" = yes; then
    AC_CONFIG_SUBDIRS([gtkx])
    IF_SUBDIRS="$IF_SUBDIRS gtkx"
+fi
+if test "$with_qt" = yes; then
+   AC_CONFIG_SUBDIRS([qtx])
+   IF_SUBDIRS="$IF_SUBDIRS qtx"
 fi
 AC_SUBST(IF_SUBDIRS)
 AC_OUTPUT

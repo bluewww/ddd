@@ -1,0 +1,10 @@
+SUBDIRS = QtX
+
+lib_LTLIBRARIES = libQtX.la
+
+libQtX_la_SOURCES = Widget.C
+
+AM_CPPFLAGS = $(QT_CFLAGS) $(SIGC_CFLAGS)
+
+
+

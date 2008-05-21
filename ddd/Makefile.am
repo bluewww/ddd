@@ -769,7 +769,7 @@ cxxtest_LDADD = $(LIBM)
 ddd_LDADD = $(RPATH) $(GTKX_LIBS) $(GTKMM_LIBS) $(LIBXML_LIBS) $(SIGC_LIBS) $(ALL_X_LIBS) $(ALL_LIBS) 
 # vsl_LDADD = $(RPATH) $(ALL_X_LIBS) $(ALL_LIBS)
 X_INCLUDE = @X_CFLAGS@
-AM_CPPFLAGS = -I$(srcdir)/.. $(GTKX_CFLAGS) $(GTKMM_CFLAGS) $(LIBXML_CFLAGS) $(XMMM_CFLAGS) $(SIGC_CFLAGS) $(X_INCLUDE)
+AM_CPPFLAGS = -I$(srcdir)/.. $(GUI_CFLAGS) $(LIBXML_CFLAGS) $(SIGC_CFLAGS) $(X_INCLUDE)
 
 # -----------------------------------------------------------------------------
 # DDD Application Defaults.
