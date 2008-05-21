@@ -163,10 +163,10 @@ typedef void (*MMItemProc)(const MMDesc items[], void *closure);
 
 
 // Creators
-GUI::PulldownMenu  *MMcreatePulldownMenu       (GUI::Container &parent, cpString name, MMDesc items[]);
-GUI::PulldownMenu  *MMcreateRadioPulldownMenu  (GUI::Container &parent, cpString name, MMDesc items[]);
-GUI::PopupMenu     *MMcreatePopupMenu          (GUI::Widget &parent, cpString name, MMDesc items[]);
-GUI::WidgetPtr<GUI::MenuBar> MMcreateMenuBar   (GUI::Container &parent, cpString name, MMDesc items[]);
+GUI::PulldownMenu  *MMcreatePulldownMenu       (GUI::Container &parent, GUI::String name, MMDesc items[]);
+GUI::PulldownMenu  *MMcreateRadioPulldownMenu  (GUI::Container &parent, GUI::String name, MMDesc items[]);
+GUI::PopupMenu     *MMcreatePopupMenu          (GUI::Widget &parent, GUI::String name, MMDesc items[]);
+GUI::MenuBar       *MMcreateMenuBar            (GUI::Container &parent, GUI::String name, MMDesc items[]);
 
 #endif
 
@@ -199,11 +199,11 @@ void MMonItems(const MMDesc items[], MMItemProc proc, XtPointer closure = 0,
 #else
 
 GUI::Container *MMcreateWorkArea(GUI::Dialog *parent, GUI::String name, MMDesc items[]);
-GUI::Container *MMcreatePanel(GUI::Container *parent, cpString name, MMDesc items[],
+GUI::Container *MMcreatePanel(GUI::Container *parent, GUI::String name, MMDesc items[],
 			      GUI::Orientation=GUI::ORIENTATION_VERTICAL);
-GUI::Container *MMcreateRadioPanel(GUI::Container *parent, cpString name, MMDesc items[],
+GUI::Container *MMcreateRadioPanel(GUI::Container *parent, GUI::String name, MMDesc items[],
 				   GUI::Orientation=GUI::ORIENTATION_VERTICAL);
-GUI::Container *MMcreateButtonPanel(GUI::Container *parent, cpString name, MMDesc items[],
+GUI::Container *MMcreateButtonPanel(GUI::Container *parent, GUI::String name, MMDesc items[],
 				    GUI::Orientation=GUI::ORIENTATION_VERTICAL);
 GUI::Menu      *MMcreatePushMenu(GUI::Container *parent, GUI::String name, MMDesc items[]);
 

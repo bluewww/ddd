@@ -96,7 +96,11 @@ void reset_status_lock(void) { status_locked = 0; }
 // Prompt recognition
 //-----------------------------------------------------------------------------
 
+#if defined(IF_XM)
 void set_buttons_from_gdb(Widget buttons, string& text)
+#else
+void set_buttons_from_gdb(GUI::Widget *buttons, string& text)
+#endif
 {
     bool yn = gdb->ends_with_yn(text);
 

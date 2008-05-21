@@ -840,7 +840,7 @@ public:
 #if defined(IF_XM)
     DataDisp(Widget parent, Widget& data_buttons_w);
 #else
-    DataDisp(GUI::Container *parent, GUI::WidgetPtr<GUI::Container> &data_buttons_w);
+    DataDisp(GUI::Container *parent, GUI::Container *&data_buttons_w);
 #endif
 
     void create_shells();

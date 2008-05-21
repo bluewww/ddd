@@ -3161,14 +3161,17 @@ long messagePosition;
 #endif
 
 // Buttons
+#if defined(IF_XM)
 static Widget console_buttons_w;
 static Widget source_buttons_w;
-#if defined(IF_XM)
 static Widget data_buttons_w;
-#else
-static GUI::WidgetPtr<GUI::Container> data_buttons_w;
-#endif
 static Widget command_toolbar_w;
+#else
+static GUI::Container *console_buttons_w;
+static GUI::Container *source_buttons_w;
+static GUI::Container *data_buttons_w;
+static GUI::Container *command_toolbar_w;
+#endif
 
 // Strings to be ignored in GDB output
 string gdb_out_ignore = "";
@@ -4370,7 +4373,9 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 #ifdef LC_ALL
     // Let DDD locales be controlled by the locale-specific
     // environment variables -- especially $LANG.
+#if defined(IF_XM)
     XtSetLanguageProc(NULL, NULL, NULL);
+#endif
     setlocale(LC_ALL, "");
 #endif
 
@@ -4860,7 +4865,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 
     std::cerr << "Set values for data window?\n";
 
-    if (data_buttons_w == (Widget)0)
+    if (!data_buttons_w)
 	data_buttons_w = make_buttons(data_disp_parent, "data_buttons", 
 				      app_data.data_buttons);
 
@@ -6394,7 +6399,11 @@ static void PreHelpOnContext(GUI::Widget *w)
 
 #endif
 
+#if defined(IF_XM)
 static void PostHelpOnItem(Widget item)
+#else
+static void PostHelpOnItem(GUI::Widget *item)
+#endif
 {
     if (item != 0)
     {
@@ -8723,51 +8732,30 @@ static XtIntervalId blink_timer = 0;     // Timer for blinking
 static sigc::connection blink_timer;         // Timer for blinking
 #endif
 
+#if defined(IF_XM)
+
 static
-#if defined(IF_XM)
 void
-#else
-bool
-#endif
-BlinkCB(
-#if defined(IF_XM)
-    XtPointer client_data, XtIntervalId *id
-#else
-    bool *set_p
-#endif
-    )
+BlinkCB(XtPointer client_data, XtIntervalId *id)
 {
-#if defined(IF_XM)
     (void) id;			// use it
     assert(*id == blink_timer);
     blink_timer = 0;
-#endif
 
     static bool have_led_colors = false;
-#if defined(IF_XM)
     static Pixel led_select_color;
     static Pixel led_background_color;
-#else
-    static Gdk::Color led_select_color;
-    static Gdk::Color led_background_color;
-#endif
 
 
     if (!have_led_colors)
     {
-#if defined(IF_XM)
 	XtVaGetValues(led_w,
 		      XmNbackground, &led_background_color,
 		      XmNselectColor, &led_select_color,
 		      XtPointer(0));
-#else
-	led_background_color = led_w->get_style()->get_bg(Gtk::STATE_NORMAL);
-	led_select_color = led_w->get_style()->get_bg(Gtk::STATE_SELECTED);
-#endif
 	have_led_colors = true;
     }
 
-#if defined(IF_XM)
     bool set = bool(long(client_data));
     if (set)
 	XtVaSetValues(led_w, XmNselectColor, led_select_color, 
@@ -8777,7 +8765,35 @@ BlinkCB(
 		      XtPointer(0));
 
     XFlush(XtDisplay(led_w));
+    XmUpdateDisplay(led_w);
+
+    if ((blinker_active || set) && app_data.busy_blink_rate > 0)
+    {
+	blink_timer = XtAppAddTimeOut(XtWidgetToApplicationContext(led_w),
+				      app_data.busy_blink_rate, BlinkCB,
+				      XtPointer(int(!set)));
+    }
+}
+
 #else
+
+static
+bool
+BlinkCB(bool *set_p)
+{
+
+    static bool have_led_colors = false;
+    static Gdk::Color led_select_color;
+    static Gdk::Color led_background_color;
+
+
+    if (!have_led_colors)
+    {
+	led_background_color = led_w->get_style()->get_bg(Gtk::STATE_NORMAL);
+	led_select_color = led_w->get_style()->get_bg(Gtk::STATE_SELECTED);
+	have_led_colors = true;
+    }
+
     bool set = *set_p;
     *set_p = !set;
     if (set)
@@ -8786,23 +8802,17 @@ BlinkCB(
 	led_w->get_style()->set_bg(Gtk::STATE_SELECTED, led_background_color);
 
     led_w->get_display()->flush();
-#endif
-    XmUpdateDisplay(led_w);
+    std::cerr << "XmUpdateDisplay?\n";
+    // XmUpdateDisplay(led_w);
 
     if ((blinker_active || set) && app_data.busy_blink_rate > 0)
     {
-#if defined(IF_XM)
-	blink_timer = XtAppAddTimeOut(XtWidgetToApplicationContext(led_w),
-				      app_data.busy_blink_rate, BlinkCB,
-				      XtPointer(int(!set)));
-#else
 	return true;
-#endif
     }
-#if !defined(IF_XM)
     return false;
-#endif
 }
+
+#endif
 
 #if defined(IF_XM)
 

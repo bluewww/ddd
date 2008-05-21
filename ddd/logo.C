@@ -30,14 +30,22 @@
 char logo_rcsid[] = 
     "$Id$";
 
-#include "logo.h"
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
+#endif
+
+#include "logo.h"
 
 #if defined(IF_XM)
 
 #include "Xpm.h"
 
 #else
+
+#include <gtkmm/bin.h>
+#include <gtkmm/label.h>
+#include <gtkmm/button.h>
+#include <gtkmm/menuitem.h>
 
 #endif
 

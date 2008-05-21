@@ -30,7 +30,7 @@
 #ifndef _DDD_Command_h
 #define _DDD_Command_h
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
@@ -39,6 +39,7 @@
 
 #if !defined(IF_XM)
 #include <GUI/Widget.h>
+#include <GUI/Container.h>
 #endif
 
 // Priorities.  The higher the priority, the earlier the command
@@ -371,7 +372,7 @@ extern Widget find_shell(Widget w = 0);
 #else
 
 // Return a shell widget according to last command origin
-extern GUI::WidgetPtr<GUI::Shell> find_shell(GUI::Widget *w = NULL);
+extern GUI::Shell *find_shell(GUI::Widget *w = NULL);
 
 #endif
 

@@ -9617,7 +9617,7 @@ DataDisp::DataDisp(Widget parent, Widget& data_buttons_w)
 
 #else
 
-DataDisp::DataDisp(GUI::Container *parent, GUI::WidgetPtr<GUI::Container> &data_buttons_w)
+DataDisp::DataDisp(GUI::Container *parent, GUI::Container *&data_buttons_w)
 {
     GUI::Main *app_context = parent->get_main();
 

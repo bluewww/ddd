@@ -34,23 +34,24 @@
 #include "Delay.h"
 #include "MString.h"
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 
 #include <X11/Intrinsic.h>
 
-#endif // IF_MOTIF
+#else
 
-#include "gtk_wrapper.h"
-
-#if !defined(IF_XM)
 #include <GUI/Button.h>
 #include <GUI/Container.h>
 #include <GUI/Menu.h>
+
 #endif
+
+#include "gtk_wrapper.h"
+
 
 // Show MESSAGE in status window.
 // If TEMPORARY is set, override locks and do not add to status history.
@@ -70,7 +71,11 @@ extern GUI::Menu *status_history(GUI::Widget *parent);
 #endif
 
 // Buttons and state
+#if defined(IF_XM)
 void set_buttons_from_gdb(Widget w, string& text);
+#else
+void set_buttons_from_gdb(GUI::Widget *w, string& text);
+#endif
 void set_status_from_gdb(const string& text);
 
  // True if last cmd came from GDB window

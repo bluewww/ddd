@@ -80,5 +80,15 @@ void manage_and_raise(Widget w);
 void manage_and_raise(GUI::Widget *w);
 #endif
 
+#if !defined(IF_XM)
+
+// Copy text from any widget to default clipboard.
+// Glib::RefPtr<Gtk::Clipboard> clip =
+//   Gtk::Clipboard::get_for_display(XtDisplay(w));
+bool text_copy_from(Widget w);
+bool text_cut_from(Widget w);
+
+#endif
+
 #endif // _DDD_wm_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

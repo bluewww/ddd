@@ -1374,8 +1374,8 @@ Widget make_buttons(Widget parent, const char *name,
 #else
 
 // Create a button work area from BUTTON_LIST named NAME
-GUI::WidgetPtr<GUI::Container> make_buttons(GUI::Container *parent, const char *name, 
-					    const char *button_list)
+GUI::Container *make_buttons(GUI::Container *parent, const char *name, 
+			     const char *button_list)
 {
     GUI::HBox *buttons = new GUI::HBox(*parent, GUI::PACK_SHRINK, name);
 

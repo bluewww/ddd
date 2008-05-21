@@ -200,8 +200,13 @@ void ArgField::valueChangedCB(GUI::Widget *,
 void ArgField::lock(bool arg)
 {
     locked = arg;
+#if defined(IF_XM)
     XtSetSensitive(top(), !locked);
     XtSetSensitive(text(), !locked);
+#else
+    top()->set_sensitive(!locked);
+    text()->set_sensitive(!locked);
+#endif
 }
 
 #if defined(IF_XM)

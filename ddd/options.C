@@ -3597,13 +3597,13 @@ static void set_xml_paned_widget_size(xmlNode *tree, Widget w, bool height_only 
 	short columns = scrolled_text->get_columns();
 	if (!height_only && columns > 0)
 	{
-	    set_xml_prop(subtree, XmNcolumns, columns, check_default);
+	    set_xml_prop(subtree, "columns", columns, check_default);
 	}
 
 	short rows = scrolled_text->get_rows();
 	if (rows > 0)
 	{
-	    set_xml_prop(subtree, XmNrows, rows, check_default);
+	    set_xml_prop(subtree, "rows", rows, check_default);
 	}
     }
     else if (entry = dynamic_cast<Gtk::Entry *>(w))
@@ -3612,7 +3612,7 @@ static void set_xml_paned_widget_size(xmlNode *tree, Widget w, bool height_only 
 	short columns = entry->get_width_chars();
 	if (!height_only && columns > 0)
 	{
-	    set_xml_prop(subtree, XmNcolumns, columns, check_default);
+	    set_xml_prop(subtree, "columns", columns, check_default);
 	}
     }
     else
@@ -3630,9 +3630,9 @@ static void set_xml_paned_widget_size(xmlNode *tree, Widget w, bool height_only 
 	Dimension height = ref->get_height();
 
 	if (!height_only)
-	    set_xml_prop(subtree, XmNwidth, width, check_default);
+	    set_xml_prop(subtree, "width", width, check_default);
 
-	set_xml_prop(subtree, XmNheight, height, check_default);
+	set_xml_prop(subtree, "height", height, check_default);
     }
 }
 

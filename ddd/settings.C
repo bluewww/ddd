@@ -166,7 +166,7 @@ static Widget            reset_signals_button = 0;
 #else
 static GUI::Container   *signals_panel = 0;
 static GUI::Container   *signals_form  = 0;
-static GUI::Widget      *reset_signals_button = 0;
+static GUI::Button      *reset_signals_button = 0;
 #endif
 static WidgetArray       signals_entries;
 static WidgetStringAssoc signals_values;
@@ -190,7 +190,7 @@ static VarArray<GUI::Entry *>       themes_entries;
 static VarArray<GUI::CheckButton *> themes_labels;
 
 static GUI::Widget      *infos_panel        = 0;
-static GUI::Widget      *reset_infos_button = 0;
+static GUI::Button      *reset_infos_button = 0;
 #endif
 #if defined(IF_XM)
 static VarArray<Widget>       infos_entries;
@@ -4440,7 +4440,7 @@ static GUI::Dialog *create_panel(DebuggerType type, SettingsType stype)
     GUI::Dialog *panel = new GUI::Dialog(*find_shell(), dialog_name.chars());
     Delay::register_shell(panel);
 
-    GUI::Button *button, *reset_button, *apply_button;
+    GUI::Button *button, *apply_button;
 
     switch (stype)
     {
@@ -4454,17 +4454,19 @@ static GUI::Dialog *create_panel(DebuggerType type, SettingsType stype)
     case INFOS:
 	button = apply_settings_button = panel->add_button("Delete");
 	button->signal_clicked().connect(sigc::ptr_fun(DeleteAllInfosCB));
+	button = reset_infos_button = panel->add_button("Reset");
+	// button->signal_clicked().connect(sigc::ptr_fun(ResetSettingsCB));
 	break;
 
     case SIGNALS:
-	button = reset_button = panel->add_button("Reset");
+	button = reset_signals_button = panel->add_button("Reset");
 	button->signal_clicked().connect(sigc::ptr_fun(ResetSignalsCB));
 	break;
 
     case THEMES:
 	button = apply_themes_button = panel->add_button("Apply");
 	button->signal_clicked().connect(sigc::ptr_fun(ApplyThemesCB));
-	button = reset_button = panel->add_button("Reset");
+	button = reset_themes_button = panel->add_button("Reset");
 	button->signal_clicked().connect(sigc::ptr_fun(ResetThemesCB));
 	break;
     }
@@ -4574,22 +4576,18 @@ static GUI::Dialog *create_panel(DebuggerType type, SettingsType stype)
     switch (stype)
     {
     case SETTINGS:
-	reset_settings_button = reset_button;
 	update_reset_settings_button();
 	break;
 
     case INFOS:
-	reset_infos_button = reset_button;
 	update_infos();
 	break;
 
     case SIGNALS:
-	reset_signals_button = reset_button;
 	update_reset_signals_button();
 	break;
 
     case THEMES:
-	reset_themes_button = reset_button;
 	update_themes();
 	update_themes_buttons();
 	break;
@@ -5922,7 +5920,7 @@ static void DoneEditCommandDefinitionCB(GUI::Widget *w)
 
     editor_w->hide();
     set_sensitive(name_w, true);
-    set_sensitive(XtParent(name_w), true);
+    set_sensitive(name_w->get_parent(), true);
 
     GUI::String label = GUI::String("Edit ") + GUI::String(">>");
     set_label(edit_w, label);
@@ -5994,7 +5992,7 @@ static void EditCommandDefinitionCB(void)
 
     // update_define(name);
     set_sensitive(name_w, false);
-    set_sensitive(XtParent(name_w), false);
+    set_sensitive(name_w->get_parent(), false);
 
     string def = "";
     if (defs.has(name))

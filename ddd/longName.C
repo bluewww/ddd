@@ -32,22 +32,22 @@
 
 #if defined(IF_XM)
 #include <X11/Intrinsic.h>
+#else
+#include <GUI/Container.h>
 #endif
 #include "longName.h"
 
 char longName_rcsid[] = 
     "$Id$";
 
+#if defined(IF_XM)
+
 string longName(Widget w)
 {
     if (w == 0)
 	return "<none>";
 
-#if defined(IF_XM)
     string ret = XtName(w);
-#else
-    string ret = w->get_name().c_str();
-#endif
 
     Widget parent = XtParent(w);
     if (parent)
@@ -55,3 +55,21 @@ string longName(Widget w)
 
     return ret;
 }
+
+#else
+
+string longName(GUI::Widget *w)
+{
+    if (w == 0)
+	return "<none>";
+
+    string ret = w->get_name().c_str();
+
+    GUI::Widget *parent = w->get_parent();
+    if (parent)
+	ret = longName(parent) + "." + ret;
+
+    return ret;
+}
+
+#endif

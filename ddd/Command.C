@@ -74,9 +74,10 @@ char Command_rcsid[] =
 #endif
 
 // Origin of last command
+#if defined(IF_XM)
 static Widget gdb_last_origin = 0;
-#if !defined(IF_XM)
-static GUI::Widget *gdb_last_origin1 = 0;
+#else
+static GUI::Widget *gdb_last_origin = 0;
 #endif
 
 // True if a user command was processed
@@ -137,8 +138,8 @@ static void ClearOriginCB(Widget w, XtPointer, XtPointer)
 #else
 static void *ClearOriginCB(void *w)
 {
-    if (gdb_last_origin == (Widget)w)
-	gdb_last_origin = 0;
+    if (gdb_last_origin == (GUI::Widget *)w)
+	gdb_last_origin = NULL;
     return NULL;
 }
 #endif
@@ -1028,10 +1029,10 @@ Widget find_shell(Widget w)
 
 #else
 
-GUI::WidgetPtr<GUI::Shell> find_shell(GUI::Widget *w)
+GUI::Shell *find_shell(GUI::Widget *w)
 {
     if (w == 0)
-	w = gdb_last_origin1;
+	w = gdb_last_origin;
     if (w == 0)
 	return command_shell;
 

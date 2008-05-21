@@ -776,8 +776,8 @@ void MMaddItems(GUI::Container *shell, MMDesc items[], bool ignore_seps)
     // Create lots of buttons...
     for (MMDesc *item = items; item && item->name; item++)
     {
-	cpString name = item->name;
-	cpString label_string = item->label_string;
+	GUI::String name = item->name;
+	GUI::String label_string = item->label_string;
 	GUI::ImageHandle *image = item->image;
 	MMType flags            = item->type;
 	MMType type             = flags & MMTypeMask;
@@ -979,7 +979,7 @@ void MMaddItems(GUI::Container *shell, MMDesc items[], bool ignore_seps)
 	    if (have_label)
 		label->show();
 
-	    GUI::Container *(*create_panel)(GUI::Container *, cpString, MMDesc[], GUI::Orientation) = 0;
+	    GUI::Container *(*create_panel)(GUI::Container *, GUI::String, MMDesc[], GUI::Orientation) = 0;
 
 	    switch (type)
 	    {
@@ -1113,7 +1113,7 @@ Widget MMcreatePulldownMenu(Widget parent, const char *name, MMDesc items[],
 #else
 
 // Create pulldown menu from items
-GUI::PulldownMenu *MMcreatePulldownMenu(GUI::Container &parent, cpString name, MMDesc items[])
+GUI::PulldownMenu *MMcreatePulldownMenu(GUI::Container &parent, GUI::String name, MMDesc items[])
 {
     GUI::PulldownMenu *menu = new GUI::PulldownMenu(parent, name);
     MMaddItems(menu, items);
@@ -1148,7 +1148,7 @@ Widget MMcreateRadioPulldownMenu(Widget parent, const char *name, MMDesc items[]
 #else
 
 // Create radio pulldown menu from items
-GUI::PulldownMenu *MMcreateRadioPulldownMenu(GUI::Container &parent, cpString name, MMDesc items[])
+GUI::PulldownMenu *MMcreateRadioPulldownMenu(GUI::Container &parent, GUI::String name, MMDesc items[])
 {
     GUI::PulldownMenu *w = MMcreatePulldownMenu(parent, name, items);
     // FIXME: Set options isHomogeneous, entryClass, radioBehaviour
@@ -1173,7 +1173,7 @@ Widget MMcreatePopupMenu(Widget parent, const char *name, MMDesc items[],
 #else
 
 // Create popup menu from items
-GUI::PopupMenu *MMcreatePopupMenu(GUI::Widget &parent, cpString name, MMDesc items[])
+GUI::PopupMenu *MMcreatePopupMenu(GUI::Widget &parent, GUI::String name, MMDesc items[])
 {
     GUI::PopupMenu *menu = new GUI::PopupMenu(parent, name);
     MMaddItems(menu, items);
@@ -1183,7 +1183,7 @@ GUI::PopupMenu *MMcreatePopupMenu(GUI::Widget &parent, cpString name, MMDesc ite
 }
 
 // Create popup menu from items
-GUI::PopupMenu *MMcreatePopupMenu(Widget parent, cpString name, MMDesc items[])
+GUI::PopupMenu *MMcreatePopupMenu(GUI::Widget *parent, GUI::String name, MMDesc items[])
 {
     // FIXME: No parent.
     GUI::PopupMenu *menu = new GUI::PopupMenu(NULL, name);
@@ -1223,7 +1223,7 @@ Widget MMcreateMenuBar(Widget parent, const char *name, MMDesc items[],
 #else
 
 // Create menu bar from items
-GUI::WidgetPtr<GUI::MenuBar> MMcreateMenuBar(GUI::Container &parent, cpString name, MMDesc items[])
+GUI::MenuBar *MMcreateMenuBar(GUI::Container &parent, GUI::String name, MMDesc items[])
 {
     GUI::MenuBar *bar = new GUI::MenuBar(parent, GUI::PACK_SHRINK, name);
     MMaddItems(bar, items);
@@ -1276,7 +1276,7 @@ Widget MMcreatePanel(Widget parent, const _XtString name, MMDesc items[],
 
 #else
 
-GUI::Container *MMcreatePanel(GUI::Container *parent, cpString name, MMDesc items[],
+GUI::Container *MMcreatePanel(GUI::Container *parent, GUI::String name, MMDesc items[],
 			      GUI::Orientation orient)
 {
     GUI::Container *panel;
@@ -1362,7 +1362,7 @@ Widget MMcreateRadioPanel(Widget parent, const _XtString name, MMDesc items[],
 #else
 
 // Create radio panel from items
-GUI::Container *MMcreateRadioPanel(GUI::Container *parent, cpString name, MMDesc items[],
+GUI::Container *MMcreateRadioPanel(GUI::Container *parent, GUI::String name, MMDesc items[],
 				   GUI::Orientation orient)
 {
     GUI::Container *panel = new GUI::RadioBox(*parent, GUI::PACK_SHRINK, name,
@@ -1392,7 +1392,7 @@ Widget MMcreateButtonPanel(Widget parent, const _XtString name, MMDesc items[],
 #else
 
 // Create button panel from items
-GUI::Container *MMcreateButtonPanel(GUI::Container *parent, cpString name, MMDesc items[],
+GUI::Container *MMcreateButtonPanel(GUI::Container *parent, GUI::String name, MMDesc items[],
 				    GUI::Orientation orient)
 {
     GUI::Container *panel;

@@ -35,6 +35,14 @@ char DispGraph_rcsid[] =
 // DispGraph stores information about all displayed display expressions.
 //-----------------------------------------------------------------------------
 
+#if defined(HAVE_CONFIG_H)
+#include "config.h"
+#endif
+
+#if !defined(IF_XM)
+#include <GUI/Container.h>
+#endif
+
 #include "DispGraph.h"
 
 #include <math.h>

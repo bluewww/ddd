@@ -29,10 +29,18 @@
 #ifndef _DDD_longName_h
 #define _DDD_longName_h
 
+#if defined(HAVE_CONFIG_H)
+#include "config.h"
+#endif
+
 #include "strclass.h"
 
 #include "gtk_wrapper.h"
 
+#if defined(IF_XM)
 extern string longName(Widget w);
+#else
+extern string longName(GUI::Widget *w);
+#endif
 
 #endif
