@@ -43,6 +43,8 @@ char mainloop_rcsid[] =
 bool main_loop_entered = false;
 
 static jmp_buf main_loop_env;
+
+#if defined(IF_XM)
 /*
  * Wrap ddd_setup_done so we can install it as a timer rather than a
  * workproc.  It seems that workprocs on Linux burn a lot of CPU
@@ -54,6 +56,7 @@ static void wrap_ddd_setup_done(XtPointer, XtIntervalId *)
 	XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 10, 
 					wrap_ddd_setup_done, 0);
 }
+#endif
 
 // DDD main loop.  This is placed in a separate module to avoid
 // warnings about longjmp() clobbering local variables.
