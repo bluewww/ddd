@@ -62,7 +62,6 @@ char mydialogs_rcsid[] =
 #include "string-fun.h"
 
 #if defined(IF_XM)
-
 // Create a selection box with a top-level shell
 Widget createTopLevelSelectionDialog(Widget parent, const _XtString name,
 				     ArgList args, Cardinal num_args)
@@ -112,11 +111,9 @@ Widget createTopLevelSelectionDialog(Widget parent, const _XtString name,
 
     return box;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Set the elements of the display selection list
 // LABEL_LIST:      Labels, using the format disp_nr ": " disp_name.
 // SELECTED:        Whether labels are to be selected
@@ -159,9 +156,7 @@ void setLabelList (Widget selectionList,
 
     freeXmStringTable(xmlabel_list, list_length);
 }
-
 #else
-
 void setLabelList (GUI::ListView *selectionList,
 		   const string  label_list[],
 		   const bool selected[],
@@ -176,11 +171,9 @@ void setLabelList (GUI::ListView *selectionList,
     for (int i = 0; i < list_length; i++) 
 	selectionList->append(label_list[i].chars());
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Replace all elements in SELECTIONLIST with the corresponding
 // entries in LABEL_LIST (i.e. with the same leading number).
 void updateLabelList (Widget selectionList,
@@ -229,9 +222,7 @@ void updateLabelList (Widget selectionList,
 	}
     }
 }
-
 #else
-
 // Replace all elements in SELECTIONLIST with the corresponding
 // entries in LABEL_LIST (i.e. with the same leading number).
 void updateLabelList (GUI::ListView *selectionList,
@@ -240,11 +231,9 @@ void updateLabelList (GUI::ListView *selectionList,
 {
     std::cerr << "updateLabelList: not implemented\n";
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Fill the item numbers in DISP_NRS
 void getItemNumbers(Widget selectionList, IntArray& numbers)
 {
@@ -275,9 +264,7 @@ void getItemNumbers(Widget selectionList, IntArray& numbers)
 	    numbers += get_nr(item);
     }
 }
-
 #else
-
 // Fill the item numbers in DISP_NRS
 void getItemNumbers(GUI::ListView *selectionList, IntArray& numbers)
 {
@@ -289,11 +276,9 @@ void getItemNumbers(GUI::ListView *selectionList, IntArray& numbers)
 	numbers += (*iter)[0];
     }
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Create an array of XmStrings from the list LABEL_LIST of length
 // LIST_LENGTH.  If HIGHLIGHT_TITLE is set, let the first line be bold.
 XmStringTable makeXmStringTable (const string label_list[],
@@ -317,11 +302,9 @@ XmStringTable makeXmStringTable (const string label_list[],
 
     return xmlist;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Select POS in LIST and make it visible
 void ListSetAndSelectPos(Widget list, int pos)
 {
@@ -373,15 +356,12 @@ void ListSetAndSelectPos(Widget list, int pos)
     else if (pos + 1 >= top_item + visible_items)
 	XmListSetBottomPos(list, pos + 1);
 }
-
 #else
-
 // Select POS in LIST and make it visible
 void ListSetAndSelectPos(GUI::ListView *list, int pos)
 {
     std::cerr << "ListSetAndSelectPos: not implemented\n";
 }
-
 #endif
 
 #if !defined(IF_XM)
@@ -403,6 +383,5 @@ int list_get_positions(GUI::ListView *selectionList, int *&positions, int &n_pos
     }
     return n_positions;
 }
-
 #endif
 

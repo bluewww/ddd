@@ -125,7 +125,9 @@ char ddd_rcsid[] =
 // ...HP : Handler procedure (see `HandlerL.h' for details)
 //-----------------------------------------------------------------------------
 
+#if defined(IF_XM)
 #include "config.h"
+#endif
 // #include "MemCheckD.h"
 
 //-----------------------------------------------------------------------------
@@ -469,22 +471,18 @@ static void ReportDeathHP(Agent *, void *, void *);
 
 // Status history
 #if defined(IF_XM)
-
 static void PopupStatusHistoryCB(Widget, XtPointer, XtPointer);
 static void PopdownStatusHistoryCB(Widget, XtPointer, XtPointer);
 static void PopdownStatusHistoryEH(Widget, XtPointer, XEvent *, Boolean *);
 
 // Argument callback
 static void ActivateCB(Widget, XtPointer client_data, XtPointer call_data);
-
 #else
-
 static bool PopupStatusHistoryCB(const GUI::EventButton *, GUI::Widget *);
 static bool PopdownStatusHistoryCB(const GUI::EventButton *);
 
 // Argument callback
 static void ActivateCB(GUI::Widget *);
-
 #endif
 
 // Verify whether buttons are active
@@ -508,15 +506,11 @@ static void setup_new_shell(GUI::Widget *w);
 static void setup_theme_manager();
 
 #if defined(IF_XM)
-
 // Set `Settings' title
 static void set_settings_title(Widget w);
-
 #else
-
 // Set `Settings' title
 static void set_settings_title(GUI::Widget *w);
-
 #endif
 
 // Set Cut/Copy/Paste bindings for MENU to STYLE
@@ -527,7 +521,6 @@ static void set_select_all_bindings(MMDesc *menu, BindingStyle style);
 
 // Popup DDD splash screen upon start-up.
 #if defined(IF_XM)
-
 static void SetSplashScreenCB(Widget, XtPointer, XtPointer);
 
 static void popup_splash_screen(Widget parent, const string& color_key);
@@ -536,17 +529,14 @@ static void popdown_splash_screen(XtPointer data = 0, XtIntervalId *id = 0);
 // Read in database from FILENAME.  Upon version mismatch, ignore some
 // resources such as window sizes.
 static XrmDatabase GetFileDatabase(const string &filename);
-
 #else
-
 static void SetSplashScreenCB(GUI::CheckButton *);
 
-static void popup_splash_screen(Widget parent, const string& color_key);
+static void popup_splash_screen(GUI::Widget *parent, const string& color_key);
 static void popdown_splash_screen(void *data = 0, GUI::connection *id = 0);
 
 // Read in database from FILENAME.
 static xmlDoc *GetFileDatabase(const string &filename);
-
 #endif
 
 #if defined(IF_XM)
@@ -571,7 +561,6 @@ static void setup_core_limit();
 static void setup_options();
 
 #if defined(IF_XM)
-
 static void setup_cut_copy_paste_bindings(XrmDatabase db);
 static void setup_select_all_bindings(XrmDatabase db);
 static void setup_show(XrmDatabase db, const char *app_name, const char *gdb_name);
@@ -579,13 +568,10 @@ static void setup_show(XrmDatabase db, const char *app_name, const char *gdb_nam
 // Help hooks
 static void PreHelpOnContext(Widget w, XtPointer, XtPointer);
 static void PostHelpOnItem(Widget item);
-
 #else
-
 static void setup_cut_copy_paste_bindings(xmlDoc *db);
 static void setup_select_all_bindings(xmlDoc *db);
 static void setup_show(xmlDoc *db, const char *app_name, const char *gdb_name);
-
 #endif
 
 // Log player stuff
@@ -598,14 +584,12 @@ static void add_arg_from_selection(Widget toplevel,
 #endif
 
 #if defined(IF_XM)
-
 #if XmVersion < 2000 || defined(LESSTIF_VERSION)
 static void toggleOverstrikeAct (Widget, XEvent*, String*, Cardinal*)
 {
     // Do nothing.  (Just a dummy.)
 }
 #endif
-
 #endif
 
 static void vsl_echo(const string& msg);
@@ -1126,7 +1110,6 @@ struct FileItems {
 };
 
 #if defined(IF_XM)
-
 // Auxiliary struct used by WhenReady. A pointer to function can not
 // be passed directly in a XtPointer.
 struct WhenReadyProc_t {
@@ -1171,17 +1154,12 @@ dummy_function_2(GUI::Widget *)
 #define DECL_WR2(NAME, PROC)						\
     static WhenReadyProc_t NAME (dummy_function_1, \
 				 sigc::slot<void, GUI::Widget *>(PROC))
-
 #else
-
 // Bind everything except the widget argument.  The widget will be
 // filled in when we queue the event for processing.
 struct WhenReadyProc_t {
-    sigc::slot<void, Widget> legacy;
     sigc::slot<void, GUI::Widget *> ready;
-    WhenReadyProc_t(sigc::slot<void, Widget> legacy0,
-		    sigc::slot<void, GUI::Widget *> ready0) {
-	legacy = legacy0;
+    WhenReadyProc_t(sigc::slot<void, GUI::Widget *> ready0) {
 	ready = ready0;
     }
 };
@@ -1200,13 +1178,10 @@ dummy_function_2(GUI::Widget *)
     static WhenReadyProc_t NAME (sigc::slot<void, Widget>(sigc::ptr_fun(PROC)), \
 				 sigc::slot<void, GUI::Widget *>(sigc::ptr_fun(dummy_function_2)))
 #define DECL_WR2(NAME, PROC)						\
-    static WhenReadyProc_t NAME (sigc::slot<void, Widget>(sigc::ptr_fun(dummy_function_1)), \
-				 sigc::slot<void, GUI::Widget *>(PROC))
-
+    static WhenReadyProc_t NAME (sigc::slot<void, GUI::Widget *>(PROC))
 #endif
 
 #if defined(IF_XM)
-
 DECL_WR(gdbOpenClassCB);
 DECL_WR(gdbOpenFileCB);
 DECL_WR(gdbOpenCoreCB);
@@ -1216,9 +1191,7 @@ DECL_WR(gdbOpenProcessCB);
 DECL_WR(gdbChangeDirectoryCB);
 DECL_WR(gdbMakeCB);
 DECL_WR(gdbMakeAgainCB);
-
 #else
-
 DECL_WR2(WR_gdbOpenClassCB, sigc::ptr_fun(gdbOpenClassCB));
 DECL_WR2(WR_gdbOpenFileCB, sigc::ptr_fun(gdbOpenFileCB));
 DECL_WR2(WR_gdbOpenCoreCB, sigc::ptr_fun(gdbOpenCoreCB));
@@ -1228,7 +1201,6 @@ DECL_WR2(WR_gdbOpenProcessCB, sigc::ptr_fun(gdbOpenProcessCB));
 DECL_WR2(WR_gdbChangeDirectoryCB, sigc::ptr_fun(gdbChangeDirectoryCB));
 DECL_WR2(WR_gdbMakeCB, sigc::ptr_fun(gdbMakeCB));
 DECL_WR2(WR_gdbMakeAgainCB, sigc::ptr_fun(gdbMakeAgainCB));
-
 #endif
 
 #define FILE_MENU(recent_menu)						\
@@ -1486,13 +1458,9 @@ struct EditItems {
 };
 
 #if defined(IF_XM)
-
 DECL_WR(dddPopupSettingsCB);
-
 #else
-
 DECL_WR2(WR_dddPopupSettingsCB, sigc::ptr_fun(dddPopupSettingsCB));
-
 #endif
 
 #define EDIT_MENU(win, w)						\
@@ -1574,15 +1542,11 @@ static GUI::Button *define_w;
 #endif
 
 #if defined(IF_XM)
-
 DECL_WR(gdbCompleteCB);
 DECL_WR(gdbApplyCB);
-
 #else
-
 DECL_WR2(WR_gdbCompleteCB, sigc::ptr_fun(gdbCompleteCB));
 DECL_WR2(WR_gdbApplyCB, sigc::ptr_fun(gdbApplyCB));
-
 #endif
 
 static MMDesc command_menu[] =
@@ -1644,35 +1608,27 @@ static MMDesc command_menu[] =
 };
 
 #if defined(IF_XM)
-
 static Widget stack_w;
 static Widget registers_w;
 static Widget threads_w;
 static Widget signals_w;
-
 #else
-
 static GUI::Button *stack_w;
 static GUI::Button *registers_w;
 static GUI::Button *threads_w;
 static GUI::Button *signals_w;
-
 #endif
 
 #if defined(IF_XM)
-
 static WhenReadyProc_t WR_ViewStackFramesCB = { SourceView::ViewStackFramesCB };
 static WhenReadyProc_t WR_ViewRegistersCB = { SourceView::ViewRegistersCB };
 static WhenReadyProc_t WR_ViewThreadsCB = { SourceView::ViewThreadsCB };
 DECL_WR(dddPopupSignalsCB);
-
 #else
-
 DECL_WR2(WR_ViewStackFramesCB, sigc::ptr_fun(SourceView::ViewStackFramesCB));
 DECL_WR2(WR_ViewRegistersCB, sigc::ptr_fun(SourceView::ViewRegistersCB));
 DECL_WR2(WR_ViewThreadsCB, sigc::ptr_fun(SourceView::ViewThreadsCB));
 DECL_WR2(WR_dddPopupSignalsCB, sigc::ptr_fun(dddPopupSignalsCB));
-
 #endif
 
 static MMDesc stack_menu[] =
@@ -2052,7 +2008,6 @@ static Widget refer_sources_w;
 #else
 static GUI::CheckButton *line_numbers2_w;
 static GUI::Widget *refer_sources_w;
-
 #endif
 
 static MMDesc source_preferences_menu[] = 
@@ -2648,13 +2603,9 @@ static GUI::Widget *edit_watchpoints_w = 0;
 #endif
 
 #if defined(IF_XM)
-
 DECL_WR(dddPopupInfosCB);
-
 #else
-
 DECL_WR2(WR_dddPopupInfosCB, sigc::ptr_fun(dddPopupInfosCB));
-
 #endif
 
 static MMDesc data_menu[] = 
@@ -2753,11 +2704,13 @@ static MMDesc crash_menu[] =
     MMEnd
 };
 
+#if defined(IF_XM)
 static Widget debug_ddd_w       = 0;
 static Widget dump_core_w       = 0;
-#if defined(IF_XM)
 static Widget valgrindLeakCheck_w = 0;
 #else
+static GUI::Widget *debug_ddd_w       = 0;
+static GUI::Widget *dump_core_w       = 0;
 static GUI::Widget *valgrindLeakCheck_w = 0;
 #endif
 
@@ -3143,21 +3096,17 @@ static GUI::CheckButton *led_w;
 #endif
 
 #if defined(IF_XM)
-
 // Last output position
 XmTextPosition promptPosition;
 
 // Last message position
 XmTextPosition messagePosition;
-
 #else
-
 // Last output position
 long promptPosition;
 
 // Last message position
 long messagePosition;
-
 #endif
 
 // Buttons
@@ -3193,10 +3142,8 @@ static StatusMsg *init_delay = 0;
 static Delay *setup_delay = 0;
 
 #if defined(IF_XM)
-
 // Events to note for window visibility
 const int STRUCTURE_MASK = StructureNotifyMask | VisibilityChangeMask;
-
 #endif
 
 // Message handling
@@ -3219,7 +3166,6 @@ typedef enum {
 } ddd_exit_t;
 
 #if defined(IF_XM)
-
 static
 ddd_exit_t pre_main_loop(int argc, char *argv[])
 {
@@ -4361,9 +4307,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     }
     return DDD_CONTINUE;
 }
-
 #else
-
 static
 ddd_exit_t pre_main_loop(int argc, char *argv[])
 {
@@ -5215,7 +5159,6 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     }
     return DDD_CONTINUE;
 }
-
 #endif
 
 
@@ -5339,14 +5282,17 @@ void process_next_event()
 
 void process_pending_events()
 {
+#if defined(IF_XM)
     if (command_shell == (Widget)0)
 	return;
 
-#if defined(IF_XM)
     XtAppContext app_context = XtWidgetToApplicationContext(command_shell);
     while (XtAppPending(app_context) & XtIMXEvent)
 	process_next_event();
 #else
+    if (!command_shell)
+	return;
+
     while (Gtk::Main::events_pending())
 	process_next_event();
 #endif
@@ -5451,7 +5397,6 @@ static void ddd_check_version()
 }
 
 #if defined(IF_XM)
-
 // Read in database from FILENAME.  Upon version mismatch, ignore some
 // resources such as window sizes.
 XrmDatabase GetFileDatabase(const string& filename)
@@ -5544,9 +5489,7 @@ XrmDatabase GetFileDatabase(const string& filename)
     unlink(tmpfile.chars());
     return db;
 }
-
 #else
-
 // Read in database from FILENAME.  Upon version mismatch, ignore some
 // resources such as window sizes.
 xmlDoc *GetFileDatabase(const string& filename)
@@ -5556,7 +5499,6 @@ xmlDoc *GetFileDatabase(const string& filename)
 #endif
     return get_file_database(filename.chars());
 }
-
 #endif
 
 //-----------------------------------------------------------------------------
@@ -5644,19 +5586,15 @@ void register_menu_shell(const MMDesc *items)
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 static void verify_button(const MMDesc *item, XtPointer)
 {
     verify_button(item->widget);
 }
-
 #else
-
 static void verify_button(const MMDesc *item, void *)
 {
     verify_button(item->widget);
 }
-
 #endif
 
 static void verify_buttons(const MMDesc *items)
@@ -5888,23 +5826,18 @@ static int lock_dialog_x = -1;
 static int lock_dialog_y = -1;
 
 #if defined(IF_XM)
-
 static void ContinueDespiteLockCB(Widget, XtPointer, XtPointer)
 {
     continue_despite_lock = true;
 }
-
 #else
-
 static void ContinueDespiteLockCB(void)
 {
     continue_despite_lock = true;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void TryToLock(XtPointer client_data, XtIntervalId *)
 {
     Widget w = (Widget)client_data;
@@ -5921,9 +5854,7 @@ static void TryToLock(XtPointer client_data, XtIntervalId *)
     XtAppAddTimeOut(XtWidgetToApplicationContext(w), 500, 
 		    TryToLock, client_data);
 }
-
 #else
-
 static bool TryToLock(GUI::Widget *w)
 {
     LockInfo info;
@@ -5940,11 +5871,9 @@ static bool TryToLock(GUI::Widget *w)
       trylock_conn = Glib::signal_timeout().connect(sigc::bind(sigc::ptr_fun(TryToLock), w), 500);
     return true;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 #if XmVersion >= 1002
 static void KillLockerCB(Widget w, XtPointer client_data, XtPointer)
 {
@@ -5961,9 +5890,7 @@ static void KillLockerCB(Widget w, XtPointer client_data, XtPointer)
     }
 }
 #endif
-
 #else
-
 static void KillLockerCB(GUI::Widget *w, LockInfo *info)
 {
     static int attempts_to_kill = 0;
@@ -5976,11 +5903,9 @@ static void KillLockerCB(GUI::Widget *w, LockInfo *info)
 	TryToLock(w);
     }
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static bool lock_ddd(Widget parent, LockInfo& info)
 {
     bool lock_ok = lock_session_dir(XtDisplay(parent), DEFAULT_SESSION, info);
@@ -6100,9 +6025,7 @@ static bool lock_ddd(Widget parent, LockInfo& info)
     // Try locking once more
     return lock_session_dir(XtDisplay(parent), DEFAULT_SESSION, info);
 }
-
 #else
-
 static bool lock_ddd(GUI::Widget *parent, LockInfo& info)
 {
     bool lock_ok = lock_session_dir(parent->get_display(), DEFAULT_SESSION, info);
@@ -6169,7 +6092,6 @@ static bool lock_ddd(GUI::Widget *parent, LockInfo& info)
     // Try locking once more
     return lock_session_dir(parent->get_display(), DEFAULT_SESSION, info);
 }
-
 #endif
 
 
@@ -6178,7 +6100,6 @@ static bool lock_ddd(GUI::Widget *parent, LockInfo& info)
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 static Boolean session_setup_done(XtPointer)
 {
     if (emptyCommandQueue() && gdb->isReadyWithPrompt())
@@ -6206,9 +6127,7 @@ static Boolean session_setup_done(XtPointer)
 
     return False;		// Get called again
 }
-
 #else
-
 static Boolean session_setup_done()
 {
     if (emptyCommandQueue() && gdb->isReadyWithPrompt())
@@ -6237,11 +6156,9 @@ static Boolean session_setup_done()
 
     return true;		// Get called again
 }
-
 #endif
 
 #if defined(IF_XM)
-
 Boolean ddd_setup_done(XtPointer)
 {
     // Delete setup delay, if any
@@ -6290,9 +6207,7 @@ Boolean ddd_setup_done(XtPointer)
 
     return False;		// Keep on processing the command queue
 }
-
 #else
-
 bool ddd_setup_done(void)
 {
     // Delete setup delay, if any
@@ -6341,7 +6256,6 @@ bool ddd_setup_done(void)
 
     return true;		// Keep on processing the command queue
 }
-
 #endif
 
 
@@ -6351,7 +6265,6 @@ bool ddd_setup_done(void)
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 static void ActivateCB(Widget, XtPointer client_data, XtPointer call_data)
 {
     XmAnyCallbackStruct *cbs = (XmAnyCallbackStruct *)call_data;
@@ -6359,14 +6272,11 @@ static void ActivateCB(Widget, XtPointer client_data, XtPointer call_data)
     Widget button = Widget(client_data);
     XtCallActionProc(button, "ArmAndActivate", cbs->event, (String *)0, 0);
 }
-
 #else
-
 static void ActivateCB(GUI::Widget *)
 {
     std::cerr << "How to call ArmAndActivate action?\n";
 }
-
 #endif
 
 //-----------------------------------------------------------------------------
@@ -6376,7 +6286,6 @@ static void ActivateCB(GUI::Widget *)
 static StatusMsg *context_help_msg = 0;
 
 #if defined(IF_XM)
-
 static void PreHelpOnContext(Widget w, XtPointer, XtPointer)
 {
     delete context_help_msg;
@@ -6385,9 +6294,7 @@ static void PreHelpOnContext(Widget w, XtPointer, XtPointer)
 
     XFlush(XtDisplay(w));
 }
-
 #else
-
 static void PreHelpOnContext(GUI::Widget *w)
 {
     delete context_help_msg;
@@ -6396,7 +6303,6 @@ static void PreHelpOnContext(GUI::Widget *w)
 
     w->get_display()->flush();
 }
-
 #endif
 
 #if defined(IF_XM)
@@ -6421,7 +6327,6 @@ static void PostHelpOnItem(GUI::Widget *item)
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 static void set_toggle(Widget w, unsigned char new_state, bool notify = false)
 {
     if (w == 0)
@@ -6449,7 +6354,6 @@ inline void notify_set_toggle(Widget w, Boolean new_state)
 {
     set_toggle(w, new_state, true);
 }
-
 #endif
 
 #if !defined(IF_XM)
@@ -6478,11 +6382,9 @@ inline void notify_set_toggle(GUI::Bipolar *w, Boolean new_state)
 {
     set_toggle(w, new_state, true);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void set_string(Widget w, const _XtString value)
 {
     if (w == 0)
@@ -6493,9 +6395,7 @@ static void set_string(Widget w, const _XtString value)
     XmTextFieldSetString(w, XMST(value));
     XtVaSetValues(w, XmNcursorPosition, 0, XtPointer(0));
 }
-
 #else
-
 static void set_string(GUI::Entry *w, const char *value)
 {
     if (w == 0)
@@ -6503,25 +6403,20 @@ static void set_string(GUI::Entry *w, const char *value)
 
     w->set_text(value);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void set_string_int(Widget w, int value)
 {
     string v = itostring(value);
     set_string(w, v.chars());
 }
-
 #else
-
 static void set_string_int(GUI::Entry *w, int value)
 {
     string v = itostring(value);
     set_string(w, v.chars());
 }
-
 #endif
 
 static bool have_cmd(const string& cmd)
@@ -6530,7 +6425,6 @@ static bool have_cmd(const string& cmd)
 }
 
 #if defined(IF_XM)
-
 static void set_scale(Widget w, int val)
 {
     if (w == 0)
@@ -6540,9 +6434,7 @@ static void set_scale(Widget w, int val)
 
     XtVaSetValues(w, XmNvalue, val, XtPointer(0));
 }
-
 #else
-
 static void set_scale(GUI::Scale *w, int val)
 {
     if (w == 0)
@@ -6550,11 +6442,9 @@ static void set_scale(GUI::Scale *w, int val)
 
     w->set_value(val);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Reflect state in option menus
 void update_options(bool noupd)
 {
@@ -6911,9 +6801,7 @@ void update_options(bool noupd)
     update_reset_preferences();
     fix_status_size();
 }
-
 #else
-
 // Reflect state in option menus
 static bool real_update_options(bool noupd)
 {
@@ -7277,7 +7165,6 @@ static bool real_update_options(bool noupd)
     fix_status_size();
     return false;
 }
-
 #endif
 
 #if !defined(IF_XM)
@@ -7289,11 +7176,9 @@ void update_options(bool noupd)
     // defer this until the idle loop.
     Glib::signal_idle().connect(sigc::bind(sigc::ptr_fun(real_update_options), noupd));
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void set_settings_title(Widget w)
 {
     if (w != 0)
@@ -7303,9 +7188,7 @@ static void set_settings_title(Widget w)
 		      XtPointer(0));
     }
 }
-
 #else
-
 static void set_settings_title(GUI::Widget *w)
 {
     if (w != 0)
@@ -7316,7 +7199,6 @@ static void set_settings_title(GUI::Widget *w)
 	mi->add_label(settings_title.xmstring().s());
     }
 }
-
 #endif
 
 //-----------------------------------------------------------------------------
@@ -7578,7 +7460,6 @@ static bool source_preferences_changed()
 }
 
 #if defined(IF_XM)
-
 static void ResetDataPreferencesCB(Widget, XtPointer, XtPointer)
 {
     notify_set_toggle(detect_aliases_w, initial_app_data.detect_aliases);
@@ -7641,9 +7522,7 @@ static void ResetDataPreferencesCB(Widget, XtPointer, XtPointer)
 	update_options();
     }
 }
-
 #else
-
 static void ResetDataPreferencesCB(void)
 {
     notify_set_toggle(detect_aliases_w, initial_app_data.detect_aliases);
@@ -7698,7 +7577,6 @@ static void ResetDataPreferencesCB(void)
 	update_options();
     }
 }
-
 #endif
 
 static bool data_preferences_changed()
@@ -7940,7 +7818,6 @@ static bool startup_preferences_changed()
 }
 
 #if defined(IF_XM)
-
 static void ResetFontPreferencesCB(Widget, XtPointer, XtPointer)
 {
     set_font(DefaultDDDFont,       initial_app_data.default_font);
@@ -7959,9 +7836,7 @@ static void ResetFontPreferencesCB(Widget, XtPointer, XtPointer)
 
     update_options();
 }
-
 #else
-
 static void ResetFontPreferencesCB(void)
 {
     std::cerr << "Font configuration: not implemented yet\n";
@@ -7977,7 +7852,6 @@ static void ResetFontPreferencesCB(void)
 
     update_options();
 }
-
 #endif
 
 static bool font_preferences_changed()
@@ -8066,7 +7940,6 @@ static bool helpers_preferences_changed()
 }
 
 #if defined(IF_XM)
-
 static void ResetPreferencesCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     Widget panel = (Widget)client_data;
@@ -8085,9 +7958,7 @@ static void ResetPreferencesCB(Widget w, XtPointer client_data, XtPointer call_d
     else if (panel_name == "helpers")
 	ResetHelpersPreferencesCB(w, client_data, call_data);
 }
-
 #else
-
 static void ResetPreferencesCB(GUI::Notebook *nb)
 {
     std::cerr << "*** Resetting preferences... " << nb << " ***\n";
@@ -8112,11 +7983,9 @@ static void ResetPreferencesCB(GUI::Notebook *nb)
     else
 	std::cerr << "\007Error: panel_name not recognized\n";
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void update_reset_preferences()
 {
     if (current_panel != (Widget)0 && reset_preferences_w != (Widget)0 && option_state_saved)
@@ -8144,9 +8013,7 @@ void update_reset_preferences()
     if (gdb_initialized)
 	check_options_file();
 }
-
 #else
-
 void update_reset_preferences()
 {
     if (current_panel != (GUI::Widget*)0
@@ -8176,11 +8043,9 @@ void update_reset_preferences()
     if (gdb_initialized)
 	check_options_file();
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void ChangePanelCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     Widget panel = (Widget)client_data;
@@ -8221,9 +8086,7 @@ static void ChangePanelCB(Widget w, XtPointer client_data, XtPointer call_data)
 	}
     }
 }
-
 #else
-
 static void ChangePanelCB(GUI::CheckButton *w, GUI::Widget *panel)
 {
     bool set = w->get_active();
@@ -8254,11 +8117,9 @@ static void ChangePanelCB(GUI::CheckButton *w, GUI::Widget *panel)
 	}
     }
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static Widget add_panel(Widget parent,
 			Widget buttons, 
 			const _XtString name, MMDesc items[],
@@ -8316,9 +8177,7 @@ static Widget add_panel(Widget parent,
 
     return button;
 }
-
 #else
-
 static int add_panel(GUI::Notebook *parent,
 		     const char *name, GUI::String label,
 		     MMDesc items[],
@@ -8340,11 +8199,9 @@ static int add_panel(GUI::Notebook *parent,
 
     return pageno;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void OfferRestartCB(Widget dialog, XtPointer, XtPointer)
 {
     if (startup_preferences_changed() || font_preferences_changed())
@@ -8365,9 +8222,7 @@ static void OfferRestartCB(Widget dialog, XtPointer, XtPointer)
 	manage_and_raise(restart_dialog);
     }
 }
-
 #else
-
 static void OfferRestartCB(GUI::WidgetPtr<GUI::Dialog> &dialog)
 {
     if (startup_preferences_changed() || font_preferences_changed())
@@ -8384,11 +8239,9 @@ static void OfferRestartCB(GUI::WidgetPtr<GUI::Dialog> &dialog)
 	manage_and_raise(restart_dialog);
     }
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Create preferences dialog
 static void make_preferences(Widget parent)
 {
@@ -8478,9 +8331,7 @@ static void dddPopupPreferencesCB (Widget, XtPointer, XtPointer)
     manage_and_raise(preferences_dialog);
     check_options_file();
 }
-
 #else
-
 // Create preferences dialog
 static void make_preferences(GUI::Widget *parent)
 {
@@ -8521,7 +8372,6 @@ static void dddPopupPreferencesCB (void)
     manage_and_raise(preferences_dialog);
     check_options_file();
 }
-
 #endif
 
 
@@ -8530,7 +8380,6 @@ static void dddPopupPreferencesCB (void)
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 static void create_status(Widget parent)
 {
     Arg args[15];
@@ -8651,9 +8500,7 @@ static void create_status(Widget parent)
     set_toggle(led_w, app_data.blink_while_busy);
     blink(true);
 }
-
 #else
-
 static void create_status(GUI::Container *parent)
 {
 #ifdef NAG_ME
@@ -8717,7 +8564,6 @@ static void create_status(GUI::Container *parent)
     set_toggle(led_w, app_data.blink_while_busy);
     blink(true);
 }
-
 #endif
 
 
@@ -8733,7 +8579,6 @@ static sigc::connection blink_timer;         // Timer for blinking
 #endif
 
 #if defined(IF_XM)
-
 static
 void
 BlinkCB(XtPointer client_data, XtIntervalId *id)
@@ -8774,9 +8619,7 @@ BlinkCB(XtPointer client_data, XtIntervalId *id)
 				      XtPointer(int(!set)));
     }
 }
-
 #else
-
 static
 bool
 BlinkCB(bool *set_p)
@@ -8811,11 +8654,9 @@ BlinkCB(bool *set_p)
     }
     return false;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Enable or disable blinking
 static void blink(bool set)
 {
@@ -8833,9 +8674,7 @@ static void blink(bool set)
 	}
     }
 }
-
 #else
-
 // Enable or disable blinking
 static void blink(bool set)
 {
@@ -8855,29 +8694,23 @@ static void blink(bool set)
 	}
     }
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void DisableBlinkHP(Agent *, void *, void *)
 {
     // GDB has died -- disable status LED
     XmToggleButtonSetState(led_w, False, False);
 }
-
 #else
-
 static void DisableBlinkHP(Agent *, void *, void *)
 {
     // GDB has died -- disable status LED
     led_w->set_active(false);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void ToggleBlinkCB(Widget w,
 			  XtPointer, 
 			  XtPointer call_data)
@@ -8897,9 +8730,7 @@ static void ToggleBlinkCB(Widget w,
     // Restart blinker
     blink(blinker_active);
 }
-
 #else
-
 static void ToggleBlinkCB(GUI::CheckButton *w)
 {
     string debugger_status_indicator =
@@ -8916,7 +8747,6 @@ static void ToggleBlinkCB(GUI::CheckButton *w)
     // Restart blinker
     blink(blinker_active);
 }
-
 #endif
 
 //-----------------------------------------------------------------------------
@@ -8932,7 +8762,6 @@ static GUI::Menu *history_shell = 0;
 #endif
 
 #if defined(IF_XM)
-
 static void
 PopupStatusHistoryCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
@@ -8966,9 +8795,7 @@ PopupStatusHistoryCB(Widget w, XtPointer client_data, XtPointer call_data)
     XtVaSetValues(history_shell, XmNx, x, XmNy, y, XtPointer(0));
     XtPopup(history_shell, XtGrabNone);
 }
-
 #else
-
 static bool
 PopupStatusHistoryCB(const GUI::EventButton *, GUI::Widget *w)
 {
@@ -9004,27 +8831,22 @@ PopupStatusHistoryCB(const GUI::EventButton *, GUI::Widget *w)
 #endif
     history_shell->popup(0, gtk_get_current_event_time());
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void
 PopdownStatusHistoryCB(Widget, XtPointer, XtPointer)
 {
     if (history_shell != 0)
 	XtPopdown(history_shell);
 }
-
 #else
-
 static bool
 PopdownStatusHistoryCB(const GUI::EventButton *)
 {
     if (history_shell != 0)
 	history_shell->hide();
 }
-
 #endif
 
 #if defined(IF_XM)
@@ -9045,7 +8867,6 @@ static void PopdownStatusHistoryEH(Widget w, XtPointer client_data,
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 void update_arg_buttons()
 {
     string arg = source_arg->get_string();
@@ -9169,9 +8990,7 @@ void update_arg_buttons()
     set_sensitive(infos_w,     (gdb->type() == GDB || gdb->type() == PYDB) &&
 		                !undoing);
 }
-
 #else
-
 void update_arg_buttons()
 {
     string arg = source_arg->get_string();
@@ -9283,7 +9102,6 @@ void update_arg_buttons()
     set_sensitive(infos_w, (gdb->type() == GDB || gdb->type() == PYDB) &&
 		  !undoing);
 }
-
 #endif
 
 // Arg changed - re-label buttons
@@ -9438,8 +9256,8 @@ struct WhenReadyInfo {
 	}
     }
 #else
-    sigc::slot<void, Widget> proc;
-    WhenReadyInfo(const MString &msg, sigc::slot<void, Widget> p)
+    sigc::slot<void, GUI::Widget *> proc;
+    WhenReadyInfo(const MString &msg, sigc::slot<void, GUI::Widget *> p)
 	: message(msg),
 	  proc(p)
     {
@@ -9466,7 +9284,6 @@ private:
     WhenReadyInfo1(const WhenReadyInfo1&);
     WhenReadyInfo1& operator= (const WhenReadyInfo1&);
 };
-
 #endif
 
 static void DoneCB(const string& /* answer */, void *qu_data)
@@ -9494,11 +9311,9 @@ static void DoneCB1(const string& /* answer */, void *qu_data)
     // (info->proc)(gdb_w);
     delete info;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Execute command in (XtCallbackProc)CLIENT_DATA as soon as GDB gets ready
 static void WhenReady(Widget w, XtPointer client_data, XtPointer call_data)
 {
@@ -9544,9 +9359,7 @@ static void WhenReady(Widget w, XtPointer client_data, XtPointer call_data)
 
     gdb_command(c);
 }
-
 #else
-
 #if 0
 // Execute command in (XtCallbackProc)CLIENT_DATA as soon as GDB gets ready
 #if defined(IF_XMMM)
@@ -9619,9 +9432,7 @@ static void WhenReady(Gtk::Widget *w, void *client_data)
 
     gdb_command(c);
 }
-
 #endif
-
 #endif
 
 #if !defined(IF_XM)
@@ -9630,18 +9441,12 @@ static void WhenReady(Gtk::Widget *w, void *client_data)
 static void WhenReady1(GUI::Widget *w, void *client_data)
 {
     WhenReadyProc_t &wrp = *reinterpret_cast<WhenReadyProc_t *>(client_data);
-#if defined(IF_XMMM)
-    XtCallbackProc &proc = wrp.legacy;
-    sigc::slot<void, GUI::Widget *> &proc2 = wrp.ready;
-#else
-    sigc::slot<void, Gtk::Widget *> &proc = wrp.legacy;
-    sigc::slot<void, GUI::Widget *> &proc2 = wrp.ready;
-#endif
+    sigc::slot<void, GUI::Widget *> &proc = wrp.ready;
 
     if (can_do_gdb_command())
     {
 	// GDB is ready: do command now
-	proc2(w);
+	proc(w);
 	return;
     }
 
@@ -9653,7 +9458,7 @@ static void WhenReady1(GUI::Widget *w, void *client_data)
 
     MString msg = rm(action + ": waiting until " + gdb->title() 
 		     + " gets ready...");
-    WhenReadyInfo1 *info = new WhenReadyInfo1(msg, proc2);
+    WhenReadyInfo1 *info = new WhenReadyInfo1(msg, proc);
 
     // We don't want to lock the status, hence we use an ordinary
     // `set_status' call instead of the StatusMsg class.
@@ -9670,7 +9475,6 @@ static void WhenReady1(GUI::Widget *w, void *client_data)
 
     gdb_command(c);
 }
-
 #endif
 
 //-----------------------------------------------------------------------------
@@ -10058,7 +9862,6 @@ void gdb_out(const string& text)
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 static DDDWindow ddd_window(XtPointer client_data)
 {
     if (source_view_shell == 0 && data_disp_shell == 0)
@@ -10066,9 +9869,7 @@ static DDDWindow ddd_window(XtPointer client_data)
     else
 	return DDDWindow(long(client_data));
 }
-
 #else
-
 static DDDWindow ddd_window(DDDWindow win)
 {
     if (source_view_shell == 0 && data_disp_shell == 0)
@@ -10076,11 +9877,9 @@ static DDDWindow ddd_window(DDDWindow win)
     else
 	return win;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void gdbCutSelectionCB(Widget w, XtPointer client_data, 
 			      XtPointer call_data)
 {
@@ -10205,9 +10004,7 @@ static void gdbPasteClipboardCB(Widget w, XtPointer client_data, XtPointer)
 	break;
     }
 }
-
 #else
-
 static void gdbCutSelectionCB(GUI::Widget *w, DDDWindow client_data)
 {
 
@@ -10289,12 +10086,10 @@ static void gdbPasteClipboardCB(GUI::Widget *w, DDDWindow client_data)
 #endif
     std::cerr << "Paste not implemented!\n";
 }
-
 #endif
 
 
 #if defined(IF_XM)
-
 static void gdbUnselectAllCB(Widget w, XtPointer client_data,
 			     XtPointer call_data)
 {
@@ -10313,18 +10108,14 @@ static void gdbUnselectAllCB(Widget w, XtPointer client_data,
 
     DataDisp::unselectAllCB(w, client_data, call_data);
 }
-
 #else
-
 static void gdbUnselectAllCB(void)
 {
     std::cerr << "gdbUnselectAllCB not implemented yet\n";
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void gdbClearAllCB(Widget, XtPointer, XtPointer)
 {
     gdbUnselectAllCB(Widget(0), XtPointer(0), XtPointer(0));
@@ -10385,9 +10176,7 @@ static void gdbSelectAllCB(Widget w, XtPointer client_data, XtPointer call_data)
 	break;
     }
 }
-
 #else
-
 static void gdbClearAllCB(void)
 {
 #ifdef NAG_ME
@@ -10405,13 +10194,11 @@ static void gdbSelectAllCB(GUI::Widget *w, DDDWindow client_data)
 #endif
     std::cerr << "gdbSelectAllCB not implemented\n";
 }
-
 #endif
 
 
 
 #if defined(IF_XM)
-
 static void gdbDeleteSelectionCB(Widget w, XtPointer client_data,
 				 XtPointer call_data)
 {
@@ -10456,9 +10243,7 @@ static void gdbDeleteSelectionCB(Widget w, XtPointer client_data,
     if (success)
 	gdbUnselectAllCB(w, client_data, call_data);
 }
-
 #else
-
 static void gdbDeleteSelectionCB(GUI::Widget *w, DDDWindow client_data)
 {
 #ifdef NAG_ME
@@ -10466,7 +10251,6 @@ static void gdbDeleteSelectionCB(GUI::Widget *w, DDDWindow client_data)
 #endif
     std::cerr << "gdbDeleteSelectionCB not implemented\n";
 }
-
 #endif
 
 // Update cut/copy/paste bindings
@@ -10527,7 +10311,6 @@ static void set_cut_copy_paste_bindings(MMDesc *menu, BindingStyle style)
 }
 
 #if defined(IF_XM)
-
 static void setup_cut_copy_paste_bindings(XrmDatabase db)
 {
     // Stupid OSF/Motif won't change the accelerators once created.
@@ -10560,14 +10343,11 @@ static void setup_cut_copy_paste_bindings(XrmDatabase db)
     assert(bindings != 0);
     XrmMergeDatabases(bindings, &db);
 }
-
 #else
-
 static void setup_cut_copy_paste_bindings(xmlDoc *db)
 {
     std::cerr << "setup_cut_copy_paste_bindings: not implemented\n";
 }
-
 #endif
 
 // Update select all bindings
@@ -10613,7 +10393,6 @@ static void set_select_all_bindings(MMDesc *menu, BindingStyle style)
 }
 
 #if defined(IF_XM)
-
 static void setup_select_all_bindings(XrmDatabase db)
 {
     // Stupid OSF/Motif won't change the accelerators once created.
@@ -10636,14 +10415,11 @@ static void setup_select_all_bindings(XrmDatabase db)
     assert(bindings != 0);
     XrmMergeDatabases(bindings, &db);
 }
-
 #else
-
 static void setup_select_all_bindings(xmlDoc *db)
 {
     std::cerr << "setup_select_all_bindings: not implemented\n";
 }
-
 #endif
 
 //-----------------------------------------------------------------------------
@@ -10732,7 +10508,6 @@ static void count_mapped_menus(
 }
 
 #if defined(IF_XM)
-
 static void gdbUpdateEditCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     DDDWindow win = ddd_window(client_data);
@@ -10827,9 +10602,7 @@ static void gdbUpdateEditCB(Widget w, XtPointer client_data, XtPointer call_data
     set_sensitive(menu[EditItems::Paste].widget,  can_paste);
     set_sensitive(menu[EditItems::Delete].widget, can_cut);
 }
-
 #else
-
 static void gdbUpdateEditCB(GUI::Widget *w, DDDWindow client_data)
 {
     DDDWindow win = ddd_window(client_data);
@@ -10889,11 +10662,9 @@ static void gdbUpdateEditCB(GUI::Widget *w, DDDWindow client_data)
 #warning Fix sensitivity of cut/copy/paste
 #endif
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void gdbUpdateFileCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     MMDesc *file_menu = (MMDesc *)client_data;
@@ -10925,9 +10696,7 @@ static void gdbUpdateFileCB(Widget w, XtPointer client_data, XtPointer call_data
     manage_child(file_menu[FileItems::Close].widget, !one_window);
 #endif
 }
-
 #else
-
 static void gdbUpdateFileCB(MMDesc *file_menu)
 {
     if (file_menu == 0 || file_menu[0].widget == 0)
@@ -10956,11 +10725,9 @@ static void gdbUpdateFileCB(MMDesc *file_menu)
     manage_child(file_menu[FileItems::Close].widget, !one_window);
 #endif
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void gdbUpdateViewCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     MMDesc *view_menu = (MMDesc *)client_data;
@@ -10973,9 +10740,7 @@ static void gdbUpdateViewCB(Widget w, XtPointer client_data, XtPointer call_data
     set_sensitive(view_menu[ExecWindow].widget, gdb->has_redirection());
     set_toggle(view_menu[CodeWindow].widget, app_data.disassemble);
 }
-
 #else
-
 static void gdbUpdateViewCB(MMDesc *view_menu)
 {
     if (view_menu == 0 || view_menu[0].widget == 0)
@@ -10985,11 +10750,9 @@ static void gdbUpdateViewCB(MMDesc *view_menu)
     set_sensitive(view_menu[ExecWindow].widget, gdb->has_redirection());
     set_toggle(view_menu[CodeWindow].widget, app_data.disassemble);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void gdbUpdateViewsCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     gdbUpdateViewCB(w, client_data, call_data);
@@ -11002,9 +10765,7 @@ static void gdbUpdateViewsCB(Widget w, XtPointer client_data, XtPointer call_dat
     set_toggle(view_menu[SourceWindow].widget, have_source_window());
     set_toggle(view_menu[GDBWindow].widget,    have_command_window());
 }
-
 #else
-
 static void gdbUpdateViewsCB(MMDesc *view_menu)
 {
     gdbUpdateViewCB(view_menu);
@@ -11016,7 +10777,6 @@ static void gdbUpdateViewsCB(MMDesc *view_menu)
     set_toggle(view_menu[SourceWindow].widget, have_source_window());
     set_toggle(view_menu[GDBWindow].widget,    have_command_window());
 }
-
 #endif
 
 void update_edit_menus()
@@ -11038,7 +10798,6 @@ void update_edit_menus()
 }
 
 #if defined(IF_XM)
-
 // In case we have tear-off menus, all these menus must be updated at
 // all times.
 static void gdbUpdateAllMenus()
@@ -11060,9 +10819,7 @@ static void gdbUpdateAllMenus()
     gdbUpdateViewCB(gdb_w, XtPointer(source_view_menu),  call_data);
     gdbUpdateViewCB(gdb_w, XtPointer(data_view_menu),    call_data);
 }
-
 #else
-
 // In case we have tear-off menus, all these menus must be updated at
 // all times.
 static void gdbUpdateAllMenus()
@@ -11082,7 +10839,6 @@ static void gdbUpdateAllMenus()
     gdbUpdateViewCB(source_view_menu);
     gdbUpdateViewCB(data_view_menu);
 }
-
 #endif
 
 //-----------------------------------------------------------------------------
@@ -11090,7 +10846,6 @@ static void gdbUpdateAllMenus()
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 static void setup_new_shell(Widget w)
 {
     if (w == 0)
@@ -11116,20 +10871,7 @@ static void setup_new_shell(Widget w)
     if (shell != 0 && XtIsRealized(shell))
 	wm_set_icon(shell, iconlogo(w), iconmask(w));
 }
-
 #else
-
-static void setup_new_shell(Widget w)
-{
-    if (w == 0)
-	return;
-
-#ifdef NAG_ME
-#warning setup_new_shell stuff not implemented
-#endif
-    std::cerr << "setup_new_shell stuff not implemented.\n";
-}
-
 static void setup_new_shell(GUI::Widget *w)
 {
     if (w == 0)
@@ -11142,12 +10884,8 @@ static void setup_new_shell(GUI::Widget *w)
 	return;
 
     // Use DDD logo as icon of the new shell
-#ifdef NAG_ME
-#warning setup_new_shell stuff not implemented
-#endif
     std::cerr << "setup_new_shell stuff not implemented.\n";
 }
-
 #endif
 
 //-----------------------------------------------------------------------------
@@ -11191,7 +10929,6 @@ static void ddd_xt_warning(String message)
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 static Widget splash_shell  = 0;
 static Pixmap splash_pixmap = None;
 static _Delay *splash_delay = 0;
@@ -11221,9 +10958,7 @@ static void popdown_splash_screen(XtPointer data, XtIntervalId *id)
 	splash_delay = 0;
     }
 }
-
 #else
-
 static GUI::Dialog *splash_shell  = 0;
 static GUI::RefPtr<GUI::Pixmap> splash_pixmap;
 static _Delay *splash_delay = 0;
@@ -11251,17 +10986,14 @@ static void popdown_splash_screen(void *data, GUI::connection *id)
 	splash_delay = 0;
     }
 }
-
 #endif
 
+#if defined(IF_XM)
 static void popup_splash_screen(Widget parent, const string& color_key)
 {
-#if defined(IF_XM)
     popdown_splash_screen();
 
-#if defined(IF_XM)
     XErrorBlocker blocker(XtDisplay(parent));
-#endif
 
     Arg args[10];
     int arg = 0;
@@ -11287,14 +11019,8 @@ static void popup_splash_screen(Widget parent, const string& color_key)
     Dimension width, height;
     splash_pixmap = dddsplash(splash, color_key, width, height);
 
-#if defined(IF_XM)
     if (blocker.error_occurred())
 	splash_pixmap = None;
-#else
-#ifdef NAG_ME
-#warning XErrorBlocker not defined
-#endif
-#endif
 
     if (splash_pixmap == None)
 	return;
@@ -11320,15 +11046,15 @@ static void popup_splash_screen(Widget parent, const string& color_key)
 
     popup_shell(splash_shell);
     wait_until_mapped(splash, splash_shell);
-#else
-#ifdef NAG_ME
-#warning Implement splash screen?
-#endif
-#endif
 }
+#else
+static void popup_splash_screen(GUI::Widget *parent, const string& color_key)
+{
+    std::cerr << "popup_splash_screen not implemented yet.\n";
+}
+#endif
 
 #if defined(IF_XM)
-
 static void SetSplashScreenCB(Widget, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
@@ -11338,16 +11064,13 @@ static void SetSplashScreenCB(Widget, XtPointer, XtPointer call_data)
 
     update_options();
 }
-
 #else
-
 static void SetSplashScreenCB(GUI::CheckButton *w)
 {
     app_data.splash_screen = w->get_active();
 
     update_options();
 }
-
 #endif
 
 //-----------------------------------------------------------------------------
@@ -11388,17 +11111,14 @@ static void ReportDeathHP(Agent *agent, void *, void *call_data)
 }
 
 #if defined(IF_XM)
-
 static void ClearDialogCB(Widget, XtPointer client_data, XtPointer)
 {
     Widget *dialog = (Widget *)client_data;
     *dialog = 0;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void vsl_echo(const string& msg)
 {
     static Widget dialog = 0;
@@ -11433,9 +11153,7 @@ static void vsl_echo(const string& msg)
 
     set_status_mstring(rm("VSL: ") + tt(msg));
 }
-
 #else
-
 static void vsl_echo(const string& msg)
 {
     static GUI::Widget *dialog = 0;
@@ -11455,7 +11173,6 @@ static void vsl_echo(const string& msg)
 
     set_status_mstring(rm("VSL: ") + tt(msg));
 }
-
 #endif
 
 //-----------------------------------------------------------------------------
@@ -11574,7 +11291,6 @@ static void check_log(const string& logname, DebuggerType& type)
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 // Return true iff resource is defined and set
 static string resource_value(XrmDatabase db, const string& app_name, const char *res_name)
 {
@@ -11591,9 +11307,7 @@ static string resource_value(XrmDatabase db, const string& app_name, const char 
     int len   = xrmvalue.size - 1; // includes the final `\0'
     return string(str, len);
 }
-
 #else
-
 // Return true iff resource is defined and set
 static string resource_value(xmlDoc *db, const string& app_name, const char *res_name)
 {
@@ -11613,7 +11327,6 @@ static string resource_value(xmlDoc *db, const string& app_name, const char *res
     int len = strlen(str);
     return string(str, len);
 }
-
 #endif
 
 static bool is_set(string value)
@@ -11630,7 +11343,6 @@ static bool is_set(string value)
 }
 
 #if defined(IF_XM)
-
 inline bool have_set_resource(XrmDatabase db, const char *app_name, const char *res_name)
 {
     return is_set(resource_value(db, app_name, res_name));
@@ -11683,9 +11395,7 @@ static void setup_show(XrmDatabase db, const char *app_name, const char *gdb_nam
     if (!cont)
 	exit(EXIT_SUCCESS);
 }
-
 #else
-
 inline bool have_set_resource(xmlDoc *db, const char *app_name, const char *res_name)
 {
     return is_set(resource_value(db, app_name, res_name));
@@ -11738,7 +11448,6 @@ static void setup_show(xmlDoc *db, const char *app_name, const char *gdb_name)
     if (!cont)
 	exit(EXIT_SUCCESS);
 }
-
 #endif
 
 //-----------------------------------------------------------------------------
@@ -12249,7 +11958,6 @@ static void setup_auto_command_prefix()
 }
 
 #if defined(IF_XM)
-
 // All options that remain fixed for a session go here.
 static void setup_options()
 {
@@ -12337,9 +12045,7 @@ static void setup_options()
     // (gdb->print_command("", true) != gdb->print_command("", false));
     manage_child(print_dump_w, can_dump);
 }
-
 #else
-
 // All options that remain fixed for a session go here.
 static void setup_options()
 {
@@ -12426,7 +12132,6 @@ static void setup_options()
     // (gdb->print_command("", true) != gdb->print_command("", false));
     manage_child(print_dump_w, can_dump);
 }
-
 #endif
 
 static void setup_theme_manager()

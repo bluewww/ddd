@@ -50,7 +50,7 @@ char args_rcsid[] =
 #include "verify.h"
 #include "wm.h"
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include <Xm/Xm.h>
 #include <Xm/List.h>
 #include <Xm/MessageB.h>
@@ -233,12 +233,12 @@ void add_to_arguments(const string& line)
 }
 
 
+#if defined(IF_XM)
 // Update list of arguments
 static void update_arguments(Widget dialog, Widget arguments_w,
 			     StringArray& arguments, const string& last,
 			     bool& updated)
 {
-#if defined(IF_MOTIF)
     if (updated || dialog == 0)
 	return;
 
@@ -263,37 +263,50 @@ static void update_arguments(Widget dialog, Widget arguments_w,
 
     Widget text_w = XmSelectionBoxGetChild(dialog, XmDIALOG_TEXT);
     XmTextSetString(text_w, XMST(last.chars()));
-#else
-    static int errcnt = 0;
-    if (!errcnt++) std::cerr << "update_arguments not implemented\n";
-#endif
 
     updated = true;
 }
+#endif
 
 static void update_run_arguments()
 {
+#if defined(IF_XM)
     update_arguments(run_dialog, run_arguments_w, run_arguments,
 		     last_run_argument, run_arguments_updated);
+#else
+    std::cerr << "update_run_arguments not implemented yet.\n";
+#endif
 }
 
 static void update_make_arguments()
 {
+#if defined(IF_XM)
     update_arguments(make_dialog, make_arguments_w, make_arguments,
 		     last_make_argument, make_arguments_updated);
+#else
+    std::cerr << "update_make_arguments not implemented yet.\n";
+#endif
 }
 
 static void update_cd_arguments()
 {
+#if defined(IF_XM)
     update_arguments(cd_dialog, cd_arguments_w, cd_arguments,
 		     last_cd_argument, cd_arguments_updated);
+#else
+    std::cerr << "update_cd_arguments not implemented yet.\n";
+#endif
 }
 
 void update_arguments()
 {
+#if defined(IF_XM)
     update_run_arguments();
     update_make_arguments();
     update_cd_arguments();
+#else
+    std::cerr << "update_arguments not implemented yet.\n";
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -346,7 +359,7 @@ static void gdbRunDCB(void)
 
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // Set program arguments from list
 static void SelectRunArgsCB(Widget, XtPointer, XtPointer call_data)
 {
@@ -426,7 +439,7 @@ void gdbRunCB1(GUI::Widget *w)
 // Make Dialog
 //-----------------------------------------------------------------------------
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 
 // Set program arguments from list
 static void SelectMakeArgsCB(Widget, XtPointer, XtPointer call_data)
@@ -557,7 +570,7 @@ void gdbMakeCB(GUI::Widget *w)
 // CD Dialog
 //-----------------------------------------------------------------------------
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // Set program arguments from list
 static void SelectChangeDirectoryArgsCB(Widget, XtPointer, XtPointer call_data)
 {
@@ -764,7 +777,7 @@ bool add_running_arguments(string& cmd, Widget origin)
 
 	if (restart_jdb == 0)
 	{
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	    restart_jdb = 
 		verify(XmCreateQuestionDialog(find_shell(origin),
 				 XMST("confirm_restart_gdb_dialog"), 
@@ -780,7 +793,7 @@ bool add_running_arguments(string& cmd, Widget origin)
 	}
 
 	saved_run_command = cmd;
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	XtManageChild(restart_jdb);
 #endif
 
@@ -818,13 +831,9 @@ bool add_running_arguments(string& cmd, GUI::Widget *origin)
     {
 	// JDB 1.2 cannot rerun a program after it has been started.
 	// Offer to restart JDB instead.
-	static Widget restart_jdb = 0;
 	static string saved_run_command;
 
-	if (restart_jdb == 0)
-	{
-	    std::cerr << "JDB: not supported yet\n";
-	}
+	std::cerr << "JDB: not supported yet\n";
 
 	saved_run_command = cmd;
 

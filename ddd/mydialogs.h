@@ -38,14 +38,11 @@
 #endif
 
 #if defined(IF_XM)
-
 // Motif includes
 #include <Xm/Xm.h>
-
 #else
-
 #include <GUI/ListView.h>
-
+#include <GUI/Dialog.h>
 #endif
 
 // DDD includes
@@ -55,7 +52,6 @@
 #include "charsets.h"
 
 #if defined(IF_XM)
-
 // Create a selection box with a top-level shell.  This is like
 // XmCreateSelectionDialog, but the parent is a top-level shell.
 Widget createTopLevelSelectionDialog(Widget parent, const _XtString name,
@@ -83,12 +79,10 @@ void setLabelList (Widget  selectionList,
 void updateLabelList (Widget  selectionList,
 		      const string  label_list[],
 		      int     list_length);
-
 #else
-
 // Create a selection box with a top-level shell.  This is like
 // XmCreateSelectionDialog, but the parent is a top-level shell.
-Widget createTopLevelSelectionDialog(GUI::Widget *parent, const char *name);
+GUI::Dialog *createTopLevelSelectionDialog(GUI::Widget *parent, const char *name);
 
 // Get the item numbers
 void getItemNumbers(GUI::ListView *selectionList, IntArray& arr);
@@ -105,7 +99,6 @@ void setLabelList (GUI::ListView *selectionList,
 void updateLabelList (GUI::ListView *selectionList,
 		      const string  label_list[],
 		      int     list_length);
-
 #endif
 
 // The default list charset
@@ -115,7 +108,6 @@ void updateLabelList (GUI::ListView *selectionList,
 #define LIST_TITLE_CHARSET CHARSET_TB
 
 #if defined(IF_XM)
-
 // Select POS in LIST and make it visible
 void ListSetAndSelectPos(Widget list, int pos);
 
@@ -127,18 +119,13 @@ XmStringTable makeXmStringTable(const string label_list[],
 
 // Free the XmString table XMLIST of length LIST_LENGTH
 void freeXmStringTable(XmStringTable xmlist, int list_length);
-
 #else
-
 // Select POS in LIST and make it visible
 void ListSetAndSelectPos(GUI::ListView *list, int pos);
-
 #endif
 
 #if !defined(IF_XM)
-
 extern int list_get_positions(GUI::ListView *selectionList, int *&positions, int &n_positions);
-
 #endif
 
 #endif // _DDD_mydialogs_h

@@ -231,13 +231,8 @@ void MMaddItems(GUI::Container *shell, MMDesc items[], bool ignore_seps = false)
 #endif
 
 // Conveniences
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #define MMNoCB { 0, 0 }
-#else
-#if 0
-extern void dummy_callback(Widget);
-#define MMNoCB PTR_FUN(dummy_callback)
-#endif
 #endif
 
 #if defined(IF_XM)

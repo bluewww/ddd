@@ -378,54 +378,35 @@ static const char *extraTranslations =
 static void ClassInitialize();
 
 #if defined(IF_XM)
-
 static void Initialize(Widget request, 
 		       Widget w,
 		       ArgList args,
 		       Cardinal *num_args);
-
-#else
-
-static void Initialize(Widget request, 
-		       Widget w);
-
 #endif
 
 #if defined(IF_XM)
-
 static void Redisplay(Widget w, XEvent *event, Region region);
-
 #else
-
 static void Redisplay(GUI::Widget *w, GUI::Event *event);
-
 #endif
 
 #if defined(IF_XM)
-
 static void Realize(Widget w, 
 		    XtValueMask *value_mask,
 		    XSetWindowAttributes *attributes);
-
 #endif
 
 #if defined(IF_XM)
-
 static Boolean SetValues(Widget old, 
 			 Widget request, 
 			 Widget new_w,
 			 ArgList args, 
 			 Cardinal *num_args);
-
-#else
-
-static Boolean SetValues(Widget old, 
-			 Widget request, 
-			 Widget new_w);
-
 #endif
 
+#if defined(IF_XM)
 static void Destroy(Widget w);
+#endif
 
 
 #if defined(IF_XM)
@@ -626,7 +607,6 @@ Graph *graphEditGetGraph(Widget w)
 
 
 #if defined(IF_XM)
-
 // Set grid pixmap
 static void setGrid(Widget w, Boolean reset = False)
 {
@@ -676,9 +656,7 @@ static void setGrid(Widget w, Boolean reset = False)
 	delete[] gridData;
     }
 }
-
 #else
-
 // Set grid pixmap
 void GUIGraphEdit::setGrid(bool reset)
 {
@@ -719,12 +697,10 @@ void GUIGraphEdit::setGrid(bool reset)
 	delete[] gridData;
     }
 }
-
 #endif
 
 
 #if defined(IF_XM)
-
 // Redraw
 static void RedrawCB(XtPointer client_data, XtIntervalId *id)
 {
@@ -800,9 +776,7 @@ static void RedrawCB(XtPointer client_data, XtIntervalId *id)
 	node->redraw() = False;
     }
 }
-
 #else
-
 // Redraw
 bool GUIGraphEdit::RedrawCB(void)
 {
@@ -861,7 +835,6 @@ bool GUIGraphEdit::RedrawCB(void)
     }
     return false;
 }
-
 #endif
 
 #if defined(IF_XM)
@@ -878,9 +851,7 @@ static void StartRedraw(Widget w)
     redrawTimer = XtAppAddTimeOut(XtWidgetToApplicationContext(w),
 				  0, RedrawCB, XtPointer(w));
 }
-
 #else
-
 // Launch redrawing procedure
 void GUIGraphEdit::StartRedraw(void)
 {
@@ -890,7 +861,6 @@ void GUIGraphEdit::StartRedraw(void)
     // Redraw after we are back in the event loop
     redrawTimer = GUI::signal_idle().connect(sigc::mem_fun(*this, &GUIGraphEdit::RedrawCB));
 }
-
 #endif
 
 #if defined(IF_XM)
@@ -909,9 +879,7 @@ void graphEditRedraw(Widget w)
 	graphEditRedrawNode(w, node);
     }
 }
-
 #else
-
 // Redraw entire graph
 void GUIGraphEdit::graphEditRedraw(void)
 {
@@ -980,7 +948,6 @@ bool GUIGraphEdit::enable_redisplay(bool state)
 #endif
 
 #if defined(IF_XM)
-
 // Converters
 
 #define done(type, value) \
@@ -1740,7 +1707,6 @@ GUIGraphEdit::GUIGraphEdit(void)
     lastSelectTime = 0;
 
 #if defined(IF_XM)
-
     // init redrawTimer
     redrawTimer = 0;
 
@@ -1772,9 +1738,7 @@ GUIGraphEdit::GUIGraphEdit(void)
 	XtParseTranslationTable(extraTranslations);
 
     XtOverrideTranslations(w, translations);
-
 #else
-
     std::cerr << "Deferring call of setGCs until widget realized.\n";
     // set GCs
     signal_realize().connect(sigc::mem_fun(*this, &GUIGraphEdit::setGCs));
@@ -1792,7 +1756,6 @@ GUIGraphEdit::GUIGraphEdit(void)
     graphEditSizeChanged();
 
     std::cerr << "No translations...\n";
-
 #endif
 
 }
@@ -1834,7 +1797,6 @@ static void Realize(Widget w,
 #endif
 
 #if defined(IF_XM)
-
 // Redisplay widget
 static void Redisplay(Widget w, XEvent *event, Region)
 {
@@ -1862,9 +1824,7 @@ static void Redisplay(Widget w, XEvent *event, Region)
 
     graph->draw(w, BoxRegion(point((XEvent *)event), size((XEvent *)event)), graphGC);
 }
-
 #else
-
 bool GUIGraphEdit::on_expose_event(GUI::EventExpose *event)
 {
 
@@ -1889,7 +1849,6 @@ bool GUIGraphEdit::on_expose_event(GUI::EventExpose *event)
     graph->draw(this, BoxRegion(point1((GUI::Event *)event),
 				size1((GUI::Event *)event)), graphGC);
 }
-
 #endif
 
 #if defined(IF_XM)
@@ -1973,10 +1932,6 @@ static Boolean SetValues(Widget old, Widget, Widget new_w,
 
     return redisplay;
 }
-#else
-#ifdef NAG_ME
-#warning No SetValues
-#endif
 #endif
 
 #if defined(IF_XM)
@@ -2027,19 +1982,15 @@ GraphNode *GUIGraphEdit::graphEditGetNodeAtPoint(const BoxPoint& p)
 }
 
 #if defined(IF_XM)
-
 GraphNode *graphEditGetNodeAtEvent(Widget w, XEvent *event)
 {
     return graphEditGetNodeAtPoint(w, point(event));
 }
-
 #else
-
 GraphNode *GUIGraphEdit::graphEditGetNodeAtEvent(GUI::Event *event)
 {
     return graphEditGetNodeAtPoint(point1(event));
 }
-
 #endif
 
 // Get frame region
@@ -2108,7 +2059,6 @@ void GUIGraphEdit::setRegionCursor(void)
 }
 
 #if defined(IF_XM)
-
 inline void myXDrawLine(
     Display *display, 
     Drawable d, 
@@ -2119,9 +2069,7 @@ inline void myXDrawLine(
 	XDrawLine(display, d, gc, f[X], f[Y], t[X], t[Y]);
     }
 }
-
 #else
-
 inline void myXDrawLine(
     GUI::RefPtr<GUI::Drawable> d, 
     GUI::RefPtr<GUI::GC> gc,
@@ -2192,7 +2140,6 @@ void GUIGraphEdit::redrawSelectFrame(const BoxRegion& r)
 }
 
 #if defined(IF_XM)
-
 static void drawSelectFrames(Widget w, 
 			     const BoxRegion& r0, 
 			     const BoxRegion& r1)
@@ -2206,9 +2153,7 @@ static void drawSelectFrames(Widget w,
     // Set appropriate cursor
     setRegionCursor(w);
 }
-
 #else
-
 void GUIGraphEdit::drawSelectFrames(const BoxRegion& r0, 
 				    const BoxRegion& r1)
 {
@@ -2221,31 +2166,25 @@ void GUIGraphEdit::drawSelectFrames(const BoxRegion& r0,
     // Set appropriate cursor
     setRegionCursor();
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Draw the selection frame
 inline void drawSelectFrame(Widget w)
 {
     drawSelectFrames(w, frameRegion(w),
 		     BoxRegion(BoxPoint(0, 0), BoxSize(0, 0)));
 }
-
 #else
-
 // Draw the selection frame
 void GUIGraphEdit::drawSelectFrame(void)
 {
     drawSelectFrames(frameRegion(),
 		     BoxRegion(BoxPoint(0, 0), BoxSize(0, 0)));
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Redraw selection frame
 static void redrawSelectFrame(Widget w, const BoxPoint& p)
 {
@@ -2258,9 +2197,7 @@ static void redrawSelectFrame(Widget w, const BoxPoint& p)
 
     drawSelectFrames(w, r0, r1);
 }
-
 #else
-
 // Redraw selection frame
 void GUIGraphEdit::redrawSelectFrame(const BoxPoint& p)
 {
@@ -2270,7 +2207,6 @@ void GUIGraphEdit::redrawSelectFrame(const BoxPoint& p)
 
     drawSelectFrames(r0, r1);
 }
-
 #endif
 
 // Find min possible offset
@@ -2446,7 +2382,6 @@ void GUIGraphEdit::moveTo(GraphNode *node,
 }
 
 #if defined(IF_XM)
-
 // Call ``selection changed'' callbacks
 static void selectionChanged(Widget w, XEvent *event, Boolean double_click)
 {
@@ -2460,9 +2395,7 @@ static void selectionChanged(Widget w, XEvent *event, Boolean double_click)
 
     XtCallCallbacks(w, XtNselectionChangedCallback, XtPointer(&info));
 }
-
 #else
-
 // Call ``selection changed'' callbacks
 void GUIGraphEdit::selectionChanged(GUI::Event *event, Boolean double_click)
 {
@@ -2474,13 +2407,11 @@ void GUIGraphEdit::selectionChanged(GUI::Event *event, Boolean double_click)
 
     signal_selection_changed().emit(&info);
 }
-
 #endif
 
 // Action functions
 
 #if defined(IF_XM)
-
 // Select all nodes
 static Boolean _SelectAll(Widget w, XEvent *, String *, Cardinal *)
 {
@@ -2501,9 +2432,7 @@ static Boolean _SelectAll(Widget w, XEvent *, String *, Cardinal *)
 
     return changed;
 }
-
 #else
-
 // Select all nodes
 Boolean GUIGraphEdit::_SelectAll(void)
 {
@@ -2521,7 +2450,6 @@ Boolean GUIGraphEdit::_SelectAll(void)
 
     return changed;
 }
-
 #endif
 
 #if defined(IF_XM)
@@ -2541,7 +2469,6 @@ void GUIGraphEdit::SelectAll(void)
 }
 
 #if defined(IF_XM)
-
 // Unselect all nodes
 static Boolean _UnselectAll(Widget w, XEvent *, String *, Cardinal *)
 {
@@ -2562,9 +2489,7 @@ static Boolean _UnselectAll(Widget w, XEvent *, String *, Cardinal *)
 
     return changed;
 }
-
 #else
-
 // Unselect all nodes
 Boolean GUIGraphEdit::_UnselectAll(void)
 {
@@ -2582,7 +2507,6 @@ Boolean GUIGraphEdit::_UnselectAll(void)
 
     return changed;
 }
-
 #endif
 
 #if defined(IF_XM)
@@ -2620,7 +2544,6 @@ static void find_connected_nodes(GraphNode *root, GraphNodePointerArray& nodes)
 }
 
 #if defined(IF_XM)
-
 // Select an entire subgraph
 static Boolean select_graph(Widget w, GraphNode *root, Boolean set = True)
 {
@@ -2643,9 +2566,7 @@ static Boolean select_graph(Widget w, GraphNode *root, Boolean set = True)
 
     return changed;
 }
-
 #else
-
 // Select an entire subgraph
 Boolean GUIGraphEdit::select_graph(GraphNode *root, Boolean set)
 {
@@ -2668,23 +2589,18 @@ Boolean GUIGraphEdit::select_graph(GraphNode *root, Boolean set)
 
     return changed;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 inline Boolean unselect_graph(Widget w, GraphNode *root)
 {
     return select_graph(w, root, False);
 }
-
 #else
-
 Boolean GUIGraphEdit::unselect_graph(GraphNode *root)
 {
     return select_graph(root, false);
 }
-
 #endif
 
 // Raise node NODE such that it is placed on top of all others
@@ -2706,7 +2622,6 @@ void GUIGraphEdit::graphEditRaiseNode(GraphNode *node)
 }
 
 #if defined(IF_XM)
-
 // Same, but only if the autoRaise resource is set
 static void raise_node(Widget w, GraphNode *node)
 {
@@ -2716,20 +2631,16 @@ static void raise_node(Widget w, GraphNode *node)
     if (autoRaise)
 	graphEditRaiseNode(w, node);
 }
-
 #else
-
 // Same, but only if the autoRaise resource is set
 void GUIGraphEdit::raise_node(GraphNode *node)
 {
     if (autoRaise)
 	graphEditRaiseNode(node);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Begin selecting or moving
 static void _SelectOrMove(Widget w, XEvent *event, String *params,
     Cardinal *num_params, SelectionMode mode, Boolean follow)
@@ -2866,9 +2777,7 @@ static void _SelectOrMove(Widget w, XEvent *event, String *params,
 	}
     }
 }
-
 #else
-
 // Begin selecting or moving
 void GUIGraphEdit::_SelectOrMove(GUI::Event *event,
 				 SelectionMode mode, Boolean follow)
@@ -3063,113 +2972,87 @@ void GUIGraphEdit::_SelectOrMove(GUI::Event *event,
 #endif
     }
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void SelectOrMove(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
 {
     _SelectOrMove(w, event, params, num_params, SetSelection, True);
 }
-
 #else
-
 void GUIGraphEdit::SelectOrMove(GUI::Event *event)
 {
     _SelectOrMove(event, SetSelection, True);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void ExtendOrMove(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
 {
     _SelectOrMove(w, event, params, num_params, ExtendSelection, True);
 }
-
 #else
-
 void GUIGraphEdit::ExtendOrMove(GUI::Event *event)
 {
     _SelectOrMove(event, ExtendSelection, True);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void ToggleOrMove(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
 {
     _SelectOrMove(w, event, params, num_params, ToggleSelection, True);
 }
-
 #else
-
 void GUIGraphEdit::ToggleOrMove(GUI::Event *event)
 {
     _SelectOrMove(event, ToggleSelection, True);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void Select(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
 {
     _SelectOrMove(w, event, params, num_params, SetSelection, False);
 }
-
 #else
-
 void GUIGraphEdit::Select(GUI::Event *event)
 {
     _SelectOrMove(event, SetSelection, False);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void Extend(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
 {
     _SelectOrMove(w, event, params, num_params, ExtendSelection, False);
 }
-
 #else
-
 void GUIGraphEdit::Extend(GUI::Event *event)
 {
     _SelectOrMove(event, ExtendSelection, False);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void Toggle(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
 {
     _SelectOrMove(w, event, params, num_params, ToggleSelection, False);
 }
-
 #else
-
 void GUIGraphEdit::Toggle(GUI::Event *event)
 {
     _SelectOrMove(event, ToggleSelection, False);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Keep on acting...
 static void Follow(Widget w, XEvent *event, String *, Cardinal *)
 {
@@ -3221,9 +3104,7 @@ static void Follow(Widget w, XEvent *event, String *, Cardinal *)
 	    break;
     }
 }
-
 #else
-
 // Keep on acting...
 void GUIGraphEdit::Follow(GUI::Event *event)
 {
@@ -3269,13 +3150,11 @@ void GUIGraphEdit::Follow(GUI::Event *event)
 	    break;
     }
 }
-
 #endif
 
 // Now, all is done.
 
 #if defined(IF_XM)
-
 static void move_selected_nodes(Widget w, const BoxPoint& offset)
 {
     const GraphEditWidget _w   = GraphEditWidget(w);
@@ -3310,9 +3189,7 @@ static void move_selected_nodes(Widget w, const BoxPoint& offset)
     graphEditSizeChanged(w);
     graphEditRedraw(w);
 }
-
 #else
-
 void GUIGraphEdit::move_selected_nodes(const BoxPoint& offset)
 {
     if (offset == BoxPoint(0, 0))
@@ -3343,11 +3220,9 @@ void GUIGraphEdit::move_selected_nodes(const BoxPoint& offset)
     graphEditSizeChanged();
     graphEditRedraw();
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void End(Widget w, XEvent *event, String *, Cardinal *)
 {
     const GraphEditWidget _w   = GraphEditWidget(w);
@@ -3443,9 +3318,7 @@ static void End(Widget w, XEvent *event, String *, Cardinal *)
 
     defineCursor(w, defaultCursor);
 }
-
 #else
-
 void GUIGraphEdit::End(GUI::Event *event)
 {
 
@@ -3533,11 +3406,9 @@ void GUIGraphEdit::End(GUI::Event *event)
 
     defineCursor(defaultCursor);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Key movement action
 static void MoveSelected(Widget w, XEvent *, String *params, 
 			 Cardinal *num_params)
@@ -3599,9 +3470,7 @@ static void MoveSelected(Widget w, XEvent *, String *params,
 	graphEditSizeChanged(w);
     }
 }
-
 #else
-
 // Key movement action
 void GUIGraphEdit::MoveSelected(GUI::Event *, string movx, string movy)
 {
@@ -3652,11 +3521,9 @@ void GUIGraphEdit::MoveSelected(GUI::Event *, string movx, string movy)
 	graphEditSizeChanged();
     }
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Select single node
 static void select_single_node(Widget w, XEvent *event, GraphNode *selectNode)
 {
@@ -3691,9 +3558,7 @@ static void select_single_node(Widget w, XEvent *event, GraphNode *selectNode)
     if (changed)
 	selectionChanged(w, event, False);
 }
-
 #else
-
 // Select single node
 void GUIGraphEdit::select_single_node(GUI::Event *event, GraphNode *selectNode)
 {
@@ -3725,11 +3590,9 @@ void GUIGraphEdit::select_single_node(GUI::Event *event, GraphNode *selectNode)
     if (changed)
 	selectionChanged(event, False);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Select first node
 static void SelectFirst(Widget w, XEvent *event, String *, Cardinal *)
 {
@@ -3738,19 +3601,15 @@ static void SelectFirst(Widget w, XEvent *event, String *, Cardinal *)
 
     select_single_node(w, event, graph->firstVisibleNode());
 }
-
 #else
-
 // Select first node
 void GUIGraphEdit::SelectFirst(GUI::Event *event)
 {
     select_single_node(event, graph->firstVisibleNode());
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Select next node
 static void SelectNext(Widget w, XEvent *event, String *, Cardinal *)
 {
@@ -3774,9 +3633,7 @@ static void SelectNext(Widget w, XEvent *event, String *, Cardinal *)
 
     select_single_node(w, event, selectNode);
 }
-
 #else
-
 // Select next node
 void GUIGraphEdit::SelectNext(GUI::Event *event)
 {
@@ -3797,11 +3654,9 @@ void GUIGraphEdit::SelectNext(GUI::Event *event)
 
     select_single_node(event, selectNode);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Select previous node
 static void SelectPrev(Widget w, XEvent *event, String *, Cardinal *)
 {
@@ -3824,9 +3679,7 @@ static void SelectPrev(Widget w, XEvent *event, String *, Cardinal *)
 
     select_single_node(w, event, selectNode);
 }
-
 #else
-
 // Select previous node
 void GUIGraphEdit::SelectPrev(GUI::Event *event)
 {
@@ -3846,7 +3699,6 @@ void GUIGraphEdit::SelectPrev(GUI::Event *event)
 
     select_single_node(event, selectNode);
 }
-
 #endif
 
 // Return nearest grid position near P
@@ -4329,7 +4181,6 @@ void GUIGraphEdit::_Layout(LayoutMode mode)
 }
 
 #if defined(IF_XM)
-
 // DoLayout() should be named Layout(), but this conflicts with the
 // `Layout' class on some pre-ARM C++ compilers :-(
 static void DoLayout(Widget w, XEvent *event, String *params,
@@ -4338,9 +4189,7 @@ static void DoLayout(Widget w, XEvent *event, String *params,
     _Layout(w, event, params, num_params);
     graphEditRedraw(w);
 }
-
 #else
-
 // DoLayout() should be named Layout(), but this conflicts with the
 // `Layout' class on some pre-ARM C++ compilers :-(
 void GUIGraphEdit::DoLayout(LayoutMode mode)
@@ -4348,11 +4197,9 @@ void GUIGraphEdit::DoLayout(LayoutMode mode)
     _Layout(mode);
     graphEditRedraw();
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Normalize graph
 static void _Normalize(Widget w, XEvent *, String *, Cardinal *)
 {
@@ -4378,9 +4225,7 @@ static void _Normalize(Widget w, XEvent *, String *, Cardinal *)
 	}
     }
 }
-
 #else
-
 // Normalize graph
 void GUIGraphEdit::_Normalize()
 {
@@ -4400,30 +4245,24 @@ void GUIGraphEdit::_Normalize()
 	}
     }
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void Normalize(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
 {
     _Normalize(w, event, params, num_params);
     graphEditRedraw(w);
 }
-
 #else
-
 void GUIGraphEdit::Normalize(void)
 {
     _Normalize();
     graphEditRedraw();
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Show and hide edges
 static void considerEdges(Widget w, XEvent *, String *params,
 			  Cardinal *num_params, Boolean shallBeHidden)
@@ -4493,9 +4332,7 @@ static void considerEdges(Widget w, XEvent *, String *params,
     if (changedSomething)
 	graphEditRedraw(w);
 }
-
 #else
-
 // Show and hide edges
 void GUIGraphEdit::considerEdges(ShowHideMode themode, Boolean shallBeHidden)
 {
@@ -4545,7 +4382,6 @@ void GUIGraphEdit::considerEdges(ShowHideMode themode, Boolean shallBeHidden)
     if (changedSomething)
 	graphEditRedraw();
 }
-
 #endif
 
 #if defined(IF_XM)

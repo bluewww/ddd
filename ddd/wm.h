@@ -29,19 +29,16 @@
 #ifndef _DDD_wm_h
 #define _DDD_wm_h
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include <X11/Intrinsic.h>
-#endif
-
-#if !defined(IF_XM)
+#else
 #include <GUI/Widget.h>
-#endif
-
 #include "gtk_wrapper.h"
+#endif
 
 #include "strclass.h"
 
@@ -49,18 +46,17 @@
 extern void wm_set_icon(Widget shell, Pixmap icon, Pixmap mask);
 extern void wm_set_icon(Display *display, Window shell,
 			Pixmap icon, Pixmap mask);
+
+extern void wm_set_name(Widget shell, string title = "", string icon = "");
+extern void wm_set_name(Display *display, Window shell,
+			string title = "", string icon = "");
 #else
 // Window manager
 extern void wm_set_icon(GUI::Widget *shell, GUI::RefPtr<GUI::Pixmap> icon, GUI::RefPtr<GUI::Pixmap> mask);
 extern void wm_set_icon(GUI::RefPtr<GUI::Display> display, GUI::RefPtr<GUI::XWindow> shell,
 			GUI::RefPtr<GUI::Pixmap> icon, GUI::RefPtr<GUI::Pixmap> mask);
-#endif
 
-extern void wm_set_name(Widget shell, string title = "", string icon = "");
-#if defined(IF_XM)
-extern void wm_set_name(Display *display, Window shell,
-			string title = "", string icon = "");
-#else
+extern void wm_set_name(GUI::Widget *shell, string title = "", string icon = "");
 extern void wm_set_name(GUI::RefPtr<GUI::Display> display, GUI::RefPtr<GUI::XWindow> shell,
 			string title = "", string icon = "");
 #endif
@@ -81,13 +77,11 @@ void manage_and_raise(GUI::Widget *w);
 #endif
 
 #if !defined(IF_XM)
-
 // Copy text from any widget to default clipboard.
 // Glib::RefPtr<Gtk::Clipboard> clip =
 //   Gtk::Clipboard::get_for_display(XtDisplay(w));
-bool text_copy_from(Widget w);
-bool text_cut_from(Widget w);
-
+bool text_copy_from(GUI::Widget *w);
+bool text_cut_from(GUI::Widget *w);
 #endif
 
 #endif // _DDD_wm_h

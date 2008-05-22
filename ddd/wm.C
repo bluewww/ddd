@@ -29,7 +29,9 @@
 char wm_rcsid[] = 
     "$Id$";
 
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
+#endif
 
 #include "wm.h"
 
@@ -38,7 +40,7 @@ char wm_rcsid[] =
 #include "string-fun.h"
 #include "findParent.h"
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include <Xm/Xm.h>
 #include <Xm/DialogS.h>
 #include <X11/Xutil.h>
@@ -54,7 +56,6 @@ char wm_rcsid[] =
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-    
 void wm_set_icon(Display *display, Window shell, Pixmap icon, Pixmap mask)
 {
     XWMHints *wm_hints = XAllocWMHints();
@@ -67,9 +68,7 @@ void wm_set_icon(Display *display, Window shell, Pixmap icon, Pixmap mask)
 
     XFree((void *)wm_hints);
 }
-
 #else
-
 void wm_set_icon(GUI::RefPtr<GUI::Display> display, GUI::RefPtr<GUI::XWindow> shell,
 		 GUI::RefPtr<GUI::Pixmap> icon, GUI::RefPtr<GUI::Pixmap> mask)
 {
@@ -77,11 +76,9 @@ void wm_set_icon(GUI::RefPtr<GUI::Display> display, GUI::RefPtr<GUI::XWindow> sh
 #warning wm_set_icon not implemented
 #endif
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void wm_set_icon(Widget shell, Pixmap icon, Pixmap mask)
 {
     if (XtIsWMShell(shell))
@@ -96,20 +93,16 @@ void wm_set_icon(Widget shell, Pixmap icon, Pixmap mask)
     wm_set_icon(XtDisplay(shell), XtWindow(shell), icon, mask);
 #endif
 }
-
 #else
-
 void wm_set_icon(GUI::Widget *shell, GUI::RefPtr<GUI::Pixmap> icon, GUI::RefPtr<GUI::Pixmap> mask)
 {
 #ifdef NAG_ME
 #warning wm_set_icon not implemented
 #endif
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void wm_set_name(Display *display, Window shell_window,
 		 string title, string icon)
 {
@@ -122,9 +115,7 @@ void wm_set_name(Display *display, Window shell_window,
     if (!icon.empty())
 	XSetIconName(display, shell_window, icon.chars());
 }
-
 #else
-
 void wm_set_name(GUI::RefPtr<GUI::Display> display, GUI::RefPtr<GUI::XWindow> shell_window,
 		 string title, string icon)
 {
@@ -138,7 +129,6 @@ void wm_set_name(GUI::RefPtr<GUI::Display> display, GUI::RefPtr<GUI::XWindow> sh
 #warning Set icon?
 #endif 
 }
-
 #endif
 
 void wm_set_name(Widget shell, string title, string icon)
@@ -146,7 +136,7 @@ void wm_set_name(Widget shell, string title, string icon)
     strip_space(title);
     strip_space(icon);
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     XtVaSetValues(shell,
 		  XmNiconName, icon.chars(),
 		  XmNtitle,    title.chars(),
@@ -161,7 +151,6 @@ void wm_set_name(Widget shell, string title, string icon)
 }
 
 #if defined(IF_XM)
-
 // Wait until W is mapped
 void wait_until_mapped(Widget w, Widget shell)
 {
@@ -191,9 +180,7 @@ void wait_until_mapped(Widget w, Widget shell)
     XSync(XtDisplay(w), False);
     XmUpdateDisplay(w);
 }
-
 #else
-
 // Wait until W is mapped
 void wait_until_mapped(GUI::Widget *w, GUI::Widget *shell)
 {
@@ -201,11 +188,9 @@ void wait_until_mapped(GUI::Widget *w, GUI::Widget *shell)
 #warning wait_until_mapped not implemented.
 #endif
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void raise_shell(Widget w)
 {
     if (w == 0 || !XtIsRealized(w))
@@ -229,9 +214,7 @@ void raise_shell(Widget w)
 	XmProcessTraversal(w, XmTRAVERSE_CURRENT);
     }
 }
-
 #else
-
 void raise_shell(GUI::Widget *w)
 {
     if (w == 0 || !w->is_realized())
@@ -248,11 +231,9 @@ void raise_shell(GUI::Widget *w)
 #endif
     }
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void manage_and_raise(Widget w)
 {
     if (w != 0)
@@ -288,29 +269,24 @@ void manage_and_raise(Widget w)
 	raise_shell(w);
     }
 }
-
 #else
-
 void manage_and_raise(GUI::Widget *w)
 {
     if (w != 0)
 	w->show();
 }
-
 #endif
 
-#if !defined(IF_MOTIF)
-
+#if !defined(IF_XM)
 bool
-text_copy_from(Widget w)
+text_copy_from(GUI::Widget *w)
 {
     std::cerr << "text_copy_from: not implemented\n";
 }
 
 bool
-text_cut_from(Widget w)
+text_cut_from(GUI::Widget *w)
 {
     std::cerr << "text_cut_from: not implemented\n";
 }
-
 #endif

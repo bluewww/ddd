@@ -2251,17 +2251,6 @@ void set_sensitive(GUI::Widget *w, bool state)
 #endif
 
 #if !defined(IF_XM)
-#ifdef NAG_ME
-#warning Can we not just test for a NULL callback and not connect anything?
-#endif
-void
-dummy_callback(Widget)
-{
-    std::cerr << "DUMMY CALLBACK\n";
-}
-#endif
-
-#if !defined(IF_XM)
 void
 dummy_xcallback(GUI::Widget *)
 {
