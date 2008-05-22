@@ -88,7 +88,7 @@ static void hint_on(const char *name)
     GUI::Dialog *suggestion = 
 	new GUI::Dialog(*find_shell(), name);
 
-    ImmediateHelpCB1(suggestion);
+    ImmediateHelpCB(suggestion);
 
     DestroyWhenIdle(suggestion);
 }

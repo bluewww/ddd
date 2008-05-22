@@ -5690,7 +5690,7 @@ void SourceView::create_shells()
 					       "buttons", bp_area);
 
     MMaddCallbacks(bp_area);
-    MMaddHelpCallback(bp_area, sigc::ptr_fun(ImmediateHelpCB1));
+    MMaddHelpCallback(bp_area, sigc::ptr_fun(ImmediateHelpCB));
 
     if (breakpoint_list_w != 0)
     {
@@ -7922,8 +7922,8 @@ void SourceView::srcpopupAct (GUI::Widget *w, GUI::Event* e, GUI::String *, unsi
 	    bp_popup_parent = w;
 	    bp_popup_w = MMcreatePopupMenu(*w, "bp_popup", bp_popup);
 	    MMaddCallbacks (bp_popup, &bp_nr);
-	    MMaddHelpCallback(bp_popup, sigc::ptr_fun(ImmediateHelpCB1));
-	    InstallButtonTips1(bp_popup_w);
+	    MMaddHelpCallback(bp_popup, sigc::ptr_fun(ImmediateHelpCB));
+	    InstallButtonTips(bp_popup_w);
 	}
 
 	// Grey out unsupported functions
@@ -7950,8 +7950,8 @@ void SourceView::srcpopupAct (GUI::Widget *w, GUI::Event* e, GUI::String *, unsi
 	{
 	    line_popup_w = MMcreatePopupMenu (*w, "line_popup", line_popup);
 	    MMaddCallbacks(line_popup, &address);
-	    MMaddHelpCallback(line_popup, sigc::ptr_fun(ImmediateHelpCB1));
-	    InstallButtonTips1(line_popup_w);
+	    MMaddHelpCallback(line_popup, sigc::ptr_fun(ImmediateHelpCB));
+	    InstallButtonTips(line_popup_w);
 
 	    set_sensitive(line_popup[LineItms::SetTempBP].widget, gdb->has_temporary_breakpoints());
 	    set_sensitive(line_popup[LineItms::SetPC].widget, gdb->has_jump_command() || 
@@ -7985,8 +7985,8 @@ void SourceView::srcpopupAct (GUI::Widget *w, GUI::Event* e, GUI::String *, unsi
 	text_popup_w = 
 	    MMcreatePopupMenu(*text_w, "text_popup", text_popup);
 	MMaddCallbacks(text_popup, &callback_word);
-	MMaddHelpCallback(text_popup, sigc::ptr_fun(ImmediateHelpCB1));
-	InstallButtonTips1(text_popup_w);
+	MMaddHelpCallback(text_popup, sigc::ptr_fun(ImmediateHelpCB));
+	InstallButtonTips(text_popup_w);
 
 	// The popup menu is destroyed immediately after having popped down.
 	text_popup_w->signal_unmap().connect(sigc::bind(sigc::ptr_fun(DestroyThisCB), text_popup_w));
@@ -9631,7 +9631,7 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, GUI::Widget * /* origin */)
     MMaddCallbacks(panel_menu, info);
 
     update_properties_panel(info);
-    InstallButtonTips1(panel);
+    InstallButtonTips(panel);
 
     MMadjustPanel(panel_menu);
 
@@ -13334,9 +13334,8 @@ void SourceView::update_glyphs_now()
 		if (bp->type() != BREAKPOINT)
 		    continue;
 
-		Widget& bp_glyph = k ? bp->code_glyph() : bp->source_glyph();
 		GUI::ScrolledText *text_w = k ? code_text_w : source_text_w;
-		bp_glyph = 0;
+		std::cerr << "bp_glyph?\n";
 
 		long pos;
 		if (k == 0)

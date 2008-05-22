@@ -42,6 +42,7 @@
 #include <GUI/MultiPaned.h>
 #include <GUI/ScrolledText.h>
 #include <GUI/Box.h>
+#include <GUI/Bipolar.h>
 #endif
 
 #include "gtk_wrapper.h"
@@ -128,12 +129,12 @@ extern void gdbCloseDataWindowCB    (GUI::Widget *);
 extern void gdbCloseExecWindowCB    (void);
 extern void gdbCloseToolWindowCB    (void);
 
-extern void gdbToggleCommandWindowCB(GUI::Widget *);
-extern void gdbToggleSourceWindowCB (GUI::Widget *);
-extern void gdbToggleCodeWindowCB   (GUI::Widget *);
-extern void gdbToggleDataWindowCB   (GUI::Widget *);
-extern void gdbToggleExecWindowCB   (GUI::Widget *);
-extern void gdbToggleToolWindowCB   (GUI::Widget *);
+extern void gdbToggleCommandWindowCB(GUI::Bipolar *);
+extern void gdbToggleSourceWindowCB (GUI::Bipolar *);
+extern void gdbToggleCodeWindowCB   (GUI::Bipolar *);
+extern void gdbToggleDataWindowCB   (GUI::Bipolar *);
+extern void gdbToggleExecWindowCB   (GUI::Bipolar *);
+extern void gdbToggleToolWindowCB   (GUI::Bipolar *);
 #endif
 
 extern bool have_command_window();
@@ -191,14 +192,9 @@ extern void set_paned_window_size(GUI::Container *paned, int width);
 extern void set_main_window_size(GUI::Container *w);
 #endif
 
+#if defined(IF_XM)
 // Save paned child sizes
 extern void save_preferred_paned_sizes(Widget paned);
-
-#if !defined(IF_XM)
-
-// Convenience function to get state of ToggleButton and CheckMenuItem.
-extern bool get_active(Widget w);
-
 #endif
 
 #endif // _DDD_windows_h

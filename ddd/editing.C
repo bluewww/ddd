@@ -939,7 +939,7 @@ void popupAct(GUI::Widget *, GUI::Event *event, GUI::String *, unsigned int *)
     {
 	gdb_popup_w = MMcreatePopupMenu(*gdb_w, "gdb_popup", gdb_popup);
 	MMaddCallbacks(gdb_popup);
-	MMaddHelpCallback(gdb_popup, sigc::ptr_fun(ImmediateHelpCB1));
+	MMaddHelpCallback(gdb_popup, sigc::ptr_fun(ImmediateHelpCB));
 	InstallButtonTips(gdb_popup_w);
     }
 

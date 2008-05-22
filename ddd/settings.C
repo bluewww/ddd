@@ -6290,7 +6290,7 @@ void dddDefineCommandCB(GUI::Widget *w)
 	editor_w->show();
 
 	MMaddCallbacks(panel_menu);
-	InstallButtonTips(panel->internal());
+	InstallButtonTips(panel);
 
 	MMadjustPanel(panel_menu);
 

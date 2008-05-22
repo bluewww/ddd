@@ -1436,7 +1436,7 @@ static MMDesc data_program_menu[]
 	    0, 0),						\
     GENTRYL("code", "Machine Code Window", MMCheckItem | x,	\
 	    BIND(gdbToggleCodeWindowCB, 0),			\
-	    sigc::ptr_fun(gdbToggleCodeWindowCB),		\
+	    sigc::retype(sigc::ptr_fun(gdbToggleCodeWindowCB)),	\
 	    0, 0),						\
     MMEnd							\
 }
@@ -1458,19 +1458,19 @@ static MMDesc views_menu[] =
     MMSep,
     GENTRYL("console", "@GDB@ Console", MMCheckItem,
 	    BIND(gdbToggleCommandWindowCB, 0),
-	    sigc::ptr_fun(gdbToggleCommandWindowCB),
+	    sigc::retype(sigc::ptr_fun(gdbToggleCommandWindowCB)),
 	    0, 0),
     GENTRYL("source", "Source Window", MMCheckItem,
 	    BIND(gdbToggleSourceWindowCB, 0),
-	    sigc::ptr_fun(gdbToggleSourceWindowCB),
+	    sigc::retype(sigc::ptr_fun(gdbToggleSourceWindowCB)),
 	    0, 0),
     GENTRYL("data", "Data Window", MMCheckItem,
 	    BIND(gdbToggleDataWindowCB, 0),
-	    sigc::ptr_fun(gdbToggleDataWindowCB),
+	    sigc::retype(sigc::ptr_fun(gdbToggleDataWindowCB)),
 	    0, 0),
     GENTRYL("code", "Machine Code Window", MMCheckItem,
 	    BIND(gdbToggleCodeWindowCB, 0),
-	    sigc::ptr_fun(gdbToggleCodeWindowCB),
+	    sigc::retype(sigc::ptr_fun(gdbToggleCodeWindowCB)),
 	    0, 0),
     MMEnd
 };
@@ -1762,7 +1762,7 @@ static MMDesc source_menu[] =
 	    0, &line_numbers1_w),
     GENTRYL("disassemble", "Display Machine Code", MMCheckItem,
 	    BIND(gdbToggleCodeWindowCB, 0),
-	    sigc::ptr_fun(gdbToggleCodeWindowCB),
+	    sigc::retype(sigc::ptr_fun(gdbToggleCodeWindowCB)),
 	    0, &disassemble_w),
     MMSep,
     GENTRYL("edit", "Edit Source...", MMPush, 
@@ -4782,7 +4782,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 
     GUI::MenuBar *menubar_w = MMcreateMenuBar(*main_window, "menubar", menubar);
     MMaddCallbacks(menubar);
-    MMaddHelpCallback(menubar, sigc::ptr_fun(ImmediateHelpCB1));
+    MMaddHelpCallback(menubar, sigc::ptr_fun(ImmediateHelpCB));
     verify_buttons(menubar);
     register_menu_shell(menubar);
 
@@ -4849,7 +4849,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	    MMcreateMenuBar (*data_main_window_w, 
 			     "menubar", data_menubar);
 	MMaddCallbacks(data_menubar);
-	MMaddHelpCallback(menubar, sigc::ptr_fun(ImmediateHelpCB1));
+	MMaddHelpCallback(menubar, sigc::ptr_fun(ImmediateHelpCB));
 	verify_buttons(data_menubar);
 	register_menu_shell(data_menubar);
 
@@ -4887,7 +4887,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	source_menubar_w = 
 	    MMcreateMenuBar (*source_main_window_w, "menubar", source_menubar);
 	MMaddCallbacks(source_menubar);
-	MMaddHelpCallback(menubar, sigc::ptr_fun(ImmediateHelpCB1));
+	MMaddHelpCallback(menubar, sigc::ptr_fun(ImmediateHelpCB));
 	verify_buttons(source_menubar);
 	register_menu_shell(source_menubar);
 
@@ -8335,7 +8335,7 @@ static int add_panel(GUI::Notebook *parent,
     panel->show();
     MMadjustPanel(items);
     MMaddCallbacks(items);
-    MMaddHelpCallback(items, sigc::ptr_fun(ImmediateHelpCB1));
+    MMaddHelpCallback(items, sigc::ptr_fun(ImmediateHelpCB));
     register_menu_shell(items);
 
     return pageno;

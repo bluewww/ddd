@@ -453,7 +453,7 @@ void gdbExamineCB(GUI::Widget *w)
 
 	(void) panel;
 	MMaddCallbacks(examine_menu);
-	MMaddHelpCallback(examine_menu, sigc::ptr_fun(ImmediateHelpCB1));
+	MMaddHelpCallback(examine_menu, sigc::ptr_fun(ImmediateHelpCB));
 
 	manage_child(unsigned_char_w,  gdb->type() == GDB);
 	manage_child(binary_w,         gdb->type() == GDB);

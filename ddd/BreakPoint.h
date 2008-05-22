@@ -33,13 +33,17 @@
 // A `BreakPoint' stores information about an existing debugger breakpoint.
 //-----------------------------------------------------------------------------
 
-#ifdef IF_MOTIF
+#if defined(HAVE_CONFIG_H)
+#include "config.h"
+#endif
+
+#if defined(IF_XM)
 
 #include <X11/Intrinsic.h>
 
-#else // NOT IF_MOTIF
+#else
 
-#endif // IF_MOTIF
+#endif
 
 // Misc includes
 #include "strclass.h"
@@ -100,8 +104,10 @@ class BreakPoint {
     bool    myaddress_changed;	// True if address changed
     bool    myselected;		// True if selected
 
+#if defined(IF_XM)
     Widget  mysource_glyph;	// Associated glyph in source
     Widget  mycode_glyph;	// Associated glyph in code
+#endif
 
 private:
     BreakPoint(const BreakPoint&);
@@ -174,9 +180,11 @@ public:
     // Selection state
     bool& selected() { return myselected; }
 
+#if defined(IF_XM)
     // Associated glyphs in source and machine code
     Widget& source_glyph() { return mysource_glyph; }
     Widget& code_glyph()   { return mycode_glyph; }
+#endif
 
     // True iff `enabled' status changed
     bool enabled_changed () const { return myenabled_changed; }

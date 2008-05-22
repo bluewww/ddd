@@ -32,7 +32,7 @@ char options_rcsid[] =
 
 #include "options.h"
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
@@ -91,12 +91,9 @@ extern int ptrace(int request, int pid, int addr, int data);
 #include <Xm/BulletinB.h>
 #include <Xm/MessageB.h>
 #include <Xm/PanedW.h>
-#endif
-#if !defined(IF_XM)
+#else
 #include <libxml/tree.h>
 #include <gtkmm/paned.h>
-#endif
-#if !defined(IF_XM)
 #include <GUI/Dialog.h>
 #endif
 
@@ -147,7 +144,6 @@ static bool options_file_has_changed(ChangeMode mode, bool reset = false);
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 void sourceToggleFindWordsOnlyCB (Widget w, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
@@ -226,9 +222,7 @@ void sourceToggleDisplayLineNumbersCB (Widget w, XtPointer, XtPointer call_data)
 	set_status("Not displaying line numbers.");
 #endif
 }
-
 #else
-
 void sourceToggleFindWordsOnlyCB (GUI::CheckButton *w)
 {
     app_data.find_words_only = w->get_active();
@@ -292,11 +286,9 @@ void sourceToggleDisplayLineNumbersCB (GUI::CheckButton *w)
 	set_status("Not displaying line numbers.");
 #endif
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void sourceSetUseSourcePathCB (Widget, XtPointer client_data, XtPointer)
 {
     Boolean state = (int)(long)client_data;
@@ -313,9 +305,7 @@ void sourceSetUseSourcePathCB (Widget, XtPointer client_data, XtPointer)
     source_arg->set_string(source_view->line_of_cursor());
     update_options();
 }
-
 #else
-
 void sourceSetUseSourcePathCB (bool state)
 {
     app_data.use_source_path = state;
@@ -330,11 +320,9 @@ void sourceSetUseSourcePathCB (bool state)
     source_arg->set_string(source_view->line_of_cursor());
     update_options(true);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void sourceSetDisplayGlyphsCB (Widget, XtPointer client_data, XtPointer)
 {
     Boolean state = (int)(long)client_data;
@@ -349,9 +337,7 @@ void sourceSetDisplayGlyphsCB (Widget, XtPointer client_data, XtPointer)
     else
 	set_status(displaying + "as text characters.");
 }
-
 #else
-
 void sourceSetDisplayGlyphsCB (bool state)
 {
     app_data.display_glyphs = state;
@@ -364,11 +350,9 @@ void sourceSetDisplayGlyphsCB (bool state)
     else
 	set_status(displaying + "as text characters.");
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void sourceSetAllRegistersCB (Widget w, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
@@ -382,9 +366,7 @@ void sourceSetAllRegistersCB (Widget w, XtPointer, XtPointer call_data)
 
     update_options();
 }
-
 #else
-
 void sourceSetAllRegistersCB (GUI::RadioButton *w)
 {
     if (w->get_active())
@@ -395,11 +377,9 @@ void sourceSetAllRegistersCB (GUI::RadioButton *w)
 
     update_options(true);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void sourceSetIntRegistersCB (Widget w, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
@@ -413,9 +393,7 @@ void sourceSetIntRegistersCB (Widget w, XtPointer, XtPointer call_data)
 
     update_options();
 }
-
 #else
-
 void sourceSetIntRegistersCB (GUI::RadioButton *w)
 {
     if (w->get_active())
@@ -426,11 +404,9 @@ void sourceSetIntRegistersCB (GUI::RadioButton *w)
 
     update_options(true);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void sourceSetTabWidthCB (Widget, XtPointer, XtPointer call_data)
 {
     XmScaleCallbackStruct *info = (XmScaleCallbackStruct *)call_data;
@@ -462,9 +438,7 @@ void sourceSetCodeIndentCB (Widget, XtPointer, XtPointer call_data)
     set_status("Code indentation set to " + 
 	       itostring(app_data.indent_code) + ".");
 }
-
 #else
-
 void sourceSetTabWidthCB (GUI::Scale *w)
 {
     app_data.tab_width = (unsigned int)w->get_value();
@@ -490,7 +464,6 @@ void sourceSetCodeIndentCB (GUI::Scale *w)
     set_status("Code indentation set to " + 
 	       itostring(app_data.indent_code) + ".");
 }
-
 #endif
 
 //-----------------------------------------------------------------------------
@@ -498,7 +471,6 @@ void sourceSetCodeIndentCB (GUI::Scale *w)
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 void graphToggleDetectAliasesCB(Widget w, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
@@ -514,9 +486,7 @@ void graphToggleDetectAliasesCB(Widget w, XtPointer, XtPointer call_data)
 
     update_options();
 }
-
 #else
-
 void graphToggleDetectAliasesCB(GUI::Bipolar *w)
 {
     app_data.detect_aliases = w->get_active();
@@ -529,11 +499,9 @@ void graphToggleDetectAliasesCB(GUI::Bipolar *w)
 
     update_options(true);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void graphToggleAlign2dArraysCB(Widget w, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
@@ -550,12 +518,10 @@ void graphToggleAlign2dArraysCB(Widget w, XtPointer, XtPointer call_data)
 
     update_options();
 }
-
 #else
-
 void graphToggleAlign2dArraysCB(GUI::CheckButton *w)
 {
-    app_data.align_2d_arrays = get_active(w);
+    app_data.align_2d_arrays = w->get_active();
     string displaying_arrays_as = 
 	"Two-dimensional arrays will be displayed as ";
 
@@ -566,11 +532,9 @@ void graphToggleAlign2dArraysCB(GUI::CheckButton *w)
 
     update_options(true);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void graphToggleShowHintsCB(Widget w, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
@@ -588,12 +552,10 @@ void graphToggleShowHintsCB(Widget w, XtPointer, XtPointer call_data)
 
     update_options();
 }
-
 #else
-
 void graphToggleShowHintsCB(GUI::CheckButton *w)
 {
-    data_disp->graph_edit->set_show_hints(get_active(w));
+    data_disp->graph_edit->set_show_hints(w->get_active());
     if (data_disp->graph_edit->get_show_hints())
 	set_status("Hints on.");
     else
@@ -601,11 +563,9 @@ void graphToggleShowHintsCB(GUI::CheckButton *w)
 
     update_options(true);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void graphToggleShowAnnotationsCB(Widget w, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
@@ -625,12 +585,10 @@ void graphToggleShowAnnotationsCB(Widget w, XtPointer, XtPointer call_data)
 
     update_options();
 }
-
 #else
-
 void graphToggleShowAnnotationsCB(GUI::CheckButton *w)
 {
-    data_disp->graph_edit->set_show_annotations(get_active(w));
+    data_disp->graph_edit->set_show_annotations(w->get_active());
     if (data_disp->graph_edit->get_show_annotations())
 	set_status("Annotations on.");
     else
@@ -640,11 +598,9 @@ void graphToggleShowAnnotationsCB(GUI::CheckButton *w)
 
     update_options(true);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void graphToggleShowDependentTitlesCB(Widget w, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
@@ -660,12 +616,10 @@ void graphToggleShowDependentTitlesCB(Widget w, XtPointer, XtPointer call_data)
 
     update_options();
 }
-
 #else
-
 void graphToggleShowDependentTitlesCB(GUI::CheckButton *w)
 {
-    app_data.show_dependent_display_titles = get_active(w);
+    app_data.show_dependent_display_titles = w->get_active();
     if (app_data.show_dependent_display_titles)
 	set_status("Dependent titles on.");
     else
@@ -675,11 +629,9 @@ void graphToggleShowDependentTitlesCB(GUI::CheckButton *w)
 
     update_options(true);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void graphToggleClusterDisplaysCB(Widget w, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
@@ -694,12 +646,10 @@ void graphToggleClusterDisplaysCB(Widget w, XtPointer, XtPointer call_data)
 
     update_options();
 }
-
 #else
-
 void graphToggleClusterDisplaysCB(GUI::CheckButton *w)
 {
-    app_data.cluster_displays = get_active(w);
+    app_data.cluster_displays = w->get_active();
 
     if (app_data.cluster_displays)
 	set_status("Display clustering enabled.");
@@ -708,11 +658,9 @@ void graphToggleClusterDisplaysCB(GUI::CheckButton *w)
 
     update_options(true);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void graphToggleSnapToGridCB(Widget w, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
@@ -730,12 +678,10 @@ void graphToggleSnapToGridCB(Widget w, XtPointer, XtPointer call_data)
 
     update_options();
 }
-
 #else
-
 void graphToggleSnapToGridCB(GUI::CheckButton *w)
 {
-    data_disp->graph_edit->set_snap_to_grid(get_active(w));
+    data_disp->graph_edit->set_snap_to_grid(w->get_active());
     if (data_disp->graph_edit->get_snap_to_grid())
 	set_status("Snap to grid on.");
     else
@@ -743,11 +689,9 @@ void graphToggleSnapToGridCB(GUI::CheckButton *w)
 
     update_options(true);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void graphToggleCompactLayoutCB(Widget w, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
@@ -769,12 +713,10 @@ void graphToggleCompactLayoutCB(Widget w, XtPointer, XtPointer call_data)
 
     update_options();
 }
-
 #else
-
 void graphToggleCompactLayoutCB(GUI::CheckButton *w)
 {
-    data_disp->graph_edit->set_layout_mode(get_active(w)?CompactLayoutMode:RegularLayoutMode);
+    data_disp->graph_edit->set_layout_mode(w->get_active()?CompactLayoutMode:RegularLayoutMode);
     if (data_disp->graph_edit->get_layout_mode() == CompactLayoutMode)
 	set_status("Compact layout enabled.");
     else
@@ -782,11 +724,9 @@ void graphToggleCompactLayoutCB(GUI::CheckButton *w)
 
     update_options(true);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void graphToggleAutoLayoutCB(Widget w, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
@@ -804,12 +744,10 @@ void graphToggleAutoLayoutCB(Widget w, XtPointer, XtPointer call_data)
 
     update_options();
 }
-
 #else
-
 void graphToggleAutoLayoutCB(GUI::CheckButton *w)
 {
-    data_disp->graph_edit->set_auto_layout(get_active(w));
+    data_disp->graph_edit->set_auto_layout(w->get_active());
     if (data_disp->graph_edit->get_auto_layout())
 	set_status("Automatic layout on.");
     else
@@ -817,11 +755,9 @@ void graphToggleAutoLayoutCB(GUI::CheckButton *w)
 
     update_options(true);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void graphToggleAutoCloseCB(Widget w, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
@@ -836,9 +772,7 @@ void graphToggleAutoCloseCB(Widget w, XtPointer, XtPointer call_data)
 
     update_options();
 }
-
 #else
-
 void graphToggleAutoCloseCB(GUI::CheckButton *w)
 {
     app_data.auto_close_data_window = w->get_active();
@@ -850,11 +784,9 @@ void graphToggleAutoCloseCB(GUI::CheckButton *w)
 
     update_options(true);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void graphSetGridSizeCB (Widget, XtPointer, XtPointer call_data)
 {
     XmScaleCallbackStruct *info = (XmScaleCallbackStruct *)call_data;
@@ -881,9 +813,7 @@ void graphSetGridSizeCB (Widget, XtPointer, XtPointer call_data)
 
     update_options();
 }
-
 #else
-
 void graphSetGridSizeCB (GUI::Scale *w)
 {
     unsigned int value = (unsigned int)w->get_value();
@@ -903,11 +833,9 @@ void graphSetGridSizeCB (GUI::Scale *w)
 
     update_options();
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void graphSetDisplayPlacementCB(Widget, XtPointer client_data, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
@@ -934,9 +862,7 @@ void graphSetDisplayPlacementCB(Widget, XtPointer client_data, XtPointer call_da
 	update_options();
     }
 }
-
 #else
-
 void graphSetDisplayPlacementCB(GUI::RadioButton *w, GUI::Orientation orientation)
 {
     if (w->get_active())
@@ -959,7 +885,6 @@ void graphSetDisplayPlacementCB(GUI::RadioButton *w, GUI::Orientation orientatio
 	update_options(true);
     }
 }
-
 #endif
 
 //-----------------------------------------------------------------------------
@@ -967,7 +892,6 @@ void graphSetDisplayPlacementCB(GUI::RadioButton *w, GUI::Orientation orientatio
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 void dddToggleGroupIconifyCB (Widget w, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
@@ -984,12 +908,10 @@ void dddToggleGroupIconifyCB (Widget w, XtPointer, XtPointer call_data)
 
     update_options();
 }
-
 #else
-
 void dddToggleGroupIconifyCB (GUI::CheckButton *w)
 {
-    app_data.group_iconify = get_active(w);
+    app_data.group_iconify = w->get_active();
     string ddd_windows_are_iconified = 
 	DDD_NAME " windows are iconified ";
 
@@ -1000,11 +922,9 @@ void dddToggleGroupIconifyCB (GUI::CheckButton *w)
 
     update_options(true);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void dddToggleUniconifyWhenReadyCB (Widget w, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
@@ -1020,12 +940,10 @@ void dddToggleUniconifyWhenReadyCB (Widget w, XtPointer, XtPointer call_data)
 
     update_options();
 }
-
 #else
-
 void dddToggleUniconifyWhenReadyCB (GUI::CheckButton *w)
 {
-    app_data.uniconify_when_ready = get_active(w);
+    app_data.uniconify_when_ready = w->get_active();
 
     if (app_data.uniconify_when_ready)
 	set_status(DDD_NAME " windows will be uniconified automatically "
@@ -1035,11 +953,9 @@ void dddToggleUniconifyWhenReadyCB (GUI::CheckButton *w)
 
     update_options(true);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void dddSetGlobalTabCompletionCB(Widget w, XtPointer client_data, XtPointer)
 {
     Boolean state = (int)(long)client_data;
@@ -1053,9 +969,7 @@ void dddSetGlobalTabCompletionCB(Widget w, XtPointer client_data, XtPointer)
 
     update_options();
 }
-
 #else
-
 void dddSetGlobalTabCompletionCB(GUI::RadioButton *w, int state)
 {
     if (!w->get_active()) return;
@@ -1069,11 +983,9 @@ void dddSetGlobalTabCompletionCB(GUI::RadioButton *w, int state)
 
     update_options(true);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void dddToggleSeparateExecWindowCB (Widget w, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
@@ -1092,12 +1004,10 @@ void dddToggleSeparateExecWindowCB (Widget w, XtPointer, XtPointer call_data)
 
     update_options();
 }
-
 #else
-
 void dddToggleSeparateExecWindowCB (GUI::CheckMenuItem *w)
 {
-    app_data.separate_exec_window = get_active(w);
+    app_data.separate_exec_window = w->get_active();
     string debugged_program_will_be_executed_in =
 	"Debugged program will be executed in ";
 
@@ -1110,11 +1020,9 @@ void dddToggleSeparateExecWindowCB (GUI::CheckMenuItem *w)
 
     update_options(true);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void dddToggleCheckGrabsCB (Widget w, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
@@ -1129,12 +1037,10 @@ void dddToggleCheckGrabsCB (Widget w, XtPointer, XtPointer call_data)
 
     update_options();
 }
-
 #else
-
 void dddToggleCheckGrabsCB (GUI::CheckButton *w)
 {
-    app_data.check_grabs = get_active(w);
+    app_data.check_grabs = w->get_active();
 
     if (app_data.check_grabs)
 	set_status("Checking for grabs.");
@@ -1143,11 +1049,9 @@ void dddToggleCheckGrabsCB (GUI::CheckButton *w)
 
     update_options(true);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void dddToggleSaveHistoryOnExitCB (Widget, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
@@ -1162,9 +1066,7 @@ void dddToggleSaveHistoryOnExitCB (Widget, XtPointer, XtPointer call_data)
 
     update_options();
 }
-
 #else
-
 void dddToggleSaveHistoryOnExitCB (GUI::CheckButton *w)
 {
     app_data.save_history_on_exit = w->get_active();
@@ -1176,11 +1078,9 @@ void dddToggleSaveHistoryOnExitCB (GUI::CheckButton *w)
 
     update_options(true);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void dddToggleSuppressWarningsCB (Widget w, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
@@ -1195,12 +1095,10 @@ void dddToggleSuppressWarningsCB (Widget w, XtPointer, XtPointer call_data)
 
     update_options();
 }
-
 #else
-
 void dddToggleSuppressWarningsCB (GUI::CheckButton *w)
 {
-    app_data.suppress_warnings = get_active(w);
+    app_data.suppress_warnings = w->get_active();
 
     if (app_data.suppress_warnings)
 	set_status("X Warnings are suppressed.");
@@ -1209,11 +1107,9 @@ void dddToggleSuppressWarningsCB (GUI::CheckButton *w)
 
     update_options(true);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void dddToggleWarnIfLockedCB (Widget w, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
@@ -1230,12 +1126,10 @@ void dddToggleWarnIfLockedCB (Widget w, XtPointer, XtPointer call_data)
 
     update_options();
 }
-
 #else
-
 void dddToggleWarnIfLockedCB (GUI::CheckButton *w)
 {
-    app_data.warn_if_locked = get_active(w);
+    app_data.warn_if_locked = w->get_active();
 
     if (app_data.warn_if_locked)
 	set_status(DDD_NAME " will warn you "
@@ -1246,11 +1140,9 @@ void dddToggleWarnIfLockedCB (GUI::CheckButton *w)
 
     update_options(true);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void dddSetBuiltinPlotWindowCB (Widget, XtPointer client_data, XtPointer)
 {
     if ((int)(long)client_data)
@@ -1277,9 +1169,7 @@ void dddSetBuiltinPlotWindowCB (Widget, XtPointer client_data, XtPointer)
     clear_plot_window_cache();
     update_options();
 }
-
 #else
-
 void dddSetBuiltinPlotWindowCB (GUI::RadioButton *w, bool state)
 {
     if (!w->get_active()) return;
@@ -1314,11 +1204,9 @@ void dddSetBuiltinPlotWindowCB (GUI::RadioButton *w, bool state)
     update_options(true);
 #endif
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void dddToggleButtonTipsCB (Widget w, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
@@ -1333,9 +1221,7 @@ void dddToggleButtonTipsCB (Widget w, XtPointer, XtPointer call_data)
 
     update_options();
 }
-
 #else
-
 void dddToggleButtonTipsCB (GUI::CheckButton *w)
 {
     app_data.button_tips = w->get_active();
@@ -1347,11 +1233,9 @@ void dddToggleButtonTipsCB (GUI::CheckButton *w)
 
     update_options(true);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void dddToggleValueTipsCB (Widget w, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
@@ -1366,9 +1250,7 @@ void dddToggleValueTipsCB (Widget w, XtPointer, XtPointer call_data)
 
     update_options();
 }
-
 #else
-
 void dddToggleValueTipsCB (GUI::CheckButton *w)
 {
     app_data.value_tips = w->get_active();
@@ -1380,11 +1262,9 @@ void dddToggleValueTipsCB (GUI::CheckButton *w)
 
     update_options(true);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void dddToggleButtonDocsCB (Widget w, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
@@ -1399,9 +1279,7 @@ void dddToggleButtonDocsCB (Widget w, XtPointer, XtPointer call_data)
 
     update_options();
 }
-
 #else
-
 void dddToggleButtonDocsCB (GUI::CheckButton *w)
 {
     app_data.button_docs = w->get_active();
@@ -1413,11 +1291,9 @@ void dddToggleButtonDocsCB (GUI::CheckButton *w)
 
     update_options(true);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void dddToggleValueDocsCB (Widget w, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
@@ -1432,9 +1308,7 @@ void dddToggleValueDocsCB (Widget w, XtPointer, XtPointer call_data)
 
     update_options();
 }
-
 #else
-
 void dddToggleValueDocsCB (GUI::CheckButton *w)
 {
     app_data.value_docs = w->get_active();
@@ -1446,11 +1320,9 @@ void dddToggleValueDocsCB (GUI::CheckButton *w)
 
     update_options(true);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void dddToggleSaveOptionsOnExitCB (Widget w, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
@@ -1465,9 +1337,7 @@ void dddToggleSaveOptionsOnExitCB (Widget w, XtPointer, XtPointer call_data)
 
     update_options();
 }
-
 #else
-
 void dddToggleSaveOptionsOnExitCB (GUI::CheckMenuItem *w)
 {
     app_data.save_options_on_exit = w->get_active();
@@ -1479,7 +1349,6 @@ void dddToggleSaveOptionsOnExitCB (GUI::CheckMenuItem *w)
 
     update_options(true);
 }
-
 #endif
 
 //-----------------------------------------------------------------------------
@@ -1487,7 +1356,6 @@ void dddToggleSaveOptionsOnExitCB (GUI::CheckMenuItem *w)
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 void dddSetCrashCB(Widget, XtPointer client_data, XtPointer)
 {
     int state = (int)(long)client_data;
@@ -1523,9 +1391,7 @@ void dddClearMaintenanceCB(Widget, XtPointer, XtPointer)
     app_data.maintenance = False;
     update_options();
 }
-
 #else
-
 void dddSetCrashCB(GUI::RadioMenuItem *w, int state)
 {
     if (w->get_active()) {
@@ -1562,7 +1428,6 @@ void dddClearMaintenanceCB(void)
     app_data.maintenance = False;
     update_options();
 }
-
 #endif
 
 
@@ -1571,7 +1436,6 @@ void dddClearMaintenanceCB(void)
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 static void post_startup_warning(Widget w)
 {
 #if 0
@@ -1586,9 +1450,7 @@ static void post_startup_warning(Widget w)
 #endif
     (void) w;			// Use it
 }
-
 #else
-
 static void post_startup_warning(GUI::Widget *w)
 {
 #if 0
@@ -1603,14 +1465,12 @@ static void post_startup_warning(GUI::Widget *w)
 #endif
     (void) w;			// Use it
 }
-
 #endif
 
 static string next_ddd_will_start_with = 
     "Next " DDD_NAME " invocation will start-up with ";
 
 #if defined(IF_XM)
-
 void dddSetSeparateWindowsCB (Widget w, XtPointer client_data, XtPointer)
 {
     int state = (int)(long)client_data;
@@ -1645,9 +1505,7 @@ void dddSetSeparateWindowsCB (Widget w, XtPointer client_data, XtPointer)
     update_options();
     post_startup_warning(w);
 }
-
 #else
-
 void dddSetSeparateWindowsCB (GUI::RadioButton *w, int state)
 {
     switch (state)
@@ -1681,11 +1539,9 @@ void dddSetSeparateWindowsCB (GUI::RadioButton *w, int state)
     update_options(true);
     post_startup_warning(w);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void dddSetStatusAtBottomCB (Widget w, XtPointer client_data, XtPointer)
 {
     Boolean state = (int)(long)client_data;
@@ -1700,9 +1556,7 @@ void dddSetStatusAtBottomCB (Widget w, XtPointer client_data, XtPointer)
     update_options();
     post_startup_warning(w);
 }
-
 #else
-
 void dddSetStatusAtBottomCB (GUI::Widget *w, bool state)
 {
     app_data.status_at_bottom = state;
@@ -1715,11 +1569,9 @@ void dddSetStatusAtBottomCB (GUI::Widget *w, bool state)
     update_options(true);
     post_startup_warning(w);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void dddSetToolBarCB (Widget w, XtPointer client_data, XtPointer)
 {
     Boolean state = (int)(long)client_data;
@@ -1735,9 +1587,7 @@ void dddSetToolBarCB (Widget w, XtPointer client_data, XtPointer)
     update_options();
     post_startup_warning(w);
 }
-
 #else
-
 void dddSetToolBarCB (GUI::RadioButton *w, bool state)
 {
     if (!w->get_active()) return;
@@ -1753,11 +1603,9 @@ void dddSetToolBarCB (GUI::RadioButton *w, bool state)
     update_options(true);
     post_startup_warning(w);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void dddSetKeyboardFocusPolicyCB (Widget w, XtPointer client_data, XtPointer)
 {
     unsigned char policy = (unsigned char)(int)(long)client_data;
@@ -1824,18 +1672,14 @@ void dddSetKeyboardFocusPolicyCB (Widget w, XtPointer client_data, XtPointer)
 
     update_options();
 }
-
 #else
-
 void dddSetKeyboardFocusPolicyCB (GUI::Widget *w, unsigned char policy)
 {
     std::cerr << "Keyboard focus policy not implemented\n";
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void dddSetPannerCB (Widget w, XtPointer client_data, XtPointer)
 {
     Boolean state = (int)(long)client_data;
@@ -1849,9 +1693,7 @@ void dddSetPannerCB (Widget w, XtPointer client_data, XtPointer)
     update_options();
     post_startup_warning(w);
 }
-
 #else
-
 void dddSetPannerCB (GUI::RadioButton *w, bool state)
 {
     app_data.panned_graph_editor = state;
@@ -1864,7 +1706,6 @@ void dddSetPannerCB (GUI::RadioButton *w, bool state)
     update_options(true);
     post_startup_warning(w);
 }
-
 #endif
 
 static void report_debugger_type()
@@ -1889,7 +1730,6 @@ static void report_debugger_type()
 }
 
 #if defined(IF_XM)
-
 void dddSetDebuggerCB (Widget w, XtPointer client_data, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
@@ -1907,9 +1747,7 @@ void dddSetDebuggerCB (Widget w, XtPointer client_data, XtPointer call_data)
     update_options();
     post_startup_warning(w);
 }
-
 #else
-
 void dddSetDebuggerCB (GUI::RadioButton *w, DebuggerType type)
 {
     if (!w->get_active())
@@ -1922,11 +1760,9 @@ void dddSetDebuggerCB (GUI::RadioButton *w, DebuggerType type)
     update_options(true);
     post_startup_warning(w);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void dddToggleAutoDebuggerCB(Widget w, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
@@ -1939,9 +1775,7 @@ void dddToggleAutoDebuggerCB(Widget w, XtPointer, XtPointer call_data)
     update_options();
     post_startup_warning(w);
 }
-
 #else
-
 void dddToggleAutoDebuggerCB(GUI::CheckButton *w)
 {
     app_data.auto_debugger = w->get_active();
@@ -1951,11 +1785,9 @@ void dddToggleAutoDebuggerCB(GUI::CheckButton *w)
     update_options(true);
     post_startup_warning(w);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void dddSetCutCopyPasteBindingsCB (Widget, XtPointer client_data, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
@@ -1981,9 +1813,7 @@ void dddSetCutCopyPasteBindingsCB (Widget, XtPointer client_data, XtPointer call
 
     update_options();
 }
-
 #else
-
 void dddSetCutCopyPasteBindingsCB (GUI::RadioButton *w, BindingStyle style)
 {
     if (!w->get_active())
@@ -2004,11 +1834,9 @@ void dddSetCutCopyPasteBindingsCB (GUI::RadioButton *w, BindingStyle style)
 
     update_options(true);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void dddSetSelectAllBindingsCB (Widget, XtPointer client_data, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
@@ -2034,9 +1862,7 @@ void dddSetSelectAllBindingsCB (Widget, XtPointer client_data, XtPointer call_da
 
     update_options();
 }
-
 #else
-
 void dddSetSelectAllBindingsCB (GUI::RadioButton *w, BindingStyle style)
 {
     if (!w->get_active())
@@ -2057,11 +1883,9 @@ void dddSetSelectAllBindingsCB (GUI::RadioButton *w, BindingStyle style)
 
     update_options(true);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void dddSetUndoBufferSizeCB(Widget w, XtPointer, XtPointer)
 {
     String s = XmTextFieldGetString(w);
@@ -2078,9 +1902,7 @@ void dddSetUndoBufferSizeCB(Widget w, XtPointer, XtPointer)
 
     update_reset_preferences();
 }
-
 #else
-
 void dddSetUndoBufferSizeCB(GUI::Entry *w)
 {
     string value = string(w->get_text().c_str());
@@ -2096,29 +1918,23 @@ void dddSetUndoBufferSizeCB(GUI::Entry *w)
 
     update_reset_preferences();
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void dddClearUndoBufferCB(Widget, XtPointer, XtPointer)
 {
     StatusDelay delay("Clearing undo buffer");
     undo_buffer.clear();
 }
-
 #else
-
 void dddClearUndoBufferCB(void)
 {
     StatusDelay delay("Clearing undo buffer");
     undo_buffer.clear();
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void toggle_button_appearance(Widget w, Boolean& data, 
 				     XtPointer call_data)
 {
@@ -2148,9 +1964,7 @@ static void toggle_button_appearance(Widget w, Boolean& data,
     update_options();
     post_startup_warning(w);
 }
-
 #else
-
 static void toggle_button_appearance(GUI::CheckButton *w, Boolean& data)
 {
     data = w->get_active();
@@ -2176,43 +1990,33 @@ static void toggle_button_appearance(GUI::CheckButton *w, Boolean& data)
     update_options(true);
     post_startup_warning(w);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void dddToggleButtonCaptionsCB(Widget w, XtPointer, XtPointer call_data)
 {
     toggle_button_appearance(w, app_data.button_captions, call_data);
 }
-
 #else
-
 void dddToggleButtonCaptionsCB(GUI::CheckButton *w)
 {
     toggle_button_appearance(w, app_data.button_captions);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void dddToggleButtonImagesCB(Widget w, XtPointer, XtPointer call_data)
 {
     toggle_button_appearance(w, app_data.button_images, call_data);
 }
-
 #else
-
 void dddToggleButtonImagesCB(GUI::CheckButton *w)
 {
     toggle_button_appearance(w, app_data.button_images);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void dddToggleFlatButtonsCB(Widget w, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
@@ -2230,9 +2034,7 @@ void dddToggleFlatButtonsCB(Widget w, XtPointer, XtPointer call_data)
     update_options();
     post_startup_warning(w);
 }
-
 #else
-
 void dddToggleFlatButtonsCB(GUI::CheckButton *w)
 {
     bool data = w->get_active();
@@ -2248,11 +2050,9 @@ void dddToggleFlatButtonsCB(GUI::CheckButton *w)
     update_options(true);
     post_startup_warning(w);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void dddToggleColorButtonsCB(Widget w, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
@@ -2297,9 +2097,7 @@ void dddToggleColorButtonsCB(Widget w, XtPointer, XtPointer call_data)
     update_options();
     post_startup_warning(w);
 }
-
 #else
-
 void dddToggleColorButtonsCB(GUI::CheckButton *w)
 {
     int data = w->get_active();
@@ -2322,11 +2120,9 @@ void dddToggleColorButtonsCB(GUI::CheckButton *w)
     update_options(true);
     post_startup_warning(w);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void dddToggleToolbarsAtBottomCB(Widget w, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
@@ -2342,9 +2138,7 @@ void dddToggleToolbarsAtBottomCB(Widget w, XtPointer, XtPointer call_data)
     update_options();
     post_startup_warning(w);
 }
-
 #else
-
 void dddToggleToolbarsAtBottomCB(GUI::CheckButton *w)
 {
     app_data.toolbars_at_bottom = w->get_active();
@@ -2357,7 +2151,6 @@ void dddToggleToolbarsAtBottomCB(GUI::CheckButton *w)
     update_options(true);
     post_startup_warning(w);
 }
-
 #endif
 
 // ---------------------------------------------------------------------------
@@ -2365,7 +2158,6 @@ void dddToggleToolbarsAtBottomCB(GUI::CheckButton *w)
 // ---------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 void dddSetEditCommandCB(Widget w, XtPointer, XtPointer)
 {
     String s = XmTextFieldGetString(w);
@@ -2401,9 +2193,7 @@ void dddSetGetCoreCommandCB(Widget w, XtPointer, XtPointer)
     // set_status("Get Core command is " + quote(command));
     update_reset_preferences();
 }
-
 #else
-
 void dddSetEditCommandCB(GUI::Entry *w)
 {
     static string command;
@@ -2433,11 +2223,9 @@ void dddSetGetCoreCommandCB(GUI::Entry *w)
     // set_status("Get Core command is " + quote(command));
     update_reset_preferences();
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void dddSetPSCommandCB(Widget w, XtPointer, XtPointer)
 {
     String s = XmTextFieldGetString(w);
@@ -2485,9 +2273,7 @@ void dddSetWWWCommandCB(Widget w, XtPointer, XtPointer)
     // set_status("Web Browser is " + quote(command));
     update_reset_preferences();
 }
-
 #else
-
 void dddSetPSCommandCB(GUI::Entry *w)
 {
     static string command;
@@ -2527,7 +2313,6 @@ void dddSetWWWCommandCB(GUI::Entry *w)
     // set_status("Web Browser is " + quote(command));
     update_reset_preferences();
 }
-
 #endif
 
 
@@ -2950,23 +2735,18 @@ static bool options_file_has_changed(ChangeMode mode, bool reset)
 }
 
 #if defined(IF_XM)
-
 inline const _XtString str(const _XtString s)
 {
     return s != 0 ? s : "";
 }
-
 #else
-
 inline const char *str(const char *s)
 {
     return s != 0 ? s : "";
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static Boolean done_if_idle(XtPointer data)
 {
     if (emptyCommandQueue() && can_do_gdb_command())
@@ -2980,9 +2760,7 @@ static Boolean done_if_idle(XtPointer data)
 
     return False;		// Get called again
 }
-
 #else
-
 static bool done_if_idle(Delay *data)
 {
     if (emptyCommandQueue() && can_do_gdb_command())
@@ -2996,7 +2774,6 @@ static bool done_if_idle(Delay *data)
 
     return true;		// Get called again
 }
-
 #endif
 
 static void done(const string&, void *data)
@@ -3121,7 +2898,6 @@ static void reload_options()
 }
 
 #if defined(IF_XM)
-
 static void ReloadOptionsCB(Widget, XtPointer, XtPointer)
 {
     reload_options();
@@ -3132,9 +2908,7 @@ static void DontReloadOptionsCB(Widget, XtPointer, XtPointer)
     // Acknowledge change
     options_file_has_changed(ACKNOWLEDGE, true);
 }
-
 #else
-
 static void ReloadOptionsCB(void)
 {
     reload_options();
@@ -3145,7 +2919,6 @@ static void DontReloadOptionsCB(void)
     // Acknowledge change
     options_file_has_changed(ACKNOWLEDGE, true);
 }
-
 #endif
 
 #if defined(IF_XM)
@@ -3159,7 +2932,6 @@ static sigc::connection check_options_timer;
 #endif
 
 #if defined(IF_XM)
-
 static void CheckOptionsFileCB(XtPointer, XtIntervalId *)
 {
     check_options_timer = 0;
@@ -3194,9 +2966,7 @@ static void CheckOptionsFileCB(XtPointer, XtIntervalId *)
 			    CheckOptionsFileCB, NULL);
     }
 }
-
 #else
-
 static bool CheckOptionsFileCB(void)
 {
     if (options_file_has_changed(ACKNOWLEDGE))
@@ -3232,7 +3002,6 @@ static bool CheckOptionsFileCB(void)
 	return true;
     }
 }
-
 #endif
 
 void check_options_file()
@@ -3263,7 +3032,6 @@ void check_options_file()
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 static bool is_fallback_value(const string& resource, string val)
 {
     static XrmDatabase default_db = app_defaults(XtDisplay(find_shell()));
@@ -3513,9 +3281,7 @@ static string widget_geometry(Widget w, bool include_size = false)
     return string_app_value(string(XtName(w)) + ".geometry", geo.chars(), 
 			    check_default);
 }
-
 #else
-
 static void
 set_xml_prop(xmlNodePtr tree, const char *name, const char *value, bool is_default=false)
 {
@@ -3667,7 +3433,6 @@ static void set_xml_widget_geometry(xmlNode *tree, const char *name, Widget w,
     xmlSetProp(subtree, (const xmlChar *)"name", (const xmlChar *)name);
     set_xml_prop(subtree, "geometry", geo.chars(), check_default);
 }
-
 #endif
 
 bool saving_options_kills_program(unsigned long flags)
@@ -3829,7 +3594,6 @@ bool get_restart_commands(string& restart, unsigned long flags)
 }
 
 #if defined(IF_XM)
-
 bool save_options(unsigned long flags)
 {
     std::cerr << "Running save_options...\n";
@@ -4417,9 +4181,7 @@ bool save_options(unsigned long flags)
 
     return ok;
 }
-
 #else
-
 // The main structural difference between this and the Motif version
 // is that the options are distinguished by Name only, the Class is
 // ignored.
@@ -4814,7 +4576,6 @@ bool save_options(unsigned long flags)
 
     return ok;
 }
-
 #endif
 
 // ---------------------------------------------------------------------------
@@ -4822,24 +4583,19 @@ bool save_options(unsigned long flags)
 // ---------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 static void DoSaveOptionsCB(Widget, XtPointer client_data, XtPointer)
 {
     unsigned long flags = (unsigned long)client_data;
     save_options(flags);
 }
-
 #else
-
 static void DoSaveOptionsCB(unsigned long flags)
 {
     save_options(flags);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Save options
 void DDDSaveOptionsCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
@@ -4908,9 +4664,7 @@ void DDDSaveOptionsCB(Widget w, XtPointer client_data, XtPointer call_data)
 	DoSaveOptionsCB(w, client_data, call_data);
     }
 }
-
 #else
-
 // Save options
 void DDDSaveOptionsCB(GUI::Widget *w, unsigned long flags)
 {

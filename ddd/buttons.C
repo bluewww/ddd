@@ -1832,7 +1832,7 @@ void set_buttons(GUI::Box *buttons, const char *_button_list, bool manage)
     refresh_buttons();
 
     // Install tips
-    InstallButtonTips1(buttons);
+    InstallButtonTips(buttons);
 
     // Update `define' panel
     UpdateDefinePanelCB();

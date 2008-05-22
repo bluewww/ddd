@@ -146,7 +146,7 @@ extern void HelpOnHelpCB(GUI::Widget *widget);
 
 // Call help for associated widget.
 // May be used as help callback for any primitive widget.
-extern void ImmediateHelpCB1(GUI::Widget *);
+extern void ImmediateHelpCB(GUI::Widget *);
 
 // Call help for widget given in "Widget w = (Widget)client_data".
 extern void HelpOnThisCB(GUI::Widget *widget, GUI::Event *event);
@@ -166,31 +166,41 @@ extern void TextHelpCB(GUI::Widget *widget, const char *s);
 #endif
 
 #if defined(IF_XM)
+
 // Call help with a built-in formatted manual page "String s =
 // (String)client_data".
 extern void ManualStringHelpCB(Widget widget, XtPointer client_data, 
 			       XtPointer call_data);
 extern void ManualStringHelpCB(Widget widget, const MString& title,
 			       const string& text);
+
 #else
+
 // Call help with a built-in formatted manual page "String s =
 // (String)client_data".
 extern void ManualStringHelpCB(GUI::Widget *widget, char *s);
 extern void ManualStringHelpCB(GUI::Widget *widget, const MString& title,
 			       const string& text);
+
 #endif
+
+#if defined(IF_XM)
 
 // (Un)install button tips on W.
 extern void InstallButtonTips(Widget w, bool install = true);
 
-#if !defined(IF_XM)
-
-extern void InstallButtonTips1(GUI::Widget *w, bool install = true);
-
-#endif
-
 // (Un)install text tips on W.
 extern void InstallTextTips(Widget w, bool install = true);
+
+#else
+
+// (Un)install button tips on W.
+extern void InstallButtonTips(GUI::Widget *w, bool install = true);
+
+// (Un)install text tips on W.
+extern void InstallTextTips(GUI::Widget *w, bool install = true);
+
+#endif
 
 // Enable or disable all installed button tips.
 extern void EnableButtonTips(bool enable = true);

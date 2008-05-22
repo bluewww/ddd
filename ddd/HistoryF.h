@@ -29,22 +29,29 @@
 #ifndef _DDD_HistoryFilter_h
 #define _DDD_HistoryFilter_h
 
+#if defined(HAVE_CONFIG_H)
+#include "config.h"
+#endif
+
 #include "bool.h"
 #include "strclass.h"
 #include "Assoc.h"
 
-#ifdef IF_MOTIF
-
+#if defined(IF_XM)
 #include <X11/Intrinsic.h>
-
-#endif // IF_MOTIF
-
+#else
 #include "gtk_wrapper.h"
+#endif
 
 typedef string (*HistoryFilter)(const string& entry);
 
+#if defined(IF_XM)
 typedef Assoc<Widget, HistoryFilter> WidgetHistoryFilterAssoc;
 typedef AssocIter<Widget, HistoryFilter> WidgetHistoryFilterAssocIter;
+#else
+typedef Assoc<GUI::Widget *, HistoryFilter> WidgetHistoryFilterAssoc;
+typedef AssocIter<GUI::Widget *, HistoryFilter> WidgetHistoryFilterAssocIter;
+#endif
 
 #endif // _DDD_HistoryFilter_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

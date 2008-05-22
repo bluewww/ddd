@@ -80,9 +80,11 @@ BreakPoint::BreakPoint(string& info_output, const string& arg,
       myfile_changed(true),
       myposition_changed(true),
       myaddress_changed(true),
-      myselected(false),
+#if defined(IF_XM)
       mysource_glyph(0),
-      mycode_glyph(0)
+      mycode_glyph(0),
+#endif
+      myselected(false)
 {
     if (gdb->has_numbered_breakpoints())
     {

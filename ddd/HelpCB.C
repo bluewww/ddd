@@ -61,7 +61,6 @@ char HelpCB_rcsid[] =
 #include <ctype.h>
 
 #if defined(IF_XM)
-
 #include <Xm/Xm.h>
 #include <Xm/CascadeB.h>
 #include <Xm/MainW.h>
@@ -82,12 +81,9 @@ char HelpCB_rcsid[] =
 #include <X11/StringDefs.h>
 #include <X11/IntrinsicP.h>	// LessTif hacks
 #include <X11/Shell.h>
-
 #else
-
 #include <GUI/Bipolar.h>
 #include <GUI/Dialog.h>
-
 #endif
 
 
@@ -120,7 +116,6 @@ char HelpCB_rcsid[] =
 // helpShowTitle       - if set, include widget name in context-sensitive help
 
 #if defined(IF_XM)
-
 struct help_resource_values {
     XmString helpString;
     Boolean showTitle;
@@ -214,7 +209,6 @@ static XtResource doc_subresources[] = {
 //-----------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 static Widget help_dialog = 0;
 static Widget help_shell  = 0;
 
@@ -227,9 +221,7 @@ static void _MStringHelpCB(Widget widget,
 			   bool help_on_help = false);
 
 MString helpOnVersionExtraText;
-
 #else
-
 static GUI::Dialog *help_dialog = 0;
 static GUI::Widget *help_shell  = 0;
 
@@ -241,7 +233,6 @@ static void _MStringHelpCB(GUI::Widget *widget,
 			   bool help_on_help = false);
 
 GUI::String helpOnVersionExtraText("");
-
 #endif
 
 
@@ -257,7 +248,6 @@ static bool isNone(const MString& s)
 }
 
 #if defined(IF_XM)
-
 static MString get_help_string(Widget widget)
 {
     // Get text
@@ -278,19 +268,15 @@ static MString get_help_string(Widget widget)
 
     return text;
 }
-
 #else
-
 static GUI::String get_help_string(GUI::Widget *widget)
 {
     // Get text
     return GUI::String("No help for ") + widget->get_name();
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static MString get_help_on_version_string(Widget widget)
 {
     // Get text
@@ -310,19 +296,15 @@ static MString get_help_on_version_string(Widget widget)
 
     return text;
 }
-
 #else
-
 static GUI::String get_help_on_version_string(GUI::Widget *widget)
 {
     // Get text
     return GUI::String("No help on version for ") + widget->get_name();
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static MString _get_tip_string(Widget widget, XEvent *event)
 {
     if (XmIsText(widget))
@@ -351,18 +333,14 @@ static MString _get_tip_string(Widget widget, XEvent *event)
 
     return text;
 }
-
 #else
-
 static GUI::String _get_tip_string(GUI::Widget *widget, GUI::Event *event)
 {
     return GUI::String("No tip for ") + widget->get_name();
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static MString prepend_label_name(Widget widget, XEvent *event, 
 				  MString (*get_string)(Widget, XEvent *))
 {
@@ -388,9 +366,7 @@ static MString prepend_label_name(Widget widget, XEvent *event,
 
     return text;
 }
-
 #else
-
 static GUI::String prepend_label_name(GUI::Widget *widget, GUI::Event *event, 
 				      GUI::String (*get_string)(GUI::Widget *, GUI::Event *))
 {
@@ -398,27 +374,21 @@ static GUI::String prepend_label_name(GUI::Widget *widget, GUI::Event *event,
 
     return text;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 inline MString get_tip_string(Widget widget, XEvent *event)
 {
     return prepend_label_name(widget, event, _get_tip_string);
 }
-
 #else
-
 inline GUI::String get_tip_string(GUI::Widget *widget, GUI::Event *event)
 {
     return prepend_label_name(widget, event, _get_tip_string);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static MString _get_documentation_string(Widget widget, XEvent *event)
 {
     if (XmIsText(widget))
@@ -450,9 +420,7 @@ static MString _get_documentation_string(Widget widget, XEvent *event)
 
     return text;
 }
-
 #else
-
 static GUI::String _get_documentation_string(GUI::Widget *widget, GUI::Event *event)
 {
     if (dynamic_cast<GUI::ScrolledText *>(widget))
@@ -467,27 +435,21 @@ static GUI::String _get_documentation_string(GUI::Widget *widget, GUI::Event *ev
     GUI::String text = GUI::String("No documentation for ") + widget->get_name();
     return text;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 inline MString get_documentation_string(Widget widget, XEvent *event)
 {
     return prepend_label_name(widget, event, _get_documentation_string);
 }
-
 #else
-
 inline GUI::String get_documentation_string(GUI::Widget *widget, GUI::Event *event)
 {
     return prepend_label_name(widget, event, _get_documentation_string);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static bool call_tracking_help(XtPointer call_data, bool key_only = false)
 {
     XmAnyCallbackStruct *cbs = (XmAnyCallbackStruct *)call_data;
@@ -506,9 +468,7 @@ static bool call_tracking_help(XtPointer call_data, bool key_only = false)
 
     return true;
 }
-
 #else
-
 static bool call_tracking_help(GUI::Event *event, bool key_only = false)
 {
     if (!event)
@@ -522,7 +482,6 @@ static bool call_tracking_help(GUI::Event *event, bool key_only = false)
 
     return true;
 }
-
 #endif
 
 #if defined(IF_XM)
@@ -538,7 +497,6 @@ void (*PostHelpOnItemHook)(GUI::Widget *) = nop1;
 //-----------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 void HelpOnHelpCB(Widget widget, XtPointer client_data, XtPointer call_data)
 {
     if (help_dialog == 0)
@@ -553,18 +511,14 @@ void HelpOnHelpCB(Widget widget, XtPointer client_data, XtPointer call_data)
 
     PostHelpOnItemHook(help_dialog);
 }
-
 #else
-
 void HelpOnHelpCB(GUI::Widget *widget)
 {
     std::cerr << "HelpOnHelpCB not implemented\n";
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void ImmediateHelpCB(Widget widget, XtPointer client_data, XtPointer call_data)
 {
     if (widget == 0)
@@ -583,25 +537,14 @@ void ImmediateHelpCB(Widget widget, XtPointer client_data, XtPointer call_data)
     MStringHelpCB(widget, XtPointer(text.xmstring()), call_data);
     PostHelpOnItemHook(widget);
 }
-
 #else
-
-extern void ImmediateHelpCB1(GUI::Widget *w)
+extern void ImmediateHelpCB(GUI::Widget *w)
 {
-#if defined(IF_XMMM)
-    ImmediateHelpCB(w->internal(), XtPointer(0), XtPointer(0));
-#else
-#ifdef NAG_ME
-#warning Implement ImmediateHelpCB1
-#endif
-    std::cerr << "ImmediateHelpCB1 not implemented\n";
-#endif
+    std::cerr << "ImmediateHelpCB not implemented\n";
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void HelpOnThisCB(Widget widget, XtPointer client_data, XtPointer call_data)
 {
     if (widget == 0)
@@ -622,9 +565,7 @@ void HelpOnThisCB(Widget widget, XtPointer client_data, XtPointer call_data)
     MStringHelpCB(widget, XtPointer(text.xmstring()), call_data);
     PostHelpOnItemHook(w);
 }
-
 #else
-
 void HelpOnThisCB(GUI::Widget *widget, GUI::Event *event)
 {
     if (call_tracking_help(event))
@@ -640,11 +581,9 @@ void HelpOnThisCB(GUI::Widget *widget, GUI::Event *event)
     MStringHelpCB(widget, text);
     PostHelpOnItemHook(widget);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void HelpOnWindowCB(Widget widget, XtPointer client_data, XtPointer call_data)
 {
     if (call_tracking_help(call_data))
@@ -662,9 +601,7 @@ void HelpOnWindowCB(Widget widget, XtPointer client_data, XtPointer call_data)
     MStringHelpCB(widget, XtPointer(text.xmstring()), call_data);
     PostHelpOnItemHook(shell);
 }
-
 #else
-
 void HelpOnWindowCB(GUI::Widget *widget, GUI::Event *event)
 {
     if (call_tracking_help(event))
@@ -682,11 +619,9 @@ void HelpOnWindowCB(GUI::Widget *widget, GUI::Event *event)
     MStringHelpCB(widget, text);
     PostHelpOnItemHook(shell);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void HelpOnVersionCB(Widget widget, XtPointer client_data, XtPointer call_data)
 {
     if (call_tracking_help(call_data))
@@ -707,9 +642,7 @@ void HelpOnVersionCB(Widget widget, XtPointer client_data, XtPointer call_data)
 
     // PostHelpOnItemHook(shell);
 }
-
 #else
-
 void HelpOnVersionCB(GUI::Widget *widget, GUI::Event *event)
 {
     if (call_tracking_help(event))
@@ -730,11 +663,9 @@ void HelpOnVersionCB(GUI::Widget *widget, GUI::Event *event)
 
     // PostHelpOnItemHook(shell);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void HelpDestroyCB(Widget, XtPointer client_data, XtPointer)
 {
     Widget old_dialog = Widget(client_data);
@@ -744,9 +675,7 @@ static void HelpDestroyCB(Widget, XtPointer client_data, XtPointer)
 	help_shell  = 0;
     }
 }
-
 #else
-
 static bool HelpDestroyCB(GUI::Widget *old_dialog)
 {
     if (old_dialog == help_dialog)
@@ -756,11 +685,9 @@ static bool HelpDestroyCB(GUI::Widget *old_dialog)
     }
     return false;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Default help, tip, and documentation strings
 static MString NoHelpText(Widget widget)
 {
@@ -780,9 +707,7 @@ static MString NoDocumentationText(Widget, XEvent *)
 {
     return MString(0, true);	// Empty string
 }
-
 #else
-
 // Default help, tip, and documentation strings
 static GUI::String NoHelpText(GUI::Widget *widget)
 {
@@ -802,46 +727,36 @@ static GUI::String NoDocumentationText(GUI::Widget *, GUI::Event *)
 {
     return GUI::String("");	// Empty string
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static XmTextPosition NoTextPosOfEvent(Widget, XEvent *)
 {
     return XmTextPosition(-1);
 }
-
 #else
-
 static long NoTextPosOfEvent(GUI::ScrolledText *, GUI::Event *)
 {
     return -1;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 MString (*DefaultHelpText)(Widget)                    = NoHelpText;
 MString (*DefaultTipText)(Widget, XEvent *)           = NoTipText;
 MString (*DefaultDocumentationText)(Widget, XEvent *) = NoDocumentationText;
 XmTextPosition (*TextPosOfEvent)(Widget, XEvent *)    = NoTextPosOfEvent;
-
 #else
-
 GUI::String (*DefaultHelpText)(GUI::Widget *)                    = NoHelpText;
 GUI::String (*DefaultTipText)(GUI::Widget *, GUI::Event *)           = NoTipText;
 GUI::String (*DefaultDocumentationText)(GUI::Widget *, GUI::Event *) = NoDocumentationText;
 long (*TextPosOfEvent)(GUI::ScrolledText *, GUI::Event *)    = NoTextPosOfEvent;
-
 #endif
 
 
 void (*DisplayDocumentation)(const MString&) = 0;
 
 #if defined(IF_XM)
-
 void StringHelpCB(Widget widget, XtPointer client_data, XtPointer call_data)
 {
     MString text = (String)client_data;
@@ -908,9 +823,7 @@ static void _MStringHelpCB(Widget widget,
     // Popup help_dialog
     manage_and_raise(help_dialog);
 }
-
 #else
-
 void StringHelpCB(GUI::Widget *widget, const char *s)
 {
     GUI::String text(s);
@@ -964,11 +877,9 @@ static void _MStringHelpCB(GUI::Widget *widget,
     // Popup help_dialog
     manage_and_raise(help_dialog);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void HelpIndexCB(Widget widget, XtPointer client_data, 
 			XtPointer call_data)
 {
@@ -990,18 +901,14 @@ static void HelpIndexCB(Widget widget, XtPointer client_data,
     XmTextSetTopCharacter(help_man, pos);
     XmTextShowPosition(help_man, pos);
 }
-
 #else
-
 static void HelpIndexCB(const GUI::String &contents)
 {
     std::cerr << "HelpIndexCB called (" << contents.c_str() << ")\n";
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Activate the button given in CLIENT_DATA
 static void ActivateCB(Widget, XtPointer client_data, 
 		       XtPointer call_data)
@@ -1011,37 +918,29 @@ static void ActivateCB(Widget, XtPointer client_data,
     Widget button = Widget(client_data);
     XtCallActionProc(button, "ArmAndActivate", cbs->event, (String *)0, 0);
 }
-
 #else
-
 // Activate the button given in CLIENT_DATA
 static void ActivateCB(GUI::Button *b)
 {
     b->activate();
 }
-
 #endif
 
 #if defined(IF_XM)
-
 struct FindInfo {
     Widget key;			// The text field holding the search key 
     Widget text;		// The text to be searched
 };
-
 #else
-
 struct FindInfo {
     GUI::Widget *key;		// The text field holding the search key 
     GUI::Widget *text;		// The text to be searched
 };
-
 #endif
 
 static bool lock_update_arg = false;
 
 #if defined(IF_XM)
-
 static void FindCB(Widget w, XtPointer client_data, XtPointer call_data,
 		   bool forward)
 {
@@ -1123,18 +1022,14 @@ static void FindCB(Widget w, XtPointer client_data, XtPointer call_data,
 	lock_update_arg = false;
     }
 }
-
 #else
-
 static void FindCB(FindInfo *fi, bool forward)
 {
     std::cerr << "FindCB\n";
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Find the next occurrence of the string contained in the widget 
 // given in CLIENT_DATA
 static void FindForwardCB(Widget w, XtPointer client_data, XtPointer call_data)
@@ -1149,9 +1044,7 @@ static void FindBackwardCB(Widget w, XtPointer client_data,
 {
     FindCB(w, client_data, call_data, false);
 }
-
 #else
-
 // Find the next occurrence of the string contained in the widget 
 // given in CLIENT_DATA
 static void FindForwardCB(FindInfo *fi)
@@ -1165,11 +1058,9 @@ static void FindBackwardCB(FindInfo *fi)
 {
     FindCB(fi, false);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Highlight current section after cursor motion
 static void HighlightSectionCB(Widget, XtPointer client_data, 
 			       XtPointer call_data)
@@ -1193,17 +1084,14 @@ static void HighlightSectionCB(Widget, XtPointer client_data,
 }
 
 #else
-
 // Highlight current section after cursor motion
 static void HighlightSectionCB(GUI::ScrolledText *text, GUI::ListView *list)
 {
     std::cerr << "HighlightSectionCB.\n";
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void SetSelectionCB(Widget w, XtPointer client_data, 
 			   XtPointer call_data)
 {
@@ -1246,14 +1134,11 @@ static void SetSelectionCB(Widget w, XtPointer client_data,
 	arg_field->set_string(selection);
     }
 }
-
 #else
-
 static void SetSelectionCB(GUI::ScrolledText *text, GUI::ComboBoxEntryText *arg)
 {
     std::cerr << "SetSelectionCB.\n";
 }
-
 #endif
 
 // Return true iff TEXT contains a manual header line at pos
@@ -1272,7 +1157,6 @@ static bool has_header(char *text, unsigned pos)
 }
 
 #if defined(IF_XM)
-
 // Note: assumes `man' or `info' format.
 void ManualStringHelpCB(Widget widget, XtPointer client_data, 
 			XtPointer)
@@ -1282,39 +1166,31 @@ void ManualStringHelpCB(Widget widget, XtPointer client_data,
 
     ManualStringHelpCB(widget, null, text);
 }
-
 #else
-
 // Note: assumes `man' or `info' format.
 void ManualStringHelpCB(GUI::Widget *widget, char *s)
 {
     std::cerr << "ManualStringHelpCB: not implemented\n";
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Close action from menu
 static void CloseCB(Widget w, XtPointer, XtPointer)
 {
     Widget shell = findTopLevelShellParent(w);
     DestroyWhenIdle(shell);
 }
-
 #else
-
 // Close action from menu
 static void CloseCB(GUI::Widget *w)
 {
     GUI::Shell *shell = findTopLevelShellParent1(w);
     DestroyWhenIdle(shell);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Create an empty dialog within a top-level-shell
 // FIXME: This should be part of core DDD!
 static Widget create_text_dialog(Widget parent, const _XtString name, 
@@ -1366,9 +1242,7 @@ static Widget create_text_dialog(Widget parent, const _XtString name,
 
     return w;
 }
-
 #else
-
 // Create an empty dialog within a top-level-shell
 // FIXME: This should be part of core DDD!
 static GUI::Dialog *create_text_dialog(GUI::Widget *parent, const char *name, 
@@ -1406,7 +1280,7 @@ static GUI::Dialog *create_text_dialog(GUI::Widget *parent, const char *name,
     menubar[1].items = 0;
 
     MMaddCallbacks(menubar);
-    MMaddHelpCallback(menubar, sigc::ptr_fun(ImmediateHelpCB1));
+    MMaddHelpCallback(menubar, sigc::ptr_fun(ImmediateHelpCB));
 
     menubar[1].items = simple_edit_menu;
 
@@ -1415,23 +1289,19 @@ static GUI::Dialog *create_text_dialog(GUI::Widget *parent, const char *name,
 
     return shell;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void DeleteFindInfoCB(Widget, XtPointer client_data, XtPointer)
 {
     FindInfo *fi = (FindInfo *)client_data;
     delete fi;
 }
-
 #else
-
-#ifdef NAG_ME
-#warning DeleteFindInfoCB
-#endif
-
+static void DeleteFindInfoCB(GUI::Widget *)
+{
+    std::cerr << "DeleteFindInfoCB not implemented yet.\n";
+}
 #endif
 
 static int max_width(const char *text)
@@ -1463,7 +1333,6 @@ static int max_width(const char *text)
 
 
 #if defined(IF_XM)
-
 static void ToggleIndexCB(Widget w, XtPointer client_data, XtPointer)
 {
     Widget child = Widget(client_data);
@@ -1473,9 +1342,7 @@ static void ToggleIndexCB(Widget w, XtPointer client_data, XtPointer)
     else
 	XtUnmanageChild(child);
 }
-
 #else
-
 static void ToggleIndexCB(GUI::Bipolar *w, GUI::Widget *child)
 {
     if (w->get_active())
@@ -1483,7 +1350,6 @@ static void ToggleIndexCB(GUI::Bipolar *w, GUI::Widget *child)
     else
 	unmanage_paned_child(child);
 }
-
 #endif
 
 // Return manual
@@ -1987,7 +1853,6 @@ void ManualStringHelpCB(GUI::Widget *widget, const MString& title,
 }
 
 #if defined(IF_XM)
-
 void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
 {
     // Delay delay;
@@ -2122,14 +1987,11 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
     XtPopup(XtParent(text_dialog), XtGrabNone);
     manage_and_raise(text_dialog);
 }
-
 #else
-
 void TextHelpCB(GUI::Widget *widget, const char *s)
 {
-    std::cerr << "TextHelpCB: Not implemented yet\n";
+    std::cerr << "TextHelpCB: Not implemented yet.\n";
 }
-
 #endif
 
 //-----------------------------------------------------------------------------
@@ -2137,7 +1999,6 @@ void TextHelpCB(GUI::Widget *widget, const char *s)
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 // Return the widget related to the mouse event EV
 static Widget EventToWidget(Widget widget, XEvent *ev)
 {
@@ -2235,26 +2096,20 @@ TrackingEvent(Widget widget, Cursor cursor,
 	}
     }
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Hook before help on context
 static void nop2(Widget, XtPointer, XtPointer) {}
 void (*PreHelpOnContextHook)(Widget w, XtPointer client_data, 
 			     XtPointer call_data) = nop2;
-
 #else
-
 // Hook before help on context
 static void nop2(GUI::Widget *, GUI::Event *) {}
 void (*PreHelpOnContextHook)(GUI::Widget *, GUI::Event *) = nop2;
-
 #endif
 
 #if defined(IF_XM)
-
 void HelpOnContextCB(Widget widget, XtPointer client_data, XtPointer call_data)
 {
     Widget item = 0;
@@ -2293,9 +2148,7 @@ void HelpOnContextCB(Widget widget, XtPointer client_data, XtPointer call_data)
     XtUngrabKeyboard(toplevel,
 		     XtLastTimestampProcessed(XtDisplay(widget)));
 }
-
 #else
-
 void HelpOnContextCB(GUI::Widget *widget, GUI::Event *event)
 {
     GUI::Widget *item = 0;
@@ -2313,16 +2166,14 @@ void HelpOnContextCB(GUI::Widget *widget, GUI::Event *event)
     std::cerr << "XmTrackingEvent?\n";
 
     if (item != 0)
-	ImmediateHelpCB1(item);
+	ImmediateHelpCB(item);
     else
-	ImmediateHelpCB1(toplevel);
+	ImmediateHelpCB(toplevel);
 
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Return the child widget (or gadget) EX/EY is in, starting with WIDGET.
 static Widget GetWidgetAt(Widget w, int ex, int ey)
 {
@@ -2380,9 +2231,9 @@ static Widget GetWidgetAt(XKeyEvent *e)
 {
     return GetWidgetAt(XtWindowToWidget(e->display, e->window), e->x, e->y);
 }
+#endif
 
 #if defined(IF_XM)
-
 void HelpOnItemCB(Widget widget, XtPointer client_data, XtPointer call_data)
 {
     Widget toplevel = findTheTopLevelShell(widget);
@@ -2403,30 +2254,28 @@ void HelpOnItemCB(Widget widget, XtPointer client_data, XtPointer call_data)
 
     ImmediateHelpCB(item, client_data, 0);
 }
-
 #else
-
 void HelpOnItemCB(GUI::Widget *widget, GUI::Event *event)
 {
-    Widget toplevel = findTheTopLevelShell(widget);
+    GUI::Widget *toplevel = findTheTopLevelShell1(widget);
 
-    if (call_tracking_help(call_data, true) || toplevel == 0)
+    if (call_tracking_help(event, true) || toplevel == 0)
     {
-	HelpOnContextCB(widget, client_data, call_data);
+	HelpOnContextCB(widget, event);
 	return;
     }
 
     Delay delay;		// Finding the widget may take time
 
-    XmAnyCallbackStruct *cbs = (XmAnyCallbackStruct *)call_data;
-
-    Widget item = GetWidgetAt(&cbs->event->xkey);
+    std::cerr << "HelpOnItemCB: Not complete.\n";
+#if 0
+    Widget item = GetWidgetAt(&event->key);
     if (item == 0)
 	item = toplevel;
 
     ImmediateHelpCB(item, client_data, 0);
+#endif
 }
-
 #endif
 
 //-----------------------------------------------------------------------------
@@ -2445,6 +2294,7 @@ static bool button_docs_enabled       = true;
 // True iff text docs are enabled.
 static bool text_docs_enabled         = true;
 
+#if defined(IF_XM)
 // The shell containing the tip label.
 static Widget tip_shell               = 0;
 
@@ -3138,8 +2988,9 @@ static void InstallButtonTipEvents(Widget w, bool install)
     // XmStringFree(doc_values.documentationString);
     // doc_values.documentationString = 0;
 }
+#endif
 
-
+#if defined(IF_XM)
 // (Un)install toolbar tips for W and all its descendants
 static void InstallButtonTipsNow(Widget w, bool install)
 {
@@ -3187,7 +3038,14 @@ static void InstallButtonTipsNow(Widget w, bool install)
 	    InstallButtonTipsNow(subMenuId, install);
     }
 }
+#else
+void InstallButtonTipsNow(GUI::Widget *w, bool install)
+{
+    std::cerr << "InstallButtonTipsNow not implemented yet.\n";
+}
+#endif
 
+#if defined(IF_XM)
 // Callback funtion: install tips now.
 static void InstallButtonTipsTimeOut(XtPointer client_data,
 				     XtIntervalId *timer)
@@ -3233,21 +3091,6 @@ void InstallButtonTips(Widget w, bool install)
 #endif
 }
 
-#if !defined(IF_XM)
-
-void InstallButtonTips1(GUI::Widget *w, bool install)
-{
-#if defined(IF_XMMM)
-    InstallButtonTips(w->internal(), install);
-#else
-    std::cerr << "Cannot install button tips for Gtk?\n";
-#endif
-}
-
-#endif
-
-
-#if defined(IF_XM)
 // Enable or disable button tips
 void EnableButtonTips(bool enable)
 {
@@ -3265,6 +3108,63 @@ void EnableButtonDocs(bool enable)
 //-----------------------------------------------------------------------------
 // Text tips.
 //-----------------------------------------------------------------------------
+
+#if defined(IF_XM)
+
+// (Un)install text tips for W.
+void InstallTextTips(Widget w, bool install)
+{
+    EventMask event_mask = EnterWindowMask | LeaveWindowMask 
+	| ButtonPress | ButtonRelease | PointerMotionMask
+	| KeyPress | KeyRelease;
+
+    if (install)
+    {
+	XtAddEventHandler(w, event_mask, False, 
+			  HandleTipEvent, XtPointer(0));
+
+    }
+    else
+    {
+	XtRemoveEventHandler(w, event_mask, False, 
+			     HandleTipEvent, XtPointer(0));
+    }
+}
+#endif
+
+#if defined(IF_XM)
+// (Un)install tips for W and all its descendants.
+// We do this as soon as we are back in the event loop, since we
+// assume all children have been created until then.
+void InstallButtonTips(Widget w, bool install)
+{
+    XtIntervalId timer;
+
+    if (install)
+	timer = XtAppAddTimeOut(XtWidgetToApplicationContext(w), 0,
+				InstallButtonTipsTimeOut, XtPointer(w));
+    else
+	timer = XtAppAddTimeOut(XtWidgetToApplicationContext(w), 0,
+				UnInstallButtonTipsTimeOut, XtPointer(w));
+
+    // Should W be destroyed beforehand, cancel installation.
+    XtAddCallback(w, XmNdestroyCallback, CancelTimer, XtPointer(timer));
+}
+#else
+// (Un)install tips for W and all its descendants.
+// We do this as soon as we are back in the event loop, since we
+// assume all children have been created until then.
+void InstallButtonTips(GUI::Widget *w, bool install)
+{
+    std::cerr << "InstallButtonTips not implemented yet\n.";
+}
+#endif
+
+//-----------------------------------------------------------------------------
+// Text tips.
+//-----------------------------------------------------------------------------
+
+#if defined(IF_XM)
 
 // (Un)install text tips for W.
 void InstallTextTips(Widget w, bool install)
@@ -3286,6 +3186,16 @@ void InstallTextTips(Widget w, bool install)
     }
 }
 
+#else
+
+// (Un)install text tips for W.
+void InstallTextTips(GUI::Widget *w, bool install)
+{
+    std::cerr << "InstallTextTips not implemented yet.\n";
+}
+
+#endif
+
 // Enable or disable text tips
 void EnableTextTips(bool enable)
 {
@@ -3297,4 +3207,3 @@ void EnableTextDocs(bool enable)
 {
     text_docs_enabled = enable;
 }
-#endif

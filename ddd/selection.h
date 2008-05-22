@@ -29,18 +29,19 @@
 #ifndef _DDD_selection_h
 #define _DDD_selection_h
 
-#ifdef IF_MOTIF
+#if defined(HAVE_CONFIG_H)
+#include "config.h"
+#endif
 
+#if defined(IF_XM)
 #include <Xm/Xm.h>
-
-#else // NOT IF_MOTIF
-
+#else
 #include "gtk_wrapper.h"
-
-#endif // IF_MOTIF
+#endif
 
 #include "strclass.h"
 
+#if defined(IF_XM)
 // Return the current clipboard selection
 extern string current_clipboard(Widget w);
 
@@ -52,6 +53,7 @@ extern string current_cut_buffer(Widget w);
 
 // Return the current selection: first primary, then cut buffer, then clipboard
 extern string current_selection(Widget w);
+#endif
 
 #endif // _DDD_selection_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

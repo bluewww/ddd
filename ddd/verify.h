@@ -29,18 +29,19 @@
 #ifndef _DDD_verify_h
 #define _DDD_verify_h
 
-#ifdef IF_MOTIF
+#if defined(HAVE_CONFIG_H)
+#include "config.h"
+#endif
 
+#if defined(IF_XM)
 #include <X11/Intrinsic.h>
-
-#else // NOT IF_MOTIF
-
+#else
 #include "gtk_wrapper.h"
-
-#endif // IF_MOTIF
+#endif
 
 extern void widget_creation_error();
 
+#if defined(IF_XM)
 // Some Motif versions return 0 if widget creation fails.
 // Rather than crashing, we prefer exiting with a diagnostic message.
 inline Widget verify(Widget w)
@@ -49,7 +50,7 @@ inline Widget verify(Widget w)
 	widget_creation_error();
     return w;
 }
-
+#endif
 
 
 #endif // _DDD_verify_h

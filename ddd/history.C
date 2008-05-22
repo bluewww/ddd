@@ -649,7 +649,11 @@ void goto_history(int pos)
 //-----------------------------------------------------------------------------
 
 // Update combo box containing TEXT
+#if defined(IF_XM)
 static void update_combo_box(Widget text, HistoryFilter filter)
+#else
+static void update_combo_box(GUI::Widget *text, HistoryFilter filter)
+#endif
 {
     StringArray entries;
 

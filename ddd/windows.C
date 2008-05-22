@@ -1665,9 +1665,9 @@ void gdbToggleCommandWindowCB(Widget w, XtPointer, XtPointer call_data)
 
 #else
 
-void gdbToggleCommandWindowCB(GUI::Widget *w)
+void gdbToggleCommandWindowCB(GUI::Bipolar *w)
 {
-    bool set = get_active(w->internal());
+    bool set = w->get_active();
     if (set)
 	gdbOpenCommandWindowCB();
     else
@@ -1691,9 +1691,9 @@ void gdbToggleSourceWindowCB(Widget w, XtPointer, XtPointer call_data)
 
 #else
 
-void gdbToggleSourceWindowCB(GUI::Widget *w)
+void gdbToggleSourceWindowCB(GUI::Bipolar *w)
 {
-    if (get_active(w->internal()))
+    if (w->get_active())
 	gdbOpenSourceWindowCB();
     else
 	gdbCloseSourceWindowCB(w);
@@ -1718,9 +1718,9 @@ void gdbToggleCodeWindowCB(Widget w, XtPointer, XtPointer call_data)
 
 #else
 
-void gdbToggleCodeWindowCB(GUI::Widget *w)
+void gdbToggleCodeWindowCB(GUI::Bipolar *w)
 {
-    if (get_active(w->internal()))
+    if (w->get_active())
 	gdbOpenCodeWindowCB();
     else
 	gdbCloseCodeWindowCB(w);
@@ -1745,9 +1745,9 @@ void gdbToggleDataWindowCB(Widget w, XtPointer, XtPointer call_data)
 
 #else
 
-void gdbToggleDataWindowCB(GUI::Widget *w)
+void gdbToggleDataWindowCB(GUI::Bipolar *w)
 {
-    if (get_active(w->internal()))
+    if (w->get_active())
 	gdbOpenDataWindowCB();
     else
 	gdbCloseDataWindowCB(w);
@@ -1770,9 +1770,9 @@ void gdbToggleExecWindowCB(Widget w, XtPointer, XtPointer call_data)
 
 #else
 
-void gdbToggleExecWindowCB(GUI::Widget *w)
+void gdbToggleExecWindowCB(GUI::Bipolar *w)
 {
-    if (get_active(w->internal()))
+    if (w->get_active())
 	gdbOpenExecWindowCB();
     else
 	gdbCloseExecWindowCB();
@@ -1795,9 +1795,9 @@ void gdbToggleToolWindowCB(Widget w, XtPointer, XtPointer call_data)
 
 #else
 
-void gdbToggleToolWindowCB(GUI::Widget *w)
+void gdbToggleToolWindowCB(GUI::Bipolar *w)
 {
-    if (get_active(w->internal()))
+    if (w->get_active())
 	gdbOpenToolWindowCB();
     else
 	gdbCloseToolWindowCB();
@@ -2605,6 +2605,7 @@ Glib::RefPtr<Gdk::Screen> XtScreen(Widget w)
     return w->get_screen();
 }
 
+#if 0
 bool
 get_active(Widget w)
 {
@@ -2618,5 +2619,6 @@ get_active(Widget w)
 	return mi->get_active();
     return false;
 }
+#endif
 
 #endif

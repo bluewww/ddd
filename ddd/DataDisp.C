@@ -3722,9 +3722,9 @@ void DataDisp::graph_popupAct (GUI::Widget *, GUI::Event* event, GUI::String *ar
 	MMaddCallbacks(node_popup,      p);
 	MMaddCallbacks(shortcut_popup1, p);
 
-	MMaddHelpCallback(graph_popup,     sigc::ptr_fun(ImmediateHelpCB1));
-	MMaddHelpCallback(node_popup,      sigc::ptr_fun(ImmediateHelpCB1));
-	MMaddHelpCallback(shortcut_popup1, sigc::ptr_fun(ImmediateHelpCB1));
+	MMaddHelpCallback(graph_popup,     sigc::ptr_fun(ImmediateHelpCB));
+	MMaddHelpCallback(node_popup,      sigc::ptr_fun(ImmediateHelpCB));
+	MMaddHelpCallback(shortcut_popup1, sigc::ptr_fun(ImmediateHelpCB));
     }
     *p = point1(event);
 
@@ -9827,15 +9827,15 @@ void DataDisp::create_shells()
     // Create menus
     graph_popup_w = 
 	MMcreatePopupMenu(*graph_edit, "graph_popup", graph_popup);
-    InstallButtonTips1(graph_popup_w);
+    InstallButtonTips(graph_popup_w);
 
     node_popup_w = 
 	MMcreatePopupMenu(*graph_edit, "node_popup", node_popup);
-    InstallButtonTips1(node_popup_w);
+    InstallButtonTips(node_popup_w);
 
     shortcut_popup_w = 
 	MMcreatePopupMenu(*graph_edit, "shortcut_popup", shortcut_popup1);
-    InstallButtonTips1(shortcut_popup_w);
+    InstallButtonTips(shortcut_popup_w);
 
     disp_graph->callHandlers();
 
@@ -9866,7 +9866,7 @@ void DataDisp::create_shells()
 					       "buttons", display_area);
 
     MMaddCallbacks (display_area);
-    MMaddHelpCallback(display_area, sigc::ptr_fun(ImmediateHelpCB1));
+    MMaddHelpCallback(display_area, sigc::ptr_fun(ImmediateHelpCB));
     register_menu_shell(display_area);
 
     // Add widget callbacks
