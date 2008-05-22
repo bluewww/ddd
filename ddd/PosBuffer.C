@@ -297,6 +297,8 @@ void PosBuffer::filter (string& answer)
     switch (already_read)
     {
     case PosComplete:
+	if (gdb->type() == GDB)
+	    filter_gdb(answer);		// Slurp in the source annotation
 	// Nothing more to filter - skip possible line number info
 	filter_line(answer);
 	break;
@@ -532,6 +534,7 @@ void PosBuffer::filter_gdb(string& answer)
     }
 	    
     // Look for regular source info
+    // (GDB's annotations are prefixed with "^Z^Z")
     int index1 = answer.index ("\032\032");
 	    
     if (index1 < 0) 
