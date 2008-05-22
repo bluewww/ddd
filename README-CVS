@@ -59,7 +59,8 @@ To checkout and build DDD from the public CVS archive, follow these steps:
    If `CVSMake' fails at some point, install the necessary package and
    simply run `CVSMake' again.
 
-   Note: running `CVSMake' takes some time.
+   Note: running `CVSMake' takes some time (over 1 minute on Andrew's
+   Pentium-M 1500).
 
 
 6. If all went well, you can now re-configure, build, and install DDD
