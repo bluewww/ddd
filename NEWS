@@ -9,7 +9,9 @@ DDD-3.3.12-test
   breakpoints), better word parsing, e.g ${foo[@]}
 - Fixed a couple of warnings.
 - DDD now starts up much faster, and exits more cleanly (1).
+- DDD now builds and runs on LynxOS (2).
 (1) Thanks to Doug Graham for his two patches.
+(2) Thanks to Olli Savia for his patch.
 
 DDD-3.3.11
 ==========
