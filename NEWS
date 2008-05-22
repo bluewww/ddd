@@ -8,6 +8,8 @@ DDD-3.3.12-test
 - Fixes to Bash debugger (remove stack movement crashes, show
   breakpoints), better word parsing, e.g ${foo[@]}
 - Fixed a couple of warnings.
+- DDD now starts up much faster, and exits more cleanly (1).
+(1) Thanks to Doug Graham for his two patches.
 
 DDD-3.3.11
 ==========
