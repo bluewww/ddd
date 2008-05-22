@@ -3067,71 +3067,6 @@ static void UnInstallButtonTipsTimeOut(XtPointer client_data,
 }
 #endif
 
-// (Un)install tips for W and all its descendants.
-// We do this as soon as we are back in the event loop, since we
-// assume all children have been created until then.
-void InstallButtonTips(Widget w, bool install)
-{
-#if defined(IF_XM)
-    XtIntervalId timer;
-
-    if (install)
-	timer = XtAppAddTimeOut(XtWidgetToApplicationContext(w), 0,
-				InstallButtonTipsTimeOut, XtPointer(w));
-    else
-	timer = XtAppAddTimeOut(XtWidgetToApplicationContext(w), 0,
-				UnInstallButtonTipsTimeOut, XtPointer(w));
-
-    // Should W be destroyed beforehand, cancel installation.
-    XtAddCallback(w, XmNdestroyCallback, CancelTimer, XtPointer(timer));
-#else
-#ifdef NAG_ME
-#warning No button tips
-#endif
-#endif
-}
-
-// Enable or disable button tips
-void EnableButtonTips(bool enable)
-{
-    button_tips_enabled = enable;
-}
-
-// Enable or disable button docs
-void EnableButtonDocs(bool enable)
-{
-    button_docs_enabled = enable;
-}
-
-
-
-//-----------------------------------------------------------------------------
-// Text tips.
-//-----------------------------------------------------------------------------
-
-#if defined(IF_XM)
-
-// (Un)install text tips for W.
-void InstallTextTips(Widget w, bool install)
-{
-    EventMask event_mask = EnterWindowMask | LeaveWindowMask 
-	| ButtonPress | ButtonRelease | PointerMotionMask
-	| KeyPress | KeyRelease;
-
-    if (install)
-    {
-	XtAddEventHandler(w, event_mask, False, 
-			  HandleTipEvent, XtPointer(0));
-
-    }
-    else
-    {
-	XtRemoveEventHandler(w, event_mask, False, 
-			     HandleTipEvent, XtPointer(0));
-    }
-}
-#endif
-
 #if defined(IF_XM)
 // (Un)install tips for W and all its descendants.
 // We do this as soon as we are back in the event loop, since we
@@ -3156,16 +3091,29 @@ void InstallButtonTips(Widget w, bool install)
 // assume all children have been created until then.
 void InstallButtonTips(GUI::Widget *w, bool install)
 {
-    std::cerr << "InstallButtonTips not implemented yet\n.";
+    std::cerr << "InstallButtonTips not implemented yet.\n";
 }
 #endif
+
+// Enable or disable button tips
+void EnableButtonTips(bool enable)
+{
+    button_tips_enabled = enable;
+}
+
+// Enable or disable button docs
+void EnableButtonDocs(bool enable)
+{
+    button_docs_enabled = enable;
+}
+
+
 
 //-----------------------------------------------------------------------------
 // Text tips.
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 // (Un)install text tips for W.
 void InstallTextTips(Widget w, bool install)
 {
@@ -3185,15 +3133,38 @@ void InstallTextTips(Widget w, bool install)
 			     HandleTipEvent, XtPointer(0));
     }
 }
+#endif
 
+//-----------------------------------------------------------------------------
+// Text tips.
+//-----------------------------------------------------------------------------
+
+#if defined(IF_XM)
+// (Un)install text tips for W.
+void InstallTextTips(Widget w, bool install)
+{
+    EventMask event_mask = EnterWindowMask | LeaveWindowMask 
+	| ButtonPress | ButtonRelease | PointerMotionMask
+	| KeyPress | KeyRelease;
+
+    if (install)
+    {
+	XtAddEventHandler(w, event_mask, False, 
+			  HandleTipEvent, XtPointer(0));
+
+    }
+    else
+    {
+	XtRemoveEventHandler(w, event_mask, False, 
+			     HandleTipEvent, XtPointer(0));
+    }
+}
 #else
-
 // (Un)install text tips for W.
 void InstallTextTips(GUI::Widget *w, bool install)
 {
     std::cerr << "InstallTextTips not implemented yet.\n";
 }
-
 #endif
 
 // Enable or disable text tips

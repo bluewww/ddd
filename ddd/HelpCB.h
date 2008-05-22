@@ -29,20 +29,16 @@
 #ifndef _DDD_HelpCB_h
 #define _DDD_HelpCB_h
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
 #if defined(IF_XM)
-
 #include <X11/Intrinsic.h>
 #include <Xm/Text.h>
-
 #else
-
 #include <GUI/Widget.h>
 #include <GUI/ScrolledText.h>
-
 #endif
 
 #include "gtk_wrapper.h"
@@ -73,7 +69,6 @@
 
 
 #if defined(IF_XM)
-
 // Select widget and call help on context.
 // May be used in a menu entry "Help On Context".
 extern void HelpOnContextCB(Widget widget, XtPointer client_data, 
@@ -121,9 +116,7 @@ extern void StringHelpCB(Widget widget, XtPointer client_data,
 // May be used for unchanged text display.
 extern void TextHelpCB(Widget widget, XtPointer client_data, 
 		       XtPointer call_data);
-
 #else
-
 // Select widget and call help on context.
 // May be used in a menu entry "Help On Context".
 extern void HelpOnContextCB(GUI::Widget *widget, GUI::Event *event);
@@ -162,44 +155,35 @@ extern void StringHelpCB(GUI::Widget *widget, const char *s);
 // Call help with "String s" as text.
 // May be used for unchanged text display.
 extern void TextHelpCB(GUI::Widget *widget, const char *s);
-
 #endif
 
 #if defined(IF_XM)
-
 // Call help with a built-in formatted manual page "String s =
 // (String)client_data".
 extern void ManualStringHelpCB(Widget widget, XtPointer client_data, 
 			       XtPointer call_data);
 extern void ManualStringHelpCB(Widget widget, const MString& title,
 			       const string& text);
-
 #else
-
 // Call help with a built-in formatted manual page "String s =
 // (String)client_data".
 extern void ManualStringHelpCB(GUI::Widget *widget, char *s);
 extern void ManualStringHelpCB(GUI::Widget *widget, const MString& title,
 			       const string& text);
-
 #endif
 
 #if defined(IF_XM)
-
 // (Un)install button tips on W.
 extern void InstallButtonTips(Widget w, bool install = true);
 
 // (Un)install text tips on W.
 extern void InstallTextTips(Widget w, bool install = true);
-
 #else
-
 // (Un)install button tips on W.
 extern void InstallButtonTips(GUI::Widget *w, bool install = true);
 
 // (Un)install text tips on W.
 extern void InstallTextTips(GUI::Widget *w, bool install = true);
-
 #endif
 
 // Enable or disable all installed button tips.
@@ -218,7 +202,6 @@ extern void EnableTextDocs(bool enable = true);
 // Data
 
 #if defined(IF_XM)
-
 // Create a help text if the `help' resource is empty
 extern MString (*DefaultHelpText)(Widget widget);
 
@@ -231,9 +214,7 @@ extern MString (*DefaultDocumentationText)(Widget widget, XEvent *event);
 
 // Return a text position associated with this event
 extern XmTextPosition (*TextPosOfEvent)(Widget widget, XEvent *event);
-
 #else
-
 // Create a help text if the `help' resource is empty
 extern GUI::String (*DefaultHelpText)(GUI::Widget *widget);
 
@@ -246,14 +227,12 @@ extern GUI::String (*DefaultDocumentationText)(GUI::Widget *widget, GUI::Event *
 
 // Return a text position associated with this event
 extern long (*TextPosOfEvent)(GUI::ScrolledText *widget, GUI::Event *event);
-
 #endif
 
 // Hook for displaying documentation
 extern void (*DisplayDocumentation)(const MString& doc);
 
 #if defined(IF_XM)
-
 // Hook before help on context
 extern void (*PreHelpOnContextHook)(Widget w, XtPointer client_data, 
 				    XtPointer call_data);
@@ -263,9 +242,7 @@ extern void (*PostHelpOnItemHook)(Widget item);
 
 // Additional text to display at ``help on version''
 extern MString helpOnVersionExtraText;
-
 #else
-
 // Hook before help on context
 extern void (*PreHelpOnContextHook)(GUI::Widget *, GUI::Event *);
 
@@ -274,7 +251,6 @@ extern void (*PostHelpOnItemHook)(GUI::Widget *item);
 
 // Additional text to display at ``help on version''
 extern GUI::String helpOnVersionExtraText;
-
 #endif
 
 // Delay times (in ms)

@@ -39,14 +39,10 @@
 #endif
 
 #if defined(IF_XM)
-
 #include <X11/Intrinsic.h>
-
 #else
-
 #include <GUI/Widget.h>
 #include <GUI/ComboBox.h>
-
 #endif
 
 
@@ -76,17 +72,13 @@ extern void save_history(const string& file, GUI::Widget *origin = 0);
 extern string last_command_from_history();
 
 #if defined(IF_XM)
-
 // History actions
 extern void prev_historyAct      (Widget, XEvent*, String*, Cardinal*);
 extern void next_historyAct      (Widget, XEvent*, String*, Cardinal*);
-
 #else
-
 // History actions
 extern void prev_historyAct      (GUI::Widget *, GUI::Event *, GUI::String *, unsigned int *);
 extern void next_historyAct      (GUI::Widget *, GUI::Event *, GUI::String *, unsigned int *);
-
 #endif
 
 // Search TEXT in history; return POS iff found, -1 if none

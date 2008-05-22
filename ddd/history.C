@@ -96,16 +96,12 @@ char history_rcsid[] =
 #include <fstream>
 
 #if defined(IF_XM)
-
 #include <Xm/Xm.h>
 #include <Xm/Text.h>
 #include <Xm/List.h>
 #include <Xm/SelectioB.h>
-
 #else
-
 #include <GUI/ListView.h>
-
 #endif
 
 #if WITH_READLINE
@@ -129,17 +125,13 @@ extern "C" void add_history(const char *line);
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 // History viewer
 static Widget gdb_history_w  = 0;
 static Widget gdb_commands_w = 0;
-
 #else
-
 // History viewer
-static Widget gdb_history_w  = 0;
+static GUI::Widget *gdb_history_w  = 0;
 static GUI::ListView *gdb_commands_w = 0;
-
 #endif
 
 // History storage
@@ -191,7 +183,6 @@ string gdb_history_file()
 }
 
 #if defined(IF_XM)
-
 static void set_line_from_history()
 {
     private_gdb_history = true;
@@ -206,9 +197,7 @@ static void set_line_from_history()
 
     private_gdb_history = false;
 }
-
 #else
-
 static void set_line_from_history()
 {
     private_gdb_history = true;
@@ -223,7 +212,6 @@ static void set_line_from_history()
 
     private_gdb_history = false;
 }
-
 #endif
 
 void set_history_from_line(const string& line,
@@ -491,7 +479,6 @@ static void HistoryDestroyedCB(Widget, XtPointer client_data, XtPointer)
 #endif
 
 #if defined(IF_XM)
-
 void gdbHistoryCB(Widget w, XtPointer, XtPointer)
 {
     if (gdb_history_w)
@@ -555,14 +542,11 @@ void gdbHistoryCB(Widget w, XtPointer, XtPointer)
 
     manage_and_raise(gdb_history_w);
 }
-
 #else
-
 void gdbHistoryCB(GUI::Widget *w)
 {
     std::cerr << "History callback not implemented\n";
 }
-
 #endif
 
 // Return last command
@@ -719,16 +703,13 @@ static void update_combo_boxes(const string& new_entry)
 }
 
 #if defined(IF_XM)
-
 static void RemoveComboBoxCB(Widget text, XtPointer, XtPointer)
 {
     combo_boxes.remove(text);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Tie a ComboBox to global history
 void tie_combo_box_to_history(Widget text, HistoryFilter filter)
 {
@@ -736,15 +717,12 @@ void tie_combo_box_to_history(Widget text, HistoryFilter filter)
     update_combo_box(text, filter);
     XtAddCallback(text, XmNdestroyCallback, RemoveComboBoxCB, XtPointer(0));
 }
-
 #else
-
 // Tie a ComboBox to global history
 void tie_combo_box_to_history(GUI::ComboBoxEntryText *text, HistoryFilter filter)
 {
     std::cerr << "tie_combo_box_to_history not implemented yet\n";
 }
-
 #endif
 
 //-----------------------------------------------------------------------------
@@ -798,7 +776,6 @@ void get_recent(StringArray& arr)
 static VoidArray menus;
 
 #if defined(IF_XM)
-
 static void update_recent_menu(const MMDesc *items)
 {
     StringArray recent_files;
@@ -846,9 +823,7 @@ static void update_recent_menu(const MMDesc *items)
     for (; items[i].widget != 0; i++)
 	XtUnmanageChild(items[i].widget);
 }
-
 #else
-
 static void update_recent_menu(const MMDesc *items)
 {
     StringArray recent_files;
@@ -897,7 +872,6 @@ static void update_recent_menu(const MMDesc *items)
     for (; items[i].widget != 0; i++)
 	items[i].widget->hide();
 }
-
 #endif
 
 static void update_recent_menus()

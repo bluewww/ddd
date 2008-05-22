@@ -1892,12 +1892,15 @@ static GUI::Button *console_w, *shortcut_w;
 struct ChangeTextInfo {
 #if defined(IF_XM)
     String *str;
-#else
-    char **str;
-#endif
     Widget dialog;
     Widget text;
     Widget vfy;
+#else
+    char **str;
+    GUI::Widget *dialog;
+    GUI::Widget *text;
+    GUI::Widget *vfy;
+#endif
     bool shortcuts;
 };
 

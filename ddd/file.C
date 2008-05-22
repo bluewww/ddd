@@ -69,7 +69,6 @@ char file_rcsid[] =
 #include <errno.h>
 
 #if defined(IF_XM)
-
 #include <Xm/Xm.h>
 #include <Xm/FileSB.h>
 #include <Xm/List.h>
@@ -80,12 +79,9 @@ char file_rcsid[] =
 #include <Xm/TextF.h>
 #include <Xm/Label.h>
 #include <Xm/PushB.h>
-
 #else
-
 #include <GUI/FileSelectionDialog.h>
 #include <GUI/Entry.h>
-
 #endif
 
 // ANSI C++ doesn't like the XtIsRealized() macro
@@ -124,7 +120,6 @@ static string current_file_filter = "";
 
 
 #if defined(IF_XM)
-
 // Make sure that every change in one filter is reflected in all others
 static void SyncFiltersCB(Widget dialog, XtPointer, XtPointer)
 {
@@ -182,27 +177,21 @@ static void FilterAllCB(Widget dialog, XtPointer client_data,
 	}
     }
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void ClearStatusCB(Widget, XtPointer, XtPointer)
 {
     set_status("");
 }
-
 #else
-
 static void ClearStatusCB(void)
 {
     set_status("");
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Create a file dialog NAME with DO_SEARCH_FILES and DO_SEARCH_DIRS
 // as search procedures for files and directories, respectively, and
 // OK_CALLBACK as the procedure called when a file is selected.
@@ -263,9 +252,7 @@ static Widget file_dialog(Widget w, const string& name,
 
     return dialog;
 }
-
 #else
-
 // Create a file dialog NAME with DO_SEARCH_FILES and DO_SEARCH_DIRS
 // as search procedures for files and directories, respectively, and
 // OK_CALLBACK as the procedure called when a file is selected.
@@ -305,11 +292,9 @@ static GUI::Dialog *file_dialog(GUI::Widget *w, const string& name,
 
     return dialog;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Create various file dialogs
 static Widget create_file_dialog(Widget w, const _XtString name,
 				 FileSearchProc searchRemoteFiles       = 0,
@@ -332,9 +317,7 @@ static Widget create_file_dialog(Widget w, const _XtString name,
 			   0, 0,
 			   openDone);
 }
-
 #else
-
 // Create various file dialogs
 static GUI::Dialog *create_file_dialog(GUI::Widget *w, const char *name,
 				       //FileSearchProc searchRemoteFiles       = 0,
@@ -348,7 +331,6 @@ static GUI::Dialog *create_file_dialog(GUI::Widget *w, const char *name,
 #endif
     return file_dialog(find_shell(w), name, openDone);
 }
-
 #endif
 
 // Synchronize file dialogs with current directory
@@ -652,7 +634,6 @@ static void searchLocalSourceFiles(Widget fs,
 #endif
 
 #if defined(IF_XM)
-
 // Get the file name from the file selection box W
 string get_file(Widget w, XtPointer, XtPointer call_data)
 {
@@ -685,9 +666,7 @@ string get_file(Widget w, XtPointer, XtPointer call_data)
 
     return filename;
 }
-
 #else
-
 // Get the file name from the file selection box W
 string get_file(GUI::FileSelectionDialog *w)
 {
@@ -706,7 +685,6 @@ string get_file(GUI::FileSelectionDialog *w)
 
     return filename;
 }
-
 #endif
 
 //-----------------------------------------------------------------------------
@@ -737,7 +715,6 @@ static void open_file(const string& filename)
 }
 
 #if defined(IF_XM)
-
 // OK pressed in `Open File'
 static void openFileDone(Widget w, XtPointer client_data, XtPointer call_data)
 {
@@ -752,9 +729,7 @@ static void openFileDone(Widget w, XtPointer client_data, XtPointer call_data)
 
     open_file(filename);
 }
-
 #else
-
 // OK pressed in `Open File'
 static void openFileDone(GUI::FileSelectionDialog *w)
 {
@@ -769,7 +744,6 @@ static void openFileDone(GUI::FileSelectionDialog *w)
 
     open_file(filename);
 }
-
 #endif
 
 // OK pressed in `Open Core'
@@ -826,7 +800,6 @@ static void openCoreDone(
 }
 
 #if defined(IF_XM)
-
 // OK pressed in `Open Source'
 static void openSourceDone(Widget w, XtPointer client_data, XtPointer call_data)
 {
@@ -844,9 +817,7 @@ static void openSourceDone(Widget w, XtPointer client_data, XtPointer call_data)
     if (filename != NO_GDB_ANSWER)
 	source_view->read_file(filename);
 }
-
 #else
-
 // OK pressed in `Open Source'
 static void openSourceDone(GUI::FileSelectionDialog *w)
 {
@@ -864,7 +835,6 @@ static void openSourceDone(GUI::FileSelectionDialog *w)
     if (filename != NO_GDB_ANSWER)
 	source_view->read_file(filename);
 }
-
 #endif
 
 //-----------------------------------------------------------------------------
@@ -1549,7 +1519,6 @@ static void RemoveCallbacksCB(Widget w, XtPointer client_data, XtPointer)
 #endif
 
 #if defined(IF_XM)
-
 // If we don't have a current executable, issue a warning.
 static void warn_if_no_program(Widget popdown)
 {
@@ -1580,9 +1549,7 @@ static void warn_if_no_program(Widget popdown)
 	}
     }
 }
-
 #else
-
 // If we don't have a current executable, issue a warning.
 static void warn_if_no_program(GUI::Widget *popdown)
 {
@@ -1603,7 +1570,6 @@ static void warn_if_no_program(GUI::Widget *popdown)
 	}
     }
 }
-
 #endif
 
 
@@ -1613,7 +1579,6 @@ static void warn_if_no_program(GUI::Widget *popdown)
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 // Get the selected item ids
 static void get_items(Widget selectionList, StringArray& itemids)
 {
@@ -1640,9 +1605,7 @@ static void get_items(Widget selectionList, StringArray& itemids)
 	itemids += item;
     }
 }
-
 #else
-
 // Get the selected item ids
 static void get_items(GUI::ListView *selectionList, StringArray& itemids)
 {
@@ -1655,11 +1618,9 @@ static void get_items(GUI::ListView *selectionList, StringArray& itemids)
 	itemids += item.c_str();
     }
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Get the item from the selection list in CLIENT_DATA
 static string get_item(Widget, XtPointer client_data, XtPointer)
 {
@@ -1673,9 +1634,7 @@ static string get_item(Widget, XtPointer client_data, XtPointer)
 
     return "";
 }
-
 #else
-
 // Get the item from the selection list in CLIENT_DATA
 static string get_item(GUI::ListView *items)
 {
@@ -1688,7 +1647,6 @@ static string get_item(GUI::ListView *items)
 
     return "";
 }
-
 #endif
 
 //-----------------------------------------------------------------------------
@@ -1762,7 +1720,6 @@ static void openClassDone(Widget w, XtPointer client_data,
 static StringArray all_sources;
 
 #if defined(IF_XM)
-
 // Select a source; show the full path name in the status line
 static void SelectSourceCB(Widget w, XtPointer, XtPointer call_data)
 {
@@ -1775,15 +1732,12 @@ static void SelectSourceCB(Widget w, XtPointer, XtPointer call_data)
 	pos = all_sources.size() - 1;
     set_status(all_sources[pos]);
 }
-
 #else
-
 // Select a source; show the full path name in the status line
 static void SelectSourceCB(GUI::Widget *)
 {
     std::cerr << "Show selected source in status line?\n";
 }
-
 #endif
 
 // Get list of sources into SOURCES_LIST
@@ -1896,7 +1850,6 @@ static void filter_sources(StringArray& labels, StringArray& sources,
 }
 
 #if defined(IF_XM)
-
 static void update_sources(Widget sources, Widget filter)
 {
     StatusDelay delay("Getting sources");
@@ -1931,10 +1884,8 @@ static void update_sources(Widget sources, Widget filter)
 
     delete[] selected;
 }
-
 #else
-
-static void update_sources(GUI::ListView *sources, Widget filter)
+static void update_sources(GUI::ListView *sources, GUI::Widget *filter)
 {
     StatusDelay delay("Getting sources");
     get_gdb_sources(all_sources);
@@ -1966,11 +1917,9 @@ static void update_sources(GUI::ListView *sources, Widget filter)
 
     delete[] selected;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // OK pressed in `Lookup Source'
 static void lookupSourceDone(Widget w,
 			     XtPointer client_data, 
@@ -2020,9 +1969,7 @@ static void lookupSourceDone(Widget w,
 	}
     }
 }
-
 #else
-
 // OK pressed in `Lookup Source'
 static void lookupSourceDone(GUI::ListView *sources)
 {
@@ -2053,7 +2000,6 @@ static void lookupSourceDone(GUI::ListView *sources)
 
     std::cerr << "Unmanage this?\n";
 }
-
 #endif
 
 static void open_source_msg()
@@ -2069,7 +2015,6 @@ static void open_source_msg()
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 void gdbOpenFileCB(Widget w, XtPointer, XtPointer)
 {
     static Widget dialog = 
@@ -2080,9 +2025,7 @@ void gdbOpenFileCB(Widget w, XtPointer, XtPointer)
 			   openFileDone);
     manage_and_raise(dialog);
 }
-
 #else
-
 void gdbOpenFileCB(GUI::Widget *w)
 {
 #ifdef NAG_ME
@@ -2092,11 +2035,9 @@ void gdbOpenFileCB(GUI::Widget *w)
 	create_file_dialog(w, "DDD: Open Program", sigc::ptr_fun(openFileDone));
     manage_and_raise(dialog);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void gdbOpenRecentCB(Widget w, XtPointer client_data, XtPointer)
 {
     int index = ((int)(long)client_data) - 1;
@@ -2115,9 +2056,7 @@ void gdbOpenRecentCB(Widget w, XtPointer client_data, XtPointer)
 	    source_view->read_file(file);
     }
 }
-
 #else
-
 void gdbOpenRecentCB(int index)
 {
     StringArray recent_files;
@@ -2134,11 +2073,9 @@ void gdbOpenRecentCB(int index)
 	    source_view->read_file(file);
     }
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void gdbOpenCoreCB(Widget w, XtPointer, XtPointer)
 {
     static Widget dialog = 
@@ -2149,9 +2086,7 @@ void gdbOpenCoreCB(Widget w, XtPointer, XtPointer)
     manage_and_raise(dialog);
     warn_if_no_program(dialog);
 }
-
 #else
-
 void gdbOpenCoreCB(GUI::Widget *w)
 {
     static GUI::Dialog *dialog = 
@@ -2159,11 +2094,9 @@ void gdbOpenCoreCB(GUI::Widget *w)
     manage_and_raise(dialog);
     warn_if_no_program(dialog);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void gdbOpenSourceCB(Widget w, XtPointer, XtPointer)
 {
     static Widget dialog = 
@@ -2185,9 +2118,7 @@ void gdbOpenSourceCB(Widget w, XtPointer, XtPointer)
 	// PYDB doesn't use an executable
     }
 }
-
 #else
-
 void gdbOpenSourceCB(GUI::Widget *w)
 {
     static GUI::Dialog *dialog = 
@@ -2206,11 +2137,9 @@ void gdbOpenSourceCB(GUI::Widget *w)
 	// PYDB doesn't use an executable
     }
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void gdbOpenProcessCB(Widget w, XtPointer, XtPointer)
 {
     static Widget dialog = 0;
@@ -2257,18 +2186,14 @@ void gdbOpenProcessCB(Widget w, XtPointer, XtPointer)
     manage_and_raise(dialog);
     warn_if_no_program(dialog);
 }
-
 #else
-
 void gdbOpenProcessCB(GUI::Widget *w)
 {
     std::cerr << "gdbOpenProcessCB not supported yet\n";
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void gdbOpenClassCB(Widget w, XtPointer, XtPointer)
 {
     static Widget dialog = 0;
@@ -2313,14 +2238,11 @@ void gdbOpenClassCB(Widget w, XtPointer, XtPointer)
     update_classes(classes);
     manage_and_raise(dialog);
 }
-
 #else
-
 void gdbOpenClassCB(GUI::Widget *)
 {
     std::cerr << "Open class not supported yet\n";
 }
-
 #endif
 
 #if defined(IF_XM)
@@ -2338,23 +2260,18 @@ void update_sources()
 }
 
 #if defined(IF_XM)
-
 static void FilterSourcesCB(Widget, XtPointer, XtPointer)
 {
     update_sources();
 }
-
 #else
-
 static void FilterSourcesCB(void)
 {
     update_sources();
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void LoadSharedLibrariesCB(Widget, XtPointer, XtPointer)
 {
     StatusDelay delay("Loading shared object library symbols");
@@ -2362,9 +2279,7 @@ static void LoadSharedLibrariesCB(Widget, XtPointer, XtPointer)
     gdb_question("sharedlibrary");
     update_sources();
 }
-
 #else
-
 static void LoadSharedLibrariesCB(void)
 {
     StatusDelay delay("Loading shared object library symbols");
@@ -2372,11 +2287,9 @@ static void LoadSharedLibrariesCB(void)
     gdb_question("sharedlibrary");
     update_sources();
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void gdbLookupSourceCB(Widget w, XtPointer, XtPointer)
 {
     if (gdb->type() != GDB)
@@ -2482,9 +2395,7 @@ void gdbLookupSourceCB(Widget w, XtPointer, XtPointer)
     manage_and_raise(dialog);
     warn_if_no_program(dialog);
 }
-
 #else
-
 void gdbLookupSourceCB(GUI::Widget *w)
 {
     if (gdb->type() != GDB)
