@@ -29,13 +29,9 @@
 #ifndef _DDD_MinMaxAssoc_h
 #define _DDD_MinMaxAssoc_h
 
-#ifdef IF_MOTIF
-
+#if defined(IF_XM)
 #include <X11/Intrinsic.h>
-
-#else // NOT IF_MOTIF
-
-#endif // IF_MOTIF
+#endif
 
 #include "Assoc.h"
 
@@ -49,7 +45,11 @@ struct MinMax {
     {}
 };
 
+#if defined(IF_XM)
 typedef Assoc<Widget, MinMax> MinMaxAssoc;
+#else
+typedef Assoc<GUI::Widget *, MinMax> MinMaxAssoc;
+#endif
 
 #endif // _DDD_MinMaxAssoc_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

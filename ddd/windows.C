@@ -58,7 +58,6 @@ char windows_rcsid[] =
 #include "XErrorB.h"
 
 #if defined(IF_XM)
-
 #include <Xm/Xm.h>
 #include <Xm/DialogS.h>
 #include <Xm/PanedW.h>
@@ -79,11 +78,8 @@ char windows_rcsid[] =
 #ifdef XtIsRealized
 #undef XtIsRealized
 #endif
-
 #else
-
 #include <GUI/MultiPaned.h>
-
 #endif
 
 //-----------------------------------------------------------------------------
@@ -138,7 +134,6 @@ static std::ostream& operator << (std::ostream& os, WindowState s)
 #endif
 
 #if defined(IF_XM)
-
 static WindowState& state(Widget w)
 {
     static WindowState command_shell_state     = PoppedDown;
@@ -161,9 +156,7 @@ static WindowState& state(Widget w)
     dummy = UnknownShell;
     return dummy;
 }
-
 #else
-
 static WindowState& state(GUI::Widget *w)
 {
     static WindowState command_shell_state     = PoppedDown;
@@ -186,25 +179,20 @@ static WindowState& state(GUI::Widget *w)
     dummy = UnknownShell;
     return dummy;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static bool popped_down(Widget w)
 {
     WindowState st = state(w);
     return st == PoppedDown || st == UnknownShell;
 }
-
 #else
-
 static bool popped_down(GUI::Widget *w)
 {
     WindowState st = state(w);
     return st == PoppedDown || st == UnknownShell;
 }
-
 #endif
 
 static void set_state(WindowState& var, WindowState state)
@@ -215,7 +203,6 @@ static void set_state(WindowState& var, WindowState state)
 }
 
 #if defined(IF_XM)
-
 static void set_state(Widget w, WindowState s)
 {
     WindowState& var = state(w);
@@ -227,9 +214,7 @@ static void set_state(Widget w, WindowState s)
 #endif
     }
 }
-
 #else
-
 static void set_state(GUI::Widget *w, WindowState s)
 {
     WindowState& var = state(w);
@@ -241,9 +226,9 @@ static void set_state(GUI::Widget *w, WindowState s)
 #endif
     }
 }
-
 #endif
 
+#if defined(IF_XM)
 // Place command tool in upper right edge of REF
 static void recenter_tool_shell(Widget ref = 0);
 
@@ -257,6 +242,21 @@ static void follow_tool_shell(Widget ref = 0);
 // Get current offset of command tool in TOP_OFFSET and RIGHT_OFFSET;
 // return true iff successful.
 static bool get_tool_offset(Widget ref, int& top_offset, int& right_offset);
+#else
+// Place command tool in upper right edge of REF
+static void recenter_tool_shell(GUI::Widget *ref = 0);
+
+// Place command tool in upper right edge of REF, with a distance of
+// TOP_OFFSET and RIGHT_OFFSET
+static void recenter_tool_shell(GUI::Widget *ref, int top_offset, int right_offset);
+
+// Have command tool follow REF
+static void follow_tool_shell(GUI::Widget *ref = 0);
+
+// Get current offset of command tool in TOP_OFFSET and RIGHT_OFFSET;
+// return true iff successful.
+static bool get_tool_offset(GUI::Widget *ref, int& top_offset, int& right_offset);
+#endif
 
 // Last offsets as actually used
 static int last_top_offset;
@@ -277,7 +277,6 @@ static void initialize_offsets()
 }
 
 #if defined(IF_XM)
-
 // Return current tool shell position relative to root window
 static BoxPoint tool_shell_pos()
 {
@@ -297,13 +296,10 @@ static BoxPoint tool_shell_pos()
 
     return BoxPoint(root_x, root_y);
 }
-
 #else
-
 #ifdef NAG_ME
 #warning tool_shell_pos not supported.
 #endif
-
 #endif
 
 #if defined(IF_XM)
@@ -316,7 +312,6 @@ static BoxPoint tool_shell_move_offset(0, 0);
 static void move_tool_shell(const BoxPoint& pos, bool verify = true);
 
 #if defined(IF_XM)
-
 // Verify shell position after movement
 static void VerifyToolShellPositionCB(XtPointer = 0, XtIntervalId *id = 0)
 {
@@ -336,9 +331,7 @@ static void VerifyToolShellPositionCB(XtPointer = 0, XtIntervalId *id = 0)
 	move_tool_shell(last_tool_shell_position, false);
     }
 }
-
 #else
-
 // Verify shell position after movement
 static bool VerifyToolShellPositionCB(void)
 {
@@ -350,7 +343,6 @@ static bool VerifyToolShellPositionCB(void)
     std::cerr << "VerifyToolShellPositionCB not implemented.\n";
     return false;
 }
-
 #endif
 
 // Move tool shell to POS.  If VERIFY is set, verify and correct 
@@ -510,7 +502,6 @@ static void FollowToolShellCB(XtPointer = 0, XtIntervalId *id = 0)
 #endif
 
 #if defined(IF_XM)
-
 bool started_iconified(Widget w)
 {
     Widget toplevel = w;
@@ -524,9 +515,7 @@ bool started_iconified(Widget w)
     XtVaGetValues(toplevel, XmNiconic, &iconic, XtPointer(0));
     return iconic;
 }
-
 #else
-
 bool started_iconified(GUI::Widget *w)
 {
 #ifdef NAG_ME
@@ -534,11 +523,9 @@ bool started_iconified(GUI::Widget *w)
 #endif
     return false;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Popup initial shell
 void initial_popup_shell(Widget w)
 {
@@ -579,9 +566,7 @@ void initial_popup_shell(Widget w)
 	XtPopup(w, XtGrabNone);
     }
 }
-
 #else
-
 // Popup initial shell
 void initial_popup_shell(GUI::Widget *w)
 {
@@ -606,11 +591,9 @@ void initial_popup_shell(GUI::Widget *w)
 
     w->show();
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void popup_shell(Widget w)
 {
     if (w == 0)
@@ -638,9 +621,7 @@ void popup_shell(Widget w)
 	XMapWindow(XtDisplay(w), XtWindow(w));
     raise_shell(w);
 }
-
 #else
-
 void popup_shell(GUI::Widget *w)
 {
     if (w == 0)
@@ -669,11 +650,9 @@ void popup_shell(GUI::Widget *w)
 #endif
     // raise_shell(w);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void popdown_shell(Widget w)
 {
     if (w == 0)
@@ -686,9 +665,7 @@ void popdown_shell(Widget w)
 
     XtPopdown(w);
 }
-
 #else
-
 void popdown_shell(GUI::Widget *w)
 {
     if (w == 0)
@@ -701,12 +678,11 @@ void popdown_shell(GUI::Widget *w)
 
     w->hide();
 }
-
 #endif
 
+#if defined(IF_XM)
 void iconify_shell(Widget w)
 {
-#if defined(IF_XM)
     if (w == 0 || !XtIsRealized(w))
 	return;
 
@@ -714,13 +690,15 @@ void iconify_shell(Widget w)
 
     XIconifyWindow(XtDisplay(w), XtWindow(w),
 		   XScreenNumberOfScreen(XtScreen(w)));
-#else
-    std::cerr << "iconify_shell not supported.\n";
-#endif
 }
+#else
+void iconify_shell(GUI::Widget *w)
+{
+    std::cerr << "iconify_shell not supported.\n";
+}
+#endif
 
 #if defined(IF_XM)
-
 void uniconify_shell(Widget w)
 {
     if (w == 0)
@@ -731,21 +709,18 @@ void uniconify_shell(Widget w)
 	popup_shell(w);
     }
 }
-
 #else
-
 void uniconify_shell(GUI::Widget *w)
 {
     std::cerr << "uniconify_shell not supported.\n";
 }
-
 #endif
 
+#if defined(IF_XM)
 static void popup_tty(Widget shell)
 {
     if (exec_tty_window())
     {
-#if defined(IF_XM)
 	XErrorBlocker blocker(XtDisplay(shell));
 
 	// Uniconify window
@@ -753,11 +728,17 @@ static void popup_tty(Widget shell)
 
 	// Place window on top
 	XRaiseWindow(XtDisplay(shell), exec_tty_window());
-#else
-	std::cerr << "popup_tty called\n";
-#endif
     }
 }
+#else
+static void popup_tty(GUI::Widget *shell)
+{
+    if (exec_tty_window())
+    {
+	std::cerr << "popup_tty not implemented.\n";
+    }
+}
+#endif
 
 #if defined(IF_XM)
 static void iconify_tty(Widget shell)
@@ -1075,7 +1056,6 @@ int running_shells()
 
 
 #if defined(IF_XM)
-
 // Generic close callback
 void DDDCloseCB(Widget w, XtPointer, XtPointer)
 {
@@ -1111,9 +1091,7 @@ void DDDCloseCB(Widget w, XtPointer, XtPointer)
     else
 	popdown_shell(shell);
 }
-
 #else
-
 // Generic close callback
 void DDDCloseCB(GUI::Widget *w)
 {
@@ -1149,7 +1127,6 @@ void DDDCloseCB(GUI::Widget *w)
     else
 	popdown_shell(shell);
 }
-
 #endif
 
 
@@ -1273,7 +1250,6 @@ void gdbCloseSourceWindowCB(GUI::Widget *w)
 }
 
 #if defined(IF_XM)
-
 void gdbCloseCodeWindowCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     if (!app_data.tty_mode && 
@@ -1293,9 +1269,7 @@ void gdbCloseCodeWindowCB(Widget w, XtPointer client_data, XtPointer call_data)
 
     update_options();
 }
-
 #else
-
 void gdbCloseCodeWindowCB(GUI::Widget *w)
 {
     if (!app_data.tty_mode && 
@@ -1315,11 +1289,9 @@ void gdbCloseCodeWindowCB(GUI::Widget *w)
 
     update_options();
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void gdbOpenSourceWindowCB(Widget, XtPointer, XtPointer)
 {
     manage_paned_child(source_view->source_form());
@@ -1340,9 +1312,7 @@ void gdbOpenSourceWindowCB(Widget, XtPointer, XtPointer)
 
     update_options();
 }
-
 #else
-
 void gdbOpenSourceWindowCB(void)
 {
     manage_paned_child(source_view->source_form());
@@ -1363,11 +1333,9 @@ void gdbOpenSourceWindowCB(void)
 
     update_options();
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void gdbOpenCodeWindowCB(Widget, XtPointer, XtPointer)
 {
     manage_paned_child(source_view->code_form());
@@ -1386,9 +1354,7 @@ void gdbOpenCodeWindowCB(Widget, XtPointer, XtPointer)
 
     update_options();
 }
-
 #else
-
 void gdbOpenCodeWindowCB(void)
 {
     manage_paned_child(source_view->code_form());
@@ -1407,7 +1373,6 @@ void gdbOpenCodeWindowCB(void)
 
     update_options();
 }
-
 #endif
 
 bool have_source_window()
@@ -1429,7 +1394,6 @@ bool have_code_window()
 }
 
 #if defined(IF_XM)
-
 // Data window
 void gdbCloseDataWindowCB(Widget w, XtPointer, XtPointer)
 {
@@ -1467,9 +1431,7 @@ void gdbCloseDataWindowCB(Widget w, XtPointer, XtPointer)
 
     update_options();
 }
-
 #else
-
 // Data window
 void gdbCloseDataWindowCB(GUI::Widget *w)
 {
@@ -1507,7 +1469,6 @@ void gdbCloseDataWindowCB(GUI::Widget *w)
 
     update_options();
 }
-
 #endif
 
 #if defined(IF_XM)
@@ -1573,7 +1534,6 @@ bool have_exec_window()
 }
 
 #if defined(IF_XM)
-
 // Tool window
 void gdbCloseToolWindowCB(Widget, XtPointer, XtPointer)
 {
@@ -1583,9 +1543,7 @@ void gdbCloseToolWindowCB(Widget, XtPointer, XtPointer)
     popdown_shell(tool_shell);
     update_options();
 }
-
 #else
-
 // Tool window
 void gdbCloseToolWindowCB(void)
 {
@@ -1595,11 +1553,9 @@ void gdbCloseToolWindowCB(void)
     popdown_shell(tool_shell);
     update_options();
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void gdbOpenToolWindowCB(Widget, XtPointer, XtPointer)
 {
     if (tool_shell == 0)
@@ -1619,9 +1575,7 @@ void gdbOpenToolWindowCB(Widget, XtPointer, XtPointer)
 
     update_options();
 }
-
 #else
-
 void gdbOpenToolWindowCB(void)
 {
     if (tool_shell == 0)
@@ -1636,7 +1590,6 @@ void gdbOpenToolWindowCB(void)
 
     update_options();
 }
-
 #endif
 
 bool have_tool_window()
@@ -1650,7 +1603,6 @@ bool have_tool_window()
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 void gdbToggleCommandWindowCB(Widget w, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
@@ -1662,9 +1614,7 @@ void gdbToggleCommandWindowCB(Widget w, XtPointer, XtPointer call_data)
     else
 	gdbCloseCommandWindowCB(w, XtPointer(0), XtPointer(0));
 }
-
 #else
-
 void gdbToggleCommandWindowCB(GUI::Bipolar *w)
 {
     bool set = w->get_active();
@@ -1673,11 +1623,9 @@ void gdbToggleCommandWindowCB(GUI::Bipolar *w)
     else
 	gdbCloseCommandWindowCB(w);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void gdbToggleSourceWindowCB(Widget w, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
@@ -1688,9 +1636,7 @@ void gdbToggleSourceWindowCB(Widget w, XtPointer, XtPointer call_data)
     else
 	gdbCloseSourceWindowCB(w, XtPointer(0), XtPointer(0));
 }
-
 #else
-
 void gdbToggleSourceWindowCB(GUI::Bipolar *w)
 {
     if (w->get_active())
@@ -1698,11 +1644,9 @@ void gdbToggleSourceWindowCB(GUI::Bipolar *w)
     else
 	gdbCloseSourceWindowCB(w);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void gdbToggleCodeWindowCB(Widget w, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
@@ -1715,9 +1659,7 @@ void gdbToggleCodeWindowCB(Widget w, XtPointer, XtPointer call_data)
 
     update_options();
 }
-
 #else
-
 void gdbToggleCodeWindowCB(GUI::Bipolar *w)
 {
     if (w->get_active())
@@ -1727,11 +1669,9 @@ void gdbToggleCodeWindowCB(GUI::Bipolar *w)
 
     update_options(true);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void gdbToggleDataWindowCB(Widget w, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
@@ -1742,9 +1682,7 @@ void gdbToggleDataWindowCB(Widget w, XtPointer, XtPointer call_data)
     else
 	gdbCloseDataWindowCB(w, XtPointer(0), XtPointer(0));
 }
-
 #else
-
 void gdbToggleDataWindowCB(GUI::Bipolar *w)
 {
     if (w->get_active())
@@ -1752,11 +1690,9 @@ void gdbToggleDataWindowCB(GUI::Bipolar *w)
     else
 	gdbCloseDataWindowCB(w);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void gdbToggleExecWindowCB(Widget w, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
@@ -1767,9 +1703,7 @@ void gdbToggleExecWindowCB(Widget w, XtPointer, XtPointer call_data)
     else
 	gdbCloseExecWindowCB(w, XtPointer(0), XtPointer(0));
 }
-
 #else
-
 void gdbToggleExecWindowCB(GUI::Bipolar *w)
 {
     if (w->get_active())
@@ -1777,11 +1711,9 @@ void gdbToggleExecWindowCB(GUI::Bipolar *w)
     else
 	gdbCloseExecWindowCB();
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void gdbToggleToolWindowCB(Widget w, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
@@ -1792,9 +1724,7 @@ void gdbToggleToolWindowCB(Widget w, XtPointer, XtPointer call_data)
     else
 	gdbCloseToolWindowCB(w, XtPointer(0), XtPointer(0));
 }
-
 #else
-
 void gdbToggleToolWindowCB(GUI::Bipolar *w)
 {
     if (w->get_active())
@@ -1802,7 +1732,6 @@ void gdbToggleToolWindowCB(GUI::Bipolar *w)
     else
 	gdbCloseToolWindowCB();
 }
-
 #endif
 
 //-----------------------------------------------------------------------------
@@ -2067,7 +1996,6 @@ static void paned_changed(Widget /* paned */)
 #endif
 
 #if defined(IF_XM)
-
 void manage_paned_child(Widget w)
 {
     Widget paned = XtParent(w);
@@ -2198,16 +2126,13 @@ void manage_paned_child(Widget w)
 
     paned_changed(w);
 }
-
 #else
-
 void manage_paned_child(GUI::Widget *w)
 {
     static int errcnt = 0;
     if (!errcnt++ == 0) std::cerr << "manage_paned_child() not implemented\n";
     GUI::MultiPaned::show_child(w);
 }
-
 #endif
 
 #if defined(IF_XM)
@@ -2245,7 +2170,6 @@ static int resizable_children(Widget paned)
 #endif
 
 #if defined(IF_XM)
-
 // Unmanage W, but be sure the command window doesn't grow.
 void unmanage_paned_child(Widget w)
 {
@@ -2292,9 +2216,7 @@ void unmanage_paned_child(Widget w)
 
     paned_changed(w);
 }
-
 #else
-
 // Unmanage W, but be sure the command window doesn't grow.
 void unmanage_paned_child(GUI::Widget *w)
 {
@@ -2302,13 +2224,11 @@ void unmanage_paned_child(GUI::Widget *w)
     if (!errcnt++ == 0) std::cerr << "unmanage_paned_child() not implemented\n";
     GUI::MultiPaned::hide_child(w);
 }
-
 #endif
 
 // Set the width of PANED to the maximum width of its children
 
 #if defined(IF_XM)
-
 // Fetch the maximum width.  Do this for each paned window.
 void get_paned_window_width(Widget paned, Dimension& max_width)
 {
@@ -2342,20 +2262,16 @@ void get_paned_window_width(Widget paned, Dimension& max_width)
 	max_width = max(size.width, max_width);
     }
 }
-
 #else
-
 // Fetch the maximum width.  Do this for each paned window.
 void get_paned_window_width(GUI::MultiPaned *paned, int& max_width)
 {
     std::cerr << "get_paned_window_width: stub\n";
     max_width = 0;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Set the found value.
 void set_paned_window_size(Widget paned, Dimension max_width)
 {
@@ -2420,15 +2336,12 @@ void set_paned_window_size(Widget paned, Dimension max_width)
 		  XmNheight, total_height + 2 * margin_height,
 		  XtPointer(0));
 }
-
 #else
-
 // Set the found value.
 void set_paned_window_size(GUI::Container *paned, int max_width)
 {
     std::cerr << "set_paned_window_size: stub\n";
 }
-
 #endif
 
 //-----------------------------------------------------------------------------
@@ -2436,7 +2349,6 @@ void set_paned_window_size(GUI::Container *paned, int max_width)
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 // Set main window size
 void set_main_window_size(Widget main)
 {
@@ -2492,15 +2404,12 @@ void set_main_window_size(Widget main)
 		  XmNheight, total_height, 
 		  XtPointer(0));
 }
-
 #else
-
 // Set main window size
 void set_main_window_size(GUI::Container *main)
 {
     std::cerr << "set_main_window_size::stub\n";
 }
-
 #endif
 
 //-----------------------------------------------------------------------------
@@ -2508,7 +2417,6 @@ void set_main_window_size(GUI::Container *main)
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 // Promote child size to scrolled window
 void set_scrolled_window_size(Widget child, Widget target)
 {
@@ -2571,9 +2479,7 @@ void set_scrolled_window_size(Widget child, Widget target)
 
     XtVaSetValues(target, XmNwidth,  width, XmNheight, height, XtPointer(0));
 }
-
 #else
-
 // Promote child size to scrolled window
 void set_scrolled_window_size(GUI::ScrolledText *child, GUI::Widget *target)
 {
@@ -2581,44 +2487,5 @@ void set_scrolled_window_size(GUI::ScrolledText *child, GUI::Widget *target)
 #warning set_scrolled_window_size not implemented.
 #endif
 }
-
 #endif
 
-#if !defined(IF_XM)
-
-// ****************************************************************************
-
-// FIXME: Distinguish these types.
-
-Glib::RefPtr<Gdk::Window> XtWindow(Widget w)
-{
-    return w->get_window();
-}
-
-Glib::RefPtr<Gdk::Display> XtDisplay(Widget w)
-{
-    return w->get_display();
-}
-
-Glib::RefPtr<Gdk::Screen> XtScreen(Widget w)
-{
-    return w->get_screen();
-}
-
-#if 0
-bool
-get_active(Widget w)
-{
-    // This convenience function is needed because some callbacks are associated
-    // both with ToggleButton and with a CheckMenuItem.
-    Gtk::ToggleButton *tb = dynamic_cast<Gtk::ToggleButton *>(w);
-    if (tb)
-	return tb->get_active();
-    Gtk::CheckMenuItem *mi = dynamic_cast<Gtk::CheckMenuItem *>(w);
-    if (mi)
-	return mi->get_active();
-    return false;
-}
-#endif
-
-#endif

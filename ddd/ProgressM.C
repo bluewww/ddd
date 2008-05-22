@@ -40,10 +40,10 @@ char ProgressMeter_rcsid[] =
 #include "version.h"
 #include "wm.h"
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 #include <Xm/Scale.h>
 #include <Xm/MessageB.h>
-#endif // IF_MOTIF
+#endif
 
 // Update progress meter every UPDATE_THRESHOLD characters
 const int ProgressMeter::UPDATE_THRESHOLD = 256;
@@ -51,8 +51,13 @@ const int ProgressMeter::UPDATE_THRESHOLD = 256;
 // Popup working dialog when updating from at least DIALOG_THRESHOLD chars.
 const int ProgressMeter::DIALOG_THRESHOLD = 4096;
 
+#if defined(IF_XM)
 Widget ProgressMeter::dialog = 0;
 Widget ProgressMeter::scale  = 0;
+#else
+GUI::Widget *ProgressMeter::dialog = 0;
+GUI::Widget *ProgressMeter::scale  = 0;
+#endif
 
 ProgressMeter *ProgressMeter::active = 0;
 
@@ -62,7 +67,7 @@ ProgressMeter::ProgressMeter(const char *_msg)
       old_background(DispValue::background),
       aborted(false)
 {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     DispValue::background = _process;
     active = (ProgressMeter *)this;
 
@@ -90,14 +95,14 @@ ProgressMeter::ProgressMeter(const char *_msg)
 	scale = verify(XmCreateScale(dialog, XMST("scale"), args, arg));
 	XtManageChild(scale);
     }
-#else // NOT IF_MOTIF
+#else
     std::cerr << "Progress meter not supported\n";
-#endif // IF_MOTIF
+#endif
 }
 
 ProgressMeter::~ProgressMeter()
 {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     DispValue::background = old_background;
     if (active == this)
 	active = 0;
@@ -107,10 +112,10 @@ ProgressMeter::~ProgressMeter()
     XtRemoveCallback(dialog, XmNcancelCallback, CancelCB, 
 		     XtPointer(&aborted));
     XtUnmanageChild(dialog);
-#endif // IF_MOTIF
+#endif
 }
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 void ProgressMeter::CancelCB(Widget, XtPointer client_data, XtPointer)
 {
     bool *flag = (bool *)client_data;
@@ -170,4 +175,4 @@ bool ProgressMeter::process(int remaining_length)
 
     return aborted;
 }
-#endif // IF_MOTIF
+#endif

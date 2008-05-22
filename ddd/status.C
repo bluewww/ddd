@@ -47,7 +47,7 @@ char status_rcsid[] =
 #include "verify.h"
 
 #include <ctype.h>
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include <Xm/Xm.h>
 #include <Xm/Text.h>
 #include <Xm/SelectioB.h>
@@ -125,7 +125,7 @@ void set_buttons_from_gdb(GUI::Widget *buttons, string& text)
 	// FIXME: Handle JDB
 	char prompt_start = (gdb->type() == XDB ? '>' : '(');
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	// Fetch previous output lines, in case this is a multi-line message.
 	String s = XmTextGetString(gdb_w);
 	string prompt(s);
@@ -170,7 +170,7 @@ void set_buttons_from_gdb(GUI::Widget *buttons, string& text)
 
     last_yn = yn;
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     if (XtIsComposite(buttons))
     {
 	set_sensitive(buttons, false);
@@ -217,10 +217,15 @@ int status_history_size = 20;
 static MString *history = 0;
 static int current_history = 0;
 
+#if defined(IF_XM)
 static Widget history_label = 0;
 static Widget history_row   = 0;
+#else
+static GUI::Widget *history_label = 0;
+static GUI::Widget *history_row   = 0;
+#endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 static Widget create_status_history(Widget parent)
 {
     static Widget history_shell = 0;
@@ -261,7 +266,6 @@ static Widget create_status_history(Widget parent)
 #endif
 
 #if defined(IF_XM)
-
 Widget status_history(Widget parent)
 {
     Widget history_shell = create_status_history(parent);
@@ -311,19 +315,16 @@ Widget status_history(Widget parent)
 
     return history_shell;
 }
-
 #else
-
 GUI::Menu *status_history(GUI::Widget *parent)
 {
     static int errcnt = 0;
     if (!errcnt++) std::cerr << "No status history: may crash!\n";
     return NULL;
 }
-
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // Return true iff S1 is a prefix of S2
 static bool is_prefix(const MString& m1, const MString& m2)
 {
@@ -510,7 +511,7 @@ void set_status_from_gdb(const string& text)
 	return;
 
     // Fetch line before prompt in GDB window
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     String s = XmTextGetString(gdb_w);
     string message = s + messagePosition;
     XtFree(s);
@@ -536,7 +537,7 @@ void set_status_from_gdb(const string& text)
 
     if (show_next_line_in_status)
     {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	messagePosition = XmTextGetLastPosition(gdb_w) + text.length();
 #else
 	messagePosition = gdb_w->get_last_position() + text.length();
@@ -588,7 +589,7 @@ void set_status_mstring(const MString& message, bool temporary)
     if (status_w == 0)
 	return;
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     if (!temporary)
 	add_to_status_history(message);
 #else
@@ -601,7 +602,7 @@ void set_status_mstring(const MString& message, bool temporary)
     {
 	current_status_text = message;
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 	XtVaSetValues(status_w,
 		      XmNlabelString, message.xmstring(),
 		      XtPointer(0));

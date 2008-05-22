@@ -39,15 +39,11 @@
 #endif
 
 #if defined(IF_XM)
-
 #include <X11/Intrinsic.h>
-
 #else
-
 #include <GUI/Button.h>
 #include <GUI/Container.h>
 #include <GUI/Menu.h>
-
 #endif
 
 #include "gtk_wrapper.h"

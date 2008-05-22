@@ -3337,6 +3337,7 @@ set_xml_prop(xmlNodePtr tree, const char *name, unsigned int val, bool is_defaul
   set_xml_prop(tree, name, buf, is_default);
 }
 
+#if 0
 static void
 set_xml_prop(xmlNodePtr tree, const char *name, const Widget *val, bool is_default=false)
 {
@@ -3344,8 +3345,9 @@ set_xml_prop(xmlNodePtr tree, const char *name, const Widget *val, bool is_defau
   snprintf(buf, sizeof(buf), "%p", val);
   set_xml_prop(tree, name, buf, is_default);
 }
+#endif
 
-static void set_xml_paned_widget_size(xmlNode *tree, Widget w, bool height_only = false)
+static void set_xml_paned_widget_size(xmlNode *tree, GUI::Widget *w, bool height_only = false)
 {
     const Boolean check_default = False;
 
@@ -3385,15 +3387,15 @@ static void set_xml_paned_widget_size(xmlNode *tree, Widget w, bool height_only 
     {
 	// We store the size of the paned child, in order to account
 	// for scrolled windows etc.
-	Widget ref = w;
-	while (ref->get_parent() != 0 && !dynamic_cast<Gtk::Paned *>(ref->get_parent()))
+	GUI::Widget *ref = w;
+	while (ref->get_parent() != 0 && !dynamic_cast<GUI::MultiPaned *>(ref->get_parent()))
 	    ref = ref->get_parent();
 	if (ref->get_parent() == 0)
 	    ref = w;
 
 	// Store absolute sizes
-	Dimension width  = ref->get_width();
-	Dimension height = ref->get_height();
+	Dimension width  = ref->internal()->get_width();
+	Dimension height = ref->internal()->get_height();
 
 	if (!height_only)
 	    set_xml_prop(subtree, "width", width, check_default);
@@ -3402,22 +3404,18 @@ static void set_xml_paned_widget_size(xmlNode *tree, Widget w, bool height_only 
     }
 }
 
-inline void set_xml_paned_widget_height(xmlNode *tree, Widget w)
+inline void set_xml_paned_widget_height(xmlNode *tree, GUI::Widget *w)
 {
     set_xml_paned_widget_size(tree, w, true);
 }
 
-static void set_xml_widget_geometry(xmlNode *tree, const char *name, Widget w,
+static void set_xml_widget_geometry(xmlNode *tree, const char *name, GUI::Widget *w,
 				    bool include_size = false)
 {
     const Boolean check_default = False;
 
-    Dimension width = w->get_width();
-    Dimension height = w->get_height();
-
-#ifdef NAG_ME
-#warning XGetWindowAttributes?
-#endif
+    Dimension width = w->internal()->get_width();
+    Dimension height = w->internal()->get_height();
 
     std::ostringstream geometry;
     if (include_size)
@@ -4520,7 +4518,7 @@ bool save_options(unsigned long flags)
     if (save_geometry)
     {
 	// Widget geometry
-	if (command_shell != (Widget)0)
+	if (command_shell)
 	    set_xml_widget_geometry(root, "command_shell", command_shell);
 	if (source_view_shell)
 	    set_xml_widget_geometry(root, "source_view_shell", source_view_shell);

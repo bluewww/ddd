@@ -33,13 +33,9 @@
 #include "strclass.h"
 #include "status.h"
 
-#ifdef IF_MOTIF
-
+#if defined(IF_XM)
 #include <X11/Intrinsic.h>
-
-#else // NOT IF_MOTIF
-
-#endif // IF_MOTIF
+#endif
 
 
 //-----------------------------------------------------------------------------
@@ -68,8 +64,13 @@ private:
     // Popup working dialog when updating from at least DIALOG_THRESHOLD chars.
     static const int DIALOG_THRESHOLD;
 
+#if defined(IF_XM)
     static Widget dialog;
     static Widget scale;
+#else
+    static GUI::Widget *dialog;
+    static GUI::Widget *scale;
+#endif
 
     bool process(int remaining_length);
 
