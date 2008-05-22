@@ -69,7 +69,7 @@ void get_transient_pos(Screen *screen, Position& pos_x, Position& pos_y)
 #endif
 }
 
-
+#if defined(IF_XM)
 // Check if window manager decorates transients
 void start_have_decorated_transients(Widget parent)
 {
@@ -95,7 +95,15 @@ void start_have_decorated_transients(Widget parent)
 				      XMST(ddd_NAME), args, arg));
     XtManageChild(init_label);
 }
+#else
+// Check if window manager decorates transients
+void start_have_decorated_transients(GUI::Widget *parent)
+{
+    std::cerr << "start_have_decorated_transients not implemented yet.\n";
+}
+#endif
 
+#if defined(IF_XM)
 bool have_decorated_transients(Widget parent)
 {
     if (init_label == 0 || init_shell == 0)
@@ -149,3 +157,10 @@ bool have_decorated_transients(Widget parent)
 
     return border_height - border_width > 5;
 }
+#else
+bool have_decorated_transients(GUI::Widget *parent)
+{
+    std::cerr << "have_decorated_transients not implemented yet.\n";
+    return false;
+}
+#endif

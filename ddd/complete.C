@@ -30,7 +30,7 @@
 char complete_rcsid[] = 
     "$Id$";
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
@@ -56,9 +56,7 @@ char complete_rcsid[] =
 #include <Xm/Xm.h>
 #include <Xm/Text.h>
 #include <Xm/TextF.h>
-#endif
-
-#if !defined(IF_XM)
+#else
 #include <GUI/Entry.h>
 #endif
 

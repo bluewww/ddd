@@ -29,32 +29,27 @@
 #ifndef _DDD_complete_h
 #define _DDD_complete_h
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
 #if defined(IF_XM)
-
 #include <X11/Intrinsic.h>
-
+#else
+#include <GUI/Widget.h>
+#include "gtk_wrapper.h"
 #endif
 
-#include "gtk_wrapper.h"
-
 #if defined(IF_XM)
-
 // Actions
 extern void complete_commandAct  (Widget, XEvent*, String*, Cardinal*);
 extern void complete_argAct      (Widget, XEvent*, String*, Cardinal*);
 extern void complete_tabAct      (Widget, XEvent*, String*, Cardinal*);
-
 #else
-
 // Actions
 extern void complete_commandAct  (GUI::Widget *, GUI::Event *, GUI::String *, unsigned int *);
 extern void complete_argAct      (GUI::Widget *, GUI::Event *, GUI::String *, unsigned int *);
 extern void complete_tabAct      (GUI::Widget *, GUI::Event *, GUI::String *, unsigned int *);
-
 #endif
 
 // Completion is done

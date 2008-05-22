@@ -1,29 +1,18 @@
 #ifndef GTK_WRAPPER_H
 #define GTK_WRAPPER_H
 
-#if defined(IF_MOTIF)
+#if defined(HAVE_CONFIG_H)
+#include "config.h"
+#endif
 
+#if defined(IF_XM)
 #include <X11/Intrinsic.h>
-
-
-
-// ****************************************************************************
-
-#else // NOT IF_MOTIF
-
-#include <GUI/Widget.h>
-#include <gtkmm/widget.h>
-
-
-
-typedef Gtk::Widget *Widget;
-
+#else
 typedef bool Boolean;
 typedef bool Bool;
 
 #define False false
 #define True true
-
-#endif // IF_MOTIF
+#endif
 
 #endif // GTK_WRAPPER_H

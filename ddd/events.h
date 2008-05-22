@@ -29,21 +29,18 @@
 #ifndef _DDD_events_h
 #define _DDD_events_h
 
-#if HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
-#ifdef IF_MOTIF
-
+#if defined(IF_XM)
 #include <X11/Xlib.h>
-
-#else // NOT IF_MOTIF
-
+#else
 #include "gtk_wrapper.h"
-
-#endif // IF_MOTIF
+#endif
 
 #if !defined(IF_XM)
+#include <GUI/Widget.h>
 #include <GUI/Events.h>
 #endif
 

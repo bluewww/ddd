@@ -47,17 +47,23 @@
 // Return a transient position on SCREEN (for command tool etc.) in POS_X/POS_Y
 extern void get_transient_pos(Screen *screen,
 			      Position& pos_x, Position& pos_y);
-#else
-// Return a transient position on SCREEN (for command tool etc.) in POS_X/POS_Y
-extern void get_transient_pos(GUI::RefPtr<GUI::Screen> screen,
-			      Position& pos_x, Position& pos_y);
-#endif
 
 // Start check for window manager decoration
 extern void start_have_decorated_transients(Widget parent);
 
 // Return true if transient windows are decorated
 extern bool have_decorated_transients(Widget parent);
+#else
+// Return a transient position on SCREEN (for command tool etc.) in POS_X/POS_Y
+extern void get_transient_pos(GUI::RefPtr<GUI::Screen> screen,
+			      Position& pos_x, Position& pos_y);
+
+// Start check for window manager decoration
+extern void start_have_decorated_transients(GUI::Widget *parent);
+
+// Return true if transient windows are decorated
+extern bool have_decorated_transients(GUI::Widget *parent);
+#endif
 
 #endif // _DDD_decoration_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

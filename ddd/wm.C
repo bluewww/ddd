@@ -131,24 +131,34 @@ void wm_set_name(GUI::RefPtr<GUI::Display> display, GUI::RefPtr<GUI::XWindow> sh
 }
 #endif
 
+#if defined(IF_XM)
 void wm_set_name(Widget shell, string title, string icon)
 {
     strip_space(title);
     strip_space(icon);
 
-#if defined(IF_XM)
     XtVaSetValues(shell,
 		  XmNiconName, icon.chars(),
 		  XmNtitle,    title.chars(),
 		  XtPointer(0));
-#else
-    std::cerr << "SET_TITLE\n";
-#endif
     
 #if 0				// This should be done by the shell.
     wm_set_name(XtDisplay(shell), XtWindow(shell), title, icon);
 #endif
 }
+#else
+void wm_set_name(GUI::Widget *shell, string title, string icon)
+{
+    strip_space(title);
+    strip_space(icon);
+
+    std::cerr << "SET_TITLE\n";
+    
+#if 0				// This should be done by the shell.
+    wm_set_name(XtDisplay(shell), XtWindow(shell), title, icon);
+#endif
+}
+#endif
 
 #if defined(IF_XM)
 // Wait until W is mapped

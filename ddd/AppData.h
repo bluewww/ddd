@@ -35,14 +35,13 @@
 #endif
 
 #if defined(IF_XM)
-
 #include <Xm/Xm.h>
 #include <X11/StringDefs.h>
 #include <X11/Xlib.h>
-
-#endif
-
+#else
+#include <GUI/Widget.h>
 #include "gtk_wrapper.h"
+#endif
 
 #include "version.h"
 #include "OnOff.h"
@@ -437,7 +436,6 @@
 #define XtCVersion               "Version"
 
 #if defined(IF_XM)
-
 struct AppData {
     const _XtString    session;
     const _XtString    initial_session;
@@ -661,9 +659,7 @@ struct AppData {
     const _XtString    dddinit_version;
     const _XtString    app_defaults_version;
 };
-
 #else
-
 struct AppData {
     const char *session;
     const char *initial_session;
@@ -888,7 +884,6 @@ struct AppData {
     const char *app_defaults_version;
     AppData(void);
 };
-
 #endif
 
 extern AppData app_data;

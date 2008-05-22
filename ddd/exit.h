@@ -35,16 +35,12 @@
 #endif
 
 #if defined(IF_XM)
-
 #include <X11/Intrinsic.h>
-
 #else
-
 #include <GUI/Main.h>
-
-#endif
-
+#include <GUI/Widget.h>
 #include "gtk_wrapper.h"
+#endif
 
 #include <iostream>
 

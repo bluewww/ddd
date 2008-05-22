@@ -8455,7 +8455,7 @@ void SourceView::NewBreakpointCB(GUI::Widget *w)
 	GUI::VBox *box = new GUI::VBox(*dialog);
 	box->show();
 
-	Widget label = new GUI::Label(*box, GUI::PACK_SHRINK, "Set Breakpoint at");
+	GUI::Widget *label = new GUI::Label(*box, GUI::PACK_SHRINK, "Set Breakpoint at");
 	label->show();
 
 	GUI::ComboBoxEntryText *text = new GUI::ComboBoxEntryText(*box);
@@ -9607,11 +9607,11 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, GUI::Widget * /* origin */)
 	GENTRYL("condition", "condition", MMComboBox,
 		BIND(SetBreakpointConditionCB, info), 
 		sigc::bind(sigc::ptr_fun(SetBreakpointConditionCB), info), 
-		0, (Widget *)&info->condition),
+		0, &info->condition),
 	GENTRYL("ignore", "ignore", MMSpinBox,
 		BIND(SetBreakpointIgnoreCountCB, info), 
 		sigc::bind(sigc::ptr_fun(SetBreakpointIgnoreCountCB), info), 
-		0, (Widget *)&info->ignore),
+		0, &info->ignore),
 	GENTRYL("commands", "commands", MMButtonPanel,
 		MMNoCB, MDUMMY, commands_menu, 0),
 	MMEnd

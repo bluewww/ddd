@@ -29,7 +29,7 @@
 char DeleteWindowCallBack_rcsid[] = 
     "$Id: DeleteWCB.C,v 1.1.1.1 2003/03/03 00:44:05 rockyb Exp $";
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
@@ -42,10 +42,11 @@ char DeleteWindowCallBack_rcsid[] =
 #include <Xm/Xm.h>
 #include <Xm/AtomMgr.h>
 #include <Xm/Protocols.h>
+#else
+#include <GUI/Widget.h>
 #endif
 
 #if defined(IF_XM)
-
 extern void AddDeleteWindowCallback(Widget shell,
 				    XtCallbackProc callback, 
 				    XtPointer closure)
@@ -62,14 +63,11 @@ extern void AddDeleteWindowCallback(Widget shell,
     XmAddProtocolCallback(shell, WM_PROTOCOLS, WM_DELETE_WINDOW, 
 			  callback, closure);
 }
-
 #else
-
 extern void AddDeleteWindowCallback(GUI::Widget *shell,
 				    sigc::slot<void> callback)
 {
     std::cerr << "AddDeleteWindowCallback on " << shell->get_name() << "\n";
     shell->internal()->signal_delete_event().connect(sigc::hide<0>(sigc::bind_return(callback, false)));
 }
-
 #endif

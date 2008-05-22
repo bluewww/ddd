@@ -57,9 +57,7 @@ char tips_rcsid[] =
 #include <Xm/MessageB.h>
 #include <Xm/PushB.h>
 #include <Xm/ToggleB.h>
-#endif
-
-#if !defined(IF_XM)
+#else
 #include <GUI/CheckButton.h>
 #endif
 
@@ -71,9 +69,9 @@ Widget set_startup_tips_w;
 GUI::CheckButton *set_startup_tips_w;
 #endif
 
+#if defined(IF_XM)
 static MString get_tip_of_the_day(Widget w, int n)
 {
-#if defined(IF_XM)
     struct tip_of_the_day_resource_values {
 	XmString tip;
     };
@@ -93,10 +91,13 @@ static MString get_tip_of_the_day(Widget w, int n)
     XtGetApplicationResources(w, &values, &r, 1, ArgList(0), 0);
 
     return MString(values.tip, true);
-#else
-    return MString("NO TIP");
-#endif
 }
+#else
+static MString get_tip_of_the_day(GUI::Widget *w, int n)
+{
+    return MString("NO TIP");
+}
+#endif
 
 static string app_value(const string& resource, const string& value)
 {
@@ -144,9 +145,9 @@ inline bool is_tip(const MString& m)
     return !m.isNull() && !m.isEmpty();
 }
 
+#if defined(IF_XM)
 static bool refresh_tip_dialog(Widget w)
 {
-#if defined(IF_XM)
     MString tip = get_tip_of_the_day(w, app_data.startup_tip_count);
     if (!is_tip(tip))
     {
@@ -170,12 +171,17 @@ static bool refresh_tip_dialog(Widget w)
     string title = DDD_NAME " Tip of the Day #" + 
 	itostring(app_data.startup_tip_count);
     XtVaSetValues(XtParent(w), XmNtitle, title.chars(), XtPointer(0));
-#endif
     return true;
 }
+#else
+static bool refresh_tip_dialog(GUI::Widget *w)
+{
+    std::cerr << "refresh_tip_dialog not implemented yet.\n";
+    return true;
+}
+#endif
 
 #if defined(IF_XM)
-
 static void PrevTipCB(Widget w, XtPointer, XtPointer)
 {
     app_data.startup_tip_count--;
@@ -187,11 +193,9 @@ static void NextTipCB(Widget w, XtPointer, XtPointer)
     app_data.startup_tip_count++;
     refresh_tip_dialog(w);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void SetStartupTipsCB(Widget w, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
@@ -201,20 +205,16 @@ void SetStartupTipsCB(Widget w, XtPointer, XtPointer call_data)
 
     update_options();
 }
-
 #else
-
 void SetStartupTipsCB(GUI::CheckButton *w)
 {
     app_data.startup_tips = w->get_active();
 
     update_options();
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void TipOfTheDayCB(Widget w, XtPointer, XtPointer)
 {
     static Widget tip_dialog = 0;
@@ -255,5 +255,4 @@ void TipOfTheDayCB(Widget w, XtPointer, XtPointer)
 
     manage_and_raise(tip_dialog);
 }
-
 #endif
