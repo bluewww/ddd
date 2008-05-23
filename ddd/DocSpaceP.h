@@ -32,14 +32,14 @@
 
 #include "DocSpace.h"
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 
 /* superclass private header file */
 #include <X11/CoreP.h>
 
-#else // NOT IF_MOTIF
+#else
 
-#endif // IF_MOTIF
+#endif
 
 /* define unique representation types not found in <X11/StringDefs.h> */
 

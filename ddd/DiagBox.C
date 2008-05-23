@@ -32,10 +32,10 @@ char DiagBox_rcsid[] =
 
 #include "PrimitiveB.h"
 #include "StringBox.h"
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
-#endif // IF_MOTIF
+#endif
 #include "DiagBox.h"
 
 DEFINE_TYPE_INFO_1(DiagBox, PrimitiveBox)

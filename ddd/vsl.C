@@ -55,13 +55,13 @@ int main(void)
 }
 #else
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 #include <X11/Intrinsic.h>      // X Toolkit
 #include <X11/Xlib.h>           // X Library
 #include <X11/Xaw/Viewport.h>   // Viewport Widget
 #include <X11/StringDefs.h>     // String Definitions
 #include <X11/Xaw/Cardinals.h>  // Definition ZERO
-#endif // IF_MOTIF
+#endif
 #include "DocSpace.h"           // DocSpace Widget
 
 #include "bool.h"

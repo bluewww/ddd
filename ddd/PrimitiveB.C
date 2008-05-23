@@ -29,10 +29,10 @@ char PrimitiveBox_rcsid[] =
     "$Id$";
 
 #include "PrimitiveB.h"
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
-#endif // IF_MOTIF
+#endif
 #include "strclass.h"
 #include "printBox.h"
 

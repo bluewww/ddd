@@ -39,7 +39,7 @@ char Delay_rcsid[] =
 #include <X11/cursorfont.h>
 #include <X11/StringDefs.h>
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // ANSI C++ doesn't like the XtIsRealized() macro
 #ifdef XtIsRealized
 #undef XtIsRealized

@@ -1544,7 +1544,7 @@ void DispValue::plot() const
     if (ndim == 0)
 	return;
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     if (plotter() == 0)
     {
 	string title = make_title(full_name());
@@ -1561,9 +1561,9 @@ void DispValue::plot() const
     _plot(plotter(), ndim);
 
     plotter()->flush();
-#else // NOT IF_MOTIF
+#else
     std::cerr << "Plotter not implemented\n";
-#endif // IF_MOTIF
+#endif
 }
 
 void DispValue::_plot(PlotAgent *plotter, int ndim) const

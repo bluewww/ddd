@@ -33,9 +33,9 @@ char fileSelectionBoxFilename_rcsid[] =
 #include "fileSBF.h"
 #include "MString.h"
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 #include <Xm/FileSB.h>
-#endif // IF_MOTIF
+#endif
 
 string fileSelectionBoxFilename(XtPointer call_data)
 {

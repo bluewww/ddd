@@ -32,7 +32,7 @@
 #include "config.h"
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include <Xm/Xm.h>
 #include <Xm/Text.h>
 #include <Xm/TextF.h>

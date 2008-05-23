@@ -28,13 +28,13 @@
 #ifndef _DDD_Tool_h
 #define _DDD_Tool_h
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 
 #include <X11/Intrinsic.h>
 
-#else // NOT IF_MOTIF
+#else
 
-#endif // IF_MOTIF
+#endif
 
 // Create command tool
 extern void create_command_tool();

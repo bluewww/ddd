@@ -35,7 +35,7 @@
 #include "VarArray.h"
 #include "DynArray.h"
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include <Xm/Xm.h>
 #endif
 

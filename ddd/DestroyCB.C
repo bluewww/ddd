@@ -37,12 +37,12 @@ char DestroyCB_rcsid[] =
 #include "DestroyCB.h"
 #include "TimeOut.h"
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include <Xm/DialogS.h>
 #include <Xm/Xm.h>
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 static void CancelTimer(Widget, XtPointer client_data, XtPointer)
 {
     XtIntervalId id = XtIntervalId(client_data);
@@ -130,7 +130,7 @@ void DestroyShellCB(GUI::Widget *widget)
 
 // Destroy specific widget
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 
 void DestroyThisCB(Widget, XtPointer client_data, XtPointer)
 {

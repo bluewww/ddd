@@ -33,13 +33,13 @@ char RegionGraphNode_rcsid[] =
 #include <iostream>
 #include <string.h>
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
-#else // NOT IF_MOTIF
+#else
 #include "gtk_wrapper.h"
-#endif // IF_MOTIF
+#endif
 
 #include "RegionGN.h"
 #include "printBox.h"

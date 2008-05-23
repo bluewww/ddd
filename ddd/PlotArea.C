@@ -51,11 +51,11 @@ char PlotArea_rcsid[] =
 #include <stdlib.h>
 #include <ctype.h>
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 #include <X11/StringDefs.h>
 #include <X11/Xlib.h>
 #include <Xm/DrawingA.h>
-#endif // IF_MOTIF
+#endif
 
 // Data
 struct plot_resource_values {
@@ -63,7 +63,7 @@ struct plot_resource_values {
     int pointsize;
 };
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 static XtResource plot_subresources[] = {
     {
 	XTRESSTR("font"),
@@ -84,7 +84,7 @@ static XtResource plot_subresources[] = {
 	XtPointer(1)
     }
 };
-#endif // IF_MOTIF
+#endif
 
 #if 0
 static const char * const color_keys[Ncolors] =   { 

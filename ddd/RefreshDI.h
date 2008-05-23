@@ -33,7 +33,7 @@
 #include "strclass.h"
 #include "status.h"
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 
 #include <Xm/Text.h>
 

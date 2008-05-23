@@ -28,7 +28,7 @@
 #ifndef _DDD_ScrolledGraphEditPrivate_h
 #define _DDD_ScrolledGraphEditPrivate_h
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 
 #include <Xm/Xm.h>
 
@@ -41,9 +41,9 @@
 #undef new
 #undef class
 
-#else // NOT IF_MOTIF
+#else
 
-#endif // IF_MOTIF
+#endif
 
 #ifdef MAX
 #undef MAX			// <Xm/XmP.h> on HP-UX defines this

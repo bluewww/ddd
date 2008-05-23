@@ -30,7 +30,7 @@ char findParent_rcsid[] =
 
 #include "config.h"
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include <Xm/Xm.h>
 #endif
 #include <iostream>
@@ -39,7 +39,7 @@ char findParent_rcsid[] =
 #include "longName.h"
 #include "bool.h"
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // ANSI C++ doesn't like the XtIsRealized() macro
 #ifdef XtIsRealized
 #undef XtIsRealized
@@ -49,7 +49,7 @@ char findParent_rcsid[] =
 // Set this to true to allow debugging
 static const bool findParent_debug = false;
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 
 // Find a realized Shell
 Widget findShellParent(Widget w)

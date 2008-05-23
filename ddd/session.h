@@ -28,16 +28,16 @@
 #ifndef _DDD_session_h
 #define _DDD_session_h
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 
 #include <X11/Intrinsic.h>
 
-#else // NOT IF_MOTIF
+#else
 
 #include <glibmm/refptr.h>
 #include <gdkmm/window.h>
 
-#endif // IF_MOTIF
+#endif
 
 #include "gtk_wrapper.h"
 
@@ -61,11 +61,11 @@ string session_file(const string& session, const char *name);
 // Custom calls
 inline string session_state_file(const string& session)
 {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     return session_file(session, "init");
-#else // NOT IF_MOTIF
+#else
     return session_file(session, "ginit");
-#endif // IF_MOTIF
+#endif
 }
 
 string session_core_file(const string& session);
@@ -87,11 +87,11 @@ inline string session_log_file()
 
 inline string session_tips_file()
 {
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     return session_file(DEFAULT_SESSION, "tips");
-#else // NOT IF_MOTIF
+#else
     return session_file(DEFAULT_SESSION, "gtips");
-#endif // IF_MOTIF
+#endif
 }
 
 inline string session_themes_dir()

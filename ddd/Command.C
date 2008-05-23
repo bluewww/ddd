@@ -59,7 +59,7 @@ char Command_rcsid[] =
 #include <ctype.h>
 #include <string.h>
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include <Xm/Xm.h>
 #include <Xm/Text.h>
 #include <X11/StringDefs.h>

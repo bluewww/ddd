@@ -38,10 +38,10 @@ char cmdtty_rcsid[] =
 #include "editing.h"
 #include "exit.h"
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 #include <Xm/Xm.h>
 #include <Xm/Text.h>
-#endif // IF_MOTIF
+#endif
 
 //-----------------------------------------------------------------------------
 // Command TTY
@@ -62,11 +62,11 @@ static void tty_command(Agent *, void *, void *call_data)
 
     // Simply insert text, invoking all necessary callbacks
     tty_gdb_input = true;
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     XmTextInsert(gdb_w, XmTextGetLastPosition(gdb_w), (String)d->data);
-#else // NOT IF_MOTIF
+#else
     gdb_w->insert(gdb_w->get_last_position(), Glib::ustring(d->data));
-#endif // IF_MOTIF
+#endif
     tty_gdb_input = false;
 }
 
@@ -88,7 +88,7 @@ void tty_out(const string& text)
     _tty_out(text);
 }
 
-#ifndef IF_MOTIF
+#if !defined(IF_XM)
 
 void tty_out(const char *text)
 {
@@ -115,7 +115,7 @@ void _tty_out(const string& text)
     command_tty->write(text.chars(), text.length());
 }
 
-#ifndef IF_MOTIF
+#if !defined(IF_XM)
 
 void _tty_out(const char *text)
 {
@@ -155,7 +155,7 @@ void tty_full_name(const string& pos)
     }
 }
 
-#ifndef IF_MOTIF
+#if !defined(IF_XM)
 
 void tty_full_name(const char *text)
 {

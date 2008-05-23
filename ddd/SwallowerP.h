@@ -31,7 +31,7 @@
 // This class
 #include "Swallower.h"
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 
 #include <X11/IntrinsicP.h>
 
@@ -44,7 +44,7 @@ extern "C" {
 #undef class
 }
 
-#endif // IF_MOTIF
+#endif
 
 #include "gtk_wrapper.h"
 

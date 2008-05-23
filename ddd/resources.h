@@ -47,7 +47,7 @@ extern DDDResource ddd_resources[];
 #endif
 extern const int ddd_resources_size;
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // Resources to use if `Ddd' app-defaults are not found
 extern const _XtString const ddd_fallback_resources[];
 #else

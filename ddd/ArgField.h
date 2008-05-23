@@ -36,7 +36,7 @@
 #include "config.h"
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 
 // Motif includes
 #include <X11/Intrinsic.h>

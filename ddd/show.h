@@ -35,7 +35,7 @@
 #include "ddd.h"
 #include "GDBAgent.h"
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 
 #include <X11/Intrinsic.h>
 #include <X11/Xresource.h>

@@ -28,7 +28,7 @@
 #ifndef _DDD_xconfig_h
 #define _DDD_xconfig_h
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 
 #include <X11/Intrinsic.h>
 
@@ -36,7 +36,7 @@
 
 extern int check_x_configuration(Widget toplevel, bool verbose);
 
-#endif // IF_MOTIF
+#endif
 
 #endif // _DDD_xconfig_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

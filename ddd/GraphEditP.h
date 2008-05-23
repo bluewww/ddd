@@ -28,7 +28,7 @@
 #ifndef _DDD_GraphEditP_h
 #define _DDD_GraphEditP_h
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 
 // Superclasses
 extern "C" {
@@ -43,9 +43,9 @@ extern "C" {
 #undef class
 }
 
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 
 // This class
 #include "GraphEdit.h"
@@ -208,7 +208,7 @@ typedef struct _GraphEditRec {
   GraphEditPartPrivate graphEditP;	// Class
 } GraphEditRec;
 
-#endif // IF_MOTIF
+#endif
 
 #endif // _DDD_GraphEditP_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

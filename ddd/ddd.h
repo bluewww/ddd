@@ -37,7 +37,7 @@
 
 #include "gtk_wrapper.h"
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 
 #include <X11/Intrinsic.h>
 #include <Xm/Xm.h>

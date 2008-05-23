@@ -36,7 +36,7 @@ char GraphEdit_rcsid[] =
 #include <iostream>
 #include <sstream>
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include <Xm/Xm.h>
 #include <Xm/ScrolledW.h>
 #include <X11/Xlib.h>

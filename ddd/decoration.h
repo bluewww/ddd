@@ -32,7 +32,7 @@
 #include "config.h"
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include <X11/Intrinsic.h>
 #else
 #include <GUI/Widget.h>

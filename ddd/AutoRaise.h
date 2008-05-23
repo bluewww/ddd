@@ -28,7 +28,7 @@
 #ifndef _DDD_AutoRaise_h
 #define _DDD_AutoRaise_h
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 
 #include <X11/Intrinsic.h>
 
@@ -46,13 +46,13 @@ extern void auto_raise(Widget shell);
 // Auto-raise SHELL unconditionally
 extern void _auto_raise(Widget shell);
 
-#else // NOT IF_MOTIF
+#else
 
 #define auto_raise(w)
 
 #define _auto_raise(w)
 
-#endif // IF_MOTIF
+#endif
 
 #endif // _DDD_AutoRaise_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

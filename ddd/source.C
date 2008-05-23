@@ -52,10 +52,10 @@ char source_rcsid[] =
 #include "fortranize.h"
 
 #include <iostream>
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 #include <Xm/Xm.h>
 #include <Xm/Text.h>
-#endif // IF_MOTIF
+#endif
 
 
 //-----------------------------------------------------------------------------

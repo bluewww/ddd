@@ -38,7 +38,7 @@ char fonts_rcsid[] =
 #include "StringSA.h"
 #include "TextSetS.h"
 #include "assert.h"
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include "converters.h"
 #endif
 #include "cook.h"
@@ -53,7 +53,7 @@ char fonts_rcsid[] =
 
 #include <stdlib.h>		// atoi()
 #include <ctype.h>
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include <Xm/TextF.h>
 #include <Xm/Text.h>
 #include <Xm/PushB.h>

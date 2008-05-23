@@ -34,7 +34,7 @@ char ArgField_rcsid[] =
 #include "ArgField.h"
 #include <ctype.h>
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include <Xm/TextF.h>
 #include <Xm/PushB.h>
 #endif
@@ -45,7 +45,7 @@ char ArgField_rcsid[] =
 #include "buttons.h"
 #include "string-fun.h"		// strip_space()
 #include "tabs.h"		// tabify()
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include "ComboBox.h"
 #endif
 

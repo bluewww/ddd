@@ -28,7 +28,7 @@
 #ifndef _DDD_XErrorBlocker_h
 #define _DDD_XErrorBlocker_h
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 
 extern "C" {
 #include <X11/Intrinsic.h>
@@ -81,13 +81,13 @@ public:
     }
 };
 
-#else // NOT IF_MOTIF
+#else
 
 #ifdef NAG_ME
 #warning XErrorBlocker not defined yet
 #endif
 
-#endif // IF_MOTIF
+#endif
 
 #endif // _DDD_XErrorBlocker_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

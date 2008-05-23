@@ -45,7 +45,7 @@ char simpleMenu_rcsid[] =
 #include "tips.h"
 #include "show.h"
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include <Xm/Text.h>
 #include <Xm/TextF.h>
 #endif
@@ -643,7 +643,7 @@ MMDesc simple_edit_menu[] =
 // Help menu
 MMDesc simple_help_menu[] = 
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     GENTRYL("onHelp", "onHelp", MMPush,
 	    BIND(HelpOnHelpCB, 0),
 	    sigc::ptr_fun(HelpOnHelpCB),

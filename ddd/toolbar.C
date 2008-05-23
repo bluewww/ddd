@@ -37,11 +37,11 @@ char toolbar_rcsid[] =
 #include "HelpCB.h"
 #include "Delay.h"
 #include "AppData.h"
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include "converters.h"
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include <Xm/Xm.h>
 #include <Xm/Form.h>
 #include <Xm/Label.h>
@@ -58,7 +58,7 @@ char toolbar_rcsid[] =
 // Helpers
 //-----------------------------------------------------------------------
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // Return the preferred height of W
 static Dimension preferred_height(Widget w)
 {
@@ -75,7 +75,7 @@ static Dimension preferred_height(Widget w)
 #endif
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 
 static void set_label_type(MMDesc items[], unsigned char label_type)
 {
@@ -158,7 +158,7 @@ static void flatten_buttons(MMDesc items[])
     }
 }
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 static Widget align_buttons(const MMDesc *items1, const MMDesc *items2)
 {
     Widget last_button  = 0;
@@ -213,7 +213,7 @@ static Widget align_buttons(const MMDesc *items1, const MMDesc *items2)
 #endif
 
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 static void ResetLabelEH(Widget w, XtPointer, XEvent *, Boolean *)
 {
     XmString label_string;
@@ -230,7 +230,7 @@ static void ResetLabelEH(Widget w, XtPointer, XEvent *, Boolean *)
 }
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 static void center_buttons(const MMDesc items[], Dimension offset)
 {
     for (const MMDesc *item = items; item != 0 && item->name; item++)

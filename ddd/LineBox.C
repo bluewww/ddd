@@ -30,10 +30,10 @@ char LineBox_rcsid[] =
 
 #include "LineBox.h"
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
-#endif // IF_MOTIF
+#endif
 
 DEFINE_TYPE_INFO_1(LineBox, PrimitiveBox)
 

@@ -29,21 +29,21 @@
 char converters_rcsid[] = 
     "$Id$";
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
 #include <X11/IntrinsicP.h>
 #include <X11/StringDefs.h>
-#endif // IF_MOTIF
+#endif
 
 #include <stdlib.h>
 #include <unistd.h>
 #include <pwd.h>
 #include <ctype.h>
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 #include <X11/CoreP.h>
-#endif // IF_MOTIF
+#endif
 
 #include "assert.h"
 #include "bool.h"
@@ -61,12 +61,12 @@ char converters_rcsid[] =
 #define new new_w
 #define class class_w
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 #include <Xm/Xm.h>
 
-#endif // IF_MOTIF
+#endif
 
-#if XmVersion < 1002 && defined(IF_MOTIF)
+#if XmVersion < 1002 && defined(IF_XM)
 #include <Xm/bitmaps.h>
 #else
 
@@ -98,7 +98,7 @@ static const _XtString const bitmap_name_set[] =
 
 #endif
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 // Decl of XmIsSlowSubclass in Motif 1.1 is not C++-aware, hence extern "C"
 extern "C" {
 #include <Xm/XmP.h>
@@ -109,7 +109,7 @@ extern "C" {
 #include <Xm/PrimitiveP.h>
 #endif
 
-#endif // IF_MOTIF
+#endif
 
 #undef new
 #undef class

@@ -28,7 +28,7 @@
 #ifndef _DDD_Sash_h
 #define _DDD_Sash_h
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 
 extern "C" {
 #define new new_w
@@ -38,9 +38,9 @@ extern "C" {
 #undef new
 }
 
-#else // NOT IF_MOTIF
+#else
 
-#endif // IF_MOTIF
+#endif
 
 #endif // _DDD_Sash_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

@@ -41,14 +41,14 @@ char PannedGraphEdit_rcsid[] =
     HAVE_X11_XAW_PANNER_H && \
     HAVE_X11_XAW_PORTHOLE_H
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 #include <X11/Intrinsic.h>
 #include <X11/StringDefs.h>
 #include <X11/Xaw/XawInit.h>
 #include <X11/Xaw/Form.h>
 #include <X11/Xaw/Panner.h>
 #include <X11/Xaw/Porthole.h>
-#endif // IF_MOTIF
+#endif
 #include "PannedGEP.h"
 
 static void PortholeCB(Widget w, XtPointer client_data, XtPointer call_data);

@@ -28,15 +28,15 @@
 #ifndef _DDD_fileSelectionBoxFilename_h
 #define _DDD_fileSelectionBoxFilename_h
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 
 #include <Xm/Xm.h>
 
-#else // NOT IF_MOTIF
+#else
 
 #include "gtk_wrapper.h"
 
-#endif // IF_MOTIF
+#endif
 
 #include "strclass.h"
 

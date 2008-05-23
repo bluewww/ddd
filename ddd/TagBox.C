@@ -30,11 +30,11 @@ char TagBox_rcsid[] =
 
 #include "assert.h"
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
-#endif // IF_MOTIF
+#endif
 #include "TagBox.h"
 #include "VSEFlags.h"
 

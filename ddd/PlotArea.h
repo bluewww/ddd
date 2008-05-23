@@ -34,7 +34,7 @@
 
 #include "strclass.h"
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include <X11/Intrinsic.h>
 #endif
 

@@ -31,7 +31,7 @@ char Box_rcsid[] =
 #include <string.h>
 
 #include "assert.h"
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>

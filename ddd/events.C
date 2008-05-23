@@ -39,7 +39,7 @@ static void invalid_event(const char *func)
     std::cerr << func << ": invalid event\n";
 }
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 
 // Event location
 BoxPoint point(XEvent *ev)
@@ -159,7 +159,7 @@ BoxPoint point1(GUI::Event *ev)
 
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 
 // Event time
 Time time(XEvent *ev)
@@ -260,7 +260,7 @@ Time time1(GUI::Event *ev)
 
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 
 // Event size
 BoxSize size(XEvent *ev)

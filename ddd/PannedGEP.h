@@ -29,7 +29,7 @@
 #ifndef _DDD_PannedGraphEditPrivate_h
 #define _DDD_PannedGraphEditPrivate_h
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 
 #include <Xm/Xm.h>
 
@@ -44,9 +44,9 @@ extern "C" {
 #undef new
 #undef class
 
-#else // NOT IF_MOTIF
+#else
 
-#endif // IF_MOTIF
+#endif
 
 // This class
 #include "PannedGE.h"

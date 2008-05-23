@@ -35,10 +35,10 @@ char StringBox_rcsid[] =
 #include "assert.h"
 #include "cook.h"
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
-#endif // IF_MOTIF
+#endif
 #include <ctype.h>
 #include <sstream>
 
@@ -61,12 +61,12 @@ Box *StringBox::resize()
     if (_font != 0)
     {
 	int direction, font_ascent, font_descent;
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 	XCharStruct overall;
 
 	XTextExtents(_font, _string.chars(), _string.length(),
 	    &direction, &font_ascent, &font_descent, &overall);
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning FIXME: We should possibly hold a complete Pango::Context in the StringBox class.
 #warning FIXME: I do not understand font description / font etc.
@@ -78,9 +78,9 @@ Box *StringBox::resize()
 	Pango::Rectangle overall = pl->get_logical_extents();
 	font_ascent = overall.get_ascent();
 	font_descent = overall.get_descent();
-#endif // IF_MOTIF
+#endif
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 #if USE_MAX_BOUNDS
 	XCharStruct max_bounds = _font->max_bounds;
 
@@ -91,13 +91,13 @@ Box *StringBox::resize()
 	_ascent = font_ascent;
 	thesize() = BoxSize(overall.width, font_ascent + font_descent);
 #endif
-#else // NOT IF_MOTIF
+#else
 #ifdef NAG_ME
 #warning Cannot get max_bounds of a Pango font.
 #endif
 	_ascent = font_ascent;
 	thesize() = BoxSize(overall.get_width(), font_ascent + font_descent);
-#endif // IF_MOTIF
+#endif
     }
 
     return this;

@@ -28,13 +28,13 @@
 #ifndef _DDD_GraphGC_h
 #define _DDD_GraphGC_h
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 
 #include <X11/Xlib.h>
 
-#else // NOT IF_MOTIF
+#else
 
-#endif // IF_MOTIF
+#endif
 
 #include "BoxPoint.h"
 #include "Box.h"

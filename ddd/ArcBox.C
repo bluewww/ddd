@@ -31,7 +31,7 @@ char ArcBox_rcsid[] =
 #include "ArcBox.h"
 #include "printBox.h"
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
 #else

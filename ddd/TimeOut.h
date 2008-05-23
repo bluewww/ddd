@@ -28,7 +28,7 @@
 #ifndef _DDD_TimeOut_h
 #define _DDD_TimeOut_h
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 
 #include <X11/Intrinsic.h>
 
@@ -64,9 +64,9 @@ extern void MyRemoveTimeOut(XtIntervalId timer,
 // Return number of pending timers
 extern int MyPendingTimeOuts();
 
-#else // NOT IF_MOTIF
+#else
 
-#endif // IF_MOTIF
+#endif
 
 #endif // _DDD_TimeOut_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

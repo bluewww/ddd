@@ -46,7 +46,7 @@
 #include "BoxPoint.h"
 #include "BoxSize.h"
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 BoxPoint point(XEvent *ev); // Location
 BoxSize size(XEvent *ev);   // Size
 Time time(XEvent *ev);      // Time

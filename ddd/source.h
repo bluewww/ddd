@@ -28,7 +28,7 @@
 #ifndef _DDD_source_h
 #define _DDD_source_h
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 
 #include <X11/Intrinsic.h>
 

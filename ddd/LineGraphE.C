@@ -39,11 +39,11 @@ char LineGraphEdge_rcsid[] =
 #include <string.h>
 #include <stdlib.h>
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
-#endif // IF_MOTIF
+#endif
 
 #include "GraphNode.h"
 #include "LineGESI.h"
@@ -245,13 +245,13 @@ void LineGraphEdge::drawLine(GUI::Widget *w,
     if (l1 == l2)
 	return;
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
     XDrawLine(XtDisplay(w), XtWindow(w), gc.edgeGC,
 	      l1[X], l1[Y], l2[X], l2[Y]);
-#else // NOT IF_MOTIF
+#else
     w->get_window()->draw_line(gc.edgeGC,
 			       l1[X], l1[Y], l2[X], l2[Y]);
-#endif // IF_MOTIF
+#endif
 
     // Draw annotation
     BoxPoint anno_pos = annotationPosition(gc);

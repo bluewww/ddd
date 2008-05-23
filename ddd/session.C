@@ -35,7 +35,7 @@ char session_rcsid[] =
 
 #include "session.h"
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #if XtSpecificationRelease >= 6
 #include <X11/SM/SM.h>
 #endif
@@ -88,7 +88,7 @@ char session_rcsid[] =
 #include "windows.h"
 #include "wm.h"
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include <Xm/Xm.h>
 #include <Xm/List.h>
 #include <Xm/MessageB.h>
@@ -479,7 +479,7 @@ static void get_sessions(StringArray& arr)
     }
 }
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 
 // Update state of `delete' button
 static void update_delete(Widget dialog)
@@ -557,7 +557,7 @@ static void update_delete1(GUI::Widget *dialog)
 
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 
 // Update list of sessions
 static void update_sessions(Widget dialog)
@@ -815,7 +815,7 @@ void delete_session(const string& session, bool silent)
     }
 }
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 
 // Remove selected sessions
 static void DeleteSessionsCB(Widget dialog, XtPointer client_data, XtPointer)
@@ -888,7 +888,7 @@ static void DeleteSessionsCB1(GUI::ListView *dialog)
 // Session save
 // ---------------------------------------------------------------------------
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 
 static string get_chosen_session(Widget dialog)
 {
@@ -940,7 +940,7 @@ void set_session(const string& v)
     create_session_dir(app_data.session);
 }
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 
 // Set the current session
 static void SetSessionCB(Widget dialog, XtPointer, XtPointer)
@@ -1365,7 +1365,7 @@ static bool done_if_idle(Delay *data)
 
 static void done(const string&, void *data)
 {
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
     XtAppAddWorkProc(XtWidgetToApplicationContext(command_shell),
 		     done_if_idle, data);
 #else
@@ -1640,7 +1640,7 @@ void RestartDebuggerCB(void)
 }
 
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 
 // OK pressed in `open session'
 static void OpenThisSessionCB(Widget w, XtPointer client_data, 

@@ -40,13 +40,13 @@
 #include "StringSA.h"
 #include "Box.h"
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 
 #include <Xm/Xm.h>
 
-#else // NOT IF_MOTIF
+#else
 
-#endif // IF_MOTIF
+#endif
 
 class Agent;
 class PlotAgent;

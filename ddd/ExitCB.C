@@ -33,10 +33,10 @@ char ExitCB_rcsid[] =
 #include <stdlib.h>
 #include <unistd.h>             // environ, execvp()
 #include <stdio.h>		// perror()
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 #include <Xm/Xm.h>
 #include <Xm/MessageB.h>
-#endif // IF_MOTIF
+#endif
 
 #include "findParent.h"
 #include "ExitCB.h"

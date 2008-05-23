@@ -57,14 +57,14 @@ char show_rcsid[] =
 #include <string.h>
 #include <errno.h>
 
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 
 #include "Xpm.h"
 #if HAVE_ATHENA
 #include <X11/Xaw/XawInit.h>
 #endif
 
-#else // NOT IF_MOTIF
+#else
 
 #endif
 

@@ -32,7 +32,7 @@
 #include "config.h"
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 #include <X11/Intrinsic.h>
 #else
 #include <gtkmm/drawingarea.h>
@@ -590,7 +590,7 @@ typedef GUIGraphEdit *GraphEditWidget;
 
 #endif
 
-#if defined(IF_MOTIF)
+#if defined(IF_XM)
 // Declare special access functions
 
 // Inform widget that its size has changed

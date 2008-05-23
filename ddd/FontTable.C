@@ -33,10 +33,10 @@ char FontTable_rcsid[] =
 #include "strclass.h"
 
 #include <iostream>
-#ifdef IF_MOTIF
+#if defined(IF_XM)
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
-#endif // IF_MOTIF
+#endif
 
 #include "FontTable.h"
 
