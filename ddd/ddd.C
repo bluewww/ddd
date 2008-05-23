@@ -177,22 +177,6 @@ char ddd_rcsid[] =
 #ifdef XtIsRealized
 #undef XtIsRealized
 #endif
-#else
-#if !defined(IF_XMMM)
-#include <gtkmm/main.h>
-#endif
-#if 0
-#include <glibmm/main.h>
-#include <gtkmm/window.h>
-#include <gtkmm/dialog.h>
-#include <gtkmm/paned.h>
-#include <gtkmm/messagedialog.h>
-#include <gtkmm/scale.h>
-#include <gtkmm/entry.h>
-#include <gtkmm/frame.h>
-
-#include "GtkMultiPaned.h"
-#endif
 #endif
 
 #if HAVE_X11_XMU_EDITRES_H
@@ -389,10 +373,7 @@ static void ddd_xt_warning(String message);
 #if defined(IF_XM)
 static void WhenReady            (Widget, XtPointer, XtPointer);
 #else
-// static void WhenReady            (Widget, XtPointer);
-#endif
-#if !defined(IF_XM)
-static void WhenReady1           (GUI::Widget *w, void *client_data);
+static void WhenReady            (GUI::Widget *w, void *client_data);
 #endif
 
 // Cut and Paste
@@ -1116,43 +1097,6 @@ struct WhenReadyProc_t {
 };
 #define DECL_WR(PROC) \
  static WhenReadyProc_t WR_##PROC = { PROC }
-
-#elif defined(IF_XMMM)
-
-// Auxiliary struct used by WhenReady. A pointer to function can not
-// be passed directly in a XtPointer.
-//struct WhenReadyProc_t {
-//    XtCallbackProc proc;
-//};
-struct WhenReadyProc_t {
-    XtCallbackProc legacy;
-    sigc::slot<void, GUI::Widget *> ready;
-    WhenReadyProc_t(XtCallbackProc legacy0,
-		    sigc::slot<void, GUI::Widget *> ready0) {
-	legacy = legacy0;
-	ready = ready0;
-    }
-};
-
-static void
-dummy_function_1(Widget, XtPointer, XtPointer)
-{
-}
-
-static void
-dummy_function_2(GUI::Widget *)
-{
-}
-
-//#define DECL_WR(NAME, PROC)			\
-//    static WhenReadyProc_t NAME = { PROC }
-
-#define DECL_WR(NAME, PROC)						\
-    static WhenReadyProc_t NAME (PROC, \
-				 sigc::slot<void, GUI::Widget *>(sigc::ptr_fun(dummy_function_2)))
-#define DECL_WR2(NAME, PROC)						\
-    static WhenReadyProc_t NAME (dummy_function_1, \
-				 sigc::slot<void, GUI::Widget *>(PROC))
 #else
 // Bind everything except the widget argument.  The widget will be
 // filled in when we queue the event for processing.
@@ -1163,20 +1107,7 @@ struct WhenReadyProc_t {
     }
 };
 
-static void
-dummy_function_1(Gtk::Widget *)
-{
-}
-
-static void
-dummy_function_2(GUI::Widget *)
-{
-}
-
 #define DECL_WR(NAME, PROC)						\
-    static WhenReadyProc_t NAME (sigc::slot<void, Widget>(sigc::ptr_fun(PROC)), \
-				 sigc::slot<void, GUI::Widget *>(sigc::ptr_fun(dummy_function_2)))
-#define DECL_WR2(NAME, PROC)						\
     static WhenReadyProc_t NAME (sigc::slot<void, GUI::Widget *>(PROC))
 #endif
 
@@ -1191,26 +1122,26 @@ DECL_WR(gdbChangeDirectoryCB);
 DECL_WR(gdbMakeCB);
 DECL_WR(gdbMakeAgainCB);
 #else
-DECL_WR2(WR_gdbOpenClassCB, sigc::ptr_fun(gdbOpenClassCB));
-DECL_WR2(WR_gdbOpenFileCB, sigc::ptr_fun(gdbOpenFileCB));
-DECL_WR2(WR_gdbOpenCoreCB, sigc::ptr_fun(gdbOpenCoreCB));
-DECL_WR2(WR_OpenSessionCB, sigc::ptr_fun(OpenSessionCB));
-DECL_WR2(WR_SaveSessionAsCB, sigc::ptr_fun(SaveSessionAsCB));
-DECL_WR2(WR_gdbOpenProcessCB, sigc::ptr_fun(gdbOpenProcessCB));
-DECL_WR2(WR_gdbChangeDirectoryCB, sigc::ptr_fun(gdbChangeDirectoryCB));
-DECL_WR2(WR_gdbMakeCB, sigc::ptr_fun(gdbMakeCB));
-DECL_WR2(WR_gdbMakeAgainCB, sigc::ptr_fun(gdbMakeAgainCB));
+DECL_WR(WR_gdbOpenClassCB, sigc::ptr_fun(gdbOpenClassCB));
+DECL_WR(WR_gdbOpenFileCB, sigc::ptr_fun(gdbOpenFileCB));
+DECL_WR(WR_gdbOpenCoreCB, sigc::ptr_fun(gdbOpenCoreCB));
+DECL_WR(WR_OpenSessionCB, sigc::ptr_fun(OpenSessionCB));
+DECL_WR(WR_SaveSessionAsCB, sigc::ptr_fun(SaveSessionAsCB));
+DECL_WR(WR_gdbOpenProcessCB, sigc::ptr_fun(gdbOpenProcessCB));
+DECL_WR(WR_gdbChangeDirectoryCB, sigc::ptr_fun(gdbChangeDirectoryCB));
+DECL_WR(WR_gdbMakeCB, sigc::ptr_fun(gdbMakeCB));
+DECL_WR(WR_gdbMakeAgainCB, sigc::ptr_fun(gdbMakeAgainCB));
 #endif
 
 #define FILE_MENU(recent_menu)						\
 {									\
     GENTRYL("open_class", "Open Class...", MMPush | MMUnmanaged,	\
 	    BIND(WhenReady, &WR_gdbOpenClassCB),			\
-	    sigc::bind(sigc::ptr_fun(WhenReady1), &WR_gdbOpenClassCB),	\
+	    sigc::bind(sigc::ptr_fun(WhenReady), &WR_gdbOpenClassCB),	\
 	    0, 0),							\
     GENTRYL("open_file", "Open Program...", MMPush,			\
 	    BIND(WhenReady, &WR_gdbOpenFileCB),				\
-	    sigc::bind(sigc::ptr_fun(WhenReady1), &WR_gdbOpenFileCB),	\
+	    sigc::bind(sigc::ptr_fun(WhenReady), &WR_gdbOpenFileCB),	\
 	    0, 0),							\
     GENTRYL("recent", "Open Recent", MMMenu,				\
 	    MMNoCB,							\
@@ -1218,7 +1149,7 @@ DECL_WR2(WR_gdbMakeAgainCB, sigc::ptr_fun(gdbMakeAgainCB));
 	    recent_menu, 0),						\
     GENTRYL("open_core", "Open Core Dump...", MMPush,			\
 	    BIND(WhenReady, &WR_gdbOpenCoreCB),				\
-	    sigc::bind(sigc::ptr_fun(WhenReady1), &WR_gdbOpenCoreCB),	\
+	    sigc::bind(sigc::ptr_fun(WhenReady), &WR_gdbOpenCoreCB),	\
 	    0, 0),							\
     GENTRYL("open_source", "Open Source...", MMPush, 			\
 	    BIND(gdbLookupSourceCB, 0),					\
@@ -1227,16 +1158,16 @@ DECL_WR2(WR_gdbMakeAgainCB, sigc::ptr_fun(gdbMakeAgainCB));
     MMSep,								\
     GENTRYL("open_session", "Open Session...", MMPush,			\
 	    BIND(WhenReady, &WR_OpenSessionCB),				\
-	    sigc::bind(sigc::ptr_fun(WhenReady1), &WR_OpenSessionCB),	\
+	    sigc::bind(sigc::ptr_fun(WhenReady), &WR_OpenSessionCB),	\
 	    0, 0),							\
     GENTRYL("save_session", "Save Session As...", MMPush,		\
 	    BIND(WhenReady, &WR_SaveSessionAsCB),			\
-	    sigc::bind(sigc::ptr_fun(WhenReady1), &WR_SaveSessionAsCB), \
+	    sigc::bind(sigc::ptr_fun(WhenReady), &WR_SaveSessionAsCB), \
 	    0, 0),							\
     MMSep,								\
     GENTRYL("attach", "Attach to Process...", MMPush,			\
 	    BIND(WhenReady, &WR_gdbOpenProcessCB),			\
-	    sigc::bind(sigc::ptr_fun(WhenReady1), &WR_gdbOpenProcessCB), \
+	    sigc::bind(sigc::ptr_fun(WhenReady), &WR_gdbOpenProcessCB), \
 	    0, 0),							\
     GENTRYL("detach", "Detach Process", MMPush,				\
 	    BIND(gdbCommandCB, "detach"),				\
@@ -1257,16 +1188,16 @@ DECL_WR2(WR_gdbMakeAgainCB, sigc::ptr_fun(gdbMakeAgainCB));
 	    0, 0),							\
     GENTRYL("cd", "Change Directory...", MMPush,			\
 	    BIND(WhenReady, &WR_gdbChangeDirectoryCB),			\
-	    sigc::bind(sigc::ptr_fun(WhenReady1), &WR_gdbChangeDirectoryCB), \
+	    sigc::bind(sigc::ptr_fun(WhenReady), &WR_gdbChangeDirectoryCB), \
 	    0, 0),							\
     MMSep,								\
     GENTRYL("make", "Make...", MMPush,					\
 	    BIND(WhenReady, &WR_gdbMakeCB),				\
-	    sigc::bind(sigc::ptr_fun(WhenReady1), &WR_gdbMakeCB),	\
+	    sigc::bind(sigc::ptr_fun(WhenReady), &WR_gdbMakeCB),	\
 	    0, 0),							\
     GENTRYL("makeAgain", "Make Again", MMPush | MMUnmanaged,		\
 	    BIND(WhenReady, &WR_gdbMakeAgainCB),			\
-	    sigc::bind(sigc::ptr_fun(WhenReady1), &WR_gdbMakeAgainCB),	\
+	    sigc::bind(sigc::ptr_fun(WhenReady), &WR_gdbMakeAgainCB),	\
 	    0, 0),							\
     MMSep,								\
     GENTRYL("close", "Close", MMPush,					\
@@ -1459,7 +1390,7 @@ struct EditItems {
 #if defined(IF_XM)
 DECL_WR(dddPopupSettingsCB);
 #else
-DECL_WR2(WR_dddPopupSettingsCB, sigc::ptr_fun(dddPopupSettingsCB));
+DECL_WR(WR_dddPopupSettingsCB, sigc::ptr_fun(dddPopupSettingsCB));
 #endif
 
 #define EDIT_MENU(win, w)						\
@@ -1505,7 +1436,7 @@ DECL_WR2(WR_dddPopupSettingsCB, sigc::ptr_fun(dddPopupSettingsCB));
 	    0, 0),							\
     GENTRYL("settings", "Settings...", MMPush,				\
 	    BIND(WhenReady, &WR_dddPopupSettingsCB),			\
-	    sigc::bind(sigc::ptr_fun(WhenReady1), &WR_dddPopupSettingsCB), \
+	    sigc::bind(sigc::ptr_fun(WhenReady), &WR_dddPopupSettingsCB), \
 	    0, 0),							\
     MMSep,								\
     GENTRYL("saveOptions", "Save Options", MMCheckItem,			\
@@ -1544,8 +1475,8 @@ static GUI::Button *define_w;
 DECL_WR(gdbCompleteCB);
 DECL_WR(gdbApplyCB);
 #else
-DECL_WR2(WR_gdbCompleteCB, sigc::ptr_fun(gdbCompleteCB));
-DECL_WR2(WR_gdbApplyCB, sigc::ptr_fun(gdbApplyCB));
+DECL_WR(WR_gdbCompleteCB, sigc::ptr_fun(gdbCompleteCB));
+DECL_WR(WR_gdbApplyCB, sigc::ptr_fun(gdbApplyCB));
 #endif
 
 static MMDesc command_menu[] =
@@ -1579,11 +1510,11 @@ static MMDesc command_menu[] =
     MMSep,
     GENTRYL("complete", "Complete", MMPush,
 	    BIND(WhenReady, &WR_gdbCompleteCB), 
-	    sigc::bind(sigc::ptr_fun(WhenReady1), &WR_gdbCompleteCB), 
+	    sigc::bind(sigc::ptr_fun(WhenReady), &WR_gdbCompleteCB), 
 	    0, &complete_w),
     GENTRYL("apply", "Apply", MMPush,
 	    BIND(WhenReady, &WR_gdbApplyCB),
-	    sigc::bind(sigc::ptr_fun(WhenReady1), &WR_gdbApplyCB),
+	    sigc::bind(sigc::ptr_fun(WhenReady), &WR_gdbApplyCB),
 	    0, 0),
     MMSep,
     GENTRYL("clear_line", "Clear Line", MMPush,
@@ -1624,29 +1555,29 @@ static WhenReadyProc_t WR_ViewRegistersCB = { SourceView::ViewRegistersCB };
 static WhenReadyProc_t WR_ViewThreadsCB = { SourceView::ViewThreadsCB };
 DECL_WR(dddPopupSignalsCB);
 #else
-DECL_WR2(WR_ViewStackFramesCB, sigc::ptr_fun(SourceView::ViewStackFramesCB));
-DECL_WR2(WR_ViewRegistersCB, sigc::ptr_fun(SourceView::ViewRegistersCB));
-DECL_WR2(WR_ViewThreadsCB, sigc::ptr_fun(SourceView::ViewThreadsCB));
-DECL_WR2(WR_dddPopupSignalsCB, sigc::ptr_fun(dddPopupSignalsCB));
+DECL_WR(WR_ViewStackFramesCB, sigc::ptr_fun(SourceView::ViewStackFramesCB));
+DECL_WR(WR_ViewRegistersCB, sigc::ptr_fun(SourceView::ViewRegistersCB));
+DECL_WR(WR_ViewThreadsCB, sigc::ptr_fun(SourceView::ViewThreadsCB));
+DECL_WR(WR_dddPopupSignalsCB, sigc::ptr_fun(dddPopupSignalsCB));
 #endif
 
 static MMDesc stack_menu[] =
 {
     GENTRYL("stack", "Backtrace...", MMPush,
 	    BIND(WhenReady, &WR_ViewStackFramesCB),
-	    sigc::bind(sigc::ptr_fun(WhenReady1), &WR_ViewStackFramesCB),
+	    sigc::bind(sigc::ptr_fun(WhenReady), &WR_ViewStackFramesCB),
 	    0, &stack_w),
     GENTRYL("registers", "Registers...", MMPush,
 	    BIND(WhenReady, &WR_ViewRegistersCB),
-	    sigc::bind(sigc::ptr_fun(WhenReady1), &WR_ViewRegistersCB),
+	    sigc::bind(sigc::ptr_fun(WhenReady), &WR_ViewRegistersCB),
 	    0, &registers_w),
     GENTRYL("threads", "Threads...", MMPush,
 	    BIND(WhenReady, &WR_ViewThreadsCB),
-	    sigc::bind(sigc::ptr_fun(WhenReady1), &WR_ViewThreadsCB),
+	    sigc::bind(sigc::ptr_fun(WhenReady), &WR_ViewThreadsCB),
 	    0, &threads_w),
     GENTRYL("signals", "Signals...", MMPush,
 	    BIND(WhenReady, &WR_dddPopupSignalsCB),
-	    sigc::bind(sigc::ptr_fun(WhenReady1), &WR_dddPopupSignalsCB),
+	    sigc::bind(sigc::ptr_fun(WhenReady), &WR_dddPopupSignalsCB),
 	    0, &signals_w),
     MMSep,
     GENTRYL("up", "Up", MMPush,
@@ -2604,7 +2535,7 @@ static GUI::Widget *edit_watchpoints_w = 0;
 #if defined(IF_XM)
 DECL_WR(dddPopupInfosCB);
 #else
-DECL_WR2(WR_dddPopupInfosCB, sigc::ptr_fun(dddPopupInfosCB));
+DECL_WR(WR_dddPopupInfosCB, sigc::ptr_fun(dddPopupInfosCB));
 #endif
 
 static MMDesc data_menu[] = 
@@ -2650,7 +2581,7 @@ static MMDesc data_menu[] =
 	    0, &args_w),
     GENTRYL("infos", "Status Displays...", MMPush,
 	    BIND(WhenReady, &WR_dddPopupInfosCB), 
-	    sigc::bind(sigc::ptr_fun(WhenReady1), &WR_dddPopupInfosCB), 
+	    sigc::bind(sigc::ptr_fun(WhenReady), &WR_dddPopupInfosCB), 
 	    0, &infos_w),
     MMSep,
     GENTRYL("align", "Align on Grid", MMPush,
@@ -3154,9 +3085,6 @@ static MString version_warnings;
 //-----------------------------------------------------------------------------
 
 #if !defined(IF_XM)
-#if !defined(IF_XMMM)
-typedef sigc::slot<void, Gtk::Widget *> slot_gtk_w;
-#endif
 typedef sigc::slot<void, GUI::Widget *> slot_gui_w;
 #endif
 
@@ -9358,86 +9286,11 @@ static void WhenReady(Widget w, XtPointer client_data, XtPointer call_data)
 
     gdb_command(c);
 }
-#else
-#if 0
-// Execute command in (XtCallbackProc)CLIENT_DATA as soon as GDB gets ready
-#if defined(IF_XMMM)
-static void WhenReady(Widget w, XtPointer client_data, XtPointer call_data)
-#else
-static void WhenReady(Gtk::Widget *w, void *client_data)
-#endif
-{
-#if defined(IF_XMMM)
-    XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
-    if (cbs == 0)
-	return;	    // This happens with old LessTif versions
-#endif
-
-#if defined(IF_XMMM)
-    XtCallbackProc proc = STATIC_CAST(WhenReadyProc_t*,client_data)->legacy;
-#else
-    WhenReadyProc_t &wrp = *reinterpret_cast<WhenReadyProc_t *>(client_data);
-    slot_gtk_w &proc = wrp.legacy;
-    slot_gui_w &proc2 = wrp.ready;
-#endif
-    XtPointer user_client_data = 0; // No way to pass extra values here
-
-    if (can_do_gdb_command())
-    {
-	// GDB is ready: do command now
-#if defined(IF_XMMM)
-	proc(w, user_client_data, call_data);
-#else
-	proc(w);
-	proc2(NULL);
-#endif
-	return;
-    }
-
-    // Execute command as soon as GDB gets ready
-#if defined(IF_XMMM)
-    XmString label = 0;
-    XtVaGetValues(w, XmNlabelString, &label, XtPointer(0));
-    MString _action(label, true);
-    XmStringFree(label);
-    string action = _action.str();
-#else
-    GUI::String _action = get_label(w);
-    string action = _action.str();
-#endif
-    if (action.contains("...", -1))
-	action = action.before("...");
-
-    MString msg = rm(action + ": waiting until " + gdb->title() 
-		     + " gets ready...");
-#if defined(IF_XMMM)
-    WhenReadyInfo *info = new WhenReadyInfo(msg, proc, user_client_data, *cbs);
-#else
-    WhenReadyInfo *info = new WhenReadyInfo(msg, proc);
-#endif
-
-    // We don't want to lock the status, hence we use an ordinary
-    // `set_status' call instead of the StatusMsg class.
-    set_status_mstring(msg);
-
-    Command c(gdb->nop_command(XtName(w)));
-    c.origin   = w;
-    c.callback = DoneCB;
-    c.data     = (void *)info;
-    c.verbose  = false;
-    c.prompt   = false;
-    c.check    = false;
-    c.priority = COMMAND_PRIORITY_USER;
-
-    gdb_command(c);
-}
-#endif
 #endif
 
 #if !defined(IF_XM)
-
 // Execute command in (XtCallbackProc)CLIENT_DATA as soon as GDB gets ready
-static void WhenReady1(GUI::Widget *w, void *client_data)
+static void WhenReady(GUI::Widget *w, void *client_data)
 {
     WhenReadyProc_t &wrp = *reinterpret_cast<WhenReadyProc_t *>(client_data);
     sigc::slot<void, GUI::Widget *> &proc = wrp.ready;

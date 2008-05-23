@@ -515,7 +515,6 @@ static const char **watch_xx_xpm       = 0;
 #if !defined(IF_XM)
 
 #if defined(IF_XMMM)
-
 GUI::ImageHandle DDD_ICON[1] = {ddd_NAME};
 GUI::ImageHandle BREAK_AT_ICON[4] = {"break_at", "break_at-xx", "break_at-arm", "break_at-hi"};
 GUI::ImageHandle CLEAR_AT_ICON[4] = {"clear_at", "clear_at-xx", "clear_at-arm", "clear_at-hi"};
@@ -543,9 +542,7 @@ GUI::ImageHandle UNCLUSTER_ICON[4] = {"uncluster", "uncluster-xx", "uncluster-ar
 GUI::ImageHandle UNDISPLAY_ICON[4] = {"undisplay", "undisplay-xx", "undisplay-arm", "undisplay-hi"};
 GUI::ImageHandle UNWATCH_ICON[4] = {"unwatch", "unwatch-xx", "unwatch-arm", "unwatch-hi"};
 GUI::ImageHandle WATCH_ICON[4] = {"watch", "watch-xx", "watch-arm", "watch-hi"};
-
 #else
-
 GUI::ImageHandle DDD_ICON[1];
 GUI::ImageHandle BREAK_AT_ICON[4];
 GUI::ImageHandle CLEAR_AT_ICON[4];
@@ -573,13 +570,11 @@ GUI::ImageHandle UNCLUSTER_ICON[4];
 GUI::ImageHandle UNDISPLAY_ICON[4];
 GUI::ImageHandle UNWATCH_ICON[4];
 GUI::ImageHandle WATCH_ICON[4];
-
 #endif
 
 #endif
 
 #if defined(IF_XM)
-
 static char get_sign(string& g)
 {
     if (g.contains('+', 0) || g.contains('-', 0) || g.contains('x', 0))
@@ -670,12 +665,9 @@ static XImage *get_button_subimage(XImage *image, const _XtString name)
 
     return 0;			// Leave unchanged
 }
-
-
 #endif
 
 #if defined(IF_XM)
-
 static void install_icon(Widget w,
 			 const _XtString name,
 			 const char **xpm_data, 
@@ -793,11 +785,9 @@ static void install_icon(GUI::Widget *w,
 
     InstallImage(image, name);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void install_button_icon(Widget w,
 				const _XtString name,
 				const char **xpm_data, 
@@ -877,11 +867,9 @@ static void install_button_icon(GUI::Widget *w,
 		 width, height,
 		 active_color_key, background, true);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Install toolbar icons in Motif cache.  COLOR_KEY indicates the XPM
 // visual type for inactive buttons.  ACTIVE_COLOR_KEY is the XPM visual
 // type for active buttons (entered or armed).
@@ -1456,9 +1444,7 @@ get_label(Gtk::Widget *w)
 #endif
 
 #if !defined(IF_XM)
-
 #if defined(IF_XMMM)
-
 MString
 get_label(GUI::Widget *w)
 {
@@ -1468,15 +1454,11 @@ get_label(GUI::Widget *w)
     XmStringFree(label);
     return lab;
 }
-
 #else
-
 GUI::String
 get_label(GUI::Widget *w)
 {
     return get_label(w->internal());
 }
-
 #endif
-
 #endif

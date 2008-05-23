@@ -135,7 +135,6 @@ static const char *lesstif_pushMenuTranslations =
 #endif
 
 #if defined(IF_XM)
-
 struct PushMenuInfo {
     Widget widget;		// The PushButton
     Widget subMenu;		// Submenu of this PushButton
@@ -150,9 +149,7 @@ private:
     PushMenuInfo(const PushMenuInfo&);
     PushMenuInfo& operator= (const PushMenuInfo&);
 };
-
 #else
-
 struct PushMenuInfo {
     GUI::Widget *widget;	// The PushButton
     GUI::Menu *subMenu;		// Submenu of this PushButton
@@ -167,7 +164,6 @@ private:
     PushMenuInfo(const PushMenuInfo&);
     PushMenuInfo& operator= (const PushMenuInfo&);
 };
-
 #endif
 
 #if defined(IF_XM)
@@ -325,7 +321,6 @@ static void ReflattenButtonCB(Widget /* shell */, XtPointer client_data,
 #ifdef NAG_ME
 #warning Button flattening?
 #endif
-
 #endif
 
 #if !defined(IF_XM)
@@ -357,7 +352,6 @@ pack_item(GUI::Container *container, GUI::Widget *widget)
 	container->add(*widget);
 #endif
 }
-
 #endif
 
 #if defined(IF_XMMM)
@@ -367,11 +361,9 @@ pack_item(GUI::Container *container, GUI::Widget *widget)
 {
     std::cerr << "PACK_ITEM NOT SUPPORTED FOR XMMM\n";
 }
-
 #endif
 
 #if defined(IF_XM)
-
 //-----------------------------------------------------------------------
 // Add items
 //-----------------------------------------------------------------------
@@ -753,9 +745,7 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	}
     }
 }
-
 #else
-
 //-----------------------------------------------------------------------
 // Add items
 //-----------------------------------------------------------------------
@@ -1088,7 +1078,6 @@ void MMaddItems(GUI::Container *shell, MMDesc items[], bool ignore_seps)
 	}
     }
 }
-
 #endif
 
 
@@ -1097,7 +1086,6 @@ void MMaddItems(GUI::Container *shell, MMDesc items[], bool ignore_seps)
 //-----------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 // Create pulldown menu from items
 Widget MMcreatePulldownMenu(Widget parent, const char *name, MMDesc items[],
 			    ArgList args, Cardinal arg)
@@ -1108,9 +1096,7 @@ Widget MMcreatePulldownMenu(Widget parent, const char *name, MMDesc items[],
 
     return menu;
 }
-
 #else
-
 // Create pulldown menu from items
 GUI::PulldownMenu *MMcreatePulldownMenu(GUI::Container &parent, GUI::String name, MMDesc items[])
 {
@@ -1119,11 +1105,9 @@ GUI::PulldownMenu *MMcreatePulldownMenu(GUI::Container &parent, GUI::String name
 
     return menu;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Create radio pulldown menu from items
 Widget MMcreateRadioPulldownMenu(Widget parent, const char *name, MMDesc items[],
 				 ArgList _args, Cardinal _arg)
@@ -1143,9 +1127,7 @@ Widget MMcreateRadioPulldownMenu(Widget parent, const char *name, MMDesc items[]
     delete[] args;
     return w;
 }
-
 #else
-
 // Create radio pulldown menu from items
 GUI::PulldownMenu *MMcreateRadioPulldownMenu(GUI::Container &parent, GUI::String name, MMDesc items[])
 {
@@ -1153,11 +1135,9 @@ GUI::PulldownMenu *MMcreateRadioPulldownMenu(GUI::Container &parent, GUI::String
     // FIXME: Set options isHomogeneous, entryClass, radioBehaviour
     return w;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Create popup menu from items
 Widget MMcreatePopupMenu(Widget parent, const char *name, MMDesc items[],
 			 ArgList args, Cardinal arg)
@@ -1168,9 +1148,7 @@ Widget MMcreatePopupMenu(Widget parent, const char *name, MMDesc items[],
 
     return menu;
 }
-
 #else
-
 // Create popup menu from items
 GUI::PopupMenu *MMcreatePopupMenu(GUI::Widget &parent, GUI::String name, MMDesc items[])
 {
@@ -1191,7 +1169,6 @@ GUI::PopupMenu *MMcreatePopupMenu(GUI::Widget *parent, GUI::String name, MMDesc 
 
     return menu;
 }
-
 #endif
 
 #if 0
@@ -1207,7 +1184,6 @@ T get_arg_value(ArgList args, Cardinal arg, String name)
 #endif
 
 #if defined(IF_XM)
-
 // Create menu bar from items
 Widget MMcreateMenuBar(Widget parent, const char *name, MMDesc items[],
 		       ArgList args, Cardinal arg)
@@ -1218,9 +1194,7 @@ Widget MMcreateMenuBar(Widget parent, const char *name, MMDesc items[],
 
     return bar;
 }
-
 #else
-
 // Create menu bar from items
 GUI::MenuBar *MMcreateMenuBar(GUI::Container &parent, GUI::String name, MMDesc items[])
 {
@@ -1230,11 +1204,9 @@ GUI::MenuBar *MMcreateMenuBar(GUI::Container &parent, GUI::String name, MMDesc i
 
     return bar;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Create work area from items
 Widget MMcreateWorkArea(Widget parent, const char *name, MMDesc items[],
 			ArgList args, Cardinal arg)
@@ -1245,9 +1217,7 @@ Widget MMcreateWorkArea(Widget parent, const char *name, MMDesc items[],
 
     return bar;
 }
-
 #else
-
 // Create work area from items
 GUI::Container *MMcreateWorkArea(GUI::Dialog *parent, GUI::String name, MMDesc items[])
 {
@@ -1257,11 +1227,9 @@ GUI::Container *MMcreateWorkArea(GUI::Dialog *parent, GUI::String name, MMDesc i
 
     return bar;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Create panel from items
 Widget MMcreatePanel(Widget parent, const _XtString name, MMDesc items[],
 		     ArgList args, Cardinal arg)
@@ -1272,9 +1240,7 @@ Widget MMcreatePanel(Widget parent, const _XtString name, MMDesc items[],
 
     return panel;
 }
-
 #else
-
 GUI::Container *MMcreatePanel(GUI::Container *parent, GUI::String name, MMDesc items[],
 			      GUI::Orientation orient)
 {
@@ -1289,7 +1255,6 @@ GUI::Container *MMcreatePanel(GUI::Container *parent, GUI::String name, MMDesc i
     panel->show();
     return panel;
 }
-
 #endif
 
 void MMadjustPanel(const MMDesc items[], Dimension space)
@@ -1334,7 +1299,6 @@ void MMadjustPanel(const MMDesc items[], Dimension space)
 }
 
 #if defined(IF_XM)
-
 // Create radio panel from items
 Widget MMcreateRadioPanel(Widget parent, const _XtString name, MMDesc items[],
 			  ArgList _args, Cardinal _arg)
@@ -1357,9 +1321,7 @@ Widget MMcreateRadioPanel(Widget parent, const _XtString name, MMDesc items[],
     delete[] args;
     return panel;
 }
-
 #else
-
 // Create radio panel from items
 GUI::Container *MMcreateRadioPanel(GUI::Container *parent, GUI::String name, MMDesc items[],
 				   GUI::Orientation orient)
@@ -1372,11 +1334,9 @@ GUI::Container *MMcreateRadioPanel(GUI::Container *parent, GUI::String name, MMD
 
     return panel;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Create button panel from items
 Widget MMcreateButtonPanel(Widget parent, const _XtString name, MMDesc items[],
 			   ArgList args, Cardinal arg)
@@ -1387,9 +1347,7 @@ Widget MMcreateButtonPanel(Widget parent, const _XtString name, MMDesc items[],
 
     return panel;
 }
-
 #else
-
 // Create button panel from items
 GUI::Container *MMcreateButtonPanel(GUI::Container *parent, GUI::String name, MMDesc items[],
 				    GUI::Orientation orient)
@@ -1406,7 +1364,6 @@ GUI::Container *MMcreateButtonPanel(GUI::Container *parent, GUI::String name, MM
 
     return panel;
 }
-
 #endif
 
 // Perform proc on items
@@ -1437,7 +1394,6 @@ void MMonItems(const MMDesc items[], MMItemProc proc, void *closure, int depth)
 //-----------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 // Add callbacks to items
 static void addCallback(const MMDesc *item, XtPointer default_closure)
 {
@@ -1610,9 +1566,7 @@ static void addCallback(const MMDesc *item, XtPointer default_closure)
 	abort();
     }
 }
-
 #else
-
 // Add callbacks to items
 static void addCallback(const MMDesc *item, void *default_closure)
 {
@@ -1837,27 +1791,21 @@ static void addCallback(const MMDesc *item, void *default_closure)
 	abort();
     }
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void MMaddCallbacks(const MMDesc items[], XtPointer default_closure, int depth)
 {
     MMonItems(items, addCallback, default_closure, depth);
 }
-
 #else
-
 void MMaddCallbacks(const MMDesc items[], void *default_closure, int depth)
 {
     MMonItems(items, addCallback, default_closure, depth);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Add help callback
 struct addHelpCallback_t {
   XtCallbackProc proc;
@@ -1870,19 +1818,15 @@ static void addHelpCallback(const MMDesc *item, XtPointer closure)
 
     XtAddCallback(widget, XmNhelpCallback, proc, XtPointer(0));
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void MMaddHelpCallback(const MMDesc items[], XtCallbackProc proc, int depth)
 {
     addHelpCallback_t proc_ = { proc };
     MMonItems(items, addHelpCallback, XtPointer(&proc_), depth);
 }
-
 #else
-
 void MMaddHelpCallback(const MMDesc items[], sigc::slot<void, GUI::Widget *> proc, int depth)
 {
 #ifdef NAG_ME
@@ -1890,7 +1834,6 @@ void MMaddHelpCallback(const MMDesc items[], sigc::slot<void, GUI::Widget *> pro
 #endif
     std::cerr << "Implement MMaddHelpCallback!\n";
 }
-
 #endif
 
 
@@ -1963,7 +1906,6 @@ GUI::Menu *MMcreatePushMenu(GUI::Container *parent, GUI::String name, MMDesc ite
 
 
 #if defined(IF_XM)
-
 static XEvent last_push_menu_event; // Just save it
 
 // Remove time out again
@@ -2032,13 +1974,10 @@ static void PopupPushMenuCB(XtPointer client_data, XtIntervalId *id)
     }
 #endif
 }
-
 #else
-
 #ifdef NAG_ME
 #warning PUSH MENUS NOT IMPLEMENTED FOR NOW
 #endif
-
 #endif
 
 #if defined(IF_XM)
@@ -2217,7 +2156,6 @@ static void RedrawPushMenuCB(Widget w, XtPointer, XtPointer)
 
 
 #if defined(IF_XM)
-
 void set_sensitive(Widget w, bool state)
 {
     if (w != 0)
@@ -2232,9 +2170,7 @@ void set_sensitive(Widget w, bool state)
 	}
     }
 }
-
 #else
-
 void set_sensitive(GUI::Widget *w, bool state)
 {
     if (w != 0)
@@ -2246,7 +2182,6 @@ void set_sensitive(GUI::Widget *w, bool state)
 #endif
     }
 }
-
 #endif
 
 #if !defined(IF_XM)

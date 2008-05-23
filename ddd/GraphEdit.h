@@ -310,11 +310,6 @@ typedef Widget GRAPH_EDIT_P;
 #else
 
 #include "GraphGC.h"
-#if defined(IF_XMMM)
-#else
-#include <gtkmm/drawingarea.h>
-#include <gdkmm/color.h>
-#endif
 
 enum GraphEditState {
     SelectState,	// draw select frame

@@ -480,7 +480,6 @@ static void get_sessions(StringArray& arr)
 }
 
 #if defined(IF_XM)
-
 // Update state of `delete' button
 static void update_delete(Widget dialog)
 {
@@ -512,7 +511,6 @@ static void update_delete(Widget dialog)
     Widget delete_w = XmSelectionBoxGetChild(dialog, XmDIALOG_APPLY_BUTTON);
     set_sensitive(delete_w, sensitive);
 }
-
 #endif
 
 #if !defined(IF_XM)
@@ -554,11 +552,9 @@ static void update_delete1(GUI::Widget *dialog)
     set_sensitive(delete_w, sensitive);
 #endif
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Update list of sessions
 static void update_sessions(Widget dialog)
 {
@@ -584,7 +580,6 @@ static void update_sessions(Widget dialog)
 
     update_delete(dialog);
 }
-
 #endif
 
 #if !defined(IF_XM)
@@ -617,7 +612,6 @@ static void update_sessions1(GUI::Widget *dialog)
 
     update_delete1(dialog);
 }
-
 #endif
 
 #if 0
@@ -629,7 +623,6 @@ static void UpdateSessionsCB(Widget dialog, XtPointer, XtPointer)
 #endif
 
 #if defined(IF_XM)
-
 // Set argument from selected list item
 static void SelectSessionCB(Widget sessions,
 			    XtPointer client_data, XtPointer call_data)
@@ -658,9 +651,7 @@ static void SelectSessionCB(Widget sessions,
     // Update delete button
     update_delete(dialog);
 }
-
 #else
-
 // Set argument from selected list item
 static void SelectSessionCB(GUI::SelectionDialog *sessions)
 {
@@ -691,11 +682,9 @@ static void SelectSessionCB(GUI::SelectionDialog *sessions)
     update_delete(dialog);
 #endif
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Create custom session dialog
 static Widget create_session_panel(Widget parent, const _XtString name,
 				   XtCallbackProc ok,
@@ -731,9 +720,7 @@ static Widget create_session_panel(Widget parent, const _XtString name,
 
     return dialog;
 }
-
 #else
-
 typedef void (*SessionCBType)(GUI::ListView *w);
 
 // Create custom session dialog
@@ -763,7 +750,6 @@ static GUI::SelectionDialog *create_session_panel(GUI::Widget *parent, const cha
 
     return dialog;
 }
-
 #endif
 
 
@@ -816,7 +802,6 @@ void delete_session(const string& session, bool silent)
 }
 
 #if defined(IF_XM)
-
 // Remove selected sessions
 static void DeleteSessionsCB(Widget dialog, XtPointer client_data, XtPointer)
 {
@@ -844,7 +829,6 @@ static void DeleteSessionsCB(Widget dialog, XtPointer client_data, XtPointer)
 
     update_sessions(dialog);
 }
-
 #endif
 
 #if !defined(IF_XM)
@@ -881,7 +865,6 @@ static void DeleteSessionsCB1(GUI::ListView *dialog)
     update_sessions(dialog);
 #endif
 }
-
 #endif
 
 // ---------------------------------------------------------------------------
@@ -889,7 +872,6 @@ static void DeleteSessionsCB1(GUI::ListView *dialog)
 // ---------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 static string get_chosen_session(Widget dialog)
 {
     Widget text     = XmSelectionBoxGetChild(dialog, XmDIALOG_TEXT);
@@ -905,7 +887,6 @@ static string get_chosen_session(Widget dialog)
 	value = DEFAULT_SESSION;
     return value;
 }
-
 #endif
 
 #if !defined(IF_XM)
@@ -919,7 +900,6 @@ static string get_chosen_session1(GUI::ListView *list)
 	value = DEFAULT_SESSION;
     return value;
 }
-
 #endif
 
 // Set session to V
@@ -941,7 +921,6 @@ void set_session(const string& v)
 }
 
 #if defined(IF_XM)
-
 // Set the current session
 static void SetSessionCB(Widget dialog, XtPointer, XtPointer)
 {
@@ -966,7 +945,6 @@ static void SetSessionCB(Widget dialog, XtPointer, XtPointer)
 	    }
     }
 }
-
 #endif
 
 #if !defined(IF_XM)
@@ -995,7 +973,6 @@ static void SetSessionCB1(GUI::ListView *dialog)
 	    }
     }
 }
-
 #endif
 
 #if defined(IF_XM)
@@ -1013,7 +990,6 @@ static GUI::Widget *gcore_methods_w = 0;
 #endif
 
 #if defined(IF_XM)
-
 static void SetGCoreSensitivityCB(Widget = 0, XtPointer = 0, XtPointer = 0)
 {
     bool set = 
@@ -1030,9 +1006,7 @@ static void SetGCoreSensitivityCB(Widget = 0, XtPointer = 0, XtPointer = 0)
     set_sensitive(may_ptrace_w, false);
 #endif
 }
-
 #else
-
 static void SetGCoreSensitivityCB(void)
 {
     bool set = 
@@ -1049,25 +1023,20 @@ static void SetGCoreSensitivityCB(void)
     set_sensitive(may_ptrace_w, false);
 #endif
 }
-
 #endif
 
 static unsigned long gcore_method = 0;
 
 #if defined(IF_XM)
-
 static void SetGCoreMethodCB(Widget, XtPointer client_data, XtPointer)
 {
     gcore_method = (unsigned long)client_data;
 }
-
 #else
-
 static void SetGCoreMethodCB(unsigned long client_data)
 {
     gcore_method = client_data;
 }
-
 #endif
 
 static MMDesc gcore_methods[] =
@@ -1102,7 +1071,6 @@ static MMDesc gcore_items[] =
 
 
 #if defined(IF_XM)
-
 // OK pressed in `save session'
 static void SaveSessionCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
@@ -1121,7 +1089,6 @@ static void SaveSessionCB(Widget w, XtPointer client_data, XtPointer call_data)
     // Mark as `non-temporary'
     set_temporary_session(app_data.session, false);
 }
-
 #endif
 
 #if !defined(IF_XM)
@@ -1144,11 +1111,9 @@ static void SaveSessionCB1(GUI::ListView *w)
     // Mark as `non-temporary'
     set_temporary_session(app_data.session, false);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Save current session from a list of choices
 void SaveSessionAsCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
@@ -1205,9 +1170,7 @@ void SaveSessionAsCB(Widget w, XtPointer client_data, XtPointer call_data)
     update_sessions(dialog);
     manage_and_raise(dialog);
 }
-
 #else
-
 // Save current session from a list of choices
 void SaveSessionAsCB(GUI::Widget *w)
 {
@@ -1266,19 +1229,15 @@ void SaveSessionAsCB(GUI::Widget *w)
 
     MString text(name);
     XtVaSetValues(dialog, XmNtextString, text.xmstring(), XtPointer(0));
-
 #else
-
 #ifdef NAG_ME
 #warning What does this stuff do?
 #endif
-
 #endif
 
     update_sessions1(dialog);
     manage_and_raise(dialog);
 }
-
 #endif
 
 
@@ -1287,7 +1246,6 @@ void SaveSessionAsCB(GUI::Widget *w)
 // ---------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 // Get a string resource from DB named NAME with class CLS
 static string get_resource(XrmDatabase db, string name, string cls)
 {
@@ -1304,9 +1262,7 @@ static string get_resource(XrmDatabase db, string name, string cls)
 
     return "";		// Not found
 }
-
 #else
-
 // Get a string resource from DB named NAME with class CLS
 static string get_resource(xmlDoc *db, string name, string cls)
 {
@@ -1326,11 +1282,9 @@ static string get_resource(xmlDoc *db, string name, string cls)
     return string("");
 #endif
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static Boolean done_if_idle(XtPointer data)
 {
     if (emptyCommandQueue() && can_do_gdb_command())
@@ -1344,9 +1298,7 @@ static Boolean done_if_idle(XtPointer data)
 
     return False;		// Get called again
 }
-
 #else
-
 static bool done_if_idle(Delay *data)
 {
     if (emptyCommandQueue() && can_do_gdb_command())
@@ -1360,7 +1312,6 @@ static bool done_if_idle(Delay *data)
 
     return true;		// Get called again
 }
-
 #endif
 
 static void done(const string&, void *data)
@@ -1641,7 +1592,6 @@ void RestartDebuggerCB(void)
 
 
 #if defined(IF_XM)
-
 // OK pressed in `open session'
 static void OpenThisSessionCB(Widget w, XtPointer client_data, 
 			      XtPointer call_data)
@@ -1655,7 +1605,6 @@ static void OpenThisSessionCB(Widget w, XtPointer client_data,
 	set_temporary_session(app_data.session, false);
     }
 }
-
 #endif
 
 #if !(IF_XM)
@@ -1672,11 +1621,9 @@ static void OpenThisSessionCB1(GUI::ListView *w)
 	set_temporary_session(app_data.session, false);
     }
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Load session from a list of choices
 void OpenSessionCB(Widget w, XtPointer, XtPointer)
 {
@@ -1694,9 +1641,7 @@ void OpenSessionCB(Widget w, XtPointer, XtPointer)
     update_sessions(dialog);
     manage_and_raise(dialog);
 }
-
 #else
-
 // Load session from a list of choices
 void OpenSessionCB(GUI::Widget *w)
 {
@@ -1714,7 +1659,6 @@ void OpenSessionCB(GUI::Widget *w)
     update_sessions1(dialog);
     manage_and_raise(dialog);
 }
-
 #endif
 
 // Name of restart session
@@ -1755,7 +1699,6 @@ string session_core_file(const string& session)
 // ---------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 #if XtSpecificationRelease >= 6
 
 // Realize X11R6 session management protocols.

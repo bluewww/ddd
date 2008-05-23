@@ -173,16 +173,13 @@ static int print_to_file(const string& filename, PrintGC& gc,
 }
 
 #if defined(IF_XM)
-
 static void deletePrintAgent(XtPointer client_data, XtIntervalId *)
 {
     // Delete agent after use
     Agent *edit_agent = (Agent *)client_data;
     delete edit_agent;
 }
-
 #else
-
 static bool deletePrintAgent(Agent *client_data)
 {
     // Delete agent after use
@@ -190,11 +187,9 @@ static bool deletePrintAgent(Agent *client_data)
     delete edit_agent;
     return false;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void unlinkPrintFile(XtPointer client_data, XtIntervalId *)
 {
     // Delete temp file after use
@@ -202,9 +197,7 @@ static void unlinkPrintFile(XtPointer client_data, XtIntervalId *)
     unlink(tempfile->chars());
     delete tempfile;
 }
-
 #else
-
 static bool unlinkPrintFile(string *tempfile)
 {
     // Delete temp file after use
@@ -212,7 +205,6 @@ static bool unlinkPrintFile(string *tempfile)
     delete tempfile;
     return false;
 }
-
 #endif
 
 static string output_buffer;
@@ -330,7 +322,6 @@ static GUI::CheckButton * custom_paper_size;
 // Go and print according to local state
 
 #if defined(IF_XM)
-
 void PrintAgainCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     const bool unmanage = ((long)client_data & 1);
@@ -440,11 +431,9 @@ void PrintAgainCB(Widget w, XtPointer client_data, XtPointer call_data)
     }
     }
 }
-
 #endif
 
 #if !defined(IF_XM)
-
 void PrintAgainCB1(GUI::Button *w, long client_data)
 {
 #if defined(IF_XMMM)
@@ -453,7 +442,6 @@ void PrintAgainCB1(GUI::Button *w, long client_data)
     std::cerr << "PrintAgainCB not implemented\n";
 #endif
 }
-
 #endif
 
 
@@ -487,7 +475,6 @@ static void set_print_file_name(const string& name)
 }
 
 #if defined(IF_XM)
-
 static void SetPrintTypeCB(Widget w, XtPointer client_data, XtPointer)
 {
     if (!XmToggleButtonGetState(w))
@@ -509,69 +496,53 @@ static void SetPrintTypeCB(Widget w, XtPointer client_data, XtPointer)
 	set_print_file_name(file_name);
     }
 }
-
 #else
-
 static void SetPrintTypeCB(GUI::Widget *w, PrintType client_data)
 {
     std::cerr << "SetPrintTypeCB not implemented\n";
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void SetSensitiveCB(Widget w, XtPointer client_data, XtPointer)
 {
     if (XmToggleButtonGetState(w))
 	set_sensitive(Widget(client_data), true);
 }
-
 #else
-
 static void SetSensitiveCB(GUI::Widget *w, GUI::Widget *client_data)
 {
     std::cerr << "SetSensitive not implemented\n";
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void TakeFocusCB(Widget w, XtPointer client_data, XtPointer)
 {
     if (XmToggleButtonGetState(w))
 	XmProcessTraversal(Widget(client_data), XmTRAVERSE_CURRENT);
 }
-
 #else
-
 static void TakeFocusCB(GUI::Widget *w, GUI::Widget *client_data)
 {
     std::cerr << "TakeFocusCB not implemented\n";
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void UnsetSensitiveCB(Widget w, XtPointer client_data, XtPointer)
 {
     if (XmToggleButtonGetState(w))
 	set_sensitive(Widget(client_data), false);
 }
-
 #else
-
 static void UnsetSensitiveCB(GUI::Widget *w, GUI::Widget *client_data)
 {
     std::cerr << "UnsetSensitiveCB not implemented\n";
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void SetPrintDisplaysCB(Widget w, XtPointer client_data, XtPointer)
 {
     if (!XmToggleButtonGetState(w))
@@ -579,18 +550,14 @@ static void SetPrintDisplaysCB(Widget w, XtPointer client_data, XtPointer)
 
     print_displays = bool((int)(long)client_data);
 }
-
 #else
-
 static void SetPrintDisplaysCB(GUI::CheckButton *w, bool client_data)
 {
     std::cerr << "SetPrintDisplaysCB not implemented\n";
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void SetPrintSelectedNodesCB(Widget w, XtPointer, XtPointer)
 {
     print_selected_only = XmToggleButtonGetState(w);
@@ -604,9 +571,7 @@ static void SetPrintTargetCB(Widget w, XtPointer client_data, XtPointer)
 
     print_target = PrintTarget((int)(long)client_data);
 }
-
 #else
-
 static void SetPrintSelectedNodesCB(GUI::CheckButton *w)
 {
     print_selected_only = w->get_active();
@@ -619,7 +584,6 @@ static void SetPrintTargetCB(GUI::CheckButton *w, long client_data)
 
     print_target = PrintTarget(client_data);
 }
-
 #endif
 
 static void set_paper_size_string(const char *s)
@@ -637,7 +601,6 @@ static void set_paper_size_string(const char *s)
 }
 
 #if defined(IF_XM)
-
 static void SetGCColorCB(Widget w, XtPointer, XtPointer)
 {
     print_postscript_gc.color = XmToggleButtonGetState(w);
@@ -666,9 +629,7 @@ static void SetGCA4(Widget w, XtPointer, XtPointer)
 	set_paper_size_string("210mm x 297mm");
     }
 }
-
 #else
-
 static void SetGCColorCB(GUI::CheckButton *w)
 {
     print_postscript_gc.color = w->get_active();
@@ -697,11 +658,9 @@ static void SetGCA4(GUI::CheckButton *w)
 	set_paper_size_string("210mm x 297mm");
     }
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void SetGCLetter(Widget w, XtPointer, XtPointer)
 {
     PostScriptPrintGC gc;
@@ -737,9 +696,7 @@ static void SetGCExecutive(Widget w, XtPointer, XtPointer)
 	set_paper_size_string("7.5in x 10in");
     }
 }
-
 #else
-
 static void SetGCLetter(GUI::CheckButton *w)
 {
     PostScriptPrintGC gc;
@@ -775,7 +732,6 @@ static void SetGCExecutive(GUI::CheckButton *w)
 	set_paper_size_string("7.5in x 10in");
     }
 }
-
 #endif
 
 // Convert single unit to points
@@ -892,7 +848,6 @@ static void get_paper_size(const string& s, int& hsize, int& vsize)
 }
 
 #if defined(IF_XM)
-
 static bool set_paper_size(const string& s)
 {
     int hsize, vsize;
@@ -930,9 +885,7 @@ static bool set_paper_size(const string& s)
 
     return true;
 }
-
 #else
-
 static bool set_paper_size(const string& s)
 {
     int hsize, vsize;
@@ -970,11 +923,9 @@ static bool set_paper_size(const string& s)
 
     return true;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void SetPaperSizeCB(Widget w, XtPointer, XtPointer call_data)
 {
     XmFileSelectionBoxCallbackStruct *cbs =
@@ -997,20 +948,16 @@ static void SetPaperSizeCB(Widget w, XtPointer, XtPointer call_data)
     if (ok)
 	XtUnmanageChild(w);
 }
-
 #else
-
 static void SetPaperSizeCB(GUI::Dialog *w)
 {
 #ifdef NAG_ME
 #warning SetPaperSizeCB not implemented.
 #endif
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void CheckPaperSizeCB(Widget text, XtPointer client_data, XtPointer call_data)
 {
     Widget ok_button = Widget(client_data);
@@ -1024,9 +971,7 @@ static void CheckPaperSizeCB(Widget text, XtPointer client_data, XtPointer call_
 
     set_sensitive(ok_button, hsize >= 0 && vsize >= 0);
 }
-
 #else
-
 static void CheckPaperSizeCB(GUI::Entry *text, GUI::Button *ok_button)
 {
     string size(text->get_text().c_str());
@@ -1036,29 +981,23 @@ static void CheckPaperSizeCB(GUI::Entry *text, GUI::Button *ok_button)
 
     set_sensitive(ok_button, hsize >= 0 && vsize >= 0);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void ResetPaperSizeCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     set_paper_size(app_data.paper_size);
     XtUnmanageChild(w);
 }
-
 #else
-
 static void ResetPaperSizeCB(GUI::Dialog *w)
 {
     set_paper_size(app_data.paper_size);
     w->hide();
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void SetGCCustom(Widget w, XtPointer, XtPointer)
 {
     if (!XmToggleButtonGetState(w))
@@ -1075,9 +1014,7 @@ static void SetGCOrientation(Widget w, XtPointer client_data, XtPointer)
     print_postscript_gc.orientation = 
 	PostScriptPrintGC::Orientation((int)(long)client_data);
 }
-
 #else
-
 static void SetGCCustom(GUI::CheckButton *w)
 {
     if (!w->get_active())
@@ -1094,11 +1031,9 @@ static void SetGCOrientation(GUI::RadioButton *w, long client_data)
     print_postscript_gc.orientation = 
 	PostScriptPrintGC::Orientation(client_data);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void SetPrintFileNameCB(Widget w, XtPointer, XtPointer)
 {
     string target = get_file(w, XtPointer(0), XtPointer(0));
@@ -1108,9 +1043,7 @@ static void SetPrintFileNameCB(Widget w, XtPointer, XtPointer)
 	XtUnmanageChild(w);
     }
 }
-
 #else
-
 static void SetPrintFileNameCB(GUI::FileSelectionDialog *w)
 {
     string target = get_file(w);
@@ -1120,11 +1053,9 @@ static void SetPrintFileNameCB(GUI::FileSelectionDialog *w)
 	w->hide();
     }
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void BrowseNameCB(Widget w, XtPointer, XtPointer)
 {
     Delay delay;
@@ -1178,9 +1109,7 @@ static void BrowseNameCB(Widget w, XtPointer, XtPointer)
 
     manage_and_raise(dialog);
 }
-
 #else
-
 static void BrowseNameCB(GUI::Widget *w)
 {
     Delay delay;
@@ -1233,11 +1162,9 @@ static void BrowseNameCB(GUI::Widget *w)
 
     manage_and_raise(dialog);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void PrintCB(Widget parent, bool displays)
 {
     print_displays = displays;
@@ -1510,9 +1437,7 @@ static void PrintCB(Widget parent, bool displays)
     // Gofer it!
     manage_and_raise(print_dialog);
 }
-
 #else
-
 static void PrintCB(GUI::Button *parent, bool displays)
 {
     print_displays = displays;
@@ -1768,11 +1693,9 @@ static void PrintCB(GUI::Button *parent, bool displays)
     // Gofer it!
     manage_and_raise(print_dialog);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void PrintGraphCB(Widget w, XtPointer, XtPointer)
 {
     PrintCB(w, true);
@@ -1782,9 +1705,7 @@ void PrintPlotCB(Widget w, XtPointer, XtPointer)
 {
     PrintCB(w, false);
 }
-
 #else
-
 void PrintGraphCB(GUI::Button *w)
 {
     PrintCB(w, true);
