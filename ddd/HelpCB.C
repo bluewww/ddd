@@ -3106,34 +3106,6 @@ void EnableButtonDocs(bool enable)
     button_docs_enabled = enable;
 }
 
-
-
-//-----------------------------------------------------------------------------
-// Text tips.
-//-----------------------------------------------------------------------------
-
-#if defined(IF_XM)
-// (Un)install text tips for W.
-void InstallTextTips(Widget w, bool install)
-{
-    EventMask event_mask = EnterWindowMask | LeaveWindowMask 
-	| ButtonPress | ButtonRelease | PointerMotionMask
-	| KeyPress | KeyRelease;
-
-    if (install)
-    {
-	XtAddEventHandler(w, event_mask, False, 
-			  HandleTipEvent, XtPointer(0));
-
-    }
-    else
-    {
-	XtRemoveEventHandler(w, event_mask, False, 
-			     HandleTipEvent, XtPointer(0));
-    }
-}
-#endif
-
 //-----------------------------------------------------------------------------
 // Text tips.
 //-----------------------------------------------------------------------------
