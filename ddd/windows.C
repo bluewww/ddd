@@ -637,16 +637,18 @@ void popup_shell(GUI::Widget *w)
 	tool_buttons_w->show();
     }
 
+#if 0
     if (w->is_realized()) {
 	w->show();
     }
+#endif
+    // Gtk realizes widgets as needed.
+    w->show();
 
     set_state(w, PoppingUp);
 
+    std::cerr << "raise shell?\n";
     // Uniconify window
-#ifdef NAG_ME
-#warning Iconified windows not handled.
-#endif
     // raise_shell(w);
 }
 #endif
