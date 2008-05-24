@@ -169,6 +169,14 @@ char ddd_rcsid[] =
 #include <Xm/RepType.h>		// XmRepTypeInstallTearOffModelConverter()
 #endif
 
+#if HAVE_X11_XMU_EDITRES_H
+#include <X11/Xmu/Editres.h>
+#endif
+
+#if HAVE_ATHENA
+#include <X11/Xaw/XawInit.h>
+#endif
+
 #include <X11/IntrinsicP.h>	// LessTif hacks
 #include "Sash.h"
 #include "LessTifH.h"
@@ -178,15 +186,6 @@ char ddd_rcsid[] =
 #undef XtIsRealized
 #endif
 #endif
-
-#if HAVE_X11_XMU_EDITRES_H
-#include <X11/Xmu/Editres.h>
-#endif
-
-#if HAVE_ATHENA
-#include <X11/Xaw/XawInit.h>
-#endif
-
 
 // Lots of DDD stuff
 #include "AgentM.h"
@@ -305,14 +304,6 @@ char ddd_rcsid[] =
 #include <GUI/Entry.h>
 #include <GUI/Main.h>
 #endif
-
-#if !defined(IF_XM)
-#if 0
-#include <gtk/gtkcheckmenuitem.h>
-#include <gtk/gtktogglebutton.h>
-#endif
-#endif
-
 // Standard stuff
 #include <stdlib.h>
 #include <iostream>
@@ -340,16 +331,6 @@ extern "C" {
 #endif
 
 
-enum DDDWindow { OtherWindow = -1,
-		 ToolWindow  = 0, 
-		 ExecWindow, 
-		 Sep,
-		 GDBWindow, 
-		 SourceWindow,
-		 DataWindow, 
-		 CodeWindow,
-		 CommonWindow };
-
 //-----------------------------------------------------------------------------
 // Forward function decls
 //-----------------------------------------------------------------------------
@@ -376,22 +357,32 @@ static void WhenReady            (Widget, XtPointer, XtPointer);
 static void WhenReady            (GUI::Widget *w, void *client_data);
 #endif
 
+enum DDDWindow { OtherWindow = -1,
+		 ToolWindow  = 0, 
+		 ExecWindow, 
+		 Sep,
+		 GDBWindow, 
+		 SourceWindow,
+		 DataWindow, 
+		 CodeWindow,
+		 CommonWindow };
+
 // Cut and Paste
 #if defined(IF_XM)
 static void gdbCutSelectionCB    (Widget, XtPointer, XtPointer);
 static void gdbCopySelectionCB   (Widget, XtPointer, XtPointer);
-static void gdbSelectAllCB       (Widget, XtPointer, XtPointer);
 static void gdbPasteClipboardCB  (Widget, XtPointer, XtPointer);
 static void gdbDeleteSelectionCB (Widget, XtPointer, XtPointer);
 static void gdbClearAllCB        (Widget, XtPointer, XtPointer);
+static void gdbSelectAllCB       (Widget, XtPointer, XtPointer);
 static void gdbUnselectAllCB     (Widget, XtPointer, XtPointer);
 #else
 static void gdbCutSelectionCB    (GUI::Widget *, DDDWindow);
 static void gdbCopySelectionCB   (GUI::Widget *, DDDWindow);
-static void gdbSelectAllCB       (GUI::Widget *, DDDWindow);
 static void gdbPasteClipboardCB  (GUI::Widget *, DDDWindow);
 static void gdbDeleteSelectionCB (GUI::Widget *, DDDWindow);
 static void gdbClearAllCB        (void);
+static void gdbSelectAllCB       (GUI::Widget *, DDDWindow);
 static void gdbUnselectAllCB     (void);
 #endif
 
@@ -437,9 +428,7 @@ static void create_status(GUI::Container *parent);
 // Status LED
 static void blink(bool set);
 #if defined(IF_XM)
-static void ToggleBlinkCB(Widget w,
-			  XtPointer client_data,
-			  XtPointer call_data);
+static void ToggleBlinkCB(Widget, XtPointer client_data, XtPointer call_data);
 #else
 static void ToggleBlinkCB(GUI::CheckButton *w);
 #endif
@@ -502,7 +491,6 @@ static void set_select_all_bindings(MMDesc *menu, BindingStyle style);
 // Popup DDD splash screen upon start-up.
 #if defined(IF_XM)
 static void SetSplashScreenCB(Widget, XtPointer, XtPointer);
-
 static void popup_splash_screen(Widget parent, const string& color_key);
 static void popdown_splash_screen(XtPointer data = 0, XtIntervalId *id = 0);
 
@@ -511,7 +499,6 @@ static void popdown_splash_screen(XtPointer data = 0, XtIntervalId *id = 0);
 static XrmDatabase GetFileDatabase(const string &filename);
 #else
 static void SetSplashScreenCB(GUI::CheckButton *);
-
 static void popup_splash_screen(GUI::Widget *parent, const string& color_key);
 static void popdown_splash_screen(void *data = 0, GUI::connection *id = 0);
 
@@ -539,7 +526,6 @@ static void setup_motif_version_warnings();
 static void setup_auto_command_prefix();
 static void setup_core_limit();
 static void setup_options();
-
 #if defined(IF_XM)
 static void setup_cut_copy_paste_bindings(XrmDatabase db);
 static void setup_select_all_bindings(XrmDatabase db);
@@ -594,6 +580,7 @@ static void vsl_echo(const string& msg);
 
 static const char * ON  = "on";
 static const char * OFF = "off";
+
 
 #if defined(IF_XM)
 // Options
@@ -1028,10 +1015,10 @@ static XtActionsRec actions [] = {
 #endif
 #endif
 
+
 //-----------------------------------------------------------------------------
 // Menus
 //-----------------------------------------------------------------------------
-
 
 #define RECENT_MENU							\
 {									\
@@ -1110,7 +1097,6 @@ struct WhenReadyProc_t {
 #define DECL_WR(NAME, PROC)						\
     static WhenReadyProc_t NAME (sigc::slot<void, GUI::Widget *>(PROC))
 #endif
-
 #if defined(IF_XM)
 DECL_WR(gdbOpenClassCB);
 DECL_WR(gdbOpenFileCB);
@@ -1446,6 +1432,7 @@ DECL_WR(WR_dddPopupSettingsCB, sigc::ptr_fun(dddPopupSettingsCB));
     MMEnd								\
 }
 
+
 #if defined(IF_XM)
 static Widget command_save_options_w;
 static Widget source_save_options_w;
@@ -1560,7 +1547,6 @@ DECL_WR(WR_ViewRegistersCB, sigc::ptr_fun(SourceView::ViewRegistersCB));
 DECL_WR(WR_ViewThreadsCB, sigc::ptr_fun(SourceView::ViewThreadsCB));
 DECL_WR(WR_dddPopupSignalsCB, sigc::ptr_fun(dddPopupSignalsCB));
 #endif
-
 static MMDesc stack_menu[] =
 {
     GENTRYL("stack", "Backtrace...", MMPush,
@@ -1674,7 +1660,6 @@ static Widget button_docs_w;
 static GUI::CheckButton *button_tips_w;
 static GUI::CheckButton *button_docs_w;
 #endif
-
 static MMDesc button_menu [] = 
 {
     GENTRYL("tips", "as Popup Tips", MMToggle,
@@ -1695,7 +1680,6 @@ static Widget value_docs_w;
 static GUI::CheckButton *value_tips_w;
 static GUI::CheckButton *value_docs_w;
 #endif
-
 static MMDesc value_menu [] = 
 {
     GENTRYL("tips", "as Popup Tips", MMToggle,
@@ -1716,7 +1700,6 @@ static Widget set_console_completion_w;
 static GUI::RadioButton *set_global_completion_w;
 static GUI::RadioButton *set_console_completion_w;
 #endif
-
 static MMDesc completion_menu [] = 
 {
     GENTRYL("inAllWindows", "in All Windows", MMRadio, 
@@ -1735,7 +1718,6 @@ static Widget max_undo_size_w;
 #else
 static GUI::Entry *max_undo_size_w;
 #endif
-
 static MMDesc undo_menu [] =
 {
     GENTRYL("size", "Undo Buffer Size", MMTextField | MMUnmanagedLabel,
@@ -1800,7 +1782,6 @@ static MMDesc general_preferences_menu[] =
 
 
 // Source preferences
-
 #if defined(IF_XM)
 static Widget set_display_glyphs_w;
 static Widget set_display_text_w;
@@ -1808,7 +1789,6 @@ static Widget set_display_text_w;
 static GUI::RadioButton *set_display_glyphs_w;
 static GUI::RadioButton *set_display_text_w;
 #endif
-
 static MMDesc glyph_menu[] =
 {
     GENTRYL("asGlyphs", "as Glyphs", MMRadio,
@@ -1829,7 +1809,6 @@ static Widget set_tool_buttons_in_command_tool_w;
 static GUI::RadioButton *set_tool_buttons_in_toolbar_w;
 static GUI::RadioButton *set_tool_buttons_in_command_tool_w;
 #endif
-
 static MMDesc tool_buttons_menu [] = 
 {
     GENTRYL("commandTool", "Command Tool", MMRadio,
@@ -1850,7 +1829,6 @@ static Widget set_refer_base_w;
 static GUI::RadioButton *set_refer_path_w;
 static GUI::RadioButton *set_refer_base_w;
 #endif
-
 static MMDesc refer_menu[] =
 {
     GENTRYL("byPath", "by Path Name", MMRadio,
@@ -1871,7 +1849,6 @@ static Widget case_sensitive_w;
 static GUI::CheckButton *words_only_w;
 static GUI::CheckButton *case_sensitive_w;
 #endif
-
 static MMDesc find_preferences_menu[] =
 {
     GENTRYL("wordsOnly", "Words Only", MMToggle,
@@ -1892,7 +1869,6 @@ static Widget cache_machine_code_w;
 static GUI::CheckButton *cache_source_files_w;
 static GUI::CheckButton *cache_machine_code_w;
 #endif
-
 static MMDesc cache_menu[] =
 {
     GENTRYL("cacheSource", "Soruce Files", MMToggle,
@@ -1915,7 +1891,6 @@ static GUI::Scale *tab_width_w;
 static GUI::Scale *source_indent_w;
 static GUI::Scale *code_indent_w;
 #endif
-
 static MMDesc scales_menu[] = {
     GENTRYL("tabWidth", "Tab Width", MMScale, 
 	    BIND(sourceSetTabWidthCB, 0),
@@ -1932,6 +1907,7 @@ static MMDesc scales_menu[] = {
     MMEnd
 };
 
+
 #if defined(IF_XM)
 static Widget line_numbers2_w;
 static Widget refer_sources_w;
@@ -1939,7 +1915,6 @@ static Widget refer_sources_w;
 static GUI::CheckButton *line_numbers2_w;
 static GUI::Widget *refer_sources_w;
 #endif
-
 static MMDesc source_preferences_menu[] = 
 {
     GENTRYL("showExecPos", "Show Position and Breakpoints", MMRadioPanel,
@@ -2123,7 +2098,6 @@ static MMDesc data_preferences_menu[] =
 
 
 // Startup preferences
-
 #if defined(IF_XM)
 static Widget set_separate_windows_w;
 static Widget set_attached_windows_w;
@@ -2131,7 +2105,6 @@ static Widget set_attached_windows_w;
 static GUI::RadioButton *set_separate_windows_w;
 static GUI::RadioButton *set_attached_windows_w;
 #endif
-
 static MMDesc window_mode_menu [] = 
 {
     GENTRYL("attached", "Stacked Windows", MMRadio,
@@ -2158,7 +2131,6 @@ static GUI::CheckButton *set_flat_buttons_w;
 static GUI::CheckButton *set_color_buttons_w;
 static GUI::CheckButton *set_toolbars_at_bottom_w;
 #endif
-
 static MMDesc button_appearance_menu [] = 
 {
     GENTRYL("images", "Images", MMToggle,
@@ -2191,7 +2163,6 @@ static Widget set_focus_explicit_w;
 static GUI::RadioButton *set_focus_pointer_w;
 static GUI::RadioButton *set_focus_explicit_w;
 #endif
-
 static MMDesc keyboard_focus_menu [] = 
 {
     GENTRYL("pointer", "Point to Type", MMRadio,
@@ -2212,7 +2183,6 @@ static Widget set_scrolling_scrollbars_w;
 static GUI::RadioButton *set_scrolling_panner_w;
 static GUI::RadioButton *set_scrolling_scrollbars_w;
 #endif
-
 static MMDesc data_scrolling_menu [] = 
 {
     GENTRYL("panner", "Panner", MMRadio,
@@ -2246,7 +2216,6 @@ static GUI::RadioButton *set_debugger_perl_w;
 static GUI::RadioButton *set_debugger_pydb_w;
 static GUI::RadioButton *set_debugger_xdb_w;
 #endif
-
 static MMDesc debugger_menu [] = 
 {
     GENTRYL("bash", "Bash", MMRadio,
@@ -2289,8 +2258,6 @@ static Widget auto_debugger_w;
 #else
 static GUI::CheckButton *auto_debugger_w;
 #endif
-
-
 static MMDesc auto_debugger_menu [] =
 {
     GENTRYL("automatic", "Determine Automatically from Arguments", MMToggle,
@@ -2386,6 +2353,7 @@ static MMDesc startup_preferences_menu [] =
     MMEnd
 };
 
+
 #if defined(IF_XM)
 static Widget font_names[5];
 static Widget font_sizes[5];
@@ -2432,6 +2400,7 @@ static MMDesc font_preferences_menu [] =
     MMEnd
 };
 #endif
+
 
 #if defined(IF_XM)
 static Widget extern_plot_window_w;
@@ -2509,7 +2478,6 @@ static MMDesc helpers_preferences_menu [] =
 
 
 // Data
-
 #if defined(IF_XM)
 static Widget print_w            = 0;
 static Widget display_w          = 0;
@@ -2537,7 +2505,6 @@ DECL_WR(dddPopupInfosCB);
 #else
 DECL_WR(WR_dddPopupInfosCB, sigc::ptr_fun(dddPopupInfosCB));
 #endif
-
 static MMDesc data_menu[] = 
 {
     GENTRYL("displays", "Displays...", MMPush,
@@ -2606,7 +2573,6 @@ static MMDesc data_menu[] =
 
 
 // Maintenance
-
 #if defined(IF_XM)
 static Widget crash_debug_w     = 0;
 static Widget crash_dump_core_w = 0;
@@ -3087,7 +3053,6 @@ static MString version_warnings;
 #if !defined(IF_XM)
 typedef sigc::slot<void, GUI::Widget *> slot_gui_w;
 #endif
-
 typedef enum {
   DDD_EXIT_FAILURE, DDD_EXIT_SUCCESS, DDD_CONTINUE
 } ddd_exit_t;
@@ -3169,23 +3134,20 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     // Read ~/.ddd/init resources
     XrmDatabase dddinit = 
 	GetFileDatabase(session_state_file(DEFAULT_SESSION));
-    if (dddinit == 0) {
+    if (dddinit == 0)
 	dddinit = XrmGetStringDatabase("");
-    }
 
     // Read ~/.ddd/tips resources
     XrmDatabase dddtips =
 	GetFileDatabase(session_tips_file());
-    if (dddtips != 0) {
+    if (dddtips != 0)
 	XrmMergeDatabases(dddtips, &dddinit);
-    }
 
     // Let command-line arguments override ~/.ddd/init
     XrmParseCommand(&dddinit, options, XtNumber(options), 
 		    DDD_CLASS_NAME, &argc, (char**)argv);
 
     const _XtString session_id = 0;
-
     if (session_id == 0)
     {
 	// Determine session
@@ -3243,9 +3205,8 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	// A session is given in $DDD_SESSION: override everything.
 	XrmDatabase session_db = 
 	    GetFileDatabase(session_state_file(restart_session()));
-	if (session_db != 0) {
+	if (session_db != 0)
 	    XrmMergeDatabases(session_db, &dddinit);
-	}
     }
     else if (session_id != 0)
     {
@@ -3253,9 +3214,8 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	// well as the command-line options.
 	XrmDatabase session_db = 
 	    GetFileDatabase(session_state_file(session_id));
-	if (session_db != 0) {
+	if (session_db != 0)
 	    XrmMergeDatabases(session_db, &dddinit);
-	}
     }
 
 #if HAVE_ATHENA
@@ -3276,7 +3236,6 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 
     // Open X connection and create top-level application shell
     XtAppContext app_context;
-
     arg = 0;
     XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
 
@@ -3566,9 +3525,8 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     // these, so register them again.
     registerOwnConverters();
 
-    Boolean iconic;
-
     // Show splash screen
+    Boolean iconic;
     XtVaGetValues(toplevel, XmNiconic, &iconic, XtPointer(0));
     if (app_data.splash_screen && !iconic && restart_session().empty())
 	popup_splash_screen(toplevel, app_data.splash_screen_color_key);
@@ -3664,14 +3622,13 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     command_shell = verify(XtCreatePopupShell("command_shell",
 					      applicationShellWidgetClass,
 					      toplevel, args, arg));
-    AddDeleteWindowCallback(command_shell, DDDCloseCB);
 
+    AddDeleteWindowCallback(command_shell, DDDCloseCB);
 
     // From this point on, we have a true top-level window.
 
     // Create main window
     arg = 0;
-
     Widget main_window = XmCreateMainWindow(command_shell, 
 					    XMST("main_window"),
 					    args, arg);
@@ -3692,7 +3649,6 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     register_menu_shell(menubar);
 
     // Create Paned Window
-
     arg = 0;
     XtSetArg(args[arg], XmNborderWidth,     0); arg++;
     XtSetArg(args[arg], XmNmarginWidth,     0); arg++;
@@ -3702,11 +3658,10 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 				   XMST("paned_work_w"),
 				   args, arg));
     XtManageChild(paned_work_w);
-    Widget main_vbox = paned_work_w;
 
     // Status line
     if (!app_data.separate_source_window && !app_data.status_at_bottom)
-	create_status(main_vbox);
+	create_status(paned_work_w);
 
     // Toolbar label type
     unsigned char label_type = XmSTRING;
@@ -3718,13 +3673,12 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	app_data.common_toolbar = false;
 
     Widget arg_label = 0;
-
     if (!app_data.separate_source_window &&
 	!app_data.separate_data_window &&
 	app_data.common_toolbar)
     {
 	arg_cmd_area[ArgItems::Display].type |= MMUnmanaged;
-	arg_cmd_w = create_toolbar(main_vbox, "common",
+	arg_cmd_w = create_toolbar(paned_work_w, "common",
 				   arg_cmd_area, DataDisp::graph_cmd_area,
 				   arg_label, source_arg, XmPIXMAP);
 
@@ -3732,7 +3686,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 
 	if (command_toolbar_w == 0)
 	{
-	    command_toolbar_w = make_buttons(main_vbox, 
+	    command_toolbar_w = make_buttons(paned_work_w, 
 					     "command_toolbar", 
 					     app_data.tool_buttons);
 	}
@@ -3757,7 +3711,6 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 				      toplevel, args, arg));
 
 	AddDeleteWindowCallback(data_disp_shell, DDDCloseCB);
-
 
 	arg = 0;
 	data_main_window_w = 
@@ -3798,13 +3751,12 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 		       XtPointer(0));
     }
 
-    if (data_buttons_w == (Widget)0)
+    if (data_buttons_w == 0)
 	data_buttons_w = make_buttons(data_disp_parent, "data_buttons", 
 				      app_data.data_buttons);
 
     // Source window
     Widget source_view_parent = paned_work_w;
-    Widget source_vbox = main_vbox;
     Widget source_menubar_w = 0;
     Widget source_main_window_w = 0;
     if (app_data.separate_source_window)
@@ -3816,7 +3768,6 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 				      topLevelShellWidgetClass,
 				      toplevel, args, arg));
 	AddDeleteWindowCallback(source_view_shell, DDDCloseCB);
-
 
 	arg = 0;
 	source_main_window_w = 
@@ -3843,31 +3794,30 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 				       XMST("source_paned_work_w"), 
 				       args, arg));
 	XtManageChild(source_view_parent);
-	source_vbox = source_view_parent;
 
 	// Status line
 	if (!app_data.status_at_bottom)
-	    create_status(source_vbox);
+	    create_status(source_view_parent);
     }
 
     // Add toolbar
     if (arg_cmd_w == 0 && !app_data.toolbars_at_bottom)
     {
-	arg_cmd_w = create_toolbar(source_vbox, "source",
+	arg_cmd_w = create_toolbar(source_view_parent, "source",
 				   arg_cmd_area, 0, arg_label, source_arg,
 				   label_type);
     }
 
     if (command_toolbar_w == 0 && !app_data.toolbars_at_bottom)
     {
-	command_toolbar_w = make_buttons(source_vbox, 
+	command_toolbar_w = make_buttons(source_view_parent, 
 					 "command_toolbar", 
 					 app_data.tool_buttons);
     }
 
     if (source_buttons_w == 0 && !app_data.toolbars_at_bottom)
     {
-	source_buttons_w = make_buttons(source_vbox, 
+	source_buttons_w = make_buttons(source_view_parent, 
 					"source_buttons", 
 					app_data.source_buttons);
     }
@@ -3887,7 +3837,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 
     // Source toolbar
     if (arg_cmd_w == 0)
-	arg_cmd_w = create_toolbar(source_vbox, "source",
+	arg_cmd_w = create_toolbar(source_view_parent, "source",
 				   arg_cmd_area, 0, arg_label, source_arg,
 				   label_type);
     XtAddCallback(arg_label, XmNactivateCallback, 
@@ -3905,15 +3855,14 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 		  XtPointer(arg_cmd_area[ArgItems::Lookup].widget));
     sync_args(source_arg, data_disp->graph_arg);
 
-    if (data_disp->graph_arg != 0) {
+    if (data_disp->graph_arg != 0)
 	XtAddCallback(data_disp->graph_arg->text(), XmNactivateCallback, 
 		      ActivateCB, 
 		      XtPointer(data_disp->graph_cmd_area[0].widget));
-    }
 
     if (command_toolbar_w == 0)
     {
-	command_toolbar_w = make_buttons(source_vbox, 
+	command_toolbar_w = make_buttons(source_view_parent, 
 					 "command_toolbar", 
 					 app_data.tool_buttons);
     }
@@ -3921,12 +3870,12 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	XtUnmanageChild(command_toolbar_w);
 
     if (source_buttons_w == 0)
-	source_buttons_w = make_buttons(source_vbox, "source_buttons", 
+	source_buttons_w = make_buttons(source_view_parent, "source_buttons", 
 					app_data.source_buttons);
 
     // Status line
     if (app_data.separate_source_window && app_data.status_at_bottom)
-	create_status(source_vbox);
+	create_status(source_view_parent);
 
     // Debugger console
     if (console_buttons_w == 0 && !app_data.toolbars_at_bottom)
@@ -3945,7 +3894,6 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 		   XmNmotionVerifyCallback,
 		   gdbMotionCB,
 		   XtPointer(0));
-
     XtAddCallback (gdb_w,
 		   XmNvalueChangedCallback,
 		   gdbChangeCB,
@@ -3980,7 +3928,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 
     // Status line
     if (app_data.status_at_bottom && !app_data.separate_source_window)
-	create_status(main_vbox);
+	create_status(source_view_parent);
 
     // Paned Window is done
     XtManageChild (paned_work_w);
@@ -3990,7 +3938,6 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 		   XmNmenuBar,    menubar_w,
 		   XmNworkWindow, paned_work_w,
 		   XtPointer(0));
-
 
     // All main widgets (except shells) are created at this point.
 
@@ -4069,7 +4016,6 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	// We don't need the debugger console, since we have a TTY.
 	gdbCloseCommandWindowCB(gdb_w, 0, 0);
     }
-
 
     if (data_disp_shell != 0)
     {
@@ -5210,7 +5156,7 @@ void process_next_event()
 void process_pending_events()
 {
 #if defined(IF_XM)
-    if (command_shell == (Widget)0)
+    if (command_shell == 0)
 	return;
 
     XtAppContext app_context = XtWidgetToApplicationContext(command_shell);
@@ -5235,9 +5181,9 @@ static bool pending_interaction()
 #if defined(IF_XM)
     XEvent event;
     const long mask = KeyPressMask | ButtonMotionMask | ButtonPressMask;
-    Bool pending = XCheckMaskEvent(XtDisplay((Widget)command_shell), mask, &event);
+    Bool pending = XCheckMaskEvent(XtDisplay(command_shell), mask, &event);
     if (pending)
-	XPutBackEvent(XtDisplay((Widget)command_shell), &event);
+	XPutBackEvent(XtDisplay(command_shell), &event);
     return pending;
 #else
 #ifdef NAG_ME
@@ -5284,8 +5230,8 @@ static void ddd_check_version()
 						      "version_warning",
 						      version_warnings.xmstring());
 #endif
-	manage_and_raise(warning);
 
+	manage_and_raise(warning);
     }
 
     if (app_data.dddinit_version == 0 ||
@@ -5427,6 +5373,8 @@ xmlDoc *GetFileDatabase(const string& filename)
     return get_file_database(filename.chars());
 }
 #endif
+
+
 
 //-----------------------------------------------------------------------------
 // Install DDD log
@@ -5765,7 +5713,7 @@ static void ContinueDespiteLockCB(void)
 #endif
 
 #if defined(IF_XM)
-static void TryToLock(XtPointer client_data, XtIntervalId *)
+static void TryLock(XtPointer client_data, XtIntervalId *)
 {
     Widget w = (Widget)client_data;
 
@@ -5779,10 +5727,10 @@ static void TryToLock(XtPointer client_data, XtIntervalId *)
     }
 
     XtAppAddTimeOut(XtWidgetToApplicationContext(w), 500, 
-		    TryToLock, client_data);
+		    TryLock, client_data);
 }
 #else
-static bool TryToLock(GUI::Widget *w)
+static bool TryLock(GUI::Widget *w)
 {
     LockInfo info;
     bool lock_ok = lock_session_dir(w->get_display(), DEFAULT_SESSION, info);
@@ -5795,7 +5743,7 @@ static bool TryToLock(GUI::Widget *w)
 
     static sigc::connection trylock_conn;
     if (!trylock_conn)
-      trylock_conn = Glib::signal_timeout().connect(sigc::bind(sigc::ptr_fun(TryToLock), w), 500);
+      trylock_conn = Glib::signal_timeout().connect(sigc::bind(sigc::ptr_fun(TryLock), w), 500);
     return true;
 }
 #endif
@@ -5813,7 +5761,7 @@ static void KillLockerCB(Widget w, XtPointer client_data, XtPointer)
     if (attempts_to_kill++ == 0)
     {
 	// Try locking again until successful
-	TryToLock(XtPointer(w), 0);
+	TryLock(XtPointer(w), 0);
     }
 }
 #endif
@@ -5827,7 +5775,7 @@ static void KillLockerCB(GUI::Widget *w, LockInfo *info)
     if (attempts_to_kill++ == 0)
     {
 	// Try locking again until successful
-	TryToLock(w);
+	TryLock(w);
     }
 }
 #endif
@@ -5908,7 +5856,6 @@ static bool lock_ddd(Widget parent, LockInfo& info)
     Widget lock_dialog =
 	verify(XmCreateQuestionDialog(parent, XMST("lock_dialog"), 
 				      args, arg));
-
     Delay::register_shell(lock_dialog);
 
 #if XmVersion >= 1002
@@ -5941,7 +5888,6 @@ static bool lock_ddd(Widget parent, LockInfo& info)
     }
 
     continue_despite_lock = false;
-
     manage_and_raise(lock_dialog);
 
     while (!continue_despite_lock)
@@ -6107,7 +6053,6 @@ Boolean ddd_setup_done(XtPointer)
 	    app_data.annotate && running_shells() == 1)
 	{
 	    // We have no shell (yet).  Be sure to popup at least one shell.
-
 	    if (app_data.annotate)
 		gdbOpenDataWindowCB(gdb_w, 0, 0);
 	    else if (app_data.source_window)
@@ -6205,6 +6150,7 @@ static void ActivateCB(GUI::Widget *)
     std::cerr << "How to call ArmAndActivate action?\n";
 }
 #endif
+
 
 //-----------------------------------------------------------------------------
 // Context help
@@ -8157,7 +8103,10 @@ static void OfferRestartCB(GUI::WidgetPtr<GUI::Dialog> &dialog)
 	static GUI::Dialog *restart_dialog = 0;
 	if (restart_dialog == 0)
 	{
-	    restart_dialog = new GUI::Dialog(*find_shell(dialog), "restart_dialog");
+	    const char *message = "DDD startup preferences were modified.\nRestart DDD to see their effect?";
+	    restart_dialog = new GUI::MessageDialog(*find_shell(dialog),
+						    "restart_dialog",
+						    message);
 	    Delay::register_shell(restart_dialog);
 	    Gtk::Button *button;
 	    button = restart_dialog->add_button("OK");
