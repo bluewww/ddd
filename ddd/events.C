@@ -3,6 +3,7 @@
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -40,7 +41,6 @@ static void invalid_event(const char *func)
 }
 
 #if defined(IF_XM)
-
 // Event location
 BoxPoint point(XEvent *ev)
 {
@@ -105,11 +105,7 @@ BoxPoint point(XEvent *ev)
 	    return BoxPoint();
     }
 }
-
-#endif
-
-#if !defined(IF_XM)
-
+#else
 // Event location
 BoxPoint point1(GUI::Event *ev)
 {
@@ -156,11 +152,9 @@ BoxPoint point1(GUI::Event *ev)
 	return BoxPoint();
     }
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Event time
 Time time(XEvent *ev)
 {
@@ -207,11 +201,7 @@ Time time(XEvent *ev)
 	    return CurrentTime;
     }
 }
-
-#endif
-
-#if !defined(IF_XM)
-
+#else
 // Event time
 Time time1(GUI::Event *ev)
 {
@@ -257,11 +247,9 @@ Time time1(GUI::Event *ev)
 	return CurrentTime;
     }
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Event size
 BoxSize size(XEvent *ev)
 {
@@ -304,11 +292,7 @@ BoxSize size(XEvent *ev)
 	    return BoxSize(0, 0);
     }
 }
-
-#endif
-
-#if !defined(IF_XM)
-
+#else
 // Event size
 BoxSize size1(GUI::Event *ev)
 {
@@ -334,5 +318,4 @@ BoxSize size1(GUI::Event *ev)
 	return BoxSize(0, 0);
     }
 }
-
 #endif

@@ -36,15 +36,14 @@
 #include <Xm/Xm.h>
 #include <Xm/Text.h>
 #include <Xm/TextF.h>
-#endif
-
+#else
 #include "gtk_wrapper.h"
+#endif
 
 // Some LessTif versions have trouble with multiple selections.
 // Use these wrappers instead.
 
 #if defined(IF_XM)
-
 void TextSetSelection(Widget widget, 
 		      XmTextPosition first, 
 		      XmTextPosition last,
@@ -53,7 +52,6 @@ void TextFieldSetSelection(Widget widget,
 			   XmTextPosition first, 
 			   XmTextPosition last, 
 			   Time time);
-
 #endif
 
 #endif // _DDD_TextSetSelection_h

@@ -3,6 +3,7 @@
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -147,7 +148,6 @@ public:
     }
 
 #if defined(IF_XM)
-
     // Draw
     virtual void draw(Widget, 
 		      const BoxRegion&, 
@@ -167,9 +167,7 @@ public:
 	draw(w, BoxRegion(BoxPoint(0, 0), BoxSize(INT_MAX, INT_MAX)),
 	    GraphGC());
     }
-
 #else
-
     // Draw
     virtual void draw(GUI::Widget *, 
 		      const BoxRegion&, 
@@ -189,7 +187,6 @@ public:
 	draw(w, BoxRegion(BoxPoint(0, 0), BoxSize(INT_MAX, INT_MAX)),
 	    GraphGC());
     }
-
 #endif
 
     // Printing

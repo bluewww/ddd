@@ -3,6 +3,7 @@
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -46,7 +47,6 @@ DEFINE_TYPE_INFO_1(SquareBox, SpaceBox)
 // RuleBox
 
 #if defined(IF_XM)
-
 // Draw RuleBox
 void RuleBox::_draw(Widget w, 
 		    const BoxRegion& r, 
@@ -79,9 +79,7 @@ void RuleBox::_draw(Widget w,
 		       width[X], width[Y]);
     }
 }
-
 #else
-
 // Draw RuleBox
 void RuleBox::_draw(GUI::Widget *w, 
 		    const BoxRegion& r, 
@@ -114,7 +112,6 @@ void RuleBox::_draw(GUI::Widget *w,
 					width[X], width[Y]);
     }
 }
-
 #endif
 
 void RuleBox::dump(std::ostream& s) const

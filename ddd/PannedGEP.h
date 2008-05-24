@@ -29,8 +29,6 @@
 #ifndef _DDD_PannedGraphEditPrivate_h
 #define _DDD_PannedGraphEditPrivate_h
 
-#if defined(IF_XM)
-
 #include <Xm/Xm.h>
 
 // Superclasses
@@ -43,10 +41,6 @@ extern "C" {
 }
 #undef new
 #undef class
-
-#else
-
-#endif
 
 // This class
 #include "PannedGE.h"

@@ -3,6 +3,7 @@
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -40,7 +41,6 @@ char longName_rcsid[] =
     "$Id$";
 
 #if defined(IF_XM)
-
 string longName(Widget w)
 {
     if (w == 0)
@@ -54,9 +54,7 @@ string longName(Widget w)
 
     return ret;
 }
-
 #else
-
 string longName(GUI::Widget *w)
 {
     if (w == 0)
@@ -70,5 +68,4 @@ string longName(GUI::Widget *w)
 
     return ret;
 }
-
 #endif

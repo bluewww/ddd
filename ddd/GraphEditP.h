@@ -29,7 +29,6 @@
 #define _DDD_GraphEditP_h
 
 #if defined(IF_XM)
-
 // Superclasses
 extern "C" {
 #define new new_w
@@ -42,11 +41,9 @@ extern "C" {
 #undef new
 #undef class
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // This class
 #include "GraphEdit.h"
 #include "Graph.h"
@@ -207,7 +204,6 @@ typedef struct _GraphEditRec {
   Res res_;				// Plain Old Data (POD)
   GraphEditPartPrivate graphEditP;	// Class
 } GraphEditRec;
-
 #endif
 
 #endif // _DDD_GraphEditP_h

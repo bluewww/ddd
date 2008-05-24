@@ -3,6 +3,7 @@
 
 // Copyright (C) 1995-1997 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -145,7 +146,6 @@ protected:
 public:
 
 #if defined(IF_XM)
-
     // Constructor for Agent users
     LiterateAgent(XtAppContext app_context, const string& pth,
 		  unsigned nTypes = LiterateAgent_NTypes):
@@ -193,7 +193,6 @@ public:
 	AsyncAgent(app_context, dummy, nTypes), activeIO(false),
 	_block_tty_input(default_block_tty_input())
     {}
-
 #endif
 
     // Duplicator

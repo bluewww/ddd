@@ -3,6 +3,7 @@
 
 // Copyright (C) 1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -47,9 +48,7 @@ char toolbar_rcsid[] =
 #include <Xm/Label.h>
 #include <Xm/PushB.h>
 #include <Xm/PanedW.h>
-#endif
-
-#if !defined(IF_XM)
+#else
 #include <GUI/Toolbar.h>
 #endif
 
@@ -76,7 +75,6 @@ static Dimension preferred_height(Widget w)
 #endif
 
 #if defined(IF_XM)
-
 static void set_label_type(MMDesc items[], unsigned char label_type)
 {
     for (MMDesc *item = items; item != 0 && item->name; item++)
@@ -139,13 +137,10 @@ static void set_label_type(MMDesc items[], unsigned char label_type)
 	}
     }
 }
-
 #else
-
 #ifdef NAG_ME
 #warning set_label_type not supported.
 #endif
-
 #endif
 
 static void flatten_buttons(MMDesc items[])
@@ -263,7 +258,6 @@ static void center_buttons(const MMDesc items[], Dimension offset)
 //-----------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 // Create a toolbar as child of parent, named `toolbar', having
 // the buttons ITEMS.  Return LABEL and ARGFIELD.
 Widget create_toolbar(Widget parent, const string& /* name */,
@@ -387,9 +381,7 @@ Widget create_toolbar(Widget parent, const string& /* name */,
 
     return toolbar;
 }
-
 #else
-
 // Create a toolbar as child of parent, named `toolbar', having
 // the buttons ITEMS.  Return LABEL and ARGFIELD.
 GUI::Container *create_toolbar(GUI::Container *parent, const string& /* name */,
@@ -465,6 +457,5 @@ GUI::Container *create_toolbar(GUI::Container *parent, const string& /* name */,
 
     return toolbar;
 }
-
 #endif
 

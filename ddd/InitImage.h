@@ -3,6 +3,7 @@
 
 // Copyright (C) 1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -29,20 +30,14 @@
 #define _DDD_InitImage_h
 
 #if defined(IF_XM)
-
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
-
 #else
-
 #include <GUI/Image.h>
-
+#include "gtk_wrapper.h"
 #endif
 
-#include "gtk_wrapper.h"
-
 #if defined(IF_XM)
-
 // Initialize IMAGE
 extern void InitImage(XImage *image);
 
@@ -55,9 +50,7 @@ Boolean InstallImage(XImage *image, const char *name);
 
 // Install bitmap in Motif cache
 Boolean InstallBitmap(unsigned char *bits, int width, int height, const char *name);
-
 #else
-
 // Initialize IMAGE
 extern void InitImage(GUI::ImageHandle &image);
 
@@ -70,7 +63,6 @@ Boolean InstallImage(GUI::ImageHandle image, GUI::ImageHandle &pointer);
 
 // Install bitmap in Image cache
 Boolean InstallBitmap(unsigned char *bits, int width, int height, GUI::ImageHandle &name);
-
 #endif
 
 #endif // _DDD_InitImage_h

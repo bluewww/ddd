@@ -37,11 +37,7 @@
 #endif
 
 #if defined(IF_XM)
-
 #include <X11/Intrinsic.h>
-
-#else
-
 #endif
 
 // Misc includes

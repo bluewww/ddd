@@ -28,8 +28,6 @@
 #ifndef _DDD_ScrolledGraphEditPrivate_h
 #define _DDD_ScrolledGraphEditPrivate_h
 
-#if defined(IF_XM)
-
 #include <Xm/Xm.h>
 
 // Superclasses
@@ -40,14 +38,10 @@
 #include <Xm/ScrolledWP.h>
 #undef new
 #undef class
-
-#else
-
 #endif
 
 #ifdef MAX
 #undef MAX			// <Xm/XmP.h> on HP-UX defines this
-#endif
 
 // This class
 #include "ScrolledGE.h"

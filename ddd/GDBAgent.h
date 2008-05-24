@@ -5,6 +5,7 @@
 // Copyright (C) 2000 Universitaet Passau, Germany.
 // Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
 // and Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -228,21 +229,17 @@ protected:
 public:
 
 #if defined(IF_XM)
-
     // Constructor
     GDBAgent (XtAppContext app_context,
 	      const string& gdb_call,
 	      DebuggerType type,
 	      unsigned nTypes = GDBAgent_NTypes);
-
 #else
-
     // Constructor
     GDBAgent (GUI::Main *app_context,
 	      const string& gdb_call,
 	      DebuggerType type,
 	      unsigned nTypes = GDBAgent_NTypes);
-
 #endif
 
     // Duplicator

@@ -3,6 +3,7 @@
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -35,15 +36,11 @@
 #if defined(IF_XM)
 #include <X11/Intrinsic.h>
 #else
-#include <gtkmm/drawingarea.h>
-#endif
-
-#if !defined(IF_XM)
 #include <GUI/Widget.h>
 #include <GUI/Events.h>
-#endif
-
+#include <gtkmm/drawingarea.h>
 #include "gtk_wrapper.h"
+#endif
 
 #include "BoxPoint.h"
 
@@ -301,14 +298,11 @@ struct GraphEditCompareNodesInfo {
 
 
 #if defined(IF_XM)
-
 // Declare the class constant
 extern WidgetClass graphEditWidgetClass;
 
 typedef Widget GRAPH_EDIT_P;
-
 #else
-
 #include "GraphGC.h"
 
 enum GraphEditState {
@@ -582,7 +576,6 @@ public:
 
 typedef GUIGraphEdit *GRAPH_EDIT_P;
 typedef GUIGraphEdit *GraphEditWidget;
-
 #endif
 
 #if defined(IF_XM)

@@ -3,6 +3,7 @@
 
 // Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -36,16 +37,11 @@
 #include "bool.h"
 
 #if defined(IF_XM)
-
 #include <X11/Intrinsic.h>
-
 #else
-
 #include <GUI/Dialog.h>
-
-#endif
-
 #include "gtk_wrapper.h"
+#endif
 
 // Error handling
 

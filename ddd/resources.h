@@ -3,6 +3,7 @@
 
 // Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -32,9 +33,8 @@
 #include <X11/Intrinsic.h>
 #else
 #include <libxml/tree.h>
-#endif
-
 #include "gtk_wrapper.h"
+#endif
 
 // DDD resource definitions
 #if defined(IF_XM)

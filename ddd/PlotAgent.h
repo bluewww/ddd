@@ -3,6 +3,7 @@
 
 // Copyright (C) 1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -85,7 +86,6 @@ public:
     static string plot_3d_settings;
 
 #if defined(IF_XM)
-
     // Constructor for Agent users
     PlotAgent(XtAppContext app_context, const string& pth,
 	      unsigned nTypes = PlotAgent_NTypes)
@@ -102,9 +102,7 @@ public:
     {
 	reset();
     }
-
 #else
-
     // Constructor for Agent users
     PlotAgent(GUI::Main *app_context, const string& pth,
 	      unsigned nTypes = PlotAgent_NTypes)
@@ -121,7 +119,6 @@ public:
     {
 	reset();
     }
-
 #endif
 
     // Start and initialize

@@ -37,22 +37,16 @@
 
 #if defined(IF_XM)
 #include <Xm/Xm.h>
-#endif
-
-#if !defined(IF_XM)
+#else
 #include <GUI/Widget.h>
 #endif
 
 #if defined(IF_XM)
-
 typedef VarArray<XmTextPosition> VarTextPositionArray;
 typedef DynArray<XmTextPosition> DynTextPositionArray;
-
 #else
-
 typedef VarArray<long> VarTextPositionArray;
 typedef DynArray<long> DynTextPositionArray;
-
 #endif
 
 typedef VarTextPositionArray TextPositionArray;

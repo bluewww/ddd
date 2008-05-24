@@ -4,6 +4,7 @@
 // Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
 // Copyright (C) 2000 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -75,27 +76,22 @@ bool gdb_input_at_prompt = false;
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 static void move_to_end_of_line(XtPointer, XtIntervalId *)
 {
     XmTextPosition pos = XmTextGetLastPosition(gdb_w);
     XmTextSetInsertionPosition(gdb_w, pos);
     XmTextShowPosition(gdb_w, pos);
 }
-
 #else
-
 static void move_to_end_of_line(void *, GUI::connection *)
 {
     long pos = gdb_w->get_last_position();
     gdb_w->set_insertion_position(pos);
     gdb_w->show_position(pos);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static XmTextPosition start_of_line()
 {
     String str = XmTextGetString(gdb_w);
@@ -110,9 +106,7 @@ static XmTextPosition start_of_line()
 
     return start + 1;
 }
-
 #else
-
 static long start_of_line()
 {
     Gtk::TextIter iter = gdb_w->buffer()->end();
@@ -122,7 +116,6 @@ static long start_of_line()
     }
     return 0;
 }
-
 #endif
 
 //-----------------------------------------------------------------------------
@@ -159,7 +152,6 @@ string current_line()
 }
 
 #if defined(IF_XM)
-
 // Helpers
 static void clear_isearch_after_motion(XtPointer, XtIntervalId *)
 {
@@ -170,9 +162,7 @@ static void set_isearch_motion_ok(XtPointer client_data, XtIntervalId *)
 {
     isearch_motion_ok = bool((long)client_data);
 }
-
 #else
-
 // Helpers
 static void clear_isearch_after_motion()
 {
@@ -183,11 +173,9 @@ static void set_isearch_motion_ok(bool client_data)
 {
     isearch_motion_ok = client_data;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Show prompt according to current mode
 static void show_isearch()
 {
@@ -252,9 +240,7 @@ static void show_isearch()
     have_isearch_line = false;
     private_gdb_output = old_private_gdb_output;
 }
-
 #else
-
 // Show prompt according to current mode
 static void show_isearch()
 {
@@ -316,11 +302,9 @@ static void show_isearch()
     have_isearch_line = false;
     private_gdb_output = old_private_gdb_output;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // When i-search is done, show history position given in client_data
 static void isearch_done(XtPointer client_data, XtIntervalId *)
 {
@@ -337,9 +321,7 @@ static void isearch_done(XtPointer client_data, XtIntervalId *)
 
     show_isearch();
 }
-
 #else
-
 // When i-search is done, show history position given in client_data
 static void isearch_done(int history)
 {
@@ -354,11 +336,9 @@ static void isearch_done(int history)
 
     show_isearch();
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void isearch_again(ISearchState new_isearch_state, XEvent *event)
 {
     if (!gdb->isReadyWithPrompt())
@@ -383,9 +363,7 @@ static void isearch_again(ISearchState new_isearch_state, XEvent *event)
 	show_isearch();
     }
 }
-
 #else
-
 static void isearch_again(ISearchState new_isearch_state, GUI::Event *event)
 {
     if (!gdb->isReadyWithPrompt())
@@ -410,11 +388,9 @@ static void isearch_again(ISearchState new_isearch_state, GUI::Event *event)
 	show_isearch();
     }
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Action: enter reverse i-search
 void isearch_prevAct(Widget, XEvent *event, String *, Cardinal *)
 {
@@ -432,9 +408,7 @@ void isearch_exitAct(Widget, XEvent *, String *, Cardinal *)
 {
     clear_isearch();
 }
-
 #else
-
 // Action: enter reverse i-search
 void isearch_prevAct(GUI::Widget *, GUI::Event *event, GUI::String *, unsigned int *)
 {
@@ -452,7 +426,6 @@ void isearch_exitAct(GUI::Widget *, GUI::Event *, GUI::String *, unsigned int *)
 {
     clear_isearch();
 }
-
 #endif
 
 // Exit i-search mode and return to normal mode
@@ -478,7 +451,6 @@ void clear_isearch(bool reset, bool show)
 }
 
 #if defined(IF_XM)
-
 void interruptAct(Widget w, XEvent*, String *, Cardinal *)
 {
     if (isearch_state != ISEARCH_NONE)
@@ -492,9 +464,7 @@ void interruptAct(Widget w, XEvent*, String *, Cardinal *)
 	gdb_keyboard_command = true;
     }
 }
-
 #else
-
 void interruptAct(GUI::Widget *w, GUI::Event*, GUI::String *, unsigned int *)
 {
     if (isearch_state != ISEARCH_NONE)
@@ -508,7 +478,6 @@ void interruptAct(GUI::Widget *w, GUI::Event*, GUI::String *, unsigned int *)
 	gdb_keyboard_command = true;
     }
 }
-
 #endif
 
 #if defined(IF_XM)
@@ -594,23 +563,18 @@ static bool do_isearch(Widget, XmTextVerifyCallbackStruct *change)
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 static bool from_keyboard(XEvent *ev)
 {
     return ev == 0 || (ev->type != ButtonPress && ev->type != ButtonRelease);
 }
-
 #else
-
 static bool from_keyboard(GUI::Event *ev)
 {
     return ev == 0 || (ev->type != GUI::BUTTON_PRESS && ev->type != GUI::BUTTON_RELEASE);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void controlAct(Widget w, XEvent *ev, String *params, Cardinal *num_params)
 {
     clear_isearch();
@@ -640,9 +604,7 @@ void commandAct(Widget w, XEvent *ev, String *params, Cardinal *num_params)
     gdb_button_command(params[0], w);
     gdb_keyboard_command = from_keyboard(ev);
 }
-
 #else
-
 void controlAct(GUI::Widget *w, GUI::Event *ev, GUI::String *params, unsigned int *num_params)
 {
     clear_isearch();
@@ -672,7 +634,6 @@ void commandAct(GUI::Widget *w, GUI::Event *ev, GUI::String *params, unsigned in
     gdb_button_command(params[0].c_str(), w);
     gdb_keyboard_command = from_keyboard(ev);
 }
-
 #endif
 
 #if defined(IF_XM)
@@ -913,7 +874,6 @@ void calc_position(int &x, int &y, bool &push_in)
 }
 
 #if defined(IF_XM)
-
 void popupAct(Widget, XEvent *event, String*, Cardinal*)
 {
     static Widget gdb_popup_w = 0;
@@ -928,9 +888,7 @@ void popupAct(Widget, XEvent *event, String*, Cardinal*)
     XmMenuPosition(gdb_popup_w, &event->xbutton);
     XtManageChild(gdb_popup_w);
 }
-
 #else
-
 void popupAct(GUI::Widget *, GUI::Event *event, GUI::String *, unsigned int *)
 {
     static GUI::PopupMenu *gdb_popup_w = 0;
@@ -947,7 +905,6 @@ void popupAct(GUI::Widget *, GUI::Event *event, GUI::String *, unsigned int *)
 #endif
     gdb_popup_w->show();
 }
-
 #endif
 
 //-----------------------------------------------------------------------------
@@ -955,7 +912,6 @@ void popupAct(GUI::Widget *, GUI::Event *event, GUI::String *, unsigned int *)
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 // Veto changes before the current input line
 void gdbModifyCB(Widget gdb_w, XtPointer, XtPointer call_data)
 {
@@ -1014,19 +970,15 @@ void gdbModifyCB(Widget gdb_w, XtPointer, XtPointer call_data)
 			move_to_end_of_line, XtPointer(0));
     }
 }
-
 #else
-
 // Veto changes before the current input line
 void gdbModifyCB(GUI::ScrolledText *gdb_w)
 {
     std::cerr << "gdbModifyCB not implemented yet\n";
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Veto key-based cursor movements before current line
 void gdbMotionCB(Widget, XtPointer, XtPointer call_data)
 {
@@ -1066,15 +1018,12 @@ void gdbMotionCB(Widget, XtPointer, XtPointer call_data)
 	}
     }
 }
-
 #else
-
 // Veto key-based cursor movements before current line
 void gdbMotionCB(GUI::ScrolledText *w)
 {
     std::cerr << "gdbMotionCB not implemented yet\n";
 }
-
 #endif
 
 // Send completed lines to GDB
@@ -1156,7 +1105,6 @@ void gdbChangeCB(GUI::ScrolledText *w)
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 void gdbCommandCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     clear_isearch();
@@ -1169,9 +1117,7 @@ void gdbCommandCB(Widget w, XtPointer client_data, XtPointer call_data)
 
     gdb_keyboard_command = from_keyboard(cbs->event);
 }
-
 #else
-
 void gdbCommandCB(GUI::Widget *w, const char *client_data)
 {
     clear_isearch();
@@ -1182,11 +1128,9 @@ void gdbCommandCB(GUI::Widget *w, const char *client_data)
 
     gdb_keyboard_command = false;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void gdb_button_command(const string& command, Widget origin)
 {
     if (command.contains("..."))
@@ -1201,9 +1145,7 @@ void gdb_button_command(const string& command, Widget origin)
 	    gdb_command(c, origin);
     }
 }
-
 #else
-
 void gdb_button_command(const string& command, GUI::Widget *origin)
 {
     if (command.contains("..."))
@@ -1218,11 +1160,9 @@ void gdb_button_command(const string& command, GUI::Widget *origin)
 	    gdb_command(c, origin);
     }
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void gdbPrevCB  (Widget w, XtPointer, XtPointer call_data)
 {
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
@@ -1232,18 +1172,14 @@ void gdbPrevCB  (Widget w, XtPointer, XtPointer call_data)
     Cardinal zero = 0;
     prev_historyAct(w, cbs->event, 0, &zero);
 }
-
 #else
-
 void gdbPrevCB  (GUI::Widget *w)
 {
     std::cerr << "gdbPrevCB: not implemented\n";
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void gdbNextCB  (Widget w, XtPointer, XtPointer call_data)
 {
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
@@ -1253,18 +1189,14 @@ void gdbNextCB  (Widget w, XtPointer, XtPointer call_data)
     Cardinal zero = 0;
     next_historyAct(w, cbs->event, 0, &zero);
 }
-
 #else
-
 void gdbNextCB  (GUI::Widget *w)
 {
     std::cerr << "gdbNextCB: not implemented\n";
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void gdbISearchPrevCB  (Widget w, XtPointer, XtPointer call_data)
 {
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
@@ -1274,18 +1206,14 @@ void gdbISearchPrevCB  (Widget w, XtPointer, XtPointer call_data)
     Cardinal zero = 0;
     isearch_prevAct(w, cbs->event, 0, &zero);
 }
-
 #else
-
 void gdbISearchPrevCB  (GUI::Widget *w)
 {
     std::cerr << "gdbISearchPrevCB: not implemented\n";
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void gdbISearchNextCB  (Widget w, XtPointer, XtPointer call_data)
 {
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
@@ -1295,18 +1223,14 @@ void gdbISearchNextCB  (Widget w, XtPointer, XtPointer call_data)
     Cardinal zero = 0;
     isearch_nextAct(w, cbs->event, 0, &zero);
 }
-
 #else
-
 void gdbISearchNextCB  (GUI::Widget *w)
 {
     std::cerr << "gdbISearchNextCB: not implemented\n";
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void gdbISearchExitCB  (Widget w, XtPointer, XtPointer call_data)
 {
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
@@ -1316,18 +1240,14 @@ void gdbISearchExitCB  (Widget w, XtPointer, XtPointer call_data)
     Cardinal zero = 0;
     isearch_exitAct(w, cbs->event, 0, &zero);
 }
-
 #else
-
 void gdbISearchExitCB  (GUI::Widget *w)
 {
     std::cerr << "gdbISearchExitCB: not implemented\n";
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void gdbClearCB  (Widget, XtPointer, XtPointer)
 {
     set_current_line("");
@@ -1350,9 +1270,7 @@ void gdbClearWindowCB(Widget, XtPointer, XtPointer)
 
     private_gdb_output = false;
 }
-
 #else
-
 void gdbClearCB  (void)
 {
     set_current_line("");
@@ -1375,11 +1293,9 @@ void gdbClearWindowCB(void)
 
     private_gdb_output = false;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void gdbCompleteCB  (Widget w, XtPointer, XtPointer call_data)
 {
     if (!gdb->isReadyWithPrompt())
@@ -1397,20 +1313,16 @@ void gdbCompleteCB  (Widget w, XtPointer, XtPointer call_data)
     end_of_lineAct(gdb_w, cbs->event, 0, &zero);
     complete_commandAct(gdb_w, cbs->event, 0, &zero);
 }
-
 #else
-
 void gdbCompleteCB  (GUI::Widget *w)
 {
 #ifdef NAG_ME
 #warning Completion not implemented
 #endif
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Use this for push buttons
 void gdbApplyCB(Widget w, XtPointer, XtPointer call_data)
 {
@@ -1429,9 +1341,7 @@ void gdbApplyCB(Widget w, XtPointer, XtPointer call_data)
     end_of_lineAct(gdb_w, cbs->event, 0, &zero);
     XtCallActionProc(gdb_w, "process-return", cbs->event, 0, zero);
 }
-
 #else
-
 // Use this for push buttons
 void gdbApplyCB(GUI::Widget *w)
 {
@@ -1439,11 +1349,9 @@ void gdbApplyCB(GUI::Widget *w)
 #warning gdbApplyCB not implemented
 #endif
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Use this for selection boxes
 void gdbApplySelectionCB(Widget w, XtPointer, XtPointer call_data)
 {
@@ -1463,13 +1371,10 @@ void gdbApplySelectionCB(Widget w, XtPointer, XtPointer call_data)
     end_of_lineAct(gdb_w, cbs->event, 0, &zero);
     XtCallActionProc(gdb_w, "process-return", cbs->event, 0, zero);
 }
-
 #else
-
 // Use this for selection boxes
 void gdbApplySelectionCB(void)
 {
     std::cerr << "gdbApplySelectionCB: not implemented\n";
 }
-
 #endif

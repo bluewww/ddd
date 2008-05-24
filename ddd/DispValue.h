@@ -41,11 +41,7 @@
 #include "Box.h"
 
 #if defined(IF_XM)
-
 #include <Xm/Xm.h>
-
-#else
-
 #endif
 
 class Agent;

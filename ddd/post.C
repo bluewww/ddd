@@ -3,6 +3,7 @@
 
 // Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -54,9 +55,7 @@ char post_rcsid[] =
 #include <Xm/Xm.h>
 #include <Xm/AtomMgr.h>
 #include <Xm/MessageB.h>
-#endif
-
-#if !defined(IF_XM)
+#else
 #include <GUI/Dialog.h>
 #include <GUI/Button.h>
 #include <GUI/Label.h>

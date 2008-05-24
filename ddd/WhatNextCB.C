@@ -3,6 +3,7 @@
 
 // Copyright (C) 1997-1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -66,7 +67,6 @@ char WhatNextCB_rcsid[] =
 #endif
 
 #if defined(IF_XM)
-
 // Show a suggestion named NAME
 static void hint_on(const _XtString name)
 {
@@ -78,9 +78,7 @@ static void hint_on(const _XtString name)
 
     DestroyWhenIdle(suggestion);
 }
-
 #else
-
 // Show a suggestion named NAME
 static void hint_on(const char *name)
 {
@@ -91,7 +89,6 @@ static void hint_on(const char *name)
 
     DestroyWhenIdle(suggestion);
 }
-
 #endif
 
 static bool no_source_and_no_code()

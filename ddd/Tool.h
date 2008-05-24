@@ -28,14 +28,6 @@
 #ifndef _DDD_Tool_h
 #define _DDD_Tool_h
 
-#if defined(IF_XM)
-
-#include <X11/Intrinsic.h>
-
-#else
-
-#endif
-
 // Create command tool
 extern void create_command_tool();
 

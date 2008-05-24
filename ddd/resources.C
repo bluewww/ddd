@@ -4,6 +4,7 @@
 // Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
 // Copyright (C) 1999-2000 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -115,7 +116,6 @@ typedef void *XtPointer;
 
 #define XmVERTICAL GUI::ORIENTATION_VERTICAL
 #define XmHORIZONTAL GUI::ORIENTATION_HORIZONTAL
-
 #endif
 
 #define N_ELEMENTS(x) (sizeof(x)/sizeof(x[0]))
@@ -2354,7 +2354,6 @@ static void copy(char *dest, const char *src, Cardinal size)
 }
 
 #if defined(IF_XM)
-
 // Copy the value at SRC of size SIZE to the value at DEST.
 static void CopyArg(XtPointer src, XtPointer dest, Cardinal size)
 {
@@ -2394,7 +2393,6 @@ static void CopyArg(XtPointer src, XtPointer dest, Cardinal size)
 	copy(STATIC_CAST(char *,dest), STATIC_CAST(char *,p), size);
     }
 }
-
 #endif
 
 
@@ -2420,7 +2418,6 @@ AppDataInitializer::AppDataInitializer()
 }
 
 #if defined(IF_XM)
-
 // Fallback resources
 // The resources should be loaded in read-only memory thanks to "const"
 const _XtString const ddd_fallback_resources[] = {
@@ -2432,9 +2429,7 @@ const _XtString const ddd_fallback_resources[] = {
 0
 
 };
-
 #else
-
 // Fallback resources
 // The resources should be loaded in read-only memory thanks to "const"
 const char *const ddd_fallback_resources[] = {
@@ -2446,11 +2441,9 @@ const char *const ddd_fallback_resources[] = {
 0
 
 };
-
 #endif
 
 #if defined(IF_XM)
-
 // Return a database of default settings
 XrmDatabase app_defaults(Display *display)
 {

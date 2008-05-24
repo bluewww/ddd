@@ -3,6 +3,7 @@
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -29,14 +30,8 @@
 #define _DDD_MakeMenu_h
 
 #if defined(IF_XM)
-
 #include <X11/Intrinsic.h>
-
-#endif
-
-#include "gtk_wrapper.h"
-
-#if !defined(IF_XM)
+#else
 #include <GUI/Container.h>
 #include <GUI/Label.h>
 #include <GUI/Box.h>
@@ -44,6 +39,7 @@
 #include <GUI/Menu.h>
 #include <GUI/MenuBar.h>
 #include <GUI/Dialog.h>
+#include "gtk_wrapper.h"
 #endif
 
 #include "bool.h"

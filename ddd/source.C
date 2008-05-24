@@ -3,6 +3,7 @@
 
 // Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -72,23 +73,18 @@ static string current_arg(bool globals_first = false)
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 void gdbLookupCB(Widget, XtPointer, XtPointer)
 {
     source_view->lookup(current_arg(true));
 }
-
 #else
-
 void gdbLookupCB(void)
 {
     source_view->lookup(current_arg(true));
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void gdbUndoCB(Widget, XtPointer, XtPointer)
 {
     undo_buffer.undo();
@@ -98,9 +94,7 @@ void gdbRedoCB(Widget, XtPointer, XtPointer)
 {
     undo_buffer.redo();
 }
-
 #else
-
 void gdbUndoCB(void)
 {
     undo_buffer.undo();
@@ -110,7 +104,6 @@ void gdbRedoCB(void)
 {
     undo_buffer.redo();
 }
-
 #endif
 
 //-----------------------------------------------------------------------------
@@ -118,7 +111,6 @@ void gdbRedoCB(void)
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 void gdbPrintCB(Widget w, XtPointer client_data, XtPointer)
 {
     const bool internal = (bool)(long)client_data;
@@ -128,9 +120,7 @@ void gdbPrintCB(Widget w, XtPointer client_data, XtPointer)
     if (!arg.empty() && !arg.matches(rxwhite))
 	gdb_command(gdb->print_command(arg, internal), w);
 }
-
 #else
-
 void gdbPrintCB(GUI::Widget *w, bool internal)
 {
     const string arg = current_arg();
@@ -138,11 +128,9 @@ void gdbPrintCB(GUI::Widget *w, bool internal)
     if (!arg.empty() && !arg.matches(rxwhite))
 	gdb_command(gdb->print_command(arg, internal), w);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void gdbPrintRefCB(Widget w, XtPointer client_data, XtPointer)
 {
     const bool internal = (bool)(long)client_data;
@@ -152,9 +140,7 @@ void gdbPrintRefCB(Widget w, XtPointer client_data, XtPointer)
     if (!arg.empty() && !arg.matches(rxwhite))
 	gdb_command(gdb->print_command(deref(arg), internal), w);
 }
-
 #else
-
 void gdbPrintRefCB(GUI::Widget *w, bool internal)
 {
     const string arg = current_arg();
@@ -162,11 +148,9 @@ void gdbPrintRefCB(GUI::Widget *w, bool internal)
     if (!arg.empty() && !arg.matches(rxwhite))
 	gdb_command(gdb->print_command(deref(arg), internal), w);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void gdbDisplayCB(Widget w, XtPointer, XtPointer)
 {
     string arg = current_arg();
@@ -182,9 +166,7 @@ void gdbDispRefCB(Widget w, XtPointer, XtPointer)
     if (!arg.empty() && !arg.matches(rxwhite))
 	gdb_command("graph display " + deref(arg), w);
 }
-
 #else
-
 void gdbDisplayCB(GUI::Widget *w)
 {
     string arg = current_arg();
@@ -200,11 +182,9 @@ void gdbDispRefCB(GUI::Widget *w)
     if (!arg.empty() && !arg.matches(rxwhite))
 	gdb_command("graph display " + deref(arg), w);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void gdbWhatisCB(Widget w, XtPointer, XtPointer)
 {
     string arg = current_arg();
@@ -212,9 +192,7 @@ void gdbWhatisCB(Widget w, XtPointer, XtPointer)
     if (!arg.empty() && !arg.matches(rxwhite))
 	gdb_command(gdb->whatis_command(arg), w);
 }
-
 #else
-
 void gdbWhatisCB(GUI::Widget *w)
 {
     string arg = current_arg();
@@ -222,7 +200,6 @@ void gdbWhatisCB(GUI::Widget *w)
     if (!arg.empty() && !arg.matches(rxwhite))
 	gdb_command(gdb->whatis_command(arg), w);
 }
-
 #endif
 
 
@@ -243,7 +220,6 @@ bool have_enabled_breakpoint_at_arg()
 }
 
 #if defined(IF_XM)
-
 void gdbBreakAtCB(Widget w, XtPointer, XtPointer)
 {
     source_view->create_bp(current_arg(true), w);
@@ -258,9 +234,7 @@ void gdbRegexBreakAtCB(Widget w, XtPointer, XtPointer)
 {
     gdb_command("rbreak " + source_arg->get_string(), w);
 }
-
 #else
-
 void gdbBreakAtCB(GUI::Widget *w)
 {
     source_view->create_bp(current_arg(true), w);
@@ -275,11 +249,9 @@ void gdbRegexBreakAtCB(GUI::Widget *w)
 {
     gdb_command("rbreak " + source_arg->get_string(), w);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void gdbClearAtCB(Widget w, XtPointer, XtPointer)
 {
     source_view->clear_bp(current_arg(true), w);
@@ -324,9 +296,7 @@ void gdbToggleEnableWatchpointCB(Widget w, XtPointer, XtPointer)
 	    source_view->enable_bp(bp->number(), w);
     }
 }
-
 #else
-
 void gdbClearAtCB(GUI::Widget *w)
 {
     source_view->clear_bp(current_arg(true), w);
@@ -371,11 +341,9 @@ void gdbToggleEnableWatchpointCB(GUI::Widget *w)
 	    source_view->enable_bp(bp->number(), w);
     }
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void gdbEditBreakpointPropertiesCB(Widget, XtPointer, XtPointer)
 {
     BreakPoint *bp = source_view->breakpoint_at(current_arg(true));
@@ -389,9 +357,7 @@ void gdbEditWatchpointPropertiesCB(Widget, XtPointer, XtPointer)
     if (bp != 0)
 	source_view->edit_breakpoint_properties(bp->number());
 }
-
 #else
-
 void gdbEditBreakpointPropertiesCB(void)
 {
     BreakPoint *bp = source_view->breakpoint_at(current_arg(true));
@@ -405,7 +371,6 @@ void gdbEditWatchpointPropertiesCB(void)
     if (bp != 0)
 	source_view->edit_breakpoint_properties(bp->number());
 }
-
 #endif
 
 
@@ -431,7 +396,6 @@ bool have_enabled_watchpoint_at_arg()
 }
 
 #if defined(IF_XM)
-
 void gdbWatchCB(Widget w, XtPointer client_data, XtPointer)
 {
     const string arg = current_arg();
@@ -448,9 +412,7 @@ void gdbWatchCB(Widget w, XtPointer client_data, XtPointer)
 	gdb_command(gdb->watch_command(arg, 
 				       WatchMode((int)(long)client_data)), w);
 }
-
 #else
-
 void gdbWatchCB(GUI::Widget *w, int mode)
 {
     const string arg = current_arg();
@@ -459,11 +421,9 @@ void gdbWatchCB(GUI::Widget *w, int mode)
 	gdb_command(gdb->watch_command(arg, 
 				       WatchMode(mode)), w);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void gdbWatchRefCB(Widget w, XtPointer, XtPointer)
 {
     string arg = current_arg();
@@ -471,9 +431,7 @@ void gdbWatchRefCB(Widget w, XtPointer, XtPointer)
     if (!arg.empty() && !arg.matches(rxwhite))
 	gdb_command(gdb->watch_command(deref(arg)), w);
 }
-
 #else
-
 void gdbWatchRefCB(GUI::Widget *w)
 {
     string arg = current_arg();
@@ -481,11 +439,9 @@ void gdbWatchRefCB(GUI::Widget *w)
     if (!arg.empty() && !arg.matches(rxwhite))
 	gdb_command(gdb->watch_command(deref(arg)), w);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void gdbUnwatchCB(Widget, XtPointer, XtPointer)
 {
     if (gdb->type() == JDB)
@@ -507,9 +463,7 @@ void gdbUnwatchCB(Widget, XtPointer, XtPointer)
 	source_view->delete_bp(wp->number());
     }
 }
-
 #else
-
 void gdbUnwatchCB(void)
 {
     if (gdb->type() == JDB)
@@ -531,11 +485,9 @@ void gdbUnwatchCB(void)
 	source_view->delete_bp(wp->number());
     }
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void gdbToggleWatchCB(Widget w, XtPointer client_data, XtPointer)
 {
     BreakPoint *bp = source_view->watchpoint_at(current_arg());
@@ -544,9 +496,7 @@ void gdbToggleWatchCB(Widget w, XtPointer client_data, XtPointer)
     else
 	gdbUnwatchCB(w, client_data, XtPointer(0));
 }
-
 #else
-
 void gdbToggleWatchCB(GUI::Widget *w, int mode)
 {
     BreakPoint *bp = source_view->watchpoint_at(current_arg());
@@ -555,7 +505,6 @@ void gdbToggleWatchCB(GUI::Widget *w, int mode)
     else
 	gdbUnwatchCB();
 }
-
 #endif
 
 //-----------------------------------------------------------------------------
@@ -565,7 +514,6 @@ void gdbToggleWatchCB(GUI::Widget *w, int mode)
 static SourceView::SearchDirection last_find_direction = SourceView::forward;
 
 #if defined(IF_XM)
-
 void gdbFindCB(Widget w, XtPointer client_data, XtPointer)
 {
     SourceView::SearchDirection direction = 
@@ -596,9 +544,7 @@ void gdbFindAgainCB(Widget w, XtPointer, XtPointer call_data)
 {
     gdbFindCB(w, XtPointer(current_find_direction()), call_data);
 }
-
 #else
-
 void gdbFindCB(GUI::Widget *w, SourceView::SearchDirection direction)
 {
     assert(direction == SourceView::forward || 
@@ -630,7 +576,6 @@ void gdbFindAgainCB(GUI::Widget *w)
 {
     gdbFindCB(w, current_find_direction());
 }
-
 #endif
 
 SourceView::SearchDirection current_find_direction()
@@ -644,22 +589,18 @@ SourceView::SearchDirection current_find_direction()
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 static void gdbDeleteEditAgent(XtPointer client_data, XtIntervalId *)
 {
     // Delete agent after use
     Agent *edit_agent = (Agent *)client_data;
     delete edit_agent;
 }
-
 #else
-
 static void gdbDeleteEditAgent(Agent *edit_agent)
 {
     // Delete agent after use
     delete edit_agent;
 }
-
 #endif
 
 static string output_buffer;
@@ -742,17 +683,13 @@ void gdbEditSourceCB  (GUI::Widget *w)
 }
 
 #if defined(IF_XM)
-
 void gdbReloadSourceCB(Widget, XtPointer, XtPointer)
 {
     source_view->reload();
 }
-
 #else
-
 void gdbReloadSourceCB(void)
 {
     source_view->reload();
 }
-
 #endif

@@ -3,6 +3,7 @@
 
 // Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -41,7 +42,6 @@ DEFINE_TYPE_INFO_1(ForegroundColorBox, ColorBox);
 bool ColorBox::use_color = true;
 
 #if defined(IF_XM)
-
 // Create color, using the colormap of W
 void ColorBox::convert_color(Widget w) const
 {
@@ -80,15 +80,12 @@ void ColorBox::convert_color(Widget w) const
 
     MUTABLE_THIS(ColorBox *)->_color_valid = true;
 }
-
 #else
-
 // Create color, using the colormap of W
 void ColorBox::convert_color(GUI::Widget *w) const
 {
     std::cerr << "convert_color not implemented!\n";
 }
-
 #endif
 
 // Draw using color
@@ -121,7 +118,6 @@ void ColorBox::_draw(GUI::Widget *w,
 }
 
 #if defined(IF_XM)
-
 // Draw using foreground color
 void ForegroundColorBox::color_draw(Widget w, 
 				    const BoxRegion& region, 
@@ -139,9 +135,7 @@ void ForegroundColorBox::color_draw(Widget w,
     // Restore old foreground
     XSetForeground(XtDisplay(w), gc, gc_values.foreground);
 }
-
 #else
-
 // Draw using foreground color
 void ForegroundColorBox::color_draw(GUI::Widget *w, 
 				    const BoxRegion& region, 
@@ -154,11 +148,9 @@ void ForegroundColorBox::color_draw(GUI::Widget *w,
     TransparentHatBox::_draw(w, region, exposed, gc, context_selected);
     gc->set_foreground(old_fg);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Draw using background color
 void BackgroundColorBox::color_draw(Widget w, 
 				    const BoxRegion& region, 
@@ -188,9 +180,7 @@ void BackgroundColorBox::color_draw(Widget w,
     TransparentHatBox::_draw(w, region, exposed, gc, context_selected);
     XSetBackground(XtDisplay(w), gc, gc_values.background);
 }
-
 #else
-
 // Draw using background color
 void BackgroundColorBox::color_draw(GUI::Widget *w, 
 				    const BoxRegion& region, 
@@ -219,7 +209,6 @@ void BackgroundColorBox::color_draw(GUI::Widget *w,
     TransparentHatBox::_draw(w, region, exposed, gc, context_selected);
     gc->set_values(gc_values, GUI::GC_BACKGROUND);
 }
-
 #endif
 
 

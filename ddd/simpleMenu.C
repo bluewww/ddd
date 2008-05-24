@@ -3,6 +3,7 @@
 
 // Copyright (C) 1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -58,7 +59,6 @@ char simpleMenu_rcsid[] =
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 static bool same_shell(Widget w1, Widget w2)
 {
     if (w1 == 0 || w2 == 0)
@@ -135,9 +135,7 @@ static void clear(Widget w, Widget dest)
     else if (XmIsTextField(dest))
 	XmTextFieldSetString(dest, XMST(""));
 }
-
 #else
-
 static bool same_shell(GUI::Widget *w1, GUI::Widget *w2)
 {
     if (w1 == 0 || w2 == 0)
@@ -220,12 +218,10 @@ static void clear(GUI::Widget *w, GUI::Widget *dest)
 //    else if (XmIsTextField(dest))
 //	XmTextFieldSetString(dest, XMST(""));
 }
-
 #endif
 
 
 #if defined(IF_XM)
-
 static Boolean select(Widget w, Widget dest, Time tm)
 {
     if (!same_shell(w, dest))
@@ -277,9 +273,7 @@ static Boolean remove(Widget w, Widget dest)
 
     return success;
 }
-
 #else
-
 static Boolean select(GUI::Widget *w, GUI::Widget *dest, Time tm)
 {
     if (!same_shell(w, dest))
@@ -334,7 +328,6 @@ static Boolean remove(GUI::Widget *w, GUI::Widget *dest)
 
     return success;
 }
-
 #endif
 
 //-----------------------------------------------------------------------------
@@ -342,7 +335,6 @@ static Boolean remove(GUI::Widget *w, GUI::Widget *dest)
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 static void UnselectAllCB(Widget w, XtPointer client_data,
 			  XtPointer call_data)
 {
@@ -359,9 +351,7 @@ static void UnselectAllCB(Widget w, XtPointer client_data,
     if (win != dest)
 	unselect(w, win, tm);
 }
-
 #else
-
 static void UnselectAllCB(GUI::Widget *w)
 {
     std::cerr << "UnselectAllCB not implemented yet\n";
@@ -378,11 +368,9 @@ static void UnselectAllCB(GUI::Widget *w)
 //    if (win != dest)
 //	unselect(w, win, tm);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void CutCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
@@ -436,9 +424,7 @@ static void PasteCB(Widget w, XtPointer client_data, XtPointer)
     if (!success && win != dest)
 	success = paste(w, win);
 }
-
 #else
-
 static void CutCB(GUI::Widget *w)
 {
     std::cerr << "CutCB not implemented yet\n";
@@ -495,11 +481,9 @@ static void PasteCB(GUI::Widget *w)
 //    if (!success && win != dest)
 //	success = paste(w, win);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void ClearAllCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     UnselectAllCB(w, client_data, call_data);
@@ -548,9 +532,7 @@ static void RemoveCB(Widget w, XtPointer client_data, XtPointer call_data)
 	UnselectAllCB(w, client_data, call_data);
 }
 
-
 #else
-
 static void ClearAllCB(GUI::Widget *w)
 {
     std::cerr << "ClearAllCB not implemented yet\n";
@@ -601,8 +583,6 @@ static void RemoveCB(GUI::Widget *w)
 //    if (success)
 //	UnselectAllCB(w, client_data, call_data);
 }
-
-
 #endif
 
 //-----------------------------------------------------------------------------

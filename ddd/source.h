@@ -3,6 +3,7 @@
 
 // Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -29,18 +30,11 @@
 #define _DDD_source_h
 
 #if defined(IF_XM)
-
 #include <X11/Intrinsic.h>
-
-#endif
-
-#if !defined(IF_XM)
-
+#else
 #include <GUI/Widget.h>
-
-#endif
-
 #include "gtk_wrapper.h"
+#endif
 
 #include "bool.h"
 #include "SourceView.h"
@@ -58,7 +52,6 @@ extern void gdbLookupCB       (void);
 #endif
 
 #if defined(IF_XM)
-
 extern void gdbTempBreakAtCB  (Widget, XtPointer, XtPointer);
 extern void gdbRegexBreakAtCB (Widget, XtPointer, XtPointer);
 extern void gdbContUntilCB    (Widget, XtPointer, XtPointer);
@@ -68,9 +61,7 @@ extern void gdbPrintCB        (Widget, XtPointer, XtPointer);
 extern void gdbDisplayCB      (Widget, XtPointer, XtPointer);
 extern void gdbWatchCB        (Widget, XtPointer, XtPointer);
 extern void gdbUnwatchCB      (Widget, XtPointer, XtPointer);
-
 #else
-
 extern void gdbTempBreakAtCB  (GUI::Widget *);
 extern void gdbRegexBreakAtCB (GUI::Widget *);
 extern void gdbContUntilCB    (GUI::Widget *);
@@ -80,27 +71,22 @@ extern void gdbPrintCB        (GUI::Widget *, bool);
 extern void gdbDisplayCB      (GUI::Widget *);
 extern void gdbWatchCB        (GUI::Widget *, int);
 extern void gdbUnwatchCB      (void);
-
 #endif
 
 #if defined(IF_XM)
-
 extern void gdbToggleWatchCB  (Widget, XtPointer, XtPointer);
 
 extern void gdbPrintRefCB     (Widget, XtPointer, XtPointer);
 extern void gdbDispRefCB      (Widget, XtPointer, XtPointer);
 
 extern void gdbWatchRefCB     (Widget, XtPointer, XtPointer);
-
 #else
-
 extern void gdbToggleWatchCB  (GUI::Widget *, int);
 
 extern void gdbPrintRefCB     (GUI::Widget *, bool);
 extern void gdbDispRefCB      (GUI::Widget *);
 
 extern void gdbWatchRefCB     (GUI::Widget *);
-
 #endif
 
 #if defined(IF_XM)
@@ -132,7 +118,6 @@ extern bool have_enabled_watchpoint_at_arg();
 
 
 #if defined(IF_XM)
-
 extern void gdbEditBreakpointPropertiesCB (Widget, XtPointer, XtPointer);
 extern void gdbEditWatchpointPropertiesCB (Widget, XtPointer, XtPointer);
 
@@ -140,9 +125,7 @@ extern void gdbToggleEnableBreakpointCB (Widget, XtPointer, XtPointer);
 extern void gdbToggleEnableWatchpointCB (Widget, XtPointer, XtPointer);
 extern void gdbFindCB         (Widget, XtPointer, XtPointer);
 extern void gdbFindAgainCB    (Widget, XtPointer, XtPointer);
-
 #else
-
 extern void gdbEditBreakpointPropertiesCB (void);
 extern void gdbEditWatchpointPropertiesCB (void);
 
@@ -150,7 +133,6 @@ extern void gdbToggleEnableBreakpointCB (GUI::Widget *);
 extern void gdbToggleEnableWatchpointCB (GUI::Widget *);
 extern void gdbFindCB         (GUI::Widget *, SourceView::SearchDirection);
 extern void gdbFindAgainCB    (GUI::Widget *);
-
 #endif
 
 extern SourceView::SearchDirection current_find_direction();

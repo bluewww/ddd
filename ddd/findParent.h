@@ -3,6 +3,7 @@
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -33,20 +34,14 @@
 #endif
 
 #if defined(IF_XM)
-
 #include <X11/Intrinsic.h>
-
 #else
-
 #include <GUI/Widget.h>
 #include <GUI/Container.h>
-
+#include "gtk_wrapper.h"
 #endif
 
-#include "gtk_wrapper.h"
-
 #if defined(IF_XM)
-
 // find a (realized) Shell
 Widget findShellParent(Widget w);
 
@@ -55,9 +50,7 @@ Widget findTopLevelShellParent(Widget w);
 
 // find highest (realized) toplevel Shell
 Widget findTheTopLevelShell(Widget w);
-
 #else
-
 // find a (realized) Shell
 GUI::Shell *findShellParent(GUI::Widget *w);
 
@@ -66,7 +59,6 @@ GUI::Shell *findTopLevelShellParent1(GUI::Widget *w);
 
 // find highest (realized) toplevel Shell
 GUI::Shell *findTheTopLevelShell1(GUI::Widget *w);
-
 #endif
 
 #endif

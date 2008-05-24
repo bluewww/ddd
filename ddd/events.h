@@ -3,6 +3,7 @@
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -36,9 +37,6 @@
 #include <X11/Xlib.h>
 #else
 #include "gtk_wrapper.h"
-#endif
-
-#if !defined(IF_XM)
 #include <GUI/Widget.h>
 #include <GUI/Events.h>
 #endif
@@ -50,9 +48,7 @@
 BoxPoint point(XEvent *ev); // Location
 BoxSize size(XEvent *ev);   // Size
 Time time(XEvent *ev);      // Time
-#endif
-
-#if !defined(IF_XM)
+#else
 BoxPoint point1(GUI::Event *ev); // Location
 BoxSize size1(GUI::Event *ev);   // Size
 Time time1(GUI::Event *ev);      // Time

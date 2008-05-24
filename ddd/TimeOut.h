@@ -29,7 +29,6 @@
 #define _DDD_TimeOut_h
 
 #if defined(IF_XM)
-
 #include <X11/Intrinsic.h>
 
 // Like XtAppAddTimeOut(), but also register timer in internal list.
@@ -63,9 +62,6 @@ extern void MyRemoveTimeOut(XtIntervalId timer,
 
 // Return number of pending timers
 extern int MyPendingTimeOuts();
-
-#else
-
 #endif
 
 #endif // _DDD_TimeOut_h

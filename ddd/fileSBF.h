@@ -28,15 +28,7 @@
 #ifndef _DDD_fileSelectionBoxFilename_h
 #define _DDD_fileSelectionBoxFilename_h
 
-#if defined(IF_XM)
-
 #include <Xm/Xm.h>
-
-#else
-
-#include "gtk_wrapper.h"
-
-#endif
 
 #include "strclass.h"
 

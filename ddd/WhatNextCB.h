@@ -3,6 +3,7 @@
 
 // Copyright (C) 1997 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -33,31 +34,22 @@
 #endif
 
 #if defined(IF_XM)
-
 #include <X11/Intrinsic.h>
-
 #else
-
 #include <GUI/Widget.h>
-
-#endif
-
 #include "gtk_wrapper.h"
+#endif
 
 #include "bool.h"
 #include "strclass.h"
 
 #if defined(IF_XM)
-
 // Give a help dependent on current DDD state.
 extern void WhatNextCB(Widget widget, XtPointer client_data,
  		       XtPointer call_data);
-
 #else
-
 // Give a help dependent on current DDD state.
 extern void WhatNextCB(GUI::Widget *);
-
 #endif
 
 #endif // _DDD_WhatNextCB_h

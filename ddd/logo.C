@@ -4,6 +4,7 @@
 // Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
 // Copyright (C) 2000 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -36,16 +37,12 @@ char logo_rcsid[] =
 #include "logo.h"
 
 #if defined(IF_XM)
-
 #include "Xpm.h"
-
 #else
-
 #include <gtkmm/bin.h>
 #include <gtkmm/label.h>
 #include <gtkmm/button.h>
 #include <gtkmm/menuitem.h>
-
 #endif
 
 #include "assert.h"
@@ -95,7 +92,6 @@ static const char **ddd_xpm = 0;
 
 
 #if defined(IF_XM)
-
 //-----------------------------------------------------------------------------
 // DDD logo
 //-----------------------------------------------------------------------------
@@ -327,8 +323,6 @@ Pixmap dddsplash(Widget w, const string& color_key,
 
     return logo;
 }
-
-
 #endif
 
 //-----------------------------------------------------------------------
@@ -513,7 +507,6 @@ static const char **watch_xx_xpm       = 0;
 #endif // !XpmVersion
 
 #if !defined(IF_XM)
-
 #if defined(IF_XMMM)
 GUI::ImageHandle DDD_ICON[1] = {ddd_NAME};
 GUI::ImageHandle BREAK_AT_ICON[4] = {"break_at", "break_at-xx", "break_at-arm", "break_at-hi"};
@@ -571,7 +564,6 @@ GUI::ImageHandle UNDISPLAY_ICON[4];
 GUI::ImageHandle UNWATCH_ICON[4];
 GUI::ImageHandle WATCH_ICON[4];
 #endif
-
 #endif
 
 #if defined(IF_XM)

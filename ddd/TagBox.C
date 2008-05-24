@@ -3,6 +3,7 @@
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -109,7 +110,6 @@ const TagBox *TagBox::findTag(const BoxPoint& p) const
 
 
 #if defined(IF_XM)
-
 // Draw TagBox
 void TagBox::_draw(Widget w, 
 		   const BoxRegion& r, 
@@ -138,9 +138,7 @@ void TagBox::_draw(Widget w,
 	XSetFunction(XtDisplay(w), gc, gcvalues.function);
     }
 }
-
 #else
-
 // Draw TagBox
 void TagBox::_draw(GUI::Widget *w, 
 		   const BoxRegion& r, 
@@ -168,7 +166,6 @@ void TagBox::_draw(GUI::Widget *w,
 	gc->set_values(gcvalues, GUI::GC_FUNCTION);
     }
 }
-
 #endif
 
 

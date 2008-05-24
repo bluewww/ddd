@@ -3,6 +3,7 @@
 
 // Copyright (C) 1996-1999 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -197,7 +198,6 @@ GDBAgent *new_gdb(DebuggerType type,
 }
 
 #if defined(IF_XM)
-
 // Show call in output window
 static void EchoTextCB(XtPointer client_data,
 		       XtIntervalId *)
@@ -205,16 +205,13 @@ static void EchoTextCB(XtPointer client_data,
     const string& gdb_call = *((const string *)client_data);
     _gdb_out(gdb_call);
 }
-
 #else
-
 // Show call in output window
 static void EchoTextCB(const string *client_data)
 {
     const string& gdb_call = *client_data;
     _gdb_out(gdb_call);
 }
-
 #endif
 
 // Invoke GDB upon rlogin

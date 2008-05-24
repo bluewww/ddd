@@ -32,7 +32,6 @@
 #include "Swallower.h"
 
 #if defined(IF_XM)
-
 #include <X11/IntrinsicP.h>
 
 // Superclasses
@@ -43,10 +42,9 @@ extern "C" {
 #undef new
 #undef class
 }
-
-#endif
-
+#else
 #include "gtk_wrapper.h"
+#endif
 
 // The Swallower class record
 

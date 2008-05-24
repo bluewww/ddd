@@ -3,6 +3,7 @@
 
 // Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -33,23 +34,17 @@
 #endif
 
 #if defined(IF_XM)
-
 #include <X11/Intrinsic.h>
-
 #else
-
 #include <GUI/FileSelectionDialog.h>
-
-#endif
-
 #include "gtk_wrapper.h"
+#endif
 
 #include "strclass.h"
 #include "StringA.h"
 
 // Open file, process, core, source ...
 #if defined(IF_XM)
-
 extern void gdbOpenRecentCB   (Widget, XtPointer, XtPointer);
 extern void gdbOpenProcessCB  (Widget, XtPointer, XtPointer);
 extern void gdbOpenClassCB    (Widget, XtPointer, XtPointer);
@@ -57,9 +52,7 @@ extern void gdbOpenFileCB     (Widget, XtPointer, XtPointer);
 extern void gdbOpenCoreCB     (Widget, XtPointer, XtPointer);
 extern void gdbOpenSourceCB   (Widget, XtPointer, XtPointer);
 extern void gdbLookupSourceCB (Widget, XtPointer, XtPointer);
-
 #else
-
 extern void gdbOpenRecentCB   (int index);
 extern void gdbOpenProcessCB  (GUI::Widget *w);
 extern void gdbOpenClassCB    (GUI::Widget *w);
@@ -67,7 +60,6 @@ extern void gdbOpenFileCB     (GUI::Widget *w);
 extern void gdbOpenCoreCB     (GUI::Widget *w);
 extern void gdbOpenSourceCB   (GUI::Widget *w);
 extern void gdbLookupSourceCB (GUI::Widget *w);
-
 #endif
 
 

@@ -3,6 +3,7 @@
 
 // Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -33,25 +34,19 @@
 #endif
 
 #if defined(IF_XM)
-
 #include <X11/Intrinsic.h>
-
-#endif
-
-#if !defined(IF_XM)
+#else
 #include <GUI/Widget.h>
 #include <GUI/Events.h>
 #include <GUI/ScrolledText.h>
-#endif
-
 #include "gtk_wrapper.h"
+#endif
 
 #include "bool.h"
 #include "strclass.h"
 
 // Actions
 #if defined(IF_XM)
-
 extern void controlAct            (Widget, XEvent*, String*, Cardinal*);
 extern void interruptAct          (Widget, XEvent*, String*, Cardinal*);
 extern void commandAct            (Widget, XEvent*, String*, Cardinal*);
@@ -72,9 +67,7 @@ extern void isearch_nextAct       (Widget, XEvent*, String*, Cardinal*);
 extern void isearch_prevAct       (Widget, XEvent*, String*, Cardinal*);
 extern void isearch_exitAct       (Widget, XEvent*, String*, Cardinal*);
 extern void popupAct              (Widget, XEvent*, String*, Cardinal*);
-
 #else
-
 extern void controlAct            (GUI::Widget *, GUI::Event*, GUI::String *, unsigned int *);
 extern void interruptAct          (GUI::Widget *, GUI::Event*, GUI::String *, unsigned int *);
 extern void commandAct            (GUI::Widget *, GUI::Event*, GUI::String *, unsigned int *);
@@ -95,7 +88,6 @@ extern void isearch_nextAct       (GUI::Widget *, GUI::Event *, GUI::String *, u
 extern void isearch_prevAct       (GUI::Widget *, GUI::Event *, GUI::String *, unsigned int *);
 extern void isearch_exitAct       (GUI::Widget *, GUI::Event *, GUI::String *, unsigned int *);
 extern void popupAct              (GUI::Widget *, GUI::Event *, GUI::String *, unsigned int *);
-
 #endif
 
 

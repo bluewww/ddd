@@ -3,6 +3,7 @@
 
 // Copyright (C) 1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -36,17 +37,12 @@
 #include "AppData.h"
 
 #if defined(IF_XM)
-
 #include <X11/Intrinsic.h>
-
 #else
-
 #include <GUI/Entry.h>
 #include <libxml/tree.h>
-
-#endif
-
 #include "gtk_wrapper.h"
+#endif
 
 // Font types
 enum DDDFont { DefaultDDDFont       = 0,
@@ -56,15 +52,11 @@ enum DDDFont { DefaultDDDFont       = 0,
                DataDDDFont          = 4 };
 
 #if defined(IF_XM)
-
 // Setup font specs.  DB is the resource database in use.
 extern void setup_fonts(AppData& app_data, XrmDatabase db = 0);
-
 #else
-
 // Setup font specs.  DB is the resource database in use.
 extern void setup_fonts(AppData& app_data, xmlDoc *db = 0);
-
 #endif
 
 // Return font name from BASE, overriding with parts from OVERRIDE.
@@ -77,23 +69,19 @@ extern string make_font(const AppData& ad, DDDFont base,
 extern void set_font(DDDFont n, const string& name);
 
 #if defined(IF_XM)
-
 // Browse fonts
 extern void BrowseFontCB(Widget, XtPointer, XtPointer);
 
 // Set font name and size
 extern void SetFontNameCB(Widget, XtPointer, XtPointer);
 extern void SetFontSizeCB(Widget, XtPointer, XtPointer);
-
 #else
-
 // Browse fonts
 extern void BrowseFontCB(GUI::Button *, DDDFont);
 
 // Set font name and size
 extern void SetFontNameCB(GUI::Entry *, DDDFont);
 extern void SetFontSizeCB(GUI::Entry *, DDDFont);
-
 #endif
 
 #endif // _DDD_fonts_h

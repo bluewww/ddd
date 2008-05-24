@@ -3,6 +3,7 @@
 
 // Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -324,7 +325,6 @@ static void ReflattenButtonCB(Widget /* shell */, XtPointer client_data,
 #endif
 
 #if !defined(IF_XM)
-
 #include <gtkmm/eventbox.h>
 
 static void

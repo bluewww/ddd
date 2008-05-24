@@ -4,6 +4,7 @@
 // Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
 // Copyright (C) 2001 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -30,35 +31,28 @@
 #define _DDD_MString_h
 
 #if defined(IF_XM)
-
 // An "MString" is but a C++ wrapper around Motif composite strings.
 
 #include <Xm/Xm.h>
-
-#endif
-
+#else
 #include "gtk_wrapper.h"
+#endif
 
 #include "strclass.h"
 #include "assert.h"
 #include "casts.h"
 
 #if defined(IF_XM)
-
 #ifdef XmFONTLIST_DEFAULT_TAG
 #define MSTRING_DEFAULT_CHARSET XmFONTLIST_DEFAULT_TAG
 #else
 #define MSTRING_DEFAULT_CHARSET XmSTRING_DEFAULT_CHARSET
 #endif
-
 #else
-
 #define MSTRING_DEFAULT_CHARSET "IGNORED"
-
 #endif
 
 #if defined(IF_XM)
-
 class MString {
 private:
     XmString _mstring;		// Motif internals
@@ -245,9 +239,7 @@ inline MString operator + (const MString& m1, const MString& m2)
     XmStringFree(tmp);
     return ret;
 }
-
 #else
-
 // Note: Motif Compound String should really be mapped to a
 // Pango GlyphString?
 
@@ -457,7 +449,6 @@ inline MString operator + (const MString& m1, const MString& m2)
     MString ret(tmp, true);
     return ret;
 }
-
 #endif
 
 

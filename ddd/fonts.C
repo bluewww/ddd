@@ -3,6 +3,7 @@
 
 // Copyright (C) 1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -654,7 +655,6 @@ static void set_font_size(DDDFont font, int size)
 }
 
 #if defined(IF_XM)
-
 void SetFontNameCB(Widget w, XtPointer client_data, XtPointer)
 {
     DDDFont font = (DDDFont) (long) client_data;
@@ -664,9 +664,7 @@ void SetFontNameCB(Widget w, XtPointer client_data, XtPointer)
 
     update_reset_preferences();
 }
-
 #else
-
 void SetFontNameCB(GUI::Entry *w, DDDFont font)
 {
     GUI::String s = w->get_text();
@@ -674,11 +672,9 @@ void SetFontNameCB(GUI::Entry *w, DDDFont font)
 
     update_reset_preferences();
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void SetFontSizeCB(Widget w, XtPointer client_data, XtPointer)
 {
     DDDFont font = (DDDFont) (long) client_data;
@@ -688,9 +684,7 @@ void SetFontSizeCB(Widget w, XtPointer client_data, XtPointer)
 
     update_reset_preferences();
 }
-
 #else
-
 void SetFontSizeCB(GUI::Entry *w, DDDFont font)
 {
     GUI::String s = w->get_text();
@@ -698,7 +692,6 @@ void SetFontSizeCB(GUI::Entry *w, DDDFont font)
 
     update_reset_preferences();
 }
-
 #endif
 
 
@@ -836,7 +829,6 @@ static void SelectionLostCB(Widget w, XtPointer client_data, XtPointer)
 }
 
 #if defined(IF_XM)
-
 // Browse fonts
 void BrowseFontCB(Widget w, XtPointer client_data, XtPointer)
 {
@@ -886,9 +878,7 @@ void BrowseFontCB(Widget w, XtPointer client_data, XtPointer)
 				  FontSelectionErrorHP, (void *)info);
     font_select_agent->start();
 }
-
 #else
-
 // Browse fonts
 void BrowseFontCB(GUI::Button *w, DDDFont font)
 {
@@ -931,5 +921,4 @@ void BrowseFontCB(GUI::Button *w, DDDFont font)
 				  FontSelectionErrorHP, (void *)info);
     font_select_agent->start();
 }
-
 #endif

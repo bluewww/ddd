@@ -29,12 +29,10 @@
 #define _DDD_findWindow_h
 
 #if defined(IF_XM)
-
 #include <X11/Intrinsic.h>
-
-#endif
-
+#else
 #include "gtk_wrapper.h"
+#endif
 
 #include "bool.h"
 

@@ -3,6 +3,7 @@
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -38,17 +39,11 @@
 #include "gtk_wrapper.h"
 
 #if defined(IF_XM)
-
 #include <X11/Intrinsic.h>
 #include <Xm/Xm.h>
-
-#endif
-
-#if !defined(IF_XM)
-
+#else
 #include <GUI/ScrolledText.h>
 #include <GUI/Button.h>
-
 #endif
 
 #include "bool.h"
@@ -103,21 +98,17 @@ extern void update_edit_menus();
 extern void save_option_state();
 
 #if defined(IF_XM)
-
 // Last output position
 extern XmTextPosition promptPosition;
 
 // Last message position
 extern XmTextPosition messagePosition;
-
 #else
-
 // Last output position
 extern long promptPosition;
 
 // Last message position
 extern long messagePosition;
-
 #endif
 
 // True if output is running
@@ -150,15 +141,11 @@ extern void process_next_event();
 extern void process_pending_events();
 
 #if defined(IF_XM)
-
 // Setup is done
 extern Boolean ddd_setup_done(XtPointer client_data);
-
 #else
-
 // Setup is done
 extern bool ddd_setup_done(void);
-
 #endif
 
 // Register shells of menu ITEMS.

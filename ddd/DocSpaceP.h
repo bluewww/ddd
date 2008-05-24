@@ -32,14 +32,8 @@
 
 #include "DocSpace.h"
 
-#if defined(IF_XM)
-
 /* superclass private header file */
 #include <X11/CoreP.h>
-
-#else
-
-#endif
 
 /* define unique representation types not found in <X11/StringDefs.h> */
 

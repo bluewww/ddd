@@ -3,6 +3,7 @@
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -29,11 +30,7 @@
 #define _DDD_GraphGC_h
 
 #if defined(IF_XM)
-
 #include <X11/Xlib.h>
-
-#else
-
 #endif
 
 #include "BoxPoint.h"

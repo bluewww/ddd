@@ -3,6 +3,7 @@
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -50,7 +51,6 @@ char findParent_rcsid[] =
 static const bool findParent_debug = false;
 
 #if defined(IF_XM)
-
 // Find a realized Shell
 Widget findShellParent(Widget w)
 {
@@ -136,11 +136,7 @@ Widget findTheTopLevelShell(Widget w)
 
     return found;
 }
-
-#endif
-
-#if !defined(IF_XM)
-
+#else
 // Find a realized Shell
 GUI::Shell *findShellParent(GUI::Widget *w)
 {
@@ -214,5 +210,4 @@ GUI::Shell *findTheTopLevelShell1(GUI::Widget *w)
 
     return w?dynamic_cast<GUI::Shell *>(found):NULL;
 }
-
 #endif

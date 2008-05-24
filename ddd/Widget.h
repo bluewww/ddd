@@ -29,16 +29,12 @@
 #define _DDD_Widget_h
 
 #if defined(IF_XM)
-
 extern "C" {
     typedef struct _WidgetRec *Widget;
     typedef struct _XGC *GC;
 }
-
 #else
-
 #include "gtk_wrapper.h"
-
 #endif
 
 #endif // _DDD_Widget_h

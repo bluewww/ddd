@@ -3,6 +3,7 @@
 
 // Copyright (C) 1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -49,64 +50,48 @@ char examine_rcsid[] =
 #include "MakeMenu.h"
 
 #if defined(IF_XM)
-
 #include <Xm/SelectioB.h>
 #include <Xm/TextF.h>
-
 #else
-
 #include <GUI/Dialog.h>
 #include <GUI/ComboBox.h>
 #include <GUI/SpinButton.h>
-
 #endif
 
 #if defined(IF_XM)
-
 static Widget repeat_w;	// Repeat count
 static Widget address_w;	// Starting address
-
 #else
-
 static GUI::SpinButton *repeat_w;	// Repeat count
 static GUI::ComboBoxEntryText *address_w;	// Starting address
-
 #endif
 
 static string the_format = "";	// The format
 
 #if defined(IF_XM)
-
 static void SetFormatCB(Widget w, XtPointer, XtPointer)
 {
     the_format = XtName(w);
 }
-
 #else
-
 static void SetFormatCB(GUI::Widget *w)
 {
     the_format = w->get_name().c_str();
 }
-
 #endif
 
 static string the_size   = "";	// The size
 
 #if defined(IF_XM)
-
 static void SetSizeCB(Widget w, XtPointer, XtPointer)
 {
     the_size = XtName(w);
 }
-
 #else
-
 static void SetSizeCB(GUI::Widget *w)
 {
     the_size = w->get_name().c_str();
 }
-
 #endif
 
 #if defined(IF_XM)
@@ -340,7 +325,6 @@ static string examine_command()
 }
 
 #if defined(IF_XM)
-
 static void DisplayExaminedCB(Widget w, XtPointer, XtPointer)
 {
     gdb_command("graph display `" + examine_command() + "`", w);
@@ -350,9 +334,7 @@ static void PrintExaminedCB(Widget w, XtPointer, XtPointer)
 {
     gdb_command(examine_command(), w);
 }
-
 #else
-
 static void DisplayExaminedCB(GUI::Widget *w)
 {
     gdb_command("graph display `" + examine_command() + "`", w);
@@ -363,11 +345,9 @@ static void PrintExaminedCB(GUI::Widget *w)
     gdb_command(examine_command(), w);
 }
 
-
 #endif
 
 #if defined(IF_XM)
-
 void gdbExamineCB(Widget w, XtPointer, XtPointer)
 {
     static Widget dialog = 0;
@@ -433,9 +413,7 @@ void gdbExamineCB(Widget w, XtPointer, XtPointer)
 
     manage_and_raise(dialog);
 }
-
 #else
-
 void gdbExamineCB(GUI::Widget *w)
 {
     static GUI::Dialog *dialog = 0;
@@ -484,6 +462,5 @@ void gdbExamineCB(GUI::Widget *w)
 
     manage_and_raise(dialog);
 }
-
 #endif
 

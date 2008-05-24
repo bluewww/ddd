@@ -16,6 +16,7 @@ Rocky BERNSTEIN <rocky@panix.com>         - BASH debugger support
 J.H.M. DASSEN <jdassen@wi.leidenuniv.nl>  - Tips and bug reports
 Dmitri DMITRIENKO <dd.cron.ru>            - PHP support
 Christian LINDIG <lindig@ips.cs.tu-bs.de> - PostScript and XFIG printing
+Peter WAINWRIGHT <prw@ceiriog.eclipse.co.uk> - Gtkmm GUI support
 Richard WOLFF <rwolff@noao.edu>		  - Python support
 
 Significant suggestions and bug fixes:

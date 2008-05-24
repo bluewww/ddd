@@ -3,6 +3,7 @@
 
 // Copyright (C) 1999 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -28,7 +29,7 @@
 char Tool_rcsid[] = 
     "$Id$";
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
@@ -61,7 +62,6 @@ char Tool_rcsid[] =
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 // Events to note for window visibility
 const int STRUCTURE_MASK = StructureNotifyMask | VisibilityChangeMask;
 
@@ -170,9 +170,7 @@ void create_command_tool()
 
     XtRealizeWidget(tool_shell);
 }
-
 #else
-
 void create_command_tool()
 {
     // It is preferable to realize the command tool as a DialogShell,
@@ -200,11 +198,5 @@ void create_command_tool()
 
     Delay::register_shell(tool_shell);
 
-#ifdef NAG_ME
-#warning We do not configure tool shell geometry
-#endif
-
-    // XtRealizeWidget(tool_shell);
 }
-
 #endif

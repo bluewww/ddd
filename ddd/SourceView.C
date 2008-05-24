@@ -5,6 +5,7 @@
 // Copyright (C) 2000 Universitaet Passau, Germany.
 // Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
 // and Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -4325,8 +4326,6 @@ bool SourceView::get_line_of_pos (Widget w,
 
     if (w != text_w)
     {
-	std::cerr << "HELP: Cannot handle selection of glyphs!\n";
-#if 0
 	// Glyph selected
 
 	MapRef ref;
@@ -4344,7 +4343,6 @@ bool SourceView::get_line_of_pos (Widget w,
 		return true;
 	    }
 	}
-#endif
     }
 
     if (pos >= int(current_text(text_w).length()))

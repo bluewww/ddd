@@ -4,6 +4,7 @@
 // Copyright (C) 1995-1997 Technische Universitaet Braunschweig, Germany.
 // Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
 // and Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -47,17 +48,9 @@
 #define _DDD_SourceView_h
 
 #if defined(IF_XM)
-
 // Motif includes
 #include <Xm/Xm.h>
-
 #else
-
-#include <gdkmm/pixbuf.h>
-
-#endif
-
-#if !defined(IF_XM)
 #include <GUI/WidgetPtr.h>
 #include <GUI/SelectionDialog.h>
 #include <GUI/RadioButton.h>
@@ -68,9 +61,9 @@
 #include <GUI/ComboBox.h>
 #include <GUI/Events.h>
 #include <GUI/Dialog.h>
-#endif
-
+#include <gdkmm/pixbuf.h>
 #include "gtk_wrapper.h"
+#endif
 
 // Misc includes
 #include "strclass.h"

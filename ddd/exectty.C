@@ -4,6 +4,7 @@
 // Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
 // Copyright (C) 2000 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -64,9 +65,7 @@ char exectty_rcsid[] =
 
 #include <Xm/Xm.h>
 #include <Xm/MessageB.h>
-#endif
-
-#if !defined(IF_XM)
+#else
 #include <GUI/Dialog.h>
 #include <GUI/Button.h>
 #include <GUI/Label.h>
@@ -124,30 +123,22 @@ static bool show_starting_line_in_tty    = false;
 pid_t exec_tty_pid()     { return separate_tty_pid; }
 
 #if defined(IF_XM)
-
 Window exec_tty_window() { return separate_tty_window; }
-
 #else
-
 GUI::RefPtr<GUI::XWindow> exec_tty_window() { return separate_tty_window; }
-
 #endif
 
 #if defined(IF_XM)
-
 static void CancelTTYCB(Widget, XtPointer client_data, XtPointer)
 {
     bool *flag = (bool *)client_data;
     *flag = true;
 }
-
 #else
-
 static void CancelTTYCB(bool *flag)
 {
     *flag = true;
 }
-
 #endif
 
 static void GotReplyHP(Agent *, void *client_data, void *call_data)
@@ -158,7 +149,6 @@ static void GotReplyHP(Agent *, void *client_data, void *call_data)
 }
 
 #if defined(IF_XM)
-
 // Create a separate tty window; return its name in TTYNAME, its
 // process id in PID, its terminal type in TERM, and its window id in
 // WINDOWID.
@@ -306,9 +296,7 @@ static void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
 	XSelectInput(XtDisplay(gdb_w), windowid, StructureNotifyMask);
     }
 }
-
 #else
-
 // Create a separate tty window; return its name in TTYNAME, its
 // process id in PID, its terminal type in TERM, and its window id in
 // WINDOWID.
@@ -450,7 +438,6 @@ static void launch_separate_tty(string &ttyname, pid_t &pid, string &term,
 #endif
     }
 }
-
 #endif
 
 static void get_args(const string& command, string& base, string& args)
@@ -993,7 +980,6 @@ static void initialize_tty(const string& tty_name, const string& tty_term)
 }
 
 #if defined(IF_XM)
-
 // Set the title of TTY_WINDOW to MESSAGE
 static void set_tty_title(string message, Window tty_window)
 {
@@ -1025,9 +1011,7 @@ static void set_tty_title(string message, Window tty_window)
 	wm_set_name(XtDisplay(command_shell), tty_window,
 		    title, icon);
 }
-
 #else
-
 // Set the title of TTY_WINDOW to MESSAGE
 static void set_tty_title(string message, GUI::RefPtr<GUI::XWindow> tty_window)
 {
@@ -1059,7 +1043,6 @@ static void set_tty_title(string message, GUI::RefPtr<GUI::XWindow> tty_window)
 	wm_set_name(command_shell->get_display(), tty_window,
 		    title, icon);
 }
-
 #endif
 
 // Handle rerun

@@ -3,6 +3,7 @@
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -268,7 +269,6 @@ void LineGraphEdge::drawLine(GUI::Widget *w,
 }
 
 #if defined(IF_XM)
-
 // Draw arrow head at POS
 void LineGraphEdge::drawArrowHead(Widget w,
 				  const BoxRegion& /* exposed */,
@@ -301,9 +301,7 @@ void LineGraphEdge::drawArrowHead(Widget w,
     XFillPolygon(XtDisplay(w), XtWindow(w), gc.edgeGC, points,
 		 XtNumber(points), Convex, CoordModeOrigin);
 }
-
 #else
-
 // Draw arrow head at POS
 void LineGraphEdge::drawArrowHead(GUI::Widget *w,
 				  const BoxRegion& /* exposed */,
@@ -333,7 +331,6 @@ void LineGraphEdge::drawArrowHead(GUI::Widget *w,
 
     w->get_window()->draw_polygon(gc.edgeGC, true, points);
 }
-
 #endif
 
 
@@ -375,7 +372,6 @@ BoxRegion LineGraphEdge::region(const GraphGC& gc) const
 }
 
 #if defined(IF_XM)
-
 // Draw self edge
 void LineGraphEdge::drawSelf(Widget w,
 			     const BoxRegion& exposed,
@@ -403,9 +399,7 @@ void LineGraphEdge::drawSelf(Widget w,
     // Find arrow angle
     drawArrowHead(w, exposed, gc, info.arrow_pos, info.arrow_alpha);
 }
-
 #else
-
 // Draw self edge
 void LineGraphEdge::drawSelf(GUI::Widget *w,
 			     const BoxRegion& exposed,
@@ -433,7 +427,6 @@ void LineGraphEdge::drawSelf(GUI::Widget *w,
     // Find arrow angle
     drawArrowHead(w, exposed, gc, info.arrow_pos, info.arrow_alpha);
 }
-
 #endif
 
 void LineGraphEdge::printSelf(std::ostream& os, const GraphGC &gc) const

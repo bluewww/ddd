@@ -3,6 +3,7 @@
 
 // Copyright (C) 1998-1999 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -169,7 +170,6 @@ static XImage *SubImage (XImage *image, int x, int y,
 #endif // XlibSpecificationRelease
 
 #if defined(IF_XM)
-
 void InitImage(XImage *image)
 {
 #if XlibSpecificationRelease >= 6
@@ -189,18 +189,14 @@ void InitImage(XImage *image)
     image->f.sub_image = SubImage;
 #endif
 }
-
 #else
-
 void InitImage(GUI::ImageHandle &image)
 {
     std::cerr << "InitImage: not implemented.\n";
 }
-
 #endif
 
 #if defined(IF_XM)
-
 XImage *CreateImageFromBitmapData(unsigned char *bits, int width, int height)
 {
     XImage *image = (XImage *)Xcalloc(1, sizeof(XImage));
@@ -220,9 +216,7 @@ XImage *CreateImageFromBitmapData(unsigned char *bits, int width, int height)
 
     return image;
 }
-
 #else
-
 GUI::ImageHandle CreateImageFromBitmapData(unsigned char *bits, int width, int height)
 {
     GUI::ImageHandle image = Gdk::Pixbuf::create(Gdk::COLORSPACE_RGB,
@@ -232,11 +226,9 @@ GUI::ImageHandle CreateImageFromBitmapData(unsigned char *bits, int width, int h
 
     return image;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 Boolean InstallImage(XImage *image, const char *image_name)
 {
     // Dave Larson <davlarso@plains.nodak.edu> writes: DDD doesn't
@@ -256,33 +248,26 @@ Boolean InstallImage(XImage *image, const char *image_name)
     return XmInstallImage(image, XMST(image_name));
 #endif
 }
-
 #else
-
 // Just store it in a variable!
 Boolean InstallImage(GUI::ImageHandle image, GUI::ImageHandle &image_name)
 {
     image_name = image;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Install the given X bitmap as NAME
 Boolean InstallBitmap(unsigned char *bits, int width, int height, const char *name)
 {
     XImage *image = CreateImageFromBitmapData(bits, width, height);
     return InstallImage(image, name);
 }
-
 #else
-
 // Install the given X bitmap as NAME
 Boolean InstallBitmap(unsigned char *bits, int width, int height, GUI::ImageHandle &name)
 {
     GUI::ImageHandle image = CreateImageFromBitmapData(bits, width, height);
     return InstallImage(image, name);
 }
-
 #endif

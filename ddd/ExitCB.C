@@ -3,6 +3,7 @@
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -47,21 +48,17 @@ extern "C" char **environ;
 // Callbacks
 
 #if defined(IF_XM)
-
 // Leave program
 void ExitCB(Widget, XtPointer status, XtPointer)
 {
     exit((int)(long)status);
 }
-
 #else
-
 // Leave program
 void ExitCB(int status)
 {
     exit(status);
 }
-
 #endif
 
 static char **_saved_argv    = 0;
@@ -72,7 +69,6 @@ char **saved_argv()    { return _saved_argv; }
 char **saved_environ() { return _saved_environ; }
 
 #if defined(IF_XM)
-
 // Restart program
 void RestartCB(Widget, XtPointer, XtPointer)
 {
@@ -83,9 +79,7 @@ void RestartCB(Widget, XtPointer, XtPointer)
     perror(saved_argv()[0]);
     exit(EXIT_FAILURE);
 }
-
 #else
-
 // Restart program
 void RestartCB(void)
 {
@@ -96,7 +90,6 @@ void RestartCB(void)
     perror(saved_argv()[0]);
     exit(EXIT_FAILURE);
 }
-
 #endif
 
 // Save argv

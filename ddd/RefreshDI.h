@@ -3,6 +3,7 @@
 
 // Copyright (C) 1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -34,15 +35,9 @@
 #include "status.h"
 
 #if defined(IF_XM)
-
 #include <Xm/Text.h>
-
-#endif
-
-#if !defined(IF_XM)
-
+#else
 #include <GUI/ScrolledText.h>
-
 #endif
 
 

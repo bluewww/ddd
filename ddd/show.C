@@ -5,6 +5,7 @@
 // Copyright (C) 2001 Universitaet des Saarlandes, Germany.
 // Copyright (C) 2001-2004 Free Software Foundation, Inc.
 // Written by Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 

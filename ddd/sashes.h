@@ -34,11 +34,7 @@
 
 #if defined(IF_XM)
 #include <X11/Intrinsic.h>
-#endif
 
-#include "gtk_wrapper.h"
-
-#if defined(IF_XM)
 // Sash killer
 extern void untraverse_sashes(Widget paned);
 extern void unmanage_sashes(Widget paned);

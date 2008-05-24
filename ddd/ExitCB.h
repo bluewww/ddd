@@ -3,6 +3,7 @@
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -31,12 +32,10 @@
 #include <stdlib.h>
 
 #if defined(IF_XM)
-
 #include <X11/Intrinsic.h>
-
-#endif
-
+#else
 #include "gtk_wrapper.h"
+#endif
 
 #ifndef EXIT_SUCCESS
 #define EXIT_SUCCESS 0
@@ -47,21 +46,17 @@
 #endif
 
 #if defined(IF_XM)
-
 // Exit program
 extern void ExitCB(Widget, XtPointer, XtPointer);
 
 // Restart program
 extern void RestartCB(Widget, XtPointer, XtPointer);
-
 #else
-
 // Exit program
 extern void ExitCB(int status);
 
 // Restart program
 extern void RestartCB(void);
-
 #endif
 
 // Save argv

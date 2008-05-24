@@ -29,7 +29,6 @@
 #define _DDD_Swallower_h
 
 #if defined(IF_XM)
-
 #include <X11/Intrinsic.h>
 #include <X11/StringDefs.h>
 
@@ -79,13 +78,10 @@ extern WidgetClass swallowerWidgetClass;
 // Define any new resources
 #define XtNwindowGoneCallback    "windowGoneCallback"
 #define XtNwindowCreatedCallback "windowCreatedCallback"
-
 #else
-
 #ifdef NAG_ME
 #warning Swallower widget is used for Gnuplot plots
 #endif
-
 #endif
 
 #endif // _DDD_Swallower_h

@@ -3,6 +3,7 @@
 
 // Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -37,12 +38,9 @@
 
 #if defined(IF_XM)
 #include <X11/Intrinsic.h>
-#endif
-
-#include "gtk_wrapper.h"
-
-#if !defined(IF_XM)
+#else
 #include <GUI/Main.h>
+#include "gtk_wrapper.h"
 #endif
 
 #if defined(IF_XM)

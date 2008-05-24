@@ -3,6 +3,7 @@
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
+// Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
 // This file is part of DDD.
 // 
@@ -69,7 +70,6 @@ protected:
 public:
 
 #if defined(IF_XM)
-
     // Constructors
     TTYAgent(XtAppContext app_context, const string& pth,
 	     unsigned nTypes = TTYAgent_NTypes):
@@ -95,9 +95,7 @@ public:
 	master(-1), slave(-1),
 	push(false)
     {}
-
 #else
-
     // Constructors
     TTYAgent(GUI::Main *app_context, const string& pth,
 	     unsigned nTypes = TTYAgent_NTypes):
@@ -123,7 +121,6 @@ public:
 	master(-1), slave(-1),
 	push(false)
     {}
-
 #endif
 
     // Duplicator
