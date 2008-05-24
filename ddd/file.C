@@ -2062,6 +2062,8 @@ void gdbOpenRecentCB(int index)
     StringArray recent_files;
     get_recent(recent_files);
 
+    index--;
+
     if (index >= 0 && index < recent_files.size())
     {
 	string file = recent_files[index];
