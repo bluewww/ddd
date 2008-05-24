@@ -660,6 +660,22 @@ Widget::get_white_gc()
     return GC::wrap(internal()->get_style()->get_white_gc());
 }
 
+void
+Widget::set_event_mask(EventMask events)
+{
+    Gdk::EventMask g_events;
+    translate_event_mask(events, g_events);
+    internal()->set_events(g_events);
+}
+
+void
+Widget::add_event_mask(EventMask events)
+{
+    Gdk::EventMask g_events;
+    translate_event_mask(events, g_events);
+    internal()->add_events(g_events);
+}
+
 SignalIdle signal_idle_;
 
 SignalIdle::SignalIdle(void)

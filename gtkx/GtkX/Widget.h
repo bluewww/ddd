@@ -485,6 +485,8 @@ namespace GtkX {
 	sigc::signal<bool, GtkX::EventButton *> &signal_button_release_pre_event();
 	sigc::signal<void> &signal_map();
 	sigc::signal<void> &signal_unmap();
+	void set_event_mask(EventMask events);
+	void add_event_mask(EventMask events);
     };
 
     template <class T>
