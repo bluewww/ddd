@@ -33,7 +33,7 @@
 
 namespace GtkX {
 
-    class Dialog: public Gtk::Dialog, public Container {
+    class Dialog: public Gtk::Dialog, public Shell {
 	GtkX::VBox *vbox_;
 	// Note that we do NOT use the Gtk::Dialog's button area.
 	// This is because we want to create the buttons ourself as
