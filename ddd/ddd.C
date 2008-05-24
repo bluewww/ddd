@@ -4610,6 +4610,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     // fixed size.  On Gtk this does not seem possible.  Therefore
     // the toolbar and status bar must go in a VBox.
     GUI::Box *main_vbox = new GUI::VBox(*main_window, GUI::PACK_EXPAND_WIDGET);
+    main_vbox->show();
 
     // Status line
     if (!app_data.separate_source_window && !app_data.status_at_bottom)
