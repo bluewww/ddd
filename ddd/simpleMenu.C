@@ -141,8 +141,8 @@ static bool same_shell(GUI::Widget *w1, GUI::Widget *w2)
     if (w1 == 0 || w2 == 0)
 	return false;
 
-    GUI::Shell *shell_1 = findTopLevelShellParent1(w1);
-    GUI::Shell *shell_2 = findTopLevelShellParent1(w2);
+    GUI::Shell *shell_1 = findTopLevelShellParent(w1);
+    GUI::Shell *shell_2 = findTopLevelShellParent(w2);
 
     return shell_1 == shell_2;
 }

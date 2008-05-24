@@ -1036,7 +1036,7 @@ GUI::Shell *find_shell(GUI::Widget *w)
     if (w == 0)
 	return command_shell;
 
-    GUI::Shell *parent = findTopLevelShellParent1(w);
+    GUI::Shell *parent = findTopLevelShellParent(w);
     if (parent == 0 || !parent->is_realized() || !parent->is_visible())
 	return command_shell;
     return parent;

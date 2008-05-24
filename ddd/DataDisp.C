@@ -3548,12 +3548,12 @@ void DataDisp::call_selection_proc(GUI::Widget *w,
 				   SelectionMode mode)
 {
     // Let multi-clicks pass right through
-    Time t = time1(event);
+    Time t = time(event);
 #ifdef NAG_ME
 #warning multi-click time hardwired.
 #endif
     if (Time(t - last_select_time) > Time(200))
-	set_args(point1(event), mode);
+	set_args(point(event), mode);
     last_select_time = t;
 
     std::cerr << "call_selection_proc not implemented (" << name << ")\n";
@@ -3726,7 +3726,7 @@ void DataDisp::graph_popupAct (GUI::Widget *, GUI::Event* event, GUI::String *ar
 	MMaddHelpCallback(node_popup,      sigc::ptr_fun(ImmediateHelpCB));
 	MMaddHelpCallback(shortcut_popup1, sigc::ptr_fun(ImmediateHelpCB));
     }
-    *p = point1(event);
+    *p = point(event);
 
     set_args(*p, SetSelection);
 

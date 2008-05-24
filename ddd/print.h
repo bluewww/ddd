@@ -48,7 +48,7 @@ extern void PrintAgainCB (Widget, XtPointer, XtPointer);
 #else
 extern void PrintGraphCB (GUI::Button *);
 extern void PrintPlotCB  (GUI::Button *);
-extern void PrintAgainCB1(GUI::Button *w, long client_data);
+extern void PrintAgainCB(GUI::Button *w, long client_data);
 #endif
 
 #endif // _DDD_print_h

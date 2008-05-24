@@ -1846,8 +1846,8 @@ bool GUIGraphEdit::on_expose_event(GUI::EventExpose *event)
 #warning Primitive border?
 #endif
 
-    graph->draw(this, BoxRegion(point1((GUI::Event *)event),
-				size1((GUI::Event *)event)), graphGC);
+    graph->draw(this, BoxRegion(point((GUI::Event *)event),
+				size((GUI::Event *)event)), graphGC);
 }
 #endif
 
@@ -1989,7 +1989,7 @@ GraphNode *graphEditGetNodeAtEvent(Widget w, XEvent *event)
 #else
 GraphNode *GUIGraphEdit::graphEditGetNodeAtEvent(GUI::Event *event)
 {
-    return graphEditGetNodeAtPoint(point1(event));
+    return graphEditGetNodeAtPoint(point(event));
 }
 #endif
 
@@ -2789,11 +2789,11 @@ void GUIGraphEdit::_SelectOrMove(GUI::Event *event,
 #warning Get the input focus?
 #endif
 
-    BoxPoint p = point1(event);
+    BoxPoint p = point(event);
     startAction = p;
     endAction   = p;
 
-    Time t = time1(event);
+    Time t = time(event);
     // Boolean double_click = 
     //	(Time(t - lastSelectTime) <= Time(XtGetMultiClickTime(XtDisplay(w))));
     Boolean double_click = 
@@ -3109,7 +3109,7 @@ static void Follow(Widget w, XEvent *event, String *, Cardinal *)
 void GUIGraphEdit::Follow(GUI::Event *event)
 {
 
-    BoxPoint p = point1(event);
+    BoxPoint p = point(event);
 
     switch(state)
     {
@@ -3329,7 +3329,7 @@ void GUIGraphEdit::End(GUI::Event *event)
 	case SelectState:
 	{
 	    drawSelectFrame();
-	    endAction = point1(event);
+	    endAction = point(event);
 
 	    BoxRegion selected = frameRegion();
 	    Boolean have_unselected_nodes = False;
@@ -3388,7 +3388,7 @@ void GUIGraphEdit::End(GUI::Event *event)
 	    drawOutlines(lastOffset);
 
             // move nodes
-	    endAction = point1(event);
+	    endAction = point(event);
 	    BoxPoint offset = actionOffset();
 	    move_selected_nodes(offset);
 

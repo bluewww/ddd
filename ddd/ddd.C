@@ -1167,7 +1167,7 @@ DECL_WR(WR_gdbMakeAgainCB, sigc::ptr_fun(gdbMakeAgainCB));
 	    0, 0),							\
     GENTRYL("printAgain", "Print Again", MMPush | MMUnmanaged,		\
 	    BIND(PrintAgainCB, 1L),					\
-	    sigc::bind(sigc::retype(sigc::ptr_fun(PrintAgainCB1)), 1L),	\
+	    sigc::bind(sigc::retype(sigc::ptr_fun(PrintAgainCB)), 1L),	\
 	    0, 0),							\
     GENTRYL("separator", "", MMSeparator | MMUnmanaged, 		\
 	    MMNoCB,							\

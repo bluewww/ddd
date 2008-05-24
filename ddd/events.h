@@ -49,9 +49,9 @@ BoxPoint point(XEvent *ev); // Location
 BoxSize size(XEvent *ev);   // Size
 Time time(XEvent *ev);      // Time
 #else
-BoxPoint point1(GUI::Event *ev); // Location
-BoxSize size1(GUI::Event *ev);   // Size
-Time time1(GUI::Event *ev);      // Time
+BoxPoint point(GUI::Event *ev); // Location
+BoxSize size(GUI::Event *ev);   // Size
+Time time(GUI::Event *ev);      // Time
 #endif
 
 #endif

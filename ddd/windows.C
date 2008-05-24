@@ -1103,7 +1103,7 @@ void DDDCloseCB(GUI::Widget *w)
 	return;
     }
 
-    GUI::Shell *shell = findTopLevelShellParent1(w);
+    GUI::Shell *shell = findTopLevelShellParent(w);
 
     if (shell == command_shell)
     {

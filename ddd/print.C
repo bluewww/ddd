@@ -435,7 +435,7 @@ void PrintAgainCB(Widget w, XtPointer client_data, XtPointer call_data)
 #endif
 
 #if !defined(IF_XM)
-void PrintAgainCB1(GUI::Button *w, long client_data)
+void PrintAgainCB(GUI::Button *w, long client_data)
 {
 #if defined(IF_XMMM)
     PrintAgainCB(w->internal(), (XtPointer)client_data, (XtPointer)0);
@@ -1462,7 +1462,7 @@ static void PrintCB(GUI::Button *parent, bool displays)
 
     GUI::Button *button;
     button = print_dialog->add_button("ok", "OK");
-    button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(PrintAgainCB1),
+    button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(PrintAgainCB),
 						button, 1L));
 
     // Remove old prompt

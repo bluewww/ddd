@@ -613,7 +613,7 @@ void HelpOnWindowCB(GUI::Widget *widget, GUI::Event *event)
     Delay delay;
 
     // Get help on the shell window
-    GUI::Widget *shell = findTopLevelShellParent1(widget);
+    GUI::Widget *shell = findTopLevelShellParent(widget);
 
     GUI::String text = get_help_string(shell);
     MStringHelpCB(widget, text);
@@ -654,7 +654,7 @@ void HelpOnVersionCB(GUI::Widget *widget, GUI::Event *event)
     Delay delay;
 
     // Get a shell window
-    GUI::Widget *shell = findTopLevelShellParent1(widget);
+    GUI::Widget *shell = findTopLevelShellParent(widget);
 
     GUI::String text = get_help_on_version_string(shell);
     text += helpOnVersionExtraText;
@@ -840,7 +840,7 @@ static void _MStringHelpCB(GUI::Widget *widget,
 			   const GUI::String &text,
 			   bool help_on_help)
 {
-    GUI::Widget *shell = findTopLevelShellParent1(widget);
+    GUI::Widget *shell = findTopLevelShellParent(widget);
     if (shell == 0)
 	shell = widget;
 
@@ -1185,7 +1185,7 @@ static void CloseCB(Widget w, XtPointer, XtPointer)
 // Close action from menu
 static void CloseCB(GUI::Widget *w)
 {
-    GUI::Shell *shell = findTopLevelShellParent1(w);
+    GUI::Shell *shell = findTopLevelShellParent(w);
     DestroyWhenIdle(shell);
 }
 #endif
@@ -2152,7 +2152,7 @@ void HelpOnContextCB(Widget widget, XtPointer client_data, XtPointer call_data)
 void HelpOnContextCB(GUI::Widget *widget, GUI::Event *event)
 {
     GUI::Widget *item = 0;
-    GUI::Shell *toplevel = findTopLevelShellParent1(widget);
+    GUI::Shell *toplevel = findTopLevelShellParent(widget);
 
     if (toplevel == 0)
     {
@@ -2257,7 +2257,7 @@ void HelpOnItemCB(Widget widget, XtPointer client_data, XtPointer call_data)
 #else
 void HelpOnItemCB(GUI::Widget *widget, GUI::Event *event)
 {
-    GUI::Widget *toplevel = findTheTopLevelShell1(widget);
+    GUI::Widget *toplevel = findTheTopLevelShell(widget);
 
     if (call_tracking_help(event, true) || toplevel == 0)
     {

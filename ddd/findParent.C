@@ -161,7 +161,7 @@ GUI::Shell *findShellParent(GUI::Widget *w)
 
 
 // find a (realized) toplevel Shell
-GUI::Shell *findTopLevelShellParent1(GUI::Widget *w)
+GUI::Shell *findTopLevelShellParent(GUI::Widget *w)
 {
     if (findParent_debug)
 	std::clog << "findTopLevelShellParent(" << w->get_name() << ") = ";
@@ -184,7 +184,7 @@ GUI::Shell *findTopLevelShellParent1(GUI::Widget *w)
 
 
 // find highest (realized) toplevel Shell
-GUI::Shell *findTheTopLevelShell1(GUI::Widget *w)
+GUI::Shell *findTheTopLevelShell(GUI::Widget *w)
 {
     if (findParent_debug)
 	std::clog << "findTopLevelShellParent(" << w->get_name() << ") = ";

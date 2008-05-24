@@ -107,7 +107,7 @@ BoxPoint point(XEvent *ev)
 }
 #else
 // Event location
-BoxPoint point1(GUI::Event *ev)
+BoxPoint point(GUI::Event *ev)
 {
     if (ev == 0)
     {
@@ -203,7 +203,7 @@ Time time(XEvent *ev)
 }
 #else
 // Event time
-Time time1(GUI::Event *ev)
+Time time(GUI::Event *ev)
 {
     if (ev == 0)
     {
@@ -294,7 +294,7 @@ BoxSize size(XEvent *ev)
 }
 #else
 // Event size
-BoxSize size1(GUI::Event *ev)
+BoxSize size(GUI::Event *ev)
 {
     if (ev == 0)
     {

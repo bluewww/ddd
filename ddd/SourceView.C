@@ -5042,7 +5042,7 @@ string SourceView::get_word_at_event(GUI::ScrolledText *text_w,
 				     long& startpos,
 				     long& endpos)
 {
-    BoxPoint event_pos = point1(event);
+    BoxPoint event_pos = point(event);
     long pos = text_w->xy_to_pos(event_pos[X], event_pos[Y]);
 
     return get_word_at_pos(text_w, pos, startpos, endpos);
@@ -7346,7 +7346,7 @@ void SourceView::startSelectWordAct (GUI::ScrolledText *text_w, GUI::Event* e,
     selection_click    = true;
     selection_startpos = startpos;
     selection_endpos   = endpos;
-    selection_time     = time1(e);
+    selection_time     = time(e);
 
     GUI::signal_idle().connect(sigc::bind(sigc::ptr_fun(setSelection), text_w));
 }
@@ -7396,7 +7396,7 @@ void SourceView::endSelectWordAct (GUI::ScrolledText* text_w, GUI::Event* e,
 	selection_endpos   = endpos;
     }
 
-    selection_time = time1(e);
+    selection_time = time(e);
 
     GUI::signal_idle().connect(sigc::bind(sigc::ptr_fun(setSelection), text_w));
 }
@@ -8017,7 +8017,7 @@ void SourceView::doubleClickAct(GUI::Widget *w, GUI::Event *e, GUI::String *para
     if (w == source_text_w || w == code_text_w)
     {
 	// Called from text: check for double click
-	Time selection_time = time1(e);
+	Time selection_time = time(e);
 	static Time last_selection_time = 0;
 
 #ifdef NAG_ME
