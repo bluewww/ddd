@@ -1644,7 +1644,8 @@ void GUIGraphEdit::setGraphGC(void)
 #if defined(IF_XM)
 static void Initialize(Widget request, Widget w, ArgList, Cardinal *)
 #else
-GUIGraphEdit::GUIGraphEdit(void)
+GUIGraphEdit::GUIGraphEdit(GUI::Container &parent, GUI::PackOptions po,
+			   const GUI::String &name)
 #endif
 {
 #if defined(IF_XM)
@@ -1756,6 +1757,9 @@ GUIGraphEdit::GUIGraphEdit(void)
     graphEditSizeChanged();
 
     std::cerr << "No translations...\n";
+    set_name(name.s());
+    parent.add_child(*this, po, 0);
+    postinit();
 #endif
 
 }

@@ -165,7 +165,6 @@ char DataDisp_rcsid[] =
 
 
 #if defined(IF_XM)
-
 //-----------------------------------------------------------------------
 // Xt Stuff
 //-----------------------------------------------------------------------
@@ -182,9 +181,7 @@ XtActionsRec DataDisp::actions [] = {
     {XTARECSTR("graph-rotate"),         DataDisp::graph_rotateAct},
     {XTARECSTR("graph-dependent"),      DataDisp::graph_dependentAct}
 };
-
 #else
-
 //-----------------------------------------------------------------------
 // Xt Stuff
 //-----------------------------------------------------------------------
@@ -201,9 +198,7 @@ GUI::ActionRec DataDisp::actions [] = {
     {XTARECSTR("graph-rotate"),         DataDisp::graph_rotateAct},
     {XTARECSTR("graph-dependent"),      DataDisp::graph_dependentAct}
 };
-
 #endif
-
 
 
 // Popup Menu
@@ -717,7 +712,6 @@ static void sort(IntArray& a, bool (*le)(int, int) = default_le)
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 void DataDisp::ClearOriginCB(Widget w, XtPointer, XtPointer)
 {
     if (last_origin == w)
@@ -725,9 +719,7 @@ void DataDisp::ClearOriginCB(Widget w, XtPointer, XtPointer)
 	last_origin = 0;
     }
 }
-
 #else
-
 void *DataDisp::ClearOriginCB(void *w)
 {
     if (last_origin == (GUI::Widget *)w)
@@ -735,11 +727,9 @@ void *DataDisp::ClearOriginCB(void *w)
         last_origin = 0;
     }
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void DataDisp::set_last_origin(Widget w)
 {
     if (last_origin != 0)
@@ -754,9 +744,7 @@ void DataDisp::set_last_origin(Widget w)
 	XtAddCallback(last_origin, XtNdestroyCallback, ClearOriginCB, 0);
     }
 }
-
 #else
-
 void DataDisp::set_last_origin(GUI::Widget *w)
 {
     if (last_origin != 0)
@@ -771,9 +759,7 @@ void DataDisp::set_last_origin(GUI::Widget *w)
 	last_origin->add_destroy_notify_callback(&last_origin, ClearOriginCB);
     }
 }
-
 #endif
-
 
 //----------------------------------------------------------------------------
 // DispNode functions
@@ -902,7 +888,6 @@ string DataDisp::pattern(const string& expr, bool shorten)
 }
 
 #if defined(IF_XM)
-
 // Apply the theme in CLIENT_DATA to the selected item.
 void DataDisp::applyThemeCB (Widget w, XtPointer client_data,
 			     XtPointer call_data)
@@ -975,9 +960,7 @@ void DataDisp::applyThemeCB (Widget w, XtPointer client_data,
 
     manage_and_raise(dialog);
 }
-
 #else
-
 // Apply the theme in CLIENT_DATA to the selected item.
 void DataDisp::applyThemeCB (GUI::Widget *w, const char *client_data)
 {
@@ -1037,11 +1020,9 @@ void DataDisp::applyThemeCB (GUI::Widget *w, const char *client_data)
 
     manage_and_raise(dialog);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Unapply the theme in CLIENT_DATA from the selected item.
 void DataDisp::unapplyThemeCB (Widget w, XtPointer client_data, XtPointer)
 {
@@ -1096,9 +1077,7 @@ void DataDisp::unapplyThemeCB (Widget w, XtPointer client_data, XtPointer)
 	}
     }
 }
-
 #else
-
 // Unapply the theme in CLIENT_DATA from the selected item.
 void DataDisp::unapplyThemeCB (GUI::Widget *w, const char *client_data)
 {
@@ -1153,11 +1132,9 @@ void DataDisp::unapplyThemeCB (GUI::Widget *w, const char *client_data)
 	}
     }
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void DataDisp::toggleThemeCB(Widget button, XtPointer num, XtPointer)
 {
     String theme;
@@ -1174,9 +1151,7 @@ void DataDisp::toggleThemeCB(Widget button, XtPointer num, XtPointer)
 	unapplyThemeCB(button, theme, XtPointer(0));
     }
 }
-
 #else
-
 void DataDisp::toggleThemeCB(GUI::CheckButton *button, int num)
 {
     void *v = button->property_user_data();
@@ -1193,11 +1168,9 @@ void DataDisp::toggleThemeCB(GUI::CheckButton *button, int num)
 	unapplyThemeCB(button, theme);
     }
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Apply the theme in CLIENT_DATA to the selected item.
 void DataDisp::applyThemeOnAllCB(Widget, XtPointer client_data, XtPointer)
 {
@@ -1208,9 +1181,7 @@ void DataDisp::applyThemeOnAllCB(Widget, XtPointer client_data, XtPointer)
     string theme = String(client_data);
     apply_theme(theme, pattern);
 }
-
 #else
-
 // Apply the theme in CLIENT_DATA to the selected item.
 void DataDisp::applyThemeOnAllCB(const char *client_data)
 {
@@ -1221,27 +1192,22 @@ void DataDisp::applyThemeOnAllCB(const char *client_data)
     string theme = client_data;
     apply_theme(theme, pattern);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Apply the theme in CLIENT_DATA to the selected item.
 void DataDisp::applyThemeOnThisCB(Widget, XtPointer client_data, XtPointer)
 {
     string theme = String(client_data);
     apply_theme(theme, quote(source_arg->get_string()));
 }
-
 #else
-
 // Apply the theme in CLIENT_DATA to the selected item.
 void DataDisp::applyThemeOnThisCB(const char *client_data)
 {
     string theme = client_data;
     apply_theme(theme, quote(source_arg->get_string()));
 }
-
 #endif
 
 string DataDisp::apply_theme_cmd(const string& theme, const string& pattern)
@@ -1331,7 +1297,6 @@ void DataDisp::toggle_themeSQ(const string& theme, const string& pattern,
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 void DataDisp::dereferenceCB(Widget w, XtPointer, XtPointer)
 {
     set_last_origin(w);
@@ -1356,9 +1321,7 @@ void DataDisp::dereferenceCB(Widget w, XtPointer, XtPointer)
 
     new_display(display_expression, 0, depends_on, false, false, w);
 }
-
 #else
-
 void DataDisp::dereferenceCB(GUI::Widget *w)
 {
     set_last_origin(w);
@@ -1383,11 +1346,9 @@ void DataDisp::dereferenceCB(GUI::Widget *w)
 
     new_display(display_expression, 0, depends_on, false, false, w);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Replace node by its dereferenced variant
 void DataDisp::dereferenceInPlaceCB(Widget w, XtPointer, XtPointer)
 {
@@ -1406,9 +1367,7 @@ void DataDisp::dereferenceInPlaceCB(Widget w, XtPointer, XtPointer)
     nrs += disp_node_arg->disp_nr();
     delete_display(nrs, w);
 }
-
 #else
-
 // Replace node by its dereferenced variant
 void DataDisp::dereferenceInPlaceCB(GUI::Widget *w)
 {
@@ -1427,11 +1386,9 @@ void DataDisp::dereferenceInPlaceCB(GUI::Widget *w)
     nrs += disp_node_arg->disp_nr();
     delete_display(nrs, w);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void DataDisp::dereferenceArgCB(Widget w, XtPointer, XtPointer)
 {
     if (selected_value() != 0)
@@ -1442,9 +1399,7 @@ void DataDisp::dereferenceArgCB(Widget w, XtPointer, XtPointer)
 
     new_display(deref(source_arg->get_string()), 0, "", false, false, w);
 }
-
 #else
-
 void DataDisp::dereferenceArgCB(GUI::Widget *w)
 {
     if (selected_value() != 0)
@@ -1455,11 +1410,9 @@ void DataDisp::dereferenceArgCB(GUI::Widget *w)
 
     new_display(deref(source_arg->get_string()), 0, "", false, false, w);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void DataDisp::toggleDetailCB(Widget dialog, XtPointer client_data, XtPointer)
 {
     if (gdb->recording())
@@ -1534,9 +1487,7 @@ void DataDisp::toggleDetailCB(Widget dialog, XtPointer client_data, XtPointer)
     if (changed)
 	refresh_graph_edit();
 }
-
 #else
-
 void DataDisp::toggleDetailCB(GUI::Widget *dialog, int client_data)
 {
     if (gdb->recording())
@@ -1611,11 +1562,9 @@ void DataDisp::toggleDetailCB(GUI::Widget *dialog, int client_data)
     if (changed)
 	refresh_graph_edit();
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void DataDisp::showDetailCB (Widget dialog, XtPointer client_data, XtPointer)
 {
     int depth = (int)(long)client_data;
@@ -1627,9 +1576,7 @@ void DataDisp::showMoreDetailCB(Widget dialog, XtPointer client_data, XtPointer)
     int more = (int)(long)client_data;
     show(dialog, 0, more);
 }
-
 #else
-
 void DataDisp::showDetailCB (GUI::Widget *dialog, int client_data)
 {
     int depth = (int)(long)client_data;
@@ -1641,7 +1588,6 @@ void DataDisp::showMoreDetailCB(GUI::Widget *dialog, int client_data)
     int more = (int)(long)client_data;
     show(dialog, 0, more);
 }
-
 #endif
 
 #if defined(IF_XM)
@@ -1805,7 +1751,6 @@ void DataDisp::rotate_node(DispNode *dn, bool all)
 }
 
 #if defined(IF_XM)
-
 void DataDisp::rotateCB(Widget w, XtPointer client_data, XtPointer)
 {
     bool rotate_all = bool(client_data);
@@ -1823,9 +1768,7 @@ void DataDisp::rotateCB(Widget w, XtPointer client_data, XtPointer)
 
     refresh_graph_edit();
 }
-
 #else
-
 void DataDisp::rotateCB(GUI::Widget *w, bool client_data)
 {
     bool rotate_all = bool(client_data);
@@ -1843,11 +1786,9 @@ void DataDisp::rotateCB(GUI::Widget *w, bool client_data)
 
     refresh_graph_edit();
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void DataDisp::toggleDisableCB (Widget dialog, XtPointer, XtPointer)
 {
     set_last_origin(dialog);
@@ -1876,9 +1817,7 @@ void DataDisp::toggleDisableCB (Widget dialog, XtPointer, XtPointer)
     else if (do_disable)
 	disable_display(disp_nrs, dialog);
 }
-
 #else
-
 void DataDisp::toggleDisableCB (GUI::Widget *dialog)
 {
     set_last_origin(dialog);
@@ -1907,7 +1846,6 @@ void DataDisp::toggleDisableCB (GUI::Widget *dialog)
     else if (do_disable)
 	disable_display(disp_nrs, dialog);
 }
-
 #endif
 
 void DataDisp::select_with_all_descendants(GraphNode *node)
@@ -2020,7 +1958,6 @@ void DataDisp::deleteCB (GUI::Widget *dialog)
 }
 
 #if defined(IF_XM)
-
 void DataDisp::refreshCB(Widget w, XtPointer, XtPointer)
 {
     // Unmerge all displays
@@ -2035,9 +1972,7 @@ void DataDisp::refreshCB(Widget w, XtPointer, XtPointer)
     // Refresh them
     refresh_display(w);
 }
-
 #else
-
 void DataDisp::refreshCB(GUI::Widget *w)
 {
     // Unmerge all displays
@@ -2052,11 +1987,9 @@ void DataDisp::refreshCB(GUI::Widget *w)
     // Refresh them
     refresh_display(w);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void DataDisp::selectAllCB(Widget w, XtPointer, XtPointer)
 {
     // StatusDelay d("Selecting all displays");
@@ -2066,9 +1999,7 @@ void DataDisp::selectAllCB(Widget w, XtPointer, XtPointer)
 		     "select-all", (XEvent *)0, (String *)0, 0);
     refresh_graph_edit();
 }
-
 #else
-
 void DataDisp::selectAllCB(GUI::Widget *w)
 {
     // StatusDelay d("Selecting all displays");
@@ -2080,11 +2011,9 @@ void DataDisp::selectAllCB(GUI::Widget *w)
 #endif
     refresh_graph_edit();
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void DataDisp::unselectAllCB(Widget w, XtPointer, XtPointer)
 {
     // StatusDelay d("Unselecting all displays");
@@ -2094,9 +2023,7 @@ void DataDisp::unselectAllCB(Widget w, XtPointer, XtPointer)
 		     "unselect-all", (XEvent *)0, (String *)0, 0);
     refresh_graph_edit();
 }
-
 #else
-
 void DataDisp::unselectAllCB(GUI::Widget *w)
 {
     // StatusDelay d("Unselecting all displays");
@@ -2108,11 +2035,9 @@ void DataDisp::unselectAllCB(GUI::Widget *w)
 #endif
     refresh_graph_edit();
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void DataDisp::enableCB(Widget w, XtPointer, XtPointer)
 {
     set_last_origin(w);
@@ -2132,9 +2057,7 @@ void DataDisp::enableCB(Widget w, XtPointer, XtPointer)
 
     enable_display(disp_nrs, w);
 }
-
 #else
-
 void DataDisp::enableCB(GUI::Widget *w)
 {
     set_last_origin(w);
@@ -2154,11 +2077,9 @@ void DataDisp::enableCB(GUI::Widget *w)
 
     enable_display(disp_nrs, w);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void DataDisp::disableCB(Widget w, XtPointer, XtPointer)
 {
     set_last_origin(w);
@@ -2178,9 +2099,7 @@ void DataDisp::disableCB(Widget w, XtPointer, XtPointer)
 
     disable_display(disp_nrs, w);
 }
-
 #else
-
 void DataDisp::disableCB(GUI::Widget *w)
 {
     set_last_origin(w);
@@ -2200,11 +2119,9 @@ void DataDisp::disableCB(GUI::Widget *w)
 
     disable_display(disp_nrs, w);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void DataDisp::shortcutCB(Widget w, XtPointer client_data, XtPointer)
 {
     int number = ((int)(long)client_data) - 1;
@@ -2239,9 +2156,7 @@ void DataDisp::shortcutCB(Widget w, XtPointer client_data, XtPointer)
 
     new_display(expr, 0, depends_on, false, false, w);
 }
-
 #else
-
 void DataDisp::shortcutCB(GUI::Widget *w, int client_data)
 {
     int number = ((int)(long)client_data) - 1;
@@ -2276,11 +2191,9 @@ void DataDisp::shortcutCB(GUI::Widget *w, int client_data)
 
     new_display(expr, 0, depends_on, false, false, w);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Set shortcut menu to expressions EXPRS
 void DataDisp::set_shortcut_menu(const StringArray& exprs,
 				 const StringArray& labels)
@@ -2332,9 +2245,7 @@ void DataDisp::set_shortcut_menu(const StringArray& exprs,
 
     refresh_args();
 }
-
 #else
-
 // Set shortcut menu to expressions EXPRS
 void DataDisp::set_shortcut_menu(const StringArray& exprs,
 				 const StringArray& labels)
@@ -2386,7 +2297,6 @@ void DataDisp::set_shortcut_menu(const StringArray& exprs,
 
     refresh_args();
 }
-
 #endif
 
 // Add one expr to shortcut menus
@@ -2520,7 +2430,6 @@ DataDispCount::DataDispCount(DispGraph *disp_graph)
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 void DataDisp::DoubleClickCB(Widget w, XtPointer, XtPointer call_data)
 {
     GraphEditPreSelectionInfo *info = (GraphEditPreSelectionInfo *)call_data;
@@ -2578,9 +2487,7 @@ void DataDisp::DoubleClickCB(Widget w, XtPointer, XtPointer call_data)
     // Don't do the default action
     info->doit = False;
 }
-
 #else
-
 void DataDisp::DoubleClickCB(GUIGraphEdit *w, GraphEditPreSelectionInfo *call_data)
 {
     GraphEditPreSelectionInfo *info = (GraphEditPreSelectionInfo *)call_data;
@@ -2638,7 +2545,6 @@ void DataDisp::DoubleClickCB(GUIGraphEdit *w, GraphEditPreSelectionInfo *call_da
     // Don't do the default action
     info->doit = False;
 }
-
 #endif
 
 
@@ -2647,7 +2553,6 @@ void DataDisp::DoubleClickCB(GUIGraphEdit *w, GraphEditPreSelectionInfo *call_da
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 void DataDisp::popup_new_argCB (Widget display_dialog, XtPointer client_data, XtPointer)
 {
     set_last_origin(display_dialog);
@@ -2664,9 +2569,7 @@ void DataDisp::popup_newCB (Widget display_dialog, XtPointer client_data, XtPoin
     BoxPoint *p = (BoxPoint *) client_data;
     new_displayCD(display_dialog, *p);
 }
-
 #else
-
 void DataDisp::popup_new_argCB (GUI::Widget *display_dialog, BoxPoint *client_data)
 {
     set_last_origin(display_dialog);
@@ -2683,7 +2586,6 @@ void DataDisp::popup_newCB (GUI::Widget *display_dialog, BoxPoint *client_data)
     BoxPoint *p = (BoxPoint *) client_data;
     new_displayCD(display_dialog, *p);
 }
-
 #endif
 
 
@@ -2770,7 +2672,6 @@ int NewDisplayInfo::cluster_nr     = 0;
 int NewDisplayInfo::cluster_offset = 0;
 
 #if defined(IF_XM)
-
 void DataDisp::new_displayDCB (Widget dialog, XtPointer client_data, XtPointer)
 {
     set_last_origin(dialog);
@@ -2799,9 +2700,7 @@ void DataDisp::new_displayDCB (Widget dialog, XtPointer client_data, XtPointer)
 	}
     }
 }
-
 #else
-
 void DataDisp::new_displayDCB (GUI::Widget *dialog, NewDisplayInfo *client_data)
 {
     set_last_origin(dialog);
@@ -2828,11 +2727,9 @@ void DataDisp::new_displayDCB (GUI::Widget *dialog, NewDisplayInfo *client_data)
 	}
     }
 }
-
 #endif
 
 #if defined(IF_XM)
-
 Widget DataDisp::create_display_dialog(Widget parent, const _XtString name,
 				       NewDisplayInfo& info)
 {
@@ -2892,9 +2789,7 @@ Widget DataDisp::create_display_dialog(Widget parent, const _XtString name,
 
     return dialog;
 }
-
 #else
-
 GUI::Dialog *DataDisp::create_display_dialog(GUI::Widget *parent, const char *name,
 					     NewDisplayInfo& info)
 {
@@ -2932,11 +2827,9 @@ GUI::Dialog *DataDisp::create_display_dialog(GUI::Widget *parent, const char *na
 
     return dialog;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Enter a new Display at BOX_POINT
 void DataDisp::new_displayCD (Widget w, const BoxPoint &box_point)
 {
@@ -2956,9 +2849,7 @@ void DataDisp::new_displayCD (Widget w, const BoxPoint &box_point)
 
     manage_and_raise(new_display_dialog);
 }
-
 #else
-
 // Enter a new Display at BOX_POINT
 void DataDisp::new_displayCD (GUI::Widget *w, const BoxPoint &box_point)
 {
@@ -2979,31 +2870,25 @@ void DataDisp::new_displayCD (GUI::Widget *w, const BoxPoint &box_point)
 
     manage_and_raise(new_display_dialog);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Create a new display
 void DataDisp::newCB(Widget w, XtPointer, XtPointer)
 {
     set_last_origin(w);
     new_displayCD(w);
 }
-
 #else
-
 // Create a new display
 void DataDisp::newCB(GUI::Widget *w)
 {
     set_last_origin(w);
     new_displayCD(w);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Create a new dependent display
 void DataDisp::dependentCB(Widget w, XtPointer, XtPointer)
 {
@@ -3036,9 +2921,7 @@ void DataDisp::dependentCB(Widget w, XtPointer, XtPointer)
     XmTextSetString(info.text, XMST(info.display_expression.chars()));
     manage_and_raise(dependent_display_dialog);
 }
-
 #else
-
 // Create a new dependent display
 void DataDisp::dependentCB(GUI::Widget *w)
 {
@@ -3071,11 +2954,9 @@ void DataDisp::dependentCB(GUI::Widget *w)
     info.text->set_text(info.display_expression.chars());
     manage_and_raise(dependent_display_dialog);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void DataDisp::displayArgCB(Widget w, XtPointer client_data, XtPointer)
 {
     bool check_pointer = bool((int)(long)client_data);
@@ -3107,9 +2988,7 @@ void DataDisp::displayArgCB(Widget w, XtPointer client_data, XtPointer)
 
     new_display(arg, 0, depends_on, false, false, w);
 }
-
 #else
-
 void DataDisp::displayArgCB(GUI::Widget *w, bool client_data)
 {
     bool check_pointer = bool((int)(long)client_data);
@@ -3141,11 +3020,9 @@ void DataDisp::displayArgCB(GUI::Widget *w, bool client_data)
 
     new_display(arg, 0, depends_on, false, false, w);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void DataDisp::plotArgCB(Widget w, XtPointer, XtPointer)
 {
     DispValue *disp_value_arg = selected_value();
@@ -3160,9 +3037,7 @@ void DataDisp::plotArgCB(Widget w, XtPointer, XtPointer)
     string arg = source_arg->get_string();
     new_display(arg, 0, "", false, true, w);
 }
-
 #else
-
 void DataDisp::plotArgCB(GUI::Widget *w)
 {
     DispValue *disp_value_arg = selected_value();
@@ -3177,31 +3052,25 @@ void DataDisp::plotArgCB(GUI::Widget *w)
     string arg = source_arg->get_string();
     new_display(arg, 0, "", false, true, w);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void DataDisp::plotHistoryCB(Widget w, XtPointer, XtPointer)
 {
     // Create new display and plot its history
     const string arg = "`graph history " + source_arg->get_string() + "`";
     new_display(arg, 0, "", false, true, w);
 }
-
 #else
-
 void DataDisp::plotHistoryCB(GUI::Widget *w)
 {
     // Create new display and plot its history
     const string arg = "`graph history " + source_arg->get_string() + "`";
     new_display(arg, 0, "", false, true, w);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void DataDisp::deleteArgCB(Widget dialog, XtPointer, XtPointer)
 {
     DataDispCount count(disp_graph);
@@ -3226,9 +3095,7 @@ void DataDisp::deleteArgCB(Widget dialog, XtPointer, XtPointer)
     // Delete argument
     delete_display(source_arg->get_string());
 }
-
 #else
-
 void DataDisp::deleteArgCB(GUI::Widget *dialog)
 {
     DataDispCount count(disp_graph);
@@ -3253,7 +3120,6 @@ void DataDisp::deleteArgCB(GUI::Widget *dialog)
     // Delete argument
     delete_display(source_arg->get_string());
 }
-
 #endif
 
 //-----------------------------------------------------------------------------
@@ -3294,7 +3160,6 @@ void DataDisp::refresh_graph_edit(bool silent)
 }
 
 #if defined(IF_XM)
-
 void DataDisp::RefreshGraphEditCB(XtPointer client_data, XtIntervalId *)
 {
     refresh_graph_edit_timer = 0;
@@ -3319,9 +3184,7 @@ void DataDisp::RefreshGraphEditCB(XtPointer client_data, XtIntervalId *)
 		  XtNgraph, (Graph *)disp_graph,
 		  XtPointer(0));
 }
-
 #else
-
 bool DataDisp::RefreshGraphEditCB(GraphEditLayoutState *client_data)
 {
     // refresh_graph_edit_timer = GUI::connection();
@@ -3342,7 +3205,6 @@ bool DataDisp::RefreshGraphEditCB(GraphEditLayoutState *client_data)
     graph_edit->set_snap_to_grid(state.snapToGrid);
     return false;
 }
-
 #endif
 
 // ***************************************************************************
@@ -3389,7 +3251,6 @@ void DataDisp::no_displaysHP (void*, void* , void* call_data)
 bool DataDisp::lose_selection = true;
 
 #if defined(IF_XM)
-
 void DataDisp::SelectionLostCB(Widget, XtPointer, XtPointer)
 {
     if (!lose_selection)
@@ -3414,9 +3275,7 @@ void DataDisp::SelectionLostCB(Widget, XtPointer, XtPointer)
 	refresh_display_list();
     }
 }
-
 #else
-
 void DataDisp::SelectionLostCB(void)
 {
     if (!lose_selection)
@@ -3441,7 +3300,6 @@ void DataDisp::SelectionLostCB(void)
 	refresh_display_list();
     }
 }
-
 #endif
 
 //-----------------------------------------------------------------------------
@@ -3449,23 +3307,18 @@ void DataDisp::SelectionLostCB(void)
 //----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 void DataDisp::graph_dereferenceAct (Widget w, XEvent*, String*, Cardinal*)
 {
     dereferenceCB(w, XtPointer(0), XtPointer(0));
 }
-
 #else
-
 void DataDisp::graph_dereferenceAct (GUI::Widget *w, GUI::Event*, GUI::String *, unsigned int *)
 {
     dereferenceCB(w);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void DataDisp::graph_detailAct (Widget w, XEvent *, 
 				String *params, Cardinal *num_params)
 {
@@ -3475,9 +3328,7 @@ void DataDisp::graph_detailAct (Widget w, XEvent *,
 
     toggleDetailCB(w, XtPointer(depth), XtPointer(0));
 }
-
 #else
-
 void DataDisp::graph_detailAct (GUI::Widget *w, GUI::Event *, 
 				GUI::String *params, unsigned int *num_params)
 {
@@ -3487,11 +3338,9 @@ void DataDisp::graph_detailAct (GUI::Widget *w, GUI::Event *,
 
     toggleDetailCB(w, depth);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void DataDisp::graph_rotateAct (Widget w, XEvent*, String*, Cardinal*)
 {
     rotateCB(w, false, XtPointer(0));
@@ -3501,9 +3350,7 @@ void DataDisp::graph_dependentAct (Widget w, XEvent*, String*, Cardinal*)
 {
     dependentCB(w, XtPointer(0), XtPointer(0));
 }
-
 #else
-
 void DataDisp::graph_rotateAct (GUI::Widget *w, GUI::Event*, GUI::String *, unsigned int *)
 {
     rotateCB(w, false);
@@ -3513,13 +3360,11 @@ void DataDisp::graph_dependentAct (GUI::Widget *w, GUI::Event*, GUI::String *, u
 {
     dependentCB(w);
 }
-
 #endif
 
 Time DataDisp::last_select_time = 0;
 
 #if defined(IF_XM)
-
 // The GraphEdit actions with some data display magic prepended
 void DataDisp::call_selection_proc(Widget w,
 				   const _XtString name,
@@ -3536,9 +3381,7 @@ void DataDisp::call_selection_proc(Widget w,
 
     XtCallActionProc(w, name, event, args, num_args);
 }
-
 #else
-
 // The GraphEdit actions with some data display magic prepended
 void DataDisp::call_selection_proc(GUI::Widget *w,
 				   const char *name,
@@ -3558,11 +3401,9 @@ void DataDisp::call_selection_proc(GUI::Widget *w,
 
     std::cerr << "call_selection_proc not implemented (" << name << ")\n";
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void DataDisp::graph_selectAct (Widget, XEvent* event, String* args, 
 				Cardinal* num_args)
 {
@@ -3576,9 +3417,7 @@ void DataDisp::graph_select_or_moveAct (Widget, XEvent* event, String* args,
     call_selection_proc(graph_edit, "select-or-move", event, args, *num_args,
 			SetSelection);
 }
-
 #else
-
 void DataDisp::graph_selectAct (GUI::Widget *, GUI::Event* event, GUI::String *args, 
 				unsigned int *num_args)
 {
@@ -3592,11 +3431,9 @@ void DataDisp::graph_select_or_moveAct (GUI::Widget *, GUI::Event* event, GUI::S
     call_selection_proc(graph_edit, "select-or-move", event, args, *num_args,
 			SetSelection);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void DataDisp::graph_extendAct (Widget, XEvent* event, String* args, 
 				Cardinal* num_args)
 {
@@ -3610,9 +3447,7 @@ void DataDisp::graph_extend_or_moveAct (Widget, XEvent* event, String* args,
     call_selection_proc(graph_edit, "extend-or-move", event, args, *num_args,
 			ExtendSelection);
 }
-
 #else
-
 void DataDisp::graph_extendAct (GUI::Widget *, GUI::Event* event, GUI::String *args, 
 				unsigned int *num_args)
 {
@@ -3626,11 +3461,9 @@ void DataDisp::graph_extend_or_moveAct (GUI::Widget *, GUI::Event* event, GUI::S
     call_selection_proc(graph_edit, "extend-or-move", event, args, *num_args,
 			ExtendSelection);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void DataDisp::graph_toggleAct (Widget, XEvent* event, String* args, 
 				Cardinal* num_args)
 {
@@ -3644,9 +3477,7 @@ void DataDisp::graph_toggle_or_moveAct (Widget, XEvent* event, String* args,
     call_selection_proc(graph_edit, "toggle-or-move", event, args, *num_args,
 			ToggleSelection);
 }
-
 #else
-
 void DataDisp::graph_toggleAct (GUI::Widget *, GUI::Event* event, GUI::String *args, 
 				unsigned int *num_args)
 {
@@ -3660,11 +3491,9 @@ void DataDisp::graph_toggle_or_moveAct (GUI::Widget *, GUI::Event* event, GUI::S
     call_selection_proc(graph_edit, "toggle-or-move", event, args, *num_args,
 			ToggleSelection);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void DataDisp::graph_popupAct (Widget, XEvent* event, String *args, 
 			       Cardinal *num_args)
 {
@@ -3707,9 +3536,7 @@ void DataDisp::graph_popupAct (Widget, XEvent* event, String *args,
 	XtManageChild(popup);
     }
 }
-
 #else
-
 void DataDisp::graph_popupAct (GUI::Widget *, GUI::Event* event, GUI::String *args, 
 			       unsigned int *num_args)
 {
@@ -3749,11 +3576,9 @@ void DataDisp::graph_popupAct (GUI::Widget *, GUI::Event* event, GUI::String *ar
 	popup->show();
     }
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void DataDisp::set_args(const BoxPoint& p, SelectionMode mode)
 {
     DispNode*  disp_node   = 0;
@@ -3870,9 +3695,7 @@ void DataDisp::set_args(const BoxPoint& p, SelectionMode mode)
     refresh_args(true);
     refresh_display_list();
 }
-
 #else
-
 void DataDisp::set_args(const BoxPoint& p, SelectionMode mode)
 {
     DispNode*  disp_node   = 0;
@@ -3995,7 +3818,6 @@ void DataDisp::set_args(const BoxPoint& p, SelectionMode mode)
     refresh_args(true);
     refresh_display_list();
 }
-
 #endif
 
 DispNode *DataDisp::selected_node()
@@ -4185,7 +4007,6 @@ void DataDisp::refresh_args(bool update_arg)
 }
 
 #if defined(IF_XM)
-
 void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *)
 {
     refresh_args_timer = 0;
@@ -4498,9 +4319,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *)
 			 0, XmTextGetLastPosition(graph_selection_w), tm);
     }
 }
-
 #else
-
 bool DataDisp::RefreshArgsCB(void)
 {
     DataDispCount count(disp_graph);
@@ -4791,7 +4610,6 @@ bool DataDisp::RefreshArgsCB(void)
     }
     return false;
 }
-
 #endif
 
 
@@ -5248,7 +5066,6 @@ void DataDisp::UpdateGraphEditorSelectionCB(void)
 }
 
 #if defined(IF_XM)
-
 // Update display editor selection after a change in the graph editor
 void DataDisp::UpdateDisplayEditorSelectionCB(Widget, XtPointer, XtPointer)
 {
@@ -5275,9 +5092,7 @@ void DataDisp::UpdateDisplayEditorSelectionCB(Widget, XtPointer, XtPointer)
     refresh_args(true);
     refresh_display_list();
 }
-
 #else
-
 // Update display editor selection after a change in the graph editor
 void DataDisp::UpdateDisplayEditorSelectionCB(void)
 {
@@ -5304,7 +5119,6 @@ void DataDisp::UpdateDisplayEditorSelectionCB(void)
     refresh_args(true);
     refresh_display_list();
 }
-
 #endif
 
 //-----------------------------------------------------------------------
@@ -5387,7 +5201,6 @@ static regex rxmore_than_one ("-?[0-9]+\\.\\.-?[0-9]+");
 #endif
 
 #if defined(IF_XM)
-
 void DataDisp::again_new_displaySQ (XtPointer client_data, XtIntervalId *)
 {
     NewDisplayInfo *info = (NewDisplayInfo *)client_data;
@@ -5396,9 +5209,7 @@ void DataDisp::again_new_displaySQ (XtPointer client_data, XtIntervalId *)
 		  info->plotted, info->origin, info->verbose, info->prompt);
     delete info;
 }
-
 #else
-
 bool DataDisp::again_new_displaySQ (NewDisplayInfo *client_data)
 {
     NewDisplayInfo *info = (NewDisplayInfo *)client_data;
@@ -5408,7 +5219,6 @@ bool DataDisp::again_new_displaySQ (NewDisplayInfo *client_data)
     delete info;
     return false;
 }
-
 #endif
 
 int DataDisp::display_number(const string& name, bool verbose)
@@ -5445,7 +5255,6 @@ void DataDisp::get_display_numbers(const string& name, IntArray& numbers)
 }
 
 #if defined(IF_XM)
-
 void DataDisp::new_displaySQ (const string& display_expression,
 			      const string& scope, BoxPoint *p,
 			      const string& depends_on,
@@ -5598,9 +5407,7 @@ void DataDisp::new_displaySQ (const string& display_expression,
 	}
     }
 }
-
 #else
-
 void DataDisp::new_displaySQ (const string& display_expression,
 			      const string& scope, BoxPoint *p,
 			      const string& depends_on,
@@ -5754,7 +5561,6 @@ void DataDisp::new_displaySQ (const string& display_expression,
 	}
     }
 }
-
 #endif
 
 // Find all expressions in DISPLAY_EXPRESSIONS, using FROM..TO syntax
@@ -6024,7 +5830,6 @@ void DataDisp::refresh_builtin_user_displays()
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 void DataDisp::open_data_window()
 {
     // Make sure graph is visible
@@ -6042,9 +5847,7 @@ void DataDisp::close_data_window()
 	gdbCloseDataWindowCB(graph_edit, 0, 0);
     }
 }
-
 #else
-
 void DataDisp::open_data_window()
 {
     // Make sure graph is visible
@@ -6062,7 +5865,6 @@ void DataDisp::close_data_window()
 	gdbCloseDataWindowCB(graph_edit);
     }
 }
-
 #endif
 
 //-----------------------------------------------------------------------------
@@ -8123,19 +7925,15 @@ bool DataDisp::RefreshDisplayListCB(bool silent)
 }
 
 #if defined(IF_XM)
-
 void DataDisp::EditDisplaysCB(Widget, XtPointer, XtPointer)
 {
     manage_and_raise(edit_displays_dialog_w);
 }
-
 #else
-
 void DataDisp::EditDisplaysCB(void)
 {
     manage_and_raise(edit_displays_dialog_w);
 }
-
 #endif
 
 //----------------------------------------------------------------------------
@@ -8183,7 +7981,6 @@ void *DataDisp::DeleteSetInfoCB(void *client_data)
 }
 
 #if defined(IF_XM)
-
 void DataDisp::setCB(Widget w, XtPointer, XtPointer)
 {
     if (!gdb->has_assign_command())
@@ -8275,9 +8072,7 @@ void DataDisp::setCB(Widget w, XtPointer, XtPointer)
     XtManageChild(apply);
     manage_and_raise(info->dialog);
 }
-
 #else
-
 void DataDisp::setCB(GUI::Widget *w)
 {
     if (!gdb->has_assign_command())
@@ -8340,7 +8135,6 @@ void DataDisp::setCB(GUI::Widget *w)
     button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(DestroyThisCB), info->dialog));
     manage_and_raise(info->dialog);
 }
-
 #endif
 
 void DataDisp::SetDone(const string& complete_answer, void *qu_data)
@@ -8372,7 +8166,6 @@ void DataDisp::SetDone(const string& complete_answer, void *qu_data)
 }
 
 #if defined(IF_XM)
-
 void DataDisp::setDCB(Widget, XtPointer client_data, XtPointer call_data)
 {
     SetInfo *info = (SetInfo *)client_data;
@@ -8398,9 +8191,7 @@ void DataDisp::setDCB(Widget, XtPointer client_data, XtPointer call_data)
     }
     gdb_command(c);
 }
-
 #else
-
 void DataDisp::setDCB(SetInfo *client_data, int apply)
 {
     SetInfo *info = (SetInfo *)client_data;
@@ -8422,7 +8213,6 @@ void DataDisp::setDCB(SetInfo *client_data, int apply)
     }
     gdb_command(c);
 }
-
 #endif
 
 //----------------------------------------------------------------------------
@@ -8577,7 +8367,6 @@ void DataDisp::set_cluster_displays(bool value)
 }
 
 #if defined(IF_XM)
-
 void DataDisp::toggleClusterSelectedCB(Widget, XtPointer, XtPointer)
 {
     DataDispCount count(disp_graph);
@@ -8591,9 +8380,7 @@ void DataDisp::toggleClusterSelectedCB(Widget, XtPointer, XtPointer)
 	unclusterSelectedCB(Widget(0), XtPointer(0), XtPointer(0));
     }
 }
-
 #else
-
 void DataDisp::toggleClusterSelectedCB(void)
 {
     DataDispCount count(disp_graph);
@@ -8607,11 +8394,9 @@ void DataDisp::toggleClusterSelectedCB(void)
 	unclusterSelectedCB();
     }
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Uncluster selected nodes (and clusters)
 void DataDisp::unclusterSelectedCB(Widget, XtPointer, XtPointer)
 {
@@ -8652,9 +8437,7 @@ void DataDisp::unclusterSelectedCB(Widget, XtPointer, XtPointer)
     refresh_args();
     refresh_graph_edit();
 }
-
 #else
-
 // Uncluster selected nodes (and clusters)
 void DataDisp::unclusterSelectedCB(void)
 {
@@ -8695,11 +8478,9 @@ void DataDisp::unclusterSelectedCB(void)
     refresh_args();
     refresh_graph_edit();
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Cluster selected nodes into a new cluster
 void DataDisp::clusterSelectedCB(Widget, XtPointer, XtPointer)
 {
@@ -8736,9 +8517,7 @@ void DataDisp::clusterSelectedCB(Widget, XtPointer, XtPointer)
 
     refresh_graph_edit();
 }
-
 #else
-
 // Cluster selected nodes into a new cluster
 void DataDisp::clusterSelectedCB(void)
 {
@@ -8775,7 +8554,6 @@ void DataDisp::clusterSelectedCB(void)
 
     refresh_graph_edit();
 }
-
 #endif
 
 
@@ -8849,7 +8627,6 @@ int DataDisp::add_refresh_addr_commands(StringArray& cmds, DispNode *dn)
 }
 
 #if defined(IF_XM)
-
 // Refresh all addresses
 void DataDisp::refresh_addr(DispNode *dn)
 {
@@ -8862,9 +8639,7 @@ void DataDisp::refresh_addr(DispNode *dn)
 
     RefreshAddr(dn);
 }
-
 #else
-
 // Refresh all addresses
 void DataDisp::refresh_addr(DispNode *dn)
 {
@@ -8876,11 +8651,9 @@ void DataDisp::refresh_addr(DispNode *dn)
 
     RefreshAddr(dn);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void DataDisp::RefreshAddr(DispNode *dn, bool in_cb)
 {
     bool ok = false;
@@ -8932,9 +8705,7 @@ void DataDisp::RefreshAddr(DispNode *dn, bool in_cb)
 	graphEditEnableRedisplay(graph_edit, False);
     }
 }
-
 #else
-
 bool DataDisp::RefreshAddr(DispNode *dn, bool in_cb)
 {
     bool ok = false;
@@ -8988,11 +8759,9 @@ bool DataDisp::RefreshAddr(DispNode *dn, bool in_cb)
     }
     return false;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void DataDisp::RefreshAddrCB(XtPointer client_data, XtIntervalId *id)
 {
     if (id != 0)
@@ -9006,14 +8775,11 @@ void DataDisp::RefreshAddrCB(XtPointer client_data, XtIntervalId *id)
     return RefreshAddr(dn, true);
 
 }
-
 #else
-
 bool DataDisp::RefreshAddrCB(DispNode *dn)
 {
     return RefreshAddr(dn, true);
 }
-
 #endif
 
 // Handle output of addr commands
@@ -9308,7 +9074,6 @@ bool DataDisp::unmerge_display(int disp_nr)
 }
 
 #if defined(IF_XM)
-
 void DataDisp::PreLayoutCB(Widget w, XtPointer, XtPointer)
 {
     if (detect_aliases)
@@ -9317,9 +9082,7 @@ void DataDisp::PreLayoutCB(Widget w, XtPointer, XtPointer)
 	graphEditEnableRedisplay(w, False);
     }
 }
-
 #else
-
 void DataDisp::PreLayoutCB(GUIGraphEdit *w)
 {
     if (detect_aliases)
@@ -9328,11 +9091,9 @@ void DataDisp::PreLayoutCB(GUIGraphEdit *w)
 	w->enable_redisplay(false);
     }
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Re-enable aliases after layouting
 void DataDisp::PostLayoutCB(Widget w, XtPointer, XtPointer)
 {
@@ -9353,9 +9114,7 @@ void DataDisp::PostLayoutCB(Widget w, XtPointer, XtPointer)
 	refresh_graph_edit();
     }
 }
-
 #else
-
 // Re-enable aliases after layouting
 void DataDisp::PostLayoutCB(GUIGraphEdit *w)
 {
@@ -9376,7 +9135,6 @@ void DataDisp::PostLayoutCB(GUIGraphEdit *w)
 	refresh_graph_edit();
     }
 }
-
 #endif
 
 // True iff we have some selection
@@ -9524,7 +9282,6 @@ void DataDisp::set_theme_manager(const ThemeManager& t)
 //----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 DataDisp::DataDisp(Widget parent, Widget& data_buttons_w)
 {
     XtAppContext app_context = XtWidgetToApplicationContext(parent);
@@ -9571,6 +9328,9 @@ DataDisp::DataDisp(Widget parent, Widget& data_buttons_w)
     int arg = 0;
     XtSetArg (args[arg], ARGSTR(XtNgraph), (Graph *)disp_graph); arg++;
 
+    (new GUI::Label(*parent, "GRAPH EDITOR", "GRAPH_EDITOR"))->show();
+    parent->show();
+    
     if (app_data.panned_graph_editor)
     {
 	graph_edit = createPannedGraphEdit(parent, 
@@ -9616,6 +9376,11 @@ DataDisp::DataDisp(Widget parent, Widget& data_buttons_w)
 }
 
 #else
+bool test_click(GUI::EventButton *ev)
+{
+    std::cerr << "Click at " << ev->x << " " << ev->y << "\n";
+    return false;
+}
 
 DataDisp::DataDisp(GUI::Container *parent, GUI::Container *&data_buttons_w)
 {
@@ -9660,9 +9425,20 @@ DataDisp::DataDisp(GUI::Container *parent, GUI::Container *&data_buttons_w)
 	data_buttons_w = 
 	    make_buttons(parent, "data_buttons", app_data.data_buttons);
 
+    (new GUI::Label(*parent, GUI::PACK_SHRINK, "DATA PARENT 1", "DATA PARENT 1"))->show();
     // Create graph editor
-    graph_edit = new GUIGraphEdit();
+    graph_edit = new GUIGraphEdit(*parent, GUI::PACK_EXPAND_WIDGET, "graph_edit");
+    graph_edit->set_size_request(200, 200);
+    graph_edit->signal_button_press_event().connect(sigc::ptr_fun(test_click));
+    graph_edit->add_event_mask(GUI::EventMask(GUI::EXPOSURE_MASK |
+					      GUI::BUTTON_PRESS_MASK |
+					      GUI::BUTTON_RELEASE_MASK |
+					      GUI::POINTER_MOTION_MASK |
+					      GUI::POINTER_MOTION_HINT_MASK |
+					      GUI::KEY_PRESS_MASK |
+					      GUI::KEY_RELEASE_MASK));
     graph_form_w = graph_edit;
+    (new GUI::Label(*parent, GUI::PACK_SHRINK, "DATA PARENT 2", "DATA PARENT 2"))->show();
 
     set_last_origin(graph_edit);
 
@@ -9697,11 +9473,9 @@ DataDisp::DataDisp(GUI::Container *parent, GUI::Container *&data_buttons_w)
 #warning Unmanaged graph selection widget callbacks not implemented.
 #endif
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void DataDisp::create_shells()
 {
     Arg args[10];
@@ -9818,9 +9592,7 @@ void DataDisp::create_shells()
     // Reset argument field and display editor buttons
     set_args();
 }
-
 #else
-
 void DataDisp::create_shells()
 {
 
@@ -9894,6 +9666,5 @@ void DataDisp::create_shells()
     // Reset argument field and display editor buttons
     set_args();
 }
-
 #endif
 

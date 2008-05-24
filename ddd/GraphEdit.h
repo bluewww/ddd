@@ -36,7 +36,7 @@
 #if defined(IF_XM)
 #include <X11/Intrinsic.h>
 #else
-#include <GUI/Widget.h>
+#include <GUI/Container.h>
 #include <GUI/Events.h>
 #include <gtkmm/drawingarea.h>
 #include "gtk_wrapper.h"
@@ -315,7 +315,7 @@ enum GraphEditState {
 #if defined(IF_XMMM)
 class GUIGraphEdit: public GUI::Widget
 #else
-class GUIGraphEdit: public GUI::Widget, public Gtk::Widget
+class GUIGraphEdit: public GUI::Widget, public Gtk::DrawingArea
 #endif
 {
 private:
@@ -332,7 +332,8 @@ private:
     Cardinal rotation_;
 #endif
 public:
-    GUIGraphEdit(void);
+    GUIGraphEdit(GUI::Container &parent, GUI::PackOptions po=GUI::PACK_SHRINK,
+		 const GUI::String &name="");
     ~GUIGraphEdit(void);
 #if !defined(IF_XMMM)
     Gtk::Widget *internal(void);
