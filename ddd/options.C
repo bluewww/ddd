@@ -2976,7 +2976,9 @@ static bool CheckOptionsFileCB(void)
 
 	if (dialog == 0)
 	{
-	    dialog = new GUI::Dialog(*find_shell(), "reload_options_dialog");
+	    const char *message = _("Options have changed on disk.  Reload them?");
+	    dialog = new GUI::MessageDialog(*find_shell(), "reload_options_dialog",
+					    message);
 	    Delay::register_shell(dialog);
 	    GUI::Button *button;
 	    button = dialog->add_button("OK");

@@ -160,7 +160,7 @@ GUI::Dialog *post_gdb_yn(string question, GUI::Widget *w)
     {
 	yn_dialog = new GUI::Dialog(*find_shell(w), "yn_dialog");
 	yn_dialog_label = new GUI::Label(*yn_dialog, GUI::PACK_SHRINK, question.chars());
-	yn_dialog->get_vbox()->pack_start(*yn_dialog_label, Gtk::PACK_SHRINK);
+	yn_dialog_label->show();
 	Delay::register_shell(yn_dialog);
 	GUI::Button *button;
 	button = yn_dialog->add_button("OK");
@@ -170,9 +170,10 @@ GUI::Dialog *post_gdb_yn(string question, GUI::Widget *w)
 #ifdef NAG_ME
 #warning What is the return value?
 #endif
-	yn_dialog->signal_delete_event().connect(sigc::bind_return(sigc::hide<0>(sigc::bind(sigc::ptr_fun(YnCB),
-											    yn_dialog, "no")),
-								   false));
+	yn_dialog->signal_delete_event().connect(
+	    sigc::bind_return(sigc::hide<0>(sigc::bind(sigc::ptr_fun(YnCB),
+						       yn_dialog, "no")),
+			      false));
     }
     else
     {

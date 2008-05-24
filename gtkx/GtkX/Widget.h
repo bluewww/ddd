@@ -12,11 +12,6 @@
 #include <GtkX/Events.h>
 #include <GtkX/Main.h>
 
-// ***** VERY IMPORTANT NOTE ****
-// All GtkX classes EXCEPT the leaves are pure interface classes,
-// that is, they contain no data.
-// This avoids problems with multiple inheritance.
-
 // Typedefs for compatibility with Motif version
 typedef int Position;
 typedef int Dimension;
@@ -24,6 +19,10 @@ typedef guint32 Time;
 
 // FIXME: default time, how is it used?
 #define CurrentTime 0 /* special time */
+
+// i18n not supported yet.
+#define _(x) (x)
+#define N_(x) (x)
 
 namespace GtkX {
 
