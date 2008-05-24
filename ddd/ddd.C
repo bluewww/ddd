@@ -1218,7 +1218,7 @@ struct ProgramItems {
 #define PROGRAM_MENU(w)							\
 {									\
     GENTRYL("run", "Run...", MMPush, BIND(gdbRunCB, 0),			\
-	    sigc::ptr_fun(gdbRunCB1), 0, 0),				\
+	    sigc::ptr_fun(gdbRunCB), 0, 0),				\
     GENTRYL("run_again", "Run Again", MMPush,				\
 	    BIND(gdbCommandCB, "run"),					\
 	    sigc::bind(sigc::ptr_fun(gdbCommandCB), "run"),		\

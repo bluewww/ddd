@@ -104,10 +104,10 @@ string assignment_value(const string& expr);
 #if defined(IF_XM)
 // Create a flat PushButton named NAME
 Widget create_flat_button(Widget parent, const string& name);
-#endif
-#if !defined(IF_XM)
+#else
 // Create a flat PushButton named NAME
-GUI::Button *create_flat_button1(GUI::Container *parent, const string& name);
+GUI::Button *create_flat_button(GUI::Container *parent, const string& name,
+				const string& label);
 #endif
 
 // Remove command from help cache.

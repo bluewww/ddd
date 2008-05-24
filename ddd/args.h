@@ -29,21 +29,18 @@
 #define _DDD_args_h
 
 #if defined(IF_XM)
-
 #include <X11/Intrinsic.h>
-
-#endif
-
+#else
 #include "gtk_wrapper.h"
+#endif
 
 #include "strclass.h"
 #include "bool.h"
 
 #if defined(IF_XM)
 void gdbRunCB(Widget, XtPointer, XtPointer);
-#endif
-#if !defined(IF_XM)
-void gdbRunCB1(GUI::Widget *);
+#else
+void gdbRunCB(GUI::Widget *);
 #endif
 
 #if defined(IF_XM)

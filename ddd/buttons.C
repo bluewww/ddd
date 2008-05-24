@@ -78,14 +78,11 @@ char buttons_rcsid[] =
 #include <Xm/ToggleB.h>
 #include <Xm/Text.h>
 #else
+#include <GUI/Events.h>
+#include <GUI/Notebook.h>
 #include "gtk_wrapper.h"
 #endif
 #include <ctype.h>
-
-#if !defined(IF_XM)
-#include <GUI/Events.h>
-#include <GUI/Notebook.h>
-#endif
 
 
 //-----------------------------------------------------------------------------
@@ -102,7 +99,6 @@ int max_value_doc_length = 128;
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 static void YnButtonCB(Widget dialog, 
 		       XtPointer client_data, 
 		       XtPointer call_data)
@@ -111,18 +107,13 @@ static void YnButtonCB(Widget dialog,
     gdbCommandCB(dialog, client_data, call_data);
     gdb_keyboard_command = true;
 }
-
-#endif
-
-#if !defined(IF_XM)
-
-static void YnButtonCB1(GUI::Widget *dialog, const char *client_data)
+#else
+static void YnButtonCB(GUI::Widget *dialog, const char *client_data)
 {
     _gdb_out(string(client_data) + '\n');
     gdbCommandCB(dialog, client_data);
     gdb_keyboard_command = true;
 }
-
 #endif
 
 //-----------------------------------------------------------------------------
@@ -232,7 +223,6 @@ const int help_timeout = 2;	// Timeout for short queries (in s)
 static StringStringAssoc help_cache;
 
 #if defined(IF_XM)
-
 static string gdbHelpName(Widget widget)
 {
     string name = XtName(widget);
@@ -241,9 +231,7 @@ static string gdbHelpName(Widget widget)
 
     return name;
 }
-
 #else
-
 static string gdbHelpName(GUI::Widget *widget)
 {
     string name = widget->get_name().c_str();
@@ -252,27 +240,22 @@ static string gdbHelpName(GUI::Widget *widget)
 
     return name;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Having retrieved the global help text, we can configure JDB
 static void ConfigureJDBCB(XtPointer, XtIntervalId *)
 {
     const string& all_help = help_cache["<ALL>"];
     configure_jdb(all_help);
 }
-
 #else
-
 // Having retrieved the global help text, we can configure JDB
 static void ConfigureJDBCB(void *, GUI::connection *)
 {
     const string& all_help = help_cache["<ALL>"];
     configure_jdb(all_help);
 }
-
 #endif
 
 static string gdbHelp(string original_command)
@@ -620,7 +603,6 @@ static void strip_through(string& s, const string& key)
 }
 
 #if defined(IF_XM)
-
 static XmTextPosition textPosOfEvent(Widget widget, XEvent *event)
 {
     XmTextPosition startpos, endpos;
@@ -634,9 +616,7 @@ static XmTextPosition textPosOfEvent(Widget widget, XEvent *event)
 
     return startpos;
 }
-
 #else
-
 static long textPosOfEvent(GUI::ScrolledText *widget, GUI::Event *event)
 {
     long startpos, endpos;
@@ -650,11 +630,9 @@ static long textPosOfEvent(GUI::ScrolledText *widget, GUI::Event *event)
 
     return startpos;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Get tip string for text widget WIDGET.
 static MString gdbDefaultValueText(Widget widget, XEvent *event, 
 				   bool for_documentation)
@@ -772,9 +750,7 @@ static MString gdbDefaultValueText(Widget widget, XEvent *event,
 	return tt(tip);
     }
 }
-
 #else
-
 // Get tip string for text widget WIDGET.
 static MString gdbDefaultValueText(GUI::ScrolledText *widget,
 				   GUI::Event *event, 
@@ -902,7 +878,6 @@ static MString gdbDefaultValueText(GUI::ScrolledText *widget,
 	return tt(tip);
     }
 }
-
 #endif
 
 // Get tip string for button widget WIDGET.
@@ -1085,7 +1060,6 @@ static MString gdbDefaultButtonText(GUI::Widget *widget, GUI::Event *,
 }
 
 #if defined(IF_XM)
-
 static MString gdbDefaultText(Widget widget, XEvent *event, 
 			      bool for_documentation)
 {
@@ -1104,9 +1078,7 @@ static MString gdbDefaultDocumentationText(Widget widget, XEvent *event)
 {
     return gdbDefaultText(widget, event, true);
 }
-
 #else
-
 static MString gdbDefaultText(GUI::Widget *widget, GUI::Event *event, 
 			      bool for_documentation)
 {
@@ -1126,7 +1098,6 @@ static MString gdbDefaultDocumentationText(GUI::Widget *widget, GUI::Event *even
 {
     return gdbDefaultText(widget, event, true);
 }
-
 #endif
 
 
@@ -1221,7 +1192,6 @@ static void DontVerifyButtonCB(Widget w, XtPointer, XtPointer)
 #endif
 
 #if defined(IF_XM)
-
 // Make BUTTON insensitive if it is not supported
 void verify_button(Widget button)
 {
@@ -1247,9 +1217,7 @@ void verify_button(Widget button)
 				    XtPointer(&verify_id));
     }
 }
-
 #else
-
 // Make BUTTON insensitive if it is not supported
 void verify_button(GUI::Widget *button)
 {
@@ -1302,7 +1270,6 @@ void refresh_buttons()
 }
 
 #if defined(IF_XM)
-
 static void RemoveFromArrayCB(Widget w, XtPointer client_data, XtPointer)
 {
     WidgetArray& arr = *((WidgetArray *)client_data);
@@ -1314,9 +1281,7 @@ static void register_button(WidgetArray& arr, Widget w)
     arr += w;
     XtAddCallback(w, XtNdestroyCallback, RemoveFromArrayCB, XtPointer(&arr));
 }
-
 #else
-
 static void RemoveFromArrayCB(GUI::Widget *w, WidgetArray *client_data)
 {
     WidgetArray& arr = *client_data;
@@ -1332,12 +1297,10 @@ static void register_button(WidgetArray& arr, GUI::Widget *w)
     std::cerr << "Destroy notify?\n";
     // w->add_destroy_notify_callback();
 }
-
 #endif
 
 
 #if defined(IF_XM)
-
 // Create a button work area from BUTTON_LIST named NAME
 Widget make_buttons(Widget parent, const char *name, 
 		    const _XtString button_list)
@@ -1369,9 +1332,7 @@ Widget make_buttons(Widget parent, const char *name,
 
     return buttons;
 }
-
 #else
-
 // Create a button work area from BUTTON_LIST named NAME
 GUI::Container *make_buttons(GUI::Container *parent, const char *name, 
 			     const char *button_list)
@@ -1386,11 +1347,9 @@ GUI::Container *make_buttons(GUI::Container *parent, const char *name,
 
     return buttons;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void set_buttons(Widget buttons, const _XtString _button_list, bool manage)
 {
     string *sp;
@@ -1631,9 +1590,7 @@ void set_buttons(Widget buttons, const _XtString _button_list, bool manage)
 
     delete delay;
 }
-
 #else
-
 void set_buttons(GUI::Box *buttons, const char *_button_list, bool manage)
 {
     string *sp;
@@ -1737,13 +1694,13 @@ void set_buttons(GUI::Box *buttons, const char *_button_list, bool manage)
 	{
 	    command = "yes";
 	    button->hide();
-	    callback = sigc::ptr_fun(YnButtonCB1);
+	    callback = sigc::ptr_fun(YnButtonCB);
 	}
 	else if (name == "No")
 	{
 	    command = "no";
 	    button->hide();
-	    callback = sigc::ptr_fun(YnButtonCB1);
+	    callback = sigc::ptr_fun(YnButtonCB);
 	}
 	else if (name == "Prev")
 	    callback = sigc::hide(sigc::ptr_fun(gdbPrevCB));
@@ -1838,7 +1795,6 @@ void set_buttons(GUI::Box *buttons, const char *_button_list, bool manage)
 
     delete delay;
 }
-
 #endif
 
 
@@ -1982,7 +1938,6 @@ static void SetVerifyButtonsCB(Widget, XtPointer, XtPointer call_data)
 #endif
 
 #if defined(IF_XM)
-
 static Widget add_button(const _XtString name, 
 			 Widget dialog, Widget buttons, 
 			 Widget text, Widget vfy,
@@ -2005,11 +1960,9 @@ static Widget add_button(const _XtString name,
 
     return button;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void create_buttons_dialog(Widget parent)
 {
     if (buttons_dialog != 0)
@@ -2108,9 +2061,7 @@ static void create_buttons_dialog(Widget parent)
     XmToggleButtonSetState(source_w, True, False);
     (void) data_w;
 }
-
 #else
-
 static void create_buttons_dialog(GUI::Widget *parent)
 {
     if (buttons_dialog != 0)
@@ -2181,11 +2132,9 @@ static void create_shortcuts_dialog(GUI::Widget *parent)
     std::cerr << "shortcuts not finished\n";
 
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // We use one single editor for both purposes, since this saves space.
 void dddEditButtonsCB(Widget w, XtPointer, XtPointer)
 {
@@ -2207,9 +2156,7 @@ void dddEditButtonsCB(Widget w, XtPointer, XtPointer)
 
     manage_and_raise(buttons_dialog);
 }
-
 #else
-
 // We use one single editor for both purposes, since this saves space.
 void dddEditButtonsCB(GUI::Widget *w)
 {
@@ -2217,11 +2164,9 @@ void dddEditButtonsCB(GUI::Widget *w)
 
     manage_and_raise(buttons_dialog);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void dddEditShortcutsCB(Widget w, XtPointer, XtPointer)
 {
     create_buttons_dialog(w);
@@ -2241,20 +2186,16 @@ void dddEditShortcutsCB(Widget w, XtPointer, XtPointer)
 
     manage_and_raise(buttons_dialog);
 }
-
 #else
-
 void dddEditShortcutsCB(GUI::Widget *w)
 {
     create_shortcuts_dialog(w);
 
     manage_and_raise(shortcuts_dialog);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void refresh_button_editor()
 {
     StringArray exprs;
@@ -2290,9 +2231,7 @@ void refresh_button_editor()
     if (active_info != 0 && active_info->str == CONST_CAST(char**,str))
 	XmTextSetString(active_info->text, XMST(*str));
 }
-
 #else
-
 void refresh_button_editor()
 {
     StringArray exprs;
@@ -2326,7 +2265,6 @@ void refresh_button_editor()
 
     std::cerr << "active_info->text not defined\n";
 }
-
 #endif
 
 //-----------------------------------------------------------------------------
@@ -2349,7 +2287,6 @@ static MMDesc desc[] =
 };
 
 #if defined(IF_XM)
-
 // Create a flat PushButton named NAME
 Widget create_flat_button(Widget parent, const string& name)
 {
@@ -2358,13 +2295,13 @@ Widget create_flat_button(Widget parent, const string& name)
     MMaddCallbacks(desc);
     return desc[0].widget;
 }
-
 #else
-
 // Create a flat PushButton named NAME
-GUI::Button *create_flat_button1(GUI::Container *parent, const string& name)
+GUI::Button *create_flat_button(GUI::Container *parent, const string& name,
+				const string& label)
 {
     desc[0].name = name.chars();
+    desc[0].label_string = label.chars();
     MMaddItems(parent, desc);
     MMaddCallbacks(desc);
     return dynamic_cast<GtkX::Button *>(desc[0].widget);

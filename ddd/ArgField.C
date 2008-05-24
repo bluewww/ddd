@@ -50,7 +50,6 @@ char ArgField_rcsid[] =
 #endif
 
 #if defined(IF_XM)
-
 // Constructor
 ArgField::ArgField (Widget parent, const char* name)
     : arg_text_field(0), handlers(ArgField_NTypes), is_empty(true), 
@@ -72,9 +71,7 @@ ArgField::ArgField (Widget parent, const char* name)
     XtAddCallback(arg_text_field, XmNlosePrimaryCallback,
 		  losePrimaryCB, this);
 }
-
 #else
-
 // Constructor
 ArgField::ArgField (GUI::Container *parent, const char* name)
     : arg_text_field(0), handlers(ArgField_NTypes), is_empty(true), 
@@ -83,7 +80,6 @@ ArgField::ArgField (GUI::Container *parent, const char* name)
     arg_text_field = new GUI::ComboBoxEntryText(*parent, GUI::PACK_SHRINK, name);
     arg_text_field->show();
 }
-
 #endif
 
 string ArgField::get_string () const
@@ -145,7 +141,6 @@ void ArgField::set_string(string s)
 }
 
 #if defined(IF_XM)
-
 void ArgField::valueChangedCB(Widget,
 			      XtPointer client_data,
 			      XtPointer)
@@ -169,9 +164,7 @@ void ArgField::valueChangedCB(Widget,
 	arg_field->handlers.call(Empty, arg_field, (void *)false);
     }
 }
-
 #else
-
 void ArgField::valueChangedCB(GUI::Widget *,
 			      ArgField *arg_field)
 {
@@ -193,7 +186,6 @@ void ArgField::valueChangedCB(GUI::Widget *,
 	arg_field->handlers.call(Empty, arg_field, (void *)false);
     }
 }
-
 #endif
 
 void ArgField::lock(bool arg)
@@ -209,7 +201,6 @@ void ArgField::lock(bool arg)
 }
 
 #if defined(IF_XM)
-
 void ArgField::losePrimaryCB(Widget,
 			     XtPointer client_data,
 			     XtPointer)
@@ -217,15 +208,12 @@ void ArgField::losePrimaryCB(Widget,
     ArgField *arg_field = (ArgField *)client_data;
     arg_field->handlers.call(LosePrimary, arg_field, 0);
 }
-
 #else
-
 void ArgField::losePrimaryCB(GUI::Widget *,
 			     ArgField *arg_field)
 {
     arg_field->handlers.call(LosePrimary, arg_field, 0);
 }
-
 #endif
 
 void ArgField::addHandler (unsigned    type,
@@ -248,14 +236,11 @@ void ArgField::callHandlers ()
 }
 
 #if defined(IF_XM)
-
 Widget ArgField::top() const
 {
     return ComboBoxTop(text());
 }
-
 #else
-
 GUI::Widget *ArgField::top() const
 {
 #ifdef NAG_ME
@@ -263,42 +248,33 @@ GUI::Widget *ArgField::top() const
 #endif
     return text();
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Clear the text field given in Widget(CLIENT_DATA)
 void ClearTextFieldCB(Widget, XtPointer client_data, XtPointer)
 {
     Widget arg_field = Widget(client_data);
     XmTextFieldSetString(arg_field, XMST(""));
 }
-
 #else
-
 // Clear the text field given in Widget(CLIENT_DATA)
 void ClearTextFieldCB(GUI::ComboBoxEntryText *entry)
 {
     entry->set_text("");
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Create a `():' label named "arg_label" for ARG_FIELD
 Widget create_arg_label(Widget parent)
 {
     return create_flat_button(parent, "arg_label");
 }
-
 #else
-
 // Create a `():' label named "arg_label" for ARG_FIELD
 GUI::Button *create_arg_label(GUI::Container *parent)
 {
-    return create_flat_button1(parent, "arg_label");
+    return create_flat_button(parent, "arg_label", "():");
 }
-
 #endif

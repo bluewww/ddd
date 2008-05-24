@@ -313,7 +313,6 @@ void update_arguments()
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 // Run program with given arguments
 static void gdbRunDCB(Widget, XtPointer, XtPointer)
 {
@@ -334,9 +333,7 @@ static void gdbRunDCB(Widget, XtPointer, XtPointer)
 	gdb_command(c, run_dialog);
     }
 }
-
 #else
-
 // Run program with given arguments
 static void gdbRunDCB(void)
 {
@@ -355,7 +352,6 @@ static void gdbRunDCB(void)
 	gdb_command(c, (GUI::Widget *)run_dialog);
     }
 }
-
 #endif
 
 #if defined(IF_XM)
@@ -372,7 +368,6 @@ static void SelectRunArgsCB(Widget, XtPointer, XtPointer call_data)
 #endif
 
 #if defined(IF_XM)
-
 // Create `Run' dialog
 void gdbRunCB(Widget w, XtPointer, XtPointer)
 {
@@ -407,13 +402,9 @@ void gdbRunCB(Widget w, XtPointer, XtPointer)
     update_run_arguments();
     manage_and_raise(run_dialog);
 }
-
-#endif
-
-#if !defined(IF_XM)
-
+#else
 // Create `Run' dialog
-void gdbRunCB1(GUI::Widget *w)
+void gdbRunCB(GUI::Widget *w)
 {
     if (run_dialog == (GUI::Widget *)0)
     {
@@ -430,7 +421,6 @@ void gdbRunCB1(GUI::Widget *w)
     update_run_arguments();
     manage_and_raise(run_dialog);
 }
-
 #endif
 
 
@@ -439,7 +429,6 @@ void gdbRunCB1(GUI::Widget *w)
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 // Set program arguments from list
 static void SelectMakeArgsCB(Widget, XtPointer, XtPointer call_data)
 {
@@ -450,11 +439,9 @@ static void SelectMakeArgsCB(Widget, XtPointer, XtPointer call_data)
     Widget text_w = XmSelectionBoxGetChild(make_dialog, XmDIALOG_TEXT);
     XmTextSetString(text_w, XMST(args.chars()));
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Make program with given arguments
 static void gdbMakeDCB(Widget, XtPointer, XtPointer)
 {
@@ -465,9 +452,7 @@ static void gdbMakeDCB(Widget, XtPointer, XtPointer)
 
     gdb_command(gdb->make_command(args));
 }
-
 #else
-
 // Make program with given arguments
 static void gdbMakeDCB(void)
 {
@@ -476,27 +461,21 @@ static void gdbMakeDCB(void)
 
     gdb_command(gdb->make_command(args));
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void gdbMakeAgainCB(Widget w, XtPointer, XtPointer)
 {
     gdb_command(gdb->make_command(last_make_argument));
 }
-
 #else
-
 void gdbMakeAgainCB(GUI::Widget *w)
 {
     gdb_command(gdb->make_command(last_make_argument));
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Create `Make' dialog
 void gdbMakeCB(Widget w, XtPointer, XtPointer)
 {
@@ -535,9 +514,7 @@ void gdbMakeCB(Widget w, XtPointer, XtPointer)
     update_make_arguments();
     manage_and_raise(make_dialog);
 }
-
 #else
-
 // Create `Make' dialog
 void gdbMakeCB(GUI::Widget *w)
 {
@@ -560,7 +537,6 @@ void gdbMakeCB(GUI::Widget *w)
     update_make_arguments();
     manage_and_raise(make_dialog);
 }
-
 #endif
 
 
@@ -580,11 +556,9 @@ static void SelectChangeDirectoryArgsCB(Widget, XtPointer, XtPointer call_data)
     Widget text_w = XmSelectionBoxGetChild(cd_dialog, XmDIALOG_TEXT);
     XmTextSetString(text_w, XMST(args.chars()));
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // ChangeDirectory program with given arguments
 static void gdbChangeDirectoryDCB(Widget, XtPointer, XtPointer)
 {
@@ -606,9 +580,7 @@ static void gdbChangeDirectoryDCB(Widget, XtPointer, XtPointer)
     }
     
 }
-
 #else
-
 // ChangeDirectory program with given arguments
 static void gdbChangeDirectoryDCB(void)
 {
@@ -632,11 +604,9 @@ static void gdbChangeDirectoryDCB(void)
     }
 #endif   
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Create `ChangeDirectory' dialog
 void gdbChangeDirectoryCB(Widget w, XtPointer, XtPointer)
 {
@@ -674,9 +644,7 @@ void gdbChangeDirectoryCB(Widget w, XtPointer, XtPointer)
     update_cd_arguments();
     manage_and_raise(cd_dialog);
 }
-
 #else
-
 // Create `ChangeDirectory' dialog
 void gdbChangeDirectoryCB(GUI::Widget *w)
 {
@@ -713,7 +681,6 @@ void gdbChangeDirectoryCB(GUI::Widget *w)
     update_cd_arguments();
     manage_and_raise(cd_dialog);
 }
-
 #endif
 
 //-----------------------------------------------------------------------------
@@ -721,7 +688,6 @@ void gdbChangeDirectoryCB(GUI::Widget *w)
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 static void RestartAndRunCB(Widget w,
 			    XtPointer client_data, XtPointer call_data)
 {
@@ -730,9 +696,7 @@ static void RestartAndRunCB(Widget w,
     const string& cmd = *((const string *)client_data);
     gdb_command(cmd, w);
 }
-
 #else
-
 static void RestartAndRunCB(GUI::Widget *w, const string *client_data)
 {
     RestartDebuggerCB();
@@ -740,11 +704,9 @@ static void RestartAndRunCB(GUI::Widget *w, const string *client_data)
     const string& cmd = *client_data;
     gdb_command(cmd, w);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 bool add_running_arguments(string& cmd, Widget origin)
 {
     if (cmd == "run")
@@ -801,9 +763,7 @@ bool add_running_arguments(string& cmd, Widget origin)
 
     return true;
 }
-
 #else
-
 bool add_running_arguments(string& cmd, GUI::Widget *origin)
 {
     if (cmd == "run")
