@@ -90,6 +90,7 @@ const MMAttr MMUnmanaged      =  128; // Make item unmanaged
 const MMAttr MMUnmanagedLabel =  256; // Don't manage label (in panels)
 const MMAttr MMIgnore         =  512; // Don't create item
 const MMAttr MMVertical       = 1024; // Make panel vertical
+const MMAttr MMNoLocale       = 2048; // Do not localize
 const MMAttr MMAttrMask       = ~MMTypeMask;
 
 

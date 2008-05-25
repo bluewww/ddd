@@ -854,11 +854,11 @@ void delete_or_controlAct(Widget, XEvent *e,
 
 static MMDesc gdb_popup[] =
 {
-    GENTRYL("clear_line", "clear_line", MMPush,
+    GENTRYL("clear_line", N_("clear_line"), MMPush,
 	    BIND(gdbClearCB, 0),
 	    sigc::hide(sigc::ptr_fun(gdbClearCB)),
 	    0, 0),
-    GENTRYL("clear_window", "clear_window", MMPush,
+    GENTRYL("clear_window", N_("clear_window"), MMPush,
 	    BIND(gdbClearWindowCB, 0),
 	    sigc::hide(sigc::ptr_fun(gdbClearWindowCB)),
 	    0, 0),

@@ -346,21 +346,21 @@ struct LineItms { enum Itms {SetBP, SetTempBP, Sep1, TempNContBP,
 			     Sep2, SetPC}; };
 MMDesc SourceView::line_popup[] = 
 {
-    GENTRYL("set", "set", MMPush,
+    GENTRYL("set", N_("set"), MMPush,
 	    BIND(SourceView::line_popup_setCB, (string *)0),
 	    sigc::bind(sigc::ptr_fun(SourceView::line_popup_setCB), (string *)0),
 	    0, 0),
-    GENTRYL("set_temp", "set_temp", MMPush, 
+    GENTRYL("set_temp", N_("set_temp"), MMPush, 
 	    BIND(SourceView::line_popup_set_tempCB, (string *)0),
 	    sigc::bind(sigc::ptr_fun(SourceView::line_popup_set_tempCB), (string *)0),
 	    0, 0),
     MMSep,
-    GENTRYL("temp_n_cont", "temp_n_cont", MMPush, 
+    GENTRYL("temp_n_cont", N_("temp_n_cont"), MMPush, 
 	    BIND(SourceView::line_popup_temp_n_contCB, (string *)0),
 	    sigc::bind(sigc::ptr_fun(SourceView::line_popup_temp_n_contCB), (string *)0),
 	    0, 0),
     MMSep,
-    GENTRYL("set_pc", "set_pc", MMPush,
+    GENTRYL("set_pc", N_("set_pc"), MMPush,
 	    BIND(SourceView::line_popup_set_pcCB, (string *)0),
 	    sigc::bind(sigc::ptr_fun(SourceView::line_popup_set_pcCB), (string *)0),
 	    0, 0),
@@ -370,20 +370,20 @@ MMDesc SourceView::line_popup[] =
 struct BPItms { enum Itms {Properties, Disable, Delete, Sep, SetPC}; };
 MMDesc SourceView::bp_popup[] =
 {
-    GENTRYL("properties", "properties", MMPush, 
+    GENTRYL("properties", N_("properties"), MMPush, 
 	    BIND(SourceView::EditBreakpointPropertiesCB, (int *)0),
 	    sigc::hide(sigc::bind(sigc::ptr_fun(SourceView::EditBreakpointPropertiesCB), (int *)0)),
 	    0, 0),
-    GENTRYL("disable", "disable", MMPush,
+    GENTRYL("disable", N_("disable"), MMPush,
 	    BIND(SourceView::bp_popup_disableCB, (int *)0),
 	    sigc::bind(sigc::ptr_fun(SourceView::bp_popup_disableCB), (int *)0),
 	    0, 0),
-    GENTRYL("delete", "delete", MMPush,
+    GENTRYL("delete", N_("delete"), MMPush,
 	    BIND(SourceView::bp_popup_deleteCB, (int *)0),
 	    sigc::bind(sigc::ptr_fun(SourceView::bp_popup_deleteCB), (int *)0),
 	    0, 0),
     MMSep,
-    GENTRYL("set_pc", "set_pc", MMPush,
+    GENTRYL("set_pc", N_("set_pc"), MMPush,
 	    BIND(SourceView::bp_popup_set_pcCB, (int *)0),
 	    sigc::bind(sigc::ptr_fun(SourceView::bp_popup_set_pcCB), (int *)0),
 	    0, 0),
@@ -394,36 +394,36 @@ struct BPButtons { enum Itms {Properties, Lookup, NewBP, NewWP, Print,
 			      Enable, Disable, Delete}; };
 MMDesc SourceView::bp_area[] =
 {
-    GENTRYL("properties", "properties", MMPush, 
+    GENTRYL("properties", N_("properties"), MMPush, 
 	    BIND(SourceView::EditBreakpointPropertiesCB, (int *)0),
 	    sigc::hide(sigc::bind(sigc::ptr_fun(SourceView::EditBreakpointPropertiesCB), (int *)0)),
 	    0, 0),
-    GENTRYL("lookup", "lookup", MMPush, 
+    GENTRYL("lookup", N_("lookup"), MMPush, 
 	    BIND(SourceView::LookupBreakpointCB, 0),
 	    sigc::hide(sigc::bind(sigc::ptr_fun(SourceView::LookupBreakpointCB),
 				  (BreakpointPropertiesInfo *)0)),
 	    0, 0),
-    GENTRYL("new_bp", "new_bp", MMPush,
+    GENTRYL("new_bp", N_("new_bp"), MMPush,
 	    BIND(SourceView::NewBreakpointCB, 0),
 	    sigc::ptr_fun(SourceView::NewBreakpointCB),
 	    0, 0),
-    GENTRYL("new_wp", "new_wp", MMPush,
+    GENTRYL("new_wp", N_("new_wp"), MMPush,
 	    BIND(SourceView::NewWatchpointCB, 0),
 	    sigc::ptr_fun(SourceView::NewWatchpointCB),
 	    0, 0),
-    GENTRYL("print", "print", MMPush, 
+    GENTRYL("print", N_("print"), MMPush, 
 	    BIND(SourceView::PrintWatchpointCB, 0),
 	    sigc::bind(sigc::ptr_fun(SourceView::PrintWatchpointCB), (BreakpointPropertiesInfo *)0),
 	    0, 0),
-    GENTRYL("enable", "enable", MMPush, 
+    GENTRYL("enable", N_("enable"), MMPush, 
 	    BIND(SourceView::BreakpointCmdCB, "enable"),
 	    sigc::hide(sigc::bind(sigc::ptr_fun(SourceView::BreakpointCmdCB), "enable")),
 	    0, 0),
-    GENTRYL("disable", "disable", MMPush, 
+    GENTRYL("disable", N_("disable"), MMPush, 
 	    BIND(SourceView::BreakpointCmdCB, "disable"),
 	    sigc::hide(sigc::bind(sigc::ptr_fun(SourceView::BreakpointCmdCB), "disable")),
 	    0, 0),
-    GENTRYL("delete", "delete", MMPush | MMHelp, 
+    GENTRYL("delete", N_("delete"), MMPush | MMHelp, 
 	    BIND(SourceView::BreakpointCmdCB, "delete"),
 	    sigc::hide(sigc::bind(sigc::ptr_fun(SourceView::BreakpointCmdCB), "delete")),
 	    0, 0),
@@ -455,19 +455,19 @@ static const _XtString const text_cmd_labels[] =
 static const char *const text_cmd_labels[] =
 #endif
 {
-    "Print ", 
-    "Display ", 
-    "Watch ",
-    "",
-    "Print ", 
-    "Display ", 
-    "Watch ",
-    "",
-    "What is ",
-    "",
-    "Lookup " ,
-    "Break at ",
-    "Clear at "
+    N_("Print "), 
+    N_("Display "), 
+    N_("Watch "),
+    N_(""),
+    N_("Print "), 
+    N_("Display "), 
+    N_("Watch "),
+    N_(""),
+    N_("What is "),
+    N_(""),
+    N_("Lookup ") ,
+    N_("Break at "),
+    N_("Clear at ")
 };
 
 
@@ -477,46 +477,46 @@ static string callback_word;
 // callback closure.  Therefore we use a global callback_word.
 MMDesc SourceView::text_popup[] =
 {
-    GENTRYL("print", "print", MMPush,
+    GENTRYL("print", N_("print"), MMPush,
 	    BIND(SourceView::text_popup_printCB, &callback_word),
 	    sigc::bind(sigc::ptr_fun(SourceView::text_popup_printCB), &callback_word),
 	    0, 0),
-    GENTRYL("disp", "disp", MMPush,
+    GENTRYL("disp", N_("disp"), MMPush,
 	    BIND(SourceView::text_popup_dispCB, &callback_word),
 	    sigc::bind(sigc::ptr_fun(SourceView::text_popup_dispCB), &callback_word),
 	    0, 0),
-    GENTRYL("watch", "watch", MMPush | MMUnmanaged, 
+    GENTRYL("watch", N_("watch"), MMPush | MMUnmanaged, 
 	    BIND(SourceView::text_popup_watchCB, &callback_word),
 	    sigc::bind(sigc::ptr_fun(SourceView::text_popup_watchCB), &callback_word),
 	    0, 0),
     MMSep,
-    GENTRYL("printRef", "printRef", MMPush, 
+    GENTRYL("printRef", N_("printRef"), MMPush, 
 	    BIND(SourceView::text_popup_print_refCB, &callback_word),
 	    sigc::bind(sigc::ptr_fun(SourceView::text_popup_print_refCB), &callback_word),
 	    0, 0),
-    GENTRYL("dispRef", "dispRef", MMPush, 
+    GENTRYL("dispRef", N_("dispRef"), MMPush, 
 	    BIND(SourceView::text_popup_disp_refCB, &callback_word),
 	    sigc::bind(sigc::ptr_fun(SourceView::text_popup_disp_refCB), &callback_word),
 	    0, 0),
-    GENTRYL("watchRef", "watchRef", MMPush | MMUnmanaged, 
+    GENTRYL("watchRef", N_("watchRef"), MMPush | MMUnmanaged, 
 	    BIND(SourceView::text_popup_watch_refCB, &callback_word),
 	    sigc::bind(sigc::ptr_fun(SourceView::text_popup_watch_refCB), &callback_word),
 	    0, 0),
     MMSep,
-    GENTRYL("whatis", "whatis", MMPush,
+    GENTRYL("whatis", N_("whatis"), MMPush,
 	    BIND(SourceView::text_popup_whatisCB, &callback_word),
 	    sigc::bind(sigc::ptr_fun(SourceView::text_popup_whatisCB), &callback_word),
 	    0, 0),
     MMSep,
-    GENTRYL("lookup", "lookup", MMPush,
+    GENTRYL("lookup", N_("lookup"), MMPush,
 	    BIND(SourceView::text_popup_lookupCB, &callback_word),
 	    sigc::hide(sigc::bind(sigc::ptr_fun(SourceView::text_popup_lookupCB), &callback_word)),
 	    0, 0),
-    GENTRYL("breakAt", "breakAt", MMPush,
+    GENTRYL("breakAt", N_("breakAt"), MMPush,
 	    BIND(SourceView::text_popup_breakCB, (string *)&callback_word),
 	    sigc::bind(sigc::ptr_fun(SourceView::text_popup_breakCB), (string *)&callback_word),
 	    0, 0),
-    GENTRYL("clearAt", "clearAt", MMPush,
+    GENTRYL("clearAt", N_("clearAt"), MMPush,
 	    BIND(SourceView::text_popup_clearCB, (string *)&callback_word),
 	    sigc::bind(sigc::ptr_fun(SourceView::text_popup_clearCB), (string *)&callback_word),
 	    0, 0),
@@ -8318,15 +8318,15 @@ void SourceView::NewWatchpointCB(Widget w, XtPointer, XtPointer)
 
 	static MMDesc wp_modes[] =
 	{
-	    GENTRYL("cwatch", "cwatch", MMPush,
+	    GENTRYL("cwatch", N_("cwatch"), MMPush,
 		    BIND(SetWatchModeCB, WATCH_CHANGE), 
 		    sigc::hide(sigc::bind(sigc::ptr_fun(SetWatchModeCB), WATCH_CHANGE)), 
 		    0, &cwatch_w),
-	    GENTRYL("rwatch", "rwatch", MMPush,
+	    GENTRYL("rwatch", N_("rwatch"), MMPush,
 		    BIND(SetWatchModeCB, WATCH_READ), 
 		    sigc::hide(sigc::bind(sigc::ptr_fun(SetWatchModeCB), WATCH_READ)), 
 		    0, &rwatch_w),
-	    GENTRYL("awatch", "awatch", MMPush,
+	    GENTRYL("awatch", N_("awatch"), MMPush,
 		    BIND(SetWatchModeCB, WATCH_ACCESS),
 		    sigc::hide(sigc::bind(sigc::ptr_fun(SetWatchModeCB), WATCH_ACCESS)),
 		    0, &awatch_w),
@@ -8335,9 +8335,9 @@ void SourceView::NewWatchpointCB(Widget w, XtPointer, XtPointer)
 
 	static MMDesc wp_menu[] = 
 	{
-	    GENTRYL("set", "set", MMLabel, MMNoCB, MDUMMY, 0, 0),
-	    GENTRYL("method", "method", MMOptionMenu, MMNoCB, MDUMMY, wp_modes, 0),
-	    GENTRYL("on", "on", MMLabel, MMNoCB, MDUMMY, 0, 0),
+	    GENTRYL("set", N_("set"), MMLabel, MMNoCB, MDUMMY, 0, 0),
+	    GENTRYL("method", N_("method"), MMOptionMenu, MMNoCB, MDUMMY, wp_modes, 0),
+	    GENTRYL("on", N_("on"), MMLabel, MMNoCB, MDUMMY, 0, 0),
 	    MMEnd
 	};
 
@@ -8408,15 +8408,15 @@ void SourceView::NewWatchpointCB(GUI::Widget *w)
 
 	static MMDesc wp_modes[] =
 	{
-	    GENTRYL("cwatch", "cwatch", MMPush,
+	    GENTRYL("cwatch", N_("cwatch"), MMPush,
 		    BIND(SetWatchModeCB, WATCH_CHANGE), 
 		    sigc::hide(sigc::bind(sigc::ptr_fun(SetWatchModeCB), WATCH_CHANGE)), 
 		    0, &cwatch_w),
-	    GENTRYL("rwatch", "rwatch", MMPush,
+	    GENTRYL("rwatch", N_("rwatch"), MMPush,
 		    BIND(SetWatchModeCB, WATCH_READ), 
 		    sigc::hide(sigc::bind(sigc::ptr_fun(SetWatchModeCB), WATCH_READ)), 
 		    0, &rwatch_w),
-	    GENTRYL("awatch", "awatch", MMPush,
+	    GENTRYL("awatch", N_("awatch"), MMPush,
 		    BIND(SetWatchModeCB, WATCH_ACCESS),
 		    sigc::hide(sigc::bind(sigc::ptr_fun(SetWatchModeCB), WATCH_ACCESS)),
 		    0, &awatch_w),
@@ -8425,17 +8425,17 @@ void SourceView::NewWatchpointCB(GUI::Widget *w)
 
 	static MMDesc wp_menu[] = 
 	{
-	    GENTRYL("set", "set", MMLabel, MMNoCB, MDUMMY, 0, 0),
-	    GENTRYL("method", "method", MMOptionMenu, MMNoCB, MDUMMY, wp_modes, 0),
-	    GENTRYL("on", "on", MMLabel, MMNoCB, MDUMMY, 0, 0),
+	    GENTRYL("set", N_("set"), MMLabel, MMNoCB, MDUMMY, 0, 0),
+	    GENTRYL("method", N_("method"), MMOptionMenu, MMNoCB, MDUMMY, wp_modes, 0),
+	    GENTRYL("on", N_("on"), MMLabel, MMNoCB, MDUMMY, 0, 0),
 	    MMEnd
 	};
 
-	dialog = new GUI::Dialog(*find_shell(w), GUI::String("new_watchpoint_dialog"));
+	dialog = new GUI::Dialog(*find_shell(w), "new_watchpoint_dialog");
 	Delay::register_shell(dialog);
 
 
-	GUI::VBox *box = new GUI::VBox(*dialog, GUI::PACK_SHRINK, GUI::String("Box"));
+	GUI::VBox *box = new GUI::VBox(*dialog, GUI::PACK_SHRINK, "Box");
 	box->show();
 
 	GUI::Widget *panel = MMcreateButtonPanel(box, "panel", wp_menu);
@@ -9157,15 +9157,15 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, Widget /* origin */)
 
     MMDesc commands_menu[] =
     {
-	GENTRYL("record", "record", MMPush,
+	GENTRYL("record", N_("record"), MMPush,
 		BIND(RecordBreakpointCommandsCB, info), 
 		sigc::bind(sigc::ptr_fun(RecordBreakpointCommandsCB), info), 
 		0, &info->record),
-	GENTRYL("end", "end", MMPush | MMInsensitive,
+	GENTRYL("end", N_("end"), MMPush | MMInsensitive,
 		BIND(EndBreakpointCommandsCB, 0), 
 		sigc::ptr_fun(EndBreakpointCommandsCB), 
 		0, &info->end),
-	GENTRYL("edit", "edit", MMPush | MMInsensitive,
+	GENTRYL("edit", N_("edit"), MMPush | MMInsensitive,
 		BIND(EditBreakpointCommandsCB, info), 
 		sigc::bind(sigc::ptr_fun(EditBreakpointCommandsCB), info), 
 		0, &info->edit),
@@ -9174,27 +9174,27 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, Widget /* origin */)
 
     MMDesc enabled_menu[] = 
     {
-	GENTRYL("lookup", "lookup", MMPush,
+	GENTRYL("lookup", N_("lookup"), MMPush,
 		BIND(LookupBreakpointCB, info),
 		sigc::hide(sigc::bind(sigc::ptr_fun(LookupBreakpointCB), info)),
 		0, &info->lookup),
-	GENTRYL("print", "print", MMPush,
+	GENTRYL("print", N_("print"), MMPush,
 		BIND(PrintWatchpointCB, info),
 		sigc::bind(sigc::ptr_fun(PrintWatchpointCB), info),
 		0, &info->print),
-	GENTRYL("enable", "enable", MMPush,
+	GENTRYL("enable", N_("enable"), MMPush,
 		BIND(EnableBreakpointsCB, info),
 		sigc::bind(sigc::ptr_fun(EnableBreakpointsCB), info),
 		0, &info->enable),
-	GENTRYL("disable", "disable", MMPush,
+	GENTRYL("disable", N_("disable"), MMPush,
 		BIND(DisableBreakpointsCB, info),
 		sigc::hide(sigc::bind(sigc::ptr_fun(DisableBreakpointsCB), info)),
 		0, &info->disable),
-	GENTRYL("temporary", "temporary", MMPush,
+	GENTRYL("temporary", N_("temporary"), MMPush,
 		BIND(MakeBreakpointsTempCB, info),
 		sigc::hide(sigc::bind(sigc::ptr_fun(MakeBreakpointsTempCB), info)),
 		0, &info->temp),
-	GENTRYL("delete", "delete", MMPush | MMHelp,
+	GENTRYL("delete", N_("delete"), MMPush | MMHelp,
 		BIND(DeleteBreakpointsCB, info),
 		sigc::bind(sigc::ptr_fun(DeleteBreakpointsCB), info),
 		0, &info->del),
@@ -9212,17 +9212,17 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, Widget /* origin */)
 
     MMDesc panel_menu[] = 
     {
-	GENTRYL("title", "title", MMButtonPanel,
+	GENTRYL("title", N_("title"), MMButtonPanel,
 		MMNoCB, MDUMMY, enabled_menu, 0),
-	GENTRYL("condition", "condition", MMComboBox,
+	GENTRYL("condition", N_("condition"), MMComboBox,
 		BIND(SetBreakpointConditionCB, info), 
 		sigc::bind(sigc::ptr_fun(SetBreakpointConditionCB), info), 
 		0, &info->condition),
-	GENTRYL("ignore", "ignore", MMSpinBox,
+	GENTRYL("ignore", N_("ignore"), MMSpinBox,
 		BIND(SetBreakpointIgnoreCountCB, info), 
 		sigc::bind(sigc::ptr_fun(SetBreakpointIgnoreCountCB), info), 
 		0, &info->ignore),
-	GENTRYL("commands", "commands", MMButtonPanel,
+	GENTRYL("commands", N_("commands"), MMButtonPanel,
 		MMNoCB, MDUMMY, commands_menu, 0),
 	MMEnd
     };
@@ -9303,7 +9303,7 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, GUI::Widget * /* origin */)
     info->spin_locked = true;
     info->nrs = breakpoint_nrs;
 
-    info->dialog = new GUI::Dialog(*find_shell(source_text_w), GUI::String("Properties"));
+    info->dialog = new GUI::Dialog(*find_shell(source_text_w), "Properties");
 
     GUI::Button *button = info->dialog->add_button("apply", "Apply");
 
@@ -9311,15 +9311,15 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, GUI::Widget * /* origin */)
 
     MMDesc commands_menu[] =
     {
-	GENTRYL("record", "record", MMPush,
+	GENTRYL("record", N_("record"), MMPush,
 		BIND(RecordBreakpointCommandsCB, info), 
 		sigc::bind(sigc::ptr_fun(RecordBreakpointCommandsCB), info), 
 		0, &info->record),
-	GENTRYL("end", "end", MMPush | MMInsensitive,
+	GENTRYL("end", N_("end"), MMPush | MMInsensitive,
 		BIND(EndBreakpointCommandsCB, 0), 
 		sigc::ptr_fun(EndBreakpointCommandsCB), 
 		0, &info->end),
-	GENTRYL("edit", "edit", MMPush | MMInsensitive,
+	GENTRYL("edit", N_("edit"), MMPush | MMInsensitive,
 		BIND(EditBreakpointCommandsCB, info), 
 		sigc::bind(sigc::ptr_fun(EditBreakpointCommandsCB), info), 
 		0, &info->edit),
@@ -9328,27 +9328,27 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, GUI::Widget * /* origin */)
 
     MMDesc enabled_menu[] = 
     {
-	GENTRYL("lookup", "lookup", MMPush,
+	GENTRYL("lookup", N_("lookup"), MMPush,
 		BIND(LookupBreakpointCB, info),
 		sigc::hide(sigc::bind(sigc::ptr_fun(LookupBreakpointCB), info)),
 		0, &info->lookup),
-	GENTRYL("print", "print", MMPush,
+	GENTRYL("print", N_("print"), MMPush,
 		BIND(PrintWatchpointCB, info),
 		sigc::bind(sigc::ptr_fun(PrintWatchpointCB), info),
 		0, &info->print),
-	GENTRYL("enable", "enable", MMPush,
+	GENTRYL("enable", N_("enable"), MMPush,
 		BIND_1(PTR_FUN(EnableBreakpointsCB), info),
 		sigc::bind(sigc::ptr_fun(EnableBreakpointsCB), info),
 		0, &info->enable),
-	GENTRYL("disable", "disable", MMPush,
+	GENTRYL("disable", N_("disable"), MMPush,
 		BIND(DisableBreakpointsCB, info),
 		sigc::hide(sigc::bind(sigc::ptr_fun(DisableBreakpointsCB), info)),
 		0, &info->disable),
-	GENTRYL("temporary", "temporary", MMPush,
+	GENTRYL("temporary", N_("temporary"), MMPush,
 		BIND(MakeBreakpointsTempCB, info),
 		sigc::hide(sigc::bind(sigc::ptr_fun(MakeBreakpointsTempCB), info)),
 		0, &info->temp),
-	GENTRYL("delete", "delete", MMPush | MMHelp,
+	GENTRYL("delete", N_("delete"), MMPush | MMHelp,
 		BIND_1(PTR_FUN(DeleteBreakpointsCB), info),
 		sigc::bind(sigc::ptr_fun(DeleteBreakpointsCB), info),
 		0, &info->del),
@@ -9366,22 +9366,22 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, GUI::Widget * /* origin */)
 
     MMDesc panel_menu[] = 
     {
-	GENTRYL("title", "title", MMButtonPanel,
+	GENTRYL("title", N_("title"), MMButtonPanel,
 		MMNoCB, MDUMMY, enabled_menu, 0),
-	GENTRYL("condition", "condition", MMComboBox,
+	GENTRYL("condition", N_("condition"), MMComboBox,
 		BIND(SetBreakpointConditionCB, info), 
 		sigc::bind(sigc::ptr_fun(SetBreakpointConditionCB), info), 
 		0, &info->condition),
-	GENTRYL("ignore", "ignore", MMSpinBox,
+	GENTRYL("ignore", N_("ignore"), MMSpinBox,
 		BIND(SetBreakpointIgnoreCountCB, info), 
 		sigc::bind(sigc::ptr_fun(SetBreakpointIgnoreCountCB), info), 
 		0, &info->ignore),
-	GENTRYL("commands", "commands", MMButtonPanel,
+	GENTRYL("commands", N_("commands"), MMButtonPanel,
 		MMNoCB, MDUMMY, commands_menu, 0),
 	MMEnd
     };
 
-    GUI::HBox *form = new GUI::HBox(*info->dialog, GUI::PACK_SHRINK, GUI::String("Form"));
+    GUI::HBox *form = new GUI::HBox(*info->dialog, GUI::PACK_SHRINK, "Form");
     form->show();
 
     GUI::Widget *panel = MMcreatePanel(form, "panel", panel_menu);

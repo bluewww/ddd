@@ -1023,39 +1023,39 @@ static XtActionsRec actions [] = {
 
 #define RECENT_MENU							\
 {									\
-    GENTRYL("r1", "r1", MMPush,						\
+    GENTRYL("r1", N_("r1"), MMPush,					\
 	    BIND(gdbOpenRecentCB, 1),					\
 	    sigc::hide(sigc::bind(sigc::ptr_fun(gdbOpenRecentCB), 1)),	\
 	    0, 0),							\
-    GENTRYL("r2", "r2", MMPush,						\
+    GENTRYL("r2", N_("r2"), MMPush,					\
 	    BIND(gdbOpenRecentCB, 2),					\
 	    sigc::hide(sigc::bind(sigc::ptr_fun(gdbOpenRecentCB), 2)),	\
 	    0, 0),							\
-    GENTRYL("r3", "r3", MMPush,						\
+    GENTRYL("r3", N_("r3"), MMPush,					\
 	    BIND(gdbOpenRecentCB, 3),					\
 	    sigc::hide(sigc::bind(sigc::ptr_fun(gdbOpenRecentCB), 3)),	\
 	    0, 0),							\
-    GENTRYL("r4", "r4", MMPush,						\
+    GENTRYL("r4", N_("r4"), MMPush,					\
 	    BIND(gdbOpenRecentCB, 4),					\
 	    sigc::hide(sigc::bind(sigc::ptr_fun(gdbOpenRecentCB), 4)),	\
 	    0, 0),							\
-    GENTRYL("r5", "r5", MMPush,						\
+    GENTRYL("r5", N_("r5"), MMPush,					\
 	    BIND(gdbOpenRecentCB, 5),					\
 	    sigc::hide(sigc::bind(sigc::ptr_fun(gdbOpenRecentCB), 5)),	\
 	    0, 0),							\
-    GENTRYL("r6", "r6", MMPush,						\
+    GENTRYL("r6", N_("r6"), MMPush,					\
 	    BIND(gdbOpenRecentCB, 6),					\
 	    sigc::hide(sigc::bind(sigc::ptr_fun(gdbOpenRecentCB), 6)),	\
 	    0, 0),							\
-    GENTRYL("r7", "r7", MMPush,						\
+    GENTRYL("r7", N_("r7"), MMPush,					\
 	    BIND(gdbOpenRecentCB, 7),					\
 	    sigc::hide(sigc::bind(sigc::ptr_fun(gdbOpenRecentCB), 7)),	\
 	    0, 0),							\
-    GENTRYL("r8", "r8", MMPush,						\
+    GENTRYL("r8", N_("r8"), MMPush,					\
 	    BIND(gdbOpenRecentCB, 8),					\
 	    sigc::hide(sigc::bind(sigc::ptr_fun(gdbOpenRecentCB), 8)),	\
 	    0, 0),							\
-    GENTRYL("r9", "r9", MMPush,						\
+    GENTRYL("r9", N_("r9"), MMPush,					\
 	    BIND(gdbOpenRecentCB, 9),					\
 	    sigc::hide(sigc::bind(sigc::ptr_fun(gdbOpenRecentCB), 9)),	\
 	    0, 0),							\
@@ -1122,80 +1122,80 @@ DECL_WR(WR_gdbMakeAgainCB, sigc::ptr_fun(gdbMakeAgainCB));
 
 #define FILE_MENU(recent_menu)						\
 {									\
-    GENTRYL("open_class", "Open Class...", MMPush | MMUnmanaged,	\
+    GENTRYL("open_class", N_("Open Class..."), MMPush | MMUnmanaged,	\
 	    BIND(WhenReady, &WR_gdbOpenClassCB),			\
 	    sigc::bind(sigc::ptr_fun(WhenReady), &WR_gdbOpenClassCB),	\
 	    0, 0),							\
-    GENTRYL("open_file", "Open Program...", MMPush,			\
+    GENTRYL("open_file", N_("Open Program..."), MMPush,			\
 	    BIND(WhenReady, &WR_gdbOpenFileCB),				\
 	    sigc::bind(sigc::ptr_fun(WhenReady), &WR_gdbOpenFileCB),	\
 	    0, 0),							\
-    GENTRYL("recent", "Open Recent", MMMenu,				\
+    GENTRYL("recent", N_("Open Recent"), MMMenu,			\
 	    MMNoCB,							\
 	    MDUMMY,							\
 	    recent_menu, 0),						\
-    GENTRYL("open_core", "Open Core Dump...", MMPush,			\
+    GENTRYL("open_core", N_("Open Core Dump..."), MMPush,		\
 	    BIND(WhenReady, &WR_gdbOpenCoreCB),				\
 	    sigc::bind(sigc::ptr_fun(WhenReady), &WR_gdbOpenCoreCB),	\
 	    0, 0),							\
-    GENTRYL("open_source", "Open Source...", MMPush, 			\
+    GENTRYL("open_source", N_("Open Source..."), MMPush, 		\
 	    BIND(gdbLookupSourceCB, 0),					\
 	    sigc::ptr_fun(gdbLookupSourceCB),				\
 	    0, 0),							\
     MMSep,								\
-    GENTRYL("open_session", "Open Session...", MMPush,			\
+    GENTRYL("open_session", N_("Open Session..."), MMPush,		\
 	    BIND(WhenReady, &WR_OpenSessionCB),				\
 	    sigc::bind(sigc::ptr_fun(WhenReady), &WR_OpenSessionCB),	\
 	    0, 0),							\
-    GENTRYL("save_session", "Save Session As...", MMPush,		\
+    GENTRYL("save_session", N_("Save Session As..."), MMPush,		\
 	    BIND(WhenReady, &WR_SaveSessionAsCB),			\
-	    sigc::bind(sigc::ptr_fun(WhenReady), &WR_SaveSessionAsCB), \
+	    sigc::bind(sigc::ptr_fun(WhenReady), &WR_SaveSessionAsCB),	\
 	    0, 0),							\
     MMSep,								\
-    GENTRYL("attach", "Attach to Process...", MMPush,			\
+    GENTRYL("attach", N_("Attach to Process..."), MMPush,		\
 	    BIND(WhenReady, &WR_gdbOpenProcessCB),			\
 	    sigc::bind(sigc::ptr_fun(WhenReady), &WR_gdbOpenProcessCB), \
 	    0, 0),							\
-    GENTRYL("detach", "Detach Process", MMPush,				\
+    GENTRYL("detach", N_("Detach Process"), MMPush,			\
 	    BIND(gdbCommandCB, "detach"),				\
 	    sigc::bind(sigc::ptr_fun(gdbCommandCB), "detach"),		\
 	    0, 0),							\
     MMSep,								\
-    GENTRYL("print", "Print Graph...", MMPush,				\
+    GENTRYL("print", N_("Print Graph..."), MMPush,			\
 	    BIND(PrintGraphCB, 0),					\
 	    sigc::retype(sigc::ptr_fun(PrintGraphCB)),			\
 	    0, 0),							\
-    GENTRYL("printAgain", "Print Again", MMPush | MMUnmanaged,		\
+    GENTRYL("printAgain", N_("Print Again"), MMPush | MMUnmanaged,	\
 	    BIND(PrintAgainCB, 1L),					\
 	    sigc::bind(sigc::retype(sigc::ptr_fun(PrintAgainCB)), 1L),	\
 	    0, 0),							\
-    GENTRYL("separator", "", MMSeparator | MMUnmanaged, 		\
+    GENTRYL("separator", N_(""), MMSeparator | MMUnmanaged, 		\
 	    MMNoCB,							\
 	    MDUMMY,							\
 	    0, 0),							\
-    GENTRYL("cd", "Change Directory...", MMPush,			\
+    GENTRYL("cd", N_("Change Directory..."), MMPush,			\
 	    BIND(WhenReady, &WR_gdbChangeDirectoryCB),			\
 	    sigc::bind(sigc::ptr_fun(WhenReady), &WR_gdbChangeDirectoryCB), \
 	    0, 0),							\
     MMSep,								\
-    GENTRYL("make", "Make...", MMPush,					\
+    GENTRYL("make", N_("Make..."), MMPush,				\
 	    BIND(WhenReady, &WR_gdbMakeCB),				\
 	    sigc::bind(sigc::ptr_fun(WhenReady), &WR_gdbMakeCB),	\
 	    0, 0),							\
-    GENTRYL("makeAgain", "Make Again", MMPush | MMUnmanaged,		\
+    GENTRYL("makeAgain", N_("Make Again"), MMPush | MMUnmanaged,	\
 	    BIND(WhenReady, &WR_gdbMakeAgainCB),			\
 	    sigc::bind(sigc::ptr_fun(WhenReady), &WR_gdbMakeAgainCB),	\
 	    0, 0),							\
     MMSep,								\
-    GENTRYL("close", "Close", MMPush,					\
+    GENTRYL("close", N_("Close"), MMPush,				\
 	    BIND(DDDCloseCB, 0),					\
 	    sigc::ptr_fun(DDDCloseCB),					\
 	    0, 0),							\
-    GENTRYL("restart", "Restart", MMPush,				\
+    GENTRYL("restart", N_("Restart"), MMPush,				\
 	    BIND(DDDRestartCB, 0),					\
 	    sigc::ptr_fun(DDDRestartCB),				\
 	    0, 0),							\
-    GENTRYL("exit", "Exit", MMPush,					\
+    GENTRYL("exit", N_("Exit"), MMPush,					\
 	    BIND(DDDExitCB, EXIT_SUCCESS),				\
 	    sigc::bind(sigc::ptr_fun(DDDExitCB), EXIT_SUCCESS),		\
 	    0, 0),							\
@@ -1218,62 +1218,62 @@ struct ProgramItems {
 
 #define PROGRAM_MENU(w)							\
 {									\
-    GENTRYL("run", "Run...", MMPush, BIND(gdbRunCB, 0),			\
+    GENTRYL("run", N_("Run..."), MMPush, BIND(gdbRunCB, 0),		\
 	    sigc::ptr_fun(gdbRunCB), 0, 0),				\
-    GENTRYL("run_again", "Run Again", MMPush,				\
+    GENTRYL("run_again", N_("Run Again"), MMPush,			\
 	    BIND(gdbCommandCB, "run"),					\
 	    sigc::bind(sigc::ptr_fun(gdbCommandCB), "run"),		\
 	    0, 0),							\
     MMSep,								\
-    GENTRYL("separateExecWindow", "Run in Execution Window",		\
+    GENTRYL("separateExecWindow", N_("Run in Execution Window"),	\
 	    MMCheckItem,						\
 	    BIND(dddToggleSeparateExecWindowCB, 0),			\
 	    sigc::retype(sigc::ptr_fun(dddToggleSeparateExecWindowCB)),	\
 	    0, &(w)),							\
     MMSep,								\
-    GENTRYL("step", "Step", MMPush,					\
+    GENTRYL("step", N_("Step"), MMPush,					\
 	    BIND(gdbCommandCB, "step"),					\
 	    sigc::bind(sigc::ptr_fun(gdbCommandCB), "step"),		\
 	    0, 0),							\
-    GENTRYL("stepi", "Step Instruction", MMPush,			\
+    GENTRYL("stepi", N_("Step Instruction"), MMPush,			\
 	    BIND(gdbCommandCB, "stepi"),				\
 	    sigc::bind(sigc::ptr_fun(gdbCommandCB), "stepi"),		\
 	    0, 0),							\
-    GENTRYL("next", "Next", MMPush,					\
+    GENTRYL("next", N_("Next"), MMPush,					\
 	    BIND(gdbCommandCB, "next"),					\
 	    sigc::bind(sigc::ptr_fun(gdbCommandCB), "next"),		\
 	    0, 0),							\
-    GENTRYL("nexti", "Next Instruction", MMPush,			\
+    GENTRYL("nexti", N_("Next Instruction"), MMPush,			\
 	    BIND(gdbCommandCB, "nexti"),				\
 	    sigc::bind(sigc::ptr_fun(gdbCommandCB), "nexti"),		\
 	    0, 0),							\
-    GENTRYL("until", "Until", MMPush,					\
+    GENTRYL("until", N_("Until"), MMPush,				\
 	    BIND(gdbCommandCB, "until"),				\
 	    sigc::bind(sigc::ptr_fun(gdbCommandCB), "until"),		\
 	    0, 0),							\
-    GENTRYL("finish", "Finish", MMPush,					\
+    GENTRYL("finish", N_("Finish"), MMPush,				\
 	    BIND(gdbCommandCB, "finish"),				\
 	    sigc::bind(sigc::ptr_fun(gdbCommandCB), "finish"),		\
 	    0, 0),							\
     MMSep,								\
-    GENTRYL("cont", "Continue", MMPush,					\
+    GENTRYL("cont", N_("Continue"), MMPush,				\
 	    BIND(gdbCommandCB, "cont"),					\
 	    sigc::bind(sigc::ptr_fun(gdbCommandCB), "cont"),		\
 	    0, 0),							\
-    GENTRYL("signal0", "Continue Without Signal", MMPush,		\
+    GENTRYL("signal0", N_("Continue Without Signal"), MMPush,		\
 	    BIND(gdbCommandCB, "signal 0"),				\
 	    sigc::bind(sigc::ptr_fun(gdbCommandCB), "signal 0"),	\
 	    0, 0),							\
     MMSep,								\
-    GENTRYL("kill", "Kill", MMPush,					\
+    GENTRYL("kill", N_("Kill"), MMPush,					\
 	    BIND(gdbCommandCB, "kill"),					\
 	    sigc::bind(sigc::ptr_fun(gdbCommandCB), "kill"),		\
 	    0, 0),							\
-    GENTRYL("break", "Interrupt", MMPush,				\
+    GENTRYL("break", N_("Interrupt"), MMPush,				\
 	    BIND(gdbCommandCB, "\003"),					\
 	    sigc::bind(sigc::ptr_fun(gdbCommandCB), "\003"),		\
 	    0, 0),							\
-    GENTRYL("quit", "Abort", MMPush,					\
+    GENTRYL("quit", N_("Abort"), MMPush,				\
 	    BIND(gdbCommandCB, "\034"),					\
 	    sigc::bind(sigc::ptr_fun(gdbCommandCB), "\034"),		\
 	    0, 0),							\
@@ -1302,28 +1302,28 @@ static MMDesc data_program_menu[]
 
 #define VIEW_MENU(x)						\
 {								\
-    GENTRYL("tool", "Command Tool...", MMPush,			\
+    GENTRYL("tool", N_("Command Tool..."), MMPush,		\
 	    BIND(gdbOpenToolWindowCB, 0),			\
 	    sigc::hide(sigc::ptr_fun(gdbOpenToolWindowCB)),	\
 	    0, 0),						\
-    GENTRYL("exec", "Execution Window...", MMPush,		\
+    GENTRYL("exec", N_("Execution Window..."), MMPush,		\
 	    BIND(gdbOpenExecWindowCB, 0),			\
 	    sigc::hide(sigc::ptr_fun(gdbOpenExecWindowCB)),	\
 	    0, 0),						\
     MMSep,							\
-    GENTRYL("console", "@GDB@ Console", MMPush,			\
+    GENTRYL("console", N_("@GDB@ Console"), MMPush,		\
 	    BIND(gdbOpenCommandWindowCB, 0),			\
 	    sigc::hide(sigc::ptr_fun(gdbOpenCommandWindowCB)),	\
 	    0, 0),						\
-    GENTRYL("source", "Source Window", MMPush,			\
+    GENTRYL("source", N_("Source Window"), MMPush,		\
 	    BIND(gdbOpenSourceWindowCB, 0),			\
 	    sigc::hide(sigc::ptr_fun(gdbOpenSourceWindowCB)),	\
 	    0, 0),						\
-    GENTRYL("data", "Data Window", MMPush,			\
+    GENTRYL("data", N_("Data Window"), MMPush,			\
 	    BIND(gdbOpenDataWindowCB, 0),			\
 	    sigc::hide(sigc::ptr_fun(gdbOpenDataWindowCB)),	\
 	    0, 0),						\
-    GENTRYL("code", "Machine Code Window", MMCheckItem | x,	\
+    GENTRYL("code", N_("Machine Code Window"), MMCheckItem | x,	\
 	    BIND(gdbToggleCodeWindowCB, 0),			\
 	    sigc::retype(sigc::ptr_fun(gdbToggleCodeWindowCB)),	\
 	    0, 0),						\
@@ -1336,28 +1336,28 @@ static MMDesc data_view_menu[]    = VIEW_MENU(MMUnmanaged);
 
 static MMDesc views_menu[] =
 {
-    GENTRYL("tool", "Command Tool...", MMPush,
+    GENTRYL("tool", N_("Command Tool..."), MMPush,
 	    BIND(gdbOpenToolWindowCB, 0),
 	    sigc::hide(sigc::ptr_fun(gdbOpenToolWindowCB)),
 	    0, 0),
-    GENTRYL("exec", "Execution Window...", MMPush,
+    GENTRYL("exec", N_("Execution Window..."), MMPush,
 	    BIND(gdbOpenExecWindowCB, 0),
 	    sigc::hide(sigc::ptr_fun(gdbOpenExecWindowCB)),
 	    0, 0),
     MMSep,
-    GENTRYL("console", "@GDB@ Console", MMCheckItem,
+    GENTRYL("console", N_("@GDB@ Console"), MMCheckItem,
 	    BIND(gdbToggleCommandWindowCB, 0),
 	    sigc::retype(sigc::ptr_fun(gdbToggleCommandWindowCB)),
 	    0, 0),
-    GENTRYL("source", "Source Window", MMCheckItem,
+    GENTRYL("source", N_("Source Window"), MMCheckItem,
 	    BIND(gdbToggleSourceWindowCB, 0),
 	    sigc::retype(sigc::ptr_fun(gdbToggleSourceWindowCB)),
 	    0, 0),
-    GENTRYL("data", "Data Window", MMCheckItem,
+    GENTRYL("data", N_("Data Window"), MMCheckItem,
 	    BIND(gdbToggleDataWindowCB, 0),
 	    sigc::retype(sigc::ptr_fun(gdbToggleDataWindowCB)),
 	    0, 0),
-    GENTRYL("code", "Machine Code Window", MMCheckItem,
+    GENTRYL("code", N_("Machine Code Window"), MMCheckItem,
 	    BIND(gdbToggleCodeWindowCB, 0),
 	    sigc::retype(sigc::ptr_fun(gdbToggleCodeWindowCB)),
 	    0, 0),
@@ -1382,51 +1382,51 @@ DECL_WR(WR_dddPopupSettingsCB, sigc::ptr_fun(dddPopupSettingsCB));
 
 #define EDIT_MENU(win, w)						\
 {									\
-    GENTRYL("undo", "Undo", MMPush,					\
+    GENTRYL("undo", N_("Undo"), MMPush,					\
 	    BIND(gdbUndoCB, 0),						\
 	    sigc::hide(sigc::ptr_fun(gdbUndoCB)),			\
 	    0, 0),							\
-    GENTRYL("redo", "Redo", MMPush,					\
+    GENTRYL("redo", N_("Redo"), MMPush,					\
 	    BIND(gdbRedoCB, 0),						\
 	    sigc::hide(sigc::ptr_fun(gdbRedoCB)),			\
 	    0, 0),							\
     MMSep,								\
-    GENTRYL("cut", "Cut", MMPush,					\
+    GENTRYL("cut", N_("Cut"), MMPush,					\
 	    BIND(gdbCutSelectionCB, win),				\
 	    sigc::bind(sigc::ptr_fun(gdbCutSelectionCB), win),		\
 	    0, 0),							\
-    GENTRYL("copy", "Copy", MMPush,					\
+    GENTRYL("copy", N_("Copy"), MMPush,					\
 	    BIND(gdbCopySelectionCB, win),				\
 	    sigc::bind(sigc::ptr_fun(gdbCopySelectionCB), win),		\
 	    0, 0),							\
-    GENTRYL("paste", "Paste", MMPush,					\
+    GENTRYL("paste", N_("Paste"), MMPush,				\
 	    BIND(gdbPasteClipboardCB, win),				\
 	    sigc::bind(sigc::ptr_fun(gdbPasteClipboardCB), win),	\
 	    0, 0),							\
-    GENTRYL("clearAll", "Clear", MMPush,				\
+    GENTRYL("clearAll", N_("Clear"), MMPush,				\
 	    BIND(gdbClearAllCB, 0),					\
 	    sigc::hide(sigc::ptr_fun(gdbClearAllCB)),			\
 	    0, 0),							\
-    GENTRYL("delete", "Delete", MMPush,					\
+    GENTRYL("delete", N_("Delete"), MMPush,				\
 	    BIND(gdbDeleteSelectionCB, win),				\
 	    sigc::bind(sigc::ptr_fun(gdbDeleteSelectionCB), win),	\
 	    0, 0),							\
     MMSep,								\
-    GENTRYL("selectAll", "Select All", MMPush,				\
+    GENTRYL("selectAll", N_("Select All"), MMPush,			\
 	    BIND(gdbSelectAllCB, win),					\
 	    sigc::bind(sigc::ptr_fun(gdbSelectAllCB), win),		\
 	    0, 0),							\
     MMSep,								\
-    GENTRYL("preferences", "Preferences...", MMPush,			\
+    GENTRYL("preferences", N_("Preferences..."), MMPush,		\
 	    BIND(dddPopupPreferencesCB, 0),				\
 	    sigc::hide(sigc::ptr_fun(dddPopupPreferencesCB)),		\
 	    0, 0),							\
-    GENTRYL("settings", "Settings...", MMPush,				\
+    GENTRYL("settings", N_("Settings..."), MMPush,			\
 	    BIND(WhenReady, &WR_dddPopupSettingsCB),			\
 	    sigc::bind(sigc::ptr_fun(WhenReady), &WR_dddPopupSettingsCB), \
 	    0, 0),							\
     MMSep,								\
-    GENTRYL("saveOptions", "Save Options", MMCheckItem,			\
+    GENTRYL("saveOptions", N_("Save Options"), MMCheckItem,		\
 	    BIND(dddToggleSaveOptionsOnExitCB, 0),			\
 	    sigc::retype(sigc::ptr_fun(dddToggleSaveOptionsOnExitCB)),	\
 	    0, &w),							\
@@ -1469,56 +1469,56 @@ DECL_WR(WR_gdbApplyCB, sigc::ptr_fun(gdbApplyCB));
 
 static MMDesc command_menu[] =
 {
-    GENTRYL("history", "Command History...", MMPush,
+    GENTRYL("history", N_("Command History..."), MMPush,
 	    BIND(gdbHistoryCB, 0),
 	    sigc::ptr_fun(gdbHistoryCB),
 	    0, 0),
     MMSep,
-    GENTRYL("prev", "Previous", MMPush,
+    GENTRYL("prev", N_("Previous"), MMPush,
 	    BIND(gdbPrevCB, 0),
 	    sigc::ptr_fun(gdbPrevCB),
 	    0, 0),
-    GENTRYL("next", "Next", MMPush,
+    GENTRYL("next", N_("Next"), MMPush,
 	    BIND(gdbNextCB, 0),
 	    sigc::ptr_fun(gdbNextCB),
 	    0, 0),
     MMSep,
-    GENTRYL("isearch_prev", "Find Backward", MMPush,
+    GENTRYL("isearch_prev", N_("Find Backward"), MMPush,
 	    BIND(gdbISearchPrevCB, 0),
 	    sigc::ptr_fun(gdbISearchPrevCB),
 	    0, 0),
-    GENTRYL("isearch_next", "Find Forward", MMPush,
+    GENTRYL("isearch_next", N_("Find Forward"), MMPush,
 	    BIND(gdbISearchNextCB, 0),
 	    sigc::ptr_fun(gdbISearchNextCB),
 	    0, 0),
-    GENTRYL("isearch_exit", "Quit Search", MMPush,
+    GENTRYL("isearch_exit", N_("Quit Search"), MMPush,
 	    BIND(gdbISearchExitCB, 0),
 	    sigc::ptr_fun(gdbISearchExitCB),
 	    0, 0),
     MMSep,
-    GENTRYL("complete", "Complete", MMPush,
+    GENTRYL("complete", N_("Complete"), MMPush,
 	    BIND(WhenReady, &WR_gdbCompleteCB), 
 	    sigc::bind(sigc::ptr_fun(WhenReady), &WR_gdbCompleteCB), 
 	    0, &complete_w),
-    GENTRYL("apply", "Apply", MMPush,
+    GENTRYL("apply", N_("Apply"), MMPush,
 	    BIND(WhenReady, &WR_gdbApplyCB),
 	    sigc::bind(sigc::ptr_fun(WhenReady), &WR_gdbApplyCB),
 	    0, 0),
     MMSep,
-    GENTRYL("clear_line", "Clear Line", MMPush,
+    GENTRYL("clear_line", N_("Clear Line"), MMPush,
 	    BIND(gdbClearCB, 0), 
 	    sigc::hide(sigc::ptr_fun(gdbClearCB)), 
 	    0, 0),
-    GENTRYL("clear_window", "Clear Window", MMPush,
+    GENTRYL("clear_window", N_("Clear Window"), MMPush,
 	    BIND(gdbClearWindowCB, 0), 
 	    sigc::hide(sigc::ptr_fun(gdbClearWindowCB)), 
 	    0, 0),
     MMSep,
-    GENTRYL("define", "Define Command...", MMPush,
+    GENTRYL("define", N_("Define Command..."), MMPush,
 	    BIND(dddDefineCommandCB, 0),
 	    sigc::ptr_fun(dddDefineCommandCB),
 	    0, &define_w),
-    GENTRYL("buttons", "Edit Buttons...", MMPush,
+    GENTRYL("buttons", N_("Edit Buttons..."), MMPush,
 	    BIND(dddEditButtonsCB, 0),
 	    sigc::ptr_fun(dddEditButtonsCB),
 	    0, 0),
@@ -1550,28 +1550,28 @@ DECL_WR(WR_dddPopupSignalsCB, sigc::ptr_fun(dddPopupSignalsCB));
 #endif
 static MMDesc stack_menu[] =
 {
-    GENTRYL("stack", "Backtrace...", MMPush,
+    GENTRYL("stack", N_("Backtrace..."), MMPush,
 	    BIND(WhenReady, &WR_ViewStackFramesCB),
 	    sigc::bind(sigc::ptr_fun(WhenReady), &WR_ViewStackFramesCB),
 	    0, &stack_w),
-    GENTRYL("registers", "Registers...", MMPush,
+    GENTRYL("registers", N_("Registers..."), MMPush,
 	    BIND(WhenReady, &WR_ViewRegistersCB),
 	    sigc::bind(sigc::ptr_fun(WhenReady), &WR_ViewRegistersCB),
 	    0, &registers_w),
-    GENTRYL("threads", "Threads...", MMPush,
+    GENTRYL("threads", N_("Threads..."), MMPush,
 	    BIND(WhenReady, &WR_ViewThreadsCB),
 	    sigc::bind(sigc::ptr_fun(WhenReady), &WR_ViewThreadsCB),
 	    0, &threads_w),
-    GENTRYL("signals", "Signals...", MMPush,
+    GENTRYL("signals", N_("Signals..."), MMPush,
 	    BIND(WhenReady, &WR_dddPopupSignalsCB),
 	    sigc::bind(sigc::ptr_fun(WhenReady), &WR_dddPopupSignalsCB),
 	    0, &signals_w),
     MMSep,
-    GENTRYL("up", "Up", MMPush,
+    GENTRYL("up", N_("Up"), MMPush,
 	    BIND(gdbCommandCB, "up"),
 	    sigc::bind(sigc::ptr_fun(gdbCommandCB), "up"),
 	    0, 0),
-    GENTRYL("down", "Down", MMPush,
+    GENTRYL("down", N_("Down"), MMPush,
 	    BIND(gdbCommandCB, "down"),
 	    sigc::bind(sigc::ptr_fun(gdbCommandCB), "down"),
 	    0, 0),
@@ -1602,47 +1602,47 @@ static GUI::CheckButton *line_numbers1_w;
 
 static MMDesc source_menu[] =
 {
-    GENTRYL("breakpoints", "Breakpoints...", MMPush,
+    GENTRYL("breakpoints", N_("Breakpoints..."), MMPush,
 	    BIND(SourceView::EditBreakpointsCB, 0),
 	    sigc::ptr_fun(SourceView::EditBreakpointsCB),
 	    0, 0),
     MMSep,
-    GENTRYL("lookup", "Lookup", MMPush,
+    GENTRYL("lookup", N_("Lookup"), MMPush,
 	    BIND(gdbLookupCB, 0),
 	    sigc::hide(sigc::ptr_fun(gdbLookupCB)),
 	    0, &lookup_w),
-    GENTRYL("findForward", "@charset Find@small>> @charset()@rm", MMPush,
+    GENTRYL("findForward", N_("@charset Find@small>> @charset()@rm"), MMPush,
 	    BIND(gdbFindCB, SourceView::forward),
 	    sigc::bind(sigc::ptr_fun(gdbFindCB), SourceView::forward),
 	    0, &find_forward_w),
-    GENTRYL("findBackward", "@charset Find@small<< @charset()@rm", MMPush,
+    GENTRYL("findBackward", N_("@charset Find@small<< @charset()@rm"), MMPush,
 	    BIND(gdbFindCB, SourceView::backward),
 	    sigc::bind(sigc::ptr_fun(gdbFindCB), SourceView::backward),
 	    0, &find_backward_w),
     MMSep,
-    GENTRYL("findWordsOnly", "Find Words Only", MMCheckItem,
+    GENTRYL("findWordsOnly", N_("Find Words Only"), MMCheckItem,
 	    BIND(sourceToggleFindWordsOnlyCB, 0), 
 	    sigc::retype(sigc::ptr_fun(sourceToggleFindWordsOnlyCB)),
 	    0, &find_words_only_w),
-    GENTRYL("findCaseSensitive", "Find Case Sensitive", MMCheckItem,
+    GENTRYL("findCaseSensitive", N_("Find Case Sensitive"), MMCheckItem,
 	    BIND(sourceToggleFindCaseSensitiveCB, 0), 
 	    sigc::retype(sigc::ptr_fun(sourceToggleFindCaseSensitiveCB)),
 	    0, &find_case_sensitive_w),
     MMSep,
-    GENTRYL("lineNumbers", "Display Line Numbers", MMCheckItem,
+    GENTRYL("lineNumbers", N_("Display Line Numbers"), MMCheckItem,
 	    BIND(sourceToggleDisplayLineNumbersCB, 0),
 	    sigc::retype((sigc::ptr_fun(sourceToggleDisplayLineNumbersCB))),
 	    0, &line_numbers1_w),
-    GENTRYL("disassemble", "Display Machine Code", MMCheckItem,
+    GENTRYL("disassemble", N_("Display Machine Code"), MMCheckItem,
 	    BIND(gdbToggleCodeWindowCB, 0),
 	    sigc::retype(sigc::ptr_fun(gdbToggleCodeWindowCB)),
 	    0, &disassemble_w),
     MMSep,
-    GENTRYL("edit", "Edit Source...", MMPush, 
+    GENTRYL("edit", N_("Edit Source..."), MMPush, 
 	    BIND(gdbEditSourceCB, 0),
 	    sigc::ptr_fun(gdbEditSourceCB),
 	    0, &edit_source_w),
-    GENTRYL("reload", "Reload Source", MMPush, 
+    GENTRYL("reload", N_("Reload Source"), MMPush, 
 	    BIND(gdbReloadSourceCB, 0),
 	    sigc::hide(sigc::ptr_fun(gdbReloadSourceCB)),
 	    0, &reload_source_w),
@@ -1663,11 +1663,11 @@ static GUI::CheckButton *button_docs_w;
 #endif
 static MMDesc button_menu [] = 
 {
-    GENTRYL("tips", "as Popup Tips", MMToggle,
+    GENTRYL("tips", N_("as Popup Tips"), MMToggle,
 	    BIND(dddToggleButtonTipsCB, 0),
 	    sigc::retype(sigc::ptr_fun(dddToggleButtonTipsCB)),
 	    0, &button_tips_w),
-    GENTRYL("docs", "in the Status Line", MMToggle,
+    GENTRYL("docs", N_("in the Status Line"), MMToggle,
 	    BIND(dddToggleButtonDocsCB, 0),
 	    sigc::retype(sigc::ptr_fun(dddToggleButtonDocsCB)),
 	    0, &button_docs_w),
@@ -1683,11 +1683,11 @@ static GUI::CheckButton *value_docs_w;
 #endif
 static MMDesc value_menu [] = 
 {
-    GENTRYL("tips", "as Popup Tips", MMToggle,
+    GENTRYL("tips", N_("as Popup Tips"), MMToggle,
 	    BIND(dddToggleValueTipsCB, 0),
 	    sigc::retype(sigc::ptr_fun(dddToggleValueTipsCB)),
 	    0, &value_tips_w),
-    GENTRYL("docs", "in the Status Line", MMToggle,
+    GENTRYL("docs", N_("in the Status Line"), MMToggle,
 	    BIND(dddToggleValueDocsCB, 0),
 	    sigc::retype(sigc::ptr_fun(dddToggleValueDocsCB)),
 	    0, &value_docs_w),
@@ -1703,11 +1703,11 @@ static GUI::RadioButton *set_console_completion_w;
 #endif
 static MMDesc completion_menu [] = 
 {
-    GENTRYL("inAllWindows", "in All Windows", MMRadio, 
+    GENTRYL("inAllWindows", N_("in All Windows"), MMRadio, 
 	    BIND(dddSetGlobalTabCompletionCB, True), 
 	    sigc::bind(sigc::retype(sigc::ptr_fun(dddSetGlobalTabCompletionCB)), True), 
 	    0, &set_global_completion_w),
-    GENTRYL("inConsole", "in Console Only", MMRadio,
+    GENTRYL("inConsole", N_("in Console Only"), MMRadio,
 	    BIND(dddSetGlobalTabCompletionCB, False),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(dddSetGlobalTabCompletionCB)), False),
 	    0, &set_console_completion_w),
@@ -1721,13 +1721,13 @@ static GUI::Entry *max_undo_size_w;
 #endif
 static MMDesc undo_menu [] =
 {
-    GENTRYL("size", "Undo Buffer Size", MMTextField | MMUnmanagedLabel,
+    GENTRYL("size", N_("Undo Buffer Size"), MMTextField | MMUnmanagedLabel,
 	    BIND(dddSetUndoBufferSizeCB, 0), 
 	    sigc::retype(sigc::ptr_fun(dddSetUndoBufferSizeCB)),
 	    0, &max_undo_size_w),
-    GENTRYL("kbytes", "kBytes", MMLabel,
+    GENTRYL("kbytes", N_("kBytes"), MMLabel,
 	    MMNoCB, MDUMMY, 0, 0),
-    GENTRYL("clear", "Clear Undo Buffer", MMPush,
+    GENTRYL("clear", N_("Clear Undo Buffer"), MMPush,
 	    BIND(dddClearUndoBufferCB, 0),
 	    sigc::hide(sigc::ptr_fun(dddClearUndoBufferCB)),
 	    0, 0),
@@ -1750,33 +1750,33 @@ static GUI::CheckButton *check_grabs_w;
 
 static MMDesc general_preferences_menu[] = 
 {
-    GENTRYL("buttonHints", "Automatic Display of Button Hints", MMButtonPanel,
+    GENTRYL("buttonHints", N_("Automatic Display of Button Hints"), MMButtonPanel,
 	    MMNoCB, MDUMMY, button_menu, 0),
-    GENTRYL("valueHints", "Automatic Display of Variable Values", MMButtonPanel,
+    GENTRYL("valueHints", N_("Automatic Display of Variable Values"), MMButtonPanel,
 	    MMNoCB, MDUMMY, value_menu, 0),
-    GENTRYL("tabCompletion", "TAB Key Completes", MMRadioPanel,
+    GENTRYL("tabCompletion", N_("TAB Key Completes"), MMRadioPanel,
 	    MMNoCB, MDUMMY, completion_menu, 0),
-    GENTRYL("groupIconify", "Iconify all Windows at Once", MMToggle,
+    GENTRYL("groupIconify", N_("Iconify all Windows at Once"), MMToggle,
 	    BIND(dddToggleGroupIconifyCB, 0),
 	    sigc::retype(sigc::ptr_fun(dddToggleGroupIconifyCB)),
 	    0, &group_iconify_w),
-    GENTRYL("uniconifyWhenReady", "Uniconify When Ready", MMToggle,
+    GENTRYL("uniconifyWhenReady", N_("Uniconify When Ready"), MMToggle,
 	    BIND(dddToggleUniconifyWhenReadyCB, 0),
 	    sigc::retype(sigc::ptr_fun(dddToggleUniconifyWhenReadyCB)),
 	    0, &uniconify_when_ready_w),
-    GENTRYL("suppressWarnings", "Suppress X Warnings", MMToggle,
+    GENTRYL("suppressWarnings", N_("Suppress X Warnings"), MMToggle,
 	    BIND(dddToggleSuppressWarningsCB, 0),
 	    sigc::retype(sigc::ptr_fun(dddToggleSuppressWarningsCB)),
 	    0, &suppress_warnings_w),
-    GENTRYL("warnIfLocked", "Warn if Multiple DDD Instances are Running", MMToggle,
+    GENTRYL("warnIfLocked", N_("Warn if Multiple DDD Instances are Running"), MMToggle,
 	    BIND(dddToggleWarnIfLockedCB, 0), 
 	    sigc::retype(sigc::ptr_fun(dddToggleWarnIfLockedCB)),
 	    0, &warn_if_locked_w),
-    GENTRYL("checkGrabs", "Continue Automatically when Mouse Pointer is Frozen", MMToggle,
+    GENTRYL("checkGrabs", N_("Continue Automatically when Mouse Pointer is Frozen"), MMToggle,
 	    BIND(dddToggleCheckGrabsCB, 0),
 	    sigc::retype(sigc::ptr_fun(dddToggleCheckGrabsCB)),
 	    0, &check_grabs_w),
-    GENTRYL("undoSize", "Undo Buffer Size", MMPanel,
+    GENTRYL("undoSize", N_("Undo Buffer Size"), MMPanel,
 	    MMNoCB, MDUMMY, undo_menu, 0),
     MMEnd
 };
@@ -1792,11 +1792,11 @@ static GUI::RadioButton *set_display_text_w;
 #endif
 static MMDesc glyph_menu[] =
 {
-    GENTRYL("asGlyphs", "as Glyphs", MMRadio,
+    GENTRYL("asGlyphs", N_("as Glyphs"), MMRadio,
 	    BIND(sourceSetDisplayGlyphsCB, True),
 	    sigc::hide(sigc::bind(sigc::ptr_fun(sourceSetDisplayGlyphsCB), true)),
 	    0, &set_display_glyphs_w),
-    GENTRYL("asText", "as Text Characters", MMRadio,
+    GENTRYL("asText", N_("as Text Characters"), MMRadio,
 	    BIND(sourceSetDisplayGlyphsCB, False),
 	    sigc::hide(sigc::bind(sigc::ptr_fun(sourceSetDisplayGlyphsCB), false)),
 	    0, &set_display_text_w),
@@ -1812,11 +1812,11 @@ static GUI::RadioButton *set_tool_buttons_in_command_tool_w;
 #endif
 static MMDesc tool_buttons_menu [] = 
 {
-    GENTRYL("commandTool", "Command Tool", MMRadio,
+    GENTRYL("commandTool", N_("Command Tool"), MMRadio,
 	    BIND(dddSetToolBarCB, False),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(dddSetToolBarCB)), false),
 	    0, &set_tool_buttons_in_command_tool_w),
-    GENTRYL("sourceWindow", "Source Window", MMRadio,
+    GENTRYL("sourceWindow", N_("Source Window"), MMRadio,
 	    BIND(dddSetToolBarCB, True),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(dddSetToolBarCB)), true),
 	    0, &set_tool_buttons_in_toolbar_w),
@@ -1832,11 +1832,11 @@ static GUI::RadioButton *set_refer_base_w;
 #endif
 static MMDesc refer_menu[] =
 {
-    GENTRYL("byPath", "by Path Name", MMRadio,
+    GENTRYL("byPath", N_("by Path Name"), MMRadio,
 	    BIND(sourceSetUseSourcePathCB, XtPointer(True)),
 	    sigc::hide(sigc::bind(sigc::ptr_fun(sourceSetUseSourcePathCB), true)),
 	    0, &set_refer_path_w),
-    GENTRYL("byBase", "by Base Name", MMRadio,
+    GENTRYL("byBase", N_("by Base Name"), MMRadio,
 	    BIND(sourceSetUseSourcePathCB, XtPointer(False)),
 	    sigc::hide(sigc::bind(sigc::ptr_fun(sourceSetUseSourcePathCB), false)),
 	    0, &set_refer_base_w),
@@ -1852,11 +1852,11 @@ static GUI::CheckButton *case_sensitive_w;
 #endif
 static MMDesc find_preferences_menu[] =
 {
-    GENTRYL("wordsOnly", "Words Only", MMToggle,
+    GENTRYL("wordsOnly", N_("Words Only"), MMToggle,
 	    BIND(sourceToggleFindWordsOnlyCB, 0), 
 	    sigc::retype(sigc::ptr_fun(sourceToggleFindWordsOnlyCB)),
 	    0, &words_only_w),
-    GENTRYL("caseSensitive", "Case Sensitive", MMToggle,
+    GENTRYL("caseSensitive", N_("Case Sensitive"), MMToggle,
 	    BIND(sourceToggleFindCaseSensitiveCB, 0), 
 	    sigc::retype(sigc::ptr_fun(sourceToggleFindCaseSensitiveCB)),
 	    0, &case_sensitive_w),
@@ -1872,11 +1872,11 @@ static GUI::CheckButton *cache_machine_code_w;
 #endif
 static MMDesc cache_menu[] =
 {
-    GENTRYL("cacheSource", "Soruce Files", MMToggle,
+    GENTRYL("cacheSource", N_("Source Files"), MMToggle,
 	    BIND(sourceToggleCacheSourceFilesCB, 0), 
 	    sigc::retype(sigc::ptr_fun(sourceToggleCacheSourceFilesCB)), 
 	    0, &cache_source_files_w),
-    GENTRYL("cacheCode", "Machine Code", MMToggle,
+    GENTRYL("cacheCode", N_("Machine Code"), MMToggle,
 	    BIND(sourceToggleCacheMachineCodeCB, 0), 
 	    sigc::retype(sigc::ptr_fun(sourceToggleCacheMachineCodeCB)), 
 	    0, &cache_machine_code_w),
@@ -1893,15 +1893,15 @@ static GUI::Scale *source_indent_w;
 static GUI::Scale *code_indent_w;
 #endif
 static MMDesc scales_menu[] = {
-    GENTRYL("tabWidth", "Tab Width", MMScale, 
+    GENTRYL("tabWidth", N_("Tab Width"), MMScale, 
 	    BIND(sourceSetTabWidthCB, 0),
 	    sigc::retype(sigc::ptr_fun(sourceSetTabWidthCB)),
 	    0, &tab_width_w),
-    GENTRYL("sourceIndent", "Source Indentation", MMScale, 
+    GENTRYL("sourceIndent", N_("Source Indentation"), MMScale, 
 	    BIND(sourceSetSourceIndentCB, 0),
 	    sigc::retype(sigc::ptr_fun(sourceSetSourceIndentCB)),
 	    0, &source_indent_w),
-    GENTRYL("codeIndent", "Machine Code Indentation", MMScale, 
+    GENTRYL("codeIndent", N_("Machine Code Indentation"), MMScale, 
 	    BIND(sourceSetCodeIndentCB, 0),
 	    sigc::retype(sigc::ptr_fun(sourceSetCodeIndentCB)),
 	    0, &code_indent_w),
@@ -1918,21 +1918,21 @@ static GUI::Widget *refer_sources_w;
 #endif
 static MMDesc source_preferences_menu[] = 
 {
-    GENTRYL("showExecPos", "Show Position and Breakpoints", MMRadioPanel,
+    GENTRYL("showExecPos", N_("Show Position and Breakpoints"), MMRadioPanel,
 	    MMNoCB, MDUMMY, glyph_menu, 0),
-    GENTRYL("toolButtons", "Tool Buttons Location", MMRadioPanel,
+    GENTRYL("toolButtons", N_("Tool Buttons Location"), MMRadioPanel,
 	    MMNoCB, MDUMMY, tool_buttons_menu, 0),
-    GENTRYL("referSources", "Refer to Program Sources", MMRadioPanel,
+    GENTRYL("referSources", N_("Refer to Program Sources"), MMRadioPanel,
 	    MMNoCB, MDUMMY, refer_menu, &refer_sources_w),
-    GENTRYL("find", "Find", MMButtonPanel,
+    GENTRYL("find", N_("Find"), MMButtonPanel,
 	    MMNoCB, MDUMMY, find_preferences_menu, 0),
-    GENTRYL("cache", "Cache", MMButtonPanel,
+    GENTRYL("cache", N_("Cache"), MMButtonPanel,
 	    MMNoCB, MDUMMY, cache_menu, 0),
-    GENTRYL("lineNumbers", "Display Source Line Numbers", MMToggle,
+    GENTRYL("lineNumbers", N_("Display Source Line Numbers"), MMToggle,
 	    BIND(sourceToggleDisplayLineNumbersCB, 0),
 	    sigc::retype(sigc::ptr_fun(sourceToggleDisplayLineNumbersCB)),
 	    0, &line_numbers2_w),
-    GENTRYL("scales", "scales", MMPanel | MMUnmanagedLabel, 
+    GENTRYL("scales", N_("scales"), MMPanel | MMUnmanagedLabel, 
 	    MMNoCB, MDUMMY, scales_menu, 0),
     MMEnd
 };
@@ -1952,15 +1952,15 @@ static GUI::CheckButton *graph_show_dependent_titles_w;
 
 static MMDesc show_menu[] = 
 {
-    GENTRYL("hints", "Edge Hints", MMToggle,
+    GENTRYL("hints", N_("Edge Hints"), MMToggle,
 	    BIND(graphToggleShowHintsCB, 0),
 	    sigc::retype(sigc::ptr_fun(graphToggleShowHintsCB)),
 	    0, &graph_show_hints_w),
-    GENTRYL("annotations", "Edge Annotations", MMToggle,
+    GENTRYL("annotations", N_("Edge Annotations"), MMToggle,
 	    BIND(graphToggleShowAnnotationsCB, 0),
 	    sigc::retype(sigc::ptr_fun(graphToggleShowAnnotationsCB)),
 	    0, &graph_show_annotations_w),
-    GENTRYL("dependentTitles", "Titles of Dependent Displays", MMToggle,
+    GENTRYL("dependentTitles", N_("Titles of Dependent Displays"), MMToggle,
 	    BIND(graphToggleShowDependentTitlesCB, 0),
 	    sigc::retype(sigc::ptr_fun(graphToggleShowDependentTitlesCB)),
 	    0, &graph_show_dependent_titles_w),
@@ -1977,11 +1977,11 @@ static GUI::CheckButton *graph_auto_layout_w;
 
 static MMDesc layout_menu[] =
 {
-    GENTRYL("compact", "Compact", MMToggle,
+    GENTRYL("compact", N_("Compact"), MMToggle,
 	    BIND(graphToggleCompactLayoutCB, 0),
 	    sigc::retype(sigc::ptr_fun(graphToggleCompactLayoutCB)),
 	    0, &graph_compact_layout_w),
-    GENTRYL("auto", "Automatic", MMToggle,
+    GENTRYL("auto", N_("Automatic"), MMToggle,
 	    BIND(graphToggleAutoLayoutCB, 0),
 	    sigc::retype(sigc::ptr_fun(graphToggleAutoLayoutCB)),
 	    0, &graph_auto_layout_w),
@@ -1998,11 +1998,11 @@ static GUI::RadioButton *graph_left_to_right_w;
 
 static MMDesc direction_menu[] =
 {
-    GENTRYL("topToBottom", "Top to bottom", MMRadio,
+    GENTRYL("topToBottom", N_("Top to bottom"), MMRadio,
 	    BIND(graphSetDisplayPlacementCB, XmVERTICAL),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(graphSetDisplayPlacementCB)), GUI::ORIENTATION_VERTICAL),
 	    0, &graph_top_to_bottom_w),
-    GENTRYL("leftToRight", "Left to right", MMRadio,
+    GENTRYL("leftToRight", N_("Left to right"), MMRadio,
 	    BIND(graphSetDisplayPlacementCB, XmHORIZONTAL),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(graphSetDisplayPlacementCB)), GUI::ORIENTATION_HORIZONTAL),
 	    0, &graph_left_to_right_w),
@@ -2017,9 +2017,9 @@ static GUI::CheckButton *graph_cluster_displays_w;
 
 static MMDesc placement_menu[] =
 {
-    GENTRYL("direction", "", MMRadioPanel | MMUnmanagedLabel,
+    GENTRYL("direction", N_(""), MMRadioPanel | MMUnmanagedLabel,
 	    MMNoCB, MDUMMY, direction_menu, 0),
-    GENTRYL("clusterDisplays", "Clustered", MMToggle,
+    GENTRYL("clusterDisplays", N_("Clustered"), MMToggle,
 	    BIND(graphToggleClusterDisplaysCB, 0),
 	    sigc::retype(sigc::ptr_fun(graphToggleClusterDisplaysCB)),
 	    0, &graph_cluster_displays_w),
@@ -2034,11 +2034,11 @@ static GUI::CheckButton *graph_snap_to_grid_w;
 
 static MMDesc themes_menu[] = 
 {
-    GENTRYL("snapToGrid", "Auto-Align Displays on Nearest Grid Point", MMToggle,
+    GENTRYL("snapToGrid", N_("Auto-Align Displays on Nearest Grid Point"), MMToggle,
 	    BIND(graphToggleSnapToGridCB, 0),
 	    sigc::retype(sigc::ptr_fun(graphToggleSnapToGridCB)),
 	    0, &graph_snap_to_grid_w),
-    GENTRYL("themes", "Themes...", MMPush,
+    GENTRYL("themes", N_("Themes..."), MMPush,
 	    BIND(dddPopupThemesCB, 0),
 	    sigc::hide(sigc::ptr_fun(dddPopupThemesCB)),
 	    0, 0),
@@ -2053,7 +2053,7 @@ static GUI::Scale *graph_grid_size_w;
 
 static MMDesc grid_menu[] =
 {
-    GENTRYL("gridSize", "Grid Size", MMScale,
+    GENTRYL("gridSize", N_("Grid Size"), MMScale,
 	    BIND(graphSetGridSizeCB, 0),
 	    sigc::retype(sigc::ptr_fun(graphSetGridSizeCB)),
 	    0, &graph_grid_size_w),
@@ -2072,27 +2072,27 @@ static GUI::CheckButton *graph_auto_close_w;
 
 static MMDesc data_preferences_menu[] = 
 {
-    GENTRYL("show", "Show", MMPanel,
+    GENTRYL("show", N_("Show"), MMPanel,
 	    MMNoCB, MDUMMY, show_menu, 0),
-    GENTRYL("placement", "Placement", MMPanel,
+    GENTRYL("placement", N_("Placement"), MMPanel,
 	    MMNoCB, MDUMMY, placement_menu, 0),
-    GENTRYL("layout", "Layout", MMPanel,
+    GENTRYL("layout", N_("Layout"), MMPanel,
 	    MMNoCB, MDUMMY, layout_menu, 0),
-    GENTRYL("detectAliases", "Detect Aliases", MMToggle,
+    GENTRYL("detectAliases", N_("Detect Aliases"), MMToggle,
 	    BIND(graphToggleDetectAliasesCB, 0),
 	    sigc::retype(sigc::ptr_fun(graphToggleDetectAliasesCB)),
 	    0, &graph_detect_aliases_w),
-    GENTRYL("align2dArrays", "Display Two-Dimensional Arrays as Tables", MMToggle,
+    GENTRYL("align2dArrays", N_("Display Two-Dimensional Arrays as Tables"), MMToggle,
 	    BIND(graphToggleAlign2dArraysCB, 0),
 	    sigc::retype(sigc::ptr_fun(graphToggleAlign2dArraysCB)),
 	    0, &graph_align_2d_arrays_w),
-    GENTRYL("autoClose", "Close Data Window when Deleting last Display", MMToggle,
+    GENTRYL("autoClose", N_("Close Data Window when Deleting last Display"), MMToggle,
 	    BIND(graphToggleAutoCloseCB, 0),
 	    sigc::retype(sigc::ptr_fun(graphToggleAutoCloseCB)),
 	    0, &graph_auto_close_w),
-    GENTRYL("themes", "", MMPanel | MMUnmanagedLabel, 
+    GENTRYL("themes", N_(""), MMPanel | MMUnmanagedLabel, 
 	    MMNoCB, MDUMMY, themes_menu, 0),
-    GENTRYL("grid", "", MMPanel | MMUnmanagedLabel,
+    GENTRYL("grid", N_(""), MMPanel | MMUnmanagedLabel,
 	    MMNoCB, MDUMMY, grid_menu, 0),
     MMEnd
 };
@@ -2108,11 +2108,11 @@ static GUI::RadioButton *set_attached_windows_w;
 #endif
 static MMDesc window_mode_menu [] = 
 {
-    GENTRYL("attached", "Stacked Windows", MMRadio,
+    GENTRYL("attached", N_("Stacked Windows"), MMRadio,
 	    BIND(dddSetSeparateWindowsCB, 1),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(dddSetSeparateWindowsCB)), 1),
 	    0, &set_attached_windows_w),
-    GENTRYL("separate", "Separate Windows", MMRadio,
+    GENTRYL("separate", N_("Separate Windows"), MMRadio,
 	    BIND(dddSetSeparateWindowsCB, 0),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(dddSetSeparateWindowsCB)), 0),
 	    0, &set_separate_windows_w),
@@ -2134,23 +2134,23 @@ static GUI::CheckButton *set_toolbars_at_bottom_w;
 #endif
 static MMDesc button_appearance_menu [] = 
 {
-    GENTRYL("images", "Images", MMToggle,
+    GENTRYL("images", N_("Images"), MMToggle,
 	    BIND(dddToggleButtonImagesCB, 0),
 	    sigc::retype(sigc::ptr_fun(dddToggleButtonImagesCB)),
 	    0, &set_button_images_w),
-    GENTRYL("captions", "Captions", MMToggle,
+    GENTRYL("captions", N_("Captions"), MMToggle,
 	    BIND(dddToggleButtonCaptionsCB, 0),
 	    sigc::retype(sigc::ptr_fun(dddToggleButtonCaptionsCB)),
 	    0, &set_button_captions_w),
-    GENTRYL("flat", "Flat", MMToggle,
+    GENTRYL("flat", N_("Flat"), MMToggle,
 	    BIND(dddToggleFlatButtonsCB, 0),
 	    sigc::retype(sigc::ptr_fun(dddToggleFlatButtonsCB)),
 	    0, &set_flat_buttons_w),
-    GENTRYL("color", "Color", MMToggle,
+    GENTRYL("color", N_("Color"), MMToggle,
 	    BIND(dddToggleColorButtonsCB, 0),
 	    sigc::retype(sigc::ptr_fun(dddToggleColorButtonsCB)),
 	    0, &set_color_buttons_w),
-    GENTRYL("bottom", "Bottom", MMToggle,
+    GENTRYL("bottom", N_("Bottom"), MMToggle,
 	    BIND(dddToggleToolbarsAtBottomCB, 0),
 	    sigc::retype(sigc::ptr_fun(dddToggleToolbarsAtBottomCB)),
 	    0, &set_toolbars_at_bottom_w),
@@ -2166,11 +2166,11 @@ static GUI::RadioButton *set_focus_explicit_w;
 #endif
 static MMDesc keyboard_focus_menu [] = 
 {
-    GENTRYL("pointer", "Point to Type", MMRadio,
+    GENTRYL("pointer", N_("Point to Type"), MMRadio,
 	    BIND(dddSetKeyboardFocusPolicyCB, XmPOINTER),
 	    sigc::bind(sigc::ptr_fun(dddSetKeyboardFocusPolicyCB), 1),
 	    0, &set_focus_pointer_w),
-    GENTRYL("explicit", "Click to Type", MMRadio,
+    GENTRYL("explicit", N_("Click to Type"), MMRadio,
 	    BIND(dddSetKeyboardFocusPolicyCB, XmEXPLICIT),
 	    sigc::bind(sigc::ptr_fun(dddSetKeyboardFocusPolicyCB), 0),
 	    0, &set_focus_explicit_w),
@@ -2186,11 +2186,11 @@ static GUI::RadioButton *set_scrolling_scrollbars_w;
 #endif
 static MMDesc data_scrolling_menu [] = 
 {
-    GENTRYL("panner", "Panner", MMRadio,
+    GENTRYL("panner", N_("Panner"), MMRadio,
 	    BIND(dddSetPannerCB, true),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(dddSetPannerCB)), true),
 	    0, &set_scrolling_panner_w),
-    GENTRYL("scrollbars", "Scrollbars", MMRadio,
+    GENTRYL("scrollbars", N_("Scrollbars"), MMRadio,
 	    BIND(dddSetPannerCB, false),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(dddSetPannerCB)), false),
 	    0, &set_scrolling_scrollbars_w),
@@ -2219,35 +2219,35 @@ static GUI::RadioButton *set_debugger_xdb_w;
 #endif
 static MMDesc debugger_menu [] = 
 {
-    GENTRYL("bash", "Bash", MMRadio,
+    GENTRYL("bash", N_("Bash"), MMRadio,
 	    BIND(dddSetDebuggerCB, BASH),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(dddSetDebuggerCB)), BASH),
 	    0, &set_debugger_bash_w),
-    GENTRYL("dbg", "DBG", MMRadio,
+    GENTRYL("dbg", N_("DBG"), MMRadio,
 	    BIND(dddSetDebuggerCB, DBG),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(dddSetDebuggerCB)), DBG),
 	    0, &set_debugger_dbg_w),
-    GENTRYL("dbx", "DBX", MMRadio,
+    GENTRYL("dbx", N_("DBX"), MMRadio,
 	    BIND(dddSetDebuggerCB, DBX),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(dddSetDebuggerCB)), DBX),
 	    0, &set_debugger_dbx_w),
-    GENTRYL("gdb", "GDB", MMRadio,
+    GENTRYL("gdb", N_("GDB"), MMRadio,
 	    BIND(dddSetDebuggerCB, GDB),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(dddSetDebuggerCB)), GDB),
 	    0, &set_debugger_gdb_w),
-    GENTRYL("jdb", "JDB", MMRadio,
+    GENTRYL("jdb", N_("JDB"), MMRadio,
 	    BIND(dddSetDebuggerCB, JDB),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(dddSetDebuggerCB)), JDB),
 	    0, &set_debugger_jdb_w),
-    GENTRYL("perl", "Perl", MMRadio,
+    GENTRYL("perl", N_("Perl"), MMRadio,
 	    BIND(dddSetDebuggerCB, PERL),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(dddSetDebuggerCB)), PERL),
 	    0, &set_debugger_perl_w),
-    GENTRYL("pydb", "PYDB", MMRadio,
+    GENTRYL("pydb", N_("PYDB"), MMRadio,
 	    BIND(dddSetDebuggerCB, PYDB),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(dddSetDebuggerCB)), PYDB),
 	    0, &set_debugger_pydb_w),
-    GENTRYL("xdb", "XDB", MMRadio,
+    GENTRYL("xdb", N_("XDB"), MMRadio,
 	    BIND(dddSetDebuggerCB, XDB),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(dddSetDebuggerCB)), XDB),
 	    0, &set_debugger_xdb_w),
@@ -2261,7 +2261,7 @@ static GUI::CheckButton *auto_debugger_w;
 #endif
 static MMDesc auto_debugger_menu [] =
 {
-    GENTRYL("automatic", "Determine Automatically from Arguments", MMToggle,
+    GENTRYL("automatic", N_("Determine Automatically from Arguments"), MMToggle,
 	    BIND(dddToggleAutoDebuggerCB, 0),
 	    sigc::retype(sigc::ptr_fun(dddToggleAutoDebuggerCB)),
 	    0, &auto_debugger_w),
@@ -2278,11 +2278,11 @@ static GUI::CheckButton *splash_screen_w;
 
 static MMDesc startup_menu [] =
 {
-    GENTRYL("splashScreen", "DDD Splash Screen", MMToggle,
+    GENTRYL("splashScreen", N_("DDD Splash Screen"), MMToggle,
 	    BIND(SetSplashScreenCB, 0),
 	    sigc::retype(sigc::ptr_fun(SetSplashScreenCB)),
 	    0, &splash_screen_w),
-    GENTRYL("startupTips", "Tip of the Day", MMToggle,
+    GENTRYL("startupTips", N_("Tip of the Day"), MMToggle,
 	    BIND(SetStartupTipsCB, 0),
 	    sigc::retype(sigc::ptr_fun(SetStartupTipsCB)),
 	    0, &startup_tips_w),
@@ -2299,11 +2299,11 @@ static GUI::RadioButton *cut_copy_paste_motif_w;
 
 static MMDesc cut_copy_paste_menu [] =
 {
-    GENTRYL("kde", "Copy", MMRadio,
+    GENTRYL("kde", N_("Copy"), MMRadio,
 	    BIND(dddSetCutCopyPasteBindingsCB, KDEBindings), 
 	    sigc::bind(sigc::retype(sigc::ptr_fun(dddSetCutCopyPasteBindingsCB)), KDEBindings ), 
 	    0, &cut_copy_paste_kde_w),
-    GENTRYL("motif", "Interrupt", MMRadio,
+    GENTRYL("motif", N_("Interrupt"), MMRadio,
 	    BIND(dddSetCutCopyPasteBindingsCB, MotifBindings),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(dddSetCutCopyPasteBindingsCB)), MotifBindings ),
 	    0, &cut_copy_paste_motif_w),
@@ -2320,11 +2320,11 @@ static GUI::RadioButton *select_all_motif_w;
 
 static MMDesc select_all_menu [] =
 {
-    GENTRYL("kde", "Select All", MMRadio,
+    GENTRYL("kde", N_("Select All"), MMRadio,
 	    BIND(dddSetSelectAllBindingsCB, KDEBindings),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(dddSetSelectAllBindingsCB)), KDEBindings), 
 	    0, &select_all_kde_w),
-    GENTRYL("motif", "Beginning of Line", MMRadio,
+    GENTRYL("motif", N_("Beginning of Line"), MMRadio,
 	    BIND(dddSetSelectAllBindingsCB, MotifBindings),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(dddSetSelectAllBindingsCB)), MotifBindings),
 	    0, &select_all_motif_w),
@@ -2333,23 +2333,23 @@ static MMDesc select_all_menu [] =
 
 static MMDesc startup_preferences_menu [] =
 {
-    GENTRYL("windows", "Window Layout", MMRadioPanel,
+    GENTRYL("windows", N_("Window Layout"), MMRadioPanel,
 	    MMNoCB, MDUMMY, window_mode_menu, 0),
-    GENTRYL("cutCopyPaste", "Ctrl+C is", MMRadioPanel,
+    GENTRYL("cutCopyPaste", N_("Ctrl+C is"), MMRadioPanel,
 	    MMNoCB, MDUMMY, cut_copy_paste_menu, 0),
-    GENTRYL("selectAll", "Ctrl+A is", MMRadioPanel,
+    GENTRYL("selectAll", N_("Ctrl+A is"), MMRadioPanel,
 	    MMNoCB, MDUMMY, select_all_menu, 0),
-    GENTRYL("buttons", "Tool Bar Appearance", MMButtonPanel,
+    GENTRYL("buttons", N_("Tool Bar Appearance"), MMButtonPanel,
 	    MMNoCB, MDUMMY, button_appearance_menu, 0),
-    GENTRYL("keyboardFocus", "Keyboard Focus", MMRadioPanel,
+    GENTRYL("keyboardFocus", N_("Keyboard Focus"), MMRadioPanel,
 	    MMNoCB, MDUMMY, keyboard_focus_menu, 0),
-    GENTRYL("dataScrolling", "Data Scrolling", MMRadioPanel,
+    GENTRYL("dataScrolling", N_("Data Scrolling"), MMRadioPanel,
 	    MMNoCB, MDUMMY, data_scrolling_menu, 0),
-    GENTRYL("autoDebugger", "Debugger Type", MMButtonPanel,
+    GENTRYL("autoDebugger", N_("Debugger Type"), MMButtonPanel,
 	    MMNoCB, MDUMMY, auto_debugger_menu, 0),
-    GENTRYL("debugger", "", MMRadioPanel,
+    GENTRYL("debugger", N_(""), MMRadioPanel,
 	    MMNoCB, MDUMMY, debugger_menu, 0),
-    GENTRYL("startupWindows", "Startup Windows", MMButtonPanel,
+    GENTRYL("startupWindows", N_("Startup Windows"), MMButtonPanel,
 	    MMNoCB, MDUMMY, startup_menu, 0),
     MMEnd
 };
@@ -2366,15 +2366,15 @@ static GUI::Entry *font_sizes[5];
 #if defined(IF_XM)
 #define FONT_MENU(font)						\
 {								\
-    GENTRYL("name", "", MMTextField | MMUnmanagedLabel,		\
+    GENTRYL("name", N_(""), MMTextField | MMUnmanagedLabel,		\
 	    BIND(SetFontNameCB, font),				\
 	    sigc::bind(sigc::ptr_fun(SetFontNameCB), font ),	\
 	    0, &font_names[int(font)]),				\
-    GENTRYL("size", "Size", MMTextField,			\
+    GENTRYL("size", N_("Size"), MMTextField,			\
 	    BIND(SetFontSizeCB, font),				\
 	    sigc::bind(sigc::ptr_fun(SetFontSizeCB), font ),	\
 	    0, &font_sizes[int(font)]),				\
-    GENTRYL("browse", "Browse...", MMPush,			\
+    GENTRYL("browse", N_("Browse..."), MMPush,			\
 	    BIND(BrowseFontCB, font),				\
 	    sigc::bind(sigc::ptr_fun(BrowseFontCB), font),	\
 	    0, 0),						\
@@ -2390,13 +2390,13 @@ static MMDesc data_font_menu           [] = FONT_MENU(DataDDDFont);
 #if defined(IF_XM)
 static MMDesc font_preferences_menu [] =
 {
-    GENTRYL("default", "Default Font", MMPanel,
+    GENTRYL("default", N_("Default Font"), MMPanel,
 	    MMNoCB, MDUMMY, default_font_menu, 0),
-    GENTRYL("variableWidth", "Variable Width", MMPanel,
+    GENTRYL("variableWidth", N_("Variable Width"), MMPanel,
 	    MMNoCB, MDUMMY, variable_width_font_menu, 0),
-    GENTRYL("fixedWidth", "Fixed Width", MMPanel,
+    GENTRYL("fixedWidth", N_("Fixed Width"), MMPanel,
 	    MMNoCB, MDUMMY, fixed_width_font_menu, 0),
-    GENTRYL("data", "Data", MMPanel,
+    GENTRYL("data", N_("Data"), MMPanel,
 	    MMNoCB, MDUMMY, data_font_menu, 0),
     MMEnd
 };
@@ -2413,11 +2413,11 @@ static GUI::RadioButton *builtin_plot_window_w;
 
 static MMDesc plot_window_menu [] =
 {
-    GENTRYL("extern", "External", MMRadio,
+    GENTRYL("extern", N_("External"), MMRadio,
 	    BIND(dddSetBuiltinPlotWindowCB, false),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(dddSetBuiltinPlotWindowCB)), false),
 	    0, &extern_plot_window_w),
-    GENTRYL("builtin", "Builtin", MMRadio,
+    GENTRYL("builtin", N_("Builtin"), MMRadio,
 	    BIND(dddSetBuiltinPlotWindowCB, true),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(dddSetBuiltinPlotWindowCB)), true),
 	    0, &builtin_plot_window_w),
@@ -2444,35 +2444,35 @@ static GUI::Entry *plot_command_w;
 
 static MMDesc helpers_preferences_menu [] =
 {
-    GENTRYL("edit", "Edit Sources", MMTextField,
+    GENTRYL("edit", N_("Edit Sources"), MMTextField,
 	    BIND(dddSetEditCommandCB, 0), 
 	    sigc::retype(sigc::ptr_fun(dddSetEditCommandCB)), 
 	    0, &edit_command_w),
-    GENTRYL("get_core", "Get Core File", MMTextField,
+    GENTRYL("get_core", N_("Get Core File"), MMTextField,
 	    BIND(dddSetGetCoreCommandCB, 0), 
 	    sigc::retype(sigc::ptr_fun(dddSetGetCoreCommandCB)), 
 	    0, &get_core_command_w),
-    GENTRYL("ps", "List Processes", MMTextField,
+    GENTRYL("ps", N_("List Processes"), MMTextField,
 	    BIND(dddSetPSCommandCB, 0),
 	    sigc::retype(sigc::ptr_fun(dddSetPSCommandCB)),
 	    0, &ps_command_w),
-    GENTRYL("term", "Execution Window", MMTextField,
+    GENTRYL("term", N_("Execution Window"), MMTextField,
 	    BIND(dddSetTermCommandCB, 0),
 	    sigc::retype(sigc::ptr_fun(dddSetTermCommandCB)),
 	    0, &term_command_w),
-    GENTRYL("uncompress", "Uncompress", MMTextField,
+    GENTRYL("uncompress", N_("Uncompress"), MMTextField,
 	    BIND(dddSetUncompressCommandCB, 0),
 	    sigc::retype(sigc::ptr_fun(dddSetUncompressCommandCB)),
 	    0, &uncompress_command_w),
-    GENTRYL("www", "Web Browser", MMTextField,
+    GENTRYL("www", N_("Web Browser"), MMTextField,
 	    BIND(dddSetWWWCommandCB, 0),
 	    sigc::retype(sigc::ptr_fun(dddSetWWWCommandCB)),
 	    0, &www_command_w),
-    GENTRYL("plot", "Plot", MMTextField,
+    GENTRYL("plot", N_("Plot"), MMTextField,
 	    BIND(dddSetPlotCommandCB, 0), 
 	    sigc::retype(sigc::ptr_fun(dddSetPlotCommandCB)), 
 	    0, &plot_command_w),
-    GENTRYL("plot_window", "Plot Window", MMRadioPanel,
+    GENTRYL("plot_window", N_("Plot Window"), MMRadioPanel,
 	    MMNoCB, MDUMMY, plot_window_menu, 0),
     MMEnd
 };
@@ -2508,64 +2508,64 @@ DECL_WR(WR_dddPopupInfosCB, sigc::ptr_fun(dddPopupInfosCB));
 #endif
 static MMDesc data_menu[] = 
 {
-    GENTRYL("displays", "Displays...", MMPush,
+    GENTRYL("displays", N_("Displays..."), MMPush,
 	    BIND(DataDisp::EditDisplaysCB, 0),
 	    sigc::hide(sigc::ptr_fun(DataDisp::EditDisplaysCB)),
 	    0, 0),
-    GENTRYL("themes", "Themes...", MMPush,
+    GENTRYL("themes", N_("Themes..."), MMPush,
 	    BIND(dddPopupThemesCB, 0), 
 	    sigc::hide(sigc::ptr_fun(dddPopupThemesCB)), 
 	    0, 0),
-    GENTRYL("watchpoints", "Watchpoints...", MMPush,
+    GENTRYL("watchpoints", N_("Watchpoints..."), MMPush,
 	    BIND(SourceView::EditBreakpointsCB, 0), 
 	    sigc::ptr_fun(SourceView::EditBreakpointsCB), 
 	    0, &edit_watchpoints_w),
-    GENTRYL("examine", "Memory...", MMPush,
+    GENTRYL("examine", N_("Memory..."), MMPush,
 	    BIND(gdbExamineCB, 0),
 	    sigc::ptr_fun(gdbExamineCB),
 	    0, &examine_w),
     MMSep,
-    GENTRYL("print", "Print ()", MMPush, 
+    GENTRYL("print", N_("Print ()"), MMPush, 
 	    BIND(gdbPrintCB, False),
 	    sigc::bind(sigc::ptr_fun(gdbPrintCB), false),
 	    0, &print_w),
-    GENTRYL("display", "Display ()", MMPush,
+    GENTRYL("display", N_("Display ()"), MMPush,
 	    BIND(gdbDisplayCB, 0),
 	    sigc::ptr_fun(gdbDisplayCB),
 	    0, &display_w),
     MMSep,
-    GENTRYL("detectAliases", "Detect Aliases", MMCheckItem,
+    GENTRYL("detectAliases", N_("Detect Aliases"), MMCheckItem,
 	    BIND(graphToggleDetectAliasesCB, 0),
 	    sigc::retype(sigc::ptr_fun(graphToggleDetectAliasesCB)),
 	    0, &detect_aliases_w),
     MMSep,
-    GENTRYL("info locals", "Display Local Variables", MMCheckItem,
+    GENTRYL("info locals", N_("Display Local Variables"), MMCheckItem,
 	    BIND(graphToggleLocalsCB, 0), 
 	    sigc::retype(sigc::ptr_fun(graphToggleLocalsCB)), 
 	    0, &locals_w),
-    GENTRYL("info args", "Display Arguments", MMCheckItem,
+    GENTRYL("info args", N_("Display Arguments"), MMCheckItem,
 	    BIND(graphToggleArgsCB, 0), 
 	    sigc::retype(sigc::ptr_fun(graphToggleArgsCB)), 
 	    0, &args_w),
-    GENTRYL("infos", "Status Displays...", MMPush,
+    GENTRYL("infos", N_("Status Displays..."), MMPush,
 	    BIND(WhenReady, &WR_dddPopupInfosCB), 
 	    sigc::bind(sigc::ptr_fun(WhenReady), &WR_dddPopupInfosCB), 
 	    0, &infos_w),
     MMSep,
-    GENTRYL("align", "Align on Grid", MMPush,
+    GENTRYL("align", N_("Align on Grid"), MMPush,
 	    BIND(graphAlignCB, 0),
 	    sigc::hide(sigc::ptr_fun(graphAlignCB)),
 	    0, &align_w),
-    GENTRYL("rotate", "Rotate Graph", MMPush,
+    GENTRYL("rotate", N_("Rotate Graph"), MMPush,
 	    BIND(graphRotateCB, 0),
 	    sigc::hide(sigc::ptr_fun(graphRotateCB)),
 	    0, 0),
-    GENTRYL("layout", "Layout Graph", MMPush,
+    GENTRYL("layout", N_("Layout Graph"), MMPush,
 	    BIND(graphLayoutCB, 0),
 	    sigc::hide(sigc::ptr_fun(graphLayoutCB)),
 	    0, 0),
     MMSep,
-    GENTRYL("refresh", "Refresh", MMPush,
+    GENTRYL("refresh", N_("Refresh"), MMPush,
 	    BIND(DataDisp::refreshCB, 0),
 	    sigc::ptr_fun(DataDisp::refreshCB),
 	    0, 0),
@@ -2586,15 +2586,15 @@ static GUI::RadioButton *crash_nothing_w   = 0;
 
 static MMDesc crash_menu[] = 
 {
-    GENTRYL("debug", "Debug DDD", MMRadioItem,
+    GENTRYL("debug", N_("Debug DDD"), MMRadioItem,
 	    BIND(dddSetCrashCB, 2),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(dddSetCrashCB)), 2),
 	    0, &crash_debug_w),
-    GENTRYL("dumpCore", "Dump Core Now", MMRadioItem,
+    GENTRYL("dumpCore", N_("Dump Core Now"), MMRadioItem,
 	    BIND(dddSetCrashCB, 1),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(dddSetCrashCB)), 1),
 	    0, &crash_dump_core_w),
-    GENTRYL("nothing", "Do Nothing", MMRadioItem,
+    GENTRYL("nothing", N_("Do Nothing"), MMRadioItem,
 	    BIND(dddSetCrashCB, 0),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(dddSetCrashCB)), 0),
 	    0, &crash_nothing_w),
@@ -2613,28 +2613,28 @@ static GUI::Widget *valgrindLeakCheck_w = 0;
 
 static MMDesc maintenance_menu[] = 
 {
-    GENTRYL("debug", "Debug DDD...", MMPush,
+    GENTRYL("debug", N_("Debug DDD..."), MMPush,
 	    BIND(DDDDebugCB, 0),
 	    sigc::hide(sigc::bind(sigc::ptr_fun(DDDDebugCB), 0)),
 	    0, &debug_ddd_w),
-    GENTRYL("dumpCore", "Dump Core Now", MMPush,
+    GENTRYL("dumpCore", N_("Dump Core Now"), MMPush,
 	    BIND(DDDDumpCoreCB, 0),
 	    sigc::hide(sigc::ptr_fun(DDDDumpCoreCB)),
 	    0, &dump_core_w),
-    //GENTRYL("tictactoe", "Tic Tac Toe...", MMPush,
+    //GENTRYL("tictactoe", N_("Tic Tac Toe..."), MMPush,
     //	    BIND(TicTacToeCB, 0),
     //	    sigc::hide(sigc::ptr_fun(TicTacToeCB)),
     //	    0, 0),
     MMSep,
-    GENTRYL("crash", "When DDD Crashes", MMRadioMenu,
+    GENTRYL("crash", N_("When DDD Crashes"), MMRadioMenu,
 	    MMNoCB, MDUMMY, crash_menu, 0),
     MMSep,
-    GENTRYL("valgrindLeak", "Do Valgrind Leak Check", MMPush | MMUnmanaged,
+    GENTRYL("valgrindLeak", N_("Do Valgrind Leak Check"), MMPush | MMUnmanaged,
 	    BIND(dddValgrindLeakCheckCB, 0),
 	    sigc::hide(sigc::ptr_fun(dddValgrindLeakCheckCB)),
 	    0, &valgrindLeakCheck_w),
     MMSep,
-    GENTRYL("remove", "Remove Menu", MMPush,
+    GENTRYL("remove", N_("Remove Menu"), MMPush,
 	    BIND(dddClearMaintenanceCB, 0),
 	    sigc::hide(sigc::ptr_fun(dddClearMaintenanceCB)),
 	    0, 0),
@@ -2650,26 +2650,26 @@ static GUI::Widget *maintenance_w = 0;
 // Menu Bar for DDD command window
 static MMDesc command_menubar[] = 
 {
-    GENTRYL("file", "File", MMMenu,
+    GENTRYL("file", N_("File"), MMMenu,
 	    BIND(gdbUpdateFileCB, command_file_menu), 
 	    sigc::hide(sigc::bind(sigc::ptr_fun(gdbUpdateFileCB), command_file_menu)), 
 	    command_file_menu, 0),
-    GENTRYL("edit", "Edit", MMMenu,
+    GENTRYL("edit", N_("Edit"), MMMenu,
 	    BIND(gdbUpdateEditCB, GDBWindow),
 	    sigc::bind(sigc::ptr_fun(gdbUpdateEditCB), GDBWindow),
 	    command_edit_menu, 0),
-    GENTRYL("view", "View", MMMenu,
+    GENTRYL("view", N_("View"), MMMenu,
 	    BIND(gdbUpdateViewCB, command_view_menu), 
 	    sigc::hide(sigc::bind(sigc::ptr_fun(gdbUpdateViewCB), command_view_menu)), 
 	    command_view_menu, 0),
-    GENTRYL("program", "Program", MMMenu,
+    GENTRYL("program", N_("Program"), MMMenu,
 	    MMNoCB, MDUMMY, command_program_menu, 0),
-    GENTRYL("commands", "Commands", MMMenu,
+    GENTRYL("commands", N_("Commands"), MMMenu,
 	    MMNoCB, MDUMMY, command_menu, 0),
-    GENTRYL("maintenance", "Maintenance", MMMenu | MMUnmanaged,
+    GENTRYL("maintenance", N_("Maintenance"), MMMenu | MMUnmanaged,
 	    MMNoCB, MDUMMY, maintenance_menu, &maintenance_w),
 #if defined(IF_XM)
-    GENTRYL("help", "Help", MMMenu | MMHelp,
+    GENTRYL("help", N_("Help"), MMMenu | MMHelp,
 	    MMNoCB, MDUMMY, simple_help_menu, 0),
 #endif
     MMEnd
@@ -2678,26 +2678,26 @@ static MMDesc command_menubar[] =
 // Menu Bar for DDD source view
 static MMDesc source_menubar[] = 
 {
-    GENTRYL("file", "File", MMMenu,
+    GENTRYL("file", N_("File"), MMMenu,
 	    BIND(gdbUpdateFileCB, source_file_menu), 
 	    sigc::hide(sigc::bind(sigc::ptr_fun(gdbUpdateFileCB), source_file_menu)), 
 	    source_file_menu, 0),
-    GENTRYL("edit", "Edit", MMMenu,
+    GENTRYL("edit", N_("Edit"), MMMenu,
 	    BIND(gdbUpdateEditCB, SourceWindow),
 	    sigc::bind(sigc::ptr_fun(gdbUpdateEditCB), SourceWindow),
 	    source_edit_menu, 0),
-    GENTRYL("view", "View", MMMenu,
+    GENTRYL("view", N_("View"), MMMenu,
 	    BIND(gdbUpdateViewCB, source_view_menu),
 	    sigc::hide(sigc::bind(sigc::ptr_fun(gdbUpdateViewCB), source_view_menu)),
 	    source_view_menu, 0),
-    GENTRYL("program", "Program", MMMenu,
+    GENTRYL("program", N_("Program"), MMMenu,
 	    MMNoCB, MDUMMY, source_program_menu, 0),
-    GENTRYL("stack", "Status", MMMenu,
+    GENTRYL("stack", N_("Status"), MMMenu,
 	    MMNoCB, MDUMMY, stack_menu, 0),
-    GENTRYL("source", "Source", MMMenu,
+    GENTRYL("source", N_("Source"), MMMenu,
 	    MMNoCB, MDUMMY, source_menu, 0),
 #if defined(IF_XM)
-    GENTRYL("help", "Help", MMMenu | MMHelp,
+    GENTRYL("help", N_("Help"), MMMenu | MMHelp,
 	    MMNoCB, MDUMMY, simple_help_menu, 0),
 #endif
     MMEnd
@@ -2706,24 +2706,24 @@ static MMDesc source_menubar[] =
 // Menu Bar for DDD data window
 static MMDesc data_menubar[] = 
 {
-    GENTRYL("file", "File", MMMenu,
+    GENTRYL("file", N_("File"), MMMenu,
 	    BIND(gdbUpdateFileCB, data_file_menu), 
 	    sigc::hide(sigc::bind(sigc::ptr_fun(gdbUpdateFileCB), data_file_menu)), 
 	    data_file_menu, 0),
-    GENTRYL("edit", "Edit", MMMenu,
+    GENTRYL("edit", N_("Edit"), MMMenu,
 	    BIND(gdbUpdateEditCB, DataWindow),
 	    sigc::bind(sigc::ptr_fun(gdbUpdateEditCB), DataWindow),
 	    data_edit_menu, 0),
-    GENTRYL("view", "View", MMMenu,
+    GENTRYL("view", N_("View"), MMMenu,
 	    BIND(gdbUpdateViewCB, data_view_menu), 
 	    sigc::hide(sigc::bind(sigc::ptr_fun(gdbUpdateViewCB), data_view_menu)), 
 	    data_view_menu, 0),
-    GENTRYL("program", "Program", MMMenu,
+    GENTRYL("program", N_("Program"), MMMenu,
 	    MMNoCB, MDUMMY, data_program_menu, 0),
-    GENTRYL("data", "Data", MMMenu,
+    GENTRYL("data", N_("Data"), MMMenu,
 	    MMNoCB, MDUMMY, data_menu, 0),
 #if defined(IF_XM)
-    GENTRYL("help", "Help", MMMenu | MMHelp,
+    GENTRYL("help", N_("Help"), MMMenu | MMHelp,
 	    MMNoCB, MDUMMY, simple_help_menu, 0),
 #endif
     MMEnd
@@ -2732,31 +2732,31 @@ static MMDesc data_menubar[] =
 // Menu Bar for common DDD data/command window
 static MMDesc common_menubar[] = 
 {
-    GENTRYL("file", "File", MMMenu,
+    GENTRYL("file", N_("File"), MMMenu,
 	    BIND(gdbUpdateFileCB, command_file_menu), 
 	    sigc::hide(sigc::bind(sigc::ptr_fun(gdbUpdateFileCB), command_file_menu)), 
 	    command_file_menu, 0),
-    GENTRYL("edit", "Edit", MMMenu,
+    GENTRYL("edit", N_("Edit"), MMMenu,
 	    BIND(gdbUpdateEditCB, CommonWindow),
 	    sigc::bind(sigc::ptr_fun(gdbUpdateEditCB), CommonWindow),
 	    command_edit_menu, 0),
-    GENTRYL("views", "Views", MMMenu,
+    GENTRYL("views", N_("Views"), MMMenu,
 	    BIND(gdbUpdateViewsCB, views_menu), 
 	    sigc::hide(sigc::bind(sigc::ptr_fun(gdbUpdateViewsCB), views_menu)), 
 	    views_menu, 0),
-    GENTRYL("program", "Program", MMMenu,
+    GENTRYL("program", N_("Program"), MMMenu,
 	    MMNoCB, MDUMMY, command_program_menu, 0),
-    GENTRYL("commands", "Commands", MMMenu,
+    GENTRYL("commands", N_("Commands"), MMMenu,
 	    MMNoCB, MDUMMY, command_menu, 0),
-    GENTRYL("stack", "Status", MMMenu,
+    GENTRYL("stack", N_("Status"), MMMenu,
 	    MMNoCB, MDUMMY, stack_menu, 0),
-    GENTRYL("source", "Source", MMMenu,
+    GENTRYL("source", N_("Source"), MMMenu,
 	    MMNoCB, MDUMMY, source_menu, 0),
-    GENTRYL("data", "Data", MMMenu,
+    GENTRYL("data", N_("Data"), MMMenu,
 	    MMNoCB, MDUMMY, data_menu, 0),
-    GENTRYL("maintenance", "Maintenance", MMMenu | MMUnmanaged,
+    GENTRYL("maintenance", N_("Maintenance"), MMMenu | MMUnmanaged,
 	    MMNoCB, MDUMMY, maintenance_menu, &maintenance_w),
-    GENTRYL("help", "Help", MMMenu | MMHelp,
+    GENTRYL("help", N_("Help"), MMMenu | MMHelp,
 	    MMNoCB, MDUMMY, simple_help_menu, 0),
     MMEnd
 };
@@ -2779,19 +2779,19 @@ static GUI::Widget *print_examine_w = 0;
 
 static MMDesc print_menu[] =
 {
-    GENTRYL("printRef", "Print *()", MMPush,
+    GENTRYL("printRef", N_("Print *()"), MMPush,
 	    BIND(gdbPrintRefCB, false),
 	    sigc::bind(sigc::ptr_fun(gdbPrintRefCB), false),
 	    0, &print_ref_w),
-    GENTRYL("dump", "Dump ()", MMPush, 
+    GENTRYL("dump", N_("Dump ()"), MMPush, 
 	    BIND(gdbPrintCB, true),
 	    sigc::bind(sigc::ptr_fun(gdbPrintCB), true),
 	    0, &print_dump_w),
-    GENTRYL("whatis", "Whatis ()", MMPush, 
+    GENTRYL("whatis", N_("Whatis ()"), MMPush, 
 	    BIND(gdbWhatisCB, 0),
 	    sigc::ptr_fun(gdbWhatisCB),
 	    0, &print_whatis_w),
-    GENTRYL("examine", "Examine ()...", MMPush, 
+    GENTRYL("examine", N_("Examine ()..."), MMPush, 
 	    BIND(gdbExamineCB, 0),
 	    sigc::ptr_fun(gdbExamineCB),
 	    0, &print_examine_w),
@@ -2810,7 +2810,7 @@ static GUI::Widget *disp_ref_w     = 0;
 
 static MMDesc display_menu[] =
 {
-    GENTRYL("dispRef", "Display *()", MMPush,
+    GENTRYL("dispRef", N_("Display *()"), MMPush,
 	    BIND(gdbDispRefCB, 0),
 	    sigc::ptr_fun(gdbDispRefCB),
 	    0, &disp_ref_w),
@@ -2823,24 +2823,24 @@ struct WatchItems {
 
 static MMDesc watch_menu[] =
 {
-    GENTRYL("watchProperties", "Watchpoint Properties...", MMPush, 
+    GENTRYL("watchProperties", N_("Watchpoint Properties..."), MMPush, 
 	    BIND(gdbEditWatchpointPropertiesCB, 0),
 	    sigc::hide(sigc::ptr_fun(gdbEditWatchpointPropertiesCB)),
 	    0, 0),
-    GENTRYL("enableWatch", "Enable Watchpoint at ()", MMPush, 
+    GENTRYL("enableWatch", N_("Enable Watchpoint at ()"), MMPush, 
 	    BIND(gdbToggleEnableWatchpointCB, 0),
 	    sigc::ptr_fun(gdbToggleEnableWatchpointCB),
 	    0, 0),
     MMSep,
-    GENTRYL("cwatch", "Set Watchpoint on ()", MMPush, 
+    GENTRYL("cwatch", N_("Set Watchpoint on ()"), MMPush, 
 	    BIND(gdbWatchCB, WATCH_CHANGE),
 	    sigc::bind(sigc::ptr_fun(gdbWatchCB), WATCH_CHANGE),
 	    0, 0),
-    GENTRYL("rwatch", "Set Read Watchpoint on ()", MMPush, 
+    GENTRYL("rwatch", N_("Set Read Watchpoint on ()"), MMPush, 
 	    BIND(gdbWatchCB, WATCH_READ),
 	    sigc::bind(sigc::ptr_fun(gdbWatchCB), WATCH_READ),
 	    0, 0),
-    GENTRYL("awatch", "Set Access Watchpoint on ()", MMPush, 
+    GENTRYL("awatch", N_("Set Access Watchpoint on ()"), MMPush, 
 	    BIND(gdbWatchCB, WATCH_ACCESS),
 	    sigc::bind(sigc::ptr_fun(gdbWatchCB), WATCH_ACCESS),
 	    0, 0),
@@ -2850,7 +2850,7 @@ static MMDesc watch_menu[] =
     // number for deleting watchpoints.
 #if 0	
     MMSep,
-    GENTRYL("unwatch", "Unwatch ()", MMPush,
+    GENTRYL("unwatch", N_("Unwatch ()"), MMPush,
 	    BIND(gdbUnwatchCB, 0),
 	    sigc::ptr_fun(gdbUnwatchCB),
 	    0, 0),
@@ -2865,33 +2865,33 @@ struct BreakItems {
 
 static MMDesc break_menu[] = 
 {
-    GENTRYL("tempBreakAt", "Set Temporary Breakpoint at ()", MMPush,
+    GENTRYL("tempBreakAt", N_("Set Temporary Breakpoint at ()"), MMPush,
 	    BIND(gdbTempBreakAtCB, 0),
 	    sigc::ptr_fun(gdbTempBreakAtCB),
 	    0, 0),
-    GENTRYL("regexBreakAt", "Set Breakpoints at Regexp ()", MMPush,
+    GENTRYL("regexBreakAt", N_("Set Breakpoints at Regexp ()"), MMPush,
 	    BIND(gdbRegexBreakAtCB, 0),
 	    sigc::ptr_fun(gdbRegexBreakAtCB),
 	    0, 0),
-    GENTRYL("breakProperties", "Breakpoint Properties...", MMPush, 
+    GENTRYL("breakProperties", N_("Breakpoint Properties..."), MMPush, 
 	    BIND(gdbEditBreakpointPropertiesCB, 0),
 	    sigc::hide(sigc::ptr_fun(gdbEditBreakpointPropertiesCB)),
 	    0, 0),
-    GENTRYL("enableBreak", "Enable Breakpoint at ()", MMPush, 
+    GENTRYL("enableBreak", N_("Enable Breakpoint at ()"), MMPush, 
 	    BIND(gdbToggleEnableBreakpointCB, 0),
 	    sigc::ptr_fun(gdbToggleEnableBreakpointCB),
 	    0, 0),
     MMSep,
-    GENTRYL("contUntil", "Continue Until ()", MMPush,
+    GENTRYL("contUntil", N_("Continue Until ()"), MMPush,
 	    BIND(gdbContUntilCB, 0),
 	    sigc::ptr_fun(gdbContUntilCB),
 	    0, 0),
-    GENTRYL("setPC", "Set Execution Position to ()", MMPush,
+    GENTRYL("setPC", N_("Set Execution Position to ()"), MMPush,
 	    BIND(gdbSetPCCB, 0),
 	    sigc::ptr_fun(gdbSetPCCB),
 	    0, 0),
     MMSep,
-    GENTRYL("clearAt2", "Clear Breakpoint at ()", MMPush,
+    GENTRYL("clearAt2", N_("Clear Breakpoint at ()"), MMPush,
 	    BIND(gdbClearAtCB, 0),
 	    sigc::ptr_fun(gdbClearAtCB),
 	    0, 0),
@@ -2904,11 +2904,11 @@ struct FindItems {
 
 static MMDesc find_menu[] = 
 {
-    GENTRYL("findForward", "@charset Find@small>> @charset()@rm", MMPush, 
+    GENTRYL("findForward", N_("@charset Find@small>> @charset()@rm"), MMPush, 
 	    BIND(gdbFindCB, SourceView::forward),
 	    sigc::bind(sigc::ptr_fun(gdbFindCB), SourceView::forward),
 	    0, 0),
-    GENTRYL("findBackward", "@charset Find@small<< @charset()@rm", MMPush, 
+    GENTRYL("findBackward", N_("@charset Find@small<< @charset()@rm"), MMPush, 
 	    BIND(gdbFindCB, SourceView::backward),
 	    sigc::bind(sigc::ptr_fun(gdbFindCB), SourceView::backward),
 	    0, 0),

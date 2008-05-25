@@ -1042,15 +1042,15 @@ static void SetGCoreMethodCB(unsigned long client_data)
 
 static MMDesc gcore_methods[] =
 {
-    GENTRYL("kill", "kill",     MMPush, 
+    GENTRYL("kill", N_("kill"),     MMPush, 
 	    BIND(SetGCoreMethodCB, 0),
 	    sigc::hide(sigc::bind(sigc::ptr_fun(SetGCoreMethodCB), 0)),
 	    0, &may_kill_w),
-    GENTRYL("gcore", "gcore",   MMPush, 
+    GENTRYL("gcore", N_("gcore"),   MMPush, 
 	    BIND(SetGCoreMethodCB, MAY_GCORE),
 	    sigc::hide(sigc::bind(sigc::ptr_fun(SetGCoreMethodCB), MAY_GCORE)),
 	    0, &may_gcore_w),
-    GENTRYL("ptrace", "ptrace", MMPush, 
+    GENTRYL("ptrace", N_("ptrace"), MMPush, 
 	    BIND(SetGCoreMethodCB, MAY_PTRACE),
 	    sigc::hide(sigc::bind(sigc::ptr_fun(SetGCoreMethodCB), MAY_PTRACE)),
 	    0, &may_ptrace_w),
@@ -1059,11 +1059,11 @@ static MMDesc gcore_methods[] =
 
 static MMDesc gcore_items[] =
 {
-    GENTRYL("dump", "dump",       MMToggle, 
+    GENTRYL("dump", N_("dump"),       MMToggle, 
 	    BIND(SetGCoreSensitivityCB, 0),
 	    sigc::hide(sigc::ptr_fun(SetGCoreSensitivityCB)),
 	    0, &dump_core_w),
-    GENTRYL("method", "method",   MMOptionMenu, 
+    GENTRYL("method", N_("method"),   MMOptionMenu, 
 	    BIND(SetGCoreSensitivityCB, 0),
 	    sigc::hide(sigc::ptr_fun(SetGCoreSensitivityCB)),
 	    gcore_methods, &gcore_methods_w),

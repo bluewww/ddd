@@ -205,19 +205,19 @@ GUI::ActionRec DataDisp::actions [] = {
 struct GraphItms { enum Itms {SelectAll, Refresh, NewArg, New}; };
 MMDesc DataDisp::graph_popup[] =
 {
-    GENTRYL("selectAll", "Select All", MMPush, 
+    GENTRYL("selectAll", N_("Select All"), MMPush, 
 	    BIND(DataDisp::selectAllCB, 0),
 	    sigc::ptr_fun(DataDisp::selectAllCB),
 	    0, 0),
-    GENTRYL("refresh", "Refresh", MMPush,
+    GENTRYL("refresh", N_("Refresh"), MMPush,
 	    BIND(DataDisp::refreshCB, 0),
 	    sigc::ptr_fun(DataDisp::refreshCB),
 	    0, 0),
-    GENTRYL("new_arg", "new_arg", MMPush | MMUnmanaged,
+    GENTRYL("new_arg", N_("new_arg"), MMPush | MMUnmanaged,
 	    BIND(DataDisp::popup_new_argCB, (BoxPoint *)0),
 	    sigc::bind(sigc::ptr_fun(DataDisp::popup_new_argCB), (BoxPoint *)0),
 	    0, 0),
-    GENTRYL("new", "New Display...", MMPush,
+    GENTRYL("new", N_("New Display..."), MMPush,
 	    BIND(DataDisp::popup_newCB, (BoxPoint *)0),
 	    sigc::bind(sigc::ptr_fun(DataDisp::popup_newCB), (BoxPoint *)0),
 	    0, 0),
@@ -228,92 +228,92 @@ MMDesc DataDisp::graph_popup[] =
 const int DataDisp::shortcut_items = 20;
 
 #define SHORTCUT_MENU							\
-    GENTRYL("s1", "s1", MMPush | MMUnmanaged,				\
-	    BIND(DataDisp::shortcutCB, 1),			\
+    GENTRYL("s1", N_("s1"), MMPush | MMUnmanaged,			\
+	    BIND(DataDisp::shortcutCB, 1),				\
 	    sigc::bind(sigc::ptr_fun(DataDisp::shortcutCB), 1),		\
 	    0, 0),							\
-    GENTRYL("s2", "s2", MMPush | MMUnmanaged,				\
-	    BIND(DataDisp::shortcutCB, 2),			\
+    GENTRYL("s2", N_("s2"), MMPush | MMUnmanaged,			\
+	    BIND(DataDisp::shortcutCB, 2),				\
 	    sigc::bind(sigc::ptr_fun(DataDisp::shortcutCB), 2),		\
 	    0, 0),							\
-    GENTRYL("s3", "s3", MMPush | MMUnmanaged,				\
-	    BIND(DataDisp::shortcutCB, 3),			\
+    GENTRYL("s3", N_("s3"), MMPush | MMUnmanaged,			\
+	    BIND(DataDisp::shortcutCB, 3),				\
 	    sigc::bind(sigc::ptr_fun(DataDisp::shortcutCB), 3),		\
 	    0, 0),							\
-    GENTRYL("s4", "s4", MMPush | MMUnmanaged,				\
-	    BIND(DataDisp::shortcutCB, 4),			\
+    GENTRYL("s4", N_("s4"), MMPush | MMUnmanaged,			\
+	    BIND(DataDisp::shortcutCB, 4),				\
 	    sigc::bind(sigc::ptr_fun(DataDisp::shortcutCB), 4),		\
 	    0, 0),							\
-    GENTRYL("s5", "s5", MMPush | MMUnmanaged,				\
-	    BIND(DataDisp::shortcutCB, 5),			\
+    GENTRYL("s5", N_("s5"), MMPush | MMUnmanaged,			\
+	    BIND(DataDisp::shortcutCB, 5),				\
 	    sigc::bind(sigc::ptr_fun(DataDisp::shortcutCB), 5),		\
 	    0, 0),							\
-    GENTRYL("s6", "s6", MMPush | MMUnmanaged,				\
-	    BIND(DataDisp::shortcutCB, 6),			\
+    GENTRYL("s6", N_("s6"), MMPush | MMUnmanaged,			\
+	    BIND(DataDisp::shortcutCB, 6),				\
 	    sigc::bind(sigc::ptr_fun(DataDisp::shortcutCB), 6),		\
 	    0, 0),							\
-    GENTRYL("s7", "s7", MMPush | MMUnmanaged,				\
-	    BIND(DataDisp::shortcutCB, 7),			\
+    GENTRYL("s7", N_("s7"), MMPush | MMUnmanaged,			\
+	    BIND(DataDisp::shortcutCB, 7),				\
 	    sigc::bind(sigc::ptr_fun(DataDisp::shortcutCB), 7),		\
 	    0, 0),							\
-    GENTRYL("s8", "s8", MMPush | MMUnmanaged,				\
-	    BIND(DataDisp::shortcutCB, 8),			\
+    GENTRYL("s8", N_("s8"), MMPush | MMUnmanaged,			\
+	    BIND(DataDisp::shortcutCB, 8),				\
 	    sigc::bind(sigc::ptr_fun(DataDisp::shortcutCB), 8),		\
 	    0, 0),							\
-    GENTRYL("s9", "s9", MMPush | MMUnmanaged,				\
-	    BIND(DataDisp::shortcutCB, 9),			\
+    GENTRYL("s9", N_("s9"), MMPush | MMUnmanaged,			\
+	    BIND(DataDisp::shortcutCB, 9),				\
 	    sigc::bind(sigc::ptr_fun(DataDisp::shortcutCB), 9),		\
 	    0, 0),							\
-    GENTRYL("s10", "s10", MMPush | MMUnmanaged,				\
-	    BIND(DataDisp::shortcutCB, 10),			\
+    GENTRYL("s10", N_("s10"), MMPush | MMUnmanaged,			\
+	    BIND(DataDisp::shortcutCB, 10),				\
 	    sigc::bind(sigc::ptr_fun(DataDisp::shortcutCB), 10),	\
 	    0, 0),							\
-    GENTRYL("s11", "s11", MMPush | MMUnmanaged,				\
-	    BIND(DataDisp::shortcutCB, 11),			\
+    GENTRYL("s11", N_("s11"), MMPush | MMUnmanaged,			\
+	    BIND(DataDisp::shortcutCB, 11),				\
 	    sigc::bind(sigc::ptr_fun(DataDisp::shortcutCB), 11),	\
 	    0, 0),							\
-    GENTRYL("s12", "s12", MMPush | MMUnmanaged,				\
-	    BIND(DataDisp::shortcutCB, 12),			\
+    GENTRYL("s12", N_("s12"), MMPush | MMUnmanaged,			\
+	    BIND(DataDisp::shortcutCB, 12),				\
 	    sigc::bind(sigc::ptr_fun(DataDisp::shortcutCB), 12),	\
 	    0, 0),							\
-    GENTRYL("s13", "s13", MMPush | MMUnmanaged,				\
-	    BIND(DataDisp::shortcutCB, 13),			\
+    GENTRYL("s13", N_("s13"), MMPush | MMUnmanaged,			\
+	    BIND(DataDisp::shortcutCB, 13),				\
 	    sigc::bind(sigc::ptr_fun(DataDisp::shortcutCB), 13),	\
 	    0, 0),							\
-    GENTRYL("s14", "s14", MMPush | MMUnmanaged,				\
-	    BIND(DataDisp::shortcutCB, 14),			\
+    GENTRYL("s14", N_("s14"), MMPush | MMUnmanaged,			\
+	    BIND(DataDisp::shortcutCB, 14),				\
 	    sigc::bind(sigc::ptr_fun(DataDisp::shortcutCB), 14),	\
 	    0, 0),							\
-    GENTRYL("s15", "s15", MMPush | MMUnmanaged,				\
-	    BIND(DataDisp::shortcutCB, 15),			\
+    GENTRYL("s15", N_("s15"), MMPush | MMUnmanaged,			\
+	    BIND(DataDisp::shortcutCB, 15),				\
 	    sigc::bind(sigc::ptr_fun(DataDisp::shortcutCB), 15),	\
 	    0, 0),							\
-    GENTRYL("s16", "s16", MMPush | MMUnmanaged,				\
-	    BIND(DataDisp::shortcutCB, 16),			\
+    GENTRYL("s16", N_("s16"), MMPush | MMUnmanaged,			\
+	    BIND(DataDisp::shortcutCB, 16),				\
 	    sigc::bind(sigc::ptr_fun(DataDisp::shortcutCB), 16),	\
 	    0, 0),							\
-    GENTRYL("s17", "s17", MMPush | MMUnmanaged,				\
-	    BIND(DataDisp::shortcutCB, 17),			\
+    GENTRYL("s17", N_("s17"), MMPush | MMUnmanaged,			\
+	    BIND(DataDisp::shortcutCB, 17),				\
 	    sigc::bind(sigc::ptr_fun(DataDisp::shortcutCB), 17),	\
 	    0, 0),							\
-    GENTRYL("s18", "s18", MMPush | MMUnmanaged,				\
-	    BIND(DataDisp::shortcutCB, 18),			\
+    GENTRYL("s18", N_("s18"), MMPush | MMUnmanaged,			\
+	    BIND(DataDisp::shortcutCB, 18),				\
 	    sigc::bind(sigc::ptr_fun(DataDisp::shortcutCB), 18),	\
 	    0, 0),							\
-    GENTRYL("s19", "s19", MMPush | MMUnmanaged,				\
-	    BIND(DataDisp::shortcutCB, 19),			\
+    GENTRYL("s19", N_("s19"), MMPush | MMUnmanaged,			\
+	    BIND(DataDisp::shortcutCB, 19),				\
 	    sigc::bind(sigc::ptr_fun(DataDisp::shortcutCB), 19),	\
 	    0, 0),							\
-    GENTRYL("s20", "s20", MMPush | MMUnmanaged,				\
-	    BIND(DataDisp::shortcutCB, 20),			\
+    GENTRYL("s20", N_("s20"), MMPush | MMUnmanaged,			\
+	    BIND(DataDisp::shortcutCB, 20),				\
 	    sigc::bind(sigc::ptr_fun(DataDisp::shortcutCB), 20),	\
 	    0, 0),							\
-    GENTRYL("other", "Other...", MMPush,				\
-	    BIND(DataDisp::dependentCB, 0),			\
+    GENTRYL("other", N_("Other..."), MMPush,				\
+	    BIND(DataDisp::dependentCB, 0),				\
 	    sigc::ptr_fun(DataDisp::dependentCB),			\
 	    0, 0),							\
     MMSep,								\
-    GENTRYL("edit", "Edit Menu...", MMPush,				\
+    GENTRYL("edit", N_("Edit Menu..."), MMPush,				\
 	    BIND(dddEditShortcutsCB, 0),				\
 	    sigc::ptr_fun(dddEditShortcutsCB),				\
 	    0, 0)
@@ -333,11 +333,11 @@ MMDesc DataDisp::shortcut_menu[]   =
 {
     SHORTCUT_MENU,
     MMSep,
-    GENTRYLI("new2", "Display ()", DISPLAY_ICON, MMPush,
+    GENTRYLI("new2", N_("Display ()"), DISPLAY_ICON, MMPush,
 	     BIND(DataDisp::displayArgCB, false),
 	     sigc::bind(sigc::ptr_fun(DataDisp::displayArgCB), false),
 	     0, 0),
-    GENTRYLI("dereference2", "Display *()", DISPREF_ICON, MMPush,
+    GENTRYLI("dereference2", N_("Display *()"), DISPREF_ICON, MMPush,
 	     BIND(DataDisp::dereferenceArgCB, 0),
 	     sigc::ptr_fun(DataDisp::dereferenceArgCB),
 	     0, 0),
@@ -354,7 +354,7 @@ struct RotateItms { enum Itms {RotateAll}; };
 
 MMDesc DataDisp::rotate_menu[] =
 {
-    GENTRYL("rotateAll", "Rotate All ()", MMPush | MMInsensitive, 
+    GENTRYL("rotateAll", N_("Rotate All ()"), MMPush | MMInsensitive, 
 	    BIND(DataDisp::rotateCB, true),
 	    sigc::bind(sigc::ptr_fun(DataDisp::rotateCB), true),
 	    0, 0),
@@ -366,88 +366,88 @@ const int DataDisp::theme_items = 20;
 
 MMDesc DataDisp::theme_menu[] =
 {
-    GENTRYL("t1", "t1", MMCheckItem | MMUnmanaged, 
+    GENTRYL("t1", N_("t1"), MMCheckItem | MMUnmanaged, 
 	    BIND(DataDisp::toggleThemeCB, 1),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(DataDisp::toggleThemeCB)), 1),
 	    0, 0), 
-    GENTRYL("t2", "t2", MMCheckItem | MMUnmanaged, 
+    GENTRYL("t2", N_("t2"), MMCheckItem | MMUnmanaged, 
 	    BIND(DataDisp::toggleThemeCB, 2),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(DataDisp::toggleThemeCB)), 2),
 	    0, 0), 
-    GENTRYL("t3", "t3", MMCheckItem | MMUnmanaged, 
+    GENTRYL("t3", N_("t3"), MMCheckItem | MMUnmanaged, 
 	    BIND(DataDisp::toggleThemeCB, 3),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(DataDisp::toggleThemeCB)), 3),
 	    0, 0), 
-    GENTRYL("t4", "t4", MMCheckItem | MMUnmanaged, 
+    GENTRYL("t4", N_("t4"), MMCheckItem | MMUnmanaged, 
 	    BIND(DataDisp::toggleThemeCB, 4),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(DataDisp::toggleThemeCB)), 4),
 	    0, 0), 
-    GENTRYL("t5", "t5", MMCheckItem | MMUnmanaged, 
+    GENTRYL("t5", N_("t5"), MMCheckItem | MMUnmanaged, 
 	    BIND(DataDisp::toggleThemeCB, 5),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(DataDisp::toggleThemeCB)), 5),
 	    0, 0), 
-    GENTRYL("t6", "t6", MMCheckItem | MMUnmanaged, 
+    GENTRYL("t6", N_("t6"), MMCheckItem | MMUnmanaged, 
 	    BIND(DataDisp::toggleThemeCB, 6),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(DataDisp::toggleThemeCB)), 6),
 	    0, 0), 
-    GENTRYL("t7", "t7", MMCheckItem | MMUnmanaged, 
+    GENTRYL("t7", N_("t7"), MMCheckItem | MMUnmanaged, 
 	    BIND(DataDisp::toggleThemeCB, 7),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(DataDisp::toggleThemeCB)), 7),
 	    0, 0), 
-    GENTRYL("t8", "t8", MMCheckItem | MMUnmanaged, 
+    GENTRYL("t8", N_("t8"), MMCheckItem | MMUnmanaged, 
 	    BIND(DataDisp::toggleThemeCB, 8),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(DataDisp::toggleThemeCB)), 8),
 	    0, 0), 
-    GENTRYL("t9", "t9", MMCheckItem | MMUnmanaged, 
+    GENTRYL("t9", N_("t9"), MMCheckItem | MMUnmanaged, 
 	    BIND(DataDisp::toggleThemeCB, 9),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(DataDisp::toggleThemeCB)), 9),
 	    0, 0), 
-    GENTRYL("t10", "t10", MMCheckItem | MMUnmanaged, 
+    GENTRYL("t10", N_("t10"), MMCheckItem | MMUnmanaged, 
 	    BIND(DataDisp::toggleThemeCB, 10),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(DataDisp::toggleThemeCB)), 10),
 	    0, 0), 
-    GENTRYL("t11", "t11", MMCheckItem | MMUnmanaged, 
+    GENTRYL("t11", N_("t11"), MMCheckItem | MMUnmanaged, 
 	    BIND(DataDisp::toggleThemeCB, 11),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(DataDisp::toggleThemeCB)), 11),
 	    0, 0), 
-    GENTRYL("t12", "t12", MMCheckItem | MMUnmanaged, 
+    GENTRYL("t12", N_("t12"), MMCheckItem | MMUnmanaged, 
 	    BIND(DataDisp::toggleThemeCB, 12),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(DataDisp::toggleThemeCB)), 12),
 	    0, 0), 
-    GENTRYL("t13", "t13", MMCheckItem | MMUnmanaged, 
+    GENTRYL("t13", N_("t13"), MMCheckItem | MMUnmanaged, 
 	    BIND(DataDisp::toggleThemeCB, 13),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(DataDisp::toggleThemeCB)), 13),
 	    0, 0), 
-    GENTRYL("t14", "t14", MMCheckItem | MMUnmanaged, 
+    GENTRYL("t14", N_("t14"), MMCheckItem | MMUnmanaged, 
 	    BIND(DataDisp::toggleThemeCB, 14),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(DataDisp::toggleThemeCB)), 14),
 	    0, 0), 
-    GENTRYL("t15", "t15", MMCheckItem | MMUnmanaged, 
+    GENTRYL("t15", N_("t15"), MMCheckItem | MMUnmanaged, 
 	    BIND(DataDisp::toggleThemeCB, 15),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(DataDisp::toggleThemeCB)), 15),
 	    0, 0), 
-    GENTRYL("t16", "t16", MMCheckItem | MMUnmanaged, 
+    GENTRYL("t16", N_("t16"), MMCheckItem | MMUnmanaged, 
 	    BIND(DataDisp::toggleThemeCB, 16),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(DataDisp::toggleThemeCB)), 16),
 	    0, 0), 
-    GENTRYL("t17", "t17", MMCheckItem | MMUnmanaged, 
+    GENTRYL("t17", N_("t17"), MMCheckItem | MMUnmanaged, 
 	    BIND(DataDisp::toggleThemeCB, 17),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(DataDisp::toggleThemeCB)), 17),
 	    0, 0), 
-    GENTRYL("t18", "t18", MMCheckItem | MMUnmanaged, 
+    GENTRYL("t18", N_("t18"), MMCheckItem | MMUnmanaged, 
 	    BIND(DataDisp::toggleThemeCB, 18),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(DataDisp::toggleThemeCB)), 18),
 	    0, 0), 
-    GENTRYL("t19", "t19", MMCheckItem | MMUnmanaged, 
+    GENTRYL("t19", N_("t19"), MMCheckItem | MMUnmanaged, 
 	    BIND(DataDisp::toggleThemeCB, 19),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(DataDisp::toggleThemeCB)), 19),
 	    0, 0), 
-    GENTRYL("t20", "t20", MMCheckItem | MMUnmanaged, 
+    GENTRYL("t20", N_("t20"), MMCheckItem | MMUnmanaged, 
 	    BIND(DataDisp::toggleThemeCB, 20),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(DataDisp::toggleThemeCB)), 20),
 	    0, 0), 
     MMSep, 
-    GENTRYL("edit", "Edit Themes...", MMPush,
+    GENTRYL("edit", N_("Edit Themes..."), MMPush,
 	    BIND(dddPopupThemesCB, 0),
 	    sigc::hide(sigc::ptr_fun(dddPopupThemesCB)),
 	    0, 0),
@@ -460,33 +460,33 @@ struct NodeItms { enum Itms {Dereference, New, Theme, Sep1,
 
 MMDesc DataDisp::node_popup[] =
 {
-    GENTRYL("dereference", "Display *", MMPush,
+    GENTRYL("dereference", N_("Display *"), MMPush,
 	    BIND(DataDisp::dereferenceCB, 0),
 	    sigc::ptr_fun(DataDisp::dereferenceCB),
 	    0, 0),
-    GENTRYL("new", "New Display", MMMenu,
+    GENTRYL("new", N_("New Display"), MMMenu,
 	    MMNoCB,
 	    MDUMMY,
 	    DataDisp::shortcut_popup2, 0),
-    GENTRYL("theme", "Theme", MMMenu,
+    GENTRYL("theme", N_("Theme"), MMMenu,
 	    MMNoCB,
 	    MDUMMY,
 	    DataDisp::theme_menu, 0),
     MMSep,
-    GENTRYL("detail", "Show Detail", MMPush, 
+    GENTRYL("detail", N_("Show Detail"), MMPush, 
 	    BIND(DataDisp::toggleDetailCB, -1),
 	    sigc::bind(sigc::ptr_fun(DataDisp::toggleDetailCB), -1),
 	    0, 0),
-    GENTRYL("rotate", "Rotate", MMPush, 
+    GENTRYL("rotate", N_("Rotate"), MMPush, 
 	    BIND(DataDisp::rotateCB, false),
 	    sigc::bind(sigc::ptr_fun(DataDisp::rotateCB), false),
 	    0, 0),
-    GENTRYL("set", "Set Value...", MMPush,
+    GENTRYL("set", N_("Set Value..."), MMPush,
 	    BIND(DataDisp::setCB, 0),
 	    sigc::ptr_fun(DataDisp::setCB),
 	    0, 0),
     MMSep,
-    GENTRYL("delete", "Undisplay", MMPush, 
+    GENTRYL("delete", N_("Undisplay"), MMPush, 
 	    BIND(DataDisp::deleteCB, 0),
 	    sigc::ptr_fun(DataDisp::deleteCB),
 	    0, 0),
@@ -498,7 +498,7 @@ struct DeleteItms { enum Itms {Cluster}; };
 
 MMDesc DataDisp::delete_menu[] =
 {
-    GENTRYL("cluster", "Cluster", MMPush,
+    GENTRYL("cluster", N_("Cluster"), MMPush,
 	    BIND(DataDisp::toggleClusterSelectedCB, 0), 
 	    sigc::hide(sigc::ptr_fun(DataDisp::toggleClusterSelectedCB)), 
 	    0, 0),
@@ -509,7 +509,7 @@ struct PlotItms { enum Itms { History }; };
 
 MMDesc DataDisp::plot_menu[] =
 {
-    GENTRYL("history", "Plot history of ()", MMPush,
+    GENTRYL("history", N_("Plot history of ()"), MMPush,
 	    BIND(DataDisp::plotHistoryCB, 0), 
 	    sigc::ptr_fun(DataDisp::plotHistoryCB), 
 	    0, 0),
@@ -559,19 +559,19 @@ struct DetailItms { enum Itms { ShowMore, ShowJust,
 
 MMDesc DataDisp::detail_menu[] =
 {
-    GENTRYL("show_more", "Show More ()", MMPush, 
+    GENTRYL("show_more", N_("Show More ()"), MMPush, 
 	    BIND(DataDisp::showMoreDetailCB, 1),
 	    sigc::bind(sigc::ptr_fun(DataDisp::showMoreDetailCB), 1),
 	    0, 0),
-    GENTRYL("show_just", "Show Just ()", MMPush, 
+    GENTRYL("show_just", N_("Show Just ()"), MMPush, 
 	    BIND(DataDisp::showDetailCB, 1),
 	    sigc::bind(sigc::ptr_fun(DataDisp::showDetailCB), 1),
 	    0, 0),
-    GENTRYL("show_detail", "Show All ()", MMPush, 
+    GENTRYL("show_detail", N_("Show All ()"), MMPush, 
 	    BIND(DataDisp::showDetailCB, -1),
 	    sigc::bind(sigc::ptr_fun(DataDisp::showDetailCB), -1),
 	    0, 0),
-    GENTRYL("hide_detail", "Hide ()", MMPush, 
+    GENTRYL("hide_detail", N_("Hide ()"), MMPush, 
 	    BIND(DataDisp::hideDetailCB, 0),
 	    (sigc::ptr_fun(DataDisp::hideDetailCB)),
 	    0, 0),
@@ -584,35 +584,35 @@ struct DisplayItms { enum Itms {New, Dereference,
 
 MMDesc DataDisp::display_area[] =
 {
-    GENTRYL("new", "New...", MMPush,
+    GENTRYL("new", N_("New..."), MMPush,
 	    BIND(DataDisp::dependentCB, 0),
 	    (sigc::ptr_fun(DataDisp::dependentCB)),
 	    0, 0),
-    GENTRYL("dereference", "Display *", MMPush,
+    GENTRYL("dereference", N_("Display *"), MMPush,
 	    BIND(DataDisp::dereferenceCB, 0),
 	    (sigc::ptr_fun(DataDisp::dereferenceCB)),
 	    0, 0),
-    GENTRYL("show_detail", "Show All ()", MMPush, 
+    GENTRYL("show_detail", N_("Show All ()"), MMPush, 
 	    BIND(DataDisp::showDetailCB, -1),
 	    sigc::bind(sigc::ptr_fun(DataDisp::showDetailCB), -1),
 	    0, 0),
-    GENTRYL("hide_detail", "Hide ()", MMPush, 
+    GENTRYL("hide_detail", N_("Hide ()"), MMPush, 
 	    BIND(DataDisp::hideDetailCB, 0),
 	    (sigc::ptr_fun(DataDisp::hideDetailCB)),
 	    0, 0),
-    GENTRYL("set", "Set ()", MMPush,
+    GENTRYL("set", N_("Set ()"), MMPush,
 	    BIND(DataDisp::setCB, 0),
 	    (sigc::ptr_fun(DataDisp::setCB)),
 	    0, 0),
-    GENTRYL("cluster", "Cluster ()", MMPush,
+    GENTRYL("cluster", N_("Cluster ()"), MMPush,
 	    BIND(DataDisp::clusterSelectedCB, 0),
 	    sigc::hide(sigc::ptr_fun(DataDisp::clusterSelectedCB)),
 	    0, 0),
-    GENTRYL("uncluster", "Uncluster", MMPush,
+    GENTRYL("uncluster", N_("Uncluster"), MMPush,
 	    BIND(DataDisp::unclusterSelectedCB, 0),
 	    sigc::hide(sigc::ptr_fun(DataDisp::unclusterSelectedCB)),
 	    0, 0),
-    GENTRYL("delete", "Undisplay", MMPush | MMHelp, 
+    GENTRYL("delete", N_("Undisplay"), MMPush | MMHelp, 
 	    BIND(DataDisp::deleteCB, 0),
 	    (sigc::ptr_fun(DataDisp::deleteCB)),
 	    0, 0),

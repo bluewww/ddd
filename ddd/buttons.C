@@ -2280,7 +2280,7 @@ static void nop(GUI::Widget *) {}
 
 static MMDesc desc[] = 
 {
-    GENTRYL("", "", MMFlatPush,
+    GENTRYL("", N_(""), MMFlatPush,
 	    BIND(nop, 0),
 	    sigc::ptr_fun(nop),
 	    0, 0),

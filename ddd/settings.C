@@ -5632,15 +5632,15 @@ static void ToggleButtonCB(GUI::CheckButton *w, ButtonTarget client_data)
 
 static MMDesc button_menu[] =
 {
-    GENTRYL("console", "console", MMToggle, 
+    GENTRYL("console", N_("console"), MMToggle, 
 	    BIND(ToggleButtonCB, ConsoleTarget),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(ToggleButtonCB)), ConsoleTarget),
 	    0, 0),
-    GENTRYL("source", "source", MMToggle, 
+    GENTRYL("source", N_("source"), MMToggle, 
 	    BIND(ToggleButtonCB, SourceTarget),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(ToggleButtonCB)), SourceTarget),
 	    0, 0),
-    GENTRYL("data", "data", MMToggle, 
+    GENTRYL("data", N_("data"), MMToggle, 
 	    BIND(ToggleButtonCB, DataTarget),
 	    sigc::bind(sigc::retype(sigc::ptr_fun(ToggleButtonCB)), DataTarget),
 	    0, 0),
@@ -6151,15 +6151,15 @@ static void ToggleArgCB(void)
 
 static MMDesc commands_menu[] =
 {
-    GENTRYL("record", "record", MMPush, 
+    GENTRYL("record", N_("record"), MMPush, 
 	    BIND(RecordCommandDefinitionCB, 0),
 	    sigc::ptr_fun(RecordCommandDefinitionCB),
 	    0, &record_w),
-    GENTRYL("end", "end", MMPush | MMInsensitive, 
+    GENTRYL("end", N_("end"), MMPush | MMInsensitive, 
 	    BIND(EndCommandDefinitionCB, 0),
 	    sigc::ptr_fun(EndCommandDefinitionCB),
 	    0, &end_w),
-    GENTRYL("edit", "edit", MMPush, 
+    GENTRYL("edit", N_("edit"), MMPush, 
 	    BIND(ToggleEditCommandDefinitionCB, 0),
 	    sigc::ptr_fun(ToggleEditCommandDefinitionCB),
 	    0, &edit_w),
@@ -6168,11 +6168,11 @@ static MMDesc commands_menu[] =
 
 static MMDesc name_menu[] =
 {
-    GENTRYL("name", "name", MMComboBox | MMUnmanagedLabel, 
+    GENTRYL("name", N_("name"), MMComboBox | MMUnmanagedLabel, 
 	    BIND(UpdateDefinePanelCB, 0),
 	    sigc::ptr_fun(UpdateDefinePanelCB),
 	    0, &name_w),
-    GENTRYL("arg", "arg", MMToggle,
+    GENTRYL("arg", N_("arg"), MMToggle,
 	    BIND(ToggleArgCB, 0),
 	    sigc::hide(sigc::ptr_fun(ToggleArgCB)),
 	    0, &arg_w),
@@ -6181,9 +6181,9 @@ static MMDesc name_menu[] =
 
 static MMDesc panel_menu[] = 
 {
-    GENTRYL("name", "name", MMButtonPanel, MMNoCB, MDUMMY, name_menu, 0),
-    GENTRYL("commands", "commands", MMButtonPanel, MMNoCB, MDUMMY, commands_menu, 0),
-    GENTRYL("button", "button", MMButtonPanel, MMNoCB, MDUMMY, button_menu, 0),
+    GENTRYL("name", N_("name"), MMButtonPanel, MMNoCB, MDUMMY, name_menu, 0),
+    GENTRYL("commands", N_("commands"), MMButtonPanel, MMNoCB, MDUMMY, commands_menu, 0),
+    GENTRYL("button", N_("button"), MMButtonPanel, MMNoCB, MDUMMY, button_menu, 0),
     MMEnd
 };
 
