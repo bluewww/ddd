@@ -450,6 +450,7 @@ struct TextItms {
 };
 
 #if defined(IF_XM)
+#define N_(x) (x)
 static const _XtString const text_cmd_labels[] =
 #else
 static const char *const text_cmd_labels[] =

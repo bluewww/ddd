@@ -9328,9 +9328,6 @@ DataDisp::DataDisp(Widget parent, Widget& data_buttons_w)
     int arg = 0;
     XtSetArg (args[arg], ARGSTR(XtNgraph), (Graph *)disp_graph); arg++;
 
-    (new GUI::Label(*parent, "GRAPH EDITOR", "GRAPH_EDITOR"))->show();
-    parent->show();
-    
     if (app_data.panned_graph_editor)
     {
 	graph_edit = createPannedGraphEdit(parent, 
