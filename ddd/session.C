@@ -1175,7 +1175,7 @@ void SaveSessionAsCB(Widget w, XtPointer client_data, XtPointer call_data)
 // Save current session from a list of choices
 void SaveSessionAsCB(GUI::Widget *w)
 {
-    static GUI::WidgetPtr<GUI::SelectionDialog> dialog = 
+    static GUI::SelectionDialog *dialog = 
 	create_session_panel(w, "sessions_to_save",
 			     SaveSessionCB1, DeleteSessionsCB1);
 
@@ -1184,7 +1184,7 @@ void SaveSessionAsCB(GUI::Widget *w)
     if (dump_core_w == 0)
     {
 	// Create panel
-	GUI::WidgetPtr<GUI::Widget> panel = MMcreateButtonPanel(dialog, "panel", gcore_items);
+	GUI::Widget *panel = MMcreateButtonPanel(dialog, "panel", gcore_items);
 	XtVaSetValues(panel, 
 		      XmNorientation, XmHORIZONTAL,
 		      XmNborderWidth,  0,
@@ -1646,7 +1646,7 @@ void OpenSessionCB(Widget w, XtPointer, XtPointer)
 // Load session from a list of choices
 void OpenSessionCB(GUI::Widget *w)
 {
-    static GUI::WidgetPtr<GUI::SelectionDialog> dialog = 
+    static GUI::SelectionDialog *dialog = 
 	create_session_panel(w, "sessions_to_open",
 			     OpenThisSessionCB1, DeleteSessionsCB1);
 

@@ -4652,7 +4652,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 
     // Data window
     GUI::Container *data_disp_parent = paned_work_w;
-    GUI::WidgetPtr<GUI::MenuBar> data_menubar_w = 0;
+    GUI::MenuBar *data_menubar_w = 0;
     GUI::Container *data_main_window_w = 0;
     if (app_data.separate_data_window)
     {
@@ -7097,8 +7097,8 @@ static unsigned char initial_focus_policy;
 static Widget preferences_dialog;
 static Widget reset_preferences_w;
 #else
-static GUI::WidgetPtr<GUI::Dialog> preferences_dialog = NULL;
-static GUI::WidgetPtr<GUI::Button> reset_preferences_w = NULL;
+static GUI::Dialog *preferences_dialog = NULL;
+static GUI::Button *reset_preferences_w = NULL;
 #endif
 #if !defined(IF_XM)
 static sigc::connection reset_preferences_connection;
@@ -8060,7 +8060,7 @@ static int add_panel(GUI::Notebook *parent,
 {
     std::cerr << ">> add_panel <<\n";
     int pageno = parent->get_n_pages();
-    GUI::WidgetPtr<GUI::HBox> form = new GUI::HBox(*parent, GUI::PACK_SHRINK, name, label);
+    GUI::HBox *form = new GUI::HBox(*parent, GUI::PACK_SHRINK, name, label);
     // Do not show() the form here; this is under the control of the
     // Notebook widget.
 
@@ -8098,7 +8098,7 @@ static void OfferRestartCB(Widget dialog, XtPointer, XtPointer)
     }
 }
 #else
-static void OfferRestartCB(GUI::WidgetPtr<GUI::Dialog> &dialog)
+static void OfferRestartCB(GUI::Dialog *&dialog)
 {
     if (startup_preferences_changed() || font_preferences_changed())
     {
@@ -8222,7 +8222,7 @@ static void make_preferences(GUI::Widget *parent)
     reset_preferences_w = preferences_dialog->add_button("reset", "Reset");
     reset_preferences_w->show();
 
-    GUI::WidgetPtr<GUI::Notebook> change = new GUI::Notebook(*preferences_dialog, GUI::PACK_SHRINK, "change");
+    GUI::Notebook *change = new GUI::Notebook(*preferences_dialog, GUI::PACK_SHRINK, "change");
     change->show();
     reset_preferences_w->signal_clicked().connect(sigc::bind(sigc::ptr_fun(ResetPreferencesCB), change));
 

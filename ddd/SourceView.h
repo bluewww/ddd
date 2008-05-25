@@ -51,7 +51,6 @@
 // Motif includes
 #include <Xm/Xm.h>
 #else
-#include <GUI/WidgetPtr.h>
 #include <GUI/SelectionDialog.h>
 #include <GUI/RadioButton.h>
 #include <GUI/Button.h>
@@ -510,10 +509,10 @@ class SourceView {
     static Widget int_registers_w;          // Display integer registers
     static Widget all_registers_w;          // Display all registers
 #else
-    static GUI::WidgetPtr<GUI::SelectionDialog> register_dialog_w;    // Dialog for registers
-    static GUI::WidgetPtr<GUI::ListView> register_list_w;             // Register list inside
-    static GUI::WidgetPtr<GUI::RadioButton> int_registers_w;          // Display integer registers
-    static GUI::WidgetPtr<GUI::RadioButton> all_registers_w;          // Display all registers
+    static GUI::SelectionDialog *register_dialog_w;    // Dialog for registers
+    static GUI::ListView *register_list_w;             // Register list inside
+    static GUI::RadioButton *int_registers_w;          // Display integer registers
+    static GUI::RadioButton *all_registers_w;          // Display all registers
 #endif
 
     static bool register_dialog_popped_up;    // True if registers are visible
@@ -1269,8 +1268,8 @@ public:
     static Widget source() { return source_text_w; }
     static Widget code()   { return code_text_w; }
 #else
-    static GUI::WidgetPtr<GUI::ScrolledText> source() { return source_text_w; }
-    static GUI::WidgetPtr<GUI::ScrolledText> code()   { return code_text_w; }
+    static GUI::ScrolledText *source() { return source_text_w; }
+    static GUI::ScrolledText *code()   { return code_text_w; }
 #endif
 
 #if defined(IF_XM)

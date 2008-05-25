@@ -5457,10 +5457,10 @@ static Widget apply_w;			// `Apply' button
 static GUI::ComboBoxEntryText *name_w;	// Name of defined command
 static GUI::CheckButton *arg_w;		// `()' toggle
 static GUI::Button *record_w;		// `Record' button
-static GUI::WidgetPtr<GUI::Button> end_w;	// `End' button
-static GUI::WidgetPtr<GUI::Button> edit_w;	// `Edit>>' button
+static GUI::Button *end_w;	// `End' button
+static GUI::Button *edit_w;	// `Edit>>' button
 static GUI::ScrolledText *editor_w;		// Command definition editor
-static GUI::WidgetPtr<GUI::Button> apply_w;	// `Apply' button
+static GUI::Button *apply_w;	// `Apply' button
 #endif
 
 static string current_name()

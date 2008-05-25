@@ -77,8 +77,8 @@ char args_rcsid[] =
 static Widget run_dialog;
 static Widget run_arguments_w;
 #else
-static GUI::WidgetPtr<GUI::Dialog> run_dialog;
-static GUI::WidgetPtr<GUI::ComboBoxEntryText> run_arguments_w;
+static GUI::Dialog *run_dialog;
+static GUI::ComboBoxEntryText *run_arguments_w;
 #endif
 static StringArray run_arguments;
 static string last_run_argument;
@@ -87,13 +87,13 @@ static bool run_arguments_updated = false;
 #if defined(IF_XM)
 static Widget make_dialog;
 #else
-static GUI::WidgetPtr<GUI::Dialog> make_dialog;
+static GUI::Dialog *make_dialog;
 #endif
 static StringArray make_arguments;
 #if defined(IF_XM)
 static Widget make_arguments_w;
 #else
-static GUI::WidgetPtr<GUI::ComboBoxEntryText> make_arguments_w;
+static GUI::ComboBoxEntryText *make_arguments_w;
 #endif
 static bool make_arguments_updated = false;
 static string last_make_argument;

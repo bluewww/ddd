@@ -168,7 +168,6 @@ char SourceView_rcsid[] =
 #include <gdkmm/displaymanager.h>
 
 #include <GUI/Box.h>
-#include <GUI/WidgetPtr.h>
 #include <GUI/RadioBox.h>
 #include <GUI/SelectionDialog.h>
 #include <GUI/RadioButton.h>
@@ -600,10 +599,10 @@ GUI::SelectionDialog *SourceView::stack_dialog_w    = 0;
 GUI::ListView *SourceView::frame_list_w             = 0;
 GUI::Button *SourceView::up_w                       = 0;
 GUI::Button *SourceView::down_w                     = 0;
-GUI::WidgetPtr<GUI::SelectionDialog> SourceView::register_dialog_w = 0;
-GUI::WidgetPtr<GUI::ListView> SourceView::register_list_w          = 0;
-GUI::WidgetPtr<GUI::RadioButton> SourceView::int_registers_w       = 0;
-GUI::WidgetPtr<GUI::RadioButton> SourceView::all_registers_w       = 0;
+GUI::SelectionDialog *SourceView::register_dialog_w = 0;
+GUI::ListView *SourceView::register_list_w          = 0;
+GUI::RadioButton *SourceView::int_registers_w       = 0;
+GUI::RadioButton *SourceView::all_registers_w       = 0;
 
 GUI::Dialog *SourceView::thread_dialog_w         = 0;
 GUI::ListView *SourceView::thread_list_w         = 0;
@@ -5575,7 +5574,7 @@ void SourceView::create_shells()
 
     up_w = stack_dialog_w->add_button("Up");
     down_w = stack_dialog_w->add_button("Down");
-    GUI::WidgetPtr<GUI::Button> cancel_w =
+    GUI::Button *cancel_w =
 	stack_dialog_w->add_button("Cancel");
 
     set_sensitive(up_w,   False);
@@ -5603,9 +5602,9 @@ void SourceView::create_shells()
     Delay::register_shell(register_dialog_w);
 
 
-    GUI::WidgetPtr<GUI::RadioBox> box = new GUI::RadioBox(*register_dialog_w,
-							  GUI::PACK_SHRINK,
-							  "box", GUI::ORIENTATION_HORIZONTAL);
+    GUI::RadioBox *box = new GUI::RadioBox(*register_dialog_w,
+					   GUI::PACK_SHRINK,
+					   "box", GUI::ORIENTATION_HORIZONTAL);
     box->show();
 
     int_registers_w =
