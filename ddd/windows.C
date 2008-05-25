@@ -103,7 +103,7 @@ Widget tool_shell;
 Widget tool_buttons_w;
 #else
 GUI::Window *tool_shell;
-GUI::Box *tool_buttons_w;
+GUI::Container *tool_buttons_w;
 #endif
 
 // Shell state stuff

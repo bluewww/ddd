@@ -62,7 +62,7 @@ GUI::Container *make_buttons(GUI::Container *parent, const char *name, const cha
 
 // Assign BUTTONS the buttons specified in LIST.  If MANAGE is set,
 // (un)manage BUTTONS depending on the number of buttons.
-void set_buttons(GUI::Box *buttons, const char *list, bool manage = true);
+void set_buttons(GUI::Container *buttons, const char *list, bool manage = true);
 #endif
 
 #if defined(IF_XM)

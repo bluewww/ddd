@@ -66,7 +66,7 @@ extern Widget tool_shell;
 extern Widget tool_buttons_w;
 #else
 extern GUI::Window *tool_shell;
-extern GUI::Box *tool_buttons_w;
+extern GUI::Container *tool_buttons_w;
 #endif
 
 // Shell management

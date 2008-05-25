@@ -43,6 +43,8 @@ char Tool_rcsid[] =
 #include <Xm/Form.h>
 #include <Xm/DialogS.h>
 #include <Xm/MwmUtil.h>
+#else
+#include <GUI/Table.h>
 #endif
 
 #include "Delay.h"
@@ -173,15 +175,6 @@ void create_command_tool()
 #else
 void create_command_tool()
 {
-    // It is preferable to realize the command tool as a DialogShell,
-    // since this will cause it to stay on top of other DDD windows.
-    // Unfortunately, some window managers do not decorate transient
-    // windows such as DialogShells.  In this case, use a TopLevel
-    // shell instead and rely on the DDD auto-raise mechanisms defined
-    // in `windows.C'.
-    //
-    // Nobody ever honors all this work.  -AZ
-
     if (app_data.tool_buttons == 0 || strlen(app_data.tool_buttons) == 0)
 	return;
 
@@ -192,7 +185,9 @@ void create_command_tool()
 
     AddDeleteWindowCallback(tool_shell, sigc::ptr_fun(gdbCloseToolWindowCB));
 
-    tool_buttons_w = new GUI::VBox(*tool_shell, GUI::PACK_SHRINK, "tool_buttons");
+    GUI::Table *table = new GUI::Table(*tool_shell, GUI::PACK_SHRINK, "tool_buttons");
+    table->set_columns(2);
+    tool_buttons_w = table;
     tool_buttons_w->show();
     set_buttons(tool_buttons_w, app_data.tool_buttons, false);
 

@@ -1592,7 +1592,7 @@ void set_buttons(Widget buttons, const _XtString _button_list, bool manage)
     delete delay;
 }
 #else
-void set_buttons(GUI::Box *buttons, const char *_button_list, bool manage)
+void set_buttons(GUI::Container *buttons, const char *_button_list, bool manage)
 {
     string *sp;
 
