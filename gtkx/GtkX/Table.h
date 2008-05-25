@@ -36,6 +36,7 @@
 namespace GtkX {
 
     class Table: public Container, public Gtk::Table {
+	int cols;
 	int x, y, w, h;
     public:
 	Table(GtkX::Container &parent, PackOptions po=PACK_SHRINK, const String &name="",
@@ -46,6 +47,7 @@ namespace GtkX {
 #include <GtkX/redirect.h>
 	void set_position(int x0, int y0, int w0=1, int h0=1);
 	void set_cell_size(int w0=1, int h0=1);
+	int set_columns(int c0=0);
 	void cr(int h=1);
 	void add_child(GtkX::Widget &child,
 		       PackOptions options=PACK_SHRINK,

@@ -75,11 +75,23 @@ Table::set_cell_size(int w0, int h0)
     h = h0;
 }
 
+int
+Table::set_columns(int c0)
+{
+    int c = cols;
+    cols = c0;
+    return c;
+}
+
 void
 Table::add_child(GtkX::Widget &child,
 		 PackOptions options,
 		 int padding)
 {
+    // Set cols to enable automatic wrapping.
+    if (cols > 0 && (x+w) > cols) {
+	cr();
+    }
     attach(*child.internal(), x, x+w, y, y+h);
     x = x+w;
 }
