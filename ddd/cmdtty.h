@@ -29,11 +29,15 @@
 #ifndef _DDD_cmdtty_h
 #define _DDD_cmdtty_h
 
+#if defined(HAVE_CONFIG_H)
+#include "config.h"
+#endif
+
 #include "bool.h"
 #include "strclass.h"
 
-#if defined(IF_GTK)
-#include <glibmm/ustring.h>
+#if !defined(IF_XM)
+#include <GUI/Widget.h>
 #endif
 
 // Initialize command tty
@@ -59,17 +63,17 @@ extern void _tty_out(const string& text);
 extern void tty_full_name(const string& text);
 #else
 // Output TEXT on controlling TTY, unless we've just composed a command
-extern void tty_out(const Glib::ustring& text);
+extern void tty_out(const GUI::String& text);
 extern void tty_out(const string& text);
 extern void tty_out(const char *text);
 
 // Output TEXT on controlling TTY (unconditionally)
-extern void _tty_out(const Glib::ustring& text);
+extern void _tty_out(const GUI::String& text);
 extern void _tty_out(const string& text);
 extern void _tty_out(const char *text);
 
 // Output TEXT on controlling TTY if we're in full_name_mode
-extern void tty_full_name(const Glib::ustring& text);
+extern void tty_full_name(const GUI::String& text);
 extern void tty_full_name(const string& text);
 extern void tty_full_name(const char *text);
 #endif

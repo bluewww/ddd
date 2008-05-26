@@ -302,7 +302,6 @@ void ddd_install_fatal(const char * /* program_name */)
 }
 
 #if defined(IF_XM)
-
 // Post a dialog containing TITLE and CAUSE
 static void post_fatal(const string& title, const string& cause,
 		       const string& cls, bool core_dumped = false)
@@ -364,9 +363,7 @@ static void post_fatal(const string& title, const string& cause,
     wait_until_mapped(fatal_dialog);
     XSync(XtDisplay(fatal_dialog), False);
 }
-
 #else
-
 // Post a dialog containing TITLE and CAUSE
 static void post_fatal(const string& title, const string& cause,
 		       const string& cls, bool core_dumped = false)
@@ -422,7 +419,6 @@ static void post_fatal(const string& title, const string& cause,
 #warning XSync?
 #endif
 }
-
 #endif
 
 // Show the user that a signal has been raised
@@ -661,7 +657,6 @@ static bool ddd_dump_core(int sig...)
 }
 
 #if defined(IF_XM)
-
 void DDDDumpCoreCB(Widget, XtPointer, XtPointer)
 {
     StatusDelay delay("Dumping core");
@@ -679,9 +674,7 @@ void DDDDumpCoreCB(Widget, XtPointer, XtPointer)
     if (!is_core_file("core"))
 	delay.outcome = "failed";
 }
-
 #else
-
 void DDDDumpCoreCB(void)
 {
     StatusDelay delay("Dumping core");
@@ -699,7 +692,6 @@ void DDDDumpCoreCB(void)
     if (!is_core_file("core"))
 	delay.outcome = "failed";
 }
-
 #endif
 
 //-----------------------------------------------------------------------------
@@ -1035,7 +1027,6 @@ void gdb_eofHP(Agent *agent, void *, void *)
 }
 
 #if defined(IF_XM)
-
 static XtIntervalId post_exception_timer = 0;
 static void PostExceptionCB(XtPointer, XtIntervalId *id)
 {
@@ -1045,16 +1036,13 @@ static void PostExceptionCB(XtPointer, XtIntervalId *id)
 
     post_gdb_died(gdb->title() + ": internal exception", -1);
 }
-
 #else
-
 static GUI::connection post_exception_timer;
 static bool PostExceptionCB()
 {
     post_gdb_died(gdb->title() + ": internal exception", -1);
     return false;
 }
-
 #endif
 
 // Internal exception (JDB)
@@ -1110,7 +1098,6 @@ void gdb_exceptionHP(Agent *agent, void *, void *call_data)
 }
 
 #if defined(IF_XM)
-
 // GDB died
 void gdb_diedHP(Agent *gdb, void *, void *call_data)
 {
@@ -1141,9 +1128,7 @@ void gdb_diedHP(Agent *gdb, void *, void *call_data)
 	XtRemoveTimeOut(post_exception_timer);
     post_exception_timer = 0;
 }
-
 #else
-
 // GDB died
 void gdb_diedHP(Agent *gdb, void *, void *call_data)
 {
@@ -1160,7 +1145,7 @@ void gdb_diedHP(Agent *gdb, void *, void *call_data)
 	if (!tty_running())
 	{
 	    // Forward diagnostics from debugger console to stderr
-	    Glib::ustring ustr = gdb_w->get_text(messagePosition, -1);
+	    GUI::String ustr = gdb_w->get_text(messagePosition, -1);
 	    string message(ustr.c_str());
 	    std::cerr << message;
 	}
@@ -1173,7 +1158,6 @@ void gdb_diedHP(Agent *gdb, void *, void *call_data)
 	post_exception_timer.disconnect();
     }
 }
-
 #endif
 
 //-----------------------------------------------------------------------------
@@ -1181,7 +1165,6 @@ void gdb_diedHP(Agent *gdb, void *, void *call_data)
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 // Exit callback
 void _DDDExitCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
@@ -1190,9 +1173,7 @@ void _DDDExitCB(Widget w, XtPointer client_data, XtPointer call_data)
     XtCallbackProc closure = ddd_is_restarting ? RestartCB : ExitCB;
     closure(w, client_data, call_data);
 }
-
 #else
-
 // Exit callback
 void _DDDExitCB(long status)
 {
@@ -1203,7 +1184,6 @@ void _DDDExitCB(long status)
     else
 	ExitCB(status);
 }
-
 #endif
 
 // `quit' has been canceled
@@ -1213,7 +1193,6 @@ static void DDDQuitCanceledCB(const string&, void *)
 }
 
 #if defined(IF_XM)
-
 // Exit/Restart after confirmation, depending on the setting of
 // DDD_IS_RESTARTING
 static void DDDDoneCB(Widget w, XtPointer client_data, XtPointer call_data)
@@ -1258,9 +1237,7 @@ static void DDDDoneCB(Widget w, XtPointer client_data, XtPointer call_data)
 
     manage_and_raise(quit_dialog);
 }
-
 #else
-
 // Exit/Restart after confirmation, depending on the setting of
 // DDD_IS_RESTARTING
 static void DDDDoneCB(GUI::Widget *w, long status)
@@ -1302,11 +1279,9 @@ static void DDDDoneCB(GUI::Widget *w, long status)
 
     manage_and_raise(quit_dialog);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Exit immediately if DDD is not ready
 static void DDDDoneAnywayCB(Widget w, XtPointer client_data, XtPointer)
 {
@@ -1324,9 +1299,7 @@ void DDDExitCB(Widget w, XtPointer client_data, XtPointer)
     ddd_is_shutting_down = false;
     DDDDoneCB(w, client_data, XtPointer(0));
 }
-
 #else
-
 // Exit immediately if DDD is not ready
 static void DDDDoneAnywayCB(GUI::Widget *w, long status)
 {
@@ -1344,11 +1317,9 @@ void DDDExitCB(GUI::Widget *w, long status)
     ddd_is_shutting_down = false;
     DDDDoneCB(w, status);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Restart unconditionally
 static void _DDDRestartCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
@@ -1368,9 +1339,7 @@ static void _DDDRestartCB(Widget w, XtPointer client_data, XtPointer call_data)
     ddd_is_shutting_down = false;
     DDDDoneCB(w, client_data, XtPointer(0));
 }
-
 #else
-
 // Restart unconditionally
 static void _DDDRestartCB(GUI::Widget *w, unsigned long flags)
 {
@@ -1392,11 +1361,9 @@ static void _DDDRestartCB(GUI::Widget *w, unsigned long flags)
     ddd_is_shutting_down = false;
     DDDDoneCB(w, flags);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Restart after confirmation
 void DDDRestartCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
@@ -1426,9 +1393,7 @@ void DDDRestartCB(Widget w, XtPointer client_data, XtPointer call_data)
     else
 	_DDDRestartCB(w, client_data, call_data);
 }
-
 #else
-
 // Restart after confirmation
 void DDDRestartCB(GUI::Widget *w)
 {
@@ -1456,7 +1421,6 @@ void DDDRestartCB(GUI::Widget *w)
     else
 	_DDDRestartCB(w, flags);
 }
-
 #endif
 
 static void debug_ddd(bool core_dumped)
@@ -1517,22 +1481,18 @@ void report_core(std::ostream& log)
 }
 
 #if defined(IF_XM)
-
 // Debug DDD
 void DDDDebugCB(Widget, XtPointer client_data, XtPointer)
 {
     bool core_dumped = (int)(long)client_data;
     debug_ddd(core_dumped);
 }
-
 #else
-
 // Debug DDD
 void DDDDebugCB(bool core_dumped)
 {
     debug_ddd(core_dumped);
 }
-
 #endif
 
 #if defined(WITH_VALGRIND)
@@ -1559,17 +1519,13 @@ bool RunningOnValgrind()
 }
 
 #if defined(IF_XM)
-
 void dddValgrindLeakCheckCB(Widget, XtPointer, XtPointer)
 {
   VALGRIND_DO_LEAK_CHECK
 }
-
 #else
-
 void dddValgrindLeakCheckCB(void)
 {
   VALGRIND_DO_LEAK_CHECK
 }
-
 #endif

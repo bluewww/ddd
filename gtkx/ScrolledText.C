@@ -198,13 +198,13 @@ ScrolledText::xy_to_pos(double x, double y)
     return iter.get_offset();
 }
 
-Glib::ustring
+String
 ScrolledText::get_text(void)
 {
     return tb_->get_text();
 }
 
-Glib::ustring
+String
 ScrolledText::get_text(long o1, long o2)
 {
     Gtk::TextIter iter1 = tb_->get_iter_at_offset(o1);
@@ -225,20 +225,20 @@ ScrolledText::get_editable(void) const
 }
 
 void
-ScrolledText::insert(long pos, const Glib::ustring &repl)
+ScrolledText::insert(long pos, const String &repl)
 {
     Gtk::TextIter iter = tb_->get_iter_at_offset(pos);
-    tb_->insert(iter, repl);
+    tb_->insert(iter, repl.s());
 }
 
 void
-ScrolledText::replace(long pos1, long pos2, const Glib::ustring &repl)
+ScrolledText::replace(long pos1, long pos2, const String &repl)
 {
     Gtk::TextIter iter1 = tb_->get_iter_at_offset(pos1);
     Gtk::TextIter iter2 = tb_->get_iter_at_offset(pos2);
     tb_->erase(iter1, iter2);
     iter1 = tb_->get_iter_at_offset(pos1);
-    tb_->insert(iter1, repl);
+    tb_->insert(iter1, repl.s());
 }
 
 void
@@ -262,9 +262,9 @@ ScrolledText::set_insertion_position(long pos)
 }
 
 void
-ScrolledText::set_text(const Glib::ustring &repl)
+ScrolledText::set_text(const String &repl)
 {
-    tb_->set_text(repl);
+    tb_->set_text(repl.s());
 }
 
 Glib::SignalProxy0<void>
@@ -293,16 +293,17 @@ ScrolledText::set_highlight(long pos1, long pos2, HighlightMode mode)
 }
 
 long
-ScrolledText::find_backward(Glib::ustring str, long start)
+ScrolledText::find_backward(String str, long start)
 {
     Gtk::TextIter iter;
+    Glib::ustring search = str.s();
     if (start == -1)
 	iter = tb_->end();
     else
 	iter = tb_->get_iter_at_offset(start);
     while (iter.backward_char()) {
 	gunichar c = *iter;
-	if (str.find(c) != (size_t)-1)
+	if (search.find(c) != (size_t)-1)
 	    return iter.get_offset();
     }
     return -1;
@@ -324,13 +325,14 @@ ScrolledText::find_backward(gunichar c, long start)
 }
 
 long
-ScrolledText::find_forward(Glib::ustring str, long start)
+ScrolledText::find_forward(String str, long start)
 {
     Gtk::TextIter iter;
+    Glib::ustring search = str.s();
     iter = tb_->get_iter_at_offset(start);
     while (iter.forward_char()) {
 	gunichar c = *iter;
-	if (str.find(c) != (size_t)-1)
+	if (search.find(c) != (size_t)-1)
 	    return iter.get_offset();
     }
     return -1;

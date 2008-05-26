@@ -96,7 +96,7 @@ void tty_out(const char *text)
     tty_out(string(text));
 }
 
-void tty_out(const Glib::ustring& text)
+void tty_out(const GUI::String& text)
 {
 #ifdef NAG_ME
 #warning FIXME: Write unicode?

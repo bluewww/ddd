@@ -145,7 +145,7 @@ string current_line()
 		 XmTextGetLastPosition(gdb_w) - promptPosition);
     XtFree(str);
 #else
-    Glib::ustring text = gdb_w->get_text(promptPosition, -1);
+    GUI::String text = gdb_w->get_text(promptPosition, -1);
     string input(text.c_str());
 #endif
     return input;

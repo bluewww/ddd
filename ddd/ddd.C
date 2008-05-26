@@ -11655,7 +11655,7 @@ static void setup_command_tty()
 	init_msg.gsub("\337", "ss");
 	init_msg.gsub("\251", "(C)");
 #else
-	Glib::ustring init_msg = gdb_w->get_text();
+	GUI::String init_msg = gdb_w->get_text();
 #endif
 	tty_out(init_msg);
     }
