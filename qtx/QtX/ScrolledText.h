@@ -88,12 +88,16 @@ namespace QtX {
 
     class ScrolledText: public QtX::Widget, public QTextEdit
     {
+	sigc::signal<void> signal_changed_;
+	void changed_callback(void);
     public:
 	ScrolledText(void);
 	ScrolledText(QtX::Container &parent, PackOptions po=PACK_SHRINK,
 		     const QtX::String &name="", const QtX::String &label="");
 	QWidget *internal(void);
 	const QWidget *internal(void) const;
+	void init_signals(void);
+	void postinit(void);
 	QWidget *signals_from(void);
 	Glib::SignalProxy0<void> signal_changed(void); // From the TextBuffer
 	bool get_editable(void) const;
@@ -120,6 +124,7 @@ namespace QtX {
 	bool pos_to_xy(long pos, int &x, int &y);
 	int get_rows();
 	int get_columns();
+	sigc::signal<void> &signal_changed();
     };
 
 }

@@ -89,14 +89,17 @@ namespace GtkX {
     private:
 	MarkedTextView tv_;
 	Glib::RefPtr<Gtk::TextBuffer> tb_;
+	sigc::signal<void> signal_changed_;
+	void changed_callback(void);
     public:
 	ScrolledText(void);
 	ScrolledText(GtkX::Container &parent, PackOptions po=PACK_SHRINK,
 		     const GtkX::String &name="", const GtkX::String &label="");
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;
+	void init_signals(void);
+	void postinit(void);
 	Gtk::Widget *signals_from(void);
-	Glib::SignalProxy0<void> signal_changed(void); // From the TextBuffer
 	bool get_editable(void) const;
 	void set_editable(bool);
 	long get_last_position(void);
@@ -121,6 +124,7 @@ namespace GtkX {
 	bool pos_to_xy(long pos, int &x, int &y);
 	int get_rows();
 	int get_columns();
+	sigc::signal<void> &signal_changed();
 #include <GtkX/redirect.h>
     };
 

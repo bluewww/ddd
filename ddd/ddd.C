@@ -6707,9 +6707,9 @@ static bool real_update_options(bool noupd)
 
     if (tab_width_w != 0)
     {
-	set_scale(tab_width_w, app_data.tab_width);
-	set_scale(source_indent_w, app_data.indent_source);
-	set_scale(code_indent_w,   app_data.indent_code);
+	tab_width_w->set_value(app_data.tab_width);
+	source_indent_w->set_value(app_data.indent_source);
+	code_indent_w->set_value(app_data.indent_code);
     }
 
     set_toggle(led_w, app_data.blink_while_busy);

@@ -152,6 +152,19 @@ ScrolledText::ScrolledText(void)
     tv_.show();
 }
 
+void
+ScrolledText::init_signals(void)
+{
+    tb_->signal_changed().connect(sigc::mem_fun(*this, &ScrolledText::changed_callback));
+}
+
+void
+ScrolledText::postinit(void)
+{
+    Widget::postinit();
+    init_signals();
+}
+
 ScrolledText::ScrolledText(GtkX::Container &parent, PackOptions po,
 			   const GtkX::String &name, const GtkX::String &label)
 {
@@ -265,12 +278,6 @@ void
 ScrolledText::set_text(const String &repl)
 {
     tb_->set_text(repl.s());
-}
-
-Glib::SignalProxy0<void>
-ScrolledText::signal_changed(void)
-{
-    return tb_->signal_changed();
 }
 
 MarkedTextView &
@@ -406,5 +413,17 @@ ScrolledText::get_columns()
     static int errcnt = 0;
     if (!errcnt++) std::cerr << "ScrolledText: COLUMNS\n";
     return 0;
+}
+
+void
+ScrolledText::changed_callback(void)
+{
+    signal_changed_();
+}
+
+sigc::signal<void> &
+ScrolledText::signal_changed()
+{
+    return signal_changed_;
 }
 
