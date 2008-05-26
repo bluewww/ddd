@@ -76,8 +76,13 @@ extern void gdb_out(const string& text);
 // Output TEXT in GDB window (unconditionally)
 extern void _gdb_out(const string& text);
 
+#if defined(IF_XM)
+// Update option menus
+extern void update_options();
+#else
 // Update option menus
 extern void update_options(bool noupd=false);
+#endif
 
 // Update option menus after toggle
 extern void toggle_update_options();
