@@ -498,6 +498,7 @@ if test "$with_gtk" = yes; then
 dnl
 dnl Check for GTK stuff
 dnl
+AC_DEFINE([IF_GTK], 1, [Define if using Gtk interface])
 gddd=gddd
 GDDD=GDDD
 PKG_CHECK_MODULES(GTKMM, [gtkmm-2.4])
@@ -518,6 +519,7 @@ elif test "$with_qt" = yes; then
 dnl
 dnl Check for QT stuff
 dnl
+AC_DEFINE([IF_QT], 1, [Define if using Qt interface])
 gddd=gddd
 GDDD=GDDD
 PKG_CHECK_MODULES(QT, [QtGui])

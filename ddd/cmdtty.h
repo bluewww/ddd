@@ -32,7 +32,7 @@
 #include "bool.h"
 #include "strclass.h"
 
-#if !defined(IF_XM)
+#if defined(IF_GTK)
 #include <glibmm/ustring.h>
 #endif
 

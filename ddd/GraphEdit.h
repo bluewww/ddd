@@ -38,7 +38,9 @@
 #else
 #include <GUI/Container.h>
 #include <GUI/Events.h>
+#if defined(IF_GTK)
 #include <gtkmm/drawingarea.h>
+#endif
 #include "gtk_wrapper.h"
 #endif
 
@@ -570,7 +572,7 @@ public:
     sigc::signal<void, GraphEditCompareNodesInfo *> signal_compare_nodes();
     sigc::signal<void, GraphEditLayoutInfo *> signal_pre_layout();
     sigc::signal<void, GraphEditLayoutInfo *> signal_post_layout();
-#if !defined(IF_XMMM)
+#if defined(IF_GTK)
 #include <GtkX/redirect.h>
 #endif
 };

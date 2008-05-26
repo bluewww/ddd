@@ -30,17 +30,11 @@
 #define _DDD_session_h
 
 #if defined(IF_XM)
-
 #include <X11/Intrinsic.h>
-
 #else
-
-#include <glibmm/refptr.h>
-#include <gdkmm/window.h>
-
-#endif
-
+#include <GUI/Widget.h>
 #include "gtk_wrapper.h"
+#endif
 
 #include "strclass.h"
 #include "version.h"

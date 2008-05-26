@@ -60,7 +60,9 @@
 #include <GUI/ComboBox.h>
 #include <GUI/Events.h>
 #include <GUI/Dialog.h>
+#if defined(IF_GTK)
 #include <gdkmm/pixbuf.h>
+#endif
 #include "gtk_wrapper.h"
 #endif
 
