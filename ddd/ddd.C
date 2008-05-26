@@ -3692,7 +3692,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 					     app_data.tool_buttons);
 	}
     }
-
+    
     // Install icons if not already done
     install_icons(command_shell, 
 		  app_data.button_color_key,
@@ -5835,7 +5835,7 @@ static bool lock_ddd(Widget parent, LockInfo& info)
 
     msg += rm("To exit this " DDD_NAME " instance, click on ") 
 	+ bf("Exit") + rm(".");
-
+	
     Arg args[10];
     int arg = 0;
 	
@@ -6229,10 +6229,7 @@ inline void notify_set_toggle(Widget w, Boolean new_state)
 {
     set_toggle(w, new_state, true);
 }
-#endif
-
-#if !defined(IF_XM)
-
+#else
 static void set_toggle(GUI::Bipolar *w, bool new_state, bool notify = false)
 {
     if (w == 0)
@@ -6300,28 +6297,8 @@ static bool have_cmd(const string& cmd)
 }
 
 #if defined(IF_XM)
-static void set_scale(Widget w, int val)
-{
-    if (w == 0)
-	return;
-
-    assert(XmIsScale(w));
-
-    XtVaSetValues(w, XmNvalue, val, XtPointer(0));
-}
-#else
-static void set_scale(GUI::Scale *w, int val)
-{
-    if (w == 0)
-	return;
-
-    w->set_value(val);
-}
-#endif
-
-#if defined(IF_XM)
 // Reflect state in option menus
-void update_options(bool noupd)
+void update_options()
 {
     set_toggle(find_words_only_w, app_data.find_words_only);
     set_toggle(words_only_w, app_data.find_words_only);
@@ -6369,9 +6346,12 @@ void update_options(bool noupd)
 
     if (tab_width_w != 0)
     {
-	set_scale(tab_width_w, app_data.tab_width);
-	set_scale(source_indent_w, app_data.indent_source);
-	set_scale(code_indent_w,   app_data.indent_code);
+	XtVaSetValues(tab_width_w,     XmNvalue, app_data.tab_width,     
+		      XtPointer(0));
+	XtVaSetValues(source_indent_w, XmNvalue, app_data.indent_source, 
+		      XtPointer(0));
+	XtVaSetValues(code_indent_w,   XmNvalue, app_data.indent_code,   
+		      XtPointer(0));
     }
 
     set_toggle(led_w, app_data.blink_while_busy);
@@ -6437,10 +6417,9 @@ void update_options(bool noupd)
     set_toggle(graph_show_dependent_titles_w,
 	       app_data.show_dependent_display_titles);
 
-    if (graph_grid_size_w != 0) {
+    if (graph_grid_size_w != 0)
 	XtVaSetValues(graph_grid_size_w, XmNvalue, show_grid ? grid_width : 0, 
 		      XtPointer(0));
-    }
 
 
     unsigned char policy = '\0';
@@ -7076,6 +7055,8 @@ static void set_settings_title(GUI::Widget *w)
 }
 #endif
 
+
+
 //-----------------------------------------------------------------------------
 // Preferences
 //-----------------------------------------------------------------------------
@@ -7570,13 +7551,13 @@ static void ResetStartupPreferencesCB(void)
     notify_set_toggle(set_toolbars_at_bottom_w, 
 		      initial_app_data.toolbars_at_bottom);
 
-    std::cerr << "Focus policy?\n";
 #if defined(IF_XM)
     notify_set_toggle(set_focus_pointer_w, 
 		      initial_focus_policy == XmPOINTER);
     notify_set_toggle(set_focus_explicit_w,
 		      initial_focus_policy == XmEXPLICIT);
 #else
+    std::cerr << "Focus policy?\n";
     notify_set_toggle(set_focus_pointer_w, 
 		      initial_focus_policy == 1);
     notify_set_toggle(set_focus_explicit_w,
@@ -7729,6 +7710,7 @@ static void ResetFontPreferencesCB(void)
 }
 #endif
 
+
 static bool font_preferences_changed()
 {
     if (string(app_data.default_font) != string(initial_app_data.default_font))
@@ -7814,8 +7796,10 @@ static bool helpers_preferences_changed()
     return false;
 }
 
+
 #if defined(IF_XM)
-static void ResetPreferencesCB(Widget w, XtPointer client_data, XtPointer call_data)
+static void ResetPreferencesCB(Widget w, XtPointer client_data, 
+  			       XtPointer call_data)
 {
     Widget panel = (Widget)client_data;
     string panel_name = XtName(panel);
@@ -7863,7 +7847,7 @@ static void ResetPreferencesCB(GUI::Notebook *nb)
 #if defined(IF_XM)
 void update_reset_preferences()
 {
-    if (current_panel != (Widget)0 && reset_preferences_w != (Widget)0 && option_state_saved)
+    if (current_panel != 0 && reset_preferences_w != 0 && option_state_saved)
     {
 	string panel_name = XtName(current_panel);
 
@@ -7921,14 +7905,13 @@ void update_reset_preferences()
 #endif
 
 #if defined(IF_XM)
-static void ChangePanelCB(Widget w, XtPointer client_data, XtPointer call_data)
+static void ChangePanelCB(Widget, XtPointer client_data, XtPointer call_data)
 {
     Widget panel = (Widget)client_data;
     XmToggleButtonCallbackStruct *cbs = 
 	(XmToggleButtonCallbackStruct *)call_data;
-    bool set = cbs->set;
 
-    if (set)
+    if (cbs->set)
     {
 	// Manage this child
 	XtManageChild(panel);
@@ -7948,7 +7931,8 @@ static void ChangePanelCB(Widget w, XtPointer client_data, XtPointer call_data)
 		      XmNnumChildren, &num_children,
 		      XtPointer(0));
 
-	for (Cardinal i = 0; i < num_children; i++) {
+	for (Cardinal i = 0; i < num_children; i++)
+	{
 	    Widget child = children[i];
 	    if (child != panel)
 	    {
@@ -7995,8 +7979,7 @@ static void ChangePanelCB(GUI::CheckButton *w, GUI::Widget *panel)
 #endif
 
 #if defined(IF_XM)
-static Widget add_panel(Widget parent,
-			Widget buttons, 
+static Widget add_panel(Widget parent, Widget buttons, 
 			const _XtString name, MMDesc items[],
 			Dimension& max_width, Dimension& max_height,
 			bool set = false)
@@ -8014,30 +7997,28 @@ static Widget add_panel(Widget parent,
 
     // Add panel
     Widget panel = MMcreatePanel(form, "panel", items);
-    XtManageChild(panel);
     MMadjustPanel(items);
     MMaddCallbacks(items);
     MMaddHelpCallback(items, ImmediateHelpCB);
+    XtManageChild(panel);
     register_menu_shell(items);
 
     // Fetch panel geometry
     XtWidgetGeometry size;
     size.request_mode = CWHeight | CWWidth;
     XtQueryGeometry(form, (XtWidgetGeometry *)0, &size);
-    Dimension size_width = size.width;
-    Dimension size_height = size.height;
 
-    size_width  += 10;		// Compensate for small rounding errors
-    size_height += 10;
+    size.width  += 10;		// Compensate for small rounding errors
+    size.height += 10;
 
-    max_width  = max(max_width,  size_width);
-    max_height = max(max_height, size_height);
+    max_width  = max(max_width,  size.width);
+    max_height = max(max_height, size.height);
 
     // Add button
-
     arg = 0;
     Widget button = verify(XmCreateToggleButton(buttons, XMST(name), args, arg));
     XtManageChild(button);
+
     XtAddCallback(button, XmNvalueChangedCallback, ChangePanelCB, 
 		  XtPointer(form));
 
@@ -8165,9 +8146,11 @@ static void make_preferences(Widget parent)
     Widget buttons =
 	verify(XmCreateRadioBox(box, XMST("buttons"), args, arg));
     XtManageChild(buttons);
+
     arg = 0;
     Widget frame = verify(XmCreateFrame(box, XMST("frame"), args, arg));
     XtManageChild(frame);
+
     arg = 0;
     XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
     XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
@@ -8184,7 +8167,7 @@ static void make_preferences(Widget parent)
 	      max_width, max_height, false);
     add_panel(change, buttons, "source",  source_preferences_menu, 
 	      max_width, max_height, false);
-    add_panel(change, buttons, "data", data_preferences_menu, 
+    add_panel(change, buttons, "data",    data_preferences_menu, 
 	      max_width, max_height, false);
     add_panel(change, buttons, "startup", startup_preferences_menu, 
 	      max_width, max_height, false);
@@ -8303,7 +8286,6 @@ static void create_status(Widget parent)
 	     (app_data.status_at_bottom ? XmARROW_UP : XmARROW_DOWN)); arg++;
     Widget arrow_w = 
 	verify(XmCreateArrowButton(status_form, XMST("arrow"), args, arg));
-
     XtManageChild(arrow_w);
 
     // Give some `dummy' status message.  Some Motif versions limit
@@ -8358,21 +8340,18 @@ static void create_status(Widget parent)
     size.request_mode = CWHeight;
     XtQueryGeometry(status_w, (XtWidgetGeometry *)0, &size);
 
-    Dimension size_height = size.height;
-
     if (lesstif_version <= 87)
-	XtVaSetValues(led_w, XmNindicatorSize, size_height - 4, XtPointer(0));
+	XtVaSetValues(led_w, XmNindicatorSize, size.height - 4, XtPointer(0));
     else
-	XtVaSetValues(led_w, XmNindicatorSize, size_height - 1, XtPointer(0));
+	XtVaSetValues(led_w, XmNindicatorSize, size.height - 1, XtPointer(0));
 
     XtVaSetValues(arrow_w,
-		  XmNheight, size_height - 2,
-		  XmNwidth,  size_height - 2,
+		  XmNheight, size.height - 2,
+		  XmNwidth,  size.height - 2,
 		  XtPointer(0));
-
     XtVaSetValues(status_form,
-		  XmNpaneMaximum, size_height,
-		  XmNpaneMinimum, size_height,
+		  XmNpaneMaximum, size.height,
+		  XmNpaneMinimum, size.height,
 		  XtPointer(0));
 
     set_toggle(led_w, app_data.blink_while_busy);
@@ -8451,15 +8430,13 @@ static void create_status(GUI::Container *parent)
 
 static bool blinker_active        = false; // True iff status LED is active
 #if defined(IF_XM)
-static XtIntervalId blink_timer = 0;     // Timer for blinking
+static XtIntervalId blink_timer   = 0;     // Timer for blinking
 #else
 static sigc::connection blink_timer;         // Timer for blinking
 #endif
 
 #if defined(IF_XM)
-static
-void
-BlinkCB(XtPointer client_data, XtIntervalId *id)
+static void BlinkCB(XtPointer client_data, XtIntervalId *id)
 {
     (void) id;			// use it
     assert(*id == blink_timer);
@@ -8468,7 +8445,6 @@ BlinkCB(XtPointer client_data, XtIntervalId *id)
     static bool have_led_colors = false;
     static Pixel led_select_color;
     static Pixel led_background_color;
-
 
     if (!have_led_colors)
     {
@@ -8589,14 +8565,12 @@ static void DisableBlinkHP(Agent *, void *, void *)
 #endif
 
 #if defined(IF_XM)
-static void ToggleBlinkCB(Widget w,
-			  XtPointer, 
-			  XtPointer call_data)
+static void ToggleBlinkCB(Widget, XtPointer, XtPointer call_data)
 {
-    string debugger_status_indicator =
-	"Debugger status indicator ";
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
+    string debugger_status_indicator =
+	"Debugger status indicator ";
 
     app_data.blink_while_busy = info->set;
 
@@ -8638,11 +8612,13 @@ static Widget history_shell = 0;
 #else
 static GUI::Menu *history_shell = 0;
 #endif
-
 #if defined(IF_XM)
-static void
-PopupStatusHistoryCB(Widget w, XtPointer client_data, XtPointer call_data)
+static void PopupStatusHistoryCB(Widget w, XtPointer client_data, 
+				 XtPointer call_data)
 {
+    (void) call_data;		// Use it
+    (void) client_data;		// Use it
+
     history_shell = status_history(w);
 
     Position shell_x, shell_y;
@@ -8653,7 +8629,6 @@ PopupStatusHistoryCB(Widget w, XtPointer client_data, XtPointer call_data)
 
     XtWidgetGeometry size;
     size.request_mode = CWHeight;
-    Dimension size_height;
     Position x, y;
     if (app_data.status_at_bottom)
     {
@@ -8712,8 +8687,7 @@ PopupStatusHistoryCB(const GUI::EventButton *, GUI::Widget *w)
 #endif
 
 #if defined(IF_XM)
-static void
-PopdownStatusHistoryCB(Widget, XtPointer, XtPointer)
+static void PopdownStatusHistoryCB(Widget, XtPointer, XtPointer)
 {
     if (history_shell != 0)
 	XtPopdown(history_shell);
@@ -8738,6 +8712,7 @@ static void PopdownStatusHistoryEH(Widget w, XtPointer client_data,
 #warning PopdownStatusHistoryEH unimplemented?
 #endif
 #endif
+
 
 
 //-----------------------------------------------------------------------------
@@ -9046,6 +9021,7 @@ void update_user_buttons()
 // Handlers
 //-----------------------------------------------------------------------------
 
+#if defined(IF_XM)
 static void gdb_readyHP(Agent *, void *, void *call_data)
 {
     bool gdb_ready = bool(long(call_data));
@@ -9054,22 +9030,13 @@ static void gdb_readyHP(Agent *, void *, void *call_data)
 	if (!gdb_initialized)
 	{
 	    gdb_initialized = true;
-#if defined(IF_XM)
 	    XmTextSetEditable(gdb_w, true);
-#else
-	    gdb_w->set_editable(true);
-#endif
 	}
 
 	// Process next pending command as soon as we return
-	if (!emptyCommandQueue()) {
-#if defined(IF_XM)
+	if (!emptyCommandQueue())
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0, 
 			    processCommandQueue, XtPointer(0));
-#else
-	    GUI::signal_idle().connect(sigc::ptr_fun(processCommandQueue));
-#endif
-	}
 
 	// Check for mouse pointer grabs
 	check_grabs(true);
@@ -9077,15 +9044,9 @@ static void gdb_readyHP(Agent *, void *, void *call_data)
 	// Completion is done
 	clear_completion_delay();
 
-#if defined(IF_XM)
 	// Selection is done
 	if (gdb_selection_dialog != 0)
 	    XtUnmanageChild(gdb_selection_dialog);
-#else
-	// Selection is done
-	if (gdb_selection_dialog != 0)
-	    gdb_selection_dialog->hide();
-#endif
 
 	// We don't exit and we don't restart
 	ddd_is_exiting = ddd_is_restarting = false;
@@ -9101,18 +9062,60 @@ static void gdb_readyHP(Agent *, void *, void *call_data)
     // Some stuff that must be executed every other time
     fix_status_size();
 }
+#else
+static void gdb_readyHP(Agent *, void *, void *call_data)
+{
+    bool gdb_ready = bool(long(call_data));
+    if (gdb_ready)
+    {
+	if (!gdb_initialized)
+	{
+	    gdb_initialized = true;
+	    gdb_w->set_editable(true);
+	}
+
+	// Process next pending command as soon as we return
+	if (!emptyCommandQueue()) {
+	    GUI::signal_idle().connect(sigc::ptr_fun(processCommandQueue));
+	}
+
+	// Check for mouse pointer grabs
+	check_grabs(true);
+
+	// Completion is done
+	clear_completion_delay();
+
+	// Selection is done
+	if (gdb_selection_dialog != 0)
+	    gdb_selection_dialog->hide();
+
+	// We don't exit and we don't restart
+	ddd_is_exiting = ddd_is_restarting = false;
+
+	if (app_data.uniconify_when_ready && userInteractionSeen())
+	{
+	    // Uniconify the command shell.  If `iconify all windows
+	    // at once' is set, this also uniconifies the other windows.
+	    uniconify_shell(command_shell);
+	}
+    }
+
+    // Some stuff that must be executed every other time
+    fix_status_size();
+}
+#endif
 
 
 struct WhenReadyInfo {
     MString message;
-
 #if defined(IF_XM)
     XtCallbackProc proc;
     XtPointer client_data;
     XmPushButtonCallbackStruct cbs;
     XEvent event;
 
-    WhenReadyInfo(const MString &msg, XtCallbackProc p, XtPointer cl_data,
+    WhenReadyInfo(const MString &msg, XtCallbackProc p,
+		  XtPointer cl_data,
 		  const XmPushButtonCallbackStruct& c)
 	: message(msg),
 	  proc(p),
@@ -9141,13 +9144,12 @@ struct WhenReadyInfo {
     {
     }
 #endif
+
 private:
     WhenReadyInfo(const WhenReadyInfo&);
     WhenReadyInfo& operator= (const WhenReadyInfo&);
 };
-
 #if !defined(IF_XM)
-
 struct WhenReadyInfo1 {
     MString message;
     slot_gui_w proc;
@@ -9176,9 +9178,7 @@ static void DoneCB(const string& /* answer */, void *qu_data)
 #endif
     delete info;
 }
-
 #if !defined(IF_XM)
-
 static void DoneCB1(const string& /* answer */, void *qu_data)
 {
     WhenReadyInfo1 *info = (WhenReadyInfo1 *)qu_data;
@@ -9324,7 +9324,7 @@ static void gdb_echo_detectedHP(Agent *, void *, void *call_data)
 
 	    // Attempt to disable echo mode explicitly via stty command.
 #if defined(IF_XM)
-	    gdb_command(gdb->shell_command("stty -echo -onlcr"), Widget(0), 0, 0, 
+	    gdb_command(gdb->shell_command("stty -echo -onlcr"), 0, 0, 0, 
 			false, false, COMMAND_PRIORITY_AGAIN);
 #else
 	    gdb_command(gdb->shell_command("stty -echo -onlcr"), (GUI::Widget*)(0), 0, 0, 
@@ -9461,6 +9461,7 @@ static void gdb_ctrl(char ctrl)
 #warning Cannot handle tab or CR characters from gdb
 #endif
 #endif
+
     case '\b':
     {
 	// Erase last character
@@ -9531,13 +9532,13 @@ void _gdb_out(const string& txt)
     if (gdb_input_at_prompt)
 	debuggee_running = false;
 
-    if (promptPosition == 0) {
 #if defined(IF_XM)
+    if (promptPosition == 0)
 	promptPosition = XmTextGetLastPosition(gdb_w);
 #else
+    if (promptPosition == 0)
 	promptPosition = gdb_w->get_last_position();
 #endif
-    }
 
     private_gdb_output = true;
 
@@ -9891,7 +9892,6 @@ static void gdbPasteClipboardCB(GUI::Widget *w, DDDWindow client_data)
 }
 #endif
 
-
 #if defined(IF_XM)
 static void gdbUnselectAllCB(Widget w, XtPointer client_data,
 			     XtPointer call_data)
@@ -9919,18 +9919,20 @@ static void gdbUnselectAllCB(void)
 #endif
 
 #if defined(IF_XM)
-static void gdbClearAllCB(Widget, XtPointer, XtPointer)
+static void gdbClearAllCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
-    gdbUnselectAllCB(Widget(0), XtPointer(0), XtPointer(0));
+    gdbUnselectAllCB(w, client_data, call_data);
     source_arg->set_string("");
-    gdbClearCB(Widget(0), XtPointer(0), XtPointer(0));
+    gdbClearCB(w, client_data, call_data);
 }
 
-static void gdbSelectAllCB(Widget w, XtPointer client_data, XtPointer call_data)
+static void gdbSelectAllCB(Widget w, XtPointer client_data, 
+			   XtPointer call_data)
 {
     DDDWindow win = ddd_window(client_data);
 
-    Time tm = time(XtLastEventProcessed(XtDisplay(w)));
+    XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
+    Time tm = time(cbs->event);
 
     bool success = false;
     Widget dest = XmGetDestination(XtDisplay(w));
@@ -10000,9 +10002,8 @@ static void gdbSelectAllCB(GUI::Widget *w, DDDWindow client_data)
 #endif
 
 
-
 #if defined(IF_XM)
-static void gdbDeleteSelectionCB(Widget w, XtPointer client_data,
+static void gdbDeleteSelectionCB(Widget w, XtPointer client_data, 
 				 XtPointer call_data)
 {
     DDDWindow win = ddd_window(client_data);
@@ -10153,6 +10154,7 @@ static void setup_cut_copy_paste_bindings(xmlDoc *db)
 }
 #endif
 
+
 // Update select all bindings
 static void set_select_all_bindings(MMDesc *menu, BindingStyle style)
 {
@@ -10225,6 +10227,7 @@ static void setup_select_all_bindings(xmlDoc *db)
 }
 #endif
 
+
 //-----------------------------------------------------------------------------
 // Update menu entries
 //-----------------------------------------------------------------------------
@@ -10246,17 +10249,14 @@ static int mapped_menus()
     return _mapped_menus;
 }
 
-static void count_mapped_menus(
 #if defined(IF_XM)
-    Widget, XtPointer, XtPointer call_data
+static void count_mapped_menus(Widget, XtPointer, XtPointer call_data)
 #else
-    GdkEventAny *ev
+static void count_mapped_menus(GdkEventAny *ev)
 #endif
-)
 {
 #if defined(IF_XM)
     XmRowColumnCallbackStruct *cbs = (XmRowColumnCallbackStruct *)call_data;
-
     if (cbs == 0)
 	return;
 
@@ -10307,11 +10307,13 @@ static void count_mapped_menus(
 	break;
     }
 #endif
+
     // std::clog << _mapped_menus << " mapped menus\n";
 }
 
 #if defined(IF_XM)
-static void gdbUpdateEditCB(Widget w, XtPointer client_data, XtPointer call_data)
+static void gdbUpdateEditCB(Widget w, XtPointer client_data, 
+			    XtPointer call_data)
 {
     DDDWindow win = ddd_window(client_data);
 
@@ -10338,6 +10340,7 @@ static void gdbUpdateEditCB(Widget w, XtPointer client_data, XtPointer call_data
 
     if (menu == 0 || menu[0].widget == 0)
 	return;
+
     count_mapped_menus(w, client_data, call_data);
 
     // Reset undo/redo actions
@@ -10368,9 +10371,17 @@ static void gdbUpdateEditCB(Widget w, XtPointer client_data, XtPointer call_data
 	set_sensitive(menu[EditItems::Redo].widget, true);
     }
 
+
     // Check if we have something to cut
     XmTextPosition start, end;
     bool can_cut = false;
+    Widget dest  = XmGetDestination(XtDisplay(w));
+
+    // Try destination window
+    if (!can_cut && dest != 0 && XmIsText(dest))
+	can_cut = XmTextGetSelectionPosition(dest, &start, &end);
+    if (!can_cut && dest != 0 && XmIsTextField(dest))
+	can_cut = XmTextFieldGetSelectionPosition(dest, &start, &end);
 
     // Try debugger console
     if (!can_cut && (win == GDBWindow || win == CommonWindow))
@@ -10468,7 +10479,8 @@ static void gdbUpdateEditCB(GUI::Widget *w, DDDWindow client_data)
 #endif
 
 #if defined(IF_XM)
-static void gdbUpdateFileCB(Widget w, XtPointer client_data, XtPointer call_data)
+static void gdbUpdateFileCB(Widget w, XtPointer client_data, 
+			    XtPointer call_data)
 {
     MMDesc *file_menu = (MMDesc *)client_data;
     if (file_menu == 0 || file_menu[0].widget == 0)
@@ -10478,15 +10490,9 @@ static void gdbUpdateFileCB(Widget w, XtPointer client_data, XtPointer call_data
 
     // Check whether we can print something
     Graph *graph = graphEditGetGraph(data_disp->graph_edit);
-    if (!graph)
-	std::cerr << "ERROR: get_graph() returned NULL\n";
-    else
-    {
-	bool can_print = (graph->firstNode() != 0);
-	set_sensitive(file_menu[FileItems::Print].widget,      can_print);
-	set_sensitive(file_menu[FileItems::PrintAgain].widget, can_print);
-    }
-
+    bool can_print = (graph->firstNode() != 0);
+    set_sensitive(file_menu[FileItems::Print].widget,      can_print);
+    set_sensitive(file_menu[FileItems::PrintAgain].widget, can_print);
 
     // Check whether we can close something
     bool can_close = (running_shells() > 1);
@@ -10531,7 +10537,8 @@ static void gdbUpdateFileCB(MMDesc *file_menu)
 #endif
 
 #if defined(IF_XM)
-static void gdbUpdateViewCB(Widget w, XtPointer client_data, XtPointer call_data)
+static void gdbUpdateViewCB(Widget w, XtPointer client_data, 
+			    XtPointer call_data)
 {
     MMDesc *view_menu = (MMDesc *)client_data;
     if (view_menu == 0 || view_menu[0].widget == 0)
@@ -10556,7 +10563,8 @@ static void gdbUpdateViewCB(MMDesc *view_menu)
 #endif
 
 #if defined(IF_XM)
-static void gdbUpdateViewsCB(Widget w, XtPointer client_data, XtPointer call_data)
+static void gdbUpdateViewsCB(Widget w, XtPointer client_data, 
+			     XtPointer call_data)
 {
     gdbUpdateViewCB(w, client_data, call_data);
 
@@ -10727,6 +10735,7 @@ static void ddd_xt_warning(String message)
 
 
 
+
 //-----------------------------------------------------------------------------
 // Splash Screen
 //-----------------------------------------------------------------------------
@@ -10749,9 +10758,8 @@ static void popdown_splash_screen(XtPointer data, XtIntervalId *id)
     
     if (splash_shell != 0)
     {
-	if (splash_pixmap) {
+	if (splash_pixmap != None)
 	    XFreePixmap(XtDisplay(splash_shell), splash_pixmap);
-	}
 
 	popdown_shell(splash_shell);
 	DestroyWhenIdle(splash_shell);
@@ -10876,6 +10884,7 @@ static void SetSplashScreenCB(GUI::CheckButton *w)
 }
 #endif
 
+
 //-----------------------------------------------------------------------------
 // GDB status
 //-----------------------------------------------------------------------------
@@ -10899,7 +10908,6 @@ static void ReportStartHP(Agent *agent, void *, void *)
 
 static void ReportDeathHP(Agent *agent, void *, void *call_data)
 {
-    std::cerr << "FIXME: ReportDeathHP\n";
     GDBAgent *gdb = ptr_cast(GDBAgent, agent);
     if (gdb == 0)
 	return;
@@ -10928,12 +10936,12 @@ static void vsl_echo(const string& msg)
 
     if (dialog == 0)
     {
+	Arg args[10];
+	Cardinal arg = 0;
+
 	// We report only the first message.  
 	// Everything else only goes into the status line.
 	MString message = rm("The VSL interpreter failed:") + cr() + tt(msg);
-
-	Arg args[10];
-	Cardinal arg = 0;
 
 	XtSetArg(args[arg], XmNdeleteResponse, XmDESTROY);          arg++;
 	XtSetArg(args[arg], XmNautoUnmanage,   False);              arg++;
@@ -10941,6 +10949,7 @@ static void vsl_echo(const string& msg)
 	dialog = verify(XmCreateWarningDialog(find_shell(gdb_w), 
 					      XMST("vsl_message"), 
 					      args, arg));
+
 	XtUnmanageChild(XmMessageBoxGetChild(dialog, 
 					     XmDIALOG_CANCEL_BUTTON));
 
@@ -10949,7 +10958,6 @@ static void vsl_echo(const string& msg)
 	XtAddCallback(dialog, XmNcancelCallback,  DestroyShellCB, 0);
 	XtAddCallback(dialog, XmNhelpCallback,    ImmediateHelpCB, 0);
 	XtAddCallback(dialog, XmNdestroyCallback, ClearDialogCB, &dialog);
-
     }
 
     manage_and_raise(dialog);
@@ -10977,6 +10985,7 @@ static void vsl_echo(const string& msg)
     set_status_mstring(rm("VSL: ") + tt(msg));
 }
 #endif
+
 
 //-----------------------------------------------------------------------------
 // Emergency
@@ -11014,10 +11023,6 @@ extern "C" {
 
 bool process_emergencies()
 {
-//    static unsigned int errcnt = 0;
-//    errcnt++;
-//    if (errcnt%80==0) std::cerr << "\n";
-//    std::cerr << "." << std::flush;
 #if defined(IF_XM)
     XEvent event;
     if (XCheckIfEvent(XtDisplay(gdb_w), &event, is_emergency, 0))
@@ -11252,6 +11257,7 @@ static void setup_show(xmlDoc *db, const char *app_name, const char *gdb_name)
 	exit(EXIT_SUCCESS);
 }
 #endif
+
 
 //-----------------------------------------------------------------------------
 // Various setups
