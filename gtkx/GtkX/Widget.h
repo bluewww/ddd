@@ -69,6 +69,8 @@ namespace GtkX {
 
     // This class is used to simplify constructors which can take a
     // unicode or old-fashioned C string.
+    typedef unsigned int UChar;
+
     class String {
 	Glib::ustring s_;
     public:
@@ -80,7 +82,7 @@ namespace GtkX {
 	String(void);
 	~String(void);
 	Glib::ustring &s(void);
-	gunichar operator[](int i) const;
+	UChar operator[](int i) const;
 	const char *c(void) const; // FIXME - don't expose raw char*
 	const char *c_str(void) const; // FIXME - don't expose raw char*
 	const Glib::ustring &s(void) const;

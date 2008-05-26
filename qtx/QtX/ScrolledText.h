@@ -99,7 +99,6 @@ namespace QtX {
 	void init_signals(void);
 	void postinit(void);
 	QWidget *signals_from(void);
-	Glib::SignalProxy0<void> signal_changed(void); // From the TextBuffer
 	bool get_editable(void) const;
 	void set_editable(bool);
 	long get_last_position(void);
@@ -107,19 +106,19 @@ namespace QtX {
 	long get_insertion_position(void);
 	bool get_selection_bounds(long &begin, long &end);
 	void clear_selection(void);
-	void replace(long pos1, long pos2, const Glib::ustring &repl);
-	void insert(long pos, const Glib::ustring &repl);
-	void set_text(const Glib::ustring &repl);
-	Glib::ustring get_text(void);
-	Glib::ustring get_text(long, long);
+	void replace(long pos1, long pos2, const GUI::String &repl);
+	void insert(long pos, const GUI::String &repl);
+	void set_text(const GUI::String &repl);
+	GUI::String get_text(void);
+	GUI::String get_text(long, long);
 	void show_position(long pos);
-	MarkedTextView &view(void);
-	Glib::RefPtr<Gtk::TextBuffer> buffer(void);
+	// MarkedTextView &view(void);
+	// Glib::RefPtr<Gtk::TextBuffer> buffer(void);
 	void set_highlight(long pos1, long pos2, HighlightMode);
-	long find_forward(Glib::ustring str, long start=0);
-	long find_backward(Glib::ustring str, long start=-1);
-	long find_forward(gunichar c, long start=0);
-	long find_backward(gunichar c, long start=-1);
+	long find_forward(GUI::String str, long start=0);
+	long find_backward(GUI::String str, long start=-1);
+	long find_forward(UChar c, long start=0);
+	long find_backward(UChar c, long start=-1);
 	long xy_to_pos(double x, double y);
 	bool pos_to_xy(long pos, int &x, int &y);
 	int get_rows();

@@ -40,6 +40,8 @@ namespace QtX {
 
     // This class is used to simplify constructors which can take a
     // unicode or old-fashioned C string.
+    typedef unsigned int UChar;
+
     class String {
 	QString s_;
     public:

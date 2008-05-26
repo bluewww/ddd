@@ -118,8 +118,8 @@ namespace GtkX {
 	void set_highlight(long pos1, long pos2, HighlightMode);
 	long find_forward(String str, long start=0);
 	long find_backward(String str, long start=-1);
-	long find_forward(gunichar c, long start=0);
-	long find_backward(gunichar c, long start=-1);
+	long find_forward(UChar c, long start=0);
+	long find_backward(UChar c, long start=-1);
 	long xy_to_pos(double x, double y);
 	bool pos_to_xy(long pos, int &x, int &y);
 	int get_rows();
