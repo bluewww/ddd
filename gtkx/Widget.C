@@ -64,7 +64,7 @@ String::operator==(const String &str) const
     return s_ == str.s_;
 }
 
-gunichar
+UChar
 String::operator[](int i) const
 {
     return s_[i];

@@ -317,7 +317,7 @@ ScrolledText::find_backward(String str, long start)
 }
 
 long
-ScrolledText::find_backward(gunichar c, long start)
+ScrolledText::find_backward(UChar c, long start)
 {
     Gtk::TextIter iter;
     if (start == -1)
@@ -346,7 +346,7 @@ ScrolledText::find_forward(String str, long start)
 }
 
 long
-ScrolledText::find_forward(gunichar c, long start)
+ScrolledText::find_forward(UChar c, long start)
 {
     Gtk::TextIter iter;
     iter = tb_->get_iter_at_offset(start);
