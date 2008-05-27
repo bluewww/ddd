@@ -30,7 +30,9 @@ char ArgField_rcsid[] =
     "$Id$";
 
 //-----------------------------------------------------------------------------
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
+#endif
 
 #include "ArgField.h"
 #include <ctype.h>
@@ -49,6 +51,7 @@ char ArgField_rcsid[] =
 #if defined(IF_XM)
 #include "ComboBox.h"
 #endif
+
 
 #if defined(IF_XM)
 // Constructor
@@ -237,10 +240,7 @@ void ArgField::callHandlers ()
 }
 
 #if defined(IF_XM)
-Widget ArgField::top() const
-{
-    return ComboBoxTop(text());
-}
+Widget ArgField::top() const { return ComboBoxTop(text()); }
 #else
 GUI::Widget *ArgField::top() const
 {
@@ -250,6 +250,7 @@ GUI::Widget *ArgField::top() const
     return text();
 }
 #endif
+
 
 #if defined(IF_XM)
 // Clear the text field given in Widget(CLIENT_DATA)

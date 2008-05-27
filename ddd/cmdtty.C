@@ -88,9 +88,7 @@ void tty_out(const string& text)
 
     _tty_out(text);
 }
-
 #if !defined(IF_XM)
-
 void tty_out(const char *text)
 {
     tty_out(string(text));
@@ -103,9 +101,7 @@ void tty_out(const GUI::String& text)
 #endif
     tty_out(text.c_str());
 }
-
 #endif
-
 
 // Output TEXT on controlling TTY (unconditionally)
 void _tty_out(const string& text)
@@ -115,9 +111,7 @@ void _tty_out(const string& text)
 
     command_tty->write(text.chars(), text.length());
 }
-
 #if !defined(IF_XM)
-
 void _tty_out(const char *text)
 {
     _tty_out(string(text));
@@ -130,7 +124,6 @@ void _tty_out(const Glib::ustring& text)
 #endif
     _tty_out(text.c_str());
 }
-
 #endif
 
 // Output TEXT on controlling TTY if we're in annotation mode
@@ -155,9 +148,7 @@ void tty_full_name(const string& pos)
 	    _tty_out(line + "\n");
     }
 }
-
 #if !defined(IF_XM)
-
 void tty_full_name(const char *text)
 {
     tty_full_name(string(text));
@@ -170,7 +161,6 @@ void tty_full_name(const Glib::ustring& text)
 #endif
     tty_full_name(text.c_str());
 }
-
 #endif
 
 // Issue an artificial prompt

@@ -29,7 +29,9 @@
 char args_rcsid[] = 
     "$Id$";
 
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
+#endif
 
 #include "args.h"
 
@@ -57,12 +59,9 @@ char args_rcsid[] =
 #include <Xm/SelectioB.h>
 #include <Xm/Text.h>
 #else
-#include "gtk_wrapper.h"
-#endif
-
-#if !defined(IF_XM)
 #include <GUI/Dialog.h>
 #include <GUI/ComboBox.h>
+#include "gtk_wrapper.h"
 #endif
 
 #include <ctype.h>
@@ -317,6 +316,7 @@ void update_arguments()
 // Run program with given arguments
 static void gdbRunDCB(Widget, XtPointer, XtPointer)
 {
+
     Widget text  = XmSelectionBoxGetChild(run_dialog, XmDIALOG_TEXT);
     String _args = XmTextGetString(text);
     string args(_args);
@@ -465,7 +465,7 @@ static void gdbMakeDCB(void)
 #endif
 
 #if defined(IF_XM)
-void gdbMakeAgainCB(Widget w, XtPointer, XtPointer)
+void gdbMakeAgainCB(Widget, XtPointer, XtPointer)
 {
     gdb_command(gdb->make_command(last_make_argument));
 }
@@ -509,7 +509,6 @@ void gdbMakeCB(Widget w, XtPointer, XtPointer)
 		      SelectMakeArgsCB, 0);
 	XtAddCallback(make_arguments_w, XmNbrowseSelectionCallback,
 		      SelectMakeArgsCB, 0);
-
     }
 
     update_make_arguments();
@@ -689,7 +688,7 @@ void gdbChangeDirectoryCB(GUI::Widget *w)
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-static void RestartAndRunCB(Widget w,
+static void RestartAndRunCB(Widget w, 
 			    XtPointer client_data, XtPointer call_data)
 {
     RestartDebuggerCB(w, client_data, call_data);

@@ -59,6 +59,7 @@ void BoxEdgeAnnotation::_draw(GUI::Widget *w, const BoxPoint& p,
 }
 #endif
 
+
 // Print
 void BoxEdgeAnnotation::_print(std::ostream& os, const BoxPoint& p,
 			       const GraphGC& gc) const

@@ -29,21 +29,16 @@
 char converters_rcsid[] = 
     "$Id$";
 
-#if defined(IF_XM)
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
 #include <X11/IntrinsicP.h>
 #include <X11/StringDefs.h>
-#endif
-
 #include <stdlib.h>
 #include <unistd.h>
 #include <pwd.h>
 #include <ctype.h>
 
-#if defined(IF_XM)
 #include <X11/CoreP.h>
-#endif
 
 #include "assert.h"
 #include "bool.h"
@@ -58,15 +53,12 @@ char converters_rcsid[] =
 #include "string-fun.h"
 #include "MString.h"
 
+#include <Xm/Xm.h>
+
 #define new new_w
 #define class class_w
 
-#if defined(IF_XM)
-#include <Xm/Xm.h>
-
-#endif
-
-#if XmVersion < 1002 && defined(IF_XM)
+#if XmVersion < 1002
 #include <Xm/bitmaps.h>
 #else
 
@@ -98,7 +90,6 @@ static const _XtString const bitmap_name_set[] =
 
 #endif
 
-#if defined(IF_XM)
 // Decl of XmIsSlowSubclass in Motif 1.1 is not C++-aware, hence extern "C"
 extern "C" {
 #include <Xm/XmP.h>
@@ -107,8 +98,6 @@ extern "C" {
 // <Xm/PrimitiveP.h> only exists in Motif 1.2 and later
 #if XmVersion >= 1002
 #include <Xm/PrimitiveP.h>
-#endif
-
 #endif
 
 #undef new

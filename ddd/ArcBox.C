@@ -54,8 +54,7 @@ DEFINE_TYPE_INFO_1(ArcBox, LineBox)
 #if defined(IF_XM)
 void ArcBox::__draw(Widget w, 
 		    const BoxRegion& r, 
-		    const BoxRegion& ,
-		    GC gc, 
+		    const BoxRegion& , GC gc, 
 		    bool) const
 #else
 void ArcBox::__draw(GUI::Widget *w, 
@@ -122,16 +121,16 @@ void ArcBox::__draw(GUI::Widget *w,
 	    std::cerr << "ArcBox::_draw(): illegal length\n";
     }
 
-    if (space[X] > 0 && space[Y] > 0 && _length > 0) {
 #if defined(IF_XM)
+    if (space[X] > 0 && space[Y] > 0 && _length > 0)
 	XDrawArc(XtDisplay(w), XtWindow(w), gc, origin[X], origin[Y],
 		 space[X], space[Y], _start * 64, _length * 64);
 #else
+    if (space[X] > 0 && space[Y] > 0 && _length > 0)
 	w->get_window()->draw_arc(gc, false, origin[X], origin[Y],
 				  space[X], space[Y],
 				  _start * 64, _length * 64);
 #endif
-    }
 }
 
 void ArcBox::dump(std::ostream& s) const

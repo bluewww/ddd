@@ -29,7 +29,7 @@
 #ifndef _DDD_BoxGraphNode_h
 #define _DDD_BoxGraphNode_h
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 

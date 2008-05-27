@@ -50,22 +50,17 @@
     Asynchronus communication is implemented using XtAppAddInput(3).
 */
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
 #include "assert.h"
-
 #if defined(IF_XM)
 #include <X11/Intrinsic.h>
-#endif
-
-#if !defined(IF_XM)
+#else
 #include <GUI/Main.h>
-#endif
-
 #include "gtk_wrapper.h"
-
+#endif
 #include "Agent.h"
 
 // Set to 1 if you want asynchronous notification
@@ -97,7 +92,6 @@ private:
 };
 
 #if defined(IF_XM)
-
 struct AsyncAgentWorkProc {
     DECLARE_TYPE_INFO
 
@@ -115,9 +109,7 @@ private:
     AsyncAgentWorkProc(const AsyncAgentWorkProc&);
     AsyncAgentWorkProc& operator = (const AsyncAgentWorkProc&);
 };
-
 #else
-
 struct AsyncAgentWorkProc {
     DECLARE_TYPE_INFO
 
@@ -135,7 +127,6 @@ private:
     AsyncAgentWorkProc(const AsyncAgentWorkProc&);
     AsyncAgentWorkProc& operator = (const AsyncAgentWorkProc&);
 };
-
 #endif
 
 // Events
@@ -152,7 +143,6 @@ const unsigned ErrorException  = 5;	// I/O exception (urgent msg) on error
 const unsigned AsyncAgent_NHandlers = 6; // # of handler types
 
 #if defined(IF_XM)
-
 class AsyncAgent: public Agent {
 public:
     DECLARE_TYPE_INFO
@@ -167,7 +157,7 @@ private:
     AsyncAgentWorkProc *workProcs;	// working procedures
 
     // dispatch event
-    void dispatch(int *fid, XtInputId *inputId);
+    void dispatch(int *fid, XtInputId *id);
 
     // used in childStatusChange()
     int new_status;
@@ -196,16 +186,14 @@ private:
 #endif
 
     // X Event Handlers
+    static void somethingHappened(XtPointer client_data,
+				  int *fid, XtInputId *id);
     static void childStatusChange(Agent *agent, void *client_data,
 				  void *call_data);
-
-    static void somethingHappened(XtPointer client_data, int *fid,
-				  XtInputId *inputId);
     static Boolean callTheHandlers(XtPointer client_data);
-    static void callTheHandlersIfIdle(XtPointer, XtIntervalId *);
+    static void callTheHandlersIfIdle(XtPointer client_data, XtIntervalId *id);
 
     // Helping functions
-
     static void terminateProcess(XtPointer, XtIntervalId *);
     static void hangupProcess(XtPointer, XtIntervalId *);
     static void killProcess(XtPointer, XtIntervalId *);
@@ -261,8 +249,7 @@ public:
 	       unsigned nTypes = AsyncAgent_NTypes):
 	Agent(pth, nTypes), _appContext(app_context), workProcs(0), 
 	new_status(0), status_change_pending(false), 
-	signal_id(0),
-	killing_asynchronously(false)
+	signal_id(0), killing_asynchronously(false)
     {
 	initHandlers();
 	addDeathOfChildHandler();
@@ -272,8 +259,7 @@ public:
 	FILE *err = 0, unsigned nTypes = AsyncAgent_NTypes):
 	Agent(in, out, err, nTypes), _appContext(app_context), workProcs(0),
 	new_status(0), status_change_pending(false),
-	signal_id(0),
-	killing_asynchronously(false)
+	signal_id(0), killing_asynchronously(false)
     {
 	initHandlers();
     }
@@ -282,8 +268,7 @@ public:
 	unsigned nTypes = AsyncAgent_NTypes):
 	Agent(dummy, nTypes), _appContext(app_context), workProcs(0),
 	new_status(0), status_change_pending(false),
-	signal_id(0),
-	killing_asynchronously(false)
+	signal_id(0), killing_asynchronously(false)
     {
 	initHandlers();
     }
@@ -292,8 +277,7 @@ public:
     AsyncAgent(const AsyncAgent& c):
 	Agent(c), _appContext(c.appContext()), workProcs(0), 
 	new_status(0), status_change_pending(false),
-	signal_id(0),
-	killing_asynchronously(false)
+	signal_id(0), killing_asynchronously(false)
     {
 	initHandlers();
     }
@@ -316,9 +300,7 @@ public:
     virtual void abort();
     virtual void terminate(bool onExit = false);
 };
-
 #else
-
 class AsyncAgent: public Agent {
 public:
     DECLARE_TYPE_INFO
@@ -472,7 +454,6 @@ public:
     virtual void abort();
     virtual void terminate(bool onExit = false);
 };
-
 #endif
 
 #endif // _DDD_AsyncAgent_h

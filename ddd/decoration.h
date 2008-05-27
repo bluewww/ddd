@@ -29,7 +29,7 @@
 #ifndef _DDD_decoration_h
 #define _DDD_decoration_h
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
@@ -37,10 +37,8 @@
 #include <X11/Intrinsic.h>
 #else
 #include <GUI/Widget.h>
-#endif
-
 #include "gtk_wrapper.h"
-
+#endif
 #include "bool.h"
 
 #if defined(IF_XM)

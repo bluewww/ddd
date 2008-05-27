@@ -150,6 +150,7 @@ void ForegroundColorBox::color_draw(GUI::Widget *w,
 }
 #endif
 
+
 #if defined(IF_XM)
 // Draw using background color
 void BackgroundColorBox::color_draw(Widget w, 

@@ -32,7 +32,6 @@
 #include "config.h"
 #include "strclass.h"
 #include "bool.h"
-
 #if defined(IF_XM)
 #include <X11/Intrinsic.h>
 #else
@@ -42,9 +41,8 @@
 #include <GUI/RadioMenuItem.h>
 #include <GUI/Scale.h>
 #include <GUI/Entry.h>
-#endif
-
 #include "gtk_wrapper.h"
+#endif
 
 #include "BindingS.h" // for BindingType
 #include "GDBAgent.h" // for DebuggerType
@@ -164,9 +162,7 @@ extern void dddToggleWarnIfLockedCB         (GUI::CheckButton *);
 extern void dddToggleSaveOptionsOnExitCB    (GUI::CheckMenuItem *);
 #endif
 
-
 #if defined(IF_XM)
-
 extern void dddToggleButtonTipsCB           (Widget, XtPointer, XtPointer);
 extern void dddToggleValueTipsCB            (Widget, XtPointer, XtPointer);
 extern void dddToggleButtonDocsCB           (Widget, XtPointer, XtPointer);
@@ -183,9 +179,7 @@ extern void dddClearMaintenanceCB           (Widget, XtPointer, XtPointer);
 
 extern void dddSetGlobalTabCompletionCB     (Widget, XtPointer, XtPointer);
 extern void dddSetSeparateWindowsCB         (Widget, XtPointer, XtPointer);
-
 #else
-
 extern void dddToggleButtonTipsCB           (GUI::CheckButton *);
 extern void dddToggleValueTipsCB            (GUI::CheckButton *);
 extern void dddToggleButtonDocsCB           (GUI::CheckButton *);
@@ -202,11 +196,8 @@ extern void dddClearMaintenanceCB           (void);
 
 extern void dddSetGlobalTabCompletionCB     (GUI::RadioButton *, int);
 extern void dddSetSeparateWindowsCB         (GUI::RadioButton *, int);
-
 #endif
-
 #if defined(IF_XM)
-
 extern void dddSetStatusAtBottomCB          (Widget, XtPointer, XtPointer);
 extern void dddSetToolBarCB                 (Widget, XtPointer, XtPointer);
 extern void dddSetKeyboardFocusPolicyCB     (Widget, XtPointer, XtPointer);
@@ -229,9 +220,7 @@ extern void dddSetWWWCommandCB              (Widget, XtPointer, XtPointer);
 extern void dddSetBuiltinPlotWindowCB       (Widget, XtPointer, XtPointer);
 
 extern void DDDSaveOptionsCB                (Widget, XtPointer, XtPointer);
-
 #else
-
 extern void dddSetStatusAtBottomCB          (GUI::Widget *w, bool state);
 extern void dddSetToolBarCB                 (GUI::RadioButton *, bool);
 extern void dddSetKeyboardFocusPolicyCB     (GUI::Widget *, unsigned char);
@@ -254,9 +243,7 @@ extern void dddSetWWWCommandCB              (GUI::Entry *);
 extern void dddSetBuiltinPlotWindowCB       (GUI::RadioButton *, bool);
 
 extern void DDDSaveOptionsCB                (GUI::Widget *, unsigned long);
-
 #endif
-
 
 #endif // _DDD_options_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

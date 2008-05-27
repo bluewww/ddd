@@ -117,6 +117,8 @@ static void YnButtonCB(GUI::Widget *dialog, const char *client_data)
 }
 #endif
 
+
+
 //-----------------------------------------------------------------------------
 // Version stuff
 //-----------------------------------------------------------------------------
@@ -670,7 +672,6 @@ static MString gdbDefaultValueText(Widget widget, XEvent *event,
     // Change EVENT such that the popup tip will remain at the same
     // position
     Position x, y;
-
     if (XmTextPosToXY(widget, endpos, &x, &y))
     {
 	switch (event->type)
@@ -1060,6 +1061,7 @@ static MString gdbDefaultButtonText(GUI::Widget *widget, GUI::Event *,
     return rm(tip);
 }
 
+
 #if defined(IF_XM)
 static MString gdbDefaultText(Widget widget, XEvent *event, 
 			      bool for_documentation)
@@ -1108,6 +1110,7 @@ static MString gdbDefaultDocumentationText(GUI::Widget *widget, GUI::Event *even
 
 // Buttons to be verified
 static WidgetArray buttons_to_be_verified;
+
 
 #if defined(IF_XM)
 static void VerifyButtonWorkProc(XtPointer client_data, XtIntervalId *id)
@@ -1227,6 +1230,8 @@ void verify_button(GUI::Widget *button)
 }
 
 #endif
+
+
 //-----------------------------------------------------------------------------
 // Button Creation
 //-----------------------------------------------------------------------------
@@ -1300,7 +1305,6 @@ static void register_button(WidgetArray& arr, GUI::Widget *w)
 }
 #endif
 
-
 #if defined(IF_XM)
 // Create a button work area from BUTTON_LIST named NAME
 Widget make_buttons(Widget parent, const char *name, 
@@ -1353,7 +1357,6 @@ GUI::Container *make_buttons(GUI::Container *parent, const char *name,
 #if defined(IF_XM)
 void set_buttons(Widget buttons, const _XtString _button_list, bool manage)
 {
-    string *sp;
     XtPointer user_data   = 0;
     WidgetList children   = 0;
     Cardinal num_children = 0;
@@ -1364,7 +1367,7 @@ void set_buttons(Widget buttons, const _XtString _button_list, bool manage)
 		  XtNnumChildren, &num_children,
 		  XtPointer(0));
 
-    sp = (string *)user_data;
+    string *sp = (string *)user_data;
     if (sp != 0 && *sp == string(_button_list))
     {
 	// Unchanged value - only re-verify all buttons
@@ -1413,9 +1416,6 @@ void set_buttons(Widget buttons, const _XtString _button_list, bool manage)
 	if (name.empty())
 	    continue;
 
-#ifdef NAG_ME
-#warning Do we really need to pass args here?
-#endif
 	MString label(0, true);
 	if (name.contains(app_data.label_delimiter))
 	{
@@ -1799,6 +1799,7 @@ void set_buttons(GUI::Container *buttons, const char *_button_list, bool manage)
 #endif
 
 
+
 //-----------------------------------------------------------------------------
 // Button Editor
 //-----------------------------------------------------------------------------
@@ -1937,6 +1938,7 @@ static void SetVerifyButtonsCB(Widget, XtPointer, XtPointer call_data)
 #warning No verify_buttons
 #endif
 #endif
+
 
 #if defined(IF_XM)
 static Widget add_button(const _XtString name, 
@@ -2267,6 +2269,7 @@ void refresh_button_editor()
     std::cerr << "active_info->text not defined\n";
 }
 #endif
+
 
 //-----------------------------------------------------------------------------
 // Flat Buttons

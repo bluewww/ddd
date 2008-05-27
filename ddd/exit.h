@@ -33,7 +33,6 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
-
 #if defined(IF_XM)
 #include <X11/Intrinsic.h>
 #else
@@ -41,7 +40,6 @@
 #include <GUI/Widget.h>
 #include "gtk_wrapper.h"
 #endif
-
 #include <iostream>
 
 #include "bool.h"
@@ -63,17 +61,17 @@ extern void ddd_install_xt_error(GUI::Main *app_context);
 
 // Callbacks
 #if defined(IF_XM)
-extern void _DDDExitCB   (Widget, XtPointer, XtPointer);    // GDB exited normally
-extern void DDDExitCB    (Widget, XtPointer, XtPointer);    // Exit DDD
-extern void DDDRestartCB (Widget, XtPointer, XtPointer);    // Restart DDD
-extern void DDDDebugCB   (Widget, XtPointer, XtPointer);    // Debug DDD
-extern void DDDDumpCoreCB(Widget, XtPointer, XtPointer);    // Dump Core
+extern void _DDDExitCB   (Widget, XtPointer, XtPointer); // GDB exited normally
+extern void DDDExitCB    (Widget, XtPointer, XtPointer); // Exit DDD
+extern void DDDRestartCB (Widget, XtPointer, XtPointer); // Restart DDD
+extern void DDDDebugCB   (Widget, XtPointer, XtPointer); // Debug DDD
+extern void DDDDumpCoreCB(Widget, XtPointer, XtPointer); // Dump Core
 #else
-extern void _DDDExitCB   (long status);                     // GDB exited normally
-extern void DDDExitCB    (GUI::Widget *, long status);      // Exit DDD
-extern void DDDRestartCB (GUI::Widget *);                   // Restart DDD
-extern void DDDDebugCB   (bool);                            // Debug DDD
-extern void DDDDumpCoreCB(void);                            // Dump Core
+extern void _DDDExitCB   (long status);                  // GDB exited normally
+extern void DDDExitCB    (GUI::Widget *, long status);   // Exit DDD
+extern void DDDRestartCB (GUI::Widget *);                // Restart DDD
+extern void DDDDebugCB   (bool);                         // Debug DDD
+extern void DDDDumpCoreCB(void);                         // Dump Core
 #endif
 
 // Valgrind

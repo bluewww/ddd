@@ -29,25 +29,20 @@
 #ifndef _DDD_buttons_h
 #define _DDD_buttons_h
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
 #include "strclass.h"
-
 #if defined(IF_XM)
 #include <X11/Intrinsic.h>
 #else
 #include <GUI/Widget.h>
-#endif
-
-#if !defined(IF_XM)
 #include <GUI/Box.h>
 #include <GUI/Container.h>
 #include <GUI/Button.h>
-#endif
-
 #include "gtk_wrapper.h"
+#endif
 
 #if defined(IF_XM)
 // Create a button row named NAME with buttons as specified in LIST

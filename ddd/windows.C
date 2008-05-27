@@ -30,7 +30,7 @@ char windows_rcsid[] =
     "$Id$";
 
 #define LOG_GEOMETRY 0
-#define LOG_EVENTS   1
+#define LOG_EVENTS   0
 #define LOG_MOVES    0
 
 #ifdef HAVE_CONFIG_H

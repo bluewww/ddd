@@ -45,7 +45,7 @@
 // 
 //-----------------------------------------------------------------------------
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
@@ -53,9 +53,7 @@
 
 #if defined(IF_XM)
 #include <Xm/Xm.h>
-#endif
-
-#if !defined(IF_XM)
+#else
 #include <GUI/Container.h>
 #include <GUI/Menu.h>
 #include <GUI/Events.h>
@@ -115,7 +113,6 @@ class DataDisp {
     friend class DataDispCount;
 
 #if defined(IF_XM)
-
     //-----------------------------------------------------------------------
     // Callbacks
     //-----------------------------------------------------------------------
@@ -128,7 +125,7 @@ class DataDisp {
     static void dereferenceArgCB        (Widget, XtPointer, XtPointer);
     static void dereferenceInPlaceCB    (Widget, XtPointer, XtPointer);
     static void toggleDetailCB          (Widget, XtPointer, XtPointer);
-    // static void toggleRotateCB          (Widget, XtPointer, XtPointer);
+    static void toggleRotateCB          (Widget, XtPointer, XtPointer);
     static void toggleDisableCB         (Widget, XtPointer, XtPointer);
     static void rotateCB                (Widget, XtPointer, XtPointer);
     static void newCB                   (Widget, XtPointer, XtPointer);
@@ -163,10 +160,7 @@ class DataDisp {
     static void PreLayoutCB                    (Widget, XtPointer, XtPointer);
     static void PostLayoutCB                   (Widget, XtPointer, XtPointer);
     static void DoubleClickCB                  (Widget, XtPointer, XtPointer);
-
 #else
-
-
     //-----------------------------------------------------------------------
     // Callbacks
     //-----------------------------------------------------------------------
@@ -179,7 +173,7 @@ class DataDisp {
     static void dereferenceArgCB        (GUI::Widget *);
     static void dereferenceInPlaceCB    (GUI::Widget *);
     static void toggleDetailCB          (GUI::Widget *, int);
-    // static void toggleRotateCB          (GUI::Widget *);
+    static void toggleRotateCB          (GUI::Widget *);
     static void toggleDisableCB         (GUI::Widget *);
     static void rotateCB                (GUI::Widget *, bool);
     static void newCB                   (GUI::Widget *);
@@ -214,7 +208,6 @@ class DataDisp {
     static void PreLayoutCB                    (GUIGraphEdit *);
     static void PostLayoutCB                   (GUIGraphEdit *);
     static void DoubleClickCB                  (GUIGraphEdit *, GraphEditPreSelectionInfo *);
-
 #endif
 
     //-----------------------------------------------------------------------
@@ -226,11 +219,9 @@ class DataDisp {
     // Timers and timer callbacks
     //-----------------------------------------------------------------------
 #if defined(IF_XM)
-    static void RefreshGraphEditCB(XtPointer, XtIntervalId *);
-    static void RefreshArgsCB (XtPointer, XtIntervalId *);
-    static void RefreshAddrCB (XtPointer, XtIntervalId *);
-
-    static void RefreshAddr   (DispNode *, bool=false);
+    static void RefreshGraphEditCB(XtPointer client_data, XtIntervalId *id);
+    static void RefreshArgsCB     (XtPointer client_data, XtIntervalId *id);
+    static void RefreshAddrCB     (XtPointer client_data, XtIntervalId *id);
 
     static XtIntervalId refresh_args_timer;
     static XtIntervalId refresh_graph_edit_timer;
@@ -239,7 +230,6 @@ class DataDisp {
     static bool RefreshGraphEditCB(GraphEditLayoutState *);
     static bool RefreshArgsCB (void);
     static bool RefreshAddrCB (DispNode *);
-
     static bool RefreshAddr   (DispNode *, bool=false);
 
     static GUI::connection refresh_args_timer;
@@ -280,9 +270,8 @@ class DataDisp {
 			 SelectionMode mode = SetSelection);
 
     static void refresh_display_list(bool silent = false);
-
 #if defined(IF_XM)
-    static void RefreshDisplayListCB(XtPointer, XtIntervalId *);
+    static void RefreshDisplayListCB(XtPointer, XtIntervalId *id);
 #else
     static bool RefreshDisplayListCB(bool);
 #endif
@@ -349,7 +338,6 @@ class DataDisp {
     static bool selected(DispNode *dn);
 
 #if defined(IF_XM)
-
     //-----------------------------------------------------------------------
     // Actions
     //-----------------------------------------------------------------------
@@ -368,10 +356,7 @@ class DataDisp {
 
     static void call_selection_proc(Widget, const _XtString, XEvent*, String*, Cardinal,
 				    SelectionMode mode);
-
 #else
-
-
     //-----------------------------------------------------------------------
     // Actions
     //-----------------------------------------------------------------------
@@ -390,7 +375,6 @@ class DataDisp {
 
     static void call_selection_proc(GUI::Widget*, const char *, GUI::Event*, GUI::String *, unsigned int,
 				    SelectionMode mode);
-
 #endif
 
     //-----------------------------------------------------------------------
@@ -533,7 +517,6 @@ public:
 				   const string& pattern);
 
 #if defined(IF_XM)
-
     // Same, but use the GDB_COMMAND interface for enqueing commands
     static void new_display(const string& display_expression,
 			    BoxPoint *pos = 0,
@@ -592,9 +575,7 @@ public:
     {
 	gdb_command(toggle_theme_cmd(theme, pattern), origin);
     }
-
 #else
-
     // Same, but use the GDB_COMMAND interface for enqueing commands
     static void new_display(const string& display_expression,
 			    BoxPoint *pos = 0,
@@ -653,7 +634,6 @@ public:
     {
 	gdb_command(toggle_theme_cmd(theme, pattern), origin);
     }
-
 #endif
 
     // Process 'info display' output in INFO_DISPLAY_ANSWER.  If
@@ -695,7 +675,7 @@ public:
 private:
     // Call me back again
 #if defined(IF_XM)
-    static void again_new_displaySQ (XtPointer, XtIntervalId *);
+    static void again_new_displaySQ (XtPointer client_data, XtIntervalId *id);
 #else
     static bool again_new_displaySQ (NewDisplayInfo *);
 #endif
@@ -865,33 +845,29 @@ public:
     static int add_refresh_addr_commands(StringArray& cmds, DispNode *dn = 0);
 
 #if defined(IF_XM)
-
     // Callbacks for menu bar
     static void EditDisplaysCB(Widget, XtPointer, XtPointer);
     static void refreshCB(Widget, XtPointer, XtPointer);
     static void selectAllCB(Widget, XtPointer, XtPointer);
     static void unselectAllCB(Widget, XtPointer, XtPointer);
     static void deleteCB(Widget, XtPointer, XtPointer);
-    static void applyThemeCB (Widget, XtPointer, XtPointer);
+    static void applyThemeCB(Widget, XtPointer, XtPointer);
     static void unapplyThemeCB(Widget, XtPointer, XtPointer);
     static void toggleThemeCB(Widget, XtPointer, XtPointer);
     static void applyThemeOnThisCB(Widget, XtPointer, XtPointer);
     static void applyThemeOnAllCB(Widget, XtPointer, XtPointer);
-
 #else
-
     // Callbacks for menu bar
     static void EditDisplaysCB(void);
     static void refreshCB(GUI::Widget *);
     static void selectAllCB(GUI::Widget *);
     static void unselectAllCB(GUI::Widget *);
     static void deleteCB(GUI::Widget *);
-    static void applyThemeCB (GUI::Widget *, const char *);
+    static void applyThemeCB(GUI::Widget *, const char *);
     static void unapplyThemeCB(GUI::Widget *, const char *);
     static void toggleThemeCB(GUI::CheckButton *, int);
     static void applyThemeOnThisCB(const char *);
     static void applyThemeOnAllCB(const char *);
-
 #endif
 
     // Helpers for user displays

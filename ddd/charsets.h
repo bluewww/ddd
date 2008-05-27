@@ -36,7 +36,6 @@
 #define CHARSET_DEFAULT  MSTRING_DEFAULT_CHARSET
 
 #if defined(IF_XM)
-
 // The fixed-width font used in texts.
 #define CHARSET_TT XmStringCharSet("tt")
 
@@ -81,9 +80,7 @@
 
 // Light font (for the command tool buttons)
 #define CHARSET_LIGHT XmStringCharSet("light")
-
 #else
-
 // The fixed-width font used in texts.
 #define CHARSET_TT "tt"
 
@@ -128,7 +125,6 @@
 
 // Light font (for the command tool buttons)
 #define CHARSET_LIGHT "light"
-
 #endif
 
 

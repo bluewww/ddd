@@ -28,8 +28,11 @@
 #ifndef _DDD_AutoRaise_h
 #define _DDD_AutoRaise_h
 
-#if defined(IF_XM)
+#if defined(HAVE_CONFIG_H)
+#include "config.h"
+#endif
 
+#if defined(IF_XM)
 #include <X11/Intrinsic.h>
 
 // Whether menus should be auto-raised
@@ -45,13 +48,9 @@ extern void auto_raise(Widget shell);
 
 // Auto-raise SHELL unconditionally
 extern void _auto_raise(Widget shell);
-
 #else
-
 #define auto_raise(w)
-
 #define _auto_raise(w)
-
 #endif
 
 #endif // _DDD_AutoRaise_h

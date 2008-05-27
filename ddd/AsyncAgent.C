@@ -86,7 +86,6 @@ void AsyncAgent::childStatusChange(Agent *agent, void *, void *call_data)
     a->status_change_pending = true;
 }
 
-
 void AsyncAgent::commit()
 {
     if (status_change_pending)
@@ -96,17 +95,12 @@ void AsyncAgent::commit()
 
 // data from agent is ready to be read
 #if defined(IF_XM)
-void
+void AsyncAgent::somethingHappened(XtPointer client_data, int *fid,
+    XtInputId *inputId)
 #else
-bool
+bool AsyncAgent::somethingHappened(Glib::IOCondition cond, int type)
+
 #endif
-AsyncAgent::somethingHappened(
-#if defined(IF_XM)
-    XtPointer client_data, int *fid, XtInputId *inputId
-#else
-    Glib::IOCondition cond, int type
-#endif
-    )
 {
 #if defined(IF_XM)
     AsyncAgent *agent = (AsyncAgent *)client_data;
@@ -163,25 +157,21 @@ void AsyncAgent::clearHandlers()
 }
 
 #if defined(IF_XM)
-
 // Process "Death of child" signal as soon as possible
 void AsyncAgent::addDeathOfChildHandler()
 {
     addHandler(_Died, childStatusChange, XtPointer(this));
 }
-
 #else
-
 // Process "Death of child" signal as soon as possible
 void AsyncAgent::addDeathOfChildHandler()
 {
     addHandler(_Died, childStatusChange, this);
 }
-
 #endif
 
-#if defined(IF_XM)
 
+#if defined(IF_XM)
 // Set Handler
 AsyncAgentHandler AsyncAgent::setHandler(unsigned type, AsyncAgentHandler h)
 {
@@ -195,38 +185,38 @@ AsyncAgentHandler AsyncAgent::setHandler(unsigned type, AsyncAgentHandler h)
 
     // Register new handler
     FILE *sourcefp      = 0;
-    int condition = 0;
+    XtPointer condition = 0;
 
     switch(type)
     {
 	case OutputReady:
 	    sourcefp  = outputfp();
-	    condition = XtInputWriteMask;
+	    condition = XtPointer(XtInputWriteMask);
 	    break;
 
 	case InputReady:
 	    sourcefp  = inputfp();
-	    condition = XtInputReadMask;
+	    condition = XtPointer(XtInputReadMask);
 	    break;
 
 	case ErrorReady:
 	    sourcefp  = errorfp();
-	    condition = XtInputReadMask;
+	    condition = XtPointer(XtInputReadMask);
 	    break;
 
 	case OutputException:
 	    sourcefp  = outputfp();
-	    condition = XtInputExceptMask;
+	    condition = XtPointer(XtInputExceptMask);
 	    break;
 
 	case InputException:
 	    sourcefp  = inputfp();
-	    condition = XtInputExceptMask;
+	    condition = XtPointer(XtInputExceptMask);
 	    break;
 
 	case ErrorException:
 	    sourcefp  = errorfp();
-	    condition = XtInputExceptMask;
+	    condition = XtPointer(XtInputExceptMask);
 	    break;
 
 	default:
@@ -236,16 +226,13 @@ AsyncAgentHandler AsyncAgent::setHandler(unsigned type, AsyncAgentHandler h)
 
     _handlers[type] = h;
 
-    if (h && sourcefp) {
-	_ids[type] = XtAppAddInput(appContext(), fileno(sourcefp), XtPointer(condition),
-				   somethingHappened, (XtPointer)this);
-    }
+    if (h && sourcefp)
+	_ids[type] = XtAppAddInput(appContext(), fileno(sourcefp), condition,
+	    somethingHappened, (XtPointer)this);
 
     return old_handler;
 }
-
 #else
-
 // Set Handler
 AsyncAgentHandler AsyncAgent::setHandler(unsigned type, AsyncAgentHandler h)
 {
@@ -312,11 +299,10 @@ AsyncAgentHandler AsyncAgent::setHandler(unsigned type, AsyncAgentHandler h)
 
     return old_handler;
 }
-
 #endif
 
-#if defined(IF_XM)
 
+#if defined(IF_XM)
 // Dispatcher
 void AsyncAgent::dispatch(int *, XtInputId *inputId)
 {
@@ -340,9 +326,7 @@ void AsyncAgent::dispatch(int *, XtInputId *inputId)
     }
 #endif
 }
-
 #else
-
 // Dispatcher
 void AsyncAgent::dispatch(int type)
 {
@@ -352,7 +336,6 @@ void AsyncAgent::dispatch(int type)
 	(*(handler(type)))(this);
     }
 }
-
 #endif
 
 // Abort
@@ -392,8 +375,8 @@ void AsyncAgent::closeChannel(FILE *fp)
     Agent::closeChannel(fp);
 }
 
-#if defined(IF_XM)
 
+#if defined(IF_XM)
 // Terminator
 void AsyncAgent::terminateProcess(XtPointer client_data, XtIntervalId *)
 {
@@ -401,22 +384,18 @@ void AsyncAgent::terminateProcess(XtPointer client_data, XtIntervalId *)
     kill(pid, SIGTERM);
 }
 
-
 void AsyncAgent::hangupProcess(XtPointer client_data, XtIntervalId *)
 { 
     pid_t pid = (pid_t)(long)client_data;
     kill(pid, SIGHUP);
 }
 
-
 void AsyncAgent::killProcess(XtPointer client_data, XtIntervalId *)
 {
     pid_t pid = (pid_t)(long)client_data;
     kill(pid, SIGKILL);
 }
-
 #else
-
 // Terminator
 bool AsyncAgent::terminateProcess(pid_t pid)
 {
@@ -434,7 +413,6 @@ bool AsyncAgent::killProcess(pid_t pid)
 {
     kill(pid, SIGKILL);
 }
-
 #endif
 
 void AsyncAgent::terminate(bool onExit)
@@ -454,32 +432,32 @@ void AsyncAgent::terminate(bool onExit)
 	// the process has terminated gracefully.
 	killing_asynchronously = true;
 
-	if (terminateTimeOut() >= 0) {
 #if defined(IF_XM)
+	if (terminateTimeOut() >= 0)
 	    XtAppAddTimeOut(appContext(), terminateTimeOut() * 1000,
 			    terminateProcess, XtPointer(pid()));
 #else
+	if (terminateTimeOut() >= 0)
 	    Glib::signal_timeout().connect(sigc::bind(sigc::ptr_fun(terminateProcess), pid()), terminateTimeOut() * 1000);
 #endif
-	}
 
-	if (hangupTimeOut() >= 0) {
 #if defined(IF_XM)
+	if (hangupTimeOut() >= 0)
 	    XtAppAddTimeOut(appContext(), hangupTimeOut() * 1000,
 			    hangupProcess, XtPointer(pid()));
 #else
+	if (hangupTimeOut() >= 0)
 	    Glib::signal_timeout().connect(sigc::bind(sigc::ptr_fun(hangupProcess), pid()), hangupTimeOut() * 1000);
 #endif
-	}
 
-	if (killTimeOut() >= 0) {
 #if defined(IF_XM)
+	if (killTimeOut() >= 0)
 	    XtAppAddTimeOut(appContext(), killTimeOut() * 1000,
 			    killProcess, XtPointer(pid()));
 #else
+	if (killTimeOut() >= 0)
 	    Glib::signal_timeout().connect(sigc::bind(sigc::ptr_fun(killProcess), pid()), killTimeOut() * 1000);
 #endif
-	}
 
 	// Inhibit further communication
 	hasNewStatus(-1);
@@ -497,7 +475,6 @@ void AsyncAgent::waitToTerminate()
 // Delayed Event Handling
 
 #if defined(IF_XM)
-
 void AsyncAgent::callTheHandlersIfIdle(XtPointer client_data, XtIntervalId *)
 {
     AsyncAgentWorkProcInfo *info = (AsyncAgentWorkProcInfo *)client_data;
@@ -515,9 +492,7 @@ void AsyncAgent::callTheHandlersIfIdle(XtPointer client_data, XtIntervalId *)
 			XtPointer(info));
     }
 }
-
 #else
-
 bool AsyncAgent::callTheHandlersIfIdle(AsyncAgentWorkProcInfo *info)
 {
     if (info->agent->isIdle())
@@ -533,11 +508,9 @@ bool AsyncAgent::callTheHandlersIfIdle(AsyncAgentWorkProcInfo *info)
     }
     return false;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 Boolean AsyncAgent::callTheHandlers(XtPointer client_data)
 {
     AsyncAgentWorkProcInfo *info = (AsyncAgentWorkProcInfo *)client_data;
@@ -546,16 +519,13 @@ Boolean AsyncAgent::callTheHandlers(XtPointer client_data)
 
     return true;
 }
-
 #else
-
 Boolean AsyncAgent::callTheHandlers(AsyncAgentWorkProcInfo *info)
 {
     Glib::signal_timeout().connect(sigc::bind(sigc::ptr_fun(callTheHandlersIfIdle), info), 10);
 
     return true;
 }
-
 #endif
 
 void AsyncAgent::callHandlersWhenIdle(int type, void *call_data)
@@ -578,7 +548,6 @@ void AsyncAgent::callHandlersWhenIdle(int type, void *call_data)
 }
 
 #if defined(IF_XM)
-
 void AsyncAgent::deleteWorkProc(AsyncAgentWorkProcInfo *info,
 				bool remove)
 {
@@ -603,9 +572,7 @@ void AsyncAgent::deleteWorkProc(AsyncAgentWorkProcInfo *info,
         }
     }
 }
-
 #else
-
 void AsyncAgent::deleteWorkProc(AsyncAgentWorkProcInfo *info,
 				bool remove)
 {
@@ -630,7 +597,6 @@ void AsyncAgent::deleteWorkProc(AsyncAgentWorkProcInfo *info,
         }
     }
 }
-
 #endif
 
 void AsyncAgent::deleteAllWorkProcs()

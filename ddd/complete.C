@@ -456,7 +456,6 @@ static void complete_reply(const string& complete_answer, void *qu_data)
 }
 
 #if defined(IF_XM)
-
 static void tabAct(Widget w, XEvent *e, String* args, Cardinal* num_args)
 {
     if (XmIsText(w))
@@ -464,9 +463,7 @@ static void tabAct(Widget w, XEvent *e, String* args, Cardinal* num_args)
     else if (XmIsPrimitive(w))
 	XtCallActionProc(w, "PrimitiveNextTabGroup", e, args, *num_args);
 }
-
 #else
-
 static void tabAct(GUI::Widget *w, GUI::Event *e, GUI::String *args, unsigned int *num_args)
 {
 #ifdef NAG_ME
@@ -474,11 +471,9 @@ static void tabAct(GUI::Widget *w, GUI::Event *e, GUI::String *args, unsigned in
 #endif
     std::cerr << "NO ACTIONS!\n";
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Complete current GDB command
 void complete_commandAct(Widget w, XEvent *e, String* args, Cardinal* num_args)
 {
@@ -519,15 +514,12 @@ void complete_commandAct(Widget w, XEvent *e, String* args, Cardinal* num_args)
 
     complete(w, e, input, input);
 }
-
 #else
-
 // Complete current GDB command
 void complete_commandAct(GUI::Widget *w, GUI::Event *e, GUI::String *args, unsigned int*num_args)
 {
     std::cerr << "complete_commandAct!\n";
 }
-
 #endif
 
 
@@ -621,7 +613,6 @@ static void _complete_argAct(GUI::Widget *w,
 }
 
 #if defined(IF_XM)
-
 void complete_argAct(Widget w, XEvent *e, String* args, Cardinal* num_args)
 {
     _complete_argAct(w, e, args, num_args, false);
@@ -631,9 +622,7 @@ void complete_tabAct(Widget w, XEvent *e, String* args, Cardinal* num_args)
 {
     _complete_argAct(w, e, args, num_args, true);
 }
-
 #else
-
 void complete_argAct(GUI::Widget *w, GUI::Event *e, GUI::String *args, unsigned int *num_args)
 {
     _complete_argAct(w, e, args, num_args, false);
@@ -643,7 +632,6 @@ void complete_tabAct(GUI::Widget *w, GUI::Event *e, GUI::String *args, unsigned 
 {
     _complete_argAct(w, e, args, num_args, true);
 }
-
 #endif
 
 

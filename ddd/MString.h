@@ -30,6 +30,10 @@
 #ifndef _DDD_MString_h
 #define _DDD_MString_h
 
+#if defined(HAVE_CONFIG_H)
+#include "config.h"
+#endif
+
 #if defined(IF_XM)
 // An "MString" is but a C++ wrapper around Motif composite strings.
 

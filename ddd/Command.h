@@ -36,7 +36,6 @@
 
 #include "GDBAgent.h"
 #include "question.h"		// NO_GDB_ANSWER
-
 #if !defined(IF_XM)
 #include <GUI/Widget.h>
 #include <GUI/Container.h>
@@ -106,27 +105,23 @@ private:
     void remove_destroy_callback();
 
 public:
-
 #if defined(IF_XM)
-
-#define COMMAND(TYPE)							\
-    Command(TYPE cmd, Widget w, OQCProc cb, void *d = 0,		\
+#define COMMAND(TYPE) \
+    Command(TYPE cmd, Widget w, OQCProc cb, void *d = 0, \
 	    bool v = false, bool c = false, int p = COMMAND_PRIORITY_SYSTEM) \
-	: command(cmd), origin(w), callback(cb), extra_callback(0), \
-	  data(d), echo(v), verbose(v), prompt(v), check(c),		\
+	: command(cmd), origin(w), callback(cb), extra_callback(0), data(d), \
+	  echo(v), verbose(v), prompt(v), check(c), \
 	  start_undo(!CommandGroup::active || CommandGroup::first_command), \
-	  priority(p)							\
-    {									\
-	add_destroy_callback();						\
-	CommandGroup::first_command = false;				\
+	  priority(p) \
+    { \
+	add_destroy_callback(); \
+	CommandGroup::first_command = false; \
     }
 
     COMMAND(const string&)
     COMMAND(const char *)
 #undef COMMAND
-
 #else
-
 #define COMMAND(TYPE)							\
     Command(TYPE cmd, GUI::Widget *w, OQCProc cb, void *d = 0,		\
 	    bool v = false, bool c = false, int p = COMMAND_PRIORITY_SYSTEM) \
@@ -142,27 +137,24 @@ public:
     COMMAND(const string&)
     COMMAND(const char *)
 #undef COMMAND
-
 #endif
 
 #if defined(IF_XM)
-
-#define COMMAND(TYPE)							\
-    Command(TYPE cmd, Widget w = 0)					\
-	: command(cmd), origin(w), callback(0), extra_callback(0), \
-	  data(0), echo(true), verbose(true), prompt(true), check(true), \
+#define COMMAND(TYPE) \
+    Command(TYPE cmd, Widget w = 0) \
+	: command(cmd), origin(w), callback(0), extra_callback(0), data(0), \
+	  echo(true), verbose(true), prompt(true), check(true), \
 	  start_undo(!CommandGroup::active || CommandGroup::first_command), \
-	  priority(COMMAND_PRIORITY_USER)				\
-    {									\
-	add_destroy_callback();						\
-	CommandGroup::first_command = false;				\
+	  priority(COMMAND_PRIORITY_USER) \
+    { \
+	add_destroy_callback(); \
+	CommandGroup::first_command = false; \
     }
+
     COMMAND(const string&)
     COMMAND(const char *)
 #undef COMMAND
-
 #else
-
 #define COMMAND(TYPE)							\
     Command(TYPE cmd, GUI::Widget *w = 0)				\
 	: command(cmd), origin(w), callback(0), extra_callback(0), data(0), \
@@ -173,15 +165,14 @@ public:
 	add_destroy_callback();						\
 	CommandGroup::first_command = false;				\
     }
+
     COMMAND(const string&)
     COMMAND(const char *)
 #undef COMMAND
-
 #endif
 
     Command(const Command& c)
-	: command(c.command), origin(c.origin),
-	  callback(c.callback),
+	: command(c.command), origin(c.origin), callback(c.callback),
 	  extra_callback(c.extra_callback), data(c.data), 
 	  echo(c.echo), verbose(c.verbose), prompt(c.prompt),
 	  check(c.check), start_undo(c.start_undo), priority(c.priority)
@@ -237,23 +228,20 @@ public:
 extern void gdb_command(const Command& command);
 
 #if defined(IF_XM)
-
 // Custom calls
-#define COMMAND(TYPE)							\
-    inline void gdb_command(TYPE command, Widget origin,		\
-			    OQCProc callback, void *data = 0,		\
-			    bool verbose = false, bool check = false,	\
-			    int priority = COMMAND_PRIORITY_SYSTEM)	\
-    {									\
-	gdb_command(Command(command, origin, callback, data,		\
-			    verbose, check, priority));			\
-    }
+#define COMMAND(TYPE) \
+inline void gdb_command(TYPE command, Widget origin, \
+			OQCProc callback, void *data = 0, \
+			bool verbose = false, bool check = false, \
+			int priority = COMMAND_PRIORITY_SYSTEM) \
+{ \
+    gdb_command(Command(command, origin, callback, data, \
+			verbose, check, priority)); \
+}
 COMMAND(const char *)
 COMMAND(const string &)
 #undef COMMAND
-
 #else
-
 // Custom calls
 #define COMMAND(TYPE)							\
     inline void gdb_command(TYPE command, GUI::Widget *origin,		\
@@ -267,22 +255,18 @@ COMMAND(const string &)
 COMMAND(const char *)
 COMMAND(const string &)
 #undef COMMAND
-
 #endif
 
 #if defined(IF_XM)
-
-#define COMMAND(TYPE)						\
-    inline void gdb_command(TYPE command, Widget origin = 0)	\
-    {								\
-	gdb_command(Command(command, origin));			\
-    }
+#define COMMAND(TYPE) \
+inline void gdb_command(TYPE command, Widget origin = 0) \
+{ \
+    gdb_command(Command(command, origin)); \
+}
 COMMAND(const char *)
 COMMAND(const string &)
 #undef COMMAND
-
 #else
-
 #define COMMAND(TYPE)							\
     inline void gdb_command(TYPE command, GUI::Widget *origin = 0)	\
     {									\
@@ -291,26 +275,22 @@ COMMAND(const string &)
 COMMAND(const char *)
 COMMAND(const string &)
 #undef COMMAND
-
 #endif
 
 #if defined(IF_XM)
-
-#define COMMAND(TYPE)							\
-    inline void gdb_batch(TYPE command, Widget origin,			\
-			  OQCProc callback, void *data = 0,		\
-			  bool verbose = false, bool check = false,	\
-			  int priority = COMMAND_PRIORITY_BATCH)	\
-    {									\
-	gdb_command(Command(command, origin, callback, data,		\
-			    verbose, check, priority));			\
-    }
+#define COMMAND(TYPE) \
+inline void gdb_batch(TYPE command, Widget origin, \
+		      OQCProc callback, void *data = 0, \
+		      bool verbose = false, bool check = false, \
+		      int priority = COMMAND_PRIORITY_BATCH) \
+{ \
+    gdb_command(Command(command, origin, callback, data, \
+			verbose, check, priority)); \
+}
 COMMAND(const char *)
 COMMAND(const string &)
 #undef COMMAND
-
 #else
-
 #define COMMAND(TYPE)							\
     inline void gdb_batch(TYPE command, GUI::Widget *origin,		\
 			  OQCProc callback, void *data = 0,		\
@@ -323,23 +303,19 @@ COMMAND(const string &)
 COMMAND(const char *)
 COMMAND(const string &)
 #undef COMMAND
-
 #endif
 
 #if defined(IF_XM)
-
-#define COMMAND(TYPE)							\
-    inline void gdb_batch(TYPE command, Widget origin = 0)		\
-    {									\
-	gdb_command(Command(command, origin, OQCProc(0), 0,		\
-			    false, true, COMMAND_PRIORITY_BATCH));	\
-    }
+#define COMMAND(TYPE) \
+inline void gdb_batch(TYPE command, Widget origin = 0) \
+{ \
+    gdb_command(Command(command, origin, OQCProc(0), 0, \
+			false, true, COMMAND_PRIORITY_BATCH)); \
+}
 COMMAND(const char *)
 COMMAND(const string &)
 #undef COMMAND
-
 #else
-
 #define COMMAND(TYPE)							\
     inline void gdb_batch(TYPE command, GUI::Widget *origin = 0)	\
     {									\
@@ -349,11 +325,15 @@ COMMAND(const string &)
 COMMAND(const char *)
 COMMAND(const string &)
 #undef COMMAND
-
 #endif
 
 // True if GDB can run a command
 bool can_do_gdb_command();
+
+#if defined(IF_XM)
+// Pass the COMMAND given in CLIENT_DATA to gdb_command()
+extern void gdbCommandCB(Widget w, XtPointer call_data, XtPointer client_data);
+#endif
 
 // Check if command queue is empty
 extern bool emptyCommandQueue();
@@ -365,20 +345,16 @@ extern void clearCommandQueue();
 extern void syncCommandQueue();
 
 #if defined(IF_XM)
-
 // Return a shell widget according to last command origin
 extern Widget find_shell(Widget w = 0);
-
 #else
-
 // Return a shell widget according to last command origin
 extern GUI::Shell *find_shell(GUI::Widget *w = NULL);
-
 #endif
 
 #if defined(IF_XM)
 // Process next element from command queue
-extern void processCommandQueue(XtPointer p = 0, XtIntervalId *id = 0);
+extern void processCommandQueue(XtPointer = 0, XtIntervalId *id = 0);
 #else
 // Process next element from command queue
 extern bool processCommandQueue(void);

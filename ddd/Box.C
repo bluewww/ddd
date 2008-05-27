@@ -76,13 +76,11 @@ void Box::draw(GUI::Widget *w,
 
     // Use default GC if needed
 #if defined(IF_XM)
-    if (gc == 0) {
+    if (gc == 0)
 	gc = DefaultGCOfScreen(XtScreen(w));
-    }
 #else
-    if (!gc) {
+    if (!gc)
 	gc = w->get_black_gc();
-    }
 #endif
 
     // Go and draw

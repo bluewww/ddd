@@ -154,7 +154,8 @@ bool ddd_is_shutting_down = false;
 bool ddd_has_crashed = false;
 
 #if defined(IF_XM)
-static void DDDDoneAnywayCB(Widget w, XtPointer client_data, XtPointer);
+static void DDDDoneAnywayCB(Widget w, XtPointer client_data, 
+			    XtPointer call_data);
 #else
 static void DDDDoneAnywayCB(GUI::Widget *w, long flags);
 #endif
@@ -336,6 +337,7 @@ static void post_fatal(const string& title, const string& cause,
 	debug = verify(XmCreatePushButton(fatal_dialog, "debug", 0, 0));
 	XtAddCallback(debug, XmNactivateCallback, DDDDebugCB, XtPointer(True));
 #endif
+
 #endif
     }
 
@@ -732,6 +734,7 @@ void ddd_install_x_fatal()
 #endif
 #endif
 
+
 #if defined(IF_XM)
 //-----------------------------------------------------------------------------
 // Xt and Motif errors
@@ -801,6 +804,7 @@ void ddd_install_xt_error(XtAppContext app_context)
 #warning Xt/Motif errors?
 #endif
 #endif
+
 
 #if defined(IF_XM)
 //-----------------------------------------------------------------------------
@@ -1006,6 +1010,8 @@ void ddd_install_x_error()
 #endif
 
 
+
+
 //-----------------------------------------------------------------------------
 // GDB I/O error
 //-----------------------------------------------------------------------------
@@ -1025,6 +1031,7 @@ void gdb_eofHP(Agent *agent, void *, void *)
 	agent->terminate();
     }
 }
+
 
 #if defined(IF_XM)
 static XtIntervalId post_exception_timer = 0;
@@ -1085,17 +1092,16 @@ void gdb_exceptionHP(Agent *agent, void *, void *call_data)
 	// Left exception state (i.e. prompt appeared)
 
 #if defined(IF_XM)
-	if (post_exception_timer != 0) {
+	if (post_exception_timer)
 	    XtRemoveTimeOut(post_exception_timer);
-	}
 	post_exception_timer = 0;
 #else
-	if (post_exception_timer) {
+	if (post_exception_timer)
 	    post_exception_timer.disconnect();
-	}
 #endif
     }
 }
+
 
 #if defined(IF_XM)
 // GDB died
@@ -1160,6 +1166,7 @@ void gdb_diedHP(Agent *gdb, void *, void *call_data)
 }
 #endif
 
+
 //-----------------------------------------------------------------------------
 // Controlled exiting
 //-----------------------------------------------------------------------------
@@ -1221,10 +1228,10 @@ static void DDDDoneCB(Widget w, XtPointer client_data, XtPointer call_data)
     if (quit_dialog)
 	DestroyWhenIdle(quit_dialog);
 
+    arg = 0;
     MString msg = rm(gdb->title() + " is still busy.  "
 		     + (ddd_is_restarting ? "Restart" : "Exit")
 		     + " anyway (and kill it)?");
-    arg = 0;
     XtSetArg(args[arg], XmNmessageString, msg.xmstring()); arg++;
     XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
     quit_dialog = verify(XmCreateQuestionDialog(find_shell(w),
@@ -1283,21 +1290,22 @@ static void DDDDoneCB(GUI::Widget *w, long status)
 
 #if defined(IF_XM)
 // Exit immediately if DDD is not ready
-static void DDDDoneAnywayCB(Widget w, XtPointer client_data, XtPointer)
+static void DDDDoneAnywayCB(Widget w, XtPointer client_data, 
+			    XtPointer call_data)
 {
     // If GDB has gotten ready in between, use controlled exit.
     if (gdb && gdb->isReadyWithPrompt())
-	DDDDoneCB(w, client_data, XtPointer(0));
+	DDDDoneCB(w, client_data, call_data);
     else
-	_DDDExitCB(Widget(0), client_data, XtPointer(0));
+	_DDDExitCB(w, client_data, call_data);
 }
 
 // Exit after confirmation
-void DDDExitCB(Widget w, XtPointer client_data, XtPointer)
+void DDDExitCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     ddd_is_restarting    = false;
     ddd_is_shutting_down = false;
-    DDDDoneCB(w, client_data, XtPointer(0));
+    DDDDoneCB(w, client_data, call_data);
 }
 #else
 // Exit immediately if DDD is not ready
@@ -1319,6 +1327,7 @@ void DDDExitCB(GUI::Widget *w, long status)
 }
 #endif
 
+
 #if defined(IF_XM)
 // Restart unconditionally
 static void _DDDRestartCB(Widget w, XtPointer client_data, XtPointer call_data)
@@ -1337,7 +1346,7 @@ static void _DDDRestartCB(Widget w, XtPointer client_data, XtPointer call_data)
 
     ddd_is_restarting    = true;
     ddd_is_shutting_down = false;
-    DDDDoneCB(w, client_data, XtPointer(0));
+    DDDDoneCB(w, client_data, call_data);
 }
 #else
 // Restart unconditionally
@@ -1363,9 +1372,10 @@ static void _DDDRestartCB(GUI::Widget *w, unsigned long flags)
 }
 #endif
 
+
 #if defined(IF_XM)
 // Restart after confirmation
-void DDDRestartCB(Widget w, XtPointer client_data, XtPointer call_data)
+void DDDRestartCB(Widget w, XtPointer, XtPointer call_data)
 {
     unsigned long flags = 
 	SAVE_SESSION | SAVE_GEOMETRY | DONT_RELOAD_CORE | DONT_COPY_CORE;
@@ -1391,7 +1401,7 @@ void DDDRestartCB(Widget w, XtPointer client_data, XtPointer call_data)
 	manage_and_raise(dialog);
     }
     else
-	_DDDRestartCB(w, client_data, call_data);
+	_DDDRestartCB(w, XtPointer(flags), call_data);
 }
 #else
 // Restart after confirmation

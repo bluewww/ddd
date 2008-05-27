@@ -29,7 +29,9 @@
 char decoration_rcsid[] = 
     "$Id$";
 
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
+#endif
 
 #include "decoration.h"
 
@@ -68,6 +70,7 @@ void get_transient_pos(Screen *screen, Position& pos_x, Position& pos_y)
     pos_y = 0;
 #endif
 }
+
 
 #if defined(IF_XM)
 // Check if window manager decorates transients

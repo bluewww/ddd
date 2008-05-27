@@ -34,26 +34,25 @@
 #else
 #include "gtk_wrapper.h"
 #endif
-
 #include "strclass.h"
 #include "bool.h"
 
 #if defined(IF_XM)
-void gdbRunCB(Widget, XtPointer, XtPointer);
+void gdbRunCB(Widget w, XtPointer, XtPointer);
 #else
 void gdbRunCB(GUI::Widget *);
 #endif
 
 #if defined(IF_XM)
-void gdbMakeCB(Widget, XtPointer, XtPointer);
-void gdbMakeAgainCB(Widget, XtPointer, XtPointer);
+void gdbMakeCB(Widget w, XtPointer, XtPointer);
+void gdbMakeAgainCB(Widget w, XtPointer, XtPointer);
 #else
 void gdbMakeCB(GUI::Widget *);
 void gdbMakeAgainCB(GUI::Widget *);
 #endif
 
 #if defined(IF_XM)
-void gdbChangeDirectoryCB(Widget, XtPointer, XtPointer);
+void gdbChangeDirectoryCB(Widget w, XtPointer, XtPointer);
 #else
 void gdbChangeDirectoryCB(GUI::Widget *);
 #endif

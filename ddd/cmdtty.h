@@ -35,7 +35,6 @@
 
 #include "bool.h"
 #include "strclass.h"
-
 #if !defined(IF_XM)
 #include <GUI/Widget.h>
 #endif

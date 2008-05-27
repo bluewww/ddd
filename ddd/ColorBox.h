@@ -58,10 +58,12 @@ public:
 
 private:
     string _color_name;		// The color name, as string
+#if defined(IF_XM)
+    Pixel _color;		// The color itself, as pixel
+#endif
     mutable bool _color_valid;		// True if COLOR is valid
     mutable bool _color_failed;		// True if conversion failed
 #if defined(IF_XM)
-    Pixel _color;		// The color itself, as pixel
     mutable unsigned short _red;	// Exact color values, scaled 0..65535
     mutable unsigned short _green;
     mutable unsigned short _blue;
@@ -75,13 +77,15 @@ protected:
 	TransparentHatBox(box),
 	_color_name(box._color_name),
 	_color(box._color),
+	_color_valid(box._color_valid),
 #if defined(IF_XM)
+	_color_failed(box._color_failed),
 	_red(box._red),
 	_green(box._green),
-	_blue(box._blue),
-#endif
-	_color_valid(box._color_valid),
+	_blue(box._blue)
+#else
 	_color_failed(box._color_failed)
+#endif
     {}
 
 #if defined(IF_XM)
@@ -121,16 +125,21 @@ protected:
 #endif
 
 public:
+#if defined(IF_XM)
+    // Constructor
+    ColorBox(Box *box, const string& name)
+	: TransparentHatBox(box), _color_name(name), _color(0),
+	  _color_valid(false), _color_failed(false),
+	  _red(0), _green(0), _blue(0)
+    {}
+#else
     // Constructor
     ColorBox(Box *box, const string& name)
 	: TransparentHatBox(box), _color_name(name),
 	  _color_valid(false), _color_failed(false),
-#if defined(IF_XM)
-	  _color(0), _red(0), _green(0), _blue(0)
-#else
 	  _color(0, 0, 0)
-#endif
     {}
+#endif
 
     // Resources
     const string& color_name() const { return _color_name; }
@@ -157,7 +166,6 @@ public:
 	_color.r = red; _color.g = green; _color.b = blue;
 #endif
 	_color_valid = true;
-
     }
 };
 

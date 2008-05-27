@@ -38,7 +38,6 @@ char BoxGraphNode_rcsid[] =
 DEFINE_TYPE_INFO_1(BoxGraphNode, RegionGraphNode)
 
 #if defined(IF_XM)
-
 // Draw a BoxGraphNode
 void BoxGraphNode::forceDraw(Widget w, 
 			     const BoxRegion& /* exposed */,
@@ -81,9 +80,7 @@ void BoxGraphNode::forceDraw(Widget w,
 	box()->draw(w, region(gc), exposed, gc.nodeGC, false);
     }
 }
-
 #else
-
 // Draw a BoxGraphNode
 void BoxGraphNode::forceDraw(GUI::Widget *w, 
 			     const BoxRegion& /* exposed */,
@@ -126,7 +123,6 @@ void BoxGraphNode::forceDraw(GUI::Widget *w,
 	box()->draw(w, region(gc), exposed, gc.nodeGC, false);
     }
 }
-
 #endif
 
 

@@ -28,8 +28,6 @@
 char AutoRaise_rcsid[] = 
     "$Id$";
 
-#include "config.h"
-
 #include "AutoRaise.h"
 #include <Xm/Xm.h>
 #include <iostream>

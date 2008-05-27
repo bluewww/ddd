@@ -34,8 +34,6 @@
 // extensibility. The contents of the box are determined by the
 // drawing function _draw().
 
-#include "config.h"
-
 #include "assert.h"
 #include <string.h>
 #include "strclass.h"
@@ -53,8 +51,6 @@
 #include "UniqueId.h"
 #include "DataLink.h"
 #include "TypeInfo.h"
-
-#include "gtk_wrapper.h"
 
 class TagBox;
 
@@ -107,6 +103,7 @@ protected:
 		       const BoxRegion& exposed, 
 		       GUI::RefPtr<GUI::GC> gc, bool context_selected) const = 0;
 #endif
+
 public:
     // Save box to stream
     virtual void dump(std::ostream& s) const = 0;

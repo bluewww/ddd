@@ -29,7 +29,9 @@
 char graph_rcsid[] = 
     "$Id$";
 
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
+#endif
 
 #include "data.h"
 #include "DataDisp.h"
@@ -42,7 +44,6 @@ char graph_rcsid[] =
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 void graphAlignCB(Widget, XtPointer, XtPointer)
 {
     StatusDelay delay("Aligning displays");
@@ -50,20 +51,16 @@ void graphAlignCB(Widget, XtPointer, XtPointer)
     XtCallActionProc(data_disp->graph_edit, 
 		     "snap-to-grid", (XEvent *)0, (String *)0, 0);
 }
-
 #else
-
 void graphAlignCB(void)
 {
     StatusDelay delay("Aligning displays");
 
     std::cerr << "graphAlignCB not implemented yet\n";
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void graphRotateCB(Widget, XtPointer, XtPointer)
 {
     StatusDelay delay("Rotating graph");
@@ -74,9 +71,7 @@ void graphRotateCB(Widget, XtPointer, XtPointer)
     XtCallActionProc(data_disp->graph_edit,
 		     "rotate", (XEvent *)0, (char**)params, 1);
 }
-
 #else
-
 void graphRotateCB(void)
 {
     StatusDelay delay("Rotating graph");
@@ -86,11 +81,9 @@ void graphRotateCB(void)
 
     std::cerr << "graphRotateCB not implemented yet\n";
 }
-
 #endif
 
 #if defined(IF_XM)
-
 void graphLayoutCB(Widget, XtPointer, XtPointer)
 {
     StatusDelay delay("Layouting graph");
@@ -98,21 +91,17 @@ void graphLayoutCB(Widget, XtPointer, XtPointer)
     XtCallActionProc(data_disp->graph_edit, 
 		     "layout", (XEvent *)0, (String *)0, 0);
 }
-
 #else
-
 void graphLayoutCB(void)
 {
     StatusDelay delay("Layouting graph");
 
     std::cerr << "graphLayoutCB not implemented yet\n";
 }
-
 #endif
 
 #if defined(IF_XM)
-
-void graphToggleLocalsCB(Widget w, XtPointer, XtPointer call_data)
+void graphToggleLocalsCB(Widget, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *cbs = 
 	(XmToggleButtonCallbackStruct *)call_data;
@@ -122,9 +111,7 @@ void graphToggleLocalsCB(Widget w, XtPointer, XtPointer call_data)
     else
 	data_disp->delete_user_display(gdb->info_locals_command());
 }
-
 #else
-
 void graphToggleLocalsCB(GUI::CheckMenuItem *w)
 {
     if (w->get_active())
@@ -132,12 +119,10 @@ void graphToggleLocalsCB(GUI::CheckMenuItem *w)
     else
 	data_disp->delete_user_display(gdb->info_locals_command());
 }
-
 #endif
 
 #if defined(IF_XM)
-
-void graphToggleArgsCB(Widget w, XtPointer, XtPointer call_data)
+void graphToggleArgsCB(Widget, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *cbs = 
 	(XmToggleButtonCallbackStruct *)call_data;
@@ -147,9 +132,7 @@ void graphToggleArgsCB(Widget w, XtPointer, XtPointer call_data)
     else
 	data_disp->delete_user_display(gdb->info_args_command());
 }
-
 #else
-
 void graphToggleArgsCB(GUI::CheckMenuItem *w)
 {
     if (w->get_active())
@@ -157,5 +140,4 @@ void graphToggleArgsCB(GUI::CheckMenuItem *w)
     else
 	data_disp->delete_user_display(gdb->info_args_command());
 }
-
 #endif

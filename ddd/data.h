@@ -29,19 +29,16 @@
 #ifndef _DDD_data_h
 #define _DDD_data_h
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
 #if defined(IF_XM)
 #include <X11/Intrinsic.h>
-#endif
-
-#if !defined(IF_XM)
+#else
 #include <GUI/CheckMenuItem.h>
-#endif
-
 #include "gtk_wrapper.h"
+#endif
 
 #if defined(IF_XM)
 extern void graphAlignCB        (Widget, XtPointer, XtPointer);

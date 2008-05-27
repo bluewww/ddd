@@ -87,11 +87,8 @@ char comm_manager_rcsid[] =
 
 #include <ctype.h>
 #include <fstream>
-
 #if !defined(IF_XM)
-
 #include <GUI/ScrolledText.h>
-
 #endif
 
 
@@ -167,26 +164,26 @@ private:
 
     void add_destroy_callback()
     {
-	if (origin != 0) {
 #if defined(IF_XM)
+	if (origin != 0)
 	    XtAddCallback(origin, XtNdestroyCallback, clear_origin, 
 			  (XtPointer)this);
 #else
+	if (origin != 0)
 	    origin->add_destroy_notify_callback(this, clear_origin);
 #endif
-	}
     }
 
     void remove_destroy_callback()
     {
-	if (origin != 0) {
 #if defined(IF_XM)
+	if (origin != 0)
 	    XtRemoveCallback(origin, XtNdestroyCallback, clear_origin,
 			     (XtPointer)this);
 #else
+	if (origin != 0)
 	    origin->remove_destroy_notify_callback(this);
 #endif
-	}
     }
 
 public:
@@ -223,11 +220,13 @@ public:
 	  disabling_occurred(false),
 
 	  init_perl(""),
-	  init_bash("")
-
 #if defined(IF_XM)
-	, position_timer(0),
+	  init_bash(""),
+
+	  position_timer(0),
 	  display_timer(0)
+#else
+	  init_bash("")
 #endif
     {
 	add_destroy_callback();
@@ -464,19 +463,15 @@ static void fix_symbols(string& cmd)
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 inline const _XtString str(const _XtString s)
 {
     return s != 0 ? s : "";
 }
-
 #else
-
 inline const char *str(const char *s)
 {
     return s != 0 ? s : "";
 }
-
 #endif
 
 static void StartDoneCB(const string& /* answer */, void * /* qu_data */)
@@ -585,7 +580,7 @@ void start_gdb(bool config)
 	{
 	    // To be handled later by DDD - enqueue in command queue
 #if defined(IF_XM)
-	    Command c(command, Widget(0), process_batch);
+	    Command c(command, 0, process_batch);
 #else
 	    Command c(command, (GUI::Widget*)(0), process_batch);
 #endif
@@ -1990,7 +1985,6 @@ static void print_partial_answer(const string& answer, CmdData *cmd_data)
 }
 
 #if defined(IF_XM)
-
 static void CancelPartialPositionCB(XtPointer client_data, XtIntervalId *id)
 {
     (void) id;			// Use it
@@ -2002,22 +1996,17 @@ static void CancelPartialPositionCB(XtPointer client_data, XtIntervalId *id)
     string ans = cmd_data->pos_buffer->answer_ended();
     print_partial_answer(ans, cmd_data);
 }
-
 #else
-
 static bool CancelPartialPositionCB(CmdData *cmd_data)
 {
     string ans = cmd_data->pos_buffer->answer_ended();
     print_partial_answer(ans, cmd_data);
     return false;
 }
-
 #endif
 
 #if defined(IF_XM)
-
-static void CancelPartialDisplayCB(XtPointer client_data,
-				   XtIntervalId *id)
+static void CancelPartialDisplayCB(XtPointer client_data, XtIntervalId *id)
 {
     (void) id;			// Use it
 
@@ -2028,9 +2017,7 @@ static void CancelPartialDisplayCB(XtPointer client_data,
     string ans = cmd_data->disp_buffer->answer_ended();
     print_partial_answer(ans, cmd_data);
 }
-
 #else
-
 static bool CancelPartialDisplayCB(CmdData *cmd_data)
 {
     string ans = cmd_data->disp_buffer->answer_ended();
@@ -2038,8 +2025,8 @@ static bool CancelPartialDisplayCB(CmdData *cmd_data)
 
     return false;
 }
-
 #endif
+
 
 static CmdData *current_cmd_data = 0;
 
@@ -2079,14 +2066,12 @@ static void partial_answer_received(const string& answer, void *data)
 	    cmd_data->pos_buffer->partial_pos_found())
 	{
 #if defined(IF_XM)
-	    if (cmd_data->position_timer != 0) {
+	    if (cmd_data->position_timer != 0)
 		XtRemoveTimeOut(cmd_data->position_timer);
-	    }
 	    cmd_data->position_timer = 0;
 #else
-	    if (cmd_data->position_timer) {
+	    if (cmd_data->position_timer)
 		cmd_data->position_timer.disconnect();
-	    }
 #endif
 	}
 
@@ -2119,14 +2104,12 @@ static void partial_answer_received(const string& answer, void *data)
 	    cmd_data->disp_buffer->partial_displays_found())
 	{
 #if defined(IF_XM)
-	    if (cmd_data->display_timer != 0) {
+	    if (cmd_data->display_timer != 0)
 		XtRemoveTimeOut(cmd_data->display_timer);
-	    }
 	    cmd_data->display_timer = 0;
 #else
-	    if (cmd_data->display_timer) {
+	    if (cmd_data->display_timer)
 		cmd_data->display_timer.disconnect();
-	    }
 #endif
 	}
 
@@ -2183,23 +2166,19 @@ static void command_completed(void *data)
     bool start_undo  = cmd_data->start_undo;
 
 #if defined(IF_XM)
-    if (cmd_data->position_timer != 0) {
+    if (cmd_data->position_timer != 0)
 	XtRemoveTimeOut(cmd_data->position_timer);
-    }
     cmd_data->position_timer = 0;
 
-    if (cmd_data->display_timer != 0) {
+    if (cmd_data->display_timer != 0)
 	XtRemoveTimeOut(cmd_data->display_timer);
-    }
     cmd_data->display_timer = 0;
 #else
-    if (cmd_data->position_timer) {
+    if (cmd_data->position_timer)
 	cmd_data->position_timer.disconnect();
-    }
 
-    if (cmd_data->display_timer) {
+    if (cmd_data->display_timer)
 	cmd_data->display_timer.disconnect();
-    }
 #endif
 
     if (verbose && !cmd_data->recorded && start_undo)

@@ -75,7 +75,7 @@ char Command_rcsid[] =
 
 // Origin of last command
 #if defined(IF_XM)
-static Widget gdb_last_origin = 0;
+static Widget gdb_last_origin;
 #else
 static GUI::Widget *gdb_last_origin = 0;
 #endif
@@ -259,8 +259,8 @@ static Command current_gdb_command("echo");
 // Saved `running' command
 static Command running_gdb_command("run");
 
-#if defined(IF_XM)
 
+#if defined(IF_XM)
 static void ClearContinuingCB(XtPointer, XtIntervalId *)
 {
     // std::clog << "Continuing...done.\n";
@@ -268,9 +268,7 @@ static void ClearContinuingCB(XtPointer, XtIntervalId *)
     continuing = 0;
     processCommandQueue();
 }
-
 #else
-
 static bool ClearContinuingCB(void)
 {
     // std::clog << "Continuing...done.\n";
@@ -278,11 +276,9 @@ static bool ClearContinuingCB(void)
     processCommandQueue();
     return false;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Process command C; do it right now.
 static void _do_gdb_command(const Command& c, bool is_command = true)
 {
@@ -369,9 +365,7 @@ static void _do_gdb_command(const Command& c, bool is_command = true)
 
     processing_gdb_commands = saved_processing_gdb_commands;
 }
-
 #else
-
 // Process command C; do it right now.
 static void _do_gdb_command(const Command& c, bool is_command = true)
 {
@@ -456,7 +450,6 @@ static void _do_gdb_command(const Command& c, bool is_command = true)
 
     processing_gdb_commands = saved_processing_gdb_commands;
 }
-
 #endif
 
 // True if GDB can run a command
@@ -562,21 +555,20 @@ static void do_gdb_command(Command& given_c, bool is_command = true)
 		timeout = app_data.cont_interrupt_delay;
 
 #if defined(IF_XM)
-	    if (continuing != 0) {
+	    if (continuing)
 		XtRemoveTimeOut(continuing);
-	    }
 
 	    continuing = 
 		XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 
 				timeout, ClearContinuingCB, XtPointer(0));
 #else
-	    if (continuing) {
+	    if (continuing)
 		continuing.disconnect();
-	    }
 
 	    continuing = 
 		GUI::signal_timeout().connect(sigc::ptr_fun(ClearContinuingCB), timeout);
 #endif
+
 	    // std::clog << "Continuing...\n";
 	}
 
@@ -668,26 +660,26 @@ bool CommandGroup::first_command = true;
 
 void Command::add_destroy_callback()
 {
-    if (origin != 0) {
 #if defined(IF_XM)
+    if (origin != 0)
 	XtAddCallback(origin, XtNdestroyCallback, clear_origin, 
 		      (XtPointer)this);
 #else
+    if (origin != 0)
 	origin->add_destroy_notify_callback(this, clear_origin);
 #endif
-    }
 }
 
 void Command::remove_destroy_callback()
 {
-    if (origin != 0) {
 #if defined(IF_XM)
+    if (origin != 0)
 	XtRemoveCallback(origin, XtNdestroyCallback, clear_origin,
 			 (XtPointer)this);
 #else
+    if (origin != 0)
 	origin->remove_destroy_notify_callback(this);
 #endif
-    }
 }
 
 #if defined(IF_XM)
@@ -718,8 +710,6 @@ static CommandQueue commandQueue;
 #if LOG_COMMAND_QUEUE
 static std::ostream& operator<<(std::ostream& os, const CommandQueue& queue)
 {
-    os << &queue;
-    return os;
     os << "[";
     bool first = true;
     for (CommandQueueIter i = queue; i.ok(); i = i.next())
@@ -908,9 +898,7 @@ static void gdb_enqueue_command(const Command& c)
 }
 
 #if defined(IF_XM)
-
-void
-processCommandQueue(XtPointer, XtIntervalId *id)
+void processCommandQueue(XtPointer, XtIntervalId *id)
 {
     if (id != 0)
 	process_timeout = 0;		// Called by timeout
@@ -940,11 +928,8 @@ processCommandQueue(XtPointer, XtIntervalId *id)
 			    200, processCommandQueue, XtPointer(0));
     }
 }
-
 #else
-
-bool
-processCommandQueue(void)
+bool processCommandQueue(void)
 {
     if (emptyCommandQueue())
 	return false;
@@ -966,7 +951,6 @@ processCommandQueue(void)
     // Check again later...
     return true;
 }
-
 #endif
 
 // Wait for command queue to drain
@@ -1006,7 +990,6 @@ void syncCommandQueue()
 }
 
 #if defined(IF_XM)
-
 // Shell finder
 Widget find_shell(Widget w)
 {
@@ -1026,9 +1009,7 @@ Widget find_shell(Widget w)
 
     return parent;
 }
-
 #else
-
 GUI::Shell *find_shell(GUI::Widget *w)
 {
     if (w == 0)
@@ -1041,5 +1022,4 @@ GUI::Shell *find_shell(GUI::Widget *w)
 	return command_shell;
     return parent;
 }
-
 #endif
