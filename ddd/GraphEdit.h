@@ -316,8 +316,10 @@ enum GraphEditState {
 
 #if defined(IF_XMMM)
 class GUIGraphEdit: public GUI::Widget
-#else
+#elif defined(IF_GTK)
 class GUIGraphEdit: public GUI::Widget, public Gtk::DrawingArea
+#else
+class GUIGraphEdit: public GUI::Widget
 #endif
 {
 private:
@@ -335,11 +337,14 @@ private:
 #endif
 public:
     GUIGraphEdit(GUI::Container &parent, GUI::PackOptions po=GUI::PACK_SHRINK,
-		 const GUI::String &name="");
+		 const GUI::String &name=0, Graph *g0=NULL);
     ~GUIGraphEdit(void);
-#if !defined(IF_XMMM)
+#if defined(IF_GTK)
     Gtk::Widget *internal(void);
     const Gtk::Widget *internal(void) const;
+#endif
+#if defined(IF_GTK)
+    bool on_expose_event(GdkEventExpose *event);
 #endif
     bool on_expose_event(GUI::EventExpose *event);
     bool get_show_grid(void);

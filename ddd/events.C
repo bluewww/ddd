@@ -309,6 +309,9 @@ BoxSize size(GUI::Event *ev)
 #ifdef NAG_ME
 #warning Width and height not available for most event types.
 #endif
+    case GUI::EXPOSE:
+	return BoxSize(ev->expose.width,
+		       ev->expose.height);
     case GUI::CONFIGURE:
 	return BoxSize(ev->configure.width,
 		       ev->configure.height);

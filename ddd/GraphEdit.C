@@ -1645,7 +1645,7 @@ void GUIGraphEdit::setGraphGC(void)
 static void Initialize(Widget request, Widget w, ArgList, Cardinal *)
 #else
 GUIGraphEdit::GUIGraphEdit(GUI::Container &parent, GUI::PackOptions po,
-			   const GUI::String &name)
+			   const GUI::String &name, Graph *g0)
 #endif
 {
 #if defined(IF_XM)
@@ -1693,6 +1693,7 @@ GUIGraphEdit::GUIGraphEdit(GUI::Container &parent, GUI::PackOptions po,
     edgePrintColor = strdup("red");
 
     highlight_thickness = 2;
+    graph = g0;
 #endif
 
     // init state
@@ -1829,6 +1830,16 @@ static void Redisplay(Widget w, XEvent *event, Region)
     graph->draw(w, BoxRegion(point((XEvent *)event), size((XEvent *)event)), graphGC);
 }
 #else
+#if defined(IF_GTK)
+bool GUIGraphEdit::on_expose_event(GdkEventExpose *event)
+{
+    std::cerr << "on_expose_event\n";
+    GUI::Event ev;
+    translate_event((GdkEvent *)event, &ev);
+    on_expose_event(&ev.expose);
+}
+#endif
+
 bool GUIGraphEdit::on_expose_event(GUI::EventExpose *event)
 {
 

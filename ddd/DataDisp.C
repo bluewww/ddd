@@ -4029,7 +4029,7 @@ void DataDisp::refresh_args(bool update_arg)
 }
 
 #if defined(IF_XM)
-void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *)
+void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 {
     (void) timer_id;		// Use it
     assert(*timer_id == refresh_args_timer);
@@ -9451,7 +9451,8 @@ DataDisp::DataDisp(GUI::Container *parent, GUI::Container *&data_buttons_w)
 
     (new GUI::Label(*parent, GUI::PACK_SHRINK, "DATA PARENT 1", "DATA PARENT 1"))->show();
     // Create graph editor
-    graph_edit = new GUIGraphEdit(*parent, GUI::PACK_EXPAND_WIDGET, "graph_edit");
+    graph_edit = new GUIGraphEdit(*parent, GUI::PACK_EXPAND_WIDGET, "graph_edit",
+				  disp_graph);
     graph_edit->set_size_request(200, 200);
     graph_edit->signal_button_press_event().connect(sigc::ptr_fun(test_click));
     graph_edit->add_event_mask(GUI::EventMask(GUI::EXPOSURE_MASK |
