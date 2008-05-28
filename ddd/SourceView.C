@@ -345,21 +345,21 @@ struct LineItms { enum Itms {SetBP, SetTempBP, Sep1, TempNContBP,
 			     Sep2, SetPC}; };
 MMDesc SourceView::line_popup[] = 
 {
-    GENTRYL("set", N_("set"), MMPush,
+    GENTRYL("set", N_("Set Breakpoint"), MMPush,
 	    BIND(SourceView::line_popup_setCB, (string *)0),
 	    sigc::bind(sigc::ptr_fun(SourceView::line_popup_setCB), (string *)0),
 	    0, 0),
-    GENTRYL("set_temp", N_("set_temp"), MMPush, 
+    GENTRYL("set_temp", N_("Set Temporary Breakpoint"), MMPush, 
 	    BIND(SourceView::line_popup_set_tempCB, (string *)0),
 	    sigc::bind(sigc::ptr_fun(SourceView::line_popup_set_tempCB), (string *)0),
 	    0, 0),
     MMSep,
-    GENTRYL("temp_n_cont", N_("temp_n_cont"), MMPush, 
+    GENTRYL("temp_n_cont", N_("Continue Until Here"), MMPush, 
 	    BIND(SourceView::line_popup_temp_n_contCB, (string *)0),
 	    sigc::bind(sigc::ptr_fun(SourceView::line_popup_temp_n_contCB), (string *)0),
 	    0, 0),
     MMSep,
-    GENTRYL("set_pc", N_("set_pc"), MMPush,
+    GENTRYL("set_pc", N_("Set Execution Position"), MMPush,
 	    BIND(SourceView::line_popup_set_pcCB, (string *)0),
 	    sigc::bind(sigc::ptr_fun(SourceView::line_popup_set_pcCB), (string *)0),
 	    0, 0),
@@ -7746,7 +7746,7 @@ void SourceView::srcpopupAct (GUI::Widget *w, GUI::Event* e, GUI::String *, unsi
 	mi->add_label(label.xmstring());
 
 	bp_popup_w->menu_position(event);
-	bp_popup_w->show();
+	bp_popup_w->popup(0, 0);
     }
     else if (pos_found 
 	     && (line_nr > 0 || !address.empty()) 
@@ -7771,7 +7771,7 @@ void SourceView::srcpopupAct (GUI::Widget *w, GUI::Event* e, GUI::String *, unsi
 	else
 	    address = string('*') + address;
 	line_popup_w->menu_position(event);
-	line_popup_w->show();
+	line_popup_w->popup(0, 0);
     }
     else
     {
