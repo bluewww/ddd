@@ -1,4 +1,4 @@
-#include <ext/hash_map>
+#include <map>
 #include <iostream>
 
 #include <GtkX/Widget.h>
@@ -119,17 +119,12 @@ const GtkX::String GtkX::mklabel(const GtkX::String &name,
     return name;
 }
 
-struct Display_Hash {
-    size_t operator()(GdkDisplay *d) const {
-	return (size_t)d;
-    }
-};
-
-typedef __gnu_cxx::hash_map<GdkDisplay *, Display *, Display_Hash> DisplayMap;
+typedef std::map<GdkDisplay *, RefPtr<Display> > DisplayMap;
 DisplayMap display_map;
 
 Display::Display(Glib::RefPtr<Gdk::Display> d0)
 {
+    nrefs_ = 0;
     disp_ = d0;
 }
 
@@ -138,10 +133,10 @@ Display::wrap(Glib::RefPtr<Gdk::Display> d0)
 {
     DisplayMap::iterator iter = display_map.find(d0->gobj());
     if (iter != display_map.end()) {
-	return (*iter).second;
+	return iter->second;
     }
-    Display *d = new Display(d0);
-    display_map.insert(std::pair<GdkDisplay *, Display *>(d0->gobj(), d));
+    RefPtr<Display> d = new Display(d0);
+    display_map.insert(std::pair<GdkDisplay *, RefPtr<Display> >(d0->gobj(), d));
     return d;
 }
 
@@ -187,13 +182,7 @@ Display::keyboard_ungrab(unsigned int time_)
     disp_->keyboard_ungrab(time_);
 }
 
-struct Screen_Hash {
-    size_t operator()(GdkScreen *d) const {
-	return (size_t)d;
-    }
-};
-
-typedef __gnu_cxx::hash_map<GdkScreen *, Screen *, Screen_Hash> ScreenMap;
+typedef std::map<GdkScreen *, RefPtr<Screen> > ScreenMap;
 ScreenMap screen_map;
 
 RefPtr<Screen>
@@ -201,15 +190,16 @@ Screen::wrap(Glib::RefPtr<Gdk::Screen> s0)
 {
     ScreenMap::iterator iter = screen_map.find(s0->gobj());
     if (iter != screen_map.end()) {
-	return (*iter).second;
+	return iter->second;
     }
-    Screen *s = new Screen(s0);
-    screen_map.insert(std::pair<GdkScreen *, Screen *>(s0->gobj(), s));
+    RefPtr<Screen> s = new Screen(s0);
+    screen_map.insert(std::pair<GdkScreen *, RefPtr<Screen> >(s0->gobj(), s));
     return s;
 }
 
 Screen::Screen(Glib::RefPtr<Gdk::Screen> s0)
 {
+    nrefs_ = 0;
     screen_ = s0;
 }
 
@@ -225,13 +215,7 @@ Screen::make_display_name(void) const
     return screen_->make_display_name();
 }
 
-struct XWindow_Hash {
-    size_t operator()(GdkWindow *d) const {
-	return (size_t)d;
-    }
-};
-
-typedef __gnu_cxx::hash_map<GdkWindow *, XWindow *, XWindow_Hash> XWindowMap;
+typedef std::map<GdkWindow *, RefPtr<XWindow> > XWindowMap;
 XWindowMap xwindow_map;
 
 RefPtr<XWindow>
@@ -239,10 +223,10 @@ XWindow::wrap(Glib::RefPtr<Gdk::Window> s0)
 {
     XWindowMap::iterator iter = xwindow_map.find(s0->gobj());
     if (iter != xwindow_map.end()) {
-	return (*iter).second;
+	return iter->second;
     }
-    XWindow *s = new XWindow(s0);
-    xwindow_map.insert(std::pair<GdkWindow *, XWindow *>(s0->gobj(), s));
+    RefPtr<XWindow> s = new XWindow(s0);
+    xwindow_map.insert(std::pair<GdkWindow *, RefPtr<XWindow> >(s0->gobj(), s));
     return s;
 }
 
@@ -710,13 +694,7 @@ Cursor::Cursor(const RefPtr<Pixmap> &source, const RefPtr<Pixmap> &mask,
 }
 
 
-struct Pixmap_Hash {
-    size_t operator()(GdkPixmap *p) const {
-	return (size_t)p;
-    }
-};
-
-typedef __gnu_cxx::hash_map<GdkPixmap *, Pixmap *, Pixmap_Hash> PixmapMap;
+typedef std::map<GdkPixmap *, RefPtr<Pixmap> > PixmapMap;
 PixmapMap pixmap_map;
 
 RefPtr<Pixmap>
@@ -724,10 +702,10 @@ Pixmap::wrap(Glib::RefPtr<Gdk::Pixmap> p0)
 {
     PixmapMap::iterator iter = pixmap_map.find(p0->gobj());
     if (iter != pixmap_map.end()) {
-	return (*iter).second;
+	return iter->second;
     }
-    Pixmap *s = new Pixmap(p0);
-    pixmap_map.insert(std::pair<GdkPixmap *, Pixmap *>(p0->gobj(), s));
+    RefPtr<Pixmap> s = new Pixmap(p0);
+    pixmap_map.insert(std::pair<GdkPixmap *, RefPtr<Pixmap> >(p0->gobj(), s));
     return s;
 }
 
@@ -754,6 +732,11 @@ Pixmap::create_from_data(RefPtr<Drawable> drawable,
 								 data, width, height, 24,
 								 gfg, gbg);
     return new Pixmap(pm);
+}
+
+Drawable::Drawable(void)
+{
+    nrefs_ = 0;
 }
 
 Pixmap::Pixmap(Glib::RefPtr<Gdk::Pixmap> p0)
@@ -825,17 +808,12 @@ Drawable::draw_polygon(RefPtr<GC> gc, bool filled,
     internal()->draw_polygon(gc->internal(), filled, gpoints);
 }
 
-struct GC_Hash {
-    size_t operator()(GdkGC *g) const {
-	return (size_t)g;
-    }
-};
-
-typedef __gnu_cxx::hash_map<GdkGC *, GC *, GC_Hash> GCMap;
+typedef std::map<GdkGC *, RefPtr<GC> > GCMap;
 GCMap gc_map;
 
 GC::GC(Glib::RefPtr<Gdk::GC> g0)
 {
+    nrefs_ = 0;
     gc_ = g0;
 }
 
@@ -844,10 +822,10 @@ GC::wrap(Glib::RefPtr<Gdk::GC> g0)
 {
     GCMap::iterator iter = gc_map.find(g0->gobj());
     if (iter != gc_map.end()) {
-	return (*iter).second;
+	return iter->second;
     }
-    GC *g = new GC(g0);
-    gc_map.insert(std::pair<GdkGC *, GC *>(g0->gobj(), g));
+    RefPtr<GC> g = new GC(g0);
+    gc_map.insert(std::pair<GdkGC *, RefPtr<GC> >(g0->gobj(), g));
     return g;
 }
 
@@ -1149,17 +1127,12 @@ FontDescription::FontDescription(const Pango::FontDescription &src):
 {
 }
 
-struct Font_Hash {
-    size_t operator()(PangoFont *f) const {
-	return (size_t)f;
-    }
-};
-
-typedef __gnu_cxx::hash_map<PangoFont *, Font *, Font_Hash> FontMap;
+typedef std::map<PangoFont *, RefPtr<Font> > FontMap;
 FontMap font_map;
 
 Font::Font(Glib::RefPtr<Pango::Font> f0)
 {
+    nrefs_ = 0;
     font_ = f0;
 }
 
@@ -1168,10 +1141,10 @@ Font::wrap(Glib::RefPtr<Pango::Font> f0)
 {
     FontMap::iterator iter = font_map.find(f0->gobj());
     if (iter != font_map.end()) {
-	return (*iter).second;
+	return iter->second;
     }
-    Font *f = new Font(f0);
-    font_map.insert(std::pair<PangoFont *, Font *>(f0->gobj(), f));
+    RefPtr<Font> f = new Font(f0);
+    font_map.insert(std::pair<PangoFont *, RefPtr<Font> >(f0->gobj(), f));
     return f;
 }
 

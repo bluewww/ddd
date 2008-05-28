@@ -361,6 +361,7 @@ namespace GtkX {
     class Drawable {
 	int nrefs_;
     public:
+	Drawable(void);
 	virtual Glib::RefPtr<Gdk::Drawable> internal(void) = 0;
 	virtual Glib::RefPtr<const Gdk::Drawable> internal(void) const = 0;
 	int ref(void) {return nrefs_++;}
