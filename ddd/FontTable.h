@@ -29,7 +29,7 @@
 #ifndef _DDD_FontTable_h
 #define _DDD_FontTable_h
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
@@ -37,10 +37,8 @@
 #include <X11/Xlib.h>
 #else
 #include <GUI/Widget.h>
-#endif
-
 #include "gtk_wrapper.h"
-
+#endif
 #include "strclass.h"
 #include "TypeInfo.h"
 #include "assert.h"
@@ -103,13 +101,13 @@ public:
     virtual ~FontTable()
     {
 	for (unsigned i = 0; i < MAX_FONTS; i++)
-	    if (table[i].font != 0) {
 #if defined(IF_XM)
+	    if (table[i].font != 0)
 		XFreeFont(_display, table[i].font);
 #else
+	    if (table[i].font != 0)
 		table[i].font.clear();
 #endif
-	    }
     }
 #if defined(IF_XM)
     XFontStruct *operator[](const string& name);

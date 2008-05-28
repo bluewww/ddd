@@ -29,7 +29,7 @@
 #ifndef _DDD_GraphEdit_h
 #define _DDD_GraphEdit_h
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
@@ -43,7 +43,6 @@
 #endif
 #include "gtk_wrapper.h"
 #endif
-
 #include "BoxPoint.h"
 
 class Graph;

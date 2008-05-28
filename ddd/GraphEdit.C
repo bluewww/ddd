@@ -29,7 +29,9 @@
 char GraphEdit_rcsid[] = 
     "$Id$";
 
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
+#endif
 
 #include <string.h>
 #include <stdlib.h>
@@ -379,7 +381,7 @@ static void ClassInitialize();
 
 #if defined(IF_XM)
 static void Initialize(Widget request, 
-		       Widget w,
+		       Widget w, 
 		       ArgList args,
 		       Cardinal *num_args);
 #endif
@@ -481,7 +483,6 @@ static const Glib::SignalProxyInfo GraphEdit_signal_compare_nodes_info =
 #endif
 
 // Method function definitions
-
 #if !defined(IF_XM)
 #if !defined(IF_XMMM)
 Gtk::Widget *
@@ -698,6 +699,7 @@ void GUIGraphEdit::setGrid(bool reset)
     }
 }
 #endif
+
 
 
 #if defined(IF_XM)
@@ -946,6 +948,9 @@ bool GUIGraphEdit::enable_redisplay(bool state)
     return old_state;
 }
 #endif
+
+
+
 
 #if defined(IF_XM)
 // Converters
@@ -1302,6 +1307,7 @@ static Boolean CvtCardinalToString (Display *display, XrmValue *,
 #endif
 #endif
 
+
 #if defined(IF_XM)
 // Initialize class
 static void ClassInitialize()
@@ -1357,6 +1363,7 @@ static void ClassInitialize()
 		       XtCacheAll, XtDestructor(0));
 }
 #endif
+
 
 // Initialize widget
 
@@ -1514,6 +1521,7 @@ void GUIGraphEdit::setGCs(void)
 }
 #endif
 
+
 #if defined(IF_XM)
 static void setGraphGC(Widget w)
 {
@@ -1641,6 +1649,7 @@ void GUIGraphEdit::setGraphGC(void)
 }
 #endif
 
+
 #if defined(IF_XM)
 static void Initialize(Widget request, Widget w, ArgList, Cardinal *)
 #else
@@ -1712,6 +1721,7 @@ GUIGraphEdit::GUIGraphEdit(GUI::Container &parent, GUI::PackOptions po,
     // init redrawTimer
     redrawTimer = 0;
 
+    // set GCs
     setGCs(w);
 
     // set Graph GC
@@ -1762,7 +1772,6 @@ GUIGraphEdit::GUIGraphEdit(GUI::Container &parent, GUI::PackOptions po,
     parent.add_child(*this, po, 0);
     postinit();
 #endif
-
 }
 
 #if defined(IF_XM)
@@ -1801,6 +1810,7 @@ static void Realize(Widget w,
 }
 #endif
 
+
 #if defined(IF_XM)
 // Redisplay widget
 static void Redisplay(Widget w, XEvent *event, Region)
@@ -1827,7 +1837,7 @@ static void Redisplay(Widget w, XEvent *event, Region)
     if (highlight_drawn)
 	graphEditClassRec.primitive_class.border_highlight(w);
 
-    graph->draw(w, BoxRegion(point((XEvent *)event), size((XEvent *)event)), graphGC);
+    graph->draw(w, BoxRegion(point(event), size(event)), graphGC);
 }
 #else
 #if defined(IF_GTK)
@@ -1865,6 +1875,7 @@ bool GUIGraphEdit::on_expose_event(GUI::EventExpose *event)
 				size((GUI::Event *)event)), graphGC);
 }
 #endif
+
 
 #if defined(IF_XM)
 // Set widget values
@@ -1961,6 +1972,9 @@ GUIGraphEdit::~GUIGraphEdit(void)
 }
 #endif
 
+
+
+
 // Action function definitions
 
 // Helping stuff
@@ -1995,7 +2009,7 @@ GraphNode *GUIGraphEdit::graphEditGetNodeAtPoint(const BoxPoint& p)
 
     return found;
 }
-
+    
 #if defined(IF_XM)
 GraphNode *graphEditGetNodeAtEvent(Widget w, XEvent *event)
 {
@@ -2007,6 +2021,7 @@ GraphNode *GUIGraphEdit::graphEditGetNodeAtEvent(GUI::Event *event)
     return graphEditGetNodeAtPoint(point(event));
 }
 #endif
+
 
 // Get frame region
 #if defined(IF_XM)
@@ -2073,16 +2088,15 @@ void GUIGraphEdit::setRegionCursor(void)
 #endif
 }
 
+
 #if defined(IF_XM)
-inline void myXDrawLine(
-    Display *display, 
-    Drawable d, 
-    GC gc,
-    const BoxPoint& f, const BoxPoint& t)
+inline void myXDrawLine(Display *display, 
+			Drawable d, 
+			GC gc,
+			const BoxPoint& f, const BoxPoint& t)
 {
-    if (f != t) {
+    if (f != t)
 	XDrawLine(display, d, gc, f[X], f[Y], t[X], t[Y]);
-    }
 }
 #else
 inline void myXDrawLine(
@@ -2097,6 +2111,7 @@ inline void myXDrawLine(
 
 #endif
     
+
 #if defined(IF_XM)
 static void redrawSelectFrame(Widget w, const BoxRegion& r)
 #else
@@ -2154,6 +2169,7 @@ void GUIGraphEdit::redrawSelectFrame(const BoxRegion& r)
 #endif
 }
 
+
 #if defined(IF_XM)
 static void drawSelectFrames(Widget w, 
 			     const BoxRegion& r0, 
@@ -2183,12 +2199,13 @@ void GUIGraphEdit::drawSelectFrames(const BoxRegion& r0,
 }
 #endif
 
+
 #if defined(IF_XM)
 // Draw the selection frame
 inline void drawSelectFrame(Widget w)
 {
     drawSelectFrames(w, frameRegion(w),
-		     BoxRegion(BoxPoint(0, 0), BoxSize(0, 0)));
+	BoxRegion(BoxPoint(0, 0), BoxSize(0, 0)));
 }
 #else
 // Draw the selection frame
@@ -2198,6 +2215,7 @@ void GUIGraphEdit::drawSelectFrame(void)
 		     BoxRegion(BoxPoint(0, 0), BoxSize(0, 0)));
 }
 #endif
+
 
 #if defined(IF_XM)
 // Redraw selection frame
@@ -2223,6 +2241,7 @@ void GUIGraphEdit::redrawSelectFrame(const BoxPoint& p)
     drawSelectFrames(r0, r1);
 }
 #endif
+
 
 // Find min possible offset
 #if defined(IF_XM)
@@ -2354,7 +2373,7 @@ void GUIGraphEdit::drawOutlines(const BoxPoint& offset)
 	    edge = graph->nextVisibleEdge(edge))
 	{
 	    // if (edge->from()->selected() || edge->to()->selected())
-	    edge->draw(w, EVERYWHERE, gc);
+		edge->draw(w, EVERYWHERE, gc);
 	}
     }
 }
@@ -2424,6 +2443,7 @@ void GUIGraphEdit::selectionChanged(GUI::Event *event, Boolean double_click)
 }
 #endif
 
+
 // Action functions
 
 #if defined(IF_XM)
@@ -2482,6 +2502,7 @@ void GUIGraphEdit::SelectAll(void)
 	selectionChanged(NULL, False);
 #endif
 }
+
 
 #if defined(IF_XM)
 // Unselect all nodes
@@ -3538,6 +3559,7 @@ void GUIGraphEdit::MoveSelected(GUI::Event *, string movx, string movy)
 }
 #endif
 
+
 #if defined(IF_XM)
 // Select single node
 static void select_single_node(Widget w, XEvent *event, GraphNode *selectNode)
@@ -3896,6 +3918,7 @@ static void Rotate(Widget w, XEvent *event, String *params,
 #endif
 
 
+
 // Layout nodes
 
 static Graph *layout_graph = 0;
@@ -4214,6 +4237,7 @@ void GUIGraphEdit::DoLayout(LayoutMode mode)
 }
 #endif
 
+
 #if defined(IF_XM)
 // Normalize graph
 static void _Normalize(Widget w, XEvent *, String *, Cardinal *)
@@ -4277,8 +4301,10 @@ void GUIGraphEdit::Normalize(void)
 }
 #endif
 
+
 #if defined(IF_XM)
 // Show and hide edges
+
 static void considerEdges(Widget w, XEvent *, String *params,
 			  Cardinal *num_params, Boolean shallBeHidden)
 {
@@ -4349,6 +4375,7 @@ static void considerEdges(Widget w, XEvent *, String *params,
 }
 #else
 // Show and hide edges
+
 void GUIGraphEdit::considerEdges(ShowHideMode themode, Boolean shallBeHidden)
 {
     // get the mode
@@ -4426,10 +4453,9 @@ void GUIGraphEdit::HideEdges(ShowHideMode how)
     considerEdges(how, True);
 #endif
 }
+#if !defined(IF_XM)
 
 // **********************************************************************
-
-#if !defined(IF_XM)
 
 // GUIGraphEdit accessors
 

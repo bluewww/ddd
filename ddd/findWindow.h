@@ -33,7 +33,6 @@
 #else
 #include "gtk_wrapper.h"
 #endif
-
 #include "bool.h"
 
 #if defined(IF_XM)

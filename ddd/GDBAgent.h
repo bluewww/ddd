@@ -227,7 +227,6 @@ protected:
     static void munch_perl_scalar(string& value);
 
 public:
-
 #if defined(IF_XM)
     // Constructor
     GDBAgent (XtAppContext app_context,

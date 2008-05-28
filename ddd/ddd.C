@@ -125,7 +125,7 @@ char ddd_rcsid[] =
 // ...HP : Handler procedure (see `HandlerL.h' for details)
 //-----------------------------------------------------------------------------
 
-#if defined(IF_XM)
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 // #include "MemCheckD.h"

@@ -29,7 +29,7 @@
 #ifndef _DDD_file_h
 #define _DDD_file_h
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
@@ -39,29 +39,27 @@
 #include <GUI/FileSelectionDialog.h>
 #include "gtk_wrapper.h"
 #endif
-
 #include "strclass.h"
 #include "StringA.h"
 
 // Open file, process, core, source ...
 #if defined(IF_XM)
-extern void gdbOpenRecentCB   (Widget, XtPointer, XtPointer);
-extern void gdbOpenProcessCB  (Widget, XtPointer, XtPointer);
-extern void gdbOpenClassCB    (Widget, XtPointer, XtPointer);
 extern void gdbOpenFileCB     (Widget, XtPointer, XtPointer);
+extern void gdbOpenRecentCB   (Widget, XtPointer, XtPointer);
+extern void gdbOpenClassCB    (Widget, XtPointer, XtPointer);
+extern void gdbOpenProcessCB  (Widget, XtPointer, XtPointer);
 extern void gdbOpenCoreCB     (Widget, XtPointer, XtPointer);
 extern void gdbOpenSourceCB   (Widget, XtPointer, XtPointer);
 extern void gdbLookupSourceCB (Widget, XtPointer, XtPointer);
 #else
-extern void gdbOpenRecentCB   (int index);
-extern void gdbOpenProcessCB  (GUI::Widget *w);
-extern void gdbOpenClassCB    (GUI::Widget *w);
 extern void gdbOpenFileCB     (GUI::Widget *w);
+extern void gdbOpenRecentCB   (int index);
+extern void gdbOpenClassCB    (GUI::Widget *w);
+extern void gdbOpenProcessCB  (GUI::Widget *w);
 extern void gdbOpenCoreCB     (GUI::Widget *w);
 extern void gdbOpenSourceCB   (GUI::Widget *w);
 extern void gdbLookupSourceCB (GUI::Widget *w);
 #endif
-
 
 // Get all sources from GDB
 void get_gdb_sources(StringArray& sources_list);

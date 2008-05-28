@@ -29,16 +29,20 @@
 #ifndef _DDD_frame_h
 #define _DDD_frame_h
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
+#if defined(IF_XM)
+#include <X11/Intrinsic.h>
+#else
+#include <GUI/Widget.h>
 #include "gtk_wrapper.h"
+#endif
 
 #if defined(IF_XM)
 // Find the WM frame surrounding WINDOW
 Window frame(Display *display, Window window);
-
 inline Window frame(Widget w) { return frame(XtDisplay(w), XtWindow(w)); }
 #else
 // Find the WM frame surrounding WINDOW

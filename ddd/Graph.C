@@ -393,7 +393,6 @@ GraphNode *Graph::getNode(GraphNode *org_node, const Graph& org_graph) const
 }
 
 #if defined(IF_XM)
-
 // Draw
 void Graph::draw(Widget w, const BoxRegion& exposed, const GraphGC& _gc) const
 {
@@ -424,9 +423,7 @@ void Graph::draw(Widget w, const BoxRegion& exposed, const GraphGC& _gc) const
 	    node->redraw() = false;
     }
 }
-
 #else
-
 // Draw
 void Graph::draw(GUI::Widget *w, const BoxRegion& exposed, const GraphGC& _gc) const
 {
@@ -457,7 +454,6 @@ void Graph::draw(GUI::Widget *w, const BoxRegion& exposed, const GraphGC& _gc) c
 	    node->redraw() = false;
     }
 }
-
 #endif
 
 

@@ -30,7 +30,9 @@
 char file_rcsid[] = 
     "$Id$";
 
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
+#endif
 
 #include "file.h"
 
@@ -118,7 +120,6 @@ static WidgetArray file_dialogs;
 
 static string current_file_filter = "";
 
-
 #if defined(IF_XM)
 // Make sure that every change in one filter is reflected in all others
 static void SyncFiltersCB(Widget dialog, XtPointer, XtPointer)
@@ -202,10 +203,10 @@ static Widget file_dialog(Widget w, const string& name,
 {
     Delay delay(w);
 
-    string pwd;
-
     Arg args[10];
     int arg = 0;
+
+    string pwd;
 
     arg = 0;
     if (do_search_files)
@@ -228,9 +229,8 @@ static Widget file_dialog(Widget w, const string& name,
 	verify(XmCreateFileSelectionDialog(w, XMST(name.chars()), args, arg));
     Delay::register_shell(dialog);
 
-    if (ok_callback != 0) {
+    if (ok_callback != 0)
 	XtAddCallback(dialog, XmNokCallback,     ok_callback, 0);
-    }
 
     XtAddCallback(dialog, XmNcancelCallback, UnmanageThisCB, 
 		  XtPointer(dialog));
@@ -245,7 +245,6 @@ static Widget file_dialog(Widget w, const string& name,
     Widget filter_button = 
 	XmFileSelectionBoxGetChild(dialog, XmDIALOG_APPLY_BUTTON);
     XtAddCallback(filter_button, XmNactivateCallback, FilterAllCB, 0);
-
     XtAddCallback(dialog, XmNunmapCallback, ClearStatusCB, 0);
 
     file_dialogs += dialog;
@@ -301,9 +300,8 @@ static Widget create_file_dialog(Widget w, const _XtString name,
 				 FileSearchProc searchRemoteDirectories = 0,
 				 FileSearchProc searchLocalFiles        = 0,
 				 FileSearchProc searchLocalDirectories  = 0,
-				 XtCallbackProc openDone = 0
-    )
-{
+				 XtCallbackProc openDone = 0)
+{			     
     if (remote_gdb())
 	return file_dialog(find_shell(w), name,
 			   searchRemoteFiles, searchRemoteDirectories, 
@@ -313,9 +311,7 @@ static Widget create_file_dialog(Widget w, const _XtString name,
 			   searchLocalFiles, searchLocalDirectories, 
 			   openDone);
     else
-	return file_dialog(find_shell(w), name,
-			   0, 0,
-			   openDone);
+	return file_dialog(find_shell(w), name, 0, 0, openDone);
 }
 #else
 // Create various file dialogs
@@ -332,6 +328,7 @@ static GUI::Dialog *create_file_dialog(GUI::Widget *w, const char *name,
     return file_dialog(find_shell(w), name, openDone);
 }
 #endif
+
 
 // Synchronize file dialogs with current directory
 void process_cd(const string& pwd)
@@ -687,6 +684,8 @@ string get_file(GUI::FileSelectionDialog *w)
 }
 #endif
 
+
+
 //-----------------------------------------------------------------------------
 // OK pressed
 //-----------------------------------------------------------------------------
@@ -746,14 +745,13 @@ static void openFileDone(GUI::FileSelectionDialog *w)
 }
 #endif
 
+
 // OK pressed in `Open Core'
-static void openCoreDone(
 #if defined(IF_XM)
-    Widget w, XtPointer client_data, XtPointer call_data
+static void openCoreDone(Widget w, XtPointer client_data, XtPointer call_data)
 #else
-    GUI::FileSelectionDialog *w
+static void openCoreDone(GUI::FileSelectionDialog *w)
 #endif
-    )
 {
 #if defined(IF_XM)
     string corefile = get_file(w, client_data, call_data);
@@ -801,7 +799,8 @@ static void openCoreDone(
 
 #if defined(IF_XM)
 // OK pressed in `Open Source'
-static void openSourceDone(Widget w, XtPointer client_data, XtPointer call_data)
+static void openSourceDone(Widget w, XtPointer client_data, 
+			   XtPointer call_data)
 {
     string filename = get_file(w, client_data, call_data);
     if (filename.empty())
@@ -836,6 +835,7 @@ static void openSourceDone(GUI::FileSelectionDialog *w)
 	source_view->read_file(filename);
 }
 #endif
+
 
 //-----------------------------------------------------------------------------
 // Program Info
@@ -1217,6 +1217,7 @@ static void sortProcesses(StringArray& a)
 #endif
 #endif
 
+
 inline bool is_separator(char c)
 {
     return c == ' ' || c == '\'' || c == '\"';
@@ -1253,6 +1254,7 @@ static bool valid_ps_line(const string& line, const string& ps_command)
     // Okay, just leave it
     return true;
 }
+
 
 #if defined(IF_XM)
 // Create list of processes
@@ -1649,6 +1651,7 @@ static string get_item(GUI::ListView *items)
 }
 #endif
 
+
 //-----------------------------------------------------------------------------
 // Classes (JDB only)
 //-----------------------------------------------------------------------------
@@ -1712,6 +1715,7 @@ static void openClassDone(Widget w, XtPointer client_data,
 #warning JDB (classes) not supported
 #endif
 #endif
+
 
 //-----------------------------------------------------------------------------
 // Lookup sources and functions (GDB only)
@@ -1938,9 +1942,7 @@ static void lookupSourceDone(Widget w,
 	// Expand to full path name
 	int *position_list = 0;
 	int position_count = 0;
-	if (
-	    XmListGetSelectedPos(sources, &position_list, &position_count)
-	    )
+	if (XmListGetSelectedPos(sources, &position_list, &position_count))
 	{
 	    if (position_count == 1)
 	    {
@@ -2038,7 +2040,7 @@ void gdbOpenFileCB(GUI::Widget *w)
 #endif
 
 #if defined(IF_XM)
-void gdbOpenRecentCB(Widget w, XtPointer client_data, XtPointer)
+void gdbOpenRecentCB(Widget, XtPointer client_data, XtPointer)
 {
     int index = ((int)(long)client_data) - 1;
 
@@ -2292,11 +2294,11 @@ static void LoadSharedLibrariesCB(void)
 #endif
 
 #if defined(IF_XM)
-void gdbLookupSourceCB(Widget w, XtPointer, XtPointer)
+void gdbLookupSourceCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     if (gdb->type() != GDB)
     {
-	gdbOpenSourceCB(w, XtPointer(0), XtPointer(0));
+	gdbOpenSourceCB(w, client_data, call_data);
 	return;
     }
 

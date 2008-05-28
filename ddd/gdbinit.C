@@ -199,8 +199,7 @@ GDBAgent *new_gdb(DebuggerType type,
 
 #if defined(IF_XM)
 // Show call in output window
-static void EchoTextCB(XtPointer client_data,
-		       XtIntervalId *)
+static void EchoTextCB(XtPointer client_data, XtIntervalId *)
 {
     const string& gdb_call = *((const string *)client_data);
     _gdb_out(gdb_call);

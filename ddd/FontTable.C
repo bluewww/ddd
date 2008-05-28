@@ -52,7 +52,6 @@ inline unsigned hash(const char *name)
 }
 
 #if defined(IF_XM)
-
 // Return XFontStruct for given font name NAME
 XFontStruct *FontTable::operator[](const string& name)
 {
@@ -67,7 +66,6 @@ XFontStruct *FontTable::operator[](const string& name)
     {
 	// Insert new font
 	table[i].name = name;
-
 	table[i].font = XLoadQueryFont(_display, name.chars());
 
 	if (table[i].font == 0)
@@ -107,9 +105,7 @@ XFontStruct *FontTable::operator[](const string& name)
 
     return table[i].font;
 }
-
 #else
-
 // Return XFontStruct for given font name NAME
 GUI::RefPtr<GUI::Font> FontTable::operator[](const string& name)
 {
@@ -167,5 +163,4 @@ GUI::RefPtr<GUI::Font> FontTable::operator[](const string& name)
 
     return table[i].font;
 }
-
 #endif

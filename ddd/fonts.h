@@ -29,7 +29,7 @@
 #ifndef _DDD_fonts_h
 #define _DDD_fonts_h
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
@@ -70,11 +70,11 @@ extern void set_font(DDDFont n, const string& name);
 
 #if defined(IF_XM)
 // Browse fonts
-extern void BrowseFontCB(Widget, XtPointer, XtPointer);
+extern void BrowseFontCB(Widget w, XtPointer, XtPointer);
 
 // Set font name and size
-extern void SetFontNameCB(Widget, XtPointer, XtPointer);
-extern void SetFontSizeCB(Widget, XtPointer, XtPointer);
+extern void SetFontNameCB(Widget w, XtPointer, XtPointer);
+extern void SetFontSizeCB(Widget w, XtPointer, XtPointer);
 #else
 // Browse fonts
 extern void BrowseFontCB(GUI::Button *, DDDFont);

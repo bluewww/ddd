@@ -654,6 +654,7 @@ static void set_font_size(DDDFont font, int size)
     }
 }
 
+
 #if defined(IF_XM)
 void SetFontNameCB(Widget w, XtPointer client_data, XtPointer)
 {
@@ -693,6 +694,7 @@ void SetFontSizeCB(GUI::Entry *w, DDDFont font)
     update_reset_preferences();
 }
 #endif
+
 
 
 //-----------------------------------------------------------------------------
@@ -828,16 +830,15 @@ static void SelectionLostCB(Widget w, XtPointer client_data, XtPointer)
 			XtLastTimestampProcessed(XtDisplay(w)));
 }
 
+
 #if defined(IF_XM)
 // Browse fonts
-void BrowseFontCB(Widget w, XtPointer client_data, XtPointer)
+void BrowseFontCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     Time tm = CurrentTime;
-#if 0
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
     if (cbs && cbs->event)
 	tm = time(cbs->event);
-#endif
 
     DDDFont font = (DDDFont) (long) client_data;
 

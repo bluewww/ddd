@@ -32,7 +32,6 @@
 #if defined(IF_XM)
 #include <X11/Xlib.h>
 #endif
-
 #include "BoxPoint.h"
 #include "Box.h"
 #include "TypeInfo.h"

@@ -29,7 +29,6 @@
 #define _DDD_fileSelectionBoxFilename_h
 
 #include <Xm/Xm.h>
-
 #include "strclass.h"
 
 extern string fileSelectionBoxFilename(XtPointer call_data);
