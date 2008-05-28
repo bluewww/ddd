@@ -30,7 +30,7 @@
 #ifndef _DDD_exit_h
 #define _DDD_exit_h
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 #if defined(IF_XM)

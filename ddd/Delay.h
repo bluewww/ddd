@@ -29,27 +29,23 @@
 #ifndef _DDD_Delay_h
 #define _DDD_Delay_h
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
 #if defined(IF_XM)
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
-#endif
-
-#if !defined(IF_XM)
+#else
 #include <GUI/Widget.h>
-#endif
-
 #include "gtk_wrapper.h"
+#endif
 
 #include "TypeInfo.h"
 #include "VarArray.h"
 #include "assert.h"
 
 #if defined(IF_XM)
-
 // _Delay defines a delay for a specific widget only
 class _Delay {
 public:
@@ -73,9 +69,7 @@ public:
     _Delay(Widget w);
     virtual ~_Delay();
 };
-
 #else
-
 // _Delay defines a delay for a specific widget only
 class _Delay {
 public:
@@ -99,11 +93,9 @@ public:
     _Delay(GUI::Widget *w);
     virtual ~_Delay();
 };
-
 #endif
 
 #if defined(IF_XM)
-
 typedef VarArray<Widget>   WidgetArray;
 typedef VarArray<_Delay *> DelayArray;
 
@@ -129,9 +121,7 @@ public:
 
     static void (*shell_registered)(Widget w);
 };
-
 #else
-
 typedef VarArray<GUI::Widget *>   WidgetArray;
 typedef VarArray<_Delay *> DelayArray;
 
@@ -158,7 +148,6 @@ public:
 
     static void (*shell_registered)(GUI::Widget *w);
 };
-
 #endif
 
 #endif // _DDD_Delay_h

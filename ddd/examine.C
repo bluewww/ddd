@@ -29,7 +29,9 @@
 char examine_rcsid[] = 
     "$Id$";
 
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
+#endif
 
 #include "examine.h"
 
@@ -58,8 +60,9 @@ char examine_rcsid[] =
 #include <GUI/SpinButton.h>
 #endif
 
+
 #if defined(IF_XM)
-static Widget repeat_w;	// Repeat count
+static Widget repeat_w;		// Repeat count
 static Widget address_w;	// Starting address
 #else
 static GUI::SpinButton *repeat_w;	// Repeat count
@@ -376,7 +379,6 @@ void gdbExamineCB(Widget w, XtPointer, XtPointer)
 	XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
 	Widget panel = MMcreateButtonPanel(dialog, "panel", examine_menu, 
 					   args, arg);
-
 	(void) panel;
 	MMaddCallbacks(examine_menu);
 	MMaddHelpCallback(examine_menu, ImmediateHelpCB);
@@ -407,9 +409,8 @@ void gdbExamineCB(Widget w, XtPointer, XtPointer)
     }
 
     string arg = source_arg->get_string();
-    if (!is_file_pos(arg) && !arg.empty()) {
+    if (!is_file_pos(arg) && !arg.empty())
 	XmTextFieldSetString(address_w, XMST(arg.chars()));
-    }
 
     manage_and_raise(dialog);
 }
@@ -463,4 +464,3 @@ void gdbExamineCB(GUI::Widget *w)
     manage_and_raise(dialog);
 }
 #endif
-

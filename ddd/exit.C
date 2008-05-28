@@ -65,7 +65,9 @@ char exit_rcsid[] =
 // W. QUOCK, San Mateo, California
 // Communications of the ACM, August 1997/Vol.40, No. 8, p. 31
 
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
+#endif
 
 #include "exit.h"
 

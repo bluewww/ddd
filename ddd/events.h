@@ -40,7 +40,6 @@
 #include <GUI/Widget.h>
 #include <GUI/Events.h>
 #endif
-
 #include "BoxPoint.h"
 #include "BoxSize.h"
 

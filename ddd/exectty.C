@@ -71,6 +71,7 @@ char exectty_rcsid[] =
 #include <GUI/Label.h>
 #endif
 
+
 extern "C" {
 // The GNU termcap declarations should also work for non-GNU termcap
 // implementations.  We do not include the system declaration files here
@@ -121,7 +122,6 @@ string gdb_tty = "";
 static bool show_starting_line_in_tty    = false;
 
 pid_t exec_tty_pid()     { return separate_tty_pid; }
-
 #if defined(IF_XM)
 Window exec_tty_window() { return separate_tty_window; }
 #else
@@ -252,9 +252,8 @@ static void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
 	tty.addHandler(Input, GotReplyHP, (void *)&reply);
 	tty.start();
 
-	while (!reply.contains('\n') && !canceled && tty.running()) {
+	while (!reply.contains('\n') && !canceled && tty.running())
 	    XtAppProcessEvent(app_context, XtIMAll);
-	}
 
 	if (reply.length() > 2)
 	{
@@ -393,9 +392,8 @@ static void launch_separate_tty(string &ttyname, pid_t &pid, string &term,
 	tty.addHandler(Input, GotReplyHP, (void *)&reply);
 	tty.start();
 
-	while (!reply.contains('\n') && !canceled && tty.running()) {
+	while (!reply.contains('\n') && !canceled && tty.running())
 	    Glib::MainContext::get_default()->iteration(false);
-	}
 
 	if (reply.length() > 2)
 	{

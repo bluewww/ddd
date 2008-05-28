@@ -29,7 +29,7 @@
 #ifndef _DDD_editing_h
 #define _DDD_editing_h
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
@@ -41,7 +41,6 @@
 #include <GUI/ScrolledText.h>
 #include "gtk_wrapper.h"
 #endif
-
 #include "bool.h"
 #include "strclass.h"
 
@@ -102,16 +101,16 @@ extern void gdbMotionCB          (GUI::ScrolledText *);
 extern void gdbChangeCB          (GUI::ScrolledText *);
 #endif
 
-#ifdef IF_XM
+#if defined(IF_XM)
 extern void gdbNextCB            (Widget, XtPointer, XtPointer);
 extern void gdbPrevCB            (Widget, XtPointer, XtPointer);
 extern void gdbISearchNextCB     (Widget, XtPointer, XtPointer);
 extern void gdbISearchPrevCB     (Widget, XtPointer, XtPointer);
 extern void gdbISearchExitCB     (Widget, XtPointer, XtPointer);
+extern void gdbClearCB           (Widget, XtPointer, XtPointer);
 extern void gdbCompleteCB        (Widget, XtPointer, XtPointer);
 extern void gdbApplyCB           (Widget, XtPointer, XtPointer);
 extern void gdbApplySelectionCB  (Widget, XtPointer, XtPointer);
-extern void gdbClearCB           (Widget, XtPointer, XtPointer);
 extern void gdbClearWindowCB     (Widget, XtPointer, XtPointer);
 #else
 extern void gdbNextCB            (GUI::Widget *);
@@ -119,10 +118,10 @@ extern void gdbPrevCB            (GUI::Widget *);
 extern void gdbISearchNextCB     (GUI::Widget *);
 extern void gdbISearchPrevCB     (GUI::Widget *);
 extern void gdbISearchExitCB     (GUI::Widget *);
+extern void gdbClearCB           (void);
 extern void gdbCompleteCB        (GUI::Widget *);
 extern void gdbApplyCB           (GUI::Widget *);
 extern void gdbApplySelectionCB  (GUI::Widget *);
-extern void gdbClearCB           (void);
 extern void gdbClearWindowCB     (void);
 #endif
 
@@ -144,7 +143,7 @@ extern void clear_isearch(bool reset = false, bool show = true);
 
 // Pass the COMMAND given in CLIENT_DATA to gdb_button_command()
 #if defined(IF_XM)
-void gdbCommandCB(Widget, XtPointer, XtPointer); // FIXME compat
+void gdbCommandCB(Widget w, XtPointer client_data, XtPointer call_data);
 #else
 void gdbCommandCB(GUI::Widget *, const char *);
 #endif

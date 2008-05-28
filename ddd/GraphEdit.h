@@ -302,8 +302,6 @@ struct GraphEditCompareNodesInfo {
 #if defined(IF_XM)
 // Declare the class constant
 extern WidgetClass graphEditWidgetClass;
-
-typedef Widget GRAPH_EDIT_P;
 #else
 #include "GraphGC.h"
 
@@ -582,7 +580,6 @@ public:
 #endif
 };
 
-typedef GUIGraphEdit *GRAPH_EDIT_P;
 typedef GUIGraphEdit *GraphEditWidget;
 #endif
 

@@ -30,7 +30,9 @@
 char editing_rcsid[] = 
     "$Id$";
 
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
+#endif
 
 #include "editing.h"
 
@@ -117,6 +119,7 @@ static long start_of_line()
     return 0;
 }
 #endif
+
 
 //-----------------------------------------------------------------------------
 // Incremental search
@@ -351,9 +354,8 @@ static void isearch_again(ISearchState new_isearch_state, XEvent *event)
     {
 	// Same state - search again
 	int history = search_history(isearch_string, int(isearch_state), true);
-	if (history < 0) {
+	if (history < 0)
 	    XtCallActionProc(gdb_w, "beep", event, 0, 0);
-	}
 	else
 	    isearch_done(XtPointer(history), 0);
     }
@@ -376,9 +378,8 @@ static void isearch_again(ISearchState new_isearch_state, GUI::Event *event)
     {
 	// Same state - search again
 	int history = search_history(isearch_string, int(isearch_state), true);
-	if (history < 0) {
+	if (history < 0)
 	    std::cerr << "BEEP!\n";
-	}
 	else
 	    isearch_done(history);
     }
@@ -557,6 +558,7 @@ static bool do_isearch(Widget, XmTextVerifyCallbackStruct *change)
 #warning do_isearch not implemented
 #endif
 #endif
+
 
 //-----------------------------------------------------------------------------
 // Misc actions
@@ -777,6 +779,7 @@ void select_allAct (Widget w, XEvent *e, String *params, Cardinal *num_params)
 #endif
 #endif
 
+
 //-----------------------------------------------------------------------------
 // Editing actions
 //-----------------------------------------------------------------------------
@@ -877,7 +880,8 @@ void calc_position(int &x, int &y, bool &push_in)
 void popupAct(Widget, XEvent *event, String*, Cardinal*)
 {
     static Widget gdb_popup_w = 0;
-    if (gdb_popup_w == (Widget)0)
+
+    if (gdb_popup_w == 0)
     {
 	gdb_popup_w = MMcreatePopupMenu(gdb_w, "gdb_popup", gdb_popup);
 	MMaddCallbacks(gdb_popup);
@@ -892,6 +896,7 @@ void popupAct(Widget, XEvent *event, String*, Cardinal*)
 void popupAct(GUI::Widget *, GUI::Event *event, GUI::String *, unsigned int *)
 {
     static GUI::PopupMenu *gdb_popup_w = 0;
+
     if (!gdb_popup_w)
     {
 	gdb_popup_w = MMcreatePopupMenu(*gdb_w, "gdb_popup", gdb_popup);
@@ -1108,7 +1113,6 @@ void gdbChangeCB(GUI::ScrolledText *w)
 void gdbCommandCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     clear_isearch();
-
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
     if (cbs->event == 0)
 	return;
@@ -1121,7 +1125,6 @@ void gdbCommandCB(Widget w, XtPointer client_data, XtPointer call_data)
 void gdbCommandCB(GUI::Widget *w, const char *client_data)
 {
     clear_isearch();
-
     gdb_button_command(string(client_data), w);
 
     std::cerr << "Make sure gdbCommandCB is never invoked by a key event.\n";

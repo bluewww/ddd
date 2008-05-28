@@ -39,16 +39,16 @@ char DispGraph_rcsid[] =
 #include "config.h"
 #endif
 
-#if !defined(IF_XM)
-#include <GUI/Container.h>
-#endif
-
 #include "DispGraph.h"
 
 #include <math.h>
 #include "pi.h"
 #include "hypot.h"
+#if defined(IF_XM)
 #include <X11/StringDefs.h>
+#else
+#include <GUI/Container.h>
+#endif
 
 #include "AppData.h"
 #include "GraphEdit.h"
@@ -229,7 +229,11 @@ int DispGraph::insert(int new_disp_nr, DispNode *new_dn, int depends_on)
 
 // Get a good position for NEW_NODE
 BoxPoint DispGraph::adjust_position (DispNode *new_node,
-				     GRAPH_EDIT_P w,
+#if defined(IF_XM)
+				     Widget w,
+#else
+				     GUIGraphEdit *w,
+#endif
 				     BoxPoint pos,
 				     const BoxPoint& offset,
 				     BoxPoint grid) const
@@ -740,7 +744,11 @@ void DispGraph::disp_node_disabledHP (void*,
 //-------------------------------------------------------------------------
 
 // Make DISP_NR an alias of ALIAS_DISP_NR.  Suppress ALIAS_DISP_NR.
-bool DispGraph::alias(GRAPH_EDIT_P w, int disp_nr, int alias_disp_nr)
+#if defined(IF_XM)
+bool DispGraph::alias(Widget w, int disp_nr, int alias_disp_nr)
+#else
+bool DispGraph::alias(GUIGraphEdit *w, int disp_nr, int alias_disp_nr)
+#endif
 {
     DispNode *d0 = get(disp_nr);
     DispNode *dn = get(alias_disp_nr);
@@ -942,9 +950,15 @@ bool DispGraph::has_angle(PosGraphNode *node, const BoxPoint& p)
 }
 
 // Add a new edge in existing graph
-void DispGraph::add_alias_edge(GRAPH_EDIT_P w, int alias_disp_nr, 
+#if defined(IF_XM)
+void DispGraph::add_alias_edge(Widget w, int alias_disp_nr, 
 			       GraphNode *_from, GraphNode *_to,
 			       EdgeAnnotation *anno)
+#else
+void DispGraph::add_alias_edge(GUIGraphEdit *w, int alias_disp_nr, 
+			       GraphNode *_from, GraphNode *_to,
+			       EdgeAnnotation *anno)
+#endif
 {
     PosGraphNode *from = ptr_cast(PosGraphNode, _from);
     PosGraphNode *to   = ptr_cast(PosGraphNode, _to);
@@ -966,15 +980,25 @@ void DispGraph::add_alias_edge(GRAPH_EDIT_P w, int alias_disp_nr,
 }
 
 // Add a direct edge from FROM to TO
-void DispGraph::add_direct_alias_edge(GRAPH_EDIT_P, int alias_disp_nr, 
+#if defined(IF_XM)
+void DispGraph::add_direct_alias_edge(Widget, int alias_disp_nr, 
 				      GraphNode *from, GraphNode *to,
 				      EdgeAnnotation *anno)
+#else
+void DispGraph::add_direct_alias_edge(GUIGraphEdit *, int alias_disp_nr, 
+				      GraphNode *from, GraphNode *to,
+				      EdgeAnnotation *anno)
+#endif
 {
     *this += new AliasGraphEdge(alias_disp_nr, from, to, anno);
 }
 
 // Check whether P is obscured by any node
-bool DispGraph::is_hidden(GRAPH_EDIT_P w, const BoxPoint& p) const
+#if defined(IF_XM)
+bool DispGraph::is_hidden(Widget w, const BoxPoint& p) const
+#else
+bool DispGraph::is_hidden(GUIGraphEdit *w, const BoxPoint& p) const
+#endif
 {
 #if defined(IF_XM)
     const GraphGC& graphGC = graphEditGetGraphGC(w);
@@ -1012,11 +1036,19 @@ BoxPoint DispGraph::rotate_offset(const BoxPoint& p, int angle)
 
 
 // Check whether POS1 and POS2 are okay as hint positions for FROM and TO
-bool DispGraph::hint_positions_ok(GRAPH_EDIT_P w,
+#if defined(IF_XM)
+bool DispGraph::hint_positions_ok(Widget w,
 				  PosGraphNode *from,
 				  PosGraphNode *to,
 				  const BoxPoint& pos1,
 				  const BoxPoint& pos2) const
+#else
+bool DispGraph::hint_positions_ok(GUIGraphEdit *w,
+				  PosGraphNode *from,
+				  PosGraphNode *to,
+				  const BoxPoint& pos1,
+				  const BoxPoint& pos2) const
+#endif
 {
 #if defined(IF_XM)
     BoxPoint p1 = graphEditFinalPosition(w, pos1);
@@ -1067,9 +1099,15 @@ bool DispGraph::hint_positions_ok(GRAPH_EDIT_P w,
 
 
 // Add edge from FROM to TO, inserting hints if required
-void DispGraph::add_routed_alias_edge(GRAPH_EDIT_P w, int alias_disp_nr, 
+#if defined(IF_XM)
+void DispGraph::add_routed_alias_edge(Widget w, int alias_disp_nr, 
 				      PosGraphNode *from, PosGraphNode *to,
 				      EdgeAnnotation *anno)
+#else
+void DispGraph::add_routed_alias_edge(GUIGraphEdit *w, int alias_disp_nr, 
+				      PosGraphNode *from, PosGraphNode *to,
+				      EdgeAnnotation *anno)
+#endif
 {
     // Determine hint offsets
     Dimension grid_height = 16;

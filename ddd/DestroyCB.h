@@ -29,40 +29,42 @@
 #ifndef _DDD_DestroyCB_h
 #define _DDD_DestroyCB_h
 
+#if defined(HAVE_CONFIG_H)
+#include "config.h"
+#endif
+
 #if defined(IF_XM)
 #include <X11/Intrinsic.h>
 #else
 #include <GUI/Widget.h>
+#include "gtk_wrapper.h"
 #endif
 
-#include "gtk_wrapper.h"
-
-// Destroy WIDGET as soon as we are idle
 #if defined(IF_XM)
-
+// Destroy WIDGET as soon as we are idle
 extern void DestroyWhenIdle(Widget widget);
 
 // Destroy the surrounding shell
-extern void DestroyShellCB(Widget, XtPointer, XtPointer);
+extern void DestroyShellCB(Widget widget, XtPointer client_data,
+			   XtPointer call_data);
 
+// Destroy specific widget
+extern void DestroyThisCB(Widget widget, XtPointer client_data,
+			  XtPointer call_data);
+
+// Unmanage the surrounding shell
+extern void UnmanageShellCB(Widget widget, XtPointer client_data,
+			    XtPointer call_data);
+
+// Unmanage specific widget
+extern void UnmanageThisCB(Widget widget, XtPointer client_data,
+			   XtPointer call_data);
 #else
-
+// Destroy WIDGET as soon as we are idle
 extern void DestroyWhenIdle(GUI::Widget *widget);
 
 // Destroy the surrounding shell
 extern void DestroyShellCB(GUI::Widget *);
-
-#endif
-
-#if defined(IF_XM)
-
-// Destroy specific widget
-extern void DestroyThisCB(Widget, XtPointer, XtPointer);
-
-// Unmanage the surrounding shell
-extern void UnmanageShellCB(Widget, XtPointer, XtPointer);
-
-#else
 
 // Destroy specific widget
 extern void DestroyThisCB(GUI::Widget *);
@@ -70,17 +72,8 @@ extern void DestroyThisCB(GUI::Widget *);
 // Unmanage the surrounding shell
 extern void UnmanageShellCB(GUI::Widget *);
 
-#endif
-
 // Unmanage specific widget
-#if defined(IF_XM)
-
-extern void UnmanageThisCB(Widget, XtPointer client_data, XtPointer);
-
-#else
-
 extern void UnmanageThisCB(GUI::Widget *);
-
 #endif
 
 #endif

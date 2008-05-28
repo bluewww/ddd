@@ -28,6 +28,10 @@
 #ifndef _DDD_DispValue_h
 #define _DDD_DispValue_h
 
+#if defined(HAVE_CONFIG_H)
+#include "config.h"
+#endif
+
 //-----------------------------------------------------------------------------
 // A DispValue reads and stores type and value of a displayed expression
 //-----------------------------------------------------------------------------
@@ -39,7 +43,6 @@
 #include "DispValueT.h"
 #include "StringSA.h"
 #include "Box.h"
-
 #if defined(IF_XM)
 #include <Xm/Xm.h>
 #endif
@@ -48,7 +51,6 @@ class Agent;
 class PlotAgent;
 
 typedef unsigned char DispValueOrientation;
-
 #if defined(IF_XM)
 const unsigned char Vertical   = XmVERTICAL;
 const unsigned char Horizontal = XmHORIZONTAL;

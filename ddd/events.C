@@ -96,6 +96,7 @@ BoxPoint point(XEvent *ev)
 	case GravityNotify:
 	    return BoxPoint(ev->xgravity.x,
 			    ev->xgravity.y);
+
 	case ConfigureRequest:
 	    return BoxPoint(ev->xconfigurerequest.x,
 			    ev->xconfigurerequest.y);
@@ -154,6 +155,7 @@ BoxPoint point(GUI::Event *ev)
 }
 #endif
 
+
 #if defined(IF_XM)
 // Event time
 Time time(XEvent *ev)
@@ -194,7 +196,6 @@ Time time(XEvent *ev)
 
 	case SelectionNotify:
 	    return ev->xselection.time;
-
 
 	default:
 	    invalid_event("time");
@@ -248,6 +249,7 @@ Time time(GUI::Event *ev)
     }
 }
 #endif
+
 
 #if defined(IF_XM)
 // Event size

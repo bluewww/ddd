@@ -50,7 +50,6 @@
 #endif
 
 // Motif includes
-
 #if defined(IF_XM)
 #include <Xm/Xm.h>
 #else
@@ -806,11 +805,12 @@ private:
     static DispValue *update_hook(string& value);
 
 public:
-    static GRAPH_EDIT_P graph_edit;
 #if defined(IF_XM)
+    static Widget graph_edit;
     static Widget graph_cmd_w;
     static Widget graph_selection_w;
 #else
+    static GUIGraphEdit *graph_edit;
     static GUI::Container *graph_cmd_w;
 #endif
     static ArgField *graph_arg;

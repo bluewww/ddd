@@ -12746,7 +12746,6 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *)
     }
 
     change_glyphs = true;
-    std::cerr << "UPDATING GLYPHS...\n";
     update_glyphs_now();
 }
 #endif

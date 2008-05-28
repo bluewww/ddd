@@ -44,7 +44,6 @@ DEFINE_TYPE_INFO_1(DiagBox, PrimitiveBox)
 // DiagBox
 
 #if defined(IF_XM)
-
 // Draw DiagBox
 void DiagBox::_draw(Widget w, 
 		    const BoxRegion& r, 
@@ -56,15 +55,13 @@ void DiagBox::_draw(Widget w,
 
     // Draw a 10-pixel-grid
     BoxCoordinate i;
-    for (i = 0; i < space[X]; i += 10) {
+    for (i = 0; i < space[X]; i += 10)
 	XDrawLine(XtDisplay(w), XtWindow(w), gc,
 	    origin[X] + i, origin[Y], origin[X] + i, origin[Y] + space[Y]);
-    }
 
-    for (i = 0; i < space[Y]; i += 10) {
+    for (i = 0; i < space[Y]; i += 10)
 	XDrawLine(XtDisplay(w), XtWindow(w), gc,
 	    origin[X], origin[Y] + i, origin[X] + space[X], origin[Y] + i);
-    }
 
     // Make space info
     std::ostringstream oss;
@@ -84,9 +81,7 @@ void DiagBox::_draw(Widget w,
 
     s->unlink();
 }
-
 #else
-
 // Draw DiagBox
 void DiagBox::_draw(GUI::Widget *w, 
 		    const BoxRegion& r, 
@@ -129,7 +124,6 @@ void DiagBox::_draw(GUI::Widget *w,
 
     s->unlink();
 }
-
 #endif
 
 void DiagBox::dump(std::ostream& s) const

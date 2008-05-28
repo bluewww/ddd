@@ -29,18 +29,17 @@
 char DestroyCB_rcsid[] = 
     "$Id$";
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
-#include <iostream>
-
 #include "DestroyCB.h"
 #include "TimeOut.h"
-
 #if defined(IF_XM)
 #include <Xm/DialogS.h>
 #include <Xm/Xm.h>
+#else
+#include <iostream>
 #endif
 
 #if defined(IF_XM)
@@ -52,7 +51,6 @@ static void CancelTimer(Widget, XtPointer client_data, XtPointer)
 #endif
 
 #if defined(IF_XM)
-
 static void DestroyCB(XtPointer client_data, XtIntervalId *id)
 {
     Widget w = Widget(client_data);
@@ -63,9 +61,7 @@ static void DestroyCB(XtPointer client_data, XtIntervalId *id)
 	XtDestroyWidget(w);
     }
 }
-
 #else
-
 static bool DestroyCB(GUI::Widget *w)
 {
 
@@ -75,11 +71,9 @@ static bool DestroyCB(GUI::Widget *w)
 	return false;
     }
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Destroy WIDGET as soon as we are idle
 void DestroyWhenIdle(Widget widget)
 {
@@ -90,9 +84,7 @@ void DestroyWhenIdle(Widget widget)
     // Should WIDGET be destroyed beforehand, cancel the timer
     XtAddCallback(widget, XmNdestroyCallback, CancelTimer, XtPointer(id));
 }
-
 #else
-
 // Destroy WIDGET as soon as we are idle
 void DestroyWhenIdle(GUI::Widget *widget)
 {
@@ -100,56 +92,45 @@ void DestroyWhenIdle(GUI::Widget *widget)
 
     // Should WIDGET be destroyed beforehand, cancel the timer
 }
-
 #endif
 
 
 // Callbacks
 
 #if defined(IF_XM)
-
 // Destroy the ancestor shell
-void DestroyShellCB(Widget widget, XtPointer, XtPointer)
+void DestroyShellCB(Widget widget, XtPointer, XtPointer call_data)
 {
     Widget w = widget;
 
     while (w != 0 && !XtIsShell(XtParent(w)))
 	w = XtParent(w);
 
-    DestroyThisCB(widget, XtPointer(w), XtPointer(0));
+    DestroyThisCB(widget, XtPointer(w), call_data);
 }
-
 #else
-
 // Destroy the ancestor shell
 void DestroyShellCB(GUI::Widget *widget)
 {
     std::cerr << "DestroyShellCB?\n";
 }
-
 #endif
 
 // Destroy specific widget
-
 #if defined(IF_XM)
-
 void DestroyThisCB(Widget, XtPointer client_data, XtPointer)
 {
     Widget w = Widget(client_data);
     DestroyWhenIdle(w);
 }
-
 #else
-
 void DestroyThisCB(GUI::Widget *w)
 {
     DestroyWhenIdle(w);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Unmanage the ancestor shell
 void UnmanageShellCB(Widget widget, XtPointer, XtPointer call_data)
 {
@@ -160,20 +141,16 @@ void UnmanageShellCB(Widget widget, XtPointer, XtPointer call_data)
 
     UnmanageThisCB(widget, XtPointer(w), call_data);
 }
-
 #else
-
 // Unmanage the ancestor shell
 void UnmanageShellCB(GUI::Widget *widget)
 {
     std::cerr << "UnmanageShellCB?\n";
 }
-
 #endif
 
 // Unmanage specific widget
 #if defined(IF_XM)
-
 void UnmanageThisCB(Widget, XtPointer client_data, XtPointer)
 {
     Widget w = Widget(client_data);
@@ -187,13 +164,9 @@ void UnmanageThisCB(Widget, XtPointer client_data, XtPointer)
 
     XtUnmanageChild(w);
 }
-
 #else
-
 void UnmanageThisCB(GUI::Widget *w)
 {
     w->hide();
 }
-
 #endif
-

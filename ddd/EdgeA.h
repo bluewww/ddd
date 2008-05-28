@@ -29,7 +29,7 @@
 #ifndef _DDD_EdgeAnnotation_h
 #define _DDD_EdgeAnnotation_h
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
@@ -59,7 +59,6 @@ public:
     virtual ~EdgeAnnotation() {}
 
 #if defined(IF_XM)
-
     // Draw annotation centered around P
     virtual void draw(Widget w, const BoxPoint& p,
 		      const BoxRegion& exposed,
@@ -72,9 +71,7 @@ public:
     {
 	draw(w, p, exposed, GraphGC());
     }
-
 #else
-
     // Draw annotation centered around P
     virtual void draw(GUI::Widget *w, const BoxPoint& p,
 		      const BoxRegion& exposed,
@@ -87,7 +84,6 @@ public:
     {
 	draw(w, p, exposed, GraphGC());
     }
-
 #endif
 
     // Print

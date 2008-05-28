@@ -30,7 +30,6 @@
 #define _DDD_ExitCB_h
 
 #include <stdlib.h>
-
 #if defined(IF_XM)
 #include <X11/Intrinsic.h>
 #else

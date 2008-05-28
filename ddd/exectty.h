@@ -29,13 +29,12 @@
 #ifndef _DDD_exectty_h
 #define _DDD_exectty_h
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
 #include "strclass.h"
 #include <stdlib.h>
-
 #if defined(IF_XM)
 #include <X11/Intrinsic.h>
 #else

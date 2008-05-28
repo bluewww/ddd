@@ -29,7 +29,7 @@
 #ifndef _DDD_DispGraph_h
 #define _DDD_DispGraph_h
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
@@ -46,8 +46,9 @@
 #include "PosGraphN.h"
 #include "GraphNPA.h"
 #include "DispNodeM.h"
-
+#if !defined(IF_XM)
 #include "GraphEdit.h"
+#endif
 
 //-----------------------------------------------------------------------------
 
@@ -103,9 +104,15 @@ public:
     // Return new display number, or 0 iff failure.
     int insert(int disp_nr, DispNode* dn, int depends_on = 0);
 
+#if defined(IF_XM)
     // Make DISP_NR an alias of ALIAS_DISP_NR.  Suppress
     // ALIAS_DISP_NR.  Return true iff changed.
-    bool alias (GRAPH_EDIT_P w, int disp_nr, int alias_disp_nr);
+    bool alias (Widget w, int disp_nr, int alias_disp_nr);
+#else
+    // Make DISP_NR an alias of ALIAS_DISP_NR.  Suppress
+    // ALIAS_DISP_NR.  Return true iff changed.
+    bool alias (GUIGraphEdit *w, int disp_nr, int alias_disp_nr);
+#endif
 
     // Un-alias ALIAS_DISP_NR.  Unsuppress ALIAS_DISP_NR.  Return true
     // iff changed.
@@ -168,16 +175,29 @@ public:
     bool refresh_titles() const;
 
 protected:
+#if defined(IF_XM)
     BoxPoint adjust_position (DispNode *new_node,
-			      GRAPH_EDIT_P w,
+			      Widget w,
 			      BoxPoint pos,
 			      const BoxPoint& offset,
 			      BoxPoint grid) const;
 
     // Add a new alias edge
-    void add_alias_edge(GRAPH_EDIT_P w, int alias_disp_nr,
+    void add_alias_edge(Widget w, int alias_disp_nr,
 			GraphNode *from, GraphNode *to,
 			EdgeAnnotation *anno);
+#else
+    BoxPoint adjust_position (DispNode *new_node,
+			      GUIGraphEdit *w,
+			      BoxPoint pos,
+			      const BoxPoint& offset,
+			      BoxPoint grid) const;
+
+    // Add a new alias edge
+    void add_alias_edge(GUIGraphEdit *w, int alias_disp_nr,
+			GraphNode *from, GraphNode *to,
+			EdgeAnnotation *anno);
+#endif
 
     // Remove node or edge from memory as well as from graph
     void delete_node(GraphNode *node);
@@ -196,20 +216,37 @@ private:
 
     void add_edge(DispNode *from, DispNode *to);
     
-    void add_direct_alias_edge(GRAPH_EDIT_P w, int alias_disp_nr, 
+#if defined(IF_XM)
+    void add_direct_alias_edge(Widget w, int alias_disp_nr, 
 			       GraphNode *from, GraphNode *to,
 			       EdgeAnnotation *anno);
-    void add_routed_alias_edge(GRAPH_EDIT_P w, int alias_disp_nr, 
+    void add_routed_alias_edge(Widget w, int alias_disp_nr, 
 			       PosGraphNode *from, PosGraphNode *to,
 			       EdgeAnnotation *anno);
 
-    bool is_hidden(GRAPH_EDIT_P w, const BoxPoint& p) const;
+    bool is_hidden(Widget w, const BoxPoint& p) const;
     static BoxPoint rotate_offset(const BoxPoint& p, int angle);
 
     // Check whether P1 and P2 are okay as hint positions for FROM and TO
-    bool hint_positions_ok(GRAPH_EDIT_P w,
+    bool hint_positions_ok(Widget w,
 			   PosGraphNode *from, PosGraphNode *to,
 			   const BoxPoint& p1, const BoxPoint& p2) const;
+#else
+    void add_direct_alias_edge(GUIGraphEdit *w, int alias_disp_nr, 
+			       GraphNode *from, GraphNode *to,
+			       EdgeAnnotation *anno);
+    void add_routed_alias_edge(GUIGraphEdit *w, int alias_disp_nr, 
+			       PosGraphNode *from, PosGraphNode *to,
+			       EdgeAnnotation *anno);
+
+    bool is_hidden(GUIGraphEdit *w, const BoxPoint& p) const;
+    static BoxPoint rotate_offset(const BoxPoint& p, int angle);
+
+    // Check whether P1 and P2 are okay as hint positions for FROM and TO
+    bool hint_positions_ok(GUIGraphEdit *w,
+			   PosGraphNode *from, PosGraphNode *to,
+			   const BoxPoint& p1, const BoxPoint& p2) const;
+#endif
 
     // Find all hints in edges leading to NODE; store them in HINTS
     static void find_hints_to(GraphNode *node, GraphNodePointerArray& hints);

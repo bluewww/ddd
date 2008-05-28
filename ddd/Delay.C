@@ -31,7 +31,9 @@ char Delay_rcsid[] =
 
 #define LOG_DELAY 0
 
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
+#endif
 
 #include "Delay.h"
 #include "assert.h"
@@ -81,7 +83,6 @@ GUI::Cursor *_Delay::current_cursor = 0;
 #endif
 
 #if defined(IF_XM)
-
 Cursor _Delay::hourglass_cursor()
 {
     if (hourglass_cache != 0)
@@ -122,6 +123,7 @@ Cursor _Delay::hourglass_cursor()
     Pixmap cursor_mask_pixmap = 
 	XCreateBitmapFromData(display, rootWindow, (char *)cursor_mask_bits,
 			      cursor_width, cursor_height);
+    
     XColor cursor_colors[2];
     cursor_colors[0].pixel = BlackPixelOfScreen(screen);
     cursor_colors[1].pixel = WhitePixelOfScreen(screen);
@@ -133,7 +135,6 @@ Cursor _Delay::hourglass_cursor()
 	XCreatePixmapCursor(display, cursor_pixmap, cursor_mask_pixmap,
 			    cursor_colors, cursor_colors + 1, 
 			    cursor_x_hot, cursor_y_hot);
-    
 #else // Watch cursor
     hourglass_cache = 
 	XCreateFontCursor(display, XC_watch);
@@ -141,9 +142,7 @@ Cursor _Delay::hourglass_cursor()
 
     return hourglass_cache;
 }
-
 #else
-
 GUI::Cursor *_Delay::hourglass_cursor()
 {
     if (hourglass_cache != 0)
@@ -197,11 +196,9 @@ GUI::Cursor *_Delay::hourglass_cursor()
 
     return hourglass_cache;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 _Delay::_Delay(Widget w):
     widget(w), old_cursor(0)
 {
@@ -231,9 +228,7 @@ _Delay::_Delay(Widget w):
 
     XtAddCallback(widget, XtNdestroyCallback, _Delay::DestroyCB, this);
 }
-
 #else
-
 _Delay::_Delay(GUI::Widget *w):
     widget(w), old_cursor(0)
 {
@@ -269,11 +264,9 @@ _Delay::_Delay(GUI::Widget *w):
 #endif
     // widget->signal_destroy().connect(MEM_FUN(*this, &_Delay::DestroyCB));
 }
-
 #endif
 
 #if defined(IF_XM)
-
 _Delay::~_Delay()
 {
   // TODO: race condition here
@@ -295,9 +288,7 @@ _Delay::~_Delay()
     current_cursor = old_cursor;
     XtRemoveCallback(widget, XtNdestroyCallback, _Delay::DestroyCB, this);
 }
-
 #else
-
 _Delay::~_Delay()
 {
   // TODO: race condition here
@@ -325,7 +316,6 @@ _Delay::~_Delay()
 #warning There is no signal_destroy()?
 #endif
 }
-
 #endif
 
 // Make sure we do not attempt to delete a delay on a destroyed widget

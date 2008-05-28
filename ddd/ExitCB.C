@@ -29,7 +29,9 @@
 char ExitCB_rcsid[] = 
     "$Id$";
 
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
+#endif
 
 #include <stdlib.h>
 #include <unistd.h>             // environ, execvp()
@@ -49,9 +51,9 @@ extern "C" char **environ;
 
 #if defined(IF_XM)
 // Leave program
-void ExitCB(Widget, XtPointer status, XtPointer)
+void ExitCB(Widget, XtPointer client_data, XtPointer)
 {
-    exit((int)(long)status);
+    exit((int)(long)client_data);
 }
 #else
 // Leave program
