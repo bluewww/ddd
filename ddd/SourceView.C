@@ -343,25 +343,28 @@ XtActionsRec SourceView::actions [] = {
 // Popup menus - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 struct LineItms { enum Itms {SetBP, SetTempBP, Sep1, TempNContBP, 
 			     Sep2, SetPC}; };
+#if !defined(IF_XM)
+static string address_static;
+#endif
 MMDesc SourceView::line_popup[] = 
 {
     GENTRYL("set", N_("Set Breakpoint"), MMPush,
 	    BIND(SourceView::line_popup_setCB, (string *)0),
-	    sigc::bind(sigc::ptr_fun(SourceView::line_popup_setCB), (string *)0),
+	    sigc::bind(sigc::ptr_fun(SourceView::line_popup_setCB), &address_static),
 	    0, 0),
     GENTRYL("set_temp", N_("Set Temporary Breakpoint"), MMPush, 
 	    BIND(SourceView::line_popup_set_tempCB, (string *)0),
-	    sigc::bind(sigc::ptr_fun(SourceView::line_popup_set_tempCB), (string *)0),
+	    sigc::bind(sigc::ptr_fun(SourceView::line_popup_set_tempCB), &address_static),
 	    0, 0),
     MMSep,
     GENTRYL("temp_n_cont", N_("Continue Until Here"), MMPush, 
 	    BIND(SourceView::line_popup_temp_n_contCB, (string *)0),
-	    sigc::bind(sigc::ptr_fun(SourceView::line_popup_temp_n_contCB), (string *)0),
+	    sigc::bind(sigc::ptr_fun(SourceView::line_popup_temp_n_contCB), &address_static),
 	    0, 0),
     MMSep,
     GENTRYL("set_pc", N_("Set Execution Position"), MMPush,
 	    BIND(SourceView::line_popup_set_pcCB, (string *)0),
-	    sigc::bind(sigc::ptr_fun(SourceView::line_popup_set_pcCB), (string *)0),
+	    sigc::bind(sigc::ptr_fun(SourceView::line_popup_set_pcCB), &address_static),
 	    0, 0),
     MMEnd
 };
@@ -7757,7 +7760,9 @@ void SourceView::srcpopupAct (GUI::Widget *w, GUI::Event* e, GUI::String *, unsi
 	if (line_popup_w == 0)
 	{
 	    line_popup_w = MMcreatePopupMenu (*w, "line_popup", line_popup);
-	    MMaddCallbacks(line_popup, &address);
+	    // Note: We cannot change the closure data here since it
+	    // is part of the bound functor.
+	    MMaddCallbacks(line_popup);
 	    MMaddHelpCallback(line_popup, sigc::ptr_fun(ImmediateHelpCB));
 	    InstallButtonTips(line_popup_w);
 
@@ -7767,9 +7772,9 @@ void SourceView::srcpopupAct (GUI::Widget *w, GUI::Event* e, GUI::String *, unsi
 	}
 
 	if (is_source_widget(w))
-	    address = current_source_name() + ":" + itostring(line_nr);
+	    address_static = current_source_name() + ":" + itostring(line_nr);
 	else
-	    address = string('*') + address;
+	    address_static = string('*') + address;
 	line_popup_w->menu_position(event);
 	line_popup_w->popup(0, 0);
     }

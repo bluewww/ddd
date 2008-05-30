@@ -94,7 +94,6 @@ char history_rcsid[] =
 #include <stdio.h>
 #include <stdlib.h>
 #include <fstream>
-
 #if defined(IF_XM)
 #include <Xm/Xm.h>
 #include <Xm/Text.h>
@@ -549,6 +548,7 @@ void gdbHistoryCB(GUI::Widget *w)
 }
 #endif
 
+
 // Return last command
 string last_command_from_history()
 {
@@ -724,6 +724,7 @@ void tie_combo_box_to_history(GUI::ComboBoxEntryText *text, HistoryFilter filter
     std::cerr << "tie_combo_box_to_history not implemented yet\n";
 }
 #endif
+
 
 //-----------------------------------------------------------------------------
 // Recent file history

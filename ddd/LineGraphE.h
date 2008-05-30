@@ -29,7 +29,7 @@
 #ifndef _DDD_LineGraphEdge_h
 #define _DDD_LineGraphEdge_h
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
@@ -61,6 +61,7 @@ protected:
 		       const BoxRegion& exposed, 
 		       const GraphGC& gc) const;
 
+    // Draw line.
     virtual void drawLine(Widget w,
 			  const BoxRegion& exposed,
 			  const GraphGC& gc) const;
@@ -82,6 +83,7 @@ protected:
 		       const BoxRegion& exposed, 
 		       const GraphGC& gc) const;
 
+    // Draw line.
     virtual void drawLine(GUI::Widget *w,
 			  const BoxRegion& exposed,
 			  const GraphGC& gc) const;
@@ -99,7 +101,6 @@ protected:
 			       double alpha) const;
 #endif
 
-    // Draw line.
     // Print self edge.
     virtual void printSelf(std::ostream& os, const GraphGC &gc) const;
 

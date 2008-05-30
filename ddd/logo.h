@@ -29,7 +29,7 @@
 #ifndef _DDD_logo_h
 #define _DDD_logo_h
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
@@ -38,7 +38,6 @@
 #else
 #include <GUI/Image.h>
 #endif
-
 #include "strclass.h"
 #include "version.h"
 #include "MString.h"

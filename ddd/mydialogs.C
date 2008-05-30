@@ -61,6 +61,7 @@ char mydialogs_rcsid[] =
 // Own includes
 #include "string-fun.h"
 
+
 #if defined(IF_XM)
 // Create a selection box with a top-level shell
 Widget createTopLevelSelectionDialog(Widget parent, const _XtString name,
@@ -113,6 +114,8 @@ Widget createTopLevelSelectionDialog(Widget parent, const _XtString name,
 }
 #endif
 
+
+
 #if defined(IF_XM)
 // Set the elements of the display selection list
 // LABEL_LIST:      Labels, using the format disp_nr ": " disp_name.
@@ -121,7 +124,7 @@ Widget createTopLevelSelectionDialog(Widget parent, const _XtString name,
 // HIGHLIGHT_TITLE: Whether the first line should be highlighted
 // NOTIFY:          Whether callbacks should be invoked
 //
-void setLabelList (Widget selectionList,
+void setLabelList (Widget  selectionList,
 		   const string  label_list[],
 		   const bool selected[],
 		   int     list_length,
@@ -176,7 +179,7 @@ void setLabelList (GUI::ListView *selectionList,
 #if defined(IF_XM)
 // Replace all elements in SELECTIONLIST with the corresponding
 // entries in LABEL_LIST (i.e. with the same leading number).
-void updateLabelList (Widget selectionList,
+void updateLabelList (Widget  selectionList,
 		      const string  label_list[],
 		      int     list_length)
 {
@@ -232,6 +235,7 @@ void updateLabelList (GUI::ListView *selectionList,
     std::cerr << "updateLabelList: not implemented\n";
 }
 #endif
+
 
 #if defined(IF_XM)
 // Fill the item numbers in DISP_NRS
@@ -362,9 +366,6 @@ void ListSetAndSelectPos(GUI::ListView *list, int pos)
 {
     std::cerr << "ListSetAndSelectPos: not implemented\n";
 }
-#endif
-
-#if !defined(IF_XM)
 
 // Get the selected item positions
 int list_get_positions(GUI::ListView *selectionList, int *&positions, int &n_positions)
@@ -384,4 +385,3 @@ int list_get_positions(GUI::ListView *selectionList, int *&positions, int &n_pos
     return n_positions;
 }
 #endif
-

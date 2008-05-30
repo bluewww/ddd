@@ -29,6 +29,10 @@
 #ifndef _DDD_MakeMenu_h
 #define _DDD_MakeMenu_h
 
+#if defined(HAVE_CONFIG_H)
+#include "config.h"
+#endif
+
 #if defined(IF_XM)
 #include <X11/Intrinsic.h>
 #else
@@ -41,7 +45,6 @@
 #include <GUI/Dialog.h>
 #include "gtk_wrapper.h"
 #endif
-
 #include "bool.h"
 #include "StringA.h"
 
@@ -79,6 +82,7 @@ const MMType MMRadioItem   = 20; // Create a RadioMenuItem (same as MMToggle for
 #endif
 
 const MMType MMTypeMask    = 31; // mask to find type
+
 
 // Special attributes, to be ORed with types
 
@@ -138,22 +142,44 @@ struct MMDesc {
 
 
 #if defined(IF_XM)
-
 // Procs
 typedef void (*MMItemProc)(const MMDesc items[], XtPointer closure);
 
 
 // Creators
-Widget         MMcreatePulldownMenu       (Widget parent, const char *name, MMDesc items[],
-					   ArgList args = 0, Cardinal arg = 0);
-Widget         MMcreateRadioPulldownMenu  (Widget parent, const char *name, MMDesc items[],
-					   ArgList args = 0, Cardinal arg = 0);
-Widget         MMcreatePopupMenu          (Widget parent, const char *name, MMDesc items[],
-					   ArgList args = 0, Cardinal arg = 0);
-Widget         MMcreateMenuBar            (Widget parent, const char *name, MMDesc items[],
-					   ArgList args = 0, Cardinal arg = 0);
-#else
+Widget MMcreatePulldownMenu      (Widget parent, const _XtString name, MMDesc items[],
+				  ArgList args = 0, Cardinal arg = 0);
+Widget MMcreateRadioPulldownMenu (Widget parent, const _XtString name, MMDesc items[],
+				  ArgList args = 0, Cardinal arg = 0);
+Widget MMcreatePopupMenu         (Widget parent, const _XtString name, MMDesc items[],
+				  ArgList args = 0, Cardinal arg = 0);
+Widget MMcreateMenuBar           (Widget parent, const _XtString name, MMDesc items[],
+				  ArgList args = 0, Cardinal arg = 0);
+Widget MMcreateWorkArea          (Widget parent, const _XtString name, MMDesc items[],
+				  ArgList args = 0, Cardinal arg = 0);
+Widget MMcreatePanel             (Widget parent, const _XtString name, MMDesc items[],
+				  ArgList args = 0, Cardinal arg = 0);
+Widget MMcreateRadioPanel        (Widget parent, const _XtString name, MMDesc items[],
+				  ArgList args = 0, Cardinal arg = 0);
+Widget MMcreateButtonPanel       (Widget parent, const _XtString name, MMDesc items[],
+				  ArgList args = 0, Cardinal arg = 0);
+Widget MMcreatePushMenu          (Widget parent, const _XtString name, MMDesc items[],
+				  ArgList args = 0, Cardinal arg = 0);
 
+
+// Align panel items along their labels
+void MMadjustPanel(const MMDesc items[], Dimension space = 15);
+
+// Add callbacks
+void MMaddCallbacks(const MMDesc items[],
+		    XtPointer default_closure = 0,
+		    int depth = -1);
+void MMaddHelpCallback(const MMDesc items[], XtCallbackProc proc, int depth = -1);
+
+// Apply PROC on all ITEMS
+void MMonItems(const MMDesc items[], MMItemProc proc, XtPointer closure = 0,
+	       int depth = -1);
+#else
 // Procs
 typedef void (*MMItemProc)(const MMDesc items[], void *closure);
 
@@ -163,37 +189,6 @@ GUI::PulldownMenu  *MMcreatePulldownMenu       (GUI::Container &parent, GUI::Str
 GUI::PulldownMenu  *MMcreateRadioPulldownMenu  (GUI::Container &parent, GUI::String name, MMDesc items[]);
 GUI::PopupMenu     *MMcreatePopupMenu          (GUI::Widget &parent, GUI::String name, MMDesc items[]);
 GUI::MenuBar       *MMcreateMenuBar            (GUI::Container &parent, GUI::String name, MMDesc items[]);
-
-#endif
-
-#if defined(IF_XM)
-
-Widget         MMcreateWorkArea           (Widget parent, const char *name, MMDesc items[],
-					   ArgList args = 0, Cardinal arg = 0);
-Widget         MMcreatePanel              (Widget parent, const char *name, MMDesc items[],
-					   ArgList args = 0, Cardinal arg = 0);
-Widget         MMcreateRadioPanel         (Widget parent, const char *name, MMDesc items[],
-					   ArgList args = 0, Cardinal arg = 0);
-Widget         MMcreateButtonPanel        (Widget parent, const char *name, MMDesc items[],
-					   ArgList args = 0, Cardinal arg = 0);
-Widget         MMcreatePushMenu           (Widget parent, const char *name, MMDesc items[],
-					   ArgList args = 0, Cardinal arg = 0);
-// Align panel items along their labels
-void MMadjustPanel(const MMDesc items[], Dimension space = 15);
-
-// Add callbacks
-void MMaddCallbacks(const MMDesc items[],
-		    XtPointer default_closure = 0,
-		    int depth = -1);
-
-void MMaddHelpCallback(const MMDesc items[], XtCallbackProc proc, int depth = -1);
-
-// Apply PROC on all ITEMS
-void MMonItems(const MMDesc items[], MMItemProc proc, XtPointer closure = 0,
-	       int depth = -1);
-
-#else
-
 GUI::Container *MMcreateWorkArea(GUI::Dialog *parent, GUI::String name, MMDesc items[]);
 GUI::Container *MMcreatePanel(GUI::Container *parent, GUI::String name, MMDesc items[],
 			      GUI::Orientation=GUI::ORIENTATION_VERTICAL);
@@ -203,6 +198,8 @@ GUI::Container *MMcreateButtonPanel(GUI::Container *parent, GUI::String name, MM
 				    GUI::Orientation=GUI::ORIENTATION_VERTICAL);
 GUI::Menu      *MMcreatePushMenu(GUI::Container *parent, GUI::String name, MMDesc items[]);
 
+
+
 // Align panel items along their labels
 void MMadjustPanel(const MMDesc items[], Dimension space = 15);
 
@@ -210,13 +207,11 @@ void MMadjustPanel(const MMDesc items[], Dimension space = 15);
 void MMaddCallbacks(const MMDesc items[],
 		    void *default_closure = 0,
 		    int depth = -1);
-
 void MMaddHelpCallback(const MMDesc items[], sigc::slot<void, GUI::Widget *> proc, int depth = -1);
 
 // Apply PROC on all ITEMS
 void MMonItems(const MMDesc items[], MMItemProc proc, void *closure = 0,
 	       int depth = -1);
-
 #endif
 
 // Add ITEMS to SHELL.  If IGNORE_SEPS is set, all separators are ignored.
@@ -229,9 +224,6 @@ void MMaddItems(GUI::Container *shell, MMDesc items[], bool ignore_seps = false)
 // Conveniences
 #if defined(IF_XM)
 #define MMNoCB { 0, 0 }
-#endif
-
-#if defined(IF_XM)
 #define MMEnd  { 0, MMPush, MMNoCB, 0, 0, 0, 0 }
 #define MMSep  { "separator", MMSeparator, MMNoCB, 0, 0, 0, 0 }
 #else
@@ -254,7 +246,6 @@ extern void set_sensitive(GUI::Widget *w, bool state);
 #endif
 
 #if defined(IF_XM)
-
 // Manage W iff STATE
 inline void manage_child(Widget w, bool state)
 {
@@ -266,9 +257,7 @@ inline void manage_child(Widget w, bool state)
 	    XtUnmanageChild(w);
     }
 }
-
 #else
-
 // Manage W iff STATE
 inline void manage_child(GUI::Widget *w, bool state)
 {
@@ -281,12 +270,10 @@ inline void manage_child(GUI::Widget *w, bool state)
     }
 }
 
-#endif
-
-#if !defined(IF_XM)
 extern void dummy_xcallback(GUI::Widget *);
 #define MDUMMY sigc::ptr_fun(dummy_xcallback)
 #endif
+
 
 // Macros for menu entries.
 
@@ -301,7 +288,7 @@ extern void dummy_xcallback(GUI::Widget *);
 // XENTRY*: New-style callbacks using abstract GUI::Widget classes.
 
 #if defined(IF_XM)
-#if 1
+#if 0
 #define MENTRYL(n,s,t,c,sub,w) { n, t, c, sub, w, 0, 0}
 #define MENTRYI(n,i,t,c,sub,w) { n, t, c, sub, w, 0, 0}
 #define MENTRYLI(n,s,i,t,c,sub,w) { n, t, c, sub, w, 0, 0}

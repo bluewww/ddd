@@ -39,7 +39,6 @@ char HintGraphNode_rcsid[] =
 DEFINE_TYPE_INFO_1(HintGraphNode, RegionGraphNode)
 
 #if defined(IF_XM)
-
 void HintGraphNode::forceDraw(Widget w, const BoxRegion&, 
 			      const GraphGC& gc) const
 {
@@ -52,9 +51,7 @@ void HintGraphNode::forceDraw(Widget w, const BoxRegion&,
 		       r.space(X), r.space(Y));
     }
 }
-
 #else
-
 void HintGraphNode::forceDraw(GUI::Widget *w, const BoxRegion&, 
 			      const GraphGC& gc) const
 {
@@ -67,5 +64,4 @@ void HintGraphNode::forceDraw(GUI::Widget *w, const BoxRegion&,
 					r.space(X), r.space(Y));
     }
 }
-
 #endif

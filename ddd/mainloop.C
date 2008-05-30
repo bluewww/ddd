@@ -43,7 +43,6 @@ char mainloop_rcsid[] =
 bool main_loop_entered = false;
 
 static jmp_buf main_loop_env;
-
 #if defined(IF_XM)
 /*
  * Wrap ddd_setup_done so we can install it as a timer rather than a
@@ -119,6 +118,7 @@ void ddd_main_loop()
 
     // Set `main_loop_entered' to true as soon 
     // as DDD becomes idle again.
+
 #if defined(IF_XM)
     // Something about Linux's implementation of workprocs makes them burn
     // a lot of CPU, which has the nasty side effect of slowing down the

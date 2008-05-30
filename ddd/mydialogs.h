@@ -60,6 +60,7 @@ Widget createTopLevelSelectionDialog(Widget parent, const _XtString name,
 // Get the item numbers
 void getItemNumbers(Widget selectionList, IntArray& arr);
 
+
 // Set the elements of the display selection list
 // LABEL_LIST:      Labels, using the format disp_nr ": " disp_name.
 // SELECTED:        Whether labels are to be selected

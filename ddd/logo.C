@@ -30,11 +30,10 @@
 char logo_rcsid[] = 
     "$Id$";
 
+#include "logo.h"
 #if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
-
-#include "logo.h"
 
 #if defined(IF_XM)
 #include "Xpm.h"
@@ -44,7 +43,6 @@ char logo_rcsid[] =
 #include <gtkmm/button.h>
 #include <gtkmm/menuitem.h>
 #endif
-
 #include "assert.h"
 #include "string-fun.h"
 #include "AppData.h"
@@ -325,6 +323,8 @@ Pixmap dddsplash(Widget w, const string& color_key,
 }
 #endif
 
+
+
 //-----------------------------------------------------------------------
 // Toolbar icons
 //-----------------------------------------------------------------------
@@ -505,7 +505,6 @@ static const char **undisplay_xx_xpm   = 0;
 static const char **unwatch_xx_xpm     = 0;
 static const char **watch_xx_xpm       = 0;
 #endif // !XpmVersion
-
 #if !defined(IF_XM)
 #if defined(IF_XMMM)
 GUI::ImageHandle DDD_ICON[1] = {ddd_NAME};
@@ -659,9 +658,10 @@ static XImage *get_button_subimage(XImage *image, const _XtString name)
 }
 #endif
 
+
+
 #if defined(IF_XM)
-static void install_icon(Widget w,
-			 const _XtString name,
+static void install_icon(Widget w, const _XtString name,
 			 const char **xpm_data, 
 			 const unsigned char *xbm_data,
 			 int width, int height,
@@ -754,9 +754,7 @@ static void install_icon(Widget w,
     if (image != 0)
 	XDestroyImage(image);
 }
-
 #else
-
 static void install_icon(GUI::Widget *w,
 			 GUI::ImageHandle &name,
 			 const char **xpm_data, 
@@ -780,8 +778,7 @@ static void install_icon(GUI::Widget *w,
 #endif
 
 #if defined(IF_XM)
-static void install_button_icon(Widget w,
-				const _XtString name,
+static void install_button_icon(Widget w, const _XtString name,
 				const char **xpm_data, 
 				const char **xpm_xx_data,
 				const unsigned char *xbm_data,
@@ -820,9 +817,7 @@ static void install_button_icon(Widget w,
 		 width, height,
 		 active_color_key, background, win_attr, true);
 }
-
 #else
-
 static void install_button_icon(GUI::Widget *w,
 				GUI::ImageHandle *name,
 				const char **xpm_data, 
@@ -1413,8 +1408,8 @@ void set_label(GUI::Widget *w, const GUI::String& new_label, GUI::ImageHandle *i
     }
 #endif
 }
-
 #if !defined(IF_XM)
+
 GUI::String
 get_label(Gtk::Widget *w)
 {
@@ -1433,9 +1428,7 @@ get_label(Gtk::Widget *w)
     }
     return "";
 }
-#endif
 
-#if !defined(IF_XM)
 #if defined(IF_XMMM)
 MString
 get_label(GUI::Widget *w)

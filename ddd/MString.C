@@ -29,8 +29,6 @@
 char MString_rcsid[] = 
     "$Id$";
 
-#include "config.h"
-
 #include "MString.h"
 
 Boolean MString::OK() const

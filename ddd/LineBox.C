@@ -41,7 +41,6 @@ DEFINE_TYPE_INFO_1(LineBox, PrimitiveBox)
 // LineBox
 
 #if defined(IF_XM)
-
 // Draw
 void LineBox::_draw(Widget w, 
 		    const BoxRegion& r, 
@@ -70,9 +69,7 @@ void LineBox::_draw(Widget w,
     // Attention: We leave LINE_WIDTH and CAP_STYLE changed!
     // (Works within Box::draw(), but the used GC may be changed)
 }
-
 #else
-
 // Draw
 void LineBox::_draw(GUI::Widget *w, 
 		    const BoxRegion& r, 
@@ -96,5 +93,4 @@ void LineBox::_draw(GUI::Widget *w,
     // Attention: We leave LINE_WIDTH and CAP_STYLE changed!
     // (Works within Box::draw(), but the used GC may be changed)
 }
-
 #endif

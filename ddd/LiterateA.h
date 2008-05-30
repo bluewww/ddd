@@ -53,7 +53,7 @@
     Use a more elaborate subclass to dispatch data in appropriate units.
 */
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
@@ -144,7 +144,6 @@ protected:
     }
 
 public:
-
 #if defined(IF_XM)
     // Constructor for Agent users
     LiterateAgent(XtAppContext app_context, const string& pth,
@@ -194,7 +193,6 @@ public:
 	_block_tty_input(default_block_tty_input())
     {}
 #endif
-
     // Duplicator
     LiterateAgent(const LiterateAgent& lit)
 	: AsyncAgent(lit), activeIO(lit.activeIO),

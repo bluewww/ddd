@@ -86,7 +86,6 @@ char HelpCB_rcsid[] =
 #include <GUI/Dialog.h>
 #endif
 
-
 // Misc DDD includes
 #include "LessTifH.h"
 #include "strclass.h"
@@ -201,7 +200,6 @@ static XtResource doc_subresources[] = {
 	XtPointer(0)
     }
 };
-
 #endif
 
 //-----------------------------------------------------------------------
@@ -388,6 +386,7 @@ inline GUI::String get_tip_string(GUI::Widget *widget, GUI::Event *event)
 }
 #endif
 
+
 #if defined(IF_XM)
 static MString _get_documentation_string(Widget widget, XEvent *event)
 {
@@ -449,6 +448,7 @@ inline GUI::String get_documentation_string(GUI::Widget *widget, GUI::Event *eve
 }
 #endif
 
+
 #if defined(IF_XM)
 static bool call_tracking_help(XtPointer call_data, bool key_only = false)
 {
@@ -491,6 +491,7 @@ void (*PostHelpOnItemHook)(Widget) = nop1;
 static void nop1(GUI::Widget *) {}
 void (*PostHelpOnItemHook)(GUI::Widget *) = nop1;
 #endif
+
 
 //-----------------------------------------------------------------------
 // Functions
@@ -687,6 +688,7 @@ static bool HelpDestroyCB(GUI::Widget *old_dialog)
 }
 #endif
 
+
 #if defined(IF_XM)
 // Default help, tip, and documentation strings
 static MString NoHelpText(Widget widget)
@@ -879,6 +881,7 @@ static void _MStringHelpCB(GUI::Widget *widget,
 }
 #endif
 
+
 #if defined(IF_XM)
 static void HelpIndexCB(Widget widget, XtPointer client_data, 
 			XtPointer call_data)
@@ -907,6 +910,7 @@ static void HelpIndexCB(const GUI::String &contents)
     std::cerr << "HelpIndexCB called (" << contents.c_str() << ")\n";
 }
 #endif
+
 
 #if defined(IF_XM)
 // Activate the button given in CLIENT_DATA
@@ -1029,6 +1033,7 @@ static void FindCB(FindInfo *fi, bool forward)
 }
 #endif
 
+
 #if defined(IF_XM)
 // Find the next occurrence of the string contained in the widget 
 // given in CLIENT_DATA
@@ -1082,7 +1087,6 @@ static void HighlightSectionCB(Widget, XtPointer client_data,
 
     ListSetAndSelectPos(list, pos);
 }
-
 #else
 // Highlight current section after cursor motion
 static void HighlightSectionCB(GUI::ScrolledText *text, GUI::ListView *list)
@@ -1173,6 +1177,7 @@ void ManualStringHelpCB(GUI::Widget *widget, char *s)
     std::cerr << "ManualStringHelpCB: not implemented\n";
 }
 #endif
+
 
 #if defined(IF_XM)
 // Close action from menu
@@ -1330,7 +1335,6 @@ static int max_width(const char *text)
 
     return max_width;
 }
-
 
 #if defined(IF_XM)
 static void ToggleIndexCB(Widget w, XtPointer client_data, XtPointer)
@@ -1852,6 +1856,7 @@ void ManualStringHelpCB(GUI::Widget *widget, const MString& title,
 #endif
 }
 
+
 #if defined(IF_XM)
 void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
 {
@@ -1993,6 +1998,7 @@ void TextHelpCB(GUI::Widget *widget, const char *s)
     std::cerr << "TextHelpCB: Not implemented yet.\n";
 }
 #endif
+
 
 //-----------------------------------------------------------------------------
 // Context-sensitive help
@@ -2173,6 +2179,7 @@ void HelpOnContextCB(GUI::Widget *widget, GUI::Event *event)
 }
 #endif
 
+
 #if defined(IF_XM)
 // Return the child widget (or gadget) EX/EY is in, starting with WIDGET.
 static Widget GetWidgetAt(Widget w, int ex, int ey)
@@ -2277,6 +2284,7 @@ void HelpOnItemCB(GUI::Widget *widget, GUI::Event *event)
 #endif
 }
 #endif
+
 
 //-----------------------------------------------------------------------------
 // Button tips
@@ -2990,6 +2998,7 @@ static void InstallButtonTipEvents(Widget w, bool install)
 }
 #endif
 
+
 #if defined(IF_XM)
 // (Un)install toolbar tips for W and all its descendants
 static void InstallButtonTipsNow(Widget w, bool install)
@@ -3106,6 +3115,8 @@ void EnableButtonDocs(bool enable)
 {
     button_docs_enabled = enable;
 }
+
+
 
 //-----------------------------------------------------------------------------
 // Text tips.

@@ -33,9 +33,11 @@
 #include "config.h"
 #endif
 
-#include "strclass.h"
-
+#if !defined(IF_XM)
+#include <GUI/Widget.h>
 #include "gtk_wrapper.h"
+#endif
+#include "strclass.h"
 
 #if defined(IF_XM)
 extern string longName(Widget w);

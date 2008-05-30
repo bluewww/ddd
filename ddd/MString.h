@@ -41,7 +41,6 @@
 #else
 #include "gtk_wrapper.h"
 #endif
-
 #include "strclass.h"
 #include "assert.h"
 #include "casts.h"
@@ -226,6 +225,7 @@ public:
     // Invariant
     Boolean OK() const;
 };
+
 
 // Concatenation
 inline MString operator + (const MString& m1, const MString& m2)
@@ -454,7 +454,6 @@ inline MString operator + (const MString& m1, const MString& m2)
     return ret;
 }
 #endif
-
 
 inline MString operator + (const MString& m, const char *s)
 {

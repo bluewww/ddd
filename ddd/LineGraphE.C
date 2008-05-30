@@ -268,6 +268,7 @@ void LineGraphEdge::drawLine(GUI::Widget *w,
     drawArrowHead(w, exposed, gc, l2, alpha);
 }
 
+
 #if defined(IF_XM)
 // Draw arrow head at POS
 void LineGraphEdge::drawArrowHead(Widget w,
@@ -370,6 +371,7 @@ BoxRegion LineGraphEdge::region(const GraphGC& gc) const
 
     return r;
 }
+
 
 #if defined(IF_XM)
 // Draw self edge

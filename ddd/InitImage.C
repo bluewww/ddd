@@ -29,13 +29,11 @@
 char InitImage_rcsid[] = 
     "$Id$";
 
-#include "config.h"
-
-#include <iostream>
-
 #include "InitImage.h"
 
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
+#endif
 #include "assert.h"
 #include "casts.h"
 
@@ -49,9 +47,12 @@ char InitImage_rcsid[] =
 #include <X11/Xutil.h>		// XGetPixel(), etc.
 
 #include <Xm/Xm.h>		// XmInstallImage()
+#else
+#include <iostream>
 #endif
 
-#if defined(IF_XM) && XlibSpecificationRelease < 6
+#if defined(IF_XM)
+#if XlibSpecificationRelease < 6
 
 // We're stuck with X11R5 or earlier, so we Provide a simple
 // XInitImage() replacement.  These GetPixel, PutPixel, and SubImage
@@ -168,6 +169,9 @@ static XImage *SubImage (XImage *image, int x, int y,
 }
 
 #endif // XlibSpecificationRelease
+#endif
+
+
 
 #if defined(IF_XM)
 void InitImage(XImage *image)

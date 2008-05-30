@@ -39,10 +39,8 @@
 #else
 #include <GUI/Widget.h>
 #include <GUI/ScrolledText.h>
-#endif
-
 #include "gtk_wrapper.h"
-
+#endif
 #include "MString.h"
 #include "bool.h"
 
@@ -96,7 +94,8 @@ extern void HelpOnHelpCB(Widget widget, XtPointer client_data,
 
 // Call help for associated widget.
 // May be used as help callback for any primitive widget.
-extern void ImmediateHelpCB(Widget, XtPointer, XtPointer);
+extern void ImmediateHelpCB(Widget widget, XtPointer client_data, 
+			    XtPointer call_data);
 
 // Call help for widget given in "Widget w = (Widget)client_data".
 extern void HelpOnThisCB(Widget widget, XtPointer client_data, 

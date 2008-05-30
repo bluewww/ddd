@@ -28,10 +28,13 @@
 #ifndef _DDD_MinMaxAssoc_h
 #define _DDD_MinMaxAssoc_h
 
+#if defined(HAVE_CONFIG_H)
+#include "config.h"
+#endif
+
 #if defined(IF_XM)
 #include <X11/Intrinsic.h>
 #endif
-
 #include "Assoc.h"
 
 struct MinMax {

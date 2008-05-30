@@ -29,7 +29,9 @@
 char MakeMenu_rcsid[] = 
     "$Id$";
 
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
+#endif
 
 #include "MakeMenu.h"
 
@@ -61,17 +63,6 @@ char MakeMenu_rcsid[] =
 
 #include "LessTifH.h"
 #else
-#include "gtk_wrapper.h"
-#include <gtkmm/optionmenu.h>
-#include <gtkmm/box.h>
-#include <gtkmm/scale.h>
-#include <gtkmm/spinbutton.h>
-#include <gtkmm/comboboxentrytext.h>
-#include <gtkmm/menubar.h>
-#include <gtkmm/image.h>
-#endif
-
-#if !defined(IF_XM)
 #include <GUI/Button.h>
 #include <GUI/SpinButton.h>
 #include <GUI/MenuItem.h>
@@ -89,8 +80,15 @@ char MakeMenu_rcsid[] =
 #include <GUI/ComboBox.h>
 #include <GUI/SeparatorMenuItem.h>
 #include <GUI/MenuBar.h>
+#include "gtk_wrapper.h"
+#include <gtkmm/optionmenu.h>
+#include <gtkmm/box.h>
+#include <gtkmm/scale.h>
+#include <gtkmm/spinbutton.h>
+#include <gtkmm/comboboxentrytext.h>
+#include <gtkmm/menubar.h>
+#include <gtkmm/image.h>
 #endif
-
 #include "bool.h"
 #include "verify.h"
 #include "findParent.h"
@@ -108,6 +106,7 @@ char MakeMenu_rcsid[] =
 #ifndef LOG_PUSH_MENUS
 #define LOG_PUSH_MENUS 0
 #endif
+
 
 #if defined(IF_XM)
 // Pushmenu callbacks
@@ -134,7 +133,6 @@ static const char *lesstif_pushMenuTranslations =
 #warning No PushMenu handling
 #endif
 #endif
-
 #if defined(IF_XM)
 struct PushMenuInfo {
     Widget widget;		// The PushButton
@@ -248,6 +246,7 @@ static void unflatten_button(Widget w, bool switch_colors = true)
     }
 }
 
+
 static void FlattenEH(Widget w,
 		      XtPointer /* client_data */,
 		      XEvent *event, 
@@ -352,15 +351,14 @@ pack_item(GUI::Container *container, GUI::Widget *widget)
 	container->add(*widget);
 #endif
 }
-#endif
 
 #if defined(IF_XMMM)
-
 static void
 pack_item(GUI::Container *container, GUI::Widget *widget)
 {
     std::cerr << "PACK_ITEM NOT SUPPORTED FOR XMMM\n";
 }
+#endif
 #endif
 
 #if defined(IF_XM)
@@ -383,28 +381,25 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
     Arg args[10];
     int arg;
 
-    Widget container = shell;
-
     static const string textName  = "text";
     static const string labelName = "label";
     // Create lots of buttons...
-    for (MMDesc *item = items; item && item->name; item++)
+    for (MMDesc *item = items; item != 0 && item->name != 0; item++)
     {
 	const char * const name = item->name;
 	MMType flags            = item->type;
 	MMType type             = flags & MMTypeMask;
-	MMDesc *subitems        = item->items;
-	Widget &widget          = item->widget;
+	Widget& widget          = item->widget;
 	Widget *widgetptr       = item->widgetptr;
-	Widget &label           = item->label;
+	MMDesc *subitems        = item->items;
+	Widget& label           = item->label;
 
 	if (flags & MMIgnore)
 	    continue;		// Don't create
 
 	const string subMenuName = string(name) + "Menu";
-	Widget subMenu = NULL;
-	Widget box = NULL;
-	Widget panel = 0;
+	Widget subMenu = 0;
+	Widget panel   = 0;
 	bool flat = false;
 	label = 0;
 	widget = 0;
@@ -509,7 +504,7 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	    // Create a CascadeButton and a new PulldownMenu
 	    assert(subitems != 0);
 
-	    subMenu = MMcreatePulldownMenu(container, subMenuName.chars(), subitems);
+	    subMenu = MMcreatePulldownMenu(shell, subMenuName.chars(), subitems);
 
 	    arg = 0;
 	    XtSetArg(args[arg], XmNsubMenuId, subMenu); arg++;
@@ -559,7 +554,7 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	    // Create a CascadeButton and a new PulldownMenu
 	    assert(subitems != 0);
 
-	    subMenu = MMcreateRadioPulldownMenu(container, subMenuName.chars(), subitems);
+	    subMenu = MMcreateRadioPulldownMenu(shell, subMenuName.chars(), subitems);
 
 	    arg = 0;
 	    XtSetArg(args[arg], XmNsubMenuId, subMenu); arg++;
@@ -572,7 +567,7 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	    // Create an option menu
 	    assert(subitems != 0);
 
-	    subMenu = MMcreatePulldownMenu(container, subMenuName.chars(), subitems);
+	    subMenu = MMcreatePulldownMenu(shell, subMenuName.chars(), subitems);
 
 	    arg = 0;
 	    XtSetArg(args[arg], XmNsubMenuId, subMenu); arg++;
@@ -607,7 +602,8 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	    if (have_label)
 		XtManageChild(label);
 
-	    Widget (*create_panel)(Widget, const _XtString, MMDesc[], ArgList, Cardinal) = 0;
+	    Widget (*create_panel)(Widget, const _XtString, MMDesc[], 
+				   ArgList, Cardinal) = 0;
 
 	    switch (type)
 	    {
@@ -642,10 +638,9 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 		XtSetArg(args[arg], XmNshadowThickness, 0); arg++;
 	    }
 
-
 	    subMenu = create_panel(widget, subMenuName.chars(), subitems, args, arg);
-	    XtManageChild(subMenu);
 
+	    XtManageChild(subMenu);
 	    break;
 	}
 
@@ -730,19 +725,17 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	    XtSetValues(shell, args, arg);
 	}
 
-	Widget panel_widget = panel?panel:widget;
+	if (panel == 0)
+	    panel = widget;
 
-	if (panel_widget) {
-	    // Non-OO widget
-	    if (flags & MMInsensitive)
-		set_sensitive(panel_widget, false);
+	if (flags & MMInsensitive)
+	    set_sensitive(panel, false);
 
-	    if (!(flags & MMUnmanaged))
-		XtManageChild(panel_widget);
+	if (!(flags & MMUnmanaged))
+	    XtManageChild(panel);
 
-	    if (widgetptr != 0)
-		*widgetptr = widget;
-	}
+	if (widgetptr != 0)
+	    *widgetptr = widget;
     }
 }
 #else
@@ -1087,7 +1080,7 @@ void MMaddItems(GUI::Container *shell, MMDesc items[], bool ignore_seps)
 
 #if defined(IF_XM)
 // Create pulldown menu from items
-Widget MMcreatePulldownMenu(Widget parent, const char *name, MMDesc items[],
+Widget MMcreatePulldownMenu(Widget parent, const _XtString name, MMDesc items[],
 			    ArgList args, Cardinal arg)
 {
     Widget menu = verify(XmCreatePulldownMenu(parent, XMST(name), args, arg));
@@ -1109,7 +1102,7 @@ GUI::PulldownMenu *MMcreatePulldownMenu(GUI::Container &parent, GUI::String name
 
 #if defined(IF_XM)
 // Create radio pulldown menu from items
-Widget MMcreateRadioPulldownMenu(Widget parent, const char *name, MMDesc items[],
+Widget MMcreateRadioPulldownMenu(Widget parent, const _XtString name, MMDesc items[],
 				 ArgList _args, Cardinal _arg)
 {
     ArgList args = new Arg[_arg + 10];
@@ -1139,7 +1132,7 @@ GUI::PulldownMenu *MMcreateRadioPulldownMenu(GUI::Container &parent, GUI::String
 
 #if defined(IF_XM)
 // Create popup menu from items
-Widget MMcreatePopupMenu(Widget parent, const char *name, MMDesc items[],
+Widget MMcreatePopupMenu(Widget parent, const _XtString name, MMDesc items[],
 			 ArgList args, Cardinal arg)
 {
     Widget menu = verify(XmCreatePopupMenu(parent, XMST(name), args, arg));
@@ -1171,21 +1164,10 @@ GUI::PopupMenu *MMcreatePopupMenu(GUI::Widget *parent, GUI::String name, MMDesc 
 }
 #endif
 
-#if 0
-template <class T>
-T get_arg_value(ArgList args, Cardinal arg, String name)
-{
-  for (int i = 0; i < arg; i++) {
-    if (args[i].name == name)
-      return static_cast<Glib::Value<T> &>(args[i].value).get();
-  }
-  return T();
-}
-#endif
 
 #if defined(IF_XM)
 // Create menu bar from items
-Widget MMcreateMenuBar(Widget parent, const char *name, MMDesc items[],
+Widget MMcreateMenuBar(Widget parent, const _XtString name, MMDesc items[],
 		       ArgList args, Cardinal arg)
 {
     Widget bar = verify(XmCreateMenuBar(parent, XMST(name), args, arg));
@@ -1208,7 +1190,7 @@ GUI::MenuBar *MMcreateMenuBar(GUI::Container &parent, GUI::String name, MMDesc i
 
 #if defined(IF_XM)
 // Create work area from items
-Widget MMcreateWorkArea(Widget parent, const char *name, MMDesc items[],
+Widget MMcreateWorkArea(Widget parent, const _XtString name, MMDesc items[],
 			ArgList args, Cardinal arg)
 {
     Widget bar = verify(XmCreateWorkArea(parent, XMST(name), args, arg));
@@ -1271,12 +1253,11 @@ void MMadjustPanel(const MMDesc items[], Dimension space)
 	XtWidgetGeometry size;
 	size.request_mode = CWWidth;
 	XtQueryGeometry(item->label, (XtWidgetGeometry *)0, &size);
-	Dimension size_width = size.width;
+	max_label_width = max(max_label_width, size.width);
 #else
 	GUI::Requisition req = item->label->size_request();
-	Dimension size_width = req.width;
+	max_label_width = max(max_label_width, req.width);
 #endif
-	max_label_width = max(max_label_width, size_width);
     }
 
     // Leave some extra space
@@ -1314,7 +1295,6 @@ Widget MMcreateRadioPanel(Widget parent, const _XtString name, MMDesc items[],
 	args[arg++] = _args[i];
 
     Widget panel = verify(XmCreateRowColumn(parent, XMST(name), args, arg));
-
     MMaddItems(panel, items);
     XtManageChild(panel);
 
@@ -1401,7 +1381,7 @@ static void addCallback(const MMDesc *item, XtPointer default_closure)
     MMType type             = flags & MMTypeMask;
     Widget widget           = item->widget;
     XtCallbackRec callback  = item->callback;
-
+    
     if (callback.closure == 0)
 	callback.closure = default_closure;
 
@@ -1454,7 +1434,7 @@ static void addCallback(const MMDesc *item, XtPointer default_closure)
 
     case MMArrow:
     {
-	if (callback.callback)
+	if (callback.callback != 0)
 	    XtAddCallback(widget, 
 			  XmNactivateCallback,
 			  callback.callback, 
@@ -1512,12 +1492,11 @@ static void addCallback(const MMDesc *item, XtPointer default_closure)
 
     case MMEnterField:
     {
-	if (callback.callback != 0) {
+	if (callback.callback != 0)
 	    XtAddCallback(widget,
 			  XmNactivateCallback,
 			  callback.callback, 
 			  callback.closure);
-	}
 	break;
     }
 
@@ -1837,13 +1816,14 @@ void MMaddHelpCallback(const MMDesc items[], sigc::slot<void, GUI::Widget *> pro
 #endif
 
 
+
 //-----------------------------------------------------------------------
 // PushMenus
 //-----------------------------------------------------------------------
 
 // Create pushmenu from items
 #if defined(IF_XM)
-Widget MMcreatePushMenu(Widget parent, const char *name, MMDesc items[],
+Widget MMcreatePushMenu(Widget parent, const _XtString name, MMDesc items[],
 			ArgList _args, Cardinal _arg)
 #else
 GUI::Menu *MMcreatePushMenu(GUI::Container *parent, GUI::String name, MMDesc items[])
@@ -1875,12 +1855,11 @@ GUI::Menu *MMcreatePushMenu(GUI::Container *parent, GUI::String name, MMDesc ite
 #if defined(IF_XM)    
     for (Cardinal i = 0; i < _arg; i++)
 	args[arg++] = _args[i];
-
+    
     Widget menu = verify(XmCreatePopupMenu(parent, XMST(name), args, arg));
 #else
     GUI::PopupMenu *menu = new GUI::PopupMenu(*parent, name);
 #endif
-
     MMaddItems(menu, items);
     auto_raise(XtParent(menu));
 
@@ -2000,6 +1979,7 @@ static void ReflattenButtonEH(Widget shell, XtPointer client_data,
 #endif
 #endif
 
+
 #if defined(IF_XM)
 static void PopupPushMenuAct(Widget w, XEvent *event, String *, Cardinal *)
 {
@@ -2095,6 +2075,8 @@ static void DecoratePushMenuAct(Widget w, XEvent */* event */,
 		 Convex, CoordModePrevious);
 }
 
+
+
 // Popup menu after some delay
 struct subresource_values {
     int push_menu_popup_time;	// Delay before popping up menu
@@ -2182,9 +2164,7 @@ void set_sensitive(GUI::Widget *w, bool state)
 #endif
     }
 }
-#endif
 
-#if !defined(IF_XM)
 void
 dummy_xcallback(GUI::Widget *)
 {

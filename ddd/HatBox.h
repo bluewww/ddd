@@ -52,8 +52,7 @@ protected:
 #if defined(IF_XM)
     virtual void _draw(Widget w, 
 		       const BoxRegion& region, 
-		       const BoxRegion& exposed,
-		       GC gc,
+		       const BoxRegion& exposed, GC gc,
 		       bool context_selected) const;
 #else
     virtual void _draw(GUI::Widget *w, 
