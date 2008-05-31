@@ -33,7 +33,7 @@ int GtkX::translate_event(GdkEvent *in, Event *out)
     case GDK_KEY_PRESS:
     case GDK_KEY_RELEASE:
 	onoff = (in->any.type == GDK_KEY_PRESS);
-	std::cerr << (onoff ? "KeyPress\n" : "KeyRelease\n");
+	// std::cerr << (onoff ? "KeyPress\n" : "KeyRelease\n");
 	out->type = (onoff ? KEY_PRESS : KEY_RELEASE);
 	out->key.window = NULL; /* FIXME */
 	out->key.send_event = in->key.send_event;
@@ -49,7 +49,7 @@ int GtkX::translate_event(GdkEvent *in, Event *out)
     case GDK_BUTTON_PRESS:
     case GDK_BUTTON_RELEASE:
 	onoff = (in->any.type == GDK_BUTTON_PRESS);
-	std::cerr << (onoff ? "ButtonPress\n" : "ButtonRelease\n");
+	// std::cerr << (onoff ? "ButtonPress\n" : "ButtonRelease\n");
 	out->type = (onoff ? BUTTON_PRESS : BUTTON_RELEASE);
 	out->button.window = NULL; /* FIXME */
 	out->button.send_event = in->button.send_event;
@@ -61,7 +61,7 @@ int GtkX::translate_event(GdkEvent *in, Event *out)
 	out->button.button = in->button.button;
 	break;
     case GDK_MOTION_NOTIFY:
-	std::cerr << "MotionNotify\n";
+	// std::cerr << "MotionNotify\n";
 	out->type = MOTION_NOTIFY;
 	out->motion.window = NULL; /* FIXME */
 	out->motion.send_event = in->motion.send_event;
@@ -77,7 +77,7 @@ int GtkX::translate_event(GdkEvent *in, Event *out)
     case GDK_ENTER_NOTIFY:
     case GDK_LEAVE_NOTIFY:
 	onoff = (in->any.type == GDK_ENTER_NOTIFY);
-	std::cerr << (onoff ? "EnterNotify\n" : "LeaveNotify\n");
+	// std::cerr << (onoff ? "EnterNotify\n" : "LeaveNotify\n");
 	out->type = (onoff ? ENTER_NOTIFY: LEAVE_NOTIFY);
 	out->crossing.window = NULL; /* FIXME */
 	out->crossing.send_event = in->crossing.send_event;
@@ -114,18 +114,18 @@ int GtkX::translate_event(GdkEvent *in, Event *out)
     case FocusIn:
     case FocusOut:
 	onoff = (in->any.type == FocusIn);
-	std::cerr << (onoff ? "FocusIn\n" : "FocusOut\n");
+	// std::cerr << (onoff ? "FocusIn\n" : "FocusOut\n");
 	out->type = FOCUS_CHANGE;
 	out->focus.window = NULL; /* FIXME */
 	out->focus.send_event = in->xfocus.send_event;
 	out->focus.in = (in->any.type == FocusIn);
 	break;
     case KeymapNotify:
-	std::cerr << "KeymapNotify\n";
+	// std::cerr << "KeymapNotify\n";
 	break;
 #endif
     case GDK_EXPOSE:
-	std::cerr << "Expose\n";
+	// std::cerr << "Expose\n";
 	out->type = EXPOSE;
 	out->expose.window = NULL; /* FIXME */
 	out->expose.send_event = in->expose.send_event;
@@ -137,92 +137,92 @@ int GtkX::translate_event(GdkEvent *in, Event *out)
 	break;
 #if 0
     case GraphicsExpose:
-	std::cerr << "GraphicsExpose\n";
+	// std::cerr << "GraphicsExpose\n";
 	break;
 #endif
     case GDK_NO_EXPOSE:
-	std::cerr << "NoExpose\n";
+	// std::cerr << "NoExpose\n";
 	out->type = NO_EXPOSE;
 	out->no_expose.window = NULL; /* FIXME */
 	out->no_expose.send_event = in->no_expose.send_event;
 	break;
     case GDK_VISIBILITY_NOTIFY:
-	std::cerr << "VisibilityNotify\n";
+	// std::cerr << "VisibilityNotify\n";
 	out->type = VISIBILITY_NOTIFY;
 	break;
 #if 0
     case CreateNotify:
-	std::cerr << "CreateNotify\n";
+	// std::cerr << "CreateNotify\n";
 	break;
     case DestroyNotify:
-	std::cerr << "DestroyNotify\n";
+	// std::cerr << "DestroyNotify\n";
 	break;
 #endif
     case GDK_UNMAP:
-	std::cerr << "UnmapNotify\n";
+	// std::cerr << "UnmapNotify\n";
 	out->type = UNMAP;
 	break;
     case GDK_MAP:
-	std::cerr << "MapNotify\n";
+	// std::cerr << "MapNotify\n";
 	out->type = MAP;
 	break;
 #if 0
     case MapRequest:
-	std::cerr << "MapRequest\n";
+	// std::cerr << "MapRequest\n";
 	break;
     case ReparentNotify:
-	std::cerr << "ReparentNotify\n";
+	// std::cerr << "ReparentNotify\n";
 	break;
 #endif
     case GDK_CONFIGURE:
-	std::cerr << "ConfigureNotify\n";
+	// std::cerr << "ConfigureNotify\n";
 	out->type = CONFIGURE;
 	break;
 #if 0
     case ConfigureRequest:
-	std::cerr << "ConfigureRequest\n";
+	// std::cerr << "ConfigureRequest\n";
 	break;
     case GravityNotify:
-	std::cerr << "GravityNotify\n";
+	// std::cerr << "GravityNotify\n";
 	break;
     case ResizeRequest:
-	std::cerr << "ResizeRequest\n";
+	// std::cerr << "ResizeRequest\n";
 	break;
     case CirculateNotify:
-	std::cerr << "CirculateNotify\n";
+	// std::cerr << "CirculateNotify\n";
 	break;
     case CirculateRequest:
-	std::cerr << "CirculateRequest\n";
+	// std::cerr << "CirculateRequest\n";
 	break;
     case PropertyNotify:
-	std::cerr << "PropertyNotify\n";
+	// std::cerr << "PropertyNotify\n";
 	break;
 #endif
     case GDK_SELECTION_CLEAR:
-	std::cerr << "SelectionClear\n";
+	// std::cerr << "SelectionClear\n";
 	out->type = SELECTION_CLEAR;
 	break;
     case GDK_SELECTION_REQUEST:
-	std::cerr << "SelectionRequest\n";
+	// std::cerr << "SelectionRequest\n";
 	out->type = SELECTION_REQUEST;
 	break;
     case GDK_SELECTION_NOTIFY:
-	std::cerr << "SelectionNotify\n";
+	// std::cerr << "SelectionNotify\n";
 	out->type = SELECTION_NOTIFY;
 	break;
 #if 0
     case ColormapNotify:
-	std::cerr << "ColormapNotify\n";
+	// std::cerr << "ColormapNotify\n";
 	break;
     case ClientMessage:
-	std::cerr << "ClientMessage\n";
+	// std::cerr << "ClientMessage\n";
 	break;
     case MappingNotify:
-	std::cerr << "MappingNotify\n";
+	// std::cerr << "MappingNotify\n";
 	break;
 #endif
     default:
-	std::cerr << "UNKNOWN EVENT TYPE " << in->any.type << "\n";
+	// std::cerr << "UNKNOWN EVENT TYPE " << in->any.type << "\n";
 	out->type = NOTHING;
 	break;
     }
