@@ -29,19 +29,17 @@
 #ifndef _DDD_PlotArea_h
 #define _DDD_PlotArea_h
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
 #include "strclass.h"
-
 #if defined(IF_XM)
 #include <X11/Intrinsic.h>
 #else
 #include <GUI/Widget.h>
 #include "gtk_wrapper.h"
 #endif
-
 #include "ChunkQueue.h"
 #include "assert.h"
 

@@ -520,7 +520,7 @@ Boolean AsyncAgent::callTheHandlers(XtPointer client_data)
     return true;
 }
 #else
-Boolean AsyncAgent::callTheHandlers(AsyncAgentWorkProcInfo *info)
+bool AsyncAgent::callTheHandlers(AsyncAgentWorkProcInfo *info)
 {
     Glib::signal_timeout().connect(sigc::bind(sigc::ptr_fun(callTheHandlersIfIdle), info), 10);
 

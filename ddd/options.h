@@ -29,7 +29,10 @@
 #ifndef _DDD_options_h
 #define _DDD_options_h
 
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
+#endif
+
 #include "strclass.h"
 #include "bool.h"
 #if defined(IF_XM)
@@ -220,6 +223,7 @@ extern void dddSetWWWCommandCB              (Widget, XtPointer, XtPointer);
 extern void dddSetBuiltinPlotWindowCB       (Widget, XtPointer, XtPointer);
 
 extern void DDDSaveOptionsCB                (Widget, XtPointer, XtPointer);
+extern void DDDSaveOptionsAsCB              (Widget, XtPointer, XtPointer);
 #else
 extern void dddSetStatusAtBottomCB          (GUI::Widget *w, bool state);
 extern void dddSetToolBarCB                 (GUI::RadioButton *, bool);

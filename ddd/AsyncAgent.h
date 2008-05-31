@@ -344,7 +344,7 @@ private:
 				  void *call_data);
 
     bool somethingHappened(Glib::IOCondition cond, int type);
-    static Boolean callTheHandlers(AsyncAgentWorkProcInfo *info);
+    static bool callTheHandlers(AsyncAgentWorkProcInfo *info);
     static bool callTheHandlersIfIdle(AsyncAgentWorkProcInfo *info);
 
     // Helping functions

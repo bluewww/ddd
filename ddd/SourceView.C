@@ -69,7 +69,9 @@ char SourceView_rcsid[] =
 
 //-----------------------------------------------------------------------------
 
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
+#endif
 
 #include "SourceView.h"
 
@@ -234,6 +236,20 @@ GUI::ImageHandle DRAG_TEMP;
 #endif
 
 #if !defined(IF_XM)
+
+void SourceView::list_bp_line_map(void)
+{
+    BpLineMap::iterator iter;
+    for (iter = bps_in_line2.begin(); iter != bps_in_line2.end(); iter++) {
+	std::cerr << "Line " << iter->first;
+	BpList &l = iter->second;
+	BpList::iterator i;
+	for (i = l.begin(); i != l.end(); i++) {
+	    std::cerr << " " << *i;
+	}
+	std::cerr << "\n";
+    }
+}
 
 #if 0
 
@@ -452,7 +468,6 @@ struct TextItms {
 };
 
 #if defined(IF_XM)
-#define N_(x) (x)
 static const _XtString const text_cmd_labels[] =
 #else
 static const char *const text_cmd_labels[] =
@@ -588,9 +603,8 @@ Widget SourceView::up_w                      = 0;
 Widget SourceView::down_w                    = 0;
 Widget SourceView::register_dialog_w         = 0;
 Widget SourceView::register_list_w           = 0;
-Widget SourceView::int_registers_w           = 0;
 Widget SourceView::all_registers_w           = 0;
-
+Widget SourceView::int_registers_w           = 0;
 Widget SourceView::thread_dialog_w           = 0;
 Widget SourceView::thread_list_w             = 0;
 #else
@@ -604,9 +618,8 @@ GUI::Button *SourceView::up_w                       = 0;
 GUI::Button *SourceView::down_w                     = 0;
 GUI::SelectionDialog *SourceView::register_dialog_w = 0;
 GUI::ListView *SourceView::register_list_w          = 0;
-GUI::RadioButton *SourceView::int_registers_w       = 0;
 GUI::RadioButton *SourceView::all_registers_w       = 0;
-
+GUI::RadioButton *SourceView::int_registers_w       = 0;
 GUI::Dialog *SourceView::thread_dialog_w         = 0;
 GUI::ListView *SourceView::thread_list_w         = 0;
 #endif
@@ -638,6 +651,9 @@ Map<int, BreakPoint> SourceView::bp_map;
 string SourceView::current_file_name = "";
 int    SourceView::line_count = 0;
 IntIntArrayAssoc SourceView::bps_in_line;
+#if !defined(IF_XM)
+SourceView::BpLineMap SourceView::bps_in_line2;
+#endif
 TextPositionArray SourceView::_pos_of_line;
 StringArray SourceView::bp_addresses;
 StringStringAssoc SourceView::file_cache;
@@ -710,6 +726,7 @@ static long selection_startpos;
 static long selection_endpos;
 static Time           selection_time;
 #endif
+
 
 //-----------------------------------------------------------------------
 // Helping functions.
@@ -916,15 +933,18 @@ int SourceView::indent_amount(GUI::Widget *w, int pos)
 
 // ***************************************************************************
 //
-
 #if defined(IF_XM)
-void SourceView::line_popup_setCB (Widget w, XtPointer client_data, XtPointer)
+void SourceView::line_popup_setCB (Widget w,
+				   XtPointer client_data,
+				   XtPointer)
 {
     const string address = *((const string *)client_data);
     create_bp(address, w);
 }
 
-void SourceView::line_popup_set_tempCB (Widget w, XtPointer client_data, XtPointer)
+void SourceView::line_popup_set_tempCB (Widget w,
+					XtPointer client_data,
+					XtPointer)
 {
     const string address = *((const string *)client_data);
     create_temp_bp(address, w);
@@ -1311,7 +1331,6 @@ void SourceView::set_bp(const string& a, bool set, bool temp,
 // ***************************************************************************
 //
 #if defined(IF_XM)
-
 void SourceView::clearBP(XtPointer client_data, XtIntervalId *)
 {
     int bp_nr = (int)(long)client_data;
@@ -1358,7 +1377,9 @@ void SourceView::clearJumpBP(const string& msg, void *data)
 }
 
 #if defined(IF_XM)
-void SourceView::line_popup_temp_n_contCB (Widget w, XtPointer client_data, XtPointer)
+void SourceView::line_popup_temp_n_contCB (Widget w,
+					   XtPointer client_data,
+					   XtPointer)
 {
     const string address = *((const string *)client_data);
     temp_n_cont(address, w);
@@ -1465,12 +1486,12 @@ void SourceView::temp_n_cont(const string& a, GUI::Widget *w)
 }
 #endif
 
-
 // ***************************************************************************
 //
-
 #if defined(IF_XM)
-void SourceView::line_popup_set_pcCB(Widget w, XtPointer client_data, XtPointer)
+void SourceView::line_popup_set_pcCB(Widget w, 
+				     XtPointer client_data,
+				     XtPointer)
 {
     const string address = *((const string *)client_data);
     move_pc(address, w);
@@ -1484,7 +1505,6 @@ void SourceView::line_popup_set_pcCB(GUI::Widget *w, const string *address)
 
 // ***************************************************************************
 //
-
 #if defined(IF_XM)
 bool SourceView::move_pc(const string& a, Widget w)
 {
@@ -1933,9 +1953,10 @@ void SourceView::_set_bps_cond(const IntArray& _nrs, const string& cond,
 
 // ***************************************************************************
 //
-
 #if defined(IF_XM)
-void SourceView::bp_popup_deleteCB (Widget w, XtPointer client_data, XtPointer)
+void SourceView::bp_popup_deleteCB (Widget w,
+				    XtPointer client_data,
+				    XtPointer)
 {
     int bp_nr = *((int *)client_data);
     delete_bp(bp_nr, w);
@@ -1949,9 +1970,10 @@ void SourceView::bp_popup_deleteCB (GUI::Widget *w, int *bp_nr)
 
 // ***************************************************************************
 //
-
 #if defined(IF_XM)
-void SourceView::bp_popup_disableCB (Widget w, XtPointer client_data, XtPointer)
+void SourceView::bp_popup_disableCB (Widget w, 
+				     XtPointer client_data,
+				     XtPointer)
 {
     int bp_nr = *((int *)client_data);
     BreakPoint *bp = bp_map.get(bp_nr);
@@ -2289,9 +2311,8 @@ string SourceView::clear_command(string pos, bool clear_next, int first_bp)
 
 // ***************************************************************************
 //
-
 #if defined(IF_XM)
-void SourceView::bp_popup_set_pcCB(Widget w, XtPointer client_data,
+void SourceView::bp_popup_set_pcCB(Widget w, XtPointer client_data, 
 				   XtPointer call_data)
 {
     int bp_nr = *((int *)client_data);
@@ -2316,15 +2337,18 @@ void SourceView::bp_popup_set_pcCB(GUI::Widget *w, int *bp_nr)
 
 // ***************************************************************************
 //
-
 #if defined(IF_XM)
-void SourceView::text_popup_breakCB (Widget w, XtPointer client_data, XtPointer)
+void SourceView::text_popup_breakCB (Widget w,
+				     XtPointer client_data,
+				     XtPointer)
 {
     const string* word_ptr = (const string*)client_data;
     create_bp(fortranize(*word_ptr, true), w);
 }
 
-void SourceView::text_popup_clearCB (Widget w, XtPointer client_data, XtPointer)
+void SourceView::text_popup_clearCB (Widget w, 
+				     XtPointer client_data, 
+				     XtPointer)
 {
     const string* word_ptr = (const string*)client_data;
     clear_bp(fortranize(*word_ptr, true), w);
@@ -2346,8 +2370,9 @@ void SourceView::text_popup_clearCB (GUI::Widget *w, const string *word_ptr)
 // ***************************************************************************
 //
 #if defined(IF_XM)
-
-void SourceView::text_popup_printCB (Widget w, XtPointer client_data, XtPointer)
+void SourceView::text_popup_printCB (Widget w, 
+				     XtPointer client_data, 
+				     XtPointer)
 {
     const string* word_ptr = (const string*)client_data;
     assert(word_ptr->length() > 0);
@@ -2355,7 +2380,8 @@ void SourceView::text_popup_printCB (Widget w, XtPointer client_data, XtPointer)
     gdb_command(gdb->print_command(fortranize(*word_ptr), false), w);
 }
 
-void SourceView::text_popup_print_refCB (Widget w, XtPointer client_data, XtPointer)
+void SourceView::text_popup_print_refCB (Widget w, 
+					 XtPointer client_data, XtPointer)
 {
     const string* word_ptr = (const string*)client_data;
     assert(word_ptr->length() > 0);
@@ -2381,9 +2407,10 @@ void SourceView::text_popup_print_refCB (GUI::Widget *w, const string *word_ptr)
 
 // ***************************************************************************
 //
-
 #if defined(IF_XM)
-void SourceView::text_popup_watchCB (Widget w, XtPointer client_data, XtPointer)
+void SourceView::text_popup_watchCB (Widget w, 
+				     XtPointer client_data, 
+				     XtPointer)
 {
     const string* word_ptr = (const string*)client_data;
     assert(word_ptr->length() > 0);
@@ -2391,7 +2418,8 @@ void SourceView::text_popup_watchCB (Widget w, XtPointer client_data, XtPointer)
     gdb_command(gdb->watch_command(fortranize(*word_ptr)), w);
 }
 
-void SourceView::text_popup_watch_refCB (Widget w, XtPointer client_data, XtPointer)
+void SourceView::text_popup_watch_refCB (Widget w, 
+					 XtPointer client_data, XtPointer)
 {
     const string* word_ptr = (const string*)client_data;
     assert(word_ptr->length() > 0);
@@ -2418,7 +2446,6 @@ void SourceView::text_popup_watch_refCB (GUI::Widget *w, const string *word_ptr)
 // ***************************************************************************
 //
 #if defined(IF_XM)
-
 void SourceView::text_popup_dispCB (Widget w, XtPointer client_data, XtPointer)
 {
     const string* word_ptr = (const string*)client_data;
@@ -2427,7 +2454,8 @@ void SourceView::text_popup_dispCB (Widget w, XtPointer client_data, XtPointer)
     gdb_command("graph display " + fortranize(*word_ptr), w);
 }
 
-void SourceView::text_popup_disp_refCB (Widget w, XtPointer client_data, XtPointer)
+void SourceView::text_popup_disp_refCB (Widget w, 
+					XtPointer client_data, XtPointer)
 {
     const string* word_ptr = (const string*)client_data;
     assert(word_ptr->length() > 0);
@@ -2452,9 +2480,9 @@ void SourceView::text_popup_disp_refCB (GUI::Widget *w, const string *word_ptr)
 
 // ***************************************************************************
 //
-
 #if defined(IF_XM)
-void SourceView::text_popup_whatisCB (Widget w, XtPointer client_data, XtPointer)
+void SourceView::text_popup_whatisCB (Widget w, XtPointer client_data, 
+				      XtPointer)
 {
     const string* word_ptr = (const string*)client_data;
     assert(word_ptr->length() > 0);
@@ -2472,7 +2500,6 @@ void SourceView::text_popup_whatisCB (GUI::Widget *w, const string *word_ptr)
 
 // ***************************************************************************
 //
-
 #if defined(IF_XM)
 void SourceView::text_popup_lookupCB (Widget, XtPointer client_data, XtPointer)
 {
@@ -2615,7 +2642,9 @@ static bool selection_click = false;
 static string last_info_output = "";
 
 #if defined(IF_XM)
-void SourceView::set_source_argCB(Widget text_w, XtPointer client_data, XtPointer call_data)
+void SourceView::set_source_argCB(Widget text_w, 
+				  XtPointer client_data, 
+				  XtPointer call_data)
 {
     const string& text = current_text(text_w);
     if (text.empty())
@@ -3146,6 +3175,7 @@ void SourceView::SetInsertionPosition(GUI::ScrolledText *text_w,
 #endif
 
 
+
 //-----------------------------------------------------------------------
 // Error handling
 //-----------------------------------------------------------------------
@@ -3193,6 +3223,8 @@ void SourceView::post_file_warning(const string& file_name,
 	post_warning(text, name, origin);
 }
 #endif
+
+
 
 
 //-----------------------------------------------------------------------
@@ -4062,6 +4094,11 @@ void SourceView::update_title()
     string icon   = 
 	DDD_NAME ": " + string(basename(current_file_name.chars()));
     const _XtString icon_s = icon.chars();
+
+    XtVaSetValues(toplevel_w,
+		  XmNtitle, title_s,
+		  XmNiconName, icon_s,
+		  XtPointer(0));
 }
 #else
 void SourceView::update_title()
@@ -4079,6 +4116,7 @@ void SourceView::update_title()
     std::cerr << "Should set title here.\n";
 }
 #endif
+
 
 
 //-----------------------------------------------------------------------
@@ -4114,18 +4152,18 @@ void SourceView::refresh_source_bp_disp(bool reset)
 	{
 	    string s(current_source.at(pos, indent - 1));
 
-	    if (s.length() > 0) {
 #if defined(IF_XM)
+	    if (s.length() > 0)
 		XmTextReplace(source_text_w,
 			      pos_of_line(line_nr),
 			      pos_of_line(line_nr) + s.length(),
 			      XMST(s.chars()));
 #else
+	    if (s.length() > 0)
 		source_text_w->replace(pos_of_line(line_nr),
 				       pos_of_line(line_nr) + s.length(),
 				       XMST(s.chars()));
 #endif
-	    }
 	}
     }
 
@@ -4188,17 +4226,17 @@ void SourceView::refresh_source_bp_disp(bool reset)
 
 	    assert(int(insert_string.length()) == indent - 1);
 
-	    if (insert_string.length() > 0) {
 #if defined(IF_XM)
+	    if (insert_string.length() > 0)
 		XmTextReplace(source_text_w, pos, 
 			      pos + indent - 1,
 			      XMST(insert_string.chars()));
 #else
+	    if (insert_string.length() > 0)
 		source_text_w->replace(pos, 
 				       pos + indent - 1,
 				       XMST(insert_string.chars()));
 #endif
-	    }
 	}
     }
 }
@@ -4305,7 +4343,7 @@ void SourceView::refresh_code_bp_disp(bool reset)
 // IN_TEXT becomes true iff POS is in the source area
 // BP_NR is the number of the breakpoint at POS (none: 0)
 // Return false iff failure
-bool SourceView::get_line_of_pos (Widget w,
+bool SourceView::get_line_of_pos (Widget   w,
 				  XmTextPosition pos,
 				  int&     line_nr,
 				  string&  address,
@@ -4520,6 +4558,8 @@ bool SourceView::get_line_of_pos (GUI::Widget *w,
     else
 	return false;
 
+    list_bp_line_map();
+
     if (w != text_w)
     {
 	std::cerr << "HELP: Cannot handle selection of glyphs!\n";
@@ -4691,7 +4731,6 @@ bool SourceView::get_line_of_pos (GUI::Widget *w,
 #endif
 
 // ***************************************************************************
-
 #if defined(IF_XM)
 // Find word around POS.  STARTPOS is the first character, ENDPOS + 1
 // is the last character in the word.
@@ -5052,6 +5091,7 @@ string SourceView::get_word_at_event(GUI::ScrolledText *text_w,
 }
 #endif
 
+
 #if defined(IF_XM)
 // Get the word at POS
 string SourceView::get_word_at_pos(Widget text_w,
@@ -5115,6 +5155,7 @@ string SourceView::get_word_at_pos(GUI::ScrolledText *text_w,
     return word;
 }
 #endif
+
 
 
 //----------------------------------------------------------------------------
@@ -5294,7 +5335,7 @@ void SourceView::create_shells()
 
     if (app_data.flat_dialog_buttons)
     {
-	for (MMDesc *item = bp_area; item != 0 && item->name; item++)
+	for (MMDesc *item = bp_area; item != 0 && item->name != 0; item++)
 	{
 	    if ((item->type & MMTypeMask) == MMPush)
 		item->type = (MMFlatPush | (item->type & ~MMTypeMask));
@@ -5374,7 +5415,6 @@ void SourceView::create_shells()
 
     arg = 0;
     frame_list_w = XmSelectionBoxGetChild(stack_dialog_w, XmDIALOG_LIST);
-
     XtVaSetValues(frame_list_w,
 		  XmNselectionPolicy, XmSINGLE_SELECT,
 		  XtPointer(0));
@@ -5398,10 +5438,11 @@ void SourceView::create_shells()
 		  XmNcancelCallback, StackDialogPoppedDownCB, 0);
     XtAddCallback(stack_dialog_w,
 		  XmNhelpCallback, ImmediateHelpCB, 0);
+
     Widget cancel_w = XmSelectionBoxGetChild(stack_dialog_w, 
 					     XmDIALOG_CANCEL_BUTTON);
-    XtVaSetValues(stack_dialog_w, XmNdefaultButton, cancel_w, XtPointer(0));
 
+    XtVaSetValues(stack_dialog_w, XmNdefaultButton, cancel_w, XtPointer(0));
 
     // Create register view
     arg = 0;
@@ -5429,7 +5470,6 @@ void SourceView::create_shells()
     int_registers_w = 
 	XmCreateToggleButton(box, XMST("int_registers"), args, arg);
     XtManageChild(int_registers_w);
-    
 
     arg = 0;
     XtSetArg(args[arg], XmNset, all_registers); arg++;
@@ -5444,7 +5484,6 @@ void SourceView::create_shells()
 
     arg = 0;
     register_list_w = XmSelectionBoxGetChild(register_dialog_w, XmDIALOG_LIST);
-
     XtVaSetValues(register_list_w,
 		  XmNselectionPolicy, XmSINGLE_SELECT,
 		  XtPointer(0));
@@ -5688,7 +5727,7 @@ void SourceView::CheckModificationCB(GUI::Widget *, bool editable)
 #if defined(IF_XM)
 // Create source or code window
 void SourceView::create_text(Widget parent, const char *base, bool editable,
-			     Widget &form, Widget &text)
+			     Widget& form, Widget& text)
 {
     Arg args[15];
     int arg = 0;
@@ -5862,16 +5901,16 @@ void SourceView::show_execution_position (const string& position_,
 #endif
 	    }
 
-	    if (last_start_highlight) {
 #if defined(IF_XM)
+	    if (last_start_highlight)
 		XmTextSetHighlight (source_text_w,
 				    last_start_highlight, last_end_highlight,
 				    XmHIGHLIGHT_NORMAL);
 #else
+	    if (last_start_highlight)
 		source_text_w->set_highlight(last_start_highlight, last_end_highlight,
 					     GUI::HIGHLIGHT_NORMAL);
 #endif
-	    }
 
 	}
 	last_pos = last_start_highlight = last_end_highlight = 0;
@@ -5936,6 +5975,7 @@ void SourceView::clear_execution_position()
     undo_buffer.remove_address();
     undo_buffer.add_state();
 }
+
 
 #if defined(IF_XM)
 void SourceView::_show_execution_position(const string& file, int line, 
@@ -6279,6 +6319,13 @@ void SourceView::process_info_bp (string& info_output,
 	    BreakPoint *new_bp = 
 		new BreakPoint(info_output, break_arg, bp_nr, file);
 	    bp_map.insert(bp_nr, new_bp);
+#if !defined(IF_XM)
+	    int line_num = new_bp->line_nr();
+	    std::pair<BpLineMap::iterator, bool> bps_i
+		= bps_in_line2.insert(std::pair<int, BpList>(line_num, BpList()));
+	    BpList &bps_l = bps_i.first->second;
+	    bps_l.insert(bps_l.end(), new_bp);
+#endif
 
 	    if (gdb->has_delete_command())
 	    {
@@ -6322,6 +6369,12 @@ void SourceView::process_info_bp (string& info_output,
 
 	// Delete it
 	undo_buffer.add_breakpoint_state(undo_commands, bp);
+#if !defined(IF_XM)
+	int line_num = bp->line_nr();
+	BpLineMap::iterator bps_i = bps_in_line2.find(line_num);
+	if (bps_i != bps_in_line2.end())
+	    bps_i->second.remove(bp);
+#endif
 	delete bp;
 	bp_map.del(bps_not_read[i]);
 
@@ -7439,7 +7492,7 @@ void SourceView::set_text_popup_resource(int item, const string& arg)
     {
 	// Set up resources for yet-to-be-created popup menu
 	string db = string(DDD_CLASS_NAME "*text_popup.") 
-	    + (const char *)text_popup[item].name + "." + XmNlabelString + ": "
+	    + text_popup[item].name + "." + XmNlabelString + ": "
 	    + "@" + CHARSET_RM + " " + text_cmd_labels[item] 
 	    + " @" + CHARSET_TT + " " + arg;
 
@@ -7486,8 +7539,8 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 
     XButtonEvent* event = &e->xbutton;
 
-    int x = (int)event->x;
-    int y = (int)event->y;
+    int x = event->x;
+    int y = event->y;
 
     if (w != source_text_w && w != code_text_w)
     {
@@ -7594,15 +7647,16 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
     else
     {
 	// Determine surrounding token (or selection) and create popup
+	static string word;
 
 	XmTextPosition startpos = 0;
 	XmTextPosition endpos   = 0;
 
 	if (pos_found)
-	    callback_word = get_word_at_pos(text_w, pos, startpos, endpos);
+	    word = get_word_at_pos(text_w, pos, startpos, endpos);
 
 	// Popup specific word menu
-	string current_arg = callback_word;
+	string current_arg = word;
 	shorten(current_arg, max_popup_expr_length);
 	string current_ref_arg = deref(current_arg);
 
@@ -7622,7 +7676,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 
 	Widget text_popup_w = 
 	    MMcreatePopupMenu(text_w, "text_popup", text_popup);
-	MMaddCallbacks(text_popup, XtPointer(&callback_word));
+	MMaddCallbacks(text_popup, XtPointer(&word));
 	MMaddHelpCallback(text_popup, ImmediateHelpCB);
 	InstallButtonTips(text_popup_w);
 
@@ -7630,7 +7684,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	Widget shell = XtParent(text_popup_w);
 	XtAddCallback(shell, XtNpopdownCallback, DestroyThisCB, shell);
 
-	bool has_arg = (callback_word.length() > 0);
+	bool has_arg = (word.length() > 0);
 	bool has_watch = has_arg && gdb->has_watch_command();
 	set_text_popup_label(TextItms::Print,    current_arg, has_arg);
 	set_text_popup_label(TextItms::Disp,     current_arg, has_arg);
@@ -7782,14 +7836,17 @@ void SourceView::srcpopupAct (GUI::Widget *w, GUI::Event* e, GUI::String *, unsi
     {
 	// Determine surrounding token (or selection) and create popup
 
+	static string word;
+
 	long startpos = 0;
 	long endpos   = 0;
 
 	if (pos_found)
-	    callback_word = get_word_at_pos(text_w, pos, startpos, endpos);
+	    word = get_word_at_pos(text_w, pos, startpos, endpos);
+	callback_word = word;
 
 	// Popup specific word menu
-	string current_arg = callback_word;
+	string current_arg = word;
 	shorten(current_arg, max_popup_expr_length);
 	string current_ref_arg = deref(current_arg);
 
@@ -7797,14 +7854,16 @@ void SourceView::srcpopupAct (GUI::Widget *w, GUI::Event* e, GUI::String *, unsi
 	GUI::PopupMenu *text_popup_w;
 	text_popup_w = 
 	    MMcreatePopupMenu(*text_w, "text_popup", text_popup);
-	MMaddCallbacks(text_popup, &callback_word);
+	// FIXME: &word is ignored.  We copied its value to the static
+	// area callback_word.
+	MMaddCallbacks(text_popup, &word);
 	MMaddHelpCallback(text_popup, sigc::ptr_fun(ImmediateHelpCB));
 	InstallButtonTips(text_popup_w);
 
 	// The popup menu is destroyed immediately after having popped down.
 	text_popup_w->signal_unmap().connect(sigc::bind(sigc::ptr_fun(DestroyThisCB), text_popup_w));
 
-	bool has_arg = (callback_word.length() > 0);
+	bool has_arg = (word.length() > 0);
 	bool has_watch = has_arg && gdb->has_watch_command();
 	set_text_popup_label(TextItms::Print,    current_arg, has_arg);
 	set_text_popup_label(TextItms::Disp,     current_arg, has_arg);
@@ -7838,6 +7897,7 @@ void SourceView::srcpopupAct (GUI::Widget *w, GUI::Event* e, GUI::String *, unsi
 }
 #endif
 
+
 #if defined(IF_XM)
 void SourceView::doubleClickAct(Widget w, XEvent *e, String *params, 
 				Cardinal *num_params)
@@ -7855,8 +7915,8 @@ void SourceView::doubleClickAct(Widget w, XEvent *e, String *params,
 
     XButtonEvent* event = &e->xbutton;
 
-    int x = (int)event->x;
-    int y = (int)event->y;
+    int x = event->x;
+    int y = event->y;
     bool control = ((event->state & ControlMask) != 0);
 
     if (w != source_text_w && w != code_text_w)
@@ -7892,8 +7952,7 @@ void SourceView::doubleClickAct(Widget w, XEvent *e, String *params,
     bool in_text;
     static int bp_nr;
     static string address;
-    assert(w == text_w);
-    bool pos_found = get_line_of_pos(text_w, pos, line_nr, address, in_text, bp_nr);
+    bool pos_found = get_line_of_pos(w, pos, line_nr, address, in_text, bp_nr);
 
     if (!pos_found)
 	return;
@@ -8170,6 +8229,7 @@ void SourceView::setArgAct(GUI::Widget *w, GUI::Event *, GUI::String *, unsigned
 }
 #endif
 
+
 //-----------------------------------------------------------------------------
 // Breakpoint selection
 //----------------------------------------------------------------------------
@@ -8392,8 +8452,8 @@ void SourceView::NewWatchpointCB(Widget w, XtPointer, XtPointer)
 
 	arg = 0;
 	Widget text = CreateComboBox(box, "text", args, arg);
-
 	tie_combo_box_to_history(text, watch_history_filter);
+
 	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, 
 		      XtPointer(0));
 	XtAddCallback(dialog, XmNokCallback, NewWatchpointDCB, 
@@ -8527,9 +8587,10 @@ struct BreakpointPropertiesInfo {
 	  enable(0), disable(0), temp(0), del(0),
 	  ignore(0), condition(0), record(0), end(0), edit(0), editor(0),
 #if defined(IF_XM)
-	  timer(0),
-#endif
+	  timer(0), spin_locked(false), ignore_spin_update(0),
+#else
 	  spin_locked(false), ignore_spin_update(0),
+#endif
 	  sync_commands(false), next(all)
     {
 	all = this;
@@ -8558,7 +8619,7 @@ private:
 BreakpointPropertiesInfo *BreakpointPropertiesInfo::all = 0;
 
 #if defined(IF_XM)
-void SourceView::DeleteInfoCB(Widget, XtPointer client_data,
+void SourceView::DeleteInfoCB(Widget, XtPointer client_data, 
 			      XtPointer call_data)
 {
     BreakpointPropertiesInfo *info = 
@@ -8744,7 +8805,6 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
     XtVaSetValues(info->dialog, XmNdialogTitle,
 		  title.xmstring(), XtPointer(0));
 
-
     // Set values
     string commands = "";
     for (i = 0; i < bp->commands().size(); i++)
@@ -8923,7 +8983,6 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
     MString title = string(DDD_NAME) + ": Properties: " + label;
     info->dialog->set_title(title.xmstring());
 
-
     // Set values
     string commands = "";
     for (i = 0; i < bp->commands().size(); i++)
@@ -9089,7 +9148,9 @@ void SourceView::getBreakpointNumbers(IntArray& breakpoint_nrs)
 
 #if defined(IF_XM)
 // Edit breakpoint properties
-void SourceView::EditBreakpointPropertiesCB(Widget, XtPointer client_data, XtPointer)
+void SourceView::EditBreakpointPropertiesCB(Widget, 
+					    XtPointer client_data, 
+					    XtPointer)
 {
     IntArray breakpoint_nrs;
     if (client_data == 0)
@@ -9158,6 +9219,7 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, Widget /* origin */)
     Widget old_label = 
 	XmSelectionBoxGetChild(info->dialog, XmDIALOG_SELECTION_LABEL);
     XtUnmanageChild(old_label);
+
     Delay::register_shell(info->dialog);
 
     MMDesc commands_menu[] =
@@ -9208,7 +9270,7 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, Widget /* origin */)
 
     if (app_data.flat_dialog_buttons)
     {
-	for (MMDesc *item = enabled_menu; item != 0 && item->name; item++)
+	for (MMDesc *item = enabled_menu; item != 0 && item->name != 0; item++)
 	{
 	    if ((item->type & MMTypeMask) == MMPush)
 		item->type = (MMFlatPush | (item->type & ~MMTypeMask));
@@ -9427,9 +9489,8 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, GUI::Widget * /* origin */)
 
 // Set breakpoint condition
 #if defined(IF_XM)
-
 void SourceView::SetBreakpointConditionCB(Widget w,
-					  XtPointer client_data,
+					  XtPointer client_data, 
 					  XtPointer call_data)
 {
     XmAnyCallbackStruct *cbs = (XmAnyCallbackStruct *)call_data;
@@ -9472,8 +9533,8 @@ void SourceView::SetBreakpointConditionCB(GUI::Widget *w,
 #if defined(IF_XM)
 // Apply all property changes
 void SourceView::ApplyBreakpointPropertiesCB(Widget w,
-					     XtPointer client_data,
-					     XtPointer call_data)
+					    XtPointer client_data, 
+					    XtPointer call_data)
 { 
     BreakpointPropertiesInfo *info = 
 	(BreakpointPropertiesInfo *)client_data;
@@ -9490,7 +9551,7 @@ void SourceView::ApplyBreakpointPropertiesCB(Widget w,
     if (XtIsManaged(XtParent(info->editor)))
     {
 	// Apply commands
-	EditBreakpointCommandsCB(w, info, XtPointer(0));
+	EditBreakpointCommandsCB(w, client_data, call_data);
     }
 }
 #else
@@ -9518,7 +9579,7 @@ void SourceView::ApplyBreakpointPropertiesCB(GUI::Widget *w, BreakpointPropertie
 #if defined(IF_XM)
 // Set breakpoint ignore count
 void SourceView::SetBreakpointIgnoreCountCB(Widget w,
-					    XtPointer client_data,
+					    XtPointer client_data, 
 					    XtPointer call_data)
 {
     XmAnyCallbackStruct *cbs = (XmAnyCallbackStruct *)call_data;
@@ -9565,13 +9626,16 @@ void SourceView::SetBreakpointIgnoreCountCB(GUI::Widget *w,
 #endif
 
 #if defined(IF_XM)
-void SourceView::SetBreakpointIgnoreCountNowCB(XtPointer client_data, XtIntervalId *)
+void SourceView::SetBreakpointIgnoreCountNowCB(XtPointer client_data, 
+					       XtIntervalId *id)
 {
     CommandGroup cg;
 
     BreakpointPropertiesInfo *info = 
 	(BreakpointPropertiesInfo *)client_data;
 
+    assert (info->timer == *id);
+    (void) id;			// Use it
     info->timer = 0;
 
     String _count = XmTextFieldGetString(info->ignore);
@@ -9599,9 +9663,11 @@ bool SourceView::SetBreakpointIgnoreCountNowCB(BreakpointPropertiesInfo *info)
 }
 #endif
 
+
 #if defined(IF_XM)
 // Make breakpoint temporary
-void SourceView::MakeBreakpointsTempCB(Widget, XtPointer client_data, XtPointer)
+void SourceView::MakeBreakpointsTempCB(Widget, XtPointer client_data, 
+				       XtPointer)
 {
     BreakpointPropertiesInfo *info = 
 	(BreakpointPropertiesInfo *)client_data;
@@ -9609,8 +9675,10 @@ void SourceView::MakeBreakpointsTempCB(Widget, XtPointer client_data, XtPointer)
     gdb_command("enable delete " + numbers(info->nrs));
 }
 
+
 // Delete Breakpoint
-void SourceView::DeleteBreakpointsCB(Widget w, XtPointer client_data, XtPointer)
+void SourceView::DeleteBreakpointsCB(Widget w, XtPointer client_data, 
+				     XtPointer)
 {
     BreakpointPropertiesInfo *info = 
 	(BreakpointPropertiesInfo *)client_data;
@@ -9619,7 +9687,8 @@ void SourceView::DeleteBreakpointsCB(Widget w, XtPointer client_data, XtPointer)
 }
 
 // Enable Breakpoints
-void SourceView::EnableBreakpointsCB(Widget w, XtPointer client_data, XtPointer)
+void SourceView::EnableBreakpointsCB(Widget w, XtPointer client_data,
+				     XtPointer)
 {
     BreakpointPropertiesInfo *info = 
 	(BreakpointPropertiesInfo *)client_data;
@@ -9663,7 +9732,9 @@ void SourceView::DisableBreakpointsCB(BreakpointPropertiesInfo *info)
 
 #if defined(IF_XM)
 // Record breakpoint commands
-void SourceView::RecordBreakpointCommandsCB(Widget w, XtPointer client_data, XtPointer)
+void SourceView::RecordBreakpointCommandsCB(Widget w,
+					    XtPointer client_data, 
+					    XtPointer)
 {
     BreakpointPropertiesInfo *info = 
 	(BreakpointPropertiesInfo *)client_data;
@@ -9996,9 +10067,12 @@ void SourceView::set_bp_commands(IntArray& nrs, const StringArray& commands,
 }
 #endif
 
+
 #if defined(IF_XM)
 // Edit breakpoint commands
-void SourceView::EditBreakpointCommandsCB(Widget w, XtPointer client_data, XtPointer)
+void SourceView::EditBreakpointCommandsCB(Widget w,
+					  XtPointer client_data, 
+					  XtPointer)
 {
     BreakpointPropertiesInfo *info = 
 	(BreakpointPropertiesInfo *)client_data;
@@ -10098,7 +10172,9 @@ void SourceView::edit_breakpoint_properties(int bp_nr)
 //----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-void SourceView::BreakpointCmdCB(Widget, XtPointer client_data, XtPointer)
+void SourceView::BreakpointCmdCB(Widget,
+				 XtPointer client_data,
+				 XtPointer)
 {
     if (breakpoint_list_w == 0)
 	return;
@@ -10439,8 +10515,11 @@ void SourceView::process_breakpoints(string& info_breakpoints_output)
 }
 
 #if defined(IF_XM)
-void SourceView::UpdateBreakpointButtonsCB(Widget, XtPointer, XtPointer)
+void SourceView::UpdateBreakpointButtonsCB(Widget, XtPointer, 
+					   XtPointer call_data)
 {
+    (void) call_data;		// Use it
+
     if (edit_breakpoints_dialog_w == 0)
 	return;
 
@@ -10588,6 +10667,8 @@ void SourceView::EditBreakpointsCB(GUI::Widget *)
     manage_and_raise(edit_breakpoints_dialog_w);
 }
 #endif
+
+
 
 //-----------------------------------------------------------------------------
 // Stack frame selection
@@ -11613,13 +11694,13 @@ void DestroyOldWidgets(WidgetArray& Array){
   const int size = Array.size();
   for (int i = 0; i < size; i++)
     {
-      if (Array[i] != 0) {
 #if defined(IF_XM)
+      if (Array[i] != 0)
 	XtDestroyWidget(Array[i]);
 #else
+      if (Array[i] != 0)
 	delete Array[i];
 #endif
-      }
     }
 }
 
@@ -11716,19 +11797,18 @@ Glib::RefPtr<Gdk::Pixbuf> SourceView::pixmap(unsigned char *bits, int width, int
 
 // Create glyph in FORM_W named NAME from given BITS
 #if defined(IF_XM)
-
 Widget SourceView::create_glyph(Widget form_w,
 				const _XtString name,
 				unsigned char *bits,
 				int width, int height)
 {
     // Get background color from text
+    Pixel background;
     Widget text_w;
     if (form_w == code_form_w)
 	text_w = code_text_w;
     else
 	text_w = source_text_w;
-    Pixel background;
     XtVaGetValues(text_w, XmNbackground, &background, XtPointer(0));
 
     // Create push button
@@ -11755,6 +11835,7 @@ Widget SourceView::create_glyph(Widget form_w,
     XtSetArg(args[arg], XmNarmColor,           background);    arg++;
     XtSetArg(args[arg], XmNbackground,         background);    arg++;
     Widget w = verify(XmCreatePushButton(form_w, XMST(name), args, arg));
+
     if (XtIsRealized(form_w))
 	XtRealizeWidget(w);
 
@@ -11771,8 +11852,8 @@ Widget SourceView::create_glyph(Widget form_w,
     XtSetValues(w, args, arg);
 
     XtAddCallback(w, XmNactivateCallback, ActivateGlyphCB, 0);
-    InstallButtonTips(w);
 
+    InstallButtonTips(w);
     return w;
 }
 #endif
@@ -11964,6 +12045,8 @@ bool SourceView::update_source_glyphs = false;
 // Update glyphs for widget GLYPH (0: all)
 void SourceView::update_glyphs(Widget glyph)
 {
+    static XtWorkProcId update_glyph_id = 0;
+
     if (glyph == 0)
 	update_source_glyphs = update_code_glyphs = true;
     else if (is_source_widget(glyph))
@@ -11971,11 +12054,8 @@ void SourceView::update_glyphs(Widget glyph)
     else if (is_code_widget(glyph))
 	update_code_glyphs = true;
 
-    static XtWorkProcId update_glyph_id = 0;
-
-    if (update_glyph_id != 0) {
+    if (update_glyph_id != 0)
 	XtRemoveTimeOut(update_glyph_id);
-    }
 
     // Chris van Engelen reports:
     // When reading in a new file, there is an infinite loop involving
@@ -12005,6 +12085,7 @@ void SourceView::update_glyphs(GUI::Widget *glyph)
     update_glyphs_now();
 }
 #endif
+
 
 #if defined(IF_XM)
 // Invoked by scrolling keys
@@ -12050,11 +12131,14 @@ void SourceView::CheckScrollCB(void)
 #endif
 
 #if defined(IF_XM)
-void SourceView::CheckScrollWorkProc(XtPointer client_data, XtIntervalId *)
+void SourceView::CheckScrollWorkProc(XtPointer client_data, XtIntervalId *id)
 {
+    (void) id;			// Use it
+
     XtIntervalId *timer = (XtIntervalId *)client_data;
     if (timer != 0)
     {
+	assert(*timer == *id);
 	*timer = 0;
     }
 
@@ -12097,6 +12181,7 @@ bool SourceView::CheckScrollWorkProc(GUI::connection *timer)
     return false;
 }
 #endif
+
 
 // Pixel offsets
 
@@ -12362,7 +12447,6 @@ void SourceView::CreateGlyphsNow(void)
 }
 #endif
 
-
 #if defined(IF_XM)
 // Return position POS of glyph GLYPH in X/Y.  Return true iff displayed.
 bool SourceView::glyph_pos_to_xy(Widget glyph, XmTextPosition pos,
@@ -12395,6 +12479,7 @@ bool SourceView::glyph_pos_to_xy(Widget glyph, XmTextPosition pos,
     return pos_displayed;
 }
 #endif
+
 
 #if defined(IF_XM)
 // Map stop sign GLYPH at position POS.  Get widget from STOPS[COUNT];
@@ -12719,12 +12804,15 @@ Widget SourceView::map_drag_arrow_at(Widget glyph, XmTextPosition pos,
 
 #if defined(IF_XM)
 // Update glyphs after interval
-void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *)
+void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *id)
 {
+    (void) id;			// Use it
+
     // Allow new invocations
     XtIntervalId *proc_id = ((XtIntervalId *) client_data);
     if (proc_id != 0)
     {
+	assert(*proc_id == *id);
 	*proc_id = 0;
     }
 
@@ -13244,13 +13332,13 @@ XmTextPosition SourceView::glyph_position(Widget glyph, XEvent *e,
     XmTextPosition pos;
     if (p[Y] <= 0)
 	pos = 0;		// We may drag outside the text window
-    else {
 #if defined(IF_XM)
+    else
 	pos = XmTextXYToPos(text_w, p[X], p[Y]);
 #else
+    else
 	pos = text_w->xy_to_pos(p[X], p[Y]);
 #endif
-    }
 
     // Stay within viewable text +/-1 row, such that we don't scroll too fast
     short rows = 0;
@@ -13338,7 +13426,6 @@ void SourceView::dragGlyphAct(Widget glyph, XEvent *e, String *params,
     XButtonEvent *event = &e->xbutton;
     translate_glyph_pos(glyph, text_w, event->x, event->y);
     event->window = XtWindow(text_w);
-
     XtCallActionProc(text_w, "source-start-select-word", e, 
 		     params, *num_params);
 
@@ -13840,6 +13927,7 @@ long SourceView::find_pc(const string& pc)
 }
 #endif
 
+
 #if defined(IF_XM)
 // Process `disassemble' output
 void SourceView::refresh_codeOQC(const string& answer, void *client_data)
@@ -13975,6 +14063,7 @@ bool SourceView::function_is_larger_than(string pc, int max_size)
     return false;
 }
 
+
 #if defined(IF_XM)
 // Show program counter location PC
 // If MODE is given, highlight PC line.
@@ -14047,7 +14136,7 @@ void SourceView::show_pc(const string& pc, XmHighlightMode mode,
 	RefreshDisassembleInfo *info = 
 	    new RefreshDisassembleInfo(pc, mode, msg);
 
-	gdb_command(gdb->disassemble_command(start, end), Widget(0),
+	gdb_command(gdb->disassemble_command(start, end), 0,
 		    refresh_codeOQC, (void *)info);
 	return;
     }
@@ -14285,14 +14374,14 @@ void SourceView::set_all_registers(bool set)
 	all_registers = set;
 
 #if defined(IF_XM)
-	if (all_registers_w != (Widget)0)
+	if (all_registers_w)
 	    XmToggleButtonSetState(all_registers_w, (Boolean)set, False);
-	if (int_registers_w != (Widget)0)
+	if (int_registers_w)
 	    XmToggleButtonSetState(int_registers_w, !(Boolean)set, False);
 #else
-	if (all_registers_w != (GUI::Widget*)0)
+	if (all_registers_w)
 	    all_registers_w->set_active(set, false);
-	if (int_registers_w != (GUI::Widget*)0)
+	if (int_registers_w)
 	    int_registers_w->set_active(!set, false);
 #endif
 
@@ -14320,6 +14409,7 @@ string SourceView::bp_pos(int num)
 	return bp->pos();
 }
 
+
 #if defined(IF_XM)
 // True iff we have some selection
 bool SourceView::have_selection()
@@ -14341,6 +14431,8 @@ bool SourceView::have_selection()
 	&& left != right;
 }
 #endif
+
+
 
 //----------------------------------------------------------------------------
 // Session stuff

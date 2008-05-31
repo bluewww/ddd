@@ -87,6 +87,7 @@ static XtResource plot_subresources[] = {
 };
 #endif
 
+
 #if 0
 static const char * const color_keys[Ncolors] =   { 
    "background", "bordercolor", "text", "border", "axis", 

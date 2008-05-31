@@ -1705,11 +1705,11 @@ static MMDesc completion_menu [] =
 {
     GENTRYL("inAllWindows", N_("in All Windows"), MMRadio, 
 	    BIND(dddSetGlobalTabCompletionCB, True), 
-	    sigc::bind(sigc::retype(sigc::ptr_fun(dddSetGlobalTabCompletionCB)), True), 
+	    sigc::bind(sigc::retype(sigc::ptr_fun(dddSetGlobalTabCompletionCB)), true), 
 	    0, &set_global_completion_w),
     GENTRYL("inConsole", N_("in Console Only"), MMRadio,
 	    BIND(dddSetGlobalTabCompletionCB, False),
-	    sigc::bind(sigc::retype(sigc::ptr_fun(dddSetGlobalTabCompletionCB)), False),
+	    sigc::bind(sigc::retype(sigc::ptr_fun(dddSetGlobalTabCompletionCB)), false),
 	    0, &set_console_completion_w),
     MMEnd
 };
@@ -3984,7 +3984,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 
     // If we use annotations, we also want tty mode.
     if (app_data.annotate)
-	app_data.tty_mode = True;
+	app_data.tty_mode = true;
 
     // Close windows explicitly requested
     if (!app_data.separate_data_window && 
@@ -4521,7 +4521,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     // these, so register them again.
     std::cerr << "No equivalent for converters\n";
 
-    Boolean iconic;
+    bool iconic;
 
     std::cerr << "Popup splash screen?\n";
 
@@ -4869,7 +4869,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 
     // If we use annotations, we also want tty mode.
     if (app_data.annotate)
-	app_data.tty_mode = True;
+	app_data.tty_mode = true;
 
     // Close windows explicitly requested
     if (!app_data.separate_data_window && 
@@ -6003,7 +6003,7 @@ static Boolean session_setup_done(XtPointer)
     return False;		// Get called again
 }
 #else
-static Boolean session_setup_done()
+static bool session_setup_done()
 {
     if (emptyCommandQueue() && gdb->isReadyWithPrompt())
     {
@@ -6250,7 +6250,7 @@ static void set_toggle(GUI::Widget *w, bool new_state, bool notify = false)
 	std::cerr << "\"" << w->get_name() << "\" is not bipolar\n";
 }
 
-inline void notify_set_toggle(GUI::Bipolar *w, Boolean new_state)
+inline void notify_set_toggle(GUI::Bipolar *w, bool new_state)
 {
     set_toggle(w, new_state, true);
 }
@@ -6714,7 +6714,7 @@ static bool real_update_options(bool noupd)
 
     set_toggle(led_w, app_data.blink_while_busy);
 
-    Boolean show_grid, snap_to_grid, show_hints, auto_layout, show_annotations;
+    bool show_grid, snap_to_grid, show_hints, auto_layout, show_annotations;
     LayoutMode layout_mode;
     Dimension grid_width, grid_height;
 
@@ -6800,7 +6800,7 @@ static bool real_update_options(bool noupd)
     set_toggle(set_color_buttons_w, button_color_key == 'c');
     set_sensitive(set_color_buttons_w, app_data.button_images);
 
-    Boolean separate = 
+    bool separate = 
 	app_data.separate_data_window || app_data.separate_source_window;
 
     set_toggle(set_toolbars_at_bottom_w, app_data.toolbars_at_bottom);
@@ -7064,11 +7064,19 @@ static void set_settings_title(GUI::Widget *w)
 // Original application resources
 static bool          option_state_saved = false;
 static AppData       initial_app_data;
+#if defined(IF_XM)
 static Boolean       initial_show_grid;
 static Boolean       initial_show_hints;
 static Boolean       initial_show_annotations;
 static Boolean       initial_snap_to_grid;
 static Boolean       initial_auto_layout;
+#else
+static bool       initial_show_grid;
+static bool       initial_show_hints;
+static bool       initial_show_annotations;
+static bool       initial_snap_to_grid;
+static bool       initial_auto_layout;
+#endif
 static Dimension     initial_grid_width;
 static Dimension     initial_grid_height;
 static LayoutMode    initial_layout_mode;
@@ -7397,7 +7405,7 @@ static void ResetDataPreferencesCB(void)
     notify_set_toggle(graph_auto_close_w,
 		      initial_app_data.auto_close_data_window);
 
-    Boolean show_hints, show_annotations;
+    bool show_hints, show_annotations;
 
     show_hints = data_disp->graph_edit->get_show_hints();
     show_annotations = data_disp->graph_edit->get_show_annotations();
@@ -7417,7 +7425,7 @@ static void ResetDataPreferencesCB(void)
     notify_set_toggle(graph_snap_to_grid_w, initial_snap_to_grid);
 
     Dimension grid_width, grid_height;
-    Boolean show_grid;
+    bool show_grid;
     grid_width = data_disp->graph_edit->get_grid_width();
     grid_height = data_disp->graph_edit->get_grid_height();
     show_grid = data_disp->graph_edit->get_show_grid();
@@ -7437,7 +7445,7 @@ static void ResetDataPreferencesCB(void)
 
 static bool data_preferences_changed()
 {
-    Boolean show_hints, show_annotations;
+    bool show_hints, show_annotations;
 #if defined(IF_XM)
     XtVaGetValues(data_disp->graph_edit, 
 		  XtNshowHints,       &show_hints,
@@ -7473,7 +7481,7 @@ static bool data_preferences_changed()
     if (app_data.show_dependent_display_titles != 
 	initial_app_data.show_dependent_display_titles)
 	return true;
-    Boolean show_grid, snap_to_grid, auto_layout;
+    bool show_grid, snap_to_grid, auto_layout;
     LayoutMode layout_mode;
     Dimension grid_width, grid_height;
 
@@ -7522,7 +7530,7 @@ static void ResetStartupPreferencesCB(Widget, XtPointer, XtPointer)
 static void ResetStartupPreferencesCB(void)
 #endif
 {
-    Boolean separate = initial_app_data.separate_data_window 
+    bool separate = initial_app_data.separate_data_window 
 	|| initial_app_data.separate_source_window;
 
     notify_set_toggle(set_separate_windows_w, separate);
@@ -7622,10 +7630,10 @@ static bool startup_preferences_changed()
     if (app_data.splash_screen != initial_app_data.splash_screen)
 	return true;
 
-    Boolean initial_separate = (initial_app_data.separate_data_window ||
-				initial_app_data.separate_source_window);
-    Boolean separate = (app_data.separate_data_window || 
-			app_data.separate_source_window);
+    bool initial_separate = (initial_app_data.separate_data_window ||
+			     initial_app_data.separate_source_window);
+    bool separate = (app_data.separate_data_window || 
+		     app_data.separate_source_window);
     if (separate != initial_separate)
 	return true;
 
@@ -9813,7 +9821,7 @@ static void gdbCutSelectionCB(GUI::Widget *w, DDDWindow client_data)
 {
 
     DDDWindow win = ddd_window(client_data);
-    Boolean success = False;
+    bool success = false;
     // Try data arg
     if (!success && (win == DataWindow || win == CommonWindow))
     {
@@ -9848,7 +9856,7 @@ static void gdbCopySelectionCB(GUI::Widget *w, DDDWindow client_data)
 {
     
     DDDWindow win = ddd_window(client_data);
-    Boolean success = False;
+    bool success = false;
 
     // Try data arg
     if (!success && (win == DataWindow || win == CommonWindow))
@@ -11127,7 +11135,7 @@ static string resource_value(xmlDoc *db, const string& app_name, const char *res
     // Glib::Value<std::string> xrmvalue;
     // xrmvalue.init(Glib::Value<std::string>::value_type());
     DDDValueBase xrmvalue;
-    Bool success = get_resource(db, str_name.chars(), str_class.chars(), xrmvalue);
+    bool success = get_resource(db, str_name.chars(), str_class.chars(), xrmvalue);
     if (!success)
 	return "";		// Resource not found
 

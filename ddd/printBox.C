@@ -28,7 +28,9 @@
 char printBox_rcsid[] = 
     "$Id$";
 
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
+#endif
 
 #include "Box.h"
 #include "printBox.h"

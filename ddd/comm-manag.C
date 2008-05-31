@@ -795,7 +795,7 @@ static void SourceDoneCB(const string& answer, void *qu_data)
 
 // Enqueue init commands
 void init_session(const string& restart, const string& settings, 
-		  Boolean try_source)
+		  bool try_source)
 {
     string init_commands = restart + settings;
 

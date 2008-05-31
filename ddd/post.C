@@ -36,6 +36,7 @@ char post_rcsid[] =
 #include "Delay.h"
 #include "DeleteWCB.h"
 #include "DestroyCB.h"
+#include "editing.h"
 #include "GDBAgent.h"
 #include "HelpCB.h"
 #include "TimeOut.h"
@@ -49,7 +50,6 @@ char post_rcsid[] =
 #include "string-fun.h"
 #include "verify.h"
 #include "wm.h"
-#include "editing.h"
 
 #if defined(IF_XM)
 #include <Xm/Xm.h>
@@ -82,36 +82,30 @@ extern "C" {
 
 #if defined(IF_XM)
 static Widget yn_dialog;
-static Widget yn_dialog_label = NULL;
 #else
 static GUI::Dialog *yn_dialog;
 static GUI::Label *yn_dialog_label = NULL;
 #endif
 
 #if defined(IF_XM)
-
 // Issue CLIENT_DATA as command and unmanage YN_DIALOG.
-void YnCB(Widget dialog, XtPointer client_data, XtPointer call_data)
+void YnCB(Widget dialog, 
+	  XtPointer client_data, 
+	  XtPointer call_data)
 {
     gdbCommandCB(dialog, client_data, call_data);
-
     unpost_gdb_yn();
 }
-
 #else
-
 // Issue CLIENT_DATA as command and unmanage YN_DIALOG.
 void YnCB(GUI::Widget *dialog, const char *command)
 {
     gdbCommandCB(dialog, command);
-
     unpost_gdb_yn();
 }
-
 #endif
 
 #if defined(IF_XM)
-
 Widget post_gdb_yn(string question, Widget w)
 {
     strip_trailing_space(question);
@@ -147,9 +141,7 @@ Widget post_gdb_yn(string question, Widget w)
     manage_and_raise(yn_dialog);
     return yn_dialog;
 }
-
 #else
-
 GUI::Dialog *post_gdb_yn(string question, GUI::Widget *w)
 {
     strip_trailing_space(question);
@@ -183,7 +175,6 @@ GUI::Dialog *post_gdb_yn(string question, GUI::Widget *w)
     manage_and_raise(yn_dialog);
     return yn_dialog;
 }
-
 #endif
 
 void unpost_gdb_yn()
@@ -210,7 +201,6 @@ static GUI::Label *busy_dialog_label = 0;
 #endif
 
 #if defined(IF_XM)
-
 Widget post_gdb_busy(Widget w)
 {
     if (ddd_is_exiting)
@@ -232,9 +222,7 @@ Widget post_gdb_busy(Widget w)
     manage_and_raise(busy_dialog);
     return busy_dialog;
 }
-
 #else
-
 GUI::Dialog *post_gdb_busy(GUI::Widget *w)
 {
     if (ddd_is_exiting)
@@ -252,7 +240,6 @@ GUI::Dialog *post_gdb_busy(GUI::Widget *w)
     manage_and_raise(busy_dialog);
     return busy_dialog;
 }
-
 #endif
 
 void unpost_gdb_busy()
@@ -272,7 +259,6 @@ void unpost_gdb_busy()
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 Widget post_gdb_died(string reason, int state, Widget w)
 {
     strip_trailing_space(reason);
@@ -354,8 +340,8 @@ Widget post_gdb_died(string reason, int state, Widget w)
     }
     else
     {
-	MString msg = rm(gdb->title() + " could not be started.");
 	arg = 0;
+	MString msg = rm(gdb->title() + " could not be started.");
 	XtSetArg(args[arg], XmNmessageString, msg.xmstring()); arg++;
 	dialog = verify(XmCreateErrorDialog(shell, 
 					    XMST("no_debugger_dialog"), 
@@ -369,9 +355,7 @@ Widget post_gdb_died(string reason, int state, Widget w)
     manage_and_raise(dialog);
     return dialog;
 }
-
 #else
-
 GUI::Dialog *post_gdb_died(string reason, int state, GUI::Widget *w)
 {
     strip_trailing_space(reason);
@@ -466,7 +450,6 @@ GUI::Dialog *post_gdb_died(string reason, int state, GUI::Widget *w)
     manage_and_raise(dialog);
     return dialog;
 }
-
 #endif
 
 
@@ -484,7 +467,6 @@ struct PostInfo {
 };
 
 #if defined(IF_XM)
-
 static void GDBOutCB(XtPointer client_data, XtIntervalId *)
 {
     PostInfo *info = (PostInfo *)client_data;
@@ -497,9 +479,7 @@ static void GDBOutCB(XtPointer client_data, XtIntervalId *)
 
     delete info;
 }
-
 #else
-
 static bool GDBOutCB(PostInfo *info)
 {
     if (!info->text.empty())
@@ -512,11 +492,9 @@ static bool GDBOutCB(PostInfo *info)
     delete info;
     return false;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 Widget post_gdb_message(string text, bool prompt, Widget w)
 {
     strip_trailing_space(text);
@@ -544,10 +522,10 @@ Widget post_gdb_message(string text, bool prompt, Widget w)
 	return 0;
     }
 
-    MString mtext = rm(text);
     Arg args[10];
     int arg = 0;
 
+    MString mtext = rm(text);
     XtSetArg(args[arg], XmNmessageString, mtext.xmstring()); arg++;
 
     static Widget gdb_message_dialog = 0;
@@ -571,9 +549,7 @@ Widget post_gdb_message(string text, bool prompt, Widget w)
     manage_and_raise(gdb_message_dialog);
     return gdb_message_dialog;
 }
-
 #else
-
 GUI::Dialog *post_gdb_message(string text, bool prompt, GUI::Widget *w)
 {
     strip_trailing_space(text);
@@ -622,7 +598,6 @@ GUI::Dialog *post_gdb_message(string text, bool prompt, GUI::Widget *w)
     manage_and_raise(gdb_message_dialog);
     return gdb_message_dialog;
 }
-
 #endif
 
 
@@ -631,7 +606,6 @@ GUI::Dialog *post_gdb_message(string text, bool prompt, GUI::Widget *w)
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 Widget post_error(string text, const _XtString name, Widget w)
 {
     strip_trailing_space(text);
@@ -656,11 +630,10 @@ Widget post_error(string text, const _XtString name, Widget w)
     if (name == 0)
 	name = "ddd_error";
 
-    MString mtext = rm(text);
-
     Arg args[10];
     int arg = 0;
 
+    MString mtext = rm(text);
     XtSetArg(args[arg], XmNmessageString, mtext.xmstring()); arg++;
 
     Widget ddd_error = 
@@ -672,9 +645,7 @@ Widget post_error(string text, const _XtString name, Widget w)
     manage_and_raise(ddd_error);
     return ddd_error;
 }
-
 #else
-
 GUI::Dialog *post_error(string text, const char *name, GUI::Widget *w)
 {
     strip_trailing_space(text);
@@ -713,15 +684,14 @@ GUI::Dialog *post_error(string text, const char *name, GUI::Widget *w)
     manage_and_raise(ddd_error);
     return ddd_error;
 }
-
 #endif
+
 
 //-----------------------------------------------------------------------------
 // DDD warnings
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 Widget post_warning(string text, const _XtString name, Widget w)
 {
     strip_trailing_space(text);
@@ -746,10 +716,10 @@ Widget post_warning(string text, const _XtString name, Widget w)
     if (name == 0)
 	name = "ddd_warning";
 
-    MString mtext = rm(text);
     Arg args[10];
     int arg = 0;
 
+    MString mtext = rm(text);
     XtSetArg(args[arg], XmNmessageString, mtext.xmstring()); arg++;
 
     Widget ddd_warning = 
@@ -761,9 +731,7 @@ Widget post_warning(string text, const _XtString name, Widget w)
     manage_and_raise(ddd_warning);
     return ddd_warning;
 }
-
 #else
-
 GUI::Dialog *post_warning(string text, const char *name, GUI::Widget *w)
 {
     strip_trailing_space(text);
@@ -806,5 +774,4 @@ GUI::Dialog *post_warning(string text, const char *name, GUI::Widget *w)
     manage_and_raise(ddd_warning);
     return ddd_warning;
 }
-
 #endif

@@ -68,7 +68,6 @@ char plotter_rcsid[] =
 #include <fstream>
 
 #if defined(IF_XM)
-
 #include <Xm/Command.h>
 #include <Xm/MainW.h>
 #include <Xm/MessageB.h>
@@ -81,11 +80,8 @@ char plotter_rcsid[] =
 #include <Xm/Text.h>
 #include <Xm/TextF.h>
 #include <Xm/ToggleB.h>
-
 #else
-
 #include <GUI/Entry.h>
-
 #endif
 
 static void TraceInputHP (Agent *source, void *, void *call_data);
@@ -152,29 +148,25 @@ struct PlotWindowInfo {
     string settings_file;	 // File to get settings from
     StatusDelay *settings_delay; // Delay while getting settings
 
+#if defined(IF_XM)
     // Constructor - just initialize
     PlotWindowInfo()
-	: source(0),
-	  window_name(""),
-	  plotter(0),
-	  area(0),
-	  shell(0),
-	  working_dialog(0),
-	  swallower(0),
-	  vsb(0),
-	  hsb(0),
-	  command(0),
-	  command_dialog(0), 
-	  export_dialog(0),
-	  active(false),
-	  settings(""),
-#if defined(IF_XM)
-	  swallow_timer(0), 
-	  settings_timer(0),
-#endif
-	  settings_file(""),
-	  settings_delay(0)
+	: source(0), window_name(""),
+	  plotter(0), area(0), shell(0), working_dialog(0), swallower(0),
+	  vsb(0), hsb(0), command(0), command_dialog(0), 
+	  export_dialog(0), active(false), swallow_timer(0), 
+	  settings(""), settings_timer(0), settings_file(""), settings_delay(0)
     {}
+#else
+    // Constructor - just initialize
+    PlotWindowInfo()
+	: source(0), window_name(""),
+	  plotter(0), area(0), shell(0), working_dialog(0), swallower(0),
+	  vsb(0), hsb(0), command(0), command_dialog(0), 
+	  export_dialog(0), active(false),
+	  settings(""), settings_file(""), settings_delay(0)
+    {}
+#endif
 
 private:
     PlotWindowInfo(const PlotWindowInfo&);
@@ -386,7 +378,6 @@ static void slurp_file(const string& filename, string& target)
 }
 
 #if defined(IF_XM)
-
 static void GetPlotSettingsCB(XtPointer client_data, XtIntervalId *id)
 {
     (void) id;			// Use it
@@ -418,9 +409,7 @@ static void GetPlotSettingsCB(XtPointer client_data, XtIntervalId *id)
 			    GetPlotSettingsCB, XtPointer(plot));
     }
 }
-
 #else
-
 static bool GetPlotSettingsCB(PlotWindowInfo *plot)
 {
     // plot->settings_timer.disconnect();
@@ -447,20 +436,18 @@ static bool GetPlotSettingsCB(PlotWindowInfo *plot)
     }
     return false;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void configure_options(PlotWindowInfo *plot, MMDesc *menu, 
 			      const string& settings)
 {
-    for (int i = 0; menu[i].name; i++)
+    for (int i = 0; menu[i].name != 0; i++)
     {
 	if ((menu[i].type & MMTypeMask) != MMToggle)
 	    continue;
 
-	string name = (const char *)menu[i].name;
+	string name = menu[i].name;
 
 	const string s1 = "*" + name;
 	Widget w = XtNameToWidget(plot->shell, s1.chars());
@@ -488,9 +475,7 @@ static void configure_options(PlotWindowInfo *plot, MMDesc *menu,
 	XmToggleButtonSetState(w, set, False);
     }
 }
-
 #else
-
 static void configure_options(PlotWindowInfo *plot, MMDesc *menu, 
 			      const string& settings)
 {
@@ -530,11 +515,9 @@ static void configure_options(PlotWindowInfo *plot, MMDesc *menu,
 #endif
     }
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void configure_plot(PlotWindowInfo *plot)
 {
     if (plot->plotter == 0)
@@ -544,12 +527,12 @@ static void configure_plot(PlotWindowInfo *plot)
 
     // Set up plot menu
     int i;
-    for (i = 0; plot_menu[i].name; i++)
+    for (i = 0; plot_menu[i].name != 0; i++)
     {
 	if ((plot_menu[i].type & MMTypeMask) != MMToggle)
 	    continue;
 
-	string name = (const char *)plot_menu[i].name;
+	string name = plot_menu[i].name;
 
 	const string s1 = "*" + name;
 	Widget w = XtNameToWidget(plot->shell, s1.chars());
@@ -636,12 +619,12 @@ static void configure_plot(PlotWindowInfo *plot)
     configure_options(plot, scale_menu,   plot->settings);
 
     // Get style
-    for (i = 0; plot_menu[i].name; i++)
+    for (i = 0; plot_menu[i].name != 0; i++)
     {
 	if ((plot_menu[i].type & MMTypeMask) != MMToggle)
 	    continue;
 
-	string name = (const char *)plot_menu[i].name;
+	string name = plot_menu[i].name;
 
 	const string s1 = "*" + name;
 	Widget w = XtNameToWidget(plot->shell, s1.chars());
@@ -667,9 +650,7 @@ static void configure_plot(PlotWindowInfo *plot)
     XtVaSetValues(plot->vsb, XmNvalue, rot_x, XtPointer(0));
     XtVaSetValues(plot->hsb, XmNvalue, rot_z, XtPointer(0));
 }
-
 #else
-
 static void configure_plot(PlotWindowInfo *plot)
 {
     if (plot->plotter == 0)
@@ -807,7 +788,6 @@ static void configure_plot(PlotWindowInfo *plot)
     XtVaSetValues(plot->hsb, XmNvalue, rot_z, XtPointer(0));
 #endif
 }
-
 #endif
 
 
@@ -817,7 +797,6 @@ static void configure_plot(PlotWindowInfo *plot)
 //-------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 // Start plot
 static void popup_plot_shell(PlotWindowInfo *plot)
 {
@@ -848,9 +827,7 @@ static void popup_plot_shell(PlotWindowInfo *plot)
 	plot->active = true;
     }
 }
-
 #else
-
 // Start plot
 static void popup_plot_shell(PlotWindowInfo *plot)
 {
@@ -881,11 +858,9 @@ static void popup_plot_shell(PlotWindowInfo *plot)
 	plot->active = true;
     }
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Swallow WINDOW
 static void swallow(PlotWindowInfo *plot, Window window)
 {
@@ -905,19 +880,15 @@ static void swallow(PlotWindowInfo *plot, Window window)
 
     popup_plot_shell(plot);
 }
-
 #else
-
 // Swallow WINDOW
 static void swallow(PlotWindowInfo *plot, GUI::RefPtr<GUI::Window> window)
 {
     std::cerr << "swallow not implemented\n";
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Swallow new GNUPLOT window; search from window created on root.
 static void SwallowCB(Widget swallower, XtPointer client_data, 
 		      XtPointer call_data)
@@ -948,19 +919,15 @@ static void SwallowCB(Widget swallower, XtPointer client_data,
     if (window != None)
 	swallow(plot, window);
 }
-
 #else
-
 // Swallow new GNUPLOT window; search from window created on root.
 static void SwallowCB(GUI::Widget *swallower)
 {
     std::cerr << "SwallowCB not implemented\n";
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Swallow new GNUPLOT window; search from root window (expensive).
 static void SwallowTimeOutCB(XtPointer client_data, XtIntervalId *id)
 {
@@ -996,19 +963,15 @@ static void SwallowTimeOutCB(XtPointer client_data, XtIntervalId *id)
     if (window != None)
 	swallow(plot, window);
 }
-
 #else
-
 // Swallow new GNUPLOT window; search from root window (expensive).
 static void SwallowTimeOutCB(PlotWindowInfo *plot)
 {
     std::cerr << "SwallowTimeOutCB not implemented\n";
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Swallow again after window has gone.  This happens while printing.
 static void SwallowAgainCB(Widget swallower, XtPointer client_data, XtPointer)
 {
@@ -1026,15 +989,12 @@ static void SwallowAgainCB(Widget swallower, XtPointer client_data, XtPointer)
 			app_data.plot_window_delay, 
 			SwallowTimeOutCB, XtPointer(plot));
 }
-
 #else
-
 // Swallow again after window has gone.  This happens while printing.
 static void SwallowAgainCB(GUI::Widget *swallower, PlotWindowInfo *plot)
 {
     std::cerr << "SwallowAgainCB not implemented\n";
 }
-
 #endif
 
 
@@ -1048,7 +1008,6 @@ static void popdown_plot_shell(PlotWindowInfo *plot)
     entered = true;
 
 #if defined(IF_XM)
-
     // Manage dialogs
     if (plot->working_dialog != 0)
 	XtUnmanageChild(plot->working_dialog);
@@ -1084,7 +1043,6 @@ static void popdown_plot_shell(PlotWindowInfo *plot)
 	delete plot->settings_delay;
 	plot->settings_delay = 0;
     }
-
 #endif
 
     plot->settings = "";
@@ -1095,7 +1053,6 @@ static void popdown_plot_shell(PlotWindowInfo *plot)
 }
 
 #if defined(IF_XM)
-
 static void CancelPlotCB(Widget, XtPointer client_data, XtPointer)
 {
     static bool entered = false;
@@ -1130,9 +1087,7 @@ static void CancelPlotCB(Widget, XtPointer client_data, XtPointer)
 
     entered = false;
 }
-
 #else
-
 static void CancelPlotCB(PlotWindowInfo *plot)
 {
     static bool entered = false;
@@ -1168,25 +1123,20 @@ static void CancelPlotCB(PlotWindowInfo *plot)
 
     entered = false;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void DeletePlotterCB(XtPointer client_data, XtIntervalId *)
 {
     Agent *plotter = (Agent *)client_data;
     delete plotter;
 }
-
 #else
-
 static bool DeletePlotterCB(Agent *plotter)
 {
     delete plotter;
     return false;
 }
-
 #endif
 
 static void DeletePlotterHP(Agent *plotter, void *client_data, void *)
@@ -1582,7 +1532,6 @@ static void ReplotCB(Widget, XtPointer client_data, XtPointer)
 //-------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 // Selection from Command widget
 static void DoPlotCommandCB(Widget, XtPointer client_data, XtPointer call_data)
 {
@@ -1594,9 +1543,7 @@ static void DoPlotCommandCB(Widget, XtPointer client_data, XtPointer call_data)
 
     send_and_replot(plot, cmd);
 }
-
 #else
-
 // Selection from Command widget
 static void DoPlotCommandCB(GUI::Entry *w, PlotWindowInfo *plot);
 {
@@ -1605,7 +1552,6 @@ static void DoPlotCommandCB(GUI::Entry *w, PlotWindowInfo *plot);
 
     send_and_replot(plot, cmd);
 }
-
 #endif
 
 // Apply button
@@ -1640,7 +1586,6 @@ static void EnableApplyCB(Widget, XtPointer client_data, XtPointer call_data)
 }
 
 #if defined(IF_XM)
-
 static void PlotCommandCB(Widget, XtPointer client_data, XtPointer)
 {
     PlotWindowInfo *plot = (PlotWindowInfo *)client_data;
@@ -1685,9 +1630,7 @@ static void PlotCommandCB(Widget, XtPointer client_data, XtPointer)
 
     manage_and_raise(plot->command_dialog);
 }
-
 #else
-
 static void PlotCommandCB(PlotWindowInfo *plot)
 {
     if (plot->command_dialog == 0)
@@ -1725,8 +1668,8 @@ static void PlotCommandCB(PlotWindowInfo *plot)
 
     manage_and_raise(plot->command_dialog);
 }
-
 #endif
+
 
 //-------------------------------------------------------------------------
 // Export

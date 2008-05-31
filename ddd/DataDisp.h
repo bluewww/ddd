@@ -92,8 +92,8 @@ enum DeferMode {
 };
 
 struct GraphEditLayoutState {
-    Boolean autoLayout;
-    Boolean snapToGrid;
+    bool autoLayout;
+    bool snapToGrid;
 };
 
 class NewDisplayInfo;

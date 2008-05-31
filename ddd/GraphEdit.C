@@ -2417,7 +2417,7 @@ void GUIGraphEdit::moveTo(GraphNode *node,
 
 #if defined(IF_XM)
 // Call ``selection changed'' callbacks
-static void selectionChanged(Widget w, XEvent *event, Boolean double_click)
+static void selectionChanged(Widget w, XEvent *event, bool double_click)
 {
     const GraphEditWidget _w  = GraphEditWidget(w);
     Graph* graph              = _w->res_.graphEdit.graph;
@@ -2431,7 +2431,7 @@ static void selectionChanged(Widget w, XEvent *event, Boolean double_click)
 }
 #else
 // Call ``selection changed'' callbacks
-void GUIGraphEdit::selectionChanged(GUI::Event *event, Boolean double_click)
+void GUIGraphEdit::selectionChanged(GUI::Event *event, bool double_click)
 {
 
     GraphEditSelectionChangedInfo info;
@@ -2448,7 +2448,7 @@ void GUIGraphEdit::selectionChanged(GUI::Event *event, Boolean double_click)
 
 #if defined(IF_XM)
 // Select all nodes
-static Boolean _SelectAll(Widget w, XEvent *, String *, Cardinal *)
+static bool _SelectAll(Widget w, XEvent *, String *, Cardinal *)
 {
     const GraphEditWidget _w = GraphEditWidget(w);
     const Graph* graph       = _w->res_.graphEdit.graph;
@@ -2469,9 +2469,9 @@ static Boolean _SelectAll(Widget w, XEvent *, String *, Cardinal *)
 }
 #else
 // Select all nodes
-Boolean GUIGraphEdit::_SelectAll(void)
+bool GUIGraphEdit::_SelectAll(void)
 {
-    Boolean changed = False;
+    bool changed = false;
     for (GraphNode *node = graph->firstVisibleNode(); node != 0;
 	node = graph->nextVisibleNode(node))
     {
@@ -2506,12 +2506,12 @@ void GUIGraphEdit::SelectAll(void)
 
 #if defined(IF_XM)
 // Unselect all nodes
-static Boolean _UnselectAll(Widget w, XEvent *, String *, Cardinal *)
+static bool _UnselectAll(Widget w, XEvent *, String *, Cardinal *)
 {
     const GraphEditWidget _w = GraphEditWidget(w);
     const Graph* graph       = _w->res_.graphEdit.graph;
 
-    Boolean changed = False;
+    bool changed = false;
     for (GraphNode *node = graph->firstNode(); node != 0;
 	node = graph->nextNode(node))
     {
@@ -2581,7 +2581,7 @@ static void find_connected_nodes(GraphNode *root, GraphNodePointerArray& nodes)
 
 #if defined(IF_XM)
 // Select an entire subgraph
-static Boolean select_graph(Widget w, GraphNode *root, Boolean set = True)
+static bool select_graph(Widget w, GraphNode *root, bool set = true)
 {
     // Find all connected nodes
     GraphNodePointerArray nodes;
@@ -2604,7 +2604,7 @@ static Boolean select_graph(Widget w, GraphNode *root, Boolean set = True)
 }
 #else
 // Select an entire subgraph
-Boolean GUIGraphEdit::select_graph(GraphNode *root, Boolean set)
+bool GUIGraphEdit::select_graph(GraphNode *root, Boolean set)
 {
     // Find all connected nodes
     GraphNodePointerArray nodes;
@@ -2628,12 +2628,12 @@ Boolean GUIGraphEdit::select_graph(GraphNode *root, Boolean set)
 #endif
 
 #if defined(IF_XM)
-inline Boolean unselect_graph(Widget w, GraphNode *root)
+inline bool unselect_graph(Widget w, GraphNode *root)
 {
     return select_graph(w, root, False);
 }
 #else
-Boolean GUIGraphEdit::unselect_graph(GraphNode *root)
+bool GUIGraphEdit::unselect_graph(GraphNode *root)
 {
     return select_graph(root, false);
 }
@@ -2699,7 +2699,7 @@ static void _SelectOrMove(Widget w, XEvent *event, String *params,
     endAction   = p;
 
     Time t = time(event);
-    Boolean double_click = 
+    bool double_click = 
 	(Time(t - lastSelectTime) <= Time(XtGetMultiClickTime(XtDisplay(w))));
     lastSelectTime = t;
 
@@ -2711,7 +2711,7 @@ static void _SelectOrMove(Widget w, XEvent *event, String *params,
 	info.graph        = graph;
 	info.node         = node;
 	info.event        = event;
-	info.doit         = True;
+	info.doit         = true;
 	info.double_click = double_click;
 
 	XtCallCallbacks(w, XtNpreSelectionCallback, XtPointer(&info));
@@ -2832,7 +2832,7 @@ void GUIGraphEdit::_SelectOrMove(GUI::Event *event,
     Time t = time(event);
     // Boolean double_click = 
     //	(Time(t - lastSelectTime) <= Time(XtGetMultiClickTime(XtDisplay(w))));
-    Boolean double_click = 
+    bool double_click = 
 	(Time(t - lastSelectTime) <= Time(200));
     lastSelectTime = t;
 
@@ -2848,7 +2848,7 @@ void GUIGraphEdit::_SelectOrMove(GUI::Event *event,
 	info.graph        = graph;
 	info.node         = node;
 	info.event        = event;
-	info.doit         = True;
+	info.doit         = true;
 	info.double_click = double_click;
 
 	signal_pre_selection().emit(&info);

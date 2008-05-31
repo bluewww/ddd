@@ -29,13 +29,12 @@
 #ifndef _DDD_post_h
 #define _DDD_post_h
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
 #include "strclass.h"
 #include "bool.h"
-
 #if defined(IF_XM)
 #include <X11/Intrinsic.h>
 #else

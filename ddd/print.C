@@ -77,9 +77,7 @@ char print_rcsid[] =
 #include <Xm/TextF.h>
 #include <Xm/PushB.h>
 #include <Xm/FileSB.h>
-#endif
-
-#if !defined(IF_XM)
+#else
 #include <GUI/Widget.h>
 #include <GUI/Dialog.h>
 #include <GUI/Entry.h>
@@ -166,10 +164,9 @@ static int print_to_file(const string& filename, PrintGC& gc,
 	graph->print_plots(filename, graphGC);
     }
 #else
-#ifdef NAG_ME
-#warning Printing not implemented
+    std::cerr << "Printing not implemented\n.";
 #endif
-#endif
+
     return 0;
 }
 
@@ -305,12 +302,12 @@ static GUI::Dialog    *paper_size_dialog = 0;
 #endif
 
 #if defined(IF_XM)
-static Widget  a4_paper_size;
-static Widget  a3_paper_size;
-static Widget  letter_paper_size;
-static Widget  legal_paper_size;
-static Widget  executive_paper_size;
-static Widget  custom_paper_size;
+static Widget          a4_paper_size;
+static Widget          a3_paper_size;
+static Widget          letter_paper_size;
+static Widget          legal_paper_size;
+static Widget          executive_paper_size;
+static Widget          custom_paper_size;
 #else
 static GUI::CheckButton * a4_paper_size;
 static GUI::CheckButton * a3_paper_size;
@@ -320,13 +317,13 @@ static GUI::CheckButton * executive_paper_size;
 static GUI::CheckButton * custom_paper_size;
 #endif
 
-// Go and print according to local state
 
 #if defined(IF_XM)
-void PrintAgainCB(Widget w, XtPointer client_data, XtPointer call_data)
+// Go and print according to local state
+void PrintAgainCB(Widget w, XtPointer client_data, XtPointer)
 {
-    const bool unmanage = ((long)client_data & 1);
-    const bool override = ((long)client_data & 2);
+    const bool unmanage = ((int)(long)client_data & 1);
+    const bool override = ((int)(long)client_data & 2);
 
     switch (print_target)
     {
@@ -350,13 +347,13 @@ void PrintAgainCB(Widget w, XtPointer client_data, XtPointer call_data)
 	if (print_to_printer(command, print_postscript_gc, 
 			     print_selected_only, print_displays) == 0)
 	{
-	    if (unmanage && print_dialog != 0) {
 #if defined(IF_XM)
+	    if (unmanage && print_dialog != 0)
 		XtUnmanageChild(print_dialog);
 #else
+	    if (unmanage && print_dialog != 0)
 		print_dialog->hide();
 #endif
-	    }
 	}
 
 	break;
@@ -394,13 +391,13 @@ void PrintAgainCB(Widget w, XtPointer client_data, XtPointer call_data)
 	    // File does not exist, is special, or override is on
 	    if (print_to_file(f, gc, print_selected_only, print_displays) == 0)
 	    {
-		if (unmanage && print_dialog != 0) {
 #if defined(IF_XM)
+		if (unmanage && print_dialog != 0)
 		    XtUnmanageChild(print_dialog);
 #else
+		if (unmanage && print_dialog != 0)
 		    print_dialog->hide();
 #endif
-		}
 	    }
 	}
 	else
@@ -432,9 +429,8 @@ void PrintAgainCB(Widget w, XtPointer client_data, XtPointer call_data)
     }
     }
 }
-#endif
-
-#if !defined(IF_XM)
+#else
+// Go and print according to local state
 void PrintAgainCB(GUI::Button *w, long client_data)
 {
 #if defined(IF_XMMM)
@@ -444,7 +440,6 @@ void PrintAgainCB(GUI::Button *w, long client_data)
 #endif
 }
 #endif
-
 
 static string suffix(PrintType print_type)
 {
@@ -563,7 +558,6 @@ static void SetPrintSelectedNodesCB(Widget w, XtPointer, XtPointer)
 {
     print_selected_only = XmToggleButtonGetState(w);
 }
-
 
 static void SetPrintTargetCB(Widget w, XtPointer client_data, XtPointer)
 {
@@ -959,7 +953,7 @@ static void SetPaperSizeCB(GUI::Dialog *w)
 #endif
 
 #if defined(IF_XM)
-static void CheckPaperSizeCB(Widget text, XtPointer client_data, XtPointer call_data)
+static void CheckPaperSizeCB(Widget text, XtPointer client_data, XtPointer)
 {
     Widget ok_button = Widget(client_data);
     String value;
@@ -985,7 +979,7 @@ static void CheckPaperSizeCB(GUI::Entry *text, GUI::Button *ok_button)
 #endif
 
 #if defined(IF_XM)
-static void ResetPaperSizeCB(Widget w, XtPointer client_data, XtPointer call_data)
+static void ResetPaperSizeCB(Widget w, XtPointer, XtPointer)
 {
     set_paper_size(app_data.paper_size);
     XtUnmanageChild(w);
@@ -1035,9 +1029,11 @@ static void SetGCOrientation(GUI::RadioButton *w, long client_data)
 #endif
 
 #if defined(IF_XM)
-static void SetPrintFileNameCB(Widget w, XtPointer, XtPointer)
+static void SetPrintFileNameCB(Widget w,
+			       XtPointer client_data, 
+			       XtPointer call_data)
 {
-    string target = get_file(w, XtPointer(0), XtPointer(0));
+    string target = get_file(w, client_data, call_data);
     if (!target.empty())
     {
 	set_print_file_name(target);
@@ -1244,7 +1240,7 @@ static void PrintCB(Widget parent, bool displays)
     };
 
     static Widget print_color_w;
-    static MMDesc type_menu[] =
+    static MMDesc type_menu[] = 
     {
 	GENTRYL("type2", N_("type2"), MMRadioPanel | MMUnmanagedLabel, 
 		MMNoCB, MDUMMY, type2_menu, 0),
@@ -1388,6 +1384,7 @@ static void PrintCB(Widget parent, bool displays)
 
     XtAddCallback(print_to_file_w, XmNvalueChangedCallback,
 		  TakeFocusCB,      XtPointer(print_file_name_field));
+
 
     // Create size dialog
     arg = 0;
@@ -1656,6 +1653,7 @@ static void PrintCB(GUI::Button *parent, bool displays)
     print_to_file_w->signal_toggled().connect(sigc::bind(sigc::ptr_fun(TakeFocusCB),
 							 print_to_file_w,
 							 print_file_name_field));
+
 
     // Create size dialog
     paper_size_dialog = 

@@ -35,6 +35,8 @@
 
 #if defined(IF_XM)
 #include <X11/Intrinsic.h>
+#define _(x) (x)
+#define N_(x) (x)
 #else
 #include <GUI/Container.h>
 #include <GUI/Label.h>

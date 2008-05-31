@@ -181,13 +181,13 @@ struct GraphEditPositionChangedInfo {
     GraphNode *node;           // Node that changed position
     BoxPoint  old_position;    // Old node position
     BoxPoint  new_position;    // New node position
-    Boolean   is_last;         // True iff no more changes follow
+    bool      is_last;         // True iff no more changes follow
 
     GraphEditPositionChangedInfo():
         graph(0), node(0), 
 	old_position(),
 	new_position(),
-	is_last(False)
+	is_last(false)
     {}
     GraphEditPositionChangedInfo(const GraphEditPositionChangedInfo& info):
         graph(info.graph), node(info.node), 
@@ -217,11 +217,11 @@ struct GraphEditPreSelectionInfo {
 #else
     GUI::Event *event;		// Event
 #endif
-    Boolean   double_click;	// Double-click?
-    Boolean   doit;		// Flag: do default action?
+    bool   double_click;	// Double-click?
+    bool   doit;		// Flag: do default action?
 
     GraphEditPreSelectionInfo():
-        graph(0), node(0), event(0), double_click(False), doit(True)
+        graph(0), node(0), event(0), double_click(false), doit(true)
     {}
     GraphEditPreSelectionInfo(const GraphEditPreSelectionInfo& info):
         graph(info.graph), node(info.node), event(info.event),
@@ -522,22 +522,22 @@ private:
     void moveTo(GraphNode *node, 
 		const BoxPoint& newPos,
 		bool isLast);
-    Boolean select_graph(GraphNode *root, Boolean set = True);
-    Boolean unselect_graph(GraphNode *root);
+    bool select_graph(GraphNode *root, bool set = true);
+    bool unselect_graph(GraphNode *root);
     void MoveSelected(GUI::Event *, string movx, string movy);
 
     // Callbacks
-    void selectionChanged(GUI::Event *event, Boolean double_click);
+    void selectionChanged(GUI::Event *event, bool double_click);
 
     // Actions
-    Boolean _SelectAll(void);
+    bool _SelectAll(void);
     void SelectAll(void);
-    Boolean _UnselectAll(void);
+    bool _UnselectAll(void);
     void UnselectAll(void);
 
     void raise_node(GraphNode *node);
     void _SelectOrMove(GUI::Event *event,
-		       SelectionMode mode, Boolean follow);
+		       SelectionMode mode, bool follow);
     void SelectOrMove(GUI::Event *event);
     void ExtendOrMove(GUI::Event *event);
     void ToggleOrMove(GUI::Event *event);
@@ -556,7 +556,7 @@ private:
     void DoLayout(LayoutMode mode=RegularLayoutMode);
     void _Normalize(void);
     void Normalize(void);
-    void considerEdges(ShowHideMode how, Boolean shallBeHidden);
+    void considerEdges(ShowHideMode how, bool shallBeHidden);
     void HideEdges(ShowHideMode themode=NopeShowHideMode);
     void ShowEdges(ShowHideMode themode=NopeShowHideMode);
 protected:

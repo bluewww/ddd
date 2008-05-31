@@ -304,17 +304,17 @@ public:
 	return 0;
     }
 
-    Boolean isEmpty() const
+    bool isEmpty() const
     {
 	return _mstring.empty();
     }
 
-    Boolean isNull() const
+    bool isNull() const
     {
 #ifdef NAG_ME
 #warning Cannot happen
 #endif
-	return False;
+	return false;
     }
 
     int lineCount() const
@@ -414,14 +414,14 @@ public:
     }
 
     // Comparison
-    Boolean operator == (const MString& m) const
+    bool operator == (const MString& m) const
     {
 	assert(OK());
 	assert(m.OK());
 	return (_mstring == m._mstring);
     }
 
-    Boolean operator != (const MString& m) const
+    bool operator != (const MString& m) const
     {
 	assert(OK());
 	assert(m.OK());
@@ -432,7 +432,7 @@ public:
     GUI::String xmstring() const { return _mstring; }
 
     // Substrings
-    Boolean contains(const MString& m) const
+    bool contains(const MString& m) const
     {
 	assert(OK());
 	assert(m.OK());
@@ -440,7 +440,7 @@ public:
     }
 
     // Invariant
-    Boolean OK() const;
+    bool OK() const;
 };
 
 // Concatenation

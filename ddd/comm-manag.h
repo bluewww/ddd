@@ -69,7 +69,7 @@ bool is_known_command(const string& answer);
 // Send commands to initialize a session.  If TRY_SOURCE is set, try
 // the GDB `source' command.
 void init_session(const string& restart, const string& settings,
-		  Boolean try_source = False);
+		  bool try_source = false);
 
 // Let DDD handle COMMAND
 void internal_command(const string& command, OQCProc callback, void *data,

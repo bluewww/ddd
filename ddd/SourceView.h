@@ -60,6 +60,8 @@
 #include <GUI/ComboBox.h>
 #include <GUI/Events.h>
 #include <GUI/Dialog.h>
+#include <list>
+#include <map>
 #if defined(IF_GTK)
 #include <gdkmm/pixbuf.h>
 #endif
@@ -96,12 +98,16 @@ class SourceView {
     //-----------------------------------------------------------------------
 #if defined(IF_XM)
     static void set_source_argCB         (Widget, XtPointer, XtPointer);
+
     static void line_popup_setCB         (Widget, XtPointer, XtPointer);
     static void line_popup_set_tempCB    (Widget, XtPointer, XtPointer);
     static void line_popup_temp_n_contCB (Widget, XtPointer, XtPointer);
     static void line_popup_set_pcCB      (Widget, XtPointer, XtPointer);
 #else
+    typedef std::list<BreakPoint *> BpList;
+    typedef std::map<int, BpList> BpLineMap;
     static void set_source_argCB         (GUI::ScrolledText *text_w, bool client_data);
+
     static void line_popup_setCB         (GUI::Widget *, const string *);
     static void line_popup_set_tempCB    (GUI::Widget *, const string *);
     static void line_popup_temp_n_contCB (GUI::Widget *, const string *);
@@ -136,39 +142,35 @@ class SourceView {
     static void text_popup_whatisCB      (GUI::Widget *, const string *);
     static void text_popup_lookupCB      (const string *);
 #endif
-
 #if defined(IF_XM)
-
     static void text_popup_breakCB       (Widget, XtPointer, XtPointer);
     static void text_popup_clearCB       (Widget, XtPointer, XtPointer);
 
     static void NewBreakpointDCB         (Widget, XtPointer, XtPointer);
-
     static void NewBreakpointCB          (Widget, XtPointer, XtPointer);
+
     static void NewWatchpointDCB         (Widget, XtPointer, XtPointer);
     static void NewWatchpointCB          (Widget, XtPointer, XtPointer);
+
     static void LookupBreakpointCB       (Widget, XtPointer, XtPointer);
     static void PrintWatchpointCB        (Widget, XtPointer, XtPointer);
     static void BreakpointCmdCB          (Widget, XtPointer, XtPointer);
-
 #else
-
     static void text_popup_breakCB       (GUI::Widget *, const string *);
     static void text_popup_clearCB       (GUI::Widget *, const string *);
 
     static void NewBreakpointDCB         (GUI::Widget *, GUI::ComboBoxEntryText *);
-
     static void NewBreakpointCB          (GUI::Widget *);
+
     static void NewWatchpointDCB         (GUI::Widget *, GUI::ComboBoxEntryText *);
     static void NewWatchpointCB          (GUI::Widget *);
+
     static void LookupBreakpointCB       (BreakpointPropertiesInfo *);
     static void PrintWatchpointCB        (GUI::Widget *, BreakpointPropertiesInfo *);
     static void BreakpointCmdCB          (const char *);
-
 #endif
 
 #if defined(IF_XM)
-
     static void EditBreakpointPropertiesCB (Widget, XtPointer, XtPointer);
     static void ApplyBreakpointPropertiesCB(Widget, XtPointer, XtPointer);
     static void SetBreakpointIgnoreCountCB (Widget, XtPointer, XtPointer);
@@ -182,9 +184,7 @@ class SourceView {
     static void EditBreakpointCommandsCB   (Widget, XtPointer, XtPointer);
     static void SetBreakpointIgnoreCountNowCB(XtPointer, XtIntervalId *);
     static void DeleteInfoCB               (Widget, XtPointer, XtPointer);
-
 #else
-
     static void EditBreakpointPropertiesCB (int *);
     static void ApplyBreakpointPropertiesCB(GUI::Widget *, BreakpointPropertiesInfo *);
     static void SetBreakpointIgnoreCountCB (GUI::Widget *, BreakpointPropertiesInfo *);
@@ -198,23 +198,23 @@ class SourceView {
     static void EditBreakpointCommandsCB   (GUI::Widget *, BreakpointPropertiesInfo *);
     static bool SetBreakpointIgnoreCountNowCB(BreakpointPropertiesInfo *);
     static void *DeleteInfoCB              (void *);
-
 #endif
-
     static void RefreshBreakpointsHP       (Agent *, void *, void *);
     static void RecordingHP                (Agent *, void *, void *);
 
 #if defined(IF_XM)
-
     static void UpdateBreakpointButtonsCB (Widget, XtPointer, XtPointer);
+
     static void CheckScrollCB(Widget, XtPointer, XtPointer);
     static void CheckScrollWorkProc(XtPointer, XtIntervalId *);
+
     static void CheckModificationCB        (Widget, XtPointer, XtPointer);
 
     static void StackDialogPoppedDownCB    (Widget, XtPointer, XtPointer);
     static void CodeDialogPoppedDownCB     (Widget, XtPointer, XtPointer);
     static void RegisterDialogPoppedDownCB (Widget, XtPointer, XtPointer);
     static void ThreadDialogPoppedDownCB   (Widget, XtPointer, XtPointer);
+
     static void SelectFrameCB    (Widget, XtPointer, XtPointer);
     static void SelectRegisterCB (Widget, XtPointer, XtPointer);
     static void SelectThreadCB   (Widget, XtPointer, XtPointer);
@@ -222,34 +222,31 @@ class SourceView {
 
     static void SetWatchModeCB(Widget, XtPointer, XtPointer);
     static void ActivateGlyphCB(Widget, XtPointer, XtPointer);
-
 #else
-
     static void UpdateBreakpointButtonsCB (void);
+
     static void CheckScrollCB(void);
     static bool CheckScrollWorkProc(GUI::connection *);
+
     static void CheckModificationCB(GUI::Widget *, bool editable);
 
     static void StackDialogPoppedDownCB    (void);
     static void CodeDialogPoppedDownCB     (void);
     static void RegisterDialogPoppedDownCB (void);
     static void ThreadDialogPoppedDownCB   (void);
+
     static void SelectFrameCB    (GUI::ListView *);
     static void SelectRegisterCB (GUI::ListView *);
     static void SelectThreadCB   (GUI::Widget *);
     static void ThreadCommandCB  (GUI::Widget *, const char *);
 
     static void SetWatchModeCB(int);
-
 #endif
-
-
 
     // Set shell title
     static void update_title();
 
 #if defined(IF_XM)
-
     // Return height of a text line
     static int line_height(Widget text_w);
 
@@ -257,9 +254,7 @@ class SourceView {
     static void create_text(Widget parent,
 			    const char *base, bool editable,
 			    Widget& form, Widget& text);
-
 #else
-
     // Return height of a text line
     static int line_height(GUI::ScrolledText *text_w);
 
@@ -268,7 +263,6 @@ class SourceView {
 			    const char *base, bool editable,
 			    GUI::Container *&form,
 			    GUI::ScrolledText *&text);
-
 #endif
 
     // Refresh displays
@@ -278,7 +272,7 @@ class SourceView {
 
     // Clear breakpoint helpers
 #if defined(IF_XM)
-    static void clearBP(XtPointer, XtIntervalId *);
+    static void clearBP(void *client_data, XtIntervalId *timer);
 #else
     static bool clearBP(int);
 #endif
@@ -316,18 +310,21 @@ class SourceView {
 #if defined(IF_XM)
     static void _set_bps_cond(const IntArray& nrs, const string& cond, 
 			      int make_false, Widget origin);
+
     // Set condition of breakpoints NRS to COND.
     inline static void set_bps_cond(const IntArray& nrs, const string& cond,
 				    Widget origin = 0)
     {
 	_set_bps_cond(nrs, cond, -1, origin);
     }
+
     // Enable and disable breakpoints via conditions.
     inline static void set_bps_cond_enabled(const IntArray& nrs, bool enabled,
 					    Widget origin = 0)
     {
 	_set_bps_cond(nrs, char(-1), enabled ? 0 : 1, origin);
     }
+
     // Custom calls
     inline static void enable_bps_cond(const IntArray& nrs, Widget origin = 0)
     {
@@ -340,18 +337,21 @@ class SourceView {
 #else
     static void _set_bps_cond(const IntArray& nrs, const string& cond, 
 			      int make_false, GUI::Widget *origin);
+
     // Set condition of breakpoints NRS to COND.
     inline static void set_bps_cond(const IntArray& nrs, const string& cond,
 				    GUI::Widget *origin = 0)
     {
 	_set_bps_cond(nrs, cond, -1, origin);
     }
+
     // Enable and disable breakpoints via conditions.
     inline static void set_bps_cond_enabled(const IntArray& nrs, bool enabled,
 					    GUI::Widget *origin = 0)
     {
 	_set_bps_cond(nrs, char(-1), enabled ? 0 : 1, origin);
     }
+
     // Custom calls
     inline static void enable_bps_cond(const IntArray& nrs, GUI::Widget *origin = 0)
     {
@@ -362,8 +362,6 @@ class SourceView {
 	set_bps_cond_enabled(nrs, false, origin);
     }
 #endif
-
-
 
 #if defined(IF_XM)
     // Find the line number at POS.  LINE_NR becomes the line number
@@ -434,7 +432,7 @@ class SourceView {
     // Timer procedures
     //-----------------------------------------------------------------------
 #if defined(IF_XM)
-    static void setSelection(XtPointer, XtIntervalId *);
+    static void setSelection(XtPointer client_data, XtIntervalId *timer);
 #else
     static bool setSelection(GUI::ScrolledText *);
 #endif
@@ -475,48 +473,47 @@ class SourceView {
     friend class GtkMarkedTextView;
 
 #if defined(IF_XM)
-    static Widget source_form_w;         // Form around text and glyphs
-    static Widget source_text_w;         // Source text
+    static Widget source_form_w; // Form around text and glyphs
+    static Widget source_text_w; // Source text
+    static Widget code_form_w;   // Form around Machine code and glyphs
+    static Widget code_text_w;   // Machine code text
 #else
     static GUI::Container *source_form_w;    // Form around text and glyphs
     static GUI::ScrolledText *source_text_w; // Source text
+    static GUI::Container *code_form_w;      // Form around Machine code and glyphs
+    static GUI::ScrolledText *code_text_w;   // Machine code text
 #endif
-#if defined(IF_XM)
-    static Widget code_form_w;            // Form around Machine code and glyphs
-    static Widget code_text_w;           // Machine code text
 
+#if defined(IF_XM)
     static Widget edit_breakpoints_dialog_w; // Dialog for editing breakpoints
-    static Widget breakpoint_list_w;       // The breakpoint list
+    static Widget breakpoint_list_w;         // The breakpoint list
+
     static Widget stack_dialog_w;            // Dialog for viewing the stack
     static Widget frame_list_w;              // The frame list
     static Widget up_w;                      // The `Up' button
     static Widget down_w;                    // The `Down' button
 #else
-    static GUI::Container *code_form_w;      // Form around Machine code and glyphs
-    static GUI::ScrolledText *code_text_w;   // Machine code text
-
     static GUI::Dialog *edit_breakpoints_dialog_w; // Dialog for editing breakpoints
     static GUI::ListView *breakpoint_list_w;       // The breakpoint list
+
     static GUI::SelectionDialog *stack_dialog_w;       // Dialog for viewing the stack
     static GUI::ListView *frame_list_w;               // The frame list
     static GUI::Button *up_w;                          // The `Up' button
     static GUI::Button *down_w;                        // The `Down' button
 #endif
-
     static bool stack_dialog_popped_up;	     // True if the stack is visible
 
 #if defined(IF_XM)
-    static Widget register_dialog_w;        // Dialog for registers
-    static Widget register_list_w;          // Register list inside
-    static Widget int_registers_w;          // Display integer registers
-    static Widget all_registers_w;          // Display all registers
+    static Widget register_dialog_w;          // Dialog for registers
+    static Widget register_list_w;            // Register list inside
+    static Widget int_registers_w;            // Display integer registers
+    static Widget all_registers_w;            // Display all registers
 #else
     static GUI::SelectionDialog *register_dialog_w;    // Dialog for registers
     static GUI::ListView *register_list_w;             // Register list inside
     static GUI::RadioButton *int_registers_w;          // Display integer registers
     static GUI::RadioButton *all_registers_w;          // Display all registers
 #endif
-
     static bool register_dialog_popped_up;    // True if registers are visible
 
 #if defined(IF_XM)
@@ -548,6 +545,10 @@ class SourceView {
     static string current_file_name;
     static int    line_count;
     static IntIntArrayAssoc bps_in_line;
+#if !defined(IF_XM)
+    static BpLineMap bps_in_line2;
+    static void list_bp_line_map(void);
+#endif
     static TextPositionArray _pos_of_line;
     static StringArray bp_addresses;
 #if defined(IF_XM)
@@ -680,7 +681,6 @@ class SourceView {
 			    bool silent = false);
 
 #if defined(IF_XM)
-
     // Set insertion position to POS.
     static void SetInsertionPosition(Widget w, XmTextPosition pos, 
 				     bool fromTop = false);
@@ -696,9 +696,7 @@ class SourceView {
     // Return current breakpoint indent amount.  If POS is given, add
     // the whitespace from POS.
     static int indent_amount(Widget w, int pos = -1);
-
 #else
-
     // Set insertion position to POS.
     static void SetInsertionPosition(GUI::ScrolledText *w, long pos, 
 				     bool fromTop = false);
@@ -716,7 +714,6 @@ class SourceView {
     // Return current breakpoint indent amount.  If POS is given, add
     // the whitespace from POS.
     static int indent_amount(GUI::Widget *w, int pos = -1);
-
 #endif
 
     // Format `where' and `thread' lines
@@ -769,6 +766,7 @@ class SourceView {
     // Create glyph in FORM_W named NAME from given BITS
     static Widget create_glyph(Widget form_w, const _XtString name, 
 			       unsigned char *bits, int width, int height);
+
     // Map glyph W in (X, Y)
     static void map_glyph(Widget& w, Position x, Position y);
 
@@ -856,6 +854,7 @@ private:
     static Widget map_stop_at(Widget w, XmTextPosition pos,
 			      WidgetArray& stops, int& count,
 			      TextPositionArray& positions);
+
     // Map arrow/drag arrow/drag stop in W at POS.  If ORIGIN is
     // given, use colors from ORIGIN.
     static Widget map_arrow_at     (Widget w, XmTextPosition pos);
@@ -879,15 +878,17 @@ private:
 	map_drag_stop_at(w, XmTextPosition(-1));
     }
     static void copy_colors(Widget w, Widget origin);
-
-    // Helping background procedures
-    static void UpdateGlyphsWorkProc(XtPointer, XtIntervalId *);
-    static Boolean CreateGlyphsWorkProc(XtPointer);
 #endif
 
     // True if code/source glyphs need to be updated
     static bool update_code_glyphs;
     static bool update_source_glyphs;
+
+#if defined(IF_XM)
+    // Helping background procedures
+    static void UpdateGlyphsWorkProc(XtPointer, XtIntervalId *);
+    static Boolean CreateGlyphsWorkProc(XtPointer);
+#endif
 
     // Update all glyphs now (without delay).
     static void update_glyphs_now();
@@ -899,7 +900,6 @@ private:
     // Helpers needed by glyphs_to_be_changed
     static bool change_glyphs;
     static WidgetArray changed_glyphs;
-
 #else
     static void CreateGlyphsNow(void);
 #endif
@@ -1108,7 +1108,6 @@ public:
     static int next_breakpoint_number();
 
 #if defined(IF_XM)
-
     // Create or clear a breakpoint at position A.  If SET, create a
     // breakpoint; if not SET, delete it.  If TEMP, make the
     // breakpoint temporary.  If COND is given, break only iff COND
@@ -1168,9 +1167,7 @@ public:
 	nrs += nr;
 	set_bp_commands(nrs, commands, origin);
     }
-
 #else
-
     // Create or clear a breakpoint at position A.  If SET, create a
     // breakpoint; if not SET, delete it.  If TEMP, make the
     // breakpoint temporary.  If COND is given, break only iff COND
@@ -1230,7 +1227,6 @@ public:
 	nrs += nr;
 	set_bp_commands(nrs, commands, origin);
     }
-
 #endif
 
     static string numbers(const IntArray& nrs);
@@ -1384,14 +1380,12 @@ public:
 
     // Set or unset showing earlier state
     static void showing_earlier_state(bool set);
-
 #if !defined(IF_XM)
     bool clicked_cb(GUI::EventButton *ev);
 #endif
 };
 
 #if defined(IF_XM)
-
 inline void SourceView::create_bp(const string& a, Widget w)
 {
     set_bp(a, true, false, "", w);
@@ -1406,9 +1400,7 @@ inline void SourceView::clear_bp(const string& a, Widget w)
 {
     set_bp(a, false, false, "", w);
 }
-
 #else
-
 inline void SourceView::create_bp(const string& a, GUI::Widget *w)
 {
     set_bp(a, true, false, "", w);
@@ -1423,7 +1415,6 @@ inline void SourceView::clear_bp(const string& a, GUI::Widget *w)
 {
     set_bp(a, false, false, "", w);
 }
-
 #endif
 
 #endif // _DDD_SourceView_h
