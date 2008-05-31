@@ -889,6 +889,8 @@ private:
     // Helping background procedures
     static void UpdateGlyphsWorkProc(XtPointer, XtIntervalId *);
     static Boolean CreateGlyphsWorkProc(XtPointer);
+#else
+    static bool UpdateGlyphsWorkProc(void);
 #endif
 
     // Update all glyphs now (without delay).

@@ -12104,8 +12104,9 @@ void SourceView::update_glyphs(GUI::Widget *glyph)
     else if (is_code_widget(glyph))
 	update_code_glyphs = true;
 
-    // FIXME: No delay here
-    update_glyphs_now();
+    // We cannot calculate the glyph positions until the buffer is
+    // actually visible.  Therefore, wait until idle.
+    GUI::signal_idle().connect(sigc::ptr_fun(SourceView::UpdateGlyphsWorkProc));
 }
 #endif
 
@@ -12863,6 +12864,13 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *id)
 
     change_glyphs = true;
     update_glyphs_now();
+}
+#else
+// Update glyphs after interval
+bool SourceView::UpdateGlyphsWorkProc(void)
+{
+    update_glyphs_now();
+    return false;
 }
 #endif
 
