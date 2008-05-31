@@ -236,11 +236,10 @@ GUI::ImageHandle DRAG_TEMP;
 #endif
 
 #if !defined(IF_XM)
-
 void SourceView::list_bp_line_map(void)
 {
     BpLineMap::iterator iter;
-    for (iter = bps_in_line2.begin(); iter != bps_in_line2.end(); iter++) {
+    for (iter = bp_line_map.begin(); iter != bp_line_map.end(); iter++) {
 	std::cerr << "Line " << iter->first;
 	BpList &l = iter->second;
 	BpList::iterator i;
@@ -249,6 +248,28 @@ void SourceView::list_bp_line_map(void)
 	}
 	std::cerr << "\n";
     }
+}
+
+void SourceView::refresh_bp_line_map(void)
+{
+    bp_line_map.clear();
+
+    // Find all breakpoints referring to this file
+    MapRef ref;
+    for (BreakPoint* bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
+    {
+	if ((bp->type() == BREAKPOINT || bp->type() == TRACEPOINT) && 
+	    bp_matches(bp))
+	{
+	    int line_num = bp->line_nr();
+	    std::pair<BpLineMap::iterator, bool> bps_i
+		= bp_line_map.insert(std::pair<int, BpList>(line_num, BpList()));
+	    BpList &bps_l = bps_i.first->second;
+	    bps_l.insert(bps_l.end(), bp);
+	}
+    }
+    std::cerr << "Refreshed bp_line_map...\n";
+    list_bp_line_map();
 }
 
 #if 0
@@ -327,7 +348,6 @@ simple_list_columns_p(void)
 
 #define simple_list_columns (*simple_list_columns_p())
 #endif
-
 #endif
 
 //-----------------------------------------------------------------------
@@ -652,7 +672,7 @@ string SourceView::current_file_name = "";
 int    SourceView::line_count = 0;
 IntIntArrayAssoc SourceView::bps_in_line;
 #if !defined(IF_XM)
-SourceView::BpLineMap SourceView::bps_in_line2;
+SourceView::BpLineMap SourceView::bp_line_map;
 #endif
 TextPositionArray SourceView::_pos_of_line;
 StringArray SourceView::bp_addresses;
@@ -4126,6 +4146,9 @@ void SourceView::update_title()
 // Update breakpoint locations
 void SourceView::refresh_bp_disp(bool reset)
 {
+#if !defined(IF_XM)
+    refresh_bp_line_map();
+#endif
     refresh_source_bp_disp(reset);
     refresh_code_bp_disp(reset);
     update_glyphs();
@@ -6322,7 +6345,7 @@ void SourceView::process_info_bp (string& info_output,
 #if !defined(IF_XM)
 	    int line_num = new_bp->line_nr();
 	    std::pair<BpLineMap::iterator, bool> bps_i
-		= bps_in_line2.insert(std::pair<int, BpList>(line_num, BpList()));
+		= bp_line_map.insert(std::pair<int, BpList>(line_num, BpList()));
 	    BpList &bps_l = bps_i.first->second;
 	    bps_l.insert(bps_l.end(), new_bp);
 #endif
@@ -6371,8 +6394,8 @@ void SourceView::process_info_bp (string& info_output,
 	undo_buffer.add_breakpoint_state(undo_commands, bp);
 #if !defined(IF_XM)
 	int line_num = bp->line_nr();
-	BpLineMap::iterator bps_i = bps_in_line2.find(line_num);
-	if (bps_i != bps_in_line2.end())
+	BpLineMap::iterator bps_i = bp_line_map.find(line_num);
+	if (bps_i != bp_line_map.end())
 	    bps_i->second.remove(bp);
 #endif
 	delete bp;

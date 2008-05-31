@@ -546,8 +546,9 @@ class SourceView {
     static int    line_count;
     static IntIntArrayAssoc bps_in_line;
 #if !defined(IF_XM)
-    static BpLineMap bps_in_line2;
+    static BpLineMap bp_line_map;
     static void list_bp_line_map(void);
+    static void refresh_bp_line_map(void);
 #endif
     static TextPositionArray _pos_of_line;
     static StringArray bp_addresses;
