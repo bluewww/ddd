@@ -55,7 +55,6 @@ char status_rcsid[] =
 #include <Xm/Label.h>
 #include <Xm/MenuShell.h>
 
-
 #include <X11/IntrinsicP.h>	// LessTif hacks
 #include "LessTifH.h"
 #endif
@@ -122,15 +121,17 @@ void set_buttons_from_gdb(GUI::Widget *buttons, string& text)
 
     if (yn && !gdb_keyboard_command)
     {
-	// FIXME: Handle JDB
-	char prompt_start = (gdb->type() == XDB ? '>' : '(');
-
 #if defined(IF_XM)
 	// Fetch previous output lines, in case this is a multi-line message.
 	String s = XmTextGetString(gdb_w);
 	string prompt(s);
 	XtFree(s);
+#endif
 
+	// FIXME: Handle JDB
+	char prompt_start = (gdb->type() == XDB ? '>' : '(');
+
+#if defined(IF_XM)
 	int pos = prompt.index(prompt_start, -1);
 	if (pos >= 0)
 	    pos = prompt.index('\n', pos) + 1;

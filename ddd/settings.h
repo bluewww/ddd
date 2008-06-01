@@ -29,23 +29,16 @@
 #ifndef _DDD_settings_h
 #define _DDD_settings_h
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
 #if defined(IF_XM)
-
 #include <X11/Intrinsic.h>
-
 #else
-
 #include <GUI/Widget.h>
-
-#endif
-
 #include "gtk_wrapper.h"
-
-
+#endif
 #include "bool.h"
 #include "strclass.h"
 #include "GDBAgent.h"
@@ -156,6 +149,7 @@ extern void dddPopupThemesCB(Widget, XtPointer, XtPointer);
 extern void dddPopupThemesCB(void);
 #endif
 
+
 // Command Definitions
 
 // True if definitions must be reloaded
@@ -180,16 +174,17 @@ void update_define_later(const string& command);
 
 #if defined(IF_XM)
 // Define command
-extern void dddDefineCommandCB(Widget w, XtPointer, XtPointer);
+extern void dddDefineCommandCB(Widget, XtPointer, XtPointer);
 #else
 // Define command
 extern void dddDefineCommandCB(GUI::Widget *w);
 #endif
 
-// Update define buttons
 #if defined(IF_XM)
-void UpdateDefinePanelCB(Widget w=NULL, XtPointer=NULL, XtPointer=NULL);
+// Update define buttons
+void UpdateDefinePanelCB(Widget = 0, XtPointer = 0, XtPointer = 0);
 #else
+// Update define buttons
 void UpdateDefinePanelCB(GUI::Widget *w=NULL);
 #endif
 

@@ -29,7 +29,7 @@
 char simpleMenu_rcsid[] = 
     "$Id$";
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
@@ -49,9 +49,8 @@ char simpleMenu_rcsid[] =
 #if defined(IF_XM)
 #include <Xm/Text.h>
 #include <Xm/TextF.h>
-#endif
-
 #include "gtk_wrapper.h"
+#endif
 
 
 //-----------------------------------------------------------------------------
@@ -329,6 +328,7 @@ static Boolean remove(GUI::Widget *w, GUI::Widget *dest)
     return success;
 }
 #endif
+
 
 //-----------------------------------------------------------------------------
 // Callbacks

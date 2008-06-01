@@ -45,7 +45,6 @@ DEFINE_TYPE_INFO_1(RiseBox, SlopeBox)
 // FallBox
 
 #if defined(IF_XM)
-
 // Draw
 void FallBox::__draw(Widget w, 
 		     const BoxRegion& r, 
@@ -59,9 +58,7 @@ void FallBox::__draw(Widget w,
     XDrawLine(XtDisplay(w), XtWindow(w), gc, origin[X], origin[Y],
 	origin[X] + space[X], origin[Y] + space[Y]);
 }
-
 #else
-
 // Draw
 void FallBox::__draw(GUI::Widget *w, 
 		     const BoxRegion& r, 
@@ -75,7 +72,6 @@ void FallBox::__draw(GUI::Widget *w,
     w->get_window()->draw_line(gc, origin[X], origin[Y],
 			       origin[X] + space[X], origin[Y] + space[Y]);
 }
-
 #endif
 
 // Print
@@ -113,7 +109,6 @@ void FallBox::dump(std::ostream& s) const
 // RiseBox
 
 #if defined(IF_XM)
-
 // Draw
 void RiseBox::__draw(Widget w, 
 		     const BoxRegion& r, 
@@ -127,9 +122,7 @@ void RiseBox::__draw(Widget w,
     XDrawLine(XtDisplay(w), XtWindow(w), gc, origin[X], origin[Y] + space[Y],
 	origin[X] + space[X], origin[Y]);
 }
-
 #else
-
 // Draw
 void RiseBox::__draw(GUI::Widget *w, 
 		     const BoxRegion& r, 
@@ -143,7 +136,6 @@ void RiseBox::__draw(GUI::Widget *w,
     w->get_window()->draw_line(gc, origin[X], origin[Y] + space[Y],
 			       origin[X] + space[X], origin[Y]);
 }
-
 #endif
 
 // Print

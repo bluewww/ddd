@@ -105,7 +105,6 @@ Box *StringBox::resize()
 }
 
 #if defined(IF_XM)
-
 // Draw
 void StringBox::_draw(Widget w, 
 		      const BoxRegion& r, 
@@ -121,9 +120,7 @@ void StringBox::_draw(Widget w,
     XDrawString(XtDisplay(w), XtWindow(w), gc, origin[X], origin[Y] + _ascent,
 		_string.chars(), _string.length());
 }
-
 #else
-
 // Draw
 void StringBox::_draw(GUI::Widget *w, 
 		      const BoxRegion& r, 
@@ -146,8 +143,8 @@ void StringBox::_draw(GUI::Widget *w,
     ww->get_window()->draw_layout(gc, origin[X], origin[Y] + _ascent, pl);
 #endif
 }
-
 #endif
+
 
 void StringBox::dump(std::ostream& s) const
 {

@@ -28,6 +28,10 @@
 #ifndef _DDD_Swallower_h
 #define _DDD_Swallower_h
 
+#if defined(HAVE_CONFIG_H)
+#include "config.h"
+#endif
+
 #if defined(IF_XM)
 #include <X11/Intrinsic.h>
 #include <X11/StringDefs.h>

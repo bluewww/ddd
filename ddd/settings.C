@@ -30,14 +30,14 @@
 char settings_rcsid[] = 
     "$Id$";
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
 #include "settings.h"
 
-#if defined(IF_XM)
 
+#if defined(IF_XM)
 #include <Xm/Xm.h>
 #include <Xm/SelectioB.h>
 #include <Xm/DialogS.h>
@@ -52,9 +52,7 @@ char settings_rcsid[] =
 #include <Xm/LabelG.h>
 #include <Xm/MwmUtil.h>
 #include <Xm/Separator.h>
-
 #else
-
 #include <gtkmm/separator.h>
 #include <GUI/Dialog.h>
 #include <GUI/Box.h>
@@ -68,9 +66,7 @@ char settings_rcsid[] =
 #include <GUI/Separator.h>
 
 #include <map>
-
 #endif
-
 #include <ctype.h>
 #include <string.h>
 #include <stdio.h>
@@ -146,7 +142,7 @@ static Widget            settings_panel = 0;
 static Widget            settings_form  = 0;
 static Widget            reset_settings_button = 0;
 static Widget            apply_settings_button = 0;
-static VarArray<Widget>       settings_entries;
+static WidgetArray       settings_entries;
 #else
 static GUI::Dialog      *settings_panel = 0;
 static GUI::Container   *settings_form  = 0;
@@ -177,8 +173,8 @@ static bool              need_reload_signals = false;
 static Widget            themes_panel = 0;
 static Widget            reset_themes_button = 0;
 static Widget            apply_themes_button = 0;
-static VarArray<Widget>  themes_entries;
-static VarArray<Widget>  themes_labels;
+static WidgetArray       themes_entries;
+static WidgetArray       themes_labels;
 
 static Widget            infos_panel        = 0;
 static Widget            reset_infos_button = 0;
@@ -193,7 +189,7 @@ static GUI::Widget      *infos_panel        = 0;
 static GUI::Button      *reset_infos_button = 0;
 #endif
 #if defined(IF_XM)
-static VarArray<Widget>       infos_entries;
+static WidgetArray       infos_entries;
 #else
 static VarArray<GUI::Widget *>       infos_entries;
 #endif
@@ -211,7 +207,6 @@ static void set_arg();
 
 
 #if defined(IF_XM)
-
 // Find widget for command COMMAND
 static Widget command_to_widget(Widget ref, string command)
 {
@@ -225,9 +220,7 @@ static Widget command_to_widget(Widget ref, string command)
 
     return found;
 }
-
 #else
-
 std::map<string, GUI::Widget *> name_to_widget;
 
 // Find widget for command COMMAND
@@ -248,7 +241,6 @@ static GUI::Widget *command_to_widget(string command)
     std::cerr << "Widget for \"" << orig_command.chars() << "\" not found\n";
     return NULL;
 }
-
 #endif
 
 // Issue `set' command
@@ -304,25 +296,20 @@ static void gdb_set_command(const string& set_command, string value)
 }
 
 #if defined(IF_XM)
-
 // OptionMenu reply
 static void SetOptionCB(Widget w, XtPointer client_data, XtPointer)
 {
     gdb_set_command((const _XtString)client_data, XtName(w));
 }
-
 #else
-
 // OptionMenu reply
 static void SetOptionCB(const char *command, GUI::Widget *w)
 {
     gdb_set_command(command, w->get_name().c_str());
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // ToggleButton reply
 static void SetOnOffCB(Widget, XtPointer client_data, XtPointer call_data)
 {
@@ -331,19 +318,15 @@ static void SetOnOffCB(Widget, XtPointer client_data, XtPointer call_data)
 
     gdb_set_command((const _XtString)client_data, cbs->set ? "on":"off");
 }
-
 #else
-
 // ToggleButton reply
 static void SetOnOffCB(GUI::CheckButton *w, const char *client_data)
 {
     gdb_set_command(client_data, w->get_active() ? "on":"off");
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // ToggleButton reply
 static void SetTrueFalseCB(Widget, XtPointer client_data, XtPointer call_data)
 {
@@ -352,19 +335,15 @@ static void SetTrueFalseCB(Widget, XtPointer client_data, XtPointer call_data)
 
     gdb_set_command((const _XtString)client_data, cbs->set ? "true":"false");
 }
-
 #else
-
 // ToggleButton reply
 static void SetTrueFalseCB(GUI::CheckButton *w, const char *client_data)
 {
     gdb_set_command(client_data, w->get_active() ? "true":"false");
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // ToggleButton reply
 static void SetSensitiveCB(Widget, XtPointer client_data, XtPointer call_data)
 {
@@ -374,20 +353,16 @@ static void SetSensitiveCB(Widget, XtPointer client_data, XtPointer call_data)
     gdb_set_command((const _XtString)client_data,
 		    cbs->set ? "sensitive":"insensitive");
 }
-
 #else
-
 // ToggleButton reply
 static void SetSensitiveCB(GUI::CheckButton *w, const char *client_data)
 {
     gdb_set_command(client_data,
 		    w->get_active() ? "sensitive":"insensitive");
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // ToggleButton reply
 static void SetNumCB(Widget, XtPointer client_data, XtPointer call_data)
 {
@@ -396,19 +371,15 @@ static void SetNumCB(Widget, XtPointer client_data, XtPointer call_data)
 
     gdb_set_command((const _XtString)client_data, cbs->set ? "1":"0");
 }
-
 #else
-
 // ToggleButton reply
 static void SetNumCB(GUI::CheckButton *w, const char *client_data)
 {
     gdb_set_command(client_data, w->get_active() ? "1":"0");
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // ToggleButton reply
 static void SetNoNumCB(Widget, XtPointer client_data, XtPointer call_data)
 {
@@ -417,19 +388,15 @@ static void SetNoNumCB(Widget, XtPointer client_data, XtPointer call_data)
 
     gdb_set_command((const _XtString)client_data, cbs->set ? "0":"1");
 }
-
 #else
-
 // ToggleButton reply
 static void SetNoNumCB(GUI::CheckButton *w, const char *client_data)
 {
     gdb_set_command(client_data, w->get_active() ? "0":"1");
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // ToggleButton reply
 static void SetDisplayCB(Widget, XtPointer client_data, XtPointer call_data)
 {
@@ -441,9 +408,7 @@ static void SetDisplayCB(Widget, XtPointer client_data, XtPointer call_data)
     else
       data_disp->delete_user_display((const _XtString)client_data);
 }
-
 #else
-
 // ToggleButton reply
 static void SetDisplayCB(GUI::CheckButton *w, const char *client_data)
 {
@@ -452,29 +417,24 @@ static void SetDisplayCB(GUI::CheckButton *w, const char *client_data)
     else
       data_disp->delete_user_display(client_data);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // ToggleButton reply
 static void SendSignalCB(Widget, XtPointer client_data, XtPointer)
 {
     gdb_command(string("signal ") + XtName(Widget(client_data)));
 }
-
 #else
-
 // ToggleButton reply
 static void SendSignalCB(GUI::Widget *client_data)
 {
     gdb_command(string("signal ") + client_data->get_name());
 }
-
 #endif
 
-#if defined(IF_XM)
 
+#if defined(IF_XM)
 static string handle_command(Widget w, bool set)
 {
     string sig    = string(XtName(w)).before('-');
@@ -489,9 +449,7 @@ static string handle_command(Widget w, bool set)
 
     return "handle " + sig + " " + action;
 }
-
 #else
-
 static string handle_command(GUI::Widget *w, bool set)
 {
     string sig    = string(w->get_name()).before('-');
@@ -506,11 +464,9 @@ static string handle_command(GUI::Widget *w, bool set)
 
     return "handle " + sig + " " + action;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // ToggleButton reply
 static void SignalCB(Widget w, XtPointer, XtPointer call_data)
 {
@@ -519,15 +475,12 @@ static void SignalCB(Widget w, XtPointer, XtPointer call_data)
 
     gdb_command(handle_command(w, cbs->set));
 }
-
 #else
-
 // ToggleButton reply
 static void SignalCB(GUI::CheckButton *w)
 {
     gdb_command(handle_command(w, w->get_active()));
 }
-
 #endif
 
 #if defined(IF_XM)
@@ -609,7 +562,6 @@ static void HelpOnSignalCB(Widget w, XtPointer client_data,
 
 
 #if defined(IF_XM)
-
 // Update state of `reset' button
 static void update_reset_settings_button()
 {
@@ -645,9 +597,7 @@ static void update_reset_settings_button()
 
     set_sensitive(reset_settings_button, false);
 }
-
 #else
-
 // Update state of `reset' button
 static void update_reset_settings_button()
 {
@@ -682,11 +632,9 @@ static void update_reset_settings_button()
 
     set_sensitive(reset_settings_button, false);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void update_apply_settings_button()
 {
     if (apply_settings_button == 0)
@@ -712,9 +660,7 @@ static void update_apply_settings_button()
 
     set_sensitive(apply_settings_button, false);
 }
-
 #else
-
 static void update_apply_settings_button()
 {
     if (apply_settings_button == 0)
@@ -738,7 +684,6 @@ static void update_apply_settings_button()
 
     set_sensitive(apply_settings_button, false);
 }
-
 #endif
 
 static void update_reset_signals_button()
@@ -766,7 +711,6 @@ static void update_reset_signals_button()
 }
 
 #if defined(IF_XM)
-
 static void update_themes_buttons()
 {
     if (apply_themes_button == 0 || reset_themes_button == 0)
@@ -843,9 +787,7 @@ static void update_themes_buttons()
     set_sensitive(apply_themes_button, apply_is_sensitive);
     set_sensitive(reset_themes_button, reset_is_sensitive);
 }
-
 #else
-
 static void update_themes_buttons()
 {
     if (apply_themes_button == 0 || reset_themes_button == 0)
@@ -920,11 +862,11 @@ static void update_themes_buttons()
     set_sensitive(apply_themes_button, apply_is_sensitive);
     set_sensitive(reset_themes_button, reset_is_sensitive);
 }
-
 #endif
 
-#if defined(IF_XM)
 
+
+#if defined(IF_XM)
 // Update states of `info' buttons
 void update_infos()
 {
@@ -941,9 +883,7 @@ void update_infos()
     if (reset_infos_button != 0)
 	set_sensitive(reset_infos_button, have_info);
 }
-
 #else
-
 // Update states of `info' buttons
 void update_infos()
 {
@@ -966,30 +906,24 @@ void update_infos()
     if (reset_infos_button != 0)
 	set_sensitive(reset_infos_button, have_info);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void UpdateSettingsButtonsNowCB(XtPointer, XtIntervalId *)
 {
     update_apply_settings_button();
     update_reset_settings_button();
 }
-
 #else
-
 static bool UpdateSettingsButtonsNowCB(void)
 {
     update_apply_settings_button();
     update_reset_settings_button();
     return false;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // TextField reply
 static void UpdateSettingsButtonsCB(Widget w, XtPointer client_data, 
 				    XtPointer)
@@ -998,37 +932,30 @@ static void UpdateSettingsButtonsCB(Widget w, XtPointer client_data,
     XtAppAddTimeOut(XtWidgetToApplicationContext(w), 0,
 		    UpdateSettingsButtonsNowCB, client_data);
 }
-
 #else
-
 // TextField reply
 static void UpdateSettingsButtonsCB(void)
 {
     // The TextField value has not yet changed.  Call again later.
     GUI::signal_idle().connect(sigc::ptr_fun(UpdateSettingsButtonsNowCB));
 }
-
 #endif
 
-#if defined(IF_XM)
 
+#if defined(IF_XM)
 static void UpdateThemesButtonsNowCB(XtPointer, XtIntervalId *)
 {
     update_themes_buttons();
 }
-
 #else
-
 static bool UpdateThemesButtonsNowCB(void)
 {
     update_themes_buttons();
     return false;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // TextField reply
 static void UpdateThemesButtonsCB(Widget w, XtPointer client_data, 
 				  XtPointer)
@@ -1037,16 +964,13 @@ static void UpdateThemesButtonsCB(Widget w, XtPointer client_data,
     XtAppAddTimeOut(XtWidgetToApplicationContext(w), 0,
 		    UpdateThemesButtonsNowCB, client_data);
 }
-
 #else
-
 // TextField reply
 static void UpdateThemesButtonsCB(void)
 {
     // The TextField value has not yet changed.  Call again later.
     GUI::signal_idle().connect(sigc::ptr_fun(UpdateThemesButtonsNowCB));
 }
-
 #endif
 
 #if defined(IF_XM)
@@ -1069,7 +993,6 @@ static void HelpOnThemeCB(Widget w, XtPointer client_data,
 #endif
 
 #if defined(IF_XM)
-
 static void ApplyThemesCB(Widget, XtPointer, XtPointer)
 {
     Delay d;
@@ -1092,9 +1015,7 @@ static void ApplyThemesCB(Widget, XtPointer, XtPointer)
     data_disp->set_theme_manager(t);
     update_themes_buttons();
 }
-
 #else
-
 static void ApplyThemesCB(void)
 {
     Delay d;
@@ -1115,12 +1036,11 @@ static void ApplyThemesCB(void)
     data_disp->set_theme_manager(t);
     update_themes_buttons();
 }
-
 #endif
 
 #if defined(IF_XM)
-
-static void ResetThemesCB(Widget, XtPointer, XtPointer)
+static void ResetThemesCB(Widget w, XtPointer client_data, 
+			  XtPointer call_data)
 {
     CommandGroup cg;
 
@@ -1128,9 +1048,7 @@ static void ResetThemesCB(Widget, XtPointer, XtPointer)
     update_themes();
     ApplyThemesCB(Widget(0), XtPointer(0), XtPointer(0));
 }
-
 #else
-
 static void ResetThemesCB(void)
 {
     CommandGroup cg;
@@ -1139,25 +1057,21 @@ static void ResetThemesCB(void)
     update_themes();
     ApplyThemesCB();
 }
-
 #endif
 
-#if defined(IF_XM)
 
+#if defined(IF_XM)
 // Register additional info button
 void register_info_button(Widget w)
 {
     infos_entries += w;
 }
-
 #else
-
 // Register additional info button
 void register_info_button(GUI::Widget *w)
 {
     infos_entries += w;
 }
-
 #endif
 
 // Save `settings' state
@@ -2025,18 +1939,17 @@ static void add_settings(GUI::Table *form, int& row, Dimension& max_width,
 #endif
 
 #if defined(IF_XM)
-
 static Widget create_signal_button(Widget label,
 				   const string& name,
 				   int row,
 				   Widget rightmost = 0)
 {
-    MString lbl(capitalize(name));
-
     Arg args[15];
     Cardinal arg = 0;
 
+    MString lbl(capitalize(name));
     XtSetArg(args[arg], XmNlabelString, lbl.xmstring()); arg++;
+
     if (rightmost != 0)
     {
 	XtSetArg(args[arg], XmNrightAttachment, XmATTACH_WIDGET); arg++;
@@ -2072,9 +1985,7 @@ static Widget create_signal_button(Widget label,
 
     return w;
 }
-
 #else
-
 static GUI::CheckButton *create_signal_button(GUI::Widget *label,
 					      const string& name,
 					      int row,
@@ -2107,7 +2018,6 @@ static GUI::Button *create_signal_button_send(GUI::Widget *label,
 
     return button;
 }
-
 #endif
 
 // Get `show' command for settings command CMD
@@ -2174,7 +2084,6 @@ static const char *const perl_taboos[] =
 };
 
 #if defined(IF_XM)
-
 // Add single button
 static void add_button(Widget form, int& row, Dimension& max_width,
 		       DebuggerType type, EntryType entry_filter,
@@ -2437,7 +2346,6 @@ static void add_button(Widget form, int& row, Dimension& max_width,
     // Add label
     Widget label = 0;
     Widget entry = 0;
-    Widget entry_w = 0;
 
     String set_command_s = new char[set_command.length() + 1];
     strcpy(set_command_s, set_command.chars());
@@ -2489,12 +2397,11 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 
     if (callback == 0)
     {
-	if (is_set) {
+	if (is_set)
 	    label = verify(XmCreateLabel(form, XMST(base.chars()), args, arg));
-	}
 	else {
-	    const string s1 = string("the") + base;
-	    label = verify(XmCreateLabel(form, XMST(s1.chars()), args, arg));
+	  const string s1 = string("the") + base;
+	  label = verify(XmCreateLabel(form, XMST(s1.chars()), args, arg));
 	}
 
 	XtManageChild(label);
@@ -2526,10 +2433,10 @@ static void add_button(Widget form, int& row, Dimension& max_width,
     Widget stop  = 0;
     if (e_type == SignalEntry)
     {
-	send  = (Widget)create_signal_button(label, "send",  row, help);
-	pass  = (Widget)create_signal_button(label, "pass",  row, send);
-	print = (Widget)create_signal_button(label, "print", row, pass);
-	stop  = (Widget)create_signal_button(label, "stop",  row, print);
+	send  = create_signal_button(label, "send",  row, help);
+	pass  = create_signal_button(label, "pass",  row, send);
+	print = create_signal_button(label, "print", row, pass);
+	stop  = create_signal_button(label, "stop",  row, print);
 
 	if (base == "all")
 	{
@@ -2795,14 +2702,12 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	entry = verify(XmCreateTextField(form, XMST(set_command.chars()), args, arg));
 	XtManageChild(entry);
 
-	if (e_type == TextFieldEntry) {
+	if (e_type == TextFieldEntry)
 	    XtAddCallback(entry, XmNvalueChangedCallback, 
 			  UpdateSettingsButtonsCB, XtPointer(0));
-	}
-	else { // ThemeEntry
+	else // ThemeEntry
 	    XtAddCallback(entry, XmNvalueChangedCallback, 
 			  UpdateThemesButtonsCB, XtPointer(0));
-	}
     }
     }
 
@@ -2889,8 +2794,8 @@ static void add_button(Widget form, int& row, Dimension& max_width,
     else if (e_type == ThemeEntry)
     {
 	// Register entry
-	themes_entries += entry_w;
-	themes_labels  += (Widget)label;
+	themes_entries += entry;
+	themes_labels  += label;
     }
     else if (e_type != DisplayToggleButtonEntry)
     {
@@ -2921,7 +2826,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	process_show(show_command, value, true);
 
 	// Register entry
-	settings_entries     += (Widget)entry;
+	settings_entries     += entry;
 	settings_entry_types += e_type;
     }
     else
@@ -2934,9 +2839,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 
     row++;
 }
-
 #else
-
 // Add single button
 static void add_button(GUI::Table *form, int& row, Dimension& max_width,
 		       DebuggerType type, EntryType entry_filter,
@@ -3589,11 +3492,9 @@ static void add_button(GUI::Table *form, int& row, Dimension& max_width,
     form->cr();
     row++;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Add separator
 static void add_separator(Widget form, int& row)
 {
@@ -3609,9 +3510,7 @@ static void add_separator(Widget form, int& row)
     XtManageChild(sep);
     row++;
 }
-
 #else
-
 // Add separator
 static void add_separator(GUI::Table *form, int& row)
 {
@@ -3622,7 +3521,6 @@ static void add_separator(GUI::Table *form, int& row)
     form->cr();
     row++;
 }
-
 #endif
 
 #if defined(IF_XM)
@@ -3729,7 +3627,6 @@ static void add_settings(GUI::Table *form, int& row, Dimension& max_width,
     }
 }
 
-
 // Reload all settings
 static void reload_all_settings()
 {
@@ -3767,7 +3664,6 @@ void update_settings()
 }
 
 #if defined(IF_XM)
-
 // Reset settings
 static void ResetSettingsCB(Widget, XtPointer, XtPointer)
 {
@@ -3795,9 +3691,7 @@ static void ResetSettingsCB(Widget, XtPointer, XtPointer)
 	    gdb_set_command(XtName(entry), settings_initial_values[entry]);
     }
 }
-
 #else
-
 // Reset settings
 static void ResetSettingsCB(void)
 {
@@ -3825,11 +3719,9 @@ static void ResetSettingsCB(void)
 	    gdb_set_command(entry->get_name().c_str(), settings_initial_values[entry]);
     }
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Reset signals
 static void ResetSignalsCB(Widget, XtPointer, XtPointer)
 {
@@ -3849,9 +3741,7 @@ static void ResetSignalsCB(Widget, XtPointer, XtPointer)
 
     gdb_command(command);
 }
-
 #else
-
 // Reset signals
 static void ResetSignalsCB(void)
 {
@@ -3871,11 +3761,9 @@ static void ResetSignalsCB(void)
 
     gdb_command(command);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Apply settings
 static void ApplySettingsCB(Widget, XtPointer, XtPointer)
 {
@@ -3896,9 +3784,7 @@ static void ApplySettingsCB(Widget, XtPointer, XtPointer)
 	    gdb_set_command(XtName(entry), value);
     }
 }
-
 #else
-
 // Apply settings
 static void ApplySettingsCB(void)
 {
@@ -3919,11 +3805,9 @@ static void ApplySettingsCB(void)
 	    gdb_set_command(entry->get_name().c_str(), value);
     }
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Delete all infos
 static void DeleteAllInfosCB (Widget, XtPointer, XtPointer)
 {
@@ -3933,9 +3817,7 @@ static void DeleteAllInfosCB (Widget, XtPointer, XtPointer)
 	XmToggleButtonSetState(entry, False, True);
     }
 }
-
 #else
-
 // Delete all infos
 static void DeleteAllInfosCB (void)
 {
@@ -3946,7 +3828,6 @@ static void DeleteAllInfosCB (void)
 	entry->set_active(false, true);
     }
 }
-
 #endif
 
 // Fetch help for specific COMMAND
@@ -4008,6 +3889,7 @@ static void fix_clip_window_translations(Widget scroll)
     XtOverrideTranslations(clip, tr);
 }
 #endif
+
 
 // Themes
 
@@ -4080,8 +3962,8 @@ static void add_themes(GUI::Table *form, int& row, Dimension& max_width)
 	add_button(form, row, max_width, gdb->type(), ThemeEntry, themes[i]);
 }
 
-#if defined(IF_XM)
 
+#if defined(IF_XM)
 // Create settings or infos editor
 static Widget create_panel(DebuggerType type, SettingsType stype)
 {
@@ -4185,7 +4067,7 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
     // Add a form.
     arg = 0;
     Widget form = verify(XmCreateForm(scroll,
-				      XMST("form"), args, arg));
+                            XMST("form"), args, arg));
 
     switch (stype)
     {
@@ -4404,9 +4286,7 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
 
     return panel;
 }
-
 #else
-
 // Create settings or infos editor
 static GUI::Dialog *create_panel(DebuggerType type, SettingsType stype)
 {
@@ -4607,12 +4487,10 @@ static GUI::Dialog *create_panel(DebuggerType type, SettingsType stype)
 
     return panel;
 }
-
 #endif
 
 
 #if defined(IF_XM)
-
 // Create settings editor
 static Widget create_settings(DebuggerType type)
 {
@@ -4638,9 +4516,7 @@ static Widget create_settings(DebuggerType type)
 
     return settings_panel;
 }
-
 #else
-
 // Create settings editor
 static GUI::Dialog *create_settings(DebuggerType type)
 {
@@ -4666,11 +4542,9 @@ static GUI::Dialog *create_settings(DebuggerType type)
 
     return settings_panel;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Create infos editor
 static Widget create_infos(DebuggerType type)
 {
@@ -4681,9 +4555,7 @@ static Widget create_infos(DebuggerType type)
 
     return infos_panel;
 }
-
 #else
-
 // Create infos editor
 static GUI::Widget *create_infos(DebuggerType type)
 {
@@ -4694,7 +4566,6 @@ static GUI::Widget *create_infos(DebuggerType type)
 
     return infos_panel;
 }
-
 #endif
 
 // Reload all signals
@@ -4708,7 +4579,6 @@ static void reload_all_signals()
 }
 
 #if defined(IF_XM)
-
 // Create signal editor
 static Widget create_signals(DebuggerType type)
 {
@@ -4726,9 +4596,7 @@ static Widget create_signals(DebuggerType type)
 
     return signals_panel;
 }
-
 #else
-
 // Create signal editor
 static GUI::Widget *create_signals(DebuggerType type)
 {
@@ -4746,7 +4614,6 @@ static GUI::Widget *create_signals(DebuggerType type)
 
     return signals_panel;
 }
-
 #endif
 
 void update_signals()
@@ -4767,33 +4634,28 @@ void update_signals()
 }
 
 #if defined(IF_XM)
-
 // Create themes editor
 static Widget create_themes(DebuggerType type)
 {
     check_options_file();
 
-    if (themes_panel != 0) {
+    if (themes_panel != 0)
 	XtDestroyWidget(themes_panel);
-    }
 
     // Reset variables
-    static const VarArray<Widget>       	empty_themes;
-    static const VarArray<Widget>               empty_labels;
+    static const WidgetArray empty;
     themes_panel        = 0;
     reset_themes_button = 0;
     apply_themes_button = 0;
-    themes_entries = empty_themes;
-    themes_labels  = empty_labels;
+    themes_entries = empty;
+    themes_labels  = empty;
 
     themes_panel = create_panel(type, THEMES);
 
     update_themes();
     return themes_panel;
 }
-
 #else
-
 // Create themes editor
 static GUI::Widget *create_themes(DebuggerType type)
 {
@@ -4817,11 +4679,9 @@ static GUI::Widget *create_themes(DebuggerType type)
     update_themes();
     return themes_panel;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Update themes
 void update_themes()
 {
@@ -4854,9 +4714,7 @@ void update_themes()
 	XtVaSetValues(button, XmNset, set, XtPointer(0));
     }
 }
-
 #else
-
 // Update themes
 void update_themes()
 {
@@ -4889,11 +4747,11 @@ void update_themes()
 	button->set_active(set);
     }
 }
-
 #endif
 
-#if defined(IF_XM)
 
+
+#if defined(IF_XM)
 // Popup editor for debugger settings
 void dddPopupSettingsCB (Widget, XtPointer, XtPointer)
 {
@@ -4923,9 +4781,7 @@ void dddPopupSignalsCB (Widget, XtPointer, XtPointer)
 
     manage_and_raise(signals);
 }
-
 #else
-
 // Popup editor for debugger settings
 void dddPopupSettingsCB (GUI::Widget *)
 {
@@ -4955,11 +4811,9 @@ void dddPopupSignalsCB (GUI::Widget *)
 
     manage_and_raise(signals);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Popup editor for display themes
 void dddPopupThemesCB (Widget, XtPointer, XtPointer)
 {
@@ -4969,9 +4823,7 @@ void dddPopupThemesCB (Widget, XtPointer, XtPointer)
 
     manage_and_raise(themes);
 }
-
 #else
-
 // Popup editor for display themes
 void dddPopupThemesCB (void)
 {
@@ -4981,7 +4833,6 @@ void dddPopupThemesCB (void)
 
     manage_and_raise(themes);
 }
-
 #endif
 
 // True iff settings might have changed
@@ -5181,7 +5032,6 @@ static void get_setting(std::ostream& os, DebuggerType type,
 }
 
 #if defined(IF_XM)
-
 // Fetch GDB settings string
 string get_settings(DebuggerType type, unsigned long flags)
 {
@@ -5200,9 +5050,7 @@ string get_settings(DebuggerType type, unsigned long flags)
 
     return string(command);
 }
-
 #else
-
 // Fetch GDB settings string
 string get_settings(DebuggerType type, unsigned long flags)
 {
@@ -5221,11 +5069,9 @@ string get_settings(DebuggerType type, unsigned long flags)
 
     return string(command);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Fetch GDB signal handling string
 string get_signals(DebuggerType type, unsigned long /* flags */)
 {
@@ -5244,9 +5090,7 @@ string get_signals(DebuggerType type, unsigned long /* flags */)
 
     return commands;
 }
-
 #else
-
 // Fetch GDB signal handling string
 string get_signals(DebuggerType type, unsigned long /* flags */)
 {
@@ -5265,8 +5109,8 @@ string get_signals(DebuggerType type, unsigned long /* flags */)
 
     return commands;
 }
-
 #endif
+
 
 //-----------------------------------------------------------------------
 // Trace Command Definitions
@@ -5446,13 +5290,13 @@ bool is_defined_cmd(const string& command)
 // Data
 
 #if defined(IF_XM)
-static Widget name_w;			// Name of defined command
-static Widget arg_w;			// `()' toggle
-static Widget record_w;			// `Record' button
-static Widget end_w;			// `End' button
-static Widget edit_w;			// `Edit>>' button
+static Widget name_w;		// Name of defined command
+static Widget arg_w;		// `()' toggle
+static Widget record_w;		// `Record' button
+static Widget end_w;		// `End' button
+static Widget edit_w;		// `Edit>>' button
 static Widget editor_w;		// Command definition editor
-static Widget apply_w;			// `Apply' button
+static Widget apply_w;		// `Apply' button
 #else
 static GUI::ComboBoxEntryText *name_w;	// Name of defined command
 static GUI::CheckButton *arg_w;		// `()' toggle
@@ -5488,7 +5332,6 @@ static bool is_arg_command(const string& name)
 }
 
 #if defined(IF_XM)
-
 static void add_button(string name, const _XtString& menu)
 {
     if (XmToggleButtonGetState(arg_w) || is_arg_command(name))
@@ -5500,9 +5343,7 @@ static void add_button(string name, const _XtString& menu)
     s += name + "\n";
     menu = (String)XtNewString(s.chars());
 }
-
 #else
-
 static void add_button(string name, const char *&menu)
 {
     if (arg_w->get_active() || is_arg_command(name))
@@ -5514,11 +5355,9 @@ static void add_button(string name, const char *&menu)
     s += name + "\n";
     menu = strdup(s.chars());
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void remove_button(const string& name, const _XtString& menu)
 {
     string s = string("\n") + menu;
@@ -5526,9 +5365,7 @@ static void remove_button(const string& name, const _XtString& menu)
     s.gsub("\n" + name + " ()\n", string("\n"));
     menu = (String)XtNewString(s.chars() + 1);
 }
-
 #else
-
 static void remove_button(const string& name, const char *&menu)
 {
     string s = string("\n") + menu;
@@ -5536,13 +5373,11 @@ static void remove_button(const string& name, const char *&menu)
     s.gsub("\n" + name + " ()\n", string("\n"));
     menu = strdup(s.chars() + 1);
 }
-
 #endif
 
 enum ButtonTarget { ConsoleTarget, SourceTarget, DataTarget };
 
 #if defined(IF_XM)
-
 static const _XtString &target_string(ButtonTarget t)
 {
     switch (t)
@@ -5560,9 +5395,7 @@ static const _XtString &target_string(ButtonTarget t)
     static const _XtString null = 0;
     return null;
 }
-
 #else
-
 static const char *&target_string(ButtonTarget t)
 {
     switch (t)
@@ -5580,20 +5413,18 @@ static const char *&target_string(ButtonTarget t)
     static const char *null = 0;
     return null;
 }
-
 #endif
 
 #if defined(IF_XM)
-
-static void ToggleButtonCB(Widget w, XtPointer client_data, XtPointer call_data)
+static void ToggleButtonCB(Widget, XtPointer client_data, XtPointer call_data)
 {
     string name = current_name();
     ButtonTarget target = (ButtonTarget) (long) client_data;
 
-    const _XtString& str = target_string(target);
-
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
+
+    const _XtString& str = target_string(target);
 
     if (info->set)
     {
@@ -5606,9 +5437,7 @@ static void ToggleButtonCB(Widget w, XtPointer client_data, XtPointer call_data)
 
     update_user_buttons();
 }
-
 #else
-
 static void ToggleButtonCB(GUI::CheckButton *w, ButtonTarget client_data)
 {
     string name = current_name();
@@ -5627,7 +5456,6 @@ static void ToggleButtonCB(GUI::CheckButton *w, ButtonTarget client_data)
 
     update_user_buttons();
 }
-
 #endif
 
 static MMDesc button_menu[] =
@@ -5648,7 +5476,6 @@ static MMDesc button_menu[] =
 };
 
 #if defined(IF_XM)
-
 static void refresh_toggle(ButtonTarget t)
 {
     Widget& w = button_menu[t].widget;
@@ -5660,9 +5487,8 @@ static void refresh_toggle(ButtonTarget t)
 
     Boolean new_state = 
 	s.contains("\n" + name + "\n") || s.contains("\n" + name + " ()\n");
-    if (old_state != new_state) {
+    if (old_state != new_state)
 	XtVaSetValues(w, XmNset, new_state, XtPointer(0));
-    }
 
 #if 1
     set_sensitive(w, !name.empty());
@@ -5674,9 +5500,7 @@ static void refresh_toggle(ButtonTarget t)
     }
 #endif
 }
-
 #else
-
 static void refresh_toggle(ButtonTarget t)
 {
     GUI::Widget *w = button_menu[t].widget;
@@ -5690,9 +5514,8 @@ static void refresh_toggle(ButtonTarget t)
 
     Boolean new_state = 
 	s.contains("\n" + name + "\n") || s.contains("\n" + name + " ()\n");
-    if (old_state != new_state) {
+    if (old_state != new_state)
 	tb->set_active(new_state);
-    }
 
 #if 1
     set_sensitive(w, !name.empty());
@@ -5704,7 +5527,6 @@ static void refresh_toggle(ButtonTarget t)
     }
 #endif
 }
-
 #endif
 
 static void refresh_toggles()
@@ -5734,7 +5556,6 @@ static void refresh_combo_box()
 // Editing stuff
 
 #if defined(IF_XM)
-
 // Text field has changed -- update buttons
 void UpdateDefinePanelCB(Widget w, XtPointer, XtPointer)
 {
@@ -5759,9 +5580,7 @@ void UpdateDefinePanelCB(Widget w, XtPointer, XtPointer)
 
     refresh_toggles();
 }
-
 #else
-
 // Text field has changed -- update buttons
 void UpdateDefinePanelCB(GUI::Widget *w)
 {
@@ -5786,7 +5605,6 @@ void UpdateDefinePanelCB(GUI::Widget *w)
 
     refresh_toggles();
 }
-
 #endif
 
 static void update_defineHP(Agent *, void *client_data, void *call_data)
@@ -5826,43 +5644,34 @@ void update_define_later(const string& command)
 }
 
 #if defined(IF_XM)
-
 static void RecordCommandDefinitionCB(Widget w, XtPointer, XtPointer)
 {
     string name = current_name();
     gdb_command("define " + name, w);
 }
-
 #else
-
 static void RecordCommandDefinitionCB(GUI::Widget *w)
 {
     string name = current_name();
     gdb_command("define " + name, w);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void EndCommandDefinitionCB(Widget w, XtPointer, XtPointer)
 {
     if (gdb->recording())
 	gdb_command("end", w);
 }
-
 #else
-
 static void EndCommandDefinitionCB(GUI::Widget *w)
 {
     if (gdb->recording())
 	gdb_command("end", w);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void DoneEditCommandDefinitionCB(Widget w, XtPointer, XtPointer)
 {
     if (!XtIsManaged(XtParent(editor_w)))
@@ -5908,9 +5717,7 @@ static void DoneEditCommandDefinitionCB(Widget w, XtPointer, XtPointer)
 	update_define_later(name);
     }
 }
-
 #else
-
 static void DoneEditCommandDefinitionCB(GUI::Widget *w)
 {
     if (!editor_w->is_mapped())
@@ -5954,11 +5761,9 @@ static void DoneEditCommandDefinitionCB(GUI::Widget *w)
 	update_define_later(name);
     }
 }
-
 #endif
 
 #if defined(IF_XM)
-
 static void EditCommandDefinitionCB(Widget, XtPointer, XtPointer)
 {
     if (XtIsManaged(XtParent(editor_w)))
@@ -5980,9 +5785,7 @@ static void EditCommandDefinitionCB(Widget, XtPointer, XtPointer)
     MString label = "Edit " + MString("<<", CHARSET_SMALL);
     set_label(edit_w, label);
 }
-
 #else
-
 static void EditCommandDefinitionCB(void)
 {
     if (editor_w->is_mapped())
@@ -6004,12 +5807,10 @@ static void EditCommandDefinitionCB(void)
     GUI::String label = GUI::String("Edit ") + GUI::String("<<");
     set_label(edit_w, label);
 }
-
 #endif
 
 #if defined(IF_XM)
-
-static void ToggleEditCommandDefinitionCB(Widget w, XtPointer client_data,
+static void ToggleEditCommandDefinitionCB(Widget w, XtPointer client_data, 
 					  XtPointer call_data)
 {
     if (XtIsManaged(XtParent(editor_w)))
@@ -6017,9 +5818,7 @@ static void ToggleEditCommandDefinitionCB(Widget w, XtPointer client_data,
     else
 	EditCommandDefinitionCB(w, client_data, call_data);
 }
-
 #else
-
 static void ToggleEditCommandDefinitionCB(GUI::Widget *w)
 {
     if (editor_w->is_mapped())
@@ -6027,12 +5826,9 @@ static void ToggleEditCommandDefinitionCB(GUI::Widget *w)
     else
 	EditCommandDefinitionCB();
 }
-
 #endif
 
-
 #if defined(IF_XM)
-
 // Apply the given command
 static void ApplyCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
@@ -6050,9 +5846,7 @@ static void ApplyCB(Widget w, XtPointer client_data, XtPointer call_data)
 	gdb_command(cmd, w);
     }
 }
-
 #else
-
 // Apply the given command
 static void ApplyCB(GUI::Widget *w)
 {
@@ -6070,7 +5864,6 @@ static void ApplyCB(GUI::Widget *w)
 	gdb_command(cmd, w);
     }
 }
-
 #endif
 
 // Force argument to `()'
@@ -6092,9 +5885,6 @@ static void set_arg()
 
 #if defined(IF_XM)
     if (gdb->recording() && XmToggleButtonGetState(arg_w))
-#if 0
-    {}
-#endif
 #else
     if (gdb->recording() && arg_w->get_active())
 #endif
@@ -6134,19 +5924,15 @@ static void set_arg()
 }
 
 #if defined(IF_XM)
-
 static void ToggleArgCB(Widget, XtPointer, XtPointer)
 {
     set_arg();
 }
-
 #else
-
 static void ToggleArgCB(void)
 {
     set_arg();
 }
-
 #endif
 
 static MMDesc commands_menu[] =
@@ -6187,8 +5973,8 @@ static MMDesc panel_menu[] =
     MMEnd
 };
 
-#if defined(IF_XM)
 
+#if defined(IF_XM)
 // Define command
 void dddDefineCommandCB(Widget w, XtPointer, XtPointer)
 {
@@ -6264,9 +6050,7 @@ void dddDefineCommandCB(Widget w, XtPointer, XtPointer)
     refresh_combo_box();
     manage_and_raise(dialog);
 }
-
 #else
-
 // Define command
 void dddDefineCommandCB(GUI::Widget *w)
 {

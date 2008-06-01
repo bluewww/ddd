@@ -29,24 +29,18 @@
 #ifndef _DDD_show_h
 #define _DDD_show_h
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
 #include "ddd.h"
 #include "GDBAgent.h"
-
 #if defined(IF_XM)
-
 #include <X11/Intrinsic.h>
 #include <X11/Xresource.h>
-
-#endif
-
-#if !defined(IF_XM)
+#else
 #include <GUI/Widget.h>
 #endif
-
 #include <iostream>
 
 // Help texts
@@ -56,7 +50,6 @@ void show_configuration(std::ostream& os);
 void show(int (*formatter)(std::ostream& os));
 
 #if defined(IF_XM)
-
 // WWW page
 void DDDWWWPageCB(Widget, XtPointer, XtPointer);
 
@@ -72,9 +65,7 @@ void DDDLicenseCB(Widget, XtPointer, XtPointer);
 // News
 int ddd_news(std::ostream& os);
 void DDDNewsCB(Widget, XtPointer, XtPointer);
-
 #else
-
 // WWW page
 void DDDWWWPageCB(GUI::Widget *);
 
@@ -90,7 +81,6 @@ void DDDLicenseCB(GUI::Widget *);
 // News
 int ddd_news(std::ostream& os);
 void DDDNewsCB(GUI::Widget *);
-
 #endif
 
 #endif // _DDD_show_h

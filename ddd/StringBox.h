@@ -29,7 +29,7 @@
 #ifndef _DDD_StringBox_h
 #define _DDD_StringBox_h
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
@@ -47,7 +47,6 @@
 #else
 #define DEFAULT_FONT_NAME "Monospace 12"
 #endif
-
 
 // StringBox
 
@@ -120,7 +119,7 @@ public:
 
 #if defined(IF_XM)
     StringBox(const string& s, XFontStruct *fnt,
-	      const char *t = "StringBox"):
+	const char *t = "StringBox"):
 	PrimitiveBox(BoxSize(0,0), BoxExtend(0, 0), t),
 	_string(s), _fontname("?"), _font(fnt), _ascent(0)
     {

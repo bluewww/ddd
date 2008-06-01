@@ -29,15 +29,14 @@
 #ifndef _DDD_status_h
 #define _DDD_status_h
 
-#include "strclass.h"
-#include "bool.h"
-#include "Delay.h"
-#include "MString.h"
-
 #if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
+#include "strclass.h"
+#include "bool.h"
+#include "Delay.h"
+#include "MString.h"
 #if defined(IF_XM)
 #include <X11/Intrinsic.h>
 #else
@@ -46,7 +45,6 @@
 #include <GUI/Menu.h>
 #include "gtk_wrapper.h"
 #endif
-
 
 // Show MESSAGE in status window.
 // If TEMPORARY is set, override locks and do not add to status history.

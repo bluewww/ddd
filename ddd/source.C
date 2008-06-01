@@ -29,7 +29,9 @@
 char source_rcsid[] = 
     "$Id$";
 
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
+#endif
 
 #include "source.h"
 
@@ -105,6 +107,7 @@ void gdbRedoCB(void)
     undo_buffer.redo();
 }
 #endif
+
 
 //-----------------------------------------------------------------------------
 // Printing
@@ -204,6 +207,7 @@ void gdbWhatisCB(GUI::Widget *w)
 
 
 
+
 //-----------------------------------------------------------------------------
 // Breakpoints
 //-----------------------------------------------------------------------------
@@ -260,7 +264,7 @@ void gdbClearAtCB(Widget w, XtPointer, XtPointer)
 void gdbToggleBreakCB(Widget w, XtPointer, XtPointer)
 {
     source_view->set_bp(current_arg(true), 
-			!have_breakpoint_at_arg(), false, "", w);
+		       !have_breakpoint_at_arg(), false, "", w);
 }
 
 void gdbContUntilCB(Widget w, XtPointer, XtPointer)
@@ -374,6 +378,7 @@ void gdbEditWatchpointPropertiesCB(void)
 #endif
 
 
+
 //-----------------------------------------------------------------------------
 // Watchpoints
 //-----------------------------------------------------------------------------
@@ -396,8 +401,9 @@ bool have_enabled_watchpoint_at_arg()
 }
 
 #if defined(IF_XM)
-void gdbWatchCB(Widget w, XtPointer client_data, XtPointer)
+void gdbWatchCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
+    (void) call_data;		// Use it
     const string arg = current_arg();
 
 #if 0 // We may have different kinds of watchpoints!
@@ -488,13 +494,13 @@ void gdbUnwatchCB(void)
 #endif
 
 #if defined(IF_XM)
-void gdbToggleWatchCB(Widget w, XtPointer client_data, XtPointer)
+void gdbToggleWatchCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     BreakPoint *bp = source_view->watchpoint_at(current_arg());
     if (bp == 0)
-	gdbWatchCB(w, client_data, XtPointer(0));
+	gdbWatchCB(w, client_data, call_data);
     else
-	gdbUnwatchCB(w, client_data, XtPointer(0));
+	gdbUnwatchCB(w, client_data, call_data);
 }
 #else
 void gdbToggleWatchCB(GUI::Widget *w, int mode)
@@ -507,6 +513,7 @@ void gdbToggleWatchCB(GUI::Widget *w, int mode)
 }
 #endif
 
+
 //-----------------------------------------------------------------------------
 // Searching
 //-----------------------------------------------------------------------------
@@ -514,7 +521,9 @@ void gdbToggleWatchCB(GUI::Widget *w, int mode)
 static SourceView::SearchDirection last_find_direction = SourceView::forward;
 
 #if defined(IF_XM)
-void gdbFindCB(Widget w, XtPointer client_data, XtPointer)
+void gdbFindCB(Widget w, 
+	       XtPointer client_data,
+	       XtPointer call_data)
 {
     SourceView::SearchDirection direction = 
 	(SourceView::SearchDirection) (long) client_data;
@@ -528,8 +537,15 @@ void gdbFindCB(Widget w, XtPointer client_data, XtPointer)
 	update_options();
     }
 
-    // Forget the exact timestamp; use the last processed.
-    Time tm = XtLastTimestampProcessed(XtDisplay(w));
+    XmPushButtonCallbackStruct *cbs = 
+	(XmPushButtonCallbackStruct *)call_data;
+
+    // LessTif 0.79 sometimes returns 0 in cbs->event.  Handle this.
+    Time tm;
+    if (cbs->event != 0)
+	tm = time(cbs->event);
+    else
+	tm = XtLastTimestampProcessed(XtDisplay(w));
 
     string key = source_arg->get_string();
     source_view->find(key, direction, 
@@ -538,7 +554,6 @@ void gdbFindCB(Widget w, XtPointer client_data, XtPointer)
 		      tm);
     source_arg->set_string(key);
 }
-
 
 void gdbFindAgainCB(Widget w, XtPointer, XtPointer call_data)
 {
@@ -627,7 +642,7 @@ static void gdbEditDoneHP(Agent *edit_agent, void *, void *)
 		    gdbDeleteEditAgent, 
 		    XtPointer(edit_agent));
 
-    gdbReloadSourceCB(Widget(0), XtPointer(0), XtPointer(0));
+    gdbReloadSourceCB(gdb_w, 0, 0);
 #else
     GUI::signal_idle().connect(sigc::bind_return(sigc::bind(sigc::ptr_fun(gdbDeleteEditAgent),
 							    edit_agent),

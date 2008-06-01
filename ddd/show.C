@@ -59,16 +59,11 @@ char show_rcsid[] =
 #include <errno.h>
 
 #if defined(IF_XM)
-
 #include "Xpm.h"
 #if HAVE_ATHENA
 #include <X11/Xaw/XawInit.h>
 #endif
-
-#else
-
 #endif
-
 #include "HelpCB.h"
 
 #if !HAVE_POPEN_DECL
@@ -538,7 +533,6 @@ void show(int (*formatter)(std::ostream& os))
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-
 void DDDWWWPageCB(Widget, XtPointer, XtPointer)
 {
     string url = app_data.www_page;
@@ -551,9 +545,7 @@ void DDDWWWPageCB(Widget, XtPointer, XtPointer)
     cmd = sh_command(cmd, true);
     system(cmd.chars());
 }
-
 #else
-
 void DDDWWWPageCB(GUI::Widget *)
 {
     string url = app_data.www_page;
@@ -566,8 +558,8 @@ void DDDWWWPageCB(GUI::Widget *)
     cmd = sh_command(cmd, true);
     system(cmd.chars());
 }
-
 #endif
+
 
 
 //-----------------------------------------------------------------------------

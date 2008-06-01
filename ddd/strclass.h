@@ -405,6 +405,10 @@ License along with this library; if not, see <http://www.gnu.org/licenses/>.
 #ifndef _ICE_strclass_h
 #define _ICE_strclass_h
 
+#if defined(HAVE_CONFIG_H)
+#include "config.h"
+#endif
+
 #include <iostream>
 #include <sstream>
 #include "rxclass.h"
@@ -414,7 +418,7 @@ License along with this library; if not, see <http://www.gnu.org/licenses/>.
 #include "casts.h"
 #include "attribute.h"
 
-#ifndef IF_XM
+#if !defined(IF_XM)
 #include <GUI/Widget.h>
 #endif
 
@@ -582,7 +586,7 @@ public:
     string(const char* t, int len);
     string(char c);
     string(std::ostringstream& os); // should be const
-#ifndef IF_XM
+#if !defined(IF_XM)
     explicit string(GUI::String const &s);
 #endif
 

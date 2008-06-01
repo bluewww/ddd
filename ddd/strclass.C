@@ -1673,7 +1673,6 @@ bool constSubString::OK() const
 	S.error("constsubString invariant failure");
     return true;
 }
-
 #if !defined(IF_XM)
 
 string::string(GUI::String const &s)
@@ -1684,6 +1683,4 @@ string::string(GUI::String const &s)
 {
     *this = string(s.c());
 }
-
-
 #endif

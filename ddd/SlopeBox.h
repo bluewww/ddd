@@ -29,7 +29,7 @@
 #ifndef _DDD_SlopeBox_h
 #define _DDD_SlopeBox_h
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
