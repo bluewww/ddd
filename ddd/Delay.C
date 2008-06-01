@@ -29,7 +29,7 @@
 char Delay_rcsid[] = 
     "$Id$";
 
-#define LOG_DELAY 0
+#define LOG_DELAY 1
 
 #if defined(HAVE_CONFIG_H)
 #include "config.h"
@@ -236,7 +236,7 @@ _Delay::_Delay(GUI::Widget *w):
 	return;
 
 #if LOG_DELAY
-    std::clog << "Setting " << widget->get_name() << " delay cursor\n";
+    std::clog << "Setting " << widget->get_name().c_str() << " delay cursor\n";
 #endif
 
     GUI::RefPtr<GUI::Display> display = widget->get_display();
@@ -298,7 +298,7 @@ _Delay::~_Delay()
 	return;
 
 #if LOG_DELAY
-    std::clog << "Removing " << widget->get_name() << " delay cursor\n";
+    std::clog << "Removing " << widget->get_name().c_str() << " delay cursor\n";
 #endif
 
     static int errcnt = 0;
@@ -387,8 +387,13 @@ void Delay::DestroyCB(GUI::Widget *widget)
 		delays[i] = 0;
 	    }
 #if LOG_DELAY
+#if defined(IF_XM)
 	    std::clog << "Unregistering " << XtName(widget) 
 		      << " in slot " << i << "\n";
+#else
+	    std::clog << "Unregistering " << widget->get_name().c_str()
+		      << " in slot " << i << "\n";
+#endif
 #endif
 	}
 }
@@ -441,7 +446,11 @@ void Delay::register_shell(GUI::Widget *widget)
     delays[i]  = new_delay;
 
 #if LOG_DELAY
+#if defined(IF_XM)
     std::clog << "Registering " << XtName(widget) << " in slot " << i << "\n";
+#else
+    std::clog << "Registering " << widget->get_name().c_str() << " in slot " << i << "\n";
+#endif
 #endif
 
     if (shell_registered != 0)
