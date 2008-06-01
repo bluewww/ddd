@@ -7677,6 +7677,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 
 	if (pos_found)
 	    word = get_word_at_pos(text_w, pos, startpos, endpos);
+	callback_word = word;
 
 	// Popup specific word menu
 	string current_arg = word;
