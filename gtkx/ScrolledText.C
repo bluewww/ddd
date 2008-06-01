@@ -82,6 +82,7 @@ MarkedTextView::map_glyph(Glib::RefPtr<Gdk::Pixbuf> glyph, int x, int y)
 	      << ") = " << new_mark << "\n";
     marks.push_back(new_mark);
     refresh_line(y, glyph->get_height());
+    return new_mark;
 }
 
 void

@@ -4565,7 +4565,8 @@ bool SourceView::get_line_of_pos (GUI::Widget *w,
 				  int&     line_nr,
 				  string&  address,
 				  bool&    in_text,
-				  int&     bp_nr)
+				  int&     bp_nr,
+				  int x, int y)
 {
     bool found = false;
 
@@ -4649,6 +4650,7 @@ bool SourceView::get_line_of_pos (GUI::Widget *w,
 		found = true;
 		in_text = false;
 		line_nr = max(line_nr, 1);
+		std::cerr << "Breakpoint area in line " << line_nr << "\n";
 
 #if 0
 		// Check for breakpoints...
@@ -4688,20 +4690,23 @@ bool SourceView::get_line_of_pos (GUI::Widget *w,
 			BreakPoint* bp = *bps.begin();
 			assert(bp != NULL);
 			bp_nr = bp->number();
+			std::cerr << "Only breakpoint: " << bp_nr << "\n";
 		    }
 		    else if (bps.size() > 1)
 		    {
 			// Find which breakpoint was selected
-			long bp_disp_pos = line_pos;
 			BpList::iterator i;
 			for (i = bps.begin(); i != bps.end(); ++i)
 			{
 			    BreakPoint* bp = *i;
 			    assert(bp != NULL);
 
-			    bp_disp_pos += 2; // respect '#' and '_';
-			    bp_disp_pos += itostring(bp->number()).length();
-			    if (pos < bp_disp_pos)
+			    GUI::GlyphMark *bp_glyph = bp->source_glyph();
+			    int x0 = bp_glyph->x;
+			    int y0 = bp_glyph->y;
+			    int x1 = x0 + bp_glyph->glyph->get_width();
+			    int y1 = y0 + bp_glyph->glyph->get_height();
+			    if ((x >= x0 && x < x1) && (y >= y0 && y < y1))
 			    {
 				bp_nr = bp->number();
 				break; // exit for loop
@@ -7656,7 +7661,9 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	{
 	    bp_popup_parent = w;
 	    bp_popup_w = MMcreatePopupMenu(w, "bp_popup", bp_popup);
-	    callback_bp_nr = bp_nr;
+#ifdef NAG_ME
+#warning MMaddCallbacks cannot override existing closure callback_bp_nr.
+#endif
 	    MMaddCallbacks (bp_popup, XtPointer(&bp_nr));
 	    MMaddHelpCallback(bp_popup, ImmediateHelpCB);
 	    InstallButtonTips(bp_popup_w);
@@ -7673,6 +7680,8 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 		      XmNlabelString, label.xmstring(),
 		      XtPointer(0));
 
+	std::cerr << "Setting callback_bp_nr = " << bp_nr << "\n";
+	callback_bp_nr = bp_nr;
 	XmMenuPosition(bp_popup_w, event);
 	XtManageChild(bp_popup_w);
     }
@@ -7736,6 +7745,9 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	Widget text_popup_w = 
 	    MMcreatePopupMenu(text_w, "text_popup", text_popup);
 	callback_word = word;
+#ifdef NAG_ME
+#warning MMaddCallbacks cannot override existing closure callback_word.
+#endif
 	MMaddCallbacks(text_popup, XtPointer(&word));
 	MMaddHelpCallback(text_popup, ImmediateHelpCB);
 	InstallButtonTips(text_popup_w);
@@ -7829,7 +7841,8 @@ void SourceView::srcpopupAct (GUI::Widget *w, GUI::Event* e, GUI::String *, unsi
     bool in_text;
     static int bp_nr;
     static string address;
-    bool pos_found = get_line_of_pos(w, pos, line_nr, address, in_text, bp_nr);
+    bool pos_found = get_line_of_pos(w, pos, line_nr, address, in_text, bp_nr,
+				     x, y);
 
     bool right_of_text = 
 	pos < long(current_text(w).length()) 
@@ -7846,7 +7859,9 @@ void SourceView::srcpopupAct (GUI::Widget *w, GUI::Event* e, GUI::String *, unsi
 	{
 	    bp_popup_parent = w;
 	    bp_popup_w = MMcreatePopupMenu(*w, "bp_popup", bp_popup);
-	    callback_bp_nr = bp_nr;
+#ifdef NAG_ME
+#warning MMaddCallbacks cannot override existing closure callback_word.
+#endif
 	    MMaddCallbacks (bp_popup, &bp_nr);
 	    MMaddHelpCallback(bp_popup, sigc::ptr_fun(ImmediateHelpCB));
 	    InstallButtonTips(bp_popup_w);
@@ -7863,6 +7878,8 @@ void SourceView::srcpopupAct (GUI::Widget *w, GUI::Event* e, GUI::String *, unsi
 	mi->remove();
 	mi->add_label(label.xmstring(), false, 0.0, 0.5);
 
+	std::cerr << "Setting callback_bp_nr = " << bp_nr << "\n";
+	callback_bp_nr = bp_nr;
 	bp_popup_w->menu_position(event);
 	bp_popup_w->popup(0, 0);
     }
@@ -7916,6 +7933,9 @@ void SourceView::srcpopupAct (GUI::Widget *w, GUI::Event* e, GUI::String *, unsi
 	    MMcreatePopupMenu(*text_w, "text_popup", text_popup);
 	// FIXME: &word is ignored.  We copied its value to the static
 	// area callback_word.
+#ifdef NAG_ME
+#warning MMaddCallbacks cannot override existing closure callback_word.
+#endif
 	callback_word = word;
 	MMaddCallbacks(text_popup, &word);
 	MMaddHelpCallback(text_popup, sigc::ptr_fun(ImmediateHelpCB));
@@ -13126,7 +13146,9 @@ void SourceView::update_glyphs_now()
 		    continue;
 
 		GUI::ScrolledText *text_w = k ? code_text_w : source_text_w;
-		std::cerr << "bp_glyph?\n";
+
+		GUI::GlyphMark *&bp_glyph = k ? bp->code_glyph() : bp->source_glyph();
+		bp_glyph = 0;
 
 		long pos;
 		if (k == 0)
@@ -13150,25 +13172,25 @@ void SourceView::update_glyphs_now()
 		{
 		    // Temporary breakpoint
 		    if (bp->enabled())
-			map_stop_at(text_w, pos, plain_temp, positions);
+			bp_glyph = map_stop_at(text_w, pos, plain_temp, positions);
 		    else
-			map_stop_at(text_w, pos, grey_temp, positions);
+			bp_glyph = map_stop_at(text_w, pos, grey_temp, positions);
 		}
 		else if (!bp->condition().empty() || bp->ignore_count() != 0)
 		{
 		    // Conditional breakpoint
 		    if (bp->enabled())
-			map_stop_at(text_w, pos, plain_cond, positions);
+			bp_glyph = map_stop_at(text_w, pos, plain_cond, positions);
 		    else
-			map_stop_at(text_w, pos, grey_cond, positions);
+			bp_glyph = map_stop_at(text_w, pos, grey_cond, positions);
 		}
 		else
 		{
 		    // Ordinary breakpoint
 		    if (bp->enabled())
-			map_stop_at(text_w, pos, plain_stop, positions);
+			bp_glyph = map_stop_at(text_w, pos, plain_stop, positions);
 		    else
-			map_stop_at(text_w, pos, grey_stop, positions);
+			bp_glyph = map_stop_at(text_w, pos, grey_stop, positions);
 		}
 	    }
 	}

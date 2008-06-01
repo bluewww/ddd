@@ -954,7 +954,7 @@ void MMaddItems(GUI::Container *shell, MMDesc items[], bool ignore_seps)
 	    bool have_label = 
 		(name[0] != '\0' && (flags & MMUnmanagedLabel) == 0);
 
-	    widget = box = new GUI::HBox(*shell, GUI::PACK_SHRINK, panelName.chars());
+	    widget = box = new GUI::HBox(*shell, GUI::PACK_EXPAND_WIDGET, panelName.chars());
 
 	    label = new GUI::Label(*box, GUI::PACK_SHRINK, name, label_string);
 	    label->set_alignment(0.0, 0.5);
@@ -997,7 +997,7 @@ void MMaddItems(GUI::Container *shell, MMDesc items[], bool ignore_seps)
 	    assert(subitems == 0);
 
 	    std::cerr << "FIXME: Hardwired bounds for HScale.\n";
-	    widget = new GUI::HScale(*shell, GUI::PACK_SHRINK, name, 0, 16);
+	    widget = new GUI::HScale(*shell, GUI::PACK_EXPAND_WIDGET, name, 0, 16);
 	    break;
 	}
 
@@ -1228,10 +1228,10 @@ GUI::Container *MMcreatePanel(GUI::Container *parent, GUI::String name, MMDesc i
 {
     GUI::Container *panel;
     if (orient == GUI::ORIENTATION_VERTICAL) {
-	panel = new GUI::VBox(*parent, GUI::PACK_SHRINK, name);
+	panel = new GUI::VBox(*parent, GUI::PACK_EXPAND_WIDGET, name);
     }
     else {
-	panel = new GUI::HBox(*parent, GUI::PACK_SHRINK, name);
+	panel = new GUI::HBox(*parent, GUI::PACK_EXPAND_WIDGET, name);
     }
     MMaddItems(panel, items);
     panel->show();

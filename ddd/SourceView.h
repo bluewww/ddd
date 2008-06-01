@@ -386,12 +386,16 @@ class SourceView {
     // at POS.  IN_TEXT becomes true iff POS is in the source area.
     // BP_NR is the number of the breakpoint at POS (none: 0).  Return
     // false iff failure.
+#ifdef NAG_ME
+#warning (x, y) are required to find breakpoint
+#endif
     static bool get_line_of_pos (GUI::Widget *w,
 				 long pos,
 				 int& line_nr,
 				 string& address,
 				 bool& in_text,
-				 int& bp_nr);
+				 int& bp_nr,
+				 int x=-1, int y=-1);
 
     // Find word around POS.  STARTPOS is the first character, ENDPOS
     // is the last character in the word.

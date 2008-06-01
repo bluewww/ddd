@@ -38,6 +38,10 @@
 
 #if defined(IF_XM)
 #include <X11/Intrinsic.h>
+#else
+namespace GUI {
+    struct GlyphMark;
+}
 #endif
 
 // Misc includes
@@ -102,6 +106,9 @@ class BreakPoint {
 #if defined(IF_XM)
     Widget  mysource_glyph;	// Associated glyph in source
     Widget  mycode_glyph;	// Associated glyph in code
+#else
+    GUI::GlyphMark *mysource_glyph;	// Associated glyph in source
+    GUI::GlyphMark *mycode_glyph;	// Associated glyph in code
 #endif
 
 private:
@@ -179,6 +186,10 @@ public:
     // Associated glyphs in source and machine code
     Widget& source_glyph() { return mysource_glyph; }
     Widget& code_glyph()   { return mycode_glyph; }
+#else
+    // Associated glyphs in source and machine code
+    GUI::GlyphMark *&source_glyph() { return mysource_glyph; }
+    GUI::GlyphMark *&code_glyph()   { return mycode_glyph; }
 #endif
 
     // True iff `enabled' status changed

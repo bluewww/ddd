@@ -29,7 +29,7 @@
 char Delay_rcsid[] = 
     "$Id$";
 
-#define LOG_DELAY 1
+#define LOG_DELAY 0
 
 #if defined(HAVE_CONFIG_H)
 #include "config.h"
@@ -349,6 +349,8 @@ Delay::Delay(GUI::Widget *w):
 #endif
     _Delay(w)
 {
+    std::cerr << "FIXME: Delay crashes.\n";
+#if defined(IF_XM)
     assert(delays.size() == _shells.size());
 
     if (delay_count++ == 0)
@@ -365,6 +367,7 @@ Delay::Delay(GUI::Widget *w):
 	    }
 	}
     }
+#endif
 }
 
 // Make sure the shell is unregistered when destroyed
