@@ -405,25 +405,26 @@ MMDesc SourceView::line_popup[] =
     MMEnd
 };
 
+int callback_bp_nr;
 struct BPItms { enum Itms {Properties, Disable, Delete, Sep, SetPC}; };
 MMDesc SourceView::bp_popup[] =
 {
-    GENTRYL("properties", N_("properties"), MMPush, 
-	    BIND(SourceView::EditBreakpointPropertiesCB, (int *)0),
-	    sigc::hide(sigc::bind(sigc::ptr_fun(SourceView::EditBreakpointPropertiesCB), (int *)0)),
+    GENTRYL("properties", N_("Properties..."), MMPush, 
+	    BIND(SourceView::EditBreakpointPropertiesCB, &callback_bp_nr),
+	    sigc::hide(sigc::bind(sigc::ptr_fun(SourceView::EditBreakpointPropertiesCB), &callback_bp_nr)),
 	    0, 0),
-    GENTRYL("disable", N_("disable"), MMPush,
-	    BIND(SourceView::bp_popup_disableCB, (int *)0),
-	    sigc::bind(sigc::ptr_fun(SourceView::bp_popup_disableCB), (int *)0),
+    GENTRYL("disable", N_("Disable Breakpoint"), MMPush,
+	    BIND(SourceView::bp_popup_disableCB, &callback_bp_nr),
+	    sigc::bind(sigc::ptr_fun(SourceView::bp_popup_disableCB), &callback_bp_nr),
 	    0, 0),
-    GENTRYL("delete", N_("delete"), MMPush,
-	    BIND(SourceView::bp_popup_deleteCB, (int *)0),
-	    sigc::bind(sigc::ptr_fun(SourceView::bp_popup_deleteCB), (int *)0),
+    GENTRYL("delete", N_("Delete Breakpoint"), MMPush,
+	    BIND(SourceView::bp_popup_deleteCB, &callback_bp_nr),
+	    sigc::bind(sigc::ptr_fun(SourceView::bp_popup_deleteCB), &callback_bp_nr),
 	    0, 0),
     MMSep,
-    GENTRYL("set_pc", N_("set_pc"), MMPush,
-	    BIND(SourceView::bp_popup_set_pcCB, (int *)0),
-	    sigc::bind(sigc::ptr_fun(SourceView::bp_popup_set_pcCB), (int *)0),
+    GENTRYL("set_pc", N_("Set Execution Position"), MMPush,
+	    BIND(SourceView::bp_popup_set_pcCB, &callback_bp_nr),
+	    sigc::bind(sigc::ptr_fun(SourceView::bp_popup_set_pcCB), &callback_bp_nr),
 	    0, 0),
     MMEnd
 };
@@ -433,8 +434,8 @@ struct BPButtons { enum Itms {Properties, Lookup, NewBP, NewWP, Print,
 MMDesc SourceView::bp_area[] =
 {
     GENTRYL("properties", N_("properties"), MMPush, 
-	    BIND(SourceView::EditBreakpointPropertiesCB, (int *)0),
-	    sigc::hide(sigc::bind(sigc::ptr_fun(SourceView::EditBreakpointPropertiesCB), (int *)0)),
+	    BIND(SourceView::EditBreakpointPropertiesCB, &callback_bp_nr),
+	    sigc::hide(sigc::bind(sigc::ptr_fun(SourceView::EditBreakpointPropertiesCB), &callback_bp_nr)),
 	    0, 0),
     GENTRYL("lookup", N_("lookup"), MMPush, 
 	    BIND(SourceView::LookupBreakpointCB, 0),
@@ -4649,6 +4650,7 @@ bool SourceView::get_line_of_pos (GUI::Widget *w,
 		in_text = false;
 		line_nr = max(line_nr, 1);
 
+#if 0
 		// Check for breakpoints...
 		VarIntArray& bps = bps_in_line[line_nr];
 		if (bps.size() == 1)
@@ -4675,6 +4677,39 @@ bool SourceView::get_line_of_pos (GUI::Widget *w,
 			}
 		    }
 		}
+#else
+		// Check for breakpoints...
+		BpLineMap::iterator bps_i = bp_line_map.find(line_nr);
+		if (bps_i != bp_line_map.end()) {
+		    BpList& bps = bps_i->second;
+		    if (bps.size() == 1)
+		    {
+			// Return single breakpoint in this line
+			BreakPoint* bp = *bps.begin();
+			assert(bp != NULL);
+			bp_nr = bp->number();
+		    }
+		    else if (bps.size() > 1)
+		    {
+			// Find which breakpoint was selected
+			long bp_disp_pos = line_pos;
+			BpList::iterator i;
+			for (i = bps.begin(); i != bps.end(); ++i)
+			{
+			    BreakPoint* bp = *i;
+			    assert(bp != NULL);
+
+			    bp_disp_pos += 2; // respect '#' and '_';
+			    bp_disp_pos += itostring(bp->number()).length();
+			    if (pos < bp_disp_pos)
+			    {
+				bp_nr = bp->number();
+				break; // exit for loop
+			    }
+			}
+		    }
+		}
+#endif
 	    }
 	    else if (pos < next_line_pos)
 	    {
@@ -7621,6 +7656,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	{
 	    bp_popup_parent = w;
 	    bp_popup_w = MMcreatePopupMenu(w, "bp_popup", bp_popup);
+	    callback_bp_nr = bp_nr;
 	    MMaddCallbacks (bp_popup, XtPointer(&bp_nr));
 	    MMaddHelpCallback(bp_popup, ImmediateHelpCB);
 	    InstallButtonTips(bp_popup_w);
@@ -7677,7 +7713,6 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 
 	if (pos_found)
 	    word = get_word_at_pos(text_w, pos, startpos, endpos);
-	callback_word = word;
 
 	// Popup specific word menu
 	string current_arg = word;
@@ -7700,6 +7735,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 
 	Widget text_popup_w = 
 	    MMcreatePopupMenu(text_w, "text_popup", text_popup);
+	callback_word = word;
 	MMaddCallbacks(text_popup, XtPointer(&word));
 	MMaddHelpCallback(text_popup, ImmediateHelpCB);
 	InstallButtonTips(text_popup_w);
@@ -7810,6 +7846,7 @@ void SourceView::srcpopupAct (GUI::Widget *w, GUI::Event* e, GUI::String *, unsi
 	{
 	    bp_popup_parent = w;
 	    bp_popup_w = MMcreatePopupMenu(*w, "bp_popup", bp_popup);
+	    callback_bp_nr = bp_nr;
 	    MMaddCallbacks (bp_popup, &bp_nr);
 	    MMaddHelpCallback(bp_popup, sigc::ptr_fun(ImmediateHelpCB));
 	    InstallButtonTips(bp_popup_w);
@@ -7824,7 +7861,7 @@ void SourceView::srcpopupAct (GUI::Widget *w, GUI::Event* e, GUI::String *, unsi
 	GUI::MenuItem *mi = dynamic_cast<GUI::MenuItem *>(bp_popup[BPItms::Disable].widget);
 	assert(mi);
 	mi->remove();
-	mi->add_label(label.xmstring());
+	mi->add_label(label.xmstring(), false, 0.0, 0.5);
 
 	bp_popup_w->menu_position(event);
 	bp_popup_w->popup(0, 0);
@@ -7867,7 +7904,6 @@ void SourceView::srcpopupAct (GUI::Widget *w, GUI::Event* e, GUI::String *, unsi
 
 	if (pos_found)
 	    word = get_word_at_pos(text_w, pos, startpos, endpos);
-	callback_word = word;
 
 	// Popup specific word menu
 	string current_arg = word;
@@ -7880,6 +7916,7 @@ void SourceView::srcpopupAct (GUI::Widget *w, GUI::Event* e, GUI::String *, unsi
 	    MMcreatePopupMenu(*text_w, "text_popup", text_popup);
 	// FIXME: &word is ignored.  We copied its value to the static
 	// area callback_word.
+	callback_word = word;
 	MMaddCallbacks(text_popup, &word);
 	MMaddHelpCallback(text_popup, sigc::ptr_fun(ImmediateHelpCB));
 	InstallButtonTips(text_popup_w);
