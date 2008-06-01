@@ -74,7 +74,8 @@ MenuItem::remove(void)
 }
 
 void
-MenuItem::add_label(const String &s)
+MenuItem::add_label(const String &s, bool mnemonic,
+		    double x_align, double y_align)
 {
-    Gtk::MenuItem::add_label(s.s());
+    Gtk::MenuItem::add_label(s.s(), mnemonic, x_align, y_align);
 }
