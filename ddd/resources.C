@@ -30,7 +30,9 @@
 char resources_rcsid[] = 
     "$Id$";
 
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
+#endif
 
 #include "resources.h"
 #include "version.h"
@@ -42,12 +44,11 @@ char resources_rcsid[] =
 
 #if defined(IF_XM)
 #include <Xm/Xm.h>
+#else
+#include "gtk_wrapper.h"
 #endif
 
-#include "gtk_wrapper.h"
-
 #if !defined(IF_XM)
-
 #define XtOffset(p_type,field) \
 	((Cardinal) (((char *) (&(((p_type)256)->field))) - ((char *)256)))
 
@@ -2443,6 +2444,7 @@ const char *const ddd_fallback_resources[] = {
 };
 #endif
 
+
 #if defined(IF_XM)
 // Return a database of default settings
 XrmDatabase app_defaults(Display *display)
@@ -2494,12 +2496,7 @@ XrmDatabase app_defaults(Display *display)
 
     return db;
 }
-#endif
-
-
-
-#if !defined(IF_XM)
-
+#else
 xmlDoc *
 get_file_database(const char *f)
 {
@@ -2601,5 +2598,4 @@ DDDValueBase::set(const GUI::String &)
 {
     std::cerr << "DDDValueBase::set not implemented\n";
 }
-
 #endif

@@ -28,17 +28,11 @@
 #ifndef _DDD_sashes_h
 #define _DDD_sashes_h
 
-#if defined(HAVE_CONFIG_H)
-#include "config.h"
-#endif
-
-#if defined(IF_XM)
 #include <X11/Intrinsic.h>
 
 // Sash killer
 extern void untraverse_sashes(Widget paned);
 extern void unmanage_sashes(Widget paned);
-#endif
 
 #endif // _DDD_sashes_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

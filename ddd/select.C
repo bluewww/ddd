@@ -59,7 +59,6 @@ static GUI::ListView *gdb_selection_list_w = 0;
 #endif
 
 #if defined(IF_XM)
-
 static void SelectCB(Widget, XtPointer client_data, XtPointer)
 {
     string& reply = *((string *)client_data);
@@ -75,9 +74,7 @@ static void CancelCB(Widget, XtPointer client_data, XtPointer)
     string& reply = *((string *)client_data);
     reply = "\003";
 }
-
 #else
-
 static void SelectCB(string *client_data)
 {
     string& reply = *((string *)client_data);
@@ -93,11 +90,10 @@ static void CancelCB(string *client_data)
     string& reply = *((string *)client_data);
     reply = "\003";
 }
-
 #endif
 
-#if defined(IF_XM)
 
+#if defined(IF_XM)
 // Answer GDB question
 static void select_from_gdb(const string& question, string& reply)
 {
@@ -165,7 +161,6 @@ static void select_from_gdb(const string& question, string& reply)
 	XtVaSetValues(gdb_selection_list_w,
 		      XmNselectionPolicy, XmSINGLE_SELECT,
 		      XtPointer(0));
-
 	XtAddCallback(gdb_selection_dialog,
 		      XmNokCallback, SelectCB, &selection_reply);
 	XtAddCallback(gdb_selection_dialog,
@@ -183,16 +178,13 @@ static void select_from_gdb(const string& question, string& reply)
 
     selection_reply = "";
     while (selection_reply.empty() 
-	   && gdb->running() && !gdb->isReadyWithPrompt()) {
+	   && gdb->running() && !gdb->isReadyWithPrompt())
 	XtAppProcessEvent(XtWidgetToApplicationContext(gdb_w), XtIMAll);
-    }
 
     // Found a reply - return
     reply = selection_reply;
 }
-
 #else
-
 // Answer GDB question
 static void select_from_gdb(const string& question, string& reply)
 {
@@ -266,34 +258,33 @@ static void select_from_gdb(const string& question, string& reply)
 
     selection_reply = "";
     while (selection_reply.empty() 
-	   && gdb->running() && !gdb->isReadyWithPrompt()) {
+	   && gdb->running() && !gdb->isReadyWithPrompt())
 	Glib::MainContext::get_default()->iteration(false);
-    }
 
     // Found a reply - return
     reply = selection_reply;
 }
-
 #endif
 
 // Select a file
 static void select_file(const string& /* question */, string& reply)
 {
 #if defined(IF_XM)
-    gdbOpenFileCB(find_shell(), XtPointer(0), XtPointer(0));
+    gdbOpenFileCB(find_shell(), 0, 0);
 #else
     gdbOpenFileCB(find_shell());
 #endif
 
     open_file_reply = "";
-    while (open_file_reply.empty() 
-	   && gdb->running() && !gdb->isReadyWithPrompt()) {
 #if defined(IF_XM)
+    while (open_file_reply.empty() 
+	   && gdb->running() && !gdb->isReadyWithPrompt())
 	XtAppProcessEvent(XtWidgetToApplicationContext(gdb_w), XtIMAll);
 #else
+    while (open_file_reply.empty() 
+	   && gdb->running() && !gdb->isReadyWithPrompt())
 	Glib::MainContext::get_default()->iteration(false);
 #endif
-    }
 
     // Found a reply - return
     reply = open_file_reply + "\n";

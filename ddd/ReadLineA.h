@@ -29,10 +29,9 @@
 #ifndef _DDD_ReadLineAgent_h
 #define _DDD_ReadLineAgent_h
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
-
 #if !defined(IF_XM)
 #include <GUI/Widget.h>
 #endif

@@ -29,7 +29,9 @@
 char RegionGraphNode_rcsid[] = 
     "$Id$";
 
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
+#endif
 
 #include <iostream>
 #include <string.h>
@@ -62,7 +64,6 @@ BoxPoint RegionGraphNode::originToPos(const BoxPoint& origin,
 
 
 #if defined(IF_XM)
-
 // Draw a RegionGraphNode
 void RegionGraphNode::draw(Widget w, 
 			   const BoxRegion& exposed, 
@@ -95,9 +96,7 @@ void RegionGraphNode::draw(Widget w,
 		       h.space(X), h.space(Y));
     }
 }
-
 #else
-
 // Draw a RegionGraphNode
 void RegionGraphNode::draw(GUI::Widget *w, 
 			   const BoxRegion& exposed, 
@@ -126,7 +125,6 @@ void RegionGraphNode::draw(GUI::Widget *w,
 					h.space(X), h.space(Y));
     }
 }
-
 #endif
 
 

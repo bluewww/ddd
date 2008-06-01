@@ -38,10 +38,10 @@
 #include <Xm/ScrolledWP.h>
 #undef new
 #undef class
-#endif
 
 #ifdef MAX
 #undef MAX			// <Xm/XmP.h> on HP-UX defines this
+#endif
 
 // This class
 #include "ScrolledGE.h"

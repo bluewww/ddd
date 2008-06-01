@@ -29,13 +29,16 @@
 #ifndef _DDD_session_h
 #define _DDD_session_h
 
+#if defined(HAVE_CONFIG_H)
+#include "config.h"
+#endif
+
 #if defined(IF_XM)
 #include <X11/Intrinsic.h>
 #else
 #include <GUI/Widget.h>
 #include "gtk_wrapper.h"
 #endif
-
 #include "strclass.h"
 #include "version.h"
 
@@ -122,17 +125,13 @@ struct LockInfo {
 };
 
 #if defined(IF_XM)
-
 // Lock session.  Return true iff successful.  Otherwise, return
 // false, and return info about the locking process in INFO.
 bool lock_session_dir(Display *display, const string& session, LockInfo& info);
-
 #else
-
 // Lock session.  Return true iff successful.  Otherwise, return
 // false, and return info about the locking process in INFO.
 bool lock_session_dir(GUI::RefPtr<GUI::Display> display, const string& session, LockInfo& info);
-
 #endif
 
 // Unlock session.  Return true iff successful.
@@ -159,27 +158,23 @@ void set_temporary_session(const string& session, bool temporary);
 // Set name of session to be restarted with
 void set_restart_session(const string& session = "");
 
-// Session editor
 #if defined(IF_XM)
-
 // Callbacks for X11R6 session management
 extern void SaveSmSessionCB(Widget, XtPointer, XtPointer);
 extern void ShutdownSmSessionCB(Widget, XtPointer, XtPointer);
 
-extern void SaveSessionAsCB(Widget, XtPointer, XtPointer);
+// Session editor
 extern void OpenSessionCB(Widget, XtPointer, XtPointer);
+extern void SaveSessionAsCB(Widget, XtPointer, XtPointer);
 
 // Restart inferior debugger
 extern void RestartDebuggerCB(Widget, XtPointer, XtPointer);
-
 #else
-
 extern void SaveSessionAsCB(GUI::Widget *);
 extern void OpenSessionCB(GUI::Widget *);
 
 // Restart inferior debugger
 extern void RestartDebuggerCB(void);
-
 #endif
 
 #endif // _DDD_session_h

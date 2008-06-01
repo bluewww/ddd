@@ -266,9 +266,13 @@ char ddd_rcsid[] =
 #include "regexps.h"
 #include "resources.h"
 #include "root.h"
+#if defined(IF_XM)
 #include "sashes.h"
+#endif
 #include "select.h"
+#if defined(IF_XM)
 #include "selection.h"
+#endif
 #include "session.h"
 #include "settings.h"
 #include "shell.h"

@@ -70,7 +70,6 @@ struct GDBReply {
 };
 
 #if defined(IF_XM)
-
 // Timeout proc - called from XtAppAddTimeOut()
 static void gdb_reply_timeout(XtPointer client_data, XtIntervalId *)
 {
@@ -87,9 +86,7 @@ static void gdb_reply_timeout(XtPointer client_data, XtIntervalId *)
     reply->received = true;
     reply->answered = false;
 }
-
 #else
-
 // Timeout proc - called from XtAppAddTimeOut()
 static bool gdb_reply_timeout(GDBReply *client_data)
 {
@@ -107,7 +104,6 @@ static bool gdb_reply_timeout(GDBReply *client_data)
     reply->answered = false;
     return false;
 }
-
 #endif
 
 // GDB sent a reply - Called from GDBAgent::send_question()
@@ -151,7 +147,6 @@ void filter_junk(string& answer)
 }
 
 #if defined(IF_XM)
-
 // Wait for GDB reply
 static void wait_for_gdb_reply(GDBReply *reply, int timeout)
 {
@@ -170,23 +165,19 @@ static void wait_for_gdb_reply(GDBReply *reply, int timeout)
     }
 
     // Process all GDB input and timer events
-    while (!reply->received && gdb->running()) {
+    while (!reply->received && gdb->running())
 	XtAppProcessEvent(XtWidgetToApplicationContext(gdb_w), 
 			  XtIMTimer | XtIMAlternateInput);
-    }
 
     if (reply->answered || !reply->received)
     {
 	// Reply has been answered or will not be answered any more:
 	// Remove timeout
-	if (timeout > 0) {
+	if (timeout > 0)
 	    XtRemoveTimeOut(timer);
-	}
     }
 }
-
 #else
-
 // Wait for GDB reply
 static void wait_for_gdb_reply(GDBReply *reply, int timeout)
 {
@@ -204,9 +195,8 @@ static void wait_for_gdb_reply(GDBReply *reply, int timeout)
     }
 
     // Process all GDB input and timer events
-    while (!reply->received && gdb->running()) {
+    while (!reply->received && gdb->running())
 	Glib::MainContext::get_default()->iteration(true);
-    }
 
     if (reply->answered || !reply->received)
     {
@@ -217,7 +207,6 @@ static void wait_for_gdb_reply(GDBReply *reply, int timeout)
 	}
     }
 }
-
 #endif
 
 // Send COMMAND to GDB; return answer (NO_GDB_ANSWER if none)
@@ -249,11 +238,7 @@ string gdb_question(const string& command, int timeout, bool verbatim)
 
     // Send question to GDB
     GDBReply *reply = new GDBReply;
-#if defined(IF_XM)
-    gdb_command(command, Widget(0), gdb_reply, (void *)reply);
-#else
-    gdb_command(command, (GUI::Widget*)(0), gdb_reply, (void *)reply);
-#endif
+    gdb_command(command, 0, gdb_reply, (void *)reply);
 
     // GDB received question - set timeout
     wait_for_gdb_reply(reply, timeout);

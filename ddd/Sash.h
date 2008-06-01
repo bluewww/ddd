@@ -28,7 +28,6 @@
 #ifndef _DDD_Sash_h
 #define _DDD_Sash_h
 
-#if defined(IF_XM)
 extern "C" {
 #define new new_w
 #define class class_w
@@ -36,7 +35,6 @@ extern "C" {
 #undef class
 #undef new
 }
-#endif
 
 #endif // _DDD_Sash_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

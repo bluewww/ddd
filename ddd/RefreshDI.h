@@ -29,11 +29,12 @@
 #ifndef _DDD_RefreshDisassembleInfo_h
 #define _DDD_RefreshDisassembleInfo_h
 
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
+#endif
 
 #include "strclass.h"
 #include "status.h"
-
 #if defined(IF_XM)
 #include <Xm/Text.h>
 #else

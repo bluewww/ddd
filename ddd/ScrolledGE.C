@@ -28,8 +28,6 @@
 char ScrolledGraphEdit_rcsid[] = 
     "$Id$";
 
-#include "config.h"
-
 #include <iostream>
 #include "ScrolleGEP.h"
 #include "GraphEdit.h"

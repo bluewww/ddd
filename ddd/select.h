@@ -29,20 +29,18 @@
 #ifndef _DDD_select_h
 #define _DDD_select_h
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
 #include "Agent.h"
-
 #if defined(IF_XM)
 #include <X11/Intrinsic.h>
 #else
 #include <GUI/Dialog.h>
 #include <GUI/ListView.h>
-#endif
-
 #include "gtk_wrapper.h"
+#endif
 
 #if defined(IF_XM)
 // Selection

@@ -30,11 +30,11 @@
 char session_rcsid[] = 
     "$Id$";
 
-#ifdef HAVE_CONFIG_H
+#include "session.h"
+
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
-
-#include "session.h"
 
 #if defined(IF_XM)
 #if XtSpecificationRelease >= 6
@@ -98,9 +98,7 @@ char session_rcsid[] =
 #include <Xm/ToggleB.h>
 #include <Xm/Text.h>
 #include <Xm/TextF.h>
-#endif
-
-#if !defined(IF_XM)
+#else
 #include <GUI/SelectionDialog.h>
 #include "resources.h"
 #endif
@@ -512,16 +510,13 @@ static void update_delete(Widget dialog)
     Widget delete_w = XmSelectionBoxGetChild(dialog, XmDIALOG_APPLY_BUTTON);
     set_sensitive(delete_w, sensitive);
 }
-#endif
-
-#if !defined(IF_XM)
-
+#else
 // Update state of `delete' button
-static void update_delete1(GUI::Widget *dialog)
+static void update_delete(GUI::Widget *dialog)
 {
-    std::cerr << "Implement update_delete1!\n";
+    std::cerr << "Implement update_delete!\n";
 #ifdef NAG_ME
-#warning Implement update_delete1
+#warning Implement update_delete
 #endif
 #if 0
     Widget sessions = XmSelectionBoxGetChild(dialog, XmDIALOG_LIST);
@@ -581,12 +576,9 @@ static void update_sessions(Widget dialog)
 
     update_delete(dialog);
 }
-#endif
-
-#if !defined(IF_XM)
-
+#else
 // Update list of sessions
-static void update_sessions1(GUI::Widget *dialog)
+static void update_sessions(GUI::Widget *dialog)
 {
     StringArray session_list;
     session_list += NO_SESSION;
@@ -611,7 +603,7 @@ static void update_sessions1(GUI::Widget *dialog)
 
     delete[] selected;
 
-    update_delete1(dialog);
+    update_delete(dialog);
 }
 #endif
 
@@ -835,10 +827,10 @@ static void DeleteSessionsCB(Widget dialog, XtPointer client_data, XtPointer)
 #if !defined(IF_XM)
 
 // Remove selected sessions
-static void DeleteSessionsCB1(GUI::ListView *dialog)
+static void DeleteSessionsCB(GUI::ListView *dialog)
 {
 #ifdef NAG_ME
-#warning DeleteSessionsCB1: Need iterator for multiple selections
+#warning DeleteSessionsCB: Need iterator for multiple selections
 #endif
 #if 0
     Widget sessions = Widget(client_data);
@@ -868,6 +860,7 @@ static void DeleteSessionsCB1(GUI::ListView *dialog)
 }
 #endif
 
+
 // ---------------------------------------------------------------------------
 // Session save
 // ---------------------------------------------------------------------------
@@ -888,11 +881,8 @@ static string get_chosen_session(Widget dialog)
 	value = DEFAULT_SESSION;
     return value;
 }
-#endif
-
-#if !defined(IF_XM)
-
-static string get_chosen_session1(GUI::ListView *list)
+#else
+static string get_chosen_session(GUI::ListView *list)
 {
     GUI::String sel = list->get_selected();
 
@@ -946,15 +936,12 @@ static void SetSessionCB(Widget dialog, XtPointer, XtPointer)
 	    }
     }
 }
-#endif
-
-#if !defined(IF_XM)
-
+#else
 // Set the current session
-static void SetSessionCB1(GUI::ListView *dialog)
+static void SetSessionCB(GUI::ListView *dialog)
 {
-    set_session(get_chosen_session1(dialog));
-    update_sessions1(dialog);
+    set_session(get_chosen_session(dialog));
+    update_sessions(dialog);
 
     if (app_data.session == DEFAULT_SESSION)
     {
@@ -1090,14 +1077,11 @@ static void SaveSessionCB(Widget w, XtPointer client_data, XtPointer call_data)
     // Mark as `non-temporary'
     set_temporary_session(app_data.session, false);
 }
-#endif
-
-#if !defined(IF_XM)
-
+#else
 // OK pressed in `save session'
-static void SaveSessionCB1(GUI::ListView *w)
+static void SaveSessionCB(GUI::ListView *w)
 {
-    SetSessionCB1(w);
+    SetSessionCB(w);
 
     if (app_data.session != DEFAULT_SESSION)
     {
@@ -1116,7 +1100,7 @@ static void SaveSessionCB1(GUI::ListView *w)
 
 #if defined(IF_XM)
 // Save current session from a list of choices
-void SaveSessionAsCB(Widget w, XtPointer client_data, XtPointer call_data)
+void SaveSessionAsCB(Widget w, XtPointer, XtPointer)
 {
     static Widget dialog = 
 	create_session_panel(w, "sessions_to_save",
@@ -1177,7 +1161,7 @@ void SaveSessionAsCB(GUI::Widget *w)
 {
     static GUI::SelectionDialog *dialog = 
 	create_session_panel(w, "sessions_to_save",
-			     SaveSessionCB1, DeleteSessionsCB1);
+			     SaveSessionCB, DeleteSessionsCB);
 
 #if defined(IF_XMMM)
 
@@ -1236,10 +1220,11 @@ void SaveSessionAsCB(GUI::Widget *w)
 #endif
 #endif
 
-    update_sessions1(dialog);
+    update_sessions(dialog);
     manage_and_raise(dialog);
 }
 #endif
+
 
 
 // ---------------------------------------------------------------------------
@@ -1606,14 +1591,11 @@ static void OpenThisSessionCB(Widget w, XtPointer client_data,
 	set_temporary_session(app_data.session, false);
     }
 }
-#endif
-
-#if !(IF_XM)
-
+#else
 // OK pressed in `open session'
-static void OpenThisSessionCB1(GUI::ListView *w)
+static void OpenThisSessionCB(GUI::ListView *w)
 {
-    SetSessionCB1(w);
+    SetSessionCB(w);
     if (app_data.session != DEFAULT_SESSION)
     {
 	open_session(app_data.session);
@@ -1648,7 +1630,7 @@ void OpenSessionCB(GUI::Widget *w)
 {
     static GUI::SelectionDialog *dialog = 
 	create_session_panel(w, "sessions_to_open",
-			     OpenThisSessionCB1, DeleteSessionsCB1);
+			     OpenThisSessionCB, DeleteSessionsCB);
 
     // Suggest reloading current session
     if (app_data.session != DEFAULT_SESSION)
@@ -1657,7 +1639,7 @@ void OpenSessionCB(GUI::Widget *w)
 	dialog->set_text(text.xmstring());
     }
 
-    update_sessions1(dialog);
+    update_sessions(dialog);
     manage_and_raise(dialog);
 }
 #endif
@@ -1907,5 +1889,4 @@ void SaveSmSessionCB(Widget, XtPointer, XtPointer) {}
 void ShutdownSmSessionCB(Widget, XtPointer, XtPointer) {}
 
 #endif // XtSpecificationRelease < 6
-
 #endif
