@@ -349,7 +349,6 @@ Delay::Delay(GUI::Widget *w):
 #endif
     _Delay(w)
 {
-    std::cerr << "FIXME: Delay crashes.\n";
 #if defined(IF_XM)
     assert(delays.size() == _shells.size());
 
@@ -367,6 +366,8 @@ Delay::Delay(GUI::Widget *w):
 	    }
 	}
     }
+#else
+    std::cerr << "FIXME: Delay crashes.\n";
 #endif
 }
 

@@ -30,7 +30,7 @@
 char tips_rcsid[] = 
     "$Id$";
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
@@ -59,9 +59,8 @@ char tips_rcsid[] =
 #include <Xm/ToggleB.h>
 #else
 #include <GUI/CheckButton.h>
-#endif
-
 #include "gtk_wrapper.h"
+#endif
 
 #if defined(IF_XM)
 Widget set_startup_tips_w;
@@ -117,7 +116,6 @@ static string app_value(const string& resource, const string& value)
 }
 
 #if defined(IF_XM)
-
 static void SaveTipCountCB(Widget, XtPointer = 0, XtPointer = 0)
 {
     create_session_dir(DEFAULT_SESSION);
@@ -137,7 +135,6 @@ static void SaveTipCountCB(Widget, XtPointer = 0, XtPointer = 0)
 		   "options_save_error");
     }
 }
-
 #endif
 
 inline bool is_tip(const MString& m)
@@ -171,6 +168,7 @@ static bool refresh_tip_dialog(Widget w)
     string title = DDD_NAME " Tip of the Day #" + 
 	itostring(app_data.startup_tip_count);
     XtVaSetValues(XtParent(w), XmNtitle, title.chars(), XtPointer(0));
+
     return true;
 }
 #else
@@ -196,7 +194,7 @@ static void NextTipCB(Widget w, XtPointer, XtPointer)
 #endif
 
 #if defined(IF_XM)
-void SetStartupTipsCB(Widget w, XtPointer, XtPointer call_data)
+void SetStartupTipsCB(Widget, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;

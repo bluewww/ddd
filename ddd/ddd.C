@@ -285,7 +285,9 @@ char ddd_rcsid[] =
 #include "string-fun.h"
 #include "tabs.h"
 #include "tempfile.h"
+#if defined(IF_XM)
 #include "tictactoe.h"
+#endif
 #include "tips.h"
 #include "toolbar.h"
 #include "ungrab.h"

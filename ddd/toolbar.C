@@ -77,7 +77,7 @@ static Dimension preferred_height(Widget w)
 #if defined(IF_XM)
 static void set_label_type(MMDesc items[], unsigned char label_type)
 {
-    for (MMDesc *item = items; item != 0 && item->name; item++)
+    for (MMDesc *item = items; item != 0 && item->name != 0; item++)
     {
 	Widget w = item->widget;
 	if (w != 0 && XmIsLabel(w))
@@ -208,6 +208,7 @@ static Widget align_buttons(const MMDesc *items1, const MMDesc *items2)
 #endif
 
 
+
 #if defined(IF_XM)
 static void ResetLabelEH(Widget w, XtPointer, XEvent *, Boolean *)
 {
@@ -228,7 +229,7 @@ static void ResetLabelEH(Widget w, XtPointer, XEvent *, Boolean *)
 #if defined(IF_XM)
 static void center_buttons(const MMDesc items[], Dimension offset)
 {
-    for (const MMDesc *item = items; item != 0 && item->name; item++)
+    for (const MMDesc *item = items; item != 0 && item->name != 0; item++)
     {
 	Widget w = item->widget;
 	if (w == 0)
@@ -253,6 +254,7 @@ static void center_buttons(const MMDesc items[], Dimension offset)
 #endif
 #endif
 
+
 //-----------------------------------------------------------------------
 // Toolbar creation
 //-----------------------------------------------------------------------
@@ -262,7 +264,7 @@ static void center_buttons(const MMDesc items[], Dimension offset)
 // the buttons ITEMS.  Return LABEL and ARGFIELD.
 Widget create_toolbar(Widget parent, const string& /* name */,
 		      MMDesc *items1, MMDesc *items2,
-		      Widget &label, ArgField*& argfield,
+		      Widget& label, ArgField*& argfield,
 		      unsigned char label_type)
 {
     assert(label_type == XmPIXMAP || label_type == XmSTRING);
@@ -458,4 +460,3 @@ GUI::Container *create_toolbar(GUI::Container *parent, const string& /* name */,
     return toolbar;
 }
 #endif
-

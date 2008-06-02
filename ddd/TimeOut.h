@@ -28,6 +28,10 @@
 #ifndef _DDD_TimeOut_h
 #define _DDD_TimeOut_h
 
+#if defined(HAVE_CONFIG_H)
+#include "config.h"
+#endif
+
 #if defined(IF_XM)
 #include <X11/Intrinsic.h>
 

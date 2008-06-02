@@ -29,19 +29,17 @@
 #ifndef _DDD_toolbar_h
 #define _DDD_toolbar_h
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
 #include "strclass.h"
 #include "MakeMenu.h"
 #include "ArgField.h"
-
-#include "gtk_wrapper.h"
-
 #if !defined(IF_XM)
 #include <GUI/Container.h>
 #include <GUI/Button.h>
+#include "gtk_wrapper.h"
 #endif
 
 #if defined(IF_XM)
@@ -59,7 +57,7 @@ enum LabelType {
 #if defined(IF_XM)
 extern Widget create_toolbar(Widget parent, const string& name, 
 			     MMDesc *items1, MMDesc *items2,
-			     Widget &label, ArgField*& argfield,
+			     Widget& label, ArgField*& argfield,
 			     unsigned char label_type);
 #else
 extern GUI::Container *create_toolbar(GUI::Container *parent, const string& name, 
@@ -67,7 +65,6 @@ extern GUI::Container *create_toolbar(GUI::Container *parent, const string& name
 				      GUI::Button *&label, ArgField*& argfield,
 				      LabelType label_type);
 #endif
-
 
 #endif // _DDD_toolbar_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

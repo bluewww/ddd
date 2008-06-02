@@ -31,8 +31,6 @@
 char tictactoe_rcsid[] = 
     "$Id$";
 
-#include "config.h"
-
 #include "tictactoe.h"
 
 #include "icons/tictactoe/circle.xbm"

@@ -29,7 +29,7 @@
 #ifndef _DDD_TagBox_h
 #define _DDD_TagBox_h
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 

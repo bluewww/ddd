@@ -28,7 +28,7 @@
 #ifndef _DDD_TextPosArray_h
 #define _DDD_TextPosArray_h
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 

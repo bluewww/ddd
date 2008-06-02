@@ -28,7 +28,7 @@
 #ifndef _DDD_TextSetSelection_h
 #define _DDD_TextSetSelection_h
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 

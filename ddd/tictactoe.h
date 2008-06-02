@@ -28,23 +28,9 @@
 #ifndef _DDD_tictactoe_h
 #define _DDD_tictactoe_h
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
-#if defined(IF_XM)
-
 #include <X11/Intrinsic.h>
 
-#endif
-
-#include "gtk_wrapper.h"
-
-#if defined(IF_XM)
-
 extern void TicTacToeCB(Widget w, XtPointer, XtPointer);
-
-#endif
 
 #endif // _DDD_tictactoe_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

@@ -29,7 +29,7 @@
 #ifndef _DDD_TTYAgent_h
 #define _DDD_TTYAgent_h
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
@@ -68,7 +68,6 @@ protected:
     virtual bool tty_ok(const char *tty);
 
 public:
-
 #if defined(IF_XM)
     // Constructors
     TTYAgent(XtAppContext app_context, const string& pth,

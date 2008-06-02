@@ -29,7 +29,7 @@
 #ifndef _DDD_tips_h
 #define _DDD_tips_h
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
@@ -38,13 +38,12 @@
 #else
 #include <GUI/Button.h>
 #include <GUI/CheckButton.h>
-#endif
-
 #include "gtk_wrapper.h"
+#endif
 
 #if defined(IF_XM)
 extern void TipOfTheDayCB(Widget w, XtPointer = 0, XtPointer = 0);
-extern void SetStartupTipsCB(Widget, XtPointer, XtPointer);
+extern void SetStartupTipsCB(Widget w, XtPointer, XtPointer);
 #else
 extern void TipOfTheDayCB(GUI::Button *w);
 extern void SetStartupTipsCB(GUI::CheckButton *);
