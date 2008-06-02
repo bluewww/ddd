@@ -121,6 +121,8 @@ namespace GtkX {
 	long find_forward(UChar c, long start=0);
 	long find_backward(UChar c, long start=-1);
 	long xy_to_pos(double x, double y);
+	void window_to_buffer_coords(double xin, double yin,
+				     double &xout, double &yout);
 	bool pos_to_xy(long pos, int &x, int &y);
 	int get_rows();
 	int get_columns();

@@ -209,6 +209,18 @@ ScrolledText::signals_from(void)
     return tv_.internal();
 }
 
+void
+ScrolledText::window_to_buffer_coords(double xin, double yin,
+				      double &xout, double &yout)
+{
+    int ix = (int)xin;
+    int iy = (int)yin;
+    int buf_x, buf_y;
+    tv_.window_to_buffer_coords(Gtk::TEXT_WINDOW_TEXT, ix, iy, buf_x, buf_y);
+    xout = buf_x;
+    yout = buf_y;
+}
+
 long
 ScrolledText::xy_to_pos(double x, double y)
 {

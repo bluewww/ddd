@@ -7819,6 +7819,12 @@ void SourceView::srcpopupAct (GUI::Widget *w, GUI::Event* e, GUI::String *, unsi
     // Get the position
     long pos = text_w->xy_to_pos(x, y);
 
+    // Translate position (we are in a scrolling window).
+    double xwin = x;
+    double ywin = y;
+    double xbuf, ybuf;
+    text_w->window_to_buffer_coords(xwin, ywin, xbuf, ybuf);
+
     // Move the insertion cursor to this position, but don't disturb the
     // selection
     long left, right;
@@ -7842,7 +7848,7 @@ void SourceView::srcpopupAct (GUI::Widget *w, GUI::Event* e, GUI::String *, unsi
     static int bp_nr;
     static string address;
     bool pos_found = get_line_of_pos(w, pos, line_nr, address, in_text, bp_nr,
-				     x, y);
+				     (int)xbuf, (int)ybuf);
 
     bool right_of_text = 
 	pos < long(current_text(w).length()) 
