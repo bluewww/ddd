@@ -49,8 +49,7 @@ MarkedTextView::on_expose_event(GdkEventExpose *event)
 	Glib::RefPtr<Gdk::GC> gc = style->get_light_gc(Gtk::STATE_NORMAL);
 	Glib::RefPtr<Gdk::Pixbuf> glyph = (*iter)->glyph;
 	int ix, iy;
-	buffer_to_window_coords((*iter)->x, (*iter)->y,
-				ix, iy);
+	buffer_to_window_xy((*iter)->x, (*iter)->y, ix, iy);
 	win->draw_pixbuf(gc, glyph, 0, 0, ix, iy,
 			 glyph->get_width(), glyph->get_height(),
 			 Gdk::RGB_DITHER_NONE, 0, 0);
@@ -64,7 +63,7 @@ MarkedTextView::refresh_line(int y, int height)
     if (win) {
 	Gdk::Rectangle rect;
 	int x1, y1;
-	buffer_to_window_coords(0, y, x1, y1);
+	buffer_to_window_xy(0, y, x1, y1);
 	std::cerr << "this=" << this << " y=" << y << " y1=" << y1 << "\n";
 	rect.set_x(x1);
 	rect.set_y(y1);
@@ -145,7 +144,7 @@ redo:
 }
 
 void
-MarkedTextView::buffer_to_window_coords(int xin, int yin, int &xout, int &yout)
+MarkedTextView::buffer_to_window_xy(int xin, int yin, int &xout, int &yout)
 {
     Gtk::TextView::buffer_to_window_coords(Gtk::TEXT_WINDOW_TEXT, xin, yin,
 					   xout, yout);
@@ -210,8 +209,8 @@ ScrolledText::signals_from(void)
 }
 
 void
-ScrolledText::window_to_buffer_coords(double xin, double yin,
-				      double &xout, double &yout)
+ScrolledText::window_to_buffer_xy(double xin, double yin,
+				  double &xout, double &yout)
 {
     int ix = (int)xin;
     int iy = (int)yin;
@@ -398,8 +397,7 @@ ScrolledText::pos_to_xy(long pos, int &x, int &y)
     iter = tb_->get_iter_at_offset(pos);
     Gdk::Rectangle location;
     tv_.get_iter_location(iter, location);
-    tv_.buffer_to_window_coords(location.get_x(), location.get_y(),
-				x, y);
+    tv_.buffer_to_window_xy(location.get_x(), location.get_y(), x, y);
     std::cerr << "pos_to_xy: what to return?\n";
     return true;
 }

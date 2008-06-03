@@ -793,7 +793,7 @@ static MString gdbDefaultValueText(GUI::ScrolledText *widget,
     widget->view().pos_to_rect(endpos, rect);
     int xbuf = rect.get_x();
     int ybuf = rect.get_y();
-    widget->view().buffer_to_window_coords(xbuf, ybuf, x, y);
+    widget->view().buffer_to_window_xy(xbuf, ybuf, x, y);
     // if (XmTextPosToXY(widget, endpos, &x, &y))
     std::cerr << "HELP: How to get position in textview window?\n";
 #ifdef NAG_ME

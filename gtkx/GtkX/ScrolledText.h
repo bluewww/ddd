@@ -80,7 +80,7 @@ namespace GtkX {
 	// Unmark all instances of a glyph:
 	void unmap_glyph(Glib::RefPtr<Gdk::Pixbuf> glyph);
 	void refresh_line(int y, int height);
-	void buffer_to_window_coords(int xin, int yin, int &xout, int &yout);
+	void buffer_to_window_xy(int xin, int yin, int &xout, int &yout);
 #include <GtkX/redirect.h>
     };
 
@@ -121,8 +121,8 @@ namespace GtkX {
 	long find_forward(UChar c, long start=0);
 	long find_backward(UChar c, long start=-1);
 	long xy_to_pos(double x, double y);
-	void window_to_buffer_coords(double xin, double yin,
-				     double &xout, double &yout);
+	void window_to_buffer_xy(double xin, double yin,
+				 double &xout, double &yout);
 	bool pos_to_xy(long pos, int &x, int &y);
 	int get_rows();
 	int get_columns();

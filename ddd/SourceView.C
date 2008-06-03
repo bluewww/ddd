@@ -7823,7 +7823,7 @@ void SourceView::srcpopupAct (GUI::Widget *w, GUI::Event* e, GUI::String *, unsi
     double xwin = x;
     double ywin = y;
     double xbuf, ybuf;
-    text_w->window_to_buffer_coords(xwin, ywin, xbuf, ybuf);
+    text_w->window_to_buffer_xy(xwin, ywin, xbuf, ybuf);
 
     // Move the insertion cursor to this position, but don't disturb the
     // selection
