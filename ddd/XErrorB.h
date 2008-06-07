@@ -28,12 +28,14 @@
 #ifndef _DDD_XErrorBlocker_h
 #define _DDD_XErrorBlocker_h
 
-#if defined(IF_XM)
+#if defined(HAVE_CONFIG_H)
+#include "config.h"
+#endif
 
+#if defined(IF_XM)
 extern "C" {
 #include <X11/Intrinsic.h>
 }
-
 #include "bool.h"
 #include "assert.h"
  
@@ -80,13 +82,10 @@ public:
 	return _event;
     }
 };
-
 #else
-
 #ifdef NAG_ME
 #warning XErrorBlocker not defined yet
 #endif
-
 #endif
 
 #endif // _DDD_XErrorBlocker_h

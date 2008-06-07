@@ -509,7 +509,7 @@ bool UndoBuffer::process_command(UndoBufferEntry& entry)
     if (!commands.empty() && gdb->type() == GDB)
     {
 #if defined(IF_XM)
-	gdb_command("show confirm", Widget(0), get_confirm, &confirm);
+	gdb_command("show confirm", 0, get_confirm, &confirm);
 #else
 	gdb_command("show confirm", (GUI::Widget*)(0), get_confirm, &confirm);
 #endif

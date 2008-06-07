@@ -295,7 +295,9 @@ char ddd_rcsid[] =
 #include "version.h"
 #include "windows.h"
 #include "wm.h"
+#if defined(IF_XM)
 #include "xconfig.h"
+#endif
 
 #if !defined(IF_XM)
 #include <sigc++/signal.h>

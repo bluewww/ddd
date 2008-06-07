@@ -28,8 +28,6 @@
 char XErrorBlocker_rcsid[] = 
     "$Id$";
 
-#include "config.h"
-
 #include "XErrorB.h"
 #include "assert.h"
 

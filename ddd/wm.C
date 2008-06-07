@@ -109,9 +109,8 @@ void wm_set_name(Display *display, Window shell_window,
     strip_space(title);
     strip_space(icon);
 
-    if (!title.empty()) {
+    if (!title.empty())
 	XStoreName(display, shell_window, title.chars());
-    }
     if (!icon.empty())
 	XSetIconName(display, shell_window, icon.chars());
 }
@@ -122,9 +121,8 @@ void wm_set_name(GUI::RefPtr<GUI::Display> display, GUI::RefPtr<GUI::XWindow> sh
     strip_space(title);
     strip_space(icon);
 
-    if (!title.empty()) {
+    if (!title.empty())
 	shell_window->set_title(title.chars());
-    }
 #ifdef NAG_ME
 #warning Set icon?
 #endif 
@@ -285,9 +283,7 @@ void manage_and_raise(GUI::Widget *w)
     if (w != 0)
 	w->show();
 }
-#endif
 
-#if !defined(IF_XM)
 bool
 text_copy_from(GUI::Widget *w)
 {

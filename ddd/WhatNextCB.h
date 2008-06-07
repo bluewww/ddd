@@ -39,7 +39,6 @@
 #include <GUI/Widget.h>
 #include "gtk_wrapper.h"
 #endif
-
 #include "bool.h"
 #include "strclass.h"
 

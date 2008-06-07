@@ -30,14 +30,16 @@ char ungrab_rcsid[] =
 
 #include "ungrab.h"
 
-#include <stdlib.h>
-
 #if defined(IF_XM)
 #include <X11/Xlib.h>
-#include <Xm/MessageB.h>
 #endif
-
+#include <stdlib.h>
+#if defined(IF_XM)
+#include <Xm/MessageB.h>
+#else
+#include <GUI/Widget.h>
 #include "gtk_wrapper.h"
+#endif
 
 #include "AppData.h"
 #include "CodeCache.h"
@@ -77,7 +79,6 @@ static GUI::RefPtr<GUI::Display> grab_display;
 #endif
 
 #if defined(IF_XM)
-
 // Return true iff pointer is grabbed.
 static bool mouse_pointer_grabbed()
 {
@@ -91,9 +92,8 @@ static bool mouse_pointer_grabbed()
 	return false;
     }
 
-    if (grab_display == 0) {
+    if (grab_display == 0)
 	grab_display = XOpenDisplay(XDisplayString(XtDisplay(command_shell)));
-    }
     if (grab_display == 0)
 	grab_display = XtDisplay(command_shell);
 
@@ -106,18 +106,16 @@ static bool mouse_pointer_grabbed()
 				   DefaultRootWindow(grab_display),
 				   True, 0, GrabModeSync, GrabModeSync,
 				   None, None, CurrentTime);
+
     if (grab_result == AlreadyGrabbed || grab_result == GrabFrozen)
 	return true;
 
     XUngrabPointer(grab_display, CurrentTime);
     XFlush(grab_display);
 
-
     return false;
 }
-
 #else
-
 // Return true iff pointer is grabbed.
 static bool mouse_pointer_grabbed()
 {
@@ -157,7 +155,6 @@ static bool mouse_pointer_grabbed()
 
     return false;
 }
-
 #endif
 
 // Return true iff the debuggee is a running X program
@@ -202,7 +199,6 @@ struct GrabCheckLocker {
 bool GrabCheckLocker::lock = false;
 
 #if defined(IF_XM)
-
 static void CheckUngrabCB(XtPointer client_data, XtIntervalId *)
 {
     int& count = *((int *)client_data);
@@ -269,14 +265,12 @@ static void CheckUngrabCB(XtPointer client_data, XtIntervalId *)
     {
 	// Try again in 1s.
 	count--;
-
+    
 	XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 1000,
 			CheckUngrabCB, XtPointer(&count));
     }
 }
-
 #else
-
 static bool CheckUngrabCB(int *client_data)
 {
     int& count = *((int *)client_data);
@@ -342,11 +336,9 @@ static bool CheckUngrabCB(int *client_data)
 
     return (count > 0);
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Start grab check
 static void CheckGrabCB(XtPointer client_data, XtIntervalId *)
 {
@@ -362,16 +354,14 @@ static void CheckGrabCB(XtPointer client_data, XtIntervalId *)
 	return;
 
     if (!running_x_program())
-	return;		// The pointer is not grabbed by our debuggee
+	return;			// The pointer is not grabbed by our debuggee
 
     static int count;
     count = app_data.grab_action_delay / 1000;
     XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0,
 		    CheckUngrabCB, XtPointer(&count));
 }
-
 #else
-
 // Start grab check
 static bool CheckGrabCB(void)
 {
@@ -391,11 +381,9 @@ static bool CheckGrabCB(void)
     GUI::signal_idle().connect(sigc::bind(sigc::ptr_fun(CheckUngrabCB), &count));
     return false;
 }
-
 #endif
 
 #if defined(IF_XM)
-
 // Check for pointer grabs in a few seconds
 void check_grabs(bool start)
 {
@@ -418,9 +406,7 @@ void check_grabs(bool start)
 			app_data.check_grab_delay,
 			CheckGrabCB, XtPointer(&check_grab_timer));
 }
-
 #else
-
 // Check for pointer grabs in a few seconds
 void check_grabs(bool start)
 {
@@ -441,6 +427,4 @@ void check_grabs(bool start)
 	GUI::signal_timeout().connect(sigc::ptr_fun(CheckGrabCB),
 				      app_data.check_grab_delay);
 }
-
 #endif
-

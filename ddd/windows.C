@@ -33,7 +33,7 @@ char windows_rcsid[] =
 #define LOG_EVENTS   0
 #define LOG_MOVES    0
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
@@ -447,7 +447,6 @@ static void follow_tool_shell(Widget ref)
     initialize_offsets();
     recenter_tool_shell(ref, last_top_offset, last_right_offset);
 }
-
 #else
 #ifdef NAG_ME
 #warning RecenterToolShellCB not implemented
@@ -562,9 +561,8 @@ void initial_popup_shell(Widget w)
 	toplevel = XtParent(toplevel);
     assert(XtIsTopLevelShell(toplevel));
 
-    if (w != toplevel && XtIsRealized(w)) {
+    if (w != toplevel && XtIsRealized(w))
 	XtPopup(w, XtGrabNone);
-    }
 }
 #else
 // Popup initial shell
@@ -610,9 +608,8 @@ void popup_shell(Widget w)
 	XtManageChild(tool_buttons_w);
     }
 
-    if (XtIsRealized(w)) {
+    if (XtIsRealized(w))
 	XtPopup(w, XtGrabNone);
-    }
 
     set_state(w, PoppingUp);
 
@@ -1059,11 +1056,11 @@ int running_shells()
 
 #if defined(IF_XM)
 // Generic close callback
-void DDDCloseCB(Widget w, XtPointer, XtPointer)
+void DDDCloseCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     if (running_shells() == 1)
     {
-	DDDExitCB(w, XtPointer(EXIT_SUCCESS), XtPointer(0));
+	DDDExitCB(w, XtPointer(EXIT_SUCCESS), 0);
 	return;
     }
 
@@ -1073,23 +1070,23 @@ void DDDCloseCB(Widget w, XtPointer, XtPointer)
     {
 	if (data_disp_shell == 0)
 	{
-	    gdbCloseDataWindowCB(w, XtPointer(0), XtPointer(0));
+	    gdbCloseDataWindowCB(w, client_data, call_data);
 	}
 
 	if (source_view_shell == 0)
 	{
-	    gdbCloseCodeWindowCB(w, XtPointer(0), XtPointer(0));
-	    gdbCloseSourceWindowCB(w, XtPointer(0), XtPointer(0));
+	    gdbCloseCodeWindowCB(w, client_data, call_data);
+	    gdbCloseSourceWindowCB(w, client_data, call_data);
 	}
 
-	gdbCloseCommandWindowCB(w, XtPointer(0), XtPointer(0));
+	gdbCloseCommandWindowCB(w, client_data, call_data);
     }
     else if (shell == data_disp_shell)
-	gdbCloseDataWindowCB(w, XtPointer(0), XtPointer(0));
+	gdbCloseDataWindowCB(w, client_data, call_data);
     else if (shell == source_view_shell)
-	gdbCloseSourceWindowCB(w, XtPointer(0), XtPointer(0));
+	gdbCloseSourceWindowCB(w, client_data, call_data);
     else if (shell == tool_shell)
-	gdbCloseToolWindowCB(Widget(0), XtPointer(0), XtPointer(0));
+	gdbCloseToolWindowCB(w, client_data, call_data);
     else
 	popdown_shell(shell);
 }
@@ -1132,6 +1129,7 @@ void DDDCloseCB(GUI::Widget *w)
 #endif
 
 
+
 // Specific close and open callbacks
 
 // Debugger console
@@ -1145,7 +1143,7 @@ void gdbCloseCommandWindowCB(GUI::Widget *w)
 	!have_data_window() && !have_source_window() && !have_code_window())
     {
 #if defined(IF_XM)
-	DDDExitCB(w, EXIT_SUCCESS, XtPointer(0));
+	DDDExitCB(w, XtPointer(EXIT_SUCCESS), 0);
 #else
 	DDDExitCB(w, EXIT_SUCCESS);
 #endif
@@ -1159,7 +1157,6 @@ void gdbCloseCommandWindowCB(GUI::Widget *w)
     }
 
 #if defined(IF_XM)
-    // Unmanaged the ScrolledWindow parent:
     unmanage_paned_child(XtParent(gdb_w));
 #else
     unmanage_paned_child(gdb_w);
@@ -1177,7 +1174,6 @@ void gdbOpenCommandWindowCB(void)
 #endif
 {
 #if defined(IF_XM)
-    // Manage the ScrolledWindow parent:
     manage_paned_child(XtParent(gdb_w));
 #else
     manage_paned_child(gdb_w);
@@ -1194,7 +1190,6 @@ void gdbOpenCommandWindowCB(void)
 bool have_command_window()
 {
 #if defined(IF_XM)
-    // Refers to ScrolledWindow parent:
     return XtIsManaged(XtParent(gdb_w));
 #else
     return gdb_w->is_visible();
@@ -1204,7 +1199,8 @@ bool have_command_window()
 
 // Source window
 #if defined(IF_XM)
-void gdbCloseSourceWindowCB(Widget w, XtPointer client_data, XtPointer call_data)
+void gdbCloseSourceWindowCB(Widget w, XtPointer client_data, 
+			    XtPointer call_data)
 #else
 void gdbCloseSourceWindowCB(GUI::Widget *w)
 #endif
@@ -1213,7 +1209,7 @@ void gdbCloseSourceWindowCB(GUI::Widget *w)
 	!have_command_window() && !have_data_window() && !have_code_window())
     {
 #if defined(IF_XM)
-	DDDExitCB(w, EXIT_SUCCESS, XtPointer(0));
+	DDDExitCB(w, XtPointer(EXIT_SUCCESS), 0);
 #else
 	DDDExitCB(w, EXIT_SUCCESS);
 #endif
@@ -1252,12 +1248,13 @@ void gdbCloseSourceWindowCB(GUI::Widget *w)
 }
 
 #if defined(IF_XM)
-void gdbCloseCodeWindowCB(Widget w, XtPointer client_data, XtPointer call_data)
+void gdbCloseCodeWindowCB(Widget w, XtPointer client_data, 
+			    XtPointer call_data)
 {
     if (!app_data.tty_mode && 
 	!have_command_window() && !have_data_window() && !have_source_window())
     {
-	DDDExitCB(w, EXIT_SUCCESS, XtPointer(0));
+	DDDExitCB(w, XtPointer(EXIT_SUCCESS), 0);
 	return;
     }
 
@@ -1294,7 +1291,8 @@ void gdbCloseCodeWindowCB(GUI::Widget *w)
 #endif
 
 #if defined(IF_XM)
-void gdbOpenSourceWindowCB(Widget, XtPointer, XtPointer)
+void gdbOpenSourceWindowCB(Widget w, XtPointer client_data,
+			   XtPointer call_data)
 {
     manage_paned_child(source_view->source_form());
     if (source_view_shell != 0 && app_data.disassemble)
@@ -1308,7 +1306,7 @@ void gdbOpenSourceWindowCB(Widget, XtPointer, XtPointer)
 	popup_shell(command_shell);
 
     if (!app_data.command_toolbar)
-	gdbOpenToolWindowCB(Widget(0), XtPointer(0), XtPointer(0));
+	gdbOpenToolWindowCB(w, client_data, call_data);
 
     app_data.source_window = true;
 
@@ -1338,7 +1336,8 @@ void gdbOpenSourceWindowCB(void)
 #endif
 
 #if defined(IF_XM)
-void gdbOpenCodeWindowCB(Widget, XtPointer, XtPointer)
+void gdbOpenCodeWindowCB(Widget w, XtPointer client_data,
+			 XtPointer call_data)
 {
     manage_paned_child(source_view->code_form());
     Widget arg_cmd_w = XtParent(source_arg->top());
@@ -1395,6 +1394,7 @@ bool have_code_window()
 #endif
 }
 
+
 #if defined(IF_XM)
 // Data window
 void gdbCloseDataWindowCB(Widget w, XtPointer, XtPointer)
@@ -1402,7 +1402,7 @@ void gdbCloseDataWindowCB(Widget w, XtPointer, XtPointer)
     if (!app_data.tty_mode && 
 	!have_source_window() && !have_command_window() && !have_code_window())
     {
-	DDDExitCB(w, XtPointer(EXIT_SUCCESS), XtPointer(0));
+	DDDExitCB(w, XtPointer(EXIT_SUCCESS), 0);
 	return;
     }
 
@@ -1535,6 +1535,7 @@ bool have_exec_window()
     return exec_tty_pid() > 0;
 }
 
+
 #if defined(IF_XM)
 // Tool window
 void gdbCloseToolWindowCB(Widget, XtPointer, XtPointer)
@@ -1605,16 +1606,16 @@ bool have_tool_window()
 //-----------------------------------------------------------------------------
 
 #if defined(IF_XM)
-void gdbToggleCommandWindowCB(Widget w, XtPointer, XtPointer call_data)
+void gdbToggleCommandWindowCB(Widget w, XtPointer client_data,
+			      XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
-    bool set = info->set;
-    if (set)
-	gdbOpenCommandWindowCB(w, XtPointer(0), XtPointer(0));
+    if (info->set)
+	gdbOpenCommandWindowCB(w, client_data, call_data);
     else
-	gdbCloseCommandWindowCB(w, XtPointer(0), XtPointer(0));
+	gdbCloseCommandWindowCB(w, client_data, call_data);
 }
 #else
 void gdbToggleCommandWindowCB(GUI::Bipolar *w)
@@ -1628,15 +1629,16 @@ void gdbToggleCommandWindowCB(GUI::Bipolar *w)
 #endif
 
 #if defined(IF_XM)
-void gdbToggleSourceWindowCB(Widget w, XtPointer, XtPointer call_data)
+void gdbToggleSourceWindowCB(Widget w, XtPointer client_data,
+			      XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     if (info->set)
-	gdbOpenSourceWindowCB(w, XtPointer(0), XtPointer(0));
+	gdbOpenSourceWindowCB(w, client_data, call_data);
     else
-	gdbCloseSourceWindowCB(w, XtPointer(0), XtPointer(0));
+	gdbCloseSourceWindowCB(w, client_data, call_data);
 }
 #else
 void gdbToggleSourceWindowCB(GUI::Bipolar *w)
@@ -1649,15 +1651,16 @@ void gdbToggleSourceWindowCB(GUI::Bipolar *w)
 #endif
 
 #if defined(IF_XM)
-void gdbToggleCodeWindowCB(Widget w, XtPointer, XtPointer call_data)
+void gdbToggleCodeWindowCB(Widget w, XtPointer client_data,
+			   XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     if (info->set)
-	gdbOpenCodeWindowCB(w, XtPointer(0), XtPointer(0));
+	gdbOpenCodeWindowCB(w, client_data, call_data);
     else
-	gdbCloseCodeWindowCB(w, XtPointer(0), XtPointer(0));
+	gdbCloseCodeWindowCB(w, client_data, call_data);
 
     update_options();
 }
@@ -1674,15 +1677,16 @@ void gdbToggleCodeWindowCB(GUI::Bipolar *w)
 #endif
 
 #if defined(IF_XM)
-void gdbToggleDataWindowCB(Widget w, XtPointer, XtPointer call_data)
+void gdbToggleDataWindowCB(Widget w, XtPointer client_data,
+			      XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     if (info->set)
-	gdbOpenDataWindowCB(w, XtPointer(0), XtPointer(0));
+	gdbOpenDataWindowCB(w, client_data, call_data);
     else
-	gdbCloseDataWindowCB(w, XtPointer(0), XtPointer(0));
+	gdbCloseDataWindowCB(w, client_data, call_data);
 }
 #else
 void gdbToggleDataWindowCB(GUI::Bipolar *w)
@@ -1695,15 +1699,16 @@ void gdbToggleDataWindowCB(GUI::Bipolar *w)
 #endif
 
 #if defined(IF_XM)
-void gdbToggleExecWindowCB(Widget w, XtPointer, XtPointer call_data)
+void gdbToggleExecWindowCB(Widget w, XtPointer client_data,
+			      XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     if (info->set)
-	gdbOpenExecWindowCB(w, XtPointer(0), XtPointer(0));
+	gdbOpenExecWindowCB(w, client_data, call_data);
     else
-	gdbCloseExecWindowCB(w, XtPointer(0), XtPointer(0));
+	gdbCloseExecWindowCB(w, client_data, call_data);
 }
 #else
 void gdbToggleExecWindowCB(GUI::Bipolar *w)
@@ -1716,15 +1721,16 @@ void gdbToggleExecWindowCB(GUI::Bipolar *w)
 #endif
 
 #if defined(IF_XM)
-void gdbToggleToolWindowCB(Widget w, XtPointer, XtPointer call_data)
+void gdbToggleToolWindowCB(Widget w, XtPointer client_data,
+			      XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     if (info->set)
-	gdbOpenToolWindowCB(w, XtPointer(0), XtPointer(0));
+	gdbOpenToolWindowCB(w, client_data, call_data);
     else
-	gdbCloseToolWindowCB(w, XtPointer(0), XtPointer(0));
+	gdbCloseToolWindowCB(w, client_data, call_data);
 }
 #else
 void gdbToggleToolWindowCB(GUI::Bipolar *w)
@@ -1735,6 +1741,7 @@ void gdbToggleToolWindowCB(GUI::Bipolar *w)
 	gdbCloseToolWindowCB();
 }
 #endif
+
 
 //-----------------------------------------------------------------------------
 // Command tool placement
@@ -1930,6 +1937,7 @@ void get_tool_offset()
 #endif
 #endif
 }
+
 
 
 // Manage paned child with minimum size
@@ -2171,6 +2179,7 @@ static int resizable_children(Widget paned)
 }
 #endif
 
+
 #if defined(IF_XM)
 // Unmanage W, but be sure the command window doesn't grow.
 void unmanage_paned_child(Widget w)
@@ -2227,6 +2236,7 @@ void unmanage_paned_child(GUI::Widget *w)
     GUI::MultiPaned::hide_child(w);
 }
 #endif
+
 
 // Set the width of PANED to the maximum width of its children
 
@@ -2346,6 +2356,8 @@ void set_paned_window_size(GUI::Container *paned, int max_width)
 }
 #endif
 
+
+
 //-----------------------------------------------------------------------------
 // Main Window stuff
 //-----------------------------------------------------------------------------
@@ -2413,6 +2425,7 @@ void set_main_window_size(GUI::Container *main)
     std::cerr << "set_main_window_size::stub\n";
 }
 #endif
+
 
 //-----------------------------------------------------------------------------
 // Scrolled Window stuff
@@ -2490,4 +2503,3 @@ void set_scrolled_window_size(GUI::ScrolledText *child, GUI::Widget *target)
 #endif
 }
 #endif
-

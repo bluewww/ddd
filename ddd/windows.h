@@ -29,24 +29,20 @@
 #ifndef _DDD_windows_h
 #define _DDD_windows_h
 
-#ifdef HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
 
 #if defined(IF_XM)
 #include <X11/Intrinsic.h>
-#endif
-
-#if !defined(IF_XM)
+#else
 #include <GUI/Window.h>
 #include <GUI/MultiPaned.h>
 #include <GUI/ScrolledText.h>
 #include <GUI/Box.h>
 #include <GUI/Bipolar.h>
-#endif
-
 #include "gtk_wrapper.h"
-
+#endif
 #include "bool.h"
 
 // Shells (only used if separate windows are used)

@@ -39,10 +39,10 @@
 #include <GUI/Widget.h>
 #include "gtk_wrapper.h"
 #endif
-
 #include "strclass.h"
 
 #if defined(IF_XM)
+// Window manager
 extern void wm_set_icon(Widget shell, Pixmap icon, Pixmap mask);
 extern void wm_set_icon(Display *display, Window shell,
 			Pixmap icon, Pixmap mask);
@@ -65,18 +65,12 @@ extern void wm_set_name(GUI::RefPtr<GUI::Display> display, GUI::RefPtr<GUI::XWin
 #if defined(IF_XM)
 void wait_until_mapped(Widget w, Widget shell = 0);
 void raise_shell(Widget w);
+void manage_and_raise(Widget w);
 #else
 void wait_until_mapped(GUI::Widget *w, GUI::Widget *shell = 0);
 void raise_shell(GUI::Widget *w);
-#endif
-
-#if defined(IF_XM)
-void manage_and_raise(Widget w);
-#else
 void manage_and_raise(GUI::Widget *w);
-#endif
 
-#if !defined(IF_XM)
 // Copy text from any widget to default clipboard.
 // Glib::RefPtr<Gtk::Clipboard> clip =
 //   Gtk::Clipboard::get_for_display(XtDisplay(w));

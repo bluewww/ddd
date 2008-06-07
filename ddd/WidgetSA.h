@@ -38,7 +38,6 @@
 #else
 #include <GUI/Widget.h>
 #endif
-
 #include "Assoc.h"
 #include "strclass.h"
 

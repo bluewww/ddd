@@ -29,7 +29,9 @@
 char WhatNextCB_rcsid[] = 
     "$Id$";
 
+#if defined(HAVE_CONFIG_H)
 #include "config.h"
+#endif
 
 #include "WhatNextCB.h"
 
@@ -60,9 +62,7 @@ char WhatNextCB_rcsid[] =
 #include <Xm/Xm.h>
 #include <Xm/Text.h>
 #include <Xm/MessageB.h>
-#endif
-
-#if !defined(IF_XM)
+#else
 #include <GUI/Dialog.h>
 #endif
 
@@ -127,7 +127,7 @@ static int passed_to_program(const string& program_state)
 
 	if (signal_description.empty())
 	    signal_description = signal;
-
+	
 #if defined(IF_XM)	
 	defineConversionMacro("SIGNAL", signal.chars());
 	defineConversionMacro("SIGNAL_DESCRIPTION", signal_description.chars());

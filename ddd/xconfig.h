@@ -28,13 +28,10 @@
 #ifndef _DDD_xconfig_h
 #define _DDD_xconfig_h
 
-#if defined(IF_XM)
 #include <X11/Intrinsic.h>
-
 #include "bool.h"
 
 extern int check_x_configuration(Widget toplevel, bool verbose);
-#endif
 
 #endif // _DDD_xconfig_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
