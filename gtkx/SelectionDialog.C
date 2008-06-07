@@ -41,11 +41,11 @@ SelectionDialog::init(Gtk::Window &parent,
 {
     set_name(name.s());
 
-    sw_ = new GtkX::ScrolledWindow(*this, PACK_SHRINK, name+String("_sw"));
+    sw_ = new GtkX::ScrolledWindow(*this, PACK_EXPAND_WIDGET, name+String("_sw"));
     sw_->set_size_request(-1, 100);
     sw_->show();
 
-    listview_ = new GtkX::ListView(*sw_, PACK_SHRINK, name+String("_list"),
+    listview_ = new GtkX::ListView(*sw_, PACK_EXPAND_WIDGET, name+String("_list"),
 				   headers);
     listview_->show();
 
