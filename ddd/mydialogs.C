@@ -365,6 +365,7 @@ void ListSetAndSelectPos(Widget list, int pos)
 void ListSetAndSelectPos(GUI::ListView *list, int pos)
 {
     std::cerr << "ListSetAndSelectPos: not implemented\n";
+    std::cerr << "Args: " << list << " " << pos << "\n";
 }
 
 // Get the selected item positions

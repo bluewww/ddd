@@ -1174,7 +1174,15 @@ static void getPIDs(Widget selectionList, IntArray& disp_nrs)
 	    disp_nrs += p;
     }
 }
+#else
+// Fill the pids in DISP_NRS
+static void getPIDs(GUI::ListView *selectionList, IntArray& disp_nrs)
+{
+    std::cerr << "getPIDS not supported yet\n";
+}
+#endif
 
+#if defined(IF_XM)
 // Get the PID from the selection list in CLIENT_DATA
 static int get_pid(Widget, XtPointer client_data, XtPointer)
 {
@@ -1188,6 +1196,13 @@ static int get_pid(Widget, XtPointer client_data, XtPointer)
     else
 	return 0;
 }
+#else
+// Get the PID from the selection list in CLIENT_DATA
+static int get_pid(GUI::ListView *processes)
+{
+    return 0;
+}
+#endif
 
 // Process selection
 
@@ -1211,12 +1226,6 @@ static void sortProcesses(StringArray& a)
 	}
     } while (h != 1);
 }
-#else
-#ifdef NAG_ME
-#warning Process selection
-#endif
-#endif
-
 
 inline bool is_separator(char c)
 {
@@ -1437,14 +1446,203 @@ static void update_processes(Widget processes, bool keep_selection)
 
     delete[] selected;
 }
+#else
+// Create list of processes
+static void update_processes(GUI::ListView *processes, bool keep_selection)
+{
+    StatusDelay delay("Getting list of processes");
 
+    string cmd = sh_command(app_data.ps_command) + " 2>&1";
+    FILE *fp = popen(cmd.chars(), "r");
+    if (fp == 0)
+    {
+	delay.outcome = strerror(errno);
+	return;
+    }
 
+    StringArray all_process_list;
+    int c;
+    string line = "";
+    bool first_line = true;
+
+    while ((c = getc(fp)) != EOF)
+    {
+	if (c == '\n')
+	{
+	    if (first_line || valid_ps_line(line, app_data.ps_command))
+		all_process_list += line;
+#if 0
+	    else
+		std::clog << "Excluded: " << line << "\n";
+#endif
+
+	    if (first_line)
+	    {
+		// Find first occurrence of `PID' title
+		ps_pid_index = line.index(" PID ");
+		if (ps_pid_index < 0)
+		    ps_pid_index = 0;
+	    }
+
+	    line = "";
+	    first_line = false;
+	}
+	else
+	{
+	    line += c;
+	}
+    }
+
+    pclose(fp);
+    sortProcesses(all_process_list);
+    DynIntArray pids(all_process_list.size());
+
+    // If GDB cannot send a signal to the process, we cannot debug it.
+    // Try a `kill -0' (via GDB, as it may be setuid) and filter out
+    // all processes in the `kill' diagnostic -- that is, all
+    // processes that `kill' could not send a signal.
+    string kill = "kill -0";
+
+    if (gdb->has_handler_command())
+	kill = "/usr/bin/kill -0"; // Bypass built-in SUN DBX command
+
+    int i;
+    for (i = 0; i < all_process_list.size(); i++)
+    {
+	pids[i] = ps_pid(all_process_list[i]);
+	if (pids[i])
+	    kill += string(" ") + itostring(pids[i]);
+    }
+#if defined(__sun) 
+    // bypass underlying debugger
+    // Fix for Sun: use /usr/bin/kill
+    string kill_result;
+    {
+      std::ostringstream os;
+      kill += " 2>&1";
+      FILE *fp = popen(kill.chars(), "r");
+      if (fp != 0)
+      {
+	  int c;
+	  while ((c = getc(fp)) != EOF)
+	  {
+	      os << (char)c;
+	  }
+	  pclose(fp);
+      }
+      kill_result = os;
+    }
+#else
+    string kill_result = gdb_question(gdb->shell_command(kill));
+#endif
+    i = 0;
+    while (i >= 0)
+    {
+	i = kill_result.index(rxint, i);
+	if (i >= 0)
+	{
+	    int bad_pid = atoi(kill_result.chars() + i);
+	    for (int k = 0; k < all_process_list.size(); k++)
+	    {
+		if (pids[k] != 0 && pids[k] == bad_pid)
+		{
+#if 0
+		    std::clog << "Excluded: " << all_process_list[k] << "\n";
+#endif
+		    all_process_list[k] = NO_GDB_ANSWER;
+		}
+	    }
+	    i++;
+	}
+    }
+
+    StringArray process_list;
+    for (i = 0; i < all_process_list.size(); i++)
+	if (all_process_list[i] != NO_GDB_ANSWER)
+	    process_list += all_process_list[i];
+
+    // Now set the selection.
+    bool *selected = new bool[process_list.size()];
+    for (i = 0; i < process_list.size(); i++)
+	selected[i] = false;
+
+    int pos = -1;
+    if (keep_selection)
+    {
+	// Preserve old selection: each PID selected before will also be
+	// selected after.
+	IntArray selection;
+	getPIDs(processes, selection);
+
+	for (i = 0; i < selection.size(); i++)
+	{
+	    for (int j = 0; j < process_list.size(); j++)
+		if (selection[i] == ps_pid(process_list[j]))
+		{
+		    if (pos < 0)
+			pos = j;
+		    selected[j] = true;
+		}
+	}
+    }
+
+    if (pos < 0)
+    {
+	// Create new selection from current file and current pid.
+	ProgramInfo info;
+
+	// Check for current pid; if found, highlight it.
+	for (i = 0; pos < 0 && i < process_list.size(); i++)
+	{
+	    if (info.pid != 0 && ps_pid(process_list[i]) == info.pid)
+		pos = i;
+	}
+
+	if (pos < 0)
+	{
+	    // Not found? Try leftmost occurrence of process base name.
+	    string current_base = basename(info.file.chars());
+	    int leftmost = INT_MAX;
+	    for (i = 0; i < process_list.size(); i++)
+	    {
+		int occurrence = process_list[i].index(current_base);
+		if (occurrence >= 0 && occurrence < leftmost 
+		    && ps_pid(process_list[i]) > 0)
+		{
+		    leftmost = occurrence;
+		    pos = i;
+		}
+	    }
+	}
+    }
+
+    if (pos >= 0)
+	selected[pos] = true;
+
+    setLabelList(processes, process_list.values(),
+		 selected, process_list.size(), true, false);
+
+    if (pos >= 0)
+	ListSetAndSelectPos(processes, pos + 1);
+
+    delete[] selected;
+}
+#endif
+
+#if defined(IF_XM)
 static void gdbUpdateProcessesCB(Widget, XtPointer client_data, XtPointer)
 {
     Widget processes = Widget(client_data);
     update_processes(processes, true);
 }
+#else
+static void gdbUpdateProcessesCB(GUI::ListView *processes)
+{
+    update_processes(processes, true);
+}
+#endif
 
+#if defined(IF_XM)
 // Select a process
 static void SelectProcessCB(Widget w, XtPointer client_data, 
 			    XtPointer call_data)
@@ -1462,8 +1660,10 @@ static void SelectProcessCB(Widget w, XtPointer client_data,
     else
 	set_status("Process " + itostring(pid));
 }
+#endif
 
 
+#if defined(IF_XM)
 // OK pressed in `Open Process'
 static void openProcessDone(Widget w, XtPointer client_data, 
 			    XtPointer call_data)
@@ -1500,9 +1700,40 @@ static void openProcessDone(Widget w, XtPointer client_data,
     gdb_command(gdb->attach_command(pid, info.file));
 }
 #else
-#ifdef NAG_ME
-#warning Process selection
-#endif
+// OK pressed in `Open Process'
+static void openProcessDone(GUI::ListView *w)
+{
+    int pid = get_pid(w);
+    if (pid <= 0)
+    {
+	gdbUpdateProcessesCB(w);	
+	return;
+    }
+
+    // w->popdown();
+
+    ProgramInfo info;
+
+    if (pid == info.pid)
+    {
+	set_status("Already attached to process " + itostring(pid) + ".");
+	return;
+    }
+
+    if (info.file == NO_GDB_ANSWER || info.file.empty())
+    {
+	post_error("No program.", "no_program", w);
+	return;
+    }
+
+    // GDB does not always detach processes upon opening new
+    // files, so we do it explicitly
+    if (info.attached)
+	gdb_command(gdb->detach_command(info.pid));
+
+    // Attach to new process
+    gdb_command(gdb->attach_command(pid, info.file));
+}
 #endif
 
 #if defined(IF_XM)
@@ -2194,6 +2425,44 @@ void gdbOpenProcessCB(Widget w, XtPointer, XtPointer)
 void gdbOpenProcessCB(GUI::Widget *w)
 {
     std::cerr << "gdbOpenProcessCB not supported yet\n";
+    static GUI::SelectionDialog *dialog = 0;
+    static GUI::ListView *processes = 0;
+
+    if (dialog == 0)
+    {
+	std::vector<GUI::String> process_headers;
+	process_headers.push_back("Process");
+	dialog = new GUI::SelectionDialog(*find_shell(w), "processes", process_headers);
+
+	Delay::register_shell(dialog);
+
+	processes = dialog->list();
+
+#if 0
+	XtAddCallback(processes, XmNsingleSelectionCallback,
+		      SelectProcessCB, XtPointer(processes));
+	XtAddCallback(processes, XmNmultipleSelectionCallback,
+		      SelectProcessCB, XtPointer(processes));
+	XtAddCallback(processes, XmNextendedSelectionCallback,
+		      SelectProcessCB, XtPointer(processes));
+	XtAddCallback(processes, XmNbrowseSelectionCallback,
+		      SelectProcessCB, XtPointer(processes));
+#endif
+	GUI::Button *button;
+	button = dialog->add_button("ok", "OK");
+	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(openProcessDone), processes));
+	button->show();
+	button = dialog->add_button("apply", "Apply");
+	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(gdbUpdateProcessesCB), processes));
+	button->show();
+	button = dialog->add_button("cancel", "Cancel");
+	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), dialog));
+	button->show();
+    }
+
+    update_processes(processes, false);
+    manage_and_raise(dialog);
+    warn_if_no_program(dialog);
 }
 #endif
 
