@@ -287,8 +287,9 @@ static bool CheckUngrabCB(int *client_data)
 	dialog_label->show();
 	Delay::register_shell(dialog);
 	GUI::Button *button;
-	button = dialog->add_button("cancel", "Cancel");
+	button = dialog->add_button("cancel", _("Cancel"));
 	std::cerr << "Connect to cancel...\n";
+	button->show();
     }
 
     if (!mouse_pointer_grabbed() && count > 0)

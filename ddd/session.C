@@ -733,13 +733,17 @@ static GUI::SelectionDialog *create_session_panel(GUI::Widget *parent, const cha
     sessions->signal_selection_changed().connect(sigc::bind(sigc::ptr_fun(SelectSessionCB),
 							    dialog));
 
-    GUI::Button *ok_w = dialog->add_button("ok", "Ok");
-    GUI::Button *apply_w = dialog->add_button("apply", "Apply");
-    GUI::Button *cancel_w = dialog->add_button("cancel", "Cancel");
+    GUI::Button *ok_w = dialog->add_button("ok", _("Ok"));
+    GUI::Button *apply_w = dialog->add_button("apply", _("Apply"));
+    GUI::Button *cancel_w = dialog->add_button("cancel", _("Cancel"));
 
     ok_w->signal_clicked().connect(sigc::bind(sigc::ptr_fun(ok), sessions));
     apply_w->signal_clicked().connect(sigc::bind(sigc::ptr_fun(apply), sessions));
     cancel_w->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), dialog));
+
+    ok_w->show();
+    apply_w->show();
+    cancel_w->show();
 
     return dialog;
 }

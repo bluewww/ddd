@@ -447,12 +447,15 @@ void gdbExamineCB(GUI::Widget *w)
 	tie_combo_box_to_history(address_w, arg_history_filter);
 
 	GUI::Button *button;
-	button = dialog->add_button("ok", "OK");
+	button = dialog->add_button("ok", _("OK"));
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(PrintExaminedCB), dialog));
-	button = dialog->add_button("apply", "Apply");
+	button->show();
+	button = dialog->add_button("apply", _("Apply"));
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(DisplayExaminedCB), dialog));
-	button = dialog->add_button("cancel", "Cancel");
+	button->show();
+	button = dialog->add_button("cancel", _("Cancel"));
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), dialog));
+	button->show();
     }
 
     string arg = source_arg->get_string();

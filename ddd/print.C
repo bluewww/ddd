@@ -1145,10 +1145,12 @@ static void BrowseNameCB(GUI::Widget *w)
 
 	Delay::register_shell(dialog);
 	GUI::Button *button;
-	button = dialog->add_button("ok", "OK");
+	button = dialog->add_button("ok", _("OK"));
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(SetPrintFileNameCB), dialog));
-	button = dialog->add_button("cancel", "Cancel");
+	button->show();
+	button = dialog->add_button("cancel", _("Cancel"));
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), dialog));
+	button->show();
     }
     else
     {
@@ -1458,9 +1460,10 @@ static void PrintCB(GUI::Button *parent, bool displays)
     Delay::register_shell(print_dialog);
 
     GUI::Button *button;
-    button = print_dialog->add_button("ok", "OK");
+    button = print_dialog->add_button("ok", _("OK"));
     button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(PrintAgainCB),
 						button, 1L));
+    button->show();
 
     // Remove old prompt
     // Create menu
@@ -1663,10 +1666,12 @@ static void PrintCB(GUI::Button *parent, bool displays)
     GUI::Entry *entry;
     entry = new GUI::Entry(*paper_size_dialog, GUI::PACK_SHRINK, "entry");
     entry->show();
-    GUI::Button *ok_button = paper_size_dialog->add_button("ok", "OK");
+    GUI::Button *ok_button = paper_size_dialog->add_button("ok", _("OK"));
     ok_button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(SetPaperSizeCB), paper_size_dialog));
-    button = paper_size_dialog->add_button("cancel", "Cancel");
+    button->show();
+    button = paper_size_dialog->add_button("cancel", _("Cancel"));
     button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(ResetPaperSizeCB), paper_size_dialog));
+    button->show();
 
     entry->signal_activate().connect(sigc::bind(sigc::ptr_fun(CheckPaperSizeCB), entry, ok_button));
 

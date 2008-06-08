@@ -412,8 +412,9 @@ void gdbRunCB(GUI::Widget *w)
 	run_dialog = new GUI::Dialog(*find_shell(w), "run_dialog");
 
 	Delay::register_shell(run_dialog);
-	GUI::Button *button = run_dialog->add_button("run", "Run");
+	GUI::Button *button = run_dialog->add_button("run", _("Run"));
 	button->signal_clicked().connect(sigc::ptr_fun(gdbRunDCB));
+	button->show();
 
 	run_arguments_w = new GUI::ComboBoxEntryText(*run_dialog);
 	run_arguments_w->show();
@@ -526,8 +527,9 @@ void gdbMakeCB(GUI::Widget *w)
 	make_dialog = new GUI::Dialog(*find_shell(w), "make_dialog");
 
 	Delay::register_shell(make_dialog);
-	GUI::Button *button = make_dialog->add_button("make", "Make");
+	GUI::Button *button = make_dialog->add_button("make", _("Make"));
 	button->signal_clicked().connect(sigc::ptr_fun(gdbMakeDCB));
+	button->show();
 
 	make_arguments_w = new GUI::ComboBoxEntryText(*make_dialog);
 	make_arguments_w->show();
@@ -656,8 +658,9 @@ void gdbChangeDirectoryCB(GUI::Widget *w)
 	cd_dialog = new GUI::Dialog(*sh, str);
 	// cd_dialog = new GUI::Dialog(find_shell(w->internal()), "cd_dialog");
 
-	GUI::Button *button = cd_dialog->add_button("change", "Change Dir");
+	GUI::Button *button = cd_dialog->add_button("change", _("Change Dir"));
 	button->signal_clicked().connect(sigc::ptr_fun(gdbChangeDirectoryDCB));
+	button->show();
 
 #ifdef NAG_ME
 #warning Unsupported list callbacks

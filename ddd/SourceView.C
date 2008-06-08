@@ -5665,8 +5665,9 @@ void SourceView::create_shells()
     if (edit_breakpoints_dialog_w != 0)
     {
 	GUI::Button *button;
-	button = edit_breakpoints_dialog_w->add_button("ok", "OK");
+	button = edit_breakpoints_dialog_w->add_button("ok", _("OK"));
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), edit_breakpoints_dialog_w));
+	button->show();
     }
 
     // Create stack view
@@ -5677,9 +5678,9 @@ void SourceView::create_shells()
     Delay::register_shell(stack_dialog_w);
 
 
-    up_w = stack_dialog_w->add_button("up", "Up");
-    down_w = stack_dialog_w->add_button("down", "Down");
-    GUI::Button *cancel_w = stack_dialog_w->add_button("cancel", "Cancel");
+    up_w = stack_dialog_w->add_button("up", _("Up"));
+    down_w = stack_dialog_w->add_button("down", _("Down"));
+    GUI::Button *cancel_w = stack_dialog_w->add_button("cancel", _("Cancel"));
 
     set_sensitive(up_w,   False);
     set_sensitive(down_w, False);
@@ -5694,6 +5695,9 @@ void SourceView::create_shells()
     down_w->signal_clicked().connect(sigc::bind(sigc::ptr_fun(gdbCommandCB), stack_dialog_w, "down"));
     cancel_w->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), stack_dialog_w));
     cancel_w->signal_clicked().connect(sigc::ptr_fun(StackDialogPoppedDownCB));
+    up_w->show();
+    down_w->show();
+    cancel_w->show();
 
 
     // Create register view
@@ -5731,10 +5735,10 @@ void SourceView::create_shells()
 								   register_list_w));
 
     GUI::Button *button;
-    button = register_dialog_w->add_button("ok", "OK");
+    button = register_dialog_w->add_button("ok", _("OK"));
     button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), register_dialog_w));
     button->show();
-    button = register_dialog_w->add_button("cancel", "Cancel");
+    button = register_dialog_w->add_button("cancel", _("Cancel"));
     button->signal_clicked().connect(sigc::ptr_fun(RegisterDialogPoppedDownCB));
     button->show();
 
@@ -5751,14 +5755,14 @@ void SourceView::create_shells()
 
     thread_list_w->get_selection()->signal_changed().connect(sigc::bind(sigc::ptr_fun(SelectThreadCB), thread_list_w));
 
-    button = thread_dialog_w->add_button("cancel", "Close");
+    button = thread_dialog_w->add_button("cancel", _("Close"));
     button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), thread_dialog_w));
     button->signal_clicked().connect(sigc::ptr_fun(ThreadDialogPoppedDownCB));
     button->show();
-    button = thread_dialog_w->add_button("suspend", "Suspend");
+    button = thread_dialog_w->add_button("suspend", _("Suspend"));
     button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(ThreadCommandCB), button, "suspend"));
     button->show();
-    button = thread_dialog_w->add_button("resume", "Resume");
+    button = thread_dialog_w->add_button("resume", _("Resume"));
     button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(ThreadCommandCB), button, "resume"));
     button->show();
 
@@ -8409,8 +8413,9 @@ void SourceView::NewBreakpointCB(GUI::Widget *w)
 	tie_combo_box_to_history(text, break_history_filter);
 
 	GUI::Button *button;
-	button = dialog->add_button("ok", "OK");
+	button = dialog->add_button("ok", _("OK"));
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(NewBreakpointDCB), button, text));
+	button->show();
     }
 
     manage_and_raise(dialog);
@@ -8612,9 +8617,9 @@ void SourceView::NewWatchpointCB(GUI::Widget *w)
 
 	tie_combo_box_to_history(text, watch_history_filter);
 	GUI::Button *button;
-	button = dialog->add_button("ok", "OK");
+	button = dialog->add_button("ok", _("OK"));
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(NewWatchpointDCB), button, text));
-
+	button->show();
     }
 
     manage_and_raise(dialog);
@@ -9462,7 +9467,9 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, GUI::Widget * /* origin */)
 
     info->dialog = new GUI::Dialog(*find_shell(source_text_w), "Properties");
 
-    GUI::Button *button = info->dialog->add_button("apply", "Apply");
+    GUI::Button *button = info->dialog->add_button("apply", _("Apply"));
+    std::cerr << "Connect apply button in edit_bps\n";
+    button->show();
 
     Delay::register_shell(info->dialog);
 
@@ -9556,13 +9563,16 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, GUI::Widget * /* origin */)
 
     MMadjustPanel(panel_menu);
 
-    button = info->dialog->add_button("ok", "OK");
+    button = info->dialog->add_button("ok", _("OK"));
     button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(ApplyBreakpointPropertiesCB), button, info));
     button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), info->dialog));
-    button = info->dialog->add_button("apply", "Apply");
+    button->show();
+    button = info->dialog->add_button("apply", _("Apply"));
     button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(ApplyBreakpointPropertiesCB), button, info));
-    button = info->dialog->add_button("cancel", "Cancel");
+    button->show();
+    button = info->dialog->add_button("cancel", _("Cancel"));
     button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), info->dialog));
+    button->show();
 
 #ifdef NAG_ME
 #warning Unmap callback?

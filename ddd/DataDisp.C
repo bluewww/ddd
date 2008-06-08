@@ -1005,18 +1005,21 @@ void DataDisp::applyThemeCB (GUI::Widget *w, const char *client_data)
 
     if (select)
     {
-	GUI::Button *apply = dialog->add_button("apply", "Apply");
+	GUI::Button *apply = dialog->add_button("apply", _("Apply"));
 	apply->signal_clicked().connect(sigc::bind(sigc::ptr_fun(applyThemeOnThisCB), client_data));
 	apply->signal_clicked().connect(sigc::bind(sigc::ptr_fun(DestroyShellCB), dialog));
+	apply->show();
     }
 
     Delay::register_shell(dialog);
     GUI::Button *button;
-    button = dialog->add_button("ok", "OK");
+    button = dialog->add_button("ok", _("OK"));
     button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(applyThemeOnAllCB), client_data));
     button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(DestroyShellCB), dialog));
-    button = dialog->add_button("cancel", "Cancel");
+    button->show();
+    button = dialog->add_button("cancel", _("Cancel"));
     button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(DestroyShellCB), dialog));
+    button->show();
 
     manage_and_raise(dialog);
 }
@@ -2813,7 +2816,7 @@ GUI::Dialog *DataDisp::create_display_dialog(GUI::Widget *parent, const char *na
     Delay::register_shell(dialog);
 
     GUI::Button *button;
-    button = dialog->add_button("ok", "OK");
+    button = dialog->add_button("ok", _("OK"));
     button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(new_displayDCB),
 						dialog, &info));
     button->show();
@@ -8154,11 +8157,11 @@ void DataDisp::setCB(GUI::Widget *w)
     tie_combo_box_to_history(info->text, set_history_filter);
 
     GUI::Button *button;
-    button = info->dialog->add_button("ok", "OK");
+    button = info->dialog->add_button("ok", _("OK"));
     button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(setDCB), info, 0));
-    button = info->dialog->add_button("apply", "Apply");
+    button = info->dialog->add_button("apply", _("Apply"));
     button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(setDCB), info, 1));
-    button = info->dialog->add_button("cancel", "Cancel");
+    button = info->dialog->add_button("cancel", _("Cancel"));
     button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(DestroyThisCB), info->dialog));
     manage_and_raise(info->dialog);
 }

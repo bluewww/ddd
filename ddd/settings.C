@@ -4325,29 +4325,35 @@ static GUI::Dialog *create_panel(DebuggerType type, SettingsType stype)
     switch (stype)
     {
     case SETTINGS:
-	button = apply_settings_button = panel->add_button("apply", "Apply");
+	button = apply_settings_button = panel->add_button("apply", _("Apply"));
 	button->signal_clicked().connect(sigc::ptr_fun(ApplySettingsCB));
-	button = reset_settings_button = panel->add_button("reset", "Reset");
+	button->show();
+	button = reset_settings_button = panel->add_button("reset", _("Reset"));
 	button->signal_clicked().connect(sigc::ptr_fun(ResetSettingsCB));
+	button->show();
 	break;
 
     case INFOS:
-	button = apply_settings_button = panel->add_button("delete", "Delete");
+	button = apply_settings_button = panel->add_button("delete", _("Delete"));
 	button->signal_clicked().connect(sigc::ptr_fun(DeleteAllInfosCB));
-	button = reset_infos_button = panel->add_button("reset", "Reset");
-	// button->signal_clicked().connect(sigc::ptr_fun(ResetSettingsCB));
+	button->show();
+	button = reset_infos_button = panel->add_button("reset", _("Reset"));
+	button->signal_clicked().connect(sigc::ptr_fun(ResetSettingsCB));
+	button->show();
 	break;
 
     case SIGNALS:
-	button = reset_signals_button = panel->add_button("reset", "Reset");
+	button = reset_signals_button = panel->add_button("reset", _("Reset"));
 	button->signal_clicked().connect(sigc::ptr_fun(ResetSignalsCB));
 	break;
 
     case THEMES:
-	button = apply_themes_button = panel->add_button("apply", "Apply");
+	button = apply_themes_button = panel->add_button("apply", _("Apply"));
 	button->signal_clicked().connect(sigc::ptr_fun(ApplyThemesCB));
-	button = reset_themes_button = panel->add_button("reset", "Reset");
+	button->show();
+	button = reset_themes_button = panel->add_button("reset", _("Reset"));
 	button->signal_clicked().connect(sigc::ptr_fun(ResetThemesCB));
+	button->show();
 	break;
     }
 
@@ -6079,11 +6085,13 @@ void dddDefineCommandCB(GUI::Widget *w)
 	MMadjustPanel(panel_menu);
 
 	GUI::Button *button;
-	button = apply_w = dialog->add_button("apply", "Apply");
+	button = apply_w = dialog->add_button("apply", _("Apply"));
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(ApplyCB), dialog));
-	button = dialog->add_button("cancel", "Cancel");
+	button->show();
+	button = dialog->add_button("cancel", _("Cancel"));
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(EndCommandDefinitionCB), dialog));
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), dialog));
+	button->show();
 
 	set_need_load_defines(true);
 	update_defines();

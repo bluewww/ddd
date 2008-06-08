@@ -5957,12 +5957,15 @@ static bool lock_ddd(GUI::Widget *parent, LockInfo& info)
     Delay::register_shell(lock_dialog);
 
     Gtk::Button *button;
-    button = lock_dialog->add_button("kill", "Kill");
+    button = lock_dialog->add_button("kill", _("Kill"));
     button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(KillLockerCB), lock_dialog, &info));
-    button = lock_dialog->add_button("continue", "Continue");
+    button->show();
+    button = lock_dialog->add_button("continue", _("Continue"));
     button->signal_clicked().connect(sigc::ptr_fun(ContinueDespiteLockCB));
-    button = lock_dialog->add_button("cancel", "Cancel");
+    button->show();
+    button = lock_dialog->add_button("cancel", _("Cancel"));
     button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(ExitCB), EXIT_FAILURE));
+    button->show();
 
 #ifdef NAG_ME
 #warning No geometry settings yet
@@ -8108,8 +8111,9 @@ static void OfferRestartCB(GUI::Dialog *&dialog)
 						    message);
 	    Delay::register_shell(restart_dialog);
 	    Gtk::Button *button;
-	    button = restart_dialog->add_button("ok", "OK");
+	    button = restart_dialog->add_button("ok", _("OK"));
 	    button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(DDDRestartCB), restart_dialog));
+	    button->show();
 	}
 	manage_and_raise(restart_dialog);
     }
@@ -8218,7 +8222,7 @@ static void make_preferences(GUI::Widget *parent)
     preferences_dialog->signal_unmap().connect(sigc::bind(sigc::ptr_fun(OfferRestartCB),
 							  preferences_dialog));
 
-    reset_preferences_w = preferences_dialog->add_button("reset", "Reset");
+    reset_preferences_w = preferences_dialog->add_button("reset", _("Reset"));
     reset_preferences_w->show();
 
     GUI::Notebook *change = new GUI::Notebook(*preferences_dialog, GUI::PACK_SHRINK, "change");

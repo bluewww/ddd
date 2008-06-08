@@ -387,13 +387,16 @@ static void post_fatal(const string& title, const string& cause,
 	Delay::register_shell(fatal_dialog);
 
 	GUI::Button *button;
-	button = fatal_dialog->add_button("restart", "Restart");
+	button = fatal_dialog->add_button("restart", _("Restart"));
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(DDDRestartCB), button));
-	button = fatal_dialog->add_button("exit", "Exit");
+	button->show();
+	button = fatal_dialog->add_button("exit", _("Exit"));
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(DDDExitCB), button, EXIT_FAILURE));
+	button->show();
 #if DEBUG_BUTTON
-	debug = fatal_dialog->add_button("debug", "Debug");
+	debug = fatal_dialog->add_button("debug", _("Debug"));
 	debug->signal_activate().connect(sigc::bind(sigc::ptr_fun(DDDDebugCB), EXIT_FAILURE));
+	debug->show();
 #endif
 	label = new GUI::Label(*fatal_dialog);
 	label->show();
@@ -1281,10 +1284,12 @@ static void DDDDoneCB(GUI::Widget *w, long status)
     GUI::Label *label = new GUI::Label(*quit_dialog, GUI::PACK_SHRINK, msg);
     Delay::register_shell(quit_dialog);
     GUI::Button *button;
-    button = quit_dialog->add_button("ok", "Yes");
+    button = quit_dialog->add_button("ok", _("Yes"));
     button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(DDDDoneAnywayCB), button, status));
-    button = quit_dialog->add_button("cancel", "No");
+    button->show();
+    button = quit_dialog->add_button("cancel", _("No"));
     button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), quit_dialog));
+    button->show();
 
     manage_and_raise(quit_dialog);
 }
@@ -1425,10 +1430,10 @@ void DDDRestartCB(GUI::Widget *w)
 	Delay::register_shell(dialog);
 	GUI::Label *label = new GUI::Label(*dialog, GUI::PACK_SHRINK, "Restart?");
 	GUI::Button *button;
-	button = dialog->add_button("ok", "Yes");
+	button = dialog->add_button("ok", _("Yes"));
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(_DDDRestartCB), button, (flags | MAY_KILL)));
 	button->show();
-	button = dialog->add_button("cancel", "No");
+	button = dialog->add_button("cancel", _("No"));
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), dialog));
 	button->show();
     

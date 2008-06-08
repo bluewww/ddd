@@ -2988,10 +2988,12 @@ static bool CheckOptionsFileCB(void)
 					    message);
 	    Delay::register_shell(dialog);
 	    GUI::Button *button;
-	    button = dialog->add_button("ok", "OK");
+	    button = dialog->add_button("ok", _("OK"));
 	    button->signal_clicked().connect(sigc::ptr_fun(ReloadOptionsCB));
-	    button = dialog->add_button("cancel", "Cancel");
+	    button->show();
+	    button = dialog->add_button("cancel", _("Cancel"));
 	    button->signal_clicked().connect(sigc::ptr_fun(DontReloadOptionsCB));
+	    button->show();
 	}
 
 	if (!dialog->is_visible())
@@ -4688,8 +4690,9 @@ void DDDSaveOptionsCB(GUI::Widget *w, unsigned long flags)
 
 	dialog = new GUI::Dialog(*w, "overwrite_options_dialog");
 	Delay::register_shell(dialog);
-	GUI::Button *button = dialog->add_button("ok", "OK");
+	GUI::Button *button = dialog->add_button("ok", _("OK"));
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(DoSaveOptionsCB), flags));
+	button->show();
 
 	manage_and_raise(dialog);
     }
@@ -4702,8 +4705,9 @@ void DDDSaveOptionsCB(GUI::Widget *w, unsigned long flags)
 
 	dialog = new GUI::Dialog(*w, "kill_to_save_dialog");
 	Delay::register_shell(dialog);
-	GUI::Button *button = dialog->add_button("ok", "OK");
+	GUI::Button *button = dialog->add_button("ok", _("OK"));
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(DoSaveOptionsCB), (flags | MAY_KILL)));
+	button->show();
 
 	manage_and_raise(dialog);
     }
@@ -4716,8 +4720,9 @@ void DDDSaveOptionsCB(GUI::Widget *w, unsigned long flags)
 
 	dialog = new GUI::Dialog(*w, "data_not_saved_dialog");
 	Delay::register_shell(dialog);
-	GUI::Button *button = dialog->add_button("ok", "OK");
+	GUI::Button *button = dialog->add_button("ok", _("OK"));
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(DoSaveOptionsCB), flags));
+	button->show();
 
 	manage_and_raise(dialog);
     }

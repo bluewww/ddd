@@ -243,10 +243,12 @@ static void select_from_gdb(const string& question, string& reply)
 	gdb_selection_list_w->get_selection()->set_mode(Gtk::SELECTION_SINGLE);
 
 	GUI::Button *button;
-	button = gdb_selection_dialog->add_button("ok", "OK");
+	button = gdb_selection_dialog->add_button("ok", _("OK"));
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(SelectCB), &selection_reply));
-	button = gdb_selection_dialog->add_button("cancel", "Cancel");
+	button->show();
+	button = gdb_selection_dialog->add_button("cancel", _("Cancel"));
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(CancelCB), &selection_reply));
+	button->show();
     }
 
     setLabelList(gdb_selection_list_w, choices, selected, count, false, false);
