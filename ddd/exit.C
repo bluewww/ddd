@@ -387,12 +387,12 @@ static void post_fatal(const string& title, const string& cause,
 	Delay::register_shell(fatal_dialog);
 
 	GUI::Button *button;
-	button = fatal_dialog->add_button("Restart");
+	button = fatal_dialog->add_button("restart", "Restart");
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(DDDRestartCB), button));
-	button = fatal_dialog->add_button("Exit");
+	button = fatal_dialog->add_button("exit", "Exit");
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(DDDExitCB), button, EXIT_FAILURE));
 #if DEBUG_BUTTON
-	debug = fatal_dialog->add_button("Debug");
+	debug = fatal_dialog->add_button("debug", "Debug");
 	debug->signal_activate().connect(sigc::bind(sigc::ptr_fun(DDDDebugCB), EXIT_FAILURE));
 #endif
 	label = new GUI::Label(*fatal_dialog);
@@ -1281,9 +1281,9 @@ static void DDDDoneCB(GUI::Widget *w, long status)
     GUI::Label *label = new GUI::Label(*quit_dialog, GUI::PACK_SHRINK, msg);
     Delay::register_shell(quit_dialog);
     GUI::Button *button;
-    button = quit_dialog->add_button("OK");
+    button = quit_dialog->add_button("ok", "Yes");
     button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(DDDDoneAnywayCB), button, status));
-    button = quit_dialog->add_button("Cancel");
+    button = quit_dialog->add_button("cancel", "No");
     button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), quit_dialog));
 
     manage_and_raise(quit_dialog);
@@ -1425,8 +1425,12 @@ void DDDRestartCB(GUI::Widget *w)
 	Delay::register_shell(dialog);
 	GUI::Label *label = new GUI::Label(*dialog, GUI::PACK_SHRINK, "Restart?");
 	GUI::Button *button;
-	button = dialog->add_button("OK");
+	button = dialog->add_button("ok", "Yes");
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(_DDDRestartCB), button, (flags | MAY_KILL)));
+	button->show();
+	button = dialog->add_button("cancel", "No");
+	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), dialog));
+	button->show();
     
 	manage_and_raise(dialog);
     }

@@ -287,7 +287,7 @@ static bool CheckUngrabCB(int *client_data)
 	dialog_label->show();
 	Delay::register_shell(dialog);
 	GUI::Button *button;
-	button = dialog->add_button("Cancel");
+	button = dialog->add_button("cancel", "Cancel");
 	std::cerr << "Connect to cancel...\n";
     }
 

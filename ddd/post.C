@@ -155,9 +155,9 @@ GUI::Dialog *post_gdb_yn(string question, GUI::Widget *w)
 	yn_dialog_label->show();
 	Delay::register_shell(yn_dialog);
 	GUI::Button *button;
-	button = yn_dialog->add_button("OK");
+	button = yn_dialog->add_button("ok", "Yes");
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(YnCB), yn_dialog, "yes"));
-	button = yn_dialog->add_button("Cancel");
+	button = yn_dialog->add_button("cancel", "No");
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(YnCB), yn_dialog, "no"));
 #ifdef NAG_ME
 #warning What is the return value?
@@ -233,7 +233,7 @@ GUI::Dialog *post_gdb_busy(GUI::Widget *w)
 	busy_dialog = new GUI::Dialog(*find_shell(w), "busy_dialog");
 	Delay::register_shell(busy_dialog);
 	GUI::Button *button;
-	button = busy_dialog->add_button("OK");
+	button = busy_dialog->add_button("ok", "OK");
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), busy_dialog));
     }
 
@@ -431,9 +431,9 @@ GUI::Dialog *post_gdb_died(string reason, int state, GUI::Widget *w)
 #endif
 	label = new GUI::Label(*dialog, GUI::PACK_SHRINK, msg.xmstring());
 	label->show();
-	button = dialog->add_button("OK");
+	button = dialog->add_button("ok", "Restart @GDB@");
 	button->signal_clicked().connect(sigc::ptr_fun(RestartDebuggerCB));
-	button = dialog->add_button("Cancel");
+	button = dialog->add_button("cancel", "Exit");
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(DDDExitCB), dialog, exit_state));
     }
     else
@@ -442,7 +442,7 @@ GUI::Dialog *post_gdb_died(string reason, int state, GUI::Widget *w)
 	dialog = new GUI::Dialog(*shell, "no_debugger_dialog");
 	label = new GUI::Label(*dialog, GUI::PACK_SHRINK, msg.xmstring());
 	label->show();
-	button = dialog->add_button("OK");
+	button = dialog->add_button("ok", "Exit");
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(ExitCB), exit_state));
     }
 
@@ -587,7 +587,7 @@ GUI::Dialog *post_gdb_message(string text, bool prompt, GUI::Widget *w)
 	gdb_message_dialog_label->show();
 	Delay::register_shell(gdb_message_dialog);
 	GUI::Button *button;
-	button = gdb_message_dialog->add_button("OK");
+	button = gdb_message_dialog->add_button("ok", "OK");
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), gdb_message_dialog));
     }
     else
@@ -678,7 +678,7 @@ GUI::Dialog *post_error(string text, const char *name, GUI::Widget *w)
     ddd_error_label->show();
     Delay::register_shell(ddd_error);
     GUI::Button *button;
-    button = ddd_error->add_button("OK");
+    button = ddd_error->add_button("ok", "OK");
     button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), ddd_error));
 
     manage_and_raise(ddd_error);
@@ -768,7 +768,7 @@ GUI::Dialog *post_warning(string text, const char *name, GUI::Widget *w)
 
     Delay::register_shell(ddd_warning);
     GUI::Button *button;
-    button = ddd_warning->add_button("OK");
+    button = ddd_warning->add_button("ok", "OK");
     button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), ddd_warning));
 
     manage_and_raise(ddd_warning);

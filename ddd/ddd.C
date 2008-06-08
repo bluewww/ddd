@@ -5957,11 +5957,11 @@ static bool lock_ddd(GUI::Widget *parent, LockInfo& info)
     Delay::register_shell(lock_dialog);
 
     Gtk::Button *button;
-    button = lock_dialog->add_button("kill");
+    button = lock_dialog->add_button("kill", "Kill");
     button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(KillLockerCB), lock_dialog, &info));
-    button = lock_dialog->add_button("continue");
+    button = lock_dialog->add_button("continue", "Continue");
     button->signal_clicked().connect(sigc::ptr_fun(ContinueDespiteLockCB));
-    button = lock_dialog->add_button("cancel");
+    button = lock_dialog->add_button("cancel", "Cancel");
     button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(ExitCB), EXIT_FAILURE));
 
 #ifdef NAG_ME
@@ -8108,7 +8108,7 @@ static void OfferRestartCB(GUI::Dialog *&dialog)
 						    message);
 	    Delay::register_shell(restart_dialog);
 	    Gtk::Button *button;
-	    button = restart_dialog->add_button("OK");
+	    button = restart_dialog->add_button("ok", "OK");
 	    button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(DDDRestartCB), restart_dialog));
 	}
 	manage_and_raise(restart_dialog);

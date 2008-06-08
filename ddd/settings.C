@@ -4325,28 +4325,28 @@ static GUI::Dialog *create_panel(DebuggerType type, SettingsType stype)
     switch (stype)
     {
     case SETTINGS:
-	button = apply_settings_button = panel->add_button("Apply");
+	button = apply_settings_button = panel->add_button("apply", "Apply");
 	button->signal_clicked().connect(sigc::ptr_fun(ApplySettingsCB));
-	button = reset_settings_button = panel->add_button("Reset");
+	button = reset_settings_button = panel->add_button("reset", "Reset");
 	button->signal_clicked().connect(sigc::ptr_fun(ResetSettingsCB));
 	break;
 
     case INFOS:
-	button = apply_settings_button = panel->add_button("Delete");
+	button = apply_settings_button = panel->add_button("delete", "Delete");
 	button->signal_clicked().connect(sigc::ptr_fun(DeleteAllInfosCB));
-	button = reset_infos_button = panel->add_button("Reset");
+	button = reset_infos_button = panel->add_button("reset", "Reset");
 	// button->signal_clicked().connect(sigc::ptr_fun(ResetSettingsCB));
 	break;
 
     case SIGNALS:
-	button = reset_signals_button = panel->add_button("Reset");
+	button = reset_signals_button = panel->add_button("reset", "Reset");
 	button->signal_clicked().connect(sigc::ptr_fun(ResetSignalsCB));
 	break;
 
     case THEMES:
-	button = apply_themes_button = panel->add_button("Apply");
+	button = apply_themes_button = panel->add_button("apply", "Apply");
 	button->signal_clicked().connect(sigc::ptr_fun(ApplyThemesCB));
-	button = reset_themes_button = panel->add_button("Reset");
+	button = reset_themes_button = panel->add_button("reset", "Reset");
 	button->signal_clicked().connect(sigc::ptr_fun(ResetThemesCB));
 	break;
     }

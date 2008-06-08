@@ -5665,7 +5665,7 @@ void SourceView::create_shells()
     if (edit_breakpoints_dialog_w != 0)
     {
 	GUI::Button *button;
-	button = edit_breakpoints_dialog_w->add_button("OK");
+	button = edit_breakpoints_dialog_w->add_button("ok", "OK");
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), edit_breakpoints_dialog_w));
     }
 
@@ -5677,10 +5677,9 @@ void SourceView::create_shells()
     Delay::register_shell(stack_dialog_w);
 
 
-    up_w = stack_dialog_w->add_button("Up");
-    down_w = stack_dialog_w->add_button("Down");
-    GUI::Button *cancel_w =
-	stack_dialog_w->add_button("Cancel");
+    up_w = stack_dialog_w->add_button("up", "Up");
+    down_w = stack_dialog_w->add_button("down", "Down");
+    GUI::Button *cancel_w = stack_dialog_w->add_button("cancel", "Cancel");
 
     set_sensitive(up_w,   False);
     set_sensitive(down_w, False);
@@ -5732,10 +5731,12 @@ void SourceView::create_shells()
 								   register_list_w));
 
     GUI::Button *button;
-    button = register_dialog_w->add_button("OK");
+    button = register_dialog_w->add_button("ok", "OK");
     button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), register_dialog_w));
-    button = register_dialog_w->add_button("Cancel");
+    button->show();
+    button = register_dialog_w->add_button("cancel", "Cancel");
     button->signal_clicked().connect(sigc::ptr_fun(RegisterDialogPoppedDownCB));
+    button->show();
 
 
     // Create thread view
@@ -5750,14 +5751,16 @@ void SourceView::create_shells()
 
     thread_list_w->get_selection()->signal_changed().connect(sigc::bind(sigc::ptr_fun(SelectThreadCB), thread_list_w));
 
-    button = thread_dialog_w->add_button("OK");
+    button = thread_dialog_w->add_button("cancel", "Close");
     button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), thread_dialog_w));
-    button = thread_dialog_w->add_button("Cancel");
     button->signal_clicked().connect(sigc::ptr_fun(ThreadDialogPoppedDownCB));
-    button = thread_dialog_w->add_button("Suspend");
+    button->show();
+    button = thread_dialog_w->add_button("suspend", "Suspend");
     button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(ThreadCommandCB), button, "suspend"));
-    button = thread_dialog_w->add_button("Resume");
+    button->show();
+    button = thread_dialog_w->add_button("resume", "Resume");
     button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(ThreadCommandCB), button, "resume"));
+    button->show();
 
     // Create remaining glyphs in the background
     CreateGlyphsNow();
@@ -8406,7 +8409,7 @@ void SourceView::NewBreakpointCB(GUI::Widget *w)
 	tie_combo_box_to_history(text, break_history_filter);
 
 	GUI::Button *button;
-	button = dialog->add_button("OK");
+	button = dialog->add_button("ok", "OK");
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(NewBreakpointDCB), button, text));
     }
 

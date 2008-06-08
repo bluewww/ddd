@@ -412,7 +412,7 @@ void gdbRunCB(GUI::Widget *w)
 	run_dialog = new GUI::Dialog(*find_shell(w), "run_dialog");
 
 	Delay::register_shell(run_dialog);
-	GUI::Button *button = run_dialog->add_button("Run");
+	GUI::Button *button = run_dialog->add_button("run", "Run");
 	button->signal_clicked().connect(sigc::ptr_fun(gdbRunDCB));
 
 	run_arguments_w = new GUI::ComboBoxEntryText(*run_dialog);
@@ -526,7 +526,7 @@ void gdbMakeCB(GUI::Widget *w)
 	make_dialog = new GUI::Dialog(*find_shell(w), "make_dialog");
 
 	Delay::register_shell(make_dialog);
-	GUI::Button *button = make_dialog->add_button("Make");
+	GUI::Button *button = make_dialog->add_button("make", "Make");
 	button->signal_clicked().connect(sigc::ptr_fun(gdbMakeDCB));
 
 	make_arguments_w = new GUI::ComboBoxEntryText(*make_dialog);
@@ -656,7 +656,7 @@ void gdbChangeDirectoryCB(GUI::Widget *w)
 	cd_dialog = new GUI::Dialog(*sh, str);
 	// cd_dialog = new GUI::Dialog(find_shell(w->internal()), "cd_dialog");
 
-	GUI::Button *button = cd_dialog->add_button("Change");
+	GUI::Button *button = cd_dialog->add_button("change", "Change Dir");
 	button->signal_clicked().connect(sigc::ptr_fun(gdbChangeDirectoryDCB));
 
 #ifdef NAG_ME

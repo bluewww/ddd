@@ -2988,9 +2988,9 @@ static bool CheckOptionsFileCB(void)
 					    message);
 	    Delay::register_shell(dialog);
 	    GUI::Button *button;
-	    button = dialog->add_button("OK");
+	    button = dialog->add_button("ok", "OK");
 	    button->signal_clicked().connect(sigc::ptr_fun(ReloadOptionsCB));
-	    button = dialog->add_button("Cancel");
+	    button = dialog->add_button("cancel", "Cancel");
 	    button->signal_clicked().connect(sigc::ptr_fun(DontReloadOptionsCB));
 	}
 

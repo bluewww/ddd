@@ -1145,9 +1145,9 @@ static void BrowseNameCB(GUI::Widget *w)
 
 	Delay::register_shell(dialog);
 	GUI::Button *button;
-	button = dialog->add_button("OK");
+	button = dialog->add_button("ok", "OK");
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(SetPrintFileNameCB), dialog));
-	button = dialog->add_button("Cancel");
+	button = dialog->add_button("cancel", "Cancel");
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), dialog));
     }
     else
@@ -1663,9 +1663,9 @@ static void PrintCB(GUI::Button *parent, bool displays)
     GUI::Entry *entry;
     entry = new GUI::Entry(*paper_size_dialog, GUI::PACK_SHRINK, "entry");
     entry->show();
-    GUI::Button *ok_button = paper_size_dialog->add_button("OK");
+    GUI::Button *ok_button = paper_size_dialog->add_button("ok", "OK");
     ok_button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(SetPaperSizeCB), paper_size_dialog));
-    button = paper_size_dialog->add_button("Cancel");
+    button = paper_size_dialog->add_button("cancel", "Cancel");
     button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(ResetPaperSizeCB), paper_size_dialog));
 
     entry->signal_activate().connect(sigc::bind(sigc::ptr_fun(CheckPaperSizeCB), entry, ok_button));

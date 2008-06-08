@@ -274,11 +274,11 @@ static GUI::Dialog *file_dialog(GUI::Widget *w, const string& name,
     Delay::register_shell(dialog);
 
     if (ok_callback != 0) {
-	button = dialog->add_button("OK");
+	button = dialog->add_button("ok", "OK ????");
 	button->signal_clicked().connect(sigc::bind(ok_callback, dialog));
     }
 
-    button = dialog->add_button("Cancel");
+    button = dialog->add_button("cancel", "Cancel ????");
     button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), dialog));
 
 #ifdef NAG_ME
@@ -2701,7 +2701,7 @@ void gdbLookupSourceCB(GUI::Widget *w)
 	GUI::Button *sharedlibrary = new GUI::Button(*bigbox, GUI::PACK_SHRINK, "sharedlibrary");
 	sharedlibrary->show();
 
-	GUI::Button *lookup = dialog->add_button("lookup");
+	GUI::Button *lookup = dialog->add_button("lookup", "Lookup");
 
 	std::vector<GUI::String> headers;
 	headers.push_back("Sources");
@@ -2711,10 +2711,10 @@ void gdbLookupSourceCB(GUI::Widget *w)
 	std::cerr << "SelectSourceCB not connected.\n";
 
 	GUI::Button *button;
-	button = dialog->add_button("OK");
+	button = dialog->add_button("ok", "OK");
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(lookupSourceDone),
 						    source_list));
-	button = dialog->add_button("Cancel");
+	button = dialog->add_button("cancel", "Cancel");
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB),
 						    dialog));
 	dialog->signal_unmap().connect(sigc::ptr_fun(ClearStatusCB));
