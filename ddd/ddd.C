@@ -4364,6 +4364,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     std::cerr << "No resource database: no need for converters yet.\n";
     get_application_resources(dddinit, &app_data,
 			      ddd_resources, ddd_resources_size);
+    xmlFreeDoc(dddinit);
 
     // From this point on, APP_DATA is valid.
 
@@ -5377,9 +5378,7 @@ XrmDatabase GetFileDatabase(const string& filename)
 // resources such as window sizes.
 xmlDoc *GetFileDatabase(const string& filename)
 {
-#ifdef NAG_ME
-#warning No version check here!
-#endif
+    std::cerr << "No version check here!\n";
     return get_file_database(filename.chars());
 }
 #endif

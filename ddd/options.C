@@ -2896,9 +2896,109 @@ static void reload_options()
     c.check    = true;
     gdb_command(c);
 #else
-#ifdef NAG_ME
-#warning reload_options not implemented.
+    std::cerr << "reload_options not implemented yet.\n";
+    static string session;
+    session = app_data.session;
+
+    string file = session_state_file(session);
+
+    StatusDelay *delay_ptr = 
+	new StatusDelay("Loading options from " + quote(file));
+
+    xmlDoc *session_db = get_file_database(file.chars());
+
+    if (session_db == 0)
+    {
+	delay_ptr->outcome = "failed";
+	delete delay_ptr;
+	return;
+    }
+
+#if 0
+    XrmDatabase target = XtDatabase(XtDisplay(toplevel));
+
+    static XrmDatabase default_db = app_defaults(XtDisplay(toplevel));
+    XrmMergeDatabases(default_db, &target);
+
+    XrmMergeDatabases(session_db, &target);
+
+    XtVaGetApplicationResources(toplevel, (XtPointer)&app_data,
+				ddd_resources, ddd_resources_size, 
+				XtPointer(0));
 #endif
+    get_application_resources(session_db, &app_data,
+			      ddd_resources, ddd_resources_size);
+    xmlFreeDoc(session_db);
+
+    // Keep session ID across reloads
+    app_data.session = session.chars();
+
+    save_option_state();
+    options_file_has_changed(ACCESS, true);
+
+    // Set options and buttons
+    update_options();
+    update_user_buttons();
+
+    // Pop down settings and signals panel (such that GDB settings
+    // and signals will be updated from scratch)
+    reset_settings();
+    reset_signals();
+
+    // Load GDB settings.  Don't care about init or restart commands here.
+    string restart = "";
+    string settings;
+    switch (gdb->type())
+    {
+    case BASH:
+	settings = str(app_data.bash_settings);
+	break;
+
+    case DBG:
+	settings = str(app_data.dbg_settings);
+	break;
+
+    case DBX:
+	settings = str(app_data.dbx_settings);
+	break;
+
+    case GDB:
+	settings = str(app_data.gdb_settings);
+	break;
+
+    case MAKE:
+	settings = str(app_data.make_settings);
+	break;
+
+    case JDB:
+	settings = str(app_data.jdb_settings);
+	break;
+
+    case PERL:
+	settings = str(app_data.perl_settings);
+	break;
+
+    case PYDB:
+	settings = str(app_data.pydb_settings);
+	break;
+
+    case XDB:
+	settings = str(app_data.xdb_settings);
+	break;
+
+    }
+
+    init_session(restart, settings, app_data.source_init_commands);
+
+    // One last command to reload the new settings
+    Command c("# reset");
+    c.callback = done;
+    c.data     = (void *)(Delay *)delay_ptr;
+    c.priority = COMMAND_PRIORITY_BATCH;
+    c.verbose  = false;
+    c.prompt   = false;
+    c.check    = true;
+    gdb_command(c);
 #endif
 }
 
