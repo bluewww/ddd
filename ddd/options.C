@@ -2990,9 +2990,11 @@ static bool CheckOptionsFileCB(void)
 	    GUI::Button *button;
 	    button = dialog->add_button("ok", _("OK"));
 	    button->signal_clicked().connect(sigc::ptr_fun(ReloadOptionsCB));
+	    button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), dialog));
 	    button->show();
 	    button = dialog->add_button("cancel", _("Cancel"));
 	    button->signal_clicked().connect(sigc::ptr_fun(DontReloadOptionsCB));
+	    button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), dialog));
 	    button->show();
 	}
 
