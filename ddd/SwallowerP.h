@@ -43,7 +43,6 @@ extern "C" {
 #undef class
 }
 #else
-#include "gtk_wrapper.h"
 #endif
 
 // The Swallower class record

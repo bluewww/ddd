@@ -80,7 +80,6 @@ char MakeMenu_rcsid[] =
 #include <GUI/ComboBox.h>
 #include <GUI/SeparatorMenuItem.h>
 #include <GUI/MenuBar.h>
-#include "gtk_wrapper.h"
 #include <gtkmm/optionmenu.h>
 #include <gtkmm/box.h>
 #include <gtkmm/scale.h>

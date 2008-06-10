@@ -34,7 +34,6 @@ extern "C" {
     typedef struct _XGC *GC;
 }
 #else
-#include "gtk_wrapper.h"
 #endif
 
 #endif // _DDD_Widget_h

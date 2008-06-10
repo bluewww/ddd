@@ -45,7 +45,6 @@ char resources_rcsid[] =
 #if defined(IF_XM)
 #include <Xm/Xm.h>
 #else
-#include "gtk_wrapper.h"
 #endif
 
 #if !defined(IF_XM)

@@ -35,7 +35,6 @@
 #if defined(IF_XM)
 #include <X11/Intrinsic.h>
 #else
-#include "gtk_wrapper.h"
 #endif
 
 extern void widget_creation_error();

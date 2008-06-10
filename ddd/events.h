@@ -36,7 +36,6 @@
 #if defined(IF_XM)
 #include <X11/Xlib.h>
 #else
-#include "gtk_wrapper.h"
 #include <GUI/Widget.h>
 #include <GUI/Events.h>
 #endif

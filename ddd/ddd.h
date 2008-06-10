@@ -36,7 +36,6 @@
 #include "strclass.h"
 #include <fstream>
 
-#include "gtk_wrapper.h"
 
 #if defined(IF_XM)
 #include <X11/Intrinsic.h>

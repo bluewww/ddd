@@ -65,7 +65,6 @@
 #if defined(IF_GTK)
 #include <gdkmm/pixbuf.h>
 #endif
-#include "gtk_wrapper.h"
 #endif
 
 // Misc includes

@@ -39,7 +39,6 @@
 #if defined(IF_XM)
 #include <X11/Intrinsic.h>
 #else
-#include "gtk_wrapper.h"
 #endif
 
 typedef string (*HistoryFilter)(const string& entry);

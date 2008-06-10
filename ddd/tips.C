@@ -59,7 +59,6 @@ char tips_rcsid[] =
 #include <Xm/ToggleB.h>
 #else
 #include <GUI/CheckButton.h>
-#include "gtk_wrapper.h"
 #endif
 
 #if defined(IF_XM)

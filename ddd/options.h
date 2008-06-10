@@ -44,7 +44,6 @@
 #include <GUI/RadioMenuItem.h>
 #include <GUI/Scale.h>
 #include <GUI/Entry.h>
-#include "gtk_wrapper.h"
 #endif
 
 #include "BindingS.h" // for BindingType

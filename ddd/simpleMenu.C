@@ -49,7 +49,6 @@ char simpleMenu_rcsid[] =
 #if defined(IF_XM)
 #include <Xm/Text.h>
 #include <Xm/TextF.h>
-#include "gtk_wrapper.h"
 #endif
 
 

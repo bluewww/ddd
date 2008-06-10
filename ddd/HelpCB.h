@@ -39,7 +39,6 @@
 #else
 #include <GUI/Widget.h>
 #include <GUI/ScrolledText.h>
-#include "gtk_wrapper.h"
 #endif
 #include "MString.h"
 #include "bool.h"

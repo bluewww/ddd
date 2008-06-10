@@ -33,7 +33,6 @@
 #include <X11/Intrinsic.h>
 #else
 #include <libxml/tree.h>
-#include "gtk_wrapper.h"
 #endif
 
 // DDD resource definitions

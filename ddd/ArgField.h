@@ -44,7 +44,6 @@
 #include <GUI/Widget.h>
 #include <GUI/ComboBox.h>
 #include <GUI/Button.h>
-#include "gtk_wrapper.h"
 #endif
 
 // Misc includes

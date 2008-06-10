@@ -39,7 +39,6 @@
 #include <GUI/Widget.h>
 #include <GUI/Events.h>
 #include <GUI/ScrolledText.h>
-#include "gtk_wrapper.h"
 #endif
 #include "bool.h"
 #include "strclass.h"

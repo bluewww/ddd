@@ -81,7 +81,6 @@ char buttons_rcsid[] =
 #else
 #include <GUI/Events.h>
 #include <GUI/Notebook.h>
-#include "gtk_wrapper.h"
 #endif
 #include <ctype.h>
 

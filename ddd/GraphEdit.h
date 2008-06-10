@@ -41,7 +41,6 @@
 #if defined(IF_GTK)
 #include <gtkmm/drawingarea.h>
 #endif
-#include "gtk_wrapper.h"
 #endif
 #include "BoxPoint.h"
 

@@ -41,7 +41,6 @@
 #include <GUI/Box.h>
 #include <GUI/Container.h>
 #include <GUI/Button.h>
-#include "gtk_wrapper.h"
 #endif
 
 #if defined(IF_XM)

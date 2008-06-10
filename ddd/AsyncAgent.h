@@ -59,7 +59,6 @@
 #include <X11/Intrinsic.h>
 #else
 #include <GUI/Main.h>
-#include "gtk_wrapper.h"
 #endif
 #include "Agent.h"
 

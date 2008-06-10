@@ -70,7 +70,6 @@ char Command_rcsid[] =
 #undef XtIsRealized
 #endif
 #else
-#include "gtk_wrapper.h"
 #endif
 
 // Origin of last command

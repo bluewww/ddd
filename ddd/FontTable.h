@@ -37,7 +37,6 @@
 #include <X11/Xlib.h>
 #else
 #include <GUI/Widget.h>
-#include "gtk_wrapper.h"
 #endif
 #include "strclass.h"
 #include "TypeInfo.h"

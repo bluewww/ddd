@@ -38,7 +38,6 @@
 #else
 #include <GUI/Widget.h>
 #include <GUI/Container.h>
-#include "gtk_wrapper.h"
 #endif
 
 #if defined(IF_XM)

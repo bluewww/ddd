@@ -39,7 +39,6 @@
 #if !defined(IF_XM)
 #include <GUI/Container.h>
 #include <GUI/Button.h>
-#include "gtk_wrapper.h"
 #endif
 
 #if defined(IF_XM)

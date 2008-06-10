@@ -38,7 +38,6 @@
 #include <X11/Intrinsic.h>
 #else
 #include <GUI/Image.h>
-#include "gtk_wrapper.h"
 #endif
 
 #if defined(IF_XM)

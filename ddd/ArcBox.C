@@ -36,7 +36,6 @@ char ArcBox_rcsid[] =
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
 #else
-#include "gtk_wrapper.h"
 #endif
 
 // Some systems define these values in <values.h> and re-define them 

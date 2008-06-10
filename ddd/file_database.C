@@ -30,5 +30,4 @@
 #include "config.h"
 #endif
 
-#include "gtk_wrapper.h"
 

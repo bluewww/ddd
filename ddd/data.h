@@ -37,7 +37,6 @@
 #include <X11/Intrinsic.h>
 #else
 #include <GUI/CheckMenuItem.h>
-#include "gtk_wrapper.h"
 #endif
 
 #if defined(IF_XM)

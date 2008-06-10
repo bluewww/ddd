@@ -43,7 +43,6 @@
 #include <GUI/Button.h>
 #include <GUI/Container.h>
 #include <GUI/Menu.h>
-#include "gtk_wrapper.h"
 #endif
 
 // Show MESSAGE in status window.

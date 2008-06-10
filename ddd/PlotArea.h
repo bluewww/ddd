@@ -38,7 +38,6 @@
 #include <X11/Intrinsic.h>
 #else
 #include <GUI/Widget.h>
-#include "gtk_wrapper.h"
 #endif
 #include "ChunkQueue.h"
 #include "assert.h"

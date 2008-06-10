@@ -45,7 +45,6 @@
 #include <GUI/Menu.h>
 #include <GUI/MenuBar.h>
 #include <GUI/Dialog.h>
-#include "gtk_wrapper.h"
 #endif
 #include "bool.h"
 #include "StringA.h"

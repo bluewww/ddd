@@ -41,7 +41,6 @@ char RegionGraphNode_rcsid[] =
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
 #else
-#include "gtk_wrapper.h"
 #endif
 
 #include "RegionGN.h"

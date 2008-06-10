@@ -39,7 +39,6 @@
 
 #include <Xm/Xm.h>
 #else
-#include "gtk_wrapper.h"
 #endif
 #include "strclass.h"
 #include "assert.h"

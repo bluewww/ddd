@@ -38,7 +38,6 @@ char ungrab_rcsid[] =
 #include <Xm/MessageB.h>
 #else
 #include <GUI/Widget.h>
-#include "gtk_wrapper.h"
 #endif
 
 #include "AppData.h"

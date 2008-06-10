@@ -39,7 +39,6 @@
 #include <X11/Intrinsic.h>
 #else
 #include <GUI/Dialog.h>
-#include "gtk_wrapper.h"
 #endif
 
 // Error handling

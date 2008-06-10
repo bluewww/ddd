@@ -41,7 +41,6 @@
 #else
 #include <GUI/Entry.h>
 #include <libxml/tree.h>
-#include "gtk_wrapper.h"
 #endif
 
 // Font types

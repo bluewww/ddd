@@ -37,7 +37,6 @@
 #include <Xm/Text.h>
 #include <Xm/TextF.h>
 #else
-#include "gtk_wrapper.h"
 #endif
 
 // Some LessTif versions have trouble with multiple selections.

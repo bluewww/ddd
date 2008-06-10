@@ -41,7 +41,6 @@
 #include <GUI/ScrolledText.h>
 #include <GUI/Box.h>
 #include <GUI/Bipolar.h>
-#include "gtk_wrapper.h"
 #endif
 #include "bool.h"
 

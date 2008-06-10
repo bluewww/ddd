@@ -38,7 +38,6 @@
 #else
 #include <GUI/Button.h>
 #include <GUI/CheckButton.h>
-#include "gtk_wrapper.h"
 #endif
 
 #if defined(IF_XM)

@@ -38,7 +38,6 @@
 #else
 #include <GUI/Main.h>
 #include <GUI/Widget.h>
-#include "gtk_wrapper.h"
 #endif
 #include <iostream>
 

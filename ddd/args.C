@@ -61,7 +61,6 @@ char args_rcsid[] =
 #else
 #include <GUI/Dialog.h>
 #include <GUI/ComboBox.h>
-#include "gtk_wrapper.h"
 #endif
 
 #include <ctype.h>

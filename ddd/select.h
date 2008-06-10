@@ -39,7 +39,6 @@
 #else
 #include <GUI/Dialog.h>
 #include <GUI/ListView.h>
-#include "gtk_wrapper.h"
 #endif
 
 #if defined(IF_XM)
