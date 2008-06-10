@@ -787,7 +787,7 @@ static void SourceDoneCB(const string& answer, void *qu_data)
 	// We've had an error while sourcing the file.  This keeps GDB
 	// from reading the entire file, so we issue commands the
 	// ordinary way.
-	init_session(info->restart, info->settings, False);
+	init_session(info->restart, info->settings, false);
     }
 
     delete info;

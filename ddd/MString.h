@@ -111,12 +111,12 @@ public:
 	return XmStringBaseline(fontlist, _mstring);
     }
 
-    Boolean isEmpty() const
+    bool isEmpty() const
     {
 	return XmStringEmpty(_mstring);
     }
 
-    Boolean isNull() const
+    bool isNull() const
     {
 	return xmstring() == 0;
     }
@@ -197,14 +197,14 @@ public:
     }
 
     // Comparison
-    Boolean operator == (const MString& m) const
+    bool operator == (const MString& m) const
     {
 	assert(OK());
 	assert(m.OK());
 	return XmStringCompare(_mstring, m._mstring);
     }
 
-    Boolean operator != (const MString& m) const
+    bool operator != (const MString& m) const
     {
 	assert(OK());
 	assert(m.OK());
@@ -215,7 +215,7 @@ public:
     XmString xmstring() const { return _mstring; }
 
     // Substrings
-    Boolean contains(const MString& m) const
+    bool contains(const MString& m) const
     {
 	assert(OK());
 	assert(m.OK());
@@ -223,7 +223,7 @@ public:
     }
 
     // Invariant
-    Boolean OK() const;
+    bool OK() const;
 };
 
 

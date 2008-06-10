@@ -827,10 +827,10 @@ static void update_themes_buttons()
 	}
 
 	if (value != current_value)
-	    apply_is_sensitive = True;
+	    apply_is_sensitive = true;
 
 	if (value != old_value)
-	    reset_is_sensitive = True;
+	    reset_is_sensitive = true;
 
 	if (apply_is_sensitive && reset_is_sensitive)
 	    break;
@@ -853,7 +853,7 @@ static void update_themes_buttons()
 
 	    if (button->get_active() != old_set)
 	    {
-		reset_is_sensitive = True;
+		reset_is_sensitive = true;
 		break;
 	    }
 	}
@@ -5513,12 +5513,12 @@ static void refresh_toggle(ButtonTarget t)
     string s = string("\n") + target_string(t);
     string name = current_name();
 
-    Boolean old_state;
+    bool old_state;
     GUI::Bipolar *tb = dynamic_cast<GUI::Bipolar *>(w);
     assert(tb);
     old_state = tb->get_active();
 
-    Boolean new_state = 
+    bool new_state = 
 	s.contains("\n" + name + "\n") || s.contains("\n" + name + " ()\n");
     if (old_state != new_state)
 	tb->set_active(new_state);
@@ -5607,7 +5607,7 @@ void UpdateDefinePanelCB(GUI::Widget *w)
     set_arg();
 
     if (w != 0 && !gdb->recording() && defs.has(name))
-      arg_w->set_active(is_arg_command(name), False);
+      arg_w->set_active(is_arg_command(name), false);
 
     refresh_toggles();
 }

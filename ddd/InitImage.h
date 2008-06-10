@@ -63,10 +63,10 @@ extern GUI::ImageHandle CreateImageFromBitmapData(unsigned char *bits,
 						  int width, int height);
 
 // Install IMAGE in Image cache
-Boolean InstallImage(GUI::ImageHandle image, GUI::ImageHandle &pointer);
+bool InstallImage(GUI::ImageHandle image, GUI::ImageHandle &pointer);
 
 // Install bitmap in Image cache
-Boolean InstallBitmap(unsigned char *bits, int width, int height, GUI::ImageHandle &name);
+bool InstallBitmap(unsigned char *bits, int width, int height, GUI::ImageHandle &name);
 #endif
 
 #endif // _DDD_InitImage_h

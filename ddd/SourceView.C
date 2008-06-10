@@ -5243,7 +5243,7 @@ static void InstallBitmapAsImage(unsigned char *bits, int width, int height,
 static void InstallBitmapAsImage(unsigned char *bits, int width, int height, 
 				 GUI::ImageHandle &name)
 {
-    Boolean ok = InstallBitmap(bits, width, height, name);
+    bool ok = InstallBitmap(bits, width, height, name);
     if (!ok)
 	std::cerr << "Could not install bitmap\n";
 }
@@ -5355,7 +5355,6 @@ SourceView::SourceView(GUI::Container *parent)
     // our handler was never called since the class default handler would
     // terminates the signal emission.
     // source_text_w->signal_button_press_event().connect(sigc::mem_fun(*this, &SourceView::clicked_cb), false);
-#warning FIXME: How to pass after=false?
     source_text_w->signal_button_press_pre_event().connect(sigc::mem_fun(*this, &SourceView::clicked_cb));
 
     // Create machine code window
@@ -5682,8 +5681,8 @@ void SourceView::create_shells()
     down_w = stack_dialog_w->add_button("down", _("Down"));
     GUI::Button *cancel_w = stack_dialog_w->add_button("cancel", _("Cancel"));
 
-    set_sensitive(up_w,   False);
-    set_sensitive(down_w, False);
+    set_sensitive(up_w,   false);
+    set_sensitive(down_w, false);
     refresh_buttons();
 
     frame_list_w = stack_dialog_w->list();
@@ -11008,8 +11007,8 @@ void SourceView::showing_earlier_state(bool set)
 	down_state = down_w->is_sensitive();
 #endif
 
-	set_sensitive(up_w, False);
-	set_sensitive(down_w, False);
+	set_sensitive(up_w, false);
+	set_sensitive(down_w, false);
     }
     else
     {
@@ -11146,8 +11145,8 @@ void SourceView::process_frame(int frame)
     }
     else
     {
-	set_sensitive(up_w,   False);
-	set_sensitive(down_w, False);
+	set_sensitive(up_w,   false);
+	set_sensitive(down_w, false);
 	refresh_buttons();
 	current_frame = -1;
     }

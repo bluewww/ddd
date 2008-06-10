@@ -254,7 +254,7 @@ Boolean InstallImage(XImage *image, const char *image_name)
 }
 #else
 // Just store it in a variable!
-Boolean InstallImage(GUI::ImageHandle image, GUI::ImageHandle &image_name)
+bool InstallImage(GUI::ImageHandle image, GUI::ImageHandle &image_name)
 {
     image_name = image;
 }
@@ -269,7 +269,7 @@ Boolean InstallBitmap(unsigned char *bits, int width, int height, const char *na
 }
 #else
 // Install the given X bitmap as NAME
-Boolean InstallBitmap(unsigned char *bits, int width, int height, GUI::ImageHandle &name)
+bool InstallBitmap(unsigned char *bits, int width, int height, GUI::ImageHandle &name)
 {
     GUI::ImageHandle image = CreateImageFromBitmapData(bits, width, height);
     return InstallImage(image, name);

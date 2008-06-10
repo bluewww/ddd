@@ -146,12 +146,12 @@ static bool same_shell(GUI::Widget *w1, GUI::Widget *w2)
     return shell_1 == shell_2;
 }
 
-static Boolean cut(GUI::Widget *w, GUI::Widget *dest, Time tm)
+static bool cut(GUI::Widget *w, GUI::Widget *dest, Time tm)
 {
     if (!same_shell(w, dest))
-	return False;
+	return false;
 
-    Boolean success = False;
+    bool success = false;
 
     std::cerr << "cut() not implemented yet\n";
 //    if (XmIsText(dest))
@@ -162,12 +162,12 @@ static Boolean cut(GUI::Widget *w, GUI::Widget *dest, Time tm)
     return success;
 }
 
-static Boolean copy(GUI::Widget *w, GUI::Widget *dest, Time tm)
+static bool copy(GUI::Widget *w, GUI::Widget *dest, Time tm)
 {
     if (!same_shell(w, dest))
-	return False;
+	return false;
 
-    Boolean success = False;
+    bool success = false;
 
     std::cerr << "copy() not implemented yet\n";
 //    if (XmIsText(dest))
@@ -178,10 +178,10 @@ static Boolean copy(GUI::Widget *w, GUI::Widget *dest, Time tm)
     return success;
 }
 
-static Boolean paste(GUI::Widget *w, GUI::Widget *dest)
+static bool paste(GUI::Widget *w, GUI::Widget *dest)
 {
     if (!same_shell(w, dest))
-	return False;
+	return false;
 
     std::cerr << "paste() not implemented yet\n";
 
@@ -190,7 +190,7 @@ static Boolean paste(GUI::Widget *w, GUI::Widget *dest)
 //    if (!editable)
 //	return False;
 
-    Boolean success = False;
+    bool success = false;
 
 //    if (XmIsText(dest))
 //	success = XmTextPaste(dest);
@@ -205,7 +205,7 @@ static void clear(GUI::Widget *w, GUI::Widget *dest)
     if (!same_shell(w, dest))
 	return;
 
-    Boolean editable = False;
+    bool editable = false;
 
     std::cerr << "clear() not implemented yet\n";
 //    XtVaGetValues(dest, XmNeditable, &editable, XtPointer(0));
@@ -273,12 +273,12 @@ static Boolean remove(Widget w, Widget dest)
     return success;
 }
 #else
-static Boolean select(GUI::Widget *w, GUI::Widget *dest, Time tm)
+static bool select(GUI::Widget *w, GUI::Widget *dest, Time tm)
 {
     if (!same_shell(w, dest))
-	return False;
+	return false;
 
-    Boolean success = False;
+    bool success = false;
 
     std::cerr << "select() not implemented yet\n";
 //    if (!success && XmIsText(dest))
@@ -308,10 +308,10 @@ static void unselect(GUI::Widget *w, GUI::Widget *dest, Time tm)
 //	XmTextFieldClearSelection(dest, tm);
 }
 
-static Boolean remove(GUI::Widget *w, GUI::Widget *dest)
+static bool remove(GUI::Widget *w, GUI::Widget *dest)
 {
     if (!same_shell(w, dest))
-	return False;
+	return false;
 
     std::cerr << "remove() not implemented yet\n";
 //    Boolean editable = False;
@@ -319,7 +319,7 @@ static Boolean remove(GUI::Widget *w, GUI::Widget *dest)
 //    if (!editable)
 //	return False;
 
-    Boolean success = False;
+    bool success = false;
 //    if (XmIsText(dest))
 //	success = XmTextRemove(dest);
 //    else if (XmIsTextField(dest))

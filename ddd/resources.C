@@ -117,6 +117,10 @@ typedef void *XtPointer;
 
 #define XmVERTICAL GUI::ORIENTATION_VERTICAL
 #define XmHORIZONTAL GUI::ORIENTATION_HORIZONTAL
+
+typedef bool Boolean;
+#define True true
+#define False false
 #endif
 
 #define N_ELEMENTS(x) (sizeof(x)/sizeof(x[0]))

@@ -2556,7 +2556,7 @@ void DataDisp::DoubleClickCB(GUIGraphEdit *w, GraphEditPreSelectionInfo *call_da
     }
 
     // Don't do the default action
-    info->doit = False;
+    info->doit = false;
 }
 #endif
 

@@ -1509,7 +1509,7 @@ void gdbCloseExecWindowCB(Widget, XtPointer, XtPointer)
 void gdbCloseExecWindowCB(void)
 #endif
 {
-    app_data.separate_exec_window = False;
+    app_data.separate_exec_window = false;
 
     kill_exec_tty();
     update_options();
@@ -1521,7 +1521,7 @@ void gdbOpenExecWindowCB(Widget, XtPointer, XtPointer)
 void gdbOpenExecWindowCB(void)
 #endif
 {
-    app_data.separate_exec_window = True;
+    app_data.separate_exec_window = true;
 
     if (exec_tty_pid() == 0)
 	startup_exec_tty();

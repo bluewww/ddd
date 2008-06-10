@@ -1159,7 +1159,7 @@ void startup_exec_tty(string& command, GUI::Widget *origin)
 	    redirect_process(command, separate_tty_name, origin);
 
 	    // Reflect setting in options
-	    app_data.separate_exec_window = True;
+	    app_data.separate_exec_window = true;
 	    update_options();
 
 	    started = true;

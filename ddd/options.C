@@ -1401,20 +1401,20 @@ void dddSetCrashCB(GUI::RadioMenuItem *w, int state)
 	switch (state)
 	{
 	case 0:
-	    app_data.dump_core        = False;
-	    app_data.debug_core_dumps = False;
+	    app_data.dump_core        = false;
+	    app_data.debug_core_dumps = false;
 	    msg += "do nothing.";
 	    break;
 
 	case 1:
-	    app_data.dump_core        = True;
-	    app_data.debug_core_dumps = False;
+	    app_data.dump_core        = true;
+	    app_data.debug_core_dumps = false;
 	    msg += "dump core.";
 	    break;
 
 	case 2:
-	    app_data.dump_core        = True;
-	    app_data.debug_core_dumps = True;
+	    app_data.dump_core        = true;
+	    app_data.debug_core_dumps = true;
 	    msg += "dump core and invoke a debugger.";
 	    break;
 	}
@@ -1426,7 +1426,7 @@ void dddSetCrashCB(GUI::RadioMenuItem *w, int state)
 
 void dddClearMaintenanceCB(void)
 {
-    app_data.maintenance = False;
+    app_data.maintenance = false;
     update_options();
 }
 #endif
@@ -1512,21 +1512,21 @@ void dddSetSeparateWindowsCB (GUI::RadioButton *w, int state)
     switch (state)
     {
     case 0:
-	app_data.separate_data_window   = True;
-	app_data.separate_source_window = True;
-	app_data.common_toolbar         = False;
+	app_data.separate_data_window   = true;
+	app_data.separate_source_window = true;
+	app_data.common_toolbar         = false;
 	break;
 
     case 1:
-	app_data.separate_data_window   = False;
-	app_data.separate_source_window = False;
-	app_data.common_toolbar         = True;
+	app_data.separate_data_window   = false;
+	app_data.separate_source_window = false;
+	app_data.common_toolbar         = true;
 	break;
 
     case 2:
-	app_data.separate_data_window   = False;
-	app_data.separate_source_window = False;
-	app_data.common_toolbar         = False;
+	app_data.separate_data_window   = false;
+	app_data.separate_source_window = false;
+	app_data.common_toolbar         = false;
 	break;
     }
 
@@ -1968,7 +1968,7 @@ static void toggle_button_appearance(Widget w, Boolean& data,
     post_startup_warning(w);
 }
 #else
-static void toggle_button_appearance(GUI::CheckButton *w, Boolean& data)
+static void toggle_button_appearance(GUI::CheckButton *w, bool& data)
 {
     data = w->get_active();
     
@@ -3463,7 +3463,7 @@ set_xml_prop(xmlNodePtr tree, const char *name, const Widget *val, bool is_defau
 
 static void set_xml_paned_widget_size(xmlNode *tree, GUI::Widget *w, bool height_only = false)
 {
-    const Boolean check_default = False;
+    const bool check_default = false;
 
     GUI::ScrolledText *scrolled_text;
     Gtk::Entry *entry;
@@ -3526,7 +3526,7 @@ inline void set_xml_paned_widget_height(xmlNode *tree, GUI::Widget *w)
 static void set_xml_widget_geometry(xmlNode *tree, const char *name, GUI::Widget *w,
 				    bool include_size = false)
 {
-    const Boolean check_default = False;
+    const bool check_default = false;
 
     Dimension width = w->internal()->get_width();
     Dimension height = w->internal()->get_height();

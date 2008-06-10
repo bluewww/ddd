@@ -31,11 +31,11 @@ char MString_rcsid[] =
 
 #include "MString.h"
 
-Boolean MString::OK() const
+bool MString::OK() const
 {
 #if defined(IF_XM)
     if (xmstring() == 0)
-	return True;		// Null pointer
+	return true;		// Null pointer
 
     // All of these must return some result.
     (void) isEmpty();
@@ -43,7 +43,7 @@ Boolean MString::OK() const
     (void) lineCount();
 #endif
 
-    return True;
+    return true;
 }
 
 // Return all characters in M
