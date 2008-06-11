@@ -66,7 +66,8 @@ ComboBoxEntryText::internal(void) const
 GtkX::String
 ComboBoxEntryText::get_text(void)
 {
-    return GtkX::String(get_active_text());
+    // return GtkX::String(get_active_text());
+    return GtkX::String(get_entry()->get_text());
 }
 
 void
