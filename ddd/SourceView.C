@@ -8652,7 +8652,7 @@ struct BreakpointPropertiesInfo {
     XtIntervalId timer;		// The spinbox timer
 #else
     GUI::Dialog *dialog;		// The widgets of the properties panel
-    GUI::Widget *title;
+    GUI::Label *title;
     GUI::Widget *lookup;
     GUI::Widget *print;
     GUI::Widget *enable;
@@ -8663,7 +8663,7 @@ struct BreakpointPropertiesInfo {
     GUI::ComboBoxEntryText *condition;
     GUI::Widget *record;
     GUI::Widget *end;
-    GUI::Widget *edit;
+    GUI::Button *edit;
     GUI::ScrolledText *editor;
 
     GUI::connection timer;		// The spinbox timer
@@ -9072,7 +9072,7 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
 	}
     }
 
-    set_label(info->title, label.chars());
+    info->title->set_label(label.chars());
 
     MString title = string(DDD_NAME) + ": Properties: " + label;
     info->dialog->set_title(title.xmstring());
@@ -9086,7 +9086,11 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
 	commands += cmd + "\n";
     }
 
-    info->editor->set_text(commands.chars());
+    GUI::String new_text = commands.chars();
+    // Try to avoid recursive calls...
+    // FIXME: Is there a way to set_text without triggering the callbacks?
+    if (new_text != info->editor->get_text())
+	info->editor->set_text(new_text);
 
     if (info->ignore_spin_update > 0)
     {
@@ -9104,7 +9108,11 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
 
     {
         const string s1 = bp->condition();
-	info->condition->set_text(s1.chars());
+	GUI::String new_text = s1.chars();
+	// Try to avoid recursive calls...
+	// FIXME: Is there a way to set_text without triggering the callbacks?
+	if (new_text != info->condition->get_text())
+	    info->condition->set_text(new_text);
     }
 
     bool can_enable   = false;
@@ -10214,7 +10222,7 @@ void SourceView::EditBreakpointCommandsCB(GUI::Widget *w, BreakpointPropertiesIn
     {
 	info->editor->hide();
 	GUI::String label = GUI::String("Edit ") + GUI::String(">>");
-	set_label(info->edit, label);
+	info->edit->set_label(label);
 
 	string cmd(info->editor->get_text().c_str());
 
@@ -10239,7 +10247,7 @@ void SourceView::EditBreakpointCommandsCB(GUI::Widget *w, BreakpointPropertiesIn
     {
 	info->editor->show();
 	GUI::String label = GUI::String("Edit ") + GUI::String("<<");
-	set_label(info->edit, label);
+	info->edit->set_label(label);
     }
 }
 #endif
