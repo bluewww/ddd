@@ -9321,15 +9321,15 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, Widget /* origin */)
 
     MMDesc commands_menu[] =
     {
-	GENTRYL("record", N_("record"), MMPush,
+	GENTRYL("record", N_("Record"), MMPush,
 		BIND(RecordBreakpointCommandsCB, info), 
 		sigc::bind(sigc::ptr_fun(RecordBreakpointCommandsCB), info), 
 		0, &info->record),
-	GENTRYL("end", N_("end"), MMPush | MMInsensitive,
+	GENTRYL("end", N_("End"), MMPush | MMInsensitive,
 		BIND(EndBreakpointCommandsCB, 0), 
 		sigc::ptr_fun(EndBreakpointCommandsCB), 
 		0, &info->end),
-	GENTRYL("edit", N_("edit"), MMPush | MMInsensitive,
+	GENTRYL("edit", N_("Edit"), MMPush | MMInsensitive,
 		BIND(EditBreakpointCommandsCB, info), 
 		sigc::bind(sigc::ptr_fun(EditBreakpointCommandsCB), info), 
 		0, &info->edit),
@@ -9338,27 +9338,27 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, Widget /* origin */)
 
     MMDesc enabled_menu[] = 
     {
-	GENTRYL("lookup", N_("lookup"), MMPush,
+	GENTRYL("lookup", N_("Lookup"), MMPush,
 		BIND(LookupBreakpointCB, info),
 		sigc::hide(sigc::bind(sigc::ptr_fun(LookupBreakpointCB), info)),
 		0, &info->lookup),
-	GENTRYL("print", N_("print"), MMPush,
+	GENTRYL("print", N_("Print XXX"), MMPush,
 		BIND(PrintWatchpointCB, info),
 		sigc::bind(sigc::ptr_fun(PrintWatchpointCB), info),
 		0, &info->print),
-	GENTRYL("enable", N_("enable"), MMPush,
+	GENTRYL("enable", N_("Enable"), MMPush,
 		BIND(EnableBreakpointsCB, info),
 		sigc::bind(sigc::ptr_fun(EnableBreakpointsCB), info),
 		0, &info->enable),
-	GENTRYL("disable", N_("disable"), MMPush,
+	GENTRYL("disable", N_("Disable"), MMPush,
 		BIND(DisableBreakpointsCB, info),
 		sigc::hide(sigc::bind(sigc::ptr_fun(DisableBreakpointsCB), info)),
 		0, &info->disable),
-	GENTRYL("temporary", N_("temporary"), MMPush,
+	GENTRYL("temporary", N_("Temporary"), MMPush,
 		BIND(MakeBreakpointsTempCB, info),
 		sigc::hide(sigc::bind(sigc::ptr_fun(MakeBreakpointsTempCB), info)),
 		0, &info->temp),
-	GENTRYL("delete", N_("delete"), MMPush | MMHelp,
+	GENTRYL("delete", N_("Delete"), MMPush | MMHelp,
 		BIND(DeleteBreakpointsCB, info),
 		sigc::bind(sigc::ptr_fun(DeleteBreakpointsCB), info),
 		0, &info->del),
@@ -9376,17 +9376,17 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, Widget /* origin */)
 
     MMDesc panel_menu[] = 
     {
-	GENTRYL("title", N_("title"), MMButtonPanel,
+	GENTRYL("title", N_("Title"), MMButtonPanel,
 		MMNoCB, MDUMMY, enabled_menu, 0),
-	GENTRYL("condition", N_("condition"), MMComboBox,
+	GENTRYL("condition", N_("Condition"), MMComboBox,
 		BIND(SetBreakpointConditionCB, info), 
-		sigc::bind(sigc::ptr_fun(SetBreakpointConditionCB), info), 
+		MDUMMY, /* sigc::bind(sigc::ptr_fun(SetBreakpointConditionCB), info), */
 		0, &info->condition),
-	GENTRYL("ignore", N_("ignore"), MMSpinBox,
+	GENTRYL("ignore", N_("Ignore"), MMSpinBox,
 		BIND(SetBreakpointIgnoreCountCB, info), 
 		sigc::bind(sigc::ptr_fun(SetBreakpointIgnoreCountCB), info), 
 		0, &info->ignore),
-	GENTRYL("commands", N_("commands"), MMButtonPanel,
+	GENTRYL("commands", N_("Commands"), MMButtonPanel,
 		MMNoCB, MDUMMY, commands_menu, 0),
 	MMEnd
     };
@@ -9469,23 +9469,21 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, GUI::Widget * /* origin */)
 
     info->dialog = new GUI::Dialog(*find_shell(source_text_w), "Properties");
 
-    GUI::Button *button = info->dialog->add_button("apply", _("Apply"));
-    std::cerr << "Connect apply button in edit_bps\n";
-    button->show();
+    GUI::Button *button;
 
     Delay::register_shell(info->dialog);
 
     MMDesc commands_menu[] =
     {
-	GENTRYL("record", N_("record"), MMPush,
+	GENTRYL("record", N_("Record"), MMPush,
 		BIND(RecordBreakpointCommandsCB, info), 
 		sigc::bind(sigc::ptr_fun(RecordBreakpointCommandsCB), info), 
 		0, &info->record),
-	GENTRYL("end", N_("end"), MMPush | MMInsensitive,
+	GENTRYL("end", N_("End"), MMPush | MMInsensitive,
 		BIND(EndBreakpointCommandsCB, 0), 
 		sigc::ptr_fun(EndBreakpointCommandsCB), 
 		0, &info->end),
-	GENTRYL("edit", N_("edit"), MMPush | MMInsensitive,
+	GENTRYL("edit", N_("Edit"), MMPush | MMInsensitive,
 		BIND(EditBreakpointCommandsCB, info), 
 		sigc::bind(sigc::ptr_fun(EditBreakpointCommandsCB), info), 
 		0, &info->edit),
@@ -9494,27 +9492,27 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, GUI::Widget * /* origin */)
 
     MMDesc enabled_menu[] = 
     {
-	GENTRYL("lookup", N_("lookup"), MMPush,
+	GENTRYL("lookup", N_("Lookup"), MMPush,
 		BIND(LookupBreakpointCB, info),
 		sigc::hide(sigc::bind(sigc::ptr_fun(LookupBreakpointCB), info)),
 		0, &info->lookup),
-	GENTRYL("print", N_("print"), MMPush,
+	GENTRYL("print", N_("Print XXX"), MMPush,
 		BIND(PrintWatchpointCB, info),
 		sigc::bind(sigc::ptr_fun(PrintWatchpointCB), info),
 		0, &info->print),
-	GENTRYL("enable", N_("enable"), MMPush,
+	GENTRYL("enable", N_("Enable"), MMPush,
 		BIND_1(PTR_FUN(EnableBreakpointsCB), info),
 		sigc::bind(sigc::ptr_fun(EnableBreakpointsCB), info),
 		0, &info->enable),
-	GENTRYL("disable", N_("disable"), MMPush,
+	GENTRYL("disable", N_("Disable"), MMPush,
 		BIND(DisableBreakpointsCB, info),
 		sigc::hide(sigc::bind(sigc::ptr_fun(DisableBreakpointsCB), info)),
 		0, &info->disable),
-	GENTRYL("temporary", N_("temporary"), MMPush,
+	GENTRYL("temporary", N_("Temporary"), MMPush,
 		BIND(MakeBreakpointsTempCB, info),
 		sigc::hide(sigc::bind(sigc::ptr_fun(MakeBreakpointsTempCB), info)),
 		0, &info->temp),
-	GENTRYL("delete", N_("delete"), MMPush | MMHelp,
+	GENTRYL("delete", N_("Delete"), MMPush | MMHelp,
 		BIND_1(PTR_FUN(DeleteBreakpointsCB), info),
 		sigc::bind(sigc::ptr_fun(DeleteBreakpointsCB), info),
 		0, &info->del),
@@ -9530,19 +9528,23 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, GUI::Widget * /* origin */)
 	}
     }
 
+    // FIXME: We should not call SetBreakpointConditionCB on every
+    // change to the ComboBox.  Only pressing "Enter" or selecting
+    // from the drop-down list should call this (otherwise we end up
+    // trying to send a partial expression to GDB).
     MMDesc panel_menu[] = 
     {
-	GENTRYL("title", N_("title"), MMButtonPanel,
+	GENTRYL("title", N_("Title"), MMButtonPanel,
 		MMNoCB, MDUMMY, enabled_menu, 0),
-	GENTRYL("condition", N_("condition"), MMComboBox,
+	GENTRYL("condition", N_("Condition"), MMComboBox,
 		BIND(SetBreakpointConditionCB, info), 
-		sigc::bind(sigc::ptr_fun(SetBreakpointConditionCB), info), 
+		MDUMMY, /* sigc::bind(sigc::ptr_fun(SetBreakpointConditionCB), info), */
 		0, &info->condition),
-	GENTRYL("ignore", N_("ignore"), MMSpinBox,
+	GENTRYL("ignore", N_("Ignore"), MMSpinBox,
 		BIND(SetBreakpointIgnoreCountCB, info), 
 		sigc::bind(sigc::ptr_fun(SetBreakpointIgnoreCountCB), info), 
 		0, &info->ignore),
-	GENTRYL("commands", N_("commands"), MMButtonPanel,
+	GENTRYL("commands", N_("Commands"), MMButtonPanel,
 		MMNoCB, MDUMMY, commands_menu, 0),
 	MMEnd
     };
