@@ -9102,14 +9102,9 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
 	info->spin_locked = lock;
     }
 
-    // Don't update unchanged condition to prevent OSF/Motif 2.0
-    // ComboBox from growing
-    // String old_condition = XmTextFieldGetString(info->condition);
-    // if (bp->condition() != old_condition)
     {
         const string s1 = bp->condition();
-	Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(info->condition->get_child());
-	entry->set_text(XMST(s1.chars()));
+	info->condition->set_text(s1.chars());
     }
 
     bool can_enable   = false;
@@ -9622,8 +9617,7 @@ void SourceView::SetBreakpointConditionCB(Widget w,
 void SourceView::SetBreakpointConditionCB(GUI::Widget *w,
 					  BreakpointPropertiesInfo *info)
 {
-    Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(info->condition->get_child());
-    const char *cond = entry->get_text().c_str();
+    const char *cond = info->condition->get_text().c_str();
     std::cerr << "set_bps_cond\n";
     set_bps_cond(info->nrs, cond, w);
 }
@@ -9662,9 +9656,8 @@ void SourceView::ApplyBreakpointPropertiesCB(GUI::Widget *w, BreakpointPropertie
 	EndBreakpointCommandsCB(w);
 
     // Apply condition
-    GUI::Entry *entry = dynamic_cast<GUI::Entry *>(info->condition->get_child());
-    const char *cond = entry->get_text().c_str();
-    std::cerr << "set_bps_cond\n";
+    const char *cond = info->condition->get_text().c_str();
+    std::cerr << "set_bps_cond: " << cond << "\n";
     set_bps_cond(info->nrs, cond, w);
 
     if (info->editor->is_mapped())
