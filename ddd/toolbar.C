@@ -143,6 +143,7 @@ static void set_label_type(MMDesc items[], unsigned char label_type)
 #endif
 #endif
 
+#if defined(IF_XM)
 static void flatten_buttons(MMDesc items[])
 {
     // Replace all `MMPush' by `MMFlatPush'
@@ -152,6 +153,17 @@ static void flatten_buttons(MMDesc items[])
 	    item->type = (MMFlatPush | (item->type & ~MMTypeMask));
     }
 }
+#else
+static void flatten_buttons(MMDesc items[])
+{
+    // Replace all `MMPush' by `MMFlatPush'
+    for (MMDesc *item = items; item != 0 && !item->name.empty(); item++)
+    {
+	if ((item->type & MMTypeMask) == MMPush)
+	    item->type = (MMFlatPush | (item->type & ~MMTypeMask));
+    }
+}
+#endif
 
 #if defined(IF_XM)
 static Widget align_buttons(const MMDesc *items1, const MMDesc *items2)

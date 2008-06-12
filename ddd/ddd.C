@@ -4544,7 +4544,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 		 << lock_info.pid;
 	if (lock_info.hostname != fullhostname())
 	    messages << ", host " << cook(lock_info.hostname);
-	if (lock_info.display != toplevel->get_display()->get_name())
+	if (lock_info.display != string(toplevel->get_display()->get_name()))
 	    messages << ", display " << cook(lock_info.display);
 	messages << ")\n";
     }
@@ -6257,7 +6257,7 @@ static void set_toggle(GUI::Widget *w, bool new_state, bool notify = false)
     if (b)
 	b->set_active(new_state, notify);
     else
-	std::cerr << "\"" << w->get_name() << "\" is not bipolar\n";
+	std::cerr << "\"" << w->get_name().c_str() << "\" is not bipolar\n";
 }
 
 inline void notify_set_toggle(GUI::Bipolar *w, bool new_state)
@@ -8955,10 +8955,10 @@ void update_arg_buttons()
 
     GUI::String deref_arg = deref(arg, "()").chars();
 
-    GUI::String print_ref_label("Print " + deref_arg);
+    GUI::String print_ref_label= GUI::String("Print ") + deref_arg;
     set_label(print_menu[PrintItems::PrintRef].widget, print_ref_label);
 
-    GUI::String disp_ref_label("Display " + deref_arg);
+    GUI::String disp_ref_label = GUI::String("Display ") + deref_arg;
     set_label(display_menu[DispItems::DispRef].widget, disp_ref_label);
 
     bool can_dereference = !gdb->dereferenced_expr("").empty();

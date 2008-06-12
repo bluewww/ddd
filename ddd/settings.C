@@ -429,7 +429,7 @@ static void SendSignalCB(Widget, XtPointer client_data, XtPointer)
 // ToggleButton reply
 static void SendSignalCB(GUI::Widget *client_data)
 {
-    gdb_command(string("signal ") + client_data->get_name());
+    gdb_command(string("signal ") + string(client_data->get_name()));
 }
 #endif
 

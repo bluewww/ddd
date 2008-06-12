@@ -66,7 +66,7 @@ void AddDeleteWindowCallback(Widget shell,
 void AddDeleteWindowCallback(GUI::Widget *shell,
 			     sigc::slot<void> callback)
 {
-    std::cerr << "AddDeleteWindowCallback on " << shell->get_name() << "\n";
-    shell->internal()->signal_delete_event().connect(sigc::hide<0>(sigc::bind_return(callback, false)));
+    std::cerr << "AddDeleteWindowCallback on " << shell->get_name().c_str() << "\n";
+    shell->internal()->signal_delete_event().connect(sigc::hide(sigc::bind_return(callback, false)));
 }
 #endif

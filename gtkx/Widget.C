@@ -40,7 +40,7 @@ String::String(const Glib::ustring &s0):
 }
 
 String::String(const char *s0):
-    s_(s0)
+    s_(s0?s0:"")
 {
 }
 
@@ -89,15 +89,16 @@ String::operator==(const String &str) const
     return s_ == str.s_;
 }
 
+bool
+String::operator!=(const String &str) const
+{
+    return s_ != str.s_;
+}
+
 UChar
 String::operator[](int i) const
 {
     return s_[i];
-}
-
-String::operator bool(void) const
-{
-    return (s_.length() > 0);
 }
 
 const char *

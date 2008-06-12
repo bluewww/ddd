@@ -755,7 +755,7 @@ void MMaddItems(GUI::Container *shell, MMDesc items[], bool ignore_seps)
     static const string textName  = "text";
     static const string labelName = "label";
     // Create lots of buttons...
-    for (MMDesc *item = items; item && item->name; item++)
+    for (MMDesc *item = items; item && !item->name.empty(); item++)
     {
 	GUI::String name = item->name;
 	GUI::String label_string = item->label_string;
@@ -1238,6 +1238,7 @@ GUI::Container *MMcreatePanel(GUI::Container *parent, GUI::String name, MMDesc i
 }
 #endif
 
+#if defined(IF_XM)
 void MMadjustPanel(const MMDesc items[], Dimension space)
 {
     // Align panel labels
@@ -1248,15 +1249,10 @@ void MMadjustPanel(const MMDesc items[], Dimension space)
 	if (item->label == 0)
 	    continue;
 
-#if defined(IF_XM)
 	XtWidgetGeometry size;
 	size.request_mode = CWWidth;
 	XtQueryGeometry(item->label, (XtWidgetGeometry *)0, &size);
 	max_label_width = max(max_label_width, size.width);
-#else
-	GUI::Requisition req = item->label->size_request();
-	max_label_width = max(max_label_width, req.width);
-#endif
     }
 
     // Leave some extra space
@@ -1267,16 +1263,39 @@ void MMadjustPanel(const MMDesc items[], Dimension space)
 	if (item->label == 0)
 	    continue;
 
-#if defined(IF_XM)
 	XtVaSetValues(item->label,
 		      XmNrecomputeSize, False,
 		      XmNwidth, max_label_width,
 		      XtPointer(0));
-#else
-	item->label->set_size_request(max_label_width);
-#endif
     }
 }
+#else
+void MMadjustPanel(const MMDesc items[], Dimension space)
+{
+    // Align panel labels
+    Dimension max_label_width = 0;
+    const MMDesc *item;
+    for (item = items; item != 0 && !item->name.empty(); item++)
+    {
+	if (item->label == 0)
+	    continue;
+
+	GUI::Requisition req = item->label->size_request();
+	max_label_width = max(max_label_width, req.width);
+    }
+
+    // Leave some extra space
+    max_label_width += space;
+
+    for (item = items; item != 0 && !item->name.empty(); item++)
+    {
+	if (item->label == 0)
+	    continue;
+
+	item->label->set_size_request(max_label_width);
+    }
+}
+#endif
 
 #if defined(IF_XM)
 // Create radio panel from items
@@ -1345,12 +1364,9 @@ GUI::Container *MMcreateButtonPanel(GUI::Container *parent, GUI::String name, MM
 }
 #endif
 
-// Perform proc on items
 #if defined(IF_XM)
+// Perform proc on items
 void MMonItems(const MMDesc items[], MMItemProc proc, XtPointer closure, int depth)
-#else
-void MMonItems(const MMDesc items[], MMItemProc proc, void *closure, int depth)
-#endif
 {
     if (depth == 0)
 	return;
@@ -1366,6 +1382,25 @@ void MMonItems(const MMDesc items[], MMItemProc proc, void *closure, int depth)
 	    MMonItems(item->items, proc, closure, depth - 1);
     }
 }
+#else
+// Perform proc on items
+void MMonItems(const MMDesc items[], MMItemProc proc, void *closure, int depth)
+{
+    if (depth == 0)
+	return;
+
+    for (const MMDesc *item = items; item != 0 && !item->name.empty(); item++)
+    {
+	if (item->type & MMIgnore)
+	    continue;
+
+	proc(item, closure);
+
+	if (item->items)
+	    MMonItems(item->items, proc, closure, depth - 1);
+    }
+}
+#endif
 
 
 //-----------------------------------------------------------------------

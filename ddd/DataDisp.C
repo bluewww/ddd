@@ -9655,7 +9655,7 @@ void DataDisp::create_shells()
 
     if (app_data.flat_dialog_buttons)
     {
-	for (MMDesc *item = display_area; item != 0 && item->name; item++)
+	for (MMDesc *item = display_area; item != 0 && !item->name.empty(); item++)
 	{
 	    if ((item->type & MMTypeMask) == MMPush)
 		item->type = (MMFlatPush | (item->type & ~MMTypeMask));

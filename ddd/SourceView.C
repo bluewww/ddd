@@ -5643,7 +5643,7 @@ void SourceView::create_shells()
 
     if (app_data.flat_dialog_buttons)
     {
-	for (MMDesc *item = bp_area; item != 0 && item->name; item++)
+	for (MMDesc *item = bp_area; item != 0 && !item->name.empty(); item++)
 	{
 	    if ((item->type & MMTypeMask) == MMPush)
 		item->type = (MMFlatPush | (item->type & ~MMTypeMask));
@@ -9521,7 +9521,7 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, GUI::Widget * /* origin */)
 
     if (app_data.flat_dialog_buttons)
     {
-	for (MMDesc *item = enabled_menu; item != 0 && item->name; item++)
+	for (MMDesc *item = enabled_menu; item != 0 && !item->name.empty(); item++)
 	{
 	    if ((item->type & MMTypeMask) == MMPush)
 		item->type = (MMFlatPush | (item->type & ~MMTypeMask));

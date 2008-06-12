@@ -116,7 +116,7 @@ namespace GtkX {
 	String operator+(const String &str) const;
 	String &operator+=(const String &str);
 	bool operator==(const String &s) const;
-	operator bool(void) const;
+	bool operator!=(const String &s) const;
 	bool empty(void) const;
 	iterator begin(void);
 	iterator end(void);

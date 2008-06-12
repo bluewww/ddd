@@ -400,7 +400,7 @@ bool lock_session_dir(GUI::RefPtr<GUI::Display> display,
 #if defined(IF_XM)
 	   << " " << XDisplayString(display)
 #else
-	   << " " << display->get_default_screen()->make_display_name()
+	   << " " << display->get_default_screen()->make_display_name().c_str()
 #endif
 	   << " " << getuid()
 	   << " " << username

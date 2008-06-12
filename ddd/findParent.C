@@ -143,7 +143,7 @@ Widget findTheTopLevelShell(Widget w)
 GUI::Shell *findShellParent(GUI::Widget *w)
 {
     if (findParent_debug)
-	std::clog << "findShellParent(" << w->get_name() << ") = ";
+	std::clog << "findShellParent(" << w->get_name().c_str() << ") = ";
 
     while (w != 0 && (!dynamic_cast<GUI::Shell *>(w)
 		      || !w->is_realized()))
@@ -152,7 +152,7 @@ GUI::Shell *findShellParent(GUI::Widget *w)
     if (findParent_debug)
     {
 	if (w != 0)
-	    std::clog << w->get_name();
+	    std::clog << w->get_name().c_str();
 	else
 	    std::clog << "(none)";
 	std::clog << "\n";
@@ -166,7 +166,7 @@ GUI::Shell *findShellParent(GUI::Widget *w)
 GUI::Shell *findTopLevelShellParent(GUI::Widget *w)
 {
     if (findParent_debug)
-	std::clog << "findTopLevelShellParent(" << w->get_name() << ") = ";
+	std::clog << "findTopLevelShellParent(" << w->get_name().c_str() << ") = ";
 
     while (w != 0 && (!dynamic_cast<GUI::Shell *>(w)
 		      || !w->is_realized()))
@@ -175,7 +175,7 @@ GUI::Shell *findTopLevelShellParent(GUI::Widget *w)
     if (findParent_debug)
     {
 	if (w != 0)
-	    std::clog << w->get_name();
+	    std::clog << w->get_name().c_str();
 	else
 	    std::clog << "(none)";
 	std::clog << "\n";
@@ -189,7 +189,7 @@ GUI::Shell *findTopLevelShellParent(GUI::Widget *w)
 GUI::Shell *findTheTopLevelShell(GUI::Widget *w)
 {
     if (findParent_debug)
-	std::clog << "findTopLevelShellParent(" << w->get_name() << ") = ";
+	std::clog << "findTopLevelShellParent(" << w->get_name().c_str() << ") = ";
 
     GUI::Widget *found = NULL;
 
@@ -204,7 +204,7 @@ GUI::Shell *findTheTopLevelShell(GUI::Widget *w)
     if (findParent_debug)
     {
 	if (found != 0)
-	    std::clog << found->get_name();
+	    std::clog << found->get_name().c_str();
 	else
 	    std::clog << "(none)";
 	std::clog << "\n";
