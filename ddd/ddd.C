@@ -7851,17 +7851,17 @@ static void ResetPreferencesCB(GUI::Notebook *nb)
 	return;
     }
     GUI::String panel_name = panel->get_name();
-    if (panel_name == GUI::String("General"))
+    if (panel_name == GUI::String("general"))
 	ResetGeneralPreferencesCB();
-    else if (panel_name == GUI::String("Source"))
+    else if (panel_name == GUI::String("source"))
 	ResetSourcePreferencesCB();
-    else if (panel_name == GUI::String("Data"))
+    else if (panel_name == GUI::String("data"))
 	ResetDataPreferencesCB();
-    else if (panel_name == GUI::String("Startup"))
+    else if (panel_name == GUI::String("startup"))
 	ResetStartupPreferencesCB();
-    else if (panel_name == GUI::String("Fonts"))
+    else if (panel_name == GUI::String("fonts"))
 	ResetFontPreferencesCB();
-    else if (panel_name == GUI::String("Helpers"))
+    else if (panel_name == GUI::String("helpers"))
 	ResetHelpersPreferencesCB();
     else
 	std::cerr << "\007Error: panel_name not recognized\n";
@@ -8227,12 +8227,16 @@ static void make_preferences(GUI::Widget *parent)
     preferences_dialog->signal_unmap().connect(sigc::bind(sigc::ptr_fun(OfferRestartCB),
 							  preferences_dialog));
 
-    reset_preferences_w = preferences_dialog->add_button("reset", _("Reset"));
-    reset_preferences_w->show();
-
     GUI::Notebook *change = new GUI::Notebook(*preferences_dialog, GUI::PACK_SHRINK, "change");
     change->show();
+
+    GUI::Button *button = preferences_dialog->add_button("ok", _("OK"));
+    button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), preferences_dialog));
+    button->show();
+
+    reset_preferences_w = preferences_dialog->add_button("reset", _("Reset"));
     reset_preferences_w->signal_clicked().connect(sigc::bind(sigc::ptr_fun(ResetPreferencesCB), change));
+    reset_preferences_w->show();
 
     Dimension max_width  = 0;
     Dimension max_height = 0;
