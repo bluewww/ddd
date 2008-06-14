@@ -4596,6 +4596,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	original_argc++;
 
     command_shell = new GUI::Window(*app_context, "command_shell", "command_shell");
+    command_shell->set_default_size(800,600);
     command_shell->signal_delete_event().connect(sigc::bind_return(sigc::hide(sigc::bind(sigc::ptr_fun(DDDCloseCB), command_shell)), false));
 
 
@@ -4666,6 +4667,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     if (app_data.separate_data_window)
     {
 	data_disp_shell = new GUI::Window(*app_context, "data_disp_shell", "data_disp_shell");
+	data_disp_shell->set_default_size(800,600);
 	AddDeleteWindowCallback(data_disp_shell, sigc::bind(sigc::ptr_fun(DDDCloseCB), data_disp_shell));
 
 
@@ -4705,6 +4707,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     if (app_data.separate_source_window)
     {
 	source_view_shell = new GUI::Window("source_view_shell", "source_view_shell");
+	source_view_shell->set_default_size(800,600);
 	AddDeleteWindowCallback(source_view_shell, sigc::bind(sigc::ptr_fun(DDDCloseCB), source_view_shell));
 
 
