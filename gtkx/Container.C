@@ -60,6 +60,10 @@ Container::add_child(Widget &child, PackOptions options, int padding)
     Gtk::PackOptions tr[] = {Gtk::PACK_SHRINK,
 			     Gtk::PACK_EXPAND_PADDING,
 			     Gtk::PACK_EXPAND_WIDGET};
+    // This code is only executed for a non-Box widget in which
+    // gtk_container() is a Gtk::Box.  Currently, this means Dialogs
+    // (for which widgets are added to a contained VBox).  Adding to a
+    // Box is handled instead by Box::add_child.
     if (box)
 	box->pack_start(*child.internal(), tr[options], padding);
     else

@@ -28,6 +28,17 @@
 
 using namespace GtkX;
 
+void
+Box::add_child(Widget &child, PackOptions options, int padding)
+{
+    Gtk::Container *cont = gtk_container();
+    Gtk::Box *box = dynamic_cast<Gtk::Box *>(cont);
+    Gtk::PackOptions tr[] = {Gtk::PACK_SHRINK,
+			     Gtk::PACK_EXPAND_PADDING,
+			     Gtk::PACK_EXPAND_WIDGET};
+    box->pack_start(*child.internal(), tr[options], padding);
+}
+
 #ifdef __GNUC__
 #warning Remove this special case notebook stuff?
 #endif

@@ -36,6 +36,8 @@
 namespace GtkX {
 
     class Box: public Container {
+	void add_child(Widget &child, PackOptions options=PACK_EXPAND_WIDGET,
+		       int padding=0);
     };
 
     class Dialog;

@@ -99,7 +99,7 @@ Dialog::internal(void) const
 Gtk::Container *
 Dialog::gtk_container(void)
 {
-    return vbox_?vbox_:get_vbox();
+    return vbox_;
 }
 
 Button *

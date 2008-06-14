@@ -55,12 +55,14 @@ MultiPaned::internal(void) const
 }
 
 void
-MultiPaned::on_add(Gtk::Widget* widget)
+MultiPaned::add_child(GtkX::Widget &child, PackOptions options, int padding)
 {
+    int resize = 0;
+    if (options & (PACK_EXPAND_PADDING|PACK_EXPAND_WIDGET))
+	resize = 1;
     int n = Gtk::Container::get_children().size();
     if (n == 0) {
-	// Gtk::VPaned::on_add(widget);
-	pack1(*widget, false, false);
+	pack1(*child.internal(), resize, false);
     }
     else if (n == 1) {
 	assert(xchild_.size() == 0);
@@ -69,7 +71,7 @@ MultiPaned::on_add(Gtk::Widget* widget)
 	Gtk::VPaned::on_add(paned);
 	xchild_.push_back(paned);
 	paned->show();
-	paned->pack1(*widget, false, false);
+	paned->pack1(*child.internal(), resize, false);
     }
     else {
 	Gtk::VPaned *paned = new Gtk::VPaned();
@@ -78,7 +80,7 @@ MultiPaned::on_add(Gtk::Widget* widget)
 	xchild_.push_back(paned);
 	parent->add(*paned);
 	paned->show();
-	paned->pack1(*widget, false, false);
+	paned->pack1(*child.internal(), resize, false);
     }
 }
 

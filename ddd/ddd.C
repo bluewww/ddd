@@ -4807,8 +4807,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	console_buttons_w = make_buttons(paned_work_w, "console_buttons", 
 					 app_data.console_buttons);
 
-    gdb_w = new GUI::ScrolledText(*paned_work_w);
-    gdb_w->set_size_request(400, 200);
+    gdb_w = new GUI::ScrolledText(*paned_work_w, GUI::PACK_EXPAND_WIDGET);
 
     std::cerr << "How to verify changes and motion?\n";
 

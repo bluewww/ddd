@@ -45,7 +45,8 @@ namespace GtkX {
 		   const GtkX::String &name="", const GtkX::String &label="");
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;
-	void on_add(Gtk::Widget* widget);
+	void add_child(GtkX::Widget &child, PackOptions options=PACK_EXPAND_WIDGET,
+		       int padding=0);
 	bool on_expose_event(GdkEventExpose* event);
 	void debug(void);
 	static void show_child(Gtk::Widget* widget);
