@@ -4711,7 +4711,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	AddDeleteWindowCallback(source_view_shell, sigc::bind(sigc::ptr_fun(DDDCloseCB), source_view_shell));
 
 
-	source_main_window_w = new GUI::VBox(*source_view_shell, GUI::PACK_SHRINK, "source_main_window");
+	source_main_window_w = new GUI::VBox(*source_view_shell, GUI::PACK_EXPAND_WIDGET, "source_main_window");
 	source_main_window_w->show();
 
 	// Add menu bar
@@ -4726,7 +4726,11 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	// Note: On Motif it is possible to force a pane to have
 	// fixed size.  On Gtk this does not seem possible.  Therefore
 	// the toolbar and status bar must go in a VBox.
-	source_vbox = new GUI::VBox(*source_main_window_w);
+	// FIXME: But, it is possible to prevent a pane from being resized when
+	// the container is resized.  It is not possible, though, to prevent the user
+	// from pulling the separator.
+	source_vbox = new GUI::VBox(*source_main_window_w, GUI::PACK_EXPAND_WIDGET,
+				    "source_vbox");
 	source_vbox->show();
 
 	// Status line
