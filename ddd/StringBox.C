@@ -77,8 +77,8 @@ Box *StringBox::resize()
 	Glib::RefPtr<Pango::Layout> pl = Pango::Layout::create(context);
 	pl->set_text(Glib::ustring(_string.chars()));
 	Pango::Rectangle overall = pl->get_logical_extents();
-	font_ascent = overall.get_ascent();
-	font_descent = overall.get_descent();
+	font_ascent = overall.get_ascent()/Pango::SCALE;
+	font_descent = overall.get_descent()/Pango::SCALE;
 #endif
 
 #if defined(IF_XM)
@@ -97,7 +97,7 @@ Box *StringBox::resize()
 #warning Cannot get max_bounds of a Pango font.
 #endif
 	_ascent = font_ascent;
-	thesize() = BoxSize(overall.get_width(), font_ascent + font_descent);
+	thesize() = BoxSize(overall.get_width()/Pango::SCALE, font_ascent + font_descent);
 #endif
     }
 
