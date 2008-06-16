@@ -157,6 +157,7 @@ Display::Display(Glib::RefPtr<Gdk::Display> d0)
 RefPtr<Display>
 Display::wrap(Glib::RefPtr<Gdk::Display> d0)
 {
+    if (!d0) return NULL;
     DisplayMap::iterator iter = display_map.find(d0->gobj());
     if (iter != display_map.end()) {
 	return iter->second;
@@ -214,6 +215,7 @@ ScreenMap screen_map;
 RefPtr<Screen>
 Screen::wrap(Glib::RefPtr<Gdk::Screen> s0)
 {
+    if (!s0) return NULL;
     ScreenMap::iterator iter = screen_map.find(s0->gobj());
     if (iter != screen_map.end()) {
 	return iter->second;
@@ -247,6 +249,7 @@ XWindowMap xwindow_map;
 RefPtr<XWindow>
 XWindow::wrap(Glib::RefPtr<Gdk::Window> w0)
 {
+    if (!w0) return NULL;
     XWindowMap::iterator iter = xwindow_map.find(w0->gobj());
     if (iter != xwindow_map.end()) {
 	return iter->second;
@@ -741,6 +744,7 @@ PixmapMap pixmap_map;
 RefPtr<Pixmap>
 Pixmap::wrap(Glib::RefPtr<Gdk::Pixmap> p0)
 {
+    if (!p0) return NULL;
     PixmapMap::iterator iter = pixmap_map.find(p0->gobj());
     if (iter != pixmap_map.end()) {
 	return iter->second;
@@ -861,6 +865,7 @@ GC::GC(Glib::RefPtr<Gdk::GC> g0)
 RefPtr<GC>
 GC::wrap(Glib::RefPtr<Gdk::GC> g0)
 {
+    if (!g0) return NULL;
     GCMap::iterator iter = gc_map.find(g0->gobj());
     if (iter != gc_map.end()) {
 	return iter->second;
@@ -1180,6 +1185,7 @@ Font::Font(Glib::RefPtr<Pango::Font> f0)
 RefPtr<Font>
 Font::wrap(Glib::RefPtr<Pango::Font> f0)
 {
+    if (!f0) return NULL;
     FontMap::iterator iter = font_map.find(f0->gobj());
     if (iter != font_map.end()) {
 	return iter->second;

@@ -9456,7 +9456,7 @@ DataDisp::DataDisp(GUI::Container *parent, GUI::Container *&data_buttons_w)
     // Create graph editor
     graph_edit = new GUIGraphEdit(*parent, GUI::PACK_EXPAND_WIDGET, "graph_edit",
 				  disp_graph);
-    graph_edit->set_size_request(200, 200);
+    // graph_edit->set_size_request(200, 200);
     graph_edit->signal_button_press_event().connect(sigc::ptr_fun(test_click));
     graph_edit->add_event_mask(GUI::EventMask(GUI::EXPOSURE_MASK |
 					      GUI::BUTTON_PRESS_MASK |

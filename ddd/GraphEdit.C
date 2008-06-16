@@ -676,7 +676,8 @@ void GUIGraphEdit::setGrid(bool reset)
 	gridPixmap.clear();
     }
 
-    if (!gridPixmap)
+    // Note that window may not be realized.
+    if (!gridPixmap && win)
     {
 	// Create grid pixmap
 	int gridDataSize = ((gridWidth + 7) / 8) * gridHeight + 1;

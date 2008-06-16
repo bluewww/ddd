@@ -97,7 +97,8 @@ Box *StringBox::resize()
 #warning Cannot get max_bounds of a Pango font.
 #endif
 	_ascent = font_ascent;
-	thesize() = BoxSize(overall.get_width()/Pango::SCALE, font_ascent + font_descent);
+	thesize() = BoxSize(overall.get_width()/Pango::SCALE,
+			    font_ascent + font_descent);
 #endif
     }
 
