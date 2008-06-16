@@ -474,10 +474,11 @@ static bool call_tracking_help(GUI::Event *event, bool key_only = false)
     if (!event)
 	return key_only;
 
-    if (event->type != GUI::KEY_PRESS && event->type != GUI::KEY_RELEASE)
+    GUI::EventKey *evk = dynamic_cast<GUI::EventKey *>(event);
+    if (!evk)
 	return key_only;
 
-    if ((event->key.state & GUI::SHIFT_MASK) == 0)
+    if ((evk->state & GUI::SHIFT_MASK) == 0)
 	return false;
 
     return true;

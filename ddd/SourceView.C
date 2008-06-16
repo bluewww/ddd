@@ -7455,10 +7455,8 @@ void SourceView::startSelectWordAct (GUI::ScrolledText *text_w, GUI::Event* e,
 {
     std::cerr << "grab-focus action not implemented\n";
 
-    if (e->type != GUI::BUTTON_PRESS && e->type != GUI::BUTTON_RELEASE)
-	return;
-
-    GUI::EventButton *event = &e->button;
+    GUI::EventButton *event = dynamic_cast<GUI::EventButton *>(e);
+    if (!event) return;
 
     long pos = text_w->xy_to_pos(event->x, event->y);
 
@@ -7798,9 +7796,6 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 // Popup button3 source menu
 void SourceView::srcpopupAct (GUI::Widget *w, GUI::Event* e, GUI::String *, unsigned int *)
 {
-    if (e->type != GUI::BUTTON_PRESS && e->type != GUI::BUTTON_RELEASE)
-	return;
-
     GUI::ScrolledText *text_w;
     if (is_source_widget(w))
 	text_w = source_text_w;
@@ -7809,7 +7804,8 @@ void SourceView::srcpopupAct (GUI::Widget *w, GUI::Event* e, GUI::String *, unsi
     else
 	return;
 
-    GUI::EventButton* event = &e->button;
+    GUI::EventButton* event = dynamic_cast<GUI::EventButton *>(e);
+    if (!event) return;
 
     int x = (int)event->x;
     int y = (int)event->y;
@@ -8146,9 +8142,6 @@ void SourceView::doubleClickAct(Widget w, XEvent *e, String *params,
 void SourceView::doubleClickAct(GUI::Widget *w, GUI::Event *e, GUI::String *params, 
 				unsigned int *num_params)
 {
-    if (e->type != GUI::BUTTON_PRESS && e->type != GUI::BUTTON_RELEASE)
-	return;
-
     GUI::ScrolledText *text_w;
     if (is_source_widget(w))
 	text_w = source_text_w;
@@ -8157,7 +8150,8 @@ void SourceView::doubleClickAct(GUI::Widget *w, GUI::Event *e, GUI::String *para
     else
 	return;
 
-    GUI::EventButton* event = &e->button;
+    GUI::EventButton* event = dynamic_cast<GUI::EventButton *>(e);
+    if (!event) return;
 
     int x = (int)event->x;
     int y = (int)event->y;

@@ -2518,9 +2518,8 @@ void DataDisp::DoubleClickCB(GUIGraphEdit *w, GraphEditPreSelectionInfo *call_da
 	return;
 
     GUI::Event *ev = info->event;
-    bool control = (ev != 0 && 
-		    (ev->type == GUI::BUTTON_PRESS || ev->type == GUI::BUTTON_RELEASE) &&
-		    (ev->button.state & GUI::CONTROL_MASK) != 0);
+    GUI::EventButton *evb = dynamic_cast<GUI::EventButton *>(ev);
+    bool control = (evb != 0 && (evb->state & GUI::CONTROL_MASK) != 0);
 
     // Do the right thing
     if (disp_node_arg->disabled())
@@ -3566,6 +3565,8 @@ void DataDisp::graph_popupAct (Widget, XEvent* event, String *args,
 void DataDisp::graph_popupAct (GUI::Widget *, GUI::Event* event, GUI::String *args, 
 			       unsigned int *num_args)
 {
+    GUI::EventButton *evb = dynamic_cast<GUI::EventButton *>(event);
+    if (!evb) return;
     static BoxPoint* p = 0;
     if (p == 0)
     {
@@ -3579,7 +3580,7 @@ void DataDisp::graph_popupAct (GUI::Widget *, GUI::Event* event, GUI::String *ar
 	MMaddHelpCallback(node_popup,      sigc::ptr_fun(ImmediateHelpCB));
 	MMaddHelpCallback(shortcut_popup1, sigc::ptr_fun(ImmediateHelpCB));
     }
-    *p = point(event);
+    *p = point(evb);
 
     set_args(*p, SetSelection);
 
@@ -3590,7 +3591,7 @@ void DataDisp::graph_popupAct (GUI::Widget *, GUI::Event* event, GUI::String *ar
     GUI::PopupMenu *popup = 0;
     if (arg == "graph" || selected_node() == 0)
 	popup = graph_popup_w;
-    else if (arg == "shortcut" || (arg.empty() && event->button.state & GUI::SHIFT_MASK))
+    else if (arg == "shortcut" || (arg.empty() && evb->state & GUI::SHIFT_MASK))
 	popup = shortcut_popup_w;
     else if (arg == "node" || arg.empty())
 	popup = node_popup_w;
@@ -9452,7 +9453,6 @@ DataDisp::DataDisp(GUI::Container *parent, GUI::Container *&data_buttons_w)
 	data_buttons_w = 
 	    make_buttons(parent, "data_buttons", app_data.data_buttons);
 
-    (new GUI::Label(*parent, GUI::PACK_SHRINK, "DATA PARENT 1", "DATA PARENT 1"))->show();
     // Create graph editor
     graph_edit = new GUIGraphEdit(*parent, GUI::PACK_EXPAND_WIDGET, "graph_edit",
 				  disp_graph);
@@ -9466,7 +9466,6 @@ DataDisp::DataDisp(GUI::Container *parent, GUI::Container *&data_buttons_w)
 					      GUI::KEY_PRESS_MASK |
 					      GUI::KEY_RELEASE_MASK));
     graph_form_w = graph_edit;
-    (new GUI::Label(*parent, GUI::PACK_SHRINK, "DATA PARENT 2", "DATA PARENT 2"))->show();
 
     set_last_origin(graph_edit);
 

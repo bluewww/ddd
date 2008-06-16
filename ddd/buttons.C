@@ -801,18 +801,18 @@ static MString gdbDefaultValueText(GUI::ScrolledText *widget,
     x = 0;
     y = 0;
     {
-	switch (event->type)
-	{
-	case GUI::MOTION_NOTIFY:
-	    event->motion.x = x;
-	    event->motion.y = y;
-	    break;
-
-	case GUI::ENTER_NOTIFY:
-	case GUI::LEAVE_NOTIFY:
-	    event->crossing.x = x;
-	    event->crossing.y = y;
-	    break;
+	GUI::EventMotion *evm;
+	GUI::EventCrossing *evc;
+#ifdef NAG_ME
+#warning Push this down to the Event translation layer (using virtual).
+#endif
+	if (evm = dynamic_cast<GUI::EventMotion *>(event)) {
+	    evm->x = x;
+	    evm->y = y;
+	}
+	else if (evc = dynamic_cast<GUI::EventCrossing *>(event)) {
+	    evc->x = x;
+	    evc->y = y;
 	}
     }
 

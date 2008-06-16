@@ -121,34 +121,35 @@ BoxPoint point(GUI::Event *ev)
 #ifdef NAG_ME
 #warning Most Gdk events do not have an associated (x,y)
 #endif
-    switch (ev->type)
-    {
-    case GUI::KEY_PRESS:
-    case GUI::KEY_RELEASE:
+    GUI::EventKey *evk;
+    GUI::EventButton *evb;
+    GUI::EventMotion *evm;
+    GUI::EventCrossing *evc;
+    GUI::EventExpose *eve;
+    GUI::EventConfigure *evcf;
+    if (evk = dynamic_cast<GUI::EventKey *>(ev)) {
 	return BoxPoint(0, 0);
-
-    case GUI::BUTTON_PRESS:
-    case GUI::BUTTON_RELEASE:
-	return BoxPoint((BoxCoordinate)ev->button.x,
-			(BoxCoordinate)ev->button.y);
-
-    case GUI::MOTION_NOTIFY:
-	return BoxPoint((BoxCoordinate)ev->motion.x,
-			(BoxCoordinate)ev->motion.y);
-
-    case GUI::ENTER_NOTIFY:
-    case GUI::LEAVE_NOTIFY:
-	return BoxPoint((BoxCoordinate)ev->crossing.x,
-			(BoxCoordinate)ev->crossing.y);
-
-    case GUI::EXPOSE:
+    }
+    else if (evb = dynamic_cast<GUI::EventButton *>(ev)) {
+	return BoxPoint((BoxCoordinate)evb->x,
+			(BoxCoordinate)evb->y);
+    }
+    else if (evm = dynamic_cast<GUI::EventMotion *>(ev)) {
+	return BoxPoint((BoxCoordinate)evm->x,
+			(BoxCoordinate)evm->y);
+    }
+    else if (evc = dynamic_cast<GUI::EventCrossing *>(ev)) {
+	return BoxPoint((BoxCoordinate)evc->x,
+			(BoxCoordinate)evc->y);
+    }
+    else if (eve = dynamic_cast<GUI::EventExpose *>(ev)) {
 	return BoxPoint(0, 0);
-
-    case GUI::CONFIGURE:
-	return BoxPoint((BoxCoordinate)ev->configure.x,
-			(BoxCoordinate)ev->configure.y);
-
-    default:
+    }
+    else if (evcf = dynamic_cast<GUI::EventConfigure *>(ev)) {
+	return BoxPoint((BoxCoordinate)evcf->x,
+			(BoxCoordinate)evcf->y);
+    }
+    else {
 	invalid_event("point");
 	return BoxPoint();
     }
@@ -214,36 +215,33 @@ Time time(GUI::Event *ev)
 	return CurrentTime;
     }
 
-    switch (ev->type)
-    {
-    case GUI::KEY_PRESS:
-    case GUI::KEY_RELEASE:
-	return ev->key.time;
-
-    case GUI::BUTTON_PRESS:
-    case GUI::BUTTON_RELEASE:
-	return ev->button.time;
-
-    case GUI::MOTION_NOTIFY:
-	return ev->button.time;
-
-    case GUI::ENTER_NOTIFY:
-    case GUI::LEAVE_NOTIFY:
-	return ev->crossing.time;
-
-    case GUI::PROPERTY_NOTIFY:
-	return ev->property.time;
-
-    case GUI::SELECTION_CLEAR:
-	return ev->selection.time;
-
-    case GUI::SELECTION_REQUEST:
-	return ev->selection.time;
-
-    case GUI::SELECTION_NOTIFY:
-	return ev->selection.time;
-
-    default:
+#ifdef NAG_ME
+#warning Push this down to the Event mechanism itself (virtual).
+#endif
+    GUI::EventKey *evk;
+    GUI::EventButton *evb;
+    GUI::EventMotion *evm;
+    GUI::EventCrossing *evc;
+    GUI::EventExpose *eve;
+    GUI::EventConfigure *evcf;
+    GUI::EventSelection *evs;
+    if (evk = dynamic_cast<GUI::EventKey *>(ev)) {
+	return evk->time;
+    }
+    else if (evb = dynamic_cast<GUI::EventButton *>(ev)) {
+	return evb->time;
+    }
+    else if (evm = dynamic_cast<GUI::EventMotion *>(ev)) {
+	return evm->time;
+    }
+    else if (evc = dynamic_cast<GUI::EventCrossing *>(ev)) {
+	return evc->time;
+    }
+    // GUI::PROPERTY_NOTIFY:
+    else if (evs = dynamic_cast<GUI::EventSelection *>(ev)) {
+	return evs->time;
+    }
+    else {
 	invalid_event("time");
 	return CurrentTime;
     }
@@ -306,19 +304,17 @@ BoxSize size(GUI::Event *ev)
 	return BoxSize(0, 0);
     }
 
-    switch (ev->type)
-    {
-#ifdef NAG_ME
-#warning Width and height not available for most event types.
-#endif
-    case GUI::EXPOSE:
-	return BoxSize(ev->expose.width,
-		       ev->expose.height);
-    case GUI::CONFIGURE:
-	return BoxSize(ev->configure.width,
-		       ev->configure.height);
-
-    default:
+    GUI::EventExpose *eve;
+    GUI::EventConfigure *evcf;
+    if (eve = dynamic_cast<GUI::EventExpose *>(ev)) {
+	return BoxSize(eve->width,
+		       eve->height);
+    }
+    else if (evcf = dynamic_cast<GUI::EventConfigure *>(ev)) {
+	return BoxSize(evcf->width,
+		       evcf->height);
+    }
+    else {
 	invalid_event("size");
 	return BoxSize(0, 0);
     }

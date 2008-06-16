@@ -1844,9 +1844,9 @@ static void Redisplay(Widget w, XEvent *event, Region)
 bool GUIGraphEdit::on_expose_event(GdkEventExpose *event)
 {
     std::cerr << "on_expose_event\n";
-    GUI::Event ev;
-    translate_event((GdkEvent *)event, &ev);
-    on_expose_event(&ev.expose);
+    GUI::RefPtr<GUI::Event> ev = GUI::translate_event((GdkEvent *)event);
+    GUI::RefPtr<GUI::EventExpose> eve = dynamic_cast<GUI::EventExpose *>(&*ev);
+    on_expose_event(eve);
 }
 #endif
 
