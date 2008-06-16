@@ -68,7 +68,7 @@ CheckButton::set_active(bool new_state, bool notify)
     if (Gtk::CheckButton::get_active() != new_state)
     {
 	if (notify) {
-	    set_active(new_state);
+	    Gtk::CheckButton::set_active(new_state);
 	}
 	else {
 	    GtkCheckButton *cb_obj = gobj();
