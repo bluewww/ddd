@@ -33,11 +33,11 @@
 #include <gdk/gdkevents.h>
 #include <gdkmm/window.h>
 
-namespace GtkX {
-
 #include <GtkX/EventType.h>
 
-    int translate_event(GdkEvent *in, Event *out);
+namespace GtkX {
+
+    RefPtr<Event> translate_event(GdkEvent *in);
     int translate_event_mask(EventMask &in, Gdk::EventMask &out);
     int translate_mod_mask(GdkModifierType &in, ModifierType &out);
 

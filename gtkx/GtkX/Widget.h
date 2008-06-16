@@ -128,58 +128,6 @@ namespace GtkX {
     const GtkX::String mklabel(const GtkX::String &name,
 			       const GtkX::String &label);
 
-    template <class T>
-    class RefPtr {
-	T *p;
-    public:
-	RefPtr(void) {
-	    p = NULL;
-	}
-	RefPtr(T *ptr) {
-	    p = ptr;
-	    if (p) p->ref();
-	}
-	RefPtr(const RefPtr &rp) {
-	    p = rp.p;
-	    if (p) p->ref();
-	}
-	template <class S> inline RefPtr(const RefPtr<S>& src);
-	RefPtr &operator=(const RefPtr &rp) {
-	    if (rp.p) rp.p->ref();
-	    if (p) p->unref();
-	    p = rp.p;
-	    return *this;
-	}
-	RefPtr &operator=(T *val) {
-	    if (val) val->ref();
-	    if (p) p->unref();
-	    p = val;
-	    return *this;
-	}
-	~RefPtr(void) {
-	    if (p) p->unref();
-	}
-	operator T *(void) const {
-	    return p;
-	}
-	T &operator*(void) const {
-	    return *p;
-	}
-	T *operator->() const {
-	    return &(operator*());
-	}
-	void clear(void) {
-	}
-    };
-
-    template <class T>
-    template <class S>
-    inline RefPtr<T>::RefPtr(const RefPtr<S>& src)
-    {
-	p = src.operator->();
-	if (p) {p->ref();}
-    }
-
     class Screen;
 
     class Display {
@@ -430,6 +378,8 @@ namespace GtkX {
 	XWindow(Glib::RefPtr<Gdk::Window> w0);
 	static RefPtr<XWindow> wrap(Glib::RefPtr<Gdk::Window> w0);
 	static RefPtr<const XWindow> wrap(Glib::RefPtr<const Gdk::Window> w0);
+	static RefPtr<XWindow> wrap(GdkWindow *w0);
+	static RefPtr<const XWindow> wrap(const GdkWindow *w0);
 	Glib::RefPtr<Gdk::Drawable> internal(void);
 	Glib::RefPtr<const Gdk::Drawable> internal(void) const;
 	Glib::RefPtr<Gdk::Window> internal_window(void);

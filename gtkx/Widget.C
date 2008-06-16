@@ -245,14 +245,29 @@ typedef std::map<GdkWindow *, RefPtr<XWindow> > XWindowMap;
 XWindowMap xwindow_map;
 
 RefPtr<XWindow>
-XWindow::wrap(Glib::RefPtr<Gdk::Window> s0)
+XWindow::wrap(Glib::RefPtr<Gdk::Window> w0)
 {
-    XWindowMap::iterator iter = xwindow_map.find(s0->gobj());
+    XWindowMap::iterator iter = xwindow_map.find(w0->gobj());
     if (iter != xwindow_map.end()) {
 	return iter->second;
     }
-    RefPtr<XWindow> s = new XWindow(s0);
-    xwindow_map.insert(std::pair<GdkWindow *, RefPtr<XWindow> >(s0->gobj(), s));
+    RefPtr<XWindow> s = new XWindow(w0);
+    xwindow_map.insert(std::pair<GdkWindow *, RefPtr<XWindow> >(w0->gobj(), s));
+    return s;
+}
+
+RefPtr<XWindow>
+XWindow::wrap(GdkWindow *w0)
+{
+    XWindowMap::iterator iter = xwindow_map.find(w0);
+    if (iter != xwindow_map.end()) {
+	return iter->second;
+    }
+    // N.B. GdkWindow is the same as GdkDrawable.
+    // Make sure we have an actual GdkWindowObject here.
+    Glib::RefPtr<Gdk::Window> w1 = Glib::wrap((GdkWindowObject *)w0);
+    RefPtr<XWindow> s = new XWindow(w1);
+    xwindow_map.insert(std::pair<GdkWindow *, RefPtr<XWindow> >(w0, s));
     return s;
 }
 
@@ -615,33 +630,33 @@ Widget::signal_unmap()
 bool
 Widget::button_press_event_callback(GdkEventButton *ev)
 {
-    GtkX::EventButton evx;
-    translate_event((GdkEvent *)ev, (GtkX::Event *)&evx);
-    return signal_button_press_event_(&evx);
+    RefPtr<Event> evx = translate_event((GdkEvent *)ev);
+    GtkX::EventButton *evxb = dynamic_cast<GtkX::EventButton *>(&*evx);
+    return signal_button_press_event_(evxb);
 }
 
 bool
 Widget::button_release_event_callback(GdkEventButton *ev)
 {
-    GtkX::EventButton evx;
-    translate_event((GdkEvent *)ev, (GtkX::Event *)&evx);
-    return signal_button_release_event_(&evx);
+    RefPtr<Event> evx = translate_event((GdkEvent *)ev);
+    GtkX::EventButton *evxb = dynamic_cast<GtkX::EventButton *>(&*evx);
+    return signal_button_release_event_(evxb);
 }
 
 bool
 Widget::button_press_pre_event_callback(GdkEventButton *ev)
 {
-    GtkX::EventButton evx;
-    translate_event((GdkEvent *)ev, (GtkX::Event *)&evx);
-    return signal_button_press_pre_event_(&evx);
+    RefPtr<Event> evx = translate_event((GdkEvent *)ev);
+    GtkX::EventButton *evxb = dynamic_cast<GtkX::EventButton *>(&*evx);
+    return signal_button_press_pre_event_(evxb);
 }
 
 bool
 Widget::button_release_pre_event_callback(GdkEventButton *ev)
 {
-    GtkX::EventButton evx;
-    translate_event((GdkEvent *)ev, (GtkX::Event *)&evx);
-    return signal_button_release_pre_event_(&evx);
+    RefPtr<Event> evx = translate_event((GdkEvent *)ev);
+    GtkX::EventButton *evxb = dynamic_cast<GtkX::EventButton *>(&*evx);
+    return signal_button_release_pre_event_(evxb);
 }
 
 void
