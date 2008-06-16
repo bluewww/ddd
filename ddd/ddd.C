@@ -6797,9 +6797,13 @@ static bool real_update_options(bool noupd)
     }
 
 
-#ifdef NAG_ME
-#warning Focus policy not implemented
-#endif
+    unsigned char policy = '\0';
+    std::cerr << "Focus policy?\n";
+    // XtVaGetValues(command_shell, XmNkeyboardFocusPolicy, &policy, 
+    //		  XtPointer(0));
+
+    set_toggle(set_focus_pointer_w,        policy == 1);
+    set_toggle(set_focus_explicit_w,       policy == 0);
 
     set_toggle(set_scrolling_panner_w,     app_data.panned_graph_editor);
     set_toggle(set_scrolling_scrollbars_w, !app_data.panned_graph_editor);
