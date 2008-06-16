@@ -201,6 +201,7 @@ namespace GtkX {
 	EventType type;
 	int ref(void) {return nrefs_++;}
 	int unref(void) {if (!--nrefs_) delete this;}
+	Event(void);
 	virtual ~Event(void);
     };
 

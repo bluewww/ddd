@@ -85,7 +85,7 @@ RefPtr<Event> GtkX::translate_event(GdkEvent *in)
 	onoff = (in->any.type == GDK_BUTTON_PRESS);
 	// std::cerr << (onoff ? "ButtonPress\n" : "ButtonRelease\n");
 	out->type = (onoff ? BUTTON_PRESS : BUTTON_RELEASE);
-	out->window = NULL; /* FIXME */
+	out->window = XWindow::wrap(in->button.window);
 	out->send_event = in->button.send_event;
 	out->time = in->button.time;
 	out->x = in->button.x;
@@ -101,7 +101,7 @@ RefPtr<Event> GtkX::translate_event(GdkEvent *in)
 	result = out;
 	// std::cerr << "MotionNotify\n";
 	out->type = MOTION_NOTIFY;
-	out->window = NULL; /* FIXME */
+	out->window = XWindow::wrap(in->motion.window);
 	out->send_event = in->motion.send_event;
 	out->time = in->motion.time;
 	out->x = in->motion.x;
@@ -121,7 +121,7 @@ RefPtr<Event> GtkX::translate_event(GdkEvent *in)
 	onoff = (in->any.type == GDK_ENTER_NOTIFY);
 	// std::cerr << (onoff ? "EnterNotify\n" : "LeaveNotify\n");
 	out->type = (onoff ? ENTER_NOTIFY: LEAVE_NOTIFY);
-	out->window = NULL; /* FIXME */
+	out->window = XWindow::wrap(in->crossing.window);
 	out->send_event = in->crossing.send_event;
 	out->subwindow = NULL; /* FIXME */
 	out->time = in->crossing.time;
@@ -175,7 +175,7 @@ RefPtr<Event> GtkX::translate_event(GdkEvent *in)
 	result = out;
 	// std::cerr << "Expose\n";
 	out->type = EXPOSE;
-	out->window = NULL; /* FIXME */
+	out->window = XWindow::wrap(in->expose.window);
 	out->send_event = in->expose.send_event;
 	out->x = in->expose.area.x;
 	out->y = in->expose.area.y;
@@ -195,7 +195,7 @@ RefPtr<Event> GtkX::translate_event(GdkEvent *in)
 	result = out;
 	// std::cerr << "NoExpose\n";
 	out->type = NO_EXPOSE;
-	out->window = NULL; /* FIXME */
+	out->window = XWindow::wrap(in->no_expose.window);
 	out->send_event = in->no_expose.send_event;
     }
     break;
