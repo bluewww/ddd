@@ -1095,17 +1095,25 @@ GC::set_values(const GCValues &values, GCValuesMask mask)
 {
     GdkGCValues gval;
     GdkGCValuesMask gmask;
-    translate_color(values.foreground, gval.foreground);
-    translate_color(values.background, gval.background);
-    gval.line_width = values.line_width;
-    translate_line_style(values.line_style, gval.line_style);
-    translate_cap_style(values.cap_style, gval.cap_style);
-    translate_join_style(values.join_style, gval.join_style);
-    translate_fill(values.fill, gval.fill);
-    translate_function(values.function, gval.function);
+    translate_gc_mask(mask, gmask);
+    if (mask&GC_FOREGROUND)
+	translate_color(values.foreground, gval.foreground);
+    if (mask&GC_BACKGROUND)
+	translate_color(values.background, gval.background);
+    if (mask&GC_LINE_WIDTH)
+	gval.line_width = values.line_width;
+    if (mask&GC_LINE_STYLE)
+	translate_line_style(values.line_style, gval.line_style);
+    if (mask&GC_CAP_STYLE)
+	translate_cap_style(values.cap_style, gval.cap_style);
+    if (mask&GC_JOIN_STYLE)
+	translate_join_style(values.join_style, gval.join_style);
+    if (mask&GC_FILL)
+	translate_fill(values.fill, gval.fill);
+    if (mask&GC_FUNCTION)
+	translate_function(values.function, gval.function);
     // FIXME: We cannot cache these results with wrap().
     // gval.stipple = new Pixmap(values.stipple);
-    translate_gc_mask(mask, gmask);
     gdk_gc_set_values(gc_->gobj(), &gval, gmask);
 }
 
