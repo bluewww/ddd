@@ -268,7 +268,11 @@ XWindow::wrap(GdkWindow *w0)
     }
     // N.B. GdkWindow is the same as GdkDrawable.
     // Make sure we have an actual GdkWindowObject here.
-    Glib::RefPtr<Gdk::Window> w1 = Glib::wrap((GdkWindowObject *)w0);
+
+    // Note: the second arg ensures the refcount is bumped here.
+    // Glib::wrap does not do this by default because usually the
+    // pointer is obtained by calling a GTK routine which does it.
+    Glib::RefPtr<Gdk::Window> w1 = Glib::wrap((GdkWindowObject *)w0, true);
     RefPtr<XWindow> s = new XWindow(w1);
     xwindow_map.insert(std::pair<GdkWindow *, RefPtr<XWindow> >(w0, s));
     return s;
@@ -561,6 +565,8 @@ Widget::get_screen(void)
 RefPtr<XWindow>
 Widget::get_window(void)
 {
+    Glib::RefPtr<Gdk::Window> rp = internal()->get_window();
+    fprintf(stderr, "WINDOW %lx\n", ((long *)&rp)[0]);
     return XWindow::wrap(internal()->get_window());
 }
 
