@@ -1493,7 +1493,9 @@ void GUIGraphEdit::setGCs(void)
 	// gcv.plane_mask = selectColor ^ background;
     }
 
-    const GUI::Color background = get_bg();
+    // const GUI::Color background = get_bg();
+    // For the time being, hard code to white
+    const GUI::Color background(1.0, 1.0, 1.0);
 
     // set clearGC
     clearGC = new GUI::GC(get_window());
