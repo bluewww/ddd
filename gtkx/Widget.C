@@ -640,7 +640,9 @@ bool
 Widget::button_press_event_callback(GdkEventButton *ev)
 {
     RefPtr<Event> evx = translate_event((GdkEvent *)ev);
+    if (!evx) return false;
     GtkX::EventButton *evxb = dynamic_cast<GtkX::EventButton *>(&*evx);
+    if (!evxb) return false;
     return signal_button_press_event_(evxb);
 }
 
@@ -648,7 +650,9 @@ bool
 Widget::button_release_event_callback(GdkEventButton *ev)
 {
     RefPtr<Event> evx = translate_event((GdkEvent *)ev);
+    if (!evx) return false;
     GtkX::EventButton *evxb = dynamic_cast<GtkX::EventButton *>(&*evx);
+    if (!evxb) return false;
     return signal_button_release_event_(evxb);
 }
 
@@ -656,7 +660,9 @@ bool
 Widget::button_press_pre_event_callback(GdkEventButton *ev)
 {
     RefPtr<Event> evx = translate_event((GdkEvent *)ev);
+    if (!evx) return false;
     GtkX::EventButton *evxb = dynamic_cast<GtkX::EventButton *>(&*evx);
+    if (!evxb) return false;
     return signal_button_press_pre_event_(evxb);
 }
 
@@ -664,7 +670,9 @@ bool
 Widget::button_release_pre_event_callback(GdkEventButton *ev)
 {
     RefPtr<Event> evx = translate_event((GdkEvent *)ev);
+    if (!evx) return false;
     GtkX::EventButton *evxb = dynamic_cast<GtkX::EventButton *>(&*evx);
+    if (!evxb) return false;
     return signal_button_release_pre_event_(evxb);
 }
 

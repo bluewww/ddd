@@ -304,10 +304,9 @@ RefPtr<Event> GtkX::translate_event(GdkEvent *in)
 #endif
     default:
     {
-	Event *out = new Event;
-	result = out;
-	// std::cerr << "UNKNOWN EVENT TYPE " << in->any.type << "\n";
-	out->type = NOTHING;
+	std::cerr << "UNKNOWN EVENT TYPE " << in->any.type << "\n"
+		  << std::flush;
+	return NULL;
     }
     break;
     }
