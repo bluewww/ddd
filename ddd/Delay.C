@@ -250,7 +250,7 @@ _Delay::_Delay(GUI::Widget *w):
     {
 	// XC_left_ptr is the default cursor in OSF/Motif.
 	// (How do we determine the current cursor? - FIXME)
-	// current_cursor = new Gdk::Cursor(Gdk::LEFT_PTR);
+	current_cursor = new GUI::Cursor(GUI::LEFT_PTR);
     }
 
     old_cursor = current_cursor;
