@@ -47,6 +47,8 @@ char Delay_rcsid[] =
 #ifdef XtIsRealized
 #undef XtIsRealized
 #endif
+#else
+#include <GUI/Cursor.h>
 #endif
 
 DEFINE_TYPE_INFO_0(_Delay);

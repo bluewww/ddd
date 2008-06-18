@@ -27,6 +27,7 @@
 #include <iostream>
 
 #include <GtkX/Widget.h>
+#include <GtkX/Cursor.h>
 #include <gtkmm/container.h>
 #include <gdk/gdkgc.h>
 
@@ -632,22 +633,6 @@ GtkX::signal_idle()
 {
     return signal_idle_;
 }
-
-static Gdk::Color make_color(const Color &rgb)
-{
-    Gdk::Color c;
-    c.set_rgb_p(rgb.r, rgb.g, rgb.b);
-    return c;
-}
-
-Cursor::Cursor(const RefPtr<Pixmap> &source, const RefPtr<Pixmap> &mask,
-	       const Color &fg, const Color &bg,
-	       int x, int y):
-    Gdk::Cursor(source->gdk_pixmap(), mask->gdk_pixmap(),
-		make_color(fg), make_color(bg), x, y)
-{
-}
-
 
 typedef std::map<GdkPixmap *, RefPtr<Pixmap> > PixmapMap;
 PixmapMap pixmap_map;

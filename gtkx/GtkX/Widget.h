@@ -362,13 +362,6 @@ namespace GtkX {
 	void set_title(const String &);
     };
 
-    class Cursor: public Gdk::Cursor {
-    public:
-	Cursor(const RefPtr<Pixmap> &source, const RefPtr<Pixmap> &mask,
-	       const Color &fg, const Color &bg,
-	       int x, int y);
-    };
-
     class Widget {
     protected:
 	// In GTK, events may be connected after, or optionally
