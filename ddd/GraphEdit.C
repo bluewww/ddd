@@ -1519,6 +1519,8 @@ void GUIGraphEdit::setGCs(void)
 #warning How to set plane mask?
 #endif
     // gcv.plane_mask = outlineColor ^ background;
+
+    setGraphGC();
 }
 #endif
 
@@ -1753,11 +1755,8 @@ GUIGraphEdit::GUIGraphEdit(GUI::Container &parent, GUI::PackOptions po,
     XtOverrideTranslations(w, translations);
 #else
     std::cerr << "Deferring call of setGCs until widget realized.\n";
-    // set GCs
+    // set GCs (includes setGraphGC)
     signal_realize().connect(sigc::mem_fun(*this, &GUIGraphEdit::setGCs));
-
-    // set Graph GC
-    setGraphGC();
 
     std::cerr << "No cursors yet...\n";
 
