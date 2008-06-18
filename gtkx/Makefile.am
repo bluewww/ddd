@@ -9,7 +9,7 @@ RadioButton.C ScrolledText.C MultiPaned.C Statusbar.C Button.C \
 FileSelection.C FileSelectionDialog.C Toolbar.C Events.C Scale.C \
 CheckMenuItem.C RadioMenuItem.C CheckButton.C Main.C MenuItem.C \
 Label.C Entry.C OptionMenu.C Table.C SeparatorMenuItem.C Separator.C \
-EventType.C
+EventType.C GUIString.C
 
 AM_CPPFLAGS = $(GTKMM_CFLAGS)
 
