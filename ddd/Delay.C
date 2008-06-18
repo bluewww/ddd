@@ -29,7 +29,7 @@
 char Delay_rcsid[] = 
     "$Id$";
 
-#define LOG_DELAY 0
+#define LOG_DELAY 1
 
 #if defined(HAVE_CONFIG_H)
 #include "config.h"
@@ -349,7 +349,8 @@ Delay::Delay(GUI::Widget *w):
 #endif
     _Delay(w)
 {
-#if defined(IF_XM)
+#if 1
+    // defined(IF_XM)
     assert(delays.size() == _shells.size());
 
     if (delay_count++ == 0)
