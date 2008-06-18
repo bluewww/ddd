@@ -107,6 +107,7 @@ void RegionGraphNode::draw(GUI::Widget *w,
     if (!(r <= exposed) || r.space(X) == 0 || r.space(Y) == 0)
 	return;
 
+    std::cerr << "RegionGraphNode::draw(1)\n";
     w->get_window()->draw_rectangle(gc.clearGC, true,
 				    r.origin(X), r.origin(Y),
 				    r.space(X), r.space(Y));
@@ -119,6 +120,7 @@ void RegionGraphNode::draw(GUI::Widget *w,
     {
 	const BoxRegion& h = highlightRegion(gc);
 
+	std::cerr << "RegionGraphNode::draw(2)\n";
 	w->get_window()->draw_rectangle(gc.invertGC, true,
 					h.origin(X), h.origin(Y),
 					h.space(X), h.space(Y));

@@ -50,6 +50,7 @@ void HatBox::_draw(GUI::Widget *w,
 #endif
 {
     BoxRegion childRegion = r;
+    std::cerr << "HatBox::_draw\n";
 
     // If not extensible, shrink to minimal size
     if (extend(X) == 0)

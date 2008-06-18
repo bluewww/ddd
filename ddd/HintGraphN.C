@@ -59,6 +59,7 @@ void HintGraphNode::forceDraw(GUI::Widget *w, const BoxRegion&,
     {
 	const BoxRegion& r = region(gc);
 
+	std::cerr << "HintGraphNode::forceDraw\n";
 	w->get_window()->draw_rectangle(gc.hintGC, false,
 					r.origin(X), r.origin(Y),
 					r.space(X), r.space(Y));

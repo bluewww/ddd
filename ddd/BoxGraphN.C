@@ -102,6 +102,7 @@ void BoxGraphNode::forceDraw(GUI::Widget *w,
 	ColorBox::use_color = false;
 	BoxRegion r = highlightRegion(gc);
 
+	std::cerr << "BoxGraphNode::forceDraw(1)\n";
 	if (r <= exposed)
 	{
 	    w->get_window()->draw_rectangle(gc.clearGC, true,

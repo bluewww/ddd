@@ -108,6 +108,7 @@ void RuleBox::_draw(GUI::Widget *w,
     else
     {
 	// Rectangle
+	std::cerr << "RuleBox::_draw\n";
 	w->get_window()->draw_rectangle(gc, true, origin[X], origin[Y],
 					width[X], width[Y]);
     }

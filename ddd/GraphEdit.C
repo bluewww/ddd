@@ -2354,6 +2354,7 @@ void GUIGraphEdit::drawOutlines(const BoxPoint& offset)
 		r.origin(X) + offset[X], r.origin(Y) + offset[Y],
 		r.space(X), r.space(Y));
 #else
+	    std::cerr << "GUIGraphEdit::drawOutlines\n";
 	    get_window()->draw_rectangle(outlineGC, false,
 					 r.origin(X) + offset[X],
 					 r.origin(Y) + offset[Y],
