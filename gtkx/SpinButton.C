@@ -1,5 +1,3 @@
- // -*- C++ -*-
-
 // High-level GUI wrapper for Gtkmm.
 
 // Copyright (C) 2007 Peter Wainwright <prw@ceiriog.eclipse.co.uk>
@@ -24,30 +22,33 @@
 // Unfortunately Motif widgets require parent and name arguments to
 // the constructor, unlike the Gtk ones.  Motif (Xt) widgets cannot be
 // reparented.  Therefore we need a constructor with extra arguments.
-// A brief look at QT indicates that this will be required there as
-// well.
 
-#ifndef GTKX_WIDGET0_H
-#define GTKX_WIDGET0_H
+// ***************************************************************************
 
-#include <GtkX/Container.h>
+#include <GtkX/SpinButton.h>
 
-// Template for a widget taking a single string constructor argument.
+using namespace GtkX;
 
-namespace GtkX {
-
-    template <class T>
-    class Widget0: public Widget, public T {
-    public:
-	Widget0(Container &parent, const String &name="");
-	Widget0(Gtk::Container *parent, const String &name="");
-	~Widget0(void);
-	Gtk::Widget *internal(void);
-	const Gtk::Widget *internal(void) const;
-	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
-#include <GtkX/redirect.h>
-    };
-
+SpinButton::SpinButton(GtkX::Container &parent, const GtkX::String &name)
+{
+    set_name(name.s());
+    parent.add_child(*this);
+    postinit();
 }
 
-#endif // GTKX_WIDGET0_H
+SpinButton::~SpinButton(void)
+{
+}
+
+Gtk::Widget *
+SpinButton::internal(void)
+{
+    return this;
+}
+
+const Gtk::Widget *
+SpinButton::internal(void) const
+{
+    return this;
+}
+

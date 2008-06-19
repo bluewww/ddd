@@ -1,4 +1,4 @@
-// -*- C++ -*-
+ // -*- C++ -*-
 
 // High-level GUI wrapper for Gtkmm.
 
@@ -30,12 +30,22 @@
 #ifndef GTKX_SPINBUTTON_H
 #define GTKX_SPINBUTTON_H
 
-#include <GtkX/Widget0.h>
+#include <GtkX/Container.h>
 #include <gtkmm/spinbutton.h>
+
+// Template for a widget taking a single string constructor argument.
 
 namespace GtkX {
 
-    typedef Widget0<Gtk::SpinButton> SpinButton;
+    class SpinButton: public Widget, public Gtk::SpinButton {
+    public:
+	SpinButton(Container &parent, const String &name="");
+	~SpinButton(void);
+	Gtk::Widget *internal(void);
+	const Gtk::Widget *internal(void) const;
+	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
+#include <GtkX/redirect.h>
+    };
 
 }
 
