@@ -257,14 +257,11 @@ _Delay::_Delay(GUI::Widget *w):
 
     if (widget->is_realized())
     {
-	// widget->get_window()->set_cursor(*hourglass_cursor());
+	widget->get_window()->set_cursor(*hourglass_cursor());
 	display->flush();
     }
 
-#ifdef NAG_ME
-#warning There is no signal_destroy()?
-#endif
-    // widget->signal_destroy().connect(MEM_FUN(*this, &_Delay::DestroyCB));
+    widget->add_destroy_notify_callback(this, _Delay::DestroyCB);
 }
 #endif
 
@@ -308,15 +305,13 @@ _Delay::~_Delay()
 
     if (widget->is_realized())
     {
-	// widget->get_window()->set_cursor(*old_cursor);
+	widget->get_window()->set_cursor(*old_cursor);
 	widget->get_display()->flush();
     }
 
     current_cursor = old_cursor;
 
-#ifdef NAG_ME
-#warning There is no signal_destroy()?
-#endif
+    widget->remove_destroy_notify_callback(this);
 }
 #endif
 
@@ -324,18 +319,17 @@ _Delay::~_Delay()
 #if defined(IF_XM)
 void _Delay::DestroyCB(Widget, XtPointer client_data, XtPointer)
 #else
-void _Delay::DestroyCB()
+void *_Delay::DestroyCB(void *client_data)
 #endif
 {
-#if defined(IF_XM)
     _Delay *delay = (_Delay *)client_data;
     assert(ptr_cast(_Delay, delay));
 
     delay->widget     = 0;
     delay->old_cursor = 0;
-#else
-    widget     = 0;
-    old_cursor = 0;
+#if !defined(IF_XM)
+    std::cerr << "Delay widget destroyed.  What is return value of DestroyCB?\n";
+    return NULL;
 #endif
 }
 
@@ -351,7 +345,6 @@ Delay::Delay(GUI::Widget *w):
 #endif
     _Delay(w)
 {
-#if 1
     // defined(IF_XM)
     assert(delays.size() == _shells.size());
 
@@ -369,9 +362,6 @@ Delay::Delay(GUI::Widget *w):
 	    }
 	}
     }
-#else
-    std::cerr << "FIXME: Delay crashes.\n";
-#endif
 }
 
 // Make sure the shell is unregistered when destroyed

@@ -200,6 +200,12 @@ XWindow::set_back_pixmap(const RefPtr<Pixmap> &pixmap, bool parent_relative)
 }
 
 void
+XWindow::set_cursor(const Cursor &cursor)
+{
+    win_->set_cursor(cursor);
+}
+
+void
 XWindow::clear(void)
 {
     win_->clear();

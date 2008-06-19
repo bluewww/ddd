@@ -352,6 +352,7 @@ namespace GtkX {
 	Glib::RefPtr<Gdk::Window> internal_window(void);
 	Glib::RefPtr<const Gdk::Window> internal_window(void) const;
 	void set_back_pixmap(const RefPtr<Pixmap> &pixmap, bool parent_relative);
+	void set_cursor(const Cursor &cursor);
 	void clear(void);
 	void clear_area(int x, int y, int w, int h);
 	GrabStatus pointer_grab(bool owner_events, EventMask event_mask,

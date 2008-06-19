@@ -85,7 +85,7 @@ private:
     _Delay& operator = (const _Delay&);
 
 protected:
-    void DestroyCB();
+    static void *DestroyCB(void *);
     virtual GUI::Cursor *hourglass_cursor();
 
 public:
