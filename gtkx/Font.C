@@ -31,6 +31,10 @@ FontDescription::FontDescription(const Pango::FontDescription &src):
 {
 }
 
+FontDescription::~FontDescription()
+{
+}
+
 typedef std::map<PangoFont *, RefPtr<Font> > FontMap;
 FontMap font_map;
 
@@ -118,6 +122,12 @@ Context::internal(void) const
     return context_;
 }
 
+void
+Context::set_font_description(const FontDescription& desc)
+{
+    context_->set_font_description(desc);
+}
+
 ////////////////////
 
 typedef std::map<PangoLayout *, RefPtr<Layout> > LayoutMap;
@@ -159,3 +169,20 @@ Layout::internal(void) const
     return layout_;
 }
 
+RefPtr<Layout>
+Layout::create(const RefPtr<Context> &context)
+{
+    return Layout::wrap(Pango::Layout::create(context->internal()));
+}
+
+void
+Layout::set_text(const String &text)
+{
+    layout_->set_text(text.s());
+}
+
+String
+Layout::get_text() const
+{
+    return layout_->get_text();
+}

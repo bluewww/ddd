@@ -487,6 +487,12 @@ Widget::get_window(void)
     return XWindow::wrap(internal()->get_window());
 }
 
+RefPtr<Context>
+Widget::get_font_context(void)
+{
+    return Context::wrap(internal()->get_pango_context());
+}
+
 int
 Widget::get_width(void) const
 {
@@ -804,6 +810,15 @@ Drawable::draw_polygon(RefPtr<GC> gc, bool filled,
     }
     internal()->draw_polygon(gc->internal(), filled, gpoints);
 }
+
+void
+Drawable::draw_layout(RefPtr<GC> &gc, int x, int y,
+		      RefPtr<Layout> &layout)
+{
+    internal()->draw_layout(gc->internal(), x, y,
+			    layout->internal());
+}
+
 
 typedef std::map<GdkGC *, RefPtr<GC> > GCMap;
 GCMap gc_map;
