@@ -134,26 +134,6 @@ namespace GtkX {
 	String make_display_name(void) const;
     };
 
-    class FontDescription: public Pango::FontDescription {
-    public:
-	FontDescription(void);
-	FontDescription(const Pango::FontDescription &);
-    };
-
-    class Font {
-	int nrefs_;
-	Glib::RefPtr<Pango::Font> font_;
-    public:
-	Font(Glib::RefPtr<Pango::Font> f0);
-	static RefPtr<Font> wrap(Glib::RefPtr<Pango::Font> f0);
-	static RefPtr<const Font> wrap(Glib::RefPtr<const Pango::Font> f0);
-	Glib::RefPtr<Pango::Font> internal(void);
-	Glib::RefPtr<const Pango::Font> internal(void) const;
-	int ref(void) {return nrefs_++;}
-	int unref(void) {if (!--nrefs_) delete this;}
-	FontDescription describe(void) const;
-    };
-
     class Drawable;
 
     class Pixmap;

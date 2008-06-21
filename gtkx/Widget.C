@@ -1124,55 +1124,6 @@ Color::Color(const String &s)
     b = (double)c.get_blue()/(double)USHRT_MAX;
 }
 
-FontDescription::FontDescription(void)
-{
-}
-
-FontDescription::FontDescription(const Pango::FontDescription &src):
-    Pango::FontDescription(src)
-{
-}
-
-typedef std::map<PangoFont *, RefPtr<Font> > FontMap;
-FontMap font_map;
-
-Font::Font(Glib::RefPtr<Pango::Font> f0)
-{
-    nrefs_ = 0;
-    font_ = f0;
-}
-
-RefPtr<Font>
-Font::wrap(Glib::RefPtr<Pango::Font> f0)
-{
-    if (!f0) return NULL;
-    FontMap::iterator iter = font_map.find(f0->gobj());
-    if (iter != font_map.end()) {
-	return iter->second;
-    }
-    RefPtr<Font> f = new Font(f0);
-    font_map.insert(std::pair<PangoFont *, RefPtr<Font> >(f0->gobj(), f));
-    return f;
-}
-
-Glib::RefPtr<Pango::Font>
-Font::internal(void)
-{
-    return font_;
-}
-
-Glib::RefPtr<const Pango::Font>
-Font::internal(void) const
-{
-    return font_;
-}
-
-FontDescription
-Font::describe(void) const
-{
-    return FontDescription(font_->describe());
-}
-
 SignalTimeout signal_timeout_;
 
 SignalTimeout::SignalTimeout(void)

@@ -37,6 +37,7 @@
 #include <X11/Xlib.h>
 #else
 #include <GUI/Widget.h>
+#include <GUI/Font.h>
 #endif
 #include "strclass.h"
 #include "TypeInfo.h"
