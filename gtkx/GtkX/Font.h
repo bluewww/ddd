@@ -25,8 +25,11 @@
 
 #include <pangomm/fontdescription.h>
 #include <pangomm/font.h>
+#include <pangomm/layout.h>
+#include <pangomm/context.h>
 
 #include <GtkX/RefPtr.h>
+#include <GtkX/GUIString.h>
 
 namespace GtkX {
 
@@ -34,6 +37,7 @@ namespace GtkX {
     public:
 	FontDescription(void);
 	FontDescription(const Pango::FontDescription &);
+	~FontDescription();
     };
 
     class Font {
@@ -41,6 +45,7 @@ namespace GtkX {
 	Glib::RefPtr<Pango::Font> font_;
     public:
 	Font(Glib::RefPtr<Pango::Font> f0);
+	~Font();
 	static RefPtr<Font> wrap(Glib::RefPtr<Pango::Font> f0);
 	static RefPtr<const Font> wrap(Glib::RefPtr<const Pango::Font> f0);
 	Glib::RefPtr<Pango::Font> internal(void);
@@ -48,6 +53,38 @@ namespace GtkX {
 	int ref(void) {return nrefs_++;}
 	int unref(void) {if (!--nrefs_) delete this;}
 	FontDescription describe(void) const;
+    };
+
+    class Context {
+	int nrefs_;
+	Glib::RefPtr<Pango::Context> context_;
+    public:
+	Context(Glib::RefPtr<Pango::Context> c0);
+	~Context();
+	static RefPtr<Context> wrap(Glib::RefPtr<Pango::Context> c0);
+	static RefPtr<const Context> wrap(Glib::RefPtr<const Pango::Context> c0);
+	Glib::RefPtr<Pango::Context> internal(void);
+	Glib::RefPtr<const Pango::Context> internal(void) const;
+	int ref(void) {return nrefs_++;}
+	int unref(void) {if (!--nrefs_) delete this;}
+	void set_font_description(const FontDescription& desc);
+    };
+
+    class Layout {
+	int nrefs_;
+	Glib::RefPtr<Pango::Layout> layout_;
+    public:
+	Layout(Glib::RefPtr<Pango::Layout> c0);
+	~Layout();
+	static RefPtr<Layout> wrap(Glib::RefPtr<Pango::Layout> c0);
+	static RefPtr<const Layout> wrap(Glib::RefPtr<const Pango::Layout> c0);
+	Glib::RefPtr<Pango::Layout> internal(void);
+	Glib::RefPtr<const Pango::Layout> internal(void) const;
+	int ref(void) {return nrefs_++;}
+	int unref(void) {if (!--nrefs_) delete this;}
+	static RefPtr<Layout> create(const RefPtr<Context> &context);
+	void set_text(const String &text);
+	String get_text() const;
     };
 
 }

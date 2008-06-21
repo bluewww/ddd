@@ -135,13 +135,12 @@ void StringBox::_draw(GUI::Widget *w,
 #warning FIXME Different pango context to that used in resize().
 #endif
     std::cerr << "String layout not implemented yet\n";
-#if 0
-    Gtk::Widget *ww = w->internal();
-    Glib::RefPtr<Pango::Context> context = ww->get_pango_context();
+#if 1
+    GUI::RefPtr<GUI::Context> context = w->get_font_context();
     context->set_font_description(_font->describe());
-    Glib::RefPtr<Pango::Layout> pl = Pango::Layout::create(context);
+    GUI::RefPtr<GUI::Layout> pl = GUI::Layout::create(context);
     pl->set_text(Glib::ustring(_string.chars()));
-    ww->get_window()->draw_layout(gc, origin[X], origin[Y] + _ascent, pl);
+    w->get_window()->draw_layout(gc, origin[X], origin[Y] + _ascent, pl);
 #endif
 }
 #endif

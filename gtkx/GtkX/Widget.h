@@ -39,6 +39,7 @@
 #include <GtkX/Events.h>
 #include <GtkX/GUIString.h>
 #include <GtkX/Main.h>
+#include <GtkX/Font.h>
 
 // Typedefs for compatibility with Motif version
 typedef int Position;
@@ -298,6 +299,8 @@ namespace GtkX {
 		      int angle1, int angle2);
 	void draw_polygon(RefPtr<GC> gc, bool filled,
 			  std::vector<Point> &points);
+	void draw_layout(RefPtr<GC> &gc, int x, int y,
+			 RefPtr<Layout> &layout);
     };
 
     class Pixmap: public Drawable {
@@ -377,6 +380,7 @@ namespace GtkX {
 	RefPtr<Display> get_display(void);
 	RefPtr<Screen> get_screen(void);
 	RefPtr<XWindow> get_window(void);
+	RefPtr<Context> get_font_context(void);
 	Main *get_main(void) const;
 	void show(void);
 	void hide(void);

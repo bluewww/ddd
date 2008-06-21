@@ -40,6 +40,11 @@ Font::Font(Glib::RefPtr<Pango::Font> f0)
     font_ = f0;
 }
 
+Font::~Font()
+{
+    font_map.erase(font_->gobj());
+}
+
 RefPtr<Font>
 Font::wrap(Glib::RefPtr<Pango::Font> f0)
 {
@@ -69,5 +74,88 @@ FontDescription
 Font::describe(void) const
 {
     return FontDescription(font_->describe());
+}
+
+////////////////////
+
+
+typedef std::map<PangoContext *, RefPtr<Context> > ContextMap;
+ContextMap context_map;
+
+Context::Context(Glib::RefPtr<Pango::Context> f0)
+{
+    nrefs_ = 0;
+    context_ = f0;
+}
+
+Context::~Context()
+{
+    context_map.erase(context_->gobj());
+}
+
+RefPtr<Context>
+Context::wrap(Glib::RefPtr<Pango::Context> f0)
+{
+    if (!f0) return NULL;
+    ContextMap::iterator iter = context_map.find(f0->gobj());
+    if (iter != context_map.end()) {
+	return iter->second;
+    }
+    RefPtr<Context> f = new Context(f0);
+    context_map.insert(std::pair<PangoContext *, RefPtr<Context> >(f0->gobj(), f));
+    return f;
+}
+
+Glib::RefPtr<Pango::Context>
+Context::internal(void)
+{
+    return context_;
+}
+
+Glib::RefPtr<const Pango::Context>
+Context::internal(void) const
+{
+    return context_;
+}
+
+////////////////////
+
+typedef std::map<PangoLayout *, RefPtr<Layout> > LayoutMap;
+LayoutMap layout_map;
+
+Layout::Layout(Glib::RefPtr<Pango::Layout> f0)
+{
+    nrefs_ = 0;
+    layout_ = f0;
+}
+
+Layout::~Layout()
+{
+    layout_map.erase(layout_->gobj());
+}
+
+RefPtr<Layout>
+Layout::wrap(Glib::RefPtr<Pango::Layout> f0)
+{
+    if (!f0) return NULL;
+    LayoutMap::iterator iter = layout_map.find(f0->gobj());
+    if (iter != layout_map.end()) {
+	return iter->second;
+    }
+    RefPtr<Layout> f = new Layout(f0);
+    layout_map.insert(std::pair<PangoLayout *, RefPtr<Layout> >(f0->gobj(), f));
+    return f;
+}
+
+Glib::RefPtr<Pango::Layout>
+Layout::internal(void)
+{
+    return layout_;
+}
+
+Glib::RefPtr<const Pango::Layout>
+Layout::internal(void) const
+{
+    return layout_;
 }
 
