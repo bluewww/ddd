@@ -5907,7 +5907,7 @@ void SourceView::create_text(GUI::Container *parent, const char *base,
     GUI::HBox *hbox = new GUI::HBox(*parent, GUI::PACK_EXPAND_WIDGET);
     form = hbox;
     // FIXME: testing
-    hbox->modify_bg(Gtk::STATE_NORMAL, Gdk::Color("red"));
+    hbox->internal()->modify_bg(Gtk::STATE_NORMAL, Gdk::Color("red"));
     form->show();
 
     text = new GUI::ScrolledText(*form, GUI::PACK_EXPAND_WIDGET);

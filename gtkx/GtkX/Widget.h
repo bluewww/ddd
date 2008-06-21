@@ -377,9 +377,11 @@ namespace GtkX {
 	sigc::signal<bool, GtkX::EventButton *> signal_button_release_pre_event_;
 	bool button_release_pre_event_callback(GdkEventButton *ev);
 	sigc::signal<void> signal_map_;
-	void signal_map_callback(void);
+	void map_callback(void);
 	sigc::signal<void> signal_unmap_;
-	void signal_unmap_callback(void);
+	void unmap_callback(void);
+	sigc::signal<bool, GtkX::EventAny *> signal_delete_event_;
+	bool delete_event_callback(GdkEventAny *ev);
     public:
 	Widget(void);
 	virtual ~Widget(void);
@@ -398,8 +400,13 @@ namespace GtkX {
 	Main *get_main(void) const;
 	void show(void);
 	void hide(void);
-	bool is_visible(void);
-	bool is_realized(void);
+	int get_width(void) const;
+	int get_height(void) const;
+	void set_size_request(int width=-1, int height=-1);
+	bool is_visible(void) const;
+	bool is_realized(void) const;
+	bool is_sensitive(void) const;
+	bool activate(void);
 	String get_name(void);
 	void set_name(const String &s);
 	void set_sensitive(bool b);
@@ -426,6 +433,7 @@ namespace GtkX {
 	sigc::signal<bool, GtkX::EventButton *> &signal_button_release_pre_event();
 	sigc::signal<void> &signal_map();
 	sigc::signal<void> &signal_unmap();
+	sigc::signal<bool, GtkX::EventAny *> signal_delete_event();
 	void set_event_mask(EventMask events);
 	void add_event_mask(EventMask events);
     };

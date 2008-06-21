@@ -29,58 +29,77 @@
 using namespace GtkX;
 
 Button::Button(GtkX::Container &parent, PackOptions po,
-	       const GtkX::String &name, const GtkX::String &label):
-    Gtk::Button(mklabel(name, label).s())
+	       const GtkX::String &name, const GtkX::String &label)
 {
+    button_ = new Gtk::Button(mklabel(name, label).s());
     set_name(name.s());
-    // We cannot use this:
-    // parent.gtk_container()->add(*this);
-    // If we always had parent.gtk_container() == &parent we could just
-    // override the on_add() method to do what we want.  However,
-    // sometimes parent.gtk_container() is a standard Gtk widget.
-    // In such a case (e.g. RadioBox) we need to override add_child()
-    // instead.
     parent.add_child(*this, po, 0);
     postinit();
 }
 
 Button::~Button(void)
 {
+    delete button_;
+}
+
+void
+Button::clicked_callback(void)
+{
+    signal_clicked_();
+}
+
+void
+Button::init_signals(void)
+{
+    button_->signal_clicked().connect(sigc::mem_fun(*this, &Button::clicked_callback));
+}
+
+void
+Button::postinit(void)
+{
+    Widget::postinit();
+    init_signals();
 }
 
 Gtk::Widget *
 Button::internal(void)
 {
-    return this;
+    return button_;
 }
 
 const Gtk::Widget *
 Button::internal(void) const
 {
-    return this;
+    return button_;
 }
 
 void
 Button::set_alignment(float xalign, float yalign)
 {
-    Gtk::Button::set_alignment(xalign, yalign);
+    button_->set_alignment(xalign, yalign);
 }
 
 void
 Button::set_label(const String &s)
 {
-    Gtk::Button::set_label(s.s());
+    button_->set_label(s.s());
 }
 
 void
 Button::remove(void)
 {
-    Gtk::Button::remove();
+    button_->remove();
 }
 
 void
 Button::add_label(const String &s)
 {
-    Gtk::Button::add_label(s.s());
+    button_->add_label(s.s());
+}
+
+sigc::signal<void> &
+Button::signal_clicked()
+{
+    return signal_clicked_;
 }
 

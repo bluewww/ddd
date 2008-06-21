@@ -57,14 +57,20 @@ void hide(void)
     GtkX::Widget::hide();
 }
 
-bool is_visible(void)
+bool is_visible(void) const
 {
     return GtkX::Widget::is_visible();
 }
 
-bool is_realized(void)
+bool is_realized(void) const
 {
     return GtkX::Widget::is_realized();
+}
+
+bool
+is_sensitive(void) const
+{
+    return GtkX::Widget::is_sensitive();
 }
 
 void set_name(const GtkX::String &s)
@@ -129,5 +135,29 @@ GtkX::Requisition
 size_request(void) const
 {
     return GtkX::Widget::size_request();
+}
+
+int
+get_width(void) const
+{
+    return GtkX::Widget::get_width();
+}
+
+int
+get_height(void) const
+{
+    return GtkX::Widget::get_height();
+}
+
+void
+set_size_request(int width=-1, int height=-1)
+{
+    GtkX::Widget::set_size_request(width, height);
+}
+
+bool
+activate(void)
+{
+    return GtkX::Widget::activate();
 }
 

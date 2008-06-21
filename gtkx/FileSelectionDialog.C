@@ -35,7 +35,7 @@
 using namespace GtkX;
 
 void
-FileSelectionDialog::init(Gtk::Window &parent,
+FileSelectionDialog::init(GtkX::Shell &parent,
 			  const String &name,
 			  FileAction action)
 {
@@ -47,45 +47,16 @@ FileSelectionDialog::init(Gtk::Window &parent,
     fs_->show();
 }
 
-FileSelectionDialog::FileSelectionDialog(Gtk::Window &parent,
-					 const String &name,
-					 FileAction action):
-    Dialog(&parent, name)
-{
-    init(parent, name, action);
-}
-
-static Gtk::Window &
-check_shell(GtkX::Shell &parent)
-{
-    Gtk::Widget *w = parent.internal();
-    Gtk::Window *win = dynamic_cast<Gtk::Window *>(w);
-    assert(win);
-    return *win;
-}
-
 FileSelectionDialog::FileSelectionDialog(GtkX::Shell &parent, const String &name,
 					 FileAction action):
-    Dialog(&check_shell(parent), name.s())
+    Dialog(parent, name)
 {
-    init(check_shell(parent), name, action);
+    init(parent, name, action);
 }
 
 FileSelectionDialog::~FileSelectionDialog(void)
 {
     delete fs_;
-}
-
-Gtk::Widget *
-FileSelectionDialog::internal(void)
-{
-    return this;
-}
-
-const Gtk::Widget *
-FileSelectionDialog::internal(void) const
-{
-    return this;
 }
 
 std::string

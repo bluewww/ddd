@@ -295,15 +295,27 @@ Widget::hide(void)
 }
 
 bool
-Widget::is_visible(void)
+Widget::is_visible(void) const
 {
     return internal()->is_visible();
 }
 
 bool
-Widget::is_realized(void)
+Widget::is_realized(void) const
 {
     return internal()->is_realized();
+}
+
+bool
+Widget::is_sensitive(void) const
+{
+    return internal()->is_sensitive();
+}
+
+bool
+Widget::activate(void)
+{
+    return internal()->activate();
 }
 
 String
@@ -333,8 +345,9 @@ Widget::init_signals(void)
     from->signal_button_release_event().connect(sigc::mem_fun(*this, &Widget::button_release_event_callback));
     from->signal_button_press_event().connect(sigc::mem_fun(*this, &Widget::button_press_pre_event_callback), false);
     from->signal_button_release_event().connect(sigc::mem_fun(*this, &Widget::button_release_pre_event_callback), false);
-    from->signal_map().connect(sigc::mem_fun(*this, &Widget::signal_map_callback));
-    from->signal_unmap().connect(sigc::mem_fun(*this, &Widget::signal_unmap_callback));
+    from->signal_map().connect(sigc::mem_fun(*this, &Widget::map_callback));
+    from->signal_unmap().connect(sigc::mem_fun(*this, &Widget::unmap_callback));
+    from->signal_delete_event().connect(sigc::mem_fun(*this, &Widget::delete_event_callback));
 }
 
 void
@@ -474,6 +487,24 @@ Widget::get_window(void)
     return XWindow::wrap(internal()->get_window());
 }
 
+int
+Widget::get_width(void) const
+{
+    return internal()->get_width();
+}
+
+int
+Widget::get_height(void) const
+{
+    return internal()->get_height();
+}
+
+void
+Widget::set_size_request(int width, int height)
+{
+    internal()->set_size_request(width, height);
+}
+
 PropertyProxy<void *>
 Widget::property_user_data(void)
 {
@@ -540,6 +571,12 @@ Widget::signal_unmap()
     return signal_unmap_;
 }
 
+sigc::signal<bool, GtkX::EventAny *>
+Widget::signal_delete_event()
+{
+    return signal_delete_event_;
+}
+
 bool
 Widget::button_press_event_callback(GdkEventButton *ev)
 {
@@ -581,15 +618,28 @@ Widget::button_release_pre_event_callback(GdkEventButton *ev)
 }
 
 void
-Widget::signal_map_callback(void)
+Widget::map_callback(void)
 {
     signal_map_();
 }
 
 void
-Widget::signal_unmap_callback(void)
+Widget::unmap_callback(void)
 {
     signal_unmap_();
+}
+
+bool
+Widget::delete_event_callback(GdkEventAny *ev)
+{
+    RefPtr<Event> evx = translate_event((GdkEvent *)ev);
+    if (!evx) return false;
+    GtkX::EventAny *evxa = dynamic_cast<GtkX::EventAny *>(&*evx);
+    if (!evxa) {
+	std::cerr << "DELETE EVENT WAS NOT HANDLED\n";
+	return false;
+    }
+    return signal_delete_event_(evxa);
 }
 
 // FIXME: Should be const, but I cannot get it to work.

@@ -46,6 +46,7 @@ Box::add_child(Widget &child, PackOptions options, int padding)
 // Private.  API does not allow construction of unparented widgets.
 VBox::VBox(const GtkX::String &name)
 {
+    vbox_ = new Gtk::VBox;
     set_name(name.s());
     postinit();
 }
@@ -53,6 +54,7 @@ VBox::VBox(const GtkX::String &name)
 VBox::VBox(GtkX::Container &parent, GtkX::PackOptions po,
 	   const GtkX::String &name, const GtkX::String &label)
 {
+    vbox_ = new Gtk::VBox;
     set_name(name.s());
     GtkX::Notebook *nb = dynamic_cast<GtkX::Notebook *>(&parent);
     if (nb)
@@ -62,21 +64,27 @@ VBox::VBox(GtkX::Container &parent, GtkX::PackOptions po,
     postinit();
 }
 
+VBox::~VBox()
+{
+    delete vbox_;
+}
+
 Gtk::Widget *
 VBox::internal(void)
 {
-    return this;
+    return vbox_;
 }
 
 const Gtk::Widget *
 VBox::internal(void) const
 {
-    return this;
+    return vbox_;
 }
 
 // Private.  API does not allow construction of unparented widgets.
 HBox::HBox(const GtkX::String &name)
 {
+    hbox_ = new Gtk::HBox;
     set_name(name.s());
     postinit();
 }
@@ -84,6 +92,7 @@ HBox::HBox(const GtkX::String &name)
 HBox::HBox(GtkX::Container &parent, GtkX::PackOptions po,
 	   const GtkX::String &name, const GtkX::String &label)
 {
+    hbox_ = new Gtk::HBox;
     set_name(name.s());
     GtkX::Notebook *nb = dynamic_cast<GtkX::Notebook *>(&parent);
     if (nb) {
@@ -96,15 +105,20 @@ HBox::HBox(GtkX::Container &parent, GtkX::PackOptions po,
     postinit();
 }
 
+HBox::~HBox()
+{
+    delete hbox_;
+}
+
 Gtk::Widget *
 HBox::internal(void)
 {
-    return this;
+    return hbox_;
 }
 
 const Gtk::Widget *
 HBox::internal(void) const
 {
-    return this;
+    return hbox_;
 }
 

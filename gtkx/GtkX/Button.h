@@ -37,11 +37,16 @@
 
 namespace GtkX {
 
-    class Button: public Widget, public Gtk::Button {
+    class Button: public Widget {
+	Gtk::Button *button_;
+	sigc::signal<void> signal_clicked_;
+	void clicked_callback(void);
     public:
 	Button(GtkX::Container &parent, PackOptions po=PACK_SHRINK, const String &name="",
 	       const String &label="");
 	~Button(void);
+	void init_signals(void);
+	void postinit(void);
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;
 	void set_alignment(float xalign, float yalign);
@@ -49,7 +54,8 @@ namespace GtkX {
 	void remove(void);
 	void add_label(const String &);
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
-#include <GtkX/redirect.h>
+	// #include <GtkX/redirect.h>
+	sigc::signal<void> &signal_clicked();
     };
 
 }

@@ -6075,8 +6075,7 @@ void dddDefineCommandCB(GUI::Widget *w)
 	GUI::Widget *panel = MMcreatePanel(form, "panel", panel_menu);
 
 
-        editor_w = new GUI::ScrolledText();
-	form->pack_start(*editor_w, Gtk::PACK_SHRINK);
+        editor_w = new GUI::ScrolledText(*form, GUI::PACK_SHRINK, "editor");
 	editor_w->show();
 
 	MMaddCallbacks(panel_menu);

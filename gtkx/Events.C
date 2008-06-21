@@ -57,6 +57,15 @@ RefPtr<Event> GtkX::translate_event(GdkEvent *in)
     bool onoff;
     RefPtr<Event> result;
     switch (in->any.type) {
+    case GDK_DELETE:
+    {
+	EventAny *out = new EventAny;
+	result = out;
+	out->type = DELETE;
+	out->window = XWindow::wrap(in->any.window);
+	out->send_event = in->any.send_event;
+    }
+    break;
     case GDK_KEY_PRESS:
     case GDK_KEY_RELEASE:
     {

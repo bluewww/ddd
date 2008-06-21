@@ -42,27 +42,31 @@ namespace GtkX {
 
     class Dialog;
 
-    class VBox: public Gtk::VBox, public Box {
+    class VBox: public Box {
+	Gtk::VBox *vbox_;
     public:
 	VBox(GtkX::Container &parent, PackOptions po=PACK_SHRINK, const String &name="",
 	    const String &label="");
+	~VBox();
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
-#include <GtkX/redirect.h>
+	// #include <GtkX/redirect.h>
     private:
 	VBox(const String &name="");
 	friend class Dialog;
     };
 
-    class HBox: public Gtk::HBox, public Box {
+    class HBox: public Box {
+	Gtk::HBox *hbox_;
     public:
 	HBox(GtkX::Container &parent, PackOptions po=PACK_SHRINK, const String &name="",
 	    const String &label="");
+	~HBox();
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
-#include <GtkX/redirect.h>
+	// #include <GtkX/redirect.h>
     private:
   	HBox(const String &name="");
 	friend class Dialog;

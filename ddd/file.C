@@ -2704,8 +2704,8 @@ void gdbLookupSourceCB(GUI::Widget *w)
 	sharedlibrary->show();
 
 	GUI::Button *lookup = dialog->add_button("lookup", _("Lookup"));
-	lookup->signal_activate().connect(sigc::bind(sigc::ptr_fun(lookupSourceDone),
-						     source_list));
+	lookup->signal_clicked().connect(sigc::bind(sigc::ptr_fun(lookupSourceDone),
+						    source_list));
 	lookup->show();
 
 	std::vector<GUI::String> headers;
@@ -2728,7 +2728,7 @@ void gdbLookupSourceCB(GUI::Widget *w)
 #warning No filters.
 #endif
 	source_filter->signal_activate().connect(sigc::ptr_fun(FilterSourcesCB));
-	sharedlibrary->signal_activate().connect(sigc::ptr_fun(LoadSharedLibrariesCB));
+	sharedlibrary->signal_clicked().connect(sigc::ptr_fun(LoadSharedLibrariesCB));
 
     }
 

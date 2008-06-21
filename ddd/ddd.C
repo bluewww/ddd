@@ -5961,7 +5961,7 @@ static bool lock_ddd(GUI::Widget *parent, LockInfo& info)
 
     Delay::register_shell(lock_dialog);
 
-    Gtk::Button *button;
+    GUI::Button *button;
     button = lock_dialog->add_button("kill", _("Kill"));
     button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(KillLockerCB), lock_dialog, &info));
     button->show();
@@ -8119,7 +8119,7 @@ static void OfferRestartCB(GUI::Dialog *&dialog)
 						    "restart_dialog",
 						    message);
 	    Delay::register_shell(restart_dialog);
-	    Gtk::Button *button;
+	    GUI::Button *button;
 	    button = restart_dialog->add_button("ok", _("OK"));
 	    button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(DDDRestartCB), restart_dialog));
 	    button->show();

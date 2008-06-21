@@ -33,15 +33,16 @@
 
 namespace GtkX {
 
-    class Dialog: public Gtk::Dialog, public Shell {
+    class Dialog: public Shell {
+	Gtk::Dialog *dlg_;
 	GtkX::VBox *vbox_;
 	// Note that we do NOT use the Gtk::Dialog's button area.
 	// This is because we want to create the buttons ourself as
 	// GtkX widgets.
 	GtkX::HBox *buttons_;
     public:
-	Dialog(Gtk::Window *parent, const String &name="");
 	Dialog(GtkX::Widget &parent, const String &name="");
+	void init(const String &name);
 	Dialog(const String &name="");
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;
@@ -49,8 +50,9 @@ namespace GtkX {
 	~Dialog(void);
 	Button *add_button(const String &name="", const String &label="");
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
-#include <GtkX/redirect.h>
+	// #include <GtkX/redirect.h>
 	void set_title(const String &);
+	int run(void);
     };
 
     enum MessageType {

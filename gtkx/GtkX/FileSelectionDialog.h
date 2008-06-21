@@ -36,18 +36,13 @@ namespace GtkX {
     class FileSelectionDialog: public Dialog {
 	FileSelection *fs_;
     public:
-	void init(Gtk::Window &parent, const String &name,
+	void init(GtkX::Shell &parent, const String &name,
 		  FileAction action);
 	FileSelectionDialog(GtkX::Shell &parent, const String &name,
 			    FileAction action);
-	Gtk::Widget *internal(void);
-	const Gtk::Widget *internal(void) const;
 	std::string get_selected(void);
 	~FileSelectionDialog(void);
-#include <GtkX/redirect.h>
-    private:
-	FileSelectionDialog(Gtk::Window &parent, const String &name,
-			    FileAction action);
+	// #include <GtkX/redirect.h>
     };
 
 }
