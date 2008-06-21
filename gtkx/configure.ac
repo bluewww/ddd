@@ -4,7 +4,7 @@ pushdef([MINOR_VERSION],     [0])
 pushdef([MICRO_VERSION],     [0])
 pushdef([VERSION], MAJOR_VERSION.MINOR_VERSION.MICRO_VERSION)
 
-AC_INIT([gtkx], VERSION, [gtkx-list@gnome.org])
+AC_INIT([gtkx], VERSION, [ddd-list@gnome.org])
 AC_CONFIG_SRCDIR([Box.C])
 AC_PREREQ(2.59)
 
