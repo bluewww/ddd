@@ -18,6 +18,8 @@
 // License along with GtkX -- see the file COPYING.
 // If not, see <http://www.gnu.org/licenses/>.
 
+#include <iostream>
+
 #include <GtkX/Font.h>
 
 using namespace GtkX;
@@ -35,7 +37,7 @@ FontDescription::~FontDescription()
 {
 }
 
-typedef std::map<PangoFont *, RefPtr<Font> > FontMap;
+typedef std::map<PangoFont *, Font *> FontMap;
 FontMap font_map;
 
 Font::Font(Glib::RefPtr<Pango::Font> f0)
@@ -47,6 +49,7 @@ Font::Font(Glib::RefPtr<Pango::Font> f0)
 Font::~Font()
 {
     font_map.erase(font_->gobj());
+    std::cerr << "font_map[-] size now " << font_map.size() << "\n";
 }
 
 RefPtr<Font>
@@ -57,8 +60,9 @@ Font::wrap(Glib::RefPtr<Pango::Font> f0)
     if (iter != font_map.end()) {
 	return iter->second;
     }
-    RefPtr<Font> f = new Font(f0);
-    font_map.insert(std::pair<PangoFont *, RefPtr<Font> >(f0->gobj(), f));
+    Font *f = new Font(f0);
+    font_map.insert(std::pair<PangoFont *, Font *>(f0->gobj(), f));
+    std::cerr << "font_map[+] size now " << font_map.size() << "\n";
     return f;
 }
 
@@ -83,7 +87,7 @@ Font::describe(void) const
 ////////////////////
 
 
-typedef std::map<PangoContext *, RefPtr<Context> > ContextMap;
+typedef std::map<PangoContext *, Context *> ContextMap;
 ContextMap context_map;
 
 Context::Context(Glib::RefPtr<Pango::Context> f0)
@@ -95,6 +99,7 @@ Context::Context(Glib::RefPtr<Pango::Context> f0)
 Context::~Context()
 {
     context_map.erase(context_->gobj());
+    std::cerr << "context_map[-] size now " << context_map.size() << "\n";
 }
 
 RefPtr<Context>
@@ -105,8 +110,9 @@ Context::wrap(Glib::RefPtr<Pango::Context> f0)
     if (iter != context_map.end()) {
 	return iter->second;
     }
-    RefPtr<Context> f = new Context(f0);
-    context_map.insert(std::pair<PangoContext *, RefPtr<Context> >(f0->gobj(), f));
+    Context *f = new Context(f0);
+    context_map.insert(std::pair<PangoContext *, Context *>(f0->gobj(), f));
+    std::cerr << "context_map[+] size now " << context_map.size() << "\n";
     return f;
 }
 
@@ -130,7 +136,7 @@ Context::set_font_description(const FontDescription& desc)
 
 ////////////////////
 
-typedef std::map<PangoLayout *, RefPtr<Layout> > LayoutMap;
+typedef std::map<PangoLayout *, Layout *> LayoutMap;
 LayoutMap layout_map;
 
 Layout::Layout(Glib::RefPtr<Pango::Layout> f0)
@@ -142,6 +148,7 @@ Layout::Layout(Glib::RefPtr<Pango::Layout> f0)
 Layout::~Layout()
 {
     layout_map.erase(layout_->gobj());
+    std::cerr << "layout_map[-] size now " << layout_map.size() << "\n";
 }
 
 RefPtr<Layout>
@@ -152,8 +159,9 @@ Layout::wrap(Glib::RefPtr<Pango::Layout> f0)
     if (iter != layout_map.end()) {
 	return iter->second;
     }
-    RefPtr<Layout> f = new Layout(f0);
-    layout_map.insert(std::pair<PangoLayout *, RefPtr<Layout> >(f0->gobj(), f));
+    Layout *f = new Layout(f0);
+    layout_map.insert(std::pair<PangoLayout *, Layout *>(f0->gobj(), f));
+    std::cerr << "layout_map[+] size now " << layout_map.size() << "\n";
     return f;
 }
 
