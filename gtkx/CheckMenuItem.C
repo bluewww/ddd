@@ -31,9 +31,9 @@
 using namespace GtkX;
 
 CheckMenuItem::CheckMenuItem(GtkX::Container &parent, PackOptions po,
-			     const GtkX::String &name, const GtkX::String &label):
-    Gtk::CheckMenuItem(mklabel(name, label).s())
+			     const GtkX::String &name, const GtkX::String &label)
 {
+    check_ = new Gtk::CheckMenuItem(mklabel(name, label).s());
     set_name(name.s());
     parent.add_child(*this, po, 0);
     postinit();
@@ -41,37 +41,43 @@ CheckMenuItem::CheckMenuItem(GtkX::Container &parent, PackOptions po,
 
 CheckMenuItem::~CheckMenuItem(void)
 {
+    delete check_;
 }
 
 Gtk::Widget *
 CheckMenuItem::internal(void)
 {
-    return this;
+    return check_;
 }
 
 const Gtk::Widget *
 CheckMenuItem::internal(void) const
 {
-    return this;
+    return check_;
 }
 
+void
+CheckMenuItem::init_signals(void)
+{
+    check_->signal_toggled().connect(sigc::mem_fun(*this, &Bipolar::toggled_callback));
+}
 
 bool
 CheckMenuItem::get_active()
 {
-    return Gtk::CheckMenuItem::get_active();
+    return check_->get_active();
 }
 
 void
 CheckMenuItem::set_active(bool new_state, bool notify)
 {
-    if (Gtk::CheckMenuItem::get_active() != new_state)
+    if (check_->get_active() != new_state)
     {
 	if (notify) {
 	    set_active(new_state);
 	}
 	else {
-	    GtkCheckMenuItem *cmi_obj = gobj();
+	    GtkCheckMenuItem *cmi_obj = check_->gobj();
 	    cmi_obj->active = !cmi_obj->active;
 	    gtk_widget_queue_draw(GTK_WIDGET(cmi_obj));
 	}

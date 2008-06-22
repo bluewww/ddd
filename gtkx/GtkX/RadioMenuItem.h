@@ -36,17 +36,17 @@
 
 namespace GtkX {
 
-    class RadioMenuItem: public Bipolar, public Gtk::RadioMenuItem {
+    class RadioMenuItem: public Bipolar {
+	Gtk::RadioMenuItem *radio_;
     public:
 	RadioMenuItem(GtkX::Container &parent, PackOptions po=PACK_SHRINK, const String &name="",
 		      const String &label="");
 	~RadioMenuItem(void);
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;
+	void init_signals();
 	bool get_active();
 	void set_active(bool new_state, bool notify=false);
-	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
-#include <GtkX/redirect.h>
     };
 
 }

@@ -33,9 +33,9 @@
 using namespace GtkX;
 
 RadioMenuItem::RadioMenuItem(GtkX::Container &parent, PackOptions po,
-			     const GtkX::String &name, const GtkX::String &label):
-    Gtk::RadioMenuItem(parent.button_group(), mklabel(name, label).s())
+			     const GtkX::String &name, const GtkX::String &label)
 {
+    radio_ = new Gtk::RadioMenuItem(parent.button_group(), mklabel(name, label).s());
     set_name(name.s());
     parent.add_child(*this, po, 0);
     postinit();
@@ -43,37 +43,43 @@ RadioMenuItem::RadioMenuItem(GtkX::Container &parent, PackOptions po,
 
 RadioMenuItem::~RadioMenuItem(void)
 {
+    delete radio_;
 }
 
 Gtk::Widget *
 RadioMenuItem::internal(void)
 {
-    return this;
+    return radio_;
 }
 
 const Gtk::Widget *
 RadioMenuItem::internal(void) const
 {
-    return this;
+    return radio_;
 }
 
+void
+RadioMenuItem::init_signals(void)
+{
+    radio_->signal_toggled().connect(sigc::mem_fun(*this, &Bipolar::toggled_callback));
+}
 
 bool
 RadioMenuItem::get_active()
 {
-    return Gtk::RadioMenuItem::get_active();
+    return radio_->get_active();
 }
 
 void
 RadioMenuItem::set_active(bool new_state, bool notify)
 {
-    if (Gtk::RadioMenuItem::get_active() != new_state)
+    if (radio_->get_active() != new_state)
     {
 	if (notify) {
 	    set_active(new_state);
 	}
 	else {
-	    std::cerr << "Setting radio menu item active!\n";
+	    std::cerr << "ERROR: Setting radio menu item active!\n";
 #if 0
 	    GtkRadioMenuItem *rmi_obj = gobj();
 	    rmi_obj->active = !rmi_obj->active;

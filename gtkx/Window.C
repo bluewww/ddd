@@ -28,13 +28,13 @@
 using namespace GtkX;
 
 void
-GtkX::Window::init_signals(void)
+Window::init_signals(void)
 {
-    Gtk::Widget::signal_delete_event().connect(sigc::mem_fun(*this, &GtkX::Window::delete_callback));
 }
 
 Window::Window(Main &main, const String &name, const String &title)
 {
+    win_ = new Gtk::Window();
     set_name(name.s());
     set_title(title.s());
     postinit();
@@ -42,6 +42,7 @@ Window::Window(Main &main, const String &name, const String &title)
 
 Window::Window(const String &name, const String &title)
 {
+    win_ = new Gtk::Window();
     set_name(name.s());
     set_title(title.s());
     postinit();
@@ -49,43 +50,37 @@ Window::Window(const String &name, const String &title)
 
 Window::~Window(void)
 {
+    delete win_;
 }
 
 Gtk::Widget *
 Window::internal(void)
 {
-    return this;
+    return win_;
 }
 
 const Gtk::Widget *
 Window::internal(void) const
 {
-    return this;
+    return win_;
 }
 
 Gtk::Container *
 Window::gtk_container(void)
 {
-    return this;
-}
-
-sigc::signal<bool, GdkEvent *> &
-GtkX::Window::signal_delete_event(void)
-{
-    return signal_delete_;
-}
-
-bool
-GtkX::Window::delete_callback(GdkEventAny *data)
-{
-    // FIXME:
-    // Slight differences between Gtkmm signature and our unified interface.
-    signal_delete_((GdkEvent *)data);
+    return win_;
 }
 
 void
-GtkX::Window::set_title(const String &s)
+Window::set_title(const String &s)
 {
-    Gtk::Window::set_title(s.s());
+    win_->set_title(s.s());
 }
+
+void
+Window::set_default_size(int width, int height)
+{
+    win_->set_default_size(width, height);
+}
+
 

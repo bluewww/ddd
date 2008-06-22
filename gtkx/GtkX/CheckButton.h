@@ -38,17 +38,17 @@
 
 namespace GtkX {
 
-    class CheckButton: public Bipolar, public Gtk::CheckButton {
+    class CheckButton: public Bipolar {
+	Gtk::CheckButton *check_;
     public:
 	CheckButton(GtkX::Container &parent, PackOptions po=PACK_SHRINK, const GtkX::String &name="",
 		    const GtkX::String &label="");
 	~CheckButton(void);
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;
-	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
+	void init_signals();
 	bool get_active();
 	void set_active(bool new_state, bool notify=false);
-#include <GtkX/redirect.h>
     };
 
 }

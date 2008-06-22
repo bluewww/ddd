@@ -8513,23 +8513,23 @@ BlinkCB(bool *set_p)
 {
 
     static bool have_led_colors = false;
-    static Gdk::Color led_select_color;
-    static Gdk::Color led_background_color;
+    static GUI::Color led_select_color;
+    static GUI::Color led_background_color;
 
 
     if (!have_led_colors)
     {
-	led_background_color = led_w->get_style()->get_bg(Gtk::STATE_NORMAL);
-	led_select_color = led_w->get_style()->get_bg(Gtk::STATE_SELECTED);
+	led_background_color = led_w->get_bg(GUI::STATE_NORMAL);
+	led_select_color = led_w->get_bg(GUI::STATE_SELECTED);
 	have_led_colors = true;
     }
 
     bool set = *set_p;
     *set_p = !set;
     if (set)
-	led_w->get_style()->set_bg(Gtk::STATE_SELECTED, led_select_color);
+	led_w->set_bg(GUI::STATE_SELECTED, led_select_color);
     else
-	led_w->get_style()->set_bg(Gtk::STATE_SELECTED, led_background_color);
+	led_w->set_bg(GUI::STATE_SELECTED, led_background_color);
 
     led_w->get_display()->flush();
     std::cerr << "XmUpdateDisplay?\n";

@@ -31,9 +31,9 @@
 using namespace GtkX;
 
 CheckButton::CheckButton(GtkX::Container &parent, PackOptions po,
-			 const GtkX::String &name, const GtkX::String &label):
-    Gtk::CheckButton(mklabel(name, label).s())
+			 const GtkX::String &name, const GtkX::String &label)
 {
+    check_ = new Gtk::CheckButton(mklabel(name, label).s());
     set_name(name.s());
     parent.add_child(*this, po, 0);
     postinit();
@@ -41,37 +41,43 @@ CheckButton::CheckButton(GtkX::Container &parent, PackOptions po,
 
 CheckButton::~CheckButton(void)
 {
+    delete check_;
 }
 
 Gtk::Widget *
 CheckButton::internal(void)
 {
-    return this;
+    return check_;
 }
 
 const Gtk::Widget *
 CheckButton::internal(void) const
 {
-    return this;
+    return check_;
 }
 
+void
+CheckButton::init_signals(void)
+{
+    check_->signal_toggled().connect(sigc::mem_fun(*this, &Bipolar::toggled_callback));
+}
 
 bool
 CheckButton::get_active()
 {
-    return Gtk::CheckButton::get_active();
+    return check_->get_active();
 }
 
 void
 CheckButton::set_active(bool new_state, bool notify)
 {
-    if (Gtk::CheckButton::get_active() != new_state)
+    if (check_->get_active() != new_state)
     {
 	if (notify) {
-	    Gtk::CheckButton::set_active(new_state);
+	    check_->set_active(new_state);
 	}
 	else {
-	    GtkCheckButton *cb_obj = gobj();
+	    GtkCheckButton *cb_obj = check_->gobj();
 	    cb_obj->toggle_button.active = !cb_obj->toggle_button.active;
 	    gtk_widget_queue_draw(GTK_WIDGET(cb_obj));
 	}

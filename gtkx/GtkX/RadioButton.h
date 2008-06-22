@@ -36,17 +36,17 @@
 
 namespace GtkX {
 
-    class RadioButton: public Bipolar, public Gtk::RadioButton {
+    class RadioButton: public Bipolar {
+	Gtk::RadioButton *radio_;
     public:
 	RadioButton(GtkX::Container &parent, PackOptions po=PACK_SHRINK,
 		    const String &name="", const String &label="");
 	~RadioButton(void);
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;
-	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
+	void init_signals();
 	bool get_active(void);
 	void set_active(bool new_state, bool notify=false);
-#include <GtkX/redirect.h>
     };
 
 }

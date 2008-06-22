@@ -35,32 +35,27 @@ ComboBoxEntryText::ComboBoxEntryText(GtkX::Container &parent,
 				     PackOptions po,
 				     const GtkX::String &name)
 {
-    Gtk::ComboBoxEntryText::set_name(name.s());
-    // We cannot use this:
-    // parent.gtk_container()->add(*this);
-    // If we always had parent.gtk_container() == &parent we could just
-    // override the on_add() method to do what we want.  However,
-    // sometimes parent.gtk_container() is a standard Gtk widget.
-    // In such a case (e.g. RadioBox) we need to override add_child()
-    // instead.
+    combo_ = new Gtk::ComboBoxEntryText();
+    set_name(name.s());
     parent.add_child(*this, po, 0);
     postinit();
 }
 
 ComboBoxEntryText::~ComboBoxEntryText(void)
 {
+    delete combo_;
 }
 
 Gtk::Widget *
 ComboBoxEntryText::internal(void)
 {
-    return this;
+    return combo_;
 }
 
 const Gtk::Widget *
 ComboBoxEntryText::internal(void) const
 {
-    return this;
+    return combo_;
 }
 
 GtkX::String
@@ -68,7 +63,7 @@ ComboBoxEntryText::get_text(void)
 {
     // Deprecated.  Does not give the right result
     // GtkX::String r1(get_active_text());
-    return GtkX::String(get_entry()->get_text());
+    return GtkX::String(combo_->get_entry()->get_text());
 }
 
 void
@@ -76,6 +71,6 @@ ComboBoxEntryText::set_text(const String &s)
 {
     // Deprecated.  Does not give the right answer
     // set_active_text(s.s());
-    get_entry()->set_text(s.s());
+    combo_->get_entry()->set_text(s.s());
 }
 

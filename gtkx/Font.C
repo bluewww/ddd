@@ -49,7 +49,7 @@ Font::Font(Glib::RefPtr<Pango::Font> f0)
 Font::~Font()
 {
     font_map.erase(font_->gobj());
-    std::cerr << "font_map[-] size now " << font_map.size() << "\n";
+    // std::cerr << "font_map[-] size now " << font_map.size() << "\n";
 }
 
 RefPtr<Font>
@@ -62,7 +62,7 @@ Font::wrap(Glib::RefPtr<Pango::Font> f0)
     }
     Font *f = new Font(f0);
     font_map.insert(std::pair<PangoFont *, Font *>(f0->gobj(), f));
-    std::cerr << "font_map[+] size now " << font_map.size() << "\n";
+    // std::cerr << "font_map[+] size now " << font_map.size() << "\n";
     return f;
 }
 
@@ -99,7 +99,7 @@ Context::Context(Glib::RefPtr<Pango::Context> f0)
 Context::~Context()
 {
     context_map.erase(context_->gobj());
-    std::cerr << "context_map[-] size now " << context_map.size() << "\n";
+    // std::cerr << "context_map[-] size now " << context_map.size() << "\n";
 }
 
 RefPtr<Context>
@@ -112,7 +112,7 @@ Context::wrap(Glib::RefPtr<Pango::Context> f0)
     }
     Context *f = new Context(f0);
     context_map.insert(std::pair<PangoContext *, Context *>(f0->gobj(), f));
-    std::cerr << "context_map[+] size now " << context_map.size() << "\n";
+    // std::cerr << "context_map[+] size now " << context_map.size() << "\n";
     return f;
 }
 
@@ -148,7 +148,7 @@ Layout::Layout(Glib::RefPtr<Pango::Layout> f0)
 Layout::~Layout()
 {
     layout_map.erase(layout_->gobj());
-    std::cerr << "layout_map[-] size now " << layout_map.size() << "\n";
+    // std::cerr << "layout_map[-] size now " << layout_map.size() << "\n";
 }
 
 RefPtr<Layout>
@@ -161,7 +161,7 @@ Layout::wrap(Glib::RefPtr<Pango::Layout> f0)
     }
     Layout *f = new Layout(f0);
     layout_map.insert(std::pair<PangoLayout *, Layout *>(f0->gobj(), f));
-    std::cerr << "layout_map[+] size now " << layout_map.size() << "\n";
+    // std::cerr << "layout_map[+] size now " << layout_map.size() << "\n";
     return f;
 }
 

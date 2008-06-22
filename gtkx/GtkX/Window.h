@@ -30,11 +30,9 @@
 
 namespace GtkX {
 
-    class Window: public Gtk::Window, public Shell {
+    class Window: public Shell {
+	Gtk::Window *win_;
 	void init_signals(void);
-    protected:
-	sigc::signal<bool, GdkEvent *> signal_delete_;
-	bool delete_callback(GdkEventAny *data);
     public:
 	Window(Main &main, const String &name="", const String &title="");
 	Window(const String &name="", const String &title="");
@@ -42,10 +40,8 @@ namespace GtkX {
 	const Gtk::Widget *internal(void) const;
 	Gtk::Container *gtk_container(void);
 	~Window(void);
-	sigc::signal<bool, GdkEvent *> &signal_delete_event(void);
 	void set_title(const String &);
-	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
-#include <GtkX/redirect.h>
+	void set_default_size(int width, int height);
     };
 
 }

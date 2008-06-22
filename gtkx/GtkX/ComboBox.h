@@ -35,7 +35,8 @@
 
 namespace GtkX {
 
-    class ComboBoxEntryText: public Widget, public Gtk::ComboBoxEntryText {
+    class ComboBoxEntryText: public Widget {
+	Gtk::ComboBoxEntryText *combo_;
     public:
 	ComboBoxEntryText(GtkX::Container &parent, PackOptions po=PACK_SHRINK, const String &name="");
 	~ComboBoxEntryText(void);
@@ -43,8 +44,6 @@ namespace GtkX {
 	const Gtk::Widget *internal(void) const;
 	String get_text(void);
 	void set_text(const String &);
-	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
-#include <GtkX/redirect.h>
     };
 
 }

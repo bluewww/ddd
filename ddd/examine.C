@@ -295,9 +295,7 @@ static string examine_command()
     string address(s_address);
     XtFree(s_address);
 #else
-    Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(address_w->get_child());
-    const char *s_address = entry->get_text().c_str();
-    string address(s_address);
+    string address = address_w->get_text().c_str();
 #endif
 
     strip_space(repeat);
@@ -460,8 +458,7 @@ void gdbExamineCB(GUI::Widget *w)
 
     string arg = source_arg->get_string();
     if (!is_file_pos(arg) && !arg.empty()) {
-	Gtk::Entry *entry = dynamic_cast<Gtk::Entry *>(address_w->get_child());
-	entry->set_text(XMST(arg.chars()));
+	address_w->set_text(arg.chars());
     }
 
     manage_and_raise(dialog);

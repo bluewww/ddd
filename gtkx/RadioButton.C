@@ -30,57 +30,53 @@
 using namespace GtkX;
 
 RadioButton::RadioButton(GtkX::Container &parent, PackOptions po,
-			 const GtkX::String &name, const GtkX::String &label):
-    Gtk::RadioButton(mklabel(name, label).s())
+			 const GtkX::String &name, const GtkX::String &label)
 {
-    Gtk::RadioButton::set_name(name.s());
-    // We cannot use this:
-    // parent.gtk_container()->add(*this);
-    // If we always had parent.gtk_container() == &parent we could just
-    // override the on_add() method to do what we want.  However,
-    // sometimes parent.gtk_container() is a standard Gtk widget.
-    // In such a case (e.g. RadioBox) we need to override add_child()
-    // instead.
+    radio_ = new Gtk::RadioButton(mklabel(name, label).s());
+    set_name(name.s());
     parent.add_child(*this, po, 0);
     postinit();
-    // FIXME: Radio behaviour already supported for children of a RadioBox.
-    // Changing the group here causes a crash (invalidates a node in the
-    // GList).
-    // set_group(parent.grp);
 }
 
 RadioButton::~RadioButton(void)
 {
+    delete radio_;
 }
 
 Gtk::Widget *
 RadioButton::internal(void)
 {
-    return this;
+    return radio_;
 }
 
 const Gtk::Widget *
 RadioButton::internal(void) const
 {
-    return this;
+    return radio_;
+}
+
+void
+RadioButton::init_signals(void)
+{
+    radio_->signal_toggled().connect(sigc::mem_fun(*this, &Bipolar::toggled_callback));
 }
 
 bool
 RadioButton::get_active()
 {
-    return Gtk::RadioButton::get_active();
+    return radio_->get_active();
 }
 
 void
 RadioButton::set_active(bool new_state, bool notify)
 {
-    if (Gtk::RadioButton::get_active() != new_state)
+    if (radio_->get_active() != new_state)
     {
 	if (notify) {
 	    set_active(new_state);
 	}
 	else {
-	    GtkRadioButton *rb_obj = gobj();
+	    GtkRadioButton *rb_obj = radio_->gobj();
 	    rb_obj->check_button.toggle_button.active = !rb_obj->check_button.toggle_button.active;
 	    gtk_widget_queue_draw(GTK_WIDGET(rb_obj));
 	}

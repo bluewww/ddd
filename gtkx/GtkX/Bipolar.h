@@ -35,9 +35,21 @@
 namespace GtkX {
 
     class Bipolar: public Widget {
+    private:
+	sigc::signal<void> signal_toggled_;
     public:
+	// FIXME: The subclasses cannot connect the signal unless this
+	// is public.  Alternatively, we could declare a virtual to
+	// return the Gtk signal, and connect it in this class.
+	void toggled_callback(void);
+    public:
+	Bipolar();
+	~Bipolar();
+	virtual void init_signals() = 0;
+	void postinit(void);
 	virtual bool get_active() = 0;
 	virtual void set_active(bool new_state, bool notify=false) = 0;
+	sigc::signal<void> &signal_toggled();
     };
 
 }

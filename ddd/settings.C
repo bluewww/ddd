@@ -5320,7 +5320,7 @@ static string current_name()
     string name(name_s);
     XtFree(name_s);
 #else
-    string name(name_w->get_entry()->get_text().c_str());
+    string name(name_w->get_text());
 #endif
     strip_space(name);
     return name;
