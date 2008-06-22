@@ -29,45 +29,46 @@ using namespace GtkX;
 
 Label::Label(Container &parent, PackOptions po,
 	     const String &name,
-	     const String &label):
-    Gtk::Label(mklabel(name, label).s())
+	     const String &label)
 {
+    label_ = new Gtk::Label(mklabel(name, label).s());
     set_name(name.s());
-    // We cannot use this:
-    // parent.gtk_container()->add(*this);
-    // If we always had parent.gtk_container() == &parent we could just
-    // override the on_add() method to do what we want.  However,
-    // sometimes parent.gtk_container() is a standard Gtk widget.
-    // In such a case (e.g. RadioBox) we need to override add_child()
-    // instead.
     parent.add_child(*this, po, 0);
     postinit();
 }
 
 Label::~Label(void)
 {
+    delete label_;
 }
 
 Gtk::Widget *
 Label::internal(void)
 {
-    return this;
+    return label_;
 }
 
 const Gtk::Widget *
 Label::internal(void) const
 {
-    return this;
+    return label_;
 }
 
 void
 Label::set_alignment(float xalign, float yalign)
 {
-    Gtk::Label::set_alignment(xalign, yalign);
+    label_->set_alignment(xalign, yalign);
 }
 
 void
 Label::set_text(const String &s)
 {
-    Gtk::Label::set_text(s.s());
+    label_->set_text(s.s());
+}
+
+// Uses underlines or Pango markup
+void
+Label::set_label(const String &s)
+{
+    label_->set_label(s.s());
 }

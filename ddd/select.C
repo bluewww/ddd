@@ -240,7 +240,7 @@ static void select_from_gdb(const string& question, string& reply)
 	gdb_selection_list_w = new GUI::ListView(*gdb_selection_dialog, GUI::PACK_SHRINK, 
 						 "gdb_selection_list", headers);
 	gdb_selection_list_w->show();
-	gdb_selection_list_w->get_selection()->set_mode(Gtk::SELECTION_SINGLE);
+	gdb_selection_list_w->set_selection_mode(GUI::SELECTION_SINGLE);
 
 	GUI::Button *button;
 	button = gdb_selection_dialog->add_button("ok", _("OK"));

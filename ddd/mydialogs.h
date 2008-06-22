@@ -125,9 +125,5 @@ void freeXmStringTable(XmStringTable xmlist, int list_length);
 void ListSetAndSelectPos(GUI::ListView *list, int pos);
 #endif
 
-#if !defined(IF_XM)
-extern int list_get_positions(GUI::ListView *selectionList, int *&positions, int &n_positions);
-#endif
-
 #endif // _DDD_mydialogs_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

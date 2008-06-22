@@ -35,33 +35,41 @@
 
 namespace GtkX {
 
+    enum SelectionMode {
+	SELECTION_NONE,
+	SELECTION_SINGLE,
+	SELECTION_BROWSE,
+	SELECTION_MULTIPLE
+    };
+
     class ListView;
 
-    class ListView: public Widget, public Gtk::TreeView {
-    private:
+    class ListView: public Widget {
+	Gtk::TreeView *tv_;
 	Glib::RefPtr<Gtk::ListStore> store_;
     protected:
 	sigc::signal<void> signal_selection_changed_;
-	static void selection_changed_callback(ListView *lv);
+	void selection_changed_callback();
     public:
-	void init_signals(void);
 	ListView(GtkX::Container &parent, PackOptions po,
 		 const GtkX::String &name,
 		 const std::vector<GtkX::String> &headers);
-	Gtk::Widget *internal(void);
-	const Gtk::Widget *internal(void) const;
-	~ListView(void);
+	Gtk::Widget *internal();
+	const Gtk::Widget *internal() const;
+	~ListView();
+	void init_signals();
+	void postinit();
 	String get_selected(int row=-1, int col=-1);
-	void clear(void);
+	void clear();
 	void append(const GtkX::String &item);
-	int get_selected_pos(void);
-	int count(void) const;
-	sigc::signal<void> &signal_selection_changed(void);
-	int n_rows(void) const;
-	int n_selected_rows(void) const;
+	int get_selected_pos();
+	int count() const;
+	sigc::signal<void> &signal_selection_changed();
+	int n_rows() const;
+	int n_selected_rows() const;
 	String get_at(int row, int col=-1);
-	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
-#include <GtkX/redirect.h>
+	void get_selected_numbers(std::vector<int> &numbers);
+	void set_selection_mode(SelectionMode);
     };
 
 }

@@ -9677,7 +9677,7 @@ void DataDisp::create_shells()
 
     if (display_list_w != 0)
     {
-	display_list_w->get_selection()->signal_changed().connect(sigc::ptr_fun(UpdateGraphEditorSelectionCB));
+	display_list_w->signal_selection_changed().connect(sigc::ptr_fun(UpdateGraphEditorSelectionCB));
     }
 
     if (edit_displays_dialog_w != 0)

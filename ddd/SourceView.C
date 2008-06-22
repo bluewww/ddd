@@ -5658,7 +5658,7 @@ void SourceView::create_shells()
 
     if (breakpoint_list_w != 0)
     {
-	breakpoint_list_w->get_selection()->signal_changed().connect(sigc::ptr_fun(UpdateBreakpointButtonsCB));
+	breakpoint_list_w->signal_selection_changed().connect(sigc::ptr_fun(UpdateBreakpointButtonsCB));
     }
 
     if (edit_breakpoints_dialog_w != 0)
@@ -5752,7 +5752,7 @@ void SourceView::create_shells()
     thread_list_w = 
 	new GUI::ListView(*thread_dialog_w, GUI::PACK_SHRINK, "threads", headers);
 
-    thread_list_w->get_selection()->signal_changed().connect(sigc::bind(sigc::ptr_fun(SelectThreadCB), thread_list_w));
+    thread_list_w->signal_selection_changed().connect(sigc::bind(sigc::ptr_fun(SelectThreadCB), thread_list_w));
 
     button = thread_dialog_w->add_button("cancel", _("Close"));
     button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), thread_dialog_w));
@@ -11109,7 +11109,7 @@ void SourceView::process_frame(int frame)
 		      XmNvisibleItemCount, &visible_items,
 		      XtPointer(0));
 #else
-	int count = frame_list_w->get_model()->children().size();
+	int count = frame_list_w->n_rows();
 #endif
 
 	int pos = 1;
@@ -11222,7 +11222,7 @@ void SourceView::set_frame_pos(int arg, int pos)
     int items = 0;
     XtVaGetValues(frame_list_w, XmNitemCount, &items, XtPointer(0));
 #else
-    int items = frame_list_w->get_model()->children().size();
+    int items = frame_list_w->n_rows();
 #endif
 
     if (pos == 0)
@@ -11241,8 +11241,7 @@ void SourceView::set_frame_pos(int arg, int pos)
 	} else
 	    return;
 #else
-	int position_count = frame_list_w->get_selection()->count_selected_rows();
-	std::cerr << "Check ListHandle_Path position_count=" << position_count << "\n";
+	int position_count = frame_list_w->n_selected_rows();
 #endif
 	if (position_count != 1 || pos < 1 || pos > items)
 	    return;
@@ -11704,7 +11703,7 @@ void SourceView::SelectThreadCB(GUI::Widget *w)
 	     )
     {
 	// Check if we have selected a threadgroup
-	int selected_items_count = thread_list_w->get_selection()->count_selected_rows();
+	int selected_items_count = thread_list_w->n_selected_rows();
 
 	if (selected_items_count == 1)
 	{

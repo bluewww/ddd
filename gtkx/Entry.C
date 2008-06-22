@@ -36,31 +36,88 @@ Entry::Entry(GtkX::Container &parent,
 	     PackOptions po,
 	     const GtkX::String &name)
 {
-    Gtk::Entry::set_name(name.s());
-    // We cannot use this:
-    // parent.gtk_container()->add(*this);
-    // If we always had parent.gtk_container() == &parent we could just
-    // override the on_add() method to do what we want.  However,
-    // sometimes parent.gtk_container() is a standard Gtk widget.
-    // In such a case (e.g. RadioBox) we need to override add_child()
-    // instead.
+    entry_ = new Gtk::Entry();
+    set_name(name.s());
     parent.add_child(*this, po, 0);
     postinit();
 }
 
 Entry::~Entry(void)
 {
+    delete entry_;
 }
 
 Gtk::Widget *
 Entry::internal(void)
 {
-    return this;
+    return entry_;
 }
 
 const Gtk::Widget *
 Entry::internal(void) const
 {
-    return this;
+    return entry_;
+}
+
+void
+Entry::init_signals(void)
+{
+    entry_->signal_activate().connect(sigc::mem_fun(*this, &Entry::activate_callback));
+    entry_->signal_changed().connect(sigc::mem_fun(*this, &Entry::changed_callback));
+}
+
+void
+Entry::postinit(void)
+{
+    Widget::postinit();
+    init_signals();
+}
+
+void
+Entry::set_text(const String &text)
+{
+    entry_->set_text(text.s());
+}
+
+String
+Entry::get_text() const
+{
+    return entry_->get_text();
+}
+
+void
+Entry::set_editable(bool is_editable)
+{
+    entry_->set_editable(is_editable);
+}
+
+bool
+Entry::get_editable() const
+{
+    return entry_->get_editable();
+}
+
+void
+Entry::activate_callback()
+{
+    signal_activate_();
+}
+
+void
+Entry::changed_callback()
+{
+    signal_changed_();
+}
+
+sigc::signal<void> &
+Entry::signal_activate()
+{
+    return signal_activate_;
+}
+
+sigc::signal<void> &
+Entry::signal_changed()
+{
+    return signal_changed_;
 }
 

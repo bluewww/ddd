@@ -38,7 +38,8 @@ namespace GtkX {
 	FileActionCreateFolder
     };
 
-    class FileSelection: public Widget, public Gtk::FileChooserWidget {
+    class FileSelection: public Widget {
+	Gtk::FileChooserWidget *fs_;
     protected:
 	sigc::signal<void> signal_selection_changed_;
 	static void selection_changed_callback(FileSelection *lv);
@@ -49,14 +50,12 @@ namespace GtkX {
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;
 	~FileSelection(void);
-	std::string get_selected(void);
+	GtkX::String get_selected(void);
 	void clear(void);
 	void append(const GtkX::String &item);
 	int get_selected_pos(void);
 	int count(void) const;
 	sigc::signal<void> &signal_selection_changed(void);
-	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
-#include <GtkX/redirect.h>
     };
 
 }

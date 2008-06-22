@@ -49,9 +49,9 @@ convert_action(FileAction act)
 }
 
 FileSelection::FileSelection(GtkX::Container &parent, PackOptions po,
-			     const String &name, FileAction action):
-    FileChooserWidget(convert_action(action))
+			     const String &name, FileAction action)
 {
+    fs_ = new Gtk::FileChooserWidget(convert_action(action));
     set_name(name.s());
     init_signals();
     parent.add_child(*this, po, 0);
@@ -59,24 +59,25 @@ FileSelection::FileSelection(GtkX::Container &parent, PackOptions po,
 
 FileSelection::~FileSelection(void)
 {
+    delete fs_;
 }
 
 Gtk::Widget *
 FileSelection::internal(void)
 {
-    return this;
+    return fs_;
 }
 
 const Gtk::Widget *
 FileSelection::internal(void) const
 {
-    return this;
+    return fs_;
 }
 
-std::string
+GtkX::String
 FileSelection::get_selected(void)
 {
-    return Gtk::FileChooser::get_filename().c_str();
+    return fs_->get_filename();
 }
 
 void

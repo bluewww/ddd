@@ -37,7 +37,8 @@
 
 namespace GtkX {
 
-    class Label: public Widget, public Gtk::Label {
+    class Label: public Widget {
+	Gtk::Label *label_;
     public:
 	Label(Container &parent, PackOptions po=PACK_SHRINK,
 	      const String &name="", const String &label="");
@@ -46,8 +47,8 @@ namespace GtkX {
 	const Gtk::Widget *internal(void) const;
 	void set_alignment(float xalign, float yalign);
 	void set_text(const String &);
-	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
-#include <GtkX/redirect.h>
+	// Uses underlines or Pango markup
+	void set_label(const String &s);
     };
 
 }

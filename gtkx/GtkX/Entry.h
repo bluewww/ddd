@@ -37,15 +37,26 @@
 
 namespace GtkX {
 
-    class Entry: public Widget, public Gtk::Entry {
+    class Entry: public Widget {
+	Gtk::Entry *entry_;
+	sigc::signal<void> signal_activate_;
+	void activate_callback();
+	sigc::signal<void> signal_changed_;
+	void changed_callback();
     public:
 	Entry(GtkX::Container &parent, PackOptions po=PACK_SHRINK, const String &name="");
-	~Entry(void);
-	Gtk::Widget *internal(void);
-	const Gtk::Widget *internal(void) const;
-	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
-#include <GtkX/redirect.h>
-    };
+	~Entry();
+	void init_signals();
+	void postinit();
+	Gtk::Widget *internal();
+	const Gtk::Widget *internal() const;
+	void set_text(const String &text); 
+	String get_text() const;
+	void set_editable(bool is_editable = true);
+	bool get_editable() const;
+	sigc::signal<void> &signal_activate();
+	sigc::signal<void> &signal_changed();
+   };
 
 }
 

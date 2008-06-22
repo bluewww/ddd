@@ -2216,20 +2216,15 @@ static void lookupSourceDone(GUI::ListView *sources)
     if (source.contains('/'))
     {
 	// Expand to full path name
-	int *position_list = 0;
-	int position_count = 0;
-	if (list_get_positions(sources, position_list, position_count))
+	std::vector<int> selnos;
+	sources->get_selected_numbers(selnos);
+	if (selnos.size() == 1)
 	{
-	    if (position_count == 1)
-	    {
-		int pos = position_list[0];
-		pos--;
-		if (pos < 0)
-		    pos = all_sources.size() - 1;
-		source = all_sources[pos];
-	    }
-
-	    free((char *)position_list);
+	    int pos = selnos[0];
+	    pos--;
+	    if (pos < 0)
+		pos = all_sources.size() - 1;
+	    source = all_sources[pos];
 	}
     }
 

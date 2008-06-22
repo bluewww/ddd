@@ -59,17 +59,19 @@ public:
 static ModelColumns model;
 
 void
-ListView::init_signals(void)
+ListView::init_signals()
 {
+    tv_->get_selection()->signal_changed().connect(sigc::mem_fun(*this, &ListView::selection_changed_callback));
 }
 
 ListView::ListView(GtkX::Container &parent, PackOptions po,
 		   const String &name,
 		   const std::vector<String> &headers)
 {
+    tv_ = new Gtk::TreeView();
     set_name(name.s());
     store_ = Gtk::ListStore::create(model);
-    set_model(store_);
+    tv_->set_model(store_);
 
     set_size_request(-1, 100);
 
@@ -78,7 +80,7 @@ ListView::ListView(GtkX::Container &parent, PackOptions po,
 	   &model.c5, &model.c6, &model.c7, &model.c8};
     assert(headers.size() <= 8);
     for (int i = 0; i < headers.size(); i++) {
-	append_column(headers[i].s(), *cols[i]);
+	tv_->append_column(headers[i].s(), *cols[i]);
     }
     Gtk::TreeModel::Row row = *store_->append();
     row[model.c1] = "test 1";
@@ -94,53 +96,45 @@ ListView::ListView(GtkX::Container &parent, PackOptions po,
     parent.add_child(*this, po, 0);
 }
 
-ListView::~ListView(void)
+ListView::~ListView()
 {
+    delete tv_;
 }
 
 Gtk::Widget *
-ListView::internal(void)
+ListView::internal()
 {
-    return this;
+    return tv_;
 }
 
 const Gtk::Widget *
-ListView::internal(void) const
+ListView::internal() const
 {
-    return this;
+    return tv_;
+}
+
+void
+ListView::postinit()
+{
+    Widget::postinit();
+    init_signals();
 }
 
 String
 ListView::get_selected(int r, int c)
 {
-#if 0
-    // FIXME: This returns the whole line!
-    Gtk::TreeIter iter = get_selection()->get_selected();
-    Gtk::TreeRow row = *iter;
-    Glib::ustring tab("\t");
-    Glib::ustring result;
-    result = row[model.c1] + tab
-	+ row[model.c2] + tab
-	+ row[model.c3] + tab
-	+ row[model.c4] + tab
-	+ row[model.c5] + tab
-	+ row[model.c6] + tab
-	+ row[model.c7] + tab
-	+ row[model.c8];
-    return result;
-#else
     static Gtk::TreeModelColumn<Glib::ustring> *cols[]
 	= {&model.c1, &model.c2, &model.c3, &model.c4,
 	   &model.c5, &model.c6, &model.c7, &model.c8};
     Glib::ustring result;
     // Note that the ListHandle_Path returned by get_selected_rows()
     // is automatically converted to an STL type:
-    std::vector<Gtk::TreePath> paths = get_selection()->get_selected_rows();
+    std::vector<Gtk::TreePath> paths = tv_->get_selection()->get_selected_rows();
     result = "";
     if (r < 0) r = 0;
     if (r > paths.size())
 	return "";
-    Gtk::TreeIter iter = get_model()->get_iter(paths[r]);
+    Gtk::TreeIter iter = tv_->get_model()->get_iter(paths[r]);
     Gtk::TreeRow row = *iter;
     Glib::ustring tab("\t");
     if (c < 0) {
@@ -157,19 +151,18 @@ ListView::get_selected(int r, int c)
 	result = row.get_value(*cols[c]);
     }
     return result;
-#endif
 }
 
 int
-ListView::n_rows(void) const
+ListView::n_rows() const
 {
-    return Gtk::TreeView::get_model()->children().size();
+    return tv_->get_model()->children().size();
 }
 
 int
-ListView::n_selected_rows(void) const
+ListView::n_selected_rows() const
 {
-    return Gtk::TreeView::get_selection()->count_selected_rows();
+    return tv_->get_selection()->count_selected_rows();
 }
 
 String
@@ -180,7 +173,7 @@ ListView::get_at(int r, int c)
 	   &model.c5, &model.c6, &model.c7, &model.c8};
     Gtk::TreePath p;
     p.push_back(r);
-    Gtk::TreeIter iter = get_model()->get_iter(p);
+    Gtk::TreeIter iter = tv_->get_model()->get_iter(p);
     Gtk::TreeRow row = *iter;
     Glib::ustring tab("\t");
     Glib::ustring result;
@@ -201,7 +194,7 @@ ListView::get_at(int r, int c)
 }
 
 void
-ListView::clear(void)
+ListView::clear()
 {
     store_->clear();
 }
@@ -221,29 +214,55 @@ ListView::append(const GtkX::String &item)
 }
 
 int
-ListView::get_selected_pos(void)
+ListView::get_selected_pos()
 {
-    Gtk::TreeSelection::ListHandle_Path paths = get_selection()->get_selected_rows();
+    Gtk::TreeSelection::ListHandle_Path paths
+	= tv_->get_selection()->get_selected_rows();
     if (paths.begin() == paths.end())
 	return -1;
     return (*paths.begin())[0];
 }
 
 int
-ListView::count(void) const
+ListView::count() const
 {
     return store_->children().size();
 }
 
 sigc::signal<void> &
-ListView::signal_selection_changed(void)
+ListView::signal_selection_changed()
 {
     return signal_selection_changed_;
 }
 
 void
-ListView::selection_changed_callback(ListView *lv)
+ListView::selection_changed_callback()
 {
-    lv->signal_selection_changed_();
+    signal_selection_changed_();
 }
 
+void
+ListView::get_selected_numbers(std::vector<int> &numbers)
+{
+    Glib::RefPtr<Gtk::TreeModel> model = tv_->get_model();
+    Glib::RefPtr<Gtk::TreeSelection> sel = tv_->get_selection();
+    std::list<Gtk::TreeModel::Path> paths = sel->get_selected_rows();
+    std::list<Gtk::TreeModel::Path>::iterator iter;
+    for (iter = paths.begin(); iter != paths.end(); iter++) {
+	numbers.push_back((*iter)[0]);
+    }
+}
+
+void
+ListView::set_selection_mode(SelectionMode sm)
+{
+    Gtk::SelectionMode gsm;
+    switch (sm) {
+    case Gtk::SELECTION_NONE: gsm = Gtk::SELECTION_NONE; break;
+    case Gtk::SELECTION_SINGLE: gsm = Gtk::SELECTION_SINGLE; break;
+    case Gtk::SELECTION_BROWSE: gsm = Gtk::SELECTION_BROWSE; break;
+    case Gtk::SELECTION_MULTIPLE: gsm = Gtk::SELECTION_MULTIPLE; break;
+    default: gsm = Gtk::SELECTION_MULTIPLE; break;
+    }
+    tv_->get_selection()->set_mode(gsm);
+}

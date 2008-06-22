@@ -272,12 +272,11 @@ void getItemNumbers(Widget selectionList, IntArray& numbers)
 // Fill the item numbers in DISP_NRS
 void getItemNumbers(GUI::ListView *selectionList, IntArray& numbers)
 {
-    Glib::RefPtr<Gtk::TreeModel> model = selectionList->get_model();
-    Glib::RefPtr<Gtk::TreeSelection> sel = selectionList->get_selection();
-    std::list<Gtk::TreeModel::Path> paths = sel->get_selected_rows();
-    std::list<Gtk::TreeModel::Path>::iterator iter;
-    for (iter = paths.begin(); iter != paths.end(); iter++) {
-	numbers += (*iter)[0];
+    std::vector<int> selnos;
+    selectionList->get_selected_numbers(selnos);
+    std::vector<int>::iterator iter;
+    for (iter = selnos.begin(); iter != selnos.end(); iter++) {
+	numbers += (*iter);
     }
 }
 #endif
@@ -366,23 +365,5 @@ void ListSetAndSelectPos(GUI::ListView *list, int pos)
 {
     std::cerr << "ListSetAndSelectPos: not implemented\n";
     std::cerr << "Args: " << list << " " << pos << "\n";
-}
-
-// Get the selected item positions
-int list_get_positions(GUI::ListView *selectionList, int *&positions, int &n_positions)
-{
-    Glib::RefPtr<Gtk::TreeSelection> sel = selectionList->get_selection();
-    Gtk::TreeSelection::ListHandle_Path paths = sel->get_selected_rows();
-    Glib::RefPtr<Gtk::TreeModel> model = selectionList->get_model();
-    n_positions = paths.size();
-    positions = (int *)malloc(n_positions*sizeof(int));
-    int count = 0;
-    for (Gtk::TreeSelection::ListHandle_Path::const_iterator iter = paths.begin();
-	 iter != paths.end();
-	 iter++) {
-	Gtk::TreePath path = *iter;
-	positions[count++] = path[0];
-    }
-    return n_positions;
 }
 #endif

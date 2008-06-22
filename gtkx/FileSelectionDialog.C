@@ -59,7 +59,7 @@ FileSelectionDialog::~FileSelectionDialog(void)
     delete fs_;
 }
 
-std::string
+GtkX::String
 FileSelectionDialog::get_selected(void)
 {
     return fs_->get_selected();
