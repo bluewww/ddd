@@ -392,8 +392,10 @@ void Delay::DestroyCB(GUI::Widget *widget)
 	    std::clog << "Unregistering " << XtName(widget) 
 		      << " in slot " << i << "\n";
 #else
-	    std::clog << "Unregistering " << widget->get_name().c_str()
-		      << " in slot " << i << "\n";
+	    // Note: This is called from the sigc::trackable base
+	    // class destructor.  The internal Gtk widget has already
+	    // been destroyed, so we cannot call get_name().
+	    std::clog << "Unregistering widget in slot " << i << "\n";
 #endif
 #endif
 	}
@@ -420,10 +422,7 @@ void Delay::register_shell(GUI::Widget *widget)
 #if defined(IF_XM)
     XtAddCallback(widget, XtNdestroyCallback, DestroyCB, XtPointer(0));
 #else
-#ifdef NAG_ME
-#warning No signal_destroy()?
-#endif
-    // widget->signal_destroy().connect(sigc::bind(PTR_FUN(Delay::DestroyCB), widget));
+    widget->add_destroy_notify_callback(widget, (void *(*)(void *))Delay::DestroyCB);
 #endif
 
     _Delay *new_delay = 0;
