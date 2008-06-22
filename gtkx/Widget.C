@@ -43,13 +43,19 @@ const GtkX::String GtkX::mklabel(const GtkX::String &name,
     return name;
 }
 
-typedef std::map<GdkDisplay *, RefPtr<Display> > DisplayMap;
+typedef std::map<GdkDisplay *, Display *> DisplayMap;
 DisplayMap display_map;
 
 Display::Display(Glib::RefPtr<Gdk::Display> d0)
 {
     nrefs_ = 0;
     disp_ = d0;
+}
+
+Display::~Display()
+{
+    display_map.erase(disp_->gobj());
+    std::cerr << "display_map[-] size now " << display_map.size() << "\n";
 }
 
 RefPtr<Display>
@@ -60,8 +66,9 @@ Display::wrap(Glib::RefPtr<Gdk::Display> d0)
     if (iter != display_map.end()) {
 	return iter->second;
     }
-    RefPtr<Display> d = new Display(d0);
-    display_map.insert(std::pair<GdkDisplay *, RefPtr<Display> >(d0->gobj(), d));
+    Display *d = new Display(d0);
+    display_map.insert(std::pair<GdkDisplay *, Display *>(d0->gobj(), d));
+    std::cerr << "display_map[+] size now " << display_map.size() << "\n";
     return d;
 }
 
@@ -107,7 +114,7 @@ Display::keyboard_ungrab(unsigned int time_)
     disp_->keyboard_ungrab(time_);
 }
 
-typedef std::map<GdkScreen *, RefPtr<Screen> > ScreenMap;
+typedef std::map<GdkScreen *, Screen *> ScreenMap;
 ScreenMap screen_map;
 
 RefPtr<Screen>
@@ -118,8 +125,9 @@ Screen::wrap(Glib::RefPtr<Gdk::Screen> s0)
     if (iter != screen_map.end()) {
 	return iter->second;
     }
-    RefPtr<Screen> s = new Screen(s0);
-    screen_map.insert(std::pair<GdkScreen *, RefPtr<Screen> >(s0->gobj(), s));
+    Screen *s = new Screen(s0);
+    screen_map.insert(std::pair<GdkScreen *, Screen *>(s0->gobj(), s));
+    std::cerr << "screen_map[+] size now " << screen_map.size() << "\n";
     return s;
 }
 
@@ -127,6 +135,12 @@ Screen::Screen(Glib::RefPtr<Gdk::Screen> s0)
 {
     nrefs_ = 0;
     screen_ = s0;
+}
+
+Screen::~Screen()
+{
+    screen_map.erase(screen_->gobj());
+    std::cerr << "screen_map[-] size now " << screen_map.size() << "\n";
 }
 
 RefPtr<XWindow>
@@ -141,7 +155,7 @@ Screen::make_display_name(void) const
     return screen_->make_display_name();
 }
 
-typedef std::map<GdkWindow *, RefPtr<XWindow> > XWindowMap;
+typedef std::map<GdkWindow *, XWindow *> XWindowMap;
 XWindowMap xwindow_map;
 
 RefPtr<XWindow>
@@ -152,8 +166,9 @@ XWindow::wrap(Glib::RefPtr<Gdk::Window> w0)
     if (iter != xwindow_map.end()) {
 	return iter->second;
     }
-    RefPtr<XWindow> s = new XWindow(w0);
-    xwindow_map.insert(std::pair<GdkWindow *, RefPtr<XWindow> >(w0->gobj(), s));
+    XWindow *s = new XWindow(w0);
+    xwindow_map.insert(std::pair<GdkWindow *, XWindow *>(w0->gobj(), s));
+    std::cerr << "xwindow_map[+] size now " << xwindow_map.size() << "\n";
     return s;
 }
 
@@ -171,14 +186,21 @@ XWindow::wrap(GdkWindow *w0)
     // Glib::wrap does not do this by default because usually the
     // pointer is obtained by calling a GTK routine which does it.
     Glib::RefPtr<Gdk::Window> w1 = Glib::wrap((GdkWindowObject *)w0, true);
-    RefPtr<XWindow> s = new XWindow(w1);
-    xwindow_map.insert(std::pair<GdkWindow *, RefPtr<XWindow> >(w0, s));
+    XWindow *s = new XWindow(w1);
+    xwindow_map.insert(std::pair<GdkWindow *, XWindow *>(w0, s));
+    std::cerr << "xwindow_map[+] size now " << xwindow_map.size() << "\n";
     return s;
 }
 
 XWindow::XWindow(Glib::RefPtr<Gdk::Window> w0)
 {
     win_ = w0;
+}
+
+XWindow::~XWindow()
+{
+    xwindow_map.erase(win_->gobj());
+    std::cerr << "xwindow_map[-] size now " << xwindow_map.size() << "\n";
 }
 
 Glib::RefPtr<Gdk::Drawable>
@@ -696,7 +718,7 @@ GtkX::signal_idle()
     return signal_idle_;
 }
 
-typedef std::map<GdkPixmap *, RefPtr<Pixmap> > PixmapMap;
+typedef std::map<GdkPixmap *, Pixmap *> PixmapMap;
 PixmapMap pixmap_map;
 
 RefPtr<Pixmap>
@@ -707,8 +729,9 @@ Pixmap::wrap(Glib::RefPtr<Gdk::Pixmap> p0)
     if (iter != pixmap_map.end()) {
 	return iter->second;
     }
-    RefPtr<Pixmap> s = new Pixmap(p0);
-    pixmap_map.insert(std::pair<GdkPixmap *, RefPtr<Pixmap> >(p0->gobj(), s));
+    Pixmap *s = new Pixmap(p0);
+    pixmap_map.insert(std::pair<GdkPixmap *, Pixmap *>(p0->gobj(), s));
+    std::cerr << "pixmap_map[+] size now " << pixmap_map.size() << "\n";
     return s;
 }
 
@@ -742,9 +765,19 @@ Drawable::Drawable(void)
     nrefs_ = 0;
 }
 
+Drawable::~Drawable()
+{
+}
+
 Pixmap::Pixmap(Glib::RefPtr<Gdk::Pixmap> p0)
 {
     pixmap_ = p0;
+}
+
+Pixmap::~Pixmap()
+{
+    pixmap_map.erase(pixmap_->gobj());
+    std::cerr << "pixmap_map[-] size now " << pixmap_map.size() << "\n";
 }
 
 Glib::RefPtr<Gdk::Pixmap>
@@ -820,13 +853,19 @@ Drawable::draw_layout(RefPtr<GC> &gc, int x, int y,
 }
 
 
-typedef std::map<GdkGC *, RefPtr<GC> > GCMap;
+typedef std::map<GdkGC *, GC *> GCMap;
 GCMap gc_map;
 
 GC::GC(Glib::RefPtr<Gdk::GC> g0)
 {
     nrefs_ = 0;
     gc_ = g0;
+}
+
+GC::~GC()
+{
+    gc_map.erase(gc_->gobj());
+    std::cerr << "gc_map[-] size now " << gc_map.size() << "\n";
 }
 
 RefPtr<GC>
@@ -837,8 +876,9 @@ GC::wrap(Glib::RefPtr<Gdk::GC> g0)
     if (iter != gc_map.end()) {
 	return iter->second;
     }
-    RefPtr<GC> g = new GC(g0);
-    gc_map.insert(std::pair<GdkGC *, RefPtr<GC> >(g0->gobj(), g));
+    GC *g = new GC(g0);
+    gc_map.insert(std::pair<GdkGC *, GC *>(g0->gobj(), g));
+    std::cerr << "gc_map[+] size now " << gc_map.size() << "\n";
     return g;
 }
 

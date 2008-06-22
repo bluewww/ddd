@@ -103,6 +103,7 @@ namespace GtkX {
 	Glib::RefPtr<Gdk::Display> disp_;
     public:
 	Display(Glib::RefPtr<Gdk::Display> d0);
+	~Display();
 	static RefPtr<Display> wrap(Glib::RefPtr<Gdk::Display> d0);
 	static RefPtr<const Display> wrap(Glib::RefPtr<const Gdk::Display> d0);
 	Glib::RefPtr<Gdk::Display> internal(void);
@@ -125,6 +126,7 @@ namespace GtkX {
 	Glib::RefPtr<Gdk::Screen> screen_;
     public:
 	Screen(Glib::RefPtr<Gdk::Screen> s0);
+	~Screen();
 	static RefPtr<Screen> wrap(Glib::RefPtr<Gdk::Screen> s0);
 	static RefPtr<const Screen> wrap(Glib::RefPtr<const Gdk::Screen> s0);
 	Glib::RefPtr<Gdk::Screen> internal(void);
@@ -252,6 +254,7 @@ namespace GtkX {
 	Glib::RefPtr<Gdk::GC> gc_;
     public:
 	GC(Glib::RefPtr<Gdk::GC> g0);
+	~GC();
 	static RefPtr<GC> wrap(Glib::RefPtr<Gdk::GC> g0);
 	static RefPtr<const GC> wrap(Glib::RefPtr<const Gdk::GC> g0);
 	Glib::RefPtr<Gdk::GC> internal(void);
@@ -285,6 +288,7 @@ namespace GtkX {
 	int nrefs_;
     public:
 	Drawable(void);
+	virtual ~Drawable();
 	virtual Glib::RefPtr<Gdk::Drawable> internal(void) = 0;
 	virtual Glib::RefPtr<const Gdk::Drawable> internal(void) const = 0;
 	int ref(void) {return nrefs_++;}
@@ -307,6 +311,7 @@ namespace GtkX {
 	Glib::RefPtr<Gdk::Pixmap> pixmap_;
     public:
 	Pixmap(Glib::RefPtr<Gdk::Pixmap> p0);
+	~Pixmap();
 	static RefPtr<Pixmap> wrap(Glib::RefPtr<Gdk::Pixmap> p0);
 	Glib::RefPtr<Gdk::Drawable> internal(void);
 	Glib::RefPtr<const Gdk::Drawable> internal(void) const;
@@ -326,6 +331,7 @@ namespace GtkX {
 	Glib::RefPtr<Gdk::Window> win_;
     public:
 	XWindow(Glib::RefPtr<Gdk::Window> w0);
+	~XWindow();
 	static RefPtr<XWindow> wrap(Glib::RefPtr<Gdk::Window> w0);
 	static RefPtr<const XWindow> wrap(Glib::RefPtr<const Gdk::Window> w0);
 	static RefPtr<XWindow> wrap(GdkWindow *w0);
