@@ -36,21 +36,20 @@
 
 namespace GtkX {
 
-    // FIXME: Tried to derive from Gtk::Bin, but as Bin is an
-    // "abstract" base class we would need to implement more method.
-    class Notebook: public Gtk::Notebook, public Container {
+    class Notebook: public Container {
+	Gtk::Notebook *nb_;
     public:
 	Notebook(GtkX::Container &parent, PackOptions po=PACK_SHRINK,
 		 const String &name="");
 	~Notebook(void);
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;
-	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
-#include <GtkX/redirect.h>
 	// Note: we must ensure all children are GtkX widgets.
 	GtkX::Widget *get_current_child(void);
 	int append_page(GtkX::Widget &child, const String &tab_label, bool use_mnemonic=false);
 	GtkX::Container *append_page(const String &tab_label="", bool use_mnemonic=false);
+	int get_n_pages();
+	void set_current_page(int page_num);
     };
 
 }

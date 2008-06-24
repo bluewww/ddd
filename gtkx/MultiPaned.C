@@ -30,28 +30,42 @@
 
 using namespace GtkX;
 
-MultiPaned::MultiPaned(void)
+#if 0
+MultiPaned::MultiPaned()
 {
+    Gtk::VPaned *paned = new Gtk::VPaned();
+    xchild_.push_back(paned);
 }
+#endif
 
 MultiPaned::MultiPaned(GtkX::Container &parent, PackOptions po,
 		       const GtkX::String &name, const GtkX::String &label)
 {
+    Gtk::VPaned *paned = new Gtk::VPaned();
+    xchild_.push_back(paned);
     set_name(name.s());
     parent.add_child(*this, po, 0);
     postinit();
 }
 
+MultiPaned::~MultiPaned()
+{
+    std::list<Gtk::VPaned *>::iterator iter;
+    for (iter = xchild_.begin(); iter != xchild_.end(); iter++) {
+	delete *iter;
+    }
+}
+
 Gtk::Widget *
 MultiPaned::internal(void)
 {
-    return this;
+    return *xchild_.begin();
 }
 
 const Gtk::Widget *
 MultiPaned::internal(void) const
 {
-    return this;
+    return *xchild_.begin();
 }
 
 void
@@ -60,15 +74,15 @@ MultiPaned::add_child(GtkX::Widget &child, PackOptions options, int padding)
     int resize = 0;
     if (options & (PACK_EXPAND_PADDING|PACK_EXPAND_WIDGET))
 	resize = 1;
-    int n = Gtk::Container::get_children().size();
+    Gtk::VPaned *top = *xchild_.begin();
+    int n = top->get_children().size();
     if (n == 0) {
-	pack1(*child.internal(), resize, false);
+	top->pack1(*child.internal(), resize, false);
     }
     else if (n == 1) {
-	assert(xchild_.size() == 0);
 	Gtk::VPaned *paned = new Gtk::VPaned();
 	paned->set_name("MultiPaned");
-	Gtk::VPaned::on_add(paned);
+	top->add(*paned);
 	xchild_.push_back(paned);
 	paned->show();
 	paned->pack1(*child.internal(), resize, false);
@@ -87,7 +101,7 @@ MultiPaned::add_child(GtkX::Widget &child, PackOptions options, int padding)
 void
 MultiPaned::debug(void)
 {
-    Gtk::VPaned *paned = this;
+    Gtk::VPaned *paned = *xchild_.begin();
     while (paned) {
 	Gtk::Widget *c1 = paned->get_child1();
 	Gtk::Allocation all = c1->get_allocation();
@@ -141,15 +155,5 @@ void
 MultiPaned::hide_child(GtkX::Widget* widget)
 {
     MultiPaned::hide_child(widget->internal());
-}
-
-#ifdef NAG_ME
-#warning DEBUGGING CODE
-#endif
-bool
-MultiPaned::on_expose_event(GdkEventExpose* event)
-{
-    // debug();
-    return Gtk::VPaned::on_expose_event(event);
 }
 

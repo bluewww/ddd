@@ -32,32 +32,27 @@ using namespace GtkX;
 MenuBar::MenuBar(GtkX::Container &parent, PackOptions po,
 		 const GtkX::String &name)
 {
+    mb_ = new Gtk::MenuBar();
     set_name(name.s());
-    // We cannot use this:
-    // parent.gtk_container()->add(*this);
-    // If we always had parent.gtk_container() == &parent we could just
-    // override the on_add() method to do what we want.  However,
-    // sometimes parent.gtk_container() is a standard Gtk widget.
-    // In such a case (e.g. RadioBox) we need to override add_child()
-    // instead.
     parent.add_child(*this, po, 0);
     postinit();
 }
 
 MenuBar::~MenuBar(void)
 {
+    delete mb_;
 }
 
 Gtk::Widget *
 MenuBar::internal(void)
 {
-    return this;
+    return mb_;
 }
 
 const Gtk::Widget *
 MenuBar::internal(void) const
 {
-    return this;
+    return mb_;
 }
 
 

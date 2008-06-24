@@ -73,13 +73,13 @@ Display::wrap(Glib::RefPtr<Gdk::Display> d0)
 }
 
 String
-Display::get_name(void) const
+Display::get_name() const
 {
     return String(disp_->get_name().c_str());
 }
 
 void
-Display::flush(void)
+Display::flush()
 {
     disp_->flush();
 }
@@ -91,13 +91,13 @@ Display::open(const String& display_name)
 }
 
 void
-Display::close(void)
+Display::close()
 {
     disp_->close();
 }
 
 RefPtr<Screen>
-Display::get_default_screen(void)
+Display::get_default_screen()
 {
     return Screen::wrap(disp_->get_default_screen());
 }
@@ -144,13 +144,13 @@ Screen::~Screen()
 }
 
 RefPtr<XWindow>
-Screen::get_root_window(void)
+Screen::get_root_window()
 {
     return XWindow::wrap(screen_->get_root_window());
 }
 
 String
-Screen::make_display_name(void) const
+Screen::make_display_name() const
 {
     return screen_->make_display_name();
 }
@@ -204,13 +204,13 @@ XWindow::~XWindow()
 }
 
 Glib::RefPtr<Gdk::Drawable>
-XWindow::internal(void)
+XWindow::internal()
 {
     return win_;
 }
 
 Glib::RefPtr<const Gdk::Drawable>
-XWindow::internal(void) const
+XWindow::internal() const
 {
     return win_;
 }
@@ -228,7 +228,7 @@ XWindow::set_cursor(const Cursor &cursor)
 }
 
 void
-XWindow::clear(void)
+XWindow::clear()
 {
     win_->clear();
 }
@@ -269,23 +269,23 @@ XWindow::set_title(const String &s)
 }
 
 
-Widget::Widget(void)
+Widget::Widget()
 {
 }
 
-Widget::~Widget(void)
+Widget::~Widget()
 {
 }
 
 // Default
 Gtk::Widget *
-Widget::signals_from(void)
+Widget::signals_from()
 {
     return internal();
 }
 
 Container *
-Widget::get_parent(void)
+Widget::get_parent()
 {
     Gtk::Container *par = internal()->get_parent();
     // Composite widget?
@@ -305,43 +305,49 @@ GtkX::get_wrapper(Gtk::Widget *w)
 }
 
 void
-Widget::show(void)
+Widget::show()
 {
     internal()->show();
 }
 
 void
-Widget::hide(void)
+Widget::hide()
 {
     internal()->hide();
 }
 
 bool
-Widget::is_visible(void) const
+Widget::is_visible() const
 {
     return internal()->is_visible();
 }
 
 bool
-Widget::is_realized(void) const
+Widget::is_realized() const
 {
     return internal()->is_realized();
 }
 
 bool
-Widget::is_sensitive(void) const
+Widget::is_sensitive() const
 {
     return internal()->is_sensitive();
 }
 
 bool
-Widget::activate(void)
+Widget::is_mapped() const
+{
+    return internal()->is_mapped();
+}
+
+bool
+Widget::activate()
 {
     return internal()->activate();
 }
 
 String
-Widget::get_name(void)
+Widget::get_name()
 {
     return internal()->get_name();
 }
@@ -359,7 +365,7 @@ Widget::set_sensitive(bool b)
 }
 
 void
-Widget::init_signals(void)
+Widget::init_signals()
 {
     // Must be called from postinit, because internal() must be set.
     Gtk::Widget *from = signals_from();
@@ -373,14 +379,14 @@ Widget::init_signals(void)
 }
 
 void
-Widget::postinit(void)
+Widget::postinit()
 {
     init_signals();
     internal()->set_data(gtkx_super_quark, this);
 }
 
 Requisition
-Widget::size_request(void) const
+Widget::size_request() const
 {
     Gtk::Requisition greq = internal()->size_request();
     Requisition req = {greq.width, greq.height};
@@ -425,13 +431,13 @@ translate_color(const GdkColor &gc, Color &c)
 }
 
 Color
-Widget::get_bg(void) const
+Widget::get_bg() const
 {
     return get_bg(STATE_NORMAL);
 }
 
 Color
-Widget::get_fg(void) const
+Widget::get_fg() const
 {
     return get_fg(STATE_NORMAL);
 }
@@ -484,25 +490,25 @@ Widget::set_fg(StateType state, const Color &c)
 
 
 Main *
-Widget::get_main(void) const
+Widget::get_main() const
 {
     return default_main_loop;
 }
 
 RefPtr<Display>
-Widget::get_display(void)
+Widget::get_display()
 {
     return Display::wrap(internal()->get_display());
 }
 
 RefPtr<Screen>
-Widget::get_screen(void)
+Widget::get_screen()
 {
     return Screen::wrap(internal()->get_screen());
 }
 
 RefPtr<XWindow>
-Widget::get_window(void)
+Widget::get_window()
 {
     Glib::RefPtr<Gdk::Window> rp = internal()->get_window();
     fprintf(stderr, "WINDOW %lx\n", ((long *)&rp)[0]);
@@ -510,19 +516,19 @@ Widget::get_window(void)
 }
 
 RefPtr<Context>
-Widget::get_font_context(void)
+Widget::get_font_context()
 {
     return Context::wrap(internal()->get_pango_context());
 }
 
 int
-Widget::get_width(void) const
+Widget::get_width() const
 {
     return internal()->get_width();
 }
 
 int
-Widget::get_height(void) const
+Widget::get_height() const
 {
     return internal()->get_height();
 }
@@ -534,14 +540,14 @@ Widget::set_size_request(int width, int height)
 }
 
 PropertyProxy<void *>
-Widget::property_user_data(void)
+Widget::property_user_data()
 {
     // N.B. This must be consistent with Gtk.
     return PropertyProxy<void *>(this, "user-data");
 }
 
 PropertyProxy_RO<void *>
-Widget::property_user_data(void) const
+Widget::property_user_data() const
 {
     // N.B. This must be consistent with Gtk.
     return PropertyProxy_RO<void *>(this, "user-data");
@@ -646,13 +652,13 @@ Widget::button_release_pre_event_callback(GdkEventButton *ev)
 }
 
 void
-Widget::map_callback(void)
+Widget::map_callback()
 {
     signal_map_();
 }
 
 void
-Widget::unmap_callback(void)
+Widget::unmap_callback()
 {
     signal_unmap_();
 }
@@ -702,7 +708,7 @@ Widget::add_event_mask(EventMask events)
 
 SignalIdle signal_idle_;
 
-SignalIdle::SignalIdle(void)
+SignalIdle::SignalIdle()
 {
 }
 
@@ -760,7 +766,7 @@ Pixmap::create_from_data(RefPtr<Drawable> drawable,
     return new Pixmap(pm);
 }
 
-Drawable::Drawable(void)
+Drawable::Drawable()
 {
     nrefs_ = 0;
 }
@@ -781,31 +787,31 @@ Pixmap::~Pixmap()
 }
 
 Glib::RefPtr<Gdk::Pixmap>
-Pixmap::gdk_pixmap(void)
+Pixmap::gdk_pixmap()
 {
     return pixmap_;
 }
 
 Glib::RefPtr<Gdk::Drawable>
-Pixmap::internal(void)
+Pixmap::internal()
 {
     return pixmap_;
 }
 
 Glib::RefPtr<const Gdk::Drawable>
-Pixmap::internal(void) const
+Pixmap::internal() const
 {
     return pixmap_;
 }
 
 Glib::RefPtr<Gdk::Pixmap>
-Pixmap::internal_pixmap(void)
+Pixmap::internal_pixmap()
 {
     return pixmap_;
 }
 
 int
-Drawable::get_depth(void) const
+Drawable::get_depth() const
 {
     return internal()->get_depth();
 }
@@ -883,13 +889,13 @@ GC::wrap(Glib::RefPtr<Gdk::GC> g0)
 }
 
 Glib::RefPtr<Gdk::GC>
-GC::internal(void)
+GC::internal()
 {
     return gc_;
 }
 
 Glib::RefPtr<const Gdk::GC>
-GC::internal(void) const
+GC::internal() const
 {
     return gc_;
 }
@@ -908,7 +914,7 @@ GC::set_foreground(const Color &color)
 }
 
 Color
-GC::get_foreground(void) const
+GC::get_foreground() const
 {
     GdkGCValues val;
     gdk_gc_get_values(gc_->gobj(), &val);
@@ -926,7 +932,7 @@ GC::set_background(const Color &color)
 }
 
 Color
-GC::get_background(void) const
+GC::get_background() const
 {
     GdkGCValues val;
     gdk_gc_get_values(gc_->gobj(), &val);
@@ -1181,7 +1187,7 @@ Color::Color(const String &s)
 
 SignalTimeout signal_timeout_;
 
-SignalTimeout::SignalTimeout(void)
+SignalTimeout::SignalTimeout()
 {
 }
 

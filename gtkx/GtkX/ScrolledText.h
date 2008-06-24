@@ -82,13 +82,13 @@ namespace GtkX {
 	h_ = src.h_;
 	return *this;
       }
-      int get_x(void) const {return x_;}
+      int get_x() const {return x_;}
       void set_x(int x0) {x_ = x0;}
-      int get_y(void) const {return y_;}
+      int get_y() const {return y_;}
       void set_y(int y0) {y_ = y0;}
-      int get_width(void) const {return w_;}
+      int get_width() const {return w_;}
       void set_width(int w0) {w_ = w0;}
-      int get_height(void) const {return h_;}
+      int get_height() const {return h_;}
       void set_height(int h0) {h_ = h0;}
     };
 
@@ -97,9 +97,9 @@ namespace GtkX {
 	bool on_expose_event(GdkEventExpose *event);
 	std::list<GlyphMark *> marks;
     public:
-	MarkedTextView(void);
-	Gtk::Widget *internal(void);
-	const Gtk::Widget *internal(void) const;
+	MarkedTextView();
+	Gtk::Widget *internal();
+	const Gtk::Widget *internal() const;
 	void pos_to_xy(long pos, int &x, int &y);
 	void pos_to_rect(long pos, Rectangle &rect);
 	GlyphMark *map_glyph(Glib::RefPtr<Gdk::Pixbuf> glyph, int x, int y);
@@ -113,37 +113,37 @@ namespace GtkX {
 #include <GtkX/redirect.h>
     };
 
-    class ScrolledText: public GtkX::Widget, public Gtk::ScrolledWindow
+    class ScrolledText: public GtkX::Widget
     {
-    private:
-	MarkedTextView tv_;
+	Gtk::ScrolledWindow *sw_;
+	MarkedTextView *tv_;
 	Glib::RefPtr<Gtk::TextBuffer> tb_;
 	sigc::signal<void> signal_changed_;
-	void changed_callback(void);
+	void changed_callback();
     public:
-	ScrolledText(void);
 	ScrolledText(GtkX::Container &parent, PackOptions po=PACK_SHRINK,
 		     const GtkX::String &name="", const GtkX::String &label="");
-	Gtk::Widget *internal(void);
-	const Gtk::Widget *internal(void) const;
-	void init_signals(void);
-	void postinit(void);
-	Gtk::Widget *signals_from(void);
-	bool get_editable(void) const;
+	~ScrolledText();
+	Gtk::Widget *internal();
+	const Gtk::Widget *internal() const;
+	void init_signals();
+	void postinit();
+	Gtk::Widget *signals_from();
+	bool get_editable() const;
 	void set_editable(bool);
-	long get_last_position(void);
+	long get_last_position();
 	void set_insertion_position(long pos);
-	long get_insertion_position(void);
+	long get_insertion_position();
 	bool get_selection_bounds(long &begin, long &end);
-	void clear_selection(void);
+	void clear_selection();
 	void replace(long pos1, long pos2, const String &repl);
 	void insert(long pos, const String &repl);
 	void set_text(const String &repl);
-	String get_text(void);
+	String get_text();
 	String get_text(long, long);
 	void show_position(long pos);
-	MarkedTextView &view(void);
-	Glib::RefPtr<Gtk::TextBuffer> buffer(void);
+	MarkedTextView &view();
+	Glib::RefPtr<Gtk::TextBuffer> buffer();
 	void set_highlight(long pos1, long pos2, HighlightMode);
 	long find_forward(String str, long start=0);
 	long find_backward(String str, long start=-1);
@@ -156,7 +156,6 @@ namespace GtkX {
 	int get_rows();
 	int get_columns();
 	sigc::signal<void> &signal_changed();
-#include <GtkX/redirect.h>
     };
 
 }

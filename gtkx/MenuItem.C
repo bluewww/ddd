@@ -24,40 +24,48 @@
 // reparented.  Therefore we need a constructor with extra arguments.
 
 #include <GtkX/MenuItem.h>
+#include <GtkX/Menu.h>
 #include <gtkmm/menuitem.h>
 
 using namespace GtkX;
 
 MenuItem::MenuItem(GtkX::Container &parent, PackOptions po,
-		   const GtkX::String &name, const GtkX::String &label):
-    Gtk::MenuItem(mklabel(name, label).s())
+		   const GtkX::String &name, const GtkX::String &label)
 {
+    item_ = new Gtk::MenuItem(mklabel(name, label).s());
     set_name(name.s());
-    // We cannot use this:
-    // parent.gtk_container()->add(*this);
-    // If we always had parent.gtk_container() == &parent we could just
-    // override the on_add() method to do what we want.  However,
-    // sometimes parent.gtk_container() is a standard Gtk widget.
-    // In such a case (e.g. RadioBox) we need to override add_child()
-    // instead.
     parent.add_child(*this, po, 0);
     postinit();
 }
 
 MenuItem::~MenuItem(void)
 {
+    delete item_;
+}
+
+void
+MenuItem::init_signals(void)
+{
+    item_->signal_activate().connect(sigc::mem_fun(*this, &MenuItem::activate_callback));
+}
+
+void
+MenuItem::postinit(void)
+{
+    Widget::postinit();
+    init_signals();
 }
 
 Gtk::Widget *
 MenuItem::internal(void)
 {
-    return this;
+    return item_;
 }
 
 const Gtk::Widget *
 MenuItem::internal(void) const
 {
-    return this;
+    return item_;
 }
 
 void
@@ -70,12 +78,32 @@ MenuItem::set_label(const String &label)
 void
 MenuItem::remove(void)
 {
-    Gtk::MenuItem::remove();
+    item_->remove();
 }
 
 void
 MenuItem::add_label(const String &s, bool mnemonic,
 		    double x_align, double y_align)
 {
-    Gtk::MenuItem::add_label(s.s(), mnemonic, x_align, y_align);
+    item_->add_label(s.s(), mnemonic, x_align, y_align);
 }
+
+void
+MenuItem::set_submenu(GtkX::Menu &sub)
+{
+    Gtk::Menu *gsub = dynamic_cast<Gtk::Menu *>(sub.internal());
+    item_->set_submenu(*gsub);
+}
+
+void
+MenuItem::activate_callback()
+{
+    signal_activate_();
+}
+
+sigc::signal<void> &
+MenuItem::signal_activate()
+{
+    return signal_activate_;
+}
+

@@ -42,6 +42,7 @@ char logo_rcsid[] =
 #include <gtkmm/label.h>
 #include <gtkmm/button.h>
 #include <gtkmm/menuitem.h>
+#include <GUI/MenuItem.h>
 #endif
 #include "assert.h"
 #include "string-fun.h"
@@ -1378,8 +1379,16 @@ void set_label(GUI::Widget *w, const GUI::String& new_label, GUI::ImageHandle *i
     }
     XmStringFree(old_label);
 #else
-    Gtk::Bin *bin = dynamic_cast<Gtk::Bin *>(w);
-    if (bin) {
+    GtkX::MenuItem *mi;
+    Gtk::Bin *bin;
+    if (mi = dynamic_cast<GtkX::MenuItem *>(w)) {
+	if (image) {
+	    std::cerr << "Cannot set Image on MenuItem\n";
+	    return;
+	}
+	mi->set_label(new_label);
+    }
+    else if (bin = dynamic_cast<Gtk::Bin *>(w)) {
 	Gtk::Widget *child = bin->get_child();
 	Gtk::Image *old_img = child?dynamic_cast<Gtk::Image *>(child):NULL;
 	Gtk::Label *old_lab = child?dynamic_cast<Gtk::Label *>(child):NULL;

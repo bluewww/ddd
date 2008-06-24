@@ -34,47 +34,49 @@ using namespace GtkX;
 
 OptionMenu::OptionMenu(GtkX::Container &parent, PackOptions po, const GtkX::String &name)
 {
+    om_ = new Gtk::OptionMenu();
     set_name(name.s());
-    // We cannot use this:
-    // parent.gtk_container()->add(*this);
-    // If we always had parent.gtk_container() == &parent we could just
-    // override the on_add() method to do what we want.  However,
-    // sometimes parent.gtk_container() is a standard Gtk widget.
-    // In such a case (e.g. RadioBox) we need to override add_child()
-    // instead.
     parent.add_child(*this, po, 0);
     postinit();
 }
 
 OptionMenu::~OptionMenu(void)
 {
+    delete om_;
 }
 
 Gtk::Widget *
 OptionMenu::internal(void)
 {
-    return this;
+    return om_;
 }
 
 const Gtk::Widget *
 OptionMenu::internal(void) const
 {
-    return this;
+    return om_;
 }
 
 void
 OptionMenu::set_menu(GtkX::Menu &menu)
 {
-    this->Gtk::OptionMenu::set_menu(menu);
+    Gtk::Menu *gmenu = dynamic_cast<Gtk::Menu *>(menu.internal());
+    om_->set_menu(*gmenu);
 }
 
 GtkX::Menu *
 OptionMenu::get_menu(void)
 {
-    Gtk::Menu *gtk_menu = Gtk::OptionMenu::get_menu();
+    Gtk::Menu *gtk_menu = om_->get_menu();
     if (!gtk_menu) return NULL;
     GtkX::Widget *w = get_wrapper(gtk_menu);
     if (!w) return NULL;
     return dynamic_cast<GtkX::Menu *>(w);
+}
+
+void
+OptionMenu::set_history(int index)
+{
+    om_->set_history(index);
 }
 

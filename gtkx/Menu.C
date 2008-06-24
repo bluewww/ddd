@@ -25,46 +25,52 @@
 
 // ***************************************************************************
 
-// Primitive widget creation using constructors with no arguments.
-
 #include <GtkX/Menu.h>
 
 using namespace GtkX;
 
 Menu::Menu(GtkX::Widget &parent, const GtkX::String &name)
 {
+    menu_ = new Gtk::Menu();
     set_name(name.s());
-    // parent.add_child(*this, po, 0);
     postinit();
 }
 
-// TEMPORARY
-Menu::Menu(Gtk::Widget *parent, const GtkX::String &name)
+Menu::Menu(const String &name)
 {
+    menu_ = new Gtk::Menu();
     set_name(name.s());
-    // parent->add(*internal());
     postinit();
 }
 
 Menu::~Menu(void)
 {
+    delete menu_;
 }
 
 Gtk::Widget *
 Menu::internal(void)
 {
-    return this;
+    return menu_;
 }
 
 const Gtk::Widget *
 Menu::internal(void) const
 {
-    return this;
+    return menu_;
 }
 
-ChildList
-Menu::get_children(void)
+void
+Menu::popup()
 {
-    return GtkX::Container::get_children();
+#ifdef NAG_ME
+#warning Arguments to popup?
+#endif
+    menu_->popup(0, 0);
 }
 
+void
+Menu::popdown()
+{
+    menu_->popdown();
+}

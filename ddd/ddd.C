@@ -8715,7 +8715,7 @@ PopupStatusHistoryCB(const GUI::EventButton *, GUI::Widget *w)
 #ifdef NAG_ME
 #warning Can we choose the position of the popup menu (SlotPositionCalc?)
 #endif
-    history_shell->popup(0, gtk_get_current_event_time());
+    history_shell->popup();
 }
 #endif
 

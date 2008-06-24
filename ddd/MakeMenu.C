@@ -1155,7 +1155,7 @@ GUI::PopupMenu *MMcreatePopupMenu(GUI::Widget &parent, GUI::String name, MMDesc 
 GUI::PopupMenu *MMcreatePopupMenu(GUI::Widget *parent, GUI::String name, MMDesc items[])
 {
     // FIXME: No parent.
-    GUI::PopupMenu *menu = new GUI::PopupMenu(NULL, name);
+    GUI::PopupMenu *menu = new GUI::PopupMenu(name);
     MMaddItems(menu, items);
     // FIXME auto_raise(XtParent(menu));
 

@@ -106,17 +106,17 @@ namespace GtkX {
 	~Display();
 	static RefPtr<Display> wrap(Glib::RefPtr<Gdk::Display> d0);
 	static RefPtr<const Display> wrap(Glib::RefPtr<const Gdk::Display> d0);
-	Glib::RefPtr<Gdk::Display> internal(void);
-	Glib::RefPtr<const Gdk::Display> internal(void) const;
-	int ref(void) {return nrefs_++;}
-	int unref(void) {if (!--nrefs_) delete this;}
-	String get_name(void) const;
-	void flush(void);
+	Glib::RefPtr<Gdk::Display> internal();
+	Glib::RefPtr<const Gdk::Display> internal() const;
+	int ref() {return nrefs_++;}
+	int unref() {if (!--nrefs_) delete this;}
+	String get_name() const;
+	void flush();
 	static RefPtr<Display> open(const String& display_name);
-	void close(void);
+	void close();
 	void pointer_ungrab(unsigned int);
 	void keyboard_ungrab(unsigned int);
-	RefPtr<Screen> get_default_screen(void);
+	RefPtr<Screen> get_default_screen();
     };
 
     class XWindow;
@@ -129,12 +129,12 @@ namespace GtkX {
 	~Screen();
 	static RefPtr<Screen> wrap(Glib::RefPtr<Gdk::Screen> s0);
 	static RefPtr<const Screen> wrap(Glib::RefPtr<const Gdk::Screen> s0);
-	Glib::RefPtr<Gdk::Screen> internal(void);
-	Glib::RefPtr<const Gdk::Screen> internal(void) const;
-	int ref(void) {return nrefs_++;}
-	int unref(void) {if (!--nrefs_) delete this;}
-	RefPtr<XWindow> get_root_window(void);
-	String make_display_name(void) const;
+	Glib::RefPtr<Gdk::Screen> internal();
+	Glib::RefPtr<const Gdk::Screen> internal() const;
+	int ref() {return nrefs_++;}
+	int unref() {if (!--nrefs_) delete this;}
+	RefPtr<XWindow> get_root_window();
+	String make_display_name() const;
     };
 
     class Drawable;
@@ -145,7 +145,7 @@ namespace GtkX {
 	double r;
 	double g;
 	double b;
-	Color(void) {
+	Color() {
 	    r = g = b = 0.0;
 	}
 	Color(double r0, double g0, double b0) {
@@ -257,15 +257,15 @@ namespace GtkX {
 	~GC();
 	static RefPtr<GC> wrap(Glib::RefPtr<Gdk::GC> g0);
 	static RefPtr<const GC> wrap(Glib::RefPtr<const Gdk::GC> g0);
-	Glib::RefPtr<Gdk::GC> internal(void);
-	Glib::RefPtr<const Gdk::GC> internal(void) const;
+	Glib::RefPtr<Gdk::GC> internal();
+	Glib::RefPtr<const Gdk::GC> internal() const;
 	GC(const RefPtr<Drawable> &d);
-	int ref(void) {return nrefs_++;}
-	int unref(void) {if (!--nrefs_) delete this;}
+	int ref() {return nrefs_++;}
+	int unref() {if (!--nrefs_) delete this;}
 	void set_foreground(const Color &color);
-	Color get_foreground(void) const;
+	Color get_foreground() const;
 	void set_background(const Color &color);
-	Color get_background(void) const;
+	Color get_background() const;
 	void set_values(const GCValues &values, GCValuesMask mask);
 	void get_values(GCValues &values);
 	void set_line_attributes(int line_width, LineStyle line_style, CapStyle cap_style, JoinStyle join_style);
@@ -277,7 +277,7 @@ namespace GtkX {
     struct Point {
 	int x;
 	int y;
-	Point(void) {}
+	Point() {}
 	Point(int x0, int y0) {
 	    x = x0;
 	    y = y0;
@@ -287,13 +287,13 @@ namespace GtkX {
     class Drawable {
 	int nrefs_;
     public:
-	Drawable(void);
+	Drawable();
 	virtual ~Drawable();
-	virtual Glib::RefPtr<Gdk::Drawable> internal(void) = 0;
-	virtual Glib::RefPtr<const Gdk::Drawable> internal(void) const = 0;
-	int ref(void) {return nrefs_++;}
-	int unref(void) {if (!--nrefs_) delete this;}
-	int get_depth(void) const;
+	virtual Glib::RefPtr<Gdk::Drawable> internal() = 0;
+	virtual Glib::RefPtr<const Gdk::Drawable> internal() const = 0;
+	int ref() {return nrefs_++;}
+	int unref() {if (!--nrefs_) delete this;}
+	int get_depth() const;
 	void draw_line(RefPtr<GC> gc,
 		       int x1, int y1, int x2, int y2);
 	void draw_rectangle(RefPtr<GC> gc, bool filled,
@@ -313,16 +313,16 @@ namespace GtkX {
 	Pixmap(Glib::RefPtr<Gdk::Pixmap> p0);
 	~Pixmap();
 	static RefPtr<Pixmap> wrap(Glib::RefPtr<Gdk::Pixmap> p0);
-	Glib::RefPtr<Gdk::Drawable> internal(void);
-	Glib::RefPtr<const Gdk::Drawable> internal(void) const;
-	Glib::RefPtr<Gdk::Pixmap> internal_pixmap(void);
-	Glib::RefPtr<const Gdk::Pixmap> internal_pixmap(void) const;
+	Glib::RefPtr<Gdk::Drawable> internal();
+	Glib::RefPtr<const Gdk::Drawable> internal() const;
+	Glib::RefPtr<Gdk::Pixmap> internal_pixmap();
+	Glib::RefPtr<const Gdk::Pixmap> internal_pixmap() const;
 	static RefPtr<Pixmap> create_bitmap_from_data(const char *bits, int width, int height);
 	static RefPtr<Pixmap> create_from_data(RefPtr<Drawable> drawable,
                                                const char *data, int width, int height,
 					       int depth, const Color &fg, const Color &bg);
-	Glib::RefPtr<Gdk::Pixmap> gdk_pixmap(void);
-	const Glib::RefPtr<Gdk::Pixmap> gdk_pixmap(void) const;
+	Glib::RefPtr<Gdk::Pixmap> gdk_pixmap();
+	const Glib::RefPtr<Gdk::Pixmap> gdk_pixmap() const;
     };
 
     class Cursor;
@@ -336,13 +336,13 @@ namespace GtkX {
 	static RefPtr<const XWindow> wrap(Glib::RefPtr<const Gdk::Window> w0);
 	static RefPtr<XWindow> wrap(GdkWindow *w0);
 	static RefPtr<const XWindow> wrap(const GdkWindow *w0);
-	Glib::RefPtr<Gdk::Drawable> internal(void);
-	Glib::RefPtr<const Gdk::Drawable> internal(void) const;
-	Glib::RefPtr<Gdk::Window> internal_window(void);
-	Glib::RefPtr<const Gdk::Window> internal_window(void) const;
+	Glib::RefPtr<Gdk::Drawable> internal();
+	Glib::RefPtr<const Gdk::Drawable> internal() const;
+	Glib::RefPtr<Gdk::Window> internal_window();
+	Glib::RefPtr<const Gdk::Window> internal_window() const;
 	void set_back_pixmap(const RefPtr<Pixmap> &pixmap, bool parent_relative);
 	void set_cursor(const Cursor &cursor);
-	void clear(void);
+	void clear();
 	void clear_area(int x, int y, int w, int h);
 	GrabStatus pointer_grab(bool owner_events, EventMask event_mask,
 				RefPtr<XWindow>& confine_to,
@@ -366,46 +366,47 @@ namespace GtkX {
 	sigc::signal<bool, GtkX::EventButton *> signal_button_release_pre_event_;
 	bool button_release_pre_event_callback(GdkEventButton *ev);
 	sigc::signal<void> signal_map_;
-	void map_callback(void);
+	void map_callback();
 	sigc::signal<void> signal_unmap_;
-	void unmap_callback(void);
+	void unmap_callback();
 	sigc::signal<bool, GtkX::EventAny *> signal_delete_event_;
 	bool delete_event_callback(GdkEventAny *ev);
     public:
-	Widget(void);
-	virtual ~Widget(void);
-	void init_signals(void);
-	void postinit(void);
+	Widget();
+	virtual ~Widget();
+	void init_signals();
+	void postinit();
 	// Instantiable subclasses will have an associated Gtk widget:
-	virtual Gtk::Widget *internal(void) = 0;
-	virtual const Gtk::Widget *internal(void) const = 0;
+	virtual Gtk::Widget *internal() = 0;
+	virtual const Gtk::Widget *internal() const = 0;
 	// Widget signals are forwarded from this (may differ from
 	// internal() for a composite widget).
-	virtual Gtk::Widget *signals_from(void);
-	Container *get_parent(void);
-	RefPtr<Display> get_display(void);
-	RefPtr<Screen> get_screen(void);
-	RefPtr<XWindow> get_window(void);
-	RefPtr<Context> get_font_context(void);
-	Main *get_main(void) const;
-	void show(void);
-	void hide(void);
-	int get_width(void) const;
-	int get_height(void) const;
+	virtual Gtk::Widget *signals_from();
+	Container *get_parent();
+	RefPtr<Display> get_display();
+	RefPtr<Screen> get_screen();
+	RefPtr<XWindow> get_window();
+	RefPtr<Context> get_font_context();
+	Main *get_main() const;
+	void show();
+	void hide();
+	int get_width() const;
+	int get_height() const;
 	void set_size_request(int width=-1, int height=-1);
-	bool is_visible(void) const;
-	bool is_realized(void) const;
-	bool is_sensitive(void) const;
-	bool activate(void);
-	String get_name(void);
+	bool is_visible() const;
+	bool is_realized() const;
+	bool is_sensitive() const;
+	bool is_mapped() const;
+	bool activate();
+	String get_name();
 	void set_name(const String &s);
 	void set_sensitive(bool b);
 	void add_destroy_notify_callback(void *data, void *(*f)(void *));
 	void remove_destroy_notify_callback(void *data);
 	bool translate_coordinates(GtkX::Widget &, int, int, int &, int &);
-	Requisition size_request(void) const;
-	Color get_bg(void) const;
-	Color get_fg(void) const;
+	Requisition size_request() const;
+	Color get_bg() const;
+	Color get_fg() const;
 	Color get_bg(StateType) const;
 	Color get_fg(StateType) const;
 	void set_bg(const Color &);
@@ -415,8 +416,8 @@ namespace GtkX {
 	// FIXME: should be const...
 	RefPtr<GC> get_black_gc();
 	RefPtr<GC> get_white_gc();
-	PropertyProxy<void *> property_user_data(void);
-	PropertyProxy_RO<void *> property_user_data(void) const;
+	PropertyProxy<void *> property_user_data();
+	PropertyProxy_RO<void *> property_user_data() const;
 	sigc::signal<bool, GtkX::EventButton *> &signal_button_press_event();
 	sigc::signal<bool, GtkX::EventButton *> &signal_button_release_event();
 	sigc::signal<bool, GtkX::EventButton *> &signal_button_press_pre_event();
@@ -453,7 +454,7 @@ namespace GtkX {
 	// no copy assignment
 	SignalTimeout &operator=(const SignalTimeout&);
     public:
-	SignalTimeout(void);
+	SignalTimeout();
 	sigc::connection connect(const sigc::slot<bool>& slot, unsigned int interval);
     };
 
@@ -473,7 +474,7 @@ namespace GtkX {
 	// no copy assignment
 	SignalIdle& operator=(const SignalIdle&);
     public:
-	SignalIdle(void);
+	SignalIdle();
 	sigc::connection connect(const sigc::slot<bool> &slot, int priority = PRIORITY_DEFAULT_IDLE);
     };
 

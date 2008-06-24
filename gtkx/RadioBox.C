@@ -23,8 +23,8 @@
 // the constructor, unlike the Gtk ones.  Motif (Xt) widgets cannot be
 // reparented.  Therefore we need a constructor with extra arguments.
 
-#include <gtkmm/radiobutton.h>
 #include <GtkX/RadioBox.h>
+#include <GtkX/RadioButton.h>
 
 using namespace GtkX;
 
@@ -41,13 +41,14 @@ RadioBox::create_box(GtkX::Orientation orientation)
     }
     box_->show();
     // FIXME: Do not allow the virtual on_add to be called here.
-    Gtk::VBox::pack_start(*box_, Gtk::PACK_SHRINK);
+    vbox_->pack_start(*box_, Gtk::PACK_SHRINK);
 }
 
 RadioBox::RadioBox(GtkX::Container &parent, PackOptions po,
 		   const GtkX::String &name,
 		   GtkX::Orientation orientation)
 {
+    vbox_ = new Gtk::VBox();
     create_box(orientation);
     set_name(name.s());
     parent.add_child(*this, po, 0);
@@ -57,18 +58,19 @@ RadioBox::RadioBox(GtkX::Container &parent, PackOptions po,
 RadioBox::~RadioBox(void)
 {
     delete box_;
+    delete vbox_;
 }
 
 Gtk::Widget *
 RadioBox::internal(void)
 {
-    return this;
+    return vbox_;
 }
 
 const Gtk::Widget *
 RadioBox::internal(void) const
 {
-    return this;
+    return vbox_;
 }
 
 Gtk::Container *
@@ -80,24 +82,8 @@ RadioBox::gtk_container(void)
 void
 RadioBox::add_child(GtkX::Widget &child, PackOptions options, int padding)
 {
-    add(*child.internal());
-}
-
-void
-RadioBox::on_add(Gtk::Widget *child)
-{
-    box_->add(*child);
-    Gtk::RadioButton *rb = dynamic_cast<Gtk::RadioButton *>(child);
-    if (rb) {
-	rb->set_group(group_);
-    }
-}
-
-void
-RadioBox::pack_start(Gtk::Widget &child, PackOptions options, int padding)
-{
-    box_->pack_start(child, (Gtk::PackOptions)(int)options, (guint)padding);
-    Gtk::RadioButton *rb = dynamic_cast<Gtk::RadioButton *>(&child);
+    box_->add(*child.internal());
+    Gtk::RadioButton *rb = dynamic_cast<Gtk::RadioButton *>(child.internal());
     if (rb) {
 	rb->set_group(group_);
     }

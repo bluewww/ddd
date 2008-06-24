@@ -34,19 +34,22 @@ using namespace GtkX;
 
 extern ScrolledText *gdb_w;
 
-MarkedTextView::MarkedTextView(void)
+// MarkedTextView must be a subclass of TextView, since it calls
+// TextView::on_expose_event() which is protected.
+
+MarkedTextView::MarkedTextView()
 {
     postinit();
 }
 
 Gtk::Widget *
-MarkedTextView::internal(void)
+MarkedTextView::internal()
 {
     return this;
 }
 
 const Gtk::Widget *
-MarkedTextView::internal(void) const
+MarkedTextView::internal() const
 {
     return this;
 }
@@ -175,25 +178,14 @@ MarkedTextView::buffer_to_window_xy(int xin, int yin, int &xout, int &yout)
 					   xout, yout);
 }
 
-ScrolledText::ScrolledText(void)
-{
-    tb_ = tv_.get_buffer();
-    // tv_.modify_bg(Gtk::STATE_NORMAL, Gdk::Color("green"));
-    // tv_.modify_fg(Gtk::STATE_NORMAL, Gdk::Color("red"));
-    // tv_.modify_text(Gtk::STATE_NORMAL, Gdk::Color("blue"));
-    // tv_.modify_base(Gtk::STATE_NORMAL, Gdk::Color("red"));
-    add(tv_);
-    tv_.show();
-}
-
 void
-ScrolledText::init_signals(void)
+ScrolledText::init_signals()
 {
     tb_->signal_changed().connect(sigc::mem_fun(*this, &ScrolledText::changed_callback));
 }
 
 void
-ScrolledText::postinit(void)
+ScrolledText::postinit()
 {
     Widget::postinit();
     init_signals();
@@ -202,35 +194,42 @@ ScrolledText::postinit(void)
 ScrolledText::ScrolledText(GtkX::Container &parent, PackOptions po,
 			   const GtkX::String &name, const GtkX::String &label)
 {
-    tb_ = tv_.get_buffer();
-    // tv_.modify_bg(Gtk::STATE_NORMAL, Gdk::Color("green"));
-    // tv_.modify_fg(Gtk::STATE_NORMAL, Gdk::Color("red"));
-    // tv_.modify_text(Gtk::STATE_NORMAL, Gdk::Color("blue"));
-    // tv_.modify_base(Gtk::STATE_NORMAL, Gdk::Color("red"));
-    add(tv_);
-    tv_.show();
+    sw_ = new Gtk::ScrolledWindow();
+    tv_ = new MarkedTextView();
+    tb_ = tv_->get_buffer();
+    // tv_->modify_bg(Gtk::STATE_NORMAL, Gdk::Color("green"));
+    // tv_->modify_fg(Gtk::STATE_NORMAL, Gdk::Color("red"));
+    // tv_->modify_text(Gtk::STATE_NORMAL, Gdk::Color("blue"));
+    // tv_->modify_base(Gtk::STATE_NORMAL, Gdk::Color("red"));
+    sw_->add(*tv_->internal());
+    tv_->show();
     set_name(name.s());
     parent.add_child(*this, po, 0);
     postinit();
 }
 
+ScrolledText::~ScrolledText()
+{
+    delete tv_;
+    delete sw_;
+}
 
 Gtk::Widget *
-ScrolledText::internal(void)
+ScrolledText::internal()
 {
-    return this;
+    return sw_;
 }
 
 const Gtk::Widget *
-ScrolledText::internal(void) const
+ScrolledText::internal() const
 {
-    return this;
+    return sw_;
 }
 
 Gtk::Widget *
-ScrolledText::signals_from(void)
+ScrolledText::signals_from()
 {
-    return tv_.internal();
+    return tv_->internal();
 }
 
 void
@@ -240,7 +239,7 @@ ScrolledText::window_to_buffer_xy(double xin, double yin,
     int ix = (int)xin;
     int iy = (int)yin;
     int buf_x, buf_y;
-    tv_.window_to_buffer_coords(Gtk::TEXT_WINDOW_TEXT, ix, iy, buf_x, buf_y);
+    tv_->window_to_buffer_coords(Gtk::TEXT_WINDOW_TEXT, ix, iy, buf_x, buf_y);
     xout = buf_x;
     yout = buf_y;
 }
@@ -251,14 +250,14 @@ ScrolledText::xy_to_pos(double x, double y)
     int ix = (int)x;
     int iy = (int)y;
     int buf_x, buf_y;
-    tv_.window_to_buffer_coords(Gtk::TEXT_WINDOW_TEXT, ix, iy, buf_x, buf_y);
+    tv_->window_to_buffer_coords(Gtk::TEXT_WINDOW_TEXT, ix, iy, buf_x, buf_y);
     Gtk::TextIter iter;
-    tv_.get_iter_at_location(iter, buf_x, buf_y);
+    tv_->get_iter_at_location(iter, buf_x, buf_y);
     return iter.get_offset();
 }
 
 String
-ScrolledText::get_text(void)
+ScrolledText::get_text()
 {
     return tb_->get_text();
 }
@@ -274,13 +273,13 @@ ScrolledText::get_text(long o1, long o2)
 void
 ScrolledText::set_editable(bool set)
 {
-    tv_.set_editable(set);
+    tv_->set_editable(set);
 }
 
 bool
-ScrolledText::get_editable(void) const
+ScrolledText::get_editable() const
 {
-    return tv_.get_editable();
+    return tv_->get_editable();
 }
 
 void
@@ -304,11 +303,11 @@ void
 ScrolledText::show_position(long pos)
 {
     Gtk::TextIter iter = tb_->get_iter_at_offset(pos);
-    tv_.scroll_to(iter);
+    tv_->scroll_to(iter);
 }
 
 long
-ScrolledText::get_last_position(void)
+ScrolledText::get_last_position()
 {
     return tb_->end().get_offset();
 }
@@ -327,13 +326,13 @@ ScrolledText::set_text(const String &repl)
 }
 
 MarkedTextView &
-ScrolledText::view(void)
+ScrolledText::view()
 {
-    return tv_;
+    return *tv_;
 }
 
 Glib::RefPtr<Gtk::TextBuffer>
-ScrolledText::buffer(void)
+ScrolledText::buffer()
 {
     return tb_;
 }
@@ -421,14 +420,14 @@ ScrolledText::pos_to_xy(long pos, int &x, int &y)
     Gtk::TextIter iter;
     iter = tb_->get_iter_at_offset(pos);
     Gdk::Rectangle location;
-    tv_.get_iter_location(iter, location);
-    tv_.buffer_to_window_xy(location.get_x(), location.get_y(), x, y);
+    tv_->get_iter_location(iter, location);
+    tv_->buffer_to_window_xy(location.get_x(), location.get_y(), x, y);
     std::cerr << "pos_to_xy: what to return?\n";
     return true;
 }
 
 void
-ScrolledText::clear_selection(void)
+ScrolledText::clear_selection()
 {
     // Glib::RefPtr<Gtk::TextMark> sel = tb_->get_selection_bound();
     // tb_->delete_mark(sel);
@@ -438,7 +437,7 @@ ScrolledText::clear_selection(void)
 }
 
 long
-ScrolledText::get_insertion_position(void)
+ScrolledText::get_insertion_position()
 {
     Glib::RefPtr<Gtk::TextMark> ins = tb_->get_insert();
     Gtk::TextIter iter = tb_->get_iter_at_mark(ins);
@@ -461,7 +460,7 @@ ScrolledText::get_columns()
 }
 
 void
-ScrolledText::changed_callback(void)
+ScrolledText::changed_callback()
 {
     signal_changed_();
 }

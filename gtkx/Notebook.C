@@ -32,6 +32,7 @@ using namespace GtkX;
 Notebook::Notebook(GtkX::Container &parent, PackOptions po,
 		   const GtkX::String &name)
 {
+    nb_ = new Gtk::Notebook();
     set_name(name.s());
     parent.add_child(*this, po, 0);
     postinit();
@@ -39,24 +40,25 @@ Notebook::Notebook(GtkX::Container &parent, PackOptions po,
 
 Notebook::~Notebook(void)
 {
+    delete nb_;
 }
 
 Gtk::Widget *
 Notebook::internal(void)
 {
-    return this;
+    return nb_;
 }
 
 const Gtk::Widget *
 Notebook::internal(void) const
 {
-    return this;
+    return nb_;
 }
 
 int
 Notebook::append_page(GtkX::Widget &child, const String &tab_label, bool use_mnemonic)
 {
-    Gtk::Notebook::append_page(*child.internal(), tab_label.s(), use_mnemonic);
+    nb_->append_page(*child.internal(), tab_label.s(), use_mnemonic);
 }
 
 GtkX::Container *
@@ -70,7 +72,7 @@ Notebook::append_page(const String &tab_label, bool use_mnemonic)
 GtkX::Widget *
 Notebook::get_current_child(void)
 {
-    Gtk::Notebook_Helpers::PageList::iterator iter = get_current();
+    Gtk::Notebook_Helpers::PageList::iterator iter = nb_->get_current();
     Gtk::Widget *child = iter->get_child();
     if (!child) return NULL;
     GtkX::Widget *super = (GtkX::Widget *)child->get_data(gtkx_super_quark);
@@ -79,5 +81,17 @@ Notebook::get_current_child(void)
 	return super;
     }
     return NULL;
+}
+
+int
+Notebook::get_n_pages()
+{
+    return nb_->get_n_pages();
+}
+
+void
+Notebook::set_current_page(int page_num)
+{
+    nb_->set_current_page(page_num);
 }
 

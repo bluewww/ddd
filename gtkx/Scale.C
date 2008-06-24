@@ -63,6 +63,7 @@ Scale::get_value(void) const
 VScale::VScale(GtkX::Container &parent, PackOptions po,
 	       const GtkX::String &name)
 {
+    scale_ = new Gtk::VScale();
     set_name(name.s());
     parent.add_child(*this, po, 0);
     init_signals();
@@ -71,9 +72,9 @@ VScale::VScale(GtkX::Container &parent, PackOptions po,
 
 VScale::VScale(GtkX::Container &parent, PackOptions po,
 	       const GtkX::String &name,
-	       double min, double max, double step):
-    Gtk::VScale(min, max, step)
+	       double min, double max, double step)
 {
+    scale_ = new Gtk::VScale(min, max, step);
     set_name(name.s());
     parent.add_child(*this, po, 0);
     init_signals();
@@ -82,35 +83,25 @@ VScale::VScale(GtkX::Container &parent, PackOptions po,
 
 VScale::~VScale()
 {
+    delete scale_;
 }
 
 Gtk::Widget *
 VScale::internal(void)
 {
-    return this;
+    return scale_;
 }
 
 const Gtk::Widget *
 VScale::internal(void) const
 {
-    return this;
-}
-
-void
-VScale::set_value(double x)
-{
-    Scale::set_value(x);
-}
-
-double
-VScale::get_value(void) const
-{
-    return Scale::get_value();
+    return scale_;
 }
 
 HScale::HScale(GtkX::Container &parent, PackOptions po,
 	       const GtkX::String &name)
 {
+    scale_ = new Gtk::HScale();
     set_name(name.s());
     parent.add_child(*this, po, 0);
     init_signals();
@@ -119,9 +110,9 @@ HScale::HScale(GtkX::Container &parent, PackOptions po,
 
 HScale::HScale(GtkX::Container &parent, PackOptions po,
 	       const GtkX::String &name,
-	       double min, double max, double step):
-    Gtk::HScale(min, max, step)
+	       double min, double max, double step)
 {
+    scale_ = new Gtk::HScale(min, max, step);
     set_name(name.s());
     parent.add_child(*this, po, 0);
     init_signals();
@@ -130,29 +121,18 @@ HScale::HScale(GtkX::Container &parent, PackOptions po,
 
 HScale::~HScale()
 {
+    delete scale_;
 }
 
 Gtk::Widget *
 HScale::internal(void)
 {
-    return this;
+    return scale_;
 }
 
 const Gtk::Widget *
 HScale::internal(void) const
 {
-    return this;
-}
-
-void
-HScale::set_value(double x)
-{
-    Scale::set_value(x);
-}
-
-double
-HScale::get_value(void) const
-{
-    return Scale::get_value();
+    return scale_;
 }
 

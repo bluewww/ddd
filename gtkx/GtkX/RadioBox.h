@@ -38,9 +38,8 @@
 
 namespace GtkX {
 
-    // FIXME: Tried to derive from Gtk::Bin, but as Bin is an
-    // "abstract" base class we would need to implement more method.
-    class RadioBox: public Gtk::VBox, public Container {
+    class RadioBox: public Container {
+	Gtk::VBox *vbox_;
 	Gtk::Box *box_;
 	Gtk::RadioButtonGroup group_;
     public:
@@ -55,12 +54,6 @@ namespace GtkX {
 	void add_child(GtkX::Widget &child,
 		       PackOptions options=PACK_SHRINK,
 		       int padding=0);
-	void on_add(Gtk::Widget *child);
-	void pack_start(Gtk::Widget &child,
-			PackOptions options=PACK_SHRINK,
-			int padding=0);
-	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
-#include <GtkX/redirect.h>
     };
 
 }

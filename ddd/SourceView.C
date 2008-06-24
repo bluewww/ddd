@@ -7889,7 +7889,7 @@ void SourceView::srcpopupAct (GUI::Widget *w, GUI::Event* e, GUI::String *, unsi
 	std::cerr << "Setting callback_bp_nr = " << bp_nr << "\n";
 	callback_bp_nr = bp_nr;
 	bp_popup_w->menu_position(event);
-	bp_popup_w->popup(0, 0);
+	bp_popup_w->popup();
     }
     else if (pos_found 
 	     && (line_nr > 0 || !address.empty()) 
@@ -7916,7 +7916,7 @@ void SourceView::srcpopupAct (GUI::Widget *w, GUI::Event* e, GUI::String *, unsi
 	else
 	    address_static = string('*') + address;
 	line_popup_w->menu_position(event);
-	line_popup_w->popup(0, 0);
+	line_popup_w->popup();
     }
     else
     {
@@ -7981,7 +7981,7 @@ void SourceView::srcpopupAct (GUI::Widget *w, GUI::Event* e, GUI::String *, unsi
 	}
 
 	text_popup_w->menu_position(event);
-	text_popup_w->popup(0, 0);
+	text_popup_w->popup();
     }
 }
 #endif

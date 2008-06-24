@@ -31,6 +31,7 @@ using namespace GtkX;
 ScrolledWindow::ScrolledWindow(GtkX::Container &parent, PackOptions po,
 			       const String &name)
 {
+    sw_ = new Gtk::ScrolledWindow();
     set_name(name.s());
     parent.add_child(*this, po, 0);
     postinit();
@@ -38,17 +39,18 @@ ScrolledWindow::ScrolledWindow(GtkX::Container &parent, PackOptions po,
 
 ScrolledWindow::~ScrolledWindow(void)
 {
+    delete sw_;
 }
 
 Gtk::Widget *
 ScrolledWindow::internal(void)
 {
-    return this;
+    return sw_;
 }
 
 const Gtk::Widget *
 ScrolledWindow::internal(void) const
 {
-    return this;
+    return sw_;
 }
 

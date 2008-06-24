@@ -35,19 +35,26 @@
 
 namespace GtkX {
 
-    class MenuItem: public Widget, public Gtk::MenuItem {
+    class Menu;
+
+    class MenuItem: public Widget {
+	Gtk::MenuItem *item_;
+	sigc::signal<void> signal_activate_;
+	void activate_callback();
     public:
 	MenuItem(GtkX::Container &parent, PackOptions po=PACK_SHRINK,
 		 const String &name="", const String &label="");
 	~MenuItem(void);
+	void init_signals();
+	void postinit();
 	void set_label(const String &label);
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;
 	void remove(void);
 	void add_label(const String &, bool mnemonic=false,
 		       double x_align=0.5, double y_align=0.5);
-	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
-#include <GtkX/redirect.h>
+	void set_submenu(GtkX::Menu &sub);
+	sigc::signal<void> &signal_activate();
     };
 
 }

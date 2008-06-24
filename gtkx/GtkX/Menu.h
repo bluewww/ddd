@@ -33,20 +33,19 @@
 #include <GtkX/MenuShell.h>
 #include <gtkmm/menu.h>
 
-// Template for a widget taking a single string constructor argument.
-
 namespace GtkX {
 
-    class Menu: public GtkX::MenuShell, public Gtk::Menu {
+    class Menu: public GtkX::MenuShell {
+    protected:
+	Gtk::Menu *menu_;
     public:
 	Menu(GtkX::Widget &parent, const String &name="");
-	Menu(Gtk::Widget *parent, const String &name="");
+	Menu(const String &name="");
 	~Menu(void);
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;
-	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
-#include <GtkX/redirect.h>
-	ChildList get_children(void);
+	void popup();
+	void popdown();
     };
 
     // These are distinct for Motif, identical for Gtk.
@@ -55,16 +54,14 @@ namespace GtkX {
     public:
 	PopupMenu(GtkX::Widget &parent, const String &name=""):
 	    Menu(parent, name) {}
-	PopupMenu(Gtk::Widget *parent, const String &name=""):
-	    Menu(parent, name) {}
+	PopupMenu(const String &name=""):
+	    Menu(name) {}
 	void menu_position(GtkX::EventButton *event) {}
     };
     class PulldownMenu: public Menu
     {
     public:
 	PulldownMenu(GtkX::Widget &parent, const String &name=""):
-	    Menu(parent, name) {}
-	PulldownMenu(Gtk::Widget *parent, const String &name=""):
 	    Menu(parent, name) {}
     };
 }

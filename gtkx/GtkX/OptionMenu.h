@@ -38,16 +38,16 @@
 
 namespace GtkX {
 
-    class OptionMenu: public Widget, public Gtk::OptionMenu {
+    class OptionMenu: public Widget {
+	Gtk::OptionMenu *om_;
     public:
 	OptionMenu(GtkX::Container &parent, PackOptions po=PACK_SHRINK, const String &name="");
 	~OptionMenu(void);
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;
-	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
-#include <GtkX/redirect.h>
 	void set_menu(GtkX::Menu &menu);
 	GtkX::Menu *get_menu(void);
+	void set_history(int index);
     };
 
 }

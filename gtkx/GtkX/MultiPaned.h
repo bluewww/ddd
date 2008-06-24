@@ -35,25 +35,24 @@
 
 namespace GtkX {
 
-    class MultiPaned: public GtkX::Container, public Gtk::VPaned
+    class MultiPaned: public GtkX::Container
     {
     private:
 	std::list<Gtk::VPaned *> xchild_;
     public:
-	MultiPaned(void);
+	// MultiPaned();
 	MultiPaned(GtkX::Container &parent, PackOptions po=PACK_SHRINK, 
 		   const GtkX::String &name="", const GtkX::String &label="");
+	~MultiPaned();
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;
 	void add_child(GtkX::Widget &child, PackOptions options=PACK_EXPAND_WIDGET,
 		       int padding=0);
-	bool on_expose_event(GdkEventExpose* event);
 	void debug(void);
 	static void show_child(Gtk::Widget* widget);
 	static void hide_child(Gtk::Widget* widget);
 	static void show_child(GtkX::Widget* widget);
 	static void hide_child(GtkX::Widget* widget);
-#include <GtkX/redirect.h>
     };
 
 }

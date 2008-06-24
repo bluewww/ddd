@@ -46,7 +46,8 @@ namespace GtkX {
 	sigc::signal<void> signal_value_changed(void);
     };
 
-    class HScale: public Scale, public Gtk::HScale {
+    class HScale: public Scale {
+	Gtk::HScale *scale_;
     public:
 	HScale(Container &parent, PackOptions po=PACK_SHRINK,
 	       const String &name="");
@@ -56,14 +57,10 @@ namespace GtkX {
 	~HScale(void);
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;
-	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
-#include <GtkX/redirect.h>
-	void set_value(double x);
-	double get_value(void) const;
-	sigc::signal<void> signal_value_changed(void);
     };
 
-    class VScale: public Scale, public Gtk::VScale {
+    class VScale: public Scale {
+	Gtk::VScale *scale_;
     public:
 	VScale(Container &parent, PackOptions po=PACK_SHRINK,
 	       const String &name="");
@@ -73,11 +70,6 @@ namespace GtkX {
 	~VScale(void);
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;
-	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
-#include <GtkX/redirect.h>
-	void set_value(double x);
-	double get_value(void) const;
-	sigc::signal<void> signal_value_changed(void);
     };
 
 }
