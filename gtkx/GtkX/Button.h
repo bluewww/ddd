@@ -30,8 +30,9 @@
 #ifndef GTKX_BUTTON_H
 #define GTKX_BUTTON_H
 
-#include <GtkX/Container.h>
 #include <gtkmm/button.h>
+#include <GtkX/Container.h>
+#include <GtkX/Image.h>
 
 // Template for a widget taking two string constructor arguments.
 
@@ -51,6 +52,7 @@ namespace GtkX {
 	const Gtk::Widget *internal(void) const;
 	void set_alignment(float xalign, float yalign);
 	void set_label(const String &);
+	void set_image(const ImageHandle &);
 	void remove(void);
 	void add_label(const String &);
 	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.

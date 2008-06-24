@@ -23,6 +23,7 @@
 // the constructor, unlike the Gtk ones.  Motif (Xt) widgets cannot be
 // reparented.  Therefore we need a constructor with extra arguments.
 
+#include <gtkmm/image.h>
 #include <GtkX/Widget.h>
 #include <GtkX/Button.h>
 
@@ -83,6 +84,16 @@ void
 Button::set_label(const String &s)
 {
     button_->set_label(s.s());
+}
+
+void
+Button::set_image(const ImageHandle &ih)
+{
+    Gtk::Widget *old_img = button_->get_image();
+    Gtk::Image *new_img = new Gtk::Image(ih);
+    button_->set_image(*new_img);
+    if (old_img)
+	delete old_img;
 }
 
 void

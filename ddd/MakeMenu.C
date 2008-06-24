@@ -788,9 +788,6 @@ void MMaddItems(GUI::Container *shell, MMDesc items[], bool ignore_seps)
 
 	case MMPush:
 	{
-#ifdef NAG_ME
-#warning MMPush might be a MenuItem or a Button.  Check shell.
-#endif
 	    if (menushell) {
 		widget = new GUI::MenuItem(*container, GUI::PACK_SHRINK, name, label_string);
 	    }
@@ -798,23 +795,15 @@ void MMaddItems(GUI::Container *shell, MMDesc items[], bool ignore_seps)
 		if (image) {
 		    GUI::Button *button = new GUI::Button(*container, GUI::PACK_SHRINK, name);
 		    widget = button;
-#if !defined(IF_XMMM)
 		    GUI::ImageHandle p1 = image[0];
 		    GUI::ImageHandle p2 = image[1];
 		    GUI::ImageHandle p3 = image[2];
 		    GUI::ImageHandle p4 = image[3];
 		    if (p1)
 		    {
-			Gtk::Image *im = new Gtk::Image(p1);
-#ifdef NAG_ME
-#warning This needs to be abstracted.
-#endif
-			Gtk::Button *b = (Gtk::Button *)button->internal();
-			b->set_image(*im);
-			b->set_label("");
-			im->show();
+			button->set_image(p1);
+			button->set_label("");
 		    }
-#endif
 		}
 		else {
 		    widget = new GUI::Button(*container, GUI::PACK_SHRINK, name, label_string);

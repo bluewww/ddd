@@ -43,6 +43,7 @@ char logo_rcsid[] =
 #include <gtkmm/button.h>
 #include <gtkmm/menuitem.h>
 #include <GUI/MenuItem.h>
+#include <GUI/Button.h>
 #endif
 #include "assert.h"
 #include "string-fun.h"
@@ -1380,36 +1381,29 @@ void set_label(GUI::Widget *w, const GUI::String& new_label, GUI::ImageHandle *i
     XmStringFree(old_label);
 #else
     GtkX::MenuItem *mi;
-    Gtk::Bin *bin;
+    GtkX::Button *btn;
     if (mi = dynamic_cast<GtkX::MenuItem *>(w)) {
 	if (image) {
 	    std::cerr << "Cannot set Image on MenuItem\n";
 	    return;
 	}
-	mi->set_label(new_label);
+	else {
+	    mi->set_label(new_label);
+	}
     }
-    else if (bin = dynamic_cast<Gtk::Bin *>(w)) {
-	Gtk::Widget *child = bin->get_child();
-	Gtk::Image *old_img = child?dynamic_cast<Gtk::Image *>(child):NULL;
-	Gtk::Label *old_lab = child?dynamic_cast<Gtk::Label *>(child):NULL;
-	if (image && !old_lab) {
+    else if (btn = dynamic_cast<GtkX::Button *>(w)) {
+	if (image) {
 	    GUI::ImageHandle p1 = image[0];
 	    GUI::ImageHandle p2 = image[1];
 	    GUI::ImageHandle p3 = image[2];
 	    GUI::ImageHandle p4 = image[3];
 	    if (p1)
 	    {
-		Gtk::Image *img = new Gtk::Image(p1);
-		bin->remove();
-		bin->add(*img);
-		img->show();
+		btn->set_image(p1);
 	    }
 	}
-	else if (!old_img) {
-	    bin->remove();
-	    Gtk::Label *label = new Gtk::Label(new_label.c_str());
-	    bin->add(*label);
-	    label->show();
+	else  {
+	    btn->set_label(new_label);
 	}
     }
     else {
