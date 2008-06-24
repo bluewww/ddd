@@ -4190,6 +4190,17 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     return DDD_CONTINUE;
 }
 #else
+static bool
+gdb_console_key_pressed(GUI::EventKey *evk)
+{
+    switch (evk->keyval) {
+    case GDK_Up: prev_historyAct(); break;
+    case GDK_Down: next_historyAct(); break;
+    default: return false;
+    }
+    return true;
+}
+
 static
 ddd_exit_t pre_main_loop(int argc, char *argv[])
 {
@@ -4815,6 +4826,8 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 					 app_data.console_buttons);
 
     gdb_w = new GUI::ScrolledText(*paned_work_w, GUI::PACK_EXPAND_WIDGET);
+
+    gdb_w->signal_key_press_pre_event().connect(sigc::ptr_fun(gdb_console_key_pressed));
 
     std::cerr << "How to verify changes and motion?\n";
 

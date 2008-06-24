@@ -40,7 +40,6 @@ static unsigned int keystate(unsigned int in)
 
 static unsigned int keyval(unsigned int in)
 {
-    std::cerr << "KEYVAL " << in << "\n";
     return in;
 }
 

@@ -24,6 +24,7 @@
 // reparented.  Therefore we need a constructor with extra arguments.
 
 #include <iostream>
+#include <iomanip>
 
 #include <GtkX/Container.h>
 #include <GtkX/ScrolledText.h>
@@ -52,6 +53,22 @@ const Gtk::Widget *
 MarkedTextView::internal() const
 {
     return this;
+}
+
+void
+MarkedTextView::init_signals()
+{
+    Gtk::Widget::signal_key_press_event().connect(sigc::mem_fun(*this, &MarkedTextView::key_press_event_callback));
+    Gtk::Widget::signal_key_release_event().connect(sigc::mem_fun(*this, &MarkedTextView::key_release_event_callback));
+    Gtk::Widget::signal_key_press_event().connect(sigc::mem_fun(*this, &MarkedTextView::key_press_pre_event_callback), false);
+    Gtk::Widget::signal_key_release_event().connect(sigc::mem_fun(*this, &MarkedTextView::key_release_pre_event_callback), false);
+}
+
+void
+MarkedTextView::postinit()
+{
+    Widget::postinit();
+    init_signals();
 }
 
 void
@@ -179,6 +196,77 @@ MarkedTextView::buffer_to_window_xy(int xin, int yin, int &xout, int &yout)
 }
 
 void
+MarkedTextView::window_to_buffer_xy(int xin, int yin, int &xout, int &yout)
+{
+    Gtk::TextView::window_to_buffer_coords(Gtk::TEXT_WINDOW_TEXT, xin, yin,
+					   xout, yout);
+}
+
+sigc::signal<bool, GtkX::EventKey *> &
+MarkedTextView::signal_key_press_event()
+{
+    return signal_key_press_event_;
+}
+
+sigc::signal<bool, GtkX::EventKey *> &
+MarkedTextView::signal_key_release_event()
+{
+    return signal_key_release_event_;
+}
+
+sigc::signal<bool, GtkX::EventKey *> &
+MarkedTextView::signal_key_press_pre_event()
+{
+    return signal_key_press_pre_event_;
+}
+
+sigc::signal<bool, GtkX::EventKey *> &
+MarkedTextView::signal_key_release_pre_event()
+{
+    return signal_key_release_pre_event_;
+}
+
+bool
+MarkedTextView::key_press_event_callback(GdkEventKey *ev)
+{
+    RefPtr<Event> evx = translate_event((GdkEvent *)ev);
+    if (!evx) return false;
+    GtkX::EventKey *evxk = dynamic_cast<GtkX::EventKey *>(&*evx);
+    if (!evxk) return false;
+    return signal_key_press_event_(evxk);
+}
+
+bool
+MarkedTextView::key_release_event_callback(GdkEventKey *ev)
+{
+    RefPtr<Event> evx = translate_event((GdkEvent *)ev);
+    if (!evx) return false;
+    GtkX::EventKey *evxk = dynamic_cast<GtkX::EventKey *>(&*evx);
+    if (!evxk) return false;
+    return signal_key_release_event_(evxk);
+}
+
+bool
+MarkedTextView::key_press_pre_event_callback(GdkEventKey *ev)
+{
+    RefPtr<Event> evx = translate_event((GdkEvent *)ev);
+    if (!evx) return false;
+    GtkX::EventKey *evxk = dynamic_cast<GtkX::EventKey *>(&*evx);
+    if (!evxk) return false;
+    return signal_key_press_pre_event_(evxk);
+}
+
+bool
+MarkedTextView::key_release_pre_event_callback(GdkEventKey *ev)
+{
+    RefPtr<Event> evx = translate_event((GdkEvent *)ev);
+    if (!evx) return false;
+    GtkX::EventKey *evxk = dynamic_cast<GtkX::EventKey *>(&*evx);
+    if (!evxk) return false;
+    return signal_key_release_pre_event_(evxk);
+}
+
+void
 ScrolledText::init_signals()
 {
     tb_->signal_changed().connect(sigc::mem_fun(*this, &ScrolledText::changed_callback));
@@ -233,24 +321,22 @@ ScrolledText::signals_from()
 }
 
 void
-ScrolledText::window_to_buffer_xy(double xin, double yin,
-				  double &xout, double &yout)
+ScrolledText::window_to_buffer_xy(int xin, int yin, int &xout, int &yout)
 {
-    int ix = (int)xin;
-    int iy = (int)yin;
-    int buf_x, buf_y;
-    tv_->window_to_buffer_coords(Gtk::TEXT_WINDOW_TEXT, ix, iy, buf_x, buf_y);
-    xout = buf_x;
-    yout = buf_y;
+    tv_->window_to_buffer_xy(xin, yin, xout, yout);
+}
+
+void
+ScrolledText::buffer_to_window_xy(int xin, int yin, int &xout, int &yout)
+{
+    tv_->buffer_to_window_xy(xin, yin, xout, yout);
 }
 
 long
-ScrolledText::xy_to_pos(double x, double y)
+ScrolledText::xy_to_pos(int x, int y)
 {
-    int ix = (int)x;
-    int iy = (int)y;
     int buf_x, buf_y;
-    tv_->window_to_buffer_coords(Gtk::TEXT_WINDOW_TEXT, ix, iy, buf_x, buf_y);
+    window_to_buffer_xy(x, y, buf_x, buf_y);
     Gtk::TextIter iter;
     tv_->get_iter_at_location(iter, buf_x, buf_y);
     return iter.get_offset();
@@ -471,3 +557,26 @@ ScrolledText::signal_changed()
     return signal_changed_;
 }
 
+sigc::signal<bool, GtkX::EventKey *> &
+ScrolledText::signal_key_press_event()
+{
+    return tv_->signal_key_press_event();
+}
+
+sigc::signal<bool, GtkX::EventKey *> &
+ScrolledText::signal_key_release_event()
+{
+    return tv_->signal_key_release_event();
+}
+
+sigc::signal<bool, GtkX::EventKey *> &
+ScrolledText::signal_key_press_pre_event()
+{
+    return tv_->signal_key_press_pre_event();
+}
+
+sigc::signal<bool, GtkX::EventKey *> &
+ScrolledText::signal_key_release_pre_event()
+{
+    return tv_->signal_key_release_pre_event();
+}

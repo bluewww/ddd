@@ -510,8 +510,6 @@ Widget::get_screen()
 RefPtr<XWindow>
 Widget::get_window()
 {
-    Glib::RefPtr<Gdk::Window> rp = internal()->get_window();
-    fprintf(stderr, "WINDOW %lx\n", ((long *)&rp)[0]);
     return XWindow::wrap(internal()->get_window());
 }
 

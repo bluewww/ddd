@@ -567,7 +567,7 @@ string last_command_from_history()
 #if defined(IF_XM)
 void prev_historyAct(Widget, XEvent*, String*, Cardinal*)
 #else
-void prev_historyAct(GUI::Widget *, GUI::Event*, GUI::String *, unsigned int *)
+void prev_historyAct()
 #endif
 {
     if (gdb_current_history == 0)
@@ -584,7 +584,7 @@ void prev_historyAct(GUI::Widget *, GUI::Event*, GUI::String *, unsigned int *)
 #if defined(IF_XM)
 void next_historyAct(Widget, XEvent*, String*, Cardinal*)
 #else
-void next_historyAct(GUI::Widget *, GUI::Event*, GUI::String *, unsigned int *)
+void next_historyAct()
 #endif
 {
     if (gdb_current_history >= gdb_history.size() - 1)

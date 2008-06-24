@@ -7458,7 +7458,7 @@ void SourceView::startSelectWordAct (GUI::ScrolledText *text_w, GUI::Event* e,
     GUI::EventButton *event = dynamic_cast<GUI::EventButton *>(e);
     if (!event) return;
 
-    long pos = text_w->xy_to_pos(event->x, event->y);
+    long pos = text_w->xy_to_pos((int)event->x, (int)event->y);
 
     long startpos, endpos;
     if (app_data.source_editing)
@@ -7822,10 +7822,8 @@ void SourceView::srcpopupAct (GUI::Widget *w, GUI::Event* e, GUI::String *, unsi
     long pos = text_w->xy_to_pos(x, y);
 
     // Translate position (we are in a scrolling window).
-    double xwin = x;
-    double ywin = y;
-    double xbuf, ybuf;
-    text_w->window_to_buffer_xy(xwin, ywin, xbuf, ybuf);
+    int xbuf, ybuf;
+    text_w->window_to_buffer_xy(x, y, xbuf, ybuf);
 
     // Move the insertion cursor to this position, but don't disturb the
     // selection

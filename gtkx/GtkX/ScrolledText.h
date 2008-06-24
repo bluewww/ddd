@@ -95,11 +95,21 @@ namespace GtkX {
     class MarkedTextView: public GtkX::Widget, public Gtk::TextView
     {
 	bool on_expose_event(GdkEventExpose *event);
+	sigc::signal<bool, GtkX::EventKey *> signal_key_press_event_;
+	bool key_press_event_callback(GdkEventKey *ev);
+	sigc::signal<bool, GtkX::EventKey *> signal_key_release_event_;
+	bool key_release_event_callback(GdkEventKey *ev);
+	sigc::signal<bool, GtkX::EventKey *> signal_key_press_pre_event_;
+	bool key_press_pre_event_callback(GdkEventKey *ev);
+	sigc::signal<bool, GtkX::EventKey *> signal_key_release_pre_event_;
+	bool key_release_pre_event_callback(GdkEventKey *ev);
 	std::list<GlyphMark *> marks;
     public:
 	MarkedTextView();
 	Gtk::Widget *internal();
 	const Gtk::Widget *internal() const;
+	void init_signals();
+	void postinit();
 	void pos_to_xy(long pos, int &x, int &y);
 	void pos_to_rect(long pos, Rectangle &rect);
 	GlyphMark *map_glyph(Glib::RefPtr<Gdk::Pixbuf> glyph, int x, int y);
@@ -110,7 +120,12 @@ namespace GtkX {
 	void unmap_glyph(Glib::RefPtr<Gdk::Pixbuf> glyph);
 	void refresh_line(int y, int height);
 	void buffer_to_window_xy(int xin, int yin, int &xout, int &yout);
+	void window_to_buffer_xy(int xin, int yin, int &xout, int &yout);
 #include <GtkX/redirect.h>
+	sigc::signal<bool, GtkX::EventKey *> &signal_key_press_event();
+	sigc::signal<bool, GtkX::EventKey *> &signal_key_release_event();
+	sigc::signal<bool, GtkX::EventKey *> &signal_key_press_pre_event();
+	sigc::signal<bool, GtkX::EventKey *> &signal_key_release_pre_event();
     };
 
     class ScrolledText: public GtkX::Widget
@@ -149,13 +164,17 @@ namespace GtkX {
 	long find_backward(String str, long start=-1);
 	long find_forward(UChar c, long start=0);
 	long find_backward(UChar c, long start=-1);
-	long xy_to_pos(double x, double y);
-	void window_to_buffer_xy(double xin, double yin,
-				 double &xout, double &yout);
+	long xy_to_pos(int x, int y);
+	void window_to_buffer_xy(int xin, int yin, int &xout, int &yout);
+	void buffer_to_window_xy(int xin, int yin, int &xout, int &yout);
 	bool pos_to_xy(long pos, int &x, int &y);
 	int get_rows();
 	int get_columns();
 	sigc::signal<void> &signal_changed();
+	sigc::signal<bool, GtkX::EventKey *> &signal_key_press_event();
+	sigc::signal<bool, GtkX::EventKey *> &signal_key_release_event();
+	sigc::signal<bool, GtkX::EventKey *> &signal_key_press_pre_event();
+	sigc::signal<bool, GtkX::EventKey *> &signal_key_release_pre_event();
     };
 
 }

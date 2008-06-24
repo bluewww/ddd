@@ -77,8 +77,8 @@ extern void prev_historyAct      (Widget, XEvent*, String*, Cardinal*);
 extern void next_historyAct      (Widget, XEvent*, String*, Cardinal*);
 #else
 // History actions
-extern void prev_historyAct      (GUI::Widget *, GUI::Event *, GUI::String *, unsigned int *);
-extern void next_historyAct      (GUI::Widget *, GUI::Event *, GUI::String *, unsigned int *);
+extern void prev_historyAct      ();
+extern void next_historyAct      ();
 #endif
 
 // Search TEXT in history; return POS iff found, -1 if none

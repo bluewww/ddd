@@ -33,11 +33,7 @@ char Delay_rcsid[] =
 #include "config.h"
 #endif
 
-#if defined(IF_XM)
 #define LOG_DELAY 0
-#else
-#define LOG_DELAY 1
-#endif
 
 #include "Delay.h"
 #include "assert.h"
