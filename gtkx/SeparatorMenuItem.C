@@ -33,31 +33,26 @@ using namespace GtkX;
 
 SeparatorMenuItem::SeparatorMenuItem(GtkX::Container &parent, const GtkX::String &name)
 {
+    smi_ = new Gtk::SeparatorMenuItem();
     set_name(name.s());
-    // We cannot use this:
-    // parent.gtk_container()->add(*this);
-    // If we always had parent.gtk_container() == &parent we could just
-    // override the on_add() method to do what we want.  However,
-    // sometimes parent.gtk_container() is a standard Gtk widget.
-    // In such a case (e.g. RadioBox) we need to override add_child()
-    // instead.
     parent.add_child(*this);
     postinit();
 }
 
 SeparatorMenuItem::~SeparatorMenuItem(void)
 {
+    delete smi_;
 }
 
 Gtk::Widget *
 SeparatorMenuItem::internal(void)
 {
-    return this;
+    return smi_;
 }
 
 const Gtk::Widget *
 SeparatorMenuItem::internal(void) const
 {
-    return this;
+    return smi_;
 }
 

@@ -35,7 +35,8 @@
 
 namespace GtkX {
 
-    class Table: public Container, public Gtk::Table {
+    class Table: public Container {
+	Gtk::Table *table_;
 	int cols;
 	int x, y, w, h;
     public:
@@ -43,8 +44,6 @@ namespace GtkX {
 	      const String &label="");
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;
-	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
-#include <GtkX/redirect.h>
 	void set_position(int x0, int y0, int w0=1, int h0=1);
 	void set_cell_size(int w0=1, int h0=1);
 	int set_columns(int c0=0);

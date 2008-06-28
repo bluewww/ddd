@@ -31,6 +31,7 @@ using namespace GtkX;
 // Private.  API does not allow construction of unparented widgets.
 Table::Table(const GtkX::String &name)
 {
+    table_ = new Gtk::Table();
     x = y = 0;
     w = h = 1;
     set_name(name.s());
@@ -40,6 +41,7 @@ Table::Table(const GtkX::String &name)
 Table::Table(GtkX::Container &parent, GtkX::PackOptions po,
 	   const GtkX::String &name, const GtkX::String &label)
 {
+    table_ = new Gtk::Table();
     x = y = 0;
     w = h = 1;
     set_name(name.s());
@@ -50,13 +52,13 @@ Table::Table(GtkX::Container &parent, GtkX::PackOptions po,
 Gtk::Widget *
 Table::internal(void)
 {
-    return this;
+    return table_;
 }
 
 const Gtk::Widget *
 Table::internal(void) const
 {
-    return this;
+    return table_;
 }
 
 void
@@ -92,7 +94,7 @@ Table::add_child(GtkX::Widget &child,
     if (cols > 0 && (x+w) > cols) {
 	cr();
     }
-    attach(*child.internal(), x, x+w, y, y+h);
+    table_->attach(*child.internal(), x, x+w, y, y+h);
     x = x+w;
 }
 

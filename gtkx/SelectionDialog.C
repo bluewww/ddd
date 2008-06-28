@@ -39,6 +39,7 @@ SelectionDialog::init(Gtk::Window &parent,
 		      const String &name,
 		      const std::vector<String> &headers)
 {
+    dialog_ = new Gtk::Dialog(name.s(), parent);
     set_name(name.s());
 
     sw_ = new GtkX::ScrolledWindow(*this, PACK_EXPAND_WIDGET, name+String("_sw"));
@@ -54,14 +55,6 @@ SelectionDialog::init(Gtk::Window &parent,
     postinit();
 }
 
-SelectionDialog::SelectionDialog(Gtk::Window &parent,
-				 const String &name,
-				 const std::vector<String> &headers):
-    Dialog(name.s(), parent)
-{
-    init(parent, name, headers);
-}
-
 static Gtk::Window &
 check_shell(GtkX::Shell &parent)
 {
@@ -72,8 +65,7 @@ check_shell(GtkX::Shell &parent)
 }
 
 SelectionDialog::SelectionDialog(GtkX::Shell &parent, const String &name,
-				 const std::vector<String> &headers):
-    Dialog(name.s(), check_shell(parent))
+				 const std::vector<String> &headers)
 {
     init(check_shell(parent), name, headers);
 }
@@ -83,18 +75,19 @@ SelectionDialog::~SelectionDialog(void)
     delete listview_;
     delete sw_;
     delete buttons_;
+    delete dialog_;
 }
 
 Gtk::Widget *
 SelectionDialog::internal(void)
 {
-    return this;
+    return dialog_;
 }
 
 const Gtk::Widget *
 SelectionDialog::internal(void) const
 {
-    return this;
+    return dialog_;
 }
 
 // In the case of Dialogs, we almost always want to add to the VBox
@@ -102,7 +95,7 @@ SelectionDialog::internal(void) const
 Gtk::Container *
 SelectionDialog::gtk_container(void)
 {
-    return get_vbox();
+    return dialog_->get_vbox();
 }
 
 ListView *
@@ -133,7 +126,7 @@ SelectionDialog::set_text(const String &s)
 void
 SelectionDialog::pack_start(Gtk::Widget &child, PackOptions options, int padding)
 {
-    get_vbox()->pack_start(child, (Gtk::PackOptions)(int)options, (guint)padding);
+    dialog_->get_vbox()->pack_start(child, (Gtk::PackOptions)(int)options, (guint)padding);
 }
 
 Button *
@@ -142,3 +135,9 @@ SelectionDialog::add_button(const String &name, const String &label)
     return new Button(*buttons_, PACK_SHRINK, name, label);
 }
 
+// FIXME: Shared with other top level window classes
+void
+SelectionDialog::set_default_size(int width, int height)
+{
+    dialog_->set_default_size(width, height);
+}

@@ -33,6 +33,7 @@ using namespace GtkX;
 
 HSeparator::HSeparator(GtkX::Container &parent, const GtkX::String &name)
 {
+    sep_ = new Gtk::HSeparator();
     set_name(name.s());
     parent.add_child(*this);
     postinit();
@@ -40,22 +41,24 @@ HSeparator::HSeparator(GtkX::Container &parent, const GtkX::String &name)
 
 HSeparator::~HSeparator(void)
 {
+    delete sep_;
 }
 
 Gtk::Widget *
 HSeparator::internal(void)
 {
-    return this;
+    return sep_;
 }
 
 const Gtk::Widget *
 HSeparator::internal(void) const
 {
-    return this;
+    return sep_;
 }
 
 VSeparator::VSeparator(GtkX::Container &parent, const GtkX::String &name)
 {
+    sep_ = new Gtk::VSeparator();
     set_name(name.s());
     parent.add_child(*this);
     postinit();
@@ -63,17 +66,18 @@ VSeparator::VSeparator(GtkX::Container &parent, const GtkX::String &name)
 
 VSeparator::~VSeparator(void)
 {
+    delete sep_;
 }
 
 Gtk::Widget *
 VSeparator::internal(void)
 {
-    return this;
+    return sep_;
 }
 
 const Gtk::Widget *
 VSeparator::internal(void) const
 {
-    return this;
+    return sep_;
 }
 

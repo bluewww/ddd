@@ -2421,7 +2421,7 @@ void gdbOpenProcessCB(Widget w, XtPointer, XtPointer)
 #else
 void gdbOpenProcessCB(GUI::Widget *w)
 {
-    std::cerr << "gdbOpenProcessCB not supported yet\n";
+    std::cerr << "gdbOpenProcessCB not completed yet\n";
     static GUI::SelectionDialog *dialog = 0;
     static GUI::ListView *processes = 0;
 
@@ -2447,10 +2447,10 @@ void gdbOpenProcessCB(GUI::Widget *w)
 		      SelectProcessCB, XtPointer(processes));
 #endif
 	GUI::Button *button;
-	button = dialog->add_button("ok", _("OK"));
+	button = dialog->add_button("attach", _("Attach"));
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(openProcessDone), processes));
 	button->show();
-	button = dialog->add_button("apply", _("Apply"));
+	button = dialog->add_button("update", _("Update"));
 	button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(gdbUpdateProcessesCB), processes));
 	button->show();
 	button = dialog->add_button("cancel", _("Cancel"));

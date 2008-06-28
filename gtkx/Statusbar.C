@@ -30,6 +30,7 @@ using namespace GtkX;
 Statusbar::Statusbar(GtkX::Container &parent, PackOptions po,
 		     const GtkX::String &name)
 {
+    sb_ = new Gtk::Statusbar();
     set_name(name.s());
     parent.add_child(*this, po, 0);
     postinit();
@@ -38,12 +39,12 @@ Statusbar::Statusbar(GtkX::Container &parent, PackOptions po,
 Gtk::Widget *
 Statusbar::internal(void)
 {
-    return this;
+    return sb_;
 }
 
 const Gtk::Widget *
 Statusbar::internal(void) const
 {
-    return this;
+    return sb_;
 }
 

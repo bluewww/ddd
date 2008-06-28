@@ -31,6 +31,7 @@ using namespace GtkX;
 
 SpinButton::SpinButton(GtkX::Container &parent, const GtkX::String &name)
 {
+    sb_ = new Gtk::SpinButton();
     set_name(name.s());
     parent.add_child(*this);
     postinit();
@@ -38,17 +39,36 @@ SpinButton::SpinButton(GtkX::Container &parent, const GtkX::String &name)
 
 SpinButton::~SpinButton(void)
 {
+    delete sb_;
 }
 
 Gtk::Widget *
 SpinButton::internal(void)
 {
-    return this;
+    return sb_;
 }
 
 const Gtk::Widget *
 SpinButton::internal(void) const
 {
-    return this;
+    return sb_;
+}
+
+String
+SpinButton::get_text() const
+{
+    return sb_->get_text();
+}
+
+void
+SpinButton::set_value(double value)
+{
+    sb_->set_value(value);
+}
+
+double
+SpinButton::get_value() const
+{
+    return sb_->get_value();
 }
 

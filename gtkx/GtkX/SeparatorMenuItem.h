@@ -37,14 +37,13 @@
 
 namespace GtkX {
 
-    class SeparatorMenuItem: public Widget, public Gtk::SeparatorMenuItem {
+    class SeparatorMenuItem: public Widget {
+	Gtk::SeparatorMenuItem *smi_;
     public:
 	SeparatorMenuItem(GtkX::Container &parent, const String &name="");
 	~SeparatorMenuItem(void);
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;
-	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
-#include <GtkX/redirect.h>
     };
 
 }

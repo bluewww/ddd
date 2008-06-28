@@ -35,14 +35,13 @@
 
 namespace GtkX {
 
-    class Toolbar: public Gtk::Toolbar, public Container {
+    class Toolbar: public Container {
+	Gtk::Toolbar *toolbar_;
     public:
 	Toolbar(GtkX::Container &parent, PackOptions po=PACK_SHRINK,
 		const String &name="");
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;
-	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
-#include <GtkX/redirect.h>
     };
 
 }

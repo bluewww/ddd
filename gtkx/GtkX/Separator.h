@@ -37,22 +37,22 @@
 
 namespace GtkX {
 
-    class HSeparator: public Widget, public Gtk::HSeparator {
+    class HSeparator: public Widget {
+	Gtk::HSeparator *sep_;
     public:
 	HSeparator(GtkX::Container &parent, const String &name="");
 	~HSeparator(void);
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;
-#include <GtkX/redirect.h>
     };
 
-    class VSeparator: public Widget, public Gtk::VSeparator {
+    class VSeparator: public Widget {
+	Gtk::VSeparator *sep_;
     public:
 	VSeparator(GtkX::Container &parent, const String &name="");
 	~VSeparator(void);
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;
-#include <GtkX/redirect.h>
     };
 
 }

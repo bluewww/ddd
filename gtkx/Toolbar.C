@@ -30,6 +30,7 @@ using namespace GtkX;
 Toolbar::Toolbar(GtkX::Container &parent, PackOptions po,
 		 const GtkX::String &name)
 {
+    toolbar_ = new Gtk::Toolbar();
     set_name(name.s());
     parent.add_child(*this, po, 0);
     postinit();
@@ -38,12 +39,12 @@ Toolbar::Toolbar(GtkX::Container &parent, PackOptions po,
 Gtk::Widget *
 Toolbar::internal(void)
 {
-    return this;
+    return toolbar_;
 }
 
 const Gtk::Widget *
 Toolbar::internal(void) const
 {
-    return this;
+    return toolbar_;
 }
 

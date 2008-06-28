@@ -37,14 +37,16 @@
 
 namespace GtkX {
 
-    class SpinButton: public Widget, public Gtk::SpinButton {
+    class SpinButton: public Widget {
+	Gtk::SpinButton *sb_;
     public:
 	SpinButton(Container &parent, const String &name="");
 	~SpinButton(void);
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;
-	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
-#include <GtkX/redirect.h>
+	String get_text() const; // FIXME inherited from Entry
+	void set_value(double value);
+	double get_value() const;
     };
 
 }

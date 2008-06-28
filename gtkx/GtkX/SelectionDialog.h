@@ -36,7 +36,8 @@
 
 namespace GtkX {
 
-    class SelectionDialog: public Gtk::Dialog, public Container {
+    class SelectionDialog: public Container {
+	Gtk::Dialog *dialog_;
 	ScrolledWindow *sw_;
 	ListView *listview_;
 	HBox *buttons_;
@@ -59,11 +60,8 @@ namespace GtkX {
 			PackOptions options = PACK_EXPAND_WIDGET,
 			int padding = 0);
 	Button *add_button(const String &name="", const String &label="");
-	// FIXME: Disambiguate inheritance from GtkX::Widget and Gtk class.
-#include <GtkX/redirect.h>
-    private:
-	SelectionDialog(Gtk::Window &parent, const String &name,
-			const std::vector<String> &headers);
+	// FIXME: Shared with other top level window classes
+	void set_default_size(int width, int height);
     };
 
 }
