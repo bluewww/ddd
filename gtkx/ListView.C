@@ -266,3 +266,20 @@ ListView::set_selection_mode(SelectionMode sm)
     }
     tv_->get_selection()->set_mode(gsm);
 }
+
+void
+ListView::set_cursor(int pos)
+{
+    Gtk::TreeModel::Path path;
+    path.push_back(pos);
+    tv_->set_cursor(path);
+}
+
+void
+ListView::scroll_to_row(int pos)
+{
+    Gtk::TreeModel::Path path;
+    path.push_back(pos);
+    tv_->scroll_to_row(path);
+}
+

@@ -70,6 +70,8 @@ namespace GtkX {
 	String get_at(int row, int col=-1);
 	void get_selected_numbers(std::vector<int> &numbers);
 	void set_selection_mode(SelectionMode);
+	void set_cursor(int);
+	void scroll_to_row(int);
     };
 
 }
