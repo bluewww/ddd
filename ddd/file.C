@@ -2430,6 +2430,7 @@ void gdbOpenProcessCB(GUI::Widget *w)
 	std::vector<GUI::String> process_headers;
 	process_headers.push_back("Process");
 	dialog = new GUI::SelectionDialog(*find_shell(w), "processes", process_headers);
+	dialog->set_default_size(800,600);
 
 	Delay::register_shell(dialog);
 
