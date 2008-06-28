@@ -112,7 +112,6 @@ void ColorBox::_draw(GUI::Widget *w,
     }
     else
     {
-	std::cerr << "ColorBox::_draw\n";
 	// Draw child without special color settings
 	TransparentHatBox::_draw(w, region, exposed, gc, context_selected);
     }
@@ -203,7 +202,6 @@ void BackgroundColorBox::color_draw(GUI::Widget *w,
 
     // Fill child area with background color
     gc->set_foreground(color());
-    std::cerr << "BackgroundColorBox::color_draw\n";
     w->get_window()->draw_rectangle(gc, true, origin[X], origin[Y], width[X], width[Y]);
     gc->set_values(gc_values, GUI::GC_FOREGROUND);
 

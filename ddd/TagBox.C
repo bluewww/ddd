@@ -160,7 +160,6 @@ void TagBox::_draw(GUI::Widget *w,
 	gc->get_values(gcvalues);
 	gc->set_function(GUI::INVERT);
 
-	std::cerr << "TagBox::_draw\n";
 	w->get_window()->draw_rectangle(gc, true,
 					clipRegion.origin(X), clipRegion.origin(Y),
 					clipRegion.space(X), clipRegion.space(Y));
