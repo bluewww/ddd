@@ -101,6 +101,12 @@ Dialog::run(void)
     return dlg_->run();
 }
 
+void
+Dialog::set_default_size(int width, int height)
+{
+    dlg_->set_default_size(width, height);
+}
+
 MessageDialog::MessageDialog(GtkX::Widget &parent, const String &name,
 			     const String &label, MessageType type):
     Dialog(parent, name)

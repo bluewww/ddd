@@ -4319,6 +4319,7 @@ static GUI::Dialog *create_panel(DebuggerType type, SettingsType stype)
 
     GUI::Dialog *panel = new GUI::Dialog(*find_shell(), dialog_name.chars());
     Delay::register_shell(panel);
+    panel->set_default_size(800, 600);
 
     GUI::Button *button, *apply_button;
 

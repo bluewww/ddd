@@ -60,8 +60,7 @@ namespace GtkX {
 			PackOptions options = PACK_EXPAND_WIDGET,
 			int padding = 0);
 	Button *add_button(const String &name="", const String &label="");
-	// FIXME: Shared with other top level window classes
-	void set_default_size(int width, int height);
+	void set_default_size(int width, int height); // FIXME inherited from Window
     };
 
 }

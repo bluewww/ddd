@@ -53,6 +53,7 @@ namespace GtkX {
 	// #include <GtkX/redirect.h>
 	void set_title(const String &);
 	int run(void);
+	void set_default_size(int width, int height); // FIXME inherited from Window
     };
 
     enum MessageType {
