@@ -1180,7 +1180,20 @@ static void getPIDs(Widget selectionList, IntArray& disp_nrs)
 // Fill the pids in DISP_NRS
 static void getPIDs(GUI::ListView *selectionList, IntArray& disp_nrs)
 {
-    std::cerr << "getPIDS not supported yet\n";
+    static const IntArray empty;
+    disp_nrs = empty;
+
+    std::vector<int> numbers;
+    selectionList->get_selected_numbers(numbers);
+    for (int i = 0; i < numbers.size(); i++)
+    {
+	GUI::String line = selectionList->get_at(numbers[i]);
+	string item(line);
+
+	int p = ps_pid(item);
+	if (p > 0)
+	    disp_nrs += p;
+    }
 }
 #endif
 
@@ -1202,7 +1215,14 @@ static int get_pid(Widget, XtPointer client_data, XtPointer)
 // Get the PID from the selection list in CLIENT_DATA
 static int get_pid(GUI::ListView *processes)
 {
-    return 0;
+    IntArray pids;
+    if (processes)
+	getPIDs(processes, pids);
+	
+    if (pids.size() == 1)
+	return pids[0];
+    else
+	return 0;
 }
 #endif
 
