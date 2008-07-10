@@ -213,6 +213,49 @@ ListView::append(const GtkX::String &item)
     row[model.c8] = "";
 }
 
+void
+ListView::append(const GtkX::String &item, UChar sep)
+{
+    Gtk::TreeModel::Row row = *store_->append();
+    Gtk::TreeModelColumn<Glib::ustring> cols[] = {
+	model.c1,
+	model.c2,
+	model.c3,
+	model.c4,
+	model.c5,
+	model.c6,
+	model.c7,
+	model.c8
+    };
+    Glib::ustring us = item.s();
+    if (sep == ' ') {
+	Glib::ustring match(" \t");
+	for (int i = 0; i < 8; i++) {
+	    Glib::ustring::size_type pos1 = us.find_first_not_of(match);
+	    if (pos1 != Glib::ustring::npos) {
+		Glib::ustring::size_type pos2 = us.find_first_of(match, pos1+1);
+		if (pos2 == Glib::ustring::npos) {
+		    pos2 = us.length();
+		}
+		Glib::ustring word = us.substr(pos1, pos2-pos1);
+		row[cols[i]] = word;
+		us = us.substr(pos2);
+	    }
+	}
+    }
+    else {
+	for (int i = 0; i < 8; i++) {
+	    Glib::ustring::size_type pos = us.find(sep);
+	    if (pos == Glib::ustring::npos) {
+		pos = us.length();
+	    }
+	    Glib::ustring word = us.substr(0, pos);
+	    row[cols[i]] = word;
+	    us = us.substr(pos);
+	}
+    }
+}
+
 int
 ListView::get_selected_pos()
 {

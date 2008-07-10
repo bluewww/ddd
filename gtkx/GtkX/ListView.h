@@ -62,6 +62,7 @@ namespace GtkX {
 	String get_selected(int row=-1, int col=-1);
 	void clear();
 	void append(const GtkX::String &item);
+	void append(const GtkX::String &item, UChar sep);
 	int get_selected_pos();
 	int count() const;
 	sigc::signal<void> &signal_selection_changed();
