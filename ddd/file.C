@@ -1622,7 +1622,7 @@ static void update_processes(GUI::ListView *processes, bool keep_selection)
 	selected[pos] = true;
 
     setLabelList(processes, process_list.values(),
-		 selected, process_list.size(), true, false);
+		 selected, process_list.size(), true, false, ' ');
 
     if (pos >= 0)
 	ListSetAndSelectPos(processes, pos + 1);
@@ -2428,7 +2428,11 @@ void gdbOpenProcessCB(GUI::Widget *w)
     if (dialog == 0)
     {
 	std::vector<GUI::String> process_headers;
-	process_headers.push_back("Process");
+	process_headers.push_back("PID");
+	process_headers.push_back("TTY");
+	process_headers.push_back("STAT");
+	process_headers.push_back("TIME");
+	process_headers.push_back("COMMAND");
 	dialog = new GUI::SelectionDialog(*find_shell(w), "processes", process_headers);
 	dialog->set_default_size(800,600);
 

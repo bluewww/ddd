@@ -165,14 +165,21 @@ void setLabelList (GUI::ListView *selectionList,
 		   const bool selected[],
 		   int     list_length,
 		   bool    highlight_title,
-		   bool    notify)
+		   bool    notify,
+		   GUI::UChar sep)
 {
     if (!selectionList)
 	return;
 
     selectionList->clear();
-    for (int i = 0; i < list_length; i++) 
-	selectionList->append(label_list[i].chars());
+    if (sep) {
+	for (int i = 0; i < list_length; i++)
+	    selectionList->append(label_list[i].chars(), sep);
+    }
+    else {
+	for (int i = 0; i < list_length; i++)
+	    selectionList->append(label_list[i].chars());
+    }
 }
 #endif
 

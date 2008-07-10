@@ -93,7 +93,8 @@ void setLabelList (GUI::ListView *selectionList,
 		   const bool selected[],
 		   int     list_length,
 		   bool    highlight_title,
-		   bool    notify);
+		   bool    notify,
+		   GUI::UChar sep=0);
 
 // Replace all elements in SELECTIONLIST with the corresponding
 // entries in LABEL_LIST (i.e. with the same leading number).
