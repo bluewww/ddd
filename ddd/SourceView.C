@@ -10793,7 +10793,7 @@ void SourceView::SelectFrameCB (GUI::ListView *w)
 		  XtPointer(0));
     int item_position = cbs->item_position;
 #else
-    int item_position = w->get_selected_pos();
+    int item_position = w->get_selected_pos() + 1;
     int count = w->count();
     std::cerr << "Check ListHandle_Path pos=" << item_position << "\n";
 #endif
