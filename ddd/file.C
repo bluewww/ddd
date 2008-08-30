@@ -274,12 +274,12 @@ static GUI::Dialog *file_dialog(GUI::Widget *w, const string& name,
     Delay::register_shell(dialog);
 
     if (ok_callback != 0) {
-	button = dialog->add_button("ok", _("OK ????"));
+	button = dialog->add_button("ok", _("OK"));
 	button->signal_clicked().connect(sigc::bind(ok_callback, dialog));
 	button->show();
     }
 
-    button = dialog->add_button("cancel", _("Cancel ????"));
+    button = dialog->add_button("cancel", _("Cancel"));
     button->signal_clicked().connect(sigc::bind(sigc::ptr_fun(UnmanageThisCB), dialog));
     button->show();
 
@@ -1991,9 +1991,12 @@ static void SelectSourceCB(Widget w, XtPointer, XtPointer call_data)
 }
 #else
 // Select a source; show the full path name in the status line
-static void SelectSourceCB(GUI::Widget *)
+static void SelectSourceCB(GUI::ListView *w)
 {
-    std::cerr << "Show selected source in status line?\n";
+    int pos = w->get_selected_pos();
+    if (pos < 0)
+	pos = all_sources.size() - 1;
+    set_status(all_sources[pos]);
 }
 #endif
 
@@ -2733,7 +2736,7 @@ void gdbLookupSourceCB(GUI::Widget *w)
 	source_list = new GUI::ListView(*dialog, GUI::PACK_EXPAND_WIDGET, "source_list", headers);
 	source_list->show();
 
-	std::cerr << "SelectSourceCB not connected.\n";
+	source_list->signal_selection_changed().connect(sigc::bind(sigc::ptr_fun(SelectSourceCB), source_list));
 
 	GUI::Button *button;
 	button = dialog->add_button("ok", _("OK"));
