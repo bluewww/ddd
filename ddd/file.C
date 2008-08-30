@@ -2731,9 +2731,13 @@ void gdbLookupSourceCB(GUI::Widget *w)
 						    source_list));
 	lookup->show();
 
+	GUI::ScrolledWindow *sw = new GtkX::ScrolledWindow(*dialog, GUI::PACK_EXPAND_WIDGET, "source_list_sw");
+	// sw->set_size_request(-1, 100);
+	sw->show();
+
 	std::vector<GUI::String> headers;
 	headers.push_back("Sources");
-	source_list = new GUI::ListView(*dialog, GUI::PACK_EXPAND_WIDGET, "source_list", headers);
+	source_list = new GUI::ListView(*sw, GUI::PACK_EXPAND_WIDGET, "source_list", headers);
 	source_list->show();
 
 	source_list->signal_selection_changed().connect(sigc::bind(sigc::ptr_fun(SelectSourceCB), source_list));
