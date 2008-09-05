@@ -2355,7 +2355,7 @@ static MMDesc startup_preferences_menu [] =
 	    MMNoCB, MDUMMY, data_scrolling_menu, 0),
     GENTRYL("autoDebugger", N_("Debugger Type"), MMButtonPanel,
 	    MMNoCB, MDUMMY, auto_debugger_menu, 0),
-    GENTRYL("debugger", N_(""), MMRadioPanel,
+    GENTRYL("debugger", N_("Debugger"), MMRadioPanel,
 	    MMNoCB, MDUMMY, debugger_menu, 0),
     GENTRYL("startupWindows", N_("Startup Windows"), MMButtonPanel,
 	    MMNoCB, MDUMMY, startup_menu, 0),
