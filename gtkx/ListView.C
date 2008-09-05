@@ -228,13 +228,21 @@ ListView::append(const GtkX::String &item, UChar sep)
 	model.c8
     };
     Glib::ustring us = item.s();
+    int nc = tv_->get_columns().size();
     if (sep == ' ') {
 	Glib::ustring match(" \t");
-	for (int i = 0; i < 8; i++) {
+	for (int i = 0; i < nc; i++) {
 	    Glib::ustring::size_type pos1 = us.find_first_not_of(match);
 	    if (pos1 != Glib::ustring::npos) {
-		Glib::ustring::size_type pos2 = us.find_first_of(match, pos1+1);
-		if (pos2 == Glib::ustring::npos) {
+		// Include remainder in last column.
+		Glib::ustring::size_type pos2;
+		if (i < nc-1) {
+		    pos2 = us.find_first_of(match, pos1+1);
+		    if (pos2 == Glib::ustring::npos) {
+			pos2 = us.length();
+		    }
+		}
+		else {
 		    pos2 = us.length();
 		}
 		Glib::ustring word = us.substr(pos1, pos2-pos1);
@@ -244,7 +252,7 @@ ListView::append(const GtkX::String &item, UChar sep)
 	}
     }
     else {
-	for (int i = 0; i < 8; i++) {
+	for (int i = 0; i < nc; i++) {
 	    Glib::ustring::size_type pos = us.find(sep);
 	    if (pos == Glib::ustring::npos) {
 		pos = us.length();
