@@ -830,20 +830,20 @@ private:
     static Widget drag_conds[2];
     static Widget drag_temps[2];
 #else
-    static Glib::RefPtr<Gdk::Pixbuf> plain_arrow;
-    static Glib::RefPtr<Gdk::Pixbuf> grey_arrow;
-    static Glib::RefPtr<Gdk::Pixbuf> past_arrow;
-    static Glib::RefPtr<Gdk::Pixbuf> signal_arrow;
-    static Glib::RefPtr<Gdk::Pixbuf> drag_arrow;
-    static Glib::RefPtr<Gdk::Pixbuf> plain_stop;
-    static Glib::RefPtr<Gdk::Pixbuf> grey_stop;
-    static Glib::RefPtr<Gdk::Pixbuf> plain_cond;
-    static Glib::RefPtr<Gdk::Pixbuf> grey_cond;
-    static Glib::RefPtr<Gdk::Pixbuf> plain_temp;
-    static Glib::RefPtr<Gdk::Pixbuf> grey_temp;
-    static Glib::RefPtr<Gdk::Pixbuf> drag_stop;
-    static Glib::RefPtr<Gdk::Pixbuf> drag_cond;
-    static Glib::RefPtr<Gdk::Pixbuf> drag_temp;
+    static GUI::ImageHandle plain_arrow;
+    static GUI::ImageHandle grey_arrow;
+    static GUI::ImageHandle past_arrow;
+    static GUI::ImageHandle signal_arrow;
+    static GUI::ImageHandle drag_arrow;
+    static GUI::ImageHandle plain_stop;
+    static GUI::ImageHandle grey_stop;
+    static GUI::ImageHandle plain_cond;
+    static GUI::ImageHandle grey_cond;
+    static GUI::ImageHandle plain_temp;
+    static GUI::ImageHandle grey_temp;
+    static GUI::ImageHandle drag_stop;
+    static GUI::ImageHandle drag_cond;
+    static GUI::ImageHandle drag_temp;
 #endif
 
 #if defined(IF_XM)
@@ -864,7 +864,7 @@ private:
     static Widget map_arrow_at     (Widget w, XmTextPosition pos);
 #else
     static GUI::GlyphMark *map_stop_at(GUI::ScrolledText *w, long pos,
-				       Glib::RefPtr<Gdk::Pixbuf> stop,
+				       const GUI::ImageHandle &stop,
 				       TextPositionArray& positions);
     static GUI::GlyphMark *map_arrow_at(GUI::ScrolledText *w, long pos);
 #endif

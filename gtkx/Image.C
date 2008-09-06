@@ -1,5 +1,3 @@
-// -*- C++ -*-
-
 // High-level GUI wrapper for Gtkmm.
 
 // Copyright (C) 2007 Peter Wainwright <prw@ceiriog.eclipse.co.uk>
@@ -20,20 +18,19 @@
 // License along with GtkX -- see the file COPYING.
 // If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef GTKX_IMAGE_H
-#define GTKX_IMAGE_H
+// High level object-oriented wrapper must support Gtk and Motif.
+// Unfortunately Motif widgets require parent and name arguments to
+// the constructor, unlike the Gtk ones.  Motif (Xt) widgets cannot be
+// reparented.  Therefore we need a constructor with extra arguments.
 
-#include <gdkmm/pixbuf.h>
+#include <GtkX/Image.h>
 
-namespace GtkX {
+using namespace GtkX;
 
-    typedef Glib::RefPtr<Gdk::Pixbuf> ImageP;
-
-    typedef Glib::RefPtr<Gdk::Pixbuf> ImageHandle;
-
-    ImageHandle image_create_from_inline(int data_length, const unsigned char *data,
-					 bool copy_pixels = false);
-
+ImageHandle
+GtkX::image_create_from_inline(int data_length, const unsigned char *data,
+			       bool copy_pixels)
+{
+    return Gdk::Pixbuf::create_from_inline(data_length, data, copy_pixels);
 }
 
-#endif // GTKX_IMAGE_H

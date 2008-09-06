@@ -8539,14 +8539,21 @@ BlinkCB(bool *set_p)
 
     bool set = *set_p;
     *set_p = !set;
-    if (set)
+    if (set) {
+	led_w->set_bg(GUI::STATE_NORMAL, led_select_color);
+	led_w->set_bg(GUI::STATE_ACTIVE, led_select_color);
+	led_w->set_bg(GUI::STATE_PRELIGHT, led_select_color);
 	led_w->set_bg(GUI::STATE_SELECTED, led_select_color);
-    else
+    }
+    else {
+	led_w->set_bg(GUI::STATE_NORMAL, led_background_color);
+	led_w->set_bg(GUI::STATE_ACTIVE, led_select_color);
+	led_w->set_bg(GUI::STATE_PRELIGHT, led_select_color);
 	led_w->set_bg(GUI::STATE_SELECTED, led_background_color);
+    }
 
-    led_w->get_display()->flush();
-    std::cerr << "XmUpdateDisplay?\n";
-    // XmUpdateDisplay(led_w);
+    // led_w->get_display()->flush();
+    led_w->queue_draw();
 
     if ((blinker_active || set) && app_data.busy_blink_rate > 0)
     {

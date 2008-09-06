@@ -5335,10 +5335,10 @@ SourceView::SourceView(GUI::Container *parent)
     std::cerr << "WRONG: toplevel_w is not necessary application shell!\n";
 
     // Install glyph images
-    PLAIN_ARROW = Gdk::Pixbuf::create_from_inline(-1, arrow_bits);
-    GREY_ARROW = Gdk::Pixbuf::create_from_inline(-1, greyarrow_bits);
-    PAST_ARROW = Gdk::Pixbuf::create_from_inline(-1, pastarrow_bits);
-    DRAG_ARROW = Gdk::Pixbuf::create_from_inline(-1, dragarrow_bits);
+    PLAIN_ARROW = GUI::image_create_from_inline(-1, arrow_bits);
+    GREY_ARROW = GUI::image_create_from_inline(-1, greyarrow_bits);
+    PAST_ARROW = GUI::image_create_from_inline(-1, pastarrow_bits);
+    DRAG_ARROW = GUI::image_create_from_inline(-1, dragarrow_bits);
 
     // Setup actions
     std::cerr << "SourceView Add actions...\n";
@@ -11878,7 +11878,7 @@ Pixmap SourceView::pixmap(Widget w, unsigned char *bits, int width, int height)
 }
 #else
 // Create a pixmap from BITS suitable for the widget W
-Glib::RefPtr<Gdk::Pixbuf> SourceView::pixmap(unsigned char *bits, int width, int height)
+GUI::ImageHandle SourceView::pixmap(unsigned char *bits, int width, int height)
 {
     GUI::ImageHandle pix = Gdk::Pixbuf::create_from_data(bits,
 							 Gdk::COLORSPACE_RGB,
@@ -12317,20 +12317,20 @@ WidgetArray SourceView::grey_conds[2];
 WidgetArray SourceView::plain_temps[2];
 WidgetArray SourceView::grey_temps[2];
 #else
-Glib::RefPtr<Gdk::Pixbuf> SourceView::plain_arrow;
-Glib::RefPtr<Gdk::Pixbuf> SourceView::grey_arrow;
-Glib::RefPtr<Gdk::Pixbuf> SourceView::past_arrow;
-Glib::RefPtr<Gdk::Pixbuf> SourceView::signal_arrow;
-Glib::RefPtr<Gdk::Pixbuf> SourceView::drag_arrow;
-Glib::RefPtr<Gdk::Pixbuf> SourceView::plain_stop;
-Glib::RefPtr<Gdk::Pixbuf> SourceView::grey_stop;
-Glib::RefPtr<Gdk::Pixbuf> SourceView::plain_cond;
-Glib::RefPtr<Gdk::Pixbuf> SourceView::grey_cond;
-Glib::RefPtr<Gdk::Pixbuf> SourceView::plain_temp;
-Glib::RefPtr<Gdk::Pixbuf> SourceView::grey_temp;
-Glib::RefPtr<Gdk::Pixbuf> SourceView::drag_stop;
-Glib::RefPtr<Gdk::Pixbuf> SourceView::drag_cond;
-Glib::RefPtr<Gdk::Pixbuf> SourceView::drag_temp;
+GUI::ImageHandle SourceView::plain_arrow;
+GUI::ImageHandle SourceView::grey_arrow;
+GUI::ImageHandle SourceView::past_arrow;
+GUI::ImageHandle SourceView::signal_arrow;
+GUI::ImageHandle SourceView::drag_arrow;
+GUI::ImageHandle SourceView::plain_stop;
+GUI::ImageHandle SourceView::grey_stop;
+GUI::ImageHandle SourceView::plain_cond;
+GUI::ImageHandle SourceView::grey_cond;
+GUI::ImageHandle SourceView::plain_temp;
+GUI::ImageHandle SourceView::grey_temp;
+GUI::ImageHandle SourceView::drag_stop;
+GUI::ImageHandle SourceView::drag_cond;
+GUI::ImageHandle SourceView::drag_temp;
 #endif
 
 
@@ -12524,20 +12524,20 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 #else
 void SourceView::CreateGlyphsNow(void)
 {
-    past_arrow = Gdk::Pixbuf::create_from_inline(-1, pastarrow_bits);
-    plain_arrow = Gdk::Pixbuf::create_from_inline(-1, arrow_bits);
-    grey_arrow = Gdk::Pixbuf::create_from_inline(-1, greyarrow_bits);
-    signal_arrow = Gdk::Pixbuf::create_from_inline(-1, signalarrow_bits);
-    drag_arrow = Gdk::Pixbuf::create_from_inline(-1, dragarrow_bits);
-    plain_stop = Gdk::Pixbuf::create_from_inline(-1, stop_bits);
-    plain_temp = Gdk::Pixbuf::create_from_inline(-1, temp_bits);
-    plain_cond = Gdk::Pixbuf::create_from_inline(-1, cond_bits);
-    grey_stop = Gdk::Pixbuf::create_from_inline(-1, greystop_bits);
-    grey_temp = Gdk::Pixbuf::create_from_inline(-1, greytemp_bits);
-    grey_cond = Gdk::Pixbuf::create_from_inline(-1, greycond_bits);
-    drag_stop = Gdk::Pixbuf::create_from_inline(-1, dragstop_bits);
-    drag_temp = Gdk::Pixbuf::create_from_inline(-1, dragtemp_bits);
-    drag_cond = Gdk::Pixbuf::create_from_inline(-1, dragcond_bits);
+    past_arrow = GUI::image_create_from_inline(-1, pastarrow_bits);
+    plain_arrow = GUI::image_create_from_inline(-1, arrow_bits);
+    grey_arrow = GUI::image_create_from_inline(-1, greyarrow_bits);
+    signal_arrow = GUI::image_create_from_inline(-1, signalarrow_bits);
+    drag_arrow = GUI::image_create_from_inline(-1, dragarrow_bits);
+    plain_stop = GUI::image_create_from_inline(-1, stop_bits);
+    plain_temp = GUI::image_create_from_inline(-1, temp_bits);
+    plain_cond = GUI::image_create_from_inline(-1, cond_bits);
+    grey_stop = GUI::image_create_from_inline(-1, greystop_bits);
+    grey_temp = GUI::image_create_from_inline(-1, greytemp_bits);
+    grey_cond = GUI::image_create_from_inline(-1, greycond_bits);
+    drag_stop = GUI::image_create_from_inline(-1, dragstop_bits);
+    drag_temp = GUI::image_create_from_inline(-1, dragtemp_bits);
+    drag_cond = GUI::image_create_from_inline(-1, dragcond_bits);
 }
 #endif
 
@@ -12630,7 +12630,7 @@ Widget SourceView::map_stop_at(Widget glyph, XmTextPosition pos,
 // Map stop sign GLYPH at position POS.  Get widget from STOPS[COUNT];
 // store location in POSITIONS.  Return mapped widget (0 if none)
 GUI::GlyphMark *SourceView::map_stop_at(GUI::ScrolledText *w, long pos,
-					Glib::RefPtr<Gdk::Pixbuf> stop,
+					const GUI::ImageHandle &stop,
 					TextPositionArray& positions)
 {
     GUI::MarkedTextView &view = w->view();
