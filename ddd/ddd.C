@@ -8461,7 +8461,12 @@ static const guint8 redlight[] =
   "\377\377\0\0\377\377\0\0\202\377\0\0"};
 
 
-
+static bool
+testclick(const GUI::EventButton *ev, int n)
+{
+    std::cerr << "testclick " << n << "\n";
+    return false;
+}
 
 static void create_status(GUI::Container *parent)
 {
@@ -8481,6 +8486,9 @@ static void create_status(GUI::Container *parent)
     // Create LED
     led_w = new GUI::Image(*status_form, GUI::PACK_SHRINK, "led", white);
     led_w->show();
+
+    led_w->signal_button_press_event().connect(sigc::bind(sigc::ptr_fun(testclick), 1));
+    led_w->signal_button_release_event().connect(sigc::bind(sigc::ptr_fun(testclick), 0));
 #endif
 
 #ifdef NAG_ME

@@ -36,10 +36,13 @@ Image::init(Container &parent, PackOptions po,
     hbox_->pack_start(*vbox_, Gtk::PACK_SHRINK, 4);
     frame_ = new Gtk::Frame();
     vbox_->pack_start(*frame_, Gtk::PACK_SHRINK, 4);
+    evbox_ = new Gtk::EventBox();
+    frame_->add(*evbox_);
     image_ = new Gtk::Image();
-    frame_->add(*image_);
+    evbox_->add(*image_);
     image_->show();
     frame_->show();
+    evbox_->show();
     vbox_->show();
     set_name(name.s());
     parent.add_child(*this, po, 0);
@@ -60,7 +63,7 @@ Image::Image(Container &parent, PackOptions po,
     set(image);
 }
 
-Image::~Image(void)
+Image::~Image()
 {
     delete image_;
     delete frame_;
@@ -69,13 +72,13 @@ Image::~Image(void)
 }
 
 Gtk::Widget *
-Image::internal(void)
+Image::internal()
 {
     return hbox_;
 }
 
 const Gtk::Widget *
-Image::internal(void) const
+Image::internal() const
 {
     return hbox_;
 }
@@ -86,3 +89,8 @@ Image::set(const ImageHandle &im)
     image_->set(im);
 }
 
+Gtk::Widget *
+Image::signals_from()
+{
+    return evbox_;
+}

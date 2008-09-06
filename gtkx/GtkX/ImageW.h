@@ -34,6 +34,7 @@
 #include <GtkX/Image.h>
 #include <gtkmm/image.h>
 #include <gtkmm/frame.h>
+#include <gtkmm/eventbox.h>
 #include <gtkmm/box.h>
 
 namespace GtkX {
@@ -42,6 +43,7 @@ namespace GtkX {
 	Gtk::HBox *hbox_;
 	Gtk::VBox *vbox_;
 	Gtk::Frame *frame_;
+	Gtk::EventBox *evbox_;
 	Gtk::Image *image_;
     public:
 	void init(Container &parent, PackOptions po=PACK_SHRINK,
@@ -50,9 +52,10 @@ namespace GtkX {
 	      const String &name="");
 	Image(Container &parent, PackOptions po,
 	      const String &name, const ImageHandle &im);
-	~Image(void);
-	Gtk::Widget *internal(void);
-	const Gtk::Widget *internal(void) const;
+	~Image();
+	Gtk::Widget *internal();
+	Gtk::Widget *signals_from();
+	const Gtk::Widget *internal() const;
 	void set(const ImageHandle &);
     };
 
