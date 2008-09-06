@@ -33,9 +33,9 @@ Image::init(Container &parent, PackOptions po,
 {
     hbox_ = new Gtk::HBox();
     vbox_ = new Gtk::VBox();
-    hbox_->pack_start(*vbox_, Gtk::PACK_SHRINK, 4);
+    hbox_->pack_start(*vbox_, Gtk::PACK_EXPAND_PADDING, 4);
     frame_ = new Gtk::Frame();
-    vbox_->pack_start(*frame_, Gtk::PACK_SHRINK, 4);
+    vbox_->pack_start(*frame_, Gtk::PACK_EXPAND_PADDING, 4);
     evbox_ = new Gtk::EventBox();
     frame_->add(*evbox_);
     image_ = new Gtk::Image();
