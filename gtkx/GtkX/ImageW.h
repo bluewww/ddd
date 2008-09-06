@@ -33,10 +33,12 @@
 #include <GtkX/Container.h>
 #include <GtkX/Image.h>
 #include <gtkmm/image.h>
+#include <gtkmm/frame.h>
 
 namespace GtkX {
 
     class Image: public Widget {
+	Gtk::Frame *frame_;
 	Gtk::Image *image_;
     public:
 	Image(Container &parent, PackOptions po=PACK_SHRINK,

@@ -312,6 +312,7 @@ char ddd_rcsid[] =
 #include <GUI/Button.h>
 #include <GUI/Entry.h>
 #include <GUI/Main.h>
+#include <GUI/ImageW.h>
 #endif
 // Standard stuff
 #include <stdlib.h>
@@ -2997,7 +2998,9 @@ GUI::ScrolledText *gdb_w;
 GUI::Button *status_w;
 
 // GDB activity led
-static GUI::CheckButton *led_w;
+// static GUI::CheckButton *led_w;
+static GUI::Image *led_w;
+static bool led_w_active = false;
 #endif
 
 #if defined(IF_XM)
@@ -8404,23 +8407,81 @@ static void create_status(Widget parent)
     blink(true);
 }
 #else
+/* GdkPixbuf RGB C-Source image dump 1-byte-run-length-encoded */
+
+#ifdef __SUNPRO_C
+#pragma align 4 (whitelight)
+#endif
+#ifdef __GNUC__
+static const guint8 whitelight[] __attribute__ ((__aligned__ (4))) = 
+#else
+static const guint8 whitelight[] = 
+#endif
+{ ""
+  /* Pixbuf magic (0x47646b50) */
+  "GdkP"
+  /* length: header (24) + pixel_data (12) */
+  "\0\0\0$"
+  /* pixdata_type (0x2010001) */
+  "\2\1\0\1"
+  /* rowstride (48) */
+  "\0\0\0""0"
+  /* width (16) */
+  "\0\0\0\20"
+  /* height (16) */
+  "\0\0\0\20"
+  /* pixel_data: */
+  "\377\377\377\377\377\377\377\377\202\377\377\377"};
+
+
+/* GdkPixbuf RGB C-Source image dump 1-byte-run-length-encoded */
+
+#ifdef __SUNPRO_C
+#pragma align 4 (redlight)
+#endif
+#ifdef __GNUC__
+static const guint8 redlight[] __attribute__ ((__aligned__ (4))) = 
+#else
+static const guint8 redlight[] = 
+#endif
+{ ""
+  /* Pixbuf magic (0x47646b50) */
+  "GdkP"
+  /* length: header (24) + pixel_data (12) */
+  "\0\0\0$"
+  /* pixdata_type (0x2010001) */
+  "\2\1\0\1"
+  /* rowstride (48) */
+  "\0\0\0""0"
+  /* width (16) */
+  "\0\0\0\20"
+  /* height (16) */
+  "\0\0\0\20"
+  /* pixel_data: */
+  "\377\377\0\0\377\377\0\0\202\377\0\0"};
+
+
+
+
 static void create_status(GUI::Container *parent)
 {
-#ifdef NAG_ME
-#warning Note: We can use a Box instead of a Form because all we need
-#warning is pack_start and pack_end.
-#endif
     GUI::Box *status_form = new GUI::HBox(*parent, GUI::PACK_SHRINK, "status_form");
     status_form->show();
 
+#if 0
     // Create LED
     led_w = new GUI::CheckButton(*status_form, GUI::PACK_SHRINK, "led", "");
-#ifdef NAG_ME
-#warning How to fill toggle button with Green color?
-#endif
     led_w->show();
 
     led_w->signal_toggled().connect(sigc::bind(sigc::ptr_fun(ToggleBlinkCB), led_w));
+#else
+    GUI::ImageHandle white = GUI::image_create_from_inline(-1, whitelight);
+    GUI::ImageHandle red = GUI::image_create_from_inline(-1, redlight);
+
+    // Create LED
+    led_w = new GUI::Image(*status_form, GUI::PACK_SHRINK, "led", white);
+    led_w->show();
+#endif
 
 #ifdef NAG_ME
 #warning Set arrow as pixmap in button.
@@ -8587,7 +8648,7 @@ static void blink(bool set)
 {
     blinker_active = set;
 
-    if (!led_w->get_active())
+    if (!led_w_active)
 	return;			// Button is not active
 
     if (blink_timer == 0)
@@ -8613,7 +8674,7 @@ static void DisableBlinkHP(Agent *, void *, void *)
 static void DisableBlinkHP(Agent *, void *, void *)
 {
     // GDB has died -- disable status LED
-    led_w->set_active(false);
+    led_w_active = false;
 }
 #endif
 

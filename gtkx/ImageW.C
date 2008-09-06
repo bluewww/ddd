@@ -30,6 +30,10 @@ using namespace GtkX;
 Image::Image(Container &parent, PackOptions po,
 	     const String &name)
 {
+    frame_ = new Gtk::Frame();
+    image_ = new Gtk::Image();
+    frame_->add(*image_);
+    image_->show();
     set_name(name.s());
     parent.add_child(*this, po, 0);
     postinit();
@@ -39,7 +43,10 @@ Image::Image(Container &parent, PackOptions po,
 	     const String &name,
 	     const ImageHandle &image)
 {
+    frame_ = new Gtk::Frame();
     image_ = new Gtk::Image(image);
+    frame_->add(*image_);
+    image_->show();
     set_name(name.s());
     parent.add_child(*this, po, 0);
     postinit();
@@ -48,18 +55,19 @@ Image::Image(Container &parent, PackOptions po,
 Image::~Image(void)
 {
     delete image_;
+    delete frame_;
 }
 
 Gtk::Widget *
 Image::internal(void)
 {
-    return image_;
+    return frame_;
 }
 
 const Gtk::Widget *
 Image::internal(void) const
 {
-    return image_;
+    return frame_;
 }
 
 void
