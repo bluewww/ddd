@@ -72,7 +72,7 @@ void
 MenuItem::set_label(const String &label)
 {
     remove();
-    add_label(label.c_str());
+    add_label(label.c_str(), false, 0.0, 0.5);
 }
 
 void
