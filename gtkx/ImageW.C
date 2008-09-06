@@ -27,47 +27,57 @@
 
 using namespace GtkX;
 
-Image::Image(Container &parent, PackOptions po,
-	     const String &name)
+void
+Image::init(Container &parent, PackOptions po,
+	    const String &name)
 {
+    hbox_ = new Gtk::HBox();
+    vbox_ = new Gtk::VBox();
+    hbox_->pack_start(*vbox_, Gtk::PACK_SHRINK, 4);
     frame_ = new Gtk::Frame();
+    vbox_->pack_start(*frame_, Gtk::PACK_SHRINK, 4);
     image_ = new Gtk::Image();
     frame_->add(*image_);
     image_->show();
+    frame_->show();
+    vbox_->show();
     set_name(name.s());
     parent.add_child(*this, po, 0);
     postinit();
+}
+
+Image::Image(Container &parent, PackOptions po,
+	     const String &name)
+{
+    init(parent, po, name);
 }
 
 Image::Image(Container &parent, PackOptions po,
 	     const String &name,
 	     const ImageHandle &image)
 {
-    frame_ = new Gtk::Frame();
-    image_ = new Gtk::Image(image);
-    frame_->add(*image_);
-    image_->show();
-    set_name(name.s());
-    parent.add_child(*this, po, 0);
-    postinit();
+    init(parent, po, name);
+    set(image);
 }
 
 Image::~Image(void)
 {
     delete image_;
     delete frame_;
+    delete vbox_;
+    delete hbox_;
 }
 
 Gtk::Widget *
 Image::internal(void)
 {
-    return frame_;
+    return hbox_;
 }
 
 const Gtk::Widget *
 Image::internal(void) const
 {
-    return frame_;
+    return hbox_;
 }
 
 void

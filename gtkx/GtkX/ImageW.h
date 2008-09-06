@@ -34,13 +34,18 @@
 #include <GtkX/Image.h>
 #include <gtkmm/image.h>
 #include <gtkmm/frame.h>
+#include <gtkmm/box.h>
 
 namespace GtkX {
 
     class Image: public Widget {
+	Gtk::HBox *hbox_;
+	Gtk::VBox *vbox_;
 	Gtk::Frame *frame_;
 	Gtk::Image *image_;
     public:
+	void init(Container &parent, PackOptions po=PACK_SHRINK,
+		  const String &name="");
 	Image(Container &parent, PackOptions po=PACK_SHRINK,
 	      const String &name="");
 	Image(Container &parent, PackOptions po,
