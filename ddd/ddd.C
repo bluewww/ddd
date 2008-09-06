@@ -440,7 +440,7 @@ static void blink(bool set);
 #if defined(IF_XM)
 static void ToggleBlinkCB(Widget, XtPointer client_data, XtPointer call_data);
 #else
-static void ToggleBlinkCB(GUI::CheckButton *w);
+static bool ToggleBlinkCB(GUI::EventButton *ev);
 #endif
 static void DisableBlinkHP(Agent *, void *, void *);
 
@@ -3000,7 +3000,7 @@ GUI::Button *status_w;
 // GDB activity led
 // static GUI::CheckButton *led_w;
 static GUI::Image *led_w;
-static bool led_w_active = false;
+static bool led_w_active = true;
 #endif
 
 #if defined(IF_XM)
@@ -8410,12 +8410,12 @@ static void create_status(Widget parent)
 /* GdkPixbuf RGB C-Source image dump 1-byte-run-length-encoded */
 
 #ifdef __SUNPRO_C
-#pragma align 4 (whitelight)
+#pragma align 4 (whitelight_data)
 #endif
 #ifdef __GNUC__
-static const guint8 whitelight[] __attribute__ ((__aligned__ (4))) = 
+static const guint8 whitelight_data[] __attribute__ ((__aligned__ (4))) = 
 #else
-static const guint8 whitelight[] = 
+static const guint8 whitelight_data[] = 
 #endif
 { ""
   /* Pixbuf magic (0x47646b50) */
@@ -8437,12 +8437,12 @@ static const guint8 whitelight[] =
 /* GdkPixbuf RGB C-Source image dump 1-byte-run-length-encoded */
 
 #ifdef __SUNPRO_C
-#pragma align 4 (redlight)
+#pragma align 4 (redlight_data)
 #endif
 #ifdef __GNUC__
-static const guint8 redlight[] __attribute__ ((__aligned__ (4))) = 
+static const guint8 redlight_data[] __attribute__ ((__aligned__ (4))) = 
 #else
-static const guint8 redlight[] = 
+static const guint8 redlight_data[] = 
 #endif
 { ""
   /* Pixbuf magic (0x47646b50) */
@@ -8461,35 +8461,22 @@ static const guint8 redlight[] =
   "\377\377\0\0\377\377\0\0\202\377\0\0"};
 
 
-static bool
-testclick(const GUI::EventButton *ev, int n)
-{
-    std::cerr << "testclick " << n << "\n";
-    return false;
-}
+static GUI::ImageHandle whitelight;
+static GUI::ImageHandle redlight;
 
 static void create_status(GUI::Container *parent)
 {
     GUI::Box *status_form = new GUI::HBox(*parent, GUI::PACK_SHRINK, "status_form");
     status_form->show();
 
-#if 0
-    // Create LED
-    led_w = new GUI::CheckButton(*status_form, GUI::PACK_SHRINK, "led", "");
-    led_w->show();
-
-    led_w->signal_toggled().connect(sigc::bind(sigc::ptr_fun(ToggleBlinkCB), led_w));
-#else
-    GUI::ImageHandle white = GUI::image_create_from_inline(-1, whitelight);
-    GUI::ImageHandle red = GUI::image_create_from_inline(-1, redlight);
+    whitelight = GUI::image_create_from_inline(-1, whitelight_data);
+    redlight = GUI::image_create_from_inline(-1, redlight_data);
 
     // Create LED
-    led_w = new GUI::Image(*status_form, GUI::PACK_SHRINK, "led", white);
+    led_w = new GUI::Image(*status_form, GUI::PACK_SHRINK, "led", whitelight);
     led_w->show();
 
-    led_w->signal_button_press_event().connect(sigc::bind(sigc::ptr_fun(testclick), 1));
-    led_w->signal_button_release_event().connect(sigc::bind(sigc::ptr_fun(testclick), 0));
-#endif
+    led_w->signal_button_press_event().connect(sigc::ptr_fun(ToggleBlinkCB));
 
 #ifdef NAG_ME
 #warning Set arrow as pixmap in button.
@@ -8593,32 +8580,13 @@ static
 bool
 BlinkCB(bool *set_p)
 {
-
-    static bool have_led_colors = false;
-    static GUI::Color led_select_color;
-    static GUI::Color led_background_color;
-
-
-    if (!have_led_colors)
-    {
-	led_background_color = led_w->get_bg(GUI::STATE_NORMAL);
-	led_select_color = led_w->get_bg(GUI::STATE_SELECTED);
-	have_led_colors = true;
-    }
-
     bool set = *set_p;
     *set_p = !set;
     if (set) {
-	led_w->set_bg(GUI::STATE_NORMAL, led_select_color);
-	led_w->set_bg(GUI::STATE_ACTIVE, led_select_color);
-	led_w->set_bg(GUI::STATE_PRELIGHT, led_select_color);
-	led_w->set_bg(GUI::STATE_SELECTED, led_select_color);
+	led_w->set(redlight);
     }
     else {
-	led_w->set_bg(GUI::STATE_NORMAL, led_background_color);
-	led_w->set_bg(GUI::STATE_ACTIVE, led_select_color);
-	led_w->set_bg(GUI::STATE_PRELIGHT, led_select_color);
-	led_w->set_bg(GUI::STATE_SELECTED, led_background_color);
+	led_w->set(whitelight);
     }
 
     // led_w->get_display()->flush();
@@ -8682,7 +8650,7 @@ static void DisableBlinkHP(Agent *, void *, void *)
 static void DisableBlinkHP(Agent *, void *, void *)
 {
     // GDB has died -- disable status LED
-    led_w_active = false;
+    blinker_active = false;
 }
 #endif
 
@@ -8705,11 +8673,12 @@ static void ToggleBlinkCB(Widget, XtPointer, XtPointer call_data)
     blink(blinker_active);
 }
 #else
-static void ToggleBlinkCB(GUI::CheckButton *w)
+static bool ToggleBlinkCB(GUI::EventButton *ev)
 {
     string debugger_status_indicator =
 	"Debugger status indicator ";
-    bool set = w->get_active();
+    led_w_active = !led_w_active;
+    bool set = led_w_active;
 
     app_data.blink_while_busy = set;
 
@@ -8720,6 +8689,7 @@ static void ToggleBlinkCB(GUI::CheckButton *w)
 
     // Restart blinker
     blink(blinker_active);
+    return false;
 }
 #endif
 
