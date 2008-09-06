@@ -393,6 +393,12 @@ Widget::size_request() const
     return req;
 }
 
+void
+Widget::queue_draw()
+{
+    internal()->queue_draw();
+}
+
 static Gtk::StateType
 translate_state_type(const StateType &in)
 {

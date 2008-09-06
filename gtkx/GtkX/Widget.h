@@ -405,6 +405,7 @@ namespace GtkX {
 	void remove_destroy_notify_callback(void *data);
 	bool translate_coordinates(GtkX::Widget &, int, int, int &, int &);
 	Requisition size_request() const;
+	void queue_draw();
 	Color get_bg() const;
 	Color get_fg() const;
 	Color get_bg(StateType) const;
