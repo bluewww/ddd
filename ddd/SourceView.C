@@ -433,36 +433,36 @@ struct BPButtons { enum Itms {Properties, Lookup, NewBP, NewWP, Print,
 			      Enable, Disable, Delete}; };
 MMDesc SourceView::bp_area[] =
 {
-    GENTRYL("properties", N_("properties"), MMPush, 
+    GENTRYLI("properties", N_("properties"), PROPERTIES_ICON, MMPush, 
 	    BIND(SourceView::EditBreakpointPropertiesCB, &callback_bp_nr),
 	    sigc::hide(sigc::bind(sigc::ptr_fun(SourceView::EditBreakpointPropertiesCB), &callback_bp_nr)),
 	    0, 0),
-    GENTRYL("lookup", N_("lookup"), MMPush, 
+    GENTRYLI("lookup", N_("lookup"), LOOKUP_ICON, MMPush, 
 	    BIND(SourceView::LookupBreakpointCB, 0),
 	    sigc::hide(sigc::bind(sigc::ptr_fun(SourceView::LookupBreakpointCB),
 				  (BreakpointPropertiesInfo *)0)),
 	    0, 0),
-    GENTRYL("new_bp", N_("new_bp"), MMPush,
+    GENTRYLI("new_bp", N_("new_bp"), NEW_BREAK_ICON, MMPush,
 	    BIND(SourceView::NewBreakpointCB, 0),
 	    sigc::ptr_fun(SourceView::NewBreakpointCB),
 	    0, 0),
-    GENTRYL("new_wp", N_("new_wp"), MMPush,
+    GENTRYLI("new_wp", N_("new_wp"), NEW_WATCH_ICON, MMPush,
 	    BIND(SourceView::NewWatchpointCB, 0),
 	    sigc::ptr_fun(SourceView::NewWatchpointCB),
 	    0, 0),
-    GENTRYL("print", N_("print"), MMPush, 
+    GENTRYLI("print", N_("print"), PRINT_ICON, MMPush, 
 	    BIND(SourceView::PrintWatchpointCB, 0),
 	    sigc::bind(sigc::ptr_fun(SourceView::PrintWatchpointCB), (BreakpointPropertiesInfo *)0),
 	    0, 0),
-    GENTRYL("enable", N_("enable"), MMPush, 
+    GENTRYLI("enable", N_("enable"), ENABLE_ICON, MMPush, 
 	    BIND(SourceView::BreakpointCmdCB, "enable"),
 	    sigc::hide(sigc::bind(sigc::ptr_fun(SourceView::BreakpointCmdCB), "enable")),
 	    0, 0),
-    GENTRYL("disable", N_("disable"), MMPush, 
+    GENTRYLI("disable", N_("disable"), DISABLE_ICON, MMPush, 
 	    BIND(SourceView::BreakpointCmdCB, "disable"),
 	    sigc::hide(sigc::bind(sigc::ptr_fun(SourceView::BreakpointCmdCB), "disable")),
 	    0, 0),
-    GENTRYL("delete", N_("delete"), MMPush | MMHelp, 
+    GENTRYLI("delete", N_("delete"), DELETE_ICON, MMPush | MMHelp, 
 	    BIND(SourceView::BreakpointCmdCB, "delete"),
 	    sigc::hide(sigc::bind(sigc::ptr_fun(SourceView::BreakpointCmdCB), "delete")),
 	    0, 0),
@@ -5637,10 +5637,6 @@ void SourceView::create_shells()
     bp_headers.push_back("Address");
     bp_headers.push_back("What");
 
-    breakpoint_list_w = 
-	new GUI::ListView(*edit_breakpoints_dialog_w, GUI::PACK_EXPAND_WIDGET, "breakpoint list",
-			  bp_headers);
-
     if (app_data.flat_dialog_buttons)
     {
 	for (MMDesc *item = bp_area; item != 0 && !item->name.empty(); item++)
@@ -5655,6 +5651,16 @@ void SourceView::create_shells()
 
     MMaddCallbacks(bp_area);
     MMaddHelpCallback(bp_area, sigc::ptr_fun(ImmediateHelpCB));
+
+    GUI::ScrolledWindow *sw = new GUI::ScrolledWindow(*edit_breakpoints_dialog_w,
+						      GUI::PACK_EXPAND_WIDGET);
+    sw->show();
+
+    breakpoint_list_w = 
+	new GUI::ListView(*sw, GUI::PACK_EXPAND_WIDGET, "breakpoint list",
+			  bp_headers);
+
+    breakpoint_list_w->show();
 
     if (breakpoint_list_w != 0)
     {
