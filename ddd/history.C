@@ -151,6 +151,9 @@ static bool gdb_new_history = true;
 // True if history command was issued
 static bool private_gdb_history = false;
 
+// Recent files storage
+static StringArray recent_files;
+
 // Update all combo boxes
 static void update_combo_boxes();
 
@@ -423,10 +426,10 @@ void save_history(const string& file, GUI::Widget *origin)
 
 	// Save the 10 most recently opened files
 	int i;
-	StringArray recent;
-	get_recent(recent);
-	for (i = recent.size() - 1; i >= 0 && i >= recent.size() - 10; i--)
-	    os << gdb->debug_command(recent[i]) << "\n";
+	for (i = recent_files.size() - 10; i < recent_files.size(); i++) {
+	    if (i >= 0)
+		os << gdb->debug_command(recent_files[i]) << "\n";
+	}
 
 	// Now save the command history itself
 	int start = gdb_history.size() - gdb_history_size;
@@ -731,9 +734,6 @@ void tie_combo_box_to_history(GUI::ComboBoxEntryText *text, HistoryFilter filter
 //-----------------------------------------------------------------------------
 
 static void update_recent_menus();
-
-// Recent files storage
-static StringArray recent_files;
 
 // Add FILE to recent file history
 void add_to_recent(const string& file)
