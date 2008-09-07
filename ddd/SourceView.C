@@ -5632,8 +5632,8 @@ void SourceView::create_shells()
 
     bp_headers.push_back("Num");
     bp_headers.push_back("Type");
-    bp_headers.push_back("Temp");
-    bp_headers.push_back("Enabled");
+    bp_headers.push_back("Disp");
+    bp_headers.push_back("Enb");
     bp_headers.push_back("Address");
     bp_headers.push_back("What");
 
@@ -10553,19 +10553,28 @@ void SourceView::process_breakpoints(string& info_breakpoints_output)
     int count = info_breakpoints_output.freq('\n') + 1;
 
     string *breakpoint_list = new string[count];
-    bool *selected          = new bool[count];
-
+    string *bpl = breakpoint_list;
     split(info_breakpoints_output, breakpoint_list, count, '\n');
 
     while (count > 0 && breakpoint_list[count - 1].empty())
 	count--;
+
+#if !defined(IF_XM)
+    // Strip header.  We already have column titles.
+    if (!has_nr(breakpoint_list[0])) {
+	bpl++;
+	count--;
+    }
+#endif
+
+    bool *selected          = new bool[count];
 
     bool select = false;
     string file = current_source_name();
 
     for (int i = 0; i < count; i++)
     {
-	string& bp_info = breakpoint_list[i];
+	string& bp_info = bpl[i];
 	if (!gdb->has_numbered_breakpoints())
 	{
 	    // JDB and Perl have no breakpoint numbers -- insert our own
@@ -10599,14 +10608,19 @@ void SourceView::process_breakpoints(string& info_breakpoints_output)
 	setup_where_line(bp_info);
     }
 
-    setLabelList(breakpoint_list_w, breakpoint_list, selected, count,
+#if defined(IF_XM)
+    setLabelList(breakpoint_list_w, bpl, selected, count,
 		 (gdb->type() == GDB || 
 		  gdb->type() == DBG || 
 		  gdb->type() == PYDB) && count > 1, false);
 
-#if defined(IF_XM)
     UpdateBreakpointButtonsCB(breakpoint_list_w, XtPointer(0), XtPointer(0));
 #else
+    setLabelList(breakpoint_list_w, bpl, selected, count,
+		 (gdb->type() == GDB || 
+		  gdb->type() == DBG || 
+		  gdb->type() == PYDB) && count > 1, false, ' ');
+
     UpdateBreakpointButtonsCB();
 #endif
 
