@@ -283,7 +283,10 @@ void getItemNumbers(GUI::ListView *selectionList, IntArray& numbers)
     selectionList->get_selected_numbers(selnos);
     std::vector<int>::iterator iter;
     for (iter = selnos.begin(); iter != selnos.end(); iter++) {
-	numbers += (*iter);
+	GUI::String _item = selectionList->get_at(*iter, 0);
+	string item(_item);
+	if (has_nr(item))
+	    numbers += get_nr(item);
     }
 }
 #endif
