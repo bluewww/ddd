@@ -191,7 +191,7 @@ static void wait_for_gdb_reply(GDBReply *reply, int timeout)
     if (timeout > 0)
     {
 	timer = GUI::signal_timeout().connect(sigc::bind(sigc::ptr_fun(gdb_reply_timeout), reply),
-					       timeout * 1000);
+					      timeout * 1000);
     }
 
     // Process all GDB input and timer events
