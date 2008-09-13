@@ -355,7 +355,9 @@ Widget post_error(string text, const _XtString name, Widget w)
     dddlog << "!  " << text << '\n';
     dddlog.flush();
 
-    if (ddd_is_exiting)
+    // If error occurs very early, we may not even have a command
+    // shell...
+    if (ddd_is_exiting || find_shell(w) == 0)
     {
 	std::cerr << ddd_NAME << ": " << text << "\n";
 	return 0;
