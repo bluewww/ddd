@@ -67,6 +67,7 @@ extern int ptrace(int request, int pid, int addr, int data);
 #include "filetype.h"
 #include "frame.h"
 #include "gdbinit.h"
+#include "mainloop.h"
 #if defined(IF_XM)
 #include "plotter.h"
 #endif
@@ -3713,6 +3714,15 @@ bool save_options(unsigned long flags)
     const bool save_geometry = (flags & SAVE_GEOMETRY);
     const bool interact      = (flags & MAY_INTERACT);
 
+    if (find_shell() == 0) {
+	// We cannot use *_app_value() because we have no shell
+	// available.  Presumably we have been called from an error
+	// handler very early in program startup.
+	if (interact)
+	    post_error("Cannot save options", "options_save_error");
+	return false;
+    }
+
     string session = 
 	(save_session ? app_data.session : DEFAULT_SESSION.chars());
 
@@ -4297,12 +4307,19 @@ bool save_options(unsigned long flags)
 // ignored.
 bool save_options(unsigned long flags)
 {
-    std::cerr << "Running save_options...\n";
-
     const bool create        = (flags & CREATE_OPTIONS);
     const bool save_session  = (flags & SAVE_SESSION);
     const bool save_geometry = (flags & SAVE_GEOMETRY);
     const bool interact      = (flags & MAY_INTERACT);
+
+    if (!main_loop_entered) {
+	// Do not allow save_options to run unless we are sure all the
+	// necessary pointers have been initialized.  This prevents
+	// segfaults if an error handler runs during program startup.
+	if (interact)
+	    post_error("Cannot save options", "options_save_error");
+	return false;
+    }
 
     string session = 
 	(save_session ? app_data.session : DEFAULT_SESSION.chars());

@@ -46,7 +46,11 @@ Dialog::init(const String &name)
 
 Dialog::Dialog(GtkX::Widget &parent, const String &name)
 {
-    dlg_ = new Gtk::Dialog(name.s(), *dynamic_cast<Gtk::Window *>(parent.internal()));
+    // Under exceptional conditions we may get a NULL pointer here.
+    if (&parent)
+	dlg_ = new Gtk::Dialog(name.s(), *dynamic_cast<Gtk::Window *>(parent.internal()));
+    else
+	dlg_ = new Gtk::Dialog(name.s());
     init(name);
 }
 

@@ -711,7 +711,13 @@ void uniconify_shell(Widget w)
 #else
 void uniconify_shell(GUI::Widget *w)
 {
-    std::cerr << "uniconify_shell not supported.\n";
+    if (w == 0)
+	return;
+
+    if (state(w) == Iconic)
+    {
+	popup_shell(w);
+    }
 }
 #endif
 
