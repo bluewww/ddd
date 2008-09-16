@@ -1532,8 +1532,6 @@ bool GDBAgent::recording(bool val)
     return recording();
 }
 
-bool foobar_debug_in_reply_array = false;
-
 void GDBAgent::handle_input(string& answer)
 {
     bool had_a_prompt;
@@ -1686,9 +1684,6 @@ void GDBAgent::handle_input(string& answer)
 		// Received all answers -- we're ready again
 		state = ReadyWithPrompt;
 
-		assert(!foobar_debug_in_reply_array);
-		foobar_debug_in_reply_array = true;
-
 		callHandlers(ReadyForQuestion, (void *)true);
 		callHandlers(ReadyForCmd, (void *)true);
 
@@ -1714,7 +1709,6 @@ void GDBAgent::handle_input(string& answer)
 		    if (array_completion != 0)
 			array_completion(answers, datas, array_data);
 		}
-		foobar_debug_in_reply_array = false;
 	    }
 	    else
 	    {

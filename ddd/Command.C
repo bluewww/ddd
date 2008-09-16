@@ -451,8 +451,6 @@ static void _do_gdb_command(const Command& c, bool is_command = true)
 }
 #endif
 
-extern bool foobar_debug_in_reply_array;
-
 // True if GDB can run a command
 bool can_do_gdb_command()
 {
@@ -812,18 +810,6 @@ void gdb_command(const Command& c0)
     if (can_do_gdb_command() && emptyCommandQueue())
     {
 	// We're ready - process immediately
-	if (foobar_debug_in_reply_array && !gdb_question_running) {
-	    // FIXME.
-	    // Sometimes DDD submits further queries for GDB state
-	    // during array completion.  An asynchronous command
-	    // issued during this phase would block subsequent
-	    // queries.  Issue a warning in this situation.
-	    std::cerr << "\n\n\n";
-	    std::cerr << "************************************************************\n";
-	    std::cerr << "*  Asynchronous gdb command found during array completion  *\n";
-	    std::cerr << "************************************************************\n";
-	    std::cerr << "\n\n\n";
-	}
 	do_gdb_command(c);
 	return;
     }

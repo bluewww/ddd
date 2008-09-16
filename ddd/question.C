@@ -217,6 +217,19 @@ string gdb_question(const string& command, int timeout, bool verbatim)
     if (command.empty())
 	return "";
 
+    if (gdb->running() && !gdb->isReadyWithPrompt()) {
+	std::cerr << "Waiting for prompt before question "
+		  << command << "...\n";
+	while (gdb->running() && !gdb->isReadyWithPrompt()) {
+#if defined(IF_XM)
+	    XtAppProcessEvent(XtWidgetToApplicationContext(gdb_w), 
+			      XtIMTimer | XtIMAlternateInput);
+#else
+	    Glib::MainContext::get_default()->iteration(true);
+#endif
+	}
+    }
+
     if (gdb_question_running || !can_do_gdb_command() || gdb->recording())
 	return NO_GDB_ANSWER;
 
