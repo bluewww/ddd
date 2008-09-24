@@ -379,7 +379,7 @@ void ListSetAndSelectPos(Widget list, int pos)
 // Select POS in LIST and make it visible
 void ListSetAndSelectPos(GUI::ListView *list, int pos)
 {
-    list->set_cursor(pos-1);
+    list->set_cursor(pos-1, false);
     list->scroll_to_row(pos-1);
 }
 #endif
