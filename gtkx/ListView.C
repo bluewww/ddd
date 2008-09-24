@@ -62,6 +62,7 @@ void
 ListView::init_signals()
 {
     tv_->get_selection()->signal_changed().connect(sigc::mem_fun(*this, &ListView::selection_changed_callback));
+    sel_cb_enb_ = true;
 }
 
 ListView::ListView(GtkX::Container &parent, PackOptions po,
@@ -289,7 +290,8 @@ ListView::signal_selection_changed()
 void
 ListView::selection_changed_callback()
 {
-    signal_selection_changed_();
+    if (sel_cb_enb_)
+	signal_selection_changed_();
 }
 
 void
@@ -319,11 +321,15 @@ ListView::set_selection_mode(SelectionMode sm)
 }
 
 void
-ListView::set_cursor(int pos)
+ListView::set_cursor(int pos, bool notify)
 {
     Gtk::TreeModel::Path path;
     path.push_back(pos);
+    bool tmp = sel_cb_enb_;
+    // Prevent callbacks if notify == false.
+    sel_cb_enb_ = notify;
     tv_->set_cursor(path);
+    sel_cb_enb_ = tmp;
 }
 
 void

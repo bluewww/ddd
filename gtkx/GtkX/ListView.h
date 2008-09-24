@@ -47,6 +47,7 @@ namespace GtkX {
     class ListView: public Widget {
 	Gtk::TreeView *tv_;
 	Glib::RefPtr<Gtk::ListStore> store_;
+	bool sel_cb_enb_;
     protected:
 	sigc::signal<void> signal_selection_changed_;
 	void selection_changed_callback();
@@ -71,7 +72,7 @@ namespace GtkX {
 	String get_at(int row, int col=-1);
 	void get_selected_numbers(std::vector<int> &numbers);
 	void set_selection_mode(SelectionMode);
-	void set_cursor(int);
+	void set_cursor(int pos, bool notify=true);
 	void scroll_to_row(int);
     };
 

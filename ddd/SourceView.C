@@ -5753,10 +5753,15 @@ void SourceView::create_shells()
 	new GUI::Dialog(*parent, "thread_dialog");
     Delay::register_shell(thread_dialog_w);
 
+    sw = new GUI::ScrolledWindow(*thread_dialog_w,
+				 GUI::PACK_EXPAND_WIDGET);
+    sw->show();
+
     std::vector<GUI::String> headers;
     headers.push_back(GUI::String("Thread"));
     thread_list_w = 
-	new GUI::ListView(*thread_dialog_w, GUI::PACK_SHRINK, "threads", headers);
+	new GUI::ListView(*sw, GUI::PACK_SHRINK, "threads", headers);
+    thread_list_w->show();
 
     thread_list_w->signal_selection_changed().connect(sigc::bind(sigc::ptr_fun(SelectThreadCB), thread_list_w));
 

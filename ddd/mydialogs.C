@@ -180,6 +180,12 @@ void setLabelList (GUI::ListView *selectionList,
 	for (int i = 0; i < list_length; i++)
 	    selectionList->append(label_list[i].chars());
     }
+    for (int i = 0; i < list_length; i++) 
+	if (selected != 0 && selected[i] == true) {
+	    std::cerr << "XmListSelectPos(selectionList, "
+		      << i+1 << "," << notify << ")\n";
+	    selectionList->set_cursor(i, false);
+	}
 }
 #endif
 
