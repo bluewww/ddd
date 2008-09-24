@@ -8464,11 +8464,6 @@ static const guint8 redlight_data[] =
 static GUI::ImageHandle whitelight;
 static GUI::ImageHandle redlight;
 
-static void status_size_request(GUI::Requisition *r)
-{
-    r->width = 0;
-}
-
 static void create_status(GUI::Container *parent)
 {
     GUI::Box *status_form = new GUI::HBox(*parent, GUI::PACK_SHRINK, "status_form");
@@ -8499,7 +8494,7 @@ static void create_status(GUI::Container *parent)
     status_w = new GUI::Button(*status_form, GUI::PACK_EXPAND_WIDGET, "status", "Status");
     status_w->show();
 
-    status_w->signal_size_request().connect(sigc::ptr_fun(status_size_request));
+    status_w->set_size_request(0, -1);
 
     // Initialize status history
     status_history_size = app_data.status_history_size;
