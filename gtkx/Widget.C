@@ -376,6 +376,7 @@ Widget::init_signals()
     from->signal_map().connect(sigc::mem_fun(*this, &Widget::map_callback));
     from->signal_unmap().connect(sigc::mem_fun(*this, &Widget::unmap_callback));
     from->signal_delete_event().connect(sigc::mem_fun(*this, &Widget::delete_event_callback));
+    from->signal_size_request().connect(sigc::mem_fun(*this, &Widget::size_request_callback));
 }
 
 void
@@ -615,6 +616,12 @@ Widget::signal_delete_event()
     return signal_delete_event_;
 }
 
+sigc::signal<void, GtkX::Requisition *>
+Widget::signal_size_request()
+{
+    return signal_size_request_;
+}
+
 bool
 Widget::button_press_event_callback(GdkEventButton *ev)
 {
@@ -678,6 +685,17 @@ Widget::delete_event_callback(GdkEventAny *ev)
 	return false;
     }
     return signal_delete_event_(evxa);
+}
+
+void
+Widget::size_request_callback(Gtk::Requisition *r)
+{
+    GtkX::Requisition rr;
+    rr.width = r->width;
+    rr.height = r->height;
+    signal_size_request_(&rr);
+    r->width = rr.width;
+    r->height = rr.height;
 }
 
 // FIXME: Should be const, but I cannot get it to work.

@@ -371,6 +371,8 @@ namespace GtkX {
 	void unmap_callback();
 	sigc::signal<bool, GtkX::EventAny *> signal_delete_event_;
 	bool delete_event_callback(GdkEventAny *ev);
+	sigc::signal<void, GtkX::Requisition *> signal_size_request_;
+	void size_request_callback(Gtk::Requisition *r);
     public:
 	Widget();
 	virtual ~Widget();
@@ -426,6 +428,7 @@ namespace GtkX {
 	sigc::signal<void> &signal_map();
 	sigc::signal<void> &signal_unmap();
 	sigc::signal<bool, GtkX::EventAny *> signal_delete_event();
+	sigc::signal<void, GtkX::Requisition *> signal_size_request();
 	void set_event_mask(EventMask events);
 	void add_event_mask(EventMask events);
     };
