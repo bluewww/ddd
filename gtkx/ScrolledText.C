@@ -122,8 +122,6 @@ GlyphMark *
 MarkedTextView::map_glyph(Glib::RefPtr<Gdk::Pixbuf> glyph, int x, int y)
 {
     GlyphMark *new_mark = new GlyphMark(glyph, x, y);
-    std::cerr << "Mapped glyph " << glyph->gobj() << " at (" << x << "," << y
-	      << ") = " << new_mark << "\n";
     marks.push_back(new_mark);
     refresh_line(y, glyph->get_height());
     return new_mark;
@@ -143,7 +141,6 @@ MarkedTextView::pos_to_xy(long pos, int &x, int &y)
 GlyphMark *
 MarkedTextView::map_glyph(Glib::RefPtr<Gdk::Pixbuf> glyph, long pos)
 {
-    std::cerr << "Mapped glyph " << glyph->gobj() << " at " << pos << "\n";
     int x, y;
     pos_to_xy(pos, x, y);
     return map_glyph(glyph, x, y);
@@ -158,9 +155,6 @@ MarkedTextView::unmap_glyph(GlyphMark *mark)
 	    int x = mark->x;
 	    int y = mark->y;
 	    int height = mark->glyph->get_height();
-	    std::cerr << "Unmapped glyph " << mark->glyph->gobj()
-		      << " at (" << x << "," << y
-		      << ") = " << mark << "\n";
 	    marks.erase(iter);
 	    refresh_line(y, height);
 	    break;
@@ -177,9 +171,6 @@ redo:
 	if ((*iter)->glyph == glyph) {
 	    int x = (*iter)->x;
 	    int y = (*iter)->y;
-	    std::cerr << "Unmapped glyph " << glyph->gobj()
-		      << " at (" << x << "," << y
-		      << ") = " << *iter << "\n";
 	    int height = (*iter)->glyph->get_height();
 	    marks.erase(iter);
 	    refresh_line(y, height);
