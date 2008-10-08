@@ -39,6 +39,13 @@ Box::add_child(Widget &child, PackOptions options, int padding)
     box->pack_start(*child.internal(), tr[options], padding);
 }
 
+void
+Box::set_spacing(int s)
+{
+    Gtk::Box *box = dynamic_cast<Gtk::Box *>(internal());
+    box->set_spacing(s);
+}
+
 #ifdef __GNUC__
 #warning Remove this special case notebook stuff?
 #endif

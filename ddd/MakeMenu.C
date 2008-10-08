@@ -942,7 +942,7 @@ void MMaddItems(GUI::Container *shell, MMDesc items[], bool ignore_seps)
 	    bool have_label = 
 		(name[0] != '\0' && (flags & MMUnmanagedLabel) == 0);
 
-	    widget = box = new GUI::HBox(*shell, GUI::PACK_EXPAND_WIDGET, panelName.chars());
+	    widget = box = new GUI::HBox(*shell, GUI::PACK_SHRINK, panelName.chars());
 
 	    label = new GUI::Label(*box, GUI::PACK_SHRINK, name, label_string);
 	    label->set_alignment(0.0, 0.5);
@@ -997,7 +997,10 @@ void MMaddItems(GUI::Container *shell, MMDesc items[], bool ignore_seps)
 	    // Create a label with an associated text field
 	    assert(subitems == 0);
 
-	    panel = new GUI::HBox(*shell, GUI::PACK_SHRINK, name);
+	    panel = new GUI::HBox(*shell, GUI::PACK_EXPAND_WIDGET, name);
+	    // ((GUI::Box *)panel)->set_spacing(200);
+	    // FIXME: Makes no difference: panel->set_bg(GUI::Color("red"));
+	    // panel->show();
 
 	    label = new GUI::Label(*panel, GUI::PACK_SHRINK, name, label_string);
 	    if (name[0] != '\0' && (flags & MMUnmanagedLabel) == 0)
@@ -1016,6 +1019,7 @@ void MMaddItems(GUI::Container *shell, MMDesc items[], bool ignore_seps)
 	    case MMTextField:
 	    case MMEnterField:
 		widget = new GUI::Entry(*panel, GUI::PACK_SHRINK, GUI::String(textName.chars()));
+		widget->set_size_request(400, -1);
 		widget->show();
 		break;
 	    }
@@ -1216,10 +1220,10 @@ GUI::Container *MMcreatePanel(GUI::Container *parent, GUI::String name, MMDesc i
 {
     GUI::Container *panel;
     if (orient == GUI::ORIENTATION_VERTICAL) {
-	panel = new GUI::VBox(*parent, GUI::PACK_EXPAND_WIDGET, name);
+	panel = new GUI::VBox(*parent, GUI::PACK_SHRINK, name);
     }
     else {
-	panel = new GUI::HBox(*parent, GUI::PACK_EXPAND_WIDGET, name);
+	panel = new GUI::HBox(*parent, GUI::PACK_SHRINK, name);
     }
     MMaddItems(panel, items);
     panel->show();
