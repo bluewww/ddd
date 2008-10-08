@@ -11336,8 +11336,13 @@ void SourceView::process_registers(string& register_output)
 	selected[i] = false;
     }
 
+#if defined(IF_XM)
     setLabelList(register_list_w, register_list, selected, count,
 		 false, false);
+#else
+    setLabelList(register_list_w, register_list, selected, count,
+		 false, false, ' ');
+#endif
 
     delete[] register_list;
     delete[] selected;
