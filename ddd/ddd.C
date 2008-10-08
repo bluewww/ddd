@@ -4196,10 +4196,16 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 static bool
 gdb_console_key_pressed(GUI::EventKey *evk)
 {
+    static long lastPrompt = 0;
+    if (promptPosition > lastPrompt) {
+	gdb_w->protect(lastPrompt, promptPosition);
+	lastPrompt = promptPosition;
+    }
     switch (evk->keyval) {
     case GDK_Up: prev_historyAct(); break;
     case GDK_Down: next_historyAct(); break;
-    default: return false;
+    default:
+	return false;
     }
     return true;
 }

@@ -282,6 +282,11 @@ ScrolledText::ScrolledText(GtkX::Container &parent, PackOptions po,
     // tv_->modify_base(Gtk::STATE_NORMAL, Gdk::Color("red"));
     sw_->add(*tv_->internal());
     tv_->show();
+    Glib::RefPtr<Gtk::TextTagTable> tt = tb_->get_tag_table();
+    if (tt) {
+	uneditable_tag_ = tb_->create_tag(Glib::ustring("uneditable-tag"));
+	uneditable_tag_->property_editable() = false;
+    }
     set_name(name.s());
     parent.add_child(*this, po, 0);
     postinit();
@@ -392,7 +397,11 @@ ScrolledText::get_last_position()
 void
 ScrolledText::set_insertion_position(long pos)
 {
-    Gtk::TextIter iter = tb_->get_iter_at_offset(pos);
+    Gtk::TextIter iter;
+    if (pos == LONG_MAX)
+	iter = tb_->end();
+    else
+	iter = tb_->get_iter_at_offset(pos);
     tb_->place_cursor(iter);
 }
 
@@ -534,6 +543,15 @@ ScrolledText::get_columns()
     static int errcnt = 0;
     if (!errcnt++) std::cerr << "ScrolledText: COLUMNS\n";
     return 0;
+}
+
+void
+ScrolledText::protect(long pos1, long pos2)
+{
+    Gtk::TextIter iter1, iter2;
+    iter1 = tb_->get_iter_at_offset(pos1);
+    iter2 = (pos2 == LONG_MAX) ? tb_->end() : tb_->get_iter_at_offset(pos2);
+    tb_->apply_tag(uneditable_tag_, iter1, iter2);
 }
 
 void

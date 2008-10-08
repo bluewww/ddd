@@ -132,6 +132,7 @@ namespace GtkX {
     {
 	Gtk::ScrolledWindow *sw_;
 	MarkedTextView *tv_;
+	Glib::RefPtr<Gtk::TextTag> uneditable_tag_;
 	Glib::RefPtr<Gtk::TextBuffer> tb_;
 	sigc::signal<void> signal_changed_;
 	void changed_callback();
@@ -170,6 +171,7 @@ namespace GtkX {
 	bool pos_to_xy(long pos, int &x, int &y);
 	int get_rows();
 	int get_columns();
+	void protect(long pos1, long pos2);
 	sigc::signal<void> &signal_changed();
 	sigc::signal<bool, GtkX::EventKey *> &signal_key_press_event();
 	sigc::signal<bool, GtkX::EventKey *> &signal_key_release_event();
