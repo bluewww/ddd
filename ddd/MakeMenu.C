@@ -1004,7 +1004,7 @@ void MMaddItems(GUI::Container *shell, MMDesc items[], bool ignore_seps)
 
 	    label = new GUI::Label(*panel, GUI::PACK_SHRINK, name, label_string);
 	    if (name[0] != '\0' && (flags & MMUnmanagedLabel) == 0)
-		label->show();
+	    	label->show();
 
 	    switch (type)
 	    {
@@ -1018,7 +1018,8 @@ void MMaddItems(GUI::Container *shell, MMDesc items[], bool ignore_seps)
 
 	    case MMTextField:
 	    case MMEnterField:
-		widget = new GUI::Entry(*panel, GUI::PACK_SHRINK, GUI::String(textName.chars()));
+		widget = new GUI::Entry(*panel, GUI::PACK_EXPAND_WIDGET, GUI::String(textName.chars()));
+		// widget->set_size_request(400, -1);
 		widget->set_size_request(400, -1);
 		widget->show();
 		break;
@@ -1050,6 +1051,7 @@ void MMaddItems(GUI::Container *shell, MMDesc items[], bool ignore_seps)
 #endif
 	}
 
+#if 0
 	if (widget) {
 	    // OO widget
 	    if (flags & MMInsensitive)
@@ -1061,6 +1063,19 @@ void MMaddItems(GUI::Container *shell, MMDesc items[], bool ignore_seps)
 	    if (widgetptr != 0)
 		*widgetptr = widget;
 	}
+#endif
+	GUI::Widget *wpanel = panel;
+	if (wpanel == 0)
+	    wpanel = widget;
+
+	if (flags & MMInsensitive)
+	    set_sensitive(wpanel, false);
+
+	if (!(flags & MMUnmanaged))
+	    wpanel->show();
+
+	if (widgetptr != 0)
+	    *widgetptr = widget;
     }
 }
 #endif
