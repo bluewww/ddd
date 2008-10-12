@@ -124,3 +124,16 @@ String::end(void) const
 {
     return s_.end();
 }
+
+String::size_type
+String::size() const
+{
+    return s_.size();
+}
+
+String::size_type
+String::length() const
+{
+    return s_.length();
+}
+

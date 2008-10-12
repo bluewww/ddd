@@ -985,7 +985,15 @@ void MMaddItems(GUI::Container *shell, MMDesc items[], bool ignore_seps)
 	    assert(subitems == 0);
 
 	    std::cerr << "FIXME: Hardwired bounds for HScale.\n";
-	    widget = new GUI::HScale(*shell, GUI::PACK_EXPAND_WIDGET, name, 0, 16);
+	    panel = new GUI::VBox(*shell, GUI::PACK_EXPAND_WIDGET, name);
+	    widget = new GUI::HScale(*panel, GUI::PACK_EXPAND_WIDGET,
+				     name+GUI::String("_s"), 0, 16);
+	    widget->set_size_request(100, -1);
+	    widget->show();
+	    label = new GUI::Label(*panel, GUI::PACK_EXPAND_WIDGET,
+				   name+GUI::String("_l"), label_string);
+	    if (label_string.length() > 0 && (flags & MMUnmanagedLabel) == 0)
+		label->show();
 	    break;
 	}
 

@@ -46,23 +46,25 @@ namespace GtkX {
 	typedef Glib::ustring::const_iterator const_iterator;
 	String(const Glib::ustring &s0);
 	String(const char *s0);
-	String(void);
-	~String(void);
-	Glib::ustring &s(void);
+	String();
+	~String();
+	Glib::ustring &s();
 	UChar operator[](int i) const;
-	const char *c(void) const; // FIXME - don't expose raw char*
-	const char *c_str(void) const; // FIXME - don't expose raw char*
-	const Glib::ustring &s(void) const;
+	const char *c() const; // FIXME - don't expose raw char*
+	const char *c_str() const; // FIXME - don't expose raw char*
+	const Glib::ustring &s() const;
 	String operator+(const String &str) const;
 	String &operator+=(const String &str);
 	bool operator==(const String &s) const;
 	bool operator!=(const String &s) const;
-	bool empty(void) const;
-	iterator begin(void);
-	iterator end(void);
-	const_iterator begin(void) const;
-	const_iterator end(void) const;
+	bool empty() const;
+	iterator begin();
+	iterator end();
+	const_iterator begin() const;
+	const_iterator end() const;
 	size_type find(const String &str, size_type i=0) const;
+	size_type size() const;
+	size_type length() const;
     };
 
     const GtkX::String mklabel(const GtkX::String &name,
