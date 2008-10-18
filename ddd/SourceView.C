@@ -5250,7 +5250,6 @@ static void InstallBitmapAsImage(unsigned char *bits, int width, int height,
 #endif
 
 #if !defined(IF_XM)
-
 bool
 SourceView::clicked_cb(GUI::EventButton *ev)
 {
@@ -5898,6 +5897,13 @@ void SourceView::create_text(Widget parent, const char *base, bool editable,
     }
 }
 #else
+void
+mark_notify(GUI::TextMark mark,
+	     long pos)
+{
+    std::cerr << "mark_notify " << mark << " " << pos << "\n";
+}
+
 // Create source or code window
 // FIXME Temporary
 // Create source or code window
@@ -5929,6 +5935,8 @@ void SourceView::create_text(GUI::Container *parent, const char *base,
     // Give the form the size specified for the text
     std::cerr << "set_scrolled_window_size(text, form);\n";
     set_scrolled_window_size(text, form);
+
+    text->signal_mark_set().connect(sigc::ptr_fun(mark_notify));
 
 #ifdef NAG_ME
 #warning Implement selections in source view

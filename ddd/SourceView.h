@@ -1388,6 +1388,7 @@ public:
     static void showing_earlier_state(bool set);
 #if !defined(IF_XM)
     bool clicked_cb(GUI::EventButton *ev);
+    static bool clicked_set_arg_cb(GUI::ScrolledText *w, GUI::EventButton *ev);
 #endif
 };
 

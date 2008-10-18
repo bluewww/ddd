@@ -62,6 +62,7 @@ MarkedTextView::init_signals()
     Gtk::Widget::signal_key_release_event().connect(sigc::mem_fun(*this, &MarkedTextView::key_release_event_callback));
     Gtk::Widget::signal_key_press_event().connect(sigc::mem_fun(*this, &MarkedTextView::key_press_pre_event_callback), false);
     Gtk::Widget::signal_key_release_event().connect(sigc::mem_fun(*this, &MarkedTextView::key_release_pre_event_callback), false);
+    get_buffer()->signal_mark_set().connect(sigc::mem_fun(*this, &MarkedTextView::mark_set_callback));
 }
 
 void
@@ -217,6 +218,12 @@ MarkedTextView::signal_key_release_pre_event()
     return signal_key_release_pre_event_;
 }
 
+sigc::signal<void, GtkX::TextMark, long> &
+MarkedTextView::signal_mark_set()
+{
+    return signal_mark_set_;
+}
+
 bool
 MarkedTextView::key_press_event_callback(GdkEventKey *ev)
 {
@@ -255,6 +262,16 @@ MarkedTextView::key_release_pre_event_callback(GdkEventKey *ev)
     GtkX::EventKey *evxk = dynamic_cast<GtkX::EventKey *>(&*evx);
     if (!evxk) return false;
     return signal_key_release_pre_event_(evxk);
+}
+
+void
+MarkedTextView::mark_set_callback(const Gtk::TextBuffer::iterator &iter,
+				  const Glib::RefPtr<Gtk::TextBuffer::Mark> &mark)
+{
+    Glib::RefPtr<Gtk::TextBuffer> buffer = mark->get_buffer();
+    if (mark == buffer->get_insert()) {
+	signal_mark_set_(GtkX::MARK_INSERT, iter.get_offset());
+    }
 }
 
 void
@@ -589,3 +606,10 @@ ScrolledText::signal_key_release_pre_event()
 {
     return tv_->signal_key_release_pre_event();
 }
+
+sigc::signal<void, GtkX::TextMark, long> &
+ScrolledText::signal_mark_set()
+{
+    return tv_->signal_mark_set();
+}
+

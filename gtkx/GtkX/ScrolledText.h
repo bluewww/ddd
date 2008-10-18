@@ -45,6 +45,10 @@ namespace GtkX {
 	SEE_DETAIL
     };
 
+    enum TextMark {
+	MARK_INSERT
+    };
+
     struct GlyphMark
     {
 	Glib::RefPtr<Gdk::Pixbuf> glyph;
@@ -103,6 +107,9 @@ namespace GtkX {
 	bool key_press_pre_event_callback(GdkEventKey *ev);
 	sigc::signal<bool, GtkX::EventKey *> signal_key_release_pre_event_;
 	bool key_release_pre_event_callback(GdkEventKey *ev);
+	sigc::signal<void, GtkX::TextMark, long> signal_mark_set_;
+	void mark_set_callback(const Gtk::TextBuffer::iterator &iter,
+			       const Glib::RefPtr<Gtk::TextBuffer::Mark> &mark);
 	std::list<GlyphMark *> marks;
     public:
 	MarkedTextView();
@@ -126,6 +133,7 @@ namespace GtkX {
 	sigc::signal<bool, GtkX::EventKey *> &signal_key_release_event();
 	sigc::signal<bool, GtkX::EventKey *> &signal_key_press_pre_event();
 	sigc::signal<bool, GtkX::EventKey *> &signal_key_release_pre_event();
+	sigc::signal<void, GtkX::TextMark, long> &signal_mark_set();
     };
 
     class ScrolledText: public GtkX::Widget
@@ -177,6 +185,7 @@ namespace GtkX {
 	sigc::signal<bool, GtkX::EventKey *> &signal_key_release_event();
 	sigc::signal<bool, GtkX::EventKey *> &signal_key_press_pre_event();
 	sigc::signal<bool, GtkX::EventKey *> &signal_key_release_pre_event();
+	sigc::signal<void, GtkX::TextMark, long> &signal_mark_set();
     };
 
 }
