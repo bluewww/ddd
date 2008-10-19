@@ -1595,9 +1595,6 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 		doc  = doc.after(rxwhite);
 		doc  = doc.after(rxwhite);
 		doc  = doc.after(rxwhite);
-		if (type == PYDB || type == BASH)
-		  doc  = base;
-
 		e_type = SignalEntry;
 	    }
 	    else if (entry_filter != DisplayToggleButtonEntry)
@@ -3343,14 +3340,8 @@ string get_settings(DebuggerType type, unsigned long flags)
 // Fetch GDB signal handling string
 string get_signals(DebuggerType type, unsigned long /* flags */)
 {
-    switch(type) {
-    case GDB:
-    case BASH:
-    case PYDB:
-      ;
-    default:
-      return "";		// Not supported yet
-    }
+    if (type != GDB)
+	return "";		// Not supported yet
 
     create_signals(type);
     string commands = "";

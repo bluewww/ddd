@@ -2229,12 +2229,12 @@ static void command_completed(void *data)
 	    case BASH:
 	    case GDB:
 	    case MAKE:
-	    case PYDB:
 		// GDB always issues file names on positions...
 		break;
 
 	    case DBG:
 	    case JDB:
+	    case PYDB:
 	    case PERL:
 		// FIXME
 		break;
@@ -2282,29 +2282,16 @@ static void command_completed(void *data)
     }
 
     // Set PC position
-    if (check && pos_buffer)
+    if (check && pos_buffer && pos_buffer->pc_found())
     {
-      if (pos_buffer->pc_found())
-      {
 	const string pc = pos_buffer->get_pc();
 	if (cmd_data->new_exec_pos || cmd_data->new_frame_pos)
-	  source_view->show_pc(pc, XmHIGHLIGHT_SELECTED,
-			       cmd_data->new_exec_pos,
-			       pos_buffer->signaled_found());
+	    source_view->show_pc(pc, XmHIGHLIGHT_SELECTED,
+				 cmd_data->new_exec_pos,
+				 pos_buffer->signaled_found());
 	else
-	  source_view->show_pc(pc, XmHIGHLIGHT_NORMAL);
-      } else if (gdb->type() == PYDB) {
-	const string pc = last_pos_found.after(':');
-	if (cmd_data->new_exec_pos || cmd_data->new_frame_pos)
-	  source_view->show_pc(pc, XmHIGHLIGHT_SELECTED,
-			       cmd_data->new_exec_pos,
-			       pos_buffer->signaled_found());
-	else
-	  source_view->show_pc(pc, XmHIGHLIGHT_NORMAL);
-	
-      }
+	    source_view->show_pc(pc, XmHIGHLIGHT_NORMAL);
     }
-
 
     if (verbose)
     {

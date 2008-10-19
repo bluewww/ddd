@@ -7658,7 +7658,6 @@ void SourceView::refresh_threads(bool all_threadgroups)
     switch (gdb->type())
     {
     case GDB:
-    case PYDB:
     {
 	string threads = gdb_question("info threads");
 	process_threads(threads);
@@ -7693,6 +7692,7 @@ void SourceView::refresh_threads(bool all_threadgroups)
     case DBG:
     case MAKE:
     case PERL:
+    case PYDB:
     case XDB:
 	// No threads.
 	break;
@@ -9529,11 +9529,6 @@ void SourceView::process_disassemble(const string& disassemble_output)
 // Search PC in the current code; return beginning of line if found
 XmTextPosition SourceView::find_pc(const string& pc)
 {
-    if (gdb->type() == PYDB) {
-      // return XmTextPosition(atoi(pc.chars()));
-      return XmTextPosition(-1);
-    }
-  
     if (compare_address(pc, current_code_start) < 0
 	|| compare_address(pc, current_code_end) > 0)
 	return XmTextPosition(-1);

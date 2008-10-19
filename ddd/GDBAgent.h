@@ -444,10 +444,12 @@ public:
     }
     ProgramLanguage program_language(string text);
 
-    // True if debugger can disassemble code
+    // True if debugger can enable breakpoints
     bool has_disassembly() const
     { 
-      return type() == GDB || type() == PYDB;
+      return type() == GDB 
+	// || type() == PYDB  // In theory this could be done.
+	;
     }
 
     // True if debugger can enable breakpoints
