@@ -2841,11 +2841,11 @@ void SourceView::set_source_argCB(Widget text_w,
 #else
 void SourceView::set_source_argCB(GUI::ScrolledText *text_w, bool client_data)
 {
-#if 0
     const string& text = current_text(text_w);
     if (text.empty())
 	return;
 
+#if 0
 #if defined(IF_XM)
     XmTextVerifyCallbackStruct *cbs = (XmTextVerifyCallbackStruct *)call_data;
 #endif
@@ -5904,6 +5904,17 @@ mark_notify(GUI::TextMark mark,
     std::cerr << "mark_notify " << mark << " " << pos << "\n";
 }
 
+bool
+SourceView::clicked_set_arg_cb(GUI::ScrolledText *w, GUI::EventButton *ev)
+{
+    if ((ev->state&(GUI::SHIFT_MASK|GUI::CONTROL_MASK)) == 0
+	&& ev->button == 1) {
+	std::cerr << "Set arg at " << ev->x << " " << ev->y
+		  << " " << w->xy_to_pos(ev->x, ev->y) << "\n";
+	return false; // Terminate emission
+    }
+}
+
 // Create source or code window
 // FIXME Temporary
 // Create source or code window
@@ -5935,6 +5946,8 @@ void SourceView::create_text(GUI::Container *parent, const char *base,
     // Give the form the size specified for the text
     std::cerr << "set_scrolled_window_size(text, form);\n";
     set_scrolled_window_size(text, form);
+
+    text->signal_button_press_pre_event().connect(sigc::bind<0>(sigc::ptr_fun(&SourceView::clicked_set_arg_cb), text));
 
     text->signal_mark_set().connect(sigc::ptr_fun(mark_notify));
 
