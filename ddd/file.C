@@ -683,12 +683,12 @@ ProgramInfo::ProgramInfo()
       running(false),
       state()
 {
-    if (!source_view || !gdb) {
+    if (!source_view) {
 	post_error("Cannot create ProgramInfo, no source view.",
 		   "no_source_error");
 	return;
     }
-    if (!source_view || !gdb) {
+    if (!gdb) {
 	post_error("Cannot create ProgramInfo, no debugger agent.\n",
 		   "gdb_io_error");
 	return;
