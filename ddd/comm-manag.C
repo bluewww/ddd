@@ -1785,6 +1785,8 @@ void send_gdb_command(string cmd, Widget origin,
 	    cmds += "info break";
 	if (extra_data->refresh_where)
 	    cmds += gdb->where_command();
+	if (extra_data->refresh_frame)
+	    cmds += gdb->frame_command();
 	if (extra_data->refresh_data)
 	    extra_data->n_refresh_data = 
 		data_disp->add_refresh_data_commands(cmds);
@@ -3267,7 +3269,6 @@ static void extra_completed (StringArray& answers,
 	string ans = "";
 	for (int i = 0; i < extra_data->n_refresh_data; i++)
 	{
-	  if (qu_count > 0 && qu_count < extra_data->extra_commands.size()) {
 	    const string& cmd = extra_data->extra_commands[qu_count];
 	    string var = cmd.after(rxwhite);
 
@@ -3277,7 +3278,6 @@ static void extra_completed (StringArray& answers,
 	    string value = answers[qu_count++];
 	    gdb->munch_value(value, var);
 	    ans += value + "\n";
-	  }
 	}
 
 	if (extra_data->n_refresh_data > 0)
