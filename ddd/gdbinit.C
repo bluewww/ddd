@@ -518,10 +518,10 @@ static struct table {
 {
     { BASH, "bash" },
     { DBG,  "dbg" },
-    { GDB,  "gdb"  },
-    { GDB,  "wdb"  },
     { DBX,  "dbx"  },
     { DBX,  "ladebug" },
+    { GDB,  "gdb"  },
+    { GDB,  "wdb"  },
     { JDB,  "jdb"  },
     { MAKE, "make" },
     { PERL, "perl" },

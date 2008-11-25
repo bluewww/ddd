@@ -22,22 +22,23 @@ To build a complete DDD from sources, you need:
      nearly ISO C++ conformant.  If you are building with a compiler that
      is not g++, be sure to read the PROBLEMS file.
 
-   * A M*tif Widget library.  Either
+   * A Motif Widget library.  Either
 
      - LessTif, 0.90 or later, or
+     - openmotif, 2.3 or later, or
      - OSF/Motif (1.2 or later).
 
-     We recommend to use LessTif 0.92 or later, available from
-     `http://www.lesstif.org/'.  
+     We recommend useing openmotif or LessTif 0.92 or later, available
+     from `http://www.lesstif.org/'.
 
-     Please note: LessTif can be built and installed as M*tif
-     1.2-compatible version and as M*tif 2.0-compatible version.
+     Please note: LessTif can be built and installed as Motif
+     1.2-compatible version and as Motif 2.0-compatible version.
      LessTif packages normally install both versions, with one being
      the default.
 
      If you use DDD with LessTif 0.92 or later, you can use any of the
      two LessTif versions.  If you use DDD with an older LessTif
-     version, be sure to use the M*tif-1.2 compatible LessTif version.
+     version, be sure to use the Motif-1.2 compatible LessTif version.
      See `External Packages', below, for details.
 
      LessTif-0.93.40 is known to work well.
@@ -122,6 +123,11 @@ To run DDD, you need:
        fact, XDB support is no longer maintained.  Try WDB or GDB 4.18
        or later; these support HP-UX compilers.
 
+     - To debug Bash programs, you will need a version of Bash that
+       has the debugger extensions compiled in and the bash debugger,
+       bashdb. Get bashdb from
+       http://bashdb.sourceforge.net/download.html
+
      - To debug Java bytecode programs, DDD supports JDB, the Java
        Debugger, as of JDK 1.1 and later.
 
@@ -129,11 +135,18 @@ To run DDD, you need:
        debugger.  DDD does its best to overcome JDB's limitations, but
        if you have an alternative to DDD/JDB, try it first.
 
-     - To debug Python programs, DDD supports PYDB, a PDB extension.
-       PYDB is included in the DDD distribution.
-
      - To debug Perl programs, DDD supports the Perl debugger as of
        Perl 5.003 and later.
+
+     - To debug GNU Make Makefiles, you will need a version of GNU
+       Make has the debugging extensions compiled. For now, the
+       installed "make" is called usually called "remake". Get
+       the GNU Make + debugger from 
+       http://bashdb.sourceforge.net/remake/
+
+     - To debug Python programs, DDD supports an extended version 
+       of the stock Python debugger called PYDB. Get pydb from 
+       the download link at http://bashdb.sourceforge.net/pydb/
 
 
 The following recommended helper applications should be in the user path:

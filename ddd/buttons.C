@@ -405,6 +405,7 @@ static string gdbSettingsValue(const string& command)
     case BASH:
     case GDB:
     case MAKE:
+    case PYDB:
 	if (command.contains("set ", 0))
 	{
 	    string value = gdb_question("show " + command.after(rxwhite));
@@ -419,7 +420,6 @@ static string gdbSettingsValue(const string& command)
     case DBX:
     case JDB:
     case PERL:
-    case PYDB:
     case XDB:
 	return NO_GDB_ANSWER;		// FIXME
     }

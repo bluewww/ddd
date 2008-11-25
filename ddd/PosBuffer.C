@@ -357,6 +357,90 @@ void PosBuffer::filter (string& answer)
     }
 }
 
+void PosBuffer::filter_bash(string& answer)
+{
+    // Check for regular source info
+    int index1 = answer.index ("\032\032");
+	    
+    if (index1 < 0) 
+    {
+	int index_p = answer.index ("\032");
+	if (index_p >= 0 && index_p == int(answer.length()) - 1)
+	{
+	    // Possible begin of position info at end of ANSWER
+	    answer_buffer = "\032";
+	    answer = answer.before (index_p);
+	    already_read = PosPart;
+	    return;
+	}
+    }
+    else
+    {
+	// ANSWER contains position info
+	int index2 = answer.index("\n", index1);
+	    
+	if (index2 == -1)
+	{
+	    // Position info is incomplete
+	    answer_buffer = answer.from (index1);
+	    answer = answer.before (index1);
+	    already_read = PosPart;
+	    return;
+	}
+	else
+	{
+	    assert (index1 < index2);
+	    
+	    // Position info is complete
+	    already_read = PosComplete;
+	    pos_buffer = answer.at(index1 + 2, index2 - (index1 + 2));
+	    answer.at(index1, index2 - index1 + 1) = "";
+	}
+    }
+
+    if (already_read != PosComplete)
+    {
+	// Try '(FILE:LINE):\n';
+
+	// INDEX points at the start of a line
+	int index = 0;
+	while (index >= 0 && !answer.empty())
+	{
+	    string line = answer.from(index);
+	    if (line.contains('\n'))
+		line = line.before('\n');
+	    strip_trailing_space(line);
+		    
+#if RUNTIME_REGEX
+	    static regex rxbashpos("[(][^:]*:[1-9][0-9]*[)]:");
+#endif
+	    if (line.matches(rxbashpos))
+	    {
+		// Fetch position
+		pos_buffer = line.after('(');
+		pos_buffer = pos_buffer.before(')');
+		already_read = PosComplete;
+
+		// Delete this line from output
+		int next_index = answer.index('\n', index);
+		if (next_index < 0)
+		    next_index = answer.length();
+		else
+		    next_index++;
+		answer.at(index, next_index - index) = "";
+		break;
+	    }
+	    else
+	    {
+		// Look at next line
+		index = answer.index('\n', index);
+		if (index >= 0)
+		    index++;
+	    }
+	}
+    }
+}
+
 void PosBuffer::filter_gdb(string& answer)
 {
     // Try to find out current PC even for non-existent source
@@ -640,6 +724,80 @@ void PosBuffer::filter_gdb(string& answer)
 	already_read = PosComplete;
 }
 
+void PosBuffer::filter_dbg(string& answer)
+{
+    int idx1, idx2;
+    
+    if (already_read != PosComplete && !answer.contains('\n'))
+    {
+	// Position info is incomplete
+	answer_buffer = answer;
+	answer = "";
+	already_read = PosPart;
+	return;
+    }
+
+    idx1 = 0;
+    while (idx1 < (int)answer.length())
+    {
+        idx2 = answer.index('\n', idx1);
+	if (idx2 < 0) idx2 = answer.length();	
+	string line = answer.at(idx1, idx2 - idx1);
+	if (line.contains('\n'))
+	    line = line.before('\n');
+	strip_trailing_space(line);
+		
+	// DBG uses a format like `test.php:4 <main>\n echo $a."hello world."'
+#if RUNTIME_REGEX
+	static regex rxdbgpos("[^ \t]*:[ \t]*[1-9][0-9]*[ \t]*<.*>");
+	static regex rxdbgframepos("#[0-9]*[ \t]*<.*>[ \t]*at[ \t]*[^ \t]*:[ \t]*[1-9][0-9]*");
+#endif
+	if (line.matches(rxdbgpos)) 
+	{
+	    string file = line.before(':');
+	    line = line.after(':');
+		    
+	    string line_no = line;
+	    strip_leading_space(line_no);
+	    line_no = line_no.before(' ');
+	    
+	    line = line.after('<');
+	    func_buffer  = line.before('>');
+	    strip_leading_space(func_buffer);
+		    
+	    pos_buffer   = file + ":" + line_no;
+	    
+	    // Delete this line from output
+	    answer.at(idx1, idx2 - idx1 + 1) = "";
+	    already_read = PosComplete;
+	    break;
+
+	} else if (line.matches(rxdbgframepos)) 
+	{
+	    string addr = line.before(">");
+	    func_buffer = addr.after('<');
+	    strip_leading_space(func_buffer);
+	    
+	    string file = line.after(">");
+	    file = file.after("at");
+	    strip_leading_space(file);
+	    
+	    string line_no = file.after(':');
+	    strip_leading_space(line_no);
+	
+	    file = file.before(':');
+	    	    
+	    pos_buffer   = file + ":" + line_no;
+	    
+	    // Delete this line from output
+	    answer.at(idx1, idx2 - idx1 + 1) = "";
+	    already_read = PosComplete;
+	    break;
+	}
+	
+	idx1 = idx2+1;
+    }
+}
 	
 void PosBuffer::filter_dbx(string& answer)
 {
@@ -925,84 +1083,6 @@ void PosBuffer::filter_dbx(string& answer)
 	already_read = Null;
 }
 
-	
-void PosBuffer::filter_xdb(string& answer)
-{
-    if (already_read != PosComplete && !answer.contains('\n'))
-    {
-	// Position info is incomplete
-	answer_buffer = answer;
-	answer = "";
-	already_read = PosPart;
-	return;
-    }
-
-    // INDEX points at the start of a line
-    int index = 0;
-    while (index >= 0 && !answer.empty())
-    {
-	string line = answer.from(index);
-	if (line.contains('\n'))
-	    line = line.before('\n');
-	strip_trailing_space(line);
-		
-	// XDB uses a format like `ctest.c: main: 4: int a = 33;'
-#if RUNTIME_REGEX
-	static regex rxxdbpos("[^ \t]*:.*: [1-9][0-9]*[: ].*");
-#endif
-	if (line.matches(rxxdbpos))
-	{
-	    string file = line.before(':');
-	    line = line.after(':');
-		    
-	    // The function name may contain "::"
-	    string func = line;
-	    while (line.contains("::"))
-		line = line.after("::");
-	    line = line.from(':');
-	    func = func.before(line);
-		    
-	    line = line.after(':');
-	    string line_no = line.before(':');
-		    
-	    strip_leading_space(func);
-	    strip_leading_space(line_no);
-	    line_no = line_no.through(rxint);
-		    
-	    pos_buffer   = file + ":" + line_no;
-	    func_buffer  = func;
-	    already_read = PosComplete;
-		    
-	    // Delete this line from output
-	    int next_index = answer.index('\n', index);
-	    if (next_index < 0)
-		next_index = answer.length();
-	    else
-		next_index++;
-	    answer.at(index, next_index - index) = "";
-	    break;
-	}
-	else
-	{
-	    // Look at next line
-	    index = answer.index('\n', index);
-	    if (index >= 0)
-		index++;
-	}
-    }
-	    
-    // Check for trailing `:' in last line
-    index = answer.index('\n', -1) + 1;
-    if (already_read != PosComplete 
-	&& answer.index(':', index) >= 0)
-    {
-	answer_buffer = answer.from(index);
-	answer.from(index) = "";
-	already_read = PosPart;
-	return;
-    }
-}
-	
 void PosBuffer::filter_jdb(string& answer)
 {
     if (already_read != PosComplete && !answer.contains('\n'))
@@ -1122,302 +1202,6 @@ void PosBuffer::filter_jdb(string& answer)
     }
 }
 
-void PosBuffer::filter_pydb(string& answer)
-{
-    if (already_read != PosComplete && !answer.contains('\n'))
-    {
-	// Position info is incomplete
-	answer_buffer = answer;
-	answer = "";
-	already_read = PosPart;
-	return;
-    }
-
-    // `Breakpoint N, FUNCTION (ARGS...) at file:line_no'
-    // rxstopped_func defined for GDB...if it changes, change here
-    int fn_index = index(answer, rxstopped_func, "Breakpoint");
-    if (fn_index >= 0)
-    {
-	fetch_function(answer, fn_index, func_buffer);
-    }
-    else
-    {
-	// `#FRAME FUNCTION(args) at file:line_no'
-	// Likewise rxframe_func defined for GDB
-	int frame_index = index(answer, rxframe_addr, "#");
-	if (frame_index == 0
-	    || frame_index > 0 && answer[frame_index - 1] == '\n')
-	{
-	    fetch_function(answer, frame_index, func_buffer);
-	}
-    }
-
-    int lineinfo  = answer.index("Lineinfo");
-    // Lineinfo <function> at file:lineno
-    if (lineinfo == 0 || (lineinfo > 0 && answer[lineinfo - 1] == '\n'))
-    {
-	answer = answer.after('<');
-	func_buffer = answer.before('>');
-    }
-
-    string result = answer.after(" at ");
-    result = result.before('\n');
-    if (result.contains(':'))
-    {
-	pos_buffer = result;
-	already_read = PosComplete;
-    }
-
-    // Don't need the answer anymore when line matches 'Lineinfo'
-    if (lineinfo >= 0)
-    {
-	answer = "";
-    }
-}
-
-void PosBuffer::filter_dbg(string& answer)
-{
-    int idx1, idx2;
-    
-    if (already_read != PosComplete && !answer.contains('\n'))
-    {
-	// Position info is incomplete
-	answer_buffer = answer;
-	answer = "";
-	already_read = PosPart;
-	return;
-    }
-
-    idx1 = 0;
-    while (idx1 < (int)answer.length())
-    {
-        idx2 = answer.index('\n', idx1);
-	if (idx2 < 0) idx2 = answer.length();	
-	string line = answer.at(idx1, idx2 - idx1);
-	if (line.contains('\n'))
-	    line = line.before('\n');
-	strip_trailing_space(line);
-		
-	// DBG uses a format like `test.php:4 <main>\n echo $a."hello world."'
-#if RUNTIME_REGEX
-	static regex rxdbgpos("[^ \t]*:[ \t]*[1-9][0-9]*[ \t]*<.*>");
-	static regex rxdbgframepos("#[0-9]*[ \t]*<.*>[ \t]*at[ \t]*[^ \t]*:[ \t]*[1-9][0-9]*");
-#endif
-	if (line.matches(rxdbgpos)) 
-	{
-	    string file = line.before(':');
-	    line = line.after(':');
-		    
-	    string line_no = line;
-	    strip_leading_space(line_no);
-	    line_no = line_no.before(' ');
-	    
-	    line = line.after('<');
-	    func_buffer  = line.before('>');
-	    strip_leading_space(func_buffer);
-		    
-	    pos_buffer   = file + ":" + line_no;
-	    
-	    // Delete this line from output
-	    answer.at(idx1, idx2 - idx1 + 1) = "";
-	    already_read = PosComplete;
-	    break;
-
-	} else if (line.matches(rxdbgframepos)) 
-	{
-	    string addr = line.before(">");
-	    func_buffer = addr.after('<');
-	    strip_leading_space(func_buffer);
-	    
-	    string file = line.after(">");
-	    file = file.after("at");
-	    strip_leading_space(file);
-	    
-	    string line_no = file.after(':');
-	    strip_leading_space(line_no);
-	
-	    file = file.before(':');
-	    	    
-	    pos_buffer   = file + ":" + line_no;
-	    
-	    // Delete this line from output
-	    answer.at(idx1, idx2 - idx1 + 1) = "";
-	    already_read = PosComplete;
-	    break;
-	}
-	
-	idx1 = idx2+1;
-    }
-}
-	
-void PosBuffer::filter_perl(string& answer)
-{
-    // Check for regular source info
-    int index1 = answer.index ("\032\032");
-	    
-    if (index1 < 0) 
-    {
-	int index_p = answer.index ("\032");
-	if (index_p >= 0 && index_p == int(answer.length()) - 1)
-	{
-	    // Possible begin of position info at end of ANSWER
-	    answer_buffer = "\032";
-	    answer = answer.before (index_p);
-	    already_read = PosPart;
-	    return;
-	}
-    }
-    else
-    {
-	// ANSWER contains position info
-	int index2 = answer.index("\n", index1);
-	    
-	if (index2 == -1)
-	{
-	    // Position info is incomplete
-	    answer_buffer = answer.from (index1);
-	    answer = answer.before (index1);
-	    already_read = PosPart;
-	    return;
-	}
-	else
-	{
-	    assert (index1 < index2);
-	    
-	    // Position info is complete
-	    already_read = PosComplete;
-	    pos_buffer = answer.at(index1 + 2, index2 - (index1 + 2));
-	    answer.at(index1, index2 - index1 + 1) = "";
-	}
-    }
-
-    if (already_read != PosComplete)
-    {
-	// Try 'PACKAGE::FUNCTION(FILE:LINE):\n'; FUNCTION is optional
-
-	// INDEX points at the start of a line
-	int index = 0;
-	while (index >= 0 && !answer.empty())
-	{
-	    string line = answer.from(index);
-	    if (line.contains('\n'))
-		line = line.before('\n');
-	    strip_trailing_space(line);
-		    
-#if RUNTIME_REGEX
-	    static regex rxperlpos("[^(]*::[^(]*[(][^:]*:[1-9][0-9]*[)]:");
-#endif
-	    if (line.matches(rxperlpos))
-	    {
-		// Fetch position
-		pos_buffer = line.after('(');
-		pos_buffer = pos_buffer.before(')');
-		already_read = PosComplete;
-
-		// Delete this line from output
-		int next_index = answer.index('\n', index);
-		if (next_index < 0)
-		    next_index = answer.length();
-		else
-		    next_index++;
-		answer.at(index, next_index - index) = "";
-		break;
-	    }
-	    else
-	    {
-		// Look at next line
-		index = answer.index('\n', index);
-		if (index >= 0)
-		    index++;
-	    }
-	}
-    }
-}
-
-void PosBuffer::filter_bash(string& answer)
-{
-    // Check for regular source info
-    int index1 = answer.index ("\032\032");
-	    
-    if (index1 < 0) 
-    {
-	int index_p = answer.index ("\032");
-	if (index_p >= 0 && index_p == int(answer.length()) - 1)
-	{
-	    // Possible begin of position info at end of ANSWER
-	    answer_buffer = "\032";
-	    answer = answer.before (index_p);
-	    already_read = PosPart;
-	    return;
-	}
-    }
-    else
-    {
-	// ANSWER contains position info
-	int index2 = answer.index("\n", index1);
-	    
-	if (index2 == -1)
-	{
-	    // Position info is incomplete
-	    answer_buffer = answer.from (index1);
-	    answer = answer.before (index1);
-	    already_read = PosPart;
-	    return;
-	}
-	else
-	{
-	    assert (index1 < index2);
-	    
-	    // Position info is complete
-	    already_read = PosComplete;
-	    pos_buffer = answer.at(index1 + 2, index2 - (index1 + 2));
-	    answer.at(index1, index2 - index1 + 1) = "";
-	}
-    }
-
-    if (already_read != PosComplete)
-    {
-	// Try '(FILE:LINE):\n';
-
-	// INDEX points at the start of a line
-	int index = 0;
-	while (index >= 0 && !answer.empty())
-	{
-	    string line = answer.from(index);
-	    if (line.contains('\n'))
-		line = line.before('\n');
-	    strip_trailing_space(line);
-		    
-#if RUNTIME_REGEX
-	    static regex rxbashpos("[(][^:]*:[1-9][0-9]*[)]:");
-#endif
-	    if (line.matches(rxbashpos))
-	    {
-		// Fetch position
-		pos_buffer = line.after('(');
-		pos_buffer = pos_buffer.before(')');
-		already_read = PosComplete;
-
-		// Delete this line from output
-		int next_index = answer.index('\n', index);
-		if (next_index < 0)
-		    next_index = answer.length();
-		else
-		    next_index++;
-		answer.at(index, next_index - index) = "";
-		break;
-	    }
-	    else
-	    {
-		// Look at next line
-		index = answer.index('\n', index);
-		if (index >= 0)
-		    index++;
-	    }
-	}
-    }
-}
-
 void PosBuffer::filter_make(string& answer)
 {
     // Check for regular source info
@@ -1502,6 +1286,251 @@ void PosBuffer::filter_make(string& answer)
     }
 }
 
+void PosBuffer::filter_perl(string& answer)
+{
+    // Check for regular source info
+    int index1 = answer.index ("\032\032");
+	    
+    if (index1 < 0) 
+    {
+	int index_p = answer.index ("\032");
+	if (index_p >= 0 && index_p == int(answer.length()) - 1)
+	{
+	    // Possible begin of position info at end of ANSWER
+	    answer_buffer = "\032";
+	    answer = answer.before (index_p);
+	    already_read = PosPart;
+	    return;
+	}
+    }
+    else
+    {
+	// ANSWER contains position info
+	int index2 = answer.index("\n", index1);
+	    
+	if (index2 == -1)
+	{
+	    // Position info is incomplete
+	    answer_buffer = answer.from (index1);
+	    answer = answer.before (index1);
+	    already_read = PosPart;
+	    return;
+	}
+	else
+	{
+	    assert (index1 < index2);
+	    
+	    // Position info is complete
+	    already_read = PosComplete;
+	    pos_buffer = answer.at(index1 + 2, index2 - (index1 + 2));
+	    answer.at(index1, index2 - index1 + 1) = "";
+	}
+    }
+
+    if (already_read != PosComplete)
+    {
+	// Try 'PACKAGE::FUNCTION(FILE:LINE):\n'; FUNCTION is optional
+
+	// INDEX points at the start of a line
+	int index = 0;
+	while (index >= 0 && !answer.empty())
+	{
+	    string line = answer.from(index);
+	    if (line.contains('\n'))
+		line = line.before('\n');
+	    strip_trailing_space(line);
+		    
+#if RUNTIME_REGEX
+	    static regex rxperlpos("[^(]*::[^(]*[(][^:]*:[1-9][0-9]*[)]:");
+#endif
+	    if (line.matches(rxperlpos))
+	    {
+		// Fetch position
+		pos_buffer = line.after('(');
+		pos_buffer = pos_buffer.before(')');
+		already_read = PosComplete;
+
+		// Delete this line from output
+		int next_index = answer.index('\n', index);
+		if (next_index < 0)
+		    next_index = answer.length();
+		else
+		    next_index++;
+		answer.at(index, next_index - index) = "";
+		break;
+	    }
+	    else
+	    {
+		// Look at next line
+		index = answer.index('\n', index);
+		if (index >= 0)
+		    index++;
+	    }
+	}
+    }
+}
+
+void PosBuffer::filter_pydb(string& answer)
+{
+    // Check for regular source info
+    int index1 = answer.index ("\032\032");
+	    
+    if (index1 < 0) 
+    {
+	int index_p = answer.index ("\032");
+	if (index_p >= 0 && index_p == int(answer.length()) - 1)
+	{
+	    // Possible begin of position info at end of ANSWER
+	    answer_buffer = "\032";
+	    answer = answer.before (index_p);
+	    already_read = PosPart;
+	    return;
+	}
+    }
+    else
+    {
+	// ANSWER contains position info
+	int index2 = answer.index("\n", index1);
+	    
+	if (index2 == -1)
+	{
+	    // Position info is incomplete
+	    answer_buffer = answer.from (index1);
+	    answer = answer.before (index1);
+	    already_read = PosPart;
+	    return;
+	}
+	else
+	{
+	    assert (index1 < index2);
+	    
+	    // Position info is complete
+	    already_read = PosComplete;
+	    pos_buffer = answer.at(index1 + 2, index2 - (index1 + 2));
+	    answer.at(index1, index2 - index1 + 1) = "";
+	}
+    }
+
+    if (already_read != PosComplete)
+    {
+	// Try '(FILE:LINE):\n';
+
+	// INDEX points at the start of a line
+	int index = 0;
+	while (index >= 0 && !answer.empty())
+	{
+	    string line = answer.from(index);
+	    if (line.contains('\n'))
+		line = line.before('\n');
+	    strip_trailing_space(line);
+		    
+#if RUNTIME_REGEX
+	    static regex rxpypos("[(][^:]*:[1-9][0-9]*[)]:");
+#endif
+	    if (line.matches(rxpypos))
+	    {
+		// Fetch position
+		pos_buffer = line.after('(');
+		pos_buffer = pos_buffer.before(')');
+		already_read = PosComplete;
+
+		// Delete this line from output
+		int next_index = answer.index('\n', index);
+		if (next_index < 0)
+		    next_index = answer.length();
+		else
+		    next_index++;
+		answer.at(index, next_index - index) = "";
+		break;
+	    }
+	    else
+	    {
+		// Look at next line
+		index = answer.index('\n', index);
+		if (index >= 0)
+		    index++;
+	    }
+	}
+    }
+}
+
+void PosBuffer::filter_xdb(string& answer)
+{
+    if (already_read != PosComplete && !answer.contains('\n'))
+    {
+	// Position info is incomplete
+	answer_buffer = answer;
+	answer = "";
+	already_read = PosPart;
+	return;
+    }
+
+    // INDEX points at the start of a line
+    int index = 0;
+    while (index >= 0 && !answer.empty())
+    {
+	string line = answer.from(index);
+	if (line.contains('\n'))
+	    line = line.before('\n');
+	strip_trailing_space(line);
+		
+	// XDB uses a format like `ctest.c: main: 4: int a = 33;'
+#if RUNTIME_REGEX
+	static regex rxxdbpos("[^ \t]*:.*: [1-9][0-9]*[: ].*");
+#endif
+	if (line.matches(rxxdbpos))
+	{
+	    string file = line.before(':');
+	    line = line.after(':');
+		    
+	    // The function name may contain "::"
+	    string func = line;
+	    while (line.contains("::"))
+		line = line.after("::");
+	    line = line.from(':');
+	    func = func.before(line);
+		    
+	    line = line.after(':');
+	    string line_no = line.before(':');
+		    
+	    strip_leading_space(func);
+	    strip_leading_space(line_no);
+	    line_no = line_no.through(rxint);
+		    
+	    pos_buffer   = file + ":" + line_no;
+	    func_buffer  = func;
+	    already_read = PosComplete;
+		    
+	    // Delete this line from output
+	    int next_index = answer.index('\n', index);
+	    if (next_index < 0)
+		next_index = answer.length();
+	    else
+		next_index++;
+	    answer.at(index, next_index - index) = "";
+	    break;
+	}
+	else
+	{
+	    // Look at next line
+	    index = answer.index('\n', index);
+	    if (index >= 0)
+		index++;
+	}
+    }
+	    
+    // Check for trailing `:' in last line
+    index = answer.index('\n', -1) + 1;
+    if (already_read != PosComplete 
+	&& answer.index(':', index) >= 0)
+    {
+	answer_buffer = answer.from(index);
+	answer.from(index) = "";
+	already_read = PosPart;
+	return;
+    }
+}
+	
 string PosBuffer::answer_ended ()
 {
     switch (already_read) 

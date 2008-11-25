@@ -3,7 +3,7 @@
 
 // Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
 // Copyright (C) 1999-2001 Universitaet Passau, Germany.
-// Copyright (C) 2001-2004 Free Software Foundation, Inc.
+// Copyright (C) 2001-2006 Free Software Foundation, Inc.
 // Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
 // and Andreas Zeller <zeller@gnu.org>.
 // 
@@ -591,8 +591,14 @@ static XrmOptionDescRec options[] = {
 
 { XRMOPTSTR("--attach"),               XRMOPTSTR(XtCSeparate),             
                                         XrmoptionNoArg, XPointer(OFF) },
+/* -attach is used by jdb to attach to another another running JVM.
+It is even described as a useful option to use in the ddd reference.
+If we add this as an option as yet a 4th way to specify --attach-windows,
+we prevent its use in jdb. 
+
 { XRMOPTSTR("-attach"),                XRMOPTSTR(XtCSeparate),             
                                         XrmoptionNoArg, XPointer(OFF) },
+*/
 { XRMOPTSTR("--attach-windows"),       XRMOPTSTR(XtCSeparate),             
                                         XrmoptionNoArg, XPointer(OFF) },
 { XRMOPTSTR("-attach-windows"),        XRMOPTSTR(XtCSeparate),             
@@ -2967,11 +2973,11 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	// We don't need the source window, since we're invoked by Emacs.
 	gdbCloseSourceWindowCB(gdb_w, 0, 0);
 
-	if (!app_data.disassemble)
+	if (!app_data.disassemble && !gdb->has_disassembly())
 	    gdbCloseToolWindowCB(gdb_w, 0, 0);
     }
 
-    if (!app_data.disassemble)
+    if (!app_data.disassemble && !gdb->has_disassembly())
     {
 	// We don't disassemble.
 	gdbCloseCodeWindowCB(gdb_w, 0, 0);
@@ -4280,7 +4286,8 @@ void update_options()
 
     source_view->set_display_line_numbers(app_data.display_line_numbers);
     source_view->set_display_glyphs(app_data.display_glyphs);
-    source_view->set_disassemble(gdb->type() == GDB && app_data.disassemble);
+    source_view->set_disassemble(gdb->type() == GDB || gdb->type() == PYDB
+				 && app_data.disassemble);
     source_view->set_all_registers(app_data.all_registers);
     source_view->set_tab_width(app_data.tab_width);
     source_view->set_indent(app_data.indent_source, app_data.indent_code);
@@ -7570,6 +7577,17 @@ static void setup_options(int& argc, const char *argv[],
 	    gdb_option_offset = 2;
 	}
 
+#if FIXED
+	if ( arg == "-python"   || arg == "--python" )
+	  arg = "-pydb";
+	else if ( arg == "-mdb" || arg == "--mdb" )
+	  arg = "--make";
+	else if ( arg == "-bashdb" || arg == "--bashdb" )
+	  arg = "--bash";
+	else if ( arg == "-java"|| arg == "--java" )
+	  arg = "--jdb";
+#endif
+
 	if ( arg == "--bash"    || arg == "-bash" 
 	     || arg == "--dbg"  || arg == "-dbg"
 	     || arg == "--dbx"  || arg == "-dbx"
@@ -7787,7 +7805,7 @@ static void setup_auto_command_prefix()
 // All options that remain fixed for a session go here.
 static void setup_options()
 {
-    set_sensitive(disassemble_w, gdb->type() == GDB);
+    set_sensitive(disassemble_w, gdb->has_disassembly());
     set_sensitive(code_indent_w, gdb->type() == GDB);
     set_sensitive(examine_w,            gdb->has_examine_command());
     set_sensitive(print_examine_w,      gdb->has_examine_command());
@@ -7848,21 +7866,22 @@ static void setup_options()
     set_sensitive(source_file_menu[FileItems::CD].widget,             have_cd);
     set_sensitive(data_file_menu[FileItems::CD].widget,               have_cd);
 
-    bool have_settings = (gdb->type() != XDB && gdb->type() != PYDB);
+    bool have_settings = (gdb->type() != XDB);
     set_sensitive(command_edit_menu[EditItems::Settings].widget,have_settings);
     set_sensitive(source_edit_menu[EditItems::Settings].widget, have_settings);
     set_sensitive(data_edit_menu[EditItems::Settings].widget,   have_settings);
 
-    set_sensitive(complete_w,  gdb->type() == GDB);
+    set_sensitive(complete_w,  gdb->type() == BASH || gdb->type() == GDB 
+		  || gdb->type() == PYDB);
     set_sensitive(define_w,    gdb->type() == GDB);
     set_sensitive(signals_w,   gdb->type() == GDB);
 
-    set_sensitive(set_debugger_bash_w, have_cmd("bash"));
+    set_sensitive(set_debugger_bash_w, have_cmd("bashdb"));
     set_sensitive(set_debugger_dbg_w,  have_cmd("dbg"));
     set_sensitive(set_debugger_dbx_w,  have_cmd("dbx") || have_cmd("ladebug"));
     set_sensitive(set_debugger_gdb_w,  have_cmd("gdb"));
     set_sensitive(set_debugger_jdb_w,  have_cmd("jdb"));
-    set_sensitive(set_debugger_make_w, have_cmd("make"));
+    set_sensitive(set_debugger_make_w, have_cmd("remake"));
     set_sensitive(set_debugger_perl_w, have_cmd("perl"));
     set_sensitive(set_debugger_pydb_w, have_cmd("pydb"));
     set_sensitive(set_debugger_xdb_w,  have_cmd("xdb"));
@@ -7890,6 +7909,11 @@ static void setup_theme_manager()
             if (strcmp(theme, "rednil.vsl") == 0) {
 	        p.active() = true;
                 p.add("*");
+            //ZARKO - automatsko aktiviranje flags i regs tema
+            } else if (strcmp(theme, "x86.vsl") == 0) {
+	        p.active() = true;
+                p.add("$eax*;$ebx*;$ecx*;$edx*");
+                p.add("($eflags &*");
             } else {
 	        p.active() = false;
             }

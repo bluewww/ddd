@@ -2,6 +2,7 @@
 // Examine range of memory
 
 // Copyright (C) 1998 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2001-2006 Free Software Foundation, Inc.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -195,6 +196,79 @@ static string examine_command()
     strip_space(repeat);
     strip_space(address);
 
+    if (GDB == gdb->type() && gdb->cpu == cpu_intel) {
+      
+      /* Intel x86 8 and 16-bit handling: 
+	 When you have an assembly line like this:
+         movw array(,%ecx,2), %ax
+
+	 there is no easy way to show memory addressed by
+	 "array(,%ecx,2)", which is very useful for debugging. This was
+	 solved via Data/Memory dialog, which was changed to handle
+	 these expressions.
+	 
+	 This way, by putting "array(,%ecx,2)" in the argument field,
+	 and calling Data/Memory dialog, correct value(s) will be
+	 shown. But, there is a catch: all data displays shown this way
+	 will have "X" as their name. I didn't figure out how to name
+	 them correctly (or, in fact, now to name them at all).
+      */
+
+      //ZARKO - prikaz sadrzaja memorije kod opsteg formata adresiranja
+      int left_par, right_par, comma1, comma2;
+      string addr,addr_addr,addr_base,addr_index,addr_mul;
+      addr = address;
+      char added = 0;
+      addr.gsub(" ","");	//izbaci sve razmake
+      addr.gsub("\t","");	//izbaci sve tabove
+
+      //zameni % sa $, pa ako je bilo ikakvih zamena, radi dalje
+      if (addr.gsub("%","$") > 0) {
+	left_par = addr.index("(");
+	right_par = addr.index(")", left_par+1);
+
+	//samo ako ima zagrada, treba dalje analizirati
+	if ((left_par != -1) && (right_par != -1)) {
+	  addr_addr = "";		//adresa
+	  addr_base = "";		//baza
+	  addr_mul = "";		//mnozilac
+	  addr_index = "";	//indeks
+	  if ((comma1 = addr.index(",",left_par+1)) != -1) {
+	    if ((comma2 = addr.index(",", comma1+1)) == -1) 
+	      comma2 = right_par;
+	  } else comma1 = comma2 = right_par;
+	  if (left_par > 0) addr_addr = addr.at(0,left_par);
+	  if (comma1 > left_par+1) 
+	    addr_base = addr.at(left_par+1, comma1-left_par-1);
+	  if (comma2 > comma1+1) 
+	    addr_index = addr.at(comma1+1,comma2-comma1-1);
+	  if (right_par > comma2+1) 
+	    addr_mul = addr.at(comma2+1,right_par-comma2-1);
+	  address = "(";
+	  if (addr_addr.length()) {
+	    if (((addr_addr.at(0,1) >= '0') && (addr_addr.at(0,1) <= '9')) 
+		|| (addr_addr.at(0,1) == '-'))
+	      address += addr_addr;
+	    else	
+	      address += "(char*)&"+addr_addr;
+	    added = 1;
+	  }
+	  if (addr_base.length()) {
+	    if (added) address += "+";
+	    address += addr_base;
+	    added = 1;
+	  }
+	  if (addr_index.length()) {
+	    if (added) address += "+";
+	    address += addr_index;
+	  }
+	  if (addr_mul.length()) address += "*"+addr_mul;
+	  address += ")";
+	}
+      }
+      //ZARKO - prikaz sadrzaja memorije kod opsteg formata adresiranja
+    }
+    
     string fmt = "/" + repeat + format(the_format, the_size);
     switch (gdb->type())
     {

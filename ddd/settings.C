@@ -728,7 +728,7 @@ void process_show(const string& command, string value, bool init)
 	set_status(value);
 
     if ( gdb->type() == BASH || gdb->type() == DBG || gdb->type() == GDB
-	|| gdb->type() == MAKE )
+	 || gdb->type() == MAKE || gdb->type() == PYDB )
     {
 	if (value.contains(" is "))
 	    value = value.after(" is ", -1);
@@ -953,6 +953,8 @@ static EntryType entry_type(DebuggerType type,
 #if RUNTIME_REGEX
     static regex rxnonzero1("no[nt][ -]?(0|zero|null)");
     static regex rxnonzero2("!= *(0|zero|null)");
+    static regex rxfixednum("[0-9]+(\\.[0-9]+)?");
+    static regex rxstring("\".*\"");
 #endif
 
     switch (type)
@@ -986,13 +988,22 @@ static EntryType entry_type(DebuggerType type,
 
     case BASH:
     case MAKE:
+    case PYDB:
+      {
+	string field = value.after(" is ");
+	field = field.before(".\n", -1);
+
+        if (field.matches(rxstring))
+	    return TextFieldEntry;
+        if (field.matches(rxfixednum))
+	    return TextFieldEntry;
 	if (value.contains("on.\n", -1) || value.contains("off.\n", -1))
 	    return OnOffToggleButtonEntry;
 	if ((value.contains("0.\n", -1) || value.contains("1.\n", -1))
 	    && is_verb(doc))
 	    return NumToggleButtonEntry;
 	break;
-
+       }
     case DBX:
 	if ((value == "0" || value == "1") &&
 	    !doc.contains("number") && !doc.contains(" > 1"))
@@ -1024,7 +1035,6 @@ static EntryType entry_type(DebuggerType type,
 
     case XDB:
     case JDB:
-    case PYDB:
     case PERL:
 	break;			// FIXME
     }

@@ -803,7 +803,7 @@ bool BreakPoint::update(string& info_output,
 
     if (!equal(new_bp.commands(), commands()))
     {
-	if (gdb->type() == GDB)
+        if (gdb->type() == GDB || gdb->type() == PYDB || gdb->type() == BASH)
 	{
 	    undo_commands << "commands " << num << '\n';
 	    for (int i = 0; i < commands().size(); i++)

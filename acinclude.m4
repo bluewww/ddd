@@ -2630,7 +2630,7 @@ dnl
 dnl The product expiration date, in ISO 8601 YYYY-MM-DD format.
 dnl After this date, users are requested to update DDD.
 dnl An empty expiration date means no expiration.
-EXPIRES=2006-12-24
+EXPIRES=
 dnl
 dnl
 AC_SUBST(ddd)dnl

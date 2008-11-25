@@ -160,9 +160,8 @@ void translate_command(string& command)
 	break;
 
     case PYDB:
-	// PYDB uses `return' instead of `finish'.
-	if (command == "finish")
-	    command = "return";
+	if (command == "cont")
+	  command = "continue";
 	break;
 
     case PERL:
@@ -183,10 +182,10 @@ void translate_command(string& command)
 	    command = "r";
 	break;
 
-    case BASH: // I think this is right.
-    case MAKE: // I think this is right.
+    case BASH:
     case DBG:  // I think this is right.
     case GDB:
+    case MAKE:
 	break;
     }
 

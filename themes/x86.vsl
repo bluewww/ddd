@@ -1,0 +1,118 @@
+// $Id$
+// Intel x86 flag bits and registers. Contributed by Zarko Zivanov.
+
+
+// To use this theme, set up some data buttons like this:
+//
+//   Ddd*dataButtons: \
+//   graph display ($eflags & 1) != 0 // c\n\
+//   graph display ($eflags & 64) != 0 // z\n\
+//   graph display ($eflags & 128) != 0 // s\n\
+//   graph display ($eflags & 1024) != 0 // d\n\
+//   graph display ($eflags & 2048) != 0 // o\n\
+//   graph display $eax & 255 // al\n\
+//   graph display $eax >> 8 & 255 // ah\n\
+//   graph display $eax & 65535 // ax\n\
+//   graph display $ebx & 255 // bl\n\
+//   graph display $ebx >> 8 & 255 // bh\n\
+//   graph display $ebx & 65535 // bx\n\
+//   graph display $ecx & 255 // cl\n\
+//   graph display $ecx >> 8 & 255 // ch\n\
+//   graph display $ecx & 65535 // cx\n\
+//   graph display $edx & 255 // dl\n\
+//   graph display $edx >> 8 & 255 // dh\n\
+//   graph display $edx & 65535 // dx
+//
+// Whenever the these displays is shown, the 
+// title will be replaced by a more intuitive
+// title like "carry", or "zero" for one of the
+// flag bits and "al" "ax", etc. for one of the 
+// registers.
+
+
+/////////////////////////////////////////////////////
+// Handling of display titles for Intel x86 flags.
+/////////////////////////////////////////////////////
+
+// check for flag-bit substitution
+ends_inf(s1, s2) = 
+    let s1c = chars(s1), 
+        s2c = chars(s2) in suffix(s2c, s1c);
+
+new_namef(name) = (if (ends_inf(name,"($eflags & 1) != 0")) then
+                        "carry"
+                elsif (ends_inf(name,"($eflags & 64) != 0")) then
+                        "zero"
+                elsif (ends_inf(name,"($eflags & 128) != 0")) then
+                        "sign"
+                elsif (ends_inf(name,"($eflags ...24) != 0")) then
+                        "direction"
+                elsif (ends_inf(name,"($eflags ...48) != 0")) then
+                        "overflow"
+                else
+                        name
+                fi);
+
+// Check title for flag-bit substitution
+
+#pragma override old_title
+old_title(name) -> title(name);
+old_title(disp_nr, name) -> title(disp_nr, name);
+
+#pragma override title
+title (disp_nr, name) -> old_title(disp_nr, name)
+        where name = new_namef(name);
+
+title (name) -> old_title(name)
+        where name = new_namef(name);
+
+
+/////////////////////////////////////////////////////
+// Handling of displaytitles for Intel x86 registers.
+/////////////////////////////////////////////////////
+
+// check for register-name substitution
+ends_inr(s1, s2) = 
+    let s1c = chars(s1), 
+        s2c = chars(s2) in suffix(s2c, s1c);
+
+new_namer(name) = (if (ends_inr(name,"$eax & 255")) then
+			"al"
+		elsif (ends_inr(name,"$eax >> 8 & 255")) then
+			"ah"
+		elsif (ends_inr(name,"$eax & 65535")) then
+			"ax"
+		elsif (ends_inr(name,"$ebx & 255")) then
+			"bl"
+		elsif (ends_inr(name,"$ebx >> 8 & 255")) then
+			"bh"
+		elsif (ends_inr(name,"$ebx & 65535")) then
+			"bx"
+		elsif (ends_inr(name,"$ecx & 255")) then
+			"cl"
+		elsif (ends_inr(name,"$ecx >> 8 & 255")) then
+			"ch"
+		elsif (ends_inr(name,"$ecx & 65535")) then
+			"cx"
+		elsif (ends_inr(name,"$edx & 255")) then
+			"dl"
+		elsif (ends_inr(name,"$edx >> 8 & 255")) then
+			"dh"
+		elsif (ends_inr(name,"$edx & 65535")) then
+			"dx"
+		else
+			name
+		fi);
+
+// Check title for register-name substitution
+
+#pragma override old_title
+old_title(name) -> title(name);
+old_title(disp_nr, name) -> title(disp_nr, name);
+
+#pragma override title
+title (disp_nr, name) -> old_title(disp_nr, name)
+	where name = new_namer(name);
+	
+title (name) -> old_title(name)
+	where name = new_namer(name);

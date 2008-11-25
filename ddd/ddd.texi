@@ -4,9 +4,10 @@
 
 @c Copyright (C) 1999-2001 Universitaet Passau, Germany.
 @c Copyright (C) 2001-2004 Universitaet des Saarlandes, Germany.
+@c Copyright (C) 2006 Free Software Foundation, Inc.
 @c
-@c Sections on GNU Make and Bash 
-@c Copyright (C) 2005 Rocky Bernstein <rocky@panix.com>
+@c Sections on GNU Make, Bash, and Python
+@c Copyright (C) 2005, 2006 Rocky Bernstein <rocky@gnu.org>
 @c
 @c Written by Andreas Zeller <zeller@gnu.org>.
 @c 
@@ -56,7 +57,7 @@
 @set EDITION First
 
 @c !!set DDD manual's revision date
-@set DATE 10 January, 2005
+@set DATE 15 July, 2006
 
 @c Index stuff
 @c Labels
@@ -82,16 +83,14 @@
 
 @c PDF settings
 @iftex
-@ifpdf
 @pdfcompresslevel=9
 @pdfinfo{
     /Title (Debugging with DDD)
     /Author (Andreas Zeller et. al.)
     /Subject (DDD - the Data Display Debugger)
-    /Keywords (Debugging Debugger DDD GNU GDB DBX XDB JDB Ladebug WDB 
-               Python Perl Bash GNU Make)
+    /Keywords (Bash Debugging Debugger DDD GNU GDB DBX JDB Ladebug GNU Make 
+               Perl Python WDB XDB)
 }
-@fi
 @end iftex
 
 @c Formatting
@@ -168,7 +167,6 @@ Send bug reports to @email{bug-ddd@@gnu.org}. @*
 \subtitle \textsf{\value{EDITION} Edition, for \value{DDD} Version \value{VERSION}}
 \subtitle \textsf{Last updated \value{DATE}}
 \sp 2
-\center \image{PICS/dddlogo, 15cm}
 \author \titlesf{Andreas Zeller}
 @end tex
 @page
@@ -819,32 +817,33 @@ To debug @emph{Java byte code programs}, you can use @DDD{} with
 (@DDD{} has been tested with @JDK{} 1.1 and @JDK{} 1.2.)
 
 @item
-@cindex @acronym{PYDB}
-@cindex Python
-To debug @emph{Python programs}, you can use @DDD{} with
-@dfn{@PYDB{}}, a Python debugger.
+@item
+@cindex Bash
+To debug @emph{Bash programs}, you need a version Bash that supports
+extended debugging support; see
+@uref{http://bashdb.sourceforge.net}. It important to make sure you
+get the right version of the debugger that matches your version of
+Bash. For bash version 2.05b, you need a patched version of bash as
+well as the debugger for bash.
 
 @item
-@cindex Perl
+@cindex GNU Make
+To debug @emph{GNU Make Makefiles}, you need a version GNU Make that supports
+extended debugging support. To get this enhanced version see
+@uref{http://bashdb.sourceforge.net/remake}.
+
+@item
 @cindex Perl
 To debug @emph{Perl programs}, you can use @DDD{} with the @dfn{Perl
 debugger,} as of Perl 5.003 and later.
 
 @item
-@cindex Bash
-@cindex Bash
-To debug @emph{Bash programs}, you need a version Bash that supports
-extended debugging support. To get this enhanced version see
-@uref{http://bashdb.sourceforge.net}. You will need version
-2.05b-debugger-0.32 or later to work with @DDD{}.
+@cindex Python
+@cindex pydb
 
-@item
-@cindex GNU Make
-@cindex GNU Make
-To debug @emph{GNU Make Makefiles}, you need a version GNU Make that supports
-extended debugging support. To get this enhanced version see
-@uref{http://bashdb.sourceforge.net/remake}. You will need version
-2.05b-debugger-0.32 or later to work with @DDD{}.
+To debug @emph{Python programs}, you need an extended version of the
+python debugger called @dfn{@PYDB{}}. To get this, see
+@uref{http://bashdb.sourceforge.net/pydb}.
 @end itemize
 
 @xref{Choosing an Inferior Debugger}, for choosing the appropriate
@@ -1129,7 +1128,10 @@ command tool.
 to Daniel Schepler.
 
 @item Dec, 2005
-@DDD{} 3.3.12: GNU Make support added.
+@DDD{} 3.3.12-test: GNU Make support added.
+
+@item Feb, 2006
+@DDD{} 3.3.12-test3: Modernize Python debugging 
 @end table
 
 
@@ -1653,31 +1655,21 @@ Normally, the inferior debugger is determined by the program to analyze:
 
 @itemize @bullet
 @item 
-If the program requires a specific interpreter, such as Java, Python,
-Perl, Bash, or GNU Make, then you should use a @JDB{}, @PYDB{}, Perl,
-Bash, or GNU Make inferior debugger.
+If the program requires a specific interpreter, such as Bash, Java,
+GNU Make, Perl, or Python, then you should use a Bash, @JDB{}, GNU
+Make, Perl, @PYDB{}, Bash, or inferior debugger.
 
 Use
-
-@cindex @acronym{JDB}, invoking @DDD{} with
-@example
-@value{ddd} --jdb @var{program}
-@end example
-
-@cindex @acronym{PYDB}, invoking @DDD{} with
-@example
-@value{ddd} --pydb @var{program}
-@end example
-
-@cindex Perl, invoking @DDD{} with
-@example
-@value{ddd} --perl @var{program}
-@end example
 
 @cindex Bash, invoking @DDD{} with
 @example
 @value{ddd} --bash @var{program}
 @value{ddd} --interpreter='@emph{path-to-debugger-bash} --debugger' @var{program}
+@end example
+
+@cindex @acronym{JDB}, invoking @DDD{} with
+@example
+@value{ddd} --jdb @var{program}
 @end example
 
 @cindex GNU Make, invoking @DDD{} with
@@ -1686,35 +1678,45 @@ Use
 @value{ddd} --interpreter='@emph{path-to-debugger-make} --debugger' @var{program}
 @end example
 
+@cindex Perl, invoking @DDD{} with
+@example
+@value{ddd} --perl @var{program}
+@end example
+
+@cindex @acronym{PYDB}, invoking @DDD{} with
+@example
+@value{ddd} --pydb @var{program}
+@end example
+
 @noindent
 to run @DDD{} with @JDB{}, @PYDB{}, Perl, Bash, or GNU Make as an inferior
 debugger.
 
 @item
-If the program is an executable binary, you should use @GDB{}, @DBX{},
+If the program is an executable binary, you should use @DBX{}, @GDB{},
 Ladebug, or @XDB{}.  In general, @GDB{} (or its HP variant, @WDB{})
 provides the most functionality of these debuggers.
 
 Use
-
-@cindex @acronym{GDB}, invoking @DDD{} with
-@example
-@value{ddd} --gdb @var{program}
-@end example
-
-@cindex @acronym{WDB}, invoking @DDD{} with
-@example
-@value{ddd} --wdb @var{program}
-@end example
 
 @cindex @acronym{DBX}, invoking @DDD{} with
 @example
 @value{ddd} --dbx @var{program}
 @end example
 
+@cindex @acronym{GDB}, invoking @DDD{} with
+@example
+@value{ddd} --gdb @var{program}
+@end example
+
 @cindex Ladebug, invoking @DDD{} with
 @example
 @value{ddd} --ladebug @var{program}
+@end example
+
+@cindex @acronym{WDB}, invoking @DDD{} with
+@example
+@value{ddd} --wdb @var{program}
 @end example
 
 @cindex @acronym{XDB}, invoking @DDD{} with
@@ -1830,14 +1832,15 @@ Giving this option is equivalent to setting the @DDD{}
 
 
 @item --debugger @var{name}
-@pindex gdb
-@pindex wdb
 @pindex dbx
+@pindex gdb
 @pindex ladebug
-@pindex xdb
 @pindex jdb
-@pindex pydb
+@pindex mdb
 @pindex perl
+@pindex pydb
+@pindex wdb
+@pindex xdb
 Invoke the inferior debugger @var{name}.  This is useful if you have
 several debugger versions around, or if the inferior debugger cannot be
 invoked under its usual name (i.e. @command{gdb}, @command{wdb},
@@ -1975,7 +1978,7 @@ for details.
 Run @JDB{} as inferior debugger.
 
 Giving this option is equivalent to setting the @DDD{}
-@samp{debugger} resource to @samp{gdb}.  @xref{Customizing Debugger Interaction},
+@samp{debugger} resource to @samp{jdb}.  @xref{Customizing Debugger Interaction},
 for details.
 
 
@@ -2427,10 +2430,10 @@ work as expected, please lookup the appropriate reference.
 * DBX and Ladebug Options::     
 * XDB Options::                 
 * JDB Options::                 
-* PYDB Options::                
-* Perl Options::                
 * Bash Options::                
 * GNU Make Options::                
+* Perl Options::                
+* PYDB Options::                
 @end menu
 
 @node GDB Options
@@ -2641,12 +2644,25 @@ Print info for debugging @JDB{}.
 
 Further options can be found in the @JDB{} documentation.
 
+@node Bash Options
+@subsubsection Bash Options
 
-@node PYDB Options
-@subsubsection PYDB Options
+If you have the proper bash installed, the option needed to specify
+debugging support is @option{--debugger}. If your bash doesn't
+understand this option you need to pick up a version of bash that does
+from @uref{http://bashdb.sourceforge.net}.  Other options can be found
+from the on-line documentation at
+@uref{http://bashdb.sourceforge.net/bashdb.html}
 
-For a list of useful @PYDB{} options, check out the @PYDB{} documentation.
+@node GNU Make Options
+@subsubsection GNU Make Options
 
+If you have the proper @code{make} installed (for now it is probably
+called @code{remake}), the option needed to specify debugging support
+is @option{--debugger}. You can pick up a debugger-enabled version
+from @uref{http://bashdb.sourceforge.net/remake}. Other options can be
+found from the on-line documentation at
+@uref{http://bashdb.sourceforge.net/remake/mdb.html}
 
 @node Perl Options
 @subsubsection Perl Options
@@ -2655,22 +2671,14 @@ The most important Perl option to use with @DDD{} is @option{-w}; it
 enables several important warnings.  For further options, see the
 @cite{perlrun(1)} manual page.
 
+@node PYDB Options
+@subsubsection PYDB Options
 
-@node Bash Options
-@subsubsection Bash Options
-
-If you have the proper bash installed, the option needed to specify
-debugging support is @option{--debugger}. (If your bash doesn't
-understand this option you need to pick up a version of bash that does
-from @uref{http://bashdb.sourceforge.net}.) 
-
-@node GNU Make Options
-@subsubsection GNU Make Options
-
-If you have the proper @code{make} installed (for now it is probably
-called @code{remake}, the option needed to specify debugging support
-is @option{--debugger} and you can pick up a debugger-enabled version
-from @uref{http://bashdb.sourceforge.net/remake}.)
+An older version of @PYDB{} used to come with @DDD{}. That is no
+longer the case. Pick up the newer version of @PYDB{} from
+@uref{http://bashdb.sourceforge.net/pydb}. For a list of useful
+@PYDB{} options, check out the @PYDB{} documentation,
+@uref{http://bashdb.sourceforge.net/pydb/pydb/lib/index.html}.
 
 @node Multiple Instances
 @subsection Multiple @value{DDD} Instances
@@ -2705,8 +2713,6 @@ This setting is tied to the following resource (@pxref{Customizing}):
 Whether to warn if multiple @DDD{} instances are running
 (@samp{on}) or not (@samp{off}, default).
 @end defvr
-
-
 
 @node X Warnings
 @subsection X warnings
@@ -3255,13 +3261,28 @@ resource regardless of @DDD{} arguments.
 @end defvr
 
 @defvr Resource debugger (class Debugger)
-The type of the inferior debugger to invoke (@samp{gdb}, @samp{dbx},
-@samp{ladebug}, @samp{xdb}, @samp{jdb}, @samp{pydb}, @samp{perl}, or
-@samp{bash}).
+The type of the inferior debugger to invoke 
+(@samp{bash}
+@samp{dbx},
+@samp{gdb}, 
+@samp{jdb}, 
+@samp{ladebug}, 
+@samp{make}, 
+@samp{perl},
+@samp{pydb}, or 
+@samp{xdb}).
 
-This resource is usually set through the @option{--gdb}, @option{--dbx},
-@option{--ladebug}, @option{--xdb}, @option{--jdb}, @option{--pydb}, 
-@option{--perl}, and @option{--bash} options; @xref{Options}, for details.
+This resource is usually set through the 
+@option{--bash}, 
+@option{--dbx},
+@option{--gdb}, 
+@option{--jdb}, 
+@option{--ladebug}, 
+@option{--make}, 
+@option{--perl},
+@option{--pydb}, and
+@option{--xdb}, 
+options; @xref{Options}, for details.
 @end defvr
 
 @defvr Resource debuggerCommand (class DebuggerCommand)
@@ -3283,17 +3304,52 @@ This resource is usually set through the @option{--debugger} option;
 inferior debugger (@pxref{Customizing}).
 
 @menu
-* GDB Initialization::          
-* DBX Initialization::          
-* XDB Initialization::          
-* JDB Initialization::          
-* PYDB Initialization::         
-* Perl Initialization::         
 * Bash Initialization::         
+* DBX Initialization::          
+* GDB Initialization::          
+* JDB Initialization::          
 * GNU Make Initialization::         
+* Perl Initialization::         
+* PYDB Initialization::         
+* XDB Initialization::          
 * Finding a Place to Start::    
 * Opening the Selection::       
 @end menu
+
+@node Bash Initialization
+@subsubsection Bash Initialization
+
+@defvr Resource bashInitCommands (class InitCommands)
+This string contains a list of newline-separated commands that are
+initially sent to the Bash debugger.  By default, it is empty.
+
+This resource may be used to customize the Bash debugger.
+@end defvr
+
+@defvr Resource bash (class Settings)
+This string contains a list of newline-separated commands that are
+also initially sent to the Bash debugger.  By default, it is empty.
+
+This resource is used by @DDD{} to save and restore Bash
+debugger settings.
+@end defvr
+
+@node DBX Initialization
+@subsubsection DBX Initialization
+
+@defvr Resource dbxInitCommands (class InitCommands)
+This string contains a list of newline-separated commands that are
+initially sent to @DBX{}.  By default, it is empty.
+
+Do not use this resource to customize @DBX{}; instead, use a
+personal @file{~/.dbxinit} or @file{~/.dbxrc} file.  See
+your @DBX{} documentation for details.
+@end defvr
+
+@defvr Resource dbxSettings (class Settings)
+This string contains a list of newline-separated commands that are
+also initially sent to @DBX{}.  By default, it is empty.
+@end defvr
 
 @node GDB Initialization
 @subsubsection GDB Initialization
@@ -3345,41 +3401,6 @@ startup (especially if you have several user-defined commands).  If
 @end defvr
 
 
-@node DBX Initialization
-@subsubsection DBX Initialization
-
-@defvr Resource dbxInitCommands (class InitCommands)
-This string contains a list of newline-separated commands that are
-initially sent to @DBX{}.  By default, it is empty.
-
-Do not use this resource to customize @DBX{}; instead, use a
-personal @file{~/.dbxinit} or @file{~/.dbxrc} file.  See
-your @DBX{} documentation for details.
-@end defvr
-
-@defvr Resource dbxSettings (class Settings)
-This string contains a list of newline-separated commands that are
-also initially sent to @DBX{}.  By default, it is empty.
-@end defvr
-
-
-@node XDB Initialization
-@subsubsection XDB Initialization
-
-@defvr Resource xdbInitCommands (class InitCommands)
-This string contains a list of newline-separated commands that are
-initially sent to @XDB{}.  By default, it is empty.
-
-Do not use this resource to customize @DBX{}; instead, use a
-personal @file{~/.xdbrc} file.  See your @XDB{}
-documentation for details.
-@end defvr
-
-@defvr Resource xdbSettings (class Settings)
-This string contains a list of newline-separated commands that are
-also initially sent to @XDB{}.  By default, it is empty.
-@end defvr
-
 
 @node JDB Initialization
 @subsubsection JDB Initialization
@@ -3398,24 +3419,22 @@ This resource is used by @DDD{} to save and restore @JDB{}
 settings.
 @end defvr
 
+@node GNU Make Initialization
+@subsubsection GNU Make Initialization
 
-
-@node PYDB Initialization
-@subsubsection PYDB Initialization
-
-@defvr Resource pydbInitCommands (class InitCommands)
+@defvr Resource makeInitCommands (class InitCommands)
 This string contains a list of newline-separated commands that are
-initially sent to @PYDB{}.  By default, it is empty.
+initially sent to the Bash debugger.  By default, it is empty.
 
-This resource may be used to customize @PYDB{}.
+This resource may be used to customize GNU Make debugging.
 @end defvr
 
-@defvr Resource pydbSettings (class Settings)
+@defvr Resource bash (class Settings)
 This string contains a list of newline-separated commands that are
-also initially sent to @PYDB{}.  By default, it is empty.
+also initially sent to the GNU Make debugger.  By default, it is empty.
 
-This resource is used by @DDD{} to save and restore @PYDB{}
-settings.
+This resource is used by @DDD{} to save and restore GNU Make
+debugger settings.
 @end defvr
 
 
@@ -3438,42 +3457,43 @@ debugger settings.
 @end defvr
 
 
-@node Bash Initialization
-@subsubsection Bash Initialization
 
-@defvr Resource bashInitCommands (class InitCommands)
+@node PYDB Initialization
+@subsubsection PYDB Initialization
+
+@defvr Resource pydbInitCommands (class InitCommands)
 This string contains a list of newline-separated commands that are
-initially sent to the Bash debugger.  By default, it is empty.
+initially sent to @PYDB{}.  By default, it is empty.
 
-This resource may be used to customize the Bash debugger.
+This resource may be used to customize @PYDB{}.
 @end defvr
 
-@defvr Resource bash (class Settings)
+@defvr Resource pydbSettings (class Settings)
 This string contains a list of newline-separated commands that are
-also initially sent to the Bash debugger.  By default, it is empty.
+also initially sent to @PYDB{}.  By default, it is empty.
 
-This resource is used by @DDD{} to save and restore Bash
-debugger settings.
+This resource is used by @DDD{} to save and restore @PYDB{}
+settings.
+@end defvr
+
+@node XDB Initialization
+@subsubsection XDB Initialization
+
+@defvr Resource xdbInitCommands (class InitCommands)
+This string contains a list of newline-separated commands that are
+initially sent to @XDB{}.  By default, it is empty.
+
+Do not use this resource to customize @DBX{}; instead, use a
+personal @file{~/.xdbrc} file.  See your @XDB{}
+documentation for details.
+@end defvr
+
+@defvr Resource xdbSettings (class Settings)
+This string contains a list of newline-separated commands that are
+also initially sent to @XDB{}.  By default, it is empty.
 @end defvr
 
 
-@node GNU Make Initialization
-@subsubsection GNU Make Initialization
-
-@defvr Resource makeInitCommands (class InitCommands)
-This string contains a list of newline-separated commands that are
-initially sent to the Bash debugger.  By default, it is empty.
-
-This resource may be used to customize GNU Make debugging.
-@end defvr
-
-@defvr Resource bash (class Settings)
-This string contains a list of newline-separated commands that are
-also initially sent to the GNU Make debugger.  By default, it is empty.
-
-This resource is used by @DDD{} to save and restore GNU Make
-debugger settings.
-@end defvr
 
 
 @node Finding a Place to Start
@@ -4482,15 +4502,15 @@ Shows the @DDD{} Manual.
 Shows what's new in this @DDD{} release.
 
 @item Debugger Reference
+@lbindex Bash Reference
+@lbindex DBX Reference
 @lbindex Debugger Reference
 @lbindex GDB Reference
-@lbindex DBX Reference
-@lbindex Ladebug Reference
-@lbindex XDB Reference
 @lbindex JDB Reference
-@lbindex PYDB Reference
+@lbindex Ladebug Reference
 @lbindex Perl Reference
-@lbindex Bash Reference
+@lbindex PYDB Reference
+@lbindex XDB Reference
 Shows the on-line documentation for the inferior debugger.
 
 @item @DDD{} License
@@ -5480,7 +5500,7 @@ To view @WWW{} pages, you can define a @samp{Web Browser} command:
 @pindex mozilla
 @pindex emacs
 @pindex xemacs
-@pindex mosaic
+@pindex firefox
 @pindex gnudoit
 @pindex lynx
 The command to invoke a @WWW{} browser.  The string @samp{@@URL@@} is
@@ -5488,7 +5508,7 @@ replaced by the @acronym{URL} to open.  Default is to try a running
 Netscape first (trying @command{mozilla}, then @command{netscape}), then
 @command{$WWWBROWSER}, then to invoke a new Netscape process, then to
 let a running Emacs or XEmacs do the job (via @command{gnudoit}), then
-to invoke Mosaic, then to invoke Lynx in an xterm.
+to invoke Firefox, then to invoke Lynx in an xterm.
 
 To specify @samp{netscape-6.0} as browser, use the setting:
 
@@ -9453,16 +9473,61 @@ installed with @DDD{} include:
 @table @samp
 @item Small Titles
 @lbindex Small Titles
-Apply this theme to show display titles in a smaller font.
+If enabled, display titles in a smaller font.
 @item Small Values
 @lbindex Small Values
 Apply this theme to display values in a smaller font.
 @item Tiny Values
 @lbindex Tiny Values
+If enabled, display values in a tiny font.
+This could be combined with a pattern like @code{*\[*\]} to make
+all array members tiny.
 Apply this theme to display values in a tiny font.
 @item Suppress Values
 @lbindex Suppress Values
-Apply this theme to display values not at all.
+If enabled, the given value will be suppressed.  This should be
+combined with a pattern like @code{*->X} to suppress all members named
+`X'.  Apply this theme to display values not at all.
+@item Red Background
+@lbindex Red Background
+Use this with a self-defined button
+associated with the command @code{graph apply red.vsl "()"}
+@item Red nil pointers
+@lbindex Red Background
+If enabled, show nil pointers in red.
+@item Green background
+@lbindex Green background
+Use this with a self-defined button associated with the command
+@code{graph apply green.vsl "()"}.
+@item Intel x86 flag bits and registers
+@lbindex Intel x86 flab gits and registers
+To use this theme, set up some data buttons like this:
+
+@example
+   Ddd*dataButtons: \
+   graph display ($eflags & 1) != 0 // c\n\
+   graph display ($eflags & 64) != 0 // z\n\
+   graph display ($eflags & 128) != 0 // s\n\
+   graph display ($eflags & 1024) != 0 // d\n\
+   graph display ($eflags & 2048) != 0 // o\n\
+   graph display $eax & 255 // al\n\
+   graph display $eax >> 8 & 255 // ah\n\
+   graph display $eax & 65535 // ax\n\
+   graph display $ebx & 255 // bl\n\
+   graph display $ebx >> 8 & 255 // bh\n\
+   graph display $ebx & 65535 // bx\n\
+   graph display $ecx & 255 // cl\n\
+   graph display $ecx >> 8 & 255 // ch\n\
+   graph display $ecx & 65535 // cx\n\
+   graph display $edx & 255 // dl\n\
+   graph display $edx >> 8 & 255 // dh\n\
+   graph display $edx & 65535 // dx
+@end example
+
+Whenever the these displays is shown, the title will be replaced by a
+more intuitive title like ``carry'', or ``zero'' for one of the flag bits
+and ``al'' ``ax'', etc. for one of the registers.
+
 @end table
 
 Each of these themes can be applied for specific displays.
@@ -10769,11 +10834,17 @@ type in and edit these commands directly.
 
 In the @emph{debugger console}, you can interact with the command
 interface of the inferior debugger.  Enter commands at the
-@emph{debugger prompt}---that is, @samp{(gdb)} for @GDB{},
-@samp{(dbx)} for @DBX{}, @samp{(ladebug)} for Ladebug, @samp{>} for
-@XDB{}, @samp{>} and @samp{@var{thread}[@var{depth}]} for @JDB{}, or
-@samp{(Pydb)} for @PYDB{}, or @samp{DB<>} for Perl, or
-@samp{bashdb<>} for Bash.  You can use arbitrary debugger commands; use the
+@emph{debugger prompt}---that is, 
+@samp{(gdb)} for @GDB{},
+@samp{bashdb<>} for Bash,
+@samp{(dbx)} for @DBX{}, 
+@samp{>} @samp{@var{thread}[@var{depth}]} for @JDB{},
+@samp{(ladebug)} for Ladebug, 
+@samp{mdb<>} for the GNU Make debugger, 
+@samp{DB<>} for Perl, 
+@samp{(Pydb)} for @PYDB{}, 
+or @samp{>} for @XDB{}.
+You can use arbitrary debugger commands; use the
 @key{Return} key to enter them.
 
 @menu
@@ -12501,13 +12572,14 @@ on standard output.  Default is @samp{off}.  @xref{Options}, for the
 
 @menu
 * GDB::                         Using @DDD{} with @GDB{}
+* Bash::                        Using @DDD{} with Bash
 * DBX::                         Using @DDD{} with @DBX{}
 * Ladebug::                     Using @DDD{} with Ladebug
-* XDB::                         Using @DDD{} with @XDB{}
 * JDB::                         Using @DDD{} with @JDB{}
-* Perl::                        Using @DDD{} with Perl
-* Bash::                        Using @DDD{} with Bash
 * Make::                        Using @DDD{} with GNU Make
+* Perl::                        Using @DDD{} with Perl
+* Python::                      Using @DDD{} with Python
+* XDB::                         Using @DDD{} with @XDB{}
 * LessTif::                     Using @DDD{} with LessTif
 @end menu
 
@@ -12693,66 +12765,6 @@ loaded file, the entry point must be named either @samp{vxworks_main} or
 @xref{GDB}, for further configuration notes.
 
 
-@node DBX
-@section Using @value{DDD} with DBX
-
-When used for debugging Pascal-like programs, @DDD{} does not
-infer correct array subscripts and always starts to count with 1.
-
-With some @DBX{} versions (notably Solaris @DBX{}),
-@DDD{} strips C-style and C++-style comments from the
-@DBX{} output in order to interpret it properly.  This also
-affects the output of the debugged program when sent to the debugger
-console.  Using the separate execution window avoids these problems.
-
-In some @DBX{} versions (notably DEC @DBX{} and AIX @DBX{}), there is no
-automatic data display.  As an alternative, @DDD{} uses the @DBX{}
-@samp{print} command to access data values.  This means that variable
-names are interpreted according to the current frame; variables outside
-the current frame cannot be displayed.
-
-@node Ladebug
-@section Using @value{DDD} with Ladebug
-
-All @DBX{} limitations (@pxref{DBX}) apply to Ladebug as well.
-
-
-@node XDB
-@section Using @value{DDD} with XDB
-
-There is no automatic data display in @XDB{}.  As a workaround,
-@DDD{} uses the @samp{p} command to access data values.  This
-means that variable names are interpreted according to the current
-frame; variables outside the current frame cannot be displayed.
-
-@node JDB
-@section Using @value{DDD} with JDB
-
-There is no automatic data display in @JDB{}.  As a workaround,
-@DDD{} uses the @samp{dump} command to access data values.
-This means that variable names are interpreted according to the
-current frame; variables outside the current frame cannot be
-displayed.
-
-In @JDB{} 1.1, the @samp{dump} and @samp{print} commands do not support
-expression evaluation.  Hence, you cannot display arbitrary expressions.
-
-Parsing of @JDB{} output is quite CPU-intensive, due to the
-recognition of asynchronous prompts (any thread may output anything at
-any time, including prompts).  Hence, a program producing much console
-output is likely to slow down @DDD{} considerably.  In such a
-case, have the program run with @option{-debug} in a separate window and
-attach @JDB{} to it using the @option{-passwd} option.
-
-@node Perl
-@section Using @value{DDD} with Perl
-
-There is no automatic data display in Perl.  As a workaround,
-@DDD{} uses the @samp{x} command to access data values.  This
-means that variable names are interpreted according to the current
-frame; variables outside the current frame cannot be displayed.
-
-
 @node Bash
 @section Using @value{DDD} with Bash
 
@@ -12780,6 +12792,49 @@ nested shell) or has any parenthesis (is in a subshell). Quitting may
 merely exit out of one of these nested (sub)shells rather than leave
 the program.
 
+@node DBX
+@section Using @value{DDD} with DBX
+
+When used for debugging Pascal-like programs, @DDD{} does not
+infer correct array subscripts and always starts to count with 1.
+
+With some @DBX{} versions (notably Solaris @DBX{}),
+@DDD{} strips C-style and C++-style comments from the
+@DBX{} output in order to interpret it properly.  This also
+affects the output of the debugged program when sent to the debugger
+console.  Using the separate execution window avoids these problems.
+
+In some @DBX{} versions (notably DEC @DBX{} and AIX @DBX{}), there is no
+automatic data display.  As an alternative, @DDD{} uses the @DBX{}
+@samp{print} command to access data values.  This means that variable
+names are interpreted according to the current frame; variables outside
+the current frame cannot be displayed.
+
+@node Ladebug
+@section Using @value{DDD} with Ladebug
+
+All @DBX{} limitations (@pxref{DBX}) apply to Ladebug as well.
+
+
+@node JDB
+@section Using @value{DDD} with JDB
+
+There is no automatic data display in @JDB{}.  As a workaround,
+@DDD{} uses the @samp{dump} command to access data values.
+This means that variable names are interpreted according to the
+current frame; variables outside the current frame cannot be
+displayed.
+
+In @JDB{} 1.1, the @samp{dump} and @samp{print} commands do not support
+expression evaluation.  Hence, you cannot display arbitrary expressions.
+
+Parsing of @JDB{} output is quite CPU-intensive, due to the
+recognition of asynchronous prompts (any thread may output anything at
+any time, including prompts).  Hence, a program producing much console
+output is likely to slow down @DDD{} considerably.  In such a
+case, have the program run with @option{-debug} in a separate window and
+attach @JDB{} to it using the @option{-passwd} option.
+
 @node Make
 @section Using @value{DDD} with GNU Make
 
@@ -12801,6 +12856,51 @@ a machine-language instructions (commands Stepi/Nexti) doesn't exist.
 Pay special attention when the prompt has extra angle
 brackets---nested invocation of GNU MAKE. Quitting may merely exit out
 of one of these nested invocations rather than leave the program.
+
+@node Perl
+@section Using @value{DDD} with Perl
+
+There is no automatic data display in Perl.  As a workaround,
+@DDD{} uses the @samp{x} command to access data values.  This
+means that variable names are interpreted according to the current
+frame; variables outside the current frame cannot be displayed.
+
+
+@node Python
+@section Using @value{DDD} with Python
+
+In short, make sure you use a newer version of @PYDB{}, one from
+@uref{http://bashdb.sourceforge.net/pydb}. Older versions that had
+been supplied with @DDD{} will no longer work.
+
+History: Up to around 1999 there was parallel development that went on
+between @DDD{}'s Python debugger @PYDB{} and the stock python debugger
+@code{pdb}. These were not necessarily @emph{competing} efforts, just
+parallel. In fact the same person worked a little bit on both.
+
+One feature that @PYDB{} supported that wasn't in @code{pdb} was @GDB{}'s
+@code{display} command.
+
+After 1999, maintaining @PYDB{} more or less fell into disuse and @code{pdb}
+sort of inched ahead with bug fixes and redisigned interaces. Around
+the beginning of 2006, new work was started to enhance pdb and to make
+it more like @GDB{}. Since @DDD{} already understands a large set of
+@GDB{} commands, many of these enhancements were immediately
+realizable by @DDD{}. These things include command completion,
+restarting the debugger, and using set/show/info commands.
+
+With the blessing of the original author of @PYDB{}, the new effort
+took over the name of the old one, Although it did not actually start
+out from the @PYDB{} base but from pdb adding the old @PYDB{}
+features.
+
+@node XDB
+@section Using @value{DDD} with XDB
+
+There is no automatic data display in @XDB{}.  As a workaround,
+@DDD{} uses the @samp{p} command to access data values.  This
+means that variable names are interpreted according to the current
+frame; variables outside the current frame cannot be displayed.
 
 @node LessTif
 @section Using @value{DDD} with LessTif

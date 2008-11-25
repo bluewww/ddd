@@ -1,4 +1,4 @@
-// $Id$
+// $Id$ -*- C++ -*-
 // Communicate with separate GDB process
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
@@ -53,6 +53,7 @@
 //-----------------------------------------------------------------------------
 
 enum DebuggerType { BASH, DBG, DBX, GDB, JDB, PERL, PYDB, XDB, MAKE };
+enum DebuggerCPU { cpu_intel, cpu_unknown};
 //-----------------------------------------------------------------------------
 // Program language
 //-----------------------------------------------------------------------------
@@ -143,6 +144,7 @@ struct ReplyRequiredInfo {
 class GDBAgent: public TTYAgent {
 public:
     DECLARE_TYPE_INFO
+    DebuggerCPU cpu;
 
 protected:
     enum State {
@@ -442,6 +444,14 @@ public:
     ProgramLanguage program_language(string text);
 
     // True if debugger can enable breakpoints
+    bool has_disassembly() const
+    { 
+      return type() == GDB 
+	// || type() == PYDB  // In theory this could be done.
+	;
+    }
+
+    // True if debugger can enable breakpoints
     bool has_enable_command() const
     { 
       return type() == BASH || type() == DBG || type() == GDB  
@@ -477,9 +487,9 @@ public:
     // change at any time)
     bool has_volatile_breakpoints() const
     {
-	return type() == GDB || type() == XDB || 
-	       type() == DBX || type() == PYDB || type() == PERL || 
-	       type() == DBG;
+	return type() == DBG  || type() == DBX  || type() == GDB 
+	  ||   type() == MAKE || type() == PERL || type() == PYDB 
+	  ||   type() == XDB;
     }
 
     // True if debugger supports I/O redirection
@@ -500,7 +510,7 @@ public:
     bool has_system_calls() const
     {
 	return type() == GDB || type() == XDB || type() == DBX || 
-	       type() == PERL;
+	  type() == PYDB || type() == PERL;
     }
 
     // True if debugger supports loading and examining executables
@@ -530,15 +540,20 @@ public:
     // True if debugger supports `cd'
     bool has_cd_command() const
     {
-      return type() == GDB || type() == XDB || 
-	type() == DBX || type() == PYDB || type() == PERL || type() == BASH;
+      return type() == BASH || type() == GDB || type() == DBX 
+	|| type() == PERL || type() == PYDB  || type() == XDB;
     }
 
     // True if debugger supports `shell'
     bool has_shell_command() const
     {
-      return type() == GDB || type() == XDB || type() == DBX || 
-	type() == PERL || type() == BASH || type() == MAKE;
+      return type() == BASH 
+	|| type() == DBX 
+	|| type() == GDB 
+	|| type() == PERL 
+	|| type() == PYDB
+	|| type() == MAKE
+	|| type() == XDB;
     }
 
     // True if debugger has numbered breakpoints
@@ -567,8 +582,10 @@ public:
     // True if debugger supports breakpoint commands
     bool has_breakpoint_commands() const
     {
-        return type() == GDB || type() == XDB || type() == BASH
-	  || type() == MAKE || has_when_command() || type() == PERL;
+        return type() == BASH || type() == GDB 
+	  || type() == MAKE || has_when_command() || type() == PERL 
+	  || type() == PYDB || type() == XDB 
+	  ;
     }
 
     // True if debugger has typed pointers, as in `(TYPE)0x0'

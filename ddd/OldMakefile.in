@@ -339,6 +339,9 @@ EPSTOPDF = epstopdf
 # The dvips program.  (dvips)
 DVIPS = @DVIPS@
 
+# The pdf2ps program.  (pdf2ps)
+PDF2PS = @PDF2PS@
+
 # The TeX program.  (tex)
 TEX = tex
 

@@ -38,13 +38,14 @@ dddrootdir   = $(pkgdatadir)-@VERSION@
 # -----------------------------------------------------------------------------
 
 themesrootdir = $(dddrootdir)/themes
-themesroot_DATA = \
-	green.vsl \
-	red.vsl \
-	rednil.vsl \
+themesroot_DATA = 	\
+	green.vsl 	\
+	red.vsl 	\
+	rednil.vsl 	\
 	smalltitles.vsl \
 	smallvalues.vsl \
-	suppress.vsl \
-	tinyvalues.vsl
+	suppress.vsl 	\
+	tinyvalues.vsl	\
+	x86.vsl	 	
 
 EXTRA_DIST = $(themesroot_DATA)

@@ -59,4 +59,20 @@ vslroot_DATA = \
 	vsldef.vsl    \
 	vsllib.vsl
 
-EXTRA_DIST = $(vslroot_DATA)
+vsl_demos = \
+	DEMOS/arcs \
+	DEMOS/bases \
+	DEMOS/big \
+	DEMOS/bigflow \
+	DEMOS/errors \
+	DEMOS/flow \
+	DEMOS/flowplus \
+	DEMOS/fonts \
+	DEMOS/lattice \
+	DEMOS/lets \
+	DEMOS/list \
+	DEMOS/math \
+	DEMOS/slopes \
+	DEMOS/std
+
+EXTRA_DIST = $(vslroot_DATA) $(vsl_demos)

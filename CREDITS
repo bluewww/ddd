@@ -9,14 +9,15 @@ The DDD Maintainers
 
 Major code contributions:
 
-Rocky BERNSTEIN <rocky@panix.com>         - BASH debugger support
+Rocky BERNSTEIN <rocky@gnu.org>           - BASH debugger support
                                           - GNU Make debugger support
                                             (well, actually the 
-	                                     debuggers too)
+	                                    debuggers too)
+	                                  - Post 2006 Python support
 J.H.M. DASSEN <jdassen@wi.leidenuniv.nl>  - Tips and bug reports
 Dmitri DMITRIENKO <dd.cron.ru>            - PHP support
 Christian LINDIG <lindig@ips.cs.tu-bs.de> - PostScript and XFIG printing
-Richard WOLFF <rwolff@noao.edu>		  - Python support
+Richard WOLFF <rwolff@noao.edu>		  - Python support (retired)
 
 Significant suggestions and bug fixes:
 

@@ -1,7 +1,8 @@
-@c $Id$ -*- texinfo -*-
+@c $Id$
 @c DDD macros
 
 @c Copyright (C) 2000 Universitaet Passau, Germany.
+@c Copyright (C) 2006 Free Software Foundation, Inc.
 @c Written by Andreas Zeller <zeller@gnu.org>.
 @c 
 @c This file is part of DDD.
@@ -75,7 +76,7 @@
 @end macro
 
 @macro PYDB {}
-@acronym{PYDB}
+@code{pydb}
 @end macro
 
 @macro VSL {}

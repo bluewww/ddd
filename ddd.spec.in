@@ -17,12 +17,12 @@ URL: http://www.gnu.org/software/ddd/
 Prereq: /sbin/install-info
 BuildRoot: /var/tmp/%{name}-root
 
-%description
-DDD is a graphical front-end for command-line debuggers such as GDB,
-DBX, WDB, Ladebug, JDB, XDB, the Perl debugger, or the Python
-debugger.  Besides "usual" front-end features such as viewing source
-texts, DDD has become famous through its interactive graphical data
-display, where data structures are displayed as graphs.
+%description DDD is a graphical front-end for command-line debuggers
+such as GDB, bashdb, DBX, WDB, Ladebug, JDB, XDB, the Perl debugger,
+the GNU Make debugger (mdb) or the Python debugger (pydb).  Besides
+"usual" front-end features such as viewing source texts, DDD has
+become famous through its interactive graphical data display, where
+data structures are displayed as graphs.
 
 %changelog
 [ddd-3.2.1]
