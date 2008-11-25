@@ -2973,11 +2973,11 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	// We don't need the source window, since we're invoked by Emacs.
 	gdbCloseSourceWindowCB(gdb_w, 0, 0);
 
-	if (!app_data.disassemble && !gdb->has_disassembly())
+	if (!app_data.disassemble || !gdb->has_disassembly())
 	    gdbCloseToolWindowCB(gdb_w, 0, 0);
     }
 
-    if (!app_data.disassemble && !gdb->has_disassembly())
+    if (!app_data.disassemble || !gdb->has_disassembly())
     {
 	// We don't disassemble.
 	gdbCloseCodeWindowCB(gdb_w, 0, 0);
