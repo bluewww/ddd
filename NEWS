@@ -2,6 +2,13 @@ DDD News						-*- text -*-
 ********
 
 ==========
+DDD-3.3.12-rc1
+
+- Fixed several segmentation faults.
+
+- Fixed a few regressions affecting gdb support after merging the pydb
+  code.
+
 DDD-3.3.12-test6
 
 - Remove pydb in this directory. Use
