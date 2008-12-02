@@ -1391,7 +1391,7 @@ IMAGE_WIDTH = 800
 # Some XPM/PPM/PostScript converters, from the netpbm and pbmplus packages.
 PBMTOXBM   = pbmtoxbm
 PGMENHANCE = pgmenhance
-PGMTOPBM   = pgmtopbm
+PGMTOPBM   = pgmtopbm -threshold
 PAMARITH   = pamarith
 PNMCUT     = pnmcut
 PNMDEPTH   = pnmdepth
