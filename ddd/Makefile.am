@@ -1042,8 +1042,8 @@ bug.$(OBJEXT):	$(srcdir)/bug.C
 	$(PNMINVERT) | \
 	$(PNMPASTE) -and $${base}-object.pbm 0 0 > $${base}-mask.pbm; \
 	$(PPMTOXPM) $${base}-object.pbm | \
-	$(SED) 's/#00*/grey50/' | \
-	$(SED) 's/#FF*/grey/' | \
+	$(SED) -e 's/#00*/grey50/' -e 's/#FF*/grey/' \
+	-e 's/\<black\>/grey50/' -e 's/\<white\>/grey/' | \
 	$(XPMTOPPM) > $${base}-button.ppm; \
 	$(PAMARITH) -add $${base}-button.ppm $${base}-mask.pbm | \
 	$(PPMTOXPM) | \
