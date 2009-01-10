@@ -100,6 +100,7 @@ char exit_rcsid[] =
 #include "version.h"
 #include "windows.h"
 #include "wm.h"
+#include "hostname.h"
 
 #include <signal.h>
 #include <iostream>
@@ -113,6 +114,12 @@ char exit_rcsid[] =
 #include <Xm/MessageB.h>
 #include <Xm/PushB.h>
 #include <Xm/Text.h>
+
+#include <sys/sysctl.h> 
+#include <sys/time.h>
+
+pid_t getpid_ret;
+string core_file_name;
 
 #if HAVE_RAISE
 #if !HAVE_RAISE_DECL
@@ -458,6 +465,115 @@ static void print_fatal_msg(const char *title, const char *cause,
 	    , cls, title, cause);
 }
 
+void get_core_pattern(int signal)
+{
+	std::ifstream pidfile;
+	int value;
+	string str_func_ret;
+	int query[] = {CTL_KERN, KERN_CORE_PATTERN};
+	char result[100];
+	size_t resultlen;
+	int retcode;
+	const char *core_pat; 
+	int flag=false;
+	struct timeval tv;
+
+       resultlen = sizeof(result);
+	
+	retcode = sysctl(query, sizeof(query), &result, &resultlen, 0, 0);
+        if (retcode == 0)
+        {
+		core_pat=result;
+		while(*core_pat)
+		{
+			if(*core_pat!='%')
+			{
+				str_func_ret += *core_pat;			
+			}
+			else
+			{	
+				switch(*++core_pat)
+				{
+					//Double percent.Output only one	
+					case '%':
+					{
+						str_func_ret += "%";
+						break;
+					}
+					//pid
+					case 'p':
+					{
+                				str_func_ret += itostring(getpid_ret);
+						flag=true;
+						break;
+					}
+					//uid	
+					case 'u':
+					{
+						str_func_ret += itostring(getuid());
+						break;
+					}
+					//gid
+					case 'g':
+					{
+						str_func_ret += itostring(getgid());
+						break;
+					}
+					//signal
+					case 's':
+					{
+						str_func_ret += itostring(signal);
+						break;
+					}
+					//time
+					case 't':
+					{
+						gettimeofday(&tv,NULL);
+						str_func_ret += itostring(tv.tv_sec);
+						break;
+					}
+					//hostname
+					case 'h':
+					{
+						str_func_ret += hostname();
+						break;					
+					}
+					//executable
+					case 'e':
+					{
+						str_func_ret += "ddd";
+						break;
+					}
+					default:
+					{
+						break;
+					}
+				}
+			}
+			++core_pat;
+		}	
+	}	
+	pidfile.open("/proc/sys/kernel/core_uses_pid");
+        if(!pidfile.good())
+        {
+		value = 0;
+        }
+        else
+        {
+                pidfile>>value;
+        }
+	
+	if(1==value)
+        {
+		if(flag)
+			core_file_name = str_func_ret;
+		else
+                	core_file_name = str_func_ret + "." + itostring(getpid_ret);
+        }
+        else
+                core_file_name = str_func_ret;
+}
+
 // Fatal signal handler: issue error message and re-raise signal
 static void ddd_fatal(int sig...)
 {
@@ -502,7 +618,9 @@ static void ddd_fatal(int sig...)
 	    return;
 	}
 
-	have_core_file = is_core_file("core");
+	get_core_pattern(sig);
+
+	have_core_file = is_core_file(core_file_name);
     }
 
     if (fatal_entered > 1 || !main_loop_entered || ddd_is_exiting)
@@ -561,6 +679,7 @@ static bool ddd_dump_core(int sig...)
 	return true;
     }
 
+    getpid_ret = core_pid;
     if (core_pid < 0)
     {
 	perror(ddd_NAME);
@@ -1143,6 +1262,12 @@ void DDDRestartCB(Widget w, XtPointer, XtPointer call_data)
 
 static void debug_ddd(bool core_dumped)
 {
+    if(core_file_name=="ddd")
+    {
+        core_file_name = "ddd.temp";
+        rename("ddd","ddd.temp");
+    }
+
     StatusDelay delay("Invoking Debug Window");
 
     string term_command = app_data.term_command;
@@ -1152,10 +1277,10 @@ static void debug_ddd(bool core_dumped)
     string gdb_command = string("gdb ") + saved_argv()[0] + " ";
 
     if (core_dumped)
-	gdb_command += "core";
+		gdb_command += core_file_name;
     else
 	gdb_command += itostring(getpid());
-
+    
 #if 0
     gdb_command.prepend("echo \"Debugging " DDD_NAME ".  "
 			"Enter \\`quit' to quit.\"; ");
@@ -1169,8 +1294,8 @@ static void debug_ddd(bool core_dumped)
 // Insert `where' info into LOG
 void report_core(std::ostream& log)
 {
-    if (!is_core_file("core"))
-	return;
+    if(!is_core_file(core_file_name))
+	    return;	
 
     string tmpfile = tempfile();
     std::ofstream os(tmpfile.chars());
@@ -1180,11 +1305,11 @@ void report_core(std::ostream& log)
 	"where\n"
 	"quit\n";
     os.close();
-
-    string gdb_command = 
-	sh_command("gdb -x " + tmpfile + " " + saved_argv()[0] + " core", 
-		   true);
-
+    
+    string  gdb_command =
+			sh_command("gdb -x " + tmpfile + " " + saved_argv()[0] + " " + core_file_name, 
+			true);
+    	
     FILE *fp = popen(gdb_command.chars(), "r");
     int c;
     while ((c = getc(fp)) != EOF)
