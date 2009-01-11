@@ -115,7 +115,6 @@ char exit_rcsid[] =
 #include <Xm/PushB.h>
 #include <Xm/Text.h>
 
-#include <sys/sysctl.h> 
 #include <sys/time.h>
 
 pid_t getpid_ret;
@@ -467,111 +466,108 @@ static void print_fatal_msg(const char *title, const char *cause,
 
 void get_core_pattern(int signal)
 {
-	std::ifstream pidfile;
-	int value;
-	string str_func_ret;
-	int query[] = {CTL_KERN, KERN_CORE_PATTERN};
-	char result[100];
-	size_t resultlen;
-	int retcode;
-	const char *core_pat; 
-	int flag=false;
-	struct timeval tv;
+    std::ifstream pidfile, patternfile;
+    int value;
+    string pattern, str_func_ret;
+    const char *core_pat; 
+    int flag=false;
+    struct timeval tv;
 
-       resultlen = sizeof(result);
-	
-	retcode = sysctl(query, sizeof(query), &result, &resultlen, 0, 0);
-        if (retcode == 0)
-        {
-		core_pat=result;
-		while(*core_pat)
+    patternfile.open("/proc/sys/kernel/core_pattern");
+    if(!patternfile.good()) {
+	str_func_ret = "core";
+    }
+    else {
+	readline(patternfile, pattern);
+	core_pat = pattern.chars();
+	while(*core_pat)
+	{
+	    if(*core_pat!='%')
+	    {
+		str_func_ret += *core_pat;			
+	    }
+	    else
+	    {	
+		switch(*++core_pat)
 		{
-			if(*core_pat!='%')
-			{
-				str_func_ret += *core_pat;			
-			}
-			else
-			{	
-				switch(*++core_pat)
-				{
-					//Double percent.Output only one	
-					case '%':
-					{
-						str_func_ret += "%";
-						break;
-					}
-					//pid
-					case 'p':
-					{
-                				str_func_ret += itostring(getpid_ret);
-						flag=true;
-						break;
-					}
-					//uid	
-					case 'u':
-					{
-						str_func_ret += itostring(getuid());
-						break;
-					}
-					//gid
-					case 'g':
-					{
-						str_func_ret += itostring(getgid());
-						break;
-					}
-					//signal
-					case 's':
-					{
-						str_func_ret += itostring(signal);
-						break;
-					}
-					//time
-					case 't':
-					{
-						gettimeofday(&tv,NULL);
-						str_func_ret += itostring(tv.tv_sec);
-						break;
-					}
-					//hostname
-					case 'h':
-					{
-						str_func_ret += hostname();
-						break;					
-					}
-					//executable
-					case 'e':
-					{
-						str_func_ret += "ddd";
-						break;
-					}
-					default:
-					{
-						break;
-					}
-				}
-			}
-			++core_pat;
-		}	
+		    //Double percent.Output only one	
+		case '%':
+		{
+		    str_func_ret += "%";
+		    break;
+		}
+		//pid
+		case 'p':
+		{
+		    str_func_ret += itostring(getpid_ret);
+		    flag=true;
+		    break;
+		}
+		//uid	
+		case 'u':
+		{
+		    str_func_ret += itostring(getuid());
+		    break;
+		}
+		//gid
+		case 'g':
+		{
+		    str_func_ret += itostring(getgid());
+		    break;
+		}
+		//signal
+		case 's':
+		{
+		    str_func_ret += itostring(signal);
+		    break;
+		}
+		//time
+		case 't':
+		{
+		    gettimeofday(&tv,NULL);
+		    str_func_ret += itostring(tv.tv_sec);
+		    break;
+		}
+		//hostname
+		case 'h':
+		{
+		    str_func_ret += hostname();
+		    break;					
+		}
+		//executable
+		case 'e':
+		{
+		    str_func_ret += "ddd";
+		    break;
+		}
+		default:
+		{
+		    break;
+		}
+		}
+	    }
+	    ++core_pat;
 	}	
-	pidfile.open("/proc/sys/kernel/core_uses_pid");
-        if(!pidfile.good())
-        {
-		value = 0;
-        }
-        else
-        {
-                pidfile>>value;
-        }
+    }	
+    pidfile.open("/proc/sys/kernel/core_uses_pid");
+    if(!pidfile.good())
+    {
+	value = 0;
+    }
+    else
+    {
+	pidfile>>value;
+    }
 	
-	if(1==value)
-        {
-		if(flag)
-			core_file_name = str_func_ret;
-		else
-                	core_file_name = str_func_ret + "." + itostring(getpid_ret);
-        }
-        else
-                core_file_name = str_func_ret;
+    if(1==value)
+    {
+	if(flag)
+	    core_file_name = str_func_ret;
+	else
+	    core_file_name = str_func_ret + "." + itostring(getpid_ret);
+    }
+    else
+	core_file_name = str_func_ret;
 }
 
 // Fatal signal handler: issue error message and re-raise signal
