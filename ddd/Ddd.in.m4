@@ -1,4 +1,4 @@
-! $Id$ -*- xrdb -*-
+! $Id$
 ! DDD Resource File.  DO NOT INSTALL THIS FILE!  See below for details.
 include(ifdef(`srcdir',srcdir()/macros.m4,macros.m4))dnl
 DDD_APP_WARNING
@@ -8,7 +8,7 @@ Ddd*appDefaultsVersion: @VERSION@
 ! Copyright (C) 1995-1999 Technische Universitaet Braunschweig, Germany.
 ! Copyright (C) 1999-2001 Universitaet Passau, Germany.
 ! Copyright (C) 2001 Universitaet des Saarlandes, Germany.
-! Copyright (C) 2001-2004 Free Software Foundation, Inc.
+! Copyright (C) 2001-2006 Free Software Foundation, Inc.
 ! Written by Andreas Zeller <zeller@gnu.org>.
 ! 
 ! This file is part of DDD.
@@ -336,14 +336,16 @@ Ddd*wwwPage: http://www.gnu.org/software/ddd/
 ! letting all these commands fail may take some time...
 
 Ddd*wwwCommand: \
-   mozilla -remote 'openURL(@URL@)' \
-|| netscape -remote 'openURL(@URL@)' \
+   firefox -remote 'openURL(@URL@)' \
+|| mozilla -remote 'openURL(@URL@)' \
+|| opera -remote 'openURL(@URL@)' \
 || ${WWWBROWSER-false} '@URL@' \
+|| konqueror 'openURL(@URL@)' \
 || galeon 'openURL(@URL@)' \
 || skipstone 'openURL(@URL@)' \
 || light 'openURL(@URL@)' \
+|| netscape -remote 'openURL(@URL@)' \
 || mozilla '@URL@' \
-|| konqueror 'openURL(@URL@)' \
 || kfmbrowser '@URL@' \
 || netscape '@URL@' \
 || gnudoit '(w3-fetch \042@URL@\042)' \

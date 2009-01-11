@@ -195,23 +195,26 @@ GDBAgent::GDBAgent (GUI::Main *app_context,
       state(BusyOnInitialCmds),
       _type(tp),
       _user_data(0),
-      _has_frame_command(tp == BASH || tp == DBG || tp == GDB || tp == XDB),
+      _has_frame_command(tp == BASH || tp == DBG || tp == GDB 
+			 || tp == MAKE || tp == PYDB || tp == XDB ),
       _has_func_command(tp == DBX),
       _has_file_command(tp == DBX),
       _has_run_io_command(false),
       _has_print_r_option(false),
       _has_output_command(false),
       _has_where_h_option(false),
-      _has_display_command(tp == DBG || tp == DBX || tp == GDB || tp == PYDB),
-      _has_clear_command(tp == BASH || tp == DBG || tp == DBX || tp == GDB || tp == JDB || tp == PERL),
+      _has_display_command(tp == BASH || tp == DBG || tp == DBX || tp == GDB 
+			   || tp == PYDB),
+      _has_clear_command(tp == BASH || tp == DBG || tp == DBX || tp == GDB 
+			 || tp == JDB || tp == PERL),
       _has_handler_command(false),
       _has_pwd_command(tp == BASH || tp == DBG || tp == DBX || tp == GDB ||
 		       tp == MAKE || tp == PYDB || tp == PERL),
       _has_setenv_command(tp == DBX),
       _has_edit_command(tp == DBX),
       _has_make_command(tp == BASH || tp == DBX || tp == GDB || 
-			tp == MAKE || tp == PERL),
-      _has_jump_command(tp == GDB || tp == DBX || tp == XDB),
+			tp == MAKE || tp == PYDB || tp == PERL),
+      _has_jump_command(tp == GDB || tp == DBX || tp == PYDB || tp == XDB),
       _has_regs_command(tp == GDB),
       _has_watch_command(0),	// see below
       _has_named_values(tp == DBG || tp == DBX || tp == GDB || tp == JDB),
@@ -280,6 +283,8 @@ GDBAgent::GDBAgent (GUI::Main *app_context,
 	_has_watch_command = WATCH_CHANGE;
     else
 	_has_watch_command = 0;
+    
+    cpu = cpu_unknown;
 }
 
 
@@ -680,8 +685,32 @@ bool GDBAgent::ends_with_prompt (const string& ans)
     string answer = ans;
     strip_control(answer);
 
-    switch (type())
+    switch (type()) {
+    case BASH:
     {
+	// Any line ending in `bashdb<...> ' is a prompt.
+	// Since N does not make sense in DDD, we use `DB<> ' instead.
+
+#if RUNTIME_REGEX
+	static regex rxbashprompt("bashdb<+[(]*[0-9][)]*>+");
+#endif
+
+	int i = answer.length() - 1;
+	if (i < 1 || answer[i] != ' ' || answer[i - 1] != '>')
+	    return false;
+
+	while (i >= 0 && answer[i] != '\n' ) {
+	  if (answer.contains("bashdb<", i)) {
+	    string possible_prompt = answer.from(i);
+	    if (possible_prompt.matches(rxbashprompt)) {
+	      last_prompt = possible_prompt;
+	      return true;
+	    }
+	  }
+	  i--;
+	}
+	return false;
+    }
     case GDB:
 	// GDB reads in breakpoint commands using a `>' prompt
 	if (recording() && answer.contains('>', -1))
@@ -696,7 +725,6 @@ bool GDBAgent::ends_with_prompt (const string& ans)
 
 	// FALL THROUGH
     case DBX:
-    case PYDB:
     {
 	// Any line ending in `(gdb) ' or `(dbx) ' is a prompt.
 	int i = answer.length() - 1;
@@ -739,99 +767,6 @@ bool GDBAgent::ends_with_prompt (const string& ans)
 	}
 	return false;
     }
-    case XDB:
-    {
-	// Any line equal to `>' is a prompt.
-	const unsigned beginning_of_line = answer.index('\n', -1) + 1;
-	if (beginning_of_line < answer.length()
-	    && answer.length() > 0
-	    && answer[beginning_of_line] == '>')
-	{
-	    last_prompt = ">";
-	    return true;
-	}
-	return false;
-    }
-
-    case BASH:
-    {
-	// Any line ending in `bashdb<...> ' is a prompt.
-	// Since N does not make sense in DDD, we use `DB<> ' instead.
-
-#if RUNTIME_REGEX
-	static regex rxbashprompt("bashdb<+[(]*[0-9][)]*>+");
-#endif
-
-	int i = answer.length() - 1;
-	if (i < 1 || answer[i] != ' ' || answer[i - 1] != '>')
-	    return false;
-
-	while (i >= 0 && answer[i] != '\n' ) {
-	  if (answer.contains("bashdb<", i)) {
-	    string possible_prompt = answer.from(i);
-	    if (possible_prompt.matches(rxbashprompt)) {
-	      last_prompt = possible_prompt;
-	      return true;
-	    }
-	  }
-	  i--;
-	}
-	return false;
-    }
-    case MAKE:
-    {
-	// Any line ending in `mdb<...> ' is a prompt.
-	// Since N does not make sense in DDD, we use `DB<> ' instead.
-
-#if RUNTIME_REGEX
-	static regex rxmakeprompt("mdb<+[(]*[0-9][)]*>+");
-#endif
-
-	int i = answer.length() - 1;
-	if (i < 1 || answer[i] != ' ' || answer[i - 1] != '>')
-	    return false;
-
-	while (i >= 0 && answer[i] != '\n' ) {
-	  if (answer.contains("mdb<", i)) {
-	    string possible_prompt = answer.from(i);
-	    if (possible_prompt.matches(rxmakeprompt)) {
-	      last_prompt = possible_prompt;
-	      return true;
-	    }
-	  }
-	  i--;
-	}
-	return false;
-    }
-    case PERL:
-    {
-	// Any line ending in `DB<N> ' is a prompt.
-	// Since N does not make sense in DDD, we use `DB<> ' instead.
-	//
-	// "T. Pospisek's MailLists" <tpo2@sourcepole.ch> reports that
-	// under Debian, Perl issues a prompt with control characters:
-	// <- "\001\002  DB<1> \001\002"
-
-#if RUNTIME_REGEX
-	static regex rxperlprompt("[ \t\001\002]*DB<+[0-9]*>+[ \t\001\002]*");
-#endif
-
-	int i = answer.length() - 1;
-	if (i < 1 || answer[i] != ' ' || answer[i - 1] != '>')
-	    return false;
-
-	while (i > 0 && answer[i - 1] != '\n' && !answer.contains("DB", i))
-	    i--;
-
-	string possible_prompt = answer.from(i);
-	if (possible_prompt.matches(rxperlprompt))
-	{
-	    last_prompt = "DB<> ";
-	    return true;
-	}
-	return false;
-    }
-
     case JDB:
     {
 	// JDB prompts using "> " or "THREAD[DEPTH] ".  All these
@@ -898,6 +833,98 @@ bool GDBAgent::ends_with_prompt (const string& ans)
 
 	return false;
     }
+    case MAKE:
+    {
+	// Any line ending in `mdb<...> ' is a prompt.
+	// Since N does not make sense in DDD, we use `DB<> ' instead.
+
+#if RUNTIME_REGEX
+	static regex rxmakeprompt("mdb<+[(]*[0-9][)]*>+");
+#endif
+
+	int i = answer.length() - 1;
+	if (i < 1 || answer[i] != ' ' || answer[i - 1] != '>')
+	    return false;
+
+	while (i >= 0 && answer[i] != '\n' ) {
+	  if (answer.contains("mdb<", i)) {
+	    string possible_prompt = answer.from(i);
+	    if (possible_prompt.matches(rxmakeprompt)) {
+	      last_prompt = possible_prompt;
+	      return true;
+	    }
+	  }
+	  i--;
+	}
+	return false;
+    }
+    case PERL:
+    {
+	// Any line ending in `DB<N> ' is a prompt.
+	// Since N does not make sense in DDD, we use `DB<> ' instead.
+	//
+	// "T. Pospisek's MailLists" <tpo2@sourcepole.ch> reports that
+	// under Debian, Perl issues a prompt with control characters:
+	// <- "\001\002  DB<1> \001\002"
+
+#if RUNTIME_REGEX
+	static regex rxperlprompt("[ \t\001\002]*DB<+[0-9]*>+[ \t\001\002]*");
+#endif
+
+	int i = answer.length() - 1;
+	if (i < 1 || answer[i] != ' ' || answer[i - 1] != '>')
+	    return false;
+
+	while (i > 0 && answer[i - 1] != '\n' && !answer.contains("DB", i))
+	    i--;
+
+	string possible_prompt = answer.from(i);
+	if (possible_prompt.matches(rxperlprompt))
+	{
+	    last_prompt = "DB<> ";
+	    return true;
+	}
+	return false;
+    }
+    case PYDB:
+    {
+	// Any line ending in `(Pydb) ' is a prompt.
+
+#if RUNTIME_REGEX
+	static regex rxpyprompt("[(]+Pydb[)]+");
+#endif
+
+	int i = answer.length() - 1;
+	if (i < 1 || answer[i] != ' ' || answer[i - 1] != ')')
+	    return false;
+
+	while (i >= 0 && answer[i] != '\n' ) {
+	  if (answer.contains("(Pydb)", i)) {
+	    string possible_prompt = answer.from(i);
+	    if (possible_prompt.matches(rxpyprompt)) {
+	      last_prompt = possible_prompt;
+	      return true;
+	    }
+	  }
+	  i--;
+	}
+	return false;
+    }
+    case XDB:
+    {
+	// Any line equal to `>' is a prompt.
+	const unsigned beginning_of_line = answer.index('\n', -1) + 1;
+	if (beginning_of_line < answer.length()
+	    && answer.length() > 0
+	    && answer[beginning_of_line] == '>')
+	{
+	    last_prompt = ">";
+	    return true;
+	}
+	return false;
+    }
+
+
     }
 
     return false;		// Never reached
@@ -1099,7 +1126,6 @@ void GDBAgent::cut_off_prompt(string& answer) const
 
 	// FALL THROUGH
     case DBX:
-    case PYDB:
 	answer = answer.before('(', -1);
 	break;
 
@@ -1113,8 +1139,9 @@ void GDBAgent::cut_off_prompt(string& answer) const
     }
     
     case BASH:
-    case MAKE:
     case JDB:
+    case MAKE:
+    case PYDB:
     {
 	// Check for prompt at the end of the last line
 	if (answer.contains(last_prompt, -1))
@@ -1818,7 +1845,6 @@ string GDBAgent::print_command(const char *expr, bool internal) const
 	break;
 
     case XDB:
-    case PYDB:
 	cmd = "p";
 	break;
 
@@ -1826,6 +1852,10 @@ string GDBAgent::print_command(const char *expr, bool internal) const
     case MAKE:
     case PERL:
 	cmd = "x";
+	break;
+
+    case PYDB:
+	cmd = "print";
 	break;
 
     case JDB:
@@ -1932,9 +1962,9 @@ string GDBAgent::info_args_command() const
 {
     switch (type())
     {
+    case BASH:
     case GDB:
     case PYDB:
-    case BASH:
 	return "info args";
 
     default:
@@ -2011,11 +2041,11 @@ string GDBAgent::make_command(const string& args) const
 
     case BASH:
     case MAKE:
-	cmd = "shell make";
+    case PYDB:
+	cmd = "shell make " + args ;
 	break;
 
     case JDB:
-    case PYDB:
     case DBG:
 	return "";		// Not available
     }
@@ -2163,16 +2193,18 @@ string GDBAgent::kill_command() const
     case DBG:
     case DBX:
     case GDB:
-    case PYDB:
 	return "kill";
    
     case XDB:
 	return "k";
 
-    case JDB:
+    case BASH:
     case MAKE:
     case PERL:
-    case BASH:
+    case PYDB:
+	return "quit";
+
+    case JDB:
 	return "";		// Not available
     }
 
@@ -2188,6 +2220,7 @@ string GDBAgent::frame_command() const
     case DBX:
     case GDB:
     case MAKE:
+    case PYDB:
 	if (has_frame_command())
 	    return "frame";
 	else
@@ -2195,9 +2228,6 @@ string GDBAgent::frame_command() const
 
     case XDB:
 	return print_command("$depth");
-
-    case PYDB:
-	return where_command(0);
 
     case JDB:
     case PERL:
@@ -2219,13 +2249,13 @@ string GDBAgent::frame_command(int num) const
     case DBX:
     case GDB:
     case MAKE:
+    case PYDB:
 	return frame_command() + " " + itostring(num);
 
     case XDB:
 	return "V " + itostring(num);
 
     case JDB:
-    case PYDB:
     case PERL:
 	return "";		// Not available
     }
@@ -2278,6 +2308,7 @@ string GDBAgent::echo_command(const string& text) const
     switch (type())
     {
     case BASH:
+    case PYDB:
 	return "print " + quote(text);
 
     case DBG:
@@ -2301,7 +2332,6 @@ string GDBAgent::echo_command(const string& text) const
 	return quote(text);
 
     case JDB:
-    case PYDB:
 	return "";		// Not available
     }
 
@@ -2497,6 +2527,7 @@ string GDBAgent::shell_command(const string& cmd) const
     case BASH:
     case GDB:
     case MAKE:
+    case PYDB:
 	return "shell " + cmd;
 
     case DBX:
@@ -2510,7 +2541,6 @@ string GDBAgent::shell_command(const string& cmd) const
 
     case DBG:
     case JDB:
-    case PYDB:
 	return "";		// Not available
     }
     return "";			// Never reached
@@ -2627,7 +2657,6 @@ string GDBAgent::debug_command(const char *program, string args) const
 	    return "file " + quote_file(program);
 
     case DBG:
-    case PYDB:
 	return string("file ") + program;
 
     case DBX:
@@ -2649,6 +2678,7 @@ string GDBAgent::debug_command(const char *program, string args) const
 	return "R";
 
     case BASH:
+    case PYDB:
 	return string("debug ") + program + args;
 
 	// restart/run is not the same a debug. But this is the closes

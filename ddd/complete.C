@@ -207,7 +207,9 @@ static string completion_command(const string& cmd)
 {
     switch (gdb->type())
     {
+    case BASH:
     case GDB:
+    case PYDB:
 	return "complete " + cmd;
 
     case PERL:
@@ -477,7 +479,8 @@ static void tabAct(GUI::Widget *w, GUI::Event *e, GUI::String *args, unsigned in
 // Complete current GDB command
 void complete_commandAct(Widget w, XEvent *e, String* args, Cardinal* num_args)
 {
-    if ((gdb->type() != GDB && gdb->type() != PERL)
+    if ((gdb->type() != BASH && gdb->type() != GDB 
+	 && gdb->type() != PERL && gdb->type() != PYDB)
 	|| w != gdb_w
 	|| !can_do_gdb_command()
 	|| XmTextGetInsertionPosition(w) != XmTextGetLastPosition(w))

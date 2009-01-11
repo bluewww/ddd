@@ -3,7 +3,7 @@
 
 // Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
 // Copyright (C) 1999-2001 Universitaet Passau, Germany.
-// Copyright (C) 2001-2004 Free Software Foundation, Inc.
+// Copyright (C) 2001-2006 Free Software Foundation, Inc.
 // Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
 // and Andreas Zeller <zeller@gnu.org>.
 // Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
@@ -722,8 +722,14 @@ static XrmOptionDescRec options[] = {
 
 { XRMOPTSTR("--attach"),               XRMOPTSTR(XtCSeparate),             
                                         XrmoptionNoArg, XPointer(OFF) },
+/* -attach is used by jdb to attach to another another running JVM.
+It is even described as a useful option to use in the ddd reference.
+If we add this as an option as yet a 4th way to specify --attach-windows,
+we prevent its use in jdb. 
+
 { XRMOPTSTR("-attach"),                XRMOPTSTR(XtCSeparate),             
                                         XrmoptionNoArg, XPointer(OFF) },
+*/
 { XRMOPTSTR("--attach-windows"),       XRMOPTSTR(XtCSeparate),             
                                         XrmoptionNoArg, XPointer(OFF) },
 { XRMOPTSTR("-attach-windows"),        XRMOPTSTR(XtCSeparate),             
@@ -2222,6 +2228,7 @@ static GUI::RadioButton *set_debugger_dbg_w;
 static GUI::RadioButton *set_debugger_dbx_w;
 static GUI::RadioButton *set_debugger_gdb_w;
 static GUI::RadioButton *set_debugger_jdb_w;
+static GUI::RadioButton *set_debugger_make_w;
 static GUI::RadioButton *set_debugger_perl_w;
 static GUI::RadioButton *set_debugger_pydb_w;
 static GUI::RadioButton *set_debugger_xdb_w;
@@ -4011,11 +4018,11 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	// We don't need the source window, since we're invoked by Emacs.
 	gdbCloseSourceWindowCB(gdb_w, 0, 0);
 
-	if (!app_data.disassemble)
+	if (!app_data.disassemble && !gdb->has_disassembly())
 	    gdbCloseToolWindowCB(gdb_w, 0, 0);
     }
 
-    if (!app_data.disassemble)
+    if (!app_data.disassemble && !gdb->has_disassembly())
     {
 	// We don't disassemble.
 	gdbCloseCodeWindowCB(gdb_w, 0, 0);
@@ -4922,11 +4929,11 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	// We don't need the source window, since we're invoked by Emacs.
 	gdbCloseSourceWindowCB(gdb_w);
 
-	if (!app_data.disassemble)
+	if (!app_data.disassemble && !gdb->has_disassembly())
 	    gdbCloseToolWindowCB();
     }
 
-    if (!app_data.disassemble)
+    if (!app_data.disassemble && !gdb->has_disassembly())
     {
 	// We don't disassemble.
 	gdbCloseCodeWindowCB(gdb_w);
@@ -6536,7 +6543,8 @@ void update_options()
 
     source_view->set_display_line_numbers(app_data.display_line_numbers);
     source_view->set_display_glyphs(app_data.display_glyphs);
-    source_view->set_disassemble(gdb->type() == GDB && app_data.disassemble);
+    source_view->set_disassemble(gdb->type() == GDB || gdb->type() == PYDB
+				 && app_data.disassemble);
     source_view->set_all_registers(app_data.all_registers);
     source_view->set_tab_width(app_data.tab_width);
     source_view->set_indent(app_data.indent_source, app_data.indent_code);
@@ -6892,7 +6900,8 @@ static bool real_update_options(bool noupd)
 #warning set_display_glyphs?
 #endif
     // source_view->set_display_glyphs(app_data.display_glyphs);
-    source_view->set_disassemble(gdb->type() == GDB && app_data.disassemble);
+    source_view->set_disassemble(gdb->type() == GDB || gdb->type() == PYDB
+				 && app_data.disassemble);
     source_view->set_all_registers(app_data.all_registers);
     source_view->set_tab_width(app_data.tab_width);
     source_view->set_indent(app_data.indent_source, app_data.indent_code);
@@ -8819,7 +8828,6 @@ static void PopdownStatusHistoryEH(Widget w, XtPointer client_data,
 // Helpers
 //-----------------------------------------------------------------------------
 
-#if defined(IF_XM)
 void update_arg_buttons()
 {
     string arg = source_arg->get_string();
@@ -8917,6 +8925,7 @@ void update_arg_buttons()
     set_sensitive(break_menu[BreakItems::RegexBreak].widget,
 		  gdb->type() == GDB);
 
+#if defined(IF_XM)
     string deref_arg = deref(arg, "()");
 
     MString print_ref_label("Print " + deref_arg);
@@ -8928,6 +8937,15 @@ void update_arg_buttons()
     XtVaSetValues(display_menu[DispItems::DispRef].widget,
 		  XmNlabelString, disp_ref_label.xmstring(),
 		  XtPointer(0));
+#else
+    GUI::String deref_arg = deref(arg, "()").chars();
+
+    GUI::String print_ref_label= GUI::String("Print ") + deref_arg;
+    set_label(print_menu[PrintItems::PrintRef].widget, print_ref_label);
+
+    GUI::String disp_ref_label = GUI::String("Display ") + deref_arg;
+    set_label(display_menu[DispItems::DispRef].widget, disp_ref_label);
+#endif
 
     bool can_dereference = !gdb->dereferenced_expr("").empty();
     manage_child(print_ref_w, can_dereference);
@@ -8943,119 +8961,7 @@ void update_arg_buttons()
     set_sensitive(infos_w,     (gdb->type() == GDB || gdb->type() == PYDB) &&
 		                !undoing);
 }
-#else
-void update_arg_buttons()
-{
-    string arg = source_arg->get_string();
 
-    bool can_find = (!arg.empty()) && !is_file_pos(arg) && 
-	source_view->have_source();
-    set_sensitive(arg_cmd_area[ArgItems::Find].widget, can_find);
-    set_sensitive(find_forward_w, can_find);
-    set_sensitive(find_backward_w, can_find);
-
-    bool undoing = undo_buffer.showing_earlier_state();
-    bool can_print = (!arg.empty()) && !is_file_pos(arg) && !undoing;
-    set_sensitive(arg_cmd_area[ArgItems::Print].widget, can_print);
-    set_sensitive(arg_cmd_area[ArgItems::Display].widget, can_print);
-    set_sensitive(print_w, can_print);
-    set_sensitive(display_w, can_print);
-
-    set_sensitive(edit_source_w, source_view->have_source());
-    set_sensitive(reload_source_w, source_view->have_source());
-
-    bool can_watch = can_print && gdb->has_watch_command();
-    set_sensitive(arg_cmd_area[ArgItems::Watch].widget, can_watch);
-
-    bool have_watch = have_watchpoint_at_arg();
-
-    manage_child(watch_menu[WatchItems::Properties].widget, have_watch);
-    manage_child(watch_menu[WatchItems::Enable].widget,     have_watch);
-    manage_child(watch_menu[WatchItems::Sep].widget,        have_watch);
-
-    set_sensitive(watch_menu[WatchItems::CWatch].widget, can_watch && 
-		  (gdb->has_watch_command() & WATCH_CHANGE) == WATCH_CHANGE);
-    set_sensitive(watch_menu[WatchItems::RWatch].widget, can_watch &&
-		  (gdb->has_watch_command() & WATCH_READ) == WATCH_READ);
-    set_sensitive(watch_menu[WatchItems::AWatch].widget, can_watch &&
-		  (gdb->has_watch_command() & WATCH_ACCESS) == WATCH_ACCESS);
-    if (have_watch)
-    {
-	set_label(arg_cmd_area[ArgItems::Watch].widget, 
-		  "Unwatch ()", UNWATCH_ICON);
-    }
-    else
-    {
-	set_label(arg_cmd_area[ArgItems::Watch].widget, 
-		  "Watch ()", WATCH_ICON);
-    }
-
-    bool watch_enabled = have_enabled_watchpoint_at_arg();
-    if (watch_enabled)
-	set_label(watch_menu[WatchItems::Enable].widget, 
-		  "Disable Watchpoint on ()");
-    else
-	set_label(watch_menu[WatchItems::Enable].widget, 
-		  "Enable Watchpoint at ()");
-
-
-    bool have_break = have_breakpoint_at_arg();
-
-    manage_child(break_menu[BreakItems::TempBreak].widget,   !have_break);
-    manage_child(break_menu[BreakItems::RegexBreak].widget,  !have_break);
-    manage_child(break_menu[BreakItems::ContUntil].widget,   !have_break);
-    manage_child(break_menu[BreakItems::Sep2].widget,        !have_break);
-    manage_child(break_menu[BreakItems::ClearAt2].widget,    !have_break);
-
-    manage_child(break_menu[BreakItems::Properties].widget,  have_break);
-    manage_child(break_menu[BreakItems::Enable].widget,      have_break);
-
-    if (have_break)
-    {
-	set_label(arg_cmd_area[ArgItems::Break].widget, 
-		  "Clear at ()", CLEAR_AT_ICON);
-    }
-    else
-    {
-	set_label(arg_cmd_area[ArgItems::Break].widget, 
-		  "Break at ()", BREAK_AT_ICON);
-    }
-
-    bool break_enabled = have_enabled_breakpoint_at_arg();
-    if (break_enabled)
-	set_label(break_menu[BreakItems::Enable].widget, 
-		  "Disable Breakpoint at ()");
-    else
-	set_label(break_menu[BreakItems::Enable].widget, 
-		  "Enable Breakpoint at ()");
-
-    set_sensitive(break_menu[BreakItems::ClearAt2].widget, gdb->recording() || have_breakpoint_at_arg());
-    set_sensitive(break_menu[BreakItems::Enable].widget, gdb->can_enable());
-    set_sensitive(break_menu[BreakItems::SetPC].widget, gdb->has_jump_command() || gdb->has_assign_command());
-    set_sensitive(break_menu[BreakItems::RegexBreak].widget, gdb->type() == GDB);
-
-    GUI::String deref_arg = deref(arg, "()").chars();
-
-    GUI::String print_ref_label= GUI::String("Print ") + deref_arg;
-    set_label(print_menu[PrintItems::PrintRef].widget, print_ref_label);
-
-    GUI::String disp_ref_label = GUI::String("Display ") + deref_arg;
-    set_label(display_menu[DispItems::DispRef].widget, disp_ref_label);
-
-    bool can_dereference = !gdb->dereferenced_expr("").empty();
-    manage_child(print_ref_w, can_dereference);
-    manage_child(disp_ref_w,  can_dereference);
-
-    set_sensitive(stack_w, !undoing);
-    set_sensitive(registers_w, gdb->has_regs_command() && !undoing);
-    set_sensitive(threads_w, (gdb->type() == GDB
-			      || gdb->type() == JDB
-			      || (gdb->type() == DBX && gdb->isSunDBX()))
-		  && !undoing);
-    set_sensitive(infos_w, (gdb->type() == GDB || gdb->type() == PYDB) &&
-		  !undoing);
-}
-#endif
 
 // Arg changed - re-label buttons
 static void source_argHP(void *, void *, void *)
@@ -11646,6 +11552,17 @@ static void setup_options(int& argc, const char *argv[],
 	    gdb_option_offset = 2;
 	}
 
+#if FIXED
+	if ( arg == "-python"   || arg == "--python" )
+	  arg = "-pydb";
+	else if ( arg == "-mdb" || arg == "--mdb" )
+	  arg = "--make";
+	else if ( arg == "-bashdb" || arg == "--bashdb" )
+	  arg = "--bash";
+	else if ( arg == "-java"|| arg == "--java" )
+	  arg = "--jdb";
+#endif
+
 	if ( arg == "--bash"    || arg == "-bash" 
 	     || arg == "--dbg"  || arg == "-dbg"
 	     || arg == "--dbx"  || arg == "-dbx"
@@ -11866,11 +11783,10 @@ static void setup_auto_command_prefix()
     app_data.auto_command_prefix = prefix.chars();
 }
 
-#if defined(IF_XM)
 // All options that remain fixed for a session go here.
 static void setup_options()
 {
-    set_sensitive(disassemble_w, gdb->type() == GDB);
+    set_sensitive(disassemble_w, gdb->has_disassembly());
     set_sensitive(code_indent_w, gdb->type() == GDB);
     set_sensitive(examine_w,            gdb->has_examine_command());
     set_sensitive(print_examine_w,      gdb->has_examine_command());
@@ -11931,21 +11847,22 @@ static void setup_options()
     set_sensitive(source_file_menu[FileItems::CD].widget,             have_cd);
     set_sensitive(data_file_menu[FileItems::CD].widget,               have_cd);
 
-    bool have_settings = (gdb->type() != XDB && gdb->type() != PYDB);
+    bool have_settings = (gdb->type() != XDB);
     set_sensitive(command_edit_menu[EditItems::Settings].widget,have_settings);
     set_sensitive(source_edit_menu[EditItems::Settings].widget, have_settings);
     set_sensitive(data_edit_menu[EditItems::Settings].widget,   have_settings);
 
-    set_sensitive(complete_w,  gdb->type() == GDB);
+    set_sensitive(complete_w,  gdb->type() == BASH || gdb->type() == GDB 
+		  || gdb->type() == PYDB);
     set_sensitive(define_w,    gdb->type() == GDB);
     set_sensitive(signals_w,   gdb->type() == GDB);
 
-    set_sensitive(set_debugger_bash_w, have_cmd("bash"));
+    set_sensitive(set_debugger_bash_w, have_cmd("bashdb"));
     set_sensitive(set_debugger_dbg_w,  have_cmd("dbg"));
     set_sensitive(set_debugger_dbx_w,  have_cmd("dbx") || have_cmd("ladebug"));
     set_sensitive(set_debugger_gdb_w,  have_cmd("gdb"));
     set_sensitive(set_debugger_jdb_w,  have_cmd("jdb"));
-    set_sensitive(set_debugger_make_w, have_cmd("make"));
+    set_sensitive(set_debugger_make_w, have_cmd("remake"));
     set_sensitive(set_debugger_perl_w, have_cmd("perl"));
     set_sensitive(set_debugger_pydb_w, have_cmd("pydb"));
     set_sensitive(set_debugger_xdb_w,  have_cmd("xdb"));
@@ -11954,94 +11871,6 @@ static void setup_options()
     // (gdb->print_command("", true) != gdb->print_command("", false));
     manage_child(print_dump_w, can_dump);
 }
-#else
-// All options that remain fixed for a session go here.
-static void setup_options()
-{
-    set_sensitive(disassemble_w, gdb->type() == GDB);
-    set_sensitive(code_indent_w, gdb->type() == GDB);
-    set_sensitive(examine_w, gdb->has_examine_command());
-    set_sensitive(print_examine_w, gdb->has_examine_command());
-    set_sensitive(cache_machine_code_w, gdb->type() == GDB);
-
-    if (gdb->type() == DBG) {
-	app_data.use_source_path = true;
-	set_toggle(set_refer_base_w, false);
-	set_toggle(set_refer_path_w, true);
-    };
-
-    set_sensitive(set_refer_base_w, gdb->type() != GDB && gdb->type() != DBG);
-    set_sensitive(set_refer_path_w, gdb->type() != GDB && gdb->type() != DBG);
-    set_sensitive(refer_sources_w,  gdb->type() != GDB && gdb->type() != DBG);
-    
-    set_sensitive(edit_watchpoints_w, gdb->has_watch_command() != 0);
-
-    set_sensitive(command_separate_exec_window_w, gdb->has_redirection());
-    set_sensitive(source_separate_exec_window_w,  gdb->has_redirection());
-    set_sensitive(data_separate_exec_window_w,    gdb->has_redirection());
-
-    bool have_core = gdb->has_core_files();
-    set_sensitive(command_file_menu[FileItems::OpenCore].widget, have_core);
-    set_sensitive(source_file_menu[FileItems::OpenCore].widget, have_core);
-    set_sensitive(data_file_menu[FileItems::OpenCore].widget, have_core);
-
-    bool have_exec = gdb->has_exec_files() || gdb->type() == PERL || gdb->type() == DBG;
-    manage_child(command_file_menu[FileItems::OpenFile].widget,     have_exec);
-    manage_child(source_file_menu[FileItems::OpenFile].widget,      have_exec);
-    manage_child(data_file_menu[FileItems::OpenFile].widget,        have_exec);
-
-    bool have_classes = gdb->has_classes();
-    manage_child(command_file_menu[FileItems::OpenClass].widget, have_classes);
-    manage_child(source_file_menu[FileItems::OpenClass].widget,  have_classes);
-    manage_child(data_file_menu[FileItems::OpenClass].widget,    have_classes);
-
-    bool have_attach = gdb->has_processes();
-    set_sensitive(command_file_menu[FileItems::Attach].widget, have_attach);
-    set_sensitive(source_file_menu[FileItems::Attach].widget, have_attach);
-    set_sensitive(data_file_menu[FileItems::Attach].widget, have_attach);
-
-    bool have_detach = gdb->has_processes();
-    set_sensitive(command_file_menu[FileItems::Detach].widget, have_detach);
-    set_sensitive(source_file_menu[FileItems::Detach].widget, have_detach);
-    set_sensitive(data_file_menu[FileItems::Detach].widget, have_detach);
-
-    bool have_make = gdb->has_make_command() || gdb->has_shell_command();
-    set_sensitive(command_file_menu[FileItems::Make].widget, have_make);
-    set_sensitive(source_file_menu[FileItems::Make].widget, have_make);
-    set_sensitive(data_file_menu[FileItems::Make].widget, have_make);
-
-    set_sensitive(command_file_menu[FileItems::MakeAgain].widget, have_make);
-    set_sensitive(source_file_menu[FileItems::MakeAgain].widget, have_make);
-    set_sensitive(data_file_menu[FileItems::MakeAgain].widget, have_make);
-
-    bool have_cd = gdb->has_cd_command();
-    set_sensitive(command_file_menu[FileItems::CD].widget, have_cd);
-    set_sensitive(source_file_menu[FileItems::CD].widget, have_cd);
-    set_sensitive(data_file_menu[FileItems::CD].widget, have_cd);
-
-    bool have_settings = (gdb->type() != XDB && gdb->type() != PYDB);
-    set_sensitive(command_edit_menu[EditItems::Settings].widget, have_settings);
-    set_sensitive(source_edit_menu[EditItems::Settings].widget, have_settings);
-    set_sensitive(data_edit_menu[EditItems::Settings].widget, have_settings);
-
-    set_sensitive(complete_w, gdb->type() == GDB);
-    set_sensitive(define_w,    gdb->type() == GDB);
-    set_sensitive(signals_w,   gdb->type() == GDB);
-
-    set_sensitive(set_debugger_bash_w, have_cmd("bash"));
-    set_sensitive(set_debugger_dbg_w,  have_cmd("dbg"));
-    set_sensitive(set_debugger_dbx_w,  have_cmd("dbx") || have_cmd("ladebug"));
-    set_sensitive(set_debugger_gdb_w,  have_cmd("gdb"));
-    set_sensitive(set_debugger_jdb_w,  have_cmd("jdb"));
-    set_sensitive(set_debugger_perl_w, have_cmd("perl"));
-    set_sensitive(set_debugger_pydb_w, have_cmd("pydb"));
-    set_sensitive(set_debugger_xdb_w,  have_cmd("xdb"));
-
-    bool can_dump = (gdb->type() == JDB);
-    // (gdb->print_command("", true) != gdb->print_command("", false));
-    manage_child(print_dump_w, can_dump);
-}
-#endif
 
 static void setup_theme_manager()
 {
@@ -12062,6 +11891,11 @@ static void setup_theme_manager()
             if (strcmp(theme, "rednil.vsl") == 0) {
 	        p.active() = true;
                 p.add("*");
+            //ZARKO - automatsko aktiviranje flags i regs tema
+            } else if (strcmp(theme, "x86.vsl") == 0) {
+	        p.active() = true;
+                p.add("$eax*;$ebx*;$ecx*;$edx*");
+                p.add("($eflags &*");
             } else {
 	        p.active() = false;
             }

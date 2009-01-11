@@ -1,6 +1,62 @@
 DDD News						-*- text -*-
 ********
 
+==========
+DDD-3.3.12-test6
+
+- Remove pydb in this directory. Use
+  http://bashdb.sourceforge.net/pydb instead
+
+- "cont"inue button for pydb was broken. 
+
+-  Start informing ddd that bash and pydb now have (or will have in the
+   next release) "commands", and "display".
+
+-  LynxOS support via Olli Savia
+
+- Add x86 theme for changing display expressions to x86 registers and
+  flag-bits. Change Data/Memory examine behavior when used on Intel
+  registers so that %reg is the same as $reg. 
+  Contributed by Zarko Zivanov.
+
+DDD-3.3.12-test5
+- Had broken gdb support
+
+- Add vsllib/DEMOS into distribution
+
+- Changes Makefiles to make "distcheck" or VPATH, or building outside
+  of source tree work better (It's still not complete though).
+
+- GNU Make, Python pydb and bashdb support improved: 
+
+  * command completion for bashdb and pydb (via gdb "complete")
+
+  * possibly a better test for debuggers using "bashdb" (vs. "bash") 
+    and "remake" (vs. "make")
+  
+  * pydb and bashdb also now have built-in "cd" and "pwd" commands - use
+    them.
+
+  * deal with bogus file name <string> that comes up in
+    tracebacks. Require a "run" to get pydb stack set correctly.
+
+- Note 
+==========
+DDD-3.3.12-test4
+- Minor bug fixes, mostly for Python support.
+
+==========
+DDD-3.3.12-test3
+- Extended python debugger support. Sort of a merge of pdb.py, ddd's old
+  pydb.py and new things.
+==========
+
+==========
+DDD-3.3.12-test2
+- GNU Make (mdb) support.
+==========
+
+==========
 DDD-3.3.12-test
 ==========
 - Fixed a bug parsing the gdb annotations -- this should improve

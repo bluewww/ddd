@@ -3,6 +3,7 @@
 
 // Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
 // Copyright (C) 1999-2000 Universitaet Passau, Germany.
+// Copyright (C) 2001-2006 Free Software Foundation, Inc.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 
