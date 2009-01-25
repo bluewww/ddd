@@ -1,21 +1,21 @@
 # $Id$
-# Getting DDD from the public CVS Archive
+# Getting DDD from the public SVN Archive
 
-DDD now has a public CVS archive (hosted at SourceForge) where you can
+DDD now has a public Subversion archive (hosted at Savannah) where you can
 download arbitrary DDD releases (typically the latest one).  Using
-your local CVS version, you can always download the latest changes and
+your local SVN version, you can always download the latest changes and
 thus stay in sync with DDD development.
 
-To checkout and build DDD from the public CVS archive, follow these steps:
+To checkout and build DDD from the public SVN archive, follow these steps:
 
 1. Check the DDD repository for latest news.  Go to:
 
-   http://sourceforge.net/projects/ddd/
+   http://savannah.gnu.org/projects/ddd/
 
 
 2. Check your prerequisites. 
 
-   The CVS repository does not contain derived files, only DDD
+   The SVN repository does not contain derived files, only DDD
    sources.  Hence, you need several tools on your local machine for
    building DDD.
 
@@ -24,22 +24,17 @@ To checkout and build DDD from the public CVS archive, follow these steps:
    sources'.  All these tools are required.
 
 
-3. Checkout DDD.  Use these commands:
+3. Checkout DDD.  Use either of these commands:
 
-       $ cvs -d:pserver:anonymous@cvs.ddd.sourceforge.net:/cvsroot/ddd login
+    $ svn co svn://svn.savannah.gnu.org/ddd/trunk ddd
+    $ svn co http://svn.savannah.gnu.org/svn/ddd/trunk ddd
 
-   If you are prompted for a password, just hit Enter.
-
-    $ cvs -z3 -d:pserver:anonymous@cvs.ddd.sourceforge.net:/cvsroot/ddd \
-      checkout -kkv ddd
+   The svn: protocol is faster, but may not be allowed if you are
+   behind a firewall.
 
    This creates a `ddd/' subdirectory containing all DDD code.
 
-   The `-kkv' option is required to expand RCS keywords, thus allowing
-   prompt version identification.  `-z3' enables compression.
-
-
-4. After successful checkout, have a look at `ddd/README-CVS' for the
+4. After successful checkout, have a look at `ddd/README-SVN' for the
    most recent version of this document.
 
 
@@ -87,6 +82,6 @@ To checkout and build DDD from the public CVS archive, follow these steps:
 
 8. You can always sync with the current development state by using
 
-	$ cvs update
+	$ svn update
 
    and rebuild DDD using `make'.
