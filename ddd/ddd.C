@@ -6802,17 +6802,10 @@ static bool real_update_options(bool noupd)
     set_sensitive(graph_left_to_right_w, !app_data.cluster_displays);
     set_sensitive(graph_top_to_bottom_w, !app_data.cluster_displays);
 
-#if defined(IF_XM)
-    set_toggle(graph_left_to_right_w, 
-	       app_data.display_placement == XmHORIZONTAL);
-    set_toggle(graph_top_to_bottom_w,
-	       app_data.display_placement == XmVERTICAL);
-#else
     set_toggle(graph_left_to_right_w, 
 	       app_data.display_placement == GUI::ORIENTATION_HORIZONTAL);
     set_toggle(graph_top_to_bottom_w,
 	       app_data.display_placement == GUI::ORIENTATION_VERTICAL);
-#endif
 
     set_toggle(graph_show_hints_w, show_hints);
     set_toggle(graph_show_annotations_w, show_annotations);
@@ -6877,9 +6870,6 @@ static bool real_update_options(bool noupd)
     set_toggle(auto_debugger_w, app_data.auto_debugger);
 
     set_toggle(splash_screen_w, app_data.splash_screen);
-#ifdef NAG_ME
-#warning Tips not supported
-#endif
 
     if (app_data.cache_source_files != source_view->cache_source_files)
     {
@@ -6923,19 +6913,6 @@ static bool real_update_options(bool noupd)
 	// data_disp->refresh_display();
     }
 
-#if defined(IF_XM)
-    // Synchronize layout direction with placement
-    switch (app_data.display_placement)
-    {
-    case XmVERTICAL:
-	data_disp->graph_edit->set_rotation(0);
-	break;
-	    
-    case XmHORIZONTAL:
-	data_disp->graph_edit->set_rotation(90);
-	break;
-    }
-#else
     // Synchronize layout direction with placement
     switch (app_data.display_placement)
     {
@@ -6947,24 +6924,7 @@ static bool real_update_options(bool noupd)
 	data_disp->graph_edit->set_rotation(90);
 	break;
     }
-#endif
 
-#if defined(IF_XM)
-    if (app_data.command_toolbar && 
-	command_toolbar_w != 0 && !XtIsManaged(command_toolbar_w))
-    {
-	if (app_data.source_window)
-	    XtManageChild(command_toolbar_w);
-	gdbCloseToolWindowCB(command_shell, 0, 0);
-    }
-    else if (!app_data.command_toolbar && 
-	     command_toolbar_w != 0 && XtIsManaged(command_toolbar_w))
-    {
-	XtUnmanageChild(command_toolbar_w);
-	if (app_data.source_window)
-	    gdbOpenToolWindowCB(command_shell, 0, 0);
-    }
-#else
     if (app_data.command_toolbar && 
 	command_toolbar_w != 0 && !command_toolbar_w->is_visible())
     {
@@ -6979,17 +6939,11 @@ static bool real_update_options(bool noupd)
 	if (app_data.source_window)
 	    gdbOpenToolWindowCB();
     }
-#endif
 
-#if 0
     EnableButtonTips(app_data.button_tips);
     EnableButtonDocs(app_data.button_docs);
     EnableTextTips(app_data.value_tips);
     EnableTextDocs(app_data.value_docs);
-#endif
-#ifdef NAG_ME
-#warning Button tips and docs.
-#endif
 
     set_string(edit_command_w,       app_data.edit_command);
     set_string(plot_command_w,       app_data.plot_command);
@@ -7071,7 +7025,6 @@ static bool real_update_options(bool noupd)
     return false;
 }
 #endif
-
 #if !defined(IF_XM)
 
 void update_options(bool noupd)

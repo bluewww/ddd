@@ -5949,6 +5949,9 @@ void SourceView::create_text(GUI::Container *parent, const char *base,
 
     text->signal_mark_set().connect(sigc::ptr_fun(mark_notify));
 
+    // Set callbacks
+    InstallTextTips(text);
+
 #ifdef NAG_ME
 #warning Implement selections in source view
 #endif

@@ -2863,8 +2863,9 @@ static void DoClearTip(XtPointer client_data, XtIntervalId *timer)
     TipInfo& ti = *((TipInfo *)client_data);
     ClearTip(ti.widget, &ti.event);
 }
+#endif
 
-
+#if defined(IF_XM)
 // Widget W has been entered or left.  Handle event.
 static void HandleTipEvent(Widget w,
 			   XtPointer /* client_data */,
@@ -2955,8 +2956,56 @@ static void HandleTipEvent(Widget w,
         break;
     }
 }
+#else
+const char *event_names[] = {
+    "DELETE",
+    "DESTROY",
+    "EXPOSE",
+    "MOTION_NOTIFY",
+    "BUTTON_PRESS",
+    "TWO_BUTTON_PRESS",
+    "THREE_BUTTON_PRESS",
+    "BUTTON_RELEASE",
+    "KEY_PRESS",
+    "KEY_RELEASE",
+    "ENTER_NOTIFY",
+    "LEAVE_NOTIFY",
+    "FOCUS_CHANGE",
+    "CONFIGURE",
+    "MAP",
+    "UNMAP",
+    "PROPERTY_NOTIFY",
+    "SELECTION_CLEAR",
+    "SELECTION_REQUEST",
+    "SELECTION_NOTIFY",
+    "PROXIMITY_IN",
+    "PROXIMITY_OUT",
+    "DRAG_ENTER",
+    "DRAG_LEAVE",
+    "DRAG_MOTION",
+    "DRAG_STATUS",
+    "DROP_START",
+    "DROP_FINISHED",
+    "CLIENT_EVENT",
+    "VISIBILITY_NOTIFY",
+    "NO_EXPOSE",
+    "SCROLL",
+    "WINDOW_STATE",
+    "SETTING",
+    "OWNER_CHANGE",
+    "GRAB_BROKEN"
+};
+
+// Widget W has been entered or left.  Handle event.
+static bool HandleTipEvent(GUI::Widget *w, GUI::Event *ev)
+{
+    if (ev && ev->type >= 0) std::cerr << event_names[ev->type] << "\n";
+    return false;
+}
+#endif
 
 
+#if defined(IF_XM)
 // (Un)install toolbar tips for W
 static void InstallButtonTipEvents(Widget w, bool install)
 {
@@ -3147,7 +3196,26 @@ void InstallTextTips(Widget w, bool install)
 // (Un)install text tips for W.
 void InstallTextTips(GUI::Widget *w, bool install)
 {
-    std::cerr << "InstallTextTips not implemented yet.\n";
+    GUI::EventMask event_mask = GUI::EventMask(GUI::ENTER_NOTIFY_MASK
+					       | GUI::LEAVE_NOTIFY_MASK 
+					       | GUI::BUTTON_PRESS_MASK
+					       | GUI::BUTTON_RELEASE_MASK
+					       | GUI::POINTER_MOTION_MASK
+					       | GUI::KEY_PRESS_MASK
+					       | GUI::KEY_RELEASE_MASK);
+
+    if (install)
+    {
+	// Note: signal handler will trap all events in widget's event
+	// mask, not only those we set here.
+	w->add_event_mask(event_mask);
+	w->signal_event().connect(sigc::bind<0>(sigc::ptr_fun(HandleTipEvent), w));
+    }
+    else
+    {
+	std::cerr << "\n\nHow to remove handler for InstallTextTips?\n";
+	std::cerr << "We have no connection id.\n\n";
+    }
 }
 #endif
 
