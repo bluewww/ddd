@@ -335,6 +335,7 @@ GtkX::translate_event_mask(EventMask &in, Gdk::EventMask &out)
     if (in&BUTTON_PRESS_MASK) {out|=Gdk::BUTTON_PRESS_MASK;}
     if (in&BUTTON_RELEASE_MASK) {out|=Gdk::BUTTON_RELEASE_MASK;}
     if (in&KEY_PRESS_MASK) {out|=Gdk::KEY_PRESS_MASK;}
+    if (in&KEY_RELEASE_MASK) {out|=Gdk::KEY_RELEASE_MASK;}
     if (in&ENTER_NOTIFY_MASK) {out|=Gdk::ENTER_NOTIFY_MASK;}
     if (in&LEAVE_NOTIFY_MASK) {out|=Gdk::LEAVE_NOTIFY_MASK;}
     if (in&FOCUS_CHANGE_MASK) {out|=Gdk::FOCUS_CHANGE_MASK;}
