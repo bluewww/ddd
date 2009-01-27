@@ -732,7 +732,7 @@ Widget::set_event_mask(EventMask events)
 {
     Gdk::EventMask g_events;
     translate_event_mask(events, g_events);
-    internal()->set_events(g_events);
+    signals_from()->set_events(g_events);
 }
 
 void
@@ -740,7 +740,7 @@ Widget::add_event_mask(EventMask events)
 {
     Gdk::EventMask g_events;
     translate_event_mask(events, g_events);
-    internal()->add_events(g_events);
+    signals_from()->add_events(g_events);
 }
 
 SignalIdle signal_idle_;
