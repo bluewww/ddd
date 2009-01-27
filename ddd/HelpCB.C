@@ -2318,10 +2318,17 @@ static bool tip_popped_up             = false;
 
 // The timer used for the delay until the tip is raised.
 static XtIntervalId raise_tip_timer   = 0;
+#endif
 
+#if defined(IF_XM)
 // The timer used for the delay until the tip is cleared.
 static XtIntervalId clear_tip_timer   = 0;
+#else
+// The timer used for the delay until the tip is cleared.
+static GUI::connection clear_tip_timer;
+#endif
 
+#if defined(IF_XM)
 // The timer used for the delay until the documentation is shown.
 static XtIntervalId raise_doc_timer   = 0;
 
@@ -2353,7 +2360,9 @@ static void CancelRaiseDoc(Widget = 0, XtPointer = 0, XtPointer = 0)
 	raise_doc_timer = 0;
     }
 }
+#endif
 
+#if defined(IF_XM)
 // Helper: cancel RAISE_TIP_TIMER
 static void CancelRaiseTip(Widget = 0, XtPointer = 0, XtPointer = 0)
 {
@@ -2363,7 +2372,9 @@ static void CancelRaiseTip(Widget = 0, XtPointer = 0, XtPointer = 0)
 	raise_tip_timer = 0;
     }
 }
+#endif
 
+#if defined(IF_XM)
 // Event information passed through timeouts, etc.
 struct TipInfo {
     XEvent event;		// The event structure
@@ -2761,7 +2772,9 @@ static void ClearDocumentation(XtPointer client_data, XtIntervalId *timer)
 		     CancelClearDocumentation, 0);
     ClearDocumentationNow(ti->widget);
 }
+#endif
 
+#if defined(IF_XM)
 // Clear tips and documentation
 static void ClearTip(Widget w, XEvent *event)
 {
@@ -2801,7 +2814,15 @@ static void ClearTip(Widget w, XEvent *event)
 	XtAddCallback   (w, XmNdestroyCallback, CancelClearDocumentation, 0);
     }
 }
+#else
+// Clear tips and documentation
+static void ClearTip(GUI::Widget *w, GUI::Event *ev)
+{
+    std::cerr << "ClearTip " << w << " " << ev << "\n";
+}
+#endif
 
+#if defined(IF_XM)
 // Raise tips and documentation
 static void RaiseTip(Widget w, XEvent *event)
 {
@@ -2853,7 +2874,15 @@ static void RaiseTip(Widget w, XEvent *event)
 	XtAddCallback(w, XmNdestroyCallback, CancelRaiseTip, 0);
     }
 }
+#else
+// Raise tips and documentation
+static void RaiseTip(GUI::Widget *w, GUI::Event *event)
+{
+    std::cerr << "RaiseTip " << w << " " << event << "\n";
+}
+#endif
 
+#if defined(IF_XM)
 static void DoClearTip(XtPointer client_data, XtIntervalId *timer)
 {
     (void) timer;
@@ -2957,58 +2986,54 @@ static void HandleTipEvent(Widget w,
     }
 }
 #else
-const char *event_names[] = {
-    "DELETE",
-    "DESTROY",
-    "EXPOSE",
-    "MOTION_NOTIFY",
-    "BUTTON_PRESS",
-    "TWO_BUTTON_PRESS",
-    "THREE_BUTTON_PRESS",
-    "BUTTON_RELEASE",
-    "KEY_PRESS",
-    "KEY_RELEASE",
-    "ENTER_NOTIFY",
-    "LEAVE_NOTIFY",
-    "FOCUS_CHANGE",
-    "CONFIGURE",
-    "MAP",
-    "UNMAP",
-    "PROPERTY_NOTIFY",
-    "SELECTION_CLEAR",
-    "SELECTION_REQUEST",
-    "SELECTION_NOTIFY",
-    "PROXIMITY_IN",
-    "PROXIMITY_OUT",
-    "DRAG_ENTER",
-    "DRAG_LEAVE",
-    "DRAG_MOTION",
-    "DRAG_STATUS",
-    "DROP_START",
-    "DROP_FINISHED",
-    "CLIENT_EVENT",
-    "VISIBILITY_NOTIFY",
-    "NO_EXPOSE",
-    "SCROLL",
-    "WINDOW_STATE",
-    "SETTING",
-    "OWNER_CHANGE",
-    "GRAB_BROKEN"
-};
-
 // Widget W has been entered or left.  Handle event.
-static bool HandleTipEvent(GUI::Widget *w, GUI::Event *ev)
+static bool HandleTipEvent(GUI::Widget *w, GUI::Event *event)
 {
-    // if (ev && ev->type >= 0) std::cerr << event_names[ev->type] << "\n";
-    GUI::EventMotion *evm;
-    if ((evm = dynamic_cast<GUI::EventMotion *>(ev))) {
+    static GUI::Widget *last_left_widget = NULL;
+
+    GUI::EventMotion *motion;
+    GUI::EventCrossing *crossing;
+    if ((crossing = dynamic_cast<GUI::EventCrossing *>(event))) {
+	std::cerr << "CROSSING " << crossing->type << " " << crossing->mode << "\n";
+	if (crossing->type == GUI::ENTER_NOTIFY) {
+	    if (clear_tip_timer != 0)
+	    {
+		clear_tip_timer.disconnect();
+
+		if (w != last_left_widget)
+		{
+		    // Entered other widget within HELP_CLEAR_TIP_DELAY.
+		    ClearTip(w, event);
+		    last_left_widget = NULL;
+		}
+		else
+		{
+		    // Re-entered same widget -- ignore.
+		    last_left_widget = NULL;
+		    return false;
+		}
+	    }
+	    GUI::ScrolledText *text = dynamic_cast<GUI::ScrolledText *>(w);
+	    if (text)
+		std::cerr << "TEXT WIDGET\n";
+	    if (!text)
+	    {
+		// Clear and re-raise tip
+		ClearTip(w, event);
+		RaiseTip(w, event);
+	    }
+	}
+	else if (crossing->type == GUI::LEAVE_NOTIFY) {
+	}
+    }
+    if ((motion = dynamic_cast<GUI::EventMotion *>(event))) {
 	int x, y;
-	if (evm->is_hint) {
+	if (motion->is_hint) {
 	    w->get_pointer(x, y);
 	}
 	else {
-	    x = evm->x;
-	    y = evm->y;
+	    x = motion->x;
+	    y = motion->y;
 	}
 	std::cerr << x << " " << y << "\n";
     }
