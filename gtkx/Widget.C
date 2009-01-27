@@ -396,6 +396,12 @@ Widget::size_request() const
 }
 
 void
+Widget::get_pointer(int &x, int &y) const
+{
+    internal()->get_pointer(x, y);
+}
+
+void
 Widget::queue_draw()
 {
     internal()->queue_draw();

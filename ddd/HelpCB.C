@@ -2999,7 +2999,19 @@ const char *event_names[] = {
 // Widget W has been entered or left.  Handle event.
 static bool HandleTipEvent(GUI::Widget *w, GUI::Event *ev)
 {
-    if (ev && ev->type >= 0) std::cerr << event_names[ev->type] << "\n";
+    // if (ev && ev->type >= 0) std::cerr << event_names[ev->type] << "\n";
+    GUI::EventMotion *evm;
+    if ((evm = dynamic_cast<GUI::EventMotion *>(ev))) {
+	int x, y;
+	if (evm->is_hint) {
+	    w->get_pointer(x, y);
+	}
+	else {
+	    x = evm->x;
+	    y = evm->y;
+	}
+	std::cerr << x << " " << y << "\n";
+    }
     return false;
 }
 #endif
@@ -3201,6 +3213,7 @@ void InstallTextTips(GUI::Widget *w, bool install)
 					       | GUI::BUTTON_PRESS_MASK
 					       | GUI::BUTTON_RELEASE_MASK
 					       | GUI::POINTER_MOTION_MASK
+					       | GUI::POINTER_MOTION_HINT_MASK
 					       | GUI::KEY_PRESS_MASK
 					       | GUI::KEY_RELEASE_MASK);
 
