@@ -1830,7 +1830,7 @@ Have fun with DDD!
 Ddd*helpOnVersionString:	\
 @llogo DDD@logo: \
 The @llogo D@logo ata @llogo D@logo isplay @llogo D@logo ebugger\n\
-@rm by Dorothea L\374tkehaus and Andreas Zeller, maintained by Andrew Gaylard.\n\n
+@rm by Dorothea L\374tkehaus and Andreas Zeller, maintained by Peter Wainwright.\n\n
 
 ! The default Help Text.
 Ddd*helpString:	\
