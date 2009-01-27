@@ -2,6 +2,11 @@ DDD News						-*- text -*-
 ********
 
 ==========
+DDD-3.3.12-rc2
+
+- DDD can once more locate its own core file when it crashes, even on
+Linux systems where the core file may not be named "core".
+
 DDD-3.3.12-rc1
 
 - Fixed several segmentation faults.
