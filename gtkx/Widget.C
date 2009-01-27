@@ -369,6 +369,7 @@ Widget::init_signals()
 {
     // Must be called from postinit, because internal() must be set.
     Gtk::Widget *from = signals_from();
+    from->signal_event().connect(sigc::mem_fun(*this, &Widget::event_callback));
     from->signal_button_press_event().connect(sigc::mem_fun(*this, &Widget::button_press_event_callback));
     from->signal_button_release_event().connect(sigc::mem_fun(*this, &Widget::button_release_event_callback));
     from->signal_button_press_event().connect(sigc::mem_fun(*this, &Widget::button_press_pre_event_callback), false);
@@ -574,6 +575,12 @@ Widget::translate_coordinates(GtkX::Widget &dest_w, int x1, int y1, int &x2, int
     return internal()->translate_coordinates(*dest_w.internal(), x1, y1, x2, y2);
 }
 
+sigc::signal<bool, GtkX::Event *> &
+Widget::signal_event()
+{
+    return signal_event_;
+}
+
 sigc::signal<bool, GtkX::EventButton *> &
 Widget::signal_button_press_event()
 {
@@ -620,6 +627,14 @@ sigc::signal<void, GtkX::Requisition *>
 Widget::signal_size_request()
 {
     return signal_size_request_;
+}
+
+bool
+Widget::event_callback(GdkEvent *ev)
+{
+    RefPtr<Event> evx = translate_event(ev);
+    if (!evx) return false;
+    return signal_event_(evx);
 }
 
 bool

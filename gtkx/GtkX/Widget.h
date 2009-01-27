@@ -357,6 +357,8 @@ namespace GtkX {
 	// In GTK, events may be connected after, or optionally
 	// before, the class closure.  For the latter case we provide
 	// the pre_event_callbacks.
+	sigc::signal<bool, GtkX::Event *> signal_event_;
+	bool event_callback(GdkEvent *ev);
 	sigc::signal<bool, GtkX::EventButton *> signal_button_press_event_;
 	bool button_press_event_callback(GdkEventButton *ev);
 	sigc::signal<bool, GtkX::EventButton *> signal_button_release_event_;
@@ -421,6 +423,7 @@ namespace GtkX {
 	RefPtr<GC> get_white_gc();
 	PropertyProxy<void *> property_user_data();
 	PropertyProxy_RO<void *> property_user_data() const;
+	sigc::signal<bool, GtkX::Event *> &signal_event();
 	sigc::signal<bool, GtkX::EventButton *> &signal_button_press_event();
 	sigc::signal<bool, GtkX::EventButton *> &signal_button_release_event();
 	sigc::signal<bool, GtkX::EventButton *> &signal_button_press_pre_event();
