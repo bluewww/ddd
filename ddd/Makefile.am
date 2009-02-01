@@ -2076,7 +2076,7 @@ DIST_STUFF = $(srcdir)/header.ps $(srcdir)/trailer.ps \
 	     $(docdir)/ddd-paper.ps \
 	     $(htmldir)/ddd.html $(srcdir)/ad2c.sed $(srcdir)/config-info \
 	     style.css $(srcdir)/fix-html.sed \
-	     $(srcdir)/unumlaut.sed
+	     $(srcdir)/unumlaut.sed ddd.desktop
 
 # Let automake know what we need.
 EXTRA_DIST = $(PROG_STUFF) $(DIST_STUFF) $(IMAGES)
@@ -2113,3 +2113,7 @@ diststuff: $(EXTRA_DIST)
 
 # `make progstuff' creates all files required for building DDD.
 progstuff: $(PROG_STUFF)
+
+desktopdir = $(datadir)/applications
+
+desktop_DATA = ddd.desktop
