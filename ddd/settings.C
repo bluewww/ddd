@@ -1634,7 +1634,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 		}
 
 		value = cached_gdb_question(show_command);
-		if (is_set && value.freq('\n') > 1)
+		if (is_set && value.freq('\n') > 1 && type != MAKE)
 		{
 		    // Generic command - list `set' subcommands
 		    add_settings(form, row, max_width,
@@ -2246,7 +2246,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	// Make entry insensitive if part of initialization commands.
 	string init = app_data.gdb_init_commands;
 	int idx = init.index(set_command);
-	bool insensitive = (idx == 0 || idx > 0 && init[idx - 1] == '\n');
+	bool insensitive = (idx == 0 || (idx > 0 && init[idx - 1] == '\n'));
 
 	// Make entry insensitive if one of Perl taboos
 	if (!insensitive && gdb->type() == PERL)
