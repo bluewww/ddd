@@ -2071,8 +2071,8 @@ PROG_STUFF = $(LEXTOCXX).flex $(LEXTOCXX).sun \
 
 # Additional files to be included in the distribution.
 DIST_STUFF = $(srcdir)/header.ps $(srcdir)/trailer.ps \
-	     $(docdir)/ddd.ps $(docdir)/ddd.pdf \
-	     $(docdir)/ddd-themes.ps $(docdir)/ddd-themes.pdf \
+	     $(docdir)/ddd.pdf \
+	     $(docdir)/ddd-themes.pdf \
 	     $(docdir)/ddd-paper.ps \
 	     $(htmldir)/ddd.html $(srcdir)/ad2c.sed $(srcdir)/config-info \
 	     style.css $(srcdir)/fix-html.sed \
