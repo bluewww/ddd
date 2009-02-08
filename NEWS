@@ -1,6 +1,20 @@
 DDD News						-*- text -*-
 ********
 
+DDD-3.3.12
+==========
+
+- Consolidated support for pydb, bashdb and remake.
+
+- Miscellaneous bug fixes.
+
+- DDD development is now hosted by the GNU project at
+
+      http://savannah.gnu.org/projects/ddd
+
+- You can download the latest code from the Subversion repository at
+  savannah.gnu.org.
+
 ==========
 DDD-3.3.12-rc2
 
