@@ -57,7 +57,7 @@
 @set EDITION First
 
 @c !!set DDD manual's revision date
-@set DATE 15 July, 2006
+@set DATE 8 Feb, 2009
 
 @c Index stuff
 @c Labels
@@ -1132,6 +1132,10 @@ to Daniel Schepler.
 
 @item Feb, 2006
 @DDD{} 3.3.12-test3: Modernize Python debugging 
+
+@item Feb, 2009
+@DDD{} 3.3.12: First mainstream release to include improved support
+for Python, Bash and Make.
 @end table
 
 
