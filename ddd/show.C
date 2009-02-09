@@ -3,7 +3,7 @@
 
 // Copyright (C) 1996-2000 Technische Universitaet Braunschweig, Germany.
 // Copyright (C) 2001 Universitaet des Saarlandes, Germany.
-// Copyright (C) 2001-2004 Free Software Foundation, Inc.
+// Copyright (C) 2001-2004, 2005 Free Software Foundation, Inc.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.

@@ -2,6 +2,7 @@
 // GDB initialization
 
 // Copyright (C) 1996-1999 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2003, 2005, 2009 Free Software Foundation, Inc.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.

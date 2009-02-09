@@ -3,7 +3,7 @@
 
 // Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
 // Copyright (C) 1999-2001 Universitaet Passau, Germany.
-// Copyright (C) 2001-2006 Free Software Foundation, Inc.
+// Copyright (C) 2001-2006, 2008 Free Software Foundation, Inc.
 // Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
 // and Andreas Zeller <zeller@gnu.org>.
 // 

@@ -2,6 +2,7 @@
 // Elementary DDD dialogs
 
 // Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2001 Free Software Foundation, Inc.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.

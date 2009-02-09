@@ -2,6 +2,7 @@
 // Interactive Help Callbacks
 
 // Copyright (C) 1998 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2001, 2004 Free Software Foundation, Inc.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.

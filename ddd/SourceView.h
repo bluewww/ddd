@@ -2,6 +2,7 @@
 // View the Source.
 
 // Copyright (C) 1995-1997 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2004 Free Software Foundation, Inc.
 // Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
 // and Andreas Zeller <zeller@gnu.org>.
 // 
