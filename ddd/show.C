@@ -298,7 +298,7 @@ static void show_configuration(std::ostream& os, bool version_only)
 	"Universit\344t Passau, Germany.\n"
         "@(#)Copyright (C) 2001 "
 	"Universit\344t des Saarlandes, Germany.\n"
-        "@(#)Copyright (C) 2001-2004 "
+        "@(#)Copyright (C) 2001-2009 "
         "Free Software Foundation, Inc.\n";
     s.gsub(sccs, string(""));
     os << s;
