@@ -145,7 +145,8 @@ copy of the license is included in the section entitled "GNU Free
 Documentation License".
 
 Send questions, comments, suggestions, etc. to @email{ddd@@gnu.org}. @*
-Send bug reports to @email{bug-ddd@@gnu.org}. @*
+Submit bug reports at @uref{http://savannah.gnu.org/bugs/?group=ddd},
+the @DDD{} bug tracker. @*
 @end ifinfo
 
 
@@ -204,7 +205,8 @@ Documentation License''; @xref{Documentation License}, for details.
 
 Send questions, comments, suggestions, etc. to
 @email{ddd@@gnu.org}. @*
-Send bug reports to @email{bug-ddd@@gnu.org}. @*
+Submit bug reports at @uref{http://savannah.gnu.org/bugs/?group=ddd},
+the @DDD{} bug tracker. @*
 
 @end titlepage
 @end ifnothtml
@@ -722,7 +724,8 @@ copy of the license is included in the section entitled ``GNU Free
 Documentation License''; @xref{Documentation License}, for details.
 
 Send questions, comments, suggestions, etc. to @email{ddd@@gnu.org}. @*
-Send bug reports to @email{bug-ddd@@gnu.org}. @*
+Submit bug reports at @uref{http://savannah.gnu.org/bugs/?group=ddd},
+the @DDD{} bug tracker. @*
 @end ifhtml
 
 
@@ -12232,11 +12235,9 @@ to do so effectively, you must know when and how to do it.
 @node Where to Send Bug Reports
 @section Where to Send Bug Reports
 
-Send bug reports for @DDD{} via electronic mail to
-
-@example
-@email{bug-ddd@@gnu.org}
-@end example
+Submit bug reports for @DDD{} at
+@uref{http://savannah.gnu.org/bugs/?group=ddd}, the @DDD{} bug
+tracker.
 
 
 @node Is it a @DDD{} Bug?
