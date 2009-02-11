@@ -146,7 +146,8 @@ Documentation License".
 
 Send questions, comments, suggestions, etc. to @email{ddd@@gnu.org}. @*
 Submit bug reports at @uref{http://savannah.gnu.org/bugs/?group=ddd},
-the @DDD{} bug tracker. @*
+the @DDD{} bug tracker. Incoming bug reports are automatically copied
+to the developers' mailing list @email{bug-ddd@@gnu.org}. @*
 @end ifinfo
 
 
@@ -203,10 +204,10 @@ Invariant Sections, no Front-Cover Texts and no Back-Cover Texts.  A
 copy of the license is included in the section entitled ``GNU Free
 Documentation License''; @xref{Documentation License}, for details.
 
-Send questions, comments, suggestions, etc. to
-@email{ddd@@gnu.org}. @*
+Send questions, comments, suggestions, etc. to @email{ddd@@gnu.org}. @*
 Submit bug reports at @uref{http://savannah.gnu.org/bugs/?group=ddd},
-the @DDD{} bug tracker. @*
+the @DDD{} bug tracker. Incoming bug reports are automatically copied
+to the developers' mailing list @email{bug-ddd@@gnu.org}. @*
 
 @end titlepage
 @end ifnothtml
@@ -725,7 +726,8 @@ Documentation License''; @xref{Documentation License}, for details.
 
 Send questions, comments, suggestions, etc. to @email{ddd@@gnu.org}. @*
 Submit bug reports at @uref{http://savannah.gnu.org/bugs/?group=ddd},
-the @DDD{} bug tracker. @*
+the @DDD{} bug tracker. Incoming bug reports are automatically copied
+to the developers' mailing list @email{bug-ddd@@gnu.org}. @*
 @end ifhtml
 
 
@@ -12235,9 +12237,10 @@ to do so effectively, you must know when and how to do it.
 @node Where to Send Bug Reports
 @section Where to Send Bug Reports
 
-Submit bug reports for @DDD{} at
+Submit bug reports for @DDD{} at 
 @uref{http://savannah.gnu.org/bugs/?group=ddd}, the @DDD{} bug
-tracker.
+tracker. Incoming bug reports are automatically copied
+to the developers' mailing list @email{bug-ddd@@gnu.org}. 
 
 
 @node Is it a @DDD{} Bug?
