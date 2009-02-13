@@ -282,6 +282,17 @@ static void _do_gdb_command(const Command& c, bool is_command = true)
 {
     string cmd = c.command;
 
+    if (!is_command) {
+	std::cerr << "\007command \"";
+	int i;
+	for (i = 0; i < c.command.length(); i++) {
+	    char ch = c.command[i];
+	    if (ch >= 32 && ch <= 126) std::cerr << ch;
+	    else std::cerr << "[" << (int)ch << "]";
+	}
+	std::cerr << "\"\n";
+    }
+
     if (is_command)
 	current_gdb_command = c;
 
@@ -322,6 +333,9 @@ static void _do_gdb_command(const Command& c, bool is_command = true)
 	    _gdb_out(gdb->prompt());
 	    return;
 	}
+    }
+    else {
+	std::cerr << "\007_do_gdb_command called prematurely\n";
     }
 
     if (is_command)

@@ -1116,6 +1116,7 @@ static void VerifyButtonWorkProc(XtPointer client_data, XtIntervalId *id)
 {
     (void) id;			// Use it
     XtIntervalId& verify_id = *((XtIntervalId *)client_data);
+    std::cerr << "Verify " << *id << " " << verify_id << "\n";
     assert(*id == verify_id);
     verify_id = 0;
 
@@ -1176,9 +1177,14 @@ static void VerifyButtonWorkProc(XtPointer client_data, XtIntervalId *id)
 		    next_invocation = 50;  // Process next button in 50ms
 		}
 
+		std::cerr << "Wait again: " << *((XtIntervalId *)client_data) << "... ";
+		if (*((XtIntervalId *)client_data)) {
+		    std::cerr << "ERROR: repeated call of VerifyButtonWorkProc.\n";
+		}
 		verify_id = XtAppAddTimeOut(app_context, next_invocation,
 					    VerifyButtonWorkProc, 
 					    client_data);
+		std::cerr << *((XtIntervalId *)client_data) << " " << verify_id << "\n";
 		return;
 	    }
 	}
