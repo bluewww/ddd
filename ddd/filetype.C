@@ -392,9 +392,10 @@ bool is_make_file(const string& file_name)
 	return false;
 
     if (file_name.contains(".mak", -1) 
-	|| file_name.contains(".mk" -1)
+	|| file_name.contains(".mk", -1)
 	|| file_name.contains("GNUMakefile", -1)
-	|| file_name.contains("Makefile", -1))
+	|| file_name.contains("Makefile", -1)
+        || file_name.contains("makefile", -1))
 	return true;
 
     return false;

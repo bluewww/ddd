@@ -340,9 +340,19 @@ DebuggerInfo::DebuggerInfo(int argc, const char * const argv[])
 	    return;
 	}
     }
+    // 2. Check for Makefile as given
 
-
-    // 2. Check for executable binary as given.
+    for (i = 1; i < argc; i++)
+    {
+	arg = argv[i];
+	
+	if (is_make_file(arg))
+        {
+	    type = MAKE;
+	    return;
+	}
+    }
+    // 3. Check for executable binary as given.
 
     static bool have_gdb = (fallback == GDB || have_cmd("gdb"));
     static bool have_dbx = 
@@ -385,7 +395,7 @@ DebuggerInfo::DebuggerInfo(int argc, const char * const argv[])
     }
 
 
-    // 3. Check for Java class in current directory.
+    // 4. Check for Java class in current directory.
 
     static bool have_jdb = (fallback == JDB || have_cmd("jdb"));
 
@@ -417,7 +427,7 @@ DebuggerInfo::DebuggerInfo(int argc, const char * const argv[])
     }
 
 
-    // 4. Check for executable binary in PATH.
+    // 5. Check for executable binary in PATH.
 
     for (i = 1; i < argc; i++)
     {
@@ -475,7 +485,7 @@ DebuggerInfo::DebuggerInfo(int argc, const char * const argv[])
     }
 
 
-    // 5. Check for Java class in CLASSPATH.
+    // 6. Check for Java class in CLASSPATH.
 
     if (have_jdb)
     {
@@ -526,7 +536,7 @@ DebuggerInfo::DebuggerInfo(int argc, const char * const argv[])
     }
 
 
-    // 6. Use fallback.
+    // 7. Use fallback.
 
     arg = "";
 
@@ -537,7 +547,7 @@ DebuggerInfo::DebuggerInfo(int argc, const char * const argv[])
     }
 
 
-    // 7. All fails.  Use GDB.
+    // 8. All fails.  Use GDB.
     type = GDB;
 }
 
@@ -548,10 +558,10 @@ static struct table {
 {
     { BASH, "bash" },
     { DBG,  "dbg" },
-    { GDB,  "gdb"  },
-    { GDB,  "wdb"  },
     { DBX,  "dbx"  },
     { DBX,  "ladebug" },
+    { GDB,  "gdb"  },
+    { GDB,  "wdb"  },
     { JDB,  "jdb"  },
     { MAKE, "make" },
     { PERL, "perl" },
