@@ -108,8 +108,14 @@ namespace GtkX {
 	static RefPtr<const Display> wrap(Glib::RefPtr<const Gdk::Display> d0);
 	Glib::RefPtr<Gdk::Display> internal();
 	Glib::RefPtr<const Gdk::Display> internal() const;
-	int ref() {return nrefs_++;}
-	int unref() {if (!--nrefs_) delete this;}
+	int ref() {
+	    return nrefs_++;
+	}
+	int unref() {
+	    int tmp = nrefs_;
+	    if (!--nrefs_) delete this;
+	    return tmp;
+	}
 	String get_name() const;
 	void flush();
 	static RefPtr<Display> open(const String& display_name);
@@ -131,8 +137,14 @@ namespace GtkX {
 	static RefPtr<const Screen> wrap(Glib::RefPtr<const Gdk::Screen> s0);
 	Glib::RefPtr<Gdk::Screen> internal();
 	Glib::RefPtr<const Gdk::Screen> internal() const;
-	int ref() {return nrefs_++;}
-	int unref() {if (!--nrefs_) delete this;}
+	int ref() {
+	    return nrefs_++;
+	}
+	int unref() {
+	    int tmp = nrefs_;
+	    if (!--nrefs_) delete this;
+	    return tmp;
+	}
 	RefPtr<XWindow> get_root_window();
 	String make_display_name() const;
 	int get_width() const;
@@ -262,8 +274,14 @@ namespace GtkX {
 	Glib::RefPtr<Gdk::GC> internal();
 	Glib::RefPtr<const Gdk::GC> internal() const;
 	GC(const RefPtr<Drawable> &d);
-	int ref() {return nrefs_++;}
-	int unref() {if (!--nrefs_) delete this;}
+	int ref() {
+	    return nrefs_++;
+	}
+	int unref() {
+	    int tmp = nrefs_;
+	    if (!--nrefs_) delete this;
+	    return tmp;
+	}
 	void set_foreground(const Color &color);
 	Color get_foreground() const;
 	void set_background(const Color &color);
@@ -293,8 +311,14 @@ namespace GtkX {
 	virtual ~Drawable();
 	virtual Glib::RefPtr<Gdk::Drawable> internal() = 0;
 	virtual Glib::RefPtr<const Gdk::Drawable> internal() const = 0;
-	int ref() {return nrefs_++;}
-	int unref() {if (!--nrefs_) delete this;}
+	int ref() {
+	    return nrefs_++;
+	}
+	int unref() {
+	    int tmp = nrefs_;
+	    if (!--nrefs_) delete this;
+	    return tmp;
+	}
 	int get_depth() const;
 	void draw_line(RefPtr<GC> gc,
 		       int x1, int y1, int x2, int y2);

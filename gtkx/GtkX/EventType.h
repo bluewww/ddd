@@ -199,8 +199,14 @@ namespace GtkX {
     struct Event {
 	int nrefs_;
 	EventType type;
-	int ref(void) {return nrefs_++;}
-	int unref(void) {if (!--nrefs_) delete this;}
+	int ref(void) {
+	    return nrefs_++;
+	}
+	int unref(void) {
+	    int tmp = nrefs_;
+	    if (!--nrefs_) delete this;
+	    return tmp;
+	}
 	Event(void);
 	virtual ~Event(void);
     };

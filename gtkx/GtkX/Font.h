@@ -50,8 +50,14 @@ namespace GtkX {
 	static RefPtr<const Font> wrap(Glib::RefPtr<const Pango::Font> f0);
 	Glib::RefPtr<Pango::Font> internal(void);
 	Glib::RefPtr<const Pango::Font> internal(void) const;
-	int ref(void) {return nrefs_++;}
-	int unref(void) {if (!--nrefs_) delete this;}
+	int ref(void) {
+	    return nrefs_++;
+	}
+	int unref(void) {
+	    int tmp = nrefs_;
+	    if (!--nrefs_) delete this;
+	    return tmp;
+	}
 	FontDescription describe(void) const;
     };
 
@@ -65,8 +71,14 @@ namespace GtkX {
 	static RefPtr<const Context> wrap(Glib::RefPtr<const Pango::Context> c0);
 	Glib::RefPtr<Pango::Context> internal(void);
 	Glib::RefPtr<const Pango::Context> internal(void) const;
-	int ref(void) {return nrefs_++;}
-	int unref(void) {if (!--nrefs_) delete this;}
+	int ref(void) {
+	    return nrefs_++;
+	}
+	int unref(void) {
+	    int tmp = nrefs_;
+	    if (!--nrefs_) delete this;
+	    return tmp;
+	}
 	void set_font_description(const FontDescription& desc);
     };
 
@@ -80,8 +92,14 @@ namespace GtkX {
 	static RefPtr<const Layout> wrap(Glib::RefPtr<const Pango::Layout> c0);
 	Glib::RefPtr<Pango::Layout> internal(void);
 	Glib::RefPtr<const Pango::Layout> internal(void) const;
-	int ref(void) {return nrefs_++;}
-	int unref(void) {if (!--nrefs_) delete this;}
+	int ref(void) {
+	    return nrefs_++;
+	}
+	int unref(void) {
+	    int tmp = nrefs_;
+	    if (!--nrefs_) delete this;
+	    return tmp;
+	}
 	static RefPtr<Layout> create(const RefPtr<Context> &context);
 	void set_text(const String &text);
 	String get_text() const;
