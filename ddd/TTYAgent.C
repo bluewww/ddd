@@ -2,6 +2,7 @@
 // An agent interface using ptys (pseudo ttys)
 
 // Copyright (C) 1999 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2001, 2003 Free Software Foundation, Inc.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.

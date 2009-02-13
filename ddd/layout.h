@@ -2,6 +2,7 @@
 // Graph layout functions
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2001 Free Software Foundation, Inc.
 // Written by Christian Lindig <lindig@ips.cs.tu-bs.de>.
 // 
 // This file is part of DDD.

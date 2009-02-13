@@ -7,8 +7,9 @@ Note: For problems occurring when *building* DDD, see the file `PROBLEMS'.
 This is a list of known (i.e. reproducible) DDD bugs, which should be
 fixed in some future DDD release.  
 
-If you find a bug, be sure to report it to <bug-ddd@gnu.org>
-such that we may fix it (or include it in this list :-)
+If you find a bug, be sure to report it at
+http://savannah.gnu.org/bugs/?group=ddd
+so that we may fix it (or include it in this list :-)
 
 If you want to fix some of these, please ask <ddd@gnu.org>
 whether there are already people working on that bug.

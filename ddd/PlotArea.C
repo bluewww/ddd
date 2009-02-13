@@ -2,6 +2,7 @@
 // An area to plot upon
 
 // Copyright (C) 1998 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2001 Free Software Foundation, Inc.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 

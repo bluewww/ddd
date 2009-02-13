@@ -1,5 +1,5 @@
 /* File-name wildcard pattern matching for GNU.
-   Copyright (C) 1985, 1988, 1989, 1991 Free Software Foundation, Inc.
+   Copyright (C) 1985, 1988, 1989, 1991, 2001 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by

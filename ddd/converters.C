@@ -2,6 +2,7 @@
 // Own converters
 
 // Copyright (C) 1995-1997 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2001, 2003 Free Software Foundation, Inc.
 // Copyright (C) 2001 Universitaet des Saarlandes, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 

@@ -3,7 +3,7 @@
 // built on libg++-assert.h and making sure top-level abort() is called
 
 // Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
-// Copyright (C) 2004 Free Software Foundation, USA.
+// Copyright (C) 2004, 2004 Free Software Foundation, USA.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.

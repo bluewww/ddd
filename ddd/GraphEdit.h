@@ -2,6 +2,7 @@
 // GraphEdit Widget -- public interface
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2004 Free Software Foundation, Inc.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 

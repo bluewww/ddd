@@ -294,11 +294,12 @@ The simplest way to compile DDD is:
      `./ddd --configuration') for version mismatches.  Also check
      whether libraries and include files have matching versions.
 
-     Then, see the `PROBLEMS' and `BUGS' files for known problems.  
-     If the problem is not listed, report it to the DDD maintainers
-     <bug-ddd@gnu.org>.  If you need help and assistance, see the DDD
-     WWW page `http://www.gnu.org/software/ddd/' for patches, people,
-     and pointers.
+     Then, see the `PROBLEMS' and `BUGS' files for known problems.  If
+     the problem is not listed, report it to the DDD maintainers at
+     `http://savannah.gnu.org/bugs/?group=ddd'.  If you need help and
+     assistance, see the DDD WWW page
+     `http://www.gnu.org/software/ddd/' for patches, people, and
+     pointers.
 
  12. If you want to use DDD on your own program, please install it
      first (see the Step 13, below).  If you absolutely *must* run 
@@ -667,8 +668,9 @@ Abort compilation and fix the problem.
 
 If you find the warning can be avoided by changing some code or by
 changing the DDD build process, please send a bug report to the DDD
-maintainers <bug-ddd@gnu.org>.  Be sure to include a context
-diff (`diff -c2') between the original and the changed file(s).
+maintainers at `http://savannah.gnu.org/bugs/?group=ddd'.  Be sure to
+include a context diff (`diff -c2') between the original and the
+changed file(s).
 
 
 
@@ -685,8 +687,9 @@ listed there, please ask a local expert for help.
 
 If you find the error can be avoided by changing some DDD code or by
 changing the DDD build process, please send a bug report to the DDD
-maintainers <bug-ddd@gnu.org>.  Be sure to include a context
-diff (`diff -c2') between the original and the changed file(s).
+maintainers at `http://savannah.gnu.org/bugs/?group=ddd'.  Be sure to
+include a context diff (`diff -c2') between the original and the
+changed file(s).
 
 
 Documentation

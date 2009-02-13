@@ -2,6 +2,7 @@
 // Character sets used in DDD
 
 // Copyright (C) 1997 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2003 Free Software Foundation, Inc.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.

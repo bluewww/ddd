@@ -2,6 +2,7 @@
 // Create dialogs to select display expressions
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2001 Free Software Foundation, Inc.
 // Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>.
 // Cross-platform interface by Peter Wainwright <prw@ceiriog.eclipse.co.uk>
 // 

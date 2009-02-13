@@ -2,6 +2,7 @@
 // Breakpoint handler
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2003 Free Software Foundation, Inc.
 // Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>.
 // 
 // This file is part of DDD.

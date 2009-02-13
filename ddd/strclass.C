@@ -2,7 +2,7 @@
 // The libg++ String class, but named "string" for coexistence with Xt
 
 /* 
-Copyright (C) 1988 Free Software Foundation
+Copyright (C) 1988, 2003 Free Software Foundation
     written by Doug Lea (dl@rocky.oswego.edu)
 
 This file is part of the GNU C++ Library.  This library is free

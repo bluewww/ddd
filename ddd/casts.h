@@ -2,6 +2,7 @@
 // Provide macros for casting types.
 
 // Copyright (C) 2001 Universitaet Passau, Germany.
+// Copyright (C) 2004 Free Software Foundation, Inc.
 // Written by Arnaud Desitter <arnaud@nag.co.uk>.
 // 
 // This file is part of DDD.

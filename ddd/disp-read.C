@@ -3,6 +3,7 @@
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Copyright (C) 2000 Universitaet Passau, Germany.
+// Copyright (C) 2003 Free Software Foundation, Inc.
 // Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
 // and Andreas Zeller <zeller@gnu.org>.
 // 
@@ -51,7 +52,7 @@ char disp_read_rcsid[] =
 // Recognize specific debugger commands
 //----------------------------------------------------------------------------
 
-// True if CMD creates one signle display
+// True if CMD creates one single display
 bool is_single_display_cmd (const string& cmd, GDBAgent *gdb)
 {
 #if RUNTIME_REGEX
