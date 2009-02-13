@@ -42,6 +42,9 @@ namespace GtkX {
 	~Window(void);
 	void set_title(const String &);
 	void set_default_size(int width, int height);
+	void get_position(int &x, int &y);
+	void get_size(int &width, int &height);
+	void move(int x, int y);
     };
 
 }

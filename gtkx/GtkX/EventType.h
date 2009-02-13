@@ -353,8 +353,8 @@ namespace GtkX {
 	unsigned int selection_time;
     };
 
-/* This event type will be used pretty rarely. It only is important
-   for XInput aware programs that are drawing their own cursor */
+    /* This event type will be used pretty rarely. It only is important
+       for XInput aware programs that are drawing their own cursor */
 
     struct EventProximity: public Event
     {
@@ -401,32 +401,6 @@ namespace GtkX {
 	char implicit;
 	RefPtr<XWindow> grab_window;
     };
-
-#if 0
-    union Event
-    {
-	EventType		type;
-	EventAny		any;
-	EventExpose		expose;
-	EventNoExpose		no_expose;
-	EventVisibility		visibility;
-	EventMotion		motion;
-	EventButton		button;
-	EventScroll		scroll;
-	EventKey		key;
-	EventCrossing		crossing;
-	EventFocus		focus_change;
-	EventConfigure		configure;
-	EventProperty		property;
-	EventSelection		selection;
-	EventOwnerChange	owner_change;
-	EventProximity		proximity;
-	EventClient		client;
-	EventWindowState	window_state;
-	EventSetting		setting;
-	EventGrabBroken		grab_broken;
-    };
-#endif
 
 }
 

@@ -135,6 +135,8 @@ namespace GtkX {
 	int unref() {if (!--nrefs_) delete this;}
 	RefPtr<XWindow> get_root_window();
 	String make_display_name() const;
+	int get_width() const;
+	int get_height() const;
     };
 
     class Drawable;
@@ -350,6 +352,11 @@ namespace GtkX {
 	GrabStatus pointer_grab(bool owner_events, EventMask event_mask,
 				unsigned int time_);
 	void set_title(const String &);
+	void get_position(int &x, int &y) const;
+	int get_origin(int &x, int &y) const;
+	void get_root_origin(int &x, int &y) const;
+	void get_geometry(int &x, int &y, int &width, int &height, int &depth) const;
+	void get_size(int &width, int &height);
     };
 
     class Widget {
@@ -373,6 +380,8 @@ namespace GtkX {
 	void unmap_callback();
 	sigc::signal<bool, GtkX::EventAny *> signal_delete_event_;
 	bool delete_event_callback(GdkEventAny *ev);
+	sigc::signal<void> signal_destroy_;
+	static void *destroy_callback(void *);
 	sigc::signal<void, GtkX::Requisition *> signal_size_request_;
 	void size_request_callback(Gtk::Requisition *r);
     public:
@@ -431,8 +440,9 @@ namespace GtkX {
 	sigc::signal<bool, GtkX::EventButton *> &signal_button_release_pre_event();
 	sigc::signal<void> &signal_map();
 	sigc::signal<void> &signal_unmap();
-	sigc::signal<bool, GtkX::EventAny *> signal_delete_event();
-	sigc::signal<void, GtkX::Requisition *> signal_size_request();
+	sigc::signal<bool, GtkX::EventAny *> &signal_delete_event();
+	sigc::signal<void> &signal_destroy();
+	sigc::signal<void, GtkX::Requisition *> &signal_size_request();
 	void set_event_mask(EventMask events);
 	void add_event_mask(EventMask events);
     };

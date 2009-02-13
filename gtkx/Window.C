@@ -84,3 +84,21 @@ Window::set_default_size(int width, int height)
 }
 
 
+void
+Window::get_position(int &x, int &y)
+{
+    win_->get_position(x, y);
+}
+
+void
+Window::get_size(int &width, int &height)
+{
+    win_->get_size(width, height);
+}
+
+void
+Window::move(int x, int y)
+{
+    win_->move(x, y);
+}
+

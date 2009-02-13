@@ -155,6 +155,18 @@ Screen::make_display_name() const
     return screen_->make_display_name();
 }
 
+int
+Screen::get_width() const
+{
+    return screen_->get_width();
+}
+
+int
+Screen::get_height() const
+{
+    return screen_->get_height();
+}
+
 typedef std::map<GdkWindow *, XWindow *> XWindowMap;
 XWindowMap xwindow_map;
 
@@ -268,6 +280,35 @@ XWindow::set_title(const String &s)
     win_->set_title(s.c_str());
 }
 
+void
+XWindow::get_position(int &x, int &y) const
+{
+    win_->get_position(x, y);
+}
+
+int
+XWindow::get_origin(int &x, int &y) const
+{
+    return win_->get_origin(x, y);
+}
+
+void
+XWindow::get_root_origin(int &x, int &y) const
+{
+    win_->get_root_origin(x, y);
+}
+
+void
+XWindow::get_geometry(int &x, int &y, int &width, int &height, int &depth) const
+{
+    win_->get_geometry(x, y, width, height, depth);
+}
+
+void
+XWindow::get_size(int &width, int &height)
+{
+    win_->get_size(width, height);
+}
 
 Widget::Widget()
 {
@@ -378,6 +419,10 @@ Widget::init_signals()
     from->signal_unmap().connect(sigc::mem_fun(*this, &Widget::unmap_callback));
     from->signal_delete_event().connect(sigc::mem_fun(*this, &Widget::delete_event_callback));
     from->signal_size_request().connect(sigc::mem_fun(*this, &Widget::size_request_callback));
+
+    // signal_destroy() is not a GTK signal.  It is implemented using
+    // sigc::trackable.
+    from->add_destroy_notify_callback(this, Widget::destroy_callback);
 }
 
 void
@@ -623,13 +668,19 @@ Widget::signal_unmap()
     return signal_unmap_;
 }
 
-sigc::signal<bool, GtkX::EventAny *>
+sigc::signal<bool, GtkX::EventAny *> &
 Widget::signal_delete_event()
 {
     return signal_delete_event_;
 }
 
-sigc::signal<void, GtkX::Requisition *>
+sigc::signal<void> &
+Widget::signal_destroy()
+{
+    return signal_destroy_;
+}
+
+sigc::signal<void, GtkX::Requisition *> &
 Widget::signal_size_request()
 {
     return signal_size_request_;
@@ -706,6 +757,14 @@ Widget::delete_event_callback(GdkEventAny *ev)
 	return false;
     }
     return signal_delete_event_(evxa);
+}
+
+void *
+Widget::destroy_callback(void *v)
+{
+    Widget *self = static_cast<Widget *>(v);
+    std::cerr << "Destroying " << self << "\n";
+    self->signal_destroy_();
 }
 
 void
