@@ -1784,7 +1784,7 @@ void set_buttons(GUI::Container *buttons, const char *_button_list, bool manage)
     // DefaultHelpText           = gdbDefaultHelpText;
     // DefaultTipText            = gdbDefaultTipText;
     // DefaultDocumentationText  = gdbDefaultDocumentationText;
-    // TextPosOfEvent            = textPosOfEvent;
+    TextPosOfEvent            = textPosOfEvent;
     // DisplayDocumentation      = showDocumentationInStatusLine;
 #ifdef NAG_ME
 #warning What do we do here?

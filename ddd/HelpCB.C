@@ -84,6 +84,7 @@ char HelpCB_rcsid[] =
 #else
 #include <GUI/Bipolar.h>
 #include <GUI/Dialog.h>
+#include <GUI/MenuItem.h>
 #endif
 
 // Misc DDD includes
@@ -332,9 +333,10 @@ static MString _get_tip_string(Widget widget, XEvent *event)
     return text;
 }
 #else
-static GUI::String _get_tip_string(GUI::Widget *widget, GUI::Event *event)
+static MString _get_tip_string(GUI::Widget *widget, GUI::Event *event)
 {
-    return GUI::String("No tip for ") + widget->get_name();
+    GUI::String s = GUI::String("No tip for ") + widget->get_name();
+    return MString(s, true);
 }
 #endif
 
@@ -365,12 +367,10 @@ static MString prepend_label_name(Widget widget, XEvent *event,
     return text;
 }
 #else
-static GUI::String prepend_label_name(GUI::Widget *widget, GUI::Event *event, 
-				      GUI::String (*get_string)(GUI::Widget *, GUI::Event *))
+static MString prepend_label_name(GUI::Widget *widget, GUI::Event *event, 
+				  MString (*get_string)(GUI::Widget *, GUI::Event *))
 {
-    GUI::String text = get_string(widget, event);
-
-    return text;
+    return get_string(widget, event);
 }
 #endif
 
@@ -380,7 +380,7 @@ inline MString get_tip_string(Widget widget, XEvent *event)
     return prepend_label_name(widget, event, _get_tip_string);
 }
 #else
-inline GUI::String get_tip_string(GUI::Widget *widget, GUI::Event *event)
+inline MString get_tip_string(GUI::Widget *widget, GUI::Event *event)
 {
     return prepend_label_name(widget, event, _get_tip_string);
 }
@@ -420,19 +420,19 @@ static MString _get_documentation_string(Widget widget, XEvent *event)
     return text;
 }
 #else
-static GUI::String _get_documentation_string(GUI::Widget *widget, GUI::Event *event)
+static MString _get_documentation_string(GUI::Widget *widget, GUI::Event *event)
 {
     if (dynamic_cast<GUI::ScrolledText *>(widget))
     {
 	if (DefaultDocumentationText != 0)
-	    return DefaultDocumentationText(widget, event);
-	return NoDocumentationText(widget, event);
+	    return MString(DefaultDocumentationText(widget, event), true);
+	return MString(NoDocumentationText(widget, event), true);
     }
 
     // Get text
 
     GUI::String text = GUI::String("No documentation for ") + widget->get_name();
-    return text;
+    return MString(text, true);
 }
 #endif
 
@@ -442,7 +442,7 @@ inline MString get_documentation_string(Widget widget, XEvent *event)
     return prepend_label_name(widget, event, _get_documentation_string);
 }
 #else
-inline GUI::String get_documentation_string(GUI::Widget *widget, GUI::Event *event)
+inline MString get_documentation_string(GUI::Widget *widget, GUI::Event *event)
 {
     return prepend_label_name(widget, event, _get_documentation_string);
 }
@@ -2318,6 +2318,25 @@ static bool tip_popped_up             = false;
 
 // The timer used for the delay until the tip is raised.
 static XtIntervalId raise_tip_timer   = 0;
+#else
+// The shell containing the tip label.
+#if defined(USE_TIP_MENU)
+static GUI::Menu *tip_shell = NULL;
+#else
+static GUI::Window *tip_shell = NULL;
+#endif
+
+// The tip label.
+static GUI::Widget *tip_label = NULL;
+
+// The tip row; a RowColumn widget surrounding the label.
+static GUI::Widget *tip_row = NULL;
+
+// True if the button tip shell is raised.
+static bool tip_popped_up = false;
+
+// The timer used for the delay until the tip is raised.
+static GUI::connection raise_tip_timer;
 #endif
 
 #if defined(IF_XM)
@@ -2334,6 +2353,13 @@ static XtIntervalId raise_doc_timer   = 0;
 
 // The timer used for the delay until the documentation is cleared.
 static XtIntervalId clear_doc_timer   = 0;
+#else
+// The timer used for the delay until the documentation is shown.
+static GUI::connection raise_doc_timer;
+
+// The timer used for the delay until the documentation is cleared.
+static GUI::connection clear_doc_timer;
+#endif
 
 // Delay times (in ms)
 int help_button_tip_delay = 750;  // Delay before raising button tip
@@ -2344,6 +2370,7 @@ int help_clear_doc_delay  = 1000; // Delay before clearing doc
 int help_clear_tip_delay  = 50;   // Delay before clearing tip
 
 
+#if defined(IF_XM)
 // Helper: cancel the timer given in CLIENT_DATA
 static void CancelTimer(Widget, XtPointer client_data, XtPointer)
 {
@@ -2360,6 +2387,23 @@ static void CancelRaiseDoc(Widget = 0, XtPointer = 0, XtPointer = 0)
 	raise_doc_timer = 0;
     }
 }
+#else
+// Helper: cancel the timer given in CLIENT_DATA
+static void *CancelTimer(void *client_data)
+{
+    GUI::connection *timer = static_cast<GUI::connection *>(client_data);
+    timer->disconnect();
+}
+
+// Helper: cancel RAISE_DOC_TIMER
+static void *CancelRaiseDoc(void *)
+{
+    if (raise_doc_timer)
+    {
+	raise_doc_timer.disconnect();
+    }
+    return NULL;
+}
 #endif
 
 #if defined(IF_XM)
@@ -2370,6 +2414,15 @@ static void CancelRaiseTip(Widget = 0, XtPointer = 0, XtPointer = 0)
     {
 	XtRemoveTimeOut(raise_tip_timer);
 	raise_tip_timer = 0;
+    }
+}
+#else
+// Helper: cancel RAISE_TIP_TIMER
+static void *CancelRaiseTip(void *)
+{
+    if (raise_tip_timer)
+    {
+	raise_tip_timer.disconnect();
     }
 }
 #endif
@@ -2772,6 +2825,412 @@ static void ClearDocumentation(XtPointer client_data, XtIntervalId *timer)
 		     CancelClearDocumentation, 0);
     ClearDocumentationNow(ti->widget);
 }
+#else
+// Event information passed through timeouts, etc.
+struct TipInfo {
+    GUI::RefPtr<GUI::Event> event;		// The event structure
+    GUI::Widget *widget;	// The widget the event occurred in
+};
+
+#define CANCEL_RAISE_DOC (void *)1
+#define CANCEL_RAISE_TIP (void *)2
+#define CANCEL_CLEAR_DOCUMENTATION (void *)3
+
+
+// Raise button tip near the widget given in CLIENT_DATA
+static bool PopupTip(TipInfo *ti)
+{
+    raise_tip_timer.disconnect();
+
+    GUI::Widget *w = ti->widget;
+
+    if (w == 0)
+	return false;
+
+    w->remove_destroy_notify_callback(CANCEL_RAISE_TIP);
+
+    MString tip = get_tip_string(w, &*ti->event);
+    if (tip.isNull() || isNone(tip) || tip.isEmpty())
+	return false;
+
+    if (!w->is_realized())
+	return false;
+
+    if (tip_shell == 0)
+    {
+#if defined(USE_TIP_MENU)
+	tip_shell = new GUI::Menu();
+	Gtk::MenuShell *gtkm = dynamic_cast<Gtk::MenuShell *>(tip_shell->internal());
+	if (gtkm) {
+	    // We can prevent the keyboard grab.
+	    // But there seems no way to prevent the mouse grab.
+	    gtkm->set_take_focus(false);
+	}
+#else
+	tip_shell = new GUI::Window();
+	Gtk::Window *win = dynamic_cast<Gtk::Window *>(tip_shell->internal());
+	if (win) {
+	    win->set_decorated(false);
+	    // This fails, because the window pops up under the mouse,
+	    // causing a LEAVE event.
+	    win->set_position(Gtk::WIN_POS_MOUSE);
+	}
+#endif
+	GUI::MenuItem *testbutton = new GUI::MenuItem(*tip_shell, GUI::PACK_EXPAND_WIDGET,
+						      "testbutton", _("Testbutton"));
+	testbutton->show();
+    }
+
+    // Find a possible place for the tip.  Consider the alignment of
+    // the parent composite as well as the distance to the screen edge.
+
+    //            TopLeft TopRight
+    // LeftTop    XXXXXXXXXXXXXXXX RightTop
+    //            XXXXXXXXXXXXXXXX
+    // LeftBottom XXXXXXXXXXXXXXXX RightBottom
+    //         BottomLeft BottomRight
+
+    enum Placement { LeftTop, RightTop,
+		     LeftBottom, RightBottom,
+		     BottomLeft, BottomRight,
+		     TopLeft, TopRight };
+
+    static Placement last_placement = BottomRight;
+    static GUI::Widget *last_parent = NULL;
+
+    GUI::Widget *parent = w->get_parent();
+    GUI::ScrolledText *text = dynamic_cast<GUI::ScrolledText *>(w);
+    if (parent != last_parent || text)
+	last_placement = BottomRight;
+
+    // Use 18 runs to find out the best position:
+    // Run 0: try last placement in same alignment
+    // Run 1-8: try at various sides of W.  Don't hide other widgets
+    //          and don't move tip off the screen.
+    // Run 9-17: same as 0-8, but don't care for hiding other widgets.
+    for (int run = 0; run < 18; run++)
+    {
+	std::cerr << "Placing tip, run " << run << "\n";
+	Placement placement = last_placement;
+	switch (run % 9)
+	{
+	case 0: placement = last_placement; break;
+	case 1: placement = BottomRight; break;
+	case 2: placement = RightBottom; break;
+	case 3: placement = RightTop;    break;
+	case 4: placement = TopRight;    break;
+	case 5: placement = BottomLeft;  break;
+	case 6: placement = LeftBottom;  break;
+	case 7: placement = LeftTop;     break;
+	case 8: placement = TopLeft;     break;
+	}
+
+	bool ok = false;
+
+	GUI::HBox *hbox = dynamic_cast<GUI::HBox *>(parent);
+	GUI::VBox *vbox = dynamic_cast<GUI::VBox *>(parent);
+	if (hbox || vbox)
+	{
+	    switch (placement)
+	    {
+	    case BottomLeft:
+	    case BottomRight:
+	    case TopLeft:
+	    case TopRight:
+		if (hbox)
+		    ok = true;
+		break;
+
+	    case LeftBottom:
+	    case LeftTop:
+	    case RightBottom:
+	    case RightTop:
+		if (vbox)
+		    ok = true;
+		break;
+	    }
+	}
+#if 0
+	else if (XmIsForm(parent))
+	{
+	    // We're part of a form: try to place the tip beyond a form
+	    // boundary.
+
+	    int fraction_base = 100;
+	    XtVaGetValues(parent, 
+			  XmNfractionBase, &fraction_base,
+			  XtPointer(0));
+	    if (fraction_base == 100)
+	    {
+		// Simple form
+		ok = true;
+	    }
+	    else
+	    {
+		// Command tool or likewise
+		unsigned char left_attachment   = XmATTACH_NONE;
+		unsigned char right_attachment  = XmATTACH_NONE;
+		unsigned char top_attachment    = XmATTACH_NONE;
+		unsigned char bottom_attachment = XmATTACH_NONE;
+
+		XtVaGetValues(w, 
+			      XmNleftAttachment,   &left_attachment,
+			      XmNrightAttachment,  &right_attachment,
+			      XmNtopAttachment,    &top_attachment,
+			      XmNbottomAttachment, &bottom_attachment,
+			      XtPointer(0));
+
+		int left_position   = 0;
+		int right_position  = 0;
+		int top_position    = 0;
+		int bottom_position = 0;
+
+		XtVaGetValues(w, 
+			      XmNleftPosition,   &left_position,
+			      XmNrightPosition,  &right_position,
+			      XmNtopPosition,    &top_position,
+			      XmNbottomPosition, &bottom_position,
+			      XtPointer(0));
+
+		switch (placement)
+		{
+		case BottomLeft:
+		case BottomRight:
+		    if (bottom_attachment == XmATTACH_POSITION
+			&& bottom_position >= fraction_base)
+			ok = true;
+		    if (bottom_attachment == XmATTACH_FORM
+			|| top_attachment == XmATTACH_OPPOSITE_FORM)
+			ok = true;
+		    break;
+
+		case RightBottom:
+		case RightTop:
+		    if (right_attachment == XmATTACH_POSITION
+			&& right_position >= fraction_base)
+			ok = true;
+		    if (right_attachment == XmATTACH_FORM
+			|| left_attachment == XmATTACH_OPPOSITE_FORM)
+			ok = true;
+		    break;
+
+		case TopLeft:
+		case TopRight:
+		    if (top_attachment == XmATTACH_POSITION
+			&& top_position == 0)
+			ok = true;
+		    if (top_attachment == XmATTACH_FORM
+			|| bottom_attachment == XmATTACH_OPPOSITE_FORM)
+			ok = true;
+		    break;
+
+		case LeftBottom:
+		case LeftTop:
+		    if (left_attachment == XmATTACH_POSITION
+			&& left_position == 0)
+			ok = true;
+		    if (left_attachment == XmATTACH_FORM
+			|| right_attachment == XmATTACH_OPPOSITE_FORM)
+			ok = true;
+		    break;
+		}
+	    }
+	}
+#endif
+	else
+	{
+	    // Any other alignment
+	    ok = true;
+	}
+
+	if (!ok && run <= 8)
+	    continue;
+
+	// Don't move tip off the screen
+	int x, y, width, height;
+	
+	GUI::RefPtr<GUI::XWindow> xwin = w->get_window();
+	xwin->get_size(width, height);
+	std::cerr << "Placing tip, size = " << width << " " << height << "\n";
+	xwin->get_position(x, y);
+	std::cerr << "Placing tip, position = " << x << " " << y << "\n";
+	xwin->get_origin(x, y);
+	std::cerr << "Placing tip, origin = " << x << " " << y << "\n";
+
+	if (text)
+	{
+	    width  = 0;
+	    height = 0;
+	}
+
+#if !defined(USE_TIP_MENU)
+	int tip_x, tip_y, tip_width, tip_height;
+	tip_shell->get_position(tip_x, tip_y);
+	tip_shell->get_size(tip_width, tip_height);
+	std::cerr << "Placing tip, tip_pos = " << tip_x << " " << tip_y << "\n";
+	std::cerr << "Placing tip, tip_size = " << tip_width << " " << tip_height << "\n";
+#endif
+
+	int x_offset = 5;
+	int y_offset = 5;
+
+	int dx = 0;
+	switch (placement)
+	{
+	case LeftBottom:
+	case LeftTop:
+	    std::cerr << "Placing tip, LB/LT\n";
+	    dx = -(tip_width + x_offset);
+	    break;
+	case RightBottom:
+	case RightTop:
+	    std::cerr << "Placing tip, RB/RT\n";
+	    dx = width + x_offset;
+	    break;
+	case BottomLeft:
+	case TopLeft:
+	    std::cerr << "Placing tip, BL/TL\n";
+	    dx = width / 2 - tip_width;
+	    break;
+	case BottomRight:
+	case TopRight:
+	    std::cerr << "Placing tip, BR/TR\n";
+	    dx = width / 2;
+	    break;
+	}
+
+	int dy = 0;
+	switch (placement)
+	{
+	case LeftBottom:
+	case RightBottom:
+	    std::cerr << "Placing tip, LB/RB\n";
+	    dy = height / 2;
+	    break;
+	case LeftTop:
+	case RightTop:
+	    std::cerr << "Placing tip, LT/RT\n";
+	    dy = height / 2 - tip_height;
+	    break;
+	case BottomLeft:
+	case BottomRight:
+	    std::cerr << "Placing tip, BL/BR\n";
+	    dy = height + y_offset;
+	    break;
+	case TopLeft:
+	case TopRight:
+	    std::cerr << "Placing tip, TL/TR\n";
+	    dy = -(tip_height + y_offset);
+	    break;
+	}
+
+	if (text)
+	{
+	    BoxPoint pos = point(ti->event);
+	    std::cerr << "Placing tip, event pos = " << pos[X] << " " << pos[Y] << "\n";
+	    dx += pos[X];
+	    dy += pos[Y];
+	}
+
+	// Don't move tip off the screen
+	int xt, yt, xo, yo;
+	xwin->get_root_origin(xo, yo);
+	xt = xo + dx;
+	yt = yo + dy;
+	if (xt < 0)
+	    continue;
+	if (yt < 0)
+	    continue;
+	GUI::RefPtr<GUI::Screen> screen = w->get_screen();
+	if (xt + tip_width >= screen->get_width())
+	    continue;
+	if (yt + tip_height >= screen->get_height())
+	    continue;
+
+	// Move tip to X, Y...
+	tip_shell->move(xt, yt);
+	
+	// and pop it up.
+	// XtPopup(tip_shell, XtGrabNone);
+#if defined(USE_TIP_MENU)
+	tip_shell->popup();
+#else
+	tip_shell->show();
+#endif
+	tip_popped_up = true;
+	last_placement = placement;
+	last_parent    = parent;
+
+	return false;
+    }
+
+#if defined(USE_TIP_MENU)
+    tip_shell->popup();
+    Gtk::MenuShell *gtkm = dynamic_cast<Gtk::MenuShell *>(tip_shell->internal());
+    if (gtkm) {
+	std::cerr << "HAS GRAB? = " << gtkm->has_grab() << "\n";
+    }
+#else
+    tip_shell->show();
+#endif
+    tip_popped_up = true;
+    return false;
+}
+
+// Show the documentation for the widget given in CLIENT_DATA
+static bool ShowDocumentation(TipInfo *ti)
+{
+    // raise_doc_timer.disconnect(); // Just return false
+
+    ti->widget->remove_destroy_notify_callback(CANCEL_RAISE_DOC);
+
+    GUI::ScrolledText *text = dynamic_cast<GUI::ScrolledText *>(ti->widget);
+
+    if (DisplayDocumentation != 0 
+	&& (text ? text_docs_enabled : button_docs_enabled))
+    {
+	// Display documentation
+	MString doc = get_documentation_string(ti->widget, &*ti->event);
+	DisplayDocumentation(doc);
+    }
+    return false;
+}
+
+// Clear the documentation
+static void ClearDocumentationNow(GUI::Widget *w);
+
+static void *CancelClearDocumentation(void *client_data)
+{
+    if (!clear_doc_timer)
+	return NULL;
+
+    clear_doc_timer.disconnect();
+    GUI::Widget *w = static_cast<GUI::Widget *>(client_data);
+    ClearDocumentationNow(w);
+    return NULL;
+}
+
+static void ClearDocumentationNow(GUI::Widget *w)
+{
+    GUI::ScrolledText *text = dynamic_cast<GUI::ScrolledText *>(w);
+    if (DisplayDocumentation != 0 
+	&& (text ? text_docs_enabled : button_docs_enabled))
+    {
+	// Clear documentation
+	static MString empty(0, true);
+	DisplayDocumentation(empty);
+    }
+}
+
+static bool ClearDocumentation(TipInfo *ti)
+{
+    // clear_doc_timer.disconnect(); // Just return false
+
+    ti->widget->remove_destroy_notify_callback(CANCEL_CLEAR_DOCUMENTATION);
+
+    ClearDocumentationNow(ti->widget);
+    return false;
+}
 #endif
 
 #if defined(IF_XM)
@@ -2816,9 +3275,47 @@ static void ClearTip(Widget w, XEvent *event)
 }
 #else
 // Clear tips and documentation
-static void ClearTip(GUI::Widget *w, GUI::Event *ev)
+static void ClearTip(GUI::Widget *w, GUI::Event *event)
 {
-    std::cerr << "ClearTip " << w << " " << ev << "\n";
+    CancelRaiseTip(NULL);
+    CancelRaiseDoc(NULL);
+
+    std::cerr << "tip_popped_up = " << tip_popped_up << "\n";
+    if (tip_popped_up)
+    {
+#if defined(USE_TIP_MENU)
+	tip_shell->popdown();
+#else
+	tip_shell->hide();
+#endif
+	tip_popped_up = false;
+    }
+
+    if (clear_doc_timer)
+    {
+	clear_doc_timer.disconnect();
+    }
+
+    GUI::ScrolledText *text = dynamic_cast<GUI::ScrolledText *>(w);
+    if (DisplayDocumentation != 0 
+	&& (text ? text_docs_enabled : button_docs_enabled))
+    {
+	// We don't clear the documentation immediately, since the
+	// user might be moving over to another button, and we don't
+	// want flashing documentation strings.
+
+	static TipInfo ti;
+	ti.event  = event;
+	ti.widget = w;
+
+	clear_doc_timer =
+	    GUI::signal_timeout().connect(sigc::bind(sigc::ptr_fun(ClearDocumentation), &ti),
+					  help_clear_doc_delay);
+
+	// Should the button be destroyed beforehand, cancel timeout
+	w->remove_destroy_notify_callback(w);
+	w->add_destroy_notify_callback(w, CancelClearDocumentation);
+    }
 }
 #endif
 
@@ -2879,6 +3376,49 @@ static void RaiseTip(Widget w, XEvent *event)
 static void RaiseTip(GUI::Widget *w, GUI::Event *event)
 {
     std::cerr << "RaiseTip " << w << " " << event << "\n";
+    GUI::ScrolledText *text = dynamic_cast<GUI::ScrolledText *>(w);
+    if (DisplayDocumentation != 0
+	&& (text ? text_docs_enabled : button_docs_enabled))
+    {
+	// No need to clear the documentation
+	if (clear_doc_timer)
+	{
+	    clear_doc_timer.disconnect();
+	}
+
+	static TipInfo ti;
+	ti.event  = event;
+	ti.widget = w;
+
+	int doc_delay = 
+	    text ? help_value_doc_delay : help_button_doc_delay;
+
+	CancelRaiseDoc(NULL);
+
+	raise_doc_timer =
+	    GUI::signal_timeout().connect(sigc::bind(sigc::ptr_fun(ShowDocumentation), &ti), doc_delay);
+
+	// Should W be destroyed beforehand, cancel timeout
+	w->add_destroy_notify_callback(CANCEL_RAISE_DOC, CancelRaiseDoc);
+    }
+
+    if (text ? text_tips_enabled : button_tips_enabled)
+    {
+	static TipInfo ti;
+	ti.event  = event;
+	ti.widget = w;
+
+	int tip_delay = 
+	    text ? help_value_tip_delay : help_button_tip_delay;
+
+	CancelRaiseTip(NULL);
+
+	raise_tip_timer = 
+	    GUI::signal_timeout().connect(sigc::bind(sigc::ptr_fun(PopupTip), &ti), tip_delay);
+
+	// Should W be destroyed beforehand, cancel timeout
+	w->add_destroy_notify_callback(CANCEL_RAISE_TIP, CancelRaiseTip);
+    }
 }
 #endif
 
@@ -2891,6 +3431,15 @@ static void DoClearTip(XtPointer client_data, XtIntervalId *timer)
 
     TipInfo& ti = *((TipInfo *)client_data);
     ClearTip(ti.widget, &ti.event);
+}
+#else
+static bool DoClearTip(TipInfo *ti)
+{
+    std::cerr << "CLEAR TIP\n";
+    // clear_tip_timer = 0; // Just return false
+
+    ClearTip(ti->widget, ti->event);
+    return false;
 }
 #endif
 
@@ -2993,10 +3542,12 @@ static bool HandleTipEvent(GUI::Widget *w, GUI::Event *event)
 
     GUI::EventMotion *motion;
     GUI::EventCrossing *crossing;
+    GUI::EventKey *key;
+    GUI::EventButton *button;
     if ((crossing = dynamic_cast<GUI::EventCrossing *>(event))) {
 	std::cerr << "CROSSING " << crossing->type << " " << crossing->mode << "\n";
 	if (crossing->type == GUI::ENTER_NOTIFY) {
-	    if (clear_tip_timer != 0)
+	    if (clear_tip_timer)
 	    {
 		clear_tip_timer.disconnect();
 
@@ -3024,18 +3575,59 @@ static bool HandleTipEvent(GUI::Widget *w, GUI::Event *event)
 	    }
 	}
 	else if (crossing->type == GUI::LEAVE_NOTIFY) {
+	    last_left_widget = w;
+	    if (clear_tip_timer)
+	    {
+		clear_tip_timer.disconnect();
+	    }
+
+	    // We don't clear the tip immediately, because the DDD ungrab
+	    // mechanism may cause the pointer to leave a button and
+	    // re-enter it immediately.
+	    static TipInfo ti;
+	    ti.event  = event;
+	    ti.widget = w;
+
+	    clear_tip_timer = 
+		GUI::signal_timeout().connect(sigc::bind(sigc::ptr_fun(DoClearTip), &ti),
+					      help_clear_tip_delay);
 	}
     }
+    if ((key = dynamic_cast<GUI::EventKey *>(event))) {
+	ClearTip(w, event);
+    }
+    if ((button = dynamic_cast<GUI::EventButton *>(event))) {
+	ClearTip(w, event);
+    }
     if ((motion = dynamic_cast<GUI::EventMotion *>(event))) {
-	int x, y;
-	if (motion->is_hint) {
-	    w->get_pointer(x, y);
+	GUI::ScrolledText *text = dynamic_cast<GUI::ScrolledText *>(w);
+	if (text) {
+	    static GUI::ScrolledText *last_motion_widget           = NULL;
+	    static long last_motion_position = -1;
+#if 0
+	    int x, y;
+	    if (motion->is_hint) {
+		w->get_pointer(x, y);
+	    }
+	    else {
+		x = motion->x;
+		y = motion->y;
+	    }
+	    long pos = TextPosOfEvent(text, event);
+	    std::cerr << x << " " << y << " " << pos << "\n";
+#endif
+	    long pos = TextPosOfEvent(text, event);
+	    std::cerr << pos << "\n";
+	    if (w != last_motion_widget || pos != last_motion_position)
+	    {
+		last_motion_widget   = text;
+		last_motion_position = pos;
+
+		ClearTip(w, event);
+		if (pos != -1)
+		    RaiseTip(w, event);
+	    }
 	}
-	else {
-	    x = motion->x;
-	    y = motion->y;
-	}
-	std::cerr << x << " " << y << "\n";
     }
     return false;
 }
