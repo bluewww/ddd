@@ -8470,11 +8470,18 @@ static void create_status(GUI::Container *parent)
     set_status("");
     set_status_mstring(short_msg);
 
-    status_w->signal_button_press_event().connect(sigc::bind(sigc::ptr_fun(PopupStatusHistoryCB), status_w));
-    status_w->signal_button_release_event().connect(sigc::ptr_fun(PopdownStatusHistoryCB));
+    // Warning: Buttons have their own press/release handlers.
+    // These return TRUE and terminate signal emission.
+    // Thus we need to hook into the pre_event callbacks.
+    status_w->signal_button_press_pre_event().connect
+	(sigc::bind(sigc::ptr_fun(PopupStatusHistoryCB), status_w));
+    status_w->signal_button_release_pre_event().connect
+	(sigc::ptr_fun(PopdownStatusHistoryCB));
 
-    arrow_w->signal_button_press_event().connect(sigc::bind(sigc::ptr_fun(PopupStatusHistoryCB), arrow_w));
-    arrow_w->signal_button_release_event().connect(sigc::ptr_fun(PopdownStatusHistoryCB));
+    arrow_w->signal_button_press_pre_event().connect
+	(sigc::bind(sigc::ptr_fun(PopupStatusHistoryCB), arrow_w));
+    arrow_w->signal_button_release_pre_event().connect
+	(sigc::ptr_fun(PopdownStatusHistoryCB));
 
 
 #ifdef NAG_ME
