@@ -2868,10 +2868,10 @@ static bool PopupTip(TipInfo *ti)
 	    gtkm->set_take_focus(false);
 	}
 #else
-	tip_shell = new GUI::Window();
+	tip_shell = new GUI::Window("", "", GUI::WINDOW_POPUP);
 	Gtk::Window *win = dynamic_cast<Gtk::Window *>(tip_shell->internal());
 	if (win) {
-	    win->set_decorated(false);
+	    // win->set_decorated(false);
 	    // This fails, because the window pops up under the mouse,
 	    // causing a LEAVE event.
 	    win->set_position(Gtk::WIN_POS_MOUSE);
@@ -3047,17 +3047,14 @@ static bool PopupTip(TipInfo *ti)
 	if (!ok && run <= 8)
 	    continue;
 
+	GUI::Allocation alloc = w->get_allocation();
+	std::cerr << "Placing tip, alloc = "
+		  << alloc.x << " " << alloc.y << " "
+		  << alloc.width << " " << alloc.height << "\n";
 	// Don't move tip off the screen
-	int x, y, width, height;
+	int width = alloc.width;
+	int height = alloc.height;
 	
-	GUI::RefPtr<GUI::XWindow> xwin = w->get_window();
-	xwin->get_size(width, height);
-	std::cerr << "Placing tip, size = " << width << " " << height << "\n";
-	xwin->get_position(x, y);
-	std::cerr << "Placing tip, position = " << x << " " << y << "\n";
-	xwin->get_origin(x, y);
-	std::cerr << "Placing tip, origin = " << x << " " << y << "\n";
-
 	if (text)
 	{
 	    width  = 0;
@@ -3134,8 +3131,16 @@ static bool PopupTip(TipInfo *ti)
 	}
 
 	// Don't move tip off the screen
+	GUI::RefPtr<GUI::XWindow> xwin = w->get_window();
 	int xt, yt, xo, yo;
-	xwin->get_root_origin(xo, yo);
+	// get_position is said to be relative to parent (but that
+	// doesn't seem to be true).
+	// xwin->get_position(xo, yo);
+	xwin->get_origin(xo, yo);
+	xo += alloc.x;
+	yo += alloc.y;
+	std::cerr << "Placing tip, origin = " << xo << " " << yo << "\n";
+
 	xt = xo + dx;
 	yt = yo + dy;
 	if (xt < 0)
@@ -3546,7 +3551,6 @@ static bool HandleTipEvent(GUI::Widget *w, GUI::Event *event)
     GUI::EventKey *key;
     GUI::EventButton *button;
     if ((crossing = dynamic_cast<GUI::EventCrossing *>(event))) {
-	std::cerr << "CROSSING " << crossing->type << " " << crossing->mode << "\n";
 	if (crossing->type == GUI::ENTER_NOTIFY) {
 	    if (clear_tip_timer)
 	    {
@@ -3615,10 +3619,8 @@ static bool HandleTipEvent(GUI::Widget *w, GUI::Event *event)
 		y = motion->y;
 	    }
 	    long pos = TextPosOfEvent(text, event);
-	    std::cerr << x << " " << y << " " << pos << "\n";
 #endif
 	    long pos = TextPosOfEvent(text, event);
-	    std::cerr << pos << "\n";
 	    if (w != last_motion_widget || pos != last_motion_position)
 	    {
 		last_motion_widget   = text;

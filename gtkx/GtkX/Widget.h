@@ -76,6 +76,14 @@ namespace GtkX {
 	int height;
     };
 
+    struct Allocation
+    {
+	int x;
+	int y;
+	int width;
+	int height;
+    };
+
     class Widget;
     class Container;
 
@@ -442,6 +450,7 @@ namespace GtkX {
 	void remove_destroy_notify_callback(void *data);
 	bool translate_coordinates(GtkX::Widget &, int, int, int &, int &);
 	Requisition size_request() const;
+	Allocation get_allocation() const;
 	virtual void get_pointer(int &x, int &y) const;
 	void queue_draw();
 	Color get_bg() const;

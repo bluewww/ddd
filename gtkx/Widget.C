@@ -440,6 +440,15 @@ Widget::size_request() const
     return req;
 }
 
+Allocation
+Widget::get_allocation() const
+{
+    Gtk::Allocation galloc = internal()->get_allocation();
+    Allocation alloc  = {galloc.get_x(), galloc.get_y(),
+			 galloc.get_width(), galloc.get_height()};
+    return alloc;
+}
+
 void
 Widget::get_pointer(int &x, int &y) const
 {

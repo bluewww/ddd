@@ -32,17 +32,24 @@ Window::init_signals(void)
 {
 }
 
-Window::Window(Main &main, const String &name, const String &title)
+Gtk::WindowType translate_wt[] = {
+    Gtk::WINDOW_TOPLEVEL,
+    Gtk::WINDOW_POPUP
+};
+
+Window::Window(Main &main, const String &name, const String &title,
+	       WindowType wt)
 {
-    win_ = new Gtk::Window();
+    win_ = new Gtk::Window(translate_wt[wt]);
     set_name(name.s());
     set_title(title.s());
     postinit();
 }
 
-Window::Window(const String &name, const String &title)
+Window::Window(const String &name, const String &title,
+	       WindowType wt)
 {
-    win_ = new Gtk::Window();
+    win_ = new Gtk::Window(translate_wt[wt]);
     set_name(name.s());
     set_title(title.s());
     postinit();

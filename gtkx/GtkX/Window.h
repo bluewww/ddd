@@ -30,12 +30,19 @@
 
 namespace GtkX {
 
+    enum WindowType {
+	WINDOW_TOPLEVEL,
+	WINDOW_POPUP
+    };
+
     class Window: public Shell {
 	Gtk::Window *win_;
 	void init_signals(void);
     public:
-	Window(Main &main, const String &name="", const String &title="");
-	Window(const String &name="", const String &title="");
+	Window(Main &main, const String &name="", const String &title="",
+	       WindowType wt=WINDOW_TOPLEVEL);
+	Window(const String &name="", const String &title="",
+	       WindowType wt=WINDOW_TOPLEVEL);
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;
 	Gtk::Container *gtk_container(void);
