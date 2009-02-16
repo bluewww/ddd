@@ -52,10 +52,12 @@ char BreakPoint_rcsid[] =
 #include "regexps.h"
 #include "index.h"
 #include "value-read.h"
+#include "post.h"
 
 #if RUNTIME_REGEX
 static regex rxnl_int ("\n[1-9]");
 static regex rxname_colon_int_nl ("[^ ]+:[0-9]+\n");
+static regex rxint_dot_int ("[0-9]+\.[0-9]+");
 #endif
 
 // Create new breakpoint from INFO_OUTPUT
@@ -65,10 +67,6 @@ BreakPoint::BreakPoint(string& info_output, const string& arg,
       mytype(BREAKPOINT),
       mydispo(BPKEEP),
       myenabled(true),
-      myfile_name(file),
-      myline_nr(0),
-      myaddress(""),
-      myfunc(""),
       myexpr(""),
       myinfos(""),
       myignore_count(0),
@@ -80,10 +78,9 @@ BreakPoint::BreakPoint(string& info_output, const string& arg,
       myfile_changed(true),
       myposition_changed(true),
       myaddress_changed(true),
-      myselected(false),
-      mysource_glyph(0),
-      mycode_glyph(0)
+      myselected(false)
 {
+    locn.resize(1);
     if (gdb->has_numbered_breakpoints())
     {
 	// Read leading breakpoint number
@@ -200,15 +197,23 @@ void BreakPoint::process_gdb(string& info_output)
     }
     info_output = info_output.after(rxblanks_or_tabs);
 
-    string new_info = "";
-    if (mytype == BREAKPOINT) 
+    // Check for multiple breakpoints
+
+    bool multiple = false;
+    if (info_output.contains("<MULTIPLE>", 0)) {
+	info_output = info_output.after('\n');
+	multiple = true;
+    }
+
+    if (mytype == BREAKPOINT && !multiple) 
     {
+	locn.resize(1);
         if (MAKE != gdb->type() && BASH != gdb->type())
 	{
 	    // Read address
-	    myaddress = info_output.through(rxalphanum);
+	    locn[0].myaddress = info_output.through(rxalphanum);
 	  
-	    info_output = info_output.after(myaddress);
+	    info_output = info_output.after(locn[0].myaddress);
 	    strip_leading_space(info_output);
 	    
 	}
@@ -224,7 +229,7 @@ void BreakPoint::process_gdb(string& info_output)
 		  func = func.before(" at ");
 	      strip_space(func);
 
-	      myfunc = func;
+	      locn[0].myfunc = func;
 	  }
 	}
 
@@ -241,11 +246,11 @@ void BreakPoint::process_gdb(string& info_output)
 	}
 
  	remainder = remainder.from(rxname_colon_int_nl);
- 	myfile_name = remainder.before(":");
+ 	locn[0].myfile_name = remainder.before(":");
 
  	remainder = remainder.after(":");
  	if (!remainder.empty() && isdigit(remainder[0]))
- 	    myline_nr = get_positive_nr(remainder);
+ 	    locn[0].myline_nr = get_positive_nr(remainder);
     }
     else if (mytype == WATCHPOINT)
     {
@@ -257,6 +262,7 @@ void BreakPoint::process_gdb(string& info_output)
     int ignore_count = 0;
     string cond      = "";
     StringArray commands;
+    string new_info = "";
 
     if (!info_output.empty() && !isdigit(info_output[0]))
     {
@@ -325,6 +331,72 @@ void BreakPoint::process_gdb(string& info_output)
 	delete[] lines;
     }
 
+    if (mytype == BREAKPOINT && multiple) 
+    {
+	if (GDB != gdb->type()) {
+	    post_warning("Detected multiple breakpoint, but this is not GDB");
+	    return;
+	}
+	int numlocs = 0;
+	while (!info_output.empty() && info_output.contains(rxint_dot_int, 0)) {
+	    locn.resize(numlocs+1);
+
+	    // Read address
+	    info_output = info_output.after(rxint_dot_int);
+	    strip_leading_space(info_output);
+
+	    // Read enabled flag (`y' or `n')
+	    // We discard this: I don't think GDB allows these flags to
+	    // be set individually.
+	    bool myenabled2;
+	    if (info_output.contains('y', 0))
+		myenabled2 = true;
+	    else if (info_output.contains('n', 0))
+		myenabled2 = false;
+	    info_output = info_output.after(rxblanks_or_tabs);
+
+	    // Read address
+	    locn[numlocs].myaddress = info_output.through(rxalphanum);
+	    info_output = info_output.after(locn[numlocs].myaddress);
+	    strip_leading_space(info_output);
+
+	    // Read function name
+	    if (info_output.contains("in ", 0))
+	    {
+		// Function name
+		string func2 = info_output.after("in ");
+		if (func2.contains('\n'))
+		    func2 = func2.before('\n');
+		if (func2.contains(" at "))
+		    func2 = func2.before(" at ");
+		strip_space(func2);
+		locn[numlocs].myfunc = func2;
+	    }
+
+	    // Read location
+	    string remainder = info_output.through('\n');
+	    info_output = info_output.after('\n');
+
+	    // GDB 5.0 may issue an (indented) file name in the following line
+	    if (!remainder.contains(rxname_colon_int_nl))
+	    {
+		remainder += info_output.through('\n');
+		if (remainder.contains(rxname_colon_int_nl))
+		    info_output = info_output.after('\n');
+	    }
+
+	    remainder = remainder.from(rxname_colon_int_nl);
+	    locn[numlocs].myfile_name = remainder.before(":");
+
+	    remainder = remainder.after(":");
+	    if (!remainder.empty() && isdigit(remainder[0]))
+		locn[numlocs].myline_nr = get_positive_nr(remainder);
+
+	    numlocs++;
+	}
+    }
+
+
     myinfos = new_info;
     myignore_count = ignore_count;
     mycondition = cond;
@@ -382,13 +454,13 @@ void BreakPoint::process_dbx(string& info_output)
 		new_line_nr = get_positive_nr(info_output);
 
 	    if (!file_name.empty())
-		myfile_name = file_name;
+		locn[0].myfile_name = file_name;
 
 	    if (new_line_nr != 0)
-		myline_nr = new_line_nr;
+		locn[0].myline_nr = new_line_nr;
 
 	    // DBX issues either locations or functions
-	    myfunc = "";
+	    locn[0].myfunc = "";
 	}
 	else if (info_output.contains ("in ", 0))
 	{
@@ -401,37 +473,37 @@ void BreakPoint::process_dbx(string& info_output)
 		// Ladebug output:
 		// `PC==x in TYPE FUNC(ARGS...) "FILE":LINE { COMMANDS }
 
-		myfile_name = line.after("\"");
-		myfile_name = myfile_name.before("\"");
-		myline_nr   = get_positive_nr(line.after("\":"));
-		myfunc      = line.before("\"");
-		strip_space(myfunc);
+		locn[0].myfile_name = line.after("\"");
+		locn[0].myfile_name = locn[0].myfile_name.before("\"");
+		locn[0].myline_nr   = get_positive_nr(line.after("\":"));
+		locn[0].myfunc      = line.before("\"");
+		strip_space(locn[0].myfunc);
 
 		// Be sure to remove TYPE
-		while (myfunc.contains(" "))
-		    myfunc = myfunc.after(" ");
+		while (locn[0].myfunc.contains(" "))
+		    locn[0].myfunc = locn[0].myfunc.after(" ");
 	    }
 	    else
 	    {
 		// DBX output:
 		// `stop in FUNC'
-		myfunc = line.before(rxblanks_or_tabs);
-		strip_space(myfunc);
+		locn[0].myfunc = line.before(rxblanks_or_tabs);
+		strip_space(locn[0].myfunc);
 
-		myfile_name = "";
-		myline_nr = 0;
+		locn[0].myfile_name = "";
+		locn[0].myline_nr = 0;
 
 		// Attempt to get exact position of FUNC
-		const string pos = dbx_lookup(myfunc);
+		const string pos = dbx_lookup(locn[0].myfunc);
 		if (!pos.empty())
 		{
 		    const string file_name = pos.before(":");
 		    const string line_s    = pos.after(":");
 		    int new_line_nr  = get_positive_nr(line_s);
 
-		    myfile_name = file_name;
+		    locn[0].myfile_name = file_name;
 		    if (new_line_nr != 0)
-			myline_nr = new_line_nr;
+			locn[0].myline_nr = new_line_nr;
 		}
 	    }
 	}
@@ -524,16 +596,16 @@ void BreakPoint::process_xdb(string& info_output)
 
     // Get function name and position
     info_output = info_output.after(rxblanks_or_tabs);
-    myfunc = info_output.before(": ");
+    locn[0].myfunc = info_output.before(": ");
 
-    const string pos = dbx_lookup(myfunc);
+    const string pos = dbx_lookup(locn[0].myfunc);
     if (!pos.empty())
     {
-	myfile_name = pos.before(":");
+	locn[0].myfile_name = pos.before(":");
     }
 
     info_output = info_output.after(": ");
-    myline_nr = get_positive_nr(info_output);
+    locn[0].myline_nr = get_positive_nr(info_output);
 
     info_output = info_output.after('\n');
 
@@ -571,8 +643,8 @@ void BreakPoint::process_jdb(string& info_output)
 	    if (last_space > 0)
 		class_name = class_name.after(last_space);
 
-	    myfile_name = class_name;
-	    myline_nr   = line_no;
+	    locn[0].myfile_name = class_name;
+	    locn[0].myline_nr   = line_no;
 
 	    // Kill this line
 	    int beginning_of_line = colon;
@@ -604,14 +676,14 @@ void BreakPoint::process_perl(string& info_output)
 	if (first_line.contains(':', -1))
 	{
 	    // Get leading file name
-	    myfile_name = first_line.before(':');
+	    locn[0].myfile_name = first_line.before(':');
 	    info_output = info_output.after('\n');
 	}
     }
 
     static const StringArray empty;
     mycommands = empty;
-    myline_nr = atoi(info_output.chars());
+    locn[0].myline_nr = atoi(info_output.chars());
     info_output = info_output.after('\n');
     bool break_seen = false;
     while (info_output.contains("  ", 0))
@@ -741,28 +813,35 @@ bool BreakPoint::update(string& info_output,
 
     if (type() == BREAKPOINT)
     {
-	if (new_bp.address() != address())
+	// FIXME: I don't believe any of these can be reached for GDB.
+	// If I'm wrong then we will need to be more careful because
+	// the breakpoint could have multiple locations.
+	if (new_bp.locn[0].address() != locn[0].address())
 	{
+	    std::cerr << "\007**** BREAKPOINT ADDRESS CHANGED\007\n";
 	    changed = myaddress_changed = true;
-	    myaddress = new_bp.address();
+	    locn[0].myaddress = new_bp.locn[0].address();
 	}
 
-	if (new_bp.func() != func())
+	if (new_bp.locn[0].func() != locn[0].func())
 	{
+	    std::cerr << "\007**** BREAKPOINT FUNCTION CHANGED\007\n";
 	    changed = myposition_changed = true;
-	    myfunc = new_bp.func();
+	    locn[0].myfunc = new_bp.locn[0].func();
 	}
 
-	if (new_bp.file_name() != file_name())
+	if (new_bp.locn[0].file_name() != locn[0].file_name())
 	{
+	    std::cerr << "\007**** BREAKPOINT FILENAME CHANGED\007\n";
 	    changed = myposition_changed = myfile_changed = true;
-	    myfile_name = new_bp.file_name();
+	    locn[0].myfile_name = new_bp.locn[0].file_name();
 	}
 
-	if (new_bp.line_nr() != line_nr())
+	if (new_bp.locn[0].line_nr() != locn[0].line_nr())
 	{
+	    std::cerr << "\007**** BREAKPOINT LINE CHANGED\007\n";
 	    changed = myposition_changed = true;
-	    myline_nr = new_bp.line_nr();
+	    locn[0].myline_nr = new_bp.locn[0].line_nr();
 	}
     }
     else if (type() == WATCHPOINT)
@@ -824,7 +903,7 @@ bool BreakPoint::update(string& info_output,
 // Resources
 //-----------------------------------------------------------------------------
 
-string BreakPoint::pos() const
+string BreakPointLocn::pos() const
 {
     if (line_nr() == 0)
 	return "*" + address();
@@ -832,6 +911,11 @@ string BreakPoint::pos() const
 	return itostring(line_nr());
     else
 	return file_name() + ":" + itostring(line_nr());
+}
+
+string BreakPoint::pos() const
+{
+    return locn[0].pos();
 }
 
 string BreakPoint::symbol() const
@@ -1033,10 +1117,10 @@ bool BreakPoint::get_state(std::ostream& os, int nr, bool as_dummy,
 {
     if (pos.empty())
     { 
-	if (line_nr() > 0)
-	    pos = file_name() + ":" + itostring(line_nr());
+	if (locn[0].line_nr() > 0)
+	    pos = locn[0].file_name() + ":" + itostring(locn[0].line_nr());
 	else
-	    pos = string('*') + address();
+	    pos = string('*') + locn[0].address();
     }
 
     if (cond == char(-1))
@@ -1119,9 +1203,9 @@ bool BreakPoint::get_state(std::ostream& os, int nr, bool as_dummy,
 	switch (type())
 	{
 	case BREAKPOINT:
-	    if (!func().empty())
+	    if (!locn[0].func().empty())
 	    {
-		os << "stop in " << func() << "\n";
+		os << "stop in " << locn[0].func() << "\n";
 	    }
 	    else if (pos.contains('*', 0))
 	    {

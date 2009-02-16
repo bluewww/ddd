@@ -254,3 +254,4 @@ const regex rxpyprompt                  (rx_matcher, (void *)"D5");
 const regex rxpypos                     (rx_matcher, (void *)"D6");
 const regex rxfixednum                  (rx_matcher, (void *)"D7");
 const regex rxstring                    (rx_matcher, (void *)"D8");
+const regex rxint_dot_int		(rx_matcher, (void *)"D9");

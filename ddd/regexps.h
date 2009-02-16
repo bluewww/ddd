@@ -100,6 +100,7 @@ extern const regex rxgraph_cmd;
 extern const regex rxidentifier;
 extern const regex rxindex;
 extern const regex rxint;
+extern const regex rxint_dot_int;
 extern const regex rxinvalid_value;
 extern const regex rxjdbpos;
 extern const regex rxjdbprompt;

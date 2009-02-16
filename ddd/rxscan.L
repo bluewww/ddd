@@ -369,5 +369,6 @@ D5[(]+Pydb[)]+{w}		        RETURN(&rxpyprompt);
 D6[(][^:]*:{P}[)]:.*	                RETURN(&rxpypos);
 D7{D}(\.{D})?	                        RETURN(&rxfixednum);
 D8".*"	                                RETURN(&rxstring);
+D9{D}\.{D}                              RETURN(&rxint_dot_int);
 (.|\n)				        RETURN(0);  // Anything else
 %%
