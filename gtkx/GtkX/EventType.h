@@ -208,6 +208,7 @@ namespace GtkX {
 	    return tmp;
 	}
 	Event(void);
+	virtual Event *clone() const = 0;
 	virtual ~Event(void);
     };
 
@@ -215,6 +216,7 @@ namespace GtkX {
     {
 	RefPtr<XWindow> window;
 	char send_event;
+	Event *clone() const;
     };
 
     struct EventExpose: public Event
@@ -226,12 +228,14 @@ namespace GtkX {
 	int width;
 	int height;
 	int count; /* If non-zero, how many more events follow. */
+	Event *clone() const;
     };
 
     struct EventNoExpose: public Event
     {
 	RefPtr<XWindow> window;
 	char send_event;
+	Event *clone() const;
     };
 
     struct EventVisibility: public Event
@@ -239,6 +243,7 @@ namespace GtkX {
 	RefPtr<XWindow> window;
 	char send_event;
 	VisibilityState state;
+	Event *clone() const;
     };
 
     struct EventMotion: public Event
@@ -253,6 +258,7 @@ namespace GtkX {
 	short is_hint;
 	/* FIXME Device *device; */
 	double x_root, y_root;
+	Event *clone() const;
     };
 
     struct EventButton: public Event
@@ -267,6 +273,7 @@ namespace GtkX {
 	unsigned int button;
 	/* FIXME Device *device; */
 	double x_root, y_root;
+	Event *clone() const;
     };
 
     struct EventScroll: public Event
@@ -280,6 +287,7 @@ namespace GtkX {
 	ScrollDirection direction;
 	/* FIXME Device *device; */
 	double x_root, y_root;
+	Event *clone() const;
     };
 
     struct EventKey: public Event
@@ -294,6 +302,7 @@ namespace GtkX {
 	unsigned short hardware_keycode;
 	unsigned char group;
 	unsigned int is_modifier : 1;
+	Event *clone() const;
     };
 
     struct EventCrossing: public Event
@@ -310,6 +319,7 @@ namespace GtkX {
 	NotifyType detail;
 	char focus;
 	unsigned int state;
+	Event *clone() const;
     };
 
     struct EventFocus: public Event
@@ -317,6 +327,7 @@ namespace GtkX {
 	RefPtr<XWindow> window;
 	char send_event;
 	short in;
+	Event *clone() const;
     };
 
     struct EventConfigure: public Event
@@ -326,6 +337,7 @@ namespace GtkX {
 	int x, y;
 	int width;
 	int height;
+	Event *clone() const;
     };
 
     struct EventProperty: public Event
@@ -335,6 +347,7 @@ namespace GtkX {
 	Atom atom;
 	unsigned int time;
 	unsigned int state;
+	Event *clone() const;
     };
 
     struct EventSelection: public Event
@@ -346,6 +359,7 @@ namespace GtkX {
 	Atom property;
 	unsigned int time;
 	/* FIXME NativeWindow requestor; */
+	Event *clone() const;
     };
 
     struct EventOwnerChange: public Event
@@ -357,6 +371,7 @@ namespace GtkX {
 	Atom selection;
 	unsigned int time;
 	unsigned int selection_time;
+	Event *clone() const;
     };
 
     /* This event type will be used pretty rarely. It only is important
@@ -368,6 +383,7 @@ namespace GtkX {
 	char send_event;
 	unsigned int time;
 	/* FIXME Device *device; */
+	Event *clone() const;
     };
 
     struct EventClient: public Event
@@ -381,6 +397,7 @@ namespace GtkX {
 	    short s[10];
 	    long l[5];
 	} data;
+	Event *clone() const;
     };
 
     struct EventSetting: public Event
@@ -389,6 +406,7 @@ namespace GtkX {
 	char send_event;
 	SettingAction action;
 	char *name;
+	Event *clone() const;
     };
 
     struct EventWindowState: public Event
@@ -397,6 +415,7 @@ namespace GtkX {
 	char send_event;
 	WindowState changed_mask;
 	WindowState new_window_state;
+	Event *clone() const;
     };
 
     struct EventGrabBroken: public Event
@@ -406,6 +425,7 @@ namespace GtkX {
 	char keyboard;
 	char implicit;
 	RefPtr<XWindow> grab_window;
+	Event *clone() const;
     };
 
 }

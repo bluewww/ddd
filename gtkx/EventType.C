@@ -34,3 +34,99 @@ Event::Event(void)
 Event::~Event(void)
 {
 }
+
+Event *EventAny::clone() const
+{
+    return new EventAny(*this);
+}
+
+Event *EventExpose::clone() const
+{
+    return new EventExpose(*this);
+}
+
+Event *EventNoExpose::clone() const
+{
+    return new EventNoExpose(*this);
+}
+
+Event *EventVisibility::clone() const
+{
+    return new EventVisibility(*this);
+}
+
+Event *EventMotion::clone() const
+{
+    return new EventMotion(*this);
+}
+
+Event *EventButton::clone() const
+{
+    return new EventButton(*this);
+}
+
+Event *EventScroll::clone() const
+{
+    return new EventScroll(*this);
+}
+
+Event *EventKey::clone() const
+{
+    return new EventKey(*this);
+}
+
+Event *EventCrossing::clone() const
+{
+    return new EventCrossing(*this);
+}
+
+Event *EventFocus::clone() const
+{
+    return new EventFocus(*this);
+}
+
+Event *EventConfigure::clone() const
+{
+    return new EventConfigure(*this);
+}
+
+Event *EventProperty::clone() const
+{
+    return new EventProperty(*this);
+}
+
+Event *EventSelection::clone() const
+{
+    return new EventSelection(*this);
+}
+
+Event *EventOwnerChange::clone() const
+{
+    return new EventOwnerChange(*this);
+}
+
+Event *EventProximity::clone() const
+{
+    return new EventProximity(*this);
+}
+
+Event *EventClient::clone() const
+{
+    return new EventClient(*this);
+}
+
+Event *EventSetting::clone() const
+{
+    return new EventSetting(*this);
+}
+
+Event *EventWindowState::clone() const
+{
+    return new EventWindowState(*this);
+}
+
+Event *EventGrabBroken::clone() const
+{
+    return new EventGrabBroken(*this);
+}
+

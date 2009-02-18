@@ -225,7 +225,7 @@ RefPtr<Event> GtkX::translate_event(GdkEvent *in)
 #endif
     case GDK_UNMAP:
     {
-	Event *out = new Event;
+	Event *out = new EventAny;
 	result = out;
 	// std::cerr << "UnmapNotify\n";
 	out->type = UNMAP;
@@ -233,7 +233,7 @@ RefPtr<Event> GtkX::translate_event(GdkEvent *in)
     break;
     case GDK_MAP:
     {
-	Event *out = new Event;
+	Event *out = new EventAny;
 	result = out;
 	// std::cerr << "MapNotify\n";
 	out->type = MAP;
