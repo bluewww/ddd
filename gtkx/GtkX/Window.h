@@ -47,10 +47,13 @@ namespace GtkX {
 	const Gtk::Widget *internal(void) const;
 	Gtk::Container *gtk_container(void);
 	~Window(void);
+	PropertyProxy<bool> property_allow_shrink();
+	PropertyProxy_RO<bool> property_allow_shrink() const;
 	void set_title(const String &);
 	void set_default_size(int width, int height);
 	void get_position(int &x, int &y);
 	void get_size(int &width, int &height);
+	void resize(int width, int height);
 	void move(int x, int y);
     };
 

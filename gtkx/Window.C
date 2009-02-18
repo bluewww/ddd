@@ -104,8 +104,28 @@ Window::get_size(int &width, int &height)
 }
 
 void
+Window::resize(int width, int height)
+{
+    win_->resize(width, height);
+}
+
+void
 Window::move(int x, int y)
 {
     win_->move(x, y);
+}
+
+PropertyProxy<bool>
+Window::property_allow_shrink()
+{
+    // N.B. This must be consistent with Gtk.
+    return PropertyProxy<bool>(this, "allow-shrink");
+}
+
+PropertyProxy_RO<bool>
+Window::property_allow_shrink() const
+{
+    // N.B. This must be consistent with Gtk.
+    return PropertyProxy_RO<bool>(this, "allow-shrink");
 }
 
