@@ -1139,6 +1139,10 @@ Ddd*plain_stop.foreground:   STOP_COLOR
 Ddd*plain_cond.foreground:   STOP_COLOR
 Ddd*plain_temp.foreground:   STOP_COLOR
 
+Ddd*multi_stop.foreground:   MULTI_COLOR
+Ddd*multi_cond.foreground:   MULTI_COLOR
+Ddd*multi_temp.foreground:   MULTI_COLOR
+
 Ddd*grey_stop.foreground:    DISABLED_COLOR
 Ddd*grey_cond.foreground:    DISABLED_COLOR
 Ddd*grey_temp.foreground:    DISABLED_COLOR

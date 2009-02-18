@@ -7899,20 +7899,26 @@ void SourceView::set_max_glyphs (int nmax)
     {
 	// Destroy old widgets...
         DestroyOldWidgets(plain_stops[k]);
+	DestroyOldWidgets(multi_stops[k]);
 	DestroyOldWidgets(grey_stops[k]);
 	DestroyOldWidgets(plain_conds[k]);
+	DestroyOldWidgets(multi_conds[k]);
 	DestroyOldWidgets(grey_conds[k]);
 	DestroyOldWidgets(plain_temps[k]);
+	DestroyOldWidgets(multi_temps[k]);
 	DestroyOldWidgets(grey_temps[k]);
 
 	// ...make array empty...
 	plain_stops[k] = empty;
+	multi_stops[k] = empty;
 	grey_stops[k]  = empty;
 
 	plain_conds[k] = empty;
+	multi_conds[k] = empty;
 	grey_conds[k]  = empty;
 
 	plain_temps[k] = empty;
+	multi_temps[k] = empty;
 	grey_temps[k]  = empty;
 
 	// ...and make room for new widgets.  The last one is a null pointer.
@@ -7920,12 +7926,15 @@ void SourceView::set_max_glyphs (int nmax)
 	for (i = 0; i < nmax + 1; i++)
 	{
 	    plain_stops[k] += Widget(0);
+	    multi_stops[k]  += Widget(0);
 	    grey_stops[k]  += Widget(0);
 
 	    plain_conds[k] += Widget(0);
+	    multi_conds[k]  += Widget(0);
 	    grey_conds[k]  += Widget(0);
 
 	    plain_temps[k] += Widget(0);
+	    multi_temps[k]  += Widget(0);
 	    grey_temps[k]  += Widget(0);
 	}
     }
@@ -8284,12 +8293,15 @@ Widget SourceView::drag_conds[2]    = {0, 0};
 Widget SourceView::drag_temps[2]    = {0, 0};
 
 WidgetArray SourceView::plain_stops[2];
+WidgetArray SourceView::multi_stops[2];
 WidgetArray SourceView::grey_stops[2];
 
 WidgetArray SourceView::plain_conds[2];
+WidgetArray SourceView::multi_conds[2];
 WidgetArray SourceView::grey_conds[2];
 
 WidgetArray SourceView::plain_temps[2];
+WidgetArray SourceView::multi_temps[2];
 WidgetArray SourceView::grey_temps[2];
 
 
@@ -8407,6 +8419,18 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 		return False;
 	    }
 	}
+	for (i = 0; i < multi_stops[k].size() - 1; i++)
+	{
+	    if (multi_stops[k][i] == 0)
+	    {
+		multi_stops[k][i] = 
+		    create_glyph(form_w, "multi_stop",
+				 stop_bits, 
+				 stop_width,
+				 stop_height);
+		return False;
+	    }
+	}
 	for (i = 0; i < grey_stops[k].size() - 1; i++)
 	{
 	    if (grey_stops[k][i] == 0)
@@ -8420,6 +8444,18 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 	    }
 	}
 
+	for (i = 0; i < multi_temps[k].size() - 1; i++)
+	{
+	    if (multi_temps[k][i] == 0)
+	    {
+		multi_temps[k][i] = 
+		    create_glyph(form_w, "multi_temp",
+				 temp_bits, 
+				 temp_width,
+				 temp_height);
+		return False;
+	    }
+	}
 	for (i = 0; i < grey_temps[k].size() - 1; i++)
 	{
 	    if (grey_temps[k][i] == 0)
@@ -8433,6 +8469,18 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 	    }
 	}
 
+	for (i = 0; i < multi_conds[k].size() - 1; i++)
+	{
+	    if (multi_conds[k][i] == 0)
+	    {
+		multi_conds[k][i] = 
+		    create_glyph(form_w, "multi_cond",
+				 cond_bits, 
+				 cond_width,
+				 cond_height);
+		return False;
+	    }
+	}
 	for (i = 0; i < grey_conds[k].size() - 1; i++)
 	{
 	    if (grey_conds[k][i] == 0)
@@ -8856,12 +8904,15 @@ void SourceView::update_glyphs_now()
 	    continue;
 
 	int plain_stops_count = 0;
+	int multi_stops_count  = 0;
 	int grey_stops_count  = 0;
 
 	int plain_conds_count = 0;
+	int multi_conds_count = 0;
 	int grey_conds_count  = 0;
 
 	int plain_temps_count = 0;
+	int multi_temps_count = 0;
 	int grey_temps_count  = 0;
 
 	if (display_glyphs)
@@ -8908,9 +8959,14 @@ void SourceView::update_glyphs_now()
 		    if (bp->dispo() != BPKEEP)
 		    {
 			// Temporary breakpoint
-			if (bp->enabled())
-			    bp_glyph = map_stop_at(text_w, pos, plain_temps[k],
-						   plain_temps_count, positions);
+			if (bp->enabled()) {
+			    if (bp->n_locations() == 1)
+				bp_glyph = map_stop_at(text_w, pos, plain_temps[k],
+						       plain_temps_count, positions);
+			    else
+				bp_glyph = map_stop_at(text_w, pos, multi_temps[k],
+						       multi_temps_count, positions);
+			}
 			else
 			    bp_glyph = map_stop_at(text_w, pos, grey_temps[k],
 						   grey_temps_count, positions);
@@ -8918,9 +8974,14 @@ void SourceView::update_glyphs_now()
 		    else if (!bp->condition().empty() || bp->ignore_count() != 0)
 		    {
 			// Conditional breakpoint
-			if (bp->enabled())
-			    bp_glyph = map_stop_at(text_w, pos, plain_conds[k],
-						   plain_conds_count, positions);
+			if (bp->enabled()) {
+			    if (bp->n_locations() == 1)
+				bp_glyph = map_stop_at(text_w, pos, plain_conds[k],
+						       plain_conds_count, positions);
+			    else
+				bp_glyph = map_stop_at(text_w, pos, multi_conds[k],
+						       multi_conds_count, positions);
+			}
 			else
 			    bp_glyph = map_stop_at(text_w, pos, grey_conds[k],
 						   grey_conds_count, positions);
@@ -8928,9 +8989,14 @@ void SourceView::update_glyphs_now()
 		    else
 		    {
 			// Ordinary breakpoint
-			if (bp->enabled())
-			    bp_glyph = map_stop_at(text_w, pos, plain_stops[k],
-						   plain_stops_count, positions);
+			if (bp->enabled()) {
+			    if (bp->n_locations() == 1)
+				bp_glyph = map_stop_at(text_w, pos, plain_stops[k],
+						       plain_stops_count, positions);
+			    else
+				bp_glyph = map_stop_at(text_w, pos, multi_stops[k],
+						       multi_stops_count, positions);
+			}
 			else
 			    bp_glyph = map_stop_at(text_w, pos, grey_stops[k],
 						   grey_stops_count, positions);
@@ -8943,13 +9009,19 @@ void SourceView::update_glyphs_now()
 	Widget glyph;
 	while ((glyph = plain_stops[k][plain_stops_count++]))
 	    unmap_glyph(glyph);
+	while ((glyph = multi_stops[k][multi_stops_count++]))
+	    unmap_glyph(glyph);
 	while ((glyph = grey_stops[k][grey_stops_count++]))
 	    unmap_glyph(glyph);
 	while ((glyph = plain_conds[k][plain_conds_count++]))
 	    unmap_glyph(glyph);
+	while ((glyph = multi_conds[k][multi_conds_count++]))
+	    unmap_glyph(glyph);
 	while ((glyph = grey_conds[k][grey_conds_count++]))
 	    unmap_glyph(glyph);
 	while ((glyph = plain_temps[k][plain_temps_count++]))
+	    unmap_glyph(glyph);
+	while ((glyph = multi_temps[k][multi_temps_count++]))
 	    unmap_glyph(glyph);
 	while ((glyph = grey_temps[k][grey_temps_count++]))
 	    unmap_glyph(glyph);
@@ -9464,14 +9536,20 @@ void SourceView::log_glyphs()
 	int i;
 	for (i = 0; i < plain_stops[k].size() - 1; i++)
 	    log_glyph(plain_stops[k][i], i);
+	for (i = 0; i < multi_stops[k].size() - 1; i++)
+	    log_glyph(multi_stops[k][i], i);
 	for (i = 0; i < grey_stops[k].size() - 1; i++)
 	    log_glyph(grey_stops[k][i], i);
 
 	for (i = 0; i < plain_conds[k].size() - 1; i++)
 	    log_glyph(plain_conds[k][i], i);
+	for (i = 0; i < multi_conds[k].size() - 1; i++)
+	    log_glyph(multi_conds[k][i], i);
 	for (i = 0; i < grey_conds[k].size() - 1; i++)
 	    log_glyph(grey_conds[k][i], i);
 
+	for (i = 0; i < multi_temps[k].size() - 1; i++)
+	    log_glyph(multi_temps[k][i], i);
 	for (i = 0; i < plain_temps[k].size() - 1; i++)
 	    log_glyph(plain_temps[k][i], i);
 	for (i = 0; i < grey_temps[k].size() - 1; i++)

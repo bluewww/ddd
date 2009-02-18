@@ -67,6 +67,9 @@ dnl
 dnl STOP_COLOR is the default color for `stopping' actions.
 define([STOP_COLOR], [red4])dnl
 dnl
+dnl MULTI_COLOR is the default color for multi-location breakpoints
+define([MULTI_COLOR], [magenta2])dnl
+dnl
 dnl DATA_COLOR is the default color for `data' actions.
 define([DATA_COLOR], [blue4])dnl
 dnl

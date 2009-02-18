@@ -532,10 +532,13 @@ private:
     static Widget drag_arrows[2];
     static WidgetArray plain_stops[2];
     static WidgetArray grey_stops[2];
+    static WidgetArray multi_stops[2];
     static WidgetArray plain_conds[2];
     static WidgetArray grey_conds[2];
+    static WidgetArray multi_conds[2];
     static WidgetArray plain_temps[2];
     static WidgetArray grey_temps[2];
+    static WidgetArray multi_temps[2];
     static Widget drag_stops[2];
     static Widget drag_conds[2];
     static Widget drag_temps[2];
