@@ -759,6 +759,10 @@ static MString gdbDefaultValueText(GUI::ScrolledText *widget,
 				   bool for_documentation)
 {
     long startpos, endpos;
+
+    std::cerr << "gdbDefaultValueText event = " << event
+	      << " " << ((GUI::EventMotion *)event)->x << " "
+	      << ((GUI::EventMotion *)event)->y << "\n";
     string expr = 
 	source_view->get_word_at_event(widget, event, startpos, endpos);
 
@@ -794,13 +798,9 @@ static MString gdbDefaultValueText(GUI::ScrolledText *widget,
     int xbuf = rect.get_x();
     int ybuf = rect.get_y();
     widget->view().buffer_to_window_xy(xbuf, ybuf, x, y);
-    // if (XmTextPosToXY(widget, endpos, &x, &y))
-    std::cerr << "HELP: How to get position in textview window?\n";
 #ifdef NAG_ME
 #warning Test for position within textview window?
 #endif
-    x = 0;
-    y = 0;
     {
 	GUI::EventMotion *evm;
 	GUI::EventCrossing *evc;
@@ -1782,14 +1782,11 @@ void set_buttons(GUI::Container *buttons, const char *_button_list, bool manage)
 #endif
 
     // Register default help command
-    // DefaultHelpText           = gdbDefaultHelpText;
-    // DefaultTipText            = gdbDefaultTipText;
-    // DefaultDocumentationText  = gdbDefaultDocumentationText;
+    DefaultHelpText           = gdbDefaultHelpText;
+    DefaultTipText            = gdbDefaultTipText;
+    DefaultDocumentationText  = gdbDefaultDocumentationText;
     TextPosOfEvent            = textPosOfEvent;
-    // DisplayDocumentation      = showDocumentationInStatusLine;
-#ifdef NAG_ME
-#warning What do we do here?
-#endif
+    DisplayDocumentation      = showDocumentationInStatusLine;
 
     // Set sensitivity
     refresh_buttons();

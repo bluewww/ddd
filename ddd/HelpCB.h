@@ -214,14 +214,14 @@ extern MString (*DefaultDocumentationText)(Widget widget, XEvent *event);
 extern XmTextPosition (*TextPosOfEvent)(Widget widget, XEvent *event);
 #else
 // Create a help text if the `help' resource is empty
-extern GUI::String (*DefaultHelpText)(GUI::Widget *widget);
+extern MString (*DefaultHelpText)(GUI::Widget *widget);
 
 // Create a help text if the `tipString' resource is empty
-extern GUI::String (*DefaultTipText)(GUI::Widget *widget, GUI::Event *event);
+extern MString (*DefaultTipText)(GUI::Widget *widget, GUI::Event *event);
 
 // Create a help text for the documentation if the `documentationString'
 // resource is empty
-extern GUI::String (*DefaultDocumentationText)(GUI::Widget *widget, GUI::Event *event);
+extern MString (*DefaultDocumentationText)(GUI::Widget *widget, GUI::Event *event);
 
 // Return a text position associated with this event
 extern long (*TextPosOfEvent)(GUI::ScrolledText *widget, GUI::Event *event);

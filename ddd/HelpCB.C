@@ -225,9 +225,9 @@ MString helpOnVersionExtraText;
 static GUI::Dialog *help_dialog = 0;
 static GUI::Widget *help_shell  = 0;
 
-static GUI::String NoHelpText(GUI::Widget *widget);
-static GUI::String NoTipText(GUI::Widget *widget, GUI::Event *event);
-static GUI::String NoDocumentationText(GUI::Widget *widget, GUI::Event *event);
+static MString NoHelpText(GUI::Widget *widget);
+static MString NoTipText(GUI::Widget *widget, GUI::Event *event);
+static MString NoDocumentationText(GUI::Widget *widget, GUI::Event *event);
 static void _MStringHelpCB(GUI::Widget *widget, 
 			   const GUI::String &text,
 			   bool help_on_help = false);
@@ -336,6 +336,12 @@ static MString _get_tip_string(Widget widget, XEvent *event)
 #else
 static MString _get_tip_string(GUI::Widget *widget, GUI::Event *event)
 {
+    GUI::ScrolledText *text = dynamic_cast<GUI::ScrolledText *>(widget);
+    if (text) {
+	if (DefaultTipText != 0)
+	    return DefaultTipText(widget, event);
+	return NoTipText(widget, event);
+    }
     GUI::String s = GUI::String("No tip for ") + widget->get_name();
     return MString(s, true);
 }
@@ -426,8 +432,8 @@ static MString _get_documentation_string(GUI::Widget *widget, GUI::Event *event)
     if (dynamic_cast<GUI::ScrolledText *>(widget))
     {
 	if (DefaultDocumentationText != 0)
-	    return MString(DefaultDocumentationText(widget, event), true);
-	return MString(NoDocumentationText(widget, event), true);
+	    return DefaultDocumentationText(widget, event);
+	return NoDocumentationText(widget, event);
     }
 
     // Get text
@@ -713,23 +719,23 @@ static MString NoDocumentationText(Widget, XEvent *)
 }
 #else
 // Default help, tip, and documentation strings
-static GUI::String NoHelpText(GUI::Widget *widget)
+static MString NoHelpText(GUI::Widget *widget)
 {
     GUI::String text = "No help available for \"";
     text += widget->get_name();
     text += "\"";
 
-    return text;
+    return MString(text, true);
 }
 
-static GUI::String NoTipText(GUI::Widget *, GUI::Event *)
+static MString NoTipText(GUI::Widget *, GUI::Event *)
 {
-    return GUI::String("");	// Empty string
+    return MString("");	// Empty string
 }
 
-static GUI::String NoDocumentationText(GUI::Widget *, GUI::Event *)
+static MString NoDocumentationText(GUI::Widget *, GUI::Event *)
 {
-    return GUI::String("");	// Empty string
+    return MString("");	// Empty string
 }
 #endif
 
@@ -751,9 +757,9 @@ MString (*DefaultTipText)(Widget, XEvent *)           = NoTipText;
 MString (*DefaultDocumentationText)(Widget, XEvent *) = NoDocumentationText;
 XmTextPosition (*TextPosOfEvent)(Widget, XEvent *)    = NoTextPosOfEvent;
 #else
-GUI::String (*DefaultHelpText)(GUI::Widget *)                    = NoHelpText;
-GUI::String (*DefaultTipText)(GUI::Widget *, GUI::Event *)           = NoTipText;
-GUI::String (*DefaultDocumentationText)(GUI::Widget *, GUI::Event *) = NoDocumentationText;
+MString (*DefaultHelpText)(GUI::Widget *)                    = NoHelpText;
+MString (*DefaultTipText)(GUI::Widget *, GUI::Event *)           = NoTipText;
+MString (*DefaultDocumentationText)(GUI::Widget *, GUI::Event *) = NoDocumentationText;
 long (*TextPosOfEvent)(GUI::ScrolledText *, GUI::Event *)    = NoTextPosOfEvent;
 #endif
 
@@ -2321,14 +2327,10 @@ static bool tip_popped_up             = false;
 static XtIntervalId raise_tip_timer   = 0;
 #else
 // The shell containing the tip label.
-#if defined(USE_TIP_MENU)
-static GUI::Menu *tip_shell = NULL;
-#else
 static GUI::Window *tip_shell = NULL;
-#endif
 
 // The tip label.
-static GUI::Widget *tip_label = NULL;
+static GUI::Label *tip_label = NULL;
 
 // The tip row; a RowColumn widget surrounding the label.
 static GUI::Widget *tip_row = NULL;
@@ -2859,28 +2861,22 @@ static bool PopupTip(TipInfo *ti)
 
     if (tip_shell == 0)
     {
-#if defined(USE_TIP_MENU)
-	tip_shell = new GUI::Menu();
-	Gtk::MenuShell *gtkm = dynamic_cast<Gtk::MenuShell *>(tip_shell->internal());
-	if (gtkm) {
-	    // We can prevent the keyboard grab.
-	    // But there seems no way to prevent the mouse grab.
-	    gtkm->set_take_focus(false);
-	}
-#else
-	tip_shell = new GUI::Window("", "", GUI::WINDOW_POPUP);
-	Gtk::Window *win = dynamic_cast<Gtk::Window *>(tip_shell->internal());
-	if (win) {
-	    // win->set_decorated(false);
-	    // This fails, because the window pops up under the mouse,
-	    // causing a LEAVE event.
-	    win->set_position(Gtk::WIN_POS_MOUSE);
-	}
+	tip_shell = new GUI::Window("tipshell", "tipshell", GUI::WINDOW_POPUP);
+	tip_label = new GUI::Label(*tip_shell, GUI::PACK_EXPAND_WIDGET,
+				   "testbutton", _("Testbutton"));
+#if 0
+	tip_shell->property_allow_shrink() = true;
+	std::cerr << "ALLOW SHRINK = " << tip_shell->property_allow_shrink()
+		  << "\n";
 #endif
-	GUI::MenuItem *testbutton = new GUI::MenuItem(*tip_shell, GUI::PACK_EXPAND_WIDGET,
-						      "testbutton", _("Testbutton"));
-	testbutton->show();
+	tip_label->show();
     }
+
+    tip_label->set_text(tip.xmstring());
+    // FIXME: The GTK shell seems to grow, but will not shrink again.
+    GUI::Requisition req = tip_label->size_request();
+    std::cerr << "TIP REQUISITION " << req.width << " " << req.height << "\n";
+    tip_shell->resize(req.width, req.height);
 
     // Find a possible place for the tip.  Consider the alignment of
     // the parent composite as well as the distance to the screen edge.
@@ -3061,13 +3057,11 @@ static bool PopupTip(TipInfo *ti)
 	    height = 0;
 	}
 
-#if !defined(USE_TIP_MENU)
 	int tip_x, tip_y, tip_width, tip_height;
 	tip_shell->get_position(tip_x, tip_y);
 	tip_shell->get_size(tip_width, tip_height);
 	std::cerr << "Placing tip, tip_pos = " << tip_x << " " << tip_y << "\n";
 	std::cerr << "Placing tip, tip_size = " << tip_width << " " << tip_height << "\n";
-#endif
 
 	int x_offset = 5;
 	int y_offset = 5;
@@ -3158,11 +3152,7 @@ static bool PopupTip(TipInfo *ti)
 	
 	// and pop it up.
 	// XtPopup(tip_shell, XtGrabNone);
-#if defined(USE_TIP_MENU)
-	tip_shell->popup();
-#else
 	tip_shell->show();
-#endif
 	tip_popped_up = true;
 	last_placement = placement;
 	last_parent    = parent;
@@ -3170,15 +3160,7 @@ static bool PopupTip(TipInfo *ti)
 	return false;
     }
 
-#if defined(USE_TIP_MENU)
-    tip_shell->popup();
-    Gtk::MenuShell *gtkm = dynamic_cast<Gtk::MenuShell *>(tip_shell->internal());
-    if (gtkm) {
-	std::cerr << "HAS GRAB? = " << gtkm->has_grab() << "\n";
-    }
-#else
     tip_shell->show();
-#endif
     tip_popped_up = true;
     return false;
 }
@@ -3289,11 +3271,7 @@ static void ClearTip(GUI::Widget *w, GUI::Event *event)
     std::cerr << "tip_popped_up = " << tip_popped_up << "\n";
     if (tip_popped_up)
     {
-#if defined(USE_TIP_MENU)
-	tip_shell->popdown();
-#else
 	tip_shell->hide();
-#endif
 	tip_popped_up = false;
     }
 
@@ -3311,7 +3289,7 @@ static void ClearTip(GUI::Widget *w, GUI::Event *event)
 	// want flashing documentation strings.
 
 	static TipInfo ti;
-	ti.event  = event;
+	ti.event  = event->clone();
 	ti.widget = w;
 
 	clear_doc_timer =
@@ -3393,7 +3371,7 @@ static void RaiseTip(GUI::Widget *w, GUI::Event *event)
 	}
 
 	static TipInfo ti;
-	ti.event  = event;
+	ti.event  = event->clone();
 	ti.widget = w;
 
 	int doc_delay = 
@@ -3609,8 +3587,9 @@ static bool HandleTipEvent(GUI::Widget *w, GUI::Event *event)
 	if (text) {
 	    static GUI::ScrolledText *last_motion_widget           = NULL;
 	    static long last_motion_position = -1;
-#if 0
 	    int x, y;
+	    // N.B. If we receive a hint, we must call get_pointer().
+	    // Otherwise we will get no more events.
 	    if (motion->is_hint) {
 		w->get_pointer(x, y);
 	    }
@@ -3619,13 +3598,15 @@ static bool HandleTipEvent(GUI::Widget *w, GUI::Event *event)
 		y = motion->y;
 	    }
 	    long pos = TextPosOfEvent(text, event);
-#endif
-	    long pos = TextPosOfEvent(text, event);
+	    std::cerr << "EVENT AT " << x << " " << y << " " << pos << "\n";
 	    if (w != last_motion_widget || pos != last_motion_position)
 	    {
 		last_motion_widget   = text;
 		last_motion_position = pos;
 
+		std::cerr << "HandleTipEvent event = " << event
+			  << " " << ((GUI::EventMotion *)event)->x << " "
+			  << ((GUI::EventMotion *)event)->y << "\n";
 		ClearTip(w, event);
 		if (pos != -1)
 		    RaiseTip(w, event);

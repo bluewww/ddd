@@ -5199,7 +5199,7 @@ string SourceView::get_word_at_pos(GUI::ScrolledText *text_w,
 	return "";
       }
 
-    if (text_w->get_selection_bounds(startpos, endpos)
+    if (!text_w->get_selection_bounds(startpos, endpos)
 	|| pos < startpos
 	|| pos > endpos)
     {
