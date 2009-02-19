@@ -412,10 +412,6 @@ GRAPH_SRC = \
 
 if WITH_GTK
 COND_DDD_SRC = \
-	GtkScrolledText.C \
-	GtkScrolledText.h \
-	GtkMultiPaned.C \
-	GtkMultiPaned.h \
 	file_database.C
 else
 COND_DDD_SRC = \
