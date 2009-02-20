@@ -6957,6 +6957,17 @@ breakpoint, except the breakpoint number.
 To copy a breakpoint to a new location, press @key{Shift} while
 dragging.
 
+In GDB 6.8 and later, a breakpoint may have multiple locations. Each
+location is marked by a separate stop sign in the machine code
+window. However, these signs cannot be dragged, because GDB cannot
+modify individual locations within a breakpoint. Multi-location
+breakpoints may be distinguished from simple breakpoints by the color
+of the stop sign, which can be set using the resources
+@example
+Ddd*multi_stop.foreground: @var{value}
+Ddd*multi_cond.foreground: @var{value}
+Ddd*multi_temp.foreground: @var{value}
+@end example
 
 @node Looking up Breakpoints
 @subsection Looking up Breakpoints
