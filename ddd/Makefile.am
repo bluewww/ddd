@@ -1076,7 +1076,7 @@ bug.$(OBJEXT):	$(srcdir)/bug.C
 	@test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; test -s $@)
 
 
-.xbm.glyph_h:
+.pngxx.glyph_h:
 	gdk-pixbuf-csource --raw --name=`basename $*`_bits $< > $*.glyph_h
 
 # This jewel makes an `emboss' effect in two steps:
@@ -1102,6 +1102,25 @@ bug.$(OBJEXT):	$(srcdir)/bug.C
 	$(SED) 's/c #FF*/c white  g white  m white/' | \
 	$(SED) "s/noname/$${base}_xx_xpm/" | $(DELETE_CR) > $@~; \
 	$(RM) $${base}-object.pbm $${base}-mask.pbm $${base}-button.ppm
+	@test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; test -s $@)
+
+#	$(XBMTOPBM) $< | $(PNMDEPTH) 255 > $${base}-object.pgm;
+
+.xbm.pngxx:
+	@-base=`$(ECHO) $@ | $(SED) 's,.*/,,' | $(SED) 's/[.]pngxx//'`; \
+	dir=`dirname $<`; \
+	color='#CC0000'; \
+	echo $< | $(GREP) -q arrow && color='#00CC00'; \
+ 	mask=$${dir}/stop.xbm; \
+	echo $< | $(GREP) -q 'arrow\|signal' && mask=$${dir}/arrow.xbm; \
+	$(XBMTOPBM) $< > $${base}-object.pbm; \
+	$(XBMTOPBM) $${mask} | $(PBMMASK) | pnminvert > $${base}-mask.pbm; \
+	$(PPMTOXPM) $${base}-object.pbm | \
+	sed -e "s/#00*/$$color/g; s/#FF*/white/g" \
+	-e "s/\\<black\\>/$$color/g; s/\\<white\\>/white/g" | \
+	$(XPMTOPPM) > $${base}-colored.ppm; \
+	$(PNMTOPNG) -alpha $${base}-mask.pbm $${base}-colored.ppm > $@~; \
+	$(RM) $${base}-object.pbm $${base}-mask.pbm $${base}-colored.ppm
 	@test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; test -s $@)
 
 .xpm.xbmxx:
@@ -1462,6 +1481,8 @@ PPMTOPGM   = ppmtopgm
 PPMTOXPM   = ppmtoxpm
 XBMTOPBM   = xbmtopbm
 XPMTOPPM   = xpmtoppm
+PBMMASK    = pbmmask
+PNMTOPNG   = pnmtopng
 
 # The ImageMagick `convert' program (convert)
 CONVERT    = convert
