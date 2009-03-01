@@ -37,6 +37,8 @@
 #include "config.h"
 #endif
 
+#include <vector>
+
 #if defined(IF_XM)
 #include <X11/Intrinsic.h>
 #else
@@ -81,15 +83,55 @@ enum BPDispo {
     BPDIS			// Disable (`enable once' in GDB)
 };
 
+class BreakPoint;
+
+class BreakPointLocn {
+    string  myfile_name;	// File name
+    int     myline_nr;		// Line number
+    string  myaddress;		// Address in memory
+    string  myfunc;		// Function name
+#if defined(IF_XM)
+    Widget  mysource_glyph;	// Associated glyph in source
+    Widget  mycode_glyph;	// Associated glyph in code
+#else
+    GUI::GlyphMark *mysource_glyph;	// Associated glyph in source
+    GUI::GlyphMark *mycode_glyph;	// Associated glyph in code
+#endif
+
+public:
+    BreakPointLocn():
+	myfile_name(""),
+	myline_nr(0),
+	myaddress(""),
+	myfunc(""),
+	mysource_glyph(0),
+	mycode_glyph(0)
+    {
+    }
+    // Breakpoint position
+    const string& file_name() const { return myfile_name; }
+    int line_nr() const             { return myline_nr; }
+    const string& address() const   { return myaddress; }
+    string pos() const;
+    const string& func() const      { return myfunc; }
+#if defined(IF_XM)
+    // Associated glyphs in source and machine code
+    Widget& source_glyph() { return mysource_glyph; }
+    Widget& code_glyph()   { return mycode_glyph; }
+#else
+    // Associated glyphs in source and machine code
+    GUI::GlyphMark *&source_glyph() { return mysource_glyph; }
+    GUI::GlyphMark *&code_glyph()   { return mycode_glyph; }
+#endif
+    friend class BreakPoint;
+};
+
 class BreakPoint {
     int     mynumber;		// Breakpoint number
     BPType  mytype;		// Type, as above
     BPDispo mydispo;		// Disposition, as above
     bool    myenabled;		// Is breakpoint enabled?
-    string  myfile_name;	// File name
-    int     myline_nr;		// Line number
-    string  myaddress;		// Address in memory
-    string  myfunc;		// Function name
+    std::vector<BreakPointLocn> locn;
     string  myexpr;		// Expression to watch (for watchpoints)
     string  myinfos;		// Additional information (human-readable)
     int     myignore_count;	// Ignore count
@@ -103,14 +145,6 @@ class BreakPoint {
     bool    myposition_changed;	// True if position changed
     bool    myaddress_changed;	// True if address changed
     bool    myselected;		// True if selected
-
-#if defined(IF_XM)
-    Widget  mysource_glyph;	// Associated glyph in source
-    Widget  mycode_glyph;	// Associated glyph in code
-#else
-    GUI::GlyphMark *mysource_glyph;	// Associated glyph in source
-    GUI::GlyphMark *mycode_glyph;	// Associated glyph in code
-#endif
 
 private:
     BreakPoint(const BreakPoint&);
@@ -156,15 +190,21 @@ public:
     // What to do when breakpoint is reached.
     BPDispo dispo() const { return mydispo; }
 
+    // Number of items (GDB has breakpoints at multiple locations)
+    int n_locations() const { return locn.size(); }
+
+    // Get numbered locn
+    BreakPointLocn &get_location(int i) { return locn[i]; }
+
     // Whether breakpoint is enabled
     bool enabled() const;
 
-    // Breakpoint position
-    const string& file_name() const { return myfile_name; }
-    int line_nr() const             { return myline_nr; }
-    const string& address() const   { return myaddress; }
+    // Breakpoint position (for simple breakpoints)
+    const string& file_name() const { return locn[0].myfile_name; }
+    int line_nr() const             { return locn[0].myline_nr; }
+    const string& address() const   { return locn[0].myaddress; }
     string pos() const;
-    const string& func() const      { return myfunc; }
+    const string& func() const      { return locn[0].myfunc; }
 
     // Watchpoint info
     const string& expr() const   { return myexpr; }
@@ -182,16 +222,6 @@ public:
 
     // Selection state
     bool& selected() { return myselected; }
-
-#if defined(IF_XM)
-    // Associated glyphs in source and machine code
-    Widget& source_glyph() { return mysource_glyph; }
-    Widget& code_glyph()   { return mycode_glyph; }
-#else
-    // Associated glyphs in source and machine code
-    GUI::GlyphMark *&source_glyph() { return mysource_glyph; }
-    GUI::GlyphMark *&code_glyph()   { return mycode_glyph; }
-#endif
 
     // True iff `enabled' status changed
     bool enabled_changed () const { return myenabled_changed; }

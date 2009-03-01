@@ -48,6 +48,8 @@
 #ifndef _DDD_SourceView_h
 #define _DDD_SourceView_h
 
+#include <vector>
+
 #if defined(IF_XM)
 // Motif includes
 #include <Xm/Xm.h>
@@ -568,6 +570,12 @@ class SourceView {
     // True iff breakpoint BP is in FILE (at LINE, if given)
     static bool bp_matches(BreakPoint *bp, const string& file, int line = 0);
 
+    // True iff breakpoint location locn is in current file (at LINE, if given)
+    static bool bp_matches(BreakPointLocn &locn, int line = 0);
+
+    // True iff breakpoint location locn is in FILE (at LINE, if given)
+    static bool bp_matches(BreakPointLocn &locn, const string& file, int line = 0);
+
     // True iff FILE1 is equal to FILE2
     static bool file_matches(const string& file1, const string& file2);
 
@@ -823,10 +831,13 @@ private:
     static Widget drag_arrows[2];
     static WidgetArray plain_stops[2];
     static WidgetArray grey_stops[2];
+    static WidgetArray multi_stops[2];
     static WidgetArray plain_conds[2];
     static WidgetArray grey_conds[2];
+    static WidgetArray multi_conds[2];
     static WidgetArray plain_temps[2];
     static WidgetArray grey_temps[2];
+    static WidgetArray multi_temps[2];
     static Widget drag_stops[2];
     static Widget drag_conds[2];
     static Widget drag_temps[2];
@@ -1254,7 +1265,7 @@ public:
     static string clear_command(string arg, bool clear_next = false,
 				int first_bp = 0);
     // Return `delete N' command.
-    static string delete_command(int bp_nr);
+    static std::vector<string> delete_commands(int bp_nr);
 
     // Return `{ COMMAND; }'
     static string command_list(const string& cmd);
