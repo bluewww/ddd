@@ -848,10 +848,13 @@ private:
     static GUI::ImageHandle signal_arrow;
     static GUI::ImageHandle drag_arrow;
     static GUI::ImageHandle plain_stop;
+    static GUI::ImageHandle multi_stop;
     static GUI::ImageHandle grey_stop;
     static GUI::ImageHandle plain_cond;
+    static GUI::ImageHandle multi_cond;
     static GUI::ImageHandle grey_cond;
     static GUI::ImageHandle plain_temp;
+    static GUI::ImageHandle multi_temp;
     static GUI::ImageHandle grey_temp;
     static GUI::ImageHandle drag_stop;
     static GUI::ImageHandle drag_cond;

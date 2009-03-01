@@ -1796,6 +1796,10 @@ bool SourceView::move_bp(int bp_nr, const string& a, GUI::Widget *w, bool copy)
     {
 	if (address.contains('*', 0))
 	{
+	    if (bp->n_locations() > 1) {
+		post_warning("Cannot move multiple BP in code window");
+		return false;
+	    }
 	    if (compare_address(address.after('*'), bp->address()) == 0)
 		return false;	// Breakpoint already at address
 	}
@@ -2173,7 +2177,8 @@ void SourceView::delete_bps(const IntArray& nrs, GUI::Widget *w)
 	{
 	    BreakPoint *bp = bp_map.get(nrs[i]);
 	    if (bp != 0)
-		gdb_command(clear_command(bp->pos()));
+		for (int j = 0; j < bp->n_locations(); j++)
+		    gdb_command(clear_command(bp->get_location(j).pos()));
 	}
     }
     else if (gdb->has_delete_command())
@@ -2182,8 +2187,11 @@ void SourceView::delete_bps(const IntArray& nrs, GUI::Widget *w)
     }
     else
     {
-        for (int i = 0; i < nrs.size(); i++)
-	    gdb_command(delete_command(nrs[i]));
+        for (int i = 0; i < nrs.size(); i++) {
+	    std::vector<string> delcmds = delete_commands(nrs[i]);
+	    for (unsigned j = 0; j < delcmds.size(); j++)
+		gdb_command(delcmds[j]);
+	}
     }
 }
 #endif
@@ -2368,10 +2376,19 @@ void SourceView::bp_popup_set_pcCB(Widget w, XtPointer client_data,
 void SourceView::bp_popup_set_pcCB(GUI::Widget *w, int *bp_nr)
 {
     BreakPoint *bp = bp_map.get(*bp_nr);
-    if (bp != 0 && !bp->address().empty())
+    if (bp != 0)
     {
-	string address = string('*') + bp->address();
-	line_popup_set_pcCB(w, &address);
+	if (bp->n_locations() > 1)
+	{
+	    post_warning("BP has multiple locations, PC is ambiguous");
+	    return;
+	}
+	string addr = bp->address();
+	if (!addr.empty())
+	{
+	    string address = string('*') + addr;
+	    line_popup_set_pcCB(w, &address);
+	}
     }
 }
 #endif
@@ -3008,7 +3025,16 @@ void SourceView::set_source_argCB(GUI::ScrolledText *text_w, bool client_data)
 		     bp != 0;
 		     bp = bp_map.next(ref))
 		{
-		    bp->selected() = (bp_matches(bp, line_nr));
+		    int i;
+		    bp->selected() = false;
+		    for (i = 0; i < bp->n_locations(); i++) {
+			BreakPointLocn &locn = bp->get_location(i);
+			if (bp->type() == BREAKPOINT && 
+			    compare_address(pos, locn.address()) == 0) {
+			    bp->selected() = true;
+			    break;
+			}
+		    }
 		}
 	    }
 	}
@@ -4643,14 +4669,17 @@ bool SourceView::get_line_of_pos (GUI::Widget *w,
 	     bp != 0;
 	     bp = bp_map.next(ref))
 	{
-	    if (w == bp->source_glyph() || w == bp->code_glyph())
-	    {
-		// Breakpoint glyph found
-		line_nr = bp->line_nr();
-		address = bp->address();
-		in_text = false;
-		bp_nr   = bp->number();
-		return true;
+	    for (int i = 0; i < bp->n_locations(); i++) {
+		BreakPointLocn &locn = bp->get_location(i);
+		if (w == locn.source_glyph() || w == locn.code_glyph())
+		{
+		    // Breakpoint glyph found
+		    line_nr = locn.line_nr();
+		    address = locn.address();
+		    in_text = false;
+		    bp_nr   = bp->number();
+		    return true;
+		}
 	    }
 	}
 #endif
@@ -4748,16 +4777,20 @@ bool SourceView::get_line_of_pos (GUI::Widget *w,
 			    BreakPoint* bp = *i;
 			    assert(bp != NULL);
 
-			    GUI::GlyphMark *bp_glyph = bp->source_glyph();
-			    int x0 = bp_glyph->x;
-			    int y0 = bp_glyph->y;
-			    int x1 = x0 + bp_glyph->glyph->get_width();
-			    int y1 = y0 + bp_glyph->glyph->get_height();
-			    if ((x >= x0 && x < x1) && (y >= y0 && y < y1))
-			    {
-				bp_nr = bp->number();
-				break; // exit for loop
+			    int j;
+			    for (j = 0; j < bp->n_locations(); j++) {
+				GUI::GlyphMark *bp_glyph = bp->get_location(j).source_glyph();
+				int x0 = bp_glyph->x;
+				int y0 = bp_glyph->y;
+				int x1 = x0 + bp_glyph->glyph->get_width();
+				int y1 = y0 + bp_glyph->glyph->get_height();
+				if ((x >= x0 && x < x1) && (y >= y0 && y < y1))
+				{
+				    bp_nr = bp->number();
+				    break; // exit for loop
+				}
 			    }
+			    if (j < bp->n_locations()) break;
 			}
 		    }
 		}
@@ -4804,8 +4837,9 @@ bool SourceView::get_line_of_pos (GUI::Widget *w,
 		     bp != 0;
 		     bp = bp_map.next(ref))
 		{
-		    if (compare_address(address, bp->address()) == 0)
-			bps += bp->number();
+		    for (int i = 0; i < bp->n_locations(); i++)
+			if (compare_address(address, bp->get_location(i).address()) == 0)
+			    bps += bp->number();
 		}
 		if (bps.size() == 1)
 		{
@@ -8362,9 +8396,12 @@ void SourceView::doubleClickAct(GUI::Widget *w, GUI::Event *e, GUI::String *para
 		 bp != 0;
 		 bp = bp_map.next(ref))
 	    {
-		if (bp->type() == BREAKPOINT && 
-		    compare_address(address, bp->address()) == 0)
-		    bps += bp->number();
+		for (int i = 0; i < bp->n_locations(); i++) {
+		    BreakPointLocn &locn = bp->get_location(i);
+		    if (bp->type() == BREAKPOINT && 
+			compare_address(address, locn.address()) == 0)
+			bps += bp->number();
+		}
 	    }
 	}
 
@@ -10116,8 +10153,7 @@ void SourceView::set_bp_commands(IntArray& nrs, const StringArray& commands,
 	{
 	    // Replace breakpoint by new one with command.
 	    const string cmd = "b " + 
-		bp->file_name() + ":" + 
-		itostring(bp->line_nr()) + 
+		bp->file_name() + ":" + itostring(bp->line_nr()) + 
 		" {" + action + "}";
 	    gdb_command(cmd, origin);
 	    delete_bp(bp->number(), origin);
@@ -12458,10 +12494,13 @@ GUI::ImageHandle SourceView::past_arrow;
 GUI::ImageHandle SourceView::signal_arrow;
 GUI::ImageHandle SourceView::drag_arrow;
 GUI::ImageHandle SourceView::plain_stop;
+GUI::ImageHandle SourceView::multi_stop;
 GUI::ImageHandle SourceView::grey_stop;
 GUI::ImageHandle SourceView::plain_cond;
+GUI::ImageHandle SourceView::multi_cond;
 GUI::ImageHandle SourceView::grey_cond;
 GUI::ImageHandle SourceView::plain_temp;
+GUI::ImageHandle SourceView::multi_temp;
 GUI::ImageHandle SourceView::grey_temp;
 GUI::ImageHandle SourceView::drag_stop;
 GUI::ImageHandle SourceView::drag_cond;
@@ -12701,8 +12740,11 @@ void SourceView::CreateGlyphsNow(void)
     signal_arrow = GUI::image_create_from_inline(-1, signalarrow_bits);
     drag_arrow = GUI::image_create_from_inline(-1, dragarrow_bits);
     plain_stop = GUI::image_create_from_inline(-1, stop_bits);
+    multi_stop = GUI::image_create_from_inline(-1, stop_bits);
     plain_temp = GUI::image_create_from_inline(-1, temp_bits);
+    multi_temp = GUI::image_create_from_inline(-1, temp_bits);
     plain_cond = GUI::image_create_from_inline(-1, cond_bits);
+    multi_cond = GUI::image_create_from_inline(-1, cond_bits);
     grey_stop = GUI::image_create_from_inline(-1, greystop_bits);
     grey_temp = GUI::image_create_from_inline(-1, greytemp_bits);
     grey_cond = GUI::image_create_from_inline(-1, greycond_bits);
@@ -13346,10 +13388,13 @@ void SourceView::update_glyphs_now()
 		view = &code_text_w->view();
 	    
 	    view->unmap_glyph(plain_temp);
+	    view->unmap_glyph(multi_temp);
 	    view->unmap_glyph(grey_temp);
 	    view->unmap_glyph(plain_cond);
+	    view->unmap_glyph(multi_cond);
 	    view->unmap_glyph(grey_cond);
 	    view->unmap_glyph(plain_stop);
+	    view->unmap_glyph(multi_stop);
 	    view->unmap_glyph(grey_stop);
 
 	    MapRef ref;
@@ -13357,55 +13402,78 @@ void SourceView::update_glyphs_now()
 		 bp != 0;
 		 bp = bp_map.next(ref))
 	    {
-		if (bp->type() != BREAKPOINT)
-		    continue;
-
-		GUI::ScrolledText *text_w = k ? code_text_w : source_text_w;
-
-		GUI::GlyphMark *&bp_glyph = k ? bp->code_glyph() : bp->source_glyph();
-		bp_glyph = 0;
-
-		long pos;
-		if (k == 0)
-		{
-		    // Find source position
-		    if (!bp_matches(bp)
-			|| line_count <= 0
-			|| bp->line_nr() <= 0
-			|| bp->line_nr() > line_count)
+		// According to the GDB folks
+		// (http://sourceware.org/ml/gdb/2009-02/msg00117.html)
+		// we can assume the source locations are all the same.
+		// So we only need one source glyph.
+		int n = (k == 0) ? 1 : bp->n_locations();
+		for (int i = 0; i < n; i++) {
+		    BreakPointLocn &locn = bp->get_location(i);
+		    if (bp->type() != BREAKPOINT)
 			continue;
 
-		    pos = pos_of_line(bp->line_nr());
-		}
-		else
-		{
-		    // Find code position
-		    pos = find_pc(bp->address());
-		}
+		    GUI::ScrolledText *text_w = k ? code_text_w : source_text_w;
 
-		if (bp->dispo() != BPKEEP)
-		{
-		    // Temporary breakpoint
-		    if (bp->enabled())
-			bp_glyph = map_stop_at(text_w, pos, plain_temp, positions);
+		    GUI::GlyphMark *&bp_glyph = k ? locn.code_glyph() : locn.source_glyph();
+		    bp_glyph = 0;
+
+		    long pos;
+		    if (k == 0)
+		    {
+			// Find source position
+			if (!bp_matches(bp)
+			    || line_count <= 0
+			    || locn.line_nr() <= 0
+			    || locn.line_nr() > line_count)
+			    continue;
+
+			pos = pos_of_line(locn.line_nr());
+		    }
 		    else
-			bp_glyph = map_stop_at(text_w, pos, grey_temp, positions);
-		}
-		else if (!bp->condition().empty() || bp->ignore_count() != 0)
-		{
-		    // Conditional breakpoint
-		    if (bp->enabled())
-			bp_glyph = map_stop_at(text_w, pos, plain_cond, positions);
+		    {
+			// Find code position
+			pos = find_pc(locn.address());
+		    }
+
+		    if (bp->dispo() != BPKEEP)
+		    {
+			// Temporary breakpoint
+			if (bp->enabled()) {
+			    if (bp->n_locations() == 1)
+				bp_glyph = map_stop_at(text_w, pos, plain_temp, positions);
+			    else
+				bp_glyph = map_stop_at(text_w, pos, multi_temp, positions);
+			}
+			else {
+			    bp_glyph = map_stop_at(text_w, pos, grey_temp, positions);
+			}
+		    }
+		    else if (!bp->condition().empty() || bp->ignore_count() != 0)
+		    {
+			// Conditional breakpoint
+			if (bp->enabled()) {
+			    if (bp->n_locations() == 1)
+				bp_glyph = map_stop_at(text_w, pos, plain_cond, positions);
+			    else
+				bp_glyph = map_stop_at(text_w, pos, multi_cond, positions);
+			}
+			else {
+			    bp_glyph = map_stop_at(text_w, pos, grey_cond, positions);
+			}
+		    }
 		    else
-			bp_glyph = map_stop_at(text_w, pos, grey_cond, positions);
-		}
-		else
-		{
-		    // Ordinary breakpoint
-		    if (bp->enabled())
-			bp_glyph = map_stop_at(text_w, pos, plain_stop, positions);
-		    else
-			bp_glyph = map_stop_at(text_w, pos, grey_stop, positions);
+		    {
+			// Ordinary breakpoint
+			if (bp->enabled()) {
+			    if (bp->n_locations() == 1)
+				bp_glyph = map_stop_at(text_w, pos, plain_stop, positions);
+			    else
+				bp_glyph = map_stop_at(text_w, pos, multi_stop, positions);
+			}
+			else {
+			    bp_glyph = map_stop_at(text_w, pos, grey_stop, positions);
+			}
+		    }
 		}
 	    }
 	}

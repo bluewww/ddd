@@ -60,10 +60,6 @@ static regex rxname_colon_int_nl ("[^ ]+:[0-9]+\n");
 static regex rxint_dot_int ("[0-9]+\.[0-9]+");
 #endif
 
-// FIXME: Should go in Locn
-//      mysource_glyph(0),
-//      mycode_glyph(0)
-
 // Create new breakpoint from INFO_OUTPUT
 BreakPoint::BreakPoint(string& info_output, const string& arg, 
 		       int number, string& file)
