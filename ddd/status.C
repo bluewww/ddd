@@ -57,6 +57,9 @@ char status_rcsid[] =
 
 #include <X11/IntrinsicP.h>	// LessTif hacks
 #include "LessTifH.h"
+#else
+#include <GUI/Window.h>
+#include <GUI/MenuShell.h>
 #endif
 
 //-----------------------------------------------------------------------------
@@ -264,6 +267,18 @@ static Widget create_status_history(Widget parent)
 
     return history_shell;
 }
+#else
+static GUI::Menu *create_status_history(GUI::Widget *parent)
+{
+    static GUI::Menu *history_shell = 0;
+
+    if (history_shell != 0)
+	return history_shell;
+
+    history_shell = new GUI::Menu(*parent, "status_history");
+
+    return history_shell;
+}
 #endif
 
 #if defined(IF_XM)
@@ -319,9 +334,29 @@ Widget status_history(Widget parent)
 #else
 GUI::Menu *status_history(GUI::Widget *parent)
 {
-    static int errcnt = 0;
-    if (!errcnt++) std::cerr << "No status history: may crash!\n";
-    return NULL;
+    GUI::Menu *history_shell = create_status_history(parent);
+
+    history_shell->clear();
+
+    if (history == 0 || status_history_size == 0)
+    {
+	history_shell->append("No history.");
+    }
+    else
+    {
+	history_shell->append("Recent messages (oldest first)");
+
+	int i = current_history;
+	do {
+	    if (!history[i].isEmpty())
+	    {
+		history_shell->append(history[i].str().chars());
+	    }
+	    i = (i + 1) % status_history_size;
+	} while (i != current_history);
+    }
+
+    return history_shell;
 }
 #endif
 
@@ -470,6 +505,18 @@ static bool is_prefix(const MString& m1, const MString& m2)
 
     return t1 == XmSTRING_COMPONENT_END;
 }
+#else
+// Return true iff S1 is a prefix of S2
+static bool is_prefix(const MString& m1, const MString& m2)
+{
+    GUI::String str1 = m1.xmstring();
+    GUI::String str2 = m2.xmstring();
+    int l1 = str1.length();
+    int l2 = str2.length();
+    if ((l1 < l2) && (str1 == str2.substr(0, l1))) return true;
+    return false;
+}
+#endif
 
 static void add_to_status_history(const MString& message)
 {
@@ -493,11 +540,6 @@ static void add_to_status_history(const MString& message)
     history[current_history] = message;
     current_history = (current_history + 1) % status_history_size;
 }
-#else
-#ifdef NAG_ME
-#warning Status history not supported.
-#endif
-#endif
 
 //-----------------------------------------------------------------------------
 // Status recognition
@@ -590,14 +632,8 @@ void set_status_mstring(const MString& message, bool temporary)
     if (status_w == 0)
 	return;
 
-#if defined(IF_XM)
     if (!temporary)
 	add_to_status_history(message);
-#else
-#ifdef NAG_ME
-#warning Status history not implemented
-#endif
-#endif
 
     if (!status_locked)
     {

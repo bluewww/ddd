@@ -55,6 +55,7 @@ namespace GtkX {
 		       double x_align=0.5, double y_align=0.5);
 	void set_submenu(GtkX::Menu &sub);
 	sigc::signal<void> &signal_activate();
+	friend class Menu;
     };
 
 }

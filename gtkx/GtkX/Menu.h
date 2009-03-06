@@ -31,6 +31,7 @@
 #define GTKX_MENU_H
 
 #include <GtkX/MenuShell.h>
+#include <GtkX/MenuItem.h>
 #include <gtkmm/menu.h>
 
 namespace GtkX {
@@ -44,6 +45,9 @@ namespace GtkX {
 	~Menu(void);
 	Gtk::Widget *internal(void);
 	const Gtk::Widget *internal(void) const;
+	void clear();
+	void append(const String &label);
+	void prepend(const String &label);
 	void popup();
 	void popdown();
     };

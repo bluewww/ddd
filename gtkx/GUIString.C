@@ -137,3 +137,9 @@ String::length() const
     return s_.length();
 }
 
+String
+String::substr(String::size_type i, String::size_type n) const
+{
+    return String(s_.substr(i, n));
+}
+

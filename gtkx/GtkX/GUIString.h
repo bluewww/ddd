@@ -65,6 +65,7 @@ namespace GtkX {
 	size_type find(const String &str, size_type i=0) const;
 	size_type size() const;
 	size_type length() const;
+	String substr(size_type i, size_type n) const;
     };
 
     const GtkX::String mklabel(const GtkX::String &name,

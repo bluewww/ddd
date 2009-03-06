@@ -25,6 +25,8 @@
 
 // ***************************************************************************
 
+#include <iostream>
+
 #include <GtkX/Menu.h>
 
 using namespace GtkX;
@@ -58,6 +60,37 @@ const Gtk::Widget *
 Menu::internal(void) const
 {
     return menu_;
+}
+
+void
+Menu::clear()
+{
+    Gtk::Menu_Helpers::MenuList &items = menu_->items();
+    Gtk::Menu_Helpers::MenuList::iterator iter;
+    while ((iter = items.begin()) != items.end()) {
+	Gtk::MenuItem *anitem = &*iter;
+	std::cerr << "Deleting menu item " << anitem << "\n";
+	// Item is automatically removed when destroyed.
+	delete anitem;
+    }
+}
+
+void
+Menu::append(const String &label)
+{
+    Gtk::Menu_Helpers::MenuList &items = menu_->items();
+    Gtk::MenuItem *glab = new Gtk::MenuItem(label.s());
+    glab->show();
+    items.push_back(*glab);
+}
+
+void
+Menu::prepend(const String &label)
+{
+    Gtk::Menu_Helpers::MenuList &items = menu_->items();
+    Gtk::MenuItem *glab = new Gtk::MenuItem(label.s());
+    glab->show();
+    items.push_front(*glab);
 }
 
 void
