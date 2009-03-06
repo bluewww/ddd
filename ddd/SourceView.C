@@ -575,6 +575,7 @@ MMDesc SourceView::text_popup[] =
 #include "icons/glyphs/signalarrow.xbm"
 #include "icons/glyphs/dragarrow.xbm"
 #include "icons/glyphs/stop.xbm"
+#include "icons/glyphs/multistop.xbm"
 #include "icons/glyphs/greystop.xbm"
 #include "icons/glyphs/dragstop.xbm"
 #include "icons/glyphs/cond.xbm"
@@ -590,6 +591,7 @@ MMDesc SourceView::text_popup[] =
 #include "icons/glyphs/signalarrow.glyph_h"
 #include "icons/glyphs/dragarrow.glyph_h"
 #include "icons/glyphs/stop.glyph_h"
+#include "icons/glyphs/multistop.glyph_h"
 #include "icons/glyphs/greystop.glyph_h"
 #include "icons/glyphs/dragstop.glyph_h"
 #include "icons/glyphs/cond.glyph_h"
@@ -12629,9 +12631,9 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 	    {
 		multi_stops[k][i] = 
 		    create_glyph(form_w, "multi_stop",
-				 stop_bits, 
-				 stop_width,
-				 stop_height);
+				 multistop_bits, 
+				 multistop_width,
+				 multistop_height);
 		return False;
 	    }
 	}

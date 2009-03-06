@@ -1111,6 +1111,7 @@ bug.$(OBJEXT):	$(srcdir)/bug.C
 	dir=`dirname $<`; \
 	color='#CC0000'; \
 	echo $< | $(GREP) -q arrow && color='#00CC00'; \
+	echo $< | $(GREP) -q multistop && color='#CC0088'; \
  	mask=$${dir}/stop.xbm; \
 	echo $< | $(GREP) -q 'arrow\|signal' && mask=$${dir}/arrow.xbm; \
 	$(XBMTOPBM) $< > $${base}-object.pbm; \
@@ -1199,6 +1200,7 @@ XBM_GLYPH_ICONS = \
 	$(glyphsdir)/pastarrow.xbm \
 	$(glyphsdir)/signalarrow.xbm \
 	$(glyphsdir)/stop.xbm \
+	$(glyphsdir)/multistop.xbm \
 	$(glyphsdir)/temp.xbm
 
 GDK_GLYPH_ICONS = $(XBM_GLYPH_ICONS:.xbm=.glyph_h)
