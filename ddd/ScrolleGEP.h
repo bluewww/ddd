@@ -33,9 +33,11 @@
 // Superclasses
 #define new new_w
 #define class class_w
+extern "C" {
 #include <Xm/XmP.h>
 #include <X11/CoreP.h>
 #include <Xm/ScrolledWP.h>
+}
 #undef new
 #undef class
 

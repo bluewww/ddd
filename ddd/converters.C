@@ -94,12 +94,12 @@ static const _XtString const bitmap_name_set[] =
 // Decl of XmIsSlowSubclass in Motif 1.1 is not C++-aware, hence extern "C"
 extern "C" {
 #include <Xm/XmP.h>
-}
 
 // <Xm/PrimitiveP.h> only exists in Motif 1.2 and later
 #if XmVersion >= 1002
 #include <Xm/PrimitiveP.h>
 #endif
+}
 
 #undef new
 #undef class
