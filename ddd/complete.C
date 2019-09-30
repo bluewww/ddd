@@ -354,7 +354,7 @@ static void complete_reply(const string& complete_answer, void *qu_data)
 	string common_pfx = completions[0];
 	int i;
 	for (i = 1; i < completions_size; i++)
-	    common_pfx = common_prefix(common_pfx, completions[i]);
+	    common_pfx = common_prefix(common_pfx, completions[i], 0);
 
 	if (completions_size > 1 && input == common_pfx)
 	{

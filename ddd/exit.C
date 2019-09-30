@@ -478,7 +478,7 @@ void get_core_pattern(int signal)
 	str_func_ret = "core";
     }
     else {
-	readline(patternfile, pattern);
+	readline(patternfile, pattern, '\n', 1);
 	core_pat = pattern.chars();
 	while(*core_pat)
 	{
