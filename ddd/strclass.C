@@ -1562,6 +1562,7 @@ std::istream& operator>>(std::istream& s, string& x)
     return s;
 }
 
+
 int readline(std::istream& s, string& x, char terminator, int discard)
 {
     assert(!x.consuming());
