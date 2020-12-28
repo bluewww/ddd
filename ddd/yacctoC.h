@@ -32,6 +32,7 @@
 
 # Make YYSTYPE a struct such that we can store class objects
 # (use anonymous unions to save space!)
+s!^union *[a-zA-Z_]*\(.*\)$!struct _YYSTYPE \1!
 s!^typedef union *[a-zA-Z_]*\(.*\)$!typedef struct _YYSTYPE \1!
 
 # Avoid conflicting re-definitions

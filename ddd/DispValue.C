@@ -1432,8 +1432,8 @@ void DispValue::get_index_surroundings(string& prefix, string& suffix) const
 
     for (int i = 1; i < nchildren(); i++)
     {
-	prefix = common_prefix(prefix, child(i)->full_name());
-	suffix = common_suffix(suffix, child(i)->full_name());
+	prefix = common_prefix(prefix, child(i)->full_name(), 0);
+	suffix = common_suffix(suffix, child(i)->full_name(), -1);
     }
 }
 

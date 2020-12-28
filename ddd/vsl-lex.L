@@ -37,6 +37,7 @@ char VSL_lex_rcsid[] =
 #include <errno.h>
 #include "strclass.h"
 #include "casts.h"
+#include "vsl-gramma.h"
 
 static const int max_include_nesting = 40;    // max include nesting
 
