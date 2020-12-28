@@ -1,7 +1,9 @@
+![ddd](https://github.com/bluewww/ddd/workflows/DDD%20CI/badge.svg)
+# Data Display Debugger
 This is the source distribution of DDD, the Data Display Debugger.
 
-To find out what's new in DDD, see the file `NEWS'.
-To find out how to build DDD, consult the file `INSTALL'.
+To find out what's new in DDD, see the file `NEWS`.
+To find out how to build DDD, consult the file `INSTALL`.
 
 For further information, consult the following files:
 
