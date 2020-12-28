@@ -1,4 +1,4 @@
-\def\postscript{}\input texinfo @c -*- texinfo -*-
+\def\postscript\input texinfo @c -*- texinfo -*-
 @c $Id$
 @c DDD Manual
 
@@ -154,7 +154,7 @@ to the developers' mailing list @email{bug-ddd@@gnu.org}. @*
 @c The title page.
 @ifnothtml
 @titlepage
-@sp -7
+@sp 1
 @ifnottex
 @title Debugging with @value{DDD}
 @subtitle User's Guide and Reference Manual
