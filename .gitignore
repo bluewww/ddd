@@ -41,3 +41,7 @@ sun-lesstif-3.1
 sun-motif
 
 *.o
+*.eps
+*.jpg
+*.pdf
+*.log
