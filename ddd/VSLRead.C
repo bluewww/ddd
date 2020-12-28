@@ -110,6 +110,12 @@ struct VSLVarDefinition {
 #define vslparse VSLLib_parse
 
 #include "vsl-lex.C"
+// hack to force keeping the token declaration and YYSTYPE section. It seems
+// that bison in yacc mode doesn't expose a YYSTYPE in the generated header
+// (only a _IGNORED_YYSTYPE version)
+#ifdef YY_YY_Y_TAB_H_INCLUDED
+#undef YY_YY_Y_TAB_H_INCLUDED
+#endif
 #include "vsl-gramma.C"
 
 #undef vslparse
