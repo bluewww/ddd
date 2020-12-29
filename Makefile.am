@@ -245,4 +245,8 @@ pdf:
 ps:
 	cd ddd && $(MAKE) ps
 
+.PHONY: clean-local
+clean-local:
+	$(RM) doc/ddd.pdf doc/ddd-themes.pdf icons/dddlogo.xpm
+	$(RM) -r doc/html
 
