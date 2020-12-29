@@ -3164,13 +3164,15 @@ void DataDisp::refresh_graph_edit(bool silent)
     state.snapToGrid = graph_edit->get_snap_to_grid();
 #endif
 
+#if defined(IF_XM)
     if (refresh_graph_edit_timer == 0)
     {
-#if defined(IF_XM)
 	refresh_graph_edit_timer = 
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(graph_edit),
 			    0, RefreshGraphEditCB, XtPointer(&state));
 #else
+    if (refresh_graph_edit_timer.empty())
+    {
 	refresh_graph_edit_timer = 
 	    GUI::signal_idle().connect(sigc::bind(sigc::ptr_fun(RefreshGraphEditCB),
 						  &state));

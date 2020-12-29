@@ -8604,7 +8604,7 @@ static void blink(bool set)
     if (!led_w_active)
 	return;			// Button is not active
 
-    if (blink_timer == 0)
+    if (blink_timer.empty())
     {
 	if (blinker_active)
 	{

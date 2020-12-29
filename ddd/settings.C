@@ -3153,7 +3153,7 @@ static void add_button(GUI::Table *form, int& row, Dimension& max_width,
 	break;
     }
 
-    if (callback == 0)
+    if (callback.empty())
     {
 	if (is_set) {
 	    label = new GUI::Label(*form, GUI::PACK_SHRINK, base.chars(), labelString.xmstring());

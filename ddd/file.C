@@ -274,7 +274,7 @@ static GUI::Dialog *file_dialog(GUI::Widget *w, const string& name,
     GUI::Button *button;
     Delay::register_shell(dialog);
 
-    if (ok_callback != 0) {
+    if (!ok_callback.empty()) {
 	button = dialog->add_button("ok", _("OK"));
 	button->signal_clicked().connect(sigc::bind(ok_callback, dialog));
 	button->show();

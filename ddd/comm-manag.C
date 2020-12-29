@@ -2109,9 +2109,9 @@ static void partial_answer_received(const string& answer, void *data)
 	    // Get the remaining position within posTimeOut ms.
 	    if (app_data.position_timeout >= 0)
 	    {
+#if defined(IF_XM)
 		assert(cmd_data->position_timer == 0);
 
-#if defined(IF_XM)
 		cmd_data->position_timer = 
 		    XtAppAddTimeOut(app_con, app_data.position_timeout,
 				    CancelPartialPositionCB, 
@@ -2147,9 +2147,9 @@ static void partial_answer_received(const string& answer, void *data)
 	    // Get the remaining displays within displayTimeOut ms.
 	    if (app_data.display_timeout >= 0)
 	    {
+#if defined(IF_XM)
 		assert(cmd_data->display_timer == 0);
 
-#if defined(IF_XM)
 		cmd_data->display_timer = 
 		    XtAppAddTimeOut(app_con, app_data.display_timeout,
 				    CancelPartialDisplayCB,
