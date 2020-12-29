@@ -39,6 +39,7 @@ extern "C" int malloc_verify();
 #include <limits.h>
 #include <new>
 #include <stdlib.h>
+#include <stdio.h>
 
 void string::error(const char* msg) const
 {
