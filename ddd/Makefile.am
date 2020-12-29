@@ -1340,16 +1340,16 @@ ddd-themes.pdf: $(ddd_themes_TEXINFOS)
 
 # The DDD manual in HTML format.
 
-htmldir = $(builddocdir)/html
+projhtmldir = $(builddocdir)/html
 
 .PHONY: html
-html: $(htmldir)/ddd.html $(htmldir)/ddd-themes.html
+html: $(projhtmldir)/ddd.html $(projhtmldir)/ddd-themes.html
 
-$(htmldir)/ddd.html $(htmldir)/ddd-themes.html: \
+$(projhtmldir)/ddd.html $(projhtmldir)/ddd-themes.html: \
 	$(srcdir)/ddd.texi $(srcdir)/ddd-themes.texi $(HTML_IMAGES) \
 	style.css $(srcdir)/fix-html.sed
-	@-test -d $(htmldir) || mkdir $(htmldir)
-	@-test -d $(htmldir)/PICS || mkdir $(htmldir)/PICS
+	@-test -d $(projhtmldir) || mkdir $(projhtmldir)
+	@-test -d $(projhtmldir)/PICS || mkdir $(projhtmldir)/PICS
 	@-test -d PICS || mkdir PICS
 	$(RM) ddd*.html
 	$(MAKEINFOHTML) -I $(srcdir) -I $(texidir) $(srcdir)/ddd-themes.texi --no-split
@@ -1359,12 +1359,12 @@ $(htmldir)/ddd.html $(htmldir)/ddd-themes.html: \
 		$(SED) 's/$(IMGEXT)/\$(IMGEXT2)/g' > $$file~ && \
 		$(MV) $$file~ $$file; \
 	done
-	cd $(htmldir) && $(RM) ddd*.html style.css PICS/*
-	$(INSTALL_DATA) ddd*.html $(srcdir)/style.css $(htmldir)
+	cd $(projhtmldir) && $(RM) ddd*.html style.css PICS/*
+	$(INSTALL_DATA) ddd*.html $(srcdir)/style.css $(projhtmldir)
 	($(ECHO) 'index.html:'; $(ECHO) '	$(LN_S) ddd.html index.html') \
-	 > $(htmldir)/Makefile
+	 > $(projhtmldir)/Makefile
 	@$(ECHO) Installing images...
-	@$(INSTALL_DATA) $(HTML_IMAGES) $(htmldir)/PICS
+	@$(INSTALL_DATA) $(HTML_IMAGES) $(projhtmldir)/PICS
 	@$(ECHO) Installing images...done.
 
 # Manual page
@@ -2071,10 +2071,12 @@ PROG_STUFF = $(LEXTOCXX).flex $(LEXTOCXX).sun \
 
 # Additional files to be included in the distribution.
 DIST_STUFF = $(srcdir)/header.ps $(srcdir)/trailer.ps \
-	     $(htmldir)/ddd.html $(srcdir)/ad2c.sed $(srcdir)/config-info \
 	     $(projdocdir)/ddd.pdf \
 	     $(projdocdir)/ddd-themes.pdf \
 	     $(projdocdir)/ddd-paper.ps \
+	     $(projhtmldir)/ddd.html \
+	     $(projhtmldir)/ddd-themes.html \
+	     $(srcdir)/ad2c.sed $(srcdir)/config-info \
 	     style.css $(srcdir)/fix-html.sed \
 	     $(srcdir)/unumlaut.sed ddd.desktop
 
