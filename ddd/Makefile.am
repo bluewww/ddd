@@ -945,7 +945,7 @@ DDDTARGET = cxxtest$(EXEEXT)
 
 # For demonstration and debugging purposes
 .PHONY: check
-check: Ddd ./$(ddd)$(EXEEXT) cxxtest$(EXEEXT) check-now
+check: Ddd ./$(ddd)$(EXEEXT) cxxtest$(EXEEXT)
 
 .PHONY: check-now
 check-now:
