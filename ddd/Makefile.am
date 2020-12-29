@@ -2064,6 +2064,7 @@ PROG_STUFF = $(LEXTOCXX).flex $(LEXTOCXX).sun \
              $(srcdir)/ddd.vsl.m4 $(vsldir)/ddd.vsl $(srcdir)/ddd.vsl.h \
              root.h.in $(srcdir)/COPYING.gz $(srcdir)/NEWS.gz \
              $(srcdir)/COPYING.gz.C $(srcdir)/NEWS.gz.C \
+	     $(srcdir)/ddd.info.txt $(srcdir)/ddd.info.txt.gz \
 	     $(srcdir)/ddd.info.txt.gz.C $(srcdir)/ddd.info \
              xlibdir.txt xlibdir.C $(srcdir)/header.str \
 	     $(srcdir)/trailer.str $(srcdir)/eps-code.x eps-code.h \
