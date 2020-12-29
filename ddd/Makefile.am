@@ -1325,11 +1325,11 @@ ps: $(builddocdir)/ddd.ps $(builddocdir)/ddd-themes.ps
 pdf: $(builddocdir)/ddd.pdf $(builddocdir)/ddd-themes.pdf
 
 $(builddocdir)/ddd.pdf: ddd.pdf
-	@-test -d $(builddocdir) || mkdir $(builddocdir)
+	@-test -d $(builddocdir) || mkdir -p $(builddocdir)
 	$(INSTALL_DATA) ddd.pdf $@
 
 $(builddocdir)/ddd-themes.pdf: ddd-themes.pdf
-	@-test -d $(builddocdir) || mkdir $(builddocdir)
+	@-test -d $(builddocdir) || mkdir -p $(builddocdir)
 	$(INSTALL_DATA) ddd-themes.pdf $@
 
 ddd.pdf: $(PDF_IMAGES) $(ddd_TEXINFOS)
@@ -1348,9 +1348,9 @@ html: $(projhtmldir)/ddd.html $(projhtmldir)/ddd-themes.html
 $(projhtmldir)/ddd.html $(projhtmldir)/ddd-themes.html: \
 	$(srcdir)/ddd.texi $(srcdir)/ddd-themes.texi $(HTML_IMAGES) \
 	style.css $(srcdir)/fix-html.sed
-	@-test -d $(projhtmldir) || mkdir $(projhtmldir)
-	@-test -d $(projhtmldir)/PICS || mkdir $(projhtmldir)/PICS
-	@-test -d PICS || mkdir PICS
+	@-test -d $(projhtmldir) || mkdir -p $(projhtmldir)
+	@-test -d $(projhtmldir)/PICS || mkdir -p $(projhtmldir)/PICS
+	@-test -d PICS || mkdir -p PICS
 	$(RM) ddd*.html
 	$(MAKEINFOHTML) -I $(srcdir) -I $(texidir) $(srcdir)/ddd-themes.texi --no-split
 	$(MAKEINFOHTML) -I $(srcdir) -I $(texidir) $(srcdir)/ddd.texi --no-split
