@@ -75,7 +75,7 @@ cvsdist: $(srcdir)/ChangeLog diststuff disttouch distclean \
 # RPM spec
 .PHONY:	spec
 spec: $(top_builddir)/$(ddd)-$(VERSION)-$(REL).spec
-$(ddd)-$(VERSION)-$(REL).spec: $(srcdir)/ddd.spec.in $(top_builddir)/config.status
+$(ddd)-$(VERSION)-$(REL).spec: $(srcdir)/ddd.spec.in
 	CONFIG_FILES=$(srcdir)/ddd.spec CONFIG_HEADERS= $(SHELL) $(top_builddir)/config.status
 	$(SED) 's/@REL@/$(REL)/g' $(top_builddir)/ddd.spec > $@
 	$(RM) $(top_builddir)/ddd.spec
