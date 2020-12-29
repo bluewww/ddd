@@ -1313,7 +1313,7 @@ ddd-themes.dvi: $(ddd_themes_TEXINFOS)
 
 # The DDD manual in PostScript format, including all pictures.
 
-docdir = $(srcdir)/../doc
+projdocdir = $(srcdir)/../doc
 builddocdir = $(top_builddir)/doc
 
 .PHONY: ps
@@ -2071,10 +2071,10 @@ PROG_STUFF = $(LEXTOCXX).flex $(LEXTOCXX).sun \
 
 # Additional files to be included in the distribution.
 DIST_STUFF = $(srcdir)/header.ps $(srcdir)/trailer.ps \
-	     $(docdir)/ddd.pdf \
-	     $(docdir)/ddd-themes.pdf \
-	     $(docdir)/ddd-paper.ps \
 	     $(htmldir)/ddd.html $(srcdir)/ad2c.sed $(srcdir)/config-info \
+	     $(projdocdir)/ddd.pdf \
+	     $(projdocdir)/ddd-themes.pdf \
+	     $(projdocdir)/ddd-paper.ps \
 	     style.css $(srcdir)/fix-html.sed \
 	     $(srcdir)/unumlaut.sed ddd.desktop
 
