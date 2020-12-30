@@ -42,8 +42,8 @@ MatchBoxFunc MatchBox::matchCallback = 0;
 bool MatchBox::matches (const Box &box, const Box *callbackArg) const
 {
     bool ret = matchesAll ||
-	DummyBox::matches(box) &&
-	    _data == ((const MatchBox *)&box)->_data; // dirty trick
+	(DummyBox::matches(box) &&
+	 _data == ((const MatchBox *)&box)->_data); // dirty trick
 
     if (ret && matchCallback)
     {

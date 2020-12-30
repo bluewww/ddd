@@ -130,13 +130,17 @@ int DefCallNode::resolveDefs(VSLDef *cdef, bool complain_recursive)
     VSLDef *def;
     for (def = _deflist->first(); def != 0; def = def->listnext())
 	if (def->matches(arg()))
+	{
 	    if (found == 0)
+	    {
 		found = def;        // First matching def
+	    }
 	    else
 	    {
 		found = 0;          // Second matching def: abort
 		break;
 	    }
+	}
 
     VSLNode::bothSidesCanMatch = old_bothSidesCanMatch;
     CallNode::matchesAll = old_CallNodeMatchesAll;

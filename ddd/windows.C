@@ -777,7 +777,7 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 	    }
 
 	    if (w == source_view_shell || 
-		w == command_shell && source_view_shell == 0)
+		(w == command_shell && source_view_shell == 0))
 	    {
 		// Source shell has been moved -- let command tool follow
 #if LOG_EVENTS || LOG_MOVES

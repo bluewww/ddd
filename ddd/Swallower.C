@@ -223,8 +223,8 @@ static void CheckIfWindowHasGone(Widget w, XtPointer, XEvent *event, Boolean *)
     const SwallowerWidget _w = SwallowerWidget(w);
     Window& window = _w->swallower.window;
 
-    if (event->type == ReparentNotify && event->xreparent.window == window ||
-	event->type == DestroyNotify && event->xdestroywindow.window == window)
+    if ((event->type == ReparentNotify && event->xreparent.window == window) ||
+	(event->type == DestroyNotify && event->xdestroywindow.window == window))
     {
 	// Our child has gone
 	WindowHasGone(w, event);

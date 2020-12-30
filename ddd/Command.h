@@ -159,7 +159,7 @@ public:
     bool operator == (const Command& c) const
     {
 	return this == &c || 
-	    command == c.command 
+	    (command == c.command
 	    && origin == c.origin 
 	    && callback == c.callback 
 	    && extra_callback == c.extra_callback 
@@ -169,7 +169,7 @@ public:
 	    && prompt == c.prompt
 	    && check == c.check
 	    && start_undo == c.start_undo
-	    && priority == c.priority;
+	    && priority == c.priority);
     }
 };
 

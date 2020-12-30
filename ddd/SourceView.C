@@ -6601,7 +6601,7 @@ void SourceView::set_bp_commands(IntArray& nrs, const StringArray& commands,
 		string command = commands[j];
 
 		if (is_graph_cmd(command) || is_running_cmd(command) ||
-		    gdb->type() == PERL && command.contains(' ', 1))
+		    (gdb->type() == PERL && command.contains(' ', 1)))
 		{
 		    // If:
 		    // - this is a DDD command, or

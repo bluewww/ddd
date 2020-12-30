@@ -2863,7 +2863,7 @@ string GDBAgent::prepend_prefix(const string& prefix, const string& expr)
 string GDBAgent::prepend_prefix(const char *prefix, const string& expr)
 {
     if (expr.matches(rxidentifier)
-	|| expr.contains("(", 0) && expr.contains(")", -1))
+	|| (expr.contains("(", 0) && expr.contains(")", -1)))
 	return prefix + expr;
     else if (expr.empty())
 	return prefix;
@@ -2880,7 +2880,7 @@ string GDBAgent::append_suffix(const string& expr, const string &suffix)
 string GDBAgent::append_suffix(const string& expr, const char *suffix)
 {
     if (expr.matches(rxidentifier)
-	|| expr.contains("(", 0) && expr.contains(")", -1))
+	|| (expr.contains("(", 0) && expr.contains(")", -1)))
 	return expr + suffix;
     else if (expr.empty())
 	return string(suffix);
