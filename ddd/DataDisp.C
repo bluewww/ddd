@@ -2698,7 +2698,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 
     // Plot
     bool arg_is_displayed = (display_number(source_arg->get_string()) != 0);
-    bool can_delete_arg = (count.selected == 0 && arg_is_displayed || 
+    bool can_delete_arg = ((count.selected == 0 && arg_is_displayed) ||
 			   record_ok || 
 			   count.selected > 0);
     set_sensitive(graph_cmd_area[CmdItms::Plot].widget, plot_ok);
@@ -2770,7 +2770,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     bool set_node_ok = 
 	disp_node_arg != 0 && 
 	(!disp_node_arg->is_user_command() || 
-	 disp_value_arg != 0 && disp_value_arg != disp_node_arg->value());
+	 (disp_value_arg != 0 && disp_value_arg != disp_node_arg->value()));
     bool set_arg_ok = (disp_node_arg == 0 && arg_ok && !is_user_command(arg));
 
     set_sensitive(graph_cmd_area[CmdItms::Set].widget,

@@ -168,9 +168,9 @@ void manage_and_raise(Widget w)
 	{
 	    XWindowAttributes attr;
 	    iconic = (!XtIsRealized(shell)
-		      || XGetWindowAttributes(XtDisplay(shell), 
+		      || (XGetWindowAttributes(XtDisplay(shell),
 					      XtWindow(shell), &attr)
-		      && attr.map_state != IsViewable);
+			  && attr.map_state != IsViewable));
 
 	    if (iconic)
 		XtVaSetValues(w, XmNinitialState, IconicState, XtPointer(0));

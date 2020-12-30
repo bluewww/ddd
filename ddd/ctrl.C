@@ -38,10 +38,12 @@ string ctrl(string name)
     if (name.length() >= 2)
     {
 	if (name[0] == '^')
+	{
 	    if (name[1] == '?')
 		return '\177';	// ^?
 	    else
 		return char(toupper(name[1]) - '@'); // ^A...^Z
+	}
 
 	if (name[0] == '\\')
 	    return uncook(name); // `\003' or similar

@@ -307,9 +307,8 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	case MMFlatPush:
 	{
 	    flat = true;
-	    // FALL THROUGH
 	}
-
+	// FALL THROUGH
 	case MMPush:
 	{
 	    // Create a PushButton
@@ -823,8 +822,8 @@ static void addCallback(const MMDesc *item, XtPointer default_closure)
     case MMFlatPush:
     {
 	flat = true;
-	// FALL THROUGH
     }
+    // FALL THROUGH
 
     case MMPush:
     {
@@ -860,8 +859,8 @@ static void addCallback(const MMDesc *item, XtPointer default_closure)
 	    ReflattenButtonCB(widget, XtPointer(widget));
 	}
 
-	// FALL THROUGH
     }
+    // FALL THROUGH
 
     case MMArrow:
     {
@@ -903,9 +902,8 @@ static void addCallback(const MMDesc *item, XtPointer default_closure)
 	    XtAddCallback(list, XmNextendedSelectionCallback,
 			  callback.callback, callback.closure);
 	}
-
-	// FALL THROUGH
     }
+    // FALL THROUGH
 
     case MMSpinBox:
     case MMTextField:
@@ -918,8 +916,8 @@ static void addCallback(const MMDesc *item, XtPointer default_closure)
 
 	if (type == MMTextField)
 	    break;
-	// FALL THROUGH
     }
+    // FALL THROUGH
 
     case MMEnterField:
     {

@@ -83,7 +83,7 @@ void PosBuffer::filter_line(string& answer) const
 static bool has_prefix(const string& answer, const string& prefix)
 {
     int index = answer.index(prefix);
-    return index == 0 || index > 0 && answer[index - 1] == '\n';
+    return index == 0 || (index > 0 && answer[index - 1] == '\n');
 }
 
 // Store first address in ANSWER after INDEX in BUFFER
@@ -473,8 +473,8 @@ void PosBuffer::filter_gdb(string& answer)
 	}
     }
 	    
-    if (check_pc && pc_buffer.empty() || 
-	check_func && func_buffer.empty())
+    if ((check_pc && pc_buffer.empty()) ||
+	(check_func && func_buffer.empty()))
     {
 	// `Breakpoint N, ADDRESS in FUNCTION (ARGS...)'
 #if RUNTIME_REGEX
@@ -491,8 +491,8 @@ void PosBuffer::filter_gdb(string& answer)
 	}
     }
 	    
-    if (check_pc && pc_buffer.empty() || 
-	check_func && func_buffer.empty())
+    if ((check_pc && pc_buffer.empty()) ||
+	(check_func && func_buffer.empty()))
     {
 	// `#FRAME ADDRESS in FUNCTION (ARGS...)'
 #if RUNTIME_REGEX
@@ -501,7 +501,7 @@ void PosBuffer::filter_gdb(string& answer)
 		
 	int pc_index = index(answer, rxframe_addr, "#");
 	if (pc_index == 0
-	    || pc_index > 0 && answer[pc_index - 1] == '\n')
+	    || (pc_index > 0 && answer[pc_index - 1] == '\n'))
 	{
 	    pc_index = answer.index(' ');
 	    fetch_address(answer, pc_index, pc_buffer);
@@ -509,8 +509,8 @@ void PosBuffer::filter_gdb(string& answer)
 	}
     }
 	    
-    if (check_pc && pc_buffer.empty() || 
-	check_func && func_buffer.empty())
+    if ((check_pc && pc_buffer.empty()) ||
+	(check_func && func_buffer.empty()))
     {
 	// `No line number available for 
 	// address ADDRESS <FUNCTION>'
@@ -583,7 +583,7 @@ void PosBuffer::filter_gdb(string& answer)
 #endif
 	int frame_index = index(answer, rxframe_addr, "#");
 	if (frame_index == 0
-	    || frame_index > 0 && answer[frame_index - 1] == '\n')
+	    || (frame_index > 0 && answer[frame_index - 1] == '\n'))
 	{
 	    fetch_function(answer, frame_index, func_buffer);
 	}

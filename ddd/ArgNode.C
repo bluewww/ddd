@@ -78,8 +78,8 @@ void ArgNode::_dumpTree(std::ostream& s) const
 bool ArgNode::matches(const VSLNode &node) const
 {
     bool ret = matchesAll ||
-	VSLNode::matches(node) &&
-	    _id == ((const ArgNode *)&node)->_id; // dirty trick
+	(VSLNode::matches(node) &&
+	 _id == ((const ArgNode *)&node)->_id); // dirty trick
 
     if (ret && matchCallback)
 	matchCallback(_id, &node);

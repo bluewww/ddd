@@ -6886,7 +6886,7 @@ fi
   # CXXOPT="-DNDEBUG"
   CXXOPT=
   CXXDEBUG=
-  CXXWARNINGS="-Wall -W -Wwrite-strings"
+  CXXWARNINGS="-Wall -W -Wwrite-strings -Wno-deprecated-copy"
   CXXSTATIC_BINDING="-Bstatic"
   CXXDYNAMIC_BINDING="-Bdynamic"
   CXXSTUFF="${MINIMAL_TOC}"
