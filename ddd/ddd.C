@@ -5822,7 +5822,7 @@ struct WhenReadyInfo {
 	}
 	else
 	{
-	    memcpy(cbs.event, c.event, sizeof(cbs.event));
+	    memcpy(cbs.event, c.event, sizeof(*cbs.event));
 	    cbs.event = &event;
 	}
     }
