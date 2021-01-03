@@ -3200,7 +3200,7 @@ string GDBAgent::disassemble_command(string start, const char *end) const
     {
         string end_( end );
 	normalize_address(end_);
-	cmd += ' ';
+	cmd += ',';
 	cmd += end_;
     }
     return cmd;
