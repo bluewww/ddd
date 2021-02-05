@@ -42,6 +42,7 @@ char tictactoe_rcsid[] =
 #include <Xm/PushB.h>
 #include <Xm/SelectioB.h>	// XmCreatePromptDialog()
 
+#include <cstdint>
 #include <iostream>
 #include <unistd.h>
 
@@ -512,7 +513,7 @@ static Widget create_tictactoe(Widget parent)
 	buttons[i] = XmCreatePushButton(board, XMST("field"), args, arg);
 	XtManageChild(buttons[i]);
 	XtAddCallback(buttons[i], XmNactivateCallback, 
-		      MakeMoveCB, XtPointer(i));
+		      MakeMoveCB, XtPointer((uintptr_t)i));
     }
     XtManageChild(board);
 

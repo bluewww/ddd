@@ -35,6 +35,7 @@ char AgentM_rcsid[] =
 
 extern "C" {
 #include <unistd.h>
+#include <stdint.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 }
@@ -122,7 +123,7 @@ bool AgentManager::childStatusChange()
 
 	if (pid > 0 && waitpid(pid, &status, WNOHANG) == pid)
 	{
-	    c->callHandlers(_Died, (void *)status);
+	    c->callHandlers(_Died, (void *)(intptr_t)status);
 	    gotit = true;
 	}
     }

@@ -53,6 +53,7 @@ char post_rcsid[] =
 #include <Xm/AtomMgr.h>
 #include <Xm/MessageB.h>
 
+#include <cstdint>
 #include <signal.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -242,7 +243,7 @@ Widget post_gdb_died(string reason, int state, Widget w)
 	XtAddCallback(dialog, XmNokCallback,     
 		      RestartDebuggerCB, XtPointer(0));
 	XtAddCallback(dialog, XmNcancelCallback, 
-		      DDDExitCB, XtPointer(exit_state));
+		      DDDExitCB, XtPointer((intptr_t)exit_state));
     }
     else
     {
@@ -254,7 +255,8 @@ Widget post_gdb_died(string reason, int state, Widget w)
 					    args, arg));
 	XtUnmanageChild(XmMessageBoxGetChild(dialog, XmDIALOG_CANCEL_BUTTON));
 	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, XtPointer(0));
-	XtAddCallback(dialog, XmNokCallback, DDDExitCB, XtPointer(exit_state));
+	XtAddCallback(dialog, XmNokCallback, DDDExitCB,
+		      XtPointer((intptr_t)exit_state));
     }
 
     Delay::register_shell(dialog);
