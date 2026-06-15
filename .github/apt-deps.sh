@@ -15,4 +15,6 @@ apt-get install -y \
 sed -i '/coder/d' /etc/ImageMagick-6/policy.xml || true
 
 # HACK: we don't have pamarith on ubuntu, but pnmarith seems to work too.
-ln -sf /usr/bin/pnmarith /usr/bin/pamarith
+if ! command -v pamarith >/dev/null 2>&1; then
+  ln -s /usr/bin/pnmarith /usr/bin/pamarith
+fi
