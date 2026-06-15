@@ -22,3 +22,13 @@ For further information, consult the following files:
 -- 
 Andreas Zeller       Universitaet Passau, Germany
                      ddd@gnu.org  http://www.gnu.org/software/ddd/
+
+# Notice
+
+This is a development version unrelated to upstream. You can find the official ddd git mirror at
+
+https://github.com/eickeler/DDD
+
+and
+
+https://www.gnu.org/software/ddd/
