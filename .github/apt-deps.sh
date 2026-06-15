@@ -1,17 +1,18 @@
 #!/bin/bash
-apt update
-apt install libmotif-dev libxt-dev netpbm imagemagick texlive-font-utils texlive-latex-base
+set -euxo pipefail
 
-if [[ $(lsb_release --release --short) == 16.04 ]]; then
-    apt install transfig
-else
-    apt install fig2dev
-fi
+apt-get update
+apt-get install -y \
+  libmotif-dev \
+  libxt-dev \
+  netpbm \
+  imagemagick \
+  texlive-font-utils \
+  texlive-latex-base \
+  fig2dev
 
 # allow imagemagick converts by giving full permission
-sed -i '/coder/d' /etc/ImageMagick-6/policy.xml
+sed -i '/coder/d' /etc/ImageMagick-6/policy.xml || true
 
-# HACK: we don't have pamarith on ubuntu (due to licensing problems afaik), but
-# pnmarith seems to work too
-ln -s /usr/bin/pnmarith /usr/bin/pamarith
-
+# HACK: we don't have pamarith on ubuntu, but pnmarith seems to work too.
+ln -sf /usr/bin/pnmarith /usr/bin/pamarith
