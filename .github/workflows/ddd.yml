@@ -2,58 +2,37 @@ name: DDD CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
-  build-ubuntu-20-04:
-    runs-on: ubuntu-20.04
-    steps:
-    - uses: actions/checkout@v2
-    - name: Install dependencies
-      run: sudo ./.github/apt-deps.sh
-    - name: CVSMake
-      run: ./CVSMake
-    - name: configure
-      run: ./configure
-    - name: make
-      run: make
-    - name: make check
-      run: make check
-    - name: make distcheck
-      run: make distcheck
+  build:
+    name: build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
 
-  build-ubuntu-18-04:
-    runs-on: ubuntu-18.04
-    steps:
-    - uses: actions/checkout@v2
-    - name: Install dependencies
-      run: sudo ./.github/apt-deps.sh
-    - name: CVSMake
-      run: ./CVSMake
-    - name: configure
-      run: ./configure
-    - name: make
-      run: make
-    - name: make check
-      run: make check
-    - name: make distcheck
-      run: make distcheck
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, ubuntu-24.04]
 
-  build-ubuntu-16-04:
-    runs-on: ubuntu-16.04
     steps:
-    - uses: actions/checkout@v2
-    - name: Install dependencies
-      run: sudo ./.github/apt-deps.sh
-    - name: CVSMake
-      run: ./CVSMake
-    - name: configure
-      run: ./configure
-    - name: make
-      run: make
-    - name: make check
-      run: make check
-    - name: make distcheck
-      run: make distcheck
+      - uses: actions/checkout@v6
+
+      - name: Install dependencies
+        run: sudo ./.github/apt-deps.sh
+
+      - name: CVSMake
+        run: ./CVSMake
+
+      - name: configure
+        run: ./configure
+
+      - name: make
+        run: make
+
+      - name: make check
+        run: make check
+
+      - name: make distcheck
+        run: make distcheck
