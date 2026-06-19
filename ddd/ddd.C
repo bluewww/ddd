@@ -280,6 +280,7 @@ char ddd_rcsid[] =
 #include <fstream>
 #include <time.h>
 #include <signal.h>
+#include <cstdint>
 
 #if HAVE_LOCALE_H
 #include <locale.h>
@@ -5466,7 +5467,7 @@ static void BlinkCB(XtPointer client_data, XtIntervalId *id)
     {
 	blink_timer = XtAppAddTimeOut(XtWidgetToApplicationContext(led_w),
 				      app_data.busy_blink_rate, BlinkCB,
-				      XtPointer(int(!set)));
+				      XtPointer(intptr_t(!set)));
     }
 }
 
@@ -5822,7 +5823,7 @@ struct WhenReadyInfo {
 	}
 	else
 	{
-	    memcpy(cbs.event, c.event, sizeof(cbs.event));
+	    memcpy(cbs.event, c.event, sizeof(*cbs.event));
 	    cbs.event = &event;
 	}
     }

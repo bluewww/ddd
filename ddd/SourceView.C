@@ -159,6 +159,7 @@ extern "C" {
 #include <sys/types.h>
 #include <sys/stat.h>
 }
+#include <stdint.h>
 #include <stdio.h>
 #include <fcntl.h>
 #include <stdlib.h>
@@ -784,7 +785,7 @@ void SourceView::clearJumpBP(const string& msg, void *data)
     {
 	// Delete all recently created breakpoints
 	XtAppAddTimeOut(XtWidgetToApplicationContext(source_text_w),
-			0, clearBP, XtPointer(i));
+			0, clearBP, XtPointer((intptr_t)i));
     }
 }
 
@@ -825,7 +826,7 @@ void SourceView::temp_n_cont(const string& a, Widget w)
 	// Make sure the temporary breakpoint is deleted after `cont'
 	Command c("cont", w);
 	c.callback = clearJumpBP;
-	c.data     = XtPointer(old_max_breakpoint_number_seen);
+	c.data     = XtPointer((intptr_t)old_max_breakpoint_number_seen);
 	gdb_command(c);
 	break;
     }
@@ -918,7 +919,7 @@ bool SourceView::move_pc(const string& a, Widget w)
 	last_jump_address = a;
 	Command c(gdb->jump_command(address), w);
 	c.callback = clearJumpBP;
-	c.data     = XtPointer(old_max_breakpoint_number_seen);
+	c.data     = XtPointer((intptr_t)old_max_breakpoint_number_seen);
 	gdb_command(c);
 
 	return true;

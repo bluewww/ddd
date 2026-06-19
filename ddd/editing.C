@@ -52,6 +52,7 @@ char editing_rcsid[] =
 #include "windows.h"
 
 #include <iostream>
+#include <cstdint>
 #include <Xm/Xm.h>
 #include <Xm/Text.h>
 #include <Xm/TextF.h>
@@ -229,7 +230,7 @@ static void isearch_again(ISearchState new_isearch_state, XEvent *event)
 	if (history < 0)
 	    XtCallActionProc(gdb_w, "beep", event, 0, 0);
 	else
-	    isearch_done(XtPointer(history), 0);
+	    isearch_done(XtPointer((intptr_t)history), 0);
     }
     else
     {
@@ -352,7 +353,7 @@ static bool do_isearch(Widget, XmTextVerifyCallbackStruct *change)
 
 	// Redraw current line with appropriate prompt.
 	XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0, 
-			isearch_done, XtPointer(history));
+			isearch_done, XtPointer((intptr_t)history));
 
 	// Upon the next call to gdbMotionCB(), clear ISearch mode,
 	// unless it immediately follows this one.
