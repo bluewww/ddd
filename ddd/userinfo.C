@@ -84,9 +84,9 @@ static char *email_from_preferences(const char *home, const char *dotrc, const c
 
 		char *s = line + strlen(tag);
 		char *t = buffer;
-		while (is_junk(*s))
+		while (*s != '\0' && is_junk(*s))
 		    s++;
-		while (!is_junk(*s) && *s != '\0')
+		while (*s != '\0' && !is_junk(*s))
 		    *t++ = tolower(*s++);
 		*t++ = '\0';
 		fclose(fp);
